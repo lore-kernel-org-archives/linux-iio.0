@@ -1,136 +1,128 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743B8388382
-	for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 15:21:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97C6E349CE9
+	for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 16:13:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779722511; cv=none; b=T8bFuuQ7nx2BNmC1G5K70twoYpJMgs5DoR8sHVJlVOgpvolHlIGRLpgwIazHjKAVfVb+5MoOiSttJukeyFQK4btMk1bv6837kh3KSQc+IlcHTWPtbtTtw9t89nq8AMcycQozy2XdOm/FXS1XayNXHhnsroEEqdEqKhjc5u0pUb8=
+	t=1779725586; cv=none; b=CCLKCb00eQIghJ2OjUqbku613+XUCGZ9mqh3bssUTz/g28m8l//Ew6bbiTlkPEr2FHeNSoCL46GNdyBf6yqz1xcsNnVIp0GDkexaa16y/65TNj3erPOerLv/Ik3H5RpuRh25O9PnPrSw6kLWuPHkrHmlb7DLSrn2zv5kqluEX9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779722511; c=relaxed/simple;
-	bh=Zih5qrvP0uYey2pj2Tiz2fmyOiEkYiF9CfhRE3bbwSg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=arcCliOMjDWV6FZl2qn0paTods5t1UTE/N5fZPcSLoLk5Av1gIFnfAXDedpf/g9DsGLn4qy1M6hH4UDk87k9aNC+1BrTd+6P2OEKvC8KuS369EGSsRMJTfnhV3CpYSBD5S3fr7RRf8+bdR5s6sokkXFrLYcVWRN/FiFvef3GM2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vb9HAldB; arc=none smtp.client-ip=209.85.167.50
+	s=arc-20240116; t=1779725586; c=relaxed/simple;
+	bh=s5w53t4HZEfOpMWOAkkPTvlM5cQcOCdRUzSMehtyGEQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PBgwXSfg+kMi5Gdpiwqhefc5hhJVTs+19WZqxeNyr9QSOxemWOTmdT1gpCHGr3wvWsmkNaEq/I+h4NV2XK2x43WSZIrU0q8mwT1rjT74mjFuQ2eMmSxdcOrM2/zgrO7MpnnDqFa1svfehs0DFGRFJo3EKl9AK5POkxJKrh6H5f8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kS1DMu6i; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vb9HAldB"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5a8772a67bcso867333e87.3
-        for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 08:21:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kS1DMu6i"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-43d75312379so8147466f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 25 May 2026 09:13:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779722509; x=1780327309; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3szcHfwW0La5jre2jpVClNipxO4MhebWvrDcZivRLXc=;
-        b=Vb9HAldBdUHOrsnK3tFAA4aCucxtQgTMfbrVxca6+RFmUtbeYLZMsXQP+PoaMbUmH1
-         40TvF0NUYzrOJOrLmvZWBP31s3ZmgVJ6ppKOtm2nqNDWzY8qlN0z9w+jGCn/0mjJOG6d
-         IfODqa8slqcOBZbt8pdMW7O5Oouf14HaFkfQe9QYyIi/x46zpBWbbHdCc60Pdq/1logv
-         2XFNetqoxAIrKP+b3zEqH+kjNmZ+nm+VqfsWeAf1oVClbDuBUCmhhHz0rKbZpBHasqof
-         De4lL5OJwwoRY6q98aU94I0i/d/V5tcrhmDajiJrvDehwRYEqSHIrSZkIJORoDujTDbZ
-         Ft7Q==
+        d=gmail.com; s=20251104; t=1779725583; x=1780330383; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=PrUkFmsyhM+H1pzZoLfPMsL3Oa/eAQefGicPa01J8aw=;
+        b=kS1DMu6iT6wKVRxaPin7EgPS7Cw9/Pt3WcjoUuYVh9fpumC5IoI/6d1RkxVJfBuVtS
+         VWVIpYdKK5RzWqtObG8JD5M91ESXgm9MROtxzeVHJu4FkMcK/tRAPBJOt++CjlF8bOrJ
+         viTwzjeTTdLZ14eluw9HcGFfMkic6lDfqgfzxKVuFzQ+Joa5uDV30/AP6Nr0Hwx/4urj
+         k37EdlUQoyANmWVkoQRyMKjYhnppCQZddKZK23UH4Fl61SX7QuBjSQAfOmN+mb7TwtJi
+         hwL4PW0fyWVAsCsxD0n9l7gWFKnuFKAn5MLjiZHnFXsbvq65wC/xV2LmM3nAbrJ6LGb9
+         CIjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779722509; x=1780327309;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3szcHfwW0La5jre2jpVClNipxO4MhebWvrDcZivRLXc=;
-        b=NEMzqINlOS/IHHep0AXAUbAshDEQtFOVav2sReQM2RX/O48klrYtH3tanVvrXZxTl7
-         yZGSmkgRmr+wKG9Fx6PfDGLV8rG4sVQ6HwsdHP5HlVc1+LNoCPz3wARdO5mNxuUEdTA1
-         CdRGkHOH6SSQ9E8Amljs6Vj0D8qQO1GcwaiCzra83Pt6rQS0khmKxEaa2NFL0QYJXQ+s
-         f3NmXUPqmA1oPhENinpFKcGZPRb6ofjYzJMo/Wk/N8W2uTfjwcX5OKgA4qHlG7VHbWTE
-         HBXAeIUh3t0r7C1eyexwLeVRGkYg+8o81sXhyO7QwO5U64V12SdhGbxd1KAbC+abYAQo
-         DdvA==
-X-Forwarded-Encrypted: i=1; AFNElJ/HpjO22EwyQIJSqJU56jS+T6mMwLwhhric0TDxsqw45pjVO+BPOu8BWjhL2NnxJSHfnR6E1h4azE0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy7G5ZcH2w877iG9pS/PTKkG6flj7AsTjLVdeYIzzscCjQJGeQa
-	0FO7lrpIsEvqTuEZgRIhpESm9aBAmT1n3GvH4jewQMIM5E9uEhXx9UPF
-X-Gm-Gg: Acq92OGjXOG5VUGe8289K4M2uOgjlNGp8aBdSajOLnHo9ROiDe1gleITxZv/KDXhZ0S
-	IEl5hQfum523B3ViwKhSlNS2/vlUavbWzvB/FkANuDaRRhsgKFZqvEkBerPnq9Nxvef4en4W5Vy
-	l4BDHSRFq5gzOpf8GDIbnJAZQ/vQmQCjzvpVFB+4GkD0OI3b3fyOidTn6uZRniWlvb6lX1ZvBIR
-	hnFy7Ov6vZXgCB4xh/7WxZnopkO+AbYJZEmdrmLF/hkyAzK3oCMDuU6F8/s7aUw8tQCW8zYIow3
-	tY0y+CAZp+YdQ71vzovLENdsR0srnId7prryo0e13Wuglu8CN3cnWolmlOkt5UkAUETyczuu20m
-	2llFkmarT1ogNsJlcnDmN+FxeRTMbP+VgtszKlOMERtGJISEygxtD72JVxIvCccjv7do3OofWYD
-	9JKCaWkp08MMlM4F+GbaCO0hUwq2eQAmA38viRs+UtTzgD
-X-Received: by 2002:a2e:a593:0:b0:38e:2183:2287 with SMTP id 38308e7fff4ca-395d8d28ba9mr24558311fa.6.1779722508386;
-        Mon, 25 May 2026 08:21:48 -0700 (PDT)
-Received: from localhost.localdomain ([94.158.61.193])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-395dcc2d61fsm22930941fa.33.2026.05.25.08.21.46
+        d=1e100.net; s=20251104; t=1779725583; x=1780330383;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PrUkFmsyhM+H1pzZoLfPMsL3Oa/eAQefGicPa01J8aw=;
+        b=KfAfEpY663MKC6vixyfYf0WOqdmRm6CfY172X4/Rw2JUWN8ClHWl0hKGmbA1se2pD8
+         I/tw5JZrBATaGfCSr/u82aMH93YtBQ5CZahL25PTf4U8IctO/52idTksDM6HZQxkyKAT
+         eLO5jBp2ksvL8zQSF8BFjw1HvBEs3cFe0Z1lY1RjjcZRF1mqxoSClZ3RiulWwoIkb9/O
+         bFclFjJIwDs/y/y0noM2Tj8XsL9GGULA4t/BvtF6y/nmSf2wpqGvugzQWPlUOP1ywjuX
+         KMi7tsprSxy+MdBggCxyovIW3olYDRvLJvMzCFoVSY8p1jqC6aHhzFnrKxwZDBciceUm
+         u4Lw==
+X-Forwarded-Encrypted: i=1; AFNElJ8bufpEM0t2byZ2T8TZjQOulcf8K4iqrJmGV7O7xnFwD3E1b9GYK4IbfiUe3M8tYdOchfhfEH02q30=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxtMsvt8pY+40EuFOsvSYenqL4ozq3XZyMyiiKEt2ibiGhqN06R
+	TfyBt3EB9nENZIh8dmeWyeJI03AZpQ0uVXNK+G6dzpxgv3Zncr0zjAQH
+X-Gm-Gg: Acq92OHmBZqt1XobThnSXz3PVsoJ43GLC60xnPC09THyacP4n45GRfLs3IeddZ3VhT/
+	EY22KmVC06B2ChX3R90ZlZVlGXERUTucVsumJFECZMI+m7VEbiNrycNDD2V9SU1xENDazJckzAf
+	vdBqm7b0ZUysHXOWbd9APOBEtN3xZD/2ibZlb3StP9S8gBhWuXkYJlp6lBjgi9jTuU9xUYF46rQ
+	hZ+UpyjGAukPkujGca3fmVINP/3PTu7MVGMdv0PmhgDONkeylxOF8GWWKttW9FIGDbL6sTOesGa
+	jUFT2Hm7ItQBW2IQb8L9AqJASsEfD2Me9Cur5bLnQcLodhU7JeXYeaHiBjfE54IJAQUf9MbosNR
+	4kbYSFV/1NBd4kHNKkVUyXv0Zc9Qqc65eu65rJAxdskJm2fgy02gJCPMfHE267Vq7kW10Uzmt5N
+	QphkTKhnuhXLvXHfkHuuKUJhr3s3Y15/qXuw==
+X-Received: by 2002:a05:6000:1889:b0:45e:8edc:dacc with SMTP id ffacd0b85a97d-45ea31ce398mr31640895f8f.27.1779725582779;
+        Mon, 25 May 2026 09:13:02 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6d47b82sm28136573f8f.19.2026.05.25.09.13.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2026 08:21:48 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: wbg@kernel.org
-Cc: m32285159@gmail.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH v2] counter: ti-eqep: balance pm_runtime on devm_clk_get_enabled() failure
-Date: Mon, 25 May 2026 20:21:37 +0500
-Message-Id: <20260525152137.7428-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        Mon, 25 May 2026 09:13:01 -0700 (PDT)
+Date: Mon, 25 May 2026 19:12:57 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: core: fix uninitialized data in debugfs
+Message-ID: <ahR1CUxzMkYDwVvO@stanley.mountain>
+References: <ahP3S9nOYN3pG-Fp@stanley.mountain>
+ <CAKqfh0H0Z0xr4bAjctr9h95QTuEUTF1eCgBsRZVHn_KrkZZX3g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKqfh0H0Z0xr4bAjctr9h95QTuEUTF1eCgBsRZVHn_KrkZZX3g@mail.gmail.com>
 
-ti_eqep_probe() calls pm_runtime_enable() and pm_runtime_get_sync()
-before devm_clk_get_enabled(). If the clk call fails, the function
-returns directly via dev_err_probe(), leaving runtime PM enabled
-and the usage counter incremented.
+On Mon, May 25, 2026 at 08:17:28AM -0500, Maxwell Doose wrote:
+> Hi Dan,
+> 
+> On Mon, May 25, 2026 at 2:19 AM Dan Carpenter <error27@gmail.com> wrote:
+> >
+> > If *ppos is non-zero then simple_write_to_buffer() will not initialize
+> > the start of buf[].  Non zero values for *ppos aren't going to work
+> > anyway.  Test for them at the start of the function and return -EINVAL.
+> >
+> > Fixes: 6d5dd486c715 ("iio: core: make use of simple_write_to_buffer()")
+> > Signed-off-by: Dan Carpenter <error27@gmail.com>
+> > ---
+> > The original copy_from_user() code was better:
+> > https://staticthinking.wordpress.com/2026/05/23/simple_write_to_buffer-is-complicated/
+> > ---
+> >  drivers/iio/industrialio-core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> 
+> Codewise looks good but often times people will prefer
+> 
+> if (*ppos || count >= sizeof(buf))
+> 
+> over
+> 
+> if (*ppos != 0 || count >= sizeof(buf))
 
-Route the clk error through the same err_pm cleanup as counter_add()
-so the runtime PM state is unwound on every failure path.
+In this context, I feel like either is acceptable since zero
+represents the number zero.  I have a blog about that which I have
+been trying to promote.  #SEO
 
-Fixes: f213729f6796 ("counter: new TI eQEP driver")
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
-v2:
-- Collapse the dev_err_probe()+assignment pair into a single line
-  using its return value (Maxwell)
-- Add Fixes tag
+https://staticthinking.wordpress.com/2024/02/20/when-to-use-0/
 
-v1: https://lore.kernel.org/all/20260523184448.7609-1-sozdayvek@gmail.com/
+> 
+> Regardless,
+> 
+> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+> 
 
- drivers/counter/ti-eqep.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+Thanks.  And you're other comments with regards to -EINVAL and
+-ENOSPC are obviously correct.
 
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index d21c157e5..4f3b17939 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -548,17 +548,21 @@ static int ti_eqep_probe(struct platform_device *pdev)
- 	pm_runtime_get_sync(dev);
- 
- 	clk = devm_clk_get_enabled(dev, NULL);
--	if (IS_ERR(clk))
--		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
-+	if (IS_ERR(clk)) {
-+		err = dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
-+		goto err_pm;
-+	}
- 
- 	err = counter_add(counter);
--	if (err < 0) {
--		pm_runtime_put_sync(dev);
--		pm_runtime_disable(dev);
--		return err;
--	}
-+	if (err < 0)
-+		goto err_pm;
- 
- 	return 0;
-+
-+err_pm:
-+	pm_runtime_put_sync(dev);
-+	pm_runtime_disable(dev);
-+	return err;
- }
- 
- static void ti_eqep_remove(struct platform_device *pdev)
--- 
-2.43.0
+regards,
+dan carpenter
 
