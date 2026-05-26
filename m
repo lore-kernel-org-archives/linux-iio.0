@@ -1,169 +1,134 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 333B63CDBD3;
-	Tue, 26 May 2026 08:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939D53CFF67
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 09:59:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779785253; cv=none; b=E7nRoRdaUe4U3gfh5yBX9KESyZz7UMQIiO9ytlY2q7Cqy5Pec6gwdHsYeB4Ci+a8nvoTMwcDAmofUg8Zv79Wzq/ucGq3psLnitdMZbxvhrU8Dwpe+1t33OFGz8xgJ7bKqECgCpoGUnN+IIf0Mw7yQ/JbivaJWq2hSd8T5o022zs=
+	t=1779789548; cv=none; b=a96V6slds9sd+2+wyTl3/qZ72Xm0B4RIt3DpEGo6TIRnLRhCWqDQRABSkMyNWKVwEydvZzNLPuy9J2cOCvwD2KXR8ayIV/EdlV3lM0W9QZ4j5HzZQjPgyC59YWByDjidZ6+fVO4uD7IQOY0S+GlZ1TbcLcpTQgx690VJDB0+Zog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779785253; c=relaxed/simple;
-	bh=UkAl8Dq+PkppOD4e4Mo1mXDyr13knwyIAb/gmdjK4+I=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WmQ0jAz7by2HOAuv9LTTqdgdYnEwcDEb83Oyi+JWg2uhDCf/Dks3Td+a4o75bhPXgSM+a5hQz2tRKgsWgypWHrMak2e8AoMZuuLbODAC5QF4PDAAWwXb+6JD2lHxb/iJgmFYiD3ajKtYcLKDgD/rAlvu703znxWqKuGBE/Xonw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zQnzxiGl; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1779789548; c=relaxed/simple;
+	bh=vQkzABbgpFu7zVsXWnxe8cy9Q3NRoLN87pCu/DZh4oA=;
+	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aa+JEOGU4kIV+P1ZCORrIbxM54ycWmcZrkOtVM9RhXXEepm3VsK0lZG5vVM1+QQ5eF+hTjtExef+Ht33VnHQkbQbGhNeEwm7Nl5gxzz3gjyFADUhXIsvUPESnxslz9IwZTN5xUX230ZmTZ4qvkwRbsK533gkALy+UsB5J04e4Nw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qzMmg9BD; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zQnzxiGl"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64Q8W6KX265316;
-	Tue, 26 May 2026 04:47:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=dKlRf
-	50l4cg5pX5mHB7tXk00yDKVlbuvsMuxNTQWRpY=; b=zQnzxiGlSjC9Y8rxOxG+d
-	moht49p+e3zy1iQI8QjdbTq7Is5F821Xc4MUAbq4fEU2h3oQb8S4qBmzV4URF2qW
-	uAD3Z1l3aUulVXpmKQEYDHhlPkJahhsv6+eNd7Tx84iMvPke8cCbtn34ewBohxPM
-	G7wZXptLLt8gojeR5opI949aNtGalnsQfmqC/9EqMREmWD5ltpR3CM+4pjowVSZ/
-	VhIsItEZQUd3lezR2Ph+1HATrHPSSm9CGch2Hul072D8QaMImFMPpo9Gzf0oTA7+
-	XBy+V3TplcNQyni96i5aI2fIW+QY3tHcXaDM1nf4DgSJCaW24iK5wLMPw9/jAsFv
-	w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4ed83e01c8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 26 May 2026 04:47:23 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64Q8lLQ8041476
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 26 May 2026 04:47:21 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Tue, 26 May 2026 04:47:21 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Tue, 26 May 2026 04:47:19 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 26 May 2026 04:47:19 -0400
-Received: from HYB-MkYHBcJRSnh.ad.analog.com (HYB-MkYHBcJRSnh.ad.analog.com [10.48.65.195])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64Q8l6Ew019775;
-	Tue, 26 May 2026 04:47:09 -0400
-From: Liviu Stan <liviu.stan@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
-	<dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Rob Herring <robh@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Antoniu
- Miclaus" <antoniu.miclaus@analog.com>,
-        Francesco Lavra <flavra@baylibre.com>,
-        Liviu Stan <liviu.stan@analog.com>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@analog.com>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v4 9/9] iio: temperature: ltc2983: Add support for ADT7604
-Date: Tue, 26 May 2026 11:47:01 +0300
-Message-ID: <20260526084703.133327-1-liviu.stan@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260525164013.118614-10-liviu.stan@analog.com>
-References:
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qzMmg9BD"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso5025175e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 02:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779789544; x=1780394344; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QLRYLwQRn5cN/q/sqko/HgmBpICy8QtK1o9ym5629xQ=;
+        b=qzMmg9BD4fTQxd7pM4s5ooOjWLSuHp8jHAhUB5CirChfBtKNgxSCciz5+ehIYF7CLY
+         J+dCOqFYJPNE6ks4oOK32Cm986F1qy0+EOzLuFvN5SxMLOIL6maYypsljGKoEku1/RwA
+         q8FM7yMNSkYvQMXimgCAtMCEpnk0QfQ1NLepK663QQm6XJ0W2A/01TIo+euqPU+8LcLc
+         Am4du0zavM94x0cwQu2ohAT7j0BTLq9T6arZzjAovESbGwdL4wT6hyouUYLE4M7WJnhl
+         OU9Hxd2jVUZ5NejpEIr0rfmlFbVxRF98rui6XFfo6NNyvlgcIkFDBtXe4gbaX/i66jok
+         COwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779789544; x=1780394344;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=QLRYLwQRn5cN/q/sqko/HgmBpICy8QtK1o9ym5629xQ=;
+        b=TAmHpxiZi527EANyRsXTUXqcHjJshAUqq6xmvf/c1VloDQcrkxMVJO/XxRowora7zA
+         SMfnrG06ftCfUi1MrTgH/ov4CyqEvSdHalMlOxDoH0AHNmhTqwb5lPRlbSsjkHNbvtgr
+         3hJ+FAo1WOn6F6nFurPivXvTldxpppJZEd13U3R25gI5R9qplvzum4fBNvL8S5n72Zij
+         8kJNx8vAAGYGu8no17bQ0F+AS/vpERdIlz+jwVYfAQ/ftMjSM44iEOl2CrlYgiuAU7GD
+         wN9jB40Hjp22aRmlcrXqNiFOmbFOu1Nx6G0arfLpSLX8STL8AHF1C8k+RfMPvBvMge+W
+         brzw==
+X-Forwarded-Encrypted: i=1; AFNElJ+9qYJnFjWMrZXNXsLvWi5kjoYrUjZET4IKfjdeFw9B69JEDq2lyMUr+Vgtj0wc+S4nk9BKRUK8tsM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvjRSy08iwBgkkhYQFwWq2yZg17rZyqqf+8mbpUZml8FP+v/Pm
+	WRtxeoqbGEZD4x8wa17E0dIYLZ7yR3x7u+YPmZMVlaLMh388q58qI0zK
+X-Gm-Gg: Acq92OGfnavkspVwtZubkHTJP4nBBaULlGD4DIS5+3v6zMpxlBImXnf+FSz3dBX+c+s
+	muDk/dxQ/3MSLCEdEDNoYSBTAc0bSlSW4XnKhbbQtT6+1UNCluBWBzaBje350ub5o3wwyslntiv
+	/wclTJ47Vg5L0EIE/jCFpYBBg+O1AKq2/IGcMAAT20IIa+Q0trNDBqY5dJnBabrG8ZXFda5YpTs
+	3yjIWZPKSdubqQg1cEnoEpehvhOmASM/Hj4ne6wamLwCQ2SeNF8+IMFnfPp+TQleuHZeubHa+5Q
+	2B7FbCGE5sjKCIODLz3cIpxM8W6nc4yzZOyfBr0w/aQxpVjFYwYvlwz/AXeyutsqZbaiROhFc8h
+	0yOvkJ1itLOEJipx61IZmNpq1+ZX6nlLwtbH27qaYKNzAT0qicbJRrKcuDA30WF9/SJhnEawnnU
+	SQL5FGNN+fXzkoFTLxFiIih+U=
+X-Received: by 2002:a05:600c:4688:b0:490:4224:e0a2 with SMTP id 5b1f17b1804b1-49042ae265bmr307954735e9.33.1779789543584;
+        Tue, 26 May 2026 02:59:03 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49044f2bad3sm339178815e9.0.2026.05.26.02.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 May 2026 02:59:02 -0700 (PDT)
+Date: Tue, 26 May 2026 12:58:59 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Angelo Dureghello <adureghello@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: ad3552r-hs: fix uninitialized data ni
+ ad3552r_hs_write_data_source()
+Message-ID: <ahVu497RZjJxn7dj@stanley.mountain>
+References: <ahP3IjYJ87bNc1De@stanley.mountain>
+ <CALSJ-wCcZ9XNTrcvq1TabT--vA5v0gritbpfNG6n0aKRXuSiKA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDA3NiBTYWx0ZWRfX6QZ/ojYFjq+K
- lG7tfWHq+WGwDEh0y/sIBFKNQSVjdyOA2P0e93g/vskcx7KPZbAJI/h/U5D0DwAGnyicqY+XJEx
- J4bVRdMIeKoLLIfwxFR41ySkfHswp1ytFa0dcpsR8eWOZ8ntr4TVftscAEvv5nKkbSiCkeO5FPn
- GfcLptpJBhlGKiQP477ggW0fA2x9RIG+Akt9ZAPzTPbfqL/wG4XBgOlO9Z9oPyPLWXFlEc4F0x4
- UHq2EteHnbr+y2BrcNrI9yZbjpxD9VDVu86a3aimpsAjr/ptUBO4Mwl5GwZw+H09Gjd3kRFRTl3
- oTLLsuUtWB7K1jayIENJ4GGcUuQFyBMtSadSS+BxD2W9MrDxCX5PMdT2zjpnOXJawSfncASC7x5
- zRuJIpQFqDNgc0tDu9OfP9WqWaj4AERz9J2QLMpdPDSfLCwJfD45injAoid+2fpLv6JNd5uFBph
- b1Tp5KEI+VetSg7i/8Q==
-X-Proofpoint-ORIG-GUID: 6BmmELo1gO0ehUykXRpNRjnZ_naHhWA3
-X-Authority-Analysis: v=2.4 cv=es3vCIpX c=1 sm=1 tr=0 ts=6a155e1b cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=c92rfblmAAAA:8
- a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=3UmEi2wzclwzjTVA44AA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=GvGzcOZaWPEFPQC_NcjD:22
-X-Proofpoint-GUID: 6BmmELo1gO0ehUykXRpNRjnZ_naHhWA3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-26_02,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 impostorscore=0 malwarescore=0 clxscore=1015 spamscore=0
- adultscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
- definitions=main-2605260076
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALSJ-wCcZ9XNTrcvq1TabT--vA5v0gritbpfNG6n0aKRXuSiKA@mail.gmail.com>
 
-On Mon, 25 May 2026 19:06:14 +0000 sashiko-bot@kernel.org wrote:
+On Mon, May 25, 2026 at 01:11:42AM -0700, Angelo Dureghello wrote:
+> Hi Dan,
+> 
+> On Mon, May 25, 2026 at 10:15:46AM +0300, Dan Carpenter wrote:
+> > If the *ppos value is non-zero then the simple_write_to_buffer() function
+> > won't initialized the start of the buf[] buffer.  Non-zero values for
+> > *ppos won't work here generally, so just test for them and return -EINVAL
+> > at the start of the function.
+> >
+> > Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
+> > Signed-off-by: Dan Carpenter <error27@gmail.com>
+> > ---
+> >  drivers/iio/dac/ad3552r-hs.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
+> > index a9578afa7015..6bc64f53bce9 100644
+> > --- a/drivers/iio/dac/ad3552r-hs.c
+> > +++ b/drivers/iio/dac/ad3552r-hs.c
+> > @@ -549,7 +549,7 @@ static ssize_t ad3552r_hs_write_data_source(struct file *f,
+> >
+> >  	guard(mutex)(&st->lock);
+> >
+> > -	if (count >= sizeof(buf))
+> > +	if (*ppos != 0 || count >= sizeof(buf))
+> >  		return -ENOSPC;
+> >
+> >  	ret = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
+> > --
+> 
+> thanks for the fix,
+> 
+> Reviewed-by: Angelo Dureghello <adureghello@baylibre.com>
+> 
+> it looks like this may fix an additional overflow in case ppos is near the
+> end of buf[].
 
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> 
-> Pre-existing issues:
-> - [High] Integer truncation of `num_channels` leads to an out-of-bounds write on the heap when parsing device tree children.
-> --
-> 
-> commit 482bc8c51e04185002511817885173bd265542d8
-> Author: Liviu Stan <liviu.stan@analog.com>
-> 
-> iio: temperature: ltc2983: Add support for ADT7604
-> 
-> This commit adds support for the ADT7604 sensor, repurposing custom RTD
-> and thermistor sensor types as copper trace and leak detectors. It
-> introduces new structs, parser functions, and hardware register mappings
-> to handle these new types.
-> 
-> > diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-> > index 130ab7fddc2fe..fc65d8352d120 100644
-> > --- a/drivers/iio/temperature/ltc2983.c
-> > +++ b/drivers/iio/temperature/ltc2983.c
-> 
-> [ ... ]
-> 
-> > @@ -1348,7 +1672,7 @@ static int ltc2983_parse_fw(struct ltc2983_data *st)
-> >  	if (!st->sensors)
-> >  		return -ENOMEM;
-> >  
-> > -	st->iio_channels = st->num_channels;
-> > +	st->iio_channels = 0;
-> 
-> [Severity: High]
-> This is a pre-existing issue, but does st->num_channels silently truncate
-> the number of child nodes since it is defined as a u8?
-> 
-> If a device tree is provided with 256 or more child nodes (e.g., 257
-> nodes via DT overlays), device_get_child_node_count() returns 257, but
-> st->num_channels truncates this to 1. This causes devm_kcalloc() to
-> allocate only a 1-element array for st->sensors.
-> 
-> The device_for_each_child_node_scoped() loop directly following this will
-> then iterate over the children and write into st->sensors[chan], resulting
-> in out-of-bounds writes on the heap. Could num_channels be changed to an
-> unsigned int to prevent this memory corruption?
-> 
-> >  	device_for_each_child_node_scoped(dev, child) {
-> >  		struct ltc2983_sensor sensor;
-> 
-> -- 
-> Sashiko AI review · https://sashiko.dev/#/patchset/20260525164013.118614-1-liviu.stan@analog.com?part=9
-> 
+simple_write_to_buffer() won't overflow.  It takes ppos into consideration
+properly.
 
-The hardware has 20 channels maximum, so num_channels as u8 can never overflow in practice.
 
-Thanks,
-Liviu
+> But i am actually missing the use case when ppos is non zero, can this
+> happen from shell "echo" ? Or some fseek/dd is needed to trigger it ?
+
+I've never actually tried to do this.  I think lseek() or fseek() would
+work.  But also the simple_write_to_buffer() function itself updates
+*ppos so multiple writes would do the trick as well.
+
+regards,
+dan carpenter
