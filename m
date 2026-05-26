@@ -1,86 +1,84 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BA083D1CC0;
-	Tue, 26 May 2026 16:43:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85C2E3FB07B;
+	Tue, 26 May 2026 16:43:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779813818; cv=none; b=JzCnliWh0G8+ZMT+1etGEu51Lv5s8GqAgmohGr93LGtUb3ogTqvsdD3lTO6IUU7eHxDNO20MYVlRLShyfu1Nc+nHtqQkCFYDY2RxsQ5wELMvL64+AqDmtsGYaMBDHGc+GwmZivTfORQVmvU3MZgSddXla/LeW5P4lPTZ9VYiRew=
+	t=1779813839; cv=none; b=tyTLWfDY9iErAmpxXnJCGyOZteX6ufdwpiMf3G75vwKvTRdl7B+kF1pDc2f8iPHYf7DKNwfrS/OtDYdgGIBWHmtldVeU1oZa6E5mrLGaVQck06z8KqTM8wQ9/JoboYQyd2UUrHAg3LWjT7bwcUWyvV2Q+ffDaoa1yTwK/K064yA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779813818; c=relaxed/simple;
-	bh=MjLHloKJCxD+hGr33Dww2AZhfZ3uiSEFA70yynJqiCQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PWiBtF1eEyFQGAHiewHkoCQjH7/mDYCq07NPLPYefEPFJb/vGTcolZ29m3tRkEsnAyP2U7Y3iEye51JJPmrDbiXo1mTLSfROPCw5a+ukTY096o6yXW9hUHqHpopBDh1mDEZ9mOU4t7RIyNgT5HRhwRw1a0BbgkDIyMowdgwJBEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mcumi2w1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779813839; c=relaxed/simple;
+	bh=4iGxpqreUMKZqfZJta2HzBWwW9Zct0UhY51b8JS9hUA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CV5nH4geLishUzzN3uMwKNsOPS9VQzauUKkGhY5jTyYcG21P+pa+ZIpkoGstmc4khvNvUWSvBsSY4fPLSgChkd1isvrpfIIC8yXkgfxAOJm7U773FRlf5DmqFOOsRvtnSJs+12PfRYL45u8BBWiF4YYQur2DFIT61VyCe2g67u8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ot0gjLdf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mcumi2w1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B70A1F000E9;
-	Tue, 26 May 2026 16:43:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ot0gjLdf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C461F000E9;
+	Tue, 26 May 2026 16:43:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779813815;
-	bh=Wt7b2w/nP6GXZrMW8V04fvvP+WuxlrCyAZTLdwHm9Mc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Mcumi2w1s+QkLY2IqtaI33Osg/Zn2jADRpCokTSxuIfJdYbLxzI91DeBHiokFLxxP
-	 pipd8ifZqFMw2biwzS1sjhKNoHtCXmgmDs9VA5BtrXUrAA+w/b/fveXJ6xIqtdTshF
-	 oDkbm4P27HoBOfwQrxIhVb9mRzLWsiVs4ynaGtU5U9cvDpY2S19UnPdz9jEa+/DV6C
-	 5iGrVE09rDUwZZddRd8TIwKRWIWg55pX6qkzTDTWnQRhK3Q5tPni491QMVrxY2Zbfo
-	 Zl/wP2qd1d4/3DjLez9zrimhbGzkpz3cQFDSmIYLHvjO4/qyaehQ0GW8GGMk86zXHX
-	 PSFZ4olEnqGew==
-Date: Tue, 26 May 2026 17:43:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: lars@metafoo.de, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- linux@roeck-us.net, jdelvare@suse.com, ak@it-klinger.de,
- linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 3/4] iio: flow: add Sensirion SLF3x liquid flow
- sensor driver
-Message-ID: <20260526174229.7c7414ae@jic23-huawei>
-In-Reply-To: <20260524205112.26638-4-wafgo01@gmail.com>
-References: <20260524205112.26638-1-wafgo01@gmail.com>
-	<20260524205112.26638-4-wafgo01@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1779813837;
+	bh=4iGxpqreUMKZqfZJta2HzBWwW9Zct0UhY51b8JS9hUA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=ot0gjLdfkX6K9J6JjAfXoCdJ9wZ3mqd9Gb19fryXvdC1y0Z2W6K1SZRMOJvaup6aw
+	 6GbBEV5K8uOJFZwtJkBuYgT+KnDc71Coe+s/uiI9hmVpx3U+QLfcXX/S9qRSWNTRRb
+	 uiTDwT2NRcxcr2otoOZ0fpZOk7QMLBAPAvsBwn8fJHru47dQEsTo38eHOKdkYrOYei
+	 +0fPTeZWUjgk5hNnwAR2RsGNzSVHGnuZUYgw034XF9rXXQh60iZq2eCdXErm2X6q1p
+	 cehN01AesPINd0bBQsdJTOpDg2vrDsVFIQGBgHhVNzMqQPBFQ0y4cZCY3X4XtQgiaa
+	 Q+yIK4dTUK4Xg==
+Date: Tue, 26 May 2026 17:43:53 +0100
+From: Conor Dooley <conor@kernel.org>
+To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: add Broadcom APDS9999
+Message-ID: <20260526-deceased-divisibly-1c76d5208d79@spud>
+References: <cover.1779781224.git.azpijr@gmail.com>
+ <2da5163825ceb794c73c9aebb5cadf6ab3728097.1779781224.git.azpijr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="RmfARgWHh0ZSQRkS"
+Content-Disposition: inline
+In-Reply-To: <2da5163825ceb794c73c9aebb5cadf6ab3728097.1779781224.git.azpijr@gmail.com>
 
-On Sun, 24 May 2026 22:49:38 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
 
-> From: Wadim Mueller <wadim.mueller@cmblu.de>
-> 
-> Add an IIO driver for the Sensirion SLF3S family of digital
-> liquid-flow sensors.  The supported sub-types (SLF3S-0600F,
-> SLF3S-4000B) share the same register map and command set and are
-> distinguished only by the flow scale; the variant is detected at
-> probe time from the product-information register.
-> 
-> The driver exposes two IIO channels:
->   - in_volumeflow_raw / in_volumeflow_scale (litres per second)
->   - in_temp_raw       / in_temp_scale       (milli-degC)
-> 
-> Continuous measurement mode is started in probe and stopped via
-> devm-action; read_raw() fetches the most recent sample on demand.
-> 
-> Signed-off-by: Wadim Mueller <wadim.mueller@cmblu.de>
-Also see:
-https://sashiko.dev/#/patchset/20260524205112.26638-1-wafgo01%40gmail.com
-It may well not be correct in all cases, but it often is!
+--RmfARgWHh0ZSQRkS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The value of _scale seems like a plausible issue to me.
-We have discussed expanding the range further than 9 decimal places
-in the past. Seems like this might be the time we need to do it.
-There is some work under review at the moment to allow more complex
-fixed point handling but not sure it applies usefully here.
+On Tue, May 26, 2026 at 09:55:15AM +0200, Jose A. Perez de Azpillaga wrote:
+> Add Device Tree binding for the Broadcom APDS9999 ambient light
+> and proximity sensor. A separate binding file is used rather
+> than merging with avago,apds9300.yaml because the APDS9999
+> has an additional vcsel-supply for the VCSEL.
+>=20
+> The APDS9999 features individual R, G, B, and IR channels with
+> a green channel that uses optical coating to approximate the
+> human eye spectral response for ALS/lux measurements. Calibrated
+> RGB color sensing is not yet implemented in the driver.
+>=20
+> Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
 
-I also missed the crc table is global. Easy solution is take a copy.
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-Suspend / resume one is a value add for the future.
+--RmfARgWHh0ZSQRkS
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Jonathan
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahXNyQAKCRB4tDGHoIJi
+0qhGAQDbYJ6pvXiznURbTsN6RQf2dhiJeZZTPJ5szCiA12A6SQEAoStqXaokjbqX
+EivfbXXKxWPHKVN7FCR3hZg64SOZlg8=
+=/aVD
+-----END PGP SIGNATURE-----
+
+--RmfARgWHh0ZSQRkS--
