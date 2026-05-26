@@ -1,48 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C12414AD20;
-	Tue, 26 May 2026 18:05:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF333BED78;
+	Tue, 26 May 2026 18:12:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779818739; cv=none; b=ExKDmwrBlXXM9rATDfuipD7SUXH/+GVAjMdIKewfoAPYWaWxFhrRLInwcOyuAExAv/Pblp+XXrZJRciAiB9fxLMBQfuGcL37J202jAKkQR5DxIV4C9S0kC717RmjTlb3tpzIU3eW3n6/OH7ls0XcyXBI0fAAMRMkOm1IjtJuhH8=
+	t=1779819168; cv=none; b=H3jgJf0zXdJ94zwCOFvsEJRs5LOgedtwv3H4qMRJ3z8oBtkr1JUfxQZ38x3ETKBpU3xTdcCLEjpq5bpZnFD0V7mi7t70ucRu86hfZgpe1D3A2idxCYKmDJWkMLaDpoo5UqGegpAV98ITePLlXXazOVo7BLeGsra5UiVMm1sQlhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779818739; c=relaxed/simple;
-	bh=tNLQPpMxwSVDe0J+tco5LiqKAvef0fVIjGezPXgxYPg=;
+	s=arc-20240116; t=1779819168; c=relaxed/simple;
+	bh=/AOziNIdHB9VXJDnMub1OWI8LVaCU4dkbjUTxh9RKmI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ix1wjHSulbjLxpiYtpaaQdzkpqDTx8vJESBIwJJ51l25JH9ai0s06etBZV2a4GM5WMWAaEoY6GN4x6mIQErVnP8NKSVk5GZLwFNWb9yvZ8CJvhmYzzoL7DkdrVhkXjGKIQGc/2j1nvLRBEXxkmLkSD9fPuby9+cg3bR18gpXQUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SI632JkX; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=p1i3RnVpaudwIDZpRB5wrqrDrWLXjXw8LsnoNWg+x7m7k9A6flpQU9kthfbYCa/wjNBb0Qnm085uD0EHKYjhUuUNs/hOn+fTkbU7rCEHDaiUxTHrM8QwZ/kBjMLCbWcsqP0S1u+7BhucjO5Ufi5tas14VxNnPA5OKkiMLLaNK14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j/tm/PMK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SI632JkX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1A31F000E9;
-	Tue, 26 May 2026 18:05:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j/tm/PMK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C74F1F000E9;
+	Tue, 26 May 2026 18:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779818738;
-	bh=dIxt4LUx2QHdUF7hI6tAEcJbjIny3W5BNJ48rwpxwXM=;
+	s=k20260515; t=1779819167;
+	bh=5ngCoUCdLUTbdrymHOsCev6X6hH5iQoI3DmGS6ubV2s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SI632JkX/m7eeKXBrmyHNNYv5hWm8LU8kIuz7ZWCosgHiAdOGfWnZDq2PVCRfgH4R
-	 a48/5Joz9AAZ34qDgYtW8yRmUz/0aviCPhqYxtYfg415/mYM4hbrNc1QVDeNLXn+k4
-	 tsqQEWwM2SifwdzBqRmOvrjxCbeXv78kbC2a965SbLmCK2FTv2dxbc7engMcn9+CUh
-	 JNmOdXollYFtZX1s5kwfBzGkxcK3wM5UTetQf3rM+zhjjEi2X1/+E0bO3EsZ8T8dBe
-	 wY8PoK1PU7FNH1LLkkKZerPSNRHQADd76DCwB/gTOy5UC8j/fKeGuVHuY+nxFUyis5
-	 nSWw96p/OwTUg==
-Date: Tue, 26 May 2026 19:05:28 +0100
+	b=j/tm/PMK6+xds8mCajlHkpjxIdln5XEF/6vMWcOztxsauj1YR3ATmxVMine3MbaIr
+	 18ADqFnZ5vyMr3g2fI2ATHMYtCdy6BpHvi3j6IqhI0isnTMraXyFLlQyOaeDiDCo2X
+	 gf1tys8RZWGoVuqNvkA4fesqF1kf6vFx/4mS1N2ATGABncvcZPrLCFwzynRAb1Yv10
+	 wNnQW7AQFUY6vBX6t9C38qNM+9ouImx91LGPOKrQRb9Uha1kyyPzncAClj2O77Pkc1
+	 BwaSViJRG/pCvr8LOwbOfuanKixf9gGBp4LquqcbtG+ToBhBdML4N2BbF8SnontwTb
+	 +23XpWM/w0rrg==
+Date: Tue, 26 May 2026 19:12:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] iio: light: add support for veml6031x00 ALS
- series
-Message-ID: <20260526190528.0efe80c6@jic23-huawei>
-In-Reply-To: <20260526185933.0084679f@jic23-huawei>
-References: <20260524-veml6031x00-v3-0-29165609b2b5@gmail.com>
-	<20260524-veml6031x00-v3-2-29165609b2b5@gmail.com>
-	<20260526185933.0084679f@jic23-huawei>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jyoti Bhayana <jbhayana@google.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Nicolas Ferre
+ <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Benson Leung <bleung@chromium.org>, Guenter
+ Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-stm32@st-md-mailman.stormreply.com, chrome-platform@lists.linux.dev,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] iio: pressure: cros_ec_baro: simplify timestamp channel
+ definition
+Message-ID: <20260526191235.0a01be62@jic23-huawei>
+In-Reply-To: <3c12da03-6c62-4045-b831-e7b07c0ecb5d@baylibre.com>
+References: <20260525014654.2399354-1-dlechner@baylibre.com>
+	<3c12da03-6c62-4045-b831-e7b07c0ecb5d@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,26 +55,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 26 May 2026 18:59:33 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 24 May 2026 20:49:11 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Sun, 24 May 2026 23:53:56 +0200
-> Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+> On 5/24/26 8:46 PM, David Lechner wrote:
+> > Use IIO_CHAN_SOFT_TIMESTAMP() to define the timestamp channel instead of
+> > manually filling in the struct iio_chan_spec fields. This makes the code
+> > less verbose and mistake-prone.
+> >   
+> FYI, there was a server error when doing b4 send, so this last patch
+> didn't get sent with the rest. I missed the [PATCH v2 9/9] when editing
+> it manually to send again.
 > 
-> > These sensors provide two light channels (ALS and IR), I2C communication
-> > and a multiplexed interrupt line to signal data ready and configurable
-> > threshold alarms.
-> > 
-> > This first implementation provides basic functionality (measurement
-> > configuration, raw reads and ID validation) and defines the different
-> > register regions in preparation for extended features in the subsequent
-> > patches of the series.
-> > 
-> > Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>  
 > 
-> A few things inline.  Biggest one is that device driver specific state needs
-> local well documented locking. Here the whole complex gain handling means there
-> are a bunch of register field where the accesses to each set of them need
-> to appear atomic.
-The sashiko comment on underflowing pm counters also looks plausible
-so check that as well.
+
+New and exciting way to confuse b4 :)  Anyhow easy to work around
+with a -v 2 for the first lot and then it thinks this one is v3 anyway.
+
+Applied.
+
+Thanks,
+
+Jonathan
