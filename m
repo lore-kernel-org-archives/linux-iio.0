@@ -1,167 +1,235 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522773DD855
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:32:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779791535; cv=pass; b=ZcRuW99RniH5lYaJa9yIwQ76JNaWII80frgNivGW8XoJk8CZYaAb748RglhLqIS05P3Ms1Yt5cAuQXXaJd1EaP42yA4HOxc2/U3oksKTKi0MDNbomyi8R2aEHmBQrh6P+u7yqYZ+rj+Au87kQiqzOHwaUOzGRWwP6Td4x1NlFbg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779791535; c=relaxed/simple;
-	bh=+roR8mADp3Fu3TnQdhRbr7fYAtHH7XKBF+tCmPVSbvE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=f5ZmgmX1goD/pXWXMJHtnP+TAC1kGrqDotNMcsmARZJNHBYiOrnaY3QIJ09SWP/EHBn/6E9ldta5EDAvGnPxNGlBlkpS8KeCsUXlVnBVcaQfTVubNvjCDFqmf74UOmpmyRypYcUFmLJdZ6SKCwkPLrakEIlWs0FETC4VCuB1MXk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BIJmWE4e; arc=pass smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F398E3DDDB4
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:53:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779792832; cv=none; b=ZWlSStEaXgQOTO6Iq7P7DmLvfwK032Pom6yWQBW9PVBVw8oULCqdtdURfqd2uZNw0Dk6vSGeF8W/k/EbW/zMkQMz9d+6GICYyfos3ZsFDDwFhLtBanefRax4iYLx9wOQEI5t5jdx9mGKQJZkQkuuLziRto7OKhFgjqd7/8ZtyYE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779792832; c=relaxed/simple;
+	bh=eRFI++GY0h29Oj/z1eOEYeAN0omCshxCgUg60gOKDYc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NH/rWbiJMbKx0wHKjp0Jbjqs9ZjLCbxVg7sWMCnBQ9Z5+evdVOE0bDsDlsDF3Y4xV5YZakurOdL7KSr9ndcsgErDRQFMmMhwhAvMPXzydueeYK9a1o3h4S/FjiAxG+9MD//EiQiU+y4v5OEOAl64dYuYucCgwNoFXEHsAA6NweY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RmwL3f5m; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Uqb0emVQ; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BIJmWE4e"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-44dd5cb0f81so7476693f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 03:32:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779791532; cv=none;
-        d=google.com; s=arc-20240605;
-        b=kJyCba67cUF/yAeNm/hRJKQYpsN8lipIcdgzrT2LCb4TfAlra/05diV6c87tL+4nRr
-         tIxbX2eAa8eDUj9FMPe32mCwruyCjYlSE0c+ldajWABVpIMrzrBKG/vK5+NLjKEr21tY
-         7JUSYxW5S1h3BzXkoznrmEfbdX38uwwa3uE+I/Jc9jLkKxnGy2t/mHC3n3QsHzsCecDH
-         vRl9zOIvzhhX8R/fNM5QyHSfE7Qlg5vyZ+4gZ2at0LxRZImAcDhki5vntVJj0wLWfg73
-         270+LigQ8EHYvkuw4G2u6yNxdDvNDW37akyP1SS9wK8gwFQdePUDW5bQ3UNDU5awZxPO
-         9wFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
-        fh=UD0q7ZHoDyLlgiVTl9r7FhJIvyv9l+IQuInVPYrKpKk=;
-        b=OjaQw9Vk3X6ZWmUpZxO2nZo2WK8cNDF86XfiGB8nBG1JzTKC6CIZhppYjDNQmVDOo8
-         kZQoy+PQrqTNL6YgC5iqMzFEXUFHp2D3Y17x4WMJfX0QOzam9rSboMVsHR/kwYKZM1HU
-         fUvdKQYGKRvZd+HgFuGbT0rZXGn/NnSv8fpZ9dNw4Vs+PXkNt6gjNrgaVhb/b4+2xaA8
-         GbYgWne453Pw8afbPFdYVUvbY8sQtx2RbbhLig5U92E784hRWehrOgY0KrjpG3rRxQ6Y
-         86szwtcX1uUm7DAVYkKaH7dj7Ucs7fjDVyerm8CAQwwLC1ypf5RcRwElmf1vCayybjA/
-         oGGw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RmwL3f5m";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Uqb0emVQ"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64Q7hXGN691689
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:53:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	qJTrqXlFYEY9B3t+nASH9FO5EeUSK4buZxILBrl96ow=; b=RmwL3f5mJSVj/kMR
+	yfgSsGb1x2Rcqoy94GpyJnxCTrAYJDJSK8t7jNrw1x1dlphWO09XUsuG6LwvE1ID
+	JQ/VAo+XPlXNiE6De+rl8s5Mcakpfmb9u1VwQb107CWEABzIveHNWh8qvXcNMrFX
+	LNEZT5sxZatOuvUW2iJyA4O4Zi3kMc8xhLvL6AfRnLOvkdoSkNeHYl2qIhmObHg8
+	6RMSTJK+0Q6ZKcDIiOCRZzl9DTsbhXy8AhzYTMjC7xphQMMchvUH60npcHnCL1s7
+	TEy0dd9NWWrcAVQstkS21I4y9wjoWflblaSZjhE5vuO6dAeAf5JyoaEL5/akHmTL
+	x6raEA==
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ecpy2kr5g-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:53:49 +0000 (GMT)
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2b458add85aso114585435ad.2
+        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 03:53:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779791532; x=1780396332; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
-        b=BIJmWE4e2rADX5x9sKmcFrFPOi2EZJ7Tp/5o0kNJTDNBTVjOc5tqJxNzZcHEEb/q8c
-         cU0wexj1E8uvRhPQYo4X8SfF8h55bl9TeELLYv13pBsyZJQEWmWXLGdZRuyWZW3/GT5p
-         SP5WTizDPokuyvMGJ6xVtSUA894r6GRj3SUe4KbV0VJmx2XAjsIQ41M0J/8mR90bodU/
-         xWCU3q4QS33z8aiJ7fZGGzZwAOfzPfg3iMVWl8mKD+FqEKdBs8oRsE1dL759oni31zRO
-         T5H9s3IU7fuyYWyxYamYJh/0h7IyOsqpokR+p2lT8g9xHixZON1DguXmiP1RBBQI2F8p
-         /Ktw==
+        d=oss.qualcomm.com; s=google; t=1779792829; x=1780397629; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qJTrqXlFYEY9B3t+nASH9FO5EeUSK4buZxILBrl96ow=;
+        b=Uqb0emVQ/3kExVuMJOCG8pmLJ9zXhMgDJ+iltvfaj5rcJa38MC3YRUZyMg786AxKBx
+         /oW7VIL/pmdKObdAKC37LqBP4p1BZI1X86WGIT3i3cKEsvV2tUQPpU8ar01J3+YkyniX
+         ALkLVgkc4VJqWtBoqbXSKjx00J/beVhjjs78QHBNjjCzKQI+n+giutv9ObnNpA164+ob
+         wM7n0SiCax/o6bO4g1A6WNSAesaSnpyPkMxI6swEsGWCCq+ekVo7PGNJ9ZoMyWdF1QLN
+         O3Y1Tc03RsDkDFOKSrDvI609pPc29IvUTE8ubhTmzs9EppH+oASLV+ySoXFJfiU+CgfN
+         R2NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779791532; x=1780396332;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
-        b=RW+SYeQnKtjPe8IuMbb/fFVjrpbLApRA7IxjcVCSZrv3iaXfY26UFvGw6VtQwDe/6v
-         zxvAA4ZxsSjGcX4s/8+TZUOR3dtMb9PsHwO+8P4C3vFBWa/CrlvLtPUAUXGCquj/CgVV
-         uKXNQgpnjzPyqQgNLNIiE9LSEcyD38VDNe1nDuIGbuPeS+eC+U+xCq0r4EYCrSxg5XrH
-         jqsf5RDlhqGAXgOd4esVcGMIBmrdj6biFSQD4VSyWnjiV/PZ6GqQ/HdDAfzkpsHiYal7
-         Wr+64lsaUTlPya9mqTtPiOPF5F5WSxMKlv8OkXo/e6/WMstcs3pW4vlih3fshEK5X07n
-         sbJg==
-X-Forwarded-Encrypted: i=1; AFNElJ+Eu8rCWGz43n9FtzhJ9bSX5jFIPU6tMNWmWTvO96yvEItLJvqWGa1xqOqwJaPfg29WxNmnwJho1KM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzERRztCY2T658oUmsoHWkzHW4NxBa1y8Mn6zdjGBkAHRMKZlnv
-	729OhHKBT9CkclXcE0og6k3r+jdOrHPbykBt002TnmWnua4RmWruvAmcLSDpiKybnAJVq45EaJh
-	nX9hsSyigLHjdIlFRoYC7+Oly3wZyzI0=
-X-Gm-Gg: Acq92OGqlFp6Geil6PRAm+7lcbB6zk+dmXBsP1W6pdXiVjO0nroZo2mDeK83UgWiWr2
-	rTyYRtNR5AxbY8Yzwjc5OcpAUHPncY3uRRvYXZO6gbMEc3FPQXDu37wZmUrt1U+V3cZ7qDrPQ6k
-	mCNIFfg60jNA94A4ru1lC1q7GVP6YMEYEmyAjNkOZIvWkYFrpM44wextqaAQ0co2xRty0DFU5Va
-	mCgimUFMvYzGFhyTzoqVZocp9rAs9e67OqYZ9BfbBI12aXpIQODWq/CgGcelbD6AncNU+5Z2RPV
-	AJAr3O09sL+GFkP5MmEEojKP2HI/9ooM/VEzoa2a8Ik6yO6bU13/9G71cz6SYCUTse75SZlba1v
-	l32Vy4fSEgx0XTZnXXVVzf1Qf8W9YGdB/np4xtKz4htiKpSbsjC2cqjD5Ia/L6BT7QBvVNt1e0r
-	mt6fzFTA==
-X-Received: by 2002:a05:6000:29d4:b0:45e:8b03:e26c with SMTP id
- ffacd0b85a97d-45ea312913cmr24483415f8f.5.1779791531503; Tue, 26 May 2026
- 03:32:11 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1779792829; x=1780397629;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qJTrqXlFYEY9B3t+nASH9FO5EeUSK4buZxILBrl96ow=;
+        b=R7O8URsvzC3nUxaBqu2Q4XLWn9uer2UrRjTaIW/XHmgMosJNgDdcLwcJNsrupOIPvK
+         V4LCSTSwIXVixLtRpVLo59MyS31OG78ay5IKTPoGH2OlmwMkquDaeOz6za4gfbpoA5cp
+         AcuBqmoiTKu0JpFvGYIVFdRcEWcyOjL/HXB9OxJMmSgmLtIChb4QLvTGZBiJ1irlrR03
+         BSxJAIeXbsNI8TwuRGRA5NzPA49BBEfECxgm2gyk25qjdlO5lukDhK39YEB1G4BAegTQ
+         Lf3Cn80eRNKH3E9p4j3ppd+PrPJrYI7eAX6vVnAizwF5coUO3+Wmh45XLbovCjb0w2wp
+         uXNA==
+X-Forwarded-Encrypted: i=1; AFNElJ8mlOUAZV7n2oDQtp9LCXbSpxA4jxkOnUnQR+26ZEqczsSDFa1s6Usy3gd+hFRWi3EVBt00OBu9oTM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxX5biLDwz8MrEudiuy8baVcitTsKza1j/BdA0W/Y26U1Lo/bSh
+	TCENIARhircmjrAQ7ZybFCovp6QlTBoL/JOQHPHzLSkuWqKMIbl/SBBHXZz7tz2osRAr5YOEAKm
+	tR46sZqIjeqM4JdDj5wIEH0ygxPyOKwutKWpmuswrHX/gV7OOYi/WmMEL/uI3g3k=
+X-Gm-Gg: Acq92OHvYkZVWrN/ccYF0O3pW14ND9C+PkccXwHINR1+vYMz3YauskWTxdGC5N04CzI
+	UQ6UGbwfatilPhXGy/MQrnTBkLUyNzNzi/HywEgviNjgn11QiElweVuRHBkRJZxXSttlPR6l7KV
+	k3Zgc69DThf0OIOhwvoJx4N+2Nn9ImToJc+oUt1rMvmnCRtgdmya22b1+p+2dgTZMpD4qIRohnb
+	GEI3Z/FACJ3fF05jADlNRMP4SS23lxp2MyJOhMXg5t4jy0TxMOpGN9vEjXGbNiNvk04prT3gmwz
+	aSPZ94nbchV5L2anLV1USVJgokkCeVUaQt42Ejl/hMjEnUUpGlOB2Z4Dv+VbJdHfhl/5jXznySS
+	jMp/WOX3tOgmWqGdd7Z0HotZtd3cs9UNhlOgtfgNsVJ6KXhtzSC8=
+X-Received: by 2002:a17:903:1a0d:b0:2b0:6e60:9582 with SMTP id d9443c01a7336-2beb06354bcmr199316905ad.18.1779792829068;
+        Tue, 26 May 2026 03:53:49 -0700 (PDT)
+X-Received: by 2002:a17:903:1a0d:b0:2b0:6e60:9582 with SMTP id d9443c01a7336-2beb06354bcmr199316535ad.18.1779792828529;
+        Tue, 26 May 2026 03:53:48 -0700 (PDT)
+Received: from [10.218.7.34] ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2beb58b3cb3sm123368905ad.40.2026.05.26.03.53.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 May 2026 03:53:48 -0700 (PDT)
+Message-ID: <e954c647-397b-499b-ba47-ebfc9a65c2b4@oss.qualcomm.com>
+Date: Tue, 26 May 2026 16:23:41 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260525152137.7428-1-sozdayvek@gmail.com>
-In-Reply-To: <20260525152137.7428-1-sozdayvek@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 26 May 2026 12:32:00 +0200
-X-Gm-Features: AVHnY4KlHlc7DFm-MOUGFrDcVGBNlcUxLVNLS_DRcv4OBRHP0vvAKh5pHPi0gc8
-Message-ID: <CALoEA-z=qZf_ZLj6Qrgpvnq6TEUGNd0yj5Z=8YYqUwShY75CSA@mail.gmail.com>
-Subject: Re: [PATCH v2] counter: ti-eqep: balance pm_runtime on
- devm_clk_get_enabled() failure
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: wbg@kernel.org, m32285159@gmail.com, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ with
+ ADC_TM auxiliary driver
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
+        David Collins <david.collins@oss.qualcomm.com>,
+        Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Stephan Gerhold <stephan.gerhold@linaro.org>
+References: <20260515-gen3_adc_tm-v1-0-39ba29f9b4ab@oss.qualcomm.com>
+ <20260515-gen3_adc_tm-v1-1-39ba29f9b4ab@oss.qualcomm.com>
+ <20260515145450.3b1e9c3d@jic23-huawei>
+ <6c876a92-e572-4cb9-8c31-bbf681a4770b@oss.qualcomm.com>
+ <20260522114722.49b6055e@jic23-huawei>
+Content-Language: en-US
+From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+In-Reply-To: <20260522114722.49b6055e@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: KoezCJXr0sS7EoQ0F4NDvRSMwBtlXZSS
+X-Authority-Analysis: v=2.4 cv=ML5QXsZl c=1 sm=1 tr=0 ts=6a157bbd cx=c_pps
+ a=JL+w9abYAAE89/QcEU+0QA==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=XFE9V2JDpLeksAh3blAA:9 a=QEXdDO2ut3YA:10 a=O8hF6Hzn-FEA:10
+ a=324X-CrmTo6CU4MGRt3R:22
+X-Proofpoint-ORIG-GUID: KoezCJXr0sS7EoQ0F4NDvRSMwBtlXZSS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI2MDA5NSBTYWx0ZWRfX9nDZQT/PBJMq
+ mIeA50bn3eJTneQ7aL2zmMFCiKnBoUlATgX+kgiTYwZNyrigHTdahGqex6/IjRQ+pHrMPP+4Bnn
+ Bd88PljkmWFcEym/rFR6Xg1XuC4bu3mONCkSAlebIYiw0vutrKEwOYJxHY4+OOZ/FFuS1pONFpZ
+ /4N36sKuS5ZMEjfWMquCJ1gzN5WFbnrDgRGMTKatf+9Br0SKyUYP6bccSHssLw04S31xcUd3Z5j
+ 2xECRlFcPNwthIrvqfFGJuq0fmFyyRM4gLZsO8tUHycA8r7pjCrJhSCIJN5eE4bkDN95dE0ErkF
+ iWDL5FtCVySoUy+j9SvucbP4KHdNVz2btUNkLFGuZvK/pocxQlau2rsvt6+imQa5XOWoKHC2AkW
+ Ef1NhmtR+iHEWn8lF930HqsUl57Y9r/PAYHIzLygXi4X1rIpu33EW5aAvYvmOLz6e6j6PPDfW5c
+ 1XHUxvvcHnc/samlvKA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-05-26_02,2026-05-26_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 suspectscore=0 spamscore=0 adultscore=0 clxscore=1015
+ lowpriorityscore=0 impostorscore=0 phishscore=0 priorityscore=1501
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605130000
+ definitions=main-2605260095
 
-On Mon, 25 May 2026 at 17:21, Stepan Ionichev <sozdayvek@gmail.com> wrote:
->
-> ti_eqep_probe() calls pm_runtime_enable() and pm_runtime_get_sync()
-> before devm_clk_get_enabled(). If the clk call fails, the function
-> returns directly via dev_err_probe(), leaving runtime PM enabled
-> and the usage counter incremented.
->
-> Route the clk error through the same err_pm cleanup as counter_add()
-> so the runtime PM state is unwound on every failure path.
->
-> Fixes: f213729f6796 ("counter: new TI eQEP driver")
-> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-> ---
-> v2:
-> - Collapse the dev_err_probe()+assignment pair into a single line
->   using its return value (Maxwell)
-> - Add Fixes tag
->
-> v1: https://lore.kernel.org/all/20260523184448.7609-1-sozdayvek@gmail.com/
->
->  drivers/counter/ti-eqep.c | 18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-> index d21c157e5..4f3b17939 100644
-> --- a/drivers/counter/ti-eqep.c
-> +++ b/drivers/counter/ti-eqep.c
-> @@ -548,17 +548,21 @@ static int ti_eqep_probe(struct platform_device *pdev)
->         pm_runtime_get_sync(dev);
->
->         clk = devm_clk_get_enabled(dev, NULL);
-> -       if (IS_ERR(clk))
-> -               return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
-> +       if (IS_ERR(clk)) {
-> +               err = dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
-> +               goto err_pm;
-> +       }
->
->         err = counter_add(counter);
-> -       if (err < 0) {
-> -               pm_runtime_put_sync(dev);
-> -               pm_runtime_disable(dev);
-> -               return err;
-> -       }
-> +       if (err < 0)
-> +               goto err_pm;
->
->         return 0;
-> +
-> +err_pm:
-> +       pm_runtime_put_sync(dev);
-> +       pm_runtime_disable(dev);
-> +       return err;
->  }
->
->  static void ti_eqep_remove(struct platform_device *pdev)
-> --
-> 2.43.0
->
+Hi Jonathan,
 
-Sashiko came back with some notes, however they are issues unrelated
-to this patch. LGTM.
+On 5/22/2026 4:17 PM, Jonathan Cameron wrote:
+> On Thu, 21 May 2026 16:16:17 +0530
+> Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+> 
+>> Hi Jonathan,
+>>
+>> On 5/15/2026 7:24 PM, Jonathan Cameron wrote:
+>>> On Fri, 15 May 2026 14:23:44 +0530
+>>> Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+>>>   
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+...
 
--- 
-Kind regards
+>>>> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+>>>> index f8168a14b907..a819c3e627a0 100644
+>>>> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+>>>> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c  
+>>>   
+>>>>  static int adc5_gen3_probe(struct platform_device *pdev)
+>>>>  {
+>>>>  	struct device *dev = &pdev->dev;
+>>>> @@ -818,7 +782,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
+>>>>  	}
+>>>>  
+>>>>  	ret = devm_request_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
+>>>> -			       adc5_gen3_isr, 0,
+>>>> +			       adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,  
+>>>
+>>> Sashikio points out that IRQF_ONESHOT is never correct for a non threaded
+>>> interrupt.  The point of that flag is to ensure we don't handle another interrupt
+>>> until the thread is done. If there isn't a thread then it doesn't do anything
+>>> (other than omit a warning!)  
+>>
+>> I tried at first keeping only the IRQF_SHARED flag here, but it seems that
+>> shared interrupts need to agree on the ONESHOT flag configuration, else the
+>> second interrupt's IRQ request call fails.
+>>
+>> And the ADC_TM interrupt needs to be ONESHOT, since we don't want that interrupt to
+>> be rearmed before we have notified the thermal framework from the threaded
+>> part of the handler. So I had to add the IRQF_ONESHOT here too, though it is
+>> not useful here.
+> That's an interesting corner case.  Maybe the warning needs to be more refined?
+> (I don't think it checks for shared?)
 
-CJD
+Yes, at the point Sashiko indicated, it looks like there is no check for shared IRQ,
+although it is checked later in the same function (__setup_irq).
+
+> 
+>>
+>> I think it's best to use a threaded IRQ handler in this driver too. I don't really
+>> see any meaningful way to split the actions in the interrupt handler here into a primary
+>> handler and a threaded handler, so is it fine if I just make the primary handler NULL
+>> and move all the ISR functionality into the threaded handler part ?
+> 
+> That's fine by me.  Just add some comments on why.
+
+Thanks for confirming, I'll push again with a comment explaining this change.
+
+Thanks,
+Jishnu
+
+> 
+> J
+>>
+>> Thanks,
+>> Jishnu
+>>
+>>
+>>>   
+>>>>  			       adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
+>>>>  			       adc);
+>>>>  	if (ret)
+>>>> diff --git a/include/linux/iio/adc/qcom-adc5-gen3-common.h b/include/linux/iio/adc/qcom-adc5-gen3-common.h
+>>>> index 6303eaa6640b..39cbfcbdb101 100644
+>>>> --- a/include/linux/iio/adc/qcom-adc5-gen3-common.h
+>>>> +++ b/include/linux/iio/adc/qcom-adc5-gen3-common.h
+>>>> @@ -205,7 +205,5 @@ int adc5_gen3_get_scaled_reading(struct device *dev,
+>>>>  int adc5_gen3_therm_code_to_temp(struct device *dev,
+>>>>  				 struct adc5_channel_common_prop *common_props,
+>>>>  				 u16 code, int *val);
+>>>> -void adc5_gen3_register_tm_event_notifier(struct device *dev,
+>>>> -					  void (*handler)(struct auxiliary_device *));
+>>>>  
+>>>>  #endif /* QCOM_ADC5_GEN3_COMMON_H */
+>>>>  
+>>>   
+>>
+> 
+
