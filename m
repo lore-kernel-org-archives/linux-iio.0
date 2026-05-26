@@ -1,91 +1,77 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mta.al2klimov.de (mta.al2klimov.de [162.55.223.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13E772F7F13;
-	Thu, 28 May 2026 16:58:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF1A405874;
+	Thu, 28 May 2026 18:17:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.55.223.79
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779987499; cv=none; b=jIMRBxDADm7ey9bolvZDeZW8BG3vgwke7vPfZVS+kUqWsmbJF3BDHyIL5kFLmCWQGKRO/9v8JvkQ1mUPbaQGa+lVgY44l3Nz/jG2buPqRqYVrWNImxCMP1smTMN7s4e62vj7eO6VQdEMA7V4u96gpq1Q4i+elenbxHhLlhB1qDk=
+	t=1779992224; cv=none; b=oJe/HvFPWZzx6bvjaXs1bOtrFqdpWbEAb44z996sGIWbTNczvlhOQ6ri+FnbuQ+Gbndjna+R+0UD7MQrZiJdHmyItdBbym47S3zxw8igyWao+pwHNY2oMkjuo7hG+TWbOJ85Rq0ctf4sIBeSjBx+HVriCFtgVsga7dNsGfOFtfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779987499; c=relaxed/simple;
-	bh=CV93Gs2E+7eZBdUXfjVjpaPPMzba/gMgpOXeOIaQgWY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dms8jsBPikmScJ+v6vK9E7M0LvR5kmKpdeQxOvMCrDSwCVqaZYxDO8P3tXChFRctw6/lGy+YwSPf4xMpNarCABQ//63S5N8boGW3WbNXVbTDm9T4NeNuYc0Fo2ZF7PWhY/F/723C/+dmXuV8pteE5dWTGlFMc5YD5jc7jmNecAM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iu5qWQfC; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779992224; c=relaxed/simple;
+	bh=XIQcvOBQXSJQG9HR8DWFxF8nLSMI5kIUwd8uYnkI5qA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ltZU4VA8VN5YGVBkinvSsuqknBHQowWKtC9v5KrdYnUojsdatB21iWKP6E2p9VIi0v410KiSWfwC3JFz3mY2HR30kvDarUMif3nYF8dMgavLkyHFCeL6to7aZV+nBls9HQQHyM4K5kkjc7XFDfYj7++oav8JYO/OS25tjS7n7YY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de; spf=pass smtp.mailfrom=al2klimov.de; dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b=Wna63snq; arc=none smtp.client-ip=162.55.223.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=al2klimov.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=al2klimov.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iu5qWQfC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E051F000E9;
-	Thu, 28 May 2026 16:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779987497;
-	bh=CV93Gs2E+7eZBdUXfjVjpaPPMzba/gMgpOXeOIaQgWY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iu5qWQfCq8RVzoag/agzz6AaZ1ZM+KV0qvqExW8JUegyT4lL2Mm/gMZMDrXfxh4nI
-	 SgroGxpyHGslplr0SIoFCVZmpjRmUR20R/6VTu6gqJaktunb0R15UescY1y4vJGfLS
-	 GkODt4oyIBYhJb12s/iqvpm5wp93AzRCqghBI1u802bKmFb+jE+W15AXh9uDCLbLoi
-	 igI1+5CSJJu1pX5W0tBXZe9nLQNTCLtnTt2VnIfwU+SlqikIcLaslaEN+Fye32Q/SO
-	 AQL5/PcmwJkLj04EMESXRxOg3Jsz/QTVndHK4m/clVJbYSLPz4N5t+cxQmMxqSIaCA
-	 6VUFmya5Vnw7A==
-Date: Thu, 28 May 2026 17:58:12 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: Akhila Kavi <akavi@axiado.com>,
-	Prasad Bolisetty <pbolisetty@axiado.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add Axiado AX3000/AX3005
- SARADC
-Message-ID: <20260528-skirt-mahogany-426302fd462f@spud>
-References: <20260528-axiado-ax3000-ax3005-saradc-v1-0-345dd5f6608a@axiado.com>
- <20260528-axiado-ax3000-ax3005-saradc-v1-1-345dd5f6608a@axiado.com>
+	dkim=pass (2048-bit key) header.d=al2klimov.de header.i=@al2klimov.de header.b="Wna63snq"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; s=default; bh=XIQcvOBQXSJQ
+	G9HR8DWFxF8nLSMI5kIUwd8uYnkI5qA=; h=in-reply-to:from:references:cc:to:
+	subject:date; d=al2klimov.de; b=Wna63snqri5jcaDlRpl+EGnHep6rSNpuosf/Nx
+	CwB++DwvOmJaU5xSlojEckepo9c5mAnQkVR+0YKkz3lVgKK1ST6N5n5T+UMZAicB9DMezG
+	WFIWqJt8nH2fCR5V2E3wiLJ88Z86zsbi34fWKI/uzWJi5UY38Q76VCjRDv5qRjc0x6Fz5o
+	iW1b1n67yKoluXYaTgW/+UkxS3Nx4rHL3ME8oWdy4+pTajH+8yBW0m+f3fNJLN17q9t49V
+	Trypnx4UfQaYz6uxf86N2Qq8KNDiwef3yth9tyn0U8968qUxGpVqRgqmPdGWCACIy5Zlm/
+	prloa5+FFaUsgunGfEnk25rQ==
+Received: from [192.168.0.101] (88.215.123.80.dyn.pyur.net [88.215.123.80])
+	by mta.al2klimov.de (OpenSMTPD) with ESMTPSA id 7fe9a56c (TLSv1.3:TLS_CHACHA20_POLY1305_SHA256:256:NO);
+	Thu, 28 May 2026 18:16:53 +0000 (UTC)
+Message-ID: <f14307bd-060f-4d5a-b7ac-20e9f096463d@al2klimov.de>
+Date: Tue, 26 May 2026 20:14:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="glY1jcPOWoMvQi2Z"
-Content-Disposition: inline
-In-Reply-To: <20260528-axiado-ax3000-ax3005-saradc-v1-1-345dd5f6608a@axiado.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: light: al3320a: read both ALS ADC registers again
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ David Heidelberg <david@ixit.cz>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>
+References: <20260523114505.73601-1-grandmaster@al2klimov.de>
+ <20260523114505.73601-2-grandmaster@al2klimov.de>
+ <20260526155249.1028be2a@jic23-huawei>
+Content-Language: en-US
+From: "Alexander A. Klimov" <grandmaster@al2klimov.de>
+In-Reply-To: <20260526155249.1028be2a@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
---glY1jcPOWoMvQi2Z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 28, 2026 at 01:10:23AM -0700, Petar Stepanovic wrote:
-> The Axiado AX3000 and AX3005 SoCs include a 10-bit SAR ADC controller.
-> AX3000 supports 16 input channels, while AX3005 supports 8 input
-> channels.
->=20
-> Document the compatible strings, register region, clock, reference
-> voltage supply, and IIO channel cells.
->=20
-> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+On 5/26/26 16:52, Jonathan Cameron wrote:
+> On Sat, 23 May 2026 13:44:58 +0200
+> "Alexander A. Klimov" <grandmaster@al2klimov.de> wrote:
+> 
+>> al3320a_read_raw() used to read two adjacent registers
+>> until the driver was modernized using the regmap framework.
+>> That cleanup accidentally replaced the 16-bit word read
+>> with a single byte read. I'm reverting latter.
+>>
+>> Fixes: 1850e6ae7f91 ("iio: light: al3320a: Implement regmap support")
+>> Signed-off-by: Alexander A. Klimov <grandmaster@al2klimov.de>
+> For future reference, be careful not to send new threads in reply to
+> old ones.
 
-With Jonathan's correction:
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+You mean I shall send v2 in the same thread as v1?
+Strange...
 
-pw-bot: changes-requested
+"please make new threads for everything you send"
+  -- greg k-h
 
-
---glY1jcPOWoMvQi2Z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahh0JAAKCRB4tDGHoIJi
-0rtoAQCZC2aiWxZMTWZ3jWNXeFb7Fiudf+Cu7MtTU9w+jxaBMgD/SChuRYlmFBa5
-mP+H04la6HHMbSF+9EdYltYwv7m/LAI=
-=Ve2X
------END PGP SIGNATURE-----
-
---glY1jcPOWoMvQi2Z--
+https://lore.kernel.org/all/2026052249-shrank-trophy-14ff@gregkh/
