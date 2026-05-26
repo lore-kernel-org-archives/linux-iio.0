@@ -1,77 +1,81 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939D53CFF67
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 09:59:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FEC3D3332
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:07:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779789548; cv=none; b=a96V6slds9sd+2+wyTl3/qZ72Xm0B4RIt3DpEGo6TIRnLRhCWqDQRABSkMyNWKVwEydvZzNLPuy9J2cOCvwD2KXR8ayIV/EdlV3lM0W9QZ4j5HzZQjPgyC59YWByDjidZ6+fVO4uD7IQOY0S+GlZ1TbcLcpTQgx690VJDB0+Zog=
+	t=1779790039; cv=none; b=P6/2I8uRSJNz8wQLWMJ2VGH8rmCNHC6d5A8ERK+0oo85Z4LRhiYDSMNvSzQhvciR4eMJWbydtYAGHQlA6mmqJwRh24k+yXy1gE5PrxkMkfIq9rkxiShDU+Y1kn9/uJK0pLBO1ESBMXmj+5uIp3J29eb0DWO4qcvJEXRLweT15i0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779789548; c=relaxed/simple;
-	bh=vQkzABbgpFu7zVsXWnxe8cy9Q3NRoLN87pCu/DZh4oA=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aa+JEOGU4kIV+P1ZCORrIbxM54ycWmcZrkOtVM9RhXXEepm3VsK0lZG5vVM1+QQ5eF+hTjtExef+Ht33VnHQkbQbGhNeEwm7Nl5gxzz3gjyFADUhXIsvUPESnxslz9IwZTN5xUX230ZmTZ4qvkwRbsK533gkALy+UsB5J04e4Nw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qzMmg9BD; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1779790039; c=relaxed/simple;
+	bh=Ublks9CuT5syiY4dPX5P5VSog6DvqLq29kO6wrUNPns=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AHOLJ4VRq9WJlHo9ASNGBPMqxbN2sBzC+Hzrb6V3wawCyuoP/5hT33wmLLvUtZtVd2MELb5LOmEhLb2NXQkM6fp9YFcTDHidRM6qZepvuqVT4UnwQqcYp0c+EGuN65Ah9VyH0E0Z532gdMpSarcBsDEkeNP/OrmwUU+76vHZvBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oFSN00XS; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qzMmg9BD"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4891e86fabeso5025175e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 02:59:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFSN00XS"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48a3e9862f0so54919695e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 03:07:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779789544; x=1780394344; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779790036; x=1780394836; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QLRYLwQRn5cN/q/sqko/HgmBpICy8QtK1o9ym5629xQ=;
-        b=qzMmg9BD4fTQxd7pM4s5ooOjWLSuHp8jHAhUB5CirChfBtKNgxSCciz5+ehIYF7CLY
-         J+dCOqFYJPNE6ks4oOK32Cm986F1qy0+EOzLuFvN5SxMLOIL6maYypsljGKoEku1/RwA
-         q8FM7yMNSkYvQMXimgCAtMCEpnk0QfQ1NLepK663QQm6XJ0W2A/01TIo+euqPU+8LcLc
-         Am4du0zavM94x0cwQu2ohAT7j0BTLq9T6arZzjAovESbGwdL4wT6hyouUYLE4M7WJnhl
-         OU9Hxd2jVUZ5NejpEIr0rfmlFbVxRF98rui6XFfo6NNyvlgcIkFDBtXe4gbaX/i66jok
-         COwg==
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=UBWVkdlUBppiUm4CnKZtDjFMlGPeTrCwu/oPgCeq608=;
+        b=oFSN00XS8JSvgHKTtHxo9tD84tNW1qVETBMBCrdtp2ANYbKYzy55a6Bkm+wvs43f8I
+         cPnEkwoT3LMw1fHJlL5qqBJUfAbQEauY3Zccz7pAuekrLJt+P6iXBiBmMznl2fIwKw1p
+         TZdzFLUGihTaLYkMLrofz+mYEA0DipPVylgFh+PZ3pPat5EpBZ8F5WmGmqXCLblJZaNx
+         XsTPMvCirVmpN7JVz8hNsNTO+GFdwit/u0ZB0KBQRBrJRGQSLmA6YTGCetcfzJ3T18Ii
+         8G3YM/yxCpu65q8IJD4M3yWJzemSUilaKHPvIfSfEManmI4LE1QYOAIEPGKXNZwwKGLQ
+         Z4ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779789544; x=1780394344;
+        d=1e100.net; s=20251104; t=1779790036; x=1780394836;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=QLRYLwQRn5cN/q/sqko/HgmBpICy8QtK1o9ym5629xQ=;
-        b=TAmHpxiZi527EANyRsXTUXqcHjJshAUqq6xmvf/c1VloDQcrkxMVJO/XxRowora7zA
-         SMfnrG06ftCfUi1MrTgH/ov4CyqEvSdHalMlOxDoH0AHNmhTqwb5lPRlbSsjkHNbvtgr
-         3hJ+FAo1WOn6F6nFurPivXvTldxpppJZEd13U3R25gI5R9qplvzum4fBNvL8S5n72Zij
-         8kJNx8vAAGYGu8no17bQ0F+AS/vpERdIlz+jwVYfAQ/ftMjSM44iEOl2CrlYgiuAU7GD
-         wN9jB40Hjp22aRmlcrXqNiFOmbFOu1Nx6G0arfLpSLX8STL8AHF1C8k+RfMPvBvMge+W
-         brzw==
-X-Forwarded-Encrypted: i=1; AFNElJ+9qYJnFjWMrZXNXsLvWi5kjoYrUjZET4IKfjdeFw9B69JEDq2lyMUr+Vgtj0wc+S4nk9BKRUK8tsM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwvjRSy08iwBgkkhYQFwWq2yZg17rZyqqf+8mbpUZml8FP+v/Pm
-	WRtxeoqbGEZD4x8wa17E0dIYLZ7yR3x7u+YPmZMVlaLMh388q58qI0zK
-X-Gm-Gg: Acq92OGfnavkspVwtZubkHTJP4nBBaULlGD4DIS5+3v6zMpxlBImXnf+FSz3dBX+c+s
-	muDk/dxQ/3MSLCEdEDNoYSBTAc0bSlSW4XnKhbbQtT6+1UNCluBWBzaBje350ub5o3wwyslntiv
-	/wclTJ47Vg5L0EIE/jCFpYBBg+O1AKq2/IGcMAAT20IIa+Q0trNDBqY5dJnBabrG8ZXFda5YpTs
-	3yjIWZPKSdubqQg1cEnoEpehvhOmASM/Hj4ne6wamLwCQ2SeNF8+IMFnfPp+TQleuHZeubHa+5Q
-	2B7FbCGE5sjKCIODLz3cIpxM8W6nc4yzZOyfBr0w/aQxpVjFYwYvlwz/AXeyutsqZbaiROhFc8h
-	0yOvkJ1itLOEJipx61IZmNpq1+ZX6nlLwtbH27qaYKNzAT0qicbJRrKcuDA30WF9/SJhnEawnnU
-	SQL5FGNN+fXzkoFTLxFiIih+U=
-X-Received: by 2002:a05:600c:4688:b0:490:4224:e0a2 with SMTP id 5b1f17b1804b1-49042ae265bmr307954735e9.33.1779789543584;
-        Tue, 26 May 2026 02:59:03 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49044f2bad3sm339178815e9.0.2026.05.26.02.59.02
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UBWVkdlUBppiUm4CnKZtDjFMlGPeTrCwu/oPgCeq608=;
+        b=lKfKTZ+6t7c8Teaoblrnv5pbMAWwqmHMaehS6gEo0AA9lnPaoyVqNTK67BD55lKuIE
+         kOUPqOWFXbQyIvacjBNAJiHBIB2Tby3wFMpvSGuwwMEyeE3H1pTufPm49+SCpFaOQ/A7
+         US7FC07R/5ZHJyKcZUuaFtOLYzrtlaQ3LTWcIgz8O+O1e2a0orURWluopidmfKWMwdTI
+         HEOi5UfYuScC1E3cRvpwTRlZYOVVFCeSxJhSGf8EAaO1t60N3jgeD9wWmvbbsf9fkt9t
+         RtwMbCb/QCYLzWo5/Yr4K1bq5WZKqfzEwoNjbTFji6KOro0euQpqgJG2S4sxAC0rvz3q
+         9Y3g==
+X-Forwarded-Encrypted: i=1; AFNElJ9Xos/e04c3Rv9ZnX+vtJZtgOjmCgTYrrSszU0m7xr9HfYNeV7vzl+axyHhre31eNK0RkUT9WcRnxk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDEwkrX652GNwobnJsUohMAmpe7ehKoOSQsbeNPULZN1JhND41
+	y7GESSNAXVo1tbV2wd7z7HD/HdJnIV28+IY5S+Cxw0X96nGv6OSbcYRS
+X-Gm-Gg: Acq92OF9Bcbv63SYTdS1WlFMsu/Urn6Dk9ykodHQ4e1qTiOLWIDX7O0Da7voYr2UQoI
+	cZK1jRUpX2ZF1VPDwDtN9oD5J7RVB9gkbwUn8qnErhfHOR7pkGlJSPku2ee7aAoVregAx9BFTNo
+	8738zzSM5VICF3n7JUMbYWGWhmq66pmAWF1yb+VC+R2cyiae8yzh2K8lNt5wl6k8lzVDdbMezT+
+	LOd1sQPuEoFO4Rqk9tAvOCRErn6JV9KZ+kChmqBVL7bEy7HntuXd/wYVCCgCo/LrBkhq4QuhxY4
+	1P8UM8ol6No/TTetoecae3atlvBYs+sZ2Kfz9OVp1Uab3+Vh3Tp5fW++xxszoNRqFFtBXEwX5ta
+	K0SbtkjJIsBTj2lb6w/Sbi11gXvBrO9jPitHoLi5Fz+zkUe02UCfyscLHCsakhs+FpzTxy5mCsI
+	oH4k5nvBglsYMcYfLEr781B9rm69g/xTJfaGQUMSErqQAfcbfMCDQ7KpOcgVtQYhWX0Gy5dQkCF
+	e1hVHcMq0YNBei9poDx61iLdISDFdPBjdedLCHRepAoMz9Giw==
+X-Received: by 2002:a05:600d:4448:20b0:48f:d620:c27f with SMTP id 5b1f17b1804b1-490422687c3mr181089135e9.4.1779790035539;
+        Tue, 26 May 2026 03:07:15 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490454c5eb0sm337780505e9.2.2026.05.26.03.07.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 02:59:02 -0700 (PDT)
-Date: Tue, 26 May 2026 12:58:59 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Angelo Dureghello <adureghello@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: ad3552r-hs: fix uninitialized data ni
- ad3552r_hs_write_data_source()
-Message-ID: <ahVu497RZjJxn7dj@stanley.mountain>
-References: <ahP3IjYJ87bNc1De@stanley.mountain>
- <CALSJ-wCcZ9XNTrcvq1TabT--vA5v0gritbpfNG6n0aKRXuSiKA@mail.gmail.com>
+        Tue, 26 May 2026 03:07:14 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 26 May 2026 11:07:09 +0100
+To: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v5 12/13] Documentation: ABI: testing: add docs for
+ ad9910 sysfs entries
+Message-ID: <wyxgririrncvg67bisazndqtlj6ylrzkqfgsi7tptjfv7qopwa@rjmtb2aohbay>
+References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
+ <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,55 +84,155 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALSJ-wCcZ9XNTrcvq1TabT--vA5v0gritbpfNG6n0aKRXuSiKA@mail.gmail.com>
+In-Reply-To: <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
 
-On Mon, May 25, 2026 at 01:11:42AM -0700, Angelo Dureghello wrote:
-> Hi Dan,
+On 26/05/17 07:37PM, Rodrigo Alencar via B4 Relay wrote:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> On Mon, May 25, 2026 at 10:15:46AM +0300, Dan Carpenter wrote:
-> > If the *ppos value is non-zero then the simple_write_to_buffer() function
-> > won't initialized the start of the buf[] buffer.  Non-zero values for
-> > *ppos won't work here generally, so just test for them and return -EINVAL
-> > at the start of the function.
-> >
-> > Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
-> > Signed-off-by: Dan Carpenter <error27@gmail.com>
-> > ---
-> >  drivers/iio/dac/ad3552r-hs.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
-> > index a9578afa7015..6bc64f53bce9 100644
-> > --- a/drivers/iio/dac/ad3552r-hs.c
-> > +++ b/drivers/iio/dac/ad3552r-hs.c
-> > @@ -549,7 +549,7 @@ static ssize_t ad3552r_hs_write_data_source(struct file *f,
-> >
-> >  	guard(mutex)(&st->lock);
-> >
-> > -	if (count >= sizeof(buf))
-> > +	if (*ppos != 0 || count >= sizeof(buf))
-> >  		return -ENOSPC;
-> >
-> >  	ret = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
-> > --
-> 
-> thanks for the fix,
-> 
-> Reviewed-by: Angelo Dureghello <adureghello@baylibre.com>
-> 
-> it looks like this may fix an additional overflow in case ppos is near the
-> end of buf[].
+> Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
+> control Parallel Port, Digital Ramp Generator and OSK parameters.
 
-simple_write_to_buffer() won't overflow.  It takes ppos into consideration
-properly.
+...
 
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_dwell_en
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		For a channel that produces parametric sweeps, this attribute controls
+> +		the sweep behavior at the configured limits. It enables dwell mode at a
+> +		sweep limit when set to 1. Otherwise, the sweep may stop at the initial
+> +		position or restart from that initial position or continue by reversing
+> +		its direction.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_roc
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Frequency rate of change in Hz/s for channels that produce linear
+> +		frequency sweeps. This value may be influenced by the channel's
+> +		sampling_frequency setting.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase_roc
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Phase rate of change in rad/s for channels that produce linear
+> +		phase sweeps. This value may be influenced by the channel's
+> +		sampling_frequency setting.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale_roc
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Amplitude scale rate of change in 1/s for channels that ramp
+> +		amplitude. This value may be influenced by the channel's
+> +		sampling_frequency setting.
 
-> But i am actually missing the use case when ppos is non zero, can this
-> happen from shell "echo" ? Or some fseek/dd is needed to trigger it ?
+I am thinking about adopting IIO_FREQUENCY and IIO_PHASE to the DRG control
+(It is considered for the Parallel port at this point).
+That would make the destination configuration a bit more clearer:
 
-I've never actually tried to do this.  I think lseek() or fseek() would
-work.  But also the simple_write_to_buffer() function itself updates
-*ppos so multiple writes would do the trick as well.
+* out_frequencyY_en
+* out_phaseY_en
+* out_altcurrentY_en
 
-regards,
-dan carpenter
+which would enable DRG for a given destination.
+
+I would not want to have 6 channels (3 for ramp up and 3 for ramp down),
+so I would develop the idea here with that in mind. Otherwise, it may
+be ok to have the 6 channels for that.
+
+The DRG have this output pin called DROVER, which indicates when the ramp reaches
+a limit (upper or lower), then I was thinking on bring that to be an iio event.
+At least initially, to treat the configuration as threshold event control, and not
+necessarily having to processs the DROVER interrupt. Mostly because that interrupt
+might be to frequent and would be better handled in hardware (by an FPGA IP).
+In fact, for certain configurations (slower ramps), CPU would be able to handle
+it just fine, specially if user is not very much concerned about deterministic
+timing when handling the event.
+
+DROVER indicates both threshold rising and falling events, so I would have something
+like:
+
+* events/out_frequencyY_thresh_rising_value
+* events/out_frequencyY_thresh_falling_value
+* events/out_phaseY_thresh_rising_value
+* events/out_phaseY_thresh_falling_value
+* events/out_altcurrentY_thresh_rising_value
+* events/out_altcurrentY_thresh_falling_value
+
+to configure the DRG limits (upper and lower), which fits well with the idea that
+DROVER is the event we are interested in.
+
+Now, we are missing two things: step rate (sampling_frequency) and step (configured with roc).
+The problem here is that both of those configuration are applicable to rising (ramp up) and
+falling (ramp down) cases.
+
+There is no RoC threshold event, so I am not sure it would make sense to create an
+event spec to configure the step with:
+
+* events/out_frequencyY_roc_rising_value
+* events/out_frequencyY_roc_falling_value
+* events/out_phaseY_roc_rising_value
+* events/out_phaseY_roc_falling_value
+* events/out_altcurrentY_roc_rising_value
+* events/out_altcurrentY_roc_falling_value
+
+But that would allow to reuse that existing iio core/event code to configure the
+ramp up/down step with new ABI.
+Otherwise, trying to get both ramp up/down configs into a single channel we would
+need:
+
+* directly to the device channel attr group:
+	* out_frequencyY_rising_roc and out_frequencyY_falling_roc
+	* out_phaseY_rising_roc and out_phaseY_falling_roc
+	* out_altcurrentY_rising_roc and out_altcurrentY_falling_roc
+* or, under the event group with a new event info: IIO_EV_INFO_ROC 
+	* events/out_frequencyY_thresh_rising_roc
+	* events/out_frequencyY_thresh_falling_roc
+	* events/out_phaseY_thresh_rising_roc
+	* events/out_phaseY_thresh_falling_roc
+	* events/out_altcurrentY_thresh_rising_roc
+	* events/out_altcurrentY_thresh_falling_roc 
+
+For the sampling_frequency configuration, which would also require new
+ABI to fit both ramp up/down in a single channel:
+
+* directly to the device channel attr group:
+        * out_frequencyY_rising_sampling_frequency and out_frequencyY_falling_sampling_frequency
+        * out_phaseY_rising_sampling_frequency and out_phaseY_falling_sampling_frequency
+        * out_altcurrentY_rising_sampling_frequency and out_altcurrentY_falling_sampling_frequency
+* or, under the event group with a new event info: IIO_EV_INFO_SAMP_FREQ   
+        * events/out_frequencyY_thresh_rising_sampling_frequency
+        * events/out_frequencyY_thresh_falling_sampling_frequency
+        * events/out_phaseY_thresh_rising_sampling_frequency
+        * events/out_phaseY_thresh_falling_sampling_frequency
+        * events/out_altcurrentY_thresh_rising_sampling_frequency
+        * events/out_altcurrentY_thresh_falling_sampling_frequency
+
+Lastly, we also have the dwell enable config:
+
+* directly to the device channel attr group:
+        * out_frequencyY_rising_dwell_en and out_frequencyY_falling_dwell_en
+        * out_phaseY_rising_dwell_en and out_phaseY_falling_dwell_en
+        * out_altcurrentY_rising_dwell_en and out_altcurrentY_falling_dwell_en
+* or, under the event group with a new event info: IIO_EV_INFO_DWELL_EN
+        * events/out_frequencyY_thresh_rising_dwell_en
+        * events/out_frequencyY_thresh_falling_dwell_en
+        * events/out_phaseY_thresh_rising_dwell_en
+        * events/out_phaseY_thresh_falling_dwell_en
+        * events/out_altcurrentY_thresh_rising_dwell_en
+        * events/out_altcurrentY_thresh_falling_dwell_en
+
+For custom event attributes, maybe iio_info.event_attrs can be used instead
+of new event info (or a mix of both).
+Another thing we may consider if going for the 6 channel case, would be having
+new modifiers: IIO_MOD_FALLING and IIO_MOD_RISING, which might simplify things
+a bit.
+
+Let me know about your thoughts on this.
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
