@@ -1,319 +1,221 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAA23FF8B9
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 17:06:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFDFF3FA5F9
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 17:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779815198; cv=none; b=myKcp+TRgMgyVWdFoyP65tCq2B3M/uaa1K7arYXTNwOYwn8GGBblaChOu49Nr1QyQFlRZ4J08tlCkKRZ7U5OFZouXpcWRBD5gv+bbaUJ9X+3PAaO1RE9XYnrn6foZrCmLETpFwzfytLx6fMevc5AU9xbEV/uEzAVW0PLMB34/p8=
+	t=1779815317; cv=none; b=KasjxQBSBLn8Z5DzwPdC/oA1Qlo2wChZXfmufKSfKj9OvyAVKHiFQAS+Y9KD8BC+e3sZ+QQcbYJ9AG56y9XL9ftHcj05ivUeCtVYGmwTBLPVvWwWhXWL7wajCR0kXG3XbQgUxfP8ytCc5I4+Tn37o0fbhSiBnHp52MQ9cQ6FlY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779815198; c=relaxed/simple;
-	bh=/9OXIks+WP4Qc7si1AAqjvfvw+oOv7dC/ZCPndVP9jk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Q5V/8S51wYTW0vOk90h8Igap0Mu5Ugt70cTF/5pI1IHRtSASdGaxXVeKe+lP6e7ZKt7CwBkzTZnl47JACmkEP/6SYdoNvZFEXDRg26Fo2ViwRPgvggZtdBdfQLeBJkf12ni7Qo8Io0rOB7NzMyYT4GEy4t6E/9VLkk09PrO09pk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N8jh1HSs; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779815317; c=relaxed/simple;
+	bh=NA27NN5p6I8UVFw/S+uheebpnwu8UHqFyN0ql1ewMQ0=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aKRjS5W9y4FjuCERuSt/wj9Eoq9vcU4e+V2eXa55YxbgJ/fMEdXz6ZeyUfEFhfBz73M5U3brzrOhIsRe4EEqwDAXQ+mdsDAtR478mFrqJUlHmjgtmCwQqmSoNg5+9IVtf5y2NKrNZkw/Xe9v3UEiT9tro9Ea3RiUMa8g1JuVS7w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YWfXZnOd; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N8jh1HSs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D1D1F000E9;
-	Tue, 26 May 2026 17:06:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779815196;
-	bh=Whl82O5bRki/IYHh4IYfIYx03EKWrtCkR8DvK6czpQ8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=N8jh1HSscNVVmYUIabAD/LO7mRRGfAtGRZgW6aQwVcwHGf+VtuJGpzUkFQSP1n/lQ
-	 UaWoZxSjS+CarU3ZhIL/Ca+Cw0A6FPrApXn09mxy+djdl1UqoYXd1gggt7ri/sJZ81
-	 P19xePIK5olmcbld+jrtWbJ2e3z6qkucg9X8fRvHVBpPxyUPNbIgWapGylO67fTj+G
-	 G6D5aCgeKvk9Jjk6S1juqkmhpwKHTCdLG/Ncl4TrftwfBrQbsjAPuv+YwaKEEbXE2I
-	 oEMXcZ8qMHV1U4DFD6IQXEEm5CyXbGWaoG/2xBz1dDQ1fhMTSpgox7v3TaGC8adBNq
-	 hjB/4xMR0MVgw==
-Date: Tue, 26 May 2026 18:06:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Cc: <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 4/4] iio: light: veml6031x00: add support for events
- and trigger
-Message-ID: <20260526180629.75c10bde@jic23-huawei>
-In-Reply-To: <DIRMWY4EUJYM.36YED21N67YBC@gmail.com>
-References: <DIRMWY4EUJYM.36YED21N67YBC@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YWfXZnOd"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-516d61baff3so51602571cf.0
+        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:08:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779815315; x=1780420115; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hqQXdsbWsKeHXeHKrmCU/WFpGzKvYZdLxIaZX6nvsjQ=;
+        b=YWfXZnOdYjaEcYcg6vbpApiL2SCc0x6gh2tPaOSRmFr9sPMJiewhqe2WWm8lXvkF7p
+         TWKMNVURRZ2Wh50qL6D7hnqYBE0itBgs057Y4S/fZgVqjcANnk55LZZub3KqXMm7o5AE
+         SfW7VlrobGR7UbPS9asYnHQA6g16ppgoSaEl3AIMNn4sj3dHtngklmd0FBJLsDAxSQji
+         6jVsO/pLyLoW+uluW+dcnlbOsajkxa/tteXqbZ6mzY58ikNjFTyDwFwbCKe0ASB12bDs
+         qMAc8MzySFZMkNxPVB15gETScxfAR0OhRsMW9rMmsqbk3A4xtCkJp7OggrnCXZxbXUBS
+         EycA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779815315; x=1780420115;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hqQXdsbWsKeHXeHKrmCU/WFpGzKvYZdLxIaZX6nvsjQ=;
+        b=ldDQztHnMsBkzwm3Pvi430A+sx1tSt5WaL3x2MxNm9T89J1BeTnY7nOiEaPO2cZJZd
+         HS8erE9+O+XThOC6IpDA/QdKBJgXMWJZ37pl+yDMy7MiftghasZfdDzPeNVe3T0p/auc
+         g7SP6fUJKkvRlWa6RsBCpz3NWfvspzqUaFZWRoYytS0RCaU7N8pMsRWmaCOFCSHTebd2
+         D+XzyapCliq9zMgVKBwirTM/pVXCkmtWSzpBH5PGoP4vtK8qROMiZp4/85EgoG4QX1Ik
+         kBttllGgkfPMHCu0NN7U1q7kml8OFAQp7Lkx2CN4RA3KcK1Aip2k+idyeKYSj4CSNrOa
+         dREA==
+X-Forwarded-Encrypted: i=1; AFNElJ+bCs5d0Vxdjh4C41xgcZp81eQizIPUOucj+WrOh925uV1HPCRo1oUqzjQY5G3EGTgdbpfUEI0BMBs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/cfuSbquzFyf4Lfx+rVo8AFdKEcvhlhkalce30zmj4Or1+kpn
+	RSEaxc9oCnsm1IUsCSDoUFVb0kjzerzdCb7oYYPjS1fHtLYckW0UoCz7
+X-Gm-Gg: Acq92OGcaa2blsLvMGCvg1APtPZ2Zl5LbLtXXG7W7zU5FTvZAr5X2fOoal7DC7RbETO
+	H8N2fX3sMvigsG9lBxQA+0OJ5B82rkiodcdII+YzEHYdVhvtMET7Q63F3s3MITfTIohsqYSd5FJ
+	eWqOs068Qn/MElatx37BNIS0w7haIZD5K0pwfTKg6YT+c4u5yYSHakk+Rl6k2c7sEiGgAympQrX
+	4EIglULrMMmCoo8Mdwrk+nNXclGeamz3egocAR7eep2qtyh9IqRu+UAUjMp/yHAs0k6sCS2Liqr
+	fsFcL9cYaRjei6MzrI4ky/KhowilrEHnsz66imszyEImWWTfsWOclW4yDYxFajog0WLRs95/miz
+	LcfGsri/nVhafo8fb/hi7AntSBHpwHX6b4LQGaQi3NeGwTjx8MMhMCWo/gbLVkPg2OrWpuQncsB
+	8Iqgd1gaHickwGCB6+3JO00gbLXja/3+WLm7hRRqk5dkCB+lcfWp7DEL4TJ8g2aeqY3LozRYPEV
+	BTyxNCAXVr3W8f0EzjnoAosUyZmpVQm7c5xwNFKtwNIHN8QSw==
+X-Received: by 2002:a05:622a:2445:b0:516:dfc9:8449 with SMTP id d75a77b69052e-516dfc99abamr233404601cf.59.1779815314663;
+        Tue, 26 May 2026 10:08:34 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517069f2d2fsm26751821cf.3.2026.05.26.10.08.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 May 2026 10:08:33 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 26 May 2026 18:08:26 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v5 12/13] Documentation: ABI: testing: add docs for
+ ad9910 sysfs entries
+Message-ID: <tdhw4z6gsuwdgg4olw5tipgqip7rtdzrl72divxvnwkc2mmpfo@7r4aceyvjvqm>
+References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
+ <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
+ <vqqvn2cgs3fbp5mq6xfac7iyosaqfrvgngqur4x355a3at7slo@ylrtd6fhi33a>
+ <20260522192040.4e6b11eb@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260522192040.4e6b11eb@jic23-huawei>
 
-On Mon, 25 May 2026 11:02:47 +0200
-"Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
+On 26/05/22 07:20PM, Jonathan Cameron wrote:
+> On Wed, 20 May 2026 19:47:25 +0100
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> 
+> > On 26/05/17 07:37PM, Rodrigo Alencar via B4 Relay wrote:
+> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > 
+> > > Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
+> > > control Parallel Port, Digital Ramp Generator and OSK parameters.  
+> > 
+> > ...
 
-> Forwarded message from Javier Carrasco on Mon May 25, 2026 at 10:59 AM:
-> On Mon May 25, 2026 at 2:13 AM CEST, sashiko-bot wrote:
-> > Thank you for your contribution! Sashiko AI review found 8 potential issue(s) to consider:
-> >
-> > New issues:
-> > - [High] Cache pollution of AF_TRIG causes unintended conversions and unnecessary I2C reads.
-> > - [High] The trigger reference acquired via iio_trigger_get() is leaked on probe error paths and driver unbind.
-> > - [High] PM runtime usage counter leaks if the driver unbinds while an event is enabled.
-> > - [High] Sysfs read/write functions and trigger operations access hardware without acquiring a PM runtime reference.
-> > - [High] Out-of-bounds array write in veml6031x00_trig_handler when the timestamp channel is enabled.
-> > - [Medium] Dead event sysfs attributes are exposed when no IRQ is present.
-> >
-> > Pre-existing issues:
-> > - [High] Unbalanced double-put of the runtime PM usage counter on driver unbind.
-> > - [High] The shutdown action accesses I2C registers after PM runtime has been disabled.
-> > --
-> >
-> > commit cbdd69d1454af4788d5d18a23d3fb6854c9981e9
-> > Author: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-> >
-> > iio: light: veml6031x00: add support for events and trigger
-> >
-> > The device provides a shared interrupt line for to notify events and
-> > data ready, which can be used as a trigger. The interrupt line is not a
-> > requirement for the device to work. Implement variants for the cases
-> > whether the interrupt line is provided or not.
-> >  
-> >> diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml6031x00.c
-> >> index 9968d4414dc96..c57aaa29abf30 100644
-> >> --- a/drivers/iio/light/veml6031x00.c
-> >> +++ b/drivers/iio/light/veml6031x00.c  
-> >
-> > [ ... ]
-> >  
-> >> @@ -136,6 +189,8 @@ static const struct iio_chan_spec veml6031x00_channels[] = {
-> >>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-> >>  		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-> >>  		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-> >> +		.event_spec = veml6031x00_event_spec,
-> >> +		.num_event_specs = ARRAY_SIZE(veml6031x00_event_spec),  
-> >
-> > [Severity: Medium]
-> > Will this expose dead event sysfs attributes when no IRQ is present?
-> >
-> > When i2c->irq is 0, the driver registers veml6031x00_info_no_irq which lacks
-> > event callbacks. However, this channel array unconditionally defines
-> > event_spec and num_event_specs. The IIO core will parse these and expose
-> > event sysfs files. Reading or writing these files will fail with -EINVAL
-> > because the callbacks are NULL, which violates the sysfs API contract.
-> >
-> > [ ... ]
-> >  
+> > This will become just offset with altcurrent channels. I noticed we have a IIO_PHASE
+> > iio_chan_type, could we have a IIO_FREQUENCY too? Parallel port needs actual raw
+> > frequency values in that case to be written to the dma buffer.
+> > 
+> Sure to IIO_FREQUENCY.  I thought we already did but seems not!
+> The Phase one is a bit special given it's use in resolvers and distance sensors
+> but perhaps it is the right solution here.
 > 
-> @Jonathan: is this how it really works? How can I then dynamically
-> define even_spec to account for it?
+> 
+> > Then we may have buffer capable channels for the parallel port:
+> > 
+> > out_altcurrent120
+> > 	offset
+> 
+> So that's the amplitude envelope control.
+> 
+> > out_phase120
+> > 	offset
+> 
+> So this is the phase adjustment being controlled. 
+> 
+> > out_frequency120
+> 
+> And this is the frequency being controlled.
+> 
+> > 	scale
+> > 	offset
+> 
+> > 
+> > Problem is that the math for the actual frequency output is:
+> > 
+> > 	f_OUT = f_FTW + (f_RAW * FM)
+> > 
+> > where f_FTW is a base frequency (already scaled), FM is a
+> > modulation gain and f_RAW is the contribution from the parallel
+> > port, which is the already scaled:
+> > 
+> > 	f_RAW = RAW * f_SYSCLK / 2^32
+> > 	f_FTW = FTW * f_SYSCLK / 2^32
+> > 
+> > so the above becomes:
+> > 
+> > 	f_OUT = (FTW * f_SYSCLK / 2^32) + (RAW * f_SYSCLK / 2^32) * FM
+> > 	f_OUT = (FTW/FM + RAW) * f_SYSCLK * FM / 2^32
+> > 
+> > if I make:
+> > 
+> > 	SCALE = f_SYSCLK * FM / 2^32
+> > 	OFFSET = FTW/FM
+> > 	f_OUT = (OFFSET + RAW) * SCALE
+> > 
+> > That would work for a IIO_FREQUENCY channel type, problem is that both
+> > scale and offset would depend on the modulation gain (FM)... I suppose
+> > scale should be setting that and offset assumes it is constant to act
+> > only on FTW.
+> 
+> I'm not that concerned about the coupling - it's a bit of a useability 
+> issue I guess as not obvious which should be the fixed one.  Can we do
+> cache written values and try and compensate to get a pair that is nearest
+> to whatever we try to drive (in either order of setting them?)
 
-Don't do it dynamically. Define two lots of static iio_chan_spec arrays
-and pick between them similarly to how you've picked the iio_info structure.
+Yeah.. or just document a proper sequence to write things, and indicate that
+writing has side effects and one may read the other attributes to assert
+the desired configuration. See that f_SYSCLK is also another configurable
+variable. Maybe it is not really practical to cache all user choices and derive
+all the other configurations as one changes.
 
-Trying to do more clever dynamic creation or not of event controls in the IIO
-core is something we could look at but it feels like just one of a lot of
-cases and this particular one is best handled by the driver not providing
-stuff that isn't used if there are no irqs.
+> > 
+> > I suppose we can keep altcurrent for other modes as phase and frequency
+> > can be attributes (knobs) for them. However, in parallel mode we are effectively
+> > pushing frequency, phase or amplitude values into the buffer.
+> 
+> Given that's the thing we are controlling. My Friday evening tired brain agrees
+> that it makes sense to use channel types rather than adjustments on something else.
+> 
+> I'll think some more on this.  We've never had continuous (well digital
+> so near continous) control of either phase or frequency before - it's just
+> be symbol stuff with a couple of points to set.
+> 
+> 
+> > 
+> > The polar destination is a corner case, but can be solved when both
+> > phase and altcurrent channels are enabled. When that happens we can
+> > change the scan_type with has_ext_scan_type = 1, so the 16-bit data
+> > bus is split between the two.
+> > 
+> For now I'll just nod at that!
 
-> 
+I took a look at get_current_scan_type() and I faced the issue:
 
-> 
-> >> +static int veml6031x00_write_event_config(struct iio_dev *iio,
-> >> +					  const struct iio_chan_spec *chan,
-> >> +					  enum iio_event_type type,
-> >> +					  enum iio_event_direction dir,
-> >> +					  bool state)
-> >> +{
-> >> +	struct veml6031x00_data *data = iio_priv(iio);
-> >> +	int ret;
-> >> +
-> >> +	guard(mutex)(&data->lock);
-> >> +
-> >> +	/* avoid multiple increments/decrements from one source */
-> >> +	if (state == data->ev_en)
-> >> +		return 0;
-> >> +
-> >> +	if (state) {
-> >> +		ret = pm_runtime_resume_and_get(data->dev);  
-> >
-> > [Severity: High]
-> > Could this leak the PM runtime usage counter if the driver unbinds?
-> >
-> > Enabling an event increments the PM runtime usage counter here. If the
-> > driver is unbound via sysfs while an event is enabled, the IIO core does
-> > not automatically disable the event. Since there is no unbind cleanup
-> > mechanism to release the pending PM reference when data->ev_en is true,
-> > does this keep the device powered on indefinitely?
-> >
-> > [ ... ]
-> >  
-> 
-> @Jonathan: Does the IIO core let the event enabled? What is the
-> approach to clear it then?
+	user checks the scan format type before enabling the buffers
 
-It would be tricky to do it in the core because it doesn't actually know
-what events are enabled - they can have complex interactions which are
-driver specific - i.e. enabling one event can turn another one off under
-the hood.  So it's a driver problem to solve. It can't immediately think of
-a good example for you to copy.  Basically will boil down to keeping track
-of whether an event is enabled, and decrementing runtime pm counters
-appropriately in the remove path.
+In this case I have a scan type that changes with the scan mask:
 
-> 
-> >> +/* AF_TRIG is reset by hardware, but the rest of the fields are persistent */
-> >> +static int veml6031x00_set_af_trig(struct veml6031x00_data *data, bool state)
-> >> +{
-> >> +	regcache_drop_region(data->regmap, VEML6031X00_REG_CONF0,
-> >> +			     VEML6031X00_REG_CONF0);
-> >> +
-> >> +	return regmap_update_bits(data->regmap, VEML6031X00_REG_CONF0,
-> >> +				  VEML6031X00_CONF0_AF_TRIG,
-> >> +				  FIELD_PREP(VEML6031X00_CONF0_AF_TRIG, state));
-> >> +}  
-> >
-> > [Severity: High]
-> > Can this cause unintentional active force conversions due to cache pollution?
-> >
-> > This sets the self-clearing AF_TRIG bit using regmap_update_bits().
-> > Because CONF0 is not marked as a volatile register, regmap_update_bits()
-> > writes AF_TRIG=1 and caches it. Any subsequent read-modify-write on CONF0
-> > (e.g., toggling the interrupt or changing integration time) will read the
-> > cached AF_TRIG=1 and write it back to hardware, unintentionally triggering
-> > an active force conversion and causing hardware state corruption.
-> >
-> > [ ... ]
-> >  
-> 
-> I will define the CONF0 register as volatile to account for this.
+	altcurrent and phase both selected for buffer transmission would
+	have the scan type changed so that the 16-bit data bus is split
+	between 2 8-bit chunks.
 
-Nasty side effect for a configuration register!
+That may also get confusing values for offset and scale. Then I decided
+to have 5 parallel port channels with fixed scan_type:
 
-> 
-> >>  static irqreturn_t veml6031x00_trig_handler(int irq, void *p)
-> >>  {
-> >>  	struct iio_poll_func *pf = p;
-> >>  	struct iio_dev *iio = pf->indio_dev;
-> >>  	struct veml6031x00_data *data = iio_priv(iio);
-> >>  	int ch, ret, i = 0;
-> >>  	struct {
-> >>  		__le16 chans[2];
-> >>  		aligned_s64 timestamp;
-> >>  	} scan = { };
-> >>
-> >>  	if (*iio->active_scan_mask == (BIT(VEML6031X00_SCAN_ALS) |
-> >>  				       BIT(VEML6031X00_SCAN_IR))) {
-> >>  		ret = regmap_bulk_read(data->regmap,
-> >>  				       VEML6031X00_REG_ALS_L,
-> >>  				       &scan.chans, sizeof(scan.chans));
-> >>  		if (ret)
-> >>  			goto done;
-> >>  	} else {
-> >>  		iio_for_each_active_channel(iio, ch) {
-> >>  			ret = regmap_bulk_read(data->regmap,
-> >>  					       iio->channels[ch].address,
-> >>  					       &scan.chans[i++],  
-> >
-> > [Severity: High]
-> > Does this loop cause an out-of-bounds array write if the timestamp
-> > channel is enabled?
-> >
-> > The iio_for_each_active_channel() loop does not exclude the soft timestamp
-> > channel. If the user enables ALS, IR, and TIMESTAMP channels, the loop
-> > iterates 3 times. However, the scan.chans array is declared as
-> > __le16 chans[2]. Processing the timestamp channel increments the index i
-> > to 2 and writes to scan.chans[2], causing an out-of-bounds memory write.
-> >
-> > Furthermore, because the timestamp channel's address is 0, this incorrectly
-> > attempts a bogus I2C read from VEML6031X00_REG_CONF0.
-> >
-> > [ ... ]
-> >  
-> 
-> Not sure if this is a real issue, and the address for channel 0 is not
-> CONF0 because it is defined in iio_chan_spec
-> veml6031x00_channels.address.
+	0. out_altcurrent120 - amplitude destination (16-bits)
+	1. out_phase120 - phase destination (16-bits)
+	2. out_frequency120 - frequency destination (16-bits)
+	3. out_altcurrent121 - polar destination (8-bits)
+	4. out_phase121 - polar destination (8-bits)
 
-It's not a real issue.  The macro 'looks' like it iterates over the timestamp
-channel - but in reality that bit is never set in the bitmask.  David threw
-together a change to that macro to fix this up but I don't know if we've yet
-audited for any 'odd' handling that relied on the property.
+with the possible scan masks:
 
-Anyhow, this is probably the most common false positive we get from Sashiko
-and in reality it's because I took a short cut long ago in that macro design.
+	0x01: amplitude
+	0x02: phase
+	0x04: frequency
+	0x18: polar
 
-> 
-> >> +static int veml6031x00_setup_irq(struct i2c_client *i2c, struct iio_dev *iio)
-> >> +{
-> >> +	struct veml6031x00_data *data = iio_priv(iio);
-> >> +	struct device *dev = data->dev;
-> >> +	int ret;
-> >> +
-> >> +	data->trig = devm_iio_trigger_alloc(dev, "%s-drdy%d", iio->name,
-> >> +					    iio_device_id(iio));
-> >> +	if (!data->trig)
-> >> +		return -ENOMEM;
-> >> +
-> >> +	data->trig->ops = &veml6031x00_trigger_ops;
-> >> +	iio_trigger_set_drvdata(data->trig, iio);
-> >> +
-> >> +	ret = devm_iio_trigger_register(dev, data->trig);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	iio->trig = iio_trigger_get(data->trig);  
-> >
-> > [Severity: High]
-> > Is the trigger reference acquired here leaked on driver unbind?
-> >
-> > Calling iio_trigger_get() increments the trigger device's refcount and the
-> > driver module's refcount. If the driver fails probe afterwards or is unbound
-> > later, iio_trigger_put() is never called because there is no devres action
-> > registered for it and no custom remove callback. Does this permanently leak
-> > the trigger device reference and prevent the module from being unloaded?
-> >
-> > [ ... ]
-> >  
-> 
-> Same here. I believe that only industrialio-trigger.c makes use of
-> iio_trigger_put().
-That's a known bug that we need to fix across all drivers.  It's a little fiddly
-to actually solve. I've been saying I'll get to it but been too busy for a while.
-Until sashiko complained all we had was a thread from a long time back saying
-'we should fix this' :)
+-- 
+Kind regards,
 
-> 
-> >> @@ -618,6 +1039,10 @@ static int veml6031x00_probe(struct i2c_client *i2c)  
-> >
-> > [ ... ]
-> >  
-> >>  	ret = devm_add_action_or_reset(dev, veml6031x00_als_shutdown_action, data);  
-> >
-> > [Severity: High]
-> > This is a pre-existing issue, but does this shutdown action access I2C
-> > registers after PM runtime has been disabled?
-> >
-> > This action is registered via devm_add_action_or_reset() before PM runtime
-> > is enabled. On teardown, devm actions run in reverse, meaning PM runtime is
-> > disabled before the shutdown action runs. The shutdown action then attempts
-> > I2C writes while PM runtime is disabled. If the device was suspended, it
-> > cannot be resumed, potentially causing I2C transfer failures.
-> >
-> > [ ... ]
-> >  
-> >>  	pm_runtime_put_autosuspend(dev);  
-> >
-> > [Severity: High]
-> > This is a pre-existing issue, but is there an unbalanced double-put of the
-> > runtime PM usage counter on driver unbind?
-> >
-> > The probe function registers a cleanup action to drop the PM reference via
-> > devm_pm_runtime_get_noresume(dev). However, this explicit put at the end
-> > of probe means the devm action will drop the reference a second time on
-> > unbind, causing a PM usage counter underflow that breaks the PM runtime
-> > state machine.  
-> 
-> As I said for [2/4], there won't be any counter underflow that way.
-> 
-> Best,
-> Javier
-> 
-> 
-> 
-
+Rodrigo Alencar
