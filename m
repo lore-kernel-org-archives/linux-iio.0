@@ -1,380 +1,555 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B55133FA5C6
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 13:11:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37203D8101;
+	Tue, 26 May 2026 13:12:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779801114; cv=none; b=ZA0rh4fAaAVPf+GakhfUs+68NKCObodNANp2mFwSzFJjwuJXSN5rPu3SKsxlJwEnxW6/QEITpjd7OvscmFN2MhziNRbidRjiokjluz7CMNXQfmD5HHodnUI/p5lkY4sZ2NxAa/o6iktlR2hog3s65ckLSvhjdXWi41Egt7gU4No=
+	t=1779801130; cv=none; b=hcre/79vToN9sfECPdjNu7K/osBD+sR2Ojx49VDmOOwNIR1IAetqdy78Xyb6rzzs53cqJ4bXit3H3dVftC3saDKNiyUngXyNGYL+40ACg0saN+Ed7iuB7zfiaWFqv7BgCNVNBDxpHB0DftQZ+LvHLivpkIsNnRelJMhx4PJoxag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779801114; c=relaxed/simple;
-	bh=z+TQ3T9Oy+ZZa2gZfsK8H+btrtS2pPvwQYb90T0bJv8=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z9j9zvA1NGg9BS6pXMkh4tkuZ6wjXtIM7BW0jEngH/58KOH5W/C9GRmTRe67Dr0eCbuUXQXmORUIRN4MxokAhWX7fdmCWVAp+Q+33g827Vw06ywfTShheZ2IVcAZkmPAcdYYgdceMaGKI9Qxqt0zdxPKzsxOpUoORhMn/eMz95A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wds0qgyf; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779801130; c=relaxed/simple;
+	bh=1WjkAMHTk/kPPcR0gQgpvoiPkTc5gaFqZ/Y8UImprtw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Enhe5z5AXP2JqGB+ta5P7GGh81DXnrkn8179ccBanGqYLfa8Xo+GVfnGDsMMiClEgsg7i1EwA3iK6ZWkrU2NgIr8ejKOJhxV0w7PFGCUP4Vdz/pQZhsxePsnQkvCR5W9VGmrvo1BGHBxoCdbh+S188/KfKG8JkPRILUNOxR+Da4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YbTrd9jX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wds0qgyf"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49050ff7cbdso29713015e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 06:11:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779801111; x=1780405911; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=WqOvSJUHAXMpiDAGk3rY9rJLyQCFTcUSCPYqn0vZPF0=;
-        b=Wds0qgyfFbrkOkWjqMSXAzGM30h8xhtaRKYhjuTsogLxIWzzSqIhfr4LC2G/x8CZs/
-         qmj4IkXmw2cIjIITxFpKvvlYn1L6MbUDecrl8n/aOSrd0xMwgBfamKZpXVT7D7HjWttV
-         weFESA6rz5C2WkmuizEhr80M9gEit3HU42YfghiQK6AgbQlY8ezI05YYHhYlafzijLTd
-         Doz1aG+pf4kz4x5EWUKJdFcQ+61d2FzCa/pUMO54FmqSsMSK17YmJbCwZSl7E/RlDdyx
-         ef5K6AMQtUWBSxdQIKAa5IiPNAA/ojgVbRlyMlbBBWF9hOrpGKVXm2mOYXQV3QQL+MST
-         Zgkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779801111; x=1780405911;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WqOvSJUHAXMpiDAGk3rY9rJLyQCFTcUSCPYqn0vZPF0=;
-        b=IojjLztdT5oQlgfZQy+PUJkY7k/CZ+6Iq6ap6qwLHBQzcQwFe0DPfy/NCgbaibWGJY
-         goRM69MUsMalWV05OWc5EfcHffh1GvPCcr1o+WupagcPdDeBugXBSv2xiHO9vI5sgjE/
-         LAdp9bCBRHnRRFifPNOCnCpFNvvP6XWNgWpZq6rJh29HsK2HAJy6QcjBfpV+UaTiBskF
-         jMltQALJZdQs4H8e/5xSDCEQHGp0XZtapMS18RHHOle5kgxzltub99LqNMUpNCVBOgJI
-         8Y3dYupF9MoRj031N8BzRHIwcZjpEGqKiHGz5Keow0SDAyHb07pehTWDPGWkgGHLfugw
-         0F4A==
-X-Gm-Message-State: AOJu0Yzvku1XN02mngDZW/yUEVbfBbHafB6E8y8vhQGekTtC6zSjrr6v
-	slyBdGkBxyq5TGjP5pn2ckxMgbAkRCudSpBubzDpZlDMgEpKPWI5KDpx
-X-Gm-Gg: Acq92OFPSbaX89vDPs6Rzz4vDXrT00vTE/KHSKI+BP1H+CJV+VfciA0tJh3O70XZ9bK
-	T2tgLXvWZs5Y9lzfBACD7nqwzepqUfplCXlkp/70bbUJa3Z2UzL2uXwSKOiMVe18/aDjDjaKkkv
-	k7rlW0SbmrpX+ifLOPiesK8DU/gTGt5ajQbPRjTKRjx3cb2xvrw1QkulMl+brqU6rKQFlCIR2D/
-	p4k0YCRZUgCYRhMqySEMPL1dM78r5t16AeeVWU7UEsffNRuaB0YbaSuzLwy+7lH5NUIz2PbpjNR
-	IXmgEbFnYzHTpTs5gt6+TNqTAKYzNreSYVW1iidy2cb/KGK+XfPKyaI5/pFA6MhEzX4d4UTg7gw
-	1s66JPU3ZAVg1jaXYnr3pHLf6ygzqE2+ajYjFSL4NTbBTQK9mmPsQxyHgCyqaAisu08fzNulFCk
-	WaeV0L2nvetESXr5khExQhzlqtTRtOSzxAQ7P/qlOozc7/18vvEvyRoBz9kB55r1NfSpje03Bb6
-	yIpl0gS9Qdez4ZPjVe3/xNOPRYkwG6ENvmJ5HRPmbegkO0GdLpAqd+nt4WO
-X-Received: by 2002:a05:600c:a011:b0:490:50ff:7943 with SMTP id 5b1f17b1804b1-49050ff7b15mr238902025e9.5.1779801110828;
-        Tue, 26 May 2026 06:11:50 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49042487609sm170628755e9.3.2026.05.26.06.11.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 06:11:50 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 26 May 2026 14:11:45 +0100
-To: Janani Sunil <janani.sunil@analog.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <25mh6grzh7zh3b4uytcqnusyv5zjuf6ia4if3ce3oqzqz56ehi@le72iqv7ye3d>
-References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
- <20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YbTrd9jX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DED3E1F00A3E;
+	Tue, 26 May 2026 13:12:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779801128;
+	bh=m2/GmaswsxJLuJWDomXfa3Z3hn4onRQKZ/a0pcxiUaE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=YbTrd9jXwdlY4jFO2DMJhOPjeNZ5KfIlLA7yR0+OLjXsr9C8kJjGKgSnGFpIrQ6z+
+	 KMu3kLg7v4X4SAeP6AT0HBD0ssbewn7Nia37iJWt5fnubU+sdICGErmuoq6x0FSrax
+	 4p1VyjAZMU3CpNaA+DlX7shqjsKt83gHu/Tg5y3eiB4cYL+pLPn0sG0K6oMDbtVOqM
+	 tbO7Sf0BRTWnE58jmorIE2IxLXhaprl7ScIVtM5bXpowcJIx958ZU8zZe1ifus7TDl
+	 UzPt6B4X20QRAuUuPzn4Y9CjYssBiBkpQy6thyQO4A95FGwgNZqLK7K3xaEPgahOnj
+	 FPhfujr8XY26A==
+Date: Tue, 26 May 2026 14:11:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Aldo Conte <aldocontelk@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v3 8/8] iio: tcs3472: implement wait time and sampling
+ frequency
+Message-ID: <20260526141159.267d9623@jic23-huawei>
+In-Reply-To: <20260522123420.45495-9-aldocontelk@gmail.com>
+References: <20260522123420.45495-1-aldocontelk@gmail.com>
+	<20260522123420.45495-9-aldocontelk@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/05/19 05:42PM, Janani Sunil wrote:
-> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> buffered voltage output digital-to-analog converter (DAC) with an
-> integrated precision reference.
+On Fri, 22 May 2026 14:34:19 +0200
+Aldo Conte <aldocontelk@gmail.com> wrote:
 
-...
+> The TCS3472 has a wait state controlled by the WEN bit in the ENABLE
+> register and the WAIT register, with an additional WLONG bit in CONFIG
+> that if set multiplies the wait step by 12. The driver previously
+> defined TCS3472_WTIME but never used it leaving the TODO comment on
+> the top of the source file.
+> 
+> Implement control of the wait time through IIO_CHAN_INFO_SAMP_FREQ:
+> 
+>   - Reading sampling_frequency returns the chip's current cycle time,
+>     computed as the sum of ATIME, the fixed RGBC initialization time
+>     and the wait time (which depends on WEN and WLONG).
+> 
+>   - Writing sampling_frequency programs WTIME so that the resulting
+>     cycle period approximates the requested frequency. If the
+>     requested frequency cannot be reached with any
+>     non-zero wait time, WEN is disabled and the chip runs
+>     back-to-back conversions at the maximum rate allowed by ATIME.
+>     If the requested period exceeds the maximum WTIME range, WLONG
+>     is enabled to extend the wait step from 2.4 ms to 28.8 ms.
+> 
+>   - The user's last requested frequency is stored in the driver's
+>     private data so that subsequent changes to integration_time
+>     recompute WTIME and preserve the requested sampling rate as
+>     closely as possible.
+> 
+> Add TCS3472_ENABLE_WEN, TCS3472_ENABLE_RUN and TCS3472_CONFIG_WLONG
+> bit definitions. TCS3472_ENABLE_RUN bundles the bits
+> (AEN | PON | WEN) that are simultaneously set when the chip is in
+> running state and cleared during powerdown, and is used by
+> tcs3472_probe(), tcs3472_powerdown().
+> 
+> In tcs3472_resume(), only PON and AEN are re-asserted while WEN is
+> preserved from data->enable.
+> 
+> Remove the "TODO: wait time" comment at the top of the file.
+Hi Aldo,
 
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad5529r-16   # 16-bit variant
-> +      - adi,ad5529r-12   # 12-bit variant
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 25000000
-> +    description:
-> +      Maximum SPI frequency. The device supports SPI Mode 0 and Mode 3.
-> +      Read operations are limited to 25MHz maximum.
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the RESET pin. Active low. When asserted low,
-> +      performs a power-on reset and initializes the device to its default state.
-> +
-> +  clear-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the CLEAR pin. Active low. When asserted low,
-> +      clears all DAC data registers without affecting configuration settings.
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +    description:
-> +      Interrupt connected to the ALARM pin. Active low interrupt output
-> +      for overtemperature conditions, SPI CRC errors, and function completion.
-> +
-> +  tg0-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the TG0 toggle pin. Pulsing this pin allows all
-> +      selected DACs to be updated synchronously for coordinated output changes.
-> +
-> +  tg1-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the TG1 toggle pin. Pulsing this pin allows all
-> +      selected DACs to be updated synchronously for coordinated output changes.
-> +
-> +  tg2-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the TG2 toggle pin. Pulsing this pin allows all
-> +      selected DACs to be updated synchronously for coordinated output changes.
-> +
-> +  tg3-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO connected to the TG3 toggle pin. Pulsing this pin allows all
-> +      selected DACs to be updated synchronously for coordinated output changes.
+Please look at Sashiko's comments on this particular patch
+(the others are about an issue that has nothing to do with your series)
 
-Those toggle pins might need to be connected to a pwm source, rather than using
-them as regular gpios (or maybe allow for both).
+https://sashiko.dev/#/patchset/20260522123420.45495-1-aldocontelk%40gmail.com
 
-> +
-> +  io-channels:
-> +    maxItems: 1
-> +    description:
-> +      ADC channel connected to the MUXOUT pin for monitoring output voltage,
-> +      load current sense, and die temperature.
-> +
-> +  io-channel-names:
-> +    const: muxout
-> +
-> +  vdd-supply:
-> +    description: Digital power supply (1.08V to 1.98V)
-> +
-> +  avdd-supply:
-> +    description: Analog power supply (4.75V to 5.25V)
-> +
-> +  hvdd-supply:
-> +    description:
-> +      High voltage positive supply (7V to 45V). Supply voltage should be chosen
-> +      based on configured output ranges (see datasheet Table 9).
-> +
-> +  hvss-supply:
-> +    description:
-> +      High voltage negative supply (-22.5V to 0V). Required only when using bipolar
-> +      output ranges (±5V, ±10V, ±15V, ±20V). Supply voltage should be
-> +      chosen based on configured output ranges (see datasheet Table 9).
-> +
-> +  vref-supply:
-> +    description:
-> +      External voltage reference supply (4.056V to 4.136V, typically 4.096V).
-> +      When specified, the device uses external reference mode and the VREF pin becomes an
-> +      input. The device uses the internal 4.096V precision reference otherwise.
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
+The suggestion is that you need to make the timeout in 
+tcs3472_req_data() longer given with these settings the capture may
+take a lot longer than previously.
 
-Probably others may comment on that, but...
+There is some other general good practice stuff in there. For example:
+> +			data->enable &= ~TCS3472_ENABLE_WEN;
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ENABLE,
+> +							data->enable);
 
-This parent node may support device addressing for multi-device support through
-those ID pins. I suppose that each device may have its own power supplies or
-other resources like the toggle pins or reset and enable.
+if you were to use a local variable to do the masking on enable
+	
+	enable = data->enable & ~TCS3472_ENABLE_WEN;
+	ret = i2c_smbus_write_byte_data(data->client,..., enable);
+	if (ret)
+		return ret;
 
-That way I suppose that an example would look like...
+	data->enable = enable;
 
+You'd ensure that 'to best effort' the cached value is not updated
+if the write fails.  The approx (possibly correct) arguement is that
+any failure in i2c_smbus_write_byte_data() is more likely to have
+left the original state alone than successfully written the new one.
+Or more generally the principle that in ideal world any call that fails
+has no side effects.
+
+Anyhow, take a look at all the feedback.  If you disagree with any of
+it feel free to add a note to the change log of the next version.
+
+
+Ah. I've just noticed that as part of this you did make the change
+I suggested in patch 3. Oops - I should have checked.  It is fine
+in here.
+
+I didn't crop so that you'd have full context visible. A few specific
+cases and comments inline.
+
+Note I've picked up patches 1-7 so it's just this one that needs
+revisions for v4.
+
+thanks,
+
+Jonathan
+
+
+> 
+> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+> ---
+> v3:
+> - Drop Suggested-by: Andy (inappropriate tag).
+> - TCS3472_ENABLE_RUN: new style.
+> - cycle_us: use div64_u64().
+> - cycle_us: cast val to u64 for 32-bit safety.
+> - wait_us: keep s64; added comment explaining the range bounds.
+> - Use 'if (ret)' instead of 'if (ret < 0)' after i2c writes.
+> - New helper tcs3472_cycle_to_freq() deduplicates val/val2 logic.
+> - !! -> ? 1 : 0 in probe.
+> - Fix tcs3472_resume(): preserve WEN from data->enable instead of
+>   forcing TCS3472_ENABLE_RUN.
+> 
+>  drivers/iio/light/tcs3472.c | 245 +++++++++++++++++++++++++++++++++---
+>  1 file changed, 227 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+> index 1f597ca93697..81549d7eba35 100644
+> --- a/drivers/iio/light/tcs3472.c
+> +++ b/drivers/iio/light/tcs3472.c
+> @@ -9,8 +9,6 @@
+>   * TCS34727)
+>   *
+>   * Datasheet: http://ams.com/eng/content/download/319364/1117183/file/TCS3472_Datasheet_EN_v2.pdf
+> - *
+> - * TODO: wait time
+>   */
+>  
+>  #include <linux/cleanup.h>
+> @@ -53,19 +51,27 @@
+>  #define TCS3472_STATUS_AINT BIT(4)
+>  #define TCS3472_STATUS_AVALID BIT(0)
+>  #define TCS3472_ENABLE_AIEN BIT(4)
+> +#define TCS3472_ENABLE_WEN BIT(3)
+>  #define TCS3472_ENABLE_AEN BIT(1)
+>  #define TCS3472_ENABLE_PON BIT(0)
+> +#define TCS3472_ENABLE_RUN						\
+> +	(TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON | TCS3472_ENABLE_WEN)
+>  #define TCS3472_CONTROL_AGAIN_MASK (BIT(0) | BIT(1))
+> +#define TCS3472_CONFIG_WLONG BIT(1)
+>  
+>  struct tcs3472_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+> +	int target_freq_hz;
+> +	int target_freq_uhz;
+>  	u16 low_thresh;
+>  	u16 high_thresh;
+>  	u8 enable;
+>  	u8 control;
+>  	u8 atime;
+>  	u8 apers;
+> +	u8 wtime;
+> +	bool wlong;
+>  };
+>  
+>  static const struct iio_event_spec tcs3472_events[] = {
+> @@ -91,6 +97,7 @@ static const struct iio_event_spec tcs3472_events[] = {
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBSCALE) | \
+>  		BIT(IIO_CHAN_INFO_INT_TIME), \
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>  	.channel2 = IIO_MOD_LIGHT_##_color, \
+>  	.address = _addr, \
+>  	.scan_index = _si, \
+> @@ -114,6 +121,47 @@ static const struct iio_chan_spec tcs3472_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> +/*
+> + * The chip's cycle time is the sum of three components:
+> + *   - ATIME: the programmable RGBC integration time.
+> + *   - The fixed RGBC initialization time (2400 us).
+> + *   - WTIME: the wait time, used only if WEN is set. If WLONG is active,
+> + *     the wait step is multiplied by 12 (2400 us -> 28800 us).
+> + */
+> +static unsigned int tcs3472_cycle_time_us(struct tcs3472_data *data)
+> +{
+> +	unsigned int atime_us = (256 - data->atime) * 2400;
+> +	unsigned int init_us = 2400;
+> +	unsigned int wtime_us;
 > +
-> +patternProperties:
-> +  "^channel@([0-9]|1[0-5])$":
-> +    type: object
-> +    description: Child nodes for individual channel configuration
+> +	if (!(data->enable & TCS3472_ENABLE_WEN))
+> +		wtime_us = 0;
+> +	else if (data->wlong)
+> +		wtime_us = (256 - data->wtime) * 28800;
+> +	else
+> +		wtime_us = (256 - data->wtime) * 2400;
 > +
-> +    properties:
-> +      reg:
-> +        description: Channel number.
-> +        minimum: 0
-> +        maximum: 15
+> +	return atime_us + init_us + wtime_us;
+> +}
 > +
-> +      adi,output-range-microvolt:
-> +        description: |
-> +          Output voltage range for this channel as [min, max] in microvolts.
-> +          If not specified, defaults to 0V to 5V range.
-> +        oneOf:
-> +          - items:
-> +              - const: 0
-> +              - enum: [5000000, 10000000, 20000000, 40000000]
-> +          - items:
-> +              - const: -5000000
-> +              - const: 5000000
-> +          - items:
-> +              - const: -10000000
-> +              - const: 10000000
-> +          - items:
-> +              - const: -15000000
-> +              - const: 15000000
-> +          - items:
-> +              - const: -20000000
-> +              - const: 20000000
+> +/*
+> + * Convert a cycle time in microseconds to a frequency in Hz and microhertz.
+> + *
+> + * Given cycle_us = T (the cycle period in microseconds), the corresponding
+> + * frequency is:
+> + *   f = 1e6 / T  [Hz]
+> + *
+> + * The result is split into the IIO_VAL_INT_PLUS_MICRO format:
+> + *   val  = floor(1e6 / T)                [Hz]
+> + *   val2 = (1e6 mod T) * 1e6 / T         [microhertz]
+> + */
+> +static void tcs3472_cycle_to_freq(unsigned int cycle_us, int *val, int *val2)
+> +{
+> +	*val = USEC_PER_SEC / cycle_us;
+> +	*val2 = div_u64((u64)(USEC_PER_SEC % cycle_us) * USEC_PER_SEC,
+> +			cycle_us);
+> +}
 > +
-> +    required:
-> +      - reg
+>  static int tcs3472_req_data(struct tcs3472_data *data)
+>  {
+>  	int tries = 50;
+> @@ -166,16 +214,131 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
+>  		*val = 0;
+>  		*val2 = (256 - data->atime) * 2400;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> +		unsigned int cycle_us = tcs3472_cycle_time_us(data);
 > +
-> +    additionalProperties: false
+> +		tcs3472_cycle_to_freq(cycle_us, val, val2);
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+>  	default:
+>  		return -EINVAL;
+>  	}
+>  }
+>  
+> +static int tcs3472_set_sampling_freq(struct tcs3472_data *data,
+> +				     int val, int val2)
+> +{
+> +	unsigned int atime_us;
+> +	unsigned int init_us = 2400;
+> +	u64 cycle_us;
+> +	s64 wait_us;
+> +	int wtime;
+> +	bool wlong = false;
+> +	u8 config;
+> +	int ret;
 > +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +  - avdd-supply
-> +  - hvdd-supply
+> +	if (val < 0 || val2 < 0 || (val == 0 && val2 == 0))
+> +		return -EINVAL;
 > +
-> +dependencies:
-> +  spi-cpha: [ spi-cpol ]
-> +  spi-cpol: [ spi-cpha ]
+> +	guard(mutex)(&data->lock);
 > +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +	atime_us = (256 - data->atime) * 2400;
+> +	cycle_us = div64_u64(PSEC_PER_SEC,
+> +			     (u64)val * USEC_PER_SEC + val2);
 > +
-> +unevaluatedProperties: false
+> +	/*
+> +	 * wait_us can be negative when the requested frequency is too high
+> +	 * to be reached, or very large when the requested frequency is
+> +	 * close to zero. Use s64 to cover the full range:
+> +	 *
+> +	 *   cycle_us = PSEC_PER_SEC / (val * USEC_PER_SEC + val2)
+> +	 *
+> +	 * The divisor of the formula above reaches its maximum when
+> +	 * val = val2 = INT_MAX:
+> +	 *  INT_MAX * USEC_PER_SEC + INT_MAX = ~2.15e18
+> +	 * so cycle_us_min = floor(1e12 / 2.15e18) = 0.
+> +	 *
+> +	 * The divisor reaches its minimum (1) when val = 0 and val2 = 1,
+> +	 * so cycle_us_max = 1e12 / 1 = 1e12.
+> +	 *
+> +	 * Therefore:
+> +	 *   wait_us_min = 0 - 2400 - 612000 = -616800
+> +	 *   wait_us_max = 1e12 - 2400 - 2400 = 999999995200
+> +	 *
+> +	 * Both fit comfortably in s64.
+> +	 */
+> +	wait_us = (s64)cycle_us - init_us - atime_us;
 > +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
+> +	if (wait_us < 2400) {
+> +		if (data->enable & TCS3472_ENABLE_WEN) {
+> +			data->enable &= ~TCS3472_ENABLE_WEN;
+As below.
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ENABLE,
+> +							data->enable);
+> +			if (ret)
+> +				return ret;
+> +		}
 > +
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
+> +		data->target_freq_hz = val;
+> +		data->target_freq_uhz = val2;
+> +		return 0;
+> +	}
 > +
-> +        dac@0 {
-> +            compatible = "adi,ad5529r-16";
-> +            reg = <0>;
-> +            spi-max-frequency = <25000000>;
+> +	/*
+> +	 * Wait state is needed: make sure WEN is active before programming
+> +	 * WTIME (and possibly WLONG).
+> +	 */
+> +	if (!(data->enable & TCS3472_ENABLE_WEN)) {
+> +		data->enable |= TCS3472_ENABLE_WEN;
+
+Similar to below. Can we only update data->enable if the write succeeds.
+
+> +		ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+> +						data->enable);
+> +		if (ret)
+> +			return ret;
+> +	}
 > +
-> +            vdd-supply = <&vdd_regulator>;
-> +            avdd-supply = <&avdd_regulator>;
-> +            hvdd-supply = <&hvdd_regulator>;
-> +            hvss-supply = <&hvss_regulator>;
+> +	wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 2400);
+> +	if (wtime < 0) {
+> +		wlong = true;
+> +		wtime = 256 - DIV_ROUND_CLOSEST_ULL(wait_us, 28800);
+> +	}
+> +	wtime = clamp(wtime, 0, 255);
 > +
-> +            reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
+> +	if (wlong != data->wlong) {
+> +		ret = i2c_smbus_read_byte_data(data->client, TCS3472_CONFIG);
+> +		if (ret < 0)
+> +			return ret;
 > +
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
+> +		config = ret;
+> +		if (wlong)
+> +			config |= TCS3472_CONFIG_WLONG;
+> +		else
+> +			config &= ~TCS3472_CONFIG_WLONG;
 > +
-> +            channel@0 {
-> +                reg = <0>;
-> +                adi,output-range-microvolt = <0 5000000>;
-> +            };
+> +		ret = i2c_smbus_write_byte_data(data->client, TCS3472_CONFIG,
+> +						config);
+> +		if (ret)
+> +			return ret;
 > +
-> +            channel@1 {
-> +                reg = <1>;
-> +                adi,output-range-microvolt = <(-10000000) 10000000>;
-> +            };
+> +		data->wlong = wlong;
+> +	}
 > +
-> +            channel@2 {
-> +                reg = <2>;
-> +                adi,output-range-microvolt = <0 40000000>;
-> +            };
-> +        };
-> +    };
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_WTIME, wtime);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->wtime = wtime;
+> +	data->target_freq_hz = val;
+> +	data->target_freq_uhz = val2;
+> +
+> +	return 0;
+> +}
+> +
+>  static int tcs3472_write_raw(struct iio_dev *indio_dev,
+>  			       struct iio_chan_spec const *chan,
+>  			       int val, int val2, long mask)
+>  {
+>  	struct tcs3472_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  	int i;
+>  
+>  	switch (mask) {
+> @@ -196,15 +359,29 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
+>  		if (val != 0)
+>  			return -EINVAL;
+>  		for (i = 0; i < 256; i++) {
+> -			if (val2 == (256 - i) * 2400) {
+> -				data->atime = i;
+> -				return i2c_smbus_write_byte_data(
+> -					data->client, TCS3472_ATIME,
+> -					data->atime);
+> -			}
+> -
+> +			if (val2 != (256 - i) * 2400)
+> +				continue;
+> +
+> +			data->atime = i;
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ATIME,
+> +							data->atime);
+> +			if (ret)
+> +				return ret;
+> +
+> +			/*
+> +			 * ATIME just changed, so the cycle time changed too.
+> +			 * Re-run the sampling frequency logic to recompute
+> +			 * WTIME and preserve the user's last requested
+> +			 * frequency.
+> +			 */
+> +			return tcs3472_set_sampling_freq(data,
+> +							 data->target_freq_hz,
+> +							 data->target_freq_uhz);
+>  		}
+>  		return -EINVAL;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return tcs3472_set_sampling_freq(data, val, val2);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -434,16 +611,15 @@ static const struct iio_info tcs3472_info = {
+>  static int tcs3472_powerdown(struct tcs3472_data *data)
+>  {
+>  	int ret;
+> -	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+>  
+>  	guard(mutex)(&data->lock);
+>  
+>  	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+> -					data->enable & ~enable_mask);
+> +					data->enable & ~TCS3472_ENABLE_RUN);
+>  	if (ret)
+>  		return ret;
+>  
+> -	data->enable &= ~enable_mask;
+> +	data->enable &= ~TCS3472_ENABLE_RUN;
+This would be more consistent and easier to read if you have
+u8 value;
 
-...
+	value = data->enable & ~TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON
+	value &= ~TCS3472_ENABLE_RUN;
 
-	spi {
-		#address-cells = <1>;
-		#size-cells = <0>;
+	ret = i2c_...
+	if (ret)
+		return ret;
 
-		multi-dac@0 {
-			compatible = "adi,ad5529r-16";
-			reg = <0>;
-			spi-max-frequency = <25000000>;
+	data->enable = value;
 
-			#address-cells = <1>;
-			#size-cells = <0>;
+	return 0;
 
-			dac@0 {
-				reg = <0>;
-				vdd-supply = <&vdd_regulator>;
-				avdd-supply = <&avdd_regulator>;
-				hvdd-supply = <&hvdd_regulator>;
-				hvss-supply = <&hvss_regulator>;
+Or something along those lines. No need for separate enable_mask local
+variable.
 
-				reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
+	>  
+>  	return 0;
+>  }
+> @@ -458,6 +634,7 @@ static int tcs3472_probe(struct i2c_client *client)
+>  	struct device *dev = &client->dev;
+>  	struct tcs3472_data *data;
+>  	struct iio_dev *indio_dev;
+> +	unsigned int cycle_us;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> @@ -498,6 +675,16 @@ static int tcs3472_probe(struct i2c_client *client)
+>  		return ret;
+>  	data->atime = ret;
+>  
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3472_WTIME);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->wtime = ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, TCS3472_CONFIG);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->wlong = (ret & TCS3472_CONFIG_WLONG) ? 1 : 0;
+> +
+>  	ret = i2c_smbus_read_word_data(data->client, TCS3472_AILT);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -518,14 +705,29 @@ static int tcs3472_probe(struct i2c_client *client)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	/* enable device */
+> -	data->enable = ret | TCS3472_ENABLE_PON | TCS3472_ENABLE_AEN;
+> +	/*
+> +	 * Enable the chip in its full running state, including WEN. The
+> +	 * actual wait time is controlled by the WTIME and WLONG registers,
+> +	 * which retain their power-on defaults until userspace writes to
+> +	 * sampling_frequency.
+> +	 */
+> +	data->enable = ret | TCS3472_ENABLE_RUN;
+>  	data->enable &= ~TCS3472_ENABLE_AIEN;
 
-				#address-cells = <1>;
-				#size-cells = <0>;
+Here is a case that should look more like the one that follows.
+Use a local variable to build what is written and update the cache
+only if the write succeeds.
 
-				channel@0 {
-					reg = <0>;
-					adi,output-range-microvolt = <0 5000000>;
-				};
+>  	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+>  		data->enable);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/*
+> +	 * Initialize target frequency from the chip's current state so that
+> +	 * subsequent integration_time changes via IIO_CHAN_INFO_INT_TIME can
+> +	 * preserve a meaningful sampling rate, even before userspace writes
+> +	 * sampling_frequency for the first time.
+> +	 */
+> +	cycle_us = tcs3472_cycle_time_us(data);
+> +	tcs3472_cycle_to_freq(cycle_us, &data->target_freq_hz,
+> +			      &data->target_freq_uhz);
+> +
+>  	ret = devm_add_action_or_reset(dev, tcs3472_powerdown_action, data);
+>  	if (ret)
+>  		return ret;
+> @@ -561,16 +763,23 @@ static int tcs3472_resume(struct device *dev)
+>  	struct tcs3472_data *data = iio_priv(i2c_get_clientdata(
+>  		to_i2c_client(dev)));
+>  	int ret;
+> -	u8 enable_mask = TCS3472_ENABLE_AEN | TCS3472_ENABLE_PON;
+> +	u8 value;
+>  
+>  	guard(mutex)(&data->lock);
+>  
+> -	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE,
+> -		data->enable | enable_mask);
+> +	/*
+> +	 * On resume, only PON and AEN need to be re-asserted. WEN must not
+> +	 * be forced on: its desired state was set by the user via
+> +	 * sampling_frequency and is already stored in data->enable, so we
+> +	 * read it from there to preserve the user's choice.
+> +	 */
+> +	value = data->enable | TCS3472_ENABLE_PON | TCS3472_ENABLE_AEN;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3472_ENABLE, value);
+>  	if (ret)
+>  		return ret;
+>  
+> -	data->enable |= enable_mask;
+> +	data->enable = value;
+>  
+>  	return 0;
+>  }
 
-				channel@1 {
-					reg = <1>;
-					adi,output-range-microvolt = <(-10000000) 10000000>;
-				};
-
-				channel@2 {
-					reg = <2>;
-					adi,output-range-microvolt = <0 40000000>;
-				};
-			}
-
-			dac@1 {
-				reg = <1>;
-				vdd-supply = <&vdd_regulator>;
-				avdd-supply = <&avdd_regulator>;
-				hvdd-supply = <&hvdd_regulator>;
-				hvss-supply = <&hvss_regulator>;
-
-				reset-gpios = <&gpio0 88 GPIO_ACTIVE_LOW>;
-
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				channel@0 {
-					reg = <0>;
-					adi,output-range-microvolt = <0 5000000>;
-				};
-
-				channel@1 {
-					reg = <1>;
-					adi,output-range-microvolt = <(-10000000) 10000000>;
-				};
-			}
-		};
-	};
-
-then you might need something like:
-
-	patternProperties:
-		"^dac@[0-3]$":
-
-and put most of the things under this node pattern.
-
-So the main driver that you're putting together might need to handle up to four instances.
-Even if your current driver cannot handle this, the dt-bindings might need cover that.
-
-Need to double check if each dac node needs a separate compatible, so you would maybe populate
-a platform data to be shared with the child nodes, which would be a separate driver.
-(not sure if it would make sense to mix and match ad5529r-16 and ad5529r-12).
-
--- 
-Kind regards,
-
-Rodrigo Alencar
