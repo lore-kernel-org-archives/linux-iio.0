@@ -1,42 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B00184524;
-	Tue, 26 May 2026 13:00:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8989184524;
+	Tue, 26 May 2026 13:04:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779800433; cv=none; b=NpIANTHS2N2IpOVNCsNzWTA/nKRys29ExH5peU3sdYORHYvBHzaVVgiF3Tty0V87kNO2TCkoFIRlRGlQuTLyBJaDv5AhNajtIhbiVaZYY2vSw7tA4otGqAYd4l09UelTikaZIlqJga+nYiTJixn9xsb5KNOheO1fZyEMkFTt6vg=
+	t=1779800654; cv=none; b=fhXheNGWPI3ojF4cv7WsQYneEavkedX/T/n5NFxrA5Kv9HXApS6jw3vcou+ncJAmQJviQ/JBmX09ePG9VeM6/eqYpwjabAwJX8MhyHBZl1Yw6x936Xl1WZlx9Zu0tIMHr4lPLthGQ2W94T+eVacW+QPecUshnWBdUBjaX4ZrKzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779800433; c=relaxed/simple;
-	bh=47bb7LiyE4yyR1fIIa4xKP2mMq7RrmM0996rxatX2d0=;
+	s=arc-20240116; t=1779800654; c=relaxed/simple;
+	bh=WBEp8LXSPyNugQH7lmRKEfqw5gJpmNnb63FAfccMDU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uWnH7/Eg7ADdEbi0EhPGcFtWPZRIWsf1TmRB/jwddOzlMYIHG5Kc4CZjygtn7glbE4p/uUEyndwrl+3GsAQPU34jNNtfIOBuhURrIRJgKWj3dYWGcJwkMUwkxuq0rWjDAiYyqIeyM0kUrRkrrKCP9torvelJ3V1opqavT14o3ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JSVwg6k3; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=jIx7j1taEOYddAKctZ1vOpmSAWRxslcXXkYTunedtzI2ORnB5OPyoherDkYxEJN+MhLww6C8O8oG+uHyRVd65f590KMHhSFv3NXWZaSGKs/5t972EsqJ8lQM7JXqs/m+9Z7xKO2N415qPSmq18c09171px7mMRgKjjAep7B8Hx0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dzMLb/78; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JSVwg6k3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C9D1F000E9;
-	Tue, 26 May 2026 13:00:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dzMLb/78"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD311F000E9;
+	Tue, 26 May 2026 13:04:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779800432;
-	bh=6WmM2jyAP3Y3wSZA35c/ErcUlZK06XMNBgxdHiZ9RD4=;
+	s=k20260515; t=1779800653;
+	bh=HovolR/b9wulIU4/hf5bIF1VRrIHVypxv7Gto9pYPKM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JSVwg6k3odXUU69MG9YidCYL3xmTN0M+BuwVXEwB1uBOFWUOi2UpXeH0cEL9XHX+Y
-	 SB4DRhK5tN/iS5UzR+DcHkMOGpyYlLiy+B56uS7H8d4KUuU96mv807bMwZ0UyOdU4k
-	 E9bXGcU1rsJndbhu/+K5QDgfkoXoozKyEntGNLj5zTcjkNPZo3KZI7kkoX8CKMvH6S
-	 FmD7d5ktfBUAY3IhBPy2rub96NajMn4C/lGpEBmGHLeqcvrTdjnv2Wjo3OHHqdOWID
-	 gVp/bkwudS+MW6bKoT/Afc+bGlsdQ/sBe/hbfq8CcHDGyWm1qV1b1y/OrJ6Uhm4Ten
-	 Ts5GpCdsF9IMQ==
-Date: Tue, 26 May 2026 14:00:24 +0100
+	b=dzMLb/78kWfwgL57Lur691H/F5e2wlZGKOQod8VO2TPWN7yQQxH+fS7B3N8VAnpqL
+	 tGzIae3y/oGQhVFYiyjMoKj7H4L0wq/Yc+qv5ldXSuInOUJDeWjpuSLaOSxWiGpie1
+	 Eye3X/Vxe7HhcOy97yrVWz/mASsOrGaGP/1j1H/tZuoWC7jAKaIS+Ca8LxNY+WkcVJ
+	 1Aqnjgz5cj3RBujWQQeV2x9IILrpqWs52mDlHedrHcNZ/tR2pwUK00RcKf7am81PD0
+	 FAIfmgTU8WQ0Ev3pZCjolY+nnxJkyb1FlYTwb5RVMg0KveF3HR2dDHc2BxbBzAxNIC
+	 a6NTeb+WyQwow==
+Date: Tue, 26 May 2026 14:04:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Aldo Conte <aldocontelk@gmail.com>
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v3 5/8] iio: tcs3472: use devm for resource management
-Message-ID: <20260526140024.3e422667@jic23-huawei>
-In-Reply-To: <20260522123420.45495-6-aldocontelk@gmail.com>
+Subject: Re: [PATCH v3 6/8] iio: tcs3472: use local struct device * for
+ remaining cases
+Message-ID: <20260526140404.20bc8e72@jic23-huawei>
+In-Reply-To: <20260522123420.45495-7-aldocontelk@gmail.com>
 References: <20260522123420.45495-1-aldocontelk@gmail.com>
-	<20260522123420.45495-6-aldocontelk@gmail.com>
+	<20260522123420.45495-7-aldocontelk@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,26 +48,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 22 May 2026 14:34:16 +0200
+On Fri, 22 May 2026 14:34:17 +0200
 Aldo Conte <aldocontelk@gmail.com> wrote:
 
-> Convert the driver to use device-managed resource allocation:
-> - Add tcs3472_powerdown_action() and register it with
->   devm_add_action_or_reset() to ensure the device is powered down on
->   cleanup.
-> - Replace iio_triggered_buffer_setup() with
->   devm_iio_triggered_buffer_setup().
-> - Replace request_threaded_irq() with devm_request_threaded_irq().
-> - Replace iio_device_register() with devm_iio_device_register().
-> - Replace mutex_init() with devm_mutex_init().
-> - Remove tcs3472_remove() as all cleanup is now handled by devm.
+> Use the local 'struct device *dev' variable introduced for the devm
+> calls also for the dev_info() calls in tcs3472_probe(), to keep the
+> probe function consistent.
 > 
-> Use a local 'dev = &client->dev' in tcs3472_probe() to keep the devm
-> calls compact.
+> No functional change.
 > 
 > Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+Hmm.  My first instinct was to say drop these prints - because 'obviously'
+the name attribute provides this information and doesn't fill up the kernel
+log.  Except (sigh) it doesn't.  The driver reports "tcs3472" for all parts
+supported.   Fun question of whether we could get away with fixing that.
+I think on balance doing so is too risky wrt to possible regression reports
+so we are stuck.
+
+That brings us back around to this change and argues in favour of keeping
+the prints - so I guess we do that.
+
 Applied to the testing branch of iio.git.
 
 Thanks,
 
 Jonathan
+
+> ---
+> v3:
+> - New patch
+> 
+>  drivers/iio/light/tcs3472.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tcs3472.c b/drivers/iio/light/tcs3472.c
+> index 4966abf83c18..f74e6633db45 100644
+> --- a/drivers/iio/light/tcs3472.c
+> +++ b/drivers/iio/light/tcs3472.c
+> @@ -480,9 +480,9 @@ static int tcs3472_probe(struct i2c_client *client)
+>  		return ret;
+>  
+>  	if (ret == 0x44)
+> -		dev_info(&client->dev, "TCS34721/34725 found\n");
+> +		dev_info(dev, "TCS34721/34725 found\n");
+>  	else if (ret == 0x4d)
+> -		dev_info(&client->dev, "TCS34723/34727 found\n");
+> +		dev_info(dev, "TCS34723/34727 found\n");
+>  	else
+>  		return -ENODEV;
+>  
+
