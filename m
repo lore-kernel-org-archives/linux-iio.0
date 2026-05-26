@@ -1,140 +1,163 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7FA3D9035
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:24:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522773DD855
+	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:32:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.54
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779791080; cv=pass; b=k6gHppsKBWzszf0QzllJgV4YHt5TLZl3pHBCY8tzNmdbjkHgtgPh7tE6GhMtorchM8FHZlQkb8NJHMN30HVqqH/sL4W+YKe59Z2ikIvGEDLIdhpOf74JoZ8x8HGrXqZ1cxo2RZaU1uzzGo1SgmmUoyHkGSzWzdPT3+qNkDnM1cE=
+	t=1779791535; cv=pass; b=ZcRuW99RniH5lYaJa9yIwQ76JNaWII80frgNivGW8XoJk8CZYaAb748RglhLqIS05P3Ms1Yt5cAuQXXaJd1EaP42yA4HOxc2/U3oksKTKi0MDNbomyi8R2aEHmBQrh6P+u7yqYZ+rj+Au87kQiqzOHwaUOzGRWwP6Td4x1NlFbg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779791080; c=relaxed/simple;
-	bh=GVacpxLCAtt+ARYGTfL3py3lMej667BEWwDj2Ay9Gbg=;
+	s=arc-20240116; t=1779791535; c=relaxed/simple;
+	bh=+roR8mADp3Fu3TnQdhRbr7fYAtHH7XKBF+tCmPVSbvE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KPKoOwBogNRlZ/TxIzqwbl510QyX9x7DUP/8nTST9unCkcQJNHT38sDTI4YkcN1a9T+sThLlS8PBAZ+Cz6Ll6yvBrHk7KkS3suq+62k5cgM/8zlL1JU2c8Zm/e2zF43OiR9eTah1uDDOLXoHnN9HWJt0K9RpQat1Cc1ajon3fCA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ecwt/tMF; arc=pass smtp.client-ip=209.85.221.51
+	 To:Cc:Content-Type; b=f5ZmgmX1goD/pXWXMJHtnP+TAC1kGrqDotNMcsmARZJNHBYiOrnaY3QIJ09SWP/EHBn/6E9ldta5EDAvGnPxNGlBlkpS8KeCsUXlVnBVcaQfTVubNvjCDFqmf74UOmpmyRypYcUFmLJdZ6SKCwkPLrakEIlWs0FETC4VCuB1MXk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BIJmWE4e; arc=pass smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ecwt/tMF"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43d75312379so8753099f8f.1
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 03:24:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779791077; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BIJmWE4e"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-44dd5cb0f81so7476693f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 03:32:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779791532; cv=none;
         d=google.com; s=arc-20240605;
-        b=ehYiZvxzSSW0H2kfnufsAHOOyJiXk7UMT3U8bhV5vV0fPn79spGZ/ZomatewlDg2ie
-         9lnz6hKSo5tkzKRcQ7+L7K4aEZ1N4hanSEYmfLt6XperLyDhpO8BuSXQpRncGjw6UXgE
-         ez6N3b7naMYIsB853wJz3HFfnEK2nGmt7Tl7RLvAZOzOmZP/TU6HsPZ1fmDX2gW37nB5
-         DqbznJMSaG+6n1vUNz5HkA2TL+Eo+bXI87VIkxfBA6qs970SaiRu/HsR8rn8GG2NEJAp
-         warZCOO747MbY7WjJwnyeOrT/mojt6EtMLbwZXVjDZ0/dfvT/1QQIuJjDZLgBD/+zBnl
-         qDZQ==
+        b=kJyCba67cUF/yAeNm/hRJKQYpsN8lipIcdgzrT2LCb4TfAlra/05diV6c87tL+4nRr
+         tIxbX2eAa8eDUj9FMPe32mCwruyCjYlSE0c+ldajWABVpIMrzrBKG/vK5+NLjKEr21tY
+         7JUSYxW5S1h3BzXkoznrmEfbdX38uwwa3uE+I/Jc9jLkKxnGy2t/mHC3n3QsHzsCecDH
+         vRl9zOIvzhhX8R/fNM5QyHSfE7Qlg5vyZ+4gZ2at0LxRZImAcDhki5vntVJj0wLWfg73
+         270+LigQ8EHYvkuw4G2u6yNxdDvNDW37akyP1SS9wK8gwFQdePUDW5bQ3UNDU5awZxPO
+         9wFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=mwCD/suEi8BopQFl4tpj8z1xVXfvd0efVxC4LL2hJfM=;
-        fh=qrnqQpWenIAohflXP9EfFF3RhLwperqiXQAIr0rwUXg=;
-        b=aRXS7Z4l0MKMm8UzpdGh81GDLF3y+RLxyBsPC39JJNcdUogRjLCIRqH+M39ea+JHF2
-         5sWnRVMOqb8rxo4Id64qZCWxmbdR+Kh2hMeoTYdWr4+GSvI6JWrc/EUb5NVWI5IS7N+R
-         cmOST5TRBuaykrPrE3NQfuxHKvbtnocBBR1AlV/Su33D6I7oSTrvQxBFcnr+YzkfmXtM
-         fgsrSxnpQW1EShjlijeKEc5EjyyXjcdjP+L5t0TnBSDn1bQ/SBn6CYZXCy0SaHHqOZ3c
-         LoU6tb6/7NPB1nhLLyqoFEoAHHPZiFCcsr/gDKi0a2cXkXhWH6P3RkFdbyH+zTq11mRS
-         nSHA==;
+        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
+        fh=UD0q7ZHoDyLlgiVTl9r7FhJIvyv9l+IQuInVPYrKpKk=;
+        b=OjaQw9Vk3X6ZWmUpZxO2nZo2WK8cNDF86XfiGB8nBG1JzTKC6CIZhppYjDNQmVDOo8
+         kZQoy+PQrqTNL6YgC5iqMzFEXUFHp2D3Y17x4WMJfX0QOzam9rSboMVsHR/kwYKZM1HU
+         fUvdKQYGKRvZd+HgFuGbT0rZXGn/NnSv8fpZ9dNw4Vs+PXkNt6gjNrgaVhb/b4+2xaA8
+         GbYgWne453Pw8afbPFdYVUvbY8sQtx2RbbhLig5U92E784hRWehrOgY0KrjpG3rRxQ6Y
+         86szwtcX1uUm7DAVYkKaH7dj7Ucs7fjDVyerm8CAQwwLC1ypf5RcRwElmf1vCayybjA/
+         oGGw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779791077; x=1780395877; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779791532; x=1780396332; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mwCD/suEi8BopQFl4tpj8z1xVXfvd0efVxC4LL2hJfM=;
-        b=ecwt/tMFTEkhuYxZOFouHYr+Md3o0fIN22hbFoBqBXrVTdWKiTSg1sVUrLd4lzWapr
-         PI2ujPoNHp6YJz0Q/x/0C4pm2xyUQGJEWjTBx3iHi6StQSbK5F502p1Ae6oNVVnGUBUr
-         BUbFvD6MAxmzI3sbhP+HkxucppRTAn9lD9BT4L0mK9N5jiXNkvs2iOJVevHun2dp5HAm
-         CQ17Xcv4MkYAZN4wszm/o+DWMtE6Xfp1XTdfLsWrM702gisImQup3vZHGo7rN/cHo3/R
-         5KtSNTx2jCpxX268UtqHt4hRSISxqIbTlgDZf2fGcyiOcz23szfKkIsuWNVxKmw1DGfC
-         9yTg==
+        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
+        b=BIJmWE4e2rADX5x9sKmcFrFPOi2EZJ7Tp/5o0kNJTDNBTVjOc5tqJxNzZcHEEb/q8c
+         cU0wexj1E8uvRhPQYo4X8SfF8h55bl9TeELLYv13pBsyZJQEWmWXLGdZRuyWZW3/GT5p
+         SP5WTizDPokuyvMGJ6xVtSUA894r6GRj3SUe4KbV0VJmx2XAjsIQ41M0J/8mR90bodU/
+         xWCU3q4QS33z8aiJ7fZGGzZwAOfzPfg3iMVWl8mKD+FqEKdBs8oRsE1dL759oni31zRO
+         T5H9s3IU7fuyYWyxYamYJh/0h7IyOsqpokR+p2lT8g9xHixZON1DguXmiP1RBBQI2F8p
+         /Ktw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779791077; x=1780395877;
+        d=1e100.net; s=20251104; t=1779791532; x=1780396332;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mwCD/suEi8BopQFl4tpj8z1xVXfvd0efVxC4LL2hJfM=;
-        b=JTB0wvI6G0tnq9Fo4XDY0W9KLiMLRHq8rxYKTRz7x2UHFJc6rubn5+/1BOQxk0IIx+
-         xhJ3/XYPVcQaXTKi6R/Gb0K0VA7ezjqfamtwEDirwIjVZNQTF5cUCE7uibFgOOFy4qvf
-         HK8Xo2CxOKPE24zcRlfpgoaQ4lWHqmdWyx5OXM/M+xSQ79GOHN9W3G3QJR/wCxrrr75J
-         8JwnB/vqixmpN8ZEMOneRPtoBEQeXUtmOeDSYkY2KKSjNxZ1t7i57Oj9moeBFefH+LZV
-         EcnYANCbaA2xtabGG4/TkPkPFGb7OnRVoCm3D/hC1VMWB0FszjWzyO42+zX/stkzRKAw
-         Mscg==
-X-Forwarded-Encrypted: i=1; AFNElJ/5VrByXBx6gDPPXmUuFlO02dvmxS+4e4wlWhahO0HCTm5OMaKVcET+ZrF1FYPhTLOnavJCJ8tcfiM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyzlxq0jHn3puUcZBLcv6dl43Z5qyUsQrTMGIiFltzRM20Cy0a1
-	9tFShIYMzXD+hNPdZnw2AEz+ucrJowhWiSoodjzwOfQtRgTFTeXlrEkh3r/dFtEDwcAeazYY46y
-	7vjFtHRomD+9Xioet/TisbDZR9qwsSwan9Q==
-X-Gm-Gg: Acq92OFaumQQ5US7DQAgwBfsJszq21vnCUDiv7FGXgEwoxFeEE4qz2/gM7f7uNVfxns
-	YOZYJqmY6+Kw91q5LyNtvU1fwD1vfCh/hSAQ6CfY6edCDNkuqYQ8R3DkMAOsophe8GmINpDFBXk
-	thvWC0fzUGndHilOypnHYKSVgSL6JEeDGRz+uVLxLtJH882B37Uz/zd00W27/Qvo7DBC54w7QSg
-	6h6Bq+GWTl+L9vQXb6npGtvVFcH8LqAm92J2OyhMguH3YBimw78aPbO5uPs2mfX1TJFiQc7tfTR
-	isdZygThMpoqUC9vtPNfpLW3QRNPK54FQBLDZ6QkGlbWdJRdnDzTOCggEI1T7iJh5joQT56ijSK
-	d3/4y26Lho4P+tpHKGsl/kAE1v8Sznnukl8z3kapyjSBa0EPJJ0XIYM//3xZk1Qg/DFBRfA6LVU
-	ruKOtzsA==
-X-Received: by 2002:a05:6000:18af:b0:45e:9304:a4c3 with SMTP id
- ffacd0b85a97d-45eb333aa31mr26418669f8f.19.1779791077240; Tue, 26 May 2026
- 03:24:37 -0700 (PDT)
+        bh=W/GZITlOOI+RYJgZPFoGbe3SNJiwyBETTTUeZXLCRW4=;
+        b=RW+SYeQnKtjPe8IuMbb/fFVjrpbLApRA7IxjcVCSZrv3iaXfY26UFvGw6VtQwDe/6v
+         zxvAA4ZxsSjGcX4s/8+TZUOR3dtMb9PsHwO+8P4C3vFBWa/CrlvLtPUAUXGCquj/CgVV
+         uKXNQgpnjzPyqQgNLNIiE9LSEcyD38VDNe1nDuIGbuPeS+eC+U+xCq0r4EYCrSxg5XrH
+         jqsf5RDlhqGAXgOd4esVcGMIBmrdj6biFSQD4VSyWnjiV/PZ6GqQ/HdDAfzkpsHiYal7
+         Wr+64lsaUTlPya9mqTtPiOPF5F5WSxMKlv8OkXo/e6/WMstcs3pW4vlih3fshEK5X07n
+         sbJg==
+X-Forwarded-Encrypted: i=1; AFNElJ+Eu8rCWGz43n9FtzhJ9bSX5jFIPU6tMNWmWTvO96yvEItLJvqWGa1xqOqwJaPfg29WxNmnwJho1KM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzERRztCY2T658oUmsoHWkzHW4NxBa1y8Mn6zdjGBkAHRMKZlnv
+	729OhHKBT9CkclXcE0og6k3r+jdOrHPbykBt002TnmWnua4RmWruvAmcLSDpiKybnAJVq45EaJh
+	nX9hsSyigLHjdIlFRoYC7+Oly3wZyzI0=
+X-Gm-Gg: Acq92OGqlFp6Geil6PRAm+7lcbB6zk+dmXBsP1W6pdXiVjO0nroZo2mDeK83UgWiWr2
+	rTyYRtNR5AxbY8Yzwjc5OcpAUHPncY3uRRvYXZO6gbMEc3FPQXDu37wZmUrt1U+V3cZ7qDrPQ6k
+	mCNIFfg60jNA94A4ru1lC1q7GVP6YMEYEmyAjNkOZIvWkYFrpM44wextqaAQ0co2xRty0DFU5Va
+	mCgimUFMvYzGFhyTzoqVZocp9rAs9e67OqYZ9BfbBI12aXpIQODWq/CgGcelbD6AncNU+5Z2RPV
+	AJAr3O09sL+GFkP5MmEEojKP2HI/9ooM/VEzoa2a8Ik6yO6bU13/9G71cz6SYCUTse75SZlba1v
+	l32Vy4fSEgx0XTZnXXVVzf1Qf8W9YGdB/np4xtKz4htiKpSbsjC2cqjD5Ia/L6BT7QBvVNt1e0r
+	mt6fzFTA==
+X-Received: by 2002:a05:6000:29d4:b0:45e:8b03:e26c with SMTP id
+ ffacd0b85a97d-45ea312913cmr24483415f8f.5.1779791531503; Tue, 26 May 2026
+ 03:32:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260525151240.7258-1-sozdayvek@gmail.com>
-In-Reply-To: <20260525151240.7258-1-sozdayvek@gmail.com>
+References: <20260525152137.7428-1-sozdayvek@gmail.com>
+In-Reply-To: <20260525152137.7428-1-sozdayvek@gmail.com>
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 26 May 2026 12:24:25 +0200
-X-Gm-Features: AVHnY4IAU50C4_nrqzpMXwpALdJEBFVEC-szZySIcvwevd6ApZMGYZEckkCvaFQ
-Message-ID: <CALoEA-yfG6TvhpR7hWq4wfY3Eznys7K0-ee54H=0NWGu5VJ0Gg@mail.gmail.com>
-Subject: Re: [PATCH v2] counter: ftm-quaddec: use devm_mutex_init()
+Date: Tue, 26 May 2026 12:32:00 +0200
+X-Gm-Features: AVHnY4KlHlc7DFm-MOUGFrDcVGBNlcUxLVNLS_DRcv4OBRHP0vvAKh5pHPi0gc8
+Message-ID: <CALoEA-z=qZf_ZLj6Qrgpvnq6TEUGNd0yj5Z=8YYqUwShY75CSA@mail.gmail.com>
+Subject: Re: [PATCH v2] counter: ti-eqep: balance pm_runtime on
+ devm_clk_get_enabled() failure
 To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: wbg@kernel.org, patrick.havelange@essensium.com, peng.fan@nxp.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, andy@kernel.org
+Cc: wbg@kernel.org, m32285159@gmail.com, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Mon, 25 May 2026 at 17:14, Stepan Ionichev <sozdayvek@gmail.com> wrote:
+On Mon, 25 May 2026 at 17:21, Stepan Ionichev <sozdayvek@gmail.com> wrote:
 >
-> ftm_quaddec_probe() calls mutex_init() but neither the cleanup
-> action nor a remove callback issues a matching mutex_destroy(),
-> which leaks the lock debug state when CONFIG_DEBUG_MUTEXES is
-> enabled.
+> ti_eqep_probe() calls pm_runtime_enable() and pm_runtime_get_sync()
+> before devm_clk_get_enabled(). If the clk call fails, the function
+> returns directly via dev_err_probe(), leaving runtime PM enabled
+> and the usage counter incremented.
 >
-> Switch to devm_mutex_init() so the mutex is torn down in the same
-> devm scope it was set up in.
+> Route the clk error through the same err_pm cleanup as counter_add()
+> so the runtime PM state is unwound on every failure path.
 >
-> Fixes: a3b9a99980d9 ("counter: add FlexTimer Module Quadrature decoder counter driver")
+> Fixes: f213729f6796 ("counter: new TI eQEP driver")
 > Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
 > ---
 > v2:
-> - Add Fixes tag and note that the leak only shows up under
->   CONFIG_DEBUG_MUTEXES (William, applied from the interrupt-cnt thread)
+> - Collapse the dev_err_probe()+assignment pair into a single line
+>   using its return value (Maxwell)
+> - Add Fixes tag
 >
-> v1: https://lore.kernel.org/all/20260523184351.7567-1-sozdayvek@gmail.com/
+> v1: https://lore.kernel.org/all/20260523184448.7609-1-sozdayvek@gmail.com/
 >
->  drivers/counter/ftm-quaddec.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/counter/ti-eqep.c | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
 >
-> diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-> index c47741292..8455f16d6 100644
-> --- a/drivers/counter/ftm-quaddec.c
-> +++ b/drivers/counter/ftm-quaddec.c
-> @@ -292,7 +292,9 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
->         counter->signals = ftm_quaddec_signals;
->         counter->num_signals = ARRAY_SIZE(ftm_quaddec_signals);
+> diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+> index d21c157e5..4f3b17939 100644
+> --- a/drivers/counter/ti-eqep.c
+> +++ b/drivers/counter/ti-eqep.c
+> @@ -548,17 +548,21 @@ static int ti_eqep_probe(struct platform_device *pdev)
+>         pm_runtime_get_sync(dev);
 >
-> -       mutex_init(&ftm->ftm_quaddec_mutex);
-> +       ret = devm_mutex_init(&pdev->dev, &ftm->ftm_quaddec_mutex);
-> +       if (ret)
-> +               return ret;
+>         clk = devm_clk_get_enabled(dev, NULL);
+> -       if (IS_ERR(clk))
+> -               return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
+> +       if (IS_ERR(clk)) {
+> +               err = dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
+> +               goto err_pm;
+> +       }
 >
->         ftm_quaddec_init(ftm);
+>         err = counter_add(counter);
+> -       if (err < 0) {
+> -               pm_runtime_put_sync(dev);
+> -               pm_runtime_disable(dev);
+> -               return err;
+> -       }
+> +       if (err < 0)
+> +               goto err_pm;
 >
+>         return 0;
+> +
+> +err_pm:
+> +       pm_runtime_put_sync(dev);
+> +       pm_runtime_disable(dev);
+> +       return err;
+>  }
+>
+>  static void ti_eqep_remove(struct platform_device *pdev)
 > --
 > 2.43.0
 >
->
+
+Sashiko came back with some notes, however they are issues unrelated
+to this patch. LGTM.
 
 Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
