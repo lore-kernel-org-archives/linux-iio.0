@@ -1,221 +1,386 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFDFF3FA5F9
-	for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 17:08:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 516764218B8;
+	Tue, 26 May 2026 17:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779815317; cv=none; b=KasjxQBSBLn8Z5DzwPdC/oA1Qlo2wChZXfmufKSfKj9OvyAVKHiFQAS+Y9KD8BC+e3sZ+QQcbYJ9AG56y9XL9ftHcj05ivUeCtVYGmwTBLPVvWwWhXWL7wajCR0kXG3XbQgUxfP8ytCc5I4+Tn37o0fbhSiBnHp52MQ9cQ6FlY8=
+	t=1779818385; cv=none; b=twdSb+SRwTAqJdqWz/hrg+CgNUV9DxS7QHLCE/Wgvf4ytUTZVAIkmSQp6dmyMWgKFjmmZIW1bOHH3KW/vQWeTOmpFY9yKJ9cLWciUz5q5cgxf5Ywvrw6MgAz47qvOUyXgu6SLMPrfJBhw2WOGcRUoyNQWGozMCxJL71WEHL5S6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779815317; c=relaxed/simple;
-	bh=NA27NN5p6I8UVFw/S+uheebpnwu8UHqFyN0ql1ewMQ0=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aKRjS5W9y4FjuCERuSt/wj9Eoq9vcU4e+V2eXa55YxbgJ/fMEdXz6ZeyUfEFhfBz73M5U3brzrOhIsRe4EEqwDAXQ+mdsDAtR478mFrqJUlHmjgtmCwQqmSoNg5+9IVtf5y2NKrNZkw/Xe9v3UEiT9tro9Ea3RiUMa8g1JuVS7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YWfXZnOd; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779818385; c=relaxed/simple;
+	bh=Bn2KmXeW4OxPMlPq4CD+TF8/I6iECDWC6ZCB/mEefsk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=S5N5OjAxS28p74egMAfaJVXTMWnSkWT+wTOvXCCRsXwLGxz9bxyZoKFJBPMupwyVlsD16f714jSkvO3ZUcW0Fl+AAj6sBlp2hqQJTxcgBnIbeNFoMx9QaQ7FXq+BzLNVdrdxeJtPuE8GQfA9ujAIb4mFHn9RouCBD4P9l4S4y+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oRNkTt9r; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YWfXZnOd"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-516d61baff3so51602571cf.0
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2026 10:08:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779815315; x=1780420115; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hqQXdsbWsKeHXeHKrmCU/WFpGzKvYZdLxIaZX6nvsjQ=;
-        b=YWfXZnOdYjaEcYcg6vbpApiL2SCc0x6gh2tPaOSRmFr9sPMJiewhqe2WWm8lXvkF7p
-         TWKMNVURRZ2Wh50qL6D7hnqYBE0itBgs057Y4S/fZgVqjcANnk55LZZub3KqXMm7o5AE
-         SfW7VlrobGR7UbPS9asYnHQA6g16ppgoSaEl3AIMNn4sj3dHtngklmd0FBJLsDAxSQji
-         6jVsO/pLyLoW+uluW+dcnlbOsajkxa/tteXqbZ6mzY58ikNjFTyDwFwbCKe0ASB12bDs
-         qMAc8MzySFZMkNxPVB15gETScxfAR0OhRsMW9rMmsqbk3A4xtCkJp7OggrnCXZxbXUBS
-         EycA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779815315; x=1780420115;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hqQXdsbWsKeHXeHKrmCU/WFpGzKvYZdLxIaZX6nvsjQ=;
-        b=ldDQztHnMsBkzwm3Pvi430A+sx1tSt5WaL3x2MxNm9T89J1BeTnY7nOiEaPO2cZJZd
-         HS8erE9+O+XThOC6IpDA/QdKBJgXMWJZ37pl+yDMy7MiftghasZfdDzPeNVe3T0p/auc
-         g7SP6fUJKkvRlWa6RsBCpz3NWfvspzqUaFZWRoYytS0RCaU7N8pMsRWmaCOFCSHTebd2
-         D+XzyapCliq9zMgVKBwirTM/pVXCkmtWSzpBH5PGoP4vtK8qROMiZp4/85EgoG4QX1Ik
-         kBttllGgkfPMHCu0NN7U1q7kml8OFAQp7Lkx2CN4RA3KcK1Aip2k+idyeKYSj4CSNrOa
-         dREA==
-X-Forwarded-Encrypted: i=1; AFNElJ+bCs5d0Vxdjh4C41xgcZp81eQizIPUOucj+WrOh925uV1HPCRo1oUqzjQY5G3EGTgdbpfUEI0BMBs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/cfuSbquzFyf4Lfx+rVo8AFdKEcvhlhkalce30zmj4Or1+kpn
-	RSEaxc9oCnsm1IUsCSDoUFVb0kjzerzdCb7oYYPjS1fHtLYckW0UoCz7
-X-Gm-Gg: Acq92OGcaa2blsLvMGCvg1APtPZ2Zl5LbLtXXG7W7zU5FTvZAr5X2fOoal7DC7RbETO
-	H8N2fX3sMvigsG9lBxQA+0OJ5B82rkiodcdII+YzEHYdVhvtMET7Q63F3s3MITfTIohsqYSd5FJ
-	eWqOs068Qn/MElatx37BNIS0w7haIZD5K0pwfTKg6YT+c4u5yYSHakk+Rl6k2c7sEiGgAympQrX
-	4EIglULrMMmCoo8Mdwrk+nNXclGeamz3egocAR7eep2qtyh9IqRu+UAUjMp/yHAs0k6sCS2Liqr
-	fsFcL9cYaRjei6MzrI4ky/KhowilrEHnsz66imszyEImWWTfsWOclW4yDYxFajog0WLRs95/miz
-	LcfGsri/nVhafo8fb/hi7AntSBHpwHX6b4LQGaQi3NeGwTjx8MMhMCWo/gbLVkPg2OrWpuQncsB
-	8Iqgd1gaHickwGCB6+3JO00gbLXja/3+WLm7hRRqk5dkCB+lcfWp7DEL4TJ8g2aeqY3LozRYPEV
-	BTyxNCAXVr3W8f0EzjnoAosUyZmpVQm7c5xwNFKtwNIHN8QSw==
-X-Received: by 2002:a05:622a:2445:b0:516:dfc9:8449 with SMTP id d75a77b69052e-516dfc99abamr233404601cf.59.1779815314663;
-        Tue, 26 May 2026 10:08:34 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517069f2d2fsm26751821cf.3.2026.05.26.10.08.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 10:08:33 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 26 May 2026 18:08:26 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v5 12/13] Documentation: ABI: testing: add docs for
- ad9910 sysfs entries
-Message-ID: <tdhw4z6gsuwdgg4olw5tipgqip7rtdzrl72divxvnwkc2mmpfo@7r4aceyvjvqm>
-References: <20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com>
- <20260517-ad9910-iio-driver-v5-12-31599c88314a@analog.com>
- <vqqvn2cgs3fbp5mq6xfac7iyosaqfrvgngqur4x355a3at7slo@ylrtd6fhi33a>
- <20260522192040.4e6b11eb@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oRNkTt9r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 691E31F0156E;
+	Tue, 26 May 2026 17:59:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779818384;
+	bh=r0rsNPFHUc4QovVcKCemrS5n2zS75nSR7UFfzirLv9E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=oRNkTt9rO7mkrZHKpOufe/KCo+kQvkmN3i+zso6sjMShYyx1XDGSQ4HMSeqbkgOVl
+	 pmJsvOjWUCHxcEzLD8TdySIAxJDCODokRsJcgdpaqZqdx/eo6EDvjBPflp3F4vnRKf
+	 9TZLbZJpNi8MBP+aBIBEIsOVnFgnsyuHWJUPxv73OochcUC8mFk2iSctAbXQU1bnZQ
+	 yWSqQRSaw64v8J+rjid3kj6FtbV+qMM0R0LrnG5C1V+SsMPEgJdE7US9Kjm4hLgZTY
+	 L7drBen8cKBf0MDS6+JDyAqppghFd+DzU2qlBOoJc/M2XJ+m50r+ciLoP9KAwHJBor
+	 RO0DIJPyvD3ww==
+Date: Tue, 26 May 2026 18:59:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/4] iio: light: add support for veml6031x00 ALS
+ series
+Message-ID: <20260526185933.0084679f@jic23-huawei>
+In-Reply-To: <20260524-veml6031x00-v3-2-29165609b2b5@gmail.com>
+References: <20260524-veml6031x00-v3-0-29165609b2b5@gmail.com>
+	<20260524-veml6031x00-v3-2-29165609b2b5@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260522192040.4e6b11eb@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/05/22 07:20PM, Jonathan Cameron wrote:
-> On Wed, 20 May 2026 19:47:25 +0100
-> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> 
-> > On 26/05/17 07:37PM, Rodrigo Alencar via B4 Relay wrote:
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > 
-> > > Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
-> > > control Parallel Port, Digital Ramp Generator and OSK parameters.  
-> > 
-> > ...
+On Sun, 24 May 2026 23:53:56 +0200
+Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
 
-> > This will become just offset with altcurrent channels. I noticed we have a IIO_PHASE
-> > iio_chan_type, could we have a IIO_FREQUENCY too? Parallel port needs actual raw
-> > frequency values in that case to be written to the dma buffer.
-> > 
-> Sure to IIO_FREQUENCY.  I thought we already did but seems not!
-> The Phase one is a bit special given it's use in resolvers and distance sensors
-> but perhaps it is the right solution here.
+> These sensors provide two light channels (ALS and IR), I2C communication
+> and a multiplexed interrupt line to signal data ready and configurable
+> threshold alarms.
 > 
+> This first implementation provides basic functionality (measurement
+> configuration, raw reads and ID validation) and defines the different
+> register regions in preparation for extended features in the subsequent
+> patches of the series.
 > 
-> > Then we may have buffer capable channels for the parallel port:
-> > 
-> > out_altcurrent120
-> > 	offset
-> 
-> So that's the amplitude envelope control.
-> 
-> > out_phase120
-> > 	offset
-> 
-> So this is the phase adjustment being controlled. 
-> 
-> > out_frequency120
-> 
-> And this is the frequency being controlled.
-> 
-> > 	scale
-> > 	offset
-> 
-> > 
-> > Problem is that the math for the actual frequency output is:
-> > 
-> > 	f_OUT = f_FTW + (f_RAW * FM)
-> > 
-> > where f_FTW is a base frequency (already scaled), FM is a
-> > modulation gain and f_RAW is the contribution from the parallel
-> > port, which is the already scaled:
-> > 
-> > 	f_RAW = RAW * f_SYSCLK / 2^32
-> > 	f_FTW = FTW * f_SYSCLK / 2^32
-> > 
-> > so the above becomes:
-> > 
-> > 	f_OUT = (FTW * f_SYSCLK / 2^32) + (RAW * f_SYSCLK / 2^32) * FM
-> > 	f_OUT = (FTW/FM + RAW) * f_SYSCLK * FM / 2^32
-> > 
-> > if I make:
-> > 
-> > 	SCALE = f_SYSCLK * FM / 2^32
-> > 	OFFSET = FTW/FM
-> > 	f_OUT = (OFFSET + RAW) * SCALE
-> > 
-> > That would work for a IIO_FREQUENCY channel type, problem is that both
-> > scale and offset would depend on the modulation gain (FM)... I suppose
-> > scale should be setting that and offset assumes it is constant to act
-> > only on FTW.
-> 
-> I'm not that concerned about the coupling - it's a bit of a useability 
-> issue I guess as not obvious which should be the fixed one.  Can we do
-> cache written values and try and compensate to get a pair that is nearest
-> to whatever we try to drive (in either order of setting them?)
+> Signed-off-by: Javier Carrasco <javier.carrasco.cruz@gmail.com>
 
-Yeah.. or just document a proper sequence to write things, and indicate that
-writing has side effects and one may read the other attributes to assert
-the desired configuration. See that f_SYSCLK is also another configurable
-variable. Maybe it is not really practical to cache all user choices and derive
-all the other configurations as one changes.
+A few things inline.  Biggest one is that device driver specific state needs
+local well documented locking. Here the whole complex gain handling means there
+are a bunch of register field where the accesses to each set of them need
+to appear atomic.
 
-> > 
-> > I suppose we can keep altcurrent for other modes as phase and frequency
-> > can be attributes (knobs) for them. However, in parallel mode we are effectively
-> > pushing frequency, phase or amplitude values into the buffer.
+> diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml6031x00.c
+> new file mode 100644
+> index 000000000000..50979d239230
+> --- /dev/null
+> +++ b/drivers/iio/light/veml6031x00.c
+> @@ -0,0 +1,657 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * VEML6031X00 Ambient Light Sensor
+> + *
+> + * Copyright (c) 2026, Javier Carrasco <javier.carrasco.cruz@gmail.com>
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+
+mod_devicetable.h is missing. Please check again for others.
+
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +#include <linux/units.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+This isn't needed yet - bring it in when it is.
+
+> +#include <linux/iio/iio-gts-helper.h>
+
+> +static int veml6031x00_set_scale(struct iio_dev *iio, int val, int val2)
+> +{
+> +	struct veml6031x00_data *data = iio_priv(iio);
+> +	int gain_sel, it_sel, ret;
+> +
+> +	ret = iio_gts_find_gain_time_sel_for_scale(&data->gts, val, val2,
+> +						   &gain_sel, &it_sel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_field_write(data->rf.it, it_sel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_field_write(data->rf.pd_div4, gain_sel >> 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_field_write(data->rf.gain, gain_sel & 0x03);
+> +}
+> +
+> +static int veml6031x00_get_scale(struct veml6031x00_data *data, int *val,
+
+One of the few thing sashiko raised on this patch that seems reasonable is
+this is doing a bunch of accesses to fields that are updated via other
+paths. It may make sense to ensure we get a consistent set and don't manage
+to hit the middle of a write elsewhere - such as in set_scale()
+
+Given that this is a driver specific thing rather than a state transition
+matter, a local mutex should be used to ensure these are serialized.
+Using the direct mode claim is relying on an internal implementation detail
+(that there is a serializing lock in there).
+
+
+> +				 int *val2)
+> +{
+> +	int gain, it, gain_reg, pd_div4, it_reg, ret, sel;
+> +
+> +	ret = regmap_field_read(data->rf.gain, &gain_reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_field_read(data->rf.pd_div4, &pd_div4);
+> +	if (ret)
+> +		return ret;
+> +
+> +	sel = (pd_div4 << 2) | gain_reg;
+> +	gain = iio_gts_find_gain_by_sel(&data->gts, sel);
+> +	if (gain < 0)
+> +		return gain;
+> +
+> +	ret = regmap_field_read(data->rf.it, &it_reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	it = iio_gts_find_int_time_by_sel(&data->gts, it_reg);
+> +	if (it < 0)
+> +		return it;
+> +
+> +	ret = iio_gts_get_scale(&data->gts, gain, it, val, val2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return IIO_VAL_INT_PLUS_NANO;
+> +}
+> +
+> +static int veml6031x00_single_read(struct iio_dev *iio, enum iio_chan_type type,
+> +				   int *val)
+> +{
+> +	struct veml6031x00_data *data = iio_priv(iio);
+> +	int addr, it_usec, ret;
+> +	__le16 reg;
+> +
+> +	switch (type) {
+> +	case IIO_LIGHT:
+> +		addr = VEML6031X00_REG_ALS_L;
+> +		break;
+> +	case IIO_INTENSITY:
+> +		addr = VEML6031X00_REG_IR_L;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(iio, claim);
+Doing this before you have added any means to get into any other mode
+is premature. This claim belongs in the next patch.
+
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(data->dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = veml6031x00_get_it(data, &it_usec);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* integration time + 10 % to ensure completion */
+> +	fsleep(it_usec + (it_usec / 10));
+> +
+> +	ret = regmap_bulk_read(data->regmap, addr, &reg, sizeof(reg));
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = le16_to_cpu(reg);
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int veml6031x00_read_raw(struct iio_dev *iio,
+> +				struct iio_chan_spec const *chan, int *val,
+> +				int *val2, long mask)
+> +{
+> +	struct veml6031x00_data *data = iio_priv(iio);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		return veml6031x00_single_read(iio, chan->type, val);
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		return veml6031x00_get_it(data, val2);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return veml6031x00_get_scale(data, val, val2);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+> +
+> +static int veml6031x00_write_raw(struct iio_dev *iio,
+> +				 struct iio_chan_spec const *chan,
+> +				 int val, int val2, long mask)
+> +{
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(iio, claim);
+As above. 
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		return veml6031x00_set_it(iio, val, val2);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return veml6031x00_set_scale(iio, val, val2);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+> +
+> +static int veml6031x00_probe(struct i2c_client *i2c)
+> +{
+> +	struct device *dev = &i2c->dev;
+> +	struct veml6031x00_data *data;
+> +	struct iio_dev *iio;
+> +	struct regmap *regmap;
+> +	int ret;
+> +
+> +	regmap = devm_regmap_init_i2c(i2c, &veml6031x00_regmap_config);
+> +	if (IS_ERR(regmap))
+> +		return dev_err_probe(dev, PTR_ERR(regmap),
+> +				     "Failed to set regmap\n");
+> +
+> +	iio = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!iio)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(iio);
+> +	i2c_set_clientdata(i2c, iio);
+> +	data->dev = dev;
+> +	data->regmap = regmap;
+> +
+> +	ret = veml6031x00_regfield_init(data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to init regfield\n");
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
+> +
+> +	data->chip = i2c_get_match_data(i2c);
+> +	if (!data->chip)
+> +		return dev_err_probe(dev, -EINVAL, "Failed to get chip data\n");
+> +
+> +	ret = devm_add_action_or_reset(dev, veml6031x00_als_shutdown_action, data);
+
+Why is shutdown cleanup registered before the power_on?  If that has to happen
+then add a comment on why here. Otherwise move it down a few lines.
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to add shutdown action\n");
+> +
+> +	/* The device starts in power down mode by default */
+> +	ret = veml6031x00_als_power_on(data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to power on the device\n");
+> +
+> +	pm_runtime_set_autosuspend_delay(dev, 2000);
+> +	pm_runtime_use_autosuspend(dev);
+> +	ret = devm_pm_runtime_set_active_enabled(dev);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to enable runtime PM\n");
+> +
+> +	ret = devm_pm_runtime_get_noresume(dev);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to get runtime PM\n");
+> +
+> +	ret = veml6031x00_validate_part_id(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	iio->name = data->chip->name;
+> +	iio->channels = veml6031x00_channels;
+> +	iio->num_channels = ARRAY_SIZE(veml6031x00_channels);
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->info = &veml6031x00_info;
+> +
+> +	ret = veml6031x00_hw_init(iio);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pm_runtime_put_autosuspend(dev);
+> +
+> +	ret = devm_iio_device_register(dev, iio);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to register iio device\n");
+> +
+> +	return 0;
+> +}
+
+> +
+> +static const struct of_device_id veml6031x00_of_match[] = {
+> +	{
+> +		.compatible = "vishay,veml6031x00",
+> +		.data = &veml6031x00_chip,
+> +	},
+> +	{
+> +		.compatible = "vishay,veml6031x01",
+> +		.data = &veml6031x01_chip,
+> +	},
+> +	{
+> +		.compatible = "vishay,veml60311x00",
+> +		.data = &veml60311x00_chip,
+> +	},
+> +	{
+> +		.compatible = "vishay,veml60311x01",
+> +		.data = &veml60311x01_chip,
+
+These would actually end up shorter than the i2c_device_id ones below
+if they were on one line.  Pick a style and use it for both tables.
+I prefer this one a little.
+
+
+> +	},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, veml6031x00_of_match);
+> +
+> +static const struct i2c_device_id veml6031x00_id[] = {
+> +	{ .name = "veml6031x00", .driver_data = (kernel_ulong_t)&veml6031x00_chip },
+> +	{ .name = "veml6031x01", .driver_data = (kernel_ulong_t)&veml6031x01_chip },
+> +	{ .name = "veml60311x00", .driver_data = (kernel_ulong_t)&veml60311x00_chip },
+> +	{ .name = "veml60311x01", .driver_data = (kernel_ulong_t)&veml60311x01_chip },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, veml6031x00_id);
+> +
+> +static struct i2c_driver veml6031x00_driver = {
+> +	.driver = {
+> +		.name = "veml6031x00",
+> +		.of_match_table = veml6031x00_of_match,
+> +		.pm = pm_ptr(&veml6031x00_pm_ops),
+> +	},
+> +	.probe = veml6031x00_probe,
+> +	.id_table = veml6031x00_id,
+> +};
+> +module_i2c_driver(veml6031x00_driver);
+> +
+> +MODULE_AUTHOR("Javier Carrasco <javier.carrasco.cruz@gmail.com>");
+> +MODULE_DESCRIPTION("VEML6031X00 Ambient Light Sensor");
+> +MODULE_LICENSE("GPL");
+> +MODULE_IMPORT_NS("IIO_GTS_HELPER");
 > 
-> Given that's the thing we are controlling. My Friday evening tired brain agrees
-> that it makes sense to use channel types rather than adjustments on something else.
-> 
-> I'll think some more on this.  We've never had continuous (well digital
-> so near continous) control of either phase or frequency before - it's just
-> be symbol stuff with a couple of points to set.
-> 
-> 
-> > 
-> > The polar destination is a corner case, but can be solved when both
-> > phase and altcurrent channels are enabled. When that happens we can
-> > change the scan_type with has_ext_scan_type = 1, so the 16-bit data
-> > bus is split between the two.
-> > 
-> For now I'll just nod at that!
 
-I took a look at get_current_scan_type() and I faced the issue:
-
-	user checks the scan format type before enabling the buffers
-
-In this case I have a scan type that changes with the scan mask:
-
-	altcurrent and phase both selected for buffer transmission would
-	have the scan type changed so that the 16-bit data bus is split
-	between 2 8-bit chunks.
-
-That may also get confusing values for offset and scale. Then I decided
-to have 5 parallel port channels with fixed scan_type:
-
-	0. out_altcurrent120 - amplitude destination (16-bits)
-	1. out_phase120 - phase destination (16-bits)
-	2. out_frequency120 - frequency destination (16-bits)
-	3. out_altcurrent121 - polar destination (8-bits)
-	4. out_phase121 - polar destination (8-bits)
-
-with the possible scan masks:
-
-	0x01: amplitude
-	0x02: phase
-	0x04: frequency
-	0x18: polar
-
--- 
-Kind regards,
-
-Rodrigo Alencar
