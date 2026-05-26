@@ -1,46 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E8703A7F5F;
-	Tue, 26 May 2026 12:33:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBC33282F1D;
+	Tue, 26 May 2026 12:35:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779798787; cv=none; b=pMJuQrKEhir1odEVEXhoNJxRxHYsPsXMEDa7By56y6AIV4YiY7pF+Eg+tvkKcbgSrmLWkUktnXu5sshcz/n0ZME06nhk1XUFNIWw9K8/k79L/6EDU6FCPsIcXK3W5TEgvD7oFjOXInLeZ3qdqKd0xznEcnUOMhzt7o+u+npke2s=
+	t=1779798930; cv=none; b=mV1wPKFzIdbQjFbi14rE/iYJsAbSP9zfK3x5gpN57PO9BjHnYc4LUG/fyoZ5KR5GB7CNwlTeLtWz8zplJWvjhIDDzPcy/ykytuLOTEdEH1SY8n+cB5Sg5saIIIfREnSoEExq1K3OILrttZ4iWJHuYpjJcO2/9gqXEMDTmkS2n8A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779798787; c=relaxed/simple;
-	bh=YRUex1hghA+tO41he3dHRIZQx/gJ1U/095M/6qHa47E=;
+	s=arc-20240116; t=1779798930; c=relaxed/simple;
+	bh=n7j2xB/p2/bpJ4PAZFAH2CPKG+pYjXlg/jFOgnW2DLY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=l0vEhy1X7p1GYFKRGEk5m4Ss0AURWgteqrfI2cEwwvjyZWX/3EJ60zRrWpYuxs4wNdBCJDxp8JJYOSpUVzqOnz/pgK0NEmTCvolvB0pqQAOL+n2pZhLs6squFs8xr6hw5WODEVpVy7C5mr5o+GrhLNvB8m5y+mqzTdGTBM++IG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LPyFj7Fi; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ABO4aED5VdF4oSxk/QNAuPmgGCTU24CQHU5AG3n2F+yYGge/1j2frlaQpj0qpbWqJFdNITIY2CJ1+TA0NOCi6LTdNhennFC4+DyflaY7JTQggYYsrSGzaDndJwOmm0Ba+hL7ElX1+Fcr6X1Bn8gemLNpzOEDzcvxW26k9MLn8CU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mVrWbuS1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LPyFj7Fi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE7C11F000E9;
-	Tue, 26 May 2026 12:33:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mVrWbuS1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9121F000E9;
+	Tue, 26 May 2026 12:35:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779798785;
-	bh=UXy+Aq3ip8ggzdAob3fH1MwYAHbx0+lsclrzD0G6o8Q=;
+	s=k20260515; t=1779798928;
+	bh=A4I37u3pxMkDLwlxmTpz4QG4dLPJrI76nlF19AT6q0I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LPyFj7Fi/8dsVw+6KLIF3BQeHFNvnYUAHDLUn+9cvtKgFfeoJPLCv0wXAUzwY5Rk2
-	 AebALP6aVBQr1C3Qpmswmy+KrWdhLFV0RMdoGZLYVQ4dXipG0If4ZDGpAvtoEb4Rhv
-	 4B2xW/UDP1eYZgKwZUbbVUforJgUFyBidA+Z2cGHT3INUyMchg+239WbgMwt8qbkh9
-	 ShRLuNTbJdzTx73JwXczuKZUYUo/6eq6vBjA+ovnx6/cw3FpkUWghIFjiMvObZQ0Zr
-	 kD1vgyWsH7IfBASq6FvSlO/cZFgIDJHrEJi8k80o8jhAxvthcWSLn9oagATDvk/4Jj
-	 nUDtkvro3rKlA==
-Date: Tue, 26 May 2026 13:32:56 +0100
+	b=mVrWbuS1XS8D3hQMpCtLJLpnHf6D6jAOgx476wTlix+2MGFvfbpg1YBsuH9+iOE3M
+	 ehoBHdgaQhjGCN3XnDZiu495rlZ0RS9alDi9zTJGtWSYv06o/tia5kgRIpWvUTomr8
+	 6S/kpe1YRlyltFd7QyJ+a9idd7tpmWMwWnB4DIcn/ch/peJ5jLNgBAWTbn0z+gQnyP
+	 TvygqtFjVDwlMKiXi55/NLyDFTQpbIBnNWfXKrp+NxGsl5hru6fZ/T1QAeXv/yyXW5
+	 W2ujko2fWTBrm/4rbOIoTmgEOL0Cg2nds0hZZo0b8OWj12xabcqpiyKv4Llh49MCaE
+	 WhR4tpzTt0/SA==
+Date: Tue, 26 May 2026 13:35:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andreas Klinger <ak@it-klinger.de>, Andy
- Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v9 04/11] dt-bindings: iio: adc: hx711: add HX710B
- support
-Message-ID: <20260526133256.4b781fa6@jic23-huawei>
-In-Reply-To: <CAMB+xkYUC-OqncD+SxOo9K36ZR9iC-5CFUs6wKojz2j+M24K4g@mail.gmail.com>
-References: <20260518220228.63322-1-piyushpatle228@gmail.com>
-	<20260518220228.63322-5-piyushpatle228@gmail.com>
-	<20260520111919.5e99fe72@jic23-huawei>
-	<CAMB+xkYUC-OqncD+SxOo9K36ZR9iC-5CFUs6wKojz2j+M24K4g@mail.gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
+ Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
+ <jan.sun97@gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260526133519.232fd9d6@jic23-huawei>
+In-Reply-To: <20260525-dedicator-strut-6f7618a92180@spud>
+References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
+	<20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
+	<20260522180207.63b725fb@jic23-huawei>
+	<20260525-dedicator-strut-6f7618a92180@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,41 +56,102 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, 24 May 2026 08:15:27 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Mon, 25 May 2026 17:30:02 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-> On Wed, May 20, 2026 at 3:49=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
-g> wrote:
-> >
-> > On Tue, 19 May 2026 03:32:20 +0530
-> > Piyush Patle <piyushpatle228@gmail.com> wrote:
-> > =20
-> > > Add the avia,hx710b compatible and document the HX710B-specific
-> > > DVDD and VREF supplies.
-> > >
-> > > Add constraints that forbid HX711-only properties on HX710B nodes and
-> > > require vref-supply for HX710B, then add a separate HX710B example.
-> > >
-> > > Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > > Acked-by: Conor Dooley <conor.dooley@microchip.com> =20
-> > FWIW the only thing Sashiko doesn't like is dvdd is enabled for the old
-> > parts. Move it to the earlier supply adding patch for hx711 and we shou=
-ld
-> > be good to go!
-> >
-> > Jonathan =20
+> On Fri, May 22, 2026 at 06:02:07PM +0100, Jonathan Cameron wrote:
+> > On Tue, 19 May 2026 17:42:58 +0200
+> > Janani Sunil <janani.sunil@analog.com> wrote:
+> >  =20
+> > > Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
+> > > buffered voltage output digital-to-analog converter (DAC) with an
+> > > integrated precision reference. =20
+> >=20
+> > Note that I'm seeing this as Changes Requested in the DT-binding patchw=
+ork
+> > but didn't see any replies.
+> >=20
+> > Seems I didn't get the sashiko reply - nor did the IIO patchwork.
+> > Hopefully Janani did!
+> > https://patchwork.kernel.org/project/devicetree/patch/20260519-ad5529r-=
+driver-v3-1-267c0731aa68@analog.com/ =20
 >=20
-> Because dvdd-supply now lands in 02/11 as a shared property, I will
-> remove it from 04/11's properties block.  The allOf constraint in
-> 04/11 does NOT gain a dvdd-supply: false in the else (HX711) branch
-> DVDD is valid and meaningful for HX711 nodes too.  The only things
-> forbidden for HX711 remain vref-supply (else branch); the only things
-> forbidden for HX710B remain vsup-supply and rate-gpios (then branch).
-> I think this will be a suitable approach, right ??
+> The sashiko stuff is per subsystem or something, so dt stuff only goes
+> to us and the submitters. I think that's kinda stupid but also probably
+> required to avoid pissing people off. There's quite a bit of noise
+> generated by it, especially with it repeating the same incorrect stuff
+> on every version.
 
-Yes. Sounds right to me.
+When I get on top of the long weekend's backlog I'll start a discussion
+on whether we ask for emails from Sashiko be sent to linux-iio.
+
+I was nervous about doing that until I had some experience of how=20
+reliable the reviews are but given I'm either cutting and pasting stuff
+into threads or telling people to go look, might as well have those emails.
 
 Jonathan
 
+>=20
+> >  =20
+> > >=20
+> > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > > ---
+> > >  .../devicetree/bindings/iio/dac/adi,ad5529r.yaml   | 217 +++++++++++=
+++++++++++
+> > >  MAINTAINERS                                        |   7 +
+> > >  2 files changed, 224 insertions(+)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.ya=
+ml b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> > > new file mode 100644
+> > > index 000000000000..eb66f6ca063d
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> > > @@ -0,0 +1,217 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/iio/dac/adi,ad5529r.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Analog Devices AD5529R 16-Channel 12/16-bit High Voltage DAC
+> > > +
+> > > +maintainers:
+> > > +  - Janani Sunil <janani.sunil@analog.com>
+> > > +
+> > > +description: |
+> > > +  The AD5529R is a 16-channel, 12-bit or 16-bit, high voltage, buffe=
+red voltage output =20
+> >=20
+> > Long line. Check the wrap.
+> >  =20
+> > > +  digital-to-analog converter (DAC) with an integrated precision ref=
+erence.
+> > > +  The device operates from unipolar and bipolar supplies. It is guar=
+anteed
+> > > +  monotonic and has built-in rail-to-rail output buffers that can so=
+urce or
+> > > +  sink up to 25mA.
+> > > +
+> > > +  Specifications:
+> > > +  * 16 independent 12-bit or 16-bit DAC channels
+> > > +  * Independently programmable output ranges: 0V to 5V, 0V to 10V, 0=
+V to 20V,
+> > > +    0V to 40V, =C2=B15V, =C2=B110V, =C2=B115V, and =C2=B120V
+> > > +  * The device supports SPI communication with Mode 0 and Mode 3.
+> > > +  * 4.096V precision reference, 12ppm/=C2=B0C maximum
+> > > +  * Built-in function generation: Toggle, Sinusoidal Dither, and Ram=
+p waveforms
+> > > +  * Multiplexer for output voltage, load current sense and die tempe=
+rature
+> > > +
+> > > +  Datasheet: https://www.analog.com/media/en/technical-documentation=
+/data-sheets/ad5529r.pdf
+> > > + =20
+> >  =20
+> > > +patternProperties:
+> > > +  "^channel@([0-9]|1[0-5])$": =20
+> >=20
+> > Sashiko commented that this should be hex.  Why the forcing to decimal?
+> >  =20
 
