@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E5D24534A3;
-	Wed, 27 May 2026 18:30:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E103B3D649C;
+	Wed, 27 May 2026 18:32:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779906630; cv=none; b=AHepVB08NWO+ySAUA12r5+eJ2yB9WXottzq7ePy0qDVyg41wJXXpFnybQmLmeZYE0N8oE4klOuvvei7CDvqrjf2edW+Vu1ryDI4rw1e6yHGhPqZuRqcI/ehndqPe0McR5fdmLE0+y6zWOXLB4N/OniR7O7eVIOI/PAlE9e5IXKQ=
+	t=1779906773; cv=none; b=HZ+xEloL1FB820mJ8PhU5nGjDoILXTkR5TphpHHLu2jHRFBDijaDhj5jHOqw22FRrfvZSSH53hcNA0ARd0TmFQgm4+mHiXSFesC/PHJ67/mDzrFKpm9FW2Cde18i1sXMhZsgOeSqDa+XpP6wnfeACrIg7GZSV5Q4cayBK3F42sI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779906630; c=relaxed/simple;
-	bh=IbyoxHcpTyADmQDw6LoqtQZmLqElPhTftmfvTzpUplQ=;
+	s=arc-20240116; t=1779906773; c=relaxed/simple;
+	bh=3SmjBOjXXCuAaVGNMBKlr05T7DyebfqzBuFQEOibEbk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ffw5ve18yFxbLULv6vZNNWpbhODxnL27dPxyXk38HfX6tQAMwyqqqa5ywPLYbuJOAwzodmNA98r1Sq7tWc5uoFyFOuoYmBcUame6jTCM7MzxTik01RMwyPpzeTXFfKpIOx8pFHfAi74UzyeIS3ez9F6CploFYjDL5h5ipQ2ABcU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VB6c9qPg; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LMZ6cwxLbZJH9jFvuRqldBC1J+UzGbXBz6R7ugW4Gd8r/QQJfIuVwXJLikjIzK0ANI42IB2cL8S9bnN+XZedtJDq9bIP+Rtlviz5a2pRAnOaV7n7gMCtOhdOZnzDLrZEz/xrH2upBtav88+EF6Oap1rfUO1S6uNn2Ue+s/DKFvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oc/9JH06; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VB6c9qPg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32FB61F000E9;
-	Wed, 27 May 2026 18:30:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oc/9JH06"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBCD1F000E9;
+	Wed, 27 May 2026 18:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779906626;
-	bh=A2d4KJWTWOKVjHxH6j5gyIYie8+/9yod2g3BPdoJjVA=;
+	s=k20260515; t=1779906771;
+	bh=AtkqO35UtTTwja2Dnv9yfIiRy6VHJUSdpTI3MAmFDm8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VB6c9qPglZQ6qp3iTA9gjWidMOYvQ2m8uTqpuGMkeBLv5/c6+Y59f13neP030bOFo
-	 3KDroMDfWhr1U0rnzRPN/MXFnJh4Ak29LloS5N2w7a5I86MS/ehCk1p6nn53OoIA9L
-	 AmF6FhNN5ME9qARn80zHjdTa1z1OdrCffOIBzXsXRAeVmr1MuVlJTmufukrMqcm13h
-	 UVgQ0xe9NygbKdiqbxCmgLUSFPgA+oVDFT+el73AfBeD68TGk8Y3PlpxneHi6ORYcy
-	 cGNlY5XRw0sQK9EcEqjRE3K2n6AeoE/NLSfMTolPm4PrTkTMFAaIlcg4e2uijlMIpR
-	 9OYqHHX9m+TQw==
-Date: Wed, 27 May 2026 19:30:19 +0100
+	b=oc/9JH06FTrPRFhmbAYT4+SaTepnzc/JwIZcXXgwyEZcqHCebfqufsPT8suc0b++k
+	 tArO3sezCiW4YmEzQhTNmnHEK0ZQGZOM7xdoUqX0fMUaxjEarbBym3hkfqzBO/d8uS
+	 fEsBmZ/vG8LP2MVsGfWU4z4Stmv7XxF9EHf26Plr8wRdVDUCu9CssD8FjNoExLXYQE
+	 lNATDuXkvBEGbNMj8mxgd00uDQUtC7+RB+iJaoplX4jBShA9vMf9q0it+4eSHD7Z1m
+	 peyxRCLclhAMT0ahQzCSRvFiEEQLrfbr6FdY1HZ/tVh0SoRA0dYiSHfcHHrm/LHmAb
+	 k2cxbopdHA1BQ==
+Date: Wed, 27 May 2026 19:32:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Maxwell Doose <m32285159@gmail.com>
-Subject: Re: [PATCH v4 3/8] iio: light: opt3001: ensure correct parenthesis
- alignment
-Message-ID: <20260527193019.367da1db@jic23-huawei>
-In-Reply-To: <20260525-opt3001-cleanup-v4-3-65b36a174f78@gmail.com>
-References: <20260525-opt3001-cleanup-v4-0-65b36a174f78@gmail.com>
-	<20260525-opt3001-cleanup-v4-3-65b36a174f78@gmail.com>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: lars@metafoo.de, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ linux@roeck-us.net, jdelvare@suse.com, ak@it-klinger.de,
+ linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 0/4] iio: add Sensirion SLF3x liquid flow sensor
+ support
+Message-ID: <20260527193241.308f67b6@jic23-huawei>
+In-Reply-To: <20260527143515.102794-1-wafgo01@gmail.com>
+References: <20260524205112.26638-1-wafgo01@gmail.com>
+	<20260526171214.750c2e25@jic23-huawei>
+	<20260527143515.102794-1-wafgo01@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,196 +51,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 25 May 2026 10:20:17 +0200
-Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+On Wed, 27 May 2026 16:34:58 +0200
+Wadim Mueller <wafgo01@gmail.com> wrote:
 
-> From: Joshua Crofts <joshua.crofts1@gmail.com>
+> On Tue, 26 May 2026 17:12:14 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Ensure correct parenthesis alignment per checkpatch.pl report.
+> > > 1. Subsystem.  Liquid-flow sensors don't seem to have a home in
+> > >    mainline yet.  iio/ feels like the natural place for me, but
+> > >    please correct me if hwmon (or somewhere else) is prefered.    
+> > 
+> > I'm fine with this type of sensor in IIO, but open to hear from others!  
 > 
-> No functional change.
+> Thanks - keeping it in iio/ for v2.
 > 
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-I was optimistic we could get the fix in via one tree and the rest via
-another but nope - this changes alignment of stuff to close to that fix.
+> > > 2. Channel type.  IIO has no flow channel type so far.  The series
+> > >    adds IIO_VOLUMEFLOW with _scale in litres per second per LSB,
+> > >    so drivers reporting smaller units only need a fractional scale.
+> > >    IIO_MASSFLOW (for gas-flow sensors) was left out on purpose --
+> > >    happy to add it in the same series if that's more usefull.    
+> > 
+> > Would be good to have a little more detail on difference etc to have
+> > that discussion.  Superficially I'm assuming this is a compressible vs
+> > non compressible thing?  
+> 
+> Right - that was the distinction I had in mind:
+> 
+>   - IIO_VOLUMEFLOW: volumetric rate (m^3/s in SI, exposed as l/s),
+>     well-defined for an incompressible fluid where the volume at the
+>     sensor equals the volume delivered.  This matches all "liquid
+>     flow" sensors I'm aware of (and the SLF3S family in particular).
+> 
+>   - IIO_MASSFLOW: mass rate (kg/s), the natural unit for gases because
+>     the volumetric rate depends on temperature and pressure.  Most
+>     "gas flow" parts on the market (Sensirion SFM3xxx, SFC, MFC
+>     devices) actually report a "standard volume flow" (e.g. slm at
+>     0 degC and 1013 mbar) which is just a fixed-density restatement
+>     of mass flow.
+Makes sense.
+> 
+> I left IIO_MASSFLOW out of this series because I don't have a driver
+> needing it right now, but if you'd prefer I add it as a stub here
+> (name + ABI entry) so the two siblings land together, I can fold that
+> in for v2 -- happy either way.
+> 
 
-Ah well. This will have to wait for that fix to make it into an upstream
-release. I might do a pull request for fixes sometime later this week to
-get that going.
+Nope. Good to discuss what it would look like in this over letter, but
+the actual introduction needs to wait for a driver that uses it.
 
-Jonathan
-
-> ---
->  drivers/iio/light/opt3001.c | 73 +++++++++++++++++++++++++--------------------
->  1 file changed, 41 insertions(+), 32 deletions(-)
+> > > 3. Subdirectory.  I put the driver in a new drivers/iio/flow/
+> > >    since there is no flow subsytem in iio yet.  If colocating with
+> > >    drivers/iio/pressure/ (next to sdp500) is preferred I'll respin.    
+> > 
+> > This is easy to change later if we make a wrong decision. For now I think
+> > iio/flow is fine.  
 > 
-> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> index efaad85dfaf3afc9199fd3124d832ee2a297f0b3..532929e8fa8b4172eadc696e927315017a07dac1 100644
-> --- a/drivers/iio/light/opt3001.c
-> +++ b/drivers/iio/light/opt3001.c
-> @@ -223,8 +223,8 @@ static const struct opt3001_scale opt3002_scales[] = {
->  	},
->  };
->  
-> -static int opt3001_find_scale(const struct opt3001 *opt, int val,
-> -		int val2, u8 *exponent)
-> +static int opt3001_find_scale(const struct opt3001 *opt, int val, int val2,
-> +			      u8 *exponent)
->  {
->  	int i;
->  	for (i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
-> @@ -242,8 +242,8 @@ static int opt3001_find_scale(const struct opt3001 *opt, int val,
->  	return -EINVAL;
->  }
->  
-> -static void opt3001_to_iio_ret(struct opt3001 *opt, u8 exponent,
-> -		u16 mantissa, int *val, int *val2)
-> +static void opt3001_to_iio_ret(struct opt3001 *opt, u8 exponent, u16 mantissa,
-> +			       int *val, int *val2)
->  {
->  	int ret;
->  	int whole = opt->chip_info->factor_whole;
-> @@ -364,8 +364,8 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
->  	if (opt->use_irq) {
->  		/* Wait for the IRQ to indicate the conversion is complete */
->  		ret = wait_event_timeout(opt->result_ready_queue,
-> -				opt->result_ready,
-> -				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
-> +					 opt->result_ready,
-> +					 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
->  		if (ret == 0)
->  			return -ETIMEDOUT;
->  	} else {
-> @@ -474,8 +474,8 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
->  }
->  
->  static int opt3001_read_raw(struct iio_dev *iio,
-> -		struct iio_chan_spec const *chan, int *val, int *val2,
-> -		long mask)
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  	int ret;
-> @@ -506,8 +506,8 @@ static int opt3001_read_raw(struct iio_dev *iio,
->  }
->  
->  static int opt3001_write_raw(struct iio_dev *iio,
-> -		struct iio_chan_spec const *chan, int val, int val2,
-> -		long mask)
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  	int ret;
-> @@ -532,9 +532,11 @@ static int opt3001_write_raw(struct iio_dev *iio,
->  }
->  
->  static int opt3001_read_event_value(struct iio_dev *iio,
-> -		const struct iio_chan_spec *chan, enum iio_event_type type,
-> -		enum iio_event_direction dir, enum iio_event_info info,
-> -		int *val, int *val2)
-> +				    const struct iio_chan_spec *chan,
-> +				    enum iio_event_type type,
-> +				    enum iio_event_direction dir,
-> +				    enum iio_event_info info,
-> +				    int *val, int *val2)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  	int ret = IIO_VAL_INT_PLUS_MICRO;
-> @@ -544,11 +546,13 @@ static int opt3001_read_event_value(struct iio_dev *iio,
->  	switch (dir) {
->  	case IIO_EV_DIR_RISING:
->  		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
-> -				opt->high_thresh_mantissa, val, val2);
-> +				   opt->high_thresh_mantissa,
-> +				   val, val2);
->  		break;
->  	case IIO_EV_DIR_FALLING:
->  		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
-> -				opt->low_thresh_mantissa, val, val2);
-> +				   opt->low_thresh_mantissa,
-> +				   val, val2);
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -560,9 +564,11 @@ static int opt3001_read_event_value(struct iio_dev *iio,
->  }
->  
->  static int opt3001_write_event_value(struct iio_dev *iio,
-> -		const struct iio_chan_spec *chan, enum iio_event_type type,
-> -		enum iio_event_direction dir, enum iio_event_info info,
-> -		int val, int val2)
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir,
-> +				     enum iio_event_info info,
-> +				     int val, int val2)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  	struct i2c_client *client = opt->client;
-> @@ -626,8 +632,9 @@ static int opt3001_write_event_value(struct iio_dev *iio,
->  }
->  
->  static int opt3001_read_event_config(struct iio_dev *iio,
-> -		const struct iio_chan_spec *chan, enum iio_event_type type,
-> -		enum iio_event_direction dir)
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  
-> @@ -635,8 +642,10 @@ static int opt3001_read_event_config(struct iio_dev *iio,
->  }
->  
->  static int opt3001_write_event_config(struct iio_dev *iio,
-> -		const struct iio_chan_spec *chan, enum iio_event_type type,
-> -		enum iio_event_direction dir, bool state)
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir,
-> +				      bool state)
->  {
->  	struct opt3001 *opt = iio_priv(iio);
->  	struct i2c_client *client = opt->client;
-> @@ -812,16 +821,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
->  			OPT3001_CONFIGURATION_M_CONTINUOUS) {
->  		if (ret & OPT3001_CONFIGURATION_FH)
->  			iio_push_event(iio,
-> -					IIO_UNMOD_EVENT_CODE(chan_type, 0,
-> -							IIO_EV_TYPE_THRESH,
-> -							IIO_EV_DIR_RISING),
-> -					iio_get_time_ns(iio));
-> +				       IIO_UNMOD_EVENT_CODE(chan_type, 0,
-> +							    IIO_EV_TYPE_THRESH,
-> +							    IIO_EV_DIR_RISING),
-> +				       iio_get_time_ns(iio));
->  		if (ret & OPT3001_CONFIGURATION_FL)
->  			iio_push_event(iio,
-> -					IIO_UNMOD_EVENT_CODE(chan_type, 0,
-> -							IIO_EV_TYPE_THRESH,
-> -							IIO_EV_DIR_FALLING),
-> -					iio_get_time_ns(iio));
-> +				       IIO_UNMOD_EVENT_CODE(chan_type, 0,
-> +							    IIO_EV_TYPE_THRESH,
-> +							    IIO_EV_DIR_FALLING),
-> +				       iio_get_time_ns(iio));
->  	} else if (ret & OPT3001_CONFIGURATION_CRF) {
->  		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
->  		if (ret < 0) {
-> @@ -884,8 +893,8 @@ static int opt3001_probe(struct i2c_client *client)
->  	/* Make use of INT pin only if valid IRQ no. is given */
->  	if (irq > 0) {
->  		ret = request_threaded_irq(irq, NULL, opt3001_irq,
-> -				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> -				"opt3001", iio);
-> +					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> +					   "opt3001", iio);
->  		if (ret) {
->  			dev_err(dev, "failed to request IRQ #%d\n", irq);
->  			return ret;
+> Sticking with drivers/iio/flow/ for v2.
 > 
+> Thanks!
+> 
+> v2 is up, addressing the inline review feedback from you and Guenter.
+> Dropping the RFC tag since the three high-level questions are
+> answered.
+> 
+> Wadim
 
