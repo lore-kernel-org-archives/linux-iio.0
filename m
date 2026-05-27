@@ -1,126 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 945562641CA;
-	Wed, 27 May 2026 11:18:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779880731; cv=none; b=ZrdjlThywT+yBeJnCqtMet2PXWmTIQMKkk0E8jGFzKNQR09sn7NZtJYq2EDIuA4ckyNIC2k85jYa55ljXJdpgMCGq3pY23WoP/HT3WitbJNHPypdUEnE78sO5q7Qq6gdmnc8ADJC0CeX0rg28RrqOMvqRCVvkB/3UvFWLbKzcLU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779880731; c=relaxed/simple;
-	bh=i8/bSOcSWzJXDdhIk9qZS4TKMVlzmAW4L+sWkYftPQ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bY3fm72Ii1Y33TzG+KLnRFZgXoSfLY6j0FWrzbzO67qAkFhuiMOaXUyX7F1O4E8RVsG4dCwlBUayQNmGSVDnkMXeMyOIyoXeY2TXZ+1NUkYV5nGybWiq7YxvDkYWgPQkNPmi5hKCE/sqPSM/+br1oKDTVvp/P/j3R+5QSn2GjBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LllbUeYB; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768E23DFC8A
+	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 11:24:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779881090; cv=pass; b=MmRXYllWub6ZQCuiElPrdb2wTIKIbHArYVXn6n8lYpa5uywCNpvD9evP/h89RduEH7G7cVROwUdlfhdF7Z0QrEgy81+sZXqMxJ7F5HFgkBXMIj4zhOMxam3R6H+KSw7oXtYKdXBXumGu92dL5u7NAoUF25XbPS/QPFksiqOFElI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779881090; c=relaxed/simple;
+	bh=6f36UCay5OAn9ZY1CaIQpcW2YbapEdBtYAL/RUTsKHs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fLELE2sn7W5c3+l10RgGq0JMrUHgsZXxm+CiMveqoOSwWpFzAXy48StGjExZPQLYQHDd2h1PUHIsC/xg93BctpwXVmC1xBfO+0HtQqgTisHVpyJXoCsrNjKrT8stf/2W+2r+XjwJNOOT5ogottUo1YFfqj8rHq+7vwli2FMjZkg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eO9/WxYC; arc=pass smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LllbUeYB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42D601F000E9;
-	Wed, 27 May 2026 11:18:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779880730;
-	bh=2YcqlaayGOV7xA/eNn9tQB+0Ls+UKfGYncAJCYDRDM4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LllbUeYBthbT/pzTLsQel1fBrRDElRyNVaABjvGdyYYZwQEPFh2gNebmU3PvnZ/7L
-	 aXrV45jaLqNsP61gwhuPHsl96UKnYR2waLPmX2gOZJUTK4dL6RmGdeNDiWLzZkaCXL
-	 xogXPf5rrAlqrLKnLL0vS4sS4lLgnPN9CCPbLkJMbNB8yCx3j4x19WcKB3oT9gzeJv
-	 seSX/lmM0vwU5BeyYrk8avGRDVVhj01WR7HpIg+B4T/1Pr7fwAhaxXmXkCaQT64vp6
-	 vaetRtnGDjVZoqX+5PvrwmGxJ00cKEew/I0p9XBLYTc/K4LpS/JfvuUTKJm1lAuMwn
-	 k1RJi51GYh3tg==
-Date: Wed, 27 May 2026 12:18:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/2] iio: adc: ad_sigma_delta: fix CS assertion and
- registerless device handling
-Message-ID: <20260527121841.529b9b8c@jic23-huawei>
-In-Reply-To: <20260527121648.6cf31312@jic23-huawei>
-References: <20260527-ad_sigma_delta-fix-v5-0-446fd2bc7330@analog.com>
-	<20260527121648.6cf31312@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eO9/WxYC"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-43eb05b1875so6146070f8f.3
+        for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 04:24:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779881087; cv=none;
+        d=google.com; s=arc-20240605;
+        b=A3qQ8F+vBuakpGTYkcN0lDEaRTUw90M9K/dXEiMgQaMVghDRfwG9AHkvmNNap4BzNy
+         GAbbmrsWUyh3H5lREq5NSp2FjBVUgCSHGBg5cd5BgtuFM58vmoqlOwMVRsVIL/ex9QzI
+         sCHdVs98hkW9E2KZ/294KGU0WQsdDvLZTpCDrTlAuBp2ozg3fGHr+t+1yxDqA30HuNpD
+         lyXE8wK5KU9Yb1/nxK2WEOOQOmZVj7RtbZy/5CvkwDfhoXZuyGqugdCwH+/oGAmShDL+
+         TnrqyreHMMAz+hk1Jdv64/WdjElkC4VUrh5VcaPqSui/4I/X9tCPD2kbGBsbsZ1sV4sc
+         +EKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=1oSdfPlt8ivfVcrtc+mkmI3RhSITwTlRakTSHCj1tzs=;
+        fh=xSklhhiRpCjK4FrwDHscpgArLihPFqUSdj91IkXWx7c=;
+        b=R1sPNEj908ma90+4reEGLNwFTv9UZdfyXLAO1h+duxDtsuSslSUQSfpC/phPI+PNyM
+         KAYv4PEEEbzEppyONvS8bSmosUdvYR38zxA1L2pjkS9cUs3c/NUl2Vm2mbxX6opNhgcJ
+         p7ExFmr0wSLNQc6+8C+KLEdV09W9sNzC8nKuP/crI3zbjdHaED6JhemL+xkl0SapiPHh
+         xxfarqgDEXCzVkird0no5Py2wlr/9pL1zhnpKcrNVdTM0VolTnfQL9pz7sHvuRYZqv9+
+         jXEniPGCpJwEBTWvuIpnvxJQ4zduVIpl1cuNbEXmsEEXDMn6Ya4xmO/k0UyUEMUXGc93
+         nhjA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779881087; x=1780485887; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1oSdfPlt8ivfVcrtc+mkmI3RhSITwTlRakTSHCj1tzs=;
+        b=eO9/WxYC7s1YBnw51qdqxW9xNhCmHB0qgFhXawJQ5kuoMyF65opaBbA+G//lYwfz5Q
+         2PBuR2c2vG92+eouJ6HVdBagg4ISud5OnKSvmM3YnbqJVPZtgeo0kYgRImXtIYsB0lro
+         Q8Rv299oxUPwY8mSkUmmJm4QOuANtMpOzp2SyMQzbeaRahoutvTZWzk04Y7tqa18QsYc
+         OvcIqtMGLeO7/5z1zz0Kvchd1vVmT/4d6P8DZ6AnWzZaSuX7ejBfISEMaa4880TkaOOT
+         H1DGnIhX0xSOqgOQ8zaVYW51ToF46bg6G23pBhXppGMrVD/tvbgqyM72BvNZIOo5hO4Q
+         SWTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779881087; x=1780485887;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1oSdfPlt8ivfVcrtc+mkmI3RhSITwTlRakTSHCj1tzs=;
+        b=Odp308xr2b9R6UyIn5wEQdeNRuFyMoclYIJsP+oUgcvYltzudhlfC2Czc6lPVBD8vE
+         qzt+lVycEg6ddNFpZ2xEl0brl5WvAwpEWNaGV3JYaLxw+bvjoyiGiMmsra1Hmw3VL7Ay
+         VtZ5Kn+hFTltlavezHv0b7p8FZCHmZ0/A33ma1mgBGmpHfcfnTmN2TVucqpkUGInZ2bz
+         P1IiYN+EHoCv7jyRzGJeZdlVJiZ3ife+OiaXL6IWM+cfkjXk6ls4w/7U5z2T7UVbvsIM
+         MUHyD2RzDbgP7st3L3AfBTNl/HLJkUnjnoha25rcKTIj6NwHJUnQOIdoUD2UZte2AA3R
+         Ma8Q==
+X-Forwarded-Encrypted: i=1; AFNElJ8h+YaRhhnb9rv1qX5LeHHY9L9YtHfqEk1Oa60DZa/2FXYK3o4b4+/1vOFFz80TVrSQSH1sm4hqnU4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpX+paTPTY+a8m7trReCUT1PwYqWoEkRft30fKn1Zls1JnJYsQ
+	+HNW4DCwf8hHJXZjD61NwtTnBDiuuDclgmjsXZFLl2WS6JSVwJ70P23+WOtDuYDy1mxRZwHD2Wu
+	jvFmKXv4RLtGIXCeIq/OoS10rdc4jp2M=
+X-Gm-Gg: Acq92OEJQ1bv9/XEKFQNlhbZj2jb/Kyj+5lf5inDxrnfHdRcetSqLABaY75pNRiCtLd
+	tPz4/FCOdS8xSETVUxdxvzqeoeRbf3BaKoNdQzpiHUpVlI/txouzD70H3Sy8zWriuF9lcYWR7cd
+	AuQtYe6InkONsliX/cSfLf/vaUsfh0ih8GiRA3x+mWYk9wXhX9wb0Sxu4v+bCZM5rBIsUhdYBOk
+	/5iAbL6zpQTcVLO4DwPHhJrW5gYd0TYwsqbLuAS58WR6l3Qf9buzgxmiPbjGovNoWFNbxB2Ft4X
+	oif6bCo+sRSANfTloklQQwclz/oUV1irUpieN9pTExOAuxdI9/XrzkI1VigQjF0LYz+mq7lT/69
+	kGHDJlNoX4w7Q2+g8Kgy2fPZU5vRUKRMWSoHjvVGsBV2ZeRLr2uLrGg3ztWevqRRs0sHgxwL7NR
+	ti/9HgOmRpAW68Lxce
+X-Received: by 2002:a05:6000:468c:b0:45e:df46:ba30 with SMTP id
+ ffacd0b85a97d-45edf46bd4emr466838f8f.34.1779881086531; Wed, 27 May 2026
+ 04:24:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20260526-fix-early-return-v1-1-c70e886329f3@gmail.com> <20260527121159.4a4f94bc@jic23-huawei>
+In-Reply-To: <20260527121159.4a4f94bc@jic23-huawei>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 27 May 2026 13:24:34 +0200
+X-Gm-Features: AVHnY4ICcG_SbVWlGG7pp_NTcZD7e61UVwmjUR0z7ffrciGosxMVadE5mVs8LQE
+Message-ID: <CALoEA-zuzkR_9aGzM+NGWVWcN0ngf-1tRbBm1exkASkx+m9eYA@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: opt3001: fix missing state reset on timeout
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Jiri Valek - 2N <valek@2n.cz>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 27 May 2026 12:16:48 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 27 May 2026 at 13:12, Jonathan Cameron <jic23@kernel.org> wrote:
+> The flow in this function is horrendous.  IF you have time would you mind
+> doing a follow up patch that just breaks it in two. Then have
+> if (opt->use_irq)
+>         opt3001_get_processed_irq();
+> else
+>         opt3001_get_processed_noirq();
+>
+> Maybe there is some code at the end that is worth sharing - you'll have to have
+> a play to see if that is worth doing.
+>
+> (If this was in your other patch set already then I'll blame lack of coffee!)
 
-> On Wed, 27 May 2026 12:38:37 +0300
-> Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
->=20
-> > This series fixes two independent bugs in the ad_sigma_delta framework.
-> >=20
-> > Patch 1 fixes CS being left permanently asserted after single conversion
-> > and in the error path of ad_sd_buffer_postenable(). In
-> > ad_sigma_delta_single_conversion(), set_mode(AD_SD_MODE_IDLE) and
-> > disable_one() were executing while keep_cs_asserted was still true,
-> > causing any SPI transfer they issued to carry cs_change=3D1. The
-> > postenable() error path also failed to call set_mode(AD_SD_MODE_IDLE),
-> > leaving the device in continuous conversion mode with bus_locked
-> > incorrectly set, opening a window for concurrent SPI access.
-> >=20
-> > Patch 2 fixes ad_sigma_delta_clear_pending_event() for devices with    =
-                                =20
-> > has_registers =3D false and no rdy_gpiod (currently AD7191, AD7780, and
-> > MAX11205). These devices fall through to the status register read path,=
-                                =20
-> > but since has_registers is false, ad_sd_read_reg() transmits no address=
-                              =20
-> > byte and blindly clocks raw MISO bytes =E2=80=94 indistinguishable from=
- reading
-> > conversion data, partially consuming any pending result and corrupting =
-the
-> > stream. With num_resetclks =3D 0 on these devices a further hazard exis=
-ts:
-> > if pending_event is set, the drain path attempts memset of SIZE_MAX byt=
-es,
-> > corrupting the heap. The fix returns 0 immediately for registerless
-> > devices. This is safe for all current instances: AD7191 and AD7780 (with
-> > powerdown GPIO) are reset between conversions by CS deassertion; AD7780
-> > (without powerdown GPIO) and MAX11205 are continuously-converting and
-> > cycle ~DRDY regardless, so the next falling edge fires naturally. A fut=
-ure
-> > registerless device that holds ~DRDY asserted until data is read would
-> > need num_resetclks set or a rdy-gpio instead. The same heap corruption =
-can
-> > be triggered on any device with rdy_gpiod set but num_resetclks =3D 0, =
-so
-> > an explicit data_read_len =3D=3D 0 guard is added independently.
-> >=20
-> > Signed-off-by: Radu Sabau <radu.sabau@analog.com> =20
-> Hi Radu,
->=20
-> Applied to the fixes-togreg branch of iio.git and marked for stable.
->=20
-> Note that as this is all a bit fiddly in the ideal world I'd like some
-> more eyes on this and will be happy to add tags or indeed pull the patch
-> in response to any reviews in the next few days.
->=20
-> Sashiko is now 'happy' I think and it found a lot more issues than I iden=
-tified
-> in earlier versions.
->=20
-Actually scratch that - these both need Fixes tags.  Please reply to each e=
-mail
-with whatever seems most likely.  I know it can be hard to find the point w=
-here
-a complex bug got introduced but we should still be providing some guidance
-on how far to backport.
+No, didn't touch on this in the original set unfortunately, but I keep
+discovering
+all sorts of strange things in this driver. IMO this warranted a quick
+solo patch
+as it can potentially mess up subsequent reads. I'll probably end up adding
+the breakdown in the other series though.
 
-Thanks,
+-- 
+Kind regards
 
-Jonathan
-
-> Thanks,
->=20
-> Jonathan
-
+CJD
