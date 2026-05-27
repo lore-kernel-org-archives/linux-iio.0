@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5457F3EA942;
-	Wed, 27 May 2026 11:12:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D0A3D6473;
+	Wed, 27 May 2026 11:16:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779880331; cv=none; b=WB1aspvbHG6q0fcLvT1Z8ygrRPUAmFE0XD71oxYZbtrlIWrOO0J8OYOvN+1up47slrO9zBdDxNiJf68nTQigtrMOfgBbygFWjVCujcO7kLEmQlnHF+RwP1Pj1tQkyZXzjsYFV1wDL2E5Q10jU1qDJwQs1+da4mohfOEpuSQcbXs=
+	t=1779880624; cv=none; b=HQCGco7KMRH6gMW2NjzfKUAxjaV3sGhL+IJY3odjG2FFEk4NQnYFQhe7Y/CmK67QKG/IV/p6NxzLyA0cIruhqtEWHV5BYR1k2Ad5eJwKdFKHQXga/dGo3pPr78osnbjF6LrfDv3YB+rMr2f1h2QLFkT48BO5puhoktlKjpNrtM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779880331; c=relaxed/simple;
-	bh=/0Yl9DBWSv2OSjUohiMto+Cg+AKLFW9utAbxd47+i78=;
+	s=arc-20240116; t=1779880624; c=relaxed/simple;
+	bh=TV27Dz68oILJadF4SE/lQl4xhTeV4MyxytBZ6vJWnJg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dQg7sQSYLry0Gzb/ASa7RHFqHLvOncueHG1xc/ghDpXsmypsTheVkgrYWiPa8NLDWPkNFumdC1KprRpN4NWhYmEcC8ZcO/8WhcR3ZjaVkU4d/3p09DhAY1hcOdyLz3v1iBAeB1/EUp1nt/Idvv7l8ms6TAvKQw/LcqFST0YOzZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y68ft7eF; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=fWdPheUvpVPsVYSnJhyONso0YDGSt8TZvsA4wV2Ks9K0ebE1xlASMoBH0VjRCJ3BnNHp9Pi48Mb2mLQAcrCyt5iwA6vMmVOSi93WpROjvCR1SZlv3URtsNE6UcS0uT4Ch3AEEdSKGRbUbG8eqkC1xcerCZywMGaWzDE369v8itg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PoV/ivlC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y68ft7eF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D57E1F000E9;
-	Wed, 27 May 2026 11:12:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PoV/ivlC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A191F000E9;
+	Wed, 27 May 2026 11:16:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779880329;
-	bh=GYKx4trkZ+FNFeHudAQLkbpLbOCapm8PqcKEgE/jfFw=;
+	s=k20260515; t=1779880617;
+	bh=bznQsg5OdfZmNLj1aA7dUb7Vuazi59aNs5ZdREDkNoE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Y68ft7eFcOramM7PwfTWO/xzjCEmewk3L0kRh4CFBNU+ZHYWr3h3rnFyAf7cIBp1w
-	 8O22qOXbCc1/X84sDCx6cop2RadQA4k2zCBXYeLSPV6xj8xIcEkCvncHV6oVChf+gj
-	 srVOU8kAwxtE7wV4L8cDHP5rjRTh6wcVFr3UcxCjaG1m3z1VCCX+zxq2R7hzN91ZVc
-	 aCFaw73O42ijzCD+ptc33xTIPakxh+DiMASWwe2/fG1wuTCAnFmHboLIgk4DD3DrN9
-	 0WeDt27EUU2IbJtHCzBBnQHf3WaW8Zsel0JOCMs7PwmhzUtYFNrbm9ODLyiAgnxSRI
-	 Y9LRNgZ7qJC/Q==
-Date: Wed, 27 May 2026 12:11:59 +0100
+	b=PoV/ivlCYoWoq/BhW3u77m/wVQS37HNr95EM5AHx1VJCW/TBzS4PN00mwS9BLk75s
+	 cNCSP3AIcjfdkBXUiqz8yW26ktbBeKYeHoUJDrSjj3fnvnvvRvFUWGNb5P3GchZy3+
+	 nLCcmJf6uqxZN/w4UL1VX6oCAqgqee5J0esgL8EMr/hbel+YfpsW/GWrMvBKzNg6Da
+	 2IBVCvA64NcKYgLgFBIo+1ZwYnh/V2zVxfDnBu/A8KRq5r4qkv8AesNfyMulqSDKI3
+	 +BZQOQLlVF7u/uYK8L+Wy1g2ClB54JQ1bzUAO2hXyw3WLKsXiVRlMnnl5ynfnqHYvl
+	 2IlljrTQJ70rQ==
+Date: Wed, 27 May 2026 12:16:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
-Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jiri Valek - 2N <valek@2n.cz>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
- stable@vger.kernel.org
-Subject: Re: [PATCH] iio: light: opt3001: fix missing state reset on timeout
-Message-ID: <20260527121159.4a4f94bc@jic23-huawei>
-In-Reply-To: <20260526-fix-early-return-v1-1-c70e886329f3@gmail.com>
-References: <20260526-fix-early-return-v1-1-c70e886329f3@gmail.com>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/2] iio: adc: ad_sigma_delta: fix CS assertion and
+ registerless device handling
+Message-ID: <20260527121648.6cf31312@jic23-huawei>
+In-Reply-To: <20260527-ad_sigma_delta-fix-v5-0-446fd2bc7330@analog.com>
+References: <20260527-ad_sigma_delta-fix-v5-0-446fd2bc7330@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,71 +47,58 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 26 May 2026 13:15:29 +0200
-Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
+On Wed, 27 May 2026 12:38:37 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-> From: Joshua Crofts <joshua.crofts1@gmail.com>
-> 
-> Currently in the function opt3001_get_processed(), there is a check
-> that directly returns -ETIMEDOUT if the conversion IRQ times out,
-> completely bypassing the err label, leaving ok_to_ignore_lock
-> permanently true, potentially breaking the device's falling threshold
-> interrupt detection.
-> 
-> Assign -ETIMEDOUT to the return variable and jump to the error label
-> to ensure ok_to_ignore_lock is properly reset.
-> 
-> Fixes: 26d90b559057 ("iio: light: opt3001: Fixed timeout error when 0 lux")
-> Reported-by: Sashiko <sashiko-bot@kernel.org>
-> Closes: https://sashiko.dev/#/patchset/20260525-opt3001-cleanup-v4-0-65b36a174f78%40gmail.com?part=1
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-The flow in this function is horrendous.  IF you have time would you mind
-doing a follow up patch that just breaks it in two. Then have
-if (opt->use_irq)
-	opt3001_get_processed_irq();
-else
-	opt3001_get_processed_noirq();
+> This series fixes two independent bugs in the ad_sigma_delta framework.
+>=20
+> Patch 1 fixes CS being left permanently asserted after single conversion
+> and in the error path of ad_sd_buffer_postenable(). In
+> ad_sigma_delta_single_conversion(), set_mode(AD_SD_MODE_IDLE) and
+> disable_one() were executing while keep_cs_asserted was still true,
+> causing any SPI transfer they issued to carry cs_change=3D1. The
+> postenable() error path also failed to call set_mode(AD_SD_MODE_IDLE),
+> leaving the device in continuous conversion mode with bus_locked
+> incorrectly set, opening a window for concurrent SPI access.
+>=20
+> Patch 2 fixes ad_sigma_delta_clear_pending_event() for devices with      =
+                              =20
+> has_registers =3D false and no rdy_gpiod (currently AD7191, AD7780, and
+> MAX11205). These devices fall through to the status register read path,  =
+                              =20
+> but since has_registers is false, ad_sd_read_reg() transmits no address  =
+                            =20
+> byte and blindly clocks raw MISO bytes =E2=80=94 indistinguishable from r=
+eading
+> conversion data, partially consuming any pending result and corrupting the
+> stream. With num_resetclks =3D 0 on these devices a further hazard exists:
+> if pending_event is set, the drain path attempts memset of SIZE_MAX bytes,
+> corrupting the heap. The fix returns 0 immediately for registerless
+> devices. This is safe for all current instances: AD7191 and AD7780 (with
+> powerdown GPIO) are reset between conversions by CS deassertion; AD7780
+> (without powerdown GPIO) and MAX11205 are continuously-converting and
+> cycle ~DRDY regardless, so the next falling edge fires naturally. A future
+> registerless device that holds ~DRDY asserted until data is read would
+> need num_resetclks set or a rdy-gpio instead. The same heap corruption can
+> be triggered on any device with rdy_gpiod set but num_resetclks =3D 0, so
+> an explicit data_read_len =3D=3D 0 guard is added independently.
+>=20
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+Hi Radu,
 
-Maybe there is some code at the end that is worth sharing - you'll have to have
-a play to see if that is worth doing.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-(If this was in your other patch set already then I'll blame lack of coffee!)
+Note that as this is all a bit fiddly in the ideal world I'd like some
+more eyes on this and will be happy to add tags or indeed pull the patch
+in response to any reviews in the next few days.
 
-Applied this to the fixes-togreg branch of iio.git and marked for stable.
+Sashiko is now 'happy' I think and it found a lot more issues than I identi=
+fied
+in earlier versions.
+
+Thanks,
 
 Jonathan
-
-
-
-> ---
->  drivers/iio/light/opt3001.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-> index 03c7a87b4a8eef13bbdcf48dcaf969781aa76bd1..0743e16f2a8fa0f07acd19c7dd6b54bec9e5c7b2 100644
-> --- a/drivers/iio/light/opt3001.c
-> +++ b/drivers/iio/light/opt3001.c
-> @@ -366,8 +366,10 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
->  		ret = wait_event_timeout(opt->result_ready_queue,
->  				opt->result_ready,
->  				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
-> -		if (ret == 0)
-> -			return -ETIMEDOUT;
-> +		if (ret == 0) {
-> +			ret = -ETIMEDOUT;
-> +			goto err;
-> +		}
->  	} else {
->  		/* Sleep for result ready time */
->  		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
-> 
-> ---
-> base-commit: 0e7dbde323808f28c5220295bfc1c5bc6f08c3f4
-> change-id: 20260526-fix-early-return-e2f1d3662180
-> 
-> Best regards,
-
