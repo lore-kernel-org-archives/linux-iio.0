@@ -1,43 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68910380FF7;
-	Wed, 27 May 2026 17:54:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7DB45106F;
+	Wed, 27 May 2026 18:07:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779904462; cv=none; b=pr6ZO8nBpWa58/rEQd0lvjY07E4sQR7YOrE7YcxjgORTBgy3HEBgSuVMSAQzdZ2M/qNj5WLkOTqTdg/qadWTKCq4HtOn/S8puPFQHTjNe7FwSrCUQ6Av9h4ohTeO8Ivr/E3rz81OTS+3bKaaiEz4WZnFtnzR0J+LykOPri0oX/4=
+	t=1779905247; cv=none; b=LmBEqxtx98NwNZEctG1WYgFuci/bRnc9uWoBQgyQbuvsRg/QWgYE7K4DFRKCbc3OYrvf/vwVKdXamdbRGMGDS3sTJAf6aUvPYjuI95kZei3H3Eqf+hAsE+EBPLg2WagZF24rl9ljp8yUYRIoXEjLkArW/oACBi3kvpSzEuS9BE8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779904462; c=relaxed/simple;
-	bh=Q2vFQqEks3gmFmel0IA4LQRZysPVAUbq7VtowAki3sU=;
+	s=arc-20240116; t=1779905247; c=relaxed/simple;
+	bh=51XUH+sK+SN+nlFz1dl2LW9JG/fpI4iMqLjIsM4rzis=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YLCkdOGa4ocqNjxw6lSqg6oXBiLS0UIn67aS03UURdSY2BrvVhAiJoRP8R3ubT1utR6t6m2xDoEtR/wslXk8xTUHwjCVM7yQvd38BPf8KWVGBds8X+KuES3D6uYDEyVSY5o6M6Vq3313mNanVVx8LkopegpzL01oIoBUMc7Rvzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i6Qev1hg; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ddL4MyCOKuMXadpqvssRDfsTJ+JO5kJbkFKTFEWHWF9rpPU0Toiz5glMgjb9gXP/TLexQH0lmA9MWYWMz29UvLuySl1mFFMeXss3u8rv2FQclO9Q4yNjqGqZY4BTW6fEB9BVVIb7tRpw5RVpoj75ktHk1GXSKyOo8RZBv5wwLGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FFnJL65Q; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i6Qev1hg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056A71F000E9;
-	Wed, 27 May 2026 17:54:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FFnJL65Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D0B1F000E9;
+	Wed, 27 May 2026 18:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779904461;
-	bh=sQOQV/UpogjC8CSIq9749AVZ/yL94/meEozKfM3YSIw=;
+	s=k20260515; t=1779905246;
+	bh=uDOrhsrRdh6+Yf4xP8K2rk2l3PA3yjLH3cn4K7gp9PA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=i6Qev1hgLnRG10RkXrrlZtRIhGR9jCdZAIEy1sxkAeilrW78GALjxGoU/t8fC3cin
-	 N7/GdHA0LXggPdIpBnbykTeSZpDejfA6Obri0f0tTp8YhJBObUb/+0xxIoaz6nePou
-	 I7WczOUo3eliHU2Yst1l2YW6fd4OHiSAOKr7zMZ7iqwS9TvPN7OLeSx+gzqsg0aakb
-	 P28gZegfTtSDVGZnnIbvVwEZw6lcAiAkjTaFb5dhvICClo6legDUNKAMqHZMCdeQlz
-	 EW/wsrrYJfLR2b/05M/sOyuIJPTIvo3oHEWYMSnL8vfKUv8hC3y0UH52BLZuCAsaF1
-	 9FMFiwXvqDHpA==
-Date: Wed, 27 May 2026 18:54:11 +0100
+	b=FFnJL65QyL7vCdq1lNbCKXeys4pP8qgnwtz2ENCtMKNGFAnWbgQefBIPzTalqB4p9
+	 69ef482ntqIYaFaBTjK8Ri/DpQoH9Fy7+RSfCzMoem1CEcqeIZ8lrec/lXxHHusrOo
+	 bmv/CH8JwbO/dzbCPqXgnmDpE43UelMOdfmwaow5EKUrispJz7NJ9HAQU1RM2K/Kqo
+	 ufxgqiINv2CBItOHypvEG/7YLhhyz3tda9+w6zG/PMM7RYqVozGf6HLP+glFuRYdv5
+	 Dk8Fe+Y753hMil5u/TeSa6iaVKy/mmkh6yD1qfHzd2kfiTp5ABjUWxiKUAkJw7iOoy
+	 2yT/TIG/xAscw==
+Date: Wed, 27 May 2026 19:07:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Piyush Patle <piyushpatle228@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ak@it-klinger.de, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
- nuno.sa@analog.com, dlechner@baylibre.com
-Subject: Re: [PATCH v10 11/11] iio: adc: hx711: add support for HX710B
-Message-ID: <20260527185411.7ead3a7e@jic23-huawei>
-In-Reply-To: <20260525105127.180156-12-piyushpatle228@gmail.com>
-References: <20260525105127.180156-1-piyushpatle228@gmail.com>
-	<20260525105127.180156-12-piyushpatle228@gmail.com>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
+ <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Subject: Re: [PATCH v13 2/6] iio: adc: ad4691: add initial driver for AD4691
+ family
+Message-ID: <20260527190713.1cba1e89@jic23-huawei>
+In-Reply-To: <20260525-ad4692-multichannel-sar-adc-driver-v13-2-1b7626d3b35c@analog.com>
+References: <20260525-ad4692-multichannel-sar-adc-driver-v13-0-1b7626d3b35c@analog.com>
+	<20260525-ad4692-multichannel-sar-adc-driver-v13-2-1b7626d3b35c@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,177 +55,158 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 25 May 2026 16:21:27 +0530
-Piyush Patle <piyushpatle228@gmail.com> wrote:
+On Mon, 25 May 2026 13:10:11 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-> Add support for the AVIA HX710B ADC, which shares the HX711 GPIO
-> interface but uses trailing PD_SCK pulses to select the active mode.
-> 
-> Model the HX710B with variant-specific channel tables and IIO info,
-> track the active channel across conversions, and use the fixed gain
-> value when computing scale.
-> 
-> Also update the adjacent Kconfig text, file header, and module
-> description so the driver text matches the newly supported variant.
-> 
-> Signed-off-by: Piyush Patle <piyushpatle228@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Hi
+> From: Radu Sabau <radu.sabau@analog.com>
+>=20
+> Add support for the Analog Devices AD4691 family of high-speed,
+> low-power multichannel SAR ADCs: AD4691 (16-ch, 500 kSPS),
+> AD4692 (16-ch, 1 MSPS), AD4693 (8-ch, 500 kSPS) and
+> AD4694 (8-ch, 1 MSPS).
+>=20
+> The driver implements a custom regmap layer over raw SPI to handle the
+> device's mixed 1/2/3/4-byte register widths and uses the standard IIO
+> read_raw/write_raw interface for single-channel reads.
+>=20
+> The chip idles in Autonomous Mode so that single-shot read_raw can use
+> the internal oscillator without disturbing the hardware configuration.
+>=20
+> Three voltage supply domains are managed: avdd (required), vio, and a
+> reference supply on either the REF pin (ref-supply, external buffer)
+> or the REFIN pin (refin-supply, uses the on-chip reference buffer;
+> REFBUF_EN is set accordingly). Hardware reset is performed by asserting
+> the reset-gpios GPIO line for at least 300 =C2=B5s then deasserting it;
 
-A few small things in here seeing as you are going to be doing a v11 for
-the patch description updates on the dt patches.
+As Sashiko notes this doesn't quite correspond to the code which deasserts
+then sleeps.  The comments in the code make it obvious that was intended
+so this commit description probably just needs an update.
 
-> ---
->  drivers/iio/adc/Kconfig |   8 +-
->  drivers/iio/adc/hx711.c | 230 ++++++++++++++++++++++++++++++++++++----
->  2 files changed, 212 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a9dedbb8eb46..38ba8cae13f1 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -791,13 +791,15 @@ config HI8435
->  	  called hi8435.
->  
->  config HX711
-> -	tristate "AVIA HX711 ADC for weight cells"
-> +	tristate "AVIA HX711 and compatible ADCs"
-As below - and similar (not and compatible because they aren't quite).
->  	depends on GPIOLIB
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
-> -	  If you say yes here you get support for AVIA HX711 ADC which is used
-> -	  for weigh cells
-> +	  If you say Y here you get support for the following AVIA ADCs:
-> +	    - HX710B
-> +	    - HX711
-> +	  which are used for bridge sensors such as weigh cells.
->  
->  	  This driver uses two GPIOs, one acts as the clock and controls the
->  	  channel selection and gain, the other one is used for the measurement
-> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> index fde95758b9a0..32a35f644834 100644
-> --- a/drivers/iio/adc/hx711.c
-> +++ b/drivers/iio/adc/hx711.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-or-later
->  /*
-> - * HX711: analog to digital converter for weight sensor module
-> + * HX711 and compatible ADCs driver for weigh sensor modules
+I guess you probably already saw and fixed this.
 
-Never use 'and compatible' when the driver needs to handle things differently
-for each part.  'and similar' is the most common weasel words for this.
+> a software reset via SPI_CONFIG_A is used as fallback when no reset
+> GPIO is provided.
+>=20
+> Accumulator channel masking for single-shot reads uses ACC_MASK_REG via
+> an ADDR_DESCENDING SPI write, which covers both mask bytes in a single
+> 16-bit transfer.
+>=20
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+
+Otherwise, just one question inline.
+
+> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
+> new file mode 100644
+> index 000000000000..cc1e2ef6bfd8
+> --- /dev/null
+> +++ b/drivers/iio/adc/ad4691.c
+
 
 > +
-> +/*
-> + * Switch the HX710B to the requested channel for the next conversion.
-> + * channel_set tracks the trailing pulse count that was last sent to the
-> + * chip; it is updated immediately after hx711_read() commits the new
-> + * mode in hardware, before waiting for the chip to be ready again.
-> + */
-> +static int hx711_set_hx710b_channel(struct hx711_data *hx711_data,
-> +				    const struct iio_chan_spec *chan)
+> +static bool ad4691_volatile_reg(struct device *dev, unsigned int reg)
 > +{
-> +	int trailing_pulses = hx710b_trailing_pulses(hx711_data, chan);
-> +	int ret;
+> +	switch (reg) {
+> +	case AD4691_STATUS_REG:
+> +	case AD4691_CLAMP_STATUS1_REG:
+> +	case AD4691_CLAMP_STATUS2_REG:
+> +	case AD4691_GPIO_READ:
+> +	case AD4691_ACC_STATUS_FULL1_REG ... AD4691_ACC_STATUS_SAT2_REG:
+> +	case AD4691_ACC_SAT_OVR_REG(0) ... AD4691_ACC_SAT_OVR_REG(15):
+> +		return true;
+> +	default:
+> +		break;
+> +	}
 > +
-> +	if (hx711_data->channel_set == trailing_pulses)
-> +		return 0;
-> +
-> +	ret = hx711_read(hx711_data, trailing_pulses);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	hx711_data->channel_set = trailing_pulses;
-> +
-> +	ret = hx711_wait_for_ready(hx711_data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
+> +	/*
+> +	 * Multi-byte registers have non-unit strides; only accept base
+> +	 * addresses to prevent debugfs from triggering reads that cross
+> +	 * register boundaries.
+What does this have to do with preventing debugfs from doing anything.
+It should allow reading of volatile registers. Why is it not enough to
+make the non base aligned registers neither readable nor writeable?
 
-	return hx711_wait_for_read(hx711_data);
-doesn't obviously hurt readability here and saves us a few lines of code.
-
+> +	 */
+> +	if (reg >=3D AD4691_AVG_IN(0) && reg <=3D AD4691_AVG_IN(15))
+> +		return (reg - AD4691_AVG_IN(0)) % 2 =3D=3D 0;
+> +	if (reg >=3D AD4691_AVG_STS_IN(0) && reg <=3D AD4691_AVG_STS_IN(15))
+> +		return (reg - AD4691_AVG_STS_IN(0)) % 3 =3D=3D 0;
+> +	if (reg >=3D AD4691_ACC_IN(0) && reg <=3D AD4691_ACC_IN(15))
+> +		return (reg - AD4691_ACC_IN(0)) % 3 =3D=3D 0;
+> +	if (reg >=3D AD4691_ACC_STS_DATA(0) && reg <=3D AD4691_ACC_STS_DATA(15))
+> +		return (reg - AD4691_ACC_STS_DATA(0)) % 4 =3D=3D 0;
+> +
+> +	return false;
 > +}
 > +
->  static int hx711_reset_read(struct hx711_data *hx711_data,
->  			    const struct iio_chan_spec *chan)
->  {
-> +	const struct hx711_chip_info *info = hx711_data->chip_info;
->  	int trailing_pulses;
->  	int ret;
->  
-> @@ -298,9 +352,16 @@ static int hx711_reset_read(struct hx711_data *hx711_data,
->  		return -EIO;
->  	}
->  
-> -	ret = hx711_set_hx711_channel(hx711_data, chan, &trailing_pulses);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (info->has_fixed_gain) {
-> +		ret = hx711_set_hx710b_channel(hx711_data, chan);
-> +		if (ret < 0)
+> +static bool ad4691_readable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case 0 ... AD4691_OSC_FREQ_REG:
+> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
+> +	case AD4691_STD_SEQ_CONFIG:
+> +		return true;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* Multi-byte registers: only accept base addresses (see volatile_reg).=
+ */
+> +	if (reg >=3D AD4691_AVG_IN(0) && reg <=3D AD4691_AVG_IN(15))
+> +		return (reg - AD4691_AVG_IN(0)) % 2 =3D=3D 0;
+> +	if (reg >=3D AD4691_AVG_STS_IN(0) && reg <=3D AD4691_AVG_STS_IN(15))
+> +		return (reg - AD4691_AVG_STS_IN(0)) % 3 =3D=3D 0;
+> +	if (reg >=3D AD4691_ACC_IN(0) && reg <=3D AD4691_ACC_IN(15))
+> +		return (reg - AD4691_ACC_IN(0)) % 3 =3D=3D 0;
+> +	if (reg >=3D AD4691_ACC_STS_DATA(0) && reg <=3D AD4691_ACC_STS_DATA(15))
+> +		return (reg - AD4691_ACC_STS_DATA(0)) % 4 =3D=3D 0;
+> +
+> +	return false;
+> +}
+
+> +static int ad4691_reset(struct ad4691_state *st)
+> +{
+> +	struct device *dev =3D regmap_get_device(st->regmap);
+> +	struct reset_control *rst;
+> +	int ret;
+> +
+> +	rst =3D devm_reset_control_get_optional_exclusive(dev, NULL);
+> +	if (IS_ERR(rst))
+> +		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset\n");
+> +
+> +	if (rst) {
+> +		/*
+> +		 * Assert the reset line to guarantee a clean reset pulse on
+> +		 * every probe, including driver reloads where the line may
+> +		 * already be deasserted (reset_control_put() does not
+> +		 * re-assert on release). tRESETL (minimum pulse width) =3D 10 ns
+> +		 * (Table 5); kernel function-call overhead alone exceeds this,
+> +		 * so no explicit delay is needed between assert and deassert.
+> +		 */
+> +		reset_control_assert(rst);
+> +		ret =3D reset_control_deassert(rst);
+> +		if (ret)
 > +			return ret;
-> +		trailing_pulses = hx710b_trailing_pulses(hx711_data, chan);
 > +	} else {
-> +		ret = hx711_set_hx711_channel(hx711_data, chan, &trailing_pulses);
-> +		if (ret < 0)
+> +		/* No hardware reset available, fall back to software reset. */
+> +		ret =3D regmap_write(st->regmap, AD4691_SPI_CONFIG_A_REG,
+> +				   AD4691_SW_RESET);
+> +		if (ret)
 > +			return ret;
 > +	}
->  
->  	return hx711_read(hx711_data, trailing_pulses);
->  }
-> @@ -322,6 +383,9 @@ static int hx711_read_raw(struct iio_dev *indio_dev,
->  		if (*val < 0)
->  			return *val;
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = hx711_data->samp_freq;
-> +		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 0;
->  		mutex_lock(&hx711_data->lock);
-> @@ -399,20 +463,26 @@ static irqreturn_t hx711_trigger(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct hx711_data *hx711_data = iio_priv(indio_dev);
->  	int i, j = 0;
-> +	int ret;
->  
->  	mutex_lock(&hx711_data->lock);
->  
->  	memset(&hx711_data->buffer, 0, sizeof(hx711_data->buffer));
->  
->  	iio_for_each_active_channel(indio_dev, i) {
-> -		hx711_data->buffer.channel[j] =
-> -			hx711_reset_read(hx711_data, &indio_dev->channels[i]);
-> -		j++;
-> +		ret = hx711_reset_read(hx711_data, &indio_dev->channels[i]);
-> +		if (ret < 0) {
-> +			dev_err_ratelimited(hx711_data->dev,
-> +					    "read failed: %d\n", ret);
-> +			goto out_unlock;
-> +		}
-> +		hx711_data->buffer.channel[j++] = ret;
->  	}
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev, &hx711_data->buffer,
-> -							pf->timestamp);
-> +					   pf->timestamp);
+> +
+> +	/*
+> +	 * Wait 300 =C2=B5s (Table 5) for the device to complete its internal r=
+eset
+> +	 * sequence before accepting SPI commands.
+> +	 */
+> +	fsleep(300);
+This is what sashiko was moaning about.
 
-This an unrelated change so should not be in a patch doing anything
-significant like this one is.
+> +	return 0;
+> +}
 
->  
-> +out_unlock:
->  	mutex_unlock(&hx711_data->lock);
->  
->  	iio_trigger_notify_done(indio_dev->trig);
-> @@ -462,6 +532,54 @@ static const struct iio_info hx711_iio_info = {
->  	.attrs			= &hx711_attribute_group,
->  };
 
