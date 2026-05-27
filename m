@@ -1,40 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDEF3E9F82
-	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 10:39:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466553ED100
+	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 10:40:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779878360; cv=none; b=KfCJLJIy8PT4DOEdIqxvNugI5As0YxSPdTJdRAqm2XEVWhKJu/NS3Eib+OTs4vZzqoEl96TklsK1wxLYUEWMUtxS9QBYkAG2p6l1cmhVJFO2hFiJa0KX7o/hG53cpv1HSbNCHzKZI5f73YpeYXJgMiW/MqJAUaljJR7ByLUDML0=
+	t=1779878441; cv=none; b=K0zyOu2tBSJ22UaIlt7Gg13n/c2SvGbBYnr/4z/B+7V3RC+JpjxjXLepdWdmhIxdCcEpth1n5eVJ3maxZCFSvAUYU74F25sJwSX7jnzpKb6O28VrZXjRux9UZ26vmeOa8HuouarcBzPf1mkaMaZxBZcleUBcumH+fJOANj1GV+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779878360; c=relaxed/simple;
-	bh=PWCsswThJB+3tBBD+8y3czASdCOr6q4KwLn5O0hTWpE=;
+	s=arc-20240116; t=1779878441; c=relaxed/simple;
+	bh=40TsmwKp/7Wy8SWEzmjDb13anIIOB+B4qa8KZHnL8pw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZJv2pc1Ab9Lf/rDhjz7xk2f5y+V5wDwIo/4VS71TijCtxFLEl0VXskahSMVmokK/R3dovNOajs5WuNJ1Z/ujJjw2MdhcXbRxc4uGaadjMvIkPjpk4GiIqdiBM8Aze2K23edLFlRgOHCS+fCZ2bc5FsDFjYaAHEKO27Js1zA5R3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VKe5QW8j; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=RWZ2l45N+lVR3wd0M8HOK2x9kP70eTDqdmw1o/DTBiHQEpIbtnsmQ+rYFYOY6CD9hJo4LHGr+eyMnVCEtgj8aKlDVtIia+WqBTzkBSeHiFMe6dlAJKvzsvG3yQKNbZT/QCn9HrrvrEBd4WIFynn4wD3ebehwghVuyUQ72K7b2bA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=abVkNdYG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VKe5QW8j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B0D1F000E9;
-	Wed, 27 May 2026 10:39:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="abVkNdYG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65F21F000E9;
+	Wed, 27 May 2026 10:40:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779878358;
-	bh=ZBttee2tMVudZntqDkekJXEhl3NrFYb8POIleHUuOIM=;
+	s=k20260515; t=1779878439;
+	bh=Jw7E9rY9222SJiN2S/RnjV6gSauLHlg+BfgSncGUfms=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VKe5QW8jc4v4tGo/3YetPpHN8XbKXbkjotu8ZnbO9+mqUAuLtByRv/YKPACAWHuIL
-	 3+dMruHJUP1dhDaM7Uw9to/K3Ydstv7qPDjy6ZJkX1r6oyBTVsU9plg77YbFRGZETE
-	 XwHgbU1q41OmDoj2Vf/qxr5l6pfQkX5Wjo1ysllSAsEAMzRvJucUIrkSTZcUh6qJ5f
-	 XEf0XspQSnknODUDzhJ0KLooSLRvM6E4L51pReWn9F8gU5TYwwj8Pwt8I7/YLtNgNW
-	 oINwzl6Yn3lnWYo2ZgvMg8GDusAVL6cXuBkc45vHDXFVquVboRcBexwv2A06vEmhSf
-	 +oa1JRICdD1iQ==
-Date: Wed, 27 May 2026 11:39:12 +0100
+	b=abVkNdYGtN24ukAAkVxAmdLHmqMS4X2tQdAfGfUAvqA21/SS03jMyptnX5cl5Q2nY
+	 GC+vqVWvYN9jL27u73PFLKlVKPuJ9/Mx9juM5Wgtx77t/71UuVKUvif6+HFbUH7slk
+	 idBF8Yi9sl0o4CsZLh8kTBx9ClENCkOQJDmlPP3IDFr4cvgTqHvq+AMVyeK4dBn3Ik
+	 619TxdJONsb48wgL29zLcAFTIBJqTOlVoslx275t9MBUF1VAzkfCPSCLVVpilI5M/s
+	 w+YNcpDu1G9MOtwVFoDSC+CxBPdDoaWODud7nAUD5Ce1EFNpKN9t0yqMhrDOGHx0y7
+	 5wZpJ5Zxz+Ukw==
+Date: Wed, 27 May 2026 11:40:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Louis Adamian <adamianlouis@gmail.com>
 Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com
-Subject: Re: [RFC PATCH 0/2] iio: pressure: ms5637: Add variant specific
- compensation
-Message-ID: <20260527113912.50bd7f79@jic23-huawei>
-In-Reply-To: <20260526185612.35048-2-adamianlouis@gmail.com>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: iio: pressure: Add binding for
+ MS5637
+Message-ID: <20260527114031.5934925f@jic23-huawei>
+In-Reply-To: <20260526185612.35048-3-adamianlouis@gmail.com>
 References: <20260526185612.35048-2-adamianlouis@gmail.com>
+	<20260526185612.35048-3-adamianlouis@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,41 +46,127 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 26 May 2026 14:40:29 -0400
+On Tue, 26 May 2026 14:40:30 -0400
 Louis Adamian <adamianlouis@gmail.com> wrote:
 
-> This series adds correct temperature compensation and pressure scaling
-> constants for the MS5637-30BA, MS5803-01BA/02BA/05BA/14BA/30BA, and
-> MS5837-30BA pressure sensor variants. Additionally, it adds a Device
-> Tree binding document for the MS5637 driver. Without correct
-> compensation, pressure values were measured to be off by 100kPa with the
-> MS5803-14BA at room temperature. 
-> 
-> Note: MAINTAINERS has not been updated yet as I am not sure what to add for
-> the MS5637 driver.
-> 
-Hi Louis
+Hi Louis,
 
-For a cover letter of an RFC there should be some questions, or other reason
-that it's an RFC.  To me this looks like a proposal for something to upstream.
+Title should just be 
+dt-bindings: iio: pressure: Add MS5637
+as it is obviously a binding from teh dt-bindings bit.
 
-Key is that RFCs and normal postings get different types of review - and
-different people in general look at each type.
 
-Thanks,
+> Create meas,ms5637 devicetree documentation file and move existing
+> devices from trivial-devices.yaml
+
+Ad something here about why you need to include the variants and what
+the compatibles with out variants correspond to.
+
+
+Note that Sashiko calls out that at least some of these devices support SPI so
+the binding needs to incorporate that as well
+https://sashiko.dev/#/patchset/20260526185612.35048-2-adamianlouis%40gmail.com
+Note we should do that even though the driver is currently i2c only I think.
+
+One minor thing inline
+
+Thanks
 
 Jonathan
 
-> Louis Adamian (2):
->   dt-bindings: iio: pressure: Add binding for MS5637
->   iio: pressure: ms5637: Add variant specific temperature compensation
+
+
 > 
->  .../bindings/iio/pressure/meas,ms5637.yaml    |  52 ++++
->  .../devicetree/bindings/trivial-devices.yaml  |  10 -
->  .../iio/common/ms_sensors/ms_sensors_i2c.c    |  81 +++---
->  .../iio/common/ms_sensors/ms_sensors_i2c.h    |  47 +++
->  drivers/iio/pressure/ms5637.c                 | 273 ++++++++++++++++--
->  5 files changed, 403 insertions(+), 60 deletions(-)
+> Signed-off-by: Louis Adamian <adamianlouis@gmail.com>
+> ---
+>  .../bindings/iio/pressure/meas,ms5637.yaml    | 52 +++++++++++++++++++
+>  .../devicetree/bindings/trivial-devices.yaml  | 10 ----
+>  2 files changed, 52 insertions(+), 10 deletions(-)
 >  create mode 100644 Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
+> new file mode 100644
+> index 000000000000..703e34989cb5
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/pressure/meas,ms5637.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/pressure/meas,ms5637.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +title: Measurement Specialties ms5637 and similar pressure sensors
+> +
+> +maintainers:
+> +  - Louis Adamian <adamianlouis@gmail.com>
+> +
+> +description:
+> +  Measurement Specialties ms5637 pressure and temperature sensors with
+> +  I2C interface.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - meas,ms5637
+> +      - meas,ms5637-30ba
+> +      - meas,ms5803
+> +      - meas,ms5803-01ba
+> +      - meas,ms5803-02ba
+> +      - meas,ms5803-05ba
+> +      - meas,ms5803-14ba
+> +      - meas,ms5803-30ba
+> +      - meas,ms5805
+> +      - meas,ms5837
+> +      - meas,ms5837-30ba
+> +      - meas,ms8607-temppressure
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vdd-supply: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+
+vdd-supply should be required as well in the binding.
+(doesn't necessarily need to be in the driver!)
+
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        pressure@76 {
+> +            compatible = "meas,ms5803-14ba";
+> +            reg = <0x76>;
+> +        };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+> index 23fd4513933a..a1516ab50a40 100644
+> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
+> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+> @@ -232,18 +232,8 @@ properties:
+>            - meas,htu21
+>              # Measurement Specialities I2C temperature and humidity sensor
+>            - meas,htu31
+> -            # Measurement Specialities I2C pressure and temperature sensor
+> -          - meas,ms5637
+> -            # Measurement Specialities I2C pressure and temperature sensor
+> -          - meas,ms5803
+> -            # Measurement Specialities I2C pressure and temperature sensor
+> -          - meas,ms5805
+> -            # Measurement Specialities I2C pressure and temperature sensor
+> -          - meas,ms5837
+>              # Measurement Specialities temp and humidity part of ms8607 device
+>            - meas,ms8607-humidity
+> -            # Measurement Specialities temp and pressure part of ms8607 device
+> -          - meas,ms8607-temppressure
+>              # Measurement Specialties temperature sensor
+>            - meas,tsys01
+>              # MEMSIC magnetometer
 
