@@ -1,85 +1,85 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14DC428465
-	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 14:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD288428822
+	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 14:35:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779892526; cv=none; b=BnCrX8kZ6YeQNH8RARqJ5Fj6HLa3+p50tg5C3pkNNTNt8TxXKDTT1WWuYFUakcZS/I+zh+OesBqL+UopJZt3lxHLbbmnoennkF0miS69N3dOcCbMHw3bVfAFNenOb66OzvmdIdIGINeMvB2P464B+BhIHRw7mUmWBBvGWzj5/Yo=
+	t=1779892527; cv=none; b=nBiBSyoWLm+hXo8TZPDFKj/VrT40r9imYeUTrApo8JhrZyt7F+24sNKWAPkvNdvMrdggVGR/u7q3eo6U5+bKc5Q6e2dPGPVrS5bUllHWY+yXUvOPf9HpzaHCN2hkuYAEqU9j0SCX94dIKlWySAHzPa6NbBxmPupY9pdp0iqFZv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779892526; c=relaxed/simple;
-	bh=TWxFzk7O5xEuF0mHiNBBjmZM46S7a97bXD7ugdZfY7c=;
+	s=arc-20240116; t=1779892527; c=relaxed/simple;
+	bh=WTcPO5jx3m8I3dAcwWfqNAsiqQwEq6XdVKR3O/E/HPo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mFq7rqye92RNs0ROfp6A46H7Y8NFZZ/Vo8hetbSe3DtKzd4K8jNWCwyLk7jBQIqft18sqdeAXx/xMsSH5dzQ5pCeBnKRCnL0SossBv6P7MF3fQ/QQPl8Ig508RZ56Ss987mkJSw0Sth9s4emLob2jbrW78AOyf7Rz/kxgrkZKrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bHy5OeV6; arc=none smtp.client-ip=209.85.221.43
+	 MIME-Version; b=R3NyhBZvRvKbZFQmoYqndbyF5C6M+7MEczQET/mhfwF5/Tx+pf05lVx16w+A0XMbAKYI28API+Urn6qR8dc+Qmzncc5lkLQE0DwcojWETLzZnJvyd58lWYdjsBRp5g6+S3D2Ub1DoVc/BzETIBYVby+keskxY9bPYvlOU9nH/K4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nS6EeIFz; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bHy5OeV6"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-45ed9336049so1520287f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 07:35:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nS6EeIFz"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-441209fb77eso7310162f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 07:35:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779892523; x=1780497323; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779892524; x=1780497324; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DQu7+1RAsuU643B6dzPPjhrjJvzUIEjr3KyG0F7v8EI=;
-        b=bHy5OeV6MF4SOz2duHxQt99C7W4tfNhjzpooUYmz0Ha6c6VkTheki4JTZwN+49dtX+
-         +OOZHOcOCr7SZ/4BYyX210+iWh4pArgFOySYVOqpGJ7SSxovpRZvXsZF7WcOUAjjPTkO
-         CtCDJC4sHBVgUXuZkjVwXRV83HmTntvleFxhEoMydOWMUw5ykHK9g5vnciRQKjxiK/tS
-         lj5JLfj9KVwPGc+0hPo/8UiG3B1dYGbmAIz5ePrXJ61if4wm1xVYROG6ClS3qaE14LJ8
-         GD77rHn9XkkxjwCQsi4XnVLwzvd9i+AaL/xuy9ZnJTwsKfq6jDTJ8+MKo33rKjMhSRJG
-         0IbQ==
+        bh=mGLUdia9Sn33UtIAjIRo2viP4FX9Z32Gv1ySJx1Aq8o=;
+        b=nS6EeIFz2mphXjAba0hsnvpPilXsQFyq8V5Cv6k20E93+3vK/fNGaaWQSibUZTNNyr
+         NpKlXTSoeh96uEID4c20on51llVXZbkfs94N7cJyyLT1G+DAHsAb9BAnY1JZEsIfNgvu
+         PtL69EY0qz9kVWbXQFPlZ3wOjDAdLVF7+NTZR65qZuP22D7c4Xud8grECU2dH2/n4UKq
+         ACrF6mk7MbQbiTLYhdL80bnwzVq5cM3yxFa6QNe87lwDtSIzEIPlewhrKMriqZBbQnAz
+         XxetIqi6e0Y/HqmsLjbzNl2oTCp9MPUg6KIquwQUyAJeNYdupb5x8emvFMYtk3ykhpOy
+         sjbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779892523; x=1780497323;
+        d=1e100.net; s=20251104; t=1779892524; x=1780497324;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=DQu7+1RAsuU643B6dzPPjhrjJvzUIEjr3KyG0F7v8EI=;
-        b=OojkdYEknW3hJHJastCJ9z/9shFHpJv5ObNbQ3MAGlPEcbUsuQ6oNsHC9+6F1ziFVD
-         gq82R2dk/bO9Y5oGheRjAiJHjbJbVUgYkBRwgqKjOkJVyt9EjRsECG5n1fNY4dL3tiyh
-         tPTP55V33wYnA4BOGwYexeiAZkbTlLxaTP2cJLJPd+jP667YOdIBV0LybdA/Fo8nH5W8
-         cUWt6ktds2H/1oo1NaSx8pLUxWw+9N1psA8vJyvo8p4K7ga5JWu3uLQBGJV1luUBlPol
-         loo2iyTba71IfgLQhZOVoyS3g8MSz+RmTT1Eh4rilbiLZm0sSB2AAIX4WyEhF1DKKQls
-         F9HQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9i+zm1KJlqJmvcj68K5aacGBRuaUO4NiH6er92TYoJLkXnEUGF5g+DBu+NWk/A3V0F+BJ6WG+XHkM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwKfzLpbP1tkeYI8qyWaVMzgStXzfsj/XNF+d2GQM9mkOU9h+cG
-	b2ppZSPAYKKiV25Z7QVgD+VYt+b+NHIQTmzF2rvmZVwUaWOMLMVd1iz8
-X-Gm-Gg: Acq92OHsnX3apkOji+2rLquT/QSEbJ6ZC//kaVWTZ6/JFXgaVIhS/PYa9/+XKh8LUDU
-	n4+gyzaP6kJJqtXD0CswkY5gdAuA+94XN+5GEE+QUhAYCsa/t1gW4tiPwWasC+Mqe2Wie7tuTfh
-	W+UFAMdQj5i5RRlie+SXperw+bkA/8468z1rop5f8v0pc7IvCFFw1L7alNFZTykgW0Ppon5XExr
-	9vtv+4XcpfJhxUgHGixgnvd5UkQa2qHG3+sIDdLiKxMKVz0lwrlpTRzleUxG9rSfW/+bnOe/BkV
-	VVhJU5OjCRo37ibRyvDCH87F+Zi/B3t2hnDgnNPSkv+PMq75mqVHAOPvNyifzt503wgAIqNcwk3
-	Sx/S+BF3TpJLamrUpJASmgLBFK4TBJJTsCi3U7sJZiGFo9MUSnUUphL+TMJ/EGQHYg2rEjLLCB8
-	nI8u0b
-X-Received: by 2002:a05:6000:2f81:b0:45a:e3dd:586b with SMTP id ffacd0b85a97d-45eb368847bmr39696399f8f.18.1779892522921;
-        Wed, 27 May 2026 07:35:22 -0700 (PDT)
+        bh=mGLUdia9Sn33UtIAjIRo2viP4FX9Z32Gv1ySJx1Aq8o=;
+        b=EsGayI55FjfDSaVR91Q9MJ3GdFy516UcA7dJgFa8kKKCCCav6eVv0923a9rTQuzXQE
+         hKWrOweRbd0XC1qx85vSTZmB/XT8zBX3maF/N8nUQK1OpOWKGDisrdChovMNud+H/Gmy
+         aVQHQOgVUCRX9VbpVjyIbQ4Y0RU06+eix/iPXXcqa7JKpz3FRXdufwlVqneyL6eViKzX
+         WeradkVEjunLRz/0b+ssWvu20ezzKdBDyuqARi8IiENRDVYjW354vwgTCAa3px0oosjF
+         BQjq+fb6MSc8x9T6ujXXh/h2AEdw4v41MemfZBEKs3GgIjNNWZfQpXvPbaC4y5gI3uWy
+         i5Hw==
+X-Forwarded-Encrypted: i=1; AFNElJ+kKS8kl4RB8CNxPckv6Krh8o5lX6C2HrLya+X+JdeDFvvSmjEaUjlOuVqP5J3tRej6MAZOBmQdK6U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyqGv/neYS0WxvvsrkSuXjfqqEZWxUfVtvZkaVPMNE6kjZ+aRci
+	8NBmcbag5yuoFcFIkB99Agjh00ULxW8Jc6a1Qhz5IUjABT70dt11EyV4
+X-Gm-Gg: Acq92OGewRKUdEsRcdYk2IR/EQUJw1Ba9GL5MvbN7wL1xzJ8M0UIVQGT0Mq/7jba439
+	rK/mQX9aXZ22BWxr57dJQay3G9T8S0sRAYOiCDLGzJKvpjrdYoquZD+W5uoTF8RWt5MmetOpete
+	rb8nbLCv4OkykLXO3VLQJZaY97JQkbF+aOp6dDcf2ifdLdgOcwOW+kgFalHlCenpz0+CmCRU7yR
+	Fe47l4OSR8vDuFJnHLLBv4VMEV3jEuBuZ6MmWe4m00Zp/rLXdjs1yBmWY6agxV7XMx3luk1fOh3
+	Ddl4EpCa5rH8vPhkxdjje+ptk1B3uKMb7hL8HEudopZcKe6/Z0kHRTGBOvAKWp/e3csKI9pfdJs
+	pftn04Aqjuy3j0fR7JfLObacg6m+O0j27+2VVHnWlGz1HxWd1QgK/tmf6nAg7BW0MsVcAETQnb5
+	WHNeQFBoR2YL1HNY0=
+X-Received: by 2002:a05:6000:26c4:b0:453:9897:76aa with SMTP id ffacd0b85a97d-45ea31a36d2mr42115457f8f.21.1779892523971;
+        Wed, 27 May 2026 07:35:23 -0700 (PDT)
 Received: from sefo-laptop ([2a02:8071:50c5:5c0::361b])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45edb5584b8sm6239763f8f.11.2026.05.27.07.35.22
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45edb5584b8sm6239763f8f.11.2026.05.27.07.35.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 May 2026 07:35:22 -0700 (PDT)
+        Wed, 27 May 2026 07:35:23 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de,
+Cc: Guenter Roeck <linux@roeck-us.net>,
+	lars@metafoo.de,
 	dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	andy@kernel.org,
 	robh@kernel.org,
 	krzk+dt@kernel.org,
 	conor+dt@kernel.org,
-	linux@roeck-us.net,
 	jdelvare@suse.com,
 	ak@it-klinger.de,
 	linux-iio@vger.kernel.org,
 	linux-hwmon@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 1/4] iio: types: add IIO_VOLUMEFLOW channel type
-Date: Wed, 27 May 2026 16:35:03 +0200
-Message-ID: <20260527143515.102794-6-wafgo01@gmail.com>
+Subject: Re: [RFC PATCH v1 3/4] iio: flow: add Sensirion SLF3x liquid flow sensor driver
+Date: Wed, 27 May 2026 16:35:04 +0200
+Message-ID: <20260527143515.102794-7-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260526171350.6fadc595@jic23-huawei>
-References: <20260524205112.26638-1-wafgo01@gmail.com> <20260524205112.26638-2-wafgo01@gmail.com> <20260526171350.6fadc595@jic23-huawei>
+In-Reply-To: <20260526170618.14f45e2d@jic23-huawei>
+References: <20260524205112.26638-1-wafgo01@gmail.com> <20260524205112.26638-4-wafgo01@gmail.com> <4349f634-dd7b-468a-912c-5ceb8a283954@roeck-us.net> <20260526170618.14f45e2d@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,42 +88,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Tue, 26 May 2026 17:13:50 +0100
+On Tue, 26 May 2026 17:06:18 +0100
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> > +What:/sys/bus/iio/devices/iio:deviceX/in_volumeflow_raw
-> > +What:/sys/bus/iio/devices/iio:deviceX/in_volumeflowY_raw
-> > +KernelVersion:6.19
-> > +Contact:linux-iio@vger.kernel.org
-> > +Description:
-> > +Raw (unscaled) volumetric flow rate reading from the channel.
-> > +To convert to standard units (litres / second) apply the
-> > +channel's _scale (and _offset, when present).  
+> > > What does the "X" refer to ? Why not "S" ?  
 > 
-> Formatting doesn't match rest of file at all.
+> Absolutely - no wild cards in file names or indeed in variables etc.
+> Just pick a part to name after.  Wild cards go wrong far too often!
 
-Done in v2.  The whitespace got lost when pasting from a wrapped
-editor - v2 uses tabs and the same indent as the surrounding
-blocks.
+Done in v2.  Renamed everywhere: slf3x.c -> slf3s.c, SLF3X_* ->
+SLF3S_*, CONFIG_SENSIRION_SLF3X -> CONFIG_SENSIRION_SLF3S,
+MAINTAINERS and binding titles too.
 
-> > +What:/sys/bus/iio/devices/iio:deviceX/in_volumeflow_scale
-> > +What:/sys/bus/iio/devices/iio:deviceX/in_volumeflowY_scale
-> > +KernelVersion:6.19
-> > +Contact:linux-iio@vger.kernel.org
-> > +Description:
-> > +Scale factor applied to raw volumetric flow readings to obtain
-> > +the value in litres per second (l/s).  
-> I'd just add this to the big block of existing _scale.
-> The units etc are all covered in _raw so we don't need to really say more than
-> this exists.
+> > > +			dev_err(&client->dev,
+> > > +				"unexpected device family 0x%02x\n",
+> > > +				buf[SLF3X_FAMILY_BYTE]);
+> > > +			return -ENODEV;  
+> 
+> Similar to below. This can't be an error or we break fallback
+> compatibles in DT. There are historic drivers that do this that
+> we haven't fixed up yet - but no new ones please!
 
-Done in v2.  The separate _scale stanza is gone; the shared
-_scale block at the top of the file now has one extra line:
+Done in v2.  Unexpected family byte and unknown sub-type both
+go to dev_dbg() now; the driver keeps the variant the compatible
+/ id_table selected.  Only CRC failures and bus errors fail probe.
 
-  IIO_VOLUMEFLOW    litres per second
+> Given the need to support fallback compatibles from device tree we don't
+> fail at all on mismatches as that prevents use supporting a new fully
+> backwards compatible (other than IDs) part in older kernels.
+> 
+> Whether a dev_info() or dev_dbg() is appropriate for such a case is
+> less obvious but definitely dev_err().
 
-The _raw block stays for the per-channel-type description and
-points at the shared _scale section for the units.
+Went with dev_dbg() for the unknown-sub-type / fallback path -
+silent by default, discoverable when chasing a quirk.
 
 Thanks,
 Wadim
