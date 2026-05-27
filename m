@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE033E9C38;
-	Wed, 27 May 2026 10:27:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C6B379EDA;
+	Wed, 27 May 2026 10:29:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779877674; cv=none; b=fl72gpvwl4hrzvkP5iPB3ocoum6T7o809SEAtEmrPjAPxgJsBIl9yyrR1DliIMtpVi0VoOuTUJWiMWifNF2tggHfLMVOVZZOOXRrWM0LPZzIylczc2vQP+m+8xdUIS4nMWjVzSOwt/Bh2TxTqk6DvBhqxE6YJakz/2o90YcH2/k=
+	t=1779877774; cv=none; b=XGhual5x6gQ80IfONkM6jp5eWsMe2jQLfXXPn3bOQZG9lidDnV8o2SP13nV+LY3q0/TNpETpn9XPxgULhuKWZ7PxgQg662vT3MmEhEeBZjEsCDf42fDbER0Y8AWH68bycWxOLuY8lhh7l5Qj/6ToLADBayg9OFt7nFsFESzUoYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779877674; c=relaxed/simple;
-	bh=F4wVIxodkwd3BDJN1yma/HjBc76+oHtuE3dWS53Epkk=;
+	s=arc-20240116; t=1779877774; c=relaxed/simple;
+	bh=M9xKL+2b0Qsxva1mcAgc3MDLFXPX0LtbRN1p4T2vTEc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=O0kJtbnJ/Or/eTyHk5oRO2ft/dt9UNyvM9XiCOJoT/S298sNLCnofancVkm/ND+spe+OQ5iR6gwUmfIUbAjx4bCZ1NrOMYza+UDU0BdpCmg9drag2mvLj1PSzOoOtOdxwVlH1ukvTnKHhh/uFPBK0EoDhpvbac0o+3+kxXzTU6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SLRcR6mH; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=q2uYpdQpa16is0R7Uxg+MUeF9OCz/6d040q/YqKHENpLIjDM6fvYPCMIKXIb7x0ipofH7OqVdFWV7VaBWJ+lQV01CUhgQAL+fdmaJCIe2CJaX9hfUZLtfUyy0eNrZyt93KWcj4ZdwoQjNLlA51JnUbY+wCC/mruqGKeUQt69K8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e48l43D9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SLRcR6mH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E38D1F000E9;
-	Wed, 27 May 2026 10:27:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e48l43D9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77A31F00A3A;
+	Wed, 27 May 2026 10:29:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779877671;
-	bh=X68sVb0OjR+rk7GZhmjXM0j8cdufoVXiBvdjmFnMMe8=;
+	s=k20260515; t=1779877772;
+	bh=ZSDedjSCkn5KXuYFKR/zV/yAW40rPT++dt1A3rZcHU8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SLRcR6mH5Ox1wqgo2thV4mPWfsO8wAbI98Ge9oikATZBk2+0aPFOulrM0zW91M3fx
-	 A9n/vJqIXg+Dozpl3WuvHibsswcc1E+jcC8pFoeKUlFZKFpZxWbzVa9xoK543zTXfN
-	 MD4M9ZHxb9DKWQ6hBzxtz2bAzMOhgnyim6QqOwTErfJs9xenL+BIjaQlBhiOeKpPd/
-	 EZUM10CmujVjbixhW2xea5GqngGTQRYFnoSywlxkR6hjSSoO1CvzBThZ7RuMBi1PfS
-	 iKy5Ljh/y5rZG517ttwzgWHoJC1/qI7c/2o9SG2bXGxOF8mN8G1OoYpPoMaUiu1zZu
-	 GxA6K5mWr22DA==
-Date: Wed, 27 May 2026 11:27:43 +0100
+	b=e48l43D9am2jb29BOJWKXnz8qFapisRR6bvc/1ZVB+nQE4+ESQD+5oU9F9u5wcQE1
+	 XNLhY73cwn1SDi9qSpfUJkerflMJS8N7z98qFXH73hmkUUO+Zebeuv4S8EDjNFfunk
+	 PLEhewsBrt6Vp6T8WO3EeuVGthR4L+4WgJi3VMENDb4X71QN09czAQ7H5dgwiZZW6q
+	 eqkQlG0mfdPrqIk7c36dIh1HFmmuAo+SY/H5JeYYg3W24gGbwt0cej4DUEQlyegz6q
+	 LxJXhdFdZSQ1V8OvchDnUJV9FLPwnPH5XFaPKpNF4GxZjagcPi2QDhSM27Hw/wPABf
+	 UFEh4xpbf9SwA==
+Date: Wed, 27 May 2026 11:29:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Maxwell Doose <m32285159@gmail.com>
-Cc: sashiko <sashiko-bot@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Tomasz Duszynski <tomasz.duszynski@octakon.com>,
- linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
- linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH v3] iio: chemical: scd30: Cleanup initializations and
- fix sign-extension bug
-Message-ID: <20260527112743.6ac97834@jic23-huawei>
-In-Reply-To: <20260526225524.119001-2-m32285159@gmail.com>
-References: <20260526225524.119001-2-m32285159@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, "open list:IIO
+ SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] iio: chemical: scd30: Replace manual locking with
+ RAII locking
+Message-ID: <20260527112924.465bc273@jic23-huawei>
+In-Reply-To: <CAKqfh0ErDrDi++OZiQhJVLujtwKV3vN-zmNZzhz7EfF8wAc-WQ@mail.gmail.com>
+References: <20260523182531.10146-2-m32285159@gmail.com>
+	<20260526154709.7dfa5f0c@jic23-huawei>
+	<CAKqfh0ErDrDi++OZiQhJVLujtwKV3vN-zmNZzhz7EfF8wAc-WQ@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,104 +47,120 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 26 May 2026 17:55:24 -0500
+On Tue, 26 May 2026 15:31:10 -0500
 Maxwell Doose <m32285159@gmail.com> wrote:
 
-> Include linux/bitfield.h for FIELD_GET().
-> 
-> Create new macros for bit manipulation in combination with manual bit
-> manipulation being replaced with FIELD_GET().
-> 
-> The current variable declaration and initializations are barely readable
-> and use comma separations across multiple lines. Refactor the
-> initializations so that mantissa and exp have separate declarations and
-> sign gets initialized later.
-> 
-> In addition (and due to the nature of the cleanup), fix a sign-extension
-> bug where, float32 would get bitwise anded with ~BIT(31)
-> (which is 0xFFFFFFFF7FFFFFFF) which corrupted the exponent.
-> 
-> Fixes: 64b3d8b1b0f5c ("iio: chemical: scd30: add core driver")
-> Reported-by: sashiko <sashiko-bot@kernel.org>
-> Closes: https://sashiko.dev/#/patchset/20260524020309.18618-1-m32285159%40gmail.com
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> On Tue, May 26, 2026 at 9:47=E2=80=AFAM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Sat, 23 May 2026 13:25:32 -0500
+> > Maxwell Doose <m32285159@gmail.com> wrote:
+> > =20
+> > > scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> > > calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> > > patterns and to improve maintainability.
+> > >
+> > > Add new helper function scd30_trigger_handler_helper_locked() contain=
+ing
+> > > the critical section for scd30_trigger_handler(). After moving
+> > > scd30_trigger_handler()'s critical section into the new helper, tune =
+up
+> > > control logic to return ret early and not memcpy() if it's an error
+> > > condition.
+> > >
+> > > In addition, small refactor to replace "?:" operator with regular
+> > > if/else returns.
+> > >
+> > > Signed-off-by: Maxwell Doose <m32285159@gmail.com> =20
+> > Just some naming things inline.
+> >
+> > I thought about just changing them and applying but decided
+> > I'd rather you took another look to make sure you agree
+> > with the suggested changes (and if you do send me a v5)
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> > >  static ssize_t calibration_forced_value_store(struct device *dev, st=
+ruct device_attribute *attr,
+> > > @@ -424,11 +430,13 @@ static ssize_t calibration_forced_value_store(s=
+truct device *dev, struct device_
+> > >       if (val < SCD30_FRC_MIN_PPM || val > SCD30_FRC_MAX_PPM)
+> > >               return -EINVAL;
+> > >
+> > > -     mutex_lock(&state->lock);
+> > > -     ret =3D scd30_command_write(state, CMD_FRC, val);
+> > > -     mutex_unlock(&state->lock);
+> > > +     guard(mutex)(&state->lock);
+> > >
+> > > -     return ret ?: len;
+> > > +     ret =3D scd30_command_write(state, CMD_FRC, val);
+> > > +     if (ret)
+> > > +             return ret;
+> > > +
+> > > +     return len;
+> > >  }
+> > >
+> > >  static IIO_DEVICE_ATTR_RO(sampling_frequency_available, 0);
+> > > @@ -579,24 +587,36 @@ static irqreturn_t scd30_irq_thread_handler(int=
+ irq, void *priv)
+> > >       return IRQ_HANDLED;
+> > >  }
+> > >
+> > > +/* Meant ONLY for scd30_trigger_handler() */ =20
+> >
+> > No need to say this in a comment. The code naming is clear enough. Howe=
+ver...
+> > =20
+>=20
+> Agree here with the removal of said comment.
+>=20
+> > > +static int scd30_trigger_handler_helper_locked(struct iio_dev *indio=
+_dev,
+> > > +                                            int *scan_data, int arr_=
+size) =20
+> >
+> > Avoid using _locked() in naming.  It isn't clear to readers if that
+> > means it is locked already, or will lock..  Also somewhat unnecessary
+> > here. We don't need the function name to say why there is a helper.
+> > =20
+>=20
+> Ah...I'm honestly not sure. I know we've decided that _locked was
+> appropriate in certain cases, I wonder if that may also be the case
+> here. I guess though since I'd have to send a v5 anyways I'll change
+> that.
+>=20
+> >
+> > arr_size would normally mean array size - i.e. how many ints
+> > there are in scan_data.  Here it is the size of scan_data - probably
+> > also make it a size_t
+> > =20
+>=20
+> Hm, perhaps? I definitely agree with size_t, I'm not so sure on
+> changing the name. However like I said since I'd likely have to send a
+> v5 anyways I'll switch up the naming.
 
-I've applied this to the fixes-togreg branch of iio.git and marked
-it for stable. 
+Given people will associate arr_size with ARRAY_SIZE() which on this array
+would return the number of ints (so /4), that name definitely needs to chan=
+ge.
+Exactly what it changes to is a different question!
 
-For the record I also messed around in compiler explorer and it seems
-that for at least some values sashiko was correct in that the current
-code doesn't give the same intermediate values on 32bit and 64bit
-(I tested x86 but should apply elsewhere).  
-
-In at least some cases it was actually fine (via undefined behaviour
-from a massive shift getting masked) so this may well not have been
-visible in testing. We should not be relying on that though so good
-to have the fix in place.  Note I only checked a few values, so it was
-not exhaustive.
-
-Thanks,
-
-Jonathan 
-> ---
-> v2:
->  - Added new floating point macro constants per Jonathan's suggestion.
->  - Included linux/bitfield.h to use FIELD_GET() since Jonathan also
->    recommended its use.
-> v3:
->  - Added fixes, reported-by, and closes tags per Jonathan's suggestion.
->  - Added explaination for fix per Jonathan's suggestion.
->  - Removed unneeded comment.
->  - Changed commit subject.
-> 
->  drivers/iio/chemical/scd30_core.c | 19 +++++++++++++++----
->  1 file changed, 15 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
-> index a665fcb78806..79124f4d7b9b 100644
-> --- a/drivers/iio/chemical/scd30_core.c
-> +++ b/drivers/iio/chemical/scd30_core.c
-> @@ -4,6 +4,8 @@
->   *
->   * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
->   */
-> +
-> +#include <linux/bitfield.h>
->  #include <linux/bits.h>
->  #include <linux/cleanup.h>
->  #include <linux/completion.h>
-> @@ -43,6 +45,11 @@
->  #define SCD30_TEMP_OFFSET_MAX 655360
->  #define SCD30_EXTRA_TIMEOUT_PER_S 250
->  
-> +/* Floating point arithmetic macros */
-> +#define SCD30_FLOAT_MANTISSA_MSK GENMASK(22, 0)
-> +#define SCD30_FLOAT_EXP_MSK GENMASK(30, 23)
-> +#define SCD30_FLOAT_SIGN_MSK BIT(31)
-> +
->  enum {
->  	SCD30_CONC,
->  	SCD30_TEMP,
-> @@ -89,10 +96,14 @@ static int scd30_reset(struct scd30_state *state)
->  /* simplified float to fixed point conversion with a scaling factor of 0.01 */
->  static int scd30_float_to_fp(int float32)
->  {
-> -	int fraction, shift,
-> -	    mantissa = float32 & GENMASK(22, 0),
-> -	    sign = (float32 & BIT(31)) ? -1 : 1,
-> -	    exp = (float32 & ~BIT(31)) >> 23;
-> +	int fraction, shift, sign;
-> +	int mantissa = FIELD_GET(SCD30_FLOAT_MANTISSA_MSK, float32);
-> +	int exp = FIELD_GET(SCD30_FLOAT_EXP_MSK, float32);
-> +
-> +	if (float32 & SCD30_FLOAT_SIGN_MSK)
-> +		sign = -1;
-> +	else
-> +		sign = 1;
->  
->  	/* special case 0 */
->  	if (!exp && !mantissa)
+>=20
+> >
+> > So this whole thing becomes
+> >
+> > static int scd30_trigger_handler_helper(struct iio_dev *indio_dev,
+> >                                         int *scan_data, size_t scan_dat=
+a_size)
+> >
+> > =20
+>=20
+> Sounds good.
+>=20
+> best regards,
+> max
 
