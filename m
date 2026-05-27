@@ -1,69 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D523F2DB7A3;
-	Wed, 27 May 2026 06:56:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCC7A3859FC;
+	Wed, 27 May 2026 07:02:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779864997; cv=none; b=cU1puQOt7VGNqfFBaehQFxPURtPBfo82TeqtnyF23i3VqxoQCkjjB9uK5aHFqhuKWlXIzz4DlP/5LpNqOPb9vLyKcMEJGa1VccY+ZQoyAVKLzI8BdZ8gh4iOiBDefYFiXF2x+nLRDmv5XVPrnJiPAvo1JGJRKN/HEfagX7VPC3Q=
+	t=1779865337; cv=none; b=Vf28Mnca1dwvAj0O7gKXsagCfxLDmSwduNqntWAeHBqQXb0rlUd9+mLqmysL9wJqvLjY+1n+Zpi+q3o8p90/17RP97NTBkep8MzwzNtdR5gSMLS9jMtC+7QvfuCfR+uhZ7m2C6ancMXEu8gH1zhIstZxEwTGkcMlyc899+KOetE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779864997; c=relaxed/simple;
-	bh=me55Rl/ZvHon/Flxl5zIakg9tRYCgnBcoSn8IEuTSkU=;
+	s=arc-20240116; t=1779865337; c=relaxed/simple;
+	bh=2II9vm/59edoijDRqUUqnmg3fWp1Cw3PTVbucHXjqDM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aYJHRx6P+4UyI6dJ7PNA7Xkt+vTPvw18C3EbVP2JVDMzn3CCGHtzu+V6VBeQOfIlGCptOk8wzT2T7fxfSKL1e7JheDTK9nZijo07tzVNCR4F8iCEWsXfCbOsFaVwWCqZ+KpVuxOOUW4aK0d/3l9itODRpV1EeRDyvX+KFX6vvJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ju9nWBj5; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=j0tJ9wPM6k+lrg7E7Gr0xDWBey2GBE+RkZXU4aO1tToMGzw19kqrX3qq1ZF9FioeKITvos6RDaB8u4t+Zn9xUwq8MMvUUta1lMU6Y20y77rbI1O27Xr2i2IGMvJMOxmH/7fnadIIC0n5c/xWgkOjZoGpyk8WtbY8qBDWJqxTF2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jru6ARm2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ju9nWBj5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF131F000E9;
-	Wed, 27 May 2026 06:56:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jru6ARm2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C311E1F000E9;
+	Wed, 27 May 2026 07:02:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779864996;
-	bh=YC+uLza7y0Sp6b5nc0/2m0K4Xo/464gvILubFJU6PpE=;
+	s=k20260515; t=1779865336;
+	bh=OCL1bC3cQatvjl5IDNunios1yI5OWnaqrhZZQKzV4sA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Ju9nWBj5M6+itsx5rcIVE1nRHLXH2IKm1Y3tbkbMpbiChSMNCglco4IxdOigzID4R
-	 z6rbs+p9sRiFV8CJ+erq/LUqVsn7seCAf97l9EmPoXXz2qbl57FQXPZOHC+mjbPrMm
-	 zsdfk+v/p2xQ8wOHG/fnLrY33HiH+IK59ADIPjSrHm7cXQjKoIs9gsHU/uCvd1ueBg
-	 ZwVGkUgPUVkh8Cmb01bA2EDjfgGjJ7m+WF7rPBTiTI1FHc5QXORoKb553d9G9KCXKv
-	 kplumjQSJHe20RqBqeXcR0RRbcULW21Au9x+kg1dfnTJPOZgvMsgvLsNidZ99qP3Fe
-	 ZQjwvRFOMvUiw==
+	b=jru6ARm2ybB7dlQ57MI7BsS+TqXbc3C4HXQGYrhI/zu484QIzKE5V9AymvIPszL2s
+	 C+X7hp2lP6G4tQ3aUoVHou0RUYBeaOGFLVpha4uDlTbYAjY7Vx0Tb/DFi+flmCxIlH
+	 3KCKh7ImKHK7TQ4ZcjHleUDi7ZQYlqSeAH1ZjxESYPD9jRLVMukePh9K0+Kx6ML4BL
+	 hK+2z9l5Y71AFr1hefn10Opp5Rf3+V23T8DfL8dzwo6INevFXwV7mXNEl+mmcsqn2b
+	 uTj9YtBSN58Rku40yQLKnXwNcmRLMYEv2qTacvGDQ95QwnPYlilOyP3c9HXNufFwQg
+	 fd4tyjGSO99Rg==
 From: William Breathitt Gray <wbg@kernel.org>
 To: Stepan Ionichev <sozdayvek@gmail.com>
 Cc: William Breathitt Gray <wbg@kernel.org>,
-	o.rempel@pengutronix.de,
-	kernel@pengutronix.de,
-	joshua.crofts1@gmail.com,
+	patrick.havelange@essensium.com,
+	peng.fan@nxp.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	andy@kernel.org
-Subject: Re: [PATCH v2] counter: interrupt-cnt: use devm_mutex_init()
-Date: Wed, 27 May 2026 15:56:31 +0900
-Message-ID: <20260527065632.502242-1-wbg@kernel.org>
+Subject: Re: [PATCH v2] counter: ftm-quaddec: use devm_mutex_init()
+Date: Wed, 27 May 2026 16:02:10 +0900
+Message-ID: <177986528627.502937.17837579399863553135.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260525151152.7238-1-sozdayvek@gmail.com>
-References: <20260525151152.7238-1-sozdayvek@gmail.com>
+In-Reply-To: <20260525151240.7258-1-sozdayvek@gmail.com>
+References: <20260525151240.7258-1-sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=647; i=wbg@kernel.org; h=from:subject; bh=me55Rl/ZvHon/Flxl5zIakg9tRYCgnBcoSn8IEuTSkU=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFliUwVfq6pofjgXV5LbmbCi7M/Sdu8fWle8/l+4PzFW7 pJz1kn7jlIWBjEuBlkxRZZe87N3H1xS1fjxYv42mDmsTCBDGLg4BWAibywYGdbfd571Obrp8y2T 1z0mr/4W/N2y6OTj7t33fevW+HHN53Rg+MNXNjte4voZqc3cas9umx9rCXh22euB9eanV01tFFq Z+xkA
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=580; i=wbg@kernel.org; h=from:subject:message-id; bh=HPDHz2buRIlz0e+RlNv5VLc0oVgu7KOAl9Odi1+NRKI=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFli0+6LLQqY2XjKquZ/dPQroZSdM5qfJVpsuMHz/unNf stNDdHpHaUsDGJcDLJiiiy95mfvPrikqvHjxfxtMHNYmUCGMHBxCsBEPqsxMnxK2G1k8niLVnHJ zqR/x08buuya0JEd+/3wuyzjg79z+lIZGTrUJ2pu7nf16bisJHPgfMiHcr+IVX8cinP/hYndeT8 zgBsA
 X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
 Content-Transfer-Encoding: 8bit
 
-On Mon, May 25, 2026 at 08:11:52PM +0500, Stepan Ionichev wrote:
-> interrupt_cnt_probe() calls mutex_init() but neither this driver
-> nor the counter core issues a matching mutex_destroy() on unbind,
+
+On Mon, 25 May 2026 20:12:40 +0500, Stepan Ionichev wrote:
+> ftm_quaddec_probe() calls mutex_init() but neither the cleanup
+> action nor a remove callback issues a matching mutex_destroy(),
 > which leaks the lock debug state when CONFIG_DEBUG_MUTEXES is
 > enabled.
 > 
 > Switch to devm_mutex_init() so the mutex is torn down in the same
 > devm scope it was set up in.
 > 
-> Fixes: a55ebd47f21f ("counter: add IRQ or GPIO based counter")
+> [...]
 
-The mutex_init() code was added in 7351312632e8 ("counter:
-interrupt-cnt: Protect enable/disable OPs with mutex"), so the Fixes tag
-should refer to that commit.
+Applied, thanks!
 
-William Breathitt Gray
+[1/1] counter: ftm-quaddec: use devm_mutex_init()
+      commit: f981309937538ca7425fbf65fe4c339c00e50eca
+
+Best regards,
+-- 
+William Breathitt Gray <wbg@kernel.org>
