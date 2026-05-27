@@ -1,52 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF5FE4779B9;
-	Wed, 27 May 2026 18:17:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC497318EEE;
+	Wed, 27 May 2026 18:20:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779905828; cv=none; b=UpsAFQ1AYvwRhsxidUm8lpBrMbgwDDSlLZiYLZ79cKeg49E0Nlg4Ol3QuJmcqzwKe1fRWuSkL3xcUdKtaqzi7Kwo9LHBATT1FgvWwSl+TLMwE2vmk9hEQUrZMZh4t0lc6/sUq8OZoPUF4lUZdBhZyzxirVGuyounaW434lYTjbo=
+	t=1779906008; cv=none; b=DtaAWXBKrzkYYVmI6YkgYsz1R6DNEgqaZ5gqf6LEKv9lqh+yaIPgRT8D0dhI84z7xbLhUEK7FbdrJqZJmzjvcEiMVPvIhVS46feZ9Av35Yn46sVo+GJpJXdtb0RrdsOK/Vs2H/lYRae2fdSH0YBAfUTzuZDJuufDeZvgr4p86A4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779905828; c=relaxed/simple;
-	bh=Nsk+GVLQ3mIBG4ZEiIFRLZZ3GB9aWQKBr/9/euxOoow=;
+	s=arc-20240116; t=1779906008; c=relaxed/simple;
+	bh=aPsKGs1Vt+vl9X7i3JuvTR3g0KIlT3qB976B0uXmgCg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cweaISweUPPXDLiYCTXXclAkLpGuD899RABEz6yIO+2U1WU/kNnUbW1u/rvop+PGVE+sQtBPXWnALTfflCX7GyCiZVFbxFUA95ZWmbUPf7lX67xwZD3AY4H03OUh7eslNG1k4vFW+QyLtKuaxIUKK7JOvpBwJCw9x1grZ4jli/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JovogSyJ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=PR79hNl98h5uAknyQvHLVfkx/P1ecmjYUfBe6hpDAo2r3iUrPbCVJAnBdKMI7kkvtHbxgRLkfiVw9/gy7xrg2lpjwrZ97C4Q8ambHUdkOeu2/rNSQtwsUP7Z+6LWUJF8ASM46noSJ83VwaTsNYIU9rMjyhsig3HcqZ5pgnRwTEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=khqJIDjX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JovogSyJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B981F000E9;
-	Wed, 27 May 2026 18:16:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="khqJIDjX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81321F000E9;
+	Wed, 27 May 2026 18:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779905826;
-	bh=CjilvsEVVaEMT/HbkP0oG5Yhwf69K/WazrffahsS7BE=;
+	s=k20260515; t=1779906006;
+	bh=1v3rtMWVPX9yEwHbVAidEkPanehT9eODsFwqHLyity4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JovogSyJMi3D37m9DdgkgJ8rKdkQNYDj9Jbh4B/JIb6vLvbrdoYuTEmdYQB4C5bCj
-	 JQxBklvTeAZTFeLUbDvDvTHx2MXO4xBiCtCtt8LeoZ1smfdCZGJYsS1tBAxfhttGl4
-	 xkYGHyrMvEMUCPIkSlRPDZYt1QGzYqQPy1x3hvAqqSQFT9Vycp58rLE7r6xp4+l8GD
-	 kYuruqSezkS+X5E10na5EBup9ZL/3T2VgJaOfZ7LNfrMZVlfeuV1DDQW76lp2H888U
-	 FCL/VDRySZniT/LnunznTRV/d3zkBcTwvCH3kCcWJaO3uYfMfSlM3FZXj/stKsBOhH
-	 /SUWIEX+Ggt+A==
-Date: Wed, 27 May 2026 19:16:52 +0100
+	b=khqJIDjXywD+TK0mhbGN61V0gkSgkML3plAdYeqoierrikDlTv0MAjNM2d40VYTD+
+	 6yEtqsGBbC0Gruj4h+zrU04b+opcBaaFY7te9jB3BdKUHFvYQiJEBuuGS2COYIHBrc
+	 l/vPGjenn9g94zzE2d8+x5v9juipD8wjHTvXzCuV7StbeWA+VSPe9mThptBVMxJ6hn
+	 J+jtXEySiNj3bsoh4rmza9glaroMZ5eNZZCxWoEO/awHqy5QPt787GEfpWooOex2hx
+	 u0KN6YhVJ2ivuu7Yr28y4ccK2HpglidTzNDQ4ho7JH5VK95fCwaycAr+Zukufb2z8n
+	 tZJIPRU2og48A==
+Date: Wed, 27 May 2026 19:19:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org
-Subject: Re: [PATCH v13 5/6] iio: adc: ad4691: add oversampling support
-Message-ID: <20260527191652.33041b88@jic23-huawei>
-In-Reply-To: <20260525-ad4692-multichannel-sar-adc-driver-v13-5-1b7626d3b35c@analog.com>
-References: <20260525-ad4692-multichannel-sar-adc-driver-v13-0-1b7626d3b35c@analog.com>
-	<20260525-ad4692-multichannel-sar-adc-driver-v13-5-1b7626d3b35c@analog.com>
+To: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>
+Cc: joshua.crofts1@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/8] iio: light: opt3001: move device registration to
+ end of probe()
+Message-ID: <20260527191959.5e871e9a@jic23-huawei>
+In-Reply-To: <20260525-opt3001-cleanup-v4-1-65b36a174f78@gmail.com>
+References: <20260525-opt3001-cleanup-v4-0-65b36a174f78@gmail.com>
+	<20260525-opt3001-cleanup-v4-1-65b36a174f78@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,56 +48,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 25 May 2026 13:10:14 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
+On Mon, 25 May 2026 10:20:15 +0200
+Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 
-> From: Radu Sabau <radu.sabau@analog.com>
+> From: Joshua Crofts <joshua.crofts1@gmail.com>
 > 
-> Add per-channel oversampling ratio (OSR) support for CNV burst mode.
-> The accumulator depth register (ACC_DEPTH_IN) is programmed with the
-> selected OSR at buffer enable time and before each single-shot read.
-> 
-> Supported OSR values: 1, 2, 4, 8, 16, 32.
-> 
-> Introduce AD4691_MANUAL_CHANNEL() for manual mode channels, which do
-> not expose the oversampling_ratio attribute since OSR is not applicable
-> in that mode. A separate manual_channels array is added to
-> struct ad4691_channel_info and selected at probe time.
-> 
-> in_voltageN_sampling_frequency represents the effective output rate for
-> channel N, defined as osc_freq / osr[N]. The chip has one internal
-> oscillator shared by all channels; each channel independently
-> accumulates osr[N] oscillator cycles before producing a result.
+> Move IIO device registration to the end of the probe() function to
+> follow standard driver teardown/setup ordering and improve driver
+> logic. Additionally, switch devm_iio_device_register() to its
+> unmanaged counterpart as current driver implementation mixes managed
+> and unmanaged resources, causing potential resource leaks.
+Not so much resource leaks,  more that it is harder to review as 
+we have to reason about non trivial life time interactions.
 
-Sashiko notes this probably needs updating for moving to single osr.
-
-> 
-> Writing sampling_frequency computes needed_osc = freq * osr[N] and
-> snaps down to the largest oscillator table entry that satisfies both
-> osc <= needed_osc and osc % osr[N] == 0, guaranteeing an exact integer
-> read-back. The result is stored in target_osc_freq_Hz and written to
-> OSC_FREQ_REG at buffer enable and single-shot time, so sampling_frequency
-> and oversampling_ratio can be set in any order.
-> 
-> in_voltageN_sampling_frequency_available is precomputed at probe for
-> each OSR value, listing only oscillator table entries that divide
-> evenly by that OSR, expressed as effective rates (osc_freq / osr[N]).
-> The list becomes sparser as OSR increases, capping at max_rate / osr[N].
-> read_avail picks the precomputed list for the channel's current OSR,
-> making the returned pointer stable and race-free.
-> 
-> Writing oversampling_ratio stores the new OSR for that channel and snaps
-> target_osc_freq_Hz to the largest oscillator table entry that is both
-> <= old_effective_rate * new_osr and evenly divisible by new_osr. This
-> preserves an integer read-back of in_voltageN_sampling_frequency after
-> the OSR change while keeping the oscillator as close as possible to the
-> previous effective rate.
-> 
-> OSR defaults to 1 (no accumulation) for all channels.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-I didn't find anything else to comment on. LGTM
-
-Thanks,
+Otherwise LGTM
 
 Jonathan
+
+> 
+> Also, add iio_device_unregister() to remove() function to correctly
+> handle teardown.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
+>  drivers/iio/light/opt3001.c | 18 ++++++++++++------
+>  1 file changed, 12 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index 03c7a87b4a8eef13bbdcf48dcaf969781aa76bd1..6a39f116f9312b6933e86d72aefbaaaf1769aca5 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -874,12 +874,6 @@ static int opt3001_probe(struct i2c_client *client)
+>  	iio->modes = INDIO_DIRECT_MODE;
+>  	iio->info = &opt3001_info;
+>  
+> -	ret = devm_iio_device_register(dev, iio);
+> -	if (ret) {
+> -		dev_err(dev, "failed to register IIO device\n");
+> -		return ret;
+> -	}
+> -
+>  	/* Make use of INT pin only if valid IRQ no. is given */
+>  	if (irq > 0) {
+>  		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> @@ -894,7 +888,17 @@ static int opt3001_probe(struct i2c_client *client)
+>  		dev_dbg(opt->dev, "enabling interrupt-less operation\n");
+>  	}
+>  
+> +	ret = iio_device_register(iio);
+> +	if (ret)
+> +		goto free_irq;
+> +
+>  	return 0;
+> +
+> +free_irq:
+> +	if (irq > 0)
+> +		free_irq(irq, iio);
+> +
+> +	return ret;
+>  }
+>  
+>  static void opt3001_remove(struct i2c_client *client)
+> @@ -904,6 +908,8 @@ static void opt3001_remove(struct i2c_client *client)
+>  	int ret;
+>  	u16 reg;
+>  
+> +	iio_device_unregister(iio);
+> +
+>  	if (opt->use_irq)
+>  		free_irq(client->irq, iio);
+>  
+> 
+
