@@ -1,176 +1,135 @@
-Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C97A5376497
-	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 19:27:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D0B35E1D3
+	for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 21:30:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.175
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779910073; cv=pass; b=ZHxO71pHHLuxn1wxCX2PPXCnXcCSbsrTTtjRS7pkThB8yA0bE7CC4xW3e6sMoS4KCyEDQvUX6mL4SxKWofsLkDpb/4L924V3PwUWn7eXwbC6wr+w4tPDl7vahz4B7juP7p3u3fe4lWAt44LM/UeK9Fm29gtprBuVfxXme3cYwNk=
+	t=1779917446; cv=pass; b=tkQPFwjDi8wRl2B5uLE5XscAd8xwEXxJ1jhQ0YANbEV76Ix3CtOsnzpN6XpWBT/e3vpKX+cGjV0+k/SX5E7JNA38yVPApapAfN3UEl3AFDqlQPLQJFSmlW4YJGHv3eJ8RVS3YrLcpC1p9V2v8C+FY+hZroS3xtoHNQSUkRimYKo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779910073; c=relaxed/simple;
-	bh=xrhZ5oxZCXb97/ZGhQC8My4TSkqxG17a4S+H8PAGKfI=;
+	s=arc-20240116; t=1779917446; c=relaxed/simple;
+	bh=v/TOy+mVoCUrT1MScoKexZjtpf45Om3+UrUr+OCgZnA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=g+p/sR41ta+imM+MQU9RDyaGKPPbN+n6PDofN8RNmUAjXjlPJkEXMOSJUrUMTH1ik50bUkzSEqR/DImmT5z62R8MSWoK4rDxbxs4SX2eFWiwRRVq/7va8USf4Axy7D4qFFQ4dfW9SGjWPKmGb5uWpfmVWr1ef3V1uKd7RBOLe7Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kdVm2T3B; arc=pass smtp.client-ip=74.125.224.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=jOIIryyqrOENij8XsOruyRn4iDjMTsGc/S/HKX1fROad2saTR+kL833plFM6LPEsUsMP3iZVvzWrw9Tzu1pakJtyS6qmAl+cH6J6g06KZlr0JD6dUyUxb41ELnNztgfNmwAHW6TjPMyhUGFbgldCOGYFF/2wxtqSldlpRHCfS04=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=GrPlpV7z; arc=pass smtp.client-ip=209.85.208.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kdVm2T3B"
-Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-65c21049dafso11117047d50.2
-        for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 12:27:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779910071; cv=none;
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="GrPlpV7z"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-38e97e73234so11351141fa.1
+        for <linux-iio@vger.kernel.org>; Wed, 27 May 2026 14:30:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779917442; cv=none;
         d=google.com; s=arc-20240605;
-        b=dSM/Py/MBMO3oGmHqzg/2V+QBdsMFHr8nUJZQLa31wcltssygzO7xKVZnMvZO+kkkX
-         ACewu6MPNFBsycKK+GlWekNSvlcboATvwhhNJFjuSCX/19rVvyRrZwK6AzeRj2xJyXUh
-         wDHu4AHdBRxa3B7UzupmjJDwfkHIsp/F1C+531oi05eXluR6bs+AIB/ijLyVpOhRvt8S
-         qTEVHOdtFJVMfnbtD4vwXELkFau/tyTjzsNT1HgRzPsqut3IjG96dGghIEdL6YMeRElt
-         ZKjIZrSeKyPmviix3hidTimX7ZnGD0JcfzAhn7Q8vyltE+y912uzWDsm7gcCHU2sDDUG
-         YNlQ==
+        b=Lpc2ueGOuYz4ZxZwXlKTBcWhmpqo+t+RiFY/g+r+RWaTuv/v9s6NQhMf66qhXhDH0A
+         1Twfdyj6lW6Kp/dK7yOswtuwrlOIwJh6KV/ksLv4nkQwCMcqqhyvSpla/z3L187FP9U4
+         8+FT9r9E7R7XpH8jAk/7zUHN5ATnZiTE4qX/hXDeyMqm97H5UYCPTg7NCNiF0uUOzLSK
+         tFM470QO8HJvSV2mWED5VGDoKCK48ixrVwm4qeWLgD/lejCGTCqYpzPcgkgCBD8nO4XG
+         EHCXx0NPLZrEptQ3Txzq0H/IwkqfhFVu4wDkRhVvyCNu8kd+Dpk5tXQsTnc2Y2AIvv0Z
+         O6zw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=6yt4usbXpiajtncrBUtIlmsAyJqULlwkgHskpaEwIYo=;
-        fh=+N/6WbHGRXWPiUQ9ahOMDY6izaBiCziCswvRaXn1NGk=;
-        b=f5vfKicvaZinoAEUIgDi/cJwEsdfkTRbZFRbcSk46Ub/XGQh/KwlTvpGX0SnESwsrg
-         nzb1txd76B7pyQVK7BU5dwIg4UmLcrfc0gtbBeItFHQ+F/p0/GX+yRFM4LShOHhFkuZb
-         R98pnMT653zgWvRDd+jd3TDXzpCZKhU1nBFckw0vEeluXYX8IqNsEoBeT624kz5/lB9K
-         l4IWCZla01LX8QFBmEupEi8Q9D2KcDMnaWyrDi3bxiqKwp2Xatw/aTNNp4FeB32ZSbIh
-         F7i139OjfcG+RziGgFkRV2iwGrqZjjJCzAkmNFiIeXjROEVuIu/PKfZLjM8bwSzErrl9
-         b6mg==;
+        bh=WL7k9voA8YUxV+I+bhTZKowfPVkgy793ox0R2aAzkCo=;
+        fh=dU/D8Yiw3zc+Ki8A+AMUKsMhamIMSRxL1ON6SMuMEAE=;
+        b=jzpgd0hXewFL0tuHZGNoQYFpMxOjfoTyeDEtawLATtjjraSOF3WePchedraHnWRfU8
+         xqSa77ot4/l2O7FUUysyexKyhHJpSkVhW63ZRtOiku/UY2tPYxndo2ePAB82PfPIh0hp
+         47xGR9cPAY/vGYUfgB7FrOdAkZdr3vhKROgse/5xGdU2PyQBTgf2HV7rStsCKYD2QeVO
+         063nmKi8ji9Pg7a4WkdTA4p0u45nhMBpGT9mLqdGHJAkwmW89pmIETbKODK1b8rFAUPP
+         7Ct9KBG2kNJKmrubfEy5cpVC4cCDR7GjQx72BiJRhiVNeBWCM8Dku1eYgkEnDsQuerFy
+         eCvw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779910071; x=1780514871; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1779917442; x=1780522242; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6yt4usbXpiajtncrBUtIlmsAyJqULlwkgHskpaEwIYo=;
-        b=kdVm2T3BnTU8fw+bDisy1fZ/pnNybWMObaVGeipmuq6EPS3ez7gGplWW+AvYVQWj3O
-         y8cjoK96uwY/UU4V5Ao8o6IgtyENUg2cersVZjAHuxcaBD1CGBHQ3k3H5DHHQjh4j8b0
-         g2uNGYn489GL1VsbWlEksjBa1iBM/q09/bvulohviYavjNHYPtmVjxgm97LxUXeiMJVh
-         qDtErf/rSPzBOofgnNOdqJoC8JUoiE/XcNWRXsbwJnAC6GaXyWSaDt3p3+MFCLtkHgIC
-         YceDKbcLw280vH0rBaCQL3ENEQXgkuGRUiB/oOsNitrTBYVWfh3bTHuoSkOIUdaIXTaM
-         OyWg==
+        bh=WL7k9voA8YUxV+I+bhTZKowfPVkgy793ox0R2aAzkCo=;
+        b=GrPlpV7zGWy0PeNZgOqDq8LWV5py2nlAXyCg88QmEei4dm1AJG2ksXxRHG5RNATBTT
+         L04oWI8tlpKP9LJPRJgbYSYHfjGJzaiEd872CZFgkXZjq694dwAyhwpNqGiOJJLE+eEd
+         gKHWYhw/cNTWMCVc6uTcPICrAaPp8/L1+Z0+ylZ3zZxMjlMpNyVIHX/IRNprM9fPN6JF
+         abPtljMDd3tPWnZar/eMcDkUL8hSwE2Xngh4jopuC+dgY+CDuJA+i6swXET7tNG2sqJT
+         spiu0oAz48U26DYSdQC/KiwWSxbPZegQKrqpVU/FN+A3x8MsM5ATJ9yZ/QF86z1rnDUL
+         Zn1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779910071; x=1780514871;
+        d=1e100.net; s=20251104; t=1779917442; x=1780522242;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=6yt4usbXpiajtncrBUtIlmsAyJqULlwkgHskpaEwIYo=;
-        b=Yb/4P6mTYaouUv8bcL/yhM9xo0D/xLTLDXrTUuxxv1iuiMNE6THLbaJVGak0tWArDT
-         BaqZVPrzkEF8rA+MpGBFd72c266fCtzf2G7sMZjh1dwjKmlXw8cHi1GKgXWTCWaifb1Q
-         fmNmtGqalbc7hAhLsW3hkZhLgg4Mpi0hk5gb62kyaDMEjQ1qdSrJ+pLsLPeD+SeyyyVs
-         cjfdk8Zwpi2i3TIwzJSizoxulAvQyVI7DkJmZViCHRYXEiwy5juN1hqDK+FEHAnCJWyD
-         SLjxNOIVlntpcZ06MBk7KqMUPzJ7dPSWtZlyUiWAtCvvNddIc0QUroFqWNFT4yomG/QA
-         8Wfg==
-X-Gm-Message-State: AOJu0YzobeKN+stKiafJY+wxKFmiwuEvJNc60V97XmgzTfTtePQg+gPw
-	ipC0u+JetYMHP6pBdcUjWHVrvuWY26HfMzz8ZIpRA/MTaYQOLdwNUKKre402mv3+eUjwI0rN2g1
-	pSywoIC1wA0/HAY1Phz1+foeRn7Q/6dY=
-X-Gm-Gg: Acq92OGij8ZNhRXSAM0kx3WV1MNVWLwm4FjmdiaBK+g/1UrBTF2XV2825G+mCwtofQx
-	UVd8+x3Ur98pVhlk+6+zNiPVC67mu7rX2H9EJySSXQHCtaFgtFcXz2a7F+Eg+nMTmJPzy3XurKf
-	wcxI/Kam04DwgldPzdIlNQshblNYmSQoRJoBCtOtBgm2oc9ok+jE4xL4sq3cf8EMnzOwMsix+sy
-	NetJtB3QHT/T37sjJZ2jEcDeVCxi+JMR0ouRwkNg8X05CFERnFdZrPNacMqk9gfr4vxCuE8AEEY
-	JtczclgtC8phgUudkAYikD/hk5sQ/q4=
-X-Received: by 2002:a05:690e:d4e:b0:65c:27b5:415f with SMTP id
- 956f58d0204a3-65ec98a9d80mr25933836d50.36.1779910070752; Wed, 27 May 2026
- 12:27:50 -0700 (PDT)
+        bh=WL7k9voA8YUxV+I+bhTZKowfPVkgy793ox0R2aAzkCo=;
+        b=CFC8tB/yrSOGm7lpy9qgkRw40/TJUHXkxtRuzcr0JtzGF6AKmBD5DrK74nHn8gFKzH
+         XeFCR8EbOfKG3ntbd9Ps9opvF6SMY9veS5KerI99uK5yYRdVMIVHjGIFqZkT6hLDzWR2
+         vFYU4xgR+Jgh5oZdn5ymSEmxhSeeqPBZVZP8js1fg4ebyYvGQbw8q6UOamP9RfnfNPlT
+         mgMljmlxneZ0VpVUxF5gB9hrF+gLS1kKHlRxvoyzfJIYLWcobiUkwXvWO7Yc2mluU32h
+         VGVgI6oPdQ+wgi8QphYjrEKgHzffChlo9nmACPrNo3GuppoLhVo+tPL5FBVuhdeTkr5S
+         q5SQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8tzYcCbEr4GQtRPHHF6IMoFxbqoIGsj8Me9PXUW+oQ/D+4MoHJtvFrEMD7sFZGW/RCZ9L+hhkZUY8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyGkBJCJT/9AzW29bYgx72VnoNuqX8stXTRVk2fPYezPoAenoHu
+	o4ajHOhdwmZNmVKN5eUjc/vnvmsSTGNLvZsvyV9Coax8x6ixgLLMyQkorbni0727wydWntYctgN
+	d4sBwwpS2gSs0UGQJfm6oLYb/RB6TYAci12aUHwoUDg==
+X-Gm-Gg: Acq92OHdeHJyfvCJwNMncYV69S6AIvlazB5d9qxtbSKQIoo0IRWPRIf9wqkJ1otlhQk
+	IY1USeJLq78GfSFtJJNB+OEm4H55DPmyzl5zJFKyLsp96tq25fxtM2FWq8yku34jUJ9KWzOTd3x
+	TJd5Las+w0XjjNpzwdq/07+JufHGPMoi2VGfK7estr6VTti5NhrFPRSkYXDgYz/of9Jy+A5j/tH
+	0KQ4yJG/XeyRVbJFNA5///nWTcynp9oAn5vGVxN0KTEPYvHIFw1JgOxjTT0XCSpgsXYXmHG9CW5
+	J05RPTbHQ16HUbZlrMiQqD4qErAtcbGBfs1DBtZtcu7Qb5j9
+X-Received: by 2002:a05:651c:1143:b0:394:2b4:ca36 with SMTP id
+ 38308e7fff4ca-395d8e1aadbmr74951561fa.30.1779917442001; Wed, 27 May 2026
+ 14:30:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260527164312.355729-1-jakubszczudlo40@gmail.com> <20260527164312.355729-2-jakubszczudlo40@gmail.com>
-In-Reply-To: <20260527164312.355729-2-jakubszczudlo40@gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Wed, 27 May 2026 14:27:38 -0500
-X-Gm-Features: AVHnY4JV2Hp-wuWeULBMYYxJj_2oHADTTVVtEn35piKyOh6tDR0IgZhA5Aiegqg
-Message-ID: <CAKqfh0HVzRnNyn7BFW8OfVKkYt24L=X7qXeZbPTj5mGzBSSfyg@mail.gmail.com>
+References: <20260527164312.355729-1-jakubszczudlo40@gmail.com>
+ <20260527164312.355729-2-jakubszczudlo40@gmail.com> <CAKqfh0HVzRnNyn7BFW8OfVKkYt24L=X7qXeZbPTj5mGzBSSfyg@mail.gmail.com>
+In-Reply-To: <CAKqfh0HVzRnNyn7BFW8OfVKkYt24L=X7qXeZbPTj5mGzBSSfyg@mail.gmail.com>
+From: David Lechner <dlechner@baylibre.com>
+Date: Wed, 27 May 2026 23:30:30 +0200
+X-Gm-Features: AVHnY4IYTzzfnPlhjRjrs-8lp8U_NqE1ENF6xM5Z5E9xssopM_cZyNmWzLQUnv8
+Message-ID: <CAMknhBE9QdzWn35419sDyTiYviEFK3ZzWsfSOfsbFB5f42y-1g@mail.gmail.com>
 Subject: Re: [PATCH 2/4] add ti,ads1110.yaml
-To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com, 
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org, jic23@kernel.org, 
 	nuno.sa@analog.com, andy@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jakub,
-
-On Wed, May 27, 2026 at 11:45=E2=80=AFAM Jakub Szczudlo
-<jakubszczudlo40@gmail.com> wrote:
+On Wed, May 27, 2026 at 9:27=E2=80=AFPM Maxwell Doose <m32285159@gmail.com>=
+ wrote:
 >
-> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-> ---
->  .../bindings/iio/adc/ti,ads1110.yaml          | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1110.=
-yaml
+> Hi Jakub,
 >
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1110.yaml b/=
-Documentation/devicetree/bindings/iio/adc/ti,ads1110.yaml
-> new file mode 100644
-> index 000000000000..7dfe07acd3b5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1110.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,ads1110.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: TI ADS1110 single channel I2C analog to digital converter
-> +
-> +maintainers:
-> +  - Jakub Szczudlo <jakubszczudlo40@gmail.com>
-> +
-> +description: |
-> +  The ADS1110 is a precision, low-power, 16-bit analog to digital conver=
-ter (ADC).
-> +  It integrates a programmable gain amplifier (PGA), internal voltage re=
-ference,
-> +  oscillator and high-accuracy temperature sensor.
-> +
-> +  Datasheet: https://www.ti.com/lit/gpn/ads1110
-> +
-> +properties:
-> +  compatible:
-> +    const: ti,ads1110
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply: true
-> +
-> +  "#io-channel-cells":
-> +    const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        adc@49 {
-> +            compatible =3D "ti,ads1110";
-> +            reg =3D <0x48>;
-> +            vdd-supply =3D <&vdd_3v3_reg>;
-> +            ti,gain =3D <1>;
-> +            ti,data-rate =3D <30>;
-> +        };
-> +    };
-> +...
-> --
-> 2.47.3
+> On Wed, May 27, 2026 at 11:45=E2=80=AFAM Jakub Szczudlo
+> <jakubszczudlo40@gmail.com> wrote:
+> >
+> > Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+> > ---
+> >  .../bindings/iio/adc/ti,ads1110.yaml          | 52 +++++++++++++++++++
+> >  1 file changed, 52 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads111=
+0.yaml
+> >
 >
+> This and patches 3 and 4 don't have commit messages, can you fix them?
 
-This and patches 3 and 4 don't have commit messages, can you fix them?
+And the patch subject needs to have the proper prefixes. For example,
+this one should be "dt-bindings: iio: acd: add ti,ads1110.yaml". And
+for multi-patch series, we always like to have a cover letter. You can
+read all about this in more detail at:
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+and https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-p=
+atches.html.
 
-best regards,
-max
+It is also more logical for for reviewers to read if you put the
+dt-bindings patch first in the series. And be sure to use
+get_maintainers to get all of the relevant maintainers. This is
+missing devicetree maintainers an mailing list.
+
+Also, this chip looks very similar to ti,ads1100 that we already have
+in the kernel. Can we reuse/extend that dt-bindings and driver instead
+of adding a new one.
+
+>
+> best regards,
+> max
