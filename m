@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C6103EFD31;
-	Thu, 28 May 2026 12:42:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC7D37B007;
+	Thu, 28 May 2026 13:02:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779972151; cv=none; b=NRZcIJdvDjR2q0YJBGIGqMFbTwdkA4rffOUrvvLfaxV64bCocIalTRTQkO+ayA9Bq5saT5gjGUKt1FNN31eS7ZT96lvadzyYCfTuSySHIX2LzWQ641KehKwWSEcqJ2l4oukuVkqCiyCg9/9Z8HxjGHBi72bo3+CW44Lu6sDC6kM=
+	t=1779973329; cv=none; b=VX2Sq082a5EvYdGsrSGLINJr9Tm92AW13RQebJUa6LBFZHZOH7fG8Wps8GFIJAXdhDi+Na9m+rCVHbYJyDD07wA/1wZrPnCY2Cn03vvyL9x+QUFtSTmi+/TbvtwnWpptjZKCCtX3WtLfbV+otZQkaCXEsRzqKKZ18UcDddFEDlI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779972151; c=relaxed/simple;
-	bh=zCDmBqBKNLVx2HHukoTqQdcq7HiepUNWsYSAOtLQ1L4=;
+	s=arc-20240116; t=1779973329; c=relaxed/simple;
+	bh=+RH3A9wqjc/9H5xLRNcWcgS6ZkQf9QdB4m8rdA2EMos=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bpZj69qIf1MunFbbnSJpnOf4xg3YrvhO5I7piYi4S6h7M/wKst3yHOedVlJXvvo1NLYAMO9+XVT2aM1JjryLEjgtiJeSCE9ktVlfy/RvX1YiVbcG8IKqaW07s8WtqGziS8GVms1T2+JnD2tzXoqoNk6//3Nxer3G0ODJdRkJcUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jvM1YQeN; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=BTQM4E5Ruqz22K1MtC6gFxDAfi+Xri+frQIVtXD/BzfDWeY1Rrc2yh4u/OOVWyFUFJPLxCBjoyZhBkglRaVB5vrQvx3iktlUIFbfDbSYPYWQAnIh2kEWAYYFNFeJN80lgA49EFEhWbleabRkQ4FlBLtZME8aByXYvuXWT0wD9dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rm6wy+D/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jvM1YQeN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963C31F00A3A;
-	Thu, 28 May 2026 12:42:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rm6wy+D/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 364911F000E9;
+	Thu, 28 May 2026 13:02:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779972141;
-	bh=aVS8DX9ln5xLsnrTXaBC68d2+dtey1SIzHgDoIDXv0w=;
+	s=k20260515; t=1779973327;
+	bh=gOdAyu4BiynnFgp0hqE62o5px9tgrY0YIgkHhd5BYWw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jvM1YQeN5+vguckmJRGclagx06soaBkrWay0cqFzqa5Dyg+YLXxYpPbd93d4e6Kvw
-	 hBqahauKFU3GPthp0q1M+MoYA3r6rX+o1Qb6Tq66OxhOAqldr3mb1hr4UdgzaEskOF
-	 X8Cy4jeQdrPV02r9W/Tl9+EONtyaPmBebFVMbaC03IuK6H+i1QkZI1AYAQ2dLQb0Mu
-	 l2I4PH1q9n6lX9WwO8H0PUu5Mww/Hos6lfFbQH4nuIXGwQICJh+IghRf10k0TluUZ8
-	 O928NohIhl7hqrBipDPGZzc2ZoJSxHY+993opxrFqJGCw7/KooAzUjHh6FaPMmlpfi
-	 lH7coKCWWANAw==
-Date: Thu, 28 May 2026 13:42:11 +0100
+	b=Rm6wy+D/xQxlwVQ+odw5kdVEtu6wMTK63/O3MHee7e8btAyMM7f65ezkQwwOM4nH/
+	 oNX4hLON+OBEJuzwuT7cmlNH60bvv02ZtE+BqAWrF56RJqnHWGawmcjGCpQgeCB3PJ
+	 JxOKE66lt38vPWa+t9q3dramP/Rt1DIC0MBHqWo11AE9swDTvkVlOZI/SeThlZ6nGV
+	 qleiugwjQ0tiU6sPggpcI0RuDNNSEP3w8jvGwlODlRXN6j3x0k6Am2CEcm2rAfh1qS
+	 MQaSFNNFDRRZfU5Xbz3xAPnE17EqFtduVnFX6d0Hiil0wpLCcUoiVmxGNod2UrTABK
+	 AoLMD/xSJW41w==
+Date: Thu, 28 May 2026 14:01:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Salih Erim <salih.erim@amd.com>
 Cc: Andy Shevchenko <andy@kernel.org>, David Lechner
@@ -36,11 +36,12 @@ Cc: Andy Shevchenko <andy@kernel.org>, David Lechner
  Michal Simek <michal.simek@amd.com>, Guenter Roeck <linux@roeck-us.net>,
  Salih Erim <erimsalih@gmail.com>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 3/5] iio: adc: versal-sysmon: add I2C driver
-Message-ID: <20260528134211.259d8c19@jic23-huawei>
-In-Reply-To: <20260527114211.174288-4-salih.erim@amd.com>
+Subject: Re: [PATCH v3 4/5] iio: adc: versal-sysmon: add threshold event
+ support
+Message-ID: <20260528140156.5cab0eda@jic23-huawei>
+In-Reply-To: <20260527114211.174288-5-salih.erim@amd.com>
 References: <20260527114211.174288-1-salih.erim@amd.com>
-	<20260527114211.174288-4-salih.erim@amd.com>
+	<20260527114211.174288-5-salih.erim@amd.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,189 +52,380 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 27 May 2026 12:42:09 +0100
+On Wed, 27 May 2026 12:42:10 +0100
 Salih Erim <salih.erim@amd.com> wrote:
 
-> Add an I2C transport driver for the Versal SysMon block. The SysMon
-> provides an I2C slave interface that allows an external master to
-> read voltage and temperature measurements through the same register
-> map used by the MMIO path.
+> Add threshold event support for temperature and supply voltage
+> channels.
 > 
-> The I2C command frame is an 8-byte structure containing a 4-byte data
-> payload, a 2-byte register offset, and a 1-byte instruction field.
-> Read operations send the frame with a read instruction, then receive
-> a 4-byte response containing the register value.
+> Temperature events:
+>   - Rising threshold with configurable value
+>   - Over-temperature (OT) alarm with separate threshold
+>   - Per-channel hysteresis as a millicelsius value
+>   - Event direction is IIO_EV_DIR_RISING (hysteresis mode)
 > 
-> Events are not supported on the I2C path because there is no
-> interrupt line and the I2C regmap backend cannot be called from
-> atomic context.
+> Supply voltage events:
+>   - Rising/falling threshold per supply channel
+>   - Per-channel alarm enable via alarm configuration registers
 > 
-> Co-developed-by: Conall O'Griofa <conall.ogriofa@amd.com>
-> Signed-off-by: Conall O'Griofa <conall.ogriofa@amd.com>
+> The hardware supports both window and hysteresis alarm modes for
+> temperature. This driver uses hysteresis mode, where the upper
+> threshold triggers the alarm and the lower threshold clears it
+> (re-arm point). The hardware has a single ISR bit per temperature
+> channel with no indication of which threshold was crossed, so
+> hysteresis mode is the natural fit. The lower threshold register
+> is computed internally as (upper - hysteresis).
+> 
+> Hysteresis is stored in the driver as a millicelsius value,
+> initialized from the hardware registers at probe. Writing the
+> rising threshold or hysteresis recomputes the lower register.
+> ALARM_CONFIG is hard-coded to hysteresis mode during init.
+> 
+> The interrupt handler masks active threshold interrupts (which are
+> level-sensitive) and schedules a delayed worker to poll for condition
+> clear before unmasking. When no hardware IRQ is available, event
+> channels are not created and interrupt init is skipped, since the
+> I2C regmap backend cannot be called from atomic context.
+> 
+> When disabling a supply channel alarm, the group interrupt remains
+> active if any other channel in the same alarm group still has an
+> alarm enabled.
+> 
 > Signed-off-by: Salih Erim <salih.erim@amd.com>
-A few minor things inline.
+Hi Salih
 
-> diff --git a/drivers/iio/adc/versal-sysmon-i2c.c b/drivers/iio/adc/versal-sysmon-i2c.c
-> new file mode 100644
-> index 00000000000..92d149f517e
-> --- /dev/null
-> +++ b/drivers/iio/adc/versal-sysmon-i2c.c
-> @@ -0,0 +1,153 @@
-> +// SPDX-License-Identifier: GPL-2.0
+Main thing in here is related to earlier question on _PROCESSED + _RAW.
+I can't see a reason to have _RAW.
+
+Various minor things inline. In many case they apply in other places I haven't
+called out so look for repeats
+
+Jonathan
+
+>  drivers/iio/adc/versal-sysmon-core.c | 655 ++++++++++++++++++++++++++-
+>  drivers/iio/adc/versal-sysmon.h      |  48 +-
+>  2 files changed, 697 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
+> index ebe052f6982..04977c9c887 100644
+> --- a/drivers/iio/adc/versal-sysmon-core.c
+> +++ b/drivers/iio/adc/versal-sysmon-core.c
+> @@ -11,6 +11,8 @@
+>  #include <linux/bitops.h>
+>  #include <linux/cleanup.h>
+>  #include <linux/device.h>
+> +#include <linux/devm-helpers.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+> @@ -18,10 +20,19 @@
+>  #include <linux/sysfs.h>
+>  #include <linux/units.h>
+>  
+> +#include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+>  
+>  #include "versal-sysmon.h"
+>  
+> +/* OT and TEMP hysteresis mode bits in SYSMON_TEMP_EV_CFG */
+> +#define SYSMON_OT_HYST_MASK		BIT(0)
+> +#define SYSMON_TEMP_HYST_MASK		BIT(1)
+> +
+> +/* Compute alarm register offset from a channel address */
+> +#define SYSMON_ALARM_OFFSET(addr) \
+> +	(SYSMON_ALARM_REG + ((addr) / SYSMON_ALARM_BITS_PER_REG) * SYSMON_REG_STRIDE)
+> +
+>  /*
+>   * Both RAW and PROCESSED are exposed: RAW is needed for event thresholds
+>   * (which operate in hardware register format), PROCESSED gives userspace
+> @@ -44,6 +55,62 @@
+>  	.datasheet_name = _name,				\
+>  }
+>  
+> +#define SYSMON_CHAN_TEMP_EVENT(_chan, _address, _name, _events) {\
+> +	.type = IIO_TEMP,					\
+> +	.indexed = 1,						\
+
+Why do you needs separate channel for events?  Can't we add the event
+spec to existing channels? For the constant ones you may need to
+have two arrays to pick between depending on whether the irq is available or not.
+
+
+> +	.address = _address,					\
+> +	.channel = _chan,					\
+> +	.event_spec = _events,					\
+> +	.num_event_specs = ARRAY_SIZE(_events),			\
+> +	.scan_type = {						\
+> +		.sign = 's',					\
+> +		.realbits = 15,					\
+> +		.storagebits = 16,				\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+> +	.datasheet_name = _name,				\
+> +}
+> +
+	*raw_data = (u16)tmp;
+> +}
+
+> +
 > +/*
-> + * AMD Versal SysMon I2C driver
-> + *
-> + * Copyright (C) 2023 - 2026, Advanced Micro Devices, Inc.
+> + * Recompute the lower threshold register from upper threshold and
+> + * cached hysteresis. Called when either upper threshold or hysteresis
+> + * is written.
 > + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +
-> +#include "versal-sysmon.h"
-> +
-> +#define SYSMON_I2C_INSTR_READ	BIT(2)
-> +#define SYSMON_I2C_INSTR_WRITE	BIT(3)
-> +
-> +#define SYSMON_I2C_DATA0_MASK	GENMASK(7, 0)
-> +#define SYSMON_I2C_DATA1_MASK	GENMASK(15, 8)
-> +#define SYSMON_I2C_DATA2_MASK	GENMASK(23, 16)
-> +#define SYSMON_I2C_DATA3_MASK	GENMASK(31, 24)
-> +
-> +#define SYSMON_I2C_OFS_LOW_MASK		GENMASK(9, 2)
-> +#define SYSMON_I2C_OFS_HIGH_MASK	GENMASK(15, 10)
-> +
-> +/* Byte positions within the 8-byte I2C command frame (HW-defined) */
-> +enum sysmon_i2c_payload_idx {
-> +	SYSMON_I2C_DATA0_IDX = 0,
-> +	SYSMON_I2C_DATA1_IDX = 1,
-> +	SYSMON_I2C_DATA2_IDX = 2,
-> +	SYSMON_I2C_DATA3_IDX = 3,
-> +	SYSMON_I2C_OFS_LOW_IDX = 4,
-> +	SYSMON_I2C_OFS_HIGH_IDX = 5,
-
-With changes suggested below I think you only need the two base
-offsets and the final one.  As such maybe 3 defines makes more sense
-than an enum
-
-> +	SYSMON_I2C_INSTR_IDX = 6,
-If you do keep an enum, it would be good to add an entry for the final
-byte to give some indication of why it is 8 bytes. Even if that is
-reserved0
-> +};
-> +
-> +static int sysmon_i2c_reg_read(void *context, unsigned int reg,
-> +			       unsigned int *val)
+> +static int sysmon_update_temp_lower(struct sysmon *sysmon, int address)
 > +{
-> +	struct i2c_client *client = context;
-> +	u8 write_buf[8] = { };
-> +	u8 read_buf[4];
-> +	int ret;
+> +	unsigned int upper_reg;
+> +	int upper_mc, lower_mc, hysteresis;
+> +	u32 raw_val;
+> +	int upper_off, lower_off, ret;
 > +
-> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
-> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
-
-I'd guess an unaligned put works here a well? though you'll need
-to do a FIELD_GET() to extract the slightly shifted content.
-
-> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_READ;
+> +	upper_off = sysmon_temp_thresh_offset(address, IIO_EV_DIR_RISING);
+> +	if (upper_off < 0)
+> +		return upper_off;
+> +	lower_off = sysmon_temp_thresh_offset(address, IIO_EV_DIR_FALLING);
+> +	if (lower_off < 0)
+> +		return lower_off;
 > +
-> +	ret = i2c_master_send(client, write_buf, sizeof(write_buf));
-> +	if (ret < 0)
+> +	if (address == SYSMON_ADDR_OT_EVENT)
+> +		hysteresis = sysmon->ot_hysteresis;
+> +	else
+> +		hysteresis = sysmon->temp_hysteresis;
+> +
+> +	ret = regmap_read(sysmon->regmap, upper_off, &upper_reg);
+> +	if (ret)
 > +		return ret;
-> +	if (ret != sizeof(write_buf))
-> +		return -EIO;
+> +	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
 > +
-> +	ret = i2c_master_recv(client, read_buf, sizeof(read_buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(read_buf))
-> +		return -EIO;
+> +	lower_mc = upper_mc - hysteresis;
+> +	sysmon_millicelsius_to_q8p7(&raw_val, lower_mc);
+
+So all the manipulation is in the units of _PROCESSED. Hence
+I'd drop _RAW.
+
 > +
-> +	*val = FIELD_PREP(SYSMON_I2C_DATA0_MASK,
-> +			  read_buf[SYSMON_I2C_DATA0_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA1_MASK,
-> +			  read_buf[SYSMON_I2C_DATA1_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA2_MASK,
-> +			  read_buf[SYSMON_I2C_DATA2_IDX]) |
-> +	       FIELD_PREP(SYSMON_I2C_DATA3_MASK,
-> +			  read_buf[SYSMON_I2C_DATA3_IDX]);
-Very complex way to express what I think is
-	*val = get_unaligned_le32(&read_buf[0]);
-> +
-> +	return 0;
+> +	return regmap_write(sysmon->regmap, lower_off, raw_val);
 > +}
 > +
-> +static int sysmon_i2c_reg_write(void *context, unsigned int reg,
-> +				unsigned int val)
+> +static int sysmon_read_event_value(struct iio_dev *indio_dev,
+> +				   const struct iio_chan_spec *chan,
+> +				   enum iio_event_type type,
+> +				   enum iio_event_direction dir,
+> +				   enum iio_event_info info,
+> +				   int *val, int *val2)
 > +{
-> +	struct i2c_client *client = context;
-> +	u8 write_buf[8] = { };
-
+> +	struct sysmon *sysmon = iio_priv(indio_dev);
+> +	unsigned int reg_val;
+> +	int offset;
 > +	int ret;
 > +
-> +	write_buf[SYSMON_I2C_DATA0_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA0_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA1_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA1_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA2_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA2_MASK, val);
-> +	write_buf[SYSMON_I2C_DATA3_IDX] =
-> +		FIELD_GET(SYSMON_I2C_DATA3_MASK, val);
-
-That's a put_unaligned_le32() I think?
-
-> +	write_buf[SYSMON_I2C_OFS_LOW_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_LOW_MASK, reg);
-> +	write_buf[SYSMON_I2C_OFS_HIGH_IDX] =
-> +		FIELD_GET(SYSMON_I2C_OFS_HIGH_MASK, reg);
-
-I'd guess put_unaligned_le16()? Will need a a FIELD_PREP()
-for the full thing though.
-
-> +	write_buf[SYSMON_I2C_INSTR_IDX] = SYSMON_I2C_INSTR_WRITE;
+> +	guard(mutex)(&sysmon->lock);
 > +
-> +	ret = i2c_master_send(client, write_buf, sizeof(write_buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(write_buf))
-> +		return -EIO;
+> +	if (chan->type == IIO_TEMP) {
+> +		if (info == IIO_EV_INFO_VALUE) {
+> +			/* Only rising threshold is exposed */
+> +			offset = sysmon_temp_thresh_offset(chan->address,
+> +							   IIO_EV_DIR_RISING);
+> +			if (offset < 0)
+> +				return offset;
+I'd add a blank line here.
+> +			ret = regmap_read(sysmon->regmap, offset, &reg_val);
+> +			if (ret)
+> +				return ret;
+here
+> +			sysmon_q8p7_to_millicelsius(reg_val, val);
+and here
+
+Generally keep block of call + error check for one thing separate from code
+before and after.  Slightly nicer to read.
+
+Lots of other places this applies but it's a very minor thing.
+
+> +			return IIO_VAL_INT;
+> +		}
+> +		if (info == IIO_EV_INFO_HYSTERESIS) {
+> +			if (chan->address == SYSMON_ADDR_OT_EVENT)
+> +				*val = sysmon->ot_hysteresis;
+> +			else
+> +				*val = sysmon->temp_hysteresis;
+> +			return IIO_VAL_INT;
+> +		}
+> +	}
 > +
-> +	return 0;
+> +	if (chan->type == IIO_VOLTAGE) {
+> +		offset = sysmon_supply_thresh_offset(chan->address, dir);
+> +		if (offset < 0)
+> +			return offset;
+> +		ret = regmap_read(sysmon->regmap, offset, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +		sysmon_supply_rawtoprocessed(reg_val, val);
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int sysmon_write_event_value(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan,
+> +				    enum iio_event_type type,
+> +				    enum iio_event_direction dir,
+> +				    enum iio_event_info info,
+> +				    int val, int val2)
+> +{
+> +	struct sysmon *sysmon = iio_priv(indio_dev);
+> +	unsigned int reg_val;
+> +	u32 raw_val;
+> +	int offset;
+> +	int ret;
+> +
+> +	guard(mutex)(&sysmon->lock);
+
+> +
+> +	if (chan->type == IIO_TEMP) {
+> +		if (info == IIO_EV_INFO_VALUE) {
+> +			/* Only rising threshold is exposed */
+> +			offset = sysmon_temp_thresh_offset(chan->address,
+> +							   IIO_EV_DIR_RISING);
+> +			if (offset < 0)
+> +				return offset;
+> +			sysmon_millicelsius_to_q8p7(&raw_val, val);
+> +			ret = regmap_write(sysmon->regmap, offset, raw_val);
+> +			if (ret)
+> +				return ret;
+> +			/* Recompute lower = upper - hysteresis */
+> +			return sysmon_update_temp_lower(sysmon,
+> +							chan->address);
+
+Under 80 chars on one line.  Check for cases of this and feel free to go a bit
+over if it helps readability.
+
+> +			return sysmon_update_temp_lower(sysmon, chan->address);
+
+> +		}
+> +		if (info == IIO_EV_INFO_HYSTERESIS) {
+> +			if (val < 0)
+> +				return -EINVAL;
+> +			if (chan->address == SYSMON_ADDR_OT_EVENT)
+> +				sysmon->ot_hysteresis = val;
+> +			else
+> +				sysmon->temp_hysteresis = val;
+> +			return sysmon_update_temp_lower(sysmon,
+> +							chan->address);
+
+As above.
+
+> +		}
+> +	}
+> +
+> +	if (chan->type == IIO_VOLTAGE) {
+> +		offset = sysmon_supply_thresh_offset(chan->address, dir);
+> +		if (offset < 0)
+> +			return offset;
+> +		ret = regmap_read(sysmon->regmap, offset, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +		sysmon_supply_processedtoraw(val, reg_val, &raw_val);
+> +		return regmap_write(sysmon->regmap, offset, raw_val);
+> +	}
+> +
+> +	return -EINVAL;
 > +}
 
-> +static const struct of_device_id sysmon_i2c_of_match_table[] = {
-> +	{ .compatible = "xlnx,versal-sysmon" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, sysmon_i2c_of_match_table);
+> +static int sysmon_handle_event(struct iio_dev *indio_dev, u32 event)
+> +{
+> +	u32 alarm_flag_offset = SYSMON_ALARM_FLAG + (event * SYSMON_REG_STRIDE);
+> +	u32 alarm_reg_offset = SYSMON_ALARM_REG + (event * SYSMON_REG_STRIDE);
+> +	struct sysmon *sysmon = iio_priv(indio_dev);
+> +	unsigned long alarm_flag_reg;
+> +	unsigned int reg_val;
+> +	u32 address, bit;
+> +	int ret;
 > +
-> +static const struct i2c_device_id sysmon_i2c_id_table[] = {
-> +	{ "versal-sysmon" },
-
-Named initializer for this.  Uwe is cleaning these up across IIO;
-let us not add another one!
-
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, sysmon_i2c_id_table);
+> +	switch (event) {
+> +	case SYSMON_BIT_TEMP:
+> +		sysmon_push_event(indio_dev, SYSMON_ADDR_TEMP_EVENT);
+> +		ret = regmap_write(sysmon->regmap, SYSMON_IDR,
+> +				   BIT(SYSMON_BIT_TEMP));
+> +		if (ret)
+> +			return ret;
+> +		sysmon->masked_temp |= BIT(SYSMON_BIT_TEMP);
+> +		break;
 > +
-> +static struct i2c_driver sysmon_i2c_driver = {
-> +	.probe = sysmon_i2c_probe,
-> +	.driver = {
-> +		.name = "versal-sysmon-i2c",
-> +		.of_match_table = sysmon_i2c_of_match_table,
-> +	},
-> +	.id_table = sysmon_i2c_id_table,
-> +};
-> +module_i2c_driver(sysmon_i2c_driver);
+> +	case SYSMON_BIT_OT:
+> +		sysmon_push_event(indio_dev, SYSMON_ADDR_OT_EVENT);
+> +		ret = regmap_write(sysmon->regmap, SYSMON_IDR,
+> +				   BIT(SYSMON_BIT_OT));
+> +		if (ret)
+> +			return ret;
+> +		sysmon->masked_temp |= BIT(SYSMON_BIT_OT);
+> +		break;
 > +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("AMD Versal SysMon I2C Driver");
-> +MODULE_AUTHOR("Conall O'Griofa <conall.ogriofa@amd.com>");
-> +MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
+> +	case SYSMON_BIT_ALARM0:
+> +	case SYSMON_BIT_ALARM1:
+> +	case SYSMON_BIT_ALARM2:
+> +	case SYSMON_BIT_ALARM3:
+> +	case SYSMON_BIT_ALARM4:
+> +		ret = regmap_read(sysmon->regmap, alarm_flag_offset, &reg_val);
+> +		if (ret)
+> +			return ret;
+> +		alarm_flag_reg = reg_val;
+> +
+> +		for_each_set_bit(bit, &alarm_flag_reg,
+> +				 SYSMON_ALARM_BITS_PER_REG) {
+> +			address = bit + (SYSMON_ALARM_BITS_PER_REG * event);
+> +			sysmon_push_event(indio_dev, address);
+> +			ret = regmap_update_bits(sysmon->regmap,
+> +						 alarm_reg_offset,
+> +						 BIT(bit), 0);
+> +			if (ret)
+> +				return ret;
+> +		}
+> +		ret = regmap_write(sysmon->regmap, alarm_flag_offset,
+> +				   alarm_flag_reg);
+> +		if (ret)
+> +			return ret;
+> +		break;
+		return regmap_write();
+> +
+> +	default:
+> +		break;
 
+Why is this not an error?
+
+> +	}
+> +
+> +	return 0;
+Might as well return early in the various paths.
+> +}
+...
+
+> +static irqreturn_t sysmon_iio_irq(int irq, void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +	struct sysmon *sysmon;
+> +	unsigned int isr, imr;
+> +
+> +	sysmon = iio_priv(indio_dev);
+> +	spin_lock(&sysmon->irq_lock);
+
+guard() here would eman you can just return if (!isr)
+
+> +
+> +	regmap_read(sysmon->regmap, SYSMON_ISR, &isr);
+> +	regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
+> +
+> +	isr &= ~imr;
+> +	regmap_write(sysmon->regmap, SYSMON_ISR, isr);
+> +
+> +	if (isr) {
+> +		sysmon_handle_events(indio_dev, isr);
+> +		schedule_delayed_work(&sysmon->sysmon_unmask_work,
+> +				      msecs_to_jiffies(SYSMON_UNMASK_WORK_DELAY_MS));
+> +	}
+> +
+> +	spin_unlock(&sysmon->irq_lock);
+> +
+> +	return IRQ_RETVAL(isr);
+> +}
