@@ -1,257 +1,320 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C65E2E738A;
-	Thu, 28 May 2026 15:03:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779980627; cv=none; b=fAYXW3VZ9ji2YzdnPInxKvtxqZVW/to2caPI2G1SlBvAh8Z3yvBu1uOvbG51GWNWuWijbUAG4LThaShajMbOQo+42bGPoL2sQPJJ+h1CKd0m29Sd55xPPrmtF/hf7LzOOTrONHbcWMN1yfGdhGQWO747J9X0BNn25JIg7awpPnI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779980627; c=relaxed/simple;
-	bh=Dl8GAxFksQ+N3e4F3L7aJSBPGBi6YY87F8ySbb2Y3Fw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fjB0LNo9/vYrnnZgun4NUpTrM+PzQHPzo6MfBIMcrJLo8IBOiZtCHCqgWWzVzaeVnOsFLf1tvD0GPYlamK7JZjdaQ2zg7DYmTmGRiP7yF3pIv5mGfDWUhKqHBowxDOQ1Qi8k6CQowSZUn17tJN3RAZ30D/TVp3i+UZn7ZadAL3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zKsRKYTM; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3947023393A
+	for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 15:03:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779980637; cv=pass; b=eXzV/hBrZNjNDmdVIrYbHI23/Jvvhc3jbvzgqQlwsCgei9kOS2/ZEfG1RYwsw8z3OaMmkbH5TdiLMnounbtsnKUu16go7lNLY70rgVXkasjvZSUz+5RgvtSTPWl84NVOCqcOQd70s49/wjtsUx9bzlhrcNScDGcb6gn/YZYHCr8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779980637; c=relaxed/simple;
+	bh=s3vC6wnoLZ1XKUWcUoScolE5ZeO4GGneFSy9sZNGveU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QL0N4D62AC/fiaD7FAuPaxnnI/9ckD7z43fjiz5zcAZkBfHuLEk4S6M9+kgusZqqlxH8W0W7szmBuut3tKJOP6hwQitoCdFCKvdQxsi6714/1ykeBhbpUp4+q8Vw0W687K6BcoHn0t4h/EFAW2EwhrXItZ/O2rWXhlJrF3FXyN0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fuVjPwSE; arc=pass smtp.client-ip=74.125.82.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zKsRKYTM"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64SEeRs8400759;
-	Thu, 28 May 2026 11:03:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=KsELe
-	zxbkRYI/DMIPccH+ZQfH9BQpq9CtGDcg0u3g0g=; b=zKsRKYTMtUPfCL4zroWug
-	BXytA2YmC0Z6J2W5A3w7Q8hMF+XLrpP4pZ/VgmHfzEjySu2WO3EbrfoEo4h1DPpV
-	qwqJ3QyDRflLEEJpSwjKGEt+iTRmWCBMOpdhFVMSZCSdT4DrrU1AoFo9jjNRt1Zi
-	p0+L4DSbGfT2rok91F3aLm7TEVgKF64D5rBxMhjtyT08yomAwEiZzp0qA7rcPHFU
-	Yu0KMNQSYoeiJVX8ZWDpFXAB/g8W+FXXb+YFu+arG59gXmDwq6znIkVo/0RVhESa
-	HbKfJ/hE64xbWHGzq1Xy5fsoThDRJgFdvfrtQA/TcN5h1vpef8d8qxlxv0ZkSaPC
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ee7x1uabf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 28 May 2026 11:03:35 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64SF3YjU008714
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 28 May 2026 11:03:34 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 28 May 2026 11:03:34 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 28 May 2026 11:03:34 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 28 May 2026 11:03:34 -0400
-Received: from work.maxim-ic.internal ([10.66.6.190])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64SF3LFm021386;
-	Thu, 28 May 2026 11:03:24 -0400
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
-        <dlechner@baylibre.com>, <andy@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <pop.ioan-daniel@analog.com>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v2 1/4] dt-bindings: iio: adc: Add ltc2378
-Date: Thu, 28 May 2026 12:03:16 -0300
-Message-ID: <23971c3bb56d8635abe9cd36fd245412f672772a.1779976379.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1779976379.git.marcelo.schmitt@analog.com>
-References: <cover.1779976379.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fuVjPwSE"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-304e58292d3so240949eec.0
+        for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 08:03:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779980623; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Eu1Js5wJ5kh5A08VPT2LMPdnv0E0/Tidr2boWRCU1DIL6zqf1jip7x+W6OwF/Jtr8Q
+         dKaAQ5XxmbwMxh62QtrLuPJ/ewmboovZZD+EB2BsUrojOSnwlWpcKAJ190VjiQxqA2jk
+         fYacnONtCgMYTJyT5cTk4c9cIy1SH/1ITEdiHGm71wkRUZG94Y9SzyP/YFND9lh7NfHk
+         VlnzMzumZSM5PcB1wbAodTChtYzbq3dPhyVkHOPEvyNXLt91oB+tTs0BEuCddW1VhX9r
+         ciXmXmdndid3S3o3AlBed/QxZRVwubXw/aJ2Kwx3D+Ld7TEOW2tDgfBZbZQyy0L2x77o
+         zP1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
+        fh=aPIsXnGlACgfqC6ZP89++TlY1RypfUjJjTj7InT/x0c=;
+        b=WAxEa4R4EZhX6Cri21/FVaxsKMMn3H5F0lIMQ7vmpTi5MCBx066DKvO1wjJ+RYmP7g
+         7PzEuKorHEp8FUr2oZB/028ooaewlgsUmjM/OEuU5RjKuqcmUe/J6pF8WDTHDDvcr8Ma
+         1intKr1VN7T4IxNOfbo6snHv/+QhEdj8/7HcZOMhDE02Bn5PNuE01UbN03Ve9Sitp+s5
+         mMPjWu3u7jIUjlOy/MX0karPGNasojgiQYdnJ7jEAl13hy6kBW/69xFK6qHkIwmq71OY
+         DGUBTCdCMjAni8T2EuIHhiLuB+BIC9L+nvKA6Y2eusx6ALp9F8HpebvOuS2KEnYV8XLf
+         iBOg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779980623; x=1780585423; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
+        b=fuVjPwSEbktOykrRELN/cZftb6kIQsBcY83Isn0NjFaQGapKKFBb4rbpbh5I5mJINE
+         eXUBy+gIboUF1wwiFdEt+D0YT0LG8KIdxdvcFAaC9sq+ocUwf55CUxujMo/CaDMLUWtX
+         qnk+FpTobIjOFMk/Be7YvchW7TINllERCKZ2DZW1mnAWLP5qGz9b91lKyBrgYynd0KbT
+         uQVwmTwGcNm4+v0qTce3bv7Bv97wUUCDJVvhvAHzOXPL3cQ64+zKGrvyuakLfl3Qw+6i
+         SkqoBsLgUimHb81i1SeA3hsVIf40qYuN8z6moa1D7RGCjLc9ydxsME3fPLU17m9DWkjF
+         ACHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779980623; x=1780585423;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
+        b=Z5J9B4KuyLnp90V/22LiFXeCqT/2WJiymiTL6d4sk2vZ1lL4pIVW09PdL6Yg5H3XIZ
+         HpQZ72Uyiq5nyKQAF4MEvkdYoRfqpHGrpizPGf/lYinPoggAz6vLkc4pJ4r/WKPZ5LHx
+         K4QneHESRwUhDoInh3uDHPTwqfQj0dliHgwOPSM1vctpVr+45eXq6v9Szg7OlSIZKcgx
+         ak7anucoC7O712CJCHGMxR0wI2Yf8h1BV4yfym51EdpzqTiBBtRBoat8He/or6OW6Tse
+         MH6FKHvUvVOPDzmqIl2cWI0ONl1BvIcuiBdmVuwypuiOIq6hsUfge+0pPyvr7xLjPFU2
+         KRVA==
+X-Forwarded-Encrypted: i=1; AFNElJ/5c2bHRI3F3HlGvMxIvNqOyUJiB9iNrqtuCdXIl32Iu1PwwQlmsVzQ1FR/Wh+HLzyQ2W5IdX20nVY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzXH6nxJBjzamYhaRliRd+1UKagkERVUu1WzjJhJSp/AQH/r6Pw
+	Wn1o3UOWQZ4D/0qKjbzEaPngruhbREpbFttzoaUwHSHoPFZx4TKRqmg3+wq3fpfcMNzI2BW9HGh
+	LmI0MbuN0fzJ3b7TAMrcTfZbKa1CeiOs=
+X-Gm-Gg: Acq92OHXn5w3Peqc1hO3wL6z5ugMW9SmhqSLLqtSXmxcUqMoWn22jEeXGOUuPQ0JcBz
+	IfI1SpXum8pysy6l4lgo60XMJe/blLURMas/r0t40LAQsSHYq9oMRmTs4KVESXPLV1LqkPpWmP7
+	DtA1A+1edcKHGgfwaQTDv84F8uT3djiL2jNAM5ZNsHqwAX8owdeAY5v2dkbBFuVikwzr/RQFOWA
+	T9QDLdVsOslnozR0jMkWsjxNSJ0g9JMeyt5FkjolkzwcFOnjhmzSF/QnaCUr5vn8l9jkzMIYTsC
+	tRFLL6TRpFiW+/0VBVk=
+X-Received: by 2002:a05:7301:fa04:b0:304:d82f:be10 with SMTP id
+ 5a478bee46e88-304d82fe55fmr1288739eec.11.1779980623129; Thu, 28 May 2026
+ 08:03:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI4MDE1MiBTYWx0ZWRfX4CZsuG5TMQok
- rv+kpPdyyVDaMupb2j7z78l8cVoFfEzBZiG1/4THyR0biycxwRE0rMEgQFE6+ysgovgZBn5sxM+
- YP/O5SDnMs4BcH90GdMvHRcGmPIZ8DeidsLNd8COriwRngo1yeMG+ApULvWWwYCcUv4sNqpcYOa
- mwaMz8se9Ajm0/46lsNQApaK/tEWKynR9wZkTaf+K8wAr7cdE15UjzUZFUKldpUT2JRxL4HYkXO
- L1cjcfdtK1MGJpuI4DqMdnDdJAOjgsaomuX9j3EUsMG/mXLz+33H5Y7/js/8Et+i+t0INV6H6pb
- x9kQ29t+p+ewTZeozaK70iGTvDfSgj4fCxPqtrFa3Csk52QqLfJzFm4I1ZGz9yPMisPHaU5BsxQ
- 8O0ALF+bVz4YmLJbC6cxFw73exmwIysHlz0+j8kayrmDmB+A8OlP754DsXSjHL8aLf59QwENDjJ
- rhxtysabW/hCVWzovPw==
-X-Authority-Analysis: v=2.4 cv=HMbz0Itv c=1 sm=1 tr=0 ts=6a185947 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=OmVn7CZJonkx5R5zMQLL:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=lrA4KKAfxSG5QlsXGw4A:9 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-GUID: ULNynLDyMvZF3mwatgeMlCQ1bwXEd_QB
-X-Proofpoint-ORIG-GUID: ULNynLDyMvZF3mwatgeMlCQ1bwXEd_QB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-05-28_04,2026-05-28_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 bulkscore=0
- adultscore=0 malwarescore=0 priorityscore=1501 clxscore=1011 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2605280152
+References: <20260528135123.103745-1-clamor95@gmail.com> <20260528135123.103745-3-clamor95@gmail.com>
+ <20260528155001.2bcb7003@jic23-huawei>
+In-Reply-To: <20260528155001.2bcb7003@jic23-huawei>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Thu, 28 May 2026 18:03:31 +0300
+X-Gm-Features: AVHnY4JOZH_BBdJBd0wzIDDW2UO693Byl1wIIcPrxkbXcQMPI-6wgD9ANvHg0-o
+Message-ID: <CAPVz0n0qCekQVGGyAyBuYv+RKC6bpydYBLJNGfPrgTYjtOJOuA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] mfd: lm3533: Convert to use OF bindings
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
+	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Document how to describe LTC2378-20 and similar ADCs in device tree.
+=D1=87=D1=82, 28 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 17:5=
+0 Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Thu, 28 May 2026 16:51:19 +0300
+> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+>
+> > Since there are no users of this driver via platform data, remove the
+> > platform data support and switch to using Device Tree bindings.
+> > Additionally, optimize functions used only by platform data.
+>
+>
+> At least the IIO ones would have made much the same amount of sense for
+> dt, just that they weren't having in the first place. I'd prefer that
+> as a precursor patch to make the rest much more readable.
+>
 
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
----
-Change log v1 -> v2:
-- Use unevaluatedProperties:false with spi-peripheral-props.yaml reference/include.
-- Use unique compatibles (no fallbacks).
+I can add you preferences into this commit, I don't mind.
 
- .../bindings/iio/adc/adi,ltc2378.yaml         | 118 ++++++++++++++++++
- MAINTAINERS                                   |   7 ++
- 2 files changed, 125 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> >
+> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+>
+> I only looked in detail at the iio bit. A few changes requested.
+>
+> > ---
+> >  drivers/iio/light/lm3533-als.c      |  95 ++++------
+> >  drivers/leds/leds-lm3533.c          |  51 ++++--
+> >  drivers/mfd/lm3533-core.c           | 268 ++++++++++------------------
+> >  drivers/video/backlight/lm3533_bl.c |  52 ++++--
+> >  include/linux/mfd/lm3533.h          |  51 +-----
+> >  5 files changed, 212 insertions(+), 305 deletions(-)
+> >
+> > diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-=
+als.c
+> > index 99f0b903018c..cbd337b73bd9 100644
+> > --- a/drivers/iio/light/lm3533-als.c
+> > +++ b/drivers/iio/light/lm3533-als.c
+>
+> > @@ -714,59 +720,33 @@ static const struct attribute_group lm3533_als_at=
+tribute_group =3D {
+> >       .attrs =3D lm3533_als_attributes
+> >  };
+> >
+> > -static int lm3533_als_set_input_mode(struct lm3533_als *als, bool pwm_=
+mode)
+> > +static int lm3533_als_setup(struct lm3533_als *als)
+> >  {
+> > -     u8 mask =3D LM3533_ALS_INPUT_MODE_MASK;
+> > -     u8 val;
+> > +     struct device *dev =3D &als->pdev.dev;
+> >       int ret;
+> >
+> > -     if (pwm_mode)
+> > -             val =3D mask;     /* pwm input */
+> > -     else
+> > -             val =3D 0;        /* analog input */
+> > -
+> > -     ret =3D lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, val, mask=
+);
+> > -     if (ret) {
+> > -             dev_err(&als->pdev->dev, "failed to set input mode %d\n",
+> > -                                                             pwm_mode)=
+;
+> > -             return ret;
+> > -     }
+> > -
+> > -     return 0;
+> > -}
+> > -
+> > -static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
+> > -{
+> > -     int ret;
+> > -
+> > -     if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MA=
+X) {
+> > -             dev_err(&als->pdev->dev, "invalid resistor value\n");
+> > -             return -EINVAL;
+> > -     }
+> > -
+> > -     ret =3D lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT,=
+ val);
+> > -     if (ret) {
+> > -             dev_err(&als->pdev->dev, "failed to set resistor\n");
+> > -             return ret;
+> > -     }
+> > +     device_property_read_u32(dev, "ti,resistor-value-ohm",
+> > +                              &als->r_select);
+> Does this have a default?  If so the pattern we've recently be setting on=
+ for IIO
+> is
+>         if (device_property_present(dev, "ti,resistor-value-ohm"))
+>                 ret =3D device_property_read_u32();
+>                 if (ret) //corrupt property in some fashion
+>                         return ret;
+>         } else {
+>                 //set default
+>         }
+> If there is no default then check it unconditionally.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
-new file mode 100644
-index 000000000000..fdc004049521
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
-@@ -0,0 +1,118 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ltc2378.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices LTC2378 and similar Analog to Digital Converters
-+
-+maintainers:
-+  - Marcelo Schmitt <marcelo.schmitt@analog.com>
-+
-+description: |
-+  Analog Devices LTC2378 series of ADCs.
-+  Specifications can be found at:
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/233818fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236416fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236418f.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236716fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236718f.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236816f.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236818f.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/236918fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237016fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237616fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237618fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237620fb.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237716fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237718fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237720fb.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237816fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237818fa.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237820fb.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/237918fb.pdf
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/238016fb.pdf
-+
-+$ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ltc2338-18
-+      - adi,ltc2364-16
-+      - adi,ltc2364-18
-+      - adi,ltc2367-16
-+      - adi,ltc2367-18
-+      - adi,ltc2368-16
-+      - adi,ltc2368-18
-+      - adi,ltc2369-18
-+      - adi,ltc2370-16
-+      - adi,ltc2376-16
-+      - adi,ltc2376-18
-+      - adi,ltc2376-20
-+      - adi,ltc2377-16
-+      - adi,ltc2377-18
-+      - adi,ltc2377-20
-+      - adi,ltc2378-16
-+      - adi,ltc2378-18
-+      - adi,ltc2378-20
-+      - adi,ltc2379-18
-+      - adi,ltc2380-16
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 100000000
-+
-+  vdd-supply:
-+    description: A 2.5V supply that powers the chip (VDD).
-+
-+  ovdd-supply:
-+    description:
-+      A 1.71V to 5.25V supply that sets the logic level for digital interface.
-+
-+  ref-supply:
-+    description:
-+      A 2.5V to 5.1V supply for the reference input (REF).
-+
-+  cnv-gpios:
-+    description:
-+      When provided, this property indicates the GPIO that is connected to the
-+      CNV pin.
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      Interrupt for signaling the completion of conversion results. The active
-+      low signal provided on the BUSY pin asserts when ADC conversions finish.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - ovdd-supply
-+  - ref-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        adc@0 {
-+            compatible = "adi,ltc2378-20";
-+            reg = <0>;
-+            spi-max-frequency = <71000000>;
-+            vdd-supply = <&supply_2_5V>;
-+            ovdd-supply = <&supply_3_3V>;
-+            ref-supply = <&supply_5V>;
-+            cnv-gpios = <&gpio0 88 GPIO_ACTIVE_HIGH>;
-+            interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9e9457c7bba6..43c691ba48cd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15203,6 +15203,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml
- F:	drivers/iio/dac/ltc1660.c
- 
-+LTC2378 IIO ADC DRIVER
-+M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
-+
- LTC2664 IIO DAC DRIVER
- M:	Michael Hennerich <michael.hennerich@analog.com>
- M:	Kim Seer Paller <kimseer.paller@analog.com>
--- 
-2.53.0
+default value is LM3533_ALS_RESISTOR_MIN and if no property is present
+clamp will ensure that als->r_select will be set to
+LM3533_ALS_RESISTOR_MIN
 
+>
+> >
+> > -     return 0;
+> > -}
+> > +     als->r_select =3D clamp(als->r_select, LM3533_ALS_RESISTOR_MIN,
+> > +                           LM3533_ALS_RESISTOR_MAX);
+> > +     als->r_select =3D DIV_ROUND_UP(2 * MICRO, 10 * als->r_select);
+> >
+> > -static int lm3533_als_setup(struct lm3533_als *als,
+> > -                         const struct lm3533_als_platform_data *pdata)
+> > -{
+> > -     int ret;
+> > +     als->pwm_mode =3D device_property_read_bool(dev, "ti,pwm-mode");
+> >
+> > -     ret =3D lm3533_als_set_input_mode(als, pdata->pwm_mode);
+> > +     ret =3D lm3533_update(lm3533, LM3533_REG_ALS_CONF, als->pwm_mode =
+?
+> > +                         LM3533_ALS_INPUT_MODE_MASK : 0,
+>
+> That's ugly.  Better as
+>
+>         ret =3D lm3533_update(lm3533, LM3533_REG_ALS_CONF,
+>                             als->pwm_mode ? LM3533_ALS_INPUT_MODE_MASK : =
+0,
+>
+
+Yes sure, just followed 80 char limit.
+
+> Though if there wasn't a layer hiding the regmap, it could just have been
+>
+>         ret =3D regmap_assign_bits(lm3533->regmap, LM3533_REG_ALS_CONF,
+>                                  LM3533_ALS_INPUT_MODE_MASK, als->pwm_mod=
+e);;
+>
+> which would have been nicer.
+>
+> I'm not particularly keen on the swashing of the helpers being in a patch
+> that is about switching the binding type as feels largely unrelated.
+> Should really have been a precursor, easier to review patch.
+>
+
+Removing of lm3533_update layer is not the scope of this patchset.
+
+>
+> > +                         LM3533_ALS_INPUT_MODE_MASK);
+> >       if (ret)
+> > -             return ret;
+> > +             return dev_err_probe(dev, ret, "failed to set input mode =
+%d\n",
+> > +                                  als->pwm_mode);
+> >
+> >       /* ALS input is always high impedance in PWM-mode. */
+> > -     if (!pdata->pwm_mode) {
+> > -             ret =3D lm3533_als_set_resistor(als, pdata->r_select);
+> > +     if (!als->pwm_mode) {
+> > +             ret =3D lm3533_write(lm3533, LM3533_REG_ALS_RESISTOR_SELE=
+CT,
+> > +                                (u8)als->r_select);
+>
+> Same applies here. Mostly an unrelated change as the only thing switching=
+ that
+> is related to the patch is one parameter.
+>
+
+Removing of lm3533_write layer is not the scope of this patchset.
+
+> >               if (ret)
+> > -                     return ret;
+> > +                     return dev_err_probe(dev, ret, "failed to set res=
+istor\n");
+> >       }
+> >
+> >       return 0;
+>
+> > @@ -852,25 +825,28 @@ static int lm3533_als_probe(struct platform_devic=
+e *pdev)
+> >       indio_dev->channels =3D lm3533_als_channels;
+> >       indio_dev->num_channels =3D ARRAY_SIZE(lm3533_als_channels);
+> >       indio_dev->name =3D dev_name(&pdev->dev);
+> > -     iio_device_set_parent(indio_dev, pdev->dev.parent);
+>
+> I'm not sure why this was there in the first place.  Hence not sure if it
+> is safe to remove.
+>
+
+This is directly related to OF conversion. The iio_device_set_parent
+bound indio_dev to parent, and it causes problems with OF now since
+als output has its own node and binding it to parent if wrong. Same
+story for backlight and leds btw.
+
+>
+> > diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
+> > index 45795f2a1042..d707d43d5526 100644
+> > --- a/drivers/leds/leds-lm3533.c
+> > +++ b/drivers/leds/leds-lm3533.c
+>
+> >
+> >       led->cb.dev =3D led->cdev.dev;
+> >
+> > -     ret =3D lm3533_led_setup(led, pdata);
+> > +     device_property_read_u32(&pdev->dev, "led-max-microamp",
+> > +                              &led->max_current);
+>
+> I'd prefer explicit setting of the default to be visible before this, or
+> the property_present pattern I mention in the IIO review above.
+>
+
+clamp will ensure that led->max_current will be set to
+LM3533_LED_MAX_CURRENT_MIN regardless if it it present
+
+> > +     led->max_current =3D clamp(led->max_current, LM3533_LED_MAX_CURRE=
+NT_MIN,
+> > +                              LM3533_LED_MAX_CURRENT_MAX);
+>
+> I didn't look any further (busy day!)
