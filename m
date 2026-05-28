@@ -1,105 +1,129 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6D232143D
-	for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 07:10:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779952229; cv=none; b=iMsuJP6GNTrLJGQiKKrkwtBdtGIR8j0AL2CSnJT+ywl8yOgI2eXq57QfX96+SySEwxNPOJIfOVt7eTayzf67m/Sm3u839jyOm/HIVYzjwc6WV8lO2Me8U5occ65aQn5g0Dk8XAmLCdGtC9Tp1qddfbEBKuFfl4qprvtRi9NmRig=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779952229; c=relaxed/simple;
-	bh=QuwSiXxxAz9s1imVlMmi43QZsNuj1bTIesseCFKmuds=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M0pgz2EvHjQGfJ/UDtTdhqPLCSxlqFn4jkMUF7t/ha92Ae1pfz0jGRNuA+v0LWW0ClTiPuhjivYhnYPyrDyAWG+rTnAhQaDyJy6WDxDeRLmic6gAyH6+ak/IydBmzsCX7uNGvoCFSd7kfV0CF+RD7paxh/WrWgMEFkzq/9Yio9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CRexWF2g; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9732233923
+	for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 07:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779952249; cv=pass; b=L5Vk93cHTADKDgu8r1XIn6brTc0L1MHFKekl4jeZq4xCt5i4l1ig7aeODaJfHVGZGdGu5uIy3k/qs2vAd3Eo7ueyxWCKLbBacTe9s20pR3p8uDRDULfkzXpdOekE0Rt+ssM3XNxNzmnnNgY+Ll13JE8Vg5UdBlyTrlLAqgWRzCU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779952249; c=relaxed/simple;
+	bh=C8247qS6SnU2nr9CzMOa8FmWj7C2y0Lvb8s8J4jogRg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cLUO2ACJ3hq0OlYFM+jGZoCqKbMFDEHio+g/zhFGXrNcdrVwMvqN0+KpNzPrr3KCugHEY8KNNIKKQGp73N7Dnk5URLF+sdIpklo+F3LdGy6Y3VShkUhGGwgT/tcjMsrEZe/WmyO1wFIoX1LVq7BYwYEcvd4TCpKv0jAcDKAVm4M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FQCD+a8u; arc=pass smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CRexWF2g"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-43fe62837baso7310118f8f.3
-        for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 00:10:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FQCD+a8u"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4891e5b9c1fso107347235e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 00:10:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1779952246; cv=none;
+        d=google.com; s=arc-20240605;
+        b=FTebbOXIKEY8zqxKxma9ETZ1mtMNMqECSMsWHR+05wMlU/TrQtiu4hDWm9zmsIvhpJ
+         ByFfNuSr0z//TVYiWABlTWeK+8pp2owo7vWMh0fo0nnhnoXatQJCkf3M206G7x0+9gHD
+         0H0VbL7Sn9qZ2j2z/FkJe3rKYrDPGDvpG3DKK30fCKHIO/IA4KRUAuZGtf3QHLQPyPdd
+         blKDaZKRyUaOmoy39mlqgPa8KZ4s/gbVkWjB4PuEyxJEe5itme1nzAjb7POoxnEtCGC5
+         v1xDNmDCHiozdKlUT0otZC+c9uZWV7TnatAj5Wh0lWLS/gF9sCoqZtsZD5jr/FK91coW
+         5DZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=VavC2fTy1inz/S4sNaYxYFEFCBdG9pidtnyJNQj99e4=;
+        fh=tzCMlpyKfnEi8hQSYr9iaWBpOchsFelRIXktHfTlLcg=;
+        b=NC1ZYBmf1kcpWyGWTyDUUMEzya370ZinSSNrK9IVzjd/VcFhAHt4tfQiaLMqZWl/t8
+         mBwpEtpPt17H9RUtm1yNpCXa4IeI98wnmmmCnvCRCvMjBfxLSpFXESzlpA1ZhlueE0oJ
+         UKoNzu7ZF9+PliI1c7BYY9sxNvEVbppfEnGjMTvS3llip8EWRJxzl+/9gJQopl4tgdR0
+         dOgloneIF/q4sPryQ8f33NNroYKhm9LSdr/XfRApfXOANFRj5DZ3Mt+pPNLP+pmOkjxE
+         aygnsX6nq6CoSJtYcpKAQQzIKIH5YMaryZsMdx8ddTxOYhAx+CeB9bhhxL3c96RU53vy
+         GL7w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779952226; x=1780557026; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WgbYyL+BoS+xdVnnxGKDCu+Y3jq6QLq8J99nhT/iuUc=;
-        b=CRexWF2g1F8t2Cg3wXuBm9BzWsvbr+MYhb4+8mpofnoLNx8IDqXodAhLEsiCFDJyLK
-         wpLJyrUkUuO+hi6Xh0F8JoFKlwyMHvCFNbH1uEYe00Kqqq8HY3tOCXbh51n4y5v/6yaG
-         cR8YMn3203mZbI9wjU416MjVMtE7hec21RH/GsJi4beYW/bvxtcWjR1I5sk3Zzy0UjPA
-         EC4civs64ClReApGBtexybIYBVIYbnMJsazL+ZNlu+HkKx9lsbVM9oQxiyiZhuFANpJE
-         /3fsJQZzagc5PTpGrYHJsEPNPvEK885eIf/w28lDMbNxW1V/3Eny7hYdmPGx7+vcrzX4
-         VHQw==
+        d=gmail.com; s=20251104; t=1779952246; x=1780557046; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=VavC2fTy1inz/S4sNaYxYFEFCBdG9pidtnyJNQj99e4=;
+        b=FQCD+a8ueKMclmrz+S8NfH0WeJLD2kxTcRtisCYcQfSMtkyr7Zz2Td1jGYbNvidtQ+
+         IkkcXWd5r2Si/kI1Ou1FAx3BdRkwFMtLnQpUdsydQPLp4DFZ5putHwmBNPgRpHmGR5NO
+         6B3H7/SMOfyoqYYKlBgzWPcPd39o1q2EiSrRM/gg7Qp6OQ2Ck3TDYAz70nKHJYX4sQKS
+         O1FA/aosuXdz0c96mKYYvRRM1x+4JmjCrCJnVF2t7/nO9V6COPHAPL+LtSNQNCUXvMWZ
+         BfvIcv9rMSP5ecghTdSFy1t5Mrklq0XN7oE90ExpIE2i0VZjZOatfE9nvRptgAv7HXle
+         IyfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779952226; x=1780557026;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WgbYyL+BoS+xdVnnxGKDCu+Y3jq6QLq8J99nhT/iuUc=;
-        b=j5xDYMSQPWiS5yhiLGh7lDOET/XnPr+wiZ/gttAtnHUwAruLqsOWyASL5G3lUFRG8u
-         aBqEwTwlITV4s/p7UtaakSet+GLu0Vv+Ji4MEsUYyUpWaGtrX3YJsR/6y7O5NukmdNLq
-         Mmoi+ChznqNVfJH/It1L+ZhJKJVB4lrTbeeKH81oxo0JpkuZpbMribo+ulC+3U1p3YZF
-         uFwj4udmMrBgvRmIICVqhgmqgI6ocpDVnknt90gsCNkuZvzDdt5cRYCTFLsLg75Y22RI
-         ehnQts+AO46lNoK2h10vQn2cndT1RCMFtMwPHyP9dajaG46+BTstgVjFwpBKgaS2lgRs
-         TRag==
-X-Gm-Message-State: AOJu0YzvrsSl9Y0TEYjycIlnObtiacFE/kMqUwHOC0xvb9itc/AfYeno
-	FZAtt6sNyH+pM7weUnvCLH1ig8Aat2cMrozm5aMEZIBZOwkqU0pUb/R/
-X-Gm-Gg: Acq92OGvAoj0wykV8GuyetyCEM0ipJb3Vh7/C5lQna9xpbZa5lR0NdzB0gU1i/VNiab
-	eSvcvhjK7dg+itaF6/QjjU94ccQ3J+QfBW65V0AV2GiWTesWwbxj1aQdv//x01PNhoWwGkCnHV3
-	LQfeDJoyha0Tf48fQfQ+NgsUIxnd+3oA9JqsZRhLq3XKQ2FE6qqfrG86WktP9fL22PA+/z2+7pY
-	8O/CvDr2TTdpZU+TUUyTY+KZM+BbCTFO0ZrSBBj85rmzeiRkBOKyv7D81F/6XsO4343DSdG5P3j
-	vcVuJrrKDvfvjPY3ZsSgeRUIrh1hDbHTw2y8W1THYiYLPIAkJTl0gWDBHeNTaHPcLWYs9wvNYD2
-	DVXY6yP7ayNTUL4gQausMaihDDT0+Okk6Yyw1356EbGpvxSbukPX/O/UctZ8eDC7kkWg0r0pAIv
-	o+iAHjefM9N1O7Pn7LEsm4D5znoLzw63tAxg==
-X-Received: by 2002:a05:6000:4a09:b0:43d:762e:76c6 with SMTP id ffacd0b85a97d-45eb38a7f6fmr45658380f8f.7.1779952225866;
-        Thu, 28 May 2026 00:10:25 -0700 (PDT)
-Received: from gmail.com ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45edb54903csm11874184f8f.6.2026.05.28.00.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 00:10:25 -0700 (PDT)
-Date: Thu, 28 May 2026 09:10:22 +0200
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v4 2/2] iio: light: add support for APDS9999 sensor
-Message-ID: <ahfp8oFEa026vqzi@gmail.com>
-References: <cover.1779781224.git.azpijr@gmail.com>
- <3219ec710db09eff8a0324b2f6ab3b78e883df9f.1779781224.git.azpijr@gmail.com>
- <20260527170656.4ef393bf@jic23-huawei>
+        d=1e100.net; s=20251104; t=1779952246; x=1780557046;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VavC2fTy1inz/S4sNaYxYFEFCBdG9pidtnyJNQj99e4=;
+        b=ge3fxcB9j1dNdidoXNF0ekzHHSvlo59GkpMCO8eN/+cRhAezAKz/ndAojgUFSnCK2k
+         DX2eEa/sf/fEV7C7z3J0OZTIqVL0vQgcGY2AMVvF9Go0GwWhyhnRDZaFGbRnEMxWifRc
+         85oLLovgkU/U7wqfKSqayZEZl8iFf5pqKgIte/PwBy2eM9SHf6AZvtFvMJoHHBh8GCWf
+         oQ/yBfB8G4xktAx3hWCt8iFlhtUeIT0exhepDMzpZUdtZlqlJrYSnDJhwFpWCoE84qlE
+         34Cwuimz23ku3+PieWaDloxCoJV4SzQUfL7U+K/6noje4IOwC9wPGEMezbwnpwWsfwWV
+         LYUA==
+X-Forwarded-Encrypted: i=1; AFNElJ9o+5q/Kg6w7h65NzgVQlfN86WK3mgPoGvAfV0YWd1MYeGB1u2S4hmWWIO9RRjh6SA8c/7PzKgbeVU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoFJUE3t8G9fEHwKM0mnRQk5KUwV22DEvYFwpga0i54IcZYeVp
+	yAyyBpc07F5d9wTy452pWYC2wQ5JuBQmNCcKR2LQsLhpvE0hYbeN9G0OKDKfaUNqvHr1tFbVsd/
+	e+et7lCq7DS9ZCSRkz1KvhJvgfJnf6p0=
+X-Gm-Gg: Acq92OFJTsyp18YNaPBsxe4sqOHin5A0U1S1QCCXq4CzYeF7CHWPDcyVX2hnFh7mNah
+	9+2UtYgldtuhknAaqtvFIU3clGp/AGSboC3HXiKu4kmZFg05AgOdxXp+ombbAP+uI3U+EgXyVSb
+	kcl0rm2FDWFoqOBrMavoMmHkjRRuXJMGOFayS5bODgVcxRphOBf9HXnch/ViK3SewWzZtNZ7F3U
+	HcDAWU9x43/AJ4Y5PZBS9m7zAqe6yFxApnDTM60gdsLt6jftRnrS9oGAo0PuREbgswjU2E91Lpn
+	qbBf340VNfl/e0sGrIb+tk1PegZP7B4fochhmFViYLNShxlLMFOW7X9V0VD8QXORFRkWDJkBKaf
+	3oJzRS8YPCpuZME3eaMmPvUHkzT8Z0FfWFIjwJAQ834cXSsQu7+O7ETehq43AVbedhA3TGRaS7g
+	qhLu1KBTE1XfaSQWpP
+X-Received: by 2002:a05:600c:3b02:b0:48a:581c:ead with SMTP id
+ 5b1f17b1804b1-490425ac8a1mr437717175e9.10.1779952246165; Thu, 28 May 2026
+ 00:10:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260527170656.4ef393bf@jic23-huawei>
+References: <20260525-opt3001-cleanup-v4-0-65b36a174f78@gmail.com>
+ <20260525-opt3001-cleanup-v4-3-65b36a174f78@gmail.com> <20260527193019.367da1db@jic23-huawei>
+In-Reply-To: <20260527193019.367da1db@jic23-huawei>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 28 May 2026 09:10:33 +0200
+X-Gm-Features: AVHnY4Ic99Oi2ZPDVbrNKpW0pGpiYp8QMyFxlsGaVy_U8pfoogkSuCbzz5Kpnl8
+Message-ID: <CALoEA-zvOAEGydkhGR1bT6w8ouT4GDUacthYUd+CSvoP_X+Syg@mail.gmail.com>
+Subject: Re: [PATCH v4 3/8] iio: light: opt3001: ensure correct parenthesis alignment
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Maxwell Doose <m32285159@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, May 27, 2026 at 05:06:56PM +0100, Jonathan Cameron wrote:
-> On Tue, 26 May 2026 09:55:46 +0200
-> "Jose A. Perez de Azpillaga" <azpijr@gmail.com> wrote:
+On Wed, 27 May 2026 at 20:30, Jonathan Cameron <jic23@kernel.org> wrote:
 >
-> > Add IIO driver for Broadcom APDS9999 ambient light sensor.
-> >
-> > The APDS9999 is a digital proximity and RGB sensor with ALS
-> > capability. The driver implements the ALS/Lux functionality
-> > using the green channel, which uses optical coating technology
-> > to approximate the human eye spectral response.
-> >
-> > Raw IIO_INTENSITY channels are exposed for red, green, blue,
-> > and IR so userspace can compute its own weighted lux.
-> > Proximity (PS) support is not yet implemented.
-> >
-> > Signed-off-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> Hi Jose,
+> On Mon, 25 May 2026 10:20:17 +0200
+> Joshua Crofts via B4 Relay <devnull+joshua.crofts1.gmail.com@kernel.org> wrote:
 >
-> A few really minor things inline.  Given how minor they are I've applied
-> this series to the testing branch of iio.git with the following tweaks:
-> (shout if you disagree with any of them!)
+> > From: Joshua Crofts <joshua.crofts1@gmail.com>
+> >
+> > Ensure correct parenthesis alignment per checkpatch.pl report.
+> >
+> > No functional change.
+> >
+> > Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+> > Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> I was optimistic we could get the fix in via one tree and the rest via
+> another but nope - this changes alignment of stuff to close to that fix.
 >
+> Ah well. This will have to wait for that fix to make it into an upstream
+> release. I might do a pull request for fixes sometime later this week to
+> get that going.
 
-all look good to me, thanks!
+Fine by me. I'll send a v5 to remove the dead code identified by Sashiko,
+unless you're willing to remember to fix it up after the fix is upstream :)
 
---
-jose a. p-a
+Thanks
+
+-- 
+Kind regards
+
+CJD
