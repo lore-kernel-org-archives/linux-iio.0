@@ -1,48 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 739953E1231;
-	Thu, 28 May 2026 11:22:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3A13E5EC7;
+	Thu, 28 May 2026 11:51:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779967375; cv=none; b=RmhUMK7vqq3ROJOd4VOTnegLFGmMp7PYNp2soKZ4hp146f/luqzhtl4Pi3gS+RB6dztF0Smy2JmWtncO+Xq4taPTcLWDGnnYqrkEVY8xcnX0YNUktT4bEg0GC5Mfp0L8DezQOoEhwALHS+7sArcedLPPKYuFvbzKQCUQDjPQ/1s=
+	t=1779969112; cv=none; b=FmQTVBli9ZbULEnDMukyw7Et/e9RZ2QTS2pH8nGa3TXw+Jjmj8uZEo9mi075uEK9Nqy+/FDqmzuPK2El+8W59OTViKwDb3A5aF0ffxxhK2Vlrb4n924Dw+gFDujHEui8gOicJ76f5sjKWKBty/b5/ieOEZKCY3TcWKrwKN/fL+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779967375; c=relaxed/simple;
-	bh=o57KCrQaOcbqzyH+seGr7LLP+j2H4xw8x0SSewVo/SY=;
+	s=arc-20240116; t=1779969112; c=relaxed/simple;
+	bh=Pw4UKXEv6JeqI1TrwKePKLxWnFVrq/+a7kLs/DTSkd8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k0U1dWMvtFhqSUFA5jtWGeugUBoWAKanGOIv31Dr8XZB1OmMUeCuZZwHDV3Bduw1RY5UAesC51HRpa0TrIxSQzA21jN9Yh/NpPt6lbkdfDFBJ3zrlIMclbv4YnhhBN4ZwwRXl/qwz98MIVw+UYcBtdK73/3qZ0/ay/tiXxOWYmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nI2387Fr; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lTfrqehqJfMnpKVX7j9AY80M/StzVT+Lo5l3+SEfu+JGbuxHqpynvbZd6gcHmUfSBoqGvztzYcfe09/FJpggzb7XOo0TnKnQ8MJ35GJo+RZCWojBTUwBJQi6KX9k+r7AHjZARnhMOSqN/cQn6M8arR/JuitNlmnoNT3ssnBAK3k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=euVdc7B+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nI2387Fr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5B401F000E9;
-	Thu, 28 May 2026 11:22:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="euVdc7B+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0361F000E9;
+	Thu, 28 May 2026 11:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779967373;
-	bh=t6nnBcVx6zH2ywacYtDReDsrezM2E3GwiJ9142LfKRo=;
+	s=k20260515; t=1779969109;
+	bh=Osw9fJdkPmu55mwjpYV9XEQmGxNSau5vk1ygkibAExo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nI2387Fr4riG+cQhdtIlcJQ9p8fa8JYl6Y6eYRwfQw4UBkYr8NhZwcpopza/R6w50
-	 zjuRbluOlNaBgbtu2Dnm/16uAXnspKd/PQ9doHtgDq1CJvCk4HOhaAFKiCf1YLalN8
-	 BqZ5lofn9nPSW8t4KaAaZpkJPzFNfkNCAuiUds/syBNoCvyFQaGZYa7I9Ye4nxaV61
-	 pRUSRgrOlrRWk29Xg5jZX2hsGlCrZHgVSsHsaLGnttvSgiqCFAERRvAz/n4Y7Une5P
-	 wuZlH8AD1oKO3EkocfbgCWKnrW6x8QMImBz2FfVmmVEUnoFkgB6/nT6ehX01mYu2Rc
-	 12ozgBjB6lZgg==
-Date: Thu, 28 May 2026 12:22:44 +0100
+	b=euVdc7B+y7D/CTomj2VAt1CNUnEWHFK+zDxr9GHUxE5KkebPiW1xJQkYGe3A0fYXX
+	 FGmM6Ml5XJTOWipK02z5Ud+9HuN2WubLdekXh788gyF0h19VxXyJUZ1TBdYVC22Rwl
+	 oA19uVUjPkBszFJB0tMQSsI0krC8RA6CoiZUABK8Hip8keoqWLLrkzPwdTrzHCafMp
+	 WQZDWWgm3EDpZpzarrbb+Y7ttuLWcLh5YWRMiVftqfFb29G0vEOBjPQvxJ1Kn7MJE5
+	 TOcmOs45TsfXehTdWjCzT9mGNxTbcsQ9pJsHV8yN7g8n7PK4FbQm14jx+x6TZVtoyf
+	 +FO0dOorEBM2A==
+Date: Thu, 28 May 2026 12:51:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Wadim Mueller <wafgo01@gmail.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Maxwell Doose
- <m32285159@gmail.com>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Jean Delvare
- <jdelvare@suse.com>, Andreas Klinger <ak@it-klinger.de>, Lars-Peter Clausen
- <lars@metafoo.de>, linux-hwmon@vger.kernel.org, Rodrigo Alencar
- <rodrigo.alencar@analog.com>
-Subject: Re: [PATCH v2 3/3] iio: flow: add Sensirion SLF3S liquid flow
- sensor driver
-Message-ID: <20260528122244.2e408dd3@jic23-huawei>
-In-Reply-To: <20260527184257.141635-4-wafgo01@gmail.com>
-References: <20260524205112.26638-1-wafgo01@gmail.com>
-	<20260527184257.141635-1-wafgo01@gmail.com>
-	<20260527184257.141635-4-wafgo01@gmail.com>
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: dac: mcp47feb02: refactor MCP47FEB02 I2C driver
+ into two modules
+Message-ID: <20260528125140.16a8f173@jic23-huawei>
+In-Reply-To: <20260527-mcp47feb02-fix2-v2-1-3e8946d7b3c4@microchip.com>
+References: <20260527-mcp47feb02-fix2-v2-1-3e8946d7b3c4@microchip.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,391 +47,254 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 27 May 2026 20:42:54 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
+On Wed, 27 May 2026 17:50:40 +0300
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> Add a driver for the Sensirion SLF3S family of digital liquid-flow
-> sensors (SLF3S-0600F, SLF3S-1300F and SLF3S-4000B).  The sensors
-> communicate over I2C and return a 16-bit signed flow value, a 16-bit
-> signed temperature reading and a status word - each protected by a
-> CRC-8 byte - in every measurement frame.
+> The MCP47FEB02 driver was refactored into two modules: mcp47feb02-core.c
+> and mcp47feb02-i2c.c in order to prepare the support for SPI
+> (MCP48F(E/V)BXX) DAC family on top of the current implementation.
 > 
-> The driver exposes:
-> 
->   in_volumeflow_raw     - signed raw counts
->   in_volumeflow_scale   - litres per second per LSB (per variant)
->   in_temp_raw           - signed raw counts
->   in_temp_scale         - millidegrees Celsius per LSB
-> 
-> The variant is auto-detected from the product-info word read at
-> probe time.  All three SLF3S devices are factory-calibrated for both
-> water and isopropyl alcohol; the calibration medium is selected via
-> the sensirion,medium device property and defaults to water.
-> 
-> Scale factors are taken from the respective datasheets (Table 16
-> for SLF3S-0600F, Table 15 for SLF3S-1300F and SLF3S-4000B):
-> 
->   SLF3S-0600F:  10 (ul/min)^-1  -> 1/600 000 000 (l/s)/LSB
->   SLF3S-1300F: 500 (ml/min)^-1  -> 1/30 000 000  (l/s)/LSB
->   SLF3S-4000B:  32 (ml/min)^-1  -> 1/1 920 000   (l/s)/LSB
-> 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Andreas Klinger <ak@it-klinger.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: linux-hwmon@vger.kernel.org
-> Cc: Maxwell Doose <m32285159@gmail.com>
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
+> The MCP47FEB02 driver was refactored into two modules: mcp47feb02-core.c
+> and mcp47feb02-i2c.c in order to prepare the support for SPI
+> (MCP48F(E/V)BXX) DAC family on top of the current implementation.
 
-A few fairly minor things inline. Also check out sashiko's review
-https://sashiko.dev/#/patchset/20260527184257.141635-1-wafgo01%40gmail.com
-(Note the DMA buffers stuff is wrong for I2C so ignore that)
+Hi Ariana,
 
-> diff --git a/drivers/iio/flow/slf3s.c b/drivers/iio/flow/slf3s.c
+I don't mind reviewing this on it's own but won't merge it until
+we have a reason (i.e. that SPI part)
+
+> 
+> Changes in v2:
+>     Refactor the code into core and I2C modules and update MAINTAINERS,
+>       Kconfig and Makefile to the new format.
+>     Handle mismatch between vref modes at power up and enable regulator
+>       only after the user corrects it.
+This doesn't sound like it's related to a refactor..
+
+All of these belong in separate patches from the fundamental code
+move. Probably before it given they seem like a good idea anyway..
+
+>     Improve comments and debug messages for clarity.
+>     Avoid 64-bit division in mcp47feb02_init_scale().
+>     Add available scale array in channel data struct.
+>     Add a device_property_present() check for the Vref1 supply before
+>       reading the regulator.
+>     Rewrite conditions and warning messages for better readablity in
+>       init_ctrl_regs().
+>     Reorder channel_data struct fields as recommended and run pahole again.
+>     Rewrite DAC_GAIN_MASK and DAC_GAIN_VAL formula as recommended.
+>     Move initialization of Vref/Vref1 accordingly in probe().
+>     Add missing newlines in debug messages.
+>     Remove lock in parse_fw().
+>     Remove fwnode_get_name function from missing label debug message.
+>     Remove redundant reg initialization.
+>     Split iio includes from the rest.
+>     Rename scale and scale_1 to scale_0 and scale_1.
+>     Declare tmp_eval as unsigned in mcp47feb02_set_scale().
+>     Declare eewa_val as unsigned in mcp47feb02_write_to_eeprom().
+>     Use 'num_channels == 0' instead of '!num_channels' in parse_fw().
+>     Move lock from mcp47feb02_write_to_eeprom() to store_eeprom_store().
+>     Correct timeout value to 20 USEC_PER_MSEC.
+>     Remove blank line before IIO_DEVICE_ATTR_WO.
+> v1:
+> - first version committed to review
+> - Link to v1: https://lore.kernel.org/r/20260403-mcp47feb02-fix2-v1-0-da60c773550e@microchip.com
+> ---
+>  MAINTAINERS                       |    4 +-
+>  drivers/iio/dac/Kconfig           |    5 +
+>  drivers/iio/dac/Makefile          |    3 +-
+>  drivers/iio/dac/mcp47feb02-core.c |  992 +++++++++++++++++++++++++++++
+>  drivers/iio/dac/mcp47feb02-i2c.c  |  145 +++++
+>  drivers/iio/dac/mcp47feb02.c      | 1250 -------------------------------------
+
+Did you turn rename detection off?  For a patch like this I'd rather have it on
+as much of the code moved from .c to core.c and it will be much easier to spot
+any changes.
+
+>  drivers/iio/dac/mcp47feb02.h      |  173 +++++
+>  7 files changed, 1320 insertions(+), 1252 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/mcp47feb02-core.c b/drivers/iio/dac/mcp47feb02-core.c
 > new file mode 100644
-> index 000000000..f971a2dc2
+> index 0000000000000000000000000000000000000000..fa3e3d06c2c96a5d25c0761b29ffe785e29a622c
 > --- /dev/null
-> +++ b/drivers/iio/flow/slf3s.c
-> @@ -0,0 +1,345 @@
-> +// SPDX-License-Identifier: GPL-2.0
+> +++ b/drivers/iio/dac/mcp47feb02-core.c
+> @@ -0,0 +1,992 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 > +/*
-> + * Sensirion SLF3S liquid flow sensor driver.
+> + * IIO driver for MCP47FEB02 Multi-Channel DAC with I2C interface
+
+That needs an update given this isn't the bus specific code any more.
+
 > + *
-> + * Supports the SLF3S-0600F, SLF3S-1300F and SLF3S-4000B liquid-flow
-> + * sensors over I2C.  Each measurement frame returns a 16-bit signed
-> + * flow value, a 16-bit signed temperature value and a status word,
-> + * each protected by a CRC-8 byte.
+> + * Copyright (C) 2026 Microchip Technology Inc. and its subsidiaries
 > + *
-> + * Datasheet: https://sensirion.com/products/catalog/SLF3S-0600F/
+> + * Author: Ariana Lazar <ariana.lazar@microchip.com>
 > + *
-> + * Copyright (C) 2026 CMBlu Energy GmbH
-> + * Author: Wadim Mueller <wafgo01@gmail.com>
+> + * Datasheet links for devices with I2C interface:
+> + * [MCP47FEBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005375A.pdf
+> + * [MCP47FVBxx] https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005405A.pdf
+> + * [MCP47FxBx4/8] https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP47FXBX48-Data-Sheet-DS200006368A.pdf
 > + */
-> +
+> +#include <linux/array_size.h>
 > +#include <linux/bitops.h>
-> +#include <linux/crc8.h>
-> +#include <linux/delay.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/device.h>
+As part of this rework (probably separate patch) good to update
+these headers to include more specific ones and drop device.h
 
-Check these.  I'd expect dev_printk.h for instance.
-Follow IWYU (approximately) for includes.
-
-> +#include <linux/i2c.h>
-> +#include <linux/mod_devicetable.h>
+> +#include <linux/export.h>
+> +#include <linux/kstrtox.h>
 > +#include <linux/module.h>
+> +#include <linux/mutex.h>
 > +#include <linux/property.h>
+> +#include <linux/regmap.h>
 > +#include <linux/regulator/consumer.h>
-> +#include <linux/unaligned.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
 > +
 > +#include <linux/iio/iio.h>
-> +
-> +#define SLF3S_CRC8_POLY			0x31
-> +#define SLF3S_CRC8_INIT			0xff
-> +
-> +#define SLF3S_PRODUCT_ID_LEN		18
-> +#define SLF3S_PRODUCT_FAMILY_BYTE	1
-> +#define SLF3S_PRODUCT_SUBTYPE_BYTE	3
-> +#define SLF3S_PRODUCT_FAMILY_ID		0x03
-> +
-> +#define SLF3S_MEAS_LEN			9
-
-I don't think this constant being a define is that useful. I'd push
-the value down to where you set how big the buffer is then use ARRAY_SIZE()
-for the loop
-
-> +#define SLF3S_MEAS_START_DELAY_US	12000
-> +
-> +/*
-> + * Temperature LSB equals 1/200 degC.  IIO_TEMP uses milli-degrees,
-> + * therefore the scale exposed to userspace is 1000 / 200 = 5.
-> + */
-> +#define SLF3S_TEMP_SCALE_MILLIC		5
-
-I'd put this value inline with the comment. It's only used in one
-place and that is where people will look for information on scale.
+> +#include <linux/iio/sysfs.h>
 
 
 > +
-> +static const struct slf3s_variant slf3s_variants[] = {
-> +	[0] = {
-> +		.sub_type	= 0x03,
-> +		.name		= "slf3s-0600f",
-> +		.scale_num	= 1,
-> +		.scale_den	= 600000000,
+> +int mcp47feb02_common_probe(const struct mcp47feb02_features *chip_features, struct regmap *regmap)
 
-Probably more readable with 600 * MICRO 
+As below. Very long line, break that after ,
 
-> +	},
-> +	[1] = {
-> +		.sub_type	= 0x02,
-> +		.name		= "slf3s-1300f",
-> +		.scale_num	= 1,
-> +		.scale_den	= 30000000,
+> +{
 
-30 * MICRO
 
-> +	},
-> +	[2] = {
-> +		.sub_type	= 0x05,
-> +		.name		= "slf3s-4000b",
-> +		.scale_num	= 1,
-> +		.scale_den	= 1920000,
 
-1920 * MILLI or leave this one as is. 4 zeros are easy to count ;)
+> diff --git a/drivers/iio/dac/mcp47feb02.h b/drivers/iio/dac/mcp47feb02.h
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..5dee70cb67bf3aca52a0234d30aea1561aa12c58
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcp47feb02.h
 
-> +	},
+
+> +/* Register addresses must be left shifted by 3 bits in order to append the command mask */
+> +#define MCP47FEB02_DAC0_REG_ADDR			0x00
+> +#define MCP47FEB02_VREF_REG_ADDR			0x40
+> +#define MCP47FEB02_POWER_DOWN_REG_ADDR			0x48
+> +#define MCP47FEB02_DAC_CTRL_MASK			GENMASK(1, 0)
+
+Is the the command mask?  Odd mismatch in naming if so. Perhaps update the comment
+to match whilst doing this move.
+
+So far I'm not seeing a reason to move these all to the header. They don't
+seem to be used in the i2c specific file.
+
+> +
+> +#define MCP47FEB02_GAIN_CTRL_STATUS_REG_ADDR		0x50
+> +#define MCP47FEB02_GAIN_BIT_MASK			BIT(0)
+> +#define MCP47FEB02_GAIN_BIT_STATUS_EEWA_MASK		BIT(6)
+> +#define MCP47FEB02_GAIN_BITS_MASK			GENMASK(15, 8)
+
+...
+
+> +
+> +enum mcp47feb02_vref_mode {
+> +	MCP47FEB02_VREF_VDD = 0,
+> +	MCP47FEB02_INTERNAL_BAND_GAP = 1,
+> +	MCP47FEB02_EXTERNAL_VREF_UNBUFFERED = 2,
+> +	MCP47FEB02_EXTERNAL_VREF_BUFFERED = 3,
+> +};
+
+Similar to the above - I'd not expect to see these in the buffer specific
+drivers, so can we keep the definitions in the core c file?
+
+> +
+> +enum mcp47feb02_scale {
+> +	MCP47FEB02_SCALE_VDD = 0,
+> +	MCP47FEB02_SCALE_GAIN_X1 = 1,
+> +	MCP47FEB02_SCALE_GAIN_X2 = 2,
+> +};
+> +
+> +enum mcp47feb02_gain_bit_mode {
+> +	MCP47FEB02_GAIN_BIT_X1 = 0,
+> +	MCP47FEB02_GAIN_BIT_X2 = 1,
 > +};
 > +
 > +/**
-> + * struct slf3s_data - per-device state
-> + * @client:	I2C client this instance is bound to
-> + * @variant:	pointer into @slf3s_variants for the detected device
-> + * @crc_table:	pre-computed CRC-8 lookup table for SLF3S_CRC8_POLY
+> + * struct mcp47feb02_channel_data - channel configuration
+> + * @scale_avail: scales available for the channel based on current configuration
+> + * @dac_data: DAC value
+> + * @ref_mode: chosen voltage for reference
+> + * @powerdown_mode: selected power-down mode
+> + * @powerdown: is false if the channel is in normal operation mode
+> + * @use_2x_gain: output driver gain control
+> + * @ref_mismatch: true if the restored register configuration is different from the device tree one
 > + */
-> +struct slf3s_data {
-> +	struct i2c_client *client;
-> +	const struct slf3s_variant *variant;
-> +	u8 crc_table[CRC8_TABLE_SIZE];
+> +struct mcp47feb02_channel_data {
+> +	int *scale_avail;
+> +	u16 dac_data;
+> +	u8 ref_mode;
+> +	u8 powerdown_mode;
+> +	bool powerdown;
+> +	bool use_2x_gain;
+> +	bool ref_mismatch;
 > +};
 > +
-> +static bool slf3s_crc_valid(const struct slf3s_data *sf, const u8 *block)
-
-I'd be consistent and have const u8 block[at_least 3]
-the make it clear how big that is expected to be.
-
-> +{
-> +	return crc8(sf->crc_table, block, 2, SLF3S_CRC8_INIT) == block[2];
-> +}
-> +
-> +static int slf3s_send_cmd(struct i2c_client *client, const u8 cmd[static 2])
-
-Use at_least, not static for kernel code as it makes it much more obvious what
-is going on.
-
-Note the sashiko report on this memory potentially being used for DMA is wrong.
-The i2c subsystem only does that if you opt in.
-
-> +{
-> +	int ret = i2c_master_send(client, cmd, 2);
-> +
-> +	if (ret == 2)
-> +		return 0;
-> +	return ret < 0 ? ret : -EIO;
-> +}
-> +
-> +/*
-> + * Read the product-info block and update @sf->variant.  The kernel
-
-wrap at 80 chars. This is a bit short in places.
-
-> + * trusts the DT compatible (or i2c id_table .data) above all else; the
-> + * sub-type byte is a sanity hint.  This means:
-> + *
-> + *   - bus / CRC failures are real errors and must fail probe;
-> + *   - if the caller already picked a variant (specific compatible), the
-> + *     PID is logged for diagnostics but mismatches do not fail probe;
-> + *   - if the caller has no variant (generic "sensirion,slf3s" fallback),
-> + *     the sub-type byte is used to pick one; unknown sub-type fails.
-This is interesting approach, but lets discuss it in the dt-binding  thread.
-
+> +/**
+> + * struct mcp47feb02_data - chip configuration
+> + * @chdata: options configured for each channel on the device
+> + * @lock: prevents concurrent reads/writes to driver's state member
+> + * @chip_features: pointer to features struct
+> + * @scale_1: scales set on channels that are using Vref1
+> + * @scale_0: scales set on channels that are using Vref/Vref0
+> + * @active_channels_mask: enabled channels
+> + * @regmap: regmap for directly accessing device register
+> + * @labels: table with channels labels
+> + * @vref1_reg: Vref1 regulator to be enabled after correcting reference mismatch
+> + * @vref_reg: Vref/Vref0 regulator to be enabled after correcting reference mismatch
+> + * @phys_channels: physical channels on the device
+> + * @vref1_buffered: Vref1 buffer is enabled
+> + * @vref_buffered: Vref/Vref0 buffer is enabled
+> + * @use_vref1: vref1-supply is defined
+> + * @use_vref: vref-supply is defined
+> + * @vref1_enabled: true if Vref1 regulator has been enabled
+> + * @vref_enabled: true if Vref/Vref0 regulator has been enabled
 > + */
-> +static int slf3s_detect_variant(struct slf3s_data *sf)
-> +{
-> +	struct i2c_client *client = sf->client;
-> +	u8 buf[SLF3S_PRODUCT_ID_LEN];
-> +	int ret;
-> +
-> +	ret = slf3s_send_cmd(client, slf3s_cmd_prep_pid);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = slf3s_send_cmd(client, slf3s_cmd_read_pid);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_master_recv(client, buf, sizeof(buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(buf))
-> +		return -EIO;
-> +
-> +	for (unsigned int i = 0; i < SLF3S_PRODUCT_ID_LEN; i += 3) {
-> +		if (!slf3s_crc_valid(sf, &buf[i]))
-> +			return -EIO;
-> +	}
-> +
-> +	if (buf[SLF3S_PRODUCT_FAMILY_BYTE] != SLF3S_PRODUCT_FAMILY_ID)
-> +		dev_dbg(&client->dev,
-> +			"unexpected family byte 0x%02x (expected 0x%02x)\n",
-> +			buf[SLF3S_PRODUCT_FAMILY_BYTE],
-> +			SLF3S_PRODUCT_FAMILY_ID);
-> +
-> +	for (unsigned int i = 0; i < ARRAY_SIZE(slf3s_variants); i++) {
-> +		if (buf[SLF3S_PRODUCT_SUBTYPE_BYTE] !=
-> +		    slf3s_variants[i].sub_type)
-I'd go slightly long and have that one line.
-		if (buf[SLF3S_PRODUCT_SUBTYPE_BYTE] != slf3s_variants[i].sub_type)
-We are a bit flexible on the 80 chars where it helps readabilty.
-
-
-> +			continue;
-> +
-> +		if (sf->variant && sf->variant != &slf3s_variants[i])
-> +			dev_dbg(&client->dev,
-> +				"DT compatible says %s but sub-type 0x%02x suggests %s\n",
-> +				sf->variant->name,
-> +				buf[SLF3S_PRODUCT_SUBTYPE_BYTE],
-> +				slf3s_variants[i].name);
-> +		else if (!sf->variant)
-
-If this happens I'd go with the detection over the dt provided. And dev_info
-for the mismatch as we want people to know wrong sensor is described.
-
-> +			sf->variant = &slf3s_variants[i];
-> +		return 0;
-> +	}
-> +
-> +	if (sf->variant) {
-> +		dev_dbg(&client->dev,
-> +			"unknown SLF3S sub-type 0x%02x, trusting DT compatible %s\n",
-> +			buf[SLF3S_PRODUCT_SUBTYPE_BYTE], sf->variant->name);
-> +		return 0;
-> +	}
-> +
-> +	dev_dbg(&client->dev, "unknown SLF3S sub-type 0x%02x\n",
-> +		buf[SLF3S_PRODUCT_SUBTYPE_BYTE]);
-As below. I'd have a blank line here
-
-> +	return -ENODEV;
-> +}
-> +
-> +static int slf3s_read_sample(struct slf3s_data *sf, int *flow, int *temp)
-> +{
-> +	u8 buf[SLF3S_MEAS_LEN];
-> +	int ret;
-> +
-> +	ret = i2c_master_recv(sf->client, buf, sizeof(buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(buf))
-> +		return -EIO;
-> +
-> +	for (unsigned int i = 0; i < SLF3S_MEAS_LEN; i += 3) {
-> +		if (!slf3s_crc_valid(sf, &buf[i]))
-> +			return -EIO;
-> +	}
-> +
-> +	*flow = sign_extend32(get_unaligned_be16(&buf[0]), 15);
-> +	*temp = sign_extend32(get_unaligned_be16(&buf[3]), 15);
-
-Trivial but good to have a blank line before simple return statements like
-this. Just makes the code a tiny bit more readable.
-
-> +	return 0;
-> +}
-
-> +
-> +static int slf3s_read_raw(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan, int *val,
-> +			  int *val2, long mask)
-> +{
-> +	struct slf3s_data *sf = iio_priv(indio_dev);
-> +	int flow, temp, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (!iio_device_claim_direct(indio_dev))
-> +			return -EBUSY;
-> +
-> +		ret = slf3s_read_sample(sf, &flow, &temp);
-> +		iio_device_release_direct(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = (chan->type == IIO_VOLUMEFLOW) ? flow : temp;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_VOLUMEFLOW) {
-> +			*val = sf->variant->scale_num;
-> +			*val2 = sf->variant->scale_den;
-
-Sashiko (probably correctly) identifies that the formatting that the IIO core
-does for an IIO_VAL_FRACTIONAL only goes to 9 decimal places.  That means
-in some cases the scale is truncated to 1 digit losing much of its usefulness.
-https://sashiko.dev/#/patchset/20260527184257.141635-1-wafgo01%40gmail.com
-
-As such we need to increase the number of digits or maybe switch to using
-https://lore.kernel.org/all/20260524-adf41513-iio-driver-v14-6-06824d9c15f4@analog.com/
-
-Which defines IIO_VAL_DECIMAL64_PICO
-
-+CC Rodrigo
-
-
-> +			return IIO_VAL_FRACTIONAL;
-> +		}
-> +		*val = SLF3S_TEMP_SCALE_MILLIC;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-> +
-> +static int slf3s_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct slf3s_data *sf;
-> +	const u8 *start_cmd = slf3s_cmd_start_water;
-> +	const char *medium;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*sf));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	sf = iio_priv(indio_dev);
-> +	sf->client = client;
-> +	sf->variant = i2c_get_match_data(client);
-> +	crc8_populate_msb(sf->crc_table, SLF3S_CRC8_POLY);
-> +
-> +	ret = devm_regulator_get_enable(dev, "vdd");
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
-
-More than likely we need some level of sleep here for the device to wake up.
-Is there anything in the datasheet?
-
-> +
-> +	ret = slf3s_detect_variant(sf);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "product info read failed\n");
-
-> +
-> +static const struct of_device_id slf3s_of_match[] = {
-> +	{ .compatible = "sensirion,slf3s-0600f", .data = &slf3s_variants[0] },
-> +	{ .compatible = "sensirion,slf3s-1300f", .data = &slf3s_variants[1] },
-> +	{ .compatible = "sensirion,slf3s-4000b", .data = &slf3s_variants[2] },
-> +	{ .compatible = "sensirion,slf3s" },
-
-This came up in the dt review, so I'll assume you'll address it there. How useful
-is the generic compatible?
-
-> +	{ }
+> +struct mcp47feb02_data {
+> +	struct mcp47feb02_channel_data chdata[MCP47FEB02_MAX_CH];
+> +	struct mutex lock; /* prevents concurrent reads/writes to driver state */
+> +	const struct mcp47feb02_features *chip_features;
+> +	int scale_1[2 * MCP47FEB02_MAX_SCALES_CH];
+> +	int scale_0[2 * MCP47FEB02_MAX_SCALES_CH];
+> +	unsigned long active_channels_mask;
+> +	struct regmap *regmap;
+> +	const char *labels[MCP47FEB02_MAX_CH];
+> +	struct regulator *vref_reg;
+> +	struct regulator *vref1_reg;
+> +	u16 phys_channels;
+> +	bool vref1_buffered;
+> +	bool vref_buffered;
+> +	bool use_vref1;
+> +	bool use_vref;
+> +	bool vref1_enabled;
+> +	bool vref_enabled;
 > +};
-> +MODULE_DEVICE_TABLE(of, slf3s_of_match);
 > +
-> +static struct i2c_driver slf3s_driver = {
-> +	.driver = {
-> +		.name		= "slf3s",
-> +		.of_match_table	= slf3s_of_match,
-> +	},
-> +	.probe		= slf3s_probe,
-> +	.id_table	= slf3s_id,
-> +};
-> +module_i2c_driver(slf3s_driver);
+> +extern const struct regmap_config mcp47feb02_regmap_config;
+> +extern const struct regmap_config mcp47fvb02_regmap_config;
 > +
-> +MODULE_AUTHOR("Wadim Mueller <wafgo01@gmail.com>");
-> +MODULE_DESCRIPTION("Sensirion SLF3S liquid flow sensor driver");
-> +MODULE_LICENSE("GPL");
+> +/* Properties shared by I2C families */
+> +int mcp47feb02_common_probe(const struct mcp47feb02_features *chip_features, struct regmap *regmap);
+
+That's a very long line. I'd break it after ,
+
+> +
+> +extern const struct dev_pm_ops mcp47feb02_pm_ops;
+> +
+> +#endif /* _MCP47FEB02_H_ */
+> 
+> ---
+> base-commit: 8625d418d24bc0ff463267b26b7cb2e7a612495f
+> change-id: 20260331-mcp47feb02-fix2-95c6baa7fb2b
+> 
+> Best regards,
 
