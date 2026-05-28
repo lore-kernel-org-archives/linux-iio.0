@@ -1,320 +1,569 @@
-Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3947023393A
-	for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 15:03:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.174
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779980637; cv=pass; b=eXzV/hBrZNjNDmdVIrYbHI23/Jvvhc3jbvzgqQlwsCgei9kOS2/ZEfG1RYwsw8z3OaMmkbH5TdiLMnounbtsnKUu16go7lNLY70rgVXkasjvZSUz+5RgvtSTPWl84NVOCqcOQd70s49/wjtsUx9bzlhrcNScDGcb6gn/YZYHCr8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779980637; c=relaxed/simple;
-	bh=s3vC6wnoLZ1XKUWcUoScolE5ZeO4GGneFSy9sZNGveU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QL0N4D62AC/fiaD7FAuPaxnnI/9ckD7z43fjiz5zcAZkBfHuLEk4S6M9+kgusZqqlxH8W0W7szmBuut3tKJOP6hwQitoCdFCKvdQxsi6714/1ykeBhbpUp4+q8Vw0W687K6BcoHn0t4h/EFAW2EwhrXItZ/O2rWXhlJrF3FXyN0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fuVjPwSE; arc=pass smtp.client-ip=74.125.82.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16CAB34B1A5;
+	Thu, 28 May 2026 15:04:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779980661; cv=none; b=RAwucRJJk04HnwThTrZ8+e4r6uzZBOfe4UyTbm0V6+fdZ+AUxW/dm6kDAxDbEWUH5sNyuePKoAqAMkMKpGYI/E1XEMzKAX7cm/6tKBEVUbMVgy/+b7fQ84D35mDtaGWZyGjQ8oyyWViyv/cox5Gn8+sbE64b0y4snr7E0WHmNVk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779980661; c=relaxed/simple;
+	bh=FEHx4SRaK/SP/KzHt+XVqoUY0C9iBFuTJ/m9KtKw2Tc=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=u9WSPPeRNGfrULbumC2baoRA3rgUOiXTSNnAVpISNcCqSGi/I12QhukWj7WDWgi8ZqXvWJcH7LSvfknfOFXTZhltwmrYOz8tk0dugF2LhlMsRT1qzLDSw0hKNq0MdCkdMTWDw588k40W24ROqyO8NKNYbmLQQRdGS4dciG2j7vQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=VBeNiTY3; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fuVjPwSE"
-Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-304e58292d3so240949eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 08:03:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1779980623; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Eu1Js5wJ5kh5A08VPT2LMPdnv0E0/Tidr2boWRCU1DIL6zqf1jip7x+W6OwF/Jtr8Q
-         dKaAQ5XxmbwMxh62QtrLuPJ/ewmboovZZD+EB2BsUrojOSnwlWpcKAJ190VjiQxqA2jk
-         fYacnONtCgMYTJyT5cTk4c9cIy1SH/1ITEdiHGm71wkRUZG94Y9SzyP/YFND9lh7NfHk
-         VlnzMzumZSM5PcB1wbAodTChtYzbq3dPhyVkHOPEvyNXLt91oB+tTs0BEuCddW1VhX9r
-         ciXmXmdndid3S3o3AlBed/QxZRVwubXw/aJ2Kwx3D+Ld7TEOW2tDgfBZbZQyy0L2x77o
-         zP1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
-        fh=aPIsXnGlACgfqC6ZP89++TlY1RypfUjJjTj7InT/x0c=;
-        b=WAxEa4R4EZhX6Cri21/FVaxsKMMn3H5F0lIMQ7vmpTi5MCBx066DKvO1wjJ+RYmP7g
-         7PzEuKorHEp8FUr2oZB/028ooaewlgsUmjM/OEuU5RjKuqcmUe/J6pF8WDTHDDvcr8Ma
-         1intKr1VN7T4IxNOfbo6snHv/+QhEdj8/7HcZOMhDE02Bn5PNuE01UbN03Ve9Sitp+s5
-         mMPjWu3u7jIUjlOy/MX0karPGNasojgiQYdnJ7jEAl13hy6kBW/69xFK6qHkIwmq71OY
-         DGUBTCdCMjAni8T2EuIHhiLuB+BIC9L+nvKA6Y2eusx6ALp9F8HpebvOuS2KEnYV8XLf
-         iBOg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779980623; x=1780585423; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
-        b=fuVjPwSEbktOykrRELN/cZftb6kIQsBcY83Isn0NjFaQGapKKFBb4rbpbh5I5mJINE
-         eXUBy+gIboUF1wwiFdEt+D0YT0LG8KIdxdvcFAaC9sq+ocUwf55CUxujMo/CaDMLUWtX
-         qnk+FpTobIjOFMk/Be7YvchW7TINllERCKZ2DZW1mnAWLP5qGz9b91lKyBrgYynd0KbT
-         uQVwmTwGcNm4+v0qTce3bv7Bv97wUUCDJVvhvAHzOXPL3cQ64+zKGrvyuakLfl3Qw+6i
-         SkqoBsLgUimHb81i1SeA3hsVIf40qYuN8z6moa1D7RGCjLc9ydxsME3fPLU17m9DWkjF
-         ACHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779980623; x=1780585423;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=999rZWGlrRMiFPTcWjsNb4DI/hC1DrKVLDhSSMIwam0=;
-        b=Z5J9B4KuyLnp90V/22LiFXeCqT/2WJiymiTL6d4sk2vZ1lL4pIVW09PdL6Yg5H3XIZ
-         HpQZ72Uyiq5nyKQAF4MEvkdYoRfqpHGrpizPGf/lYinPoggAz6vLkc4pJ4r/WKPZ5LHx
-         K4QneHESRwUhDoInh3uDHPTwqfQj0dliHgwOPSM1vctpVr+45eXq6v9Szg7OlSIZKcgx
-         ak7anucoC7O712CJCHGMxR0wI2Yf8h1BV4yfym51EdpzqTiBBtRBoat8He/or6OW6Tse
-         MH6FKHvUvVOPDzmqIl2cWI0ONl1BvIcuiBdmVuwypuiOIq6hsUfge+0pPyvr7xLjPFU2
-         KRVA==
-X-Forwarded-Encrypted: i=1; AFNElJ/5c2bHRI3F3HlGvMxIvNqOyUJiB9iNrqtuCdXIl32Iu1PwwQlmsVzQ1FR/Wh+HLzyQ2W5IdX20nVY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXH6nxJBjzamYhaRliRd+1UKagkERVUu1WzjJhJSp/AQH/r6Pw
-	Wn1o3UOWQZ4D/0qKjbzEaPngruhbREpbFttzoaUwHSHoPFZx4TKRqmg3+wq3fpfcMNzI2BW9HGh
-	LmI0MbuN0fzJ3b7TAMrcTfZbKa1CeiOs=
-X-Gm-Gg: Acq92OHXn5w3Peqc1hO3wL6z5ugMW9SmhqSLLqtSXmxcUqMoWn22jEeXGOUuPQ0JcBz
-	IfI1SpXum8pysy6l4lgo60XMJe/blLURMas/r0t40LAQsSHYq9oMRmTs4KVESXPLV1LqkPpWmP7
-	DtA1A+1edcKHGgfwaQTDv84F8uT3djiL2jNAM5ZNsHqwAX8owdeAY5v2dkbBFuVikwzr/RQFOWA
-	T9QDLdVsOslnozR0jMkWsjxNSJ0g9JMeyt5FkjolkzwcFOnjhmzSF/QnaCUr5vn8l9jkzMIYTsC
-	tRFLL6TRpFiW+/0VBVk=
-X-Received: by 2002:a05:7301:fa04:b0:304:d82f:be10 with SMTP id
- 5a478bee46e88-304d82fe55fmr1288739eec.11.1779980623129; Thu, 28 May 2026
- 08:03:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="VBeNiTY3"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64SEeJIJ3916484;
+	Thu, 28 May 2026 11:04:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=WEkMW
+	nxxqkKfzzQ7LCtE4Es500MhlYIeyNCOAa1Nww4=; b=VBeNiTY3CqQadtg50t4iA
+	6g08NMmuCqONcZ5PdREn9qppLab5XI0Jp4VPMhQIiofb63l4JRxsLBsMdvaBMRIL
+	qBtuNfcqfyrESjk8TCX0DMINbb2TAR4nL2Orj3gH+boCu1FEF5f1QBW1XJpZ0PGI
+	TknsgdAFpxBmD1RvrG2TrKayKMtR7xgJBPWxprAAALW3LaaOYPCtC6+Tvnk5IFzo
+	xh5/8f5WMg0VlEA34t+i1QtKtP5AJ7/8UnpAr1rNGHw75Ff4feAOzJlI4FnxjGrl
+	99ybXjat60q4mfQRvsxs4TJe2YQteKXyjidMpBAKaS24bzTP2zcp12DcFeBXEa4V
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ee7xdk969-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 28 May 2026 11:04:12 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 64SF4BHD008823
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 28 May 2026 11:04:11 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 28 May
+ 2026 11:04:11 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 28 May 2026 11:04:11 -0400
+Received: from work.maxim-ic.internal ([10.66.6.190])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 64SF3w6K021403;
+	Thu, 28 May 2026 11:04:00 -0400
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+        <dlechner@baylibre.com>, <andy@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <pop.ioan-daniel@analog.com>, <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v2 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs
+Date: Thu, 28 May 2026 12:03:52 -0300
+Message-ID: <40e1108bc9eaeba486705b54c4c94004f0e7f369.1779976379.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1779976379.git.marcelo.schmitt@analog.com>
+References: <cover.1779976379.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260528135123.103745-1-clamor95@gmail.com> <20260528135123.103745-3-clamor95@gmail.com>
- <20260528155001.2bcb7003@jic23-huawei>
-In-Reply-To: <20260528155001.2bcb7003@jic23-huawei>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Thu, 28 May 2026 18:03:31 +0300
-X-Gm-Features: AVHnY4JOZH_BBdJBd0wzIDDW2UO693Byl1wIIcPrxkbXcQMPI-6wgD9ANvHg0-o
-Message-ID: <CAPVz0n0qCekQVGGyAyBuYv+RKC6bpydYBLJNGfPrgTYjtOJOuA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] mfd: lm3533: Convert to use OF bindings
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=VMPtWdPX c=1 sm=1 tr=0 ts=6a18596c cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
+ a=ir6pry_9mBCdi5gbn5AA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTI4MDE1MiBTYWx0ZWRfX9eIcCpQlNhID
+ Uh+XDqdfEV3TsnXLAN3Bigc5Z43GN8VscekqIvPDc9PMIv+t+kxJO7Ia7LL+QrhmZgwZea5Itt4
+ /iyvsDERZmeDdz5+jPWlxMZTY9/r+aagcReRxXcoenuzf5VHjNMojxTWMxXiJdV9c7It/r/Po2t
+ PzLJc3kkzY1LvPgcJptxB2p/dxsNedOoqV32mUjoqQmWbiqsay/knn2A/7ltGi+nY+RIVkjJsKz
+ gN3tNr8a7Ez/AKLg7N9RwwejsUtJJKwzeP7zD1Mw5aO4XSyVxh4XRyE1QwRfuwvLnXj/F0SNFKu
+ ebvyPXof3kk2tEP3wdl2C+vlASimqtsFmRHUNQvqnTMa47/t1KB/jwuzb1NydjOhd77qm0JcER+
+ aBp4FGt7ri5miwpGRo/LMrALn+SQkwILJ6SZ+ifD5g1fxyziHgmCjnuVDCg/cD2aTJYocLXnYEe
+ IebA5GAd/xFoUUVpmWQ==
+X-Proofpoint-GUID: sWueWq41dSoQ3L49FuacaOm95iAYQPNe
+X-Proofpoint-ORIG-GUID: sWueWq41dSoQ3L49FuacaOm95iAYQPNe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
+ definitions=2026-05-28_04,2026-05-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 suspectscore=0 adultscore=0 priorityscore=1501 impostorscore=0
+ malwarescore=0 phishscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2605210000 definitions=main-2605280152
 
-=D1=87=D1=82, 28 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 17:5=
-0 Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Thu, 28 May 2026 16:51:19 +0300
-> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
->
-> > Since there are no users of this driver via platform data, remove the
-> > platform data support and switch to using Device Tree bindings.
-> > Additionally, optimize functions used only by platform data.
->
->
-> At least the IIO ones would have made much the same amount of sense for
-> dt, just that they weren't having in the first place. I'd prefer that
-> as a precursor patch to make the rest much more readable.
->
+Support for LTC2378-20 and similar analog-to-digital converters.
 
-I can add you preferences into this commit, I don't mind.
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+---
+Change log v1 -> v2:
+- Added missing includes and sorted the include section.
+- Added waiting time required before reading back LTC2378 conversion data.
+- Fixed voltage regulator read error path.
+- Properly right-aligned sample data.
+- Dropped device ID table and simplified chip specific information keeping.
+- Using named device_id data initializers.
+- Use bool for output code type distinction.
+- Added scope for IIO_DEV_ACQUIRE_DIRECT_MODE usage.
 
-> >
-> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
->
-> I only looked in detail at the iio bit. A few changes requested.
->
-> > ---
-> >  drivers/iio/light/lm3533-als.c      |  95 ++++------
-> >  drivers/leds/leds-lm3533.c          |  51 ++++--
-> >  drivers/mfd/lm3533-core.c           | 268 ++++++++++------------------
-> >  drivers/video/backlight/lm3533_bl.c |  52 ++++--
-> >  include/linux/mfd/lm3533.h          |  51 +-----
-> >  5 files changed, 212 insertions(+), 305 deletions(-)
-> >
-> > diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-=
-als.c
-> > index 99f0b903018c..cbd337b73bd9 100644
-> > --- a/drivers/iio/light/lm3533-als.c
-> > +++ b/drivers/iio/light/lm3533-als.c
->
-> > @@ -714,59 +720,33 @@ static const struct attribute_group lm3533_als_at=
-tribute_group =3D {
-> >       .attrs =3D lm3533_als_attributes
-> >  };
-> >
-> > -static int lm3533_als_set_input_mode(struct lm3533_als *als, bool pwm_=
-mode)
-> > +static int lm3533_als_setup(struct lm3533_als *als)
-> >  {
-> > -     u8 mask =3D LM3533_ALS_INPUT_MODE_MASK;
-> > -     u8 val;
-> > +     struct device *dev =3D &als->pdev.dev;
-> >       int ret;
-> >
-> > -     if (pwm_mode)
-> > -             val =3D mask;     /* pwm input */
-> > -     else
-> > -             val =3D 0;        /* analog input */
-> > -
-> > -     ret =3D lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, val, mask=
-);
-> > -     if (ret) {
-> > -             dev_err(&als->pdev->dev, "failed to set input mode %d\n",
-> > -                                                             pwm_mode)=
-;
-> > -             return ret;
-> > -     }
-> > -
-> > -     return 0;
-> > -}
-> > -
-> > -static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
-> > -{
-> > -     int ret;
-> > -
-> > -     if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MA=
-X) {
-> > -             dev_err(&als->pdev->dev, "invalid resistor value\n");
-> > -             return -EINVAL;
-> > -     }
-> > -
-> > -     ret =3D lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT,=
- val);
-> > -     if (ret) {
-> > -             dev_err(&als->pdev->dev, "failed to set resistor\n");
-> > -             return ret;
-> > -     }
-> > +     device_property_read_u32(dev, "ti,resistor-value-ohm",
-> > +                              &als->r_select);
-> Does this have a default?  If so the pattern we've recently be setting on=
- for IIO
-> is
->         if (device_property_present(dev, "ti,resistor-value-ohm"))
->                 ret =3D device_property_read_u32();
->                 if (ret) //corrupt property in some fashion
->                         return ret;
->         } else {
->                 //set default
->         }
-> If there is no default then check it unconditionally.
+ MAINTAINERS               |   1 +
+ drivers/iio/adc/Kconfig   |  12 ++
+ drivers/iio/adc/Makefile  |   1 +
+ drivers/iio/adc/ltc2378.c | 342 ++++++++++++++++++++++++++++++++++++++
+ drivers/iio/adc/ltc2378.h |  47 ++++++
+ 5 files changed, 403 insertions(+)
+ create mode 100644 drivers/iio/adc/ltc2378.c
+ create mode 100644 drivers/iio/adc/ltc2378.h
 
-default value is LM3533_ALS_RESISTOR_MIN and if no property is present
-clamp will ensure that als->r_select will be set to
-LM3533_ALS_RESISTOR_MIN
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 43c691ba48cd..aed265ecabba 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15209,6 +15209,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
++F:	drivers/iio/adc/ltc2378*
+ 
+ LTC2664 IIO DAC DRIVER
+ M:	Michael Hennerich <michael.hennerich@analog.com>
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8550917226a1..70fec8e3e891 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -939,6 +939,18 @@ config LTC2309
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called ltc2309.
+ 
++config LTC2378
++	tristate "Analog Devices LTC2378 ADC driver"
++	depends on SPI
++	depends on GPIOLIB || PWM
++	select IIO_BUFFER
++	help
++	  Say yes here to build support for Analog Devices LTC2378-20 and
++	  similar analog to digital converters.
++
++	  This driver can also be built as a module. If so, the module will
++	  be called ltc2378.
++
+ config LTC2471
+ 	tristate "Linear Technology LTC2471 and LTC2473 ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 707dd708912f..1814fb78dde3 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -81,6 +81,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+ obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+ obj-$(CONFIG_LTC2309) += ltc2309.o
++obj-$(CONFIG_LTC2378) += ltc2378.o
+ obj-$(CONFIG_LTC2471) += ltc2471.o
+ obj-$(CONFIG_LTC2485) += ltc2485.o
+ obj-$(CONFIG_LTC2496) += ltc2496.o ltc2497-core.o
+diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
+new file mode 100644
+index 000000000000..bdff98157979
+--- /dev/null
++++ b/drivers/iio/adc/ltc2378.c
+@@ -0,0 +1,342 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Analog Devices LTC2378 ADC series driver
++ *
++ * Copyright (C) 2026 Analog Devices Inc.
++ * Author: Ioan-Daniel Pop <pop.ioan-daniel@analog.com>
++ * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
++ */
++
++#include <linux/bitops.h>
++#include <linux/bits.h>
++#include <linux/cleanup.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++#include <linux/types.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/types.h>
++
++#include "ltc2378.h"
++
++static const struct ltc2378_chip_info ltc2338_18_chip_info = {
++	.name = "ltc2338-18",
++	.resolution = 18,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2364_16_chip_info = {
++	.name = "ltc2364-16",
++	.resolution = 16,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2364_18_chip_info = {
++	.name = "ltc2364-18",
++	.resolution = 18,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2367_16_chip_info = {
++	.name = "ltc2367-16",
++	.resolution = 16,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2367_18_chip_info = {
++	.name = "ltc2367-18",
++	.resolution = 18,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2368_16_chip_info = {
++	.name = "ltc2368-16",
++	.resolution = 16,
++	.twos_comp = false,
++
++};
++
++static const struct ltc2378_chip_info ltc2368_18_chip_info = {
++	.name = "ltc2368-18",
++	.resolution = 18,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2369_18_chip_info = {
++	.name = "ltc2369-18",
++	.resolution = 18,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2370_16_chip_info = {
++	.name = "ltc2370-16",
++	.resolution = 16,
++	.twos_comp = false,
++};
++
++static const struct ltc2378_chip_info ltc2376_16_chip_info = {
++	.name = "ltc2376-16",
++	.resolution = 16,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2376_18_chip_info = {
++	.name = "ltc2376-18",
++	.resolution = 18,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2376_20_chip_info = {
++	.name = "ltc2376-20",
++	.resolution = 20,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2377_16_chip_info = {
++	.name = "ltc2377-16",
++	.resolution = 16,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2377_18_chip_info = {
++	.name = "ltc2377-18",
++	.resolution = 18,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2377_20_chip_info = {
++	.name = "ltc2377-20",
++	.resolution = 20,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2378_16_chip_info = {
++	.name = "ltc2378-16",
++	.resolution = 16,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2378_18_chip_info = {
++	.name = "ltc2378-18",
++	.resolution = 18,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2378_20_chip_info = {
++	.name = "ltc2378-20",
++	.resolution = 20,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2379_18_chip_info = {
++	.name = "ltc2379-18",
++	.resolution = 18,
++	.twos_comp = true,
++};
++
++static const struct ltc2378_chip_info ltc2380_16_chip_info = {
++	.name = "ltc2380-16",
++	.resolution = 16,
++	.twos_comp = true,
++};
++
++static int ltc2378_convert_and_acquire(struct ltc2378_state *st)
++{
++	int ret;
++
++	/* Cause a rising edge of CNV to initiate a new ADC conversion */
++	gpiod_set_value_cansleep(st->cnv_gpio, 1);
++	fsleep(4);
++	ret = spi_sync_transfer(st->spi, &st->xfer, 1);
++	gpiod_set_value_cansleep(st->cnv_gpio, 0);
++
++	return ret;
++}
++
++static int ltc2378_channel_single_read(const struct iio_chan_spec *chan,
++				       struct ltc2378_state *st, int *val)
++{
++	const struct iio_scan_type *scan_type = &chan->scan_type;
++	u32 sample;
++	int ret;
++
++	ret = ltc2378_convert_and_acquire(st);
++	if (ret)
++		return ret;
++
++	if (scan_type->realbits > 16)
++		sample = st->scan.data.sample_buf32;
++	else
++		sample = st->scan.data.sample_buf16;
++
++	if (scan_type->format == IIO_SCAN_FORMAT_SIGNED_INT)
++		*val = sign_extend32(sample, scan_type->realbits - 1);
++	else
++		*val = sample;
++
++	return 0;
++}
++
++static int ltc2378_read_raw(struct iio_dev *indio_dev,
++			    const struct iio_chan_spec *chan,
++			int *val, int *val2, long info)
++{
++	struct ltc2378_state *st = iio_priv(indio_dev);
++	int ret;
++
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++		if (IIO_DEV_ACQUIRE_FAILED(claim))
++			return -EBUSY;
++
++		ret = ltc2378_channel_single_read(chan, st, val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = st->ref_uV / MILLI;
++		/*
++		 * For all LTC2378-like devices, the amount of bits that express
++		 * voltage magnitude depend on the output code format:
++		 * - straight binary: All precision/resolution bits are used.
++		 * - 2's complement: One of the precision bits is used for sign.
++		 */
++		if (st->info->twos_comp)
++			*val2 = st->info->resolution - 1;
++		else
++			*val2 = st->info->resolution;
++
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info ltc2378_iio_info = {
++	.read_raw = &ltc2378_read_raw,
++};
++
++static int ltc2378_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	unsigned int num_iio_chans = 1;
++	struct iio_dev *indio_dev;
++	struct ltc2378_state *st;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	st->spi = spi;
++
++	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read ref regulator\n");
++
++	st->ref_uV = ret;
++	st->info = spi_get_device_match_data(spi);
++	if (!st->info)
++		return -EINVAL;
++
++	indio_dev->name = st->info->name;
++	indio_dev->info = &ltc2378_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	st->cnv_gpio = devm_gpiod_get_optional(dev, "cnv", GPIOD_OUT_LOW);
++	if (st->cnv_gpio && IS_ERR(st->cnv_gpio))
++		return dev_err_probe(dev, PTR_ERR(st->cnv_gpio),
++				     "failed to get CNV GPIO");
++
++	st->chans[0].type = IIO_VOLTAGE;
++	st->chans[0].info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++					  BIT(IIO_CHAN_INFO_SCALE);
++	st->chans[0].scan_type.format = st->info->twos_comp ? IIO_SCAN_FORMAT_SIGNED_INT :
++							      IIO_SCAN_FORMAT_UNSIGNED_INT;
++	st->chans[0].scan_type.realbits = st->info->resolution;
++	st->chans[0].scan_type.storagebits = st->info->resolution > 16 ? 32 : 16;
++
++	st->xfer.rx_buf = &st->scan.data;
++	st->xfer.len = BITS_TO_BYTES(st->chans[0].scan_type.storagebits);
++	st->xfer.bits_per_word = st->info->resolution > 16 ? 32 : 16;
++
++	indio_dev->channels = st->chans;
++	indio_dev->num_channels = num_iio_chans;
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
++}
++
++static const struct of_device_id ltc2378_of_match[] = {
++	{ .compatible = "adi,ltc2338-18", .data = &ltc2338_18_chip_info },
++	{ .compatible = "adi,ltc2364-16", .data = &ltc2364_16_chip_info },
++	{ .compatible = "adi,ltc2364-18", .data = &ltc2364_18_chip_info },
++	{ .compatible = "adi,ltc2367-16", .data = &ltc2367_16_chip_info },
++	{ .compatible = "adi,ltc2367-18", .data = &ltc2367_18_chip_info },
++	{ .compatible = "adi,ltc2368-16", .data = &ltc2368_16_chip_info },
++	{ .compatible = "adi,ltc2368-18", .data = &ltc2368_18_chip_info },
++	{ .compatible = "adi,ltc2369-18", .data = &ltc2369_18_chip_info },
++	{ .compatible = "adi,ltc2370-16", .data = &ltc2370_16_chip_info },
++	{ .compatible = "adi,ltc2376-16", .data = &ltc2376_16_chip_info },
++	{ .compatible = "adi,ltc2376-18", .data = &ltc2376_18_chip_info },
++	{ .compatible = "adi,ltc2376-20", .data = &ltc2376_20_chip_info },
++	{ .compatible = "adi,ltc2377-16", .data = &ltc2377_16_chip_info },
++	{ .compatible = "adi,ltc2377-18", .data = &ltc2377_18_chip_info },
++	{ .compatible = "adi,ltc2377-20", .data = &ltc2377_20_chip_info },
++	{ .compatible = "adi,ltc2378-16", .data = &ltc2378_16_chip_info },
++	{ .compatible = "adi,ltc2378-18", .data = &ltc2378_18_chip_info },
++	{ .compatible = "adi,ltc2378-20", .data = &ltc2378_20_chip_info },
++	{ .compatible = "adi,ltc2379-18", .data = &ltc2379_18_chip_info },
++	{ .compatible = "adi,ltc2380-16", .data = &ltc2380_16_chip_info },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ltc2378_of_match);
++
++static const struct spi_device_id ltc2378_spi_id[] = {
++	{ .name = "ltc2338-18", .driver_data = (kernel_ulong_t)&ltc2338_18_chip_info },
++	{ .name = "ltc2364-16", .driver_data = (kernel_ulong_t)&ltc2364_16_chip_info },
++	{ .name = "ltc2364-18", .driver_data = (kernel_ulong_t)&ltc2364_18_chip_info },
++	{ .name = "ltc2367-16", .driver_data = (kernel_ulong_t)&ltc2367_16_chip_info },
++	{ .name = "ltc2367-18", .driver_data = (kernel_ulong_t)&ltc2367_18_chip_info },
++	{ .name = "ltc2368-16", .driver_data = (kernel_ulong_t)&ltc2368_16_chip_info },
++	{ .name = "ltc2368-18", .driver_data = (kernel_ulong_t)&ltc2368_18_chip_info },
++	{ .name = "ltc2369-18", .driver_data = (kernel_ulong_t)&ltc2369_18_chip_info },
++	{ .name = "ltc2370-16", .driver_data = (kernel_ulong_t)&ltc2370_16_chip_info },
++	{ .name = "ltc2376-16", .driver_data = (kernel_ulong_t)&ltc2376_16_chip_info },
++	{ .name = "ltc2376-18", .driver_data = (kernel_ulong_t)&ltc2376_18_chip_info },
++	{ .name = "ltc2376-20", .driver_data = (kernel_ulong_t)&ltc2376_20_chip_info },
++	{ .name = "ltc2377-16", .driver_data = (kernel_ulong_t)&ltc2377_16_chip_info },
++	{ .name = "ltc2377-18", .driver_data = (kernel_ulong_t)&ltc2377_18_chip_info },
++	{ .name = "ltc2377-20", .driver_data = (kernel_ulong_t)&ltc2377_20_chip_info },
++	{ .name = "ltc2378-16", .driver_data = (kernel_ulong_t)&ltc2378_16_chip_info },
++	{ .name = "ltc2378-18", .driver_data = (kernel_ulong_t)&ltc2378_18_chip_info },
++	{ .name = "ltc2378-20", .driver_data = (kernel_ulong_t)&ltc2378_20_chip_info },
++	{ .name = "ltc2379-18", .driver_data = (kernel_ulong_t)&ltc2379_18_chip_info },
++	{ .name = "ltc2380-16", .driver_data = (kernel_ulong_t)&ltc2380_16_chip_info },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ltc2378_spi_id);
++
++static struct spi_driver ltc2378_driver = {
++	.driver = {
++		.name = "ltc2378",
++		.of_match_table = ltc2378_of_match
++	},
++	.probe = ltc2378_probe,
++	.id_table = ltc2378_spi_id,
++};
++module_spi_driver(ltc2378_driver);
++
++MODULE_AUTHOR("Ioan-Daniel Pop <pop.ioan-daniel@analog.com>");
++MODULE_AUTHOR("Marcelo Schmitt <marcelo.schmitt@analog.com>");
++MODULE_DESCRIPTION("Analog Devices LTC2378 ADC series driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/adc/ltc2378.h b/drivers/iio/adc/ltc2378.h
+new file mode 100644
+index 000000000000..399e8f67cd0e
+--- /dev/null
++++ b/drivers/iio/adc/ltc2378.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Analog Devices LTC2378 and similar ADCs common definitions and properties
++ * Copyright (C) 2026 Analog Devices, Inc.
++ * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
++ */
++
++#ifndef __DRIVERS_IIO_ADC_LTC2378_H__
++#define __DRIVERS_IIO_ADC_LTC2378_H__
++
++#include <linux/iio/iio.h>
++#include <linux/spi/spi.h>
++#include <linux/types.h>
++#include <linux/units.h>
++
++#define LTC2378_TDSDOBUSYL_NS		5
++#define LTC2378_TBUSYLH_NS		13
++#define LTC2378_TCNV_HIGH_NS		20
++
++struct ltc2378_chip_info {
++	const char *name;
++	int resolution;
++	bool twos_comp; /* Output code is 2's complement or straight binary */
++};
++
++struct ltc2378_state {
++	const struct ltc2378_chip_info *info;
++	struct gpio_desc *cnv_gpio;
++	struct spi_device *spi;
++	struct spi_transfer xfer;
++	struct iio_chan_spec chans[2]; /* 1 physical chan + 1 timestamp chan */
++	int ref_uV;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	struct {
++		union {
++			u16 sample_buf16;
++			u32 sample_buf32;
++		} data;
++		aligned_s64 timestamp;
++	} scan __aligned(IIO_DMA_MINALIGN);
++};
++
++#endif /* __DRIVERS_IIO_ADC_LTC2378_H__ */
+-- 
+2.53.0
 
->
-> >
-> > -     return 0;
-> > -}
-> > +     als->r_select =3D clamp(als->r_select, LM3533_ALS_RESISTOR_MIN,
-> > +                           LM3533_ALS_RESISTOR_MAX);
-> > +     als->r_select =3D DIV_ROUND_UP(2 * MICRO, 10 * als->r_select);
-> >
-> > -static int lm3533_als_setup(struct lm3533_als *als,
-> > -                         const struct lm3533_als_platform_data *pdata)
-> > -{
-> > -     int ret;
-> > +     als->pwm_mode =3D device_property_read_bool(dev, "ti,pwm-mode");
-> >
-> > -     ret =3D lm3533_als_set_input_mode(als, pdata->pwm_mode);
-> > +     ret =3D lm3533_update(lm3533, LM3533_REG_ALS_CONF, als->pwm_mode =
-?
-> > +                         LM3533_ALS_INPUT_MODE_MASK : 0,
->
-> That's ugly.  Better as
->
->         ret =3D lm3533_update(lm3533, LM3533_REG_ALS_CONF,
->                             als->pwm_mode ? LM3533_ALS_INPUT_MODE_MASK : =
-0,
->
-
-Yes sure, just followed 80 char limit.
-
-> Though if there wasn't a layer hiding the regmap, it could just have been
->
->         ret =3D regmap_assign_bits(lm3533->regmap, LM3533_REG_ALS_CONF,
->                                  LM3533_ALS_INPUT_MODE_MASK, als->pwm_mod=
-e);;
->
-> which would have been nicer.
->
-> I'm not particularly keen on the swashing of the helpers being in a patch
-> that is about switching the binding type as feels largely unrelated.
-> Should really have been a precursor, easier to review patch.
->
-
-Removing of lm3533_update layer is not the scope of this patchset.
-
->
-> > +                         LM3533_ALS_INPUT_MODE_MASK);
-> >       if (ret)
-> > -             return ret;
-> > +             return dev_err_probe(dev, ret, "failed to set input mode =
-%d\n",
-> > +                                  als->pwm_mode);
-> >
-> >       /* ALS input is always high impedance in PWM-mode. */
-> > -     if (!pdata->pwm_mode) {
-> > -             ret =3D lm3533_als_set_resistor(als, pdata->r_select);
-> > +     if (!als->pwm_mode) {
-> > +             ret =3D lm3533_write(lm3533, LM3533_REG_ALS_RESISTOR_SELE=
-CT,
-> > +                                (u8)als->r_select);
->
-> Same applies here. Mostly an unrelated change as the only thing switching=
- that
-> is related to the patch is one parameter.
->
-
-Removing of lm3533_write layer is not the scope of this patchset.
-
-> >               if (ret)
-> > -                     return ret;
-> > +                     return dev_err_probe(dev, ret, "failed to set res=
-istor\n");
-> >       }
-> >
-> >       return 0;
->
-> > @@ -852,25 +825,28 @@ static int lm3533_als_probe(struct platform_devic=
-e *pdev)
-> >       indio_dev->channels =3D lm3533_als_channels;
-> >       indio_dev->num_channels =3D ARRAY_SIZE(lm3533_als_channels);
-> >       indio_dev->name =3D dev_name(&pdev->dev);
-> > -     iio_device_set_parent(indio_dev, pdev->dev.parent);
->
-> I'm not sure why this was there in the first place.  Hence not sure if it
-> is safe to remove.
->
-
-This is directly related to OF conversion. The iio_device_set_parent
-bound indio_dev to parent, and it causes problems with OF now since
-als output has its own node and binding it to parent if wrong. Same
-story for backlight and leds btw.
-
->
-> > diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
-> > index 45795f2a1042..d707d43d5526 100644
-> > --- a/drivers/leds/leds-lm3533.c
-> > +++ b/drivers/leds/leds-lm3533.c
->
-> >
-> >       led->cb.dev =3D led->cdev.dev;
-> >
-> > -     ret =3D lm3533_led_setup(led, pdata);
-> > +     device_property_read_u32(&pdev->dev, "led-max-microamp",
-> > +                              &led->max_current);
->
-> I'd prefer explicit setting of the default to be visible before this, or
-> the property_present pattern I mention in the IIO review above.
->
-
-clamp will ensure that led->max_current will be set to
-LM3533_LED_MAX_CURRENT_MIN regardless if it it present
-
-> > +     led->max_current =3D clamp(led->max_current, LM3533_LED_MAX_CURRE=
-NT_MIN,
-> > +                              LM3533_LED_MAX_CURRENT_MAX);
->
-> I didn't look any further (busy day!)
