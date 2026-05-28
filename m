@@ -1,45 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6302621E097;
-	Thu, 28 May 2026 14:31:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B19B93F39CA;
+	Thu, 28 May 2026 14:50:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779978697; cv=none; b=Wg/KhpMxhiZeCv1GUaRAN4n8m8ddOZPnov3rxAGJ4IG1MSqrpwJUSSBFxRxA/C2WuUQ9YhFGr5n+f/pvBjAiKajznBin+M8Qy8w6Ocx4oDXRSs4FAn3EWBuTu1d9R3SIrcesUvogQmZQt6TP24WnvGM0NPN3N7UGnmOX512c7+8=
+	t=1779979815; cv=none; b=anirymSJ44fFlLqzybnq/aBNonnN6ft85CFnVIXnxBCsb2aDKJc4BqhOAtBM1NENqOzZpXKQguHi34iF0i9zeUXxvK0KkblpseqHkSgK9XPG+38FFHOWmoqFTGwSsJ2AublTOG0dRmRHTQztPDJtzHVtiizJP31coftpuFesLTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779978697; c=relaxed/simple;
-	bh=Td1xJitxiDzzJJjDE5oddeOX21u+IW8VKtI0m5Za+tc=;
+	s=arc-20240116; t=1779979815; c=relaxed/simple;
+	bh=PFp3sO8hb+Eu6vwodvP5eqxXPknEtjKp9agdsSZ5+CU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=H285VBYwUFH7wPUUR9VrE0z9dv/gPN7m5ERMZIdSleayb5bp8WbegBwoI5yhY6naua++2z1petbdtDa0QOt3cVUl/Z2BCNBLi21dKUIbr8wggKYtAMRAeFPCt92/eRTwoTwMMLjl6BrxZE9c4x+XCX31ToD8j+D5QBzH1w5jZoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VVIa14dI; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rrxJ0Y1YcwR02jbHyQywggj6LcI+0Y8VAMyII+DHBgbM2PyxBAThNBgQLuvXeeh3cukpxIT7vMh9htRP3789pGDDMtZGps0ugdVfvtNizY2uHPGLae15Rd3eYLcWt3urcTHY2pKgW+Yksmf82E9+Da6coFCMJUcAYNek98fRfFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KY5/qWZ3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VVIa14dI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36D41F000E9;
-	Thu, 28 May 2026 14:31:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KY5/qWZ3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F33C21F000E9;
+	Thu, 28 May 2026 14:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779978695;
-	bh=FO62eDUGPK4apFj2VsqGTNxsf+/LmNvLwxs5aBAFjl4=;
+	s=k20260515; t=1779979813;
+	bh=NiItlBY7QOVrHd2Lg1eA5eBS6YeaFvRU04FpBU3GdhU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VVIa14dI+WA//zejpEFiygn92BJoNH+6nEilw708S86ieBDt4XTT520sd9f3KmGlO
-	 9lRV+O7YVZk/ntstWffYM/C8v5HFo7Xcf20L2X75IfcwBaLjFOn5Yzg8AWixqGFijm
-	 ZBV3IjvJ9MVLBXay1+3+9PqNdWBxVNo+qh5wEtB6rClZUkjgf+mP7FMsLvSwzsnesh
-	 E9u3EQIrlt3D1gZ0TX+kqRUSvRoPC2vTgzcMx3+tbpjpmGF65qedMe30FTAaytyjHo
-	 0hG47vqj9tWX+EKR4SUiVKqD/Xi4vTp0iEJ60TU4cvZyAKN83ME/ELKZ2boARcmbIo
-	 G2GlM8G8cZcYw==
-Date: Thu, 28 May 2026 15:31:26 +0100
+	b=KY5/qWZ3RyMqWExGi4AC93pZcwim6EYmS7SHr06t9dLMY/CHdNjrfybK2SZnhcZXV
+	 d906jL0Nr9kL4/Wk6b4kuXVnGMplWdmCxmh1jTXTqh+z4HIFJ8V2N7Y15TCKn/7vE2
+	 rh8ZqPUS8gimH7cjMIVSKEjnmdsWX/8mGkGr8Cojklc8q76Z4s3AP3dggqYxVrpGvb
+	 CxwiiLm5Jc4doO1J/SF/aDRa8zX+OqCySS0FWbUALqNHLkJ/M+UcLkvOE9ynAX5uKA
+	 X8pIic5YxjIuEhxX5jo74zQhPWKHVHZv8Jz3kTl6LPRGzqn6N5t3PlIcU82yywAHVP
+	 WGW+W/GiDYD4g==
+Date: Thu, 28 May 2026 15:50:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo
+ Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v2 7/7] MAINTAINERS: add Open Sensor Fusion IIO
- driver
-Message-ID: <20260528153126.7be7c765@jic23-huawei>
-In-Reply-To: <20260524085312.15369-8-kimjinseob88@gmail.com>
-References: <20260524085312.15369-1-kimjinseob88@gmail.com>
-	<20260524085312.15369-8-kimjinseob88@gmail.com>
+ Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
+ dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] mfd: lm3533: Convert to use OF bindings
+Message-ID: <20260528155001.2bcb7003@jic23-huawei>
+In-Reply-To: <20260528135123.103745-3-clamor95@gmail.com>
+References: <20260528135123.103745-1-clamor95@gmail.com>
+	<20260528135123.103745-3-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,39 +53,173 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 24 May 2026 17:53:12 +0900
-Jinseob Kim <kimjinseob88@gmail.com> wrote:
+On Thu, 28 May 2026 16:51:19 +0300
+Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> Add file patterns for the driver, binding, and protocol reference.
+> Since there are no users of this driver via platform data, remove the
+> platform data support and switch to using Device Tree bindings.
+> Additionally, optimize functions used only by platform data.
+
+
+At least the IIO ones would have made much the same amount of sense for
+dt, just that they weren't having in the first place. I'd prefer that
+as a precursor patch to make the rest much more readable.
+
 > 
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+
+I only looked in detail at the iio bit. A few changes requested.
+
 > ---
->  MAINTAINERS | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  drivers/iio/light/lm3533-als.c      |  95 ++++------
+>  drivers/leds/leds-lm3533.c          |  51 ++++--
+>  drivers/mfd/lm3533-core.c           | 268 ++++++++++------------------
+>  drivers/video/backlight/lm3533_bl.c |  52 ++++--
+>  include/linux/mfd/lm3533.h          |  51 +-----
+>  5 files changed, 212 insertions(+), 305 deletions(-)
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index c2c6d7927..9238701f4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19977,6 +19977,15 @@ F:	Documentation/networking/oa-tc6-framework.rst
->  F:	drivers/net/ethernet/oa_tc6.c
->  F:	include/linux/oa_tc6.h
+> diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+> index 99f0b903018c..cbd337b73bd9 100644
+> --- a/drivers/iio/light/lm3533-als.c
+> +++ b/drivers/iio/light/lm3533-als.c
+
+> @@ -714,59 +720,33 @@ static const struct attribute_group lm3533_als_attribute_group = {
+>  	.attrs = lm3533_als_attributes
+>  };
 >  
-> +OPEN SENSOR FUSION IIO DRIVER
-> +M:	Jinseob Kim <kimjinseob88@gmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +L:	devicetree@vger.kernel.org
-As noted, no need for lists. The appropriate catch all listings in 
-maintainers cover IIO and DT-bindings.
+> -static int lm3533_als_set_input_mode(struct lm3533_als *als, bool pwm_mode)
+> +static int lm3533_als_setup(struct lm3533_als *als)
+>  {
+> -	u8 mask = LM3533_ALS_INPUT_MODE_MASK;
+> -	u8 val;
+> +	struct device *dev = &als->pdev.dev;
+>  	int ret;
+>  
+> -	if (pwm_mode)
+> -		val = mask;	/* pwm input */
+> -	else
+> -		val = 0;	/* analog input */
+> -
+> -	ret = lm3533_update(als->lm3533, LM3533_REG_ALS_CONF, val, mask);
+> -	if (ret) {
+> -		dev_err(&als->pdev->dev, "failed to set input mode %d\n",
+> -								pwm_mode);
+> -		return ret;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static int lm3533_als_set_resistor(struct lm3533_als *als, u8 val)
+> -{
+> -	int ret;
+> -
+> -	if (val < LM3533_ALS_RESISTOR_MIN || val > LM3533_ALS_RESISTOR_MAX) {
+> -		dev_err(&als->pdev->dev, "invalid resistor value\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	ret = lm3533_write(als->lm3533, LM3533_REG_ALS_RESISTOR_SELECT, val);
+> -	if (ret) {
+> -		dev_err(&als->pdev->dev, "failed to set resistor\n");
+> -		return ret;
+> -	}
+> +	device_property_read_u32(dev, "ti,resistor-value-ohm",
+> +				 &als->r_select);
+Does this have a default?  If so the pattern we've recently be setting on for IIO
+is
+	if (device_property_present(dev, "ti,resistor-value-ohm"))
+		ret = device_property_read_u32();
+		if (ret) //corrupt property in some fashion
+			return ret;
+	} else {
+		//set default
+	}
+If there is no default then check it unconditionally.
 
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/imu/opensensorfusion,osf-uart.yaml
-Bring this in with the first file, then update as you add additional files.
+>  
+> -	return 0;
+> -}
+> +	als->r_select = clamp(als->r_select, LM3533_ALS_RESISTOR_MIN,
+> +			      LM3533_ALS_RESISTOR_MAX);
+> +	als->r_select = DIV_ROUND_UP(2 * MICRO, 10 * als->r_select);
+>  
+> -static int lm3533_als_setup(struct lm3533_als *als,
+> -			    const struct lm3533_als_platform_data *pdata)
+> -{
+> -	int ret;
+> +	als->pwm_mode = device_property_read_bool(dev, "ti,pwm-mode");
+>  
+> -	ret = lm3533_als_set_input_mode(als, pdata->pwm_mode);
+> +	ret = lm3533_update(lm3533, LM3533_REG_ALS_CONF, als->pwm_mode ?
+> +			    LM3533_ALS_INPUT_MODE_MASK : 0,
 
-> +F:	Documentation/iio/open-sensor-fusion-protocol-v0.rst
-> +F:	drivers/iio/opensensorfusion/
-> +
->  OPEN FIRMWARE AND FLATTENED DEVICE TREE
->  M:	Rob Herring <robh@kernel.org>
->  M:	Saravana Kannan <saravanak@kernel.org>
+That's ugly.  Better as
 
+	ret = lm3533_update(lm3533, LM3533_REG_ALS_CONF,
+			    als->pwm_mode ? LM3533_ALS_INPUT_MODE_MASK : 0,
+
+Though if there wasn't a layer hiding the regmap, it could just have been
+
+	ret = regmap_assign_bits(lm3533->regmap, LM3533_REG_ALS_CONF,
+				 LM3533_ALS_INPUT_MODE_MASK, als->pwm_mode);;
+
+which would have been nicer.
+
+I'm not particularly keen on the swashing of the helpers being in a patch
+that is about switching the binding type as feels largely unrelated.
+Should really have been a precursor, easier to review patch.
+
+
+> +			    LM3533_ALS_INPUT_MODE_MASK);
+>  	if (ret)
+> -		return ret;
+> +		return dev_err_probe(dev, ret, "failed to set input mode %d\n",
+> +				     als->pwm_mode);
+>  
+>  	/* ALS input is always high impedance in PWM-mode. */
+> -	if (!pdata->pwm_mode) {
+> -		ret = lm3533_als_set_resistor(als, pdata->r_select);
+> +	if (!als->pwm_mode) {
+> +		ret = lm3533_write(lm3533, LM3533_REG_ALS_RESISTOR_SELECT,
+> +				   (u8)als->r_select);
+
+Same applies here. Mostly an unrelated change as the only thing switching that
+is related to the patch is one parameter.
+
+>  		if (ret)
+> -			return ret;
+> +			return dev_err_probe(dev, ret, "failed to set resistor\n");
+>  	}
+>  
+>  	return 0;
+
+> @@ -852,25 +825,28 @@ static int lm3533_als_probe(struct platform_device *pdev)
+>  	indio_dev->channels = lm3533_als_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(lm3533_als_channels);
+>  	indio_dev->name = dev_name(&pdev->dev);
+> -	iio_device_set_parent(indio_dev, pdev->dev.parent);
+
+I'm not sure why this was there in the first place.  Hence not sure if it
+is safe to remove.
+
+
+> diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
+> index 45795f2a1042..d707d43d5526 100644
+> --- a/drivers/leds/leds-lm3533.c
+> +++ b/drivers/leds/leds-lm3533.c
+
+>  
+>  	led->cb.dev = led->cdev.dev;
+>  
+> -	ret = lm3533_led_setup(led, pdata);
+> +	device_property_read_u32(&pdev->dev, "led-max-microamp",
+> +				 &led->max_current);
+
+I'd prefer explicit setting of the default to be visible before this, or
+the property_present pattern I mention in the IIO review above.
+
+> +	led->max_current = clamp(led->max_current, LM3533_LED_MAX_CURRENT_MIN,
+> +				 LM3533_LED_MAX_CURRENT_MAX);
+
+I didn't look any further (busy day!)
