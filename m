@@ -1,219 +1,119 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF669317171;
-	Thu, 28 May 2026 14:06:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16E13278156;
+	Thu, 28 May 2026 14:09:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779977207; cv=none; b=Dr812knkaaJ43BQLnhMNhDODMTePWCnAIxlYGC/rxrX+nkBfb79HDwZ384A0I1NtjNpFseDuXp+Wo5fOsbXgvyrh7XBKYZk0Y/IJ6GFewsXBw6Ws2UppF4j8dXipnz47SqBPFok2DtGeij/N5YFoKvpPxvq+/uy/lQt9kJho3Zs=
+	t=1779977395; cv=none; b=LlszQGxyGZ+T4dGfQWQ93dr+vPbOmOaxfqd106zyu16ys6mJ7UZU3BJbqWqynyPcxfAwukrAkx5t8Ro1WXKNwXxQbeAWemT/YONYrNcPTxZw86AD2P65WgRPHTojhXA2sijGHcqf/w9bJSlj+Z1kbC0oZn1V0sM0azu4AFWBG1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779977207; c=relaxed/simple;
-	bh=PumwfX3ZSkSKAXww/WfwB8bOJ7+lpDsvlTayOnhJeU0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TDw2Kcs/WNSy47IaGOTxMKqm84UYKR6nH7A0zg8TAesl/5BurfvJGfNPIjQ9/8EkHt7OHF5nGpZMaIe5Uv97bXkSio6x7WdQwGaSUKxGWzn/uCxF8tlIHsxTXwV11ovoV5t5j96WhCGCbDQGAiayyyE5j4XxLF0V1Uf7S1H0C/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZLsrV9Yg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1779977395; c=relaxed/simple;
+	bh=Pr+jxz7BY35FXsRBBvKHNemKJtlVjF9l/QZ3A0n1eQI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WmEvegKv/BT8zuwSn3KvFc6H/St2UdUi8TLAwZIWhfnHwXGLyVd+77LlFq694d9bz4jPRBy60kmD6eUzFQF5X8tW6kna+KiY8gv+wJjrB/o721cZPW9svVAg+4ZblGUyt7XT/MgJggZ03zri1uiUyvxDPdr6ParYyL/qsUiexhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TsX3XjVH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZLsrV9Yg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F391F000E9;
-	Thu, 28 May 2026 14:06:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TsX3XjVH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44EAE1F000E9;
+	Thu, 28 May 2026 14:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779977205;
-	bh=RKvz/4EOqIVhSz/IJ4p06G8eVomZ5XVVmZ7JKCeU/1I=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZLsrV9YggTuXZNpn1NshPzPLAnvyndxAL5vPrrinh8KwJukW6nQSAN041PV0SdrPW
-	 eCcNfeq70QZ8KbLLICZXuLZUrFJA0kEerPC75p0LHdn93ZUR1O2BdS3p4vok58Es7D
-	 WTpa7tZbyMIIPqqn7xp+0NccxawIrHxn8Web3MkS7O/ZEyZKJ6RzfpKVq0LFSwi831
-	 ntonJIXh3JeeaWbmZpPmvZoPcEKs59NHR+QRVgiDh2srF1OYX0Sdi54y2DvrI6vL3M
-	 U2yvq3LUNzkUI5ZZ6ObgngPYFs/saQyYKm7i0/WGQH64Ey/GRJ4VQAlWRu5o9Owbnb
-	 Lg7a1qqmz4qjw==
-Date: Thu, 28 May 2026 15:06:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v2 5/7] iio: osf: add UART serdev transport
-Message-ID: <20260528150636.38d8e091@jic23-huawei>
-In-Reply-To: <20260524085312.15369-6-kimjinseob88@gmail.com>
-References: <20260524085312.15369-1-kimjinseob88@gmail.com>
-	<20260524085312.15369-6-kimjinseob88@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1779977393;
+	bh=u0uUf3f7uBNsnWsY36gNTsll6Uy0Yo12v5M+z1iDSco=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=TsX3XjVHE3tZoc6dR0sgaRdfEbz7ZgrS0yZg+pf6s7YMtCo5YuEutctv7p4JLdKdu
+	 2zlp0kDxNJV2q4QVz3idkm7DS68YyyUzIfSAKsm9hSXM9R7WJYnZeKc/zyYIXMpZLv
+	 XIJxEJP7Ixc3zisnBMBCVoIUprUdXqRwu2ownwXWs1d2XmRMurwQtDq5JB8JN0sryF
+	 kl01OEU12npK50xn27fqachkvBUsZnrw6+4l+hV7YfJNrLppGR5oz1MYRga6EZR9hO
+	 wgFJaN/acT4Xzz1fHUuoTVytYIRNbgmRWxVFCXxIoxHLrnPbNXIwyML1FzyJTJNgEq
+	 L5U5LYgItd9gg==
+Date: Thu, 28 May 2026 15:09:50 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: sashiko-reviews@lists.linux.dev,
+	Piyush Patle <piyushpatle228@gmail.com>, robh@kernel.org,
+	conor+dt@kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v10 04/11] dt-bindings: iio: adc: hx711: add HX710B
+ support
+Message-ID: <20260528-ample-ointment-3d90520304f9@spud>
+References: <20260525105127.180156-5-piyushpatle228@gmail.com>
+ <20260525111144.CA7E71F000E9@smtp.kernel.org>
+ <20260525-clanking-possum-4ba58b466854@spud>
+ <20260527184128.2f5f02e5@jic23-huawei>
+ <20260528-payphone-alto-870198753d50@spud>
+ <20260528140838.180844cd@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-
-On Sun, 24 May 2026 17:53:10 +0900
-Jinseob Kim <kimjinseob88@gmail.com> wrote:
-
-> Add the serdev receive path that feeds decoded OSF0 frames to the core.
-> 
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
-Various things inline.
-
-> diff --git a/drivers/iio/opensensorfusion/Kconfig b/drivers/iio/opensensorfusion/Kconfig
-> new file mode 100644
-> index 000000000..360f25b4f
-> --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/Kconfig
-> @@ -0,0 +1,15 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +
-> +config OPEN_SENSOR_FUSION
-> +	tristate "Open Sensor Fusion UART IIO driver"
-> +	depends on IIO
-> +	depends on SERIAL_DEV_BUS
-> +	select CRC32
-> +	help
-> +	  Build the Open Sensor Fusion UART receive path.
-> +
-> +	  The driver receives OSF0 frames over a serdev UART.
-> +	  Frames are decoded and validated before being passed to the
-> +	  driver core.
-> +	  This patch only adds the transport path.
-> +	  IIO device registration is added separately.
-
-Why is help text talking about a patch?
-
-> diff --git a/drivers/iio/opensensorfusion/osf_core.c b/drivers/iio/opensensorfusion/osf_core.c
-> new file mode 100644
-> index 000000000..c867b3158
-> --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/osf_core.c
-> @@ -0,0 +1,107 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +#include <linux/errno.h>
-> +#include <linux/string.h>
-> +#include <linux/types.h>
-> +
-> +#include "osf_core.h"
-> +#include "osf_protocol.h"
-> +
-> +#define OSF_RESERVED_MSG_FIRST		0x7f00
-> +#define OSF_RESERVED_MSG_LAST		0x7fff
-> +#define OSF_VENDOR_PRIVATE_FIRST	0x8000
-> +
-> +void osf_core_init(struct osf_device *osf, struct device *dev)
-> +{
-> +	memset(osf, 0, sizeof(*osf));
-
-You zero them memory before passing to this.  That seems like a sensible
-pattern in which case this memset is unneeded.
-
-> +	osf->dev = dev;
-> +}
-
-> +
-> +int osf_core_receive_frame(struct osf_device *osf, const u8 *buf, size_t len)
-> +{
-> +	struct osf_frame frame;
-> +	size_t frame_len;
-> +	int ret;
-> +
-> +	if (!osf || !buf)
-> +		return -EINVAL;
-
-If these can happen add a comment on why. If not remove them as overly cautious
-checking.
-
-> +
-> +	ret = osf_protocol_decode_frame(buf, len, &frame, &frame_len);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (frame_len != len)
-> +		return -EMSGSIZE;
-> +
-> +	switch (frame.message_type) {
-> +	case OSF_MSG_SENSOR_SAMPLE:
-> +		ret = osf_core_validate_sensor_sample(&frame);
-> +		break;
-> +	case OSF_MSG_DEVICE_STATUS:
-> +		ret = osf_core_validate_device_status(&frame);
-> +		break;
-> +	case OSF_MSG_CAPABILITY_REPORT:
-> +		ret = osf_core_validate_capability_report(&frame);
-
-Perhaps check ret in each of these and return early if set. Then we only
-do the shared path below on success.
-
-> +		break;
-> +	default:
-> +		if (frame.message_type >= OSF_RESERVED_MSG_FIRST &&
-> +		    frame.message_type <= OSF_RESERVED_MSG_LAST)
-> +			ret = 0;
-> +		else if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
-> +			ret = 0;
-> +		else
-> +			ret = -EOPNOTSUPP;
-
-Given there is nothing else to do on error, return -EOPNOTSUPP; perhaps.
-
-> +		break;
-> +	}
-> +
-> +	if (!ret)
-> +		osf->last_sequence = frame.sequence;
-> +
-> +	return ret;
-> +}
-
-> diff --git a/drivers/iio/opensensorfusion/osf_serdev.c b/drivers/iio/opensensorfusion/osf_serdev.c
-> new file mode 100644
-> index 000000000..f121089ed
-> --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/osf_serdev.c
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="2TlNsjHs/AwiJhpQ"
+Content-Disposition: inline
+In-Reply-To: <20260528140838.180844cd@jic23-huawei>
 
 
-> +
-> +static int osf_serdev_probe(struct serdev_device *serdev)
-> +{
-> +	struct osf_serdev *osf_uart;
-> +	unsigned int baudrate;
-> +	int ret;
-> +
-> +	osf_uart = devm_kzalloc(&serdev->dev, sizeof(*osf_uart), GFP_KERNEL);
-> +	if (!osf_uart)
-> +		return -ENOMEM;
-> +
-> +	osf_uart->serdev = serdev;
-> +	osf_core_init(&osf_uart->osf, &serdev->dev);
-> +	osf_stream_init(&osf_uart->stream, &osf_uart->osf);
-> +
-> +	serdev_device_set_drvdata(serdev, osf_uart);
-> +	serdev_device_set_client_ops(serdev, &osf_serdev_ops);
-> +
-> +	ret = serdev_device_open(serdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	baudrate = serdev_device_set_baudrate(serdev, OSF_SERDEV_BAUD);
-> +	if (baudrate != OSF_SERDEV_BAUD)
-> +		dev_warn(&serdev->dev, "requested %u baud, controller set %u\n",
-> +			 OSF_SERDEV_BAUD, baudrate);
-> +
-> +	serdev_device_set_flow_control(serdev, false);
-> +
-> +	return 0;
-> +}
-> +
-> +static void osf_serdev_remove(struct serdev_device *serdev)
-> +{
-> +	struct osf_serdev *osf_uart = serdev_device_get_drvdata(serdev);
-> +
-> +	serdev_device_close(serdev);
-> +	osf_stream_reset(&osf_uart->stream);
-> +	osf_core_unregister_iio(&osf_uart->osf);
+--2TlNsjHs/AwiJhpQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Given these don't match up with things in probe() please add some comments
-to explain what they are undoing.
+On Thu, May 28, 2026 at 02:08:38PM +0100, Jonathan Cameron wrote:
+> On Thu, 28 May 2026 09:54:39 +0100
+> Conor Dooley <conor@kernel.org> wrote:
+>=20
+> > On Wed, May 27, 2026 at 06:41:28PM +0100, Jonathan Cameron wrote:
+> > > On Mon, 25 May 2026 18:01:41 +0100
+> > > Conor Dooley <conor@kernel.org> wrote:
+> > >  =20
+> > > > Jonathan,
+> > > >=20
+> > > > Here's an example of the sort of stuff it complains about on every
+> > > > iteration.
+> > > >  =20
+> > > Thanks. +cc linux-iio@vger.kernel.org
+> > >  =20
+> > > > On Mon, May 25, 2026 at 11:11:44AM +0000, sashiko-bot@kernel.org wr=
+ote: =20
+> > > > > Thank you for your contribution! Sashiko AI review found 2 potent=
+ial issue(s) to consider:
+> > > > > - [Medium] The `dvdd-supply` property is utilized by the HX710B a=
+nd mentioned in the commit message, but it is not enforced as a required pr=
+operty for the new compatible or included in the example. =20
+> > > Yup. This stuff needs fixing.
+> > >  =20
+> > > > > - [Low] The `if` condition for the `avia,hx710b` compatible incor=
+rectly uses `const` instead of `contains: const`, causing schema validation=
+ to always fail for HX710B nodes. =20
+> > >=20
+> > > This one I'm not sure on. Is it right?  I tested by hacking
+> > > the example to have a supply it shouldn't and the schema validation f=
+ailed
+> > > as expected making me think this is a false positive.
+> > > I have zero natural feel for yaml so no idea :) =20
+> >=20
+> > It's not the common pattern, but it does work.
+> > IIRC the difference between it and "contains: const: ..." is that it do=
+esn't
+> > apply the condition when the compatible is used as a fallback.
+> >=20
+> Makes sense. Given we may have fallbacks in future, it would be
+> good to use contains version.
 
-> +}
+Or change it in the future when the user of the fallback arrives, since
+the binding will need to be modified anyway at that point. That's why
+I didn't ask for the change to be made.
 
+--2TlNsjHs/AwiJhpQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahhMqgAKCRB4tDGHoIJi
+0sXvAP92zvcRaUiEZg0HoRTjaMrwDAi1Y8ujeXAeOozyoBzanwD+JaUUoJPDMi8d
+7Y2GUDUXWWHmBFGcFVqTtFXqKAfPzwY=
+=pFhj
+-----END PGP SIGNATURE-----
+
+--2TlNsjHs/AwiJhpQ--
