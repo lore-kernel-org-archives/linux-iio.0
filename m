@@ -1,44 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E345EDDCD;
-	Thu, 28 May 2026 16:56:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13E772F7F13;
+	Thu, 28 May 2026 16:58:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779987362; cv=none; b=JDeoV/zJlLnDqxszqWwyeHOPriFgmWu/ThYE1i+vH3k60+mftSF/KGT9yMS1eUbbi//EsPs7V6VrWbMSND87cO9fDmkXfx9766FoH1pK/Fr1HUMA7uw8aqqdM9wskff0DApPZNuSopeoMnIPlXqC3LaA1i+gW22luji7IyUfB9o=
+	t=1779987499; cv=none; b=jIMRBxDADm7ey9bolvZDeZW8BG3vgwke7vPfZVS+kUqWsmbJF3BDHyIL5kFLmCWQGKRO/9v8JvkQ1mUPbaQGa+lVgY44l3Nz/jG2buPqRqYVrWNImxCMP1smTMN7s4e62vj7eO6VQdEMA7V4u96gpq1Q4i+elenbxHhLlhB1qDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779987362; c=relaxed/simple;
-	bh=hJ1n5xHzLhhjEFMWyc0czU8zgGQTD/DqQsMamSkzaLc=;
+	s=arc-20240116; t=1779987499; c=relaxed/simple;
+	bh=CV93Gs2E+7eZBdUXfjVjpaPPMzba/gMgpOXeOIaQgWY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XZ3NPGi6TRHuqTQWAfGvlM/9Fn+OAXkw5u+c54uYvW03Rg+SR7X00E01EXoeSFr53UU1lkK2gCAk65XeSyrQAEmjkfQm3jc8UwB32quF5gr+OdmJ7Da2ccLonXDBozZCSsSCOvLBlukV2f4gspWmlGxlH9SY8bPdk+OXBinXAiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S94GI6w8; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=dms8jsBPikmScJ+v6vK9E7M0LvR5kmKpdeQxOvMCrDSwCVqaZYxDO8P3tXChFRctw6/lGy+YwSPf4xMpNarCABQ//63S5N8boGW3WbNXVbTDm9T4NeNuYc0Fo2ZF7PWhY/F/723C/+dmXuV8pteE5dWTGlFMc5YD5jc7jmNecAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iu5qWQfC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S94GI6w8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2EF91F000E9;
-	Thu, 28 May 2026 16:55:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iu5qWQfC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E051F000E9;
+	Thu, 28 May 2026 16:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779987361;
-	bh=hJ1n5xHzLhhjEFMWyc0czU8zgGQTD/DqQsMamSkzaLc=;
+	s=k20260515; t=1779987497;
+	bh=CV93Gs2E+7eZBdUXfjVjpaPPMzba/gMgpOXeOIaQgWY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=S94GI6w8Ip5AhptrodQ668xnBOl6b7Sh7f5hjcCRdNAq6fRRAsst9ZCWaM7Yptr7s
-	 23UNC7KfhhCXNdetpUP1cWzJ+q/nOVgwoHpP1yPdwA30AskV0f5UcF/YMzUPiBVvTR
-	 YTfKJpN0d3pbUuRJC79ffM7tcii7/csrTC9prHdNzShte5+nEBPwTyVvlcMkqe7EpC
-	 7sawq5yE1QquDNic3RVUqxQuWbh+XyrxKJZ0LX+reR9baGSTju0VNOUMCoJBGTUTsM
-	 CekYRkoV79sIEInCQPl6macDXdywgdQgpTBNpiLBcbZaMNW7RcyTv3KoZWfpiv8ZZ/
-	 S+0Lw0t6DyOiA==
-Date: Thu, 28 May 2026 17:55:56 +0100
+	b=iu5qWQfCq8RVzoag/agzz6AaZ1ZM+KV0qvqExW8JUegyT4lL2Mm/gMZMDrXfxh4nI
+	 SgroGxpyHGslplr0SIoFCVZmpjRmUR20R/6VTu6gqJaktunb0R15UescY1y4vJGfLS
+	 GkODt4oyIBYhJb12s/iqvpm5wp93AzRCqghBI1u802bKmFb+jE+W15AXh9uDCLbLoi
+	 igI1+5CSJJu1pX5W0tBXZe9nLQNTCLtnTt2VnIfwU+SlqikIcLaslaEN+Fye32Q/SO
+	 AQL5/PcmwJkLj04EMESXRxOg3Jsz/QTVndHK4m/clVJbYSLPz4N5t+cxQmMxqSIaCA
+	 6VUFmya5Vnw7A==
+Date: Thu, 28 May 2026 17:58:12 +0100
 From: Conor Dooley <conor@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, pop.ioan-daniel@analog.com,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: adc: Add ltc2378
-Message-ID: <20260528-paycheck-prowling-9d7745222ae7@spud>
-References: <cover.1779976379.git.marcelo.schmitt@analog.com>
- <23971c3bb56d8635abe9cd36fd245412f672772a.1779976379.git.marcelo.schmitt@analog.com>
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>,
+	Prasad Bolisetty <pbolisetty@axiado.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: add Axiado AX3000/AX3005
+ SARADC
+Message-ID: <20260528-skirt-mahogany-426302fd462f@spud>
+References: <20260528-axiado-ax3000-ax3005-saradc-v1-0-345dd5f6608a@axiado.com>
+ <20260528-axiado-ax3000-ax3005-saradc-v1-1-345dd5f6608a@axiado.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,42 +51,41 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="GblWo1Um3hnwZ3yC"
+	protocol="application/pgp-signature"; boundary="glY1jcPOWoMvQi2Z"
 Content-Disposition: inline
-In-Reply-To: <23971c3bb56d8635abe9cd36fd245412f672772a.1779976379.git.marcelo.schmitt@analog.com>
+In-Reply-To: <20260528-axiado-ax3000-ax3005-saradc-v1-1-345dd5f6608a@axiado.com>
 
 
---GblWo1Um3hnwZ3yC
+--glY1jcPOWoMvQi2Z
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 28, 2026 at 12:03:16PM -0300, Marcelo Schmitt wrote:
-> Document how to describe LTC2378-20 and similar ADCs in device tree.
+On Thu, May 28, 2026 at 01:10:23AM -0700, Petar Stepanovic wrote:
+> The Axiado AX3000 and AX3005 SoCs include a 10-bit SAR ADC controller.
+> AX3000 supports 16 input channels, while AX3005 supports 8 input
+> channels.
 >=20
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> ---
-> Change log v1 -> v2:
-> - Use unevaluatedProperties:false with spi-peripheral-props.yaml referenc=
-e/include.
+> Document the compatible strings, register region, clock, reference
+> voltage supply, and IIO channel cells.
+>=20
+> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
 
-> - Use unique compatibles (no fallbacks).
-
-Please note why these do not use fallbacks in your commit message.
-With that explanation,
+With Jonathan's correction:
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
 pw-bot: changes-requested
 
---GblWo1Um3hnwZ3yC
+
+--glY1jcPOWoMvQi2Z
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahhznAAKCRB4tDGHoIJi
-0j2BAP0U0STmvht8yI2Nh6bXJUuJRqpQpYoMz3apIBbstOnjOQD+PaLJDy4K55k+
-IMOip65wa5Jvg695ffUsGpq426H3JAU=
-=nNs1
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahh0JAAKCRB4tDGHoIJi
+0rtoAQCZC2aiWxZMTWZ3jWNXeFb7Fiudf+Cu7MtTU9w+jxaBMgD/SChuRYlmFBa5
+mP+H04la6HHMbSF+9EdYltYwv7m/LAI=
+=Ve2X
 -----END PGP SIGNATURE-----
 
---GblWo1Um3hnwZ3yC--
+--glY1jcPOWoMvQi2Z--
