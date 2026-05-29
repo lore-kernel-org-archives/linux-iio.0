@@ -1,142 +1,129 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09C433CCFA6
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 11:11:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92B6E3A2549
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 11:17:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.179
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780053122; cv=pass; b=EYgSKzsstBv86V//8v2e34vbEW/XyGrKB8fMIZSLRoF79hD6b3UMpHAxgpf8zB138woWlKmfza6AyGk+IkrUPCArZu0ZvWOGCglPBpP7j7pZ/pRA3OKKKIZU7p5BcLqZZdigZfUrpUjgR09WGC8J3Z9Jw8HtCDBp67j/dV97+xY=
+	t=1780053433; cv=pass; b=XmFKMxhUzjw6s5Hx7D0IoddTQ9/hAp1W94b5CKIWSGhEH3eCx7ZtKg+CQWaCg/jFO3GcPnIw7ZSLSogGmuf+r/nhWEqGkTI59qzTqf+U+lk9/zSK/C5URs9NcrZZsuK0JooKW+KNIemJbramZaZ269xR8+o4oxdKsjCXzZSpLvo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780053122; c=relaxed/simple;
-	bh=8wkglXjVU6JEBZlnTooRBiWGbdspQowCcNG7fybF35g=;
+	s=arc-20240116; t=1780053433; c=relaxed/simple;
+	bh=L3mfJ8b8ZEM+xhFAaS2hUBo/4NjpVXYO+a9psiGQoGo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DHd8KXSXSo5azJgA01Isc5/N+ElMVGv6WBGLPDwSOJDLZQr4UdaunEMLl4RW5YDZreFy/nkm/pSoB9P6OsdHdT79ArbztdK/q318l6PPO4mCdLerXldOKGZF9KA62vxQQqiUGKgQd1Lu/RWGZtg3Fpu21xgVkgQlD3300VEttD0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bBST1a/z; arc=pass smtp.client-ip=209.85.221.48
+	 To:Cc:Content-Type; b=hbavyIu5JmhcH29UJMW0ZNyDQGzjjnkcSWO1niGRI6irwcEm3i0Oml/+PmYkdZfynPO84ufFdARe4Z30Xz8B0628jw+0HcBMp0Mb3+RnEdY5vNwzJPyb8HQ7BEw8PjlCZXW5+DfvQFtpNlQTwu3uUVDga1WrGdmb66Lvc4P1SXo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PTj3gXwy; arc=pass smtp.client-ip=74.125.82.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bBST1a/z"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45eeba68948so1114952f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 04:11:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780053118; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PTj3gXwy"
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-304545f5206so10569585eec.0
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 04:17:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780053432; cv=none;
         d=google.com; s=arc-20240605;
-        b=bvqDWaJr5x6wS2XOy6tNTcFCG3jbWf4tprxogQs2S744+A+v4FY2P5wuD4VAJ6LchD
-         Inp/C1j9kTmjwJ3w5MuNNpM30HjegzjgOJkhftfl0PZUjT1sGlHFdA1O3dWDpsxPIoDF
-         E9hU64gzv5aWIjq24XrRTpCdnha86M3nSm22VQlMm0FQdi/cMo2w0FR1N8Tb2vuSnek+
-         ZcUC4irJwQUTEoG08c8eompV0MRx33yJmb4OVUahvYPKGYDDesO2LnPrXSd9Euu9SVYa
-         KQTv71xw+WwiYvJ3RVEBwzoqsFyvjueMZ2aFlH8ws2Q9E1HYW8+CLHrtxZ523U/nThfO
-         WEsA==
+        b=gAhjyfC6d6rCAdj/+gXh1pJyaHFvMH2FyATVm/YHTTPGSdHkEP8zg9pRIXtwV60dlP
+         ZiGOYDD7NpOzLGIlWvxxAG+SJ266aa8t357wuMplriJNL2/5TUSYtSPmfX2JljhM16jC
+         qT1TzVU4wwCtMO70jZmO6j3PDrVGPquztVC60YN3i9Bb3ea+ls4Lq7su8WSWR//ZMVKB
+         DDr8/AyVEdq2v8eYuHvzBNY4OVQaeW5rvUSMLDkyKvTWMR6Y19TJUnfMvPWGkfOwhWdg
+         /2JOmAw0H94BNT0OrqL67iEdrpP6aP/zijHi8fMD+eI6Q4hSKADj67mz4oYz6bBoh5/6
+         1GyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=6cP10sPviPffkTtbT4HFnT5v/q25UD6CviQVyqor3x0=;
-        fh=R3ctAtPbmXAC7jgwpRzNECOLEO7AoMS57daiUKjw5jE=;
-        b=U6MQg0n2gY2R933etsHcj1rjkJcauOhnfkns9fsBg5OuACkyIjZI02KUqoqHT17i9y
-         ZVDMv8s4u4cqNzWMZXdX7kS9jvX7buEzHm8mSmaEYEn5K7k3vDKFACqK7zvUyhqDYuBA
-         4qZNhzYXZfBtHbbwMli2JWCiE8Wg43i+k4F1o+3y14Sng+AHpLjHiTMFik7twqCbZpn4
-         ipeSz38Ic87elb2VY4x9CkzRs9u6fzPIZOhbnD6KgleIhkqAcE9moxprQssF/Jz0EudC
-         qxFi8Ry552G0FLS5FE9Xzj/If0Q9zi4xq/XvCj6ttE1B8XW9PFNh2sOJNEIv56ch6Y/k
-         jqow==;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=L3mfJ8b8ZEM+xhFAaS2hUBo/4NjpVXYO+a9psiGQoGo=;
+        fh=GNMKpZtkIJWInA5JWxa4WytT3noDEtn5qCNQ/mKontM=;
+        b=HbEifyaVQZu1WLe1CdbXDl9mkfHyEkugRPsc62LfWfFIv1JeKL5jib34wnsrU/5wwB
+         ynZllzgK/azor1i1NGPi1mbpAj9Z8ZFpak7bKA6O7yNZAre4/maVl6aO3zxxgxZmqjR0
+         2e3S9F+TY6p/giZK1Gy7sCV51Xu25WbkI1bdpEywQg4Z955TESRxJV7LpSARvAMQkzTs
+         HWPNB53LIG/3j/a/5rJslbOFV6mfST1Y2HBMuX0E7WNuo81A4wGI4bKWlM83ruRwfujK
+         GqLR61TfyCJvI05g3DY6sY/2IrBKYEEprUFeKUI7G3fBVo08itFhQZifCWxvLIHU0zl7
+         BI7g==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780053118; x=1780657918; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6cP10sPviPffkTtbT4HFnT5v/q25UD6CviQVyqor3x0=;
-        b=bBST1a/zuZ7R9sXHVwJ9sZ7xOrAjpa7ov8Tfx0LFK6Maq3WtPZN4nwzsvUlVNzOTic
-         7TjBFe4+j6l05XsgvHi+7JXbogKDsm9YGSdIe6GXQrgRBWOhcGSERLzY3PNjS3cLlIsa
-         UwxKYhLd+pn/Iv97UgnLko3adcLj9X+t9inckhlJo3Pbnnj7T1lepNwIYH2tbtI87RdA
-         Og7heIUz1cvSscMbols0iGqlfiXwXEH/wiyyauYI09fASGuCDvc5HUz4ubasU4SUXOrg
-         HUWuWnhokeIvHvHi78W/hyeX1P6ekZ6rmfXgDNOdoQ71Pm7qaNnOmRtE2dxUrxUG+AzA
-         di3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780053118; x=1780657918;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1780053432; x=1780658232; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6cP10sPviPffkTtbT4HFnT5v/q25UD6CviQVyqor3x0=;
-        b=gH24FFO/iy8ObrSvsJxTawjnahB8gFrXA0VOofhnLcji2JBxhFTbrQVygPl0wJ6Ggv
-         XQNH/XutxFhNV5p4fFezYOo/EY6pCjnLKHB5w87r+uJiiTlhGhJyq91GN4v6eVJ/HmfG
-         xBHp11LC4vVL9bpggxqqRk5adNzz7Nz5Rr7BzSyJSSwai1xDe0ujp/G2OXQTV+AI53Lp
-         6QMFLD9A5SrQtw3MmZoZCPRaeRnrfNcGbKd8zcBHOreWardp+HZWYEx8g+jkz0QZixi3
-         gTgOohTPAlzT+pReR2u2ICluUh8Q45AJJvkXZHRZDLEnjnZiTG6x42FLxf6uYsyz40YR
-         RhlQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+PfvJRGiWYlebtc1qCi2e84qOMeWtEQDQvWnK5gAxSJkNslnjdbAloo+vhW4lbjXAsQSZ75yf0H1w=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz0uONpKmeVmuj2jAuT10ygsK3WUGqNGnDVjd5Tc8YckAEDybyM
-	kaUEA4ckrPKKCMw48aOky0Xz5JFBCFTO2qzoDP7uEtyOstHRV5hc6vFFEN2a/YbgSyfezugZqC7
-	j6B8UCTiQYg/7XA0XpelxTa2mcRlVIs8=
-X-Gm-Gg: Acq92OG8h1RjtXjXYYYx58377A1zSkDI/MpG55N+5qm7ce9hyD4v3u3/qCjmjkzoCDE
-	o6IgtUjbBcaSVQ9/ux8twL3vo+eqNmqFPCCkxxxP8aj1XsRZCyyXiHGLQGq2liurF521ljKOy3R
-	R9/2HM3AubyNT9B78s9tthps49yCl0jC0TsCe768V5ub4cvHO3J0OKyo3LX8fGrwSuPhbEL3VKj
-	4qQk6/1xiR9vgOnZIRHzTaCZLfBPwkzh8znpo5N2pOKKjaAuvX3SCP9Gg/TYeXc9BVNDdXGMOMr
-	tf+JUXzWIC398/bvZHVoRw9dy4W3N8SjcMi0aHjfJCsivK5Jn5qOaeFjJAcrSMzLJgYbIU+gZf9
-	OViqB5u2AlK5Xel8pTswmtajwCHJq/r9DvoBpEzjTQsnBxdTW4krEL0+aC46cZASaczCzkLUBjl
-	LmVHy5tNAzE2v3DYdy
-X-Received: by 2002:adf:e5cc:0:b0:45e:d3d4:c230 with SMTP id
- ffacd0b85a97d-45ef1460d52mr3439160f8f.38.1780053118206; Fri, 29 May 2026
- 04:11:58 -0700 (PDT)
+        bh=L3mfJ8b8ZEM+xhFAaS2hUBo/4NjpVXYO+a9psiGQoGo=;
+        b=PTj3gXwyVBSTT/HcISlafISe3FMEQr96CaFFu7eOrHtXClvmFwtyfUXLrFPNq1Szs6
+         4T15J8oeFmFgejfH0lV54qCPetLHJQco/9DSz2wKZeY3zWQLp7j7LRP67beQVIPGJceu
+         rG8UMKA9CCPlFr0DB9YF55wJ5Nx/+YlPajyUV0WSHWT1qWWgAKUooDL9Slj53w1On9wT
+         VLffTQKVJ89xrmmM2OYjqsPw1oTC8IEJ3zZqey9ZMHlc5g0zBM2LePCuR5PhGP7UCFST
+         GnBjdQKM4Pmo+Lb7UzoiwsoxZ2KFkdlhkdxA573e8QmV6ZuKevBQg9BMJNbKYRy9QFf/
+         QrVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780053432; x=1780658232;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=L3mfJ8b8ZEM+xhFAaS2hUBo/4NjpVXYO+a9psiGQoGo=;
+        b=r1jTGVJ8bhPXtf+zUG7Vcbc5Hi9GZ0JSdjDEwEw5sGsMZCqlBRBMAiGowltaPN6JxF
+         edqziOTUhhZXTB+WBdptGwe9eZWambCCaU4jeAIaN7joAeayErr3VC2m1yvYylcyQdUV
+         h8Po3xmx5beE20sauFeT8I+usX0xw+m7JRahqH0rnnbxEEsKx/hyuIMts1Vy60mKhR/H
+         xtwXPFHM2V9qKCgU38yrbScWIBVVSHS7RCsoOiPvY3m6xlL+lno9FNQ8i1Gi/GQVvwSV
+         wmEcF+ItCeKLltN21run6aPacKJybIdld1rszEBDi776w00XFpGlKG5+9HvO15sAK/+R
+         DKbQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9jdgrmj/rE8PBi8WmUU22QlDGoI8JzAgoUoAmreiFwlUnKhjIqNv0VPbzXHAI+czAesPvCdrfYTKA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyvmdgk17YTpK6/VzgeogF3WTm/a+mIhVHe3eIgCvbvtUGM3JW1
+	6P6IUu3HjO1gDPd6Gesp09wpFCZKdBfhWC6UbhUd2r77DP9ttbuz4lrVJTbu2VJF69XiUl6N1kX
+	Ys+HPOr4YbmnoVARmlUZGlp0TjYX4olc=
+X-Gm-Gg: Acq92OGBwWkJVWIu59MpMWPJQ3zitR5ru11BN+/8ptkObHQHBNNRGkYHunDV0cBk6lY
+	X76f0fBD6F4RGNnx8LtCDY83sEmqDhix1ujciWcN3DqWp2xJVLlrilF8EUTfZVOXItzkdncvAxK
+	SII+TsU7bPLHHvlQbmEWiW97KeztHacJsP98/XDLhbqN8wSsws3MZmtce4bopS8vkepiD7pjVhL
+	xr82e+i3CX7+wkbSDsIrD171+3KiNYXwS2v6OyaYavrxG36Y6o8QTJTSQrIWqtBgqqK0t+Glo/P
+	4kwwC2YTXZYIh+kvKAg=
+X-Received: by 2002:a05:7300:ac81:b0:2ea:c085:44b1 with SMTP id
+ 5a478bee46e88-304eb17ec82mr985940eec.19.1780053431705; Fri, 29 May 2026
+ 04:17:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1780050609.git.sozdayvek@gmail.com>
-In-Reply-To: <cover.1780050609.git.sozdayvek@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Fri, 29 May 2026 13:11:46 +0200
-X-Gm-Features: AVHnY4I2Ri-8CtBqR6HlFrrFv2C0tdAHR15azmryU_IGhYjAjW2UQ0fDsBs1MhQ
-Message-ID: <CALoEA-zdDO3zZdhLZZt+f89E5cwVH-dFVJoA+Ecs-W+ve3AyXA@mail.gmail.com>
-Subject: Re: [PATCH 0/4] iio: fix PM-enable leak on probe error path across 4 drivers
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260528135123.103745-1-clamor95@gmail.com> <20260528135123.103745-6-clamor95@gmail.com>
+ <ahl0La8OQHXAlV3m@aspen.lan>
+In-Reply-To: <ahl0La8OQHXAlV3m@aspen.lan>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Fri, 29 May 2026 14:17:00 +0300
+X-Gm-Features: AVHnY4LHdqQWkZI96KeyzyHPIcreHN1kHpCMC5cCziI3ntwRYA4WURCN1WE3agw
+Message-ID: <CAPVz0n0kpYBACOo=YyNk31KGwBEoyrf+dii8V6QY4iRCGd2PNQ@mail.gmail.com>
+Subject: Re: [PATCH v2 5/6] video: backlight: lm3533_bl: Set initial mapping
+ mode from DT
+To: Daniel Thompson <daniel@riscstar.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
+	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 29 May 2026 at 12:51, Stepan Ionichev <sozdayvek@gmail.com> wrote:
+=D0=BF=D1=82, 29 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 14:1=
+0 Daniel Thompson <daniel@riscstar.com> =D0=BF=D0=B8=D1=88=D0=B5:
 >
-> This series fixes a class of runtime PM enable_count leaks on probe error
-> paths across drivers/iio/.
+> On Thu, May 28, 2026 at 04:51:22PM +0300, Svyatoslav Ryhel wrote:
+> > Add support to obtain the initial mapping mode from DT instead of leavi=
+ng
+> > it unconfigured. Additionally, update the linear sysfs code, which uses=
+ a
+> > similar coding pattern.
 >
-> Each affected driver calls pm_runtime_enable() in probe and then a non-devm
-> registration function (typically iio_device_register()).  When the
-> registration fails the probe returns directly without calling
-> pm_runtime_disable(); on subsequent probe/rebind the runtime PM tracking
-> complains about an unbalanced enable.
+> Words like "additionally" in a patch description can be a sign the patch
+> should actually be two patches. In this case the patch would be a lot
+> easier to read if you cleaned up the linear sysfs code (patch N) and then
+> added the new DT logic (patch N+1).
 >
-> The fix is the same in each driver: replace pm_runtime_enable() with
-> devm_pm_runtime_enable() and drop the now-redundant pm_runtime_disable()
-> and pm_runtime_set_suspended() calls in the .remove() callback.  The devm
-> action runs after .remove() and handles the teardown.
->
-> drivers/iio/adc/ti-ads1015.c was posted as a standalone patch earlier:
-> https://lore.kernel.org/all/20260529101011.3030-1-sozdayvek@gmail.com/
->
-> A separate follow-up will cover four more drivers (apds9960, mma8452,
-> pa12203001, us5182d) where the same leak exists but the probe error
-> path needs a goto to the existing manual cleanup label rather than a
-> plain return.
->
-> Stepan Ionichev (4):
->   iio: light: isl29028: use devm_pm_runtime_enable() to fix probe error
->     path
->   iio: light: tsl2583: use devm_pm_runtime_enable() to fix probe error
->     path
->   iio: temperature: mlx90614: use devm_pm_runtime_enable() to fix probe
->     error path
->   iio: accel: bmi088-accel: use devm_pm_runtime_enable() to fix probe
->     error path
->
->  drivers/iio/accel/bmi088-accel-core.c | 6 +++---
->  drivers/iio/light/isl29028.c          | 7 +++----
->  drivers/iio/light/tsl2583.c           | 6 +++---
->  drivers/iio/temperature/mlx90614.c    | 6 +++---
 
-I guess something happened to your formatting, because all of the commit
-messages exceed the 72 character column length.
+I looked into this in reverse. My goal was to add DT logic I don't
+case how sysfs works. My code matched with what sysfs does I just
+included sysfs change as well. I might better drop sysfs changes
+entirely since with such pace this patchset will inflate from 6 to 15
+and beyond.
 
--- 
-Kind regards
-
-CJD
+>
+> Daniel.
