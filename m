@@ -1,79 +1,79 @@
-Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A88D6270EDF
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 12:49:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69AD923394B
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 12:51:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.175
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780058970; cv=pass; b=KNa/rEV4i18o427Uoa5eh3lAyJBEPhDDUpwZG6BMcpCKyJQoJJwyXuybl+jU2GGNLblLhGZQqlw4iyMpGEA435xqN9cGaERw37EUheJJnxmn2rObZcL2vGHuNMglkd/gPFoZTcjPvH+4jQ12BxP87xZxrHG/96kP8Tm/71Poa3o=
+	t=1780059080; cv=pass; b=l/90OGog19vLlwLAkgjCKAEsoL3vek4GuDERUENSTmM/09gLKdMPEniqsRfjRH2DQaFoJ+Vpa6bC+KjuzORFHwIhW1SDoTS28AfGmj/brBARDjWbZ+EJcAiv6HPipdX0BvRUfyzLMrRypBz26t2iOnwqpr0Yfu/oeLOgwHi5ZZI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780058970; c=relaxed/simple;
-	bh=wnAYEg9vOROpsL13TeQ9svG6rRxiCECbhZZHUY30t7o=;
+	s=arc-20240116; t=1780059080; c=relaxed/simple;
+	bh=ODkGxCw5SXtPHcQOjgdJU6FKSQ/m3pZ1pyOImUBC7zo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JqBVksTvWc38Lr7uVspnA2V0sU1VulIqJ+SCIISdlmOqPxWTqhDvqMdCfweZWicRcFL2nc0sL5zhLt/ImNpwfg1D9DKM3zRtsK4eO8m42pSywMT9/OmkdzfQwBSD2txzNg/dc3oXK+kpUvBFKXojXxTz6AH3YzU5y3Y9nSnm9ZQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sg8rYOj3; arc=pass smtp.client-ip=74.125.82.48
+	 To:Cc:Content-Type; b=Qi94OFkYcZjFmWIJdi1EkAnIxHSwStqeh4lWbgP00P0rtyOcFJODzed+7214wwbAe29820A/MOQZPVfgc6xYXl/qIUgtJiZaNm2eoqFP9gfqcrWtWgUgG/nvYS6F7EXBDE0KRZekgZEAQ5Su0QJvVzVbsIIE2nQL0jv9h4+UGvk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vj6DigeZ; arc=pass smtp.client-ip=74.125.82.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sg8rYOj3"
-Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1370417c01cso6514922c88.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 05:49:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780058967; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vj6DigeZ"
+Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-304cf518c9dso2954456eec.1
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 05:51:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780059078; cv=none;
         d=google.com; s=arc-20240605;
-        b=jCWo5h1N9iWj1lS7iPDZ33uOmmrxZcXUajNpjgIdc2Spg86cq8rC6NOHKqwI8Ac7p8
-         DIzQVqcqQPoNdj58Gxornk+uRF6a4ZouJHgFobl06D8DlwwvA3MUY6i+yk9UWTZl6usD
-         p6QVqcAG8yaHwhLSyKCg+SHMbsvkWEIlrssyGx1sO4ogUyXTBV8TPRk/iyW+isRE6eW3
-         loovnP7FG4bV4UZ4QCyjLjBBz0PpCBnzOGvmxNFK1WCxICSRaXgJPyGjP3kmpoBKAHKY
-         sWul38WctI4F7uKgO2/+CuUJlEQvav6/12XkpnJEXff1HZHTGmcL6WXhkOGojkyeTbwx
-         bXFA==
+        b=HPqeHGCk4+g4sE9fBuhvlSmkHO1BMmtzHXwVt+ihkXTGx2lLPabTsF+Gx3GjLu1SBV
+         MS5reY2XTd/PFMUqcUpiWpb+un2CPFealTQnR30OMIgAMt/5KTxo/XGQpv0Q23P4EGpA
+         wSaW5RyXBTDInHeBMw1jO9MSNG6V5z+trs+tCKE76YZp3KxuoH0Ldcu8TP8cbmT4WIzv
+         B6r5856L4AelZDD6TxAJGXtBS+LeINbWX6XnrOvmhWlTid/55l3yG82azX3X3GseLbFM
+         oDPhZ8AheFp+GgF4A9KLaM0nqY9dtAxBx/OdGtxxYesJh9AhEbdSUVaJmwt+7EhVxel/
+         FZSg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=b86HzbFDPFZFe6VT99TCPFl1ySb6jYj9OLb2aq8afX4=;
+        bh=ODkGxCw5SXtPHcQOjgdJU6FKSQ/m3pZ1pyOImUBC7zo=;
         fh=UBjF/oaYi4vC6OARkco+8hEEXBrCV+v5SUUTBWTLU8U=;
-        b=lRi86EMvPvTzxMyRqvYmvamEIJ9jBVaUErPSx1jJW/V2+1mL9+0dOlGgOjLHEXMxfn
-         dcKlCfN52SZxxw0qtFex8evpKVM26s7LdbXNMrbhnqJfc1WeCoYk40PJuLuFFOVymb2w
-         SpXkPz8KEyZZkETRrQ/qyrq6Z5Q9aioOX/HNtgZJpx414cRjeXuioLaxIb414/14vale
-         51QflHoNiO+rO/s+/zRtiVE/oweDPRcUWHGXT5u97CATasaNFBqMscmxG6ENhztfJ1Bn
-         QdAevKJccBwKuRwd1gw96KHa8Ri1BpBPtiMIdPaggW+nPJYJ2sVGsqYS1xFe2xFG7n0u
-         /kfQ==;
+        b=SCb423yXguivlTMnTpdUDf4tFvCT2gie6fnBWiYl7IttYm1ffQLtKRGfUgXq4pAG+c
+         Gw2Q6aJZnM2FkyftNciwlWHDnyt/hZX2i2o4ntahtxYrSn+Z3syRCBA/WyWixuIPWlHD
+         LoQ6X+oHKKdOqrx/rjGiFrEyjCZ9F178TePUhJHkFXbFqEIY4UsQyRjaTg1zq8yIXEl6
+         yUoSaJfMVfsPb6MaslyNuJ0Cib3hnMf3m95bP+npv2vNBNScUnVWr+7lKX4TIKffKXN/
+         f71qIXK6hIsNzcYLxf2U+py3mBigecxP6O9t8tBt/Wr9atkfYq/+CYaWHs6/ud/Iqo2m
+         EoDw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780058966; x=1780663766; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780059078; x=1780663878; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=b86HzbFDPFZFe6VT99TCPFl1ySb6jYj9OLb2aq8afX4=;
-        b=sg8rYOj3esxI8AT+SHKJhrBeTiVtEGTqr0UDLYmgI4VQbM3WCTfKG8j+G8G6ZaASZI
-         yQ6orClsbhlr7l13zoIUEsoYLlmHh3q0Ivwx1IdmbTY+ao9zTudN3vIHb59Js1NuJ8h2
-         VjkEVQMcN8rw7z8UmRjQHB5IcYAKF0npFOaGvG8LKMXUb7S+utGabmeFmwif6CtjvGou
-         GKeU79FQqmiau5KhhF29Nwg2QKxCdmkK2JBc6EiY03vCJ+oqVhwNMhwn3Rg/Z5vZ26K5
-         zTcckfTeAPCuJzXEAK6T70zIaDVuAlZ7pXOl+ZR/QUcutGz6LgomRApyqmhVoCKo1dg7
-         56AQ==
+        bh=ODkGxCw5SXtPHcQOjgdJU6FKSQ/m3pZ1pyOImUBC7zo=;
+        b=Vj6DigeZ4VYTLHSS0Ct8oI6PY7PEhHkPmSNBVaXxmkgyD0LpvFgbkfevU3di7JhBOR
+         bzZwZ+F1btjPbZz0/O3IT+Gv6ge5wL4Wxos1f7U5fwvhK+VeZSLY8HM865KLvkvvki9c
+         LIC152QURm7E0lVUcrs7IpVblyxiwg8VfI7PXNqLj8ANRpH2fcyybEARWnQ3gDDimb6f
+         7nEEQHWWY3QS+06QCms6pPBgzBHDoRx4BkgWUkMHsG/vHOlUg/9waKL0gNXUPT1aBQ7c
+         ccb8exeCXFi+UjFvXpmBb2fuWJQtN5BxLN7TW6Md3zWLoNX39wf1ryCXwpjQlqMCSPMh
+         2QDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780058967; x=1780663767;
+        d=1e100.net; s=20251104; t=1780059078; x=1780663878;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=b86HzbFDPFZFe6VT99TCPFl1ySb6jYj9OLb2aq8afX4=;
-        b=g6LKZ9WziXt2jCLI+BhRgYDKPPxjJDEFhNKnSMIF1YEjF2Qi/vz4+bO6XkiCaI1PG2
-         NDQ67UMEGLvP/XxlzwAlQ/nghCEP/ZWOeLiSCFwRbleAohPCGWbGo6Li94Iir0RaH8ZY
-         IPWgGyAoI10zjPVLMdwDOqqcU5APmLSfsce83RLwCJLv8KdGri4dd9YZIr368uETfEii
-         9T1KjRJMCaXKgrPs6Oy279qcvFVNKsqoKNX2Lw0JSQRxMDLSEtyCivbUvVBUmz7UFKLl
-         MqVJTlUWrw+JnzmoZiUxVpHevLVLpmtfcJg+tDOSKtgZzqFMmgNySiCO8fjalXCsYUL9
-         +Mlg==
-X-Gm-Message-State: AOJu0YxrCUQ6sKK/DI2PDSnyV/wRLPc7btdSOZg2Mrte8WShWCFtoqi8
-	JLcdD6Xs99YhsY3Tg/dpFqzv+2o8BGuM7XhU4ES+7cTuDnFTwLrgCaM+WDNurYXnfbEv/vj3lpV
-	wD9NTVXNCC2k/8QThdYKzLywAa7opRmsJSyAiB6rWqQ==
-X-Gm-Gg: Acq92OEPuanaqWpw0veqW0Uf8HwRuYh47SwZgyLMz3DmIheYkJC8XEAi2KREYGoE5WD
-	inBpYMj6PEqbFrdkj6Y7nJK/04j+MLRb6uitqOc5MppKQtbGXvjG83RGHhoinlIiM9iS54NmsgL
-	UOTC8DQ54zc38n/g9aMhHYys36FjVHGWV2k3Gs50+VE9h8b4Neg9cFDF8ylqdBPWOSFc0MTRq7t
-	K1S0y7hoQw+zMYhw5yfOa9FaEDdPBRRu/dJrSmrhLpfJ9hQy1dWB7xtBLDS0IZpVvJP+q4+LNG4
-	kmRnsF4l2uLNCBxwYK5C+gQMGNFkTCaYQGeX8n8kEJvHIkqqx/VqI2QRKZ/JfYTRitr3UGAZatB
-	jGVTwu19ZvNvDI31g
-X-Received: by 2002:a05:7022:ec86:b0:137:9ab:2cde with SMTP id
- a92af1059eb24-137af113ceemr1006345c88.32.1780058966526; Fri, 29 May 2026
- 05:49:26 -0700 (PDT)
+        bh=ODkGxCw5SXtPHcQOjgdJU6FKSQ/m3pZ1pyOImUBC7zo=;
+        b=M8c7eQzBtKpz3jrwNjrN9hHT5WNRq2d8k5N7NrifiwIteYF6A75MB6jmzaevGL7OYK
+         813HZ9wJirAr2mhSl+6D8X7wV0deSTk9OBr0XEbptj265+oPVSZNO6KXwKiewzh/fkyU
+         8z75CwQBvD2aCfhYe4pV2xWvnqdodzWkemjYalrrnjMbyvcQDxd10gNO2KRSsaaufgsH
+         oMk+AlrUmHjc+WUhsjsW/cohk3l+qWlWM2+kORNthFm5JzczThFtLDO2NbJeNKNXZzCw
+         LBdgGlcyjE10Z9PnvOcSIy0RQVG2SUqjiYiK9aVFqPhwgmPE790q3vdFRJe6h7/SfPyA
+         WEtQ==
+X-Gm-Message-State: AOJu0YzkANv/BA4pDHM2FmQRLFHULSG7+WWguk+tsKffoX1uFmwqMoy/
+	LinVANcBs99dcdg2Wf21Xcr7CUROB5rlsokA3BcCrgzObO+BmCEFC5DeuWYopG5U2fcqmOe5j3X
+	ZLQn3vGPBW9WwiybRaUFCa/s1cKPNm5w=
+X-Gm-Gg: Acq92OGoGm4eQTe+kk78Zp6V6bMRgsqUKiniYpEqEyd6i1OlGGjAmD5JEIfd+BlapJn
+	7vKtmUHyZkbWXb1bUnJNfzqvCjwmrpq+1ncvoueJ49/iMKloyBI0k+OjUW66V7rviEfjT8ru3FE
+	qBxdnPkZNJtM+wWOPsZ1TQy4P7dfjz26/I8IUlURJMrLgDgjjMA2e3HxvHhVc6+3OUMtbY8XF6t
+	li2U0lX1ZX6AJBhCetuC20nPf6RbU9YK40OMm8DNMSr/rC4XQxmy3k3RWZX/VvaBBwXhydt/ehH
+	v+X2UJHOHjXhXeILMz3H/5cQ/b07o0fbkjTxZt8ivGBRFrP6DgTCtKbEijwGDqavtdUJRtOzM6N
+	i8nNJ2w==
+X-Received: by 2002:a05:7300:bc0b:b0:2da:2ec2:64e5 with SMTP id
+ 5a478bee46e88-304eb17d833mr1328199eec.18.1780059078543; Fri, 29 May 2026
+ 05:51:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,13 +81,13 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260524085312.15369-1-kimjinseob88@gmail.com>
- <20260524085312.15369-7-kimjinseob88@gmail.com> <20260528153036.3fe67c85@jic23-huawei>
-In-Reply-To: <20260528153036.3fe67c85@jic23-huawei>
+ <20260524085312.15369-8-kimjinseob88@gmail.com> <20260528153126.7be7c765@jic23-huawei>
+In-Reply-To: <20260528153126.7be7c765@jic23-huawei>
 From: Kim Jinseob <kimjinseob88@gmail.com>
-Date: Fri, 29 May 2026 21:49:14 +0900
-X-Gm-Features: AVHnY4K-djBwKZm3kepGPNtrB_bDZtLs_aGW98E47Lo_OnDo0EpBY5G-6tD8ZSA
-Message-ID: <CALMSewL2dxWuq3BE+ni9pPPBichKM5v8QssDs5gQoGWxwHD-og@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 6/7] iio: osf: register IIO devices from capabilities
+Date: Fri, 29 May 2026 21:51:06 +0900
+X-Gm-Features: AVHnY4Ln9TX6I_0W0MRyaA3N1oy1elL0wOv-HXney8IDZR5wMdYVBqFAwE78op0
+Message-ID: <CALMSewL7RvTSet3DSk7cQ5Lqi+EDduUOSAVK=vZ5TKz65_9qyg@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 7/7] MAINTAINERS: add Open Sensor Fusion IIO driver
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -96,101 +96,23 @@ Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, May 28, 2026 at 11:30:00PM +0100, Jonathan Cameron wrote:
+On Thu, May 28, 2026 at 11:31:00PM +0100, Jonathan Cameron wrote:
 
-> Various things inline.
-
-Addressed in RFC v3.
-
-> Why?
-
-Addressed in the v3 patch split. The core/protocol/IIO changes were
-reworked so the includes match the code introduced in each patch
-
-> This sounds like it makes a duplicate.  Rename to _isduplicate() or something like that.
+> As noted, no need for lists. The appropriate catch all listings in
+> maintainers cover IIO and DT-bindings.
 
 Addressed in RFC v3.
 
-> Another place a designated intializer makes sense I think. See below for
-> other examples.
+I dropped the explicit linux-iio and devicetree list entries from the new
+MAINTAINERS section.
 
-Addressed in RFC v3 where it made the code clearer.
-
-> Maybe reorder so yo ucan use a designated initializer.
-> Technically it will zero the values before you then fill them, but the
-> code is a fair bit simpler.
-
-Addressed in RFC v3 where it made the code clearer.
-
-> I'd flip
->         if (!indio_dev)
->                 return 0; /* Nothing to do */
+> Bring this in with the first file, then update as you add additional files.
 
 Addressed in RFC v3.
 
-> Seems like these changes belong in the earlier patch? Can you refactor
-> that to avoid having to modify it here.
+I removed the standalone MAINTAINERS patch and folded the MAINTAINERS updates
+into the patches that add the corresponding files.
 
-Addressed in the v3 patch split.
-
-> I'd put the found block here rather than a goto. That simpler
-> flow is worth the cost of indent. You can also flip the condition
-> giving
-
-Addressed in RFC v3.
-
-> Some of each of these comes from an existing structure reflecting what we
-> read from the device, can we use that structure embedded her instead of having
-> to copy field by field?
-
-I reviewed this while preparing RFC v3. I kept the cached runtime state
-separate from the wire-format decode structures, but reduced the field-by-field
-copying where the decoded data did not need to be retained.
-
-> Neither device.h nor kernel.h should be included in a driver, unless you
-> are using one of the few definitions that need them. Typically there are more
-> focused include like dev_printk.h which should be used instead.
-
-Addressed in RFC v3. I removed broad includes that were not needed.
-linux/device.h
-remains only where device APIs are used.
-
-> Only seems likely to be used once. So why have an macro?
-> Maybe it is useful just to put it next to the others for visual comparison.
-
-Reviewed while preparing RFC v3. I kept the channel helper macros only where
-they improved consistency between the channel definitions.
-
-> 0 is a terminating entry so no trailing comma.
-
-Addressed in RFC v3.
-
-> If this isn't needed to silence a compiler or similar warning: we control
-> that value in the driver so should know if this can happen or not.
-> So probably not needed.
-
-Addressed in RFC v3. I removed unnecessary defensive checks for values the
-driver controls.
-
-> If you are unregistering something that is null something went wrong
-> probably.  Seems unlikely we need this defence.
-
-Addressed in RFC v3.
-
-> Then this can be done at declaration above.
-
-Addressed in RFC v3.
-
-> Add a comment on what the race is (I assume) that gets us here with that not set.
-
-Addressed in RFC v3. I added a short comment around the iio_buffer_enabled()
-case.
-
-I also addressed the Sashiko feedback for this patch in RFC v3 by fixing the
-IIO_BUFFER / IIO_KFIFO_BUF dependency handling, rejecting channel_count
-mismatches before pushing samples to IIO buffers, and adding locking around
-cached latest samples.
-
-Thanks,
+Thanks
 
 Jinseob
