@@ -1,79 +1,79 @@
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548153E1221
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 12:44:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 883AB21A453
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 12:47:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.174
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780058695; cv=pass; b=qzMxnipStjZ7eoLBDVCrxEleCUKEkffaYQ0yVzRTYc6j1OaPeRvPZkjsBHxYeOf8QWEslstELN5Ce90KU0KzWomNEIjT2xm7UgrIShsIwX33D4mutJxKzuTtYReq4bvEzacFvSuKZJKN9e06nbKIb+RSm5+3XXvcu3Bei9hAz/k=
+	t=1780058843; cv=pass; b=Ir/b7TmM8hi1NJNAhXzhdoUjB1nmsXAfbOBp9WQIRmodlhmb7WSzFP2YW8leSMTxk6TxUFL9OCMqNEQletMOA80VGwACmex1PpIfHGxsGwBgqbOo2/lPVDO/oNtPu2neATdiIr9gZI9RbpERUdPU5l9SvFZiR2xpSuihQhnYLxA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780058695; c=relaxed/simple;
-	bh=M4bTXOPZH9eLQiy6ZvaD+nc7ONjW9bp2mJRz7DeWHFc=;
+	s=arc-20240116; t=1780058843; c=relaxed/simple;
+	bh=gxNcfrriIjSv2ErPB2KszZ+tnSTwuzgtq1xME5V2rQM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZEPDBE8WiHE6cv8Sp8FFxyAYPAMfrfCUVlqyCAQUV8yCui28GBJoEN8QW/Ac2bOJ5f/Pc7crWHKfew0+9qSBJHMdaaUZ5Z02cZsXrpirK7mgafKEKTAJZ5xuAwtXrmGdHRaXYlueB8BTnDjI61mA0NGk7hL+Zjek430Go3CSwwo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C6nNkuBb; arc=pass smtp.client-ip=74.125.82.42
+	 To:Cc:Content-Type; b=pM3G5zBm8Iwsrc2joiUOs9B/RJZLDAmZxq3MbOqqtl3/qfsmFjrrAjq13t+wpOWJqeSMwm6NyE1JCO+AplYIgSdH0aYNSQNCl9G39ayYk8rD47T4rwxeAQ46Vi68/e0bF/DZen+JJiOflGl5mPLCkcWT046m8M145F0z7R3rUhU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R/5YKOQp; arc=pass smtp.client-ip=74.125.82.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C6nNkuBb"
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-132830d8281so1871677c88.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 05:44:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780058693; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R/5YKOQp"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-304d8e3bb72so428947eec.1
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 05:47:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780058842; cv=none;
         d=google.com; s=arc-20240605;
-        b=QOWlCzj2GQsaCoUsxDIBGTO8O0Zw6dn0bmED0F2SnEomKH6BzycOyGRkXISt+CkbCP
-         Abn+L3zGyGsqBc2BMQIDT5Ly6dbyAC8BxWGTLGcMPtYUH03igWE6zHUXbjeEsf3VKFqk
-         bU/gqrwWztgjSqI8f3yX4JMRQaQ/6rcKZqtlrYPx1msXKRPOu0geavpbd+VJjb8pdkHd
-         AA9WDdsHICYEPRmC4UZveKjTAAUbW9VthvJIQ+dmrctg3i1Ok2fbhDBHpY73tKZgMrnY
-         khTghtZ7HkH5Y78xueIYrasEoWzbpzo+TtCCsjr7w7U1/VKOdgvzqWyrD9ZHNcdklGpc
-         gNng==
+        b=jbx1HhoK7mGN9fPmrR/2PSOKPYY6ik3wAhhPTeoP4w6N60fAQX6nwjjZw4Alu2+0Gm
+         7bE30jtGI+2TUGHEZJKZr7f2m/5UL+rzBs9X8sjfAbW/kGlaPrC0uNT788CHTPGlDgwa
+         hZPF7EMjxt19MKEKMktGAejAV47zA1E31/bCpWIfsykCXvgaCUZG69APHLpRu/kzOe4c
+         QIjJS8PmlHfFUwawYH/fVe1rnwFkcUs4Xwai8SYbo+W8wvNWE4EhMLlOB58Y54O24RM+
+         NF4El2Ia4HPfCX6+MgeHDPvkRdgkNbXMecdZHiWL3aLxF6avzmfy24nMYq16vC/zaRsm
+         IUWQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=NNMtWPP10CT5p5rrDk2KTLCMwhU3X0sQZPLuXsdc9co=;
+        bh=kxd7pDN4r+x1pc20wnNZSk5uzpveedLJxkfd4XwHmSY=;
         fh=UBjF/oaYi4vC6OARkco+8hEEXBrCV+v5SUUTBWTLU8U=;
-        b=R4Pv6Z/s1FgdjxeWQYfmI9JCmSMWbuI9uNNJ8hdPICR+nt6r000l4v5y5XpbSs/Fjf
-         +ezPDWxi4bcYGUTsXneTJ4JQoM0wriEVf917NhfHHubS9pYTXIy11tSnC6+j6As9dsJL
-         40vj1UfSsG8YZXu1VgRPx6elAFW6mZBVHPRVkRFu4hWqt3ovDY+9+F0+eYfHSItJ4s/H
-         TOwUKHxsS1JkALndYeuPOUdnbUc/o/WmKYdphJqEPlRykxVK6nV/nN6DihFnH8Vn+pdC
-         k5K9pJl5kN5VBo1LkrzuOZvab2/kIZvQeO69su7mjbora6teLqPHL0ZF5D8XCEPcoMlZ
-         +PQA==;
+        b=aRG1TyaFhamTvAqSjznszWXbkQwP00TTrO2DLfTUaNQaF39N86uxq1x2MFEEiykacF
+         jO2RW1kZWLdOTQOXUMlsYaNZ5wDc5pD7l08O6z2Un5uKz9ayAbxJznp4JXBzqgrnF0z3
+         /9YbrXY1bZ4FVKvgZ8c2eg2hTYM66r3U9gc+AT+bIzv90x/Dcm4KEDPOP5XwlUvS8VV6
+         Q8Nmctp0ENAG6RMDqykqpNh4Wn9UBMxk9EiynMUhBQ6OG30nw02e8kofIjyGAYIAdDnL
+         gOPUQr8jud47fJW2T/H9s46JrJ/uxJ4/9ThtUyvfD+23dOkMWI6dPrsYzYn+NLymii7w
+         vEpg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780058693; x=1780663493; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780058842; x=1780663642; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NNMtWPP10CT5p5rrDk2KTLCMwhU3X0sQZPLuXsdc9co=;
-        b=C6nNkuBbslbrsGvvFCaBCHckOGzeMu8PSRHGKiNk9xpPufpCSSYdlrQs/DsstBuUNe
-         t8hUoECWnJK70gVXHR1dFI+TPJoOV3vsDQRrZxUIH7Kuj+k/LD8clZO4qvyWNIFpOquE
-         Pkg/4Q/0DZDkMX9SjY+IBlVgxVlqzGzngan5b5vCJ9e6oSvNQMg/OUEQ2enW9QpwCcxY
-         lGzUuBhezlVzPm6pigV9M19vnYx59SOkvZNVHMZW8tL+OWVr67Ow26MFb8+f0SO2xykR
-         tpF4A6BWQzC5E6XJ5C79ZKkhAPAtIBVBJrDLRYeLTfXpPT9vLehX2o0MuGZQMHYmdkhQ
-         h2Gg==
+        bh=kxd7pDN4r+x1pc20wnNZSk5uzpveedLJxkfd4XwHmSY=;
+        b=R/5YKOQpsW9pcJs4cZKhF2RpxbLFZbFV27A5WWjHHAcmURvyN1FQ/6Cm6dv//GrICP
+         iCkYDeXFR5uEDsA1BLuPbncwanrztBiPD/CuXO92m5msQZYZd9kKFAbwopRnmlGYKvsY
+         E2ZcPkmidNZw1YSnoWIxiuNXqpdyjYF3RZmzgRo4WYjGkSCp1gwmwYdIRU2MI1475vXW
+         y88IclEbFoW4+/cYnBXgeDeiQaDxx4pQNjCxWXUZ0GL9cFwcjbeuhbgS6TgRvqEE+bai
+         STpxk0So7ENoB5hDuOEASgEp+FnfJu4evTHGFIqjLcCVK68Xp+gIvuAayz6at+A9998s
+         /ubA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780058693; x=1780663493;
+        d=1e100.net; s=20251104; t=1780058842; x=1780663642;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NNMtWPP10CT5p5rrDk2KTLCMwhU3X0sQZPLuXsdc9co=;
-        b=WppsHBhL8lQkAhPOnHGtTbmnrxKh15Z5PwRTOaXplMvAg49Mo4iQQqVe0IIoojDY6D
-         I6igEwPjny6o91YeqUswEfn56dAyp2Gw0kdj4mRW6HWu1aj+IkpaMWbfMI98CuJbpx2p
-         CypDlvCGQxga9MHkNLG8F43EPb4zC13chijk56xWWklrrXqDJJXSAT+zuxuCzWAIYVSN
-         ycRgZMiemlNRS/xN5fdfyDHl5y3+1JNSl65nAxjy5ujdKjI1Ot9DXm4GAKk5fNFr6bU2
-         W0UbZJWhiPnhq2UA2UVjItgT2QiAER1eLjpfGGa7dqp8JuISOaf82riadfo5i5rcaBrw
-         Bykg==
-X-Gm-Message-State: AOJu0YyhHL0e7szkMYwczfSate40vni8N9/8ErXrDXeGec/3g9Pdm6NX
-	hhoJR1SmW6tr/JZBYJw7kvSq4FFLWdnmyjWFvRT2ClYRDe7czQbQZYO1r2aLqHTMF7bu0kzw/2g
-	5mUY57/+iUphawHIm6YdjZ0Vg7woQUis=
-X-Gm-Gg: Acq92OF3BDDgR8wUhM2pzheHqQDi+/znspeGo4UIK8PDXjLV73I/nbEZwTN16E7J+MZ
-	K9x4/N2NIVt0oZSK6Yk/CoEv/RWwqXSq0EtfRSasbXEBGEmrb2JTo0DaO5vBDs0P80F/HTifhiq
-	zu2ToGScD2FDLlLpeY7cUCCBI8KDH9kS2qhiIY1Qw9uI60AE9RnurZchmB02FnJ8NEprwvFceIN
-	kCRZHCmYcMlmCi/fz6i03iE+j8rYwKLT1bFvyN5WE6W1olEtXc9AKr2sGEyKutUGfG+VGN4ZDyu
-	o162uJ4t1aSuvR1Qei1QHAa09IdVIZyHx9tfFmFCQ0ghlHwkDsgc5W85KNlxB7DpCqpmjtDm1db
-	3jqgOYVGCH6sYEwX1
-X-Received: by 2002:a05:7300:1493:b0:304:e2a5:689e with SMTP id
- 5a478bee46e88-304eb0f1942mr1157086eec.2.1780058693522; Fri, 29 May 2026
- 05:44:53 -0700 (PDT)
+        bh=kxd7pDN4r+x1pc20wnNZSk5uzpveedLJxkfd4XwHmSY=;
+        b=B4IU3eQVIE98hBo7nlnXKU3eVLdrTaHZsm9UUz+1ugBd8qRWK4jqwqGrIyh7GWbipm
+         +Ypf5jXuQQX7NAtqI5CBQXnNhL5bDWwp1ChwwROrPRl1ei+MEWQ0xzHw4meFCtWtEMCs
+         /sx56fjTGXD4jsz2Y4mEy3A45tN4oA+Y4hsTZJvTlpTz9DlmKkwAvNNS8yRc+NSwhcT9
+         9kLhoA2cEgL/uF0hqkPjImpzovmsukjNjRLpzm7VWDcCS9JD+IQT4vl/Jc0CrH77vdkv
+         RIELUsw042eiJSi/VUOfTl5COmXMUTtp4oKR6JWv70n2oOwb7I7FcfXbZLqbiFim0YRc
+         SElg==
+X-Gm-Message-State: AOJu0YxU3tdjR/5CjxWFEY6zF/ej5OwFeNIsabk0nM+UTkw53V4P/9TV
+	/5VXFWUFUVMs4fUFYKZ0tAw3GFXg4Xtlh3pDPa1X/Iur2xf91VkK6z7W9t4y/qp0+dyRFKoKozN
+	494DF9mQvVO2aHlVUytlRp9KaB+1XWmI=
+X-Gm-Gg: Acq92OHo3+FceTZ8vdsTfqBNqS+9tz0XaczdCArCroIu4pk9YF68QKoOQy8196HMFWC
+	0zQ2IL2EW3/qRUskxijo2u+JaQmj0lMKsNkCduPmaHxpBIFap8nyqqW9leBCNxuZm6+OAV2mJjH
+	tqw9JOkNRo8QxiYZL5wTr9UpaqKg3L9wHRLzXuGMzm1Cjyo8VfBv/WlihtFOhRe8MyhX7lqFKN9
+	RRF+5jEN5hrrKBkh8bJNv9NChtcxuZeDpPlqx2Ue6vk+l/f5ADKHrdxQnIam8/93bjxoOHVqu9W
+	R50+CFVIzsQzBPZsm977dHT9xH/jysdPbE6b0wlIfA4Ppl8AGqCgjVlNqg7fsSum7KtIrYWt94e
+	Mpe34jw==
+X-Received: by 2002:a05:7301:2b08:b0:304:e7ca:4b62 with SMTP id
+ 5a478bee46e88-304eb106cddmr1229257eec.3.1780058841699; Fri, 29 May 2026
+ 05:47:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,13 +81,13 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260524085312.15369-1-kimjinseob88@gmail.com>
- <20260524085312.15369-5-kimjinseob88@gmail.com> <20260528145840.0329992c@jic23-huawei>
-In-Reply-To: <20260528145840.0329992c@jic23-huawei>
+ <20260524085312.15369-6-kimjinseob88@gmail.com> <20260528150636.38d8e091@jic23-huawei>
+In-Reply-To: <20260528150636.38d8e091@jic23-huawei>
 From: Kim Jinseob <kimjinseob88@gmail.com>
-Date: Fri, 29 May 2026 21:44:41 +0900
-X-Gm-Features: AVHnY4IcyOp5CZC6i3jxkpOuG2fXWQ5C6S5HEB1G4kbbTEN36elytsTpf7dHQ5o
-Message-ID: <CALMSewJnv25V6ivT5RJmUvGVijpOK8YK+6-dcn_RDLUPx8eDsA@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 4/7] iio: osf: add stream parser
+Date: Fri, 29 May 2026 21:47:09 +0900
+X-Gm-Features: AVHnY4IGxGowofBHcDiPlgbcncVC-q3E32X35d6DaNb4JwsYtVV5e3x015JdIr0
+Message-ID: <CALMSewK0pL7hgRQsgn82zb0Y27RiQVxY+oj7nqRDQZ=b8cOPzA@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 5/7] iio: osf: add UART serdev transport
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -96,51 +96,43 @@ Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
->
-> On Thu, May 28, 2026 at 10:58:00PM +0100, Jonathan Cameron wrote:
-> > Various minor things inline.
->
-> Addressed in RFC v3.
->
-> I applied the stream parser cleanups in the new series.
->
-> >         for (size_t i = 0; i < stream->len; i++)
-> >                 match_len = min(stream->len - i, OSF_STREAM_MAGIC_LEN);
->
-> Addressed in RFC v3.
->
-> >                 if (get_unaligned_le16(stream->buf + 6) != OSF_FRAME_HEADER_LEN) {
-> >
-> > is fine. We are a bit flexible on line length when it helps readability.
->
-> Addressed in RFC v3 where it improved readability.
->
-> > As in previous patch, how do we get here with any of those being possible?
-> > The last one might make sense as it's about coupling between parameters, but
-> > I'm not seeing the first two as useful unless you clear stream->osf in remove
-> > path or similar.  If you do maybe a comment.
->
-> Addressed in RFC v3. I removed the unnecessary internal-only checks and kept
-> the boundary check for the invalid buffer/length relationship.
->
-> > No way for first erro to be set, so same as:
-> >    return osf_stream_process(stream);
-> >
-> > If this changes later in this patch series then fine to keep it like this.
->
-> Addressed in RFC v3.
->
-> >    copy_len = min(len, space);
->
-> Addressed in RFC v3.
->
-> I also reviewed the Sashiko feedback for this patch while preparing RFC v3.
-> Normal chunked reception is no longer counted as an error-style partial frame
-> condition, and the stream/core path was kept consistent with the revised
-> validation boundary used in the rest of the series.
->
-> Thanks,
+On Thu, May 28, 2026 at 11:06:00PM +0100, Jonathan Cameron wrote:
 
+> Various things inline.
 
->
-> Jinseob
+Addressed in RFC v3.
+
+> Why is help text talking about a patch?
+
+Addressed in RFC v3. I updated the Kconfig help text so it describes the
+driver rather than the patch split.
+
+> You zero them memory before passing to this.  That seems like a sensible
+> pattern in which case this memset is unneeded.
+
+Addressed in RFC v3. The unnecessary memset in osf_core_init() was removed.
+
+> If these can happen add a comment on why. If not remove them as overly cautious
+> checking.
+
+Addressed in RFC v3. I removed the internal-only NULL checks in the core
+receive path while keeping the protocol and stream boundary checks.
+
+> Perhaps check ret in each of these and return early if set. Then we only
+> do the shared path below on success.
+
+Addressed in RFC v3. The receive path now uses a simpler early-return style.
+
+> Given there is nothing else to do on error, return -EOPNOTSUPP; perhaps.
+
+Addressed in RFC v3.
+
+> Given these don't match up with things in probe() please add some comments
+> to explain what they are undoing.
+
+Addressed in RFC v3. I added a short remove-path ordering comment before the
+serdev close/reset/unregister sequence.
+
+Thanks
+
+Jinseob
