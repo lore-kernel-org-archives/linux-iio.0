@@ -1,136 +1,150 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F51A315D29;
-	Fri, 29 May 2026 13:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7CE3128B2;
+	Fri, 29 May 2026 13:10:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780060224; cv=none; b=PSBT2NNT/MBDFxgr8zOkeyXJLJojWt5s8ufrUzWq/pvmJQMj8ALjlTwI6dQ89q2A6lQMdqT272+s598V+HuBPJVIDhpjlWOzALN9fTgSyOyTMJn8bTWPHKCUeUs/NF6muoNrCfmj77egtuFBUrZPxO8dUsvChI92J5J6IlOgkPI=
+	t=1780060245; cv=none; b=Nv5RFobVaOjByFrun8H+KzNdgY1W8gD1doOo8p2OGs/VxiXkV7kjZSdwmBmzf5Ht3JUzIWiI0WQOV+Pxsp+pTxS9lvf8L0GoJ3k2Lum+pXiKYIljxd3+nhejDQ0Vid5ksLS2uV+MjoS25L9VxRgei40ZhNT6VjuOob+6SyYCxSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780060224; c=relaxed/simple;
-	bh=2/Zvl+trlsq8n+1p4UIy0aHBRvg/DchOBD8IeGDpntI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l8gYtwjMuU2o9WQh5y0TbfAhftZDxKHyMdvH6Z2g8/XsGwUSzCXqVuR3uOGJ7SrQH3b0Gb96ywD9TmNXtFvDeOGP8tFNA4oOggf69bDqHerOOGtntQnoZw4BQy3UopUR4AmXS/nc0c8MBO2pDZV9xFH3JZHm8zBMCF3ag9e4SQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OlkK4An9; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780060245; c=relaxed/simple;
+	bh=zuzinPcFhRl9plRyoeXIwzrcl/6M6IK0u2t05etneN8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=h4YBHaaNjM5Bmdq6yvdEAgFBWenRDdUPEQ/mDa5uvzb4HBJXAPvcU13GfvMiD9ZHQQ+IvnEPxXJ/FdAXT/mJvta28ytREimqAw3QZghqnhyruMGDgImoLnKim9P8Arv3U1P4vvfP6Qt6OfUD5/Ktitk2t71R32oFqxXp0eFOiFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mLOeNaY+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OlkK4An9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780060222; x=1811596222;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2/Zvl+trlsq8n+1p4UIy0aHBRvg/DchOBD8IeGDpntI=;
-  b=OlkK4An9WJ02pFxt4VimK+tLsGJxkuLyKHKAceG3ebaCRds4C8MnaVXD
-   Q+Nbl6GwHm9JZyzT7TDAugYkvHxRbFWuAq3Zipi0FdyZNji9+15Qb2AAC
-   oFq4Mz+dU74Pxx0tsm+IWf4HmhabTCOi8/X1Xq3LjSD4yA4aOahL+PUmY
-   jfHYOwqpOAD5r+3XOWEAChvAa2UKUp7+f3thlAs8sW1pZcWkdssfv2/8g
-   kgHcUvpM5/He/Pc8WN2SQqTY5sGWqBy2bl6eglG4STJxn0p7sJQ08NYcN
-   aTjNx4Ds9vO9makvha7Amfp+3FjKNGemBwi2lgaKGHii8QTZM2moWiN+i
-   Q==;
-X-CSE-ConnectionGUID: qgeJNxAUSuufM/pkR27vkQ==
-X-CSE-MsgGUID: crdUALXmRgSf4JdmjLUiYA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11801"; a="81094639"
-X-IronPort-AV: E=Sophos;i="6.24,175,1774335600"; 
-   d="scan'208";a="81094639"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2026 06:10:20 -0700
-X-CSE-ConnectionGUID: QwRpYl2bTJ2wv+sHFAmM2g==
-X-CSE-MsgGUID: eadYBeMVSeas18DgBDN8Gw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,175,1774335600"; 
-   d="scan'208";a="239846563"
-Received: from lkp-server01.sh.intel.com (HELO f0d55cb201f0) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 29 May 2026 06:10:18 -0700
-Received: from kbuild by f0d55cb201f0 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1wSwyd-000000007G6-3Add;
-	Fri, 29 May 2026 13:10:15 +0000
-Date: Fri, 29 May 2026 21:10:08 +0800
-From: kernel test robot <lkp@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>, jic23@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev,
-	Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] iio: chemical: scd30: Replace manual locking with
- RAII locking
-Message-ID: <202605292103.zH0JgWhp-lkp@intel.com>
-References: <20260528222906.61561-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mLOeNaY+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5F21F00893;
+	Fri, 29 May 2026 13:10:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780060242;
+	bh=tC9HqkQy8s8fCowmxdJQZ9JYQ14fcgNVnaNweKmAX5U=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=mLOeNaY+LFPu3SP40WdO2KaINV+FYH004qBTmn1FtKJB81vr3GaeMS+zXZ2GLc+7g
+	 Jb6Y2Fzb6OXFGL9y16tZdu1odcIA8Atb87zT6MhQVOL1gwDsa5JEEsM/vsH6CpBbNZ
+	 6jXOArmVUaFWwm300UxV0flUbB4hP8IzDnFecLWxP+re32gb/Rab7G+RvvaUvSSNLZ
+	 QT8cVVWpcT4PrlCJPeISJV0SDOXxHdyJSK7lSRV8ONlcrmfF7DsauYAVdzennX+qUG
+	 IXWcnDLuiLQB81wMlInxRv7f36RnEfu1wqtz2YOVrThqQr1wDtWWP9AD850L0BNa2k
+	 kynlbPBjctgqA==
+Date: Fri, 29 May 2026 14:10:31 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo
+ Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
+ dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] mfd: lm3533: Convert to use OF bindings
+Message-ID: <20260529141031.62703eff@jic23-huawei>
+In-Reply-To: <CAPVz0n1u0z35rP8vUKjAzW_mrPm9yeMjK_-nKbyctUvQik6ECw@mail.gmail.com>
+References: <20260528135123.103745-1-clamor95@gmail.com>
+	<20260528135123.103745-3-clamor95@gmail.com>
+	<20260528155001.2bcb7003@jic23-huawei>
+	<CAPVz0n0qCekQVGGyAyBuYv+RKC6bpydYBLJNGfPrgTYjtOJOuA@mail.gmail.com>
+	<20260529100819.1823ebb3@jic23-huawei>
+	<CAPVz0n0VHdUo5oHdALgcerLsykdz-2n7c+jxYHrMOV7Ra5x_qQ@mail.gmail.com>
+	<20260529114828.5a87c732@jic23-huawei>
+	<CAPVz0n1u0z35rP8vUKjAzW_mrPm9yeMjK_-nKbyctUvQik6ECw@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260528222906.61561-1-m32285159@gmail.com>
-
-Hi Maxwell,
-
-kernel test robot noticed the following build errors:
-
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.1-rc5 next-20260528]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Maxwell-Doose/iio-chemical-scd30-Replace-manual-locking-with-RAII-locking/20260529-063551
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20260528222906.61561-1-m32285159%40gmail.com
-patch subject: [PATCH v5] iio: chemical: scd30: Replace manual locking with RAII locking
-config: hexagon-randconfig-r073-20260529 (https://download.01.org/0day-ci/archive/20260529/202605292103.zH0JgWhp-lkp@intel.com/config)
-compiler: clang version 19.1.7 (https://github.com/llvm/llvm-project cd708029e0b2869e80abe31ddb175f7c35361f90)
-smatch: v0.5.0-9185-gbcc58b9c
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260529/202605292103.zH0JgWhp-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202605292103.zH0JgWhp-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/iio/chemical/scd30_core.c:617:8: error: call to undeclared function 'scd30_trigger_handler_helper_locked'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-     617 |         ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
-         |               ^
-   drivers/iio/chemical/scd30_core.c:617:8: note: did you mean 'scd30_trigger_handler_helper'?
-   drivers/iio/chemical/scd30_core.c:590:12: note: 'scd30_trigger_handler_helper' declared here
-     590 | static int scd30_trigger_handler_helper(struct iio_dev *indio_dev, int *scan_data,
-         |            ^
-   1 error generated.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
 
-vim +/scd30_trigger_handler_helper_locked +617 drivers/iio/chemical/scd30_core.c
+> > > > > >         if (device_property_present(dev, "ti,resistor-value-ohm"))
+> > > > > >                 ret = device_property_read_u32();
+> > > > > >                 if (ret) //corrupt property in some fashion
+> > > > > >                         return ret;
+> > > > > >         } else {
+> > > > > >                 //set default
+> > > > > >         }
+> > > > > > If there is no default then check it unconditionally.  
+> > > > >
+> > > > > default value is LM3533_ALS_RESISTOR_MIN and if no property is present
+> > > > > clamp will ensure that als->r_select will be set to
+> > > > > LM3533_ALS_RESISTOR_MIN  
+> > > >
+> > > > I don't see that default in the binding doc and relying in the 0 being clamped
+> > > > isn't particularly readable - I'd set it explicitly.
+> > > >  
+> > >
+> > > Oh, ye, my bad. Schema enforces one of props to be present and if pwn
+> > > is present then resistor is ignored. What if I move resistor reading,
+> > > clamping and conversion under !als->pwm_mode check? Then resistor must
+> > > be present and hence must be checked unconditionally.  
+> >
+> > Sounds good.
+> >  
+> > >
+> > > Additionally, I can comment original lm3533_als_setup with #if 0
+> > > #endif then git formatting will be much cleaner and easier to review,
+> > > and once we all come to result I will just remove entire commented
+> > > block and Lee can pick clean commits.  
+> >
+> > No don't do that.  If you flatten the two helpers as a precursor patch
+> > then the changes in here will be easier to review anyway.
+> >  
+> 
+> By "flatten the two helpers" you mean incorporate
+> lm3533_als_set_input_mode and lm3533_als_set_resistor into
+> lm3533_als_setup first and then convert it to use DT? I am asking,
+> just to be sure.
+> 
 
-   606	
-   607	static irqreturn_t scd30_trigger_handler(int irq, void *p)
-   608	{
-   609		struct iio_poll_func *pf = p;
-   610		struct iio_dev *indio_dev = pf->indio_dev;
-   611		struct {
-   612			int data[SCD30_MEAS_COUNT];
-   613			aligned_s64 ts;
-   614		} scan = { };
-   615		int ret;
-   616	
- > 617		ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
-   618		if (ret)
-   619			goto out;
-   620	
-   621		iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
-   622					    iio_get_time_ns(indio_dev));
-   623	out:
-   624		iio_trigger_notify_done(indio_dev->trig);
-   625		return IRQ_HANDLED;
-   626	}
-   627	
+yes
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> > > > > > > @@ -852,25 +825,28 @@ static int lm3533_als_probe(struct platform_device *pdev)
+> > > > > > >       indio_dev->channels = lm3533_als_channels;
+> > > > > > >       indio_dev->num_channels = ARRAY_SIZE(lm3533_als_channels);
+> > > > > > >       indio_dev->name = dev_name(&pdev->dev);
+> > > > > > > -     iio_device_set_parent(indio_dev, pdev->dev.parent);  
+> > > > > >
+> > > > > > I'm not sure why this was there in the first place.  Hence not sure if it
+> > > > > > is safe to remove.
+> > > > > >  
+> > > > >
+> > > > > This is directly related to OF conversion. The iio_device_set_parent
+> > > > > bound indio_dev to parent, and it causes problems with OF now since
+> > > > > als output has its own node and binding it to parent if wrong. Same
+> > > > > story for backlight and leds btw.  
+> > > >
+> > > > Is there any risk anyone was using the canonical path to get to the iio dev?
+> > > > /sys/bus/platform/devices/..../iio\:deviceX
+> > > > This is technically an ABI change be it a subtle one.
+> > > >  
+> > >
+> > > Linux kernel has no users of this driver, and it is in "stale" state
+> > > for more then 2 years (maybe even longer). I have cc'd Johan Hovold.
+> > >
+> > > https://lore.kernel.org/lkml/ZmBcvtLCzllQDWVX@hovoldconsulting.com/
+> > >
+> > > This this 2 y. o. discussion and there were no actions ore movements.
+> > > I assume this driver in its current form has no more users. This does
+> > > not mean that it cannot be revived though.  
+> >
+> > So, just to check, are you a user of this code or is this more trying to
+> > help out with old code?
+> >  
+> 
+> I am not insane enough to get myself into all this conversion if I did
+> not need it. This is one of 2 remaining gaps in support of LG
+> P880/P895 I own and support. I would really like to finally mainline
+> all the patches I have locally since maintaining them becomes quite
+> troublesome with time and additional patches layering on top.
+
+Excellent! There are some odd people out there who do start on this
+sort of thing despite no personal use case :)
+
+Jonathan
+
+
+
