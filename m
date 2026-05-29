@@ -1,154 +1,332 @@
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FD8237E301
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 05:42:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 712AE33F582
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 08:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780033325; cv=none; b=e5Xu0ph0CFLsTCOoDu7CXVxjYM5DwZZ7kZgunzmYxBE9c69n/eWXHZSu7CO86lRocnaw25vTD4/OC6vCD6OECTBryLVsRcs5LNJm1KWoDV+cYGArI/P3+ovtwwFqC4xy0TqtOxv3Gy4Ruh/N6fEuyltaj0CDWROQpxfq+WjHILs=
+	t=1780042906; cv=none; b=N1RJ0RS/Z2ZWzydt6fMk5uVtFIG4UYa7AIXPww19VG6o2gEVDxuo/TezPtnMKTBFvxtXLwodNcEkuv6x+PcI7Eg08AqIC8Qyn5xXQ0xgOm6K05BBs5MhJpb61EKRulv0oCTQ7Yt/P3BBW3pJol+vYgT1WyS9tP6xei07HMx6UHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780033325; c=relaxed/simple;
-	bh=rF2fjIczSR5/O/w8jUrxzr8qaMT2qPjcyQns/bTHSkM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IeyYJOaeIyZQC7oXPY4s8lPBAOISjyaDtjkuI6AptW7Lt3tqfMhUZi7leyi4m90C34V9QLYnF9WHKcFf+S7oY4+jzht+8aKyE4oqYe6RF2OsLi9U43iBKCgbDrpqhQ9uHaHlWDSK/IjWsWsTqHI6pQk9kqDiGOvxUhsDvs93iaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=suK8qX4H; arc=none smtp.client-ip=74.125.82.171
+	s=arc-20240116; t=1780042906; c=relaxed/simple;
+	bh=zLVQlrGFYnOCUGHoSDP+O1fB+fDE6or0cutO5YbR/Bw=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=A7Zqmfk00A6hwDsLYU55GoAFyoJKSdk1PvjTb597CcBw1PIIEBGJONDzg7m+tGaB/8EPDnBGI7+RXdq+LQUTxMng44uAP4yPf5p3h0CShg4AkOkXrw4cmRMMhv6fK3uYrdjSaKv+FhAPl1GwRVkAYGcYD5Ca+/cjTK2zgUGqUgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pe/QHZn0; arc=none smtp.client-ip=209.85.208.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="suK8qX4H"
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-304c520fe9aso4581992eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 28 May 2026 22:42:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pe/QHZn0"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3965a5d06c7so1658111fa.0
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 01:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780033323; x=1780638123; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Xk0hlbm0P5JJAGntaPUrnolV3Vq6zGWkmyfbWRCDuAQ=;
-        b=suK8qX4H+aZYsl0m/Ogzd8nWGEkOhR7MgKUnr15Ddf0+JaJIuyhla3sbOqhRW8yoHV
-         60WotZU8ozBMZqt0G77dO9FD++NUPoxnZsEaMSdqFs9EML6ht1JeXrtLFFj9en5iHzAB
-         rCZISnIykYqAfvfTEpCK9gat7G/D4iUOLJrhOl+6V1bJXVQ4nToizTbtcasqSleT6sBG
-         xNMhzsGeE1Lk3o+NP/VX9ayfyJMsFKN0HinxFgLsLoY7234HCZAv3TWQEnYfFBAlL0fb
-         TQ2cwHx0aE7av6cpM/JyTiyE4oj2Sezw6JPtp66m9mc7oF934bsZcw+kpLA5NXbnC3a+
-         9lRg==
+        d=gmail.com; s=20251104; t=1780042903; x=1780647703; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=nMYAYoPG5h2LdAR8d80xh1GBZQs0rqJKLSYJYOXAPPE=;
+        b=pe/QHZn0a8pK9Fwp5EJFZPccjmkxbiqHDJognITZWGYMPpIIQLgzexJhm8PQxaWArd
+         tuQQsR3WB6T1L62DJhUAFyJD5nIimPr2ToZ3okNnpuv/IRowm3t8QaCnWQuFSVsMbyR8
+         9qjCb+eS1r08ZFZglRkLxhwOiEZ/EjAdruiNaMZlA5Zsv4K04AX/J8OLVcZR8zEHUxCr
+         q/HRqvhyKzmE1LQUV/IBLxW1za3MUkxVeauk6r7PdZeQhdG9SwmVkN8KULwBw7nRLoq9
+         ik9e3d2JeeIKMAPik7X2zVQEECCmd0ZDZwURtcgeK1g/cW1V4wvSS47WkN5NCVFaQDKn
+         QDfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780033323; x=1780638123;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Xk0hlbm0P5JJAGntaPUrnolV3Vq6zGWkmyfbWRCDuAQ=;
-        b=IfuL75TQheMBYBl4eqHg+wBQitaKu1RBqvpVFJT4nFIGKRe4X91Sscr157MyiYSWO4
-         29czk8OeOvSGH74DrgvgmaatjGP8Cx3OTmL6MN9xPHfTXRBzJvu2zL3vgWxeqWNmhEGU
-         1weNM++La+U/usTKKlMQPg/2z9t54Sije7r6TfplRrnSPYw+6qIM9G7dO3D+RX8mRZhl
-         yKMkPOJPnjg3IocGL7pLe2mX6YXNLC59uDSOMZR0PreReqA0FWwQt0fZz9NhiDexbPAR
-         nKSMbNZ86T1yeGcPMPYmqdvv33K0lz6PWr1q9tavrabW7XfCQG5ZPAdgsaQvkWMqdAu7
-         OPew==
-X-Forwarded-Encrypted: i=1; AFNElJ9SxNcdFfrU7MEhylppCgS/RdOM8qaueHdX0kmy5ZLcNkDW+CtmuchDBjYsEVaCG2CerdKfiRNqn4o=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8j7VocJB6IzdDJfR7gmEZCd1nGRLRRryO0G1DOOeVReXTXL89
-	LoG7FMpT9TvHIz0/5ZKTfX2tOUPzACI/R7Fzg9xMFCPuh8c9qdi6Oz64
-X-Gm-Gg: Acq92OG2muU+YwFIUH3B7cf3Lk/YYgFBvcWHWWrOhHbff/NDy758vM1B82OLJIDviJa
-	FJ1qLaCtSybp7KJq+1hqBoaj3QiaRzvH4Yg17Q+aqE7O0J4MEJE85ok/V0hlCdjMhfTnWPIPlU3
-	InLxsBQR0Wjsx27u9sHnC+bt+bSqvXujKyfjT/eqOXjAPjY6fhM67OWGHSjFie7FQP6lufOUtLL
-	XpT8MjW96J6G/6b7zRTQA4xYYjFvGSjqjMxcG8tlkzEo+9vF0JdnOT8NtR13r7fKtMqhZiJN1Ov
-	divCuWN+k/qhYf/qlNxkN9QurifjXrmkBplxbjOtI+8TF7T+bLzKLqa8E/m6GXwLNPOsV5I4g2L
-	5H+NpJ/M0H+GYh0a3Ww/33wS/y6i+5JBonH9iwXNdkY9rMUaPz5FhX3neTc2jdxef8+Xm0AXcot
-	q0gPaszo0QUkGeiBaX65ADZRZ0qzq4DNJM0C9Uiw==
-X-Received: by 2002:a05:7301:4196:b0:2de:cc07:e99 with SMTP id 5a478bee46e88-304ead9b7fbmr734452eec.7.1780033323236;
-        Thu, 28 May 2026 22:42:03 -0700 (PDT)
-Received: from majuro ([2601:644:4383:1c0::4126])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-304ed30fffesm620713eec.11.2026.05.28.22.42.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 22:42:02 -0700 (PDT)
-From: Brandon Saint-John <branstj@gmail.com>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Cc: Brandon Saint-John <branstj@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	rust-for-linux@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Igor Korotin <igor.korotin.linux@gmail.com>
-Subject: Re: [RFC PATCH v3 3/4] iio: position: add Rust driver for ams AS5600
-Date: Thu, 28 May 2026 22:37:56 -0700
-Message-ID: <20260529053803.3256031-1-branstj@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260524132824.54918-4-muchamadcoirulanwar@gmail.com>
-References: 
+        d=1e100.net; s=20251104; t=1780042903; x=1780647703;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nMYAYoPG5h2LdAR8d80xh1GBZQs0rqJKLSYJYOXAPPE=;
+        b=qcRIY4rrcu/JctD0oAKDctK8LbXP2VOzSHFJMRviskj7TKMrnfxglgOub3V0VBwduT
+         y/3CGjqx58cxpdCR7fuWdivm0eS3JxDduHiH2sMFZR6eT4tSP67JNhkzQMPV4lOLCKyj
+         4VSkeZOi+YBwnn9b3MqkCx1UflDVZCDumXDA5RrC5oazid8l5XeVWhanYFq0JU9w9ka9
+         nZjTHp41DK46jGiBljWJ+1lXxMXt5eWTS225Gd2QJVke7zbjUbIL5e3+zTvXr14Zizev
+         mH+WwHmKCGhfBFjZbPCtDYAQ1IQpgpRu0niOiTui82f4q7Un/By4BmUDsEGfGwwCJe/F
+         MNlA==
+X-Forwarded-Encrypted: i=1; AFNElJ+qeAWy+DmFQOGE2ffm9eQQN6EqQdyLhgcbITI3zFtUliMgm8xwNQ1DCkS8UzFUfSHs3R9Rw9HPIao=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx/R5BNAsdzJD5AegVCheqsjt3TWj/rjzj127inqMQpm54IJe5j
+	abCk3nPybsvk9ei4IhEqppGxB49winA56zgq4vYnLt2nrFYOcRa21yuU
+X-Gm-Gg: Acq92OFpuxPeLYQ7vQOeQedhvWvQ98bvP7zfCQVbO14BYfZ3ALcZCC0NsjSsvA7M43z
+	lmR1qR1+8KbFu8HGYv9aL/CEYgiE5XEUmInrCg1OWXbAumaTC+YTvGepFDu8ftla6/MLvjkjyO/
+	zZjVHt993h9JeOF7i74q1zh3YKQxcGCJbXsJoHO0z75rxOkZFHgwq7BHuvCG2pQc6GEzTnSzvjp
+	r++VfhzxCDz0PQi+H6M07J2QPSdq16t1lFXQAqbKZxGJPPs3ke99jBtA4/pAZc+ZOg9O+E9MBxV
+	zGx6O/rCU5E8Up+V6lT1mSuy42ifil7JQGtSVB4ILi7isss3JKvrQSBhg9/KelGmsjOAyVksQPr
+	5ZekrHvD96QnW7Pb19TusYDkM6klU7YyHUeb98j2Y5JaaUyV4EGSyjE4FhvLnZZv1KO6WHDRX3S
+	zHDFwtTAOfj3ftYvSFp8IxEflNqUzOvLrYpOaR24uuqmym2kMkCWvgGA==
+X-Received: by 2002:a2e:a80c:0:b0:38e:a883:6303 with SMTP id 38308e7fff4ca-396536a0e3amr5603501fa.9.1780042902277;
+        Fri, 29 May 2026 01:21:42 -0700 (PDT)
+Received: from [10.38.18.54] ([213.255.186.37])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39659c45a51sm972001fa.3.2026.05.29.01.21.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 May 2026 01:21:41 -0700 (PDT)
+Message-ID: <aa2c2f98-454d-489c-a652-b8023b0773bf@gmail.com>
+Date: Fri, 29 May 2026 11:21:40 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
+ error paths
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260517160801.269-1-sozdayvek@gmail.com>
+ <20260518094238.1986-1-sozdayvek@gmail.com>
+ <20260518161516.53f21777@jic23-huawei>
+ <61d9cec3-6aed-416f-9604-94fe94cb2e3b@gmail.com>
+ <20260520120822.351aa58f@jic23-huawei>
+ <0d58842a-aa5c-4d12-9435-3264070038cc@gmail.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+In-Reply-To: <0d58842a-aa5c-4d12-9435-3264070038cc@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On Sun, 24 May 2026 20:28:22 +0700 Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com> wrote:
+On 22/05/2026 15:38, Matti Vaittinen wrote:
+> On 20/05/2026 14:08, Jonathan Cameron wrote:
+>> On Tue, 19 May 2026 08:48:13 +0300
+>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+>>
+>>> Thanks Jonathan,
+>>>
+>>> Your post give me something to think about ;)
+>>
+>> This is a can of worms.  More below.
+>>
+>> I'm unconcerned as long as (and ideally someone should check it)
+>> we can get of being stuck by unbind/rebind of driver.  Anything
+>> else is best effort.
+>>
+>>
+>>>
+>>> On 18/05/2026 18:15, Jonathan Cameron wrote:
+>>>> On Mon, 18 May 2026 14:42:38 +0500
+>>>> Stepan Ionichev <sozdayvek@gmail.com> wrote:
+>>>>> bm1390_trigger_handler() returns from three error paths without
+>>>>> calling iio_trigger_notify_done(). The success path at the end
+>>>>> does, so on a single transient regmap or read failure the trigger
+>>>>> use_count is never decremented, and the !atomic_read(&trig->use_count)
+>>>>> guard in iio_trigger_poll_chained() drops every subsequent dispatch.
+>>>>> The buffered-data flow stays wedged until the trigger is detached.
+>>>>>
+>>>>> Funnel all returns through a single done label that calls
+>>>>> iio_trigger_notify_done() and reports the outcome via IRQ_RETVAL().
+>>>>>
+>>>>> Fixes: 81ca5979b6ed ("iio: pressure: Support ROHM BU1390")
+>>>>> Cc: stable@vger.kernel.org
+>>>>> Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+>>>>
+>>>> These error path 'fixes' are fixes for hardware failure - so if 
+>>>> anything
+>>>> they are hardending  against a possible error condition. I don't mind
+>>>> that bit it's not a bug to not do this so fixes tag an stable are not
+>>>> appropriate for any of these.
+>>>>
+>>>> Note however that hardening against these conditions is not this 
+>>>> simple.
+>>>> It takes careful analysis of exactly how the hardware behaves and what
+>>>> each error condition 'might' mean.  Whilst they are probably harmless
+>>>> I'm also very dubious about taking them without comprehensive testing
+>>>> on the particular device.
+>>>>> ---
+> 
+> //snip
+> 
+>>>>> @@ -639,7 +642,8 @@ static irqreturn_t bm1390_trigger_handler(int 
+>>>>> irq, void *p)
+>>>>>            ret = bm1390_pressure_read(data, &data->buf.pressure);
+>>>>>            if (ret) {
+>>>>>                dev_warn(data->dev, "sample read failed %d\n", ret);
+>>>>> -            return IRQ_NONE;
+>>>>> +            handled = false;
+>>>>> +            goto done;
+>>>>
+>>>> Hopefully all this stuff is unrelated to the trigger.  For these it 
+>>>> is fair to
+>>>> ack the trigger and the interrupt.  Curiously the driver does it 
+>>>> partly for the
+>>>> next one (IRQ_HANDLED).
+>>>
+>>> I would keep the IRQ_NONE here because, if we keep constantly failing
+>>> the reads, then the bus is likely to be unerliable - and disabling the
+>>> useless IRQ is probably very sane thing to do. It should help debugging.
+>>> What comes to acking the trigger - I am starting to agree with Stepan,
+>>> we should probably ack the trigger in any case. If we don't ack the
+>>> trigger, then the IRQ_NONE does not serve the purpose it is intended 
+>>> for.
+>>
+>> The interrupt that we'd get spurious detection on here would not be 
+>> the device
+>> one it would be the software emulated one deep in the iio trigger stuff.
+>>
+>> Might still be useful for debug. Anyone fancy hacking an error in and 
+>> reporting
+>> back what we actually get from the debug hardware?  (with that trigger 
+>> acked
+>> as you suggest?)
+> 
+> No promises but I'll see if I can try out something next week...
 
-> +//! Driver for ams AS5600 12-bit magnetic rotary position sensor.
-> +//!
-> +//! Datasheet: https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+The week has been horrible... I only had around half an hour for this 
+(just now). Quick:
 
-Small nitpick, but going to the above link doesn't resolve to a pdf.
-The link that works as of today for me is:
++++ b/drivers/iio/pressure/rohm-bm1390.c
+@@ -621,6 +621,16 @@ static const struct iio_buffer_setup_ops 
+bm1390_buffer_ops = {
+         .predisable = bm1390_buffer_predisable,
+  };
 
-https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
++/*
++ * Test case where IRQ status is nopt read (acked). Useful for 
+evaluating the
++ * impact of returning the IRQ_NONE from the trigger handler. define 
+also the
++ * TEST_FORCE_IRQ_NOTIFY if you wish to cause the trigger to be notified.
++ *
++ * Note, in case it is not obvious, this will cause IRQ storm.
++ */
++#define TEST_FORCE_IRQ_NONE
++#define TEST_FORCE_IRQ_NOTIFY
++
+  static irqreturn_t bm1390_trigger_handler(int irq, void *p)
+  {
+         struct iio_poll_func *pf = p;
+@@ -628,12 +638,27 @@ static irqreturn_t bm1390_trigger_handler(int irq, 
+void *p)
+         struct bm1390_data *data = iio_priv(idev);
+         int ret, status;
 
-> +fn err_enodata() -> Error {
-> +    Error::from_errno(-(ENODATA as i32))
-> +}
++#ifdef TEST_FORCE_IRQ_NONE
++       static unsigned long int first = 1, first2 = 0;
++       ret = 0;
++
++       if (first) {
++               pr_info("Skip read\n");
++               first = 0;
++       }
++       #ifdef TEST_FORCE_IRQ_NOTIFY
++       status = BIT(BM1390_CHAN_PRESSURE);
++       #else
++       status = 0;
++       #endif
++#else
+         /* DRDY is acked by reading status reg */
+         ret = regmap_read(data->regmap, BM1390_REG_STATUS, &status);
+         if (ret || !status)
+                 return IRQ_NONE;
++#endif
 
-Later on it's probably better to add ENODATA to kernel::error::code instead of the helper.
+-       dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
++//     dev_dbg(data->dev, "DRDY trig status 0x%x\n", status);
 
-> +#[derive(Clone, Copy)]
-> +struct As5600Io(*mut i2c_client);
-> +
+         if (test_bit(BM1390_CHAN_PRESSURE, idev->active_scan_mask)) {
+                 ret = bm1390_pressure_read(data, &data->buf.pressure);
+@@ -656,7 +681,17 @@ static irqreturn_t bm1390_trigger_handler(int irq, 
+void *p)
+                                     data->timestamp);
+         iio_trigger_notify_done(idev->trig);
 
-You can replace the *mut i2c_client with an ARef<I2cClient>. The
-kernel::impl_device_context_into_aref! macro is run on &I2cClient<Core>
-so you can call ARef::from on dev instead of casting it to the raw pointer
-to hold it.
++#ifdef TEST_FORCE_IRQ_NONE
++       /* HACK, return IRQ_NONE and see if IRQ gets disabled */
++       if (!(first2 % 1000))
++               pr_info("Hack, return IRQ_NONE (%lu th)\n", first2);
++
++       first2++;
++
++       return IRQ_NONE;
++#else
+         return IRQ_HANDLED;
++#endif
+  }
 
-Then it saves you from repeating a few different parts, like redoing unsafe impls,
-recasting back to I2cClient<Core> in try_readN, etc.
+  /* Get timestamps and wake the thread if we need to read data */
 
-> +impl IoCapable<u8> for As5600Io {}
-> +impl IoCapable<u16> for As5600Io {}
 
-None of the read_u16 or IoCapable<u16> are used at this point, so those traits/methods
-could be dropped.
 
-As a side note, in the most recent rust-next branch, there are a few changes with IoCapable
-so maybe worth rebasing at some point to get those changes. IoCapable isn't a marker trait
-anymore so I get compile errors trying to rebase there.
+resulted:
+root@arm:/home/debian# /iio_generic_buffer -a -c1000000 --device-name 
+bm1390 -T0 > /dev/null
+Enabling all channels
+[  115.098819] Skip read
+[  115.102442] Hack, return IRQ_NONE (0 th)
+[  116.459049] Hack, return IRQ_NONE (1000 th)
+[  117.851037] Hack, return IRQ_NONE (2000 th)
+[  119.214843] Hack, return IRQ_NONE (3000 th)
+[  120.598114] Hack, return IRQ_NONE (4000 th)
+[  121.960255] Hack, return IRQ_NONE (5000 th)
+[  123.322424] Hack, return IRQ_NONE (6000 th)
 
-> +#[pin_data]
-> +struct As5600Priv<T> {
-> +    #[pin]
-> +    io_lock: Mutex<As5600HwState<T>>,
-> +    channels: KBox<[iio_chan_spec; 1]>,
-> +}
-> +
-> +/// Encapsulates the I/O interface and its runtime health state.
-> +///
-> +/// This prevents operations on a known-dead bus (Circuit Breaker pattern).
-> +struct As5600HwState<T> {
-> +    io: T,
-> +    state: DeviceState,
-> +}
+//snip
 
-Could As5600Priv/HwState hold the As5600Io directly instead of a generic T?
-As5600Priv was not generic over T in v2, and since As5600Io implements Io/IoCapable
-and the sensor only uses the I2C bus it doesn't seem like it needs to be generic,
-at least at the moment.
+[  237.726666] Hack, return IRQ_NONE (90000 th)
+[  239.095910] Hack, return IRQ_NONE (91000 th)
+[  240.481233] Hack, return IRQ_NONE (92000 th)
+[  241.846072] Hack, return IRQ_NONE (93000 th)
+[  243.206432] Hack, return IRQ_NONE (94000 th)
+[  244.570636] Hack, return IRQ_NONE (95000 th)
+[  245.928964] Hack, return IRQ_NONE (96000 th)
+[  247.286839] Hack, return IRQ_NONE (97000 th)
+[  248.647986] Hack, return IRQ_NONE (98000 th)
+[  250.011214] Hack, return IRQ_NONE (99000 th)
+[  251.368583] irq 64: nobody cared (try booting with the "irqpoll" option)
+[  251.375463] CPU: 0 UID: 0 PID: 835 Comm: irq/63-2-005d-b Tainted: G 
+         O        7.1.0-rc1-00002-g3b459deb7222-dirty #249 VOLUNTARY
+[  251.375501] Tainted: [O]=OOT_MODULE
+[  251.375511] Hardware name: Generic AM33XX (Flattened Device Tree)
+[  251.375525] Call trace:
+[  251.375545]  unwind_backtrace from show_stack+0x10/0x14
+[  251.375607]  show_stack from dump_stack_lvl+0x50/0x64
+[  251.375646]  dump_stack_lvl from __report_bad_irq+0x30/0xbc
+[  251.375680]  __report_bad_irq from note_interrupt+0x2b4/0x32c
+[  251.375722]  note_interrupt from handle_nested_irq+0x13c/0x14c
+[  251.375758]  handle_nested_irq from iio_trigger_poll_nested+0x4c/0x68 
+[industrialio]
+[  251.375917]  iio_trigger_poll_nested [industrialio] from 
+bm1390_irq_thread_handler+0x54/0x7c [rohm_bm1390]
+[  251.375994]  bm1390_irq_thread_handler [rohm_bm1390] from 
+irq_thread_fn+0x1c/0x78
+[  251.376028]  irq_thread_fn from irq_thread+0x18c/0x324
+[  251.376057]  irq_thread from kthread+0xf8/0x130
+[  251.376091]  kthread from ret_from_fork+0x14/0x20
+[  251.376114] Exception stack(0xe0355fb0 to 0xe0355ff8)
+[  251.376136] 5fa0:                                     00000000 
+00000000 00000000 00000000
+[  251.376156] 5fc0: 00000000 00000000 00000000 00000000 00000000 
+00000000 00000000 00000000
+[  251.376175] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[  251.376189] handlers:
+[  251.498714] [<2ec7a5d9>] iio_pollfunc_store_time [industrialio] 
+threaded [<7f4268a2>] bm1390_trigger_handler [rohm_bm1390]
+[  251.509974] Disabling IRQ #64
 
-> +impl<T: Io + IoCapable<u8> + Unpin> IioDriver for As5600Priv<T> {
-> +    fn read_raw(&self, _chan: *const iio_chan_spec, mask: isize) -> Result<IioVal> {
-> +        match mask {
-> +            // IIO_CHAN_INFO_RAW — read the 12-bit raw angle value.
-> +            m if m == iio_chan_info_enum_IIO_CHAN_INFO_RAW as isize => {
+Message from syslogd@arm at Jan  1 01:17:33 ...
+  kernel:[  251.509974] Disabling IRQ #64
+[  252.822500] sched: RT throttling activated
 
-Ideally in the future, the iio_chan_info_enum_* variants can be wrapped in an Rust
-enum with an #[repr] attribute. At this stage, match isn't as useful as it could be
-since you still need to call "if m == ...".
 
-Sent using hkml (https://github.com/sjp38/hackermail)
+Things I very hastly picked up:
+
+1. The throttling mechanism works even though the handling is invoked 
+via iio_trigger_poll_nested(), Probably because this propagates the call 
+to the handle_nested_irq() - which does bookkeeping.
+
+2. For some reason (which I didn't have time to check yet), the 
+beaglebone black which I used to run this, was not completely blocked by 
+the IRQ. We can see the "Hack, return IRQ_NONE (xxx th)" -prints 
+emerging just fine.
+
+And now I must run. I hope to be able to dig some more details next week.
+
+Yours,
+	-- Matti
+
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
