@@ -1,173 +1,303 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6792A3C4B81
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 09:59:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F94305673;
+	Fri, 29 May 2026 10:02:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780048751; cv=none; b=HyfZkjjKPZ43LNblEXawPADePnkYSVD+nLR7oWIiGgTH++QXxm3NFCmxsT+Ml5OMGzZbAGlqfr4W14Lbam8gMxaXVHKnVuKwEjR0ajUgr2SwD6jPwjTlrZ7ts6ytNmqWTYi8e+1ed1r0a6opqexQKQNZAQYolDrXA0px07/X8gY=
+	t=1780048937; cv=none; b=dIU28v+TSad7LQeGU+Bz1Jx19nUhpcOnVJoM8RQA1xnpjvbwpB4C2SDWdvosfn/NjroC+5FDm2eBncY9lFw+puYyzt3x8p0bzVnK3749lfR0WjMLFvfKJk8PtRtBrcYnui00DxDRFKGbRg/V+parJmMEJEb9J45l1HLpCf67qwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780048751; c=relaxed/simple;
-	bh=zpk7WwA/HuQxQBjY/4PQ71+fGV/wQyHGZ3pc6imOA00=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WvtvGT0Lt78voCrm8I145kNPjvzcaIHTEH5dgjgbZoYvflaYd9c6nEtCmtoMjpq+k+2bLe3pdZnyA77DW08HlNKUH8tGBbhcrIXh9uCw4J+L2r5+za8PCoDa89Smpt/nBwx0qiDgR8do+72DOem9QBTKfenAkMTpYeMkPzUaypE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=isjNXlU/; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780048937; c=relaxed/simple;
+	bh=3fCLL/8ALQkJnOOC9sUU5x3LkrQZe3tHishjf7bod4o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MrQmGJlQgobRBcluh9k994f8eP5jn+WGAjEvNKlLMYlPxXSTL8yQHi9/8+etVcYmcN+K3u6sUDw3DgCCLvLdG86159kWahPMCAn6GvGeVbGmWkBozBEoAH1M0su4FXZH0e2/QL9szyGwW+CrNxLndWRhn0p0rt8wOyylt5AO2xY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rf+ep/1s; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="isjNXlU/"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aa5a77c07aso46529e87.2
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 02:59:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780048745; x=1780653545; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=foAANAeJfAfM/cw3YT3GPXeC07g5W781y+R6Ho2ugfc=;
-        b=isjNXlU/TGPSgdI04B4Or74xg0Vbh8bhXZlWVHdpqiEMvZBwQurDkURgFIKvS8kK0v
-         XmN6k/C6FErpbOmEizFgKAQd8bOXGr08bsRDW0UYhKi0LNMRpjbD9CuW2ovSJfaCLDR5
-         k80hRIZRxHwFOu87wVmd2ekQBFrHzu3I+Uw2ZVGub6A4ZQne0/Ycqc+6gtJLyFAijlr+
-         fa5H5mFxk8BGOwFHNxIxYY7cRSDC1VLTm9rtGbQTGfHgUQoqfjWTIrcmRDq0SI8Gac5u
-         8e6oNyjlIl9eHyb/by0bCRjkkJrq2VB4tl15Fuq/GH25XPJjkypkXmwa06k2mQ8Ry5Ah
-         wmTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780048745; x=1780653545;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=foAANAeJfAfM/cw3YT3GPXeC07g5W781y+R6Ho2ugfc=;
-        b=c53YlNPPYkT8J9VEp54isrCarksM9DNK36oH/QwoJuadazT4VwTbYjSbBtZfS6HFRv
-         Ogoc8CEoC//9qzaNBinRYQM3jZw+DqIH60FLO7xE58UXnhIxmyUzoixzc5d9NUzmeqjh
-         9AvoS3VWBrfMGY6VLxFdziI9xp0VOoISwh1/FM6kcy/TCcXdte9FAtumTa1v6UWLgQQI
-         9ZCcIXzBosWrMPKDfeDVzdMmhcO09A21zjosApDye3OnhYjnRXDoS/kTLy5434U1WM9B
-         f9PZCCZS7fHco+dkNLc7NMsl/jDlhrSX+IvTLxQyzCqhT1gF/3a9ymmlSkUuLiHXESFY
-         7GtQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8QCuICz024IvQz2dJK0Qd7AexWSGhiyZrFYHPaCXOZbtElFYOwFvaI8yTO2lzBiDEGNRLF7TckUWY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwGavecklLc8wLZbwGazyD8Lup+JKGmmoyyNiQQzwazV0V4iwhI
-	ncrLaoXqLSuMDqSZlR+4ikhVMhy99HkGep+y6jgNt+wMplONm+mkYknLdEnceK2c
-X-Gm-Gg: Acq92OE7hc2DtO1RMW0Qnb/1/TdpTKTkyCQWx6zWkkzC7PnPB4n9EpNz19DE7PIU+J1
-	l9sW+zEo5+x51MQaLC28ULF7fpejMQfIa+eHaKCUFjLFbfTQIaLaGqQXfeAG6W0HXRvjeno4FP+
-	aKlKYPsJJIDygx56hR6dTBBT+jIR6jnN9e5k69kkQorN8MTWvWqwr+zzmm0thXgGgkcBpWPbuWx
-	AahogHQ5CGn06rKXDO/NteS+Gu5gnS/lcoRen+Pf3jlRrHEYYv0wdZVzNLa1MQ36wiXXr918x8X
-	Y56gpoXCbfA1pnLjb5YPTHan5lZ2E0P5kztdE+ZUEb+4VvCKi0CkQEtu+xu2n1AKQYCOO0p2Ind
-	7dLStUdb1tnzA7TSk98iOfqZGC0EZetrYhD5Xtv8QOZVrJLpEAs7O4MQz6T1n4aqp2Uf2ksaL05
-	ESy3zxOjZNf/PQq2sMUHGHal8dIGbVCvgSDHqbX+So+1CBo/C/dyOjjAY=
-X-Received: by 2002:a05:6512:1304:b0:5a4:f0:c4c4 with SMTP id 2adb3069b0e04-5aa594c1db9mr238224e87.7.1780048745098;
-        Fri, 29 May 2026 02:59:05 -0700 (PDT)
-Received: from localhost.localdomain ([94.158.61.193])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39659e2a8b2sm1309011fa.29.2026.05.29.02.59.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 02:59:04 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: wbg@kernel.org
-Cc: m32285159@gmail.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sozdayvek@gmail.com
-Subject: [PATCH v3] counter: ti-eqep: use devm for runtime PM to fix probe error path
-Date: Fri, 29 May 2026 14:58:34 +0500
-Message-Id: <20260529095834.2561-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rf+ep/1s"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 568FC1F00893;
+	Fri, 29 May 2026 10:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780048936;
+	bh=KP/dBa4vlaAwTlWv9+FCkj19C58IqLkr8C9/6n44Wb4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Rf+ep/1sYiUublsEiU93nSRDxCA49iG0IH2vPiMUJNouijMfS9h22s1mpGWWzeSzJ
+	 m/4aaPNYsh+lI8tGIIBLHoFxERSC1alzhdhHL1RzHCBZnYgk16WzgukAV75dXFGP3P
+	 9mVVcHqitQpcleBwdMQ07S5LYLVoZZJzaJI0U6haVf5EFYr4ohU6M/BGWM1FWNImM5
+	 +jpv3h+4LgmpX/EJn2AM00wrJmOQDPVUTd5e7h6wewVG5e8lLQ6Pn/3DupKv7ZqFYd
+	 0CltbdnGeK+Zd2esa5DCakB0jOrLvQhSmKMZ5ovcfOigPgyD9JteCkB7ISbybxqZEz
+	 nxvR1aAlWJz0w==
+Date: Fri, 29 May 2026 11:02:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <nuno.sa@analog.com>,
+ <Michael.Hennerich@analog.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <pop.ioan-daniel@analog.com>, <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v2 2/4] iio: adc: ltc2378: Add support for LTC2378-20
+ and similar ADCs
+Message-ID: <20260529110205.2f91a1ed@jic23-huawei>
+In-Reply-To: <40e1108bc9eaeba486705b54c4c94004f0e7f369.1779976379.git.marcelo.schmitt@analog.com>
+References: <cover.1779976379.git.marcelo.schmitt@analog.com>
+	<40e1108bc9eaeba486705b54c4c94004f0e7f369.1779976379.git.marcelo.schmitt@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-ti_eqep_probe() enables runtime PM and takes a reference manually,
-then returns directly via dev_err_probe() if devm_clk_get_enabled()
-fails, leaking the runtime PM enable and usage count. v2 tried to
-route that error through a manual cleanup label, but mixing a
-devm-managed resource (the clock) with a manual pm_runtime unwind
-is itself wrong: the devm clock release runs after the manual
-unwind, in the wrong order.
+On Thu, 28 May 2026 12:03:52 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-Manage the runtime PM with devm instead: devm_pm_runtime_enable()
-for the enable, pm_runtime_resume_and_get() with a devm action for
-the get/put. Every probe error path then unwinds through devm in
-the correct reverse order, and ti_eqep_remove() no longer has to
-touch runtime PM.
+> Support for LTC2378-20 and similar analog-to-digital converters.
+> 
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
-Fixes: f213729f6796 ("counter: new TI eQEP driver")
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
-v3:
-- Manage runtime PM with devm (devm_pm_runtime_enable plus a devm
-  action for pm_runtime_put_sync); remove now-empty PM unwind from
-  ti_eqep_remove() (Andy)
-- Reword commit message: v2 mixed devm with manual unwind, fix is
-  full devm conversion
+As normal, our friendly AI had something to say:
+https://sashiko.dev/#/patchset/cover.1779976379.git.marcelo.schmitt%40analog.com
 
-v2: https://lore.kernel.org/all/20260525152137.7428-1-sozdayvek@gmail.com/
-v1: https://lore.kernel.org/all/20260523184448.7609-1-sozdayvek@gmail.com/
 
- drivers/counter/ti-eqep.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+A few other things inline from a fresh read.
 
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index d21c157e531a..b24c8a29201d 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -492,6 +492,11 @@ static const struct regmap_config ti_eqep_regmap16_config = {
- 	.max_register = QCPRDLAT,
- };
- 
-+static void ti_eqep_pm_put(void *dev)
-+{
-+	pm_runtime_put_sync(dev);
-+}
-+
- static int ti_eqep_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -544,19 +549,25 @@ static int ti_eqep_probe(struct platform_device *pdev)
- 	 * parent PWMSS bus driver. On AM17xx, this comes from the PSC power
- 	 * domain.
- 	 */
--	pm_runtime_enable(dev);
--	pm_runtime_get_sync(dev);
-+	err = devm_pm_runtime_enable(dev);
-+	if (err)
-+		return err;
-+
-+	err = pm_runtime_resume_and_get(dev);
-+	if (err)
-+		return err;
-+
-+	err = devm_add_action_or_reset(dev, ti_eqep_pm_put, dev);
-+	if (err)
-+		return err;
- 
- 	clk = devm_clk_get_enabled(dev, NULL);
- 	if (IS_ERR(clk))
- 		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
- 
- 	err = counter_add(counter);
--	if (err < 0) {
--		pm_runtime_put_sync(dev);
--		pm_runtime_disable(dev);
--		return err;
--	}
-+	if (err < 0)
-+		return dev_err_probe(dev, err, "Failed to add counter\n");
- 
- 	return 0;
- }
-@@ -564,11 +575,8 @@ static int ti_eqep_probe(struct platform_device *pdev)
- static void ti_eqep_remove(struct platform_device *pdev)
- {
- 	struct counter_device *counter = platform_get_drvdata(pdev);
--	struct device *dev = &pdev->dev;
- 
- 	counter_unregister(counter);
--	pm_runtime_put_sync(dev);
--	pm_runtime_disable(dev);
- }
- 
- static const struct of_device_id ti_eqep_of_match[] = {
--- 
-2.43.0
+>  M:	Michael Hennerich <michael.hennerich@analog.com>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 8550917226a1..70fec8e3e891 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -939,6 +939,18 @@ config LTC2309
+>  	  This driver can also be built as a module. If so, the module will
+>  	  be called ltc2309.
+>  
+> +config LTC2378
+> +	tristate "Analog Devices LTC2378 ADC driver"
+> +	depends on SPI
+> +	depends on GPIOLIB || PWM
+
+Triggered sashiko:
+https://sashiko.dev/#/patchset/cover.1779976379.git.marcelo.schmitt%40analog.com
+This dependency is odd enough that I think I'd add a comment on why.
+Also bring in the dependency on PWM in the patch that needs it not this one.
+
+Will it build without gpiolib? If so I'd prefer that to be a || COMPILE_TEST
+just to get a little more coverage.
+
+
+> +	select IIO_BUFFER
+This doesn't seem to be needed yet either.
+
+> +	help
+> +	  Say yes here to build support for Analog Devices LTC2378-20 and
+> +	  similar analog to digital converters.
+> +
+> +	  This driver can also be built as a module. If so, the module will
+> +	  be called ltc2378.
+> +
+
+> diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
+> new file mode 100644
+> index 000000000000..bdff98157979
+> --- /dev/null
+> +++ b/drivers/iio/adc/ltc2378.c
+> @@ -0,0 +1,342 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Analog Devices LTC2378 ADC series driver
+> + *
+> + * Copyright (C) 2026 Analog Devices Inc.
+> + * Author: Ioan-Daniel Pop <pop.ioan-daniel@analog.com>
+> + * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> + */
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+
+dev_prink.h missing for dev_err_probe()
+
+> +#include <linux/err.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/types.h>
+> +
+> +#include "ltc2378.h"
+
+> +static int ltc2378_convert_and_acquire(struct ltc2378_state *st)
+> +{
+> +	int ret;
+> +
+> +	/* Cause a rising edge of CNV to initiate a new ADC conversion */
+> +	gpiod_set_value_cansleep(st->cnv_gpio, 1);
+
+Should we check for errors on setting the gpio?
+
+> +	fsleep(4);
+> +	ret = spi_sync_transfer(st->spi, &st->xfer, 1);
+> +	gpiod_set_value_cansleep(st->cnv_gpio, 0);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ltc2378_channel_single_read(const struct iio_chan_spec *chan,
+> +				       struct ltc2378_state *st, int *val)
+> +{
+> +	const struct iio_scan_type *scan_type = &chan->scan_type;
+> +	u32 sample;
+> +	int ret;
+> +
+> +	ret = ltc2378_convert_and_acquire(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (scan_type->realbits > 16)
+> +		sample = st->scan.data.sample_buf32;
+
+Sashikio has an interesting theory here that you need a shift. I can't immediately
+spot why it is wrong.  Given we are clocking in 32bits I assume the first
+res_bits are valid then we get a bunch of garbage after that. Given it's MSB first
+the SPI controller should put those in the top bits of the resulting u32 with the
+garbage at the bottom. So shouldn't we shift them down by 32 - resolution or something
+like that? + in buffered case provide the relevant shift value (in later patches)
+
+> +	else
+> +		sample = st->scan.data.sample_buf16;
+> +
+> +	if (scan_type->format == IIO_SCAN_FORMAT_SIGNED_INT)
+> +		*val = sign_extend32(sample, scan_type->realbits - 1);
+> +	else
+> +		*val = sample;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ltc2378_read_raw(struct iio_dev *indio_dev,
+> +			    const struct iio_chan_spec *chan,
+> +			int *val, int *val2, long info)
+> +{
+> +	struct ltc2378_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_RAW:
+
+case IIO_CHAN_INFO_RAW: {
+
+> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +			return -EBUSY;
+> +
+> +		ret = ltc2378_channel_single_read(chan, st, val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+> +
+}
+
+As that IIO_DEV_ACQUIRE_DIRECT_MODE() is declaring a local variable
+so there is something go out of scope and result in cleanup.
+LLVM moans about this, GCC just does the wrong thing which can in theory
+at least result in an underflow.
+You'll get build bot warnings on this - bug sashiko caught it.
+
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = st->ref_uV / MILLI;
+> +		/*
+> +		 * For all LTC2378-like devices, the amount of bits that express
+> +		 * voltage magnitude depend on the output code format:
+> +		 * - straight binary: All precision/resolution bits are used.
+> +		 * - 2's complement: One of the precision bits is used for sign.
+> +		 */
+> +		if (st->info->twos_comp)
+> +			*val2 = st->info->resolution - 1;
+> +		else
+> +			*val2 = st->info->resolution;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+
+
+> +
+> +MODULE_AUTHOR("Ioan-Daniel Pop <pop.ioan-daniel@analog.com>");
+
+I'm a bit curious on this - listing an module author but not tags?  Maybe
+provide some context in the patch description or a tag if appropriate.
+
+> +MODULE_AUTHOR("Marcelo Schmitt <marcelo.schmitt@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices LTC2378 ADC series driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/adc/ltc2378.h b/drivers/iio/adc/ltc2378.h
+> new file mode 100644
+> index 000000000000..399e8f67cd0e
+> --- /dev/null
+> +++ b/drivers/iio/adc/ltc2378.h
+> @@ -0,0 +1,47 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Analog Devices LTC2378 and similar ADCs common definitions and properties
+> + * Copyright (C) 2026 Analog Devices, Inc.
+> + * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> + */
+> +
+> +#ifndef __DRIVERS_IIO_ADC_LTC2378_H__
+> +#define __DRIVERS_IIO_ADC_LTC2378_H__
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+> +
+> +#define LTC2378_TDSDOBUSYL_NS		5
+> +#define LTC2378_TBUSYLH_NS		13
+> +#define LTC2378_TCNV_HIGH_NS		20
+> +
+> +struct ltc2378_chip_info {
+> +	const char *name;
+> +	int resolution;
+> +	bool twos_comp; /* Output code is 2's complement or straight binary */
+
+I think this would be more intuitive if was the terminology of the datasheet
+so bipolar (vs unipolar).  Or is there a case where something more complex is
+going on like offset binary rather than 2s comp?
+
+
+> +};
+> +
+> +struct ltc2378_state {
+> +	const struct ltc2378_chip_info *info;
+> +	struct gpio_desc *cnv_gpio;
+> +	struct spi_device *spi;
+> +	struct spi_transfer xfer;
+> +	struct iio_chan_spec chans[2]; /* 1 physical chan + 1 timestamp chan */
+> +	int ref_uV;
+> +
+> +	/*
+> +	 * DMA (thus cache coherency maintenance) requires the
+> +	 * transfer buffers to live in their own cache lines.
+> +	 */
+> +	struct {
+> +		union {
+> +			u16 sample_buf16;
+> +			u32 sample_buf32;
+> +		} data;
+> +		aligned_s64 timestamp;
+> +	} scan __aligned(IIO_DMA_MINALIGN);
+> +};
+> +
+> +#endif /* __DRIVERS_IIO_ADC_LTC2378_H__ */
 
