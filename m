@@ -1,41 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2D2261B71
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 10:40:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4853C1413;
+	Fri, 29 May 2026 10:42:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780051207; cv=none; b=dHTSba5Vc3/qBcfwWhAnJQKcuV7sWkdJrz9I3a2lcCT8LqXjxjYmMQQLX3aCIsYJWWu98x9oUWYSVTzGWdMZEc/1c8x/lKJsfK0RaUO6EVTpbdWfTJ36u9cofmu7lcf29lrZsMH58/yigaup9yl9ot+QW2gbritNCCWX1Kpwp2Y=
+	t=1780051330; cv=none; b=T7GIvTUsg3LBbC3S9LZwSjLxsDBshpa9S+iUdTWR1Z9GoBVUzYzdJ54NfT4Wy5mO23oEAGaMDWHe+M0O1KR69/6I496wi5187IHRj0pOFK8UqNKWgWynfuU14igvJUND8np9AFI2E9UVi6Hney3nCQpIJZewidXoCDUzcccCI4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780051207; c=relaxed/simple;
-	bh=Fxbkvo6H20xBcVBLy6SQ2S7wEso77MZ/z0S982pnDjU=;
+	s=arc-20240116; t=1780051330; c=relaxed/simple;
+	bh=Pydm/KqUfaaRm/g5YdTFd3EG9LfbJ0MD/sV0S06DwPs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=d4ZW3r3Hgw0ur8lL2raYq+MGkHVpj59Gi804DgGZXsQ2f+mBDkY54ApkupEKaWgiarP+UPik961FcIqyPoKMMYFhmaDO4hT6s05QMH2Y7bvM9DL5sztdsfVR24ImF6x3jPeNBvkhhxgO0Jh+dAeQhDq5gdD8ymXsfqqTpAXMZns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bifBZAGM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=DxIU5ZRDR7UHbilYzYCvPr6gDEJdmGrFZI+Ddd09WhO7GXyB4W3dnJUm91vDPbOB+oLpmYe0Xsdtfp5cL3r+ngRxmfKpzLxKSlgX6UYSV7ufdaHBRIjFAZAFLFb8xCmV0aDNHG6NIuL87UYysjBOL+aE5ckMzXLYs7ixmQ8EB1s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QkTaACHb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bifBZAGM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B76281F00893;
-	Fri, 29 May 2026 10:40:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QkTaACHb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F3A1F00893;
+	Fri, 29 May 2026 10:42:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780051206;
-	bh=PBQl4rz15UI8SxCZ9gQfMpVc/xUtp6kqRbwgA+5lBus=;
+	s=k20260515; t=1780051329;
+	bh=lKhDvAtjj6+GIVLyAh7HOny5HfcgNNMwzvBtD/CeGmM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bifBZAGMcimL0k/5aAhAzOdJHzA8LaXHYzOky3wKf/MEa2OzLXQTTApqQ4Wl3qoQO
-	 YCV7h5/1LWWx1Wga6vIRsVutRTF7T+MQQHhrbriAD3bBYnQH2vm8SGahtFgV9xseZG
-	 AShxBygE3LWJz7fZP/k+F4qO7sWV2EOSlachS7VaTX8cziq9vLI81EEoZsVPyTNTtQ
-	 r9qjbmHMZlExefAp2mo6umoj8aVuQ0ksApXn7+nvesbMozu4R2YDT2aUlDCFfBgMyK
-	 cO7IumJTPXtIhhiO8RwG5O9il31xOMe2OgaYchBThodeD42ELafhqdkkQ6ZAFNPggo
-	 2f6yXiSa6Tj9w==
-Date: Fri, 29 May 2026 11:39:56 +0100
+	b=QkTaACHbEioba4Cd0JM9VMyZ7q7pB6qM1Y6Cue58rUiMGH+K25rk72Fcq0FZ9521x
+	 V6q2LtJS8LDgUkS1ImaaV+J7gmQComAHxRT+gjAGWAkP+TxWO0YqzhvXKLPj1BfIFP
+	 BUc/4dwxYS/uWDNr5kHNAnO1PKZ4Uqro5WWOJx6wfmFNQ6G9zkPt5wv7XrBUd/jx/8
+	 P5sz+0Z0Hd9t1zOFM30y3l535Glqisp1ETJDJlsXXH7swk/cdQKlZHiJPlDFUBZ+IG
+	 TerU2ZyIoxAuhY2xX4mdbJG/2jUNGVuqTvzld+90wxT9SzspdGD9wXx/PUlVjt0UCh
+	 GC5MoeaIuZOnQ==
+Date: Fri, 29 May 2026 11:42:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: matheus.feitosa@usp.br
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, Lucas
- Rabaquim <lucas.rabaquim@usp.br>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4] light: tsl2591: simplify tsl2591_persist functions
- via lookup table
-Message-ID: <20260529113956.1c4198fc@jic23-huawei>
-In-Reply-To: <20260528185912.24774-1-matheus.feitosa@usp.br>
-References: <20260528185912.24774-1-matheus.feitosa@usp.br>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org (open list:IIO
+ SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH v5] iio: chemical: scd30: Replace manual locking with
+ RAII locking
+Message-ID: <20260529114201.4025eeb2@jic23-huawei>
+In-Reply-To: <20260528222906.61561-1-m32285159@gmail.com>
+References: <20260528222906.61561-1-m32285159@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,110 +48,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 28 May 2026 15:55:12 -0300
-matheus.feitosa@usp.br wrote:
+On Thu, 28 May 2026 17:29:06 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> From: Matheus Silveira <matheus.feitosa@usp.br>
+> scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
+> calls. Replace them with the newer guard(mutex)() for cleaner RAII
+> patterns and to improve maintainability.
 > 
-> Replace switch statements with an indexed lookup table for
-> persist cycle conversions.
+> Add new helper function scd30_trigger_handler_helper() containing
+> the critical section for scd30_trigger_handler().
 > 
-> Both functions contain redundant switch statements. This
-> reduces code duplication and makes future updates to
-> TSL2591_PRST_ALS_INT_CYCLE_* definitions easier to maintain
-> by keeping the mapping in a single place.
+> In addition, small refactor to replace "?:" operator with regular
+> if/else returns.
 > 
-> Signed-off-by: Matheus Silveira <matheus.feitosa@usp.br>
-> Co-developed-by: Lucas Rabaquim <lucas.rabaquim@usp.br>
-> Signed-off-by: Lucas Rabaquim <lucas.rabaquim@usp.br>
-See feedback from sashiko:
-https://sashiko.dev/#/patchset/20260528185912.24774-1-matheus.feitosa%40usp.br
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 
-As far as I can tell: tsl2591_compatible_als_persist_cycle() was not
-doing anything useful before this patch - so whilst you are here please send
-an additional patch to rip that out (if you agree it is pointless!)
-
-Otherwise, I missed a small formatting thing. I tidied that up whilst
-applying.  Applied to the testing branch of iio.git
-
-Thanks
-
-Jonathan
-
-> ---
-> Changes in v3:
->  - Remove struct persist_entry and replace the struct
->    list with an array of u8 values
->  - Remove the loop from tsl2591_persist_cycle_to_lit()
->    as suggested by Andy Shevchenko
->  - Align tsl2591_persist_lit_to_cycle() with
->    tsl2591_als_time_to_fval()
->  - Keep the loop in tsl2591_persist_lit_to_cycle()
->    as suggested during discussion by David Lechner
-> 
-> Changes in v4:
->  - Fix Lucas's name in tags
->  - Start lookup loop from TSL2591_PRST_ALS_INT_CYCLE_ANY
->    as suggested by Marcelo Schmitt and Jonathan Cameron
-> ---
->  drivers/iio/light/tsl2591.c | 95 +++++++++++--------------------------
->  1 file changed, 29 insertions(+), 66 deletions(-)
-> 
-> diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-> index 08476f193a44..2b91ecb86ade 100644
-> --- a/drivers/iio/light/tsl2591.c
-> +++ b/drivers/iio/light/tsl2591.c
-
->  static int tsl2591_persist_lit_to_cycle(const u8 als_persist)
->  {
-> -	switch (als_persist) {
-> -	case 1:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_ANY;
-> -	case 2:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_2;
-> -	case 3:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_3;
-> -	case 5:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_5;
-> -	case 10:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_10;
-> -	case 15:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_15;
-> -	case 20:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_20;
-> -	case 25:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_25;
-> -	case 30:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_30;
-> -	case 35:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_35;
-> -	case 40:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_40;
-> -	case 45:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_45;
-> -	case 50:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_50;
-> -	case 55:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_55;
-> -	case 60:
-> -		return TSL2591_PRST_ALS_INT_CYCLE_60;
-> -	default:
-> -		return -EINVAL;
-> +	for (unsigned int i = TSL2591_PRST_ALS_INT_CYCLE_ANY;
-> +		i < ARRAY_SIZE(tsl2591_persist_table);
-> +		i++) {
-This is not particularly nicely formatted. Better aligned as
-
-	for (unsigned int i = TSL2591_PRST_ALS_INT_CYCLE_ANY;
-	     i < ARRAY_SIZE(tsl2591_persist_table); i++) {
-		if (als_persist == tsl2591_persist_table[i])
-
-> +		if (als_persist == tsl2591_persist_table[i])
-> +			return i;
->  	}
+Looks like you sent a version that won't build.
+> +static int scd30_trigger_handler_helper(struct iio_dev *indio_dev, int *scan_data,
+> +					size_t scan_data_size)
+> +{
+> +	struct scd30_state *state = iio_priv(indio_dev);
+> +	int ret;
 > +
-> +	return -EINVAL;
->  }
+> +	guard(mutex)(&state->lock);
+> +
+> +	if (!iio_trigger_using_own(indio_dev))
+> +		ret = scd30_read_poll(state);
+> +	else
+> +		ret = scd30_read_meas(state);
+> +	memcpy(scan_data, state->meas, scan_data_size);
+> +
+> +	return ret;
+> +}
+> +
+>  static irqreturn_t scd30_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+> -	struct scd30_state *state = iio_priv(indio_dev);
+>  	struct {
+>  		int data[SCD30_MEAS_COUNT];
+>  		aligned_s64 ts;
+>  	} scan = { };
+>  	int ret;
 >  
->  static int tsl2591_compatible_int_time(struct tsl2591_chip *chip,
+> -	mutex_lock(&state->lock);
+> -	if (!iio_trigger_using_own(indio_dev))
+> -		ret = scd30_read_poll(state);
+> -	else
+> -		ret = scd30_read_meas(state);
+> -	memcpy(scan.data, state->meas, sizeof(state->meas));
+> -	mutex_unlock(&state->lock);
+> +	ret = scd30_trigger_handler_helper_locked(indio_dev, scan.data, sizeof(scan.data));
+The call needs an update t the new naming.
+
+>  	if (ret)
+>  		goto out;
+>  
 
