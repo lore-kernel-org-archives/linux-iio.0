@@ -1,61 +1,63 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FC2D3A9018
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 10:45:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B5E3CCFB4
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 10:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780051555; cv=none; b=oZ1ljcCi0+4xg/Q8+ep0tqienTpd9ihIlsZjO72K3lwfxJwzmSYEAj/lYFTBlXNkn+QIdSZhQFtxut/XOQYFKHh3AtjTQxq5bai3nui9PscAxlSiTt6i2kl6N4t23M7XsnmOHaWSwtOnUaGlkyLBzsXW0d4zGb4Qn3wR86o9o1A=
+	t=1780051558; cv=none; b=WJ+28j2PwsdY4fxU572zGjdg0181LVJ7KaECSCJOU5cOt6Taoq/Eb5EtD/tAw5Tg8owZD29cqTtkienlFP8S7WFFs20Noxd/oL/VQ3ppcAXX4YUxsae1Ofv1mHo6RHOLTxjLI37FdPpCIRRYdGQQGNOZj8OWCNX9dNjr3lsHvgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780051555; c=relaxed/simple;
-	bh=TlwOFJL7HDuGRuusp19t26F5y1lKZgyjWAU59m7tSYs=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mA46Tx2rvvUXx6CL5qd2iWXtY70cd9R1EXi0hVEyjFqKOFhPBQEfq3lrKLqsUAuWhsWccKk1eVsASXsaqXrafN1bYP00VrudrJYewxzuxrG+mmF+ZBKZWBFsToL09G33XkWV9QSxbEWBX5Kb1gLINp3ibtnEtW2UUthoMxwu7wc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HAX1cYiK; arc=none smtp.client-ip=209.85.208.175
+	s=arc-20240116; t=1780051558; c=relaxed/simple;
+	bh=gefyxywsiMBSr6d14j+d4bay8IyQt8dXGWBKJWpislU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Yh54UMUBIlIv7zn91pbaFbtwSnEEarc6XTKrxBgVQgHPwcKF9vc8CPIaGWB+aaI6Hg3Um6EGlWXrxlYk66zGGjnNp6NQPQhasGm7qmh2W75tSvaq0mobNrrxyHmCyU3BoCywjgjkXvtLAEdVhzB/mTchwLg/Z+P0JHoLgVlgxIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O5sutoLL; arc=none smtp.client-ip=209.85.167.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HAX1cYiK"
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-38ec6e3de84so17095801fa.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 03:45:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O5sutoLL"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5a875ca312eso1432826e87.3
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 03:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780051552; x=1780656352; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xpcy2czVripxTHluyLjMSuAtr0VL9lenvzOSbRvXvh4=;
-        b=HAX1cYiKqky+HZ8+wyMaWqLObBAx/TruTEvs1vS1rwSZQHLKif+NLc5Io//4bsqgRP
-         CxhKTMc8T8prP3SqXpNrh7722/xGiZoDNfM/tMqq9K8aVR/mlW6uJLl10Hr7uNhJ6lKJ
-         WXRDvgWsmD9nvvtHuGibopGa0JQ/0uoFPnBaHgmvCRWDOVQVXPxEuQR8+20paAUm/Z85
-         QAwNKIZFL42wXyNOTnN5mM9GuIk6abERMpu1uX/e5Hy30R9wqlSeyu8FZGtnHdVPWRwK
-         ILyDlPbSv9qMbC6M/Qh1AopRAmS0fyNmvGxtUAr23QTJYU/9b3jeJ46ns0vTsspodiih
-         WFkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780051552; x=1780656352;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1780051556; x=1780656356; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Xpcy2czVripxTHluyLjMSuAtr0VL9lenvzOSbRvXvh4=;
-        b=N0AO7B8AddCZMfTopiM92y3ssFrmzt+X1ywSLkt97pEy0rnEiGmCnrir9rIsbv5JM6
-         M3ASAhYwOYOFKhPKwkE4pGSxxh/VFZB3vgs6rxmBw+rIr7U4HXYzI/ADqcAWBv3CQ/4p
-         EkwoGpLspSirLmSw6VoxCjTHZ9ixANNSVKBKd+1V9qQheWTv7rxMe/p43FIQJYRQK55a
-         8/+P+D7q5cYpa0LnYUlBuMMlGKl0SUABUsdIPjT7KJv57PSEuPv8eQBHmualL6SmHqoD
-         obHKWiUJU/aBb5vbXWeqOlb4TVrj2iWz2ofElBY2Z5jH+9M6QB7QM32kX6SW/gcez8I3
-         zV2g==
-X-Forwarded-Encrypted: i=1; AFNElJ9vNdgPb1EWi12EFO3pSz4RmfBOfC1WiN8jMWIIEjJA8V0du8XbDHIPBr/kMW0CSfOnlWWQZJbLuXQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxkMoOtLjvmZPEdpYr55X1rg7AKm52DnxQdjTrulutQt4IwXVNf
-	ype83yQV9kqn/ChjbC5W2gotgxXwIRq3k1lURpC/rNJdGAdbfudgNgje
-X-Gm-Gg: Acq92OHLltn2hgKVRhT8etJG1/uk6qWlCO9/J6+T/H8EyWfW+UXWogpMwcz73YyAFx9
-	07Svhs+eGj2E7EEdDkoJmm0LF4j1ht3vrv95ZLYKw75xIXs6UPGb6l7yFm2qhpQdsfLCxWFFUs5
-	5lPTs6SHHI4yl3FE6aBZdjCy5sfb+apx6NVavZEKqyjWJ6gcoC45R7gpXh60Y4CDa7YvKN1nyvx
-	aG0LF+Pgw0lEEa/zjv1IWVhCFllrKR+IHiIiTNzCk9x8YkZ4JzqZ/oAfxOuoh0Oq+YG83hwQPiY
-	TVyk/WWxm5ZL/5dRzvG+39YZOK2en1gWted2HoTvk4MpNB31jrg6dTXz6IWLOkiE8qCZPjYsuUX
-	T2zjNBmtTnvacXE3UlMIX0VNpaGMp2SNgekoKHHReSm9Ky+tc/yOQPxtfs94PhpltZ8ehcCRMny
-	wEunadVzrU4aKJB/hjPnRIar1GF5wMKdIymwUFcQnBfIVNzQwpA4+jIsU=
-X-Received: by 2002:a05:6512:2210:b0:5a2:7798:9990 with SMTP id 2adb3069b0e04-5aa59463bfcmr362923e87.1.1780051552305;
-        Fri, 29 May 2026 03:45:52 -0700 (PDT)
+        bh=7OXH2+flOB/VPx3klyh9xxXOIX/pTbIIlXVLEZ4fguY=;
+        b=O5sutoLLd5tTbXz4l0n/TvXi6ebjd6U+gSOdcys4AHKVotpZm/s2no680ZouY9NWU1
+         e2B5YnA+AkZV2ebf1qEfSXhOHGV6yjID0vXprGr182E+TzAc0WtLwObzzcgpH7ZK7Qdy
+         xtUCDQMVlpVi16J7Zw8KLmgVFMjCZ6k0KOq8PsL7pWMx4XcPU+F+r6lBE4dYQrGrUFrT
+         1K8GsFSaWGSCjnPhFlWN2t4Wm7M2+y7oj4iexak578A+oy5cxenbYwfgSdLYSVxoA/2j
+         1XYziCzun6TqGqmkv/PWaO/NFrZJ6LcqUtKyeKLyuy8cKoiiYApqO71woztFW6xbG8Ng
+         mmfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780051556; x=1780656356;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=7OXH2+flOB/VPx3klyh9xxXOIX/pTbIIlXVLEZ4fguY=;
+        b=izy2OaVghWLnu8YYON16glan7woKMKhi96889C6sagR8bmC+oySbx76DfcgFpF/KUY
+         Y7BJZFoZmFO6lJgQbRq+P8VCOSZt6Ks5IEZ1MLXhJhrwCmtTNVpg4vCiqql4xlcmasnA
+         c3/PAlbLjtyG52J7L3o4Z06MdXlEznpp8K430CiAKjKzUbNPE+dI+XN9AdlN0lMilJ0C
+         7YyolwEbC1MDfXzQHSkKqsuweiiMzaC/6eVrhWIvwsLg1+6Ubw+jhOvIGeNI3l6kPkSn
+         20WmGPSv37oT2sKFsKAUXmJcGt2dN046ohtV1gMsDZ4tnw97+QIoH4QaS9faYwgQ2HQ0
+         7F1A==
+X-Forwarded-Encrypted: i=1; AFNElJ8htyCZS7e5svpIsJ8YPmG2TdF+jgZpELzqKUK3Fkm7G/H7hHP3jAt0lXE+ViXUvyb05Vfdf+xKuhs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZ4+zB615i3RyDUWc6waIzYf0LReMTnQTUzxayZCXIh9dvlaRj
+	ek2kS+jSumKOZ4J92CB41GZWALvP6g9nR3DHTRkXEhJRYu3O0f6K6oVE
+X-Gm-Gg: Acq92OH0Fa0vRzblbjipbMXDnWKYbLXt/EP7AWZrYV3jscliVt9vvMAE28LvprIfdJV
+	6e4OcmWOrW3Y3t4iLke5xmMog6Qm/9Aw9S1Dkpav8Wrai6hA7G4BcGN5Ji32btpes0/SaEpNK24
+	2L1j/DD4bKPNKIanfBijVc8YT8BlWzMmua7xXqNeBJyDybb18tcHEySA/zZlHq3FHJsFP3TVpZm
+	Ft0SoTSUzw5d+6QpTmnUiIbmMQXX9sslFna1hHrp1FRjSUT0QrscoX9O5JnI9mPQl/pvBZ9yLZC
+	JEHfBfi6fA2W2lN/nUdphfDrDV6a48NAP2ID+4CC2c7E4WlbcTwKuyYoKjPnaRVuVUI1AkmhdLr
+	x/U1PKm9WwijaRSBTip7DQp/EsPY0NgpzEBTQHT8K5WO3KAKBTVZoJWfJZhhHmNAhW8+KPL1eDo
+	zpxBSPJ+K/BGjjq2sKA4UjxicYfzuX2CEkEeb1retrMcf7Sc4Gv32bQF8=
+X-Received: by 2002:a05:6512:3996:b0:5a8:7218:47b9 with SMTP id 2adb3069b0e04-5aa594c30edmr358949e87.8.1780051555661;
+        Fri, 29 May 2026 03:45:55 -0700 (PDT)
 Received: from localhost.localdomain ([94.158.61.193])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa5b788811sm192604e87.63.2026.05.29.03.45.48
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa5b788811sm192604e87.63.2026.05.29.03.45.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 03:45:50 -0700 (PDT)
+        Fri, 29 May 2026 03:45:53 -0700 (PDT)
 From: Stepan Ionichev <sozdayvek@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -63,10 +65,12 @@ Cc: dlechner@baylibre.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/4] iio: PM-enable leak on probe error path (goto-variant drivers)
-Date: Fri, 29 May 2026 15:45:40 +0500
-Message-Id: <cover.1780051096.git.sozdayvek@gmail.com>
+Subject: [PATCH 1/4] iio: light: pa12203001: use devm_pm_runtime_enable() to fix probe error path
+Date: Fri, 29 May 2026 15:45:41 +0500
+Message-Id: <04c4962d435d4df8e8ce6655598c0964014392f1.1780051096.git.sozdayvek@gmail.com>
 X-Mailer: git-send-email 2.33.0.windows.2
+In-Reply-To: <cover.1780051096.git.sozdayvek@gmail.com>
+References: <cover.1780051096.git.sozdayvek@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,48 +79,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is the goto-variant follow-up to the standalone ti-ads1015 patch and
-the 4-patch series for the simple drivers.  In these four drivers probe
-calls pm_runtime_enable() but the existing register-failure path jumps to
-a manual cleanup label (out_err / buffer_cleanup / error_power_down)
-rather than returning directly.  None of those cleanup labels call
-pm_runtime_disable(), so the runtime PM enable_count leaks on probe
+pa12203001_probe() calls pm_runtime_enable() and then
+iio_device_register().  If iio_device_register() fails the function
+jumps to out_err but the existing out_err handler does not call
+pm_runtime_disable(), leaking the runtime PM enable_count on probe
 failure and on subsequent rebind.
 
-The conversion is the same as in the rest of the class: replace
-pm_runtime_enable() with devm_pm_runtime_enable() and drop the
-pm_runtime_disable() / pm_runtime_set_suspended() calls in .remove().
-On the new error path from devm_pm_runtime_enable() each patch jumps to
-the same existing cleanup label that iio_device_register() uses, so the
-manual unwind for the non-devm resources held earlier in probe still
-runs.  In apds9960 nothing is powered or registered at that point so a
-plain return is used.
+Switch to devm_pm_runtime_enable() so the enable (and the matching
+dont_use_autosuspend) are torn down automatically.  On its new error path
+the probe jumps to the existing out_err label so the chip-disable cleanup
+stays in step with the rest of the manual unwind.  The pm_runtime_disable()
+and pm_runtime_set_suspended() calls in pa12203001_remove() are dropped;
+the devm action runs after .remove() and handles the teardown.
 
-Standalone precedent already on the list:
-  iio: adc: ti-ads1015 -
-  https://lore.kernel.org/all/20260529101011.3030-1-sozdayvek@gmail.com/
-
-Companion 4-patch series for the simple-return drivers (isl29028,
-tsl2583, mlx90614, bmi088-accel) was posted alongside this one.
-
-Stepan Ionichev (4):
-  iio: light: pa12203001: use devm_pm_runtime_enable() to fix probe
-    error path
-  iio: light: us5182d: use devm_pm_runtime_enable() to fix probe error
-    path
-  iio: light: apds9960: use devm_pm_runtime_enable() to fix probe error
-    path
-  iio: accel: mma8452: use devm_pm_runtime_enable() to fix probe error
-    path
-
- drivers/iio/accel/mma8452.c    | 7 +++----
- drivers/iio/light/apds9960.c   | 6 +++---
+Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+---
  drivers/iio/light/pa12203001.c | 7 +++----
- drivers/iio/light/us5182d.c    | 7 +++----
- 4 files changed, 12 insertions(+), 15 deletions(-)
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-
-base-commit: 7cb1c5b32a2bfde961fff8d5204526b609bcb30a
+diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+index 98a1f1624c75..b9f50c9070a3 100644
+--- a/drivers/iio/light/pa12203001.c
++++ b/drivers/iio/light/pa12203001.c
+@@ -372,7 +372,9 @@ static int pa12203001_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		goto out_err;
+ 
+-	pm_runtime_enable(&client->dev);
++	ret = devm_pm_runtime_enable(&client->dev);
++	if (ret)
++		goto out_err;
+ 	pm_runtime_set_autosuspend_delay(&client->dev,
+ 					 PA12203001_SLEEP_DELAY_MS);
+ 	pm_runtime_use_autosuspend(&client->dev);
+@@ -395,9 +397,6 @@ static void pa12203001_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+-	pm_runtime_disable(&client->dev);
+-	pm_runtime_set_suspended(&client->dev);
+-
+ 	ret = pa12203001_power_chip(indio_dev, PA12203001_CHIP_DISABLE);
+ 	if (ret)
+ 		dev_warn(&client->dev, "Failed to power down (%pe)\n",
 -- 
 2.43.0
 
