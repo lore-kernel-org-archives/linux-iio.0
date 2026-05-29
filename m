@@ -1,195 +1,158 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CB94478E45
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 18:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAD783769EB
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 19:36:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780079840; cv=none; b=mKbVpzFs3niwq3ulQp8j6ptr7iOE8X8ihjtp3jpk+XHJBLQc6hEG7Bkej2hDhSeIeO2b/VtmAyEifyQlIFGGYXN9iyrOu9kYnvt7bIN169NmX2K+k3nRTpk2+g9RX6jNgSOwp0SmkRKw9mj3sc2Xk1HvdBDCu9EBO6Fa/DcsXrE=
+	t=1780083363; cv=none; b=VOsXipfI92FgLVJ+9lCkHsBBvP3V1Fg1QV+3labqavnFbdNfK50xtbkaXekx+9k6Ymuc+bdkOggBIggeNbtLeWHSwOZQIWYXV77Bc9+M0EjOykXtJ9zR+kDklq8Bq9gv8gqFaKYE2Save7lDJpzsiZTIsHquBVmDUXYXVLytEoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780079840; c=relaxed/simple;
-	bh=4kYvBVIyxbZc3wN4nTs2bf6YuCzG0XhcPUB/ns1CWpY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WFrDAik3OU/GnBfEQh0rh0GHNTJd3SI3GbVUMiuD5pQxPxFwMW1gnmQvTySzphNhp/PH3qrWVGZ72u8orlfWG9E3Th2jhDEAQgfOPmR+LUKfEVUCK/wJqAompq+R/cbbc1zLqYMHmSNFYARxmQTqC0CMD9qiEO4/DjLZ9skvJTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d30sJnjB; arc=none smtp.client-ip=209.85.128.46
+	s=arc-20240116; t=1780083363; c=relaxed/simple;
+	bh=n9h0MjhuSTHJx0ps9EQSx+ZsByKpqYFFUGQ2CiW+e4I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sHjG0ebkQ6KhXOKfVj64v3Yl7FXVTmhVXRBUBzL0zRKZmXH9AOfzrnlAeuF45uIZxWjCNVLifNSV1DEa14QW8LZA/7zwDLflsOtkAhrzb2AOmT2QrzcBAyaaPlVogPyYGC0aH3pOw+QIAdGMMcdBEZDiyoKaHw/c0djVg2BLNvs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sp/Yv47v; arc=none smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d30sJnjB"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-48962cd0864so11803395e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 11:37:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sp/Yv47v"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-68bd9fce347so2128406a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 12:36:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780079834; x=1780684634; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=S/m4QFm7x6hshNVSS9JbTtp77lFuR+iDM6hBxOl/wts=;
-        b=d30sJnjBjDm25cyvNEpoBxOBvYO6g6xlA7hX/IIgC/RDMBgbz0pQv/BXQgQDVdXJJE
-         25hPQzNhCQBxNaX4Y6HDjSZoJof17r/tNqQSz6Dco4dOiJmySoSsXxwrcRYTwVtZVIzC
-         rb6mJYwiPEP7g1ATguZgMr2KPdSUjpVQ2+1FIV7rnHY5W8MMU7dtZfRWdU9W8Xm0xvxq
-         8cgfIvFrBFkses3N3CC92SeHS/QRlyC2MavpIUr/XgJpX/T92Qj+IfKEb4qz9t+PW9ja
-         MGWdl+OIYxKmi7KlPJ5TxliClp5d/gFsc8uoAFlDFZBpR3Xk2lZ31MWCwYG56rBupxsF
-         aaVA==
+        d=gmail.com; s=20251104; t=1780083360; x=1780688160; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=C4KTjjREkFr8HWH1QHpFZ/ConaYsx8lnYSzAqiNOAtQ=;
+        b=Sp/Yv47vdtQoBsi8OShahiTwd8gMmCK1iTi1PnTwQxm9c67RILnujnD1k/kpA9a+Yd
+         0S28q2pvJGsc9FzI9nHsmx7EGhbaU3i5+hyfvAb0Oj2uAkEaMjn60c55MKhUDRPiOeGZ
+         3XxaJIcxhSo7/d+IVem8u2RqO92lZGg9yQkXaYEoCefs6fFo8jto3MPiTLMdbjQPjWLQ
+         KFkG0QUqkNjn8BIpJ42Is8tDCwoat+p8Kcw1RH75+H5ts/iywk9gG9k2v+BETQtdg9E6
+         DFGFcKpk+IHX9PCp3eM3v06Rw+UXrc6HrBDo1U8/WApMB2XKiQeNYsKH4LbbVe2+slcx
+         xd+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780079834; x=1780684634;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S/m4QFm7x6hshNVSS9JbTtp77lFuR+iDM6hBxOl/wts=;
-        b=p32JxY6+MJsQDnM6qlJ3WrpwRsqL6HP3+iJ2M/NX8L3Hb+Z4MFiEGsuzNamNuLQmr/
-         XYJrXIAjONaEPUGVQJmvFbBCBGdw1JVLxtZ906qAkcpkfUBor84K1lgXtYNUSLLPTyj2
-         aTxHBygRu9X5PrU5tMuBMrn9DMm6OdrrPhl5kWZUzMdHc6/sscw9CQY2HHX/1ah6OlWy
-         4K9BqH7IXCeUYLH8AiqdgVMz5ua6r1B07E67UAbkI6tEyZmK3XRaIk7Si2v9XoJoGya9
-         BumMUkKAkcGk8K6IU7xO8uztBzOanHdYUvWD3aR8M1kaFuZ9dlUpEdl4D6BFt0X89goP
-         7ndA==
-X-Forwarded-Encrypted: i=1; AFNElJ/lhfbcvgQH3KYyRS73qX9GThC3zXR8XohcjUMP3YhWF3+A0WQwFmcQYlT5piac1jyh94nm6bTCQGI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzQFB3JRk7gceg50KE7Exo9ejmxl5LBNehJhxfYw6SN8ftrub9f
-	9EfKEa1Bt7DP6iJ4uFFWZ0cYGYXQ2MCcRLO5J+k3YaJ31Av9NpKymj+s
-X-Gm-Gg: Acq92OEeVOJx5/VUe6bNLW/Gwe3nYHfR/YudSOvU9X06YYywXhqJ5Ldbp5MZJ/496gE
-	7yNXH88s2LVNuFokWLvvLTJFmsFWjELxQA+boHwOZ43yNAuC+2oACpulGX9hBpdNFMvy4qiggzb
-	4s97KTq3vJJA3s6fNvufmxiGpDebapbWRunRcNvtJ40CcNtZnRPP02kgn/uoefKkeZrz7UMyCJT
-	zsb2oy4THNamh7DE23hA3JnpiRaE+v9y4/rXOc71t9lCcMxKiR8rk1YY/ZuUcOnS2LcI1mVQnxg
-	5vuyMFTw2ww1RCoNKO1n7I68I8NFIQBR+/m4woAcO3+w2pOB8cfcxpSq3YZzY9H04wMs01jp5xe
-	9zkpECW0BAw/JO7dLTgT7CkvYj+iVrD4oICR8NSvg+zBHkHAucqu/SBPEjiv3j1airO0M9bhUkr
-	k1q7mmIovz0xZDEAbgA41svYAmLuxkwqazavB43kXTImzEmay6SIE8FsZBLqmQ9UUiVg==
-X-Received: by 2002:a05:600c:4f8e:b0:490:6238:c5d0 with SMTP id 5b1f17b1804b1-490a290ce4dmr6140515e9.1.1780079834202;
-        Fri, 29 May 2026 11:37:14 -0700 (PDT)
-Received: from localhost.localdomain ([82.215.118.79])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef34c3081sm5740555f8f.15.2026.05.29.11.37.12
+        d=1e100.net; s=20251104; t=1780083360; x=1780688160;
+        h=in-reply-to:content-disposition:mime-version:references
+         :mail-followup-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C4KTjjREkFr8HWH1QHpFZ/ConaYsx8lnYSzAqiNOAtQ=;
+        b=jZBrKJ6a8fgOm897CrYnOQvr3dSDh1LH8kE+l/VYoqHhOkFlLpJfWFtFSjT7lgSUnd
+         PWImcSbygh/vAFzdN6p8dZFmfmGgxO2HbdQhAe0mOtWOGQYsxagb3SLVTVSdUxmAD5Z+
+         F5pJy6MA86y7X8WyUCEZe8u0izQ+M8LUC9HraNsYTV+BQKc/4AUMj4IvXZey6O8ubCsA
+         ViDg8yXfsy5dyWDuFNQtjWxn3tDQPS6nCB7F8uNU9pjFCW9ZpoAdsnjZOwkELviOCkmJ
+         JKn02Q5NBVa0OWsMhZEusXSBXfEYoat7m9sxTyDx6xSoVG2wsf65DxxLwiQEb00c89mz
+         DI1Q==
+X-Forwarded-Encrypted: i=1; AFNElJ963tSLRNPJDPsRvU4XEYeUvvBiIdqrQRt4eo+9YK5z5CIdMrcPD1NgpF2KT4uGQDH+z8TpEwt8CxE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwyYXCmSzDoFMbZvE1UIcGMpUzVJJJ12/0Pf0AiefVlnhjALIJP
+	+agCPZUPoHaFz65OBAosNK1JV7A3b4UR+ODlQAyYLeJUjWFEg6kjl5HH
+X-Gm-Gg: Acq92OG60MPvlrPHXRzjWNVUxbIelZZQANuF34EqetSNJW/r2ioX/hkc8v3hgJe6dVU
+	KRDa/fkFQQrgmYOfz6QxYymBNz2xjsQAwR9cBpGlsWEnYRktB1z8Mf0D9sE9J/IYbI07msnt4Bu
+	XHQHWgGLEv8J/CF4YIWQ9kzmwzwKLOkeqNcpoDpDA0Qgv9tlZGHCUkyD5D/TaudI/fzGTxxo9Ck
+	rfke4lFRbJy4OS5Y+dzHQETYeKI+5VvUo8vI6jRlSidib0XQnGiidCH75nWyP83niE/iiYDdTmD
+	9fYxmroNZsLS8wxnkv5HxQlZ9oV4NrOsb4MIFH8AnCUwDhC3G54gqRANhirwKZmNuT6oYNf8R70
+	H9uDW+W4Sltj9PjXySPa8L0VpecW/4Phm/M72yA0z9s9IhN54fNJEFJQA5Hi+4Fh+9CNv2OkDRz
+	CIq/cmVf6PmSTuE6eOBOlP0N6n6vlcJb+AIDrn4zQ0zylR
+X-Received: by 2002:a17:907:9495:b0:bd9:a6ab:a245 with SMTP id a640c23a62f3a-beab344183dmr50261466b.41.1780083359132;
+        Fri, 29 May 2026 12:35:59 -0700 (PDT)
+Received: from localhost ([2a05:3580:f312:6c00:1b49:dfce:283c:7307])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-be9d27f4782sm95518766b.5.2026.05.29.12.35.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 11:37:13 -0700 (PDT)
-From: Stepan Ionichev <sozdayvek@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	joshua.crofts1@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: adc: ti-ads1015: use devm helpers to fix probe error paths
-Date: Fri, 29 May 2026 23:37:08 +0500
-Message-Id: <20260529183708.17819-1-sozdayvek@gmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        Fri, 29 May 2026 12:35:58 -0700 (PDT)
+Date: Fri, 29 May 2026 22:35:57 +0300
+From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 1/3] iio: imu: inv_mpu6050: fix unbalanced
+ regulator_disable calls, when probe fails
+Message-ID: <ahnqnXLp5E-zMmQv@skv.local>
+Mail-Followup-To: Andrey Skvortsov <andrej.skvortzov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Marek <jonathan@marek.ca>,
+	Brian Masney <masneyb@onstation.org>, Rob Herring <robh@kernel.org>
+References: <20260426112334.3938774-1-andrej.skvortzov@gmail.com>
+ <20260426112334.3938774-2-andrej.skvortzov@gmail.com>
+ <20260426154330.0a29236e@jic23-huawei>
+ <ae50xlJfXiVax6c_@skv.local>
+ <20260427100441.68b6a986@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260427100441.68b6a986@jic23-huawei>
 
-Once ads1015_probe() gets past ads1015_set_conv_mode(CONTINUOUS), two
-resources leak on its error paths and on driver unbind:
+On 26-04-27 10:04, Jonathan Cameron wrote:
+> On Sun, 26 Apr 2026 23:25:42 +0300
+> Andrey Skvortsov <andrej.skvortzov@gmail.com> wrote:
+> 
+> > On 26-04-26 15:43, Jonathan Cameron wrote:
+> > > On Sun, 26 Apr 2026 14:23:32 +0300
+> > > Andrey Skvortsov <andrej.skvortzov@gmail.com> wrote:
+> > >   
+> > > > During a probe functions after all regulators are enabled, runtime pm
+> > > > is enabled. Before probe function finishes, runtime pm triggers and
+> > > > disables vddio regulator. When probe function fails after that,
+> > > > inv_mpu_core_disable_regulator_action tries to disable already
+> > > > disabled by runtime pm vddio regulator causing following backtrace:
+> > > > 
+> > > >   inv-mpu6050-i2c 1-0068: trigger probe fail -19
+> > > >   WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x2ac/0x600
+> > > >   Call trace:
+> > > >    _regulator_disable+0x2ac/0x600 (P)
+> > > >    regulator_disable+0xac/0x148
+> > > >    inv_mpu_core_disable_regulator_vddio_action+0x3c/0xb0 [inv_mpu6050]
+> > > >    devm_action_release+0x4c/0x88
+> > > >    release_nodes+0xd8/0x178
+> > > >    devres_release_group+0x214/0x3c8
+> > > >    i2c_device_probe+0x6fc/0x9b0
+> > > >   ...
+> > > >   inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
+> > > > 
+> > > > vddio state is handled in two places: pm_runtime and
+> > > > inv_mpu_core_disable_regulator_vddio_action devm action.
+> > > > inv_mpu_core_disable_regulator_vddio_action has to check, whether
+> > > > regulator is disabled by pm_runtime already. But this information is
+> > > > available only after pm_runtime state is initialized by
+> > > > pm_runtime_set_active during a probe. So
+> > > > inv_mpu_core_disable_regulator_vddio_action has to be called only
+> > > > after pm_runtime is properly initialized. To handle cases, when probe
+> > > > fails before pm_runtime is enabled, explicitly disable regulators
+> > > > in error paths.  
+> > > Why not drag pm_runtime_set_active() earlier?  
+> > 
+> > Do you mean something like proposed in v2? [1]
+> > 
+> > 1. https://lore.kernel.org/linux-iio/20260401082737.781018-4-andrej.skvortzov@gmail.com/#t
+> Ah yes. Sorry, I missed that discussion.
+> 
+> To me moving this earlier is less hacky.  We are brining the runtime
+> state inline with what we have set the power to at the point of doing
+> so.
+For me moving pm_runtime_set_active earlier looks better as well. Then
+I'll change this back to the previous version in the next patchset version,
+if nobody has something against that.
 
-  - pm_runtime_enable() is left enabled if iio_device_register() fails;
-    on subsequent probe/rebind the runtime PM tracking complains about
-    an unbalanced enable.
-  - The CONTINUOUS conversion mode written to the chip is never restored
-    on any error path after that point, so on probe failure the chip is
-    left running.
+> 
+> Nuno, having seen the complexity that moving that state change late
+> causes, I don't suppose you are convinced that v2 solution is the way
+> to go?
+> 
+> Thanks,
+> 
+> Jonathan
 
-Convert all three teardown operations of ads1015_remove() to devm so
-that the error paths and the unbind path share the same unwind in
-reverse-of-setup order:
-
-  - ads1015_set_conv_mode(SINGLESHOT) becomes a devm action registered
-    immediately after CONTINUOUS mode is enabled.
-  - pm_runtime_enable() becomes devm_pm_runtime_enable().
-  - iio_device_register() becomes devm_iio_device_register(), so the
-    iio device is unregistered first on unbind.
-
-ads1015_remove() is no longer needed and is dropped.
-
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
----
-v2:
-- Full devm conversion: register a devm action for set_conv_mode(SINGLESHOT),
-  switch to devm_iio_device_register, drop ads1015_remove() entirely.  This
-  avoids mixing devm with manual unwind (Jonathan) and also fixes the
-  pre-existing continuous-mode leak on probe failure.
-- Drop the unrelated dev_err() -> dev_err_probe() conversion from v1 (Joshua).
-
-v1: https://lore.kernel.org/all/20260529101011.3030-1-sozdayvek@gmail.com/
-
- drivers/iio/adc/ti-ads1015.c | 44 +++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index c7ffe47449e2..d7f4d0d5bcf9 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -930,6 +930,17 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
- 				  mode << ADS1015_CFG_MOD_SHIFT);
- }
- 
-+static void ads1015_power_down(void *p)
-+{
-+	struct ads1015_data *data = p;
-+	int ret;
-+
-+	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-+	if (ret)
-+		dev_warn(regmap_get_device(data->regmap),
-+			 "Failed to power down (%pe)\n", ERR_PTR(ret));
-+}
-+
- static int ads1015_probe(struct i2c_client *client)
- {
- 	const struct ads1015_chip_data *chip;
-@@ -1030,6 +1041,10 @@ static int ads1015_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_add_action_or_reset(&client->dev, ads1015_power_down, data);
-+	if (ret)
-+		return ret;
-+
- 	data->conv_invalid = true;
- 
- 	ret = pm_runtime_set_active(&client->dev);
-@@ -1037,33 +1052,11 @@ static int ads1015_probe(struct i2c_client *client)
- 		return ret;
- 	pm_runtime_set_autosuspend_delay(&client->dev, ADS1015_SLEEP_DELAY_MS);
- 	pm_runtime_use_autosuspend(&client->dev);
--	pm_runtime_enable(&client->dev);
--
--	ret = iio_device_register(indio_dev);
--	if (ret < 0) {
--		dev_err(&client->dev, "Failed to register IIO device\n");
-+	ret = devm_pm_runtime_enable(&client->dev);
-+	if (ret)
- 		return ret;
--	}
--
--	return 0;
--}
- 
--static void ads1015_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct ads1015_data *data = iio_priv(indio_dev);
--	int ret;
--
--	iio_device_unregister(indio_dev);
--
--	pm_runtime_disable(&client->dev);
--	pm_runtime_set_suspended(&client->dev);
--
--	/* power down single shot mode */
--	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
--	if (ret)
--		dev_warn(&client->dev, "Failed to power down (%pe)\n",
--			 ERR_PTR(ret));
-+	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
- #ifdef CONFIG_PM
-@@ -1150,7 +1143,6 @@ static struct i2c_driver ads1015_driver = {
- 		.pm = &ads1015_pm_ops,
- 	},
- 	.probe		= ads1015_probe,
--	.remove		= ads1015_remove,
- 	.id_table	= ads1015_id,
- };
- 
 -- 
-2.43.0
-
+Best regards,
+Andrey Skvortsov
