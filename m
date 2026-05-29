@@ -1,71 +1,103 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3375D310620;
-	Fri, 29 May 2026 01:43:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C410835B634;
+	Fri, 29 May 2026 02:08:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780019016; cv=none; b=Dg+vLBhyMBJDG94pZaRYMPCrcPo8L2elfg+n6KZ+m3wzRHnivkU1xJjegVZT5yUhIs+Hk6qgRdltUm1C7pnCMQ70sum3X451OexCpXfUq50QAJ4nLUYHnHA/FcDMI9aRemhQ815spYxhb9seKUjZZMNrYPZrNtcYEB/RGFjKqc0=
+	t=1780020515; cv=none; b=LjP8mDrTx/x1a8gOUuBmgKB7Tdt2/7BUk6vInwYwFhAWFen1gA9ovTs+H3I1rV7vCKam7mzEALQyWUm7KHBZBL7DOQJ6IgtslfB4F1TN4zgL7uGoP18fnrvPRFpkxx33Oj7VHX73WnVfBctW5b9kM/k0oJ0o2qirLVj6VpDP5T4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780019016; c=relaxed/simple;
-	bh=1AsmdiETNEFx3hBEl6SrqPw/3LZ6Ju9GvXYIAYkH7dw=;
-	h=Content-Type:MIME-Version:In-Reply-To:References:Subject:From:Cc:
-	 To:Date:Message-ID; b=YzADaHOTje7ZaVe38tOJd4DvxwOoG2kwFmbi6cKGpFM3hsHsZmKv+ROg/uSOw5J+x6vanpnPMX5GUdOsDAl7/vHvzNe6Cu1l3MNLn60VVe8bC4m2uC8i2EtJP5LbbzrBnpq4YySq6iFB2HTkFcvycyy0Q4OWUczSfqujVPB84ro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hKptxWx2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780020515; c=relaxed/simple;
+	bh=kEzW8hT8wQFiBZknHN+TOAuUrnTCN1XX/ZwyChu1vLw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=MnqBpOZRotT7A6LJb4KJmn6DnenSOjG1tPnZ87LAMVdAKtnVeiaFNq3PT2bkt1CVq4WLWqJG3xBy6sKjcSiPfSyFI6mkDuuSbgDnLaEkIPGbDPn5yXZEGrirYBGy+pMJXJdlJiTdt/CoCOu/kHkXjnTRcU6cgQiz0Yy+A9Ylb/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O4mIppbN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hKptxWx2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00C61F000E9;
-	Fri, 29 May 2026 01:43:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O4mIppbN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F031F000E9;
+	Fri, 29 May 2026 02:08:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780019014;
-	bh=e9PK2+v56bWHft/pJdttvPO2BAiTBE3dQNzkNxA8Mzw=;
-	h=In-Reply-To:References:Subject:From:Cc:To:Date;
-	b=hKptxWx2tQQZtStuLM0FIi1dSu3BqRbU1gQSwf4I+aFwL+iMlDMMITZPJtoC8HdN2
-	 sgNPbt8XOyJrGqodW58H2UIKnufLtr+wo7EHpH7h9yT8/EIe5CnDONi9r1blRiAq0m
-	 5oZN86fvEMJdRY9iZztkzoiwqpjB7UBlxAeE4Si6VX61f2yKzi6nKlt89xNx/LCJIg
-	 npl+qaBgMUgSUzmb4Ef/v2b895my92jcqjRHszbXoexlIYimD7mgW5w5ngHlJar9x4
-	 cgocL7hsIcDV+h9E2H7TsWzNN2MpVvhygFISzYbXHJRcPxgrhJzqJl4yNHZK/UlVIw
-	 mlKoCXikGs3Mg==
-Content-Type: text/plain; charset="utf-8"
+	s=k20260515; t=1780020514;
+	bh=ETMQPjncFlckJ5YgQOSifPV4HhJj2LTIMcT33lWzNY0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=O4mIppbNxNzZAIfoXT6X5EQTDqLLcHe2vii0tXdfrp24vXyHzLBe2MDPmrD9WyvZ3
+	 yRm53J+GCHK/Vt0CEJqmFgcL+tAv5WSWoNWRuGZlZ2fUbtGE0ABbgYYdYnF+aIJjKl
+	 F6FUQyIlDuDjiO2hCpDxwRXak7Hrdt2Dla5lqE90sgPJhdj8JprHOC/j6iMNHx8Fhy
+	 jO5FpWUaq3VJXMIpbqqrKoPOyC0o8Lwjf2Enib7BLXyQhGsGFfKn0AsJrlPRczQadb
+	 ZHKSWCh3KJ449yJWIc45yHh1Aih3nbUZB6/mSTsk+lISEKI/Fvc5S9AgfCjuwMxrMS
+	 rYU9w6vakCxLg==
+From: William Breathitt Gray <wbg@kernel.org>
+To: Stepan Ionichev <sozdayvek@gmail.com>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	patrick.havelange@essensium.com,
+	peng.fan@nxp.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	andy@kernel.org
+Subject: Re: [PATCH v2] counter: ftm-quaddec: use devm_mutex_init()
+Date: Fri, 29 May 2026 11:08:28 +0900
+Message-ID: <20260529020829.613952-1-wbg@kernel.org>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260528140745.033560d6@jic23-huawei>
+References: <20260528140745.033560d6@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <07739437-4720-4a15-87cc-40f6f92f3759@kernel.org>
-References: <20260511100805.121432-1-angelogioacchino.delregno@collabora.com> <20260511141743.251a47e4@jic23-huawei> <07739437-4720-4a15-87cc-40f6f92f3759@kernel.org>
-Subject: Re: [PATCH RESEND v8 00/10] SPMI: Implement sub-devices and migrate drivers
-From: Stephen Boyd <sboyd@kernel.org>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org, srini@kernel.org, vkoul@kernel.org, neil.armstrong@linaro.org, sre@kernel.org, krzk@kernel.org, dmitry.baryshkov@oss.qualcomm.com, quic_wcheng@quicinc.com, melody.olvera@oss.qualcomm.com, quic_nsekar@quicinc.com, ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org, luca.weiss@fairphone.com, konrad.dybcio@oss.qualcomm.com, mitltlatltl@gmail.com, krishna.kurapati@oss.qualcomm.com, linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, kernel@collabora.com
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Date: Thu, 28 May 2026 18:43:33 -0700
-Message-ID: <178001901320.7182.15120759905441640016@lazor>
-User-Agent: alot/0.12
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2016; i=wbg@kernel.org; h=from:subject; bh=kEzW8hT8wQFiBZknHN+TOAuUrnTCN1XX/ZwyChu1vLw=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFkSX5l0Nm7YcbE9eXuo1utft2zaOFP//tUI6nzlw7pgo Z55NZ98RykLgxgXg6yYIkuv+dm7Dy6pavx4MX8bzBxWJpAhDFycAjCR54sZGdbWpK0O/Pwycuoj 9yccV8sesded+R94pXr3NQ7mF6/6b2gzMsywLf2xyESvNCL9wHyn17q/JIU7ZhxfWfzt0hHlJ1e msXMBAA==
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
-Quoting AngeloGioacchino Del Regno (2026-05-20 04:51:26)
-> On 5/11/26 15:17, Jonathan Cameron wrote:
-> > On Mon, 11 May 2026 12:07:55 +0200
-> > AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wr=
-ote:
-> >=20
-> > Hi Angelo,
-> >=20
-> > Why the resend?  If marking a series with that I expect to see it
-> > called out as first thing in the cover letter.
-> >=20
->=20
-> Right, forgot to mention why.
->=20
-> The v8 was sent on January 2026, I pinged maintainers to pick it on
-> March 2026, even if this was fully reviewed by multiple people nobody
-> picked anything here.
->=20
-> ....and I've resent it because pinging multiple times didn't work, and
-> because the series got old all that much. :-)
->=20
+On Thu, May 28, 2026 at 02:07:45PM +0100, Jonathan Cameron wrote:
+> On Thu, 28 May 2026 06:52:18 +0900
+> William Breathitt Gray <wbg@kernel.org> wrote:
+> 
+> > On Wed, May 27, 2026 at 05:57:58PM +0100, Jonathan Cameron wrote:
+> > > On Tue, 26 May 2026 12:24:25 +0200
+> > > Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+> > >
+> > > > On Mon, 25 May 2026 at 17:14, Stepan Ionichev <sozdayvek@gmail.com> wrote:
+> > > > >
+> > > > > ftm_quaddec_probe() calls mutex_init() but neither the cleanup
+> > > > > action nor a remove callback issues a matching mutex_destroy(),
+> > > > > which leaks the lock debug state when CONFIG_DEBUG_MUTEXES is
+> > > > > enabled.
+> > > > >
+> > > > > Switch to devm_mutex_init() so the mutex is torn down in the same
+> > > > > devm scope it was set up in.
+> > > > >
+> > > > > Fixes: a3b9a99980d9 ("counter: add FlexTimer Module Quadrature decoder counter driver")
+> > > > > Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
+> > > > > ---
+> > > > > v2:
+> > > > > - Add Fixes tag and note that the leak only shows up under
+> > >
+> > > It's not a leak as such. All that happens is the 'magic' pointer embedded
+> > > in the lock is not set NULL. No memory or counters or anything like that leaked
+> > > in current mainline where the implementation with CONFIG_DEBUG_MUTEXES is
+> > >
+> > > void mutex_destroy(struct mutex *lock)
+> > > {
+> > > 	DEBUG_LOCKS_WARN_ON(mutex_is_locked(lock));
+> > > 	lock->magic = NULL;
+> > > }
+> >
+> > What is the purpose of the magic pointer? Is it just informational, to
+> > catch instances where any attempt to use the mutex occurs after the
+> > device memory is freed for example?
+> More or less. In some cases the mutex life can be less than the structure
+> containing it.
 
-I take it you want me to apply these patches to the spmi tree? Can you
-respond to the Sashiko bot comments about why it's wrong or fix issues
-it found?
+Stepan,
+
+I think Jonathan is right, so I'm going to drop the Fixes tag for this
+one, and pick up as well the original revision of your interrupt-cnt
+patch without the Fixes tag. Sorry for the noise.
+
+Thank you,
+
+William Breathitt Gray
