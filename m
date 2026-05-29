@@ -1,203 +1,138 @@
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5101C3C7690
-	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 10:56:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780052193; cv=pass; b=jKXRsHBnUAsS7L3ym7zsGCRd5UOo0PNE7iTGaNixOD/EvKrBefhM4hOqa+OiKTZoA4r4W/9f3Y0bkUQXkP+TYlXi1Wfuu9wEBda5BXBBCuocrcpFd7jtuBwfdiJVHnuBDB98sLXJLYmuUAw7EtBwzFZ41JFb/5nsElgeNp5t8WU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780052193; c=relaxed/simple;
-	bh=Y7dc5LHP74ZYKK/a6Hv5SvYo8Aw44DNxbmzdGSGer2o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BDdDEWTo1pRqbw+i8/kD2nRwbyCqjG5UcnpbB/f/YzyGVEL3IsvFzWLMuY5nH8Q2/BTh1fT2ROVjSq1kTUIEdHn/HKHY9DkGEAwY8l6HKn9sx6o1ohGQaEi5lH+DC21JhuvKvmw7OR5mGAd4CGJ5SzjdrraITkX0zZQnMseOaAw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lbu8DpMo; arc=pass smtp.client-ip=74.125.82.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4413CDBAA
+	for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 11:00:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780052421; cv=none; b=cIHpb2xipfnyl775+Aqvxoa9nOx6rUX9Iops0UCR9TRyvrDYvcJhygXDS31CuVJ3I7UgAWSYCaMWeoCFI86lU2Xtg0LiMIz/Qnl0OzY1UB2IIInRgGU3Fh9Hz5FahUYHuW+gEZ47s5ByxarUeAwqVmJp1fAi3vcyoIgYCrDBrvM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780052421; c=relaxed/simple;
+	bh=6hUd2Dp3mbUUsH0uJSobaZD75vru4SnrNxnw5Brg8sQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b5rnjOjvs8Zc3rxJ9YgGA+vnK9AkEc4aQ1LAR/GfzfFYWH6cEu123IRaiD9Ue5x06B8fIuig3ivPelhOrhF6zsty7mc40vmVlGPlJP24kABRpBl4AipuNWI/+ZD+WgWDtJm+NKQU9rUu5H0HzWT+RaHDOlX7dxCjna1Eg+Q+/x0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20251104.gappssmtp.com header.i=@riscstar-com.20251104.gappssmtp.com header.b=EBTl19xW; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lbu8DpMo"
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1353c2f35cfso6829851c88.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 03:56:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780052189; cv=none;
-        d=google.com; s=arc-20240605;
-        b=YcqedoBhSZlPZpEW91sRTOqnNtk/GAUO6DNQlG79rheZVAK+NjewBneLUsv+H9xyjH
-         mziwzNYgi77QzKL7HeKg8QYkXpi772HTNzhVHDdGwlPHwJNRyOI4YjT16IySpaWt9DrQ
-         J5b1sJX+50OgvkH/AGJ0qiJXdyOXTgaIFDwCivC0qW+EufLSXSlx6QCHKB5Lyt2iwmn2
-         Yy4u+l/wlza94avyr2vs76TKcTxrn4lJ8PaxVZp0nRVhqGAQuTYaaLffULVJXl68EVb3
-         PFWWFCnL2nXgUt+MDnNpSrPGV8GSVCe+fxTZtb1iNUYhi5TV/Ek5TufK/9sCJPSd49IQ
-         5f+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=QT9o7z8njCzuauXIRpTZNkDYlGBM5NI3aWAig5/bi7I=;
-        fh=KdKufgNj0vRvnUO0lOvT9L8afgraKiWDop/WaLiWPgw=;
-        b=ljmISx8EGcXppBpFR2um2g7Ed7kICJmI1tgRsFdEezkiPjBkFrTpf/u3VPOsER5MPt
-         FsoXrpHwX1acdIRtczkv6F5/ckgq99Q8xFffT1NEz+EsxCvHc6Kej7395cdThfWzkQmP
-         7ZMwH++EC1e6mZPqrOS5Ay3f8ItPhkeTXjr902+QejKNnNOtT+0qVvFh8j9gazagyaYE
-         MEngRGZxKRcoPdbO94ou6WaG44ahh+Y3Q/OLYDMHEO3amUnWrQpvVlLGDXiCPp34hmUY
-         RpT71oGMnmLb56+tIJjLPKP7i67BvvH13lsUYBFN0JOrg+6myVFq2PqqzF9N7QBjwxY7
-         ZJdw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=riscstar-com.20251104.gappssmtp.com header.i=@riscstar-com.20251104.gappssmtp.com header.b="EBTl19xW"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-490388fd0dbso81154805e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 04:00:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780052189; x=1780656989; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QT9o7z8njCzuauXIRpTZNkDYlGBM5NI3aWAig5/bi7I=;
-        b=Lbu8DpMo4pxqcsBXVtbqLe0NhbTjFp50POcVMm48mQVhtTSnx0CscTWnpEanSdshzS
-         RkLGTJ2ta28nxAuIvrp/aTEswQScWUYjm2RxHPRwWmXJAvbtQeAnstVlu3d0C4lLms3s
-         8F8Jn7/FHkuu7Jkm6ytH94infdSRNx1jXu6eKBu2CpGJIpQdNBZLvNzWQIUlaqfZMUV2
-         tNZpqfBXzY7Or/6IYF342HTinVEb1ATIF9GPqXibUvuNqanXTqcVEwda5B89Dv4jxmMG
-         9hNy6Hsht1Qc4oCp0EV9sIb0FtTtNCgIKdPRUZQBZ6COtvZjFvzJ96rgyTuVsB0s19r6
-         OthA==
+        d=riscstar-com.20251104.gappssmtp.com; s=20251104; t=1780052417; x=1780657217; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=18we3XaF38yQ3wAMs5IOP6Gxb6jY92eB45OuWFEEzvE=;
+        b=EBTl19xWHiPWCO7Nczi0mwTNG6EQHjljhLEWvLhlgFCHXAGByJCxzkfO1ZY2HoVauu
+         DHjoLRpG30HBnJjGsufGCVx7ovs09PcOQAmjy2inMDQf6eSetlZV2Wc/z7pqWOAOID6M
+         XESmr+oqX2g32vSRhprYdCAliIEucCsN4RTemaK4l8icZcWDHpQgjcvlYjynJtLRL5vL
+         8zmuIxUMy5uvcsatLW1qQaW6ydbP7winGOMB1M+7P2hL06SzRPkOLX7aDugyB9RTwQd7
+         2I3kBTAb+lod36BoDU7xXXSN3LiM+KvFekOYgljs+DSvVqQP+xB6VdNevjAQhMgK8zkA
+         TNWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780052189; x=1780656989;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=QT9o7z8njCzuauXIRpTZNkDYlGBM5NI3aWAig5/bi7I=;
-        b=ZC0nKJ2P+XC06jIUB+uwSuclCyS2HJ5DkpkmJHiaHJ9YlBE4lznrZSaMmdoawxDc/A
-         xeKrtv/HS/xALK6/ndQpbOgBfEV2bxgL41Em8NsjxA8j/D59qbv46W8vJ+UL4cPRmU03
-         9dQWGOW5/jzAH6Mg3Wgw4FA6LfEMyySloyb6cpq//ukP1L40ZfOSkzdrDybXHlHgZz4p
-         k1mJUIasVhc4M3uJ2Ji1lyXVYWFi+f3IianVvIpMJgJSs0RGDr0Iv7rWF+J+dWOtYJyM
-         6uaOvE9GU0SWJ0o5bda2FpyGQMhL6cZO2orX0aLYaEO85l3+oPyevoIlDEQWBTwJN6S2
-         mozw==
-X-Forwarded-Encrypted: i=1; AFNElJ+C3Z9kQBLFlupfDmKGHqTHcUwqdkO7l66dH64T96v8XwL5AeJPBA4Jihi08zcvYLor2zhhPaMg8Ww=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyQh2EKOmtTBIcEX8h3YJ62bUV8G/VtdPLqwbC2Uvmbdn8k4pKh
-	hWq/Awc8ZXBjmCs3wcrK4FLd3FfFUSAIyiio1OPRO8ypvThaOR744dht5e41D4+LIraGeAsak+a
-	3pAgmc7glPx8LRVvxQiKiuvxPRFLaBaI=
-X-Gm-Gg: Acq92OETUp2vpfJf4QxMZrTJ3rSH2omDqvJDng9IfsNaq4LD9rd/UhAZiQ7/4GtWjKJ
-	AX0+0m7nONel5tdMmSyg+v4UJD709uczoq+oWZ8lUxPHRn15R1C3Ju18NLr3Coq6flbZqJFpD4F
-	HgV/2lkfHKKsEa9kKgRx4dJUtqmir2RK2ZjWfnc0IIIBX3TdGRH5g6ljFD8mAiazLmqJHJlUEQb
-	g9B9eusCxVEpFktYpxlUniWJvkDXioivNImXya2uPw7IDpOO+4IGxLMpSyz5gDsXmHPMPvmpqRZ
-	azzj+NA24vfC6Nns3zba3OujWfhxGg==
-X-Received: by 2002:a05:7301:688a:b0:2da:4216:7ea3 with SMTP id
- 5a478bee46e88-304eb16c784mr1065135eec.14.1780052189412; Fri, 29 May 2026
- 03:56:29 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780052417; x=1780657217;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=18we3XaF38yQ3wAMs5IOP6Gxb6jY92eB45OuWFEEzvE=;
+        b=DSHSahhzDHecZiad/h5MBerZ3se9BYdUkIOnGcYKIAs2HYiVkiboYP2XyDxnabfEXL
+         UAZGPxI9qeR0aWVfFsw2WuE/bpB2paYiNSxYGKTAWdhZbPhzPekhXQDN4jG1wQm/Yf/3
+         aCsxLXjYJsu0vfiNYg7uO7y7MeQPzFs9Ks8/WwJBv4pyyaxGGMadZBevTjVdO2iCH4py
+         EBr8xs8PGmU640y31lAPojUu8efKEQak2R34sC6xxgLnpWRaVHaqUaoMAbQn7ESS/e+p
+         3ZFLSniRBf5X2z5e/mAYGJ3GvQRgKJCoScFZ970rGSmxg6ltbLMx+61ZcZ6yoVHEKC8W
+         ltOA==
+X-Forwarded-Encrypted: i=1; AFNElJ+vtf9Fp2OcNuwrgT7Vi4u8zk2Il/Dv7Bbu9JbvJjyFcvv68vsaALP7aQpOrtWydMI71osRyubM3qw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxypqiN0eVrm4BYguwcuNkpxKx7WGDlbsebUsaAhm65Wu6flp26
+	FG010+T2wMEOykt3Co7CQl8PzyY6415s0J5NvF62nViHnZDDme1MR/AWnfei4Q6HyjM=
+X-Gm-Gg: Acq92OHAkt4yIQhquATT64vdiUkpnqLHsIMT2X1gQQNacWAGJDNA8qlRXCY/h45r6D3
+	fIVs9oVrPF77KyfFiPWpz2zdK57LAYK6dceUHZx1t1mvq6xvntup1p1Z009NlH5t/3G5xht9g0n
+	LOzz2T0w2kt/105C1q2AoutdomO1Y8Fjv2xszK7E60S7S/41Tn7U8nKOvTlLV3z/ntLyy5gUg4B
+	tiSyW2TKeNikSpg2Wx7ejq+enpDapbnYaYbNVd/63IVHmdIsr9fqVLlxvIt6C5SP/NG7+thkPdI
+	hkYlejgUUefJ7s3ZymmB9DMVf09lE4W+A26mV0z00dyp7Sp0uQKEiCd78o3rsQaH+wkxdvt7Rhl
+	xUOFiaoaBXQYWc/qZzsC98/BmEcZRJ+WzYF4KkuBF9H3TGcf/qb/9dHQZHjAWtbI+xlVudkQQGY
+	GVGW/Qe1GUluL4k89h/9HOghjg4K/g9b1SNkWBXZM/c8ilh84ObmZCskvwFNRFWMjSS32LL6brg
+	4oHoEsql6ud57XROC7SEA0aBHH77ZUAqSpkrQyXmGh4j77MQhTb7yxkHW1jvZZTsErZ/QkSSF07
+	Ng5c/4xu6jPOzJMS/muvKFhK/5mcwQ==
+X-Received: by 2002:a05:600c:630f:b0:490:845d:652d with SMTP id 5b1f17b1804b1-4909c0ba3dbmr44464495e9.15.1780052415386;
+        Fri, 29 May 2026 04:00:15 -0700 (PDT)
+Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4909d6975e2sm49548585e9.6.2026.05.29.04.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 May 2026 04:00:15 -0700 (PDT)
+Date: Fri, 29 May 2026 12:00:12 +0100
+From: Daniel Thompson <daniel@riscstar.com>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] mfd: lm3533: Convert to use OF bindings
+Message-ID: <ahlxvGRVFDFrTUN3@aspen.lan>
+References: <20260528135123.103745-1-clamor95@gmail.com>
+ <20260528135123.103745-3-clamor95@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260528135123.103745-1-clamor95@gmail.com> <20260528135123.103745-2-clamor95@gmail.com>
- <ahlhinOh3NxB7FY_@aspen.lan> <CAPVz0n3C8D+amSRkF=Koj6Niu6u8uz4LbMoRYEX32_ECm5-tSQ@mail.gmail.com>
- <ahludIZPMUlPDTG_@aspen.lan>
-In-Reply-To: <ahludIZPMUlPDTG_@aspen.lan>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Fri, 29 May 2026 13:56:16 +0300
-X-Gm-Features: AVHnY4J2FFsbeePVzhdaZr1L7xTMY9M_-IQ9RntYfCEGWE3LHkP9pzzQ1jAxVDc
-Message-ID: <CAPVz0n0XvQwLd6gv2kiVHfSTyM_jF142beSwWb3L9sBLEQDzZA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] dt-bindings: leds: Document TI LM3533 LED controller
-To: Daniel Thompson <daniel@riscstar.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260528135123.103745-3-clamor95@gmail.com>
 
-=D0=BF=D1=82, 29 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 13:4=
-6 Daniel Thompson <daniel@riscstar.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Fri, May 29, 2026 at 01:07:50PM +0300, Svyatoslav Ryhel wrote:
-> > =D0=BF=D1=82, 29 =D1=82=D1=80=D0=B0=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE =
-12:51 Daniel Thompson <daniel@riscstar.com> =D0=BF=D0=B8=D1=88=D0=B5:
-> > >
-> > > On Thu, May 28, 2026 at 04:51:18PM +0300, Svyatoslav Ryhel wrote:
-> > > > Document the LM3533 - a complete power source for backlight, keypad=
- and
-> > > > indicator LEDs in smartphone handsets. The high-voltage inductive b=
-oost
-> > > > converter provides the power for two series LED strings display bac=
-klight
-> > > > and keypad functions.
-> > > >
-> > > > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-> > > > ---
-> > > >  .../leds/backlight/ti,lm3533-backlight.yaml   |  68 +++++++
-> > > >  .../bindings/leds/ti,lm3533-leds.yaml         |  66 +++++++
-> > > >  .../devicetree/bindings/leds/ti,lm3533.yaml   | 170 ++++++++++++++=
-++++
-> > > >  3 files changed, 304 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/leds/backligh=
-t/ti,lm3533-backlight.yaml
-> > > >  create mode 100644 Documentation/devicetree/bindings/leds/ti,lm353=
-3-leds.yaml
-> > > >  create mode 100644 Documentation/devicetree/bindings/leds/ti,lm353=
-3.yaml
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/leds/backlight/ti,lm=
-3533-backlight.yaml b/Documentation/devicetree/bindings/leds/backlight/ti,l=
-m3533-backlight.yaml
-> > > > new file mode 100644
-> > > > index 000000000000..866b0fb8ed04
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/leds/backlight/ti,lm3533-ba=
-cklight.yaml
-> > > > @@ -0,0 +1,68 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/leds/backlight/ti,lm3533-backli=
-ght.yaml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: TI LM3533 high voltage series LED strings
-> > > > +
-> > > > +description:
-> > > > +  This is part of the TI LM3533 MFD device. It represents two high=
- voltage series
-> > > > +  LED strings for display backlight controlled by the TI LM3533.
-> > > > +
-> > > > +maintainers:
-> > > > +  - Svyatoslav Ryhel <clamor95@gmail.com>
-> > > > +
-> > > > +allOf:
-> > > > +  - $ref: /schemas/leds/backlight/common.yaml#
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    const: ti,lm3533-backlight
-> > > > +
-> > > > +  reg:
-> > > > +    description: Control bank selection (0 =3D bank A, 1 =3D bank =
-B).
-> > > > +    maximum: 1
-> > > >    <snip>
-> > > > +  ti,pwm-config-mask:
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > > +    description: |
-> > > > +      Control Bank PWM Configuration Register mask that allows to =
-configure
-> > > > +      PWM input in Zones 0-4
-> > > > +      BIT(0) - PWM Input is enabled
-> > > > +      BIT(1) - PWM Input is enabled in Zone 0
-> > > > +      BIT(2) - PWM Input is enabled in Zone 1
-> > > > +      BIT(3) - PWM Input is enabled in Zone 2
-> > > > +      BIT(4) - PWM Input is enabled in Zone 3
-> > > > +      BIT(5) - PWM Input is enabled in Zone 4
-> > >
-> > > This is optional and the drive implements a default (zero) that is no=
-t
-> > > documented here.
-> > >
-> > > Is zero a sane default from a DT binding point of view?
-> > >
-> >
-> > Yes, if property is missing then PWM input is disabled which is
-> > equivalent to setting all bits to 0.
->
-> So the default should be documented in the bindings?
->
+On Thu, May 28, 2026 at 04:51:19PM +0300, Svyatoslav Ryhel wrote:
+> Since there are no users of this driver via platform data, remove the
+> platform data support and switch to using Device Tree bindings.
+> Additionally, optimize functions used only by platform data.
 
-Ye, sure, I can do that.
+The last sentence is a little vague and makes us have to hunt for the
+changes in a relatively large patch. If it is referring to the change to
+common up the init and update code then it's would better to say that
+explicitly!
 
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> ---
+>  drivers/iio/light/lm3533-als.c      |  95 ++++------
+>  drivers/leds/leds-lm3533.c          |  51 ++++--
+>  drivers/mfd/lm3533-core.c           | 268 ++++++++++------------------
+>  drivers/video/backlight/lm3533_bl.c |  52 ++++--
+>  include/linux/mfd/lm3533.h          |  51 +-----
+
+Just one comment for backlight, below:
+
+> diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+> index babfd3ceec86..42da652df58d 100644
+> --- a/drivers/video/backlight/lm3533_bl.c
+> +++ b/drivers/video/backlight/lm3533_bl.c
+> @@ -295,13 +293,20 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+>  	bl->cb.id = lm3533_bl_get_ctrlbank_id(bl);
+>  	bl->cb.dev = NULL;			/* until registered */
 >
-> Daniel.
+> +	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "%s-%d",
+> +			      pdev->name, pdev->id);
+> +	if (!name)
+> +		return -ENOMEM;
+> +
+>  	memset(&props, 0, sizeof(props));
+>  	props.type = BACKLIGHT_RAW;
+>  	props.max_brightness = LM3533_BL_MAX_BRIGHTNESS;
+> -	props.brightness = pdata->default_brightness;
+
+Given the big changes to the driver is there any chance of putting a
+good value in props.scale (BACKLIGHT_SCALE_LINEAR or
+BACKLIGHT_SCALE_NON_LINEAR)?
+
+If the difference between 50% and 100% *looks* like 50% then the scale is
+non-linear (since humn perception of brightness is not linear).
+
+
+Daniel.
