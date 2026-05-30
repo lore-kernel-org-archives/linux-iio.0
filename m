@@ -1,499 +1,182 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6EE3A16B6
-	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 11:40:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780141226; cv=none; b=jDcdse6VwMjNVIO1VemKmqT+rpwCqUrIIv+9HrodpSDW6WKNoaign19wqZXFSkSnu3+ppwtzw8UxUvN9RoWCFA5v2raPurKuQPP1PPkWB/DxE68EeaFLthV0+oy+HkqHhHYfL7MndVQQgLuWxAMyJsE39Yjqg0qLj0RxiA/5Tms=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780141226; c=relaxed/simple;
-	bh=X7ToDL1mD2pV/uPGqeAfSsw/jzNwbMunFKSKazMXyK8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QRkMXsgpSZdJidE5UHtYY48OjsHlqlkpQ99ZtFkC/EqHw4tKFP3txOI+UyxIbFTvPcq12J95zdZ70xCZc8t4CUCDg+htWjTNf6H3eR0BSCgj0q3EIvcjtJsXJ6em4nvDy3/HOKZMl6UtgoCwSNWDPAg4R/Y/mJWXg3lUPSblZ4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sqDyIa2r; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16C31368D41
+	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 12:13:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780143209; cv=pass; b=GiSU8LNAcEj6sRQ1p4WVufmGe8sWsvtxrtE+KAlZSdvrDH7+9ic4iXSNmTQw+8L/R56aMBuYHlozBB9dxn0jwvOZYs0USE2q5hVKis5/psT2sPCApZM4n+tfw+Pvd27hcBaeLlALVLGfB36tWqcXk93Mi6RucbaP8vjYS+HSNx8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780143209; c=relaxed/simple;
+	bh=Zcqq4uNc5P/uQsQGgioaxUxbxELyjmsfBqYi3m/Vfvk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WyfS5/O3lHZqTAse5OK+t1WyZ19sU6MJ338cy2w1dnOcMaytRDao3XFFR6ZVxjWK7HkX4fTj/zK7lqqw2n7PaGW3h9OnchD7+2oyfoeNnwOBkYzRO8WqUTX1LLvf4u9zRVIh+BrT66RucUF2M+eDdDyIu99gdarxfYGIbihXYxc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qD33Myj9; arc=pass smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sqDyIa2r"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-835386ff122so14447624b3a.3
-        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 04:40:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qD33Myj9"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-68852a4fc68so12903401a12.3
+        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 05:13:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780143206; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Cvnh/z1sh2II7KkTMrTcTdrDXENa4CbaVSV4hEKjAIN1Fj/SvLFzNkyJQ1oW/uO1J0
+         ZadggdrRSr7IIOHYkW9pbnxAgcvxXDQfXBIzbn1awhWid+8JLGEwmENpaWdBuGXhbsux
+         oXu4kMMJQuAIzSymoe0U1T51MYSCEcCG7quVkm9w37vkG2UE1kqi4JrN3x8pZ0U32JNQ
+         NIN0tviKwUJIPvy0sQlbJUOeRT+/db+nPxUSKmkn2Q0Rt8aFSDfVYX4YD+3DY3eIJBbm
+         qot5kOKqttOYjsHYGunyVWLGDf9QfkcKwkPM61S06r+alFDsH1EbavnEVVz50dd3FY0E
+         Fh7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=xrduNo3l5STIDhpgC7F3W2pVEkONkM5OKWj5qR5aWhQ=;
+        fh=kas4J1RRK2tNvOfI3bCsPrsZd0HBasQ/eGHmR1cOV6c=;
+        b=G9kQSld2CXJMQW4RhBpWYEmlY3KXFOTxLny8oYkbT8fJ7rfvgd+Xu1CeUeiZZWFouK
+         fjbdyRvzbEeksHLFXlhj1hwggGzeYE2+UU6ljSQ5KwJr+oiKkdx4PyqGDUxO7Ccos7To
+         6pdoQx+Rj6LVZ/MCRV36Sl8jEI97bZrKczwplf4ctajAnWZl1cVoTRvpy4T3mndF0bB+
+         Ss29gc33Jk10n8orTBLrSpU+MlDW5pDQnzGv+49pI046IiSVfQpEhSGl+D9VcI//kNc7
+         QniQZ4DFljI1L945YZH3gwA5trN/L8gEi6D2EUrNAITMlELHjeK1/W2buK2KguRX8bJj
+         SWnA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780141224; x=1780746024; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1780143206; x=1780748006; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0rD71LnEcxrWgkmwxQhljbsgghJc7itjZTY4QeFA4Yo=;
-        b=sqDyIa2rpkQAkRhmP7/Eb/AFHUMGx6zDdUTW240T/rqEzztPBNNY0C2Cj3uAPG+P4o
-         telBXq8R63GOwxPXw2G33h/e7FnjSyI9qngOuuliiuIMfbxLUrGzOCv/3xdqC13P5AY9
-         uQHZuTWr6xiZFN9GPBN1rjO1H7pEKv/lGUblRIH8GcV7r9OT1ByWFlFElkN7wsQOO0MT
-         botKICdwFlRDDItbSaKUDPvYHYWXNZimTKfYEkK/eLM2RlIt8PuiCKeqjssIxT/5Zp7U
-         wB8hpWA2FZiqA35zxDcJr4djs2RyuFeHdNJvBG1DDRlD6NMwGpHAyzW/NSBnDaZN7EfD
-         a5rw==
+        bh=xrduNo3l5STIDhpgC7F3W2pVEkONkM5OKWj5qR5aWhQ=;
+        b=qD33Myj9WcbSh0G8Y5O1DNqwtUhvGzogecaLLqnOe0H6TH1HIKAbJDm7yuTf0IW3x0
+         gGz5k7WYBysJDiB/uKnMN6g9zOEbN/qdXrIuoepRvU9ioxxYQfahdHuXAvI+if3HzZuz
+         GcpNPVsNpl3gsCh635XiB871C42p3iicZDCCmSUkUiwzvEB5ss4prc3uHe5lqdohMTG9
+         uVKkU46qp3wbJdRxSRFNLHK62j3O0mtJlrHuvtL/pwfrR0tmUGPrsEbTC/m9f6hUnSdZ
+         fn/fuGFLUekuTvjcqZoPtT1eqCD8rZOL6hiRsJCEk+mQucdJ5yk1aODMXXj2UayhPhQe
+         cWBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780141224; x=1780746024;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1780143206; x=1780748006;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=0rD71LnEcxrWgkmwxQhljbsgghJc7itjZTY4QeFA4Yo=;
-        b=EZZXYJVS0QFUfCQPvWM+Cww6vd6lgO/DHiw1aqXo/r5MnXdOuuCW+rXQeQdsVxKtxJ
-         gyNsXIl/stU4okgo8yLcGNAvcqdEF6ozaBRKYHm5uWQ6W6L2W56D9ivyKJ81Jfb1muhh
-         R2pIZB3TAf8oxYWavCKtSHU7U+4ktdQua7EN75MS+jjCTjmq/xzNMA+iZBMVi6h5qjB5
-         dHkhhcK+sJHPniVBO7I0D2hQDEB+ECQYgM1gbvd+0pe5Ckn7FzrUJKe62vGxmKjxMC8j
-         ycXIzkAnCSZwiPcqKdaj/nXbEMY+NAxsYWNDbyxH7b0Ovza/Ta6DCH+Wwd9TCdU8hSyX
-         9wAA==
-X-Forwarded-Encrypted: i=1; AFNElJ+ZyTKmqLPoOnXzgJyedN3bIDYLVZgrhh4YVhD4zlWsoaREIKaF49HV97AAZk+TEHLZmHqfzI94Liw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzDXLUFSIUWqmqdlflUCsDJ4ueONZuWcv1aoOdb8UhEpz5rVp5O
-	ywDFhIM0N8Wo4aSW/YA2WFW+co0ijj6cf/Uk4ZGEEgv2q4BCA4BW1x32
-X-Gm-Gg: Acq92OHAvEstjemTT8CaZVBM05uOUbSKHqC6EEZdBxts0nr2nCuxHIIskV+5gbeht94
-	B0XAgqjJoR/3ifGxn5OxF6pf2mY5Aq7SwrdNAYjORWfaYC83SHeLfqNBJV/b/mriSopMF0MHIQX
-	QuHpaldbX/BQzxYt3mOnQUEv2slAekQ49fl2UwGuzpLVMFYJRMpyTxc9UqKTaXAOZGa4vbUkPlu
-	YKdDHZdTpYH1YCJaMaL3afBj5we8F3liC+y1WCuBNHTK9l25Kixc2oZTVw2Roy9b8GrhLcozkji
-	Uy1jYSFwSkUIiu6khWkF0HweTKqks6ZPBqvz5y5gu90ImMfjedW1KeEyemdC4VhrjtByFmaKLZs
-	+zIJDlqAO71ehwtr5wvCtZwZEEdFUdXtVC3g4LylK09Wr8jejUV64ne4fHrlWdtWL4FMH2U8ybE
-	WYxNbUCSNngBGBtTQV4W3y54IDq9R+BFyz01HFJ3capk9U2F7Cl6oEeCXFFQ==
-X-Received: by 2002:a05:6a00:1f1a:b0:83d:446c:498f with SMTP id d2e1a72fcca58-84225478b3amr3055273b3a.32.1780141223796;
-        Sat, 30 May 2026 04:40:23 -0700 (PDT)
-Received: from fedora ([61.74.238.173])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84214b6797esm5467518b3a.26.2026.05.30.04.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2026 04:40:23 -0700 (PDT)
-From: SeungJu Cheon <suunj1331@gmail.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	apokusinski01@gmail.com,
-	me@brighamcampbell.com,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev,
-	SeungJu Cheon <suunj1331@gmail.com>
-Subject: [PATCH 4/4] iio: pressure: mpl3115: add hardware FIFO support
-Date: Sat, 30 May 2026 20:39:38 +0900
-Message-ID: <20260530113938.171540-5-suunj1331@gmail.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260530113938.171540-1-suunj1331@gmail.com>
-References: <20260530113938.171540-1-suunj1331@gmail.com>
+        bh=xrduNo3l5STIDhpgC7F3W2pVEkONkM5OKWj5qR5aWhQ=;
+        b=KYGc+fwZ7h0I3OEsoikcnLrD4UhoJs/ADapNL66riv2L8Y0UDs6x9YWDsswy2ugieK
+         77j/h8WKog/i1pOo6MIOUSOIciTiZ/7YObiOWeb/MvhHLbhgYsbYvCBui6w/MptCtB3h
+         xOwUGysu8CdCC3/yGRfz41QTgRkyNfzMAPehuOzQcVEiEo1NixULA2WuZe6Et9jDcOkR
+         x5LpNxD/A8TpjflpHzkZDcTeNzxOnlmJijSHVyYtK5qcUPLxCXMBdqc0gx/HGSH+vvAe
+         ocgmczXcan+a01mQ5NP0Q0hcf1eNrzvCacSwZR3p8PW7Kbuym9ZenI+w2RI/+63yVClK
+         rbSA==
+X-Forwarded-Encrypted: i=1; AFNElJ/e78aGZzEsYvHZFWMTRylqq+3mBre2mUHWNLJ+TkrSgKmJEMEETdZLwaEyYojiQtMGf6DOP6qT62o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLcWmfhBPDuFsYJr6cJRLnCQ26Jfiro/TPRLZf9I1tWFfhcc8Z
+	WsMSNJlTIAmKD0QIT05w0ydFlchAIeUmYuNf7QDczwL7lElMEzk0jlTZ6Wp1pLTrYr1eS1uonWk
+	bxXWUcw0GZimTBX6EXlHmpZ7rKEaCJdE=
+X-Gm-Gg: Acq92OGL6dOS21djg5vm4fpR6FchQ2zfIe9Kl9Mm6DS/75RRE53MDZm6s0P4wXb/0xM
+	aSiVRbDrnsKneniMOjXNuVGJSzu2VXlGFxUicr1wKtt0XBvIviSlhuCli/+4Ibq/N33IS/f2xC2
+	M7azdoRq/pMlnxlkIdBXk378gryWX0c/IvGyasnaECiqX9kwNPgqqmq0e5wMMi/4mXBRCCYgcb8
+	VxonDRTT/Z90dBogmerG5iO/yeKQ8LvCATJksDTmmUqx+MDwmDdlca1EhthoQUpkGONN6cl/EaU
+	EjRZ94tbxtTpmUNovN8ql4FfQ30BLxQUHwBDIHYKX6t0/RnpoAZ1QMNlgt98n91gWvWw5hLqRkM
+	FlaorsEtd7a4E3k6uGCkEPnVPbdGKqlawesgH7gGzrN/4NDyc38lN4bIHUiWn8WrpmlfNHixpW0
+	XCUxkhCMk8pkBL0ao=
+X-Received: by 2002:a17:906:5a49:b0:be2:7ee3:fabb with SMTP id
+ a640c23a62f3a-beab3846422mr117941666b.41.1780143206144; Sat, 30 May 2026
+ 05:13:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260530113938.171540-1-suunj1331@gmail.com> <20260530113938.171540-2-suunj1331@gmail.com>
+In-Reply-To: <20260530113938.171540-2-suunj1331@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Sat, 30 May 2026 14:12:49 +0200
+X-Gm-Features: AVHnY4JaMDgf3QYl2WlxP_Brp-ClFJIuceIE2pF_w-vCIceUytgSPvaHhuC8coc
+Message-ID: <CAHp75Vfd_eRRgnCpXsa0CVQ56f85YwQQRTj70MfmB4prVygYGg@mail.gmail.com>
+Subject: Re: [PATCH 1/4] iio: pressure: mpl3115: convert probe to fully devm managed
+To: SeungJu Cheon <suunj1331@gmail.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, apokusinski01@gmail.com, 
+	me@brighamcampbell.com, skhan@linuxfoundation.org, 
+	linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add support for the MPL3115A2 hardware FIFO.
+On Sat, May 30, 2026 at 1:40=E2=80=AFPM SeungJu Cheon <suunj1331@gmail.com>=
+ wrote:
+>
+> Convert probe to use devm-managed resource allocation,
+> removing the need for an explicit remove callback.
+>
+> Replace iio_triggered_buffer_setup() and
+> iio_device_register() with their devm equivalents.
+> Register a devm action to return the device to standby,
+> replacing the cleanup previously performed in
+> mpl3115_remove().
+>
+> Move mpl3115_standby() and suspend/resume helpers above
+> probe to satisfy declaration ordering requirements.
+>
+> No functional change.
 
-The device provides a 32-sample FIFO with configurable
-watermark interrupts, allowing buffered data acquisition
-with reduced interrupt and CPU overhead.
+...
 
-Use a kfifo-backed IIO buffer when a DRDY interrupt and
-SMBus block reads are available, falling back to the
-existing triggered buffer implementation otherwise.
+> +static int mpl3115_suspend(struct device *dev)
+> +{
+> +       struct iio_dev *indio_dev =3D i2c_get_clientdata(to_i2c_client(de=
+v));
 
-When enabled, the driver configures the FIFO in circular
-mode and drains accumulated samples on watermark
-interrupts.
+What's wrong with dev_get_drvdata() ?
 
-Overflow conditions are handled by flushing available
-samples before resetting the FIFO, avoiding unnecessary
-data loss.
+> +       return mpl3115_standby(iio_priv(indio_dev));
+> +}
+> +
+> +static int mpl3115_resume(struct device *dev)
+> +{
+> +       struct iio_dev *indio_dev =3D i2c_get_clientdata(to_i2c_client(de=
+v));
 
-The hardware always captures pressure and temperature
-samples together, so FIFO operation requires both channels
-to be enabled.
+Ditto.
 
-Register cache updates are performed only after successful
-I2C writes to keep cached and hardware state consistent.
+> +       struct mpl3115_data *data =3D iio_priv(indio_dev);
+> +
+> +       return i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
+> +                                        data->ctrl_reg1);
+> +}
 
-No functional change for non-buffered operation.
+...
 
-Signed-off-by: SeungJu Cheon <suunj1331@gmail.com>
----
- drivers/iio/pressure/mpl3115.c | 266 +++++++++++++++++++++++++++++++--
- 1 file changed, 256 insertions(+), 10 deletions(-)
+You forgot about mutex_init().
 
-diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
-index 90e83e34ec43..26b6490c8c4c 100644
---- a/drivers/iio/pressure/mpl3115.c
-+++ b/drivers/iio/pressure/mpl3115.c
-@@ -6,7 +6,7 @@
-  *
-  * (7-bit I2C slave address 0x60)
-  *
-- * TODO: FIFO buffer, altimeter mode, oversampling, continuous mode,
-+ * TODO: altimeter mode, oversampling, continuous mode,
-  * user offset correction, raw mode
-  */
- 
-@@ -22,6 +22,7 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
-@@ -31,6 +32,8 @@
- #define MPL3115_OUT_PRESS 0x01 /* MSB first, 20 bit */
- #define MPL3115_OUT_TEMP 0x04 /* MSB first, 12 bit */
- #define MPL3115_WHO_AM_I 0x0c
-+#define MPL3115_F_STATUS 0x0d
-+#define MPL3115_F_SETUP 0x0f
- #define MPL3115_INT_SOURCE 0x12
- #define MPL3115_PT_DATA_CFG 0x13
- #define MPL3115_PRESS_TGT 0x16 /* MSB first, 16 bit */
-@@ -47,9 +50,32 @@
- #define MPL3115_STATUS_TEMP_RDY BIT(1)
- 
- #define MPL3115_INT_SRC_DRDY BIT(7)
-+#define MPL3115_INT_SRC_FIFO BIT(6)
- #define MPL3115_INT_SRC_PTH BIT(3)
- #define MPL3115_INT_SRC_TTH BIT(2)
- 
-+#define MPL3115_F_STATUS_F_OVF BIT(7)
-+#define MPL3115_F_STATUS_F_CNT GENMASK(5, 0)
-+
-+#define MPL3115_F_SETUP_F_MODE GENMASK(7, 6)
-+#define MPL3115_F_SETUP_F_WMRK GENMASK(5, 0)
-+
-+enum mpl3115_fifo_mode {
-+	MPL3115_F_MODE_DISABLED = 0,
-+	MPL3115_F_MODE_CIRCULAR = 1,
-+};
-+
-+#define MPL3115_FIFO_SIZE 32
-+#define MPL3115_FIFO_SAMPLE_SIZE 5
-+#define MPL3115_DEFAULT_WATERMARK 1
-+
-+#define MPL3115_BUF_PRESS_OFFSET 0
-+#define MPL3115_BUF_TEMP_OFFSET 4
-+#define MPL3115_BUF_TS_OFFSET 8
-+#define MPL3115_BUF_SIZE (MPL3115_BUF_TS_OFFSET + sizeof(s64))
-+
-+#define MPL3115_FIFO_SAMPLES_PER_READ 6U
-+
- #define MPL3115_PT_DATA_EVENT_ALL GENMASK(2, 0)
- 
- #define MPL3115_CTRL1_RESET BIT(2) /* software reset */
-@@ -63,8 +89,12 @@
- #define MPL3115_CTRL3_IPOL2 BIT(1)
- 
- #define MPL3115_CTRL4_INT_EN_DRDY BIT(7)
-+#define MPL3115_CTRL4_INT_EN_FIFO BIT(6)
- #define MPL3115_CTRL4_INT_EN_PTH BIT(3)
- #define MPL3115_CTRL4_INT_EN_TTH BIT(2)
-+#define MPL3115_CTRL4_ACTIVE_MASK \
-+	(MPL3115_CTRL4_INT_EN_DRDY | \
-+	 MPL3115_CTRL4_INT_EN_PTH | MPL3115_CTRL4_INT_EN_TTH)
- 
- #define MPL3115_CTRL5_INT_CFG_DRDY BIT(7)
- #define MPL3115_CTRL5_INT_CFG_FIFO BIT(6)
-@@ -94,6 +124,9 @@ struct mpl3115_data {
- 	struct mutex lock;
- 	u8 ctrl_reg1;
- 	u8 ctrl_reg4;
-+	u8 watermark;
-+	u8 fifo_buf[MPL3115_FIFO_SIZE * MPL3115_FIFO_SAMPLE_SIZE]
-+		__aligned(IIO_DMA_MINALIGN);
- };
- 
- enum mpl3115_irq_pin {
-@@ -101,6 +134,25 @@ enum mpl3115_irq_pin {
- 	MPL3115_IRQ_INT2,
- };
- 
-+static int mpl3115_set_active(struct mpl3115_data *data, bool active)
-+{
-+	u8 reg;
-+	int ret;
-+
-+	if (active)
-+		reg = data->ctrl_reg1 | MPL3115_CTRL1_ACTIVE;
-+	else
-+		reg = data->ctrl_reg1 & ~MPL3115_CTRL1_ACTIVE;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-+					reg);
-+	if (ret)
-+		return ret;
-+
-+	data->ctrl_reg1 = reg;
-+	return 0;
-+}
-+
- static int mpl3115_request(struct mpl3115_data *data)
- {
- 	int ret, tries = 15;
-@@ -322,6 +374,109 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
-+static int mpl3115_set_fifo(struct mpl3115_data *data,
-+			    enum mpl3115_fifo_mode mode)
-+{
-+	u8 f_setup;
-+
-+	f_setup = FIELD_PREP(MPL3115_F_SETUP_F_MODE, mode) |
-+		  FIELD_PREP(MPL3115_F_SETUP_F_WMRK, data->watermark);
-+
-+	return i2c_smbus_write_byte_data(data->client, MPL3115_F_SETUP,
-+			f_setup);
-+}
-+
-+static int mpl3115_fifo_reset(struct mpl3115_data *data)
-+{
-+	int ret;
-+
-+	ret = mpl3115_set_fifo(data, MPL3115_F_MODE_DISABLED);
-+	if (ret)
-+		return ret;
-+
-+	return mpl3115_set_fifo(data, MPL3115_F_MODE_CIRCULAR);
-+}
-+
-+static int mpl3115_fifo_transfer(struct mpl3115_data *data,
-+				 unsigned int sample_count)
-+{
-+	unsigned int remaining = sample_count;
-+	unsigned int offset = 0;
-+	unsigned int batch;
-+	int ret;
-+
-+	while (remaining > 0) {
-+		batch = min(remaining, MPL3115_FIFO_SAMPLES_PER_READ);
-+
-+		ret = i2c_smbus_read_i2c_block_data(data->client,
-+						    MPL3115_OUT_PRESS,
-+						    batch * MPL3115_FIFO_SAMPLE_SIZE,
-+						    &data->fifo_buf[offset]);
-+		if (ret < 0)
-+			return ret;
-+		if (ret != batch * MPL3115_FIFO_SAMPLE_SIZE)
-+			return -EIO;
-+
-+		offset += batch * MPL3115_FIFO_SAMPLE_SIZE;
-+		remaining -= batch;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mpl3115_fifo_flush(struct iio_dev *indio_dev)
-+{
-+	struct mpl3115_data *data = iio_priv(indio_dev);
-+	u8 buffer[MPL3115_BUF_SIZE] __aligned(sizeof(s64)) = { };
-+	unsigned int sample_count, i;
-+	int ret;
-+	bool overflow;
-+	s64 ts;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, MPL3115_F_STATUS);
-+	if (ret < 0)
-+		return ret;
-+
-+	overflow = FIELD_GET(MPL3115_F_STATUS_F_OVF, ret);
-+	sample_count = FIELD_GET(MPL3115_F_STATUS_F_CNT, ret);
-+	if (sample_count == 0)
-+		return overflow ? mpl3115_fifo_reset(data) : 0;
-+
-+	ret = mpl3115_fifo_transfer(data, sample_count);
-+	if (ret)
-+		return ret;
-+
-+	ts = iio_get_time_ns(indio_dev);
-+	for (i = 0; i < sample_count; i++) {
-+		u8 *sample = &data->fifo_buf[i * MPL3115_FIFO_SAMPLE_SIZE];
-+
-+		memcpy(&buffer[MPL3115_BUF_PRESS_OFFSET], &sample[0], 3);
-+		memcpy(&buffer[MPL3115_BUF_TEMP_OFFSET], &sample[3], 2);
-+
-+		iio_push_to_buffers_with_ts(indio_dev, buffer, sizeof(buffer), ts);
-+	}
-+
-+	if (overflow) {
-+		dev_warn_ratelimited(&data->client->dev,
-+				     "FIFO overflow, samples may be lost\n");
-+		return mpl3115_fifo_reset(data);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mpl3115_set_watermark(struct iio_dev *indio_dev, unsigned int value)
-+{
-+	struct mpl3115_data *data = iio_priv(indio_dev);
-+
-+	value = clamp_val(value, 1, MPL3115_FIFO_SIZE - 1);
-+
-+	guard(mutex)(&data->lock);
-+	data->watermark = value;
-+
-+	return 0;
-+}
-+
- static int mpl3115_config_interrupt(struct mpl3115_data *data,
- 				    u8 ctrl_reg1, u8 ctrl_reg4)
- {
-@@ -348,6 +503,67 @@ static int mpl3115_config_interrupt(struct mpl3115_data *data,
- 	return ret;
- }
- 
-+static int mpl3115_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct mpl3115_data *data = iio_priv(indio_dev);
-+	u8 ctrl_reg4;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = mpl3115_set_active(data, false);
-+	if (ret)
-+		return ret;
-+
-+	ret = mpl3115_set_fifo(data, MPL3115_F_MODE_CIRCULAR);
-+	if (ret) {
-+		mpl3115_set_active(data, true);
-+		return ret;
-+	}
-+
-+	ctrl_reg4 = data->ctrl_reg4;
-+	ctrl_reg4 |= MPL3115_CTRL4_INT_EN_FIFO;
-+	ctrl_reg4 &= ~MPL3115_CTRL4_INT_EN_DRDY;
-+
-+	return mpl3115_config_interrupt(data,
-+		data->ctrl_reg1 | MPL3115_CTRL1_ACTIVE, ctrl_reg4);
-+}
-+
-+static int mpl3115_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct mpl3115_data *data = iio_priv(indio_dev);
-+	u8 ctrl_reg1, ctrl_reg4;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = mpl3115_set_active(data, false);
-+	if (ret)
-+		return ret;
-+
-+	ret = mpl3115_set_fifo(data, MPL3115_F_MODE_DISABLED);
-+	if (ret)
-+		return ret;
-+
-+	ctrl_reg4 = data->ctrl_reg4 & ~MPL3115_CTRL4_INT_EN_FIFO;
-+	ctrl_reg1 = data->ctrl_reg1;
-+
-+	if (ctrl_reg4 & MPL3115_CTRL4_ACTIVE_MASK)
-+		ctrl_reg1 |= MPL3115_CTRL1_ACTIVE;
-+
-+	return mpl3115_config_interrupt(data, ctrl_reg1, ctrl_reg4);
-+}
-+
-+static const struct iio_buffer_setup_ops mpl3115_buffer_ops = {
-+	.postenable = mpl3115_buffer_postenable,
-+	.predisable = mpl3115_buffer_predisable,
-+};
-+
-+static const unsigned long mpl3115_scan_masks[] = {
-+	BIT(0) | BIT(1),
-+	0,
-+};
-+
- static const struct iio_event_spec mpl3115_temp_press_event[] = {
- 	{
- 		.type = IIO_EV_TYPE_THRESH,
-@@ -409,10 +625,19 @@ static irqreturn_t mpl3115_interrupt_handler(int irq, void *private)
- 	if (ret < 0)
- 		return IRQ_NONE;
- 
--	if (!(ret & (MPL3115_INT_SRC_TTH | MPL3115_INT_SRC_PTH |
--		     MPL3115_INT_SRC_DRDY)))
-+	if (!(ret & (MPL3115_INT_SRC_FIFO | MPL3115_INT_SRC_TTH |
-+		     MPL3115_INT_SRC_PTH | MPL3115_INT_SRC_DRDY)))
- 		return IRQ_NONE;
- 
-+	if (ret & MPL3115_INT_SRC_FIFO) {
-+		int flush_ret;
-+
-+		scoped_guard(mutex, &data->lock)
-+			flush_ret = mpl3115_fifo_flush(indio_dev);
-+		if (flush_ret < 0)
-+			goto err_reset_fifo;
-+	}
-+
- 	if (ret & MPL3115_INT_SRC_DRDY)
- 		iio_trigger_poll_nested(data->drdy_trig);
- 
-@@ -444,6 +669,11 @@ static irqreturn_t mpl3115_interrupt_handler(int irq, void *private)
- 	}
- 
- 	return IRQ_HANDLED;
-+
-+err_reset_fifo:
-+	scoped_guard(mutex, &data->lock)
-+		mpl3115_fifo_reset(data);
-+	return IRQ_HANDLED;
- }
- 
- static int mpl3115_set_trigger_state(struct iio_trigger *trig, bool state)
-@@ -618,6 +848,7 @@ static const struct iio_info mpl3115_info = {
- 	.write_event_config = mpl3115_write_event_config,
- 	.read_event_value = mpl3115_read_thresh,
- 	.write_event_value = mpl3115_write_thresh,
-+	.hwfifo_set_watermark = mpl3115_set_watermark,
- };
- 
- static int mpl3115_trigger_probe(struct mpl3115_data *data,
-@@ -723,6 +954,7 @@ static int mpl3115_probe(struct i2c_client *client)
- 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
- 	struct mpl3115_data *data;
- 	struct iio_dev *indio_dev;
-+	bool use_fifo;
- 	int ret;
- 
- 	ret = i2c_smbus_read_byte_data(client, MPL3115_WHO_AM_I);
-@@ -762,17 +994,31 @@ static int mpl3115_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	data->watermark = MPL3115_DEFAULT_WATERMARK;
-+
- 	ret = mpl3115_trigger_probe(data, indio_dev);
- 	if (ret)
- 		return ret;
- 
--	ret = devm_iio_triggered_buffer_setup(&client->dev,
--				      indio_dev,
--				      NULL,
--				      mpl3115_trigger_handler,
--				      NULL);
--	if (ret)
--		return ret;
-+	use_fifo = data->drdy_trig &&
-+	   i2c_check_functionality(client->adapter,
-+				   I2C_FUNC_SMBUS_READ_I2C_BLOCK);
-+
-+	if (use_fifo) {
-+		indio_dev->available_scan_masks = mpl3115_scan_masks;
-+		ret = devm_iio_kfifo_buffer_setup(&client->dev, indio_dev,
-+						  &mpl3115_buffer_ops);
-+		if (ret)
-+			return ret;
-+	} else {
-+		ret = devm_iio_triggered_buffer_setup(&client->dev,
-+						      indio_dev,
-+						      NULL,
-+						      mpl3115_trigger_handler,
-+						      NULL);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
--- 
-2.52.0
+> -       ret =3D mpl3115_trigger_probe(data, indio_dev);
+> +       ret =3D devm_add_action_or_reset(&client->dev, mpl3115_standby_ac=
+tion,
+> +                                      data);
 
+Add
+
+  struct device *dev =3D &client->dev;
+
+to the top of the function to make this shorter and easier to read.
+
+>         if (ret)
+>                 return ret;
+
+...
+
+> -static int mpl3115_standby(struct mpl3115_data *data)
+> -{
+> -       return i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
+> -               data->ctrl_reg1 & ~MPL3115_CTRL1_ACTIVE);
+> -}
+
+Split moving of this function to a separate prerequisite patch.
+
+...
+
+> -static int mpl3115_suspend(struct device *dev)
+
+> -static int mpl3115_resume(struct device *dev)
+
+Why did you touch these two?
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
