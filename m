@@ -1,82 +1,80 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9254312834
-	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 20:42:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09313446AB
+	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 20:42:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780173760; cv=none; b=NfqaFz6e+5F6c0eBBiLgIqfgKtp0R0Qy9sjQz/8bQyCP4pqhmgEEqWTmIpK8rRLdeaGk31jyRS30dqcpOmaNBsi66bKbGxtTIukfroZQeoK5SlOWK/w4zj3C8OGcvLhAiLqnuijmBivT9P6kdZN7HHqU07yw/W1xaKqiLj8gQXk=
+	t=1780173761; cv=none; b=pA1MzGjdRD4zDAXqLqKHhm6FjseFHzDgSJdShO0wiPRPY1uw5xsyKyET0AXwyX5lLN4vGbyMAD6bi1RbtpspW3pYWfjTOtnlCIhbW/zO1tbcRhy2sOCfZJSYXCKVBbj/yU0fHFDE+eSxd6o42RS5+TFqXygnLakoPYWcpR2weiA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780173760; c=relaxed/simple;
-	bh=9JHbE4HNOkaWdA9aiO+m3bHYkQAb5mezw87RyiCnHPE=;
+	s=arc-20240116; t=1780173761; c=relaxed/simple;
+	bh=nCy5H0yYPO0n7/jb3nTGCKwYSi+iROuyCfMWemB6VAY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=txE3EoEx1f4w/5POBd0L1bAYwBrOdSKoQ16U8pJawmzok3cOoZzeUlrkWD9UNB56kSnbQco2ILN8w9XSf5ejLwYnRqb+RLPPDzK3nMGBL9rzZZNRaxzpizujzGaGQk9wqncx+BCwWk//XRnTMWUL2R8xNVh2BeOSgI9OrmnC7fM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gfiu2Q1P; arc=none smtp.client-ip=209.85.221.48
+	 MIME-Version:Content-Type; b=sY8oe5KVXsSRXyHlNvjJVQW0bUQ/Snayfzue8chd8i6OZm1xQJYDefoWDLsfxr6GfM1y1Pb3UYEOWIfnB6uCTqlbYHVLQpOTbtgQH08dNzMWe5JrKjdIdNGDM3BE0G6wzThzEOH1umjeJbftl8VAb/xBNI8u9kLP2mg1LwnlvNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pV6KNqea; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gfiu2Q1P"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45eee266c6cso1809879f8f.1
-        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 13:42:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pV6KNqea"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-490a765f47aso763785e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 13:42:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780173757; x=1780778557; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780173758; x=1780778558; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=a3tfGgufw87JlCJA1EHDdaMQtis24J507tckYXm4wyE=;
-        b=gfiu2Q1P9xBOIn1Q4VRF9t5obDLFJBpIjij4HApYiFINgfBQmwnC75/1bsKFtR8jbI
-         4dBA94cSZmTxA3E0WOdW7KfwqAUxqvuj1gcq11ZwRYhu475qILHrb9irb9fiake/TIwF
-         Dwk5A88/Ip9Ek7BGchVS7ekfLapoDpREvCcJQB2Z+S4VByU7jGZCR2i3dKTRlQqaVZ2s
-         pD3Jft8rhahz1vxtV/WsfQjRF0n9DzbJwU1Qdl2Zf8h5vANw3IU9uJpR0N84ParZdYA2
-         9IJpMl+g+UWQsRZt8k5V3dn1xT0+IJYsctPp2L7kZbelfrWBuayRNn6EGGrbQR/dpefT
-         7kxg==
+        bh=5sGWvr4odaFr/sdFXxkB9IZN4+afYuvFDh8G38c3Kek=;
+        b=pV6KNqea5NvIkh38p5abpZTcJEHj9H0kFCkvQXNGmLzfdU/iI29dsYwj1xwTaYd18v
+         vkgst27x4Qop6HDQ68ef1gc4m6qWjqb4HzgAVBUJNH0LKLrA24jGWDgzAs9jAN+Nq8DK
+         S1UiMzeeMY0PAF3zXinNxPgDse7gWq2XE9yDynUB973IkupozRRyVowFflW0BNCo5qko
+         Ggcdo837dz21x4qoVZ7UkQZCPWAjf7IAp2OI7RGTZO1p0bXhsRtuJxMzP61KJLChIE1c
+         0re2R2119cXz6hDDv/uIl6BWD+GueiFGGk5q0wfRRuyxnGFnV6NfKvSVVfdqV6i4WrxQ
+         GWdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780173757; x=1780778557;
+        d=1e100.net; s=20251104; t=1780173758; x=1780778558;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=a3tfGgufw87JlCJA1EHDdaMQtis24J507tckYXm4wyE=;
-        b=GSpRLbXU1A89p2RA/hUN6gbHBo3RQhrRFiuMBubQyXHZ1G8YiodZ6mTiSvsZVe0TJ1
-         izDsJ/iRxBo6gJiJdD6eg3v3eYIAHDliHn5ByFaaKeplz3AffV4Eiztm0MwayJ2d8dZs
-         LDRLk8GFDs6DZ08aRN5+DcHxfLWRjCTQhdiTMi4pCG52Pt8csf9VPPdbeNolPSsBo8QY
-         gjNI0G4Aub6JMdfnNrRqWw6+OBoqM2jhOP9VM54W/Al7QIRmYAP+cqaIw4UWdegkU+uv
-         f9Ed1Stb6efFu68JT1AZKVorvHwX+yEJ4ymtI/Y3x5QLuT0i496iQhUs6m5ki5ies0PA
-         eJ+g==
-X-Forwarded-Encrypted: i=1; AFNElJ+lTtKNNEzz0oKCFjyy2tmhpCwcZQO+uA0EYNJuTVbp8Y2Mks6cCVWgZnkYtTuySzl10fDLoDDVHPI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxrkes0eH4AqZaa1qVg9GMxImGx21RJ9chFnKPuwD+uO59Z0cL6
-	FZ9NXGtIZA47oQ3NyUEpXQ+xu/aKd4j5n2wqMFBXhZ4ahvJ4DQrYcN8r
-X-Gm-Gg: Acq92OFbeW45g+JQ7pI8VUH5YCeUEZIsBnzRHmkipBC0fITyCxEWWZwqpc0XhfHF6FV
-	SBB41IauyJyc3HtE4r0c3khht8/r3q/qOkT71CAfKUAki+liCO2aXGRB6kkaXwNifQD8C5xpfnt
-	zxb1x9RNujk+0UxZGMuaIij1dYQrOlYudgbalR+jUhGpqtjr8UbdHqoZQaWak4w9kWrPe2ljL8f
-	oDhR2EiOYzKprxJJ+HnTQmH04hiF6rHhk/tfuJYzBqrWi89tJA/hHISMCv/LRx8bbmlD7lkDHS4
-	klttMOJ4ovXwq6UdaqW+r9Alf0B7f0UWxdYPxXgFGkx/d99VJzJLBd1qEaYg7tcRJJT3ggWR7Sv
-	WqqFXidLKNDcLCTTJTm76oowLhLNmXC7eKC9LAkLekbbLUro8taR3InhGotaKLuhJFt2+dvVZbg
-	crrAyd7tewMnqd8lo=
-X-Received: by 2002:a5d:58f6:0:b0:45e:e50e:3bc with SMTP id ffacd0b85a97d-45ef6b71573mr7238155f8f.29.1780173757308;
-        Sat, 30 May 2026 13:42:37 -0700 (PDT)
+        bh=5sGWvr4odaFr/sdFXxkB9IZN4+afYuvFDh8G38c3Kek=;
+        b=PKo1KxlFesXAGo1MDaWPKTMvFBEUxKebHrWfti2WzU7gzh5L/iSD0/2HL4IQbMaq+j
+         vNeLeT7LiRKXMQY7L3IVY32cOsRNPlk3PGeeFM9BSAybwlRFdxxGIwsBvep2jzKR+qje
+         SA4YZC8BQH7RPOvDyOBCWN5x1n0qRQ/C9Lzvr+KFgiqHyRNEVClfcybi0B5U7yd22EF2
+         3+cPpguI0xUHvYJmspiDIWFB/sGhFbFVApgFGPNM+/9/anEqMKfIQpDqMM2bE1ux75v9
+         UDHZrFOVptYGSMqytF9F2jFWh4T5uTHvOKp+MAJB+zODHcbP2cNyfu5EllBumXpGEQR3
+         I8og==
+X-Forwarded-Encrypted: i=1; AFNElJ/zTrDdYZkOIKoeQVe3PmGfYBRjtkVyjSVTw6P4D1wxD+4udCLiI+EnN5YMgTCA032+hNALmVkAHWs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxtYi5jfwNTOZb8gBxvKL1nt9FWW2fq08Jw/xKHpcD2Y3by05Uu
+	6lQyjUFObtop3tC4HDR+ROyyr8SA23F4Hz5o7B/S97TFsmWd0AsnhtEM
+X-Gm-Gg: Acq92OHkxdWPz6n6myqz5uazYgeIJj7ItbIf5+pJIwtaJ0jgE+F6buuBu/gLcGwQucj
+	nsYcc9OCT14zmXGD5Se3QMdY79wmDag6bdvTMxTQGzXS85HqVU3MtDhCaNWZBuaKaItM794VUrn
+	lQs8f5Q8uETnZpzxXTSEtxRiWL00EsQnwZ8Hxjf1GkXHO11KRRlXIHR4y7YG4SaZ8pbZVVQzNip
+	mKYQgJ+X9VU3GgmvjXSTof1O0Aa/KMagrGCzcCk0A9Snw/V9bD1dMVWRZKHq1eDNE9G9llFHj68
+	ynOqdvOscx8QmLxUWDR79995sfTgRPpSnFYnFbCQqnl/VMVbPXsN7M9H+D79OVuXoWslghYSulm
+	bHj/vbeqWr0LVtHoJ6DhX+USHefVvD7qIFqYo2GLzYvkte+PEgT7wjAtsiI55MnGLNCkvMYar+7
+	MivtB9JJnsDZPkQng=
+X-Received: by 2002:a05:600d:8494:10b0:490:47e3:929a with SMTP id 5b1f17b1804b1-490a29122ffmr64554585e9.6.1780173758235;
+        Sat, 30 May 2026 13:42:38 -0700 (PDT)
 Received: from sefo-laptop ([2a02:8071:50c5:5c0::361b])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef356a4c4sm13944636f8f.31.2026.05.30.13.42.36
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef356a4c4sm13944636f8f.31.2026.05.30.13.42.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2026 13:42:36 -0700 (PDT)
+        Sat, 30 May 2026 13:42:37 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: Wadim Mueller <wafgo01@gmail.com>,
 	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
 	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
 	Maxwell Doose <m32285159@gmail.com>
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: flow: add Sensirion SLF3S liquid flow sensor
-Date: Sat, 30 May 2026 22:42:05 +0200
-Message-ID: <binding-reply-1780172572434549738-wafgo01@gmail.com>
+Subject: Re: [PATCH v2 3/3] iio: flow: add Sensirion SLF3S liquid flow sensor driver
+Date: Sat, 30 May 2026 22:42:06 +0200
+Message-ID: <driver-reply-1780172596743720241-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260528-transparent-adventurous-python-af8f69@quoll>
-References: <20260527184257.141635-1-wafgo01@gmail.com> <20260527184257.141635-3-wafgo01@gmail.com> <20260528-transparent-adventurous-python-af8f69@quoll>
+In-Reply-To: <20260528122244.2e408dd3@jic23-huawei>
+References: <20260527184257.141635-1-wafgo01@gmail.com> <20260527184257.141635-4-wafgo01@gmail.com> <20260528122244.2e408dd3@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -86,43 +84,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Thu, May 28, 2026 at 11:07:18AM +0200, Krzysztof Kozlowski wrote:
-> Do not attach (thread) your patchsets to some other threads (unrelated
-> or older versions). [...]
+On Thu, 28 May 2026 12:22:44 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Understood, v3 will be a new thread.
+Thanks for the review (and to Rodrigo for jumping in). Inline
+replies, will address all of it in v3.
 
-> No need for cc of maintainers here which are output by
-> get_maintainers.pl. [...] Anyway, your SoB must be the last.
+> Check these.  I'd expect dev_printk.h for instance.
+> Follow IWYU (approximately) for includes.
 
-Ok, will drop the manual Cc block and put SoB last.
+Will go through the includes and add the missing ones for what is
+used directly.
 
-> > +      - const: sensirion,slf3s
-> 
-> That's confusing - why do you have generic compatible allowed to be
-> alone?
+> I don't think this [SLF3S_MEAS_LEN] constant being a define is
+> that useful. [...] use ARRAY_SIZE() for the loop
 
-The driver detects the sub-type anyway, so the generic-only form
-does not add anything. Will drop it and keep only the fallback
-pair.
+Will move the literal to the buf declaration and use
+ARRAY_SIZE(buf).
 
-> > +  sensirion,medium:
-> 
-> Sounds like you configure driver probe behavior. Why this is board-level
-> static configuration (DT)?
+> I'd put this value [SLF3S_TEMP_SCALE_MILLIC] inline with the
+> comment.
 
-Agreed, that is runtime config and not hardware description. Will
-drop the property and expose it as a sysfs RW attribute instead.
+Will inline at the call site and drop the define.
 
-> Please make example complete - add all properties.
+> Probably more readable with 600 * MICRO / 30 * MICRO / 1920 * MILLI
 
-Will do.
+Ack, will do.
 
-> > +F:drivers/iio/flow/
-> 
-> Drop, you don't maintain that directory here.
+> I'd be consistent and have const u8 block[at_least 3]
+> [...] Use at_least, not static for kernel code
 
-Will drop, only the binding YAML and slf3s.c stay.
+Will switch both helpers to [at_least N].
 
-Thanks,
+> wrap at 80 chars
+
+Will reflow.
+
+> If this happens I'd go with the detection over the dt provided.
+> And dev_info for the mismatch [...]
+
+Will invert: detection wins, DT is fallback for unknown sub-type,
+mismatch goes to dev_info.
+
+> More than likely we need some level of sleep here for the device to
+> wake up. Is there anything in the datasheet?
+
+Yes, tPU = 25 ms max (time to sensor ready). Will add
+fsleep(25000) after the regulator enable. Also tw = 60 ms typ
+(warm-up until output within spec), so will bump the existing
+SLF3S_MEAS_START_DELAY_US from 12 ms to 60 ms.
+
+> How useful is the generic compatible?
+
+Will be dropped in v3 (agreed with Krzysztof in the binding
+thread). Also moving sensirion,medium out of DT into a sysfs
+attribute, since it's runtime config.
+
+> Sashiko (probably correctly) identifies that the formatting that the
+> IIO core does for an IIO_VAL_FRACTIONAL only goes to 9 decimal places.
+> [...] maybe switch to using IIO_VAL_DECIMAL64_PICO
+> +CC Rodrigo
+
+Confirmed, the SLF3S-0600F scale (~1.67e-9 l/s/LSB) gets
+truncated to 1 digit, the 1300F loses some precision too.
+
+I would prefer waiting for Rodrigo's IIO_VAL_DECIMAL64_PICO over
+bumping the FRACTIONAL formatter, since pico covers all variants
+and avoids changing core behaviour for everyone. Plan would be
+to send v3 with all other points addressed and respin to v4 once
+PICO is in mainline. Ok with you, or would you rather see the
+FRACTIONAL bump now?
+
+Thanks again,
 Wadim
