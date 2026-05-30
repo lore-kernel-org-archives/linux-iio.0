@@ -1,63 +1,63 @@
-Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26483A3807
-	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 11:40:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD5113AA1B8
+	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 11:40:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780141216; cv=none; b=f/0ptlmuzxhBHdu0NtkxQNO3l7tqBSzWK7TFBsuqpVWWPA+JTxtY95xeuPWMxGfVWKw3LFPHZ6SBmpaNG1gDgoxcZ4DzVa4ZgSvGHyMb+V1x3bTVNEYLQcw+mEm/RuVo6egNATRsYZgIlHmNxvNisUyzFtDGk3Yldzb1iFDfuoQ=
+	t=1780141221; cv=none; b=XNju/24rObFDr7nQz6kUtVdZk/mr0C1aHtNLwQnIb6ejpF8FurgwFp35kfEEEhItgJTWcHB4dOWeiMNRNgef8WkCxd7XTsmG9B6A+ECW9NYzCAG/YvrXNLweqY29q2/TCyZgRVwvEJesAYD1OQ/B5zfaog16sTGFhrgrwm1lqZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780141216; c=relaxed/simple;
-	bh=Tjpk0UGo7UJkZtCc2AlC0a6mEIDVKO9WL9yPpEY8ksE=;
+	s=arc-20240116; t=1780141221; c=relaxed/simple;
+	bh=NBy+mkNrqimaOWf2ERo+sQjKJUgFdTb/ZQTPXdtPvfg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mnX5ZJzJiEfwsz2jw/Dzh9yzp5aixqZAlOTVSBgBWGv/IwBfpU1eWMdeLDcw9vHGVViV0unVpl/P9Wq9DkKzoLj0EOc6hOBuaBHZ80GeyJYxVJ5KkXr91gPfsnSemuadjxD1FuE46F4t8VIHsh4nS7Z5MkAc/NqhEL5VRGJFvZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IRuP76H3; arc=none smtp.client-ip=209.85.210.172
+	 MIME-Version; b=YoaS9XNy+UAMm1ME+Fd/pKrV9Gf3dVR0ROlR4zhwK5iWbFOZITerf9H/GcZKz/v9pznA/Treg20Kk4pWo/OlJJBzlT3Cjgs07J5iQ0IX/c2m0ISHgs2NaYGuWUMhSlgPiIWATWkNkaGVx7BSNoG+39P4jnukkKw7isxaadTtk+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nShTw77J; arc=none smtp.client-ip=209.85.210.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IRuP76H3"
-Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-842307472d4so64561b3a.0
-        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 04:40:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nShTw77J"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-842307472d4so64575b3a.0
+        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 04:40:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780141215; x=1780746015; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780141219; x=1780746019; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=86sSBgbx9kKkCfgAmFq6bHEkr4eE6POT886tx7GLE3I=;
-        b=IRuP76H3/79uhA4QYqjncsQyASgr0GE/xBJCMnNBlkETZ9GtQnmHQE/UBOne3THzVo
-         LFexkT9jbvG4ZLUSZzU4vqUTUWhu46Nxwocx/GGIIroikqZg5BEs+XxFk4PKr8DR8WAx
-         rQH+kZaisfaZcBuettStXDKTFiQJTUxO/Hvt50nJEmSS/Gyu6v/o1vT/WAwYr3wXQKtM
-         AHebVrnZlRUkRLbQkt4JFFjhC0HF66PGxUrcNBrLdV/8aKVEkj2EM2/zakSyM4XJ6/pm
-         Fu8pM0EDBwo23NGR0krsIFE5p7CPhE3ulNIvyaN6x+h/FG+aeZEtgoF5FMimXsJhokzm
-         XgNg==
+        bh=AgCJI2YjM9JuHXtmrKn60x1jsb6A7Po4zShmgNdGeKM=;
+        b=nShTw77JEUKGyXgHC7N+NDawZ3/9QaL3egOtfuBI2ggfG1ZEE3VxWcidW5zdpaVMD8
+         n5QR9hEiaoGybd3BFbFiunVFO82ZYwYtjPtomo5JXLchDNp/xy1L4aObm4oIx5V+fszM
+         s6cacFqQECt4t65DNgbxFcZuUr3JTi9UBHpNOg1/+vtBgDJDIe/sUKx7uKu3PNe/Bzbl
+         WCoaeZgo3mF4KwJ7m6oe1bVYBgUnGWx35AKKxZA6LtW/W3VjlnlvnoRv82V/9HePHJOE
+         9c5iesQLkXYuJAErGHduqBMrRdi03R6X9eFBm0XU2i4BVvZS/9tR2FDNVB0jSyvMnsYj
+         sysw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780141215; x=1780746015;
+        d=1e100.net; s=20251104; t=1780141219; x=1780746019;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=86sSBgbx9kKkCfgAmFq6bHEkr4eE6POT886tx7GLE3I=;
-        b=rO9Y/6n/WiKDV31FJNvslwzGwSVM9JTxA9RwUtDmeOKyXyoV5qQBcTwatooh3eGFWk
-         9DJVxbVWgLJxEEPxy2yu/3rgUJUPLK6sLritpkDJBaEhn/G6KGBQhAn+D8wRcJK8Zjvr
-         nkYBFrEK42x9Ediqp0WKLreKuniPNSvmdnef91vwRLh2vSbLMNhsL7kg1bFxhp6AzZCv
-         07UFBYEvAFGzM7si6Ue3DvK6/Q1uUP68tQmY4l5zp6McwwRwZYnlMyfx/LZxEpe+Pnys
-         O2fDLH0PeJMsMOw1jt+Brvbsc5/9arxpx2j7drs4c5OI2WHSdPS6zanBygWBVBNMuAAt
-         ezVA==
-X-Forwarded-Encrypted: i=1; AFNElJ805VdTpL8Mh2T95ALOPbH2RPHJ8DA2lT+K0nAJyn8eZQ+9VUDa6MIe8WtBsXeO8wX5WDa/R0u33Sg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzKmcUKV9q/bZfxO0L40+D30cy4QdlWgYw+iWBVFwKevaazU8v7
-	WA8iygA+acgEAGTdoIRncRdO+o8wsr3lN5NMmOet5zfwK8JZ//rmHPAV
-X-Gm-Gg: Acq92OGKah6zGE667u3H3qQX+dZz3IuxQPsmkC29gGPSs3n6rB0eoSX98XKg6H7AYWi
-	6W4wy4BulnvGuWlvC+Uzsa6VmWfcYVR8kLSRQFM0RBm/UdBrjXO8E7W+6iv6GNIjnZ9oneAtfV3
-	0rllti3RT79UXlZ8EtesL+SDaIIJzqtHcALv1JOgzPvG1beanB733Fzc4rq100NP0ipnmnGu/HT
-	DOrIzAA9Korna7H81qYY1WGxOIdhxOuXBQNGaDpSp4Yca4OZGggO4jtZPFp+JTIsq8Y+S2uiHaY
-	nOmSea0WrnmFgQvQSzEOIaxoPPMlB/sPdXAOM9g8uYsLnuSMX7jdstGHxfoNsZ/b84CHf9Gso3A
-	M9g2mHJqqDaTlzS6vc3jvjPBjpD7RMr8h7oaeEKlrKeSdNajwOdvhIHOu1WSsx5tm4oQxfsbpJF
-	TwshzKytR382HkJ07dpCjaL/JFsuD95pTbrZ34NQdiSsoyKNJpkVJfVMc9Ow==
-X-Received: by 2002:aa7:8889:0:b0:823:9b7:9c0e with SMTP id d2e1a72fcca58-84225493ba1mr3250783b3a.34.1780141215015;
-        Sat, 30 May 2026 04:40:15 -0700 (PDT)
+        bh=AgCJI2YjM9JuHXtmrKn60x1jsb6A7Po4zShmgNdGeKM=;
+        b=Vh7xFc+RDxGVP6Ry24zGb8aN7YmQYdfZXnDmEHONPVrpL2J3c0U7uwbHX3IW9zHD16
+         ygKpcT2gpaVs1UfZbNpArYan6SJf43dxcishcSFxzu4IKYQsO8qeg8/aAg9BPwIkusJS
+         jih7LAdzdOTUBofnaPsVEA7J288Ik1r9P5lsZ3P7jY/UnSewXsCVFV9WKUryIAUhzz4B
+         OO0HT9BG3GNSTwjLPzM8/TwgocwEe73gAMLqDjfNge+ulITtsQyfa9s1zEsXDj6MVliw
+         j0/nPZwoxJSDgEy57NnpwNHeJcsjt5ZAf+Evw7RZGB8W7szpR149DB68CVWNsyqW0BeR
+         OAtw==
+X-Forwarded-Encrypted: i=1; AFNElJ+33LMKvAe/1wyASqvtF0wMl6Za8Fneqb+t1R3AflwqwfcbJZdAxjsBBkaOGdQpMe+TeN/nLa/YJzs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFRrGhDPWnMYr2IYPM/ksVyHOye4mwPBG4Ol8LXSCubnBx2T8x
+	zteNbj9h5PRU2JQRPip9KCgzgR7LBYShZhwrEuGon/eCU5Eqnf+FqEf4
+X-Gm-Gg: Acq92OFP3F2Q0NCAqk6Q61OCH+O/w0Exe0PgGtje76dfhP2dlgDKN5SYbxRHEiOStwM
+	zAr/+/YkgdEMadt2N+PsZihBBgNpAhIHnAbxKX5+EYyCdkWSEeLcC1uk36urcDlPnmcdpNw7XNI
+	Az6EeycdwELn+EKFalhe3QPGQ6sjdeeW7bnEoa8eFHcT68pGeBCfVFfaUNpW/HzdlKprj0hCQuK
+	66OwhMMkV+is6Gp/ZGs9X0T4PnCywOSLCWW4dB8M9M4dxIrv/yPyj2mqbBC17UshZvcGx8O2X8J
+	0t9Rr7LlYIP08aBJfCrZKQuS7Sj0YSwOscyO9ITTWfhQMDp6kagcQPeNHxmRqnr/Mpi/EVykFPI
+	NWglW7/RkwX+GgOjxnW7XlCzkIfUXieDv8FT56I8uVpwgli/DjHWX+9xLCz9/mRVXJ6waC1jpKH
+	qZWPKvI2U0XN21j+icM1GxI1orm913eBRBjSHJVpuRDdLI3O6zmiYhmiKAU389Niswj5/p
+X-Received: by 2002:a05:6a00:27a0:b0:833:2398:cde2 with SMTP id d2e1a72fcca58-8422570a361mr2969224b3a.43.1780141219248;
+        Sat, 30 May 2026 04:40:19 -0700 (PDT)
 Received: from fedora ([61.74.238.173])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84214b6797esm5467518b3a.26.2026.05.30.04.40.12
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84214b6797esm5467518b3a.26.2026.05.30.04.40.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2026 04:40:14 -0700 (PDT)
+        Sat, 30 May 2026 04:40:18 -0700 (PDT)
 From: SeungJu Cheon <suunj1331@gmail.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -69,9 +69,9 @@ Cc: dlechner@baylibre.com,
 	skhan@linuxfoundation.org,
 	linux-kernel-mentees@lists.linux.dev,
 	SeungJu Cheon <suunj1331@gmail.com>
-Subject: [PATCH 2/4] iio: pressure: mpl3115: clean up interrupt handling and locking
-Date: Sat, 30 May 2026 20:39:36 +0900
-Message-ID: <20260530113938.171540-3-suunj1331@gmail.com>
+Subject: [PATCH 3/4] iio: pressure: mpl3115: generalize interrupt pin routing
+Date: Sat, 30 May 2026 20:39:37 +0900
+Message-ID: <20260530113938.171540-4-suunj1331@gmail.com>
 X-Mailer: git-send-email 2.52.0
 In-Reply-To: <20260530113938.171540-1-suunj1331@gmail.com>
 References: <20260530113938.171540-1-suunj1331@gmail.com>
@@ -83,119 +83,92 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Return IRQ_NONE instead of IRQ_HANDLED when reading
-INT_SOURCE fails.
+Write CTRL_REG5 explicitly for both INT1 and INT2 rather than
+relying on power-on defaults when INT2 is selected.
 
-On shared interrupt lines, returning IRQ_HANDLED after a
-failed register read may prevent other handlers from being
-invoked.
+This avoids incorrect interrupt routing after a suspend/resume
+cycle where the register may not return to its default state.
 
-Switch the trigger handler from explicit mutex_lock/unlock
-to scoped_guard() for consistency with the locking style
-used elsewhere in the driver.
+Route both DRDY and FIFO interrupts to the selected pin. The
+FIFO routing is not yet used but is required by the hardware
+FIFO support added in the following patch.
 
-Move mpl3115_config_interrupt() above the interrupt handler
-in preparation for the FIFO support added in a subsequent
-patch.
+Consolidate polarity configuration into a single code path
+that handles both interrupt pins uniformly.
 
 No functional change intended.
 
 Signed-off-by: SeungJu Cheon <suunj1331@gmail.com>
 ---
- drivers/iio/pressure/mpl3115.c | 59 +++++++++++++++++-----------------
- 1 file changed, 29 insertions(+), 30 deletions(-)
+ drivers/iio/pressure/mpl3115.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
-index befb6d48efa9..52a3d0d59769 100644
+index 52a3d0d59769..90e83e34ec43 100644
 --- a/drivers/iio/pressure/mpl3115.c
 +++ b/drivers/iio/pressure/mpl3115.c
-@@ -308,9 +308,8 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
- 	u8 buffer[16] __aligned(8) = { };
- 	int ret;
+@@ -67,6 +67,7 @@
+ #define MPL3115_CTRL4_INT_EN_TTH BIT(2)
  
--	mutex_lock(&data->lock);
--	ret = mpl3115_fill_trig_buffer(indio_dev, buffer);
--	mutex_unlock(&data->lock);
-+	scoped_guard(mutex, &data->lock)
-+		ret = mpl3115_fill_trig_buffer(indio_dev, buffer);
- 	if (ret)
- 		goto done;
+ #define MPL3115_CTRL5_INT_CFG_DRDY BIT(7)
++#define MPL3115_CTRL5_INT_CFG_FIFO BIT(6)
  
-@@ -322,6 +321,32 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
-+static int mpl3115_config_interrupt(struct mpl3115_data *data,
-+				    u8 ctrl_reg1, u8 ctrl_reg4)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-+					ctrl_reg1);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG4,
-+					ctrl_reg4);
-+	if (ret < 0)
-+		goto reg1_cleanup;
-+
-+	data->ctrl_reg1 = ctrl_reg1;
-+	data->ctrl_reg4 = ctrl_reg4;
-+
-+	return 0;
-+
-+reg1_cleanup:
-+	i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-+				  data->ctrl_reg1);
-+	return ret;
-+}
-+
- static const struct iio_event_spec mpl3115_temp_press_event[] = {
- 	{
- 		.type = IIO_EV_TYPE_THRESH,
-@@ -381,7 +406,7 @@ static irqreturn_t mpl3115_interrupt_handler(int irq, void *private)
- 
- 	ret = i2c_smbus_read_byte_data(data->client, MPL3115_INT_SOURCE);
- 	if (ret < 0)
--		return IRQ_HANDLED;
-+		return IRQ_NONE;
- 
- 	if (!(ret & (MPL3115_INT_SRC_TTH | MPL3115_INT_SRC_PTH |
- 		     MPL3115_INT_SRC_DRDY)))
-@@ -420,32 +445,6 @@ static irqreturn_t mpl3115_interrupt_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static int mpl3115_config_interrupt(struct mpl3115_data *data,
--				    u8 ctrl_reg1, u8 ctrl_reg4)
--{
--	int ret;
--
--	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
--					ctrl_reg1);
--	if (ret < 0)
--		return ret;
--
--	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG4,
--					ctrl_reg4);
--	if (ret < 0)
--		goto reg1_cleanup;
--
--	data->ctrl_reg1 = ctrl_reg1;
--	data->ctrl_reg4 = ctrl_reg4;
--
--	return 0;
--
--reg1_cleanup:
--	i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
--				  data->ctrl_reg1);
--	return ret;
--}
--
- static int mpl3115_set_trigger_state(struct iio_trigger *trig, bool state)
+ static const unsigned int mpl3115_samp_freq_table[][2] = {
+ 	{ 1,      0 },
+@@ -624,6 +625,7 @@ static int mpl3115_trigger_probe(struct mpl3115_data *data,
  {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 	struct fwnode_handle *fwnode = dev_fwnode(&data->client->dev);
+ 	int ret, irq, irq_type, irq_pin = MPL3115_IRQ_INT1;
++	u8 ctrl_reg5;
+ 
+ 	irq = fwnode_irq_get_byname(fwnode, "INT1");
+ 	if (irq < 0) {
+@@ -634,6 +636,9 @@ static int mpl3115_trigger_probe(struct mpl3115_data *data,
+ 		irq_pin = MPL3115_IRQ_INT2;
+ 	}
+ 
++	ctrl_reg5 = irq_pin == MPL3115_IRQ_INT1 ?
++	    MPL3115_CTRL5_INT_CFG_DRDY | MPL3115_CTRL5_INT_CFG_FIFO : 0;
++
+ 	irq_type = irq_get_trigger_type(irq);
+ 	if (irq_type != IRQF_TRIGGER_RISING && irq_type != IRQF_TRIGGER_FALLING)
+ 		return -EINVAL;
+@@ -643,23 +648,19 @@ static int mpl3115_trigger_probe(struct mpl3115_data *data,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (irq_pin == MPL3115_IRQ_INT1) {
+-		ret = i2c_smbus_write_byte_data(data->client,
+-						MPL3115_CTRL_REG5,
+-						MPL3115_CTRL5_INT_CFG_DRDY);
+-		if (ret)
+-			return ret;
++	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG5,
++					ctrl_reg5);
++	if (ret)
++		return ret;
+ 
+-		if (irq_type == IRQF_TRIGGER_RISING) {
+-			ret = i2c_smbus_write_byte_data(data->client,
+-							MPL3115_CTRL_REG3,
+-							MPL3115_CTRL3_IPOL1);
+-			if (ret)
+-				return ret;
+-		}
+-	} else if (irq_type == IRQF_TRIGGER_RISING) {
+-		ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG3,
+-						MPL3115_CTRL3_IPOL2);
++	if (irq_type == IRQF_TRIGGER_RISING) {
++		u8 ipol = irq_pin == MPL3115_IRQ_INT1 ?
++			  MPL3115_CTRL3_IPOL1 :
++			  MPL3115_CTRL3_IPOL2;
++
++		ret = i2c_smbus_write_byte_data(data->client,
++						MPL3115_CTRL_REG3,
++						ipol);
+ 		if (ret)
+ 			return ret;
+ 	}
 -- 
 2.52.0
 
