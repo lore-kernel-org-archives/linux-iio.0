@@ -1,95 +1,95 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F7536167E
-	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 12:40:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E237C3546C2
+	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 13:33:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780144802; cv=pass; b=UQa/GHWLdP+/WBIUfrzYy7kEdjAl5CKKEOtgNbnHwXX3QD2CR7qHmxuouv2jrIe6iEL6ehXnnahDf99RIjKU3MZ4TncoDL7gJfVPLAnMTwXMmWPNgWmtjEUD89md1Dn0Pgy0f0xb0N+XLmE5HqvDAiAp6rVU+xeW6AxRzpkThhE=
+	t=1780147983; cv=pass; b=WxtZiIg/Thb6DO2qHd4gWi+Pi8OObj+VV/RCPKOauBsLDfdfIpfAR5fOJhOsXM5SUBZe30Q3mhIWxzDecPjHQrT4X/Nu++Lt195+9ZjdvIU2eP67pJCMPOSiWvCXRdZPaMBaL+sMJx5F6yXnv0ejS0w6CG8BQHYeftk1l8GGMnc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780144802; c=relaxed/simple;
-	bh=mCFQYPb0hER5/YK01K9/AMjW2Ofy75QWLf9PsPmXl1w=;
+	s=arc-20240116; t=1780147983; c=relaxed/simple;
+	bh=L/Zna6URqXyzVfJdb3caqyH2x3byxNdGLxMMgpga9w8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NVqnwBxKZrtl7RL8UlRpXqojCNb0ubz4u43gy6higu1Q9YpDIymceB0QxJeyEaedOmPBZkow+N1GoA4f3owtYgHWqQStF8Xu7jO7sshGFRP8TCYbp89JVDa+zd+Wmu+sVErmT8JxQ2AjwxJR+ZYriHirOLODS1Zv3At1n3M8TB8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gx4p5wYB; arc=pass smtp.client-ip=209.85.218.44
+	 To:Cc:Content-Type; b=lDn2UWrQG7ljgfUZRgrgakrN97+bBducGhagKIIuDChhCe9p899TJLmtF6e4JG+ssBInZduCwF+7/huMVmJ9BMaLlxtY5tjmziY1d+/gNfUI/maWluTtR0pwnk7eYpGNdkHcsMVz682OdgsuyNHfqrpAW5qmS+oQl9eyoxrdxdQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SFy2sEDx; arc=pass smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gx4p5wYB"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-bd8f9889a8cso1785098866b.1
-        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 05:40:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780144800; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SFy2sEDx"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-68ad1e513d3so4379197a12.0
+        for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 06:33:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780147980; cv=none;
         d=google.com; s=arc-20240605;
-        b=hDvSorpLvE9hr/UeP2PgFWqCSQdljemqqu3nptIBR+Po/wKA1xBuQ8IgY2lG/vTpcV
-         weqKHxm7cYPgNyGK6gfxE4MYo5EGMH22yd+yuHmV7T3aMuWzw8LIJCrKjw4O7O4EVw+g
-         LTQhoQ16JRacEUbJR2Z6nixQzRp6PF04/Txxqy1/ToF3+OxKmgkKHvmIIgWNRlbN7BQ2
-         C+tWj+oudYZY9Mvudw281tRt1SakFr1DHEAOxZMRcnXxe6j/e7P/gYvkptIBmLaS1Kxn
-         lGUfOofsd1K6RtUab5BR/24uIM7Rc/GetfeZkEEetS+kqU+t4GB2RC9BTlz25FsXkHZh
-         bHbw==
+        b=cIcS9vuGEncAr93STwtyrsXkBgh407ySVYTb1PBQD+Kx9I7Vo0c9fa/zC6Tt2/PT7L
+         YJX6b7K1jexhLe4svHoXfVSFI4QUarvSdJGSsz074mEGtz8KdY0fs97VLM1SgW7WUbDB
+         L1xpTldzQCBKR1q9rbby4vdxqfitvDKKYi2GtHJTBowWqajLARA1a1AYD2lnLffWgAf3
+         p0pkumYX6C1FutXQEgmfWj0A6cFzTlk4/4j/zJnvqIwZ9ZnJfA/ChixrjXbvxKwMRWxq
+         3Yr9svcJ6Bdy8rZXFjIQ9AmyqDn+WNsymxWYvkyrzeIPlAgYHRZYYu4dGJN81ylk7z10
+         djbA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=mCFQYPb0hER5/YK01K9/AMjW2Ofy75QWLf9PsPmXl1w=;
-        fh=CbEVLLuFxsbyihD7Xaa2APi/eUoCMHWgdXYP5ckTNWU=;
-        b=JO+Wyfs9sYPz8mtpnrKICIRapC14V91XOrcFgB/23kbe4OVW6txJwT2ifyBW7/xLyV
-         rD3u7Si9qUv9HbkXsHTLlo3Vko9e3JooyY0q7YZ3J+W0Q8JkVy1M1WMbzE3+S2ZLMpgX
-         rpgDBN0BFpbNIJzSdlB6FdMzVTV25g3FdpcNdDiiw3+fIioAoJpzhFfa/go3beXUiVQJ
-         loQqdWxhhn5SoHCoU4tKw8jRb91Qkho+UPw3amMJrlIYzvQ7Ldiv5CHZBADM8+w2S6k3
-         WizrdGuxICoC6KzBjgc3o1Lqb7xRzbrhrpPPrp/Xgyl4ROQDfFze78OPwcrMsXPCJx/E
-         lozg==;
+        bh=4VWEUBWF7KBd1rVzFSzp+Xk2pu4Cot8nnx4EEqEDLwU=;
+        fh=QQ5CJAmVEtLcyg86pg4oUUolKCDGCP3aiw+8wg8EV0w=;
+        b=U7VPKEju8LP9MxOkGo5Wp+4nnWko55XFsqXjiKUSU8eBbSRRlrjF/XlZK6MB3KkIpd
+         cA0yyzN5Yh1r9cOL0zoBTD/FFUpEI2Uvn8kLbXgQAcbx299jxsXAnxXSwuaEjLdOhfeF
+         Cdn2wUSbwhi1CIOXJvsK8jo8YxAafhjBUhEBuDQdz7xNpUMiPsZ+aM7VcWHHiiWcrYa2
+         6x5ED7dR789mRBvB8KET7QL4YSMDt96r4u5rVb2xWX380y5OG7ntcZ7BdHu+WzqymduF
+         oNO668i/K6QMjmA0HPXke2oKQ7ZErLU0gDSS+GpCmTmNAbZT83EIrOP3Qra6TNmBkn8o
+         EbdA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780144800; x=1780749600; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780147980; x=1780752780; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mCFQYPb0hER5/YK01K9/AMjW2Ofy75QWLf9PsPmXl1w=;
-        b=gx4p5wYB9KJC18utTD5ISKRWqXzqNWCiskVSvA2LIEQd5UwmzxHvtyzTxGWuOy0csu
-         XluEXXRqIYmx0yFQhEQH12ZQkSpduS9rGBfV9AfKXaSzZYowN293nPfASeQrqDi6QeLU
-         rJOAJl9h827oXJB2s5+JNSpIeIce53/vSvVRueUvHQsstbf/GVNOSArjS6QHNpSnEXld
-         ODMzDbF8q1nwZ876G/WwpixO35T2X3D+tEhOqf6BBY0Nyw60XwHyZMvlk1OY1vtq8G9P
-         7VSpWAvEZNjTS1BWB+C89hqnpgOj1ZMeO8HCrM87Owdm7yvpxdCKo6fSxu+PfgDOs6xe
-         Px4A==
+        bh=4VWEUBWF7KBd1rVzFSzp+Xk2pu4Cot8nnx4EEqEDLwU=;
+        b=SFy2sEDxmmglPZkqRtR9+KHq1D/RxbWKsHhozUifIRbupSNKPr+Lz21Eo6XtNGyFmk
+         77Hi98XRaJkVKRjLFlf18pocACKJdmQXmhPIW6Y3LrmnrTZ3dXugKgmmzr26SCIRfNm1
+         ipm6/FKPGAjHKJy1Px6cFAvp35mqQkZHsteVNWtB0pUT6e62cDjoufaA/UHh4rJMOO9W
+         FJo92P5IeFw5ZHvW3XUdcch9ztmqy9In+H4VtiA8W1/BKYN5BFrfx/CQsrAu9h1cKNir
+         7GU1Aph8UK1PZrBI2HtjQtDu0gIsa2Coj2Afh01TMIBjO+1P2X3MtPTE+F/39Q1inCZ2
+         iH/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780144800; x=1780749600;
+        d=1e100.net; s=20251104; t=1780147980; x=1780752780;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=mCFQYPb0hER5/YK01K9/AMjW2Ofy75QWLf9PsPmXl1w=;
-        b=VIvehoA+CwIjUnoR8393VlUEbOk8H63JtBrBGsWY9qHm25XFHvVnL6IJH9oRRVVtC9
-         uud6kbnT8X+t2nlY9ViqZF6YSLh587fvC1zrPYhh+7l8ckPtoXf6hAyRmRgTa9Z9TXDS
-         hX4WLivQ20VdHb6k9X8YzsFRI7+8mQ6Jut84S6uIuAtP2Enu1EBQp36mn/qjxLzU74JH
-         Zuk6kcpRlsv/z/AUBVotBrxBzn7y9elMSUgau7FBIrFc5LG/TtwUhsHOT67zrxa1ZA5u
-         zGlQqpof7UPQ5qux3xIQKwbLyRuMK3JXhOVWC1eADswmXxdZjgl2RZjH9RwjDZSQsDIq
-         y0fA==
-X-Forwarded-Encrypted: i=1; AFNElJ9a7l4bUloLIFTCPY/hIFB3IaVpNnRMx/fhDkjxh1kh/8Dqs0NqmPcl6IooqYcf40rjNHFizWlbT08=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwKA10jgiYUFkaELagZcHVAaDLQ1DeOi8E4sMWyUfh0TxIWjjTL
-	mS9xZefdw8gDMXOa+X45scKNrDpDWHpztSOj3JP142tjwACQ+60D2GLiSUBM48tS4mc45LJJbVv
-	KhprKPSUeBrq7QXSsIpoyEg1KBMQTYzQ=
-X-Gm-Gg: Acq92OE72/ydgscFnB6TDCAFZOgrXWbhsK4jFKcwTSKgu2o5TBTOtG6rICFv5pjPWxh
-	gAvzUKe0+GUKM2ecKpcpt5xnsKGNHAAIkTLgyvxg3IRA9d1XDV07EblwkDlsebd/tKalQNYaNtB
-	+6ArltC00pov6ARmnqtogcRQOhCzXkJPlejodKO1NJvBSLe2AUX0oVfa468724aXOEVNy2AjIJA
-	PohzZaO5PrQk/4sOVq4WZuvVE3Qkbw6cJRXGsoOGK8IuvTKRXrTWRbXssq4bCkPUwZfcazxdohy
-	EhUmzNkUidhWQdPWfx+ND/76aZ2EmDACHQr58/JuKbE542IniGd3PenjHrNX/IgWBq0BrOuYjUc
-	5cgGo4eiBOZhZKhhQ5WEaFps82FPkt50yUJWw1REpABsiuEpw+eMu6ngfgDnMS4KFk7OvbX/ldN
-	3ttB68
-X-Received: by 2002:a17:907:3da0:b0:bda:25eb:1893 with SMTP id
- a640c23a62f3a-beab52314c4mr187958966b.20.1780144799547; Sat, 30 May 2026
- 05:39:59 -0700 (PDT)
+        bh=4VWEUBWF7KBd1rVzFSzp+Xk2pu4Cot8nnx4EEqEDLwU=;
+        b=HBPwo7JT6tfwVcLIIdlo41dFpJbFUvboTDH+kircA84WPRSzTguTyzb0KWV5L5+22r
+         SuRslYhILzbLEAALyrp1oVm9RaCyUnzVNlUQFs93j/sUWP3HeVt3y1Gl/QyrRX2Bslc8
+         TRsc5uNlmNl5wfXWvCqc4CH4PXHBVckeuKZ6cwGS9z5L+jrdn/d7kmhlbQtLbHeBFsZE
+         iw/xDJBXjfqlW+Chb3XSOY3uUWnL8F6YpNWPHOP8yv6S3CGC/jx9M+yVJEkQKI+0n4eU
+         r0GMQC+pUEFhPXVJ9Kcp3IkRlaVBCUxdvT/rYO8VGwLfTT9K5kS7n8HHZB6iVbPhted+
+         cu4w==
+X-Forwarded-Encrypted: i=1; AFNElJ/XfwgQ1dhlRWLru8VCX1f9LQHl2UXVXHVvs74C5VkuQ60w1quuDP4C8/mr3E8VMi5M4sCtbMssPpg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8DbChxg1vLhRWgqgJ+al7WvDVtvOViYNj6b4M6BOoEnZWFwbP
+	abWhjUpFmPAwpZiQicmehwwWK8g17KNVNvRmol6rabZ0kXumnJUqIYm/hnlBZo8tSX4GB9Gli11
+	FkpPfB1TuXJvg9yI3Pbmu6M2ZTc92DnZhSR9fTc6pJg==
+X-Gm-Gg: Acq92OHpdm7hE+jjBDuS92DPnao+nzq6ROc5/wFiDLPoN2zQe4d82k/yTQT+xeDLKSe
+	fhFOaXqAVQIZ4Q81aJwsy2jXVfrYcgJv4ee1kEgyiEM40JArOjgAjPP+tihfl6RF6ev5AEDik1x
+	I38+BP2brdO+tfCjYr+Z1H8qLWdjTFFR+9PKgwekaFcUs3QMLw51+DHSOrUnKwm2uTpmxvvMVzU
+	/Igzbl2qVnT1PGgQbgESXBh6e1bzalpUTHAyPoFlhSCk1Usjy3u/04zDnLxL0260VRnodjGFBVE
+	Zt8gkbpxR2oUv5XufpYQ8ZQVaPwp42qJhNszJqb8kT9WkfA8CTrpmqJ+VKU7V1armmuYYBZiSMY
+	OZ4zBBnIzaagdsq8xAQ52kwoEZkbjMfLBfdyTh9Gj3Crjr62AZz2AS80ft6HFj7f0HQIBlh0U1f
+	dbq7b5
+X-Received: by 2002:a17:907:1dc4:b0:bab:ba5a:fcb8 with SMTP id
+ a640c23a62f3a-beab78b54edmr128024966b.32.1780147980188; Sat, 30 May 2026
+ 06:33:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260530113938.171540-1-suunj1331@gmail.com> <20260530113938.171540-4-suunj1331@gmail.com>
-In-Reply-To: <20260530113938.171540-4-suunj1331@gmail.com>
+References: <20260530113938.171540-1-suunj1331@gmail.com> <20260530113938.171540-5-suunj1331@gmail.com>
+In-Reply-To: <20260530113938.171540-5-suunj1331@gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sat, 30 May 2026 14:39:23 +0200
-X-Gm-Features: AVHnY4Lmuhtu-KybdV7Y84jYr1jUSp6SdCGizBZhIGhDG0mK6WX9DgW9jdLlhgs
-Message-ID: <CAHp75VdMZ-HdJXA0SLpFrs7AZw90v+VRpbHgoiugwooG62cbhw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] iio: pressure: mpl3115: generalize interrupt pin routing
+Date: Sat, 30 May 2026 15:32:23 +0200
+X-Gm-Features: AVHnY4JGtN-bFKVfNa_oaVFPXwDdfk9n2OhCT6NCdPj5SfXTexBuP7-erJSeYz0
+Message-ID: <CAHp75VcN7B5BdKZGBiw5cbhYesGsO_tStcN3cKgggiHiuSnJ7w@mail.gmail.com>
+Subject: Re: [PATCH 4/4] iio: pressure: mpl3115: add hardware FIFO support
 To: SeungJu Cheon <suunj1331@gmail.com>
 Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com, 
 	nuno.sa@analog.com, andy@kernel.org, apokusinski01@gmail.com, 
@@ -101,22 +101,171 @@ Content-Transfer-Encoding: quoted-printable
 On Sat, May 30, 2026 at 1:40=E2=80=AFPM SeungJu Cheon <suunj1331@gmail.com>=
  wrote:
 >
-> Write CTRL_REG5 explicitly for both INT1 and INT2 rather than
-> relying on power-on defaults when INT2 is selected.
+> Add support for the MPL3115A2 hardware FIFO.
 >
-> This avoids incorrect interrupt routing after a suspend/resume
-> cycle where the register may not return to its default state.
+> The device provides a 32-sample FIFO with configurable
+> watermark interrupts, allowing buffered data acquisition
+> with reduced interrupt and CPU overhead.
 >
-> Route both DRDY and FIFO interrupts to the selected pin. The
-> FIFO routing is not yet used but is required by the hardware
-> FIFO support added in the following patch.
+> Use a kfifo-backed IIO buffer when a DRDY interrupt and
+> SMBus block reads are available, falling back to the
+> existing triggered buffer implementation otherwise.
 >
-> Consolidate polarity configuration into a single code path
-> that handles both interrupt pins uniformly.
+> When enabled, the driver configures the FIFO in circular
+> mode and drains accumulated samples on watermark
+> interrupts.
+>
+> Overflow conditions are handled by flushing available
+> samples before resetting the FIFO, avoiding unnecessary
+> data loss.
+>
+> The hardware always captures pressure and temperature
+> samples together, so FIFO operation requires both channels
+> to be enabled.
+>
+> Register cache updates are performed only after successful
+> I2C writes to keep cached and hardware state consistent.
+>
+> No functional change for non-buffered operation.
 
-> No functional change intended.
+...
 
-All the same issues in the commit message as with the previous change.
+> +       u8 fifo_buf[MPL3115_FIFO_SIZE * MPL3115_FIFO_SAMPLE_SIZE]
+> +               __aligned(IIO_DMA_MINALIGN);
+
+We have a macro for this,
+
+...
+
+> +static int mpl3115_fifo_flush(struct iio_dev *indio_dev)
+> +{
+> +       struct mpl3115_data *data =3D iio_priv(indio_dev);
+> +       u8 buffer[MPL3115_BUF_SIZE] __aligned(sizeof(s64)) =3D { };
+
+Don't we have a macro for this?
+
+> +       unsigned int sample_count, i;
+> +       int ret;
+> +       bool overflow;
+> +       s64 ts;
+> +
+> +       ret =3D i2c_smbus_read_byte_data(data->client, MPL3115_F_STATUS);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       overflow =3D FIELD_GET(MPL3115_F_STATUS_F_OVF, ret);
+> +       sample_count =3D FIELD_GET(MPL3115_F_STATUS_F_CNT, ret);
+> +       if (sample_count =3D=3D 0)
+> +               return overflow ? mpl3115_fifo_reset(data) : 0;
+> +
+> +       ret =3D mpl3115_fifo_transfer(data, sample_count);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ts =3D iio_get_time_ns(indio_dev);
+> +       for (i =3D 0; i < sample_count; i++) {
+
+  for (unsigned int i =3D 0; ...) {
+
+> +               u8 *sample =3D &data->fifo_buf[i * MPL3115_FIFO_SAMPLE_SI=
+ZE];
+
+> +               memcpy(&buffer[MPL3115_BUF_PRESS_OFFSET], &sample[0], 3);
+> +               memcpy(&buffer[MPL3115_BUF_TEMP_OFFSET], &sample[3], 2);
+
+These two sound to me like something which might require endianness
+handling, but if you put this as CPU native one and leave user space
+to take care of, it may be okay.
+
+> +
+> +               iio_push_to_buffers_with_ts(indio_dev, buffer, sizeof(buf=
+fer), ts);
+> +       }
+> +
+> +       if (overflow) {
+
+> +               dev_warn_ratelimited(&data->client->dev,
+> +                                    "FIFO overflow, samples may be lost\=
+n");
+> +               return mpl3115_fifo_reset(data);
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static int mpl3115_set_watermark(struct iio_dev *indio_dev, unsigned int=
+ value)
+> +{
+> +       struct mpl3115_data *data =3D iio_priv(indio_dev);
+
+> +       value =3D clamp_val(value, 1, MPL3115_FIFO_SIZE - 1);
+
+Why not clamp()?
+
+> +       guard(mutex)(&data->lock);
+> +       data->watermark =3D value;
+> +
+> +       return 0;
+> +}
+
+...
+
+> +static int mpl3115_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +       struct mpl3115_data *data =3D iio_priv(indio_dev);
+> +       u8 ctrl_reg4;
+> +       int ret;
+> +
+> +       guard(mutex)(&data->lock);
+> +
+> +       ret =3D mpl3115_set_active(data, false);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret =3D mpl3115_set_fifo(data, MPL3115_F_MODE_CIRCULAR);
+> +       if (ret) {
+> +               mpl3115_set_active(data, true);
+
+Instead of having an argument, just make two helpers: set_active() /
+set_inactive().
+
+> +               return ret;
+> +       }
+
+> +       ctrl_reg4 =3D data->ctrl_reg4;
+> +       ctrl_reg4 |=3D MPL3115_CTRL4_INT_EN_FIFO;
+> +       ctrl_reg4 &=3D ~MPL3115_CTRL4_INT_EN_DRDY;
+> +
+> +       return mpl3115_config_interrupt(data,
+> +               data->ctrl_reg1 | MPL3115_CTRL1_ACTIVE, ctrl_reg4);
+
+In some cases the FIELD_PREP()/FIELD_GET() is used, why not use FIELD_MODIF=
+Y()?
+
+> +}
+
+...
+
+> +static const unsigned long mpl3115_scan_masks[] =3D {
+> +       BIT(0) | BIT(1),
+> +       0,
+
+No comma in terminator entry.
+
+> +};
+
+...
+
+> -       ret =3D devm_iio_triggered_buffer_setup(&client->dev,
+> -                                     indio_dev,
+> -                                     NULL,
+> -                                     mpl3115_trigger_handler,
+> -                                     NULL);
+> -       if (ret)
+> -               return ret;
+
+Before modifying this, it might make sense to split necessary bits to
+the helper function and then simply reuse it as needed.
 
 --=20
 With Best Regards,
