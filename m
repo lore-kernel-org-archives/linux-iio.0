@@ -1,62 +1,62 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2CA534846A
-	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 03:20:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992B4348452
+	for <linux-iio@vger.kernel.org>; Sat, 30 May 2026 03:20:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780111226; cv=none; b=KqOXBoAV1fogmDhA3I7N8szq5IYPilePqZFOb0eCzfS6a02vYk6sZcf1D5GoykfSWmMnu8Vz+qVNig+SQSNeeq6sa9mchI/XE6zLcaFmueIclUl9c+WAJUXWa7uYgQk/DzwUGsEAmAbDtY77bT7crX3aej3GAD9+jNHGnzyMX3I=
+	t=1780111227; cv=none; b=K/NLym4aCFDC15NlC8UdFOOz0lDRhwlpyRCgrVN0BwszcOnB7LB4U0yK6xqqC4UrKf/gr8A3qTHhk9flxwM+NAyJEcoIAQfwnbzg3cYBixEf5wSrFxE25buksMeulgKomwe2VGn7yL48Wir2UdRrdc84xxbwTO6fFMRUJu5H+JU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780111226; c=relaxed/simple;
-	bh=+kGR7bVxbKT9wsB2L0tfl/Mim0nn94lRb4TnvmHYGqw=;
+	s=arc-20240116; t=1780111227; c=relaxed/simple;
+	bh=wpVIjSW73Tqy3CtyfM/2p3sMOt1ZtfwlpoHVfMdMOOg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OOejWrNUwAqKMIBoOFuyT11m1LddOSs9hRL6ggSKsUy/Be+4zjqy6mRyj782wZI4TcjW7qrTxhrB7rg63ZcWYVVUIP62xUgD4l42L98NgUFfMiABJJp5/gE/us7KkcrkNgSdfc3yI6kwawU0LG82r/+V3ISr9TYVa8J4gppsSX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qaznJj3f; arc=none smtp.client-ip=209.85.160.48
+	 MIME-Version; b=K9kWhYZaN0FRSEAPGOf0RfeEme53C9I3xwCkDyDR2WPzsAq8w4oPcUydiIch4OEhZxT6sN5/TXhaBrYy7sqdk16DwbMzo7XqTc64BkYTRwoWliF3Gd9SIvrhjhrHf+sR3SsQyzSbKUYbVZTs6eAFQIm7/ArqA/ZC67gVa0N4koQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G2HSiD99; arc=none smtp.client-ip=209.85.161.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qaznJj3f"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-439712b3416so5137428fac.2
-        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 20:20:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G2HSiD99"
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-69d7aa0ac14so5286363eaf.3
+        for <linux-iio@vger.kernel.org>; Fri, 29 May 2026 20:20:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780111223; x=1780716023; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780111225; x=1780716025; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RnwoxwabVhbDbMkRzoM5vsAFsTBGbwkNUwJ3O13YP5o=;
-        b=qaznJj3fbKgF4oXt25XuzTN80/BdhwhKyrvR9KE+tswEX6uO4txowJ0qY3SyGxnW4a
-         LIB9UBC3rpBM8gF0shR07x/2nNpwbDfHLzIgeK810G21qpKwyh2LdyrFL3YF/KBCdKTZ
-         gz+qCEC+zTWu10h7jMw/Vmi7tW4DNLyswQshXojqSVbxe/iS6tTd4e8mdsB6ws+ei3A/
-         SSYwvZWSAMA+NObA4gpBnKNr4pjwzas6nxJy037wJalbYbO8TZAAHxW9KYIKDCN525q1
-         qDaUPMNF6Qlpxp2PFaVRR03+ReC3qet5wFh89Wias3k5495QECXGAIs1z/rMob7cKeTL
-         0mtQ==
+        bh=kkQGFdPkGtJ/r5yX8xazHT/KTEybpcr8RzLV0lxcFoU=;
+        b=G2HSiD99kv5M+uucV3gDAQ6P0rAed/HaUFbN1gQlxPCyoKR2GheEQVkAl1a/o/06fr
+         Yd8sPOQBAc7CQX0DDazCDbBL7cfxiV4+y1pC7zbsRXOQebL+HeHjVAHLjbkqIEJ2fL8x
+         APK/0vEhDKw2tTwL0U6MKDareJG8Wx9u9h+WjKqn/P5SPektglu+PNPoAzi5mrCQRcOQ
+         C1nOsAYnMYqyyed5fEIXi7InxJ/6pPxP7/mC9LN/fa/xRNxkMv8/dnEzc8Sh9VAx9Xg+
+         +5CXOihQcJNVXr2Z1YAmyjhcjH2FWyKi/azsP6/dW0D4dGjdjJosjgNWnPmaXTaHh8c0
+         1h5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780111223; x=1780716023;
+        d=1e100.net; s=20251104; t=1780111225; x=1780716025;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=RnwoxwabVhbDbMkRzoM5vsAFsTBGbwkNUwJ3O13YP5o=;
-        b=iC94WVrw9fcz/n1x9Ae5UQG4RDcZusNW4QfGuwk1jwc1AwnvxGHN0F78o7sU/H2RnN
-         LON+qrw/gtjZlwJMeFBXMfve3zl6Kg6mmeB9LDQI47LisM7bhQrXYPRUmg+rlbhjJS9h
-         y5pbll4DUisu8mYsuhnKpAk/XNIhz21pkgEVIZc0hQC0BOu+lmRVQpiyQRaFlyuZ3DKB
-         sLUybTjDWv7lROeVELO6bP0SubucKfhkfrMTrfc2UyHlV9AwXaZbNX1Rmir8iINiuDOy
-         JiTWThi81ro5D3gjrNFkRqikH65tsEXrNTtneed0/gK26ZFoGolVIMrnfjeVUR2awyN0
-         meFA==
-X-Gm-Message-State: AOJu0YyDqHwilzheRS8zClQ4ghrDEOJ9Gg6q9oUY+qaCvY5t6PjhNDky
-	Lb9qOgwUQs+U5mhAOPRCnMNRWYOsAQ9sHgU57GJMFLEEqHyollg3ReKIHLHgujlT
-X-Gm-Gg: Acq92OGgh+5IdWAc6QKClMLxwCOmFWe5WvexdtD2C4nThX0l12eN0XACHkKsE96H0Tt
-	BDEcUA9J8fCTD6J5Rhm/uKbmVhUp4rk1kl+P6oXcZjpAEpbhCiZ7A2FofalKd4a4AebuxBSnV89
-	q6Z81hnfaHdxsfjXikFGOtWCBjWSE08KCl3Ec23epqx4Aca2Mx5/z5B4hRYpmTGKn3INX2ajjBQ
-	rvFmZ8BOnSplReWPWV2VJAxTA0VlIWnNmKihMIthSNPASHeAFqR+YCqykWZ47NdOqy0SSj0tU7M
-	jt37GI3Pa+P2BPPQTvfjZkQLnbUOjbNeVKkF8D+x5cS4cvZZdYCC6IvjLHwipIRDlhyx5ouwWYQ
-	eB1XlfoAZ5vrcmpPh3ez4AUaD2OoAcF79X62olIjZyR02+UqOxpZRj4zjVFFgGgstWr/aanepM9
-	+TSqIi+bLDgWLWdJUUCsDdGSZwMSfHw3o=
-X-Received: by 2002:a05:6820:2909:b0:694:8cd5:10c9 with SMTP id 006d021491bc7-69e105d8a2emr1079848eaf.51.1780111223684;
-        Fri, 29 May 2026 20:20:23 -0700 (PDT)
+        bh=kkQGFdPkGtJ/r5yX8xazHT/KTEybpcr8RzLV0lxcFoU=;
+        b=HnU8F7OBPlRO5cEEc1lqi9lgm7cOoEzTnJ4HRviLg+dTb55zV2D36dW4KASKukM318
+         l9169O7nNfZbgNT75yHrj4u74UE23zalqNT+GlDS/1OzBJHrsSn7SeWCdXEjs6InA57h
+         gfUs7O/fYDyyQjhJCcF7fM7+WezqjTLnH98BwHl5cYiJX4LBy3sjVqLFUtdHSti90fCJ
+         i4PlYrcrVrWgLj9HK7Gtg1tBOdwpHTISwmnKLZVF78dSpR4dyqyB9x75L20fVjAq3YFh
+         NWCLRo3QKIr+AuI25Ix7UDV3CnmZ7C2IpMjNWZ2g9lUrwJODxa2m8TWRW0VS9juh4oI5
+         6mQw==
+X-Gm-Message-State: AOJu0Yw1NyGO6rAymvjv25oxAhU8xLXFt03Yy1RgTM714yhbHrkmgptH
+	3w+PmlsXBGPnkOKH8Tw+nmCtJh9e6RRt5VM6UEmGnjNcSM8vdDYLvP4wO842PdfW
+X-Gm-Gg: Acq92OHFJN4i3kH4SwlbmtXLTIxMHADkGpprHyzh6/Nj0dvnIUOFkTiifvIKRAE6Me5
+	S0NznUFhvk2LSh3z2u/ff9a9dSx9Sidw+AYw8sfFYCpVbIa8QRzu3dbSF21diVlVo/VJ3mYClKC
+	FT+fOV8BdT/Vi/HDp5gK8exbXEqtXjEuep5Q5/wdzEAaPiZYwdypdDVjU7BOJzstj5Wu4ZC14fh
+	rrhhd20bQnysFLtmeW1iqIpDNbDTGlDt7AZYEUQetiUthBMYlPDBwQ9ycT8V2OoLv2ptj/IUlbN
+	GGrycFE7kNiVmruupqF1y0HBOWf1V3tJH0H/E+TpvYhX/XJUFGnNu7G9TEffzQYdz2VGkB+VhwL
+	r0r1XEmWf3jEgUuAtb1nml6PD+vsRZ1ZHMtR1kSporkFp47J/neoJDiRNOSkBh/8gYHtgjGLqwq
+	Toot5SBQaOFNSAgYjqW2h5btH3QGInPm8=
+X-Received: by 2002:a05:6820:2219:b0:69d:9547:c963 with SMTP id 006d021491bc7-69e102e3a3fmr1135487eaf.27.1780111225660;
+        Fri, 29 May 2026 20:20:25 -0700 (PDT)
 Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69e067e911csm2130737eaf.5.2026.05.29.20.20.22
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69e067e911csm2130737eaf.5.2026.05.29.20.20.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 20:20:23 -0700 (PDT)
+        Fri, 29 May 2026 20:20:25 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: andy@kernel.org,
@@ -72,9 +72,9 @@ Cc: andy@kernel.org,
 	robh@kernel.org,
 	andriy.shevchenko@intel.com,
 	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V9 07/11] iio: imu: inv_icm42607: Add Temp Support in icm42607
-Date: Fri, 29 May 2026 22:17:34 -0500
-Message-ID: <20260530031739.109063-8-macroalpha82@gmail.com>
+Subject: [PATCH V9 09/11] iio: imu: inv_icm42607: Add IRQ for icm42607
+Date: Fri, 29 May 2026 22:17:36 -0500
+Message-ID: <20260530031739.109063-10-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260530031739.109063-1-macroalpha82@gmail.com>
 References: <20260530031739.109063-1-macroalpha82@gmail.com>
@@ -84,205 +84,145 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-Add functions for reading temperature sensor data.
+Add IRQ support for the icm42607 driver.
 
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
- drivers/iio/imu/inv_icm42607/Makefile         |  1 +
- drivers/iio/imu/inv_icm42607/inv_icm42607.h   |  3 +
- .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 18 +++++
- .../iio/imu/inv_icm42607/inv_icm42607_temp.c  | 81 +++++++++++++++++++
- .../iio/imu/inv_icm42607/inv_icm42607_temp.h  | 33 ++++++++
- 5 files changed, 136 insertions(+)
- create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
- create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
+ .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 97 ++++++++++++++++++-
+ 1 file changed, 96 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/inv_icm42607/Makefile b/drivers/iio/imu/inv_icm42607/Makefile
-index 3c9d08509793..ccb8e007cdeb 100644
---- a/drivers/iio/imu/inv_icm42607/Makefile
-+++ b/drivers/iio/imu/inv_icm42607/Makefile
-@@ -3,6 +3,7 @@
- obj-$(CONFIG_INV_ICM42607) += inv-icm42607.o
- inv-icm42607-y += inv_icm42607_core.o
- inv-icm42607-y += inv_icm42607_buffer.o
-+inv-icm42607-y += inv_icm42607_temp.o
- 
- obj-$(CONFIG_INV_ICM42607_I2C) += inv-icm42607-i2c.o
- inv-icm42607-i2c-y += inv_icm42607_i2c.o
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-index cb878de970d4..c651f0b66d43 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-@@ -381,6 +381,9 @@ extern const struct dev_pm_ops inv_icm42607_pm_ops;
- 
- u32 inv_icm42607_odr_to_period(enum inv_icm42607_odr odr);
- 
-+int inv_icm42607_set_temp_conf(struct inv_icm42607_state *st, bool enable,
-+			       unsigned int *sleep_ms);
-+
- int inv_icm42607_core_probe(struct regmap *regmap,
- 			    const struct inv_icm42607_hw *hw,
- 			    inv_icm42607_bus_setup bus_setup);
 diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-index 16ead03a59f9..cf9d0c6f3f4b 100644
+index 6b623fb679f3..3c91623dffb2 100644
 --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
 +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-@@ -152,6 +152,24 @@ static int inv_icm42607_set_pwr_mgmt0(struct inv_icm42607_state *st,
- 	return 0;
+@@ -331,6 +331,91 @@ static int inv_icm42607_setup(struct inv_icm42607_state *st,
+ 	return inv_icm42607_set_conf(st, st->hw->conf);
  }
  
-+int inv_icm42607_set_temp_conf(struct inv_icm42607_state *st, bool enable,
-+			       unsigned int *sleep_ms)
++static irqreturn_t inv_icm42607_irq_timestamp(int irq, void *_data)
 +{
-+	unsigned int val;
-+	int ret;
++	struct inv_icm42607_state *st = _data;
 +
-+	val = FIELD_PREP(INV_ICM42607_TEMP_CONFIG0_FILTER_MASK,
-+			 INV_ICM42607_FILTER_BW_34HZ);
-+	ret = regmap_update_bits(st->map, INV_ICM42607_REG_TEMP_CONFIG0,
-+				 INV_ICM42607_TEMP_CONFIG0_FILTER_MASK, val);
-+	if (ret)
-+		return ret;
++	st->timestamp.accel = iio_get_time_ns(st->indio_accel);
 +
-+	return inv_icm42607_set_pwr_mgmt0(st, st->conf.gyro.mode,
-+					  st->conf.accel.mode, enable,
-+					  sleep_ms);
++	return IRQ_WAKE_THREAD;
 +}
 +
- static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
- 				 const struct inv_icm42607_conf *conf)
- {
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
-new file mode 100644
-index 000000000000..418098450592
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2026 InvenSense, Inc.
-+ */
++static irqreturn_t inv_icm42607_irq_handler(int irq, void *_data)
++{
++	struct inv_icm42607_state *st = _data;
++	struct device *dev = regmap_get_device(st->map);
++	unsigned int status;
++	int ret;
 +
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
++	mutex_lock(&st->lock);
 +
-+#include "inv_icm42607.h"
-+#include "inv_icm42607_temp.h"
++	ret = regmap_read(st->map, INV_ICM42607_REG_INT_STATUS, &status);
++	if (ret) {
++		dev_err(dev, "Interrut status read error %d\n", ret);
++		goto out_unlock;
++	}
 +
-+static int inv_icm42607_temp_read(struct inv_icm42607_state *st, s16 *temp)
++	if (status & INV_ICM42607_INT_STATUS_FIFO_FULL)
++		dev_warn(dev, "FIFO full data lost!\n");
++
++	if (status & INV_ICM42607_INT_STATUS_FIFO_THS) {
++		mutex_unlock(&st->lock);
++		ret = inv_icm42607_buffer_fifo_read(st, 0);
++		if (ret) {
++			dev_err(dev, "FIFO read error %d\n", ret);
++			goto out_unlock;
++		}
++
++		mutex_lock(&st->lock);
++		ret = inv_icm42607_buffer_fifo_parse(st);
++		if (ret)
++			dev_err(dev, "FIFO parsing error %d\n", ret);
++	}
++
++out_unlock:
++	mutex_unlock(&st->lock);
++	return IRQ_HANDLED;
++}
++
++static int inv_icm42607_irq_init(struct inv_icm42607_state *st, int irq,
++				 int irq_type, bool open_drain)
 +{
 +	struct device *dev = regmap_get_device(st->map);
-+	__be16 *raw;
++	unsigned int val = 0;
 +	int ret;
 +
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&st->lock);
-+
-+	ret = inv_icm42607_set_temp_conf(st, true, NULL);
-+	if (ret)
-+		return ret;
-+
-+	raw = &st->buffer[0];
-+	ret = regmap_bulk_read(st->map, INV_ICM42607_REG_TEMP_DATA1, raw, sizeof(*raw));
-+	if (ret)
-+		return ret;
-+
-+	*temp = be16_to_cpup(raw);
-+	if (*temp == INV_ICM42607_DATA_INVALID)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	s16 temp;
-+	int ret;
-+
-+	if (chan->type != IIO_TEMP)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+		ret = inv_icm42607_temp_read(st, &temp);
-+		iio_device_release_direct(indio_dev);
-+		if (ret)
-+			return ret;
-+		*val = temp;
-+		return IIO_VAL_INT;
-+	/*
-+	 * T°C = (temp / 128) + 25
-+	 * Tm°C = 1000 * ((temp * 100 / 12800) + 25)
-+	 * scale: 100000 / 12800 ~= 7.8125
-+	 * offset: 3200
-+	 */
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 7;
-+		*val2 = 812500000;
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = 3200;
-+		return IIO_VAL_INT;
++	switch (irq_type) {
++	case IRQF_TRIGGER_RISING:
++	case IRQF_TRIGGER_HIGH:
++		val = INV_ICM42607_INT_CONFIG_INT1_ACTIVE_HIGH;
++		break;
 +	default:
-+		return -EINVAL;
++		val = INV_ICM42607_INT_CONFIG_INT1_ACTIVE_LOW;
++		break;
 +	}
-+}
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
-new file mode 100644
-index 000000000000..e03924e30866
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
-@@ -0,0 +1,33 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Copyright (C) 2026 InvenSense, Inc.
-+ */
 +
-+#ifndef INV_ICM42607_TEMP_H_
-+#define INV_ICM42607_TEMP_H_
++	switch (irq_type) {
++	case IRQF_TRIGGER_LOW:
++	case IRQF_TRIGGER_HIGH:
++		val |= INV_ICM42607_INT_CONFIG_INT1_LATCHED;
++		break;
++	default:
++		break;
++	}
 +
-+#include <linux/bitops.h>
++	if (!open_drain)
++		val |= INV_ICM42607_INT_CONFIG_INT1_PUSH_PULL;
 +
-+struct iio_dev;
-+struct iio_chan_spec;
++	ret = regmap_write(st->map, INV_ICM42607_REG_INT_CONFIG, val);
++	if (ret)
++		return ret;
 +
-+#define INV_ICM42607_TEMP_CHAN(_index)				\
-+{								\
-+	.type = IIO_TEMP,					\
-+	.info_mask_separate =					\
-+		BIT(IIO_CHAN_INFO_RAW) |			\
-+		BIT(IIO_CHAN_INFO_OFFSET) |			\
-+		BIT(IIO_CHAN_INFO_SCALE),			\
-+	.scan_index = _index,					\
-+	.scan_type = {						\
-+		.sign = 's',					\
-+		.realbits = 16,					\
-+		.storagebits = 16,				\
-+	},							\
++	irq_type |= IRQF_ONESHOT;
++	return devm_request_threaded_irq(dev, irq, inv_icm42607_irq_timestamp,
++					 inv_icm42607_irq_handler, irq_type,
++					 st->hw->name, st);
 +}
 +
-+int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int *val, int *val2, long mask);
+ static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
+ {
+ 	int ret;
+@@ -367,13 +452,18 @@ int inv_icm42607_core_probe(struct regmap *regmap,
+ {
+ 	struct device *dev = regmap_get_device(regmap);
+ 	struct inv_icm42607_state *st;
+-	int irq;
++	int irq, irq_type;
++	bool open_drain;
+ 	int ret;
+ 
+ 	irq = fwnode_irq_get_byname(dev_fwnode(dev), "INT1");
+ 	if (irq < 0)
+ 		return dev_err_probe(dev, irq, "Unable to get INT1 interrupt\n");
+ 
++	irq_type = irq_get_trigger_type(irq);
 +
-+#endif
++	open_drain = device_property_read_bool(dev, "drive-open-drain");
++
+ 	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+ 	if (!st)
+ 		return -ENOMEM;
+@@ -433,6 +523,11 @@ int inv_icm42607_core_probe(struct regmap *regmap,
+ 	if (IS_ERR(st->indio_accel))
+ 		return PTR_ERR(st->indio_accel);
+ 
++	/* Initialize interrupt handling */
++	ret = inv_icm42607_irq_init(st, irq, irq_type, open_drain);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
 -- 
 2.43.0
 
