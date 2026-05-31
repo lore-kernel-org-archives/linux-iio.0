@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1974D8CE;
-	Sun, 31 May 2026 12:49:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6501F3BAC;
+	Sun, 31 May 2026 12:58:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780231789; cv=none; b=o/nRjVo05fzYoeztpmTH4K+NWCD+hrUw8qUyFceIfcZxzJKSR0uPbmTcye/OX6ynIedSLWE1mDpPgMp6Ce95qBOZbX1Z224N+yiNG7t81pCeSQs45/6R5QXHcUIbRkNeQSvTca6zu7fvgrkx2HATGaHYkh0os9Hgs2qE/l95ojg=
+	t=1780232316; cv=none; b=qtdk6VGrK8HF8stEFlieGg3WvSgpTUIhpiQKq/SFtyZfNrQPNCgeLJ+rcyvhA5ktV2bttFiULoiTAxFSwFtdyj2nTjWkraeyMp8iKSQELVrNuxvB7dftKUWr4hj8NJeh5y5eSdlu3jAj9G34PYdipAunuBQGmrXbblutIwM6Qe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780231789; c=relaxed/simple;
-	bh=5nV79P+9EglaPAg5nPezTmysnGPfiy1R3Kpp5WqIfmw=;
+	s=arc-20240116; t=1780232316; c=relaxed/simple;
+	bh=idAL3HNc/TgMamT2gmTLTexn6as+2ynGuFAnG9iqaQk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ClZaVKtIhh2eRyBmmF+MQ0jLK8OvA7TSstXS3MCSq97Bpk0pRyKsUqst0aqeEeRRgxN/xdma5d9KJXIz48FJtuhk0mgFuP+DbsV/jNIH3TbzS/b8XyXrImwcuJtcLmNde9YpK3AaLptxsUQ5ratYY61PtgLd92UQ4jKbnq+gL+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d/BQ7x0A; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=TyElD12CBx4mhkHVKVfBerQo0lOPw3tY2DnnhyFsDfKjaCOUwZ4NtLJ2XmBrYcrtoBRu1o0A6IfGo7IwRBZOwgvBWSlSzinUbxrNGLMtvSQkA4JZM/+Ex5zCDGzAu5W/cVhpMCDyLVOmIFlWfGH3JUXGc3jE/9Zoc2l2dO1B5hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hVDOQFS8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d/BQ7x0A"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDE91F00893;
-	Sun, 31 May 2026 12:49:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hVDOQFS8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ABBA1F00893;
+	Sun, 31 May 2026 12:58:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780231787;
-	bh=0FQT6mOQRjHPoUHEtFPyGoBL6/gd6UgwcPgHmimCaC8=;
+	s=k20260515; t=1780232314;
+	bh=+CA+v+FUWBPtZ6XNzVlGy534etJ1KYmo7MXS0bn/j60=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=d/BQ7x0AM6FYpvv7+jiRlmdnet8xq7jq37iFPAFIDu2ll7AjI+ZijVXMZBnVgvyr2
-	 KpjMSnjcqvRrO7AGrjF5GFkbq7nSOKyIzicB5S6bBxeMpOjshpeE9z+pVWZOfmYJyn
-	 8QZ1Wz4+R2KC1Z062DJSR8avWWwIvT7U3ehPHGtBM8PaOuDz/1TQZuuL77dHjQM6Ge
-	 kW8wVHXkkAliFJKua8ycsmmeQgmRbFPmeiar9HDVKu1U9puzneD9U024dF7MP3DtG7
-	 lsFqbK2USg2sbla2PVUUrY7bWOv2VQzY+kkhgsp1YhCzr/L4I3C/8Bxg6ZLCdTALL7
-	 0vJqcqWR+l0Ew==
-Date: Sun, 31 May 2026 13:49:36 +0100
+	b=hVDOQFS8dc7teV5JeOSXzM8E0IQI6FyFRlxFE+w6jLBdeDMRe5fD24yI7nzMnrQ/b
+	 Sf1AJTkWEn+Abe/wJFBb0x24PbDYy3rcCufnMmGk7UALjKQRgKu1V3EZn8mvafsfoI
+	 f7iPEdEY6+fOy86hueb9Jeo3G63dRKEGuTS9xsf2AU5GWP0j0MbEZZ9Sq0stTHsQAn
+	 X8lzdjnejJ5n0dYx9okjyPVGYImAw7FKBPTCo4ZBKHhvi0I85wRY2apE1uM+DVMv84
+	 8MkhEX/iz7Ko0HIWQ8SHtUT0OcVfa12cSGx6/25xfbYRW02fJV08I1ZrQuQsxDfuC1
+	 S/Bfu8tRRf2tg==
+Date: Sun, 31 May 2026 13:58:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Chris Morgan <macroalpha82@gmail.com>
 Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
@@ -34,11 +34,12 @@ Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
  linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
  heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
  andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V9 09/11] iio: imu: inv_icm42607: Add IRQ for icm42607
-Message-ID: <20260531134936.051e9824@jic23-huawei>
-In-Reply-To: <20260530031739.109063-10-macroalpha82@gmail.com>
+Subject: Re: [PATCH V9 10/11] iio: imu: inv_icm42607: Add Gyroscope to
+ icm42607
+Message-ID: <20260531135823.015c4fd1@jic23-huawei>
+In-Reply-To: <20260530031739.109063-11-macroalpha82@gmail.com>
 References: <20260530031739.109063-1-macroalpha82@gmail.com>
-	<20260530031739.109063-10-macroalpha82@gmail.com>
+	<20260530031739.109063-11-macroalpha82@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,117 +50,140 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 29 May 2026 22:17:36 -0500
+On Fri, 29 May 2026 22:17:37 -0500
 Chris Morgan <macroalpha82@gmail.com> wrote:
 
 > From: Chris Morgan <macromorgan@hotmail.com>
 > 
-> Add IRQ support for the icm42607 driver.
-Note I'm only calling out a few things sashiko commented on. Make sure
-you verify any others are fixed or false positives.
-
-https://sashiko.dev/#/patchset/20260530031739.109063-1-macroalpha82%40gmail.com
-
-I didn't have anything non sashiko related to add to this patch.
+> Add gyroscope functions to the icm42607 driver.
 > 
 > Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> ---
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 97 ++++++++++++++++++-
->  1 file changed, 96 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> index 6b623fb679f3..3c91623dffb2 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
 
-> +
-> +static irqreturn_t inv_icm42607_irq_handler(int irq, void *_data)
-> +{
-> +	struct inv_icm42607_state *st = _data;
-> +	struct device *dev = regmap_get_device(st->map);
-> +	unsigned int status;
-> +	int ret;
-> +
-> +	mutex_lock(&st->lock);
-> +
-> +	ret = regmap_read(st->map, INV_ICM42607_REG_INT_STATUS, &status);
-> +	if (ret) {
-> +		dev_err(dev, "Interrut status read error %d\n", ret);
-> +		goto out_unlock;
-> +	}
-> +
-> +	if (status & INV_ICM42607_INT_STATUS_FIFO_FULL)
-> +		dev_warn(dev, "FIFO full data lost!\n");
-> +
-> +	if (status & INV_ICM42607_INT_STATUS_FIFO_THS) {
-> +		mutex_unlock(&st->lock);
-> +		ret = inv_icm42607_buffer_fifo_read(st, 0);
-> +		if (ret) {
-> +			dev_err(dev, "FIFO read error %d\n", ret);
-> +			goto out_unlock;
-Sashiko caught this one.
+Hi Chris,
+Various things inline.
 
-Lock isn't held.  This dance is horrible though.  Normally we avoid this
-by having an unlocked variant of the inner function 
-__inv_icm42607_buffer_fifo_read() and a locked wrapper without the underscores.
-Or push the lock out of there in general and add a __must_hold() marking so
-we can detect any paths that don't have the lock.
+Thanks,
 
-> +		}
-> +
-> +		mutex_lock(&st->lock);
-> +		ret = inv_icm42607_buffer_fifo_parse(st);
+Jonathan
+
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c
+> index 5b69bf895b35..c45239613344 100644
+> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_buffer.c
+
+>  int inv_icm42607_buffer_fifo_parse(struct inv_icm42607_state *st)
+>  {
+> +	struct inv_icm42607_sensor_state *gyro_st = iio_priv(st->indio_gyro);
+>  	struct inv_icm42607_sensor_state *accel_st = iio_priv(st->indio_accel);
+>  	struct inv_sensors_timestamp *ts;
+>  	int ret;
+> @@ -491,6 +494,16 @@ int inv_icm42607_buffer_fifo_parse(struct inv_icm42607_state *st)
+>  	if (st->fifo.nb.total == 0)
+>  		return 0;
+>  
+> +	/* handle gyroscope timestamp and FIFO data parsing */
+> +	if (st->fifo.nb.gyro > 0) {
+> +		ts = &gyro_st->ts;
+> +		inv_sensors_timestamp_interrupt(ts, st->fifo.watermark.eff_gyro,
+> +						st->timestamp.gyro);
+> +		ret = inv_icm42607_gyro_parse_fifo(st->indio_gyro);
 > +		if (ret)
-> +			dev_err(dev, "FIFO parsing error %d\n", ret);
+> +			return ret;
 > +	}
 > +
-> +out_unlock:
-> +	mutex_unlock(&st->lock);
-> +	return IRQ_HANDLED;
+>  	/* handle accelerometer timestamp and FIFO data parsing */
+>  	if (st->fifo.nb.accel > 0) {
+>  		ts = &accel_st->ts;
+> @@ -507,12 +520,14 @@ int inv_icm42607_buffer_fifo_parse(struct inv_icm42607_state *st)
+>  int inv_icm42607_buffer_hwfifo_flush(struct inv_icm42607_state *st,
+>  				     unsigned int count)
+>  {
+> +	struct inv_icm42607_sensor_state *gyro_st = iio_priv(st->indio_gyro);
+>  	struct inv_icm42607_sensor_state *accel_st = iio_priv(st->indio_accel);
+>  	struct inv_sensors_timestamp *ts;
+> -	s64 accel_ts;
+> +	s64 gyro_ts, accel_ts;
+>  	int ret;
+>  
+>  	accel_ts = iio_get_time_ns(st->indio_accel);
+> +	gyro_ts = iio_get_time_ns(st->indio_gyro);
+
+Sashiko calls out correctly that there is a race with devices finishing
+coming up that might be hit here.  Probably need some sort of presence
+check and locking to be sure those are both valid.
+
+
+
+>  
+>  	ret = inv_icm42607_buffer_fifo_read(st, count);
+>  	if (ret)
+
+
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+> new file mode 100644
+> index 000000000000..8d59156086b1
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+
+> +
+> +static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
+> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
+> +	{ },
+No comma. Check for any other commas after terminating entries like this one.
+> +};
+
+
+> +
+> +int inv_icm42607_gyro_parse_fifo(struct iio_dev *indio_dev)
+> +{
+> +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
+> +	struct inv_icm42607_sensor_state *gyro_st = iio_priv(indio_dev);
+> +	struct inv_sensors_timestamp *ts = &gyro_st->ts;
+> +	ssize_t i, size;
+> +	unsigned int no;
+> +	const void *accel, *gyro, *timestamp;
+> +	const s8 *temp;
+> +	unsigned int odr;
+> +	s64 ts_val;
+> +	struct inv_icm42607_gyro_buffer buffer = { };
+> +
+> +	guard(mutex)(&st->lock);
+Sashiko thinks there is a deadlock here as this lock will already
+be held.  Report looks correct to me + same bug in the accelerometer case.
+
+I'm surprised you didn't see them in testing as deadlocks tend to be obvious!
+
+
+> +
+> +	/* parse all fifo packets */
+> +	for (i = 0, no = 0; i < st->fifo.count; i += size, ++no) {
+> +		size = inv_icm42607_fifo_decode_packet(&st->fifo.data[i],
+> +				&accel, &gyro, &temp, &timestamp, &odr);
+> +		/* quit if error or FIFO is empty */
+> +		if (size <= 0)
+> +			return size;
+> +
+> +		/* If the packet size could cause us to overflow, return. */
+> +		if (i + size > st->fifo.count)
+> +			return -EIO;
+> +
+> +		/* skip packet if no gyro data or data is invalid */
+> +		if (gyro == NULL || !inv_icm42607_fifo_is_data_valid(gyro))
+> +			continue;
+> +
+> +		/* update odr */
+> +		if (odr & INV_ICM42607_SENSOR_GYRO)
+> +			inv_sensors_timestamp_apply_odr(ts, st->fifo.period,
+> +							st->fifo.nb.total, no);
+> +
+> +		memcpy(&buffer.gyro, gyro, sizeof(buffer.gyro));
+> +		/* convert 8 bits FIFO temperature in high resolution format */
+> +		buffer.temp = temp ? (*temp * 64) : 0;
+> +		ts_val = inv_sensors_timestamp_pop(ts);
+> +		iio_push_to_buffers_with_ts(indio_dev, &buffer,
+> +					    sizeof(buffer), ts_val);
+> +	}
+> +
+> +	return 0;
 > +}
-
-> +
->  static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
->  {
->  	int ret;
-> @@ -367,13 +452,18 @@ int inv_icm42607_core_probe(struct regmap *regmap,
->  {
->  	struct device *dev = regmap_get_device(regmap);
->  	struct inv_icm42607_state *st;
-> -	int irq;
-> +	int irq, irq_type;
-> +	bool open_drain;
->  	int ret;
->  
->  	irq = fwnode_irq_get_byname(dev_fwnode(dev), "INT1");
->  	if (irq < 0)
->  		return dev_err_probe(dev, irq, "Unable to get INT1 interrupt\n");
->  
-> +	irq_type = irq_get_trigger_type(irq);
-> +
-> +	open_drain = device_property_read_bool(dev, "drive-open-drain");
-> +
->  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
->  	if (!st)
->  		return -ENOMEM;
-> @@ -433,6 +523,11 @@ int inv_icm42607_core_probe(struct regmap *regmap,
->  	if (IS_ERR(st->indio_accel))
->  		return PTR_ERR(st->indio_accel);
->  
-> +	/* Initialize interrupt handling */
-> +	ret = inv_icm42607_irq_init(st, irq, irq_type, open_drain);
-
-Sashiko asks some stuff about ordering wrt to this call. It is relatively
-unusual to register an irq after the driver is exposed to userspace. Tends to
-lead to potentially silly races.  Can we move it before device registration
-and rely on presence checks to handle any interrupts that we see before those
-iio devices are registered?
-
-
-> +	if (ret)
-> +		return ret;
-> +
->  	return 0;
->  }
->  EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
 
