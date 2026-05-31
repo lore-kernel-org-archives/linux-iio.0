@@ -1,67 +1,67 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217DB345CBC
-	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 15:26:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55B7E390CAA
+	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 15:26:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780241172; cv=none; b=JK1hzeoT+q34dSqkhgIUxCjSJWxXwbao6Ah9etyWD9M73YZN/bv/+esWGD1GSVnOaLGoQveZv1iXsff3vx+GHAF9hJGmTPng+ebPfQndvLFY3cSscRotdJeI8tEf05gPu9gPceETvDoZ/g84mD3YtiVTav3+TLHE2U7eYhhwCNE=
+	t=1780241173; cv=none; b=SHKlUJrVAbKb29LZjL9vARwhzN2WSDsVY0i581cFHiJJfVf4ooYiUWVOPqd+x1fPwZcN8xkzgW2U5vuRDNAT+R06k562C+2bI10h9/41RFyFlI97L0Ov5LIegbdJ0awE51YY0yjEmKCAiMOAlcrBELoSKDJVosJqG1mdFHSdgiM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780241172; c=relaxed/simple;
-	bh=n0b364dDBrWM4RGQrGIAbMsbTV+2t0ZGtLdE7nGAO9Q=;
+	s=arc-20240116; t=1780241173; c=relaxed/simple;
+	bh=fG9dTQd6OKY4ybUsIIQRbILKv3sfqdu7vBpdDFZ8pvo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QgLdn46uDGjuMp3ZV59jtg78Sa5ajXSmPIJjMAZGRrCeMUI72xJnI3lvG7HoBgiBI/45nOBMQb1Xzjd+QKHIZ4MyGiJkLCDHDfBu3rkfEzbM7yNhQ3JZHUtKrmELPXIkkGhATikaNfDYYRdraHPaRsZgqwUQ45L4rUX8+Dw2S/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=bmJU5wg1; arc=none smtp.client-ip=209.85.221.51
+	 In-Reply-To:To:Cc; b=ajokkhfJT6+LmAqjzADFeGnO19OQJevLrH428xlE0gcT+T9m+0Y/wtA4rZhboqWG3TMIVa3H4eSb8CDtOttdT6Sp28IGMK/VTdiLr5fRiC5kmJHlwJvYB2rV6zHz97en5fdDtXuagCHmTEZmPcSFI6DUtd9wbfxVED+Hx/1mfkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Xy2jWL1R; arc=none smtp.client-ip=209.85.221.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="bmJU5wg1"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-4600ddc4017so370326f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 08:26:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Xy2jWL1R"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-45fe59255beso283622f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 08:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1780241165; x=1780845965; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1780241169; x=1780845969; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=mqVoCiMOeXwzd334lL+Kbbn+xeppyD+CHd7jRk3nty8=;
-        b=bmJU5wg1NywS0wT9foLNQJ921i36DrPOPf6ANWS9bSuIHKxO2yi9daow3RPFqcmRh6
-         yLWC1bsJhHvr/toa3HiEV4YHIasqIKmIjnXiPcUp+jvkbKmT7Ba0/4+ibdBoiyaGiOu3
-         Lr5EzDxHHcsZFLSyRK6Ti7ReEyEWgFBR65Evrhe8QieIUwjQ08WQLxm0xKu19m/14KTG
-         dPu67wRFwDJ1sUdL6d36laS4an/FWesCwebMBIwC0BANvfOAvq5ZxMPYjcG4EjkpwvHu
-         VHT2r/W8Q3+29+7tNa34iRf27NtaZ5p/6uV8cu0MvY1kZVlvTUpYaLnQZciDO2wbaECz
-         h9+Q==
+        bh=vo148tLRdvHB4Hf8KQfkCKci/SYla3jkLQmLRXKSwIw=;
+        b=Xy2jWL1RMoIUktqE8G3cRBaw0Xo7/aJGyzb59awCV9oK2n1kNR0PNOInhw8HQV6AEE
+         Za75/r37WY+c8V+P7K0OaIutvUMnTCFel4Gz6HMnI/14LXroYOerF3C3z+DoqRMOFuZY
+         /Q8qRowzVcjs1k6WZ6ntkMVFGbyESjmrKxRftzbc4Z63afTBIjD5J7Sinz8Cv1ze+gah
+         rnZ1usRYTivMjgrBbZoN6Iegg1adAUg/5sdNqCpesGJROZvEctHlcFWVr7R691IBEGB+
+         q0Rbpuk3yRZf0QItqgdHARKM/jXCi7UA5LmxMLPBfGbkTXgMMh0h+ubHCVSvt+eSM7nM
+         WKng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780241165; x=1780845965;
+        d=1e100.net; s=20251104; t=1780241169; x=1780845969;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=mqVoCiMOeXwzd334lL+Kbbn+xeppyD+CHd7jRk3nty8=;
-        b=b5Y7dD9F997KZs9msHm67jGStBUnLvmJk011/8DK7lMX1AXpRdlFoMGfjktqVoRwhU
-         YTAje5sXbF/NWD5bAvbdbcZYYJP96nSXhtoDMy7LtGXEkomoSEr62be8pE1y+wJo+T8X
-         9ixxgr9yqeOZReL8NmLJ9UrirX/f6oxUrEHGso1O3K2g6QXnWoKN4TdxDlqNmbTLghQt
-         8YmdXBMKIyhnvPDb2W/V4LUZBNFpJDM7Am6e0o5C5X4yytB/ctkYcXt6UJXldlIs0YNW
-         02OvXlP8fmnrSRYXx2RM73QBjKUKrcj8WHDEBiZ+86qMbdevXbOwGoCWprhJzsVs3n6X
-         STNA==
-X-Forwarded-Encrypted: i=1; AFNElJ9XRILCgrhAl/4hnu8utI1bH/qz6hL7YXQ1NQ9hDvufIDwjOnNIq2aKrx2GVJ+k/2ELDOBxZFWXE74=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwVbSjIOh1RRvDJw/MoCw8zQRQNsVMkamSeeyy6C3AEEMpKBXHR
-	rheJXpzzFE5+Ik3VL22bEWoyiXnAaAvh+OBREU/B3jzg6vaLWPoTEqzRSahlqBVHQd8=
-X-Gm-Gg: Acq92OF3GLlrUT0wLIUYDnLNkeQycY+x/NrPaJ65zvwYA9p8/tbajpi2CVAi/nOniNh
-	/3xNUwMwUFQqnvi9HEs9BPu8mNg+36miKEBrt99UAzE9L/uBEVFXcesEqSWSqus9JOkoMgGeILz
-	Hs7xRF/oX+pqKu9MR5EMisbDy1N2bRair6eeh8xTTv6QPDeWHnB42R22sYVh8icbFEv+PG7WiAq
-	HyQVTJmAX4sRjJuQugNYMDLqLZvV90ABPgOJDPbuoQP7Zz9cKCOOUMwMbt3gOg8o6fg2n47oLIX
-	J9lGYNQPkZc/4+aj/9Nj5V6QBsPxQUzTeBf47V0cfd+HFI501GYpaxAn6k80w7a+WA5quH/uYX5
-	Vkgyxv0lTk9SsLDNG3nslAs/57dCbRKJoTlmWIZ4/VpV7SKXZ0CWeDCA/cESWCmHKaEHa9unlS2
-	Yj0T6DxGF0bdO8UMAJU5zqADb4CxfsZmn+7qg8eXge1A==
-X-Received: by 2002:a05:6000:228a:b0:45e:f780:6181 with SMTP id ffacd0b85a97d-45ef7806726mr11531989f8f.23.1780241164634;
-        Sun, 31 May 2026 08:26:04 -0700 (PDT)
+        bh=vo148tLRdvHB4Hf8KQfkCKci/SYla3jkLQmLRXKSwIw=;
+        b=CQhHDTHKdSI8quxAy7yi1gQehi4NKLOVEw2bTW1ycY6Gk35UO6394/xl2gtWg4VIiK
+         n3MrbjQDptlbsRo2Tj9cOxpCL5gpG1IBVMAHJ0/5fseBcgmVTtGsilfDCzi3tlKhsRnj
+         NlcPaVnKd2Jcr+AVaSDvhdZn1PGqhISg61BbedpveO9OOuZkV/KoQURWwlNOPdkkJgF7
+         tYLz433scMlDXKBsyVZQCHJpjijeKiHMXDHBOpyBBHVGZat/00cavpNY8HWFi722YbLa
+         IYmB6qwdno+nik7Fu7t7c43P53Fndz8ClLN3O6PTBGhSodyLJFvrcoCPgd8SAYF9alO5
+         oRIg==
+X-Forwarded-Encrypted: i=1; AFNElJ+hb3kSrKIzznwGwZbm8GzRw5xLnjZSbMDkXepMe8W2gUyFhlhDypeTTYbBGOxlVLwzo1Q/S4PMuzo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5gshMkNHhC5CiLH/NuuWQ7mgOyX0ZmNYkCbLmf0wmLW8yCetI
+	DFpu7lALSTHRJ0aoOMWizIRMw8shJFXKRvGsb6faukDZVW32MFda+U6SIzUOK/pSNz0=
+X-Gm-Gg: Acq92OFLZw8gE8f4XPjPNhqrlAVhNHzWJaKZ8vr5pizZpL2v4kBUViKrGSULrqTNi3V
+	lLgIzVBezrJHu+TRvOCMqyGpf6kmUaQnWNnJjDqCTpw4ah3fDh8Zslrt+AyXqT5FtnFmLL4g8On
+	B8R6EyU1c+3eboZVcqNxbllM2Y5VmXvnBjfr0P272SrhfVWL5YZ8wyzw3Div0gxcUcZH/jA5ZNF
+	itcpQUdoAS5F1m8nWnL8+QmWUwqbwDPIsRFaXGU4PT1iLXwY95yS7KOY95avPJ6B9vAh38e5Ytg
+	eyBZlursi06UQSYoUFohY3/OE429AEqb4rj6efX/2V0Xh0JH9jMXWO9iQTPibyzHuDHBPshmMZN
+	7TAEQYWCXWgu0dt36EGJpWrbcmMwngE4INIkiP+5Ee/olQZDAH1dFd8128tP9ragwLP7iULUhsG
+	jQ9bcn3Yu+IZaf8ZXkwivVDeGhVADJl73B+LSoHDEKlg==
+X-Received: by 2002:adf:f690:0:b0:45e:ed10:8dff with SMTP id ffacd0b85a97d-45ef6b7fe7dmr10702843f8f.24.1780241168825;
+        Sun, 31 May 2026 08:26:08 -0700 (PDT)
 Received: from [192.168.0.2] ([2a07:7e81:7daa:0:202:c9ff:fe53:eda4])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef354cf0dsm18526622f8f.17.2026.05.31.08.26.03
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef354cf0dsm18526622f8f.17.2026.05.31.08.26.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2026 08:26:04 -0700 (PDT)
+        Sun, 31 May 2026 08:26:08 -0700 (PDT)
 From: Angelo Dureghello <adureghello@baylibre.com>
 X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-Date: Sun, 31 May 2026 17:25:59 +0200
-Subject: [PATCH v4 06/11] m68k: mcf5441x: add CCM registers
+Date: Sun, 31 May 2026 17:26:03 +0200
+Subject: [PATCH v4 10/11] m68k: stmark2: enable DACs outputs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +70,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260531-wip-stmark2-dac-v4-6-7e65ab4215dd@baylibre.com>
+Message-Id: <20260531-wip-stmark2-dac-v4-10-7e65ab4215dd@baylibre.com>
 References: <20260531-wip-stmark2-dac-v4-0-7e65ab4215dd@baylibre.com>
 In-Reply-To: <20260531-wip-stmark2-dac-v4-0-7e65ab4215dd@baylibre.com>
 To: Greg Ungerer <gerg@linux-m68k.org>, 
@@ -88,44 +88,43 @@ X-Mailer: b4 0.15.2
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Add CCM module register offsets.
+Enabled DAC0 and DAC1 outpus disabling shared ADC inputs on ADC3 and ADC7.
 
+Reviewed-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
- arch/m68k/include/asm/m5441xsim.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Changes in v2:
+- using mcf_read16/mcf_write16
+- remove unuseful comment
+---
+ arch/m68k/coldfire/stmark2.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/m68k/include/asm/m5441xsim.h b/arch/m68k/include/asm/m5441xsim.h
-index f5acc962bb95..9ce2cbb05316 100644
---- a/arch/m68k/include/asm/m5441xsim.h
-+++ b/arch/m68k/include/asm/m5441xsim.h
-@@ -125,6 +125,26 @@
- #define MCFPM_PPMHR1		0xfc040038
- #define MCFPM_PPMLR1		0xfc04003c
- #define MCFPM_LPCR		0xec090007
-+
-+/*
-+ * Chip Configuration Module (CCM).
-+ */
-+#define MCF_CCM_CCR		0xec090004
-+#define MCF_CCM_RCON		0xec090008
-+#define MCF_CCM_CIR		0xec09000a
-+#define MCF_CCM_MISCCR		0xec09000e
-+#define MCF_CCM_CDRH		0xec090010
-+#define MCF_CCM_CDRL		0xec090012
-+#define MCF_CCM_UOCSR		0xec090014
-+#define MCF_CCM_UHCSR		0xec090016
-+#define MCF_CCM_MISCCR3		0xec090018
-+#define MCF_CCM_MISCCR2		0xec09001a
-+#define MCF_CCM_ADCTSR		0xec09001c
-+#define MCF_CCM_DACTSR		0xec09001e
-+#define MCF_CCM_SBFSR		0xec090020
-+#define MCF_CCM_SBFCR		0xec090022
-+#define MCF_CCM_FNACR		0xec090024
-+
- /*
-  *  UART module.
+diff --git a/arch/m68k/coldfire/stmark2.c b/arch/m68k/coldfire/stmark2.c
+index d3be4b2953fd..8aa9286e85d2 100644
+--- a/arch/m68k/coldfire/stmark2.c
++++ b/arch/m68k/coldfire/stmark2.c
+@@ -113,6 +113,8 @@ static struct platform_device *stmark2_devices[] __initdata = {
   */
+ static int __init init_stmark2(void)
+ {
++	u16 val;
++
+ 	/* DSPI0, all pins as DSPI, and using CS1 */
+ 	mcf_write8(0x80, MCFGPIO_PAR_DSPIOWL);
+ 	mcf_write8(0xfc, MCFGPIO_PAR_DSPIOWH);
+@@ -125,6 +127,11 @@ static int __init init_stmark2(void)
+ 	/* CAN pads */
+ 	mcf_write8(0x50, MCFGPIO_PAR_CANI2C);
+ 
++	val = mcf_read16(MCF_CCM_MISCCR2);
++	val &= ~(MCF_CCM_MISCCR2_ADC3_EN | MCF_CCM_MISCCR2_ADC7_EN);
++	val |= MCF_CCM_MISCCR2_DAC0_SEL | MCF_CCM_MISCCR2_DAC1_SEL;
++	mcf_write16(val, MCF_CCM_MISCCR2);
++
+ 	platform_add_devices(stmark2_devices, ARRAY_SIZE(stmark2_devices));
+ 
+ 	spi_register_board_info(stmark2_board_info,
 
 -- 
 2.54.0
