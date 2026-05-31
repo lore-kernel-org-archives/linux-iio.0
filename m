@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C958E37DE8B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C961237F8DF;
 	Sun, 31 May 2026 08:31:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780216297; cv=none; b=bEf/u1oMua82B4BAS/SH4urBrnhaSKd3JoZUPDFzY16RpHcac9xMp/y5c8c2eICqpVAYkuZO6VO8b3Rwi9F+Rdc6TJkX+tjcvdtQebBR2MyfvAROoeb+jN+cv5AezYWcfD1Uv1+vzrNpAbPgZcaz6CIxJzXDr9SztpiDMxqxfGw=
+	t=1780216297; cv=none; b=AnN7e5yOvBmF3fHKc1gftwWBRFc53b5BzKxAqjDJYDqS7Wjm3p652VPfAsLW7xgEwvof6IRrR5fC1vwVGGdJXrWpAq2WoZQcukzjYg3BQ+owPmfrz56oCdg7S4kXcv0KZXF2r4XIGVZI06Lqjn1FKosgXWvJC4ga0gaGZMui30U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780216297; c=relaxed/simple;
-	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
+	bh=DwcVGf55Ebihg1MbnvXiFFLAExefrkwKIieqBYgf39Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Z6cU47A5A3P2nWQd5Upkv6x3Ncez6yAKzWVzyHSL/XdtbyCgrXd1qoKWMMctXaG6HTv7Db2BCE42l2oSO/ZKjYvvb1jX33usXBZ+yEV1Nob2RbShJoDI49DfNsvSas7tsfjU5l75XZa1SwGVpBkn4wsKm/iq6BUyRB3wFBM31DI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gjEC8FZc; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=na+gfBhRAikHoVVU10C7XQZ7Uy26v8XGttOXgBA0UKTtRWQX4y7lbm2S7MssQwTbmGnmUC61PcpP2tsQZxDTWDVfRfnGoxrHg2evOsy3yKwoDr00M7SrvTkevnmDNoYLAj11Ei+55Ux1oXeeE1e2p9HZB3iD8OessIsT5MwUZ/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JlJWuwqg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gjEC8FZc"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C15DC2BCF6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JlJWuwqg"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 63806C2BCF4;
 	Sun, 31 May 2026 08:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1780216297;
-	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
+	bh=DwcVGf55Ebihg1MbnvXiFFLAExefrkwKIieqBYgf39Y=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=gjEC8FZc9Q2Obm9K6D94HSKYair7Z+fWpxbGsZ88F0M9PYrZ1AamadGbmf7ZCckaU
-	 ZRBbFVDJAMLp/yadmiQg14XPuCSB5JJvZX/MJI2YfM3W8o1p/wypplF1VS4wAxaZx3
-	 6pcagVPDJrLF6CBoWSOlKw3RpdAHtqhvPzRflhRWWzmLyuhfdOgunc13zLTuoyBrHO
-	 vFMSRFCDNKjLTLXzzDgrnPvXNWcUcKOnBRPTQyPk9w0oOXyqijK2ow8+FqqOyFr9C+
-	 4pg3iUjLfvAU6C1lXLh4ZXo5Aeu+y5Ekq6JMpAqqP7CG98Jye1xOHfXXb/AzHcVG75
-	 N1QXMN83IUQDA==
+	b=JlJWuwqgReO6MJc7bblmfBJCHxEml99h0LheZgk3kYOTKIGkJWOQX1HkmPHS5qpgl
+	 CYRQBQMH6VCPOH0Vm9PcdgSn9VoFtAxbak5sxgVkfM/+1W+CToKq5RTTJ8Gt+jdCrx
+	 /QCpsJHe8DECdOiOaRjxxbsfMJXEoTNrKLXsQ+IGx0NL+uZKKPEdROz33XGVgLD1ZF
+	 TBopUx6jfcawzmtViveuDm5zg4tjh6Fyit2oc8qfnx8YScDz9sIURM3VNMU9QD7Rir
+	 J0+3OwvGR9aDJP+1l1CxIgH6rE0iqKmv3Us0NJJ9fU+bVeGLD32GkKumipQt7Wptme
+	 aTzHJ5r2pjeeg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB72CD6E5A;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C505CD5BD1;
 	Sun, 31 May 2026 08:31:37 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 31 May 2026 09:30:46 +0100
-Subject: [PATCH v15 03/12] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
+Date: Sun, 31 May 2026 09:30:44 +0100
+Subject: [PATCH v15 01/12] dt-bindings: iio: frequency: add adf41513
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260531-adf41513-iio-driver-v15-3-da09adf1c0dd@analog.com>
+Message-Id: <20260531-adf41513-iio-driver-v15-1-da09adf1c0dd@analog.com>
 References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
 In-Reply-To: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -58,13 +57,14 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
  Sergey Senozhatsky <senozhatsky@chromium.org>, 
  Shuah Khan <skhan@linuxfoundation.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780216295; l=4931;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780216295; l=9537;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=Pr5+NBfQy2PXMwkQMZ2Ccvc7BauaEGWsUrxgWkFdXyQ=;
- b=4LIlBmzp9L2AQp7uay3mllOo+Muruh4jV6wZIQL0sJPPV8Vpkt9V9vh70cW7XPAR9kNlZTT7y
- t7SmtpqR8qsBegwQ4WHbQd+y20g/Gc5LFNzt7ArLAUOSEcx9H+/859a
+ bh=/EYODO6CXKC1vAUrEhocUM0AElaF6JP80c4HuEwBXMk=;
+ b=MiqfjuRH37BsPgMvR6kdctQjzmWF7WbDMWlSZPOAj+e2AghZIHFEL+WXR3LfvDa+FARFqIMdq
+ txtkgpgaOiDBcMd4agktSlRwsMlSqPEPzSng1dcUiJyQG+FlPmTcSNH
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,149 +74,269 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-precision). After the decimal point, digits beyond the specified scale
-are ignored.
+DT-bindings for ADF41513, an ultralow noise PLL frequency synthesizer that
+can be used to implement local oscillators (LOs) as high as 26.5 GHz.
+Some properties are based upon an existing PLL device properties
+(e.g. ADF4350).
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- include/linux/kstrtox.h |   3 ++
- lib/kstrtox.c           | 100 ++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 103 insertions(+)
+ .../bindings/iio/frequency/adi,adf41513.yaml       | 227 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 234 insertions(+)
 
-diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
-index 6ea897222af1..bec2fc17bde0 100644
---- a/include/linux/kstrtox.h
-+++ b/include/linux/kstrtox.h
-@@ -97,6 +97,9 @@ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
- int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
- int __must_check kstrtobool(const char *s, bool *res);
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+new file mode 100644
+index 000000000000..f4fae9210382
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+@@ -0,0 +1,227 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,adf41513.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADF41513 PLL Frequency Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The ADF41513 is an ultralow noise frequency synthesizer that can be used to
++  implement local oscillators (LOs) as high as 26.5 GHz in the upconversion and
++  downconversion sections of wireless receivers and transmitters. The ADF41510
++  supports frequencies up to 10 GHz.
++
++  https://www.analog.com/en/products/adf41510.html
++  https://www.analog.com/en/products/adf41513.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adf41510
++      - adi,adf41513
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 25000000
++
++  clocks:
++    maxItems: 1
++    description: Clock that provides the reference input frequency.
++
++  avdd1-supply:
++    description: PFD and Up and Down Digital Driver Power Supply (3.3 V)
++
++  avdd2-supply:
++    description: RF Buffer and Prescaler Power Supply (3.3 V)
++
++  avdd3-supply:
++    description: N Divider Power Supply (3.3 V)
++
++  avdd4-supply:
++    description: R Divider and Lock Detector Power Supply (3.3 V)
++
++  avdd5-supply:
++    description: Sigma-Delta Modulator and SPI Power Supply (3.3 V)
++
++  vp-supply:
++    description: Charge Pump Power Supply (3.3 V)
++
++  enable-gpios:
++    description:
++      GPIO that controls the chip enable pin. A logic low on this pin
++      powers down the device and puts the charge pump output into
++      three-state mode.
++    maxItems: 1
++
++  lock-detect-gpios:
++    description:
++      GPIO for lock detect functionality. When configured for digital lock
++      detect, this pin will output a logic high when the PLL is locked.
++    maxItems: 1
++
++  adi,power-up-frequency-mhz:
++    minimum: 1000
++    maximum: 26500
++    default: 10000
++    description:
++      The PLL tunes to this frequency during the initialization sequence.
++      This property should be set to a frequency supported by the loop filter
++      and VCO used in the design. Range is 1 GHz to 26.5 GHz for ADF41513,
++      and 1 GHz to 10 GHz for ADF41510.
++
++  adi,reference-div-factor:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 1
++    maximum: 32
++    default: 1
++    description:
++      Value for the reference division factor (R Counter). The driver will
++      increment R Counter as needed to achieve a PFD frequency within the
++      allowed range. High R counter values will reduce the PFD frequency, which
++      lowers the frequency resolution, and affects phase noise performance.
++      As it affects the PFD frequency, this value depends on the loop filter
++      design.
++
++  adi,reference-doubler-enable:
++    description:
++      Enables the reference doubler when deriving the PFD frequency.
++      The maximum reference frequency when the doubler is enabled is 225 MHz.
++      As it affects the PFD frequency, this value depends on the loop filter
++      design.
++    type: boolean
++
++  adi,reference-div2-enable:
++    description:
++      Enables the reference divide-by-2 function when deriving the PFD
++      frequency. As it affects the PFD frequency, this value depends on the
++      loop filter design.
++    type: boolean
++
++  adi,charge-pump-resistor-ohms:
++    minimum: 1800
++    maximum: 10000
++    default: 2700
++    description:
++      External charge pump resistor (R_SET) value in ohms. This sets the maximum
++      charge pump current along with the charge pump current setting.
++
++  adi,charge-pump-current-microamp:
++    minimum: 81
++    maximum: 7200
++    description:
++      Charge pump current (I_CP) in microamps. The value will be rounded to the
++      nearest supported value. Range of acceptable values depends on the
++      charge pump resistor value, such that 810 mV <= I_CP * R_SET <= 12960 mV.
++      This value depends on the loop filter and the VCO design.
++
++  adi,logic-level-1v8-enable:
++    description:
++      Set MUXOUT and DLD logic levels to 1.8V. Default is 3.3V.
++    type: boolean
++
++  adi,phase-detector-polarity-positive-enable:
++    description:
++      Set phase detector polarity to positive. Default is negative.
++      Use positive polarity with non-inverting loop filter and VCO with
++      positive tuning slope, or with inverting loop filter and VCO with
++      negative tuning slope.
++    type: boolean
++
++  adi,lock-detector-count:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 64
++    description:
++      Sets the value for Lock Detector count of the PLL, which determines the
++      number of consecutive phase detector cycles that must be within the lock
++      detector window before lock is declared. Lower values increase the lock
++      detection sensitivity, while higher values provides a more stable lock
++      detection. Applications that consume the lock detect signal may require
++      different settings based on system requirements.
++    enum: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]
++
++  adi,phase-resync-period-ns:
++    default: 0
++    description:
++      When this value is non-zero, enable phase resync functionality, which
++      produces a consistent output phase offset with respect to the input
++      reference. The value specifies the resync period in nanoseconds, used
++      to configure clock dividers with respect to the PFD frequency. This value
++      should be set to a value that is at least as long as the worst case lock
++      time, i.e., it depends mostly on the loop filter design.
++
++  adi,le-sync-enable:
++    description:
++      Synchronizes Load Enable (LE) transitions with the reference signal to
++      avoid asynchronous glitches in the output. This is recommended when using
++      the PLL as a frequency synthesizer, where the reference signal will always
++      be present while the device is being configured. When using the PLL as a
++      frequency tracker, where the reference signal may be absent, LE sync
++      should be left disabled.
++    type: boolean
++
++dependencies:
++  adi,charge-pump-resistor-ohms: [ 'adi,charge-pump-current-microamp' ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - avdd1-supply
++  - avdd2-supply
++  - avdd3-supply
++  - avdd4-supply
++  - avdd5-supply
++  - vp-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: adi,adf41510
++    then:
++      properties:
++        adi,power-up-frequency-mhz:
++          maximum: 10000
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pll@0 {
++            compatible = "adi,adf41513";
++            reg = <0>;
++            spi-max-frequency = <25000000>;
++            clocks = <&ref_clk>;
++            avdd1-supply = <&avdd1_3v3>;
++            avdd2-supply = <&avdd2_3v3>;
++            avdd3-supply = <&avdd3_3v3>;
++            avdd4-supply = <&avdd4_3v3>;
++            avdd5-supply = <&avdd5_3v3>;
++            vp-supply = <&vp_3v3>;
++            enable-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
++            lock-detect-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
++
++            adi,power-up-frequency-mhz = <15500>;
++            adi,charge-pump-current-microamp = <3600>;
++            adi,charge-pump-resistor-ohms = <2700>;
++            adi,reference-doubler-enable;
++            adi,lock-detector-count = <64>;
++            adi,phase-resync-period-ns = <0>;
++            adi,phase-detector-polarity-positive-enable;
++            adi,le-sync-enable;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3115538ce829..e1c3a26a6e2f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1662,6 +1662,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml
+ F:	drivers/iio/adc/ade9000.c
  
-+int __must_check kstrtoudec64(const char *s, unsigned int scale, u64 *res);
-+int __must_check kstrtodec64(const char *s, unsigned int scale, s64 *res);
++ANALOG DEVICES INC ADF41513 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
 +
- int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
- int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
- int __must_check kstrtoul_from_user(const char __user *s, size_t count, unsigned int base, unsigned long *res);
-diff --git a/lib/kstrtox.c b/lib/kstrtox.c
-index bd63c55b8490..ab43d16659ce 100644
---- a/lib/kstrtox.c
-+++ b/lib/kstrtox.c
-@@ -17,6 +17,7 @@
- #include <linux/export.h>
- #include <linux/kstrtox.h>
- #include <linux/math64.h>
-+#include <linux/overflow.h>
- #include <linux/types.h>
- #include <linux/uaccess.h>
- 
-@@ -407,6 +408,105 @@ int kstrtobool(const char *s, bool *res)
- }
- EXPORT_SYMBOL(kstrtobool);
- 
-+static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-+{
-+	u64 _res = 0;
-+	unsigned int rv_int, rv_frac;
-+
-+	rv_int = _parse_integer(s, 10, &_res);
-+	if (rv_int & KSTRTOX_OVERFLOW)
-+		return -ERANGE;
-+	s += rv_int;
-+
-+	if (*s == '.')
-+		s++; /* skip decimal point */
-+
-+	rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
-+	if (rv_frac & KSTRTOX_OVERFLOW)
-+		return -ERANGE;
-+	s += rv_frac;
-+
-+	if (!rv_int && !rv_frac && !isdigit(*s))
-+		return -EINVAL; /* no digits at all */
-+
-+	while (isdigit(*s)) /* truncate digits */
-+		s++;
-+
-+	if (*s == '\n')
-+		s++;
-+	if (*s)
-+		return -EINVAL;
-+
-+	if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
-+	    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
-+		return -ERANGE;
-+
-+	*res = _res;
-+	return 0;
-+}
-+
-+/**
-+ * kstrtoudec64() - Convert a string to an unsigned 64-bit value that represents
-+ *		    a scaled decimal number.
-+ * @s: The start of the string. The string must be null-terminated, and may also
-+ *  include a single newline before its terminating null. The first character
-+ *  may also be a plus sign, but not a minus sign. Digits beyond the specified
-+ *  scale are ignored.
-+ * @scale: The number of digits to the right of the decimal point. For example,
-+ *  a scale of 2 would mean the number is represented with two decimal places,
-+ *  so "123.45" would be represented as 12345.
-+ * @res: Where to write the result of the conversion on success.
-+ *
-+ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-+ */
-+noinline
-+int kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-+{
-+	if (s[0] == '+')
-+		s++;
-+	return _kstrtoudec64(s, scale, res);
-+}
-+EXPORT_SYMBOL(kstrtoudec64);
-+
-+/**
-+ * kstrtodec64() - Convert a string to a signed 64-bit value that represents a
-+ *		   scaled decimal number.
-+ * @s: The start of the string. The string must be null-terminated, and may also
-+ *  include a single newline before its terminating null. The first character
-+ *  may also be a plus sign or a minus sign. Digits beyond the specified scale
-+ *  are ignored.
-+ * @scale: The number of digits to the right of the decimal point. For example,
-+ *  a scale of 5 would mean the number is represented with five decimal places,
-+ *  so "-3.141592" would be represented as -314159.
-+ * @res: Where to write the result of the conversion on success.
-+ *
-+ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-+ */
-+noinline
-+int kstrtodec64(const char *s, unsigned int scale, s64 *res)
-+{
-+	u64 tmp;
-+	int rv;
-+
-+	if (s[0] == '-') {
-+		rv = _kstrtoudec64(s + 1, scale, &tmp);
-+		if (rv < 0)
-+			return rv;
-+		if ((s64)-tmp > 0)
-+			return -ERANGE;
-+		*res = -tmp;
-+	} else {
-+		rv = kstrtoudec64(s, scale, &tmp);
-+		if (rv < 0)
-+			return rv;
-+		if ((s64)tmp < 0)
-+			return -ERANGE;
-+		*res = tmp;
-+	}
-+	return 0;
-+}
-+EXPORT_SYMBOL(kstrtodec64);
-+
- /*
-  * Since "base" would be a nonsense argument, this open-codes the
-  * _from_user helper instead of using the helper macro below.
+ ANALOG DEVICES INC ADF4377 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
