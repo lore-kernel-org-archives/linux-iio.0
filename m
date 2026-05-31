@@ -1,216 +1,293 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D249376BC2
-	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 10:55:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780224925; cv=pass; b=O7BZRsIXNE+7YR+3pK7QghLBygVo8WjTHoZVBSt9numplVXjRKoQlRn3AZvKcRKmvUp00fcFn86zXjUhJHVjEDyNt+vjHRLfCHU1Xme+Z6d3R/TvjqH9/7X4Gsra2zhKjher4gKs+EDSGrW6pGMYaT9kPwEEyUW94cyEVUHkjgc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780224925; c=relaxed/simple;
-	bh=Nm0tmq5ULLWQNSJtXAjGCgBa0hYs9qgF5ZFGoPUTPQY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=u/XeAC0C3oJoKyd+aC3bYGLBiBT1CY/QrmjkTp1+uHpIz9PQ9q+e4DATCdhsKlJ9+2TJfUJ42jiolP7DPoDCX94TT02CJkfuzt/hgEAajzPgwVqkbEzoF6HuRBQ9gX0yDP03LUm91Ef1SMNNxktr0rhOk8DFEay3XddmjTjQ82Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AXuCp4Fs; arc=pass smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 107BA1EDA0F;
+	Sun, 31 May 2026 10:56:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780225004; cv=none; b=JXmWaU58aty6AInqk+v3MKPvTG7K+5E6/uO1EKQyGfBOI8mk7bmB1Yz60ulCKTdRIGjvxXQjlG5hrnD6YzUVZpf9pXkhEcjTzJphSYebwgTRK1+Vs2FVnrqdMdZy0P+e9nyvAejzSccojWVrlol4icqakiD31q30tKzUkhsxEuE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780225004; c=relaxed/simple;
+	bh=IFwQ3ciCWmfvvhOfuesU+o7xVhtZduP60t5XNBtLOVA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Cx1riSfYo9vO8FPbKFGpVqCQ8KxRa5owA3NxpdiMRZeW0GbZhc5mnMi0fguFhTqU8THJVReVqw040XrvqhVuK5/JJHLgkARh+kqSD6WxeGc5ZDuHjCxqZmxRWmK6Z9BAo/xbLF/B4DIXKhrqYiY3A3dUoZRz6QjY50ziWT+Izqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f9crzifl; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AXuCp4Fs"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5aa612bf6efso1236797e87.3
-        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 03:55:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780224922; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Ws/oHAPePg0Je65lstewyUvimqDyr96wMNOg/BT9OSwhMQcTBr9oMkeGW//2K+isdR
-         kNJo8bXFNnj+64I/UTMhgeplxs6uP7PL6TT2QZ2qASjdIE41PLYPBmBp6AgmDquvAhug
-         b+hKcBiQj23xwf+ycdhXbfgM+RSBFUlQFBKyKFXPAj3YwkV3KzkVzK8kF0YjkhM0s47Y
-         3VG6ddCG1Z2o6YogZwoG6d2Os0Nnk5gxpr3TDApa2uyCAPxM2aPwhtRoxqCAyYJT1eiu
-         +GJaten3gS0LnvU2sD36OciFXkuimds77QaqmMo4DE/e27Q6ef/+ExwxIFM2bAZIbRnx
-         3fXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=1093W6GwBbIGfmlyuBH18NfrL6utXJlkl45KlHg45Ho=;
-        fh=5cXoLD7M0pWJF9pCYgpdVZOJmvqlq2Wc8xQAMw7db6w=;
-        b=Y+hGezeHhujAPaSc6CMNhNKmtiAwmLCvJZ+cwxgQw46jZhIIzNpyXriqKIkRTgW35Y
-         us3MGSqSrA7Ufpu6Jh9HxOJP4utq+21wAIyJrkAAAnmG/Tkzm4Fd1EOu4PTHBvuXHwwR
-         LSxRbOIr6uSAEI/gF1W7XDkiA0j9e3PNLXXRN5ezNeeloHc8t5B1/yAFXTtsUPLnlcIv
-         zcqbRUJCz69/M1751J4NHqj9IvajWKVGx5X/pNotdiQCmPT0ZjSJxJPlsjsD4J0AKTRW
-         CFjt8Z36PMe1M4WbEHMEGJBy2mVnWEG38AK9i5uJj+eFX1aoMq0V8yr+h8OgGmdFGMXM
-         Fmng==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780224922; x=1780829722; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1093W6GwBbIGfmlyuBH18NfrL6utXJlkl45KlHg45Ho=;
-        b=AXuCp4FsWv4oU8VIQt/0bZeahKW19MoDGzxxlVea1p24lFy+lEziMsZJkCEnKtIbeB
-         wckiQoHuZbSwChMkdhjCVulf61cxvIpVR/KtEh78F76vOF7Zb27DjIPHpypz7BsWwi7t
-         C5c8+eFmooOhxUv8Gcieriv/Y9JtkbVayx5zqSVDvWCtVr9vHZPBvTTvoTT69NPaWpPE
-         qKPmoFpnKqwfn0fbI8zvrjJdRneAQBTCK82lbe0e07AnlCrgESBULdEYK+Gum4YlgiWa
-         5K2PwgsskqmA/ACq2TPzR+JY1gLDPNfUl19tFG13odrhWzC8FPY7yCIX/w2M79nc7uc5
-         lBhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780224922; x=1780829722;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=1093W6GwBbIGfmlyuBH18NfrL6utXJlkl45KlHg45Ho=;
-        b=ihV6ocYUnt2OA1DEVATZTKHJEruEaDSMBtndzDeiWl/I5FHzMxLiJr9rXOexZ6Y/Ap
-         91VhPOSEL+Kx/VoSVtZ2N/zI6sinY2kqleIvXZ3syf/SPZxBw+YrMQDom3hNEg58bxHL
-         agNleE5rgj1TgTLmRMJeP9e4NYoBwPaNECdVaYCLf8Rqd/JVkFEkQcxoD89G55aGO/Ht
-         D1LV+xgXqbUpjCyvbxkpOKwye68yZoF3e1yamevZgiD9VklD7tt7VGsjrURJ0H42kcze
-         KM6EjkkQytERdojKrAZxB30r2h2XR6rH5w1BIB0RfmjtrYX/4OsCbf+h+h2GxFQcnvnb
-         4xOw==
-X-Forwarded-Encrypted: i=1; AFNElJ9yIKR3o8lzprXteWh9AJS3LGJETBP2DyDdn21d5Zpf6mYl2CJcQQhInnA/TYUl1eMJVISu/SDRDSc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzz4vyRz09Z9bq/lMytnb04cTS1iez+8KfqDxkXDnlYrKfX+6c2
-	k9cyxcT+5t0NRPe2WC+RE1fRVWvDqMeAAC8RdA0j/bRCajXEAT+nUsf5Z0ewZQDpD8Gu6WztEaZ
-	yqt+xsLSyiL9fdwN7WaUiaAfjsV80Q3U=
-X-Gm-Gg: Acq92OHZRzZFrZCAMCuiw1vhsDstpoctLC0KXGgcUSCb268Gf4Jasuhqrh0mDops69n
-	4b8T2UE5cSnNEiEC/+t7bxmKWGj9IuLBhdZ9rC8jhjB+V/HfynqVxOLQdM0rfEeSW//2LlmiyZU
-	eS8Oyg/FLxokqDTm7Rb2Q6sohA9pXakO1YGctCc4Ite/4xvfl+Ez9yOy4kiEOwN69zBmqFqwVN0
-	3TAqZv++a5m0Zh/W5oSXgw0wcmRbtq3CVV0Fkwiiyxwp1LDAR7poJInsQzF+IRr7oww2wBPA5E6
-	x5TS0qUduYrIwes2OvdRgF2XpRtWiw9biWvJZQdlRk9xzbFoMg==
-X-Received: by 2002:a05:6512:12c2:b0:5aa:6c27:c44e with SMTP id
- 2adb3069b0e04-5aa6c27c552mr54641e87.22.1780224921700; Sun, 31 May 2026
- 03:55:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f9crzifl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD64C1F00893;
+	Sun, 31 May 2026 10:56:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780225002;
+	bh=HXU1JtpzpXVGRLWIV+L+tgxdEVMq/LK8ZMB5gNnUkG4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=f9crzifl0M4CJBl7IOk2Hd3GvJarSoGxCmQqKugBHOYb4R1fWsScjOcLEGf2ooB0X
+	 zmM9Hd94Nz07GzmCr5Z1zOuV6ZcSPbBJYgqAFTA0GhEVaAxn6Hkp2LhNLy4w/qPRIP
+	 F1GoVameHyq0EzMpga7oqw8H/8dvk0Yz3biHCRKd6SOgJI+j0kh2k3NAuPhcZZQa32
+	 w3Wai/EFrCL1AWYTKp7Weg5MkBIrr8O3mfnQY9Lxf3KNEUR5cz0yPwe6M7vcDeAWLh
+	 N7ZNu6FdgOqX7VZ5J7FY6Ion2y8gU2b0WwLZ8NIDPdIUmkuEn9kWHHmXqAapOvY7kj
+	 k2bECrdv2BH9A==
+Date: Sun, 31 May 2026 11:56:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jinseob Kim <kimjinseob88@gmail.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ Sa <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v3 3/6] iio: osf: add protocol v0 decoding
+Message-ID: <20260531115633.4ce69e04@jic23-huawei>
+In-Reply-To: <20260529121005.1470-4-kimjinseob88@gmail.com>
+References: <20260529121005.1470-1-kimjinseob88@gmail.com>
+	<20260529121005.1470-4-kimjinseob88@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260530113938.171540-1-suunj1331@gmail.com> <20260530113938.171540-3-suunj1331@gmail.com>
- <CAHp75VeeAOnUj018z_JdSKZagXP7yYaw7okm0jdT8BBp_DM6iQ@mail.gmail.com>
-In-Reply-To: <CAHp75VeeAOnUj018z_JdSKZagXP7yYaw7okm0jdT8BBp_DM6iQ@mail.gmail.com>
-From: SeungJu Cheon <suunj1331@gmail.com>
-Date: Sun, 31 May 2026 19:55:10 +0900
-X-Gm-Features: AVHnY4I2Lr4axwE7KYByIRLLAi7ZshWau76NwjYsMhtD9kY8YK2GQ8Qs4a5SX5w
-Message-ID: <CAGwK=3qzWZHaewUXyvmxEG8Ann=s9AButj=9+6LEobG+O09pgw@mail.gmail.com>
-Subject: Re: [PATCH 2/4] iio: pressure: mpl3115: clean up interrupt handling
- and locking
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, apokusinski01@gmail.com, 
-	me@brighamcampbell.com, skhan@linuxfoundation.org, 
-	linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
-Hi Andy,
+On Fri, 29 May 2026 21:10:02 +0900
+Jinseob Kim <kimjinseob88@gmail.com> wrote:
 
-On Sat, May 30, 2026 at 9:33 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> > Switch the trigger handler from explicit mutex_lock/unlock
-> > to scoped_guard() for consistency with the locking style
-> > used elsewhere in the driver.
->
-> Split these two. Moving to scoped_guard() is a separate refactoring.
+> Add OSF0 frame validation and payload decoders.
+>=20
+> Extend MAINTAINERS to cover the protocol decoder.
+>=20
+> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
 
-Will do. I'll move the scoped_guard() conversion to its own patch in
-v2.
+I've commented on a few things inline. Some of them apply in multiple
+places. Biggest thing is asking for rules on how this 'specification'
+handled backwards compatibility.
 
-> > No functional change intended.
->
-> But this is a lie. The change is a (big enough) functional change and
-> actually it feels and sounds like it deserves a Fixes tag.
+Jonathan
 
-You're right, the IRQ_NONE change is a functional change. I'll split
-it into its own patch with a Fixes tag and drop the "no functional
-change" wording.
+> diff --git a/drivers/iio/opensensorfusion/osf_protocol.c b/drivers/iio/op=
+ensensorfusion/osf_protocol.c
+> new file mode 100644
+> index 000000000..ed91d3dd5
+> --- /dev/null
+> +++ b/drivers/iio/opensensorfusion/osf_protocol.c
 
-> > +reg1_cleanup:
-> > +       i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-> > +                                 data->ctrl_reg1);
->
-> And if this fails?.. (Okay, this is not this patch issue, it's an
-> original code.)
+> +
+> +int osf_protocol_decode_capability_report(const struct osf_frame *frame,
+> +					  struct osf_capability_report *report)
+> +{
+> +	u16 capability_count;
+> +	size_t expected_len;
+> +	const u8 *payload;
+> +
+> +	if (!frame || !report || !frame->payload)
+> +		return -EINVAL;
+> +
+> +	if (frame->message_type !=3D OSF_MSG_CAPABILITY_REPORT)
+> +		return -EPROTO;
+> +
+> +	if (frame->payload_len < OSF_CAP_REPORT_BASE_LEN)
+> +		return -EMSGSIZE;
+> +
+> +	payload =3D frame->payload;
+> +	capability_count =3D get_unaligned_le16(payload);
+> +
+> +	if (get_unaligned_le16(payload + 2))
 
-Right, that's pre-existing and outside the scope of this series.
+As below - these zero checks to me look like a protocol design bug.
+If you can I'd encourage adding something on rules for backward compatibili=
+ty
+to your initial spec docs.
 
-> > Move mpl3115_config_interrupt() above the interrupt handler
-> > in preparation for the FIFO support added in a subsequent
-> > patch.
->
-> If you need to move it up, split this move to a separate patch.
+> +		return -EPROTO;
+> +
+> +	if (capability_count > (SIZE_MAX - OSF_CAP_REPORT_BASE_LEN) /
+> +	    OSF_CAP_SENSOR_ENTRY_LEN)
 
-Will split the move into its own patch in v2.
+Alignment can be easier to read.
 
-Thanks for the review.
+	if (capability_count >
+	    (SIZE_MAX - OSF_CAP_REPORT_BASE_LEN) / OSF_CAP_SENSOR_ENTRY_LEN)
 
-On Sat, May 30, 2026 at 9:33=E2=80=AFPM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Sat, May 30, 2026 at 1:40=E2=80=AFPM SeungJu Cheon <suunj1331@gmail.co=
-m> wrote:
-> >
-> > Return IRQ_NONE instead of IRQ_HANDLED when reading
-> > INT_SOURCE fails.
-> >
-> > On shared interrupt lines, returning IRQ_HANDLED after a
-> > failed register read may prevent other handlers from being
-> > invoked.
->
-> > Switch the trigger handler from explicit mutex_lock/unlock
-> > to scoped_guard() for consistency with the locking style
-> > used elsewhere in the driver.
->
-> Split these two. Moving to scoped_guard() is a separate refactoring.
->
-> > Move mpl3115_config_interrupt() above the interrupt handler
-> > in preparation for the FIFO support added in a subsequent
-> > patch.
->
-> > No functional change intended.
->
-> But this is a lie. The change is a (big enough) functional change and
-> actually it feels and sounds like it deserves a Fixes tag.
->
-> ...
->
-> > +reg1_cleanup:
-> > +       i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-> > +                                 data->ctrl_reg1);
->
-> And if this fails?.. (Okay, this is not this patch issue, it's an
-> original code.)
->
-> > +       return ret;
-> > +}
->
-> ...
->
-> > -static int mpl3115_config_interrupt(struct mpl3115_data *data,
-> > -                                   u8 ctrl_reg1, u8 ctrl_reg4)
-> > -{
-> > -       int ret;
-> > -
-> > -       ret =3D i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_RE=
-G1,
-> > -                                       ctrl_reg1);
-> > -       if (ret < 0)
-> > -               return ret;
-> > -
-> > -       ret =3D i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_RE=
-G4,
-> > -                                       ctrl_reg4);
-> > -       if (ret < 0)
-> > -               goto reg1_cleanup;
-> > -
-> > -       data->ctrl_reg1 =3D ctrl_reg1;
-> > -       data->ctrl_reg4 =3D ctrl_reg4;
-> > -
-> > -       return 0;
-> > -
-> > -reg1_cleanup:
-> > -       i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
-> > -                                 data->ctrl_reg1);
-> > -       return ret;
-> > -}
->
-> If you need to move it up, split this move to a separate patch.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+> +		return -EOVERFLOW;
+> +
+> +	expected_len =3D OSF_CAP_REPORT_BASE_LEN +
+> +		       capability_count * OSF_CAP_SENSOR_ENTRY_LEN;
+> +	if (frame->payload_len !=3D expected_len)
+> +		return -EMSGSIZE;
+> +
+> +	report->capability_count =3D capability_count;
+> +	report->entries =3D payload + OSF_CAP_REPORT_BASE_LEN;
+> +
+> +	return 0;
+> +}
+> +
+> +int osf_protocol_decode_capability_entry(const struct osf_capability_rep=
+ort *report,
+> +					 unsigned int index,
+> +					 struct osf_capability_entry *entry)
+> +{
+> +	u16 sample_format;
+> +	u16 sensor_type;
+> +	u32 flags;
+> +	const u8 *payload;
+
+If no other reason for order, use reverse xmas tree. Also fine to combine e=
+ntries of
+same type as long as non assign values. Up to you if you'd prefer not to.
+
+	u16 sample_format, sensor_type;
+	const u8 *payload;
+	u32 flags;
+> +
+> +	if (!report || !report->entries || !entry)
+> +		return -EINVAL;
+> +
+> +	if (index >=3D report->capability_count)
+> +		return -ERANGE;
+> +
+> +	payload =3D report->entries + index * OSF_CAP_SENSOR_ENTRY_LEN;
+> +	sensor_type =3D get_unaligned_le16(payload);
+> +	sample_format =3D get_unaligned_le16(payload + 6);
+> +	flags =3D get_unaligned_le32(payload + 12);
+> +
+> +	if (!osf_sensor_type_valid(sensor_type))
+> +		return -EPROTO;
+> +
+> +	if (sample_format !=3D OSF_SAMPLE_FORMAT_S32)
+> +		return -EPROTO;
+> +
+> +	if (flags & ~OSF_CAPABILITY_FLAGS_MASK)
+> +		return -EPROTO;
+> +
+> +	if (get_unaligned_le32(payload + 16))
+
+That needs more info. I guess it's check reserved is 0?
+In an extensible protocol design there should be no need to check
+that.  If a future version adds stuff in there then there are rules
+on how it is done.
+
+1) Not by default, needs to be enabled be aware software.
+2) If by default, can be ignored, but must be discoverable - i.e.
+   we must know if 0 means the value 0 or reserved0
+3) If we can't ignore it then 0 must be natural default.  I.e.
+   future capability bits, 0 means not supported.
+
+Upshot, unless the protocol design for future versions is broken
+there should never be a reason to check reserved values are 0
+other than debug.
+
+If you really need to keep this because the protocol design is
+not backwards compatible, then add a comment on what that check is.
+
+
+> +		return -EPROTO;
+> +
+> +	entry->sensor_type =3D sensor_type;
+> +	entry->sensor_index =3D get_unaligned_le16(payload + 2);
+> +	entry->channel_count =3D get_unaligned_le16(payload + 4);
+> +	entry->sample_format =3D sample_format;
+> +	entry->scale_nano =3D get_unaligned_le32(payload + 8);
+> +	entry->flags =3D flags;
+> +
+> +	return 0;
+> +}
+> diff --git a/drivers/iio/opensensorfusion/osf_protocol.h b/drivers/iio/op=
+ensensorfusion/osf_protocol.h
+> new file mode 100644
+> index 000000000..4b6fb131a
+> --- /dev/null
+> +++ b/drivers/iio/opensensorfusion/osf_protocol.h
+> @@ -0,0 +1,95 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +#ifndef _OSF_PROTOCOL_H
+> +#define _OSF_PROTOCOL_H
+> +
+> +#include <linux/types.h>
+> +
+> +#define OSF_PROTOCOL_MAJOR		0
+> +#define OSF_PROTOCOL_MINOR		0
+> +#define OSF_FRAME_HEADER_LEN		38
+> +#define OSF_FRAME_CRC_LEN		4
+> +#define OSF_FRAME_MIN_LEN		(OSF_FRAME_HEADER_LEN + OSF_FRAME_CRC_LEN)
+> +
+> +#define OSF_SENSOR_SAMPLE_BASE_LEN	16
+> +#define OSF_DEVICE_STATUS_LEN		20
+> +#define OSF_CAP_REPORT_BASE_LEN		4
+> +#define OSF_CAP_SENSOR_ENTRY_LEN		20
+> +#define OSF_CAPABILITY_FLAGS_MASK	0x00000003U
+> +
+> +enum osf_message_type {
+
+Ideally each of these blocks would have a reference to a spec document sect=
+ion.
+=46rom website I guess that doc is a work in progress?
+
+> +	OSF_MSG_SENSOR_SAMPLE		=3D 0x0001,
+> +	OSF_MSG_DEVICE_STATUS		=3D 0x0002,
+> +	OSF_MSG_CAPABILITY_REPORT	=3D 0x0003,
+> +};
+> +
+> +enum osf_sensor_type {
+> +	OSF_SENSOR_ACCELEROMETER		=3D 0x0001,
+> +	OSF_SENSOR_GYROSCOPE		=3D 0x0002,
+> +	OSF_SENSOR_MAGNETOMETER		=3D 0x0003,
+> +	OSF_SENSOR_BAROMETER		=3D 0x0004,
+> +	OSF_SENSOR_TEMPERATURE		=3D 0x0005,
+> +	OSF_SENSOR_HUMIDITY		=3D 0x0006,
+> +	OSF_SENSOR_AMBIENT_LIGHT		=3D 0x0007,
+> +	OSF_SENSOR_PROXIMITY		=3D 0x0008,
+> +};
+> +
+> +enum osf_sample_format {
+> +	OSF_SAMPLE_FORMAT_S32		=3D 0x0001,
+> +};
+> +
+
+> +struct osf_frame {
+> +	u8 protocol_minor;
+> +	u16 message_type;
+> +	u32 payload_len;
+> +	u64 sequence;
+> +	u64 timestamp_us;
+> +	u32 flags;
+> +	const u8 *payload;
+#
+__counted_by_ptr(payload_len); ?
+
+> +	u32 crc;
+> +};
+> +
+> +struct osf_sensor_sample {
+> +	u16 sensor_type;
+> +	u16 sensor_index;
+> +	u16 channel_count;
+> +	u16 sample_format;
+> +	u32 scale_nano;
+> +	const u8 *samples;
+
+I guess we don't know the alignement so can't
+type this and that also stops use doing __counted_by_ptr() which
+is annoying.
+
+> +};
+> +
+> +struct osf_device_status {
+> +	u32 uptime_s;
+> +	u32 status_flags;
+> +	u32 error_flags;
+> +	u32 dropped_frames;
+> +};
+> +
+> +struct osf_capability_report {
+> +	u16 capability_count;
+> +	const u8 *entries;
+> +};
+> +
+> +struct osf_capability_entry {
+> +	u16 sensor_type;
+> +	u16 sensor_index;
+> +	u16 channel_count;
+> +	u16 sample_format;
+> +	u32 scale_nano;
+> +	u32 flags;
+> +};
