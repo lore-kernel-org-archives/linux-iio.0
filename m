@@ -1,93 +1,71 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B677A38C2DE;
-	Sun, 31 May 2026 13:15:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9952417D1;
+	Sun, 31 May 2026 14:29:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780233353; cv=none; b=m+fgFzBU/cLm5XzvP2CXSzu7fl/61nfX/QMLH7sK0hJfTF8uoSyNwyWRNdQpLCCFYYqIbq8SKTrXMyZ78nG2uXEd5+TEE3A5LVIhOKJPwSiczggepMDP0WJROU2jsCTzr2Gi4/n3g81VUybn1d5sC90fVdhC493J7Ba0pVVQ0Rs=
+	t=1780237788; cv=none; b=ajVuq95m9ooi/jA1kxzFUhyo0x5WS8GhRYKE0MPIhfylMWNwDWZ1ZbpAwo0unnJKVv93pmH5fxYsa0fdXn6zsKOSVjNhOaqNN5wSyYcjK0yQXQVT2UWmRkV/ZH+YcoIof98tHshIW9opss0U3WGESPUxmUW95vhF1Ko+0h7Jm+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780233353; c=relaxed/simple;
-	bh=nj129rjUByaIy9o0FSopNQk9RD+FeU54z1Cbh8ZBbdg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=om/1KyqoAe8Au2dlv5oaeChKdjTS6r8Kz5ypCcdC4uyseoNw/GrHkwViKUbh9N7bvTWzlIS3SoyZwzrmnjjQadIHzS8hOUepQkubKvWgQ8tICHa/76eZ80oyEXuC88iVfALJh7ktBUbIWxr+utihVk7nrxxzEdK1LT9xQaQDZvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE3D21F00898;
-	Sun, 31 May 2026 13:15:47 +0000 (UTC)
-Message-ID: <ecf346d5-a65f-4507-b277-40e75ae89442@linux-m68k.org>
-Date: Sun, 31 May 2026 23:15:43 +1000
+	s=arc-20240116; t=1780237788; c=relaxed/simple;
+	bh=VV+bvLBPyzWCAES1xyY05y7SItkM62ijNhwMrsYrA/0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=nZzCVlI3BkV6HxlVw4uaOhLQ6WOH2ExvUT+mmaawO7jCdGLO6WiAlSqO1PJtwWXUEJaoh+W7wAdhj6IBFiTKpuNSTiY26JMaP7B29xEXnl11CMm2zsQWqp51F/xWZtROAvBCuB3j9ah4stRBa6RegtbSDLE6H5WXZ6B8rwqGUnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZBxo0UwA; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZBxo0UwA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7987B1F00893;
+	Sun, 31 May 2026 14:29:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780237786;
+	bh=r7NnKiSSL1BrIqnvrmeynUlYX1CC8XKVHjN623Vs+Ys=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ZBxo0UwA2UGJPSr92/pnG3OniNVPr1gUffFr8PYG2PX6/xThvh5faInRrQhTK4nMu
+	 jtyBOKNKJLSj8cp7f+hrpLkpaCaTi96GnBEbe2lKhA6r9SanmjlxG7oBu3e2a8NMSn
+	 37jd5KFoM4fvISkfn2YCJxelwewAlAWJFzikYnmANkQonMsmparQY2eHsCFKYCCMZK
+	 OR0zPhxo/kTDXCdMxL7P2JGVa0DlVAAUR/mFIZ/D4Uh3k9Ko0ta+06iN9WRCPR92ww
+	 DEYvTSz59PDgsV6R+HR1vQtFppj/IZNloFz4aksELnq1jgkubghkkNmABOnYFa4+cB
+	 sqRaCQYN6FL9Q==
+Date: Sun, 31 May 2026 15:29:37 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: SeungJu Cheon <suunj1331@gmail.com>
+Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, apokusinski01@gmail.com, me@brighamcampbell.com,
+ skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH 1/4] iio: pressure: mpl3115: convert probe to fully devm
+ managed
+Message-ID: <20260531152937.13aaf38c@jic23-huawei>
+In-Reply-To: <CAGwK=3oJ1EhcC9uA0dufvCfkEfok2vx9yGYCO7iy22gkYW-=5A@mail.gmail.com>
+References: <20260530113938.171540-1-suunj1331@gmail.com>
+	<20260530113938.171540-2-suunj1331@gmail.com>
+	<20260530161048.0e2ce1fe@jic23-huawei>
+	<CAGwK=3oJ1EhcC9uA0dufvCfkEfok2vx9yGYCO7iy22gkYW-=5A@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/11] m68k: mcf5441x: initialize DAC clocks by iio DAC
- driver name
-To: Angelo Dureghello <adureghello@baylibre.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>,
- Arnd Bergmann <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-References: <20260522-wip-stmark2-dac-v3-0-16be0ad35a67@baylibre.com>
- <20260522-wip-stmark2-dac-v3-3-16be0ad35a67@baylibre.com>
-Content-Language: en-US
-From: Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <20260522-wip-stmark2-dac-v3-3-16be0ad35a67@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Angelo,
+On Sun, 31 May 2026 19:49:40 +0900
+SeungJu Cheon <suunj1331@gmail.com> wrote:
 
-On 23/5/26 07:20, Angelo Dureghello wrote:
-> From: Angelo Dureghello <adureghello@baylibre.com>
-> 
-> Later in this patchset, the mcf54415 DAC driver is added.
-> Considering some other different ColdFire cpu DACs exists, the DAC driver
-> is named as "mcf54415_dac", related to the mcf5441x family SoCs with
-> DACs (mcf54415/6/7/8).
-> 
-> So updating DAC CLKDEDV_INIT with proper driver name.
-> 
-> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
-> ---
-> Changes in v2:
-> - none
-> Changes in v3
-> - roll back clock names as they was originally
-> ---
->   arch/m68k/coldfire/m5441x.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/m68k/coldfire/m5441x.c b/arch/m68k/coldfire/m5441x.c
-> index 5b5e09ecf487..b02ca2eb55a4 100644
-> --- a/arch/m68k/coldfire/m5441x.c
-> +++ b/arch/m68k/coldfire/m5441x.c
-> @@ -106,8 +106,8 @@ static struct clk_lookup m5411x_clk_lookup[] = {
->   	CLKDEV_INIT("mcfpit.3", NULL, &__clk_0_35),
->   	CLKDEV_INIT("mcfeport.0", NULL, &__clk_0_36),
->   	CLKDEV_INIT("mcfadc.0", NULL, &__clk_0_37),
-> -	CLKDEV_INIT("mcfdac.0", NULL, &__clk_0_38),
-> -	CLKDEV_INIT("mcfdac.1", NULL, &__clk_0_39),
-> +	CLKDEV_INIT("mcf54415_dac.0", NULL, &__clk_0_38),
-> +	CLKDEV_INIT("mcf54415_dac.1", NULL, &__clk_0_39),
+> Hi Jonathan, thanks for the detailed review.
 
-I thought after the last discussion on this that we would not change these
-clock names?
+Hi,
 
-Regards
-Greg
+Small process thing.  When you agree with a comment and don't have
+follow up questions, then crop out that part of the email.  Save any
+acknowledgement / thanks for the change log section in the next version.
 
+That lets us quickly see if there are questions.
 
+If you have no questions or follow up on a particular review, don't reply
+at all!  We will see the result in the next version anyway.
 
->   	CLKDEV_INIT("mcfrtc.0", NULL, &__clk_0_42),
->   	CLKDEV_INIT("mcfsim.0", NULL, &__clk_0_43),
->   	CLKDEV_INIT("mcfusb-otg.0", NULL, &__clk_0_44),
-> 
+If there was anything in here that needed a reply, I missed it!
+Jonathan
 
