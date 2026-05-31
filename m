@@ -1,116 +1,224 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E62392DC79A;
-	Sat, 30 May 2026 23:11:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C958E37DE8B;
+	Sun, 31 May 2026 08:31:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780182709; cv=none; b=j33LALuiIw4axc9Et7KwiAGRSuVl/sJmv4tOMtYKPOqTCxNvIsI7EstEsr6DUfNWt08uVCuY9MfIY3vWx++wdXUGrYtMVqCvxUmkAQMbdhjdye5J4gVpWYJDIX2wAcZrE5j1B/xwTwy+zbKRkBQoqeBU9De0iiscidWrKtsZdgI=
+	t=1780216297; cv=none; b=bEf/u1oMua82B4BAS/SH4urBrnhaSKd3JoZUPDFzY16RpHcac9xMp/y5c8c2eICqpVAYkuZO6VO8b3Rwi9F+Rdc6TJkX+tjcvdtQebBR2MyfvAROoeb+jN+cv5AezYWcfD1Uv1+vzrNpAbPgZcaz6CIxJzXDr9SztpiDMxqxfGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780182709; c=relaxed/simple;
-	bh=JxCHsqyx82Eg7xxLsxDPxKJZersRU1eya8nz9d6Ws94=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KgeRaWeN8Qn1EabXAavnnd2P3A5O9hcEhG91Wb68LWPTYvKX0sa+RrAT0pkMF97gIsnXEu4l6WULcXMkTynbAyHCT2cg0uDnGAu00IjDTaiaTdC9UsmrNRE7McyKRBk9mzuoMrpnQbYwtrpEgTaMo7Vs/ZzPE2gi6DKY+FGgHKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cT/Grrsl; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780216297; c=relaxed/simple;
+	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Z6cU47A5A3P2nWQd5Upkv6x3Ncez6yAKzWVzyHSL/XdtbyCgrXd1qoKWMMctXaG6HTv7Db2BCE42l2oSO/ZKjYvvb1jX33usXBZ+yEV1Nob2RbShJoDI49DfNsvSas7tsfjU5l75XZa1SwGVpBkn4wsKm/iq6BUyRB3wFBM31DI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gjEC8FZc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cT/Grrsl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CBD1F00893;
-	Sat, 30 May 2026 23:11:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780182708;
-	bh=QY0/+e+KNY7EeUMYH//8eNjIBXcxLjHjGZf4xhZ7cE4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=cT/GrrslCCvRktzotxchjaz7eTCXEczYZlMyL3bYkcrBFPlV4M/kdaNC8k9fs4aeh
-	 VelIvfS9BtU4iawRYPW/XSKsKb/awjh3gFr+VY2XNdXiFkyyL1r6fZSgv1Oa/Omu1h
-	 STPBXq9TfC6s6S22QTD1ZNv/Uq+66JLXMd5x3FlOH1Y6qc2HVBYn8jG8tj0uBoB9fB
-	 qE4B8SxMZNAmJGLNslXCr8SzAIsRfNw0cpVdGgTOOzjMpYHNo7Sq7S2CCjzD/Xbg3f
-	 aAeIaRcp4a49EzaGrz7vDw+9uw+/JL2G8oRP3l0NFW6OyBso3PGMto2K2jw1nTs+KW
-	 LGHPa2rB9E3pg==
-Date: Sun, 31 May 2026 00:11:44 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Taha Narimani <tahanarimani3443@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: iio: adc: Add schema for AD7816/7/8 digital
- temperature sensor
-Message-ID: <20260531-mama-demanding-edf694ceb099@spud>
-References: <20260530133126.54460-1-tahanarimani3443@gmail.com>
- <20260530135302.54688-1-tahanarimani3443@gmail.com>
- <20260530155817.6169e5e2@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gjEC8FZc"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C15DC2BCF6;
+	Sun, 31 May 2026 08:31:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1780216297;
+	bh=CORvr0UdfFniwScEKu2H4oM/0Asr8GBcGggS48OKTBQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=gjEC8FZc9Q2Obm9K6D94HSKYair7Z+fWpxbGsZ88F0M9PYrZ1AamadGbmf7ZCckaU
+	 ZRBbFVDJAMLp/yadmiQg14XPuCSB5JJvZX/MJI2YfM3W8o1p/wypplF1VS4wAxaZx3
+	 6pcagVPDJrLF6CBoWSOlKw3RpdAHtqhvPzRflhRWWzmLyuhfdOgunc13zLTuoyBrHO
+	 vFMSRFCDNKjLTLXzzDgrnPvXNWcUcKOnBRPTQyPk9w0oOXyqijK2ow8+FqqOyFr9C+
+	 4pg3iUjLfvAU6C1lXLh4ZXo5Aeu+y5Ekq6JMpAqqP7CG98Jye1xOHfXXb/AzHcVG75
+	 N1QXMN83IUQDA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB72CD6E5A;
+	Sun, 31 May 2026 08:31:37 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Sun, 31 May 2026 09:30:46 +0100
+Subject: [PATCH v15 03/12] lib: kstrtox: add kstrtoudec64() and
+ kstrtodec64()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="0pKiDVqOA+ZCCJCE"
-Content-Disposition: inline
-In-Reply-To: <20260530155817.6169e5e2@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260531-adf41513-iio-driver-v15-3-da09adf1c0dd@analog.com>
+References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
+In-Reply-To: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+ Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+ Sergey Senozhatsky <senozhatsky@chromium.org>, 
+ Shuah Khan <skhan@linuxfoundation.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780216295; l=4931;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=Pr5+NBfQy2PXMwkQMZ2Ccvc7BauaEGWsUrxgWkFdXyQ=;
+ b=4LIlBmzp9L2AQp7uay3mllOo+Muruh4jV6wZIQL0sJPPV8Vpkt9V9vh70cW7XPAR9kNlZTT7y
+ t7SmtpqR8qsBegwQ4WHbQd+y20g/Gc5LFNzt7ArLAUOSEcx9H+/859a
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
+point numbers with pre-defined scale are parsed into a 64-bit value (fixed
+precision). After the decimal point, digits beyond the specified scale
+are ignored.
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ include/linux/kstrtox.h |   3 ++
+ lib/kstrtox.c           | 100 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 103 insertions(+)
+
+diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
+index 6ea897222af1..bec2fc17bde0 100644
+--- a/include/linux/kstrtox.h
++++ b/include/linux/kstrtox.h
+@@ -97,6 +97,9 @@ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
+ int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
+ int __must_check kstrtobool(const char *s, bool *res);
+ 
++int __must_check kstrtoudec64(const char *s, unsigned int scale, u64 *res);
++int __must_check kstrtodec64(const char *s, unsigned int scale, s64 *res);
++
+ int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
+ int __must_check kstrtoll_from_user(const char __user *s, size_t count, unsigned int base, long long *res);
+ int __must_check kstrtoul_from_user(const char __user *s, size_t count, unsigned int base, unsigned long *res);
+diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+index bd63c55b8490..ab43d16659ce 100644
+--- a/lib/kstrtox.c
++++ b/lib/kstrtox.c
+@@ -17,6 +17,7 @@
+ #include <linux/export.h>
+ #include <linux/kstrtox.h>
+ #include <linux/math64.h>
++#include <linux/overflow.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
+ 
+@@ -407,6 +408,105 @@ int kstrtobool(const char *s, bool *res)
+ }
+ EXPORT_SYMBOL(kstrtobool);
+ 
++static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
++{
++	u64 _res = 0;
++	unsigned int rv_int, rv_frac;
++
++	rv_int = _parse_integer(s, 10, &_res);
++	if (rv_int & KSTRTOX_OVERFLOW)
++		return -ERANGE;
++	s += rv_int;
++
++	if (*s == '.')
++		s++; /* skip decimal point */
++
++	rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
++	if (rv_frac & KSTRTOX_OVERFLOW)
++		return -ERANGE;
++	s += rv_frac;
++
++	if (!rv_int && !rv_frac && !isdigit(*s))
++		return -EINVAL; /* no digits at all */
++
++	while (isdigit(*s)) /* truncate digits */
++		s++;
++
++	if (*s == '\n')
++		s++;
++	if (*s)
++		return -EINVAL;
++
++	if (_res && (scale > (19 + rv_frac) || /* log10(2^64) = 19.26 */
++	    check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
++		return -ERANGE;
++
++	*res = _res;
++	return 0;
++}
++
++/**
++ * kstrtoudec64() - Convert a string to an unsigned 64-bit value that represents
++ *		    a scaled decimal number.
++ * @s: The start of the string. The string must be null-terminated, and may also
++ *  include a single newline before its terminating null. The first character
++ *  may also be a plus sign, but not a minus sign. Digits beyond the specified
++ *  scale are ignored.
++ * @scale: The number of digits to the right of the decimal point. For example,
++ *  a scale of 2 would mean the number is represented with two decimal places,
++ *  so "123.45" would be represented as 12345.
++ * @res: Where to write the result of the conversion on success.
++ *
++ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
++ */
++noinline
++int kstrtoudec64(const char *s, unsigned int scale, u64 *res)
++{
++	if (s[0] == '+')
++		s++;
++	return _kstrtoudec64(s, scale, res);
++}
++EXPORT_SYMBOL(kstrtoudec64);
++
++/**
++ * kstrtodec64() - Convert a string to a signed 64-bit value that represents a
++ *		   scaled decimal number.
++ * @s: The start of the string. The string must be null-terminated, and may also
++ *  include a single newline before its terminating null. The first character
++ *  may also be a plus sign or a minus sign. Digits beyond the specified scale
++ *  are ignored.
++ * @scale: The number of digits to the right of the decimal point. For example,
++ *  a scale of 5 would mean the number is represented with five decimal places,
++ *  so "-3.141592" would be represented as -314159.
++ * @res: Where to write the result of the conversion on success.
++ *
++ * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
++ */
++noinline
++int kstrtodec64(const char *s, unsigned int scale, s64 *res)
++{
++	u64 tmp;
++	int rv;
++
++	if (s[0] == '-') {
++		rv = _kstrtoudec64(s + 1, scale, &tmp);
++		if (rv < 0)
++			return rv;
++		if ((s64)-tmp > 0)
++			return -ERANGE;
++		*res = -tmp;
++	} else {
++		rv = kstrtoudec64(s, scale, &tmp);
++		if (rv < 0)
++			return rv;
++		if ((s64)tmp < 0)
++			return -ERANGE;
++		*res = tmp;
++	}
++	return 0;
++}
++EXPORT_SYMBOL(kstrtodec64);
++
+ /*
+  * Since "base" would be a nonsense argument, this open-codes the
+  * _from_user helper instead of using the helper macro below.
+
+-- 
+2.43.0
 
 
---0pKiDVqOA+ZCCJCE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, May 30, 2026 at 03:58:17PM +0100, Jonathan Cameron wrote:
-> On Sat, 30 May 2026 13:53:00 +0000
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +    description: OTI (Over Temperature Indicator) interrupt.
-
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +
-> > +    spi {
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <0>;
-> > +
-> > +        adc@0 {
-> > +            compatible =3D "adi,ad7816";
-> > +            reg =3D <0>;
-> > +            spi-max-frequency =3D <1000000>;
-> > +            rdwr-gpios =3D <&gpio 5 GPIO_ACTIVE_HIGH>;
-> > +            convert-gpios =3D <&gpio 6 GPIO_ACTIVE_HIGH>;
-> > +            busy-gpios =3D <&gpio 7 GPIO_ACTIVE_HIGH>;
-> > +            interrupts =3D <20 IRQ_TYPE_LEVEL_LOW>;
-> > +            interrupt-parent =3D <&gpio>;
->=20
-> You don't have any interrupts in the binding. So this shouldn't
-> pass testing.
-
-There is an interrupts property in the binding, unless you meant
-something else?
-
->=20
-> > +        };
-> > +    };
->=20
-
---0pKiDVqOA+ZCCJCE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCahturwAKCRB4tDGHoIJi
-0gfAAQCneNI6VLFrU90IsQ7TsC4XDyCYH1xKZOshGV9AdDN4CQD+KyNaEs7mzyCP
-a2OhzqpgOhoIr9Whyj+UA4RfNyLQtgE=
-=P3an
------END PGP SIGNATURE-----
-
---0pKiDVqOA+ZCCJCE--
