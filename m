@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EAD13264D8;
-	Sun, 31 May 2026 11:43:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 150FD32AAB5;
+	Sun, 31 May 2026 12:12:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780227790; cv=none; b=ThLdfx4j0kXxVnERmQZQprfcXsqdqU6CIPwcmcVhA2BjAGeSS5IfyKYfTOd+hRO8fO0PQX3yjOlJZVJ8W2yRZmnYwH1xjAqBEKKIDyQvRuJ7c0FuC0VKnOA6SR5jHAa736f21qA2T5NLwadxaSjN20Us8PCBrr9DSVcIiBlWFQM=
+	t=1780229523; cv=none; b=RQ5hmGnoeRqbohNbzILZyUa8zBNcyLsQvRHToZLt+1vk0Q6hnf4J3N3MpDBBy3JAXUbIJmvDdW5qD0i6xqrgHxx0XX2hsq/AqTrzJk+Oq6pEC5rfAnR2juH2/QNyMlkdr6vXi01D4pE6Suopa5EZgN9PDULIbO/u1fC4GTPA+WU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780227790; c=relaxed/simple;
-	bh=qlDsX22ixATQnPJZCLXBaJadQg2Mp8FzYgyXVi6f9D4=;
+	s=arc-20240116; t=1780229523; c=relaxed/simple;
+	bh=rgHWHt5DY8XLQO5FBRgy9lWxPQqOmnIE7dwyb/SCwcQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XAATmvppIFTs+n1XZJc6NO38mU9xdZ/44wY/YC9UsHSapUQ0NanvnIVsA02zUeim/5rF+G/jUEh1MN8RiHOzw8x5/CHuGKtISpOzHb908QUNOfcekByCtR85Zz7OYOWWuBFgQSEJ9MU6fcXjTggh/MmrVT2hXPqvCGxn4+ea1+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cx3oPL6R; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ejP7RnK7xW1uNWiXT5IgGt7UxhpZUO7+DLG4HwfYR1L/iDfjWBJ5RgAhneElG2GtByazU1kHgtTHwxZlxvMZkLt3f6EpfQqHpIKp4cBJYvYPxqgGrXrx4viL2A1lgT6tfnnxrIV8QPNoRlSgOeAy2sdpf8or3ZuUo6isgCp05xo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BuI9zv7c; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cx3oPL6R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85071F00893;
-	Sun, 31 May 2026 11:43:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BuI9zv7c"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF2301F00893;
+	Sun, 31 May 2026 12:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780227788;
-	bh=Udwv5iId0KXcQ8Qt92knmjHpT9C5tKvoZRkPbaL0z4k=;
+	s=k20260515; t=1780229521;
+	bh=leqiPf+NTSbTmkKH37kvObGoIRcbRTHncXBrq9GqQm8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Cx3oPL6RVSRUCHNtkm/8Yoyn//WlcCMo3WKbDwY/RwwaqlAdQtHKofaHHGxv2+qDH
-	 Ol1XgSLm7Q0ebKSd794uOePoUk9saBL+ZO6jEkkhyafLFlpIllvVaRCjtliGLcaERL
-	 d5j1kPEciQQcX14aGSuWYlZGg9b9++qVr2p6U7rTBx0m40r0wBA9Ei07hrwkrdzHXw
-	 Wu6aPoYmfuZ6+wRCYz0uzmsG8wn7ihzQs2wj1AA6Frb87XdESBRvw+PEZUCnHqeoP2
-	 Cx9T4sR2H0ZYwfMJmVfYJl6Many933pzbSQ3OlPWcHUQlp31yiHQzZNzWnRGpZzNDO
-	 l2DvZ0rMZG4DA==
-Date: Sun, 31 May 2026 12:42:59 +0100
+	b=BuI9zv7cJ5hxS8TPOfZweXKlE2BJ/HZlvUxZ8xqhyPvBaTZR7ryjgoNOv903e/ddr
+	 RDn9gCnRj0gLy91NP3OWoN4lAPNgEOL8fsTbnKKVeHVlOiAqmMjaPkeVwJNGeeJW0E
+	 s5YuR8zJkLDRwy3BovverP4SGGT9Ra7DGqjmnR1RMKT/4Zz9Yasu0Mu83JZZNsIw7+
+	 wUrwx92bC2jIjvCDBWy7iU0Fa1qTkQDKpPIf1I87aDi5K0xZ0fjHFJRHTN8ssuimD9
+	 k8v3q86f1lVfKXXMNcDHEJMtaf38lAwEIsPQhElCx8oACCtZReZFsMWnyzb4aiIrbZ
+	 1wXfAP/HrdCnQ==
+Date: Sun, 31 May 2026 13:11:54 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- Sa <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v3 6/6] iio: osf: register IIO devices from
- capabilities
-Message-ID: <20260531124259.69941363@jic23-huawei>
-In-Reply-To: <20260529121005.1470-7-kimjinseob88@gmail.com>
-References: <20260529121005.1470-1-kimjinseob88@gmail.com>
-	<20260529121005.1470-7-kimjinseob88@gmail.com>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+ dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
+ andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V9 03/11] iio: imu: inv_icm42607: Add inv_icm42607 Core
+ Driver
+Message-ID: <20260531131154.047f33ce@jic23-huawei>
+In-Reply-To: <20260530031739.109063-4-macroalpha82@gmail.com>
+References: <20260530031739.109063-1-macroalpha82@gmail.com>
+	<20260530031739.109063-4-macroalpha82@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,237 +50,223 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 29 May 2026 21:10:05 +0900
-Jinseob Kim <kimjinseob88@gmail.com> wrote:
+On Fri, 29 May 2026 22:17:30 -0500
+Chris Morgan <macroalpha82@gmail.com> wrote:
 
-> Use the first capability report to create supported IIO devices.
+> From: Chris Morgan <macromorgan@hotmail.com>
 > 
-> Cache latest samples and push enabled buffers directly.
+> Add the core component of a new inv_icm42607 driver. This includes
+> a few setup functions and the full register definition in the
+> header file.
+https://sashiko.dev/#/patchset/20260530031739.109063-1-macroalpha82%40gmail.com
+Again has some feedback.  I've commented on them below to say whether I agree
+or not. Also a few other minor things inline.
+
 > 
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
-Sahiko spotted an uninitialized heap data leak in the one of the
-IIO core functions. I've just sent a patch to fix that.
+> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+> ---
+>  drivers/iio/imu/inv_icm42607/inv_icm42607.h   | 336 ++++++++++++++++++
+>  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 206 +++++++++++
+>  2 files changed, 542 insertions(+)
+>  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
+>  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> 
 
-https://sashiko.dev/#/patchset/20260529121005.1470-1-kimjinseob88%40gmail.com
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+> new file mode 100644
+> index 000000000000..4801ece28058
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
 
-Thankfully that bounce buffering variant is rarely used so the bug
-should affect too many systems.
-
-A few other things inline, but mostly looks pretty good to me.
-
-Jonathan
-
-> diff --git a/drivers/iio/opensensorfusion/osf_core.c b/drivers/iio/opensensorfusion/osf_core.c
-> index c867b3158..e0a12de01 100644
-> --- a/drivers/iio/opensensorfusion/osf_core.c
-> +++ b/drivers/iio/opensensorfusion/osf_core.c
-> @@ -5,7 +5,7 @@
->  #include <linux/types.h>
->  
->  #include "osf_core.h"
-> -#include "osf_protocol.h"
-> +#include "osf_iio.h"
-Did this stop using the osf_protocol.h?  Seems unlikely that changed in this
-patch. So why drop it?
-
->  
->  #define OSF_RESERVED_MSG_FIRST		0x7f00
->  #define OSF_RESERVED_MSG_LAST		0x7fff
-> @@ -13,23 +13,175 @@
->  
->  void osf_core_init(struct osf_device *osf, struct device *dev)
->  {
-> -	memset(osf, 0, sizeof(*osf));
-
-Wrong patch, push that earlier.
-
-> +	mutex_init(&osf->latest_lock);
->  	osf->dev = dev;
->  }
-
-> +
-> +static int osf_core_handle_sensor_sample(struct osf_device *osf,
-> +					 const struct osf_frame *frame)
+> +static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
+> +				 const struct inv_icm42607_conf *conf)
 > +{
-> +	struct osf_latest_sample *latest;
->  	struct osf_sensor_sample sample;
-> +	struct iio_dev *indio_dev;
-> +	s32 values[OSF_MAX_SAMPLE_CHANNELS] = { };
-> +	unsigned int i;
+> +	unsigned int val;
 > +	int ret;
 > +
-> +	ret = osf_protocol_decode_sensor_sample(frame, &sample);
+> +	val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, conf->gyro.mode);
+> +	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, conf->accel.mode);
+> +	/*
+> +	 * No temperature enable reg in datasheet, but BSP driver selected RC
+> +	 * oscillator clock in LP mode when temperature was disabled.
+> +	 */
+> +	if (!conf->temp_en)
+> +		val |= INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL;
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_PWR_MGMT0, val);
 > +	if (ret)
 > +		return ret;
 > +
-> +	if (sample.channel_count > OSF_MAX_SAMPLE_CHANNELS)
-> +		return -E2BIG;
->  
-> -	return osf_protocol_decode_sensor_sample(frame, &sample);
-> +	for (i = 0; i < sample.channel_count; i++) {
-> +		ret = osf_protocol_sensor_sample_value(&sample, i, &values[i]);
-> +		if (ret)
-> +			return ret;
-> +	}
+> +	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK, conf->gyro.fs);
+> +	val |= FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_ODR_MASK, conf->gyro.odr);
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG0, val);
+> +	if (ret)
+> +		return ret;
 > +
-> +	mutex_lock(&osf->latest_lock);
-
-scoped_guard() should work well here.
-
-> +	latest = osf_core_find_latest_sample(osf, sample.sensor_type,
-> +					     sample.sensor_index);
-> +	if (!latest) {
-> +		mutex_unlock(&osf->latest_lock);
-> +		return -E2BIG;
-> +	}
+> +	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_FS_SEL_MASK, conf->accel.fs);
+> +	val |= FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_ODR_MASK, conf->accel.odr);
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_ACCEL_CONFIG0, val);
+> +	if (ret)
+> +		return ret;
 > +
-> +	memcpy(latest->values, values, sizeof(values));
-> +	latest->sensor_type = sample.sensor_type;
-> +	latest->sensor_index = sample.sensor_index;
-> +	latest->channel_count = sample.channel_count;
-> +	latest->sample_format = sample.sample_format;
-> +	latest->scale_nano = sample.scale_nano;
-> +	latest->sequence = frame->sequence;
-> +	latest->timestamp_us = frame->timestamp_us;
-> +	latest->valid = true;
-> +	osf->last_sequence = frame->sequence;
-> +	mutex_unlock(&osf->latest_lock);
+> +	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG1_FILTER_MASK, conf->gyro.filter);
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG1, val);
+> +	if (ret)
+> +		return ret;
 > +
-> +	indio_dev = osf_core_find_iio_dev(osf, sample.sensor_type,
-> +					  sample.sensor_index);
-> +	if (!indio_dev)
-> +		return 0;
+> +	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG1_FILTER_MASK, conf->accel.filter);
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_ACCEL_CONFIG1, val);
+> +	if (ret)
+
+Sashiko points out that this is overwriting whatever is the 
+INV_ICM42607_ACCEL_CONFIG1_AVG_MASK field.  That isn't set at all yet, which is fine
+but I'd be tempted to make it clear what intent is here. Either explicitly set it
+to 0 as
+	val |= FIELD_PREP(INV_ICM42607_ACCEL_CONFIG1_AVG_MASK, 0);
+or use regmap_update_bits as sashiko suggests.
+
+> +		return ret;
 > +
-> +	return osf_iio_push_sample(indio_dev, values, sample.channel_count);
->  }
-
-> +int osf_core_read_latest_sample(struct osf_device *osf, u16 sensor_type,
-> +				u16 sensor_index, unsigned int channel,
-> +				s32 *value)
-> +{
-> +	const struct osf_latest_sample *latest;
-> +	unsigned int i;
-> +	int ret = -ENODATA;
+> +	st->conf = *conf;
 > +
-> +	if (!osf || !value)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&osf->latest_lock);
-
-I'd look at using guard(mutex) here
-
-> +	for (i = 0; i < osf->latest_sample_count; i++) {
-> +		latest = &osf->latest_samples[i];
-> +		if (latest->sensor_type != sensor_type ||
-> +		    latest->sensor_index != sensor_index)
-> +			continue;
-> +
-You can easily push the following out of the loop by
-just doing the test 
-	if (i == osf->latest_sample_count)
-		return -ENODATA;
-after the loops.
-
-> +		if (latest->valid && channel < latest->channel_count) {
-> +			*value = latest->values[channel];
->  			ret = 0;
-> -		else if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
-> -			ret = 0;
-> -		else
-> -			ret = -EOPNOTSUPP;
-> +		}
->  		break;
->  	}
-> -
-> -	if (!ret)
-> -		osf->last_sequence = frame.sequence;
-> +	mutex_unlock(&osf->latest_lock);
->  
->  	return ret;
->  }
-> diff --git a/drivers/iio/opensensorfusion/osf_core.h b/drivers/iio/opensensorfusion/osf_core.h
-> index 3680c8c9b..04dd2a367 100644
-> --- a/drivers/iio/opensensorfusion/osf_core.h
-> +++ b/drivers/iio/opensensorfusion/osf_core.h
-
-> diff --git a/drivers/iio/opensensorfusion/osf_iio.c b/drivers/iio/opensensorfusion/osf_iio.c
-> new file mode 100644
-> index 000000000..5e5099878
-> --- /dev/null
-> +++ b/drivers/iio/opensensorfusion/osf_iio.c
-
-> +
-> +static const unsigned long osf_temp_available_scan_masks[] = {
-> +	BIT(0),
-
-This one is a bit comic. It's not doing anything as can only
-either or disable the single channel anyway before this!
-
-
-> +	0
-> +};
-
-> +
-> +void osf_iio_unregister_sensor(struct iio_dev *indio_dev)
-> +{
-> +	struct osf_iio_state *state = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_kfifo_free(state->buffer);
-> +	iio_device_free(indio_dev);
+> +	return 0;
 > +}
 > +
-> +int osf_iio_push_sample(struct iio_dev *indio_dev, const s32 *values,
-> +			unsigned int channel_count)
+> +/**
+> + *  inv_icm42607_setup() - check and setup chip
+> + *  @st:	driver internal state
+> + *  @bus_setup:	callback for setting up bus specific registers
+> + *
+> + *  Returns 0 on success, a negative error code otherwise.
+> + */
+> +static int inv_icm42607_setup(struct inv_icm42607_state *st,
+> +			      inv_icm42607_bus_setup bus_setup)
 > +{
-> +	struct osf_iio_state *state = iio_priv(indio_dev);
-> +	s32 scan[OSF_MAX_SAMPLE_CHANNELS] = { };
-> +	s64 timestamp;
+> +	const struct device *dev = regmap_get_device(st->map);
+> +	unsigned int val;
+> +	int ret;
 > +
-> +	if (channel_count != state->spec->channel_count)
-> +		return -EPROTO;
+> +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
+> +	if (ret)
+> +		return ret;
 > +
-> +	memcpy(scan, values, channel_count * sizeof(*values));
-
-This is odd. You are using the unaligned push but bouncing here as well.
-If you are going to bounce here then use a structure that includes the
-aligned_s64 timestamp, or don't bounce here and leave it to the
-push to buffer below to do that.
-
+> +	if (val != st->hw->whoami)
+> +		dev_warn(dev, "Unknown whoami %#02x expected %#02x (%s)\n",
+> +			 val, st->hw->whoami, st->hw->name);
 > +
-> +	/* Buffer state can change here; IIO rechecks it during the push path. */
-
-Add more detail on what the race is and where IIO is checking it on the
-push path. Note it's not a problem to race unless the buffer we are pushing
-to is not ready to receive data.  An extra sample during tear down is
-fine.  If there is another race that needs this then I doubt this fixes
-it as opposed to narrowing the window.
-
-
-> +	if (!iio_buffer_enabled(indio_dev))
-> +		return 0;
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
+> +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
+> +	if (ret)
+> +		return ret;
 > +
-> +	timestamp = iio_get_time_ns(indio_dev);
-
-I wonder if it's worth grabbing the timestamp earlier. There is quite a bit
-of code between where we know we have a sample and here and we want it as near
-to the real data capture time as possible.  So perhaps grab in the caller
-and pass down into here.
-
+> +	fsleep(INV_ICM42607_RESET_TIME_MS * 1000);
 > +
-> +	return iio_push_to_buffers_with_ts_unaligned(indio_dev, scan,
+> +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+> +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+> +				       INV_ICM42607_RESET_TIME_MS * 100,
+> +				       INV_ICM42607_RESET_TIME_MS * 10000);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "reset error, reset done bit not set\n");
+> +
+> +	/* Sync the regcache again after a reset. */
+> +	ret = regcache_sync(st->map);
 
-As above, if using this should pass in values, not scan.
+I haven't checked sashiko's feedback on this but it seems plausible as
+there is a check in regcache_sync on whether the cache is dirty and no obvious
+path for it to get to that state here.
 
-> +						     channel_count * sizeof(*scan),
-> +						     timestamp);
-This is where Sashiko noticed that if we have the timestamp turned on and
-a non multiple of 8 channel_count * sizeof(*scan) the hole between channels and
-timestamp is never initialized.  That's a core bug so don't do anything here.
-Please test the patch I just sent out though to make sure I didn't mess it up!
 
-Jonathan
-
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = bus_setup(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
+> +			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
+> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK,
+> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return inv_icm42607_set_conf(st, st->hw->conf);
 > +}
 
+> +int inv_icm42607_core_probe(struct regmap *regmap,
+> +			    const struct inv_icm42607_hw *hw,
+> +			    inv_icm42607_bus_setup bus_setup)
+> +{
+> +	struct device *dev = regmap_get_device(regmap);
+> +	struct inv_icm42607_state *st;
+> +	int irq;
+> +	int ret;
+> +
+> +	irq = fwnode_irq_get_byname(dev_fwnode(dev), "INT1");
+> +	if (irq < 0)
+> +		return dev_err_probe(dev, irq, "Unable to get INT1 interrupt\n");
+
+Sashiko comments on this and is correct that this only works on
+device tree with interrupt-names.  Which is intentional!
+
+
+> +
+> +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> +	if (!st)
+> +		return -ENOMEM;
+> +
+> +	dev_set_drvdata(dev, st);
+
+Really small thing. Is this used yet?  I think this should be in a later
+patch. Probably patch 5.
+
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->hw = hw;
+> +	st->map = regmap;
+> +	st->irq = irq;
+> +
+> +	ret = iio_read_mount_matrix(dev, &st->orientation);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to retrieve mounting matrix %d\n", ret);
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get vdd regulator\n");
+> +
+> +	st->vddio_supply = devm_regulator_get(dev, "vddio");
+> +	if (IS_ERR(st->vddio_supply))
+> +		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
+> +				     "Failed to get vddio regulator\n");
+> +
+> +	ret = inv_icm42607_enable_vddio_reg(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(dev, inv_icm42607_disable_vddio_reg, st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Setup chip registers (includes WHOAMI check, reset check, bus setup) */
+> +	ret = inv_icm42607_setup(st, bus_setup);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
+> +
+> +MODULE_AUTHOR("InvenSense, Inc.");
+> +MODULE_DESCRIPTION("InvenSense ICM-42607x device driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_IMPORT_NS("IIO_INV_SENSORS_TIMESTAMP");
 
