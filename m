@@ -1,588 +1,301 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DE63921DD
-	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 16:56:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780246606; cv=none; b=dXjx9OckbNvsu2I9nC3+JyYkr6uPG2KH43wznZKld9c9lo7W+MYPyE3DOjxnOuW6BXss9rrUMMJjxViqiSZgwFjJklveQctUww4RSYVdY36uDdtnXXRdKlc9PE9E2hXY/b6cPjo+CQNfbQQBND2oh6rmzu257Mjy+KBpwZl3tAw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780246606; c=relaxed/simple;
-	bh=ewK45FUX7lmkWOd2kFd4LGo43jx03Ao1sE5D+vNrf10=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=u35ziin5k8WTmCO56dukvUaucW6OEIl/v0PzFsoZEWQS8GjhT7KlOSYzb1rAAS0XR3FQUzH3pZZPTyzDdCaZvZ9lJYqxLWquoxJofeo0zqQ1EC1MNQWPXiX0XJCp+js27Aznu1q01aMbdwz0JFkcxhaura4JiJDBf8Y9yYfpt0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I3CuGexv; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2245334B1A6
+	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 17:04:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780247097; cv=pass; b=AwWgqlXNhAsyK5oAoL5veXfA+uuj8SVnPYFv9OuIjIbR1be3CxpzyJ4LC3JIuLMwQOGZVD8q21CFWQCRiWejolcjcrG7kpIXgI6+xNQwY0BcLHdP5+NkmZwEQ3ZSxfX5ma4Tchb4QlxvYVlwmfoGwv05EXEHxenVywFIUH1nbpA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780247097; c=relaxed/simple;
+	bh=H7QItvga5a9vyjSKr/kFCcz+smthy3VXYyuQRBz+Wa8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TGvC3J4z3VSAV2tLBq8xe1bZtUPRPczlKvwisb2TDRlbpgx8sG2Vtb9+UKRh4m9Lixyu13cL8f+i5nLHAQzTxwdFtstBpv8uSD6TsHQ6lmRYgMfLJFGqxvJReyrs0ggyn8WfqsOMiNbogOsOpSy2phKyicbl6UIGlgf3RdCEe3I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kor9FMS1; arc=pass smtp.client-ip=209.85.208.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I3CuGexv"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-490388fd0dbso97123025e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 09:56:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kor9FMS1"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-68b3a28da7eso495110a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 10:04:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780247094; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Kf32SvgKKMY3W3oWskKbcdKlG8efQjtkdjgdBnnG6ERMv0F5IoRjXKKkN5EO3/ZRMY
+         fbbZnx67AY10HSfnP7exr1lVPQA+nPw4UMC2OQW+eVvbDQUoxQDsNxPPPhP+JnJQKChO
+         xI1xF0bt4XkwNbyG+Q52l1aT/7Bx0n6ZXRvU6ag/SYAE5BjMiDD1hJe+GimxuMmMH4sL
+         KK/qlfwR8WtyK916IgLlpj6HZTCxwH3nS6fix2Flj0eDo5HznKz50cRO8XDsc/yxhxDl
+         0VbZtl2F5H9FtnENe61iUKZhQVFYig9zjCAaYRBoiW28x8sPqRhU8Aem2PLtadiKPDRd
+         izQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=2blOXQVLbvhazc/BACOMVu6tNFxD3c2S1a/BDqNp1cQ=;
+        fh=zntq+ZPObtiCe1HV5HpWawS0gr0a0BPBdfJEA29YdbE=;
+        b=LJrBKIBHPfopB0ZaW2PO2FNL30X7G/GJbnStHwKw5Uzg7ou4t78NPqNJ/4VB4hDuhf
+         lA4tdpjjIHVx7MKsVpiQVihGdyK2FG6iPe2BCl4OrsX19mrRXK+VOX2KyUl9NI7q9km0
+         oaey0vwT2YIOGScJT3FLOBX6qxgHG7DcsJ6ZNCRHCo5z3K4tF6hPyXs9S323weHBSs9u
+         Kk27QuuuIkwYg5pSf2+ycKCg9EJDSCk1KB/VN+XpA0Aq3CB/oqL1Wo75Ye6kL7OWXezS
+         /1Rz1s01l8D3CZV1I+29aIQ8S1rUr5xH4D8k4f+Sk6bZt2BxmYkUxrO6a8ig4GwiBDWE
+         Y7TQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780246602; x=1780851402; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HLKvJfg0/NvWRCe/MCTYwsfuloddP9MfpRmlHlM2uug=;
-        b=I3CuGexvj+VBRRvZ3icx4SUMROf9OZHQ1SY4r9iyI7aXm4FqD/Mq8CabPv5j3o9kf8
-         W9tei86qOKCQ2oKnlJbSKcKR59a224EXdKSInKCQ2/TQG/Igb/AwXTgsk7hJCUzB++ee
-         TKRUBm+T6vALbfqQ90qJrnNfiNKuhTAXTNTOF3SLsb5g58Qs5Tu+EzZSvSJJ3eQgIISG
-         L33xc8iQLgHh+HxgzLzFG9cDjY/lri6YJaXkSU/6ayowx6Ll8x5wkwFVnTYrVThvw0uB
-         2cw3UyMVmEDJ/R3QwRAZ4haKJNiCct6dIxCyLjRbJbeR5XD9CMAkT0pPHaBFEhQjSB/s
-         odVQ==
+        d=gmail.com; s=20251104; t=1780247094; x=1780851894; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2blOXQVLbvhazc/BACOMVu6tNFxD3c2S1a/BDqNp1cQ=;
+        b=kor9FMS1h6crulNlqo2Lpsj+ffbiP+OSxI+MDHQm07y6oLf8SUn4+CmqxRPlp6g+Te
+         Q/DersFVULs2hcleIoXLLASGyfLdldRST0p2YoyKzj90nObvJlqXvaLvFbc0Ig2yfuZm
+         ui0YGsr5F+g2xD+Ax80CMv/ZgqbJ+aR/vDVzOt1+hPHZ6Axgx98nSZbU4v0hZv9OBLK+
+         45ls3UugvIOI3U3H+bqvxXxb54Y7NePMABl8lodpYQNovqWUoYYfLBNc8Tu+K9r4ujBQ
+         ifZlY/i0xE5SW3+d3Tg/OFlUGmO69ddPZ1fRMRTX+JkQR9ZNJJSGoMUZtU02nd4w+8VG
+         1Svg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780246602; x=1780851402;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=HLKvJfg0/NvWRCe/MCTYwsfuloddP9MfpRmlHlM2uug=;
-        b=njFOGmHXnHYWpA9ETcSh70NH3MXImVsk6qvtkX5ooT645oiN8x+vZO5EqT7HrLEKZ2
-         ECzgadxr5Co8AN3jR+HePrTZQ43imdiq3LscrU/LC4/i7XBF7rDAeCHQTJMPSfMIezk/
-         wyvI/83SU5gF0tp9ZgkwwpdgtWL2IP2S4cBu74Hc8MQas8/kctVxgSA4p+YSGIJmXcd/
-         0DF5usp4rmC9aOSAuaakVWuExkTcNi8hqzuV9YS/mx5Zu8UhVSdB52TP1qgL39CMOV9n
-         TundSpZ7GupRe1GMuzgouVb9/bZllJDndXchHk8BF3k3CwCHg3yrXeDe1lfV5JpHwgdZ
-         whDQ==
-X-Gm-Message-State: AOJu0YzQRGID6syKR7o5BuJwCKicRkELKCmbd9MPs7nRjjk4mXXMVkm8
-	7/YhEx9v886sSTsWPxQU8O1y6Wva5nzj9+H67oMGCjLt5h0mx6EtZejo
-X-Gm-Gg: Acq92OG1kaOtru8dacA7cnciuzD5LwHSYyEo+1TIQlyD24UE8dQsP+JeloFNaQDm7xA
-	nh09M+fFl0Mq1Qsjg+d8IkbsT5nkxH8/BheNajmHdd/BLXmOONWcaUYXcXD+39fhlwZyFYANRiW
-	IkrPxT5J5Wc02gVuKBORs4eCw56Xjn8+CTIh3qVWpvjLf7p9URjXeJPLnKivk15bfq60NFtc94d
-	yj1apgVgHI/nIJSfAwQLBe8GhCLQzT2h6iWDzwza0IwyUgOvhfZafGn3S+zn4skuHi+3BSuBWhV
-	kP/1gfsGS0gStpSNmYUDtwjGcKNGhTe3fqsUXQMx1pp1eeYVQ4kBm77ObIs00sG4aHzBIT1jwDB
-	A1BmDN63SBHa2UouKV5w8Pxn5hxNQz21HAiQ4y2KJmhK2FR7/FqkeWKCIEV10C5w9ciSXTtSbyb
-	28uvkaalH6VuqY/ShMEQoMUIt2gTez7teSZsmCJoqXbRhikUIULosIgWtSQmlnek/ftLeTgOnnS
-	WcJ308m+bbCxM3uz7JkcKmJ6nGuOK4eGd5a5gCwk/se5w4KAEV855l4D4TRhWWIZjBlGLKYmVli
-	PtDd0umpDKJhr/o3vjS4ct6W2ZMxYCVIb/DSMZ+M4WJTdDrC7kI=
-X-Received: by 2002:a05:600c:1989:b0:490:51b9:2309 with SMTP id 5b1f17b1804b1-490a297e1e1mr161157935e9.29.1780246602050;
-        Sun, 31 May 2026 09:56:42 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0:c287:187e:fb7a:66a4])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4909c09acd3sm57648445e9.4.2026.05.31.09.56.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2026 09:56:41 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Sun, 31 May 2026 18:56:36 +0200
-Subject: [PATCH v4 2/2] iio: light: veml3328: add support for new device
+        d=1e100.net; s=20251104; t=1780247094; x=1780851894;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2blOXQVLbvhazc/BACOMVu6tNFxD3c2S1a/BDqNp1cQ=;
+        b=XDXhbTaGvw+H/7/80yEhnJwbTIvzexmMP2RziGqIYDDkVwVDdDHV0hJTk0ghBvdNxq
+         FVtIpEto1Y81m+LVXeb0Xnh5XqBLC6UHtXeINlljn4jWOjjioICGqFjrJjmRtKfXqcZN
+         WYbbYMdj2p6awDNXELjxSL42Q5fZJ4tO+IrSxKzeW2/L4XBnb8DccSuB7tNtxzaGxiNx
+         XnmYY8p2AV1agq3TxnBXZ/KSBSwkyP3Uq8u+y/eTPQqxE6e6EVuSyCUGW6t8FCx9HCpA
+         oHglPDKLI8aD41G4FCctrKOrkHLvse3waB2FBjQnokZMDYXK1azV0fuKRWJsKmfcqjWk
+         qy8g==
+X-Forwarded-Encrypted: i=1; AFNElJ+tJBdaA4vXL/RSR3bSUfG7M+i32b6IL/WWmEKbDEd/dNFRr4CqXvtSEPFRPqB7hkfcgZa7ncJdcto=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoBAqpuS/V3iBnZ++/f6APb0mlmJDWyIhH9ZvlmyjVw5pp2nqu
+	Chmad1/CKm1TUUBqdHTsTHm0TO0q9hVcDCVS2Bpk+13f6R6hEKyf3gRLhTUtCUCHFSp7n1vIUWR
+	e3zLkJVck015wbkgCReqtSoKCJA0v7V4=
+X-Gm-Gg: Acq92OGXoLAHKGEXS7kIGCcsiIJnrfgz3R6sWn81u7JX9P2GMzTeoV4fCAlheDXboZf
+	FeMuzYJq+cljQDWVTOepseDauqjGwuC7vIWpQd8hiT01rAN02kF5Fu6DWumpqIhgE1EU4BXBhkY
+	3SnTa7L61SI5TAioxgOWB/iRSQJn7dQCJqtDFvrZkFJuxlOrgTaBSP9x8fSOQYbnjX3fIpEXDjn
+	wUqG3KRGzjnoaN3Aj9JcwkZpmrUxN1jsIMQN7YtxIvnfxcn4hwCurpnnYvSfLWWrR7nbwvVDT3d
+	wjRNt2BYFzyI7cX9cj+iX5ctVnslKw==
+X-Received: by 2002:a05:6402:2112:b0:680:ddba:c435 with SMTP id
+ 4fb4d7f45d1cf-68c8ac28ca9mr1633355a12.8.1780247094217; Sun, 31 May 2026
+ 10:04:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260531-veml3328-v4-2-f9b65d71d917@gmail.com>
-References: <20260531-veml3328-v4-0-f9b65d71d917@gmail.com>
-In-Reply-To: <20260531-veml3328-v4-0-f9b65d71d917@gmail.com>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780246598; l=14236;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=ewK45FUX7lmkWOd2kFd4LGo43jx03Ao1sE5D+vNrf10=;
- b=zvqYo6GE9+tKZ4t4Ol34oVxdzL0oTWyBRspd5c7/4BayAZ5Lmf8777FtQ325Oxg+a+hCtA66v
- CCZcmLGH+15Dh6ns47sGlTFZOB/n2VNswpENg8ulQB9hro2E5vzxyt4
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
+References: <20260530165917.55767-1-tahanarimani3443@gmail.com> <20260531154153.2b77a407@jic23-huawei>
+In-Reply-To: <20260531154153.2b77a407@jic23-huawei>
+From: Taha Narimani <tahanarimani3443@gmail.com>
+Date: Sun, 31 May 2026 20:34:41 +0330
+X-Gm-Features: AVHnY4JCcWEV7vljfej8qjqDgTJSY6f0xryHUy16PiHo_9FHD-hnTSLx2MrcHj8
+Message-ID: <CAEsNvj-9ApXwx1HO9kwfSNBESQRSTcLmUYm_DnziaC6v1zzfdQ@mail.gmail.com>
+Subject: Re: [PATCH v3 RFC v3] dt-bindings: iio: adc: add ad7816/7/8 digital
+ temperature sensor / ADC
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, 
+	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add support for the Vishay VEML3328 RGB/IR light sensor communicating
-via I2C (SMBus compatible).
+Hi Jonathan,
 
-Also add a new entry for said driver into Kconfig and Makefile.
+Thank you for your patience and the detailed review of v2. I apologize
+for rushing the v3 submission and omitting the changelog. I am still
+familiarizing myself with the kernel mailing list etiquette, and I
+will certainly slow down and allow at least a week for future patch
+revisions to ensure proper discussion time.
 
-Assisted-by: Gemini:3.1-Pro
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- MAINTAINERS                  |   5 +
- drivers/iio/light/Kconfig    |  11 ++
- drivers/iio/light/Makefile   |   1 +
- drivers/iio/light/veml3328.c | 422 +++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 439 insertions(+)
+As you recommended, I took a step back and thoroughly read the
+AD7816/7/8 datasheets. That was a great learning point=E2=80=94it helped me
+realize that the AD7816 (8-pin) completely lacks a BUSY pin, which the
+current staging driver incorrectly requests unconditionally. I also
+mapped out the missing power supplies and OTI interrupts based on the
+datasheet specifications to make the binding complete.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9e9457c7bba6..a893a1a1181e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -28402,6 +28402,11 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
- F:	drivers/iio/light/veml3235.c
- 
-+VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
-+M:	Joshua Crofts <joshua.crofts1@gmail.com>
-+S:	Maintained
-+F:	drivers/iio/light/veml3328.c
-+
- VISHAY VEML6030 AMBIENT LIGHT SENSOR DRIVER
- M:	Javier Carrasco <javier.carrasco.cruz@gmail.com>
- S:	Maintained
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index da4807a3fd3d..ef36824f312f 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -713,6 +713,17 @@ config VEML3235
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called veml3235.
- 
-+config VEML3328
-+	tristate "VEML3328 RGBCIR light sensor"
-+	select REGMAP_I2C
-+	depends on I2C
-+	help
-+	  Say Y here if you want to build a driver for the Vishay VEML3328
-+	  RGB IR light sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called veml3328
-+
- config VEML6030
- 	tristate "VEML6030 and VEML6035 ambient light sensors"
- 	select REGMAP_I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 39e62dfc10c7..64e354c49ed8 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_US5182D)		+= us5182d.o
- obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
- obj-$(CONFIG_VCNL4035)		+= vcnl4035.o
- obj-$(CONFIG_VEML3235)		+= veml3235.o
-+obj-$(CONFIG_VEML3328)		+= veml3328.o
- obj-$(CONFIG_VEML6030)		+= veml6030.o
- obj-$(CONFIG_VEML6040)		+= veml6040.o
- obj-$(CONFIG_VEML6046X00)	+= veml6046x00.o
-diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
-new file mode 100644
-index 000000000000..7ff1753925c4
---- /dev/null
-+++ b/drivers/iio/light/veml3328.c
-@@ -0,0 +1,422 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Vishay VEML3328 RGBCIR light sensor driver
-+ *
-+ * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
-+ *
-+ * Datasheet: https://www.vishay.com/docs/84968/veml3328.pdf
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/time.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#define VEML3328_REG_CONF		0x00
-+#define VEML3328_REG_ID			0x0c
-+#define VEML3328_REG_DATA_C		0x04
-+#define VEML3328_REG_DATA_R		0x05
-+#define VEML3328_REG_DATA_G		0x06
-+#define VEML3328_REG_DATA_B		0x07
-+#define VEML3328_REG_DATA_IR		0x08
-+
-+#define VEML3328_CONF_IT_MASK		GENMASK(5, 4)
-+#define VEML3328_CONF_GAIN_MASK		GENMASK(11, 10)
-+
-+#define VEML3328_MAX_IT_TIME		(400 * USEC_PER_MSEC)
-+
-+#define VEML3328_ID_VAL			0x28
-+
-+#define VEML3328_SHUTDOWN		(BIT(0) | BIT(15))
-+
-+struct veml3328_data {
-+	struct regmap *regmap;
-+	/* Ensure read-modify-write sequences are not interrupted. */
-+	struct mutex lock;
-+};
-+
-+static const struct regmap_config veml3328_regmap_config = {
-+	.name = "veml3328",
-+	.reg_bits = 8,
-+	.val_bits = 16,
-+	.max_register = VEML3328_REG_ID,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+};
-+
-+#define VEML3328_CHAN_SPEC(_color, _addr) { \
-+	.type = IIO_INTENSITY, \
-+	.modified = 1, \
-+	.channel2 = IIO_MOD_LIGHT_##_color, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE), \
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME), \
-+	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME), \
-+	.address = _addr, \
-+}
-+
-+static const struct iio_chan_spec veml3328_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.address = VEML3328_REG_DATA_G,
-+	},
-+	VEML3328_CHAN_SPEC(CLEAR, VEML3328_REG_DATA_C),
-+	VEML3328_CHAN_SPEC(RED, VEML3328_REG_DATA_R),
-+	VEML3328_CHAN_SPEC(GREEN, VEML3328_REG_DATA_G),
-+	VEML3328_CHAN_SPEC(BLUE, VEML3328_REG_DATA_B),
-+	VEML3328_CHAN_SPEC(IR, VEML3328_REG_DATA_IR),
-+};
-+
-+/*
-+ * Precomputed scale values (micro units).
-+ * Formula for calculation: 0.384 * (50000 / IT_us) * (1 / Gain)
-+ * Gain indexes: 0 (x0.5), 1 (x1), 2 (x2), 3 (x4)
-+ * IT indexes: 0 (50ms), 1 (100ms), 2 (200ms), 3 (400ms)
-+ */
-+static const int veml3328_scale_vals[4][8] = {
-+	{ 0, 768000, 0, 384000, 0, 192000, 0, 96000 },
-+	{ 0, 384000, 0, 192000, 0, 96000,  0, 48000 },
-+	{ 0, 192000, 0, 96000,  0, 48000,  0, 24000 },
-+	{ 0, 96000,  0, 48000,  0, 24000,  0, 12000 },
-+};
-+
-+/* integration times in microseconds */
-+static const int veml3328_it_times[][2] = {
-+	{ 0, 50 * USEC_PER_MSEC },
-+	{ 0, 100 * USEC_PER_MSEC },
-+	{ 0, 200 * USEC_PER_MSEC },
-+	{ 0, 400 * USEC_PER_MSEC },
-+};
-+
-+static int veml3328_power_down(struct veml3328_data *data)
-+{
-+	return regmap_set_bits(data->regmap, VEML3328_REG_CONF,
-+			       VEML3328_SHUTDOWN);
-+}
-+
-+static int veml3328_power_up(struct veml3328_data *data)
-+{
-+	int ret;
-+
-+	ret = regmap_clear_bits(data->regmap, VEML3328_REG_CONF,
-+				VEML3328_SHUTDOWN);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Sleep for maximum integration time to ensure sensor is powered on
-+	 * correctly.
-+	 */
-+	fsleep(VEML3328_MAX_IT_TIME);
-+
-+	return 0;
-+}
-+
-+static void veml3328_power_down_action(void *data)
-+{
-+	veml3328_power_down(data);
-+}
-+
-+static int veml3328_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct veml3328_data *data = iio_priv(indio_dev);
-+	struct regmap *regmap = data->regmap;
-+	struct device *dev = regmap_get_device(regmap);
-+	unsigned int reg_val;
-+	int it_inx, gain_inx;
-+	int ret;
-+
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = regmap_read(regmap, chan->address, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		*val = reg_val;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_INT_TIME:
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+		if (it_inx >= ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		*val = veml3328_it_times[it_inx][0];
-+		*val2 = veml3328_it_times[it_inx][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+		gain_inx = FIELD_GET(VEML3328_CONF_GAIN_MASK, reg_val);
-+
-+		if (it_inx >= ARRAY_SIZE(veml3328_it_times) || gain_inx >= 4)
-+			return -EINVAL;
-+
-+		/* Stride by 2 through the flattened array to match (val, val2) */
-+		*val = veml3328_scale_vals[it_inx][gain_inx * 2];
-+		*val2 = veml3328_scale_vals[it_inx][gain_inx * 2 + 1];
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml3328_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long mask)
-+{
-+	struct veml3328_data *data = iio_priv(indio_dev);
-+	struct regmap *regmap = data->regmap;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	unsigned int reg_val;
-+	int ret, it_inx;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		*length = ARRAY_SIZE(veml3328_it_times) * 2;
-+		*vals = (const int *)veml3328_it_times;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		return IIO_AVAIL_LIST;
-+
-+	case IIO_CHAN_INFO_SCALE: {
-+		PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
-+		ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+		if (ret)
-+			return ret;
-+
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+		if (it_inx >= ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		*length = 8;
-+		*vals = (const int *)veml3328_scale_vals[it_inx];
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		return IIO_AVAIL_LIST;
-+	}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int veml3328_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct veml3328_data *data = iio_priv(indio_dev);
-+	struct regmap *regmap = data->regmap;
-+	struct device *dev = regmap_get_device(regmap);
-+	unsigned int reg_val;
-+	int i, it_inx;
-+	int ret;
-+
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_INT_TIME:
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		for (i = 0; i < ARRAY_SIZE(veml3328_it_times); i++) {
-+			if (veml3328_it_times[i][1] == val2)
-+				break;
-+		}
-+
-+		if (i == ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		return regmap_update_bits(regmap, VEML3328_REG_CONF,
-+					  VEML3328_CONF_IT_MASK,
-+					  FIELD_PREP(VEML3328_CONF_IT_MASK, i));
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regmap_read(regmap, VEML3328_REG_CONF, &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		it_inx = FIELD_GET(VEML3328_CONF_IT_MASK, reg_val);
-+		if (it_inx >= ARRAY_SIZE(veml3328_it_times))
-+			return -EINVAL;
-+
-+		for (i = 0; i < 4; i++) {
-+			if (val == veml3328_scale_vals[it_inx][i * 2] &&
-+			    val2 == veml3328_scale_vals[it_inx][i * 2 + 1])
-+				break;
-+		}
-+
-+		if (i == 4)
-+			return -EINVAL;
-+
-+		return regmap_update_bits(regmap, VEML3328_REG_CONF,
-+					  VEML3328_CONF_GAIN_MASK,
-+					  FIELD_PREP(VEML3328_CONF_GAIN_MASK, i));
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info veml3328_info = {
-+	.read_raw = veml3328_read_raw,
-+	.write_raw = veml3328_write_raw,
-+	.read_avail = veml3328_read_avail,
-+};
-+
-+static int veml3328_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct veml3328_data *data;
-+	struct iio_dev *indio_dev;
-+	unsigned int reg_val;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data->regmap = devm_regmap_init_i2c(client, &veml3328_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "Failed to initialize regmap\n");
-+
-+	ret = devm_mutex_init(dev, &data->lock);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
-+
-+	ret = regmap_read(data->regmap, VEML3328_REG_ID, &reg_val);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to read ID register\n");
-+
-+	if ((reg_val & 0xff) != VEML3328_ID_VAL)
-+		dev_warn(dev, "Unknown device ID: 0x%02x\n", reg_val & 0xff);
-+
-+	ret = veml3328_power_up(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to power on sensor\n");
-+
-+	ret = devm_add_action_or_reset(dev, veml3328_power_down_action, data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to register teardown\n");
-+
-+	indio_dev->name = "veml3328";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &veml3328_info;
-+	indio_dev->channels = veml3328_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(veml3328_channels);
-+
-+	pm_runtime_set_active(dev);
-+	pm_runtime_set_autosuspend_delay(dev, 2000);
-+	pm_runtime_use_autosuspend(dev);
-+
-+	ret = devm_pm_runtime_enable(dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable runtime PM\n");
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int veml3328_runtime_suspend(struct device *dev)
-+{
-+	struct veml3328_data *data = iio_priv(dev_get_drvdata(dev));
-+	int ret;
-+
-+	ret = veml3328_power_down(data);
-+	if (ret)
-+		dev_err(dev, "Failed to suspend: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int veml3328_runtime_resume(struct device *dev)
-+{
-+	struct veml3328_data *data = iio_priv(dev_get_drvdata(dev));
-+	int ret;
-+
-+	ret = veml3328_power_up(data);
-+	if (ret)
-+		dev_err(dev, "Failed to resume: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static DEFINE_RUNTIME_DEV_PM_OPS(veml3328_pm_ops,
-+				 veml3328_runtime_suspend,
-+				 veml3328_runtime_resume,
-+				 NULL);
-+
-+static const struct of_device_id veml3328_of_match[] = {
-+	{ .compatible = "vishay,veml3328" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, veml3328_of_match);
-+
-+static const struct i2c_device_id veml3328_id[] = {
-+	{ .name = "veml3328" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, veml3328_id);
-+
-+static struct i2c_driver veml3328_driver = {
-+	.driver = {
-+		.name = "veml3328",
-+		.of_match_table = veml3328_of_match,
-+		.pm = pm_ptr(&veml3328_pm_ops),
-+	},
-+	.probe = veml3328_probe,
-+	.id_table = veml3328_id,
-+};
-+module_i2c_driver(veml3328_driver);
-+
-+MODULE_AUTHOR("Joshua Crofts <joshua.crofts1@gmail.com>");
-+MODULE_DESCRIPTION("VEML3328 RGBCIR Light Sensor");
-+MODULE_LICENSE("GPL");
+Here is the requested changelog for this version:
 
--- 
-2.54.0
+Changes in v3:
+- Updated the patch title and marked it explicitly as an RFC, noting
+the driver's staging status.
+- Added `spi-max-frequency` with a maximum limit of 12.5MHz based on
+the datasheet.
+- Added `vdd-supply` and `vref-supply` properties (making vref-supply
+optional where an internal reference exists).
+- Implemented conditional schema logic: restricted `busy-gpios`
+exclusively to the `adi,ad7817` variant and disallowed `vref-supply`
+for `adi,ad7818`.
+- Documented the `interrupts` property for the OTI pin (Active low) to
+resolve the validation error in the v2 example.
+- Modified the example block to use `adi,ad7817` to correctly align
+with the `busy-gpios` requirement.
 
+Best regards,
+Taha Narimani
+
+
+On Sun, May 31, 2026 at 6:12=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Sat, 30 May 2026 16:59:15 +0000
+> Taha Narimani <tahanarimani3443@gmail.com> wrote:
+>
+> > Document the Analog Devices AD7816, AD7817, and AD7818 digital
+> > temperature sensor and ADC bindings in YAML format.
+> >
+> > Please note that the driver for this device is currently in drivers/sta=
+ging.
+> > This patch is sent as an RFC to clean up and standardize the device tre=
+e
+> > bindings prior to any major driver refactoring.
+> >
+> > While reviewing the AD7816/7/8 datasheet to correctly document the prop=
+erties,
+> > it was noted that the current staging driver attempts to request a 'bus=
+y' GPIO
+> > for both AD7816 and AD7817. However, the AD7816 is an 8-pin device and =
+does
+> > not possess a BUSY pin (only the 16-pin AD7817 has it). Therefore, in t=
+his
+> > binding, busy-gpios is strictly limited to adi,ad7817.
+> >
+> > This resolves the checkpatch.pl warnings regarding undocumented DT
+> > compatible strings.
+> >
+> > Signed-off-by: Taha Narimani <tahanarimani3443@gmail.com>
+> > ---
+> Hi Taha,
+>
+> There should be a change log here. Please reply to this thread with that =
+for
+> this version.
+>
+> Also, slow down.  For any patch allow at least 24 hours unless a maintain=
+er
+> specifically requests it faster. For most stuff a week. That way any ongo=
+ing
+> discussion can finish and additional reviewers have time to take a look.
+>
+>
+> >  .../bindings/iio/adc/adi,ad7816.yaml          | 105 ++++++++++++++++++
+> >  1 file changed, 105 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad781=
+6.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml =
+b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+> > new file mode 100644
+> > index 0000000..48563e4
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
+> > @@ -0,0 +1,105 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/adc/adi,ad7816.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Analog Devices AD7816/7/8 digital temperature sensor / ADC
+> > +
+> > +maintainers:
+> > +  - Taha Narimani <tahanarimani3443@gmail.com>
+> > +
+> > +description: |
+> > +  Analog Devices AD7816, AD7817, and AD7818 10-Bit general purpose ADC=
+ and
+> > +  temperature sensor. The device communicates via an SPI interface.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,ad7816
+> > +      - adi,ad7817
+> > +      - adi,ad7818
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 12500000
+> > +
+> > +  vdd-supply:
+> > +    description: Main power supply.
+> > +
+> > +  vref-supply:
+> > +    description: |
+> > +      Optional external reference voltage supply. If not provided, the
+> > +      internal reference is used. Applicable for AD7816 and AD7817.
+> > +
+> > +  rdwr-gpios:
+> > +    maxItems: 1
+> > +    description: GPIO connected to the RD/WR pin.
+> > +
+> > +  convert-gpios:
+> > +    maxItems: 1
+> > +    description: GPIO connected to the CONVST (Convert Start) pin.
+> > +
+> > +  busy-gpios:
+> > +    maxItems: 1
+> > +    description: GPIO connected to the BUSY pin. Only applicable for A=
+D7817.
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +    description: OTI (Over Temperature Indicator) interrupt. Active lo=
+w.
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - vdd-supply
+> > +  - rdwr-gpios
+> > +  - convert-gpios
+> > +
+> > +allOf:
+> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            const: adi,ad7817
+> > +    then:
+> > +      required:
+> > +        - busy-gpios
+> > +    else:
+> > +      properties:
+> > +        busy-gpios: false
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            const: adi,ad7818
+> > +    then:
+> > +      properties:
+> > +        vref-supply: false
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +
+> > +    spi {
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +
+> > +        adc@0 {
+> > +            compatible =3D "adi,ad7817";
+> > +            reg =3D <0>;
+> > +            spi-max-frequency =3D <1000000>;
+> > +            vdd-supply =3D <&vcc>;
+> > +            vref-supply =3D <&vref>;
+> > +            rdwr-gpios =3D <&gpio 5 GPIO_ACTIVE_HIGH>;
+> > +            convert-gpios =3D <&gpio 6 GPIO_ACTIVE_HIGH>;
+> > +            busy-gpios =3D <&gpio 7 GPIO_ACTIVE_HIGH>;
+> > +            interrupts =3D <20 IRQ_TYPE_LEVEL_LOW>;
+> > +            interrupt-parent =3D <&gpio>;
+> > +        };
+> > +    };
+>
