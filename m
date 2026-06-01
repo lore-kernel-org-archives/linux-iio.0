@@ -1,93 +1,96 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EA9F3314B9
-	for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 23:59:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1531F198E91
+	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 00:45:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780271977; cv=none; b=WK2sxmNnzUxXILBQflMknOpbSCDYdEvI+a95Cu4PtOU5iJ7qNA3bsSrZy0sf/QDoSKupNBAwDnznm1GlvZbzgn0rv2JLXP/gqXPJFFEPBBscI0lmmKKnXEZcNmTdvFXGkfFhexgNn7HEkpGQnYuALJweiLquR25j4r8KOrZk1wA=
+	t=1780274703; cv=none; b=JSVAmS+0w0s0gLsdagkWROyws6fdKxcxV445TOi1dgTI685pjPDNvYad4Kd8CqnSBwlE9XzXK2Ok4FvIam2D1HUoNpPkpHANXoVUuRULvcnhFKl2LVMuneb6DdXO4+by87WyXefMW0PGpowVoScr5DunU+fyWFReEFSmZ+dPhlE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780271977; c=relaxed/simple;
-	bh=g5jy42hBp/hoNV//YEAgI+RIQwM6LSbOBEP4dyQoREs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ki6g854LRGvdemCj4OFe8oCEmLiUgnAvScRAVkqyoq7r9veB3DT6/I3Lu2YY7+4wufXitJSywNgqxJ/pHVDBUE7sgZhsihDr34IkADOcCbuBkQ36DPpouyz2RQVSCDeGhP5NBqn/w/C4LAcY4992fpjGsQC9FKYE2+r8ye49blA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DdBpnZk8; arc=none smtp.client-ip=209.85.160.44
+	s=arc-20240116; t=1780274703; c=relaxed/simple;
+	bh=1mtJOHJyw/69DclxGkPrN+gFk5vHFLiAalbGJxuoGdE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fz0NnyHcgLvPvCli+gN1alHfeUWl32hcNo4r1jz60Ar8qNCwxw22Wm94Xr+8xlLqJsTJoik3LPq8f5dYbvxjmvT06uBeqw+rQtuzgY3Zg12Iu5lJ94dQNThoBvnkkciQhUJijoZfZopY/eF7aiu2ImDFduiPNxFiQ0UMz/3Nt14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jxQlg5OA; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DdBpnZk8"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-43b6f782cfaso4048544fac.3
-        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 16:59:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jxQlg5OA"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-7e38f2f3800so6309017b3.0
+        for <linux-iio@vger.kernel.org>; Sun, 31 May 2026 17:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780271974; x=1780876774; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jE4mCARgYwymCUjuCV4JjyAJstLarID3EgjEBx1+3V4=;
-        b=DdBpnZk8754194IacjbkGuBL40eAMVOiRBa8OLi+GHgFuUAsc3gvOIUxtQEm+MYRiK
-         ZCwVCJee6/5xySAN+DXSCog6htd+6bwEZXE/s1n6xa6rkhRfcY3KxtpC/XEfUP63XCxs
-         87CjPP131FbB7CNnLwcvZtrWRBakuPlk/m1IrDiKUHMJ12jbhC0/Yx1/ovTiTZeWN9lq
-         R6Kf1SA4Ykv0npcKaDe+gSFgFjdMcJP5lfOlVzrBrqrAuEg+Cnc2o7jpDe/n2ZWrXfOg
-         W0o+mNSvDAabVkaKRDkFzT9NInoTmdBbta6u3WwxUJF+bclV5BQkAYARzJSRweqnyQuO
-         OsNg==
+        d=gmail.com; s=20251104; t=1780274701; x=1780879501; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=9sNcx/VAiskm6FYZ+uFUhNLeXBjBzhmJKxvyu7OkeIg=;
+        b=jxQlg5OAtqHM3iHTAqAp6UxfOM6O1gx3zLEHZgW8SvYTx2Qb7JNpJ5CoVijL0mpZ4+
+         qB5Yc6cHva7Mey7eEAozxYMJGyGvDKybcrUmpxydgF2BzGtNF+ZwtE0rZdXEK001PHfA
+         90ZOd3Ls15Y//LoA1gtf+Xbjb/AS1DbxJGNxzisj5d2EycTJAXdGjYIcNc76bGcnF46h
+         gpXcYx1W3NpEllN8HyZa339SXuVOl7ba+2epq7LvLuBYnQJHg316FFu6tAbxOnenFsP2
+         oMOq58jYtGFxvVDqe44fgoZTtnDEk1BHQv7Moq+oeCqejJ/M7T8FVD0PUwiitdHQgfQP
+         fOZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780271974; x=1780876774;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=jE4mCARgYwymCUjuCV4JjyAJstLarID3EgjEBx1+3V4=;
-        b=HTUqQNVVinLcQmW3h8O04No9+VEXD779Us17Tbp34PY7Ee1798xEVoxZ5+E8xY3bM5
-         RW0u+nuM3J9Z1ghien4IeA5YKuVxcQJ/T2rG3+iH9k3LmctgH750pFiPFDcqRwTDUeNj
-         yE0MAmSWahGx5wg4k7hj9Lwryww+NgturmVTShZmkOYgyAFPsyhpm5TzuGX1Qs8kkNuY
-         pG1aJ97yxFyK1pAEZfgZdpctcivXBYSC+OdLAFxhGRvTHRO6Jv/KaXZHSpFhGJJY+Y2J
-         YTg5/GBo+rRnb0IxZ1074ZvXtCcvT3pEkcEQ8S22bcLLceGX4hZu9peI+OhAMZ3PucCt
-         dVQQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9dyT28JHkh9Y0YbWtQSBQ8ivs3+nFLN7Xbg+yc8SkpcMhQzdE7EfoqARcUtruBSds5pBrxnBsu3IE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YywSst6mwVfmKne/xiZ1urUr77QxpE10Rwy3kGZkok4gTbtACv9
-	mWMBf/VGWiGGxJB/gjgqO0YhyO25/TPlE7QpQ2czd3SRJw5CW57prZ9LzR1sIZT+X10=
-X-Gm-Gg: Acq92OHR0BBDoPGj+Y7fvy/FKgci4JhnQOlUpqX3KQqyIJxtNphq8jDuMfGM3Ed+5lA
-	BwRW9RknmEUN6NEBMQABpF3bIJVoJ+He0R2U32g48NNrH/JRCobYe6ulaFYQt5LPTdZQnXWc2+j
-	v+PYXQF8y5s4zPQbNUA888n0kldbrZhwJ8GwqqFTwV41fXfTaxgxJAc/lqqvPmgujqfZMRXySvr
-	KxIG5q51ndXLtt9Nq+B0kiXtPfjnV3bbzr1Clzc836RhU6MLWS2tEt49tnoENSSRsseSSW0JAvq
-	jS4Xo6UB3eTW6vQSx2cSYLRPoObF3Rbtp/WBVKHEKDid1lpSMrMXMHJPX/TjnF/aEqq2xcivYQD
-	QSWjh0bbMBzxD+6x44HfgVFOz3BBhmY09+wz2smz2fa1jdVQHF1OlqP6npxXWO98ouKS7CFRwhJ
-	nMqX70PKs+BrW3Bj4SAND4wRvL2dk873awBLfgenBW4ZHS0ZI2dYOmOQoksCSctMw=
-X-Received: by 2002:a05:6870:658e:b0:417:392e:4e67 with SMTP id 586e51a60fabf-43ca4247a42mr4605423fac.20.1780271974352;
-        Sun, 31 May 2026 16:59:34 -0700 (PDT)
-Received: from linuxescape (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-43c93ae5342sm6468385fac.7.2026.05.31.16.59.33
+        d=1e100.net; s=20251104; t=1780274701; x=1780879501;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9sNcx/VAiskm6FYZ+uFUhNLeXBjBzhmJKxvyu7OkeIg=;
+        b=HCcOM9YCzch83kQJmjVOUUS94bFrSmIql2ppO5YLX4xBHGjfTqefHydkwTbalq4CkL
+         rSy4xr9hdFdPdjIlJHQmb5lMtQygt6kJJAmyCwM0yRjejGGRjSPdAvDkq2Y+T7VYugIZ
+         JVcn69KOazZ+tNojKFCDCaGBl0jeQ5mmVd+AhOOvo5vodnCwkdBFbYEZ68bOka7sULgC
+         3OINEdGP93nlVrvVZPtBz22xO/+y19Qs3iqDtTtbP3ZFa6yzA8zi6t/gBmrwPn1Kz1PU
+         NIkPljlEG6lC8XYyBhQu92+gCWLDFKVV4cpIPV3FXrQ5kmJFq2PdMPLECIQ2AfoHR+ym
+         H4JQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8Ic91grNXvwdFnPedOQGp/iGVLBipUzmrii7QhRXnLwPeIWV4tukp/K+PSbSDUlHY1iaXnTjjhbpI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwIvrfgtLw5W6tHD4/qSAVMnG3/TLVu8z9xP/TgyCabsj1InXHw
+	57JfQx8abmpFu32l90kk3UudMLtLaOuXS69IY3G4htnIWzmld4r0tq81
+X-Gm-Gg: Acq92OHoR2T6Uhgg7QODToToDwRdgjkhEbNoiegLHr1TY7typajd902y2Kd7Ms1n+FQ
+	rF5OjVftjudXShKekTy7Jwllnfu1jKOXfgVC+xOmfl56ikFrvpDuV9ayKnNNtuO5XeMjs3zqatZ
+	Qmt/LIeOXSbsBbMoziDhkW/nGA6a8eJ3a5Rf4HX0InfveuX4X9mJPuero70+YYY9qxc8xk2oryP
+	x7hV3nd2d0B4olC5vVCZqswI/LMFC1OC0+8JF62l3BBpMdvXVnps7YUMEb2MkXfcyJ1/xWZUjyJ
+	7DiNYQZWhMOSC1s58nFUKa9wJE6CrQ3IDurcXm+3J+V/lbzkJTqX00W9eSZL1Zqxght3HupsPie
+	53UmjGjlnQZE9SWe5YyGzsImaZyvp4Wj0BIwp2G/UVUP+CGhKxeeuolXH5jWyDoKxHflr0H6e5F
+	rX9NKBn1N6o38ADzn1InqowUHE6BSmbFmnNA9gwcJKNes=
+X-Received: by 2002:a05:690c:4a10:b0:799:198d:8c78 with SMTP id 00721157ae682-7e05f4f5035mr81162727b3.46.1780274701061;
+        Sun, 31 May 2026 17:45:01 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7e17ae7c667sm30748037b3.27.2026.05.31.17.44.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 May 2026 16:59:33 -0700 (PDT)
-Date: Sun, 31 May 2026 18:59:31 -0500
-From: Maxwell Doose <m32285159@gmail.com>
+        Sun, 31 May 2026 17:45:00 -0700 (PDT)
+Date: Sun, 31 May 2026 21:45:23 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 To: Wadim Mueller <wafgo01@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: flow: add Sensirion SLF3S liquid flow
- sensor driver
-Message-ID: <20260531185931.1bcda47c@linuxescape>
-In-Reply-To: <20260530205435.37326-4-wafgo01@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iio: flow: add Sensirion SLF3S liquid flow sensor
+ driver
+Message-ID: <ahzWI-bQwnQ8ogFL@debian-BULLSEYE-live-builder-AMD64>
 References: <20260530205435.37326-1-wafgo01@gmail.com>
-	<20260530205435.37326-4-wafgo01@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+ <20260530205435.37326-4-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260530205435.37326-4-wafgo01@gmail.com>
 
-Hi Wadim,
+Hello Wadim,
 
-On Sat, 30 May 2026 22:54:32 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
+Some additional comments. Feel free to disregard any of them if they conflict
+with previous reviews.
 
+On 05/30, Wadim Mueller wrote:
 > Add a driver for the Sensirion SLF3S family of digital
 > liquid-flow sensors on I2C.  Currently supported variants are
 > SLF3S-0600F, SLF3S-1300F and SLF3S-4000B; they share the same
@@ -111,134 +114,108 @@ Wadim Mueller <wafgo01@gmail.com> wrote:
 > 
 > Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
 > ---
->  drivers/iio/Kconfig       |   1 +
->  drivers/iio/Makefile      |   1 +
->  drivers/iio/flow/Kconfig  |  27 +++
->  drivers/iio/flow/Makefile |   7 +
->  drivers/iio/flow/slf3s.c  | 406 ++++++++++++++++++++++++++++++++++++++
->  5 files changed, 442 insertions(+)
->  create mode 100644 drivers/iio/flow/Kconfig
->  create mode 100644 drivers/iio/flow/Makefile
->  create mode 100644 drivers/iio/flow/slf3s.c
->
+...
+> +config SENSIRION_SLF3S
+> +	tristate "Sensirion SLF3S liquid flow sensor"
+> +	depends on I2C
+> +	select CRC8
+> +	help
+> +	  Say yes here to build support for the Sensirion SLF3S family
+> +	  of digital liquid-flow sensors:
+> +
+> +	    - SLF3S-0600F
+> +	    - SLF3S-1300F
+> +	    - SLF3S-4000B
+> +
+> +	  The driver reports the volumetric flow rate and the embedded
+> +	  temperature reading via the standard IIO interface.
+This level of detail is probably not needed in the Kconfig entry. Though, it's
+probably okay to have it anyways.
 
-Nice code. Just have a couple of questions (+sashiko has some concerns
-as well).
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called slf3s.
+> +
+> +endmenu
+> diff --git a/drivers/iio/flow/Makefile b/drivers/iio/flow/Makefile
+> new file mode 100644
+> index 000000000..3cf4ab95c
+> --- /dev/null
+> +++ b/drivers/iio/flow/Makefile
+> @@ -0,0 +1,7 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Makefile for industrial I/O flow sensor drivers
+> +#
+> +
+> +# When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_SENSIRION_SLF3S) += slf3s.o
+> diff --git a/drivers/iio/flow/slf3s.c b/drivers/iio/flow/slf3s.c
+> new file mode 100644
+> index 000000000..497a56f59
+> --- /dev/null
+> +++ b/drivers/iio/flow/slf3s.c
+> @@ -0,0 +1,406 @@
+...
+> +static const struct slf3s_variant slf3s_variants[] = {
+> +	[0] = {
+> +		.sub_type	= 0x03,
+> +		.name		= "slf3s-0600f",
+> +		.scale_num	= 1,
+> +		.scale_den	= 600 * MICRO,
+> +	},
+> +	[1] = {
+> +		.sub_type	= 0x02,
+> +		.name		= "slf3s-1300f",
+> +		.scale_num	= 1,
+> +		.scale_den	= 30 * MICRO,
+This one seems to almost zero out with 9 decimal digit precision.
+And it doesn't get better if _raw * _scale is to result in m³/s.
+I haven't followed it closely but, maybe this driver could use some of the new
+IIO_VAL types from ADF41513 series [1].
 
-[snip]
-> +/*
-> + * Read the product-info block and pick the matching variant.  The
-> + * sub-type byte returned by the sensor is the source of truth; a
-> + * DT-supplied compatible only seeds an initial guess and is overridden
-> + * on mismatch (with an informational message so misconfigured device
-> + * trees are easy to spot).
-> + *
-> + * Bus / CRC failures are real errors and fail probe.  An unknown
-> + * sub-type byte fails probe too: we cannot publish a meaningful scale
-> + * without a matching entry in slf3s_variants[].
-> + */
-> +static int slf3s_detect_variant(struct slf3s_data *sf)
+Ignore my comment if l/s was accepted.
+
+[1]: https://lore.kernel.org/linux-iio/20260531-adf41513-iio-driver-v15-6-da09adf1c0dd@analog.com/
+
+> +	},
+...
+> +
+> +static int slf3s_read_sample(struct slf3s_data *sf, int *flow, int *temp)
 > +{
-> +	struct i2c_client *client = sf->client;
-> +	u8 buf[SLF3S_PRODUCT_ID_LEN];
+> +	u8 buf[9];
+Can buf be 6 bytes long? 2 bytes of flow data + 1 CRC + 2 bytes of temp + 1 CRC.
+
 > +	int ret;
 > +
-> +	ret = slf3s_send_cmd(client, slf3s_cmd_prep_pid);
-> +	if (ret)
+> +	ret = i2c_master_recv(sf->client, buf, ARRAY_SIZE(buf));
+> +	if (ret < 0)
 > +		return ret;
-
-Here sashiko said:
-
-"If the system goes through a warm reboot or kexec, won't the sensor
-still be running in continuous measurement mode since there is no
-.shutdown callback? If the sensor is actively measuring, will it NACK
-the 'read product ID' command sent here and cause the probe to
-unconditionally fail? Should a stop measurement command be sent before
-trying to read the product ID?"
-
-Was looking and didn't find a shutdown callback, so you'll probably
-want to add that.
-
-> +     ret = slf3s_send_cmd(client, slf3s_cmd_read_pid);
-> +     if (ret)
-> +             return ret;
+> +	if (ret != ARRAY_SIZE(buf))
+> +		return -EIO;
 > +
-> +     ret = i2c_master_recv(client, buf, sizeof(buf));
-> +     if (ret < 0)
-> +             return ret;
-> +     if (ret != sizeof(buf))
-> +             return -EIO;
+> +	for (unsigned int i = 0; i < ARRAY_SIZE(buf); i += 3) {
+> +		if (!slf3s_crc_valid(sf, &buf[i]))
+> +			return -EIO;
+> +	}
 > +
-> +     for (unsigned int i = 0; i < SLF3S_PRODUCT_ID_LEN; i += 3) {
-> +             if (!slf3s_crc_valid(sf, &buf[i]))
-> +                     return -EIO;
-> +     }
+> +	*flow = sign_extend32(get_unaligned_be16(&buf[0]), 15);
+> +	*temp = sign_extend32(get_unaligned_be16(&buf[3]), 15);
 > +
-> +     if (buf[SLF3S_PRODUCT_FAMILY_BYTE] != SLF3S_PRODUCT_FAMILY_ID)
-> +             dev_info(&client->dev,
-> +                      "unexpected family byte 0x%02x (expected 0x%02x)\n",
-> +                      buf[SLF3S_PRODUCT_FAMILY_BYTE],
-> +                      SLF3S_PRODUCT_FAMILY_ID);
-
-This feels like something that could be dev_warn() to me (if it's
-unexpected then it means it probably shouldn't happen!)
-
-> +
-> +     for (unsigned int i = 0; i < ARRAY_SIZE(slf3s_variants); i++) {
-> +             if (buf[SLF3S_PRODUCT_SUBTYPE_BYTE] !=
-> +                 slf3s_variants[i].sub_type)
-> +                     continue;
-> +
-> +             if (sf->variant && sf->variant != &slf3s_variants[i])
-> +                     dev_info(&client->dev,
-> +                              "DT compatible says %s but sensor reports %s; using %s\n",
-> +                              sf->variant->name,
-> +                              slf3s_variants[i].name,
-> +                              slf3s_variants[i].name);
-
-Same here, if the DT says it should be x and we get y, then that also
-feels like something that shouldn't have happened.
-
-> +
-> +             sf->variant = &slf3s_variants[i];
-> +
-> +             return 0;
-> +     }
-> +
-> +     dev_err(&client->dev, "unknown SLF3S sub-type 0x%02x\n",
-> +             buf[SLF3S_PRODUCT_SUBTYPE_BYTE]);
-> +
-> +     return -ENODEV;
+> +	return 0;
 > +}
-
-[snip]
-
 > +
-> +static struct i2c_driver slf3s_driver = {
-> +	.driver = {
-> +		.name		= "slf3s",
-> +		.of_match_table	= slf3s_of_match,
-> +	},
-> +	.probe		= slf3s_probe,
-> +	.id_table	= slf3s_id,
+...
+> +static const struct iio_chan_spec_ext_info slf3s_ext_info[] = {
+> +	IIO_ENUM("medium", IIO_SHARED_BY_TYPE, &slf3s_medium_enum),
+> +	IIO_ENUM_AVAILABLE("medium", IIO_SHARED_BY_TYPE, &slf3s_medium_enum),
+We should probably document the new 'medium' ABI.
+For consolidated ABI, we document it in Documentation/ABI/testing/sysfs-bus-iio.
+Since this is new stuf, maybe start with a separate ABI doc
+(e.g. Documentation/ABI/testing/sysfs-bus-iio-slf3s) ?
+
+> +	{ }
 > +};
 
-Sashiko said:
-
-"Since the driver lacks power management operations, what happens when
-the system suspends and resumes?
-If power is cut to the sensor during suspend, won't it reset to the IDLE
-state and cause subsequent IIO reads to fail because the driver never
-re-issues the start command? Or if power isn't cut, will leaving it
-actively measuring waste power?"
-
-Which it has some good points, you'll just have to issue a start
-command once the system is back from suspend.
-
-I'd say it's very close, but please address those comments from
-sashiko (also you don't have to take my advice on the dev_warn()
-stuff, I'll be honest I haven't written a driver from scratch yet!)
-
--- 
-best regards,
-max
+With best regards,
+Marcelo
