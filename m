@@ -1,182 +1,181 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B8C6395D9F
-	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 11:12:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F50346782
+	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 11:33:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.171
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780312322; cv=pass; b=SbzLBrDAy5Np7ZN6azd4lFOxn93QsazNqaANgbX6VL3Nfnvr7ODsKLzNkY1HWUrtBaHSchyrr869W0UjIcCBUOFJIlbIUE6lQnjxZ43KsctDhZU1GhZE01qQqI/VyGzqKyNpPVKuXhZwqy3QP1CA1+XNfzfbs4j6jGgUC75cIBI=
+	t=1780313601; cv=pass; b=aLWioinxJDtNmI0H96nOS/C5nWmhmNnAdlynKufbFuToBeCDGcUo6uS9zV5RJH/Xs/QqCRWD1Ar9RqbFqMTAaTHo1FbR5cFgl5rXwJGB+62k51WwV/Mu1Sw3GqgoW44io5v3GVMqr5e2HQhSt1Gxjh9lJQPQPRhszusoYSzhfFA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780312322; c=relaxed/simple;
-	bh=CTuqB8f8CHnjUFXfepKG78RIBK3dVznwIcbKmaKwToc=;
+	s=arc-20240116; t=1780313601; c=relaxed/simple;
+	bh=2EkJKyz4kt+nX/YiRPXOU9Y/RomvRxwf410SJENTcWM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oOvSkImSmlCq+PkTjd8OkbVG0J3D5ui/11u+nBc0lR80ljCfjIgyJglVcq28nWzbxMk7Tv5Vfkc/Tilx//wlzumebmedT8zrn2MHhWv2rSuEeAbUensYbUesY1BzIOGXpw5g6u5BPBrRZ1fDhFT3Cb16X9saMBWIQykwjJktWGM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YBt1I18N; arc=pass smtp.client-ip=209.85.208.176
+	 To:Cc:Content-Type; b=M+OO6gWxmcNyOYFySWa1wWNd+XAs0Av5uMyioUvO62USCKdMQbQccjEJAg2hNeB8joY5OJyB0IgCAo+Y0OKVgPfwys9oBn2AxkYCnlhmswSfMRn5DFjAjlKC/6G/nnEM51aJPg0dD+7Tei3wpI0WgCQHcwaxHcscXA6uTHfAs3U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RFkyQjd+; arc=pass smtp.client-ip=209.85.208.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YBt1I18N"
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-39664fe2dd8so15148361fa.3
-        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 04:12:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780312320; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RFkyQjd+"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3965bc493caso18761341fa.2
+        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 04:33:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780313598; cv=none;
         d=google.com; s=arc-20240605;
-        b=ZUX3AKCgRG/dirSrMI8rNN2g4YqqbwRlww+qdVKtjTOMY/AQmDpVasQdzufc9w6F2Y
-         LRnJcdo5c9ft1P57Ga/hDJld0JxEdlU3N02KtEiEv6kbq6We88B0I0opIY+tSIPoGpdu
-         3C/pmNfVvKPJRObgiJOhZYJtBfYTPsnTQkNdKXJ2Y9bT0Je2PUo5XOFnRrZw2BmY7did
-         Itnw6rDsqxMhEq+pQv+2ycFV/UnRwtp6SKLbhNJVnZKtgRaFEBdkcqTn0mV2NV4TFfFg
-         D7Ct8kSZAxULcGmuWHDXVmZn9UYDiEwxTHFNZO+yILiIMzB4PA9rYqk8ZIoZR/M15VNP
-         uSEg==
+        b=egdMoUaxt6fMLnqczWNGVcAujcUUl8yRgJ037UVuw9nTDD+y08c1Ol46w1Ty+eS6HJ
+         Q3JziR0FXWFwfl4vP4z0JqEMpgMt6N8QyjYRkWGPEdBbh9ykad2hb/P7vcz2bP3m4d5x
+         xRU0Ezt46X5/i2IjjZstSrrT6TnfTe6T/PIVWR5IFoT+6r/LeGujnXddOetbFLowBbUg
+         OpVQPKt/nTdNmQ23cS58TjwXxVytTsqneDDcFv3llawVQqTYVm5WUbQAVcIZVjVJ4yK+
+         mvrSxDviLkXH1uyQThPbmBrsvBLOQHiCIzvj0WfOEHHcSLtpcRWNtTflE/33VNetoSdC
+         YEJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
-        fh=TUck8HYLQD3M9WBUn/LrbSlXofXqCUAwF/sB3KNoSq4=;
-        b=a212qBNgBYEd2ndklw/8ROJxPM2mWQ4Fgz2y1aUO7sBnUI/nCi43qi4b4XJL6jAYEI
-         J6tYgkxs7aMvoCR2Dz/vmUiSHehQb/nh2bloSkVJhm09hPqyKiJCcrfjzrg/qaAGfW1g
-         3W3Rud36NZXnkMXPyXSMUEUGsBZep9+J/lxezTsv2BehEi9i8DT3pQ9K5l3O24LugGnw
-         oxre10Iz16p4/mFdHGGXVXR+x4SKnmFTDLw+5dgDPIVfAhEF99231uN+dei4650SusmL
-         nu1mmyuXuCLdSsPYgzKYJPBCFFuvuGHm2Shg+QxQFn+vp7ALwJ49u6ro7mLVGqsAo0SM
-         rf0Q==;
+        bh=9AFofBAYz8Sa57QxDZuZAkdSqVfumktDj0aUTcAMgtk=;
+        fh=vyHJbdCyJ5wbKY6Q7Osa6se+lxmUgtZps652b5hOgqk=;
+        b=GxgYAMFS/pI2lu1mp0X7t9sfPsQUyrufV7eP2x9yFjIKC+PZBkwQ04ilT7efnu8CV+
+         RRPvuFo5a0UdFU8W39721uOLMHy8HLak/cCx5AK5t57UbOeXhYN0ieLSi096syqhnlpd
+         wc/EpNUuPyIAJ+at8dlO2yWrCZfMtPxej/xYWooU/ct3JiuUhp5D6DXEECqamhbZat1V
+         PKb1bhrsQz2BQE+L/NW0nd0ygu2zGlXc5dvnB3Vtntp5T0y0cjPc3+wHhAkvp4J4OwzI
+         s3tilWfNMnD9iOmEXcR2SnrcpSrGM+oRxCPHDPpGcNSlvH9Tok0BuSP2thBjCk1EyJcS
+         yMmw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780312320; x=1780917120; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780313598; x=1780918398; darn=vger.kernel.org;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
-        b=YBt1I18NnSHl5dwR5RqA+Psb38siM/sf5HsWpIqBH7Y2ylweZouzRdlyi41qk9ZYq9
-         4MITcQN+ATzcAVMJJ2gmT/mINqC1Tb6BqYDiSGVjIwY/MgmAUSuPDfu1rtrV7cIa/Z7o
-         By2q3CTtXZs2fIJvQYjgbhWpiiHBSRNmAPUsU4A7Yh9mMa28gNZ/h6s/DY3ny2oE8oA8
-         tae2EO2PjxcwGp8VpkV3iA7Rax6a0zqtVgS7t94odLO647pbfz0co5CTas2BQuucoi7s
-         fU8wcQWUwsnGMZbi3B6QS1MVt3vNG/zscUDN8eKRiOCe8j4NNsHonpjMI+poWuRDLoph
-         pWsA==
+        bh=9AFofBAYz8Sa57QxDZuZAkdSqVfumktDj0aUTcAMgtk=;
+        b=RFkyQjd+tZd1FOBaAp15q39WaJJiCzGoREKNKGqPu3dSTR+GNsrF1b/CpST6zUtKGu
+         f4kq9DWOHhJSkz/VOY8XPYFQmeznmwsjCdFTOR/LYAiFttwS4Q6SPrOvNOCFi5WfuueI
+         cXP5m+4WsVJHXZTs+ecvMFYcODngfHN2zhVVCZgrYvvt66qyB4TDJ/ZbSkxGBZMngHqh
+         2HydpqD+W0PCOpabm+y0L/0mpxjKEIbsL5BMXowZDoSHnJciWHNqak++wr+Acsy7TV1q
+         JoTawqLcTPNrZ9oo1PJeKwZegMRjVTobLC/+pxmBsxfMaXBHlFeUE3sc020+H2RJtwej
+         9tEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780312320; x=1780917120;
+        d=1e100.net; s=20251104; t=1780313598; x=1780918398;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
-        b=UTOn7A7AIAJhe3wrRSIscTKpN53I9lchcHxp17RadRFd37gDwRz/DQ2y+QDsr9GP2T
-         ZWEtQTqyapOs30miagvuRqqNSvnxrnZCLztWw99fIqdB543lTZt8Zjzcv18HdWgPaAiE
-         ZqSSoL/cxTzGWYG61xFmBAI4Mt9IJ6eOjQDvfzBxydeXfk+n9l1gUiUvRE6fpwDeDGml
-         Xbmr/D8bRRNPO66v1ju6jRSq6FuitaNqSs1NjP68xz9utalET7NjKUwTuARtbI8QWuX4
-         yWPZ3HkmHD+b3BGe8j9Cslznc1s7yjyA9NprAIVywtlGBCJM8cI+8cfLkO/sbXMRaiiq
-         v23w==
-X-Gm-Message-State: AOJu0YxjBQTqsaGUZslNN50O99KyQ4S9eGiD+ctTkebWU8iT2780EemW
-	uQwm0evZMrNN3RDJNze0B6RlTbZt5WO+fnAH2/1HMu9CqUHWjHzzKw+blR+CRTbMSAWZ1z25SQC
-	SM49rAOMGycRPxyfwrQoWvm8OAan2Bl8=
-X-Gm-Gg: Acq92OEhIMEBit+QhP2WXhJxri40dNdBlGHGAIhM134eQSq0QuCWr8GR+Ut3n+RdjAf
-	1C+i2jN+o+jYS45KIeu41SrvjYTnfpxj3oMdQcMv1JEx5ajedgKy/ecAugn9bhzcoSDY7D2WyRh
-	6xzBojUy9IzUK0S17xquXMbyHJ9KexNAL5aGSAuUGL8heR9++FqCR3w9OkgiWn/RUu9dGGPWaMX
-	WveRhv07TjabCfVljleQ2y81PF86RWxq5M6YkbeCxtZ1DBhq8BInEAa0eaa3905W/xYseB0rTPp
-	sEYysx6tHF6DfuXyWUnbc7RdS2+nbCgCAo1XTRhyX2JeOAz1sNom
-X-Received: by 2002:a2e:a90f:0:b0:396:892a:7392 with SMTP id
- 38308e7fff4ca-396892a75c4mr9613571fa.29.1780312319159; Mon, 01 Jun 2026
- 04:11:59 -0700 (PDT)
+        bh=9AFofBAYz8Sa57QxDZuZAkdSqVfumktDj0aUTcAMgtk=;
+        b=awGsV4Lvtp40BuV+6ALxgRGrTarHMEj9LE+baSw6ZJHtJof4jynjD2HX9EzobqFdYM
+         U/8dAJKpk2XJvgPIjIRGqfFmikDzNqVoOhiYM381hqgfc0iRqtyvoH9SfzWAjpdHRGnu
+         2IqoiT31k2uOn0bnFkXzf5uFyaZFQNLD6KQpD9qztBW4bnzCCZiGYmS8c9EYCiApLUml
+         l+uVuXyVeL8lIOXFIghHJP+sDt3KeQu5HlVNNrWXx3FrQy54CQmxm8cujEiFIrlfvOhC
+         sW1CJBy42MjCnV4tfxGNSKFLtG5yEsZH9WZHTl3Ixvbc5F4gNizGhEu9SWMeORYCpKzm
+         JM+g==
+X-Forwarded-Encrypted: i=1; AFNElJ8hE2abdE8FIQ6EdhfhgGv5vNDL+iC1QtPJeqAVARBvePxiLZeccS1D5JwNpylVp1G3jexxXPuomzE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxPU2qmxMJkPTj8pgpjWcLxW/GizudND63mwIarlx2LAfLIhUWZ
+	/1zkngOAJDbFKNi3ctt7j5z1ctTFmH609RqLOOekdqk4wvchv+n3pDzTSeF1cDymwCZyQsGVoeU
+	8t8rj29bM+f92D73mQ1qJXo2PYX8DlPc=
+X-Gm-Gg: Acq92OFB3mTFJE7UmdmXQy8nAUMT8ka6hslL5Dj28RrZeerwNYv2M8yZi1TQVNsPUr5
+	O+3rAp04+muN6hn2dD/J9AQdQ6MzCKasH5hkLnONkLRmBt72mg+xfBOtzxLdsjTWzjtpKo5HZvY
+	NPzeRdzgoiFpQMZBrtNdJWF+AwgwNPxbttgUX6FCiaoe0NMlfiDj5rbQk3aBZEyhlziNo/RO/xT
+	wdLBN8sjmndxAyRCKbLi4hInpX1bbPw+IR1Ns82P+L4qG6F0PAOARGXAk1dQYRkUD/VfwIf1LBB
+	Na/IyzN3/P9ja8xX7XSvbyK9a646xd5dPwzLTDJA4GASXpBOrl5f
+X-Received: by 2002:a05:6512:689:b0:5aa:b6a:738e with SMTP id
+ 2adb3069b0e04-5aa6092a284mr3457717e87.44.1780313597763; Mon, 01 Jun 2026
+ 04:33:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
- <20260524132824.54918-4-muchamadcoirulanwar@gmail.com> <20260528170840.54173bb7@jic23-huawei>
-In-Reply-To: <20260528170840.54173bb7@jic23-huawei>
+References: <20260524132824.54918-4-muchamadcoirulanwar@gmail.com> <20260529053803.3256031-1-branstj@gmail.com>
+In-Reply-To: <20260529053803.3256031-1-branstj@gmail.com>
 From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Mon, 1 Jun 2026 18:11:46 +0700
-X-Gm-Features: AVHnY4IaJKeU316-BdlSnXxw4wjZPLsu5BeYIZhXkBm0IWLZZkKFsQJ29ovO0Ik
-Message-ID: <CAO26r3R5+xYQM=_uxF32MQRuxkhpeY3bTwq6M3o8dPCr8-kdnA@mail.gmail.com>
+Date: Mon, 1 Jun 2026 18:33:04 +0700
+X-Gm-Features: AVHnY4IhtGOIH_QUtVZymfWopC_MaNartaHjSBgct--I-duvHtzGa7eq2I4G5jU
+Message-ID: <CAO26r3QseHMqX7iQ5B3BRk5wf0_3i1XY+xr6BmY8u4M50ufE6A@mail.gmail.com>
 Subject: Re: [RFC PATCH v3 3/4] iio: position: add Rust driver for ams AS5600
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
-	Igor Korotin <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>
+To: Brandon Saint-John <branstj@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Miguel Ojeda <ojeda@kernel.org>, Igor Korotin <igor.korotin.linux@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 28 May 2026 17:08:00 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, 29 May 2026 05:37:00 +0000
+Brandon Saint-John <branstj@gmail.com> wrote:
 
-> > Features:
-> > - Circuit breaker pattern for I/O error resilience
-> I'm not sure why this is particularly useful, but maybe I'm missing something.
-
-> I mention this below - it works (sort of) because right now you just
-> do reads with no state changes.  In general device recovery is way
-> more complex than what you do.
-
-Fair enough. It's over-engineered for what this driver does. Simple -EIO
-propagation is enough since the sensor is read-only and the Mutex
-already limits bus access to one reader at a time. I'll remove the circuit
-breaker in v4. The read_raw path will just propagate errors from
-try_read8/try_read16 directly.
-
-> I think we need a separate discussion on how to do device recovery.
-> It is at best a black art and very device specific if bus corruption occurred.
-
-> On a read you can maybe get away with this but on a write we have no
-> idea if it wrote or not and that write may or may not have had side
-> effects. If you lose a write, the only always correct thing to do is
-> a device reset. Other stuff is very device specific.
-
-Agreed. Since this driver is read-only today, the whole mechanism is
-solving a problem that doesn't really exist here. If device recovery
-patterns come up as a broader R4L discussion topic, happy to participate.
-
-> > +                let angle_h = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_H as usize) {
-> > +                    Ok(v) => v as u16,
-> > +                    Err(_) => return Err(hw_guard.handle_io_error()),
-> > +                };
-> > +                let angle_l = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_L as usize) {
-> > +                    Ok(v) => v as u16,
-> > +                    Err(_) => return Err(hw_guard.handle_io_error()),
-> > +                };
-> > +
-> > +                let angle = (angle_h << 8 | angle_l) & 0x0FFF;
+> > +//! Datasheet: https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
 >
-> This is the sort of thing we'd never do in a C driver because we have well
-> defined meaningful functions / macros for doing this.  I'd like to see
-> something equivalent in the rust code of.
->    Bulk read int a two byte array. i2c_smbus_read_word_data() or swapped variant.
->    Unaligned endian read  get_unaligned_be16()
->    Masking to extract the 12 bits that are valid. FIELD_GET() whatever.
+> Small nitpick, but going to the above link doesn't resolve to a pdf.
+> The link that works as of today for me is:
+> https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
 
-Switching to `try_read16()` (calls `i2c_smbus_read_word_data`) plus
-`swap_bytes()` for the byte order, then mask:
+I'll update in v4. Looks like ams reorganized under the ams-osram.com domain.
 
-    const AS5600_RAW_ANGLE_MASK: u16 = 0x0FFF;
-
-    let raw = client.try_read16(AS5600_REG_RAW_ANGLE_H as usize)?;
-    let angle = raw.swap_bytes() & AS5600_RAW_ANGLE_MASK;
-
-Rust doesn't have FIELD_GET yet, but a named constant serves the same
-documentation purpose. Single call, no manual byte assembly.
-
-> > +                // Read the 12-bit angle as two bytes. The AS5600 hardware
-> > +                // freezes the internal angle value on reading the high byte
-> > +                // until the low byte is read
+> > +fn err_enodata() -> Error {
+> > +    Error::from_errno(-(ENODATA as i32))
+> > +}
 >
-> Would be very unusual if the device does this but doesn't support some form
-> of larger read. Would be nice to be able to do that in a rust driver.
+> Later on it's probably better to add ENODATA to kernel::error::code
+> instead of the helper.
 
-Yes, the AS5600 supports word reads over SMBus. I was being overly
-cautious with the byte-at-a-time approach based on the datasheet's
-latch mechanism description, but a word read achieves the same atomicity
-from the hardware side. Using it in v4.
+Agreed, the `err_enodata()` helper is a workaround. Will check if
+ENODATA can be added to kernel::error::code directly for v4, or at
+minimum leave a TODO comment.
 
-> > +        channels_alloc[0].info_mask_separate = (1 << iio_chan_info_enum_IIO_CHAN_INFO_RAW)
-> > +            | (1 << iio_chan_info_enum_IIO_CHAN_INFO_SCALE);
+> > +#[derive(Clone, Copy)]
+> > +struct As5600Io(*mut i2c_client);
 >
-> I believe there is a kernel rust equivalent of BIT(). Can you use that here.
-
-This should use `kernel::bits::bit()` for consistency.
-The status register check already uses `bit_u8(5)` but the channel
-setup didn't follow the same pattern. I'll fix this in v4.
-
-> > +        dev_info!(dev.as_ref(), "AS5600 magnetic position sensor ready\n");
+> You can replace the *mut i2c_client with an ARef<I2cClient>. The
+> kernel::impl_device_context_into_aref! macro is run on &I2cClient<Core>
+> so you can call ARef::from on dev instead of casting it to the raw pointer
+> to hold it.
 >
-> Too noisy. dev_dbg() at most.
+> Then it saves you from repeating a few different parts, like redoing unsafe
+> impls, recasting back to I2cClient<Core> in try_readN, etc.
 
-I will change this to dev_dbg!().
+Good suggestion. I'll restructure around `ARef<I2cClient>` in v4, it
+eliminates the As5600Io wrapper, the manual Send/Sync impls, and the
+unsafe casts entirely.
+
+> > +impl IoCapable<u16> for As5600Io {}
+>
+> None of the read_u16 or IoCapable<u16> are used at this point, so those
+> traits/methods could be dropped.
+
+Per Jonathan's feedback, I'm switching to a word read for the angle
+register, so `try_read16` will actually be used in v4. But the As5600Io
+wrapper (and its IoCapable impls) goes away regardless since I'm moving
+to `ARef<I2cClient>` which already has the Io impl from patch 1.
+
+> As a side note, in the most recent rust-next branch, there are a few changes
+> with IoCapable so maybe worth rebasing at some point to get those changes.
+> IoCapable isn't a marker trait anymore so I get compile errors trying to
+> rebase there.
+
+I checked and you're right. `IoCapable` changed upstream, the empty
+marker impls in patch 1 won't compile against rust-next anymore.
+Will provide proper implementations for I2cClient in v4.
+
+> > +#[pin_data]
+> > +struct As5600Priv<T> {
+> > +    #[pin]
+> > +    io_lock: Mutex<As5600HwState<T>>,
+> > +    channels: KBox<[iio_chan_spec; 1]>,
+> > +}
+>
+> Could As5600Priv/HwState hold the As5600Io directly instead of a generic T?
+> As5600Priv was not generic over T in v2, and since As5600Io implements
+> Io/IoCapable and the sensor only uses the I2C bus it doesn't seem like it
+> needs to be generic, at least at the moment.
+
+I will make this change in v4. I agree that simplifying the struct to
+use a concrete
+type is the better approach here.With ARef<I2cClient> replacing
+As5600Io, the struct
+becomes As5600Priv { io_lock: Mutex<As5600HwState>, ... } with no type
+parameter."
+
+> > +            m if m == iio_chan_info_enum_IIO_CHAN_INFO_RAW as isize => {
+>
+> Ideally in the future, the iio_chan_info_enum_* variants can be wrapped in
+> an Rust enum with an #[repr] attribute. At this stage, match isn't as
+> useful as it could be since you still need to call "if m == ...".
+
+Makes sense as future work for the IIO abstraction. Would make the match
+exhaustive and eliminate the catch-all arm.
 
 Thanks,
 Coirul
