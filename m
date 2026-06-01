@@ -1,96 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E2435201A;
-	Mon,  1 Jun 2026 18:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD10A360EE1
+	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 19:08:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780339861; cv=none; b=lJH8jItm6mPpEdibwGwugpoTE8o3LOzEO8DQm9aTzlVda5TlsNKeE3gXN8ei1OiNnJQPHK7igUjz1cMFiXX4DKuVVgC/A9j/qE0lHOcB7f7CT8z4LPg+kZkJxovfH37Vl8RYYnhHMuv/g6fsiKnpkZZGFVy+0VsT/UF28MVC3dY=
+	t=1780340923; cv=none; b=uh9Kcp9p2af/tD9tXENzSMdgVCEQeDSA0PgbFVw0xqX03wl5BPMgja7QRcdee+Ho+P/7PYahyCTQGHHcl62c5LcwwVKXRuvBbF3UyPDE0YaE4AZZrvyhyYmmbi6Oj8orzXC5qNC2FG6CgRV5dKKEmL/SkKOD3Ewen+35tpTPPx0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780339861; c=relaxed/simple;
-	bh=DryslYpeymIi1YeWJQHgEHy8SMX1B03EOCjGZoiiI64=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bCYvCelcWZxQ8IiltihH2znXWnVpkBvz2MiwWz+pyDvF8cVozgxyKcpjxcUmCDwaa1eF5FYvpKjCdLdgfwbB33EVyr8DVhX0wKOxDc1vncxDLghTJFkWMyFsGLYK+Er9Y6Hj2IiSQ7Bcw34b9tVqev2uLWhRqVqXQmAW5SMmf6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XoEJs6vh; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780340923; c=relaxed/simple;
+	bh=M+dNFpPXrFRPmBsUEie0nmc+YUFxy/WQwbXHXetnt84=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=glvNGJZkELCstIHNxrp6th4GwdojuVFAku+A1tMDQxlcHm6FLr7nGhyo4RcwAlbVjEr+IBbXyDvqaHZegFLzEcqCJl58B6aPk3TSakj/EHomfTHFGOFlexdpNS12eeUUkWtQpswWTw6FYbp8QwOa5/Z82DGUcT71xgHds7y5OPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RJR48QyM; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XoEJs6vh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780339861; x=1811875861;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DryslYpeymIi1YeWJQHgEHy8SMX1B03EOCjGZoiiI64=;
-  b=XoEJs6vhsdhB2MHF/RAAEmXZfqTZCSKrAKR6tmAr6Plp7f82FQ1umOzA
-   T2QKcZr1XoKuuxYxPaYqas6p9z4vr7IMT1LzEImMEzckQDzQAYzcBkECE
-   dun2gzthSyok5VMTlh8ENKMPb+yoYHHENecEF0dOGlFnjRHtErQB6STea
-   CT95io4GGVNyxtJWsdvym3Nwk7Mmautnh/V9GdJ8FLwdolN8AJRqpzku6
-   siue48Q1izFRWpYRvFiFnCt1UVrXR1MRGbRaVXbWE7Zi3ElftVRhE29Rw
-   lwmeABrRUlC+2REBOQb2ocbnzKqteHZZtVjNnvqMOpdOrkqceL93lSZNm
-   w==;
-X-CSE-ConnectionGUID: JL2xq6IlTjuWVcRA7nbVVQ==
-X-CSE-MsgGUID: g4PfveC6ScmLjf3ycDW5WA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="81168674"
-X-IronPort-AV: E=Sophos;i="6.24,181,1774335600"; 
-   d="scan'208";a="81168674"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2026 11:51:00 -0700
-X-CSE-ConnectionGUID: o6zXrnonQOWCR09JsCSStQ==
-X-CSE-MsgGUID: Z0YCIZfUTM+ylf5YessR2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,181,1774335600"; 
-   d="scan'208";a="243770786"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.111])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2026 11:50:58 -0700
-Date: Mon, 1 Jun 2026 21:50:55 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: chemical: scd30: Replace manual locking with
- RAII locking
-Message-ID: <ah3Uj9K91xD8G1-P@ashevche-desk.local>
-References: <20260519131944.25174-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RJR48QyM"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2bf18c30bb2so28652075ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 12:08:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780340922; x=1780945722; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3dkkwysLFrkBSQxMcAInCtRdNyAQqtX7kURZC+lxbYk=;
+        b=RJR48QyMU9cX6mE21ZyK6SycPSZ6fvpW6SmjhnbMqsWT0bBKmYUjLva/9iqZ8Fyq7+
+         PxU9Q4KBLtA3sH7x+W0SJZmuDktCVsAXBUj7cGkcf/r5ZB+4RCptQoiI+xigsg7mLMZ8
+         bhihNsS12WfveLoF+ty6UhHi+NwcKkeHS308GOFAzGcPg7Ntznv4hF1oqkksX/f83XsO
+         x11qUJ6oXAFl13nIjjRcRBL1wb/zNcvyJVDG3KdcUUrPoVP+nJl79jknECdYVYLiwzpP
+         eZtG5mgj24f9/fxxfTFiK8XqbfON77xZOQbj0FuEMl/wTQaNONIvXQvrfaKY078WJzFa
+         +3dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780340922; x=1780945722;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3dkkwysLFrkBSQxMcAInCtRdNyAQqtX7kURZC+lxbYk=;
+        b=nndGqlfNkyYcZmOvy6jq42OyQkF84EP34aoQGkm1N+Z6xjOshhlJGo7zNmBsB+oKzj
+         V/1HUogtHtW3y9KmvwugdAw8RuDSi0l65e/4l0Fvx5WQirH2OmIb6GI/DmhKlUAj/kA3
+         ljTR8wc5lVV2tpHzGLLxPLJmPrb0WpkM3tzXPx6JtPhh1yHdBgehq8/GSnxZeXDwoItJ
+         0htb0alRUgAiSgqhtGf3txZxJ70MpAI0J8I0f3iLfhCRrStURC86Z+9Nj55tAEkyKO83
+         kU/1Mh9dqA3KBAu8tO2whKtMMtIR+ZDp1IA2nLQ21lHEuqvDTWDws668CtXT+0BJqONN
+         mo1A==
+X-Forwarded-Encrypted: i=1; AFNElJ8g4LVlpI6/vNp7nU5vntfm7ih/hJurMihFawQley13Cxj4os5iztEGDswX9n1DM2pmW+2jIyUHQcw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz7Kol/Nro8f6nxaq0965KJrCz4DOe2+gAXME+tpZPPQjGfSeOe
+	QFjuXpnc0DB26mfyVOzp/M68Tl5rUjVESjCgoUeXK0p7zzUJcO6tvZ3h
+X-Gm-Gg: Acq92OE7Q8gjvJBSr3JisXD5/M7nrLTBTDI5kkhWzPeM7Lxqnz78s/SNNdoiW7sXWgF
+	qCvTtZ/S8yvANzh1O+YCQQqs2gF+a4lTnfAdldoEYT24PUozRa4OWevP9aPgcxbAb5Y9htsZ4e8
+	ZcqT1aYESnJ/z1nhpUvIMW47+Wif/4qlGqqgES9dDw63Pgi6KBHX6jrviTPYa99/eGNCV+54Kwu
+	DnP8HX160tYYKc/+8eAuEm2ul64klS2/rxJnDCGZgNOsOhwuDu1dzEhKmKZNlfw7AsT8UxWTOL7
+	RkFfimmrTN3m7KEaTMHN+OKsvcH1T7e6iewhPIqun8w3WYbZLC5r+oG0xBuWqm8veY8PM6hD3Ey
+	K20q0XcG6zudGtZfYUPiyjugwl8lP5uAMoMsfWB0RS8zx/Zxr4TO7zC1GIajXv3M9DydxqsyPF6
+	ncJCvHBy3jOaUjNXOeLySn6Vi7soTJ+OPpyUiVgNCaomNyI/2eieipbTiH+e0=
+X-Received: by 2002:a17:903:986:b0:2bf:1e59:d99 with SMTP id d9443c01a7336-2bf367950ffmr128794405ad.8.1780340921865;
+        Mon, 01 Jun 2026 12:08:41 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf23a0fea7sm108187045ad.29.2026.06.01.12.08.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2026 12:08:41 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: todo: fix typo and refine resource management items
+Date: Tue,  2 Jun 2026 00:38:36 +0530
+Message-Id: <20260601190836.2766703-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260519131944.25174-1-m32285159@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 19, 2026 at 08:19:43AM -0500, Maxwell Doose wrote:
-> scd30_core.c currently uses manual mutex_lock() and mutex_unlock()
-> calls. Replace them with the newer guard(mutex)() for cleaner RAII
-> patterns and to improve maintainability.
-> 
-> Add new helper function scd30_trigger_handler_helper_locked() containing
-> the critical section for scd30_trigger_handler().
-> 
-> In addition, small refactor to replace "?:" operator with regular
-> if/else returns.
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-...
+Fix a typo in the staging documentation path and adjust formatting of
+existing entries for readability.
 
-> +	if (!iio_trigger_using_own(indio_dev))
-> +		ret = scd30_read_poll(state);
-> +	else
-> +		ret = scd30_read_meas(state);
+Add TODO items to track conversion of selected drivers to device managed
+resource APIs and evaluate usage of cleanup.h helpers for simplifying
+resource management.
 
-Why not use positive conditional?
+These updates aim to better reflect ongoing cleanup efforts within the
+IIO subsystem.
 
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+---
+ drivers/iio/TODO | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/TODO b/drivers/iio/TODO
+index 2ace27d1ac62..17093cc6c61b 100644
+--- a/drivers/iio/TODO
++++ b/drivers/iio/TODO
+@@ -5,12 +5,16 @@ Documentation
+ tree
+   - Yaml conversions for abandoned drivers
+   - ABI Documentation
+-  - Audit driviers/iio/staging/Documentation
++  - Audit drivers/staging/iio/Documentation
+ 
+-- Converting drivers from device tree centric to more generic
+-property handlers.
++- Converting drivers from device tree centric to more generic property handlers.
+ 
+ - Refactor old platform_data constructs from drivers and convert it
+ to state struct and using property handlers and readers.
+ 
++- Convert selected IIO drivers to use fully device managed resource APIs.
++
++- Evaluate and adopt cleanup.h helpers (guard, __free) in drivers where
++  manual resource management is still used.
++
+ Mailing list: linux-iio@vger.kernel.org
 -- 
-With Best Regards,
-Andy Shevchenko
-
+--
 
