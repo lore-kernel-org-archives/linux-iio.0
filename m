@@ -1,63 +1,63 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A5B3DD866
-	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 15:19:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB0E93DB625
+	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 15:19:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780327164; cv=none; b=NckXfhsms4kJenJkYUrLUkTrTRY4OJtePvjpm8W0KP/1HK7rc9vAnkJxUW1G1h53x7FxSOGW8gpiXCTtADUyGtE4Ri4h3efqgaN/5z9osm2wzm9zcuhisCqmVh9yfPKlHYHypba0bdUrHbwX75H4HjOQ6hyb8BJ63pu8Hm1V3q8=
+	t=1780327166; cv=none; b=ErL+pmp87tZXUK4VBAvyb/NI0BKwtyPL7+awgVtfnl/RNCfLkLQONWEhZ1pip1lipqKcpD3RsqdPs3AuM4yyQNXmFgLaPieXG3dG1SPW1qXk8b3zrNiNI/SyJ7xQwUXV1PvZGimXYNRIkZUaEfPu8nWBWPuJZSVNGi6LbHEWTb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780327164; c=relaxed/simple;
-	bh=x5K4xFRFiQMCHrQaFBke2R9ygwO72RPNpHJKJvM5Ef4=;
+	s=arc-20240116; t=1780327166; c=relaxed/simple;
+	bh=+XJVhU2zPkpnCe5OFCObMG1j3Sj/CGVdrvJ521UPM9U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C9yMPi7ulHolV/POY5s/fOotRlEwmi2FshUzDik1++KgTkkFPUPw0mI0CdPVV5sZkEmFKMLPoXarXNpVfIBBto9blXhAyzEPRdeZ+ZGM8W0TsIHNvR+EyNEqaehe5R5FiJ6BrLtL1fSWImAtOQlhdjTOYGmOCsYR4/iJtIoruDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=li2x1C4P; arc=none smtp.client-ip=209.85.221.54
+	 MIME-Version; b=jiWJND3RA4Bl6oQnjO7Uxkt600FfEeE3GuNfK9bYKfLF1Mj8vVLiGzW6eQZWha2o2/4+N0Ajax1Wz8s1jVbhQu6rwdFXg9H+x0gwNnfyFgGWZQwLMxu96pNRMQ0/LbW3o9w9YcMvYRuGZCSbAleZ+IVA8We3R6qDx/YzGlDF9OQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V/pp/l99; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="li2x1C4P"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-45fd45e596cso887105f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 08:19:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V/pp/l99"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-490a765d410so17456995e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 08:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780327148; x=1780931948; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780327150; x=1780931950; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1p24QeWuEOdkZHaL1V7uOjlrxK/vJ1VAKn0KvK7P92s=;
-        b=li2x1C4PiZsuigqBQgmGPTakdR5fFV/3WLVzPcpYVZL0X2xEi3lq6jjWq3+Q3M/IXr
-         TTP7uawhaRSjKjbM8dUWLmlb4yohmVNpvKZQTpaFlkWfZEelDbjdJ889AMRWxE8qvUCT
-         oxMYi69LCvHXYT1VM0MnARsd8KMYysw5y03KBEqL20D4mYbzSXKfOBr0+gFqg6ClMtiZ
-         KNrU3KI9U8zQhcBvKkNkyoFAE7HZ0YeljoE96sV1UEmTk075TIt3UJ+0GYausJlaFDT0
-         YwxrwQFSnyHWhL33LdSAlI7TmHVST9XlMXOkieaO6s0q11zD+zTfF0M9Da5VohrOsnJJ
-         biTw==
+        bh=MeSJxuqtwsz6jGt+YVFicWB8+6LnFt3NUvnbNkDL/mA=;
+        b=V/pp/l9948g7rakEOQUQ390K7N9kJ7sXVs2zB9cQnAKPZYPQ6sZ1YrD4Koy1xcdl84
+         HC4gfDOvOdMpPzk/qeXJLABpNiGwsBwt5ITlcPpK3PzkE6z8hJlsRgki1V1byJy0VWld
+         4SEsVODptC2xv8sv58A4/pQq4icscBd+TTnMfcbhYPLvyxdRtRqOU1C3T5cmPbSdrrXh
+         azI4KW6a9DXfUyqgjRHlh15vBYBpRG+o/nGy30xa8l22ZjenhGeCEleWIyPfDLdnmklB
+         Dc1T8b3lly7M0KBDW58x0yNaIBxrPdIfIIzzIOefLFzWsn17usNDYX46ATubZGo/QMMn
+         pGsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780327148; x=1780931948;
+        d=1e100.net; s=20251104; t=1780327150; x=1780931950;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=1p24QeWuEOdkZHaL1V7uOjlrxK/vJ1VAKn0KvK7P92s=;
-        b=XEkY76nhwX7JqEMu1D7cDEi+bh+AWDcD5p/GyDqk8dQ9qwV27+W3nBXAkxx6AFsy+V
-         ujQ0K31xqavm7VAau9JoVqf3290X7E55PaNEjJpGLArvGcJgNLAMu67QOxpp5NUDVLtX
-         LtA/QdbUfnQTaiMRUXKaGqvZ/EuDj4yhmkXS6klGRJ660kY9YN6dZW2h2RxVO97HXyab
-         9EJ/TxFzAN3ELmujguxMuAOwi2IIOOr6LHhvCQRRF2bjKMR1IfQTvxUIJk4vlcJbupNJ
-         +VaBM6KjHsQ1bxhnmfC1QPCYS5mXRSCRDElUBs2HQiSnzarVOTCAp9dbFDPjurt6kZ1q
-         JFRA==
-X-Forwarded-Encrypted: i=1; AFNElJ8ivwrOPSjlVcA248IEQXBR0YAc0KcnkDNTL5oINjKNxzZjSbEY6IbbZURogM2qOHn+ABvyqAxVN9M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxW9n7Acladfi4JWdgIDYtcOZug+akaoWQqh3SbaiKw3Yzh3euH
-	suqyh2TAjEB2CMNIwVDcYnHrG7hlWWXWviXDd+cwna62nW48Pd6R7qPo
-X-Gm-Gg: Acq92OHhHXiS2cUqPym+WG0soz/xcTXEX0XCF0SHZ9xrxCrmhlIfomgbPVRLBgpPisR
-	VWmbwNqNsfFULoWUlRrUIfu3fXojzObGjf+WedFc2zlrFFKGjWNiT2i/NtF0Z9UL2ONZuQ/vUIt
-	LsORdV6VaVGtjAJi4oGIDHejKZPK8V+e/5cWtB9OrLCZe13E/nkvXvdO9nvJb1RQVyjlRfD+a74
-	Sl9x2WZ9Hm/4nrTMhWK+IuCrD8j+mO3oGDvB+fI9E1scvZ1xl0L08IKW6RrCHogeCfEXyG4Lt6y
-	/9PTMPMFBwMuADIZhGfnjsNNabMvTcTzK5GoT7ZDa24oGtNP73ejpv3E18dCxpAmJC+kJXROtNn
-	FUnS8oHqs9DG+U7bEGTr/8gkFmO39b80gmu3XIsNYddj6Tfa1Qb+8W4EysKItCWo9IHgDfAppgX
-	iSjpjzxA6W4GrpKlZSdETM+s4=
-X-Received: by 2002:a5d:5cd1:0:b0:43f:dd91:b022 with SMTP id ffacd0b85a97d-45ef6b791f1mr16538591f8f.35.1780327148356;
-        Mon, 01 Jun 2026 08:19:08 -0700 (PDT)
+        bh=MeSJxuqtwsz6jGt+YVFicWB8+6LnFt3NUvnbNkDL/mA=;
+        b=QtYrJcfC4C6TMK63ZBQTV4zqfilAqAdSTm5rtKiiQA/AKiqJUaQQ8PeLhpHk9doFU6
+         yWw1Ex0/6BvnQbiaIJ8RRs7YDrxy8mrZTeXG9+jMnuwE5m3sPW2pwtlEGEHtOQSuKzvN
+         GhTJ7SgEbeVSeJHkw9VoWySzpd+s7Z9+JiUZA7Vh+sJ+LxkRoTDSiwgA7jRr6TDoEyll
+         phS9jLuUZfN+okk0wAcfBpAzUX/JcgBaKu+EfCIDG/JYB2Phe1b8hfULj7lD86hBSoo6
+         tbtBGd5/vQs/Y3LdjCEdr1WACwcqIRmuaDBCQ6Jmf7EKS5unDyXA+WauTkD8mn6i+ui+
+         FADg==
+X-Forwarded-Encrypted: i=1; AFNElJ8it3AAf34EOi0WGYZKu2UcKRwstqVrE6rjbTpuM26x1IwjWjeVqbnB/DfwjYmAB8yndyd0M6Q46Uw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzvWt+QEk3RW3NaV6e5T8b26n9d6Plu92TnzMVsnT1tV8+j9RXy
+	QoDGw6PyaN3/BYTMO0QCWsIFH4BJmvsVKK/BUE438dsDwKpNyAE7nXmc
+X-Gm-Gg: Acq92OEobHHNvbJnw8Qk8/GG+XKO1cWrcZkWyf/r8Rw5K97r7F9IA7j7UGYs5iy/t00
+	SzQCk6eURynJCfgyMT/N3Ek2KXrFQIyr+GGXPMn4WqPP29YBj0IQmZzhr74a2V/uKlK1s6X4NOg
+	BEbc5EUVhSDPqf5pTEuFkbguM5hegBgaRCmGVTvE4cD8dWDapnmN4tBN+SBWdFsENRk5j4w+0rM
+	TQ0C4iqO9nbuAdQ9Eg67YhQR2W4H5OmQ9wKbgoPtXRVWsOrq27kxLFrcKZyhNM7SF6A9uoUdiRj
+	L7FNO4tXUxPHgVH73Z++2dM/Z1LuXmpokKSaJcUQqXQw+LhraTnlUGXpEKlhBbx46PAkB5VrqEf
+	CGhl6ECmGRI92DnEemyuVELfkSH/tV73qvaSZd0daRlNWJspZKo8iEItX+UG+HUI7xTStNfudhg
+	fBEnccjsndiMe/OfeRnMfCJ3k=
+X-Received: by 2002:a05:600c:4715:b0:490:7136:ad05 with SMTP id 5b1f17b1804b1-490a29748dcmr205098165e9.31.1780327149765;
+        Mon, 01 Jun 2026 08:19:09 -0700 (PDT)
 Received: from xeon ([188.163.112.61])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef354cd7csm25753103f8f.18.2026.06.01.08.19.06
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45ef354cd7csm25753103f8f.18.2026.06.01.08.19.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2026 08:19:07 -0700 (PDT)
+        Mon, 01 Jun 2026 08:19:09 -0700 (PDT)
 From: Svyatoslav Ryhel <clamor95@gmail.com>
 To: Lee Jones <lee@kernel.org>,
 	Daniel Thompson <danielt@kernel.org>,
@@ -79,9 +79,9 @@ Cc: Johan Hovold <johan@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [PATCH v3 07/11] mfd: lm3533: Set DMA mask
-Date: Mon,  1 Jun 2026 18:18:27 +0300
-Message-ID: <20260601151831.76350-8-clamor95@gmail.com>
+Subject: [PATCH v3 08/11] video: backlight: lm3533_bl: Improve linear sysfs logic
+Date: Mon,  1 Jun 2026 18:18:28 +0300
+Message-ID: <20260601151831.76350-9-clamor95@gmail.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260601151831.76350-1-clamor95@gmail.com>
 References: <20260601151831.76350-1-clamor95@gmail.com>
@@ -93,34 +93,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Missing coherent_dma_mask assigning triggers the following warning in
-dmesg:
-
-[    3.287872] platform lm3533-backlight.0: DMA mask not set
-
-Since this warning might be elevated to an error in the future, set
-coherent_dma_mask to zero because both the core and cells do not utilize
-DMA.
+Simplify the sysfs logic of the linear property by switching to a macro
+and a ternary operator.
 
 Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 ---
- drivers/mfd/lm3533-core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/backlight/lm3533_bl.c | 19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/mfd/lm3533-core.c b/drivers/mfd/lm3533-core.c
-index 4dca5641b774..b597d338d6f7 100644
---- a/drivers/mfd/lm3533-core.c
-+++ b/drivers/mfd/lm3533-core.c
-@@ -491,6 +491,10 @@ static int lm3533_i2c_probe(struct i2c_client *i2c)
- 				   LM3533_BOOST_FREQ_MAX);
- 	lm3533->boost_freq = lm3533->boost_freq / (500 * KILO) - 1;
+diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+index c70b8a3bb301..36e6f027613a 100644
+--- a/drivers/video/backlight/lm3533_bl.c
++++ b/drivers/video/backlight/lm3533_bl.c
+@@ -23,6 +23,7 @@
+ #define LM3533_BL_MAX_BRIGHTNESS	255
  
-+	/* LM3533 and child devices do not use DMA */
-+	i2c->dev.coherent_dma_mask = 0;
-+	i2c->dev.dma_mask = &i2c->dev.coherent_dma_mask;
-+
- 	return lm3533_device_init(lm3533);
- }
+ #define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
++#define   CTRLBANK_AB_BCONF_MODE(n)	BIT(2 * (n) + 1)
+ 
+ 
+ struct lm3533_bl {
+@@ -136,8 +137,9 @@ static ssize_t show_linear(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
+ {
+ 	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	int id = lm3533_bl_get_ctrlbank_id(bl);
++	u8 mask = CTRLBANK_AB_BCONF_MODE(id);
+ 	u32 val;
+-	u8 mask;
+ 	int linear;
+ 	int ret;
+ 
+@@ -145,8 +147,6 @@ static ssize_t show_linear(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	mask = 1 << (2 * lm3533_bl_get_ctrlbank_id(bl) + 1);
+-
+ 	if (val & mask)
+ 		linear = 1;
+ 	else
+@@ -160,23 +160,16 @@ static ssize_t store_linear(struct device *dev,
+ 					const char *buf, size_t len)
+ {
+ 	struct lm3533_bl *bl = dev_get_drvdata(dev);
++	int id = lm3533_bl_get_ctrlbank_id(bl);
+ 	unsigned long linear;
+-	u8 mask;
+-	u8 val;
+ 	int ret;
+ 
+ 	if (kstrtoul(buf, 0, &linear))
+ 		return -EINVAL;
+ 
+-	mask = 1 << (2 * lm3533_bl_get_ctrlbank_id(bl) + 1);
+-
+-	if (linear)
+-		val = mask;
+-	else
+-		val = 0;
+-
+ 	ret = regmap_update_bits(bl->lm3533->regmap, LM3533_REG_CTRLBANK_AB_BCONF,
+-				 mask, val);
++				 CTRLBANK_AB_BCONF_MODE(id),
++				 linear ? CTRLBANK_AB_BCONF_MODE(id) : 0);
+ 	if (ret)
+ 		return ret;
  
 -- 
 2.51.0
