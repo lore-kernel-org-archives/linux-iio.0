@@ -1,166 +1,133 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D49305673
-	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 08:30:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780302656; cv=pass; b=Zjiryc5VP+6hOxWm/v4re7wrG4+t2kOfOCfJgRRDk6+2//8t03hfVrxmKbN5DxkEjS1qYGJtMv/0jsP/ELAKZhIHAo8NDSn8uxtaLgxBxmmlypbA1Qw1LE9ix+GRfwknliACteSuPXtHHsvUFip66BBncYWyozkzbRt8STqaxj0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780302656; c=relaxed/simple;
-	bh=dqkqR4BnOVQZ1yByVkkIKp5wLe1EcgY0DOuGCt7r8gU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KrtYw1QsRd8FeCOBLYE5xKmqPN94IbP7/ha6zjCJBtuyJ0oa5q4H4IwIromL1CzLvchHMPKpsllUrpvS2yn9b/h0PnmCJRkmu/lVJX7nku7RM6VQGbt2ECL154cyNjesPzvCeMR/eYj0HJiRebXSLTwh52vORyKnvY1REsxdC/Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XbJ1IA3o; arc=pass smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE75D33B6C9;
+	Mon,  1 Jun 2026 08:42:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780303355; cv=none; b=ZML5kA4pQqsP4Ifw+90dMb3HUUHGrBku5LlcC8Fadg4uwZww36d1nLRFqqMy5qu0so1TS3up6wI0tilCdP1MU/V/6yy+97+zmk2bUo/omBN1rw4tvjZ/yibxb8Wlw57diqQgc2wxvMJGkB8cKN5eDSdI5EVc0agbCiTnAl4sTWg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780303355; c=relaxed/simple;
+	bh=pdjj2XGxaVlfGq4xjk6VNuLJ3cdUN4JVfnXLNbLtPo0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ac23U2gFqkI1mJXM2afMkJYLBr6EJ+oL3Hp7bOCKYC/cgOE1iJ94VbLN1lr4xDk8m6nL27hQ/ZIn9pCuQ8jWQEgB0QggBzT7/bdzPGN1HZKmEKI4FOvjYhxL0nLHUDvI4PSGCKEf0p5aEO6zKzproNt3uyL805Gf+SY9hysJRkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TSXcVBqv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XbJ1IA3o"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aa68dbb38aso810346e87.2
-        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 01:30:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780302653; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ja3hasZBm3sY/Kjm8r1IGbjWyZQO6FK/0YMWS++TTQ89JxHWQTvkrnyY82IIhwoqou
-         dlhAbSpWA9kGPkS512S+j/kMhJFdmNSjD3ntQ3+xxM6+RZmgQ9oeMT+WMeNqPQEA0ajN
-         iMTzmjU3wAr1WN4NF5eXMgwso8QHc+fiTlLKvTERawCqNUyZVzHfLQWZgp95PxXLD297
-         44/VVyxQoShmbnMahwzuy15J5Od0zRstZrOrRKMwWyjtW+D46YPef1NXgL56qt2xNCMg
-         dv0LAEi85REFg7+Jj1ledCPkJP+48fhbno2/muloZGvTClWVrma9XuXhwFvDoCwHCbuc
-         KoBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=YypMuV9q9YXVfPhMTCupjt06XXyEV6MtVbgxq/LZL/4=;
-        fh=TUck8HYLQD3M9WBUn/LrbSlXofXqCUAwF/sB3KNoSq4=;
-        b=JqFebP7tdLPAF1rhd724GnupnG1ABFAZwXhGfXhZXX0kRKGVElrv8R0BaXOTyRjfQH
-         ttYHEXHvqdZldUHNgtgRGKZxPnrClJ3Ks54vvN0V30NOLelMyTMBM9qEAthnU4TXVT4N
-         jWpGUDJYVP0BDQTTkVKQZ1TMG4XPlB7FsbaZYq1HEMybTiE3vxVdhjXJgmouKiS7SQaP
-         eyuJ/vFT49LU0tG6BAWf2W5YIrKG3/d61RJOh42ZPkIbraGSUc3sybrVrDxxEJz99k23
-         37rBiOnIsQG5/UC51CN0DWs2BKgO0VWgbKcDcGWHCpMPogEtWo4uLwc2C1+UuPzluKDo
-         cvnQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780302653; x=1780907453; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YypMuV9q9YXVfPhMTCupjt06XXyEV6MtVbgxq/LZL/4=;
-        b=XbJ1IA3o9rZKqeJ/peV7u3sd4AJmq/DWhaPQ067PlO7lu0hq3GakpVKmLieyjaJGNO
-         QgLFYA9Ay5m3kthbb2xgmqeVRnsXzwzrg/8yOE0u9NLr1+1aX5NIpQYw1lvuk2vBfmfy
-         4eJQcyEvOVlqfvjxncw6uPMEYsIMQi1WuAH6cocK5lf7yGPFGAy5GH7pLaoj8hxfHnGw
-         AJdH3BsmqR/Ud92B1LwDSqX5Q9crZrJBi7qmjApRu/mfifRRJBbbC1Nk8b/Z23bsrfpV
-         x/p3fudziGgQilYE9KzO1KL4twQCyyv6//W3DfsiaDZ3HpPboHlkX9SjryD1Q8gYjyvc
-         gXyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780302653; x=1780907453;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YypMuV9q9YXVfPhMTCupjt06XXyEV6MtVbgxq/LZL/4=;
-        b=EaHFLUNTXIhwvxiHGwQkpgw0Kv/8mB/wlMPS7DjCo/fBnKhGLYfj3OFxdss6SaQJ4g
-         vugZ/9HkzPAWb3Sdbw8ni/wnhzvOxVcKsgxG5eQ6tHCAuyqhOO4vLADuompSo6uhA1N/
-         uRjeN+49yZO6wXpjNFIMbKgqCga/3gAQbYfqY9ztAthbEUzF3hT51a9ST8iatYhUUKPu
-         LP/3WWnOC0jEgS+qdae/edkC7jMdaiKYo1KhNjSCoAXq35ExTF7WPGvPaWMFp3rfsEdq
-         1xCWKa4Ih5QLZ0VL5IayME2VyzzPxpCR6Jc1MhIWSGNfEeSIgkWT6Smf2Qjm0zj3uIxW
-         lmkw==
-X-Gm-Message-State: AOJu0YyHayy2vinA2knuleqxlsa+lCTvImQUUUa5r5VwlWEWN2rzKkDE
-	nHGLGEtWnqDS8ndxwGgtAfWBvir84+mW5eH4Ji+eeoIw7HDXt9zNCIDGfTiFxzjbZlIULa8SA3I
-	mBIcjx8b+Kow0ftTZSKhcj8diATEcdjQ=
-X-Gm-Gg: Acq92OG9sQ4XFUHY4tFgP09Zd68OB4KIX2GPWvMWWbq6y/NUt1yLBIRwSL41lDK+j2+
-	g2VhmoUADmDidcHP7LXzC6AkR+uxxmy4Zr3w3dTNF+s844gB3ZHjh6CJFFqWoRMhBgCB38idO0g
-	XMzlGZlRYvlm8Xtbme73YEFJR6bpSmOi1mMpu+oukOKEcV5YBrurM9U7qhOgmsUKF/bgZS7Tlt9
-	rKT6VNLV5bQxfZcmqkTR4/UN/pQI//tykuJUMTXiflPXwJkoa/y+yWpx24vpMdF7owgu/OXqRMB
-	dCNMjnwyPQR6BL04p1W3S/Ae6EYQeXI77jaKrXOLYLTc/XRKr0+cHy5dD1Np3m4=
-X-Received: by 2002:a05:6512:24ce:b0:5aa:6d83:800a with SMTP id
- 2adb3069b0e04-5aa6d8381bdmr522214e87.16.1780302652412; Mon, 01 Jun 2026
- 01:30:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TSXcVBqv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7DD1F00893;
+	Mon,  1 Jun 2026 08:42:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780303354;
+	bh=KcetvipwKrdaxS3zlwcxcPRGiITNpor0MF/yLZpamm0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=TSXcVBqvlkmyzmJReJogHarH7kH3u9wHTIA1gEf4JvqTtHQDJD61Kr51RmAFglhfv
+	 rLnyrBvFWT1lIRIBj6IzqxCjthekG32y9QIcBu8k4fuW5k1N6SEnYGelkZPvUZ5nnU
+	 UEg6Q93ltHgtcw+iWFY4Gus8o2mX7lvJL8X0dmRkZmSjkfOsRgwMx6hIFvyMrAF2lJ
+	 1CEQnZGxIxTYFvtnpUfdGI/oorSD4w4pPMo03So6utlloHhQiiJ54XmWTRXrxItdwV
+	 Dv7WEq9djViHYsKFtfLDO3372iJYTMcMh9DQdOlEE/NLtX1yN1yZgwe5CEw4Kmx2Za
+	 JInlQfYhnTiXA==
+Message-ID: <345e5048-c3aa-44d0-a66d-55a0322419db@kernel.org>
+Date: Mon, 1 Jun 2026 10:42:28 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
- <20260524132824.54918-3-muchamadcoirulanwar@gmail.com> <20260528170927.65168836@jic23-huawei>
-In-Reply-To: <20260528170927.65168836@jic23-huawei>
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Mon, 1 Jun 2026 15:30:40 +0700
-X-Gm-Features: AVHnY4JErnspeaoP2OZI2ukHg5O69BCq1jevCR3XrllajWyDd-8YbOzEVDhD6E0
-Message-ID: <CAO26r3QasDuUo2_7qrJfPtQer-UP6K6jzg9=RhDRT8OXN5BK-w@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 2/4] rust: add minimal IIO subsystem abstractions
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
-	Igor Korotin <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V9 02/11] dt-bindings: iio: imu: icm42600: Add icm42607
+ binding
+To: Chris Morgan <macromorgan@hotmail.com>
+Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
+ andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
+ jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
+ linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
+ andriy.shevchenko@intel.com
+References: <20260530031739.109063-1-macroalpha82@gmail.com>
+ <20260530031739.109063-3-macroalpha82@gmail.com>
+ <20260530-certain-goose-from-neptune-96e8ae@quoll>
+ <PH0PR19MB9973385EBACD2645B8845DE4F2A5152@PH0PR19MB997338.namprd19.prod.outlook.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
+ QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
+ +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
+ ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
+ 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
+ hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
+ tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
+ 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
+ naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
+ hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
+ whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
+ qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
+ RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
+ Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
+ H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
+ dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
+ AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
+ jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
+ zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
+ XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
+In-Reply-To: <PH0PR19MB9973385EBACD2645B8845DE4F2A5152@PH0PR19MB997338.namprd19.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, 28 May 2026 17:09:00 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On 01/06/2026 03:44, Chris Morgan wrote:
+> On Sat, May 30, 2026 at 09:26:31AM +0200, Krzysztof Kozlowski wrote:
+>> On Fri, May 29, 2026 at 10:17:29PM -0500, Chris Morgan wrote:
+>>> From: Chris Morgan <macromorgan@hotmail.com>
+>>>
+>>> Add devicetree binding for the Invensense ICM42607 and Invensense
+>>> ICM42607P inertial measurement unit. This unit is a combined
+>>> accelerometer, gyroscope, and thermometer available via I2C or SPI.
+>>
+>> Implement feedback from v3. Subject is still incorrect.
+>>
+> 
+> I'm sorry, that was dropped due to an oversight. I'll correct it.
+> 
+>>>
+>>> This device is functionally very similar to the icm42600 series with a
+>>> very different register layout, however unlike the icm42600 driver we
+>>> require a interrupt-names property be present.
+>>
+>> Why do we require it? Who needs it?
+>>
+> 
+> The driver this was based off of, the icm42600 driver, has a fallback
+> to select the 1st available interrupt in the event of the named
 
-> You'll need a lot more stuff before it makes any sense to be messing
-> with claims on the state.  They only come in once drivers are dealing
-> with buffers etc. I'd leave them until then.
+So some other driver? That's not relevant here if you do not use that.
 
-> As above with the level of bindings you are doing so far, neither of these
-> should ever be called.  They are not for use by drivers simply wanting
-> to serialize things but about controlling the ability of the IIO core to
-> change the fundamental data flow from simple polling to streaming data to
-> user space accessible kfifos.
+> interrupt not existing. I was told not to do that here so the named
+> interrupt is a requirement for the icm42607.
 
-Understood. I was conflating "serialize concurrent sysfs reads" with
-"prevent mode transitions", which are two different things. The driver's
-Mutex handles the former; DirectModeGuard is for the latter and has no
-business being here until buffer support exists.
+So icm42607 driver needs it? Then write it explicitly.
 
-Dropping DirectModeGuard entirely from v4: struct, C helpers, and the
-trampoline call. Will bring it back when adding buffer/trigger support,
-where it belongs in the individual driver rather than the generic
-trampoline.
-
-> Sort of. It ensures the state doesn't change.  Given buffer/trigger
-> operations only occur when in a buffer state it sort of prevents their
-> operations. That's not including stuff like setting up buffers though -
-> just the data streaming.
->
-> Anyhow, kick it in the long grass (drop for now) given you don't support
-> buffer state. Good to see what this probably looks like though.
-
-Noted. Good to have the shape sketched out at least.
-
-> We only need to do this if the particular device the driver is supporting
-> needs for the specific operation to ensure that no accesses occur to
-> the device. We should not do this for reading stuff back that is cached in the
-> driver for instance.  In many cases devices have interfaces where absolutely
-> anything is safe in buffer modes.
->
-> This is unfortunately going to be hard to do other than in specific drivers
-> that knows those rules. + doesn't belong here at all yet as a rust driver
-> can't get into a state where this fails and should never be relying on this
-> for its own synchronization (e.g. between concurrent calls of read_raw()).
-
-Right. The trampoline shouldn't be making policy decisions about when to
-claim direct mode, that's driver-specific knowledge. Removing from the
-generic abstraction.
-
-> why .get() for this one.
-
-I used .get() because NonZeroI32 is a wrapper type, meaning we have to
-explicitly extract the
-inner i32. Since the other variants use a plain i32, they don't need
-it. I'll add a quick comment in
-v4 to clarify this.
-
-> The data accessed in c by iio_priv() is zeroed, not uninitialized but
-> I'm not sure that's what you are referring to.
-
-You're right, `iio_device_alloc` uses `kzalloc`, so `priv_` is zeroed.
-The SAFETY comment was wrong. Fixing in v4 to say "zeroed memory" and
-note that PinInit overwrites it with the initialized state.
-
-> Can channels be static const?  It is in most IIO drivers written in C.
-
-Yes. Moving it to a module-level static in v4. That removes the KBox
-allocation and the lifetime question around `indio_dev->channels`
-outliving `priv_`.
-
-Thanks,
-Coirul
+Best regards,
+Krzysztof
