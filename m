@@ -1,357 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00A0430E0DC;
-	Mon,  1 Jun 2026 10:58:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780311538; cv=none; b=pgPGFxCIy9WybKv/fTCYwDhvO6R+wfIfaHA5bYtieh3E+p+dU2QGhbmVIbS8h+S4DfXvVrPyTZ/REcKq9nC9A8ISLP2KMy5j/tbWqK6AnhVQDjMl9hdeY/0IXjqd4C711yl1eWDsvZw6g+wILIImuLFpGnqCVkACA8TFr6onY4Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780311538; c=relaxed/simple;
-	bh=ClByjCOq2WlbyOSqv0KRT+7uuZ8dxprqdTcSSRDV7ZY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JVvoVX5SIsilF7EH6KRsc3vEaN4LVH0jhUkPrSYSWkHGWCKPow0vtkSzg9SCRM+UzsUl8Yl3/GrKbXNUQKSH0tRBlH5vwm6PALPZy1mr6t/3QKp7lnkHZcKFUwh/gGF1wM2+jDdcw36lr594eGsaUQol0Z30lGlyBtxtFNbTX2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jYYEQ39R; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B8C6395D9F
+	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 11:12:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.176
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780312322; cv=pass; b=SbzLBrDAy5Np7ZN6azd4lFOxn93QsazNqaANgbX6VL3Nfnvr7ODsKLzNkY1HWUrtBaHSchyrr869W0UjIcCBUOFJIlbIUE6lQnjxZ43KsctDhZU1GhZE01qQqI/VyGzqKyNpPVKuXhZwqy3QP1CA1+XNfzfbs4j6jGgUC75cIBI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780312322; c=relaxed/simple;
+	bh=CTuqB8f8CHnjUFXfepKG78RIBK3dVznwIcbKmaKwToc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oOvSkImSmlCq+PkTjd8OkbVG0J3D5ui/11u+nBc0lR80ljCfjIgyJglVcq28nWzbxMk7Tv5Vfkc/Tilx//wlzumebmedT8zrn2MHhWv2rSuEeAbUensYbUesY1BzIOGXpw5g6u5BPBrRZ1fDhFT3Cb16X9saMBWIQykwjJktWGM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YBt1I18N; arc=pass smtp.client-ip=209.85.208.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jYYEQ39R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30DD1F00893;
-	Mon,  1 Jun 2026 10:58:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780311536;
-	bh=wha5nBMrWzJ0FhRTsE4v2aErw0mekdzOJMKKRc+sg/0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jYYEQ39R1HQWyuJw+FejZLaoLSH8vGF54jAvYZPnG6uyfYu8280NlMYDcwBUorNxT
-	 XqtwmjHYrFKXyj9N5+WUpii4C7QCp2U2nRS0+iN7yv5WBWbyRBUn1lGkKGndjx2/v3
-	 q6/PdvqDBLYJ6Uc6s3d5lixJhzoWyXTmrV/qUCB/QEh9P3M6e6N0xf84xhVGf1wDML
-	 lTmkL6mCSyJlPxvFbPSnCzPi7Yte4rHunRnMVKVA0vAarDuMWtmMn3DRoOl54tNzNB
-	 rDXnlswJkDpR8MkiuMPupQhwP8RyG4O8C8zYwZZPxz7prHRtcFuGoHhfeXk2+lq+Hx
-	 aBgaereGcs+mg==
-Date: Mon, 1 Jun 2026 11:58:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Cc: <sashiko-reviews@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v4 4/4] iio: light: veml6031x00: add support for events
- and trigger
-Message-ID: <20260601115849.77564328@jic23-huawei>
-In-Reply-To: <DIXMJH3581S0.5DHXMLATTOV1@gmail.com>
-References: <20260531-veml6031x00-v4-4-e64f7fdce38d@gmail.com>
-	<20260531204345.1C2A41F00893@smtp.kernel.org>
-	<DIXMJH3581S0.5DHXMLATTOV1@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YBt1I18N"
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-39664fe2dd8so15148361fa.3
+        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 04:12:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780312320; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ZUX3AKCgRG/dirSrMI8rNN2g4YqqbwRlww+qdVKtjTOMY/AQmDpVasQdzufc9w6F2Y
+         LRnJcdo5c9ft1P57Ga/hDJld0JxEdlU3N02KtEiEv6kbq6We88B0I0opIY+tSIPoGpdu
+         3C/pmNfVvKPJRObgiJOhZYJtBfYTPsnTQkNdKXJ2Y9bT0Je2PUo5XOFnRrZw2BmY7did
+         Itnw6rDsqxMhEq+pQv+2ycFV/UnRwtp6SKLbhNJVnZKtgRaFEBdkcqTn0mV2NV4TFfFg
+         D7Ct8kSZAxULcGmuWHDXVmZn9UYDiEwxTHFNZO+yILiIMzB4PA9rYqk8ZIoZR/M15VNP
+         uSEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
+        fh=TUck8HYLQD3M9WBUn/LrbSlXofXqCUAwF/sB3KNoSq4=;
+        b=a212qBNgBYEd2ndklw/8ROJxPM2mWQ4Fgz2y1aUO7sBnUI/nCi43qi4b4XJL6jAYEI
+         J6tYgkxs7aMvoCR2Dz/vmUiSHehQb/nh2bloSkVJhm09hPqyKiJCcrfjzrg/qaAGfW1g
+         3W3Rud36NZXnkMXPyXSMUEUGsBZep9+J/lxezTsv2BehEi9i8DT3pQ9K5l3O24LugGnw
+         oxre10Iz16p4/mFdHGGXVXR+x4SKnmFTDLw+5dgDPIVfAhEF99231uN+dei4650SusmL
+         nu1mmyuXuCLdSsPYgzKYJPBCFFuvuGHm2Shg+QxQFn+vp7ALwJ49u6ro7mLVGqsAo0SM
+         rf0Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780312320; x=1780917120; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
+        b=YBt1I18NnSHl5dwR5RqA+Psb38siM/sf5HsWpIqBH7Y2ylweZouzRdlyi41qk9ZYq9
+         4MITcQN+ATzcAVMJJ2gmT/mINqC1Tb6BqYDiSGVjIwY/MgmAUSuPDfu1rtrV7cIa/Z7o
+         By2q3CTtXZs2fIJvQYjgbhWpiiHBSRNmAPUsU4A7Yh9mMa28gNZ/h6s/DY3ny2oE8oA8
+         tae2EO2PjxcwGp8VpkV3iA7Rax6a0zqtVgS7t94odLO647pbfz0co5CTas2BQuucoi7s
+         fU8wcQWUwsnGMZbi3B6QS1MVt3vNG/zscUDN8eKRiOCe8j4NNsHonpjMI+poWuRDLoph
+         pWsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780312320; x=1780917120;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gkL8gzHaH95ivbWHNAfJEuvQzWUQ9brGRQ3o+4Ufqk0=;
+        b=UTOn7A7AIAJhe3wrRSIscTKpN53I9lchcHxp17RadRFd37gDwRz/DQ2y+QDsr9GP2T
+         ZWEtQTqyapOs30miagvuRqqNSvnxrnZCLztWw99fIqdB543lTZt8Zjzcv18HdWgPaAiE
+         ZqSSoL/cxTzGWYG61xFmBAI4Mt9IJ6eOjQDvfzBxydeXfk+n9l1gUiUvRE6fpwDeDGml
+         Xbmr/D8bRRNPO66v1ju6jRSq6FuitaNqSs1NjP68xz9utalET7NjKUwTuARtbI8QWuX4
+         yWPZ3HkmHD+b3BGe8j9Cslznc1s7yjyA9NprAIVywtlGBCJM8cI+8cfLkO/sbXMRaiiq
+         v23w==
+X-Gm-Message-State: AOJu0YxjBQTqsaGUZslNN50O99KyQ4S9eGiD+ctTkebWU8iT2780EemW
+	uQwm0evZMrNN3RDJNze0B6RlTbZt5WO+fnAH2/1HMu9CqUHWjHzzKw+blR+CRTbMSAWZ1z25SQC
+	SM49rAOMGycRPxyfwrQoWvm8OAan2Bl8=
+X-Gm-Gg: Acq92OEhIMEBit+QhP2WXhJxri40dNdBlGHGAIhM134eQSq0QuCWr8GR+Ut3n+RdjAf
+	1C+i2jN+o+jYS45KIeu41SrvjYTnfpxj3oMdQcMv1JEx5ajedgKy/ecAugn9bhzcoSDY7D2WyRh
+	6xzBojUy9IzUK0S17xquXMbyHJ9KexNAL5aGSAuUGL8heR9++FqCR3w9OkgiWn/RUu9dGGPWaMX
+	WveRhv07TjabCfVljleQ2y81PF86RWxq5M6YkbeCxtZ1DBhq8BInEAa0eaa3905W/xYseB0rTPp
+	sEYysx6tHF6DfuXyWUnbc7RdS2+nbCgCAo1XTRhyX2JeOAz1sNom
+X-Received: by 2002:a2e:a90f:0:b0:396:892a:7392 with SMTP id
+ 38308e7fff4ca-396892a75c4mr9613571fa.29.1780312319159; Mon, 01 Jun 2026
+ 04:11:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
+ <20260524132824.54918-4-muchamadcoirulanwar@gmail.com> <20260528170840.54173bb7@jic23-huawei>
+In-Reply-To: <20260528170840.54173bb7@jic23-huawei>
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Date: Mon, 1 Jun 2026 18:11:46 +0700
+X-Gm-Features: AVHnY4IaJKeU316-BdlSnXxw4wjZPLsu5BeYIZhXkBm0IWLZZkKFsQJ29ovO0Ik
+Message-ID: <CAO26r3R5+xYQM=_uxF32MQRuxkhpeY3bTwq6M3o8dPCr8-kdnA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 3/4] iio: position: add Rust driver for ams AS5600
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Igor Korotin <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, 01 Jun 2026 12:01:10 +0200
-"Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
+On Thu, 28 May 2026 17:08:00 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> My view about the issues Sashiko reported.
-> 
-> On Sun May 31, 2026 at 10:43 PM CEST, sashiko-bot wrote:
-> > Thank you for your contribution! Sashiko AI review found 7 potential issue(s) to consider:
-> >
-> > New issues:
-> > - [High] Missing `.validate_device` in trigger operations allows other devices to attach to a sensor-specific trigger.  
-> 
-> Tested with no real issues, but the trigger is mean for this device
-> only.
+> > Features:
+> > - Circuit breaker pattern for I/O error resilience
+> I'm not sure why this is particularly useful, but maybe I'm missing something.
 
-We've always been a bit vague on whether the expectation is that a trigger
-can be used by another device when not being used by this one.  It shouldn't
-crash, but you may well not get data ;)
+> I mention this below - it works (sort of) because right now you just
+> do reads with no state changes.  In general device recovery is way
+> more complex than what you do.
 
-> 
-> > - [High] PM runtime usage count is leaked if the device is unbound while events are enabled.  
-> 
-> The usage count is set to 0 by the devres action.
+Fair enough. It's over-engineered for what this driver does. Simple -EIO
+propagation is enough since the sensor is read-only and the Mutex
+already limits bus access to one reader at a time. I'll remove the circuit
+breaker in v4. The read_raw path will just propagate errors from
+try_read8/try_read16 directly.
 
-Rather than decrementing?
+> I think we need a separate discussion on how to do device recovery.
+> It is at best a black art and very device specific if bus corruption occurred.
 
-> 
-> > - [High] Stale values in the regmap cache for the hardware-cleared `AF_TRIG` bit cause unintended triggers.  
-> 
-> Real issue, I forgot to set CONF0 as a volatile register.
+> On a read you can maybe get away with this but on a write we have no
+> idea if it wrote or not and that write may or may not have had side
+> effects. If you lose a write, the only always correct thing to do is
+> a device reset. Other stuff is very device specific.
 
-If you set it volatile, I assume the dance around marking the cache as
-wrong is not needed?
+Agreed. Since this driver is read-only today, the whole mechanism is
+solving a problem that doesn't really exist here. If device recovery
+patterns come up as a broader R4L discussion topic, happy to participate.
 
-> 
-> > - [Medium] Mixing `goto` error handling with `guard()` scope-based cleanup in the same function.  
-> 
-> Not a real issue because the goto's happen after the guard, but it's easy to
-> get rid of them.
-Please do.  Those rules are about code fragility rather than just bugs.
+> > +                let angle_h = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_H as usize) {
+> > +                    Ok(v) => v as u16,
+> > +                    Err(_) => return Err(hw_guard.handle_io_error()),
+> > +                };
+> > +                let angle_l = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_L as usize) {
+> > +                    Ok(v) => v as u16,
+> > +                    Err(_) => return Err(hw_guard.handle_io_error()),
+> > +                };
+> > +
+> > +                let angle = (angle_h << 8 | angle_l) & 0x0FFF;
+>
+> This is the sort of thing we'd never do in a C driver because we have well
+> defined meaningful functions / macros for doing this.  I'd like to see
+> something equivalent in the rust code of.
+>    Bulk read int a two byte array. i2c_smbus_read_word_data() or swapped variant.
+>    Unaligned endian read  get_unaligned_be16()
+>    Masking to extract the 12 bits that are valid. FIELD_GET() whatever.
 
+Switching to `try_read16()` (calls `i2c_smbus_read_word_data`) plus
+`swap_bytes()` for the byte order, then mask:
 
-> 
-> > - [Medium] Non-functional event sysfs attributes are exposed to userspace when the device lacks an IRQ.  
-> 
-> Missing fix to be added to V5.
-> 
-> >
-> > Pre-existing issues:
-> > - [High] Unbalanced PM runtime usage counter due to mixing devm action with manual put.  
-> 
-> Not a real issue because an underflow is not possible.
+    const AS5600_RAW_ANGLE_MASK: u16 = 0x0FFF;
 
-True, but still nice to balance if easily done.
+    let raw = client.try_read16(AS5600_REG_RAW_ANGLE_H as usize)?;
+    let angle = raw.swap_bytes() & AS5600_RAW_ANGLE_MASK;
 
-> 
-> > --
-> >
-> > commit c0654b1fbfc516c85d27a7c169844b649c2a1077
-> > Author: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-> >
-> > iio: light: veml6031x00: add support for events and trigger
-> >
-> > The device provides a shared interrupt line for to notify events and
-> > data ready, which can be used as a trigger. The interrupt line is not a
-> > requirement for the device to work. Implement variants for the cases
-> > whether the interrupt line is provided or not.
-> >  
-> >> diff --git a/drivers/iio/light/veml6031x00.c b/drivers/iio/light/veml6031x00.c
-> >> index facb1b8e42418..5e79eb942f09c 100644
-> >> --- a/drivers/iio/light/veml6031x00.c
-> >> +++ b/drivers/iio/light/veml6031x00.c  
-> >
-> > [ ... ]
-> >  
-> >> @@ -144,6 +197,8 @@ static const struct iio_chan_spec veml6031x00_channels[] = {
-> >>  		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-> >>  		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-> >>  		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-> >> +		.event_spec = veml6031x00_event_spec,
-> >> +		.num_event_specs = ARRAY_SIZE(veml6031x00_event_spec),  
-> >
-> > [Severity: Medium]
-> > Will this unconditionally expose event sysfs attributes even when the device
-> > lacks an IRQ?
-> >
-> > If i2c->irq is 0, the driver uses veml6031x00_info_no_irq to omit event
-> > callbacks. However, the IIO core checks num_event_specs during
-> > iio_check_for_dynamic_events() and creates sysfs attributes anyway. If these
-> > attributes are accessed from userspace without the callbacks, will they
-> > return -EINVAL?
-> >  
-> 
-> This fix is also missing. I will add it to V5.
-> 
-> > [ ... ]
-> >  
-> >> +static int veml6031x00_set_af_trig(struct veml6031x00_data *data, bool state)
-> >> +{
-> >> +	regcache_drop_region(data->regmap, VEML6031X00_REG_CONF0,
-> >> +			     VEML6031X00_REG_CONF0);
-> >> +
-> >> +	return regmap_update_bits(data->regmap, VEML6031X00_REG_CONF0,
-> >> +				  VEML6031X00_CONF0_AF_TRIG,
-> >> +				  FIELD_PREP(VEML6031X00_CONF0_AF_TRIG, state));
-> >> +}  
-> >
-> > [Severity: High]
-> > Does this leave a stale AF_TRIG value in the non-volatile regmap cache?
-> >
-> > The AF_TRIG bit is cleared automatically by hardware. While this function
-> > drops the cache region before setting the bit, VEML6031X00_REG_CONF0 is not
-> > marked as volatile in veml6031x00_volatile_ranges. Because of this,
-> > regmap_update_bits() writes the new value to hardware and also caches it.
-> >
-> > Would any subsequent updates to CONF0 (such as changing AF or SD bits) read
-> > the cached AF_TRIG=1 and write it back, causing an unintended measurement
-> > trigger?
-> >  
-> 
-> Absolutely right, I forgot to update this although I said I would do it.
-> 
-> > [ ... ]
-> >  
-> >> +static int veml6031x00_write_event_config(struct iio_dev *iio,
-> >> +					  const struct iio_chan_spec *chan,
-> >> +					  enum iio_event_type type,
-> >> +					  enum iio_event_direction dir,
-> >> +					  bool state)
-> >> +{
-> >> +	struct veml6031x00_data *data = iio_priv(iio);
-> >> +	int ret;
-> >> +
-> >> +	guard(mutex)(&data->irq_lock);
-> >> +
-> >> +	/* avoid multiple increments/decrements from one source */
-> >> +	if (state == data->ev_en)
-> >> +		return 0;
-> >> +
-> >> +	if (state) {
-> >> +		ret = pm_runtime_resume_and_get(data->dev);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +	}  
-> >
-> > [Severity: High]
-> > Is the PM runtime usage count leaked if the device is unbound while events
-> > are enabled?
-> >
-> > The pm_runtime_resume_and_get() call keeps the device powered on, but there
-> > does not appear to be a custom devres action or remove callback to disable
-> > the event and drop this reference if the driver is unbound. Could this
-> > prevent the parent I2C controller from ever entering runtime suspend?
-> >  
-> 
-> The devres action that was registered in the probe function will
-> decrement the counter if the driver is unbound. I explained the
-> mechanism at the end of the mail.
-> 
-> > [ ... ]
-> >  
-> >> +static int veml6031x00_set_trigger_state(struct iio_trigger *trig, bool state)
-> >> +{
-> >> +	struct iio_dev *iio = iio_trigger_get_drvdata(trig);
-> >> +	struct veml6031x00_data *data = iio_priv(iio);
-> >> +	int ret;
-> >> +
-> >> +	guard(mutex)(&data->irq_lock);
-> >> +
-> >> +	if (state == data->trig_en)
-> >> +		return 0;
-> >> +
-> >> +	ret = veml6031x00_set_interrupt(data, state);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	/* The AF bit must be set before setting AF_TRIG */
-> >> +	ret = regmap_update_bits(data->regmap, VEML6031X00_REG_CONF0,
-> >> +				 VEML6031X00_CONF0_AF,
-> >> +				 FIELD_PREP(VEML6031X00_CONF0_AF, state));
-> >> +	if (ret)
-> >> +		goto err_disable_interrupt;
-> >> +
-> >> +	ret = veml6031x00_set_af_trig(data, state);
-> >> +	if (ret)
-> >> +		goto err_clear_af;  
-> >
-> > [Severity: Medium]
-> > Is it safe to mix goto-based error handling with guard() scope-based cleanup
-> > in this function?
-> >
-> > According to the cleanup subsystem guidelines, mixing goto with guard() or
-> > __free() in the same function can create confusing ownership semantics.
-> > Should this function either use goto entirely or be fully converted to
-> > scoped cleanups?
-> >  
-> 
-> The real issue arises when there are goto calls before the cleanup, but
-> I think it is cleaner to get rid of all goto calls where cleanup magic
-> is used. I will remove them and add function calls and error return
-> in the error paths.
-> 
-> > [ ... ]
-> >  
-> >> +static const struct iio_trigger_ops veml6031x00_trigger_ops = {
-> >> +	.set_trigger_state = veml6031x00_set_trigger_state,
-> >> +};  
-> >
-> > [Severity: High]
-> > Is a .validate_device callback needed here to prevent other devices from
-> > attaching to this sensor-specific trigger?
-> >
-> > Without setting .validate_device to iio_trigger_validate_own_device, another
-> > IIO device could attach to it. If that happens, veml6031x00_set_trigger_state()
-> > would enable the DRDY interrupt while the sensor is PM runtime suspended
-> > (since its own buffer_preenable isn't called). Would this cause the dependent
-> > device's buffer captures to hang?
-> >  
-> 
-> This trigger is intented to be used by its own device. I will add
-> iio_trigger_validate_own_device to iio_trigger_ops.
-> 
-> > [ ... ]
-> >  
-> >> +static irqreturn_t veml6031x00_trig_handler(int irq, void *p)
-> >> +{
-> >> +	struct iio_poll_func *pf = p;
-> >> +	struct iio_dev *iio = pf->indio_dev;
-> >> +	struct veml6031x00_data *data = iio_priv(iio);
-> >> +	int ch, ret, i = 0;
-> >> +	struct {
-> >> +		__le16 chans[2];
-> >> +		aligned_s64 timestamp;
-> >> +	} scan = { };
-> >> +
-> >> +	if (test_bit(VEML6031X00_SCAN_ALS, iio->active_scan_mask) &&
-> >> +	    test_bit(VEML6031X00_SCAN_IR, iio->active_scan_mask)) {
-> >> +		ret = regmap_bulk_read(data->regmap,
-> >> +				       VEML6031X00_REG_ALS_L,
-> >> +				       &scan.chans, sizeof(scan.chans));
-> >> +		if (ret)
-> >> +			goto done;
-> >> +	} else {
-> >> +		iio_for_each_active_channel(iio, ch) {
-> >> +			ret = regmap_bulk_read(data->regmap,
-> >> +					       iio->channels[ch].address,
-> >> +					       &scan.chans[i++],
-> >> +					       sizeof(*scan.chans));  
-> >
-> > [Severity: High]
-> > Does this loop inadvertently perform an I2C read from address 0 for the
-> > software timestamp channel?
-> >
-> > When IIO_CHAN_SOFT_TIMESTAMP is active and the fast-path isn't taken, it
-> > iterates over all active channels. Since the timestamp channel does not define
-> > a hardware address, its .address is 0.
-> >
-> > Would regmap_bulk_read() read VEML6031X00_REG_CONF0 instead of data,
-> > wasting I2C bandwidth and writing the configuration register's value into
-> > the scan buffer just before the timestamp?
-> >  
-> 
-> We have mentioned before that Sashiko is wrong about this. Is there any
-> way to tell Sashiko why this is ok?
-> 
-> > [ ... ]
-> >  
-> >> @@ -677,12 +1102,21 @@ static int veml6031x00_probe(struct i2c_client *i2c)
-> >>  	iio->channels = veml6031x00_channels;
-> >>  	iio->num_channels = ARRAY_SIZE(veml6031x00_channels);
-> >>  	iio->modes = INDIO_DIRECT_MODE;
-> >>
-> >>  	ret = veml6031x00_hw_init(iio);
-> >>  	if (ret)
-> >>  		return ret;
-> >>
-> >> +	if (i2c->irq) {
-> >> +		ret = veml6031x00_setup_irq(i2c, iio);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +
-> >> +		iio->info = &veml6031x00_info;
-> >> +	} else {
-> >> +		iio->info = &veml6031x00_info_no_irq;
-> >> +	}
-> >> +
-> >>  	ret = devm_iio_triggered_buffer_setup(dev, iio, NULL,
-> >>  					      veml6031x00_trig_handler,
-> >>  					      &veml6031x00_buffer_setup_ops);  
-> >
-> > [Severity: High]
-> > This isn't a bug introduced by this patch, but is the PM runtime usage
-> > counter unbalanced at the end of veml6031x00_probe()?
-> >
-> > The driver acquires a reference using devm_pm_runtime_get_noresume() which
-> > associates a devres cleanup action. If pm_runtime_put_autosuspend() is
-> > called manually at the end of probe (immediately after this buffer setup),
-> > the devres cleanup will still fire when the device is unbound, performing a
-> > second put. Could this cause the PM runtime usage counter to underflow
-> > to -1?  
-> 
-> This cannot happen because the devres action uses pm_runtime_put_noidle(),
-> which in turns uses atomic_add_unless(usage_count, -1, 0) to avoid
-> decrementing the usage_count if it is already 0.
-> 
-> Best regards,
-> Javier
+Rust doesn't have FIELD_GET yet, but a named constant serves the same
+documentation purpose. Single call, no manual byte assembly.
 
+> > +                // Read the 12-bit angle as two bytes. The AS5600 hardware
+> > +                // freezes the internal angle value on reading the high byte
+> > +                // until the low byte is read
+>
+> Would be very unusual if the device does this but doesn't support some form
+> of larger read. Would be nice to be able to do that in a rust driver.
+
+Yes, the AS5600 supports word reads over SMBus. I was being overly
+cautious with the byte-at-a-time approach based on the datasheet's
+latch mechanism description, but a word read achieves the same atomicity
+from the hardware side. Using it in v4.
+
+> > +        channels_alloc[0].info_mask_separate = (1 << iio_chan_info_enum_IIO_CHAN_INFO_RAW)
+> > +            | (1 << iio_chan_info_enum_IIO_CHAN_INFO_SCALE);
+>
+> I believe there is a kernel rust equivalent of BIT(). Can you use that here.
+
+This should use `kernel::bits::bit()` for consistency.
+The status register check already uses `bit_u8(5)` but the channel
+setup didn't follow the same pattern. I'll fix this in v4.
+
+> > +        dev_info!(dev.as_ref(), "AS5600 magnetic position sensor ready\n");
+>
+> Too noisy. dev_dbg() at most.
+
+I will change this to dev_dbg!().
+
+Thanks,
+Coirul
