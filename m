@@ -1,116 +1,133 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E84361667
-	for <linux-iio@vger.kernel.org>; Mon,  1 Jun 2026 11:37:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB42F356762;
+	Mon,  1 Jun 2026 11:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780313842; cv=none; b=RZSm7T1iv0ibJwr+XL29bdOcXCjUl97jLe64zI9v82RzybprSLMAkkmTUvcDf8YphhxVlD2y4jdb5kZdH0/EITbkGIQ1OBUov0tglcoTuznPnD0CCB20QA+faBRk0tU2DKWyvP8pDUUgW319nrtWohkaNBfXqvWSshWP5Z6yUzU=
+	t=1780314808; cv=none; b=dYrO+bxQT7AunDACmfz6j3qsyKzcXbCxUgs5sfoLk84QQWjwvMvANuHcaelMKUVk8buIVVqHNQFd4KTiKiD/z0K73YhS9Y5Nd+BTJ4altU3hc/qDnYWvpkASxn6iTkP+v0AICZa3GgHuRVlTd06LGD0iZoKqh/J2zIMjqlOHl+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780313842; c=relaxed/simple;
-	bh=Zjof0WVULYCBSZ2Pq6gQ3NRucoS9NMNzybSAd/5mwGU=;
+	s=arc-20240116; t=1780314808; c=relaxed/simple;
+	bh=IQzxV7pCkFhNEhgkgV5APM8VCjuD4xO5y1RWLdYIFCw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Myfk9eUuVY5qQlqOTqz4+Pv+VUhguX0RxnYwMIa3UWufbapMAIs337pHuvep3qoX0lJt/ku36XC5k4OxwLoS65te4PHq7YiFYMYk0SPCAhz5xzYn6styDAdgeqkIsdYFMiGEAFk+3c0Z+jIf45w+oXziLMx41Wb+HpYFIH/Xw7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qzEMuI3I; arc=none smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bnJoXJXCgZI9seozSBd3dM3KPg52tx6i7RJpzwh4uMF8yOIJGzQ7NV4GPN/kObaXkjSP65DReX8UveVbRedzVI4Q9OtzrTdMrFYix99i64ueArFKUkfNKzuuSoyLVBMmvD6PlMinEwJlhxRqXAFhDV114Nf0RA9B4Cc9UXkkv+A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e0pnmlmi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qzEMuI3I"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-68cec9f4c6cso2255199a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 01 Jun 2026 04:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780313840; x=1780918640; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Y5aiob/5xwmuKj1NkLrGEbiNwQs8EGYTAf6Wpc7voc=;
-        b=qzEMuI3IznZhj/mJaJMGbw+62j2CONe+W8ZAdHy6nK8t/2EWxbEVLRNap7/Vpp9Ckp
-         37jt6Qk4e+A7yWpvOjgobHqVFvIftUs3AuuuOQuHTb0vpNIxIFsq32ng2YfaUkknJbY0
-         SEaLUa9/XA7XAN0ZgpaemkBU0gjyUzQXe1yf0lM4Iar9tMhO53guOEmjDbFXR1BL8xT5
-         7x1UpDivouBLhMzOycfqPNaYPIjyD1feLOqbkkXTAGMukFwlXLTWdbQXuK6Ezxn/Ngba
-         kMIQOmZSvG48L93MiCU3wmS3dFpFzz++2F9EJz6ZAW36wrYNq7yE6kTKP4VWXTDOa2Ep
-         l4qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780313840; x=1780918640;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4Y5aiob/5xwmuKj1NkLrGEbiNwQs8EGYTAf6Wpc7voc=;
-        b=CVP0FFlDqW7br6nF9iCabd/ODzYS2sxiDPMJdvKnff351ABMzi2YAJ2gmfSsC4qgWD
-         Yg6yVneFGIQeSq31MmcHAwK/iVwMMsZoBzph7nVbcpPJL4WQx/M7lig6e8o6H0leAh3n
-         C/GGpeQsTtdTqchygLm4kFyhQIpJRKu+rQcZk4rhiGfUpzHFf2AdRG7H+GLtiesSmFpY
-         U1yfkCqqp0h2AvyQuKN230fQY8V8ZAANWOhFPRYrE1GiRx1bnFrDg3PC4jn4BdARO/nu
-         msRmcI5Ubyx8Qv3yLU0afNUJ3ZESnhkJcg1qaPl5a1i1dxrfFCvupWcqHPMsfCmRI4oj
-         88Zg==
-X-Forwarded-Encrypted: i=1; AFNElJ8OPvb/zVXWWZWDv/86WxVVrjNNkJ1pIGPq9vj6CEGWwSBphHBjF6HPeN5RsCnB1NYz6VRAUv9CGm4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzIKbBFd5diCrgz0iC/Ly1+joSB4jLml5u8oFEdvlvh1i1WfqQd
-	5U6sVlP/GU0AXIR4drUdEhoXdJSn0O46vbSLpsTOJwOLs9j75E/KCuAw
-X-Gm-Gg: Acq92OHP+hI1wnkFusb4Jz9qkbX2BNfyBHL5bUbsXU97xoRKGpU7T/UzlZObJ5OpIdh
-	G99fosaFEu2eMVJaN/94ZYGWa+LEtvLd5yUo+USVWuSuTKV0Zj1jZtJKngdH71Bh3IIt6yZ3aF9
-	YyNN+alKhHv9ZUrKAgZanYZA/9p3xerLPVOYAVWl7wNEp+MabamUv+X3ZDW+UKrFvY8cg1aY45G
-	sSwtCxawZ9svPjgtScHvbPDnSfSsu3KShLZiiIvvdzL5CnWTeTjib0U6qKOaREzlUXIASLyPOIZ
-	aUCiwIfEvORDrvMfFuXzNkb9geOzdQQyq+lxIVfVVlBm/N1em+cNPMnIbacoftoYS+P4n4let4Z
-	4IjD6tAwcEDavqTsWIOhMERkUu3/SUqTCaWnjAwOLBFGD7NZT4I34rN16DrmZjRZvqZbVWlGbzh
-	495Jkzqn1HLbuU2KBY+1O/C15UvEQl39D5eIHiFlTQLmy3
-X-Received: by 2002:a17:906:c151:b0:bee:9d02:6e7c with SMTP id a640c23a62f3a-bee9d032e8amr30809366b.10.1780313839361;
-        Mon, 01 Jun 2026 04:37:19 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bee7bdf4438sm25754166b.55.2026.06.01.04.37.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jun 2026 04:37:18 -0700 (PDT)
-Date: Mon, 1 Jun 2026 14:37:14 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Taha Narimani <tahanarimani3443@gmail.com>,
-	Nishad Kamdar <nishadkamdar@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"open list:STAGING - INDUSTRIAL IO" <linux-iio@vger.kernel.org>,
-	"open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: adc: ad7816: drop busy pin requirement for
- ad7816
-Message-ID: <ah1u6r2NemqKd2k7@stanley.mountain>
-References: <20260530173514.56640-1-tahanarimani3443@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e0pnmlmi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6C21F00893;
+	Mon,  1 Jun 2026 11:53:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780314807;
+	bh=nYp0fOvWMWcbYwMIvi/eCpOgf7cfplqgKaznYttRV9U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=e0pnmlmis7soHJ7KmYW1gO8dOhVZ1+7y/zojXBE6r+87SrhxhekXYLGvmr8nuwvuh
+	 uo/AkbjAsTTOcmSYuY70ihPcODiG1PJk0mK60a2FLEATQKH/xycohW2bF3DhG+9m8D
+	 77l1PzwL3gU21AjwMJ3K5w32hHXeZ+ZSfEllb3riTBv6EM8PIWmK3NPw/xMtEqD6L8
+	 jcqiiVuSQgQA3dzs7q2qQG4m+7u6EktWP3DnDQLvgqo0QOWMfsJcgbRmwD6JyY4zin
+	 mFBlqLuM+dc1sVsOGs2eMDQNzcxsSQML1ClyPDAAiibEotsSLt1UTloqSHD/6PNR+P
+	 rQwEY7G7v24ew==
+Date: Mon, 1 Jun 2026 13:53:23 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S
+ liquid flow sensor
+Message-ID: <20260601-banana-narwhal-of-music-0b4d3a@quoll>
+References: <20260530205435.37326-1-wafgo01@gmail.com>
+ <20260530205435.37326-3-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260530173514.56640-1-tahanarimani3443@gmail.com>
+In-Reply-To: <20260530205435.37326-3-wafgo01@gmail.com>
 
-On Sat, May 30, 2026 at 05:35:12PM +0000, Taha Narimani wrote:
-> According to the AD7816/7/8 datasheet, the AD7816 is an 8-pin device
-> and does not possess a BUSY pin. The BUSY pin is exclusive to the
-> 16-pin AD7817.
+On Sat, May 30, 2026 at 10:54:31PM +0200, Wadim Mueller wrote:
+> Document the bindings for the Sensirion SLF3S family of digital
+> liquid-flow sensors on I2C.  The family currently covers the
+> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
 > 
-> The driver previously requested a 'busy' GPIO unconditionally for both
-> the AD7816 and AD7817. If a device tree correctly modeled the hardware
-> by omitting the busy-gpios property for the AD7816, devm_gpiod_get()
-> would return -ENOENT and cause the probe to fail.
+> The driver auto-detects the variant from the product-information
+> register at probe time; the per-variant compatible strings exist
+> for documentation and dt_binding_check purposes.
+
+Here...
+
+> +description:
+> +  Family of digital liquid-flow sensors from Sensirion with I2C
+> +  interface.  All family members share the same register map; sub-types
+> +  differ only in the flow scale factor and the calibrated measurement
+> +  range, both of which are detected at probe time via the
+> +  product-information register.
+
+And here...
+
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - sensirion,slf3s-0600f
+> +      - sensirion,slf3s-1300f
+> +      - sensirion,slf3s-4000b
+
+And here something else. Confusing. Didn't you say device variants are
+auto-detectable? So you have only one compatible sensirion,slf3s.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vdd-supply: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vdd-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        flow-sensor@8 {
+> +            compatible = "sensirion,slf3s-0600f";
+> +            reg = <0x08>;
+> +            vdd-supply = <&reg_3v3>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 06a8c7457..222a03b6d 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -24187,6 +24187,14 @@ S:	Maintained
+>  F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
+>  F:	drivers/iio/chemical/sgp40.c
+>  
+> +SENSIRION SLF3S LIQUID FLOW SENSOR DRIVER
+> +M:	Wadim Mueller <wafgo01@gmail.com>
+> +R:	Maxwell Doose <m32285159@gmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
+> +F:	drivers/iio/flow/slf3s.c
+
+Basically almost the same comment as before. Drop. There is no such file.
+
+> +
+>  SENSIRION SPS30 AIR POLLUTION SENSOR DRIVER
+>  M:	Tomasz Duszynski <tduszyns@gmail.com>
+>  S:	Maintained
+> -- 
+> 2.52.0
 > 
-> Fix this by restricting the busy GPIO request strictly to the AD7817.
-> 
-> Signed-off-by: Taha Narimani <tahanarimani3443@gmail.com>
-
-The patch is corrupted.
-
-Otherwise this seems reasonable enough.  (I haven't read the datasheet
-but I trust that you have).  Let's add Nishad to the CC list since he
-is the one who first limitted it to not check ID_AD7818.
-
-The other way to solve this would be to use devm_gpiod_get_optional()
-in the probe() function and test for NULL in ad7816_spi_read().  I
-think this would be a cleaner solution because then it works based
-on the device trees instead of having to hardcode which devices
-have it in the driver itself.
-
-regards,
-dan carpenter
-
