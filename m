@@ -1,126 +1,119 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D097349CDE
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 16:27:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F858361675;
+	Tue,  2 Jun 2026 16:33:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780417654; cv=none; b=CZy7KWBhRHKcd1ell5Omc40FDUW34Xg9tyld+uKd4d5qdegKE2NrdS55Qhu7v2erzzjkRnJl5TBhiBaydxMTezY2Ix7qIZ2TkaW8TOQYp2ipkhFpxUl3DYOFxFfraid/8PA8eJKikDXCDoCrLOqrSNSiSYjUINXXhIha1autK20=
+	t=1780418032; cv=none; b=HDsZa+axX1BAN8R9+XrX/3Vx/1AuiwIZjyZ9fTcTL6AYIIMF/YhaCg9pk04WRKVVib3YtIVdsxRSilrG/fl9RYA90hMgqMex6gBLdFCVE19SlU9KEaDR1C324iHgJqr7b46Tju1mR5F+eX/YDlnEGM/jmupqIt3xZWfZrXiPvPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780417654; c=relaxed/simple;
-	bh=+yN8p7DEGsSd+vBoTiX9Ys6DjfKuoshdY9jKOrkSVQc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TYeqDeWSOFNUradm/yxWFoWjUAz9/mLcm2NpJpW0UMeJqYmQD3dfFwMtPahPr3Qhk75GshQWcrQaP9av66tXCJV5YxrpQ5+diWqQqG9DLan4hzWJQyY4Y+qLX9AuG5FDHAA8VeqidCtQ/wNDLKkFuvyaPYmhtIldkuiKoaHFYxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IUEdx/PG; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780418032; c=relaxed/simple;
+	bh=dcsHKAoQP64Fz4xl/KKbSuqrRQCZoXXSHYxQq69uwEQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=HmlLY7wRwRHtU7mmy3/BzG3O4UNA8h4vFVr3DZDPSYSxowLzv1gQaj4ZkhTWDPjw0RuiDbEXiN/rxUzVF3UEMzXyoEOd3dAMjGCNdpR/qc+y89N2sBzpz3RUZ4D5+kigKcGPjDIkbtyCjjWmMmMt6CjJE76l9P2MFc9bo/5KNa0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dd2QdNTN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IUEdx/PG"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-490b3e03939so5839825e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 09:27:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780417652; x=1781022452; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=rqHvtwA/FbTxVrNzgAP/DUfo1ysapu0skhzyjdpfojQ=;
-        b=IUEdx/PGCsFUDFyJ0lyrfhzepSyxJCTey0aJObNXFjbln81s3pumN13WvRRdTVsPLl
-         FdBbPjZqHQc25msWsZhcQfvwj+qQS/o3v1zv6cqv3UI/hE9IvgCfaR7wes3P+lkEABeI
-         y+ag2Eke4P1fVJoExW/cby7BRZnqGg/EdEORLWBIJ0AcrJGBJ+6pvFJYWDW/mx8uKxPM
-         VbRGMSz0QL9cb+WQ52xLPF+85f1o3s+ccL+qZ00t+TjuWHdqWVcm0oZR/nV+WxOZKx5H
-         Zn+/OhAHqdMIGFgb9A35xB0niYDEk6eOIzsHG5MDCBWPbedbTbgL7c4xFf/FQRGItazi
-         5/3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780417652; x=1781022452;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rqHvtwA/FbTxVrNzgAP/DUfo1ysapu0skhzyjdpfojQ=;
-        b=VlmVm+GCo8RZg4Q2pV4trix27rWIQvN+9uGXaKjJqebY3hR0sb4BaOQfZaJ3DAp+rS
-         vnket/IMCp5h1clcxhnveiujzCaPcvTHg0S9bvT+mjeleKfIOpo7W0ykgmpIdaBwywor
-         2pZ8ldXRp6mtAMFgU/HzpOw0APd/Dd18vcHDJXKKd4JdwH/DQJhUzebmOmyvVgWXH0Xx
-         cabMJYR2BbbHPMfmOpS1gOI0t5dfi0TzXZ8muk0oZ2usu1/gEbGTrJtAg0Z9uryQjzQZ
-         MBZYjcqzE+PBQBR2Q7MBau3p0L/FeFw1zlNAJns1rIY0Oj4lOCNCyP/wydt3RJGF8zet
-         EBmQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+BykRWR0PsvPvU8rUOQHou3UM2SIYRluRWZXA2sgd5n+LeaB+wPJcCgzIwgzxCBMLN7y/QrcGyHhU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzV7RLoJz2fprYTzIqFxvnVIypE+aZo3g+qzYEYxT0JkAk4akrM
-	Kmur0B5pvScty488i/eA9eQPsZeMRgp/k8Dmih8V+rLKaAEAxaBUxxZP
-X-Gm-Gg: Acq92OENH6xWJVZCyiM/J5J7uH3MH2uo27KxjwplDDrfV5DyhhIKof7z3gTKuxcIBkq
-	nDFOMwmCpg8eUkk0re51EH0jLYHX/5CExyTrJ9FQfmfV7hMcU+UO69PTzDpPtVYHUStHqFRFrFh
-	nXAzUco4eFOvGkh9D0XDrviUxaAfVtLuoorfP6fwFWE+c+lEmJGFo9DjDXKe6bq9EMSxHXqPolK
-	CQMYChOOrX1oKtvpvI476+HsE5I0iZLUPPwcoDdEqWJ1CgZrkT/2ffTUt24mS20rDjlk9tRUCve
-	KemoO6IMEQS1Go4muOV9eH9VEvdQy/uR7zJQMKtTUbJd/xHt9cntRFK1xZQhjXaV2KsS6EzMkd0
-	agDbj4ubfsBESY0sZxPZvReO6oowwGUfi0x1BNcHpaPV4SmLP0a+9Ab24o5NdJmDjIy6kMpwyAB
-	cVcbah+HNqbKxO1EQ99qwv/G/sANKa0Ybk2QLZcajxwt+5I4UM/jXybzqfmtbc0WNMjXZSrRaQ8
-	p4XbR8O1rEB
-X-Received: by 2002:a05:600d:15:b0:490:55d9:149a with SMTP id 5b1f17b1804b1-490b0ec9ca3mr70445485e9.18.1780417651565;
-        Tue, 02 Jun 2026 09:27:31 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f2dcbe3sm381471f8f.8.2026.06.02.09.27.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 09:27:31 -0700 (PDT)
-Message-ID: <dc7f62261b4bf665482ecd791e425bbc68aae515.camel@gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7380: select REGMAP
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Sam Moelius <sam.moelius@trailofbits.com>, Jonathan Cameron	
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Marcelo Schmitt	 <marcelo.schmitt@analog.com>, Jonathan
- Santos <Jonathan.Santos@analog.com>,  Jorge Marques
- <jorge.marques@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Matti Vaittinen	 <mazziesaccount@gmail.com>, Jishnu Prakash
- <jishnu.prakash@oss.qualcomm.com>,  Duje =?UTF-8?Q?Mihanovi=C4=87?=	
- <duje@dujemihanovic.xyz>, Stefan Popa <stefan.popa@analog.com>, Julien
- Stephan	 <jstephan@baylibre.com>, "open list:IIO SUBSYSTEM AND DRIVERS"	
- <linux-iio@vger.kernel.org>
-Cc: Samuel Moelius <samuel.moelius@trailofbits.com>
-Date: Tue, 02 Jun 2026 17:28:35 +0100
-In-Reply-To: <20260602153926.1540911-1-sam.moelius@trailofbits.com>
-References: <20260602153926.1540911-1-sam.moelius@trailofbits.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dd2QdNTN"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2DE94C2BCC4;
+	Tue,  2 Jun 2026 16:33:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1780418032;
+	bh=dcsHKAoQP64Fz4xl/KKbSuqrRQCZoXXSHYxQq69uwEQ=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=dd2QdNTNrQYeQ6xPaIPsRXMkwg//xltULE09jvagSyNHX6pbGx5mebUqSfJqRQcfd
+	 u8srw1mvrgw4geIHZo/f7hLpF1vUxTGYcdG+xfTUo8ckmxzgyFl+rtstAYykTu+O4Q
+	 N+QfBTsjHLGyJISRaLSvtFFdj7cSQSXejyOdujDxDPBYqug7CFy73L40y66/eFFqKM
+	 r8/FSetSiu9ek0QJyqCyQfo0ZCvu5OMP1OkFrbjAYiR3wLMN/QWoL9iV1+RXq71Xhy
+	 RqRj3qtn7TGkMyZqhWUMebLVXY8Nb6f+c7r41EsVLyoS74BJF2MBYlUN2tXPTp4F7G
+	 9zSOP63i4Xyfg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A59CD5BD1;
+	Tue,  2 Jun 2026 16:33:51 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Subject: [PATCH 00/12] New features for the AD5686 IIO driver
+Date: Tue, 02 Jun 2026 17:33:47 +0100
+Message-Id: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAOsFH2oC/x3MQQqDMBBG4avIrB1Igg7qVcRFNL/tbNKSqC2Id
+ ze4/BbvnZSRFJmG6qSEQ7N+YoGtK1rePr7AGorJGSdGjGMfWumEI368wm97QmZYK4tp5hDmnkr
+ 5TVj1/1zH6bpuO9vkBWUAAAA=
+X-Change-ID: 20260602-ad5686-new-features-e116c04bddb9
+To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780418030; l=2210;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=dcsHKAoQP64Fz4xl/KKbSuqrRQCZoXXSHYxQq69uwEQ=;
+ b=YQcJxhCXAdZjqbq0PTcmgbJdHmJnFTw39NM1lD/TLpGichFY1mMwDrXvtgKJ2VlDpv4FCv3Jf
+ i7Dl/EGxMwjDyAXWpJpZHuXkvGyqfUarsn9FKHyCzvbc+foBztTPR+T
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Tue, 2026-06-02 at 15:39 +0000, Sam Moelius wrote:
-> From: Samuel Moelius <samuel.moelius@trailofbits.com>
->=20
-> The AD7380 driver uses generic regmap types and APIs. However, its Kconfi=
-g entry
-> does not select REGMAP.
->=20
-> As a result, AD7380 can be enabled from an allnoconfig-derived config wit=
-h
-> SPI_MASTER=3Dy while REGMAP remains unset, causing ad7380.o to fail to bu=
-ild.
->=20
-> Fixes: b095217c104b ("iio: adc: ad7380: new driver for AD7380 ADCs")
->=20
-> Signed-off-by: Samuel Moelius <samuel.moelius@trailofbits.com>
-> ---
+This is the second series of three on updating the AD5686 driver.
 
-Change looks good but it seems the commit message will fail checkpatch. Wit=
-h that:
+Initially, a big patch series was sent:
+https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Then, the first patch series added fixes and cleanups:
+https://lore.kernel.org/linux-iio/20260524-ad5686-fixes-v7-0-b6bf395d08bd@analog.com/
 
-> =C2=A0drivers/iio/adc/Kconfig | 1 +
-> =C2=A01 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a9dedbb8eb46..c79341848698 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -311,6 +311,7 @@ config AD7298
-> =C2=A0config AD7380
-> =C2=A0	tristate "Analog Devices AD7380 ADC driver"
-> =C2=A0	depends on SPI_MASTER
-> +	select REGMAP
-> =C2=A0	select SPI_OFFLOAD
-> =C2=A0	select IIO_BUFFER
-> =C2=A0	select IIO_BUFFER_DMAENGINE
+This one is introducing new features:
+- Consume optional reset and correct power supplies;
+- LDAC GPIO handling (active-low, held low when unused);
+- SPI bus sync() implementation for batching multiple transfers;
+- Triggered buffer support, leveraging LDAC and sync() to flush
+  all channel writes atomically;
+- Gain control support through the scale property.
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+Rodrigo Alencar (12):
+      dt-bindings: iio: dac: ad5696: add reset/ldac/gain gpio support
+      dt-bindings: iio: dac: ad5696: rework on power supplies
+      dt-bindings: iio: dac: ad5686: add reset/ldac/gain gpio support
+      dt-bindings: iio: dac: ad5686: rework on power supplies
+      iio: dac: ad5686: add support for missing power supplies
+      iio: dac: ad5686: consume optional reset signal
+      iio: dac: ad5686: add ldac gpio
+      iio: dac: ad5686: introduce sync operation
+      iio: dac: ad5686: implement new sync() op for the spi bus
+      iio: dac: ad5686: add triggered buffer support
+      iio: dac: ad5686: write_raw: use guard(mutex)()
+      iio: dac: ad5686: add gain control support
+
+ .../devicetree/bindings/iio/dac/adi,ad5686.yaml    |  62 +++++-
+ .../devicetree/bindings/iio/dac/adi,ad5696.yaml    |  65 ++++++-
+ drivers/iio/dac/Kconfig                            |   2 +
+ drivers/iio/dac/ad5686-spi.c                       | 109 ++++++++---
+ drivers/iio/dac/ad5686.c                           | 212 +++++++++++++++++++--
+ drivers/iio/dac/ad5686.h                           |  29 ++-
+ drivers/iio/dac/ad5696-i2c.c                       |   2 +-
+ 7 files changed, 422 insertions(+), 59 deletions(-)
+---
+base-commit: 3dee3cddb9b2f78447bf1077f3eb8ae0b8251247
+change-id: 20260602-ad5686-new-features-e116c04bddb9
+
+Best regards,
+-- 
+Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+
