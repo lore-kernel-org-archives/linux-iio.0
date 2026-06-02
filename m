@@ -1,58 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 609FC30C37E;
-	Tue,  2 Jun 2026 22:17:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E3E830C37E;
+	Tue,  2 Jun 2026 22:18:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780438642; cv=none; b=NLA53F27DU54/kejZ+1UOqL4Wae/f33okRJLKiDGYvtGPaWTMIVSB+fnX/mtrrWQLnhAd4Npfwgn4R+/qv8PoHPbg8sZK5/thl7yK4ViRwgGH72kw7NdeCMw/wqxdR0IefxSgenbeTbfASZlxt147UD5x5gp4UV94UasicRHR90=
+	t=1780438703; cv=none; b=raI+TmaAvmsKtyjucLm64dBUh1t0wGvp0c/9r71O3S/BftTyx3b0it2dELm27W1nbS5PZsa887VHdSjMljZEoEwoKhNMplqeTnvqRAHYKm9AmFvwmYsQtvh5T/neeiKZJYHRKNzzo9rzampHBvxLoE+hBsp+o684GQYdbQ2gvY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780438642; c=relaxed/simple;
-	bh=UHp4R2KbUMqK+YlWY1FwtJ3p5eYTTcVWukkz7P/2baw=;
+	s=arc-20240116; t=1780438703; c=relaxed/simple;
+	bh=gIpcuuz1TvSWfM4qo7VGbvDQcZHOe3mcgzP1HjPAdCg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZopcFoBqbpvLBoo3eoHHOoGl8eUxLysk3rwu+4lUq2zaCBAja30BSC79w298RzET3hpRbPT+nQ+Li0phSmpS2RAhjT6NN4J0aDIMewQcryAvGwu4GzCCOM0xf3nIT6SdoReEEN5sA5fCyk1NrcrLEtc5z8cYOFzZlIWlmdl43K8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DFwH3Qcd; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ow4F3OY2lGsYE6rpWsoOQJbap6vOvldn4dmiFvFD4bpAHmozyHuZZxhcnpi7U2M6jCxeQV45qx/c4PF5P75b2l6ev64LEaUGsyv7txofvKBCIv7KExM0wURRf3eDNeTARhm2/RzMBhl10obUDDxqz8tOkUJpIPN2NRW8zNAMJCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CCoWmDyw; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DFwH3Qcd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CCoWmDyw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780438640; x=1811974640;
+  t=1780438702; x=1811974702;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=UHp4R2KbUMqK+YlWY1FwtJ3p5eYTTcVWukkz7P/2baw=;
-  b=DFwH3Qcdh2gO4B4S/TxBVdB3W34zjDTczueSt9iAUOXYfL2vo0xUAMHa
-   HqdtuF3pthbQZ3OHWD2qJJCIpzkFh0JURt+o3qq5c2lnCHrky9h5qCVwR
-   PFcKCsVvMoAgqu+LlymLAY2bXVsl+EcOObtFceEnXXdwO49ckp4NfY9LE
-   iF7bMpt6wtOxSWMfRUla+VlvCBqlJVpKPS6FgSveR0sMBegGfty4lBo7P
-   5sYWicsoODJ58lQrGAPehHp3WXObdlywu2Rx3lJY6Gf0pZWDB2b0b4JOl
-   spkpRyHtmSnYAa54IB2N/amD6fYEcG3mldig5T3LVnTyGCTUBPrtYK0AH
+  bh=gIpcuuz1TvSWfM4qo7VGbvDQcZHOe3mcgzP1HjPAdCg=;
+  b=CCoWmDyw7SQCIZoqxfbxIx5dS3En+1p2GF4aUOWRgBHDirOXQGv1zQOm
+   9/Eo726RM+cL/3qZ7O8/7kveshWzbJDE3k12nlAJBmV4SlnLrsmvr6cdJ
+   KEqVj8SouGyNsMkMN1xc+xixkNUOoselku/rr7qAd346Xbv0WtxMxe1Dv
+   Pc64x4nb6q6i3btzLwsVGR2iPvh5ME8IZnZIJIRbX0HHA3bfWowO/KGBp
+   DdcQinXs8ImUv85TRqybvhDnaJ6nP1qMJAMv0EGsaz8I+84Nj2hZXOmUj
+   2xF+ur+Rx21Azk2EvEakLQ/xxlxGWuOmJS42mMPonA/BBrzEIHLk/ZqVU
    Q==;
-X-CSE-ConnectionGUID: /I3LGutAT2adaI5kJfG6dw==
-X-CSE-MsgGUID: gh07aCIOTfa7pz29atYq8w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="80975020"
+X-CSE-ConnectionGUID: A1XhtX6jTeeCPK2nbH7R2A==
+X-CSE-MsgGUID: dBBeLdbySF6rRScVGUpb3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="84862868"
 X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="80975020"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 15:17:20 -0700
-X-CSE-ConnectionGUID: G1OUcX6fRomyQXw+v1242w==
-X-CSE-MsgGUID: ibO+nOPFQUmK6GJOchWy+A==
+   d="scan'208";a="84862868"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 15:18:21 -0700
+X-CSE-ConnectionGUID: uOzPg9KvQaq+nKWVVHhyvw==
+X-CSE-MsgGUID: IJ3xC0usSnmliVFJciDmVg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="244144138"
+   d="scan'208";a="249117643"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 15:17:18 -0700
-Date: Wed, 3 Jun 2026 01:17:15 +0300
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 15:18:19 -0700
+Date: Wed, 3 Jun 2026 01:18:16 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: jic23@kernel.org, andrea.merello@iit.it, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, hcazarim@yahoo.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Maxwell Doose <m32285159@gmail.com>,
+	Stepan Ionichev <sozdayvek@gmail.com>, andrea.merello@iit.it,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	hcazarim@yahoo.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: imu: bno055: terminate dev_err() strings with a
  newline
-Message-ID: <ah9Wa4jaKZwm_HVh@ashevche-desk.local>
+Message-ID: <ah9WqIztidPlaZoA@ashevche-desk.local>
 References: <20260520190851.11390-1-sozdayvek@gmail.com>
+ <CAKqfh0EPXX1zh3ScPCyBWhSq70wL3MpnUW9TV0Btn5LSF2EGuA@mail.gmail.com>
+ <20260522155948.47c100c5@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,24 +65,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260520190851.11390-1-sozdayvek@gmail.com>
+In-Reply-To: <20260522155948.47c100c5@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, May 21, 2026 at 12:08:50AM +0500, Stepan Ionichev wrote:
-> Two dev_err() calls in bno055_ser_write_reg() and bno055_ser_read_reg()
-> are missing the trailing newline, so the kernel log buffer continues
-> the next message on the same line.
-> 
-> Add the missing \n.
+On Fri, May 22, 2026 at 03:59:48PM +0100, Jonathan Cameron wrote:
+> On Wed, 20 May 2026 15:13:41 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
 
-Surprisingly the kernel log buffer will be fine even without this patch.
-So the commit message should say something about consistency of the style
-and theoretical problems in the future in case one switches back from dev_err()
-to pr_err().
+...
 
-You can dig into sources to understand why your patch changes nothing in the
-behaviour.
+> Applied. 
+
+Hmm... It's probably too late to tweak the commit message, okay, not a big deal
+here.
 
 -- 
 With Best Regards,
