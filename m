@@ -1,147 +1,129 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5FD3290AA
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 18:13:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BF0D225788;
+	Tue,  2 Jun 2026 18:27:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780424042; cv=none; b=HlCOu0ZJg4r0gUoPzdaxhw/uEiy9NPpXC8Rme+arFbBmNPSExpcdmlNakpnQYWVIlP3mGbN4eFheEldPvvuCfhGN8mxXeNzRqEofGXRMRq9MyJ5AgWyeXnIhjYb2DVlVd0Qh50k6bSEhqtSYN4tW4Xym17evG3fhbXNs8gKO0WU=
+	t=1780424871; cv=none; b=MptfiWIpzIL0CiqNkr+KGmehNLLtb2cKxK0kMBwyE6rJAPxoMNL2Nv/Ys1GaPFEevWHY8e4x+vR2SRzJEx2qwwMejy8zL9IgtPvrzsqb/Rt0RaplVBr50WzKvAHNGVyiaF5q/qZu2Vsv4AdqCKH5PaGqwSuxgSIjWJsjMovvqbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780424042; c=relaxed/simple;
-	bh=gT9vtGomwr2YBhqB+I1cUafVp3NVJebbX9LkGkLu4TY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lSCnoCmlPtfVWxjJQQppmSDQDfAH2BNypfVEoLOTl9F3aPBLCM98yS78af6eUAl7TYJBm220vWjr7MKo+aVtRSy0fnaN2e7GLrdHRpZyK4d2b7pvmnUNNcYbdfr17wsQ2kdJiPYMlxd0oIWC/JyVUpYIZ96rFccB1ey3btQy1Ak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=HAev8hXC; arc=none smtp.client-ip=209.85.221.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1780424871; c=relaxed/simple;
+	bh=JAKACGblmVp0qOtTpZKUe7ENVsK0mSqAwKq+52Y/t/s=;
+	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uEono+JHGhSxtXBa2ynsqzgl+ZeBYs15B+yNApbvRy5pQ8Y1nnc0t6mKN4oe9KpCTEpgAEEfizknMRl85Afhk0p+Lj4uajd2kkc7HqH63eaxMXUosFCASnq2tT74cvpMDqeAK/zVeMQXIJKiQnWHLfw2YRy52df4ip+Jh3Vtx74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LQzMXtkl; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="HAev8hXC"
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-59cb87795d1so134469e0c.2
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 11:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1780424038; x=1781028838; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=un5+wVFsN+iMeasPatJXlEUYLopu8Se8GcAmqD1RE0k=;
-        b=HAev8hXCnm/IMZw9XbYhXn3owurtVlmI7y5Jw+toB+QO5MUpfUsz77exGpcEJCiTME
-         RWjOWjM7EGf6NjzxJorDF3e3TzEBo7malDGNoWL0lI4+BKkj3VczYk6QduDQqewfQuC/
-         tz+i9pgEYMMr8KzSL17cCRFWi4Afnh21dxGhY1w6BXYPpMNzpq8kBeySUaDxnAymdgz1
-         N4lkRa+LBHgGKDfLLAJ4yFClW8KZ9/Qsd7D2MUst/Hp58GT2HRTq71/kQdqNGP08qixt
-         aiz9/PIXgy5rpehiriJz0lvCZB/JDSO+Y36Soak182EnfyrPi6Ol/WXlT7mC54VJvk4A
-         V5XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780424038; x=1781028838;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=un5+wVFsN+iMeasPatJXlEUYLopu8Se8GcAmqD1RE0k=;
-        b=ZFmitXr1wB0W/RWC4S1qZCbd1tbh/FQyCxysDMO7Lvj8JjxkuGPl7bUo30bZxH/ifi
-         /v929yh0SurrjADgSUXhypgXG1ayqbmklnAPcMUP6IT6bH4Ybpn//+uO/t2JqZjmno+e
-         OJdVHe1MwA04gnFbX+JKoVML6n9b/XyEjHatis4DSq8YnuU4jq+B/kJaFB8qC8EmvZz/
-         wj0dISC44oSHjNRR0IegR/nEIVKR1tN8R52bpsL/4w45H0AUeC9FsQgklOAM4LCiaP7J
-         QhUwAhBkankzTqJc/ymEdGsGCAWhRg0ZIYh9QOC3oAqTENGogFPdMGlIu+Mka3ID0Rn8
-         K64A==
-X-Forwarded-Encrypted: i=1; AFNElJ+CYdYMT0yM+CzrR6ARpc1eI8UgVgRGHmCW1Cz77SSqimH23x78amsLkSSBa43dvIWdzYRudkLq25Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzYZAkO5iXpXeqIH9BshvyHkwFFqoc7iyerx0pjqYL/V/VU0jzm
-	lIgr29rhTmLjGwO4QY2mxbMkEy/6BjMXoF9W3ZJE/p05zBthsslrNRhcqXtymMZmq+Y=
-X-Gm-Gg: Acq92OGAGtFyNjXU8JGE5tLSQkb/P+CCjp9TBf9O9I0lQdR/WCrFKvg7M9eDPcy1a2j
-	Wd/t5HgK4FN9Hdbh4uowRdzryK7AUwB9H5avNhk+v2HzqR/UQ9wc73piWTw+FRsxZgpInCKHCi3
-	Gxzc695EjXslGEghGKY2QpSZ7+qTs4dY7HOTQjz5O6t7M6DWHmLk6cRTpk3jfsFAOGDpzfOnem8
-	fAEzQ6wdg2NucAr0ZcH7O4q38tX5r/Fhw7SB6t61IlB4qD0EWEe8m7/DYCPVbXXP/osFu8czMXO
-	GjtgtxOMWW9UJi4CKH7HxIAZB/YKFfe9Eg0rpdh6kwHHXrOSQSkHduLN6fH/X+5er6fgfkbVCVF
-	wFqjJTjfFWcLRaK4nLU2kWgtFzy6LN6JxnLrnBsoWGRocKjh1smZ1nPirkSbbdFdCtErmjvf8vl
-	+/jcAONJU2UrdjoClGahr42Lx5i+tZOMVtrqn1roQ4mk8u1tWzWKVFOKrvpHLLUu4=
-X-Received: by 2002:a05:6102:c4a:b0:631:bcfa:39d2 with SMTP id ada2fe7eead31-6ea2c9c5657mr513734137.6.1780424038069;
-        Tue, 02 Jun 2026 11:13:58 -0700 (PDT)
-Received: from localhost.localdomain ([177.118.156.89])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-963abac87ffsm9305408241.7.2026.06.02.11.13.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 11:13:57 -0700 (PDT)
-From: Lucas Rabaquim <lucas.rabaquim@usp.br>
-X-Google-Original-From: Lucas Rabaquim
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Lucas Rabaquim <lucas.rabaquim@usp.br>,
-	Matheus Silveira <matheus.feitosa@usp.br>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: light: tsl2591: remove unneeded tsl2591_compatible_als_persist_cycle()
-Date: Tue,  2 Jun 2026 15:11:49 -0300
-Message-ID: <20260602181211.48399-1-lucas.rabaquim@usp.br>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LQzMXtkl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780424870; x=1811960870;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=JAKACGblmVp0qOtTpZKUe7ENVsK0mSqAwKq+52Y/t/s=;
+  b=LQzMXtklDSr3IbECYCKXkYlP6w4QEnffPHQiaXY4uAnTWHbADWjFkfhQ
+   zaTHLkE9ZEwsTTSIxWtoiqrYT4GT/c24YDUdV/9X9dzYz21kiNBbucXFh
+   xnRMyipFBDTKtVlVPvGmZ7V/itbzR0E3H85vm1AZ6h1W6NB0VNYMBUxtm
+   MHjfD/ncRNzo0DQKIGiMDRyOaWLg/fjc7YBbYPv3GV6mYvDbl8Ybbt981
+   Qoqi+EBnrRC2hv9dZcoK2TpAQZ79/hqUas0DwiHAz3IPSIkIU+8AKAIOc
+   mEArmrvEJndPolr3a3IUKRx4lvJEoI87EuAlTXz6rZpunbo0EZr/SU/pz
+   w==;
+X-CSE-ConnectionGUID: R33Bq4ttQXCARhnvdirKiQ==
+X-CSE-MsgGUID: rfzUiMCWRoGI64dnS0bE8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81348605"
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="81348605"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 11:27:49 -0700
+X-CSE-ConnectionGUID: X7dJPcHIRBuGkxCgZ6zc6A==
+X-CSE-MsgGUID: f3PWSRppTeGC+zCSm+pprg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
+   d="scan'208";a="237634600"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 11:27:46 -0700
+Date: Tue, 2 Jun 2026 21:27:43 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Angelo Dureghello <adureghello@baylibre.com>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 11/11] iio: dac: add mcf54415 DAC
+Message-ID: <ah8gn3g3_-cY1kbQ@ashevche-desk.local>
+References: <20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com>
+ <20260513-wip-stmark2-dac-v2-11-fcdae50cf51a@baylibre.com>
+ <agTe7vZ94DnmD4Ed@ashevche-desk.local>
+ <CALSJ-wBbjwrhTEpfKm-JHox7-E1YRQ=kTj1JN+KyiucTTu7c3A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALSJ-wBbjwrhTEpfKm-JHox7-E1YRQ=kTj1JN+KyiucTTu7c3A@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Lucas Rabaquim <lucas.rabaquim@usp.br>
+On Thu, May 21, 2026 at 05:14:07AM -0700, Angelo Dureghello wrote:
+> On Wed, May 13, 2026 at 11:28:30PM +0300, Andy Shevchenko wrote:
+> > On Wed, May 13, 2026 at 11:14:35AM +0200, Angelo Dureghello wrote:
 
-The function was only used to verify if als_persist is a
-TSL2591_PRST_ALS_INT_CYCLE_* value. However, before its call in
-tsl2591_write_event_value(), the line
-als_persist = tsl2591_persist_lit_to_cycle(period) is executed,
-meaning that by the time tsl2591_compatible_als_persist_cycle()
-is reached, als_persist is a TSL2591_PRST_ALS_INT_CYCLE_* value,
-making the verification pointless.
+...
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Lucas Rabaquim <lucas.rabaquim@usp.br>
-Co-developed-by: Matheus Silveira <matheus.feitosa@usp.br>
-Signed-off-by: Matheus Silveira <matheus.feitosa@usp.br>
----
- drivers/iio/light/tsl2591.c | 29 -----------------------------
- 1 file changed, 29 deletions(-)
+> > > +struct mcf54415_dac {
+> > > +	struct clk *clk;
+> > > +	struct regmap *map;
+> >
+> > I believe that regmap pointer is used more often, can you check with
+> > bloat-o-meter that swapping these two (by the order) gives any benefit in
+> > object size?
+> >
+> 
+> checking size in ColdFire arch with last kernel.org gcc had no benefit,
+> anyway put regmap before
 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index 3ec823865ce2..39cb68abbbea 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -309,31 +309,6 @@ static int tsl2591_compatible_gain(struct tsl2591_chip *chip, const u8 als_gain)
- 	}
- }
- 
--static int tsl2591_compatible_als_persist_cycle(struct tsl2591_chip *chip,
--						const u32 als_persist)
--{
--	switch (als_persist) {
--	case TSL2591_PRST_ALS_INT_CYCLE_ANY:
--	case TSL2591_PRST_ALS_INT_CYCLE_2:
--	case TSL2591_PRST_ALS_INT_CYCLE_3:
--	case TSL2591_PRST_ALS_INT_CYCLE_5:
--	case TSL2591_PRST_ALS_INT_CYCLE_10:
--	case TSL2591_PRST_ALS_INT_CYCLE_15:
--	case TSL2591_PRST_ALS_INT_CYCLE_20:
--	case TSL2591_PRST_ALS_INT_CYCLE_25:
--	case TSL2591_PRST_ALS_INT_CYCLE_30:
--	case TSL2591_PRST_ALS_INT_CYCLE_35:
--	case TSL2591_PRST_ALS_INT_CYCLE_40:
--	case TSL2591_PRST_ALS_INT_CYCLE_45:
--	case TSL2591_PRST_ALS_INT_CYCLE_50:
--	case TSL2591_PRST_ALS_INT_CYCLE_55:
--	case TSL2591_PRST_ALS_INT_CYCLE_60:
--		return 0;
--	default:
--		return -EINVAL;
--	}
--}
--
- static int tsl2591_check_als_valid(struct i2c_client *client)
- {
- 	int ret;
-@@ -915,10 +890,6 @@ static int tsl2591_write_event_value(struct iio_dev *indio_dev,
- 			goto err_unlock;
- 		}
- 
--		ret = tsl2591_compatible_als_persist_cycle(chip, als_persist);
--		if (ret < 0)
--			goto err_unlock;
--
- 		ret = tsl2591_set_als_persist_cycle(chip, als_persist);
- 		if (ret < 0)
- 			goto err_unlock;
+Thanks for checking.
+
+> > > +};
+
+...
+
+> > > +		return dev_err_probe(dev, PTR_ERR(regs),
+> > > +				     "failed to get io regs\n");
+> >
+> > One line.
+> 
+> i decided to stay inside 80 in all the file, is it ok ?
+
+It's fine, but for trailing string literals like this the limit was lifted more
+than ten years ago. I leave it to the maintainer.
+
+...
+
+> > > +		return dev_err_probe(dev, PTR_ERR(info->clk),
+> > > +				     "failed getting clock\n");
+> >
+> > Also can be a single line, but this one a bit longer than above, gives
+> > 88 characters.
+> 
+> same as above
+
+Ditto.
+
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
