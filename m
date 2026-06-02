@@ -1,61 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16803806D5;
-	Tue,  2 Jun 2026 23:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7975E3955C3;
+	Tue,  2 Jun 2026 23:19:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780441665; cv=none; b=uQlyZbf4Kri3XsdwJUEI2RuLxTg5sTb82SizlF7san9Zi0gKD3m+k3bNEKKOj+2JswEFke+Di9+V2A5x8eRjkmT6kLBOPR4pgGInk8VY19DWmO88rNr+3fnuXfBPiMhvCHZV9T6pJs2fLBfFAR49/WHtUntiZBsXbGVBYg/VI9c=
+	t=1780442361; cv=none; b=Ejt/3Kpk7zjIpKo5O6YTb5rsMKOY1DFxFF4F7SI7mflCnUW0RTlR6V/93TSEco1/7+hrjw8ra/C0Uzg0OFkKgWkOeMJbA91EwLk8a54fdfwqK6xEt5DqH7CAyek5flWmvhC8f6ysAEHaI3noDOT87vSMRR1zG4gUT8lHZOKiBDw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780441665; c=relaxed/simple;
-	bh=jNTwgEfJn0Krge+rJ80oGgi7nITBPlSkLBHlfbqDoaU=;
+	s=arc-20240116; t=1780442361; c=relaxed/simple;
+	bh=vs/EBQecgRth5Rc6H5L4Tcwy7k4cnknuN/7RorS/7Fs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qZz2LMc7t22rrorBxb5yvqJj/2BqFgTERJ5QV7Gy3x4GxInv+LtwwHpSeBX/z02eEV4mQ96kJW+gYSuUXZpeafBEI3VYlfj4iPIdnK+6X7cNeaaKSvf6QvdBLSbDqRpr9faS+1IbgbABqnckaWaofhTF+BY+amMEvDQ3AxinETQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FrHynRdg; arc=none smtp.client-ip=198.175.65.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=s4wfH58msmr2QmZK9HG+XrEPKLKLgLh4kpCoO7Qod2WeS1YJqSE685+GZnsxfz17pBPKhicpSSJzlJ//DlvQVohuwbqnPBONNXBoLF0VWPy+02/3c656wdRg7l82e3JdhAgA6ALdq9jPl2VFqWU2wZYe7f8wXjKQxVqOSMIHYLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nwuw2r4/; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FrHynRdg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nwuw2r4/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780441665; x=1811977665;
+  t=1780442360; x=1811978360;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=jNTwgEfJn0Krge+rJ80oGgi7nITBPlSkLBHlfbqDoaU=;
-  b=FrHynRdgKuz0SW1C6KmEueu+d8noe3qLSXeawBZn26FOYeZtienE2Vcy
-   A+Ln6RIk1ChHFB19ZHRRs8/WwdWo9j/TvQ54ksrkQWmtttampl+/WO934
-   PryLWXP7MUhbR/g0cgBW8lfMBvBnTvHbWpzg2y8VRK3yTrn1hYvOMtkaV
-   fPyLbzANjqy51wrmt3lOz1Sqnldvnbhi3qQwpcbFiD1PjS3mz2DkkzmVH
-   8AkA2H7ZQIOQwCnOSj1bdDF6N1n2WEJKNTU/L7aR0dqlRDjzQ69inrjap
-   5TD3kajzHypkdz15yTF2sv2Ylo9oWZ4ZZgluJn/N2AIGRceg+RQbKLxXP
+  bh=vs/EBQecgRth5Rc6H5L4Tcwy7k4cnknuN/7RorS/7Fs=;
+  b=nwuw2r4/FjUofvvXFGwfzFAHnbZXgXu9HF5QQNDapbWD+VDtock0xQTT
+   z4Ll8IBuOmv45JfiZpP1Btu3ZEkiDUq9K23uwxJZtQkt7OCW8lZAQqsG8
+   wABlVK7yStojlkt/id+T7jn27HJKBI9LtQNQh5gE8RuNAgWxCx+Iuf4+5
+   FXL18C0QOS+/x/p03V7/JnfkVogdSqzQ03N3IVvhLBfVB+tE24MepoC11
+   oGCxXHygPUE7E3n+5kGexQItpv3lYApfBsRdziAAjgFcQYWp+4sEhM6pX
+   SKy8TNtcyVf37N9RQ7h/N7a8WTrVzAqMcD60yfuMvAMV21VFnBXLqO/sC
    w==;
-X-CSE-ConnectionGUID: dhUn5BuiTNqaJ9m3AIGepw==
-X-CSE-MsgGUID: HJ5TRZ0DSGeKwK/7SqBl7g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="92724646"
+X-CSE-ConnectionGUID: ruY16USLQHak8fNbgFqf9w==
+X-CSE-MsgGUID: yyM+JrRpRzaarHE/TeqFrw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="98805566"
 X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="92724646"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 16:07:44 -0700
-X-CSE-ConnectionGUID: qoSNqjJcRGWVDBlYak/iDg==
-X-CSE-MsgGUID: IOMgFuRjSdeWmIALETiVpw==
+   d="scan'208";a="98805566"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 16:19:19 -0700
+X-CSE-ConnectionGUID: 6Jg28LnHSa6Vlc5YKq3PGQ==
+X-CSE-MsgGUID: VOMCzlC4TP6HAYt5YnWuMA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="247994467"
+   d="scan'208";a="239593879"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 16:07:40 -0700
-Date: Wed, 3 Jun 2026 02:07:38 +0300
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 16:19:13 -0700
+Date: Wed, 3 Jun 2026 02:19:11 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+To: Liviu Stan <liviu.stan@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v3 3/6] iio: osf: add protocol v0 decoding
-Message-ID: <ah9iOlsELRUGNLxv@ashevche-desk.local>
-References: <20260529121005.1470-1-kimjinseob88@gmail.com>
- <20260529121005.1470-4-kimjinseob88@gmail.com>
+	Conor Dooley <conor+dt@kernel.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Francesco Lavra <flavra@baylibre.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] iio: temperature: ltc2983: Use local device
+ pointer consistently
+Message-ID: <ah9k7zV4wLZe7VoL@ashevche-desk.local>
+References: <20260521164323.770626-1-liviu.stan@analog.com>
+ <20260521164323.770626-3-liviu.stan@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,102 +71,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260529121005.1470-4-kimjinseob88@gmail.com>
+In-Reply-To: <20260521164323.770626-3-liviu.stan@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, May 29, 2026 at 09:10:02PM +0900, Jinseob Kim wrote:
-> Add OSF0 frame validation and payload decoders.
-
-> Extend MAINTAINERS to cover the protocol decoder.
-
-Unneeded detail in the commit message. It's implied that MAINTAINERS is updated
-accordingly.
+On Thu, May 21, 2026 at 07:42:55PM +0300, Liviu Stan wrote:
+> Some functions define a local 'dev' pointer but still use bare
+> '&st->spi->dev' in some code paths, and some don't have it at all.
+> Replace bare references with the local pointer for consistency.
 
 ...
 
-> +int osf_protocol_decode_frame(const u8 *buf, size_t len,
-> +			      struct osf_frame *frame, size_t *frame_len)
-> +{
-> +	u32 expected_crc;
-> +	u32 actual_crc;
-> +	u32 payload_len;
-> +	size_t total_len;
-> +	u8 major;
-> +
-> +	if (!buf || !frame || !frame_len)
-> +		return -EINVAL;
-> +
-> +	if (len < OSF_FRAME_MIN_LEN)
-> +		return -EMSGSIZE;
+> -	dev_dbg(&st->spi->dev, "Assign reg:0x%04X, val:0x%08X\n", reg,
+> +	dev_dbg(dev, "Assign reg:0x%04X, val:0x%08X\n", reg,
+>  		chan_val);
 
-> +	if (buf[0] != 'O' || buf[1] != 'S' || buf[2] != 'F' || buf[3] != '0')
-> +		return -EPROTO;
-
-It's FourCC, define it as integer and compare as integer
-
-#define ..._MAGIC	0xhhhhhhhh	/* OSF0 */
-
-	if (get_unaligned_le32() != _MAGIC)
-
-
-> +	major = buf[4];
-> +	if (major != OSF_PROTOCOL_MAJOR)
-> +		return -EPROTO;
-> +
-> +	if (get_unaligned_le16(buf + 6) != OSF_FRAME_HEADER_LEN)
-> +		return -EPROTO;
-> +
-> +	payload_len = get_unaligned_le32(buf + 10);
-> +	if (payload_len > len - OSF_FRAME_MIN_LEN)
-> +		return -EMSGSIZE;
-> +
-> +	if (get_unaligned_le32(buf + 34))
-> +		return -EPROTO;
-> +
-> +	total_len = OSF_FRAME_HEADER_LEN + payload_len + OSF_FRAME_CRC_LEN;
-> +	expected_crc = osf_crc32_ieee(buf, OSF_FRAME_HEADER_LEN + payload_len);
-> +	actual_crc = get_unaligned_le32(buf + OSF_FRAME_HEADER_LEN + payload_len);
-> +
-> +	if (actual_crc != expected_crc)
-> +		return -EBADMSG;
-> +
-> +	frame->protocol_minor = buf[5];
-> +	frame->message_type = get_unaligned_le16(buf + 8);
-> +	frame->payload_len = payload_len;
-> +	frame->sequence = get_unaligned_le64(buf + 14);
-> +	frame->timestamp_us = get_unaligned_le64(buf + 22);
-> +	frame->flags = get_unaligned_le32(buf + 30);
-> +	frame->payload = buf + OSF_FRAME_HEADER_LEN;
-> +	frame->crc = actual_crc;
-> +	*frame_len = total_len;
-> +
-> +	return 0;
-> +}
+Now it's perfectly a single line.
 
 ...
 
-> +int osf_protocol_sensor_sample_value(const struct osf_sensor_sample *sample,
-> +				     unsigned int index, s32 *value)
-> +{
-> +	if (!sample || !sample->samples || !value)
-> +		return -EINVAL;
-> +
-> +	if (index >= sample->channel_count)
-> +		return -ERANGE;
-> +
-> +	*value = (s32)get_unaligned_le32(sample->samples + index * sizeof(s32));
+>  	if (chan->address >= st->num_channels) {
+> -		dev_err(&st->spi->dev, "Invalid chan address:%ld",
+> +		dev_err(dev, "Invalid chan address:%ld",
+>  			chan->address);
 
-Why casting?
+Ditto.
 
-> +	return 0;
-> +}
+>  		return -EINVAL;
+>  	}
 
 ...
 
-> +#define OSF_CAPABILITY_FLAGS_MASK	0x00000003U
+>  	if (ret)
+> -		return dev_err_probe(&st->spi->dev, ret,
+> +		return dev_err_probe(dev, ret,
+>  				     "Device startup timed out\n");
 
-GENMASK() ?
+Ditto.
+
+...
+
+> -	st->iio_chan = devm_kzalloc(&spi->dev,
+> +	st->iio_chan = devm_kzalloc(dev,
+>  				    st->iio_channels * sizeof(*st->iio_chan),
+>  				    GFP_KERNEL);
+
+This should be first switched to devm_kcalloc().
+
+...
+
+> -	ret = devm_request_irq(&spi->dev, spi->irq, ltc2983_irq_handler,
+> +	ret = devm_request_irq(dev, spi->irq, ltc2983_irq_handler,
+>  			       IRQF_TRIGGER_RISING, st->info->name, st);
+>  	if (ret)
+> -		return dev_err_probe(&spi->dev, ret,
+> +		return dev_err_probe(dev, ret,
+>  				     "failed to request an irq\n");
+
+Another patch should just drop this duplicate message.
+
+...
+
+So, this has to be split to three:
+- dropping dup message
+- moving to devm_kcalloc() and at the same time define local dev in the probe
+(and only in the probe without changing anything else)
+- this patch
 
 
 -- 
