@@ -1,310 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339CA2C2363;
-	Tue,  2 Jun 2026 10:27:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D5D33D565D
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 10:31:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780396050; cv=none; b=aad3fToXeSHefmYh9EMwkgvtqm9QYlen6i0SukZl90G8Izxwn8LvviEUPC39q38YxU7vznRdfmMGYVUWcGf9xYG3jf6o47dkf1WGt3Z71t34llzJatdkUl4j5VeiUZ139b0AbdGiF/6k2+/PkKdlrkYKpBQbh3AbHhO75urwA2Q=
+	t=1780396299; cv=none; b=Od8IUNzqbPPtWvj/9U6UuXVyrFLau5BFS6ulFG2U3SIj5uoBoMkyM8Zi0F4WGQ6G6GyWev2yrd5yR9kK/iFZ2V11k0PBNTPiMBmEDJpyZJCgEAWMidJsWf3pGYziaJcoR21I/nIuT2VHV6e4sD2RAYUQlTqt1tl7aYPf12px+c8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780396050; c=relaxed/simple;
-	bh=Nd3sbqqPNlvBdk1116WY/rAB3A+F7RuRk5ZUhoPTIbY=;
+	s=arc-20240116; t=1780396299; c=relaxed/simple;
+	bh=o0Nni+yp1Gx1jtyHijBx0ul2iFhVLO/rQkcI7P29gmo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vbhc/0ADlkoBo2H3LvK0VgCdrDwhbALTdqo47r0wNiLaiHiwjCVt/BrqekmPNHKyygNkHCR4l9+0TmNr2l7Z7/bWjk53CugEbjfCInUAQx6rE4oAdVwcD34GvHZdA9lXm9L5YPVTWno5mHY4AiosixlhR/Kuqu0t1EgKOAdWhPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gYgtQhWS; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=Noqo14jiVVx500xRDPf6qyaQrSN3rud5L9RC677eY4PhT2akC1oLK/WYkQbALyQi+gn/2KBjLzM1fRHIh8BdZPMjXek7RzWpyoHJT6PY+mSx1ucCSqwzBdAIb+oT4R66VU9W0Wl/I7T9nNWxsGGiwtizuUus+T9bOIfhO+xivbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FlLSGV0J; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gYgtQhWS"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FlLSGV0J"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780396048; x=1811932048;
+  t=1780396297; x=1811932297;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Nd3sbqqPNlvBdk1116WY/rAB3A+F7RuRk5ZUhoPTIbY=;
-  b=gYgtQhWSpT/bnJeuT4QNFGedhXez6xKU2X9lfGDYXB9XVCMesx8kHcAr
-   Al2WKhgdEQ6QQoekHyCkxG33McybNY7ihh+LzSQM5mOjGI5vv02eA2FpG
-   tJBy9UM14WJSTDh71388LRph2gEswXJBrXa7EOYEXtj7YIfif6rAualPz
-   f5LbBh4XzsfGE5G3HhiGIkDgMbFNzf3goJ/682Vn9MKFh2+WOntJ9tuIK
-   VoVqVjgwNEv/XdHXOtyAyVEYoaw9nRhVBSfKTzz3JxF8rvS6c7mTuifDC
-   Xaxi88TjfgaxvevvttpofuMSp0lzxa/G3lNT7UE/av2F5cyaKLlQgAfah
-   w==;
-X-CSE-ConnectionGUID: GHCR67hhSIqHjHoCM5zY5w==
-X-CSE-MsgGUID: HI2mYz8dTdaxITF4rePpCA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="81302525"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=o0Nni+yp1Gx1jtyHijBx0ul2iFhVLO/rQkcI7P29gmo=;
+  b=FlLSGV0JSZRniGIeexSs/Xq65/RzUTu/pKAMpI7mxCpiRTm0tXjQd/N9
+   v90xHn/WfEIf6+N8ZDI/L4PSoaXBe2mmO8UjTfilpOfuZgBwHkSqtFZpR
+   mAQVWx3+Si1R5jAEcRCYrdYNQ+Oh07LUffxU5GZU5gkl7AH5ZiHtHZ8vn
+   wdHGBfpZuOsML5xJ9IfPJ8Y/aGBOmStjsMuUk2K8+wvY7B7MqYHml0O1N
+   ZqHl85uysRpoh2fi7RhileTuCKNI9WuVbeihs7VykyqWndNUSackwOnGl
+   +QcU8j5Hu3NAPHxzoTtr4jpLlFTXxEiPHIOr7lvs/EISFHBNMQx31eqMh
+   Q==;
+X-CSE-ConnectionGUID: /lqpyjIxQIW4o3KC3bitVw==
+X-CSE-MsgGUID: ZyjTaWupT0mFavonnj672A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="84801050"
 X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="81302525"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 03:27:27 -0700
-X-CSE-ConnectionGUID: KUrzNGKEQ4OIpCuKxJ6Tgg==
-X-CSE-MsgGUID: kuji5Xc5Q66p9XNzuENrBg==
+   d="scan'208";a="84801050"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 03:31:37 -0700
+X-CSE-ConnectionGUID: 5z1wrGUPQEqaEEEnvquwzA==
+X-CSE-MsgGUID: L9WA0xICTVKfAYbp2gmjBg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="274133528"
+   d="scan'208";a="281979657"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 03:27:24 -0700
-Date: Tue, 2 Jun 2026 13:27:21 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 03:31:34 -0700
+Date: Tue, 2 Jun 2026 13:31:31 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] iio: light: veml6031x00: add support for events
- and trigger
-Message-ID: <ah6wCYjFatHpaSM5@ashevche-desk.local>
-References: <20260531-veml6031x00-v4-0-e64f7fdce38d@gmail.com>
- <20260531-veml6031x00-v4-4-e64f7fdce38d@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	SeungJu Cheon <suunj1331@gmail.com>, linux-iio@vger.kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	apokusinski01@gmail.com, me@brighamcampbell.com,
+	skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH 4/4] iio: pressure: mpl3115: add hardware FIFO support
+Message-ID: <ah6xA19t8RlijavX@ashevche-desk.local>
+References: <20260530113938.171540-1-suunj1331@gmail.com>
+ <20260530113938.171540-5-suunj1331@gmail.com>
+ <CAHp75VcN7B5BdKZGBiw5cbhYesGsO_tStcN3cKgggiHiuSnJ7w@mail.gmail.com>
+ <20260530164306.70c9ac71@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260531-veml6031x00-v4-4-e64f7fdce38d@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260530164306.70c9ac71@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, May 31, 2026 at 09:58:24PM +0200, Javier Carrasco wrote:
-> The device provides a shared interrupt line for to notify events and
-> data ready, which can be used as a trigger. The interrupt line is not a
-> requirement for the device to work. Implement variants for the cases
-> whether the interrupt line is provided or not.
+On Sat, May 30, 2026 at 04:43:06PM +0100, Jonathan Cameron wrote:
+> On Sat, 30 May 2026 15:32:23 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Sat, May 30, 2026 at 1:40 PM SeungJu Cheon <suunj1331@gmail.com> wrote:
 
 ...
 
->  #include <linux/bitfield.h>
->  #include <linux/bits.h>
->  #include <linux/i2c.h>
-> +#include <linux/interrupt.h>
+> > > +       u8 fifo_buf[MPL3115_FIFO_SIZE * MPL3115_FIFO_SAMPLE_SIZE]
+> > > +               __aligned(IIO_DMA_MINALIGN);  
+> > 
+> > We have a macro for this,
+> Which one?  We have the buffer + timestamp ones for IIO but that' not
+> relevant here.
 
-Previous patch uses irqreturn_t already.
-
-...
-
-> +#define VEML6031X00_INT_MASK        (VEML6031X00_INT_TH_L | \
-> +				     VEML6031X00_INT_TH_H | \
-> +				     VEML6031X00_INT_DRDY)
-
-Besides mixture of tabs and spaces (the indentation in the first line made only
-using spaces) this is less readable than
-
-#define VEML6031X00_INT_MASK						     \
-	(VEML6031X00_INT_TH_L | VEML6031X00_INT_TH_H | VEML6031X00_INT_DRDY)
-
-...
-
-> +static int veml6031x00_read_period(struct iio_dev *iio, int *val)
-> +{
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +	int ret, reg;
-> +
-> +	ret = regmap_field_read(data->rf.pers, &reg);
-> +	if (ret)
-> +		return ret;
-
-> +	*val = 1 << reg;
-
-UB for reg == 31. What's wrong with BIT() here?
-
-> +	return IIO_VAL_INT;
-> +}
-
-...
-
-> +static int veml6031x00_write_period(struct iio_dev *iio, int val)
-> +{
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +
-> +	if (val < 0 || val > 8 || hweight8(val) != 1)
-
-This gives upper bits out of considerations, while...
-
-> +		return -EINVAL;
-> +
-> +	return regmap_field_write(data->rf.pers, ffs(val) - 1);
-
-...this one not. It's not a problem per se, but confusing for the reader, needs
-more brain power to get it.
-
-Instead I propose to make it clearer
-
-	u8 period = val;
-	...
-
-Also, wouldn't __ffs() suffice instead of ffs() - 1? I don't remember, please
-double check that.
-
-> +}
-
-...
-
-> +static int veml6031x00_write_th(struct iio_dev *iio, int val, int val2, int dir)
-> +{
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +	struct device *dev = data->dev;
-> +	__le16 reg = cpu_to_le16(val);
-> +	int ret;
-> +
-> +	if (val < 0 || val > U16_MAX || val2)
-> +		return -EINVAL;
-> +
-> +	if (dir == IIO_EV_DIR_RISING) {
-> +		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WH_L,
-> +					&reg, sizeof(reg));
-> +		if (ret)
-> +			dev_dbg(dev, "Failed to set high threshold %d\n", ret);
-> +	} else {
-> +		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WL_L,
-> +					&reg, sizeof(reg));
-> +		if (ret)
-> +			dev_dbg(dev, "Failed to set low threshold %d\n", ret);
-> +	}
-
-You can deduplicate the message by:
-
-	bool rising = dir == IIO_EV_DIR_RISING;
-	...
-	if (rising)
-		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WH_L,
-					&reg, sizeof(reg));
-	else
-		ret = regmap_bulk_write(data->regmap, VEML6031X00_REG_WL_L,
-					&reg, sizeof(reg));
-	if (ret)
-		dev_dbg(dev, "Failed to set %s threshold %d\n", str_high_low(rising), ret);
-
-Will require string_choices.h.
-
-> +	return ret;
-> +}
-
-...
-
-> +static int veml6031x00_set_interrupt(struct veml6031x00_data *data, bool state)
-> +	__must_hold(&data->irq_lock)
-
-This is an annotation for sparse. If you really want to make it sure...
-
-> +{
-> +	int ret;
-
-...use lockdep annotation here (as well).
-
-> +	if (state) {
-> +		data->int_users++;
-> +		if (data->int_users > 1)
-> +			return 0;
-> +	} else {
-> +		data->int_users--;
-> +		if (data->int_users > 0)
-> +			return 0;
-> +	}
-> +
-> +	ret = regmap_field_write(data->rf.int_en, state);
-> +	if (ret) {
-> +		if (state)
-> +			data->int_users--;
-> +		else
-> +			data->int_users++;
-> +	}
-> +
-> +	return ret;
-> +}
-
-...
-
-> +static irqreturn_t veml6031x00_interrupt(int irq, void *private)
-> +{
-> +	struct iio_dev *iio = private;
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +	s64 timestamp;
-> +	int ret, reg;
-> +
-> +	ret = regmap_read(data->regmap, VEML6031X00_REG_INT, &reg);
-> +	if (ret) {
-> +		dev_err(data->dev,
-> +			"Failed to read interrupt register %d\n", ret);
-
-It will flood the log very quickly under a heavy system load that may not
-service interrupt in time. I'm actually not sure how useful this message
-is (only for debug?).
-
-> +		return IRQ_NONE;
-> +	}
-> +
-> +	if (!(reg & VEML6031X00_INT_MASK))
-> +		return IRQ_NONE;
-> +
-> +	guard(mutex)(&data->irq_lock);
-> +
-> +	if ((reg & (VEML6031X00_INT_TH_H | VEML6031X00_INT_TH_L)) && data->ev_en) {
-> +		timestamp = iio_get_time_ns(iio);
-> +
-> +		if (reg & VEML6031X00_INT_TH_H)
-> +			iio_push_event(iio, IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +								 IIO_EV_TYPE_THRESH,
-> +								 IIO_EV_DIR_RISING),
-> +				       timestamp);
-> +		if (reg & VEML6031X00_INT_TH_L)
-> +			iio_push_event(iio, IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +								 IIO_EV_TYPE_THRESH,
-> +								 IIO_EV_DIR_FALLING),
-> +				       timestamp);
-> +	}
-> +
-> +	if ((reg & VEML6031X00_INT_DRDY) && data->trig_en) {
-> +		iio_trigger_poll_nested(data->trig);
-> +		ret = veml6031x00_set_af_trig(data, true);
-> +		if (ret)
-> +			dev_err(data->dev, "Failed to set trigger %d\n", ret);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-
-...
-
-> +static int veml6031x00_setup_irq(struct i2c_client *i2c, struct iio_dev *iio)
-> +{
-> +	struct veml6031x00_data *data = iio_priv(iio);
-> +	struct device *dev = data->dev;
-> +	int ret;
-> +
-> +	data->trig = devm_iio_trigger_alloc(dev, "%s-drdy%d", iio->name,
-> +					    iio_device_id(iio));
-> +	if (!data->trig)
-> +		return -ENOMEM;
-> +
-> +	data->trig->ops = &veml6031x00_trigger_ops;
-> +	iio_trigger_set_drvdata(data->trig, iio);
-> +
-> +	ret = devm_iio_trigger_register(dev, data->trig);
-> +	if (ret)
-> +		return ret;
-> +
-> +	iio->trig = iio_trigger_get(data->trig);
-> +	ret = devm_request_threaded_irq(dev, i2c->irq, NULL,
-> +					veml6031x00_interrupt,
-> +					IRQF_ONESHOT,
-> +					iio->name, iio);
-> +	if (ret)
-
-> +		return dev_err_probe(dev, ret, "Failed to request irq %d\n",
-> +				     i2c->irq);
-
-Dup message, please remove. return ret; will suffice.
-
->  	return 0;
->  }
+Ah, I stand corrected!
 
 -- 
 With Best Regards,
