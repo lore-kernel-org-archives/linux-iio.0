@@ -1,114 +1,185 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D66BB3939B5;
-	Tue,  2 Jun 2026 11:59:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780401568; cv=none; b=FyfOyQMUiytRN8np72/ZI6U4+bJiHFad7W2SQsKrOf/QQ8pE3q0PPD1l2HQVvqdnnXDi6l8YhG+giRMMhkCxFnGV2N+NDqolK7dRNHYD8IC1dpSVM2jYogwYeg3t5WgA7FM8d8FDbdU0irOAX+okP+SyJNh4dtbhGGiCNSAc2BY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780401568; c=relaxed/simple;
-	bh=9LTj386/a+Iv+it/X9E+SOvy9Psrkc0ZaGYlYVahIUw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hOfVkOt1k2pKmnO/afDZhMSZjX/U/b6gTKGwrRozNH/FQJCOBIHrvZiELo5bVSVUTtfk6fU7jBLEWDCttyogPKp4a2VTBCMbPT1EyZLdleLsuaw3lBP1UEdGKTKh/LNvxmbZqn9tgVU/BtGaAOl9ET0oA0kvCOucJye9MPn3lss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N4jWOoPF; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C199D3D5241
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 12:00:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.182
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780401629; cv=pass; b=hvBKar7J10HXsbJz+gSaqTql8ZIrZlQCfO7ceaq5T7fuaw614IOQTphqRs4aF8KvewEbwJk8J9csZfr/A8rTN96L9B6d40YQY/WHyeG5vlOsHPky5KMTPtG+DCXMMzCKUak4TqAom7bNGAP99W/c1HbGX+k/J/q48ZJMAHD0uc0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780401629; c=relaxed/simple;
+	bh=05RkR29gR0EzADOG/MdNwo8HCGHyLs1e+QZ7FIg+Q3g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DN1GWBkO2zDidZv+Y0E50ItUxO7s7WdKebIPjg7hBu1ge1h7cPJi27uy/ReI9fskTzntcoprNIh31pCFMToairXbixoINz+b9LQKbhYEIKMwd3AnApDPM5FyzSXAnt4ecr+3zvkkclytYRr7SPsGdfeeZp0Wd3Vqs0bvhyiSupc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HpnsARGD; arc=pass smtp.client-ip=74.125.82.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N4jWOoPF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD94C1F00893;
-	Tue,  2 Jun 2026 11:59:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780401567;
-	bh=QZZxwumbaJyuarHbUY4ZoK3cdKzarRWJ3vb08iu0rek=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=N4jWOoPF3decmWri7JTIYNE3txYdhW1r3W7WwTYMGErxDzWaULywiXYnB0e2dB4pr
-	 tVmwAQ4EX0mi8qYg19bBXpgU4AkqRTiIAZwrIg/0wrlJoKL3UAEy7VqHl2D112OoAm
-	 FbWgxLJbTSUltwBnwQHdvW9bdbRkMrTwBj6X4hm5FIouRDx04ygi8ySUCG5ciOmmlB
-	 rnXRURZRoBaEBABluKm6s1ooSPg6/5vJ0c5PDm2T7hvOkG7Yz0ILyp/DyP1hy6D6FU
-	 P6SC4dr2RAL3tCkgwmcVX0BQqSmr8LAFWOjJYCxEoPNyYBckCPUab664EPelS7/XLd
-	 m+MgE3SIMejQw==
-Date: Tue, 2 Jun 2026 12:59:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org,
- linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Igor Korotin
- <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>,
- Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-i2c@vger.kernel.org
-Subject: Re: [RFC PATCH v3 1/4] i2c: rust: implement kernel::io::Io trait
- for I2cClient
-Message-ID: <20260602125919.4b289ce2@jic23-huawei>
-In-Reply-To: <CAO26r3QLJ1ZR1Qfjr6wQo+e3H6v=Z=bxkeE8+nseajYgWLbi4g@mail.gmail.com>
-References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
-	<20260524132824.54918-2-muchamadcoirulanwar@gmail.com>
-	<20260528162557.2b0b28d9@jic23-huawei>
-	<CAO26r3QZyVco2aZRqPSyWr3d-SBAVEknkaeNDM4g5DFCr3-2aw@mail.gmail.com>
-	<20260601100559.274d5b05@jic23-huawei>
-	<CAO26r3QLJ1ZR1Qfjr6wQo+e3H6v=Z=bxkeE8+nseajYgWLbi4g@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HpnsARGD"
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-307263ad0cbso2226455eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 05:00:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780401628; cv=none;
+        d=google.com; s=arc-20240605;
+        b=DJHODo+gSYh2qz3DQPvW8Ii51xrkg6X90xr10eDhUDNuG4J1ndPcw1c7yug69BjXID
+         t4x1cRaYMUsjox7gZgdJezaNoeLE9dfGPRUgJstDSmQ8SasPpSdsvYijaTCtP+EyL9IH
+         VlKsQVWi8ksBgVygCw3UD0fHSnPxJcfF++MP+MF09aiNPDTgFxjfSMi9IL6YHttEeADz
+         7HOjtVjsYLXeNK0M/Pg/iRRsuiZ1iEQ9aUebfE+707UOcJKurXVWkGcBOor9BHhmNjRC
+         WuaeELIX3GH6T+Z5jqMPFbKgXFT7P71CzKfEf2+CVMyfacOA08HvoFqqRvBORsvTXCgk
+         X8Eg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ltXCCc4wpurtipYSrGSPv75JAWyLn0B0neQXenFUA+U=;
+        fh=Ogo1wxuP8gfjhWT+Dv64q1K9Wpou4pWGNz33ZemiyP4=;
+        b=fVdhwxkzNLLGwy47Tc6kKNFQaZAY+Kn4QHfyotb5El+J82l5PSpPoo8RGQDx3n75GF
+         bEgiayOdHeVsBis1dN8IvTi95XX7hnR2VQbSwVnOU7PrJwjcVFb4zsjyLHWx+xY7xfYm
+         +UIlztu5OW3LnRxxEGfUCjLhOfenSOCMaJpfhRQEYwkQlmO69znSTBa+Y6SdT9OkuaPo
+         s+YbEhhszsj+KBCVbWSyKKKpbGl4QeOMq9pcwmjGOeVXgUSsI/8a+NZVBEOJa9RMXkof
+         xNfIy+qAb8rJkavvNHfhg+zlOuZ5V41JUXuxIUVDJkSfyufFnhr6BD+ubLpIUn9caHPG
+         oIjA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780401628; x=1781006428; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ltXCCc4wpurtipYSrGSPv75JAWyLn0B0neQXenFUA+U=;
+        b=HpnsARGDbG9IQ8Dv/Qfp9jbpu2ux3zNde1400BTJXTkrP2TPdyLLOpUzZJcSm34fkN
+         eP2AsQMgG/vfz3G5vcEBK37CCZ3AkO/BaD+yjBkhtDQcVPSSOgCkq6AEIxF62a6+ct+f
+         iw+Jh9ScEE6KmIo82LayCV5q+Iuu2JNsgwzuPCGxSuggPdIqzIMr/7A3mvYCsOHBsKhG
+         9hcorNNVF3k2l7r+elR0Qi4uyFQHXO5LT+G94KFCRplQboEDCnyd6GVkLGWVpAqqTc3p
+         Yd89XnO0iL4jAfioBfqaElG1Vh+ABP6WCMuu5xPzqQIHQS1bMUpPwzhjcCBD6s2rea90
+         fASg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780401628; x=1781006428;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ltXCCc4wpurtipYSrGSPv75JAWyLn0B0neQXenFUA+U=;
+        b=ABA+4Asf8NGRdomOxWjMXa/UsCS6kaozO4V4aH4JJCqckPUVJm0taLXFNdbGEo8QSC
+         1l+O/RcfShwBYiZTB3JmHmtVHK1zTK2RJjL7fuUF0nJBdep/Hdb3GsvElny0/dq44LPA
+         QUfi5G1gPr5bI5X1eZpYZ6wTmIXqzq0ZE5gtoYbmBfc8xDt40Qh7zh5K5FLEtA4gI3k1
+         bvBr+hzJBVbkW+NUtG0zjRF3D5IvGpzZYak+DPDbCX5BWI+YUhehU+T7dwJbCK8732jV
+         +W6CsgrhWMdLmmRYk9XnKIa2k9TFY9QapJouCf3ZIaOEtonmWGYRW22FhorjzyagWGME
+         VheQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/jXWBPHwvpRRQ6m+bi8OI83DGnirZFixwd6CMLkgvPvJKYIrRcaFmUhrdvS+NtMhbsQmgc+JY8xbY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwdZ5pdPjKnLxRDRH184qSlBumdFR7XnTtAkLncAl9YQphe/rRd
+	JIj7MyUjo6xu+O8dpYtF+D5AlW9o+ZuE9gL7lKEs1WHFp6KtxhXs4QY8GtZAmxr4Ofsm2M2nQK+
+	1KzEibzYqTGkFyxQItC5bjYsNQ5Gi1EU=
+X-Gm-Gg: Acq92OGopFxNtD0lIdrxPyg++L3yg5BMh6/0Fp9lFPDdd9iElCXZYCD04mCb9N5OYEe
+	BVFFiGlfaDUJfqZZy6cU6mp9XJzq/qbr+AqTOkUilMV7+rmAWSaiSHP7KhuDBIRf+MeXojAJ/pg
+	3IxbquGSBo06q/b+oQ9FFirzC7I3WOXO/e9zLBTHn0s1XYUAB9nKkGq7I88vaM9mdsEEgbNOCcI
+	65QoM1orP3cYbY/pcMJDqwEiHOmtHMF8NW48xHL4hgUjrlGzGV2s3M3IQHGK9oJpvVCVUJlDuwQ
+	EO62c6dPyNZg/+dy0jM=
+X-Received: by 2002:a05:7300:6da3:b0:304:cf6c:4cfe with SMTP id
+ 5a478bee46e88-304fa4d506emr7133140eec.9.1780401626958; Tue, 02 Jun 2026
+ 05:00:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260601151831.76350-1-clamor95@gmail.com> <20260601151831.76350-6-clamor95@gmail.com>
+ <ah6TGjRNnDpQGO60@ashevche-desk.local> <CAPVz0n21RGAaJc1sda4xyp1h0z+6R6FJ4=XWdOtB1mgtV8=RUA@mail.gmail.com>
+ <ah648F2plc4UHTM1@ashevche-desk.local>
+In-Reply-To: <ah648F2plc4UHTM1@ashevche-desk.local>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Tue, 2 Jun 2026 15:00:15 +0300
+X-Gm-Features: AVHnY4JW9CHRHy50Nkm6GtBSzM61Oxt7rnaqb6kAIuOEvYU0rp0GBajm0chAidM
+Message-ID: <CAPVz0n2J6cmWyYWL5aQcFJeDEezD0P_ianTjqUzXiFuDsYbVmQ@mail.gmail.com>
+Subject: Re: [PATCH v3 05/11] mfd: lm3533: Convert to use OF bindings
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
+	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2 Jun 2026 15:11:12 +0700
-Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com> wrote:
-
-> On Mon, 1 Jun 2026 10:05:00 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > +CC linux-i2c and Wolfram - make sure to keep them on future versions
-> > of this patch.  
-> 
-> Noted.
-> 
-> > If this was renamed to make it the rust smbus binding then I wouldn't
-> > be as bothered by this. For something claiming to be I2C this is a
-> > misleading interface and I am very much against it.  
-> 
-> Agreed. I'll rename it to make it clearly SMBus-scoped in v4.
-> 
-> > Understood that there is more to do, but given the regmap already
-> > encapsulates the smbus support you have here, I'd be much more in
-> > favour of the focus going on getting that done.
+=D0=B2=D1=82, 2 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 14:05=
+ Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Tue, Jun 02, 2026 at 01:31:44PM +0300, Svyatoslav Ryhel wrote:
+> > =D0=B2=D1=82, 2 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 1=
+1:24 Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5=
+:
+> > > On Mon, Jun 01, 2026 at 06:18:25PM +0300, Svyatoslav Ryhel wrote:
+>
+>
+> ...
+>
+> > > > +     device_for_each_child_node_scoped(lm3533->dev, child) {
+> > >
+> > > > +             if (!fwnode_device_is_available(child))
+> > > > +                     continue;
+> > >
+> > > Do we need this check?
 > >
-> > I would almost suggest not merging a non regmap interface for what you
-> > cover here, except we do get annoying corner cases where the device
-> > uses a mixture of smbus like commands and non smbus so there probably
-> > will need to be support at the i2c / smbus level.  
-> 
-> Makes sense. Will defer to Wolfram and the i2c folks on whether this
-> should wait for regmap or land as a clearly-scoped SMBus patch.
-> 
-> 
-> > Is this separating a safety argument from a bug check? If so why
-> > not just use the tighter one?  
-> 
-> > +    fn maxsize(&self) -> usize {
-> > +        256
-> > +    }  
-> 
-> The try_read8 here is a general SMBus wrapper, not AS5600-specific.
-> The u8 command (register address) applies to any SMBus device, so
-> 8-bit is the protocol max. If we tighten below that, it breaks devices
-> with registers at 0x80 and above. The 7-bit limit applies to the
-> device address, not this command byte.
+> > This is nice to have if the node is disabled. If we assume that there
+> > are no disabled nodes, I can remove it.
+>
+> It's already implied. See
+>
+> static struct fwnode_handle *
+> of_fwnode_get_next_child_node(const struct fwnode_handle *fwnode, struct =
+fwnode_handle *child)
+> {
+>         return of_fwnode_handle(of_get_next_available_child(to_of_node(fw=
+node), to_of_node(child)));
+> }
+>
+> And I believe it's written somewhere in the documentation (if not, feel f=
+ree to
+> patch that).
+>
 
-Ah.. Sorry, I was being stupid and had forgotten the meaning
-of the address byte (which device + that magic r/w bit which
-is oddly in that byte).  I even read wrong section of the smbus
-protocol description as it has both read byte and read byte data
-only the second of which takes a command byte.
+Very nice. Thank you.
 
-I think I got thrown by the generic naming of try_read8 that
-doesn't capture that distinction but given it comes from the trait
-I guess we can't do much about that.
+> ...
+>
+> > > > +     ret =3D sysfs_create_group(&dev->kobj, &lm3533_attribute_grou=
+p);
+> > >
+> > > No way. You should use .dev_groups.
+> >
+> > I did not change how driver does this, just swapped lm3533->dev to
+> > dev. I will set is back as it was.
+>
+> This is a serious race condition that needs to be addressed. Since you ar=
+e
+> touching this driver the fixes against known issues probably are the firs=
+t
+> things that have to be done.
+>
 
-Jonathan
+Fine, I will have a look.
 
-> 
-> Thanks,
-> Coirul
-
+> > > > +     if (ret) {
+> > > > +             dev_err(dev, "failed to create sysfs attributes\n");
+> > > >               goto err_unregister;
+> > > >       }
+>
+> ...
+>
+> > > Can you think on how to split this change to smaller steps? I believe=
+ it's
+> > > possible.
+> >
+> > No, I am done with tinkering with this patchset. It is broken enough
+> > and it has inflated enough.
+>
+> Probably you don't want this to be reviewed then? I believe other kernel
+> developers and maintainers will ask you the same.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
