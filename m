@@ -1,297 +1,238 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1A3B377553;
-	Tue,  2 Jun 2026 16:33:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34EE9372044
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 16:42:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780418033; cv=none; b=iF11LuneOVHulDA+OXcANVCrBofhf59/JmZ7nwdmMjOmbmkfGpLiFuEISG4Wkp99iSgUxfYTNKUdDZ2JzZ+7/4n3wjsFspo1iKUMt/fZP7O8klVIB2Y0GztowiXqPxG/u9eVjqFyGpKKzVbaHmeLLHUmqg0MmaTedU+WueSBu70=
+	t=1780418537; cv=none; b=F3LtX9vO2enD0CRvt27em/GVNh5SKOmFd6rh95Uzh+T7ruPOJWvitdsHqyuG8n01eWqiGG3UkD+YdnKXGOPctL+XTRBJa9GaVwdM7v4+Il4AuYCYD1hmJkP3l5Hfnkkr8qA8DzPZOxW8yU9/mY+IO501yKVb8BD49vuBDqrCDpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780418033; c=relaxed/simple;
-	bh=qsMK8Q2HM6jTGoQPEbrRSvbyVLrZlkP5fRZbE+xOgYQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HUJfTu/j5OoWnofXD6f938iA7DP7NEOwX4pYbfeUc1WbwHIJMN33cAjk381jvdYF9v9giMhN84PAn8biqjwfPEn7T6/nxDJWbgyMOCifPr1+KBbaCjbbT74lLtJDU/w9WHeR86NwwRjfN4MB4TmBVdYScBXEOGkR3huCuJdOH7s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=twLLZfCL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1780418537; c=relaxed/simple;
+	bh=s6aDIM5T4K9eEgStPnqzEH7yFVm5qbwDjPGc76UY+L4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=SAgnuQhO31ccJIBpq+4La9jTCaws3xSTaijdbZVGqpfgJyHmQ2Mk8C5zlzK5J2h7cf3DBSBdoXz2Sgk/2Q1lKWH7+0qFyEk3Yi7zstcr6F7i4FGd2197Sk/7hlSFfHx+wEYZ5peRAOnw90s00CDqHTTffm/WpsDVZODUu59Js+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PBa81a4/; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="twLLZfCL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABA96C2BCC7;
-	Tue,  2 Jun 2026 16:33:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1780418033;
-	bh=qsMK8Q2HM6jTGoQPEbrRSvbyVLrZlkP5fRZbE+xOgYQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=twLLZfCLW3M5hjfRLntb9hJiCNy/XPY9HzvKMWljRpaRh1kyDzCOOsIOHg4TGgsPL
-	 vidx1qtU4sAa1bislzL5vImsKqSEsjrmGTqAp//mF9sQmLmRl9sT32Qt3OGXCY4FDA
-	 uigfXaZRkeP/M+/VpIKH6twiP1mUGL9SQ0L5x7w0f9L8QljAYhHrFzoVrOKgJuX7VP
-	 q5WnerDOK1DpNwuo8G5HeBy2NArRp2C3pYSB1kWIOXZXBJv5qv5GDDGLYOIjbviuGV
-	 qdnIQBgajWNhqGnycdMe6mhnikL2GNpgnrX40HvXCDHWaUYuaEs9m1wg7p2CD4RDsx
-	 1ntPYKgrOtb+w==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A03BDCD5BD1;
-	Tue,  2 Jun 2026 16:33:53 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 02 Jun 2026 17:33:59 +0100
-Subject: [PATCH 12/12] iio: dac: ad5686: add gain control support
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PBa81a4/"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490388fd0dbso116743955e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 09:42:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780418535; x=1781023335; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=zCciMA4f/2leknE0hevkJM9c0pFZpflJQvPHBF72s8k=;
+        b=PBa81a4/OEWRqHeaosFr/rcSVB57ibcd7SCnyTwVa1d80Uy0ihbUMC6wUw+cenAQ+c
+         +pAo3Sh2L6y5xWaeVMvSfsodjk/7kuGvbkGkmH/Z0jagEOmpxMTSF7qTS5nLQenw0Zmt
+         WP5daLAXhIi/2InIleN9JRNiKZdJUkzG6MlG5/g8ebJUW4GM+C8gxJzxJFDUSdHIy6bU
+         7Zd3K48GS/u91WgVg6gLzHU0d28VOmqSPTZVI3/9/FDzfuONyLRoOq6lAXbXmZIQg0dU
+         AFgJypGrCXX1YQuCr15NNJ9hxXXFlRzFm440AT2RooldbCbNUqVdnONhuGpK7EXkT6jH
+         VDqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780418535; x=1781023335;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zCciMA4f/2leknE0hevkJM9c0pFZpflJQvPHBF72s8k=;
+        b=nckBP29iy1nINIe0OoSCIoHbhYbYuP6JppdCciupgIs9dIr/9ZmmV9oQ/dZG/mM4VS
+         HXm5Sw13mtlq/tsGImSsBtgzo7BxES/6RbgfB1WrCfTeWh16yrHKiU1POc/kHmlAJBw3
+         i43vz+//m+xeuaD0jKC0qiknhyHYNeINc/bFQ61uVjUp/zTxYpMtSFcVPu4U0aQSIVu7
+         pqcQ7VpenCpdESXZuMu6KbQAUa7NHLoY7xFoqHexules5955vjvLC3eY8j2eDzhSx+tW
+         YrvTwYxjB3pW6ALhfDRBn6ivF6nLXaVGRdBCUX2jsRJMVOcOTEgsazGTiA5vbdhv/YGh
+         /Z6Q==
+X-Gm-Message-State: AOJu0YzJyfxhmIFBcPsZJUFbK4sZ/XvZy7nI4gB51cswywnJTGNFYeaJ
+	oxxuy04/d97rjp0whGnuSEaEQeU6Kdo1N5tnDyaeF9xzSUFN4NpA+mLT
+X-Gm-Gg: Acq92OE5P9cmrdeTssWOR1ppjaNNSpn+kYJFrfjNlxarN0w/sKMFpeKWtpuh63f4ClJ
+	Vjr0A+mWk6/5dr1QrXp1AKJNMn7WB0osFpRXJhlAzY5CS2UlD7+6a7KXEf1WcfTruj9t2ou8+uT
+	I4UBfioVnYaHu63Du05iaIKqAgnZ/m7wlF1kOD4DumFdXKtqGE4O5TpDoJb/2uWBOvf2BI/wmei
+	E6M/PLPZ1QTL/gTV3gGtaVK9uHfJuOYJ77PMzKv971HPIGcBOLyFAyLXRdo4RIM68UFEOcQezRB
+	snVoQGCuG7NVDlT6KhQorrNSi3KrHrtYDW/wDzaafpliuKqExrffCXHs+Lml8NfVxQvr6Rm+iKv
+	ZHSIgegsPLeoTSycwqBtl60CIZHRq7YNJM7KahztfjWhywN+aPNMlyHcb5y9+8wDjyzfLf7D2aQ
+	kvCkzribXOZDWxucPdglLJ5FXHTMzBWtqoKkESIAQ9tetBKeBHAGXyZ9o+z0bugU/LZEH7nkHjx
+	SdUY83Pxn3BOss+CZPdgxk=
+X-Received: by 2002:a05:600c:35c9:b0:490:3d62:f5e1 with SMTP id 5b1f17b1804b1-490b50b972amr8330945e9.22.1780418534540;
+        Tue, 02 Jun 2026 09:42:14 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490b0e20bacsm74368025e9.6.2026.06.02.09.42.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 09:42:14 -0700 (PDT)
+Message-ID: <2df4cad5e29fbcb4c5c5f59ea0bf322c7a301bdc.camel@gmail.com>
+Subject: Re: [PATCH 2/4] iio: adc: mt6323-auxadc: add mt6323 PMIC AUXADC
+ driver
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: rva333@protonmail.com, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner	 <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>,  Andy Shevchenko	 <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger	 <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno	 <angelogioacchino.delregno@collabora.com>, Lee
+ Jones <lee@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>
+Date: Tue, 02 Jun 2026 17:43:18 +0100
+In-Reply-To: <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+References: <20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com>
+	 <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260602-ad5686-new-features-v1-12-691e01883d27@analog.com>
-References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
-In-Reply-To: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780418030; l=7911;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=vqAOSWmQzVBmJ7L7sOnIK3s3iVYpw9YgEy4GB79ktSg=;
- b=dbzjSv28Hz9cjn/9A2b1SXPj75QVaExCRn6xGJq1sKrP1p5R7gOYRQtQWr5aFmy7siCN9juIk
- LFAio8o6v/8C2SFAFUn87XkJRLRndVNbMkFcOdJ4oO3rmN8n8KyZY8X
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Tue, 2026-06-02 at 15:46 +0300, Roman Vivchar via B4 Relay wrote:
+> From: Roman Vivchar <rva333@protonmail.com>
+>=20
+> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
+> provides support for reading various channels including battery and
+> charger voltages, battery and chip temperature, current sensing and
+> accessory detection.
+>=20
+> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
+>=20
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd
+> Generation)
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> ---
+> =C2=A0MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=
+=C2=A0 8 ++
+> =C2=A0drivers/iio/adc/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 |=C2=A0 11 ++
+> =C2=A0drivers/iio/adc/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
+|=C2=A0=C2=A0 1 +
+> =C2=A0drivers/iio/adc/mt6323-auxadc.c | 299 +++++++++++++++++++++++++++++=
++++++++++++
+> =C2=A04 files changed, 319 insertions(+)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d1cc0e12fe1f..c9ad2417a3ef 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16256,6 +16256,14 @@ S:	Maintained
+> =C2=A0F:	Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> =C2=A0F:	drivers/mmc/host/mtk-sd.c
+> =C2=A0
+> +MEDIATEK MT6323 PMIC AUXADC DRIVER
+> +M:	Roman Vivchar <rva333@protonmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +L:	linux-mediatek@lists.infradead.org=C2=A0(moderated for non-subscriber=
+s)
+> +S:	Maintained
+> +F:	drivers/iio/adc/mt6323-auxadc.c
+> +F:	include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
 
-Most of the supported devices rely on a GAIN pin to control a 2x
-multiplier applied to the output voltage. Other devices, e.g. the
-single-channel ones, provides a gain control through a bit field in the
-control register. Some designs might have the GAIN pin hardwired to
-VDD/VLOGIC or GND, which would still be fine for this patch, that allows
-the scale property to be configurable with two available options.
+The above file was not added in this patch
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 96 +++++++++++++++++++++++++++++++++++++++++++++---
- drivers/iio/dac/ad5686.h |  8 ++++
- 2 files changed, 99 insertions(+), 5 deletions(-)
+...
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 54b953018cfa..fabe967c5225 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -13,10 +13,12 @@
- #include <linux/errno.h>
- #include <linux/export.h>
- #include <linux/kstrtox.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- #include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
-@@ -39,7 +41,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5310_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5310_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
-@@ -48,7 +51,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5683_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5683_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -191,9 +195,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->vref_mv;
--		*val2 = chan->scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		if (st->double_scale) {
-+			*val = st->scale_avail[2];
-+			*val2 = st->scale_avail[3];
-+		} else {
-+			*val = st->scale_avail[0];
-+			*val2 = st->scale_avail[1];
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 	return -EINVAL;
- }
-@@ -215,6 +224,63 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
- 				    chan->address, val << chan->scan_type.shift);
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
-+			st->double_scale = false;
-+		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
-+			st->double_scale = true;
-+		else
-+			return -EINVAL;
-+
-+		switch (st->chip_info->regmap_type) {
-+		case AD5310_REGMAP:
-+			return ad5310_control_sync(st);
-+		case AD5683_REGMAP:
-+			return ad5683_control_sync(st);
-+		case AD5686_REGMAP:
-+			/*
-+			 * even if the gain pin is hardwired on the board, the
-+			 * user is able to control the scale such that it
-+			 * matches the actual gain setting.
-+			 */
-+			gpiod_set_value_cansleep(st->gain_gpio,
-+						 st->double_scale ? 1 : 0);
-+			return 0;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	struct ad5686_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*vals = st->scale_avail;
-+		*length = ARRAY_SIZE(st->scale_avail);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -223,6 +289,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5686_info = {
- 	.read_raw = ad5686_read_raw,
- 	.write_raw = ad5686_write_raw,
-+	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
-+	.read_avail = ad5686_read_avail,
- };
- 
- static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
-@@ -244,6 +312,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
- 		.channel = chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
- 		.address = addr,				\
- 		.scan_index = chan,				\
- 		.scan_type = {					\
-@@ -470,6 +539,16 @@ const struct ad5686_chip_info ad5679r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
-+static void ad5686_init_scale_avail(struct ad5686_state *st)
-+{
-+	int realbits = st->chip_info->channels[0].scan_type.realbits;
-+	s64 tmp;
-+
-+	tmp = 2ULL * st->vref_mv * NANO >> realbits;
-+	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-+	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-+}
-+
- static irqreturn_t ad5686_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -569,6 +648,13 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
- 				     "Failed to get LDAC GPIO\n");
- 
-+	st->gain_gpio = devm_gpiod_get_optional(dev, "gain", GPIOD_OUT_LOW);
-+	if (IS_ERR(st->gain_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
-+				     "Failed to get GAIN GPIO\n");
-+
-+	ad5686_init_scale_avail(st);
-+
- 	udelay(5); /* power-up time */
- 	reset_control_assert(rstc);
- 	udelay(1); /* reset pulse: comfortably bigger than the spec */
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index bc793179db09..455d6bbefdfe 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -40,9 +40,11 @@
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
- 
-+#define AD5310_GAIN_BIT_MSK			BIT(7)
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5310_PD_MSK				GENMASK(10, 9)
- 
-+#define AD5683_GAIN_BIT_MSK			BIT(11)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5683_PD_MSK				GENMASK(14, 13)
- 
-@@ -124,9 +126,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-  * @ldac_gpio:		LDAC pin GPIO descriptor
-+ * @gain_gpio:		GAIN pin GPIO descriptor
-  * @vref_mv:		actual reference voltage used
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-+ * @scale_avail:	pre-calculated available scale values
-+ * @double_scale:	flag to indicate the gain multiplier is applied
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-  * @lock:		lock to protect access to state fields, which includes
-  *			the data buffer during regmap ops
-@@ -138,9 +143,12 @@ struct ad5686_state {
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
- 	struct gpio_desc		*ldac_gpio;
-+	struct gpio_desc		*gain_gpio;
- 	unsigned short			vref_mv;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
-+	int				scale_avail[4];
-+	bool				double_scale;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 	void				*bus_data;
+> +
+> +static const struct iio_chan_spec mt6323_auxadc_channels[] =3D {
+> +	MTK_PMIC_IIO_CHAN(baton2,=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_BATON2,=C2=A0=
+=C2=A0=C2=A0 MT6323_AUXADC_ADC6,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(ch6,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MT6323_AUXAD=
+C_CH6,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_ADC11,
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(bat_temp,=C2=A0 MT6323_AUXADC_BAT_TEMP,=C2=A0 MT6323_=
+AUXADC_ADC5,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(chip_temp, MT6323_AUXADC_CHIP_TEMP, MT6323_AUXADC_ADC=
+4,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(vcdt,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_VCD=
+T,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_ADC2,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(baton1,=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_BATON1,=C2=A0=
+=C2=A0=C2=A0 MT6323_AUXADC_ADC3,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(isense,=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_ISENSE,=C2=A0=
+=C2=A0=C2=A0 MT6323_AUXADC_ADC1,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(batsns,=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_BATSNS,=C2=A0=
+=C2=A0=C2=A0 MT6323_AUXADC_ADC0,=C2=A0
+> IIO_VOLTAGE),
+> +	MTK_PMIC_IIO_CHAN(accdet,=C2=A0=C2=A0=C2=A0 MT6323_AUXADC_ACCDET,=C2=A0=
+=C2=A0=C2=A0 MT6323_AUXADC_ADC7,=C2=A0
+> IIO_VOLTAGE),
+> +};
 
--- 
-2.43.0
+All of the above are IIO_VOLTAGE. Just remove _ch_type then.
 
+> +
+> +/**
+> + * struct mt6323_auxadc - Main driver structure
+> + * @regmap:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Regmap from PWRAP
+> + * @lock:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Mutex to=
+ serialize AUXADC reading vs configuration
+> + *
+> + * The MediaTek MT6323 (as well as a lot of other PMICs) has the followi=
+ng
+> hierarchy:
+> + * PMIC AUXADC <- PMIC MFD <- SoC PWRAP (wrapper for PWRAP FSM)
+> + *
+> + * Therefore, PWRAP regmap should be obtained using dev->parent->parent.
+> + */
 
+The above kerneldoc seems unnecessary to me.
+
+> +struct mt6323_auxadc {
+> +	struct regmap *regmap;
+> +	struct mutex lock;
+> +};
+
+...
+
+>=20
+> +
+> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
+> +				=C2=A0 const struct iio_chan_spec *chan,
+> +				=C2=A0 int *val, int *val2, long mask)
+> +{
+> +	struct mt6323_auxadc *auxadc =3D iio_priv(indio_dev);
+> +	int ret, mult;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->channel =3D=3D MT6323_AUXADC_ISENSE ||
+> +		=C2=A0=C2=A0=C2=A0 chan->channel =3D=3D MT6323_AUXADC_BATSNS)
+> +			mult =3D 4;
+> +		else
+> +			mult =3D 1;
+> +
+> +		/* 1800mV full range with 15-bit resolution. */
+> +		*val =3D mult * 1800;
+> +		*val2 =3D 15;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		scoped_guard(mutex, &auxadc->lock) {
+> +			ret =3D mt6323_auxadc_prepare_channel(auxadc);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret =3D mt6323_auxadc_request(auxadc, chan->channel);
+> +			if (ret)
+> +				return ret;
+> +
+> +			/* Hardware limitation: the AUXADC needs a delay to become
+> ready. */
+> +			fsleep(300);
+> +
+> +			ret =3D mt6323_auxadc_read(auxadc, chan, val);
+> +			if (ret)
+> +				return ret;
+
+Could be return mt6323_auxadc_read(...)
+
+- Nuno S=C3=A1
+>=20
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("MediaTek MT6323 PMIC AUXADC Driver");
