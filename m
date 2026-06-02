@@ -1,118 +1,279 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90DD396B9A;
-	Tue,  2 Jun 2026 19:02:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1F2B3A425B
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 19:03:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780426968; cv=none; b=HAkrkCiF+7AKC1b4vAVEfk3s3LWti/xVTcy1yga3yMVaCWZbwzyw0kpEbWSuvpAV2NNa/lrZtZGyPhoRyNC5Oykfrq7eTewRnEaJ8NBIkm2OfPvlxwR0ZM/urQUz0nTt5m+dg+CKNNV3BrtYgXWgM9OsN9gpLEVu0txN189lCMc=
+	t=1780427001; cv=none; b=pRRdGsVWTSiM7zOwKYeZ15n8tyTfDu8d7Ot24G1DqsF1setA6KpSQWbVWBylThwJJYPF63Yu0/yK6f8dtgjd2gb/ZFXjgxxevKeiPMFT771ouqpZxJG0euK6JVjjPIh0e1I/3iihhQbu2evN0C50zbUExcUxIs3c6+5tAJDtQvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780426968; c=relaxed/simple;
-	bh=/u1xXNGlVpEJUvCd6E2pa3ofnqfvGpTtYoYhyqQ+eWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=drYHWJHUCyg5Tv8MyBYTYyAmaNsk0Hqw8K+OQ0Z/G3OxtMJO9KkxhQL3tv24fU9cbArULdPOvGq4QrTrn1uhdjlLyOhTMj0WA0TNvK/RfFMQmw4E9W0RbmO1Fbxo77MxDMwCN7ICGj6rSzYZJY3+oHIfqVkFyv21EWdvg+AMS78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B1hnLdFg; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780427001; c=relaxed/simple;
+	bh=zJTu9veXEM3Lrrt040/1KsikJHjCRx0dCltdW93CFPc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rOUTvR4e9J+WaAIDmAIdZnKHPmG0T9DQdKrOnjIztVCuLgoo58Q4DvB2Hqw8eaTP9nxLMhwJQXj+gaqcm3VwHCMv2nhTqxZqi50HOrOb+VEVxP7rPJgOPypUO5GmozrmyM+gSw3E/+1vmCruROLXOQt/huu006H9DAHN0Ks7LCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MdKRhZ/H; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B1hnLdFg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780426966; x=1811962966;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/u1xXNGlVpEJUvCd6E2pa3ofnqfvGpTtYoYhyqQ+eWE=;
-  b=B1hnLdFgypGxed3bwN0Uy1ko3Im1shCAEsviyXnzXTe1BCViqjfMGjVc
-   vk0zgNxgPFPQJHhwwk6tOFTlAdNktV4TaeaztbIA/aivBYK6ck18kHH8c
-   XRHhdHiTOEWcCD5sV+0BRZsXYeajLusFd03wPGalGiFBF0cWQOTT+qGGf
-   bgwwMKTbEhdheYlG67UUbsg6QFilo/TCEUMzs0VCoY6da+ZJx3jl1ZxX/
-   ZPOWf/VayKEI9oE9gKVvVPXx22MhbcRtKBvXnDHgEMvCorEI0otQ7d6DF
-   ES+at4XDnaXCQKXLBQFXqjYxQDIUllCg0gg2eQ3jhIkzjbvADUbevsHJo
-   Q==;
-X-CSE-ConnectionGUID: hcNyYqVLSZ2veQ05qF3A2g==
-X-CSE-MsgGUID: jFx8dJgqQUWORQ29mtPiag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="92604261"
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="92604261"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 12:02:45 -0700
-X-CSE-ConnectionGUID: fEA8PSRYRTyo2m39nk+amw==
-X-CSE-MsgGUID: mBgqNq96RlWugG4ZhGL6Tg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="245804668"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 12:02:41 -0700
-Date: Tue, 2 Jun 2026 22:02:39 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MdKRhZ/H"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-49068493267so68627725e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 12:03:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780426997; x=1781031797; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vNX7HWh/NKDhCbF70pYqvTRR2al/vJaAaaX8bCfRONo=;
+        b=MdKRhZ/HlVQzSD/KFNQd02wtIP63RQQH/bq6oXVzcYRcnxtViHMsolCOp0pvtBJ4XX
+         1Tb4lMVBDWYoXGY/6WKB/MfgMcEV1ZWyZL/nCpAtCmAcbstni7g7+dmZ814pQkV0myt3
+         xudFXF6NIqODYIJvCRMj8pIbpRCpLcUOu/eWp5LSRIfUiDh9uNEbqrdfmrttZvcRUq1d
+         hL+O0VGHIKGS8M7Ft5F5aFOy6xDMPQmPcouQYFAb9b2BhPh46cDG7g7sV50hJtXW3y7x
+         wnVJKwOUk0CmxPraNecRkQReIfSla7dX15RnHCxdZlDkk6gzl76Z8BAUVlSbpANIWrZc
+         3heg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780426997; x=1781031797;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vNX7HWh/NKDhCbF70pYqvTRR2al/vJaAaaX8bCfRONo=;
+        b=OZXpmpR3WVx7RwvgqY+474+TUok+Q6Wh9O0k7vNe//GYcSrhxvacMb6PbTCLJzwBUD
+         7xIRRJBv4B9vQD3rvN49XADOcG0Br3BlhtwF78ilGYwK+xH5EKk/h0xsipVCIT+yA8yL
+         ulR+q2rqJimeXw0pDfi3FkUUhJb/t3oHv27dBtl6gjWyYJk85lErTt3F88ACspymgxCZ
+         Upz4ZZu1H+aEbjZb82Jwf8OSfm37j32wfFUfkzj51Od2dWKXup1n/eTR/MsHpJ9pDTV+
+         zB32LV71/lthKXzJ02v056ogWiYO9u/4UMNREzsxKAb+MwyO6boKmnqUfkPtog/2YATa
+         tdJA==
+X-Gm-Message-State: AOJu0Yyi+/hmqyezBrZldNI6CrBK4Pnzw/RysJeHBOfHjKMnGcxrXdeW
+	qS33242iGqM8E5ZEhmcWwP4GseBdhGya8SS8EmZ9zTbOIfdTv85uGVCh
+X-Gm-Gg: Acq92OE5dCG1OdCJPuQwX3CpghnQTtvtm4bYEA8h/ujlHmWE4Id0+hgCkalPQtvjhd+
+	RAk30x19pg/MBOlIKZ5beBFD0daPj1LjQ10FbFEYlF3HU2cxkKOz1uIsg7EoHgftQXWxXdpKvpj
+	E/e4k21xrkgP/R6o4vVHTKJeg/G+8z/KHfIEpqA+BO+1o5pKvEdUwVbM4lkzoS+jiUJLE2TcZDk
+	vy6CGVdOXGwv/w4eJgp5qltmWaQxPFAe+w+J4tmN29rl3sZ/wSQkmavcVMX2qQeuoAchecz1FSs
+	Uk7stsm8Yx0ZLk1waJlHP9reCgcIEpPRl22lh6bo2i9anNHCY/3V8z4AoWbExJHZziVJCNqpVBF
+	BF8rrdbUPfx+XImOv3LFXxvTIlNb85vZ5Om2yU/iY72Lr3Kv4e87W+bBFQjh2lb3HYs6cDG4ldj
+	YLyqtfIABzJnQ+KLXVl8Gw+MSLTbbxQGhCFxY0B9DgK7s7XHdg/sZvcepjGLRxIrTCOFbESIXh9
+	ybIb3FMSUA51KujyvVfBkQ0Dw==
+X-Received: by 2002:a05:600c:3495:b0:490:3c90:2cda with SMTP id 5b1f17b1804b1-490b5ed636amr1404525e9.20.1780426996666;
+        Tue, 02 Jun 2026 12:03:16 -0700 (PDT)
+Received: from fedora ([105.190.243.46])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f368e9fsm1374473f8f.37.2026.06.02.12.03.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Jun 2026 12:03:16 -0700 (PDT)
+From: Jad Keskes <inasj268@gmail.com>
+To: linux-staging@lists.linux.dev
+Cc: linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 05/12] iio: dac: ad5686: add support for missing power
- supplies
-Message-ID: <ah8oz29R8mem6H5X@ashevche-desk.local>
-References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
- <20260602-ad5686-new-features-v1-5-691e01883d27@analog.com>
+	Dan Carpenter <error27@gmail.com>,
+	Jad Keskes <inasj268@gmail.com>
+Subject: [PATCH v2] staging: iio: addac: fix CamelCase naming in adt7316
+Date: Tue,  2 Jun 2026 20:03:08 +0100
+Message-ID: <20260602190308.158051-1-inasj268@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260602-ad5686-new-features-v1-5-691e01883d27@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 02, 2026 at 05:33:52PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> Get and enable regulators for vdd, vlogic and vref input power pins. Vdd
-> is the input power supply, while vlogic powers the digital side. vref is
-> replacing vcc, which is being deprecated, but still supported. The value
-> of vref_mv is checked so that a device without internal voltage reference
-> cannot proceed without an explicit supply. For correct operation, vdd and
-> vlogic are required, then devm_regulator_get_enable() is used so the
-> driver can still work without them by using the stub/dummy regulators.
-> Error report uses dev_err_probe(), which helps debugging an init issue.
+checkpatch flagged a few CamelCase names in this driver.
+AIN and DAC prefixes are lowercased as standard kernel style.
+Vref is kept capitalized since V stands for Voltage and is a
+proper technical abbreviation.
 
-...
+DA_AB and DA_CD are renamed to dac_ab and dac_cd to match the
+register constants ADT7316_VREF_BYPASS_DAC_AB and
+ADT7316_VREF_BYPASS_DAC_CD that they reference.
 
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-> +	if (ret == -ENODEV) /* vcc-supply is deprecated, but supported still */
-> +		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+Signed-off-by: Jad Keskes <inasj268@gmail.com>
+---
+ drivers/staging/iio/addac/adt7316.c | 64 ++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 32 deletions(-)
 
->  	if (ret < 0 && ret != -ENODEV)
-
-It can be deduplicated now with
-
-	else if (ret < 0)
-
-> -		return ret;
-> +		return dev_err_probe(dev, ret, "failed to read vref voltage\n");
->  
->  	st->use_internal_vref = ret == -ENODEV;
->  	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
-
->  
-
-Drop this blank line as the assignment and check are coupled.
-
-> +	if (!st->vref_mv)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "invalid or not provided vref voltage\n");
-
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 8a9a8262c..b5d62f1d3 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -663,7 +663,7 @@ static IIO_DEVICE_ATTR(da_high_resolution, 0644,
+ 		adt7316_store_da_high_resolution,
+ 		0);
+ 
+-static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
++static ssize_t adt7316_show_ain_internal_Vref(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+ {
+@@ -677,7 +677,7 @@ static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
+ 		!!(chip->config3 & ADT7516_AIN_IN_VREF));
+ }
+ 
+-static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
++static ssize_t adt7316_store_ain_internal_Vref(struct device *dev,
+ 					       struct device_attribute *attr,
+ 					       const char *buf,
+ 					       size_t len)
+@@ -704,9 +704,9 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
+ 	return len;
+ }
+ 
+-static IIO_DEVICE_ATTR(AIN_internal_Vref, 0644,
+-		adt7316_show_AIN_internal_Vref,
+-		adt7316_store_AIN_internal_Vref,
++static IIO_DEVICE_ATTR(ain_internal_Vref, 0644,
++		adt7316_show_ain_internal_Vref,
++		adt7316_store_ain_internal_Vref,
+ 		0);
+ 
+ static ssize_t adt7316_show_enable_prop_DACA(struct device *dev,
+@@ -787,7 +787,7 @@ static IIO_DEVICE_ATTR(enable_proportion_DACB, 0644,
+ 		       adt7316_store_enable_prop_DACB,
+ 		       0);
+ 
+-static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct device *dev,
++static ssize_t adt7316_show_dac_2Vref_ch_mask(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+ {
+@@ -798,7 +798,7 @@ static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct device *dev,
+ 		chip->dac_config & ADT7316_DA_2VREF_CH_MASK);
+ }
+ 
+-static ssize_t adt7316_store_DAC_2Vref_ch_mask(struct device *dev,
++static ssize_t adt7316_store_dac_2Vref_ch_mask(struct device *dev,
+ 					       struct device_attribute *attr,
+ 					       const char *buf,
+ 					       size_t len)
+@@ -825,9 +825,9 @@ static ssize_t adt7316_store_DAC_2Vref_ch_mask(struct device *dev,
+ 	return len;
+ }
+ 
+-static IIO_DEVICE_ATTR(DAC_2Vref_channels_mask, 0644,
+-		       adt7316_show_DAC_2Vref_ch_mask,
+-		       adt7316_store_DAC_2Vref_ch_mask,
++static IIO_DEVICE_ATTR(dac_2Vref_channels_mask, 0644,
++		       adt7316_show_dac_2Vref_ch_mask,
++		       adt7316_store_dac_2Vref_ch_mask,
+ 		       0);
+ 
+ static ssize_t adt7316_show_DAC_update_mode(struct device *dev,
+@@ -948,7 +948,7 @@ static IIO_DEVICE_ATTR(update_DAC, 0644,
+ 		       adt7316_store_update_DAC,
+ 		       0);
+ 
+-static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
++static ssize_t adt7316_show_dac_ab_Vref_bypass(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+ {
+@@ -959,7 +959,7 @@ static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
+ 		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_AB));
+ }
+ 
+-static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
++static ssize_t adt7316_store_dac_ab_Vref_bypass(struct device *dev,
+ 					       struct device_attribute *attr,
+ 					       const char *buf,
+ 					       size_t len)
+@@ -982,12 +982,12 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
+ 	return len;
+ }
+ 
+-static IIO_DEVICE_ATTR(DA_AB_Vref_bypass, 0644,
+-		       adt7316_show_DA_AB_Vref_bypass,
+-		       adt7316_store_DA_AB_Vref_bypass,
++static IIO_DEVICE_ATTR(dac_ab_Vref_bypass, 0644,
++		       adt7316_show_dac_ab_Vref_bypass,
++		       adt7316_store_dac_ab_Vref_bypass,
+ 		       0);
+ 
+-static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
++static ssize_t adt7316_show_dac_cd_Vref_bypass(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+ {
+@@ -998,7 +998,7 @@ static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
+ 		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_CD));
+ }
+ 
+-static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
++static ssize_t adt7316_store_dac_cd_Vref_bypass(struct device *dev,
+ 					       struct device_attribute *attr,
+ 					       const char *buf,
+ 					       size_t len)
+@@ -1021,12 +1021,12 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
+ 	return len;
+ }
+ 
+-static IIO_DEVICE_ATTR(DA_CD_Vref_bypass, 0644,
+-		       adt7316_show_DA_CD_Vref_bypass,
+-		       adt7316_store_DA_CD_Vref_bypass,
++static IIO_DEVICE_ATTR(dac_cd_Vref_bypass, 0644,
++		       adt7316_show_dac_cd_Vref_bypass,
++		       adt7316_store_dac_cd_Vref_bypass,
+ 		       0);
+ 
+-static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
++static ssize_t adt7316_show_dac_internal_Vref(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+ {
+@@ -1041,7 +1041,7 @@ static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
+ 		       !!(chip->ldac_config & ADT7316_DAC_IN_VREF));
+ }
+ 
+-static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
++static ssize_t adt7316_store_dac_internal_Vref(struct device *dev,
+ 					       struct device_attribute *attr,
+ 					       const char *buf,
+ 					       size_t len)
+@@ -1082,9 +1082,9 @@ static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
+ 	return len;
+ }
+ 
+-static IIO_DEVICE_ATTR(DAC_internal_Vref, 0644,
+-		       adt7316_show_DAC_internal_Vref,
+-		       adt7316_store_DAC_internal_Vref,
++static IIO_DEVICE_ATTR(dac_internal_Vref, 0644,
++		       adt7316_show_dac_internal_Vref,
++		       adt7316_store_dac_internal_Vref,
+ 		       0);
+ 
+ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
+@@ -1644,13 +1644,13 @@ static struct attribute *adt7316_attributes[] = {
+ 	&iio_dev_attr_da_high_resolution.dev_attr.attr,
+ 	&iio_dev_attr_enable_proportion_DACA.dev_attr.attr,
+ 	&iio_dev_attr_enable_proportion_DACB.dev_attr.attr,
+-	&iio_dev_attr_DAC_2Vref_channels_mask.dev_attr.attr,
++	&iio_dev_attr_dac_2Vref_channels_mask.dev_attr.attr,
+ 	&iio_dev_attr_DAC_update_mode.dev_attr.attr,
+ 	&iio_dev_attr_all_DAC_update_modes.dev_attr.attr,
+ 	&iio_dev_attr_update_DAC.dev_attr.attr,
+-	&iio_dev_attr_DA_AB_Vref_bypass.dev_attr.attr,
+-	&iio_dev_attr_DA_CD_Vref_bypass.dev_attr.attr,
+-	&iio_dev_attr_DAC_internal_Vref.dev_attr.attr,
++	&iio_dev_attr_dac_ab_Vref_bypass.dev_attr.attr,
++	&iio_dev_attr_dac_cd_Vref_bypass.dev_attr.attr,
++	&iio_dev_attr_dac_internal_Vref.dev_attr.attr,
+ 	&iio_dev_attr_VDD.dev_attr.attr,
+ 	&iio_dev_attr_in_temp.dev_attr.attr,
+ 	&iio_dev_attr_ex_temp.dev_attr.attr,
+@@ -1684,15 +1684,15 @@ static struct attribute *adt7516_attributes[] = {
+ 	&iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+ 	&iio_dev_attr_powerdown.dev_attr.attr,
+ 	&iio_dev_attr_fast_ad_clock.dev_attr.attr,
+-	&iio_dev_attr_AIN_internal_Vref.dev_attr.attr,
++	&iio_dev_attr_ain_internal_Vref.dev_attr.attr,
+ 	&iio_dev_attr_da_high_resolution.dev_attr.attr,
+ 	&iio_dev_attr_enable_proportion_DACA.dev_attr.attr,
+ 	&iio_dev_attr_enable_proportion_DACB.dev_attr.attr,
+-	&iio_dev_attr_DAC_2Vref_channels_mask.dev_attr.attr,
++	&iio_dev_attr_dac_2Vref_channels_mask.dev_attr.attr,
+ 	&iio_dev_attr_DAC_update_mode.dev_attr.attr,
+ 	&iio_dev_attr_all_DAC_update_modes.dev_attr.attr,
+ 	&iio_dev_attr_update_DAC.dev_attr.attr,
+-	&iio_dev_attr_DAC_internal_Vref.dev_attr.attr,
++	&iio_dev_attr_dac_internal_Vref.dev_attr.attr,
+ 	&iio_dev_attr_VDD.dev_attr.attr,
+ 	&iio_dev_attr_in_temp.dev_attr.attr,
+ 	&iio_dev_attr_ex_temp_AIN1.dev_attr.attr,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.54.0
 
