@@ -1,150 +1,114 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 194053FE35F
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 14:33:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F7303EB809
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 15:39:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780410838; cv=none; b=oN+w6W27eMXCVsSRlec6OB4oiwnJHI6PFQWnGS3GNTn0kcq5pStd3w+adLl12suWFRMxgEEoPNRA5vV88brlnoZ/LfoP8dB2nLOzqHAXvmuOkevJ05CEWThkLY0SrmzBd1QaAs4zWOhi4MuEPU7/6zdwaSp+ahsCUtVep33qj5M=
+	t=1780414785; cv=none; b=b1ujCSVz4aImHXwWsfhd3VbdI4gYbfiWjOaFhTuRrP5mpksNAeg4c81zHRKGBUbqqwdo2ObeAqtS1wCGLC/SNy7WsJQRrMiuz6yB6nqCOwDXrkVD4rh7k1JdriH+zRqqNFTwm87T7j501UifxFEKjbuaNzj8+lVEo9832x4HPwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780410838; c=relaxed/simple;
-	bh=Nd4vw1L+ymZYbLRTwg/NZf2mrSWax/xtCg820VWD/gM=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=ZIpMlvdLveSZukbFB3K0phoW0IwuxBZAndt+H1C8AJO7Clwd9b075Tro0g2PB6fBcVJycBb/jnk5LvxU4bOVkfrr/BmIKKBAGyYOXg2bJFuc86cLyDs8Z/e0YIDmXguz/ouoWr6yZCWG9rQ6lo8xuKRM5p2c4cMeatC1SvZ7hNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aXeh9mMG; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780414785; c=relaxed/simple;
+	bh=uzjZVtOVp9rHxaK2qDp5BRQbRRi0kT5DlVhtDRyB91M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eJ0bC5rEHMCf9Bpux95/acj/M/ga6SfqK13QZX/IgnIHMR1zQZx7X/4gU0uaX3sxEXdV3JU6p46MO07eXldbKQf/y0IFfLqvG/YneypTD6OYkfcQkscue8MMXBUfMDDpLVz8U6XmMmGJQ4P83vsTwmonulRU2pDz+KsvZTL9ksQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com; spf=pass smtp.mailfrom=trailofbits.com; dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b=eqAGXE/Y; arc=none smtp.client-ip=209.85.217.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=trailofbits.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=trailofbits.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aXeh9mMG"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-490686877a1so69552985e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 07:33:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=trailofbits.com header.i=@trailofbits.com header.b="eqAGXE/Y"
+Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-6c449ac3588so1494129137.3
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 08:39:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780410835; x=1781015635; darn=vger.kernel.org;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QmM1BrMGkrG5v4hb15wulvAOXm7AmR3Jxwy4Qx7FlCE=;
-        b=aXeh9mMGX0IADC/tj7dTVxhdkW5rtHlFqurvX+Myfr7l27eCi9tcYKbgttM1O3YrnQ
-         pelVK3c8lpkfSAVrAj4VlnV0MdTJ41248g4fNxxHLqXucNiok4FXFL3o/YQ1TwN0Ly+N
-         PGZ4zlswkZgYQaPsyV1gdHAGj8SKu54rQ9lHGtJF0/cwYu8Fkysx3FmWn96hG8hMAWrw
-         NISJm8+FJUCQ8lUJhn9K+XWDGRsbTcC33F72a0AqDI7qzAsWIC5V8tb3e3fK8jLkK7Sn
-         5T9S2vGDw+TUL9MRPf7k+FPtX5kY0RUNacHxZdD/J+6ExCWqzthJ2iNvGHtuTJn3rXyG
-         PRzg==
+        d=trailofbits.com; s=google; t=1780414783; x=1781019583; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KFxuTfObIS5kNIa/g+jesmeajMd2HNasePUY4XZFIUQ=;
+        b=eqAGXE/YoqGNjy78wrSHd+HnxbFGcMqhsBH+A0uuY2qghdP82PdwQsLA9S54VjS7D6
+         GQkCnTaeZpfM8rIl0RlIq5tWsqKJqIicj/o7t5TQZPKrqJSW8vl/oDCBOkVp6tA1Oy/2
+         tKyBivnA+3wcgm1K4sOtOxXhL2nUb1AqpTE+sVf+daNWnIJFu94eTj7fqm91uRtV80C3
+         3RNuD82Tk9WZiNNGPNiNRU5F6FUZKyiUaYCrDo/lVIhE8mO1MofLSSfGq1oCxU1xna47
+         bU7xOohdANLdra+nrZwSJ9I+r4ldFSW+gvAeHIFtbRD8AVrdLeo+OCowLpK/uQ5F7IAn
+         /SWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780410835; x=1781015635;
-        h=in-reply-to:references:from:to:cc:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QmM1BrMGkrG5v4hb15wulvAOXm7AmR3Jxwy4Qx7FlCE=;
-        b=HeWqyt/gWDrpyroevK5Dv2gQeqSmj+XDjCfIi1QLKeWDk03MUnLfICweMICQbeCU7L
-         SB0sOTAQJj4sbZOFV/TO/+mpppn41vEZnc2rV+uwhcgOsGWplfCjc4tgqI91xzDq9aGf
-         PLZ0rwLHJihja1lVSleF0rHIAawY4hikOu3VYF6AJFqBqj6GiAVe1eHjMvG1dTABVU8U
-         iSzRsPUwa2wRqyvzppJy9U9oeZNb9ukFMHdly8G4kjtvkITvxvJgomaqQkFvh73Qxa1f
-         I249KNrSoYVchU9G1kS9hF3GceWzMTxBs7hCQycmWPH76ZAuFn6thYKQZbOYRVGRHPkc
-         0l9A==
-X-Forwarded-Encrypted: i=1; AFNElJ/8HqC9D3H/PdO+jxsqjZtZ0a21o88Fa3Y391fqX566YzAF0fw+/san9P3lvElTUnQPIYXDv7NeFMk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwjDRQ/eDH1EoCtrv7Rgl+dKFw5GuZQyuXc1/wJXtYULtBcF4ME
-	RuaV/taONJA2yjpdd/xBDdccJMKMS/gd2aQtAhsEEDDh8fgIG56r7zarmxHi/w==
-X-Gm-Gg: Acq92OEk8HpFKA1TG2Xiv4cEBoFZ4KaIUk8uyUqphtGbly8ad4pRSXYylyup8mFFNPg
-	X/YbyKd0Zx/bkE9HXMXiK6syWFiC8iSw0naYtghfLDniCYQ7KkN7aN6JgYgC3XH4zBehBEQHPV1
-	ybeUgp0hCpNkCkp5hxKsevkKQ/LIMDHoklL9nTSaYoZ1B1EOVgRM5RcZSsixB36ni5lRmn+jHMa
-	5+OwCTeJBNKpiFslOTDe3ALuVcxNS5+XBGFf5IefEz+N2C1sXE+PNH3hV7lDizHJ43q3M/wBS6R
-	xoDNQdQblJeSE6r3n923UBgFEZUTwL/XfBx/N3a8czpf247d/qCwdu9Z1a2WwInOXGw7kSv8j9H
-	xYGFUGeFJMQV5NzUFaPzUu1ArUgFL7x43uByDYa1WCGeat3ZWgUNRdukPJcsjVhROwqgrTeb5i8
-	Wd24H0QuPmwZiX2DkWC0xNjEkT5HJ+4BSGDQ3aOu4UYzbaRzw=
-X-Received: by 2002:a05:600c:3b01:b0:490:b11e:e4be with SMTP id 5b1f17b1804b1-490b11eef57mr57031085e9.3.1780410835288;
-        Tue, 02 Jun 2026 07:33:55 -0700 (PDT)
-Received: from localhost ([2001:4bb8:152:df59:3b69:56ea:a39b:adb4])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490b0e13f91sm91140185e9.3.2026.06.02.07.33.53
+        d=1e100.net; s=20251104; t=1780414783; x=1781019583;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KFxuTfObIS5kNIa/g+jesmeajMd2HNasePUY4XZFIUQ=;
+        b=S74syvFgDr/VD+jiM9VjlGVI5gQisnM2Q4CxFMG2eHd6W8LxfojRXAVyFAvtDR40t6
+         +2QzInOvyoFkg9DpHURJZb1cl7h/nJsOCboJ+JZ9G+vataOW2C/JQgl/wAYnYC+/rkDJ
+         r2pzSvxfMjiXY9GzUxZz1wxsoJjbadNW+pdwJhaANZ0tEocVBtHnxD1bEahzZnQ80wgC
+         oItudfl1yRlHXnZPIg9qWsEPCY18R1q4bbOthHxRpy7RMcIRZ4MHslLd9j1g1sUvSV7R
+         0SiN+8hcU6IBmSFWrfVeI48NARqo+FhWNZBgGsJvRSw7KWN2atqAkuAyMkx9We+7oYen
+         ka6A==
+X-Forwarded-Encrypted: i=1; AFNElJ8nEhBRtCWK6y8H4jGG5Q4CrUltJ9jMlMXVCAN0ZdfMYtDvaSIMf/+qwCljW9N9sOKNca737qIVMt4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLRWFY09Dsw3rwx3GPoc/2I2C8iWn5Fw6Qp4niPdgvR+SE7L8o
+	tYN2PaTSGEobqM63xfMGb1LoO/cYJxFSxp6wUXmg5M7AxytFhbhE/R9CvBAkLoTeHJQ=
+X-Gm-Gg: Acq92OH0beSFi3zn2xHSRJ+BxcKBTcOHWvaN/CxH9H5j+zUwcO8Z2nYMagao5ysBYP3
+	bE/9CRXW6ax6sk2jRinmiEooIrhRGjryhTwsY+jzfjv41fLy+TRId7HdPI6lpFgrlcodAM8K30M
+	B+Qg4qirBcgPkGviYfxuR82jLhol4OOKg4V6JzLcgQpVP0w2JCNsiwsr464cVA94fQlQuFO5X1x
+	e53dbHr+4C9QPsmPDZJyWfBbS8BXlW7satUq/dds8dDvou9ymeVxfibTL8AK0p0VN6pTZ6dk0pm
+	6CL7/ppTQgSzAG58nLpJVZEBDsMiOB2eNThSLwAmABO+2DxZeoZ2ncbcxy6HPrEeTDgrGTkKKWM
+	NAEBOtapBRdw80UN8bWAg+xZQ6C2gTMTsVLYSm/DnK613n5RYy0fARM3WSaCWmsOlbpqqOmdUq+
+	BkSYcsua3wPPNemI+n3fRGNhYmAZilRLWJGve5LA==
+X-Received: by 2002:a05:6102:3754:b0:5ff:c5c8:2734 with SMTP id ada2fe7eead31-6ea2cd9b752mr361252137.25.1780414783445;
+        Tue, 02 Jun 2026 08:39:43 -0700 (PDT)
+Received: from localhost ([161.35.96.86])
+        by smtp.gmail.com with UTF8SMTPSA id 6a1803df08f44-8ccea216beesm120744206d6.39.2026.06.02.08.39.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jun 2026 07:33:54 -0700 (PDT)
+        Tue, 02 Jun 2026 08:39:42 -0700 (PDT)
+From: Sam Moelius <sam.moelius@trailofbits.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Jonathan Santos <Jonathan.Santos@analog.com>,
+	Jorge Marques <jorge.marques@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+	=?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje@dujemihanovic.xyz>,
+	Stefan Popa <stefan.popa@analog.com>,
+	Julien Stephan <jstephan@baylibre.com>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS)
+Cc: Samuel Moelius <samuel.moelius@trailofbits.com>
+Subject: [PATCH] iio: adc: ad7380: select REGMAP
+Date: Tue,  2 Jun 2026 15:39:26 +0000
+Message-ID: <20260602153926.1540911-1-sam.moelius@trailofbits.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 02 Jun 2026 16:33:52 +0200
-Message-Id: <DIYMYT4VSZ25.1BOXCDTHJNNVE@gmail.com>
-Subject: Re: [PATCH v4 2/4] iio: light: add support for veml6031x00 ALS
- series
-Cc: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Lars-Peter Clausen"
- <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Rishi Gupta"
- <gupt21@gmail.com>, "David Lechner" <dlechner@baylibre.com>,
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, "Matti Vaittinen" <mazziesaccount@gmail.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-To: "Jonathan Cameron" <jic23@kernel.org>, "Javier Carrasco"
- <javier.carrasco.cruz@gmail.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
-References: <20260531-veml6031x00-v4-0-e64f7fdce38d@gmail.com>
- <20260531-veml6031x00-v4-2-e64f7fdce38d@gmail.com>
- <ah6p-f2RCW8VcuDR@ashevche-desk.local>
- <DIYI40YK6CSX.2P4017PHVJHCT@gmail.com>
- <20260602133806.53590943@jic23-huawei>
- <DIYKK894ZZW5.26RO6S0GL2201@gmail.com>
- <20260602152939.78e46dfd@jic23-huawei>
-In-Reply-To: <20260602152939.78e46dfd@jic23-huawei>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Tue Jun 2, 2026 at 4:29 PM CEST, Jonathan Cameron wrote:
-> On Tue, 02 Jun 2026 14:40:47 +0200
-> "Javier Carrasco" <javier.carrasco.cruz@gmail.com> wrote:
->
->> On Tue Jun 2, 2026 at 2:38 PM CEST, Jonathan Cameron wrote:
->> >> >> +/*
->> >> >> + * The gain selector encodes (PD_D4 << 2) | GAIN to identify each=
- gain setting.
->> >> >> + * Gains are multiplied by 8 to work with integers. The values in=
- the iio-gts
->> >> >> + * tables don't need corrections because the maximum value of the=
- scale refers
->> >> >> + * to GAIN =3D x1, and the rest of the values are obtained from t=
-he resulting
->> >> >> + * linear function.
->> >> >> + * TODO: add support for MILLI_GAIN_X165 and MILLI_GAIN_X660
->> >> >> + */
->> >> >> +#define VEML6031X00_SEL_MILLI_GAIN_X125  0x07
->> >> >> +#define VEML6031X00_SEL_MILLI_GAIN_X250  0x04
->> >> >> +#define VEML6031X00_SEL_MILLI_GAIN_X500  0x03
->> >> >> +#define VEML6031X00_SEL_MILLI_GAIN_X1000 0x00
->> >> >> +#define VEML6031X00_SEL_MILLI_GAIN_X2000 0x01
->> >> >
->> >> > Not sure if these one-time use definitions improve or not the reada=
-bility
->> >> > of the code. Up to Jonathan.
->> >> >
->> >>
->> >> I prefer these definitions, and a similar pattern is used in multiple
->> >> drivers in IIO, but I have no strong feelings about it.
->> >
->> > Looking again at this, what do the numbers in the defines actually mea=
-n?
->> > Seems a bit odd to have the base gain of 1 being called X125.
->> > Maybe a comment on that would be useful.  I don't mind either way
->> > on defines for this but if that number is useful to have I'd rather
->> > have a define than a comment on each line.
->> >
->>
->> I thought that MILLI_GAIN was already documenting what x125 is: 0.125 =
-=3D
->> 125 milli. More than the base gain of 1, it is the lowest gain you can
->> configure.
->
-> Ah. The X location maybe what meant I didn't figure it out.
-> For similar the past we've done _0_125 .... _2_000
-> which might be less confusing?
->
-> There isn't really a perfect answer for this stuff.
->
-> J
+From: Samuel Moelius <samuel.moelius@trailofbits.com>
 
-If that has been done in the past, I am fine with dropping _MILLI_ and
-using _0_125 and so on for V5.
+The AD7380 driver uses generic regmap types and APIs. However, its Kconfig entry does not select REGMAP.
 
-Best regards,
-Javier
+As a result, AD7380 can be enabled from an allnoconfig-derived config with SPI_MASTER=y while REGMAP remains unset, causing ad7380.o to fail to build.
+
+Fixes: b095217c104b ("iio: adc: ad7380: new driver for AD7380 ADCs")
+
+Signed-off-by: Samuel Moelius <samuel.moelius@trailofbits.com>
+---
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a9dedbb8eb46..c79341848698 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -311,6 +311,7 @@ config AD7298
+ config AD7380
+ 	tristate "Analog Devices AD7380 ADC driver"
+ 	depends on SPI_MASTER
++	select REGMAP
+ 	select SPI_OFFLOAD
+ 	select IIO_BUFFER
+ 	select IIO_BUFFER_DMAENGINE
+-- 
+2.43.0
+
