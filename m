@@ -1,35 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA5983E9C12
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 14:14:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6B273EA96A;
+	Tue,  2 Jun 2026 14:20:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780409663; cv=none; b=FModJqmYnxaV8tbfYSBwhppo919Vknf1TZKtT2PTS9nGr/Tdsud/vgqoq+i3WA0I5JyoSJl6SsNe/TPkGC9BAiU+KB7nITjrCkb8wYR+VYGyw3+ZG5HVzB+SUHLc8aGZYsZ/TIuVoJebviNT76rnGT5hTqHXp6BAb1v73iaMGxs=
+	t=1780410026; cv=none; b=h0c+Tki4b50c8zoEF9jfxCC+AYb8uT5DhXn2hKveBmOrvJnT9tZLG0AlgE4FHWokjIlRkCGarD5VanDr9+6YtAiBKluKNOQPNm9XoAlqFRCJ1WXSknOEvipf9T0KW8LQiPCID4620/Gs4OXEtO9JNqRQZgCfnOW0tafXAC2HncM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780409663; c=relaxed/simple;
-	bh=V4y2/DP3WoBOQojku/3xxwTgfghNtU3L84bL+5mkQcY=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=cJiBZzeEpXFzsMOCOkdhizDCPwhP+6vJAEPYjO3z2VmIJV+/vFCiozXUpHLRpiLWct046N5tN6JOWoW8jwhN+GkZiZrUSQv2oJ+Qm1LyD5KCBFqRVtgvnz1bj8+Tm/jiJkOyS4q0V2ZJp/6odXq4+zB1wC1gBL8s+bZ4Tlecs7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pc9kQpGz; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780410026; c=relaxed/simple;
+	bh=9rDtsXXKFDhxJhPZeuQxWPpJbhWfBgjp1ERCAd1KBvA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NjZJRMy47IPs0ZKTAO8K5/MBT5PaJuPlv+7oAx45Mx//Md86x/o7TVIGUmZjsMUk/FpCW6C2aj2AFTqwGHI6hQy71kiz583EohvqmDmhieuIsulvBnm2xerIlnxwaGxLURi1esYnIoCnjX5kutQghRaEFJX++ZOePyiwOPjH9UE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WSHxf1Hd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pc9kQpGz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8AC51F00893;
-	Tue,  2 Jun 2026 14:14:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WSHxf1Hd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1D31F00893;
+	Tue,  2 Jun 2026 14:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780409661;
-	bh=dCsMoT8NCIPFhQCnASI7C19SJ/rwIDi5O+2BNHkU9lw=;
-	h=Date:From:To:Subject;
-	b=Pc9kQpGzZBXHKtT45x0iFExUKRVUpjWYkd5BFy0b4P1QB/kTw/H8wbGifRqL4UKKQ
-	 CDX6cf3wdyMyLbcR7Ys53oYS2uTBokxddg+qefTtvjhc20hPhyyBojIjtvxEXAZ9Gu
-	 DJ2r+S7txXBH5kUX34QVbHAuEgK2OK+FBdt1WWYjPERYzDq6b9GUJvXHmzbFru5c+D
-	 w0ThOQJMEFSpvbrw7irVcB0h4IgZ4eHo8P5qCCI4OPa+n5r6qEhmXE/PXfEdJC69Jf
-	 35O1mSMgl+IqhiN8WPV4entwMGpKUd0wUISs+43yrzYvclNdqmCHzSLmpSf2+Ndn/q
-	 Yz6ssjCyKNQCA==
-Date: Tue, 2 Jun 2026 15:14:15 +0100
+	s=k20260515; t=1780410025;
+	bh=FmC/mmtPl+X+5WW3o/Y0mwOQvp51tqVNEKXkocyeBOM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=WSHxf1Hd2bL0CsFQvLOVSWWlGmLcU+JWcWyL5aQieYjxwUjRwLzU43zySrBlWxLlr
+	 tnw/9VSZsUCXAy7qpooYK2Z6mf3h1BbEfambt4Fk7MbPfVstPZ99nu/HzRiXNz1HU9
+	 juOLR+BjAiANMHpm4TtgsbgoCFlXjc/8aGa6Sp21+kHEsaoe+5mwri8fwYLp/L3pF/
+	 832ucoPYpx2hdMpmkCe2lTUiNCqzwXy6nd7w0k1Z/4UsViwpYVV0Y1ANLsDQMG16gp
+	 FRHyLMHody7ddV3pikAWtYSiMNq8HSeS8/S0K66rnQ5xllWhERBIg9wx88zMSesXbd
+	 S76PTKD45Mq2A==
+Date: Tue, 2 Jun 2026 15:20:19 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] IIO: 2nd set of fixes for the 7.1 cycle
-Message-ID: <20260602151415.1c17664b@jic23-huawei>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, Jingoo
+ Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>,
+ dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v3 05/11] mfd: lm3533: Convert to use OF bindings
+Message-ID: <20260602152019.078cc40e@jic23-huawei>
+In-Reply-To: <CAPVz0n1r97d8-uzhPGBx0LFSp75A3_2mMXDQQ30utT-6NtpHNA@mail.gmail.com>
+References: <20260601151831.76350-1-clamor95@gmail.com>
+	<20260601151831.76350-6-clamor95@gmail.com>
+	<20260602144640.433b4d35@jic23-huawei>
+	<CAPVz0n1r97d8-uzhPGBx0LFSp75A3_2mMXDQQ30utT-6NtpHNA@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -37,135 +52,154 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The following changes since commit 329db447f8f02e82ff3acf130c892e1a4063d493:
+On Tue, 2 Jun 2026 16:50:16 +0300
+Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-  Merge tag 'iio-fixes-for-7.1a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-05-15 13:45:33 +0200)
+> =D0=B2=D1=82, 2 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 16:=
+46 Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+> >
+> > On Mon,  1 Jun 2026 18:18:25 +0300
+> > Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+> > =20
+> > > Since there are no users of this driver via platform data, remove the
+> > > platform data support and switch to using Device Tree bindings.
+> > >
+> > > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com> =20
+> >
+> > =20
+> > > index 52136ca1abc9..55b35467a722 100644
+> > > --- a/drivers/iio/light/lm3533-als.c
+> > > +++ b/drivers/iio/light/lm3533-als.c
+> > > @@ -16,16 +16,19 @@
+> > >  #include <linux/module.h>
+> > >  #include <linux/mutex.h>
+> > >  #include <linux/mfd/core.h>
+> > > +#include <linux/mod_devicetable.h>
+> > >  #include <linux/platform_device.h>
+> > > +#include <linux/property.h>
+> > >  #include <linux/regmap.h>
+> > >  #include <linux/slab.h>
+> > >  #include <linux/uaccess.h>
+> > > +#include <linux/units.h>
+> > >
+> > >  #include <linux/mfd/lm3533.h>
+> > >
+> > >
+> > > -#define LM3533_ALS_RESISTOR_MIN                      1
+> > > -#define LM3533_ALS_RESISTOR_MAX                      127
+> > > +#define LM3533_ALS_RESISTOR_MIN                      1575
+> > > +#define LM3533_ALS_RESISTOR_MAX                      200000
+> > >  #define LM3533_ALS_CHANNEL_CURRENT_MAX               2
+> > >  #define LM3533_ALS_THRESH_MAX                        3
+> > >  #define LM3533_ALS_ZONE_MAX                  4
+> > > @@ -57,6 +60,9 @@ struct lm3533_als {
+> > >
+> > >       atomic_t zone;
+> > >       struct mutex thresh_mutex;
+> > > +
+> > > +     bool pwm_mode;
+> > > +     u32 r_select;
+> > >  };
+> > >
+> > >
+> > > @@ -411,7 +417,7 @@ static ssize_t show_thresh_either_en(struct devic=
+e *dev,
+> > >       int enable;
+> > >       int ret;
+> > >
+> > > -     if (als->irq) {
+> > > +     if (als->irq > 0) {
+> > >               ret =3D lm3533_als_get_int_mode(indio_dev, &enable);
+> > >               if (ret)
+> > >                       return ret;
+> > > @@ -716,30 +722,34 @@ static const struct attribute_group lm3533_als_=
+attribute_group =3D {
+> > >       .attrs =3D lm3533_als_attributes
+> > >  };
+> > >
+> > > -static int lm3533_als_setup(struct lm3533_als *als,
+> > > -                         const struct lm3533_als_platform_data *pdat=
+a)
+> > > +static int lm3533_als_setup(struct lm3533_als *als)
+> > >  {
+> > >       struct device *dev =3D &als->pdev->dev;
+> > >       int ret;
+> > >
+> > > +     als->pwm_mode =3D device_property_read_bool(dev, "ti,pwm-mode");
+> > > +
+> > >       ret =3D regmap_update_bits(als->lm3533->regmap, LM3533_REG_ALS_=
+CONF,
+> > >                                LM3533_ALS_INPUT_MODE_MASK,
+> > > -                              pdata->pwm_mode ? LM3533_ALS_INPUT_MOD=
+E_MASK : 0);
+> > > +                              als->pwm_mode ? LM3533_ALS_INPUT_MODE_=
+MASK : 0);
+> > >       if (ret)
+> > >               return dev_err_probe(dev, ret, "failed to set input mod=
+e %d\n",
+> > > -                                  pdata->pwm_mode);
+> > > -
+> > > +                                  als->pwm_mode);
+> > >
+> > >       /* ALS input is always high impedance in PWM-mode. */
+> > > -     if (!pdata->pwm_mode) {
+> > > -             if (pdata->r_select < LM3533_ALS_RESISTOR_MIN ||
+> > > -                 pdata->r_select > LM3533_ALS_RESISTOR_MAX) {
+> > > -                     dev_err(&als->pdev->dev, "invalid resistor valu=
+e\n");
+> > > -                     return -EINVAL;
+> > > -             }
+> > > +     if (!als->pwm_mode) {
+> > > +             ret =3D device_property_read_u32(dev, "ti,resistor-valu=
+e-ohms",
+> > > +                                            &als->r_select);
+> > > +             if (ret)
+> > > +                     return dev_err_probe(dev, ret,
+> > > +                                          "failed to ger resistor va=
+lue\n");
+> > > +
+> > > +             als->r_select =3D clamp(als->r_select, LM3533_ALS_RESIS=
+TOR_MIN,
+> > > +                                   LM3533_ALS_RESISTOR_MAX); =20
+> >
+> > If we are getting garbage from DT I think I'd rather error out that pap=
+er over
+> > that problem.  So similar to before, check valid value and if not fail =
+probe
+> > so that hopefully someone goes and fixes it!
+> > =20
+>=20
+> sure
+>=20
+> > > +             als->r_select =3D DIV_ROUND_UP(2 * MICRO, 10 * als->r_s=
+elect); =20
+> > Why do we need this when we didn't before?  The range checks are the sa=
+me
+> > so it smells like it shouldn't need transforming. I'd also rather we di=
+dn't do
+> > rewriting of the meaning of r_select like this.  Just use a local varia=
+ble for
+> > the intermediate result.
+> > =20
+>=20
+> before pdata passed resistor value as actual register value, not we
+> are getting the actual resistance in ohms from the tree and must
+> convert it into register value.
 
-are available in the Git repository at:
+ah. I missed the change of values.  Can you make them explicitly now _OHMS =
+or something
+along those lines rather than reusing the macro name for a different thing.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.1b
+>=20
+> > >
+> > >               ret =3D regmap_write(als->lm3533->regmap, LM3533_REG_AL=
+S_RESISTOR_SELECT,
+> > > -                                pdata->r_select);
+> > > +                                als->r_select);
+> > >               if (ret)
+> > >                       return dev_err_probe(dev, ret, "failed to set r=
+esistor\n"); =20
 
-for you to fetch changes up to 91bc6767a4f55dc470d8a56b55b9f2ea09094efe:
-
-  iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices (2026-05-29 09:57:23 +0100)
-
-----------------------------------------------------------------
-IIO: 2nd set of fixes for the 7.1 cycle.
-
-Usual mixed bag of ancient issues and the recently introduced.
-
-Various drivers
-- Ensure use of simple_write_to_buffer() in debugfs callbacks doesn't
-  result in reading off   the end of intended data by checking the
-  position is always 0.
-buffer/hw-consumer
-- Ensure scan_mask is freed on buffer release.
-acpi-als
-- Check ACPI_COMPANION() against NULL to close corner case where a
-  driver is overridden.
-adi,ad4062
-- Add GPIOLIB dependency to avoid undefined ref to gpiochip_get_data()
-adi.ad7768-1
-- Add GPIOLIB dependency to avoid several undefined functions.
-adi,ad2s1210
-- Ensure possible recovery path if a read fails in the interrupt handler.
-bosch,bmg160
-- Increase sleep on startup to ensure device is ready.
-bosch,bmp280
-- Ensure buffer pushed to kfifo is zeroed to avoid leaking uninitialized
-  stack data to userspace.
-dyna-image,al3010
-- Fix refactor that stopped reading one of the two measurement registers.
-dyna-image,al3320a
-- Fix refactor that stopped reading one of the two measurement registers.
-qcom,spmi-iadc
-- Ensure disable_irq_wake() is called on remove path.
-sensiron,scd30
-- Fix a sign extension bug.
-st,vl5310x
-- Ensure possible recovery path if a read fails in the interrupt handler.
-ti,adc1298
-- Bounds check for pga_settings index. Hardening against device returning
-  unexpected values.
-ti,tmp006
-- Ensure trigger correctly released on remove path.
-vishay,veml6030
-- Fix incorrect channel type in events.
-vishay,veml6074
-- Bounds check for veml6075_it_ms. Hardening against device returning
-  unexpected values.
-
-----------------------------------------------------------------
-Alexander A. Klimov (2):
-      iio: light: al3010: read both ALS ADC registers again
-      iio: light: al3320a: read both ALS ADC registers again
-
-Arnd Bergmann (1):
-      iio: adc: ad4062: add GPIOLIB dependency
-
-Dan Carpenter (3):
-      iio: dac: ad3552r-hs: fix uninitialized data ni ad3552r_hs_write_data_source()
-      iio: backend: fix uninitialized data in debugfs
-      iio: core: fix uninitialized data in debugfs
-
-David Carlier (1):
-      iio: pressure: bmp280: zero-init bmp580 trigger handler buffer
-
-Felix Gu (1):
-      iio: buffer: hw-consumer: free scan_mask on buffer release
-
-Javier Carrasco (1):
-      iio: light: veml6030: fix channel type when pushing events
-
-Jonathan Cameron (1):
-      iio: adc: ad7768-1: Select GPIOLIB
-
-Joshua Crofts (1):
-      iio: light: opt3001: fix missing state reset on timeout
-
-Maxwell Doose (1):
-      iio: chemical: scd30: Cleanup initializations and fix sign-extension bug
-
-Radu Sabau (2):
-      iio: adc: ad_sigma_delta: fix CS held asserted and state leaks
-      iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices
-
-Rafael J. Wysocki (1):
-      iio: light: acpi-als: Check ACPI_COMPANION() against NULL
-
-Sam Daly (2):
-      iio: light: veml6075: add bounds check to veml6075_it_ms index
-      iio: adc: ti-ads1298: add bounds check to pga_settings index
-
-Stepan Ionichev (6):
-      iio: gyro: bmg160: bail out when bandwidth/filter is not in table
-      iio: gyro: bmg160: wait full startup time after mode change at probe
-      iio: proximity: vl53l0x: notify trigger and clear IRQ on error paths
-      iio: resolver: ad2s1210: notify trigger and clear state on fault read error
-      iio: temperature: tmp006: use devm_iio_trigger_register
-      iio: adc: qcom-spmi-iadc: balance enable_irq_wake() on driver unbind
-
- drivers/iio/adc/Kconfig                       |  2 ++
- drivers/iio/adc/ad_sigma_delta.c              | 39 +++++++++++++++++++++++----
- drivers/iio/adc/qcom-spmi-iadc.c              | 18 ++++++++++---
- drivers/iio/adc/ti-ads1298.c                  |  7 ++++-
- drivers/iio/buffer/industrialio-hw-consumer.c |  2 ++
- drivers/iio/chemical/scd30_core.c             | 19 ++++++++++---
- drivers/iio/dac/ad3552r-hs.c                  |  2 +-
- drivers/iio/gyro/bmg160_core.c                | 16 +++++++++--
- drivers/iio/industrialio-backend.c            |  2 +-
- drivers/iio/industrialio-core.c               |  2 +-
- drivers/iio/light/acpi-als.c                  |  6 ++++-
- drivers/iio/light/al3010.c                    |  8 +++---
- drivers/iio/light/al3320a.c                   |  8 +++---
- drivers/iio/light/opt3001.c                   |  6 +++--
- drivers/iio/light/veml6030.c                  |  8 +++---
- drivers/iio/light/veml6075.c                  |  8 ++++--
- drivers/iio/pressure/bmp280-core.c            |  2 +-
- drivers/iio/proximity/vl53l0x-i2c.c           |  7 +++--
- drivers/iio/resolver/ad2s1210.c               |  2 +-
- drivers/iio/temperature/tmp006.c              |  2 +-
- 20 files changed, 127 insertions(+), 39 deletions(-)
