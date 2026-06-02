@@ -1,117 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35B102248A8;
-	Tue,  2 Jun 2026 11:07:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBC83D25B4;
+	Tue,  2 Jun 2026 11:12:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780398479; cv=none; b=eFov4wTzc2+mmEHVIhmDWhZJDK5BSIvDydgXqTDgycSbmKCDY7ZqFIDt+O0a0KukfNuYyIoDrxRLBbTcAc/8e/Tpc7q6e+ZhgJXTcO290gctgx469J4TALMknESQ8f7KKD5ZXeAbdUrLRu3FtKyfJWwry/XslfO5DGvbwoVPceg=
+	t=1780398752; cv=none; b=PKd7KKVWelw0cfjIGOgsPtAFSNeMBDI2xRQjZ4+9z5t89Ov9HNwiUhl0KU0/GZu1lP9VLyJAY5LorMfwci3fGr7IN3Aavt2a4f5FJ6W1uIslNLhlvonmw21IPBSGtaF3R7xqhoUSpP9n7/UEt+H4CBBAXO+79v1L108YdYNrWAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780398479; c=relaxed/simple;
-	bh=mFctebV6efZPkxdiXhNEx0eARojG2bev1G/ivejaxqo=;
+	s=arc-20240116; t=1780398752; c=relaxed/simple;
+	bh=9T4zNQT0trs46eiYmksy1HHbaHk+hzaIynpxPXrOOy4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N5wKO8m96znIGQ/0XMMQP7T7KO+4pogBlQAeP5k+mz0MgyGHLW62+e7/BevmT3b6NTZhXvXkPY+qlXwjfeHAzUUayzDZT7hwZN0w1uedJGVW5ZPDutvrDsVaJc6j/Wvi6gTJegP2sFnvBpO2iDfbVYyzXg2VxOIHjnKpa8Y8m8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nmoBBVOr; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=E2w+p8S/78FTHdFACYk1zKZT2mZSqthgDbxQauxG7Nhln5d3In7m8Ii80be0x/xzCNlGMWEwwfrzhvuPQ1o6W+FIdeFAN8BB3cvMuRaSHDkzlVoaMs6GGDay+FfmWVqYlYIx3FtLVEY83znbE0c0VG1Sedfqx2BZ0SnuBbJJI9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AQJvsk4p; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nmoBBVOr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AQJvsk4p"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780398478; x=1811934478;
+  t=1780398749; x=1811934749;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=mFctebV6efZPkxdiXhNEx0eARojG2bev1G/ivejaxqo=;
-  b=nmoBBVOrwCFnArKyPsbRh2FzPl9jwRcZOXoLNpFrFLjddrEvZmlZfG/v
-   /QXsOWkVLe8NH9Xs6+JLb7cBlw62RvEmm/OciI4i6wvzdCW4v1MU4Cd2w
-   YS6vTxn1ep4t898jFGxkMebeSof0l3zILA6pY2Yb/h1jjYcdlzApxrM6P
-   PSbQzaAarTyQM9wH+nnTCHqtngFD/zXzqh5iYspCTfrLUFc3DHt//x5nx
-   DjlZFl7x6LbKi+LrQELFP+ramY9+p67RIHmH12PZrFLhUVQ41qyGDxOru
-   hWhOA7BN45MXBZgLaNM0cFAJsXbixOLJdXSV4NzEOZinf73HOS96Wx3Pt
-   g==;
-X-CSE-ConnectionGUID: I7V0s52lSaCsHjS5TnTuVg==
-X-CSE-MsgGUID: bT+99yrZQBGd+OXYk9skhQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="81207825"
+   mime-version:in-reply-to;
+  bh=9T4zNQT0trs46eiYmksy1HHbaHk+hzaIynpxPXrOOy4=;
+  b=AQJvsk4pfK+zXxTGWCNxpm4E6c/no0sxTj083NvRPjMAFAaLehjl4sai
+   5DyHqh1EJIZ593mwtdudszu0I9njwDpL4zuurc+UQxWkzg/KDMGI0Om5D
+   ILNDZzxcYE/y7IqzlgZcbbMtRr4iCCqxG8Rs3mphauTPK/djjvwbeArMv
+   1LDs81VSXXqRR6euuCXnyVyY4CZqzPQb95fMC1n1QAIOtnYxlYWPbx2bI
+   yWKRXVne2/nkYx6nc5jnPaJ4O+y2s/STr3frZTT8veG698SO4YT3CSPBS
+   arERcZ9G8SIWci3H9nH7wRTGwXh9NFeKCRZw0O5LE9se6cyTeO8BWnB8V
+   A==;
+X-CSE-ConnectionGUID: IqUj/wMxQhC7UW3xbpN7Qw==
+X-CSE-MsgGUID: Z00l+qcsTjW3AFR5JHeVvQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="84803636"
 X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="81207825"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:07:57 -0700
-X-CSE-ConnectionGUID: lhiRJlaQQHmUbKHn1VV+4A==
-X-CSE-MsgGUID: r7XmoXFkTjavabE0tmKG2g==
+   d="scan'208";a="84803636"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:12:28 -0700
+X-CSE-ConnectionGUID: vBQj/Q+8RgGRvI4hjRuesQ==
+X-CSE-MsgGUID: DtVtKBtbSAiIrUHfWhG5yQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="243975444"
+   d="scan'208";a="240874332"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:07:52 -0700
-Date: Tue, 2 Jun 2026 14:07:49 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 04:12:24 -0700
+Date: Tue, 2 Jun 2026 14:12:22 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
+To: Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v3 08/11] video: backlight: lm3533_bl: Improve linear
- sysfs logic
-Message-ID: <ah65hfgoM67V6-iR@ashevche-desk.local>
-References: <20260601151831.76350-1-clamor95@gmail.com>
- <20260601151831.76350-9-clamor95@gmail.com>
- <ah6PxFtoJUWkd79P@ashevche-desk.local>
- <CAPVz0n0P7Jk17cM2M1zuHZfySo2=Uibr5izwKU2tqiBpBcg0FQ@mail.gmail.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/4] iio: light: add support for veml6031x00 ALS series
+Message-ID: <ah66ljSiIc0ywFC2@ashevche-desk.local>
+References: <20260531-veml6031x00-v4-0-e64f7fdce38d@gmail.com>
+ <20260531-veml6031x00-v4-2-e64f7fdce38d@gmail.com>
+ <ah6p-f2RCW8VcuDR@ashevche-desk.local>
+ <DIYI40YK6CSX.2P4017PHVJHCT@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPVz0n0P7Jk17cM2M1zuHZfySo2=Uibr5izwKU2tqiBpBcg0FQ@mail.gmail.com>
+In-Reply-To: <DIYI40YK6CSX.2P4017PHVJHCT@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 02, 2026 at 01:19:00PM +0300, Svyatoslav Ryhel wrote:
-> вт, 2 черв. 2026 р. о 11:09 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
-> > On Mon, Jun 01, 2026 at 06:18:28PM +0300, Svyatoslav Ryhel wrote:
+On Tue, Jun 02, 2026 at 12:45:35PM +0200, Javier Carrasco wrote:
+> On Tue Jun 2, 2026 at 12:01 PM CEST, Andy Shevchenko wrote:
+> > On Sun, May 31, 2026 at 09:58:22PM +0200, Javier Carrasco wrote:
 
 ...
 
-> > >       if (kstrtoul(buf, 0, &linear))
-> > >               return -EINVAL;
+> > + array_size.h
 > >
-> > Besides _assign_bits() in the below, side note here to unshadow error codes:
+> >> +#include <linux/bitfield.h>
+> >> +#include <linux/bits.h>
+> >> +#include <linux/i2c.h>
 > >
-> >         ret = kstrtoul(buf, 0, &linear);
-> >         if (ret)
-> >                 return ret;
+> >> +#include <linux/module.h>
+> >> +#include <linux/mod_devicetable.h>
 > >
-> > (obviously in a separate change).
+> > In C locale it seems wrong order.
+> >
+> >> +#include <linux/mutex.h>
+> >> +#include <linux/pm_runtime.h>
+> >> +#include <linux/regmap.h>
+> >
+> > + types.h
 > 
-> Won't happen in this patches.
+> Do you know any tool to automate this beyond asking an AI? Manual
+> auditing is not very reliablo and it is not that difficult to miss a
+> header that has been indirectly included. Building with W=1 and similar
+> stuff did not help.
 
-You mean both suggestions or you are talking about kstrotoul() only? If it's
-only about the latter, it's fine with me, but _assign_bits() makes sense to do
-in this patch as you already change the parameters enough to make it better.
+`iwyu`, but it needs a custom configuration. Even with that it's quite far from ideal.
+The custom config had been shared in the linux-iio@ mailing list this year.
+
+> >> +#include <linux/units.h>
 
 ...
 
-> > >       ret = regmap_update_bits(bl->lm3533->regmap, LM3533_REG_CTRLBANK_AB_BCONF,
-> > > -                              mask, val);
-> > > +                              CTRLBANK_AB_BCONF_MODE(id),
-> > > +                              linear ? CTRLBANK_AB_BCONF_MODE(id) : 0);
-> > >       if (ret)
-> > >               return ret;
+> >> +	/* integration time + 10 % to ensure completion */
+> >
+> > fsleep() adds up to 25%, isn't it enough?
+> 
+> The problem is that it adds UP to 25%, but that is not guaranteed. If
+> almost no extra delay is added, it will be below the margin I added,
+> which was necessary when I tested this delay with real hardware.
 
-^^^ left for the context.
+Noted. Can it_usec be precalculated already to include that 10%?
+
+> >> +	fsleep(it_usec + (it_usec / 10));
+
+...
+
+> >> +	pm_runtime_put_autosuspend(dev);
+> >
+> > Hmm... But why? Wouldn't this be problematic with reference count on the failed
+> > devm_iio_device_register() below?
+> 
+> I could move this a bit further down after devm_iio_device_register(),
+> but as I replied to a Sashiko complaint, the reference count will never
+> underflow in this configuration.
+
+Please, add a comment elaborating on that, it's not clear at glance.
 
 -- 
 With Best Regards,
