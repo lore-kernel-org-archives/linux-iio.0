@@ -1,70 +1,261 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91B57342532;
-	Tue,  2 Jun 2026 14:25:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780410336; cv=none; b=j/ZRk1tafiH51vubBlBQZ4W0Wo7lw+H+dFltkwIIuhDhAvMZEi44hIWibXXYBQ4AaqDFNDrLUB6XHWWw8aB2IjCEQxh7rsENB/Q/5e87748fMl/qTl4YtU7NFZx7vm1L2xQC8llpBSahUex8dq8VPrANjOA+SCc2bg0kQFskO40=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780410336; c=relaxed/simple;
-	bh=gDGXiLT3JqOX8wQ9n6ii703OTT8fmAPo27/oT17JntU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WuX8c2odDqs2phoJpg0DKiSxGOx46pOtkASABrojRcYxmTXPYH7csdb1zvQ3ui/kDI2I7+4VOvvh24benaeh7YAJKMjyqQ2jrP2YRPDc55jRLrV7XL+GVqeLtyhzkyZfm3/ZDMF03SjzUDQIrn0wUMyWqLKyo1xJrwdDaVnZRVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KFxpfJnN; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F07E3F39C8
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 14:29:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780410548; cv=pass; b=cEQb+ggI7Tr/jW1fw+KMGummUBVTzt7FbT5TNdrI/J/YhukoHo+V861QqGdFtn/vOmIkAWp/js1l6gacMfneWduEVzcCZHeZRMPsDD0YSGSptrUEJuB210mOmRhcGb1Hhaspbj61hiOmAcoSPNwpdw7jhoYqpSwCRwgamq478cQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780410548; c=relaxed/simple;
+	bh=pCKVJKfsgqUTs8AS/FfeirHvz2C/Fw3t9KjvROqrw3c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IHJC7Y7TstkHzuJkF4plztBLEEO+Asr09KtY/jXU2TyD3p+yQxwLVsjZ59obl0CSFqfVWfaiKhe8k/JtsL3c0Q2IZwzIqqVQHEdnt0sIVfUBTxLpjg6x8F6UpDT1wOtSOt7H2PHYvUwztNXsQlfHZkLQ0qAW+oDWWzPcD0/4yjo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kvS7iLe1; arc=pass smtp.client-ip=74.125.82.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KFxpfJnN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF701F00893;
-	Tue,  2 Jun 2026 14:25:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780410335;
-	bh=rms3S0PZB6SZwtbdTVXGh0F52SojebAQvTX0RudusYo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KFxpfJnNYyAJJeNh9/dFdRZhEdbvESeQTpBB+GYXLnzwRMUF/GJ+t+eGg0ldx7Ef8
-	 xMQfyrV6Y3SEaoTkGLV2nruV2QxwgCRlzW3FN6Wx7NJZxWFhwINz/4d4o8ODOr2P9R
-	 AvPhr2/goj2idswGNh3wmNqTkCvcQLnQKXanX3FcZl/bbee4DRIOimCE3msoMadifZ
-	 sRNzN9tn9tBFkMGXCsTAXYcX2BdctYMIypFnbSfAArk7bIPMIROJ7qcy1FW1ukKwOj
-	 O7pLaL2OmDBIwplMFt1V6s9fI8jnEdfA7xlQrwqEFt88JNzr7cal9PRcJUYBUP7xJe
-	 FiUY5B0SCLUnA==
-Date: Tue, 2 Jun 2026 15:25:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
- linux@analog.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad4080: fix AD4880 chip ID
-Message-ID: <20260602152527.1ae1303e@jic23-huawei>
-In-Reply-To: <CALoEA-wZhXnLrAcW+k81p8ifFp=WpF7DVA+35H9oLDhGKR6cdA@mail.gmail.com>
-References: <20260602084019.2564-1-antoniu.miclaus@analog.com>
-	<CALoEA-yz-kJGHXDC=Fwmi1C9P_EpEcimxt=9a94vv6eAHQ-TXg@mail.gmail.com>
-	<20260602134417.5fd78512@jic23-huawei>
-	<CALoEA-wZhXnLrAcW+k81p8ifFp=WpF7DVA+35H9oLDhGKR6cdA@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kvS7iLe1"
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-304f0039c02so8049958eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 07:29:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780410546; cv=none;
+        d=google.com; s=arc-20240605;
+        b=TZRiHuGJ8KIsiKPONLnzSB6MSgUOxXefIzPt5xKs+4llJN2amRhLSD3yGaCw2xCLl8
+         LjKF4TXPMtAtalJnvUfC0Pb8AuLXQkDGpoWI8a1QLAjvZeLwE1aQYk7x2Cj6AVW4nfIh
+         HEN16atQzzatx0U3X2gIVwiBYkS0yCU05NAzI9hpwMxJ0OTLGeU4V/Wsd5fKjGKTmVAv
+         j2avqvREvLRxIjd3LCQ5mbq+pxZHFph1iC43F9426M3rA+OVsIHdWLWxUvhzVOKMq2jY
+         XTck4Qp0fYM2c5xvD+hry0RK+tYRXJ/QWatDvfNqLXpux2cK2MsZpQ2MOt0vjV7hktDM
+         XRXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=kpwFh2a0/oyZBOiJkQQQ7Xbyt/Uy5rqSD9KPnvxrM2g=;
+        fh=2D2Es0VPK0iKMFMhMDAuR92Hjz/by/LPQE0/ERY3jow=;
+        b=DB0n9IEZBe0fMK86y+Pl99T2/epMW0l8ziDuhPwEIdD07ejo3Y9tvkoJjtwjQEsgAR
+         YuOORgwrQ0NNSdYYGzlnNVxXaVMIqNd/iX9op4yGSn5lRYCPtlKoAU6IArG/jill6xYF
+         j/KatJj8KVeAjg5HYwQpnJTXSftMynOSucQ2KsNxr8h6moQh403TpiF1hsm0dwztWUic
+         Y5fnr0GJ7F5uXzKym2/Fm3/ELjNOvd8O/YbYYGWFJ/5qbKHJyFyQnIV5urhwap6KbaC9
+         2+GAUaxirkSaM5k3kvB5EgxI3OeUFBry/ot0HLArjcmx1YqYgrwua02qtJOr2cf1htDV
+         D6+Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780410546; x=1781015346; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kpwFh2a0/oyZBOiJkQQQ7Xbyt/Uy5rqSD9KPnvxrM2g=;
+        b=kvS7iLe1ZbSh+crMCh2b6P4PeWiWpsgx0lXJ9O43NgaWrWKS6fDA2DCuzIp87sEdW9
+         CPHvFZsR0HDubiu7jNp7l2eOf4yqTd80E2s9MBLklSajPIgseA4uRDM5DIhSCk4U+Yav
+         Z/6RHb4UTq+/+fFpQSngOnNm/KywstoAyqIVxFd5HWgQDPhiDtN8RjFLup7+aQpgJ7Re
+         9KYHzA3N0FbXVVZjZM6bqmpGKkTacMIIKPAyUQpEVOSZvKgDdq4/YCdjx9RA2hBL+x5b
+         5WRIS8cU39OXH5JdzZWu52J9GE57edeqvNEwrL/IxXyywahr/nk2D4LVNRfCTgTxlhxU
+         R7cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780410546; x=1781015346;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=kpwFh2a0/oyZBOiJkQQQ7Xbyt/Uy5rqSD9KPnvxrM2g=;
+        b=eIdaiBteVNMNhnKTq+H5dfdJjgzSY842iUg7HOKiREGPWsAPniyDKc1sSH2NWrqkP4
+         gMspOMqxb0syn0gUx900Xo6qJukgbt/cT6Zw3lM62MXVOlfH4wRZk970tQb+HNC/H9Zs
+         CXZ4qd0X+O+RH7Hl9oGW+q4L8kD52ZQ8J71NGbp+9iscNv9axXWKTjWqiW5tzqNiA9TL
+         Z+6qzYj/Z7njw2vxVIhH01LwLb+RCuG+zM4Lzlg34hrPbc5G32GxB4KHJUPW0tXNkfhI
+         Gm1PTIgTq5L8d/tZXIKKTDsWeTQkrrR4GWzla0QQAiGVpUxJB9mm6XzdBf4hqJ/XPoaH
+         Esyg==
+X-Forwarded-Encrypted: i=1; AFNElJ+fuObl4mS9QG9doPjJDhk6Uq4rZo426x2WjRtpgLdscPuq4LGYiYZu0NWMwvQ319G/f21bpFMtYkU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzCBafzSMA0hom73cOzf7j+le/uoY4tbE8UKoV4Ph24DgvyhFb+
+	cLdhuD6ufg6n9wTwT6DK7hZ8itTZJK/JweI/a8doXRrQA7puSzEBYlam9eCZq2ZsG8UuJEFWXW+
+	n1FfgIJdVKCSqPukIMkQ3sSCBRLTgLA4=
+X-Gm-Gg: Acq92OHvI86Hf4AQE2OF87Ho14g3Asa9MgDlBBZG/wSxxru078HCoULqVQnmF06kPMQ
+	pIRfynYsadTIiysUu3SF6RqdDiB8LARlEQmcabn1hMcn2GAKPVFART8AINtzEbwE8dsq6z9uPgP
+	hf+NkmEBbTCh7SCHofQhlbKg3n/2axvVumIx5BtTSb+Yi5860rYaSzktxmrFfhKLXU/edrwDxxw
+	sPK43hL+zspV0nZ9XQxCSlx92T4+9/FDWI/SXuZjYsHzI8oR48R2lGZk7X/RNI114QHFgxFK3Y9
+	8u9G9pKHGz1q8x3tFUo=
+X-Received: by 2002:a05:7301:1f0d:b0:304:e20e:f5c9 with SMTP id
+ 5a478bee46e88-304fa6ab9d9mr8316247eec.31.1780410546079; Tue, 02 Jun 2026
+ 07:29:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260601151831.76350-1-clamor95@gmail.com> <20260601151831.76350-6-clamor95@gmail.com>
+ <20260602144640.433b4d35@jic23-huawei> <CAPVz0n1r97d8-uzhPGBx0LFSp75A3_2mMXDQQ30utT-6NtpHNA@mail.gmail.com>
+ <20260602152019.078cc40e@jic23-huawei>
+In-Reply-To: <20260602152019.078cc40e@jic23-huawei>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Tue, 2 Jun 2026 17:28:54 +0300
+X-Gm-Features: AVHnY4IAAmHJnZ7jdhhpGUMZSGLBbZqFDtuCT4UKpkopc5zewTxJykItA13TvMY
+Message-ID: <CAPVz0n0D+97TqZD+003z40vGK_gtnNv5v8iGyc8NYekLdHg58A@mail.gmail.com>
+Subject: Re: [PATCH v3 05/11] mfd: lm3533: Convert to use OF bindings
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
+	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2 Jun 2026 16:02:48 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+=D0=B2=D1=82, 2 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 17:20=
+ Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Tue, 2 Jun 2026 16:50:16 +0300
+> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+>
+> > =D0=B2=D1=82, 2 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 1=
+6:46 Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+> > >
+> > > On Mon,  1 Jun 2026 18:18:25 +0300
+> > > Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+> > >
+> > > > Since there are no users of this driver via platform data, remove t=
+he
+> > > > platform data support and switch to using Device Tree bindings.
+> > > >
+> > > > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> > >
+> > >
+> > > > index 52136ca1abc9..55b35467a722 100644
+> > > > --- a/drivers/iio/light/lm3533-als.c
+> > > > +++ b/drivers/iio/light/lm3533-als.c
+> > > > @@ -16,16 +16,19 @@
+> > > >  #include <linux/module.h>
+> > > >  #include <linux/mutex.h>
+> > > >  #include <linux/mfd/core.h>
+> > > > +#include <linux/mod_devicetable.h>
+> > > >  #include <linux/platform_device.h>
+> > > > +#include <linux/property.h>
+> > > >  #include <linux/regmap.h>
+> > > >  #include <linux/slab.h>
+> > > >  #include <linux/uaccess.h>
+> > > > +#include <linux/units.h>
+> > > >
+> > > >  #include <linux/mfd/lm3533.h>
+> > > >
+> > > >
+> > > > -#define LM3533_ALS_RESISTOR_MIN                      1
+> > > > -#define LM3533_ALS_RESISTOR_MAX                      127
+> > > > +#define LM3533_ALS_RESISTOR_MIN                      1575
+> > > > +#define LM3533_ALS_RESISTOR_MAX                      200000
+> > > >  #define LM3533_ALS_CHANNEL_CURRENT_MAX               2
+> > > >  #define LM3533_ALS_THRESH_MAX                        3
+> > > >  #define LM3533_ALS_ZONE_MAX                  4
+> > > > @@ -57,6 +60,9 @@ struct lm3533_als {
+> > > >
+> > > >       atomic_t zone;
+> > > >       struct mutex thresh_mutex;
+> > > > +
+> > > > +     bool pwm_mode;
+> > > > +     u32 r_select;
+> > > >  };
+> > > >
+> > > >
+> > > > @@ -411,7 +417,7 @@ static ssize_t show_thresh_either_en(struct dev=
+ice *dev,
+> > > >       int enable;
+> > > >       int ret;
+> > > >
+> > > > -     if (als->irq) {
+> > > > +     if (als->irq > 0) {
+> > > >               ret =3D lm3533_als_get_int_mode(indio_dev, &enable);
+> > > >               if (ret)
+> > > >                       return ret;
+> > > > @@ -716,30 +722,34 @@ static const struct attribute_group lm3533_al=
+s_attribute_group =3D {
+> > > >       .attrs =3D lm3533_als_attributes
+> > > >  };
+> > > >
+> > > > -static int lm3533_als_setup(struct lm3533_als *als,
+> > > > -                         const struct lm3533_als_platform_data *pd=
+ata)
+> > > > +static int lm3533_als_setup(struct lm3533_als *als)
+> > > >  {
+> > > >       struct device *dev =3D &als->pdev->dev;
+> > > >       int ret;
+> > > >
+> > > > +     als->pwm_mode =3D device_property_read_bool(dev, "ti,pwm-mode=
+");
+> > > > +
+> > > >       ret =3D regmap_update_bits(als->lm3533->regmap, LM3533_REG_AL=
+S_CONF,
+> > > >                                LM3533_ALS_INPUT_MODE_MASK,
+> > > > -                              pdata->pwm_mode ? LM3533_ALS_INPUT_M=
+ODE_MASK : 0);
+> > > > +                              als->pwm_mode ? LM3533_ALS_INPUT_MOD=
+E_MASK : 0);
+> > > >       if (ret)
+> > > >               return dev_err_probe(dev, ret, "failed to set input m=
+ode %d\n",
+> > > > -                                  pdata->pwm_mode);
+> > > > -
+> > > > +                                  als->pwm_mode);
+> > > >
+> > > >       /* ALS input is always high impedance in PWM-mode. */
+> > > > -     if (!pdata->pwm_mode) {
+> > > > -             if (pdata->r_select < LM3533_ALS_RESISTOR_MIN ||
+> > > > -                 pdata->r_select > LM3533_ALS_RESISTOR_MAX) {
+> > > > -                     dev_err(&als->pdev->dev, "invalid resistor va=
+lue\n");
+> > > > -                     return -EINVAL;
+> > > > -             }
+> > > > +     if (!als->pwm_mode) {
+> > > > +             ret =3D device_property_read_u32(dev, "ti,resistor-va=
+lue-ohms",
+> > > > +                                            &als->r_select);
+> > > > +             if (ret)
+> > > > +                     return dev_err_probe(dev, ret,
+> > > > +                                          "failed to ger resistor =
+value\n");
+> > > > +
+> > > > +             als->r_select =3D clamp(als->r_select, LM3533_ALS_RES=
+ISTOR_MIN,
+> > > > +                                   LM3533_ALS_RESISTOR_MAX);
+> > >
+> > > If we are getting garbage from DT I think I'd rather error out that p=
+aper over
+> > > that problem.  So similar to before, check valid value and if not fai=
+l probe
+> > > so that hopefully someone goes and fixes it!
+> > >
+> >
+> > sure
+> >
+> > > > +             als->r_select =3D DIV_ROUND_UP(2 * MICRO, 10 * als->r=
+_select);
+> > > Why do we need this when we didn't before?  The range checks are the =
+same
+> > > so it smells like it shouldn't need transforming. I'd also rather we =
+didn't do
+> > > rewriting of the meaning of r_select like this.  Just use a local var=
+iable for
+> > > the intermediate result.
+> > >
+> >
+> > before pdata passed resistor value as actual register value, not we
+> > are getting the actual resistance in ohms from the tree and must
+> > convert it into register value.
+>
+> ah. I missed the change of values.  Can you make them explicitly now _OHM=
+S or something
+> along those lines rather than reusing the macro name for a different thin=
+g.
+>
 
-> On Tue, 2 Jun 2026 at 14:44, Jonathan Cameron <jic23@kernel.org> wrote:
-> > Applied but I dropped the fixes tag because it causes pain for me to have
-> > references within my tree near merge windows and it will all be in the same
-> > pull request anyway.  Note it had changed because I had to do some surgery
-> > on the tree a few days ago.  
-> 
-> Hey Jonathan,
-> 
-> Just letting you know that your Signed-off-by tag is missing in the commit
-> in the togreg branch.
-> 
+Acknowledged.
 
-Thanks. Fat fingered it.
-
-Fixed up.
+> >
+> > > >
+> > > >               ret =3D regmap_write(als->lm3533->regmap, LM3533_REG_=
+ALS_RESISTOR_SELECT,
+> > > > -                                pdata->r_select);
+> > > > +                                als->r_select);
+> > > >               if (ret)
+> > > >                       return dev_err_probe(dev, ret, "failed to set=
+ resistor\n");
+>
