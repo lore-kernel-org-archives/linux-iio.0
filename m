@@ -1,61 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mta-64-140.flowmailer.net (mta-64-140.flowmailer.net [185.136.64.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047FC3AA9F8;
-	Tue,  2 Jun 2026 07:14:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F134C359A90
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 07:23:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780384483; cv=none; b=Gm4dUgEvt/9fVRtwOJ+Uqb6b80J7fXqc6Zv1xl2E5yS8O7KZwWPzlHA7/GuS92oKjD2Tf6rXS4eyeZFF7qmXajql8FsYXEiznjHShASQCkSNtrs5cARssTOi8Dsd3sueMvEZr7PZhgEecCdadhjSRvTD/hDpiznaMZ4AA1+AlnU=
+	t=1780385007; cv=none; b=U98KIKcU+eWv47fFtlFYj8mtVaVyWwwUA0pRLUoETY+KF/k8NHfFnLLWPgSQHU2/eXWCGd013d7imahWUie/FHhZaH/rwBVtFfBMxBUG5ndVMAp8HToAjLnJLJoYydN2eDaJ5X7ef1RxTlYkrsr003OVMOODxObKcQqLbR6RGkA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780384483; c=relaxed/simple;
-	bh=/O4EHfUTId8Kc0lzTp+jTcH6Nz1Ul6n+I4iwV4ldZfI=;
+	s=arc-20240116; t=1780385007; c=relaxed/simple;
+	bh=rTMmvdqLn8XGVIbwx6QxILaPnIKuu93HhNdO2BLhr54=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fJSMihqExEE1r+2emydMcKqhEks0ru5Tbfe66VsKUsI0uYqdBc3w7mHQjM0ROgFL9RxEPTWRWFELVvI9N/LMK3YNrUz1rx3nJW3j0ih87r8ZFuTv8EdMHpr60Z7H4/N2R2f1VHL1YJ/vRlKDNnAk8o/kLavrdSn9vzu9jG2FfKo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hsaziog+; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=eIpU81itSY6IWtQZGC20iookgvC/oSJBnmfrlmaCAB8yf8nQAD86QLolSsNqa2OZet4+8TXarCM8kPj1URVj3O6HhuCefQc1datxGi4S7qiMTaUQ9DnJJ5iXJHqK15DlPeiWHuPsJjig4JaU4A7IOQ5gQeddxU56BY/5lFlC4mk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com; dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b=Toge8bLz; dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b=ec+PfJIe; arc=none smtp.client-ip=185.136.64.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens-energy.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=errorhandling.siemens-energy.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hsaziog+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780384480; x=1811920480;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/O4EHfUTId8Kc0lzTp+jTcH6Nz1Ul6n+I4iwV4ldZfI=;
-  b=Hsaziog+B4n+3zFlWd8j058VrFclsE7W5y065w2o/dEtAWP3zCouSbqT
-   nCowLOAUgH/OMmuCllZtoMneCAlxdtsz1b6qSzOsJ4YpIB1tFMGBPMt2m
-   RzDbXXvJdWf06QZSGcIBD7IJPN3dJqKwrUbixlzPz2c6jbCMgxbpgUCmy
-   RPtKdc2xDPoy/60RuD7NmK7MlCmR+tVhX0+yj9XFxLKvb5HYhekdylMcE
-   W29J/DbflegrjNR7DDpW2lqux1Q4OA14XJ/G4azooY+N1Tu+10tkKl1le
-   TLIAi+zsh83XyLO3L4E0z48gViU4y4WX/mnxcID00oiIpR3hK/uDGLcqK
-   Q==;
-X-CSE-ConnectionGUID: GbB8hjTdQHC4Z4/R+anCLw==
-X-CSE-MsgGUID: r8m/SiyjTpaG7IwwzCzq3Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="80307965"
-X-IronPort-AV: E=Sophos;i="6.24,182,1774335600"; 
-   d="scan'208";a="80307965"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 00:14:39 -0700
-X-CSE-ConnectionGUID: DVqkrYshRjeBhkXa81bC6Q==
-X-CSE-MsgGUID: U29l8T7oRl6oZ+aDYuVgvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,182,1774335600"; 
-   d="scan'208";a="274089500"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 00:14:37 -0700
-Date: Tue, 2 Jun 2026 10:14:34 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, Tomasz Duszynski <tduszyns@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5] iio: chemical: sps30: Replace manual locking with
- RAII locking
-Message-ID: <ah6C2vFPiflM7Qvg@ashevche-desk.local>
-References: <20260523181536.5254-2-m32285159@gmail.com>
+	dkim=pass (1024-bit key) header.d=flowmailer.net header.i=@flowmailer.net header.b="Toge8bLz";
+	dkim=pass (2048-bit key) header.d=siemens-energy.com header.i=schuster.simon@siemens-energy.com header.b="ec+PfJIe"
+Received: by mta-64-140.flowmailer.net with ESMTPSA id 202606020713146bf1d212520019fd10
+        for <linux-iio@vger.kernel.org>;
+        Tue, 02 Jun 2026 09:13:14 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=s1;
+ d=flowmailer.net;
+ h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
+ bh=rTMmvdqLn8XGVIbwx6QxILaPnIKuu93HhNdO2BLhr54=;
+ b=Toge8bLz2dyLab0qL8rkthmm38M0DIbWMwxIZTkHCglUndNKtXlsEFzupMzU1i/vzCdijc
+ miocQZzlL9bzz0ZuwDfASqzdjU/d6NY+xy09C5rIOtPgu1bTsWHtrNYMYexJC33Ow7Pw9BIh
+ 4PggmgbDjvYm9EN9UTfgesMkNvRAg=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm3;
+ d=siemens-energy.com; i=schuster.simon@siemens-energy.com;
+ h=from:from:sender:to:to:cc:cc:subject:subject:content-type:content-type:content-transfer-encoding:References:In-Reply-To:Date:Message-ID:MIME-Version;
+ bh=rTMmvdqLn8XGVIbwx6QxILaPnIKuu93HhNdO2BLhr54=;
+ b=ec+PfJIeqY0XmjF70C+uM3vKHeUzZAh1oTg2/qKJ7kPp6hfzDsi97fQ48IoGRskdwuz7Cu
+ BGbuFZJ1Q9hHZckYImkEVD3l7jGDitagbUlrsjtMZGp7BQq6QWHs2rCwJGEOP6xEi685QNoj
+ Dhxnc4HYfsbAg8Fm/fRfi0hYIxCejI2QpzVxqaXoytvcWrW15vVIQ9nYgGgotDILZbmKgedc
+ b8LJKCIxu/nklS6gM/yKotmExl+J8oVb93bKKA61U9r3GprrFfQDONQGoXo5/evBr8Iz8wW4
+ xRQAllgjoeOQIpdd6p46Xuo84qL1JvVLvPqgCUmzpiwzXycLeLiQhrYQ==;
+Date: Tue, 2 Jun 2026 09:13:11 +0200
+From: Simon Schuster <schuster.simon@siemens-energy.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>, Ethan Nelson-Moore
+ <enelsonmoore@gmail.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>,
+ Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Dinh
+ Nguyen <dinguyen@kernel.org>, linux-doc@vger.kernel.org,
+ devicetree@vger.kernel.org, workflows@vger.kernel.org, Linux-Arch
+ <linux-arch@vger.kernel.org>, dmaengine@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, Netdev
+ <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-hardening@vger.kernel.org,
+ linux-kbuild@vger.kernel.org, "linux-csky@vger.kernel.org"
+ <linux-csky@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+ Alex Shi <alexs@kernel.org>, Yanteng Si <si.yanteng@linux.dev>, Dongliang
+ Mu <dzm91@hust.edu.cn>, Hu Haowen <2023002089@link.tyut.edu.cn>, Kees Cook
+ <kees@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Will Deacon
+ <will@kernel.org>, "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>, Nicholas Piggin
+ <npiggin@gmail.com>, Vinod Koul <vkoul@kernel.org>, Frank Li
+ <Frank.Li@kernel.org>, Dave Penkler <dpenkler@gmail.com>, Andi Shyti
+ <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Andrew Lunn <andrew+netdev@lunn.ch>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, Krzysztof
+ WilczyDski <kwilczynski@kernel.org>, Andreas Oetken
+ <andreas.oetken@siemens-energy.com>
+Subject: Re: [PATCH] nios2: remove the architecture
+Message-ID: <20260602071311.gtvif43wcjyulphh@dev-vm-schuster>
+References: <20260518042833.272221-1-enelsonmoore@gmail.com>
+ <d40b1e80-37fc-4c88-9d7f-dae6458efe6c@app.fastmail.com>
+ <20260518105735.GW3126523@noisy.programming.kicks-ass.net>
+ <20260518172444.zyd47mcagrcwu7wt@dev-vm-schuster>
+ <CADkSEUjhq6HSdg4ignzbuJiN5uXATsTdxFbRJ3BMxs5=WUWLDg@mail.gmail.com>
+ <20260519103012.blot4bssgiqfer6p@dev-vm-schuster>
+ <CANiq72=6oYtHf0Q1NaLXZ+25uQyYbej2xnvUhtgpHyvozhP7_Q@mail.gmail.com>
+ <ah3TN93e7lRpVihW@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,36 +86,15 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260523181536.5254-2-m32285159@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <ah3TN93e7lRpVihW@ashevche-desk.local>
 
-On Sat, May 23, 2026 at 01:15:36PM -0500, Maxwell Doose wrote:
-> Replace manual mutex_lock() and mutex_unlock() calls with the much newer
-> guard(mutex)() and scoped_guard() macros to enable RAII patterns,
-> modernize the driver, and to increase readability.
-> 
-> Move mutex locking into sps30_do_meas() and tune it up to use guard()(),
-> as every caller takes the lock anyways.
+Hello Andy,
 
-...
+On Mon, Jun 01, 2026 at 09:45:11PM +0300, Andy Shevchenko wrote:
+> Supported implies that one gets real money for the job. Is this the case here?
 
-> -	mutex_lock(&state->lock);
-> +	guard(mutex)(&state->lock);
-> +
->  	ret = state->ops->write_cleaning_period(state, cpu_to_be32(val));
-> -	if (ret) {
-> -		mutex_unlock(&state->lock);
-> +	if (ret)
->  		return ret;
-> -	}
->  
->  	msleep(20);
+Thank you for caring about NIOSII. I'm doing so as part of my
+employment at Siemens Energy; if this is real enough then yes :)
 
-Same question as per v4 (yes, I see that it was in the original code).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards
+Simon
