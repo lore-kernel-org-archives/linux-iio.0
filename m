@@ -1,66 +1,67 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57DFA3E315F
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 13:29:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 893203E7BC3
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 13:29:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780407000; cv=none; b=Pd0GRtFAPoPu0ZrSRTg3iXBp8qcq8lN6v9oHQRZd/SBm0cEK01rqJP1PadI/iyNYI0wcbVPYU9/fB+zAvh5lwWTEECmCpmV51t50pO+C0ym11wJztmDCjTFc5UeCfjhOosN0E4SzDC13B0vO6wqnVo8kW39FAz3kaUgvkUEjGzQ=
+	t=1780407001; cv=none; b=ipOihPl2bE3iGgVSqTFHyxkv3id1Cg+OuA0mFzDAyRoUzSBZbOnOTDIK4Yd9Zzol9NfINJC+D4rYRjySj46xhpBMmIPnveFiz4cOXHZoFn6UxgZiS5ioI207oLY95XdBAUiIKglMZh+l4CS3DD9Dr9sS+EaQldG9fEphraxFKIA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780407000; c=relaxed/simple;
-	bh=5luNUag2LdyDi5VqrC1aIszbCLtLxoCrzOEgPLO3Ebg=;
+	s=arc-20240116; t=1780407001; c=relaxed/simple;
+	bh=Fa9r7MLTB3iX047+Vsi5imvyqmNHFXgMUgJ+vFWwYYE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sspPeoNXgZCUB3Y/OcX8PeJBOgXJHrPpAJfRGjCHMFZwTa6U/mr4WWR7Do2jWTGFQayOwIlhuYAsBjVZ3Hcy6xhly+sezhcDgMn51GcqbX6UsWE3wPo+PxSrM2uGy+dcqCKckAnqd/+tQrE3zn+1Hqh6ELFkOWYzmnr3M5lCjG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dNDpXUXI; arc=none smtp.client-ip=209.85.214.175
+	 In-Reply-To:To:Cc; b=ol5cn9SyVQHbVDBm072ehFy8GZwW5AaMLDFD1+kmRloDdFfs6iM2dksoNpcJ5bR9MPvdpFBclK2Fq4adV+/X8eYA4m9FmvZqHBaDkfrG5Gsg8qD+mEGxjFk+e1eo91r+GTekMeCblk1l6JUeVjDP6giHlxqalQrADfZycCDNxxE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HhQgwWHE; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dNDpXUXI"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2c0c2c7d45eso23576225ad.1
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 06:29:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HhQgwWHE"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2bf1cda2b17so33394495ad.1
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 06:29:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780406997; x=1781011797; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780406994; x=1781011794; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=y4tHaCTkkKCoM4U1oOnmJumPoDSJ1Hmje5FiTiMmUUs=;
-        b=dNDpXUXIEqTRkoQUpObTQ0lDt79vtpOnUoL+vo16VFxhcIVVZItLa8uGyjKdFUbArA
-         QO7YB753eV+7OeU6FKN6yszZ+LB64ZmhP85+qCQnXE38G2iDjs/5EQ8+dvuArGBHu7mN
-         tKOCeaIddM9LJ8c85ur3MK3bHXWvqkfYvl4AvouCO0Vw/B1mydF6AFNc8hfx1PMqYlAt
-         D1cqUIapZb6OxRJ/M0w0a1TsYz93TEnDRpX1VWhbTuJ/f7/+hN0GhhGoztb39LdRL0n3
-         0e7VT40DF7oKo5HBBEhExEh6we5toc+tJEM9BLSXpK5qZZYZUEKfXBdENJ4xF6KnYjGP
-         2gbQ==
+        bh=KCK/pBOSfb2PmGw6nhVQkWTZvBIjCGaZdFKlWF4SGdk=;
+        b=HhQgwWHEFDM2imYhr6+/4KmF0lZaODSCP2/1mK9SfQrvcIojH/PKIYF1xx/sce6pKn
+         BudR8RcqFC/9NK7owwpJ+87t4BqsZErQPxZ6r0rEdzrc8mA05H0FZPioTVIK/wHYbIWK
+         1Clvgqd8HDlhHDK/FGS+LUOsgC3KmUGnbT9RQ6Vz49qHgu+8WkFNYu5qDfxvSHmyB2FB
+         JDQqVNG7SLyYG5IJuyqMwGuuPOkvDdzDNoGma/iig5Tt3ywr4pJ0U7nba/JT3apYn1l4
+         OZ7RAYTOVytAN/IVbmJHKDGmRwcHrDDPU/W8iuzW57Qhv/tw4/IS1yBdcBuNXigrCHrG
+         R3QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780406997; x=1781011797;
+        d=1e100.net; s=20251104; t=1780406994; x=1781011794;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=y4tHaCTkkKCoM4U1oOnmJumPoDSJ1Hmje5FiTiMmUUs=;
-        b=Xwhoum+X2KCXdDg499eQrwxR8LKxmMxJ9JL/iCwlSPQEESvGhTD0j/XXZxqFqRF2os
-         ZAAvOfflFjMJW/Dsl5mrucRmHt6mxFHINvKL+o36KO4qcCRFhJo+KdcaJ2lrRaNgIYfg
-         wR0YZx+Jq09S8z59p+moO7MKeb8q2eNSXKKBT7+kFpIt3rnwPNcV66PDOKn4BsTFGLZq
-         uyuJcgNaHNfrBlF+x6CK4tSvNetkzQkZqingolGTlOgLwTR69bWIdJhOTwoVCWhN45xF
-         cAcWiDq07UNm15Yn+b1X+eInIlMVrzTiqjOPbZaa8zWbV9p404o3h5LFXt61FnqejyMr
-         28zw==
-X-Gm-Message-State: AOJu0Yx80sVzRYuIrcwNb1e1gDGJaHeUFiuf4Z6oGwCCH8EpB5AKqhiC
-	SHB/OekqeIC/4hJfLfnkay76GcgFcVaDHvV+x8tkKtmdigAYByMhluPqLDHXNw==
-X-Gm-Gg: Acq92OFnytiblxvODvaAsL8SbM0EsHef5JZlv79vz5RPm5NkbC2x4lJUX067hoEkoyd
-	Uug8OK+pkQ0qtYqQf6iJFGjELSwjmpUb9H51e0S98L0+OCgYtpfBArlyXrpy7FU19DQ30an3uxm
-	iJk2HtG5VKQF+NVKKk5DO5qwFCFOaGy2lEOo2U8pnUPPcv/MAPd4xsnnGed4u1qbycG9EpX8aw2
-	4tZ1o2DEffoFx4wRsewwheg9Yn/+XwS6X363YpHbzvPYmqbG4v9IFn5tgjyJUXFPcvgxFx9Dr2S
-	O8UoCAVx1b/6BFyrjOx+Tz+phzinDpv/eCht5s7zBeF0PgmCCC3lwuxYapYWh2LxsoMfU9LNMWK
-	bsVi6lOkLcC+JVD/5prslNkzHtVoz3+vxF/DsW30107vC+BKbpoycDilsUdOmo8LF2EwP6xehgE
-	K44hcw3uvr/LaWaETakPK69lqiaCuJIPy2aO/8Px2NL552eNIC4Ogkf9jJwD8=
-X-Received: by 2002:a17:902:e785:b0:2bd:d7b5:83ed with SMTP id d9443c01a7336-2bf368d10d5mr180385505ad.39.1780406997375;
-        Tue, 02 Jun 2026 06:29:57 -0700 (PDT)
+        bh=KCK/pBOSfb2PmGw6nhVQkWTZvBIjCGaZdFKlWF4SGdk=;
+        b=i6H9wckno/ib94PtR1ZCP7WXcnJhSFAcu11EiJ3+C4d2b7UUGvYWHOQkf3jtVCMHe7
+         /YLa4YtE5gbh/qjh3bcIw2btLvxaNeyOAC9HTwASWj9VCplPWNHOPfdTQ46S0D7TCkBy
+         uwDArBKyPMyNUZUPq72ONXmGpliCEgYMEzW+wLwloRLtzs8T8cD5KGe9Qgv4HJhEOtT8
+         UvAOwfXdUVUR/lSbhB8DW5lktsMMJVaBxoEXQLbQgVHVTmOvV4z71OE4Vo1Qa+jRbz3N
+         ylj2JHtuSbC4O/FMISh2qoDgV4mM2u4zAMtSay6os65J39BWmV36o9dY/8rm2/giiJTR
+         cTdg==
+X-Gm-Message-State: AOJu0Yy0bY8mxZ/hMvOjuxtuyk/1CIZo+bKyCQQbC9YsD5u9HEgnluUi
+	umrTpbjVLJbA4CWyo41nZNd5FS/arAGi5VRYkIsQ/w9Gw2jNEC9TFJC7f122lA==
+X-Gm-Gg: Acq92OHqXzxVgDhQf+eX2c45tDPG3IuCiumMD18Jezy4T5kx1eIsqr0vriNaee5vz/s
+	xHJR5oRCwarRxcRBZ1FaOgi5Hjjs/uPvTPHTXJRagJw528/mSPwn/+shuHSddR0DCxnLaF6/teX
+	45DtJjp/nUGIj7KOKzqWLjG57eiChmH7eo+nprnaLgxJmppba/axpvKTPlIgle879P6yHYzrR/D
+	Ca1BZmeedrZ/ny81wpkA1yLo6cVR7EwjsX7n9vb8k9+zbyMoc7o6+rijU1XgmM4+xo1Tr8LnvGp
+	1x8tHXogdCcXnv11+xZcFn7xAbTcA1A8WaV/kcRmfgWTeGgCvprJtuIzNTQ9jAZLqBjUmx+cpJ7
+	FvK46Ik4HRzocigndhTsnmAxWvERNJw7XuunTZmiHi3V0yOqnWKi1Yu684RSECTGv8UaL9/ZpQA
+	n06JgQumFC+kLNYC5PZMU4YWHSNoJyocWahnwaSLxw4/wDQ6A8ivI9aW4kVCI=
+X-Received: by 2002:a17:903:41c6:b0:2b0:6068:4c5f with SMTP id d9443c01a7336-2c10cc35557mr37132975ad.8.1780406994403;
+        Tue, 02 Jun 2026 06:29:54 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf23a1ee6esm148548215ad.33.2026.06.02.06.29.54
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2bf23a1ee6esm148548215ad.33.2026.06.02.06.29.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 06:29:57 -0700 (PDT)
+        Tue, 02 Jun 2026 06:29:54 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-Date: Tue, 02 Jun 2026 18:59:23 +0530
-Subject: [PATCH v4 2/5] iio: accel: mma8452: use local struct device
+Date: Tue, 02 Jun 2026 18:59:22 +0530
+Subject: [PATCH v4 1/5] iio: accel: mma8452: convert to bulk regulator
+ usage
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +70,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-2-26d6dff8fc55@gmail.com>
+Message-Id: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-1-26d6dff8fc55@gmail.com>
 References: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-0-26d6dff8fc55@gmail.com>
 In-Reply-To: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-0-26d6dff8fc55@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -77,144 +78,174 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Sanjay Chitroda <sanjayembeddedse@gmail.com>
+ Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Introduce a local struct device pointer derived from &client->dev.
-This avoids repeated &client->dev usage and improves readability.
+The "vdd" and "vddio" regulators are always controlled together. Switch
+to the regulator bulk API to handle setup, enable, and disable paths in
+a single call.
 
+No functional change intended.
+
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
 ---
 changes in v4:
-- address coding style comment given by Andy
-- v3 link -> https://lore.kernel.org/all/20260505174640.3998281-8-sanjayembedded@gmail.com/
+- added explicit header with input from Joshua Crofts
+- validate new member of structure with `pahole` and `bloat-o-meter`
+  comment from Andy
+  ./scripts/bloat-o-meter mma8452-before.o mma8452-after.o
+  add/remove: 0/0 grow/shrink: 0/6 up/down: 0/-1013 (-1013)
+  Function                                     old     new   delta
+  _entry_ptr                                    72      56     -16
+  _entry                                       396     308     -88
+  mma8452_remove                               646     548     -98
+  mma8452_runtime_suspend                      633     467    -166
+  mma8452_runtime_resume                       939     639    -300
+  mma8452_probe                               4247    3902    -345
+  Total: Before=36561, After=35548, chg -2.77%
+
+  pahole before:
+    /* size: 288, cachelines: 5, members: 10 */
+    /* sum members: 278, holes: 2, sum holes: 10 */
+
+  pahole after:
+    /* size: 320, cachelines: 5, members: 9 */
+    /* sum members: 310, holes: 2, sum holes: 10 */
+  summary: overall size of driver is optimized and all new member are in same cacheline
+- v3 link -> https://lore.kernel.org/all/20260505174640.3998281-7-sanjayembedded@gmail.com/
 ---
- drivers/iio/accel/mma8452.c | 39 +++++++++++++++++++--------------------
- 1 file changed, 19 insertions(+), 20 deletions(-)
+ drivers/iio/accel/mma8452.c | 60 ++++++++++++---------------------------------
+ 1 file changed, 16 insertions(+), 44 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index a44b2138951e..1d4ea614cb57 100644
+index 1403b32e2b21..a44b2138951e 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -223,15 +223,15 @@ static int mma8452_drdy(struct mma8452_data *data)
- static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
- {
- #ifdef CONFIG_PM
-+	struct device *dev = &client->dev;
- 	int ret;
+@@ -18,6 +18,7 @@
+  * TODO: orientation events
+  */
  
- 	if (on)
--		ret = pm_runtime_resume_and_get(&client->dev);
-+		ret = pm_runtime_resume_and_get(dev);
- 	else
--		ret = pm_runtime_put_autosuspend(&client->dev);
-+		ret = pm_runtime_put_autosuspend(dev);
- 	if (ret < 0) {
--		dev_err(&client->dev,
--			"failed to change power state to %d\n", on);
-+		dev_err(dev, "failed to change power state to %d\n", on);
++#include <linux/array_size.h>
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
+ #include <linux/mod_devicetable.h>
+@@ -111,8 +112,7 @@ struct mma8452_data {
+ 	u8 data_cfg;
+ 	const struct mma_chip_info *chip_info;
+ 	int sleep_val;
+-	struct regulator *vdd_reg;
+-	struct regulator *vddio_reg;
++	struct regulator_bulk_data regs[2];
  
- 		return ret;
- 	}
-@@ -1553,7 +1553,7 @@ static int mma8452_probe(struct i2c_client *client)
- 	struct iio_dev *indio_dev;
- 	int ret;
- 
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -1563,10 +1563,9 @@ static int mma8452_probe(struct i2c_client *client)
- 
- 	data->chip_info = i2c_get_match_data(client);
- 	if (!data->chip_info)
--		return dev_err_probe(&client->dev, -ENODEV,
--				     "unknown device model\n");
-+		return dev_err_probe(dev, -ENODEV, "unknown device model\n");
- 
--	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
+ 	/* Ensure correct alignment of time stamp when present */
+ 	struct {
+@@ -1570,25 +1570,15 @@ static int mma8452_probe(struct i2c_client *client)
  	if (ret)
  		return ret;
  
-@@ -1599,7 +1598,7 @@ static int mma8452_probe(struct i2c_client *client)
- 		goto disable_regulators;
- 	}
+-	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
+-	if (IS_ERR(data->vdd_reg))
+-		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_reg),
+-				     "failed to get VDD regulator!\n");
+-
+-	data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
+-	if (IS_ERR(data->vddio_reg))
+-		return dev_err_probe(&client->dev, PTR_ERR(data->vddio_reg),
+-				     "failed to get VDDIO regulator!\n");
+-
+-	ret = regulator_enable(data->vdd_reg);
++	data->regs[0].supply = "vdd";
++	data->regs[1].supply = "vddio";
++	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regs), data->regs);
+ 	if (ret)
+-		return dev_err_probe(dev, ret, "failed to enable VDD regulator!\n");
++		return dev_err_probe(dev, ret, "failed to get regulators\n");
  
--	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
-+	dev_info(dev, "registering %s accelerometer; ID 0x%x\n",
- 		 data->chip_info->name, data->chip_info->chip_id);
+-	ret = regulator_enable(data->vddio_reg);
+-	if (ret) {
+-		dev_err_probe(dev, ret, "failed to enable VDDIO regulator!\n");
+-		goto disable_regulator_vdd;
+-	}
++	ret = regulator_bulk_enable(ARRAY_SIZE(data->regs), data->regs);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to enable regulators\n");
  
- 	i2c_set_clientdata(client, indio_dev);
-@@ -1632,10 +1631,10 @@ static int mma8452_probe(struct i2c_client *client)
- 	if (client->irq) {
- 		int irq2;
- 
--		irq2 = fwnode_irq_get_byname(dev_fwnode(&client->dev), "INT2");
-+		irq2 = fwnode_irq_get_byname(dev_fwnode(dev), "INT2");
- 
- 		if (irq2 == client->irq) {
--			dev_dbg(&client->dev, "using interrupt line INT2\n");
-+			dev_dbg(dev, "using interrupt line INT2\n");
- 		} else {
- 			ret = i2c_smbus_write_byte_data(client,
- 							MMA8452_CTRL_REG5,
-@@ -1643,7 +1642,7 @@ static int mma8452_probe(struct i2c_client *client)
- 			if (ret < 0)
- 				goto disable_regulators;
- 
--			dev_dbg(&client->dev, "using interrupt line INT1\n");
-+			dev_dbg(dev, "using interrupt line INT1\n");
- 		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
-@@ -1680,14 +1679,13 @@ static int mma8452_probe(struct i2c_client *client)
- 			goto buffer_cleanup;
- 	}
- 
--	ret = pm_runtime_set_active(&client->dev);
-+	ret = pm_runtime_set_active(dev);
+ 	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
  	if (ret < 0)
- 		goto free_irq;
+@@ -1723,10 +1713,7 @@ static int mma8452_probe(struct i2c_client *client)
+ 	mma8452_trigger_cleanup(indio_dev);
  
--	pm_runtime_enable(&client->dev);
--	pm_runtime_set_autosuspend_delay(&client->dev,
--					 MMA8452_AUTO_SUSPEND_DELAY_MS);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, MMA8452_AUTO_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
+ disable_regulators:
+-	regulator_disable(data->vddio_reg);
+-
+-disable_regulator_vdd:
+-	regulator_disable(data->vdd_reg);
++	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
  
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
-@@ -1722,11 +1720,12 @@ static void mma8452_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	struct device *dev = &client->dev;
+ 	return ret;
+ }
+@@ -1748,8 +1735,7 @@ static void mma8452_remove(struct i2c_client *client)
+ 	mma8452_trigger_cleanup(indio_dev);
+ 	mma8452_standby(iio_priv(indio_dev));
  
- 	iio_device_unregister(indio_dev);
+-	regulator_disable(data->vddio_reg);
+-	regulator_disable(data->vdd_reg);
++	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
+ }
  
--	pm_runtime_disable(&client->dev);
--	pm_runtime_set_suspended(&client->dev);
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
- 
- 	if (client->irq)
- 		free_irq(client->irq, indio_dev);
-@@ -1749,7 +1748,7 @@ static int mma8452_runtime_suspend(struct device *dev)
- 	ret = mma8452_standby(data);
- 	mutex_unlock(&data->lock);
- 	if (ret < 0) {
--		dev_err(&data->client->dev, "powering off device failed\n");
-+		dev_err(dev, "powering off device failed\n");
+ #ifdef CONFIG_PM
+@@ -1767,15 +1753,9 @@ static int mma8452_runtime_suspend(struct device *dev)
  		return -EAGAIN;
  	}
  
+-	ret = regulator_disable(data->vddio_reg);
+-	if (ret) {
+-		dev_err(dev, "failed to disable VDDIO regulator\n");
+-		return ret;
+-	}
+-
+-	ret = regulator_disable(data->vdd_reg);
++	ret = regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
+ 	if (ret) {
+-		dev_err(dev, "failed to disable VDD regulator\n");
++		dev_err(dev, "failed to disable regulators\n");
+ 		return ret;
+ 	}
+ 
+@@ -1788,16 +1768,9 @@ static int mma8452_runtime_resume(struct device *dev)
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret, sleep_val;
+ 
+-	ret = regulator_enable(data->vdd_reg);
+-	if (ret) {
+-		dev_err(dev, "failed to enable VDD regulator\n");
+-		return ret;
+-	}
+-
+-	ret = regulator_enable(data->vddio_reg);
++	ret = regulator_bulk_enable(ARRAY_SIZE(data->regs), data->regs);
+ 	if (ret) {
+-		dev_err(dev, "failed to enable VDDIO regulator\n");
+-		regulator_disable(data->vdd_reg);
++		dev_err(dev, "failed to enable regulators\n");
+ 		return ret;
+ 	}
+ 
+@@ -1815,8 +1788,7 @@ static int mma8452_runtime_resume(struct device *dev)
+ 	return 0;
+ 
+ runtime_resume_failed:
+-	regulator_disable(data->vddio_reg);
+-	regulator_disable(data->vdd_reg);
++	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
+ 
+ 	return ret;
+ }
 
 -- 
 2.34.1
