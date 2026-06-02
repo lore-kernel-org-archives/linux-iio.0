@@ -1,80 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738942010EE
-	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 02:46:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3807D364E81;
+	Tue,  2 Jun 2026 02:58:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780368387; cv=none; b=nS68OMLpnHKx7e2wi0+zkPTsUeFi6VDbqVSUkVmJ+enk7koriYn4syzYDG3hHocRpm/A/W+PhTdjf1K9ghOD8YLCZcT2iYn0kp8Y2X8/FnTArWwog6MyEAnqTCZjxJ9JJE55Qphg2FUZWLWwzrGaj39D87xURfSnF5CI3OiMRc4=
+	t=1780369129; cv=none; b=qpOglaXumQBNaF4zSwIH+UNhQQlhUNee7FP6Vz1k3aawM1xAbdcj97zh8k2rpTp6/VCBzMWYGX/JhG0lZUqH8pObAhVSgqvT+5Hrh7crC04gKgwTJchlPhOhIP5WgVDSAo3hn+hKMukyUKV2rlZBd8WKXg+UBX4Cum3qQFs5ZDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780368387; c=relaxed/simple;
-	bh=hovCfJYcEUVlFFFq1ZwFK5AV7uJr5zqOhRta2+uytAg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=j3adZhze0HftdwlFP3Tb8Z5EJDhVxmtTMr2E4IkcZyPBWXAWCshzI4e/1wYHMOfZfneCwepEyukjJSK06JP5oOIGjcijtD2mY6c2g3dS6dw4pQr0tJaz6R0VxCB8CsBEy7xfw1vGxr4HoxtIAS03smNcj+qHQ7g8JfZLPbEWNA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BzQMKbwH; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780369129; c=relaxed/simple;
+	bh=53Cp5+xc+DYElUKvXrlzk3pn+leisi31D9Du/yr+gIA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OiKh3rpIgqZEgCg7E/IZQgLsnZCUx34O3YyeIRLVOfli3tmPFLvtx7Bul9sX9OQecpKgU0ucGXxTW5twYtd4qVd/UEh3ZAZw9SmH5UNdnYsfGv2cOc6dHUCYctrWV6lxMsJwgHhkEfYbTA90NRDvhgQx8k7ixPHeMmRwBEZxTl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=AFco6wM+; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BzQMKbwH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8BB1F00893;
-	Tue,  2 Jun 2026 02:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780368386;
-	bh=xPxHBR90KTEunBtPPiggYAWbGhJ765Ut0YRR5/6Cx4E=;
-	h=From:To:Cc:Subject:Date;
-	b=BzQMKbwHObY4sdRVtc1T7tALMtaSduvV04Ej3/8SszC8xWHm2GAE1lVxMbWQ0K9Dy
-	 DtXgX+X+xnm7Fo0AXekzxrel717cNPY7aJVplny7d61HNVY3MYUGGOOlfeFVjQpH6L
-	 riX2aAzn/0sGnMHFuE0X0hIzHywFqOuzMK79BcQskm4OuiKFCCOQuxvcx4tbH/aoXz
-	 9F86UibUA4jRtQvYthz37MvfT1ehcJiaYmlEf2tJ36bvfLhhkzBRa38C+1flk3eAK2
-	 /nyrna6nHcUO0tka9GILCyvW1ukLv9X1ORlwlpl+ogjYyH1N3dVMdq1HOsN0znLTtc
-	 peSVbBhRbYn7Q==
-From: William Breathitt Gray <wbg@kernel.org>
-To: gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org
-Cc: William Breathitt Gray <wbg@kernel.org>
-Subject: [GIT PULL] Counter updates for 7.2
-Date: Tue,  2 Jun 2026 11:46:02 +0900
-Message-ID: <20260602024614.853294-1-wbg@kernel.org>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AFco6wM+"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=V6Fwgi6SxT306fVnfWLu85I0FmoYducjBMjSrjw4plo=; b=AFco6wM+4kKsPd/RxOZ3WirD18
+	9wWXZAPaGaw5U/2SNlcoFUWOtWzzTv+FdpGYnm2N5u9z5ZLjxaPtmW0gFl5UTlrT7xqh2sflbVmvr
+	QLYojwuJKnNZTsUldMYtFCVPzT/mryE6hzvMJ72K8Joa/m8dWtpbEVgNe3GoYa78GIk4degkjjcmW
+	vRpHMwYGl+bHqjqZ/gDvjOxZpxc0Lr+ck8nTnLxQ79SpdVDFCCT7UfU3GGx+Sec1ZJn7Oj6TxHRtm
+	nHDVFe/gMe7lJBLHVkzL2wfWTgrZ5XugVyS1P8W1NTMFvTJWkDqqRIv3XZV+r1ymfyA2U7LG34Zz7
+	L9Mt6MVQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1wUFL1-0000000CCc9-0zZn;
+	Tue, 02 Jun 2026 02:58:43 +0000
+Message-ID: <a597f215-6ec8-40e7-be5d-9e765a87f639@infradead.org>
+Date: Mon, 1 Jun 2026 19:58:40 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1300; i=wbg@kernel.org; h=from:subject; bh=hovCfJYcEUVlFFFq1ZwFK5AV7uJr5zqOhRta2+uytAg=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFlyzjsmHyuy9XrL4vfc7pZHqJra3b3m6/80q6bxm9bNk vJ0/lnVUcrCIMbFICumyNJrfvbug0uqGj9ezN8GM4eVCWQIAxenAEzkXgDDP9PoCYwHdCXn6jLd 17khd3hK9/lH33yXzVJfP6t0s/OUO1MY/qmxnnhw6ESg2g/eJ7YcbXfsrvzcseVAffn/qb9Vohk k5vEBAA==
-X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v15 11/12] docs: iio: add documentation for adf41513
+ driver
+To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
+ <20260531-adf41513-iio-driver-v15-11-da09adf1c0dd@analog.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20260531-adf41513-iio-driver-v15-11-da09adf1c0dd@analog.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 254f49634ee16a731174d2ae34bc50bd5f45e731:
 
-  Linux 7.1-rc1 (2026-04-26 14:19:00 -0700)
 
-are available in the Git repository at:
+On 5/31/26 1:30 AM, Rodrigo Alencar via B4 Relay wrote:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> Add documentation for ADF41513 driver, which describes the device
+> driver files and shows how userspace may consume the ABI for various
+> tasks.
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wbg/counter.git tags/counter-updates-for-7.2
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
 
-for you to fetch changes up to ca815bb87064a8f68b00eaf8872ef0d4a33a5bf7:
+> ---
+>  Documentation/iio/adf41513.rst | 199 +++++++++++++++++++++++++++++++++++++++++
+>  Documentation/iio/index.rst    |   1 +
+>  MAINTAINERS                    |   1 +
+>  3 files changed, 201 insertions(+)
 
-  counter: intel-qep: Use devm_mutex_init() (2026-05-28 07:16:46 +0900)
-
-----------------------------------------------------------------
-Counter updates for 7.2
-
-Manual mutex lock logic is replaced by lock guards in intel-qep.
-Additionally, devm_mutex_init() is now used in ftm-quaddec,
-interrupt-cnt, and intel-qep to handle mutex cleanup automatically.
-
-----------------------------------------------------------------
-Ilpo Järvinen (1):
-      counter: intel-qep: Use devm_mutex_init()
-
-Joao Paulo Menezes Linaris (1):
-      counter: intel-qep: Replace manual mutex logic with lock guards
-
-Stepan Ionichev (2):
-      counter: ftm-quaddec: use devm_mutex_init()
-      counter: interrupt-cnt: use devm_mutex_init()
-
- drivers/counter/ftm-quaddec.c   |  4 ++-
- drivers/counter/intel-qep.c     | 54 ++++++++++++++++-------------------------
- drivers/counter/interrupt-cnt.c |  4 ++-
- 3 files changed, 27 insertions(+), 35 deletions(-)
+-- 
+~Randy
