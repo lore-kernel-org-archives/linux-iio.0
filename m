@@ -1,45 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 869CD391E6D;
-	Tue,  2 Jun 2026 12:06:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF5A3D9DC7;
+	Tue,  2 Jun 2026 12:18:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780402011; cv=none; b=BErRzqc2XOt3foO384xeDOFgwYyFGDqp/yb8Mx1F93ZPjjUk8H5xkEvwO8tCr8v/xnoCzYiOXlTBMaDCmBlbAhtcx/ykkaOjCWiQ6GiUkkC7ks3HhQFF0erUPM6iz4BBjMaIMqZJDVPqUbAju3yJjxOruQiILP+unyuSgDu7yW0=
+	t=1780402721; cv=none; b=s5TdRAKiK9PAh53iP19YnsOxUQOoEkb2XtfZeVia0UeDSX9KDHQMXnxvGBOyKGNnYlBCqgBeW7Fdd7RELAOnqcu7kPCP0+Hb6CQ4Md+f+WLcOjU2IxnkwDs1GVoX5hIhkvfrtt/d9CToXUHyuy3xP8eXGo5PwZ1smvbKxq0htP0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780402011; c=relaxed/simple;
-	bh=4Ib1HZSwprKjDZ/HBqLJ79bSipqyf1w+Seee7XKf6eg=;
+	s=arc-20240116; t=1780402721; c=relaxed/simple;
+	bh=z7JOGxH+HnsSBaqYX1QWBrmBLuqirw2iDXE3bDXzFuc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sBAZDbFRW8zAXfSKgQP0/pm3xWd+D2Nn4MDpuxngkvXeQFrZficBIgrvQ5EhVcH4w/cD9HzTqbDYJGnRha+T8VcGcwKV5Y7dqFGuMQRocOE//7NOqNY7969PCYPfIsDiLrokGcmDxCBL+MNJvClXwIiVDJ0SqhYDkVdCbyIhXo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m9z37o56; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=iStXOkVbmLbBAavSBSLlZZIb16J3HZjEurUm1tLgpbTB2tRf0jqQXxll1kl5+TOBjnAXEJkthr6AgBUf9KlfkzH7Pi7EIh/a/+gGHUKAKoFJpgGcWRXnZBrDnhi7B4YeCEQrJLMZ30XWQP/0GvuvGPPP6VSNsxwFbQCcc99fCcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lH257MTD; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m9z37o56"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C4A1F00898;
-	Tue,  2 Jun 2026 12:06:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lH257MTD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 220E21F00893;
+	Tue,  2 Jun 2026 12:18:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780402010;
-	bh=yUAN4g0wGB09Drb9QYW00b2yzOFrzF2qEiVD7nuUHmw=;
+	s=k20260515; t=1780402719;
+	bh=Ss7ojY/nLgTQfI5mOUTQBO8O5dUcKHmNe7UXFbpE0lE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=m9z37o564W5v9RvWD8+pXaHZnLvQC7MUjE+8fd+xUjg4G+sYgqFGbnlIUpsFJ7eGz
-	 LPVkewdkHYuU09dhIJN2w9rxGRBZSm1oFggCFE+AasbOWTaRnqeY+ccqhaByiQDQjS
-	 LCu4um7OJ3s1TAtWtu5uv6kpLx+DPIjEPSw5RUjcfNtsgsbekVxOfw5hNfoREHjo8L
-	 FAA9ZgktiM9sKInYbaUSlinXx4nD3dFNsde9GJgX0FcX0w1g08WKTFiwUJoVGJcPDD
-	 950rRqAIuz3xUKMHWfNjehlh/8W8id+pkZ04ZgtQD/Rn9FnbI+l301yK4Kcskgd3DS
-	 bvHJIfIleIv/Q==
-Date: Tue, 2 Jun 2026 13:06:42 +0100
+	b=lH257MTDFI6DryJ8fj8OaVA3qjmRDorOJ+bisaieFGCHqR/vDZCKcIRwLp128EY/b
+	 KhdzIPUtyB0sgKGSr0A6OFsU7wUxdRUcFLEl+/oTn7A4cdNokaBHxid4CVgDcn4VPC
+	 ifQ9MAnBM+9aboyuLUdZRbH54+JREtrwLO7ugWAE44tgJxUBKPdsCQc1Fx87s2FlDC
+	 86oZplAZsbpP+l2sLMGR4FsL2ze7zmqAXFxbhPDt9hinIfYItwYR5hnEhT4XiG5Len
+	 qt6RelxK6UFhEI8I21CPGQBd15KH/s8IKThtSRxocAtWP4nXr5zFDhveqRokBgGeGe
+	 sKX08EaX3LRjQ==
+Date: Tue, 2 Jun 2026 13:18:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org,
- linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Igor Korotin
- <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>
-Subject: Re: [RFC PATCH v3 3/4] iio: position: add Rust driver for ams
- AS5600
-Message-ID: <20260602130642.068b24ea@jic23-huawei>
-In-Reply-To: <CAO26r3R5+xYQM=_uxF32MQRuxkhpeY3bTwq6M3o8dPCr8-kdnA@mail.gmail.com>
-References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
-	<20260524132824.54918-4-muchamadcoirulanwar@gmail.com>
-	<20260528170840.54173bb7@jic23-huawei>
-	<CAO26r3R5+xYQM=_uxF32MQRuxkhpeY3bTwq6M3o8dPCr8-kdnA@mail.gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Rishi
+ Gupta <gupt21@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: light: veml3328: add support for new device
+Message-ID: <20260602131834.2fe5677e@jic23-huawei>
+In-Reply-To: <CALoEA-xDSVOj0qkr6fYnQt0s1Xqh6acsVs7c7QKemWRaRh1i6A@mail.gmail.com>
+References: <20260530-veml3328-v3-0-dd562eaee8d9@gmail.com>
+	<20260530-veml3328-v3-2-dd562eaee8d9@gmail.com>
+	<20260531101940.037d1d7a@jic23-huawei>
+	<CALoEA-yEA5KcvXqZCCg76qFAgyNq8BQ5+gop442mju-9PiKaxg@mail.gmail.com>
+	<20260601101726.203f56cd@jic23-huawei>
+	<CALoEA-w8zX+bzpEfvGoafDaOr6Kd-USgsyZ6SRpV08Yw6MaVrg@mail.gmail.com>
+	<CALoEA-xDSVOj0qkr6fYnQt0s1Xqh6acsVs7c7QKemWRaRh1i6A@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,54 +55,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Tue, 2 Jun 2026 10:14:59 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> > > +                let angle_h = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_H as usize) {
-> > > +                    Ok(v) => v as u16,
-> > > +                    Err(_) => return Err(hw_guard.handle_io_error()),
-> > > +                };
-> > > +                let angle_l = match hw_guard.io.try_read8(AS5600_REG_RAW_ANGLE_L as usize) {
-> > > +                    Ok(v) => v as u16,
-> > > +                    Err(_) => return Err(hw_guard.handle_io_error()),
-> > > +                };
-> > > +
-> > > +                let angle = (angle_h << 8 | angle_l) & 0x0FFF;  
+> On Mon, 1 Jun 2026 at 16:43, Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 > >
-> > This is the sort of thing we'd never do in a C driver because we have well
-> > defined meaningful functions / macros for doing this.  I'd like to see
-> > something equivalent in the rust code of.
-> >    Bulk read int a two byte array. i2c_smbus_read_word_data() or swapped variant.
-> >    Unaligned endian read  get_unaligned_be16()
-> >    Masking to extract the 12 bits that are valid. FIELD_GET() whatever.  
+> > On Mon, 1 Jun 2026 at 11:17, Jonathan Cameron <jic23@kernel.org> wrote:  
+> > >
+> > > If you have time to figure out the path that causes that, it would be excellent
+> > > to have it recorded. I spent a few minutes the other day on this and couldn't
+> > > find it.  Maybe ask AI to figure it out :)  
 > 
-> Switching to `try_read16()` (calls `i2c_smbus_read_word_data`) plus
-> `swap_bytes()` for the byte order, then mask:
-> 
->     const AS5600_RAW_ANGLE_MASK: u16 = 0x0FFF;
-> 
->     let raw = client.try_read16(AS5600_REG_RAW_ANGLE_H as usize)?;
->     let angle = raw.swap_bytes() & AS5600_RAW_ANGLE_MASK;
+> Briefly analyzing this with AI (Gemini 3.1 Pro, just like Sashiko). I
+> noticed that
+> in drivers/base/dd.c the specific driver probe function is called and then
+> pm_request_idle() is called after it in _driver_probe_device(), which
+> is probably
+> the reason the sensor is suspended after probe even though I didn't
+> explicitly call
+> pm_runtime_put_autosuspend() (odd that this behaviour in the actual
+> driver base).
 
-That swap goes back to a pattern we ripped out of the C code years ago
-and why we have the smbus swapped functions and regmap support fort htat.
+It kind of makes sense as it's basically a now you are finished, should this
+be going to sleep call.  I never thought of looking there.
+I did some archaeology and via 3 refactors / bug fixes that call goes all the
+way back to the introduction of runtime PM 17 years ago.
 
-If a given part always does the bytes in opposite byte order of smbus
-then it should be handled as part of the read function rather than every
-word read having to be followed by a swap.  Here you only have one so
-it doesn't look that bad, but for some other devices this is the common
-call sequence to ready almost anything.
 
 > 
-> Rust doesn't have FIELD_GET yet, but a named constant serves the same
-> documentation purpose. Single call, no manual byte assembly.
+> To err on the side of caution, I'd add a pm_runtime_get_noresume() call before
+> setting up autosuspend and a
+> pm_runtime_mark_last_busy()/pm_runtime_get_autosupend()
+> combo before registering the device. Technically Sashiko is correct, this isn't
+> explicitly done in the driver, nevertheless the driver base actually
+> handles this
+> if pm_runtime is correctly set up and callbacks are defined.
+> 
+> Jonathan - up to you if you want to fix up the driver since it's
+> already committed
+> or if I should send a patch (I guess it isn't that critical, but it
+> keeps Sashiko quiet
+> in future patches).
+It is fine as it stands - lets just keep replying to tell sashiko it is wrong
+until it learns :)
 
-A named constant serves only part of the purpose. The main gain from FIELD_GET()
-is we don't have to go check if a shift is also needed.  I'd strongly
-support work on getting something similar for rust as it makes for a lot
-more consistent and readable driver code.
+Arguably we should be ripping out some of the dance that is going on in current
+drivers so as to remove unnecessary complexity.  I'm nervous to do that on anything
+we can't test.
 
-Basically I want all the useful helper stuff we've built up in C to be
-available in Rust.  In cases like this one I would prefer there was never
-a legacy of doing it any other way!
+Thanks for looking into this!
+
 
 Jonathan
+
+> 
 
