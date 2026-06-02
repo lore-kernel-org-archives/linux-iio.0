@@ -1,109 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC60C37B012;
-	Tue,  2 Jun 2026 08:09:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780387789; cv=none; b=NOAwX9qb76YRtHD+ZIQ7qYE8M9VdSz0+ynx0vWSp69mYVF8KwplNxGfFe/JFK8asKJLhEvVpkYnKBRT/WTalHxGqUpB4hh2D5WfVv6w3CSVP1yh++hF1AQbmC2PwtOOzLvMhGavINPEIBhGaa9k0l4ia/PR9V19wCjbC1vhkotQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780387789; c=relaxed/simple;
-	bh=gwYJ/kTtL7028h1WAxReM18rkWLzIkyfezPsBxvoirg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ox9zStqENdl54spZblW4pQLtFYk6bYjQZZ9erNpkKr+bdDg5j3aU5bqxGXUsJyWicqpcyUAut38A/zJvGisBkmLJmOAVP2RMJyv92q1dSNygJVu0vnMT5+pwXzFBzqofE+IgT4yhPq/Uxb6SsNtrwveZc7QbKKWEtixGT1kkZ74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eueEkc+A; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4541D3AEB2D
+	for <linux-iio@vger.kernel.org>; Tue,  2 Jun 2026 08:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780387888; cv=pass; b=AGVRAWpWWNzUWFrblB750gIeI80wbWWj4l1L/HxqeE3THqScEYPJ9IRps3DncBw2snKO21faGDT9AXGOx8nytYCW3w8WiAUI51lVtm7pfGnOv0tWbz8qF+BlEk7WEjqpDW2o4WXMbx6NnQ+yHEm2R846ZoiaLU9PuvhjDUdd4X8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780387888; c=relaxed/simple;
+	bh=pnwmlQxuqdNrQurh7v1e9vKSMxYrp0Jp3doNPYkrr1U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QuiAK+gjPYawi28uiDuyvs2b8IFQD0lyiZ/uDPxdO+75zf3zrTDqrDJr8QF5Qn19nslnKXmzDo2adKDCibiBIQCUhMIYRGXavfenS3e9n32X/vopPKUz0T+FozKgRnzky14W26HeBFtEMLJwuAf0MCSs3A9aoA/B/jXGQVXqqjo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gSrTIaqe; arc=pass smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eueEkc+A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780387789; x=1811923789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gwYJ/kTtL7028h1WAxReM18rkWLzIkyfezPsBxvoirg=;
-  b=eueEkc+ADN576A1kcwyvcKX8Ab7rM7b9dKdYbNXLyNIht7L/BQNClRO9
-   I3V849nTBIjfuT/7r14a6qUkRc3gLoyO589hTFxZaoFUWf2q0tz4+tBlF
-   omguOS6QaqV03rUuptR+x79WBsrbPwvoaA9CX4ZMAXsd4GEbVdyXm+h8p
-   ABrrr4AGgeVczbUh2jdAi3K0KACNkU+jixuKIw0imPfkdK1jO/iFEvyTZ
-   T3FC2rcjguvi8XQWH9EWX9h4cHDNpNei8R2QXEydYRl+MW0e7Y0ZU8A0u
-   zY15886mMIhK/0ZDih006EfRz6ctNHiDvsstEYPpV4NDiENx3QMYox/hK
-   g==;
-X-CSE-ConnectionGUID: iBlI97rCQx+am7f34OkxCA==
-X-CSE-MsgGUID: zx18TN3HQyCmQHATu8rguw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11804"; a="92652664"
-X-IronPort-AV: E=Sophos;i="6.24,182,1774335600"; 
-   d="scan'208";a="92652664"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 01:09:48 -0700
-X-CSE-ConnectionGUID: oXQ32FnEQLiEJT/X8SyneQ==
-X-CSE-MsgGUID: 9RXlf7NKQRGUUADC5KWE2w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,182,1774335600"; 
-   d="scan'208";a="248759645"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 01:09:42 -0700
-Date: Tue, 2 Jun 2026 11:09:40 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v3 08/11] video: backlight: lm3533_bl: Improve linear
- sysfs logic
-Message-ID: <ah6PxFtoJUWkd79P@ashevche-desk.local>
-References: <20260601151831.76350-1-clamor95@gmail.com>
- <20260601151831.76350-9-clamor95@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gSrTIaqe"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5aa5edf347eso2491550e87.3
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 01:11:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780387885; cv=none;
+        d=google.com; s=arc-20240605;
+        b=hNbjTdP9y+2nddQw7RNTYjy1D/hdbbLPCppe1fVYW+FZ/Ypv3NMVAVtsRfGR1vMJAL
+         2exLl8YGvbLE29Gql7JRTworL5jfTtwO70IYvqYzEQvOy/N0U1h2IWXBqKfG1GHRJ1kA
+         Bg00kJhXoMYG0+4v3mx6Z9NpKl4S6dP3KH4gx3WsnFF8yn4Ie5xzNleoD0xzmlaX65F+
+         64wN5YH7YSOF6dRAjirOPzUfBiLRjZrc89vNtSo+n7hvY3JrNr2ZfgujufH4u7JxocJ4
+         7YHEC4ptnWZoGVMdmB+4gy4jOo784EtHQkPlBkdtr38MUQrVYprd/pU313+4ss0ZGZzV
+         KXZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=0AqyNY/g3TIszlVcbBsHINX2o3fZo7a95+GAaAZfEE4=;
+        fh=7jj8BKy16E1WF24AEfbtUhzBmYip7aTr2fvaTtzrN+8=;
+        b=ignUxukj/9FbU0MC1Ov2A1BYnF/eeBCdVdfeF9DlfEnFPUDpZEP1rAZYKcvI0Sv890
+         1iqU/t0y7E6o8Q5wu56QeUt/2nYlJmgNnG9tvjkYfCEsMZKj5p/+PaPA+drQPEL2JSJN
+         jQTKTbVN7CwwVWq0Q2S3UasiODXGDJs59rUjlzz0M+xED8q8+wjDsDivgDR9FRpjfbUO
+         wYdaQwwfH29kLy3aSf/5AvwvZXpDMVzui/7iDuJKujgKCE5kvYkp6eBoyVJsHn/gVpI0
+         LKwxyZQh/5Ym+EMTZCBbak6ez4twhtEG8lxazREyd+3cQcf0jJM1Rc6uZ9jD1g+/dRnG
+         3QEQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780387885; x=1780992685; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0AqyNY/g3TIszlVcbBsHINX2o3fZo7a95+GAaAZfEE4=;
+        b=gSrTIaqe8y4APNvrrEF9dpDWnvgf+dXoj40XvtK53tn76AhXRONto3nvO+Z0Q9Bq12
+         kWcxtEgncTVBB31sB4OO7Kx19+Kx65xCNBs6k9xIyo3TEjj0XAfWyec+tyaROZ0XQIME
+         QOCXojv65TwcDQ99IMOMP8rVpHS54BIvOt7P0c+pTaphRvZM4dsUbprC+IAwmgf3/5oG
+         knOUDGVBVFWH00emlyVZuF+uWeZU132AINezOJD4CLMVpPujY6ZGdefK+wWuGbDt6M9v
+         pKFRGsHrlt8uzqUwxJ7oklJWnFM/20ib8QC4X22OLsAhyPIAgqvasRZxE/ZqjM7zxMSr
+         7pvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780387885; x=1780992685;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0AqyNY/g3TIszlVcbBsHINX2o3fZo7a95+GAaAZfEE4=;
+        b=epVU02F0M40NLgrAKxewCd2xv+PX9HSbEb3YlhSVKQw41XEthKGR2Hhfaw/SVFm2HV
+         lZdBnevbIEWOaF82Tlgg0F9oJJlAQwDwsNHzOG/9M7tHmWrlrG0P0QkN7bnrZXeicrcB
+         LdRrXjF611H5RwCSUtGLxcE8Kiz+qnVkZKJuZBctBiUXg0Ds+fBeioCb+bwP1JRFY481
+         tihb7zbAPqCSnpFsCMb5m+xnOHnFdc203cxWF0y+fHT6X2ZK7WiGOQLAL3T9SFOs7XBY
+         /CD9jpotT7YU7dGFwaJBoEiRpOwclDj89QTILZHHzIRIE4xainmZklpaejAC/1sVVdhC
+         nfVA==
+X-Gm-Message-State: AOJu0YzfaTM2uF92Gk04pnpzHuGOB90x887eVWp4p5kfDWBeKjBEItax
+	yrI8CDkSyRWjkfvMXRLzXObCd4RrHYPBOhfdvbqX0Pedr86+ZP0B1oDPiEBHm/QzkFTj7YfsWsj
+	3aJY15dgFLO1yTtUHFiLi3lTZsTSsabQ=
+X-Gm-Gg: Acq92OEri7W+qKjsIqI4H/uIe+S2eMW8MpTNTOU5f/z/yIPytJLC+Y5gFd/SJYjSCT0
+	+YXAki+1WVcv24d4sYoQwk8dWv9iNDO9ly1LZiYcGjwWlxxDxHii/oxNClkThJb/By8lkBC8qhN
+	6+WUVJLfyj8TnhVfjX/+ECYEOhMv8KbXW1xL7MfojQAiEEI1vL7qqtuIKWFFYR34K0KyzPxTSP1
+	F02+nx9EoZNCpQFw0xVlPdM9K77mMLp7Rw1y5dHkOq39eXEv91U2VVram2M2RytJ5WifevVl0ZI
+	dyPd45nIpLDqOCmVFgPH
+X-Received: by 2002:a05:6512:3b99:b0:5aa:6523:22b5 with SMTP id
+ 2adb3069b0e04-5aa652323acmr4015131e87.16.1780387885222; Tue, 02 Jun 2026
+ 01:11:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260601151831.76350-9-clamor95@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
+ <20260524132824.54918-2-muchamadcoirulanwar@gmail.com> <20260528162557.2b0b28d9@jic23-huawei>
+ <CAO26r3QZyVco2aZRqPSyWr3d-SBAVEknkaeNDM4g5DFCr3-2aw@mail.gmail.com> <20260601100559.274d5b05@jic23-huawei>
+In-Reply-To: <20260601100559.274d5b05@jic23-huawei>
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Date: Tue, 2 Jun 2026 15:11:12 +0700
+X-Gm-Features: AVHnY4Irm78_Kg_xuJgPzY0YzVzov3ndwWZWvfzeJyil_0GTKGZCNCjHaprgtCs
+Message-ID: <CAO26r3QLJ1ZR1Qfjr6wQo+e3H6v=Z=bxkeE8+nseajYgWLbi4g@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 1/4] i2c: rust: implement kernel::io::Io trait for I2cClient
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Igor Korotin <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>, 
+	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-i2c@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jun 01, 2026 at 06:18:28PM +0300, Svyatoslav Ryhel wrote:
-> Simplify the sysfs logic of the linear property by switching to a macro
-> and a ternary operator.
+On Mon, 1 Jun 2026 10:05:00 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-...
+> +CC linux-i2c and Wolfram - make sure to keep them on future versions
+> of this patch.
 
->  	if (kstrtoul(buf, 0, &linear))
->  		return -EINVAL;
+Noted.
 
-Besides _assign_bits() in the below, side note here to unshadow error codes:
+> If this was renamed to make it the rust smbus binding then I wouldn't
+> be as bothered by this. For something claiming to be I2C this is a
+> misleading interface and I am very much against it.
 
-	ret = kstrtoul(buf, 0, &linear);
-	if (ret)
-		return ret;
+Agreed. I'll rename it to make it clearly SMBus-scoped in v4.
 
-(obviously in a separate change).
+> Understood that there is more to do, but given the regmap already
+> encapsulates the smbus support you have here, I'd be much more in
+> favour of the focus going on getting that done.
+>
+> I would almost suggest not merging a non regmap interface for what you
+> cover here, except we do get annoying corner cases where the device
+> uses a mixture of smbus like commands and non smbus so there probably
+> will need to be support at the i2c / smbus level.
 
-...
-
->  	ret = regmap_update_bits(bl->lm3533->regmap, LM3533_REG_CTRLBANK_AB_BCONF,
-> -				 mask, val);
-> +				 CTRLBANK_AB_BCONF_MODE(id),
-> +				 linear ? CTRLBANK_AB_BCONF_MODE(id) : 0);
->  	if (ret)
->  		return ret;
-
--- 
-With Best Regards,
-Andy Shevchenko
+Makes sense. Will defer to Wolfram and the i2c folks on whether this
+should wait for regmap or land as a clearly-scoped SMBus patch.
 
 
+> Is this separating a safety argument from a bug check? If so why
+> not just use the tighter one?
+
+> +    fn maxsize(&self) -> usize {
+> +        256
+> +    }
+
+The try_read8 here is a general SMBus wrapper, not AS5600-specific.
+The u8 command (register address) applies to any SMBus device, so
+8-bit is the protocol max. If we tighten below that, it breaks devices
+with registers at 0x80 and above. The 7-bit limit applies to the
+device address, not this command byte.
+
+Thanks,
+Coirul
