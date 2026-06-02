@@ -1,73 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 032441DF73C;
-	Tue,  2 Jun 2026 19:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3469A2F8EA2;
+	Tue,  2 Jun 2026 19:58:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780429392; cv=none; b=mhhiRBS/5wfJRey8u95cWq1AMF2wV4IpmF5sEaIS7iE+4MjgUBgOzogWOVxcTGCEdJkgaqj+9XsplC86TaXeL9L9Ikp7IDQxCVzprvttkoTgA3Kd9/UiL45eUZyxQ173CTfoG2TbfkuVWmX0Tqb3dxYUpicbbviPjZTvT21NSYA=
+	t=1780430289; cv=none; b=NTMc4cGZ3BihBFCKhKFuCmHVDmRpogCqkp0qFE4r+lXC/fOrEXnM40q+dNScFtnPuQxw6/qnNO/yq5x4NevcScNBNjiGd6TCuLR8cSDINqiedDK7l6pK4XSNcAHOR7eXEW34gkq9RVUY3Q0JsGsMJJGIw/ZzMF43mcdRkYWe0P0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780429392; c=relaxed/simple;
-	bh=gMr1z32Fe9bVRotM8G9d9TWLVOlwDGCHucb/wxnUKM0=;
+	s=arc-20240116; t=1780430289; c=relaxed/simple;
+	bh=zWmUa9IoGsfRyRSXVEZh1hDJdjIO4Y+uoIZvYw4doy0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h2yq1hla4rw9TMauHijLXc8yKMr8aeKDi6G7Snr5n8cmrv+fpN2cAgtRvM4v8+zrBPpMA3mFO/UAivegB1onumzGWNYLfNv/XAiIAhJZedTatmf+5KP4BTXTDPg2ZISVf7LFsu9FcPMnzz9fP7DQvd+D2sN03p8JwXwXvBhOX9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hn99b9IT; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=uCPuYqGMz6ZiJkLqMxgWbHH6/YGSWiFPFmPC/9CaI51Xpda+/ODXIT21inW+6d39k8cFbqy+2y4kjWrb/dKUHsBXSyaeTCfvJpspZafNNV1NzcUD/F7TCXLVQWVbu7UY+9Oans7OQNyH09V7cEsXQK4+i7j7xV0mSTdkYko6kag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GoR/ooG3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hn99b9IT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780429391; x=1811965391;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gMr1z32Fe9bVRotM8G9d9TWLVOlwDGCHucb/wxnUKM0=;
-  b=Hn99b9ITzX0ObLjo5WozsW6o9ppzYWABGwLdywzUjQzIKTk+DhRtMbnJ
-   IkvTZWwsdhT8wq30x3FK+3iyvtxWkgUypluBVjsLLBO0VuN6/Uh3whSwX
-   a8VPJi3w8acFp3l6ptO6BzkyB2Yf6C8e3Me6/20AL/tV+VRyk6xvO+uGG
-   y4cEQ+B2cOlwqFlEnWjTZWDpZyngnafcR4WftLXT7uRnzTp/ba5Rf13KD
-   wW/tXA8kL3uBQp2I1Luy00815yFWGBpmk3G/P/GvD0jQwxUlw2eWyJtIp
-   V8UG/difCz/ALDzgeeOE/9d1LjP1Pb0KRIPiRM9zlFJxAYEMRMCe1zGO5
-   g==;
-X-CSE-ConnectionGUID: d7w8yqpoQkWXOTTkJ8NPAA==
-X-CSE-MsgGUID: mhdcstt9Sr+BWBNnj8A8kQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="92712200"
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="92712200"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 12:43:10 -0700
-X-CSE-ConnectionGUID: dHMUEn4ITCSkBb4SIKHeaw==
-X-CSE-MsgGUID: D6zO8JWPTAy8dvwBtEzkoQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,183,1774335600"; 
-   d="scan'208";a="244107628"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.229])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 12:43:06 -0700
-Date: Tue, 2 Jun 2026 22:43:03 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GoR/ooG3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD89E1F00893;
+	Tue,  2 Jun 2026 19:58:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780430287;
+	bh=fnLig1efP0TuJ12veBvKUYnUO2mrsAHX1oK+MYE3e7Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GoR/ooG3A23xypxe/2xIjqhXBgNQL6JSdsjAIy5mcUDJyifn889NEwPXaX9plNUoQ
+	 95s+38nJXC3BmSI6OEEU9xfocEKCy4p3TuYErHQCifEiF5vj2uv69ycot9xDWNk8Uo
+	 lKQgRWyKxyn1v7TCaUc4ZigPwyxw7+23CyRtPwNMCb9g0wGFAEmy64M2jxJBQRt77t
+	 MCghHnNJMLBMEnrPwsa+jZT59Iykyxv3SbFGTk1qCENU3CeqW37zeThZjKl4tlDHWo
+	 waTd9ltZGETh15fjYkBwNpQEtlbfYmE0w6t/84CMFfn9gIPvZkLqmeid/filaiA1Xz
+	 GWL3TLidwOjjw==
+Date: Tue, 2 Jun 2026 14:58:07 -0500
+From: Rob Herring <robh@kernel.org>
+To: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+Cc: Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
+	Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v15 02/12] lib: kstrtox: add local
- _parse_integer_limit_init() helper
-Message-ID: <ah8yR3Os8NDNll27@ashevche-desk.local>
-References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
- <20260531-adf41513-iio-driver-v15-2-da09adf1c0dd@analog.com>
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Chen Zhong <chen.zhong@mediatek.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, kernel@collabora.com,
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/9] MT6365 PMIC support cleanup
+Message-ID: <20260602195807.GA1062343-robh@kernel.org>
+References: <20260429-mediatek-genio-mt6365-cleanup-v1-0-6f43838be92f@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,42 +56,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260531-adf41513-iio-driver-v15-2-da09adf1c0dd@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260429-mediatek-genio-mt6365-cleanup-v1-0-6f43838be92f@collabora.com>
 
-On Sun, May 31, 2026 at 09:30:45AM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Wed, Apr 29, 2026 at 11:44:13AM +0200, Louis-Alexis Eyraud wrote:
+> Several Mediatek and Radxa boards, based on MT8370, MT8390 or MT8395
+> SoC, integrate the MT6365 PMIC, that is a MT6359P variant:
+>  - Mediatek Genio 1200-EVK
+>  - Mediatek Genio 700-EVK
+>  - Mediatek Genio 510-EVK
+>  - Radxa NIO-12L
+> It is compatible with the MT6359 PMIC.
+> 
+> But both MT6365 PMIC support and compatibility were never expressed in
+> the dt-bindings and there is no MT6365 include file as well.
+> So, since these board support was introduced, their devicetrees use the
+> mt6359 include file to enable this PMIC support. 
+> 
+> The goal of this series is to clean this support by adding the missing
+> compatible strings for this MFD main and subdevices in the dt-bindings,
+> and add a include for MT6365 definitions to replace the MT6359 include
+> in these board devicetrees and for future ones (like Genio 520/720
+> EVKs).
+> 
+> The series is based on linux-next tree (tag: next-20260428) and has
+> been tested on Mediatek Genio 510, 700 and 1200-EVK boards.
+> 
+> ---
+> Louis-Alexis Eyraud (9):
+>       dt-bindings: mfd: mediatek: mt6397: Add rtc for MT6359
+>       dt-bindings: mfd: mediatek: mt6397: Add MT6365 PMIC support
+>       dt-bindings: input: mediatek,pmic-keys: Add MT6365 support
+>       dt-bindings: iio: adc: mt6359: Add MT6365 PMIC AuxADC
 
-> Add parsing helper that accepts an initial value for the accumulated
-> result when parsing an 64-bit integer. It reuses current implementation
-> for _parse_integer_limit(), which now consumes the new function with
-> init = 0. The diff algorithm would have the documentation header and
-> prototype of _parse_integer_limit() moved around so it is adjusted
-> according to guidelines.
+Applied these 2 to fix warnings in linux-next.
 
-...
+Angelo, Apply the binding changes along with the .dts changes if they 
+haven't been picked up yet.
 
-> +static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
-> +					      unsigned long long init,
+Once again, Mediatek warnings are moving in the wrong direction. :(
 
-Why not name it res...
+Rob
 
-> +					      unsigned long long *p,
-> +					      size_t max_chars)
->  {
->  	unsigned long long res;
-
-...and drop this one...
-
->  	unsigned int rv;
->  
-> -	res = 0;
-> +	res = init;
-
-...and this one?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>       arm64: dts: mediatek: mt6359: use proper compatible for rtc
+>       arm64: dts: mediatek: add MT6365 PMIC include
+>       arm64: dts: mediatek: mt8390-genio-common: use MT6365 PMIC definitions
+>       arm64: dts: mediatek: mt8395-genio-common: use MT6365 PMIC definitions
+>       arm64: dts: mediatek: mt8395-radxa-nio-12l: use MT6365 PMIC definitions
