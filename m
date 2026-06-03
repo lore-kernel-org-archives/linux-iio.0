@@ -1,98 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FB2A2EAD15;
-	Wed,  3 Jun 2026 01:06:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFB4730C15C
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 01:11:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780448785; cv=none; b=rXO/07LiLXoGLvTO9BRhBMBUU5Jme64U8lqWuosGjQ30E+kerawcBdTf7E0RaRPcuIZtgXHre6zo0NxTjKEMjj7y51EHLjNYegYDwrZbV1+1gwjGfxqjlEXuooOzQWjLtaIA20CnEyV6OrMnEprgzWmCn0LmPgkUEDjAAK/Cr48=
+	t=1780449113; cv=none; b=Ntx61LAcTYceb4Xalam1DwAzbjiKo18DKlADfCnTyQrCfUJUki3cor6VMVBzI3MZm2H5G34UubkyFLHzwKv7Wi3P69/nKtxMFxTjimHTRgCqfwb9LjwT2sX7CKWG6SXvmJTiVi170xHVLKKF02eNt74ysJorFd7fDM+dUsSKrMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780448785; c=relaxed/simple;
-	bh=QZp0OK3dQyxnNySJKhBsMviw0OwDNCQ0fKMSRJLU1Is=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VE1V3QPyFgKiIwbe/SZo3OnwZ+PTiQeVrcmLp68KJxaTqBf8Cda3j6rqhAeufCdN0F8X6B8UboEL3nh3oTWRsIUiUfnr0NvFF4iC3LFIiCkfHeVwkcBDWdpP+g+dqnq4TpBX57kILTMz2CmWSjZltvwIEBKnXzxmjXwaopQuD50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KffLtuU/; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780449113; c=relaxed/simple;
+	bh=pxsYJ1ePpzQuD5t0vTi+GN7ozjOM4QwjIHiqhvwy5NE=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=l8r6Tcs5wtLciMm41N8PjROnGWcPDXC2PiTp+cim4wlHE4OOpH8wq7oaAALHryychu13av6Ox99bVJBhm7b0bczhfsB4v7ZHEVLvtVu2VRjDqpqjsVdcceXHvifRzBuBKbNLk8TuWmkYO5WZxGPfdnuOo9CBS76CZ6JlS6U+WHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rtVdKDuD; arc=none smtp.client-ip=209.85.210.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KffLtuU/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780448784; x=1811984784;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QZp0OK3dQyxnNySJKhBsMviw0OwDNCQ0fKMSRJLU1Is=;
-  b=KffLtuU/AVNOXppL1rFDtmGcDDT33Ora4CvaE1+N4aLFR4MFpv7osIS3
-   2py+a8OdvmZAG1s1l66RAQ+Jz4tUuAyrm3XT5D6KsjKMSShMpprOM+0H4
-   xYWJF44gZjPjIaLPQmYGkwklM5288hlD72lh4VEcSR2v3q1iHbraXGCeb
-   o+oqiJFxl0d+MhpOKL6Rh70v8OB/nkztuyfA2Ut65O4wN9ZLsPgQqjbDi
-   keYeTdcI8ttBmrwPKYBDRHMWjqyIDTKDN0ZgJ70gyU/uNr2wq8szT1HW/
-   WdC8Yzfy7xO6Amz4IB3KCfRUuYBCEaGO56gnIhgkZxI6yNwLQlCKL/BJW
-   w==;
-X-CSE-ConnectionGUID: 874wqCarTUuD0/D85WEd+A==
-X-CSE-MsgGUID: JdUKvrP4T4mot/s1sSd0Dg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="91932359"
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="91932359"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 18:06:24 -0700
-X-CSE-ConnectionGUID: KIwkLwlLTgWV+DfR+7kGTQ==
-X-CSE-MsgGUID: hvZpKi/4R8+RXW8ug0QIog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="239909649"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2026 18:06:21 -0700
-Date: Wed, 3 Jun 2026 04:06:19 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Runyu Xiao <runyu.xiao@seu.edu.cn>
-Cc: jic23@kernel.org, nuno.sa@analog.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, benato.denis96@gmail.com, martin@martingkelly.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jianhao.xu@seu.edu.cn, stable@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: imu: bmi160: add IRQF_NO_THREAD to data-ready
- trigger IRQ
-Message-ID: <ah9-C90a7n0ME4XM@ashevche-desk.local>
-References: <20260602091727.2406720-1-runyu.xiao@seu.edu.cn>
- <20260602091727.2406720-3-runyu.xiao@seu.edu.cn>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rtVdKDuD"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-84234c83142so1353076b3a.1
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 18:11:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780449109; x=1781053909; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=wfa0xqifL6vDOGACfxfGJ3JF4SFfMplxwiS2lFwtPkg=;
+        b=rtVdKDuDFHOFEuFkxwFgAQwL/f2YaFezQ9KAYzGrcQ/Jy7nYJ+MbyRtQMvxAZaw+Gp
+         51ta3AIgM89aS5lGjUzmhze40BIKYFGe+9VL1JXJvaeA3iQAvYkojsHvaeRfnunyqXF4
+         pxwsSM/yUasjnlfWWqB8F05mOI2ElvVJgHmKYpZAKWVP8jQ1RIcjZ/buLrNz0sYmARup
+         0bplJ1vJ5WT4ickbVszGW66LbzdYponzejsJcvOWCoMle/4OACm/9LzPKxj+HKx8ui20
+         SiYPMS7LEmWPkNhqWm9xhSMjLpTD9wqve1wrmxAM5dCWWN3Jtgnm41L/KuSeMkYzgvXA
+         rhiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780449109; x=1781053909;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wfa0xqifL6vDOGACfxfGJ3JF4SFfMplxwiS2lFwtPkg=;
+        b=ac1B4Awlr6RdD+13rflQorHKk5v4265YgBR3PLvLofZ3W9fj2NdUyZUZROrIxs1hrN
+         P3yCZ+Pf02QJs4gwe5pfG+xf+SWuqZSljnhqAj8ZHA5+GzmRnzzNbSoQQlGlXBnBBqiT
+         VyBM3xwD1yzMvwHc5fBD7EKaTet1Fi4s0xsoTx1+ryDNcw5NMGAJdCdMP5gNHANe8F7L
+         dZtkdd+FmLAah3sQswkhhSy8I4J8Tr230YtUsNl8KGobCv8Xq0JD0Cfn7JaV1EiLJxyS
+         mnu6/IpbhutPZ7iTndEzEEr4IQDFRgmw9NhzkblrtwdZ1dXdixwgcv5TflX1JJOZWGOx
+         SeJw==
+X-Gm-Message-State: AOJu0YzBFHWMagmTcp6fA1enR7/hfJXIHT4QrFzhQAW/R0cuuzI8xHkO
+	4bni4etkLJMQ5mT+xUq3h65gFGq6ezGaEzqDNuiLbdYn/JKN9/n/1+T5
+X-Gm-Gg: Acq92OFOiky300++UHNxxL3jJuQjGYb6eun6fyP8x/syQjwFKw8Uk6LwcMNqadsmZH5
+	Us5SSbdAf1Q4lrXpsYC5umWPgldh2CdE/YuNRikqlhveeGdzOQrvtf+fKrhZnH31CRGep2I04oE
+	urxj4oC1Y1VH/1t25qgeHM+EUsDPamGUFKkdhqOlC/z43JWHcYaV4mmnW9gDhdQXfynzyRUPAXl
+	UxLsCPynGh3DXVopE2+gp+7uN8VaSGEh9wsMS+NHSiX7cBOl5OLYgzoVQDLhX34hve2f33cftWY
+	/OJGsBvFXwqTe3JnxW4U602Mt8GQqh2sZwCYzxxRLhxkl9mk1BVxJGKDtSr8+R1YOsg6AguiInt
+	XHHCa5mtJrxWBetSu1tLpbKAKG03WypSjwb8EJZeD838chI5g0OmxpMTFhSCU5aQazwCDidpMZC
+	zXxGiNOkAkMYbETnx8TBRuwLAF8uBzmp/lnvOHkpDlOIa7W4wrXKxVy2WlXw==
+X-Received: by 2002:a05:6a00:1f06:b0:83c:928:6e5a with SMTP id d2e1a72fcca58-84284e22fd8mr1087363b3a.13.1780449108782;
+        Tue, 02 Jun 2026 18:11:48 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:8899:fcac:9fd7:3b2f:a800:e88c])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-842828fa877sm1081497b3a.51.2026.06.02.18.11.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jun 2026 18:11:48 -0700 (PDT)
+Date: Wed, 03 Jun 2026 06:41:43 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: rva333@protonmail.com,
+ Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Lee Jones <lee@kernel.org>
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>,
+ Roman Vivchar <rva333@protonmail.com>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_2/4=5D_iio=3A_adc=3A_mt6323-au?=
+ =?US-ASCII?Q?xadc=3A_add_mt6323_PMIC_AUXADC_driver?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+References: <20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com> <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+Message-ID: <1F6728A6-BD73-4159-AAC9-82370212EF04@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260602091727.2406720-3-runyu.xiao@seu.edu.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Tue, Jun 02, 2026 at 05:17:27PM +0800, Runyu Xiao wrote:
-> bmi160_probe_trigger() registers iio_trigger_generic_data_rdy_poll()
-> through devm_request_irq(), but it passes only irq_type and does not add
-> IRQF_NO_THREAD.
-> 
-> When the kernel is booted with forced IRQ threading, the parent IRQ can
-> otherwise be threaded by the IRQ core and the subsequent IIO trigger
-> child IRQ is dispatched from irq/... thread context instead of hardirq
-> context. Because the handler immediately pushes the event into
-> iio_trigger_poll(), this violates the hardirq-only IIO trigger helper
-> contract and can drive downstream trigger consumers through the wrong
-> execution context.
-> 
-> Add IRQF_NO_THREAD on top of irq_type when registering the BMI160 data-
-> ready trigger handler.
-> 
-> Build-tested by compiling bmi160_core.o.
-> 
-> No BMI160 hardware was available for end-to-end runtime testing on this
-> submission branch.
-
-Same comments as per previous patch.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
+
+On 2 June 2026 6:16:55=E2=80=AFpm IST, Roman Vivchar via B4 Relay <devnull=
++rva333=2Eprotonmail=2Ecom@kernel=2Eorg> wrote:
+>From: Roman Vivchar <rva333@protonmail=2Ecom>
+>
+>The mt6323 AUXADC is a 15-bit ADC used for system monitoring=2E This driv=
+er
+>provides support for reading various channels including battery and
+>charger voltages, battery and chip temperature, current sensing and
+>accessory detection=2E
+>
+>Add a driver for the AUXADC found in the MediaTek mt6323 PMIC=2E
+>
+>Tested-by: Ben Grisdale <bengris32@protonmail=2Ech> # Amazon Echo Dot (2n=
+d Generation)
+>Signed-off-by: Roman Vivchar <rva333@protonmail=2Ecom>
+Hi Roman,
+Thank you for the patch=2E
+>---
+> MAINTAINERS                     |   8 ++
+> drivers/iio/adc/Kconfig         |  11 ++
+> drivers/iio/adc/Makefile        |   1 +
+> drivers/iio/adc/mt6323-auxadc=2Ec | 299 ++++++++++++++++++++++++++++++++=
+++++++++
+> 4 files changed, 319 insertions(+)
+>
+>diff --git a/MAINTAINERS b/MAINTAINERS
+>index d1cc0e12fe1f=2E=2Ec9ad2417a3ef 100644
+>--- a/MAINTAINERS
+>+++ b/MAINTAINERS
+>@@ -16256,6 +16256,14 @@ S:	Maintained
+> F:	Documentation/devicetree/bindings/mmc/mtk-sd=2Eyaml
+> F:	drivers/mmc/host/mtk-sd=2Ec
+>=20
+>+MEDIATEK MT6323 PMIC AUXADC DRIVER
+>+M:	Roman Vivchar <rva333@protonmail=2Ecom>
+>+L:	linux-iio@vger=2Ekernel=2Eorg
+
+No need to add explicit iio list for driver=2E
+Top level entry covers this driver=2E
+
+>+L:	linux-mediatek@lists=2Einfradead=2Eorg (moderated for non-subscribers=
+)
+>+S:	Maintained
+>+F:	drivers/iio/adc/mt6323-auxadc=2Ec
+>+F:	include/dt-bindings/iio/adc/mediatek,mt6323-auxadc=2Eh
+>+
+> MEDIATEK MT6735 CLOCK & RESET DRIVERS
+> M:	Yassine Oudjana <y=2Eoudjana@protonmail=2Ecom>
+> L:	linux-clk@vger=2Ekernel=2Eorg
+=2E=2E=2E
+Thanks, Sanjay
+>+MODULE_DESCRIPTION("MediaTek MT6323 PMIC AUXADC Driver");
+>
