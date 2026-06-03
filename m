@@ -1,75 +1,83 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A88364053
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 10:20:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 996F6384CF2
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 10:27:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780482014; cv=none; b=bINfsTCfnKzebzGN3/I37T0+TF2O6podNYTKE5dNeNk86/SpKHQ1QNVIOaYnf3rEcww98WezWfmP4Qh+9rZIeYN4muaz9LONNVNS/H48F/SP2PjFeaLwJuFBDc++1FBEcVuHu/e3QvR+6INi3bhsgBNyUwxrnXTI+UuvwkXO+do=
+	t=1780482436; cv=none; b=eSkzLGvrOlVm60TRHBuiwSyKM5yK2QSzOufkOmHtF9ZVAHn+PXwS+bvz9Hc/e2dvlmHyJ+1FQwSgEug02SbApGQEbj58hj9gesoYPI9E3Ff2P7CLjRD8t0e+ApU1Eff6GRJXHdl11gJL6KETjCXE4XVcEkQWh2V2Gdu4FOz1YAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780482014; c=relaxed/simple;
-	bh=6JWuCjrtHouuP/SgAZ1opeRT+EYE2wYDmIx2BHv+9Zk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D2IkQGau9TL0UGW73sRxZaBcuFzR3brdOSbobkKebMI2H+k41KTmfVAq5c7p9iiXOkVVeYjyR6EtsOvl/ZDQZCDivNQWYkr1bS6XEYLOP75Hwe5uQg8IpNqb48o3xUzrnai5vWGU1PsEvlRLg0O1iieuLZgwMfSLRXsF4HNELoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q/i1EOdj; arc=none smtp.client-ip=209.85.208.42
+	s=arc-20240116; t=1780482436; c=relaxed/simple;
+	bh=Ark9em2HE+VudWaYABBUGSqA5V6yzvpN+95Dp7fRXKA=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S82HN7h/u9Yose9eq5mo7IYH6r9KLGszIOwzp3c+GhVmWdBigI++ziBeZqJrTdHPlGz+CtvH8s91JWhAsamoSfnNQw8++6WGk8GQRMoqwj9ii6GPikRVUJBez0MGg7BvHZGaE3lEJ4xhehBIbR4AuaHzt+hKpCGKsPmGRZST4M8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CHA6gZNN; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q/i1EOdj"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-68bac6e24fdso8787208a12.1
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 03:20:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CHA6gZNN"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-beb7f26ed62so440467166b.0
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 03:27:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780482012; x=1781086812; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780482434; x=1781087234; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RzJK2sZtZ9lh2JDEqWKWxmwImBV/cnCe18AOQPQmCZ4=;
-        b=Q/i1EOdjKv/pa8OBHsNl8o5H6tl1AsU8n7PECT23/zAGBWWhaK/WrOU+fQJgldu28p
-         IfsxYCtg5Oy6yBkhhHG16R/+JsyCbjcAzBWV7XkoPLEH0XNh0HOpUBSiGz+s5tgNfkjD
-         tKnwHdyc1eEiWJta5La+j+A0jkP12yoMKbviV81qSCruBp+ZA3Z8jiwe2pIOSJStjNB+
-         U7zcnIa/Z+cxUEDzUC5+8Un5wEdCtViJfu0xq7UqaGKcIkXbZ1/3hh5uUKqkWvtAIPQr
-         d+n7HjPABsBvdcQN9pp5Z7ZkcNEuMq2BncMpRyw/n/x9BwEsC28BA9Y01ZfGXPRuLnlJ
-         QK0g==
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H+8/3rc9t6wT4lr8p2D3TwP0o4yczLstnY4MzI08CwE=;
+        b=CHA6gZNN8ODXOaN2r642vRk7BH81kSPVTL1m0AWIn2AeYvT0cIXJooZ3HF+BdFIzOP
+         nimFmTxoHG7q5b4+pIaJ1u2JNmlmRUP0tIeg+KOjnSSkc/LTy9NL5DlUEUa+tm5j7Srj
+         +cuavPNRl4mbw/SSA+uDRWM/oa8rArc2zP8f5/iimugTA3aAE1hAEOW/JMzNzu97T5ud
+         0lkC3KZ9I7ri/o5Uztl3kZS92WSUOqHSKfvNx/LAIf/+tvdG+hFf3Sbt/MReIjk/d7YR
+         AxD5IdPfTEdcuR5Cn720jnxrFASk4BqaOHcklSgFBSCfnf99an7WnnSJtg0EF7BYbBtn
+         j+zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780482012; x=1781086812;
+        d=1e100.net; s=20251104; t=1780482434; x=1781087234;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=RzJK2sZtZ9lh2JDEqWKWxmwImBV/cnCe18AOQPQmCZ4=;
-        b=Zo28VkC0DMzaI7RmYvENWNoYpXF2OoMMuMKnZBlKI2W7BHaVxp2Sy5Qy5ePqxZHswK
-         tefuWCSqi9iIOvTQcwUrkLVNxBYFBvZihI+UtVULrt0XNvwk11zZFXAuSK1kdHn+q9tS
-         CwW8oG/yO+1KtAxnb3QcK1y51cRtsikzpLBqGmYTCbZdu9VDVYsCZ30Yv7X2VjUDCqrz
-         B4IhpL0VEq95DeFp4oLYlLAHpj4uUe3/Rx6Z8UJavemZaaWsh/tm26O0fPAY9hdaB2pQ
-         HGGCX5y0dkkKn8rOXAQH++PB6dwSwYBnwLrh5H7k91CwmduOePOd4raOMEOrrWetvd8+
-         YbEg==
-X-Forwarded-Encrypted: i=1; AFNElJ+LT1xN7Tqa05DQeCXStXRGiulGmrgsfcH2qL54UAcvughJ5VBjiW6PTDOaNgxMqiFvWwkfcoz+efc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzpNacrD27ML3tTtE6RN5/1i9yPui2BdhpZ7FG+ni69K7FxsYNa
-	as9itlKoL9M6tnhFf6pD7EgmFwNjBR5wpJ/vR4r3rSfQ2Ag3PTfpjXZK
-X-Gm-Gg: Acq92OFQR7+MhOX9pw916c+18gnry6Y2MGhb4pxVpiwGM7jNmwACVZPNKse3tMDbkTX
-	btqmr7dAMfi7J6IHQYlpiwEXOFV56wCSMfblv7QgsqQ7XYEFfyZPCFxLFgpZKC6rWV8VNYFINCc
-	2nO2YKvzg+zyi9de5JDjr8Ud/Hq8M/nTI6CQDkYDAaT6+vSuVan7jR9sAgoz3iDnbv/KHb8s1CC
-	eMX9r6gDItJ75gRMQO9eSKPHscXmhwQsK6QQ8elmIK5roDUbWc+hG9VGIp4kBFAmFklMykWu4gt
-	ckO65gWRRcZeBlHMyCXp4UkDprf/eYeBRveNEidqC6YDN2iZgwko0BI/y2UEDQki2x6TCqM92fu
-	W0YXTyCQGu3KXn7DzHAdHbh+r3j1FKLTS48Aj1EEdgZgbODH1p9JCQ2AWCZQoNjQxgGwkLBPWCZ
-	fYY14kIbiVrPiQUv9eDgqrC2QhDvErlg==
-X-Received: by 2002:a05:6402:5242:b0:68c:3994:45f1 with SMTP id 4fb4d7f45d1cf-68e6fa73b28mr1296617a12.6.1780482011623;
-        Wed, 03 Jun 2026 03:20:11 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e64c2f34asm974022a12.4.2026.06.03.03.20.10
+        bh=H+8/3rc9t6wT4lr8p2D3TwP0o4yczLstnY4MzI08CwE=;
+        b=lV4/reKoXPwatfeArM+b7vkqC/ywzOloHsgIiRahUoEoQS6Ckbrrlu/EUdlxWb35IH
+         PZhfpuabmiFIjcPSa+QEnKigItc163MjnrzNa9vtadwph1r+nM9LDQAh+ik+ioZoXFjd
+         SPnkuYRmRYezWGTlQIOkOF61Vte5iBHReu3X7VZmJeDEX9sUMffYdqaBkYNBMMd8FDm9
+         GYyb5XAFi8FCoLtbh82CloFRxez0Vwf3h0rIspWfdlCglvN1wvOJTKXO3MT1pmBMSqx3
+         tLx28spWOMCwK1flEkv/P7HuKf+YDY24an6zl34JCaGmeeyp3K24UqNruZCZmfeIwuL4
+         SS+Q==
+X-Forwarded-Encrypted: i=1; AFNElJ8iQbr3ZSNhKeZJVWzRbtjLpz1vyta10V/6a1YOFlUW+2BSOz1IEhI+GLcasAN/uvGBXiQI+sbp5OQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzOQ4Yvla5gz+vyEf+sG080kMGADLVQtVs78dBapT4hWkI8uDQp
+	b7sY20bnQz66ev/+z7TVzlYTnPBl9ogTdDkxGTRlxy1Duj2zTzJPRKS+
+X-Gm-Gg: Acq92OGxUtAgxGT8dqoX7IJvKeUyKoa+UtMosX0pe1fj74Sv1VX+pkh8xx2n0xCJ9E5
+	AQKqTo+gmat3X4nMcVfnLePGfzFbdfP1/zkEViLrosT+nJU86RZCcY1rzKBt0XfqZE2LrOMCQ8b
+	u1QO9gFaKhnBpQ66vHl+BfOUKdOp3+abVOqOjjdDhZQoYzH/o96E8lHB6idVL+wVRMfKkQ50u2x
+	BHN0JXzoXwiO7fK20sKnpQLIWVl9Pd9DgW0Gg+3ERMhV5wFSO6cLEo7kzJop2KrrSFxfUQhWDn9
+	bQ6RivhVPGPlsSUP3DIUC5w+lUto8rjRfP8SFS/zuxlcKGp8AhNEeVbn4um8hJKsrIxeGjUOxJ+
+	S1GjNA9+dPVkIHeUY9HH6f9UXVFzBWpx0S/3smfp7krxP3ClUjRUXIFNpcjXrjXgWEpmMWE82AZ
+	ek6VVXr7Qmwl8Fx8eKoSXPmkA59xtF97Y+9ZAGkvoCujvNxSV+U03qWB+uFUc8zEyTDb2TfX7pd
+	QB69YjEMEw8N2iyfi5gMDB6wwQHKL3/RkqaAyOMU1OcXIOuXw==
+X-Received: by 2002:a17:907:3890:b0:bd8:f7f6:92a6 with SMTP id a640c23a62f3a-bf0b32b8a7bmr154755466b.23.1780482433765;
+        Wed, 03 Jun 2026 03:27:13 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf0559f1464sm130550366b.55.2026.06.03.03.27.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 03:20:11 -0700 (PDT)
-Date: Wed, 3 Jun 2026 13:20:08 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Taha Narimani <tahanarimani3443@gmail.com>, jic23@kernel.org,
-	lars@metafoo.de, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: adc: ad7816: Use
- devm_gpiod_get_optional() for busy GPIO
-Message-ID: <ah__2Fjf0MxIQLnh@stanley.mountain>
-References: <20260603123333.5608-1-tahanarimani3443@gmail.com>
- <ah_zMybQBDHakXpX@ashevche-desk.local>
+        Wed, 03 Jun 2026 03:27:13 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Wed, 3 Jun 2026 11:27:11 +0100
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	rodrigo.alencar@analog.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
+	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v15 02/12] lib: kstrtox: add local
+ _parse_integer_limit_init() helper
+Message-ID: <r54csg73lsafo6rff7gew2eardfag3zmwjbm4jl54pjbqf6w7y@axnfog5wpney>
+References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
+ <20260531-adf41513-iio-driver-v15-2-da09adf1c0dd@analog.com>
+ <ah8yR3Os8NDNll27@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,36 +86,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ah_zMybQBDHakXpX@ashevche-desk.local>
+In-Reply-To: <ah8yR3Os8NDNll27@ashevche-desk.local>
 
-On Wed, Jun 03, 2026 at 12:26:11PM +0300, Andy Shevchenko wrote:
-> On Wed, Jun 03, 2026 at 12:33:33PM +0000, Taha Narimani wrote:
-> > The driver currently utilizes devm_gpiod_get() for the 'busy' line,
-> > which makes the GPIO mandatory. However, the busy pin is hardware-optional
-> > depending on the specific board configuration.
-> > 
-> > Switch to devm_gpiod_get_optional() to allow boards that do not have
-> > this pin wired up to still probe the driver successfully, and remove
-> > the redundant conditional chip-ID check since the optional API handles
-> > missing descriptors gracefully.
+On 26/06/02 10:43PM, Andy Shevchenko wrote:
+> On Sun, May 31, 2026 at 09:30:45AM +0100, Rodrigo Alencar via B4 Relay wrote:
+> 
+> > Add parsing helper that accepts an initial value for the accumulated
+> > result when parsing an 64-bit integer. It reuses current implementation
+> > for _parse_integer_limit(), which now consumes the new function with
+> > init = 0. The diff algorithm would have the documentation header and
+> > prototype of _parse_integer_limit() moved around so it is adjusted
+> > according to guidelines.
 > 
 > ...
 > 
-> > -	if (chip->id == ID_AD7817) {
-> > +	if (chip->busy_pin) {
+> > +static unsigned int _parse_integer_limit_init(const char *s, unsigned int base,
+> > +					      unsigned long long init,
 > 
-> If we get GPIO optional, this check wouldn't be necessary anymore as the below
-> should return 0 IIRC in this case.
+> Why not name it res...
+
+"res" is short for result and this is an init value. I suppose the compiler
+can optmize towards that kinda of efficiency. I thought of "p" itself to
+carry the init value, and the function would just accumulate, but that would
+change expectations on the function behavior.
+ 
+> > +					      unsigned long long *p,
+> > +					      size_t max_chars)
+> >  {
+> >  	unsigned long long res;
+> 
+> ...and drop this one...
+> 
+> >  	unsigned int rv;
+> >  
+> > -	res = 0;
+> > +	res = init;
+> 
+> ...and this one?
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
 > 
 
-No, it's still necessary.  It can be NULL because of the CONFIG_
-in which case, sure, gpiod_get_value() is a no-op.  But it can
-also be NULL because of the device tree and in that case we need
-the check to avoid a NULL pointer dereference.
+-- 
+Kind regards,
 
-> >  		while (gpiod_get_value(chip->busy_pin))
-> >  			cpu_relax();
-> >  	}
-
-regards,
-dan carpenter
+Rodrigo Alencar
