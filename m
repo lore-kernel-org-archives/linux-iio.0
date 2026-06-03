@@ -1,68 +1,69 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A16FB3A960A
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:08:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04D524779A5
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780495733; cv=none; b=gS1n3bR/ccdxGj2F7YBbgFmVuZad5Uzt78wqYCvIfTzgLt+xjhK0Aj6YNnA84id9V7dOHX7d+6TVfbAeDj1lVbe5X2dW6o1ZCCxWOqlgFPH/9aH4nWE7BrvtJmGdpUhIHjiuAp9iymtROE/05g7a0xUymrtKh4x0u72IUoHTaAg=
+	t=1780495735; cv=none; b=V918SBDIE+jHvVWrtWve3gvXYQmjdYAsQts0MF0YRy6WS/tRLaW0wEdQ5KrPt/zZNp9n/i7ZEL9/GdYmf8NvZ/jDNPPCdeww3hEOFYZ/2aaJYyT8du26RFCgRHjdRz0uQSIhf2LzHRF2z22wHWWvmOSxEEpbXOVquozoft8gs/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780495733; c=relaxed/simple;
-	bh=L3ZPpwbHa76nNAHfgBqExbWbe/NkLxokXKDlmicbUV4=;
+	s=arc-20240116; t=1780495735; c=relaxed/simple;
+	bh=cNitDgpG+YYjAKvK7VvFwa+o4R38DcEMH86nv13E4Bs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WVLPDZmNFAEmEo/eBs7nPM31xx+oPLkofXMw8HGltEVyGpSf5Fi8fRpC0w+t1TbGreR7hoze31X+d9Egom78+3HEPrSUjLYFbdGQcmwwjkzAbw1GYNk+Ky6jn5yWIMEwH1psqiQ4xXT2VvzMzCQPbJ6FloXURLJr2EnytKR/huA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IxAMb7SY; arc=none smtp.client-ip=209.85.218.48
+	 MIME-Version:Content-Type; b=HzQlzXYD4XO8Mqe8MlOu0IlmJwQrNbrsUAu74PoOdszc5bse4MWXRY/mFnORBf0Q14Evd0/UpXp9SmrR2ys2a1wUEDk/oHo1BkbdmKl+byZHW5FOt7TJV+BDwmr7GY10+bJSUbWZednG39JsU1RaMoTU3b/neFeAaSvAKpo/x1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iRII+2uQ; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IxAMb7SY"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-bed4f2f0898so503160866b.3
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:08:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iRII+2uQ"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-bed2b9bfa02so464225366b.1
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:08:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780495731; x=1781100531; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780495732; x=1781100532; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=L3ZPpwbHa76nNAHfgBqExbWbe/NkLxokXKDlmicbUV4=;
-        b=IxAMb7SYZTKP/P44MdIGxBfOc6GgCL8dvL8PiAv1ayGA0vV7W6Njqq9851tgfqXi+R
-         24GdM/b5h7J5H5OF/vRV8QNA0FngMsvpTNpqzpvpVdqsByBy2E/V+NzovVU6z/l2Lyij
-         JgcBU5OG/D8sPI1u1DAQO1Rm1hPDo2Ihfu91dIGQ/LjgFZEFXuqxng+fUsWMK+BGymHn
-         WoPAnSqljl12pqmtvu4x1x2gtsPmG+9WFFxR6G33Ieyf56GswZKjF0RU/HVKUmzoJVOH
-         eX2vWV7f3nglDjaKM/iX8zEskjTLR9kzKMz7kQAsUg35JNtqtRFarP/adyuWqZZ4tkpR
-         EXzg==
+        bh=Pmb1yX4mP1Uu8kbitSMZnCcGiRxACvqmJQFx0csOrFI=;
+        b=iRII+2uQUaJ1TcR7UekAIe4idzHIsG8tHgmdUYr2iSy1gx1x4WVamjqCnxuyMMezrE
+         KBbXgEu8yr1yjdM9XH1GuzKJJvLRpYN8lccrSmbzQjVEN597qqiGhKlYZ1CG/uUeLJVV
+         T/vo6A0d+mjNaQjaXr69T7hIuNY2TYW/z3I/zEOckvK21j4Uk4X0QX2baAQxLqov6Pa8
+         08//5p66x9s0TRd6aKkobcsIDSBIvdMgcOZdWbdWNSmKt0vCNlVwXpbyDLvxQueE3LON
+         LDLN1wFGyRDI7S8orqLzfa+fJpvTiQwfHdm0kcKr6huRl2fVPudMIZfVPFgR/ozgIbfH
+         gUzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780495731; x=1781100531;
+        d=1e100.net; s=20251104; t=1780495732; x=1781100532;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=L3ZPpwbHa76nNAHfgBqExbWbe/NkLxokXKDlmicbUV4=;
-        b=n9LztG3yk437jokh9Xgz9FRpy91m5sw9nPIOQ0Fj20wckifpIChO8oQb4aMsw6RNBY
-         esF4TdoN0AJJmBTogvqmy1wTIabNpzWU6SYl3fGZ+DkWuWiFvCGSe/gWi1W0G/V48BaG
-         5lQZpKs+rNyI1i2JSkRG4nnPT4VWAEWL9LVFAm4dg0/UbphhNj2lc3K2onj/uTr1SrQb
-         oC7vn5j7yWfrnweHUwqIkT4JUo18wArRCQC8Vp4lK5ytIAmtk1w2VHLgAM4Cdz2s+L+3
-         zNkfOx4i7UaoUVp5I1ixE/IJdebdfWl9Sneh4sDF50tykzPCuiVbWYrk/PlH+KLII5J3
-         oBUQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9FqsoNSoOdrxngrE1RXtsCxk/XZ1NStTzZ4RKDhR1aN/Ae/J4VfvXFcrREl9dhqgcxIW9T495/H2Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwablsMWLurAKTXmPg1lQ8B/IJYAPhbsF2Uu9TyjuYWzkdOx1MR
-	L5Reyl1ZkwOuPoFERzXwvP8F25MdIAB78YpfkvSf8lOWlE9dTGqMgZMv
-X-Gm-Gg: Acq92OF8203O7NDNrIp9vuO6m/jLMBL9Mk4QVA/qsUP4Je6KQCLOkmlW/33hkRN66G9
-	NpJYsK3I7sXMELoM4aM9SUkufGtmc0xbywR0aoUFeM6sQRIMSPc8VUmqMCd9iPVNwifFQwmoweH
-	W6JA+oTjPWPA5LcmSmx9GYgjzwiNyXxWp0pODFBzvSTcPKqETLsO36n3GGxg89X+bNy1f1n/7e9
-	ZpOMmKzRIqpclkjaRwNEo4z87ZdRjPZ1KeSVOMXhPhr4Neigyg0nZzBRIY1DyakjObneOs9fT85
-	fbB+Hsn/2I8XDAjzRQ6Wp7xGJmVXUd4/j0sXP218KhPPDg/lqwC1VH/rScQHYsOBFtyp+ro2tBV
-	OyLnCdeBhzT4rgvFWmTe6bxaCKUKE+coIOEm/cBWciF3X29xhrwxQ8ROb91UF9JaXF/u4wI5V9j
-	dIvGe/JmtZuiWGji1Yg2Y9hdz79I1IpDTQQMfOpxZFgWUE/ms0/HpXmnR4OJ6mOX36+29YcZTBC
-	FJDl9I=
-X-Received: by 2002:a17:907:c10:b0:bd9:2b46:99b0 with SMTP id a640c23a62f3a-bf0b4395c05mr203050166b.49.1780495730961;
-        Wed, 03 Jun 2026 07:08:50 -0700 (PDT)
+        bh=Pmb1yX4mP1Uu8kbitSMZnCcGiRxACvqmJQFx0csOrFI=;
+        b=DdZcxXCoKOzrA1WGePRVkYdLWL3jra5vzNkQEHkFBkr+rvsRfz8U4lKn8v6wHu176F
+         QNS6u3fBOBLlXqFdwttzQTYM0bQiBhZb1Uc6+S4edsoUarPCG9FrLbCyn4UcE0r84J8v
+         YjtnUquxJRC1p80Kp4+d0n+xGabGk1NrIzSdAfJfSJmib9B15/H4RfZtEHdvZOWEmnTH
+         8fVVIn7RYSNXPFUER3jWsnU6rcGFm5DUljzxhc30Iv6CnEBj/zyu4/IfESkfj58C+ZIz
+         t/u2lsL0RzR8yfOdu8xovHReXDSvriS8RCH7+/Ycf95njPxSs81MM3ccc5L4D/GqDuxJ
+         7Mtw==
+X-Forwarded-Encrypted: i=1; AFNElJ8uOwoXuJ6TCZmFMjiq5CSlmxDH5NNwkFX5q0Mu3+obAEhCXZqaATcEIFddpb3aj1wmJIDdj1N/bQA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyNBiZrcTVgPsRSJ/bCu6XtXvpmRjHDzCM3c+WDxzdS6++RWatm
+	nm7u7Neq7geChFLcKdUhwdIgh8+OSBZli1UqHoiYZHeB+ppRJpoYLB5S
+X-Gm-Gg: Acq92OGyDZn9EfiARmZrg7KmbDeiveVrPBd2XgB14WzJ0ZXty/g/caIdL2G8XQ62iCC
+	P4NJ8M0ImUT6+nK1TNYXD5qOfyiSPKxm3ZY6vcT4yQzF3iA0eDb/3tfRXsWnDJ3hnAqulOszu52
+	l2aNENwL6uV6L9CAk26X7f8s28WN2/TXxFdGXDQe2kTBgY6euPmEMzypK4aPT0JPZEB0Ko+11o2
+	1eD81Ap0KuU+Q+gLy//jdw/Hd66afpTIzgoJ2ChqDqmHpYgQF1lkYUvzT/3SXh+BlhnK7Hu4RdS
+	78sFFw8Xa5ayIJ2Z2kuZEb/reSWFfVgdIpF/xxf1OJuxjv9OiyCHT+OcEzaOp0wzHBxwq1Fk9M+
+	krOlk63oQLaYdt7lKoz2E5wJDjeEAzKHnmiUUBsGsvHwD2j6odv/idCvXNpTu0MLz3o2UeecTp6
+	bIe3yhZmuiIfaAl6Y/4B2Alp+TKh7Ei3u2GGLd8fbxTO/5hK2K9o4YvjcTsJNqgAROmH82vdOMP
+	HQspLUPtY2QNS+HNg==
+X-Received: by 2002:a17:907:c10:b0:bed:6bd7:71ad with SMTP id a640c23a62f3a-bf0b3ea64e8mr183726566b.49.1780495732295;
+        Wed, 03 Jun 2026 07:08:52 -0700 (PDT)
 Received: from fedora.embedded.cmblu.dev (p5df027fc.dip0.t-ipconnect.de. [93.240.39.252])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf0559f1ac0sm162062866b.62.2026.06.03.07.08.49
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf0559f1ac0sm162062866b.62.2026.06.03.07.08.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 07:08:50 -0700 (PDT)
+        Wed, 03 Jun 2026 07:08:51 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
 To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc: Wadim Mueller <wafgo01@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
@@ -70,15 +71,15 @@ Cc: Wadim Mueller <wafgo01@gmail.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Maxwell Doose <m32285159@gmail.com>,
-	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: flow: add Sensirion SLF3S liquid flow sensor driver
-Date: Wed,  3 Jun 2026 16:08:34 +0200
-Message-ID: <20260602-slf3s-v3-reply-06-wafgo01@gmail.com>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S liquid flow sensor
+Date: Wed,  3 Jun 2026 16:08:35 +0200
+Message-ID: <20260602-slf3s-v3-reply-08-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
-In-Reply-To: <ahzWI-bQwnQ8ogFL@debian-BULLSEYE-live-builder-AMD64>
-References: <20260530205435.37326-1-wafgo01@gmail.com> <20260530205435.37326-4-wafgo01@gmail.com> <ahzWI-bQwnQ8ogFL@debian-BULLSEYE-live-builder-AMD64>
+In-Reply-To: <ahxzpBcqN6o6q4a4@debian-BULLSEYE-live-builder-AMD64>
+References: <20260530205435.37326-1-wafgo01@gmail.com> <20260530205435.37326-3-wafgo01@gmail.com> <ahxzpBcqN6o6q4a4@debian-BULLSEYE-live-builder-AMD64>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -88,15 +89,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Sun, 31 May 2026 21:45:23 -0300
+On Sun, 31 May 2026 14:45:08 -0300
 Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> Can buf be 6 bytes long? 2 bytes of flow data + 1 CRC + 2 bytes of temp
-> + 1 CRC.
+> We could add a mention to the IRQ pin to make the doc more complete.
+>   interrupts:
+>     maxItems: 1
 
-Yes. The third word (Byte 7-9 in the datasheet, Table 8) is the signaling
-flags: 2 byte flags + 1 CRC. The driver does not use the flags, and the
-datasheet says the read can be aborted with a NACK/STOP after the temp
-word. So i make buf 6 bytes and read only flow + temp.
+I would let interrupts out for now. The driver is polled and in v2 the
+feedback was to not put properties in the binding which we do not use. If
+later a board uses the IRQ pin we can add it. Ok for you?
 
 Wadim
