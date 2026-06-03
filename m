@@ -1,41 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87C63407592;
-	Wed,  3 Jun 2026 11:00:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 544CF44BC82
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 11:01:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780484418; cv=none; b=BbZb3z+fYbTUZXG3zx2L8qs7N1sfmSxL4OI+SDTsHdhD0D1nSreR7m/fS1jfantWVtIHutho9LVSNEtHiPNY5wikO2h8GfcbTxsSiZVR45Hzx15Z6m+Gas68gmFma0UXgBjphHFMjXr1zNk/xZPkZsozCRAqc7BfqM53jSisLQQ=
+	t=1780484500; cv=none; b=UHo1+kqqTF0c9bTMgZpO0jZbh8rQ70oFlD8kEQt2LiSTTN8jFFU8x0e9vE0+/uai/HtHK69AXkg6ZCwA4aLYWVN5rrXdTEMk0UrS8PcYJDgusnLkYnFt9ctdalaaXmcKNF2ez39Oqixtfw9vRUNxuLVmd6r3mrikALKkuc0x4cY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780484418; c=relaxed/simple;
-	bh=CNKaYB54oesFqwBIzQmDKJ/yEIlcn80va8CAKp3e1sU=;
+	s=arc-20240116; t=1780484500; c=relaxed/simple;
+	bh=9BUoylVSJ+EytrkV5kQ9YZ/1owWTTBb5hR1zXaKfB2o=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UeP0CZnoeRI8UGTZYN22tPgCGuacDagZIjVCoOXSiZy92HIr1ngm+arol4Qw7hNHkWb4QGImss//qduhB9Lv2pmOUiiMrg2Fc5tcM41ZQvTcPnnXK3fEmia5NO+QGF+PWzJyv5RV30Dt9W7yTz1kjWMx6kA2ZI7kNEF+KwWgQYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iq5uNue8; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Jw4/mK4lIvXbL5j9zttlZZiskKg5gyoVz88eRKfRKUg9MyrEzLX19SwHPJWvk7yRstG1qDqQC2/0A8isNUuLWczbGKY5lzV6EDApagMG0x52IWY/WiL9jQC+VkhbETeXFNCiEyVaknk4ojcDAVDgBT/P+DrHwOiBPeOaPczi8ho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EZXrTrBo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iq5uNue8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435151F00893;
-	Wed,  3 Jun 2026 11:00:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EZXrTrBo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 088E01F00898;
+	Wed,  3 Jun 2026 11:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780484417;
-	bh=1CgUjNlMw9S52nRCDvi21p+Qt+QcAgx6DMINQg+4PHo=;
+	s=k20260515; t=1780484498;
+	bh=h4qy3hp/zw5OnsYgRXDxheDOAuRZUNKS2NKP0ioDcSs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iq5uNue8uLn2kifGX1Pqf2UNIM8caqsqmvUD/8US+upGUD/k2XcU697qVf0WaAqYx
-	 Q7uEoSkobOaFyElfddC6jkngMUeOD5eXdba9j/ouXhVzXNxO5RZyxau5K0qUfBw5gG
-	 nU8DXr9uWKTaSSTQsQcCIUwec9w3JhGqsi2ZmpLpnvzG/cKAyXcQrF5DdNenFCwMHr
-	 N0zKCNs6oksnPxwxZiGloT/pRqmHjR70dGFDGgrtbfVPmj5rsOCnAf9jwebrbhjVDn
-	 m2RIcg4RtOPGZETb/RWSmJX6OBbUyPt07xGr+GwQbiVRzH4IGSujYyUX5s+AwGhpk5
-	 /XYQJhvRLsaQg==
-Date: Wed, 3 Jun 2026 12:00:13 +0100
+	b=EZXrTrBouQRfIkRmZxctT5yqTDRnDIcdw6qu+No8JYTSzyVTfZHjoh+DgFY0q9nBo
+	 ILjKy19nnXmeJzU+kJGQkcgLs9Gn7jDB80ArFzGUnmKaawSsPqo5qcOjZkOhjyuJSM
+	 zZ7f59E6JkXdkWdsDXdDeRnwjXDNcxdSLmBCKLyoRkZf0gxd495nCqa4H02KxBU4Nr
+	 poJSBFh0Awpxj4v2wHHn1vtISpHgTQADKn+ln4LAmzOBkzJk6RFHy57If1QULM6FDd
+	 9aGd+CNw8NJRwMgoUeRqw+kB4u5KX9dXLQXrXTTqNZ2pRDF3MS3qIhMJ4stmZtKB14
+	 GLFvdRZxbI2fg==
+Date: Wed, 3 Jun 2026 12:01:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dan Carpenter <error27@gmail.com>
-Cc: Jad Keskes <inasj268@gmail.com>, linux-staging@lists.linux.dev,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: addac: fix CamelCase naming in adt7316
-Message-ID: <20260603115946.34055d3f@jic23-huawei>
-In-Reply-To: <ah_Kbff-c38NWV66@stanley.mountain>
-References: <20260602190308.158051-1-inasj268@gmail.com>
-	<ah_Kbff-c38NWV66@stanley.mountain>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Sam Moelius <sam.moelius@trailofbits.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Jonathan Santos <Jonathan.Santos@analog.com>, Jorge Marques
+ <jorge.marques@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, Jishnu Prakash
+ <jishnu.prakash@oss.qualcomm.com>, Duje =?UTF-8?B?TWloYW5vdmnEhw==?=
+ <duje@dujemihanovic.xyz>, Stefan Popa <stefan.popa@analog.com>, Julien
+ Stephan <jstephan@baylibre.com>, "open list:IIO SUBSYSTEM AND DRIVERS"
+ <linux-iio@vger.kernel.org>, Samuel Moelius
+ <samuel.moelius@trailofbits.com>
+Subject: Re: [PATCH v2] iio: adc: ad7380: select REGMAP
+Message-ID: <20260603120127.03f9172c@jic23-huawei>
+In-Reply-To: <ah-ADnSU_VhacXqI@ashevche-desk.local>
+References: <20260602164539.1541685-1-sam.moelius@trailofbits.com>
+	<ah-ADnSU_VhacXqI@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,52 +55,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 3 Jun 2026 09:32:13 +0300
-Dan Carpenter <error27@gmail.com> wrote:
+On Wed, 3 Jun 2026 04:14:54 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Tue, Jun 02, 2026 at 08:03:08PM +0100, Jad Keskes wrote:
-> > checkpatch flagged a few CamelCase names in this driver.
-> > AIN and DAC prefixes are lowercased as standard kernel style.  
+> On Tue, Jun 02, 2026 at 04:45:39PM +0000, Sam Moelius wrote:
 > 
-> The AIN things aren't an issue and checkpatch doesn't complain
-> about them.
-
-Also they are userspace ABI.  Admittedly this is in staging and that
-ABI is completely none compliant with IIO standards, but none the less
-you should be very very careful when making that sort of change.
-
-This driver needs a mass of work to drag it into the modern age.
-IIRC there have been a few partial attempts at that in the past.
-One key part of that is most of what you are touching in this
-patch is in code that will not exist after this is modernized.
-
-I'd be surprised if there is low hanging fruit like this that actually
-makes sense to do in the remaining staging/iio drivers. 
-Mostly much more radical surgery is required.
-
-Anyhow, with that all in mind I'm not planning to take this sort
-of change to this driver
+> > The AD7380 driver uses generic regmap types and APIs. However, its
+> > Kconfig entry does not select REGMAP.
+> > 
+> > As a result, AD7380 can be enabled from an allnoconfig-derived config
+> > with SPI_MASTER=y while REGMAP remains unset, causing ad7380.o to fail
+> > to build.  
+> 
+> Okay,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+I replied late to v1.  Unless I'm missing something makes more sense
+to select REGMAP_SPI
 
 Jonathan
-
-> 
-> > Vref is kept capitalized since V stands for Voltage and is a
-> > proper technical abbreviation.
-> > 
-> > DA_AB and DA_CD are renamed to dac_ab and dac_cd to match the
-> > register constants ADT7316_VREF_BYPASS_DAC_AB and
-> > ADT7316_VREF_BYPASS_DAC_CD that they reference.  
-> 
-> This sort of change would need to be in its own commit.  (We're
-> dropping the rest of the commit anyway).  The difference
-> between DA and DAC is not totally clear to me...  The
-> adt7316_show_DAC_2Vref_ch_mask() function only seems to deal
-> with DA but the adt7316_store_DAC_2Vref_ch_mask() does stuff
-> with both.  So I'm not sure I understand the naming.  (I have
-> not investigated and this is my first time to look at this
-> code).
-> 
-> regards,
-> dan carpenter
-> 
 
