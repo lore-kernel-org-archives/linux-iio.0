@@ -1,171 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C629357702;
-	Wed,  3 Jun 2026 14:29:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5C67352F87
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:42:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780496959; cv=none; b=GFCv6UR/4TVZfZ4PUSbLPFOYh7n00nN6WmkBHMNKDC9WTnE/5S9Y8RJ/8+Ogx+cMhH1z04BQT7721BwEvwKuleSbfkAxv4YPx3lk3QBjI/lPhc20Au1gNzYl+QlD+gfzR76Pi4tW4ZYuWwLyx/PtF5zSklXWoSrZbgje78It1yo=
+	t=1780497770; cv=none; b=H95qtOcoWQORSwpTe5pJQj1rAFLV1YY07zXN+dDN+rstV/YHXdF23dy3fZJaiuFr4izqf7VuWiJgjNfpcFyE+4PGNnlBW8UcMXb+b2g9CW8Xt0ZFgWgY1oE/vZYEU8pZmm4Q9DpmjwQTcz5qJOWW/r6UZjZv6NLhUy2CvPYsGdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780496959; c=relaxed/simple;
-	bh=3IS+k94DYJHFIIrTbceVZbBLpOqeMUXVak3aBgdSaWk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZHeHXQUR4iEdhJ51Df4r7Z1E2TD2QNxDrfnf2KEiYV0C1aPtqlC5v9/x1szmrd+V5THTgx8uUooaaRRwir+cNogChPUHoBg/9dXL4VOq0Y/+uo8PkrQZ3tBRhefEZzI/ORUXox62A3WmP1aCApexffoY/xtrU4MJ8j6VP+Yf6WY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ecfA8esV; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780497770; c=relaxed/simple;
+	bh=TElSRUVHBNGTnko5oEEDBAu/L+B9LgigDWbZewSLW9w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CLGDYvFRrcoBcZD9bEIotq402ZKCdtTVv4Ad7qdClJrCHQb0F29cymQxJgLkrjTCU1tTEU0xjMcnZB7X2sHW4ggWXQ44xJLX4t7DDbfOBFG+xn48abRr07sJxhi3+86VJCykWFoDGff3t7iKyDXgNMaHPq4OxLVMmpLHCjXvNkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nBx/fM1y; arc=none smtp.client-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ecfA8esV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB3541F00893;
-	Wed,  3 Jun 2026 14:29:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780496958;
-	bh=BjbyjYUmBJJMB/wiP7XQE+BbJe1wmFBZwsfOIexhZvs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=ecfA8esVi0kf7JcfNC7Rxp3m56cuBuKqtVVUcFMdTpfYJtg3sqs9uFh7INXbNxzhU
-	 UsWFfWIdx+7hP34i16MJHx5vWzYUEUFfXMG3NvZdLNUujYl+ctyfsvD9xFGCUoB56J
-	 KhWPrgaql9ugUnpNE7uFRHSVt0UCg7Zry/lYEdbBRk6UiWN+MWh40Ddh4YARCXvYaV
-	 j8mm2SyE5p4EWMdG3bt9SCFsf1dQJ14dlt55zUTMjBWL4P3ogOfZ3Ig21xtI/XyxJ1
-	 kYGDE/RQnzzJvQfRn2FMkCGOL1Nxmi5TZWFfYU2OR/Cw4SQbIBTmaRCRwBQFMdgU7m
-	 1Hfh9ZFWJmUYA==
-Message-ID: <1dbd3ab3-de6c-44dd-8100-e8ee60f558c8@kernel.org>
-Date: Wed, 3 Jun 2026 16:29:10 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nBx/fM1y"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-7e2f3646c10so49021167b3.0
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:42:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780497768; x=1781102568; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rHKWer5YzIktM08gYTN/IYle79QxK5fXHWRMtT9CjIU=;
+        b=nBx/fM1yzPAqi/VuwUplae+U9iBBMedtRsHNR0VBATfa1ALwrC/UNy+sjVLchIS+zk
+         gfTFe0j2c1gyNRDOM1A3Q7G3mTceA6br3d+eZWazFG4OkyuevsChAwRqCuHtaZXMO1v7
+         4lpw2f6GOxBTlpW8bQR/+d3kVSQEayXOv1Jkqvjosb8+KuyNp9uFCmKlv7C7KKb6byM3
+         kJNUVNxkmLxaYCH5kBW8nsml9VMMhmhDjpw0j40DE7HfdObWbdlDZJaD+YwzG7y+0KT8
+         i7RFf/88m/5vbU0L+pHbjeP11TWLpFpcBxpSKwGdDNVxjZ01ciZzV4VXbzXUv0H2POMA
+         XV9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780497768; x=1781102568;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rHKWer5YzIktM08gYTN/IYle79QxK5fXHWRMtT9CjIU=;
+        b=nbBhBK65RTTPqSWF4NwETQuJ1A7IHlELZ2eRSn7PXV5Hvg8zlwK9xQPPmkbbMaSCJ8
+         RMqdkGo3t2HuhIKED0BLUuqYeSZP0eVFNnUYc0sgzwRRv0+4RJ38sKcpqqACMoBurf1H
+         zVYDvr5ESTUItJFgou3v/XQXVsNUeHTvW0HUvTMfqqXEbDEvKf48r3HcEe7DKKJlneel
+         WYzAS7p8+Q+/zTgiwfolsMgJGjDgLaqXoKhP8oHcHhhbJ7dEdNZ/zILlwsgXeAJ3CnF3
+         FaJDOvp0JKuwEMWWNElB7PSd34wfo4TGMIme7ZcsgxUmTXb/513AK585v7Gr72BVv1JL
+         p3XQ==
+X-Forwarded-Encrypted: i=1; AFNElJ+IoFRCLYVRS9r1C74ayohQYH0a3ZA1mY+8qW1EF3GYldOgS1VTvv/Egf6rIjxKAfQkoPsiumlWNTc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8WdqP//fru/BTRszMhQfDZ2UA3oEsd1ogcNSU2YuRmuNFla91
+	8Jno0GoP6PMRenhQS9qlR5v3odlN00U719Kh16XHF0VisYrXhMBSd4to
+X-Gm-Gg: Acq92OH1hICh4+XAqlpIEJxZiO6Qq3G2dHymRW4nh8FRetlAIze/e4H7klRL5Acr1xv
+	xF7qb7UiYlcoiZl43mi4AK5OV59EY7Q/K75V1rYzJ2Q/BmUSginpKQgpYO0GY0uuvBpFbwE0QVG
+	qZuoYuIM1JcEurxg65C+WSedoufsyw5L6osjSPcpk4V56Ja46ZwClgV8ErxmFp9as3U466zAvh1
+	rcF4EllMXt37/NqLEOrT9Spd/HcNBOtIK8G8Oar3SalOW0NFldpTXF/B7IbM+i8mY7Bxw78zT4g
+	D3fAqA0b85qC4+xd8ZiyBVdGKbiaeaDyuyrXdHpqL8tJvJT0Jgz1MmTlUfgL8U0uAZSiyuI1+Fh
+	nQNRlb3vppI0QhdSINtSR/OixZ4hQXvPyEj+3hoFNDtJfY9sQ+sPIa6hHxC12KsjtKY0bIWGRbX
+	iHXMQ5D+EloLO9QbisH/wgCc7cwjyWugzq6Njfo7bMbI4vNVFgnSdtYw==
+X-Received: by 2002:a05:690c:6806:b0:7d0:261a:692 with SMTP id 00721157ae682-7ea4b7e7289mr36006357b3.44.1780497767939;
+        Wed, 03 Jun 2026 07:42:47 -0700 (PDT)
+Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7ea2148b48fsm17466527b3.12.2026.06.03.07.42.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jun 2026 07:42:46 -0700 (PDT)
+Date: Wed, 3 Jun 2026 11:43:14 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S
+ liquid flow sensor
+Message-ID: <aiA9gjJzWuX6taWv@debian-BULLSEYE-live-builder-AMD64>
+References: <20260530205435.37326-1-wafgo01@gmail.com>
+ <20260530205435.37326-3-wafgo01@gmail.com>
+ <ahxzpBcqN6o6q4a4@debian-BULLSEYE-live-builder-AMD64>
+ <20260602-slf3s-v3-reply-08-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S liquid
- flow sensor
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Wadim Mueller <wafgo01@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260530205435.37326-1-wafgo01@gmail.com>
- <20260530205435.37326-3-wafgo01@gmail.com>
- <20260601-banana-narwhal-of-music-0b4d3a@quoll>
- <20260601150959.49bbf125@jic23-huawei>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260601150959.49bbf125@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260602-slf3s-v3-reply-08-wafgo01@gmail.com>
 
-On 01/06/2026 16:09, Jonathan Cameron wrote:
-> On Mon, 1 Jun 2026 13:53:23 +0200
-> Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On 06/03, Wadim Mueller wrote:
+> On Sun, 31 May 2026 14:45:08 -0300
+> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 > 
->> On Sat, May 30, 2026 at 10:54:31PM +0200, Wadim Mueller wrote:
->>> Document the bindings for the Sensirion SLF3S family of digital
->>> liquid-flow sensors on I2C.  The family currently covers the
->>> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
->>>
->>> The driver auto-detects the variant from the product-information
->>> register at probe time; the per-variant compatible strings exist
->>> for documentation and dt_binding_check purposes.  
->>
->> Here...
->>
->>> +description:
->>> +  Family of digital liquid-flow sensors from Sensirion with I2C
->>> +  interface.  All family members share the same register map; sub-types
->>> +  differ only in the flow scale factor and the calibrated measurement
->>> +  range, both of which are detected at probe time via the
->>> +  product-information register.  
->>
->> And here...
->>
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - sensirion,slf3s-0600f
->>> +      - sensirion,slf3s-1300f
->>> +      - sensirion,slf3s-4000b  
->>
->> And here something else. Confusing. Didn't you say device variants are
->> auto-detectable? So you have only one compatible sensirion,slf3s.
+> > We could add a mention to the IRQ pin to make the doc more complete.
+> >   interrupts:
+> >     maxItems: 1
 > 
-> And then future fallback compatibles can never work. 
-> Basically as far as I have ever been able to establish this is why
-> generic compatibles are almost always the wrong way to go.
+> I would let interrupts out for now. The driver is polled and in v2 the
+> feedback was to not put properties in the binding which we do not use. If
+> later a board uses the IRQ pin we can add it. Ok for you?
 > 
-> If we get a future part with an unknown ID and don't have these existing
-> specific compatibles, then we have no way to specify which one it is
 
-But why would you have future part with unknown ID?
+Well, okay for me. I suggested that because of the guidelines for dt-bindings [1].
 
-The device is slf3s with variants. All of known variants have an
-interface to detect the actual variant. There is no indication that this
-won't work - why would company remove the ID register?
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/writing-bindings.rst?h=v7.1-rc6#n17
 
-But even if this happens, then it would be change of device interface,
-thus you cannot use generic compatible and you will have a new dedicated
-compatible.
+Though, TBH, I'm also frequently tempted to leave interrupt properties out of
+bindings. It's not uncommon to have IIO drivers that don't support interrupt
+lines and, for those cases, having to describe the interrupts in dt ends up
+becoming just an extra task. Even though I don't know/recall the reason why dt
+maintainers have such guideline, they probably have a good reason to have that
+(right?). If the guidance has changed, then maybe we can update the guidelines
+for writing bindings?
 
-If the device is actually "slf3s-0600f" (because slf3s is a family),
-then I am fine with using that as the fallback. Specific front
-compatibles are also fine in such case.
-
-
-
-> compatible with.  Given these are providing scaling info that means we
-> can't realistically support such a future part with a fallback at all.
-> 
-> That would only be possible if there was feature level discovery. A single
-> whoami register with no structure to the value is useless for this.
-
-The whoami register defines all the features, no? What would feature
-discovery improve? ID register is simply logical OR of some feature set,
-still uniquely identifying the features set/variant.
-
-
-Best regards,
-Krzysztof
+With best regards,
+Marcelo
