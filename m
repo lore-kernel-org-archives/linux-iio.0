@@ -1,89 +1,117 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011002.outbound.protection.outlook.com [52.101.65.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8C833D506
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 06:33:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780468431; cv=none; b=puJOJi+WOCwUmjlisJ+2jj/QpHRtfoe7WFyEYTmCJDTbJpVcU8nQT2mq2TpfxficUVm/1+keEK+ZjyBniGsz0GXeSggRb1Qt3r3ygS5bZCBldxyMbOwMgOtvO2eIaJS9G7AsfBx68nnY9Dpe/62Cvb8jDHZ/O5Bm6YrdEObgzPM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780468431; c=relaxed/simple;
-	bh=1mFJwss2uddOemB0lfVnj8btYhgYyzmfcfvPotLmuZ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IfIigegHjlutBe///KBvxMkW6tY+j7wrvI+sWhk7YJyB4LK78S/tQ3/wkD3u/WOzfFdPD7HHrxlAX3oUnVxAC/vp0juR/r/FPQPe21CvmXE240HTk0n61rVj5AdLyeDKPQAC+qyc1/nrLXmhD0BoRXtXkf3IzvopUowJmYEieVg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q2JvzBEw; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C23E400E01;
+	Wed,  3 Jun 2026 07:47:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780472839; cv=fail; b=S9mV+jaCJK4akiNjbBtXuuP8oX5XUTX+qzZGOXpdEFoT6VFg253jZcO38tkibB2ZtGOPZrT27vFSyrLq0zZSu6d7ZIEkSm86244zmGhF/dnQNJ4KvpRdlyGEMVOYCTLgCMbRZzl82f4w/sxYHfFQzreheGzpgzRCDah7t++z7us=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780472839; c=relaxed/simple;
+	bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
+	h=From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Qan6wLqwhe/VS7DOC3U38BzsdTVEC0s+E7ekUrMIplNunw+blf0g8FAEuUOc32N/nt7C3JHF5wy2bMM0EfjV+tc53zxRzOXsNgLpl7fPqg7g5NqtR/TbMuh+UB/AWaGoxkFpcOjJZufBah8pMWcj8GONYA1I/3fW6qkDozmCYqI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=AHAl52Y/; arc=fail smtp.client-ip=52.101.65.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q2JvzBEw"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-beb7f26ed62so413926066b.0
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2026 23:33:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780468426; x=1781073226; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8okQsbU3P/WBag+XtfX7e4+WVeyaNw5gsz4Ik6CGEOs=;
-        b=Q2JvzBEwoGOvedZqVYEqmNLavOQVlLnTyp5vuVqRH4s6IO4uxodamqR5TDJavO8iO8
-         5QbiB8XW464mhwH1JWFXFQJLtEtNBXQ/0OkS7LYZ8+GX1rEvGVmARQg1gT++rtAiEXjr
-         MFW6vhaaFFFxz4uz8ijkPss4LHsg0qap71YgHc6lXZOSfkoRYbvc3OTXApYO+ZmmOMVW
-         PsQxmbPOlOKNzs7CUWL3e8XY/GFezqLkB6Ty2HY8v3HCX6oK72nK6UDD7MPuwGGCCwdU
-         2k5A7zYwlc9N7U3BJvFLcfIwtiU18Xe+aXMTXtrTFjyV4HRJ+9bL0/tka8tnxkdFIhq6
-         Qx3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780468426; x=1781073226;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8okQsbU3P/WBag+XtfX7e4+WVeyaNw5gsz4Ik6CGEOs=;
-        b=dmIvSEXd/w0DOxub1skk7l5tuOUTgwEm6hz4ntSCVQ7sqWzlaB+XDjq/pdMQWw4QHC
-         KlqJD7ax9BMzpDq8QNYH9y29pzzqpYlNx8gCPExUJgz/XVBYMiJS+CNyMeiZI//c/JEf
-         uqlWdjNHvYZ+hMHq/h89R4lSC7tXKsUmE5UrLsWAdyZR64BfDpr9H1GgZvW/m0CUsqUn
-         p3mcpnar2NEhze39byDDsUKn1nuN20u8diru+4vQRvyrS+UzHEjZS+5MQbPE0vJnGmjh
-         0E1iTmQ4ufJx8yIBSW6CVNs0Ucwk6B8OVLx8bOsqo8VXB4ngrqP4ukdbhrnRWI7fEvBg
-         cgdQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9SPrQ/FrGBnuNi/EAEUr7Ydvrs3XLKBqI9vjFv7oPQnxvxbA8TKDtVoSgWFU9XpF1t9FUqG/b1C1M=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwI2qW8dinAfsu7Upvk59ZLh0qSAay3BSPLZWN/NJCVsutOOiNB
-	TYDxfxrxIC6Y7rq0VEPepsHmVsOuTbJQSRJG0bbbsJoV5/AUMGBByP/I
-X-Gm-Gg: Acq92OGTAWLEj8qCfofk4IPovrbvSRZAtVVmGp/VncduvESxRspFR3r8PvIsLYslq3M
-	PVlr2jCNqC5b12QVxnGnUQoHJMZYHnZGnIx/G0dZQRS5CLwvqROw8kkqrCrDS1D0pVX51Ea2XPc
-	FySTtH33XC/+fxywM8jYE2caUGQF0mIWrOOPBh2Dgm6aJE4sXqoz+2IY5GoaNtmYuenxXN8r6cP
-	ZtMhU6jG/Bqik/aV5aAs4bbVVtCZRRJe+X1fbRMl4PV6rzs6Mioj+wJrE1krW008lwZlQ2Bt6QT
-	f8644tsU+QOQUEKTTJqRYC7LNRQ5Y+xVX4ophW2EJHKB0pQqRy/2mCWsClNLQdGeMAnEGwPeLHW
-	wUdloSwOZ+vhSlB65um4AXyO/yUK/bnT/nwkR33hbignMscDpyIpXYV2YkX7x81An4NNGJYfCVG
-	GTX7LOrDxxcdvAigZABmax7bnw4I5zeQ==
-X-Received: by 2002:a17:906:8446:b0:beb:f976:5235 with SMTP id a640c23a62f3a-bf0b1bce8f1mr51527766b.18.1780468425538;
-        Tue, 02 Jun 2026 23:33:45 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf054e051b0sm89899566b.31.2026.06.02.23.33.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jun 2026 23:33:45 -0700 (PDT)
-Date: Wed, 3 Jun 2026 09:33:42 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Jad Keskes <inasj268@gmail.com>
-Cc: linux-staging@lists.linux.dev, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] staging: iio: impedance-analyzer: fix CamelCase in ad5933
-Message-ID: <ah_Kxh6A9YaArwrU@stanley.mountain>
-References: <20260602201428.213890-1-inasj268@gmail.com>
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="AHAl52Y/"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xDGQjl9EJwdPRrp+77BLPttErYi/QFSrMUOCJ06Oa2/onYZtcJL2V+oFGp/pm81r04PC1dJhTrpiIkyh9ZIulqBSPmSOpQDhreYmeKWTTmUHdlpQ48H88ipy2u1Njga13GtYFn9wXyFmWmE6762L2DnO4ysi6mLNy5g2TEIK3BOW1LP+r5istQJCcj29IZ9KoK3cD75SVdqP6egs3qrZtp8M2nsChrVqxhzIyQtN5u0Edtbl/LMMcMNVv61k5/pRYcM5gQ/HaASozQYU2Aiq6Kaf271xdQnNpJALvEsOhF4bq6SiOHlRP0PfWn8N1mEzZqkV7/6fOEvQi44IhgiOxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
+ b=hp7vS+Su5NbKOKmCfBSFOkudC9sheQ7p5GYHEUAeNm1yg/qh0rb1EOCObzf0J2Q+qTGfTWMeprCXbWNtDqqHU/X0u/6bUQTmUYiUKhP14VDGcNpGKXWTG5ePWIhkJN6SRhVM2+SAbLk2+Z/tYDpmWzTCa0237yqPjQyE4h/imTnzwQN+eRG1MziT/YlP3ohSk/eVLfLJKwbsQTtungc4nWKCWj66ip96KTkrdP0Y3Ff8/G6aBl0S2+tTN6oNH7tIAlGMWpINPyOLKoB2FxgXHkKNWTaXMyIEaHQI6LPc2ND/79/hZEUF4U+1SR/mF//+auzzymPTgR9OIgmw6h2aFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=kylinos.cn smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
+ b=AHAl52Y/mvZUmpyoViwx/pryNFoNnjyaNR6KHAErIoR44OuBh2JesWJujJSISvkOJ/ksThOyEZ9LnYoxJVrMlOqs1N3ddrobMFllKY9XAirWrwwxbyVlSJR2jkngz8BEftN/VTczHiKfneUB4i2l5mskDpW/VxIFwkFlOjWYT0o=
+Received: from DUZPR01CA0192.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4b6::15) by VI1PR02MB6462.eurprd02.prod.outlook.com
+ (2603:10a6:800:17d::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.16; Wed, 3 Jun 2026
+ 07:47:07 +0000
+Received: from DB5PEPF00014B8B.eurprd02.prod.outlook.com
+ (2603:10a6:10:4b6:cafe::8f) by DUZPR01CA0192.outlook.office365.com
+ (2603:10a6:10:4b6::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.7 via Frontend Transport; Wed, 3
+ Jun 2026 07:47:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ DB5PEPF00014B8B.mail.protection.outlook.com (10.167.8.199) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.92.5 via Frontend Transport; Wed, 3 Jun 2026 07:47:06 +0000
+Received: from pc67007-2609 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Wed, 3 Jun
+ 2026 09:47:06 +0200
+From: Waqar Hameed <waqar.hameed@axis.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Miao Li <limiao870622@163.com>, <jic23@kernel.org>,
+	<dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
+	<bigeasy@linutronix.de>, <marcus.folkesson@gmail.com>,
+	<dixitparmar19@gmail.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <limiao@kylinos.cn>
+Subject: Re: [PATCH] iio: accel: stk8ba50: Update includes to match IWYU
+In-Reply-To: <ah_BL85vs88ynvQ2@ashevche-desk.local> (Andy Shevchenko's message
+	of "Wed, 3 Jun 2026 08:52:47 +0300")
+References: <20260603015033.187735-1-limiao870622@163.com>
+	<ah_BL85vs88ynvQ2@ashevche-desk.local>
+User-Agent: a.out
+Date: Wed, 3 Jun 2026 09:47:06 +0200
+Message-ID: <pnda4tc12x1.a.out@axis.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260602201428.213890-1-inasj268@gmail.com>
+Content-Type: text/plain
+X-ClientProxiedBy: se-mail11w.axis.com (10.20.40.11) To se-mail10w.axis.com
+ (10.20.40.10)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB5PEPF00014B8B:EE_|VI1PR02MB6462:EE_
+X-MS-Office365-Filtering-Correlation-Id: 052b4536-c23f-4663-3d55-08dec1444f75
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|7416014|36860700016|376014|18002099003|22082099003|4143699003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	pIKj4AjEb9Aoxa8s5rnYlERj87qKRKSX5cAh3KESBwegDRJj87e+WJU+KUX+gw19+e7+Jk3XF2OcmVNw133E3LSrXcHOAGMIMB/L9xI39oXHr2wCDNpq104C4FITprETk9Hr12qen7uwYUzFSLrpj0YPKUlAOxc7qiy1CHaiCqNV1Wx38xY2f5tDjGyq3ZWI7qr68vqYzAZXttmrFk7JXn1KDbwDyO5T7qMvbipb5UPg9KqrUUtJpw2Jy0h9PAbbVJt2yRd21C9JX6KxYeoL5GO1ZY3Oqe6ghuoY8ivwcn2gMuQmQAogRUdfTy3FGe1J1KNHt1hXFkxgQwpmfahAe7u5A4xRDgii59zNfaECd2VB8lyqCgbOaANarIopAu1Vk07RZ7nVBEjGtQbeFeZVsTOnkgdnoivEZWNwnxyq3vEv5XNCJ4oN8fAitvUm8rT6yZx8Qhap4Yiex/ui1JEK3iVyAduqofn0cvmQo3RYIZM+WlCZGQWSAddl9QClR5qD/+sVR3SUBbPaGDXybFQo14RuTmDjwmFld4+b+Xc6EI774G2PAJj8qvKtWUF1/Sa5MScdluSPyVpJ8rlYH+co9lJm1mgx55i1+PBKWYSmvTA6U7wTSGvD9zssGPXzzyigtkcM6PFTV8wTouluUrAKTwAhJzMBSIAsESeW0UsxR88nWOU+DuY4Flakeex2NOKMqUv0aC6C2jUEC/9uTs/frZ/CycntWaN46flZfoQTAOI=
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(36860700016)(376014)(18002099003)(22082099003)(4143699003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	XWwW4sYO6ffKyc0IRMmyINxUJFOcgDuckQRUY3pQsSA0rpYhuOEkyjKYfL45pbozaEvJ2nomiucbRBcGFSpISNX8K7i4iYYi61w9FoH4Lol4TfkPJDwyP0YB8ddVYG9Zo6uAIIwc6RA/egHlg1TOzOmqpJbL85KxZip0KK/9kEg4oynMaKfpQA/F76WxB9DuQIYFKNlBIC/ZND5VfM1cd8qmvF48L+us+rpioZng30rcHNopY/aqIfw/8Pw3rMOoKbthTPyJsDkWya6GwE7jUPZDsqZXkWeMKQIS/0mbFRDzl1Jezzz4UCAwv5Ec6UQ9r0SU+hcWougw+iMTfYSdHFLZ0Z0Aem1J+adQHGkaKRlP4apaXY6M41tGF+hJGckEDdGNydmSjrzZEOxg5yPDODWkflr/K1nTSqcZEGwGwyiKrifN9Rq7alrVSUNxYIvv
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2026 07:47:06.7729
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 052b4536-c23f-4663-3d55-08dec1444f75
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB5PEPF00014B8B.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6462
 
-On Tue, Jun 02, 2026 at 09:14:28PM +0100, Jad Keskes wrote:
-> checkpatch flagged mixed-case suffixes in #define names: _mVpp and _Hz.
-> Rename to _MV_PP and _HZ to follow kernel UPPER_SNAKE_CASE convention.
-> 
+On Wed, Jun 03, 2026 at 08:52 +0300 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-These are scientific things.  milli vs Mega etc.  The capitalization
-makes it a million times different from each other.  We have to be
-correct instead of following checkpatch.
+[...]
 
-regards,
-dan carpenter
+>> +#include <linux/iio/types.h>
+>
+> Not sure if we need this one to be explicitly added when iio.h is included.
 
+I would vote for removing this, to be consistent with most other drivers.
