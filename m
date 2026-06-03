@@ -1,124 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D8954219EE;
-	Wed,  3 Jun 2026 08:30:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780475431; cv=none; b=r2py/jPId7ep02ZEfz3SX+PU5n4ZqjDTx15uGEG1j2V6rc1/c0UyRBVF1bQu3C/QbymSSEfJjzHrk0fEjGd6OMJnhwkZRqDSU1EvdJ2Q5MtCTZubZ4GyXt0TiL2k9aU0np1UOm0VfV1+1zZpgbPcKokhbGYI2QvepdTeEeVEnOI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780475431; c=relaxed/simple;
-	bh=GB89Y8MUH6tSku1C9M0gHxJRmpls8P2xLSXw0JEWHSw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J4Rz7VcvVJTSLFGfbdOzSSgNYelB9nN1UtmRuiA94JiON2UfTP1ZBTOYG6WXHLgG3VIv0QcpBRou0X1ghAyh0BQhjJ3mzlSk1I44mXj0HWWF5U5Qx8ETiMDSfF5WM1iJA8Id2A3iKoOVaEbeYbfIMhDCf9u6zzEHa5oMrKCZm9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=URnIkHac; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AFE9328B61
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 08:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780476759; cv=pass; b=tWZGojFYL6PPmaaQF9OzVuBMCLvg+JTdRu1J1qjUayeCI/zDV+moV8Fgm60aUlAaSaZhbb0lD0aPmaDLlbqse8//irpc31i0jBFW5DGy6SdP7Prz/wE3OuvH1VjdDk02U9LFI3kvOND+bXoN6p4wpKaA54mhDCD42unEG/1E/PY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780476759; c=relaxed/simple;
+	bh=EGFZSx0nPpPT8Xi8klATOIesfD1+YDfuEGOz+7rhoPY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Iu4ncjY+reKdVhk5IqvxEYRGlSLIJt7nNxaV+wLHrXoI4w9uVIKj5+54OxQXypJlLpH+EkNBnzP0sJ2S5KT3Ht3qcdmVTGL/lF19bgV2BwZsU3rKv9/VwUqyZy41wHDhoZd8pgJ8EBrw/Ub81sBtrpwUfL+gGM1CLQ6+45bE0ww=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YLeZiKDV; arc=pass smtp.client-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="URnIkHac"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780475430; x=1812011430;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GB89Y8MUH6tSku1C9M0gHxJRmpls8P2xLSXw0JEWHSw=;
-  b=URnIkHacivOEjAg/0Nt61+3FEBLRA0Suy0zVT1+VoaB2kwv8q67f/z9w
-   Tpy8ZRHa6ohJEJcb894MoZlJucYQlDD8aQplV7mBjeBSX9i5lj5+eQ0Fi
-   DCvrRO7xrbGO+iXc/rb1rowUWmnF1eBe8QQwP2/yeahxW9xI/RVjZCF6U
-   KUWaZv7bfNL4GjSUrzzdyDaKpYjEDOM3Ba48HxA2UwMr/o9fq80AMIY03
-   ukGSOMAbhGlM56ARJYVY8MEzl7hUr5S14SQIE+UkOHh985S51JY9rtmc3
-   QgX6U/iMHsSope4PjHXhTdss5s6Q/Rdfot1mdO9YXr4mIQ6+bzp8QetU4
-   g==;
-X-CSE-ConnectionGUID: mEvPUz1DSiOg8jMWtoKNyw==
-X-CSE-MsgGUID: 3Hx8ZyVbStms9Frs/vwizw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81334805"
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="81334805"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 01:30:29 -0700
-X-CSE-ConnectionGUID: gEPMMCICRaWxS+ZoM8eblw==
-X-CSE-MsgGUID: YAWq7yJ2RBqIbyhXr3gn0w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
-   d="scan'208";a="237801576"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 01:30:25 -0700
-Date: Wed, 3 Jun 2026 11:30:22 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v15 03/12] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <ah_mHskAN1zljpL5@ashevche-desk.local>
-References: <20260531-adf41513-iio-driver-v15-0-da09adf1c0dd@analog.com>
- <20260531-adf41513-iio-driver-v15-3-da09adf1c0dd@analog.com>
- <ah9EXNnutqk1FoV2@ashevche-desk.local>
- <etbgk2eap5w2db36kqoze7qehp2jmydc5a7stfymqowsqukf45@g2w4zew2zhic>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YLeZiKDV"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-396775c26f9so33612951fa.3
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 01:52:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780476756; cv=none;
+        d=google.com; s=arc-20240605;
+        b=feWjkOVfceWeRnbeIExT6seXhVZCf5pXVpdpM39fcLNxaFZgaeCPmYPm6xxUX2XoHj
+         LwgXKmogCeFE7Wj3s8RtfCgSo8fFkDWhjTVaKoXN1rEGZHi/Uv279n8qDc+G8nzoZEyS
+         XhZNmfjJ6bKsNZnvpanhMzf4qPJvRcDjiH2O53F1Wc0wdScJVzwGuzk6lRdbkEet375y
+         NaueIPQW7WdPOr0iAS1aHHzB8BJMi9A63EYLuORR1L9OKoXiwZlbPJ0pr8y5dZC8lwHk
+         2F7HnuMdtWSLHL5GPSOqhkzKJVHWPK1folQ62dyJ63hCXgv0gdGTyzedDzCxcQ4n7nPa
+         hmTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=697VXlmq44YvP5WclcZyXKZOINa+k3r8BrdvqCVk+gw=;
+        fh=TUck8HYLQD3M9WBUn/LrbSlXofXqCUAwF/sB3KNoSq4=;
+        b=eoox+g16k8vB3RDgQp2iRv/yGBxD9h/XeRAA4mhvfFNPfuE9ZnzofozIlnm9nD2VFl
+         i9DzNqDE6ahF4iWcf6FcWR9NCxJw7YB0H39aiygYvcgZtLjoAVkHjbp1BDWA8jpPJdxl
+         Y5rkT4avZ5w+RX+C5GJtwEa7U9TCKEebAOKp4pCcDRnsRG0T7kAz3wzcVZ3xKnthVs5w
+         1SVpplvDR9ElnAfW/D3fCLsNQI0GQMQE+FQu19kkGztdaIOcSbjG86I8J0vwwOsOXkMY
+         FYXAGyPf1HUal971fAZggK/cEniqVyallFDDJkCti4TXtBUXUOrieYaep9RtKQZigMIb
+         Pgog==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780476756; x=1781081556; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=697VXlmq44YvP5WclcZyXKZOINa+k3r8BrdvqCVk+gw=;
+        b=YLeZiKDVNj6Gvhi8jRfGiv2GcNmZE32H8lIiG8LlRYFaagI8iSYa5Ukm8bV3MdqRrW
+         LGKeYvasI4WlxQomrrI2GfrTKdb77ujA4mMWBQBnl8WO6n0ud0ZtcTLSMS9HiTr02dXS
+         taPZvPz3PQVgeHnu5iqXfd+tnJnK7rtkGXp7PiWP2oj1U0cUYZ99dg5g+fFvx8zof1+g
+         5R0F43m0bE5/2EbOn+t018cnCQYVLPVmOfUXChHYgBQWBXutV1xaSRRodRVbRgOZgjmW
+         UVxsvc1pX9ChmPia9DStGHUZv7MdEqBL2pNTKl8FQrFa+OfAtdswn17xmqAdfjbJrthd
+         jbkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780476756; x=1781081556;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=697VXlmq44YvP5WclcZyXKZOINa+k3r8BrdvqCVk+gw=;
+        b=dvnVdEDQ/5Js0RdnVjKmnop/gug1xoHegkS042Isz0BdKaqIUuW7KsG9AxdPfg7aQt
+         M0fKv3suJX4TfkoTwu2cGNny2m+COrGaJioHF5fKFGhwZEb6VOCAbgXkA+AR9jNzz0R2
+         qe8tMpuqMCSEI5E8lLsqAKXcync/C6JiIbbWRrnEApFN/vvOdjBcb3NmEy+LA9JtmAxM
+         rT/rUUNRezYMKxiidiRylf5I5qBel6kZ12/nF2Er81wjFfTBP96cMZ/ny/T40y3n/BmP
+         wjQ1L4e8NpJtkqshLnDsUO+2ldqlEqY+oVAdv4gSYEhWKjSlQNpQj1cL0+SJmPiKOsi8
+         qz4Q==
+X-Gm-Message-State: AOJu0YxKEKHwLonPosp+lufcBxAPfTOdwDjyNm3rlRSl1IO6V047OhM0
+	sfPcXk14osePj/fX9nk8CFWl5ZSit/b+SmODT5YoIXcZ3yJ+YiYe+7pFTyiPp6ygRKxm370LfMS
+	ilKiMTB3qhzBMYf/1HTj8SxNOSM66wR0=
+X-Gm-Gg: Acq92OED92FCacdQsp264mLGaie/SQmdxKMPe9oBtbossoKtI3aQnll97EUP+2UixDr
+	KrIpYRsg8pXzbG4qJZuNIyRmP0b1bFU4jA4gst5jVCBpB9PBM+NdLoQ5ZTnby55SntmuS4Q4+gL
+	FA2epGCJ0UpeWQnTblEuGCZfCYWAwzoHRJYFXdlarEN4wbfDpNVuay2rCDpFc7hpyifWKtfryFf
+	X5v7sZIr9Qem06W+Q2Y+vEea1pyefO7xxlPDQpyPy5HjlqbvSEfrpsJ5RKPb/Y/MwNFEImox4+w
+	um3n7XDzWyDPnFUniUkK
+X-Received: by 2002:a05:651c:509:b0:394:8fc:8c44 with SMTP id
+ 38308e7fff4ca-396aeebac21mr7138741fa.0.1780476755306; Wed, 03 Jun 2026
+ 01:52:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <etbgk2eap5w2db36kqoze7qehp2jmydc5a7stfymqowsqukf45@g2w4zew2zhic>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260524132824.54918-1-muchamadcoirulanwar@gmail.com>
+ <20260524132824.54918-4-muchamadcoirulanwar@gmail.com> <20260528170840.54173bb7@jic23-huawei>
+ <CAO26r3R5+xYQM=_uxF32MQRuxkhpeY3bTwq6M3o8dPCr8-kdnA@mail.gmail.com> <20260602130642.068b24ea@jic23-huawei>
+In-Reply-To: <20260602130642.068b24ea@jic23-huawei>
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Date: Wed, 3 Jun 2026 15:52:22 +0700
+X-Gm-Features: AVHnY4JZhb593s7xu7sfNCsQ5zG3L-rlxBp4pbrsozwUpy2S1S4SNEX8wP4dTkg
+Message-ID: <CAO26r3RnTS1QOYrM-W4WagNDSCbb+T-+pQTou+yy80BeBWMgCA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 3/4] iio: position: add Rust driver for ams AS5600
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, rust-for-linux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
+	Igor Korotin <igor.korotin.linux@gmail.com>, Brandon Saint-John <branstj@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Jun 03, 2026 at 09:13:40AM +0100, Rodrigo Alencar wrote:
-> On 26/06/03 12:00AM, Andy Shevchenko wrote:
-> > On Sun, May 31, 2026 at 09:30:46AM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Mon, 2 Jun 2026 13:06:00 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-...
+> > > +                let angle = (angle_h << 8 | angle_l) & 0x0FFF;
+> >
+> > Switching to `try_read16()` (calls `i2c_smbus_read_word_data`) plus
+> > `swap_bytes()` for the byte order, then mask:
+> >
+> >     const AS5600_RAW_ANGLE_MASK: u16 = 0x0FFF;
+> >
+> >     let raw = client.try_read16(AS5600_REG_RAW_ANGLE_H as usize)?;
+> >     let angle = raw.swap_bytes() & AS5600_RAW_ANGLE_MASK;
+>
+> That swap goes back to a pattern we ripped out of the C code years ago
+> and why we have the smbus swapped functions and regmap support for that.
+> If a given part always does the bytes in opposite byte order of smbus
+> then it should be handled as part of the read function rather than every
+> word read having to be followed by a swap.
 
-> > > +static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-> > > +{
-> > > +	u64 _res = 0;
-> > > +	unsigned int rv_int, rv_frac;
-> > > +
-> > > +	rv_int = _parse_integer(s, 10, &_res);
-> > > +	if (rv_int & KSTRTOX_OVERFLOW)
-> > > +		return -ERANGE;
-> > > +	s += rv_int;
-> > > +
-> > > +	if (*s == '.')
-> > > +		s++; /* skip decimal point */
-> > > +
-> > > +	rv_frac = _parse_integer_limit_init(s, 10, _res, &_res, scale);
-> > > +	if (rv_frac & KSTRTOX_OVERFLOW)
-> > > +		return -ERANGE;
-> > > +	s += rv_frac;
-> > 
-> > > +	if (!rv_int && !rv_frac && !isdigit(*s))
-> > 
-> > Do we care about isdigit() here? Why?
-> 
-> The check here validates the presence of digits, and
-> this is to cover a corner case with scale = 0 and s = ".5",
-> which is considered a valid input and leads to rv_int = 0 and
-> rv_frac = 0, outputing res = 0
+Understood. I'll use i2c_smbus_read_word_swapped or a Rust wrapper
+around it, so the byte order is handled at the transport level.
 
-Please, add a comment on top of this check.
+> > Rust doesn't have FIELD_GET yet, but a named constant serves the same
+> > documentation purpose. Single call, no manual byte assembly.
+>
+> A named constant serves only part of the purpose. The main gain from
+> FIELD_GET() is we don't have to go check if a shift is also needed.
+> I'd strongly support work on getting something similar for rust as it
+> makes for a lot more consistent and readable driver code.
+>
+> Basically I want all the useful helper stuff we've built up in C to be
+> available in Rust. In cases like this one I would prefer there was never
+> a legacy of doing it any other way!
 
--- 
-With Best Regards,
-Andy Shevchenko
+Agreed, I'll look into what exists for a Rust FIELD_GET equivalent.
 
-
+Thanks,
+Coirul
