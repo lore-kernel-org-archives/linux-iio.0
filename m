@@ -1,117 +1,100 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011002.outbound.protection.outlook.com [52.101.65.2])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C23E400E01;
-	Wed,  3 Jun 2026 07:47:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.2
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780472839; cv=fail; b=S9mV+jaCJK4akiNjbBtXuuP8oX5XUTX+qzZGOXpdEFoT6VFg253jZcO38tkibB2ZtGOPZrT27vFSyrLq0zZSu6d7ZIEkSm86244zmGhF/dnQNJ4KvpRdlyGEMVOYCTLgCMbRZzl82f4w/sxYHfFQzreheGzpgzRCDah7t++z7us=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780472839; c=relaxed/simple;
-	bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
-	h=From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Qan6wLqwhe/VS7DOC3U38BzsdTVEC0s+E7ekUrMIplNunw+blf0g8FAEuUOc32N/nt7C3JHF5wy2bMM0EfjV+tc53zxRzOXsNgLpl7fPqg7g5NqtR/TbMuh+UB/AWaGoxkFpcOjJZufBah8pMWcj8GONYA1I/3fW6qkDozmCYqI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=AHAl52Y/; arc=fail smtp.client-ip=52.101.65.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8BD3FF881;
+	Wed,  3 Jun 2026 07:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780473577; cv=none; b=VrJoHgEYXWPJmPl7ipS0MUNzQiU35DinfVZrc9GQe+6w0QbaFy27JJ4Qd3yHD6sOw/mMqhJIaFxz/UtLMqACC8XRDyhRcCOqla6ghT28YAJ3XeHFtqYFy8SucDDbnb7lY+74iZcu103AtyLHffZa6le1Q3Ql8Qy5SNgaAdJaSMM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780473577; c=relaxed/simple;
+	bh=g9R6Pj7IedGiVjGt0NYiN3746tmR1kvMrqdl7k6vDVY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PEu0yfMZnzHXKHTp8WjACZjYIppvIJb1n3chiyQr01fXKYG2tWq5wSrwdHHRepje8tt1T3QMhX6t/mle68D46Y2toNAqPU2J2ncjFJUCAAtJWRezDa9fcv3CyE6NsE90c/8irbS757QamPpBmRi8HkYZnpRVOtjtqwbd/xsWG20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ngqUzRym; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="AHAl52Y/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xDGQjl9EJwdPRrp+77BLPttErYi/QFSrMUOCJ06Oa2/onYZtcJL2V+oFGp/pm81r04PC1dJhTrpiIkyh9ZIulqBSPmSOpQDhreYmeKWTTmUHdlpQ48H88ipy2u1Njga13GtYFn9wXyFmWmE6762L2DnO4ysi6mLNy5g2TEIK3BOW1LP+r5istQJCcj29IZ9KoK3cD75SVdqP6egs3qrZtp8M2nsChrVqxhzIyQtN5u0Edtbl/LMMcMNVv61k5/pRYcM5gQ/HaASozQYU2Aiq6Kaf271xdQnNpJALvEsOhF4bq6SiOHlRP0PfWn8N1mEzZqkV7/6fOEvQi44IhgiOxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
- b=hp7vS+Su5NbKOKmCfBSFOkudC9sheQ7p5GYHEUAeNm1yg/qh0rb1EOCObzf0J2Q+qTGfTWMeprCXbWNtDqqHU/X0u/6bUQTmUYiUKhP14VDGcNpGKXWTG5ePWIhkJN6SRhVM2+SAbLk2+Z/tYDpmWzTCa0237yqPjQyE4h/imTnzwQN+eRG1MziT/YlP3ohSk/eVLfLJKwbsQTtungc4nWKCWj66ip96KTkrdP0Y3Ff8/G6aBl0S2+tTN6oNH7tIAlGMWpINPyOLKoB2FxgXHkKNWTaXMyIEaHQI6LPc2ND/79/hZEUF4U+1SR/mF//+auzzymPTgR9OIgmw6h2aFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=kylinos.cn smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k81d7VkLhHR5ZDDBxkMEBKGX4hPt5YBjrs4/XyVlZAY=;
- b=AHAl52Y/mvZUmpyoViwx/pryNFoNnjyaNR6KHAErIoR44OuBh2JesWJujJSISvkOJ/ksThOyEZ9LnYoxJVrMlOqs1N3ddrobMFllKY9XAirWrwwxbyVlSJR2jkngz8BEftN/VTczHiKfneUB4i2l5mskDpW/VxIFwkFlOjWYT0o=
-Received: from DUZPR01CA0192.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:4b6::15) by VI1PR02MB6462.eurprd02.prod.outlook.com
- (2603:10a6:800:17d::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.16; Wed, 3 Jun 2026
- 07:47:07 +0000
-Received: from DB5PEPF00014B8B.eurprd02.prod.outlook.com
- (2603:10a6:10:4b6:cafe::8f) by DUZPR01CA0192.outlook.office365.com
- (2603:10a6:10:4b6::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.7 via Frontend Transport; Wed, 3
- Jun 2026 07:47:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
- smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- DB5PEPF00014B8B.mail.protection.outlook.com (10.167.8.199) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Wed, 3 Jun 2026 07:47:06 +0000
-Received: from pc67007-2609 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Wed, 3 Jun
- 2026 09:47:06 +0200
-From: Waqar Hameed <waqar.hameed@axis.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: Miao Li <limiao870622@163.com>, <jic23@kernel.org>,
-	<dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
-	<bigeasy@linutronix.de>, <marcus.folkesson@gmail.com>,
-	<dixitparmar19@gmail.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <limiao@kylinos.cn>
-Subject: Re: [PATCH] iio: accel: stk8ba50: Update includes to match IWYU
-In-Reply-To: <ah_BL85vs88ynvQ2@ashevche-desk.local> (Andy Shevchenko's message
-	of "Wed, 3 Jun 2026 08:52:47 +0300")
-References: <20260603015033.187735-1-limiao870622@163.com>
-	<ah_BL85vs88ynvQ2@ashevche-desk.local>
-User-Agent: a.out
-Date: Wed, 3 Jun 2026 09:47:06 +0200
-Message-ID: <pnda4tc12x1.a.out@axis.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ngqUzRym"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780473577; x=1812009577;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=g9R6Pj7IedGiVjGt0NYiN3746tmR1kvMrqdl7k6vDVY=;
+  b=ngqUzRymW9x2jHSnbFoKcfyLsI3Xc7dPpnj4S6z4+yWIX7g1SLmBj4sG
+   rt2cB0ygRdFxB7QQW2rEeVjSA3FIZW1oA8u9y+yRL+BfwPbDA9PHZGoDd
+   4PUe6P3wdYKBmC7cq5Wu4MzdNGJtxv1ORt91rrp5FKVHZmb8jfyNMhuqU
+   bpWQGpNoxQmEyjS5m+ywIH4OPMn9XYgKNPHLiZYt4kxOGaMucjZ1u+3u3
+   8U6wASUPyGohyPWGwns3iTDuCfd+dLpJ27QmA9YQ7eSkKrDbSanBtgVRN
+   SlSkdjjquqDI4ZrVmcOp43coMSL7ScmJPE58sCZ/w08jiDlnbhgHPTnCq
+   g==;
+X-CSE-ConnectionGUID: agSXjQD6RvqGhpqTZEtg0A==
+X-CSE-MsgGUID: qp0O/t/vSt2bCmQc8BH3CQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81454380"
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="81454380"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 00:59:37 -0700
+X-CSE-ConnectionGUID: petaq8DTTq2v4Q4wLo954Q==
+X-CSE-MsgGUID: 3vFwIrwwTXOZ009Dy6GzBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="243296934"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 00:59:33 -0700
+Date: Wed, 3 Jun 2026 10:59:30 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, pop.ioan-daniel@analog.com,
+	marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v2 0/4] iio: adc: Add support for LTC2378 and similar ADCs
+Message-ID: <ah_e4ovBsXQ-BVcw@ashevche-desk.local>
+References: <cover.1779976379.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: se-mail11w.axis.com (10.20.40.11) To se-mail10w.axis.com
- (10.20.40.10)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB5PEPF00014B8B:EE_|VI1PR02MB6462:EE_
-X-MS-Office365-Filtering-Correlation-Id: 052b4536-c23f-4663-3d55-08dec1444f75
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|7416014|36860700016|376014|18002099003|22082099003|4143699003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	pIKj4AjEb9Aoxa8s5rnYlERj87qKRKSX5cAh3KESBwegDRJj87e+WJU+KUX+gw19+e7+Jk3XF2OcmVNw133E3LSrXcHOAGMIMB/L9xI39oXHr2wCDNpq104C4FITprETk9Hr12qen7uwYUzFSLrpj0YPKUlAOxc7qiy1CHaiCqNV1Wx38xY2f5tDjGyq3ZWI7qr68vqYzAZXttmrFk7JXn1KDbwDyO5T7qMvbipb5UPg9KqrUUtJpw2Jy0h9PAbbVJt2yRd21C9JX6KxYeoL5GO1ZY3Oqe6ghuoY8ivwcn2gMuQmQAogRUdfTy3FGe1J1KNHt1hXFkxgQwpmfahAe7u5A4xRDgii59zNfaECd2VB8lyqCgbOaANarIopAu1Vk07RZ7nVBEjGtQbeFeZVsTOnkgdnoivEZWNwnxyq3vEv5XNCJ4oN8fAitvUm8rT6yZx8Qhap4Yiex/ui1JEK3iVyAduqofn0cvmQo3RYIZM+WlCZGQWSAddl9QClR5qD/+sVR3SUBbPaGDXybFQo14RuTmDjwmFld4+b+Xc6EI774G2PAJj8qvKtWUF1/Sa5MScdluSPyVpJ8rlYH+co9lJm1mgx55i1+PBKWYSmvTA6U7wTSGvD9zssGPXzzyigtkcM6PFTV8wTouluUrAKTwAhJzMBSIAsESeW0UsxR88nWOU+DuY4Flakeex2NOKMqUv0aC6C2jUEC/9uTs/frZ/CycntWaN46flZfoQTAOI=
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(36860700016)(376014)(18002099003)(22082099003)(4143699003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	XWwW4sYO6ffKyc0IRMmyINxUJFOcgDuckQRUY3pQsSA0rpYhuOEkyjKYfL45pbozaEvJ2nomiucbRBcGFSpISNX8K7i4iYYi61w9FoH4Lol4TfkPJDwyP0YB8ddVYG9Zo6uAIIwc6RA/egHlg1TOzOmqpJbL85KxZip0KK/9kEg4oynMaKfpQA/F76WxB9DuQIYFKNlBIC/ZND5VfM1cd8qmvF48L+us+rpioZng30rcHNopY/aqIfw/8Pw3rMOoKbthTPyJsDkWya6GwE7jUPZDsqZXkWeMKQIS/0mbFRDzl1Jezzz4UCAwv5Ec6UQ9r0SU+hcWougw+iMTfYSdHFLZ0Z0Aem1J+adQHGkaKRlP4apaXY6M41tGF+hJGckEDdGNydmSjrzZEOxg5yPDODWkflr/K1nTSqcZEGwGwyiKrifN9Rq7alrVSUNxYIvv
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2026 07:47:06.7729
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 052b4536-c23f-4663-3d55-08dec1444f75
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB5PEPF00014B8B.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR02MB6462
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1779976379.git.marcelo.schmitt@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 03, 2026 at 08:52 +0300 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, May 28, 2026 at 12:02:53PM -0300, Marcelo Schmitt wrote:
+> This patch series adds support for LTC2378 and similar low noise, low power,
+> high speed, successive approximation register (SAR) ADCs. These ADCs are similar
+> among each other, varying mainly on the amount of precision bits, maximum sample
+> rate, and input configuration (either fully differential or pseudo-differential).
+> 
+> The initial support patch enables single-shot sample read with a GPIO connected
+> to the CNV pin.
+> 
+> The second support patch enables high-speed data captures with SPI offloading.
+> The setup is similar to AD4030, with a specialized PWM generator being used both
+> for SPI offload triggering and conversion start signaling.
+> 
+> The last support patch enables running buffered data captures without SPI offloading.
+> 
+> Some structures and variables are introduced earlier to reduce diff in latter patches.
+> 
+> The initial version of the LTC2378 driver was developed by Ioan-Daniel. Though,
+> despite of the many changes I made to the code, I've kept him as module author
+> to provide credit for his work.
 
-[...]
+No datasheet link, no explanation why the brand new driver is needed.
+No need to resend, just answer the above questions.
 
->> +#include <linux/iio/types.h>
->
-> Not sure if we need this one to be explicitly added when iio.h is included.
+> Link to v1: https://lore.kernel.org/linux-iio/cover.1779117444.git.marcelo.schmitt1@gmail.com/
 
-I would vote for removing this, to be consistent with most other drivers.
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
