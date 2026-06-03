@@ -1,44 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0072D46AEEF;
-	Wed,  3 Jun 2026 12:52:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DF801A0BF1;
+	Wed,  3 Jun 2026 12:55:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780491129; cv=none; b=CLtwWTR5nhnJ39f3jshg4DHeMmpZAmqr5N1wafHO7mH5HYSKtz6kkBz6J6ySu6AQ7xCXNPrHsVPnOiV/vpCzBE3LtnEPAI9pYeC8JRtpPHrJt0WkCsU/tMun9wgWaXIU2Gi3xeWfDv7tSS4FfiQIIFi7bsVwCxpdrjFufd2EEPA=
+	t=1780491339; cv=none; b=Na5lBb5X9baCi38tsTJFUAfaMKzIAO7MI+UIQ8TenRDlC8tI5GmetMj1xvDSn9QS/FD2i5X/KBch6peUTgEO0cSGpV4NBHfZbIzElYyERd0IpXa1+OhquwWtbS8Cy5WLB+pV4P6I8PB01AvqCdmgCQ65hZg8A/Am9CFVeduleRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780491129; c=relaxed/simple;
-	bh=8eKivnL6rIP7uq8FU0P9rtmpsR9dQ/aVtg8WULglB3w=;
+	s=arc-20240116; t=1780491339; c=relaxed/simple;
+	bh=3rYEvm8guTOUqyzyTHOnG+63cFjmQM0v9FHTN0tbDrw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=abUWbshe4vnCFWrMSTHEnEvRNkU1WXfga5Q7GnREHRcZBXnaeVgJTTae4XrbhILVURCw9LBJlnsWBdQ276phVuqvB/sF3/yat570VP5Viyw8evMflg7hyL3t/DZ7dpexxEqvtGEfyHEwRtC8xT7aHG2KzfyJAtbM4gCDs6Ey6Q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ObNl8bCV; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=e2cS5jfYOwc2pB1jJKgORudE9RkrNWOXvzS0qfh2AoIaoc8zrGvx5nZQnSH0qmM7smQ7UPvYXZ9lj6785HIngXa0RY+nnoskQbdQQYlTVgvqVegJIsAadPAkp0l+rzAq77S2dziM8Qp8Y4MfSOrgfX2C27fg71jN1/RLHhGBzhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZITy+Jvh; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ObNl8bCV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44E91F00893;
-	Wed,  3 Jun 2026 12:52:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZITy+Jvh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7AE1F00893;
+	Wed,  3 Jun 2026 12:55:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780491128;
-	bh=FtocfIoyInlHJrTnG9L0+JlEkrTxGrUIvuAZAWuzkGU=;
+	s=k20260515; t=1780491337;
+	bh=iE4jRMPbhQH0PvIv57gmqF1YPc/vbiAJUSleWIT0u7Y=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ObNl8bCVsLygNySgPtaSq9nxN3fhHt5BlRqShtfnZE7KJMh403mBqNbHvHV4squtf
-	 /8HwmWVpXBS7z5u4lOrcsXycD3gGzSLEL01t8Q3jaDOehFAeho208kVhXywPnb5Tcn
-	 HD8xM/mHzh7B9WEIQdj2PcSkEhNNNr1ydn6Qa2kphJS4iCxnb+tSWOv3IUfw52CDPF
-	 Pb7yH15OV7Oy4zFVWJWdQYf3wq8hDymmT0PuW58wY9HrpJSmupBFTc7UlpjQGIkYv+
-	 VyCxpmGAPZqzECOa4nKg44rbthriEJcFcGx5E3bkPLi9LaMoAlWx+m++WNcLJH3tS0
-	 56QZMTa+GGrMg==
-Date: Wed, 3 Jun 2026 13:52:01 +0100
+	b=ZITy+Jvh5I+g+3hrZx+k88KdQNY2wDBZvjYq5TlCVs6UOrTHgIbH/YZzL5wyApxI5
+	 T8kh9Z0F3pzk7z0/5uMDstcXeElYJZkuJdnfRbNDbSZ9oOXfYYTyp6yPcGQlgjM9Sl
+	 LYsmf0FUI3VywLT+pxbDyTuV3CSCiHxrQlezYtrBKcFmIEwE7GD0x2rTarTqQBBhX3
+	 mwtqpeOLNsAy7ojhOFI4EkjhqqVJzMLyzxtPWqdQwMftMe04eRlMjKKDe5Zs4A4fPP
+	 UTIlY+oTwQYp6aNsMR2yK8/y6svyelZhqYupSyDj9yguWMx9Lb/aeqClamgTAk3qan
+	 kWQkG9hLXMHdw==
+Date: Wed, 3 Jun 2026 13:55:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Guangshuo Li <lgs201920130244@gmail.com>
-Cc: Francesco Dolcini <francesco@dolcini.it>, =?UTF-8?B?Sm/Do28=?= Paulo
- =?UTF-8?B?R29uw6dhbHZlcw==?= <jpaulo.silvagoncalves@gmail.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads1119: fix PM reference leak in buffer
- preenable
-Message-ID: <20260603135201.0e484c7b@jic23-huawei>
-In-Reply-To: <20260603121640.1394763-1-lgs201920130244@gmail.com>
-References: <20260603121640.1394763-1-lgs201920130244@gmail.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook
+ <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH 09/12] iio: dac: ad5686: implement new sync() op for the
+ spi bus
+Message-ID: <20260603135525.41331916@jic23-huawei>
+In-Reply-To: <ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
+References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
+	<20260602-ad5686-new-features-v1-9-691e01883d27@analog.com>
+	<ah8roqGqZ_VhAPaa@ashevche-desk.local>
+	<ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,48 +56,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed,  3 Jun 2026 20:16:40 +0800
-Guangshuo Li <lgs201920130244@gmail.com> wrote:
+On Wed, 3 Jun 2026 13:26:43 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> ads1119_triggered_buffer_preenable() resumes the device with
-> pm_runtime_resume_and_get() before starting a conversion.
+> On 26/06/02 10:14PM, Andy Shevchenko wrote:
+> > On Tue, Jun 02, 2026 at 05:33:56PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> >   
+> > > Use of local SPI bus data to manage a collection of SPI transfers and
+> > > flush them to the SPI platform driver with the sync() operation. This
+> > > allows for faster handling of multiple channel DAC writes, avoiding kernel
+> > > overhead per spi_sync() call, which will be helpful when enabling
+> > > triggered buffer support.  
+> > 
+> > Why spi_message_alloc() can't be used instead of manual handling?
+> > (Seems no current users, so you even can modify it for your needs.)  
 > 
-> If i2c_smbus_write_byte() fails, the function returns the error directly
-> and leaves the runtime PM usage counter elevated. The matching
-> postdisable callback is not called when preenable fails, so the reference
-> is leaked and the device may remain runtime-active indefinitely.
-> 
-> Store the I2C transfer result in ret and drop the runtime PM reference on
-> failure before returning the error.
-> 
-> Fixes: a9306887eba41 ("iio: adc: ti-ads1119: Add driver")
-> Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-
-Note I may well drag these across to the togreg branch for the coming
-merge window as I'm not really expecting to squeeze in another fixes
-pull this cycle and all the fixes I currently have queued are for ancient
-bugs.
-
-> ---
->  drivers/iio/adc/ti-ads1119.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1119.c b/drivers/iio/adc/ti-ads1119.c
-> index 79be71b4de96..9324408cb3b0 100644
-> --- a/drivers/iio/adc/ti-ads1119.c
-> +++ b/drivers/iio/adc/ti-ads1119.c
-> @@ -459,7 +459,11 @@ static int ads1119_triggered_buffer_preenable(struct iio_dev *indio_dev)
->  	if (ret)
->  		return ret;
+> I need to manually call spi_message_add_tail() to append messages.
+> I suppose that such function is a bit weird and no wonder why it
+> is not being used. struct spi_message_with_transfers might need
+> to be properly declared so that users can populate the transfer
+> array without manually moving pointers or having to redefine the type.
 >  
-> -	return i2c_smbus_write_byte(st->client, ADS1119_CMD_START_SYNC);
-> +	ret = i2c_smbus_write_byte(st->client, ADS1119_CMD_START_SYNC);
-> +	if (ret)
-> +		pm_runtime_put_autosuspend(dev);
-> +
-> +	return ret;
->  }
->  
->  static int ads1119_triggered_buffer_postdisable(struct iio_dev *indio_dev)
+Agreed it would be significant surgery. Perhaps worth it as a follow up
+if you can find a couple of drivers open coding the equivalent.
+
+Otherwise perhaps send a patch removing spi_message_alloc()
+
+J
 
