@@ -1,68 +1,68 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC59047ECDF
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F06480952
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:13:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780506782; cv=none; b=c8PVi3bbmGjCZdF41LbvlrwsElDBFFAVJsjFB/TU8QrV+cjqbttuOhrKCFPDgQcjRapDDQCw+XZam5gY/jzTxlLs8YAwWVPZDovCmRQHtcik4AQcfOCVprpOexcLs6PlM7wUlIkST1W8drD+IZ3y0VEmoxp/Cw1r05URl5r5BOo=
+	t=1780506782; cv=none; b=ocpNaBrld7+/da2Lu4HPm9jgIH3mAtTFygsEbS1YfJ+dk+hA6r25wmFA909dq3u3BgJELFLct5VF76c7r6ITIMvqVcYk/Wo71/uvF1A+wOZpQlh4AFHxbAHvPJu5t18I0E/2959a4Ep4UJHTmhBccaGP+POmEO/fg/U2VLMcHRU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780506782; c=relaxed/simple;
-	bh=2BDkcyxuCYIlZAGkYDGk8pck10gD78JOrPFXgQsgGWg=;
+	bh=92QMxbg9OM9tIa76RuRwrM+dPii8Tq6UIhU4yfo+Ymo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HpgD9ZntHgNg0RI5Dh4qYJgPhVQ7RZX4/FyF+mDjvORg1Culxlk08Q+zbb9UjglPMuo79ASoSXQr9x2t7nTvmFLkVHw3bwPhP0P8a4wpG6IbJ2uQHTN/T8uxXeRsVoaW5+Pc8QAAky9y9I7qQQjz/MI/YGAX8MtJSIJfA3F3eWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sLCV4941; arc=none smtp.client-ip=209.85.221.44
+	 In-Reply-To:To:Cc; b=NVnUdKXxhBgVDIBa+OkPZreVWlGuabK6AHFA5KR0CSF79elDlJTHDEAFferUgHzUf3HUyNwNLqWXdCD15UVWmGttscG01lA9hTnGFMmi5Vh1OrgiiuuGl4h6XuiFtewGb0PSAtTScGl56ivacM02+905bV1rmpx4vpSgKqHgLyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BeVzFCo7; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sLCV4941"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-45efa80e0afso3736518f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BeVzFCo7"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-45ee5cdbd28so641036f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:13:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780506778; x=1781111578; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780506779; x=1781111579; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=tlFviVqEyV6yDfca0ZHHxijD0F7o0i8z+Aw19WODozw=;
-        b=sLCV4941O4fIGhgLsuqPdH9oy1xO09BctBDieRSxSB5Gadg6P7NZe4ancmI9CpOk3l
-         PSs/S05RjJ8dluttLrWMbX8NtPDAnxVbyCIN+ic9kY2gMZkMFywrMKs3axNGjFk+iQXj
-         E3tKezf67Q67jMB7Qxw3CA4rBr5HIALKF2tSWuqamuQpzoj/5s+N/NqqMcUtb3aXMVEI
-         qnOQCMRIgaPSUsaOGQ7YWbvmR2xQdRTMx2F9lvZgx9uJEGyf/+1ZxczaBaXXDxV8LRZS
-         5MIUb7BKQGPkbdcpnild6mzDs+nCJ36RWf4aATDSGqA9YuvRTD+jpLdPPnINoigwXnKm
-         l9fQ==
+        bh=ZMSn5pkdQNE0J6eKuFLup2G1Dj4O8HRGoerYXvW5gEM=;
+        b=BeVzFCo7TF3qVXlXkpITpyTB3CF4ZdGnmIFSnZWkq15q6Pd+WsaATEvOLBKy7FGMo5
+         dbMWDJdz7ubrFCjeCz8jAP7fwOR7+aYTPQQKHTCBKwUiYqZ01LC1wSU8zFMan0L+pf3s
+         Hb71b+4B+Y+JqSL7uqRNO+v2cJ5F0LydBLhp2woCa1a8rRZf5flmQgecJfXWLj7ACpkx
+         /c2iP01dQ7M8CuzV4gqwR+XMjtQzzr/83s2tp6OK3peTGt7uG7nmZO3E1Qo+gdQhag2/
+         wzMBHb13ZKbZqGBvON+NohSMXFvVHLxCrkMgmJn72DL4KVrlnHVyCCGwlzvEIG3IQkhl
+         zUZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780506778; x=1781111578;
+        d=1e100.net; s=20251104; t=1780506779; x=1781111579;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=tlFviVqEyV6yDfca0ZHHxijD0F7o0i8z+Aw19WODozw=;
-        b=f2lwZUtpiXX5zYIqaXOGLhMl+52bRft8uaT8Z1ovd1TLRSR6VbLLqvdv0YsY13JGwu
-         0mpDlQfjd11OlSt3WuhrDxDyikvJX/+RWww4NARcVUYqAV0PmytIiUBlcDwb+LWKqpuE
-         LKZ620WpKdlOnb2yIxr3HRIXKpuauLEzHPfSUxyTzD5Gn92tl/NDSQSbawp4AhVfKCEq
-         5dNFcYn7cNIYU59XuISdfe3cAsk2s8LM7lLUG8Ty18B6iO/rRiSZKVA2ICFkEw6tB5Hr
-         5UO/hieBLrl3PZq4x4ygJxjwCs6d4+gsavgg7BbIEjc3WNXM/5wqN1HL1IIVB4VrHZEP
-         3GVQ==
-X-Gm-Message-State: AOJu0Yx1MnaLyYVZk9t9vc6n5l47JPMJBYx4TYjauKp4hSs4tRXo6uqo
-	CqltXlra+u3n8JU9/K22vrSwpoLRCXe6LipuRF1/WnDRiVI9YoeIMil1GHba3X6c
-X-Gm-Gg: Acq92OFF+n/sk5OLOjroChiCbdx9TyYr2siDW5zG/rQamvnp7ILv5EwTPGXPlD+sLb4
-	PzIMmqZbtK/6MzMArjzXnYLtOgZbvhtADWVNTPkwhXMZRugYxoh1DvV3K1qyDNpo7wdblOfmsUM
-	UXX4jBirce9fv0LICqNbBmHDQQvxcmlGFT4ACk3KmwfA1z5QUF3+upQdv+VyEXpPRA2uW+WocaJ
-	8yWNT2x/2+IY+PdOJmuARklxcdKP3TEQ+O0woYZdOg7kfz0JFunwMimlDDkB82UJq+bHYN3zFaJ
-	UNTQ1BOrgWovgSJRDL3HEQvdPeCRApy9+zdguDnZjjtEm2lLwDfK+18ugRzqwS7Q9cvrNDXR+R+
-	A2nfXJtXmVy6GN2P5FRQ2nAhshde1craqRi1tYx+/2p/O+uLdPlj05je5CU5fJtsy9FE+kCnX5P
-	sJWUUv8wHD9CWA0NhAu9prVdiUNrBsxrx0HZuDfNqqrmlobtiDJ1IUDWQZTi6W3D8NsHcVNfL2R
-	yAofQh+n7VepzJDT4KX908b4P3lIC9yNwOTWyAmXon79tI0ZGvkm9F9K4q9cwQaAxULdQCHDWW2
-	XtDaz24iUtsVp3/++S/procj3oZBo3ZMJZxAoT8CGNYqt55cczt7kBkXoOyyMw==
-X-Received: by 2002:a05:6000:4b11:b0:45e:ec27:b4b0 with SMTP id ffacd0b85a97d-460217264a4mr6430009f8f.18.1780506778048;
+        bh=ZMSn5pkdQNE0J6eKuFLup2G1Dj4O8HRGoerYXvW5gEM=;
+        b=JqqI78WjNWfN2qembzo2yuf7TwO91bQ7DZHSFfp37dqlJUlvDySF2ofuC1eBPchpEH
+         ArpMxuzuK6bpexr5nzAiehpGSVRw0zo8y5YBilSFf6Xc1Wrs0mocMwjZXJZ8aeHT1udj
+         UstwLZ73YA0fjh/DjP6gaGGYLrEA4iGqITxEHqjfx3zkNAy017TKNE8UF0N5izEWr1yE
+         EbSZrKvPa1ouzG4kmymb29MLAILgif+ZOUKCg44V8HxFsvqPaMC+aGh3J5oLvEPWuH3s
+         6AiHCgQiNP624w3G9/h8TnqVXGYQAQRh15vL8B7xOR8HxsHNo1M8KTKjAS0qE5T3QdNF
+         xE8w==
+X-Gm-Message-State: AOJu0YyaqL1Eo3WLyyB+Kmc/NaV5VUR65v8z+kSZouNIeRsWtcmZj3+D
+	W2UB7n6ty/3RiPFe8TQhwcUjgHh5fJ7NF2Cn7+XxyvEOUpBlzUKnYD/4
+X-Gm-Gg: Acq92OHcmsdm0PrAz7NgxuAn2AdXB/m68YG835uEzuAV61i8GpPXNTr7Wr/Hlqeq4MW
+	WBdfdO2d434uWC7kz0+UjjIW7reGxOcbS+RY9k3Q1+INC33EaQvFaXV4yhUsmf7pxn/+ZFL0Eqx
+	pZo6xq3nK33+bYN/tSHTPR+YcSCdSg1Ab3+lh5vf5wtfc381J2Mg3th4IkmAwE/3z7FoqlGyqq0
+	QbK/GGEDO8jwNC9vSRJBipbSbw24p5tREq2pxHpMhhhCJwSkVOMOLTvyCyydjPzsHfy0vpnlnGa
+	2qo4HjoNAiH8RzshCmLevb1dL6wzXlOtFcV+n9ZAhXOrmdojoztZQUHQf3dftIhD7PHYsu4skOw
+	VfRVGLMl1qFfNY5tIqm5xRj2suE+x3AQZIUbjRSNFD4VLIsDJ71+PXm5M0PEdnljs5Nqg8FUYqC
+	bgeLeZSx0Fwxz9FAggD65dpfmWYSHPwwXOXIsxh4cZNtRV1Pmlb9zJ1qTT8mpZN6aLXlHpL8Sqz
+	dPvESUYIBkx6D3HZmRBn6NmDxWaqO4/hNY3DfmdT8gAIc6j5aJgwJCUW4HXUuQvbGAYDoQ2c6Iw
+	1bdPVW+pMcM66diP8OHV+E5rcLzWt03/9nnYmGYUGt3Wrf+ESJk=
+X-Received: by 2002:a5d:6410:0:b0:45e:f93a:2069 with SMTP id ffacd0b85a97d-46027620f64mr301522f8f.23.1780506778825;
         Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0:c287:187e:fb7a:66a4])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.57
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
+        Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 03 Jun 2026 19:12:57 +0200
-Subject: [PATCH v5 6/8] iio: light: opt3001: move driver to guard(mutex)()
- use
+Date: Wed, 03 Jun 2026 19:12:58 +0200
+Subject: [PATCH v5 7/8] iio: light: opt3001: switch driver to managed
+ resources
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260603-opt3001-cleanup-v5-6-3ef7b926d555@gmail.com>
+Message-Id: <20260603-opt3001-cleanup-v5-7-3ef7b926d555@gmail.com>
 References: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 In-Reply-To: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -79,205 +79,160 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
+ Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=5010;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=4217;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=2BDkcyxuCYIlZAGkYDGk8pck10gD78JOrPFXgQsgGWg=;
- b=PcH3w3TrZ12sMbpkFbwhZyaT7JJZx5u9UIA9uF/7bo6o3+aIkJ1XexZTFh+98bhKD9pNXGSZb
- IQMxy342Zo+AHNoCYFEuVK5ODL6t94YzJEl/aJKRTyrkBpZAehzYYAa
+ bh=92QMxbg9OM9tIa76RuRwrM+dPii8Tq6UIhU4yfo+Ymo=;
+ b=XLHP7KJoRffnxe2yXtx1AdAQ7tgrkSJpiXrMktbfGmXdLoEOaJneNAd01chtWOBDFl8J1Z4Sz
+ e5ihZ4dOn3nDYkTQ+KtvLk0OeGiL2n/41Fwl1J7zplopbnRHyJG2oT0
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Move driver to use guard(mutex)() macro, to facilitate automatic
-locking/unlocking of resources. This modernizes the driver and
-improves code style.
+Move the driver to use devm_* functions to automate resource
+management and simplify error handling. This also allows removal
+of the opt3001_remove() function.
 
-While at it, remove unnecessary gotos and return variables.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 61 +++++++++++++++------------------------------
- 1 file changed, 20 insertions(+), 41 deletions(-)
+ drivers/iio/light/opt3001.c | 89 ++++++++++++++++++++-------------------------
+ 1 file changed, 39 insertions(+), 50 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index fa799edd6a9c..14a091533067 100644
+index 14a091533067..44f4e67eed0c 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -10,6 +10,7 @@
+@@ -705,6 +705,30 @@ static int opt3001_read_id(struct opt3001 *opt)
+ 	return 0;
+ }
  
- #include <linux/array_size.h>
- #include <linux/bits.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
- #include <linux/errno.h>
-@@ -477,7 +478,6 @@ static int opt3001_read_raw(struct iio_dev *iio,
- 			    int *val, int *val2, long mask)
++static void opt3001_power_off(void *data)
++{
++	struct opt3001 *opt = data;
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
++	u16 reg_val;
++	int ret;
++
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
++	if (ret < 0) {
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
++		return;
++	}
++
++	reg_val = ret;
++	opt3001_set_mode(opt, &reg_val, OPT3001_CONFIGURATION_M_SHUTDOWN);
++
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg_val);
++	if (ret < 0)
++		dev_err(dev, "failed to write to register %02x\n",
++			OPT3001_CONFIGURATION);
++}
++
+ static int opt3001_configure(struct opt3001 *opt)
  {
- 	struct opt3001 *opt = iio_priv(iio);
+ 	struct i2c_client *client = opt->client;
+@@ -743,6 +767,11 @@ static int opt3001_configure(struct opt3001 *opt)
+ 		return dev_err_probe(dev, ret, "failed to write register %02x\n",
+ 				     OPT3001_CONFIGURATION);
+ 
++	ret = devm_add_action_or_reset(dev, opt3001_power_off, opt);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "failed to register power off function\n");
++
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "failed to read register %02x\n",
+@@ -836,9 +865,11 @@ static int opt3001_probe(struct i2c_client *client)
+ 	opt->client = client;
+ 	opt->chip_info = i2c_get_match_data(client);
+ 
+-	mutex_init(&opt->lock);
++	ret = devm_mutex_init(dev, &opt->lock);
++	if (ret)
++		return ret;
++
+ 	init_waitqueue_head(&opt->result_ready_queue);
+-	i2c_set_clientdata(client, iio);
+ 
+ 	if (opt->chip_info->has_id) {
+ 		ret = opt3001_read_id(opt);
+@@ -858,59 +889,18 @@ static int opt3001_probe(struct i2c_client *client)
+ 
+ 	/* Make use of INT pin only if valid IRQ no. is given */
+ 	if (irq > 0) {
+-		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+-					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+-					   "opt3001", iio);
++		ret = devm_request_threaded_irq(dev, irq, NULL, opt3001_irq,
++						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++						"opt3001", iio);
+ 		if (ret)
+-			return dev_err_probe(dev, ret,
+-					     "failed to request IRQ #%d\n",
+-					     irq);
++			return ret;
++
+ 		opt->use_irq = true;
+ 	} else {
+ 		dev_dbg(dev, "enabling interrupt-less operation\n");
+ 	}
+ 
+-	ret = iio_device_register(iio);
+-	if (ret)
+-		goto free_irq;
+-
+-	return 0;
+-
+-free_irq:
+-	if (irq > 0)
+-		free_irq(irq, iio);
+-
+-	return ret;
+-}
+-
+-static void opt3001_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *iio = i2c_get_clientdata(client);
+-	struct opt3001 *opt = iio_priv(iio);
+-	struct device *dev = &client->dev;
 -	int ret;
- 
- 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
- 		return -EBUSY;
-@@ -485,23 +485,17 @@ static int opt3001_read_raw(struct iio_dev *iio,
- 	if (chan->type != opt->chip_info->chan_type)
- 		return -EINVAL;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 	case IIO_CHAN_INFO_PROCESSED:
--		ret = opt3001_get_processed(opt, val, val2);
--		break;
-+		return opt3001_get_processed(opt, val, val2);
- 	case IIO_CHAN_INFO_INT_TIME:
--		ret = opt3001_get_int_time(opt, val, val2);
--		break;
-+		return opt3001_get_int_time(opt, val, val2);
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
+-	u16 reg;
 -
--	mutex_unlock(&opt->lock);
+-	iio_device_unregister(iio);
 -
--	return ret;
+-	if (opt->use_irq)
+-		free_irq(client->irq, iio);
+-
+-	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_CONFIGURATION);
+-		return;
+-	}
+-
+-	reg = ret;
+-	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+-
+-	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to write register %02x\n",
+-			OPT3001_CONFIGURATION);
+-	}
++	return devm_iio_device_register(dev, iio);
  }
  
- static int opt3001_write_raw(struct iio_dev *iio,
-@@ -509,7 +503,6 @@ static int opt3001_write_raw(struct iio_dev *iio,
- 			     int val, int val2, long mask)
- {
- 	struct opt3001 *opt = iio_priv(iio);
--	int ret;
+ static const struct opt3001_chip_info opt3001_chip_information = {
+@@ -951,7 +941,6 @@ MODULE_DEVICE_TABLE(of, opt3001_of_match);
  
- 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
- 		return -EBUSY;
-@@ -523,11 +516,9 @@ static int opt3001_write_raw(struct iio_dev *iio,
- 	if (val != 0)
- 		return -EINVAL;
+ static struct i2c_driver opt3001_driver = {
+ 	.probe = opt3001_probe,
+-	.remove = opt3001_remove,
+ 	.id_table = opt3001_id,
  
--	mutex_lock(&opt->lock);
--	ret = opt3001_set_int_time(opt, val2);
--	mutex_unlock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
--	return ret;
-+	return opt3001_set_int_time(opt, val2);
- }
- 
- static int opt3001_read_event_value(struct iio_dev *iio,
-@@ -538,28 +529,23 @@ static int opt3001_read_event_value(struct iio_dev *iio,
- 				    int *val, int *val2)
- {
- 	struct opt3001 *opt = iio_priv(iio);
--	int ret = IIO_VAL_INT_PLUS_MICRO;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	switch (dir) {
- 	case IIO_EV_DIR_RISING:
- 		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
- 				   opt->high_thresh_mantissa,
- 				   val, val2);
--		break;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_EV_DIR_FALLING:
- 		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
- 				   opt->low_thresh_mantissa,
- 				   val, val2);
--		break;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
--		ret = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	mutex_unlock(&opt->lock);
--
--	return ret;
- }
- 
- static int opt3001_write_event_value(struct iio_dev *iio,
-@@ -586,12 +572,12 @@ static int opt3001_write_event_value(struct iio_dev *iio,
- 	if (val < 0)
- 		return -EINVAL;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	ret = opt3001_find_scale(opt, val, val2, &exponent);
- 	if (ret < 0) {
- 		dev_err(dev, "can't find scale for %d.%06u\n", val, val2);
--		goto err;
-+		return ret;
- 	}
- 
- 	whole = opt->chip_info->factor_whole;
-@@ -614,20 +600,16 @@ static int opt3001_write_event_value(struct iio_dev *iio,
- 		opt->low_thresh_exp = exponent;
- 		break;
- 	default:
--		ret = -EINVAL;
--		goto err;
-+		return -EINVAL;
- 	}
- 
- 	ret = i2c_smbus_write_word_swapped(client, reg, value);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to write register %02x\n", reg);
--		goto err;
-+		return ret;
- 	}
- 
--err:
--	mutex_unlock(&opt->lock);
--
--	return ret;
-+	return 0;
- }
- 
- static int opt3001_read_event_config(struct iio_dev *iio,
-@@ -659,7 +641,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 	if (!state && opt->mode == OPT3001_CONFIGURATION_M_SHUTDOWN)
- 		return 0;
- 
--	mutex_lock(&opt->lock);
-+	guard(mutex)(&opt->lock);
- 
- 	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
- 		: OPT3001_CONFIGURATION_M_SHUTDOWN;
-@@ -668,7 +650,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 	if (ret < 0) {
- 		dev_err(dev, "failed to read register %02x\n",
- 			OPT3001_CONFIGURATION);
--		goto err;
-+		return ret;
- 	}
- 
- 	reg = ret;
-@@ -678,13 +660,10 @@ static int opt3001_write_event_config(struct iio_dev *iio,
- 	if (ret < 0) {
- 		dev_err(dev, "failed to write register %02x\n",
- 			OPT3001_CONFIGURATION);
--		goto err;
-+		return ret;
- 	}
- 
--err:
--	mutex_unlock(&opt->lock);
--
--	return ret;
-+	return 0;
- }
- 
- static const struct iio_info opt3001_info = {
+ 	.driver = {
 
 -- 
 2.54.0
