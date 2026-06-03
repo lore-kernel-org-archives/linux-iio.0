@@ -1,67 +1,67 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0574779B3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D54947D92C
 	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780506780; cv=none; b=QHptmKQdhtUWIvd1bP9lMMGkOdAZ/sIcUY5E9BeW88rooiqooUSs/W/wXoD5dX9ZNYChM98Mi8jxQVFaVF1lIc+NCO8hUHeG4/UDMFJo3kCD2+YFs1M+bYiClfCICUi8yU70bGK2aBE7aACgK6T1R4PsBntp7lQnhJhKgwGD1Jw=
+	t=1780506781; cv=none; b=CvWsu+Vaq3OBMf3tZKL8oDrJBftHjwn/UMyrYHBQ7Az1VISMcdRcfXxEP58h8a2VwyN4jfxebYbg9NbX+4XGrkdnFDDhrQLBnW93D+Wse0ZVa6Z1JvwMxdBRxHPOMLI/lxcsGgQfti9pCLybCY84eKQhTEkvlRNr8/R9jF4X/J4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780506780; c=relaxed/simple;
-	bh=LykF7kDE88zomYF6W/24KVDMDse9RknyfnBW2IyXgj8=;
+	s=arc-20240116; t=1780506781; c=relaxed/simple;
+	bh=+qC0YWfflnYInnRf+X6ZznWVvUClte/iMms9DO3MvUo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=VHxTYQEldEWgWqmI+gndURqRZR4TqXUMa9CEjoKjQylaUiEbooMvvyA+9jZ6Qod2XriKaoXvEsrPOiE2vgtRYIlkIlMg8G2A8UnjTNmZcDKLNN2lmtgUDG4Ld2K5Nr2gjWERhK4wlh0f4EVQCy3x1KGNTAABu2O05kgatNaGItc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BBywPZmY; arc=none smtp.client-ip=209.85.221.51
+	 In-Reply-To:To:Cc; b=k6fAQURrbycGNz9iNr0WjQiMSeflMgvekZVDqg96hVkuvfo28UeKbZgp+TCuWQvGhbPoXhr2FCIcFN5KBLHnupclyzppUfSe63Gr8EXuTBdXiK1CnxNHrfrNmjU56ia0xrGtvf/Ln7TIUlvw36xu1yB08envb8U4KwVU57syfp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lbWO5vVY; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BBywPZmY"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-45ef1629ff4so4413364f8f.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lbWO5vVY"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-490ac357c55so37470625e9.1
         for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20251104; t=1780506777; x=1781111577; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4BYCzX7AdlAVMBcwi37iulKK+FCsXHV5sM1hbNOOcUo=;
-        b=BBywPZmYAXfZiGOSxxLx7PuWvjggXqbhCaRnK/oNRZoUzvyQ0yi6k4ljswqWtAstVa
-         wxMxIEQelKlibGVQZvFAClGAqeN5MqtgBowrseRCKDUU7sAm5Sa6d60SlDbrVpSKPgc4
-         48jUBzD3RPXBXxXdiL7CkUsulH3oybHLsNwDPcSwo3ZX3nq0b4X+3yThMvXxTTaM++6T
-         fY4HLdEMWr0DDYd2UH7Ut7BfUj6tLkfVzt3VWYQwa62uXmhBKOP8XBA6mdJkkc+RO+g8
-         q0u0+Un/WwLJi3zvhXpFVPeHX+r2BDmXdB0Rx2qjlqOcN8VqlnTC2QxHC8fJ1VcFtlPs
-         VaSw==
+        bh=9Be/cBTIY2UtthPWGW4sFFao6/kg9emmQLSnpfKTVvo=;
+        b=lbWO5vVYP2V4Ay2irakVMuijVxwj5iJ7M8Qt4XRJ0AKjUykOsgeL5ozwQCpdRPxDKR
+         2fr9kqiCL38rISCuSvXXegLkbEBSqH1UAzbUxUHNiXz0VVwfHGiHoq0RAuGf96VrfSsS
+         Cd9URbrfUVYO6gDd1UwMWnxTpyGiTwfq8c2eCXlm94Th0v4DBBq44bgvSoSi5vA/Evcl
+         0yek/+odUmP10utg/RlKf5x/XUnMTrDXes9Ia0pDr4O7P9zd86ZAFiVKBh3rZ5XCEeSF
+         4yuDCZsCUuf3ozPh55kc4c6BZhz/YeLmZq6IAbL/kJO2gnyghic7E4npuBvGQRqlJ65g
+         Guqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20251104; t=1780506777; x=1781111577;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=4BYCzX7AdlAVMBcwi37iulKK+FCsXHV5sM1hbNOOcUo=;
-        b=VY3R5PfzS97wAj5BjRCITS90QsWZkhep0oUB71OwRdZZi/8a0+NJTjCakYSCO5Zcol
-         aV1ArCOJycXNfkccN49Sdz8Ts+8D0eOkua3RQM0lfgjHvHJxtDCCPr4fka0TAbNUM0JV
-         OC1sUlmHDKtHzTgPrJiRPHGrHwZfYa9WfenyuWvDbmorW+e2VKFYabehTz+qDyFoDUK7
-         S5YseL+KwzYGbZIuTrf82fS/BlNB6RXtFlz6cIhrDlsZoGTplXRPkNHf9AEgyDMWvYjk
-         asCPnoNPNIZ+SnL1+w5dmdJmSe1VsBWZQ7x7pHdQnsJJ7l7x4pEQtlSqEmocEOn4SmJo
-         LOTg==
-X-Gm-Message-State: AOJu0YwroVHo07lneugonRmyxOQDRK+Esxu6ruWc+f2T9+DSorOvFV6z
-	zc4AEX4mUli03hGyaXB6iX55M/5b4/u8mIgZ42ZfiWQ0wT0sHhsMsE0g
-X-Gm-Gg: Acq92OEiwutOSMu3gpBWM82BShVRAcrsDAv2ie78p6TfFrUYrxqaDZez7L2VIwjnxJc
-	KWNnAfaSHKhwnpEw7fgp8aoYmglALQvW8yy8z2sPQXPxJ3P8tLVhUHqkiY2iogBUIbeoIaVulPa
-	PuuivDcHb3+JNbBfgdwj/l0TL6Wp3MBrUdjn5v9VM7TenzkBFX+R1OjlBcbJt52DErrxfV80Wn1
-	//+dbmF2y/dZP6xAv4e4ViGeVntbOIX0ETKKgryLUHPlRmzNK8iwr31phKiF2/3+EmJ7kjds98p
-	ji8IDwjdr6DE6XEgXoUE1tZpnDm9LEiYvNEdWZ5PZ9AHkqr+TuKpez4cg5FSSK+aLKEfvSVWe5k
-	0lNzGPX+twa/f4x6+ZSpnWhF/tugNh8AMB7PYbVj2mSrZhRoh3sIe4QyNQJtK5udPBezg73s5Bn
-	s8cj2VQMhjpCwEqmr7ga+CGg2x043Ygj2+6tE3OHKc3GOn3d0tcyU3wNlaKYobMFaxBE/MzDQkz
-	uH1riqM2dpo7YJExgdJsi+buxHhqh+Aq5VypJgdL8YyNmm7oHCtpud8yXgL+VHP7XZebS7gfcEt
-	ULgdePMXRNqyq2DlExY6pdmbgtNvI/VEUZOSthIrX3+HskiAi94=
-X-Received: by 2002:a5d:4bc7:0:b0:45e:f266:f4c4 with SMTP id ffacd0b85a97d-460218433c0mr4918691f8f.29.1780506776796;
-        Wed, 03 Jun 2026 10:12:56 -0700 (PDT)
+        bh=9Be/cBTIY2UtthPWGW4sFFao6/kg9emmQLSnpfKTVvo=;
+        b=iuq7yPJDgI7mRQLwnKEHUfX/OPdiWnpLcqymM/BU90E2u3Prd9YXM5sxuAWBdmxavJ
+         vLWQozmbrPKjAif7wfTeu7rfiCs1BHuHArIc9CWPNu+rlg21zbh0eQy4zcaKan4YrnyT
+         YI6MXmF1lqZiMnA29UHeVyi7uvAuTSCM6FKhkwcLJnAdTxBRziQjj18u6FDrEAuhFkff
+         wBYuN+3mh9EZ3Ve2N8zkiNUPhed9XKG/yH+cjZAckZtepmJh+BGfaWIvgoFsAgB0Z4ZI
+         Ew0ClKYm/lyYbGMgzB2tXGvAyFnAcZwluZez0CGO/ypinztoxMQ33pYvTKr8q9RResim
+         8hQA==
+X-Gm-Message-State: AOJu0YyTwrwjgM0MrsGDOD8+oG6NASJ1QMhGEFGOPL+R5qaWNKyxHZCE
+	LWDUeY3o3nXgbg+yA95Z3/p8mmnAS+ALbRLeMe0MVx5hu+bnA6XEv060
+X-Gm-Gg: Acq92OEXgoC+Z1sda41jmjOFicG1DOET8fnhT4beQgTkH0iElb+0I50uAE7J5PHIoji
+	wH3N++W7hb+oimt7LSSk67BiQ93DBYsUqQJtIyc/15BGftBDM7MdyRq5yjeyAIigfpc5IN+zgrX
+	wX2jMUt69LzyHet4qtVvcFDQxeNs2ha5PIa1nTsegPrK0OgoZC3YquVRWmlX8ComSv7q6uLRnoL
+	EJVxhBAdrB4aZNoEguuNj0/5Gj/fuNE2J+BzbMARBim6jNebp2X/6VpFwI9fwE7psRf+cNQUJDK
+	l65y+CdxJCtsabZzHZcc2X76hV1xxEH21sn08ccGTZDeLfH24UnAnONaVaH7VSFl6cGqj4O3M6Y
+	wCln0cY+938Z2BTtTBuz4MXb50IyFWQNdVJNo+XnKMmkGTjuu3yze6mB9GdB9SxEDgx7mMlgIfI
+	5f08aSOLhv291pRXONWvAUvc2LD387xPbEUmrlaORD7btfoy2joj+e5sai92t0Z7eI/85yK5p5K
+	t9VeyBNPAfD+Hhsxp812me7YWDCA3BEiBKQ8j2MVAC/V/quXqaxRFm/UrUx0WthSy28CgC42y9G
+	lLWc9bn0GMZO1aSsBvjWFdanx7sbqPhvk/slCLU7Mc/5cqDTE24=
+X-Received: by 2002:a05:600c:4ec6:b0:490:b8e2:6380 with SMTP id 5b1f17b1804b1-490b8e264c9mr57333915e9.12.1780506777445;
+        Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0:c287:187e:fb7a:66a4])
         by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 10:12:56 -0700 (PDT)
+        Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 03 Jun 2026 19:12:55 +0200
-Subject: [PATCH v5 4/8] iio: light: opt3001: localize for loop iterator
+Date: Wed, 03 Jun 2026 19:12:56 +0200
+Subject: [PATCH v5 5/8] iio: light: opt3001: prefer dev_err_probe()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +70,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260603-opt3001-cleanup-v5-4-3ef7b926d555@gmail.com>
+Message-Id: <20260603-opt3001-cleanup-v5-5-3ef7b926d555@gmail.com>
 References: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 In-Reply-To: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -81,39 +81,123 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Maxwell Doose <m32285159@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=996;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=3528;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=LykF7kDE88zomYF6W/24KVDMDse9RknyfnBW2IyXgj8=;
- b=Bvbs2pLL2mxZoNXDVpUjIR6KNtp0668oR/vrErINol1P1xY52vE+d2py1n/KTZ+RexIOfgWN8
- NZgO8rCNl0LDsjBpBu6EF7kR8yMPMG/1TXXznEvCfWSvdZNHakbfUXZ
+ bh=+qC0YWfflnYInnRf+X6ZznWVvUClte/iMms9DO3MvUo=;
+ b=OBv0spHsQfLwlI2kP+v23eUvLAlrzl19aHcpZ38EvdsT6kH7OSlrKhAMKSkQPSaULkwHrdBNz
+ GJ+d6+XltfqCk318cpX6bLm06sV7yCIoCoNVGAV/g6ZFrCtJeY8dL96
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Localize loop iterator to tighten scope and improve code style
-per checkpatch.pl report.
-
-No functional change.
+Switch driver to use dev_err_probe() to unify error messages generated
+in *_probe() and probe path functions.
 
 Reviewed-by: Maxwell Doose <m32285159@gmail.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/light/opt3001.c | 56 ++++++++++++++++++---------------------------
+ 1 file changed, 22 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 532929e8fa8b..777a54753b0c 100644
+index 777a54753b0c..fa799edd6a9c 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -226,8 +226,7 @@ static const struct opt3001_scale opt3002_scales[] = {
- static int opt3001_find_scale(const struct opt3001 *opt, int val, int val2,
- 			      u8 *exponent)
- {
--	int i;
--	for (i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
-+	for (unsigned int i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
- 		const struct opt3001_scale *scale = &(*opt->chip_info->scales)[i];
- 		/*
- 		 * Compare the integer and micro parts to determine value scale.
+@@ -706,21 +706,17 @@ static int opt3001_read_id(struct opt3001 *opt)
+ 	int ret;
+ 
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_MANUFACTURER_ID);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_MANUFACTURER_ID);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read register %02x\n",
++				     OPT3001_MANUFACTURER_ID);
+ 
+ 	manufacturer[0] = ret >> 8;
+ 	manufacturer[1] = ret & 0xff;
+ 
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_DEVICE_ID);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_DEVICE_ID);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read register %02x\n",
++				     OPT3001_DEVICE_ID);
+ 
+ 	device_id = ret;
+ 
+@@ -738,11 +734,9 @@ static int opt3001_configure(struct opt3001 *opt)
+ 	u16 reg;
+ 
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_CONFIGURATION);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read register %02x\n",
++				     OPT3001_CONFIGURATION);
+ 
+ 	reg = ret;
+ 
+@@ -766,28 +760,22 @@ static int opt3001_configure(struct opt3001 *opt)
+ 	reg &= ~OPT3001_CONFIGURATION_FC_MASK;
+ 
+ 	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to write register %02x\n",
+-			OPT3001_CONFIGURATION);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to write register %02x\n",
++				     OPT3001_CONFIGURATION);
+ 
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_LOW_LIMIT);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read register %02x\n",
++				     OPT3001_LOW_LIMIT);
+ 
+ 	opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
+ 	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret);
+ 
+ 	ret = i2c_smbus_read_word_swapped(client, OPT3001_HIGH_LIMIT);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to read register %02x\n",
+-			OPT3001_HIGH_LIMIT);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to read register %02x\n",
++				     OPT3001_HIGH_LIMIT);
+ 
+ 	opt->high_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
+ 	opt->high_thresh_exp = OPT3001_REG_EXPONENT(ret);
+@@ -894,10 +882,10 @@ static int opt3001_probe(struct i2c_client *client)
+ 		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+ 					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+ 					   "opt3001", iio);
+-		if (ret) {
+-			dev_err(dev, "failed to request IRQ #%d\n", irq);
+-			return ret;
+-		}
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "failed to request IRQ #%d\n",
++					     irq);
+ 		opt->use_irq = true;
+ 	} else {
+ 		dev_dbg(dev, "enabling interrupt-less operation\n");
 
 -- 
 2.54.0
