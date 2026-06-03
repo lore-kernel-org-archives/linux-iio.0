@@ -1,115 +1,488 @@
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5C67352F87
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:42:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3FD4481FD7;
+	Wed,  3 Jun 2026 14:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780497770; cv=none; b=H95qtOcoWQORSwpTe5pJQj1rAFLV1YY07zXN+dDN+rstV/YHXdF23dy3fZJaiuFr4izqf7VuWiJgjNfpcFyE+4PGNnlBW8UcMXb+b2g9CW8Xt0ZFgWgY1oE/vZYEU8pZmm4Q9DpmjwQTcz5qJOWW/r6UZjZv6NLhUy2CvPYsGdM=
+	t=1780497960; cv=none; b=AbeyNHPExSbp7KDY0gnXCbbufcN8HqQyhux5/DMQGLZFSSg3wqhP40AzqmPcCIRXTR+qoJs4lzgojcHNFRYoBTpxGU0H555rJmMuPqA8Nm4GC9uiVjcBuQBViC8KkdqWI3JztCQ6BdDelL80Q0/9rPqjRFiAJhgk3Ne4u63GN1U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780497770; c=relaxed/simple;
-	bh=TElSRUVHBNGTnko5oEEDBAu/L+B9LgigDWbZewSLW9w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CLGDYvFRrcoBcZD9bEIotq402ZKCdtTVv4Ad7qdClJrCHQb0F29cymQxJgLkrjTCU1tTEU0xjMcnZB7X2sHW4ggWXQ44xJLX4t7DDbfOBFG+xn48abRr07sJxhi3+86VJCykWFoDGff3t7iKyDXgNMaHPq4OxLVMmpLHCjXvNkw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nBx/fM1y; arc=none smtp.client-ip=209.85.128.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780497960; c=relaxed/simple;
+	bh=bvUVoFTdaOhr99ucnb+AI/D7yly0q6bZXf/wsQQoBSI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=mfT5sKh/TZKiqnNcYA46Y02LBHY/ZZCRmDnIudI47PDXn+Z/FdTfasZ9yj6EZ2tN0/UD4odmDVXgQQ3bAK49LDD7cxClVB6VbW7lCO+H62WoxX978Hl5wZ4XFkvl0oI8bPt25V9SrLrWNa9IBRdI8OrM1pMQQuRskZrBCodcpAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=fvse6wo3; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nBx/fM1y"
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-7e2f3646c10so49021167b3.0
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:42:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780497768; x=1781102568; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rHKWer5YzIktM08gYTN/IYle79QxK5fXHWRMtT9CjIU=;
-        b=nBx/fM1yzPAqi/VuwUplae+U9iBBMedtRsHNR0VBATfa1ALwrC/UNy+sjVLchIS+zk
-         gfTFe0j2c1gyNRDOM1A3Q7G3mTceA6br3d+eZWazFG4OkyuevsChAwRqCuHtaZXMO1v7
-         4lpw2f6GOxBTlpW8bQR/+d3kVSQEayXOv1Jkqvjosb8+KuyNp9uFCmKlv7C7KKb6byM3
-         kJNUVNxkmLxaYCH5kBW8nsml9VMMhmhDjpw0j40DE7HfdObWbdlDZJaD+YwzG7y+0KT8
-         i7RFf/88m/5vbU0L+pHbjeP11TWLpFpcBxpSKwGdDNVxjZ01ciZzV4VXbzXUv0H2POMA
-         XV9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780497768; x=1781102568;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rHKWer5YzIktM08gYTN/IYle79QxK5fXHWRMtT9CjIU=;
-        b=nbBhBK65RTTPqSWF4NwETQuJ1A7IHlELZ2eRSn7PXV5Hvg8zlwK9xQPPmkbbMaSCJ8
-         RMqdkGo3t2HuhIKED0BLUuqYeSZP0eVFNnUYc0sgzwRRv0+4RJ38sKcpqqACMoBurf1H
-         zVYDvr5ESTUItJFgou3v/XQXVsNUeHTvW0HUvTMfqqXEbDEvKf48r3HcEe7DKKJlneel
-         WYzAS7p8+Q+/zTgiwfolsMgJGjDgLaqXoKhP8oHcHhhbJ7dEdNZ/zILlwsgXeAJ3CnF3
-         FaJDOvp0JKuwEMWWNElB7PSd34wfo4TGMIme7ZcsgxUmTXb/513AK585v7Gr72BVv1JL
-         p3XQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+IoFRCLYVRS9r1C74ayohQYH0a3ZA1mY+8qW1EF3GYldOgS1VTvv/Egf6rIjxKAfQkoPsiumlWNTc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8WdqP//fru/BTRszMhQfDZ2UA3oEsd1ogcNSU2YuRmuNFla91
-	8Jno0GoP6PMRenhQS9qlR5v3odlN00U719Kh16XHF0VisYrXhMBSd4to
-X-Gm-Gg: Acq92OH1hICh4+XAqlpIEJxZiO6Qq3G2dHymRW4nh8FRetlAIze/e4H7klRL5Acr1xv
-	xF7qb7UiYlcoiZl43mi4AK5OV59EY7Q/K75V1rYzJ2Q/BmUSginpKQgpYO0GY0uuvBpFbwE0QVG
-	qZuoYuIM1JcEurxg65C+WSedoufsyw5L6osjSPcpk4V56Ja46ZwClgV8ErxmFp9as3U466zAvh1
-	rcF4EllMXt37/NqLEOrT9Spd/HcNBOtIK8G8Oar3SalOW0NFldpTXF/B7IbM+i8mY7Bxw78zT4g
-	D3fAqA0b85qC4+xd8ZiyBVdGKbiaeaDyuyrXdHpqL8tJvJT0Jgz1MmTlUfgL8U0uAZSiyuI1+Fh
-	nQNRlb3vppI0QhdSINtSR/OixZ4hQXvPyEj+3hoFNDtJfY9sQ+sPIa6hHxC12KsjtKY0bIWGRbX
-	iHXMQ5D+EloLO9QbisH/wgCc7cwjyWugzq6Njfo7bMbI4vNVFgnSdtYw==
-X-Received: by 2002:a05:690c:6806:b0:7d0:261a:692 with SMTP id 00721157ae682-7ea4b7e7289mr36006357b3.44.1780497767939;
-        Wed, 03 Jun 2026 07:42:47 -0700 (PDT)
-Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7ea2148b48fsm17466527b3.12.2026.06.03.07.42.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 07:42:46 -0700 (PDT)
-Date: Wed, 3 Jun 2026 11:43:14 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S
- liquid flow sensor
-Message-ID: <aiA9gjJzWuX6taWv@debian-BULLSEYE-live-builder-AMD64>
-References: <20260530205435.37326-1-wafgo01@gmail.com>
- <20260530205435.37326-3-wafgo01@gmail.com>
- <ahxzpBcqN6o6q4a4@debian-BULLSEYE-live-builder-AMD64>
- <20260602-slf3s-v3-reply-08-wafgo01@gmail.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="fvse6wo3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1780497958; x=1812033958;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=bvUVoFTdaOhr99ucnb+AI/D7yly0q6bZXf/wsQQoBSI=;
+  b=fvse6wo3sya4MOBqwESU29AQt+MYf0hGxlLfRbBxG2Uk9glAsFRGnp+s
+   /KUnHJ+6Wbb+4EmEIGIuVAImsLNd+7S1CJvX9UiTS2QLB+1U9vgaKE5JX
+   SjXWJkg/k/hSZXPT8QeIsg6jv1GWRWTI+hYok8sSouIAkHdRIs8/R7gJ3
+   OIA89ARPuTZYcy9lIejx1cwoyA2rTFDnwHegi0j48reVKBBkLpfQ4YWZO
+   quKbMdeA24HR7idNbOb0LiK7Pf8o7UJ9bF6Hg9ZkwM8j/f1FC6StaiRan
+   i8sehcPIbtoGz9E8meL2goY/9Cxnv/eWxOuDd8cRDT8X84P8R0f4iHSxR
+   w==;
+X-CSE-ConnectionGUID: I28YAzSmQle6rT5xDVWIHQ==
+X-CSE-MsgGUID: xgMWgf5vTrKjZnF/6x6Vqw==
+X-IronPort-AV: E=Sophos;i="6.24,185,1774335600"; 
+   d="scan'208";a="58944498"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 03 Jun 2026 07:44:55 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Wed, 3 Jun 2026 07:44:54 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Wed, 3 Jun 2026 07:44:52 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Date: Wed, 3 Jun 2026 17:44:48 +0300
+Subject: [PATCH v3] iio: dac: mcp47feb02: Fix passing uninitialized
+ vref1_uV for no Vref1 case
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260602-slf3s-v3-reply-08-wafgo01@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260603-mcp47feb02-fix4-v3-1-ed09975cad15@microchip.com>
+X-B4-Tracking: v=1; b=H4sIAN89IGoC/3XNywrCMBCF4VcpWRtJpulFV76HuMhlYmfRpiQSl
+ NJ3N+1KFJf/gflmYQkjYWLnamERMyUKU4n6UDE76OmOnFxpBgJaoaTio51V59EI4J6eirdSOTz
+ VtfIArFzNEcu+i9db6YHSI8TX/iDLbf1vZcklP7lOGu28gwYvI9kY7EDz0YaRbV6GDwPErwHF6
+ E3X9Kh1b6z/NtZ1fQNV//G09gAAAA==
+X-Change-ID: 20260414-mcp47feb02-fix4-614de9334f22
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>
+CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Dan Carpenter
+	<error27@gmail.com>, Ariana Lazar <ariana.lazar@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780497891; l=13959;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=bvUVoFTdaOhr99ucnb+AI/D7yly0q6bZXf/wsQQoBSI=;
+ b=GXZxmwl2n4/MYepPgJwu7cBpCseca3tjc83S5TnRng664XtftawkG7tWEWwWdAYGOqzh6yg5d
+ 6SaUstJMf98Ce8wyMD7e9+Uq9t/3m/+pmP707hpYCcTcZCE2phERMKa
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-On 06/03, Wadim Mueller wrote:
-> On Sun, 31 May 2026 14:45:08 -0300
-> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
-> 
-> > We could add a mention to the IRQ pin to make the doc more complete.
-> >   interrupts:
-> >     maxItems: 1
-> 
-> I would let interrupts out for now. The driver is polled and in v2 the
-> feedback was to not put properties in the binding which we do not use. If
-> later a board uses the IRQ pin we can add it. Ok for you?
-> 
+Ensure that if a device has Vref1 but reading the regulator returns an
+error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
+vref1_uV value.
 
-Well, okay for me. I suggested that because of the guidelines for dt-bindings [1].
+Also add a device_property_present() check for the Vref1 supply before
+reading the regulator.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/writing-bindings.rst?h=v7.1-rc6#n17
+Fixes: dd154646d292 ("iio: dac: mcp47feb02: Fix Vref validation [1-999] case")
+Reported-by: Dan Carpenter <error27@gmail.com>
+Closes: https://lore.kernel.org/all/adiPnla0M5EzvgD-@stanley.mountain/
 
-Though, TBH, I'm also frequently tempted to leave interrupt properties out of
-bindings. It's not uncommon to have IIO drivers that don't support interrupt
-lines and, for those cases, having to describe the interrupts in dt ends up
-becoming just an extra task. Even though I don't know/recall the reason why dt
-maintainers have such guideline, they probably have a good reason to have that
-(right?). If the guidance has changed, then maybe we can update the guidelines
-for writing bindings?
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+---
+Changes in v3:
+- Handle mismatch between vref modes at power up and enable regulator
+   only after the user corrects it.
+- Link to v2: https://lore.kernel.org/r/20260420-mcp47feb02-fix4-v2-1-8b758eaa8bcf@microchip.com
 
-With best regards,
-Marcelo
+Changes in v2:
+- return the reading regulator error to not use vref1_uV uninitialized in
+   mcp47feb02_init_ctrl_regs() call 
+- add device_property_present() check for the Vref1
+- Link to v1: https://lore.kernel.org/r/20260414-mcp47feb02-fix4-v1-1-9d71badfd25e@microchip.com
+---
+ drivers/iio/dac/mcp47feb02.c | 245 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 202 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
+index faccb804a5ed548088aaf83266b16ed45a92916c..09eab829b1b57c7a794bbac2dee581cb1fad575f 100644
+--- a/drivers/iio/dac/mcp47feb02.c
++++ b/drivers/iio/dac/mcp47feb02.c
+@@ -68,6 +68,11 @@
+ #define MCP47FEB02_INTERNAL_BAND_GAP_uV			2440000
+ #define NV_DAC_ADDR_OFFSET				0x10
+ 
++#define MCP47FEB02_VDD_VOLTAGE_REFERENCE "Device VDD"
++#define MCP47FEB02_INTERNAL_BAND_GAP_VOLTAGE_REFERENCE "Internal Band Gap"
++#define MCP47FEB02_PRIMARY_VOLTAGE_REFERENCE "External VREF pin"
++#define MCP47FEB02_SECOND_VOLTAGE_REFERENCE "External VREF1 pin"
++
+ enum mcp47feb02_vref_mode {
+ 	MCP47FEB02_VREF_VDD = 0,
+ 	MCP47FEB02_INTERNAL_BAND_GAP = 1,
+@@ -307,6 +312,7 @@ static const struct mcp47feb02_features mcp47fvb28_chip_features = {
+  * @powerdown: is false if the channel is in normal operation mode
+  * @powerdown_mode: selected power-down mode
+  * @dac_data: dac value
++ * @ref_mismatch: true if the restored register configuration is different from the device tree one
+  */
+ struct mcp47feb02_channel_data {
+ 	u8 ref_mode;
+@@ -314,6 +320,7 @@ struct mcp47feb02_channel_data {
+ 	bool powerdown;
+ 	u8 powerdown_mode;
+ 	u16 dac_data;
++	bool ref_mismatch;
+ };
+ 
+ /**
+@@ -326,11 +333,15 @@ struct mcp47feb02_channel_data {
+  * @active_channels_mask: enabled channels
+  * @regmap: regmap for directly accessing device register
+  * @labels: table with channels labels
++ * @vref1_reg: Vref1 regulator to be enabled after correcting reference mismatch
++ * @vref_reg: Vref/Vref0 regulator to be enabled after correcting reference mismatch
+  * @phys_channels: physical channels on the device
+  * @vref1_buffered: Vref1 buffer is enabled
+  * @vref_buffered: Vref/Vref0 buffer is enabled
+  * @use_vref1: vref1-supply is defined
+  * @use_vref: vref-supply is defined
++ * @vref1_enabled: true if Vref1 regulator has been enabled
++ * @vref_enabled: true if Vref/Vref0 regulator has been enabled
+  */
+ struct mcp47feb02_data {
+ 	struct mcp47feb02_channel_data chdata[MCP47FEB02_MAX_CH];
+@@ -341,11 +352,15 @@ struct mcp47feb02_data {
+ 	unsigned long active_channels_mask;
+ 	struct regmap *regmap;
+ 	const char *labels[MCP47FEB02_MAX_CH];
++	struct regulator *vref_reg;
++	struct regulator *vref1_reg;
+ 	u16 phys_channels;
+ 	bool vref1_buffered;
+ 	bool vref_buffered;
+ 	bool use_vref1;
+ 	bool use_vref;
++	bool vref1_enabled;
++	bool vref_enabled;
+ };
+ 
+ static const struct regmap_range mcp47feb02_readable_ranges[] = {
+@@ -798,6 +813,48 @@ static int mcp47feb02_check_scale(struct mcp47feb02_data *data, int val, int val
+ 	return -EINVAL;
+ }
+ 
++static void mcp47feb02_regulator_disable(void *d)
++{
++	struct regulator *reg = (struct regulator *)d;
++
++	if (reg)
++		regulator_disable(reg);
++}
++
++static bool mcp47feb02_ref_mismatch(struct mcp47feb02_data *data, unsigned int ch)
++{
++	bool use_vref, use_bandgap;
++
++	if (data->chdata[ch].ref_mode == MCP47FEB02_VREF_VDD)
++		return false;
++
++	use_vref = (data->phys_channels >= 4 && (ch % 2)) ?  data->use_vref1 : data->use_vref;
++	use_bandgap = (data->chdata[ch].ref_mode == MCP47FEB02_INTERNAL_BAND_GAP);
++
++	return use_vref == use_bandgap;
++}
++
++static int mcp47feb02_enable_reg(struct mcp47feb02_data *data, struct regulator *reg, bool *enabled)
++{
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
++
++	if (*enabled)
++		return 0;
++
++	ret = regulator_enable(reg);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
++
++	ret = devm_add_action_or_reset(dev, mcp47feb02_regulator_disable, reg);
++	if (ret)
++		return ret;
++
++	*enabled = true;
++
++	return 0;
++}
++
+ static int mcp47feb02_ch_scale(struct mcp47feb02_data *data, int ch, int scale)
+ {
+ 	int tmp_val, ret;
+@@ -806,6 +863,10 @@ static int mcp47feb02_ch_scale(struct mcp47feb02_data *data, int ch, int scale)
+ 		tmp_val = MCP47FEB02_VREF_VDD;
+ 	} else if (data->phys_channels >= 4 && (ch % 2)) {
+ 		if (data->use_vref1) {
++			ret = mcp47feb02_enable_reg(data, data->vref1_reg, &data->vref1_enabled);
++			if (ret)
++				return ret;
++
+ 			if (data->vref1_buffered)
+ 				tmp_val = MCP47FEB02_EXTERNAL_VREF_BUFFERED;
+ 			else
+@@ -814,6 +875,10 @@ static int mcp47feb02_ch_scale(struct mcp47feb02_data *data, int ch, int scale)
+ 			tmp_val = MCP47FEB02_INTERNAL_BAND_GAP;
+ 		}
+ 	} else if (data->use_vref) {
++		ret = mcp47feb02_enable_reg(data, data->vref_reg, &data->vref_enabled);
++			if (ret)
++				return ret;
++
+ 		if (data->vref_buffered)
+ 			tmp_val = MCP47FEB02_EXTERNAL_VREF_BUFFERED;
+ 		else
+@@ -828,6 +893,7 @@ static int mcp47feb02_ch_scale(struct mcp47feb02_data *data, int ch, int scale)
+ 		return ret;
+ 
+ 	data->chdata[ch].ref_mode = tmp_val;
++	data->chdata[ch].ref_mismatch = false;
+ 
+ 	return 0;
+ }
+@@ -872,6 +938,16 @@ static int mcp47feb02_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec c
+ 	struct mcp47feb02_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
++	guard(mutex)(&data->lock);
++
++	/*
++	 * The reference mode restored from EEPROM may not match the current
++	 * device tree configuration. Access will be allowed after a matching
++	 * scale is written by the user.
++	 */
++	if (data->chdata[ch->address].ref_mismatch)
++		return -EBUSY;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		ret = regmap_read(data->regmap, REG_ADDR(ch->address), val);
+@@ -896,6 +972,12 @@ static int mcp47feb02_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
++		/*
++		 * Allow only scale write operation until reference mismatch is corrected.
++		 */
++		if (data->chdata[ch->address].ref_mismatch)
++			return -EBUSY;
++
+ 		ret = regmap_write(data->regmap, REG_ADDR(ch->address), val);
+ 		if (ret)
+ 			return ret;
+@@ -1034,36 +1116,67 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
+ 		 * In order to overwrite the setting from volatile register with the one from the
+ 		 * device tree, the user needs to write the chosen scale.
+ 		 */
+-		switch (data->chdata[i].ref_mode) {
+-		case MCP47FEB02_INTERNAL_BAND_GAP:
+-			if (data->phys_channels >= 4 && (i % 2) && data->use_vref1) {
+-				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
+-				dev_dbg(dev, "ch[%u]: reference voltage set to VREF1", i);
+-				break;
+-			}
+-			if ((data->phys_channels < 4 || (data->phys_channels >= 4 && !(i % 2))) &&
+-			    data->use_vref) {
+-				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
+-				dev_dbg(dev, "ch[%u]: reference voltage set to VREF", i);
+-				break;
++		data->chdata[i].ref_mismatch = mcp47feb02_ref_mismatch(data, i);
++		if (data->chdata[i].ref_mismatch) {
++			unsigned int ref_mode = data->chdata[i].ref_mode;
++			const char *restored_vref;
++			const char *dt_vref;
++
++			if (ref_mode == MCP47FEB02_VREF_VDD) {
++				restored_vref = MCP47FEB02_VDD_VOLTAGE_REFERENCE;
++			} else if (ref_mode == MCP47FEB02_INTERNAL_BAND_GAP) {
++				restored_vref = MCP47FEB02_INTERNAL_BAND_GAP_VOLTAGE_REFERENCE;
++			} else if ((ref_mode == MCP47FEB02_EXTERNAL_VREF_UNBUFFERED ||
++				ref_mode == MCP47FEB02_EXTERNAL_VREF_BUFFERED) &&
++				data->phys_channels >= 4 && (i % 2)) {
++				restored_vref = MCP47FEB02_SECOND_VOLTAGE_REFERENCE;
++			} else {
++				restored_vref = MCP47FEB02_PRIMARY_VOLTAGE_REFERENCE;
+ 			}
+-			break;
+-		case MCP47FEB02_EXTERNAL_VREF_UNBUFFERED:
+-		case MCP47FEB02_EXTERNAL_VREF_BUFFERED:
+-			if (data->phys_channels >= 4 && (i % 2) && !data->use_vref1) {
+-				dev_dbg(dev, "ch[%u]: was configured to use VREF1", i);
+-				dev_dbg(dev,
+-					"ch[%u]: reference voltage set to internal band gap", i);
+-				break;
+-			}
+-			if ((data->phys_channels < 4 || (data->phys_channels >= 4 && !(i % 2))) &&
+-			    !data->use_vref) {
+-				dev_dbg(dev, "ch[%u]: was configured to use VREF", i);
+-				dev_dbg(dev,
+-					"ch[%u]: reference voltage set to internal band gap", i);
+-				break;
++
++			if (data->phys_channels >= 4 && (i % 2))
++				if (data->use_vref1)
++					dt_vref = MCP47FEB02_SECOND_VOLTAGE_REFERENCE;
++				else
++					dt_vref = MCP47FEB02_INTERNAL_BAND_GAP_VOLTAGE_REFERENCE;
++			else
++				if (data->use_vref)
++					dt_vref = MCP47FEB02_PRIMARY_VOLTAGE_REFERENCE;
++				else
++					dt_vref = MCP47FEB02_INTERNAL_BAND_GAP_VOLTAGE_REFERENCE;
++
++			dev_info(dev, "ch[%u]: restored configuration uses %s\n",
++				 i, restored_vref);
++			dev_info(dev,
++				 "ch[%u]: currently selected vref will not be in scale_available\n",
++				 i);
++			dev_info(dev, "ch[%u]: DT describes %s as the available reference source\n",
++				 i, dt_vref);
++		} else if (data->chdata[i].ref_mode == MCP47FEB02_EXTERNAL_VREF_UNBUFFERED ||
++			   data->chdata[i].ref_mode == MCP47FEB02_EXTERNAL_VREF_BUFFERED) {
++			unsigned int reg_vref;
++			bool is_buf;
++
++			if (data->phys_channels >= 4 && (i % 2))
++				is_buf = data->vref1_buffered;
++			else
++				is_buf = data->vref_buffered;
++
++			if (is_buf)
++				reg_vref = MCP47FEB02_EXTERNAL_VREF_BUFFERED;
++			else
++				reg_vref = MCP47FEB02_EXTERNAL_VREF_UNBUFFERED;
++
++			if (data->chdata[i].ref_mode != reg_vref) {
++				ret = regmap_update_bits(data->regmap, MCP47FEB02_VREF_REG_ADDR,
++							 DAC_CTRL_MASK(i),
++							 DAC_CTRL_VAL(i, reg_vref));
++				if (ret)
++					return ret;
++
++				data->chdata[i].ref_mode = reg_vref;
++				dev_info(dev, "Mismatch buffer property for ch[%u]\n", i);
+ 			}
+-			break;
+ 		}
+ 
+ 		pd_tmp = (pd_ch >> (2 * i)) & MCP47FEB02_DAC_CTRL_MASK;
+@@ -1091,11 +1204,35 @@ static int mcp47feb02_init_ch_scales(struct mcp47feb02_data *data, int vdd_uV,
+ 	return 0;
+ }
+ 
++static int mcp47feb02_try_enable_reg(struct mcp47feb02_data *data)
++{
++	unsigned int i;
++	int ret;
++
++	for_each_set_bit(i, &data->active_channels_mask, data->phys_channels) {
++		if (data->chdata[i].ref_mismatch)
++			continue;
++
++		if (data->chdata[i].ref_mode < MCP47FEB02_EXTERNAL_VREF_UNBUFFERED)
++			continue;
++
++		if (data->phys_channels >= 4 && (i % 2))
++			ret = mcp47feb02_enable_reg(data, data->vref1_reg, &data->vref1_enabled);
++		else
++			ret = mcp47feb02_enable_reg(data, data->vref_reg, &data->vref_enabled);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
+ static int mcp47feb02_probe(struct i2c_client *client)
+ {
+ 	const struct mcp47feb02_features *chip_features;
+ 	struct device *dev = &client->dev;
+ 	struct mcp47feb02_data *data;
++	struct regulator *vref_reg;
+ 	struct iio_dev *indio_dev;
+ 	int vref1_uV, vref_uV, vdd_uV, ret;
+ 
+@@ -1136,32 +1273,54 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 
+ 	vdd_uV = ret;
+ 
+-	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+-	if (ret > 0) {
+-		vref_uV = ret;
+-		data->use_vref = true;
++	if (device_property_present(dev, "vref-supply")) {
++		vref_reg = devm_regulator_get(dev, "vref");
++		if (IS_ERR(vref_reg))
++			return PTR_ERR(vref_reg);
++
++		data->vref_reg = vref_reg;
++
++		vref_uV = regulator_get_voltage(vref_reg);
++		if (vref_uV < 0)
++			return vref_uV;
++
++		if (vref_uV > 0)
++			data->use_vref = true;
++		else
++			dev_dbg(dev, "Vref is 0 uV, internal band gap will be used.\n");
+ 	} else {
+ 		vref_uV = 0;
+-		dev_dbg(dev, "using internal band gap as voltage reference.\n");
+-		dev_dbg(dev, "Vref is unavailable.\n");
++		dev_dbg(dev, "Using internal band gap as voltage reference.\n");
+ 	}
+ 
+-	if (chip_features->have_ext_vref1) {
+-		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
+-		if (ret > 0) {
+-			vref1_uV = ret;
++	if (chip_features->have_ext_vref1 && device_property_present(dev, "vref1-supply")) {
++		vref_reg = devm_regulator_get(dev, "vref1");
++		if (IS_ERR(vref_reg))
++			return PTR_ERR(vref_reg);
++
++		data->vref1_reg = vref_reg;
++
++		vref1_uV = regulator_get_voltage(vref_reg);
++		if (vref1_uV < 0)
++			return vref1_uV;
++
++		if (vref1_uV > 0)
+ 			data->use_vref1 = true;
+-		} else {
+-			vref1_uV = 0;
+-			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
+-			dev_dbg(dev, "Vref1 is unavailable.\n");
+-		}
++		else
++			dev_dbg(dev, "Vref1 is 0 uV, internal band gap will be used.\n");
++	} else {
++		vref1_uV = 0;
++		dev_dbg(dev, "Using internal band gap as voltage reference 1.\n");
+ 	}
+ 
+ 	ret = mcp47feb02_init_ctrl_regs(data);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Error initialising vref register\n");
+ 
++	ret = mcp47feb02_try_enable_reg(data);
++	if (ret)
++		return ret;
++
+ 	ret = mcp47feb02_init_ch_scales(data, vdd_uV, vref_uV, vref1_uV);
+ 	if (ret)
+ 		return ret;
+
+---
+base-commit: 51e7665ab81f02adc80a1219c260ee678e9c6eb8
+change-id: 20260414-mcp47feb02-fix4-614de9334f22
+
+Best regards,
+-- 
+Ariana Lazar <ariana.lazar@microchip.com>
+
