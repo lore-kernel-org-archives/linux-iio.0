@@ -1,68 +1,67 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4FC4657C0
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0574779B3
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780506779; cv=none; b=EPzawsvYNOOxlCFIG8SsDiq7flJrxnGjg+54n+miatyCO9zef3rw4Znw1EyEznJKlQOMB7T2HJ7B1f+wpwgacg62HFk8F5xho9orQGBf0K0IJiJRrXgDaO33N3SsJYaTZUPVwbfGOrpvpCrKYofq2zAOcU63LVfBtVc+Siv/Jis=
+	t=1780506780; cv=none; b=QHptmKQdhtUWIvd1bP9lMMGkOdAZ/sIcUY5E9BeW88rooiqooUSs/W/wXoD5dX9ZNYChM98Mi8jxQVFaVF1lIc+NCO8hUHeG4/UDMFJo3kCD2+YFs1M+bYiClfCICUi8yU70bGK2aBE7aACgK6T1R4PsBntp7lQnhJhKgwGD1Jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780506779; c=relaxed/simple;
-	bh=QeWJCZvpTY5nLADABMkjfcMoywKp5RzEV7WCG0/i08U=;
+	s=arc-20240116; t=1780506780; c=relaxed/simple;
+	bh=LykF7kDE88zomYF6W/24KVDMDse9RknyfnBW2IyXgj8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rWVS8f2Iqa4Y56e1w7QUzfiIw971FBIj7v5ziDy4SzhBPnfS1PTRyQMiAn+DX+MefX73vAIY+PugO+oPaMQZxyjxOE3VYdOlguE3eqw0vgBLaRmlQMXKZ/cmlZFMqdOB1GfoQWyoSf7NHM47mSfjplk2LPr+Vg6CzURxyFW50/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=euA/QbeI; arc=none smtp.client-ip=209.85.221.49
+	 In-Reply-To:To:Cc; b=VHxTYQEldEWgWqmI+gndURqRZR4TqXUMa9CEjoKjQylaUiEbooMvvyA+9jZ6Qod2XriKaoXvEsrPOiE2vgtRYIlkIlMg8G2A8UnjTNmZcDKLNN2lmtgUDG4Ld2K5Nr2gjWERhK4wlh0f4EVQCy3x1KGNTAABu2O05kgatNaGItc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BBywPZmY; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="euA/QbeI"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-45eeba68948so5150555f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BBywPZmY"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-45ef1629ff4so4413364f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780506776; x=1781111576; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780506777; x=1781111577; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FOMRBHKYKTsxlDpldBhhYcBNx5WxuRJUnFPdfKzqslI=;
-        b=euA/QbeIvsBYNp8cDGvi8L69Aanj9LOSSLQhMCldsxUR32aKDpAmWE+RhAJVjVInlp
-         hJO6ENnwm9L6aE394ikERTWRjch4QcYiTDUWxSjwfBqHI5X/Dc3476tUyiKw1UAvVhQ7
-         gPGhZ8a6NTFDwcGelnkMsdv0Y6lASzzGBav1zUrSz/roeV/6VVw0lMGNKrocDT9b3WXO
-         Xx3eaB7uaF+2X1ZMjmw1QrYqtXbuj72lzK9AXK90/rYHbOLsi0l99Fizdj9RQ92OF4zU
-         er0ULasieloizhsxX30ErLngXwMyumuojkDzx0jNlc9JQq445YRX41nF0MHGJllayAX4
-         cXmw==
+        bh=4BYCzX7AdlAVMBcwi37iulKK+FCsXHV5sM1hbNOOcUo=;
+        b=BBywPZmYAXfZiGOSxxLx7PuWvjggXqbhCaRnK/oNRZoUzvyQ0yi6k4ljswqWtAstVa
+         wxMxIEQelKlibGVQZvFAClGAqeN5MqtgBowrseRCKDUU7sAm5Sa6d60SlDbrVpSKPgc4
+         48jUBzD3RPXBXxXdiL7CkUsulH3oybHLsNwDPcSwo3ZX3nq0b4X+3yThMvXxTTaM++6T
+         fY4HLdEMWr0DDYd2UH7Ut7BfUj6tLkfVzt3VWYQwa62uXmhBKOP8XBA6mdJkkc+RO+g8
+         q0u0+Un/WwLJi3zvhXpFVPeHX+r2BDmXdB0Rx2qjlqOcN8VqlnTC2QxHC8fJ1VcFtlPs
+         VaSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780506776; x=1781111576;
+        d=1e100.net; s=20251104; t=1780506777; x=1781111577;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=FOMRBHKYKTsxlDpldBhhYcBNx5WxuRJUnFPdfKzqslI=;
-        b=GlOj/CY5qgtl7Cujn0RyYlrlhxKnMv5KdszVVZ9Wtt2UkbbICXqdon1851QDa9VqeN
-         hCteZATQeB6/r9BVOx4CYr4hdhTF7rm8MKf8KlhG4TfkFCjZiWOgoFBkzU/X5Bo/esDT
-         1WoCIQ6qTC9PBs4RO5F0qTUJWpfTUm3oIGBPiphQS3YM3KqfSlr0Cx7cz9xvDCm0mD/X
-         uoF4b0kR7zel9P4239YT7XUvks244cZu9S5SiNTW5vZHWkykDHoskKb70HenfD/sglIx
-         bCxR85fj6ky9fbxGlmRlhhNcjzfL/8lDqosW/RLrOIZRYJ3lb85+zbLxvOfDUr5FIfRF
-         cm6A==
-X-Gm-Message-State: AOJu0Ywzw5rEh7xflsPheHxXOC4V/5gjvpJWlKu//osLxFecPe7dlHbc
-	65BYrNimaIIaU9CPz6/7Yiy9wylJQ8K8f+er1Tw48qLliRDlMQNmR/Gk
-X-Gm-Gg: Acq92OH34hCIxrcGx2fFiya3CIO/Mog6pfPsMBP4T0TYJsOhNqybKFppDvpUQrlFQVX
-	WKnx6PIBEQPy9KqxGci1g/wTjvgTlLlS2c/hWQEeVhjbhc9/J0uT5feSpOoBakNoWe0KT83030p
-	twP3c2mY2u25U9Fo4OKrGDp7qUbdjkja/TUkZo8ehAEcwTmdMTB2HkhIB1PRUBnd/kzShMc/Wqi
-	5NKk7BVggYhgZ1e9aY0uW/k3z8h3X5OWaQorPIcj/En1MW2P4xRaZ/HmqCJhT4cK61kLAsfj0ur
-	afOeLNck9CkpvdZobMXS+xavasYI20w8vo0vIprjOl88Jg05LSXiVAT2ylj4QPc/xLXqr0kmzAl
-	WkDvjMhaYfFDP1FirrZ2CJs8m6d1xwp05F9Eziy+e2R9b8uN02fY7dP/Qm5HolYRkCUsIp6/5d8
-	NIHVnYEIF1yAZWjm8+aTx0PSUEHZEllDNa1auNrV5JMyGIrJ7c8vb46oB74SvbedMWV3My8OhcM
-	QgKICn9ED8pmlsfpo02GnPqoKxly9NCP+hwlazDRWJzlzxkxdFile4Ho7vKg7a80Urnic2YlsOW
-	4tjxJJkfmMQpE2BfpmNz2Kb3QWucGiXR8U/VOiSLgMiTuZ94bZ8=
-X-Received: by 2002:a5d:5710:0:b0:453:e3a1:6580 with SMTP id ffacd0b85a97d-46021844ce7mr4854446f8f.25.1780506776224;
+        bh=4BYCzX7AdlAVMBcwi37iulKK+FCsXHV5sM1hbNOOcUo=;
+        b=VY3R5PfzS97wAj5BjRCITS90QsWZkhep0oUB71OwRdZZi/8a0+NJTjCakYSCO5Zcol
+         aV1ArCOJycXNfkccN49Sdz8Ts+8D0eOkua3RQM0lfgjHvHJxtDCCPr4fka0TAbNUM0JV
+         OC1sUlmHDKtHzTgPrJiRPHGrHwZfYa9WfenyuWvDbmorW+e2VKFYabehTz+qDyFoDUK7
+         S5YseL+KwzYGbZIuTrf82fS/BlNB6RXtFlz6cIhrDlsZoGTplXRPkNHf9AEgyDMWvYjk
+         asCPnoNPNIZ+SnL1+w5dmdJmSe1VsBWZQ7x7pHdQnsJJ7l7x4pEQtlSqEmocEOn4SmJo
+         LOTg==
+X-Gm-Message-State: AOJu0YwroVHo07lneugonRmyxOQDRK+Esxu6ruWc+f2T9+DSorOvFV6z
+	zc4AEX4mUli03hGyaXB6iX55M/5b4/u8mIgZ42ZfiWQ0wT0sHhsMsE0g
+X-Gm-Gg: Acq92OEiwutOSMu3gpBWM82BShVRAcrsDAv2ie78p6TfFrUYrxqaDZez7L2VIwjnxJc
+	KWNnAfaSHKhwnpEw7fgp8aoYmglALQvW8yy8z2sPQXPxJ3P8tLVhUHqkiY2iogBUIbeoIaVulPa
+	PuuivDcHb3+JNbBfgdwj/l0TL6Wp3MBrUdjn5v9VM7TenzkBFX+R1OjlBcbJt52DErrxfV80Wn1
+	//+dbmF2y/dZP6xAv4e4ViGeVntbOIX0ETKKgryLUHPlRmzNK8iwr31phKiF2/3+EmJ7kjds98p
+	ji8IDwjdr6DE6XEgXoUE1tZpnDm9LEiYvNEdWZ5PZ9AHkqr+TuKpez4cg5FSSK+aLKEfvSVWe5k
+	0lNzGPX+twa/f4x6+ZSpnWhF/tugNh8AMB7PYbVj2mSrZhRoh3sIe4QyNQJtK5udPBezg73s5Bn
+	s8cj2VQMhjpCwEqmr7ga+CGg2x043Ygj2+6tE3OHKc3GOn3d0tcyU3wNlaKYobMFaxBE/MzDQkz
+	uH1riqM2dpo7YJExgdJsi+buxHhqh+Aq5VypJgdL8YyNmm7oHCtpud8yXgL+VHP7XZebS7gfcEt
+	ULgdePMXRNqyq2DlExY6pdmbgtNvI/VEUZOSthIrX3+HskiAi94=
+X-Received: by 2002:a5d:4bc7:0:b0:45e:f266:f4c4 with SMTP id ffacd0b85a97d-460218433c0mr4918691f8f.29.1780506776796;
         Wed, 03 Jun 2026 10:12:56 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0:c287:187e:fb7a:66a4])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.55
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 03 Jun 2026 10:12:56 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 03 Jun 2026 19:12:54 +0200
-Subject: [PATCH v5 3/8] iio: light: opt3001: ensure correct parenthesis
- alignment
+Date: Wed, 03 Jun 2026 19:12:55 +0200
+Subject: [PATCH v5 4/8] iio: light: opt3001: localize for loop iterator
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,7 +70,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260603-opt3001-cleanup-v5-3-3ef7b926d555@gmail.com>
+Message-Id: <20260603-opt3001-cleanup-v5-4-3ef7b926d555@gmail.com>
 References: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 In-Reply-To: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -80,194 +79,41 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
  Maxwell Doose <m32285159@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=6428;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=996;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=QeWJCZvpTY5nLADABMkjfcMoywKp5RzEV7WCG0/i08U=;
- b=JFvRNsROi1QB5Q7e5g6wFAj9uvKmkfk3y3pDYgTT22sBva2hn4sTvto6WkxTJJ6CJAlwvlhXz
- LNI2qAyAvFPDpW/wIENxfauegoiK17f0fuyu/Lphaz2W1qK1MU69Mf1
+ bh=LykF7kDE88zomYF6W/24KVDMDse9RknyfnBW2IyXgj8=;
+ b=Bvbs2pLL2mxZoNXDVpUjIR6KNtp0668oR/vrErINol1P1xY52vE+d2py1n/KTZ+RexIOfgWN8
+ NZgO8rCNl0LDsjBpBu6EF7kR8yMPMG/1TXXznEvCfWSvdZNHakbfUXZ
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Ensure correct parenthesis alignment per checkpatch.pl report.
+Localize loop iterator to tighten scope and improve code style
+per checkpatch.pl report.
 
 No functional change.
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Maxwell Doose <m32285159@gmail.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 73 +++++++++++++++++++++++++--------------------
- 1 file changed, 41 insertions(+), 32 deletions(-)
+ drivers/iio/light/opt3001.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index efaad85dfaf3..532929e8fa8b 100644
+index 532929e8fa8b..777a54753b0c 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -223,8 +223,8 @@ static const struct opt3001_scale opt3002_scales[] = {
- 	},
- };
- 
--static int opt3001_find_scale(const struct opt3001 *opt, int val,
--		int val2, u8 *exponent)
-+static int opt3001_find_scale(const struct opt3001 *opt, int val, int val2,
-+			      u8 *exponent)
+@@ -226,8 +226,7 @@ static const struct opt3001_scale opt3002_scales[] = {
+ static int opt3001_find_scale(const struct opt3001 *opt, int val, int val2,
+ 			      u8 *exponent)
  {
- 	int i;
- 	for (i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
-@@ -242,8 +242,8 @@ static int opt3001_find_scale(const struct opt3001 *opt, int val,
- 	return -EINVAL;
- }
- 
--static void opt3001_to_iio_ret(struct opt3001 *opt, u8 exponent,
--		u16 mantissa, int *val, int *val2)
-+static void opt3001_to_iio_ret(struct opt3001 *opt, u8 exponent, u16 mantissa,
-+			       int *val, int *val2)
- {
- 	int ret;
- 	int whole = opt->chip_info->factor_whole;
-@@ -364,8 +364,8 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
- 	if (opt->use_irq) {
- 		/* Wait for the IRQ to indicate the conversion is complete */
- 		ret = wait_event_timeout(opt->result_ready_queue,
--				opt->result_ready,
--				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
-+					 opt->result_ready,
-+					 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
- 		if (ret == 0)
- 			return -ETIMEDOUT;
- 	} else {
-@@ -474,8 +474,8 @@ static int opt3001_set_int_time(struct opt3001 *opt, int time)
- }
- 
- static int opt3001_read_raw(struct iio_dev *iio,
--		struct iio_chan_spec const *chan, int *val, int *val2,
--		long mask)
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 	int ret;
-@@ -506,8 +506,8 @@ static int opt3001_read_raw(struct iio_dev *iio,
- }
- 
- static int opt3001_write_raw(struct iio_dev *iio,
--		struct iio_chan_spec const *chan, int val, int val2,
--		long mask)
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 	int ret;
-@@ -532,9 +532,11 @@ static int opt3001_write_raw(struct iio_dev *iio,
- }
- 
- static int opt3001_read_event_value(struct iio_dev *iio,
--		const struct iio_chan_spec *chan, enum iio_event_type type,
--		enum iio_event_direction dir, enum iio_event_info info,
--		int *val, int *val2)
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir,
-+				    enum iio_event_info info,
-+				    int *val, int *val2)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 	int ret = IIO_VAL_INT_PLUS_MICRO;
-@@ -544,11 +546,13 @@ static int opt3001_read_event_value(struct iio_dev *iio,
- 	switch (dir) {
- 	case IIO_EV_DIR_RISING:
- 		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
--				opt->high_thresh_mantissa, val, val2);
-+				   opt->high_thresh_mantissa,
-+				   val, val2);
- 		break;
- 	case IIO_EV_DIR_FALLING:
- 		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
--				opt->low_thresh_mantissa, val, val2);
-+				   opt->low_thresh_mantissa,
-+				   val, val2);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -560,9 +564,11 @@ static int opt3001_read_event_value(struct iio_dev *iio,
- }
- 
- static int opt3001_write_event_value(struct iio_dev *iio,
--		const struct iio_chan_spec *chan, enum iio_event_type type,
--		enum iio_event_direction dir, enum iio_event_info info,
--		int val, int val2)
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir,
-+				     enum iio_event_info info,
-+				     int val, int val2)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 	struct i2c_client *client = opt->client;
-@@ -626,8 +632,9 @@ static int opt3001_write_event_value(struct iio_dev *iio,
- }
- 
- static int opt3001_read_event_config(struct iio_dev *iio,
--		const struct iio_chan_spec *chan, enum iio_event_type type,
--		enum iio_event_direction dir)
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 
-@@ -635,8 +642,10 @@ static int opt3001_read_event_config(struct iio_dev *iio,
- }
- 
- static int opt3001_write_event_config(struct iio_dev *iio,
--		const struct iio_chan_spec *chan, enum iio_event_type type,
--		enum iio_event_direction dir, bool state)
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir,
-+				      bool state)
- {
- 	struct opt3001 *opt = iio_priv(iio);
- 	struct i2c_client *client = opt->client;
-@@ -812,16 +821,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
- 			OPT3001_CONFIGURATION_M_CONTINUOUS) {
- 		if (ret & OPT3001_CONFIGURATION_FH)
- 			iio_push_event(iio,
--					IIO_UNMOD_EVENT_CODE(chan_type, 0,
--							IIO_EV_TYPE_THRESH,
--							IIO_EV_DIR_RISING),
--					iio_get_time_ns(iio));
-+				       IIO_UNMOD_EVENT_CODE(chan_type, 0,
-+							    IIO_EV_TYPE_THRESH,
-+							    IIO_EV_DIR_RISING),
-+				       iio_get_time_ns(iio));
- 		if (ret & OPT3001_CONFIGURATION_FL)
- 			iio_push_event(iio,
--					IIO_UNMOD_EVENT_CODE(chan_type, 0,
--							IIO_EV_TYPE_THRESH,
--							IIO_EV_DIR_FALLING),
--					iio_get_time_ns(iio));
-+				       IIO_UNMOD_EVENT_CODE(chan_type, 0,
-+							    IIO_EV_TYPE_THRESH,
-+							    IIO_EV_DIR_FALLING),
-+				       iio_get_time_ns(iio));
- 	} else if (ret & OPT3001_CONFIGURATION_CRF) {
- 		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
- 		if (ret < 0) {
-@@ -884,8 +893,8 @@ static int opt3001_probe(struct i2c_client *client)
- 	/* Make use of INT pin only if valid IRQ no. is given */
- 	if (irq > 0) {
- 		ret = request_threaded_irq(irq, NULL, opt3001_irq,
--				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
--				"opt3001", iio);
-+					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+					   "opt3001", iio);
- 		if (ret) {
- 			dev_err(dev, "failed to request IRQ #%d\n", irq);
- 			return ret;
+-	int i;
+-	for (i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
++	for (unsigned int i = 0; i < ARRAY_SIZE(*opt->chip_info->scales); i++) {
+ 		const struct opt3001_scale *scale = &(*opt->chip_info->scales)[i];
+ 		/*
+ 		 * Compare the integer and micro parts to determine value scale.
 
 -- 
 2.54.0
