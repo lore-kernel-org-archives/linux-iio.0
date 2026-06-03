@@ -1,128 +1,147 @@
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5F0A2D839C
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:10:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.175
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780495843; cv=none; b=s4gWSnpc4DqfyMOuEgcZ7zr4KSHPkSGpW0owYyKkKpo1XA6qSomWSBDDSoC++4ShiVezsoHJ3+hYxE37eLhSOXL3+g5iSdqBs9TwrJ+XRf35KSQM6zIioJGfQw7SvmzhovQ0v2a6XMp2+QbuQXQz3RokTVXyuACGjdZf5q105as=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780495843; c=relaxed/simple;
-	bh=Wsqebf9WrjFQdgwRqy5yFQGUTloZSCm7NH3pE60b+qA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fUs0VZ+mueVDc8UKDJ1/5IKMTY2+RLLpPgLKKfLosPgZQLH7yUsn4PvyrLMd1Eg7IanlKD1vnexBySplF3xPF+ehtdxziASkNRCx06Wnqn9Rel5+JuNi3uN70DclnGmnHTwXmkOftdSqracA1swQX7I10bREG9byAYbtaTEcIBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P6mX16lC; arc=none smtp.client-ip=74.125.82.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2431382F31
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 14:11:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780495890; cv=pass; b=qsX+/sv+OVK2rTc9EiGs5SbeRDXnXg44gezRAOIHXvdLsujl2KShqdK0AP39pdltlyXoVm6x+N1fBvhMbTpo8dpVSzWWal6s2hrYd4e6E0do5xf47Xt8JA6YJ8C52tHz+HmqNKYzeoBlWdyPIG1yw2Hr84QC/TYjUjsRa0CNgPI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780495890; c=relaxed/simple;
+	bh=J0T//PjZ8vmpTt0DYps/hq0hsme+tTywEjcY/Myy1Dk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SQpNQvBTNpo8j7j8bV7qbVPlVnoXLyCqTpSCUM0XM4xK+eEgcTgVfx6d1XOPHoSpe5PFEImCUBF/mQtuLHy7PHQ/d+8pZYCjRUzc8luDOHkDJHFadP6C98gyK75rW6S1VXrLd/uAleroWtFrf2gXjwRTAwmSoeajuvXinVggc50=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pqSseIrE; arc=pass smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P6mX16lC"
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-304545f5206so17291640eec.0
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:10:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pqSseIrE"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-490b4e1ade7so12938945e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 07:11:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780495887; cv=none;
+        d=google.com; s=arc-20240605;
+        b=gYV8zZBnju1MO322noHZRU6kTGJMFHPAbun99tgCpVH/bMw+3UYeEvcstKQyCAk4ts
+         wu3Med4S6V31R7ZIN8c0X/w+38WE1+E16NNW2VqxvImmrr+IVOWqoRhvyKMSnuml4/4P
+         d3sm1vJPjE6yj0JT/U1sU4gMy1c1UUE/l6lswY5JG6VOI2ziTQYHrYj5zz0HSIsaTV6J
+         iD9Yd21TG23b4OICqL7T4R6AoFGCqbmJ9gcAdOW8w4+7wsOjS0v/e5E8Hp+NyRES6sUn
+         8GEzoOdZIGwhqMxzc00InWFOmZHr2sDffFcxfvHBoaEgaGXr1QfgL8/ZIY/x0/dpR0Ym
+         WGtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=6CACAA4uU+KaJ+JCYwxfhqMbDUI9bUD1OM/DS88kIZw=;
+        fh=lD9eUY/Amz8IdJcF1xUR1B1jkos1AfAarz3CmO4CJZ8=;
+        b=HKG8U1tHUMxAdnbVIlA2AfpqcBTFVFlnD2DJ3aAl0MdfXoiqiE2gnaC/NZUaoF2bzy
+         roIpiKbzyIGl1dI9ykh+PV0YB1S+yaILLyrxS+fQIV/b2CdlcvnyY/VqGllgeG3mD33a
+         /FkUffwhk1SIsNfpG3B6+OsoQBzBFWj5nAPXGlT0C0ffFaRzplFTxwt7za9Ft/uFVe2Z
+         0EKr9a/h6YFXeQPQQFvdHif5Tb+JF0DjqnM1cUevJofdSiYpjsixhN7bqw/7mt6/1ML+
+         6s33ysBnAdLsabStAqXR/HRvofVk0ad2IPkVTev3ZfFyVoGsQknDtqToOLvH+gNnX5Rg
+         W8+g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780495841; x=1781100641; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=W+Nsk+vqXIyBd7fxqKZqUNL8HC5XArruDYOxkLJDrxI=;
-        b=P6mX16lC9WYAN6OdLoY3aojdeY8rapdYV029YnqCmvlCD60P4ttZIDWxgYobZm1IqZ
-         ZZs56eCfrzAkbv5TmUpG25ZmJB7bWgNiwxyKuQn0fEbAnTQ6qRpNzpbLQQ/IH40Jy3dg
-         cFyFx91vE1+ggtwqJHolc15JZz0DN2ZiZLkEY44auMWte0HqBTjNwmUKW6UBrDSgVBoN
-         2y3kY0o4ofm7kWapIEco+yZRExSZVux8Ho4xcMI472tVQ27WiiffcxgvmylTmhGfGt6+
-         Q/ZSuEtXy418QT+7psPHbvzz4uskYOw5i0WyVe7dWUpmCmuoITlryH5UAjW2FkRN+HGw
-         L0Zw==
+        d=gmail.com; s=20251104; t=1780495887; x=1781100687; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6CACAA4uU+KaJ+JCYwxfhqMbDUI9bUD1OM/DS88kIZw=;
+        b=pqSseIrEuxb2IsE6dzpL2LFznOYvNELOxng1t3HOUHbEq6w8rNlJOlDHmvN/903l8U
+         Uou9vO75kkW9cNNmIiV88BNY2SffbWUVZw4Jo5+FWAa+3+ClTW3aLHHewRgj1zG7ChJv
+         uEPKgC/9EN5S66EOR5YCD0mvI0IDpw+3DmWMhWcexXMD1uzD9etskihhh/48Ex0ii2ST
+         ZQfloVKgMInLaw3T42K8t647AM0sLSD+BmX0C5kmr8+KIopnqkbWxXoQoFMPlbJbGKnL
+         kNhel9PXbEmpggwQk4d+q+ZAURiaHGQZ0toZBy8yFUuS2bLWZuNwpTzM27cxn1EGnAH4
+         6Knw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780495841; x=1781100641;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W+Nsk+vqXIyBd7fxqKZqUNL8HC5XArruDYOxkLJDrxI=;
-        b=qNChjJKhSpCfOvHeYJoG7Lp/wWF3ffdvYOG5ZtmhYKOv/P3+CXsEQOUIY6VpI21mVx
-         TjesI/30rse+3ndbptl5S+PsN/SKj2y2uVboAK6Y/R7X3hJIBtrEDZe20gfNC4HInSWE
-         LsPPwm/GwX+Y7fh2popFAWfdH0asMxjNEt0RbFeM/NBkEW7kgs8Hz2OIGm6L9eYDrY2c
-         yN+4nUTPFdTugeosFJgujoGIQ14q9Qbk10G1fbMGkNOg19oVNop5n5+WCkm5e/JHJcNJ
-         mbvz9TRG2mAd7Cj42BsR0ibbzOpJkoEnlte8wm04i0FQOkTmNdsncgOXHRKawRvpPGD+
-         V+2w==
-X-Forwarded-Encrypted: i=1; AFNElJ9YfK19XFWMyocPXOMtUP2o1cHsIQ1nxkVeTPjCTtKMDxTafh0Ub+r7TgxqDyCHSCW5WHmWlU73Bo0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIau21jn941J5voubjinPMjN2GVpyTJ8Fj9TN2zJgfj4IycTE2
-	sv7wQ8c3XY6a8QOz/syyLvmLYs7Oql/IjJxttFldrBjdeRvUaCitdagf
-X-Gm-Gg: Acq92OGIQ59uMtU48l87a4q8jH47jaTPBDvEua/ysFpowE4BklaEwmECrplFKjarMvC
-	NZ8bu86jou8nRoU/mscWpSjrPLvIv9x2xJuP6f+UlOhSe+KfdzChrxsDHx8OUr7PkkcYwv2O49V
-	tPN/hW59IRg+UUpkUjqTm396GR6sexEa5St+QnezRzk62lVl9oTrJo855me1IVO8kcuEdGZ4RFq
-	C+fl3jFET81YzScks3w5HmPdvqN7pFdnRr3UR8u/ogtLRRRlTMrYimzQnmVORynWe/WmFcETBCN
-	gTLnLN2fKjx/k9lqEacm1O0i+IvK6xeMAAxGbt4pCSd5hAYIC4I6HJeVbwAB/VQyDFrzskdBAp8
-	+YgWjhGtyagA4o0nU7m4GsrWAmeoQZ6u6yB7SRRPOhcj4KgLNaLsRkp+yLT+vzzu2phm8q/Wnsc
-	1e9Kd/XkGSIfaHD9hyNei+N9glruFuVrcvnB1RcrUdfAZRAWGMEXo1vg==
-X-Received: by 2002:a05:693c:25c4:b0:304:cc9c:35ae with SMTP id 5a478bee46e88-3074fa3b7abmr1608250eec.4.1780495840722;
-        Wed, 03 Jun 2026 07:10:40 -0700 (PDT)
-Received: from localhost ([2804:30c:1f02:6000:8b59:7c96:762e:9faa])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074db525a1sm2453217eec.1.2026.06.03.07.10.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 07:10:39 -0700 (PDT)
-Date: Wed, 3 Jun 2026 11:11:06 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
-	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, pop.ioan-daniel@analog.com
-Subject: Re: [PATCH v2 0/4] iio: adc: Add support for LTC2378 and similar ADCs
-Message-ID: <aiA1-tAnRjYQu2EO@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1779976379.git.marcelo.schmitt@analog.com>
- <ah_e4ovBsXQ-BVcw@ashevche-desk.local>
+        d=1e100.net; s=20251104; t=1780495887; x=1781100687;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=6CACAA4uU+KaJ+JCYwxfhqMbDUI9bUD1OM/DS88kIZw=;
+        b=BkaX/Bgcq7YDvvZjaKFNwFN1AnVqGoIZ/Q9kxiaOj5xUOf/D0opeFPxBd7BnzsyNHZ
+         cDGL9ooIa7T2tU6qWLpfNiSMn5eCMMpQn11MLUVIbKvDz73XXUwrmrS6Nr8B5+2Igpud
+         0eay9MaLIl+MOY4rPA85YS3bZQfTbuqRCxSbVAE/YQFoGgbvOUyNCiGjwB3Htsb1yqvn
+         1xEkYp1Bo371j9FjsN0k7Sl5wCQVO/fNKAkdhf4p5NmCd6FfC49aeLaXIEbwki5ME51L
+         Te4uUEMdCsLvOQvwd4rhqviEcdn7md7aFqFbAtceSgkoD9KIK4qlKXvrO2BvnNeFo5Hl
+         TFpA==
+X-Forwarded-Encrypted: i=1; AFNElJ8Uq4JPaas5D5ezvxBtRuImBwgxsFkLn7cUZA6CI/gjocp6t3Pos3V08+/hxGjLb12IpnJ1sz2RWoI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQci1nxtZd0LmY4I/gadEmrVrtXExL0UL39bd5ErqzHnFovqBZ
+	Hf6oSavdXal5SATpWUwQGkD1pQnnvUsPxG8y28dP6bwGiNhjCjhHqS5uw78B2pUCA+bXidz1iqf
+	Zu/nMNNvMB+IWq0gh5QfLPad7zzE0xRU=
+X-Gm-Gg: Acq92OHDi6OBxfPSdOIAtpcu6UC2LlfSZ0BmHfeqccbon/he+LiQvuVWfxLQrL+OKAb
+	L/fRXFeanME09ez+xzX/ZYLssk88vUEEPLNPqeEzhM/14xTA9I36oR4HKQBq4NSyVeKyL0xtGdC
+	qfgichptqvrWnL5Yq/pFiyerDQ0/MoFXNmQbxbzg+8YE5nYwfkF/f7e7XPHJxUFkrLFDnat3S6W
+	Od0Z2N4cCegFBB87KkFGAURl2TvIoJA1fgo08ZvqNzM/N61uS+CANTRHxHWtUSuljVo71rozTvM
+	lvvLeC3MF31hWdjif0QKiGSuIZVlm0U4/l8fhYi6pUEt9KOxJ7/hhoWOJI7dBNIX5FXoW30DVaf
+	zlKoGKSEDH6VUGRu+4kBnvOSB/y5JEf0C1IOpKd6NGKn2k1qnf3qREuGx20qborCgAJ+pDBnD8v
+	QlhwswQJVy/pYXq4+X
+X-Received: by 2002:a05:600c:8b65:b0:490:b9c3:6c58 with SMTP id
+ 5b1f17b1804b1-490ba04d535mr41203015e9.16.1780495886801; Wed, 03 Jun 2026
+ 07:11:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ah_e4ovBsXQ-BVcw@ashevche-desk.local>
+References: <20260531111605.2411980-1-jic23@kernel.org> <2417EDFF-1ADA-42CC-8D52-C93E90EC4953@gmail.com>
+ <20260603145551.3f97ed31@jic23-huawei>
+In-Reply-To: <20260603145551.3f97ed31@jic23-huawei>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Wed, 3 Jun 2026 16:11:15 +0200
+X-Gm-Features: AVHnY4LcuFKG3CQqaPg7WdE0Ti7h601NxXV2uQHxjBXNd6acxjYBVfCPM74bpEQ
+Message-ID: <CALoEA-yQrjLyt3vwMKxMy+dj4f43Cj8PfZFtkGPBBP41oz3Myw@mail.gmail.com>
+Subject: Re: [PATCH] iio: buffer: Ensure bounce buffer used for unaligned case
+ is zeroed.
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, linux-iio@vger.kernel.org, 
+	Jinseob Kim <kimjinseob88@gmail.com>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, "Reported-by: Sashiko" <sashiko-bot@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 06/03, Andy Shevchenko wrote:
-> On Thu, May 28, 2026 at 12:02:53PM -0300, Marcelo Schmitt wrote:
-> > This patch series adds support for LTC2378 and similar low noise, low power,
-> > high speed, successive approximation register (SAR) ADCs. These ADCs are similar
-> > among each other, varying mainly on the amount of precision bits, maximum sample
-> > rate, and input configuration (either fully differential or pseudo-differential).
-> > 
-> > The initial support patch enables single-shot sample read with a GPIO connected
-> > to the CNV pin.
-> > 
-> > The second support patch enables high-speed data captures with SPI offloading.
-> > The setup is similar to AD4030, with a specialized PWM generator being used both
-> > for SPI offload triggering and conversion start signaling.
-> > 
-> > The last support patch enables running buffered data captures without SPI offloading.
-> > 
-> > Some structures and variables are introduced earlier to reduce diff in latter patches.
-> > 
-> > The initial version of the LTC2378 driver was developed by Ioan-Daniel. Though,
-> > despite of the many changes I made to the code, I've kept him as module author
-> > to provide credit for his work.
-> 
-> No datasheet link, no explanation why the brand new driver is needed.
-> No need to resend, just answer the above questions.
+On Wed, 3 Jun 2026 at 16:04, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sun, 31 May 2026 23:58:25 +0530
+> Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+>
+> > On 31 May 2026 4:46:05=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
+> > >iio_push_to_buffers_with_ts_unaligned() leaks uninitialized heap memor=
+y
+> > >to userspace if the data passed in is not a multiple of 8 bytes and th=
+e
+> > >timestamp is enabled.  Use memset() to zero it after resizing.
+> > >
+> > >Fixes: 95ec3fdf2b79 ("iio: core: Introduce iio_push_to_buffers_with_ts=
+_unaligned()")
+> > >Reported-by: Reported-by: Sashiko <sashiko-bot@kernel.org>
+> >
+> > Hi Jonathan,
+> >
+> > Looks like "Reported-by:" is duplicated.
+> I'll tweak that whilst applying.
+>
+> I would like a few more eyes on this though just to confirm I didn't mess=
+ it up!
 
-Hello Andy, thank you for having a look at this set.
+Sashiko had some remarks about the wrong member being memset, however
+it seems relatively standard... human 1, Sashiko 0?
 
-In short, this new driver is needed for supporting LTC2378-20 and similar ADCs.
-Even though these parts are somewhat similar to AD4000, the available HDL for
-high speed sample rate mode is different and the wiring configuration is also
-different. Because of that, I think cramming LTC2378 support into AD4000 driver
-might not be a good idea. I'll add a note about that in v3 together with
-datasheet links.
+Does this memset operate on the wrong pointer?
+When iio_push_to_buffers_with_ts_unaligned() is called for the first time,
+iio_dev_opaque->bounce_buffer is NULL. devm_krealloc() allocates a new buff=
+er
+and returns it in bb, but this memset uses the old pointer, which would res=
+ult
+in a NULL pointer dereference.
+Additionally, if scan_bytes increases on subsequent calls, devm_krealloc()
+might free the old block. This would cause memset to write into freed memor=
+y
+using the new, larger size, resulting in a use-after-free and out-of-bounds
+write.
 
-There are some good points that Jonathan and sashiko raised in v2 and I'm still
-working out a solution for some of them. Will share a v3 after tackling out the
-remaining issues.
+--=20
+Kind regards
 
-Thanks,
-Marcelo
-
-> 
-> > Link to v1: https://lore.kernel.org/linux-iio/cover.1779117444.git.marcelo.schmitt1@gmail.com/
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+CJD
