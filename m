@@ -1,112 +1,84 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA113A9DA9
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 10:54:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1D93D4108;
+	Wed,  3 Jun 2026 10:54:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780484080; cv=none; b=i4XmwbG2eWDQfO1yojDnWM5A5hbI54F2ONaYEJwjskpyl5DPiXHkE8k5MdKq7BsKN1cGvQ7/e4xNTNMBudFROrN+63qXCWNm5yyHJIiC3D6WqXOFrUMXm3tC+088tti8I2J16PNddYK2/lRyyyxXzopw+bxEbbC5R6dGKReXplI=
+	t=1780484087; cv=none; b=pJbou3Jm+v1KOUwijbAOwsysG+2ZA8FyZAMWzSOveA4ZX+0ptYbG9wndFckqZnzhjqN3svq96CTtbV3tvGfeAsnxKX19A+3AW2FWYFKvGHsUfud7iVAEyLD9W+gKgb5intkhJu3X07UDrFkO14n7yGbRj9uicixR3JXA+iT0IJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780484080; c=relaxed/simple;
-	bh=tmrf2fIck4+7Bi+IcBroQJJi4SXIIt2ivLBx+FZgzQs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nv4v9FYk1MzzGHMnPMDJn/4keGS1YM+RS/RIVIIdXzKyhgXwbMSBM6T6F2l6Z5JTMDE5lCbsRwEa455RyqX1GavJgAtjGGKRFnduRpTSz/+/GGzeHv53vRFBCJhBBGyfOPFo45wC/+JfmNFoC2v10xfChSfGtMin1Jc6s0PeY+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JiUvjH7G; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780484087; c=relaxed/simple;
+	bh=fM3lVMoWRNs3P+Z8HysbOxgd9rT1/qMXGot5Kn+63OU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=K2g7D1iwhXvEo7MW/VecZcvDBmAih7hl2DTiP9Vfw7d686aGqaTz++DPUMB0XtVkAeIeNMEQ/xiq1sImgVgniZ9NcKYFVRzOQyHDQsWReeVb/wAcOyHbbYA2Ea3sSQd/OXYnUw8zRNb7TTMyKbaoaDb3+3oYyD2TOP6vLQnSkQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQSW2Ldx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JiUvjH7G"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-beb8a08a6c8so603919166b.2
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 03:54:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780484078; x=1781088878; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=l8xPodyUoWJlPI7e6lU/pFf27beG/+cguIPjhg9rv9w=;
-        b=JiUvjH7GwM259TOKEyjzYS/CfTyBgnggAQxCGJesWdx2pNUU5BnCnrc0Iwp6QmawKJ
-         Om8cT056bKXM3JbfQwAeCtVRQN8xZ/GG2ciyxYzL+29l0n0C7vrnENxZVO8VkJNbSnv6
-         tyvw+sACDSHT4Pvslf235fhHlAC/5IJcjuE7eSH1oN9AW8GxVcNQhCA68r1PLjBhOV/d
-         ae4SPUGBMJheTsQ5zRF5AUXtspNphDCZAPlERJxPaRc+CWwxp7Lc/lomybh1Oie96BAi
-         EZPayICirOuJmQABQZuyLnvOHJY1WJP9P//Yi5/pkAxa33xEkpcVOkSBnu9mkKZAe/zx
-         vN+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780484078; x=1781088878;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l8xPodyUoWJlPI7e6lU/pFf27beG/+cguIPjhg9rv9w=;
-        b=TqanSaRohCz6n620blpUcvdW0FGWBzdayxOuzj4ovY7KqpBsVhT37qsk0SCfuxKSBp
-         FDmm151lqlX5nQ1RmdZQTk4HEEeTCFkzixW5GVMILhBHTe9hPlXVrlwPua0RqTPzhT1S
-         TOM7mmdHZNM/gcdadWi6jrBbtbbM3Msc+JZuaOMmB4KVvVckh2lhJK/DfO/KYHsd7DLI
-         e2kSkNMZ0m5ATSTsxpY8bx0/i3wMG16Ohd+rPklmiM2qBcbJwZJVp2KgYARv7a121DEx
-         PjqWBXOo3FouLrTZ92l9SIVFCELDMMpd1PS0vtL7GfQuwTHgZgUvSX6cAltj6cu4hmPe
-         VsvQ==
-X-Forwarded-Encrypted: i=1; AFNElJ82mhKfVoCPq2lIJdHeR7SAmLR6wtLqnCYNDgbloUDlO/Qo38rvgQ3QJCXOS+ndJrp8tafYwbGQeWw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx3YlX4Ud0RTzYfIkm1ml0Fy7s8EUj9108DgIw0gEgpU4g/uojs
-	UEnlee32MGEvOyinwFdwGG4gFkckg2Qp/S514+GbKRP8v5kKfU1N2kXS
-X-Gm-Gg: Acq92OEdGu7QY/jITGoMvd0sZhnNm2vQ6cUNiWYVAuu5U/hrks5vV4z24SQV2mdFcmG
-	OCPwW2jCXYzkhRl8N9/J1dS2Ef8msnr7U4yyPrRjXnNJ8fWFiBI0pUWZKJnbkAMY7X7xZfS/i2g
-	askYRswnP4a0HK6tOhCm6cvV/nVoD7jb+lxO5WSK9CzGOndGPe4d/PWtTnaxkNU1Qfn5+ecARIJ
-	j08XWFvQDDpScz9egtpfaGWVOZGm1iNEZEOVgQ9AqPAHjrFmUYt6J/mYWYE16lQ8sEuAfPyCcnV
-	/4bO9zAvXnmcbsMuwLX7OykaGTwWxep2VEZAUuHzfDmSUXt0QGexiZyjL5GzXzLmiNVQs3+yshZ
-	7DB5TpSLwa2LuiUmSpW4oWFlXruCE3Ta0eTnvbURFivwbyJ+Jku9GmD1V4NCWGRqzi3Ucxuwtja
-	TpVaDSW4cGAVW1RscGILiHGOdqPH/27w==
-X-Received: by 2002:a17:907:c28f:b0:bea:5cc7:95a4 with SMTP id a640c23a62f3a-bf0adceaa7dmr131107266b.0.1780484077830;
-        Wed, 03 Jun 2026 03:54:37 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf05208e897sm131534866b.25.2026.06.03.03.54.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 03:54:37 -0700 (PDT)
-Date: Wed, 3 Jun 2026 13:54:33 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Taha Narimani <tahanarimani3443@gmail.com>, jic23@kernel.org,
-	lars@metafoo.de, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: adc: ad7816: Use
- devm_gpiod_get_optional() for busy GPIO
-Message-ID: <aiAH6eonsntoHQvF@stanley.mountain>
-References: <20260603123333.5608-1-tahanarimani3443@gmail.com>
- <ah_zMybQBDHakXpX@ashevche-desk.local>
- <ah__2Fjf0MxIQLnh@stanley.mountain>
- <aiAD7HRnWmSJb738@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQSW2Ldx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1F31F00893;
+	Wed,  3 Jun 2026 10:54:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780484086;
+	bh=SagKm0C+mLWJRzJo5yiqGPYEzpXXDxrNz+NqSO0sSkI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=HQSW2Ldx1czdQqiE7HC/gkmWGHkfmTYFYXNaiWQvZ6EjgnO0ie/05RIvQKVxVBJy0
+	 XF/4JSGJOLFl7v279nSVV1lNBRsI4f4j8u3chSS8XHnoxuLsK35/E1lOEjkJhNDCOH
+	 206TAL/orTdY2J0VL7dDpZ8YKUMz3GNdi85tL15QRjjHMc9oGsiywJiBXM7yd3o4m0
+	 00V+BGUJ9KxTn3Y09VHbsE5By6mq0GMNh2QNs8Z6+tigJFmsW2zHf7MA0jEfB9X7D+
+	 sH39PUUzBVLq02+W/2mzWZJd/BhK2kNxOQgE8+G6jkn5fUYqIQ5CKfCph+3NOTwoj7
+	 xUh0WlhBTPc+Q==
+Date: Wed, 3 Jun 2026 11:54:39 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Taha Narimani <tahanarimani3443@gmail.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "open list:IIO SUBSYSTEM AND DRIVERS"
+ <linux-iio@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE
+ TREE BINDINGS" <devicetree@vger.kernel.org>, open list
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 RFC v3] dt-bindings: iio: adc: add ad7816/7/8 digital
+ temperature sensor / ADC
+Message-ID: <20260603115439.4f0a2264@jic23-huawei>
+In-Reply-To: <20260602-pork-unsightly-fd091c88e5a3@spud>
+References: <20260530165917.55767-1-tahanarimani3443@gmail.com>
+	<20260602-pork-unsightly-fd091c88e5a3@spud>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aiAD7HRnWmSJb738@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 03, 2026 at 01:37:32PM +0300, Andy Shevchenko wrote:
-> On Wed, Jun 03, 2026 at 01:20:08PM +0300, Dan Carpenter wrote:
-> > On Wed, Jun 03, 2026 at 12:26:11PM +0300, Andy Shevchenko wrote:
-> > > On Wed, Jun 03, 2026 at 12:33:33PM +0000, Taha Narimani wrote:
-> 
-> ...
-> 
-> > > > -	if (chip->id == ID_AD7817) {
-> > > > +	if (chip->busy_pin) {
-> > > 
-> > > If we get GPIO optional, this check wouldn't be necessary anymore as the below
-> > > should return 0 IIRC in this case.
+On Tue, 2 Jun 2026 18:05:44 +0100
+Conor Dooley <conor@kernel.org> wrote:
+
+> On Sat, May 30, 2026 at 04:59:15PM +0000, Taha Narimani wrote:
+> > Document the Analog Devices AD7816, AD7817, and AD7818 digital
+> > temperature sensor and ADC bindings in YAML format.
 > > 
-> > No, it's still necessary.  It can be NULL because of the CONFIG_
-> > in which case, sure, gpiod_get_value() is a no-op.  But it can
-> > also be NULL because of the device tree and in that case we need
-> > the check to avoid a NULL pointer dereference.
+> > Please note that the driver for this device is currently in drivers/staging.
+> > This patch is sent as an RFC to clean up and standardize the device tree
+> > bindings prior to any major driver refactoring.
+> > 
+> > While reviewing the AD7816/7/8 datasheet to correctly document the properties,
+> > it was noted that the current staging driver attempts to request a 'busy' GPIO
+> > for both AD7816 and AD7817. However, the AD7816 is an 8-pin device and does
+> > not possess a BUSY pin (only the 16-pin AD7817 has it). Therefore, in this
+> > binding, busy-gpios is strictly limited to adi,ad7817.
+> > 
+> > This resolves the checkpatch.pl warnings regarding undocumented DT
+> > compatible strings.
+> > 
+> > Signed-off-by: Taha Narimani <tahanarimani3443@gmail.com>  
 > 
-> Can you elaborate on the latter more? I fail to see that.
-> What I see is that the function either implemented or not is NULL-aware.
-> 
+> This seems probably okay, but I'm not willing to ack it as an RFC.
 
-Ah, yes.  You're right.  The VALIDATE_DESC() macro has a return hiding
-inside.  I hadn't seen that.
+You will get to see it again in the series moving the driver out of staging
+so wait until then.
 
-regards,
-dan carpenter
-
+Looks fine to me as well.
