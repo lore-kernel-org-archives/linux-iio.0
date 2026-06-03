@@ -1,67 +1,68 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D54947D92C
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC59047ECDF
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 17:12:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780506781; cv=none; b=CvWsu+Vaq3OBMf3tZKL8oDrJBftHjwn/UMyrYHBQ7Az1VISMcdRcfXxEP58h8a2VwyN4jfxebYbg9NbX+4XGrkdnFDDhrQLBnW93D+Wse0ZVa6Z1JvwMxdBRxHPOMLI/lxcsGgQfti9pCLybCY84eKQhTEkvlRNr8/R9jF4X/J4=
+	t=1780506782; cv=none; b=c8PVi3bbmGjCZdF41LbvlrwsElDBFFAVJsjFB/TU8QrV+cjqbttuOhrKCFPDgQcjRapDDQCw+XZam5gY/jzTxlLs8YAwWVPZDovCmRQHtcik4AQcfOCVprpOexcLs6PlM7wUlIkST1W8drD+IZ3y0VEmoxp/Cw1r05URl5r5BOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780506781; c=relaxed/simple;
-	bh=+qC0YWfflnYInnRf+X6ZznWVvUClte/iMms9DO3MvUo=;
+	s=arc-20240116; t=1780506782; c=relaxed/simple;
+	bh=2BDkcyxuCYIlZAGkYDGk8pck10gD78JOrPFXgQsgGWg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=k6fAQURrbycGNz9iNr0WjQiMSeflMgvekZVDqg96hVkuvfo28UeKbZgp+TCuWQvGhbPoXhr2FCIcFN5KBLHnupclyzppUfSe63Gr8EXuTBdXiK1CnxNHrfrNmjU56ia0xrGtvf/Ln7TIUlvw36xu1yB08envb8U4KwVU57syfp0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lbWO5vVY; arc=none smtp.client-ip=209.85.128.51
+	 In-Reply-To:To:Cc; b=HpgD9ZntHgNg0RI5Dh4qYJgPhVQ7RZX4/FyF+mDjvORg1Culxlk08Q+zbb9UjglPMuo79ASoSXQr9x2t7nTvmFLkVHw3bwPhP0P8a4wpG6IbJ2uQHTN/T8uxXeRsVoaW5+Pc8QAAky9y9I7qQQjz/MI/YGAX8MtJSIJfA3F3eWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sLCV4941; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lbWO5vVY"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-490ac357c55so37470625e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sLCV4941"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-45efa80e0afso3736518f8f.2
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 10:12:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780506777; x=1781111577; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780506778; x=1781111578; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=9Be/cBTIY2UtthPWGW4sFFao6/kg9emmQLSnpfKTVvo=;
-        b=lbWO5vVYP2V4Ay2irakVMuijVxwj5iJ7M8Qt4XRJ0AKjUykOsgeL5ozwQCpdRPxDKR
-         2fr9kqiCL38rISCuSvXXegLkbEBSqH1UAzbUxUHNiXz0VVwfHGiHoq0RAuGf96VrfSsS
-         Cd9URbrfUVYO6gDd1UwMWnxTpyGiTwfq8c2eCXlm94Th0v4DBBq44bgvSoSi5vA/Evcl
-         0yek/+odUmP10utg/RlKf5x/XUnMTrDXes9Ia0pDr4O7P9zd86ZAFiVKBh3rZ5XCEeSF
-         4yuDCZsCUuf3ozPh55kc4c6BZhz/YeLmZq6IAbL/kJO2gnyghic7E4npuBvGQRqlJ65g
-         Guqg==
+        bh=tlFviVqEyV6yDfca0ZHHxijD0F7o0i8z+Aw19WODozw=;
+        b=sLCV4941O4fIGhgLsuqPdH9oy1xO09BctBDieRSxSB5Gadg6P7NZe4ancmI9CpOk3l
+         PSs/S05RjJ8dluttLrWMbX8NtPDAnxVbyCIN+ic9kY2gMZkMFywrMKs3axNGjFk+iQXj
+         E3tKezf67Q67jMB7Qxw3CA4rBr5HIALKF2tSWuqamuQpzoj/5s+N/NqqMcUtb3aXMVEI
+         qnOQCMRIgaPSUsaOGQ7YWbvmR2xQdRTMx2F9lvZgx9uJEGyf/+1ZxczaBaXXDxV8LRZS
+         5MIUb7BKQGPkbdcpnild6mzDs+nCJ36RWf4aATDSGqA9YuvRTD+jpLdPPnINoigwXnKm
+         l9fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780506777; x=1781111577;
+        d=1e100.net; s=20251104; t=1780506778; x=1781111578;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=9Be/cBTIY2UtthPWGW4sFFao6/kg9emmQLSnpfKTVvo=;
-        b=iuq7yPJDgI7mRQLwnKEHUfX/OPdiWnpLcqymM/BU90E2u3Prd9YXM5sxuAWBdmxavJ
-         vLWQozmbrPKjAif7wfTeu7rfiCs1BHuHArIc9CWPNu+rlg21zbh0eQy4zcaKan4YrnyT
-         YI6MXmF1lqZiMnA29UHeVyi7uvAuTSCM6FKhkwcLJnAdTxBRziQjj18u6FDrEAuhFkff
-         wBYuN+3mh9EZ3Ve2N8zkiNUPhed9XKG/yH+cjZAckZtepmJh+BGfaWIvgoFsAgB0Z4ZI
-         Ew0ClKYm/lyYbGMgzB2tXGvAyFnAcZwluZez0CGO/ypinztoxMQ33pYvTKr8q9RResim
-         8hQA==
-X-Gm-Message-State: AOJu0YyTwrwjgM0MrsGDOD8+oG6NASJ1QMhGEFGOPL+R5qaWNKyxHZCE
-	LWDUeY3o3nXgbg+yA95Z3/p8mmnAS+ALbRLeMe0MVx5hu+bnA6XEv060
-X-Gm-Gg: Acq92OEXgoC+Z1sda41jmjOFicG1DOET8fnhT4beQgTkH0iElb+0I50uAE7J5PHIoji
-	wH3N++W7hb+oimt7LSSk67BiQ93DBYsUqQJtIyc/15BGftBDM7MdyRq5yjeyAIigfpc5IN+zgrX
-	wX2jMUt69LzyHet4qtVvcFDQxeNs2ha5PIa1nTsegPrK0OgoZC3YquVRWmlX8ComSv7q6uLRnoL
-	EJVxhBAdrB4aZNoEguuNj0/5Gj/fuNE2J+BzbMARBim6jNebp2X/6VpFwI9fwE7psRf+cNQUJDK
-	l65y+CdxJCtsabZzHZcc2X76hV1xxEH21sn08ccGTZDeLfH24UnAnONaVaH7VSFl6cGqj4O3M6Y
-	wCln0cY+938Z2BTtTBuz4MXb50IyFWQNdVJNo+XnKMmkGTjuu3yze6mB9GdB9SxEDgx7mMlgIfI
-	5f08aSOLhv291pRXONWvAUvc2LD387xPbEUmrlaORD7btfoy2joj+e5sai92t0Z7eI/85yK5p5K
-	t9VeyBNPAfD+Hhsxp812me7YWDCA3BEiBKQ8j2MVAC/V/quXqaxRFm/UrUx0WthSy28CgC42y9G
-	lLWc9bn0GMZO1aSsBvjWFdanx7sbqPhvk/slCLU7Mc/5cqDTE24=
-X-Received: by 2002:a05:600c:4ec6:b0:490:b8e2:6380 with SMTP id 5b1f17b1804b1-490b8e264c9mr57333915e9.12.1780506777445;
-        Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
+        bh=tlFviVqEyV6yDfca0ZHHxijD0F7o0i8z+Aw19WODozw=;
+        b=f2lwZUtpiXX5zYIqaXOGLhMl+52bRft8uaT8Z1ovd1TLRSR6VbLLqvdv0YsY13JGwu
+         0mpDlQfjd11OlSt3WuhrDxDyikvJX/+RWww4NARcVUYqAV0PmytIiUBlcDwb+LWKqpuE
+         LKZ620WpKdlOnb2yIxr3HRIXKpuauLEzHPfSUxyTzD5Gn92tl/NDSQSbawp4AhVfKCEq
+         5dNFcYn7cNIYU59XuISdfe3cAsk2s8LM7lLUG8Ty18B6iO/rRiSZKVA2ICFkEw6tB5Hr
+         5UO/hieBLrl3PZq4x4ygJxjwCs6d4+gsavgg7BbIEjc3WNXM/5wqN1HL1IIVB4VrHZEP
+         3GVQ==
+X-Gm-Message-State: AOJu0Yx1MnaLyYVZk9t9vc6n5l47JPMJBYx4TYjauKp4hSs4tRXo6uqo
+	CqltXlra+u3n8JU9/K22vrSwpoLRCXe6LipuRF1/WnDRiVI9YoeIMil1GHba3X6c
+X-Gm-Gg: Acq92OFF+n/sk5OLOjroChiCbdx9TyYr2siDW5zG/rQamvnp7ILv5EwTPGXPlD+sLb4
+	PzIMmqZbtK/6MzMArjzXnYLtOgZbvhtADWVNTPkwhXMZRugYxoh1DvV3K1qyDNpo7wdblOfmsUM
+	UXX4jBirce9fv0LICqNbBmHDQQvxcmlGFT4ACk3KmwfA1z5QUF3+upQdv+VyEXpPRA2uW+WocaJ
+	8yWNT2x/2+IY+PdOJmuARklxcdKP3TEQ+O0woYZdOg7kfz0JFunwMimlDDkB82UJq+bHYN3zFaJ
+	UNTQ1BOrgWovgSJRDL3HEQvdPeCRApy9+zdguDnZjjtEm2lLwDfK+18ugRzqwS7Q9cvrNDXR+R+
+	A2nfXJtXmVy6GN2P5FRQ2nAhshde1craqRi1tYx+/2p/O+uLdPlj05je5CU5fJtsy9FE+kCnX5P
+	sJWUUv8wHD9CWA0NhAu9prVdiUNrBsxrx0HZuDfNqqrmlobtiDJ1IUDWQZTi6W3D8NsHcVNfL2R
+	yAofQh+n7VepzJDT4KX908b4P3lIC9yNwOTWyAmXon79tI0ZGvkm9F9K4q9cwQaAxULdQCHDWW2
+	XtDaz24iUtsVp3/++S/procj3oZBo3ZMJZxAoT8CGNYqt55cczt7kBkXoOyyMw==
+X-Received: by 2002:a05:6000:4b11:b0:45e:ec27:b4b0 with SMTP id ffacd0b85a97d-460217264a4mr6430009f8f.18.1780506778048;
+        Wed, 03 Jun 2026 10:12:58 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0:c287:187e:fb7a:66a4])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.56
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f345209sm8797506f8f.17.2026.06.03.10.12.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 03 Jun 2026 10:12:57 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 03 Jun 2026 19:12:56 +0200
-Subject: [PATCH v5 5/8] iio: light: opt3001: prefer dev_err_probe()
+Date: Wed, 03 Jun 2026 19:12:57 +0200
+Subject: [PATCH v5 6/8] iio: light: opt3001: move driver to guard(mutex)()
+ use
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260603-opt3001-cleanup-v5-5-3ef7b926d555@gmail.com>
+Message-Id: <20260603-opt3001-cleanup-v5-6-3ef7b926d555@gmail.com>
 References: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 In-Reply-To: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -79,125 +80,204 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Joshua Crofts <joshua.crofts1@gmail.com>, 
- Maxwell Doose <m32285159@gmail.com>
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=3528;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780506773; l=5010;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=+qC0YWfflnYInnRf+X6ZznWVvUClte/iMms9DO3MvUo=;
- b=OBv0spHsQfLwlI2kP+v23eUvLAlrzl19aHcpZ38EvdsT6kH7OSlrKhAMKSkQPSaULkwHrdBNz
- GJ+d6+XltfqCk318cpX6bLm06sV7yCIoCoNVGAV/g6ZFrCtJeY8dL96
+ bh=2BDkcyxuCYIlZAGkYDGk8pck10gD78JOrPFXgQsgGWg=;
+ b=PcH3w3TrZ12sMbpkFbwhZyaT7JJZx5u9UIA9uF/7bo6o3+aIkJ1XexZTFh+98bhKD9pNXGSZb
+ IQMxy342Zo+AHNoCYFEuVK5ODL6t94YzJEl/aJKRTyrkBpZAehzYYAa
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-Switch driver to use dev_err_probe() to unify error messages generated
-in *_probe() and probe path functions.
+Move driver to use guard(mutex)() macro, to facilitate automatic
+locking/unlocking of resources. This modernizes the driver and
+improves code style.
 
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+While at it, remove unnecessary gotos and return variables.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
- drivers/iio/light/opt3001.c | 56 ++++++++++++++++++---------------------------
- 1 file changed, 22 insertions(+), 34 deletions(-)
+ drivers/iio/light/opt3001.c | 61 +++++++++++++++------------------------------
+ 1 file changed, 20 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 777a54753b0c..fa799edd6a9c 100644
+index fa799edd6a9c..14a091533067 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -706,21 +706,17 @@ static int opt3001_read_id(struct opt3001 *opt)
- 	int ret;
+@@ -10,6 +10,7 @@
  
- 	ret = i2c_smbus_read_word_swapped(client, OPT3001_MANUFACTURER_ID);
--	if (ret < 0) {
--		dev_err(dev, "failed to read register %02x\n",
--			OPT3001_MANUFACTURER_ID);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to read register %02x\n",
-+				     OPT3001_MANUFACTURER_ID);
+ #include <linux/array_size.h>
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/errno.h>
+@@ -477,7 +478,6 @@ static int opt3001_read_raw(struct iio_dev *iio,
+ 			    int *val, int *val2, long mask)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
+-	int ret;
  
- 	manufacturer[0] = ret >> 8;
- 	manufacturer[1] = ret & 0xff;
+ 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
+ 		return -EBUSY;
+@@ -485,23 +485,17 @@ static int opt3001_read_raw(struct iio_dev *iio,
+ 	if (chan->type != opt->chip_info->chan_type)
+ 		return -EINVAL;
  
- 	ret = i2c_smbus_read_word_swapped(client, OPT3001_DEVICE_ID);
--	if (ret < 0) {
--		dev_err(dev, "failed to read register %02x\n",
--			OPT3001_DEVICE_ID);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to read register %02x\n",
-+				     OPT3001_DEVICE_ID);
+-	mutex_lock(&opt->lock);
++	guard(mutex)(&opt->lock);
  
- 	device_id = ret;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_PROCESSED:
+-		ret = opt3001_get_processed(opt, val, val2);
+-		break;
++		return opt3001_get_processed(opt, val, val2);
+ 	case IIO_CHAN_INFO_INT_TIME:
+-		ret = opt3001_get_int_time(opt, val, val2);
+-		break;
++		return opt3001_get_int_time(opt, val, val2);
+ 	default:
+-		ret = -EINVAL;
++		return -EINVAL;
+ 	}
+-
+-	mutex_unlock(&opt->lock);
+-
+-	return ret;
+ }
  
-@@ -738,11 +734,9 @@ static int opt3001_configure(struct opt3001 *opt)
- 	u16 reg;
+ static int opt3001_write_raw(struct iio_dev *iio,
+@@ -509,7 +503,6 @@ static int opt3001_write_raw(struct iio_dev *iio,
+ 			     int val, int val2, long mask)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
+-	int ret;
  
- 	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
--	if (ret < 0) {
--		dev_err(dev, "failed to read register %02x\n",
--			OPT3001_CONFIGURATION);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to read register %02x\n",
-+				     OPT3001_CONFIGURATION);
+ 	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
+ 		return -EBUSY;
+@@ -523,11 +516,9 @@ static int opt3001_write_raw(struct iio_dev *iio,
+ 	if (val != 0)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&opt->lock);
+-	ret = opt3001_set_int_time(opt, val2);
+-	mutex_unlock(&opt->lock);
++	guard(mutex)(&opt->lock);
+ 
+-	return ret;
++	return opt3001_set_int_time(opt, val2);
+ }
+ 
+ static int opt3001_read_event_value(struct iio_dev *iio,
+@@ -538,28 +529,23 @@ static int opt3001_read_event_value(struct iio_dev *iio,
+ 				    int *val, int *val2)
+ {
+ 	struct opt3001 *opt = iio_priv(iio);
+-	int ret = IIO_VAL_INT_PLUS_MICRO;
+ 
+-	mutex_lock(&opt->lock);
++	guard(mutex)(&opt->lock);
+ 
+ 	switch (dir) {
+ 	case IIO_EV_DIR_RISING:
+ 		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
+ 				   opt->high_thresh_mantissa,
+ 				   val, val2);
+-		break;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_EV_DIR_FALLING:
+ 		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
+ 				   opt->low_thresh_mantissa,
+ 				   val, val2);
+-		break;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+-		ret = -EINVAL;
++		return -EINVAL;
+ 	}
+-
+-	mutex_unlock(&opt->lock);
+-
+-	return ret;
+ }
+ 
+ static int opt3001_write_event_value(struct iio_dev *iio,
+@@ -586,12 +572,12 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 	if (val < 0)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&opt->lock);
++	guard(mutex)(&opt->lock);
+ 
+ 	ret = opt3001_find_scale(opt, val, val2, &exponent);
+ 	if (ret < 0) {
+ 		dev_err(dev, "can't find scale for %d.%06u\n", val, val2);
+-		goto err;
++		return ret;
+ 	}
+ 
+ 	whole = opt->chip_info->factor_whole;
+@@ -614,20 +600,16 @@ static int opt3001_write_event_value(struct iio_dev *iio,
+ 		opt->low_thresh_exp = exponent;
+ 		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto err;
++		return -EINVAL;
+ 	}
+ 
+ 	ret = i2c_smbus_write_word_swapped(client, reg, value);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to write register %02x\n", reg);
+-		goto err;
++		return ret;
+ 	}
+ 
+-err:
+-	mutex_unlock(&opt->lock);
+-
+-	return ret;
++	return 0;
+ }
+ 
+ static int opt3001_read_event_config(struct iio_dev *iio,
+@@ -659,7 +641,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 	if (!state && opt->mode == OPT3001_CONFIGURATION_M_SHUTDOWN)
+ 		return 0;
+ 
+-	mutex_lock(&opt->lock);
++	guard(mutex)(&opt->lock);
+ 
+ 	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
+ 		: OPT3001_CONFIGURATION_M_SHUTDOWN;
+@@ -668,7 +650,7 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read register %02x\n",
+ 			OPT3001_CONFIGURATION);
+-		goto err;
++		return ret;
+ 	}
  
  	reg = ret;
+@@ -678,13 +660,10 @@ static int opt3001_write_event_config(struct iio_dev *iio,
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to write register %02x\n",
+ 			OPT3001_CONFIGURATION);
+-		goto err;
++		return ret;
+ 	}
  
-@@ -766,28 +760,22 @@ static int opt3001_configure(struct opt3001 *opt)
- 	reg &= ~OPT3001_CONFIGURATION_FC_MASK;
+-err:
+-	mutex_unlock(&opt->lock);
+-
+-	return ret;
++	return 0;
+ }
  
- 	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
--	if (ret < 0) {
--		dev_err(dev, "failed to write register %02x\n",
--			OPT3001_CONFIGURATION);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to write register %02x\n",
-+				     OPT3001_CONFIGURATION);
- 
- 	ret = i2c_smbus_read_word_swapped(client, OPT3001_LOW_LIMIT);
--	if (ret < 0) {
--		dev_err(dev, "failed to read register %02x\n",
--			OPT3001_LOW_LIMIT);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to read register %02x\n",
-+				     OPT3001_LOW_LIMIT);
- 
- 	opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
- 	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret);
- 
- 	ret = i2c_smbus_read_word_swapped(client, OPT3001_HIGH_LIMIT);
--	if (ret < 0) {
--		dev_err(dev, "failed to read register %02x\n",
--			OPT3001_HIGH_LIMIT);
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "failed to read register %02x\n",
-+				     OPT3001_HIGH_LIMIT);
- 
- 	opt->high_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
- 	opt->high_thresh_exp = OPT3001_REG_EXPONENT(ret);
-@@ -894,10 +882,10 @@ static int opt3001_probe(struct i2c_client *client)
- 		ret = request_threaded_irq(irq, NULL, opt3001_irq,
- 					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
- 					   "opt3001", iio);
--		if (ret) {
--			dev_err(dev, "failed to request IRQ #%d\n", irq);
--			return ret;
--		}
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "failed to request IRQ #%d\n",
-+					     irq);
- 		opt->use_irq = true;
- 	} else {
- 		dev_dbg(dev, "enabling interrupt-less operation\n");
+ static const struct iio_info opt3001_info = {
 
 -- 
 2.54.0
