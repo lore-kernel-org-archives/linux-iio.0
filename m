@@ -1,43 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 016D22D592D;
-	Wed,  3 Jun 2026 13:31:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A73CB315785;
+	Wed,  3 Jun 2026 13:41:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780493465; cv=none; b=tqiQ0cpL94xTtZcsiDfvCuNU+UfNSENNrZgj+dCzunOdynpBuVBrp0TvtJnslXzWNsT5/yyFdAUuBSqnKwmvEGYSeF5wM+K7HW+xU6TeBIYZ/C+hFKgOEZklj27GlxRF2nEA8tEldnDIk0cd4LQGqcAKfNUlsiFQrHUm6TQtiHM=
+	t=1780494103; cv=none; b=JeNUFBmD5b+8M3yQaUqkhFfJgo542x4muXPOju28QaageH6an7eEw6V2izoShYa8yIv6ne9o0XcUy3GBqLAQIZ4f9ic4BmFL97kPf7b7ArX0NmBOW0EG5HGfj7Le7ap6kwRcn1QE7PL2pig6fG+qXScyNZUXOFPTs1FeGq9gFAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780493465; c=relaxed/simple;
-	bh=qsyTZ2hC7Rdhtni/l2TyeGzmiSIeKQN9bGas17AhzYo=;
+	s=arc-20240116; t=1780494103; c=relaxed/simple;
+	bh=+8C41rRncxMIOZPBtKBLqFtE+5PaSmWw3yiragR7HYA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=crtjMukBwkJ1ID5J5bsJHPUBf6tu1SYd3VQZPpnOOUmZJ15+xuKNVn4my/fV7GplcIlExZxDGi/FX3if5t6D7TvYIlBU/eITqy8EfMtxVHYbnIto6GPohrVq71D4u7uIzbyoPqKlTdXvh3hapycTkpTf+4RZ9Pe4ZsdwOnWg5EI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=APpfzN+m; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Ik5NyITJE+E0m9IGSn0DP5f4Lx80KhBDMj6do6NOprTi+QRgYSSBMQpnG3BWlNbxao9HUCjUKo3Uf+bJlKsQgMDMAJeG71IbFpc93p0VZZIr8jj+Knhnjoqm+j0ieAF479eXSA4MsE3pnsMZHMPIzeua/S/bj2b4HJ5S6D2HvcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=htLHZ/bT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="APpfzN+m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E107A1F00893;
-	Wed,  3 Jun 2026 13:31:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="htLHZ/bT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B031F00893;
+	Wed,  3 Jun 2026 13:41:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780493463;
-	bh=a3z1DuYx348Z9Spf+zPmnsW3JiPXDTTqihKvmTNSgBA=;
+	s=k20260515; t=1780494102;
+	bh=TnE/uLXPZCe1VSHvqcoTHEVGQ4O32FN0ovU1bXUARic=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=APpfzN+mnSRXIpSCBsfvHHhfQJw9qwRVFwveokcy+OiFVcUrcCW54CzDIS+CrYt9r
-	 DHTLaWbBLL0/eb94k1wTM8TzVYalh05k7WaQPNfqu/pE3AvNcI9lyZLfCSw2d0FALM
-	 cLqXhyx8nBk4JOHSCFdQdx1MNPb5NhTwAMFxpzZAL+9CvN6sTZ+Fm1xO31/f4HFOVy
-	 2x/nmHAzdFvRNOJcNh/5241BAL0vkGHaKLyOUeBdKQ9Q1BOru7O9ZihfrDrBOa998y
-	 TS/DwShF9vHCaA0u7aYslLel13fTEM35cddcBGSXzCsFm4iGyD/k/I5/WVl7UhC16U
-	 jrfezZLI21pRQ==
-Date: Wed, 3 Jun 2026 14:30:55 +0100
+	b=htLHZ/bTWSKQDDbVwToSkF9CW2OiNYBuNJbe0DIOLVX+ZxwXUsnsF3UCwj/ZtIzqN
+	 BUdw77jFIFUAzQoRyVjTh1+D9VM7iPcjAUnXIARcF7260zeSu77KhHGOqVadj3/c0C
+	 HcP5bYU4o8Wi0hMehvV6hmXh0UCOmbp2hgb75tN75R/Ezmx8VDAtm0kaCb5NT4m3uz
+	 +VKnl383MUD+5N6uUbB/Fhf8MXlGEunJ4W9Uty3CQlkQsvumqw02nKqL6ViLBikH4+
+	 Gu0XHyy0/Q04qL5n56eqB+eytb/QLzrgo5JTi2V6a664eN4d5cm34dMz3msWh6WWBA
+	 vgb6tNNGe7f+Q==
+Date: Wed, 3 Jun 2026 14:41:32 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/5] iio: accel: mma8452: use pm_ptr() and direct
- runtime PM calls
-Message-ID: <20260603143055.26126435@jic23-huawei>
-In-Reply-To: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-3-26d6dff8fc55@gmail.com>
-References: <20260602-15-apr-pm-iio-mma8452-v4-temp-v4-0-26d6dff8fc55@gmail.com>
-	<20260602-15-apr-pm-iio-mma8452-v4-temp-v4-3-26d6dff8fc55@gmail.com>
+To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Lee Jones <lee@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 2/4] iio: adc: mt6323-auxadc: add mt6323 PMIC AUXADC
+ driver
+Message-ID: <20260603144132.6c5daea8@jic23-huawei>
+In-Reply-To: <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+References: <20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com>
+	<20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,300 +54,163 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 02 Jun 2026 18:59:24 +0530
-Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+On Tue, 02 Jun 2026 15:46:55 +0300
+Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
 
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> From: Roman Vivchar <rva333@protonmail.com>
 > 
-> Use pm_ptr() together with DEFINE_RUNTIME_DEV_PM_OPS() so the PM ops
-> pointer is automatically handled when CONFIG_PM is enabled or disabled.
+> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
+> provides support for reading various channels including battery and
+> charger voltages, battery and chip temperature, current sensing and
+> accessory detection.
 > 
-> Switch to direct PM runtime calls and drop
-> mma8452_set_runtime_pm_state() wrapper, which is no longer needed.
+> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
 > 
-> While at it, fix runtime PM handling in several paths to ensure proper
-> balancing of pm_runtime_resume_and_get() and pm_runtime_put(), avoiding
-> usage count leaks on error paths.
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+Trivial stuff inline + a question from the sashiko bot you may have
+missed.
 
-"While at it" comments cause alarm bells to ring, even more so when they
-are fixes. This should be broken up and the fixes moved to the start
-of the patch set followed only later by rework.
+Jonathan
 
-I'm fairly sure this introduces some bugs.. What testing can you do on this
-one?  I'd be very nervous touching this without some form of verification
-that the state is correct and the power remains on when events are in use
-(right not it doesn't)
-
-The final problem of disabling events on remove() also needs to be covered.
-It is up to the driver to figure out what events are enabled and turn
-them off.
-
-> 
-> This follows modern kernel power-management conventions.
-> 
-> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> 
-> ---
-> changes in v4:
-> - fix runtime PM handling by balancing the refcount with input from Jonathan
-> - v3 link -> https://lore.kernel.org/all/20260505174640.3998281-9-sanjayembedded@gmail.com/
-> changes in v3:
-> - Use direct PM runtime calls and drop redundant wrapper along with CONFIG_PM
-> - v2 link -> https://lore.kernel.org/all/20260422165643.2148195-6-sanjayembedded@gmail.com/
-> changes in v2:
-> - Use DEFINE_RUNTIME_DEV_PM_OPS to address review comment and resolve 0-day bot warning
-> - v1 link -> https://lore.kernel.org/all/20260414192045.3598010-1-sanjayembedded@gmail.com/
-> ---
->  drivers/iio/accel/mma8452.c | 110 ++++++++++++++++++++++++--------------------
->  1 file changed, 59 insertions(+), 51 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 1d4ea614cb57..467e42c2c0dd 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-
-> @@ -975,6 +953,7 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->  				      bool state)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	struct device *dev = &data->client->dev;
->  	int val, ret;
->  	const struct mma8452_event_regs *ev_regs;
->  
-> @@ -982,17 +961,22 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
-
-This one is fiddlier. In the case of turning an event on the aim
-is to leave the pm counter raised, the decrement only comes when turning it off.
-
->  	if (ret)
->  		return ret;
->  
-> -	ret = mma8452_set_runtime_pm_state(data->client, state);
-> -	if (ret)
-> -		return ret;
-> +	if (state) {
-> +		ret = pm_runtime_resume_and_get(dev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
->  
->  	switch (dir) {
->  	case IIO_EV_DIR_FALLING:
-> -		return mma8452_set_freefall_mode(data, state);
-> +		ret = mma8452_set_freefall_mode(data, state);
-> +		goto pm_runtime_put;
-
-see below for more discussion but break might be appropriate here.
-
->  	case IIO_EV_DIR_RISING:
->  		val = i2c_smbus_read_byte_data(data->client, ev_regs->ev_cfg);
-> -		if (val < 0)
-> -			return val;
-> +		if (val < 0) {
-> +			ret = val;
-> +			goto pm_runtime_put;
-> +		}
->  
->  		if (state) {
->  			if (mma8452_freefall_mode_enabled(data)) {
-> @@ -1004,19 +988,31 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->  			val |= BIT(chan->scan_index +
->  					ev_regs->ev_cfg_chan_shift);
->  		} else {
-> -			if (mma8452_freefall_mode_enabled(data))
-> -				return 0;
-> -
-> +			if (mma8452_freefall_mode_enabled(data)) {
-> +				ret = 0;
-I'm not 100% sure what intent is here. This is in a rising path
-which has nothing directly to do with freefall yet the configuration
-is not modified.
-
-In this path state == false, and we aren't in an error case so maybe we just want
-to do nothing other than decrementing the counter.
+> diff --git a/drivers/iio/adc/mt6323-auxadc.c b/drivers/iio/adc/mt6323-auxadc.c
+> new file mode 100644
+> index 000000000000..da6c11a5079c
+> --- /dev/null
+> +++ b/drivers/iio/adc/mt6323-auxadc.c
+> @@ -0,0 +1,299 @@
 
 
-
-> +				goto pm_runtime_put;
-
-> +			}
->  			val &= ~BIT(chan->scan_index +
->  					ev_regs->ev_cfg_chan_shift);
->  		}
->  
->  		val |= ev_regs->ev_cfg_ele;
->  
-> -		return mma8452_change_config(data, ev_regs->ev_cfg, val);
-> +		ret = mma8452_change_config(data, ev_regs->ev_cfg, val);
-> +		goto pm_runtime_put;
+> +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
+> +				 unsigned long channel)
+> +{
+> +	struct regmap *map = auxadc->regmap;
+> +	int ret;
 > +
->  	default:
-> -		return -EINVAL;
-> +		ret = -EINVAL;
-> +		goto pm_runtime_put;
->  	}
+> +	ret = regmap_set_bits(map, MT6323_AUXADC_CON11, AUXADC_CON11_VBUF_EN);
+
+See below. Sashiko asked if lack of turning this off again when done
+with a read is wasting power or similar.
+
+> +	if (ret)
+> +		return ret;
 > +
-
-
-
-> +pm_runtime_put:
-> +	if (state)
-> +		pm_runtime_put(dev);
-> +	else
-> +		pm_runtime_put_autosuspend(dev);
-This is wrong as the counter is universally decremented
-whether or not we were turning something on.
-
-Anyhow, Split this an do an earlier return in good path.
-
-Mind you there is a fun question of what the right thing to do on
-a failure is.  Maybe we should assume a retry is on the way and
-do a put_autosuspend.
-
-If you do keep the combined, you can just break in the switch
-rather than gotos.
-
-
+> +	ret = regmap_clear_bits(map, MT6323_AUXADC_CON22, BIT(channel));
+> +	if (ret)
+> +		return ret;
 > +
-> +	return ret;
->  }
->  
->  static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
-> @@ -1453,22 +1449,39 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	struct device *dev = &data->client->dev;
->  	int reg, ret;
->  
-> -	ret = mma8452_set_runtime_pm_state(data->client, state);
-> -	if (ret)
-> -		return ret;
-> +	if (state) {
-> +		ret = pm_runtime_resume_and_get(dev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
->  
->  	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-> -	if (reg < 0)
-> -		return reg;
-> +	if (reg < 0) {
-> +		ret = reg;
-> +		goto pm_runtime_put;
-> +	}
->  
->  	if (state)
->  		reg |= MMA8452_INT_DRDY;
->  	else
->  		reg &= ~MMA8452_INT_DRDY;
->  
-> -	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
-> +	ret = mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
-> +	if (ret < 0)
-> +		goto pm_runtime_put;
+> +	return regmap_set_bits(map, MT6323_AUXADC_CON22, BIT(channel));
+> +}
 > +
-> +	if (!state)
-> +		return pm_runtime_put_autosuspend(dev);
+> +static int mt6323_auxadc_read(struct mt6323_auxadc *auxadc,
+> +			      const struct iio_chan_spec *chan, int *out)
+> +{
+> +	struct regmap *map = auxadc->regmap;
+> +	u32 reg = chan->address;
+It's only used one. I'd probably put it inline and skip the local variable.
+> +	u32 val;
+> +	int ret;
+> +
+> +	ret = regmap_read_poll_timeout(map, reg, val, (val & AUXADC_READY_MASK),
+> +				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*out = FIELD_GET(AUXADC_DATA_MASK, val);
 > +
 > +	return 0;
+> +}
 > +
-> +pm_runtime_put:
-> +	if (state)
-> +		pm_runtime_put(dev);
-> +	return ret;
-After the cleanup there isn't a lot of shared code in here and the
-flow is confusing I'd break it into two helpers along the lines of:
+> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
+> +				  const struct iio_chan_spec *chan,
+> +				  int *val, int *val2, long mask)
+> +{
+> +	struct mt6323_auxadc *auxadc = iio_priv(indio_dev);
+> +	int ret, mult;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->channel == MT6323_AUXADC_ISENSE ||
+> +		    chan->channel == MT6323_AUXADC_BATSNS)
+> +			mult = 4;
+> +		else
+> +			mult = 1;
+> +
+> +		/* 1800mV full range with 15-bit resolution. */
+> +		*val = mult * 1800;
+> +		*val2 = 15;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		scoped_guard(mutex, &auxadc->lock) {
+> +			ret = mt6323_auxadc_prepare_channel(auxadc);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = mt6323_auxadc_request(auxadc, chan->channel);
+Sashiko asks:
+"Does this leak power by leaving AUXADC_CON11_VBUF_EN enabled after the
+reading finishes?
+It appears the voltage buffer is enabled in mt6323_auxadc_request() but never
+disabled once the conversion completes and exits here. Also, the active
+channel is never cleared."
+https://sashiko.dev/#/patchset/20260602-mt6323-adc-v1-0-68ec737508ee%40protonmail.com
 
-static int mma8452_data_rdy_trigger_enable(struct mma8452_data *data)
-{
-	struct device *dev = &data->client->dev;
-	int ret;
-
-	ret = pm_runtime_resume_and_get(dev);
-	if (ret < 0)
-		return ret;
-
-	ret = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-	if (ret < 0)
-		goto powerdown;
-
-	ret = mma8452_change_config(data, MMA8452_CTRL_REG4, ret | MMA8452_INT_DRDY);
-	if (ret < 0)
-		goto powerdown;
-
-	return 0;
-
-powerdown:
-	pm_runtime_put(dev);
-	return ret;
-}
-
-static int mma8452_data_ready_trigger_disable(struct mma8452_data *data)
-{
-	struct device *dev = &data->client->dev;
-	int reg, ret;
-
-	ret = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-	if (ret < 0)
-		return ret;
-	
-	ret = mma8452_change_config(data, MMA8452_CTRL_REG4, ret & ~MMA8452_INT_DRDY);
-	if (ret < 0)
-		return ret;
-
-	pm_runtime_put_autosuspend(dev);
-
-	return 0;
-}
-
-Then pick between them based on state.
-
-While that is a fairly significant refactor I think that is fine as part of
-the fix as it makes the code more readable.
+Seems like a reasonable point.
 
 
->  }
->  
->  static const struct iio_trigger_ops mma8452_trigger_ops = {
-> @@ -1737,7 +1750,6 @@ static void mma8452_remove(struct i2c_client *client)
->  	regulator_bulk_disable(ARRAY_SIZE(data->regs), data->regs);
->  }
->  
-> -#ifdef CONFIG_PM
-Unrelated to the fixes.
+> +			if (ret)
+> +				return ret;
+> +
+> +			/* Hardware limitation: the AUXADC needs a delay to become ready. */
+> +			fsleep(300);
+> +
+> +			ret = mt6323_auxadc_read(auxadc, chan, val);
+> +			if (ret)
+> +				return ret;
+> +		}
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
 
->  static int mma8452_runtime_suspend(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> @@ -1791,13 +1803,9 @@ static int mma8452_runtime_resume(struct device *dev)
->  
->  	return ret;
->  }
-> -#endif
->  
-> -static const struct dev_pm_ops mma8452_pm_ops = {
-> -	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
-> -	SET_RUNTIME_PM_OPS(mma8452_runtime_suspend,
-> -			   mma8452_runtime_resume, NULL)
-> -};
-> +static DEFINE_RUNTIME_DEV_PM_OPS(mma8452_pm_ops,
-> +				 mma8452_runtime_suspend, mma8452_runtime_resume, NULL);
+> +static int mt6323_auxadc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mt6323_auxadc *auxadc;
+> +	struct iio_dev *iio;
+> +	struct regmap *regmap;
 
-This is unrelated to the fix aspect above.
+When no other particular ordering preference in IIO is for reverse xmas
+tree. 
 
-
->  
->  static const struct i2c_device_id mma8452_id[] = {
->  	{ .name = "fxls8471", .driver_data = (kernel_ulong_t)&mma_chip_info_table[fxls8471] },
-> @@ -1814,7 +1822,7 @@ static struct i2c_driver mma8452_driver = {
->  	.driver = {
->  		.name	= "mma8452",
->  		.of_match_table = mma8452_dt_ids,
-> -		.pm	= &mma8452_pm_ops,
-> +		.pm	= pm_ptr(&mma8452_pm_ops),
->  	},
->  	.probe = mma8452_probe,
->  	.remove = mma8452_remove,
-> 
-
+> +	int ret;
+> +
+> +	regmap = dev_get_regmap(dev->parent->parent, NULL);
+> +	if (!regmap)
+> +		return dev_err_probe(dev, -ENODEV, "failed to get regmap\n");
+> +
+> +	iio = devm_iio_device_alloc(dev, sizeof(*auxadc));
+> +	if (!iio)
+> +		return -ENOMEM;
+> +
+> +	auxadc = iio_priv(iio);
+> +	auxadc->regmap = regmap;
+> +
+> +	ret = devm_mutex_init(dev, &auxadc->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = mt6323_auxadc_init(auxadc);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to initialize auxadc\n");
+> +
+> +	iio->name = "mt6323-auxadc";
+> +	iio->info = &mt6323_auxadc_iio_info;
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->channels = mt6323_auxadc_channels;
+> +	iio->num_channels = ARRAY_SIZE(mt6323_auxadc_channels);
+> +
+> +	return devm_iio_device_register(dev, iio);
+> +}
