@@ -1,43 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECC1136A36E;
-	Wed,  3 Jun 2026 10:56:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87C63407592;
+	Wed,  3 Jun 2026 11:00:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780484172; cv=none; b=Sqb/3ACQd1BfA9yKpBPMSS49p4dqzAfk+IfXOeGnug104ZBrC/TQqbSXqfyBIM+ShEwdcgg6Ya7Hi7YhBMhwHXb0EHtrATSxw9ThOnuZkW5vJaBfG45qBvZToAa9yjZJJ351AwYoD6kPUgSMGqXBr2iFIbIhWlgK9SBOpfenNSM=
+	t=1780484418; cv=none; b=BbZb3z+fYbTUZXG3zx2L8qs7N1sfmSxL4OI+SDTsHdhD0D1nSreR7m/fS1jfantWVtIHutho9LVSNEtHiPNY5wikO2h8GfcbTxsSiZVR45Hzx15Z6m+Gas68gmFma0UXgBjphHFMjXr1zNk/xZPkZsozCRAqc7BfqM53jSisLQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780484172; c=relaxed/simple;
-	bh=xmDJwof4XDDjilUfkwJHGPZ3onWnBpjRWYP2hRxqkTA=;
+	s=arc-20240116; t=1780484418; c=relaxed/simple;
+	bh=CNKaYB54oesFqwBIzQmDKJ/yEIlcn80va8CAKp3e1sU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dWjn4leO1nUkagQdGKSfgrr7yslstjjr6lePe675unFpy7fQHQISmsvuuMH0z53oTUi47VsSGu4RMwBb+SA2iMLyfKi0rmclCU7o5O9okWQCdhOm28kyGqPPcfmxFYD6UWoDN6m8l2fxsJLG8lBsVJY9tHXF0LDpg5jEZXFKjuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J666huQR; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=UeP0CZnoeRI8UGTZYN22tPgCGuacDagZIjVCoOXSiZy92HIr1ngm+arol4Qw7hNHkWb4QGImss//qduhB9Lv2pmOUiiMrg2Fc5tcM41ZQvTcPnnXK3fEmia5NO+QGF+PWzJyv5RV30Dt9W7yTz1kjWMx6kA2ZI7kNEF+KwWgQYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iq5uNue8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J666huQR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9827B1F00893;
-	Wed,  3 Jun 2026 10:56:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iq5uNue8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435151F00893;
+	Wed,  3 Jun 2026 11:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780484171;
-	bh=FDwF1eE0EdMzImIdVDDPp5Vo+daPsDYxV2qxbfRAH04=;
+	s=k20260515; t=1780484417;
+	bh=1CgUjNlMw9S52nRCDvi21p+Qt+QcAgx6DMINQg+4PHo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=J666huQRrA7a9IiLF4dn227fjrc1o4pusaWXUTNU0bAJr/vGG9rIyEd5+eC8tT26a
-	 bAX88fIs4F1b6Ub8dq068DrcTdFHzsUMrVfVSGxkK877a1M2qXLjNG6aCeTk4MLt1j
-	 6ljo2SRjJnr1AI/SuRO/K/aXZJtcd4jeLF32W8k7KyGmc2YxzXnInssTODJ4gfeyWg
-	 emg++Aw5qvWfG63DmymH+IEiaX/Ki15BmUFyW6M3myzvtivUYbHmUcM7ukQyO4X2eR
-	 px3tz924qRlXO4QdvZhsW1xAH4J91/dCzAjdPPMi/o8nAa+QFq7rVTDqxCbb2/2W2B
-	 M3c51hYEe14uw==
-Date: Wed, 3 Jun 2026 11:56:04 +0100
+	b=iq5uNue8uLn2kifGX1Pqf2UNIM8caqsqmvUD/8US+upGUD/k2XcU697qVf0WaAqYx
+	 Q7uEoSkobOaFyElfddC6jkngMUeOD5eXdba9j/ouXhVzXNxO5RZyxau5K0qUfBw5gG
+	 nU8DXr9uWKTaSSTQsQcCIUwec9w3JhGqsi2ZmpLpnvzG/cKAyXcQrF5DdNenFCwMHr
+	 N0zKCNs6oksnPxwxZiGloT/pRqmHjR70dGFDGgrtbfVPmj5rsOCnAf9jwebrbhjVDn
+	 m2RIcg4RtOPGZETb/RWSmJX6OBbUyPt07xGr+GwQbiVRzH4IGSujYyUX5s+AwGhpk5
+	 /XYQJhvRLsaQg==
+Date: Wed, 3 Jun 2026 12:00:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Miao Li <limiao870622@163.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, dixitparmar19@gmail.com,
- waqar.hameed@axis.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, limiao@kylinos.cn
-Subject: Re: [PATCH] iio: accel: stk8312: Update includes to match IWYU
-Message-ID: <20260603115604.0bb2592a@jic23-huawei>
-In-Reply-To: <ah_BVAIR40VIquaY@ashevche-desk.local>
-References: <20260603014754.187465-1-limiao870622@163.com>
-	<ah_BVAIR40VIquaY@ashevche-desk.local>
+To: Dan Carpenter <error27@gmail.com>
+Cc: Jad Keskes <inasj268@gmail.com>, linux-staging@lists.linux.dev,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: addac: fix CamelCase naming in adt7316
+Message-ID: <20260603115946.34055d3f@jic23-huawei>
+In-Reply-To: <ah_Kbff-c38NWV66@stanley.mountain>
+References: <20260602190308.158051-1-inasj268@gmail.com>
+	<ah_Kbff-c38NWV66@stanley.mountain>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,24 +46,52 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 3 Jun 2026 08:53:24 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 3 Jun 2026 09:32:13 +0300
+Dan Carpenter <error27@gmail.com> wrote:
 
-> On Wed, Jun 03, 2026 at 09:47:54AM +0800, Miao Li wrote:
+> On Tue, Jun 02, 2026 at 08:03:08PM +0100, Jad Keskes wrote:
+> > checkpatch flagged a few CamelCase names in this driver.
+> > AIN and DAC prefixes are lowercased as standard kernel style.  
 > 
-> > Update the list of included headers in stk8312.c using
-> > Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
-> > and add missing headers such as array_size.h, bits.h,
-> > dev_printk.h, etc.  
-> 
-> Same comments as per your other patch.
-> 
+> The AIN things aren't an issue and checkpatch doesn't complain
+> about them.
 
-Main take away here is if you are sending a new type of change,
-test the waters (and get initial feedback) on that change applied
-to a single driver.  That way you don't waste your time or that
-of reviewers on common problems.
+Also they are userspace ABI.  Admittedly this is in staging and that
+ABI is completely none compliant with IIO standards, but none the less
+you should be very very careful when making that sort of change.
 
-Thanks,
+This driver needs a mass of work to drag it into the modern age.
+IIRC there have been a few partial attempts at that in the past.
+One key part of that is most of what you are touching in this
+patch is in code that will not exist after this is modernized.
+
+I'd be surprised if there is low hanging fruit like this that actually
+makes sense to do in the remaining staging/iio drivers. 
+Mostly much more radical surgery is required.
+
+Anyhow, with that all in mind I'm not planning to take this sort
+of change to this driver
 
 Jonathan
+
+> 
+> > Vref is kept capitalized since V stands for Voltage and is a
+> > proper technical abbreviation.
+> > 
+> > DA_AB and DA_CD are renamed to dac_ab and dac_cd to match the
+> > register constants ADT7316_VREF_BYPASS_DAC_AB and
+> > ADT7316_VREF_BYPASS_DAC_CD that they reference.  
+> 
+> This sort of change would need to be in its own commit.  (We're
+> dropping the rest of the commit anyway).  The difference
+> between DA and DAC is not totally clear to me...  The
+> adt7316_show_DAC_2Vref_ch_mask() function only seems to deal
+> with DA but the adt7316_store_DAC_2Vref_ch_mask() does stuff
+> with both.  So I'm not sure I understand the naming.  (I have
+> not investigated and this is my first time to look at this
+> code).
+> 
+> regards,
+> dan carpenter
+> 
+
