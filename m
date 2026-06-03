@@ -1,103 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CD12F8EB7
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 09:20:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1211B3F58C5;
+	Wed,  3 Jun 2026 09:26:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780478415; cv=none; b=IhaTARI0SInDvBPzZoBA03gwHavaNeDhs0FIjBtCFB4Wx0bduV/FqUKbV++6RqUxooptnN+hNIkw+0wLanpI5bF8dqzvIDmc0P3+msAyRJx8U98eLZfgh76qv9NT9/ZeMhoP6YHObst2y19jNvM1xDCl0wfBfcZSC9MzmYLtdx4=
+	t=1780478779; cv=none; b=b4Xrzmgg6nxJZKDjojZHL8r7OvrN7rRhDwJbWU6BCUJLgz8P6S9FyR26LjWg7NeW79AYczAKKkFrGeC7I5xNxi4H1Pzyar0V/jgpgZtUo+okSLiXNKwmFYGDJFLIqCzuKX3o8pUKSappO0ZFQsIhXQJU+fuwhEwiG6vXpBkEN70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780478415; c=relaxed/simple;
-	bh=B8nWa5m+gfh+e74pfi2m8v0AalhEF9irrUG9k6kZBb4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jyAGoqdy5CpgRo8Lq5C1UvpyFGKbMcFUPL5h6xG/wwolUix91N0L2tUiykK25K28kcdNDDxOfeNjfuZm4KX8EkS+U8Z3tgoJcxmUppubGtinf6PA4SirwcZt2/PLQrRJJKA1u4i1jQA6eVl13e2F/z6izUlYFzSRXENag8XVyA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IoF2y6zK; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780478779; c=relaxed/simple;
+	bh=yvYfUG+tm6Y4ovpoosSHN/jEx5DwmFb3r51sEauelfM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kuQYUe7PcV2532ITobPEOe72xcbpEuF0D86yz/DPGlb3obCeTmAy+KvCGWMaA1QLgyokIbV/+oTUA6zO1xpCe4Z2ZZ8iUVcoKkF+DO+fMh3UBzcW+YHEJlU1QTjjRdaxsqDeLJT7alEaXZEH/hJSRWfoRtUUXnOXBzTuKAbxpOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a4NndX1l; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IoF2y6zK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B2931F00893;
-	Wed,  3 Jun 2026 09:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780478413;
-	bh=h0R/08BeDo7cvhJ6N3qiy8DrX9+ynx75WZDRdAfDTqM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IoF2y6zKGuNKpZ96kTn5aOP/Y67jjFbsYQL6yn/rhH9FJFyiAjq4mlJ0Q41X4/sjn
-	 WnRMzxQO4SabicuAhl4swaLzPARMmE/dnqLvuEwTPhcghoE8jwavLLue9S2gh86A+T
-	 tJq7Q13azUXUEB60/pkvEo2F5CrqkxCbtIuCLZt149RMdNiCQgtATeOz5lLm7rEOHO
-	 /m50udUoulEjvWUYlIQy2ptjECzX0aC3cunvr1J3ADroESuNO2nF+xqvlU5xBK5oUf
-	 W3qxdb/8w6ItTql7zGXUlvT/Jv/C9LQ1bU3xoohPAsqqZJj5brlmScw6B0J5BxddGW
-	 kcXPclMDj6SBQ==
-Date: Wed, 3 Jun 2026 10:20:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Sam Moelius <sam.moelius@trailofbits.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=	 <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Marcelo Schmitt	
- <marcelo.schmitt@analog.com>, Jonathan Santos <Jonathan.Santos@analog.com>,
- Jorge Marques <jorge.marques@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Matti Vaittinen	 <mazziesaccount@gmail.com>,
- Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, Duje =?UTF-8?B?TWloYW5v?=
- =?UTF-8?B?dmnEhw==?=	 <duje@dujemihanovic.xyz>, Stefan Popa
- <stefan.popa@analog.com>, Julien Stephan	 <jstephan@baylibre.com>, "open
- list:IIO SUBSYSTEM AND DRIVERS"	 <linux-iio@vger.kernel.org>, Samuel
- Moelius <samuel.moelius@trailofbits.com>
-Subject: Re: [PATCH] iio: adc: ad7380: select REGMAP
-Message-ID: <20260603102007.51485e82@jic23-huawei>
-In-Reply-To: <dc7f62261b4bf665482ecd791e425bbc68aae515.camel@gmail.com>
-References: <20260602153926.1540911-1-sam.moelius@trailofbits.com>
-	<dc7f62261b4bf665482ecd791e425bbc68aae515.camel@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a4NndX1l"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780478778; x=1812014778;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yvYfUG+tm6Y4ovpoosSHN/jEx5DwmFb3r51sEauelfM=;
+  b=a4NndX1lI2e3mO0JV4TvTP1EjMnrD0zKYa0QxtbXcmUGcLeC7OkH+8/o
+   7nFDmMWXnwui/v1Q/ljsbCclqMQxJ0Bmvz6dZJGFHnB+2dT95ydRFk7gX
+   tqDegdzKYz+Mj25rWMwcg3omUnQdTFZne4g9BwPYjTnCfBU4/id8If2VK
+   Y7lWfZgCbzzXHhnan6AtK5yE5nhMt0DXmTHPE37ZoWQdalp+xo6wELLxj
+   /InMi83S0ZbyBIxRY5x4xSP7HdUwS396r4YGbq8E2zwUy1++J4xvaLVC1
+   2wDzCkIZ1/bYU4pFcID7QKoJx0p3xIOX8Kd6tMiWRsYGedShDiMpbd1s7
+   w==;
+X-CSE-ConnectionGUID: jmmnX2mdTyGYS0OkvXTPpA==
+X-CSE-MsgGUID: 5t8mfVNlSTyOihjlgeP8iw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11805"; a="81311729"
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="81311729"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 02:26:17 -0700
+X-CSE-ConnectionGUID: xtuEddK4TKKCl3LQNMtNZQ==
+X-CSE-MsgGUID: 8y4rIbe/SSqzZuNIMqVDWA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,184,1774335600"; 
+   d="scan'208";a="248117969"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 02:26:14 -0700
+Date: Wed, 3 Jun 2026 12:26:11 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Taha Narimani <tahanarimani3443@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: adc: ad7816: Use
+ devm_gpiod_get_optional() for busy GPIO
+Message-ID: <ah_zMybQBDHakXpX@ashevche-desk.local>
+References: <20260603123333.5608-1-tahanarimani3443@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260603123333.5608-1-tahanarimani3443@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 02 Jun 2026 17:28:35 +0100
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+On Wed, Jun 03, 2026 at 12:33:33PM +0000, Taha Narimani wrote:
+> The driver currently utilizes devm_gpiod_get() for the 'busy' line,
+> which makes the GPIO mandatory. However, the busy pin is hardware-optional
+> depending on the specific board configuration.
+> 
+> Switch to devm_gpiod_get_optional() to allow boards that do not have
+> this pin wired up to still probe the driver successfully, and remove
+> the redundant conditional chip-ID check since the optional API handles
+> missing descriptors gracefully.
 
-> On Tue, 2026-06-02 at 15:39 +0000, Sam Moelius wrote:
-> > From: Samuel Moelius <samuel.moelius@trailofbits.com>
-> >=20
-> > The AD7380 driver uses generic regmap types and APIs. However, its Kcon=
-fig entry
-> > does not select REGMAP.
-> >=20
-> > As a result, AD7380 can be enabled from an allnoconfig-derived config w=
-ith
-> > SPI_MASTER=3Dy while REGMAP remains unset, causing ad7380.o to fail to =
-build.
-> >=20
-> > Fixes: b095217c104b ("iio: adc: ad7380: new driver for AD7380 ADCs")
-> >=20
-> > Signed-off-by: Samuel Moelius <samuel.moelius@trailofbits.com>
-> > --- =20
->=20
-> Change looks good but it seems the commit message will fail checkpatch. W=
-ith that:
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
->=20
-> > =C2=A0drivers/iio/adc/Kconfig | 1 +
-> > =C2=A01 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index a9dedbb8eb46..c79341848698 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -311,6 +311,7 @@ config AD7298
-> > =C2=A0config AD7380
-> > =C2=A0	tristate "Analog Devices AD7380 ADC driver"
-> > =C2=A0	depends on SPI_MASTER
-> > +	select REGMAP
+...
 
-Would REGMAP_SPI be the better choice?  I assume either works from
-build point of view, but nicer to select all the support this actually need=
-s.
+> -	if (chip->id == ID_AD7817) {
+> +	if (chip->busy_pin) {
 
-> > =C2=A0	select SPI_OFFLOAD
-> > =C2=A0	select IIO_BUFFER
-> > =C2=A0	select IIO_BUFFER_DMAENGINE =20
+If we get GPIO optional, this check wouldn't be necessary anymore as the below
+should return 0 IIRC in this case.
+
+>  		while (gpiod_get_value(chip->busy_pin))
+>  			cpu_relax();
+>  	}
+
+> +	chip->busy_pin = devm_gpiod_get_optional(&spi_dev->dev, "busy",
+> +						 GPIOD_IN);
+
+Make it a single line. Perhaps with a help of
+
+	struct device *dev = &spi_dev->dev;
+
+added to the top of the function.
+
+> +	if (IS_ERR(chip->busy_pin)) {
+> +		ret = PTR_ERR(chip->busy_pin);
+> +		dev_err(&spi_dev->dev, "Failed to request busy GPIO: %d\n",
+> +			ret);
+> +		return ret;
+
+You can't do that, it will spam bootlog very quickly if this GPIO is deferred
+and never appears. The proper way is to
+
+		return dev_err_probe(dev, PTR_ERR(chip->busy_pin), "...");
+
+>  	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
