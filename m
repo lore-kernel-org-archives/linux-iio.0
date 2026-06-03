@@ -1,49 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A73CB315785;
-	Wed,  3 Jun 2026 13:41:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F83329E6C;
+	Wed,  3 Jun 2026 13:46:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780494103; cv=none; b=JeNUFBmD5b+8M3yQaUqkhFfJgo542x4muXPOju28QaageH6an7eEw6V2izoShYa8yIv6ne9o0XcUy3GBqLAQIZ4f9ic4BmFL97kPf7b7ArX0NmBOW0EG5HGfj7Le7ap6kwRcn1QE7PL2pig6fG+qXScyNZUXOFPTs1FeGq9gFAw=
+	t=1780494380; cv=none; b=KFiLYpQ2mqqPcoDjlohI7rOJONVjH6vnWNqkB02fFQq1YEkA1RX2FPl6pkQqwiO9Rd9AqduKHKqGDRdXhFq+7IBzoThhyuWYwDPbCwBHDs7k08hGonEaotecQ3i5oD9LfU3V8PEP4juL53mjpFHtxL0GQ7BTN1d7VGgduPe7jb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780494103; c=relaxed/simple;
-	bh=+8C41rRncxMIOZPBtKBLqFtE+5PaSmWw3yiragR7HYA=;
+	s=arc-20240116; t=1780494380; c=relaxed/simple;
+	bh=YFNAqFDxk/MEMEUnwOMbFmzvs+j1ZkGZaJGTjzFOkMw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ik5NyITJE+E0m9IGSn0DP5f4Lx80KhBDMj6do6NOprTi+QRgYSSBMQpnG3BWlNbxao9HUCjUKo3Uf+bJlKsQgMDMAJeG71IbFpc93p0VZZIr8jj+Knhnjoqm+j0ieAF479eXSA4MsE3pnsMZHMPIzeua/S/bj2b4HJ5S6D2HvcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=htLHZ/bT; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=q9Fe2pnxhV7dj7njZ9Mzj3X9ngZGXMo+0NPBUb1o7nizmz+O2VmDNA3WFclleUdRlUsLRezq2ZZxIDDhcjvsQq1R6ziitF2NcKAKvWgeJ8/1yRQqsRz3c+3yu1J7mkkOVC8if9VWxTT6REXYGtI3H6jkDfKgYUMchC8NmGKLxt8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X3lpzVzN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="htLHZ/bT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B031F00893;
-	Wed,  3 Jun 2026 13:41:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X3lpzVzN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D92741F00893;
+	Wed,  3 Jun 2026 13:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780494102;
-	bh=TnE/uLXPZCe1VSHvqcoTHEVGQ4O32FN0ovU1bXUARic=;
+	s=k20260515; t=1780494379;
+	bh=SM1cKq9SfWufKuIA+3YVCEbGbuxmG5CEwN2ohUYgVxI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=htLHZ/bTWSKQDDbVwToSkF9CW2OiNYBuNJbe0DIOLVX+ZxwXUsnsF3UCwj/ZtIzqN
-	 BUdw77jFIFUAzQoRyVjTh1+D9VM7iPcjAUnXIARcF7260zeSu77KhHGOqVadj3/c0C
-	 HcP5bYU4o8Wi0hMehvV6hmXh0UCOmbp2hgb75tN75R/Ezmx8VDAtm0kaCb5NT4m3uz
-	 +VKnl383MUD+5N6uUbB/Fhf8MXlGEunJ4W9Uty3CQlkQsvumqw02nKqL6ViLBikH4+
-	 Gu0XHyy0/Q04qL5n56eqB+eytb/QLzrgo5JTi2V6a664eN4d5cm34dMz3msWh6WWBA
-	 vgb6tNNGe7f+Q==
-Date: Wed, 3 Jun 2026 14:41:32 +0100
+	b=X3lpzVzNsmzUvBWgrJY/p4bH8g7VDsT822kjq9ZTydis6zw7/CngVyU7LjFVwcqVp
+	 PEuYKLUGDIRYvv/9CdXuFr+/WK+OPzpdDRSAENljYuFyvoTpyyHiFzmexKqJvSvlSL
+	 iAyp3Pu6EJZhVkSMowL5zHx8L3AKv8HL3Zys4IVIGtV5axAC0EXnNNqfaXLXUcG2N6
+	 Neh+iezmCtZmXO+5sIQLR3/K/rkoxTi/JFVHEdANmw15bE2mOgeVIYj2zQLQg5v7Xv
+	 Wwl2ZMeN/qHLyQbPp74H6ZAZUxdXdv+S5qQjPXop4bC3FZrEMH1x/d44Ae3uQo0OvH
+	 bvrwIEVjAmhgw==
+Date: Wed, 3 Jun 2026 14:46:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, Lee Jones <lee@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH 2/4] iio: adc: mt6323-auxadc: add mt6323 PMIC AUXADC
- driver
-Message-ID: <20260603144132.6c5daea8@jic23-huawei>
-In-Reply-To: <20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
-References: <20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com>
-	<20260602-mt6323-adc-v1-2-68ec737508ee@protonmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Runyu Xiao <runyu.xiao@seu.edu.cn>, nuno.sa@analog.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, dlechner@baylibre.com, andy@kernel.org,
+ benato.denis96@gmail.com, martin@martingkelly.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ jianhao.xu@seu.edu.cn, stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: imu: adis: add IRQF_NO_THREAD to non-FIFO
+ trigger IRQ
+Message-ID: <20260603144612.0102a336@jic23-huawei>
+In-Reply-To: <ah997ABzoOb0cFq3@ashevche-desk.local>
+References: <20260602091727.2406720-1-runyu.xiao@seu.edu.cn>
+	<20260602091727.2406720-2-runyu.xiao@seu.edu.cn>
+	<ah997ABzoOb0cFq3@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,163 +51,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 02 Jun 2026 15:46:55 +0300
-Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+On Wed, 3 Jun 2026 04:05:48 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Roman Vivchar <rva333@protonmail.com>
+> On Tue, Jun 02, 2026 at 05:17:26PM +0800, Runyu Xiao wrote:
+> > devm_adis_probe_trigger() registers iio_trigger_generic_data_rdy_poll()
+> > through devm_request_irq() on the non-FIFO path, but it does not add
+> > IRQF_NO_THREAD to the IRQ flags.
+> > 
+> > When the kernel is booted with forced IRQ threading, the parent IRQ can
+> > otherwise be threaded by the IRQ core and the subsequent IIO trigger
+> > child IRQ is then dispatched from irq/... thread context instead of
+> > hardirq context. Because iio_trigger_generic_data_rdy_poll()
+> > immediately drives iio_trigger_poll(), this violates the hardirq-only
+> > IIO trigger helper contract and can push downstream trigger consumers
+> > through the wrong execution context.
+> > 
+> > Add IRQF_NO_THREAD on top of the existing adis->irq_flag value for the
+> > non-FIFO request_irq() path, while preserving the current trigger
+> > polarity and IRQF_NO_AUTOEN behavior.  
 > 
-> The mt6323 AUXADC is a 15-bit ADC used for system monitoring. This driver
-> provides support for reading various channels including battery and
-> charger voltages, battery and chip temperature, current sensing and
-> accessory detection.
+> > Build-tested by compiling adis_trigger.o.
+> > 
+> > No ADIS hardware was available for end-to-end runtime testing on this
+> > submission branch.  
 > 
-> Add a driver for the AUXADC found in the MediaTek mt6323 PMIC.
+> These two paragraphs are unneeded details and can go to the cover letter.
 > 
-> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
-> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-Trivial stuff inline + a question from the sashiko bot you may have
-missed.
+> ...
+> 
+> Code wise IIRC another approach was discussed. But Jonathan may know better.
+> 
 
-Jonathan
+Whilst I dislike the necessity of marking these, I'm not aware of another
+solution.  Maybe the discussion Andy refers to what the one around
+papering over ONESHOT where if that flag is set and there isn't a thread
+handler it's a driver bug.
 
-> diff --git a/drivers/iio/adc/mt6323-auxadc.c b/drivers/iio/adc/mt6323-auxadc.c
-> new file mode 100644
-> index 000000000000..da6c11a5079c
-> --- /dev/null
-> +++ b/drivers/iio/adc/mt6323-auxadc.c
-> @@ -0,0 +1,299 @@
+For this we might be able to on day do something cleverer but that would
+first mean fixing up how we run top halfs when only the thread is called.
 
-
-> +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
-> +				 unsigned long channel)
-> +{
-> +	struct regmap *map = auxadc->regmap;
-> +	int ret;
-> +
-> +	ret = regmap_set_bits(map, MT6323_AUXADC_CON11, AUXADC_CON11_VBUF_EN);
-
-See below. Sashiko asked if lack of turning this off again when done
-with a read is wasting power or similar.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_clear_bits(map, MT6323_AUXADC_CON22, BIT(channel));
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_set_bits(map, MT6323_AUXADC_CON22, BIT(channel));
-> +}
-> +
-> +static int mt6323_auxadc_read(struct mt6323_auxadc *auxadc,
-> +			      const struct iio_chan_spec *chan, int *out)
-> +{
-> +	struct regmap *map = auxadc->regmap;
-> +	u32 reg = chan->address;
-It's only used one. I'd probably put it inline and skip the local variable.
-> +	u32 val;
-> +	int ret;
-> +
-> +	ret = regmap_read_poll_timeout(map, reg, val, (val & AUXADC_READY_MASK),
-> +				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*out = FIELD_GET(AUXADC_DATA_MASK, val);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mt6323_auxadc_read_raw(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan,
-> +				  int *val, int *val2, long mask)
-> +{
-> +	struct mt6323_auxadc *auxadc = iio_priv(indio_dev);
-> +	int ret, mult;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->channel == MT6323_AUXADC_ISENSE ||
-> +		    chan->channel == MT6323_AUXADC_BATSNS)
-> +			mult = 4;
-> +		else
-> +			mult = 1;
-> +
-> +		/* 1800mV full range with 15-bit resolution. */
-> +		*val = mult * 1800;
-> +		*val2 = 15;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_RAW:
-> +		scoped_guard(mutex, &auxadc->lock) {
-> +			ret = mt6323_auxadc_prepare_channel(auxadc);
-> +			if (ret)
-> +				return ret;
-> +
-> +			ret = mt6323_auxadc_request(auxadc, chan->channel);
-Sashiko asks:
-"Does this leak power by leaving AUXADC_CON11_VBUF_EN enabled after the
-reading finishes?
-It appears the voltage buffer is enabled in mt6323_auxadc_request() but never
-disabled once the conversion completes and exits here. Also, the active
-channel is never cleared."
-https://sashiko.dev/#/patchset/20260602-mt6323-adc-v1-0-68ec737508ee%40protonmail.com
-
-Seems like a reasonable point.
-
-
-> +			if (ret)
-> +				return ret;
-> +
-> +			/* Hardware limitation: the AUXADC needs a delay to become ready. */
-> +			fsleep(300);
-> +
-> +			ret = mt6323_auxadc_read(auxadc, chan, val);
-> +			if (ret)
-> +				return ret;
-> +		}
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-> +static int mt6323_auxadc_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mt6323_auxadc *auxadc;
-> +	struct iio_dev *iio;
-> +	struct regmap *regmap;
-
-When no other particular ordering preference in IIO is for reverse xmas
-tree. 
-
-> +	int ret;
-> +
-> +	regmap = dev_get_regmap(dev->parent->parent, NULL);
-> +	if (!regmap)
-> +		return dev_err_probe(dev, -ENODEV, "failed to get regmap\n");
-> +
-> +	iio = devm_iio_device_alloc(dev, sizeof(*auxadc));
-> +	if (!iio)
-> +		return -ENOMEM;
-> +
-> +	auxadc = iio_priv(iio);
-> +	auxadc->regmap = regmap;
-> +
-> +	ret = devm_mutex_init(dev, &auxadc->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = mt6323_auxadc_init(auxadc);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to initialize auxadc\n");
-> +
-> +	iio->name = "mt6323-auxadc";
-> +	iio->info = &mt6323_auxadc_iio_info;
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->channels = mt6323_auxadc_channels;
-> +	iio->num_channels = ARRAY_SIZE(mt6323_auxadc_channels);
-> +
-> +	return devm_iio_device_register(dev, iio);
-> +}
+So with a patch descriptions tweaked as Andy suggests I'll pick these up.
