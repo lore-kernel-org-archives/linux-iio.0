@@ -1,86 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DF801A0BF1;
-	Wed,  3 Jun 2026 12:55:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EF211A0BF1
+	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 12:57:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780491339; cv=none; b=Na5lBb5X9baCi38tsTJFUAfaMKzIAO7MI+UIQ8TenRDlC8tI5GmetMj1xvDSn9QS/FD2i5X/KBch6peUTgEO0cSGpV4NBHfZbIzElYyERd0IpXa1+OhquwWtbS8Cy5WLB+pV4P6I8PB01AvqCdmgCQ65hZg8A/Am9CFVeduleRM=
+	t=1780491439; cv=none; b=kzjQx3W52RXQxqfJ8jjNfhKdN6Xj26CoZlPFarUYt8IFOknBpd/VpildYU/ZS+y7U6b8g1RT8dh9cYJwXcsYIev2Es41oc6no5Kq99lTAdly3IAN/w6rp5NSXJ/F3Gvt4KWwHg5svo2TbcOIsBNSIkU3dLfXJeiDu9XEHlVx8Bw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780491339; c=relaxed/simple;
-	bh=3rYEvm8guTOUqyzyTHOnG+63cFjmQM0v9FHTN0tbDrw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e2cS5jfYOwc2pB1jJKgORudE9RkrNWOXvzS0qfh2AoIaoc8zrGvx5nZQnSH0qmM7smQ7UPvYXZ9lj6785HIngXa0RY+nnoskQbdQQYlTVgvqVegJIsAadPAkp0l+rzAq77S2dziM8Qp8Y4MfSOrgfX2C27fg71jN1/RLHhGBzhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZITy+Jvh; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZITy+Jvh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7AE1F00893;
-	Wed,  3 Jun 2026 12:55:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780491337;
-	bh=iE4jRMPbhQH0PvIv57gmqF1YPc/vbiAJUSleWIT0u7Y=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZITy+Jvh5I+g+3hrZx+k88KdQNY2wDBZvjYq5TlCVs6UOrTHgIbH/YZzL5wyApxI5
-	 T8kh9Z0F3pzk7z0/5uMDstcXeElYJZkuJdnfRbNDbSZ9oOXfYYTyp6yPcGQlgjM9Sl
-	 LYsmf0FUI3VywLT+pxbDyTuV3CSCiHxrQlezYtrBKcFmIEwE7GD0x2rTarTqQBBhX3
-	 mwtqpeOLNsAy7ojhOFI4EkjhqqVJzMLyzxtPWqdQwMftMe04eRlMjKKDe5Zs4A4fPP
-	 UTIlY+oTwQYp6aNsMR2yK8/y6svyelZhqYupSyDj9yguWMx9Lb/aeqClamgTAk3qan
-	 kWQkG9hLXMHdw==
-Date: Wed, 3 Jun 2026 13:55:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
+	s=arc-20240116; t=1780491439; c=relaxed/simple;
+	bh=pHsMjf9jOADay95AmSheayfTht4Ho2nDz85KLsw11og=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=sh/uHV1wYE3LKiSGbq4s9tw3xD7sRPb6IqWVW0llYqEj+kx9aNuqxs/C2ootI039bbRia9d5UnD7xxnm6Ar2isyHlvdnjKAPd7NTPKXt8YU4yiwz7UrtFkMafs9J1KBjLZMAVos9kQI2ondYkXVb/GREhh2v5pP3S4OUVtaloRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1wUl9n-0005og-Nv; Wed, 03 Jun 2026 14:57:15 +0200
+Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1wUl9m-000uml-2B;
+	Wed, 03 Jun 2026 14:57:14 +0200
+Received: from pza by lupine with local (Exim 4.98.2)
+	(envelope-from <p.zabel@pengutronix.de>)
+	id 1wUl9m-000000009Wj-2PbL;
+	Wed, 03 Jun 2026 14:57:14 +0200
+Message-ID: <b21934ee7bc0b588a7a07a8bad93f2792a61df38.camel@pengutronix.de>
+Subject: Re: [PATCH 06/12] iio: dac: ad5686: consume optional reset signal
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
+	 <noname.nuno@gmail.com>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>, 
+	linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
+ Hennerich	 <Michael.Hennerich@analog.com>, David Lechner
  <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook
- <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 09/12] iio: dac: ad5686: implement new sync() op for the
- spi bus
-Message-ID: <20260603135525.41331916@jic23-huawei>
-In-Reply-To: <ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor Dooley
+ <conor+dt@kernel.org>, Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva"
+ <gustavoars@kernel.org>
+Date: Wed, 03 Jun 2026 14:57:14 +0200
+In-Reply-To: <20260603130833.007c1526@jic23-huawei>
 References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
-	<20260602-ad5686-new-features-v1-9-691e01883d27@analog.com>
-	<ah8roqGqZ_VhAPaa@ashevche-desk.local>
-	<ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+		<20260602-ad5686-new-features-v1-6-691e01883d27@analog.com>
+		<ah_k9A9535Vz6PCw@nsa> <20260603130833.007c1526@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2-0+deb13u1 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Wed, 3 Jun 2026 13:26:43 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Mi, 2026-06-03 at 13:08 +0100, Jonathan Cameron wrote:
+> On Wed, 3 Jun 2026 09:28:26 +0100
+> Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+>=20
+> > On Tue, Jun 02, 2026 at 05:33:53PM +0100, Rodrigo Alencar via B4 Relay =
+wrote:
+> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > >=20
+> > > Add RESET pin GPIO support through an optional reset control, which i=
+s
+> > > local to the probe function. Also, include delays for power-up time a=
+nd
+> > > reset pulse width.
+> > >=20
+> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > ---
+> > >  drivers/iio/dac/ad5686.c | 13 +++++++++++++
+> > >  1 file changed, 13 insertions(+)
+> > >=20
+> > > diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> > > index 4a8c587ff116..345ca2436332 100644
+> > > --- a/drivers/iio/dac/ad5686.c
+> > > +++ b/drivers/iio/dac/ad5686.c
+> > > @@ -8,12 +8,14 @@
+> > >  #include <linux/array_size.h>
+> > >  #include <linux/bitfield.h>
+> > >  #include <linux/bitops.h>
+> > > +#include <linux/delay.h>
+> > >  #include <linux/dev_printk.h>
+> > >  #include <linux/errno.h>
+> > >  #include <linux/export.h>
+> > >  #include <linux/kstrtox.h>
+> > >  #include <linux/module.h>
+> > >  #include <linux/regulator/consumer.h>
+> > > +#include <linux/reset.h>
+> > >  #include <linux/sysfs.h>
+> > >  #include <linux/wordpart.h>
+> > > =20
+> > > @@ -471,6 +473,7 @@ int ad5686_probe(struct device *dev,
+> > >  		 const struct ad5686_chip_info *chip_info,
+> > >  		 const char *name, const struct ad5686_bus_ops *ops)
+> > >  {
+> > > +	struct reset_control *rstc;
+> > >  	struct ad5686_state *st;
+> > >  	struct iio_dev *indio_dev;
+> > >  	int ret, i;
+> > > @@ -506,6 +509,16 @@ int ad5686_probe(struct device *dev,
+> > >  		return dev_err_probe(dev, -EINVAL,
+> > >  				     "invalid or not provided vref voltage\n");
+> > > =20
+> > > +	rstc =3D devm_reset_control_get_optional_exclusive(dev, NULL);
+> > > +	if (IS_ERR(rstc))
+> > > +		return dev_err_probe(dev, PTR_ERR(rstc),
+> > > +				     "Failed to get reset control\n"); =20
+> >=20
+> > On top of what Andy stated, I'm fairly sure
+> > devm_reset_control_get_optional_exclusive() returns with the GPIO
+> > asserted.
+>=20
+> We've been getting reports on that not being the case from Sashiko
+> and when I last looked into one of those it definitely isn't documented
+> as doing so and I got the impression it is a reset controller specific
+> thing.
 
-> On 26/06/02 10:14PM, Andy Shevchenko wrote:
-> > On Tue, Jun 02, 2026 at 05:33:56PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> >   
-> > > Use of local SPI bus data to manage a collection of SPI transfers and
-> > > flush them to the SPI platform driver with the sync() operation. This
-> > > allows for faster handling of multiple channel DAC writes, avoiding kernel
-> > > overhead per spi_sync() call, which will be helpful when enabling
-> > > triggered buffer support.  
-> > 
-> > Why spi_message_alloc() can't be used instead of manual handling?
-> > (Seems no current users, so you even can modify it for your needs.)  
-> 
-> I need to manually call spi_message_add_tail() to append messages.
-> I suppose that such function is a bit weird and no wonder why it
-> is not being used. struct spi_message_with_transfers might need
-> to be properly declared so that users can populate the transfer
-> array without manually moving pointers or having to redefine the type.
->  
-Agreed it would be significant surgery. Perhaps worth it as a follow up
-if you can find a couple of drivers open coding the equivalent.
+The reset controller API does not prescribe that freshly acquired
+resets start in asserted state, because that isn't possible for self-
+clearing resets.
 
-Otherwise perhaps send a patch removing spi_message_alloc()
+If the chip needs to see the deasserted -> asserted flank, the driver
+should start with a deassert.
 
-J
+> Do we are fine here because the gpio reset controller reset_gpio_probe()
+> includes:
+> 	priv->reset =3D devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
+> 	if (IS_ERR(priv->reset))
+> 		return dev_err_probe(dev, PTR_ERR(priv->reset),
+> 				     "Could not get reset gpios\n");
+> Which I guess puts it in to reset?
 
+Yes. I would like consumer drivers to not rely on implicit knowledge
+about the reset controller driver, though.
+
+> So do we assume gpio reset or not for this sort of driver that specifies
+> in the binding reset-gpios. Now if the following is implying we need
+> a deasserted to asserted transition (maybe?) then we'd need to force
+> a deassert first.
+
+Iff the transition is necessary, explicitly deassert-then-assert.
+
+
+regards
+Philipp
