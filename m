@@ -1,111 +1,204 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 851BD40910C
-	for <linux-iio@vger.kernel.org>; Wed,  3 Jun 2026 12:26:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA1FA30FF08;
+	Wed,  3 Jun 2026 12:42:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780489608; cv=none; b=klas9xmDcaZABx0n55fjTzsaKP160nLaEWPymr07EvJquunxx1d8DqdPrMfEDho8lUzRYiklQp6ltO6iY4E//c3F1wZtAaIyJLMx6HTZFl3eFFD3HBALEYG1ewo96hlDif+IVPtFQZWAQdk2TUi11ovpfHOC8oqj79kqR8HBiRo=
+	t=1780490524; cv=none; b=JFVFAehOYow5nNdLtDsw1Pa3s6X3bpAwiD39rm2usW86S3wadFnWKK0rWM9lPpse8q8GE4He28e1zmYpdAV5rN3gnXWuA5/pPeJuOxgSyqPe7+S9UKBnmuGDJEqKUy8h58C4XkHbPbH+OvchrAeD0eIa/pAO+C7AIRwsp6+TLTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780489608; c=relaxed/simple;
-	bh=3jIsHOEB2pBvR4m/btDNC659kkrYQVQgt5gTAuhCyB4=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W6hSqVAv4CF5C2eGgoB8BfKqGXdhqye3gKGKeb3KXdecBBXm6EItmY5yqeDASuXEhKtswlY7ApdIB3AyGd2xIncJ0ecplVdqpq1boKJk+OSJIokD+wI9gu32jeDjn0bYbAWN0nPXn9ivUHFb2KHxeUowl8u2ulGFXm/nPwV2Th4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AOf1qL4F; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780490524; c=relaxed/simple;
+	bh=dWwGk9rQfTnjchtezlSWjb+t1YEjffClPqKEsjmAgZA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sADotwpGLPubRdtJujTSNp/zMdo6jABwmG5kcq3v5pkjED/TkK2tmfb8ukhNeqRJcVdkMTcNa8hNxIZ5+QJvmFM/J2U/rPAlVuYJ+mJQMilMSDLlHytm080sq5kkbzQO/g/G8NMciwW7ogbHydc6ppALLGZZdy7jJSEpO7kcDPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Aeil1ksO; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AOf1qL4F"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-68c19f1f3ceso8451515a12.2
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 05:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780489606; x=1781094406; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=s4aVZcTl8U1FLvESvygfBSaJHvnQyZU6dW/R+A9ZYVI=;
-        b=AOf1qL4F14i/C+CIj8WK6zCxoJSA0DaWD7pTV+j0sYGso7YWdF0peZHioGyOEFdMDD
-         z2X9bQzjaIpJcHvKHiddDzqye28tytsXsGw9Nq/pTgZ4EYmaAutHENR5/71+apibeg1x
-         TLLRyd5A7PPqjocY/Uow2GxkwQXkeOa14v9zKAgYAYH+wvnC0lTJTFaCvGh1cGiFdD8C
-         /in5lYM8aRX0YppJCYLQipNlua/eiGZbvZppoPqmF7iik34ZkEYVF63u4W9ki9w6RUGS
-         /5VGK7Rvmk6rwkfQ3gOzJuUjBxcyLDCnayPwZzOni3FJE6LRIMorDB6bi9EH4ONYdMz/
-         kljA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780489606; x=1781094406;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=s4aVZcTl8U1FLvESvygfBSaJHvnQyZU6dW/R+A9ZYVI=;
-        b=IklPq7VBPxy9U7iVs6zxLgzuJS1ef2bhwOZO6mCdJ8PzFqi71OvqDochiN6HYeVHPM
-         IJI4gcVMvB6yRpzzrihWG1BfwhYOSMqSpVbAq6/bMGSZWyAOanyifk06GFv2VJBk5yjd
-         9A/uGdevxBApuuNZkBYqMSrMVB/dyXdukrbDkq1jqpbXJ57AbTT/qgOSce/e9WpGnbt+
-         FqErDfa0I9USWFebQCr5CZSsdk/zxBDbfyPXnjFSRh37eWmfBjgHu8t8h9aJr0v0/XKZ
-         jSwsutuhowrCK943E0bFzUjXJFQdAL/wJ9GBFmguAHAtD0AE7N6uorpPDOwwu8hl7pYE
-         lElw==
-X-Forwarded-Encrypted: i=1; AFNElJ8eit45z7XLggs29oOjK09I6gfeGBiBEhvOVSAkmL7fyqH3Q3T7j2osbMYSPyS5spPLnmrGldFA3oM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz6OrWiCwlrS5AoLU89GOsrMIZBilxVSF4KA1KpovqHBXKfdjGh
-	LNHq/1R92c8kupPekFDV7euvreeOZR86EZe7fKq3z4UDKAe2wbYFzIqc
-X-Gm-Gg: Acq92OEOcA1zTyQ4/EdyQy4TjAxOBSGGUQjDxLnzPeke/5LncX1KkcG2JqEq2muusCb
-	/iesyKnnAEOyDJRJgtqwM69bEMZDV6K8hVtKjQtQUTsC6ylw0JyCwL+ML9v4mGmMxoS35OEU1xO
-	8bVhkBu390mId6WOm1+uH0r9ha+afv4nV1x1k9aKpxOlEu517beQwSMZnA/CVlfs2KGMWldMVuy
-	uP6Yxf2TmAWZBZENwzKr3Ifn21CUhDnnhww6UFPG6q2e2MNdq0vRyTBBeZ5ir2mh17b0IAtqvPW
-	PNK6yV4SPV6mDwuEuQRr9BIL8bNEj3/Slc6m99Sr1x2XesH30hY2lWDcD8Ce5C1bVdWUEobFiAV
-	Qtwsy+Vpav1MthH7pgcA8959+5DN+STXCny2UQ+Z4Gvqgw0ZUNErZemwBJFtBuyyciIb7Xd+hvi
-	vpSAjw7EFH9PWmKuogFRPxchdCVWsajs3D+G4HLonVZ+60yenGr4aMKHadVfFo8T5qGXXlIMaEg
-	10x+rAV60Dd5U3RmOHFYVQJZVdjN9zT/clz7xwFUCSrLHTv1Q==
-X-Received: by 2002:a17:907:1998:b0:beb:b53d:4839 with SMTP id a640c23a62f3a-bf0aea0a6femr173937066b.33.1780489605837;
-        Wed, 03 Jun 2026 05:26:45 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf04e9e3847sm149542666b.0.2026.06.03.05.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Jun 2026 05:26:45 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Wed, 3 Jun 2026 13:26:43 +0100
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 09/12] iio: dac: ad5686: implement new sync() op for the
- spi bus
-Message-ID: <ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Aeil1ksO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57C021F00893;
+	Wed,  3 Jun 2026 12:41:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780490523;
+	bh=G8yheY5+6eUkXr3fPaoHOlmsKDT+Lz00pXPX5Sex3X8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Aeil1ksOTAsuqE72xZUS5FbFWWbX8seUrg32UHwTUpr1sOm+iTHTUJt1W/RFlPcEv
+	 uBv4MTbQa/YaGHCWajre1k4IPvhmyRsCr7pUuY+0q2Iab4Mowuc7iA4JBF2DsJSAk+
+	 3Vwr3WdH41x9hNdBEJjr2gAEmZrKpZQHig9tI4Ck/X/rJnmPH8OJCpxZSV35KwE1vK
+	 fNyqiQCegm0CcrxgMUJZzzigpFV5dV8Ia5PYWfIZPcfCi53w+9rn/mcBGhWbuYp30Y
+	 ScFPsqr8JCw0UkziI7XxEP2WYAbaTOZ3AUrsTYCdJP5sZ1m1m8/P2eFzHTEb9CJJo1
+	 YVTkNEJ5hXtiA==
+Date: Wed, 3 Jun 2026 13:41:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook
+ <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH 10/12] iio: dac: ad5686: add triggered buffer support
+Message-ID: <20260603134151.7cf1654b@jic23-huawei>
+In-Reply-To: <20260602-ad5686-new-features-v1-10-691e01883d27@analog.com>
 References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
- <20260602-ad5686-new-features-v1-9-691e01883d27@analog.com>
- <ah8roqGqZ_VhAPaa@ashevche-desk.local>
+	<20260602-ad5686-new-features-v1-10-691e01883d27@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ah8roqGqZ_VhAPaa@ashevche-desk.local>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/06/02 10:14PM, Andy Shevchenko wrote:
-> On Tue, Jun 02, 2026 at 05:33:56PM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Tue, 02 Jun 2026 17:33:57 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> > Use of local SPI bus data to manage a collection of SPI transfers and
-> > flush them to the SPI platform driver with the sync() operation. This
-> > allows for faster handling of multiple channel DAC writes, avoiding kernel
-> > overhead per spi_sync() call, which will be helpful when enabling
-> > triggered buffer support.
+> Implement trigger handler by leveraging the LDAC gpio to update all DAC
+> channels at once when it is available. Also, the multiple channel writes
+> can be flushed at once with the sync() operation.
 > 
-> Why spi_message_alloc() can't be used instead of manual handling?
-> (Seems no current users, so you even can modify it for your needs.)
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+One passing comment inline. + some musings... I'd love to avoid
+the need for lots of drivers to call iio_trigger_notify_done() manually
+as it always results in ugly code paths.  
+> ---
+>  drivers/iio/dac/Kconfig  |  2 ++
+>  drivers/iio/dac/ad5686.c | 59 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 61 insertions(+)
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 657c68e75542..5f14fcd780e2 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -240,6 +240,8 @@ config LTC2688
+>  
+>  config AD5686
+>  	tristate
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+>  
+>  config AD5686_SPI
+>  	tristate "Analog Devices AD5686 and similar multi-channel DACs (SPI)"
+> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> index a4cc0f86ea54..5052df44ab1c 100644
+> --- a/drivers/iio/dac/ad5686.c
+> +++ b/drivers/iio/dac/ad5686.c
+> @@ -19,7 +19,11 @@
+>  #include <linux/sysfs.h>
+>  #include <linux/wordpart.h>
+>  
+> +#include <linux/iio/buffer.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+>  
+>  #include "ad5686.h"
+>  
+> @@ -245,6 +249,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
+>  		.address = addr,				\
+> +		.scan_index = chan,				\
+>  		.scan_type = {					\
+>  			.sign = 'u',				\
+>  			.realbits = (bits),			\
+> @@ -469,6 +474,53 @@ const struct ad5686_chip_info ad5679r_chip_info = {
+>  };
+>  EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
+>  
+> +static irqreturn_t ad5686_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct iio_buffer *buffer = indio_dev->buffer;
+> +	struct ad5686_state *st = iio_priv(indio_dev);
+> +	u16 val[AD5686_MAX_CHANNELS] = { };
+> +	int ret, ch, i = 0;
+> +	bool async_update;
+> +	u8 cmd;
+> +
+> +	ret = iio_pop_from_buffer(buffer, val);
+> +	if (ret)
+> +		goto out;
+> +
+> +	mutex_lock(&st->lock);
+> +
+> +	async_update = st->ldac_gpio && bitmap_weight(indio_dev->active_scan_mask,
+> +						      iio_get_masklength(indio_dev)) > 1;
+> +	if (async_update) {
+> +		/* use ldac to update all channels simultaneously */
+> +		cmd = AD5686_CMD_WRITE_INPUT_N;
+> +		gpiod_set_value_cansleep(st->ldac_gpio, 0);
+> +	} else {
+> +		cmd = AD5686_CMD_WRITE_INPUT_N_UPDATE_N;
+> +	}
+> +
+> +	iio_for_each_active_channel(indio_dev, ch) {
+> +		ret = st->ops->write(st, cmd, indio_dev->channels[ch].address, val[i++]);
+> +		if (ret)
+> +			goto cleanup;
+> +	}
+> +
+> +	if (st->ops->sync)
+> +		ret = st->ops->sync(st); /* flush all pending transfers */
+> +
+> +cleanup:
+> +	if (async_update)
 
-I need to manually call spi_message_add_tail() to append messages.
-I suppose that such function is a bit weird and no wonder why it
-is not being used. struct spi_message_with_transfers might need
-to be properly declared so that users can populate the transfer
-array without manually moving pointers or having to redefine the type.
- 
--- 
-Kind regards,
+Error paths are always fun.  Do we care about setting ldac_gpio to 1 if
+we failed to write the channel values?  That will set any that did successfully
+update, but not all of them.  Note I'm not sure on the right answer for this.
+There may not be one!
 
-Rodrigo Alencar
+
+> +		gpiod_set_value_cansleep(st->ldac_gpio, 1);
+> +
+> +	mutex_unlock(&st->lock);
+> +out:
+> +	iio_trigger_notify_done(indio_dev->trig);
+We get this pattern so often (though not always).  Feels like maybe
+we should put some effort into a generic opt in solution for this.
+
+A job for another day but options that come to mind.
+1) (hideous) a flag
+2) Maybe an alternative callback. thread_always_complete or
+   something like that.  Pain to wire through all the calls though
+   and injecting the necessary wrapper isn't great either.
+   Implementation wise would be a case of popping in a wrapper function
+   in iio_trigger_attach_poll() call to request_threaded_irq().
+3) Maybe a helper macro?  Bit ugly as we'd need one to generate
+   the wrapper function and another to use the same name for
+   the registration function.
+
+Hmm. Those are all ugly (maybe 2 is ok ish).  Suggestions welcome!
+
+
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  int ad5686_probe(struct device *dev,
+>  		 const struct ad5686_chip_info *chip_info,
+>  		 const char *name, const struct ad5686_bus_ops *ops,
+> @@ -569,6 +621,13 @@ int ad5686_probe(struct device *dev,
+>  		return -EINVAL;
+>  	}
+>  
+> +	ret = devm_iio_triggered_buffer_setup_ext(dev, indio_dev, NULL,
+> +						  &ad5686_trigger_handler,
+> +						  IIO_BUFFER_DIRECTION_OUT,
+> +						  NULL, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+>  	return devm_iio_device_register(dev, indio_dev);
+>  }
+>  EXPORT_SYMBOL_NS_GPL(ad5686_probe, "IIO_AD5686");
+> 
+
