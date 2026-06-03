@@ -1,78 +1,93 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5253D88E2;
-	Wed,  3 Jun 2026 15:29:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC99B2D238F;
+	Wed,  3 Jun 2026 16:44:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780500554; cv=none; b=pmJ3roJbGNPl55f29juEv34OgSX/W6qoiu/1ur2ausizMnx5vBoAweMGvo5SjDnoBXLTdaHETZHaGFEpklAQtcHviAtsZgqy3bZSlztAUvosFoAgeZGk8V96X1FQQxZO+u0fMeUqQc2u7KBUSoWBoNP/NoV89dwg/0f+eOMGcZk=
+	t=1780505096; cv=none; b=JIndtXPWPmtnrr0TGKF2gzdec+csiWTMhAeWabN4kAi37OyKnTBDqNL2pSDbd1C8EnZOFynTcE0NMnYCGpHwru5ZqTCVNVWYq17e8rvqtWWxLmV8R2UVGMouicxpOwxcx3yXQ/KobGUySD9l5njE6kiG7nVVC9cK2R9ppUSiVYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780500554; c=relaxed/simple;
-	bh=dEM4FZiYxW5GwuHui+XET6DH4BwS+45tvNzCTdARDiQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rzYGm8V662SAqm/dHxyxgJ797zmUtb2m8azXmCGwktOSrdZA2RyBcxVtTQ55rr8miU1aN0ZE3Z3Z4pEHYHN8B9qOGb1PfSjzd+T9JhEmFWsOPbY/UdlzRIeFGXnO+SPtYMyiaEr2iraZp+qrNbMZiSsaH9anwxF3VBSJRZo+tvA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PbNOyYyi; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780505096; c=relaxed/simple;
+	bh=BUlxBkgm8FOKrOXmEjSD3+2aRV7KZxjXCTyS6MxYcsc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JrRSVxGveyTTdN6sGMCHY7YPoh7clnHUAAiWMZFHSN0OqheUzq8LvzGVF+qxxxwUv4PQcpJeu6JbCc866/0KZUvrkc/Wi1SbyhmqM0oXZCs5QiTaLN2MpfBAcgQNnMfHPZ+lXim3A77Oy+H2CTtghi5z8UTom0A5oB86LtAYghw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kweUpJvZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PbNOyYyi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6244D1F00893;
-	Wed,  3 Jun 2026 15:29:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kweUpJvZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCC7F1F00898;
+	Wed,  3 Jun 2026 16:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780500553;
-	bh=dEM4FZiYxW5GwuHui+XET6DH4BwS+45tvNzCTdARDiQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PbNOyYyiz8IZwYJEG0n+fAwOz9+vF5Hul7AVXy8HkjLQIU0/XpovG6Jhk9K9J3EJ0
-	 1chyVNTtz1Tn7m9cplpxJ0DhUIuCFfx/fftXz7AnyRKtFDKXF3Tjl2FdH4mB/m8GqM
-	 7y5HshQOQBAwkky6kjEWWk6NoL+JucNJr0V0z7Cyi+3y5VD3scuUxqdSXSD119Y0c7
-	 jPYdXBlB2gW9DFH2i3Ad0CJfJ0iQACnUihbBxOpAlsqLJ5fllY84TylNXH0uMYs5H2
-	 tcpIK+O2J7TZK7iiymP2V2Z4KvPPI8DGKKcBfWkG6Dgg9mGymgM1vhEdlsayvPuod6
-	 1bAP8cKUa7nOg==
-Date: Wed, 3 Jun 2026 16:29:08 +0100
-From: Conor Dooley <conor@kernel.org>
-To: rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 04/12] dt-bindings: iio: dac: ad5686: rework on power
- supplies
-Message-ID: <20260603-jinx-comment-893bd09b67e9@spud>
-References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
- <20260602-ad5686-new-features-v1-4-691e01883d27@analog.com>
+	s=k20260515; t=1780505095;
+	bh=i0uRfTsqw/6A4i3J5Kn/83igv+/jfV+x9vnrazFBOx8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=kweUpJvZxSEd41k/2wp8OIVGV4hDN6OSwU6YOHP/nadKF+79kZzdLNeqDGoMI4JO/
+	 e0jDVgYJvRpfoCgA6ZeRqFDia6gfvjCjKykh0arLOQvoXCOEUhBvQGIA4hbUoKz3Sc
+	 /9tOnpeOceBvMjymfFC97FomkYWZa/tUB7Ih+q/dsr582KR1rj9kO1C1dP6bJh9Amf
+	 lmBRrrh+x+U1IjRhTHkGro41mOeeQs8sFl/P5MQbf7cExnbrl/dDjzXkRA3sjfRS7Q
+	 TtQlrsgIyYur1CLNm3VbFlwfYh+XFFAOa5z4R9g/Zw5vedfaqIkOUm3OqYpYxosUCy
+	 PFlCEllKMcrLw==
+Date: Wed, 3 Jun 2026 17:44:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Tomasz Duszynski
+ <tomasz.duszynski@octakon.com>, linux-iio@vger.kernel.org (open list:IIO
+ SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH] iio: chemical: scd30: Use devm_mutex_init() over
+ non-devm mutex_init()
+Message-ID: <20260603174447.63a181d5@jic23-huawei>
+In-Reply-To: <20260603145134.58956-1-m32285159@gmail.com>
+References: <20260603145134.58956-1-m32285159@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="MaYwtlXVLhGyALtk"
-Content-Disposition: inline
-In-Reply-To: <20260602-ad5686-new-features-v1-4-691e01883d27@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Wed,  3 Jun 2026 09:51:33 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
---MaYwtlXVLhGyALtk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> The current code uses mutex_init() instead of devm_mutex_init(), which
+> is incorrect as the rest of the file uses the devm automatic resource
+> management API. Fix this so that the mutex is set up in the same way as
+> the rest of the device data structure.
+> 
+> Fixes: 64b3d8b1b0f5c ("iio: chemical: scd30: add core driver")
+Hi Maxwell,
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+No to this being a fix.  This enhances one corner case of debug, slightly.
+So to me it isn't worth a fixes tag.
 
---MaYwtlXVLhGyALtk
-Content-Type: application/pgp-signature; name="signature.asc"
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> ---
+>  drivers/iio/chemical/scd30_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+> index db5cc295aeab..f00979c0c196 100644
+> --- a/drivers/iio/chemical/scd30_core.c
+> +++ b/drivers/iio/chemical/scd30_core.c
+> @@ -714,7 +714,10 @@ int scd30_probe(struct device *dev, int irq, const char *name, void *priv,
+>  	state->pressure_comp = SCD30_PRESSURE_COMP_DEFAULT;
+>  	state->meas_interval = SCD30_MEAS_INTERVAL_DEFAULT;
+>  	state->command = command;
+> -	mutex_init(&state->lock);
+> +	ret = devm_mutex_init(dev, &state->lock);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to init mutex\n");
+The only thing it can return is -ENOMEM I think. Which doesn't print anything
+so 
+	if (ret)
+		return ret;
 
------BEGIN PGP SIGNATURE-----
+is enough.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaiBIRAAKCRB4tDGHoIJi
-0hHpAP4vSnt2gJc7cOKZ5HA16ZE9X3/61xB+ARF0TMDXNE9uhwEAjBaheBYS48KL
-mADBl6MOPknJR45HEpYVF36x6gnu8QA=
-=OxSt
------END PGP SIGNATURE-----
+> +
+>  	init_completion(&state->meas_ready);
+>  
+>  	dev_set_drvdata(dev, indio_dev);
 
---MaYwtlXVLhGyALtk--
