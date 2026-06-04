@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AB63374726;
-	Thu,  4 Jun 2026 19:40:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF610395AD0;
+	Thu,  4 Jun 2026 19:45:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780602057; cv=none; b=BvwPPIHLNLQFtw8BW2RBWyy8UHbqnG3vfsQwr4L9+wWsLJP7oDfe/64EoFl438C30r9t4WfjlHJVo5URlKlHrbXEigF1Qm0cbJ1UtbJnTYdGXJIyc71jwUJ21XAnYFVWYCiiZaPN+RgrVybeZ+xbth+EVbvEdBQMQNJo0JqC7uU=
+	t=1780602334; cv=none; b=DE0xUpfaZnsI1k55IXS3v10o5kaKUHpuRM4M+pw+TQFWzirajGiwtT3fZnFlPMXJyLMzwXpRMxIQvT4IK3GyN6mDyOAsdKwDgHJunNqy20RZl6h3n9b7uLiYbSzVDOCrbLBRmSBIfb7XyQ30ihTVVWCwnLM5mpYAdbSfjhPMves=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780602057; c=relaxed/simple;
-	bh=Y9wjbRT9w94Gcp/bzW1GMOk9EUx5ovP+IYIpAbYawNs=;
+	s=arc-20240116; t=1780602334; c=relaxed/simple;
+	bh=WMK4bTHC4COjtMnoY/gx2o8LNTtg032vV51R4f5uW8M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rExwIlndEWihsmxvMlVSvT7c10q2pu8uHhW4meHF5C6aviIT6OZS9p+bfC5+7zw0204wHs6MaI0m64KA1PznkI/ilA2ppmfXmLl1Fgko28nb8hpoTzLS+dhVqJb6Llx1NcObCt2SlFxKUWMxQUdx1U9IWa+7GcPmPs+BWehQTSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GFxbvpvn; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=N/YR+KUavFKpei8f9fgmBTVyIES0/0hsqVLFQg+ep0PfpicBSHxRvEF+TFzDMXHffEs8ea51CDzxr54T5jqIy0FpTHqUurfBnjNm4J726tt0WYxoXD6ubn123zZ8f7OXwXHEPWO5AgUMc81250wz9maofiMdTkSFUzJ6yO6E5EA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mIRbuqU9; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GFxbvpvn"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mIRbuqU9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780602056; x=1812138056;
+  t=1780602333; x=1812138333;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Y9wjbRT9w94Gcp/bzW1GMOk9EUx5ovP+IYIpAbYawNs=;
-  b=GFxbvpvnno7gdU4ugw+cgfpDgnoJv8TJr1yCtB4f1su9XJ5rS2/uYFX2
-   k3B72L1oRmuMol4GIG+4nKDTPnqgjCKpaIlowSi0YOz1/G+cGeo6voS9e
-   9mMfTwr7znxND6zIKM+Mjc2iANSYRRSh01IiGeRYXTeTeIOj4Pi7GVSJd
-   MsV5xr43uTrLgSLS19Wt8dsaSOTVQgdA1T3BDdutW/7Bz6eJCAq6zPiuI
-   Fg2IvyfTpf5iVjwNifaz/GA/DQU/IPG/RSb+EJqABz1hPV0LkESdyOTbU
-   0wftH9jE3yZMOEwhfmqcvjgWMln7T4DELHV0w4mud1sD/2CpVwZauqPyw
-   Q==;
-X-CSE-ConnectionGUID: K7kQhUZKRoORhIobMk7LzQ==
-X-CSE-MsgGUID: K51GNdLYRjip6ycrZRuAKQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11807"; a="80577597"
+  bh=WMK4bTHC4COjtMnoY/gx2o8LNTtg032vV51R4f5uW8M=;
+  b=mIRbuqU9WrU2mSUQ1KNcQLyLiAtCWGfj6XlVmHZchz/HYyNCGXxo5cgl
+   ejlrrEzW6kysRli/bdq7w0AoULCox8MF4WvMDckDVWRrhVOvGvTR7iObH
+   AooueErGMeBp+pjF8HPh8y2RmXfZyqX7ShuEipJ2M89EIH5X1lhEldO1F
+   uSj7XVsRl4J4RFt54ggbj15ayCvHAUADSQcbvHpjUoDmXb+1jRc42/A/k
+   igr7zrYU9haPMr/TYyIGfiYfd4URt12zFzIgntONdjX0orrKsf6NamBAq
+   caKTeC9nL5+5aODnEgrqOFCpo+pvXDBoh7OBvLIv2T068umq/dtE3UaI2
+   g==;
+X-CSE-ConnectionGUID: f3eoZS6vTQyo/3kdSf2qvg==
+X-CSE-MsgGUID: rh9scg5hS8u201ur2CRt0w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11807"; a="104098246"
 X-IronPort-AV: E=Sophos;i="6.24,187,1774335600"; 
-   d="scan'208";a="80577597"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:40:55 -0700
-X-CSE-ConnectionGUID: QFwM7w91QJSjNZj3WfltbQ==
-X-CSE-MsgGUID: fwQvEaiPRcOYj7CA0byi4A==
+   d="scan'208";a="104098246"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:45:32 -0700
+X-CSE-ConnectionGUID: K9iRRo49QZ2J4PScV7UK5Q==
+X-CSE-MsgGUID: a9Y12UIwSDul6vSDZvMz2A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,187,1774335600"; 
-   d="scan'208";a="268565706"
+   d="scan'208";a="241650755"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:40:50 -0700
-Date: Thu, 4 Jun 2026 22:40:48 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:45:27 -0700
+Date: Thu, 4 Jun 2026 22:45:25 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -63,11 +63,11 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v16 05/14] lib: kstrtox: add kstrtoudec64() and
- kstrtodec64()
-Message-ID: <aiHUwARy7g3cSv1t@ashevche-desk.local>
+Subject: Re: [PATCH v16 09/14] iio: test: iio-test-format: add test case for
+ decimal format
+Message-ID: <aiHV1VnTAy3fOHbh@ashevche-desk.local>
 References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
- <20260604-adf41513-iio-driver-v16-5-1a7d09143bc2@analog.com>
+ <20260604-adf41513-iio-driver-v16-9-1a7d09143bc2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,20 +76,18 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260604-adf41513-iio-driver-v16-5-1a7d09143bc2@analog.com>
+In-Reply-To: <20260604-adf41513-iio-driver-v16-9-1a7d09143bc2@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 04, 2026 at 10:58:59AM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Thu, Jun 04, 2026 at 10:59:03AM +0100, Rodrigo Alencar via B4 Relay wrote:
 
-> Add helpers that parses decimal numbers into 64-bit number, i.e., decimal
-> point numbers with pre-defined scale are parsed into a 64-bit value (fixed
-> precision). After the decimal point, digits beyond the specified scale
-> are ignored.
+> Add iio_test_iio_format_value_decimal_64() kunit test case for decimal
+> value formatting, exploring different scales types. Also, the same
+> iio_val_s64_decompose() helper used to populate local array is used in
+> iio_test_iio_format_value_integer_64().
 
-Okay, this seems universal enough, follows the semantics of kstrto*() family
-and gives a good results. Let's make it sail!
-
+I missed that. Always fond of test cases!
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 -- 
