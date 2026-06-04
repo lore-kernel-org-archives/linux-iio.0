@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A5BB3FAE11;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E6203FBEBC;
 	Thu,  4 Jun 2026 09:59:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780567183; cv=none; b=Y3zRsgbVbshc0i4urjUsV8j2X7rAWWDw239JkYLfzdQvTjghDII51Ygxeca0XGuVpXQPnrRMPhrwl/Nb2qSMRNiSjFWiD1geSDWMIsh+up1QzufN8d7xFGrAx+9TpgMISRolSZ9flzQPkrOraFdcOloMsCCoY4TAyQAIkgddUwM=
+	t=1780567183; cv=none; b=qQjETeWL0r2gSaCTgwbdZs/ilerVtUwxz5RnLRMvb8Cj2q1xw3atYqgLXyMYcEzy9diZk5MtSMkFLD1s95qujWtQNTXCTEfIFYcym351nZG2rl0Vf4qZSPvZ3Q9wX1FF/gtLOn8n9TbFARpR4L+xydif1Va47eT8h/4QpmBrrCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780567183; c=relaxed/simple;
-	bh=0MiPE4pAGNIHkDMT5fwtfqtbshqWVCMkNClPirEcpH4=;
+	bh=t5P0ZQptKWPx6uBH17Z9/siQ4yc0Pc0Au48fKjXJ99w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cpnzG6tAK+lyWKOBbMPJTRLiD3+laOVTYLuWVHaOJLRH7zcBKMTJ6aeqoCkMFNVRxps790TEAOunulGQFcgyswZSs1r807KkvEi9Fpct1OhbV4FTq/zVzssmP/G8zjXTe82z38XjA2QpXuQFlQWvRTu35SDiOLrpqwvyJAWQK5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rRshlagP; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=HxQe6ZnVDAKGVTqKX/74mDgTK1A4Sf2KijnDCZOaPKIb671Xv+lKn54N0pGCcofI53w+QlzdI72PyirDkDJnDkdIP5KaZG3C90uCOu8o0bKn0g3ekgVjyBa53FdYMWFDbxtF5fUcmmOlorKY4lDV25q8VmA51UYTGkBHA2PCz4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ft4OllUC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rRshlagP"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 48996C2BCF4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ft4OllUC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5AA70C2BCB8;
 	Thu,  4 Jun 2026 09:59:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1780567183;
-	bh=0MiPE4pAGNIHkDMT5fwtfqtbshqWVCMkNClPirEcpH4=;
+	bh=t5P0ZQptKWPx6uBH17Z9/siQ4yc0Pc0Au48fKjXJ99w=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=rRshlagPsulHVf97XLIxiHfVAsSBqUrxpi1vH31IsgBCt8qswGjm3AiFwS4acw0aZ
-	 o4t2MEMubi9/+jnK9u+qV0is/4pl+L5yHrdoU7ZnK2UaU5g6qcFWv2aYHO9jSiVqTe
-	 qHmTafdIKmxiRNpGzLJ4Pcgt/4p1IarfbUGdJ1Fquqox21XHVGTFtsa/Z6MRhZhL/O
-	 XLe8ok9fWMGJUNvh+13a8NqnxdcTJT5hQ3VLghYFlmtYoT/yW2Tm8oZfORkc2xalk6
-	 lqIyNAUbIqJwISwprqv++CNNmDnSIcj+i+lgTzwhunwheYFhIIkQlwv+Y7Q/wogsGQ
-	 NwrZ1MbPqLC3g==
+	b=ft4OllUCxGB65zTzfUg/+pok3zo66L7f6iw6eABGt1OKlzEewWKRDGuarOSWtcK5T
+	 jQVTNPDsYmO+0I0AA0GoycffJM8HwqsEDDghCVfUGlrOMxqeXI95WgsusXWtvIhOMM
+	 tXsnM96Dbxe3KoMpvVEmqlr8VVOJ8dETZwS5LHALDSYmMI9j2n6GxKl881AIefKeei
+	 zFHQzci6At4q3Q2n9SklIDp2zsAj/vwM1FLfHirhRAqZ7oYuWRn7LcjqlL3kKbiTGe
+	 pPrUjNHkA/ugkKajDws9+9KFIxU7oqVaXP7q5OvOryrdBRr4tMti0G1Ur73lRtNgFo
+	 bGhMA5wrOwh2A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F496CD6E6B;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 518ADCD6E4A;
 	Thu,  4 Jun 2026 09:59:43 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 04 Jun 2026 10:59:01 +0100
-Subject: [PATCH v16 07/14] lib: math: div64: add div64_s64_rem()
+Date: Thu, 04 Jun 2026 10:59:02 +0100
+Subject: [PATCH v16 08/14] iio: core: add decimal value formatting into
+ 64-bit value
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260604-adf41513-iio-driver-v16-7-1a7d09143bc2@analog.com>
+Message-Id: <20260604-adf41513-iio-driver-v16-8-1a7d09143bc2@analog.com>
 References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
 In-Reply-To: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -59,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780567181; l=2327;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780567181; l=5995;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=ROKa5iAD0w5bgrXddKrko8IjoFXS2V0nXvPl5DFoZoI=;
- b=2iEc8P2m9zI2rqyUKhM1ARNBTEtG0NbMD7xgrFgqOEyAemqJqxLvDZBFO78qLgf2fMsmvYOBP
- ONLU5IzgHIxBB7tyZVc85ZpKMgUP1OyUu07vEez5TY+MRBAMCFRzZ8O
+ bh=lidKmhqhVJP0xInFxusgHlG+DxtS24EsXW5NkFXrSbM=;
+ b=w+7S92bznRZ4kBDyhKV4atNivwjn5zqoHDJ8Z0ygmN1w5Rpxzs0ieygleJUqPeoGk/nvcnkmr
+ 8Q59MKzcIUyDFzrmsEem8rQxikoyd91SIebFNMHBtYXUOplrnLPHoIS
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -73,79 +74,186 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add div64_s64_rem() function, with 32-bit implementation that uses
-div64_u64_rem() and a branchless approach to resolve the sign of the
-remainder and quotient (negation in two's complement).
+Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
+defines the representation of fixed decimal point values into a single
+64-bit number. This new format increases the range of represented values,
+allowing for integer parts greater than 2^32, as bits are not "wasted"
+in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
+IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bit
+decimals into integer values used in IIO formatting interfaces, which
+creates consistency and avoid error-prone manual assignments when using
+wordpart macros. When doing the parsing, kstrtodec64() is used with the
+scale defined by the specific decimal format type.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- include/linux/math64.h | 18 ++++++++++++++++++
- lib/math/div64.c       | 15 +++++++++++++++
- 2 files changed, 33 insertions(+)
+ drivers/iio/industrialio-core.c | 49 ++++++++++++++++++++++++++++++++---------
+ include/linux/iio/types.h       | 20 +++++++++++++++++
+ 2 files changed, 59 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/math64.h b/include/linux/math64.h
-index cc305206d89f..99189410d4bb 100644
---- a/include/linux/math64.h
-+++ b/include/linux/math64.h
-@@ -57,6 +57,20 @@ static inline u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder)
- 	return dividend / divisor;
- }
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index ffe0dc49c4b9..93c2540d4cd2 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -19,6 +19,7 @@
+ #include <linux/idr.h>
+ #include <linux/kdev_t.h>
+ #include <linux/kernel.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/poll.h>
+@@ -26,7 +27,6 @@
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/wait.h>
+-#include <linux/wordpart.h>
  
-+/**
-+ * div64_s64_rem - signed 64bit divide with 64bit divisor and remainder
-+ * @dividend: signed 64bit dividend
-+ * @divisor: signed 64bit divisor
-+ * @remainder: pointer to signed 64bit remainder
-+ *
-+ * Return: sets ``*remainder``, then returns dividend / divisor
-+ */
-+static inline s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder)
-+{
-+	*remainder = dividend % divisor;
-+	return dividend / divisor;
-+}
-+
- /**
-  * div64_u64 - unsigned 64bit divide with 64bit divisor
-  * @dividend: unsigned 64bit dividend
-@@ -102,6 +116,10 @@ extern s64 div_s64_rem(s64 dividend, s32 divisor, s32 *remainder);
- extern u64 div64_u64_rem(u64 dividend, u64 divisor, u64 *remainder);
- #endif
- 
-+#ifndef div64_s64_rem
-+extern s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder);
-+#endif
-+
- #ifndef div64_u64
- extern u64 div64_u64(u64 dividend, u64 divisor);
- #endif
-diff --git a/lib/math/div64.c b/lib/math/div64.c
-index d1e92ea24fce..0b10ded09a9b 100644
---- a/lib/math/div64.c
-+++ b/lib/math/div64.c
-@@ -158,6 +158,21 @@ u64 div64_u64(u64 dividend, u64 divisor)
- EXPORT_SYMBOL(div64_u64);
- #endif
- 
-+#ifndef div64_s64_rem
-+s64 div64_s64_rem(s64 dividend, s64 divisor, s64 *remainder)
-+{
-+	s64 quot, t, rem;
-+
-+	quot = div64_u64_rem(abs(dividend), abs(divisor), (u64 *)&rem);
-+	t = dividend >> 63;
-+	*remainder = (rem ^ t) - t;
-+	t = (dividend ^ divisor) >> 63;
-+
-+	return (quot ^ t) - t;
-+}
-+EXPORT_SYMBOL(div64_s64_rem);
-+#endif
-+
- #ifndef div64_s64
- s64 div64_s64(s64 dividend, s64 divisor)
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/buffer_impl.h>
+@@ -656,6 +656,7 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 				  int size, const int *vals)
  {
+ 	int tmp0, tmp1;
++	int l = 0;
+ 	s64 tmp2;
+ 	bool scale_db = false;
+ 
+@@ -699,7 +700,6 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 	case IIO_VAL_INT_MULTIPLE:
+ 	{
+ 		int i;
+-		int l = 0;
+ 
+ 		for (i = 0; i < size; ++i)
+ 			l += sysfs_emit_at(buf, offset + l, "%d ", vals[i]);
+@@ -708,8 +708,25 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 	case IIO_VAL_CHAR:
+ 		return sysfs_emit_at(buf, offset, "%c", (char)vals[0]);
+ 	case IIO_VAL_INT_64:
+-		tmp2 = (s64)((((u64)vals[1]) << 32) | (u32)vals[0]);
+-		return sysfs_emit_at(buf, offset, "%lld", tmp2);
++		return sysfs_emit_at(buf, offset, "%lld",
++				     iio_val_s64_compose(vals[0], vals[1]));
++	case IIO_VAL_DECIMAL64_MILLI:
++	case IIO_VAL_DECIMAL64_MICRO:
++	case IIO_VAL_DECIMAL64_NANO:
++	case IIO_VAL_DECIMAL64_PICO:
++	{
++		int scale = type - IIO_VAL_DECIMAL64_BASE;
++		s64 frac;
++
++		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
++				     int_pow(10, scale), &frac);
++		if (tmp2 == 0 && frac < 0)
++			l += sysfs_emit_at(buf, offset, "-");
++
++		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
++				   abs(frac));
++		return l;
++	}
+ 	default:
+ 		return 0;
+ 	}
+@@ -979,6 +996,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret, fract_mult = 100000;
++	int type, dec_scale = 0;
+ 	int integer, fract = 0;
+ 	long long integer64;
+ 	bool is_char = false;
+@@ -989,9 +1007,11 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 	if (!indio_dev->info->write_raw)
+ 		return -EINVAL;
+ 
+-	if (indio_dev->info->write_raw_get_fmt)
+-		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
+-			this_attr->c, this_attr->address)) {
++	if (indio_dev->info->write_raw_get_fmt) {
++		type = indio_dev->info->write_raw_get_fmt(indio_dev,
++							  this_attr->c,
++							  this_attr->address);
++		switch (type) {
+ 		case IIO_VAL_INT:
+ 			fract_mult = 0;
+ 			break;
+@@ -1007,12 +1027,19 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 		case IIO_VAL_CHAR:
+ 			is_char = true;
+ 			break;
++		case IIO_VAL_DECIMAL64_MILLI:
++		case IIO_VAL_DECIMAL64_MICRO:
++		case IIO_VAL_DECIMAL64_NANO:
++		case IIO_VAL_DECIMAL64_PICO:
++			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
++			fallthrough;
+ 		case IIO_VAL_INT_64:
+ 			is_64bit = true;
+ 			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
++	}
+ 
+ 	if (is_char) {
+ 		char ch;
+@@ -1021,12 +1048,14 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 			return -EINVAL;
+ 		integer = ch;
+ 	} else if (is_64bit) {
+-		ret = kstrtoll(buf, 0, &integer64);
++		if (dec_scale)
++			ret = kstrtodec64(buf, dec_scale, &integer64);
++		else
++			ret = kstrtoll(buf, 0, &integer64);
+ 		if (ret)
+ 			return ret;
+ 
+-		fract = upper_32_bits(integer64);
+-		integer = lower_32_bits(integer64);
++		iio_val_s64_decompose(integer64, &integer, &fract);
+ 	} else {
+ 		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
+ 					    scale_db);
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4e3099defc1d..924ac9dc6893 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -7,6 +7,9 @@
+ #ifndef _IIO_TYPES_H_
+ #define _IIO_TYPES_H_
+ 
++#include <linux/types.h>
++#include <linux/wordpart.h>
++
+ #include <uapi/linux/iio/types.h>
+ 
+ enum iio_event_info {
+@@ -34,6 +37,23 @@ enum iio_event_info {
+ #define IIO_VAL_FRACTIONAL_LOG2 11
+ #define IIO_VAL_CHAR 12
+ 
++#define IIO_VAL_DECIMAL64_BASE		32
++#define IIO_VAL_DECIMAL64_MILLI		(IIO_VAL_DECIMAL64_BASE + 3)
++#define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
++#define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
++#define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
++
++static inline s64 iio_val_s64_compose(s32 val0, s32 val1)
++{
++	return (s64)(((u64)val1 << 32) | (u32)val0);
++}
++
++static inline void iio_val_s64_decompose(s64 dec64, s32 *val0, s32 *val1)
++{
++	*val0 = lower_32_bits(dec64);
++	*val1 = upper_32_bits(dec64);
++}
++
+ enum iio_available_type {
+ 	IIO_AVAIL_LIST,
+ 	IIO_AVAIL_RANGE,
 
 -- 
 2.43.0
