@@ -1,111 +1,188 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696233D1711;
-	Thu,  4 Jun 2026 05:51:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0600E3D47DD
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 06:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780552308; cv=none; b=FJE7c/+Xs+9ZmFDvVoIT2MdXGZwKOqSEp6E+f0sNJcXCczShJSCdzy6gTN9k2qWlNk9I2qzXlBB74Bt9SVhMQDFAB3bVP9/bmfe/gvthh5C+lUmiVh7wmd5/Sll8yfklEhcLzmNNxJBhHwssS7wrTvPbpU2+7SsbbD4zhvBm3+4=
+	t=1780553161; cv=none; b=kcy3SDmOLautX9MOAYRQ97+5IRFe6JdmPx+lzAg6PJbdAM1RIjpZIGMangXhLClqK6dxO3XLHZCTaLWyezp7PBQZBQeOwsBVcqt9E0kCf/tEoS/3HvtCDB4gLBtXkrlhm9fyYnziqzUdoWbpXqPknejvmsGAKuQQinu4Jtbd1X4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780552308; c=relaxed/simple;
-	bh=StrjWbO7JkBLpCjpx66U+DeF2jDXM7FSmXwXo91gAZI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U21NQEtQO+JXANHzQQRoYSxRJzC5ysDjJ6lvN4CofWdRQx5kEGIqaX5TsO4hy1F22169mf5Xovp28msBjf4u41v8qehYTxHUY38+Rujoibxejey0+lAOOv7xR17h2wY3hsdR9HnjFIZDzwAN/i03cZZ2svrRHPNFwIX/xhrCYD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KqD7b+lf; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780553161; c=relaxed/simple;
+	bh=5eswC+KL4APLtyRsks8Cy8JGWs92UNSBQ6FWuiiawDw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=vCQ5XGnnCNAlUxsNQg9WoAX4spH4LrVZkV/OY+Gjjp88144tSYzyCdBMrUstCjDJ0AYctNoPkFsM5vyZlI4q6k8rC/b4YpchvWGluUV4S4WViM1iGa4pitBxF/sH22IzX2i8uCb7qjr7sxZCo9v4/XslNWRcNuzKhb1GvMS+qp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hDnF00r2; arc=none smtp.client-ip=209.85.167.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KqD7b+lf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780552302; x=1812088302;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=StrjWbO7JkBLpCjpx66U+DeF2jDXM7FSmXwXo91gAZI=;
-  b=KqD7b+lfwrTYgIL/l4ZxnWuF5WS5HjuNYd4ZbzCkwqocBiV3sh91zMj2
-   MlsuZAINZhcVkukZNUcNsL2cugS6JNW2dz3QDoi5drrXKql4d7eN11wNh
-   7MF7ei09PYfEUcrgNyJuyW/4MtUsby+u9MxHMf4fAlkEgrXpN9JD3r6Nu
-   HGX33dNyY3QhbE/71chQ21dPySybh0dVpzV6zW08yHYKgkvtkoh6lN1B5
-   BAdVhlnwdOPqoKXsc8tKpZzP+dlvIkamojhiqj+ojtoRkCIemLvptER+E
-   RIM2CEznIfl4Cvx5nZymhRJs6Jtz6YXEYxnZ/b1gywiJrP5xKfGX99fg4
-   w==;
-X-CSE-ConnectionGUID: xmo8KvLPRhaLQwd6ljlIzg==
-X-CSE-MsgGUID: NJ2xZbP8Q0+ci4prefS4gQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="92857602"
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="92857602"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 22:51:41 -0700
-X-CSE-ConnectionGUID: 4waxMAB+T8KRdArTOwvSxQ==
-X-CSE-MsgGUID: KAv13reYQneW8TJSV0HJ1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="243379753"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 22:51:36 -0700
-Date: Thu, 4 Jun 2026 08:51:33 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
-	linux@analog.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 05/12] iio: dac: ad5686: add support for missing power
- supplies
-Message-ID: <aiESZaVcbh7ctlPh@ashevche-desk.local>
-References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
- <20260602-ad5686-new-features-v1-5-691e01883d27@analog.com>
- <ah8oz29R8mem6H5X@ashevche-desk.local>
- <p3ydzrkizeysxlzc355xzgeboipihgo45w34uwn7a4lb63jgek@kr5r5hgjh354>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hDnF00r2"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aa5f11deb2so316287e87.3
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 23:05:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780553158; x=1781157958; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QzGDTR4e2e8XTfSWLdmjfHxDAQS69+VmysI4qx6bLeY=;
+        b=hDnF00r2LRhSQsuzscr8vexWN0/X57UY/E/Ts2rFky4QstE6Lt94rb/MIwRzvUhUzM
+         GOiyDxsyAKUai+//5APkNiH0dF2w/ITf1n6vgPdF4oxvO96jm8jtblG11Qsu/mpH5Tod
+         uQggvGUtkhLaUe3FwcjafG4E+xu743I0nTiiRsAe5rduLgfCpB5XutMW6HOjvJv+6HqA
+         m4TOzmcO10RtRDgjV+hoyks+iNowcWjYR6b6JJesG0bKm/36hDuiv1H2wHk5TspMrqvO
+         BG1DmvoOloruC2lgoMM5WJenXHWAmHq3k544qZY3N617vp6jr+MITlUJ+9JuFzTofXte
+         v6EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780553158; x=1781157958;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QzGDTR4e2e8XTfSWLdmjfHxDAQS69+VmysI4qx6bLeY=;
+        b=qWz6qpQnmEKkG27jUOSafynaFxCdKZlp/xg0I6wB/4JAE8NQ2emYVCit0bmgNsc3Op
+         tiexiiWxUrIY/+8pwc6pcNuAAIApO/LEq5IHPZMusuRF7BJmVD7z5mOX9ciG20AEFaGZ
+         oECn1pdobXhYxhC0R65HC3Yv3L8XbXbkgMNV+4Kk32eSO1hQBIv7B36NmYttajG6Ki8F
+         pCs3hUStFEjAXqdGw15jDzNEDmvH80Brvi2pH2KSv51wGBuZrADuq2Xqb8UQrLh/pGdd
+         QsuYNwavI/2wz9tGSUujtuY3iutEhpBhkKDWoe8veQKYIkfsyFlDfdQTqxctf+cOvP54
+         XXGA==
+X-Forwarded-Encrypted: i=1; AFNElJ973+ExghBnkG2obUI6HaOUfMN5Q+wCi5Gb0gSSL2+wo/vqC7krs03oc//4mPdOC6nPaoeiohEMDCU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfwsFkoJx/WZzk1tKMfS9WpPUCGlM3HXM1f2bXeOxZ/RuTXy0n
+	1uZqJ4a1LLtIRTGjQNyziUIE2pp28AVU7dznEHaLY4yNremM8qqMRTwn
+X-Gm-Gg: Acq92OG3x2O0wwvH9O5A1I+nkc3Br+ActNCl4iU/j9DhvsdE44jVkSo4hRYOvvasNb9
+	xj5UxYKkx7cVI+23MKjeitlRREIKUhBvi1WVONs/CmxvKPBZbYNNXl2d2T1fhuZldMeAQhQPYul
+	Mhr4od2qILqa6oDzIW7YzzCRg5iyXOnK8J4O3Y5Bzl+KDITmtbzuJlzA5qMbRWJArLcPpu8p6yd
+	ktuSRe8PKWHCZo/4mefuw/ePDstHQurntzAg4O5Ok81nEWQLCw7gZ8hq1FIYawy7l36V15s8HQj
+	hp0EFVRSD5dDZpQ+t81ThnamVkFDCNEIwyD+kfcglo79ep2FLXpntS/l4ByjF/4xZADZNIFuC1k
+	gJzKMZXL5TgfeVx0DSzxEe5K7Bs9T6aYEy4M6GLb9GIMnY+Z6lAKTl6LPJYtIQbEZajSkP3uzD0
+	jSGrRYi2h0iPtZ99s0Nv8oziWHYzr84LUooznzGxgnD1ABg9DFnty/3pZ/exeGpXa4in9lVoXfC
+	Ki36BJqU0Jp2V8rwmyaxDEfNFn4cA==
+X-Received: by 2002:a05:6512:8050:b0:5aa:77b2:fec8 with SMTP id 2adb3069b0e04-5aa7c0ec22amr1475705e87.27.1780553157939;
+        Wed, 03 Jun 2026 23:05:57 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-396abf66d87sm14160741fa.1.2026.06.03.23.05.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Jun 2026 23:05:56 -0700 (PDT)
+Message-ID: <dc478208-17ee-49c1-af93-fbebd95be527@gmail.com>
+Date: Thu, 4 Jun 2026 09:05:54 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <p3ydzrkizeysxlzc355xzgeboipihgo45w34uwn7a4lb63jgek@kr5r5hgjh354>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: pressure: rohm-bm1390: notify trigger on all
+ error paths
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stepan Ionichev <sozdayvek@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20260517160801.269-1-sozdayvek@gmail.com>
+ <20260518094238.1986-1-sozdayvek@gmail.com>
+ <20260518161516.53f21777@jic23-huawei>
+ <61d9cec3-6aed-416f-9604-94fe94cb2e3b@gmail.com>
+ <20260520120822.351aa58f@jic23-huawei>
+ <0d58842a-aa5c-4d12-9435-3264070038cc@gmail.com>
+ <aa2c2f98-454d-489c-a652-b8023b0773bf@gmail.com>
+ <20260603182658.2c3c6efa@jic23-huawei>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260603182658.2c3c6efa@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 03, 2026 at 01:17:25PM +0100, Rodrigo Alencar wrote:
-> On 26/06/02 10:02PM, Andy Shevchenko wrote:
-> > On Tue, Jun 02, 2026 at 05:33:52PM +0100, Rodrigo Alencar via B4 Relay wrote:
-
-...
-
-> > > +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-> > > +	if (ret == -ENODEV) /* vcc-supply is deprecated, but supported still */
-> > > +		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
-> > 
-> > >  	if (ret < 0 && ret != -ENODEV)
-> > 
-> > It can be deduplicated now with
-> > 
-> > 	else if (ret < 0)
+On 03/06/2026 20:26, Jonathan Cameron wrote:
+> On Fri, 29 May 2026 11:21:40 +0300
+> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 > 
-> Not really, because ret is overwritten with
-> 
-> 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc")
-> 
-> so the check for if (ret < 0 && ret != -ENODEV) is intentional
+>> On 22/05/2026 15:38, Matti Vaittinen wrote:
+>>> On 20/05/2026 14:08, Jonathan Cameron wrote:
+>>>> On Tue, 19 May 2026 08:48:13 +0300
+>>>> Matti Vaittinen <mazziesaccount@gmail.com> wrote:
 
-Indeed, thanks for pointing this out.
+//snip
 
-> > > -		return ret;
-> > > +		return dev_err_probe(dev, ret, "failed to read vref voltage\n");
+>> [  251.368583] irq 64: nobody cared (try booting with the "irqpoll" option)
+>> [  251.375463] CPU: 0 UID: 0 PID: 835 Comm: irq/63-2-005d-b Tainted: G
+>>           O        7.1.0-rc1-00002-g3b459deb7222-dirty #249 VOLUNTARY
+>> [  251.375501] Tainted: [O]=OOT_MODULE
+>> [  251.375511] Hardware name: Generic AM33XX (Flattened Device Tree)
+>> [  251.375525] Call trace:
+>> [  251.375545]  unwind_backtrace from show_stack+0x10/0x14
+>> [  251.375607]  show_stack from dump_stack_lvl+0x50/0x64
+>> [  251.375646]  dump_stack_lvl from __report_bad_irq+0x30/0xbc
+>> [  251.375680]  __report_bad_irq from note_interrupt+0x2b4/0x32c
+>> [  251.375722]  note_interrupt from handle_nested_irq+0x13c/0x14c
+>> [  251.375758]  handle_nested_irq from iio_trigger_poll_nested+0x4c/0x68
+>> [industrialio]
+>> [  251.375917]  iio_trigger_poll_nested [industrialio] from
+>> bm1390_irq_thread_handler+0x54/0x7c [rohm_bm1390]
+>> [  251.375994]  bm1390_irq_thread_handler [rohm_bm1390] from
+>> irq_thread_fn+0x1c/0x78
+>> [  251.376028]  irq_thread_fn from irq_thread+0x18c/0x324
+>> [  251.376057]  irq_thread from kthread+0xf8/0x130
+>> [  251.376091]  kthread from ret_from_fork+0x14/0x20
+>> [  251.376114] Exception stack(0xe0355fb0 to 0xe0355ff8)
+>> [  251.376136] 5fa0:                                     00000000
+>> 00000000 00000000 00000000
+>> [  251.376156] 5fc0: 00000000 00000000 00000000 00000000 00000000
+>> 00000000 00000000 00000000
+>> [  251.376175] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+>> [  251.376189] handlers:
+>> [  251.498714] [<2ec7a5d9>] iio_pollfunc_store_time [industrialio]
+>> threaded [<7f4268a2>] bm1390_trigger_handler [rohm_bm1390]
+>> [  251.509974] Disabling IRQ #64
+>>
+>> Message from syslogd@arm at Jan  1 01:17:33 ...
+>>    kernel:[  251.509974] Disabling IRQ #64
+>> [  252.822500] sched: RT throttling activated
+>>
+>>
+>> Things I very hastly picked up:
+>>
+>> 1. The throttling mechanism works even though the handling is invoked
+>> via iio_trigger_poll_nested(), Probably because this propagates the call
+>> to the handle_nested_irq() - which does bookkeeping.
+> 
+> Great.  At least it squashes something.
+
+Yes. We get the nice trace in logs, clearly pointing to the guilty one.
+
+>>
+>> 2. For some reason (which I didn't have time to check yet), the
+>> beaglebone black which I used to run this, was not completely blocked by
+>> the IRQ. We can see the "Hack, return IRQ_NONE (xxx th)" -prints
+>> emerging just fine.
+> 
+> After the Disabling IRQ #64 message?
+
+No. The prints were spilled out regularly, even before the IRQ got 
+disabled. So, CPU was not completely consumed by the IRQs. I am not sure 
+if the IRQ thread gets preempted (what is the default scheduling policy 
+for IRQ threads?), or if we have some other safety mechanism letting 
+other stuff be executed. In any case, the system stayed somewhat responsive.
+
+***
+
+I did also try a hack which returned the IRQ_NONE, but did not call the 
+iio_trigger_notify_done(). Result was as expected - the IRQ stayed 
+asserted as the bm1390_trigger_handler() was not invoked repeatedly. 
+Furthermore, the very helpful log entry was not spilled.
+
+I suppose that now, because the system stayed somewhat responsive (even 
+when the IRQ stayed active in the background), it wasn't exactly hard to 
+check the IRQ counters and spot the culprit from there.
+
+As a bottom line, I would love to see this fix getting merged, even 
+though it doesn't seem as crucial I thought it was. Checking the log is 
+still first thing one does when spotting a problem - and the entry there 
+was to the point. Not all systems capture IRQ counters when an error 
+occurs - while many still capture the kernel logs :)
+
+Yours,
+	-- Matti
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-
+~~ When things go utterly wrong vim users can always type :help! ~~
