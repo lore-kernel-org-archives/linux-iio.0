@@ -1,89 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E293FC5C1
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 09:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780564249; cv=none; b=cRVf7SLsthT5uyvFUq+DNmqjSU9DtBPh5BDpvdMr4T/zbd+gM6y38srdxiGnMANsXp7dgUCNy7agVbc535vOw1HTAJcKteXzQzJhZza62mmmm8Tqm4Vwdq3GEqeW54DJF0xtdGIWPvrBrxNfRp4DSmIHjQNP0p9zH1uXOqJKmrc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780564249; c=relaxed/simple;
-	bh=THjuVxH9mOLTAjFIZYfTTd11rM7LsJpO37/E36bSYXQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UMIZxmuO4141O90GX6P2ZMIUydF5cOh+Tnegzp7FPixmxrFbAkHUJwXz65YykAe403OF9NxdM9VQZaef0n44o31mu5hnHsFkdLsMTmYXKZAEG0YZvZpfie2/lTsvsw2+RmFBwR+Oy7vOK0jVjkA9GM0YFiYNCc3FHeRNn6M37Ms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z5g5AERC; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC832594B9
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 09:16:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780564568; cv=pass; b=BDtafesIrpOgJepv1+KgdNQT6I/HYVFakuCyXzPnsXNCW6WQSmqCfQdTHWGxuGFsHR9BHH3ZuVVPiXvtWCiLa/O2fXhHXO7hPGwAaMqCeBX82GFUvCTexx+CQgmTil9ztjHtNklXZlcssy07sJIxSpUTnLXwCi1gLMaW4INNQbQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780564568; c=relaxed/simple;
+	bh=4TABmo9cAip9VzeGMfHP/ewu/I2FMPcfxvfJcd6iVHY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MzSPTX3fEhvYP3eJ8UsRz/B+o9/iKfE6a3OEe+N3WLtw7FX6g+Nt2v1aJo4BSIxzvLo6ojJL/ZHY1NT+hNEgskJdfUQDf5OdzdNSKnM1BFO8HDKiOeM+GrPVeq60ecuC4ruXLC1zYMmcStL+Bb8k9UmFU+uvaN9wvA7S+QikABo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GyLto4rj; arc=pass smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z5g5AERC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780564247; x=1812100247;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=THjuVxH9mOLTAjFIZYfTTd11rM7LsJpO37/E36bSYXQ=;
-  b=Z5g5AERCHjt3U+EoU5rM5J55QhyXbos6dLMi/dl1msNl3Vk7zodqDmz/
-   4EMIABEbQ2wYXiAAi5DqqOMJZgQV8AFojBIY0RGIins8h+CULuwQRFdtZ
-   SwMbq48yI0idWX3NqsAKynnBWzvPP2prg6Ed8dYCkSR8y1JAWvNo35Ehm
-   rnnEF6RtoT3RmSCRyue3eGo61ydlyaJ/voctgG7Bv0nrV6G2E0IYAnPj0
-   dM6pHbH4BoWvlMudDLJXTiXw5mWqfZWNc4ZMbcJZRK3/G20x4U5DpE/Fd
-   JWjT4XV3R1xGID307Kq/kCyGcQX/FL/sFlvheaPpn+Gt2iQB1alrnsZ2L
-   w==;
-X-CSE-ConnectionGUID: umU9tTLnTDORZyxdwT+h3g==
-X-CSE-MsgGUID: NuYM3HXQSAiskn7ioo0z7w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="85276940"
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="85276940"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 02:10:47 -0700
-X-CSE-ConnectionGUID: 2PAIhQztTkSB8XufQUQK4g==
-X-CSE-MsgGUID: y69uexidSIWwrWS5rPXsAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="244612927"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 02:10:45 -0700
-Date: Thu, 4 Jun 2026 12:10:42 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jinseob Kim <kimjinseob88@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Sanjay Chitroda <sanjayembeddedse@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] iio: buffer: Ensure bounce buffer used for unaligned
- case is zeroed.
-Message-ID: <aiFBEn_DKx5f6ekv@ashevche-desk.local>
-References: <20260604084307.640053-1-jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GyLto4rj"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-45ee5cdbd28so1056508f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 02:16:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780564565; cv=none;
+        d=google.com; s=arc-20240605;
+        b=SJOSz9jwfPkU4GD138bGoVOWRXZxBJTW39HGIZtyJ2yYAYuGnB1a0kdpzbdcPQWMyC
+         MDg40igS/C30J1vQ2NVOiPKxGVtY1T9xh6ioBQaeKOxcrFM1D01Ft24v6/2/QFLUUjnM
+         V684FcESOSyrohdIGaT8yVo/QEXV8sgrazOp/M66qvaHODa83yPRtipGLTHuSzg3Fa6T
+         VMCRUHB3EKqUjhcH7+ekOnJMj9p7KnjfBNHQSom/cOVKu8XG0oTPBtNBdKDkN5jjU43L
+         fDJbydN1mqp9UvVyOAs75MusBzMdJfgYtHL6mTOce8Rkp0LMi7Iv0HXz/IIwlXZBrV9j
+         nHUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Jc9Nyn4+ErSxF1R08zuU3Mq4bFvcF9uwvoLtWphiAYA=;
+        fh=RCQF9ng3FhIr6mzYvmn3GjpnEsLu8Hu3y5DVuDmPZwY=;
+        b=TWYzKE9gzUrhriSeA1pLZ7atURa839nHMLZ4g/KVvht2JIKJwkO7JvmjaydAtBwgYm
+         nW5kFnIRjL/iFaxsojpEKsaJaMD2qA74maw+3gKzCWZhJuC+cgoPcWJbB2Zimu6BVRHA
+         Afx3ppadx62TZyuIzgTZOIGyH/ey6uqB28uV+DBdPA2aHy4RBdYADLz+ArsVSzP1w+wI
+         Tl8ChcKDC2aBgdXlARSsqa+0Dxq9dogwztsWhWJlnnwCiReTPf1BHYSPOhWGFWcn0e8T
+         h4J/CcVZUgkCKmMvfM8jYCjxW5E84dQ8onFvYBmLrY6cNxhStf4pXdOHXa31UiNhj21W
+         P9kQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780564565; x=1781169365; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Jc9Nyn4+ErSxF1R08zuU3Mq4bFvcF9uwvoLtWphiAYA=;
+        b=GyLto4rj6GFv/dtjJlN4zOqmO3haFhiJkhilcjtZXkl0tPa4EuJSB9bmLEX3LRGq+w
+         VgX8mY8RU11AxkqBF1NMs17RIghiGXJMjSwmVQoEk0fOEiD4r0f+0SWKfVUDgFpx4fah
+         hum2wp5yAdUzmMWdY2FwegsV5uApHVol4gHluxcazHXJZN+dNU9pVyvzyGKFd+zuXKPb
+         F1ntlvUdSLEPgHI9Nfl+cTvrnrteYfToXhbRtwt9UqrJwpLfR7OFRbbipcpSjIbiTMn0
+         plw9583Hv3n69qzG9OlHtBVLDwcYJM49xY+jdF5KXn2jKA+9NKY1L/Pt4jmbml/2z4QK
+         vzAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780564565; x=1781169365;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Jc9Nyn4+ErSxF1R08zuU3Mq4bFvcF9uwvoLtWphiAYA=;
+        b=dx2PirmHa0DOOwKC/gZkPNt/Tf0HOmtt2dfUxWb3eWASK04k0HRI8QMi1KjrxJv61i
+         EbKTZusvqlcaqmQmvyL7+osVQJmEudEfFvGO4+rhxx6PVQbMd/TYpjp/winac02JboAl
+         aMPp0yYiHkP8kN9j+LlzkEBAi26tbKy6cQsFHPvjW0OPo70+l6KDFyM5kkJD/2P+PG30
+         /wpYO5sPQYt4BHx6Vmgpk0MCJRmTN61qqw24tZUlCs0gIKuGu3Ino+QxKAxbCoLvGacg
+         qytmnm5xNL2RP6BZTDUPnMbujgzo88yg0/L+A4YH5oAjbbO59S/GKgQi1Cd9GVcRLbmK
+         jG/g==
+X-Forwarded-Encrypted: i=1; AFNElJ+5GRiZEm1ftkpM4RZonnZXJzxkEMKl6NiiBX1SDIsy6qSq5y5IzB0Ecn1nbub1OxvsQIB5LErLOFI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5vo8bsAA98bd7ekAcC/Z/cQzhR5HYiqOSvOT1mrmzDN8I7JUA
+	KYpxeebzPdEQ5d98mFE8IPcivi2CmCt8zcho7CmUbngOdCtIhrDE8tPK8WHvZ3kpLYsvBj0yt/m
+	6VPGDT8o73MLT8X8n8702iWLGoJrZsek=
+X-Gm-Gg: Acq92OEW4KjyJf1l7bynBRYVR58k5PFRbIuqTSpBx9aUu58YYDlm5WVs6CqBkJonPjT
+	GyWoThNMigh1+CZstyn03OuSBHpdsBhzx+ZMEd47SsjmfD4eg2MWjJrITV5mQD/Lzdw+Mj+RIK/
+	ZyivUdFzmFsNgmX8aGk037HYQN0ENo9RHRem/1+tdRHvz/kyPf/TicHYs0yXYrmKztqmMtlMKbm
+	Fd56741/TBmJLxgWK1lcjHqKE1kF3QggtiTMLubr4XKnMtsd5ntu3k6nbxvp6CK7HiO/IiYVLqG
+	XUivMLt6N9I7LXpHLHtu1P34//nDy2iS/4FsXkaauMdF5mzDct68Tg4O/cSgbGnwF2bJx4aVghE
+	dfIb+iQPRtA3ErUWJLZ5+Yl7JTXplglmAkTynjcQPV5GJb2IREYUjNT4TbYQ6+OzG1C7dF8jtS0
+	zYtDf0J3QG6eROHrkCVIAJ9MM+skQ=
+X-Received: by 2002:a05:600c:a6a6:b0:490:b58f:4d65 with SMTP id
+ 5b1f17b1804b1-490bc51530dmr29824255e9.15.1780564565002; Thu, 04 Jun 2026
+ 02:16:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260604084307.640053-1-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260604070053.299221-1-limiao870622@163.com>
+In-Reply-To: <20260604070053.299221-1-limiao870622@163.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 4 Jun 2026 11:15:53 +0200
+X-Gm-Features: AVHnY4JMjR6JKifO44uS9M-mwVQgW43u-5y8-mW4kvUW3NZYwHzsujzGyPxVpnU
+Message-ID: <CALoEA-z1LAoZRHHgXij-WDMKHW9HdJZOkTz_QS4_umMuEAnJyA@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: accel: stk8312: Update includes to match IWYU
+To: Miao Li <limiao870622@163.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, dixitparmar19@gmail.com, waqar.hameed@axis.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, limiao@kylinos.cn
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Jun 04, 2026 at 09:43:07AM +0100, Jonathan Cameron wrote:
-> iio_push_to_buffers_with_ts_unaligned() leaks uninitialized heap memory
-> to userspace if the data passed in is not a multiple of 8 bytes and the
-> timestamp is enabled.  Use memset() to zero it after resizing.
+On Thu, 4 Jun 2026 at 09:11, Miao Li <limiao870622@163.com> wrote:
+>
+> From: Miao Li <limiao@kylinos.cn>
+>
+> Update the list of included headers in stk8312.c using
+> Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
+> and add missing headers such as array_size.h, bits.h,
+> dev_printk.h, etc.
+>
+> Meanwhile, sort these headers in alphabetical order.
+>
+> Signed-off-by: Miao Li <limiao@kylinos.cn>
+> ---
 
-...
+No need to resend IMO, however you're missing a changelog. Additionally,
+wrap the body of the commit message to 72 characters next time, per
+guidelines.
 
->  				   indio_dev->scan_bytes, GFP_KERNEL);
->  		if (!bb)
->  			return -ENOMEM;
-> +		memset(bb, 0, indio_dev->scan_bytes);
+-- 
+Kind regards
 
-May I suggest different approach, id est use __GFP_ZERO instead of hunting
-correct pointers?
-
-With Best Regards,
-Andy Shevchenko
-
-
+CJD
