@@ -1,63 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A186538D3E3;
-	Thu,  4 Jun 2026 07:38:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DCD33955E5;
+	Thu,  4 Jun 2026 07:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780558713; cv=none; b=R9huucnh5PVLOf7Kuqb8KUERt72xD2zvxSBT/RXoxtPLLe0QSPLrdyA7NtzJNooBGbWSa+ChLaPJ5MKZ67eZDizyomsPctRWqR+m9fvJXRhH10r1OvvFH2aOG02QpgOAu162tPA1bus7saH8RoiFg9It1VNuoiPrw+hzm7dwy7E=
+	t=1780559013; cv=none; b=ilR5gzmfwOZvkuarM1379/cTUI/RCOxdvjkK/TvsLvtWba2yf0efKipQNhzx9phzccCrr7nupVz4kbg7byV9fdtNE3VHe9F6vfA+EJz9e3KK9rSlN0/G92fUfF0GjylGRc+tMg2GQPSetw7hYj9DlTh9rTl2ZX3oO42Lg2rjHAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780558713; c=relaxed/simple;
-	bh=V1Aala8etxd0GSdirjOaW43EnHDyJ03qqCDUSzAkxh8=;
+	s=arc-20240116; t=1780559013; c=relaxed/simple;
+	bh=+EsWJrGR8qAiWpqsUXS0/Of8UPrLT68Lhh12yWrfhks=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pSWcX8wJj4RlUyia4cO1alRLE0xgugN/VsnhZAJD3WsVuVDNQ8Ufc0l7xAJRQ5fo55WITTkDeG4tkJUdF19XDjVZ5XwkxgvtUntARUXV7mVk3BcZDL4H1lWN9kbYXtqiyv7SGNobEIOeaQnN4NvgvC94NoAh+uphjKLIwQVguwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GP5YN/Qp; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZdlOPKJspfTNvk94L4VJPwMgxJ78AzAr5tl4FePSBh0vfhwRy6RSBgZRWEa6x6OwnGg+wXm38u7vtkmr2iwttpU3X8lJl7urB9elEZeTFcewBDkC55pycZaYADF8NVgsVIAQ7q4VLA3qUq4qUcTw0WiRW5Pqds1pAa2JPEIUb0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WSumexND; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GP5YN/Qp"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WSumexND"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780558712; x=1812094712;
+  t=1780559012; x=1812095012;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=V1Aala8etxd0GSdirjOaW43EnHDyJ03qqCDUSzAkxh8=;
-  b=GP5YN/QppzjCgOiKnP7ULCBJroif0tsUcITVkifVIuaxTOwrQ1QMjOTG
-   ShzHNL7IKzHec/83/1jUbSmiydAZTmPmyyvMLPyUSZmmYwQr4Fx69DZSS
-   OJUU1VYmYVn4xts3tkSuzmlQtunjF3yCVfm+DVH9syBgpMePV9ciabyZv
-   i0rIsUXwU5/KGAvfu3sn1bF71sX5qrRjjTj5dD84+gJWUmUu/CI4Sc7lw
-   8JoBf5fpAJYFSRHGkiG9s36DLbM5ykZXeFyeHQRr2U+24RuvjjRkxlXUp
-   z3W+pRpmwOe58hT4zfUh4yM285C933K8GWRs5RjCYXA7Hon3SXrTqQ+Ht
-   w==;
-X-CSE-ConnectionGUID: rNvi/oXDRletyA9VGMd9kw==
-X-CSE-MsgGUID: zXuf5+QnT1e9iYrhLbioAg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="68916665"
+  bh=+EsWJrGR8qAiWpqsUXS0/Of8UPrLT68Lhh12yWrfhks=;
+  b=WSumexNDe2eTGSAcjZJ+/d4QpGl1fGDFOPyIQdEhtptcCpHrBFiiFpSV
+   YETQDGKI23NOY+3SOCe6tROeUK8dqj1HOex87zN7A/h6Qrbs0vreOWxhQ
+   s/ZrnPLVZcWCAU8V1v/zMm0Aba64oRmrwQurFN5A8EBb4thN8mTXKrGVg
+   e2ff9fpDekkJx7u4P+hkCnNg4nd9j79XoNh9+YXH48mpQjr0rRtsAdqV9
+   Iz10eWFW/OK7cAqqmyAzLu1tA1ObFhqlLXF4i8Bv66OtGOfKQfIfK/uGK
+   QKlhKkS8tdBRiixiJLof0hwqvT0NP0OUfj3jmVRh9YcG7ex62ABF6cCaq
+   Q==;
+X-CSE-ConnectionGUID: Uvdti8PqT4OgEzae7zihyA==
+X-CSE-MsgGUID: WaDNCUgMSbiN9bfkqCJvnA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81122213"
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="68916665"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:38:18 -0700
-X-CSE-ConnectionGUID: pa87SgoLSjWlbJfvccyCGQ==
-X-CSE-MsgGUID: Ihqw813UQu6WgXZ9tXSmYA==
+   d="scan'208";a="81122213"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:43:31 -0700
+X-CSE-ConnectionGUID: B/HY0kz/TaKhSS03pyomIw==
+X-CSE-MsgGUID: OoZJ3w7/SZC50gyfoxoFlw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="244320924"
+   d="scan'208";a="241504422"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:38:15 -0700
-Date: Thu, 4 Jun 2026 10:38:12 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:43:28 -0700
+Date: Thu, 4 Jun 2026 10:43:26 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Maxwell Doose <m32285159@gmail.com>, Dan Carpenter <error27@gmail.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-Message-ID: <aiErZORXCEwxXYaU@ashevche-desk.local>
-References: <ahP3O2tQdu4dNx_c@stanley.mountain>
- <CAKqfh0En4pHqSfxfd2FHSDTxfWx6BfJLfeQ3xup4bwfLSTrZRA@mail.gmail.com>
- <20260526191946.409160c8@jic23-huawei>
- <aiEpmqKwFuIMRfdl@ashevche-desk.local>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: chemical: scd30: Use devm_mutex_init() over
+ non-devm mutex_init()
+Message-ID: <aiEsnl1cwLRXrUq8@ashevche-desk.local>
+References: <20260603145134.58956-1-m32285159@gmail.com>
+ <20260603174447.63a181d5@jic23-huawei>
+ <CAKqfh0G4xDUh7ZR=f760yOAqYqjSLhWGw4UP8KiRM=nnZhg6BQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,30 +68,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aiEpmqKwFuIMRfdl@ashevche-desk.local>
+In-Reply-To: <CAKqfh0G4xDUh7ZR=f760yOAqYqjSLhWGw4UP8KiRM=nnZhg6BQ@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 04, 2026 at 10:30:40AM +0300, Andy Shevchenko wrote:
-> On Tue, May 26, 2026 at 07:19:46PM +0100, Jonathan Cameron wrote:
-> > On Mon, 25 May 2026 08:20:31 -0500
+On Wed, Jun 03, 2026 at 12:27:18PM -0500, Maxwell Doose wrote:
+> On Wed, Jun 3, 2026 at 11:44 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Wed,  3 Jun 2026 09:51:33 -0500
 > > Maxwell Doose <m32285159@gmail.com> wrote:
-> > > On Mon, May 25, 2026 at 2:17 AM Dan Carpenter <error27@gmail.com> wrote:
-> > > >
-> > > > If the *ppos value is non-zero then simple_write_to_buffer() will not
-> > > > initialize the start of the buf[] buffer.  Non-zero ppos values aren't
-> > > > going to work at all.  Check for that at the start of the function and
-> > > > return -EINVAL.
-> > > 
-> > > Commit message is incorrect, it looks like you're returning -ENOSPC here...
-> > Tweaked and applied to the fixes-togreg branch of iio.git + marked for stable.
-> 
-> I was stumbled over these patches by Dan. Since the file_operations for the code
-> in question do not define .llseek, the seek is not supported and will return
-> -ESPIPE. I'm not sure why we have these patches to begin with. Dan, can you
-> elaborate on the case where the *ppos is not 0, please?
 
-FWIW, I also left a comment in that blog post.
+...
+
+> > > +     ret = devm_mutex_init(dev, &state->lock);
+> > > +     if (ret)
+> > > +             return dev_err_probe(dev, ret, "Failed to init mutex\n");
+> > The only thing it can return is -ENOMEM I think. Which doesn't print anything
+> > so
+> >         if (ret)
+> >                 return ret;
+> >
+> > is enough.
+> 
+> If I'm not wrong (and after a quick google search), I think it also
+> may return -EINVAL but then that means the device struct is invalid.
+
+What?!
+
+> Still may be worth doing dev_err_probe(dev, ret, "Failed to init mutex
+> with error %d", ret); or something along those lines. If you want I
+> can get this out today or I can also wait for more reviewer feedback,
+> but your recommended changes seem pretty simple. TBH though I'd still
+> argue for the case of either dev_err_probe() or dev_warn() since not
+> having an initialized mutex is certainly an error.
+
+I am on the side of dropping the message altogether. Invalid dev here is
+nonsense. Just read the code.
+
 
 -- 
 With Best Regards,
