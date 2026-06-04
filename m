@@ -1,52 +1,51 @@
 Received: from mxd.seznam.cz (mxd.seznam.cz [77.75.76.210])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 651E338422E;
-	Thu,  4 Jun 2026 11:22:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 906C6421896;
+	Thu,  4 Jun 2026 11:22:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.75.76.210
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780572139; cv=none; b=kT47a6xpCItC9vUrFexdwme+B0SIY+6+t6vidGEZkgz1kZ2Bptf+Uwqfft4P8IoqJDikn7UST7GN3qVn80QZ7oKVHvrruaArUrZv2gXJxzZxtKR3g/ckh903mJGt0TyuueCownXAVHCz8+BCPlVdGXO8E0kCooMDMZYYOMf9SRk=
+	t=1780572140; cv=none; b=uUp5IKB1WMQJE1KTsWKcLsnbN9eSaREM2qSbaYvvMZbTXcFKm6jb6hBfseuU8jFWKKFhbpIDF+OJkNbdEWAkUj4qS7fUnsxiV6Knxk4oGH5eosWfFGmLUcTEhvzQ3e7RtwqlXjtCkQno0wsfZQHu2Wnxz75ylU4gbEX5edgH9JA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780572139; c=relaxed/simple;
-	bh=m/msBevO/iQZVT89dzqHcqWLkM5e49iFGIMHNtTWeFo=;
+	s=arc-20240116; t=1780572140; c=relaxed/simple;
+	bh=ffuhcNpMHdglk2WjdpuyY6i2gxxQsvWhB2Ci6lMtJNc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Fa9QQbgEDaeecOAbXHPZ1w+SqdjOWHKSyS6mQezCEjktTKDz487eVO8yDUlDL9AfJYNRB5MG8+dCjD/55TLtwxiq26yzTqXewXvRu1sC+njLsDNpfwCoF5kSIXMlwzYtZiKR50W5Zhi0WaAy7BHNI4BaXKRTQz4tulxPnYpdT5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=QU+cdloE; arc=none smtp.client-ip=77.75.76.210
+	 MIME-Version:Content-Type; b=pYoBlBt3xXvmqZsrTmgOa+hCs37FBq8P9FoBHa/Dj6Mp0Hl/QmdgiPdE9DjrSDYhqdbCDPFv5nw3xBM3kGkhtL4WrMYSkoYCuNO5TV8YFjfcbJxarWXoodDh7iGTMo/ro6yqhCxNTOUfAxdejiPlPDhjgKN6sZBh21lCMgJ2CNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=Pu+Oori0; arc=none smtp.client-ip=77.75.76.210
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seznam.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="QU+cdloE"
+	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="Pu+Oori0"
 Received: from email.seznam.cz
 	by smtpc-mxd-85fb448c55-l247v
 	(smtpc-mxd-85fb448c55-l247v [2a02:598:96:8a00::1200:706])
-	id 460751b9fe687c3644f9cb25;
-	Thu, 04 Jun 2026 13:22:09 +0200 (CEST)
+	id 5d530e08e53c23875fad9494;
+	Thu, 04 Jun 2026 13:22:10 +0200 (CEST)
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=szn1;
-	t=1780572129; bh=xDRt1Dcqkerhgdjm9mpPX5GDQJrDGK1nLvp9cUFugzc=;
+	t=1780572130; bh=1bvg8zYnyMyCjJqKJ4h8h8tAERnyEf1dZrppLbq6m04=;
 	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	b=QU+cdloEkQBy/gqS3/IO0CA3gCSPoZBkkodNJIlzK1ocS4BCRPKspzKES7HXu7W2i
-	 LY7zPzNQR7el99gYVvDsqIxHUIpRg88j9c/Roc3ahnQ/GdTrrnWU81P/BL3aarXUTL
-	 ZoYMs7TNf1GAVl1SycD/Ak4MFezi2xVkIb43NUa5Mb/9WwPjzgOkTg0q5TiHY1PVUQ
-	 whfWFdR7viXcgB4wpCIiBgWG5tHztncgFIKI+XcRYn5i/7wP0Kyu2VS5vnHAHKSvk5
-	 Cbu+YWU3RgBniG0iKcieFzct/pklacaxmbHgsNJBgKesQFw+lv72P+W1l43NfW57CO
-	 hvB/QKfWB9EFw==
+	b=Pu+Oori0ifiOuVz6gArb05J4iV0jZLXdHcajBSWveNK2WFO4YDja6yWcRzz/7/0A4
+	 CSzWLO4zQxY4C3XllHm9xw2xNNPgg+BeciiAqovQnouGzAxeO6AV/GYnzbwc5Sat1r
+	 OwRAa6dU7Eiysv8nRAgR8nrn7Vr7w7bYYCKPG70QAeXi5mX4ArbjRT4in0SL7K+Jz9
+	 n2eJHdJA44TJeV3y3zmpPQMfZNHtY9A724X4HGIqge8fpwzL30uTxFYEMU46iAj2NL
+	 tqeqgr+nb/ex2+Dm3rPS0K/EKOvSo0/DcbRau1pWDzWExOgShlODZAPde5Mfcx/z7k
+	 xJCArs28R3yFw==
 Received: from archlinux (ezechiel.sdb.cz [185.100.196.77])
 	by smtpd-relay-b58bfc659-d5tsb (szn-email-smtpd/2.0.73) with ESMTPA
-	id 84957538-b7fc-4490-86a8-1a7ef89eb2bb;
-	Thu, 04 Jun 2026 13:21:55 +0200
+	id 927307c4-0dcc-4065-a5b3-a79d5257ff9c;
+	Thu, 04 Jun 2026 13:21:50 +0200
 From: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
 To: linux-iio@vger.kernel.org
 Cc: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 07/11] iio: humidity: change from %ld to %pe for PTR_ERR() printing
-Date: Thu,  4 Jun 2026 13:19:05 +0200
-Message-ID: <20260604111921.106936-7-vo.kratky@seznam.cz>
+Subject: [PATCH 03/11] iio: chemical: change from %ld to %pe for PTR_ERR() printing
+Date: Thu,  4 Jun 2026 13:19:01 +0200
+Message-ID: <20260604111921.106936-3-vo.kratky@seznam.cz>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260604111921.106936-1-vo.kratky@seznam.cz>
 References: <20260604111921.106936-1-vo.kratky@seznam.cz>
@@ -65,37 +64,33 @@ No functional change intended.
 
 Signed-off-by: Vojtěch Krátký <vo.kratky@seznam.cz>
 ---
- drivers/iio/humidity/hts221_i2c.c | 4 ++--
- drivers/iio/humidity/hts221_spi.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/chemical/bme680_i2c.c | 2 +-
+ drivers/iio/chemical/bme680_spi.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/humidity/hts221_i2c.c b/drivers/iio/humidity/hts221_i2c.c
-index cbaa7d1af6c4..bf15f03cd3dd 100644
---- a/drivers/iio/humidity/hts221_i2c.c
-+++ b/drivers/iio/humidity/hts221_i2c.c
-@@ -31,8 +31,8 @@ static int hts221_i2c_probe(struct i2c_client *client)
+diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+index 5560ea708b36..f812a56bfd26 100644
+--- a/drivers/iio/chemical/bme680_i2c.c
++++ b/drivers/iio/chemical/bme680_i2c.c
+@@ -25,7 +25,7 @@ static int bme680_i2c_probe(struct i2c_client *client)
  
- 	regmap = devm_regmap_init_i2c(client, &hts221_i2c_regmap_config);
+ 	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
  	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "Failed to register i2c regmap %ld\n",
--			PTR_ERR(regmap));
-+		dev_err(&client->dev, "Failed to register i2c regmap %pe\n",
-+			regmap);
+-		dev_err(&client->dev, "Failed to register i2c regmap %ld\n", PTR_ERR(regmap));
++		dev_err(&client->dev, "Failed to register i2c regmap %pe\n", regmap);
  		return PTR_ERR(regmap);
  	}
  
-diff --git a/drivers/iio/humidity/hts221_spi.c b/drivers/iio/humidity/hts221_spi.c
-index e6fef2acd523..15e46ad8707d 100644
---- a/drivers/iio/humidity/hts221_spi.c
-+++ b/drivers/iio/humidity/hts221_spi.c
-@@ -31,8 +31,8 @@ static int hts221_spi_probe(struct spi_device *spi)
- 
- 	regmap = devm_regmap_init_spi(spi, &hts221_spi_regmap_config);
+diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+index aa97645ba539..d557d92007b1 100644
+--- a/drivers/iio/chemical/bme680_spi.c
++++ b/drivers/iio/chemical/bme680_spi.c
+@@ -123,7 +123,7 @@ static int bme680_spi_probe(struct spi_device *spi)
+ 	regmap = devm_regmap_init(&spi->dev, &bme680_regmap_bus,
+ 				  bus_context, &bme680_regmap_config);
  	if (IS_ERR(regmap)) {
--		dev_err(&spi->dev, "Failed to register spi regmap %ld\n",
--			PTR_ERR(regmap));
-+		dev_err(&spi->dev, "Failed to register spi regmap %pe\n",
-+			regmap);
+-		dev_err(&spi->dev, "Failed to register spi regmap %ld\n", PTR_ERR(regmap));
++		dev_err(&spi->dev, "Failed to register spi regmap %pe\n", regmap);
  		return PTR_ERR(regmap);
  	}
  
