@@ -1,73 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E583845D9;
-	Thu,  4 Jun 2026 08:44:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E79DF387372;
+	Thu,  4 Jun 2026 08:53:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780562687; cv=none; b=mfnwEPPzW6DDtSPAPKKVlBaF2XSxk256LlX/bdjPMRCA7J2mmLAMdsHl62caAoIaH07Y6J07OUJ92oHdTQe2o4Wly9twJ18jD/AwlW42SkyVWPjvgjDx1oMDy11ncNR+jv7HAQ/FppfEEdWR1HZ/hzqc1Ku4TWtLSYgOrPFY2jM=
+	t=1780563233; cv=none; b=Vx1dziRX3UT6H9GyID8Na0Lynit1DnR/BGAMG5yynS0pSVVmK9h3pBFjwreoyB+enJwBVoJ8FfzlqfNU5rS5dJ/Dm6NadW22Bpo2FRgwSMyO33aNhYR9l819sWUdEr9T27GMy9THO0ZdXkZ4mmPfuQy/owvDAbnHvjeqRBJ4QpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780562687; c=relaxed/simple;
-	bh=0yOWO35rcDsarFlXpNl+Ju0O96SbL2oqYWhyd0MnAVY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dnH4Gp6NDBUNkfbNQhdtIlHSJC0s9dZ/JuPsXv+hPS/2nuqLYZ1FGqXA1PR4UIUOBHe5ABkjDFy2flxVEn/E100Z7MTVvp0b9QNZ5eUiKeK8SVR6m1S/1hbwFrKgFHp9N1SoHY8nItT/11c5akRgWMf0Pu59phfivoMGRoBee1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JNbrsH9W; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780563233; c=relaxed/simple;
+	bh=27Hx/I+FZJvMLbtvyHv3evL+ddwk+n7RoBOYihns5cU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E0zZZumZ5eyv4/NQX+ONEVJrxuIuKBlOOYBYm6dQeN1gy2eCLbUVatqCq5zYK9KI0AMAcsDLEAeLxJbNy4boEFK8zhQcZ6Ue0mS7s+2rGH1ioo21fc4uPDfvZFAjQLJZz7L00NjxmsTc/RXw+H/YeE5ejq0vqT8GqLEAX8zZnvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DNnH8Agj; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JNbrsH9W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF491F00893;
-	Thu,  4 Jun 2026 08:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780562685;
-	bh=R981tlrK0klQUlTE1sFXhwd45Yh9urS5lTzUcq9Q9TM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JNbrsH9WWBgUrtly2yt3++Zhh7yjb2XvTsO39Jjl7Jolygo7ww+7joUCCB9eNzCyR
-	 3cbzf6FNVBTYmnGI4w5V/pK1c3H17bZcy6kh25CJxRVTOX1qS0UuBCnG8M1xCxdDce
-	 4Oqo4azMyXtbKMB389Eg9rbT9jILkPEJdK6yehDuW3/KpdDrbVPCgnGlG6+Rmw8JGh
-	 T8qXBHJH7bfuYz1fMB8hsjh/jXPP4ILJORsmLex59E4do1/862m9HZNcp0KRd4ky9x
-	 Tyo1R1OYhDhSoKrW2rPK+NjAbAk5amqnlr+Re7xBme4k16/rk318ijsDsc9Buvy5la
-	 i5uCmB8vYExIQ==
-Date: Thu, 4 Jun 2026 09:44:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: types: add IIO_VOLUMEFLOW channel type
-Message-ID: <20260604094436.3c50f123@jic23-huawei>
-In-Reply-To: <20260602-slf3s-v3-reply-03-wafgo01@gmail.com>
-References: <20260530205435.37326-1-wafgo01@gmail.com>
-	<20260530205435.37326-2-wafgo01@gmail.com>
-	<ahx5cuM1xlOVP6DT@debian-BULLSEYE-live-builder-AMD64>
-	<20260601104233.310ac930@jic23-huawei>
-	<20260602-slf3s-v3-reply-03-wafgo01@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DNnH8Agj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780563232; x=1812099232;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=27Hx/I+FZJvMLbtvyHv3evL+ddwk+n7RoBOYihns5cU=;
+  b=DNnH8AgjdJon1by1yheCz2RaKb1XE0x0+xCA5unf8LOKNdPV79gHO/UH
+   hxTvaNrN8anQoBqaEuzvhvQkJ8EsN1wEUkIP1LhL67qFOatB+5A4VY9li
+   W8DX7GlPSAkhMTlCq9UN7Uvd9o09NhyDFMAQW8GiXuiDpHyuveVOjgk3t
+   wuj5A9uEnLr6nnYCZ7bP7dvqLOqEoNWyO6A9dAu1VXtzp27qJVg8Tqi2T
+   Jm7EunkQtctTiWeMds9VAZNxeg1qytf0QM+zWBg0Hc10BXSiXCcCNWTjG
+   7Fepqa9DwrbYm6LiczqRdEBFnBsjm+dHbW+FTAVBwkjmwe2fZK/gDcH4a
+   Q==;
+X-CSE-ConnectionGUID: 8vQQTwj2QhuzK+ok18sTXg==
+X-CSE-MsgGUID: oHOI8vPXRb6o+WmyB87Lbw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="98960079"
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="98960079"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:53:50 -0700
+X-CSE-ConnectionGUID: vZ/cBMvWToGGhuWyhwiDsQ==
+X-CSE-MsgGUID: fOOrQdsKTD2/XFKiVEzfWg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="248837263"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:53:47 -0700
+Date: Thu, 4 Jun 2026 11:53:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Miao Li <limiao870622@163.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, dixitparmar19@gmail.com, waqar.hameed@axis.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	limiao@kylinos.cn
+Subject: Re: [PATCH v2] iio: accel: stk8312: Update includes to match IWYU
+Message-ID: <aiE9GGtvgBY48LIw@ashevche-desk.local>
+References: <20260604070053.299221-1-limiao870622@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260604070053.299221-1-limiao870622@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed,  3 Jun 2026 16:08:33 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
+On Thu, Jun 04, 2026 at 03:00:53PM +0800, Miao Li wrote:
 
-> On Mon, 1 Jun 2026 10:42:33 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > I don't think that discussion ever finished. [...]  
-> 
-> So i need to decide the unit: l/s or m^3/s? My feeling is l/s. The ranges
-> are sub-ml/s, so m^3/s only makes the scale 1e3 smaller and the DECIMAL64
-> precision thing worse, for no real benefit in sysfs. If you want strict
-> SI i change it. What you prefer?
-> 
-Yes, I'd prefer that for consistency (m^3/sec).  Hopefully the scaling is fine
-with the new forms that are happy with more leading zeros.
+> Update the list of included headers in stk8312.c using
+> Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
+> and add missing headers such as array_size.h, bits.h,
+> dev_printk.h, etc.
 
-> Wadim
+> Meanwhile, sort these headers in alphabetical order.
+
+Usually we do sort in a separate change, but here it's just about a single
+unordered item, so I believe it's completely fine to combine (in _this_ case).
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
