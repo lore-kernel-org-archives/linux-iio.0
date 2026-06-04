@@ -1,115 +1,99 @@
-Received: from outbound10.mail.transip.nl (outbound10.mail.transip.nl [136.144.136.17])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F9F3C3451;
-	Thu,  4 Jun 2026 06:49:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9353DD85A;
+	Thu,  4 Jun 2026 07:01:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780555783; cv=none; b=Xz4Nup9PIfibpTawNxLve+GPE3Zv6R9fQefMnTnAFzMJNAPat6cDPH/eFz/rUs5lao5NJ3Ya/RYBffF3KgXxbAI5UYDubABNgwwaToTMGCsmk4D1/AwRVwZhejj84WyzC3oW9jJ0vqJf45UnI8+xgtcTxakqCNqqVvdt5qitazw=
+	t=1780556505; cv=none; b=gjutFoiBZZOJRrgBtuX2cuyIC4yy9W3AZ7T+ZL0HVeIJlWObbsFDblqtS0CMbLR8OSCz5oVCVZam2A06I9QSVC9fjlcumAL3t+57ifcyLI1EDuwcPxOEObAYTLKxj6quSbRuZEpbVM6ehOROQTMD92bOb1A8zxVLX9m8ZEnXdKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780555783; c=relaxed/simple;
-	bh=oywdSivV/NpQN1wXKSdQq5Wu/6uQhRyMY9gM5iiPf/k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jYjUzqlKBQd8X8krCYUEMW3yc6RSYiYy0PJbjVDvVqeFltRK8gAq7zBjUR3DyMf8vgp0jFZnE7BqAvwFbvI/UIq/p7l7DxTXvFQ6FFQs0QiR1lAGmpFDme66rxm1Sje5eDY3xYJOmokmrDFMbi0KCajlEtMgtB1ix5CZ5Wkc42I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=hDUivU0t; arc=none smtp.client-ip=136.144.136.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1780556505; c=relaxed/simple;
+	bh=GSt/0YVMLmFuHtooMM9OGBGZr4c9aTbjatyjDOM4FwM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SfDfmBR64A3z1aUsI8GzpXifhH40oRX0MKGBJEnH77UnHwo+bzX3IzfkRWbTl00lE7++D5UyLzScLi22bUtMc3fbSGxUruILuuY3lWPVE3iNQxg0appAnSvsgISIadvx/lHAJHHQ73zf6EUGHoTPtsGc9MqPMJifu2fa0kpy8yU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=beI4gYm0; arc=none smtp.client-ip=117.135.210.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="hDUivU0t"
-Received: from submission3.mail.transip.nl (unknown [10.100.4.72])
-	by outbound10.mail.transip.nl (Postfix) with ESMTP id 4gWFY33DrrzTPNX4;
-	Thu,  4 Jun 2026 08:49:27 +0200 (CEST)
-Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission3.mail.transip.nl (Postfix) with ESMTPA id 4gWFY26TGhzf52bR;
-	Thu,  4 Jun 2026 08:49:26 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="beI4gYm0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=gX
+	oGcviAjO4XOHdXiKgBGqrvnnYzq9t5lrJ6fj8+MJc=; b=beI4gYm0Q9c7XO+vPt
+	eywmYsls4x18z882bXtdwWR4NwIQ0XDbCYEZ34uKE6cQ3AFjnRdVSePgamhvgHkq
+	+oGSUljLaSg5TNBa8wUAkfF0KtSQxpu3bNv6TSjZ8o/bbWP+6YqQU7XNaO9GEa2e
+	0xNIjWX/T461Kl2yfUkqW2cuw=
+Received: from localhost.localdomain (unknown [])
+	by gzsmtp3 (Coremail) with SMTP id PigvCgC3nv2mIiFqEZqvAQ--.52337S2;
+	Thu, 04 Jun 2026 15:00:56 +0800 (CST)
+From: Miao Li <limiao870622@163.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	Herman van Hazendonk <github.com@herrie.org>
-Subject: [PATCH v2 1/2] iio: light: isl29018: fix 32-bit overflow in isl29018_read_lux()
-Date: Thu,  4 Jun 2026 08:49:24 +0200
-Message-ID: <20260604064925.3097108-2-github.com@herrie.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260604064925.3097108-1-github.com@herrie.org>
-References: <20260604054723.2983181-1-github.com@herrie.org>
- <20260604064925.3097108-1-github.com@herrie.org>
+	andy@kernel.org,
+	dixitparmar19@gmail.com,
+	waqar.hameed@axis.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	limiao@kylinos.cn,
+	limiao870622@163.com
+Subject: [PATCH v2] iio: accel: stk8312: Update includes to match IWYU
+Date: Thu,  4 Jun 2026 15:00:53 +0800
+Message-Id: <20260604070053.299221-1-limiao870622@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: ClueGetter at submission3.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780555767; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version:content-type;
- bh=4cYIfd0/w5cJoCAlF9Q80FADB/3Lqf1vY5KVb3NzNwk=;
- b=hDUivU0thqMMyOL2nmhKeCorFEqJvBw2gpm8qI5GrYvmbpnB6do9GtyBjXifwaMFJtH4Lf
- sfCpSt6SINgV4t6ls3bOzHXey+9EZAbcC+M0E5C1vu/5TDehcN+8j8H5cLh7wc9RDG0NZB
- o14mk3zL/2ETAd1X4oNzkuV6KNLxW6jIBBUV+E5smuFiynILWD9jnpdFasKtEk6QsMu4dE
- Ap/RgBZPDOYoy72X6q54IvKpoFUs46amxa7MG6NF00I05ynuW/PCx5TSh+dIj5JOtMrbjV
- zDWWCjet6IIJbfzXrlpgnMdiz3MGc1mCVbndBg+HaBRpyh7wZNO0O/lRzjUkVQ==
-X-Report-Abuse-To: abuse@transip.nl
+X-CM-TRANSID:PigvCgC3nv2mIiFqEZqvAQ--.52337S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZF17Aw1xCw4kJw1ktr45Awb_yoW8JF4xpF
+	4qkF4kGrsrAw18GFy7uF129Fy5Xan8Gr17try2ga4jv343tF1qgwsY9FnagrykCrZFga15
+	Way3Grs8Cr45ZrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piJGYdUUUUU=
+X-CM-SenderInfo: 5olpxtbryxiliss6il2tof0z/xtbCzQiVY2ohIqjeXQAA3x
 
-The intermediate calculations in isl29018_read_lux() use 32-bit
-arithmetic throughout, which overflows in two distinct ways:
+From: Miao Li <limiao@kylinos.cn>
 
-1. lux_data * chip->scale.uscale — at 16-bit integration time and the
-   1000 fc range, scale.uscale is 976562.  A full-scale 16-bit reading
-   (65535) gives 65535 * 976562 ≈ 64 billion, far beyond UINT_MAX.
-   The value wraps before the / 1000000 division can save it, producing
-   a wildly wrong data_x_range.
+Update the list of included headers in stk8312.c using
+Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
+and add missing headers such as array_size.h, bits.h,
+dev_printk.h, etc.
 
-2. data_x_range * chip->calibscale — even after a correct data_x_range,
-   multiplying by a calibscale of a few hundred (reasonable for a deeply
-   tinted cover glass) pushes the product past INT_MAX, causing *lux to
-   wrap negative.
+Meanwhile, sort these headers in alphabetical order.
 
-Fix both by widening the intermediate variables to u64 and clamping the
-final result to INT_MAX before storing it in the signed int *lux out
-parameter.
-
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+Signed-off-by: Miao Li <limiao@kylinos.cn>
 ---
- drivers/iio/light/isl29018.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/iio/accel/stk8312.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-index b6ab726d1dae..eafdfd9c4635 100644
---- a/drivers/iio/light/isl29018.c
-+++ b/drivers/iio/light/isl29018.c
-@@ -193,17 +193,18 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
- static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
- {
- 	int lux_data;
--	unsigned int data_x_range;
-+	u64 data_x_range, result;
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index f31c6ab3392d..959dfdf61db4 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -7,12 +7,20 @@
+  * IIO driver for STK8312; 7-bit I2C address: 0x3D.
+  */
  
- 	lux_data = isl29018_read_sensor_input(chip,
- 					      ISL29018_CMD1_OPMODE_ALS_ONCE);
- 	if (lux_data < 0)
- 		return lux_data;
- 
--	data_x_range = lux_data * chip->scale.scale +
--		       lux_data * chip->scale.uscale / 1000000;
--	*lux = data_x_range * chip->calibscale +
--	       data_x_range * chip->ucalibscale / 1000000;
-+	data_x_range = (u64)lux_data * chip->scale.scale +
-+		       (u64)lux_data * chip->scale.uscale / 1000000;
-+	result = data_x_range * chip->calibscale +
-+		 data_x_range * chip->ucalibscale / 1000000;
-+	*lux = (int)min_t(u64, result, INT_MAX);
- 
- 	return 0;
- }
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/delay.h>
++#include <linux/dev_printk.h>
++#include <linux/errno.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+-#include <linux/kernel.h>
+ #include <linux/module.h>
+-#include <linux/delay.h>
++#include <linux/mod_devicetable.h>
++#include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/sysfs.h>
+ #include <linux/types.h>
++
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
 -- 
-2.43.0
+2.25.1
 
