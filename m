@@ -1,144 +1,145 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57FB42B721
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 16:20:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA85F48BD56
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 16:23:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.172
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780590015; cv=pass; b=bem5lJBe732LldAYk4SpZUQDvMrzF+NkYHlJLH4fEmK8e0+7fzXuxpUhgh8hHhzaiU+pD3r81mhZahaTa5O0G9XqREKTR76AjfhrZNMXG7+same3ev4ZaB7JCH8NTl1DYYCmN4A4M3gcTUjmj+4/U7TBmFp9g4X7BgJvxNPN3Ak=
+	t=1780590187; cv=pass; b=UHGoeF+gSRqpFPILwVYtkAOidnFRC4Bq0Bq8FRhkgE6CBdj4LkkfDyYwyUzDhGtyUsjf6RFRSLeU8oxgQcB6dEI2ZCQlcYBUtCpR61322ZtdYQ3fKsUwVURACOisLELQcjmI8YkTvfnfOzxWP52g+Sps4AWVNNNdKC+Blf9sksA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780590015; c=relaxed/simple;
-	bh=vgUDMcsPZsrJmli8uHc2VZ/Xp8TkGo/abYUdfDLsuK8=;
+	s=arc-20240116; t=1780590187; c=relaxed/simple;
+	bh=R33MDLLx98AGcEWtjDLJMPWkATner6/vdrhTj3+qESw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BpMm8jSONpTmr1legf2Z9LENHW4rk/YK12kbo80PNFw+N5D1HoDbkChpO5XNx+VZodnk16x2SmwwiEzKhhPqlwzWexgYBE9oHbRuuprou3dOYc+4IvqFjxNWqLd6sGAAywdrghf2HzzsWxeq1uLx7nIrzFrTMNwTJJKUQGbrHPY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=k2stAVs+; arc=pass smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 To:Cc:Content-Type; b=JLbaVk3NI1tlsWf5ZV0osuN6ZqUJBLAxLhnFAd14d2ZWwG4trbdscsFP7S0B2q0/ndnw3Lap3fl3x+NmxS/mmN9aYLmlp5kkUmjIQkBwrYqXzMS2XT3ooqmI/RvaAkzRquiq3G460a2zPhu/cuJla4fPi6Yc3NkiQiOtATWntLk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mcOo3a+4; arc=pass smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="k2stAVs+"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8ccf887de87so10271006d6.0
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 09:20:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780590009; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mcOo3a+4"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-7ea16f090b4so13392027b3.2
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 09:23:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780590184; cv=none;
         d=google.com; s=arc-20240605;
-        b=b5CIVh8k5q9sQQjfKMR3YQ2RIQNTluvvNB1uD6Nc3gUN13J+ufY1K6INhEVyPP2S4D
-         YaiWmN3hMti2jRuHkqZVhVCWnn4BH9TfDfXnCFPYLz9Z+8KOYomljLeFw/gH7/JsjPXF
-         n9TLX8uD3JiG4z6ySAtgarIXIkLEfJEV2njfdAaWGVcm3gniHSZ9/+/79Yt3boO8DTwD
-         ED2tFVxRi2Z3psDh1901cyb/qQzU+T1SpNtIAPNBDuovqWrDnyFmziQb9GVl3lQEhS1p
-         BcYK0Z4GkNOeI8cfHxWSgDoOnHFq+hSR7G91+guE+WQAi7pHg0YdPINJ0SCl/5Ax60hR
-         U6Zg==
+        b=kDs2M4yBSuaVI4oiUDaUaDvlqYFUfbBLWEgG9pfzTecTIw7VL52XwyrNaJoV+MbDCr
+         +UrGbjyOAkIaxhwP9Z45EFLhq5R45sYpQYFTRzP4Cjm3NLAVp8LS5AN5MQTnuIwtTZWB
+         HSr0DFBF/uToL3Vf7Yx3pE2/D5IKXkjV0lXfPNDRSo7HQ8WYYlUCUPnvP7p9fcM6h5XF
+         Z98zcQcs2IhR3kp28m+OAK4VloqaNukNjlkjDJ0bYtOm2PMlq5BfN4um5o9Kh5Xgs9zt
+         vIGDw4JpyZMRrz7mYm7tJYrK/QJEsQHhoG+P8GRr/HyqiljGJT2eRoqr3F5xP3Ea87vg
+         opsQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
-        fh=S7/1SdRtSH4UcTQnIWUkhn30ICZqK8kyqUJN3qkra+s=;
-        b=c3Z5VV86nteQNiuLtcjQz/Y6yaFic6IKnU/NOitaLL7tJoR5brd9RUV0/44ZGgnBDe
-         dXWNgB3k+YIJDh28VG5aB8Frr8w1e/QuPF4ogVNSIRuVdjUbKw/hfFlAUPAZMn0K9UwV
-         Uy4AONvZaz8qkXWdxn2bPjYn783lmAygVZrfmk02S2I+8/x4GR6jQgnPnJUnvaecsza7
-         3+nF+RFtC2GJn3xur36cLKRoTf55TWaXXAgBCZ/SjFR4GWd1zwXTc6yLnPsJHCgvYobL
-         JhPNteLZufZ6NXW0+WvMIGOIxYhbHsNhmCcTDdrmqJJ3MqxMc90+IY7bsRIeSFb5NjJL
-         o8mw==;
+        bh=J4GlRxMa9J9gLARfP1LhX+QwG+3ogwBamX6CE29VQtE=;
+        fh=NcjN+JJ6bsEALQeXQnPeso/MYCWqJsEzNfTjMvKCWM0=;
+        b=A9e46Ph6xaHKudTjbPuhKoyk1ajNM4DVwM/WuGgQzMFUMTz+qba2ByMzysLorTH7EI
+         g6VawiIbwbELRHlFCyFGT+jyGMG6poI5A9BDJCAqyhxU3ZKKPPuGkq5G+I0iBt/FWt9+
+         fX8b9JGpiW7gE73aJdCE7sN98cosLhGNf6crEPTDaYv7+filW10mhrVu/R8+Sf9bFS2j
+         jNVqgFYKMwELxNzhfBBmV87STt3wfvy+UPUHA1aZSqffi/1dYU5TvxIP3hYrSpX3Ho/u
+         u3fjjti4Ddj361uhgKrXHjIph/ITdSVjTkfBO7CQK7LTeRfUs8LmmedgwippVnaV0+R7
+         fRzw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1780590009; x=1781194809; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780590184; x=1781194984; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
-        b=k2stAVs+dP1fwpxE9oQ0QIrxI/TMiVRt/EUNknR6lSMdC1paG8Y/xUwYBCdfCsQYMD
-         BLOiR9Wt1Fs8gK8nWx1gazJkd1HCVADsFn3eShnQrpZvjFtHhRlr3bO+afXrylFCWwSA
-         jBKEH0Dgir5vrfm+Sb6RpXl3zTgqNUdZlCSMWj4yT863F8m9JlTkQMBE30k7++XqOcrv
-         6RDDqFbS/xoZHy7PibST/4DfR9g7eQc4OHunAg7ZnINgtQirig2q3qeaGKBzLZcL5e2g
-         NiN2GhDVSQSk7RzYB8fvKUWHTWmPr31dtP10oexr/0jtjQgElYaSYRsYJ2RsUHom8Fk0
-         yj7g==
+        bh=J4GlRxMa9J9gLARfP1LhX+QwG+3ogwBamX6CE29VQtE=;
+        b=mcOo3a+4MSeieQ3I3Uhx7bWRty4H7Mkat0yOe9uDizThNsRqg0MOXb+ZxKVSFbFD85
+         wdv79T0lMVejxSIUONvobuHLmOal2jDltMuFDAbWjW9TRES/qh6Kzd4mI7lyutPxCv8O
+         psxmsKKgx1a9zAEOH19BXbRxqeHsvOosWVisjUXpqTkxIdnzshcYaoy76EgdSgq22Za8
+         l28Q0+PxLy3OkFSb2IeoEk3S3NxzMHeKxtaF8VTbd7DEudf3uaMDJVVLet+FTNWjuVom
+         TzFTGG4PZXojda7DELcqQ6zVHfKKIH4kMilGNB3tjMy2fW5PdlIQ++2eTvu8bT4jmFD7
+         EhzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780590009; x=1781194809;
+        d=1e100.net; s=20251104; t=1780590184; x=1781194984;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
-        b=Jr2INrfjxmCwhUBYhB+baUQRLL1L7Lbr62CzhzYL1JH7+Zocj2u36HFv3Vk1pkB8SK
-         B1diPjlEIjXjGd295JUdWvzNnSIoCVKYSzlWvQGM+GlSPQDo+weZ4/wv1kxv9rJVe77e
-         wXdQAfTDPI+vhDU+9EqsEwsup2BU4/oL9+Y9eNv2Tcgtt4b7WeE+1AUcZ4+Wd64R8xek
-         zkLuerHMIwbXGRWSSdb2dy0rgjqv13RP9jnrk7Iij+1vwEPdfSEc4mvwTbSF1qShuUhU
-         fsNYP05oKMn3dsdc8fe4jm28O9eM/lZ75sYOEgfTYd1v1T6nfu3z6R6ZHl3y1sTrHWVj
-         6e/g==
-X-Forwarded-Encrypted: i=1; AFNElJ+g895I+CNJ5X5dxooLta91hGKpWWRa7/k0XHM8iBUusnLTKNvuFqF4ODDI1qM5GQww83HQ1r6qIpA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyqeGCYmJ4JTn3EGAQjtyZWkHHkG4NqjUWjRdTAgWnGwCNuSw2R
-	LjgYZMg6bXHLCesRfyXYFSuSCyl3xTO5hGSedrP5iIv+fT5U77FPY4t4hcE8GwVg0eYzHPU4TrG
-	qTsfns0d3SVcoGcgUzHnKWOyo8G3dOufFMdL2kqogkg==
-X-Gm-Gg: Acq92OEfAnnCxglPvntGqrOKZPFMqP5//dHzxFVy+wGmmc4V6nfrEiFk4+y6Xr5RAQO
-	+UYe7qEleZ5OKkCJVRdmjgTAQ3CyePjBO6fwSOY2jvvs7NqZesFHnztVbHQ89GAmD0YcQ6M5fKc
-	Fcq+douRYLpHw8YGbGdMlOecCCMSZ+DISnuOkbhV6djjjq7j85mT+33bLOAUb7sKK9jjyQRm7Lt
-	3vxG1oQybSE0D6RBXay9V8uGKCVVyunyWJfguZcbG3JWDNi7Vh8jSKWaJu8rD2Llm306im7Ij9T
-	4RxxXS8YKFXjvUogg0zD87VpwkGpUZ3CUvzoqWbIGW+zEbSK/1/w+ciFhFXD
-X-Received: by 2002:a05:6214:412:b0:8cc:ed49:bdcc with SMTP id
- 6a1803df08f44-8cece1655d1mr124325456d6.44.1780590008249; Thu, 04 Jun 2026
- 09:20:08 -0700 (PDT)
+        bh=J4GlRxMa9J9gLARfP1LhX+QwG+3ogwBamX6CE29VQtE=;
+        b=IFfdB4JXojNg9N3noC2GV9uc8S9+4Tu6cFEYX2dWQV6i0KiV6Ovrm0tim86RYuwZQg
+         r78+oIqf7jtLKyyqZbRps3REmkccj/dks/pyboA5X9nlpKbiEgHP6SGoSmq5BJl5lGXW
+         M7wryOOfWqRNo/SIx0W5Va5gZtwgf/7FmvK1oN+raJbgMKce3Qwa+U0AMjhMEMjLffKJ
+         v+0C+xpWK5WL/IgDEtgKjQuy0W+D9zLu92GFqqXlwqYEjM/KXLk/ZP4vaRWrmDwUCiab
+         nYfqrqXhSmmEq3c1UhTMe+BiniJ1EHgbzl7I/IWkIWsGHFqadojvrB04W6mXEWD7p4Jt
+         TAmw==
+X-Forwarded-Encrypted: i=1; AFNElJ+W/eCRCukvr0vRM473dJUnOCYC9pXfNPyTsuwy9OnW5Z9IzdEyfwV7kbf1CuTr6PHutYPBYmwmNQU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw14T62mkB1BDSLpVb28c8WNPrpEHIz8xE34OAc8JkhNALEL0ug
+	VtXpiXQ2jsqPAOgiMCm6n+7+K1p1p9oLb1p06/VGz8/92Iw9sShdrz05hZBiGcEPf4cbM5X+MQc
+	1hu74Vi/0e0eazzHDOi1frZy1+HZGnxU=
+X-Gm-Gg: Acq92OEMaHIpXLdKUz1YRRGlg3XMEzsNmzAp0mD/3kRJSOPEcDuae8RXJoFhtzVN4xJ
+	zRFEKH/ymOlV7aR98W3BJAAW7xl+hyOey5ZW1CWxO0x0O2Fye0H6wmgkpnAy9hwIg04JwtMWEKx
+	kKMxjXm/kQUtOhNKsNFymXO97LBSaYUkkY+wJFKu7smBMiSE4r+Gb9nVAvxJS7dby9KOFbMxqLn
+	Gq9rh8aQTCmugXTXKunw37gCBcrjMlTiFTXvGLV5HujJUBbLEMMv8SqwIbgI20lpjNUTaW0HpHM
+	nsmTvktUhP3MVkcCJw==
+X-Received: by 2002:a05:690c:4c11:b0:7dd:b286:dfdc with SMTP id
+ 00721157ae682-7ea474082dcmr83931297b3.11.1780590183656; Thu, 04 Jun 2026
+ 09:23:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260604131518.27323-2-m32285159@gmail.com>
-In-Reply-To: <20260604131518.27323-2-m32285159@gmail.com>
-From: David Lechner <dlechner@baylibre.com>
-Date: Thu, 4 Jun 2026 18:19:55 +0200
-X-Gm-Features: AVVi8Cdxjl1cmHAE031qH9pvjyzBKib5VzySpAY024FugOHM1d2O3jfPXo3IFUI
-Message-ID: <CAMknhBGKHdUV10mLz3P_eH3mg9WU5kHw-pGqoRWfVGyvD2HwOA@mail.gmail.com>
+References: <20260604131518.27323-2-m32285159@gmail.com> <CAMknhBGKHdUV10mLz3P_eH3mg9WU5kHw-pGqoRWfVGyvD2HwOA@mail.gmail.com>
+In-Reply-To: <CAMknhBGKHdUV10mLz3P_eH3mg9WU5kHw-pGqoRWfVGyvD2HwOA@mail.gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Thu, 4 Jun 2026 11:21:07 -0500
+X-Gm-Features: AVVi8Cc5DGJV2qGkiVnnrzl4T47hU_cqZeZQE22kuY-JOnybjjtLRuBskiXF_mk
+Message-ID: <CAKqfh0FU5g96PjcXcz_hPafZR2uLq3xX2V-yyraHqPXX8RBRDw@mail.gmail.com>
 Subject: Re: [PATCH v2] iio: chemical: scd30: Use devm_mutex_init() over
  non-devm mutex_init()
-To: Maxwell Doose <m32285159@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
 Cc: jic23@kernel.org, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
 	Andy Shevchenko <andy@kernel.org>, 
 	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 4, 2026 at 3:17=E2=80=AFPM Maxwell Doose <m32285159@gmail.com> =
-wrote:
+On Thu, Jun 4, 2026 at 11:20=E2=80=AFAM David Lechner <dlechner@baylibre.co=
+m> wrote:
 >
-> The current code uses mutex_init() instead of devm_mutex_init(), which
-> is incorrect as the rest of the file uses the devm automatic resource
-> management API. Fix this so that the mutex is set up in the same way as
-> the rest of the device data structure.
+> On Thu, Jun 4, 2026 at 3:17=E2=80=AFPM Maxwell Doose <m32285159@gmail.com=
+> wrote:
+> >
+> > The current code uses mutex_init() instead of devm_mutex_init(), which
+> > is incorrect as the rest of the file uses the devm automatic resource
+> > management API. Fix this so that the mutex is set up in the same way as
+> > the rest of the device data structure.
+> >
+> > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> > ---
+> >  v2:
+> >  - Drop fixes tag per Jonathan's suggestion.
+> >  - Replace dev_err_probe() with return -ENOMEM per Jonathan and Andy's
+> >    suggestions.
+> >
+> >  drivers/iio/chemical/scd30_core.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/s=
+cd30_core.c
+> > index db5cc295aeab..198add58affd 100644
+> > --- a/drivers/iio/chemical/scd30_core.c
+> > +++ b/drivers/iio/chemical/scd30_core.c
+> > @@ -714,7 +714,10 @@ int scd30_probe(struct device *dev, int irq, const=
+ char *name, void *priv,
+> >         state->pressure_comp =3D SCD30_PRESSURE_COMP_DEFAULT;
+> >         state->meas_interval =3D SCD30_MEAS_INTERVAL_DEFAULT;
+> >         state->command =3D command;
+> > -       mutex_init(&state->lock);
+> > +       ret =3D devm_mutex_init(dev, &state->lock);
+> > +       if (ret)
+> > +               return -ENOMEM;
 >
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
->  v2:
->  - Drop fixes tag per Jonathan's suggestion.
->  - Replace dev_err_probe() with return -ENOMEM per Jonathan and Andy's
->    suggestions.
+> Why are we ignoring ret?
 >
->  drivers/iio/chemical/scd30_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> I would expect:
 >
-> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd=
-30_core.c
-> index db5cc295aeab..198add58affd 100644
-> --- a/drivers/iio/chemical/scd30_core.c
-> +++ b/drivers/iio/chemical/scd30_core.c
-> @@ -714,7 +714,10 @@ int scd30_probe(struct device *dev, int irq, const c=
-har *name, void *priv,
->         state->pressure_comp =3D SCD30_PRESSURE_COMP_DEFAULT;
->         state->meas_interval =3D SCD30_MEAS_INTERVAL_DEFAULT;
->         state->command =3D command;
-> -       mutex_init(&state->lock);
-> +       ret =3D devm_mutex_init(dev, &state->lock);
-> +       if (ret)
-> +               return -ENOMEM;
+>               return ret;
+>
 
-Why are we ignoring ret?
-
-I would expect:
-
-              return ret;
-
-> +
->         init_completion(&state->meas_ready);
->
->         dev_set_drvdata(dev, indio_dev);
-> --
-> 2.54.0
->
+Gah, I must've Jonathan's + Andy's comments get to my head (He said it
+should likely only return -ENOMEM) :(
+I don't know if he'll want to tweak while applying or if I should just
+go back and resubmit.
