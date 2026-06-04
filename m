@@ -1,129 +1,111 @@
-Received: from outbound0.mail.transip.nl (outbound0.mail.transip.nl [149.210.149.69])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C603783BB;
-	Thu,  4 Jun 2026 05:47:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=149.210.149.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696233D1711;
+	Thu,  4 Jun 2026 05:51:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780552060; cv=none; b=mAOBsj3lzKGgP+ijzGQvfTQCaYsG7HKlkdl5tBFvWdgViAFnlUrRNyYw9x6abg7aFnX/1KxZqgHED/gFOnNJ0bLCEb5URrm27exCoq80Q9QQHQlE1IKZorf3SOHkMLjj+Y+0/Dztyq1YHr1xLIDwkDEVQuJpXt40ncuFfhyzswY=
+	t=1780552308; cv=none; b=FJE7c/+Xs+9ZmFDvVoIT2MdXGZwKOqSEp6E+f0sNJcXCczShJSCdzy6gTN9k2qWlNk9I2qzXlBB74Bt9SVhMQDFAB3bVP9/bmfe/gvthh5C+lUmiVh7wmd5/Sll8yfklEhcLzmNNxJBhHwssS7wrTvPbpU2+7SsbbD4zhvBm3+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780552060; c=relaxed/simple;
-	bh=s/tXcyivvK6qON6ZSiN21djSrCA0bh6zQnu2d2wq/60=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=orCmNnA4fGda6zHY3nHA57s4VcwcYNfMI7DjDeYHja+Wh6pQiexr+ybWnRaNKPkcrxrPkDeLt0nxwRuJRMmQ2aD7q/dHYZtHAyvvUaAVvkqkaN18EKBys+RMyMn6HfUPZoURL6TlhYXbEfMqercZOuVBjSsIhl2YTZ6WqoeqAtA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=nB8/9O0d; arc=none smtp.client-ip=149.210.149.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1780552308; c=relaxed/simple;
+	bh=StrjWbO7JkBLpCjpx66U+DeF2jDXM7FSmXwXo91gAZI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=U21NQEtQO+JXANHzQQRoYSxRJzC5ysDjJ6lvN4CofWdRQx5kEGIqaX5TsO4hy1F22169mf5Xovp28msBjf4u41v8qehYTxHUY38+Rujoibxejey0+lAOOv7xR17h2wY3hsdR9HnjFIZDzwAN/i03cZZ2svrRHPNFwIX/xhrCYD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KqD7b+lf; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="nB8/9O0d"
-Received: from submission1.mail.transip.nl (unknown [10.100.4.70])
-	by outbound0.mail.transip.nl (Postfix) with ESMTP id 4gWD9S6DZxzxNvB;
-	Thu,  4 Jun 2026 07:47:24 +0200 (CEST)
-Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission1.mail.transip.nl (Postfix) with ESMTPA id 4gWD9S1PbszJjhYP;
-	Thu,  4 Jun 2026 07:47:24 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	masneyb@onstation.org
-Subject: [PATCH 1/1] iio: light: isl29018: support cover-glass gain compensation via DT
-Date: Thu,  4 Jun 2026 07:47:23 +0200
-Message-ID: <20260604054723.2983181-2-github.com@herrie.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260604054723.2983181-1-github.com@herrie.org>
-References: <20260604054723.2983181-1-github.com@herrie.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KqD7b+lf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780552302; x=1812088302;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=StrjWbO7JkBLpCjpx66U+DeF2jDXM7FSmXwXo91gAZI=;
+  b=KqD7b+lfwrTYgIL/l4ZxnWuF5WS5HjuNYd4ZbzCkwqocBiV3sh91zMj2
+   MlsuZAINZhcVkukZNUcNsL2cugS6JNW2dz3QDoi5drrXKql4d7eN11wNh
+   7MF7ei09PYfEUcrgNyJuyW/4MtUsby+u9MxHMf4fAlkEgrXpN9JD3r6Nu
+   HGX33dNyY3QhbE/71chQ21dPySybh0dVpzV6zW08yHYKgkvtkoh6lN1B5
+   BAdVhlnwdOPqoKXsc8tKpZzP+dlvIkamojhiqj+ojtoRkCIemLvptER+E
+   RIM2CEznIfl4Cvx5nZymhRJs6Jtz6YXEYxnZ/b1gywiJrP5xKfGX99fg4
+   w==;
+X-CSE-ConnectionGUID: xmo8KvLPRhaLQwd6ljlIzg==
+X-CSE-MsgGUID: NJ2xZbP8Q0+ci4prefS4gQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="92857602"
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="92857602"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 22:51:41 -0700
+X-CSE-ConnectionGUID: 4waxMAB+T8KRdArTOwvSxQ==
+X-CSE-MsgGUID: KAv13reYQneW8TJSV0HJ1Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="243379753"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 22:51:36 -0700
+Date: Thu, 4 Jun 2026 08:51:33 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+	linux@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH 05/12] iio: dac: ad5686: add support for missing power
+ supplies
+Message-ID: <aiESZaVcbh7ctlPh@ashevche-desk.local>
+References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
+ <20260602-ad5686-new-features-v1-5-691e01883d27@analog.com>
+ <ah8oz29R8mem6H5X@ashevche-desk.local>
+ <p3ydzrkizeysxlzc355xzgeboipihgo45w34uwn7a4lb63jgek@kr5r5hgjh354>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: ClueGetter at submission1.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780552044; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version;
- bh=UFASBU7YcGz8/4/7aM5eChG+sRY+dPXEb17D5i+c9Wg=;
- b=nB8/9O0dHdLT/A3ozj6IxVfGaVg0GnrlcxfNSkaYQ5QZ9C7VT1WnBZUda3+shSHmQCUN1s
- qyiGp3lHv+bePS5tzZDve9PKTf1oET/+SYQmspQIb0UqtxOM05ynl17ga/AG/Eu0ixKCVe
- SLeRidLk9klatWgbDAMSqvF63h6hm31yZS2QqdFDJeX0tafyMH+9NlurlsxzeP7a3ER3be
- +CcnedI3J4D3CbJZFdhR9EXNV1hZjyVuUZFO8taaEB3l8LXDVkd+eJJKr0yEtZsBZvzcSa
- WdGH4ooIuYVx8IRkcHwMGuBJGfUiibeq9gxYhq1qycoXVt0VuRQEplRUsgxiVQ==
-X-Report-Abuse-To: abuse@transip.nl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <p3ydzrkizeysxlzc355xzgeboipihgo45w34uwn7a4lb63jgek@kr5r5hgjh354>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Boards that mount the sensor under a tinted or coated cover glass need
-to compensate for the optical loss before downstream consumers can map
-the reading onto a useful lux range. The driver already exposes a
-runtime knob through in_illuminance0_calibscale, but every user has to
-re-apply it after every reboot (or rely on a board-specific udev rule),
-and a power-of-two cover gain like 100x is a hardware constant of the
-board rather than a policy choice that belongs in userspace.
+On Wed, Jun 03, 2026 at 01:17:25PM +0100, Rodrigo Alencar wrote:
+> On 26/06/02 10:02PM, Andy Shevchenko wrote:
+> > On Tue, Jun 02, 2026 at 05:33:52PM +0100, Rodrigo Alencar via B4 Relay wrote:
 
-Add an "isil,cover-comp-gain" device-tree property that seeds calibscale
-at probe, mirroring the pattern tsl2563.c already uses for the same
-class of problem (amstaos,cover-comp-gain). The default stays 1 so
-existing systems are unaffected, and userspace can still re-tune via
-the sysfs attribute afterwards.
+...
 
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
----
- .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++++++++++
- drivers/iio/light/isl29018.c                        |  9 +++++++++
- 2 files changed, 22 insertions(+)
+> > > +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+> > > +	if (ret == -ENODEV) /* vcc-supply is deprecated, but supported still */
+> > > +		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> > 
+> > >  	if (ret < 0 && ret != -ENODEV)
+> > 
+> > It can be deduplicated now with
+> > 
+> > 	else if (ret < 0)
+> 
+> Not really, because ret is overwritten with
+> 
+> 	ret = devm_regulator_get_enable_read_voltage(dev, "vcc")
+> 
+> so the check for if (ret < 0 && ret != -ENODEV) is intentional
 
-diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
-index 0ea278b07d1c..92ea2742bbd3 100644
---- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
-+++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
-@@ -34,6 +34,19 @@ properties:
-   vcc-supply:
-     description: Regulator that provides power to the sensor
- 
-+  isil,cover-comp-gain:
-+    description: |
-+      Multiplier applied to the ambient-light reading at startup to
-+      compensate for optical loss in the board's cover glass. Boards
-+      that mount the sensor under a tinted or coated window typically
-+      need a value between a few and a few hundred. The value seeds
-+      in_illuminance0_calibscale, so it can still be retuned at
-+      runtime through sysfs.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 1
-+    maximum: 65535
-+    default: 1
-+
- required:
-   - compatible
-   - reg
-diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-index b6ab726d1dae..427dbb639141 100644
---- a/drivers/iio/light/isl29018.c
-+++ b/drivers/iio/light/isl29018.c
-@@ -727,7 +727,16 @@ static int isl29018_probe(struct i2c_client *client)
- 	mutex_init(&chip->lock);
- 
- 	chip->type = dev_id;
-+	/*
-+	 * Allow boards that mount the sensor behind tinted / coated cover
-+	 * glass to bake the optical-loss compensation into firmware via
-+	 * "isil,cover-comp-gain", following the precedent set by
-+	 * tsl2563.c. The value seeds calibscale (default 1), so userspace
-+	 * can still retune through in_illuminance0_calibscale.
-+	 */
- 	chip->calibscale = 1;
-+	device_property_read_u32(&client->dev, "isil,cover-comp-gain",
-+				 &chip->calibscale);
- 	chip->ucalibscale = 0;
- 	chip->int_time = ISL29018_INT_TIME_16;
- 	chip->scale = isl29018_scales[chip->int_time][0];
+Indeed, thanks for pointing this out.
+
+> > > -		return ret;
+> > > +		return dev_err_probe(dev, ret, "failed to read vref voltage\n");
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
