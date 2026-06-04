@@ -1,165 +1,88 @@
-Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outbound11.mail.transip.nl (outbound11.mail.transip.nl [136.144.136.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD34233A6E9
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 04:38:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780547894; cv=pass; b=IzaNwtCtLhashRTN4Uytlv5PE0qYz68/aWgWfI81blvy3SUIl8/NZQsb/EI/G9NaUFxtUMqKozpXriXX9MlE2VcRdEek13kb+avJJUhAzt4nY+A2U66Klz7C/GNzx82FxczEB3AAJxOjATJI2MkWTLZaT+kJgm7GO/yIQu4mrCs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780547894; c=relaxed/simple;
-	bh=cSJqbqeQQoCctdJKwU9ufUpFY+CsJwsZRsyI/ueOMT4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=A4rJcKFu/cZ57WKbWm+UfJ3TyGvfJCJJHnfO23C49XuTiIWuPpakffyw7KDvwBc7dZwlDVlUt9A5tddtbtKawNbn1C+tW4tHWkNU+YlLff+7tAGuny896gJEmI5GLtPEZMz2nP0sq1W40D4ypt6A5nvHQw/CzhQdoJA1dcfFDEQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dThghJBI; arc=pass smtp.client-ip=74.125.224.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E93D3CA4AB;
+	Thu,  4 Jun 2026 05:47:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780552054; cv=none; b=Ko7a3hU1LGR6Un38OdPr0Dbi1gRpNISbwfP55gadwXxU61skzzkQVZzSMY7JPM7eelAD4yRu0MPRlIlqbhtj9QtYMVSoH2i+ydH2RlVbdsywq5hbK7ySfQAd3I3VLwM9Af/jTfscyqYn/IKgDpqPvkH0nzWwJ5Z9nSYxczoSsj0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780552054; c=relaxed/simple;
+	bh=C5ni448VtuIkwwEICqDfUjBPJbXAQkiSFr164C1XyCo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nfFgcEMGzg0LgaKGXedlrdxCqzJ/+0pFQzUHLSpL5mubS85Hogp2guEFHviUCvmEgp4A4ybvAEzp2GhWjA29B61st+H054J7xsMJgfoDvXei1f/Zei3vM+enuV5PvxMgPHg39+wQDXr29nFI/OydW+KTs1E11273ChlakYWQvVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=DjYMI6v0; arc=none smtp.client-ip=136.144.136.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dThghJBI"
-Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-66058b880e9so317180d50.2
-        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2026 21:38:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780547893; cv=none;
-        d=google.com; s=arc-20240605;
-        b=g1wpZ7m8BrhjhQwJAV4uxgnFUTTwN2P8mRkK/jgdBmXCeEFkAtP6se/BR+hU6gtRRg
-         t355GzyzaM4+NK+n44Q4IU/BOgmT5S9+1WlSVe1ARA7M6quV3Zl3u0PrkXmKY5/M+hI/
-         JlmDEOxl3SOSNUbG7fbRkHLTyo8AldbHkgiJqsW1LZRMwlIL+SzvjtrHrDuA352yD5Ly
-         dSE0tXumcDBTP7rWImvpkKS8XgbwqjN3966pyej0xaEe8bS7d+BMhSa8gF9q6XVl0m4q
-         9svwgUcAZiNn9NDRbPtILTEv3WJtPgAYcPIoNZMTqTmNIlvgzT32aerJpNsU2/+iFQ72
-         ZH6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Wg264YkE5pyKyst5Jn6pATRjlK2A9ozZfnSop0+Fjt8=;
-        fh=gs3TppPTzDTWDq3cS+OPl2ekT5wAkY1QEV9KgKj2P48=;
-        b=VY/o69AhkC9igYbAIZ3DoFOjaV00egng5Z9O+qpR4+mXbkSgD/lXbNCYG+oCfqo9VY
-         ZGSGJ400puHEWV/U06wZrbYB77jUadDblBpJLFOixg4PwVgk+uuSh3SGxoUHT0b9LwyO
-         kbs8n57tziMr4YOlLaT0K2VpPo4d+xe0GZaPG+QE0DH2lo5MwcQqsM7Uxd52PN6oXMD4
-         BK8mvvx5atO92f/ra4+rWVDyW4Idsp3BZ1u8VbXqaoQX7GiV+wjIt5M4CR7A3D3SKd/c
-         6qw7oZT87DXDvWV5j1ChAx+13jgnSnzKNIWNRVuRzgoCoVvv/rt9PY1rEHvH874XXuGe
-         8eiw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780547893; x=1781152693; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wg264YkE5pyKyst5Jn6pATRjlK2A9ozZfnSop0+Fjt8=;
-        b=dThghJBITptZFKHTVkhAip5+Z4O5TMeTbapCHTArHSMTpTn8nm96b0DagEcsWkAeV+
-         PcvV83TGB3LAHta4sCcUV2q0AiA0YioZqwgfF99tkSS3X63eY1gqDGj4gtDe0iFVnIDW
-         ujdXBaANDD3kfeRTB3NoVzYtak8FnN8kO2dSjgyTofsC+feMeIybDqhbtydnS2DiLmNx
-         6DeL0mDU9ovmacLmKM9GX6n+643SbRyr+D2bMM9v9WWpYfRPbf7PANohoTfGdUwagfqD
-         p9/kiMTBdJko3/CFKuuiqDy4GkqhERkpbl+VNq8Uac0n9kfS0DZL+xsBxwPrhJgmeCjf
-         ef7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780547893; x=1781152693;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Wg264YkE5pyKyst5Jn6pATRjlK2A9ozZfnSop0+Fjt8=;
-        b=H03v2cxN5tA+Lmm1ShUaQBWGoaqgaYO3D5VZXmSj0gpdH050v5l2G4Mzx/3CUUKwEt
-         FoXcbMSuP2EH9IP2vcbnUZqnYA46pwEGfzgp9HeY4vd4vUCHGR2z1GQ9bZZDrf2zyegR
-         5o1pJ5rnNjwcH34UP55to8cpuL/lJCgVdZy2NC8PQHjY1B21hEeOWGcGAiUwf0efc0vB
-         JxLYJPkiRlOoflUiuhaiAqydeuIUMMHBuvCu5ZUbw96xQS/a/d2iW1tLfv+dy4kTmeTI
-         Z3vNqp67U1wKgxvBmvUjweCpMFyvMKM4WU0lJXfs+eeC1Sb245fSpFTVfl9f/ShHnGoU
-         Z6Qg==
-X-Forwarded-Encrypted: i=1; AFNElJ/L/xgGXUly1KBxRMosqwHx9osjgsOsaS0DA5bbAxCI96kgyNY+LYsrF9oPpwVJf+GMdwS2ksIFfAg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywajpz2+P/G5ktKj4eTFD3ZtKhB0GFThgfPAcotRDpIVGR2wMSl
-	SBGh8jjLzpDvTiXzja4JbuX9cpyn/9fBSQcmS0ZNiWw8rKR8eRXasflq6YT9s2laWo8qSxBQIC4
-	AMbfb5RjS/o7wi4DoaEouhyNhxBnHOIA=
-X-Gm-Gg: Acq92OH2cK5yO5ef01+vjAOtulNesy8r71HtIgOc79PmRpyhd3yuOTE3339azPLJlVb
-	5KS8wLSFW47eWKNKgSg1Ap2vW1NqDJ19eCMjp/M4Y8XXW5sHngMMV9cYNQ3LRo3NLlNbaVszMu5
-	Z0/O7JguNKw2Gdu1QZhB3nSPKqw9K2AD+ZwBYmR+dwfvEO6ROxEMKORU5aqjq/90DzGLhDftAhz
-	yQpJE5pHY1GtROFHxErrFXJCnwpmJ36cv+0RGUT0XdLPj5ymienEnpar2+qe1oAujmE1pwmRx0B
-	u5ZGAZ6F91CxbJb4SLDr
-X-Received: by 2002:a53:ef0d:0:b0:65d:c448:e5eb with SMTP id
- 956f58d0204a3-660dc51dcbemr4865793d50.56.1780547892595; Wed, 03 Jun 2026
- 21:38:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="DjYMI6v0"
+Received: from submission1.mail.transip.nl (unknown [10.100.4.70])
+	by outbound11.mail.transip.nl (Postfix) with ESMTP id 4gWD9S1HXFzkQQPS;
+	Thu,  4 Jun 2026 07:47:24 +0200 (CEST)
+Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
+	by submission1.mail.transip.nl (Postfix) with ESMTPA id 4gWD9R3TKhzJjhYK;
+	Thu,  4 Jun 2026 07:47:23 +0200 (CEST)
+From: Herman van Hazendonk <github.com@herrie.org>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	masneyb@onstation.org
+Subject: [PATCH 0/1] iio: light: isl29018: cover-glass gain compensation via DT
+Date: Thu,  4 Jun 2026 07:47:22 +0200
+Message-ID: <20260604054723.2983181-1-github.com@herrie.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260603141633.1398943-1-lgs201920130244@gmail.com> <20260603181846.7c3a36e8@jic23-huawei>
-In-Reply-To: <20260603181846.7c3a36e8@jic23-huawei>
-From: Guangshuo Li <lgs201920130244@gmail.com>
-Date: Thu, 4 Jun 2026 12:38:01 +0800
-X-Gm-Features: AVHnY4L10wJ6AK0f1w1Z1v1M-ln3DX8hQ8TF8kqyu2mw7oZcy23CyJYU3U8S6FQ
-Message-ID: <CANUHTR8KwE=FtxogHAuHY1UT=LrXOE8qjneewyhP84SoqwuY0Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: gyro: mpu3050: avoid double free_irq after trigger failure
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Ethan Tidmore <ethantidmore06@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: ClueGetter at submission1.mail.transip.nl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=transip-a; d=herrie.org; t=1780552043; h=from:subject:to:cc:date:
+ mime-version; bh=uvlpXs05Cgpzb1r5FZDWmc1DpFg8q51UDHKXG3t6x9o=;
+ b=DjYMI6v0KZJUIPxVB9IU70E+BFeKijq357a0mfHqPYXrCB59KJCOZdl76tHHBAcQY3NBFn
+ lawJvpCxaKZgX90p/BV9eHQsf80apFpdBBOo0QIPKoJ9XBr+yfL5XtTT3kg8D/rJoViP3r
+ w4y63vJZhRHcrJAppyzWq+RfvMBqkhCzSqAmS9B7bGx28gJ6HAVPez8e5xS8QWwymjwZb5
+ 9uKynj9Vq9MA7R/2Uv6KEiktdMSk3GrOCrfh9mURdQphS/hSdWnlZ0Y84gTTns5lLAebTP
+ 5d8fJKvMMJvpTE7KMazZE5edVrmXoBpcQ1N0BS1DgxkVLdGqIGHA+5Sfiohhrw==
+X-Report-Abuse-To: abuse@transip.nl
 
-Hi Jonathan,
+The ISL29018/ISL29023 is commonly mounted behind a tinted or coated
+cover glass on consumer devices (HP TouchPad being one example). In
+that configuration the visible-light photodiode reads roughly 1/100th
+of actual ambient lux, causing downstream consumers (brightness daemons,
+display managers) to permanently classify the environment as near-dark
+and pin the backlight at a fraction of its range.
 
-Thank you for pointing this out.
+The driver already exposes in_illuminance0_calibscale for runtime
+compensation, but that requires udev rules or userspace re-application
+after every reboot.  The optical loss is a board-level hardware constant
+and belongs in firmware.
 
-On Thu, 4 Jun 2026 at 01:18, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Wed,  3 Jun 2026 22:16:33 +0800
-> Guangshuo Li <lgs201920130244@gmail.com> wrote:
->
-> > commit 4216db1043a3b ("iio: gyro: mpu3050: Fix irq resource leak") made
-> > mpu3050_trigger_probe() release the IRQ when iio_trigger_register() fails
-> > after request_threaded_irq() succeeds.
-> >
-> > However, that failure is non-fatal to mpu3050_common_probe(). The caller
-> > only logs the trigger setup failure and continues to register the IIO
-> > device. Since mpu3050_trigger_probe() leaves mpu3050->irq set after
-> > freeing the IRQ, later cleanup still believes the driver owns that IRQ.
-> >
-> > If iio_device_register() fails, the probe error path frees the IRQ again.
-> > If probe succeeds, mpu3050_common_remove() frees it again during unbind.
-> >
-> > Clear mpu3050->irq after releasing the IRQ, and use mpu3050->irq rather
-> > than the original irq argument to decide whether the probe error path
-> > still has an IRQ to release.
-> >
-> > Fixes: 4216db1043a3b ("iio: gyro: mpu3050: Fix irq resource leak")
-> > Signed-off-by: Guangshuo Li <lgs201920130244@gmail.com>
-> Please check the list for similar fixes.
-> https://lore.kernel.org/all/20260520152236.2308686-1-xinyuili@126.com/
-> has a discussion of the right solution here being to just fail the probe
-> if the trigger registration fails.
->
-> The current attempt to paper over that is nasty and not something
-> we normally do.
->
-> Jonathan
->
-> > ---
-> >  drivers/iio/gyro/mpu3050-core.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> > index d84e04e4b431..0fd881fdd1ad 100644
-> > --- a/drivers/iio/gyro/mpu3050-core.c
-> > +++ b/drivers/iio/gyro/mpu3050-core.c
-> > @@ -1137,6 +1137,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
-> >
-> >  err_iio_trigger:
-> >       free_irq(mpu3050->irq, mpu3050->trig);
-> > +     mpu3050->irq = 0;
-> >
-> >       return ret;
-> >  }
-> > @@ -1260,7 +1261,7 @@ int mpu3050_common_probe(struct device *dev,
-> >       pm_runtime_get_sync(dev);
-> >       pm_runtime_put_noidle(dev);
-> >       pm_runtime_disable(dev);
-> > -     if (irq)
-> > +     if (mpu3050->irq)
-> >               free_irq(mpu3050->irq, mpu3050->trig);
-> >       iio_triggered_buffer_cleanup(indio_dev);
-> >  err_power_down:
->
+This series adds an "isil,cover-comp-gain" DT property that seeds
+calibscale at probe time, following the precedent established by
+tsl2563.c (amstaos,cover-comp-gain) for the same class of problem.
+The default stays 1 so existing systems are unaffected, and userspace
+can still override the value through sysfs afterwards.
 
-I missed that previous discussion. The patch you mentioned already fixes
-the issue I was trying to address.
+A follow-up DTS patch enabling this for the HP TouchPad will be sent
+separately to the ARM/DTS tree once this driver change is upstream.
 
-Thanks,
-Guangshuo
+Herman van Hazendonk (1):
+  iio: light: isl29018: support cover-glass gain compensation via DT
+
+ .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++++++++++
+ drivers/iio/light/isl29018.c                        |  9 +++++++++
+ 2 files changed, 22 insertions(+)
+
+-- 
+2.43.0
+
