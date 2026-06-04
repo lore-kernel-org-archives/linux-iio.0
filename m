@@ -1,136 +1,144 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD3AF43C05C
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 16:14:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57FB42B721
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 16:20:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780589665; cv=pass; b=l5nP0IrPtWgpimOpTyT7uCOPD6kNQ7raNz1MWZmsPLcYRVaS/o0Nejx+URD3CYpoUyTu0SwyzLkfuZt7bZHvQtBAZ8JCBE/awibptgxBepoV07p3gdhpD4XWi8nPsvgNEV1Pz67nhhFJVFiFOk7W3TkDbkhnpfwziQjHS7dyOMY=
+	t=1780590015; cv=pass; b=bem5lJBe732LldAYk4SpZUQDvMrzF+NkYHlJLH4fEmK8e0+7fzXuxpUhgh8hHhzaiU+pD3r81mhZahaTa5O0G9XqREKTR76AjfhrZNMXG7+same3ev4ZaB7JCH8NTl1DYYCmN4A4M3gcTUjmj+4/U7TBmFp9g4X7BgJvxNPN3Ak=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780589665; c=relaxed/simple;
-	bh=GKwKIb/u7M7DhfWfWX/iglYL6XD0X5bxNq0DTHaMz4s=;
+	s=arc-20240116; t=1780590015; c=relaxed/simple;
+	bh=vgUDMcsPZsrJmli8uHc2VZ/Xp8TkGo/abYUdfDLsuK8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LiSLq47l53iE0e2QcALT2wycMv48zo0WSZK0Kmw1SNr6gRKrfejDtUlx1zQJlFcDQTDpzlNlDzXZ+ah80JkExrqtzpFAw5DI66CbMfpJzkUY+VXOnGL+mAeAzxeiD7YS55NCa7PzF1mxlnOS5BajW1tUzAWVUZXx9WTlwRxno1s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ce086YNq; arc=pass smtp.client-ip=209.85.219.42
+	 To:Cc:Content-Type; b=BpMm8jSONpTmr1legf2Z9LENHW4rk/YK12kbo80PNFw+N5D1HoDbkChpO5XNx+VZodnk16x2SmwwiEzKhhPqlwzWexgYBE9oHbRuuprou3dOYc+4IvqFjxNWqLd6sGAAywdrghf2HzzsWxeq1uLx7nIrzFrTMNwTJJKUQGbrHPY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=k2stAVs+; arc=pass smtp.client-ip=209.85.219.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ce086YNq"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-8cce77eb087so7750736d6.1
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 09:14:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780589663; cv=none;
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="k2stAVs+"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-8ccf887de87so10271006d6.0
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 09:20:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780590009; cv=none;
         d=google.com; s=arc-20240605;
-        b=WHH6dkCHoUfkx9OiAP2U3427i/Oh/alODGOIcr2JayGBS4t0AIxph5arFEudU8ezCW
-         KJzF2/oMvrv1Xoa+kZ9oloFYGBwioqxlAEDAWwDrqHilc+PEQKBeiLXFm2wGql0DGT0o
-         RNuddsPIH3oC6ms6gng2Fc71Qkx51fQzZ5TsphJIJXXdHtqaR8b2PyG5Do+KQcJqjZTN
-         aRa0o753O22wfUn0Ss9cPf9Ahn/5zHDnFZZC9beN65G9ZOTtxJdzRemhBDDdAhETkghj
-         coUw4JWU1wSvc9bct14oTTSbgSobi4hSPa5IcJY87fD6qf7N6zfsarcJ4XyzQEuTVFWG
-         1uuA==
+        b=b5CIVh8k5q9sQQjfKMR3YQ2RIQNTluvvNB1uD6Nc3gUN13J+ufY1K6INhEVyPP2S4D
+         YaiWmN3hMti2jRuHkqZVhVCWnn4BH9TfDfXnCFPYLz9Z+8KOYomljLeFw/gH7/JsjPXF
+         n9TLX8uD3JiG4z6ySAtgarIXIkLEfJEV2njfdAaWGVcm3gniHSZ9/+/79Yt3boO8DTwD
+         ED2tFVxRi2Z3psDh1901cyb/qQzU+T1SpNtIAPNBDuovqWrDnyFmziQb9GVl3lQEhS1p
+         BcYK0Z4GkNOeI8cfHxWSgDoOnHFq+hSR7G91+guE+WQAi7pHg0YdPINJ0SCl/5Ax60hR
+         U6Zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=GKwKIb/u7M7DhfWfWX/iglYL6XD0X5bxNq0DTHaMz4s=;
-        fh=DX9oPwGAXMNCz8b1g648i4g1dZZoIMoEv/dwhIEpHEE=;
-        b=RMh2E8R2vrZWswNTKaC31SHwBvY9CRBakK/0Qq+jThA0NtjcYVmC+wJ9dXb+Sax7uq
-         WMJULg5eNJLxl+F5XLoX2m2JGSfjgIF3qUJnMYFcqmymgbP6KKI4vcL+8cqpGkTGeA9W
-         P0Pia8DR1ecg0SEZ2YYI3TsOFXBWkSEUza7froB/Ds5j4vhnnabL5DklyDr0eeI/Xm+V
-         XndiU4uDSC+efMk6Mz1K2hstCc023uHqowzy8atAP/slaOHfvXV4ZC0FemdgPrIvZQkx
-         rLXvP66P2AVEIOq+LBSQ7e5hklZgIOtdHKNN/6r9knixOk77b5pYq+C0/1/LZERaue/X
-         GzxQ==;
+        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
+        fh=S7/1SdRtSH4UcTQnIWUkhn30ICZqK8kyqUJN3qkra+s=;
+        b=c3Z5VV86nteQNiuLtcjQz/Y6yaFic6IKnU/NOitaLL7tJoR5brd9RUV0/44ZGgnBDe
+         dXWNgB3k+YIJDh28VG5aB8Frr8w1e/QuPF4ogVNSIRuVdjUbKw/hfFlAUPAZMn0K9UwV
+         Uy4AONvZaz8qkXWdxn2bPjYn783lmAygVZrfmk02S2I+8/x4GR6jQgnPnJUnvaecsza7
+         3+nF+RFtC2GJn3xur36cLKRoTf55TWaXXAgBCZ/SjFR4GWd1zwXTc6yLnPsJHCgvYobL
+         JhPNteLZufZ6NXW0+WvMIGOIxYhbHsNhmCcTDdrmqJJ3MqxMc90+IY7bsRIeSFb5NjJL
+         o8mw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1780589663; x=1781194463; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1780590009; x=1781194809; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GKwKIb/u7M7DhfWfWX/iglYL6XD0X5bxNq0DTHaMz4s=;
-        b=ce086YNqawxIXlHUEQyR1jOT8KCcOVQ4STa2OgFfQi+SDENTWvD0QrX6rUNfumfChB
-         o1vtLG3j8U2tQES7tyhiCoUwbl1/QpVISQtPIwRedrHoHRgUzQwOHoPC1jo9lStOVBb5
-         P6nfVpnqmQcZHs+TpcXgoAie1bK8nJTlwgYS1tID2A+Jzm+b0jxVuRRRLRgBYgBFTLx5
-         3ZRU86bnwQjFs1Vexho1r1nz0u2JB0DyoHNevYUyU+ZSWE4s7hrQ7bARiTWVnIwrrDdA
-         fFm1PO1oAWHREmVNl1oSRw57Be989W2GucTvup+muLeBX9rNOh+MomypVvdppTL4QdcJ
-         oTdw==
+        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
+        b=k2stAVs+dP1fwpxE9oQ0QIrxI/TMiVRt/EUNknR6lSMdC1paG8Y/xUwYBCdfCsQYMD
+         BLOiR9Wt1Fs8gK8nWx1gazJkd1HCVADsFn3eShnQrpZvjFtHhRlr3bO+afXrylFCWwSA
+         jBKEH0Dgir5vrfm+Sb6RpXl3zTgqNUdZlCSMWj4yT863F8m9JlTkQMBE30k7++XqOcrv
+         6RDDqFbS/xoZHy7PibST/4DfR9g7eQc4OHunAg7ZnINgtQirig2q3qeaGKBzLZcL5e2g
+         NiN2GhDVSQSk7RzYB8fvKUWHTWmPr31dtP10oexr/0jtjQgElYaSYRsYJ2RsUHom8Fk0
+         yj7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780589663; x=1781194463;
+        d=1e100.net; s=20251104; t=1780590009; x=1781194809;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=GKwKIb/u7M7DhfWfWX/iglYL6XD0X5bxNq0DTHaMz4s=;
-        b=pepGEnXNUkgm9KHZ5mmEtJl5hpPiQjD0JIAmHVq6DtqWFQh1h5Z1yXWNBpYyyNyHhp
-         DstjR3JYdJ/2yeuOUBqyyRF9bbeKalCbzWOnF0ma0wtdUh4Jl73Lr+3uVJgLvM5NBLxZ
-         QSAOxwhJGRTX0DOz9DeqQmBMeedxpxvg5pYqVoTEyuAWSql8pbSAmqbu66sE51NoBvId
-         ZDw77EzHpZJjk7JgdSI9/rBWZLgPg0nOZcaDpkI3zqmV9d8rh3gnD7IOb5hhSwhTo24S
-         q5NuxtWK4K6eRRULbZtTahHvGzObvCfVNhdsg8qE5yD4AlBLvs6RJkeDk5ZzEKMwbAOA
-         KAbg==
-X-Forwarded-Encrypted: i=1; AFNElJ+Y9nqMFUwban8f/GhGd2ad0xViAzt3KdDY1nSlNpSYkQIG6JiLfpXaQE2E3cJJSWb37hB9B9J4KcA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxHe8EFvHVjC8iYG2yciH3HeFqxgWKvWNGCJLPYrL+4AWSQUCS9
-	QMk2xEowt+9Hg/36DiNxXIft9vxbpO91PcqklkY+iI9vd1cAIudC/8QK7m5NtKXq3dN36mCqmWH
-	YAIUNg42XC+4+31qMgTHL+o9hYq3HL2k1ssnPG1711A==
-X-Gm-Gg: Acq92OGh04cn90SjixGuCCr6QfGcoUc9iUnTPtyJcMXYfKiUHgPrP5hRWR8zwkJ6Mjg
-	yEqjGitwLakRP259XetY7lCeZM7nnmIHdTz7sgg0xPMtQURiodxM2ZMhG9cdU1YI/DVsjuHCm2S
-	xY5n2j2TPjv+ddGD3T2SupH+Nb52OyLW7lLO9Si+VlSUNiq0MTjT8nc7MSpl35goGdgu9vy2MTO
-	SzZ0/g6tGkckJN/TBHpM+OOj86yI9H0U+g6cjl39IZ6IqzRf5tVEhcRFPxrkJcMH4H7WvT4JL81
-	qrPA2YKg5n5lSK5r76AC1L4PSweWPH5R+uVoI2TiR99oC9R9iV7HqUgw9XSn
-X-Received: by 2002:a05:6214:3a0a:b0:8cc:dfd2:b929 with SMTP id
- 6a1803df08f44-8cecdca7f27mr126313206d6.29.1780589662648; Thu, 04 Jun 2026
- 09:14:22 -0700 (PDT)
+        bh=LLrY5btFgsC61H05eMSN0G6u5fLvNhlwYmKjGwMO1nM=;
+        b=Jr2INrfjxmCwhUBYhB+baUQRLL1L7Lbr62CzhzYL1JH7+Zocj2u36HFv3Vk1pkB8SK
+         B1diPjlEIjXjGd295JUdWvzNnSIoCVKYSzlWvQGM+GlSPQDo+weZ4/wv1kxv9rJVe77e
+         wXdQAfTDPI+vhDU+9EqsEwsup2BU4/oL9+Y9eNv2Tcgtt4b7WeE+1AUcZ4+Wd64R8xek
+         zkLuerHMIwbXGRWSSdb2dy0rgjqv13RP9jnrk7Iij+1vwEPdfSEc4mvwTbSF1qShuUhU
+         fsNYP05oKMn3dsdc8fe4jm28O9eM/lZ75sYOEgfTYd1v1T6nfu3z6R6ZHl3y1sTrHWVj
+         6e/g==
+X-Forwarded-Encrypted: i=1; AFNElJ+g895I+CNJ5X5dxooLta91hGKpWWRa7/k0XHM8iBUusnLTKNvuFqF4ODDI1qM5GQww83HQ1r6qIpA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyqeGCYmJ4JTn3EGAQjtyZWkHHkG4NqjUWjRdTAgWnGwCNuSw2R
+	LjgYZMg6bXHLCesRfyXYFSuSCyl3xTO5hGSedrP5iIv+fT5U77FPY4t4hcE8GwVg0eYzHPU4TrG
+	qTsfns0d3SVcoGcgUzHnKWOyo8G3dOufFMdL2kqogkg==
+X-Gm-Gg: Acq92OEfAnnCxglPvntGqrOKZPFMqP5//dHzxFVy+wGmmc4V6nfrEiFk4+y6Xr5RAQO
+	+UYe7qEleZ5OKkCJVRdmjgTAQ3CyePjBO6fwSOY2jvvs7NqZesFHnztVbHQ89GAmD0YcQ6M5fKc
+	Fcq+douRYLpHw8YGbGdMlOecCCMSZ+DISnuOkbhV6djjjq7j85mT+33bLOAUb7sKK9jjyQRm7Lt
+	3vxG1oQybSE0D6RBXay9V8uGKCVVyunyWJfguZcbG3JWDNi7Vh8jSKWaJu8rD2Llm306im7Ij9T
+	4RxxXS8YKFXjvUogg0zD87VpwkGpUZ3CUvzoqWbIGW+zEbSK/1/w+ciFhFXD
+X-Received: by 2002:a05:6214:412:b0:8cc:ed49:bdcc with SMTP id
+ 6a1803df08f44-8cece1655d1mr124325456d6.44.1780590008249; Thu, 04 Jun 2026
+ 09:20:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260604132646.1099072-1-andreas.kempe@actia.se>
- <aiGH7x531jwzOVxF@lore-desk> <aiGKz9iMAUfFqxUP@w570anl.actianordic.se>
- <aiGNeKTzOR30w-Qf@lore-desk> <aiGZxzz8DF-E-tux@w570anl.actianordic.se>
-In-Reply-To: <aiGZxzz8DF-E-tux@w570anl.actianordic.se>
+References: <20260604131518.27323-2-m32285159@gmail.com>
+In-Reply-To: <20260604131518.27323-2-m32285159@gmail.com>
 From: David Lechner <dlechner@baylibre.com>
-Date: Thu, 4 Jun 2026 18:14:11 +0200
-X-Gm-Features: AVVi8Cc5C5vnUpUU89NhE8J2JmAWGCJNYCxHGaVbnNxZics4mAQyyj2eIiU6a4I
-Message-ID: <CAMknhBG+u__qiLv0aRLYnUW3iYXkYDLHveQ-bs2gGZfBAD6Viw@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: deselect shub page before reading whoami
-To: Andreas Kempe <andreas.kempe@actia.se>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, John Ernberg <john.ernberg@actia.se>
+Date: Thu, 4 Jun 2026 18:19:55 +0200
+X-Gm-Features: AVVi8Cdxjl1cmHAE031qH9pvjyzBKib5VzySpAY024FugOHM1d2O3jfPXo3IFUI
+Message-ID: <CAMknhBGKHdUV10mLz3P_eH3mg9WU5kHw-pGqoRWfVGyvD2HwOA@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: chemical: scd30: Use devm_mutex_init() over
+ non-devm mutex_init()
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: jic23@kernel.org, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 4, 2026 at 5:29=E2=80=AFPM Andreas Kempe <andreas.kempe@actia.s=
-e> wrote:
+On Thu, Jun 4, 2026 at 3:17=E2=80=AFPM Maxwell Doose <m32285159@gmail.com> =
+wrote:
 >
-> On Thu, Jun 04, 2026 at 04:36:40PM +0200, Lorenzo Bianconi wrote:
-> > CAUTION: This email originated from outside of the organization. Do not=
- click links or open attachments unless you recognize the sender and know t=
-he content is safe.
-> >
-> > >
-> > > > Is it enough, if the shub is available, to just always run
-> > > > st_lsm6dsx_set_page(, false) before checking the whoami?
-> > > >
-> > >
-> > > I think that should be fine, yes. I only added the readout to lessen
-> > > the risk of unnecessary writes to potentially unknown devices.
-> >
-> > I guess you just need to check the shub is supported, then it is fine t=
-o
-> > disable shub register access at that point (it is supposed to be that w=
-ay).
-> >
+> The current code uses mutex_init() instead of devm_mutex_init(), which
+> is incorrect as the rest of the file uses the devm automatic resource
+> management API. Fix this so that the mutex is set up in the same way as
+> the rest of the device data structure.
 >
-> You are thinking of gating st_lsm6dsx_set_page() on
-> shub_settings.page_mux.addr like I do, but without the read? Or do you
-> want to gate on something else?
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> ---
+>  v2:
+>  - Drop fixes tag per Jonathan's suggestion.
+>  - Replace dev_err_probe() with return -ENOMEM per Jonathan and Andy's
+>    suggestions.
+>
+>  drivers/iio/chemical/scd30_core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd=
+30_core.c
+> index db5cc295aeab..198add58affd 100644
+> --- a/drivers/iio/chemical/scd30_core.c
+> +++ b/drivers/iio/chemical/scd30_core.c
+> @@ -714,7 +714,10 @@ int scd30_probe(struct device *dev, int irq, const c=
+har *name, void *priv,
+>         state->pressure_comp =3D SCD30_PRESSURE_COMP_DEFAULT;
+>         state->meas_interval =3D SCD30_MEAS_INTERVAL_DEFAULT;
+>         state->command =3D command;
+> -       mutex_init(&state->lock);
+> +       ret =3D devm_mutex_init(dev, &state->lock);
+> +       if (ret)
+> +               return -ENOMEM;
 
-How about setting the SW_RESET bit in the CTRL3_C register during
-probe too to ensure the rest of the registers are in a known state?
+Why are we ignoring ret?
 
+I would expect:
+
+              return ret;
+
+> +
+>         init_completion(&state->meas_ready);
 >
-> I'm willing to submit a v2 if you want it.
->
->
-> Best regards,
-> Andreas Kempe
+>         dev_set_drvdata(dev, indio_dev);
+> --
+> 2.54.0
 >
