@@ -1,111 +1,165 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40063CC9E8
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 07:45:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91962E65D;
+	Thu,  4 Jun 2026 07:59:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780559145; cv=none; b=NOLqVleiI49AxAiOQmfR29n6NeoFw4XSTX8R/+31px4uedQzvK/0Q6fFBPWsuDb9UOfyCbEmO5I9kCp7m6+OGgJRmq5NsbrHSKB+TF6+9FzSPEi8lOWZ2J9yUGA10ibL+lMG6vZ0Y1yXaIaPDHbaZfjwqo7ZDtqyTTQ1nwo7ESI=
+	t=1780559943; cv=none; b=oGSx2faeeaxo5iy6VSyvOdK3s3NnwNk3ZKmKozjJA5FjPu1My0Hv0IRr9B6YHyQ+KhkRy7qihqMw7vmYD+jNdFBMm11Cxj7xpzTIeXb6EAouFADxJCTgItcwS46OUiUWrUA9sslyP6Z3nf8eAdQ3kWOZGpw6116XOjm8BK5KV/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780559145; c=relaxed/simple;
-	bh=Dvt4W+Qy7EAGh0/2wIo3vsZYTtfKVjQbzzmSzWu1jsM=;
+	s=arc-20240116; t=1780559943; c=relaxed/simple;
+	bh=/2Y8ZUM2slpMBxKrMrCa4JVbzzaFNKK3bH/fmA1FtC8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tS0Dgpqpi7wzS52YitF2NvdWjb3mVndPCRMSh9t6XHWlF0sAibbEYPN1JVIW0JT9Xzi7PSQnMlJgfZwMrM0YsmI85M3RQxxPbOo5FJs9M5NuQRXS2SOrfdWG2Hs1ArOuqdrWT2gPtOT4G3f1R9WUPczgufN80zLQFypa/UcvkzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CAgspFg+; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=cxAKAXx5arBMk3L8vc0vZzIDvsP3li7pdv+hh+o5Sp7PFPCCCJnEbgO44+oFbKEudnbluPPzGPmpofJ7/qnDxgUT+V/VvuicrsCw3DM0fQWu4NQCfYNrMcAxCyB4fqwysDdKQGuUn9pbt5PJqhNxckf9Y1CZd3EglpPlcnZZ4OY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GTSO3LsG; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CAgspFg+"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-9159f631656so34857985a.1
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 00:45:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780559143; x=1781163943; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=kLeYQqRXlh1qJ/lyjnFUyj/UDElKHE/qIYm+8ZoOG5E=;
-        b=CAgspFg+mqJL2ubJwFPUAhGcHpHcMNEjz8m3kWH6q7daXlPAbGkmoRNg/MXFU7vrVn
-         P8KH5RtGSCJxWo8Q9Yus6dAE6ZBDz37jOHjiVNdQ4SyR7OzlDGk/baEfxP5qTJ7suR/s
-         LAZ4eYSR2wSYkJE+rJ4Q8P8G7gFXvh9Glo5i0lB7vIZhwfvKMiX31Wg/1274RneIrzVD
-         wl50l8diKtIrNYVwVrLE0l4kYNvmrNV3RxHebrBYeszYka5TenUp4u2gU+X6dXM/yf2A
-         vKegx8MSSuvRMCOjm5+A6F3c30PuIbOfPWXSITWshde50j4+RD79tecBCkU6RgaIqBwG
-         nmJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780559143; x=1781163943;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kLeYQqRXlh1qJ/lyjnFUyj/UDElKHE/qIYm+8ZoOG5E=;
-        b=ktHog5WWBpNosm64SgfQD0zScSefwfCZW2Z8whp+ey7hFJUqyptCwP72bMlOd6M3ng
-         HoT9lkJ3+AztE6yX21wOwvs2zWQ6lsztAd50SIYBsd5YAh57e9PIm3lZV4Lzx6OyjnKS
-         BMBrtUHPnl2v16CHMin2Nczhj9CHINjsOFJI/UzmM+uOEjK8+e+myPCOJp5BBjTXV3pg
-         Md0/kw2eUWguNEL819twhe+EY4XRoBq1NSV7FCaS3G5xbv/S+0MbJ+CxCCpFNXgotinx
-         wUjIVo1xltWyAVyvHjC8nDJWFgIGFgPfoMk7stHw37HZaWP7ZMedBkLp34L1Et77rdpo
-         zbKQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8UuJsYHtoRFab73n54FLttkquadyqA8kjv+FMz7d7bVbeXuybLURb1CVejgV3I5CbyqRiPEjeDWrU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqVjCyDS9AKlwOaEacIlcdlqTY0XpVZC/2iKAhhtZ+VkoppbYa
-	LyT7XcxsmZs8X0wwXfP3SHp65nlIYLjiO6HglswmnoGbA+7yGt0XEnIjEhQqs6Qk
-X-Gm-Gg: Acq92OHG2SSVJSXVhazox1B+fKKti9bkswLJhDCbW2dZwK+/Kk+dGgcc1hInP+xel0+
-	VFxGoNc1bLFuAgmQmdJeVdNavZ8RRbSp0Lck6GUiyVfu5k7BmwBcAHGBRyfI2vowjVrbnrSjIog
-	WgAFQwTEBuOnyw782cHc4bK8FlaamF3t24xQ6x3iYtXE2q0MgHvVwMCiEHK8MW32JK513pM6U81
-	/+gPvpHc0jJyHowxW8y704bOcqNBYVhVHgyEW41cHiMeneM3ntxZkwzonZF2luuUN+3GHcWrWWQ
-	yk+6a5WGtSd4jKCcnuBOLeoyJej+wpNB3tg87MnuFkCQRL8xwaDL73O+bBd0CLiAcfX3EK/phG+
-	6C1iyWCNtaIyLKNvO5giyDFvv6a+18xSUIj+zNMPVq0LFiKdC9/tE8oDWjUwa0UCUf0SDuiR74x
-	VPQ2LgNL3MROxAFeD2DIuzGDFLMPk=
-X-Received: by 2002:a05:620a:3727:b0:8cf:bad7:20c5 with SMTP id af79cd13be357-9159af5890cmr400348585a.25.1780559142818;
-        Thu, 04 Jun 2026 00:45:42 -0700 (PDT)
-Received: from localhost ([149.40.50.195])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9158a37c4e6sm505365785a.26.2026.06.04.00.45.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 00:45:42 -0700 (PDT)
-Date: Thu, 4 Jun 2026 10:45:36 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GTSO3LsG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780559942; x=1812095942;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/2Y8ZUM2slpMBxKrMrCa4JVbzzaFNKK3bH/fmA1FtC8=;
+  b=GTSO3LsGkR1r8lvX1gUNPSyBkaEK5tkwJYYrELhAz2tQbPvgm5vlBD7g
+   NoY8/x4k+HCiB4bnnh13KzQDlc3QN05jrMFMvZhrVfPQ5az3gwxZGkWBM
+   jwtruS/3xENZjFDbMrLNb6zsdKSLFIgBWUnq9nLrSPZDw59h4oGIxmcgX
+   drS4fIePazcmYwo7HVI4om76n+Rs8h414xWRkS4nWRU7Q8RQcTl8gxzHy
+   oAKGer7+b8iEB9K2utAPjIsBqF+tAd0Jh/Lc2oI20BvAm66GUSQeqc2jN
+   BDT6uKJKWIzkocagclja+rw9Z+a+d7IOOW5Vl0Cv8pRf2cTPW6tw8uQGZ
+   g==;
+X-CSE-ConnectionGUID: s2PJgF4WSXmJD6O4w6z2HQ==
+X-CSE-MsgGUID: 5VK15jgKTtWPts+iV7dNOw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="98802002"
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="98802002"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:59:02 -0700
+X-CSE-ConnectionGUID: C6PNSqS7SIaJ7Tl1IYh/aA==
+X-CSE-MsgGUID: ELWEmfB6TAaL/rOevhFtWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="241977046"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:58:58 -0700
+Date: Thu, 4 Jun 2026 10:58:56 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Maxwell Doose <m32285159@gmail.com>, Nuno Sa <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-Message-ID: <aiEtIGOFhF8AfUCT@stanley.mountain>
-References: <ahP3O2tQdu4dNx_c@stanley.mountain>
- <CAKqfh0En4pHqSfxfd2FHSDTxfWx6BfJLfeQ3xup4bwfLSTrZRA@mail.gmail.com>
- <20260526191946.409160c8@jic23-huawei>
- <aiEpmqKwFuIMRfdl@ashevche-desk.local>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH v3] iio: dac: mcp47feb02: Fix passing uninitialized
+ vref1_uV for no Vref1 case
+Message-ID: <aiEwQLq1RQW1OfZq@ashevche-desk.local>
+References: <20260603-mcp47feb02-fix4-v3-1-ed09975cad15@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aiEpmqKwFuIMRfdl@ashevche-desk.local>
+In-Reply-To: <20260603-mcp47feb02-fix4-v3-1-ed09975cad15@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 04, 2026 at 10:30:34AM +0300, Andy Shevchenko wrote:
-> On Tue, May 26, 2026 at 07:19:46PM +0100, Jonathan Cameron wrote:
-> > On Mon, 25 May 2026 08:20:31 -0500
-> > Maxwell Doose <m32285159@gmail.com> wrote:
-> > > On Mon, May 25, 2026 at 2:17 AM Dan Carpenter <error27@gmail.com> wrote:
-> > > >
-> > > > If the *ppos value is non-zero then simple_write_to_buffer() will not
-> > > > initialize the start of the buf[] buffer.  Non-zero ppos values aren't
-> > > > going to work at all.  Check for that at the start of the function and
-> > > > return -EINVAL.
-> > > 
-> > > Commit message is incorrect, it looks like you're returning -ENOSPC here...
-> > Tweaked and applied to the fixes-togreg branch of iio.git + marked for stable.
+On Wed, Jun 03, 2026 at 05:44:48PM +0300, Ariana Lazar wrote:
+> Ensure that if a device has Vref1 but reading the regulator returns an
+> error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
+> vref1_uV value.
 > 
-> I was stumbled over these patches by Dan. Since the file_operations for the code
-> in question do not define .llseek, the seek is not supported and will return
-> -ESPIPE. I'm not sure why we have these patches to begin with. Dan, can you
-> elaborate on the case where the *ppos is not 0, please?
+> Also add a device_property_present() check for the Vref1 supply before
+> reading the regulator.
 
-The simple_write_to_buffer() will update *ppos so partial writes are
-supported in that way.
+...
 
-regards,
-dan carpenter
+> +static void mcp47feb02_regulator_disable(void *d)
+> +{
+> +	struct regulator *reg = (struct regulator *)d;
+
+Unneeded casting, then for the maintenance it's better to have assignment and
+definition to be split as we have a validation check.
+
+> +	if (reg)
+> +		regulator_disable(reg);
+> +}
+
+With the above being said, there are two alternatives:
+
+static void mcp47feb02_regulator_disable(void *d)
+{
+	struct regulator *reg;
+
+	reg = d;
+	if (reg)
+		regulator_disable(reg);
+}
+
+OR (my preference)
+
+static void mcp47feb02_regulator_disable(void *reg)
+{
+	if (reg)
+		regulator_disable(reg);
+}
+
+...
+
+> +static bool mcp47feb02_ref_mismatch(struct mcp47feb02_data *data, unsigned int ch)
+> +{
+> +	bool use_vref, use_bandgap;
+> +
+> +	if (data->chdata[ch].ref_mode == MCP47FEB02_VREF_VDD)
+> +		return false;
+> +
+> +	use_vref = (data->phys_channels >= 4 && (ch % 2)) ?  data->use_vref1 : data->use_vref;
+
+Too many spaces.
+
+> +	use_bandgap = (data->chdata[ch].ref_mode == MCP47FEB02_INTERNAL_BAND_GAP);
+
+(Unneeded parentheses.)
+
+> +	return use_vref == use_bandgap;
+
+I would rewrite this as
+
+	bool use_bandgap;
+
+	if (data->chdata[ch].ref_mode == MCP47FEB02_VREF_VDD)
+		return false;
+
+	use_bandgap = data->chdata[ch].ref_mode == MCP47FEB02_INTERNAL_BAND_GAP;
+
+	if (data->phys_channels >= 4 && (ch % 2))
+		return data->use_vref1 == use_bandgap;
+	else // redundant, but left for the formatting purposes
+		return data->use_vref == use_bandgap;
+
+> +}
+
+...
+
+> +				data->phys_channels >= 4 && (i % 2)) {
+
+This idiom is repeated so many times that I would rather see
+
+static inline bool is_...(data, ch)
+{
+	return data->phys_channels >= 4 && (ch % 2);
+}
+
+and be used everywhere. If required, add also a comment on top to explain the logic,
+why we need it to be done this way.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
