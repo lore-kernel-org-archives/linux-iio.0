@@ -1,162 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91962E65D;
-	Thu,  4 Jun 2026 07:59:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D4F4333727;
+	Thu,  4 Jun 2026 08:03:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780559943; cv=none; b=oGSx2faeeaxo5iy6VSyvOdK3s3NnwNk3ZKmKozjJA5FjPu1My0Hv0IRr9B6YHyQ+KhkRy7qihqMw7vmYD+jNdFBMm11Cxj7xpzTIeXb6EAouFADxJCTgItcwS46OUiUWrUA9sslyP6Z3nf8eAdQ3kWOZGpw6116XOjm8BK5KV/A=
+	t=1780560201; cv=none; b=KJH3EXYfLpWfLXwlMoA2/qbd7babTzvYgNd3qCEkpyNyFv8naXMO1RNAuY/9xw8xaf7pXBjQxeVR11ZwrucdRvovHcimRGXjuIDOx0CNBi2xqAGDvgCWuYujz/5qTKjqn5Y9hmWLdjwfuvHZP6D8CGVSJBAxboxvDk9zSdpttqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780559943; c=relaxed/simple;
-	bh=/2Y8ZUM2slpMBxKrMrCa4JVbzzaFNKK3bH/fmA1FtC8=;
+	s=arc-20240116; t=1780560201; c=relaxed/simple;
+	bh=7wlbzBpIne/Dq/I4A508LDQHjcIZK0mUCHGgBu3dPPY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cxAKAXx5arBMk3L8vc0vZzIDvsP3li7pdv+hh+o5Sp7PFPCCCJnEbgO44+oFbKEudnbluPPzGPmpofJ7/qnDxgUT+V/VvuicrsCw3DM0fQWu4NQCfYNrMcAxCyB4fqwysDdKQGuUn9pbt5PJqhNxckf9Y1CZd3EglpPlcnZZ4OY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GTSO3LsG; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=taTjm1lqAKwmsXyxC56RUKzcM9oV0zODnCLx8SF4J9M2VkVY1BU/df+VgLKhzhHcJqnBXb/bQ6yvfxvrqS+VEiqrXTOxnmQllZJUxeK9q4GOweFlMTm4ujRnEdvOoIC7Fw45D9jsHg65gD7BxL0gp3HiN3+kfL5fHja7U2HIXfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N1ITUDHv; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GTSO3LsG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N1ITUDHv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780559942; x=1812095942;
+  t=1780560201; x=1812096201;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/2Y8ZUM2slpMBxKrMrCa4JVbzzaFNKK3bH/fmA1FtC8=;
-  b=GTSO3LsGkR1r8lvX1gUNPSyBkaEK5tkwJYYrELhAz2tQbPvgm5vlBD7g
-   NoY8/x4k+HCiB4bnnh13KzQDlc3QN05jrMFMvZhrVfPQ5az3gwxZGkWBM
-   jwtruS/3xENZjFDbMrLNb6zsdKSLFIgBWUnq9nLrSPZDw59h4oGIxmcgX
-   drS4fIePazcmYwo7HVI4om76n+Rs8h414xWRkS4nWRU7Q8RQcTl8gxzHy
-   oAKGer7+b8iEB9K2utAPjIsBqF+tAd0Jh/Lc2oI20BvAm66GUSQeqc2jN
-   BDT6uKJKWIzkocagclja+rw9Z+a+d7IOOW5Vl0Cv8pRf2cTPW6tw8uQGZ
-   g==;
-X-CSE-ConnectionGUID: s2PJgF4WSXmJD6O4w6z2HQ==
-X-CSE-MsgGUID: 5VK15jgKTtWPts+iV7dNOw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="98802002"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=7wlbzBpIne/Dq/I4A508LDQHjcIZK0mUCHGgBu3dPPY=;
+  b=N1ITUDHvK04G3Jp57DFek/03AMtjxBl9RmkaQ7naE5hO79ytoL+MZi6+
+   agr8DvUYXkX/90EFWZ9Uol/rijSjqWYSj0/HnBplQ2gJW6ER+AZehOuAG
+   fP2Olap0UpOXY+VRU6+7TXt/V6PszX66OkSEfV3qmHYRNJCwBI3PUEuTe
+   Ay+jeAJ0kbkObaaKh5i/BX0wpHTObJQJ+ueyFpSUjESRKPGsAT3VINPvT
+   IQRKLGeIZm4SB+Pqz/p4sadzjYmUC4JE6YlciRWjE4SH22nv0Ehkp9uKF
+   dQM3ip5rE8f7gy9QU34/iAUAwYPYDIwsononMUiCai913M4rwZnNgcPIr
+   A==;
+X-CSE-ConnectionGUID: aTTDzBB2T9mcdEPtmH5E0Q==
+X-CSE-MsgGUID: a8fcaIZzTC61XVHIisR5jg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81442641"
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="98802002"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:59:02 -0700
-X-CSE-ConnectionGUID: C6PNSqS7SIaJ7Tl1IYh/aA==
-X-CSE-MsgGUID: ELWEmfB6TAaL/rOevhFtWQ==
+   d="scan'208";a="81442641"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:03:20 -0700
+X-CSE-ConnectionGUID: Uh7laE23SMKo+X1snuQ+Ww==
+X-CSE-MsgGUID: 3UWW7A9+SUqWEbLEWUi2nw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="241977046"
+   d="scan'208";a="268389408"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:58:58 -0700
-Date: Thu, 4 Jun 2026 10:58:56 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:03:17 -0700
+Date: Thu, 4 Jun 2026 11:03:15 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ariana Lazar <ariana.lazar@microchip.com>
+To: Dan Carpenter <error27@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>, Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH v3] iio: dac: mcp47feb02: Fix passing uninitialized
- vref1_uV for no Vref1 case
-Message-ID: <aiEwQLq1RQW1OfZq@ashevche-desk.local>
-References: <20260603-mcp47feb02-fix4-v3-1-ed09975cad15@microchip.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
+Message-ID: <aiExQzpIOwPgwd3-@ashevche-desk.local>
+References: <ahP3O2tQdu4dNx_c@stanley.mountain>
+ <CAKqfh0En4pHqSfxfd2FHSDTxfWx6BfJLfeQ3xup4bwfLSTrZRA@mail.gmail.com>
+ <20260526191946.409160c8@jic23-huawei>
+ <aiEpmqKwFuIMRfdl@ashevche-desk.local>
+ <aiEtIGOFhF8AfUCT@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260603-mcp47feb02-fix4-v3-1-ed09975cad15@microchip.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aiEtIGOFhF8AfUCT@stanley.mountain>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 03, 2026 at 05:44:48PM +0300, Ariana Lazar wrote:
-> Ensure that if a device has Vref1 but reading the regulator returns an
-> error, mcp47feb02_init_ctrl_regs() is not called with an uninitialized
-> vref1_uV value.
-> 
-> Also add a device_property_present() check for the Vref1 supply before
-> reading the regulator.
+On Thu, Jun 04, 2026 at 10:45:36AM +0300, Dan Carpenter wrote:
+> On Thu, Jun 04, 2026 at 10:30:34AM +0300, Andy Shevchenko wrote:
+> > On Tue, May 26, 2026 at 07:19:46PM +0100, Jonathan Cameron wrote:
+> > > On Mon, 25 May 2026 08:20:31 -0500
+> > > Maxwell Doose <m32285159@gmail.com> wrote:
+> > > > On Mon, May 25, 2026 at 2:17 AM Dan Carpenter <error27@gmail.com> wrote:
+> > > > >
+> > > > > If the *ppos value is non-zero then simple_write_to_buffer() will not
+> > > > > initialize the start of the buf[] buffer.  Non-zero ppos values aren't
+> > > > > going to work at all.  Check for that at the start of the function and
+> > > > > return -EINVAL.
+> > > > 
+> > > > Commit message is incorrect, it looks like you're returning -ENOSPC here...
+> > > Tweaked and applied to the fixes-togreg branch of iio.git + marked for stable.
+> > 
+> > I was stumbled over these patches by Dan. Since the file_operations for the code
+> > in question do not define .llseek, the seek is not supported and will return
+> > -ESPIPE. I'm not sure why we have these patches to begin with. Dan, can you
+> > elaborate on the case where the *ppos is not 0, please?
 
-...
+> The simple_write_to_buffer() will update *ppos so partial writes are
+> supported in that way.
 
-> +static void mcp47feb02_regulator_disable(void *d)
-> +{
-> +	struct regulator *reg = (struct regulator *)d;
-
-Unneeded casting, then for the maintenance it's better to have assignment and
-definition to be split as we have a validation check.
-
-> +	if (reg)
-> +		regulator_disable(reg);
-> +}
-
-With the above being said, there are two alternatives:
-
-static void mcp47feb02_regulator_disable(void *d)
-{
-	struct regulator *reg;
-
-	reg = d;
-	if (reg)
-		regulator_disable(reg);
-}
-
-OR (my preference)
-
-static void mcp47feb02_regulator_disable(void *reg)
-{
-	if (reg)
-		regulator_disable(reg);
-}
-
-...
-
-> +static bool mcp47feb02_ref_mismatch(struct mcp47feb02_data *data, unsigned int ch)
-> +{
-> +	bool use_vref, use_bandgap;
-> +
-> +	if (data->chdata[ch].ref_mode == MCP47FEB02_VREF_VDD)
-> +		return false;
-> +
-> +	use_vref = (data->phys_channels >= 4 && (ch % 2)) ?  data->use_vref1 : data->use_vref;
-
-Too many spaces.
-
-> +	use_bandgap = (data->chdata[ch].ref_mode == MCP47FEB02_INTERNAL_BAND_GAP);
-
-(Unneeded parentheses.)
-
-> +	return use_vref == use_bandgap;
-
-I would rewrite this as
-
-	bool use_bandgap;
-
-	if (data->chdata[ch].ref_mode == MCP47FEB02_VREF_VDD)
-		return false;
-
-	use_bandgap = data->chdata[ch].ref_mode == MCP47FEB02_INTERNAL_BAND_GAP;
-
-	if (data->phys_channels >= 4 && (ch % 2))
-		return data->use_vref1 == use_bandgap;
-	else // redundant, but left for the formatting purposes
-		return data->use_vref == use_bandgap;
-
-> +}
-
-...
-
-> +				data->phys_channels >= 4 && (i % 2)) {
-
-This idiom is repeated so many times that I would rather see
-
-static inline bool is_...(data, ch)
-{
-	return data->phys_channels >= 4 && (ch % 2);
-}
-
-and be used everywhere. If required, add also a comment on top to explain the logic,
-why we need it to be done this way.
+Can you show the step-by-step scenario? I'm still fail to see how it may be happen.
+Is it somewhere inside the kernel loop? Which VFS function(s) is responsible for
+that in such a case?
 
 -- 
 With Best Regards,
