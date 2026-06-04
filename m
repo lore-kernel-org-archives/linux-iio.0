@@ -1,106 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D4F4333727;
-	Thu,  4 Jun 2026 08:03:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9286394EBD
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 08:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780560201; cv=none; b=KJH3EXYfLpWfLXwlMoA2/qbd7babTzvYgNd3qCEkpyNyFv8naXMO1RNAuY/9xw8xaf7pXBjQxeVR11ZwrucdRvovHcimRGXjuIDOx0CNBi2xqAGDvgCWuYujz/5qTKjqn5Y9hmWLdjwfuvHZP6D8CGVSJBAxboxvDk9zSdpttqk=
+	t=1780560607; cv=none; b=uSQWNNc+Jl3bK3t4lu3TBbsa3JVhs1geJGHkpu3sR10S1MVSjsrcdSkcZIoxgugzHeCisg0Tdj5v90Pm1UsF9ORrT/fwh6M0sEgJclGlo1jmzjQ1wDQIabi8RN/Zy+7D0BIwFek05nvwkYOkwz92sa4/FVbMX2c7a6fFYMA3r+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780560201; c=relaxed/simple;
-	bh=7wlbzBpIne/Dq/I4A508LDQHjcIZK0mUCHGgBu3dPPY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=taTjm1lqAKwmsXyxC56RUKzcM9oV0zODnCLx8SF4J9M2VkVY1BU/df+VgLKhzhHcJqnBXb/bQ6yvfxvrqS+VEiqrXTOxnmQllZJUxeK9q4GOweFlMTm4ujRnEdvOoIC7Fw45D9jsHg65gD7BxL0gp3HiN3+kfL5fHja7U2HIXfY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N1ITUDHv; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780560607; c=relaxed/simple;
+	bh=FZQMkrX+okeT4SlD7Tf4t2UW+eiFRO3yu1a1DqNEutQ=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=SbVbwTepDK7ZDGqtV2l11pQHopy5r/YLiIoTNK6B4+fxy3AmlvKszY7LaZRV1leaZ43r4cAQxQh5/T98Pjyj5fUbRnkRDZCso9j8MRJY+yY8K4bUUaDk2juCWnX5sZKfQK6u0dD/LpChiZplxS9Bv40CZmVD0YHQz/hzwGr04/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gHzm2vdW; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N1ITUDHv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780560201; x=1812096201;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=7wlbzBpIne/Dq/I4A508LDQHjcIZK0mUCHGgBu3dPPY=;
-  b=N1ITUDHvK04G3Jp57DFek/03AMtjxBl9RmkaQ7naE5hO79ytoL+MZi6+
-   agr8DvUYXkX/90EFWZ9Uol/rijSjqWYSj0/HnBplQ2gJW6ER+AZehOuAG
-   fP2Olap0UpOXY+VRU6+7TXt/V6PszX66OkSEfV3qmHYRNJCwBI3PUEuTe
-   Ay+jeAJ0kbkObaaKh5i/BX0wpHTObJQJ+ueyFpSUjESRKPGsAT3VINPvT
-   IQRKLGeIZm4SB+Pqz/p4sadzjYmUC4JE6YlciRWjE4SH22nv0Ehkp9uKF
-   dQM3ip5rE8f7gy9QU34/iAUAwYPYDIwsononMUiCai913M4rwZnNgcPIr
-   A==;
-X-CSE-ConnectionGUID: aTTDzBB2T9mcdEPtmH5E0Q==
-X-CSE-MsgGUID: a8fcaIZzTC61XVHIisR5jg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="81442641"
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="81442641"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:03:20 -0700
-X-CSE-ConnectionGUID: Uh7laE23SMKo+X1snuQ+Ww==
-X-CSE-MsgGUID: 3UWW7A9+SUqWEbLEWUi2nw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="268389408"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 01:03:17 -0700
-Date: Thu, 4 Jun 2026 11:03:15 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Dan Carpenter <error27@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Maxwell Doose <m32285159@gmail.com>, Nuno Sa <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-Message-ID: <aiExQzpIOwPgwd3-@ashevche-desk.local>
-References: <ahP3O2tQdu4dNx_c@stanley.mountain>
- <CAKqfh0En4pHqSfxfd2FHSDTxfWx6BfJLfeQ3xup4bwfLSTrZRA@mail.gmail.com>
- <20260526191946.409160c8@jic23-huawei>
- <aiEpmqKwFuIMRfdl@ashevche-desk.local>
- <aiEtIGOFhF8AfUCT@stanley.mountain>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gHzm2vdW"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-45eea68dd6fso179329f8f.2
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 01:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780560604; x=1781165404; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=eq5xpfpddkc8h4wqB4/es/lPRW0lpYTExJdBasPpfqU=;
+        b=gHzm2vdWb5QrHBHaFxWY3RL8CuRx0ktyVIsGN73YoZ1OWoOE4wQ4D0VkpDXhN//C+p
+         INr6eRBV1qEvj3YXhOlp9FRlKuXahBC541J7PTngjtIaWo0pcl/j7mf+YO2/2ExXps5Z
+         H0TZIrOn0GC+8sxLJPCvmfxyRXzYlCI+g8f0Bln61QKtpDml2FLu5o3+0z4vziJAVzdm
+         SRT56Vdjj88MaX2Qv8uM1S1XYuc3YEvwieXMGgPJBTSr3dE+UZfNIzH8A4dDTwYiacVs
+         IKVVGxjyZoBmeKMsCupveGXy6Tf1ZV89AHepYz79LbkVeLbcONLp83Dr2KYNmajq0H5f
+         bRhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780560604; x=1781165404;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=eq5xpfpddkc8h4wqB4/es/lPRW0lpYTExJdBasPpfqU=;
+        b=VQuEWmQiWs8BaPxwqtL2fxwiNjG7L+/stKTJWJrS6j8pix4s4ccZoJSHwHgs2ZZmBH
+         kBLdyezgYU6r6mwVkQaBISuM1q1U5DcrCC1sDZebK3yW9PDouqXsLpMxw91bM2ZAIr/Z
+         U46w5+w2KDSi4xkAQWqayDU8JtBuYpx6NlFzjKRAjbHTPBS2PxzeIK/tvsDTS5dAce4z
+         kcIonMeNie2IuRqUCJei8bdmFUsje15zSiVevxc6FvhKHTGcgadKkPnl9GN9nbbvlZRv
+         vtUXdzjQcHkcwZ46mKSr4Q3TB+ibKl/g5NDuy6F2o/5sXH0iSWDwLEg49a5UzQQYn5+R
+         Zwow==
+X-Forwarded-Encrypted: i=1; AFNElJ+I/+ZR3ARNJheZwDzNTwJl33TykAqyPQXOpWxJmg/gF44RvklzMNJ+WNts6eInMsc4BDBJwa+YSag=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyaf9+rqv3TXD/meFpXxYpaNPUXGNXgmZg2DeeQ4Gw1UexheN6o
+	MKHk75b3C6iqRpMcPb0zabBGpFQVZvqMzVeZ3qt0JeIWcGvC4hhl/D1Sc4t/DE04
+X-Gm-Gg: Acq92OHKeABw0wmqgnu3bVIzQy1zBo5Wmitglk9QYZo9kc4jQ3ky+7FFepBxcvGTtbo
+	2jW2LHjFpB+z+jcmwCWw3a3Rv/dzdBL/klhN2jw8NbtGvji2IOCiZDIlZXKvzKRcqtvReGcVkKH
+	QZsU07l9MAzkS7CX8POkzBekzvoY3mNLqsE1wzW6Dxg22ABiiS+9noTiXipcGGUKAhXN5FRax9p
+	NSzHemTr1K3EurDTYGcNR7hVaSDLlD+HJfCwDkvViJdzie6AdXE7+sAyTANljUHwEFf8XAwTJ//
+	gh/7SzLWdofEJzexaDJwQr1bKCKOcIT3t/Bq27CEez10jiBSgjC603nCxc/DVNEFSRN5Oc/4EoH
+	+y/SQzs9mTh56wIsgH9sUajYPURaK6Qn1dcSKiSY4pe7eyRKb+Bc08qsZEYkOkNmbuNsFCaVS3d
+	11vNMAFkj0vrBd3+7MrZbRt6+Wht+7+A1q+uWlYvvSybLITX78mwc=
+X-Received: by 2002:a5d:4987:0:b0:451:3b12:9bca with SMTP id ffacd0b85a97d-46021831001mr7968041f8f.25.1780560604206;
+        Thu, 04 Jun 2026 01:10:04 -0700 (PDT)
+Received: from [192.168.37.44] ([217.61.173.50])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f2eadefsm15126722f8f.11.2026.06.04.01.10.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Jun 2026 01:10:03 -0700 (PDT)
+Message-ID: <d82b27d8-4e0e-4749-bea7-a09f43554fb2@gmail.com>
+Date: Thu, 4 Jun 2026 10:10:02 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aiEtIGOFhF8AfUCT@stanley.mountain>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 8/8] iio: tcs3472: implement wait time and sampling
+ frequency
+From: Aldo Conte <aldocontelk@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+References: <20260522123420.45495-1-aldocontelk@gmail.com>
+ <20260522123420.45495-9-aldocontelk@gmail.com>
+Content-Language: en-US
+In-Reply-To: <20260522123420.45495-9-aldocontelk@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 04, 2026 at 10:45:36AM +0300, Dan Carpenter wrote:
-> On Thu, Jun 04, 2026 at 10:30:34AM +0300, Andy Shevchenko wrote:
-> > On Tue, May 26, 2026 at 07:19:46PM +0100, Jonathan Cameron wrote:
-> > > On Mon, 25 May 2026 08:20:31 -0500
-> > > Maxwell Doose <m32285159@gmail.com> wrote:
-> > > > On Mon, May 25, 2026 at 2:17 AM Dan Carpenter <error27@gmail.com> wrote:
-> > > > >
-> > > > > If the *ppos value is non-zero then simple_write_to_buffer() will not
-> > > > > initialize the start of the buf[] buffer.  Non-zero ppos values aren't
-> > > > > going to work at all.  Check for that at the start of the function and
-> > > > > return -EINVAL.
-> > > > 
-> > > > Commit message is incorrect, it looks like you're returning -ENOSPC here...
-> > > Tweaked and applied to the fixes-togreg branch of iio.git + marked for stable.
-> > 
-> > I was stumbled over these patches by Dan. Since the file_operations for the code
-> > in question do not define .llseek, the seek is not supported and will return
-> > -ESPIPE. I'm not sure why we have these patches to begin with. Dan, can you
-> > elaborate on the case where the *ppos is not 0, please?
+On 22/05/26 14:34, Aldo Conte wrote:
+> @@ -196,15 +359,29 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
+>   		if (val != 0)
+>   			return -EINVAL;
+>   		for (i = 0; i < 256; i++) {
+> -			if (val2 == (256 - i) * 2400) {
+> -				data->atime = i;
+> -				return i2c_smbus_write_byte_data(
+> -					data->client, TCS3472_ATIME,
+> -					data->atime);
+> -			}
+> -
+> +			if (val2 != (256 - i) * 2400)
+> +				continue;
+> +
+> +			data->atime = i;
+> +			ret = i2c_smbus_write_byte_data(data->client,
+> +							TCS3472_ATIME,
+> +							data->atime);
+> +			if (ret)
+> +				return ret;
 
-> The simple_write_to_buffer() will update *ppos so partial writes are
-> supported in that way.
+Hi Jonathan,
 
-Can you show the step-by-step scenario? I'm still fail to see how it may be happen.
-Is it somewhere inside the kernel loop? Which VFS function(s) is responsible for
-that in such a case?
+Two questions on the INT_TIME case in tcs3472_write_raw() before
+I send v4.
 
--- 
-With Best Regards,
-Andy Shevchenko
+- The compute/write/commit pattern issue you raised elsewhere
+also applies here. I plan to swap the order: write first with i
+
+return i2c_smbus_write_byte_data( data->client, TCS3472_ATIME, i);
+
+then update data->atime only on success. OK?
+
+- Sashiko flagged a race ( 
+https://sashiko.dev/#/patchset/20260522123420.45495-1-aldocontelk%40gmail.com ) :
+target_freq_hz/uhz are read without
+the lock and then passed to tcs3472_set_sampling_freq() which
+takes the lock internally. Two options:
+
+1)  Take the lock briefly in write_raw() to write ATIME, update
+     data->atime, and snapshot target_freq_hz/uhz. Then release the
+     lock and call tcs3472_set_sampling_freq() (which takes the lock
+     again internally). Minimal change, but ATIME and WTIME updates
+     are not atomic with each other.
+
+2)  Split tcs3472_set_sampling_freq() into a public wrapper that
+     takes the lock and a __tcs3472_set_sampling_freq() helper with
+     the lock already held. Then in write_raw() take the lock once,
+     write ATIME, and call the helper. This keeps ATIME and WTIME
+     updates atomic.
+
+In these cases, what is used to do?
+
+Thanks,
+Aldo
+
+> +
+> +			/*
+> +			 * ATIME just changed, so the cycle time changed too.
+> +			 * Re-run the sampling frequency logic to recompute
+> +			 * WTIME and preserve the user's last requested
+> +			 * frequency.
+> +			 */
+> +			return tcs3472_set_sampling_freq(data,
+> +							 data->target_freq_hz,
+> +							 data->target_freq_uhz);
+>   		}
+>   		return -EINVAL;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return tcs3472_set_sampling_freq(data, val, val2);
+>   	default:
+>   		return -EINVAL;
+>   	}
 
 
