@@ -1,157 +1,110 @@
-Received: from mxd.seznam.cz (mxd.seznam.cz [77.75.76.210])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E3E2410D3C;
-	Thu,  4 Jun 2026 11:22:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.75.76.210
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780572167; cv=none; b=EPbLSXKh+aHasIbMIvDGMP0+CCwUnr8Bk9it+9YQGUqRUvijVH31J/e7IOUVwEjOPbKfG1PTiuTTFcDtwrFmS4FVKwyvTM39gRe2CZWe9l5o2YljDbIT0cXcgbQ81sme786pmZeuzrJuw2T4QnNgWcVEKJJvOa0t7c0GUVTfC/c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780572167; c=relaxed/simple;
-	bh=IpOZCjkZMabNhUiJqSdV9ToZEd6y0Ydi43Zfb+vI48Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nGW5x8KpW52RUXiHDjt0En1bRCqkF5hyrWTRVm6Vwu2Yq0oYBHCs+fnJyibz0QWiyioxyzAFzDsj+lu55tEJk/WtmHB29LM/06dxhhKwK28c+J/4TJ+hivKecPZXJXBkLPlXe1B13GFs17MhrMhD6yPafPQUNvhcfZK39Ac6uq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=faKG/lwp; arc=none smtp.client-ip=77.75.76.210
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seznam.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF089402442
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 11:33:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780572784; cv=pass; b=t49zAkB0tVVE6rSdYMq58gUzfVPPttp8T+F1q7i91LZiWecBAj7+kHyGtZm9OTyNmuqeuoR4RD6hzYnda9eNaBKobCXnM7Psfbda8R1En1qZpl7Cb+sPx+p1jLhLshQ7O9QPF1N4KZhocM2q02pkJbscRCTbB6aKEdPHsePz6Ck=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780572784; c=relaxed/simple;
+	bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BGXTBKKzUKoTsO43/m1kt5K5pvgz8BabOB6Phd7sukOr+FBQPQvnPJFFAlbvwzLZMPsJWD/H+Qf32cE9bLYrCfjvzT4u1rKs3pyg59HwMZ9bJTKW5FCh6lTs5xzNpow8BxJhCy8r/Ze8rujzTnxEtVO5pVA4tn+Go7GP6mZLN2U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UCAHCWfp; arc=pass smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="faKG/lwp"
-Received: from email.seznam.cz
-	by smtpc-mxd-5757bcb9c-s9zn4
-	(smtpc-mxd-5757bcb9c-s9zn4 [2a02:598:128:8a00::1000:a07])
-	id 379119bf8ffe3430356f8323;
-	Thu, 04 Jun 2026 13:22:34 +0200 (CEST)
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=szn1;
-	t=1780572154; bh=5VLHqQnw/WzSW0+gd/cXCF87asEVA999TDTkxOyLkek=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	b=faKG/lwpccmTeEmFJrtzv61edr2ILFdxYwNass19R5pLiJaTdt/4R7bckXuXSvX7E
-	 HV8pVBlz/gYRYzbjT4E9/vgFz1HCBtL6WxiptAYN8CqEguLt58FxsfX5B8uDocCRCQ
-	 1Vckyj04FyCxC8tJ3/eZnR9H4/g7KCUlkC1PTAwsDAd1QeOj4oi+DbLKWPD897TDt5
-	 3xQU2GhTs1LIK3FasQsA9kje7fYgZvhtaZoc1qZeblJ4B6ndBOoyd/OvaYBVneiNso
-	 M0e+vnpfjNrDJ6HrnPYhMgjaoAezm85kzzK5HYV4FYM0dthlJcYTnGBURtvxKRTzuf
-	 LkxyUHgyCWiow==
-Received: from archlinux (ezechiel.sdb.cz [185.100.196.77])
-	by smtpd-relay-b58bfc659-d5tsb (szn-email-smtpd/2.0.73) with ESMTPA
-	id e87c4ac1-89da-4d16-85e6-61e76713f259;
-	Thu, 04 Jun 2026 13:21:57 +0200
-From: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
-To: linux-iio@vger.kernel.org
-Cc: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Remi Buisson <remi.buisson@tdk.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 08/11] iio: imu: change from %ld to %pe for PTR_ERR() printing
-Date: Thu,  4 Jun 2026 13:19:06 +0200
-Message-ID: <20260604111921.106936-8-vo.kratky@seznam.cz>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260604111921.106936-1-vo.kratky@seznam.cz>
-References: <20260604111921.106936-1-vo.kratky@seznam.cz>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UCAHCWfp"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-45eea68dd6fso316820f8f.2
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 04:33:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780572781; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ZgXXxYcS3ZIZ89xRbhUNUyT+91wWGtHSKB3ZPPFm94yGsnjfBcgBYq1yssJKb4ITrx
+         WfDk8wRmuxW/v1L0ZndU8zChmS8vbYLLW49gX9B0Rduvdxr8U9y/cE08hvKt8cNx39KH
+         2tLim/SuiMk3D5nTikVqp7phKbhVWIy00mi56l4E60DD2XwCjpiWXaVXBrZ/ToYu92vi
+         fh7cOedSKwgc3y5wTU3ZuBYRqVHWuHmWTjRjCkddG2BF7ic3C4kd/Eh1Ah6SozL07aeJ
+         qnXmWiWDwWTA1H0YW/w8PUIheQ//RmfnuZCwUC3pL9Ib47YoNrLo1zi+BLmBIm7Mh2JN
+         hM+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
+        fh=hN54YNWJ2gFuxL4BRhe7qVwAf8/04ACTndomMl9WdxY=;
+        b=cEPXtGwuWPA4hPmaQSrlp9DT803cCWgFjyLzFrWfE45Ddx66Ox9plYNTXfFjXDY5dZ
+         QGH3LlpPG4JUxbN3lPK3vlUzFq4Z3iMHwxX5KMn+KM/GEuFthN3um0jfsRf4F9FyNyAk
+         YRh8BCC/c0Uvh7O2W6uYioVZcFhbu8wkVpRHxit70aX1KHbr004gIE0CrzNw3RM33I3D
+         MAavQUY/3qwSNvpLQ0uHhkNOzU42l6YhMGNu03uGZHrj7yL8wLbfZACbgBWG9/cXsFQ2
+         KmNcVHVhCkA5jXJtylzbHME34Xyfu+LAmSyoz8wxHAONLj6D6E59edT/B3D1J6miedua
+         Oftw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780572781; x=1781177581; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
+        b=UCAHCWfpFzyKZL9ZO8hTTIh8ASGm7oJmGPt6DDdTDv2FUu7qESG7IBHgbymJ9E+OMf
+         aFRso9X8MuPVuKKwA7Trv9PKh/cGPKKAFyWGtgnpnllkUQa4NRIXvKrRoe55LultBeUE
+         0gpzTxWfoA3+MxD0P6gm76zLYa7j1ORuYA605jxwyiCQbEoxU6FJ9FPTHmfGHKro19kD
+         4acUOXyGR0yk0yR0oIE/8VmshPxOqtX03ldf7Z+Ys+2Stb7gnRQrwhZOLNlezzlrcvaq
+         uzT/QDFc17lVc2szI13lJWNINrS9Y9WO5RhOiBHziI8j9+a8HtYyU4CPo8auL4mgkR32
+         7ELA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780572781; x=1781177581;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
+        b=TtGJAJQpQvyJAGYxPJUn0bFTos9f5+yDleyJGFPfu5SXW8u95sC8ZCGotJafuw2nF8
+         yMUUAAoJ8dXzVtBqRyUlpi86l3scAsck+W9Lv9CF0olJMHX8rYCIndaL0TwGkx6aSd77
+         qdQukr1RPi5oeMAfrVBr8CSv/Zjq72U8BYq3qqggDD2lTUwGnkcwwuDuCJAb7/8dgqL0
+         8yySpIOyMcL5tQ88+3Pnsp+VxFExL5BBamkWNU+mbpurEkkPrvrhDUIZqoV5mldCWtTQ
+         sKxFRN6s0lCbxYU3m+Gu+HZGMCUo5U0lKGCLxlGIb+uQYnHDrEaLtiLMRtdsPDsKTu0o
+         f5bQ==
+X-Gm-Message-State: AOJu0Yxv+J1LSARXsdMoVB850BDYciR38uyW5NK3eDFvegirJQaQqG+k
+	h0H81WD2hNL5soHm0pIFMsY5cWCEKyjKsAu7DOKF0ctzJhUpc10ZIllV4s4IcexQL5+dMrgLSxA
+	NH4VJbZV5RqH/mep/nlZoEUtmB4rauks=
+X-Gm-Gg: Acq92OHT/zdKog3Y5FmiIeyWMILmEzrAv5kQrf07/NfqZASxYFiIEMwm/JyTQSMfFuQ
+	Irx6w6yNBIOGf7JiHptyPW/NuW8XRiJ7oIjRVU6IlZ1HaeYbMl4EwgM6+3CcQcjP8J0KJp6dIHy
+	PG5z+dJKX4WdV2GKR0v5bVjXwqiZujb2WRwja1PCfhX3O8lCHNRz3VK2m1EXgwgkAsEnUKILz+P
+	Z9ERelAwY3Neidn58Hjdotbc1uZ+YPKK7a4DllxP4Ipd0Ee5/0z/5fn0+I07mU/0f0vJsGe/kWR
+	oK9HqEEzsz6OYRRV0sM52RTcV8Hu49uTpMdMwNsBJi7bsialE8vzsjAj8EMmFaZleme9iRfMzjk
+	g94jGPQiGa7/spBWAWJ6cnJOXfc0az5UxMsxFB+dDxlPr8Zl7kjlQ4IrROIj3SJFj30h9YkYFjS
+	TeBpuu59nRsbaYuBGL
+X-Received: by 2002:a05:6000:ac4:b0:45e:93ac:769e with SMTP id
+ ffacd0b85a97d-46021780205mr9208507f8f.6.1780572781106; Thu, 04 Jun 2026
+ 04:33:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260604111921.106936-1-vo.kratky@seznam.cz> <20260604111921.106936-3-vo.kratky@seznam.cz>
+In-Reply-To: <20260604111921.106936-3-vo.kratky@seznam.cz>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 4 Jun 2026 13:32:49 +0200
+X-Gm-Features: AVVi8CfoZLnTGoETl0CJhkGIIbb1KDhaAW7xm9hsTUc-Ub-1Ro-4VH7oR6golPU
+Message-ID: <CALoEA-w1W+p4gLawWrFxe_sN2cJnQ25yRBFPh02N_2NPVQbkaQ@mail.gmail.com>
+Subject: Re: [PATCH 03/11] iio: chemical: change from %ld to %pe for PTR_ERR() printing
+To: =?UTF-8?B?Vm9qdMSbY2ggS3LDoXRrw70=?= <vo.kratky@seznam.cz>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Found by Coccinelle.
+On Thu, 4 Jun 2026 at 13:22, Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kratky@sezna=
+m.cz> wrote:
+>
+> Found by Coccinelle.
 
-No functional change intended.
+This is not an adequate commit message. Summarize what you did
+and why in short. Keep the rest though.
 
-Signed-off-by: Vojtěch Krátký <vo.kratky@seznam.cz>
----
- drivers/iio/imu/fxos8700_i2c.c                  | 2 +-
- drivers/iio/imu/fxos8700_spi.c                  | 2 +-
- drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c | 2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c     | 2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c     | 2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c     | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
+--=20
+Kind regards
 
-diff --git a/drivers/iio/imu/fxos8700_i2c.c b/drivers/iio/imu/fxos8700_i2c.c
-index 2cc4a27a4527..d60b62417325 100644
---- a/drivers/iio/imu/fxos8700_i2c.c
-+++ b/drivers/iio/imu/fxos8700_i2c.c
-@@ -25,7 +25,7 @@ static int fxos8700_i2c_probe(struct i2c_client *client)
- 
- 	regmap = devm_regmap_init_i2c(client, &fxos8700_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "Failed to register i2c regmap %ld\n", PTR_ERR(regmap));
-+		dev_err(&client->dev, "Failed to register i2c regmap %pe\n", regmap);
- 		return PTR_ERR(regmap);
- 	}
- 
-diff --git a/drivers/iio/imu/fxos8700_spi.c b/drivers/iio/imu/fxos8700_spi.c
-index 6b0dc7a776b9..8d89ce8e92eb 100644
---- a/drivers/iio/imu/fxos8700_spi.c
-+++ b/drivers/iio/imu/fxos8700_spi.c
-@@ -16,7 +16,7 @@ static int fxos8700_spi_probe(struct spi_device *spi)
- 
- 	regmap = devm_regmap_init_spi(spi, &fxos8700_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&spi->dev, "Failed to register spi regmap %ld\n", PTR_ERR(regmap));
-+		dev_err(&spi->dev, "Failed to register spi regmap %pe\n", regmap);
- 		return PTR_ERR(regmap);
- 	}
- 
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c
-index 9247eae9b3e2..e08f9605c8b3 100644
---- a/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c
-@@ -45,7 +45,7 @@ static int inv_icm45600_i3c_probe(struct i3c_device *i3cdev)
- 	regmap = devm_regmap_init_i3c(i3cdev, &inv_icm45600_regmap_config);
- 	if (IS_ERR(regmap))
- 		return dev_err_probe(&i3cdev->dev, PTR_ERR(regmap),
--					"Failed to register i3c regmap %ld\n", PTR_ERR(regmap));
-+					"Failed to register i3c regmap %pe\n", regmap);
- 
- 	ret = regmap_read(regmap, INV_ICM45600_REG_WHOAMI, &whoami);
- 	if (ret)
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-index b2a7c2eaf50d..8a2b50a35f33 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-@@ -34,7 +34,7 @@ static int st_lsm6dsx_i2c_probe(struct i2c_client *client)
- 
- 	regmap = devm_regmap_init_i2c(client, &st_lsm6dsx_i2c_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "Failed to register i2c regmap %ld\n", PTR_ERR(regmap));
-+		dev_err(&client->dev, "Failed to register i2c regmap %pe\n", regmap);
- 		return PTR_ERR(regmap);
- 	}
- 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-index cb5c5d7e1f3d..7326388cf228 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-@@ -34,7 +34,7 @@ static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
- 
- 	regmap = devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(dev, "Failed to register i3c regmap %ld\n", PTR_ERR(regmap));
-+		dev_err(dev, "Failed to register i3c regmap %pe\n", regmap);
- 		return PTR_ERR(regmap);
- 	}
- 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-index 3389b15df0bc..75a7e0ab9b12 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-@@ -29,7 +29,7 @@ static int st_lsm6dsx_spi_probe(struct spi_device *spi)
- 
- 	regmap = devm_regmap_init_spi(spi, &st_lsm6dsx_spi_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&spi->dev, "Failed to register spi regmap %ld\n", PTR_ERR(regmap));
-+		dev_err(&spi->dev, "Failed to register spi regmap %pe\n", regmap);
- 		return PTR_ERR(regmap);
- 	}
- 
--- 
-2.54.0
-
+CJD
