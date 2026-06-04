@@ -1,61 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295EE36F91F;
-	Thu,  4 Jun 2026 06:44:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EAE13D75C8;
+	Thu,  4 Jun 2026 06:46:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780555443; cv=none; b=JNrQ66UdBSbhnrdoi42pi99Y28a7yyZuwh20bo3TSwfzOIALnv3nzPL7u7cxdkSp5d8NAdmJ0eI0YYXVhYIaCLdglw3doP20W4Kwp7s3kEp03SkRgeef5gqDko5aeUICOpsImXfpFflXLPcHo7i4TfDI7lAG1Kst/IxPSttnyYk=
+	t=1780555604; cv=none; b=qVNn8E//FXf5nRaOe07U9ImEmg7rB+wUc94ZnaClKm1z+dRk1YLGTPKi06wPQH9VYJkiMb+4wOiTaxjLcpiByfvkD/dbpJRfrWHgRWi3wz/CGJ6fdqJln5ixzz+zvpt3l+X//RoLvGEJT6IRdS+kY6ZQUvrr4Gj7e2ZtdVQFXKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780555443; c=relaxed/simple;
-	bh=I9gpjeWC9XNwlkkPlCY/2zYAu8ved+462plCF+qx1Fo=;
+	s=arc-20240116; t=1780555604; c=relaxed/simple;
+	bh=Zog3dedIa6BWK3Csra0QhvzSchkw9WlmD8g22cDsU7U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lbTI/5A3loQ4l/DlWgtvcUzne+ikBSn61yRjup9/jnu1NVqP8rppb+mZhHAvEPdvl/AG4QSfIr0+D2D34ztTS2+c91hJW7E1YFBg5OXQeAoxObVAAw6rSMmfVxk9ntcum0gy1vfxFcmY1bSfrkZHWqebX5YLOSa84MYMZcilHpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PVbzsjls; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=cYksS9+kgr4I4GayNOEhtAWIJOmvdA7RQGQRKt9t6OTytXhgPCbNSKtTDTIxOfjxULLcXc0jrr2Wg3reMIqjXpLCBXTKtOWkDKfO1w2T2C5jTF2RsL7seOZt7PVK3YhM6/MBxDxACGLJ+k+ad/+f0V0ypI8E9oqeVpTUW33MWy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=detRfL2W; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PVbzsjls"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="detRfL2W"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780555442; x=1812091442;
+  t=1780555597; x=1812091597;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=I9gpjeWC9XNwlkkPlCY/2zYAu8ved+462plCF+qx1Fo=;
-  b=PVbzsjlso8sidKovfvi44KpsbfZcaBB3JEpmmcnRPy5kJW6d5hE1FIkE
-   bg2TATzwtCF2fgFEvG0HJQA97UA8CZBvKHOblj+kRh6J2dhBt7DhC1Fqs
-   S9MiO3rI+jNc2JPzUA5FnfLAZqqu293pKbVtyEqAtsewC67Gm2uVZP0ZO
-   8qLfWKFWyxhbU387WBv9wDeZesNrkvbrL3PV3YjnsnMk07g4nsaVq71tH
-   AqPov+8i7Cln04+ZDO5oF34u7DUK6XM3s5skpgcdRudXnGstedqGDoF09
-   WAiqAxijW5sGv7hwHWi1tTFZLGIt3bn2xnkeuP8CuJCT4jm0orIwzmIhH
+  bh=Zog3dedIa6BWK3Csra0QhvzSchkw9WlmD8g22cDsU7U=;
+  b=detRfL2WJ1JbbagmVVOsvB2UhE2YAPYb7hnxzZngZ1Jm7N4Gk7l/FR1j
+   82VaWe8GSmxRCoayU3DYFj/i0depRvWMROue2GpFOjUBnSqEb19FZqjE5
+   7gNpTA1ZV0M6k8dzTL+r/3hguYa/Il9pAD5kQcem9E0xGi9TBtTvabsxG
+   xV4H15US9fE1w7QbD6F7EuSCTYsuu/iNH4BEXqgRJMLPNIsCm2xciZOrB
+   WQou30tcRbryy2cUFX6ehjcxk509A/A9p8IJZij5jb8RGjWi6MqMq5zcp
+   PT2JDbtBMjI69il5bQBNuGmdqeZoMSYojtmGBKtgUSE3gU+BglHdgQeQE
    g==;
-X-CSE-ConnectionGUID: f3nXbQnJQP6crpqMG+WUHA==
-X-CSE-MsgGUID: /RPAFF1xSByW3Ceo/eJ2qg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="80517076"
+X-CSE-ConnectionGUID: wCfSi8rUQ1ilWSXOGBg/yA==
+X-CSE-MsgGUID: vYmCWpM5QX62xhlqqmnyeQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="91692036"
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="80517076"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:44:01 -0700
-X-CSE-ConnectionGUID: RQcnoIAvR2O6xx9ZioqS5Q==
-X-CSE-MsgGUID: LI4MrR0eQGGoSDoCYOoSGA==
+   d="scan'208";a="91692036"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:46:37 -0700
+X-CSE-ConnectionGUID: yUhSNWxzQ6OtRarRF01uwg==
+X-CSE-MsgGUID: 9DTEQXKqTCO7mPyiSr9VVg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
-   d="scan'208";a="274697039"
+   d="scan'208";a="243389670"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:43:59 -0700
-Date: Thu, 4 Jun 2026 09:43:57 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2026 23:46:34 -0700
+Date: Thu, 4 Jun 2026 09:46:31 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/8] iio: light: opt3001: use local struct device and
- i2c_client variables
-Message-ID: <aiEercskB3aV9IV-@ashevche-desk.local>
+	linux-kernel@vger.kernel.org, Maxwell Doose <m32285159@gmail.com>
+Subject: Re: [PATCH v5 5/8] iio: light: opt3001: prefer dev_err_probe()
+Message-ID: <aiEfRxM1NulIWOQT@ashevche-desk.local>
 References: <20260603-opt3001-cleanup-v5-0-3ef7b926d555@gmail.com>
- <20260603-opt3001-cleanup-v5-2-3ef7b926d555@gmail.com>
+ <20260603-opt3001-cleanup-v5-5-3ef7b926d555@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,38 +63,37 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260603-opt3001-cleanup-v5-2-3ef7b926d555@gmail.com>
+In-Reply-To: <20260603-opt3001-cleanup-v5-5-3ef7b926d555@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 03, 2026 at 07:12:53PM +0200, Joshua Crofts wrote:
-> Switch the driver to use local variables for struct device and struct
-> i2c_client and remove struct device member from struct opt3001, as the
-> former can be derived from struct client.
-> 
-> While at it, ensure that parentheses alignment is correct in functions
-> that were changed in this patch.
-> 
-> No functional change.
+On Wed, Jun 03, 2026 at 07:12:56PM +0200, Joshua Crofts wrote:
+> Switch driver to use dev_err_probe() to unify error messages generated
+> in *_probe() and probe path functions.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+But I just realise that you are doing ping-pong style of changes here.
+I just commented on the patch 2 about this. This patch needs to be rebased
+on top of the patch 2 with the addressed concerns.
 
 ...
 
->  static int opt3001_read_id(struct opt3001 *opt)
+>  		ret = request_threaded_irq(irq, NULL, opt3001_irq,
+>  					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>  					   "opt3001", iio);
+> -		if (ret) {
+> -			dev_err(dev, "failed to request IRQ #%d\n", irq);
+> -			return ret;
+> -		}
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "failed to request IRQ #%d\n",
+> +					     irq);
 
-In this function...
+Most likely this one is also affected, I haven't checked, though.
 
->  	if (ret < 0) {
-> -		dev_err(opt->dev, "failed to read register %02x\n",
-> -				OPT3001_MANUFACTURER_ID);
-> +		dev_err(dev, "failed to read register %02x\n",
-> +			OPT3001_MANUFACTURER_ID);
->  		return ret;
-
-...this and similar changes should be dropped from this patch as you anyway
-convert to dev_err_probe() later on in the same series. So, please reduce
-the churn.
-
->  	}
+>  		opt->use_irq = true;
 
 -- 
 With Best Regards,
