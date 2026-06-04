@@ -1,122 +1,85 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87675394786
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 10:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48603401480;
+	Thu,  4 Jun 2026 10:37:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780567778; cv=none; b=T+3rVaiRvxwqaZVFTrmEm0K7I0ODqQbitw3t/B8FyuJ8gBKXtXA5Jax+I99C0+uKioIS3/HnGNniuvbo+p+QTCGasuPzQ+JvgjJn/Ns0J7b5O+cCr6qRCviEzM66p7AlZBUeJtzG3uXC42/r8CYHrlqPBoqbl6s8oKrQzxNEkS4=
+	t=1780569474; cv=none; b=TlkR9JGXdBWMFLZ2SECqL3o+oRpIP/IYiLvQ+c5nUqHtIHMUQHLQ9PrrrE5L4ECXITXhc+C3eLupzfgTux4aJ7J5mPXReaP2jCnrg7R+HWKul8pIBYUMVAfnVZWAYkZwe/uLgEfjJurcJN+/E+CgV1QSE53Tw+t0ehVI7wD5POs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780567778; c=relaxed/simple;
-	bh=B2CnKvGteEd3Ogga1Fg7bneFO20MG2+ueysH7w2tBBY=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NdZ1zZ4/yvy7hX8RIi3Hysp/3wbLjFbrdxE6oTc14RIozsU9TRIHOjmefcqYZP+gyCFF+lkgtyhuXk8N6x3VDEFyT1YlCmPhSteqKOFxDUzdRNw9cSedenrAWUyICQppJzqGhHWtJM4ipbvoQOFGh5UI+JfF4cCAT/woI6cdC8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JY4tSe/2; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780569474; c=relaxed/simple;
+	bh=c5RpBLqWlICFbIobg9nqlCNhrruLQfpGcYrA/xs7Zbk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MkHPQoWtsfWcyyzg7+5GsltsyyVDvR0t6d6Hzbu1LePiil4xHWTjYz+WHx7O7CMmYPewuJV90wI83yBhXXg9xNc6QNrVroPFzmFDcdInCXb2h0Z+cJFyT1ESblOYYHUnGdeOp5iu86wEnEoocaaJxs8WgB7deyqJ0TqvciN4gOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eF2hDYEM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JY4tSe/2"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6870ad8072eso457233a12.0
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 03:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780567776; x=1781172576; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3GPJ5N+yj+5C24kf/hzt0wYoGPWLbKx8pufh7NjXz1U=;
-        b=JY4tSe/246+USi8aySI278Od4y/o+RB8O057qGMWXJZKZiq7d+4sA7niTg7Fcv2FrQ
-         hPdsB677cImBHagtDXv+0xLl/x7t1VCMRJOTEB9MVe8pIiE533+VF9yzjJ/9Zelmp1bT
-         zVvUELeDW2aHV7/OrfHHqZ5qjS7fRdpfmvDo9wYUuRjzYITAV4lVZ/s/05S5R8LcqVZr
-         usA0gR+BqYWcSUvIxksSPbeqIagDL03hHr/UjZyjV2PuFeclfv12Wfz4G47hxd/Vacv8
-         dYaq+37yP7pPK/8bAsZIDsQYSKWk6B2bVsuPEYB/Fe6eFkhKCmMZOkMFe+R3T/M6Jjce
-         umNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780567776; x=1781172576;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3GPJ5N+yj+5C24kf/hzt0wYoGPWLbKx8pufh7NjXz1U=;
-        b=L0PtOoCeEGQWmljE3A5gY/FwfVVmNVIUH73Tbtus2yG1Cg1fkC04FqAEOb+D/WjxFD
-         KlInA81j+6IYX9jNMvgdpfaatRAWmT8SICmxSe9zvXksBLSLCrvBRyOrccuGtyqax8uM
-         DrcsCTwRqGsgfdyYUFoxVw2F04aAMfCEngazQtsi4l+7SGLQ8U/e33dGBie0LisFn0gu
-         uoy/9FjMngPOe7HXCoP3u+6+rf4f2StrwTGszI1Q718UxlVjOzveRA+ARInwmPjBWiIC
-         JGs1CdJWWH7gx/TeKPOKOBON5X7lH2edRv/tBhnJhAV8Asf7BhM7+mr6664Aq4oDqIUz
-         2V9Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8WvVXpvPdTfmoVw522C2f+hBjG/QqXEzBFSuhrx7X57xa5fLjn6wZ2G1n6APTtFBLl+nGrCfLBhkw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4TQdp2rH2Q8VKrDLkz2CrYv5YpgmT6XRCA5WLRQzIEe8m0cfH
-	glHNbsAt81pW0VI0sjzhKEQSLDV+SC6mXR6kySwMWLHm+BPABMaUdzAi
-X-Gm-Gg: Acq92OEsIbmsJjedShTMdkrVhQgA+WgdIRF63zJhjBAdMx6Co880m4yhj+M2iTlRsGc
-	kCuJlFO+bL75HBmiguDwxosxwpGeJYZULmIePSs7JKPWG3g0l4D4ZHdGw0MIl/wk8bf6jTuTi/U
-	NrAQuP5S7aeH84YYpwKy3pfX6lBPkgClHsMK8LdoFpsFzTdfFayhoxvVSTEeaOJZPCcuUyyWDRr
-	K+G7IBR6sz42uKjhXwCXicElk8c+gJvrpFWaR3U1RljcDBMjt87LwwNMm1rLeNxNT5U63R2pTl9
-	X685eYnhRS7pYHOOoDb5qWwlIfoGS9+dhUjdbs9tTtzZl5TPq5+b5pPXLYrLFrt+dwgT3nA2loH
-	gEQ5U0HGOtwFz42pGLcucdkrlfxdRt2cIfu+a5Ch5IcoxyUFjRo5RHm5NSX0sJ3LU+2ltuh1Ju0
-	sqTHceLEP/1TQujjQbg1tOsAheCYGZy1pVM2LJWDSXFUEjiH2jlHjUQNDtepX9hOlUAs2kmVKHe
-	VE4/rJJzxXOTHtUcdzVuS29frjkwJOvP3Jsv27rx0sRo43cjA==
-X-Received: by 2002:a05:6402:5d85:b0:67c:34bb:1bd1 with SMTP id 4fb4d7f45d1cf-68f0edd16c2mr1002189a12.1.1780567775983;
-        Thu, 04 Jun 2026 03:09:35 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e65851786sm2239274a12.17.2026.06.04.03.09.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Jun 2026 03:09:34 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Thu, 4 Jun 2026 11:09:33 +0100
-To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux@analog.com
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v16 04/14] lib: kstrtox: add initial value to
- _parse_integer_limit()
-Message-ID: <rvx36i2ydmwhbbkdgbvh26uqchyoptzuu7tleuyarqn2skzkxz@owzwp62mzkdo>
-References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
- <20260604-adf41513-iio-driver-v16-4-1a7d09143bc2@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eF2hDYEM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B64F1F00893;
+	Thu,  4 Jun 2026 10:37:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780569471;
+	bh=ZcBh0Lca+Z3zK3SpF1noQ+gU9c/xq6vt/xeZ0e0WeM4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=eF2hDYEMQZSmCJiQWOL2xR8t+NE3zncfpe5Vnlu6e5UNYEwtg9NtE4WDwyoZeDsif
+	 dr4cr3q/7P9gJYlfyXdSU78UOi3WdsiDI+/TQUTNglTWxIovgTYnRQ3wlbPecGRQWc
+	 jZO7pBuoM/dQ23z3Y62R/EIyu2vd/HHGR/imVLC0PW2aB4P5WrApP+olGE2bEgwoEm
+	 hlZWKGrY3F3QpI9iBbUdhEgfYe06cPW/PACOGEhXAOK5suSRinUn2hRBXpi65a6dOa
+	 1GYmJEtXQKtQTcBttKTE/zmS8BX0CmToC/unP0E0yqwWJ1kUqqBC+ZMkgYMzVAt4Oi
+	 M/Vge0Bnekyyg==
+Date: Thu, 4 Jun 2026 11:37:43 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Aldo Conte
+ <aldocontelk@gmail.com>, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, shuah@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v3 4/8] iio: tcs3472: use ! instead of explicit NULL
+ check
+Message-ID: <20260604113743.1231ccfe@jic23-huawei>
+In-Reply-To: <CALoEA-zCeWEAOAQGi8pQ_R7Sqify6Z=BegMuV1nx5fKH7OUvtw@mail.gmail.com>
+References: <20260522123420.45495-1-aldocontelk@gmail.com>
+	<20260522123420.45495-5-aldocontelk@gmail.com>
+	<aiE36_SrwCvwLYTu@ashevche-desk.local>
+	<CALoEA-zCeWEAOAQGi8pQ_R7Sqify6Z=BegMuV1nx5fKH7OUvtw@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260604-adf41513-iio-driver-v16-4-1a7d09143bc2@analog.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 26/06/04 10:58AM, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Thu, 4 Jun 2026 10:38:18 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+
+> On Thu, 4 Jun 2026 at 10:31, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> >
+> > On Fri, May 22, 2026 at 02:34:15PM +0200, Aldo Conte wrote:  
+> > > Replace 'if (indio_dev == NULL)' with 'if (!indio_dev)' in
+> > > tcs3472_probe() to follow the preferred kernel style.  
+> >  
+> > > Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>  
+> >
+> > Joshua, even if it's not written in the documentation (or unclear) the idea is
+> > that whoever formally suggested the change has to acknowledge it (Acked-by is
+> > enough, but full review is superior, of course).  
 > 
-> Add init parameter to _parse_integer_limit() that defines an initial
-> value for the accumulated result when parsing an 64-bit integer. The
-> new function prototype is adjusted so that the _parse_integer() macros
-> stay consistent allowing for one more argument, which defaults to 0.
+> I see, thanks for the heads up. Not sure if Jonathan will add my tag
+> at this point,
+> nevertheless
+> 
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
 
-...
+This is burried under a merge so indeed unlikely I'll add tags.
+Still good to have a record on the list for anyone who looks back.
 
->  noinline
->  unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
-> -				  size_t max_chars)
-> +				  size_t max_chars, unsigned long long init)
->  {
->  	unsigned long long res;
->  	unsigned int rv;
->  
-> -	res = 0;
-> +	res = init;
+I rushed things a bit because today is more or less the cut off for
+anything making this cycle.
 
-This might generate conflict, as the code around have changed in linux-next.
-It is an easy fix though.
+Thanks,
 
->  	rv = 0;
->  	while (max_chars--) {
->  		unsigned int c = *s;
-
--- 
-Kind regards,
-
-Rodrigo Alencar
+Jonathan
