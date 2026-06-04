@@ -1,126 +1,121 @@
-Received: from mxd.seznam.cz (mxd.seznam.cz [77.75.76.210])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF3F42315B;
-	Thu,  4 Jun 2026 12:03:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.75.76.210
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780574630; cv=none; b=OjKRm2fIRJu7AVy/DoeYX4BhxVhFSiyHV2jP0YZAPTVoVlADPsmE0YaXXsB5Uz8Gn/2/odF3T1bH3s2jatoXmvIaAPZURGBnUWOEl04QPkbCQ7TJpUqMwV6L5TB1TIISaUY/6xZ/99ZRt2N13wPfiYJb02A2Bvp/syHdKw1TuP4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780574630; c=relaxed/simple;
-	bh=RBovYy19EiZRsg07lrECIVRpp9OSIdemZtFEPxBHtyY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FFADVDTnl7KnNvv4Eq9JNEIQ6HafX7sOR32FeDyFZXVI4+x329oZGsrCQnn0tUY5mcyvubgoUvRUth7T9Vh3SW8AxiQJqyAgzbG2NYA53F9MO9QAjYhgFiGEqs2hvN4qckrwYeSgEktW4VcbI3pPhch0XJ0V4CZK0AigQFHd6L4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=hMMQbD8i; arc=none smtp.client-ip=77.75.76.210
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seznam.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0D2425CE1
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 12:14:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780575249; cv=pass; b=P8x7zjxkLnQpo2xsZMMeDtd3022UFv6YQh3jZtP7h7j+NkvkRDaOZ/yLi5tEbyKCXt9W35iiCttgN6V16LAsCJnpOB/W5sC2sJqCdFqPGtVi2lXWm4DhY3j8/qOa8BysRw/Mnp+kCcs/9TppifEbe0cjy4OicxoZ27VibDBin4k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780575249; c=relaxed/simple;
+	bh=hVAGzyHSt5KhlybpXWwaDZg5zPRQ2ygUdYah+Ynq7Hg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GXrzdjlMNTaCxK+69CZCJBrSWTnkcDjIhZZv6jQZnGs2xxnZMQvWC6SJYd5xRHCm2wCUkJdNetVjeIdgAw6vsVAdDK4larkF8Vysmm4gRE44LEprEN7WcD9ASveW248unHHvQbOxfH8ZcTP8J8RN++BRdUPb9GlgjWargeb7rJ0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R+Vx0i5Y; arc=pass smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="hMMQbD8i"
-Received: from email.seznam.cz
-	by smtpc-mxd-85fb448c55-l247v
-	(smtpc-mxd-85fb448c55-l247v [2a02:598:96:8a00::1200:706])
-	id 01e17ed8b98e5357031fe444;
-	Thu, 04 Jun 2026 14:03:31 +0200 (CEST)
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=szn1;
-	t=1780574611; bh=UnE6hazbC7NXuakkgz2RAPo+5oXRlfrayieK43sMpgI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	b=hMMQbD8i5yhdpAC0MDr9+ukoLdfPKy9GsmrBbdr3ye5XXdIDP8vAdFgz+QhoPSV7r
-	 lYbotoJPVNYjV7UNCHa75t5T/6x6A3oYAUZjypRoITrZqy3gzsQiadtv2ZolGp1G1B
-	 o5fFbkeLx8SuM3rzFnQW87zL9HjE5NOe7Vqz75E8MLDDOuiZK3vdfnGa3VBcQGqK9n
-	 LmJy+El+6C5NcDfmxNMLOGk5caay1CApalJyiB0u8lUcffCS+8bonXKWznMoixPJZS
-	 B2O3Tn3aKbjyULB8ZJeh1SMlOhhBiQdG5ENegMZD+J0ePhZfXX/SdLdNzSaWCfZVVk
-	 xXyM7JV2v2OsQ==
-Received: from archlinux (ezechiel.sdb.cz [185.100.196.77])
-	by smtpd-relay-b58bfc659-k9lmt (szn-email-smtpd/2.0.73) with ESMTPA
-	id fca65836-4b8d-4033-9fd2-c50de0c3c701;
-	Thu, 04 Jun 2026 14:03:04 +0200
-From: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
-To: linux-iio@vger.kernel.org
-Cc: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>,
-	Andreas Klinger <ak@it-klinger.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 10/11] iio: proximity: change from %ld to %pe for PTR_ERR() printing
-Date: Thu,  4 Jun 2026 13:59:30 +0200
-Message-ID: <20260604120201.116925-11-vo.kratky@seznam.cz>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260604120201.116925-1-vo.kratky@seznam.cz>
-References: <20260604120201.116925-1-vo.kratky@seznam.cz>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R+Vx0i5Y"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490af320e2aso7798885e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 05:14:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780575247; cv=none;
+        d=google.com; s=arc-20240605;
+        b=bLYukmufCE8491z21kY5bLE6Av9aMoDuz5zElc9rk+bXOAMi/j7mldSlnM5zpVcuew
+         By3JULNV08RHkQzoRxxaKgPy1zMeAfjThP8h0Cr8hlGS1EPP+YzngKU5jHU43eu0KaYd
+         MxONL9nSydW3/EN7sOpAE+eyxb7heOeoCy+bMMNMa8qPhCtcIpgPQ3bR1/51p2m3fy10
+         ErC9gvpOEPOLVqdF2aZ0KztEZo83ZAlQ31NDhLqGRNTpL1WdLiuSHBoUEPIySkSNe0ZJ
+         VqBnZi8erPv73pPXR+T/o3SMYaagBNMKw+p7q3AUOCaYeqa8QD0Q8od86XMSKRJ8T01a
+         u02w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=hVAGzyHSt5KhlybpXWwaDZg5zPRQ2ygUdYah+Ynq7Hg=;
+        fh=qupqY2qiH4N3Q8o02XoGGX4kiZ8lDiJgA0LpGZ852gc=;
+        b=E8XveoZgwHKw40gAWaV3eXMmg2vSTnD16i7fb0lGG874UpIR4Tm/Wdn4oj5aHX6zYo
+         josYaI52EsA9mvr0RWoTz7gPvMDIZPoqcEDK4Y5b0DGwmWwLk9p17Tk4XcqxuAasqMdy
+         nAeQA6cCNsjtK6aVCwCw8pfm/lsAtgFXirQAxbLwPatD/2tQYZ5pw2pfHskSB/SJXs28
+         lDV/XYiGGmIR/lStKoUhkFG5ahMuHP1ZF7TQUFzLk22JIg17rYmxnIsrzGVyiumRDeeN
+         Df+EW5ZwUb8f2Au33KY8YVWq+P6He8iuZ5ZbVTtE7ZokArxCItkra3EFFwt/fgvkMQp+
+         38Vg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780575247; x=1781180047; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hVAGzyHSt5KhlybpXWwaDZg5zPRQ2ygUdYah+Ynq7Hg=;
+        b=R+Vx0i5YHjNtpZiucDBeLCI01YEUU/RwGZIxuFpfoRm3FFU0SfPV8oiott9oQN5tgj
+         d7K5YOI07aTSgaq2vX4Mb+3PdGndtNy4be11G+sewutUfjIP2y0FEnYkQQtaCXzyK88S
+         L7pWFGdCaBnfZyfDvtqG/Akfl39CnkHCuuRwdIfmXghUFD8MsgviUsxHDOXRPKq8tIM9
+         XMCxoo9SO4dWGQgB1woq/Ige1S2LYMMQz4pk0pfJJp/3khbP6fUxsS4E3kKzO7YQYvqn
+         oYo4DGvEhJvv0cgVm+MwH+aIaWX/3OPfqoX5XQ6cOtUnKNI7Q5QM6BO7DjKA/YtJEJFH
+         +NAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780575247; x=1781180047;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=hVAGzyHSt5KhlybpXWwaDZg5zPRQ2ygUdYah+Ynq7Hg=;
+        b=NeT3XY+qFyisZZm+LkoD4fwL5xYJqy7bQBFHRl5RSZOB7ecL9LUzTkMOvyKiBU4AxR
+         cDUJbiakdzx6rXRA7T2rIelrVEANhR452toLyp8P+lzcbRPTn6VE7I9rcb+uqIyQebyt
+         ST4WdB9gu2LDTLF8zCDYsQWqczre5SIhWWr9esWbgFaRN4vjUrHPJASlzwj4Jr+Epx7A
+         PUFTULSjCxtJzQzXifoWyxQP6gxkpTAcIkTvd/66HSqKjbfhBWCCZ+9Hc0CebT0l7MYW
+         5GudQZ8WRjLXp6ZBqYgewqTKFhDTKXtUKhDAotJVxb5Hc2yz/edALrWliPyeNMXe5DMl
+         vrdA==
+X-Gm-Message-State: AOJu0YxtxsrLkzrQPvuX+N3bPDaglTw8pNuYm3SQvUz1IW8lVl08uFMf
+	ma7K77fRxgELditBPXrgcnDR6K4o1eFsTzwofQEKOY1WJ9zH6YLEDBuL2tK3OeuqxMd3i/t+IvO
+	mjcHMMZ+ofC67ts3YM0X8DNAapnlW+MY=
+X-Gm-Gg: Acq92OGC8nqHgWQjSg+K6wzKDzEUh+cwyj99cpglyjpKZATOowBsm6UXfxv50Ys4wNM
+	18JaKiiYwVYyuqG6QjpiHkYD4USODn1ljUoDFUrTUcnTQXkj648UTxcArBLZKpN7c12I595rTNY
+	rJWllf93Mm21RZjMhhQheN7DURUJjAHTpZDFJ/o1H1zTucLTjIotqoeDoNqdY1VVkvFVdWskhrW
+	Qp/W2c8URuMgnsyEsLGBZU//HvuN4Aym8gXcZge5f2bUoZD1IQ48IIhU7556P4/88/YJ9QYDUuT
+	sMN6dxEvA1qTZZ9+JTeI0UvFT03sx32QSjdPHRQWBABFCPzuVMV+K+Iq4iueh0AqGfkrYDYtRRw
+	w7Ma1jJWhUw30GM96lEva3X/MDqkF80Ia/pB9O2U+uwCYdH19jdF8Cm8cAFKf/fQ8K0K+klNezS
+	XcztkM9+7sOv7Jsh5P2/WOKPz4t6U=
+X-Received: by 2002:a05:600c:1f83:b0:48f:e230:d5ab with SMTP id
+ 5b1f17b1804b1-490b60de2e9mr131328315e9.31.1780575246692; Thu, 04 Jun 2026
+ 05:14:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260604120201.116925-1-vo.kratky@seznam.cz> <20260604120201.116925-2-vo.kratky@seznam.cz>
+In-Reply-To: <20260604120201.116925-2-vo.kratky@seznam.cz>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Thu, 4 Jun 2026 14:13:56 +0200
+X-Gm-Features: AVVi8CfJLFKPcrrPyV8IISD1sl7MvoQAa11R430J4pCOm9Mhj4Pc3ab6MtZ810o
+Message-ID: <CALoEA-zSroEAxiN1L81+JERksLC2Oba=u9ya6j4--gcwpn6m0w@mail.gmail.com>
+Subject: Re: [PATCH v2 01/11] iio: accel: change from %ld to %pe for PTR_ERR() printing
+To: =?UTF-8?B?Vm9qdMSbY2ggS3LDoXRrw70=?= <vo.kratky@seznam.cz>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Lucas Stankus <lucas.p.stankus@gmail.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Puranjay Mohan <puranjay@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Replace numeric PTR_ERR() logging with the %pe format specifier
-so that error values are printed in a more readable form.
+On Thu, 4 Jun 2026 at 14:11, Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kratky@sezna=
+m.cz> wrote:
+>
+> Replace numeric PTR_ERR() logging with the %pe format specifier
+> so that error values are printed in a more readable form.
+>
+> This change was identified using a Coccinelle semantic patch.
+>
+> No functional change intended.
+>
+> Signed-off-by: Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kratky@seznam.cz>
+> ---
 
-This change was identified using a Coccinelle semantic patch.
+Thanks for the change, but in the future, please slow down! Let the current
+version sit for at least 24 hours before sending a new version so that
+everyone has an opportunity to review it.
 
-No functional change intended.
+--=20
+Kind regards
 
-Signed-off-by: Vojtěch Krátký <vo.kratky@seznam.cz>
----
- drivers/iio/proximity/ping.c  |  4 ++--
- drivers/iio/proximity/srf04.c | 12 ++++++------
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/proximity/ping.c b/drivers/iio/proximity/ping.c
-index e3487094d7be..c54978c1a888 100644
---- a/drivers/iio/proximity/ping.c
-+++ b/drivers/iio/proximity/ping.c
-@@ -293,8 +293,8 @@ static int ping_probe(struct platform_device *pdev)
- 
- 	data->gpiod_ping = devm_gpiod_get(dev, "ping", GPIOD_OUT_LOW);
- 	if (IS_ERR(data->gpiod_ping)) {
--		dev_err(dev, "failed to get ping-gpios: err=%ld\n",
--						PTR_ERR(data->gpiod_ping));
-+		dev_err(dev, "failed to get ping-gpios: err=%pe\n",
-+			data->gpiod_ping);
- 		return PTR_ERR(data->gpiod_ping);
- 	}
- 
-diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
-index e97f9a20ac7a..06700a4cf275 100644
---- a/drivers/iio/proximity/srf04.c
-+++ b/drivers/iio/proximity/srf04.c
-@@ -264,23 +264,23 @@ static int srf04_probe(struct platform_device *pdev)
- 
- 	data->gpiod_trig = devm_gpiod_get(dev, "trig", GPIOD_OUT_LOW);
- 	if (IS_ERR(data->gpiod_trig)) {
--		dev_err(dev, "failed to get trig-gpios: err=%ld\n",
--					PTR_ERR(data->gpiod_trig));
-+		dev_err(dev, "failed to get trig-gpios: err=%pe\n",
-+					data->gpiod_trig);
- 		return PTR_ERR(data->gpiod_trig);
- 	}
- 
- 	data->gpiod_echo = devm_gpiod_get(dev, "echo", GPIOD_IN);
- 	if (IS_ERR(data->gpiod_echo)) {
--		dev_err(dev, "failed to get echo-gpios: err=%ld\n",
--					PTR_ERR(data->gpiod_echo));
-+		dev_err(dev, "failed to get echo-gpios: err=%pe\n",
-+					data->gpiod_echo);
- 		return PTR_ERR(data->gpiod_echo);
- 	}
- 
- 	data->gpiod_power = devm_gpiod_get_optional(dev, "power",
- 								GPIOD_OUT_LOW);
- 	if (IS_ERR(data->gpiod_power)) {
--		dev_err(dev, "failed to get power-gpios: err=%ld\n",
--						PTR_ERR(data->gpiod_power));
-+		dev_err(dev, "failed to get power-gpios: err=%pe\n",
-+						data->gpiod_power);
- 		return PTR_ERR(data->gpiod_power);
- 	}
- 	if (data->gpiod_power) {
--- 
-2.54.0
-
+CJD
