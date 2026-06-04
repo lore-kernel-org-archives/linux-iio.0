@@ -1,110 +1,101 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mxd.seznam.cz (mxd.seznam.cz [77.75.76.210])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF089402442
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 11:33:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780572784; cv=pass; b=t49zAkB0tVVE6rSdYMq58gUzfVPPttp8T+F1q7i91LZiWecBAj7+kHyGtZm9OTyNmuqeuoR4RD6hzYnda9eNaBKobCXnM7Psfbda8R1En1qZpl7Cb+sPx+p1jLhLshQ7O9QPF1N4KZhocM2q02pkJbscRCTbB6aKEdPHsePz6Ck=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780572784; c=relaxed/simple;
-	bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BGXTBKKzUKoTsO43/m1kt5K5pvgz8BabOB6Phd7sukOr+FBQPQvnPJFFAlbvwzLZMPsJWD/H+Qf32cE9bLYrCfjvzT4u1rKs3pyg59HwMZ9bJTKW5FCh6lTs5xzNpow8BxJhCy8r/Ze8rujzTnxEtVO5pVA4tn+Go7GP6mZLN2U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UCAHCWfp; arc=pass smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 972813A9014
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 12:02:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.75.76.210
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780574578; cv=none; b=iNN9izOZpiToh6WY8Xn08cXmdeP2W+FSWlPoNfFXnTOXqX/zQ8qM+/abA/OqKrqRuUpKZWDI/jvc2R2cZ+K12Xgvll2bYfg7mlmrnLdFr4Bm9bilOzvQVVGHCbLFUZg8oTl5wzkabpGEde0W23F6DlluovKngr2EVUhkKrnsAik=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780574578; c=relaxed/simple;
+	bh=wIfu6ey3OwWBMtV2DqXTRQgHK3J1YqIGTKsTy0ZZzRg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lAPoIuh3wjR88GSChp+TMstP7hSmyZyS8zYd+gK9GVkmhNc82pIfXzXYlUvx2u1gp7hmF7Xj43hZj0WrCAzo1YXf8ocGGzmbvMblODH6TS23T6AyL6trkbJrrJa+1KUzds/FFcE/i8M0FQTvIoDpsPAWqakKD7LtO1Wamaldqf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=ApkaXi7z; arc=none smtp.client-ip=77.75.76.210
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seznam.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UCAHCWfp"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-45eea68dd6fso316820f8f.2
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 04:33:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780572781; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ZgXXxYcS3ZIZ89xRbhUNUyT+91wWGtHSKB3ZPPFm94yGsnjfBcgBYq1yssJKb4ITrx
-         WfDk8wRmuxW/v1L0ZndU8zChmS8vbYLLW49gX9B0Rduvdxr8U9y/cE08hvKt8cNx39KH
-         2tLim/SuiMk3D5nTikVqp7phKbhVWIy00mi56l4E60DD2XwCjpiWXaVXBrZ/ToYu92vi
-         fh7cOedSKwgc3y5wTU3ZuBYRqVHWuHmWTjRjCkddG2BF7ic3C4kd/Eh1Ah6SozL07aeJ
-         qnXmWiWDwWTA1H0YW/w8PUIheQ//RmfnuZCwUC3pL9Ib47YoNrLo1zi+BLmBIm7Mh2JN
-         hM+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
-        fh=hN54YNWJ2gFuxL4BRhe7qVwAf8/04ACTndomMl9WdxY=;
-        b=cEPXtGwuWPA4hPmaQSrlp9DT803cCWgFjyLzFrWfE45Ddx66Ox9plYNTXfFjXDY5dZ
-         QGH3LlpPG4JUxbN3lPK3vlUzFq4Z3iMHwxX5KMn+KM/GEuFthN3um0jfsRf4F9FyNyAk
-         YRh8BCC/c0Uvh7O2W6uYioVZcFhbu8wkVpRHxit70aX1KHbr004gIE0CrzNw3RM33I3D
-         MAavQUY/3qwSNvpLQ0uHhkNOzU42l6YhMGNu03uGZHrj7yL8wLbfZACbgBWG9/cXsFQ2
-         KmNcVHVhCkA5jXJtylzbHME34Xyfu+LAmSyoz8wxHAONLj6D6E59edT/B3D1J6miedua
-         Oftw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780572781; x=1781177581; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
-        b=UCAHCWfpFzyKZL9ZO8hTTIh8ASGm7oJmGPt6DDdTDv2FUu7qESG7IBHgbymJ9E+OMf
-         aFRso9X8MuPVuKKwA7Trv9PKh/cGPKKAFyWGtgnpnllkUQa4NRIXvKrRoe55LultBeUE
-         0gpzTxWfoA3+MxD0P6gm76zLYa7j1ORuYA605jxwyiCQbEoxU6FJ9FPTHmfGHKro19kD
-         4acUOXyGR0yk0yR0oIE/8VmshPxOqtX03ldf7Z+Ys+2Stb7gnRQrwhZOLNlezzlrcvaq
-         uzT/QDFc17lVc2szI13lJWNINrS9Y9WO5RhOiBHziI8j9+a8HtYyU4CPo8auL4mgkR32
-         7ELA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780572781; x=1781177581;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ZfKEuWLlMX0icAotpBmb6Gj8rMmn0WuhWbONlf/UNZs=;
-        b=TtGJAJQpQvyJAGYxPJUn0bFTos9f5+yDleyJGFPfu5SXW8u95sC8ZCGotJafuw2nF8
-         yMUUAAoJ8dXzVtBqRyUlpi86l3scAsck+W9Lv9CF0olJMHX8rYCIndaL0TwGkx6aSd77
-         qdQukr1RPi5oeMAfrVBr8CSv/Zjq72U8BYq3qqggDD2lTUwGnkcwwuDuCJAb7/8dgqL0
-         8yySpIOyMcL5tQ88+3Pnsp+VxFExL5BBamkWNU+mbpurEkkPrvrhDUIZqoV5mldCWtTQ
-         sKxFRN6s0lCbxYU3m+Gu+HZGMCUo5U0lKGCLxlGIb+uQYnHDrEaLtiLMRtdsPDsKTu0o
-         f5bQ==
-X-Gm-Message-State: AOJu0Yxv+J1LSARXsdMoVB850BDYciR38uyW5NK3eDFvegirJQaQqG+k
-	h0H81WD2hNL5soHm0pIFMsY5cWCEKyjKsAu7DOKF0ctzJhUpc10ZIllV4s4IcexQL5+dMrgLSxA
-	NH4VJbZV5RqH/mep/nlZoEUtmB4rauks=
-X-Gm-Gg: Acq92OHT/zdKog3Y5FmiIeyWMILmEzrAv5kQrf07/NfqZASxYFiIEMwm/JyTQSMfFuQ
-	Irx6w6yNBIOGf7JiHptyPW/NuW8XRiJ7oIjRVU6IlZ1HaeYbMl4EwgM6+3CcQcjP8J0KJp6dIHy
-	PG5z+dJKX4WdV2GKR0v5bVjXwqiZujb2WRwja1PCfhX3O8lCHNRz3VK2m1EXgwgkAsEnUKILz+P
-	Z9ERelAwY3Neidn58Hjdotbc1uZ+YPKK7a4DllxP4Ipd0Ee5/0z/5fn0+I07mU/0f0vJsGe/kWR
-	oK9HqEEzsz6OYRRV0sM52RTcV8Hu49uTpMdMwNsBJi7bsialE8vzsjAj8EMmFaZleme9iRfMzjk
-	g94jGPQiGa7/spBWAWJ6cnJOXfc0az5UxMsxFB+dDxlPr8Zl7kjlQ4IrROIj3SJFj30h9YkYFjS
-	TeBpuu59nRsbaYuBGL
-X-Received: by 2002:a05:6000:ac4:b0:45e:93ac:769e with SMTP id
- ffacd0b85a97d-46021780205mr9208507f8f.6.1780572781106; Thu, 04 Jun 2026
- 04:33:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="ApkaXi7z"
+Received: from email.seznam.cz
+	by smtpc-mxd-85fb448c55-l247v
+	(smtpc-mxd-85fb448c55-l247v [2a02:598:96:8a00::1200:706])
+	id 61785f2dd91772a26386c5b1;
+	Thu, 04 Jun 2026 14:02:54 +0200 (CEST)
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=szn1;
+	t=1780574574; bh=oMIS17F7U4apFwJE02RTuEx1AEeKGiBjxDj3jsYuJ5U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	b=ApkaXi7zUXmcYl9iM2UDVhkiu8H3ZrO1AnbrjoZOFPl4JZjd8WsfuGY3Y6Xs1a9lX
+	 pp0T7guoTWjiHb9Dczhqro5Dz+yb+tl5Ji1eHdoB8q2AjEnlL6k6SVQobMmE0vAhqr
+	 FqRPd36U3Qy1JhoMIHZNv2Rmq6M+AzvpkZUy/cBJoLIT6yh5YSPulBq9GJpXqKitKJ
+	 9wETlvj2pOUc36sDgkvcEBhHgdMwCG30VB+5usvVrcKBNNp9ujeqIWibTKLC+DblSk
+	 JIeGuZeeiMCcMACdJt6FtUSzCFepDUpBAQnAu8UWMa/D9nXuy0YNTMkmzvPSlDzsKw
+	 R9AmW3XfsCsIQ==
+Received: from archlinux (ezechiel.sdb.cz [185.100.196.77])
+	by smtpd-relay-b58bfc659-k9lmt (szn-email-smtpd/2.0.73) with ESMTPA
+	id 0642cb48-30f1-4b1e-aaa8-eff269a85580;
+	Thu, 04 Jun 2026 14:02:49 +0200
+From: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
+To: linux-iio@vger.kernel.org
+Cc: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
+Subject: [PATCH v2 00/11] iio: change from %ld to %pe for PTR_ERR() printing
+Date: Thu,  4 Jun 2026 13:59:20 +0200
+Message-ID: <20260604120201.116925-1-vo.kratky@seznam.cz>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260604111921.106936-1-vo.kratky@seznam.cz> <20260604111921.106936-3-vo.kratky@seznam.cz>
-In-Reply-To: <20260604111921.106936-3-vo.kratky@seznam.cz>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 4 Jun 2026 13:32:49 +0200
-X-Gm-Features: AVVi8CfoZLnTGoETl0CJhkGIIbb1KDhaAW7xm9hsTUc-Ub-1Ro-4VH7oR6golPU
-Message-ID: <CALoEA-w1W+p4gLawWrFxe_sN2cJnQ25yRBFPh02N_2NPVQbkaQ@mail.gmail.com>
-Subject: Re: [PATCH 03/11] iio: chemical: change from %ld to %pe for PTR_ERR() printing
-To: =?UTF-8?B?Vm9qdMSbY2ggS3LDoXRrw70=?= <vo.kratky@seznam.cz>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, 4 Jun 2026 at 13:22, Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kratky@sezna=
-m.cz> wrote:
->
-> Found by Coccinelle.
+v1 -> v2:
+- Improve commit message wording
 
-This is not an adequate commit message. Summarize what you did
-and why in short. Keep the rest though.
+Vojtěch Krátký (11):
+  iio: accel: change from %ld to %pe for PTR_ERR() printing
+  iio: adc: change from %ld to %pe for PTR_ERR() printing
+  iio: chemical: change from %ld to %pe for PTR_ERR() printing
+  iio: common: change from %ld to %pe for PTR_ERR() printing
+  iio: dac: change from %ld to %pe for PTR_ERR() printing
+  iio: gyro: change from %ld to %pe for PTR_ERR() printing
+  iio: humidity: change from %ld to %pe for PTR_ERR() printing
+  iio: imu: change from %ld to %pe for PTR_ERR() printing
+  iio: light: change from %ld to %pe for PTR_ERR() printing
+  iio: proximity: change from %ld to %pe for PTR_ERR() printing
+  iio: resolver: change from %ld to %pe for PTR_ERR() printing
 
---=20
-Kind regards
+ drivers/iio/accel/adxl313_i2c.c                 |  4 ++--
+ drivers/iio/accel/adxl313_spi.c                 |  4 ++--
+ drivers/iio/accel/adxl355_i2c.c                 |  4 ++--
+ drivers/iio/accel/adxl355_spi.c                 |  4 ++--
+ drivers/iio/accel/kxsd9-spi.c                   |  4 ++--
+ drivers/iio/adc/sun4i-gpadc-iio.c               |  6 +++---
+ drivers/iio/chemical/bme680_i2c.c               |  2 +-
+ drivers/iio/chemical/bme680_spi.c               |  2 +-
+ drivers/iio/common/st_sensors/st_sensors_i2c.c  |  4 ++--
+ drivers/iio/common/st_sensors/st_sensors_spi.c  |  4 ++--
+ drivers/iio/dac/ad5770r.c                       |  4 ++--
+ drivers/iio/dac/ltc1660.c                       |  4 ++--
+ drivers/iio/gyro/fxas21002c_i2c.c               |  4 ++--
+ drivers/iio/gyro/fxas21002c_spi.c               |  4 ++--
+ drivers/iio/humidity/hts221_i2c.c               |  4 ++--
+ drivers/iio/humidity/hts221_spi.c               |  4 ++--
+ drivers/iio/imu/fxos8700_i2c.c                  |  2 +-
+ drivers/iio/imu/fxos8700_spi.c                  |  2 +-
+ drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c |  2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c     |  2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c     |  2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c     |  2 +-
+ drivers/iio/light/gp2ap002.c                    |  2 +-
+ drivers/iio/light/st_uvis25_i2c.c               |  4 ++--
+ drivers/iio/light/st_uvis25_spi.c               |  4 ++--
+ drivers/iio/proximity/ping.c                    |  4 ++--
+ drivers/iio/proximity/srf04.c                   | 12 ++++++------
+ drivers/iio/resolver/ad2s1200.c                 |  8 ++++----
+ 28 files changed, 54 insertions(+), 54 deletions(-)
 
-CJD
+-- 
+2.54.0
+
