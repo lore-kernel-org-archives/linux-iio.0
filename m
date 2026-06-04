@@ -1,44 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D666637EFF9;
-	Thu,  4 Jun 2026 10:42:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C6A52ED848;
+	Thu,  4 Jun 2026 10:46:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780569777; cv=none; b=WESI79ti2R00fEXqo7+UViftTSjQ/mlks28gevLdAGwCbrUEl87VtFKQGBpND0kxQKsGaTMfKtlsGlOB3Doct0Kk9ZluYF1r0RSdge2RKXvblbXRDoiwEbVvo5NoT5kBiZTsd6QlotVpVQYPz+1QyeCu3YggTzSYE5rBSANZtZk=
+	t=1780570005; cv=none; b=UJdCrwoccockq0P1B99yzgG7p0zbSOvgGmtyOjW0UoJSdgbpx44YYwHdgCpksz/MOgjRs9grW/ff/0rqZmsgx5R9PZ3XX6HkV4NHQa1bLVPIbEGVjYKH2J+E8rg/Jv68RPLF6Tih2+pnd7Wz2c9e2dAC7P5UsAIfj0p8zygdjd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780569777; c=relaxed/simple;
-	bh=W/ZoxX/Jwu2Ztq4ah3ps14Rmca1QIszABtBDW1GI4uw=;
+	s=arc-20240116; t=1780570005; c=relaxed/simple;
+	bh=biiRY84vnYMb5PbMnT2Tgh+oJNQYMtRjO3yfY9cGl2Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=twqgJBfWLl1yILc7Lpqtc5P3vHOiEJ5dgIht7H+t8eCJcyb4duuyxN6tDbwcJhmgsHdnMf6FmB5mnYUGsz+JkVIrS5mEp3M+OqAYDLEzVg8BupcQgsA7ZN/m2F17/yjHTre9PseLEQw1bmi1rVVuW9yb0i/hsEMGuhA73LUdGH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h4Oz+tRU; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=W7YVBotgT4byVakg6R1WZk/Tu1KfSA2JOo1RK2XQebTsJA0KpfFd/xTHAt5dUPcp+Q9PEyDIehPSbb6ZRHkekGXnnLggTdngwQvsLPqBj1a+bExcxxmAR7gySwFvy7mc8tXCnZY15hhKTH83zouIl0OVzfBjSBsL0gJDwgs5Qik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mMFNHt72; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h4Oz+tRU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3762A1F00893;
-	Thu,  4 Jun 2026 10:42:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mMFNHt72"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C4B1F00893;
+	Thu,  4 Jun 2026 10:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780569776;
-	bh=vgDazCCMRyTee16fiBKqlVntuEd5XwEDoAvtziv7/Ho=;
+	s=k20260515; t=1780570003;
+	bh=FOme6FGys2fI4Tk2hmHNWSvY6xaDpJ6qGZkN/RcDCTI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=h4Oz+tRUAQ3jcCRhRGYVlr+egINwiHWCslpotFVCxHnv/scGfk8nb3r4+BxRJOIdG
-	 +R9l+j9eHezIhiQqk4Kt+6U6KXu/vZ2orhXn9vbXcVZtIW3M5KtvAYCuV2Xvhel5Xu
-	 RAK0bKqy4gVizgvqHfvHecvqcv7YFSpc1zdL9qD+q0225/O9/JnKBm+DnXvZ8PHJlt
-	 9eeEy4awwXs8OlXrEXe+vMkI2QDrU191C7BxT/Zo0ZX9u3ZGEhEmWpHQhMdvvRbivq
-	 gWi20mLHz3seLlnF9+ZSKVZTHkb4SBvhqOt+OpbyU0liV+MxJGn11f8pZ8e4Ttv/Ej
-	 mVbcQq/byjTYA==
-Date: Thu, 4 Jun 2026 11:42:50 +0100
+	b=mMFNHt72qrquxGmmCXZZA1e8HzZncvYR4s1rKQ9JJ7E51LqzroMv6dUPl/+EvHRRX
+	 +i060RL4+TDq293fspO/Hw5ew2qhYVvA/+j7Mv1Igbqe7Nd71abJ3mgjgbTg/xLgVR
+	 dpzX2hTBerXvJMQC+ODxYhAleonMuvSg28Uj/Yrf8uwd7myg0Jk/IUrvmP7tTfrr1N
+	 MjLary/2OxvlHx81VZN6zzGmHZg+XVBZf7jEZHdANpKaHDGUXkvwklru3BuSYDYQym
+	 9LzBH9SwgAPmilj/Br2v0WpO04kHdj0o54METH9DenfuuzrVGQXhyzsrHTLeKfO9Se
+	 GQrLsDToVaesA==
+Date: Thu, 4 Jun 2026 11:46:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v3 8/8] iio: tcs3472: implement wait time and sampling
- frequency
-Message-ID: <20260604114250.3fb62d93@jic23-huawei>
-In-Reply-To: <d82b27d8-4e0e-4749-bea7-a09f43554fb2@gmail.com>
-References: <20260522123420.45495-1-aldocontelk@gmail.com>
-	<20260522123420.45495-9-aldocontelk@gmail.com>
-	<d82b27d8-4e0e-4749-bea7-a09f43554fb2@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Amit Kucheria <amitk@kernel.org>, Thara
+ Gopinath <thara.gopinath@gmail.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui
+ <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
+ <kamal.wadhwa@oss.qualcomm.com>, David Collins
+ <david.collins@oss.qualcomm.com>, Anjelique Melendez
+ <anjelique.melendez@oss.qualcomm.com>, Neil Armstrong
+ <neil.armstrong@linaro.org>, Stephan Gerhold <stephan.gerhold@linaro.org>
+Subject: Re: [PATCH v2 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ
+ with ADC_TM auxiliary driver
+Message-ID: <20260604114630.23ca427a@jic23-huawei>
+In-Reply-To: <ah9ouLQFI7VtHCWL@ashevche-desk.local>
+References: <20260526-gen3_adc_tm-v2-0-702fbac919ac@oss.qualcomm.com>
+	<20260526-gen3_adc_tm-v2-1-702fbac919ac@oss.qualcomm.com>
+	<ah9ouLQFI7VtHCWL@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,93 +58,93 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 4 Jun 2026 10:10:02 +0200
-Aldo Conte <aldocontelk@gmail.com> wrote:
+On Wed, 3 Jun 2026 02:35:20 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 22/05/26 14:34, Aldo Conte wrote:
-> > @@ -196,15 +359,29 @@ static int tcs3472_write_raw(struct iio_dev *indio_dev,
-> >   		if (val != 0)
-> >   			return -EINVAL;
-> >   		for (i = 0; i < 256; i++) {
-> > -			if (val2 == (256 - i) * 2400) {
-> > -				data->atime = i;
-> > -				return i2c_smbus_write_byte_data(
-> > -					data->client, TCS3472_ATIME,
-> > -					data->atime);
-> > -			}
-> > -
-> > +			if (val2 != (256 - i) * 2400)
-> > +				continue;
+> On Tue, May 26, 2026 at 04:26:09PM +0530, Jishnu Prakash wrote:
+> > The SDAM0 IRQ can be triggered for both EOC (end of conversion) events for
+> > immediate ADC reads done in this driver and for threshold violation events,
+> > based on ADC_TM thresholds configured from the auxiliary ADC_TM driver on
+> > TM channels on the first SDAM.
+> > 
+> > At present, this interrupt is handled only in the ISR in the main ADC driver.
+> > When the ISR is triggered for an ADC_TM event, this driver notifies the ADC_TM
+> > driver by calling a notifier callback exposed from it for this purpose.
+> > 
+> > To simplify the interrupt handling in both drivers, share the interrupt between
+> > the drivers. With this, ADC_TM interrupts on SDAM0 will be handled directly in
+> > the ADC_TM driver, so remove the notifier callback and all TM interrupt
+> > handling in the main ADC ISR.  
+> 
+> ...
+> 
+> > +	/*
+> > +	 * This interrupt is shared with the ADC_TM auxiliary driver, which
+> > +	 * is threaded and uses IRQF_ONESHOT. Since shared interrupts need
+> > +	 * to agree on IRQF_ONESHOT configuration and there is a kernel
+> > +	 * warning for using IRQF_ONESHOT with non-threaded interrupts,
+> > +	 * make this also a threaded IRQ.
+> > +	 */
 > > +
-> > +			data->atime = i;
-> > +			ret = i2c_smbus_write_byte_data(data->client,
-> > +							TCS3472_ATIME,
-> > +							data->atime);
-> > +			if (ret)
-> > +				return ret;  
+> > +	ret = devm_request_threaded_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
+> > +					NULL, adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,
+> > +					adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
+> > +					adc);
+> >  	if (ret)
+> >  		return dev_err_probe(dev, ret,
+> >  				     "Failed to request SDAM%d irq\n",  
 > 
-> Hi Jonathan,
-> 
-> Two questions on the INT_TIME case in tcs3472_write_raw() before
-> I send v4.
-> 
-> - The compute/write/commit pattern issue you raised elsewhere
-> also applies here. I plan to swap the order: write first with i
-> 
-> return i2c_smbus_write_byte_data( data->client, TCS3472_ATIME, i);
-> 
-> then update data->atime only on success. OK?
-
-Yes. That's conventional way to do it as ensures the cache reflects
-the most likely state (fails that don't write are probably slightly
-more likely than fails that do).
-
-
-
-> 
-> - Sashiko flagged a race ( 
-> https://sashiko.dev/#/patchset/20260522123420.45495-1-aldocontelk%40gmail.com ) :
-> target_freq_hz/uhz are read without
-> the lock and then passed to tcs3472_set_sampling_freq() which
-> takes the lock internally. Two options:
-> 
-> 1)  Take the lock briefly in write_raw() to write ATIME, update
->      data->atime, and snapshot target_freq_hz/uhz. Then release the
->      lock and call tcs3472_set_sampling_freq() (which takes the lock
->      again internally). Minimal change, but ATIME and WTIME updates
->      are not atomic with each other.
-> 
-> 2)  Split tcs3472_set_sampling_freq() into a public wrapper that
->      takes the lock and a __tcs3472_set_sampling_freq() helper with
->      the lock already held. Then in write_raw() take the lock once,
->      write ATIME, and call the helper. This keeps ATIME and WTIME
->      updates atomic.
-> 
-> In these cases, what is used to do?
-
-2 is cleanest solution so do that.
-
-
-> Thanks,
-> Aldo
-> 
-> > +
-> > +			/*
-> > +			 * ATIME just changed, so the cycle time changed too.
-> > +			 * Re-run the sampling frequency logic to recompute
-> > +			 * WTIME and preserve the user's last requested
-> > +			 * frequency.
-> > +			 */
-> > +			return tcs3472_set_sampling_freq(data,
-> > +							 data->target_freq_hz,
-> > +							 data->target_freq_uhz);
-> >   		}
-> >   		return -EINVAL;
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		return tcs3472_set_sampling_freq(data, val, val2);
-> >   	default:
-> >   		return -EINVAL;
-> >   	}  
-> 
+> Also add a patch to drop this duplicate message.
 > 
 
+There is another thread going on this.  It might not be duplicate
+if -EPROBE_DEFER is returned.  The message won't be printed but it
+will be logged for helping debug deferred probe reasons.
+
+So maybe we have been a little too energetic in removing these.
+
+static void __dev_probe_failed(const struct device *dev, int err, bool fatal,
+			       const char *fmt, va_list vargsp)
+{
+	struct va_format vaf;
+	va_list vargs;
+
+	/*
+	 * On x86_64 and possibly on other architectures, va_list is actually a
+	 * size-1 array containing a structure.  As a result, function parameter
+	 * vargsp decays from T[1] to T*, and &vargsp has type T** rather than
+	 * T(*)[1], which is expected by its assignment to vaf.va below.
+	 *
+	 * One standard way to solve this mess is by creating a copy in a local
+	 * variable of type va_list and then using a pointer to that local copy
+	 * instead, which is the approach employed here.
+	 */
+	va_copy(vargs, vargsp);
+
+	vaf.fmt = fmt;
+	vaf.va = &vargs;
+
+	switch (err) {
+	case -EPROBE_DEFER:
+		device_set_deferred_probe_reason(dev, &vaf);
+//this call.
+		dev_dbg(dev, "error %pe: %pV", ERR_PTR(err), &vaf);
+		break;
+
+	case -ENOMEM:
+		/* Don't print anything on -ENOMEM, there's already enough output */
+		break;
+
+	default:
+		/* Log fatal final failures as errors, otherwise produce warnings */
+		if (fatal)
+			dev_err(dev, "error %pe: %pV", ERR_PTR(err), &vaf);
+		else
+			dev_warn(dev, "error %pe: %pV", ERR_PTR(err), &vaf);
+		break;
+	}
+
+	va_end(vargs);
+}
+
+Jonathan
