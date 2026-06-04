@@ -1,134 +1,131 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75E4A3CE0A8
-	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 07:16:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1353B8D5C;
+	Thu,  4 Jun 2026 07:18:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780557392; cv=none; b=pZc6B4JnK/YfrZcDBJUfH59tzergAtOusE8q6lzrNlo0QfpGvbp7nBjeynU6Vt4VtqGtLvM4VSSMGsLdaKdxuCA42vJvyn7jPHwuFyP0Y6Bo8MH+Zw13DAJQjEH+l0ZSBuCe7pPkeAbM6ZrNopPXi8rS/ap1gbwd6gLHtwrNVZo=
+	t=1780557485; cv=none; b=Z0Z9ywcUoz+XhBWp16q+Wc9FhC0HezylUchBehbrCkOCmPkdJaX6r37O2RZZFGlqIHTfusTUcZQzbd9loBteIErhx5/XkLTz6KveawrQUGLJb/5Z3d+0Q1Q/b6+NgVb8eP2U1ebyBPQQZXqYIm9SQjMdKH+2n9+C1UzxVrdNsp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780557392; c=relaxed/simple;
-	bh=ipxFRwOMI9FnrFLgYfOuqOLFuYrkxm4d5w3ALRd0Xlc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=k4jRTnZEbJD3boqmBMAFX0MjfXHDjUDW6NfQbpmsz4FTx+8RVZyCIQwk4LhaM7Qt7+LPbDFoKpZ+ML9z6lTm4mw8bn+qeDqBpn03t4jWsOzzAnnRzuSQLQYT+Lh4VyssGru0aXCetspzIAdLN3tOMoYYIpJ1ghSY09L0v5K0Bes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-bebac79fff8so31948766b.0
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 00:16:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780557389; x=1781162189;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cmuhf90GQCmtgd5+s3OkmfdSZyPGskYbQsHr9VlNV2M=;
-        b=ZhM0n2V9Wd8FIwccI2lJg3hcHjEcdNVSPsah0i8RS6MvMiaNhbmH/zoUTopQHlfBOf
-         6G6TZsYxJzfuplh5JKzguqILiyOqk8vPLG7xJR/XP7UXTmekkNYYckXnBHmMDKrw33Om
-         KVoGivZau13ohauByVPZ46gziZWPDQb5XpmGYUHDpcMjlMwHFU+JVlMQ6GbJ08mz0VIU
-         yDRuZN7Y6XeL2VLIf+U1GHrNgU1JClYwk8bfKn53An+ryFqUFQjF4pj35qtpcLDm2nCq
-         2iuDqedNiAz4uICkYeH54R8z9s3ZC0JQlNFJhoH0jYTGRRrp4Qua6RisxHuHHV8xM45b
-         x9Jw==
-X-Forwarded-Encrypted: i=1; AFNElJ/McLeyINJGEYTniS1gfP36icMKBlLEt2jZHtYOeC3pgKjLTmKDNpqC9eaPSY0DjfnVItPjI/XgdIo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzNC+YcEwOE0sR8l52PHvMzqJE114DNEHe4RC0TO9nyVkO0O/B5
-	OiAMa6IbXBakt6uBMgHViFofa+cv9YNgi2YEKNS3npUjOFjWeTqnFApjgDE2yZvppe0=
-X-Gm-Gg: Acq92OFhcKUuFowdZ+vMRBtgbsSwlBDRCPGj5MNI/s6gqwLvMrC7P1K/HxbPiVaAdw9
-	90X/LIqSfQC6EP8G3RCHBoY5bkhGsR/TzztcdJ72Gg/2G6DIcId+cP2AsdpHHvNabG92MD8n8ri
-	37SC54NrpVMXXDCRbpg+f9N4KSN8VQymc45vLCE/uZzKaszTDD3LPu2k2/9Itxw9Va+QuZ3tUhg
-	3HUVt2UIbCrhAjm51/W/GJeftgnq1Tpnlyl4rBZ81ZufSrqKJIX+5kXxtcm/zmcbC6nmRK+RdEL
-	hSDto+XDIBOWNzk23HbKL+JwTNgLpzukRAlSoSWjSwVgyufjRqVbwGKsbJT65EOwocDfA1evYQO
-	EcZ10cAqw8QNTNyL49MWBF2WGEAcpOMYk3mCcfZYodf5IKlHiwnqGnOLzu4nk/sxG1vVGIw+DiN
-	htyd7g5cL/opYj0Mp20s+mkNRijw51FexgKot4Zwu2LIU0bDP3aFftM2xg4PA2XtmxQLqJqWE=
-X-Received: by 2002:a17:907:9486:b0:bec:894d:dd3f with SMTP id a640c23a62f3a-bf0aca0e75dmr345787966b.14.1780557388509;
-        Thu, 04 Jun 2026 00:16:28 -0700 (PDT)
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf051e9c499sm259036566b.22.2026.06.04.00.16.26
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jun 2026 00:16:27 -0700 (PDT)
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-68d2342c5e6so504683a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 00:16:26 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+JNbvdu9w1a9gfhuVLLaj9VY3WH12Wc4U8rTRxRKJgTcj7yqT3MyGeeHw3+1CPkOiwc89nqLNDG2Y=@vger.kernel.org
-X-Received: by 2002:a05:6402:3805:b0:68a:f749:608d with SMTP id
- 4fb4d7f45d1cf-68e72932655mr3390437a12.21.1780557386130; Thu, 04 Jun 2026
- 00:16:26 -0700 (PDT)
+	s=arc-20240116; t=1780557485; c=relaxed/simple;
+	bh=RqcXuJvYAFt2+iRQE5KNL1qoAip4We8+XF+OHMLdvz8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HeqlMtrLdhmAj0TEeb6b4V0D5pRbZHXCqF3BAJm80FF7awG07ItB+cm6CL6eEKhyaCWPRPUQEVN3GTRuVfPI2+J2l1yYI/k3oBuXX3zs/aX2ciQ904bMTMFGIQbjcpgHFb5fAX906qhjyMkrznIe4cSZuBgE4OaSLUW9dEVYAlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d0fGUSES; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d0fGUSES"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780557484; x=1812093484;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RqcXuJvYAFt2+iRQE5KNL1qoAip4We8+XF+OHMLdvz8=;
+  b=d0fGUSESnPCVf0RMfc2lw2qeXn2VPJs9OmuZUV3G5PeoQpY3echUItli
+   PoDXtGZoMWEEwTwaFzTEHHFdZAYHQXzKkL+guCxcnE3oN8sOFluWB1Xbc
+   0vk4yrocnYqut6e2jhmbZERAYUA1HKIoxjUTnjE2E2DLruDE52/l7Opmz
+   BE10vGx78hlMCTLtF1INIcZF8aYSK6CfNks5s/qSb9ZRsAP690YdspdTd
+   lO6KnPe4QZ2MzxfC6T7BdBEhATgpA6shcZfBUvGIoqEzWXLtKyVe4aV2J
+   YJCzBhRo2svqURhvzwOruE56u4sxDE7hhCoL2Kwodqex4pNkO84pxDFfs
+   g==;
+X-CSE-ConnectionGUID: FVdG4d+uQ2Gkt97cuYJKhQ==
+X-CSE-MsgGUID: mKmU+MfRQaaO8jEZ+Odzlw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11806"; a="92064009"
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="92064009"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:18:03 -0700
+X-CSE-ConnectionGUID: 7Y7LKIr2SH2cwfN6VrPyLQ==
+X-CSE-MsgGUID: qiNvkXOBRyaSOn7x/gvFHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,186,1774335600"; 
+   d="scan'208";a="241966936"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 00:18:01 -0700
+Date: Thu, 4 Jun 2026 10:17:58 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Herman van Hazendonk <github.com@herrie.org>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, masneyb@onstation.org
+Subject: Re: [PATCH 1/1] iio: light: isl29018: support cover-glass gain
+ compensation via DT
+Message-ID: <aiEmplRsQnvlacCD@ashevche-desk.local>
+References: <20260604054723.2983181-1-github.com@herrie.org>
+ <20260604054723.2983181-2-github.com@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <202606040245.XfmRpBhA-lkp@intel.com>
-In-Reply-To: <202606040245.XfmRpBhA-lkp@intel.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 4 Jun 2026 09:16:12 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUqo5C9epmE1idc15x9nByhVZP5Hdb5OKtOLSMakb+sfA@mail.gmail.com>
-X-Gm-Features: AVHnY4JPWQVIpu2upPgjp37FxY__BC8JhXLs9bmbyscm7sasgK8RSPuLMSmE61A
-Message-ID: <CAMuHMdUqo5C9epmE1idc15x9nByhVZP5Hdb5OKtOLSMakb+sfA@mail.gmail.com>
-Subject: Re: drivers/iio/common/scmi_sensors/scmi_iio.c:247:1-7: WARNING:
- do_div() does a 64-by-32 division, please consider using div64_u64 instead.
-To: kernel test robot <lkp@intel.com>
-Cc: Tiwei Bie <tiwei.btw@antgroup.com>, oe-kbuild-all@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>, 
-	Jyoti Bhayana <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, arm-scmi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260604054723.2983181-2-github.com@herrie.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-CC IIO/SCMI
+On Thu, Jun 04, 2026 at 07:47:23AM +0200, Herman van Hazendonk wrote:
+> Boards that mount the sensor under a tinted or coated cover glass need
+> to compensate for the optical loss before downstream consumers can map
+> the reading onto a useful lux range. The driver already exposes a
+> runtime knob through in_illuminance0_calibscale, but every user has to
+> re-apply it after every reboot (or rely on a board-specific udev rule),
+> and a power-of-two cover gain like 100x is a hardware constant of the
+> board rather than a policy choice that belongs in userspace.
+> 
+> Add an "isil,cover-comp-gain" device-tree property that seeds calibscale
+> at probe, mirroring the pattern tsl2563.c already uses for the same
+> class of problem (amstaos,cover-comp-gain). The default stays 1 so
+> existing systems are unaffected, and userspace can still re-tune via
+> the sysfs attribute afterwards.
 
-On Wed, 3 Jun 2026 at 20:36, kernel test robot <lkp@intel.com> wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   ba3e43a9e601636f5edb54e259a74f96ca3b8fd8
-> commit: a0e2cb6a90634f3dc80f16e882a683ee5761b0b0 um: Add VFIO-based virtual PCI driver
-> date:   1 year, 1 month ago
-> config: um-randconfig-r052-20260603 (https://download.01.org/0day-ci/archive/20260604/202606040245.XfmRpBhA-lkp@intel.com/config)
-> compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project e5ab4f8a1f766febdc65ce89c00dec85393cfd68)
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Fixes: a0e2cb6a9063 ("um: Add VFIO-based virtual PCI driver")
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202606040245.XfmRpBhA-lkp@intel.com/
->
-> cocci warnings: (new ones prefixed by >>)
-> >> drivers/iio/common/scmi_sensors/scmi_iio.c:247:1-7: WARNING: do_div() does a 64-by-32 division, please consider using div64_u64 instead.
->    drivers/iio/common/scmi_sensors/scmi_iio.c:507:2-8: WARNING: do_div() does a 64-by-32 division, please consider using div64_u64 instead.
->    drivers/iio/common/scmi_sensors/scmi_iio.c:273:2-8: WARNING: do_div() does a 64-by-32 division, please consider using div64_u64 instead.
->    drivers/iio/common/scmi_sensors/scmi_iio.c:166:1-7: WARNING: do_div() does a 64-by-32 division, please consider using div64_u64 instead.
->
-> vim +247 drivers/iio/common/scmi_sensors/scmi_iio.c
->
-> f774117c96f94c Jyoti Bhayana 2021-03-09  238
-> f774117c96f94c Jyoti Bhayana 2021-03-09  239  static void convert_ns_to_freq(u64 interval_ns, u64 *hz, u64 *uhz)
-> f774117c96f94c Jyoti Bhayana 2021-03-09  240  {
-> f774117c96f94c Jyoti Bhayana 2021-03-09  241    u64 rem, freq;
-> f774117c96f94c Jyoti Bhayana 2021-03-09  242
-> f774117c96f94c Jyoti Bhayana 2021-03-09  243    freq = NSEC_PER_SEC;
-> f774117c96f94c Jyoti Bhayana 2021-03-09  244    rem = do_div(freq, interval_ns);
-> f774117c96f94c Jyoti Bhayana 2021-03-09  245    *hz = freq;
-> f774117c96f94c Jyoti Bhayana 2021-03-09  246    *uhz = rem * 1000000UL;
-> f774117c96f94c Jyoti Bhayana 2021-03-09 @247    do_div(*uhz, interval_ns);
+Haven't DT schema patches needed to go separately?
 
-Indeed, most do_div() use in that driver is broken on 32-bit.
+...
 
-> f774117c96f94c Jyoti Bhayana 2021-03-09  248  }
-> f774117c96f94c Jyoti Bhayana 2021-03-09  249
->
-> :::::: The code at line 247 was first introduced by commit
-> :::::: f774117c96f94c7c4d2f076e4cacc80218b0df48 iio/scmi: Adding support for IIO SCMI Based Sensors
->
-> :::::: TO: Jyoti Bhayana <jbhayana@google.com>
-> :::::: CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> +	/*
+> +	 * Allow boards that mount the sensor behind tinted / coated cover
+> +	 * glass to bake the optical-loss compensation into firmware via
+> +	 * "isil,cover-comp-gain", following the precedent set by
+> +	 * tsl2563.c. The value seeds calibscale (default 1), so userspace
+> +	 * can still retune through in_illuminance0_calibscale.
+> +	 */
+>  	chip->calibscale = 1;
+> +	device_property_read_u32(&client->dev, "isil,cover-comp-gain",
+> +				 &chip->calibscale);
 
-So why was this sent to different people instead?
+With
 
-Gr{oetje,eeting}s,
+	struct device *dev = &client->dev;
 
-                        Geert
+at the top of the function this will be made shorter.
+
+Additionally the above approach won't be accurate when property is present in
+DT but by some reason can't be retrieved. It will puzzle the user. That's why
+the robust approach is
+
+	struct device *dev = &client->dev;
+	const char *propname;
+	...
+
+	propname = "isil,cover-comp-gain";
+	if (device_property_present(dev, &chip->calibscale)) {
+		ret = device_property_read_u32(dev, propname, &chip->calibscale);
+		if (ret)
+			return ret; // optionally dev_err_probe()
+	} else {
+		chip->calibscale = 1;
+	}
+
+Taking the expansion of this pattern we might need to actually introduce a full
+set of device_property_read_*_optional() to make this churn less required.
+Perhaps for v7.3.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
