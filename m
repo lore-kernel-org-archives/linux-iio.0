@@ -1,127 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from outbound7.mail.transip.nl (outbound7.mail.transip.nl [136.144.136.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 174E73FFACF;
-	Thu,  4 Jun 2026 09:59:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA20230DEA6;
+	Thu,  4 Jun 2026 10:06:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780567184; cv=none; b=Pp1NjYBtZIFpayS4+RA5OnMj5e6LxWOsBfliJPSzSbr7r80e/nI9PdYx5unUGncFUk1BsjJwr4aLqfk2YJZ48OZUYB77P0bN2vUbxV0IcdK1okD3JKtUL6QyRH2G8GsjCwa7l6akRvZ6sABtABlX1wYh4xfCuUEa/ezc+Ju6DfQ=
+	t=1780567592; cv=none; b=rGkEkm1YkqKe2uoWgsj8eGKYSz2BkjHj+iRHkyE3SP4pRpD7xhlvlcvNE0Ky9FoCk0ULZ+aKChl5aPyAVGDFOqFWxJufm3yRH9OfSqLzl8J7lunfCXMylkVFpp33UfAo0rlFtB0wqYSZaIEFTJfoTPGO5RqCrEHIAg5kk/6tjeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780567184; c=relaxed/simple;
-	bh=ohJeTMjeku8t5K1ttdN8gNNUHwPn/uHTPp9sLxXmVtc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=mqErJZaoD0wncSEZDo8pvEheQU6x/KCr8p0MrW+xu+OTHdbudGy3xgU6deYGaZ6n94wAniSp1bhh3WuWpgLtqW/xx9Ey0KnSfCL7mA4s5CWqJ+jOkuSNHcQFv4D5LARhqt5ikFJUEEkxP3Zje1aSJSZyKPSuVzihb1bRwZTPGlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZmpneUHW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1780567592; c=relaxed/simple;
+	bh=SLpU7aN2a9faFe1mhShSSdbVwUGdtGHAq78J9+XZRGY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fl+wb24SjX9oE6oFBknYHoqgFUDWOec3WA7V+QIWeIOJHa93Ojrs16vCfL+CKMBrNOpspgI2SnaLjX3wDr3OPdI0+AFmpwUZOaRjo+c8b+O/1V4h/vqF6COgi//uksnOi4xKh8KcbDbuofDNPysanQ7KZPvKqm6TwnYKwGLCMEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=q4xlIROe; arc=none smtp.client-ip=136.144.136.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZmpneUHW"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E8C49C2BCF5;
-	Thu,  4 Jun 2026 09:59:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1780567184;
-	bh=ohJeTMjeku8t5K1ttdN8gNNUHwPn/uHTPp9sLxXmVtc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ZmpneUHWJFdRqZjUpBQ3Ocp7ks5Yuc+aQVHAIEeQD/J0ZPJHtlr4G7XpsWZl9kClC
-	 3WGSrhb4vwP3wTNef/DKcA6J7bkRfzQ5DxC0W6bf0cP5S8js95+UBw9yjRQmicsFlB
-	 6Tbu2sfC79E+pg83aGnHwmer9jUCz81AeQ6VzelhymuYCLfi9wPflX5vPytLUFiS6K
-	 72HQazdLQJua+4OZH1/LAHChW161UjFJYYuInh9OLj7BJzegvkGm/Jk0SERBZQwCNx
-	 gJG8zte7+7WcxMeu/PX5Xt/QznEqdA0M3sNTxFp1zjnlQqT2jwoavXCIYDzr3SxYAF
-	 pCDj3ynQNGLFg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25F8CD6E4A;
-	Thu,  4 Jun 2026 09:59:43 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 04 Jun 2026 10:59:08 +0100
-Subject: [PATCH v16 14/14] Documentation: ABI: testing: add common ABI file
- for iio/frequency
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="q4xlIROe"
+Received: from submission11.mail.transip.nl (unknown [10.103.8.162])
+	by outbound7.mail.transip.nl (Postfix) with ESMTP id 4gWKwB5njBzQvvWV;
+	Thu,  4 Jun 2026 12:06:18 +0200 (CEST)
+Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
+	by submission11.mail.transip.nl (Postfix) with ESMTPA id 4gWKwB0z49z3R3nyw;
+	Thu,  4 Jun 2026 12:06:18 +0200 (CEST)
+From: Herman van Hazendonk <github.com@herrie.org>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	tomasborquez13@gmail.com,
+	masneyb@onstation.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Herman van Hazendonk <github.com@herrie.org>
+Subject: [PATCH v3 0/3] iio: light: isl29018: overflow/precision fix + cover-glass gain via DT
+Date: Thu,  4 Jun 2026 12:06:14 +0200
+Message-ID: <20260604100617.3486541-1-github.com@herrie.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260604-adf41513-iio-driver-v16-14-1a7d09143bc2@analog.com>
-References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
-In-Reply-To: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux@analog.com
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
- Steven Rostedt <rostedt@goodmis.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
- Sergey Senozhatsky <senozhatsky@chromium.org>, 
- Shuah Khan <skhan@linuxfoundation.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Randy Dunlap <rdunlap@infradead.org>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780567181; l=2255;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=nzu7TWbUWAeg5jcOBjag0rSTFAMHqoxs8t5VMBJbick=;
- b=M4nvx4k1Rb125zc36f8u4baelRx9CUDtvLssQK5aNQhlzyYeA5VeY8rVfoXWD6FYwSs8qzF/1
- m8BWzlSWZAqCkwMgpNNF9/cn6ercQZ5FRQiNdOSCffdDtdvgMjOR7sg
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: ClueGetter at submission11.mail.transip.nl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=transip-a; d=herrie.org; t=1780567578; h=from:subject:to:cc:date:
+ mime-version:content-type;
+ bh=br/W1kxa5o4a9978W2FJuQnhzfuBESTeaxzezoAI9Dk=;
+ b=q4xlIROeMywnO7yJ5l/DVqsXZTQdNb3vQ/qK3pj2Z24Zc0wORcL4ZZegXHBsSj2ICxQJ7I
+ W/HF4fGrm1qmWDPnwi9hspBWCHUM5EveTNvVKSQvsIooQyJjVVuzSRSEYMtEBplVQsWkuT
+ ePAv1Mma0alABHkkciNzaTRzA8K0CMo77ihMAScQp2SgWDrn5Xl9TOJc7RDvfqAbbZNM12
+ +aiOqeLRj21a9I2hout3iJhfKW/PhRlZCIj6Xt0TXS5DbSR2X2Aj2x5Ghf/DvYwrVP1k/G
+ chk8W+r3qiefJJAHREom63yyO7YA1nFZWZ4aCm+yV3x/rtvzxSPW0yfPohNTLg==
+X-Report-Abuse-To: abuse@transip.nl
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+v3:
+ - Split the DT binding into its own commit per maintainer feedback
+   on v2 (binding must precede the driver patch that consumes the
+   new property).  The series is now 3 patches in dependency order:
+   precision fix -> binding -> driver.
 
-Add ABI documentation file for PLL/DDS devices with frequency_resolution
-sysfs entry attribute used by both ADF4350 and ADF41513.
+ - PATCH 1/3: tighten the precision fix.  v2 widened the intermediate
+   arithmetic to u64 but still discarded the sub-lux remainder before
+   applying calibscale, which collapsed to zero on low ranges with
+   large cover-glass gain.  v3 keeps the remainder via div_u64_rem()
+   so even small counts contribute.  Switching from '/' and '%' on
+   u64 to div_u64()/div_u64_rem() also restores the ARM32 build,
+   which v2 broke with __aeabi_uldivmod.
 
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+ - PATCH 3/3 (driver) addresses Andy's review of v2:
+     * hoist 'struct device *dev = &client->dev;' so subsequent
+       device_property_*() and devm_*() calls are uniform;
+     * guard the property read with device_property_present() and
+       surface the failure with dev_err_probe(), rather than silently
+       falling back when device_property_read_u32() returns -EINVAL
+       on a malformed value;
+     * the silent fallback (calibscale = 1) only applies when the
+       property is genuinely absent, which matches the tsl2563.c
+       precedent.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-new file mode 100644
-index 000000000000..46075aee7804
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-+KernelVersion:	3.4.0
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-+		devices. The given value directly influences the operating mode when
-+		fractional-N synthesis is required, as it derives values for
-+		configurable modulus parameters used in the calculation of the output
-+		frequency. It is assumed that the algorithm used to compute the various
-+		dividers is able to generate proper values for multiples of the channel
-+		spacing.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-index 1254457a726e..76987a119feb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-@@ -1,13 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Stores channel Y frequency resolution/channel spacing in Hz.
--		The value given directly influences the MODULUS used by
--		the fractional-N PLL. It is assumed that the algorithm
--		that is used to compute the various dividers, is able to
--		generate proper values for multiples of channel spacing.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+PATCH 2/3 is the new standalone binding commit; the schema, default,
+and rationale are unchanged from v2.
 
+A follow-up DTS patch enabling this for the HP TouchPad will be sent
+separately to the ARM/DTS tree once the driver change is upstream.
+
+Herman van Hazendonk (3):
+  iio: light: isl29018: fix overflow and precision in
+    isl29018_read_lux()
+  dt-bindings: iio: light: isl29018: add isil,cover-comp-gain
+  iio: light: isl29018: support cover-glass gain compensation via DT
+
+ .../bindings/iio/light/isl29018.yaml          | 13 ++++++++
+ drivers/iio/light/isl29018.c                  | 31 ++++++++++++++-----
+ 2 files changed, 37 insertions(+), 7 deletions(-)
+
+
+base-commit: 944125b4c454b58d2fe6e35f1087a932b2050dff
 -- 
 2.43.0
-
 
