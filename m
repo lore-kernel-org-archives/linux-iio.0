@@ -1,114 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3C8E2BE7CD;
-	Thu,  4 Jun 2026 19:52:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780602723; cv=none; b=BzYxYCXLsFhfoC6PrtkgTQgVaqRXLDe4VM23WlLKEGVc65DTZkk7S9GbqVMWbPPirLcgKvvUdSFHdYAI2QkKirp+dp9EfP+c3l+FWpP94XrVMl7CmLgcHlXMztmk5kRd55qRpYkxm552erRYNUiDirlOO/0XO+BJK2nBChCI+1o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780602723; c=relaxed/simple;
-	bh=T3ON8U+Lc0mMTzbjnCLobpvwbCqKFznwnEswAAqae7c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OkwAImxjgTmFuR9mFKtmOFQv6Hv/Xjo/uSo4KLb/lRb4+gqpR97YIZmyBelvB0jHUD6X/seKBpoY2sLgI1S8TTnXC1h2A6Ag5Lv2Bp5PAAsX0hnXgYmPP3BfPAgOtugwIplZ3z5iehD1tbz43OQGUOe9WJZEq7kQCspFSwBkjLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hVd4a2IB; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6F7F3D6690
+	for <linux-iio@vger.kernel.org>; Thu,  4 Jun 2026 20:08:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780603741; cv=pass; b=RBurUWzAOx6nnlpN6RJXDun3gtYGSWt61mvg74OhpEk7EZXApGZ4v1DSbAcqrysH9DfDvY/MLwwaaia7qJszvGKSF7GLYM2xFkL6CRgHSooyhBUZ5ls35v0oMaYQhtzyYuuGZYFK8xjiIWpwvEpi0aHByREcI3P+jx59E3+Um8g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780603741; c=relaxed/simple;
+	bh=/soW6BEPfrOeKA/nsKv4OoTJanbV4JKjESUCQeexEus=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GvSuWQILlaTPZ1bQjkYRA+yt/YM5I4eZaqVgRdKv3LxW6J3AB6mDCMv7PJ7VUjdmKMousKhGN24gHckGcWY666e+WULiTt43hbZuX42QUNGUV1Cy0WH22Xl/F/1ozBEt0Mw0stMdsAyk+rlm4AGTM01uUzNMBpMmFBVXePhknyw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aBbGtWqx; arc=pass smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hVd4a2IB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780602722; x=1812138722;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T3ON8U+Lc0mMTzbjnCLobpvwbCqKFznwnEswAAqae7c=;
-  b=hVd4a2IBB0+GgnTY+NPh4kKcDyF7lHFWS3uAeIKKVk6419wdQnfsoJ4U
-   9pDAncLRBpvQ6vSw1EjCSU/brQRG/71NwBM4BffSG39Abf0M0xQOGYbSe
-   sLAJwCbRaRDDqeuVIoM+FYM+kdw36hureGG+ZlJt+xoCQ7db/FUVluQx6
-   yBER/12n4GU0kYAFvd/bqXGNIgjQ0NL8/GYri02I7NTOTpqq34DQtYQv4
-   f22eQEGEOYDTBuXf3ffxCF4XC4qO7XisUKET2b6HLHz5SKWAt9FkvNdx+
-   9/6Mudo65dsskFVOJT9otq/KL8nhfl1ymhEfcYlg5OtYBYATGyyHGOoEz
-   Q==;
-X-CSE-ConnectionGUID: 7cCSEYN1TCylFxfFHcvGWw==
-X-CSE-MsgGUID: WWNVk9lgTNKU6pBxTkEs6A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11807"; a="81436922"
-X-IronPort-AV: E=Sophos;i="6.24,187,1774335600"; 
-   d="scan'208";a="81436922"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:52:02 -0700
-X-CSE-ConnectionGUID: y7yeIrLtTGK7pVjwDRpjtQ==
-X-CSE-MsgGUID: IHnfC1g9RO6glRyHfCs3NA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,187,1774335600"; 
-   d="scan'208";a="268334198"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.47])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2026 12:51:57 -0700
-Date: Thu, 4 Jun 2026 22:51:55 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
-	rodrigo.alencar@analog.com,
-	Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH 09/12] iio: dac: ad5686: implement new sync() op for the
- spi bus
-Message-ID: <aiHXWwRK2LQxdRYv@ashevche-desk.local>
-References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
- <20260602-ad5686-new-features-v1-9-691e01883d27@analog.com>
- <ah8roqGqZ_VhAPaa@ashevche-desk.local>
- <ylp2jf3wbojbwoozhow433vcvnz24ahvqlr35hhdoctm42rqqn@irrv3f76gr7k>
- <20260603135525.41331916@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aBbGtWqx"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-68f36e1663cso2203553a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 04 Jun 2026 13:08:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780603737; cv=none;
+        d=google.com; s=arc-20240605;
+        b=SH4nJoaAgnrRMscmUwcNXIudgU3Gzrj9tO+mio+xV9mFSMp/XqY8k+oLbYtinjysvs
+         kgspIr3MFbb5UaOEVWQ4Cq5XS/l6pc7iIttpI8tNQPnOg8zuvTCn6s6+rwIqqknE4GLU
+         QoFjpd6nxhjMhCNe6j15IQxDBhxtaVaw8ggx7aKIcu5Pczt0sHSuzOZCjteyWyPHRXBA
+         FIGw5WbAFfVbe32CfVLL5hl43Vt6Y3Ygzc3PKLnrtGiXzrvKdJ4+DVG6RzZPwKWpX2cB
+         e9yhz2JEF5iIyTiMuHJ4NDoHJmpZEfcYdh4riER04TQknLhsWw3A7EKzQDtaVeWXpRck
+         k3gA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=As6cI0xJmfFIjfcHLl2ewQP4QW4Lwd77NZvCltE72AE=;
+        fh=Ow1+uLNb/1fFPbdrD+Tt+GrShQIFgRMnDQ921d1ABkA=;
+        b=aW0GzyU9XJtgbGD4HiGt025eMZPZoq6ab05hVxv0jn1uDzh9M1qp5o5ey2dYf50Fuu
+         EUcpPQiju78uarM7r1Yuoiv/0rZfavLoUEmIbHmemVbQJ0YuNX5rN1Sdf4t9QoyXsvLF
+         hIqVTd+K4gHlXQqTtmDTGzUUqZkjdnOCWfnni59zkyBh3j+LlPgEofHVphYmv4aCWlJD
+         zmbqXi+VAvtM45IqXmz7eZpBMf2+E0odaCM8gAbUqWkdmih1Vbn9sPgO3DoY/QoFuDYq
+         64jOxuG5fkvyzSLmhX2+hvEpDgbh5LMmG2gMPK/Hdzuq1DsVmTP+pfjfJWPgp7xFd6BJ
+         mH4Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780603737; x=1781208537; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=As6cI0xJmfFIjfcHLl2ewQP4QW4Lwd77NZvCltE72AE=;
+        b=aBbGtWqxNApv6L8b6jEXXGjEEXu9VcssODPzo0iLQnd47adRhKKt3UlWrvpOjUwADw
+         InNGdaEkbxlHhN4BYGtWlCLM/EqNKSaegwVf+8KHrMEdIhsj+PY4nStCYDbtVZb03WTb
+         CzHST5Muhi+3P1GtvgNNIxMgobJ6VraLZa7VL55WOkC7Bi89E+O1XlH4SlLmVDM57OVj
+         qWPDfwo4AFmL3Dl4nl3FRq6JITxww3n+NMfHI204Iay4XtKIWLxVoSsFlBYf+Pcaja2s
+         axMKKDiL9Ib9Z3C9sMHQZ9XfCYh2yVSpnAa28penQSRvL/jlH12A0Yfe3ulkAr4hAGMu
+         7+DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780603737; x=1781208537;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=As6cI0xJmfFIjfcHLl2ewQP4QW4Lwd77NZvCltE72AE=;
+        b=qKtnTUt89m9UG9pFdv8iaGNexq1R5nlS/HXzprcppz1leQKl1w3dCH4ddBQhYlDjTq
+         u7JP+uPl5OwzI/NzP+89NVWVLDB7jHzx6VSQuHtWBLr1ZhzactVHonvRWWCigrNrX0w2
+         L1N9TJWq3vbPNkwWTazeQ/1aXjCa4sQKohnH7EMcaAMhgESe+qgFwiK0QKHl5u9/hk4i
+         6t2B51Tbmg5zJ8s44iuBy7bq1Nkl3/d+2HzkjrzzABqzNwkD6glUaIOB9hS7IyuQzQnO
+         DkSlWH1vGlrZFV1m7k9Rd0A2IX2Uml9gf7R9iwAMBb2bR30vdqbIkmA21hiVCKHGwCFV
+         uudw==
+X-Gm-Message-State: AOJu0YwfhSce0p2lEUCLYtu8M2efSp+4jo4bnDpsjhxQd2c3NhPAUt5q
+	XVg+kjQGAElZeOvj8l9hD4PIFgMfewLpIr7ltsEhJlQtBLAAmrDgSxLp5ZZ69mZ7jTWw7WvCzrr
+	0FnczXDdB59Fcs3sl6zUbEZp3z+1d1qk=
+X-Gm-Gg: Acq92OFSs2nfEfWAQtqj8q6xPOwx0fQEpwQ/MeVNzNisjlZJPjhcQszFsTs2xWTaZMM
+	QvlfNF9pAVXc7zrhTgdNn+uU5HLoLfe2S6ei/ZYb4pkBjak9rLwPhR2WX5+7CesE4FWC++gAFZ8
+	dXx34AKmyPy7QDwnHQdA7m5F6KVPCUVULxQe1IKfXf8wzssemW+wTSlXj4vosZQTvfZeTC6Uu5L
+	dqee46HqYqzZ6fUQAMN5v5z5o2LA6u6AXkABTrhbX/rAhECScVVt7RHw3Ox0ut5CIQj23Oxp3Kn
+	b6oJegMZ5akvFmZ89h1h9zOPf32ifv+/2bgM8ZhnmFtpZAwIaroL7GCmIpGlRjl8+8u+VavsJJK
+	xveMlCsTeEuAeDZHnAYkXBW7LokqSDfl79mtOmaEjRqCG3pkuVB2JMuG7oxcZ84582yIgIY7XAH
+	Vds9I=
+X-Received: by 2002:a17:907:c70f:b0:beb:2de3:1ba3 with SMTP id
+ a640c23a62f3a-bf370379589mr13347666b.2.1780603736721; Thu, 04 Jun 2026
+ 13:08:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260603135525.41331916@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260604120201.116925-1-vo.kratky@seznam.cz> <20260604120201.116925-7-vo.kratky@seznam.cz>
+In-Reply-To: <20260604120201.116925-7-vo.kratky@seznam.cz>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 4 Jun 2026 23:08:19 +0300
+X-Gm-Features: AVHnY4JXzP3mwf8Q3a9RtgDYoteo-Nofo0i6eByKjDXT41BcdfxJeNpLI0AyVLc
+Message-ID: <CAHp75VcKGfzQePh0TzsNBKPjHxr=ey8uO=4_+_oaioSNKkS8_A@mail.gmail.com>
+Subject: Re: [PATCH v2 06/11] iio: gyro: change from %ld to %pe for PTR_ERR() printing
+To: =?UTF-8?B?Vm9qdMSbY2ggS3LDoXRrw70=?= <vo.kratky@seznam.cz>
+Cc: linux-iio@vger.kernel.org, Rui Miguel Silva <rmfrfs@gmail.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 03, 2026 at 01:55:25PM +0100, Jonathan Cameron wrote:
-> On Wed, 3 Jun 2026 13:26:43 +0100
-> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > On 26/06/02 10:14PM, Andy Shevchenko wrote:
-> > > On Tue, Jun 02, 2026 at 05:33:56PM +0100, Rodrigo Alencar via B4 Relay wrote:
-> > >   
-> > > > Use of local SPI bus data to manage a collection of SPI transfers and
-> > > > flush them to the SPI platform driver with the sync() operation. This
-> > > > allows for faster handling of multiple channel DAC writes, avoiding kernel
-> > > > overhead per spi_sync() call, which will be helpful when enabling
-> > > > triggered buffer support.  
-> > > 
-> > > Why spi_message_alloc() can't be used instead of manual handling?
-> > > (Seems no current users, so you even can modify it for your needs.)  
-> > 
-> > I need to manually call spi_message_add_tail() to append messages.
-> > I suppose that such function is a bit weird and no wonder why it
-> > is not being used. struct spi_message_with_transfers might need
-> > to be properly declared so that users can populate the transfer
-> > array without manually moving pointers or having to redefine the type.
-> >  
-> Agreed it would be significant surgery. Perhaps worth it as a follow up
-> if you can find a couple of drivers open coding the equivalent.
-> 
-> Otherwise perhaps send a patch removing spi_message_alloc()
+On Thu, Jun 4, 2026 at 3:03=E2=80=AFPM Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kr=
+atky@seznam.cz> wrote:
+>
+> Replace numeric PTR_ERR() logging with the %pe format specifier
+> so that error values are printed in a more readable form.
+>
+> This change was identified using a Coccinelle semantic patch.
+>
+> No functional change intended.
 
-My experience with removing of dead code in SPI is that Mark is reluctant
-doing that. Maybe if somebody tries that  it will work this time.
+NAK (in this form). See below why.
+Also note, the same applies to the similar cases in all patches like this.
 
--- 
+...
+
+>         regmap =3D devm_regmap_init_i2c(i2c, &fxas21002c_regmap_i2c_conf)=
+;
+>         if (IS_ERR(regmap)) {
+> -               dev_err(&i2c->dev, "Failed to register i2c regmap: %ld\n"=
+,
+> -                       PTR_ERR(regmap));
+> +               dev_err(&i2c->dev, "Failed to register i2c regmap: %pe\n"=
+,
+> +                       regmap);
+>                 return PTR_ERR(regmap);
+
+This should be simply moved to dev_err_probe(). With that %pe will be
+implied. Also it will save the time to move to dev_err_probe()
+directly without any trampoline like this.
+
+>         }
+
+--=20
 With Best Regards,
 Andy Shevchenko
-
-
