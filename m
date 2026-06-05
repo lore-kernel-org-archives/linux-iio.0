@@ -1,145 +1,337 @@
-Received: from outbound2.mail.transip.nl (outbound2.mail.transip.nl [149.210.149.73])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5FF440E8C0;
-	Fri,  5 Jun 2026 13:18:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=149.210.149.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B40640E8CA;
+	Fri,  5 Jun 2026 13:24:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780665537; cv=none; b=UiJIapdWP0lZU5MMaB5mlJTowKDzDracyFVDTkYlBUMjXRV+XNnot5VZ+F2smPcQ44HdeG1isfjyFO+NzaO9/cU6K00OrYWFKRRxE4QYJV7sUuibJkd+jILv8u5Mwr6XWfgVZPIHwok54LTjp8WCY3KLBCBZCEdxRJFvfwNZHo8=
+	t=1780665877; cv=none; b=IwH21CnKbsU1Qs1BvJYRckdu/mIQvS/1aPbcN35YaTMFtkvchoFzO1AsRNCAr+SXU+MGdGEmC7o5W4ba+8SCvWlpNZGOUrZ4AiZk1FOcRtj/aQ+WPfOxx43lyL50SYVQm7UBDAM0vmlImWPrSWZcICX/qj1k1/b/yWYO5+RS2+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780665537; c=relaxed/simple;
-	bh=RwrbHH9+9wSryIYzjtFHFD7K/OAgolLTQNAo59cIB1A=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=EzzEoUgbmdWJS1lv0j3fzdY3E0BPd6ylA/gr0M6u+/0sIBejq1PURC/pZMFNQ7DY7Z3harB4NIAmDbb+she2sIBpKwEq9/1M9S/PUlpoEH6U7oQkOl2F3BhjaQ6t1p5WX/aBV8J4MQo6r5OSGJrQrdigZ0mAfrSBPRpi2QeqT5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=iuOBXaDG; arc=none smtp.client-ip=149.210.149.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1780665877; c=relaxed/simple;
+	bh=81bGJGQreABbs6uaEfo9pHlqGsQ0bs2mY0b1X4FH5nI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RIQIgW03Yl5eJUnDw03gNxQjvNh2G5+zSGpl8kUrDKfrXjusmYIiKCb+bhIoJPjt/e9z7nBfnxot7zXldPPI2sZaLwpgDW467mEHXW0mejDcIQikf91gg+4O1aXBNDtuIumgh75tzXDUEVQ4LG3uDoxV+cQ2pmCuMcC4zMMJOHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g1NWT3hq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="iuOBXaDG"
-Received: from submission14.mail.transip.nl (unknown [10.103.8.165])
-	by outbound2.mail.transip.nl (Postfix) with ESMTP id 4gX27l3ZG9zYdrq;
-	Fri,  5 Jun 2026 15:18:43 +0200 (CEST)
-Received: from transip.email (unknown [10.103.8.120])
-	by submission14.mail.transip.nl (Postfix) with ESMTPA id 4gX27j5kYqz3RgQtt;
-	Fri,  5 Jun 2026 15:18:41 +0200 (CEST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g1NWT3hq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF0C1F00893;
+	Fri,  5 Jun 2026 13:24:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1780665875;
+	bh=BpGvgb0hocl8EsAwIZPdM5eWYEjmlqOzZzO985F0TPM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=g1NWT3hq9XLZmVnInzDfdllEYebMKqXxuaqAbZZI4pmTxfpamNPIHNQWzjP1oadTy
+	 EEgiQMfzHJM3c9BVFlK4Z2lxI3sQcyHgKyfMsc+bl8bMpz7nW5rvZORnnoXMEYVtxn
+	 9u+ca7bNNTiFwZQY88YLXqDtqgiFNHfZbCmk7K6uu1VKRV0TYpOL3F8uU6D99qJgwF
+	 RJBZj0moC/KwvezgUf5t2rP9kmbzGgNmmZcHpPdhhjl0KzMc3zWDcHIIOFTCNh1o63
+	 kwigU/sdKnKkrOrTNXlhDD5j5k9+wV3K802JhrQ5PddlYHDBDLkfaO3mP1Mq8/lo3K
+	 9FXIDpAI99VEQ==
+Date: Fri, 5 Jun 2026 14:24:28 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Kim Seer Paller <kimseer.paller@analog.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux@analog.com>,
+ <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iio: dac: ad3530r: Add support for AD3532R/AD3532
+Message-ID: <20260605142428.5cd21b26@jic23-huawei>
+In-Reply-To: <20260604-iio-ad3532r-support-v1-3-c3552f9031de@analog.com>
+References: <20260604-iio-ad3532r-support-v1-0-c3552f9031de@analog.com>
+	<20260604-iio-ad3532r-support-v1-3-c3552f9031de@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Fri, 05 Jun 2026 15:18:41 +0200
-From: me@herrie.org
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Conor Dooley <conor@kernel.org>, Herman van Hazendonk
- <github.com@herrie.org>, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- tomasborquez13@gmail.com, masneyb@onstation.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: light: isl29018: add
- isil,cover-comp-gain
-Reply-To: github.com@herrie.org
-Mail-Reply-To: github.com@herrie.org
-In-Reply-To: <20260605140449.1d7538ee@jic23-huawei>
-References: <20260604100617.3486541-1-github.com@herrie.org>
- <20260604100617.3486541-3-github.com@herrie.org>
- <20260604-energy-lid-e7949164431a@spud>
- <20260605140449.1d7538ee@jic23-huawei>
-User-Agent: Webmail
-Message-ID: <b6919a62f06ad8e4e80232d9b2a0e706@herrie.org>
-X-Sender: me@herrie.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: ClueGetter at submission14.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780665523; h=from:reply-to:subject:to:
- cc:references:in-reply-to:date:mime-version:content-type;
- bh=09KWYWN3aDGlrvx5eZ+tQ7JdO5jM2Se3rJrxGagpMz8=;
- b=iuOBXaDGiRGXGJzsHc1qGmOqznJVr6hvFDmx4hCZUOdCIIIAsgq6MI4zq2KnGPtQ03O6Vi
- wdV+Hzk0jWaZOMDhsedGGatDEotRQQeQ4FB9Cp/iOOxiEUyeGzV1F3dld5vCyH7IViK0r3
- 2JKajZK5BYRC7e5iFddmqRI0B2u8rwNLStv8s+LGMIdVSN6rTcY4oDRLoXcbQl8NfZybWt
- QO/62GcfjM3qXJc2qg4ybqsmnSi0W3WQUKZYd9htvBpRGYfc9Byoy9JTxbUyDLbvwfeo6i
- 96yYwLze4e01yZ+y+cmMpNAGaK0xsN3ptYNAQMrwF3hnwLFQY97J7VPDy5u/Sg==
-X-Report-Abuse-To: abuse@transip.nl
 
-On 2026-06-05 15:04, Jonathan Cameron wrote:
-> On Thu, 4 Jun 2026 18:01:08 +0100
-> Conor Dooley <conor@kernel.org> wrote:
-> 
->> On Thu, Jun 04, 2026 at 12:06:16PM +0200, Herman van Hazendonk wrote:
->> > Document the new optional property that seeds the ISL29018 calibration
->> > scale factor at boot from firmware, allowing boards with tinted cover
->> > glass to ship with correct luminance readings without a userspace helper.
->> >
->> > The value is a positive integer (minimum 1, maximum 65535) that is
->> > multiplied with the raw lux reading.  Userspace can still override it
->> > at runtime through in_illuminance0_calibscale.
->> >
->> > Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
->> > ---
->> >  .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++++++++++
->> >  1 file changed, 13 insertions(+)
->> >
->> > diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
->> > index 0ea278b07d1c..92ea2742bbd3 100644
->> > --- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
->> > +++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
->> > @@ -34,6 +34,19 @@ properties:
->> >    vcc-supply:
->> >      description: Regulator that provides power to the sensor
->> >
->> > +  isil,cover-comp-gain:
->> > +    description: |
->> > +      Multiplier applied to the ambient-light reading at startup to
->> > +      compensate for optical loss in the board's cover glass. Boards
->> > +      that mount the sensor under a tinted or coated window typically
->> > +      need a value between a few and a few hundred.
-> 
-> Is it useful to support decimal points on these values?  The userspace 
-> interface
-> does and you mention the 'right' answer might be only a few which means 
-> precision
-> at that range will be terrible - less of an issue if 100s!
-> 
-> Thanks
-> 
-> Jonathan
-> 
-Hard to say, my old HP TouchPad needs 100 as a value here (taken from 
-legacy 2.6.35
-kernel and binaries). So we probably don't need precision, but I have no 
-other
-references to substantiate.
+On Thu, 4 Jun 2026 15:13:45 +0800
+Kim Seer Paller <kimseer.paller@analog.com> wrote:
 
-Thanks
-Herman
+> The AD3532R/AD3532 is a 16-channel, 16-bit voltage output DAC with a
+> dual-bank register architecture (bank 0 at 0x1000 for channels 0-7,
+> bank 1 at 0x3000 for channels 8-15).
 > 
+> Introduce a table-driven register bank approach: per-chip register
+> address arrays in chip_info are iterated by ad3530r_update_reg_banks()
+> and ad3530r_write_reg_banks() helpers. This replaces the single-register
+> setup calls for existing variants (AD3530R, AD3531R) and scales
+> naturally to the AD3532R's dual-bank layout without per-variant
+> conditionals in the setup path.
 > 
->> 
->> > The value seeds
->> > +      in_illuminance0_calibscale, so it can still be retuned at
->> > +      runtime through sysfs.
->> 
->> Delete this, driver implementation stuff isn't relevant to the
->> devicetree binding.
->> 
->> With that gone,
->> Acked-by: Conor Dooley <conor.dooley@microchip.com>
->> 
->> pw-bot: changes-requested
->> 
->> Cheers,
->> Conor.
->> 
->> > +    $ref: /schemas/types.yaml#/definitions/uint32
->> > +    minimum: 1
->> > +    maximum: 65535
->> > +    default: 1
->> > +
->> >  required:
->> >    - compatible
->> >    - reg
->> > --
->> > 2.43.0
->> >
+> Convert sw_ldac_trig_reg from a static register address to a function
+> pointer to handle the AD3532R's per-bank LDAC trigger registers.
+> 
+> Add AD3532R-specific powerdown modes (1kohm_to_gnd, 10kohm_to_gnd,
+> three_state) matching the OUTPUT_OPERATING_MODE register encoding, and
+> a dedicated ad3532r_set_dac_powerdown() using arithmetic channel-to-
+> register mapping for the 16-channel address space.
+> 
+> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+Hi
+
+Some minor stuff inline. Biggest thing is split the patch into:
+1) Patch that refactors existing code only
+2) Patch that adds new device support.
+
+Jonathan
+
+> diff --git a/drivers/iio/dac/ad3530r.c b/drivers/iio/dac/ad3530r.c
+> index d9db3226ecd6..2bdff438b2a0 100644
+> --- a/drivers/iio/dac/ad3530r.c
+> +++ b/drivers/iio/dac/ad3530r.c
+> @@ -2,6 +2,7 @@
+
+>  static ssize_t ad3530r_get_dac_powerdown(struct iio_dev *indio_dev,
+>  					 uintptr_t private,
+>  					 const struct iio_chan_spec *chan,
+> @@ -163,9 +209,9 @@ static ssize_t ad3530r_set_dac_powerdown(struct iio_dev *indio_dev,
+>  					 const char *buf, size_t len)
+>  {
+>  	struct ad3530r_state *st = iio_priv(indio_dev);
+> -	int ret;
+>  	unsigned int reg, pdmode, mask, val;
+>  	bool powerdown;
+> +	int ret;
+>  
+>  	ret = kstrtobool(buf, &powerdown);
+>  	if (ret)
+> @@ -190,6 +236,56 @@ static ssize_t ad3530r_set_dac_powerdown(struct iio_dev *indio_dev,
+>  	return len;
+>  }
+>  
+> +static ssize_t ad3532r_set_dac_powerdown(struct iio_dev *indio_dev,
+> +					 uintptr_t private,
+> +					 const struct iio_chan_spec *chan,
+> +					 const char *buf, size_t len)
+> +{
+> +	struct ad3530r_state *st = iio_priv(indio_dev);
+> +	unsigned int reg, pdmode, mask, val, local_ch;
+> +	bool powerdown;
+> +	int ret;
+> +
+> +	ret = kstrtobool(buf, &powerdown);
+> +	if (ret)
+> +		return ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +	local_ch = chan->channel % AD3530R_CH_PER_BANK;
+> +	reg = (chan->channel < AD3530R_CH_PER_BANK ? AD3532R_OUTPUT_OPERATING_MODE_0 :
+> +	       AD3532R_OUTPUT_OPERATING_MODE_2) + local_ch / AD3530R_CH_PER_REG;
+Wrap is rather hard to read.
+	reg = (chan->channel < AD3530R_CH_PER_BANK ? AD3532R_OUTPUT_OPERATING_MODE_0 :	
+	       AD3532R_OUTPUT_OPERATING_MODE_2) +
+	      local_ch / AD3530R_CH_PER_REG;
+helps a bit
+
+> +	mask = AD3530R_OP_MODE_CHAN_MSK(local_ch % AD3530R_CH_PER_REG);
+> +
+> +	pdmode = powerdown ? st->chan[chan->channel].powerdown_mode : 0;
+> +	val = field_prep(mask, pdmode);
+> +
+> +	ret = regmap_update_bits(st->regmap, reg, mask, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->chan[chan->channel].powerdown = powerdown;
+> +
+> +	return len;
+> +}
+
+> +static const struct ad3530r_chip_info ad3532_chip = {
+> +	.name = "ad3532",
+> +	.channels = ad3532r_channels,
+> +	.num_channels = ARRAY_SIZE(ad3532r_channels),
+> +	.sw_ldac_trig_reg = ad3532r_trigger_sw_ldac_reg,
+> +	.input_ch_reg = ad3532r_input_ch_reg,
+> +	.interface_config_a = ad3532r_if_config,
+> +	.output_control = ad3532r_out_ctrl,
+> +	.reference_control = ad3532r_ref_ctrl,
+> +	.op_mode = ad3532r_op_mode,
+> +	.num_banks = ARRAY_SIZE(ad3532r_if_config),
+> +	.num_op_mode_regs = ARRAY_SIZE(ad3532r_op_mode),
+> +	.internal_ref_support = false,
+> +};
+> +
+> +static const struct ad3530r_chip_info ad3532r_chip = {
+> +	.name = "ad3532r",
+> +	.channels = ad3532r_channels,
+> +	.num_channels = ARRAY_SIZE(ad3532r_channels),
+> +	.sw_ldac_trig_reg = ad3532r_trigger_sw_ldac_reg,
+> +	.input_ch_reg = ad3532r_input_ch_reg,
+> +	.interface_config_a = ad3532r_if_config,
+> +	.output_control = ad3532r_out_ctrl,
+> +	.reference_control = ad3532r_ref_ctrl,
+> +	.op_mode = ad3532r_op_mode,
+> +	.num_banks = ARRAY_SIZE(ad3532r_if_config),
+> +	.num_op_mode_regs = ARRAY_SIZE(ad3532r_op_mode),
+> +	.internal_ref_support = true,
+> +};
+
+As mentioned below - split patch into refactors but no new parts, then
+a patch just adding the new part support.
+
+> +
+> +static int ad3530r_update_reg_banks(const struct ad3530r_state *st,
+> +				    const unsigned int *regs,
+> +				    unsigned int num_regs,
+> +				    unsigned int mask, unsigned int val)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < num_regs; i++) {
+	for (unsigned int i...
+> +		ret = regmap_update_bits(st->regmap, regs[i], mask, val);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad3530r_write_reg_banks(const struct ad3530r_state *st,
+> +				   const unsigned int *regs,
+> +				   unsigned int num_regs,
+> +				   unsigned int val)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < num_regs; i++) {
+	for (unsigned int i = 0;
+> +		ret = regmap_write(st->regmap, regs[i], val);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  {
+> +	const struct ad3530r_chip_info *chip_info = st->chip_info;
+>  	struct device *dev = regmap_get_device(st->regmap);
+>  	struct gpio_desc *reset_gpio;
+> -	int i, ret;
+>  	u8 range_multiplier, val;
+> +	int i, ret;
+
+Not in this patch. If you want to tidy up existing code ordering separate patch.
+
+>  
+>  	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+>  	if (IS_ERR(reset_gpio))
+> @@ -384,9 +644,10 @@ static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  		fsleep(1 * USEC_PER_MSEC);
+>  		gpiod_set_value_cansleep(reset_gpio, 0);
+>  	} else {
+> -		/* Perform software reset */
+> -		ret = regmap_update_bits(st->regmap, AD3530R_INTERFACE_CONFIG_A,
+> -					 AD3530R_SW_RESET, AD3530R_SW_RESET);
+> +		ret = ad3530r_update_reg_banks(st, chip_info->interface_config_a,
+> +					       chip_info->num_banks,
+> +					       AD3530R_SW_RESET,
+> +					       AD3530R_SW_RESET);
+>  		if (ret)
+>  			return ret;
+>  	}
+> @@ -395,8 +656,10 @@ static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  
+>  	range_multiplier = 1;
+>  	if (device_property_read_bool(dev, "adi,range-double")) {
+> -		ret = regmap_set_bits(st->regmap, AD3530R_OUTPUT_CONTROL_0,
+> -				      AD3530R_OUTPUT_CONTROL_RANGE);
+> +		ret = ad3530r_update_reg_banks(st, chip_info->output_control,
+> +					       chip_info->num_banks,
+> +					       AD3530R_OUTPUT_CONTROL_RANGE,
+> +					       AD3530R_OUTPUT_CONTROL_RANGE);
+
+Maybe worth a helper for 
+ad3530r_set_reg_bank_bits() or something like that.
+
+>  		if (ret)
+>  			return ret;
+>  
+> @@ -406,8 +669,10 @@ static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  	if (external_vref_uV) {
+>  		st->vref_mV = range_multiplier * external_vref_uV / MILLI;
+>  	} else {
+> -		ret = regmap_set_bits(st->regmap, AD3530R_REFERENCE_CONTROL_0,
+> -				      AD3530R_REFERENCE_CONTROL_SEL);
+> +		ret = ad3530r_update_reg_banks(st, chip_info->reference_control,
+> +					       chip_info->num_banks,
+> +					       AD3530R_REFERENCE_CONTROL_SEL,
+> +					       AD3530R_REFERENCE_CONTROL_SEL);
+>  		if (ret)
+>  			return ret;
+>  
+> @@ -420,17 +685,11 @@ static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  	      FIELD_PREP(AD3530R_OP_MODE_CHAN_MSK(2), AD3530R_NORMAL_OP) |
+>  	      FIELD_PREP(AD3530R_OP_MODE_CHAN_MSK(3), AD3530R_NORMAL_OP);
+>  
+> -	ret = regmap_write(st->regmap, AD3530R_OUTPUT_OPERATING_MODE_0, val);
+> +	ret = ad3530r_write_reg_banks(st, st->chip_info->op_mode,
+> +				      st->chip_info->num_op_mode_regs, val);
+>  	if (ret)
+
+Given there is non trivial refactoring in here to make it easier to support the new
+device, the patch should be spilt.  Refactors and no new support in first patch
+so that we can just verify it does the same thing, then second patch adding new
+device support.
+
+>  		return ret;
+>  
+> -	if (st->chip_info->num_channels > 4) {
+> -		ret = regmap_write(st->regmap, AD3530R_OUTPUT_OPERATING_MODE_1,
+> -				   val);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>  	for (i = 0; i < st->chip_info->num_channels; i++)
+>  		st->chan[i].powerdown_mode = AD3530R_POWERDOWN_32K;
+>  
+> @@ -445,7 +704,7 @@ static int ad3530r_setup(struct ad3530r_state *st, int external_vref_uV)
+>  static const struct regmap_config ad3530r_regmap_config = {
+>  	.reg_bits = 16,
+>  	.val_bits = 8,
+> -	.max_register = AD3530R_MAX_REG_ADDR,
+> +	.max_register = AD3532R_MAX_REG_ADDR,
+
+What happens if we read off the end (via debugfs) for the smaller parts?
+
+>  };
+>  
+>  static const struct iio_info ad3530r_info = {
+> @@ -514,6 +773,8 @@ static const struct spi_device_id ad3530r_id[] = {
+>  	{ "ad3530r", (kernel_ulong_t)&ad3530r_chip },
+>  	{ "ad3531", (kernel_ulong_t)&ad3531_chip },
+>  	{ "ad3531r", (kernel_ulong_t)&ad3531r_chip },
+> +	{ "ad3532", (kernel_ulong_t)&ad3532_chip },
+> +	{ "ad3532r", (kernel_ulong_t)&ad3532r_chip },
+
+Add a precursor patch to switch this to named initializers. Otherwise
+this will clash with the work Uwe is doing to ensure these are all done that
+way.
+
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, ad3530r_id);
+> @@ -523,6 +784,8 @@ static const struct of_device_id ad3530r_of_match[] = {
+>  	{ .compatible = "adi,ad3530r", .data = &ad3530r_chip },
+>  	{ .compatible = "adi,ad3531", .data = &ad3531_chip },
+>  	{ .compatible = "adi,ad3531r", .data = &ad3531r_chip },
+> +	{ .compatible = "adi,ad3532", .data = &ad3532_chip },
+> +	{ .compatible = "adi,ad3532r", .data = &ad3532r_chip },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, ad3530r_of_match);
+> 
+
