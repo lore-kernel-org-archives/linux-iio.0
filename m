@@ -1,63 +1,63 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA554BC02C
-	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 09:10:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175B14C0401
+	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 09:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780650628; cv=none; b=gkLcDjJKFFuuSJgp5Xmw2nPDW/PKiQFV5nuWTvPrcGHUyY7RJPiGgtudCHvNAGHYqYZvUgkfzPLeZa+OvEwhOrsuZYWDgIpG0VWg19HQBSqPYsBMED/Vr0EJd3QKGpWIWOAnJqtaVyAm7T26F8mEFs2yi9XaPsFvQlrOcdeDQD0=
+	t=1780650632; cv=none; b=AoZ/U0x1bqhvTgpDeOHE0z9JkUweIA1hmHGdYe2XWGa5edTEpH5rsWgd28sRmneOn84ZEzkG3oNWuPltEOyOmbG7UoPmsfKu+yd0FYew89kFdTp6Jo5U5z//j8nhHjjJywSI634ApTjNdqWwhOlLPMD4TBrC15mEfUUhFp2rbUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780650628; c=relaxed/simple;
-	bh=cQOCyWEIALkdoLR3TrYUhtEyJOAoHDyTYq9GcxdQAAI=;
+	s=arc-20240116; t=1780650632; c=relaxed/simple;
+	bh=hAaX4OC0wXHk6GFCEy1dkXtnVAgO039C1INW5BJ2szk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fgecZrceClGt07Wxxy3cUD6k8agqw6PIP1QVHxFzPbQw129MeNpGJBZwAbSrytb6VdH4NJcCcjPBdJPteMJnurG3cWVYFwh7wMiSbIrNNn34TRPVZYFl3KqFFq5E0CrTvv219egNwuNUZA7vRunh4jJzEzgTtijexeFXjxKecVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HuAmDL/N; arc=none smtp.client-ip=209.85.167.51
+	 MIME-Version; b=PwJs7LXlmW9TONOlRLJVT52eHnFUgoMWJw/DsycSagjXJh6xOMNbyTOh8Q6swFSnigp73HpPlyq3+UKiKUHPpOkIDGBDctndJGN3uJ4z0oENJw9iUu4wo5fpKLhjtzWA5J4kYHeqreGhxgsyhq5FG+7MMmOt1m6nDL0f6/nDm0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oV4vJ/D1; arc=none smtp.client-ip=209.85.167.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HuAmDL/N"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aa7a7ad4d3so1370329e87.1
-        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 02:10:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oV4vJ/D1"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5aa5f11deb2so1854664e87.3
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 02:10:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780650626; x=1781255426; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780650629; x=1781255429; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=awNPDfMBLScbqNNAfmJZbvI6wRRhBZ6Yy/Wt1gz41bE=;
-        b=HuAmDL/Ng3heZ0WZ1Re4JxpincnKp0EIFGD2wRz+K5BCF6eMofxxyrKV2aAf4NWGLY
-         7VCZ+vgu/REuenqOokTHZ7Uj4AgxDtcVHUrqaiKr3juOvXp92LM+7rAn16RH1Zb5v+f/
-         H8UiHQKW4iiDZYYr25q4ao+PfNEk8pJIw3NccGc8nnuknSXsKmt0aOE/CRICLC2vOxrG
-         IAHbh/oV0al8wJTuFRQJOMzxBcj9APAV+kBT6qMaFRoKciBIL4+Sb7RVXAXVqOpbK/N7
-         UWrHCGNORC2Iqgn9snseqgMPJDKgMRAnyGWFIix5XtqCfXzgkF1cxaWFVGpq0HUkfZ7Q
-         a0Pw==
+        bh=DIoCcj2Kf6AY0n+CP4wwAAXAkuwxiGksEj0rioxN5Eg=;
+        b=oV4vJ/D1+jaQ5mZfpJUxKA/j+9+S0tkBUQZDl1Go0eV+epRK1XjOOs/do0BfHP2DHt
+         /sAbV3gb/Hvi7QBNaWtOd5wML7tfhsVdE4sduqRQWM5wakffEjFcaAe5rpPjWN+5lXj5
+         E85lSeki58Q3kxFCeApzyFNjDNbKFXfsw/DVFkUdP4P1kN17eIHAtwdFjZo965X1N3l7
+         q9e2ZMWfLEKmCQdjNxEM9VVR/CWom8emby1GSSMo6lU5ZgbLjGoTObVAQye9cMO31pF1
+         vliYAjT7rT6/MyoAbO3BmfOseY3LXwR37ws741qklKc6pgMnuSvgOy8wpQL+nYYV1/Q/
+         GW8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780650626; x=1781255426;
+        d=1e100.net; s=20251104; t=1780650629; x=1781255429;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=awNPDfMBLScbqNNAfmJZbvI6wRRhBZ6Yy/Wt1gz41bE=;
-        b=GYtgBU100ERv5RsbFL1bXhIGx6Ley9IuJTRTuH21orbMHP3n4zcm55uwBi5Ro87Bs4
-         lrvGqj4JHNoEL3vThyMIybqOGlBGI12bYHYEeY6UfKYkod7Qrv3CfDcM2jV0OAMS0jBf
-         Z9isaXFHpp93ScXwPeDIqsr2aVQV6gbD22oeAQ6WUEHK9FSTQsmQQ4oug7DIBmlxvKnM
-         1JxiWwH7bP0uTFM83cmoD0gr3zq8QssM9MSOr9kvWxpwnqxAKnlz5kq7IPTBP+BC9alQ
-         sTnRZPugNIFKXjeMwYFd3ikmg5RFmJmAgA+eglyhQiOM86XdYCvKuR0l38/w8XkhCYb0
-         yllg==
-X-Forwarded-Encrypted: i=1; AFNElJ8d4anXiToA9fdYQCpnmRnyrkA9WShtVtfyYQGsr345pW2i+WlhBTNqVzB65coAFjKt0Opa6s1nksA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwcrM7EkJFvSSjiFq1H6m+v/9pf54FunevAZpBNKlfKrJdCo8a0
-	21xvp29KzGp1aGSSEo3D/BfnGz25f/kozPy85MP3bjnJGLiYSotxKHJO
-X-Gm-Gg: Acq92OGo9veCh9ei2U7ZYdrxw9AJbZfqfNKu8Ioi4TbmMPyVabqJTxVXZa3A55pVbEs
-	hoZz0YzlGohWRy/gkz/nG+RbA04hhmpXd4CEaX2MfDRq8YeFTzakzPX3tSZjvgR5UXOBDpSiQbN
-	3sRvYYg+nUTE9VFbBYyO5b1ei4cCUGzNOerJQ1p9H3PGKyCwhRtNOqA6NLpPcDgWOGPkb3V6BbP
-	Lmn7Kii368bW36x+PsZ3K+PTrQlUIUdDetne/1o89LP/4gEW8d6n5tpV3d4kun0CLu3hVT6xkE8
-	XqnWyqLJDH/a0NjgJlfA34xA1qyFBRztXhxQuOHOMx5H+Nb6paVT7FvXxPUA0S0W1oEFP6dX+5O
-	c4sKFW4K53EMxWKIJEtIbcNVhfQYgyM/HUdyqSydxI1lcPei1rHBi8anmlETzO7UQvHgagI2xaa
-	VtsoFAh3nsTPce+hT++1lTLypGNqcj9cpp62QrPn+s26k=
-X-Received: by 2002:a05:6512:ad6:b0:5aa:671d:9966 with SMTP id 2adb3069b0e04-5aa87b40683mr814399e87.6.1780650625403;
-        Fri, 05 Jun 2026 02:10:25 -0700 (PDT)
+        bh=DIoCcj2Kf6AY0n+CP4wwAAXAkuwxiGksEj0rioxN5Eg=;
+        b=J+gPty5rlY2SFrKqMbKqgAAoQB4WVZ7QYzWj8e4+CHelVkwhr3NGE0iQ1moRwdGRjB
+         JZkJcDiW3SGtFo+xdDZEeFsIYCdlLdkNq7dHId7Nn2PMqrTSfS3llSiYHWccCnm2meST
+         JC29TUt8MI0mKWUIvnIp+0d60FRI2WKVEMK1QwIZ9+K8tuoBUFoq6yxGrZiOQ7m779i7
+         HzPxbVpEkgbuNVgdKv5CV1Ypwj8Rsgnj9swYKj7/YqgaLe4PhT/kLIL9k/oICkCgC0rh
+         UddpybGSUgHt7HRemyYA9vNoaJXOxYgLJbyC+QypPftbRbWcUPw5VSo3S0TH2DUz+EAK
+         8RfQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/VsDTylNurXtB6krIYZaDyB3e4DvIDd4TyqekOeqrAUJIDbDhl4ILb8hZGWLJUoVqZwCPVZoSKZWE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgBnbIIhfD+9hP8jsiAxVUXr50GSpnpq6jaGdYVgzZiYBpzpE3
+	Fc0Fcj7sJffr4YEW+wpLRA69PzHsRjgWBR1VzvmPplnCFnMQVC+3//wJ
+X-Gm-Gg: Acq92OE0iosht/Y2rvozVOn/2/neXds4KnJ7UhEKhpUB61nScaRw5Xc8sVv/v+K39x8
+	wvvjj7FxDt3s5rdR3m2QdsPbNZVXZKvWNHEOpx3JcR1FJFkzVS0c1pTUfksx9ZRseEByF+yb+By
+	aZA8HnqtO9MN8hrPtO016JjeEmSj2ubNRSYyisEjPQtNKcPf73c/bEkkDpGu1a9ej5VvPzfA1Ce
+	JEl6YMyCRiOdS7u2royYysEWCLEmBs+VFYOP6PiUiR7OqfNsytEVWsJmEilX4vD4q/UWvlD8y70
+	a6RgakfDDPQs5KIedaIX0wT7NhCz52QVorf8mV/UCdr2lkwamet813GByiJuH5mlo1nTyU7GluZ
+	FKtMdO21HzG4mHPcdsGhec4cOykGaqkXkt2n7Qoa/WDX7HxYYlCSPB9gwVfxNbFjM1z38NhBEgf
+	cKQ1ctOuFolE7ebCLfcLKZ3FA+XWSlYVViCwBmCUZPJZk=
+X-Received: by 2002:a05:6512:1513:20b0:5aa:6cfc:a208 with SMTP id 2adb3069b0e04-5aa87b73157mr557508e87.15.1780650629249;
+        Fri, 05 Jun 2026 02:10:29 -0700 (PDT)
 Received: from new-nest ([2a05:3580:f312:6c00:1b49:dfce:283c:7307])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa7b9903e9sm1705914e87.69.2026.06.05.02.10.24
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa7b9903e9sm1705914e87.69.2026.06.05.02.10.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2026 02:10:24 -0700 (PDT)
+        Fri, 05 Jun 2026 02:10:28 -0700 (PDT)
 From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
 To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -70,9 +70,9 @@ To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
 	Brian Masney <masneyb@onstation.org>,
 	Rob Herring <robh@kernel.org>
 Cc: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Subject: [PATCH v4 2/3] iio: imu: inv_mpu6050: use devres-enabled version of pm_runtime_enable()
-Date: Fri,  5 Jun 2026 12:09:39 +0300
-Message-ID: <20260605090940.1103750-3-andrej.skvortzov@gmail.com>
+Subject: [PATCH v4 3/3] iio: imu: inv_mpu6050: control vdd supply using devm-helpers
+Date: Fri,  5 Jun 2026 12:09:40 +0300
+Message-ID: <20260605090940.1103750-4-andrej.skvortzov@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260605090940.1103750-1-andrej.skvortzov@gmail.com>
 References: <20260605090940.1103750-1-andrej.skvortzov@gmail.com>
@@ -84,57 +84,89 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Usage of devm_pm_runtime_enable() allows to remove driver-specific
-action, that does the same as default action.
+vdd supply will be automatically disabled on error condition during a
+probe and on driver cleanup.
 
 Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
 ---
 
 Changes in v4:
- - update commit message to address Andy's comment
-   about functions, callbacks and runtime PM names
-
+ - no actual changes
+ 
 Changes in v3:
- - remove extra blank lines in "use devres-enabled version of pm_runtime_enable"
+ - no dead code in inv_mpu_core_disable_regulator_action anymore since st variable
+   is used to get 'struct device' now
 
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 23 ++++------------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  1 -
+ 2 files changed, 4 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 8c8b4f9a8ff63..6fd35ea5daabb 100644
+index 6fd35ea5daabb..c170efce7d31c 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -1874,13 +1874,6 @@ static void inv_mpu_core_disable_regulator_action(void *_data)
- 		inv_mpu_core_disable_regulator_vddio(st);
- }
- 
--static void inv_mpu_pm_disable(void *data)
--{
--	struct device *dev = data;
--
--	pm_runtime_disable(dev);
--}
--
- int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
+@@ -1863,12 +1863,6 @@ static void inv_mpu_core_disable_regulator_action(void *_data)
  {
-@@ -2023,13 +2016,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 
- 	/* chip init is done, turning on runtime power management */
- 	pm_runtime_get_noresume(dev);
--	pm_runtime_enable(dev);
-+	result = devm_pm_runtime_enable(dev);
-+	if (result)
-+		return result;
- 	pm_runtime_set_autosuspend_delay(dev, INV_MPU6050_SUSPEND_DELAY_MS);
- 	pm_runtime_use_autosuspend(dev);
- 	pm_runtime_put(dev);
--	result = devm_add_action_or_reset(dev, inv_mpu_pm_disable, dev);
+ 	struct inv_mpu6050_state *st = _data;
+ 	struct device *dev = regmap_get_device(st->map);
+-	int result;
+-
+-	result = regulator_disable(st->vdd_supply);
 -	if (result)
--		return result;
+-		dev_err(regmap_get_device(st->map),
+-			"Failed to disable vdd regulator: %d\n", result);
  
- 	switch (chip_type) {
- 	case INV_MPU6000:
+ 	if (!pm_runtime_status_suspended(dev))
+ 		inv_mpu_core_disable_regulator_vddio(st);
+@@ -1948,21 +1942,14 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 
+ 	device_set_wakeup_capable(dev, true);
+ 
+-	st->vdd_supply = devm_regulator_get(dev, "vdd");
+-	if (IS_ERR(st->vdd_supply))
+-		return dev_err_probe(dev, PTR_ERR(st->vdd_supply),
+-				     "Failed to get vdd regulator\n");
+-
+ 	st->vddio_supply = devm_regulator_get(dev, "vddio");
+ 	if (IS_ERR(st->vddio_supply))
+ 		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
+ 				     "Failed to get vddio regulator\n");
+ 
+-	result = regulator_enable(st->vdd_supply);
+-	if (result) {
+-		dev_err(dev, "Failed to enable vdd regulator: %d\n", result);
+-		return result;
+-	}
++	result = devm_regulator_get_enable(dev, "vdd");
++	if (result)
++		return dev_err_probe(dev, result, "Failed to enable vdd regulator\n");
+ 	msleep(INV_MPU6050_POWER_UP_TIME);
+ 
+ 	/* set pm_runtime active early for disable vddio resource cleanup */
+@@ -1971,10 +1958,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		return result;
+ 
+ 	result = inv_mpu_core_enable_regulator_vddio(st);
+-	if (result) {
+-		regulator_disable(st->vdd_supply);
++	if (result)
+ 		return result;
+-	}
+ 
+ 	result = devm_add_action_or_reset(dev, inv_mpu_core_disable_regulator_action,
+ 				 st);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 6239b1a803f77..2c0cf53c9a627 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -206,7 +206,6 @@ struct inv_mpu6050_state {
+ 	u8 irq_mask;
+ 	unsigned skip_samples;
+ 	struct inv_sensors_timestamp timestamp;
+-	struct regulator *vdd_supply;
+ 	struct regulator *vddio_supply;
+ 	bool magn_disabled;
+ 	s32 magn_raw_to_gauss[3];
 -- 
 2.53.0
 
