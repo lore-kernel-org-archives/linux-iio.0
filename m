@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78E7336CDFD;
-	Fri,  5 Jun 2026 17:47:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB2E3377563;
+	Fri,  5 Jun 2026 17:52:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780681666; cv=none; b=muoZbDE73BYO+l6amg6ez3L7AHy3tPUXp4XZhmkIqnjVgNLCMlpiTNuzznfnkVZEQjuYxHDC8LgbkvyxNcgdZfx2toTXeNdPLFcd+H1vGwIO91+el6stDgfa5g/etOcysw4AWwdCZiyAO9gXCZQAkrcHiSWY7+UqzxytrNCLzxM=
+	t=1780681944; cv=none; b=aMb4S/yQh8mDXh8S5JIw0S1HZjtf7F4PZWIPamTaE555Dh0Eqnk3f/sb+C56trnRta+Po25TS2sQvFmNPkSbJYdw3enq1OjhdG/wnHZn5N1+qSV3z2KcueN92yVrX7V0xElJcsH6rWYfWwyqbgqnE0q7KMbQMFkmOZPu+KnpUDI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780681666; c=relaxed/simple;
-	bh=iFckiDNyiON/IdX8+g1901W3jvIFJdYTVUDj1qnv3i0=;
+	s=arc-20240116; t=1780681944; c=relaxed/simple;
+	bh=UP95N0DlzO2m6BFHxSdTVRvxptLOM2N2fHvS+eCzIcA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DWyljVrG9kLYDCFORC58ZfdpXPKk9r38FQHhRh6kp2UP9oyIVZoUIANy9VJAOg2KzqvlwwV5K6D3fhGuEmfyhG7bsqjSIbyt+B0DAeGHA4SrSPxmjB/NAyM4VLIieggOQ2QlvA3uislJbHhRE/Tfz75hKhZUy1ye2JpWqQseXhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WTWF5eFb; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=H4fKWm4+65Rh7W3NQ81PRDrw45yhs8C1ZeRxmyYIQI5tzf7gCpKtN51bjGp7zj1oDjek7Z2X9ksvH/zclgOJjpLYzlvP8Euzr5Tu1c+bMlHEwUK1/vC1F0i15R2VQcuF/wriRXyunFTRIiy0O07j7qBG7fjbqLDAsHfGTEuaJjo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hk+M56vZ; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WTWF5eFb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hk+M56vZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780681662; x=1812217662;
+  t=1780681940; x=1812217940;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=iFckiDNyiON/IdX8+g1901W3jvIFJdYTVUDj1qnv3i0=;
-  b=WTWF5eFb3orCyfqi0ez3nAHKZgp5dEmkF+7f5b6ZmXaDF3DGmaw1fsDw
-   wh+kcMAlfKFk/5cL0t7RdWWjEw5VDtpuuzc47JSvosTK+BQwJ2aiBIMGp
-   AmENPrNla7CuJjkPejXPxj98SJ7bvCUbPjomOfeLOa07dshY0V//cE/Xp
-   4Q82y0mV9SPgmuQLtfDdX0A1exT6Rqevsyo6vTeBJxAy+NlOpuDrKocQi
-   DjIQ0WKoaBT3ZtRD6ZflQ211J9PZlGbxtZ2leBr0tpsRAU/wgLQrqTYnd
-   SODYk7erfO/ZvHy+GJt9IwRY/T1l5VlIcnHJzg9nhoQQTcenFOAoG0Z/5
-   Q==;
-X-CSE-ConnectionGUID: hvhuhM7hR6GxzpqOftcpKA==
-X-CSE-MsgGUID: MJl/FEGjSM+ewpQ0ND1IGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="81377348"
+   mime-version:in-reply-to;
+  bh=UP95N0DlzO2m6BFHxSdTVRvxptLOM2N2fHvS+eCzIcA=;
+  b=hk+M56vZySU8CGZJ6SVSN8ymCSQLqsZuREbbFIndkwvTYtlUFpvPlHSg
+   Ccna46gOV3HZ71/mOgLYgNUdhmsDVowHzso9Ug3yWb5q0EU86/ps/kkIs
+   saK5PsNDNAdxpvWhABt5ZsMb0qGon0iyZy7DUH0OrAHoLZ0dohiUgLb06
+   A/FAhCJnPa1dNMXsb0pM03um0EXGQ07W+1WsTs5sySTNv86DiO7g2+57q
+   q7/zIxqrA7Y3ir5WWDjF78/6Z0vkwpGWFwxzlcd6Ex/7kxNSlGt3a43i7
+   Y3ctXPKOeR9g1AluwH4iqg1Pe400L2AN9mkQmHP66oainrVCLwTmvsSZR
+   w==;
+X-CSE-ConnectionGUID: 3Dj6T6g7TXO2I2EjsYClDQ==
+X-CSE-MsgGUID: 8vQj4DjaTi28zFgzrl9AQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="92089615"
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="81377348"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 10:47:42 -0700
-X-CSE-ConnectionGUID: t19rByvZRkmt7/IH2dhyVg==
-X-CSE-MsgGUID: zQ0/xsGPSkqtoUGd0PEupA==
+   d="scan'208";a="92089615"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 10:52:19 -0700
+X-CSE-ConnectionGUID: tKKG8e4VQsa7InrUwgs+Aw==
+X-CSE-MsgGUID: 4nes/u9/TSe792NXfEUjwg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="240449450"
+   d="scan'208";a="245024817"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 10:47:38 -0700
-Date: Fri, 5 Jun 2026 20:47:36 +0300
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 10:52:15 -0700
+Date: Fri, 5 Jun 2026 20:52:13 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Herman van Hazendonk <github.com@herrie.org>
 Cc: jic23@kernel.org, linusw@kernel.org, denis.ciocca@st.com,
@@ -52,126 +52,120 @@ Cc: jic23@kernel.org, linusw@kernel.org, denis.ciocca@st.com,
 	sanjayembeddedse@gmail.com, maudspierings@gocontroll.com,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: common: st_sensors: honour channel endianness
- in read_axis_data
-Message-ID: <aiMLuIlRPHXuj3cH@ashevche-desk.local>
+Subject: Re: [PATCH 3/3] iio: magnetometer: st_magn: honour st,fullscale-mg
+ DT property
+Message-ID: <aiMMzSf8-C9fTlWW@ashevche-desk.local>
 References: <cover.1780652883.git.github.com@herrie.org>
- <0dac8e8e2872dc180b138923b5cd4fd18eee047b.1780652883.git.github.com@herrie.org>
+ <a8b63f5997700aba85883816a5d7520dcb28a96d.1780652883.git.github.com@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0dac8e8e2872dc180b138923b5cd4fd18eee047b.1780652883.git.github.com@herrie.org>
+In-Reply-To: <a8b63f5997700aba85883816a5d7520dcb28a96d.1780652883.git.github.com@herrie.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jun 05, 2026 at 12:08:41PM +0200, Herman van Hazendonk wrote:
-> st_sensors_read_axis_data() unconditionally decoded multi-byte
-> results with get_unaligned_le16() / get_unaligned_le24() regardless
-> of the channel's declared scan_type.endianness.
+On Fri, Jun 05, 2026 at 12:08:43PM +0200, Herman van Hazendonk wrote:
+> The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
+> highest-sensitivity full-scale supported by the chip -- as the
+> starting range. For the LSM303DLH that is +/-1.3 G; for the
+> LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
 > 
-> For every ST sensor that has used this helper since it was introduced
-> this happened to be fine because the ST IMU/accel/gyro/pressure
-> families publish their data registers as little-endian and the
-> channel specs in those drivers declare IIO_LE accordingly.
+> That is the right default for "minimal noise floor at a desk", but
+> it leaves no margin for boards that pick up appreciable DC bias from
+> nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
+> LSM303DLH magnetometer is mounted close enough to the surrounding
+> power planes that X reads back as the chip's 0xF000 overflow
+> sentinel (== -4096 raw, the value the chip publishes when the ADC
+> saturates) on every sample at the chip-default range, while Y and Z
+> fall well within the +/-1.3 G window.
 > 
-> The LSM303DLH magnetometer however publishes its X/Y/Z output as a
-> pair of big-endian bytes (the H register sits at the lower address,
-> 0x03/0x05/0x07, and the L register immediately after), and its
-> channel specs in st_magn_core.c correctly declare IIO_BE -- but
-> read_axis_data() ignored that and decoded as little-endian, swapping
-> the high and low bytes of every magnetometer sample.
+> Parse the st,fullscale-mg device-tree property (documented separately
+> in dt-bindings/iio/st,st-sensors.yaml) in the magnetometer common
+> probe to select the initial fs_avl entry by its mg value. The driver
+> tolerates an unknown / unsupported value by falling back to the chip
+> default and warning, so the property is purely additive -- existing
+> in-tree DTSes are unaffected.
 > 
-> The bug is most visible on a stationary chip: in earth's field the
-> true X reading is small and the high byte sits at 0x00, so swapping
-> the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
-> = 240). Y and Z still appear "to vary" because their magnitudes are
-> larger and the noise in the low byte produces big swings in the
-> swapped high byte:
+> Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
+> LSM303DLH the valid values are 1300, 1900, 2500, 4000, 4700, 5600
+> and 8100; for LSM303DLHC they are 1300, 1900, 2500, 4000, 4700, 5600,
+> 8100 (same code path); for LIS3MDL they are 4000, 8000, 12000, 16000;
+> and so on. Sensors with a fixed full-scale (fs.addr == 0) simply
+> ignore the property.
 > 
->   before (chip flat, sysfs in_magn_*_raw):
->       X=240 (stuck), Y= 12032..23296, Z=-16128..-9728
+> Empirical scale sweep on the HP TouchPad confirmed that on this
+> board any fs_avl >= 1 produces non-saturated X readings:
 > 
->   after (direct i2c-dev big-endian decode, same chip same orientation):
->       X≈-4096, Y≈210, Z≈80     (sensible values reflecting earth's
->                                 ambient field at low gauss range)
+>     scale (0.001 G/LSB)  | X raw    Y raw    Z raw
+>     --------------------+-------------------------------
+>             1.100        | -4096    44       46    (X saturated)
+>             0.855        |  -547    37       37    (clean)
+>             0.670        |  -433    94      103    (clean)
+>             0.450        |  -266    44       71    (clean)
+>             0.400        |  -235    34       65    (clean)
+>             0.330        |  -196    27       56    (clean)
+>             0.230        |  -145    15       40    (clean)
 > 
-> Fix read_axis_data() to dispatch on ch->scan_type.endianness and
-> call get_unaligned_be16() / get_unaligned_be24() when the channel
-> declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
-> st_pressure, st_lsm6dsx and others) are unaffected because their
-> channel specs already declare IIO_LE and the LE path is unchanged.
+> 2500 mg is the natural choice for tenderloin: comfortably outside
+> the saturation regime while keeping useful precision for compass
+> applications.
 
 ...
 
-> -	if (byte_for_channel == 1)
-> +	if (byte_for_channel == 1) {
->  		*data = (s8)*outdata;
+> +	{
 
-Maybe for the consistency's sake use sign_extend32() everywhere?
+Oh, no. Use
 
-> +	} else if (byte_for_channel == 2) {
-> +		if (ch->scan_type.endianness == IIO_BE)
-> +			*data = (s16)get_unaligned_be16(outdata);
-> +		else
-> +			*data = (s16)get_unaligned_le16(outdata);
-> +	} else if (byte_for_channel == 3) {
-> +		if (ch->scan_type.endianness == IIO_BE)
-> +			*data = (s32)sign_extend32(get_unaligned_be24(outdata),
-> +						   23);
-> +		else
-> +			*data = (s32)sign_extend32(get_unaligned_le24(outdata),
-> +						   23);
-
-Why do you need casting here? sign_extend32() should return signed type.
-With this being addressed, you can make them one-liners.
-
-> +	}
-
-	u32 tmp;
+	const char *propname;
 	...
-	if (byte_for_channel == 1) {
-		// this way is done to show the below variant
-		tmp = *outdata;
-		*data = sign_extend32(tmp, 7);
-	} else if (byte_for_channel == 2) {
-		if (ch->scan_type.endianness == IIO_BE)
-			tmp = get_unaligned_be16(outdata);
-		else
-			tmp = get_unaligned_le16(outdata);
-		*data = sign_extend32(tmp, 15);
-	} else if (byte_for_channel == 3) {
-		if (ch->scan_type.endianness == IIO_BE)
-			tmp = get_unaligned_be24(outdata);
-		else
-			tmp = get_unaligned_le24(outdata);
-		*data = sign_extend32(tmp, 23);
+	propname = "st,fullscale-mg";
+	if (device_property_present(..., propname)) {
+		struct st_sensor_fullscale *fs = &mdata->sensor_settings->fs;
+		u32 fs_mg;
+
+		ret = device_property_read_u32(parent, propname, &fs_mg);
+		if (ret)
+			return ret;
+
+		...
 	}
 
-Or even
+instead.
 
-	if (byte_for_channel == 1) {
-		tmp = *outdata;
-	} else if (byte_for_channel == 2) {
-		if (ch->scan_type.endianness == IIO_BE)
-			tmp = get_unaligned_be16(outdata);
-		else
-			tmp = get_unaligned_le16(outdata);
-	} else if (byte_for_channel == 3) {
-		if (ch->scan_type.endianness == IIO_BE)
-			tmp = get_unaligned_be24(outdata);
-		else
-			tmp = get_unaligned_le24(outdata);
-	} else {
-		...error...
-	}
-	*data = sign_extend32(tmp, BYTES_TO_BITS(byte_for_channel) - 1);
+> +		u32 fs_mg;
 
+> +		if (!device_property_read_u32(parent, "st,fullscale-mg",
+> +					      &fs_mg)) {
+> +			struct st_sensor_fullscale *fs =
+> +				&mdata->sensor_settings->fs;
+> +			int i;
+> +
+> +			for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+> +				if (!fs->fs_avl[i].num)
+> +					break;
+
+This is strange. What's the point to go via the whole table? Does it have gaps?
+
+> +				if (fs->fs_avl[i].num == fs_mg) {
+> +					mdata->current_fullscale =
+> +						&fs->fs_avl[i];
+> +					break;
+> +				}
+> +			}
+> +			if (mdata->current_fullscale->num != fs_mg)
+> +				dev_warn(parent,
+> +					 "st,fullscale-mg=%u not supported, using %u\n",
+
+Also use %s and propname.
+
+> +					 fs_mg, mdata->current_fullscale->num);
+> +		}
+> +	}
 
 -- 
 With Best Regards,
