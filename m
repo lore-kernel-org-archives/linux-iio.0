@@ -1,91 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C442128725B;
-	Fri,  5 Jun 2026 18:08:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B34315793;
+	Fri,  5 Jun 2026 18:10:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780682919; cv=none; b=XJ4/jKO/Sx10TwaLSX7ZcibZqYbcHJZl66H9n29HAH7c9JVlOFZLVLvjgMjiFRgqnL2tl+8DVFNX3sFJhGOi8kVHVJjYX5ezSKa98O//dtADj0r9DhIpvzU/WvG4ZdDF2c9Z0NMSfMfc/z+BiI5DK52JJJsytpUrBsziVxKbkdo=
+	t=1780683029; cv=none; b=My+Evqd/F6+l9aFNZj0x7NPdOUdVhFcUZ5uPV5Mwx6Yj5DLldmONxTMF++Cw3xVdchRFPadYPrVNozkeJRtxWH/iXfLaR/p3z80nc3O43AaLp8TQYIDwqlgiYuHDp2nAVy2HGnBil754Fid6Q/H4wDd1Hp72l7RO4xFs8UAT8tM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780682919; c=relaxed/simple;
-	bh=2+brnzUx990MOInGWsL6ZxNrK90ERrXAKzKSiSYXsPw=;
+	s=arc-20240116; t=1780683029; c=relaxed/simple;
+	bh=CqVj0C/PESAXUez0gzJ4cJi3BxzrPb7V5KZtA6FXslY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z6Yu9a5cbZZWhxMax+LJyvFD7G4RYWsLRMoAvwYbArvuKA2Vpufmtw4jnKLdwcWxeyQU4lnBuIQiv5WNtsuu2pW0AlDQmmdRnnX3E9LOzEkQNCkTTNtKl+OPBNwXiffR9lRzmXtRM7/q9Kjwap2+KmA4hJb13+WI8trEolB6riM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SGmG13yi; arc=none smtp.client-ip=192.198.163.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=JFHxoop49kwdQIV0KpqnsGAxyRBgZpXxax6TpoTnrkRxBm6pLNtlJuqe12nqZX2sfHYagsJkCtTRKub3IZBCyyzZAFIP68ipS78MoTuvrdCGiAT2NPpJIFlx50FwyKlhd+F4hpNOUqPYYAn2HhnYGD+P7sm+q+QssPkmsvp0TFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fufdefqs; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SGmG13yi"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fufdefqs"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780682918; x=1812218918;
+  t=1780683029; x=1812219029;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=2+brnzUx990MOInGWsL6ZxNrK90ERrXAKzKSiSYXsPw=;
-  b=SGmG13yi5ICaHrNhVW0XS4A+9VKTqsLLt9t5aOEl0J+xMNH+FXj6RXT2
-   4PFKxagC40PygNd4w1KRBF+/naQfpdm2K9O8Axo7iQXMRsMDqLETtM4sk
-   qkSK0OZ3H4DLS7BW0yTSDDrfqb2T5oOZgIze7DNF/qFxsy1PMmyavW83P
-   4GN3ETqSibUSNXvlRWBtDfYZpQfkxzyr4DfChJluLu9HwHgJVD8QNR0z1
-   bI9Oyhz5HaXloYx1PSpe2XMUQzQTTKDji0Jb9qfQcutc75ZfdjRIMjqiR
-   RSYCetZocdKsOe4NfywFLsY4JzhG6vIxWQ8n1/OBQGJcVC8L+2uM+XZUh
-   w==;
-X-CSE-ConnectionGUID: o9PSHtK3S36Ym5axgKn9+Q==
-X-CSE-MsgGUID: GE54KMuDTbyT/HzsWrXVgQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="80555507"
+   mime-version:in-reply-to;
+  bh=CqVj0C/PESAXUez0gzJ4cJi3BxzrPb7V5KZtA6FXslY=;
+  b=FufdefqsaaT2lnpqJJu3CueQh4OYD5a/LKLxCThhR+M4aTfQ/tE6/MEW
+   Yp5amEmFqwYKe5d0Q2fMFwUGl4LVIv705D2vUExCNIFDJ0K7qDGZBcqgA
+   wBtfjIxZxWBdOVT2VcLmdnY8uoroyazlGirkSi4J6W4daLa2cJ20QUDYT
+   m6kmE0MQJBcp5WCrlh4+2ZYW6RTDQCrlI04G73hwgFKptmuuJ7BHoUFVn
+   NNi1YIYnMg9bax73jckrU+EhpUdF5zbOvoKCR+EDrne7mkGgO0xusBGsl
+   pr9pm88tmYayOyP2bbHmEkAjcRxD7BzQtWB+oT5LPwfPSw1tSHxUBvmQr
+   g==;
+X-CSE-ConnectionGUID: ugyAnoZpRzSO9iYMRGJgDg==
+X-CSE-MsgGUID: BAYuhhfKTtKcYNs0CsXEYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="85141904"
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="80555507"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:08:37 -0700
-X-CSE-ConnectionGUID: VodKQM33QyCJKHA7Nq4egQ==
-X-CSE-MsgGUID: DA8IULWcTiShoZurc3E7Gw==
+   d="scan'208";a="85141904"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:10:29 -0700
+X-CSE-ConnectionGUID: QUVxgwSVQ7+LWmRqO/Rgeg==
+X-CSE-MsgGUID: NVRTWpl9SgegVwalg9Vy9g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="268590591"
+   d="scan'208";a="282992143"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:08:34 -0700
-Date: Fri, 5 Jun 2026 21:08:32 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:10:26 -0700
+Date: Fri, 5 Jun 2026 21:10:23 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Rishi Gupta <gupt21@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+To: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, ~lkcamp/patches@lists.sr.ht,
+	linux-kernel-mentees@lists.linux.dev, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] iio: light: add support for veml6031x00 ALS series
-Message-ID: <aiMQoKociwhOUDvJ@ashevche-desk.local>
-References: <20260524-veml6031x00-v3-0-29165609b2b5@gmail.com>
- <20260524-veml6031x00-v3-2-29165609b2b5@gmail.com>
- <20260526185933.0084679f@jic23-huawei>
- <aiMPJ9Qqcg7XTJt0@ashevche-desk.local>
+Subject: Re: [PATCH v4 2/2] iio: adc: spear_adc: align headers with IWYU
+ principle
+Message-ID: <aiMRDwzwh6zXaHo_@ashevche-desk.local>
+References: <20260527014058.35265-1-rodrigo.gobbi.7@gmail.com>
+ <20260527014058.35265-3-rodrigo.gobbi.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aiMPJ9Qqcg7XTJt0@ashevche-desk.local>
+In-Reply-To: <20260527014058.35265-3-rodrigo.gobbi.7@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jun 05, 2026 at 09:02:22PM +0300, Andy Shevchenko wrote:
-> On Tue, May 26, 2026 at 06:59:33PM +0100, Jonathan Cameron wrote:
-> > On Sun, 24 May 2026 23:53:56 +0200
-> > Javier Carrasco <javier.carrasco.cruz@gmail.com> wrote:
+On Tue, May 26, 2026 at 10:36:40PM -0300, Rodrigo Gobbi wrote:
+> Remove unused includes and add what is being used:
+> 
+> #include <linux/array_size.h> // for ARRAY_SIZE
+> #include <linux/bits.h>  // for GENMASKxx
+> #include <linux/dev_printk.h> // for dev_err_probe, dev_info
+> #include <linux/math.h>  // for DIV_ROUND_UP
+> #include <linux/mutex.h> // for struct mutex
+> #include <linux/types.h> // for uXX definitions
 
-...
+> #include <linux/iio/types.h> // for IIO_CHAN_INFO_*
 
-> I have a déjà vu that I have given already same comments.
-> Why are they not addressed?
-
-Okay, it's v3, I reviewed already v4.
+I guess we tend to avoid including this one as long as iio/iio.h is included.
 
 -- 
 With Best Regards,
