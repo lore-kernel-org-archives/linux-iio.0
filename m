@@ -1,26 +1,25 @@
-Received: from outbound1.mail.transip.nl (outbound1.mail.transip.nl [149.210.149.72])
+Received: from outbound8.mail.transip.nl (outbound8.mail.transip.nl [136.144.136.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEB9E378D9C;
-	Fri,  5 Jun 2026 10:08:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=149.210.149.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68F923D8137;
+	Fri,  5 Jun 2026 10:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780654134; cv=none; b=uWUZ/k8AA7Ee7ZMIf6Ki39Xq0IkQIiEq4wsBPSH6MGL9vOR4OI4hlIz2n7Hmksi6K+HKvZPbQI6Wu7iPPyT6Hb19KovpqKQ8FS9mOSfC8BwsxmJNdYNCHOJrftGfSHNJGiEvZQEsSOzM2PORzOsWFF88i1xKA+mnJqVsB/lMrAM=
+	t=1780654139; cv=none; b=EPWiGS+/Bz7daDAhqt/13Gosygfv5HoKOnNkhotZGXmoKcoCYvc5y3OAmV6fCIgVIYTpskMaA29eq+ib96MyEf0hP3JHexlrzBt9C+6HQYtzCugadk0v0ATFptuaDfZHuFrMdvv2lawkhFCNSNKylcuXQUAZNDDfN/IhVaOGbE8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780654134; c=relaxed/simple;
-	bh=vIJDzY22/pR5PVFHnxAxJReqIhW7CHx+PE8fszsXqVM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hriyuNiJnn71v686QbyuBRLH141MejwNbF5oork4/2avCYsEDVZaOOAQzZ3Y0R3RcoLe6BlsAyECuTcDdohs2TF8qkeHE13kmxVf/KWDNZmItz4r3hZJYzLUy0AxI/qtgYo/uw7LowfvHf6F//6sppOX9rRCY5F4sky2dJ3zoLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=C5oTZjrc; arc=none smtp.client-ip=149.210.149.72
+	s=arc-20240116; t=1780654139; c=relaxed/simple;
+	bh=O0r39KWtJcvvr6HrSfODHfJ63Zbmr6L7WBKTJfoeZCk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FAV3QR24KHHUOjFhL6UHWy6+mn+q6bv2kZFRIkSuaLK6b+tRsJmz7WfBCTM24VfYUIRmO20w4uI15B/V4xdVi5/2x9BUM40h0chuJK6ekm7X3YE3TbBc5ot6i39dcLP30mnQVr6jzyamMlqGq5ury8qn6oldU9Nt5L3vcXnfY+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=sEPXu05Q; arc=none smtp.client-ip=136.144.136.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="C5oTZjrc"
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="sEPXu05Q"
 Received: from submission4.mail.transip.nl (unknown [10.103.8.155])
-	by outbound1.mail.transip.nl (Postfix) with ESMTP id 4gWxwY4SbvzRj3L;
-	Fri,  5 Jun 2026 12:08:45 +0200 (CEST)
+	by outbound8.mail.transip.nl (Postfix) with ESMTP id 4gWxwX6hpkzY76h8;
+	Fri,  5 Jun 2026 12:08:44 +0200 (CEST)
 Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission4.mail.transip.nl (Postfix) with ESMTPA id 4gWxwX6rLzz3R3p02;
+	by submission4.mail.transip.nl (Postfix) with ESMTPA id 4gWxwX28h9z3R3p03;
 	Fri,  5 Jun 2026 12:08:44 +0200 (CEST)
 From: Herman van Hazendonk <github.com@herrie.org>
 To: jic23@kernel.org,
@@ -38,12 +37,10 @@ Cc: dlechner@baylibre.com,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Herman van Hazendonk <github.com@herrie.org>
-Subject: [PATCH 1/3] iio: common: st_sensors: honour channel endianness in read_axis_data
-Date: Fri,  5 Jun 2026 12:08:41 +0200
-Message-ID: <0dac8e8e2872dc180b138923b5cd4fd18eee047b.1780652883.git.github.com@herrie.org>
+Subject: [PATCH 0/3] iio: lsm303dlh-magn: endianness + boot-time fullscale selection
+Date: Fri,  5 Jun 2026 12:08:40 +0200
+Message-ID: <cover.1780652883.git.github.com@herrie.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1780652883.git.github.com@herrie.org>
-References: <cover.1780652883.git.github.com@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,88 +51,91 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: ClueGetter at submission4.mail.transip.nl
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780654125; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version:content-type;
- bh=u8xxJRCo95FdjbzXYIN6cwNdNtoDj6gaprfSMe/H9M0=;
- b=C5oTZjrcmM3BRd4UrxRVd3qRPJgM5+HscVMm6OIAiqcNP5YPpOsn1sG547GpnVGSxrah3Y
- nL9abxNVm9bjGn00YNccAgpcd7qyP7rfJhxUyZMUF3V6yqxp4mWg5ugxBNRZZsvhVk2U28
- mhyOhfnLqGJ9UAFr4WSCX0J2PEPdbzwZamZje3Kd5bozUFEZnpTemc6Ab1JG/ux/YufeF9
- xXjfLQ/rpITAZAePfvOGEk/cmrBHJfjinAJPVQglnYQfH0DtU4TSu/Q+6N16wMxMCAW3CN
- yzCQ6JZIqAuF4sxAIpflI2jqulBxqd8x3FC9apGuB7IvmaCc5/7cs3ASPEKjAA==
+ s=transip-a; d=herrie.org; t=1780654124; h=from:subject:to:cc:date:
+ mime-version:content-type;
+ bh=h659qkI7QXLh60/Bn1eXJ0SYXQqI0f9z1CMZW4J+C6s=;
+ b=sEPXu05Qye/KPtUfxhPxMdWMtPTttcUGoCVAB4vFZ38AB1EOvwfWZAk0hhDYarhh+bQlbv
+ SthPbehivLxJK7dZVOQhBG/eWds3tvH2fJmhMncXLKeJGMW5hswZJ/BNjIaM006mJpnEIv
+ r18NyC3v9davit4lQvYHtnbm3Qxcyi2ZKvNuVJN+/mllb+mhpHAqr/YH58PxCrj/teHEVm
+ H/VRuNTjIN5NHtrUmSpnJ9s3//ococxyZPpNxJktPRCgX4QcgxC+qCIfGM+ea7/5EE4PR7
+ /ChaQGAbNBPuOeN5dOmu7pzf7A9ah2ug3sERfbbCVqBzNJG1yqwI+blRE4eHLw==
 X-Report-Abuse-To: abuse@transip.nl
 
-st_sensors_read_axis_data() unconditionally decoded multi-byte
-results with get_unaligned_le16() / get_unaligned_le24() regardless
-of the channel's declared scan_type.endianness.
+This series fixes two independent issues that together prevent the
+LSM303DLH magnetometer from delivering usable readings out of the
+box on at least the HP TouchPad (apq8060), and adds a small generic
+extension to the ST sensors device-tree binding to allow boards to
+declare a non-default initial full-scale.
 
-For every ST sensor that has used this helper since it was introduced
-this happened to be fine because the ST IMU/accel/gyro/pressure
-families publish their data registers as little-endian and the
-channel specs in those drivers declare IIO_LE accordingly.
+PATCH 1/3 fixes st_sensors_core's read_axis_data() helper to honour
+the channel's declared scan_type.endianness. The helper has
+unconditionally decoded multi-byte results as little-endian since
+it was introduced. Every other in-tree ST sensor declares IIO_LE
+and was unaffected, but the LSM303DLH magnetometer publishes its
+X / Y / Z words as big-endian pairs (high byte at the lower
+register address, 0x03 / 0x05 / 0x07) and its channel specs in
+st_magn_core.c correctly declare IIO_BE. The mismatch swapped the
+high and low bytes of every magnetometer sample. The fix is generic
+and only affects the IIO_BE branch; existing IIO_LE consumers are
+untouched.
 
-The LSM303DLH magnetometer however publishes its X/Y/Z output as a
-pair of big-endian bytes (the H register sits at the lower address,
-0x03/0x05/0x07, and the L register immediately after), and its
-channel specs in st_magn_core.c correctly declare IIO_BE -- but
-read_axis_data() ignored that and decoded as little-endian, swapping
-the high and low bytes of every magnetometer sample.
+PATCH 2/3 adds an optional `st,fullscale-mg` device-tree property
+to the ST sensors binding. The driver core hardcodes fs_avl[0] (the
+highest-sensitivity range) as the starting full-scale, which is the
+right default for a desk-noise floor but leaves no margin for
+boards that pick up DC bias from nearby PCB structures. The
+property lets a board declare the initial range in milligauss, with
+the driver falling back to its built-in default on absence or on an
+unsupported value. The property is purely additive and no in-tree
+DTS is affected.
 
-The bug is most visible on a stationary chip: in earth's field the
-true X reading is small and the high byte sits at 0x00, so swapping
-the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
-= 240). Y and Z still appear "to vary" because their magnitudes are
-larger and the noise in the low byte produces big swings in the
-swapped high byte:
+PATCH 3/3 parses st,fullscale-mg in the magnetometer common probe
+and selects the matching fs_avl entry. The LSM303DLH on the HP
+TouchPad picks up enough DC bias from the surrounding power planes
+that the chip-default +/-1.3 G range saturates the X axis to the
+chip's 0xF000 overflow sentinel on every sample, while Y and Z fall
+within range. Empirically any fs_avl >= 1 (+/-1.9 G and up) works;
+on tenderloin the appropriate value is 2500 mg (+/-2.5 G).
 
-  before (chip flat, sysfs in_magn_*_raw):
-      X=240 (stuck), Y= 12032..23296, Z=-16128..-9728
+Before this series, on the HP TouchPad with the magnetometer flat
+on a stable surface (sysfs in_magn_x_raw / in_magn_y_raw /
+in_magn_z_raw, 15 reads at 200 ms intervals):
 
-  after (direct i2c-dev big-endian decode, same chip same orientation):
-      X≈-4096, Y≈210, Z≈80     (sensible values reflecting earth's
-                                ambient field at low gauss range)
+  X = 240             (high byte stuck at 0x00, low byte = 0xF0)
+  Y = 12032..23296    (apparent random walk over ~11 K range)
+  Z = -16128..-9728   (apparent random walk over ~6 K range)
 
-Fix read_axis_data() to dispatch on ch->scan_type.endianness and
-call get_unaligned_be16() / get_unaligned_be24() when the channel
-declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
-st_pressure, st_lsm6dsx and others) are unaffected because their
-channel specs already declare IIO_LE and the LE path is unchanged.
+After PATCH 1/3 alone (endianness fix), the chip reports its real
+overflow sentinel for X:
 
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
----
- .../iio/common/st_sensors/st_sensors_core.c   | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+  X = -4096           (= 0xF000, chip's saturation marker)
+  Y =  91..103        (tight, sensible field reading)
+  Z = 173..184        (tight, sensible field reading)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index dbc5e16fbde4..84bce1539908 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -508,12 +508,21 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 	if (err < 0)
- 		return err;
- 
--	if (byte_for_channel == 1)
-+	if (byte_for_channel == 1) {
- 		*data = (s8)*outdata;
--	else if (byte_for_channel == 2)
--		*data = (s16)get_unaligned_le16(outdata);
--	else if (byte_for_channel == 3)
--		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
-+	} else if (byte_for_channel == 2) {
-+		if (ch->scan_type.endianness == IIO_BE)
-+			*data = (s16)get_unaligned_be16(outdata);
-+		else
-+			*data = (s16)get_unaligned_le16(outdata);
-+	} else if (byte_for_channel == 3) {
-+		if (ch->scan_type.endianness == IIO_BE)
-+			*data = (s32)sign_extend32(get_unaligned_be24(outdata),
-+						   23);
-+		else
-+			*data = (s32)sign_extend32(get_unaligned_le24(outdata),
-+						   23);
-+	}
- 
- 	return 0;
- }
+After the full series with st,fullscale-mg=2500 on tenderloin:
+
+  X = -384..-403      (tight, sensible field reading)
+  Y =   47..58
+  Z =   96..108
+
+Spans of 14..20 raw counts at scale 0.000670 G/LSB across all axes,
+matching expected chip noise around the ambient DC bias.
+
+PATCH 1/3 is a standalone bug fix and could be applied on its own
+even if the binding extension is rejected. PATCHES 2/3 and 3/3 form
+a unit.
+
+
+Herman van Hazendonk (3):
+  iio: common: st_sensors: honour channel endianness in read_axis_data
+  dt-bindings: iio: st,st-sensors: add st,fullscale-mg
+  iio: magnetometer: st_magn: honour st,fullscale-mg DT property
+
+ .../bindings/iio/st,st-sensors.yaml           | 18 ++++++++++
+ .../iio/common/st_sensors/st_sensors_core.c   | 19 +++++++---
+ drivers/iio/magnetometer/st_magn_core.c       | 35 +++++++++++++++++++
+ 3 files changed, 67 insertions(+), 5 deletions(-)
+
 -- 
 2.43.0
 
