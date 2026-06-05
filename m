@@ -1,133 +1,239 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from outbound7.mail.transip.nl (outbound7.mail.transip.nl [136.144.136.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6586F40F8F4
-	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 19:18:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C1A536F918;
+	Fri,  5 Jun 2026 19:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780687097; cv=none; b=qCfFh5hSyiFnMSxMMRTCNcv1jep0cb6deK2jYE0TjQf/Ok9w3PAaiMXcv/RA886lIG3aN0uM1MRk1u6n9AdIDddI1Fl+dLCN2MKNVbATnEllrxMpm0nabuo1LtUfrEhvsw5wX3iJ6ef9h8dwd6XiFFnXW7R+d3xAwTYyZjAYbP0=
+	t=1780687702; cv=none; b=BLDgYBlG9BKB9tvWajvo3Fc9VlzLV146aNFOonUygK4xphvlJgfYyh80Eo+d3XufH5BPrVfftDsi20GXHbT2Q8kulq7i1ZsG0/OuoChgRk/FlEzH8J/zZVAPCFS99Ca/2FB3Nc2z4WLFQ+Da/tbsgdYe4cTPhGuG1xXYx/hNXGA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780687097; c=relaxed/simple;
-	bh=8ylB3rlC41NFungz6bMGKN6KJ1Twfg/MRXfgYoGCa0Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XHjstY1Fr4Gv6baBXvbbprrD/SS61Lp3s37KFRUbsRAydhx3WPbv31frN/LsIHpRCFIkaJVXjNC0Lsyj3gysKaZqWfjQ3VnD7bU9KJxWHzeQrqYS8oPX0oUZT526TpYMQAknscMbWsOwdk5hgGiP5RNnqdo/MVRMzTtZOI29sR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W1R2Ebk5; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1780687702; c=relaxed/simple;
+	bh=QKE8vMgCB3mQJZMfmpaf0wSt/1YjPMFLzPhfcIPAIIQ=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=RyPkwt4OS9V17W33nOZy1Pz/9RdLXUcZiEuexCW3mWM827oXfIHOd/AEFQbcYr6VbAV5us9dzTmkcUOPWb0BcU2SBSYWmRmrljdNHfc8UVaK/MZv/EPWCCpF9A6c2ezritaJyJDzY3x0Z9PHbaPqpm5Sh1X5UFnlWt4DUwDB4MU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=Shwld+Cp; arc=none smtp.client-ip=136.144.136.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W1R2Ebk5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780687092; x=1812223092;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8ylB3rlC41NFungz6bMGKN6KJ1Twfg/MRXfgYoGCa0Q=;
-  b=W1R2Ebk54BNtt6mjl3uDNJTTs1ZcWdMIGFJm+ouvIBNqfLmhlh3Al/zK
-   t5ccSSAPPr8zjgtCzV5ePN9i3mCr4Ch1A7N9mqnaJWUiVN614ZyObtVV9
-   sExpFNxh2k0gRWvMgO0EZdCZdKWTxdWWjL9ycZFimY6hnnLnake1dOHzo
-   hVCcyGDNKu9lda/8uPlHBR7EBksiMP9sboEJYpYxH2UiaIVQ0DIIT7+CY
-   o2hpZr0V5eXDF1oUfRhzGrl2YqTchXF9g+eARHPhmxFi75LHHygscWfSv
-   o+dCgUNYe6FzAm6N/IgCDb4d064/x64oXCadAvSscSy0XrntdSxQOGru1
-   g==;
-X-CSE-ConnectionGUID: ia4+0tiSRneb0adibhJRYg==
-X-CSE-MsgGUID: 8W9RADL4SLmIRWT38jC7SQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="85379743"
-X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="85379743"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 12:18:11 -0700
-X-CSE-ConnectionGUID: moRiP4L+Q9SsO7ZeIHQErQ==
-X-CSE-MsgGUID: 297YXmXiQE+SgacElZuO6A==
-X-ExtLoop1: 1
-Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 12:18:09 -0700
-Date: Fri, 5 Jun 2026 22:18:07 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jinseob Kim <kimjinseob88@gmail.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Sanjay Chitroda <sanjayembeddedse@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, sashiko-bot@kernel.org
-Subject: Re: [PATCH v2] iio: buffer: Ensure bounce buffer used for unaligned
- case is zeroed.
-Message-ID: <aiMg71I2O6a94g3o@ashevche-desk.local>
-References: <20260604084307.640053-1-jic23@kernel.org>
- <aiFBEn_DKx5f6ekv@ashevche-desk.local>
- <20260605145000.0ae0356e@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="Shwld+Cp"
+Received: from submission11.mail.transip.nl (unknown [10.103.8.162])
+	by outbound7.mail.transip.nl (Postfix) with ESMTP id 4gXBKw49CvzQvv7c;
+	Fri,  5 Jun 2026 21:28:04 +0200 (CEST)
+Received: from transip.email (unknown [10.103.8.120])
+	by submission11.mail.transip.nl (Postfix) with ESMTPA id 4gXBKv6y0qz3R3nyw;
+	Fri,  5 Jun 2026 21:28:03 +0200 (CEST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260605145000.0ae0356e@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Date: Fri, 05 Jun 2026 21:28:03 +0200
+From: me@herrie.org
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Conor Dooley <conor@kernel.org>, Herman van Hazendonk
+ <github.com@herrie.org>, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ tomasborquez13@gmail.com, masneyb@onstation.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: light: isl29018: add
+ isil,cover-comp-gain
+Reply-To: github.com@herrie.org, me@herrie.org
+Mail-Reply-To: github.com@herrie.org, me@herrie.org
+In-Reply-To: <b6919a62f06ad8e4e80232d9b2a0e706@herrie.org>
+References: <20260604100617.3486541-1-github.com@herrie.org>
+ <20260604100617.3486541-3-github.com@herrie.org>
+ <20260604-energy-lid-e7949164431a@spud>
+ <20260605140449.1d7538ee@jic23-huawei>
+ <b6919a62f06ad8e4e80232d9b2a0e706@herrie.org>
+User-Agent: Webmail
+Message-ID: <bb7c65095dc53dd8723c1ecd9c33796c@herrie.org>
+X-Sender: me@herrie.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: ClueGetter at submission11.mail.transip.nl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=transip-a; d=herrie.org; t=1780687684; h=from:reply-to:subject:to:
+ cc:references:in-reply-to:date:mime-version:content-type;
+ bh=RM1UwQ2hNqp1x3qGmKLfqqTeS2uUEn+qa002FsSD4pE=;
+ b=Shwld+CpxgZJxZhjTQ20oe5/pDTHap05B3v+XzOZ89JH+bXc2VvAAoGx5i0oZ+htMXhcJc
+ 3vU0XZ9dnd4SVKQ9gBd3c98FtpGLz7EBr/xvliz/uf/atPp9OASd0LpyHBVUNEz9g94SA5
+ kE4l0ROb6j8DuRS9ASQPt76TKdjNUd4HQoz/SjGwQhMkP1h6z4QmoXWK2CF+HJ9mfRPSzc
+ mcKoB5XkMyR7Hi/MRgtSikhEQFiDu1cNrC1iJKpPh9KHVzj9tFYzttZM7a6x42MKZtpsia
+ cTv9j2NZ3Aw/B7R9NXxgfEUaaemOV0Ryxi2pbQgZ9vjJ13INoXiaBHlR50gpRA==
+X-Report-Abuse-To: abuse@transip.nl
 
-On Fri, Jun 05, 2026 at 02:50:00PM +0100, Jonathan Cameron wrote:
-> On Thu, 4 Jun 2026 12:10:42 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Thu, Jun 04, 2026 at 09:43:07AM +0100, Jonathan Cameron wrote:
-
-...
-
-> > >  				   indio_dev->scan_bytes, GFP_KERNEL);
-> > >  		if (!bb)
-> > >  			return -ENOMEM;
-> > > +		memset(bb, 0, indio_dev->scan_bytes);  
-> > 
-> > May I suggest different approach, id est use __GFP_ZERO instead of hunting
-> > correct pointers?
+On 2026-06-05 15:18, me@herrie.org wrote:
+> On 2026-06-05 15:04, Jonathan Cameron wrote:
+>> On Thu, 4 Jun 2026 18:01:08 +0100
+>> Conor Dooley <conor@kernel.org> wrote:
+>> 
+>>> On Thu, Jun 04, 2026 at 12:06:16PM +0200, Herman van Hazendonk wrote:
+>>> > Document the new optional property that seeds the ISL29018 calibration
+>>> > scale factor at boot from firmware, allowing boards with tinted cover
+>>> > glass to ship with correct luminance readings without a userspace helper.
+>>> >
+>>> > The value is a positive integer (minimum 1, maximum 65535) that is
+>>> > multiplied with the raw lux reading.  Userspace can still override it
+>>> > at runtime through in_illuminance0_calibscale.
+>>> >
+>>> > Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+>>> > ---
+>>> >  .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++++++++++
+>>> >  1 file changed, 13 insertions(+)
+>>> >
+>>> > diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>>> > index 0ea278b07d1c..92ea2742bbd3 100644
+>>> > --- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>>> > +++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>>> > @@ -34,6 +34,19 @@ properties:
+>>> >    vcc-supply:
+>>> >      description: Regulator that provides power to the sensor
+>>> >
+>>> > +  isil,cover-comp-gain:
+>>> > +    description: |
+>>> > +      Multiplier applied to the ambient-light reading at startup to
+>>> > +      compensate for optical loss in the board's cover glass. Boards
+>>> > +      that mount the sensor under a tinted or coated window typically
+>>> > +      need a value between a few and a few hundred.
+>> 
+>> Is it useful to support decimal points on these values?  The userspace 
+>> interface
+>> does and you mention the 'right' answer might be only a few which 
+>> means precision
+>> at that range will be terrible - less of an issue if 100s!
+>> 
+>> Thanks
+>> 
+>> Jonathan
+>> 
+> Hard to say, my old HP TouchPad needs 100 as a value here (taken from 
+> legacy 2.6.35
+> kernel and binaries). So we probably don't need precision, but I have 
+> no other
+> references to substantiate.
 > 
-> That's a weird beast when combined with a krealloc so I was a bit
-> nervous about readability (and less so whether it was correct).
-> It should be fine in that we will either get stale data or zeros
-> because we always use this path to allocate the buffer so if you
-> think it is obviously fine then I don't mind.
-> 
-> The oddities are that if an object grows within a slab but doesn't need
-> a new one we are relying on those bits happening to be zero based on the
-> original allocation doing __GFP_ZERO as well (as it's the same call)
-> 
-> I'm nervous though as that region off the end is sometimes used for
-> debug objects and I really don't understand that bit of slab well enough.
-> If it actually does this, then seems like we'd end up with a lot of
-> nasty corner cases so I assume it doesn't.
+> Thanks
+> Herman
+Scratch that. Did some more research. Proof is in the legacy webOS 
+binaries:
 
-Such a bug will be a serious issue in mm. I don't think it exists.
-But, of course, chances are not completely 0.
+What legacy webOS actually does here:
 
-Current users (not a comprehensive list)
+1. Per-device calibration via factory token reads an ALSCal token from 
+system storage
+containing JSON with calibration points at lux_0, lux_50, lux_100, 
+lux_400 (measured
+ADC counts at known reference illuminance levels).
 
-arch/arm64/kvm/nested.c:92
-drivers/firmware/efi/capsule-loader.c:61
-drivers/gpio/gpiolib.c:5198
-drivers/media/platform/amphion/vdec.c:329
-drivers/net/ethernet/intel/ice/ice_lib.c:3044
-drivers/net/ethernet/mellanox/mlx5/core/steering/hws/bwc.c:785
-drivers/net/wireless/ti/wl18xx/main.c:1582
-drivers/nvme/target/pci-epf.c:708
-drivers/spi/spi.c:1411
-drivers/usb/gadget/function/uvc_configfs.c:880
-fs/ceph/mdsmap.c:322
-fs/smb/server/ksmbd_work.c:123
-lib/tests/slub_kunit.c:273
-sound/soc/meson/meson-card-utils.c:49
+2. Computes a floating-point ratio AlsToLux_Ratio_WhiteLED = average of 
+expected_lux /
+measured_count across the JSON calibration points. This is a real 
+number, not an integer.
 
-Also note the kernel-doc for krealloc_array(). It has some note WRT __GFP_ZERO
-and it means the flag must be supported. Also there is a note in mm/slub.c.
+3. Adjusts for light source spectrum at runtime detects illuminant type 
+from ALS:IR
+ratio, then applies a fractional spectrum correction:
+Fluorescent above 100 counts: ratio x 0.4652
+Incandescent above 700 counts: ratio x 0.4
+Incandescent 50-100 counts:    ratio x 0.9
+Fluorescent < 50 counts:       ratio x (-0.000724·N + 0.7463)
 
-> However, I couldn't convince myself enough not to just force a memset of the
-> whole thing.
+4. Final lux = ALSCount / spectrum_corrected_ratio - a true 
+floating-point division.
 
-I personally would go with __GFP_ZERO.
+Implications
 
--- 
-With Best Regards,
-Andy Shevchenko
+- The "right" cover-comp value is per-device factory-measured, not 
+per-board. Different
+units off the same production line have different optical transmission 
+due to coating
+tolerance.
+- The values are fractional by nature. Examples from the legacy code: 
+0.4652, 0.7463,
+0.8333. None are integers.
+
+The ISL29023 datasheet itself says nothing about cover compensation - 
+it's strictly
+board-level optical correction. So there's no "right" answer from the 
+chip side;
+it's whatever the board's cover glass + coating attenuates.
+
+ALSCal values found on the particular device:
+
+{"lux_50":{"c":31}, "lux_100":{"c":58}, "lux_400":{"c":164}}
+
+This is device specific TouchPad's factory calibration:
+   - At 50 lux, ADC reads 31 counts  lux/count = 1.613
+   - At 100 lux, ADC reads 58 counts lux/count = 1.724
+   - At 400 lux, ADC reads 164 counts  lux/count = 2.439
+
+Note the ratio isn't constant - the response is mildly non-linear, but 
+per the legacy
+code the driver computes the average ratio as the calibration:
+
+   ratio = (1.6129 + 1.7241 + 2.4390) / 3 = 1.9253 lux/count
+
+Independent verification:
+   - At calibscale=34: lux = 1295
+   - Implied raw count: 1295 / (34 x 0.015258) = 2496 counts
+   - Applying legacy formula: 2496 / 1.9253 = 1296.4 = 1295
+
+The factory-calibrated value for this specific TouchPad is 34.04 (not 
+100). Per-point
+calibscale values from the ALSCal JSON:
+
+Cal point‚ lux/count ratio‚ Equivalent calibscale
+lux_50    ‚ 1.6129          ‚ 40.64
+lux_100   ‚ 1.7241          ‚ 38.01
+lux_400   ‚ 2.4390          ‚ 26.87
+average   ‚ 1.9253          ‚ 34.04
+
+What this means concretely
+
+1. Decimal precision is necessary, not nice-to-have. Real per-device 
+factory values
+span 26.9 - 40.6 across the chip's response curve. A single scalar 
+approximation costs
+precision; restricting to integer compounds it.
+
+2. Updated v5 plan: switch to two-cell <int micro> for fractional 
+values, and change
+the tenderloin DTS default from <100> to <34 040000> (or close to that).
+
+Thoughts on this?
+
+Thanks,
+Herman
 
 
+>> 
+>> 
+>>> 
+>>> > The value seeds
+>>> > +      in_illuminance0_calibscale, so it can still be retuned at
+>>> > +      runtime through sysfs.
+>>> 
+>>> Delete this, driver implementation stuff isn't relevant to the
+>>> devicetree binding.
+>>> 
+>>> With that gone,
+>>> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+>>> 
+>>> pw-bot: changes-requested
+>>> 
+>>> Cheers,
+>>> Conor.
+>>> 
+>>> > +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> > +    minimum: 1
+>>> > +    maximum: 65535
+>>> > +    default: 1
+>>> > +
+>>> >  required:
+>>> >    - compatible
+>>> >    - reg
+>>> > --
+>>> > 2.43.0
+>>> >
