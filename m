@@ -1,128 +1,91 @@
-Received: from outbound5.mail.transip.nl (outbound5.mail.transip.nl [136.144.136.9])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E6C233723;
-	Fri,  5 Jun 2026 08:47:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84E14B8DEC
+	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 09:01:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780649252; cv=none; b=hFZtUb81hPn3l30GU56dlc6jtSUsARdAdcdqzR0n3TboIU863ehTl+SYYSH1xt3wbpqfcnTVwEyEDMyebqiQkShLEDDvq9XmLEK9AV+qvGGbKTx080TmCvqSC8Yh+B/YIBmFq2JZ/57scSPSzZ72S2EzRUXsd8owLyogGOPHLjI=
+	t=1780650110; cv=none; b=K/+rupna171Gp/lBVj3JpNdO71JTZUAofkL/Ginq5ZyVkzT29Sm2sTJrz00st7h8O4leeYEqdmkTdA15thlU5E6Vq9/FwFqiqwWoxaksB5S7STQH9c/rxkNDPy+kpNn9x6t07icB+eIj0Y0x1qt3zZJE7thZVjaKiesXUpQMitM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780649252; c=relaxed/simple;
-	bh=vvpDUNSTmlVd/hGAG+9hXkldKHkwQINqvNkm2FJE/ls=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EfQHvbFeQL1yAH1ozxSsRkn4qgEJLOpi/BC9iJTjLVCsZngGVb1bPVnRjj4AtUgX4Su3J0u5+9/eHZ+E7PODgeDwzB5ThYoASr24kk4yATcZgmmbpYzSgVuTxqU4wZP27zHC35WWWGycCJTezYO8EtpwbpNl60pt5XQj1yfBdVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=g5+utD+G; arc=none smtp.client-ip=136.144.136.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1780650110; c=relaxed/simple;
+	bh=wSQ084P/0nUSf95mq5aigSd7cQQngvpR33H/qqVc3LE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=hBgUcLUg489nT94Ad+eoeEsOPFG4vgHy8ALT1JhLSF54940NHFYI9N7MAgVEKoNKcIG3yrMwl8DTH9pPvg8bzMSoISOjmjavAkhhk3cDZAmxjWibsidbMdrj3a5vuk5/K9TwoUgEOGtqVDtmzuSCqWxnMzDmluVLCQOks88XdgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=y6HQyc14; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="g5+utD+G"
-Received: from submission10.mail.transip.nl (unknown [10.103.8.161])
-	by outbound5.mail.transip.nl (Postfix) with ESMTP id 4gWw6g2BXJzHVlP;
-	Fri,  5 Jun 2026 10:47:23 +0200 (CEST)
-Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission10.mail.transip.nl (Postfix) with ESMTPA id 4gWw6f5K8dz1g92mK;
-	Fri,  5 Jun 2026 10:47:22 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-To: linusw@kernel.org,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Herman van Hazendonk <github.com@herrie.org>
-Subject: [PATCH] iio: gyro: mpu3050: restore cached sample rate on runtime resume
-Date: Fri,  5 Jun 2026 10:47:22 +0200
-Message-ID: <4622fa440f1686e06d0828a6abdbda3181fa385b.1780649212.git.github.com@herrie.org>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="y6HQyc14"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 7E62EC5846D;
+	Fri,  5 Jun 2026 09:01:45 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id D65915FED1;
+	Fri,  5 Jun 2026 09:01:45 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9B77C106A2028;
+	Fri,  5 Jun 2026 11:01:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1780650105; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding; bh=UJEJK0/P1A9x4+6/Zd/TWjjAZyiz0JZ6SI/8O8uicq4=;
+	b=y6HQyc149mTVEFwL2MIRSyZ9L1RTIB3vgtMGI+bMRPpu5RbGssjaGlDQpu2lKHYFO2bAq7
+	SvrYQs5IYkrG9Du2d/hh1QQrZZpX0yLLnj/4KvU9CR91FuXmj07VdcjSJmOb4dZh51Ulgj
+	InCbgcXkIZZ5ejnusxEJVNRFOt69RSLlUuuMFIV9yjD3ei0EvUsDawnZBuQF/fY8/uysw8
+	lfsop+GV76zjQDMsaSeBVCeOeeQEvXsVEQu+mowdEacl7McQ9Q5iuU9GSPxrISEPV3dod9
+	5X3q0KjMEgxZx0q2yeA8zfE3gSqs4Dxu262voWEtjCJ/83WZsTWlvKzxsiuRAg==
+From: Romain Gantois <romain.gantois@bootlin.com>
+Subject: [PATCH 0/2] iio: temperature: tmp117: Support the TMP119 sensor
+Date: Fri, 05 Jun 2026 11:01:34 +0200
+Message-Id: <20260605-tmp119-v1-0-349f45f17d12@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: ClueGetter at submission10.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780649242; h=from:subject:to:cc:date:
- mime-version; bh=GJoL9J8Cmxp8zQ9NtkYIs0OoW3AI1zMDhzVX0UjULXE=;
- b=g5+utD+GVTIw6dmfCEons6RvYdiwdjaGHc4LOzGc+VKWYX0cDTOZS465J+1iYZGSb1FO/F
- vi01KqpocQg8vB2IBEMvUjui6Bs/8lLc7c9UuTroyLLYW55X2qbxET1iGpF76R229lhuvV
- 8H/MrXJ8IoWNsKpBtCj7eT+C1uHDtSLSE/fDPQRgF3e6UrIh1kyguzLJrERioY86kXFH/y
- HOxRjtG6b+kYac3TINtI5r/ytbcSNW5EiKACjWMo1GZeVW2lFbR8ztog9cnlCsmGCwPq5b
- vyXyNT9mSxggEart4+dIfGwEksAeaC1B0QR8lyNEKITs93X7T5wPcmHzp6GYUw==
-X-Report-Abuse-To: abuse@transip.nl
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDMwNT3ZLcAkNDS10zM6MUI8NUkxRjQ3MloOKCotS0zAqwQdGxEH5xaVJ
+ WanIJSLdSbS0A9Z2BQGoAAAA=
+X-Change-ID: 20260605-tmp119-662d21e4d317
+To: Puranjay Mohan <puranjay@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
+ Wil Stark <wil_stark@keysight.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ Romain Gantois <romain.gantois@bootlin.com>
+X-Mailer: b4 0.15.2
+X-Last-TLS-Session-Version: TLSv1.3
 
-mpu3050_runtime_resume() only calls mpu3050_power_up(), which clears
-the SLEEP bit and waits 200 ms for the chip's register file to come
-back. It does not reprogram the full-scale, low-pass filter or sample
-rate divisor, all of which return to the chip's power-on defaults
-across a power cycle.
+Hello everyone,
 
-The driver's cached state (mpu3050->fullscale, mpu3050->lpf,
-mpu3050->divisor) is the source of truth for what userspace observes
-through the IIO ABI: in_anglvel_sampling_frequency goes through
-mpu3050_get_freq() which reads the cached lpf and divisor, and
-in_anglvel_scale similarly reads cached fullscale. After the first
-autosuspend cycle the chip's actual sample rate diverges from what
-sysfs reports, until the next IIO_CHAN_INFO_RAW read incidentally
-reprograms the chip via mpu3050_set_8khz_samplerate() and the cached
-state restoration paths in mpu3050_fifo_read_one().
+This series adds support for the TMP119, which has an identical programming
+model to the TMP117, but slightly different specs and electrical
+characteristics.
 
-That incidental restoration is only triggered by direct sysfs raw
-reads, not by buffered/triggered mode. A user who configures the
-sample rate, starts buffered capture and then leaves the device idle
-long enough to autosuspend will see chip-default-rate samples after
-resume rather than the configured rate.
+Best Regards,
 
-Reprogram the chip from the cached state in mpu3050_runtime_resume()
-by calling mpu3050_start_sampling() after mpu3050_power_up() succeeds.
-On failure power the chip back down to keep regulator and pm_runtime
-reference counts in sync with the error path.
+Romain
 
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+Signed-off-by: Romain Gantois <romain.gantois@bootlin.com>
 ---
- drivers/iio/gyro/mpu3050-core.c | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+Romain Gantois (1):
+      dt-bindings: iio: ti,tmp117: add binding for the TMP119
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index d84e04e4b431..ac041074cfdf 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1291,7 +1291,32 @@ static int mpu3050_runtime_suspend(struct device *dev)
- 
- static int mpu3050_runtime_resume(struct device *dev)
- {
--	return mpu3050_power_up(iio_priv(dev_get_drvdata(dev)));
-+	struct mpu3050 *mpu3050 = iio_priv(dev_get_drvdata(dev));
-+	int ret;
-+
-+	ret = mpu3050_power_up(mpu3050);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * mpu3050_power_up() only clears the SLEEP bit; it leaves the
-+	 * full-scale, low-pass filter and sample rate divisor at the
-+	 * chip's power-on defaults. Restore them from the driver's
-+	 * cached state so the hardware matches what userspace observes
-+	 * via the IIO ABI (in_anglvel_sampling_frequency, in_anglvel_scale)
-+	 * across a suspend/resume cycle. Without this the chip continues
-+	 * to deliver samples at chip-default rate after the first
-+	 * autosuspend cycle, until the next IIO_CHAN_INFO_RAW read
-+	 * incidentally reprograms it.
-+	 */
-+	ret = mpu3050_start_sampling(mpu3050);
-+	if (ret) {
-+		dev_err(dev, "failed to restore sampling config on resume\n");
-+		mpu3050_power_down(mpu3050);
-+		return ret;
-+	}
-+
-+	return 0;
- }
- 
- DEFINE_RUNTIME_DEV_PM_OPS(mpu3050_dev_pm_ops, mpu3050_runtime_suspend,
--- 
-2.43.0
+Wil Stark (1):
+      iio: temperature: tmp117: add TI TMP119 support
+
+ Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml | 6 ++++--
+ drivers/iio/temperature/tmp117.c                                 | 4 ++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+---
+base-commit: ddd664bbff63e09e7a7f9acae9c43605d4cf185f
+change-id: 20260605-tmp119-662d21e4d317
+
+Best regards,
+--  
+Romain Gantois <romain.gantois@bootlin.com>
 
