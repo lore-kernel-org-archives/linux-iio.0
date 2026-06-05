@@ -1,136 +1,325 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EB50394462;
-	Fri,  5 Jun 2026 16:07:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A95D3E3D9D;
+	Fri,  5 Jun 2026 16:08:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780675648; cv=none; b=RQFu3PCf0LQO1wGMAgKnpUQa6bLcNlv5lQK21kNSuDmH2bkF0WdixDd2hORhEKWGhQCofacBJb11U6sp/MmFZktQZv8ziUPaEf/TgeSFTFvKVAmBHG/R2MRlwtomXXHTBiEDMBfGddT44/2JbvPVs+0ybFuuqJPQTvfR9ZZ7I9Q=
+	t=1780675728; cv=none; b=KcyCCgYmytdQiJO6++ewJl5nUphzh6ZKmoa+iG/eM51oYtOXYQTfLOdGkFXPDp9xDIkus5TQe+tVVfL0oKSzekKA1QDX9z1ouDOohMnAPaYo/gZfve5vnea1+E+aOcm4GMORUGKfBPvhSlJbwYQSZKbXLuoxdEMavxJg5ARh0mI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780675648; c=relaxed/simple;
-	bh=5dVUhFpjbYqFMj66ApW3IFadsxBJTPkevv1Cx+fV/sU=;
+	s=arc-20240116; t=1780675728; c=relaxed/simple;
+	bh=20ZpNWixaCv9XSjspQ/3hLi4OcsGjY0zsVqGZZY8vMA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ee8JrOoQ3uhEFGk9OJy9PoPN7+SKqMrqKV/HZb7MImQeyrc/S9V8PWZ1ejkr/CPwlNFHAdNP4992Rdn++ZEwOXP4TlyrwfftWsfQeHFr/K2SMqdMBN3b4rtpoOh+AUCH3hAZ6dYq87sY9L4Bfw7Ix6zj9ID21aZLZRNO70elLoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iYKkSPXe; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=WKTN+XgqKRVhcPeA5v90FcnlZhuCmBOAOjihUBU1EYBQsT93LI0gma58ZkrSp4SNEwyATB6buDk3wVXEYaRHAoWkIQIL1WsoTcKcqFrieH6rwUsrmvOCIPBi5IejIyAL9pntpqwAuQHUjybOP4DwhfKrR8jI7HcvqqvTRwS6tZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jspIjfVd; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iYKkSPXe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0D91F00898;
-	Fri,  5 Jun 2026 16:07:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780675647;
-	bh=/B1xxDKU9ZRX82lOlwJil3Y2ZWZ/fpaWwlXF6/X9Kpo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iYKkSPXeGtA/d6FoEk65Jzy2Y6NY7mNNxpSZ7tAQramgf/RWhhfC8c9cgp5yKvoYN
-	 MErHO/22E+fBhCvw6CBxpVmcqUecKdEKlAr9N2w+cTUwXUKjk8hSBlosg9srYaW9t/
-	 2swDWDb39T8lmrqJf1ebdC4u9kg8q1XcHt1AGG/hSniGbFv73PmCExy2oBQJh9Wfr7
-	 fUt6HI5IfpVR4mbVlqgrG6iziFyrQMmiy7FdEBgW6p8LSBMWhZGaZU8En28EKL66rP
-	 +S/P/KudZ7azT4lSIQ7bQEbQQSwyajRPbXNoOU/Wp6x+690xPYewKV1ALzXiplMMnq
-	 svq1atY7jTK1Q==
-Date: Fri, 5 Jun 2026 17:07:22 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Herman van Hazendonk <github.com@herrie.org>
-Cc: jic23@kernel.org, linusw@kernel.org, denis.ciocca@st.com,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	sanjayembeddedse@gmail.com, maudspierings@gocontroll.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: iio: st,st-sensors: add st,fullscale-mg
-Message-ID: <20260605-musket-ecosphere-2d3761964b57@spud>
-References: <cover.1780652883.git.github.com@herrie.org>
- <e49aba850b1f48ea00089e7142c00584541001eb.1780652883.git.github.com@herrie.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jspIjfVd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780675722; x=1812211722;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=20ZpNWixaCv9XSjspQ/3hLi4OcsGjY0zsVqGZZY8vMA=;
+  b=jspIjfVdX0YS2uKVSmOP+lwHdw7snO07L/VAyyATScrmRU8PnF1HJcbz
+   yDEwNvseNW/aGoaC+QYwP3LHB604mAhkg+DJ3kOC/LPo335jXFLCJtqRq
+   7gTulZ/1E2g5vmIVicPMPtGuXzytgojJ2OHG0wy5UXEsyfAgz1rN933h8
+   N2NXlG85jw6/b0/d9AFXDSnlGHbFXWJi55iijGYsvEd4Jp436JmidSbT1
+   cVS2A3cIqMVC9e5U4LRsHFo/u7i0u2YD+v/1vAv9ZHSC/y35uATxV8bCq
+   mwi+iqZeKHc4GrL81kaIZJyBsAo69wGpkFUKEGbNlIz0Yj14eerUfT/oR
+   g==;
+X-CSE-ConnectionGUID: RCWqBjCZTjW2mT8ugjTkRA==
+X-CSE-MsgGUID: cNItdRs2Q0OYCMjHysXdDw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="106952492"
+X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
+   d="scan'208";a="106952492"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 09:08:41 -0700
+X-CSE-ConnectionGUID: B5g7jFl9TR6h0VRsHMOv0Q==
+X-CSE-MsgGUID: ZHnxMt/uRNakWuNPER3XDg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
+   d="scan'208";a="249978644"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 09:08:38 -0700
+Date: Fri, 5 Jun 2026 19:08:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+	dlechner@baylibre.com, jic23@kernel.org,
+	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+	krzk+dt@kernel.org, robh@kernel.org,
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V10 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
+ Driver
+Message-ID: <aiL0g8d0Y_JeAC5c@ashevche-desk.local>
+References: <20260604201832.60656-1-macroalpha82@gmail.com>
+ <20260604201832.60656-4-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="kSebB565KYv20uXB"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <e49aba850b1f48ea00089e7142c00584541001eb.1780652883.git.github.com@herrie.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260604201832.60656-4-macroalpha82@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
+On Thu, Jun 04, 2026 at 03:18:25PM -0500, Chris Morgan wrote:
 
---kSebB565KYv20uXB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Add the core component of a new inv_icm42607 driver. This includes
+> a few setup functions and the full register definition in the
+> header file.
 
-On Fri, Jun 05, 2026 at 12:08:42PM +0200, Herman van Hazendonk wrote:
-> Add an optional st,fullscale-mg property that selects the initial
-> full-scale range of an ST MEMS sensor at probe time, expressed in
-> milligauss for magnetometers (and analogous engineering units for
-> other ST sensor families that may grow this property in the future).
->=20
-> The property is purely additive: if absent, drivers fall back to
-> their existing chip default, and if present but unsupported by the
-> specific sensor the driver warns and falls back. No existing in-tree
-> DTS is affected.
->=20
-> The motivating case is the LSM303DLH magnetometer on the HP TouchPad
-> (apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
-> saturates the X axis to the chip's 0xF000 overflow sentinel out of
-> probe, because the chip is mounted close to surrounding power planes
-> and picks up enough DC bias to exceed the smallest range. The driver
-> core hardcodes fs_avl[0] as the starting range, so userspace cannot
-> recover without racing the driver to write the in_magn_x_scale sysfs
-> attribute after probe. st,fullscale-mg lets the device tree declare
-> a wider initial range up-front and avoids the race entirely.
->=20
-> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
-> ---
->  .../devicetree/bindings/iio/st,st-sensors.yaml | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/D=
-ocumentation/devicetree/bindings/iio/st,st-sensors.yaml
-> index a1a958215cdb..335f38e9f78f 100644
-> --- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-> @@ -126,6 +126,24 @@ properties:
->    mount-matrix:
->      description: an optional 3x3 mounting rotation matrix.
-> =20
-> +  st,fullscale-mg:
+...
 
-I'd be inclined to say that this should spell out milligauss, but
-this seems reasonable enough to me.
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-> +    description: |
-> +      Selects the initial sensor full-scale at probe time, expressed in
-> +      milligauss for magnetometers (or analogous engineering units for
-> +      other sensor families that may grow this property in the future).
-> +      The value must match one of the sensor-specific full-scale ranges
-> +      supported by the chip; if the chip does not support the requested
-> +      range the driver falls back to its built-in default.
+> +#ifndef INV_ICM42607_H_
+> +#define INV_ICM42607_H_
 > +
-> +      This is intended for boards where the magnetometer chip picks up
-> +      enough DC bias from nearby PCB structures (power planes, ferrous
-> +      shields, etc.) that the kernel's chip-default highest-sensitivity
-> +      range saturates one or more axes to the chip's overflow sentinel,
-> +      and userspace observes that axis as permanently stuck. Declaring
-> +      a wider initial range avoids the saturation at the cost of a
-> +      slightly coarser quantisation.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+
+I haven't found users for these two.
+
++ bits.h // BIT() / GENMASK()
+
+> +#include <linux/iio/iio.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+
+
+> +#include <linux/regulator/consumer.h>
+
+No users for this one.
+
++ types.h // for bool
+
+...
+
+> +enum inv_icm42607_sensor_mode {
+> +	INV_ICM42607_SENSOR_MODE_OFF,
+> +	INV_ICM42607_SENSOR_MODE_STANDBY,
+> +	INV_ICM42607_SENSOR_MODE_LOW_POWER,
+> +	INV_ICM42607_SENSOR_MODE_LOW_NOISE,
+
+Are those enums map 1:1 to HW bits or bitfields? If so, assign explicitly each
+of them.
+
+> +	INV_ICM42607_SENSOR_MODE_NB
+
+Is this a terminator like NUMBER_OF ?
+
+> +};
+
+...
+
+> +/* ODR values */
+> +enum inv_icm42607_odr {
+> +	INV_ICM42607_ODR_1600HZ = 5,
+
+See above. This one is problematic. No one should rely on Linux/C enums when
+it's about HW bits. All HW related stuff has to be explicit.
+
+> +	INV_ICM42607_ODR_800HZ,
+> +	INV_ICM42607_ODR_400HZ,
+> +	INV_ICM42607_ODR_200HZ,
+> +	INV_ICM42607_ODR_100HZ,
+> +	INV_ICM42607_ODR_50HZ,
+> +	INV_ICM42607_ODR_25HZ,
+> +	INV_ICM42607_ODR_12_5HZ,
+> +	INV_ICM42607_ODR_6_25HZ_LP,
+> +	INV_ICM42607_ODR_3_125HZ_LP,
+> +	INV_ICM42607_ODR_1_5625HZ_LP,
+> +	INV_ICM42607_ODR_NB
+> +};
+
+...
+
+> +struct inv_icm42607_sensor_conf {
+> +	int mode;
+> +	int fs;
+> +	int odr;
+> +	int filter;
+
+All of them are supposed to be signed? Why?
+
+> +};
+
+...
+
+> +struct inv_icm42607_hw {
+> +	uint8_t whoami;
+
+What's wrong with u8?
+
+> +	const char *name;
+> +	const struct inv_icm42607_conf *conf;
+> +};
+
+...
+
+> +#include <linux/delay.h>
+> +#include <linux/dev_printk.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+
+IWYU, please.
+
+...
+
+> +/**
+> + *  inv_icm42607_setup() - check and setup chip
+> + *  @st:	driver internal state
+> + *  @bus_setup:	callback for setting up bus specific registers
+> + *
+> + *  Returns 0 on success, a negative error code otherwise.
+
+If you do kernel-doc, validate it. Return section is missing here.
+
+> + */
+
+...
+
+> +{
+> +	const struct device *dev = regmap_get_device(st->map);
+> +	unsigned int val;
+> +	int ret;
 > +
->  allOf:
->    - if:
->        properties:
-> --=20
-> 2.43.0
->=20
+> +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (val != st->hw->whoami)
+> +		dev_warn(dev, "Unknown whoami %#02x expected %#02x (%s)\n",
+> +			 val, st->hw->whoami, st->hw->name);
 
---kSebB565KYv20uXB
-Content-Type: application/pgp-signature; name="signature.asc"
+dev_warn_probe() ?
 
------BEGIN PGP SIGNATURE-----
+> +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
+> +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
+> +	if (ret)
+> +		return ret;
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaiL0OgAKCRB4tDGHoIJi
-0mWhAP0WtJXb6Y1fNVc7JRVRXauldTnWnniSpLpJ0CYwHpQAMQEA/+fXOjmXsv5D
-BLMdqhx3tRTkJljg6eJVtEavHs/5UgY=
-=yNKR
------END PGP SIGNATURE-----
+> +	fsleep(INV_ICM42607_RESET_TIME_MS * 1000);
 
---kSebB565KYv20uXB--
+USEC_PER_MSEC (needs time.h)
+
+> +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+> +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+> +				       INV_ICM42607_RESET_TIME_MS * 100,
+> +				       INV_ICM42607_RESET_TIME_MS * 10000);
+
+These are weird, as in the first case it's actually 1/10th of _RESET_TIME_MS.
+Perhaps you need to reconsider what you use as that constant. Personally I
+prefer to see just plain values with the multipliers (to convert to µs).
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "reset error, reset done bit not set\n");
+> +
+> +	/* Sync the regcache again after a reset. */
+> +	regcache_mark_dirty(st->map);
+> +	ret = regcache_sync(st->map);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = bus_setup(st);
+
+Hmm... This is bad name with potential of name collision in the future (in case
+driver bus code wants to have the same name for the function).
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
+> +			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
+> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK,
+> +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return inv_icm42607_set_conf(st, st->hw->conf);
+> +}
+
+...
+
+> +int inv_icm42607_core_probe(struct regmap *regmap,
+> +			    const struct inv_icm42607_hw *hw,
+> +			    inv_icm42607_bus_setup bus_setup)
+> +{
+> +	struct device *dev = regmap_get_device(regmap);
+> +	struct inv_icm42607_state *st;
+> +	int ret;
+> +
+> +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> +	if (!st)
+> +		return -ENOMEM;
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->hw = hw;
+> +	st->map = regmap;
+> +
+> +	ret = iio_read_mount_matrix(dev, &st->orientation);
+> +	if (ret)
+
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to retrieve mounting matrix %d\n", ret);
+
+Remove duplicate ret printing.
+
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get vdd regulator\n");
+> +
+> +	st->vddio_supply = devm_regulator_get(dev, "vddio");
+> +	if (IS_ERR(st->vddio_supply))
+> +		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
+> +				     "Failed to get vddio regulator\n");
+> +
+> +	ret = inv_icm42607_enable_vddio_reg(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(dev, inv_icm42607_disable_vddio_reg, st);
+> +	if (ret)
+> +		return ret;
+
+> +	/* Setup chip registers (includes WHOAMI check, reset check, bus setup) */
+> +	ret = inv_icm42607_setup(st, bus_setup);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+
+Just
+
+	return inv_icm42607_setup(st, bus_setup);
+
+? Or is it going to be extended in the next changes?
+
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
