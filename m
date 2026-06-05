@@ -1,52 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0104A35E1C0;
-	Fri,  5 Jun 2026 14:13:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12DE6382361;
+	Fri,  5 Jun 2026 14:20:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780668809; cv=none; b=gZpky9pTaYpeakQyKMfvVyYjy7oJ7qwChtGbKQfAsGu6WGh9t8+W/tPeYFtTf+3f5rfUAil0Y4rNqFnooLlb4iZv1UYmHVlq1uurXCFZpwidO5Ae62SlccE1A1LQLC7WAg76A44iizQIOV77381gL71rcSF3uYr3C4HdFn4sids=
+	t=1780669223; cv=none; b=Bax9CXzU+2f7EHEj5TTV58FXqTQaS/i58YUjNRmJawbrhd8gy29O4yqa0+iAcQKaYi7xagVGdS233UOOihkNddmcNid3mAXDCsuroZeFFRbSljxJkrY0jpe8FfVHe+AaXWllh/hwMKtJN0E2r/Yo+5gus6gpGI66qRFCVbY9T5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780668809; c=relaxed/simple;
-	bh=7wFJ5IkD/rqkXIejOdToxbX4+xkIOaxJhkDI3k9F2TA=;
+	s=arc-20240116; t=1780669223; c=relaxed/simple;
+	bh=pDx1/G8ZYOcUKTOmsRidQLTb0hxM7jQ+i738NgKeizw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=p6TEkSYA9usTPZMei+eOIZ1pPaB23TdcoBDgInbnJmkhWdP6kz7tt4rpHaKVtHqOsk8vRXkeDgH4LOwBMIDTRvC/0Rn7gTxBFxys44ENORUg2rnZ5rGfN3SR518SqijZ3XbXOExuCaJd+6yRDf+RwAeSQ5kgbodfXZvkxxX03hI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ciRrWfTU; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=XekFbaZVskwbsGpAj1h/GzATX2wPEsrJXAh8vRz2peX8Ble+iQgGgOQNm1hVkEvlmTwlE0bTImlH2YPqbwDz7+A+Xo8VVf/4/Q+VwXvCmDmFFc7HIa4hINI6MhXa1zOoMDEwgSotJzR2gQdB9Tvq8/QgjZ/xc9ALPh76uBnwq6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jQ5qFcv9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ciRrWfTU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D75751F00893;
-	Fri,  5 Jun 2026 14:13:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jQ5qFcv9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B990D1F00893;
+	Fri,  5 Jun 2026 14:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780668807;
-	bh=YnLjWnBU/ykYm2jI7JAvvpklnyKWG746Upvh99vHdRY=;
+	s=k20260515; t=1780669215;
+	bh=HgVBt5hB/cB9fifRQqctexQyLLTrMia8NOV3hyAOvnc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ciRrWfTUkxhZgAi8tWkGmWDkp8MlNp8/n8I8m+dJIzG74sUOBYNrw/Ct0UNkBEHQ+
-	 BUZAnf7QKSPCNcCWh55deerxD7dshaU1E/apg222VAE4zoCdN8Ovhq3IfZq2S1xHEr
-	 gEJu6hwrSgqMR3Z3MKukLzqQWlenpi82KoflijVuLW3WZgDqYe7a7wLsppz2GjEGwE
-	 XukiCVQgwiofb4OEA/D0sCW4flnqL24lDA+3w3vSmAPE6m4TuDoWNjV1TL3DBbZ3RO
-	 +Bx2QP9/UU6yNyA8BSXdcaTU/CBVprCICxktGx0J5CHMCNPsMaXI2M6bImnKXM4RbX
-	 ALVaH/8OZ3/iA==
-Date: Fri, 5 Jun 2026 15:13:20 +0100
+	b=jQ5qFcv9GiAAziFNmdjTDRibQDynnyaJszCzJqLwXfmYJ4iPRYJj8lVGFsPcUmDpr
+	 FplohwBIdOZSSd2JQMKVj7FhX5OGd0/7YQk770nW+Zr/ZyNG8YYpkzRKKcMiV3zILK
+	 iv+T2HeQdfYwd76NDw5tbgXcy4wvcboA70HbEwiz1ch2DBGb6nlZF2LeiOP2bR5HaO
+	 C+p2g6fCjxO0BoFUKtPPXLmNzMioTPeUy0dj6fnUZvRdfG9FxfV8cxQ1XZD3L7dGGc
+	 ezd6yZJndVuVHdxl00fsRgOL7IUzYcP0gpC7aijj/FG3Tk4kpAjyYukGYtmIG+SY0r
+	 ChKt7TmUWb8sg==
+Date: Fri, 5 Jun 2026 15:20:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andreas Kempe <andreas.kempe@actia.se>
-Cc: David Lechner <dlechner@baylibre.com>, Lorenzo Bianconi
- <lorenzo@kernel.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, John Ernberg <john.ernberg@actia.se>
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: deselect shub page before reading
- whoami
-Message-ID: <20260605151320.415cc432@jic23-huawei>
-In-Reply-To: <aiLS232YzmDvXhsN@w570anl.actianordic.se>
-References: <20260604132646.1099072-1-andreas.kempe@actia.se>
-	<aiGH7x531jwzOVxF@lore-desk>
-	<aiGKz9iMAUfFqxUP@w570anl.actianordic.se>
-	<aiGNeKTzOR30w-Qf@lore-desk>
-	<aiGZxzz8DF-E-tux@w570anl.actianordic.se>
-	<CAMknhBG+u__qiLv0aRLYnUW3iYXkYDLHveQ-bs2gGZfBAD6Viw@mail.gmail.com>
-	<aiGmfzaSj3bNyXkM@w570anl.actianordic.se>
-	<20260605131518.072dad20@jic23-huawei>
-	<aiLS232YzmDvXhsN@w570anl.actianordic.se>
+To: Romain Gantois <romain.gantois@bootlin.com>
+Cc: Puranjay Mohan <puranjay@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Thomas
+ Petazzoni <thomas.petazzoni@bootlin.com>, Wil Stark
+ <wil_stark@keysight.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: ti,tmp117: add binding for the
+ TMP119
+Message-ID: <20260605152005.4d888f6b@jic23-huawei>
+In-Reply-To: <ft-705oeTSiaftSGNjv94A@bootlin.com>
+References: <20260605-tmp119-v1-0-349f45f17d12@bootlin.com>
+	<20260605-tmp119-v1-1-349f45f17d12@bootlin.com>
+	<20260605125332.151b92f8@jic23-huawei>
+	<ft-705oeTSiaftSGNjv94A@bootlin.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,64 +54,71 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 5 Jun 2026 13:44:59 +0000
-Andreas Kempe <andreas.kempe@actia.se> wrote:
+On Fri, 05 Jun 2026 14:24:45 +0200
+Romain Gantois <romain.gantois@bootlin.com> wrote:
 
-> On Fri, Jun 05, 2026 at 01:15:18PM +0100, Jonathan Cameron wrote:
-> > On Thu, 4 Jun 2026 16:23:27 +0000
-> > Andreas Kempe <andreas.kempe@actia.se> wrote:  
-> > > On Thu, Jun 04, 2026 at 06:14:11PM +0200, David Lechner wrote:  
-> > > >
-> > > > How about setting the SW_RESET bit in the CTRL3_C register during
-> > > > probe too to ensure the rest of the registers are in a known state?
-> > > >  
-> > >
-> > > While the shub register file is selected, the reset register is
-> > > shadowed so it can't be written without first selecting the normal
-> > > register file. A reset is already called from probe in
-> > > st_lsm6dsx_init_device() after the whoami check has passed.  
+> Hi Jonathan,
+> 
+> On Friday, 5 June 2026 13:53:32 CEST Jonathan Cameron wrote:
+> > On Fri, 05 Jun 2026 11:01:35 +0200
 > > 
-> > The fix is fine, but I think it shouldn't be buried in the whoami
-> > check as it's a bit of a weird side effect.  I'd like a top level
-> > function that we can see in probe(). That can do the read + write
-> > if necessary sequence you have in this patch.
+> > Romain Gantois <romain.gantois@bootlin.com> wrote:  
+> > > The TMP119 has the same register layout as the TMP117, and a better local
+> > > sensor accuracy.  
 > > 
-> > This driver currently hard rejects unknown wai values (which it probably
-> > should not given fallback compatibles should work). Lets assume that will
-> > get resolved at somepoint and so the wai gate is advisory only. That
-> > means that the dance to avoid writing to a device that doesn't match will
-> > no be useful anyway.
-> > 
-> > As such, I'd prefer this 'reset of the register file mux selector' was
-> > part of the reset function and that was simply called before checking
-> > WAI.  It fits more logically there than in the whoami check function
-> > which is just the first place the unexpected setting causes problems.
-> > That is put it in st_lsm6dsx_reset_device() and call that before
-> > st_lsm6dsx_check_whoami().  Maybe with a comment to justify that.
+> > Sounds like (and the driver changes pretty much confirm) that this could
+> > use a fallback compatible to the tmp117.
 > >   
 > 
-> I agree fully that its current placement in st_lsm6dsx_check_whoami()
-> is not optimal.
+> What do you mean by "fallback compatible" in this case? Do you mean we should 
+> do something like this in the bindings:
 > 
-> The reason I put the fix where it is, is because 
-> st_lsm6dsx_check_whoami() is what assigns hw->settings needed for
-> st_lsm6dsx_set_page() to work. I moved that assignment to before the
-> whoami check for that very reason.
+> ```
+> enum:
+>        - ti,tmp116
+>        - ti,tmp119
+> const:
+>        - ti,tmp117
+> ```
+Something like (I can never remember the syntax so this is modified from
+another binding doc and untested)
+
+    oneOf:
+      - enum:
+          - ti,tmp116
+          - ti,tmp117
+      - items:
+          - enum:  #enum here because once we have one we tend to get more ;)
+              - ti,tmp119
+          - const: ti,tmp117
+
 > 
-> As I see it, moving my fix to a more reasonable place would mean a
-> larger restructuring of the driver or making the whoami check advisory
-> per your suggestion.
+> But wouldn't this invalidate existing device trees which only have:
+> 
+> `compatible = "ti,tmp116";`
+> 
+> > The second patch then just resolves the print that would happen on older
+> > kernels using that fallback due to ID mismatch.  That's fine but nice
+> > if older kernels can work with this part.  
+> 
+> Sorry I don't quite understand: since this is a feature patch, I don't expect 
+> it would get backported onto older kernels. Therefore why would the second 
+> patch resolve the print happening on older kernels?
+> 
+The point of a fallback compatible is that we don't have to backport anything.
+New device tree comes along that lists
 
-That feels unwise (even though it would work) as a fix for this issue.
-People would get very confused at the informational print.
+compatible = "ti,tmp119", "ti,tmp117"
 
-Ok. I guess maybe this is the best we can do.
-
-Lets see if Lorenzo is happy with earlier part of this thread
+will just work. Older kernel will think it has a tmp117 which is fine as they
+are register interface compatible.  It will print a message to say that it
+found an unknown ID but then assume it is what the firmware told it, here the
+tmp117 fallback.  With your second patch in place, that harmless message will
+disappear for new kernels.
 
 Jonathan
 
 
+> Thanks,
 > 
-> Best regards,
-> Andreas Kempe
+
