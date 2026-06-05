@@ -1,136 +1,220 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96CAD3B7768
-	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 14:40:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.176
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780670419; cv=pass; b=QBb85WKtBACu5QyghNr+iPYlv+FcyWH2wnr9Ld0b3Hw+C481F5kNPCLfSx24j4qhwVNKl8ipXoXJSgK8eoLDylAGl6nT3bOZO7Hs0BqXXLdylLhujesxLwuwR7Lp3k/hdnapfq6sMW3K5F5qcEjVLACxhpFnR4R7guUpABdMt0o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780670419; c=relaxed/simple;
-	bh=XudTaUobkCqpMUk/mD4J3kCOpdjuFbbcE/1FmyL6ub0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QglxdeyF5KKifOeY2HC1eGIRvUsI5JwgWe0zL5u4BlYXv2OYLi3HgFU38xcYsf3hX+LaSquR4hw1yZt29ZHKU95MQcw7CrMo0Nx2ZQekhr4ij1WTVnCV1o6wJ2hIb93AHKRj4EHkSaktIdKSP3+O/k//EpTKYYXFgS6E7O9X4D8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fl5c//UM; arc=pass smtp.client-ip=209.85.128.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB5B73EEADA;
+	Fri,  5 Jun 2026 14:59:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780671544; cv=none; b=Ab5Bcfykop7yi1pw6O+ST+ZMm/LpcdRoM2WbSwTdixtONSxEHp9l5IPhr8uQqaSlMpMSngyOfemnh0r5+Jeqo4qxTPAhzPvk07Bc3qWV9ZhImerjv5xFQaPFdRIvc43xt9ZN/Mi4AaCz3vYIet8tUqFmNhjpSHpUGozzlFhscCA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780671544; c=relaxed/simple;
+	bh=YtUWoF8b6w9hBx+0sbPAOY49NFqfABOcos5LLMOyEFc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=smIKbrtsNqSkl0B6dhq0wa2h/Ugqgd2Ga7IE+MT/2O0tKu5SdjpU4TyMEMYzCGFGcwgvk1ciZqdsdvakfvuVt6woTncP5vzEOiEKFkXoCq/5PE3OX2ETfMTimsN4xy7SGSWa6QLGlXcg/4IIb1eGADWJHGwwTqf2TA07ywLg5g0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cWpPZScw; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fl5c//UM"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-7dbd25309f7so22404877b3.2
-        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 07:40:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780670417; cv=none;
-        d=google.com; s=arc-20240605;
-        b=YOPnFU+U7sUBaqWMeCL2pWbj7pLnf4FXPRhXZs0qLsK5l7FrJr7SZRJCZ8Ugu1gtH/
-         2GaW4MeElGfCm9AcD85MftjIKXIuLthZ0QvQu4yaDtN+4YGpQ/17boZsbvkMz5rQdbbH
-         YPI61ZWgh5jckt6UyjQoJQUfjHhdN8m5uu4yWKrUxoGsELtSBTWnqYFQLq/ETPvADVbl
-         GMOTOLfzDNoO/3+9sMCUQNKZfQC2cHicYvaWMUgEExxq11UzhlXOqSlXqGw2+Q+5T1lr
-         XhvG3rZDo1V79VSBGhnzxaMoL7r9T83nig7wf1LUvCvyV3Cetp6ZJsvsXMFTPIU4776Z
-         texA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=JIBuaMp5eVSsZqmc6zEU/S8/Nh91rW1LUCYzFy6pAg8=;
-        fh=iAiWlPWdM+yAJ+wTVSodhfKY8mgCG/8y3cMHkPAmgUc=;
-        b=bqZj0bNydV5fLMop9HEGJSnu2eQL7guWQHwe1g2M7Bu6o7RZX0WZ51FHhb781IUcA0
-         2M67Fb30BfYSKOPp7GxYNjo7nShQmrzmgeS2yxuByqWDVrd1E8UDw7SC96Jr0FdVARRz
-         f3jIMUtS5UiGZadiR+IA3nS11AQpdypxUKaqPDAb2uCa86esHnhpRv6IR35kOhfnp4Sg
-         q4d+Y1o0I+kzdApU72hQdi+OCKJyrONDWdkKP1etAUEiY5qnRtpDzMaO7tdnK5H2oFfl
-         xRapW3bhZwWfYPVb4xFgzPaORzMhsCXM5//XEUtty3BPCUahiT4CLzBSt2PCBb6bkkYa
-         IJDg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780670417; x=1781275217; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JIBuaMp5eVSsZqmc6zEU/S8/Nh91rW1LUCYzFy6pAg8=;
-        b=Fl5c//UMzpCP5xl4NzvS5ZIUwnUMF/kLYMVm2gqZpGY772v/YGJDHdh/trRj18BuST
-         +hzVD8UZreJdUn+3XoGuzrHj2DTk+D7ph73+KxhT0AasyiP6o2foh1oImJtlqQs3+KDP
-         1Fq4hWTnul/PSlWacA+3XACO1dNXwpNmwJa8ErdksK3WHfNdTADaFPjADGfa5ajdMWMe
-         1mrMJLUS/aEwn/wlupftsABVcMWoHoxJy6U1skvytseNMlBvgMvIe6fqj/RbY6XWM3Zt
-         82SlkU3N3b9Q090/Ucy8s7GUet+K5en1gBIi920oa68EZ5ZPBRBmYzu0FAtIeDfMKh7Y
-         epAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780670417; x=1781275217;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=JIBuaMp5eVSsZqmc6zEU/S8/Nh91rW1LUCYzFy6pAg8=;
-        b=OuL3PCxMr7OMtOoMTCA80jdeJQYlrTOjqPwHrrVVi95nVnk8nKkfkP+il9ErNCi/OZ
-         /kqUrfdJ3rH6LpfJWrAHkaxyQcdgjX3teWtqrx0mPQeY5RHe9JXgkKBEiX5EyUQ4kO/i
-         8TFolEZMM/rP7o22m2iRP2jMXj/b/Fmon6RGOrSFVm+Y3TCgB4PoihUWFmqxLve2uyH2
-         kPbyWxpdrH2rQjGv4B3MR+xgurHweL6dIuZuWpRSm+miidTSI0W802WY+A5Xuqi4Bnee
-         9+qO3lBf5YfrL9//nYP+ciPaGzlV9Df28ay4u5zDF7UgFydTFLKMzqIGYXi3/Igmm1dq
-         Fxug==
-X-Forwarded-Encrypted: i=1; AFNElJ+QjxSXn2xwF/OLLNpy21PkPJzLo30ZLvh0S5KPzGdvL+taX/KFmW3ilRb9MszLAmdYW08HfhiOqNA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxLN4/8IkqxP2EvUBTA7tpvoY9Ws9S9qUW3AUfxxB3gHdU97Pet
-	ttbZOlFuER3sR7a6ZYB4MPAn0RgNfheBNrlfyzIzoQLgu6tzOzY3oS2EgpsjT0fySD6P+Ic0pmL
-	XkxuuV5BoDdyq+4kqYrxK0qcIGY1af0A=
-X-Gm-Gg: Acq92OFCOP6d0uZlV0vowMXC84XMwlS6fQvGKYIYT+ut+e5hWrxt9qPv6m51BXTZakx
-	lTyBBr3M8XUgem80nE4/nBxAQdD+KwyDUz8Wk1fWF7GQDytYUcjlvzis4RX6MiVCodQ4lpepUjY
-	jDTBqEHQJjvqzELd5R9GRKH7zf6k7QyLgizcbX4dw1hgrsYePXzCkyvYk/DUhuh+ZssrvZf7oQc
-	lXZbk7mrEWNWq7nOWfwmqmoig9m5UIu791ZtgedAEMIF6SuSg8jghr+FvLPhekfAQzsx7JlGy6f
-	v3O7L86XqNChsK69OQ==
-X-Received: by 2002:a05:690c:680b:b0:7cf:af41:50d9 with SMTP id
- 00721157ae682-7ed102ebf89mr38276587b3.36.1780670416478; Fri, 05 Jun 2026
- 07:40:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cWpPZScw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1780671543; x=1812207543;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YtUWoF8b6w9hBx+0sbPAOY49NFqfABOcos5LLMOyEFc=;
+  b=cWpPZScwhvf24uJ1gANnSZh9dOGBf9VbBAio707ycWG96j/R7ZnEs22i
+   jFOhLv1m507y/38w0VKgCJyc4tDFI70Jj9VCxLsYqME2syHtK/SOmj25U
+   uiIfawJiGghQwNPosYtjcTb2gz+ly4AVy21QaoqZ++Y3QkWXhtKOI1rb+
+   /0HOFCgEgLjVHYjJZrb8zMsUoRT6L2hOxFKHGVN6VBVqrh7rZzw5zBOXj
+   76gaXpphF1ocTjqYikHJFY99ol9vdtVmuKjJejC/owNmY99qmhTAjOyNS
+   rZus29Vqx0udWAzYT5vA3zGhYXzVbCFI3JBhacqdKXbKU/pFVQPe/CBQY
+   w==;
+X-CSE-ConnectionGUID: essLhdr5QdKZ22h3h6kvZA==
+X-CSE-MsgGUID: hWb0Lt5+QYieNkBQCDnJuA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11807"; a="81565791"
+X-IronPort-AV: E=Sophos;i="6.24,188,1774335600"; 
+   d="scan'208";a="81565791"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 07:59:02 -0700
+X-CSE-ConnectionGUID: tzVH5uAlRFKML/xZ0N061g==
+X-CSE-MsgGUID: n9brUnkpQTqYX5ua5kVMZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,188,1774335600"; 
+   d="scan'208";a="282944665"
+Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 07:59:00 -0700
+Date: Fri, 5 Jun 2026 17:58:57 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Herman van Hazendonk <github.com@herrie.org>
+Cc: linusw@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: mpu3050: read gyro samples via FIFO in
+ IIO_CHAN_INFO_RAW
+Message-ID: <aiLkMW_1yynJmGgu@ashevche-desk.local>
+References: <cover.1780648724.git.github.com@herrie.org>
+ <81c02804b9ae3bc194ef1da95f58da4c5e19b609.1780648724.git.github.com@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAKqfh0En4pHqSfxfd2FHSDTxfWx6BfJLfeQ3xup4bwfLSTrZRA@mail.gmail.com>
- <20260526191946.409160c8@jic23-huawei> <aiEpmqKwFuIMRfdl@ashevche-desk.local>
- <aiEtIGOFhF8AfUCT@stanley.mountain> <aiExQzpIOwPgwd3-@ashevche-desk.local>
- <aiE3N6zErq2WcCvS@ashevche-desk.local> <aiFVuvVtaWbjfVzA@stanley.mountain>
- <aiFWg6vC2cVbONTK@stanley.mountain> <aiGRzFrSU6QUL4R2@ashevche-desk.local>
- <aiJo1kjN3_XDUdBc@stanley.mountain> <aiKIoqR0IQBZ-1ZD@ashevche-desk.local>
-In-Reply-To: <aiKIoqR0IQBZ-1ZD@ashevche-desk.local>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Fri, 5 Jun 2026 09:38:17 -0500
-X-Gm-Features: AVVi8CcB2xdyAloYYt76tcmuErFY63mlZK_MqQnyHeOABHPlNJaoZTICrRdPL-g
-Message-ID: <CAKqfh0FMsor4WnrdMcXrF4+G=m-Vu=nGq5ieDz8C=bUOvicT-g@mail.gmail.com>
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Dan Carpenter <error27@gmail.com>, Jonathan Cameron <jic23@kernel.org>, Nuno Sa <nuno.sa@analog.com>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <81c02804b9ae3bc194ef1da95f58da4c5e19b609.1780648724.git.github.com@herrie.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jun 5, 2026 at 3:28=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Fri, Jun 05, 2026 at 09:12:38AM +0300, Dan Carpenter wrote:
-> > On Thu, Jun 04, 2026 at 05:55:08PM +0300, Andy Shevchenko wrote:
-> > > On Thu, Jun 04, 2026 at 01:42:11PM +0300, Dan Carpenter wrote:
-> > > > On Thu, Jun 04, 2026 at 01:38:50PM +0300, Dan Carpenter wrote:
-> > > > >    168          ret =3D sscanf(buf, "%i %i", &back->cached_reg_ad=
-dr, &val);
-> > > > >                              ^^^
-> > > > > Uninitialized variable.
-> > > >
-> > > > s/variable/data/.
-> > >
-> > > With what I asked in the previous reply and what you explained there
-> > > (thanks, btw!) I still think your patches are not fully correct. They
-> > > will require to atomically write all or nothing. If we want support
-> > > partial writes we need to go with that differently (reset ppos when
-> > > we got enough or more than enough data).
-> >
-> > Requiring writes to syfs and debugfs be atomic is pretty normal and
-> > works well in practice.  These are very small writes.
->
-> Perhaps. In any case your patch will break existing partial writes, right=
-?
-> I'm still considering that resetting ppos is the right thing to do. Just
-> need to find where the best place is to do that.
->
+On Fri, Jun 05, 2026 at 10:46:21AM +0200, Herman van Hazendonk wrote:
+> The direct gyro register file (XOUT_H..ZOUT_L) returns stale data on
+> at least the HP TouchPad (apq8060): X high byte is stuck at 0xFF and
+> Z reads as 0x0000 even when the chip is otherwise sampling and the
+> userspace i2c-dev path returns sensible values for the same chip from
+> the same registers. Y reads correctly, suggesting the issue is in how
+> the on-die register file responds to back-to-back two-byte reads at
+> specific offsets after the reset / PLL settle that
+> mpu3050_set_8khz_samplerate() performs immediately before the read.
+> 
+> The chip's on-chip FIFO does not have this hazard because the sample
+> assembly is performed inside the chip and the host only reads a fully
+> formed frame from FIFO_R.
+> 
+> Add a small mpu3050_fifo_read_one() helper that:
+> 
+>   - lowers DLPF/SMPLRT to ~250 Hz so exactly one fresh sample lands
+>     in the FIFO during the wait loop (at the previously-set 8 kHz the
+>     FIFO accumulates a sample every 125 us and races the FIFO_COUNT_H
+>     / FIFO_R bulk reads, producing per-axis byte hazards even though
+>     the oldest 6 bytes are nominally a clean frame);
+>   - configures FIFO_EN for gyro X / Y / Z only (the FIFO-captured
+>     TEMP slot occasionally returns stale data while gyro words are
+>     still consistent; mpu3050_read_raw() reads TEMP_H/L directly
+>     instead);
+>   - resets the FIFO and enables FIFO read-out in a single
+>     USR_CTRL write so the chip atomically resets the write pointer
+>     with capture already on (two separate writes leave the FIFO in a
+>     brief transient state where the first sample after re-enable can
+>     land at a non-zero offset, producing per-byte-shifted frames in
+>     the readback);
+>   - waits for one 6-byte sample to land with a generous retry loop;
+>   - reads one 6-byte X / Y / Z frame from FIFO_R;
+>   - tears the FIFO capture down so subsequent buffered/triggered
+>     reads aren't confused by stale FIFO_EN bits.
+> 
+> Route IIO_CHAN_INFO_RAW through this helper for IIO_ANGL_VEL. IIO_TEMP
+> keeps its existing direct TEMP_H/L read because that register is not
+> affected by the gyro register-file hazard, and the FIFO-captured TEMP
+> slot occasionally diverges from the live register by several degrees.
+> The triggered-buffer path (mpu3050_trigger_handler()) is unchanged
+> and continues to manage the FIFO itself when the hardware interrupt
+> trigger is active.
+> 
+> The chip is left at ~250 Hz when the helper returns; mpu3050->lpf and
+> mpu3050->divisor are unchanged so the sysfs in_anglvel_sampling_-
+> frequency value resolved via mpu3050_get_freq() keeps reporting the
+> user-configured rate. The next caller of mpu3050_set_8khz_samplerate()
+> (any subsequent IIO_CHAN_INFO_RAW read, or the buffered-mode enable
+> path, or a companion runtime_resume fix sent as a separate patch)
+> issues a full chip reset and reprograms the hardware from cached
+> state.
+> 
+> Test results on the HP TouchPad with the chip lying flat, 15
+> IIO_CHAN_INFO_RAW reads at 200 ms intervals:
+> 
+>   Before this patch (direct XOUT_H/YOUT_H/ZOUT_H reads):
+>     X = 255             (high byte stuck at 0xFF, permanently)
+>     Y = -99             (works)
+>     Z = 0               (low/high bytes both 0x00, permanently)
+> 
+>   After this patch (FIFO read path):
+>     X = -95..-156       (span 61, mean -127)
+>     Y =  46..80         (span 34, mean  61)
+>     Z = -15..23         (span 38, mean   3)
+>     TEMP = -13440..-13552  (span 112, stable)
+> 
+> Steady-state per-read latency is ~89 ms, dominated by the existing
+> mpu3050_set_8khz_samplerate() reset + msleep(50) before the FIFO
+> helper.
 
-I'm certainly no expert on simple_write_to_buffer() but something in
-me tells me that writing in the middle of a buffer is a code smell.
-But you all seem much more informed in that regard so don't trust me
-:)
+AI assisted?
+
+> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+
+...
+
+> +	int retries;
+
+Why signed?
+
+...
+
+> +	/*
+> +	 * Wait for at least one sample to land. At 250 Hz that's nominally
+> +	 * 4 ms; the retry loop gives a generous margin so a stretched i2c
+> +	 * clock or NEW sample-rate-change settle time doesn't trip the
+> +	 * timeout.
+> +	 */
+> +	for (retries = 0; retries < 10; retries++) {
+> +		usleep_range(2000, 4000);
+> +		ret = regmap_bulk_read(mpu3050->map, MPU3050_FIFO_COUNT_H,
+> +				       &raw_count, sizeof(raw_count));
+> +		if (ret)
+> +			goto disable;
+> +		fifocnt = be16_to_cpu(raw_count);
+> +		if (fifocnt >= MPU3050_FIFO_FRAME_BYTES)
+> +			break;
+> +	}
+
+Can't you use a macro from iopoll.h?
+
+> +	if (fifocnt < MPU3050_FIFO_FRAME_BYTES) {
+> +		dev_dbg(mpu3050->dev, "FIFO timeout (%u bytes)\n", fifocnt);
+> +		ret = -ETIMEDOUT;
+> +		goto disable;
+> +	}
+
+...
+
+> static int mpu3050_read_raw(struct iio_dev *indio_dev,
+
+>  					"error reading temperature\n");
+>  				goto out_read_raw_unlock;
+>  			}
+> -
+>  			*val = (s16)be16_to_cpu(raw_val);
+>  			ret = IIO_VAL_INT;
+> -
+>  			goto out_read_raw_unlock;
+
+Stray changes.
+
+...
+
+>  				goto out_read_raw_unlock;
+>  			}
+
+> -
+
+Stray blank removal again.
+
+> -			*val = be16_to_cpu(raw_val);
+> +			/*
+> +			 * frame[0..2] = XOUT/YOUT/ZOUT in the order the chip
+> +			 * packs gyro words into the FIFO. scan_index is 1..3
+> +			 * for X/Y/Z so subtract one to land on the frame.
+> +			 */
+> +			*val = (s16)be16_to_cpu(frame[chan->scan_index - 1]);
+>  			ret = IIO_VAL_INT;
+
+> -
+
+...and again.
+
+>  			goto out_read_raw_unlock;
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
