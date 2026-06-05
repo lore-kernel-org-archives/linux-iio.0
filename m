@@ -1,60 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B34315793;
-	Fri,  5 Jun 2026 18:10:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA2F390C8D;
+	Fri,  5 Jun 2026 18:16:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780683029; cv=none; b=My+Evqd/F6+l9aFNZj0x7NPdOUdVhFcUZ5uPV5Mwx6Yj5DLldmONxTMF++Cw3xVdchRFPadYPrVNozkeJRtxWH/iXfLaR/p3z80nc3O43AaLp8TQYIDwqlgiYuHDp2nAVy2HGnBil754Fid6Q/H4wDd1Hp72l7RO4xFs8UAT8tM=
+	t=1780683405; cv=none; b=RADLb2+YF6zQ5ug7GkWY48vV1ZgJa2+IQV6b0G50P+bxjuD6QeOrAZFJIHN+Iez+Sm2KsS3f0T1Uw7WO0L6XawahmJeTo/lzkn79MGa8aa4gTHmoqoXOLcoDEeyqpK59r19OH5X3yXB9KLRe5t6Olb6RVQog7qAo0MmsW+/Panc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780683029; c=relaxed/simple;
-	bh=CqVj0C/PESAXUez0gzJ4cJi3BxzrPb7V5KZtA6FXslY=;
+	s=arc-20240116; t=1780683405; c=relaxed/simple;
+	bh=Czu7M7stp84IueL4PgpIZQSP3xMQW5xUrpR55Dpa0hM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JFHxoop49kwdQIV0KpqnsGAxyRBgZpXxax6TpoTnrkRxBm6pLNtlJuqe12nqZX2sfHYagsJkCtTRKub3IZBCyyzZAFIP68ipS78MoTuvrdCGiAT2NPpJIFlx50FwyKlhd+F4hpNOUqPYYAn2HhnYGD+P7sm+q+QssPkmsvp0TFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fufdefqs; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=MRoNrKER2RtSyeQ8RIZmPFkwJHrO+nl7hOOgEy9JeVWDODO0Ik4m7Prn9GOK0GSkNjnEwR0WTzmkmOvsT+N3d1yBfU79D3Mf1oty1Tz98ox4UDW33teqx4vzW5nM8fD7KKLdpvRBkpSIe9hGysjtOY+oVIQQhRGyNR+z7M4nEpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J2ujLPrn; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fufdefqs"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J2ujLPrn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780683029; x=1812219029;
+  t=1780683404; x=1812219404;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=CqVj0C/PESAXUez0gzJ4cJi3BxzrPb7V5KZtA6FXslY=;
-  b=FufdefqsaaT2lnpqJJu3CueQh4OYD5a/LKLxCThhR+M4aTfQ/tE6/MEW
-   Yp5amEmFqwYKe5d0Q2fMFwUGl4LVIv705D2vUExCNIFDJ0K7qDGZBcqgA
-   wBtfjIxZxWBdOVT2VcLmdnY8uoroyazlGirkSi4J6W4daLa2cJ20QUDYT
-   m6kmE0MQJBcp5WCrlh4+2ZYW6RTDQCrlI04G73hwgFKptmuuJ7BHoUFVn
-   NNi1YIYnMg9bax73jckrU+EhpUdF5zbOvoKCR+EDrne7mkGgO0xusBGsl
-   pr9pm88tmYayOyP2bbHmEkAjcRxD7BzQtWB+oT5LPwfPSw1tSHxUBvmQr
-   g==;
-X-CSE-ConnectionGUID: ugyAnoZpRzSO9iYMRGJgDg==
-X-CSE-MsgGUID: BAYuhhfKTtKcYNs0CsXEYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="85141904"
+  bh=Czu7M7stp84IueL4PgpIZQSP3xMQW5xUrpR55Dpa0hM=;
+  b=J2ujLPrnTAFdSSi3ftxnUKs8DsoBaIKLVeA5q3M9PZsqjJfy5qNCxjQp
+   LnnNgFZs5Nr/YOkGVseV40TQmRjFSf6cWL0EMByddQty9BV3wB3cGihmI
+   NltPLkyw4tepkwXjc76UUTPkQxmJVLHYy3+2DlF6/6KRy36nK0qYmsER/
+   /DRL9ULaaK6qHJxm1T+vky0r1U/6Sx12d0spxTX2RmpXuRL0cqJ2YILwF
+   px0XNoMm3VFFgARcy4EyMc+xg2oC+1L85t/PxH09KJcC/yRXscJNoD5xx
+   H8xeGcLCcBUdRZKMnxncfpTQ/+TYnZz2RKmcMFHy+wdxc8EPrht6b5LyW
+   w==;
+X-CSE-ConnectionGUID: Ntde4AFuSbGboZQ9PEyicw==
+X-CSE-MsgGUID: qzfR19uDR763gJlgaT1KSQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11808"; a="104183174"
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="85141904"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:10:29 -0700
-X-CSE-ConnectionGUID: QUVxgwSVQ7+LWmRqO/Rgeg==
-X-CSE-MsgGUID: NVRTWpl9SgegVwalg9Vy9g==
+   d="scan'208";a="104183174"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:16:43 -0700
+X-CSE-ConnectionGUID: +UtgzMglSRypY9K2M6LwNw==
+X-CSE-MsgGUID: F5ESppPXSWG8lsSCPSFTag==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,189,1774335600"; 
-   d="scan'208";a="282992143"
+   d="scan'208";a="241928990"
 Received: from ettammin-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.178])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:10:26 -0700
-Date: Fri, 5 Jun 2026 21:10:23 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2026 11:16:39 -0700
+Date: Fri, 5 Jun 2026 21:16:37 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rodrigo Gobbi <rodrigo.gobbi.7@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, ~lkcamp/patches@lists.sr.ht,
-	linux-kernel-mentees@lists.linux.dev, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: spear_adc: align headers with IWYU
- principle
-Message-ID: <aiMRDwzwh6zXaHo_@ashevche-desk.local>
-References: <20260527014058.35265-1-rodrigo.gobbi.7@gmail.com>
- <20260527014058.35265-3-rodrigo.gobbi.7@gmail.com>
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>,
+	Prasad Bolisetty <pbolisetty@axiado.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Subject: [PATCH 0/3] iio: adc: Add Axiado SARADC
+ driver
+Message-ID: <aiMShZhp7iUL9n4_@ashevche-desk.local>
+References: <20260528-axiado-ax3000-ax3005-saradc-v1-0-345dd5f6608a@axiado.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,23 +68,24 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260527014058.35265-3-rodrigo.gobbi.7@gmail.com>
+In-Reply-To: <20260528-axiado-ax3000-ax3005-saradc-v1-0-345dd5f6608a@axiado.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, May 26, 2026 at 10:36:40PM -0300, Rodrigo Gobbi wrote:
-> Remove unused includes and add what is being used:
+On Thu, May 28, 2026 at 01:10:22AM -0700, Petar Stepanovic wrote:
+> This series adds support for the SAR ADC controller found on Axiado
+> AX3000 and AX3005 SoCs.
 > 
-> #include <linux/array_size.h> // for ARRAY_SIZE
-> #include <linux/bits.h>  // for GENMASKxx
-> #include <linux/dev_printk.h> // for dev_err_probe, dev_info
-> #include <linux/math.h>  // for DIV_ROUND_UP
-> #include <linux/mutex.h> // for struct mutex
-> #include <linux/types.h> // for uXX definitions
+> The controller is a 10-bit ADC. AX3000 has sixteen input channels and
+> AX3005 has eight input channels. The driver uses SoC match data to
+> select the number of available channels for each compatible.
+> 
+> The driver supports single-shot voltage reads through the IIO subsystem
+> and uses the reference voltage regulator for scale calculation.
 
-> #include <linux/iio/types.h> // for IIO_CHAN_INFO_*
-
-I guess we tend to avoid including this one as long as iio/iio.h is included.
+When submit a new driver always answer these two questions:
+- why do we even need a new brand driver? (No existing that can be extended?)
+- where can we get a datasheet? (URL? Other means?)
 
 -- 
 With Best Regards,
