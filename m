@@ -1,171 +1,204 @@
-Received: from outbound11.mail.transip.nl (outbound11.mail.transip.nl [136.144.136.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36693F0ABF;
-	Fri,  5 Jun 2026 10:08:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2E514A3410
+	for <linux-iio@vger.kernel.org>; Fri,  5 Jun 2026 11:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780654144; cv=none; b=H3eeQ5XuSCFvJFkp5/hejJRe3mwVRbBXAQv7gymry1TRTTANziYvjqkjszLZjrnwAsoiLfO/Wst8SxoOtg/HUYTg2xHkbNhMa+QiaPL+A6Dnl1pj4sFF2ID5434TmiH+iSwLCoABLlNc3CKOYESQnLX0+3OnBroBcrnZUCRMfRA=
+	t=1780659280; cv=none; b=jWKF5VjLDdh8wu9iidyos/a3UObQA5jCuSSO1ax6XfNdWzCNuLXoNt5iU5QYw4fyivfDCCATTToN50ycb3REEE4UCLkaQi59rw1s5ZWR6OTvJ9mYYThZjot39rq6XY8TtT0LGym+2d4XGmRPOlE24LgCql22e1a15SzVnlMWcS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780654144; c=relaxed/simple;
-	bh=sJxLEqKR9v8Hg0iJX3EyuPAsYh2VmANHcCjjQi9bWDc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JfP74E2BolEFIpiU+mtXZapnjhfXW6r20CerjN5/CRpoK+ohzO45uE08WNXkPRL9DkM6J8LCnBrLe13yBnXgC0VLuOTEwqcSXtR5DQZzmWjCaRqK10AI500ZbdXf7sFm+49T76sSQDwl/tDE3nBpjGPNP5UJEW+HS9p0OkjWHmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=byFlq7bu; arc=none smtp.client-ip=136.144.136.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1780659280; c=relaxed/simple;
+	bh=RTjhxEGvOy+F+VQ/siDtUUts+dyofnFoSYDC7g4FuG4=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cFVW1lRWl8CFzfNC3f4HCmBezKeLNQ1IcF/f3Ei47qMcCGQFCLHBJjnelSKeShaUge4zwDEgv7xkDWGVf1VLI2fwGjWlFQRVuSWU88OvnMrvBu8DzyXy6lJsGVU36oJJdkKMbLTfFYXnDGVyhDhVWOh0kD34sJfZna8V+RE+4mo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wmq3kPUV; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="byFlq7bu"
-Received: from submission4.mail.transip.nl (unknown [10.103.8.155])
-	by outbound11.mail.transip.nl (Postfix) with ESMTP id 4gWxwZ6l8PzkQRYC;
-	Fri,  5 Jun 2026 12:08:46 +0200 (CEST)
-Received: from herrie-desktop.. (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission4.mail.transip.nl (Postfix) with ESMTPA id 4gWxwZ2780z3R3nyy;
-	Fri,  5 Jun 2026 12:08:46 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-To: jic23@kernel.org,
-	linusw@kernel.org,
-	denis.ciocca@st.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	sanjayembeddedse@gmail.com,
-	maudspierings@gocontroll.com,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Herman van Hazendonk <github.com@herrie.org>
-Subject: [PATCH 3/3] iio: magnetometer: st_magn: honour st,fullscale-mg DT property
-Date: Fri,  5 Jun 2026 12:08:43 +0200
-Message-ID: <a8b63f5997700aba85883816a5d7520dcb28a96d.1780652883.git.github.com@herrie.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1780652883.git.github.com@herrie.org>
-References: <cover.1780652883.git.github.com@herrie.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wmq3kPUV"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-45ee5cdbd28so1821956f8f.1
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 04:34:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780659277; x=1781264077; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hJRmfaxPaWcnCvs7QB4gUgP5UAYanEHUPfa/m1ombOs=;
+        b=Wmq3kPUV9UQPwUwMfcEXS9nkcfIrne1+VxRzzjUKdhZSQLt92iAY6nYOEznZG/ER34
+         DI+Ud3o2CrPMIs80JfWzrStGQL2ggC+z8+t/N0Z9zJtlWanXANkgmfUTohUzM0ZeWDtu
+         GlweRSmz9jODSRyF7mOAblmcPhpdIfjohDSeviSD+UKuZ2V1LPE2w7QjwBhhowwetEB0
+         LqDEmOuK7vAJdyDpzNLW4ZjT6MX+Ffq5dqimPRyIZQW61NZ0z06mJK/GcMfaDN5mpcJO
+         mWKElBxtngM5oQCC8uS34uksuJNFEZ7I6AIRQZnOUN+L2qyOZaeFzBx0bx3cqYg8tiIR
+         vkDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780659277; x=1781264077;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hJRmfaxPaWcnCvs7QB4gUgP5UAYanEHUPfa/m1ombOs=;
+        b=SbZR8mwzmucwrYR7xySQXvKX4JjMF9VUZI9cxguefR+EgfYz+JumZn9RqhUOZciMGN
+         gwuqyLhUpCpzOiJNZQYBCs0n4Ct3J5OhlIXrN5YinNmsGZOajhfkE6B/X/WozjojM3v/
+         OtKW5CHZ3oiZAtgXALQZatPWeZTSY/sSqYM/FMvk1TqGD3mZMbh2uXi0bg0rEwZv5ZkB
+         q7nAg891I0beBUbMNBn66rVAWQwETCJfR29JrOw/JLpeXiaCnjwGlD0bs4EpkXvcwtl0
+         zEFP4p+q661vcIcY/m/RKBI+2aA5W26ncN4j4Mduu/19djhuDKtcJJ3jR8H3lBrSjlPQ
+         6lCA==
+X-Forwarded-Encrypted: i=1; AFNElJ/+TEMVDBn1tiAALWIMotfwlLEctcEhj+0re3Fw591S1AjRhp7y6ACqyKDL0dhdyFVP8BnUzocvYEo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxFjGdyGsKPLs+JGhKdrdmmgBeLSmjI6Poro8sE1wmVb5Lp2w1Q
+	KblCV8oDxs1UwaR9ODQdbpfilXgktbgA4U+6FXf1aSBbfe75FFAi2REx
+X-Gm-Gg: Acq92OHxTMxuwtZuZSvVHYD2ziqWw5EUyGqfK/nTQrG1aZptalPNsA1uEjRRXVfmzPR
+	WShqQd1q6tuewxI/Czrf3y0OCvXRliW89+brZALpgUC+RGly2n1MhmWv6vyBJyOSCuLZAVnSstd
+	x3IE4dEOprbbUd6tHXqgdmNOuuOX7o5HeG68wwIyMMd6LU28Ez/RoqGS6NHNIERpMfGXxymdBNa
+	kKv9t4Qpg3sEm3b2FVqbbraJwM9SiCmcTOA19rEWcQsKFtaRWyhkm7TfdHDEPyTRu8ovlpoziOu
+	VgGersfLo7h4PZ6fXPKQJt+BLM6SX4C88cgFmM9GeGtE6H89ATaolLtgSzpLFEDJtOsRKxZ5bxo
+	bdJNYP3vjEEu2cx8+xJM/OUjpl6wF3NpKlNIi7mAH7mI++aD8rB6Ub5069TbxZdhelUZQ1t0oY+
+	qOBE4tZfhK/b2fhVsDi+Tu3H0gIkpIEvrX34mqMDOMe+dQ69KAHmjvoIENU9jSkyd73qcjTPY+N
+	BGhsDPIHrMwveiV3TQJkEkxutRKy3xBqxotPtKH07GwTIC+v8toI/ReatLx
+X-Received: by 2002:a05:6000:491a:b0:45e:dc0a:bcb with SMTP id ffacd0b85a97d-46032db42fcmr3878302f8f.22.1780659277189;
+        Fri, 05 Jun 2026 04:34:37 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46028a6dce6sm17068219f8f.30.2026.06.05.04.34.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Jun 2026 04:34:36 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Fri, 5 Jun 2026 12:34:31 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>, 
+	linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH 10/12] iio: dac: ad5686: add triggered buffer support
+Message-ID: <i3wvatdosla3cszhhtizgoetcbknl56be3mpipzdxqx2jzvch2@l4hzeer5zoa7>
+References: <20260602-ad5686-new-features-v1-0-691e01883d27@analog.com>
+ <20260602-ad5686-new-features-v1-10-691e01883d27@analog.com>
+ <20260603134151.7cf1654b@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: ClueGetter at submission4.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1780654126; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version;
- bh=xb/U3BDUqdxbY5zFe5F+I4YVsGUKm6tPSWQsBYhq7+g=;
- b=byFlq7buZZiGbj8oT1vpSjGMHfELTx2Vf5wd7t6PFvHF3uE+tmY65zIwcI/AABcpwFERgG
- W/QjEeXIef42HUPYcj+4864hYlh8vLptqA61re1wRsM0CYOojp6ffTgCw2R/7ghm91UP47
- QF9UhznJDHYdKjo+ohdQ/hmI5WCCnzcrrQtVe17mdJeHaOQ/mATX2rDuBHiJFUGGEqGIo2
- LaOBA+TZgvNhUa986AYLuEzyKDIGmivFsyce3zhtvIrHMOhj9evS2LUX2Yw5cDeqGKLslp
- RBqGj5RM8lcyFmtDcnkbxJANnNy8a+2zOHbMNj3HJ6SwCvVQFUOlo2PL5GdGtA==
-X-Report-Abuse-To: abuse@transip.nl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260603134151.7cf1654b@jic23-huawei>
 
-The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
-highest-sensitivity full-scale supported by the chip -- as the
-starting range. For the LSM303DLH that is +/-1.3 G; for the
-LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
+On 26/06/03 01:41PM, Jonathan Cameron wrote:
+> On Tue, 02 Jun 2026 17:33:57 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Implement trigger handler by leveraging the LDAC gpio to update all DAC
+> > channels at once when it is available. Also, the multiple channel writes
+> > can be flushed at once with the sync() operation.
 
-That is the right default for "minimal noise floor at a desk", but
-it leaves no margin for boards that pick up appreciable DC bias from
-nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
-LSM303DLH magnetometer is mounted close enough to the surrounding
-power planes that X reads back as the chip's 0xF000 overflow
-sentinel (== -4096 raw, the value the chip publishes when the ADC
-saturates) on every sample at the chip-default range, while Y and Z
-fall well within the +/-1.3 G window.
+...
 
-Parse the st,fullscale-mg device-tree property (documented separately
-in dt-bindings/iio/st,st-sensors.yaml) in the magnetometer common
-probe to select the initial fs_avl entry by its mg value. The driver
-tolerates an unknown / unsupported value by falling back to the chip
-default and warning, so the property is purely additive -- existing
-in-tree DTSes are unaffected.
+> > +static irqreturn_t ad5686_trigger_handler(int irq, void *p)
+> > +{
+> > +	struct iio_poll_func *pf = p;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct iio_buffer *buffer = indio_dev->buffer;
+> > +	struct ad5686_state *st = iio_priv(indio_dev);
+> > +	u16 val[AD5686_MAX_CHANNELS] = { };
+> > +	int ret, ch, i = 0;
+> > +	bool async_update;
+> > +	u8 cmd;
+> > +
+> > +	ret = iio_pop_from_buffer(buffer, val);
+> > +	if (ret)
+> > +		goto out;
+> > +
+> > +	mutex_lock(&st->lock);
+> > +
+> > +	async_update = st->ldac_gpio && bitmap_weight(indio_dev->active_scan_mask,
+> > +						      iio_get_masklength(indio_dev)) > 1;
+> > +	if (async_update) {
+> > +		/* use ldac to update all channels simultaneously */
+> > +		cmd = AD5686_CMD_WRITE_INPUT_N;
+> > +		gpiod_set_value_cansleep(st->ldac_gpio, 0);
+> > +	} else {
+> > +		cmd = AD5686_CMD_WRITE_INPUT_N_UPDATE_N;
+> > +	}
+> > +
+> > +	iio_for_each_active_channel(indio_dev, ch) {
+> > +		ret = st->ops->write(st, cmd, indio_dev->channels[ch].address, val[i++]);
+> > +		if (ret)
+> > +			goto cleanup;
+> > +	}
+> > +
+> > +	if (st->ops->sync)
+> > +		ret = st->ops->sync(st); /* flush all pending transfers */
+> > +
+> > +cleanup:
 
-Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
-LSM303DLH the valid values are 1300, 1900, 2500, 4000, 4700, 5600
-and 8100; for LSM303DLHC they are 1300, 1900, 2500, 4000, 4700, 5600,
-8100 (same code path); for LIS3MDL they are 4000, 8000, 12000, 16000;
-and so on. Sensors with a fixed full-scale (fs.addr == 0) simply
-ignore the property.
+It turns out that this label is not really needed. When sync() op is available
+it must be called regardless of write failure, so the bus data can reset its
+state. Then moving "cleanup" up would just make it useless.
 
-Empirical scale sweep on the HP TouchPad confirmed that on this
-board any fs_avl >= 1 produces non-saturated X readings:
+> > +	if (async_update)
+> 
+> Error paths are always fun.  Do we care about setting ldac_gpio to 1 if
+> we failed to write the channel values?  That will set any that did successfully
+> update, but not all of them.  Note I'm not sure on the right answer for this.
+> There may not be one!
 
-    scale (0.001 G/LSB)  | X raw    Y raw    Z raw
-    --------------------+-------------------------------
-            1.100        | -4096    44       46    (X saturated)
-            0.855        |  -547    37       37    (clean)
-            0.670        |  -433    94      103    (clean)
-            0.450        |  -266    44       71    (clean)
-            0.400        |  -235    34       65    (clean)
-            0.330        |  -196    27       56    (clean)
-            0.230        |  -145    15       40    (clean)
+I would not see a problem with that, as there is no much we can do with errors
+in a interrupt handler.
 
-2500 mg is the natural choice for tenderloin: comfortably outside
-the saturation regime while keeping useful precision for compass
-applications.
+> 
+> > +		gpiod_set_value_cansleep(st->ldac_gpio, 1);
+> > +
+> > +	mutex_unlock(&st->lock);
+> > +out:
+> > +	iio_trigger_notify_done(indio_dev->trig);
+> We get this pattern so often (though not always).  Feels like maybe
+> we should put some effort into a generic opt in solution for this.
+> 
+> A job for another day but options that come to mind.
+> 1) (hideous) a flag
+> 2) Maybe an alternative callback. thread_always_complete or
+>    something like that.  Pain to wire through all the calls though
+>    and injecting the necessary wrapper isn't great either.
+>    Implementation wise would be a case of popping in a wrapper function
+>    in iio_trigger_attach_poll() call to request_threaded_irq().
+> 3) Maybe a helper macro?  Bit ugly as we'd need one to generate
+>    the wrapper function and another to use the same name for
+>    the registration function.
+> 
+> Hmm. Those are all ugly (maybe 2 is ok ish).  Suggestions welcome!
 
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
----
- drivers/iio/magnetometer/st_magn_core.c | 35 +++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+using a cleanup.h? with something like:
 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index ef348d316c00..936253440856 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/property.h>
- #include <linux/sysfs.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -628,6 +629,40 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 	mdata->current_fullscale = &mdata->sensor_settings->fs.fs_avl[0];
- 	mdata->odr = mdata->sensor_settings->odr.odr_avl[0].hz;
- 
-+	/*
-+	 * Allow the device tree to override the default full-scale. Hardware
-+	 * such as the LSM303DLH magnetometer on the HP TouchPad picks up
-+	 * enough DC bias from nearby PCB structures that the chip-default
-+	 * highest-sensitivity range saturates the X axis to a sentinel
-+	 * 0xF000 immediately at probe; selecting a less sensitive range via
-+	 * st,fullscale-mg fixes that without requiring userspace to write
-+	 * in_magn_*_scale at startup.
-+	 */
-+	{
-+		u32 fs_mg;
-+
-+		if (!device_property_read_u32(parent, "st,fullscale-mg",
-+					      &fs_mg)) {
-+			struct st_sensor_fullscale *fs =
-+				&mdata->sensor_settings->fs;
-+			int i;
-+
-+			for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
-+				if (!fs->fs_avl[i].num)
-+					break;
-+				if (fs->fs_avl[i].num == fs_mg) {
-+					mdata->current_fullscale =
-+						&fs->fs_avl[i];
-+					break;
-+				}
-+			}
-+			if (mdata->current_fullscale->num != fs_mg)
-+				dev_warn(parent,
-+					 "st,fullscale-mg=%u not supported, using %u\n",
-+					 fs_mg, mdata->current_fullscale->num);
-+		}
-+	}
-+
- 	if (!pdata)
- 		pdata = (struct st_sensors_platform_data *)&default_magn_pdata;
- 
+	static inline void iio_trigger_always_done(struct iio_poll_func **ppf)
+	{
+		iio_trigger_notify_done((*ppf)->indio_dev->trig);
+	}
+
+	static irqreturn_t ad5686_trigger_handler(int irq, void *p)
+	{
+		struct iio_poll_func *pf __cleanup(iio_trigger_always_done) = p;
+		/* ... */
+
+		ret = iio_pop_from_buffer(buffer, val);
+		if (ret)
+			return IRQ_HANDLED;
+
+		/* ... */
+
+		return IRQ_HANDLED;
+	}
+
+> 
+> > +
+> > +	return IRQ_HANDLED;
+> > +}
+
 -- 
-2.43.0
+Kind regards,
 
+Rodrigo Alencar
