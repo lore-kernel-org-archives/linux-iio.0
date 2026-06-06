@@ -1,90 +1,79 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011009.outbound.protection.outlook.com [52.101.62.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8543A314B62
-	for <linux-iio@vger.kernel.org>; Sat,  6 Jun 2026 04:58:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780721932; cv=none; b=glBAbPItmF2FGjQ54mpOTVPMfaMCFGNMaXqPXRLF2PgWlh7j0H5FXlWVK7zY53UosigHEMN/fR8cKg1RngVBUsDQnLiDp007FlOKbgPAdM6pfwZM2pnSjd3EdjHsKRZSFeZTVeNQCxcdQnKes4fMmpyt8c5w/xZG0GM65+fi8TI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780721932; c=relaxed/simple;
-	bh=J/hbghdGiskCXq2LMuJR1POlS86t7rcaRIUrzBWVHgM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=beDeJDJfX9yOiug43/4FZf5CTipzfPo7Qt86rgObAGCUDfORmLTtTUKoE6OxQA3+gYTGzMW3rQ+50JHitbkzlVeXEKRvnCe0Zfs0E4D/b6eIKrnbKxsw6n2Pfn6bffZNwDzKyA0CmRxNce+FuYArstsoA65CdaEfNHHqZ5SiyGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YduCpeko; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FA4118A6D4;
+	Sat,  6 Jun 2026 05:17:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.9
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780723055; cv=fail; b=qVKqdmepndxgzBwTYmkUK6mx4XIopKNmu5U42Gdwxco01uIaVUltwZcBEA83bCSVY07lqXQXU8MqmEtFFmaEKtaSig9pTtuqyNPmNgNoyzbbtCZP4i+m5ZApHrkI4Ga4hWNmDNt01FshPEiCfNRriIGogwujvdlDGzP3X4WZIxw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780723055; c=relaxed/simple;
+	bh=za7AS6Lqw+Ltaq3B4JDLL5a1TBl+Nn1iEf2lt3uIH7U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KHBG71ZhtUQabaFYLcxvbj1xxjyten3ZI0jRwXMZo3apn2QE445e+4ARy97YnmaI2UMwEmxqlnktxrxxymp+gocQUqc9/FMAWDrtRYBnG/WAXNUuonFdyzHHOEjJkwqCd6mxj16iqaslrm4BoB+F2rHCDyEZpQnIXBzcvFcsZQk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Ohll0HEd; arc=fail smtp.client-ip=52.101.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YduCpeko"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-69165354c87so299058a12.3
-        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 21:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780721929; x=1781326729; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=THaL1QVPpQgP2z5ftX+u3ovu7VRE23Z1E4qNugQA6t8=;
-        b=YduCpekonrnNLVeTKOipMxkHqK9ZRrMCmfcIqHtSKi+Gb1r2p2R2pSajBPHv0wUH94
-         vG3ZDzYW22kbtqWDbqgc7S4eF3chQbsehw6l3nhGjFhLf3icNZD79XVsr140tkQ6a5Xk
-         /69X8ba4crVwVD7aM8l6Gzcm/je+PzYn8r2QxKaTBk972bfN1727q+rCnpMJuDb1srbk
-         5MILrAIn1MU2boYxE+MDyz3UQnEtVOY82K9VEMccUw35dMoScaHy0KKjS4RieUPwDPRs
-         D42KzQNWq73p+4oyoLevuEuRBz5zQEoA6CJSoH8g6fucj4nCK3L1AC/IDNBxlVJOZ2BX
-         v7YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780721929; x=1781326729;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=THaL1QVPpQgP2z5ftX+u3ovu7VRE23Z1E4qNugQA6t8=;
-        b=i0qZIt3JMOUvuPdfEhzkUzIKxlu2hhQiwQa8JYWB9me/OqIqXUhXle0Iejq0qQb8Zh
-         eXka7IzxHlkfvmucU1KjML6NHlW8fXPVcbAmi6VGGAufIjQyFehy8182Xr8UP3t/FNLn
-         GpNd01AZiiJ6dQtva2cl7Rs2up4BVwVO+LpHj2VEHT2OALH6UGZNaBZq1VgleiQCraUO
-         Buf/U6jgTjPBmJAAKk/1N+BuhCID63GPEBXMep6WHYs1teXMk2+Nc8e7jvcDO/cDWYvm
-         TkqtfJ/nMH7jFCfXZYX/ZD5h/FkcA68Ia4VtcBMyxFGKwNx0cRScOUR3ijJ7iya3sEnd
-         Rzmg==
-X-Forwarded-Encrypted: i=1; AFNElJ/q2x/5V1smidiSm51X0qRMOVMoChivoWqhcFDpRSQuwVyWtUQEkdNrxmJ4kx3SXveEIMbZzOnAqN8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzWeZcQvJGJDLFn/egIvLCq8LL5sH1Vt7GYNkj3kPunT1O1emcA
-	j57LqBkB54iZMIwz2MPQZghVmlv1zT7lErgBmm5PegZHy11scEaU5Yz3
-X-Gm-Gg: Acq92OGh2bY7UzjWEcDmhrKwS0NCAgh4cjfec45tFQ68yZnBRqaEWofebEbK2GuP+C9
-	lt3xSJx3ny8Gj3L3iDfOHNR0HxJ+ZohChFzXR0E5C2KFjZmMHkcf+b6TvYHihQxPMulMlwzX3mR
-	96/raeFViN//59ZUc8WfMZI24ajFDtQxl/L6DRKDbHDvKU5MfhQf3Dcatsn0eNiv1vOUkVAkS/7
-	5qbLf65Dxd2FnSWSMX3wNsLf9HS6jUj+409nyVjZbK6xjLzqWkvhC5xynrWyc2ECyM7tE+0Tg/Y
-	hxMT0YxfWMz4oP59AqWa8DrHAOmYuJfTUkB5UYAmQ70Vlt4MfNkOOrcjsKc4ai29kQEdp4k9iU8
-	eX7PUiNdIHQFOMwkE1X9bxFs9i7iSagjL8IhfkwADd3TbOvo4SgNpoC1FLGJO1f61for31gkSKM
-	7NbrMg0amIUP7P7WlrF7SK/xPwa/xwQImpMw==
-X-Received: by 2002:a17:907:608b:b0:bcb:66df:819a with SMTP id a640c23a62f3a-bf3741e8062mr385758166b.40.1780721928778;
-        Fri, 05 Jun 2026 21:58:48 -0700 (PDT)
-Received: from xeon ([188.163.112.61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf054e086fesm570597166b.32.2026.06.05.21.58.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2026 21:58:47 -0700 (PDT)
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-To: Lee Jones <lee@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>,
-	Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Helge Deller <deller@gmx.de>,
-	Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>,
-	dri-devel@lists.freedesktop.org,
-	linux-leds@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: [PATCH v4 14/14] video: leds: backlight: lm3533: Support getting LED sources from DT
-Date: Sat,  6 Jun 2026 07:57:38 +0300
-Message-ID: <20260606045738.21050-15-clamor95@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260606045738.21050-1-clamor95@gmail.com>
-References: <20260606045738.21050-1-clamor95@gmail.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Ohll0HEd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=T2yfiw9fMm12uYXWZEoS8R3/q2qo4X4mu/5VE2pgonuRdjHnrmAkIbo2y9w1dfr9hep1KdQ4CcUC9A2RlQ+nLYz20aCg7n7EthtDYhDG3kaaQ9EdmBp3eOPOIR7OcNCtnUmDzDD+qsfBpHtMoQTvgd+t+37qJ2cDUWgB7+Leqswy5aLoT4jWBldkeKbd09S3HEledXwTE/OlrqBeOgAusCcr2UcKcD1DqqcI77qp/2HvtbuEk2LDlqOKppRn9sBWxNWBG0kwC5GnLTPPs6cm1lnwFTjB6ZtGjFjfM7y1bXoqieDIvIIOTkTL2vGDStjyWe7stiux7MObkRSh36lHuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=44W2ru1BfcEqZeiSYna6D/4z1jXSsBmr8qcKEMZEnFw=;
+ b=gGpBVF5VWyuGtmrOoQoE1+qiZJkfiP/ETz3vOQTMy8XgC2K6n37F2a9BYVBTCCTX/EQzv+LxI2pNhvO8mVPzyJd8Z8oKOBiy2tBtq6yYk4xiu3SUJI5L1E3CZmXEgxZ3HlIOcuZO7rnLWrSG1G6+SHJjp9jiSde5O0QO0PW2UbcRR33eoF0f4Cd+YX/ArOplOnkH0SBE6ASeLon5JsQQX2EX9Ct8d1SytjJzTubNhWSCC6N1oQfM2hFVS95jiBdveeP5FVpgZZBjb6iYYrmsoZMlEDrjYgf0YHHtYvNJSyPz7tLwJddHaroE0aQ+Q8w3pxx0o7PXNEfogaxQQ/cykQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=44W2ru1BfcEqZeiSYna6D/4z1jXSsBmr8qcKEMZEnFw=;
+ b=Ohll0HEdL5l8YJqMBBtGz7axRmpSs4XrtLY72FYPRc0bfUyu8U4IYGiaprat9K0pBQX1xWnYfHWUnTW4/H/84WlKyeCui0igjynCXXa5bxmkN54SVE04W+vPBfg7JGnRxSmVy0qtQ3K/cByyDx/EbAaQZWjxWgY0S845yiVA8GE=
+Received: from BY1P220CA0012.NAMP220.PROD.OUTLOOK.COM (2603:10b6:a03:59d::8)
+ by SJ2PR12MB7868.namprd12.prod.outlook.com (2603:10b6:a03:4cd::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.9; Sat, 6 Jun 2026
+ 05:17:26 +0000
+Received: from SJ1PEPF00001CE4.namprd03.prod.outlook.com
+ (2603:10b6:a03:59d:cafe::9d) by BY1P220CA0012.outlook.office365.com
+ (2603:10b6:a03:59d::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.11 via Frontend Transport; Sat, 6
+ Jun 2026 05:17:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ SJ1PEPF00001CE4.mail.protection.outlook.com (10.167.242.20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.92.5 via Frontend Transport; Sat, 6 Jun 2026 05:17:26 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Sat, 6 Jun
+ 2026 00:17:26 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Fri, 5 Jun
+ 2026 22:17:25 -0700
+Received: from xirsalihe40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
+ Transport; Sat, 6 Jun 2026 00:17:24 -0500
+From: Salih Erim <salih.erim@amd.com>
+To: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
+CC: David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+	<krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Conall O'Griofa
+	<conall.ogriofa@amd.com>, Michal Simek <michal.simek@amd.com>, Guenter Roeck
+	<linux@roeck-us.net>, Salih Erim <erimsalih@gmail.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Salih Erim <salih.erim@amd.com>
+Subject: [PATCH v4 0/5] iio: adc: add AMD/Xilinx Versal SysMon driver
+Date: Sat, 6 Jun 2026 06:17:02 +0100
+Message-ID: <20260606051707.535281-1-salih.erim@amd.com>
+X-Mailer: git-send-email 2.37.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -92,194 +81,129 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE4:EE_|SJ2PR12MB7868:EE_
+X-MS-Office365-Filtering-Correlation-Id: e0be89c8-70b5-4d38-dd5a-08dec38ae61d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|36860700016|82310400026|1800799024|13003099007|6133799003|18002099003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	JUoIIDS/rhIOl4Ii9Ehgoiw3Ns2SLTaI9k1zX+rDiPt4aFdgKee0N/IEL4/xrs5RmeNSlbuk6tZJKtJ4G1GX5ve9cS5YgmXQIJUNrZXKryP2cH22qznHIcoIO/dVtfR11xrqCVPwueUnKAsbHzg8V8Sbe8BMmicnWAEAU8k/hOvV4Lebe8lgvgvohcZHisK1MIXXnK5jgYSr+UPUjjAQkgpWVL46OXXwwyVwK/XFawNBP06iLlHUcreDnvHBz+70Z174Dl+mQg2bkjXLDq6y0n/xhAWYyRisXKH5YyQhDEDWV7NGxP0X7Eucq1CH/oQooLPiN7K/Qr+5wSdBqymBSBd9PR8M2LZZCZjYSO9b43GvoezmnjZtZ3RwNcZU/nbM5MsQwdX0/oI3cOh/QoxzW5SrPnCaUHUxs4lfOlyyRR5dtD9QaHYQ83i63RycXUI5xifBmzb6WCDmEMbPY0xAAZg9Ix0bmNxwABHDVC/cdh8Atl6TEAgGpJrkPYD1IR7Bt/J+Do25nxlHcx/ykNDNPtFUtSocCFu/vR/hzODOHrnkq0Q4SOo5BR47nRYgaWY4ggnPAz8luksK3XeIzcuC4o4aOiibc5BXMQPlDBXipK06De+DNwYOVulC9sbR58rKf76CE7MhrLDrkxlEkuLSKejwEpMrYqC9ScJP8j2Hu3bsDGQ7I99n/OneLbcMILnFE4LfTkJmIOFAN7Uf6F9PpX1JqeMdRJesXsheTZw8/gE=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700016)(82310400026)(1800799024)(13003099007)(6133799003)(18002099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	A4r5OxMQgDzu0BFv7b7sGldEZQWq7NTrVEkzjZQkmslcIrxu3pmG+GgwNKwVIQk+q4zTP5eUCmjCa2bUEyQU6ChabjJjLCqY1bYvFaIuTKqtzGo6KWU4MzAbRgVuqQWTcCK6dpebqoy42Nj+X3/gum2DUlvwATQRAFBff9X8ZM3CJXzSLZFCV9cvtlDEcm7H077zuP13D6j+bEmtj6S0340Rghg2sPjUw6NpqQM1zAu6J/MKZSDdA/itMyFH27R3JWCqC5yNXdXZhWx4I3/BHCfuINaU+JRjFtOZR85gjtPnqBjh46Z+wwUcTJIy+eeW39xnYnmAdIr5IVwmB8qesI/s79K1H4V4gby/1WOgNYaUtlqZoo1RhKCW40UgtASgkC9TJTsndV/g2oGNR/C9RnbNn7nI35UM7fS70LSm0Br8wTsGMjkhvxemplsczyP3
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2026 05:17:26.6053
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0be89c8-70b5-4d38-dd5a-08dec38ae61d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE4.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7868
 
-Add Control Bank to HVLED/LVLED muxing support based on the led-sources
-defined in the device tree.
+This series adds a new IIO driver for the AMD/Xilinx Versal System
+Monitor (SysMon), providing on-chip voltage and temperature monitoring.
 
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
----
- drivers/leds/leds-lm3533.c          | 58 ++++++++++++++++++++++++++++-
- drivers/video/backlight/lm3533_bl.c | 43 ++++++++++++++++++++-
- 2 files changed, 99 insertions(+), 2 deletions(-)
+The Versal SysMon measures up to 160 supply voltages and reads up to
+64 temperature satellites distributed across the SoC. The hardware
+also provides aggregated device temperature registers: the current
+max and min across all active satellites, and peak/trough values
+recorded since last hardware reset. The device can be accessed via
+memory-mapped I/O or via an I2C interface.
 
-diff --git a/drivers/leds/leds-lm3533.c b/drivers/leds/leds-lm3533.c
-index a661aedcdc60..fe3e01b265e1 100644
---- a/drivers/leds/leds-lm3533.c
-+++ b/drivers/leds/leds-lm3533.c
-@@ -27,6 +27,11 @@
- #define LM3533_ALS_CHANNEL_LV_MIN	1
- #define LM3533_ALS_CHANNEL_LV_MAX	2
- 
-+#define LM3533_REG_OUTPUT_CONF1			0x10
-+#define   OUTPUT_CONF1_SHIFT			2
-+#define   OUTPUT_LVLED_MASK			0x3
-+#define LM3533_REG_OUTPUT_CONF2			0x11
-+#define   OUTPUT_CONF2_SHIFT			6
- #define LM3533_REG_CTRLBANK_BCONF_BASE		0x1b
- #define LM3533_REG_PATTERN_ENABLE		0x28
- #define LM3533_REG_PATTERN_LOW_TIME_BASE	0x71
-@@ -55,6 +60,9 @@ struct lm3533_led {
- 	u32 max_current;
- 	u32 pwm;
- 
-+	int num_leds;
-+	u32 leds[LM3533_LVCTRLBANK_MAX];
-+
- 	bool have_als;
- };
- 
-@@ -623,7 +631,35 @@ static const struct attribute_group *lm3533_led_attribute_groups[] = {
- 
- static int lm3533_led_setup(struct lm3533_led *led)
- {
--	int ret;
-+	u32 output_cfg_shift = 0;
-+	u32 output_cfg_val = 0;
-+	u32 output_cfg_mask = 0;
-+	int ret, i;
-+
-+	if (led->num_leds) {
-+		for (i = 0; i < led->num_leds; i++) {
-+			if (led->leds[i] >= LM3533_LVCTRLBANK_MAX)
-+				continue;
-+
-+			output_cfg_shift = led->leds[i] * 2;
-+			output_cfg_val |= led->id << output_cfg_shift;
-+			output_cfg_mask |= OUTPUT_LVLED_MASK << output_cfg_shift;
-+		}
-+
-+		/* LVLED1, LVLED2 and LVLED3 */
-+		ret = regmap_update_bits(led->regmap, LM3533_REG_OUTPUT_CONF1,
-+					 output_cfg_mask << OUTPUT_CONF1_SHIFT,
-+					 output_cfg_val << OUTPUT_CONF1_SHIFT);
-+		if (ret)
-+			return ret;
-+
-+		/* LVLED4 and LVLED5 */
-+		ret = regmap_update_bits(led->regmap, LM3533_REG_OUTPUT_CONF2,
-+					 output_cfg_mask >> OUTPUT_CONF2_SHIFT,
-+					 output_cfg_val >> OUTPUT_CONF2_SHIFT);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = lm3533_ctrlbank_set_max_current(&led->cb, led->max_current);
- 	if (ret)
-@@ -700,6 +736,26 @@ static int lm3533_led_probe(struct platform_device *pdev)
- 	led->pwm = 0;
- 	device_property_read_u32(&pdev->dev, "ti,pwm-config-mask", &led->pwm);
- 
-+	led->num_leds = device_property_count_u32(&pdev->dev, "led-sources");
-+	if (led->num_leds > LM3533_LVCTRLBANK_MAX) {
-+		dev_err(&pdev->dev, "num of LED sources exceeds max %d: %d\n",
-+			LM3533_LVCTRLBANK_MAX, led->num_leds);
-+		goto err_deregister;
-+	}
-+
-+	/*
-+	 * If led-sources property is not set then either this Control Bank uses
-+	 * its default LVLED or is not linked to any LVLED at all.
-+	 */
-+	if (led->num_leds > 0) {
-+		ret = device_property_read_u32_array(&pdev->dev, "led-sources",
-+						     led->leds, led->num_leds);
-+		if (ret) {
-+			dev_err(&pdev->dev, "failed to get led-sources\n");
-+			goto err_deregister;
-+		}
-+	}
-+
- 	ret = lm3533_led_setup(led);
- 	if (ret)
- 		goto err_deregister;
-diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
-index 2aa4b86042ff..ed358fb3c759 100644
---- a/drivers/video/backlight/lm3533_bl.c
-+++ b/drivers/video/backlight/lm3533_bl.c
-@@ -7,6 +7,7 @@
-  * Author: Johan Hovold <jhovold@gmail.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/mod_devicetable.h>
-@@ -22,6 +23,7 @@
- #define LM3533_HVCTRLBANK_COUNT		2
- #define LM3533_BL_MAX_BRIGHTNESS	255
- 
-+#define LM3533_REG_OUTPUT_CONF1		0x10
- #define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
- #define   CTRLBANK_AB_BCONF_ALS(n)	BIT(2 * (n))
- #define   CTRLBANK_AB_BCONF_MODE(n)	BIT(2 * (n) + 1)
-@@ -36,6 +38,9 @@ struct lm3533_bl {
- 	u32 max_current;
- 	u32 pwm;
- 
-+	int num_leds;
-+	u32 led_strings[LM3533_HVCTRLBANK_COUNT];
-+
- 	bool have_als;
- 	bool linear;
- };
-@@ -232,13 +237,30 @@ static struct attribute_group lm3533_bl_attribute_group = {
- static int lm3533_bl_setup(struct lm3533_bl *bl)
- {
- 	int ctrlbank = lm3533_bl_get_ctrlbank_id(bl);
--	int ret;
-+	u32 output_cfg_val = 0;
-+	u32 output_cfg_mask = 0;
-+	int ret, i;
- 
- 	ret = regmap_assign_bits(bl->regmap, LM3533_REG_CTRLBANK_AB_BCONF,
- 				 CTRLBANK_AB_BCONF_MODE(ctrlbank), bl->linear);
- 	if (ret)
- 		return ret;
- 
-+	if (bl->num_leds) {
-+		for (i = 0; i < bl->num_leds; i++) {
-+			if (bl->led_strings[i] >= LM3533_HVCTRLBANK_COUNT)
-+				continue;
-+
-+			output_cfg_val |= ctrlbank << bl->led_strings[i];
-+			output_cfg_mask |= BIT(bl->led_strings[i]);
-+		}
-+
-+		ret = regmap_update_bits(bl->regmap, LM3533_REG_OUTPUT_CONF1,
-+					 output_cfg_mask, output_cfg_val);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	ret = lm3533_ctrlbank_set_max_current(&bl->cb, bl->max_current);
- 	if (ret)
- 		return ret;
-@@ -316,6 +338,25 @@ static int lm3533_bl_probe(struct platform_device *pdev)
- 
- 	device_property_read_u32(&pdev->dev, "ti,pwm-config-mask", &bl->pwm);
- 
-+	bl->num_leds = device_property_count_u32(&pdev->dev, "led-sources");
-+	if (bl->num_leds > LM3533_HVCTRLBANK_COUNT)
-+		return dev_err_probe(&pdev->dev, bl->num_leds,
-+				     "num of LED sources exceeds max %d\n",
-+				     LM3533_HVCTRLBANK_COUNT);
-+
-+	/*
-+	 * If led-sources property is not set then either this Control Bank uses
-+	 * its default HVLED or is not linked to any HVLED at all.
-+	 */
-+	if (bl->num_leds > 0) {
-+		ret = device_property_read_u32_array(&pdev->dev, "led-sources",
-+						     bl->led_strings,
-+						     bl->num_leds);
-+		if (ret)
-+			return dev_err_probe(&pdev->dev, ret,
-+					     "failed to get led-sources\n");
-+	}
-+
- 	ret = lm3533_bl_setup(bl);
- 	if (ret)
- 		return ret;
+The driver is split into a bus-agnostic core module using the regmap
+API, an MMIO platform driver, and an I2C driver. This allows the
+same IIO logic to be shared across different bus transports.
+
+Previous submissions:
+  v3: https://lore.kernel.org/all/20260527114211.174288-1-salih.erim@amd.com/
+  v2: https://lore.kernel.org/all/20260502111951.538488-1-salih.erim@amd.com/
+  v1: https://lore.kernel.org/all/cover.1757061697.git.michal.simek@amd.com/
+
+Changes in v4:
+  - Core: temperature channels use RAW + SCALE (IIO_VAL_FRACTIONAL,
+    1000/128) instead of PROCESSED; voltage channels use PROCESSED
+    only, drop RAW; drop scan_type from all channel macros (Jonathan)
+  - Core: move __free(fwnode_handle) declarations down to just
+    above use; devm_regmap_init() on one line; lock comment
+    describes RMW sequences and cached state (Jonathan)
+  - Events: merge event channels into static temp array -- two
+    arrays (with/without events) selected by has_irq; event-only
+    channels have no info_mask (Jonathan)
+  - Events: blank lines, fit under 80 chars, default returns error,
+    return early in each case, guard(spinlock) in IRQ handler
+    (Jonathan)
+  - Events: take irq_lock in write_event_config for temp_mask
+    updates (Sashiko)
+  - I2C: replace enum with defines, use unaligned accessors for
+    data and register offset packing, named initializer in
+    i2c_device_id (Jonathan)
+  - I2C: drop bitfield.h, add unaligned.h
+  - Oversampling: return directly, remove else after early returns,
+    rename mask defines, blank lines (Jonathan)
+  - Oversampling: move oversampling read inside guard(mutex) scope
+  - Fix v2 lore link in cover letter
+
+Changes in v3:
+  - DT binding: single compatible, voltage-channels rename, single
+    quotes, drop label/bipolar/xlnx,aie-temp (Krzysztof)
+  - Core: IWYU throughout, __free(fwnode_handle), sign_extend32(),
+    size_add(), dev_err_probe(), s16 param, remove (int) casts,
+    drop SYSMON_MILLI in favor of (int)MILLI, rename _ext to _name
+    in SYSMON_CHAN_TEMP macro (Andy, Jonathan)
+  - Core: fwnode_irq_get() moved to core_probe, remove sysmon->dev/
+    indio_dev/irq from struct, describe protected data in lock
+    comment, add RAW+PROCESSED comment (Jonathan)
+  - I2C: IWYU, remove wrapper struct, explicit enum values, sizeof()
+    for buffers, = { } initializers, adapt to core_probe interface
+    change (Andy, Krzysztof)
+  - Events: IWYU, FIELD_GET/FIELD_PREP, regmap_set/clear_bits,
+    clamp_t, !!, IRQ_RETVAL(), devm_delayed_work_autocancel,
+    loop var scope, error checks, remove redundant else, logical
+    param splits, spinlock safety comment (Andy)
+  - Events: hysteresis rework -- store as millicelsius, hardcode
+    ALARM_CONFIG to hysteresis mode, compute lower threshold from
+    (upper - hysteresis), remove falling threshold for temperature,
+    single event spec per channel with IIO_EV_DIR_RISING, push
+    IIO_EV_DIR_RISING for temp and IIO_EV_DIR_EITHER for voltage
+    (Jonathan)
+
+Tested on VCK190 (single SLR, MMIO path, 7 supplies, 10 temperature
+satellites) and VPK180 (System Controller, I2C path, 7 supplies).
+
+A follow-up series will add thermal zone integration, secure firmware
+access, and I2C remote monitoring.
+
+Salih Erim (5):
+  dt-bindings: iio: adc: add xlnx,versal-sysmon binding
+  iio: adc: add Versal SysMon driver
+  iio: adc: versal-sysmon: add I2C driver
+  iio: adc: versal-sysmon: add threshold event support
+  iio: adc: versal-sysmon: add oversampling support
+
+ .../bindings/iio/adc/xlnx,versal-sysmon.yaml  |  154 +++
+ MAINTAINERS                                   |    7 +
+ drivers/iio/adc/Kconfig                       |   33 +
+ drivers/iio/adc/Makefile                      |    3 +
+ drivers/iio/adc/versal-sysmon-core.c          | 1079 +++++++++++++++++
+ drivers/iio/adc/versal-sysmon-i2c.c           |  125 ++
+ drivers/iio/adc/versal-sysmon.c               |   91 ++
+ drivers/iio/adc/versal-sysmon.h               |  130 ++
+ 8 files changed, 1622 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+ create mode 100644 drivers/iio/adc/versal-sysmon-core.c
+ create mode 100644 drivers/iio/adc/versal-sysmon-i2c.c
+ create mode 100644 drivers/iio/adc/versal-sysmon.c
+ create mode 100644 drivers/iio/adc/versal-sysmon.h
+
 -- 
-2.53.0
+2.48.1
 
