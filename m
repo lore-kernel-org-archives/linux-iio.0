@@ -1,201 +1,161 @@
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3207224E4C6
-	for <linux-iio@vger.kernel.org>; Sat,  6 Jun 2026 07:22:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.176
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780730576; cv=pass; b=DirCQl8yN5/nvIgg70RfPhTMg+TVBXbIJJgjH8crDV0goXk4KGp6FrZ8N7Pry1YclM2x3QjkWr3X7tJwRoI4onpgcA0wRFeX4hYYdE5remMlzEE0dfIL1f2ZZZxEVh47lfHgFJp81MpDlQS2dPD3fMqy/+Z9+T9j2WaCSZAV23Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780730576; c=relaxed/simple;
-	bh=EdOBiUbIj1sa3p5dKmb4uizhrFu5/uX1E3lqCuVG5ss=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H0kNoN7o8B7hH/S8HX2yhm30BOcge1xHhsPF+adkJiDT9utggSB2dL7fcHSPUWSwa+DJDpiq4X7GbguidpawnSQwKJt84IeZ+PO4+SYBB/HCvDxyCQcyKCCoOrwtZpHOjWtR69ry+JVFayA/IRhlshdF+kodWv0RX51Mmj6M544=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DHj0iA4M; arc=pass smtp.client-ip=74.125.82.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D7115A85A
+	for <linux-iio@vger.kernel.org>; Sat,  6 Jun 2026 09:27:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780738043; cv=none; b=V990PN2iogpE2PY2iX/C8hVq2dGB2VopKXujQPZ6XjNzgoUJVleJ+kzG5NxtalubYAX8amsL/9LwP1ins3hQ3EEl7DRmLC1vREGX2rrxb9yu0wPQQa1jZrIv7Z7CtGf5hPhJbcXjvxHOIjT2JfenWxHVeuGIicuPIzaZSQ4rmxQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780738043; c=relaxed/simple;
+	bh=oAYcyU/xg32+wm+itzwDqLCUlfsHpkpwyRpoAl2AWxY=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=imyQqosI/xs74OatgYlFP6ZgkBRPtXEdqqN1b1ywGyisL1bWgMGbqIEBTjab/tdLc85iVCkDbB2Yt4IA6/7jbTwKLA4/SSxJQ56Fe5WcGL7DyZPG5cC+BXECBhNE2AX/vGFKyePvGW0orj4JO82g1s8IHNO4v46v/9smHpeSSGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZZuktn8k; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DHj0iA4M"
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-3045c195251so2413159eec.1
-        for <linux-iio@vger.kernel.org>; Sat, 06 Jun 2026 00:22:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780730574; cv=none;
-        d=google.com; s=arc-20240605;
-        b=dhEHAT9gomc086X5AkNTmG1Cd4yhgXDGgB1IF/320lrDnODJxraaEgpV8DVWNuDbrW
-         LFVGbtTVUFaQ5R7H01upW+lhkvlQxUi3EKvTbkQLKwR0JcYFbPmhfQ5MI1sd3LhnBjbs
-         iGhupxQ9CSHF55ljUUChiHKAn7WK2338cxCU5g64NsCxZDLw4NqB5ESiccCc+ggTgRa5
-         wQZRhjJxXqhEDoSGJWVbgCusUbsS64SeRPR+waZaXgicQ8MvjJq3LQNnufZ7l+n3zDcy
-         ah/nMMx9DEStHkm1pr5g/gCrYdpl0kaxSF/21jye1luX4mYB9GcVnpQR3FyMtX3H5aWu
-         48oQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=XNsDZHZrfK8USkMmXJwaiXlbXh0rWP0T8pk6zwRtmPo=;
-        fh=k2jbauhLvoVwgN5RdPCAHYftRkn/9PKmAFLyOK2FAnI=;
-        b=R0VjYBicYMmk1nYwM5scBhks9GI6iyiSwaC2yqWC7+hkdaChQgJ9TdyObJBgkS1f8T
-         YjmDZsq0ccD2ISLDQvnD6zWv5mVBQt0gxUokjR2oivyyifFo6fwHAknuteBulMx8N/hJ
-         9GyR/IPyPvqNigfbwsiGOCh6U0FhdUVw6ApWUXjPUQDD48DVxoiYZPL6E2XPolGyVPht
-         F/w6a7Fg2HicMws3d7etgiZWJlXauDR3Yrl+p4XdS7JZ/DJanNB7GJRPNNrZ++XBOgLr
-         8fE0wWbKyOMimijOL58eevC1ZnEGyYaWuohdmTUrcc4uxyOy8q0DK3JYCZxG7aUdwnNh
-         loYg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZZuktn8k"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-45ef5146b56so2399551f8f.0
+        for <linux-iio@vger.kernel.org>; Sat, 06 Jun 2026 02:27:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780730574; x=1781335374; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XNsDZHZrfK8USkMmXJwaiXlbXh0rWP0T8pk6zwRtmPo=;
-        b=DHj0iA4M2k7kxU3V8wQh5By6avliWmgAIP8i2RXC38vVXqIbyj6ixd+xPE1hnrbIRx
-         xdL0+Db4Z1QKzlEQqn/2H93YR5A/Sdm5v9IUnSgxg9bOQdEX6jTHPFjViVAeFaW6qxVP
-         8C881cTVozbthUaZTYYusj4q1m3AYXWKMUqtV+TBx+PtEBsotHOP3lPuXIJyvW3lTc1h
-         nMRbWjk3jxsqV4j1dxmW8gOibRJFk44JdHPZ8bfY6FvXCS5mXjXf405MvzNyp/8kAR4Z
-         9umR9Z3CLlwDjFQgOFXGD2fgOHxenL/np+vj54ZUAFIC1rkdmiMZHdCYhJ9a8OldM6Rm
-         c3yg==
+        d=gmail.com; s=20251104; t=1780738038; x=1781342838; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=6rnRDWNFodJfpGcCxgsSzIm6WWEVisydV6yWbLjUSzg=;
+        b=ZZuktn8kr543bkfzyigF/qBxC/dOSpD7Np/+SZriQJ5BUSPyEQPyG93PowgCqnW58b
+         FfUbM3l51yZ81GN18yIdw/Dq0UcbxHu0hnNGGeOGhlTSS6GYPJxEirgp70blg0B4xrUV
+         cIKN8BhPWHL3YVMRJ+oaflDuGh34wdmoSYzy9bIl97jNB5SlNiIBfO/WOHAwH0zxJDJM
+         ncriqwJuSF66G8gnIveYQw6XoGixXwYZXmfPk02Ik8H8eoDMa7d8REyvHiTCOTrOwchQ
+         E9xcFxLzgoPG0qxKBtD1dtQVc0/CJjZ/7fkbz0BZkmaW1kxcSzE5fkxF+5bh2fDMTEAX
+         lFbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780730574; x=1781335374;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=XNsDZHZrfK8USkMmXJwaiXlbXh0rWP0T8pk6zwRtmPo=;
-        b=UFM+mjkooYf9rYoBWNjc3LuGLnurlJ4ZOk0peksBmiBNYFuJIPIlr5ASpynDP5H2NJ
-         +5eO9dXFYvCvdiwgFW4Fl6o4oleM1mH9alhJEybXIuDmSE8bwS1asPbBX7wDvqpO1DD5
-         FoQA7RcRXD/cseRhdS27Z6rcMusavQI5iqbVyEzFsC4O9YFmogrkYtFWzwAhwQgylZXU
-         vJS4hQsbMlpp8rodtScrIOwXjoYVn6pxQFeFqL1vFzeF6G4SXNvTawxT8tPRTui5Vhow
-         tlVui/juka8sF+h2sm0BFwFrufWe/590z5tURhK/IZJ3ub0TLO3WTBhUtkC1t6R/gejW
-         DY4A==
-X-Forwarded-Encrypted: i=1; AFNElJ+IF3oytSPibC/4dVA8mpFZwyQNe64Is3zQGmUbrH6JDPsb336aJqZRDBQQxi0LOkecUnLpi5ny2/0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJ4qj/LYDno9Rvk4kn0tREx3zBRJDV5/j8IMnYmWtRGPCeFdK/
-	rxgXPoJJ+zrbFCSFvHCRfzVzsQx98Ht98vrQdfxJ2PKzkK6CiYpRu5V8dMDPnAq8GR9k47k6upI
-	Lby+GCu3GRtfpDCtT7Rq67fNaaY64sR8=
-X-Gm-Gg: Acq92OHzl3SYutsWuYMefEaUOpjpXafRXSwCM4EDr906xklnA23iNsOdTLGT6Zt4ZEr
-	oZAWg/k1ALBEmCAAinOI3/KTTMdvFsbLOE2bcVSc+BmDdi48U+lTGRvE4TEh4LyxQ9B6k+pJImX
-	JiPDfd57QmWl8ugTuvH6o5VHaCmwXdyN4Rcr0KeR0FDCjCqiAeX/qz7yIUhh55lyLBDATYy+pxP
-	V8wX/4ow+pGbgsOE2ZzPWa7TCbg1IHOZK22A6UnJJe35gYyK7fVYlF1BfAkAD5AkGl3f1Itk0m3
-	kr20yoEYZmmiccH7FKM1X6GrO8udlw==
-X-Received: by 2002:a05:7300:7488:b0:2cb:4b8f:b2bd with SMTP id
- 5a478bee46e88-3077af30ab5mr4444661eec.6.1780730574227; Sat, 06 Jun 2026
- 00:22:54 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780738038; x=1781342838;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6rnRDWNFodJfpGcCxgsSzIm6WWEVisydV6yWbLjUSzg=;
+        b=sG16zrkk3PyYqRyxG34M5zbg7hPzBWS1EixxTE9R8dSJPfvEst+szTFStcyAJSVAKb
+         JjzznsN1vGTrbaVYrnxtigtfh7k3AvF20sdeIyLV8z993vw6gUED3hg7mD+DE+xksnaL
+         kz0t7mI9W6euMZ6eaM01HuFcWhlZxOXWHntTNhoZ5pJUSqUJs5jIXdLK8gGxUTFdny2o
+         olQBWRIBwoYRgJkqWtrrBTt6t/rGN+vrwDkVUUkuxN4AuxAyneKEiYYj7jLLwaVVRmGi
+         TMT+5sw/f0X6hQI+4uqDZuo6ACIrR0zxyhKXUws6tONU07Cl//nQXhP8EAfHlXgH8BFu
+         YKAQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/C3oW7zivmTVfjT2rqRoAaFVghE6+Un65uOPhe5aOXBzUSXoLy7p3Oi+TUd1yLPWAE/9gPzTI/KqI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyM7jG+E3RpN7HZAyEsmbNJcIs95/oRtiXEe7P983GE7nUlHQNq
+	7nilxLe0XZaQYobeV3/4b5B+XzdLM/5w7Z2L8Lza9dKZ7GCJvo/Qfljz
+X-Gm-Gg: Acq92OGT78uFl0yUtHkKgUvpY/v9/zdWtMPM1PZWhWNFfYv6I4+GBS0BJDWiVhpTYxs
+	guTQsM/dPcp/YG1ukCP00jVkQXU9itKYQLPtdC0QFMto41qtCs5wqLXm5CTVpfcTcu9r1HUNqey
+	Hlg6uXzFSyiPmkoSYsieE463sBtE5qXlqGpCHyr1THvuaoJyHTtBz5/vOQzXnZqwGE+Gof9aTcZ
+	SmCsCvigQnk0YB5rPYrYdllvpCOWVc/vDPrilH057WOkFzwM8A5x0SZb+R4n5OaOeBHi0nsZDBq
+	jfAEtPNIE6tH017r97yD02kYwITOT89fDMIReWRbKockXHxWCjHoK6qX3K4k+f6E7GGhgNTUaAU
+	0LSaQHT8OZ3LiG6qolAe4Dz56YbkrwAuJs6NeXs0FoUAF76EJ+qCXz6itDbB7QcJQtjP2VWt74U
+	7c4klzzidcFxznBRGlBAcLdiOPAla1rB/sooC8vy75b9AyoU81Wxgmc7Ov73cbCtVL7yasPziNW
+	VtkrdUWsA==
+X-Received: by 2002:a05:6000:2083:b0:460:11bd:3fde with SMTP id ffacd0b85a97d-46032da2286mr8499620f8f.13.1780738037992;
+        Sat, 06 Jun 2026 02:27:17 -0700 (PDT)
+Received: from ?IPV6:2a01:e11:5402:d840:f1ee:c5d:74e4:6e19? ([2a01:e11:5402:d840:f1ee:c5d:74e4:6e19])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46028a6dce6sm25534821f8f.30.2026.06.06.02.27.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Jun 2026 02:27:17 -0700 (PDT)
+Message-ID: <8392f8a6-719e-43d9-813a-0a163f450ed8@gmail.com>
+Date: Sat, 6 Jun 2026 11:27:16 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-3-clamor95@gmail.com>
- <aiPDzdKuccdLIvlF@ashevche-desk.local>
-In-Reply-To: <aiPDzdKuccdLIvlF@ashevche-desk.local>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Sat, 6 Jun 2026 10:22:43 +0300
-X-Gm-Features: AVVi8Ceg74fnSrmdqpxPSKGHcf0CnCmmeoCyMtr9C-KzyjgDa-9lYe4AaFHwWbI
-Message-ID: <CAPVz0n2rdgw8Xr3uxVdQGwrHTNFqK4SKQDFU2FEB8LzLwPhQ_A@mail.gmail.com>
-Subject: Re: [PATCH v4 02/14] mfd: lm3533: Remove driver specific regmap wrappers
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 8/8] iio: tcs3472: implement wait time and sampling
+ frequency
+From: Aldo Conte <aldocontelk@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+References: <20260522123420.45495-1-aldocontelk@gmail.com>
+ <20260522123420.45495-9-aldocontelk@gmail.com>
+ <9c0bec93-e102-4655-8074-fd544b16d912@gmail.com>
+Content-Language: en-US
+In-Reply-To: <9c0bec93-e102-4655-8074-fd544b16d912@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-=D1=81=D0=B1, 6 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 09:53=
- Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Sat, Jun 06, 2026 at 07:57:26AM +0300, Svyatoslav Ryhel wrote:
-> > Remove driver-specific regmap wrappers in favor of using regmap helpers
-> > directly.
->
-> I like the idea of this patch. Nevertheless I have some suggestions below=
-.
->
-> ...
->
-> >  {
-> >       struct lm3533_als *als =3D iio_priv(indio_dev);
-> >       u8 reg;
-> > -     u8 val;
-> > +     u32 val;
->
-> Strictly speaking this should be unsigned int. The regmap API use unsigne=
-d int.
->
+On 04/06/26 11:23, Aldo Conte wrote:
+> On 22/05/26 14:34, Aldo Conte wrote:
+> 
+>>   static int tcs3472_req_data(struct tcs3472_data *data)
+>>   {
+>>       int tries = 50;
+>> @@ -166,16 +214,131 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
+>>           *val = 0;
+>>           *val2 = (256 - data->atime) * 2400;
+>>           return IIO_VAL_INT_PLUS_MICRO;
+>> +    case IIO_CHAN_INFO_SAMP_FREQ: {
+>> +        unsigned int cycle_us = tcs3472_cycle_time_us(data);
+>> +
+>> +        tcs3472_cycle_to_freq(cycle_us, val, val2);
+>> +        return IIO_VAL_INT_PLUS_MICRO;
+>> +    }
+>>       default:
+>>           return -EINVAL;
+>>       }
+>>   }Hi Jonathan,
+> 
+> One more thing on v4 before I send it.
+> 
+> For Sashiko's "tries too short" finding, I made the timeout dynamic
+> based on the actual cycle time:
+> 
+>      cycle_us = tcs3472_cycle_time_us(data);
+>      timeout_ms = max(1000U, (cycle_us * 2) / USEC_PER_MSEC);
+>      tries = DIV_ROUND_UP(timeout_ms, 20);
+> 
+> 2 * cycle_us gives some safety margin, and the 1-second floor keeps
+> the original behavior on default configurations.
+> 
+> This solves the timeout issue but introduces a new concern:
+> tcs3472_cycle_time_us() reads data->{enable,wlong,wtime,atime}
+> without holding the lock, both here and in the SAMP_FREQ case of
+> read_raw() (also flagged by Sashiko).
+> 
+> For the SAMP_FREQ case I'll just add guard(mutex)(&data->lock)
+> before the call:
+> 
+>      case IIO_CHAN_INFO_SAMP_FREQ: {
+>          unsigned int cycle_us;
+> 
+>          guard(mutex)(&data->lock);
+>          cycle_us = tcs3472_cycle_time_us(data);
+>          tcs3472_cycle_to_freq(cycle_us, val, val2);
+>          return IIO_VAL_INT_PLUS_MICRO;
+>      }
+> 
+> For tcs3472_req_data() I plan to use scoped_guard() only around the
+> cycle_us computation:
+> 
+>      scoped_guard(mutex, &data->lock)
+>          cycle_us = tcs3472_cycle_time_us(data);
+> 
+>      timeout_ms = max(1000U, (cycle_us * 2) / USEC_PER_MSEC);
+>      tries = DIV_ROUND_UP(timeout_ms, 20);
+> 
+>      while (tries--) {
+>          ...
+>      }
+> 
+> Could this be ok?
+> 
+> Thanks,
+> Aldo
+Hi Jonathan,
+do you have any updates on this idea?
 
-Yes, though regmap defines only 8 bit to be used so it should not matter
+I have already implemented it and it seems to work.
 
-> ...
->
-> >  static int lm3533_als_set_int_mode(struct iio_dev *indio_dev, int enab=
-le)
-> >  {
-> >       struct lm3533_als *als =3D iio_priv(indio_dev);
-> > -     u8 mask =3D LM3533_ALS_INT_ENABLE_MASK;
-> > -     u8 val;
-> >       int ret;
-> >
-> > -     if (enable)
-> > -             val =3D mask;
-> > -     else
-> > -             val =3D 0;
-> > -
-> > -     ret =3D lm3533_update(als->lm3533, LM3533_REG_ALS_ZONE_INFO, val,=
- mask);
-> > +     ret =3D regmap_assign_bits(als->lm3533->regmap, LM3533_REG_ALS_ZO=
-NE_INFO,
-> > +                              LM3533_ALS_INT_ENABLE_MASK, enable);
->
-> In cases like this perhaps leaving mask would be fine and together with
+If you agree, I am ready to submit the v4 of the patch.
 
-I prefer to remove intermediate variables it the helper allows to
-directly pass needed value.
-
->
->         struct regmap *map =3D als->lm3533->regmap;
->
-
-next patch drops lm3533 so there will be als->regmap which IMHO is
-more logical instead of passing entire lm3533 to child devices.
-
-> this be nice one-liner:
->
->         ret =3D regmap_assign_bits(map, LM3533_REG_ALS_ZONE_INFO, mask, e=
-nable);
->
-> >       if (ret) {
-> >               dev_err(&indio_dev->dev, "failed to set int mode %d\n",
-> >                                                               enable);
->
-> In many cases it won't increase LoC count.
->
-> ...
->
-> >  extern int lm3533_ctrlbank_set_brightness(struct lm3533_ctrlbank *cb, =
-u8 val);
-> > -extern int lm3533_ctrlbank_get_brightness(struct lm3533_ctrlbank *cb, =
-u8 *val);
-> > +extern int lm3533_ctrlbank_get_brightness(struct lm3533_ctrlbank *cb, =
-u32 *val);
->
-> >  extern int lm3533_ctrlbank_set_pwm(struct lm3533_ctrlbank *cb, u8 val)=
-;
-> > -extern int lm3533_ctrlbank_get_pwm(struct lm3533_ctrlbank *cb, u8 *val=
-);
-> > +extern int lm3533_ctrlbank_get_pwm(struct lm3533_ctrlbank *cb, u32 *va=
-l);
->
-> Now they become asymmetrical. Perhaps to replace setters, but be careful =
-about
-> upper bits.
->
-
-Yes, I have same thoughts. Upper beats should be irrelevant since
-regmap should use only fist 8 bits but I will be careful, thanks.
-
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+thanks,
+-- Aldo
