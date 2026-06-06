@@ -1,74 +1,86 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E477C12FF69
-	for <linux-iio@vger.kernel.org>; Sat,  6 Jun 2026 00:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23CC2F8EBA
+	for <linux-iio@vger.kernel.org>; Sat,  6 Jun 2026 04:58:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780706690; cv=none; b=Mh3ogkS3gwDysfNCupUmZD2L8Zn4ZwIWhWhh9jpAssMAkxmK3UzelSNFRtzyVQeNIy0MHCyZibieLf8nyJr7S1mB2jMwtchEUNJReg7iY4Qxp1fqm/8tRwY7axKnNq1kWsq3hX18hBJSGRE8P+9b5jeyMQaTkXsdFnmjQaOkm5w=
+	t=1780721887; cv=none; b=IWpAK7d8+idn+y4CKw6tqNhclc96lPkC0GSWiggk2afRceAq9zTVWdAXEZRtwZLi0Tdhf9bjBUWVEI2/XXgUUME3cGa4ZqEQk6aXhEcfXDHZhVI6ecL7dpNrT7lSKkIGIsunpkoRgWcxPgC8flPCLnidAVxV4Gdn2rQeSHng7hY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780706690; c=relaxed/simple;
-	bh=dRZK27N2byQcY1LNOqt6bEGbXPueyY87I0cDb1bEmh4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D7KgIeV2sm+K8EfWHWVoGXbFfrsuzR4D15kUiPU8ZB9+nT6+SltiVecyeScBZ4EtXebYzTViJ+7dKDp8L6JfkvNsRX5wKKRqaFIRKqWQXOV4L3PigvxVbXXUYdBN97Cft3W52vHzJcu0BWZkQekLzAze1H2BBR+BtJmBrNatm7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f5/5M9I2; arc=none smtp.client-ip=209.85.128.174
+	s=arc-20240116; t=1780721887; c=relaxed/simple;
+	bh=sChSctaNk/iJ7rMo4OneEoqRj9NRpGu5gBeih5JX6Jg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lb+rzEFTjVBAAnWhTTeosiFfHGoERTHvJSebIKoZbKcLfiUojL+XaDq8WDn0GJlnxnuNsvJePU11Ewx7SLRYsbxkfOFXnCES//V4nVeQIME/KQqngQpcRnAGSWgtqkl7YA/4JiwTcUi5QRsb8k4myEYVltiDDHTvarY8k99TI08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sSfs//8t; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f5/5M9I2"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-7e0b3db3499so19133827b3.0
-        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 17:44:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sSfs//8t"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-beb8a08a6c8so370062566b.2
+        for <linux-iio@vger.kernel.org>; Fri, 05 Jun 2026 21:58:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780706688; x=1781311488; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780721884; x=1781326684; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kVxvw0FXwX0MOWo86WK/chtHgtRPUdaNPh5FdNMHb7M=;
-        b=f5/5M9I2T2wHJqIH4UKikTHz4DNUjVtT0sizHNaq3w65CzSR3QI0X9rcDwvYsREgeW
-         hcoJroCpaqNtS2xgySchbleiAYC/W7OOHITrCAGfrlENSeLEQgmpJdRlwa/2/PKJiPf6
-         RWUHzX8UK5T0gmlltMi+Jw54uEhL+0J8jAZ9gsIbaMot8c3kUjfxNlCcUFVIUYCqrdco
-         0VAG10MXFlnALmskIHM7eQZHItli+mi2jgkFz0CNd/zYnFQkS2zf+XZERv/Gm6igEDjF
-         GMBf8pO5mv+z3bzQ3McqwZRx/bMQGkiSw15P8fsRXaRK3cu+AAizHtrzFeTxLyo4gVDX
-         p64Q==
+        bh=ijiDIJoRq4DW5gmq2cKgL9VuesBVH2zWjg+vtHwI5sw=;
+        b=sSfs//8t7+hi4vevAcVnNjxy1AQom4JuITz2efSHK9eMjRSjnhpigeGBbwFOXFrODK
+         Z/GiP+EFP3SMYvbl4RrWp2DnpUEOX0iMA5Q/A2irlBbF9bhlwDPTzhgHtcuqUHU8s+82
+         mkv1VTrkmYfkGhYaxh9vnrs4JLVn/LsLDpnUd7r/6F4PIaRIyKXQfh2mkrPhtDJnAKAk
+         nTbRKpBufwY78nqOkIVVvt2hNHNMKNJBXqN0r7tKtMRW5LIRcH+8ojfBz7eKgb/OP7X8
+         ODt15qnp7y9J9fLIctqWHekiPiqRPH2rcCdxN7sd4EFopcLlVydJPXxJ42T5rVSnDS72
+         IrIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780706688; x=1781311488;
+        d=1e100.net; s=20251104; t=1780721884; x=1781326684;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kVxvw0FXwX0MOWo86WK/chtHgtRPUdaNPh5FdNMHb7M=;
-        b=OixJqpWXREXhTCETub20xYSKL2ItRYQ1rqNUF5/1B7S1Sy9WjUb1wz1ZXBSZKGsLD3
-         p3e53h27DFhG0G/AFWpNpGbS/P3c0/hzTHp3QxWftpbMIK0DVCg5OqtsspP09CvxVUvx
-         JCSpuyS7xtNoIu133Qfo8CTV3bpLjsHEm9B/RkMtNVwVhxY+tcGErxkKknJZhIpfBafc
-         cSgras5r/Rm5DY6tQlCIGNSNshZtggq2XsHEqOgPXGEOQkStZuayq2DBAmuVNRfQc04C
-         OfRJ3ef+ZuKLKYtk3Uby2buS4yUidWk+3Sd3LrKlwHbvHGAK7jLIkcg9BtR1TG66WeXC
-         iGew==
-X-Forwarded-Encrypted: i=1; AFNElJ+1abxeeRCp110HviyJ9X7iVGQVQJIU8HFUsfQQ6WpZDDiBfpI47GTbOdv5m19G44CyxUyASqzRuSI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwGp8kCEU/Us3eA9JwuP5YIKu+jd4NaIo2vd3qXUDDWWfrTUZrC
-	mc5MDZ5kc1EKPetTDIxvm+O/FWx/ApJr3tgnggWw/6rFbts6qKPesQhv
-X-Gm-Gg: Acq92OEDh49A8KGN00Onuz5PIPzrYIcJ5G+95NDD1yO5kk0/5T2GZX4N0idurFhvD2f
-	Ent1/sUj2siYI7dU3wmP7snNktKMF9iJ8F/CGt6FQOa40aIixOwcgt/3BPnS+lFMA1U4xHhXTQr
-	/ZOYAFu5g+p7LH9gZh1mvZcLD365HkdL2Rq2mcCpjfHnSUsLyFPRNI7UCoTy8hcvZCDMRax2rTl
-	Qot9QjXWUeSZghfTwQf4cpKFk7H0XJmLT2Qw4KUWMV5XpORhLLv/VeMNkTnrXTH7jT4XomGHF/O
-	kIE4uHXPToUpVtblrHo2j8lInpsPw3zdvV3N2/P+RBbt39mCghOD2Y4fB+6uqNjZpqJM1eo1Ewl
-	MGivXDjQ9EcDDSeJuLp6rolJ0yZjZPJI8JzCl2HVcJS9ZcLwtLOQTc/6TclszcptCZWcehxESFQ
-	m5fn8SwyWLeyNrocKUjfxArT57+9E7gu6Sf3gJNtABllRX497l66o0x3ZgiVjvW0rybF6tsPWD2
-	es=
-X-Received: by 2002:a05:690c:a9d:b0:7ec:59e7:459d with SMTP id 00721157ae682-7ed0cee82bdmr62097807b3.37.1780706687989;
-        Fri, 05 Jun 2026 17:44:47 -0700 (PDT)
-Received: from i-use-arch-btw (c-67-187-47-172.hsd1.ga.comcast.net. [67.187.47.172])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7ea2148b168sm58212937b3.14.2026.06.05.17.44.47
+        bh=ijiDIJoRq4DW5gmq2cKgL9VuesBVH2zWjg+vtHwI5sw=;
+        b=VTLoJyGf0zbWXUwrq8QavqQENVgUtOnE6LelUpb+wNycZV3l0FS49bwSRkewxDnqvZ
+         mGrLyL3qQe2Qon0PAMS2fZwsof24K/eAPe49AlMO38Q7voLXNOvTCdAhgyL1AiQYMP3Z
+         kf7vTab/u9+K0AleqDdtWX76Zc4RtmyQxdnYKIAK6su66SPK+DS7sEnzw+STDVz/iC0B
+         2doSSPOJyypjoDTBbfBWXeDppGY1zG4b63oGB/5g5heDvZyXdx7mF1dsBIyHTu28icAr
+         Ls8kcUZSepjOowqUT5Xnyct1EfvqPnSnH+JaGiwXvn/Ck40O2EPa5y5DpBne4wwVG/do
+         XBAQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8brqcBYLnROzlxebf63l+ySrqcWWjLd5+AP9vYUJzdWDme0qFg+39ENC/f/fYip5mfriBHzaoSWXw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyERpmQZif5JitiyfJY34gC/WdMyshZWTCSJ2+7TDaSc1oCkz/Y
+	hkwEVWpVeSy3KXIvbngdT2cTZ68SaDr9VBJ1QTDo9d4MHqGy2BuZv4DD
+X-Gm-Gg: Acq92OHlR+yVbpAzV0UPokuY1gvc3XtMwZJ5xT78ZVTSwYdNTHVc/D/SDERy3ZOC+/n
+	y1JFr4rDbg7q3uxIMDdzp8OGqWNK3Sfol5q0dMwdnN9BK/LP5pJkC1QTN446seTkhJrEJ1uMxPE
+	lfHJ7CjyCXnBtE/FBNu7iGpM1qJ7rrsIKjYIBVDfv/Tw+kzbbLkAyoPBwOXpZbXlLRyWwU880Iy
+	4eMFdoi1vUHd8SNkvy4plTOcHqg/Faapc3WE+6wvuzjINwwK6hABKg3HHr5q/T9fJeWir1YrQEV
+	boMprtjGoD+060sApFWXsU2K7Pityx/SJhLPbjgPDFQ3NT4KMLeHq168P5zx2d6AmRpFCzS8LPI
+	dQY2qP8WfUxaaQ2adZxks6TaPNdF5WsGNXgAfpJ03qJvHKkT/YMGEZ5jYDw3iSALrPGEkDEg1Wf
+	PlW29+VfKg1oW7eZrvf5y3vVSzyC5mvhvrDw==
+X-Received: by 2002:a17:906:8a79:b0:bee:bcf6:6a23 with SMTP id a640c23a62f3a-bf3749d7f03mr231807166b.43.1780721883699;
+        Fri, 05 Jun 2026 21:58:03 -0700 (PDT)
+Received: from xeon ([188.163.112.61])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf054e086fesm570597166b.32.2026.06.05.21.57.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jun 2026 17:44:47 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: jic23@kernel.org
-Cc: Maxwell Doose <m32285159@gmail.com>,
+        Fri, 05 Jun 2026 21:58:01 -0700 (PDT)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Lee Jones <lee@kernel.org>,
+	Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>,
+	Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3] iio: chemical: scd30: Use devm_mutex_init() over non-devm mutex_init()
-Date: Fri,  5 Jun 2026 19:42:04 -0500
-Message-ID: <20260606004203.158853-2-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	Helge Deller <deller@gmx.de>,
+	Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Johan Hovold <johan@kernel.org>,
+	dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: [PATCH v4 00/14] mfd: lm3533: convert to OF bindings, improve support
+Date: Sat,  6 Jun 2026 07:57:24 +0300
+Message-ID: <20260606045738.21050-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,35 +89,93 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The current code uses mutex_init() instead of devm_mutex_init(), which
-is incorrect as the rest of the file uses the devm automatic resource
-management API. Fix this so that the mutex is set up in the same way as
-the rest of the device data structure.
+Convert LM3533 to OF bindings, add missing VIN supply, add support for
+setting mapping mode and LED sources based on device tree. 
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 ---
- v3:
- - Return ret instead of -ENOMEM.
+Changes in v2:
 
- drivers/iio/chemical/scd30_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+schema
+- maximum led sources for leds set to 4
+- anyOf > oneOf in ALS
+- improved ALS descriptions
+- adjusted example
+drivers
+- dropped devm convertion of irq and mfd helpers
+- all als configuration moved into lm3533_als_setup
+- added regulator/consumer.h
+- lm3533_bl_setup set before sysfs_create_group in backlight
+- added check if LVLED is valid
+- LM3533_REG_OUTPUT_CONF1 > LM3533_REG_OUTPUT_CONF2 for LVLED4 and LVLED5
 
-diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
-index db5cc295aeab..f1f2507c03b2 100644
---- a/drivers/iio/chemical/scd30_core.c
-+++ b/drivers/iio/chemical/scd30_core.c
-@@ -714,7 +714,10 @@ int scd30_probe(struct device *dev, int irq, const char *name, void *priv,
- 	state->pressure_comp = SCD30_PRESSURE_COMP_DEFAULT;
- 	state->meas_interval = SCD30_MEAS_INTERVAL_DEFAULT;
- 	state->command = command;
--	mutex_init(&state->lock);
-+	ret = devm_mutex_init(dev, &state->lock);
-+	if (ret)
-+		return ret;
-+
- 	init_completion(&state->meas_ready);
- 
- 	dev_set_drvdata(dev, indio_dev);
+Changes in v3:
+
+- ohm -> ohms
+- added default PWM mask to schema
+- added commit removing driver regmap wrappers
+- added commits which flatten pdata helpers
+- adjusted check if als->irq > 0 since als->irq can be negative if error/missing
+- added count for children defined in device tree and mfd_cell is allocated
+  via devm_kcalloc to be able to contain all of them
+- fixed backlight boundary check
+- fixed count increased unconditionally
+- dev_err returns node name instead of reg value
+- LM3533_MAX_CURRENT_* defines moved to common header since they are used to clamp
+  current values read from the tree
+- mapping mode commit splitted into 2 (sysfs logic improvement > mode from DT)
+- backlight mode configuration set before sysfs group is created
+- fixed LVLED check on LEDs setup
+- added check if HVLED is valid
+- fixed wrong err_sysfs_remove goto in lm3533_bl
+- added commit implementing backlight_scale property
+
+Changes in v4:
+
+- fixed regmap_update_bits val and mask swap in lm3533_als_set_int_mode
+- fixed als->irq check in store_thresh_either_en
+- removed clamping of r_select in als driver
+- added use_of_reg and of_reg for backlight and leds registration
+- added intermediate step in asigning props.brightness
+- fixed HVLED/LVLED configuration overwriting
+- added bounds check for num_leds in leds and backlight driver
+- switched to regmap_clean/set/assign/test_bits helpers where appropriate
+- dropped extern from header function declartions
+- switched lm3533 pointer in cell structures to regmap
+- sysfs_create_group > device_add_group
+- changes in backlight sysfs were expanded to all properties
+---
+
+Svyatoslav Ryhel (14):
+  dt-bindings: leds: Document TI LM3533 LED controller
+  mfd: lm3533: Remove driver specific regmap wrappers
+  mfd: lm3533: Remove extern from shared functions in the header
+  mfd: lm3533: Pass only regmap and light sensor presence to child
+    devices
+  iio: light: lm3533-als: Remove redundant pdata helpers
+  mfd: lm3533-core: Remove redundant pdata helpers
+  mfd: lm3533: Switch sysfs_create_group() to device_add_group()
+  mfd: lm3533: Convert to use OF bindings
+  mfd: lm3533: Add support for VIN power supply
+  mfd: lm3533: Set DMA mask
+  video: backlight: lm3533_bl: Improve logic of sysfs functions
+  video: backlight: lm3533_bl: Set initial mapping mode from DT
+  video: backlight: lm3533_bl: Implement backlight_scale property
+  video: leds: backlight: lm3533: Support getting LED sources from DT
+
+ .../leds/backlight/ti,lm3533-backlight.yaml   |  69 ++++
+ .../bindings/leds/ti,lm3533-leds.yaml         |  67 ++++
+ .../devicetree/bindings/leds/ti,lm3533.yaml   | 169 ++++++++
+ drivers/iio/light/lm3533-als.c                | 179 ++++-----
+ drivers/leds/leds-lm3533.c                    | 181 ++++++---
+ drivers/mfd/lm3533-core.c                     | 365 +++++++-----------
+ drivers/mfd/lm3533-ctrlbank.c                 |  27 +-
+ drivers/video/backlight/lm3533_bl.c           | 223 ++++++-----
+ include/linux/mfd/lm3533.h                    |  75 +---
+ 9 files changed, 806 insertions(+), 549 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/backlight/ti,lm3533-backlight.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533-leds.yaml
+ create mode 100644 Documentation/devicetree/bindings/leds/ti,lm3533.yaml
+
 -- 
-2.54.0
+2.53.0
 
