@@ -1,45 +1,46 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011009.outbound.protection.outlook.com [52.101.62.9])
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010023.outbound.protection.outlook.com [52.101.201.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FA4118A6D4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF323233938;
 	Sat,  6 Jun 2026 05:17:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.9
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.23
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780723055; cv=fail; b=qVKqdmepndxgzBwTYmkUK6mx4XIopKNmu5U42Gdwxco01uIaVUltwZcBEA83bCSVY07lqXQXU8MqmEtFFmaEKtaSig9pTtuqyNPmNgNoyzbbtCZP4i+m5ZApHrkI4Ga4hWNmDNt01FshPEiCfNRriIGogwujvdlDGzP3X4WZIxw=
+	t=1780723055; cv=fail; b=uYI4bnX878PGgkyyydjxEhs5d56vMwtN+cvspOqjnJJN5Tpm1iYDoDzu6fqatIpij46Ydn6yxrFfirHT/X2IOE75V3Pk0DjfnWVL3baknFKp/ahhgpamqYnrFcDYZp9HjE0pbOgq0OEeWOLMadajrnO3GuyWokWbU09bFsYRw94=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1780723055; c=relaxed/simple;
-	bh=za7AS6Lqw+Ltaq3B4JDLL5a1TBl+Nn1iEf2lt3uIH7U=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KHBG71ZhtUQabaFYLcxvbj1xxjyten3ZI0jRwXMZo3apn2QE445e+4ARy97YnmaI2UMwEmxqlnktxrxxymp+gocQUqc9/FMAWDrtRYBnG/WAXNUuonFdyzHHOEjJkwqCd6mxj16iqaslrm4BoB+F2rHCDyEZpQnIXBzcvFcsZQk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Ohll0HEd; arc=fail smtp.client-ip=52.101.62.9
+	bh=TOTj47dT6INyWdjs4A9RF1wJr/xqD4ixwueX1DS2vfQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Fey6+LU1eltJJBJW5VQATMxV9ApcZEe8VQt9jLidrsinBLB542Zvow9IKGx1bFAi+pvAME+F077pEn+6WIQqwlB3AzkKEHP3QkkC4o814/ejoVEkSqmd81heRG555sBLRmtKeLuaz85/m0IaoIG85i9NhvjJ3XgXqixZoJ9rrq8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=HcLA7SSo; arc=fail smtp.client-ip=52.101.201.23
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Ohll0HEd"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="HcLA7SSo"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=T2yfiw9fMm12uYXWZEoS8R3/q2qo4X4mu/5VE2pgonuRdjHnrmAkIbo2y9w1dfr9hep1KdQ4CcUC9A2RlQ+nLYz20aCg7n7EthtDYhDG3kaaQ9EdmBp3eOPOIR7OcNCtnUmDzDD+qsfBpHtMoQTvgd+t+37qJ2cDUWgB7+Leqswy5aLoT4jWBldkeKbd09S3HEledXwTE/OlrqBeOgAusCcr2UcKcD1DqqcI77qp/2HvtbuEk2LDlqOKppRn9sBWxNWBG0kwC5GnLTPPs6cm1lnwFTjB6ZtGjFjfM7y1bXoqieDIvIIOTkTL2vGDStjyWe7stiux7MObkRSh36lHuQ==
+ b=Y7lWx+QUrrKhHgY7Gn5QQVuhAkV+Y80AdB+Zn0AUxiJM7PW315zcrr/Ej+s45mLBFNMi31BgxdLwZZ2mNOZ6x29aXhA3ca9BWgz/hcrZgEYQnAGXF+CnnxAgDaIHyjzmTSM1QVo1K3TP3JImYhI5geuMNU1pl/FCcTvMC73GIN/4f7fnl5PFGmR0Bu48qQ5IXjXzNI7raR+8gsvxAZonMo0btwv1XTZ+vhMgC33o252rU0tDC5nv1fLEpT8FAuS2BirzXM+iCjz8tJfHMw4a8kIJqrHaU1Zm9pkJlu3ozgiVUiQ8tZojVm5dhVjsBz8ztoEzHSDSibOrC6JhNe7sBA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=44W2ru1BfcEqZeiSYna6D/4z1jXSsBmr8qcKEMZEnFw=;
- b=gGpBVF5VWyuGtmrOoQoE1+qiZJkfiP/ETz3vOQTMy8XgC2K6n37F2a9BYVBTCCTX/EQzv+LxI2pNhvO8mVPzyJd8Z8oKOBiy2tBtq6yYk4xiu3SUJI5L1E3CZmXEgxZ3HlIOcuZO7rnLWrSG1G6+SHJjp9jiSde5O0QO0PW2UbcRR33eoF0f4Cd+YX/ArOplOnkH0SBE6ASeLon5JsQQX2EX9Ct8d1SytjJzTubNhWSCC6N1oQfM2hFVS95jiBdveeP5FVpgZZBjb6iYYrmsoZMlEDrjYgf0YHHtYvNJSyPz7tLwJddHaroE0aQ+Q8w3pxx0o7PXNEfogaxQQ/cykQ==
+ bh=/r4SFV2f1gvIPIGbTH5GdGVu/6v6BXswa6Cebvnvxf4=;
+ b=pgnQAq9VE//djCMUBuAmnHmdNFcXZ7EeNuDEPeLp1Xh9bNSIb5u3Lshh+oOrNagtlhMcvAxESVmk3IEHay/D4n7fFr37nh0Kt/M0TbMXM6qmgx2uyQXJlpXbgr5wChCuYCK2AZfOKBGQZx3IQAxypeTXAQCHP7axJuaW0th04G3N9OwitXodDXG3uYyLvMq3DH+vRNfKNyb7YgfnLl4AU0ae3sFQVHhyPs9V9YR9R2RAQLd9G6Mjn2BEX+N4RNjgn3Ij5tp8GvZllrmsbnAK6//XuRSAG/i0yEVWp8OLe3GnJ0+fWiPPgHyaJBawO50TgPttL5azIhx3KSx21eQ7dg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=44W2ru1BfcEqZeiSYna6D/4z1jXSsBmr8qcKEMZEnFw=;
- b=Ohll0HEdL5l8YJqMBBtGz7axRmpSs4XrtLY72FYPRc0bfUyu8U4IYGiaprat9K0pBQX1xWnYfHWUnTW4/H/84WlKyeCui0igjynCXXa5bxmkN54SVE04W+vPBfg7JGnRxSmVy0qtQ3K/cByyDx/EbAaQZWjxWgY0S845yiVA8GE=
-Received: from BY1P220CA0012.NAMP220.PROD.OUTLOOK.COM (2603:10b6:a03:59d::8)
- by SJ2PR12MB7868.namprd12.prod.outlook.com (2603:10b6:a03:4cd::11) with
+ bh=/r4SFV2f1gvIPIGbTH5GdGVu/6v6BXswa6Cebvnvxf4=;
+ b=HcLA7SSorw6PEot5hQhW47YJHli0K/g1Z/cawg5MtpdjLtP/HUo5FzK+Ww6WMrwbH1niMjmlJv+gjnqnTvAdq3GAquc4kn7oHyux2zp0ISDoyEACr6qPZOHR5t5AcQG0+Mr1KRvziULbdCGDWH2W88yoeuKdtWePDnXonN+y9eY=
+Received: from SJ0PR05CA0006.namprd05.prod.outlook.com (2603:10b6:a03:33b::11)
+ by DS0PR12MB8786.namprd12.prod.outlook.com (2603:10b6:8:149::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.9; Sat, 6 Jun 2026
- 05:17:26 +0000
-Received: from SJ1PEPF00001CE4.namprd03.prod.outlook.com
- (2603:10b6:a03:59d:cafe::9d) by BY1P220CA0012.outlook.office365.com
- (2603:10b6:a03:59d::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.11 via Frontend Transport; Sat, 6
- Jun 2026 05:17:26 +0000
+ 05:17:29 +0000
+Received: from SJ1PEPF00001CE5.namprd03.prod.outlook.com
+ (2603:10b6:a03:33b:cafe::1) by SJ0PR05CA0006.outlook.office365.com
+ (2603:10b6:a03:33b::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.92.9 via Frontend Transport; Sat, 6
+ Jun 2026 05:17:28 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,20 +48,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
 Received: from satlexmb08.amd.com (165.204.84.17) by
- SJ1PEPF00001CE4.mail.protection.outlook.com (10.167.242.20) with Microsoft
+ SJ1PEPF00001CE5.mail.protection.outlook.com (10.167.242.21) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.92.5 via Frontend Transport; Sat, 6 Jun 2026 05:17:26 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ 15.21.92.5 via Frontend Transport; Sat, 6 Jun 2026 05:17:28 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Sat, 6 Jun
- 2026 00:17:26 -0500
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Fri, 5 Jun
- 2026 22:17:25 -0700
+ 2026 00:17:27 -0500
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb10.amd.com
+ (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Sat, 6 Jun
+ 2026 00:17:27 -0500
 Received: from xirsalihe40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
- Transport; Sat, 6 Jun 2026 00:17:24 -0500
+ Transport; Sat, 6 Jun 2026 00:17:26 -0500
 From: Salih Erim <salih.erim@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
 CC: David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
@@ -69,11 +70,14 @@ CC: David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
 	<conall.ogriofa@amd.com>, Michal Simek <michal.simek@amd.com>, Guenter Roeck
 	<linux@roeck-us.net>, Salih Erim <erimsalih@gmail.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Salih Erim <salih.erim@amd.com>
-Subject: [PATCH v4 0/5] iio: adc: add AMD/Xilinx Versal SysMon driver
-Date: Sat, 6 Jun 2026 06:17:02 +0100
-Message-ID: <20260606051707.535281-1-salih.erim@amd.com>
+	<linux-kernel@vger.kernel.org>, Salih Erim <salih.erim@amd.com>, "Krzysztof
+ Kozlowski" <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH v4 1/5] dt-bindings: iio: adc: add xlnx,versal-sysmon binding
+Date: Sat, 6 Jun 2026 06:17:03 +0100
+Message-ID: <20260606051707.535281-2-salih.erim@amd.com>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20260606051707.535281-1-salih.erim@amd.com>
+References: <20260606051707.535281-1-salih.erim@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -84,126 +88,239 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE4:EE_|SJ2PR12MB7868:EE_
-X-MS-Office365-Filtering-Correlation-Id: e0be89c8-70b5-4d38-dd5a-08dec38ae61d
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE5:EE_|DS0PR12MB8786:EE_
+X-MS-Office365-Filtering-Correlation-Id: 536b8dd8-6505-4b41-17b9-08dec38ae759
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|36860700016|82310400026|1800799024|13003099007|6133799003|18002099003|11063799006|56012099006;
+	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700016|1800799024|11063799006|56012099006|3023799007|22082099003|18002099003|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	JUoIIDS/rhIOl4Ii9Ehgoiw3Ns2SLTaI9k1zX+rDiPt4aFdgKee0N/IEL4/xrs5RmeNSlbuk6tZJKtJ4G1GX5ve9cS5YgmXQIJUNrZXKryP2cH22qznHIcoIO/dVtfR11xrqCVPwueUnKAsbHzg8V8Sbe8BMmicnWAEAU8k/hOvV4Lebe8lgvgvohcZHisK1MIXXnK5jgYSr+UPUjjAQkgpWVL46OXXwwyVwK/XFawNBP06iLlHUcreDnvHBz+70Z174Dl+mQg2bkjXLDq6y0n/xhAWYyRisXKH5YyQhDEDWV7NGxP0X7Eucq1CH/oQooLPiN7K/Qr+5wSdBqymBSBd9PR8M2LZZCZjYSO9b43GvoezmnjZtZ3RwNcZU/nbM5MsQwdX0/oI3cOh/QoxzW5SrPnCaUHUxs4lfOlyyRR5dtD9QaHYQ83i63RycXUI5xifBmzb6WCDmEMbPY0xAAZg9Ix0bmNxwABHDVC/cdh8Atl6TEAgGpJrkPYD1IR7Bt/J+Do25nxlHcx/ykNDNPtFUtSocCFu/vR/hzODOHrnkq0Q4SOo5BR47nRYgaWY4ggnPAz8luksK3XeIzcuC4o4aOiibc5BXMQPlDBXipK06De+DNwYOVulC9sbR58rKf76CE7MhrLDrkxlEkuLSKejwEpMrYqC9ScJP8j2Hu3bsDGQ7I99n/OneLbcMILnFE4LfTkJmIOFAN7Uf6F9PpX1JqeMdRJesXsheTZw8/gE=
+	hxuC6fgEDO9KYvqPVl++cqa6nnRFzBUC5jNFWxbFrfJ9RYqC6tmp5MC56XJSja4Fdy2ka5Z2hh3WScwVisYMeSsO+G0Unx/0X6PtHYZWQNgy1cbPk89YNCv+OQr68TcxC/hTJr+5gYHy9GEk715TdYf1pYvmVnPN6bXay1wsr2ur/saiMnJ5KORX6qjsEf9VEumfH9c3VdSGmsUubsuzzQicSwwBh809cf6MlOk2r8cSH1Or9BXLWNkNhmF/ThblKcnhAZrzd6+BSikUgDse+cEpO5VLg70EVMqwoeOu1u3A7wmMagbSMX2uZuWXUp81pJkcGM8UdwROumX8aGNI++ZZ7Qyfq3sN8eCDemTz52Ib9itWMko2UgbftbOA8JQd0HXfuNn8leXs3vyC6wMHN30vNFxOl8WKxln3w3rE1c6PJAAVloJmGyv/EmK1jqhOlhxmr2WAPOphobecVzacC0xI1/PDyUrvw76OPAHgnbD9NcLRavugIi47pbZVdm/X6v9k7Dl3vDxa54pZCugBWDntW0Nc9fWQXB+s16XkjPaKZ/QDStD97tVugKfLhw/lXNmZEak9tlKYN9GuZu+6TS516xw2HUZVT7w9rEIBMxjlNELkI89W63cJCllxbbPPA1SB/nGz+m7m2pkVKKnacV670BijgcfvWZLvfWzCgW4hmj888AXpXWwbSHajF4/X
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700016)(82310400026)(1800799024)(13003099007)(6133799003)(18002099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700016)(1800799024)(11063799006)(56012099006)(3023799007)(22082099003)(18002099003)(13003099007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	A4r5OxMQgDzu0BFv7b7sGldEZQWq7NTrVEkzjZQkmslcIrxu3pmG+GgwNKwVIQk+q4zTP5eUCmjCa2bUEyQU6ChabjJjLCqY1bYvFaIuTKqtzGo6KWU4MzAbRgVuqQWTcCK6dpebqoy42Nj+X3/gum2DUlvwATQRAFBff9X8ZM3CJXzSLZFCV9cvtlDEcm7H077zuP13D6j+bEmtj6S0340Rghg2sPjUw6NpqQM1zAu6J/MKZSDdA/itMyFH27R3JWCqC5yNXdXZhWx4I3/BHCfuINaU+JRjFtOZR85gjtPnqBjh46Z+wwUcTJIy+eeW39xnYnmAdIr5IVwmB8qesI/s79K1H4V4gby/1WOgNYaUtlqZoo1RhKCW40UgtASgkC9TJTsndV/g2oGNR/C9RnbNn7nI35UM7fS70LSm0Br8wTsGMjkhvxemplsczyP3
+	XJv3wuzdbMvqzhCeJOyNgsZZFXGh5eVDeMLn2kXvve2yOgj74GDQj45kG4bG+xZhAdV1pNTz3Quy+oz1enKbYfALFAL12naXY6o5Lxkt2i/tRbQDqGiuax6Mri2xOlgzsIEbwt8V5672G+mzTMkBymrSqHJ29nZiep6YuxNFAIvzjE8syElT7TeO8GfJVc+YROg0DMMAmdie/gXy6Cph4AwgZSruAZiMQLwdNDHiLV43jS3h94O7QyL7nqpvgnwBJsS+AmWtCQ1kEIUAjwpJ3x6zZFR+8+/uaMiZ47gpnkwWbrhhcx7ckhd8gLtg/Q61zLVhzxxbExuoHpHF7hYaH0XxXK+8zjHna+kUfmSrAgxtKs8gfHonUGWgVtayn5+sEUD+TVUb0c4s5wp6UJ7Z8tst6BoLTnj1r65bvyCRx7C2pKkRT0OwSI4GJAa+LLQZ
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2026 05:17:26.6053
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2026 05:17:28.6119
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0be89c8-70b5-4d38-dd5a-08dec38ae61d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 536b8dd8-6505-4b41-17b9-08dec38ae759
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE4.namprd03.prod.outlook.com
+	SJ1PEPF00001CE5.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7868
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8786
 
-This series adds a new IIO driver for the AMD/Xilinx Versal System
-Monitor (SysMon), providing on-chip voltage and temperature monitoring.
+Add devicetree binding for the AMD/Xilinx Versal System Monitor (SysMon).
 
-The Versal SysMon measures up to 160 supply voltages and reads up to
-64 temperature satellites distributed across the SoC. The hardware
-also provides aggregated device temperature registers: the current
-max and min across all active satellites, and peak/trough values
-recorded since last hardware reset. The device can be accessed via
+The Versal SysMon is the successor to the Zynq UltraScale+ AMS block,
+providing on-chip voltage and temperature monitoring. The hardware
+supports up to 160 supply voltage measurement points and up to 64
+temperature satellites distributed across the SoC, with configurable
+threshold alarms and oversampling. The device can be accessed via
 memory-mapped I/O or via an I2C interface.
 
-The driver is split into a bus-agnostic core module using the regmap
-API, an MMIO platform driver, and an I2C driver. This allows the
-same IIO logic to be shared across different bus transports.
+Supply and temperature channels are described as child nodes under
+container nodes, referencing the standard adc.yaml binding for
+channel properties.
 
-Previous submissions:
-  v3: https://lore.kernel.org/all/20260527114211.174288-1-salih.erim@amd.com/
-  v2: https://lore.kernel.org/all/20260502111951.538488-1-salih.erim@amd.com/
-  v1: https://lore.kernel.org/all/cover.1757061697.git.michal.simek@amd.com/
-
+Co-developed-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Salih Erim <salih.erim@amd.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
 Changes in v4:
-  - Core: temperature channels use RAW + SCALE (IIO_VAL_FRACTIONAL,
-    1000/128) instead of PROCESSED; voltage channels use PROCESSED
-    only, drop RAW; drop scan_type from all channel macros (Jonathan)
-  - Core: move __free(fwnode_handle) declarations down to just
-    above use; devm_regmap_init() on one line; lock comment
-    describes RMW sequences and cached state (Jonathan)
-  - Events: merge event channels into static temp array -- two
-    arrays (with/without events) selected by has_irq; event-only
-    channels have no info_mask (Jonathan)
-  - Events: blank lines, fit under 80 chars, default returns error,
-    return early in each case, guard(spinlock) in IRQ handler
-    (Jonathan)
-  - Events: take irq_lock in write_event_config for temp_mask
-    updates (Sashiko)
-  - I2C: replace enum with defines, use unaligned accessors for
-    data and register offset packing, named initializer in
-    i2c_device_id (Jonathan)
-  - I2C: drop bitfield.h, add unaligned.h
-  - Oversampling: return directly, remove else after early returns,
-    rename mask defines, blank lines (Jonathan)
-  - Oversampling: move oversampling read inside guard(mutex) scope
-  - Fix v2 lore link in cover letter
+  - Add Reviewed-by tag from Krzysztof Kozlowski
 
 Changes in v3:
-  - DT binding: single compatible, voltage-channels rename, single
-    quotes, drop label/bipolar/xlnx,aie-temp (Krzysztof)
-  - Core: IWYU throughout, __free(fwnode_handle), sign_extend32(),
-    size_add(), dev_err_probe(), s16 param, remove (int) casts,
-    drop SYSMON_MILLI in favor of (int)MILLI, rename _ext to _name
-    in SYSMON_CHAN_TEMP macro (Andy, Jonathan)
-  - Core: fwnode_irq_get() moved to core_probe, remove sysmon->dev/
-    indio_dev/irq from struct, describe protected data in lock
-    comment, add RAW+PROCESSED comment (Jonathan)
-  - I2C: IWYU, remove wrapper struct, explicit enum values, sizeof()
-    for buffers, = { } initializers, adapt to core_probe interface
-    change (Andy, Krzysztof)
-  - Events: IWYU, FIELD_GET/FIELD_PREP, regmap_set/clear_bits,
-    clamp_t, !!, IRQ_RETVAL(), devm_delayed_work_autocancel,
-    loop var scope, error checks, remove redundant else, logical
-    param splits, spinlock safety comment (Andy)
-  - Events: hysteresis rework -- store as millicelsius, hardcode
-    ALARM_CONFIG to hysteresis mode, compute lower threshold from
-    (upper - hysteresis), remove falling threshold for temperature,
-    single event spec per channel with IIO_EV_DIR_RISING, push
-    IIO_EV_DIR_RISING for temp and IIO_EV_DIR_EITHER for voltage
-    (Jonathan)
+  - Use single compatible (xlnx,versal-sysmon only), remove
+    xlnx,versal-sysmon-i2c (Krzysztof)
+  - Rename supply-channels container to voltage-channels (Krzysztof)
+  - Use single quotes in patternProperties regex (Krzysztof)
+  - Drop label description from channel properties (Krzysztof)
+  - Drop bipolar from channel properties (Krzysztof)
+  - Remove xlnx,aie-temp property from binding and example (Krzysztof)
 
-Tested on VCK190 (single SLR, MMIO path, 7 supplies, 10 temperature
-satellites) and VPK180 (System Controller, I2C path, 7 supplies).
+Changes in v2:
+  - Restructured to container nodes (supply-channels, temperature-channels)
+    with channel@N children referencing adc.yaml
+  - Added xlnx,versal-sysmon-i2c compatible
+  - Descriptions rewritten to describe hardware only
+  - Example simplified to #address-cells = <1>
+  - Interrupt example uses GIC_SPI/IRQ_TYPE_LEVEL_HIGH constants
+  - Commit description explains hardware context instead of schema layout
+  - reg required for both MMIO and I2C, interrupts optional
+  - Hex unit-addresses (channel@a not channel@10) per DTSpec
+  - patternProperties regex updated to accept hex digits [0-9a-f]
+  - Example trimmed to minimal variants (one basic + one bipolar supply,
+    one AIE temperature channel)
 
-A follow-up series will add thermal zone integration, secure firmware
-access, and I2C remote monitoring.
-
-Salih Erim (5):
-  dt-bindings: iio: adc: add xlnx,versal-sysmon binding
-  iio: adc: add Versal SysMon driver
-  iio: adc: versal-sysmon: add I2C driver
-  iio: adc: versal-sysmon: add threshold event support
-  iio: adc: versal-sysmon: add oversampling support
-
- .../bindings/iio/adc/xlnx,versal-sysmon.yaml  |  154 +++
- MAINTAINERS                                   |    7 +
- drivers/iio/adc/Kconfig                       |   33 +
- drivers/iio/adc/Makefile                      |    3 +
- drivers/iio/adc/versal-sysmon-core.c          | 1079 +++++++++++++++++
- drivers/iio/adc/versal-sysmon-i2c.c           |  125 ++
- drivers/iio/adc/versal-sysmon.c               |   91 ++
- drivers/iio/adc/versal-sysmon.h               |  130 ++
- 8 files changed, 1622 insertions(+)
+ .../bindings/iio/adc/xlnx,versal-sysmon.yaml  | 154 ++++++++++++++++++
+ 1 file changed, 154 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
- create mode 100644 drivers/iio/adc/versal-sysmon-core.c
- create mode 100644 drivers/iio/adc/versal-sysmon-i2c.c
- create mode 100644 drivers/iio/adc/versal-sysmon.c
- create mode 100644 drivers/iio/adc/versal-sysmon.h
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+new file mode 100644
+index 00000000000..1ad58e3d616
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+@@ -0,0 +1,154 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/xlnx,versal-sysmon.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AMD/Xilinx Versal System Monitor
++
++maintainers:
++  - Salih Erim <salih.erim@amd.com>
++
++description:
++  The AMD/Xilinx Versal System Monitor (SysMon) is the successor to the
++  Zynq UltraScale+ AMS block. It provides on-chip voltage and temperature
++  monitoring with up to 160 voltage measurement points and up to
++  64 temperature satellites distributed across the SoC. The hardware
++  supports configurable threshold alarms and oversampling. The device
++  can be accessed via memory-mapped I/O or via an I2C interface.
++
++properties:
++  compatible:
++    const: xlnx,versal-sysmon
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  '#io-channel-cells':
++    const: 1
++
++  voltage-channels:
++    type: object
++    description:
++      Container for voltage measurement channels.
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      '^channel@([0-9a-f]|[1-9][0-9a-f])$':
++        $ref: adc.yaml
++
++        description:
++          Measures a voltage rail. The register index and rail
++          name are assigned by the hardware design tool (Vivado).
++
++        properties:
++          reg:
++            minimum: 0
++            maximum: 159
++            description:
++              Voltage measurement register index assigned by the hardware
++              design tool.
++
++        required:
++          - reg
++          - label
++
++        unevaluatedProperties: false
++
++    required:
++      - '#address-cells'
++      - '#size-cells'
++
++    additionalProperties: false
++
++  temperature-channels:
++    type: object
++    description:
++      Container for temperature satellite measurement channels.
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      '^channel@([1-9a-f]|[1-3][0-9a-f]|40)$':
++        $ref: adc.yaml
++
++        description:
++          Reads a temperature satellite sensor. Each satellite monitors
++          a specific region of the SoC die.
++
++        properties:
++          reg:
++            minimum: 1
++            maximum: 64
++            description:
++              Temperature satellite number (1-based hardware index).
++
++        required:
++          - reg
++          - label
++
++        unevaluatedProperties: false
++
++    required:
++      - '#address-cells'
++      - '#size-cells'
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    sysmon@f1270000 {
++        compatible = "xlnx,versal-sysmon";
++        reg = <0xf1270000 0x4000>;
++        interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
++        #io-channel-cells = <1>;
++
++        voltage-channels {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++                reg = <0>;
++                label = "vccaux";
++            };
++
++            channel@3 {
++                reg = <3>;
++                label = "vcc_ram";
++                bipolar;
++            };
++        };
++
++        temperature-channels {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@a {
++                reg = <10>;
++                label = "aie-temp-ch1";
++            };
++        };
++    };
 -- 
 2.48.1
 
