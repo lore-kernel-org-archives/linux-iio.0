@@ -1,433 +1,450 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011013.outbound.protection.outlook.com [40.93.194.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9CD30595B
-	for <linux-iio@vger.kernel.org>; Sun,  7 Jun 2026 18:37:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780857458; cv=none; b=muuiCqD3InSVLxbhoPlPRpnEYL7pb9ziG9KHlz1Fn5xH0M9CjM7+Cwn1GRl9nTi66l+PjrLy4kDsXlvoFZDbPlzZBhAl48ky+HsDs+IbZIo9fezPFlPgAsmYGU3sKe757lYTskha5HEdjIPHkeevPl0+qCDvZ+SvKY8+YOFjuyM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780857458; c=relaxed/simple;
-	bh=xQsh1Dv1Iu54/Cb3594y8odpVQjN0OB8h6ISUFWnpH4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dQpbtDWTfzM9IofoDEsFY5zPI2o8YuCRbDl5YEdHAINE2Vbr4DcaEzWpS0GwZ5f86Ek2t20PhS385694vUvobn9c0YkZBJfmBEhbB2+MNDah1lxnph8X1dO7odeWKBmwYvHR+elyqncoNb0aoZfrE8r1+9L4j17iIMIEMkKBGbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mXinIQUB; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743A74071CB;
+	Sun,  7 Jun 2026 20:46:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780865161; cv=fail; b=OhHUJILL2BW4s4VSA3AiLSeC/1nxTsB5NogS0D3CqDp2a5fP7mO+kA5Mg8gg1srMRKnefnTAqfLMb210Dfz5yoRMiI79x7gEqc7BojOi3skuzi3ZrKd/I7GVu6bQoKq6Ozt093tTmRwvF/fGr517JjBQebEeXBKWKowujrNCPPQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780865161; c=relaxed/simple;
+	bh=iDg+vuoBaMtHjCMAjoHM85WbHX7IqF0NavjI4NDdB14=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=MraQjx+xfCTLXqhClgtaNvvNnOWIAZlTzhv21qoXgDRCUFLRrRlA1KicpUjzB1wisG6/nYgJ7Pb6dyKkz2PI232sXcYxN/fay+UHy23sEAPbEspWTkz64pWK9EDNN+1oNk1q55U9/YlsHfZoX2MtSHgV24RJM7rHt61CQjJ9+lk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=T+xx2roS; arc=fail smtp.client-ip=40.93.194.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mXinIQUB"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5aa68cfc182so2982218e87.0
-        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 11:37:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780857455; x=1781462255; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gi9RhOvXuN1inW3/JT5BCjZHZCw1onAyhDikSR7H1fw=;
-        b=mXinIQUBjkR0UIFVCpjoVt05obybVHDyuN/7TgYv3voJa2EiDZXxXbRYyKx2hCFsDK
-         08jWKJEFwet0Z8+1HsrgWZ8qjbyr3t3HlSnAdER9wg/lyyQZKi6+LEWV2ZxUJbfQkRrY
-         IP5aHTxPY57pIMiyq/33oWYjwIJ0b4Yex2+Z1AB3KkbNAuxPxXkyHwh8XJgKkXVFD2Yi
-         jzxzdnCvOlN7K4Mm5JgUmV4xr075JxCfJuLF+kgpkfAWmiM8+RZC003qouHQ5+FBH0gB
-         IzzsBzOP4sWPxw1QWt9X+yd0/dSKx7WF2gq39u1EO9fyyPklWO6ACw7+87hlCeJYVA+p
-         gL7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780857455; x=1781462255;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gi9RhOvXuN1inW3/JT5BCjZHZCw1onAyhDikSR7H1fw=;
-        b=e9eEqInhm2uR6etXH29Bytv0sydlcaHmsDxZIqIHoDmy8+VZ2ceuI74VllVL9qizrq
-         tiRYZMSZEX34nzRdx/ptY/QNJL+jmseVeNNAnK1/xpTJ1Roxq2umOxeJzxYx3RiIv7i1
-         3XyCFnRlwn+buHzuAFoIGzG7phyr5Ea6kU1gitNxhyvS0eoo+B97G9z8hsTJ28cz6KsZ
-         7g5CbozueMgiU5UIagMxu9g2cmgmDROv/tyCUEdbEnxUTDHBDQPok2+V8KOvmd3DCm74
-         Cn6trddYKAK163CMerUpJia+KErnQq/8HvzkC8TOcH21Ypu43iqfEPIrJ5hdVYk9Jnip
-         pI1w==
-X-Gm-Message-State: AOJu0YwPVo/seoKxOxbM32K840uTdMhAjiKCxBDa+tZ7UYvvB+wvEZA2
-	UrmSFLQO3RYn+Ulcy661CH2YFKEIJupwrPh1Y+o8ZQnYrWm47AWEnkbhk1h2ztFY
-X-Gm-Gg: Acq92OFAtckT1/ZaZJi3Hyrja5MPRoQD9CsT9+9AQJFZ3S8/Xflx+z6JWz/uGqV6fs7
-	nQ2tsrN76cxhKTnmisb1wsn8Rs4DI07ZwGiSWr089U7lUGaaLEsLCrgUL5+TpPGKglysfSkcKms
-	Fm2veF9TGoINu2h2zTeTatjBca6YMLZweODnypzvhVDKB6AbOeGfUj9fDhIWnOHB7R9UgL8Smyj
-	oiPIEy/7bzPt1oYNzWgH1VF2tczu8FErXATe+COZQnCYww6ZkMdsME5sq03NUNo0dAXBMr4nOAO
-	OBPYycUqpBme88roN4xl0ToAOYEB64SI9wcDKDoMeK765vObXmggvJI5j/C2nn2vHlGKfPw+Z8Z
-	7RZXjTkGtgb3gQ+x/iHyW5jMFLUBYhSKSd07Ha7ZxcGFIw4cLNTWiBVTPVpoH1Z/lRdJ6FCPyYw
-	RDyh9FUSx6LANQbK8fbYkECqtNQkWuups4MnJxj6PsxGsC4eb9zPPWzwNDj1fzFqUGarmeXijLe
-	jKVyw==
-X-Received: by 2002:a05:6512:6c8:b0:5aa:6b98:7a78 with SMTP id 2adb3069b0e04-5aa87b53eadmr3301875e87.13.1780857455386;
-        Sun, 07 Jun 2026 11:37:35 -0700 (PDT)
-Received: from MSI-LINUX.kielce.vectranet.pl ([2a02:2a40:27ec:2900:efe3:f920:63b7:5b7])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa7b8fc426sm3240809e87.26.2026.06.07.11.37.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2026 11:37:33 -0700 (PDT)
-From: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	marcelo.schmitt@analog.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	mike.looijmans@topic.nl,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jorge.marques@analog.com,
-	antoniu.miclaus@analog.com,
-	mazziesaccount@gmail.com,
-	jishnu.prakash@oss.qualcomm.com,
-	duje@dujemihanovic.xyz,
-	wens@kernel.org,
-	sakari.ailus@linux.intel.com,
-	linusw@kernel.org,
-	jszczudlo <jakubszczudlo40@gmail.com>
-Subject: [PATCH 3/3] iio: adc: Add ti-ads1110 support to ti-ads1100 driver
-Date: Sun,  7 Jun 2026 20:35:42 +0200
-Message-ID: <20260607183542.368184-4-jakubszczudlo40@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260607183542.368184-1-jakubszczudlo40@gmail.com>
-References: <20260607183542.368184-1-jakubszczudlo40@gmail.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="T+xx2roS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DrnG2cJ23w48Ax4yUL6ywoT2CvGstZerzUSbl+8xR6yAqGz6Xc4B3iVXha7nGXmn4U/aPV1doVBj8Jdtw8GU5C5Iu2ka8ol+vMRdQ/mD9XHOsTknlbT1rhqGq2ZuljMJRoWUrc43V0/iX3ZRWhRjMnLZammgh6IHxZ5Tynm4Mr96W/QXXKXYqhW3mSRqFbM9xqBu4+p5cNViJrrhJzpyycNz261lFyvp66hcDDqfvSbkD3X7Os8JySKOfMZ1z3Q8lDQ/e2xN9atgHlLxzkcNGAFOoM2RhWTI0ObBuajye2nxpCouLIjBGKv4mIeNu7oXdQ0tX4GBf2DUTSs+6625cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SKMH+90TavRZbjH/EGIE6mLpVFyKE4MdCofd8pVh5q8=;
+ b=TckfAqhrHRZfFMxpWdU3FV+ZG+rV94yaWCNmDDWR7Fka+2CGqeH4WbDgrEXX1+jMmRP4/8GxeXy2+ujRbPYaq6ZQ9uHcTezzzCwFyM8UoJqRedE0IYLAP/D+VVYRS7MwI+xX/wZf4Mjez+4a58Ha4klSbxQLhiHmpFPhKUqDWaNCU2dwE1Gtl/UxBGPUJGW6SoVMf6Xzlq1q3BQT7NLypFYuFbE7VnMi/nlE0R9rCiEy5zuYwNyqWAB2JzuazySklDYVa3lo1crFSeCbZjqQm5cmdtpsvZnfgI+jXEAmyrsG1FQLTs7Qbpq/POhm/2IHyUs0KlwvlEdMZzJMHngTQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SKMH+90TavRZbjH/EGIE6mLpVFyKE4MdCofd8pVh5q8=;
+ b=T+xx2roSjr0oNn4U5+33DvBZ4+ksDn+XmiJibCq1uSe2BEOJgxZWmQelt59GvQPjuKttfQeWukcn/CSc/lYrhhSwmXBKkREnPSN/xkD6qK9+dOAb8pJPkAbwaLX6BMMAzkcijsJpsF00Y/G+Uuq6fKgGKNPzFre0XBYxICdC+fE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by DS7PR12MB5912.namprd12.prod.outlook.com (2603:10b6:8:7d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.12; Sun, 7 Jun 2026
+ 20:45:54 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0092.011; Sun, 7 Jun 2026
+ 20:45:54 +0000
+Message-ID: <cabc05f6-9a01-4827-b2a3-9267da1e6932@amd.com>
+Date: Sun, 7 Jun 2026 21:45:50 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/5] iio: adc: add Versal SysMon driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Conall O'Griofa <conall.ogriofa@amd.com>,
+ Michal Simek <michal.simek@amd.com>, Guenter Roeck <linux@roeck-us.net>,
+ Salih Erim <erimsalih@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260606051707.535281-1-salih.erim@amd.com>
+ <20260606051707.535281-3-salih.erim@amd.com>
+ <aiUmb0WMPHi0D6GH@ashevche-desk.local>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <aiUmb0WMPHi0D6GH@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0471.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a8::8) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|DS7PR12MB5912:EE_
+X-MS-Office365-Filtering-Correlation-Id: 19811fdb-2ec0-4441-8ca6-08dec4d5c4b0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|18002099003|22082099003|3023799007|6133799003|56012099006|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	mb870VN8UsGBGK36DUFoN7sTdlMDyxQV7tg2i3yxK41gnVEzWSgx3PzqrEbGLT3D7kf9HimOGVHd3R/bCw927hAtM+Et/VV3BldAgihXuLFtlMX+4kzqmcYG/zBhxtA3KDNzCGCWMwgY7o1pvH5Cd4h1pPfu03oGs9colD5mxL7Zb9F0IkiGkNBxjmtRT1QGDVRytItsEZ/0pTaCodMRDm8xz/GHhpk3LopvHkz5Tge4PAgwcVh+BjllwJaHpWDUMH/AAzxUSPycHhtnIURVzAD9Q+5VJGKirR+4wBapWGJ04RefREhViVdxnSrC6KHm+elrN8wHFQipH7uoeigGTKkWg37NyPwoDm52GYZUUgZpC9byV8N4/kMGcaM8NbC8GZdoHY7UITiaioR6IjhvZunhhP/NvxEQKFfYv7wpoeSTPKab4OoomwYaVwmoXUtmFw9LV5RywbOWVyMLhFpHMoyDhcMx7qNhSu+ENAr8p3/7wBmO+isxId57kMxFVcmhaWxKQPJyUFGl4I9B9pQBobCdER8RKLQziptuqzvThgP4sxU1P+pgwQEmain70oQcNCbiHj64qRJ3VbUUE5NH/nCX/eMynNnMEyuWXhsa5uwCygM3tlfRjQOyJQ+PI0y2emR3i1r1G0U/D4Jdp5MHpOhXUeYHkq15KtHoL0XhEkGbZjRiKeBXBF1vBv8ZqBrM
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(18002099003)(22082099003)(3023799007)(6133799003)(56012099006)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VVpaM1VGREJoQ0dDRzdMTjQ4cVZTMVF1ajU3QVFQd1FFMW05enI4eTFNNFcy?=
+ =?utf-8?B?WFJTQlAveER4czJSWWRsNHRCazMxK05KdHRiVURkUkhOaTBsa1U5SURGbkZM?=
+ =?utf-8?B?b1lDZlNmaExZSnpmVkJJdWphNXFsMEZPQWlVcVBsUnhTd0x5UFl6YTBVL25v?=
+ =?utf-8?B?RmduSStlYmk3L1JzaDY0ZzkvUWxMeTB5M1RoWTNabHhRM1Z2Qy9mMnprTnRp?=
+ =?utf-8?B?bDNhOFNmUVNJb21OZ3p6VTdMSC9UUWFxRmt5NzJDVENIbEVlZENCSnMvemox?=
+ =?utf-8?B?RGJGNE5XdkQwZDJocnBlRi9VTHVORHRYdlRuczBMdko3OGkyNGx3cG15NWEx?=
+ =?utf-8?B?UWJxM0l1OHB1cVBjdzQwVlNKd1BSZjlIM1BmYnlYNWJZSjVVc1o4OFFWTUZ3?=
+ =?utf-8?B?N1Jxbm1Yb1g5c0VTcU1pNmNFT1A0dVU4cGxnemZ2ZmErSGlUaS82K0Zrakpm?=
+ =?utf-8?B?SWNJcERUTnpKNGNaWW1SNTg2L1JGZ3gzSndCakFMK0NzaFJCS3hTTVQyWm15?=
+ =?utf-8?B?ejBjSTZablY4MjJmRzM5ZUl2emFsTmZuejBCVjZVcGdGTkpCQndVZHhKQ3Vo?=
+ =?utf-8?B?dDZnTUtQUnZDODFFdDZyRzdsZ2Z6YkhqUTRGclZYcko5d1JiMUdVUnptNzR1?=
+ =?utf-8?B?OGxQa2lrb2NQbDBUM0NSa0NLWVZyREJjSTZ2cnpISDF3TmNKdW5VVmpUVysr?=
+ =?utf-8?B?UGlKbklTSTFCSWZCaFZVMkpoNDFaaHlBM3dQVWwzYkV6UVBlQTRNUTVqT25h?=
+ =?utf-8?B?UzhkMlVCNFFBN2VTSVV0OSt3dGlrL0V4OW5BV0loMkYzRFgxdU41THNmTDdP?=
+ =?utf-8?B?UkdzMDRya0E5UDI2QzlHVFRaY1VJV1ZSNWFUazhCQWtzcXpNQ1VKcTNUbkZM?=
+ =?utf-8?B?RlByUEtoQlVNUnlwQkhSUWd3ejl3QU4wNmdJWDRpTEhoQmNOQ1l5T0tJV1Nn?=
+ =?utf-8?B?ek5oYTBIU0l0ejkzcVdMYnZpUVlVUXlxdHI3U0tRcmcvbmRycTlaYTRNU3FP?=
+ =?utf-8?B?dDk2cnVDTGkyczhiczVrK0FHY3U5TW82Y2JXTUVWc2hIQjlxeTAvKzhLWWFB?=
+ =?utf-8?B?aE9KSVZrSW5JUXBWWWtlNUlaK3dwa3FUcWZQUXZ3akp0UkdyREFpdS9hTGc0?=
+ =?utf-8?B?RC9lTis2aVM2d2hFWEx4S0tSSU5jd2FtcUFpV2VFaEFZbDB5cmdYaGNYZ2NV?=
+ =?utf-8?B?MktjRUtJQnM2bFBUM3FlYUZjbGpCNWNrdk0zcG9LZHc1Z2c4Wldma09aMTla?=
+ =?utf-8?B?VjkyUXlSMStwTFdEUmtLaHNma2M5NTZnQ09JcnFveWw4RSs4czVpY2FBSGla?=
+ =?utf-8?B?Nk5Hay82dkhsRU9aMGNlS1dSUUN5ZDgwOXpNVHRJQUhIcU5ZLy9vZU5jWWVh?=
+ =?utf-8?B?S2VxeFY5NkdQS3lsSmY5UU5uc3IzV05vL3NoRit1aENxRENDQ1VlZlNLclE0?=
+ =?utf-8?B?V2tXL3dWVkxzSGIvUlllaWdOcnRzcW40NFZFVmVOU0c2eGJZRnNlOXBWN2Ri?=
+ =?utf-8?B?WUVUUkV3R3VSTnI3eVFIN3dZU1BaelR5RC94ZndZbHNSWHErOWlRbVY3WkVS?=
+ =?utf-8?B?YjBBSm5ZUUhYL0UwSjltRHBtNTZNOGlxbllrcUozbGZ1OXNQRG9RYkE5bXU5?=
+ =?utf-8?B?NnJUVk9IWXZ5YnJjYWNKMTRYYzhWSjdPaStCYjVzQ0cyVUt3YnhIb01tRWlN?=
+ =?utf-8?B?MGdKTFYvamNMSFRRWktyT2dkUVJiUVFzL2M0eW9SemxGRDBOalhnRWlsNmpy?=
+ =?utf-8?B?ZmpqQ1ZSa2tWN1hVYjJTQnJlcmFPNXpPanRjM2ExRUFTdjJYYVczNkxOT0FV?=
+ =?utf-8?B?cW9pbGdYSVNmTUpFT0JpQldSbjczUEo0dnprOFFmcTVZOUltS2dmYjhtSHNi?=
+ =?utf-8?B?VzlXT0lNZHBpNEoyVTNYZnFyWXQweHBDZlYyUjVoUUdVc2JWc2x0RjZLdVNJ?=
+ =?utf-8?B?eHZ5UVd1Ni91SHhhUUM2ejhhdlc3Y0lzUkJTSm8wUUdoWFFVOWNtazE2eGR0?=
+ =?utf-8?B?Y1VkQWJrQ1lqOVFxMzhrYmEzTjJGbHk5THNDWGlPMlk2bERkQU8wZkU5Wloz?=
+ =?utf-8?B?SENNclp6Zm9Oak50eFk1MGo5WEdEK3ZhOHhONkt2QkZpMzJsVXk0TXdmQ25G?=
+ =?utf-8?B?b1l2cWtTQ3RxNzNlb0h1eENMcXNjcG55aVBXTVluMmVreUd1NkVVNEgzNDhr?=
+ =?utf-8?B?cG56NDhEQmRzMGZveDVnWFNhVDB3WnQxSVBab3BPbnlYYTBUSWRqNWlwcVhI?=
+ =?utf-8?B?VUtEamphM2ZJT2kybUp4akVjWW1MaWoyRHNvdnc0VGcrNE81NFh2R2IvTURu?=
+ =?utf-8?Q?/PGqvAHMdv/WtXdsAA?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19811fdb-2ec0-4441-8ca6-08dec4d5c4b0
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2026 20:45:54.2026
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: K19hnyVcSB6PIV4VNnsk8WrIE/dbL6QFqcQaWg56LZyTJZyCNTS7lwztbDa2kt7B
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5912
 
-From: jszczudlo <jakubszczudlo40@gmail.com>
+Hi Andy,
 
-add ADS1100 support
-make changing gain and datarate wait for new reading
-fix unbalanced regulator disable when removing in singleshot mode
+Thanks for review, replies are inline.
 
-Signed-off-by: jszczudlo <jakubszczudlo40@gmail.com>
----
- drivers/iio/adc/ti-ads1100.c | 165 ++++++++++++++++++++++++++---------
- 1 file changed, 126 insertions(+), 39 deletions(-)
+On 07/06/2026 09:06, Andy Shevchenko wrote:
+> 
+> On Sat, Jun 06, 2026 at 06:17:04AM +0100, Salih Erim wrote:
+>> Add the core driver and MMIO platform driver for the AMD/Xilinx Versal
+>> System Monitor (SysMon) block.
+>>
+>> The SysMon block resides in the platform management controller (PMC) and
+>> provides on-chip voltage and temperature monitoring through a 10-bit,
+>> 200 kSPS ADC. It can monitor up to 160 voltage channels and 64
+>> temperature satellites distributed across the SoC, with a consistent
+>> sample rate of 8 kSPS per channel regardless of how many channels are
+>> enabled.
+>>
+>> The driver is split into three compilation units:
+>>    - versal-sysmon-core: Channel parsing, IIO registration, read_raw
+>>    - versal-sysmon: MMIO platform driver with custom regmap accessors
+>>
+>> Voltage results are stored in a 19-bit modified floating-point format
+>> and converted to millivolts. Temperature results are stored in Q8.7
+>> signed fixed-point Celsius format and converted to millicelsius.
+>>
+>> The MMIO regmap backend uses a custom reg_write accessor that
+>> automatically unlocks the NPI (NoC programming interface) lock
+>> register before each write, as required by the hardware. The regmap
+>> is configured with fast_io since the underlying MMIO accessors are
+>> safe to call from atomic context.
+> 
+> ...
+> 
+>> +#include <linux/array_size.h>
+>> +#include <linux/bitfield.h>
+>> +#include <linux/bitops.h>
+>> +#include <linux/cleanup.h>
+>> +#include <linux/device.h>
+> 
+> + err.h
 
-diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
-index aa8946063c7d..11d6fe1e8abc 100644
---- a/drivers/iio/adc/ti-ads1100.c
-+++ b/drivers/iio/adc/ti-ads1100.c
-@@ -5,18 +5,15 @@
-  * Copyright (c) 2023, Topic Embedded Products
-  *
-  * Datasheet: https://www.ti.com/lit/gpn/ads1100
-- * IIO driver for ADS1100 and ADS1000 ADC 16-bit I2C
-+ * IIO driver for ADS1100, ADS1000 and ADS1110 ADC 16-bit I2C
-  */
- 
- #include <linux/bitfield.h>
- #include <linux/bits.h>
--#include <linux/cleanup.h>
--#include <linux/delay.h>
--#include <linux/module.h>
--#include <linux/init.h>
- #include <linux/i2c.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
--#include <linux/property.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
- #include <linux/units.h>
-@@ -39,17 +36,39 @@
- #define	ADS1100_SINGLESHOT	ADS1100_CFG_SC
- 
- #define ADS1100_SLEEP_DELAY_MS	2000
-+#define ADS1110_REFERENCE_VOLTAGE_MICROVOLT 2048000
-+
-+/* Timeout based on the minimum sample rate of 8 SPS (7500000us) */
-+#define ADS11x0_MAX_DRDY_TIMEOUT	7500000
- 
- static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
-+static const int ads1110_data_rate[] = { 240, 60, 30, 15 };
- static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
- 
-+struct ads11x0_config {
-+	const int *data_rate;
-+	bool has_reference_voltage;
-+};
-+
-+static const struct ads11x0_config ads1100_config = {
-+	.data_rate = ads1100_data_rate,
-+	.has_reference_voltage = false,
-+};
-+
-+static const struct ads11x0_config ads1110_config = {
-+	.data_rate = ads1110_data_rate,
-+	.has_reference_voltage = true,
-+};
-+
- struct ads1100_data {
- 	struct i2c_client *client;
- 	struct regulator *reg_vdd;
- 	struct mutex lock;
- 	int scale_avail[2 * 4]; /* 4 gain settings */
- 	u8 config;
--	bool supports_data_rate; /* Only the ADS1100 can select the rate */
-+	bool supports_data_rate; /* Only the ADS1100/ADS1110 can select the rate */
-+	bool has_reference_voltage; /* The ADS1110 has an internal reference, so fixed scale */
-+	const int *data_rate;
- };
- 
- static const struct iio_chan_spec ads1100_channel = {
-@@ -59,12 +78,6 @@ static const struct iio_chan_spec ads1100_channel = {
- 	    BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 	.info_mask_shared_by_all_available =
- 	    BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
--	.scan_type = {
--		      .sign = 's',
--		      .realbits = 16,
--		      .storagebits = 16,
--		      .endianness = IIO_CPU,
--		       },
- 	.datasheet_name = "AIN",
- };
- 
-@@ -85,6 +98,50 @@ static int ads1100_set_config_bits(struct ads1100_data *data, u8 mask, u8 value)
- 	return 0;
- };
- 
-+static int ads11x0_get_voltage_microvolts(struct ads1100_data *data)
-+{
-+	if (data->has_reference_voltage)
-+		return ADS1110_REFERENCE_VOLTAGE_MICROVOLT;
-+	else
-+		return regulator_get_voltage(data->reg_vdd);
-+}
-+
-+static int ads11x0_get_voltage_milivolts(struct ads1100_data *data)
-+{
-+	return ads11x0_get_voltage_microvolts(data) / (MICRO / MILLI);
-+}
-+
-+static bool ads11x0_new_data_ready(struct ads1100_data *data)
-+{
-+	int ret;
-+	u8 buffer[3];
-+
-+	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
-+	if (ret < sizeof(buffer)) {
-+		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-+		return 0;
-+	}
-+
-+	int return_val = FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
-+
-+	return return_val;
-+}
-+
-+static int ads11x0_poll_data_ready(struct ads1100_data *data)
-+{
-+	bool data_ready;
-+	u8 buffer[3];
-+	int datarate = data->data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
-+	unsigned long wait_time = DIV_ROUND_CLOSEST(MICRO, 5 * datarate);
-+
-+	/* To be sure that polled value will have value after config change */
-+	i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
-+
-+	return read_poll_timeout(ads11x0_new_data_ready, data_ready,
-+				 !data_ready, wait_time,
-+				 ADS11x0_MAX_DRDY_TIMEOUT, false, data);
-+}
-+
- static int ads1100_data_bits(struct ads1100_data *data)
- {
- 	return ads1100_data_rate_bits[FIELD_GET(ADS1100_DR_MASK, data->config)];
-@@ -105,9 +162,10 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
- 
- 	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
- 
-+	pm_runtime_mark_last_busy(&data->client->dev);
- 	pm_runtime_put_autosuspend(&data->client->dev);
- 
--	if (ret < 0) {
-+	if (ret < sizeof(buffer)) {
- 		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
- 		return ret;
- 	}
-@@ -127,7 +185,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- {
- 	int microvolts;
- 	int gain;
--
-+	int ret;
- 	/* With Vdd between 2.7 and 5V, the scale is always below 1 */
- 	if (val)
- 		return -EINVAL;
-@@ -135,7 +193,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- 	if (!val2)
- 		return -EINVAL;
- 
--	microvolts = regulator_get_voltage(data->reg_vdd);
-+	microvolts = ads11x0_get_voltage_microvolts(data);
- 	/*
- 	 * val2 is in 'micro' units, n = val2 / 1000000
- 	 * result must be millivolts, d = microvolts / 1000
-@@ -147,34 +205,49 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- 	if (gain < BIT(0) || gain > BIT(3))
- 		return -EINVAL;
- 
-+	ret = pm_runtime_resume_and_get(&data->client->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	ads1100_set_config_bits(data, ADS1100_PGA_MASK, ffs(gain) - 1);
- 
--	return 0;
-+	ret = ads11x0_poll_data_ready(data);
-+
-+	pm_runtime_mark_last_busy(&data->client->dev);
-+	pm_runtime_put_autosuspend(&data->client->dev);
-+
-+	return ret;
- }
- 
- static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
- {
- 	unsigned int i;
- 	unsigned int size;
-+	int ret;
- 
- 	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
- 	for (i = 0; i < size; i++) {
--		if (ads1100_data_rate[i] == rate)
--			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
--						       FIELD_PREP(ADS1100_DR_MASK, i));
-+		if (data->data_rate[i] == rate) {
-+			ret = pm_runtime_resume_and_get(&data->client->dev);
-+			if (ret < 0)
-+				return ret;
-+
-+			ads1100_set_config_bits(data, ADS1100_DR_MASK,
-+						FIELD_PREP(ADS1100_DR_MASK, i));
-+			ret = ads11x0_poll_data_ready(data);
-+
-+			pm_runtime_mark_last_busy(&data->client->dev);
-+			pm_runtime_put_autosuspend(&data->client->dev);
-+			return ret;
-+		}
- 	}
- 
- 	return -EINVAL;
- }
- 
--static int ads1100_get_vdd_millivolts(struct ads1100_data *data)
--{
--	return regulator_get_voltage(data->reg_vdd) / (MICRO / MILLI);
--}
--
- static void ads1100_calc_scale_avail(struct ads1100_data *data)
- {
--	int millivolts = ads1100_get_vdd_millivolts(data);
-+	int millivolts = ads11x0_get_voltage_milivolts(data);
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(data->scale_avail) / 2; i++) {
-@@ -196,7 +269,7 @@ static int ads1100_read_avail(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		*type = IIO_VAL_INT;
--		*vals = ads1100_data_rate;
-+		*vals = data->data_rate;
- 		if (data->supports_data_rate)
- 			*length = ARRAY_SIZE(ads1100_data_rate);
- 		else
-@@ -233,12 +306,11 @@ static int ads1100_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		/* full-scale is the supply voltage in millivolts */
--		*val = ads1100_get_vdd_millivolts(data);
-+		*val = ads11x0_get_voltage_milivolts(data);
- 		*val2 = 15 + FIELD_GET(ADS1100_PGA_MASK, data->config);
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		*val = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK,
--						   data->config)];
-+		*val = data->data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
- 		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
-@@ -280,8 +352,8 @@ static int ads1100_setup(struct ads1100_data *data)
- 		return ret;
- 
- 	ret = i2c_master_recv(data->client, buffer, sizeof(buffer));
--	if (ret < 0)
--		return ret;
-+	if (ret < sizeof(buffer))
-+		return -1;
- 
- 	/* Config register returned in third byte, strip away the busy status */
- 	data->config = buffer[2] & ~ADS1100_CFG_ST_BSY;
-@@ -292,9 +364,13 @@ static int ads1100_setup(struct ads1100_data *data)
- 	return 0;
- }
- 
--static void ads1100_reg_disable(void *reg)
-+static void ads1100_reg_disable(void *data)
- {
--	regulator_disable(reg);
-+	struct ads1100_data *ads1100_data = data;
-+
-+	/* Disable when not already disabled by the driver */
-+	if (!(ads1100_data->config & ADS1100_CFG_SC))
-+		regulator_disable(ads1100_data->reg_vdd);
- }
- 
- static void ads1100_disable_continuous(void *data)
-@@ -307,6 +383,7 @@ static int ads1100_probe(struct i2c_client *client)
- 	struct iio_dev *indio_dev;
- 	struct ads1100_data *data;
- 	struct device *dev = &client->dev;
-+	const struct ads11x0_config *model;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-@@ -334,10 +411,18 @@ static int ads1100_probe(struct i2c_client *client)
- 		return dev_err_probe(dev, ret,
- 				     "Failed to enable vdd regulator\n");
- 
--	ret = devm_add_action_or_reset(dev, ads1100_reg_disable, data->reg_vdd);
-+	ret = devm_add_action_or_reset(dev, ads1100_reg_disable, data);
- 	if (ret)
- 		return ret;
- 
-+	model = device_get_match_data(dev);
-+	if (!model)
-+		return dev_err_probe(dev, ret,
-+				"Can't set device data\n");
-+
-+	data->data_rate = model->data_rate;
-+	data->has_reference_voltage = model->has_reference_voltage;
-+
- 	ret = ads1100_setup(data);
- 	if (ret)
- 		return dev_err_probe(dev, ret,
-@@ -400,16 +485,18 @@ static DEFINE_RUNTIME_DEV_PM_OPS(ads1100_pm_ops,
- 				 NULL);
- 
- static const struct i2c_device_id ads1100_id[] = {
--	{ "ads1100" },
--	{ "ads1000" },
-+	{ .name = "ads1100", .driver_data = (kernel_ulong_t)&ads1100_config },
-+	{ .name = "ads1000", .driver_data = (kernel_ulong_t)&ads1100_config },
-+	{ .name = "ads1110", .driver_data = (kernel_ulong_t)&ads1110_config },
- 	{ }
- };
- 
- MODULE_DEVICE_TABLE(i2c, ads1100_id);
- 
- static const struct of_device_id ads1100_of_match[] = {
--	{.compatible = "ti,ads1100" },
--	{.compatible = "ti,ads1000" },
-+	{ .compatible = "ti,ads1100", .data = &ads1100_config },
-+	{ .compatible = "ti,ads1000", .data = &ads1100_config },
-+	{ .compatible = "ti,ads1110", .data = &ads1110_config },
- 	{ }
- };
- 
--- 
-2.47.3
+Accepted.
+> 
+>> +#include <linux/module.h>
+>> +#include <linux/property.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/string.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/units.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +
+>> +#include "versal-sysmon.h"
+> 
+> ...
+> 
+>> +static int sysmon_read_raw(struct iio_dev *indio_dev,
+>> +                        struct iio_chan_spec const *chan,
+>> +                        int *val, int *val2, long mask)
+>> +{
+>> +     struct sysmon *sysmon = iio_priv(indio_dev);
+>> +     unsigned int regval;
+>> +     int ret;
+>> +
+>> +     guard(mutex)(&sysmon->lock);
+>> +
+>> +     switch (chan->type) {
+>> +     case IIO_TEMP:
+>> +             if (mask == IIO_CHAN_INFO_SCALE) {
+>> +                     /* Q8.7 to millicelsius: raw * 1000 / 128 */
+>> +                     *val = (int)MILLI;
+> 
+> Casting is not required here.
+
+Accepted. Will drop (int) cast in the scale assignment.
+
+> 
+>> +                     *val2 = BIT(SYSMON_FRACTIONAL_SHIFT);
+>> +                     return IIO_VAL_FRACTIONAL;
+>> +             }
+>> +             if (mask != IIO_CHAN_INFO_RAW)
+>> +                     return -EINVAL;
+>> +
+>> +             ret = regmap_read(sysmon->regmap, chan->address, &regval);
+>> +             if (ret)
+>> +                     return ret;
+>> +
+>> +             *val = (s16)regval;
+> 
+> Basically you want to use sign_extend32(regval, 15) for consistency.
+
+Accepted.
+
+> 
+>> +             return IIO_VAL_INT;
+>> +
+>> +     case IIO_VOLTAGE:
+>> +             if (mask != IIO_CHAN_INFO_PROCESSED)
+>> +                     return -EINVAL;
+>> +
+>> +             ret = regmap_read(sysmon->regmap,
+>> +                               (chan->address * SYSMON_REG_STRIDE) +
+> 
+> Unneeded parentheses.
+
+Accepted. Will remove throughout.
+
+> 
+>> +                               SYSMON_SUPPLY_BASE, &regval);
+>> +             if (ret)
+>> +                     return ret;
+>> +
+>> +             sysmon_supply_rawtoprocessed(regval, val);
+>> +             return IIO_VAL_INT;
+>> +
+>> +     default:
+>> +             return -EINVAL;
+>> +     }
+>> +}
+> 
+> ...
+> 
+>> +static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
+>> +{
+>> +     unsigned int num_supply = 0, num_temp = 0;
+>> +     unsigned int idx, temp_chan_idx, volt_chan_idx;
+>> +     struct iio_chan_spec *sysmon_channels;
+>> +     const char *label;
+>> +     u32 reg;
+>> +     int ret;
+>> +
+>> +     struct fwnode_handle *supply_node __free(fwnode_handle) =
+>> +             device_get_named_child_node(dev, "voltage-channels");
+> 
+>> +     if (supply_node)
+> 
+> Do you need this check? IIRC the below is NULL-aware.
+
+You're right, fwnode_get_child_node_count() handles NULL
+(fwnode_get_next_child_node returns NULL for NULL fwnode).
+Will drop both checks.
+  >
+>> +             num_supply = fwnode_get_child_node_count(supply_node);
+>> +
+>> +     struct fwnode_handle *temp_node __free(fwnode_handle) =
+>> +             device_get_named_child_node(dev, "temperature-channels");
+>> +     if (temp_node)
+> 
+> Same Q here?
+
+Will drop this check too.
+> 
+>> +             num_temp = fwnode_get_child_node_count(temp_node);
+>> +
+>> +     sysmon_channels = devm_kcalloc(dev,
+>> +                                    size_add(ARRAY_SIZE(temp_channels),
+>> +                                             num_supply + num_temp),
+> 
+> size_add() should be called twice.
+
+Accepted.
+> 
+>> +                                    sizeof(*sysmon_channels), GFP_KERNEL);
+>> +     if (!sysmon_channels)
+>> +             return -ENOMEM;
+> 
+> ...
+> 
+>> +     /* Temperature satellite channels from DT */
+>> +     fwnode_for_each_child_node_scoped(temp_node, child) {
+>> +             ret = fwnode_property_read_u32(child, "reg", &reg);
+>> +             if (ret < 0)
+> 
+> Can fwnode APIs like this return positive? If so, what is the meaning of that
+> and why do we ignore it?
+
+They cannot return positive. fwnode_property_read_u32() returns
+0 on success or negative errno. Will change to if (ret) for
+consistency.
+
+> 
+>> +                     return dev_err_probe(dev, ret,
+>> +                                          "missing reg for temp channel\n");
+>> +
+>> +             if (reg < 1 || reg > SYSMON_TEMP_SAT_MAX)
+>> +                     return dev_err_probe(dev, -EINVAL,
+>> +                                          "temp reg %u out of range [1..%u]\n",
+>> +                                          reg, SYSMON_TEMP_SAT_MAX);
+>> +
+>> +             ret = fwnode_property_read_string(child, "label", &label);
+>> +             if (ret < 0)
+>> +                     return dev_err_probe(dev, ret,
+>> +                                          "missing label for temp channel\n");
+>> +
+>> +             sysmon_channels[idx++] = (struct iio_chan_spec) {
+>> +                     .type = IIO_TEMP,
+>> +                     .indexed = 1,
+>> +                     .address = SYSMON_TEMP_SAT_BASE +
+>> +                                ((reg - 1) * SYSMON_REG_STRIDE),
+> 
+> Too many parentheses.
+
+Accepted. (reg - 1) needs parens for precedence, will remove the
+outer pair.
+
+> 
+>> +                     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +                     .info_mask_shared_by_type =
+>> +                             BIT(IIO_CHAN_INFO_SCALE),
+>> +                     .datasheet_name = label,
+>> +             };
+>> +     }
+> 
+> ...
+> 
+>> +     for (idx = 0; idx < indio_dev->num_channels; idx++) {
+> 
+>          for (unsigned int idx = 0; idx < indio_dev->num_channels; idx++) {
+> 
+> ?
+
+Accepted.
+> 
+>> +             if (sysmon_channels[idx].type == IIO_TEMP)
+>> +                     sysmon_channels[idx].channel = temp_chan_idx++;
+>> +             else
+>> +                     sysmon_channels[idx].channel = volt_chan_idx++;
+>> +     }
+> 
+> ...
+> 
+>> +/**
+>> + * sysmon_core_probe() - Initialize Versal SysMon core
+>> + * @dev: Parent device
+>> + * @regmap: Register map for hardware access
+>> + *
+>> + * Return: 0 on success, negative errno on failure.
+>> + */
+>> +int sysmon_core_probe(struct device *dev, struct regmap *regmap)
+> 
+> I'm wondering if the @regmap is the same as you can get from @dev via
+> respective API.
+
+Yes, dev_get_regmap(dev, NULL) would work since devm_regmap_init
+registers it with devres. However, the explicit parameter makes
+the dependency clear and avoids coupling core_probe to the devres
+registration order. Happy to change if you prefer dev_get_regmap().
+
+> 
+> ...
+> 
+> + err.h // covers IS_ERR(), -Exxx
+
+Accepted.
+
+> 
+>> +#include <linux/io.h>
+>> +#include <linux/mod_devicetable.h>
+>> +#include <linux/module.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/regmap.h>
+> 
+> + types.h // covers NULL, __iomem
+> 
+> IWYU, please.
+
+Accepted.
+
+> 
+>> +#include "versal-sysmon.h"
+>> +
+>> +struct sysmon_mmio {
+>> +     void __iomem *base;
+> 
+> __iomem is not defined in the above headers.
+
+Accepted, covered by types.h above.
+
+> 
+>> +};
+> 
+> ...
+> 
+>> +static int sysmon_platform_probe(struct platform_device *pdev)
+>> +{
+>> +     struct device *dev = &pdev->dev;
+>> +     struct sysmon_mmio *mmio;
+>> +     struct regmap *regmap;
+>> +
+>> +     mmio = devm_kzalloc(dev, sizeof(*mmio), GFP_KERNEL);
+>> +     if (!mmio)
+>> +             return -ENOMEM;
+>> +
+>> +     mmio->base = devm_platform_ioremap_resource(pdev, 0);
+>> +     if (IS_ERR(mmio->base))
+>> +             return PTR_ERR(mmio->base);
+> 
+> IS_ERR() is not provided in the headers included.
+
+Accepted, covered by err.h above.
+
+> 
+>> +
+>> +     regmap = devm_regmap_init(dev, NULL, mmio, &sysmon_mmio_regmap_config);
+> 
+> NULL is not defined in the above headers.
+
+Accepted, covered by types.h above.
+
+Salih
+
+...
 
