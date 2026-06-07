@@ -1,51 +1,50 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010007.outbound.protection.outlook.com [52.101.46.7])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012068.outbound.protection.outlook.com [52.101.43.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C275728727D;
-	Sun,  7 Jun 2026 21:02:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8072D73A0;
+	Sun,  7 Jun 2026 22:29:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.68
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780866178; cv=fail; b=cVqwe3Ktjf64Lf8OgOoG2JWtvYJnJreAXtAzdBq8/5xnW7UEOnYlPDLmvNBiXovQocvtc3DrE09Zgqp2F0oZAz8SPs5TQl11n1sKAFRkS8oahnUZvMx+L72y4vVGiPkv2Swov5YyvpSJXteS0Pwhgo6QcD5FzVmvcfX7i+sxQWg=
+	t=1780871370; cv=fail; b=JAAp5GelTRyMBR1o5ogJXwrnKc7PlxLFOpKm3mvk8p4xVs5qOrCMpXjGHukROGikxE4oj4nZ8XjSaIL6BR/k1wpBjLl7E6VzAUA0IOmOUAb+DPHIgXtf6TXkujAhCMZDxfIgejGPrRpZd4ZAdIXdRflHNAdwsErNe4kTIulHr2Q=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780866178; c=relaxed/simple;
-	bh=leI7plT44IPfxY6pidHAAdw0tnwi6+mww3LNrHjd9FU=;
+	s=arc-20240116; t=1780871370; c=relaxed/simple;
+	bh=S3ZhNAb/Pkmk/QDKX6NzvhGbE9ZGtAlDeZ0BGmBbhkA=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=hSOic3Pccig8MCqebLvcw3bfhAegaoQyxQ4jmJyxXoy6+9bKVX9wbFHQpGptNoos47LNixMobk5JzneSFhBNU1O0c1LBOK5QLJ4pRJzLg8jT0+sNRcz9fK6kO6GeYKL0cKDUjhws+BUaMfBMd++nI3hcyiBvd9zxvYPwpVDapBQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=5gYjOmym; arc=fail smtp.client-ip=52.101.46.7
+	 Content-Type:MIME-Version; b=kzCp9ZFjw4TNrVYoVU0KojODdFd45NpRIV18eDwn5w1iYFMLKbkJwKx3Bqiv+It2sLO2BNpyczqhihUCrMlsN/rjnwUjxzUZOGKg+WbsxjOBW+j+xt5yHxEomowUWXRT0/68QdyQR5C78oVti5As9AD76Fc4AGsJ+4j47OTmsgs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0k77a6YH; arc=fail smtp.client-ip=52.101.43.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="5gYjOmym"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0k77a6YH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XFl9OjwTBMD2cSGYb5K73XEDy+nH2PzXfE1d+RSDf4i4anokwrvTK4Sx9eftUM9GUx5nHw1XK0gdMqEx3I52E66dTQVvCuQxiNUELKZLJrJZbZBMay3t7DAtuTGw1kYDi9gijTOQdwbWki9i9nNhSEbnrtuYgJ62FgkULXiMvrTqteoXfbzpO+W6BdetzQGRKkcYrNQyByPWcaHdDJeZoKFKCal089RyKZWIFrMWHP0y+JxXJERBVmgGunGDZMEtNdZ7/2/OjJl/kSdhg7hbOjtlnrCrdmR6tcuTzbSZSMu0XjUBIFNX2hzZUY15mKYbeTCBdeuzve3zO0UtrA1K8g==
+ b=f1C/mmjzQM1f/muj4Uzsl9BOIt2uWD2UA/z57zQGzmjfjWzbLh5bapcqvjcyipoIiBm35MTWILhvCmg0BYqQPIfJa8ilRF4g8/iEkVKmr2oPsM9JCjI5Tl3deyXuQ6jPHZ5pNxLKVU1oQxY3zgnWzG96oiNm5SSToda41WSTpg+98vzFUkBtBRWnQRNHG32LMQTlLv/15rgoX8efoQiZ56yRA4wjtXjWV8HBA213LAv1SaHY8xue1uqRVl1y+bD64SmZ5uz9yx+1fsashINTuq9zAVk/t6T5looev8QDmS4kwS8jyXaSTSlZZGWMeA8Yei+zdw2agZiubfL/glqBew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KVfxmPAufXSZrllgk4stfNuBXs7Cbl0Bhfom0DGXgSs=;
- b=zFh41PHYwvdBRFsoEtb2L0d49gn/lre5MSzWH+TEcWmRIjdXuGuxJ0TYubIgAt4pP4Cq1yuHibBuzFgWNO8+kdS4UAsFhJgEO8RsobLDH6bckh82tA4ai5ppkjEJUuO8WKI1UYAkU8MHRduPkGioVNA/Y1JcFwA/kwf63A0RDPixpcvbW+2QKesOB05DIKBSZOdVqdO5x4/Z+lA45LDaK69ebRvLQaHSxsbwVVfROmeb+/7jKc65ZGQY6Ryi2SETjj4lFsPANp4rqp67xtfZiUFo/ZOY6BJuxYNSNaVb3KNrhINFEl23aMW9jqjAXRJBFqlmAgpvja5DV5Lx75F4ww==
+ bh=pBnHzk81RWuLNnqFMQ7mYSADMZ/RK8eqqzJvyRgcmJw=;
+ b=oaNtyS+Iv8yU9WVeG+vdVWqUhMDzHhGGZGDcB6cyqgcI4o4YXs1JyVx2cbetqK/SKKsC9ACLA5u7Q9YDCAlBz6lNBg2ZLWYDtS+x9d+EV2dWf7P2gxoehSVZohMwVT9E5b2143HljahOegWcIZ6WPpy3jLzBN/77UNWKOuRLhHyNBn8Gepm7Xp+H5EemI6VG7McBEcK+7vH8A2JcCQsjyLjCxnTJxY2lVhmRbGad8XByXpjYZvhFHg91c2XsHEPvbqDlsTp7KDF2+1aPQ8Pm4VDRcsHiuwjqHkaJcU75tyspiwoBXZ8dTThdwijjF6vFKt8S+ZsbwNXdkSrUxxguew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KVfxmPAufXSZrllgk4stfNuBXs7Cbl0Bhfom0DGXgSs=;
- b=5gYjOmymPlwwPcrMa+xpnqGN693nLaio8RsVxoRYklkT9FpJhpXw658Rbuhx4W1aCTIB/WOFGciTAi63gVrRezSwI16f5yttOLt6VyUuZMftUwKkAA1BTjxkWISgO8YTTmQMX7QcaI3Sfb81SplHcGmGkJEH9zrhCBhekOVK9Oc=
+ bh=pBnHzk81RWuLNnqFMQ7mYSADMZ/RK8eqqzJvyRgcmJw=;
+ b=0k77a6YH1FxFM5V3w+e0dcxExrKWSjy7iEZKJNJ4YQWwIbZ8jh3d4oAriEWDs3gSdG/YggFV7IquPxA6DhlixNw7H3yijYsa8TjFQwlD0XTYfbmm6uWOzhXuOuA/BgCG4fTO4CVDlyLbh1nrvIPKXhEKSG1oKZhmqL5G/Xbh3Go=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by CH3PR12MB8726.namprd12.prod.outlook.com (2603:10b6:610:17b::15) with
+ by IA1PR12MB8407.namprd12.prod.outlook.com (2603:10b6:208:3d9::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.12; Sun, 7 Jun 2026
- 21:02:52 +0000
+ 22:29:26 +0000
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0092.011; Sun, 7 Jun 2026
- 21:02:51 +0000
-Message-ID: <0f8f431f-af21-4bad-bff2-e6cde078bd41@amd.com>
-Date: Sun, 7 Jun 2026 22:02:47 +0100
+ 22:29:26 +0000
+Message-ID: <3a550d80-b4e5-4e94-ab11-cddafad023c2@amd.com>
+Date: Sun, 7 Jun 2026 23:29:23 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/5] iio: adc: versal-sysmon: add threshold event
- support
+Subject: Re: [PATCH v4 5/5] iio: adc: versal-sysmon: add oversampling support
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
  David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
@@ -56,15 +55,15 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
  Salih Erim <erimsalih@gmail.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260606051707.535281-1-salih.erim@amd.com>
- <20260606051707.535281-5-salih.erim@amd.com>
- <aiUeVs_FoI9vV1Hd@ashevche-desk.local>
+ <20260606051707.535281-6-salih.erim@amd.com>
+ <aiUi4jRd2C8kczkt@ashevche-desk.local>
 Content-Language: en-US
 From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <aiUeVs_FoI9vV1Hd@ashevche-desk.local>
+In-Reply-To: <aiUi4jRd2C8kczkt@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PA7P264CA0243.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:371::8) To IA1PR12MB7736.namprd12.prod.outlook.com
+X-ClientProxiedBy: PA7P264CA0048.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:34a::20) To IA1PR12MB7736.namprd12.prod.outlook.com
  (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -73,416 +72,173 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|CH3PR12MB8726:EE_
-X-MS-Office365-Filtering-Correlation-Id: c1ff6592-cb16-4932-bd25-08dec4d82319
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|IA1PR12MB8407:EE_
+X-MS-Office365-Filtering-Correlation-Id: 897b8b1d-6db4-45e2-749d-08dec4e43bb8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|7416014|376014|6133799003|18002099003|18092099006|22082099003|4143699003|11063799006|56012099006;
+	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|6133799003|22082099003|18002099003|4143699003|56012099006|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	SkdPapOGiTp26p1X1bS3faL1jW52c6LJtqqYegHkLDRLEuoRiCYh2vxHhfsGVn53N6kofZiulOnWlXlvcp4Uy3Rb4k/CzIAJ7MMSDQexCzNNcutZ+J+rdS3OlTNrV7T+oFz+TIyY4PlbemvazMDXLLJSnjqrI/loKu7dixH/CcMnlosTRyflUx4oG8JpRaJt3eV5kBA92Y1tttWV7EcrLY6CAHuIo1r5mfUpcu0Zdzp74gd7jKMYbYjfBTV9Ky/UTFKiFAPkPp8r3dPvL+qkzByOO5hYJ5x0FNP9d4jKNOWHu+kdXv/dg3hGTCQyqdvJJI25/v+Z5iQSppWrxFcBx+Yi+TmlwaOLsX0aL2rF+dZbpU1kPa6xsCi4EdLQLlmVJys07bYwwmcmGKHRhFumMQjM+v4siJqI3A7l4pAbhthD5ocwVCgY5FVxd6AmAx1fV/E4/I4GYheIf5+j0C9LWdbPSxvEhNCXJ/Qsez/oxxGjI0KvbYzKYFCY1xvrJCoCNDolyHlPxaW5NpUjttg3H9WtNQbbnK4WfnVSbciUYOt85EGJcTsijh4wtHm+lYamuy4A/9kPO+dZftBycR0Lg8dBe1UOeyzJG/tVMHEK1//R6nOWrN7db1qPgisVqq4+4Ruk5U/Fkuuc10F52fwtIo7DaRdbKfhSrg5qTzwfUI/FfhmXr5i1Q4BUf8fy8nbu
+	UQLzRAncHdaqqRbkG87m+yluRRGPuDwbWVg3HeSdeysqHicH4TJJEQckSsdcW0O3V6OLhyw3FsOw9y/JV4jr1EzX5mUKY8qlZVU6RZwNWcln3/m3DYihq7MpNmA236eyOfeOl5XhSQOhDM4/jB5CvLvRR34s8cWGA0373mQ7xErfmBKSgkSWcM1XLOMU9h7BMhBtcSRFocnpg6gue2FqNZ7evo1+9V/CZ6MusmrtXOgK+utqcW297HCW7Ajcmjt1CZqjPEnpTPEHUS9f6rIsXki5jdPu+eaAj3hXeaZd2E2TMzL7n6l7fJ746YRvGPisPAVfM2346DOXFg4sms/WI+MbFQbMqWeRnOphUmsO+UV+U7ivsIW6aOK4EB0Zso6tSv5LOsnLdl2vPXI5ulQO88wEiGow/88X/ulkVJ8lcPGsh0kxBgKukT8nsDjMf9MAOhiLGL+Ar3vvCaQLB41JJG/JLIGqdxZ4uGyJA1VVCEOaE0etOzlf2uNXGi4OcK2Sf6FRhXdY/D4Fqxs7LD/H/yFaSA+fY1QvOYGJDGTCj+5y+ufH3pifgWFIftUdpdZXpIcJTY/PW/zLyK0u5mNNqMQYg4WmIQoPAGPkCUvM1cZrpQAcdW93xeaM1wp67Dn7Aw4sd/kcEEfa3+R+TfwQzFUnPn0qjJ65UvdGGhWXwTfEVtTRtMO3qlqExupkttZM
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(6133799003)(18002099003)(18092099006)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(6133799003)(22082099003)(18002099003)(4143699003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WTRIWDc3a05STVFNeG1DU1ZNQ0QxMitUSXBYOUZjdkpQNVB6WWEyNXo4eTJU?=
- =?utf-8?B?b3Z6U1pHL0REVW02cDFaWkhSQVdlb1FPYkxMTFp3dEtETjBSNWlWN2U4QmNL?=
- =?utf-8?B?TEdGZHJteldSOVp4T242REFuWEVGMUJUb3REOGVtOHdNUDNYM2NhaTk4UHM0?=
- =?utf-8?B?R252K3lmR3pkaE9yQ2l3eExBc2E5a3V3RXVlZzNzVW1LTFh2OXg1Y05Xd2Q0?=
- =?utf-8?B?QlU0cDVUaVdNeEdHOWhNL0NBVTRTSWRhdEJTVktqc3ZkUDBnWnl1QUdZeUp1?=
- =?utf-8?B?VUF4MjR5Y0JYUm1xODdaYjZPcGFCTjE0MVBjdENyMTBURldBOEh0RExJVEt5?=
- =?utf-8?B?WGxNYVFoOEpBb29FVmVEVVBXaUh6SlpucjVOVXhDSk1qS2JXNGZBcHFoMWpY?=
- =?utf-8?B?dnlGUW1IbVpiNnpiWWVoOVVYT0hKTDBZR3hpR0FzT0hMNzYrWVhGZ0EwbUlq?=
- =?utf-8?B?RkdvOWZQNDhob3hUbS9kMFVyOWJMNEdSS3VMNGUzQldQQTRwZkErSzZyOWdz?=
- =?utf-8?B?WWtZVFhWRDZDemM4ZWV2b0dJbFg3UmJXZXU0TmxhaWlmVUtodGRpT0Z3dkhU?=
- =?utf-8?B?dDlNdExVdGVhaUd4YUVWcDk1YkdXYjNRM0RDcksyME9KbXl5VDFYWEIzVTdo?=
- =?utf-8?B?Y2xRK1hPSkpZQTBiTXhaR0RzYzVtVjU2eFNjelJoUnJvbXBsWm1rZVYvUDky?=
- =?utf-8?B?N25TbytnN2dKQ2hVSjVtWXdWTUpZL3g2UVVCRDByTjBlR1BhRWZVOUh6c0k2?=
- =?utf-8?B?bE10WUs5aE53dHdOQmxWZW1OVDdKZGEvNndSa2xWWGZocVh0YlVwVjREalVL?=
- =?utf-8?B?Rjl2OXRkUEdDTUZBWC9iSTZWRGRsRGcwRmNEYXZHNGVRcFVRR0FpTXJFUHNT?=
- =?utf-8?B?SjRpc08wdm0yVUkxQVE1TUsrdzJRVlBqRFErWjBIS1p3QjhkR0UzVjhGWGJ4?=
- =?utf-8?B?YmJHNUxMcWdSbkZwZkczN0ZLa29xMnk2MVY4aXFrUEgzWmIyMEdkNlZsR0dj?=
- =?utf-8?B?L1hOejEyeGhicDFlWUcyMGJxOG9jOGZZVzNZc1JqRmxnZG4vOXY5TGpvMGM5?=
- =?utf-8?B?TUNDMmRXd0tmMkV3WlJhMkVRYy9IR0JCejRjNnk1U096aUNDSnN0Z0ZhWmQw?=
- =?utf-8?B?UExGcHZpMStuMGJJY2ZuY1lIT1VwMFhjUkpBcklyc2ZrTEI5SVh2ZS8xMjMy?=
- =?utf-8?B?d1Jnek01bG43R3JMNFh2Z1RiZDlHSzNPRWVISFQyTksrODRYaWxKcWoxVU1m?=
- =?utf-8?B?b2dKSGkxaHNyNnlrdFo5aS9zN0djL0xkMUhSZTlyUU9Vb2tEVEZoRHNoZDFj?=
- =?utf-8?B?Z0l3aTN6bGN5ZmJEN2tUZUxyYlhCRk4yMlZQclRoNWxXekVhUTlGOHFEaEt5?=
- =?utf-8?B?eEVETDQvemxoUVU0blNxSlROS2JRZnRRaDhVdzA5czRUYTJGMTluaW9jeDZz?=
- =?utf-8?B?UURpaUVUTldnb1BMcytmS0lPdlZOUEZxaU5HUnpWenpwelN1WkpSODJhMDA2?=
- =?utf-8?B?LzJ4REs1UTJoYW1BbVpQc3hZWWx0R3NUTVpIRmIzaEQyS1lhVE82VWIrdUJ6?=
- =?utf-8?B?cnZOcGVlc0laMVlpalA4b1djcW9rLzdqUExmY0k2NEkrb0xFR0M5STVLNEJi?=
- =?utf-8?B?YmlFaWxlaFlnbnRsVXdGV0NoMnBHZnhrY3RzNURJTDF6MGROVERpc21qd2hS?=
- =?utf-8?B?Z3YrR2pKOUNYY1NSVndEeDFUTEtwTG52R01nSnd5a1UwMWYrQ0RVcHVteXBx?=
- =?utf-8?B?b3NkZzBPYkhrL2FOUWNETTJUSnNvWC9scE5pRUY3Y3B5SElCekEvVC9JcTlh?=
- =?utf-8?B?TzlOelJpQkwzMEplSFNWeTVFWHFaYjNTbDVMM3EwdlFQWVpLTnNwLy9Ja1Bl?=
- =?utf-8?B?WVdiTDEvTEowTHZOWFhWem9admFaY1pqQVloVlJvZ0xKQWVsb3gxVjhVWkJC?=
- =?utf-8?B?UmM3VXF3RVNrb1lSNHZYT0pyYjQ4N0xuQzlEOWJmQzNUZFFVSEo5bzgwcXdU?=
- =?utf-8?B?cHZMdmZFOVRod1Q0UTh3ckVtUmZ2My9LbVFmMkpGRkdCVFc3eVJFS1kxZS9n?=
- =?utf-8?B?b1VkMFcvV0NlRjdlcjUrZjhndThnUHlmY0JvT1hxSFdTR3FBMXJ5Mm82OXN6?=
- =?utf-8?B?bi9zNlVKRnZLSDNVR0lYaUNUT09mZnNYUEY5eTl3aWoyRW5Hd01xc3B6YzQy?=
- =?utf-8?B?WmUxaUdldFVEa0pYK20rNXcrdldxRmlFeDV5RTkyN0RXYkxDUHZvQW9JSHVV?=
- =?utf-8?B?VDJXVThhbnQ2ZlZFZk1YU1JiZ3VqbmNKMDZFa0pSdkhvam1ZT3dhQi81RHgr?=
- =?utf-8?Q?48XSdSd2SRzAOy98kv?=
+	=?utf-8?B?ZzhQdVhNMXQzdkVLR1RzM3hKM3R5elQ3SXRDQmtvTHVNdU4xNnBiZitrbE56?=
+ =?utf-8?B?dTA5Tzk3WDYyUUJDMHo2cnN6a203R0ZNZ1h2VFE3Q3c4L1lxTGlOdFkzalR0?=
+ =?utf-8?B?QktNQ0N2RzM0NkNXUlRkamd2WncwdjVhT3V1L2xJQk9qTFBWVmdNWUs4ZS9U?=
+ =?utf-8?B?dGpiSitUdzRralI4SENJQzhKU3NKMkdrVnpOQ1VxWW9ESEpkaG9ybGxIVnYy?=
+ =?utf-8?B?VGliK2RUWE5JUkt4MDJuOWtpdEc1UXdERWxLS2tybzJYR2dSbGx4a3I0RmN0?=
+ =?utf-8?B?b0NuZVRuSk82Q09TT1crc3hFd3FGdU5rTEx0ZWxBR3RIRGc0U1hENlM0enpS?=
+ =?utf-8?B?cjZKS2RIZ1IyNWJ4SUJyYlpnclZyV0F2RkhEN3plTVBUTjFFZXFWaTJwUm9l?=
+ =?utf-8?B?QUtFSU1YSFlHZnJ4aUYyYVhRWVhHVG90Nis2ZWNpOXlPdU44MEs5YTY3RW9U?=
+ =?utf-8?B?K0hLR3gxbkt6ckh6eTZOUmp0SVVaU0dDbEdIc2pXSmcrN0VCRFVOVkQxUDlQ?=
+ =?utf-8?B?YjRvNnJOMFhCdzV1b1o2clBSbVI5MTZpa05kL3RVVytGU1pTR29yMm9TdFYr?=
+ =?utf-8?B?WWVYMXZDY3ZjKytsckJjdGVuclJYN3lSc0E1SXlGTkF3VTFQazRxSXppdlY5?=
+ =?utf-8?B?Q1lLamxaVnR6cjJnRlhMZzR4cmRyaDhJMzFuMmVwWWV2M0todlRFR2ZERmtM?=
+ =?utf-8?B?Q215VEV2R0dJakZsbDJaOGNScjBubWRlSnN2TVVHMFU2MTRxV3dmWkZQS0U5?=
+ =?utf-8?B?SWxSejZyYnBhdzVCNVBGYk51RVB2bUpTVnNacTl6QWJGT3k0cVR5a1dkK05t?=
+ =?utf-8?B?c0E2enV0NTFnWmYwcVpoY1I0SVJleU1vdWRyVGlJV3FwQ1BUaGhhTnNiRjVn?=
+ =?utf-8?B?OXBBNE50SmhkY0hHYmUzcWRZUWRNblI4THBiUS81NWFCYWR4MzFyZmx5aTlU?=
+ =?utf-8?B?R3ZVQ3VvbzZCRFJlcjNzaDI2SnZpckVWZ21abG93TDd2STVMUWoyU1ZvSDlO?=
+ =?utf-8?B?VUZjRlZXU1pwY3djUGRvV3N1WE9BUVQ3cTRYcFp6NDFxTFRUZkdQOHpqbG1w?=
+ =?utf-8?B?RXBLa1htazFQdXVQQmJKN0VXcklnMm5NeHQrQ2t2VXdoN0sxcWdBWGVEUnVG?=
+ =?utf-8?B?SkttdzVoZDh4bWVqRzRKdzJKWVZINnprdmQrd3dLK0ZaQkM1aWtITDBjSG1O?=
+ =?utf-8?B?T0ZoOTdGeWpKRnhnQy9mQXpyUlVvWXViMDBvMHJtL0I0dE9QUzlUbzc4K2xl?=
+ =?utf-8?B?cDVMdXpmNGRKZGJ5RzM1SmNyZGhjSWxhcmFrcXpndDBaMWRhdi9BQm0vdTB0?=
+ =?utf-8?B?akdQL3Z3WUU0TjF3UUJQZE1XOTFIL2Y4dDRwZkpJSjNRcWV4c3U4VVNvdkQv?=
+ =?utf-8?B?VnYzc3dRTnNzRlErOHFQRHZ1Q01McjRtNW1md2YyS1ZoZlgrdUpoU2FzWUQw?=
+ =?utf-8?B?WDVOM0tJUHU4QjBrTWN4bktjbEZyeVJZbzBhZkx0ZHkzVGtHM1puNGo0ZEhU?=
+ =?utf-8?B?VU1yeEhPNnp2UlZ3ejNIdWl6SUpFUnl0NEpwL1VkVUN0cnlNVVNnZVErNFAw?=
+ =?utf-8?B?UlNyeEhLMTdmYUtGZG05eXQwalhJRkZBV2U5ZndHUGxPUFk5ak45Q0tRV0wx?=
+ =?utf-8?B?aHZpc0VRcklOYXlwYkZMdFRsNkVuY3EySWVUbHNRRUFBWnhQV2V3VEZ4RkFU?=
+ =?utf-8?B?MWNtZERoQUtTdWd0K2R6VStteWRvdXFnL0l4ZEZhb0EyTDdlQ0J0WXhSTytp?=
+ =?utf-8?B?SFNkWjFPcXNYNUFyMlVBbEMrN2JHSzZCMHBsWnh5N2FUaElmMzFFZURDd0tL?=
+ =?utf-8?B?S29BR0pIdkMvOFlnU0o1bUkrbTFVR0tqYWJCV04vSFREVExlTVZVUTlubUJn?=
+ =?utf-8?B?UEZzNFhOMW5kN1pZVXpEVXNIVStENy9Cc0pna3NxL0dWU0dscDJKaTJJTFNr?=
+ =?utf-8?B?WmRQbjEyUk9kbFZvVEZONGE1YzRQcTc3SWw2dnNSVGVZc2tZTm9KZ0tHUXk5?=
+ =?utf-8?B?R1UzZ0VPS3RuanE2NTZObHY5MlBWcnF0dHVJK2FLbDJvU09DOTU0NzZJWFhW?=
+ =?utf-8?B?eHBlUmFPb2R6ZHhRYU52eHpZeWRKSktvL3Ztb080WjRCMERVcXNTUlhvRUxU?=
+ =?utf-8?B?MG1pM1d1Y3IzWGV3VE1zYnp2Q1E4QW81ME43a2NTS0RWZllub2NqL0UwaEky?=
+ =?utf-8?B?OUYrdjdWaU5LOGgvSHdtcVVYc2I3VDF5V2E0bDluRER3TU5rQzZWdGFXMUlz?=
+ =?utf-8?B?RHhLY01VTG1LdzdqNVo1cEllbkxmY0tNdXp1VzM3YStmVEtpWjdVaTRLb3A0?=
+ =?utf-8?Q?v7/p6Z2CpEaTnJpcNY?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1ff6592-cb16-4932-bd25-08dec4d82319
+X-MS-Exchange-CrossTenant-Network-Message-Id: 897b8b1d-6db4-45e2-749d-08dec4e43bb8
 X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2026 21:02:51.6075
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2026 22:29:26.7761
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: svR3TFlj5t9WWVIo9tGgh+hXFP6ar5VlhG6FAJpgdmerP864tiZM49AthAQ0KjIR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8726
+X-MS-Exchange-CrossTenant-UserPrincipalName: qKrf8+0l6noK2Wnhig8ke2DCgOXGUFqkra31JVypFk9raRsnIj7LCcDYPArCv59P
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8407
 
 Hi Andy,
 
-Thanks, replies are inline.
-On 07/06/2026 08:31, Andy Shevchenko wrote:
+On 07/06/2026 08:50, Andy Shevchenko wrote:
 > 
-> On Sat, Jun 06, 2026 at 06:17:06AM +0100, Salih Erim wrote:
->> Add threshold event support for temperature and supply voltage
->> channels.
+> On Sat, Jun 06, 2026 at 06:17:07AM +0100, Salih Erim wrote:
+>> Add support for reading and writing the oversampling ratio through
+>> the IIO oversampling_ratio attribute. The hardware supports averaging
+>> 2, 4, 8, or 16 samples, plus a ratio of 1 (no averaging).
 >>
->> Temperature events:
->>    - Rising threshold with configurable value
->>    - Over-temperature (OT) alarm with separate threshold
->>    - Per-channel hysteresis as a millicelsius value
->>    - Event direction is IIO_EV_DIR_RISING (hysteresis mode)
+>> Temperature and supply channels share oversampling configuration at
+>> the type level (all temperature channels share one ratio, all supply
+>> channels share another), exposed through info_mask_shared_by_type.
 >>
->> Supply voltage events:
->>    - Rising/falling threshold per supply channel
->>    - Per-channel alarm enable via alarm configuration registers
->>
->> The hardware supports both window and hysteresis alarm modes for
->> temperature. This driver uses hysteresis mode, where the upper
->> threshold triggers the alarm and the lower threshold clears it
->> (re-arm point). The hardware has a single ISR bit per temperature
->> channel with no indication of which threshold was crossed, so
->> hysteresis mode is the natural fit. The lower threshold register
->> is computed internally as (upper - hysteresis).
->>
->> Hysteresis is stored in the driver as a millicelsius value,
->> initialized from the hardware registers at probe. Writing the
->> rising threshold or hysteresis recomputes the lower register.
->> ALARM_CONFIG is hard-coded to hysteresis mode during init.
->>
->> The interrupt handler masks active threshold interrupts (which are
->> level-sensitive) and schedules a delayed worker to poll for condition
->> clear before unmasking. When no hardware IRQ is available, event
->> channels are not created and interrupt init is skipped, since the
->> I2C regmap backend cannot be called from atomic context.
->>
->> When disabling a supply channel alarm, the group interrupt remains
->> active if any other channel in the same alarm group still has an
->> alarm enabled.
+>> The hardware encoding uses sample_count / 2 in a 4-bit field within
+>> the CONFIG register. Per-channel averaging enable registers must also
 > 
 > ...
 > 
->> +static void sysmon_supply_processedtoraw(int val, u32 reg_val, u32 *raw_data)
+>> +static int sysmon_set_avg_enable(struct sysmon *sysmon,
+>> +                              u32 base, u32 count, u32 val)
 >> +{
->> +     int exponent = FIELD_GET(SYSMON_MODE_MASK, reg_val);
->> +     int format = FIELD_GET(SYSMON_FMT_MASK, reg_val);
->> +     int scale, tmp;
->> +
->> +     scale = BIT(SYSMON_SUPPLY_MANTISSA_BITS - exponent);
->> +     tmp = (val * scale) / (int)MILLI;
->> +
->> +     if (format)
->> +             tmp = clamp_t(int, tmp, S16_MIN, S16_MAX);
->> +     else
->> +             tmp = clamp_t(int, tmp, 0, U16_MAX);
-> 
-> No, please, use clamp().
-
-Accepted.
-
-> 
->> +     *raw_data = (u16)tmp;
->> +}
-> 
-> ...
-> 
->> +static int sysmon_write_alarm_config(struct sysmon *sysmon,
->> +                                  unsigned long address, bool enable)
->> +{
->> +     u32 shift = address % SYSMON_ALARM_BITS_PER_REG;
->> +     u32 offset = SYSMON_ALARM_OFFSET(address);
->> +
->> +     if (enable)
->> +             return regmap_set_bits(sysmon->regmap, offset, BIT(shift));
->> +
->> +     return regmap_clear_bits(sysmon->regmap, offset, BIT(shift));
-> 
-> regmap_assign_bits()
-
-Accepted.
-> 
->> +}
-> 
-> ...
-> 
->> +     u32 alarm_reg_offset = SYSMON_ALARM_REG + (event * SYSMON_REG_STRIDE);
-> 
-> Unneeded parentheses.
-
-Accepted. Will remove in both places.
-> 
-> ...
-> 
->> +             for_each_set_bit(bit, &alarm_flag_reg,
->> +                              SYSMON_ALARM_BITS_PER_REG) {
-> 
-> I would leave this on a single (83 characters) line.
-
-Accepted.
-
-> 
->> +                     address = bit + (SYSMON_ALARM_BITS_PER_REG * event);
-> 
-> Unneeded parentheses.
-
-Accepted.
-
-> 
->> +                     sysmon_push_event(indio_dev, address);
->> +                     ret = regmap_update_bits(sysmon->regmap, alarm_reg_offset, BIT(bit), 0);
-> 
-> Why not _clear_bits()
-
-Accepted.
-
-> 
->> +                     if (ret)
->> +                             return ret;
->> +             }
-> 
-> ...
-> 
->> +static void sysmon_unmask_temp(struct sysmon *sysmon, unsigned int isr)
->> +{
->> +     unsigned int unmask, status;
->> +
->> +     status = isr & SYSMON_TEMP_INTR_MASK;
->> +
->> +     unmask = (sysmon->masked_temp ^ status) & sysmon->masked_temp;
-> 
-> Is this the same as
-> 
->          unmask =  ~status & sysmon->masked_temp;
-> 
-> ?
-
-Yes, that's equivalent, Will simplify.
-> 
->> +     sysmon->masked_temp &= status;
->> +
->> +     unmask &= ~sysmon->temp_mask;
-> 
-> The above needs a comment explaining the logic.
-
-Accepted. Will add a comment explaining that we only unmask
-interrupts that have cleared in hardware and are not
-administratively disabled by userspace (via temp_mask).
-
-> 
->> +}
-> 
-> ...
-> 
->> +static void sysmon_unmask_worker(struct work_struct *work)
->> +{
->> +     struct sysmon *sysmon = container_of(work, struct sysmon,
->> +                                          sysmon_unmask_work.work);
-> 
-> Better to split as
-> 
->          struct sysmon *sysmon =
->                  container_of(work, struct sysmon, sysmon_unmask_work.work);
-
-Accepted.
-
-> 
->> +     unsigned int isr;
->> +
->> +     spin_lock_irq(&sysmon->irq_lock);
->> +     regmap_read(sysmon->regmap, SYSMON_ISR, &isr);
->> +     regmap_write(sysmon->regmap, SYSMON_ISR, isr);
->> +     sysmon_unmask_temp(sysmon, isr);
->> +     spin_unlock_irq(&sysmon->irq_lock);
->> +
->> +     if (sysmon->masked_temp)
->> +             schedule_delayed_work(&sysmon->sysmon_unmask_work,
->> +                                   msecs_to_jiffies(SYSMON_UNMASK_WORK_DELAY_MS));
->> +     else
->> +             regmap_write(sysmon->regmap, SYSMON_STATUS_RESET, 1);
->> +}
->> +
->> +static irqreturn_t sysmon_iio_irq(int irq, void *data)
->> +{
->> +     struct iio_dev *indio_dev = data;
->> +     struct sysmon *sysmon = iio_priv(indio_dev);
->> +     unsigned int isr, imr;
->> +
->> +     guard(spinlock)(&sysmon->irq_lock);
->> +
->> +     regmap_read(sysmon->regmap, SYSMON_ISR, &isr);
->> +     regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
->> +
->> +     isr &= ~imr;
-> 
->> +     regmap_write(sysmon->regmap, SYSMON_ISR, isr);
-> 
-> Is writing 0 necessary?
-
-No. Will move the ISR write after the if (!isr) early return.
-
-> 
->> +     if (!isr)
->> +             return IRQ_NONE;
->> +
->> +     sysmon_handle_events(indio_dev, isr);
->> +     schedule_delayed_work(&sysmon->sysmon_unmask_work,
->> +                           msecs_to_jiffies(SYSMON_UNMASK_WORK_DELAY_MS));
->> +
->> +     return IRQ_HANDLED;
->> +}
->> +
->> +static int sysmon_init_interrupt(struct sysmon *sysmon,
->> +                              struct device *dev,
->> +                              struct iio_dev *indio_dev,
->> +                              int irq)
->> +{
->> +     unsigned int imr;
 >> +     int ret;
 >> +
->> +     /* Events not supported without IRQ (e.g. I2C path) */
->> +     if (!irq)
->> +             return 0;
->> +
->> +     ret = devm_delayed_work_autocancel(dev, &sysmon->sysmon_unmask_work,
->> +                                        sysmon_unmask_worker);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
->> +     if (ret)
->> +             return ret;
->> +     sysmon->temp_mask = imr & SYSMON_TEMP_INTR_MASK;
->> +
->> +     return devm_request_irq(dev, irq, sysmon_iio_irq, 0,
->> +                             "sysmon-irq", indio_dev);
+>> +     for (unsigned int i = 0; i < count; i++) {
+>> +             ret = regmap_write(sysmon->regmap,
+>> +                                base + (i * SYSMON_REG_STRIDE), val);
 > 
-> 
-> 
->> +}
-> 
-> ...
-> 
->> +static int sysmon_init_hysteresis(struct sysmon *sysmon, int address,
-> 
-> Can address be negative?
-
-No. Will change to unsigned int.
-
-> 
->> +                               int *hysteresis)
-> 
-> ...
-> 
->> +     ret = regmap_read(sysmon->regmap, upper_off, &upper_reg);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = regmap_read(sysmon->regmap, lower_off, &lower_reg);
->> +     if (ret)
->> +             return ret;
-> 
-> Half of the IO accessors have no error checks, these do.
-> Why is this inconsistency?
-
-The regmap calls in sysmon_unmask_worker and sysmon_iio_irq
-have no error checks because they run in contexts where errors
-cannot be propagated (workqueue, hardirq). The init path checks
-errors because it can return them to the caller. Will add a
-comment explaining this.
-
-> 
-> ...
-> 
->> +     if (has_irq) {
->> +             temp_chans = temp_channels_with_events;
->> +             num_static = ARRAY_SIZE(temp_channels_with_events);
->> +     } else {
->> +             temp_chans = temp_channels_no_events;
->> +             num_static = ARRAY_SIZE(temp_channels_no_events);
->> +     }
->> +
->>        sysmon_channels = devm_kcalloc(dev,
->> -                                    size_add(ARRAY_SIZE(temp_channels),
->> +                                    size_add(num_static,
->>                                                num_supply + num_temp),
-> 
-> It makes inconsistency. Even originally. It should be two calls to size_add().
+> Unneeded parentheses.
 
 Accepted.
-
 > 
->>                                       sizeof(*sysmon_channels), GFP_KERNEL);
->>        if (!sysmon_channels)
->>                return -ENOMEM;
-> 
-> 
-> ...
-> 
->> +     irq = fwnode_irq_get(dev_fwnode(dev), 0);
->> +     has_irq = irq > 0;
-> 
-> This misses deferred probe.
-
-Accepted. Will check for negative return and propagate.
-
-> 
-> ...
-> 
->> -     ret = sysmon_parse_fw(indio_dev, dev);
->> +     ret = sysmon_parse_fw(indio_dev, dev, has_irq);
-> 
-> Why do we need has_irq? You can supply irq there as well and check it against 0.
-
-Accepted. Will pass irq directly and check > 0 inside
-sysmon_parse_fw.
-
-Regards,
-Salih
-
-> 
->>        if (ret)
->>                return ret;
->>
->> +     if (has_irq) {
->> +             /* Set hysteresis mode for both temperature channels */
->> +             ret = regmap_set_bits(sysmon->regmap, SYSMON_TEMP_EV_CFG,
->> +                                   SYSMON_OT_HYST_MASK |
->> +                                   SYSMON_TEMP_HYST_MASK);
->> +             if (ret)
->> +                     return ret;
->> +
->> +             /* Initialize cached hysteresis from hardware registers */
->> +             ret = sysmon_init_hysteresis(sysmon, SYSMON_ADDR_TEMP_EVENT,
->> +                                          &sysmon->temp_hysteresis);
->> +             if (ret)
->> +                     return ret;
->> +             ret = sysmon_init_hysteresis(sysmon, SYSMON_ADDR_OT_EVENT,
->> +                                          &sysmon->ot_hysteresis);
->> +             if (ret)
->> +                     return ret;
->> +
->> +             ret = sysmon_init_interrupt(sysmon, dev, indio_dev, irq);
 >> +             if (ret)
 >> +                     return ret;
 >> +     }
+> 
+> Also you can use temporary for regmap
+> 
+>          struct regmap *map = sysmon->regmap;
+>          int ret;
+> 
+>          for (unsigned int i = 0; i < count; i++) {
+>                  ret = regmap_write(map, base + i * SYSMON_REG_STRIDE, val);
+>                  if (ret)
+>                          return ret;
+>          }
+> 
+>> +     return 0;
+>> +}
+> 
+> And use this trick in other places where appropriate, it makes code easier
+> to read.
+
+Accepted. Will use a local regmap pointer in functions with
+repeated sysmon->regmap access.
+
+> 
+> ...
+> 
+>> +static int sysmon_osr_write(struct sysmon *sysmon, int channel_type, int val)
+>> +{
+>> +     /*
+>> +      * HW register encoding is sample_count / 2:
+>> +      * 0=none, 1=2x, 2=4x, 4=8x, 8=16x (not log2-based).
+>> +      */
+>> +     int hw_val = val >> 1;
+>> +     int ret;
+>> +
+>> +     if (channel_type == IIO_TEMP) {
+>> +             ret = regmap_update_bits(sysmon->regmap, SYSMON_CONFIG,
+>> +                                     SYSMON_CONFIG_TEMP_SAT_OSR,
+>> +                                     FIELD_PREP(SYSMON_CONFIG_TEMP_SAT_OSR,
+>> +                                                hw_val));
+>> +             if (ret)
+>> +                     return ret;
+>> +
+>> +             return sysmon_set_avg_enable(sysmon, SYSMON_TEMP_EN_AVG_BASE,
+>> +                                          SYSMON_TEMP_EN_AVG_COUNT,
+>> +                                          hw_val ? ~0U : 0);
+> 
+>> +     }
+>> +
+>> +     if (channel_type == IIO_VOLTAGE) {
+> 
+> Can channel_type be both TEMP and VOLTAGE here? No. Why do we check it twice?
+
+Good point. Will restructure to use switch or if/else to
+make it clear only one path executes.
+
+Thanks,
+Salih
+> 
+>> +             ret = regmap_update_bits(sysmon->regmap, SYSMON_CONFIG,
+>> +                                     SYSMON_CONFIG_SUPPLY_OSR,
+>> +                                     FIELD_PREP(SYSMON_CONFIG_SUPPLY_OSR,
+>> +                                                hw_val));
+>> +             if (ret)
+>> +                     return ret;
+>> +
+>> +             return sysmon_set_avg_enable(sysmon, SYSMON_SUPPLY_EN_AVG_BASE,
+>> +                                          SYSMON_SUPPLY_EN_AVG_COUNT,
+>> +                                          hw_val ? ~0U : 0);
+>> +     }
+>> +     return -EINVAL;
+>> +}
 > 
 > --
 > With Best Regards,
