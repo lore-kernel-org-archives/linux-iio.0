@@ -1,74 +1,72 @@
-Received: from mail-dy1-f195.google.com (mail-dy1-f195.google.com [74.125.82.195])
+Received: from mail-dy1-f193.google.com (mail-dy1-f193.google.com [74.125.82.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54782253EE
-	for <linux-iio@vger.kernel.org>; Sun,  7 Jun 2026 14:00:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C883A3E87
+	for <linux-iio@vger.kernel.org>; Sun,  7 Jun 2026 14:14:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780840838; cv=none; b=MC6aKMJNPIHWY+PPNtd+2xiIkGZJJ400Ck3L7o/CqzsQsXELHZjSXDbcjmvXCCN9ebYOypWp1dKmXKthy+QMslI/TQoJtD35JM8rHy9aiDh0oq7wyGdLa9Ur3BjlMf4nSNpx6UHkLWVHYrV2T+yW4meez94LgyHOGFzcMVrJbXE=
+	t=1780841689; cv=none; b=rJ14X8xLu+/ykieD/Z0KR3/V/ruo7C7ks0Kcei4gzbGYG0VDtzMudwpFJxrTj6pvFWnsX4LjxbxUBrp+2PhtZhtQaOjaAezng+b0LaGPs+4xW2Ms/eb4L2MSNZr29GLAOUmBvfgbl5MsHtLq/bZx12Vfiv9RyMsJJn4goZdcNo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780840838; c=relaxed/simple;
-	bh=jKP9+fHUgkONd+OEs5wzKAR947i8Z1a3ARbhT17+syI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OFFccTNKu5wdgJdxYskPa148fI0Mfs7uAjE3cSij5gIQMtFiylBcetgN8eQK4vgorshukqYRoO0+3fZ2fZyHwLqnOB4PpLtLts4QDWRNLqrr43b4hTDGDtNT2hrzZMEb/WTWOOGH/yYYPMFYRbLI12fkcBsbZ+Muy9SB0r+D/48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WYvOYpnJ; arc=none smtp.client-ip=74.125.82.195
+	s=arc-20240116; t=1780841689; c=relaxed/simple;
+	bh=P+Nb6j8I2J5+FDadA1c859H6p1jpbIiLjEm/gQu2pFE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tL/hVk3wysPWUn97J4Rb9zXIVwysB20ZIqSe8RXkFOuvmPs5qNXO6AdvTJKhHt3rSFMNj+BGmNEyg2gSsC0iyjTziaB+3UXkU7VIa5M5gwSGJaYMMauc5/SCNI0EyGQrX+FTo4YGRwuE9ncaaA2LBLP1mnzVPX8+tisVnLHmcu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gvZgXppI; arc=none smtp.client-ip=74.125.82.193
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WYvOYpnJ"
-Received: by mail-dy1-f195.google.com with SMTP id 5a478bee46e88-304f590dd91so3667065eec.0
-        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 07:00:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gvZgXppI"
+Received: by mail-dy1-f193.google.com with SMTP id 5a478bee46e88-3075ce9c05aso6147197eec.1
+        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 07:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780840836; x=1781445636; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780841687; x=1781446487; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vlQtD5hNQ3qQQNswkZH9BNz1aB+yRfkIoZHyFOn2t28=;
-        b=WYvOYpnJIWdcC5qKkXurzZUT8dNO1mpeiiLiPc7rHOZMNM4+je+eDMVxu133P6ORYg
-         TljqIGb1zeDM6UK8XUFwh4sQCQhYR1PW1kXk+9xqdnG0quyHQCrGGi6pNMbSzvp385xv
-         HRde8IDp8ZK1CpXaFqOnh78X2La2GTEM6hnhadVwSt8qVYivMJIV4Ldt4vd4vsTDdO3g
-         JRL+ioWkv8MEoq0QoBn6MRGS++php/50Enhg5UgSCMdsiQRlGYMNfaXy7WsBP/eM6zCU
-         P/J5t4Twd3aEl/uN0Elw1+yCHsxOKjdjqKAaegf+5w17v2ZqUyp9ZICIl/Rf+EcA14qT
-         531Q==
+        bh=Kuj8kQpIzGjU4xu75a8AvJp0dubB+cjh4hqHihfF2P8=;
+        b=gvZgXppIKH/zQVCNzkiYqBhkicvXC0M3oV5DsFWJ2yV06berPS7WdOqm6IJ7WKcZ8O
+         Zn0hbO+cwvF/eppOzjbs178U0c/uCFNBHZIFp3xrUd4e3iUmR1XsrBfuJXKCBswsaMwl
+         oAeqnklOyxBdgw7TMQq8dNU8N1nLeszsx0zd05DuIFtxNCz7bK3GljQ/hqAfUdCM+C7C
+         v9VS0q15QEXZZUPM9t6AmIKfkajgbaHwlcnqSgqgkn3TwMCtYMjAq2Lo2eVUjsSl0u9w
+         MbtivX6AjbNTQzyZOq8gUp+0gVTK6kTbuJggFnZnh1stKEiAELabnSKWosZLiBI5SlDJ
+         E/Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780840836; x=1781445636;
+        d=1e100.net; s=20251104; t=1780841687; x=1781446487;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vlQtD5hNQ3qQQNswkZH9BNz1aB+yRfkIoZHyFOn2t28=;
-        b=jKqYansOQafo9KkEYXvkOHWuZee9tUtNFaI+1ifNGNkW9xZxzAsJtdEaVXEDZ3SnNz
-         2fHk7RhlKhgwzxB2MYMN8eNifntkTPUmTfj2ZFCwEKkdwmS85S767vbDrItk2UdYw3J1
-         1A0EbomTbc3LaRI1OtYScIicSFtUeNToqjRKKOU9EHVD+VtZUlqhG2Cj9pgeOXHsV0SE
-         vK6qyXeDMr/3sQVanBed01fYqUK+rUqT8GH5GASEY+pCCIih5/pMXnjJuik08IgoqDTi
-         2aeoqKl/MU1Rn6wdH/XRzjOMxg/3ZJYNXeoIZRCDQNL857onIUMdlI3q8eXjFkWV9ORU
-         BWEA==
-X-Forwarded-Encrypted: i=1; AFNElJ+UslyYrWyDVkgnjiYUdaBt+6WaEW7MgicT21sbcvmeHZ2TwOYRippKt1N4JTGliCtkkPw738rX81Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwRpr7cgTZIeWxLffflGCzRyb6ryIy2uscobH89svzE0jxctwMk
-	oZuuJdpm43YC37duCYX1SSR/XPR3hTTqVLyk2vpQcKTaYZ7z4F3u/Ms3
-X-Gm-Gg: Acq92OH2xqYr0bz9uJngdWrA/sWgfyN4UEeSmt+03h3Q3R6Yv4bB/GJwov+g5US6APc
-	fEmEoOVv0UgvwvD4zKARRpyZyIHVzbuWCodX3YdRYmgkO8uBGPQTYhy03AyO0XpUfcEXuCh+4Ch
-	GGvxuagmP269HBZ6VneWGMJHs6KsxcmuZeigwguQg3hjrKK/ahX/zBy7Dg1BXHjf6ANir5toYNk
-	x/+dAucQuhzA9iV3D9+yNuBtTWRxsp65TSnfYiKXHU03eab8kPHgGXFbdshQGzPWgIVU6LVqso2
-	zKJfx4s1ob2Q/c+NJ+uZkJe+xq5Ozd5QiTRqwwOE50JGXU1tPbYf5kDOiMvBDAfH9bIrZHRTj23
-	Iij7a+vVi9PIO1//BwYrs5IWFkdfO0zXJVg/MEkCdiXBQj1/5H0Lcfbie9bYCxBIb9eJozMQJGu
-	bvpH2mKEZsSoQX70O3ybuuPgGuA2lXHrdhSlumFRe5/GiOt8LChY3IdH9NUXB4SeuCqZnnwVI/j
-	RXu
-X-Received: by 2002:a05:7300:214f:b0:303:f2dc:8ab4 with SMTP id 5a478bee46e88-3077b32a447mr6515342eec.2.1780840835827;
-        Sun, 07 Jun 2026 07:00:35 -0700 (PDT)
+        bh=Kuj8kQpIzGjU4xu75a8AvJp0dubB+cjh4hqHihfF2P8=;
+        b=mEUACgc4ZZrSYsD0uxPVSlvzvjnwZWBhlS3qKPzDL43KPhRI/sS0s6V2MNUM9B0RNR
+         9Rg+/PQHQ0RsGg32YN8E9v1e29OiCA0WQVjwCZo6qjHQ1DeOKhNSs9cRjIlrOtYffYqo
+         +CTqeYMHx6IAXHTTsifdDwDeUBhNattzdwUrDD5MvkNu0WoR1kjNVXn+MqI+lXYz77+Y
+         9+3u0jj7mgvXTGYVGpBTakmcsYU2gsO0zaxS1o1jzkxgEgsWsOALL/5UruOvCd+pVNZT
+         5wpAcLk9F11JEClRhXwxni9jUqm/2qIo9JMQnUMbF41HV1LaxKkRnowo9vOvfGpyDY6I
+         hsGg==
+X-Forwarded-Encrypted: i=1; AFNElJ8Got3ud6ytKHtFCwQoVj5gh+qwL0D8+1ygXAtCvQG2+iesyq6SK3UZTQ+SS7DALP9iuhQS+BJJviA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwiUdBkc9yaRdhrc7dQyO2NBUWTrEqsRNHheu7lJ0F1mlvX3Fst
+	4xTrMnKVnRkn536977zetTkBKLqJe+PzOpUXA8aHN1GJ7Mf5gD2g9lQh
+X-Gm-Gg: Acq92OFHE4FK5RUc3dEdbtHdsdYCYjv8FPCbhmDrKtAziNwLJs611xvniBNf3wMqzGz
+	9VwbUZOT0SkaXedsJf0ZWII+vopsWm11HRkT/89XfIbyObh/wXqVRmPNq4aWMYftJTVFlc/4moU
+	EzQRkKg+NjweLFDncE70WqrcQlxuMIxYucZqoaAgTxg/DVQi4N2Gc2ecaNdpvk0ZmROINc/a47A
+	M4H4BomnZg4IS5ECbMZaIweQVeTtmb7fOctWf4mqun2PjhmFbePcca9DQXcZz7kNx4RobSslMqH
+	SoJPVPjwvzrslBMSvi3y/LNmhVJtjNqnEYjaAW22Li9M1YfP0XvkjLkFz18nMp1yZNzVBeEwPIq
+	APWu2znF1A1Wqa47QFpfk7g3u4kVy9x+IVCH4h2PuGerNrE4KjeMLoE10LzKdO6VzPeUBAWdz6y
+	Sjm5vk+Qh/nv3hyrIK8OU0XV9SyPBbZdRWwyromGUT8dUygQPuL+WkEAYuTAeaaHZ3rw==
+X-Received: by 2002:a05:7300:572a:b0:304:aca:35c5 with SMTP id 5a478bee46e88-3077b22c938mr5783472eec.23.1780841687119;
+        Sun, 07 Jun 2026 07:14:47 -0700 (PDT)
 Received: from localhost.localdomain ([76.32.119.210])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074df3b234sm17989689eec.23.2026.06.07.07.00.34
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3074dcb98aasm13472648eec.12.2026.06.07.07.14.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2026 07:00:35 -0700 (PDT)
+        Sun, 07 Jun 2026 07:14:46 -0700 (PDT)
 From: Hungyu Lin <dennylin0707@gmail.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Hungyu Lin <dennylin0707@gmail.com>
-Subject: [PATCH] iio: pressure: bm1390: replace short msleeps with usleep_range
-Date: Sun,  7 Jun 2026 14:00:18 +0000
-Message-Id: <20260607140018.59586-1-dennylin0707@gmail.com>
+Subject: [PATCH] iio: gyro: bmg160: use __func__ in error message
+Date: Sun,  7 Jun 2026 14:14:35 +0000
+Message-Id: <20260607141435.60229-1-dennylin0707@gmail.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -78,57 +76,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace msleep(1) with usleep_range(1000, 2000) for the
-driver's short delays.
-
-The BM1390 datasheet specifies a 1 ms reset cancel wait time
-(tSC1) during the power-on sequence. Use usleep_range() for
-these short delays, as it is more appropriate than msleep()
-and avoids unnecessarily long sleeps.
+Use __func__ instead of hardcoding the function name in the
+error message.
 
 Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
 ---
- drivers/iio/pressure/rohm-bm1390.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/gyro/bmg160_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/pressure/rohm-bm1390.c b/drivers/iio/pressure/rohm-bm1390.c
-index 08146ca0f91d..35b9abc25a8a 100644
---- a/drivers/iio/pressure/rohm-bm1390.c
-+++ b/drivers/iio/pressure/rohm-bm1390.c
-@@ -486,21 +486,21 @@ static int bm1390_chip_init(struct bm1390_data *data)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index 38394b5f3275..8cebac89ed81 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -313,8 +313,7 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+ 		ret = pm_runtime_put_autosuspend(dev);
  
--	msleep(1);
-+	usleep_range(1000, 2000);
+ 	if (ret < 0) {
+-		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
+-
++		dev_err(dev, "Failed: %s for %d\n", __func__, on);
+ 		if (on)
+ 			pm_runtime_put_noidle(dev);
  
- 	ret = regmap_write_bits(data->regmap, BM1390_REG_RESET,
- 				BM1390_MASK_RESET, BM1390_RESET);
- 	if (ret)
- 		return ret;
- 
--	msleep(1);
-+	usleep_range(1000, 2000);
- 
- 	ret = regmap_write_bits(data->regmap, BM1390_REG_RESET,
- 				BM1390_MASK_RESET, BM1390_RESET_RELEASE);
- 	if (ret)
- 		return ret;
- 
--	msleep(1);
-+	usleep_range(1000, 2000);
- 
- 	ret = regmap_reinit_cache(data->regmap, &bm1390_regmap);
- 	if (ret) {
-@@ -575,7 +575,7 @@ static int bm1390_fifo_disable(struct iio_dev *idev)
- 	struct bm1390_data *data = iio_priv(idev);
- 	int ret;
- 
--	msleep(1);
-+	usleep_range(1000, 2000);
- 
- 	guard(mutex)(&data->mutex);
- 	ret = bm1390_meas_set(data, BM1390_MEAS_MODE_STOP);
 -- 
 2.34.1
 
