@@ -1,166 +1,184 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012006.outbound.protection.outlook.com [52.101.53.6])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BCD035DA40
-	for <linux-iio@vger.kernel.org>; Sun,  7 Jun 2026 09:44:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780825485; cv=none; b=T5Yd5T6GHQRijjme2eBntJY40t6jp1rxAHt1Qfut1gadTryN79LQrxKfGO8Po94SHN5lEeCyFevHkC5S+FfKIlWX9gYkrjPB1rTx/nub2EmLPYsxPTbo/5B1pTrHT9UnQ0WPczwUArTK02x1doszdTpORdGggfTQveFCul+qLdg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780825485; c=relaxed/simple;
-	bh=ThYMWQAfsexWY1TWhGbF6PFLMWNiIlXKMllw2X788mQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=m9H67Vys/HOLiVd6VKHKkw0xEzxq8DR2eT8TTFkJS7tLs7NONktgG5knmg9HN+C0YubjkO/kp4/LxgGL0Z417Cd3s4marsEk/BY7voXkRCBA/U8c4mTb8dR8GhhW7P8aweYovA2bzWHeac3R9YfK1j/ShWsx5a96wn7nUw1djTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A+/3/Com; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121D41C5F27;
+	Sun,  7 Jun 2026 10:27:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.6
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780828049; cv=fail; b=ovVuMimPWuKEpDIKmqAKs+a3uItwyiSf2H3O5XvX9u3hRR8zPracJ94mRaa2lx9AWT5Z2YR30v0ZCzicc+FiaocV7sr3kOY2w//ofPDOobcGlyItTD3C9rrbUBVmPb2t+KRTlpqAah3bQoxnNetP19YqDcaVfssRjVTgaWKkf0o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780828049; c=relaxed/simple;
+	bh=5+r8bpUCsMISGNvtEtxt/FZnod3tEe6VnMd8ES/htCM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=tzWsY38xceGKeQhh8559saJS83PYw0+OeUC2dXK6wk3/IEQVrfXcL3a58PXsLAdQuqNeFAwXoUqZtlnHPcXORJ6FGypspyOajZy+DYUcxu9O5AFmiULeOgWx/UkPnv50lMf/bn7Zb+HOQu+O9t5DPAK9a8EO1r5NZFfXAiP150s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=g6t9d8yU; arc=fail smtp.client-ip=52.101.53.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A+/3/Com"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-45ef4223be7so1688575f8f.2
-        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 02:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780825483; x=1781430283; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HR/lmdk2plRsJSnfN9lqr24Fr4cHJ+9UQGnQ2BUyH4o=;
-        b=A+/3/CombLRRzvbCbT32QSj02gHn5fOFGXMWJNEbwgr/pGnj0orygU2OuRjKWGPa+x
-         lxaINJ3LFjkCgyQVt0CRhkSSWzHdbMH9UY853vqBzTTvWm9/BdC3Jxj4s5F1iIIknZkq
-         Z8dPDHSHnq8jQK9YiPeJwHLCa+eoOuZQJIIqD0SgbHJjnsX4ibJxhbvEFi3hXBtdTVFq
-         XmaC4rMwgJdEL1S2N+axViyXUWn8eeyupwKP9lt9K1Fm0U26ijLU8jAc9NubEBd/up/K
-         TqaJqzA+Wk5ommjqCNvZ5j/MmHa3INdU5lsJkE/J0jviAtOYTaSwT7+sdi7EtxZUeXig
-         4nkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780825483; x=1781430283;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HR/lmdk2plRsJSnfN9lqr24Fr4cHJ+9UQGnQ2BUyH4o=;
-        b=CqdGmQMUqsZKLwgQEXJLmlE5FOlPIg5SMeHziLxFeMs28t/Ze2vNaKexuv8mEc935p
-         LoPqyjiXWswPdJwSxfQE69tH2LLQaxB+vKFIyIoiskEIPJ1jP12G1TJrr62xHhshbUO6
-         zYbyg/r0oAmPx7JtnVi4M/2rI870R8f9j1sWNmQ5Hz6b1EeJrZ59v1Ymdo2ZVTrVkf8b
-         L89BjwSiL0S98VZYL9yz9tLkrPN6jZdd9+sAjoA8ZNi5PMeV47/tqNfSA2Lj6j2i1cDE
-         5phaE1TTwkB74SrADZ1jr241nETBeODMdrXwZwRLFGt9s7ysak49YUys7sH2LTL/LmGS
-         B+MA==
-X-Forwarded-Encrypted: i=1; AFNElJ8SvtHLoMQiLtHtPNKIijrb4ANJ2+Jxvv6rYpbPJn3OHS4ayKct2NUAgGu1bnW6EINT0HFm9I2uIGE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFrA0ZTnJgbJp4VR+g/kXAfqmubX17g5Poed6mVSMkqCl9sf7I
-	UNu2cYWmBWotut35MAlaTA5aZr8oY3vd9J2SSirvNUrDIXVq8mBvaWl1
-X-Gm-Gg: Acq92OF+zBtcIPwJwEBXibED/MP1pnjFmlBJHfsoagxvHbsG3PLCL6T2xdYeQITZ5qm
-	3cYLEhp3qHfhXU/NuIWlxRi69HJuZ/uzsZCyol1TnrMfQa4ACzxm8h43UqJyjz2rciLl1EDBHXy
-	6bdE4GmUKhceFiHN8JZZTaN+w67lAz99EWEjboeO5A0+YK6InSJLypqaMgKsjPUjYe04BRq7DPn
-	tJXon4tk3UugeN0oK5aVWZKR7qwv7QKv4OX5kwam3tS+tsaF1lZvA1ddWdI4YYSKGehCtUcOVDA
-	O9YhwmwD1SioD7TeVX9jBv3QDgSBFIfaICeHDtN0ZvL7RL7aFxYs1FdLpTct1z9ACCuq5kLVlX5
-	gdX7YrwPpl+ZT0pjhfGDOtoIJxUqyMe37i/cVqzUm/Gz8XM2C41mNUo6aWB3WQl4rs3NlAc9ybu
-	S65tk4X/4PG2PBe6FeOfaUGontFcWzNk398OzAWD3taLSbYvAlrS/s0CKbUDlMeJlMJMVXUDoYU
-	+viZiea7g==
-X-Received: by 2002:a05:6000:181a:b0:45d:817c:b8b2 with SMTP id ffacd0b85a97d-4603065b5f2mr11689633f8f.30.1780825482665;
-        Sun, 07 Jun 2026 02:44:42 -0700 (PDT)
-Received: from ?IPV6:2a01:e11:5402:d840:f1ee:c5d:74e4:6e19? ([2a01:e11:5402:d840:f1ee:c5d:74e4:6e19])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f360bd6sm44922742f8f.36.2026.06.07.02.44.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jun 2026 02:44:42 -0700 (PDT)
-Message-ID: <d1c24756-3025-4ce8-9437-be3b2a4b89a4@gmail.com>
-Date: Sun, 7 Jun 2026 11:44:41 +0200
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="g6t9d8yU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iVngu7wZ6HCY+jw1mo5D4xzs8c5MY09ugg8cvwQz3taUXP4jxPqZmb/IHz3AZKAf0EkOBKVZb0I/iiKgFNGfpThpr/MvqqSVoYINXG3LIYWFcbmzwO5PFtzDstfp3ClmQnu848ILwm64MnrYkpS1fV8HIoJQH+LY7Dhc91e3q59Uwk2ihBSYOVDdHlEprU/dG27IbiuV5imZMkdAoXBhPWk19OOzcFrfFjlzoppaoI2HbSq7/+kxClIFrKdUAtlUs0yE4aie8RLldab7wh6RmV3MJ7eLo+xB2TyXcROQyEfioiBvQ0RuQq4hfwauARyM7/LLrRUOMTMNdPcYby4r9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SLhej37+8jE34vAeg4dFJPgmVl8ViPXXKNReix/1NYQ=;
+ b=YwMmFzp/+n6OhlBQROkr80iGz+5nV6YUig5VjugzEGgDxv0zbszhElAOboXXXgKyQZijndAfpYuro9lzw134xY5vPTGiE0BRIXPotNbWEpBkemOJnmE9X4LfvyBV7qt2xnWZx3sfHj/1Kg+JKzmNBOUpWc0D1py9OGDoPe9HRRTZl383beeC81drfDLYF7yD73n2qde809v71VE0QR4u9XP/gv8a0z42b2WXkX/AjdULAX7z7deH3XN/B7IrhnCDl17IBg2VQ7DKL3JHfNeVKPUqZQ6seFJdn6uAwpklHUdv3fbqOriMy0z88tHRzD/gdmxSh71U2BNU7zZ3WVoPRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SLhej37+8jE34vAeg4dFJPgmVl8ViPXXKNReix/1NYQ=;
+ b=g6t9d8yUSABXqs9ri7gj+LikzZj+0bjcKwjH5Xk+LM9ctBw6Qef5xuSZsLEFHibkwzIpkOg/w6s02K/pAlgHCqhUO/Bm/NL5/Oq2yTnLyVUG0F9eZWLftxT+XsHyXN7HRHEpfyB4LkYCYDPUHzj9oV2RCo5Uuq3LT4wc/9AzXCA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by MN6PR12MB8592.namprd12.prod.outlook.com (2603:10b6:208:478::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.12; Sun, 7 Jun 2026
+ 10:27:23 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0092.010; Sun, 7 Jun 2026
+ 10:27:23 +0000
+Message-ID: <1d336058-7930-49f4-8bef-5e4f3438bda0@amd.com>
+Date: Sun, 7 Jun 2026 11:27:19 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 3/5] iio: adc: versal-sysmon: add I2C driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Conall O'Griofa <conall.ogriofa@amd.com>,
+ Michal Simek <michal.simek@amd.com>, Guenter Roeck <linux@roeck-us.net>,
+ Salih Erim <erimsalih@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260606051707.535281-1-salih.erim@amd.com>
+ <20260606051707.535281-4-salih.erim@amd.com>
+ <aiRoOnyMG2g6BU_a@ashevche-desk.local>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <aiRoOnyMG2g6BU_a@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0511.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:272::12) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 8/8] iio: tcs3472: implement wait time and sampling
- frequency
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- shuah@kernel.org, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-References: <20260522123420.45495-1-aldocontelk@gmail.com>
- <20260522123420.45495-9-aldocontelk@gmail.com>
- <9c0bec93-e102-4655-8074-fd544b16d912@gmail.com>
- <8392f8a6-719e-43d9-813a-0a163f450ed8@gmail.com>
- <20260606150939.72974703@jic23-huawei>
-Content-Language: en-US
-From: Aldo Conte <aldocontelk@gmail.com>
-In-Reply-To: <20260606150939.72974703@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|MN6PR12MB8592:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0b52d1fd-3848-4efa-9cae-08dec47f5cbb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|22082099003|18002099003|11063799006|4143699003|56012099006|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	u6zdK2mTK/JSnsWkuxbkFbRaub02d/klyUbWoX93WNoNB/mV9y6TtGr7ipHTHoOGO+DasGUTw3aQvTqWWFvcXbcnGpu6CpLQFVXc7bepUSJ10lq868edUsvsAv6FjPIm8A/fIano0OSkyD5F1QC67RL5KXlMNhql2HFc/eKqDKKfZ9waqBTVhvkQ7c9ew2ZX3qDR2sJatrkL64YYOVSkvQjj8ep3iZAJy6EpQAfXKrLbfIHyzccvp1z3wo+F/w+wXvtGhldyO0VTTsy0aw22pYdy+cVGvI+wOPHF2asrDHQySti84VBK55OMwxpCfYvMsVmQBHewzmCJkinAYhuqntTRfFV4m7pKi9tEkdI5ch82dnF0n0dGa7yBzqBEXq3ZEjK/sQAxj6U+9CqhhWOLAakKlH2J2cORZjHtmjxbU5cume/aZhAxEawwXa10GWj5YwjZSoN1FpLL9UE/wj2kfPgJHgwQbDZbVe7BkZ4Wd6a8UuHknDnp05CnpL3sZjqfzXfFjwPLdTTJ6KSkoWOfdGnWIflvCSsEnkyVvH5/VoSh59k2jPQotVvp423QAPF8BqsdKg/bc+u7S8ttpP6NvqgaSyTiwAOwqHHsewcsWSwdqqF+NZjjijB9C0AZWNrAUk9hjcwwMiPTz9w9fiYPvAXCCVwJx7TT5l3E4CFwQSl+DZBbESfc+j22rfPS4cp9
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(22082099003)(18002099003)(11063799006)(4143699003)(56012099006)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bjRza2UyMjdBS1ZSRHVzRzRvYjYrVndycWRJck1iZ3dhSm9xTWZYT2xlbUFk?=
+ =?utf-8?B?RHVjazEyUWl3MnRZaVhRLzRvckZ5eVVPOTVkNU9DeGJ0Ynd1T1FQUm5YN3Z4?=
+ =?utf-8?B?VXM5elNBb3Z5dHBXOUZIL0ZZSnY0VERnZ2VQWWNZNUdUakFSZlZwc0Q2akVJ?=
+ =?utf-8?B?UURjV2sxcHpKVGpJYWkwTDhpV25PWjcwOXlIWjY2Z2JnTkhTN3ZnRjV3R0I5?=
+ =?utf-8?B?M0JNV3dTZys5NURwVGdHYUNXcFk3YWd3ZHh0emMvSUpKY1JWb1h5bTQ0QTgz?=
+ =?utf-8?B?V0k5YzZZdFRKOVQ2OW05cWNkMmdYalhUUjdkTWhwRnFBSWp3QjJuMFJ5WnB4?=
+ =?utf-8?B?WW1ES0pjQlhoOHpGRTY1c3k0alVHbFN2c2YrTkNtQ2VDTlJtWXk5WjY2aTd4?=
+ =?utf-8?B?L2dPa3Vjc3pTYnhmbDhvcEhUOUNaL1R0ODV4UmNsUkhTQUpRSklHNTVwSkZt?=
+ =?utf-8?B?cW51YnlxQjRLSXI4cGpOZHJ6aU0rdWs2TExTcDVpU1FRMXJkWHR5V01aV3dq?=
+ =?utf-8?B?MEo2cEt6TDlZQ1hHT01rS0JTT0gwVUdhbjVXU1B2UlNmT3RYa1lOSC9McEFS?=
+ =?utf-8?B?NkFhcUVaY0wyV0x3SWlxQ0JFZm10U3pqZHE5OHMvSnZhZFV3OThjM0ZKRktG?=
+ =?utf-8?B?SE8ybFUrd0pvVlNEMmRmcURrWlRJazk4ZTBxaUVya2xqSUp1dXZqUktrak40?=
+ =?utf-8?B?YTdYRmZLcjYwMVBWWGxiem9hcmpiLzZlOWRkK1NpZ2Rzc3YxUW0yWVZXVk9q?=
+ =?utf-8?B?UTRnZjdESnpGc3hRb3paV0JueXlWb3poU1RiVWZKRlN0WEZTdDJpVlcrNitC?=
+ =?utf-8?B?Q05GQU9ka1JXS1pNazhraHh5VmFKWmhrK2NDUGdqaGR5eUg3cHE4aVpoRlpq?=
+ =?utf-8?B?dGs3N3dXdWtPRGhsT0YrNk9jaFVhRmdLaGs2NlNjYXBMKzFJbVh1Rnk3Ylo1?=
+ =?utf-8?B?cHlCbXBSeHo0a1dvSStzNm40QXQzTnU3MjVJUG1EdENmbDdkci9VajVYNjNu?=
+ =?utf-8?B?OFJYTlpselZJVjI0U1FtaWsxRDU5aGR3YWpIM3c0cDg1MmNBUWw3TTdzOXc5?=
+ =?utf-8?B?ZC9kYWxYQjdLbFE3N3JZUDZjQ0JUZGZqZXlTaWhSOGgwNjBSa0dYWG9VU2RK?=
+ =?utf-8?B?enY5eGIzRzl2enBleXFFYzlHVzFORWM3WGZQbnFUcmFLL1pEYVFHVHJQbno5?=
+ =?utf-8?B?cjJNbS9hR3JXWS9CWUF4UzgxelNPUFFiaVE1Vmpja250MHBaTzlOOStzYWZK?=
+ =?utf-8?B?MmUvUndGWFIvbVFVRXBZaWRURjBZd2J4N1pjUzhXZGVhZFZNdnk3c05mYlZC?=
+ =?utf-8?B?OForYllENHZzUVpuUUxOVE5zNjZtcytuQ1NKMmRSVmFSL1p1OGE4OVlKTUJV?=
+ =?utf-8?B?NEM0WEdrb0lMcWFuR1Z3MDRjeVNNRVJIMS9jNDVPbjlaelJMb214bjBPT09a?=
+ =?utf-8?B?bW5DenJyOWp4Q2s3My9ocGFrZXd2UEl4RkVmbTBMb1dMbHpDWnJmaE9ZTkRU?=
+ =?utf-8?B?Nis1akxOKzZ6cCtVUW43ZUxWdmFJYUhrVks5YmZ3bFBHU2pTV0cySmdwb0p3?=
+ =?utf-8?B?YlpyRktEYmIzNUZ4NG94M3Uwam14WldrdkpsaHJ2UndPN1lIaGQ3U3pzY2Z6?=
+ =?utf-8?B?ekFWcFUwUmJWVDdmQSs4dTE3MWJuSTdVanN4TVp6aDNBSWIxa0cycGoyR0hm?=
+ =?utf-8?B?TG1NRGpLR2htdXlaaEd1cERML2RjR0FiUmlEWXlrZjhGOUY3bFNnVGVQYm00?=
+ =?utf-8?B?Z011eVZZL250VURDYlhPQzlmVHhSYkhqMGhaaDFXZHZTVTlPbFBwbmVEbzFv?=
+ =?utf-8?B?ZUpLcHJSOXRpRmNTd2dVY1pnSFdlMTZSWElweGQ2TzlPcmlMWXBxSDNWRUdX?=
+ =?utf-8?B?aDFUaXhQL1YvYjYzN09Oc2FnUFVqb2EwdDAwVW5tNGRTNytPbmFTMFh1NEd2?=
+ =?utf-8?B?UHIwVzZBbnZzQk9IUWZFdmg2b05UY1JJQWNyQ2xpNkU1SUNIeHcwZ0FMRWZU?=
+ =?utf-8?B?UU9wdDRuN3h6THlRUXNTQjRsT3dPdzNTR2Vrd3lqNlJFT2dkRForN09WQ0tY?=
+ =?utf-8?B?YWJ6azdKeUcyZjFvckoyRFdmc09pNkUrTElPTnJpbkpIYm5ZVVVqbHRkR2xt?=
+ =?utf-8?B?dEtWVWI5UVEwVU5MV3Z2cXJ5WjFkOHlid2VwWWVseUFFd2EvcjI3ZnUyb3lL?=
+ =?utf-8?B?M2ZVQm5OZlhIeXBkS3pWbjRMQUlNRzhSVWZ5a3ZrNDRHdWw3dWovZUtaZEtK?=
+ =?utf-8?B?dFJXaHVuMG5hbDdPZVFlaDQzQ3M5V2hjZnphWVRFcnFqVzRITndVWXpqOE5C?=
+ =?utf-8?Q?drB76HLIG9k1y2wxvp?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b52d1fd-3848-4efa-9cae-08dec47f5cbb
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2026 10:27:23.0709
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Nmq32pIOo1hRnvaI5USrzxL7mdCc+sGuRHVl4voNznSqHVZknq9ozZQ1iwx/vJKk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8592
 
-On 06/06/26 16:09, Jonathan Cameron wrote:
-> On Sat, 6 Jun 2026 11:27:16 +0200
-> Aldo Conte <aldocontelk@gmail.com> wrote:
+Hi Andy,
+
+Thanks for all reviews.
+
+On 06/06/2026 19:34, Andy Shevchenko wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
 > 
->> On 04/06/26 11:23, Aldo Conte wrote:
->>> On 22/05/26 14:34, Aldo Conte wrote:
->>>    
->>>>    static int tcs3472_req_data(struct tcs3472_data *data)
->>>>    {
->>>>        int tries = 50;
->>>> @@ -166,16 +214,131 @@ static int tcs3472_read_raw(struct iio_dev *indio_dev,
->>>>            *val = 0;
->>>>            *val2 = (256 - data->atime) * 2400;
->>>>            return IIO_VAL_INT_PLUS_MICRO;
->>>> +    case IIO_CHAN_INFO_SAMP_FREQ: {
->>>> +        unsigned int cycle_us = tcs3472_cycle_time_us(data);
->>>> +
->>>> +        tcs3472_cycle_to_freq(cycle_us, val, val2);
->>>> +        return IIO_VAL_INT_PLUS_MICRO;
->>>> +    }
->>>>        default:
->>>>            return -EINVAL;
->>>>        }
->>>>    }
 > 
-> If this races with an update can we end up with too short a dynamic timeout?
-> I.e. what happens if that time changes - is the current read cycle completed
-> with old timing and it only affect the next one, or is it super simple and
-> the affect is immediate - maybe changing some threshold on a counter that
-> is used to trigger / stop the acquisition?
+> On Sat, Jun 06, 2026 at 06:17:05AM +0100, Salih Erim wrote:
+>> Add an I2C transport driver for the Versal SysMon block. The SysMon
+>> provides an I2C slave interface that allows an external master to
+>> read voltage and temperature measurements through the same register
+>> map used by the MMIO path.
+>>
+>> The I2C command frame is an 8-byte structure containing a 4-byte data
+>> payload, a 2-byte register offset, and a 1-byte instruction field.
+>> Read operations send the frame with a read instruction, then receive
+>> a 4-byte response containing the register value.
+>>
+>> Events are not supported on the I2C path because there is no
+>> interrupt line and the I2C regmap backend cannot be called from
+>> atomic context.
 > 
-> I would not expect us to either be able to rely on particular behaviour or
-> find it documented anywhere.  So two options.
-> 1) Lock around the retry loop
-> 2) Set the retry max to the worse possible case if that's not insanely long.
->     Give the polling should exist early anyway it shouldn't make a practical
->     difference and is always long enough.   I think the max is about 7 seconds? That's
->     rather long to hold a lock for, but should never apply if real timing is a
->     microseconds.  This would be my preference as it's simple.
+> ...
 > 
-> Only remaining thing to check is there is nothing in the datasheet to imply it
-> is unsafe to change the timings during a capture - as if that were the case
-> stronger locking would be needed.
+>> +#include <linux/bits.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/module.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/unaligned.h>
+> 
+> There are headers absent, please, follow IWYU principle.
+> 
+> IS_ERR() ? struct of_device_id ?
 
-Hi Jonathan,
+Accepted. Will add linux/err.h and linux/mod_devicetable.h in v5.
 
-Thanks for the analysis. I checked the TCS3472 datasheet
-does not document what happens when ATIME, WTIME
-or WLONG change mid-capture.
+Salih.
+> 
+>> +#include "versal-sysmon.h"
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
 
-The worst case is ATIME=0x00, WTIME=0x00, WLONG=1, giving
-614 ms (Max Integration Time) + 2.4 ms (RGBC Init) +
-7.37 s (Max Wait Time) ~ 8 s.
-
-
-For v4 I went with your option (2):
-
-static int tcs3472_req_data(struct tcs3472_data *data)
-{
-	/*
-	 * The worst-case cycle time is reached with ATIME=0x00, WTIME=0x00
-	 * and WLONG=1. So: 614 ms (Max Integration Time) + 2.4 ms (RGBC Init) +
-	 * 7.37 s (Max Wait Time) = ~ 8 s (Total Max cycle time).
-	 * Use that as a polling upper bound; in normal operation the loop
-	 * exits as soon as AVALID is set. So the total number of tries in 8
-	 * seconds considering a polling period of 20 ms is 400.
-	 */
-	int tries = 400;
-	int ret;
-
-	while (tries--) {
-...
-
-
-400 iterations × 20 ms = 8 s upper bound.
-
-Thanks,
-Aldo
