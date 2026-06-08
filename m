@@ -1,184 +1,86 @@
-Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433C31E98EF
-	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 00:00:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.172
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780876858; cv=pass; b=cDztiz1a+UhmxKt4iBxwiZoWNDVaG6QlqVhHQuGoyJZpahP1fqStXVaQ9tz3xpVVog2VNLD7u1n4WMEIF8v8Ca3m48i0HyjY4ShQD+vOEBhtTrxlJnbcPlm8f3Fdc8JEVFzK0BwPnUMuFqwtxOOLY40vuuIU1bdksKhl4nj4t1o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780876858; c=relaxed/simple;
-	bh=VuwmmwFxGMekqquc1DCDYbDslGEIlrnt5yEYKf680H0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NwlWVdDCMp8VsPyZQGv4KHIkxIl3MfLD7Sd62/wD5CqRPnasfXHl6U4DaTQVa6u0RBP8v7iu92zp15g7i3cNYxrAt60L0WIYjjOxaV/fknjiBZJxe+n3D/Ca2VY3rt8kgcSnZH67zbqycWpOoPS/bQ1P4VA8c3W7TVYHQY/mLC4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mkH3otez; arc=pass smtp.client-ip=74.125.82.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8FD834B682
+	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 03:34:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780889669; cv=none; b=VWmk5K2/xGCb77W0RG2kHUjVM2QUE7j88+mJu2bY+On0G7hd6mZjfiyG12+flyGnsi0wHEeQw5lsqE5uTptJP8CDU3bcljWVpX5uxxuZ8tC6NPqlJC+mvTYhCvNJ6NbcGhEfYqiMbIsBWYVac5H7z6xB65AEhjAkqp36V9zrSwU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780889669; c=relaxed/simple;
+	bh=sHHbD0ONEEaCeotDdkn9pje+CVbEmNbV5DHwllWZyZU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=In18YUMG0GPB6H6niMF7vXusb4ppaZICqx315lsA8/CoEz4DOhuJolhbelT4l0sUw5Qjq+ReD4uqEC016ebbV8wZZ/G+q+c56kY7RDBAgt4coMyLhG6+BK66C8nQfU/USVrRpLIxK+YoVUH85cSd7C0lCrzwoIIcAH0FVwZMUKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mkH3otez"
-Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-307263ad0cbso4714993eec.0
-        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 17:00:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1780876856; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Cp9kZ5tugS7DVQzSuUnE+xVOna0G3zVxlvdIQd27bV0qIN45Xkavyreq8O9DZvwj7+
-         X4YttDssD/L3Q+//KErjjXAJu6CuL0Ds4IM3CIgoc91Ifbap22cF4Q8NxIfRwVcEdc1N
-         lFlQfSXBxjbcb4CKKRX65YeUbufPxGgiST+BQKA4UVnPyendH7fxwcPL3Mq3G38XPQ/o
-         EFFg/8YqIJ+EoZZDs+6MQYfCZGzDCB5JZs3jSqW+Q8ODBwwBzM+g90vDaXiCmRfqAwyI
-         8q1axR5iFcCNSUWtnoQQxwsGETMgrQ8qRQ7f139Iz9YrqxRyLRr2hVAbPAw98qSttygY
-         nOIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=m6U/zVL7rPRjDbkA7h7UTZUE6hh6LQLfurYbgFDIpVw=;
-        fh=oDQ61pzT2SwFz8IQEjgLDpMnB15rBqlvEal+DYV4S54=;
-        b=M5/cVto0bd/oh5ZTWB4dcMqKKEfZ/0SShbMNiEdf00/WGdaACoQ7kMrt0H3ygXR343
-         qO2ZM6N+/26kDYgslEezpy+mIiomGwLext1YTdD9TmdSJ0MrozVFWWBQ6L5Y1Zpt4bbo
-         S5ZjO8VduIvBBf3Mu9rQoXcbUhEUOa1PSECJg0Lom4i75piK/LhvGW2rFE7Go0EtAVkM
-         UhVwMk4ArIcb/5Zn/42YkQG7os4xQoLIeU5HlFnrhDncs2wMDfcTLGN93bmnDD3FNbdQ
-         7Nd1XUqUXchIZxak50G2PZ/0AiLGPSAsYAOaxiYcjDCsKzRRVPgQeLmIolfQ92n1BXwQ
-         2Q+Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780876856; x=1781481656; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m6U/zVL7rPRjDbkA7h7UTZUE6hh6LQLfurYbgFDIpVw=;
-        b=mkH3otezm0qtNWzjW0ytoNsQWLVM8ms/mzCt8jIioqpc0gxUVbo5W9DnqpPbiX5b3e
-         GifL5K/PVJq2O9KbXGwGN6YGRRnkNk2gS6tteYiuXkz9Yz1yupoRX8D61Qv+DTY6UgOh
-         EVSjDtLeXr4YW7CBbz4bKbufRJb4sn84nYCxucMajsiHUkNtwyRqt2UV/nJ5QjZeKoqu
-         AnNR8IXs4EQ/p0HSkbAAxlwFpjcg8hxg2XCACT0/l/VP6h1v9IuEQxfnEII0Wp4nfm/P
-         RHeBkF937zC8RKOOdBAqbdmH0nC09UdWJz7k68dS518Vg+zz2/YJFhdFiOedrNLUOCKe
-         RLvw==
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-36da8439078so3365306a91.2
+        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 20:34:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780876856; x=1781481656;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=m6U/zVL7rPRjDbkA7h7UTZUE6hh6LQLfurYbgFDIpVw=;
-        b=tFGYo1OKUKlizAbr1fd+FhneRQZnRV0LI7LrOWLF5ZAZW83gGU3aRrNLfOva9Pm70g
-         VOvWLgE5davQ6oMUbSSgaYXIk0KS+GrjUh08Ml5iCsVaW/YWSUouIdPcZkavhn1febHJ
-         /dntXnG6r3dpGoDWrWA9i6fdYeOIukJNPn2fWzo+hBV7chMvT4YN1JNOZofRJwMT9S2I
-         0htr/g8mk9IY8rwSdH72daye1LjGuyjC0dg09iNjqITrK3ADQfwEkxXlOMy1tNi2hkYm
-         +aD5a4EzlhzqiieCkJEOXppW2JHI2SSCCt8CHjBUSxymKTtf9bgJ/g77Vy8ZAR1rOJ2V
-         /Cfg==
-X-Forwarded-Encrypted: i=1; AFNElJ+IsmJFsp9Rw89KC8TK1hZgYmUIjD+/YnJ3vpBIN1KlU20lIDtQ4fFHmViN0ggVM4fCSQySyW4weZw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyk4Z5TXjsnXJPEDofSHFAc+lz0Vacnlf3iZG1PGPuO/avllafh
-	9cIn94Y9raW2pZszwuAwTT2akrlsD7NTMFl9Pwzohjf6XnaUat1iTWG3YvKImp3eCd6qtKX7eHG
-	KCiX7nx8GHuwiw9Ab3ydMl17fZRpKSwFdrKntn0bRRg==
-X-Gm-Gg: Acq92OGx8abUK4HVJxZPBIBNayjpwsSQwSy14qZTSZflF57ECb6Zaw3K/oInHc3O4Q0
-	1IckNGJIN110rlQyM3Vr8w3rdcoQ4fCw3sWk5EF4X30mCG0eSG7OJoPoqyC00bVyT/iRQuDlahH
-	vtnn/DJf41sr+gcpVm9kgxM242eJjTI0Tq9zmJ5PG5DO+IfrS+6X/yK4lAyHEF5Q/cf52QPKk9i
-	YMPhLJmWUvdLVi3IED5XvZsr/eCgeKluiA9iid7+sVVQjUVKBCSnnyK6zn3Fm8D0a87IjfqmR6E
-	uIJR8odzeQW2TqrImmGrpnopbkLx8NJR4jxW1mVTcluWc+KwiGJYTSUwZUdL03SePlvxoU9aYs6
-	m7NcbyA==
-X-Received: by 2002:a05:693c:3003:b0:304:d835:27f with SMTP id
- 5a478bee46e88-3077b15d304mr6234605eec.22.1780876856248; Sun, 07 Jun 2026
- 17:00:56 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1780889668; x=1781494468;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0Ho76qDRnjibYO7dJmtXa8Sqgx9fQ9gkuBJQgz/YzZQ=;
+        b=bixf+Y6sziRhGbxD/xUv4h7+rnuoAkIikg9CFpKBzE7UdIMox+JhQU84d2uVqpo6n2
+         e1jAudaRILe/9dd7cf0Lv4bCVDWdoEVw3MIDs1gu8SWAFAHxAUx/QTanRZzpY3VvgvNL
+         kJqLMpsLL+TBVxoFILq11eVTXy9pfnOuopCKkpXmginao4yBhojocxEkS20AFRXOy2tW
+         Yq1RVv6DK3A5t5bWzA6m02vLEa6eWoQC+kLUiOfzfHWrbOi6tqYwU8AouANrOpEYDFQu
+         Ji+KB9ySZpHGbNgymzxETgtHVja1QMW981e75SHoR3ujlPR1X/aLCe6YltBw0VIcCsk4
+         6Hig==
+X-Forwarded-Encrypted: i=1; AFNElJ8DGe6etxfCiOpr9tyrWl+2BMacjWALx+dDye4A+16m8ez6mYmCS5ASd6kSTP4O1vUAriehpIFix78=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw0nq3SX7WUoYwwWSS5wmeU0KlVib3ayQ/bDxA/Do2Aqb14Iz9p
+	DCtE7csnlPmH3ojq/QrNrnkDXUrq+xzqjFbiZ+lHztnBe0U4dfEasIO2
+X-Gm-Gg: Acq92OFstqAPCf6SZt6t1gCY6oyqc9/5w2BFbWVlc9k6BQHKE0G8jzzH1FANJ+ULmEQ
+	K/3XJeevt6uie/Di90Z1SR4t5A9Tw16R8l1TeMjMrx7DtQIn7SLdLtRs7w5eOg2KswvtcFSDM1z
+	2OADd08NoiKf31EUGYItjzF8nqzHIWzooHMx7zIUfd0VKna7KsDIOrUFDBQPuOFgUgmJNOZ9l1i
+	UC8WLBJI8VhvooO4ZGFLCU7+1VYSDLVmF7ocNN053bTRQsol0zJDprR++c8MBSkm2rjUoOPhKEv
+	JtN5rAWYXIe87/4qAZmb0eYNoHgpdm7LxiZsydp06spcjtYr8+Xxz0SsnvoHMR9clJyh/fvCblt
+	ktE5cPG5S8K8evoxHtzREJ4HKx/2Z64NS2AVnnWI8XMy7CxdMvZ65REJ5ilRZ8pNMfrMeqXzlIV
+	ApDhHnd8UzF04sZ45CWQ6SPROzxnA/OReWjR9RZV4QkIjUebAK+Uwdyd6UgSIsDxi4xyd4YRr6E
+	HKUKhHr29Z5S+Wt6DU9eMvKN4+jtAz7Jh6GW/17
+X-Received: by 2002:a17:90b:394e:b0:36a:aeaf:ab2a with SMTP id 98e67ed59e1d1-370f0d4c33emr16802169a91.19.1780889668050;
+        Sun, 07 Jun 2026 20:34:28 -0700 (PDT)
+Received: from fedora ([59.152.111.50])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36f6c76f55asm14102286a91.7.2026.06.07.20.34.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Jun 2026 20:34:27 -0700 (PDT)
+From: Siratul Islam <email@sirat.me>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Siratul Islam <email@sirat.me>
+Subject: [PATCH 0/1] iio: proximity: cleanup fixes for vl53l1x-i2c
+Date: Mon,  8 Jun 2026 09:32:05 +0600
+Message-ID: <20260608033218.26514-1-email@sirat.me>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260531111605.2411980-1-jic23@kernel.org> <2417EDFF-1ADA-42CC-8D52-C93E90EC4953@gmail.com>
- <20260603145551.3f97ed31@jic23-huawei> <CALoEA-yQrjLyt3vwMKxMy+dj4f43Cj8PfZFtkGPBBP41oz3Myw@mail.gmail.com>
- <20260604093706.1f02eba4@jic23-huawei> <CALoEA-ytCTBP8V5jSJLgCsxwyG_g-w2sh5QtutQqFoYzO7Qq=g@mail.gmail.com>
-In-Reply-To: <CALoEA-ytCTBP8V5jSJLgCsxwyG_g-w2sh5QtutQqFoYzO7Qq=g@mail.gmail.com>
-From: Kim Jinseob <kimjinseob88@gmail.com>
-Date: Mon, 8 Jun 2026 09:00:43 +0900
-X-Gm-Features: AVVi8CcIvDmvac6xeYe7GDbkWmsRfY_XhUDAMbs6OmxCgO4LPDo6G_Im8GPKSNw
-Message-ID: <CALMSewJRaX0VSS+eXgZjp1MYai6RHMTf0VBJjn3wFewGqPMXCw@mail.gmail.com>
-Subject: Re: [PATCH] iio: buffer: Ensure bounce buffer used for unaligned case
- is zeroed.
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
-	linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, "Reported-by: Sashiko" <sashiko-bot@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
->Jinseob, could you please test this with your OSF driver - at least
->make sure it doesn't stop the data coming out!
+This patch addresses the style changes suggested by Andy on the
+initial patch series introducing this driver. The changes include:
 
-I tested the v2 patch as posted, with:
+- Sort register defines list
+- Extract vl53l1x_wait_data_ready() polling logic
+- Logically split regmap_read_poll_timeout()
 
-        memset(bb, 0, indio_dev->scan_bytes);
+No functional changes.
 
-The test was done on a Raspberry Pi running 6.12.75+rpt-rpi-v8 with an
-OSF GREEN prototype connected over UART. The patched industrialio.ko was
-loaded non-persistently from /tmp, without overwriting /lib/modules and
-without depmod or reboot.
+Link: https://lore.kernel.org/linux-iio/acUHDGUqg4RdI7fW@ashevche-desk.local/#t
 
-With the patched industrialio module active, the OSF driver registered:
+Siratul Islam (1):
+  iio: proximity: cleanup fixes for vl53l1x-i2c
 
-  osf-accel
-  osf-gyro
-  osf-magn
-  osf-temp
+ drivers/iio/proximity/vl53l1x-i2c.c | 36 ++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 19 deletions(-)
 
-Raw reads passed for all four devices. Buffer reads also passed:
+--
+2.54.0
 
-  osf-accel: 2 samples, scan_bytes =3D 24
-  osf-gyro: 2 samples, scan_bytes =3D 24
-  osf-magn: 1 sample, scan_bytes =3D 24
-  osf-temp: 2 samples, scan_bytes =3D 16
-
-The padding bytes were zero in the captured samples:
-
-  3-axis devices: bytes 12..15 were zero
-  temperature: bytes 4..7 were zero
-
-No OSF/IIO oops, panic, BUG, WARNING, or call trace was observed.
-
-This test covers the current memset(bb, ...) version of the patch, not a
-possible __GFP_ZERO variant.
-
-Tested-by: Jinseob Kim <kimjinseob88@gmail.com>
-
-Thanks,
-
-Jinseob
-
-
-2026=EB=85=84 6=EC=9B=94 4=EC=9D=BC (=EB=AA=A9) =EC=98=A4=ED=9B=84 5:43, Jo=
-shua Crofts <joshua.crofts1@gmail.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1=
-:
->
-> On Thu, 4 Jun 2026 at 10:37, Jonathan Cameron <jic23@kernel.org> wrote:
-> > > Sashiko had some remarks about the wrong member being memset, however
-> > > it seems relatively standard... human 1, Sashiko 0?
-> > >
-> > > Does this memset operate on the wrong pointer?
-> > > When iio_push_to_buffers_with_ts_unaligned() is called for the first =
-time,
-> > > iio_dev_opaque->bounce_buffer is NULL. devm_krealloc() allocates a ne=
-w buffer
-> > > and returns it in bb, but this memset uses the old pointer, which wou=
-ld result
-> > > in a NULL pointer dereference.
-> > > Additionally, if scan_bytes increases on subsequent calls, devm_kreal=
-loc()
-> > > might free the old block. This would cause memset to write into freed=
- memory
-> > > using the new, larger size, resulting in a use-after-free and out-of-=
-bounds
-> > > write.
-> > >
-> >
-> > doh. It is right - the patch is garbage.  1 to sashiko 0 to idiot devel=
-oper.
-> >
-> > I messed up the line ordering.  Memset should be at least one line late=
-r.
->
-> Right, I must be losing my marbles as I've completely glanced over this
-> even after reading Sashiko's comment :( At least my remark had some
-> sort of purpose.
->
-> --
-> Kind regards
->
-> CJD
