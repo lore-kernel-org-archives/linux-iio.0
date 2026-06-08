@@ -1,79 +1,85 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7433655FC
-	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 12:19:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E08AB37AA65
+	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 12:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780921190; cv=none; b=hWS/x388bwWh9EwGsNZKmI+AGFgOfyDYExR0dGuM2KrWdPTTrBXabak+vfjKdB6LQwR/rC+u4ti119tmGtWvle3HQnhZzh3hwvbWp4YryuUBUwieMvRFbrnmny4FTicR/SBiCYOVYQua8y5AVhBHTWM61td14IMsLWpDXHEO75E=
+	t=1780921509; cv=none; b=cMfU94DYbDotF1VLMuTA8lK49J6KFFqrQ798MpIUg/bM0AomtTrzcDa+OvFXS5TqZqePK2BZlMkPvPbw0gDk2a+RgoCpsCJA2uq52pwMQDLAY2WiItgYmlZeiP5umWEbMDijXc+5A9NrxfqnoxtnadHX5N/KAjQF55xzIlokPuI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780921190; c=relaxed/simple;
-	bh=e1bzxx0iY67CI2xUqgdhPs4ZiUlAksJ9p2jPa6KR9Ts=;
+	s=arc-20240116; t=1780921509; c=relaxed/simple;
+	bh=r+iCWX9heE5Z9B8ae1bmRfyMHYbnyQwXWtPlRLXYvBk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ThGXsQTIw8YwRNulnAxDmEcgl8VLgbyOWTNEOALLtuIfKS2kDFpyj3lvm5NAiLUsaONigQkCdXQM9L68XvdJuEf3ivloGQZE5GSe38klZ+fF2BH+dkYqyqVt6o77AeXLoYfFAC9b1mdSDhWQYjidarouwai1xRDODCKS94bf78s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f6BuzTUR; arc=none smtp.client-ip=209.85.208.44
+	 MIME-Version:Content-Type; b=s68xWI1QiQ1On8RQmZD09zYO2y8zhjXf4Y3gcq8nlJdigwyPEoyBtQcNf6gBHab4qyY1gV7GkdGL6caNB11h12LcP+IeLoSKTiTAqfJZnZcbXCz+34aGjMPwHBkB+DQZ/SzNkLMwb9A4ipu6RkakjOOEG/iHEXTZ2aSlp8L4c08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e5EoediD; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f6BuzTUR"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-68d232ed3f9so6783328a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 05:19:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e5EoediD"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-68ced97b6eeso5766487a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 05:25:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780921188; x=1781525988; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780921506; x=1781526306; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=e1bzxx0iY67CI2xUqgdhPs4ZiUlAksJ9p2jPa6KR9Ts=;
-        b=f6BuzTUR0Vo1nNXTlVsea4CYnx+Bnk3dYUWA68JSkalbCa6VuPfPKeMJUwFuKpH7Jg
-         nkYWcdel04pkIbK11FF/0vHi2s3ufb9SHlWteZKLe96BN66LArX92XrFqwNd4PnUZjcO
-         k9Xzx/NIuEZCsiE3Alh5bEVrOJiDNuhuYrpw0MO+IfN3s8MDLkOdxqPhUpw7rti25+cn
-         DjWvYs/JCCvyvlgu0fsbpTDys+uRdRJy5UYRw0lTSHeMdoy61yFIlP6R0q6cYlTey3/t
-         PAb5Rkk5mQ58snUnwh4C/+lvX4Yz5N/tFDHzzK4BkwyIl1VaFsX7mjmaInucKyqm4S4e
-         z47Q==
+        bh=r+iCWX9heE5Z9B8ae1bmRfyMHYbnyQwXWtPlRLXYvBk=;
+        b=e5EoediDWlEGUE59XVf22ZDBxJp29i+UlU4QZFjUvBayeKnPDmRnKp7UEXNQSPQj+F
+         x1NF3sPQwhAv/AmudkPj3T6mloOTurNH4HpAUOwdeuFklsrw+N1PoMLekayLtD2ZQrl9
+         4xqAcxlwT4axhnHsQ9Gi1LUye44AgqBNV9UMF6iWlCLaoKviZA5RLo0hVtIEFpRM8Q3j
+         jmuWzrHDQehGu+k5SV35+wd0CyG3kdVP6/N7VS1GvLoNENdChtoJRZ7lcv6wIQSBS+LJ
+         /LtGhfXQNWlV2zhOZoFUzEW+azfrIMwxJnOS1U4PTco2smTzOJTICO+PiwacJyOX2M8O
+         YkEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780921188; x=1781525988;
+        d=1e100.net; s=20251104; t=1780921506; x=1781526306;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=e1bzxx0iY67CI2xUqgdhPs4ZiUlAksJ9p2jPa6KR9Ts=;
-        b=n4j8QGyMOMif9K0WgS6+LZb7tECjEsKtL+clXvHpMQxdCcpZyNWsp996fahy5x1aWU
-         ia/Gn3fzN0EdOCqK9v50fWe8bYapJyhqiwUfmjMmUXRI1+cEPG4fmA2/+WoEqQsZ2CbY
-         aVEBAKUXt7GwD0EemeExJCZWf/H2Ka1TQQR2pH+u5stecBQQQTpbISecn2P4hc2ofIPh
-         wpIF/ybWl1fhzoR+xOk9Q1mgilip1DKhYZ0Mr2YVzwdFzpC4z1PcD5IOV+RyfabDsr7N
-         K9+v18uauUlq6AqCD/MUgjvOWiDITT8/OnvRiaS2FspfxczYjUWf2wx7QqlWuJ0ruGdq
-         MKLw==
-X-Forwarded-Encrypted: i=1; AFNElJ80uXGMfGNQQG5prfozewRsgFN/n+zSXUhEbGmYmhJL/W5U86hPkoSt0T+yUPLX0KSNXpC8GIlyEiw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjLkTREZkb2IHvRam5F5mb79G6oNtRecakbEe0nTbeVAeck6gM
-	rELmGMxLZNfs36TfkBJQ1AbEi3I1enWpwCpcQCiyEnyxxjczdmCmiEmn
-X-Gm-Gg: Acq92OGINHaY2dYc6LS8eIBeGM4iE2DzOqYuSEvVln/IqqhqlltQkyTOs7aUx1mkIQp
-	KpyCHnBTsPTxZNjduTl9eoPm6xTNb7RCVmB9Ma/HmlHhFiWVwKD/S9rTDSqF6oKMQNHG+YuCUcx
-	wNSMh2jC1BSlN95BxAUgouug8wcc2sEezSn13Vjh++v/qg8vousi1uyM3VqUGgGmI8LizGBGNJW
-	NJNmDDInLnkGrUoJ7IK8TIBGKRRG51DnM9g33/jcFSJvpj+djDCRk1i8kvLWjTgjhbdTXTp4c7L
-	pEKsoU+F+4PYXw8ev90Ta1hvhPPX70HHxsozG3h6kj0k4Ck7zmxL8B+sVaAIyt/2YxyxTfBBn4n
-	02xsyP3o5FOWtN4B7hHkRB6o0IMFN7y2H5Er/cwtL15ZTQBjknncZuBoziZ+4MCrfmLeM1DSYbE
-	pHzVyp1QX16cC4jals8OpahwFSDENqdsvbFqbilKGgUBjT9DtmMt8xbNRnFQLCPs3uY5DKI1NdL
-	0Aj
-X-Received: by 2002:a05:6402:1906:b0:691:5700:7d34 with SMTP id 4fb4d7f45d1cf-69157008526mr4271194a12.15.1780921187287;
-        Mon, 08 Jun 2026 05:19:47 -0700 (PDT)
+        bh=r+iCWX9heE5Z9B8ae1bmRfyMHYbnyQwXWtPlRLXYvBk=;
+        b=aR1mBuMyIuFWB+2B3/8JPDFlNMkpznPp0awxl3lNo0lXtmm74KqdDE2EToVH1OHipy
+         Hz9zirmwRcFnlZwWOFFlSh8bKDxM5vFNV0fJ1mnInV0rV1LFZ8AWcpSpLtZcQXcNruUB
+         lLQmlpjuOwzDQORczTldN6GBkaWBycGTIRryR0EJX04M8O/GtanA1M20R90q7jI5i4Vd
+         pUqeayOPujbLBtEK6udi1sIHZu/P4vfw8LLJwI3O0lll/OVJARdvyVWOSZjk/7shBpr1
+         jh+D0cd6DVpzZbg8lmRPTHVto1aBXgNSI+USlP27wSH9nK1gxra2wEpDHjlkN0I5tuM1
+         OLog==
+X-Forwarded-Encrypted: i=1; AFNElJ+cA1poFng+C8cFFT/wfdxXB0TmgxZOm6hxX3zIz3n+BMoieuOgEMozGVziHnJIiMcOwbjfKOVHvuw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxH0UckXPOf1pOcX3+dXCWLkvKHZau+SNsB3mreSyOFwdoukp7Z
+	fnWBeaItMlkBRXfNPRqzgInCG45jZjb2ILLnfGB9VVPQj0tec8nZ2mVt
+X-Gm-Gg: Acq92OHE8YxS+fCuTOcIAChVQdJ44Wek61tWTwcrCdSq+yjfu9OPZ9EIkCQh3re2UI4
+	un3Mi3fErhw08apw8qfSL2oM3gD2a4OY1B6xGEtcuDTOS0qoZ/8dyTJXDQxrCgycEcOtACnCfAb
+	SPLybSetl5HonxzdbxxyHUuun0mqdYH1fmEvboDOFHA1JeplbPDQrQK1qT4+A6qQbGVffUR3ASc
+	oFuJg2fDiOWUMEa0FSERnJ2+/uqCr/8xRbPb2x81Fh+n/RNPwJda+7kroSLgA/zoxMG823rLqOD
+	jgnjD/ErCe+xEEbLam/HN553zNWXfs0sOhJHHUQLpluDP9susw9aJ65Lk3+TujXqPcN5r9OjpzA
+	JvpDLvojx0K9aUVeL1Qr0TzAJif3pl5W/3l8OJfm7N02vYh3ZZr4LXcBTTADgerWUNkxs8j6yEw
+	D887ZglwjocqykwxMAT8MxUt20+kdVrXzHvSj0chkTjFv4y1UGdiUUF14bedfiKuNt9/aDB0t+d
+	zyB
+X-Received: by 2002:a05:6402:3484:b0:691:ad86:ac51 with SMTP id 4fb4d7f45d1cf-691ad86c033mr3034671a12.20.1780921506170;
+        Mon, 08 Jun 2026 05:25:06 -0700 (PDT)
 Received: from fedora.clients.cmblu.de (p5df027fc.dip0.t-ipconnect.de. [93.240.39.252])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e65b57c66sm7017671a12.28.2026.06.08.05.19.46
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-68e65851fa2sm6954145a12.18.2026.06.08.05.25.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 05:19:46 -0700 (PDT)
+        Mon, 08 Jun 2026 05:25:05 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 Cc: Wadim Mueller <wafgo01@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>,
 	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/3] counter: add GPIO-based counter driver
-Date: Mon,  8 Jun 2026 14:19:32 +0200
-Message-ID: <20260608-gpio-counter-v5-ping-wafgo01@gmail.com>
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iio: types: add IIO_VOLUMEFLOW channel type
+Date: Mon,  8 Jun 2026 14:24:59 +0200
+Message-ID: <20260608-slf3s-v3-reply-unit-decision-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260524193846.19216-1-wafgo01@gmail.com>
-References: <20260515153616.157605-1-wafgo01@gmail.com> <20260524193846.19216-1-wafgo01@gmail.com>
+In-Reply-To: <6at5vkw3byvbdw3przfchwrqscghdfhuwkv5xf6v6dkvfpplt5@3k3gjxn2ua26>
+References: <20260530205435.37326-1-wafgo01@gmail.com> <20260530205435.37326-2-wafgo01@gmail.com> <ahx5cuM1xlOVP6DT@debian-BULLSEYE-live-builder-AMD64> <20260601104233.310ac930@jic23-huawei> <20260602-slf3s-v3-reply-03-wafgo01@gmail.com> <20260604094436.3c50f123@jic23-huawei> <20260607-slf3s-v3-reply-femto-wafgo01@gmail.com> <6at5vkw3byvbdw3przfchwrqscghdfhuwkv5xf6v6dkvfpplt5@3k3gjxn2ua26>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,17 +89,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Sun, 24 May 2026 21:38:43 +0200
-Wadim Mueller <wafgo01@gmail.com> wrote:
+On Mon, 8 Jun 2026 09:53:28 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> Add a binding for a generic GPIO-based counter.
+> v16 is essentially ready to be accepted! I suppose adding the FEMTO format
+> could be done here if needed.
 
-Hi William,
+Thanks Rodrigo,
 
-gentle ping on v5 - it should address all your v4 feedback, and Conor has
-acked the binding [1]. Anything still open?
+then let's go with m^3/s as Jonathan prefers. That does need FEMTO (the
+SLF3S-0600F scale is ~1.667e-12 m^3/s), so could you fold
+IIO_VAL_DECIMAL64_FEMTO into v16? I'll base v4 on top of it.
 
 Thanks,
 Wadim
-
-[1] https://lore.kernel.org/all/20260525-register-bogus-b198545b69a8@spud/
