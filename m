@@ -1,294 +1,443 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazolkn19012072.outbound.protection.outlook.com [52.103.11.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0BDC3955C6
-	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 20:31:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780950717; cv=none; b=jQiW6YJ1XQcJrQIz8hsLOTTMc1QawQUs0BdY55VpYjLhlAbsDwOmsmWyOLWDeJbi7RSZx11swIptI15bVYbfvXtCmzs5HgBxBYEEugX8q2F5156wcZ98zzk+PLnfOYyeq1x19dGyPHqivWzdog2+XVHfXKZbJTBqZrqZe8BbSTg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780950717; c=relaxed/simple;
-	bh=/R+qFNq2MRWIRpASjDvEa9edwehTODKYWPwF4Ig6JSA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NoJPH+zd+LjneZYHKApSs2d7+BBky9Fyo1khEp8EawkZeOn9fvBjJtPANbJlH34e/8M82TA/BLUjgGd2ndSsxAhHg0nLjyO040ibtUhffgIWB3zPk8n1Euu7CWp7LOYPB1Gj8OP5xwaF/TJ6tW9yTzYg0J/dg30IfwDmBnh69OE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IdXurBZu; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34F51313E29;
+	Mon,  8 Jun 2026 20:52:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.11.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780951967; cv=fail; b=P75ZHrFaf2ZiLxDA2zEfIqOnNwN8KS4cqIfox8wP3I/7kALd6AJ3YjHWQKwpt5DIbGgwvTXL3A0zqBvaa7zihLU0SPEB+lhgwolHEGi3X9+71cL4E49Wm4yqzj2miG8pPZtltgG1ynjdAfSyYnhf24Oje488BJIq8vR+hkhZHN0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780951967; c=relaxed/simple;
+	bh=RQnyw1/cbYxMcPXdOgKfLsOY/cqm09wEV+3qT6KTJAw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=KNmOKOEp7Q+JhJqSv8fb+23Yu5Y1f6DLzdqBQZUDRfudkLbMyYKYqRtT90Nk1uAdOkpiygQNGaqwwG86AbKjE6h/xH7VTO6/nvTA8SESm4f3OqRNRkaj6LInYlh8/4VjORWQWqSfjqbbCI+jlnOA8ZowkdQDUNUhj9jHN5V4fUo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=fail (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=InBMtHNw reason="signature verification failed"; arc=fail smtp.client-ip=52.103.11.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IdXurBZu"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-490b1bbcf3aso39430445e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 13:31:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780950713; x=1781555513; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=J7aA46O1Kidp9EIBCKXaMzxYNS525jaJND8WlxgPNm4=;
-        b=IdXurBZuK2RfTtY1M8I6fmwT6fbiUpxs1/8okyjjucPbI4CSf82ha4Nu0GyWGGCOEy
-         VGb1y+YVqoqCp5b4CnT10gtQ/3DcZTgvibP+URzjmpzvfL7x1ZNLSVZErzPQlGtaqZCb
-         pKPemInwLjxz/8Wf6ukhj198sAvdZjwnGeNrpsl0Rsj7R39hflukI5QPqqsy+nle5u+F
-         JF1Ksy1dAOFsoQPCHI9Y0YOnAHFniMYq+nb8x+NlPH5qIOfpdPwnLy6h0M/g0uzcXpz2
-         tJh50CG5kS8/xI5jPf9X5hW496v+GvFklo4XB9bN+7BrmoOlirmRoxUNse+knCuJB//n
-         ECbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780950713; x=1781555513;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J7aA46O1Kidp9EIBCKXaMzxYNS525jaJND8WlxgPNm4=;
-        b=CWbL1R5RTwxb8ct4QjzeZyv8fooI2juZz/bs4dvAEaj9aGeDBJdfcVD4EG9l6r006h
-         HrBL/ii7QeMDzCFCN6BS0yVbM4bkaQKWwOZGmlnFqpA2d0sEL+EukZLGU5ReQbz3dj07
-         eg0E/sg0rUyC5DntfFjd9Bj31HbyCXQM4B/69nUlu28SqjDGhlcRjD+9GoWw5dF1EyvG
-         lA9aY087JRMEJFPlDsjtB7wO0SEcI1KAnfuZLsZ1fLrTbLMc4v6Sayj+X1ssf7cFwDmg
-         4FBS/mgoxxySgsodnMqc9CWaivy7yJa+qoNr/tjzNdtV3dS2XfiTrtzDtTeLdON+B4r6
-         lzAA==
-X-Forwarded-Encrypted: i=1; AFNElJ8W8TAM6fW78Idju7DPFNi2swo0tTBACCNcS5lyd4yzAZO96ga8JGE6rvo4BTUW0XFGQR4d0auuW0g=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw9YoIBTLElK+kx8+GgmbwgcOWzIECK2U1eDm2Jz8kvX5T310p6
-	I/tsvoGYN/3iuNxE+kOts1FMK8R/fMcrOi5GDw0tm2nV30TtCmmnlYmU
-X-Gm-Gg: Acq92OHSFWUSqngQlNLcGa5Luo3UNCwklwFrwDb7ukRnExQuKVq29oHYHEdizZkbEs3
-	CmififRrbf73uRnuXaqHLvfNP2j4QwAHeCF2Z/DbaJF3DS5fgPufeXQTFnb5L8oACPvlI22XpTz
-	Ou6DomUTcrndh2ax5Kkwp+Y69NGI8r9yJibok/bkCEPHoif6aDiHtLT1SQTllVE5PwBBNZkvlB/
-	SJ9pIa7ykZ8F+va6zJt2FdXuJoqDvxWHozQVYE6+jdeMU+oHmdq/bp3wwHO6V9ilBb6EZXtk5vz
-	xiv61FP6Jip/ZOjJEBZ342a5earFXBA1U9BsXWVSjfrOfQWRQ9+UyirNew3pB69Zz/TyfaS5iLj
-	jTyOyK2DrLo1I66hMGjhmu3LG7GqcSsHg11y/vKuiVTP2/EPBT4iJDz/2qoZmjyG8dhHLIdaUJP
-	4Zip3E15XnfaXNnqkCVtjbctiWdfNCoCr7MtAjJ01mOTcbFcEPwOLROOynicASoGNTiyQ5f2F8c
-	zxBRq0ooLQQtxKvKLRFtSU=
-X-Received: by 2002:a05:600c:4e43:b0:490:b9c3:6c69 with SMTP id 5b1f17b1804b1-490c2622cf7mr276459415e9.30.1780950713229;
-        Mon, 08 Jun 2026 13:31:53 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490bc413541sm452900015e9.14.2026.06.08.13.31.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 13:31:52 -0700 (PDT)
-Message-ID: <93063cd749aa8bc5f650bfa4188abb8c4cb8aec9.camel@gmail.com>
-Subject: Re: [PATCH v16 08/14] iio: core: add decimal value formatting into
- 64-bit value
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, 	linux@analog.com
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>,  Andy Shevchenko	 <andy@kernel.org>, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich	
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>,  Andrew Morton
- <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, Steven Rostedt
- <rostedt@goodmis.org>,  Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes
- <linux@rasmusvillemoes.dk>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Shuah Khan <skhan@linuxfoundation.org>
-Date: Mon, 08 Jun 2026 21:32:58 +0100
-In-Reply-To: <20260604-adf41513-iio-driver-v16-8-1a7d09143bc2@analog.com>
-References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
-	 <20260604-adf41513-iio-driver-v16-8-1a7d09143bc2@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="InBMtHNw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=SpMRtCkwQdRQCDxGeeIh3iYPbc6XxAM7XrmQke9K7lP7FXba7LhJ1N2dqWbERj16FeX3ThtjlEuXZ6jFjUHMAmAzc5fDnl81dChZ9x80e+p0vE7ZhRUKuH/G6bekOOKsh03XNrrLX0CRUDEWI/d8opMm9vkD2X6oaIg73dmhMHVfA/QwUp/QNtP4mjobV3guUApHxMowWWyl2Pz4V6Y1ymJQVriM71RcuStMQdoYOxaveadx0kGHa7ZajXSBIROFHnPBodt+QwT5xLu8tYCw2N5vPmk2N1INHzNN6sDYHx9tQ9J5qhOm8BGBDift7jf2RmJJRvp+fmuTHgMxjuYt8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AfeQoYpMToXKejH9+Cq7FjtALv7nJpha61eLVk39EKc=;
+ b=buokE2Bhf9cDXfXqppmQK/YDAgEHtNCS9Y1mQfhxfICQ81+12T4IcQ/F1fKh2iaHxYd542gsjtRuMpAJGL78B72SwkyOHJjGTYECI2FznmvSKP2OU5z9q2ZIQfb95lVrDoOU5oqr/8Nrn6ddN1M25Cr2eDrR8idvF6bXQwphIN3/A00glv0bpzCNS5TnSEG4nSOxzWQJT9OgyktTA9AM/upkamax1k2+MZlVDEXjcwFkQ+GbcRQQ6HmLzAXRSncob/dPtDg9bGdD7TpovYk9lYhNalWEBnqDzGM1wYNJzZxGYdCRkuiMeKpRz4Umg0ouS7CTJoydgJ2W+UMZUQZ4xA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AfeQoYpMToXKejH9+Cq7FjtALv7nJpha61eLVk39EKc=;
+ b=InBMtHNwGSdAK3vjiZRiFk0P4wA0ZI0Ub1RPtFMdoiuDOAukIzdFVniDGiLz/y0QV5jR9hKLeRS1s2AAMtrlWlSJdXc4vfFBzR7V/Ye7DWirq1MD1PHKzPwB1qBsMsm0zzJhcbmUxT5cbatHMyX0+NxXA7tMhN6u04thpta3rpgUIff96AKJTmxXjp+LHnu5VhTRCJwgr1Va8+YLSiejeMNnNnRZuLsRD4LZA8PVXUMcdeZzu28HddkKvEN5G2dPrAEdilkr7y41AdomXWY+VTZIa+RIsYjAWU15txch2Ore4eJjXQuMZfRbAX52lL8wd5ykWFToa2DgGGYwVe4F2w==
+Received: from PH0PR19MB997338.namprd19.prod.outlook.com
+ (2603:10b6:510:3b1::18) by SJ0PR19MB5558.namprd19.prod.outlook.com
+ (2603:10b6:a03:427::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.12; Mon, 8 Jun 2026
+ 20:52:42 +0000
+Received: from PH0PR19MB997338.namprd19.prod.outlook.com
+ ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
+ ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.21.0092.011; Mon, 8 Jun 2026
+ 20:52:42 +0000
+Date: Mon, 8 Jun 2026 15:52:38 -0500
+From: Chris Morgan <macromorgan@hotmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
+	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
+	jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+	heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org,
+	robh@kernel.org
+Subject: Re: [PATCH V10 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
+ Driver
+Message-ID:
+ <PH0PR19MB99733851DADB0671AE5F76B788A51C2@PH0PR19MB997338.namprd19.prod.outlook.com>
+References: <20260604201832.60656-1-macroalpha82@gmail.com>
+ <20260604201832.60656-4-macroalpha82@gmail.com>
+ <aiL0g8d0Y_JeAC5c@ashevche-desk.local>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aiL0g8d0Y_JeAC5c@ashevche-desk.local>
+X-ClientProxiedBy: SA1P222CA0118.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:3c5::6) To PH0PR19MB997338.namprd19.prod.outlook.com
+ (2603:10b6:510:3b1::18)
+X-Microsoft-Original-Message-ID: <aicrljrjYg_R7Llu@wintermute.localhost.fail>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|SJ0PR19MB5558:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1f197c9b-dcbf-443f-b613-08dec59fe21e
+X-MS-Exchange-SLBlob-MailProps:
+	znQPCv1HvwUXBahuwteIkQeW30lJPuxO3pHOGDU5H2qJMGFC34uzINA3XcTgr6rxcsYpRf8SrtTW6i3wef6Dp5RNOHV5+3EBb6VQULj569GF3mvD2RGKJpvHfSPwllyNvm3EJE2MYoDkbtZuwtY8pbKlY2we8auaMgFFiw01cis/4S9AidCKNGO6hMsV3aQOLTmpIBxDlpTO9qACfsjq1nyOyRl76osd3eji59R6DfVwDo20Wid3vzNCwtRKqTx8mE3h+xSL4E1my0T1oq1HlavhsWy55ySeiKYUGnbE4OEQ3ObqsOksUFrqJSMqF9aVeBdefF1uYBoUS5s37MkYv1jeZdUk7QOWv7rS1vxjONAMS6NRcLvebl5Q33H/B0ls/A+7vysf16ev9TqQcRkx1P7irExCQq12vpVCcXwG2jEqN5QGuD6Uc1ej+QHh8QfIgY5HV+R9mPXYpyTtbIkgWU+xWjndV+5LFOqYe3UzFqPzXL86ipwEyKsZdMXpZ7RbD4uodTatWpqHLa/aTiFa0fogHmAumDpfohlh7MZWmlhTVb4h0fAcO+GtNOrm9TFKxPANUDaJ3KC+14LbOtoLXVonOMgP3wCLReAlGhwSXl4EXGZ2nXi6Mpxq+CjFzyVmtY2XxTgvO5Ecu+EMzTzB1Ni/xcvdaBUEgFHFf3aBRumjMKbHP80X9PbTEbzWkJq/I5MRNWqQpfrCGNaZZFFLcpd/BGvQ7/BW1ZgCmjwDFCwlvpw9kZ+UJoxxFmqGg2M6EWbRUb3As7Y=
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|24021099003|6090799003|25031999004|13031999006|51005399006|37011999003|41001999006|5072599009|15080799012|12121999013|8060799015|19110799012|23021999003|40105399003|440099028|3412199025;
+X-Microsoft-Antispam-Message-Info:
+	=?iso-8859-1?Q?xDaTRhHubrtwG60s+lxNjpQYziFtlpAMoiTlbY1PeHA7Ayc/hilPx9NwVK?=
+ =?iso-8859-1?Q?nFHmPfyUrTu/mq6TiP507r7BVDNh7dXSl3hquJSBSIUshOBNcGwP40Cj6x?=
+ =?iso-8859-1?Q?T61a+raeimSKuk+mZfSCWDxm7X458b19GC03sNlqIQrd1Avh/3kOJErO1D?=
+ =?iso-8859-1?Q?Q0ng6Ih8dSsBZ/iUx6r8NFqSURrvV/MwHLkYL645dIZ/K4Jvg3aBfMxUlQ?=
+ =?iso-8859-1?Q?6/x2sHGjaPDtAIvx0hPBNqdSxeivxkEzn+TeXibP6FJrFaaAcsbpiYR21B?=
+ =?iso-8859-1?Q?6sZq4ZMbaL38Ay2ZQacxO6yaokbJ5HAPY4AMijMbgvgMV1CBgcNhbDJHp5?=
+ =?iso-8859-1?Q?T/xHRqEhD/Kk6yXFkBZUcukUVpxo4mVdJWRghupw9Lh7R7Qn773iQ1ZmYQ?=
+ =?iso-8859-1?Q?WeY/vBi+8F34kyB682YngUh6xodQ7j54LvLSujQrCDUWupES4C4hHv6nja?=
+ =?iso-8859-1?Q?c/U9dfETPZM6fXoiC+ERFOzzol4qeUiz7Khcq00NyJTueVD5juwyWvpr4s?=
+ =?iso-8859-1?Q?VtKqzeKhHliGVjpvmkFtX3c9mD7H1hwyyuN9G5ePi4FQLhN+ciQYAn60hM?=
+ =?iso-8859-1?Q?EoGBkF2b8dRv/OOko0jtPBrzFXKK3xOmKDZpwcHGPv30Qm0SA6+B1l62Xx?=
+ =?iso-8859-1?Q?+y/XbXCBE9owCu67/mJx+rfPxKkQGkphMiSvi5yItMaRBXifVzAPFEFTz2?=
+ =?iso-8859-1?Q?imoPO0mwTdoCUpBCJxYW8NqZvtdjrtWGJz30E1OPrb1HHdq/ANf3IOfxEh?=
+ =?iso-8859-1?Q?UsMamJQxoE4riC5/WvltvzQcAqWK/XeIByhgnt1pYAJzWM4Z7wjbMrQXqD?=
+ =?iso-8859-1?Q?tIIWht0RtqWSeqi6nuZ8fKqJ9N/biRXxnHC2f73sjdugDgIP3cXuTd7CVv?=
+ =?iso-8859-1?Q?bRjiA5DXlCJMdhfgfMR5t95IufeXwOJeX30jH/DFhak2uo/GvDy9/Dc/kU?=
+ =?iso-8859-1?Q?ygN4rh5UD9swoFo2t4po62KnxYkZecc/RiTuaBX0/hX2+nWS1o2dTp6YBw?=
+ =?iso-8859-1?Q?zb7kFPdTTqdb7P3IRA5Glrxqp+rPJg1NIul5wypajP5WF2Ew5q3ZNWXR9Q?=
+ =?iso-8859-1?Q?D/7voRG24fEB+vGAzz5cQxHRiaaV+4Y38OpbwtNErVZzRAdx4D7GJr/L6C?=
+ =?iso-8859-1?Q?TsILhVCiy2luE0aL/5CKFaMRrESOU21qJ7PxQFJSP8Oq944PRI?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?uFjgNq4uo9CglOMy3GkGIwgRmaTFsCBkKU4TmhscoZCEtcYUCjfMxn897u?=
+ =?iso-8859-1?Q?zfoNZNjlK9ctTEEbKAk5hhdghPldg/05K5qGfAJ7TzyKW5k3QSZnE29RYr?=
+ =?iso-8859-1?Q?YAxNQxQQrkA29Pe8QKRjdLGtVn7hazlJHnZ49m1Vyuroyl9fhuFgdZUqYx?=
+ =?iso-8859-1?Q?LEhhqthJs48IEzPsaytWmUTqTzbVMYSekXxIQhZkgR2MgdFXPb6Ebd/zOI?=
+ =?iso-8859-1?Q?zHNSigVlV1s23KIoCZQlMywHLMd+u6Q1VZJQF+fj9Lc/5AFaayqgWH0aH5?=
+ =?iso-8859-1?Q?TSXw1H7QS4K/yB4Mq6QFU3xME5FBUwh6xmmCFGvn97BBI0mGkw7rqEZPCl?=
+ =?iso-8859-1?Q?bkXbvwAWNvlsFcEW3/q/r07shCj8tkOn5YIsquLqUxOeTuWwdm+KTWWweP?=
+ =?iso-8859-1?Q?Kl3ZCderaxIyOKlS0GZpycQwRGG/76cdN6wdWbCEmgR+Hib6xAWvaDvlEw?=
+ =?iso-8859-1?Q?HPYHq2p4VMC4lbiW7M6tOZ7czw5QdLTRXn14NcQhDCTNB16JM3AEvIUx9m?=
+ =?iso-8859-1?Q?KKvmavmeU6jHWeuEZPctUO63XQZLOVWpkaNugwi02IVYgW4GkeQowPMfYv?=
+ =?iso-8859-1?Q?MRlLIpKk2VFo8IZ+isG9uxVdxHi2aABXr7dVOvTKyq98bln4NyVQNk46Gq?=
+ =?iso-8859-1?Q?g1gAIE2eTe4FYUKnj1HPQRdaDxXXk6qBY5kd91rIVtwregWlvJ174v+HU/?=
+ =?iso-8859-1?Q?zEWh4OZTjnNFz4ZARjqAUfzd7l7hFffY0npEzbk2wM0sHy90aQro92PGG0?=
+ =?iso-8859-1?Q?yPXacCl4CeH4U0QtwSpWLGhIvXU3at6k+txw+2jZO3ZzH7FJxTtwPlX8tA?=
+ =?iso-8859-1?Q?lWRhNh0N3Uos2a5q3l0OmfluqHZocS1t0ExWig/HaAv8tj3atwwRxTr1Q/?=
+ =?iso-8859-1?Q?g4OqoKq/fdCL6ZEGgH/LRVJdWaa1ROYzXbe27iJCa89p6yDCOtVuosmT+u?=
+ =?iso-8859-1?Q?kHdyJ83U+CJvF3jwzq/jK6J7zNJS24S8+LXzw7xVxYWSTXNFWcJ08UzUds?=
+ =?iso-8859-1?Q?/0F3wlf0BmHAOQFydcru5RYOdRx60cQYtzLVJh5F7bxfFnmS9bHCj7yQlU?=
+ =?iso-8859-1?Q?TSFIZ3ifZ+hPt1+hS5JE6JMSMWvjt7PLHaU4DCFBZ5JJi766zOSicsI3gF?=
+ =?iso-8859-1?Q?bG+x6ZpRABEvWdiQvkdEb22t7k3O0VX+al/PbmXJFK8YIdCMrX1V2erNXF?=
+ =?iso-8859-1?Q?oICQrH4OvF4k47pwx0wVNSQU4xdqO1l54jRHoaW25wwZbYRewd1vE0rvPK?=
+ =?iso-8859-1?Q?2OcvfS5v+hcG1E2GDHCTvzh2shyBZBPzdpEfyLFsHXbcn10/EeWHtuAj9h?=
+ =?iso-8859-1?Q?q8wqMLtxzegoeDb3g0sbsEEj9YEdfVS0isF1mSV78NCHcxMBUhiQl+vHn7?=
+ =?iso-8859-1?Q?5eQsCitYxWFTwb0o+ybiyO5TH+BulUWP0lL6Ej8tHN0AGYVF2YECjoCIc2?=
+ =?iso-8859-1?Q?Cd+tMsvrkJiua3EtQGcalI10cVd2JQK7Dc30vw=3D=3D?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f197c9b-dcbf-443f-b613-08dec59fe21e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2026 20:52:42.0438
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR19MB5558
 
-On Thu, 2026-06-04 at 10:59 +0100, Rodrigo Alencar via B4 Relay wrote:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Create new format types for iio values (IIO_VAL_DECIMAL64_*), which
-> defines the representation of fixed decimal point values into a single
-> 64-bit number. This new format increases the range of represented values,
-> allowing for integer parts greater than 2^32, as bits are not "wasted"
-> in the fractional part, which can be seen in IIO_VAL_INT_PLUS_MICRO and
-> IIO_VAL_INT_PLUS_NANO. Helpers are created to compose and decompose 64-bi=
-t
-> decimals into integer values used in IIO formatting interfaces, which
-> creates consistency and avoid error-prone manual assignments when using
-> wordpart macros. When doing the parsing, kstrtodec64() is used with the
-> scale defined by the specific decimal format type.
->=20
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
+On Fri, Jun 05, 2026 at 07:08:35PM +0300, Andy Shevchenko wrote:
+> On Thu, Jun 04, 2026 at 03:18:25PM -0500, Chris Morgan wrote:
+> 
+> > Add the core component of a new inv_icm42607 driver. This includes
+> > a few setup functions and the full register definition in the
+> > header file.
+> 
+> ...
+> 
+> > +#ifndef INV_ICM42607_H_
+> > +#define INV_ICM42607_H_
+> > +
+> > +#include <linux/bitfield.h>
+> > +#include <linux/bitops.h>
+> 
+> I haven't found users for these two.
+> 
+> + bits.h // BIT() / GENMASK()
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+I'll correct this.
 
-> =C2=A0drivers/iio/industrialio-core.c | 49 ++++++++++++++++++++++++++++++=
-++---------
-> =C2=A0include/linux/iio/types.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 20 =
-+++++++++++++++++
-> =C2=A02 files changed, 59 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-c=
-ore.c
-> index ffe0dc49c4b9..93c2540d4cd2 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -19,6 +19,7 @@
-> =C2=A0#include <linux/idr.h>
-> =C2=A0#include <linux/kdev_t.h>
-> =C2=A0#include <linux/kernel.h>
-> +#include <linux/math64.h>
-> =C2=A0#include <linux/module.h>
-> =C2=A0#include <linux/mutex.h>
-> =C2=A0#include <linux/poll.h>
-> @@ -26,7 +27,6 @@
-> =C2=A0#include <linux/sched.h>
-> =C2=A0#include <linux/slab.h>
-> =C2=A0#include <linux/wait.h>
-> -#include <linux/wordpart.h>
-> =C2=A0
-> =C2=A0#include <linux/iio/buffer.h>
-> =C2=A0#include <linux/iio/buffer_impl.h>
-> @@ -656,6 +656,7 @@ static ssize_t __iio_format_value(char *buf, size_t o=
-ffset,
-> unsigned int type,
-> =C2=A0				=C2=A0 int size, const int *vals)
-> =C2=A0{
-> =C2=A0	int tmp0, tmp1;
-> +	int l =3D 0;
-> =C2=A0	s64 tmp2;
-> =C2=A0	bool scale_db =3D false;
-> =C2=A0
-> @@ -699,7 +700,6 @@ static ssize_t __iio_format_value(char *buf, size_t o=
-ffset,
-> unsigned int type,
-> =C2=A0	case IIO_VAL_INT_MULTIPLE:
-> =C2=A0	{
-> =C2=A0		int i;
-> -		int l =3D 0;
-> =C2=A0
-> =C2=A0		for (i =3D 0; i < size; ++i)
-> =C2=A0			l +=3D sysfs_emit_at(buf, offset + l, "%d ", vals[i]);
-> @@ -708,8 +708,25 @@ static ssize_t __iio_format_value(char *buf, size_t =
-offset,
-> unsigned int type,
-> =C2=A0	case IIO_VAL_CHAR:
-> =C2=A0		return sysfs_emit_at(buf, offset, "%c", (char)vals[0]);
-> =C2=A0	case IIO_VAL_INT_64:
-> -		tmp2 =3D (s64)((((u64)vals[1]) << 32) | (u32)vals[0]);
-> -		return sysfs_emit_at(buf, offset, "%lld", tmp2);
-> +		return sysfs_emit_at(buf, offset, "%lld",
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 iio_val_s64_compose(vals[0], vals[1]));
-> +	case IIO_VAL_DECIMAL64_MILLI:
-> +	case IIO_VAL_DECIMAL64_MICRO:
-> +	case IIO_VAL_DECIMAL64_NANO:
-> +	case IIO_VAL_DECIMAL64_PICO:
-> +	{
-> +		int scale =3D type - IIO_VAL_DECIMAL64_BASE;
-> +		s64 frac;
-> +
-> +		tmp2 =3D div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 int_pow(10, scale), &frac);
-> +		if (tmp2 =3D=3D 0 && frac < 0)
-> +			l +=3D sysfs_emit_at(buf, offset, "-");
-> +
-> +		l +=3D sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
-> +				=C2=A0=C2=A0 abs(frac));
-> +		return l;
-> +	}
-> =C2=A0	default:
-> =C2=A0		return 0;
-> =C2=A0	}
-> @@ -979,6 +996,7 @@ static ssize_t iio_write_channel_info(struct device *=
-dev,
-> =C2=A0	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> =C2=A0	struct iio_dev_attr *this_attr =3D to_iio_dev_attr(attr);
-> =C2=A0	int ret, fract_mult =3D 100000;
-> +	int type, dec_scale =3D 0;
-> =C2=A0	int integer, fract =3D 0;
-> =C2=A0	long long integer64;
-> =C2=A0	bool is_char =3D false;
-> @@ -989,9 +1007,11 @@ static ssize_t iio_write_channel_info(struct device=
- *dev,
-> =C2=A0	if (!indio_dev->info->write_raw)
-> =C2=A0		return -EINVAL;
-> =C2=A0
-> -	if (indio_dev->info->write_raw_get_fmt)
-> -		switch (indio_dev->info->write_raw_get_fmt(indio_dev,
-> -			this_attr->c, this_attr->address)) {
-> +	if (indio_dev->info->write_raw_get_fmt) {
-> +		type =3D indio_dev->info->write_raw_get_fmt(indio_dev,
-> +							=C2=A0 this_attr->c,
-> +							=C2=A0 this_attr->address);
-> +		switch (type) {
-> =C2=A0		case IIO_VAL_INT:
-> =C2=A0			fract_mult =3D 0;
-> =C2=A0			break;
-> @@ -1007,12 +1027,19 @@ static ssize_t iio_write_channel_info(struct devi=
-ce *dev,
-> =C2=A0		case IIO_VAL_CHAR:
-> =C2=A0			is_char =3D true;
-> =C2=A0			break;
-> +		case IIO_VAL_DECIMAL64_MILLI:
-> +		case IIO_VAL_DECIMAL64_MICRO:
-> +		case IIO_VAL_DECIMAL64_NANO:
-> +		case IIO_VAL_DECIMAL64_PICO:
-> +			dec_scale =3D type - IIO_VAL_DECIMAL64_BASE;
-> +			fallthrough;
-> =C2=A0		case IIO_VAL_INT_64:
-> =C2=A0			is_64bit =3D true;
-> =C2=A0			break;
-> =C2=A0		default:
-> =C2=A0			return -EINVAL;
-> =C2=A0		}
-> +	}
-> =C2=A0
-> =C2=A0	if (is_char) {
-> =C2=A0		char ch;
-> @@ -1021,12 +1048,14 @@ static ssize_t iio_write_channel_info(struct devi=
-ce *dev,
-> =C2=A0			return -EINVAL;
-> =C2=A0		integer =3D ch;
-> =C2=A0	} else if (is_64bit) {
-> -		ret =3D kstrtoll(buf, 0, &integer64);
-> +		if (dec_scale)
-> +			ret =3D kstrtodec64(buf, dec_scale, &integer64);
-> +		else
-> +			ret =3D kstrtoll(buf, 0, &integer64);
-> =C2=A0		if (ret)
-> =C2=A0			return ret;
-> =C2=A0
-> -		fract =3D upper_32_bits(integer64);
-> -		integer =3D lower_32_bits(integer64);
-> +		iio_val_s64_decompose(integer64, &integer, &fract);
-> =C2=A0	} else {
-> =C2=A0		ret =3D __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
-> =C2=A0					=C2=A0=C2=A0=C2=A0 scale_db);
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 4e3099defc1d..924ac9dc6893 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -7,6 +7,9 @@
-> =C2=A0#ifndef _IIO_TYPES_H_
-> =C2=A0#define _IIO_TYPES_H_
-> =C2=A0
-> +#include <linux/types.h>
-> +#include <linux/wordpart.h>
-> +
-> =C2=A0#include <uapi/linux/iio/types.h>
-> =C2=A0
-> =C2=A0enum iio_event_info {
-> @@ -34,6 +37,23 @@ enum iio_event_info {
-> =C2=A0#define IIO_VAL_FRACTIONAL_LOG2 11
-> =C2=A0#define IIO_VAL_CHAR 12
-> =C2=A0
-> +#define IIO_VAL_DECIMAL64_BASE		32
-> +#define IIO_VAL_DECIMAL64_MILLI		(IIO_VAL_DECIMAL64_BASE + 3)
-> +#define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
-> +#define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
-> +#define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
-> +
-> +static inline s64 iio_val_s64_compose(s32 val0, s32 val1)
-> +{
-> +	return (s64)(((u64)val1 << 32) | (u32)val0);
-> +}
-> +
-> +static inline void iio_val_s64_decompose(s64 dec64, s32 *val0, s32 *val1=
-)
-> +{
-> +	*val0 =3D lower_32_bits(dec64);
-> +	*val1 =3D upper_32_bits(dec64);
-> +}
-> +
-> =C2=A0enum iio_available_type {
-> =C2=A0	IIO_AVAIL_LIST,
-> =C2=A0	IIO_AVAIL_RANGE,
+> 
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/regmap.h>
+> 
+> 
+> > +#include <linux/regulator/consumer.h>
+> 
+> No users for this one.
+> 
+> + types.h // for bool
+> 
+> ...
+> 
+
+And this.
+
+> > +enum inv_icm42607_sensor_mode {
+> > +	INV_ICM42607_SENSOR_MODE_OFF,
+> > +	INV_ICM42607_SENSOR_MODE_STANDBY,
+> > +	INV_ICM42607_SENSOR_MODE_LOW_POWER,
+> > +	INV_ICM42607_SENSOR_MODE_LOW_NOISE,
+> 
+> Are those enums map 1:1 to HW bits or bitfields? If so, assign explicitly each
+> of them.
+
+I'll explicitly set every value in the enums to be clear.
+
+> 
+> > +	INV_ICM42607_SENSOR_MODE_NB
+> 
+> Is this a terminator like NUMBER_OF ?
+
+This is a terminator, yes. I will not set these explicitly and keep
+commas off of them to keep them easily identifable as terminators.
+
+> 
+> > +};
+> 
+> ...
+> 
+> > +/* ODR values */
+> > +enum inv_icm42607_odr {
+> > +	INV_ICM42607_ODR_1600HZ = 5,
+> 
+> See above. This one is problematic. No one should rely on Linux/C enums when
+> it's about HW bits. All HW related stuff has to be explicit.
+> 
+
+I will explicitly set the values here.
+
+> > +	INV_ICM42607_ODR_800HZ,
+> > +	INV_ICM42607_ODR_400HZ,
+> > +	INV_ICM42607_ODR_200HZ,
+> > +	INV_ICM42607_ODR_100HZ,
+> > +	INV_ICM42607_ODR_50HZ,
+> > +	INV_ICM42607_ODR_25HZ,
+> > +	INV_ICM42607_ODR_12_5HZ,
+> > +	INV_ICM42607_ODR_6_25HZ_LP,
+> > +	INV_ICM42607_ODR_3_125HZ_LP,
+> > +	INV_ICM42607_ODR_1_5625HZ_LP,
+> > +	INV_ICM42607_ODR_NB
+> > +};
+> 
+> ...
+> 
+> > +struct inv_icm42607_sensor_conf {
+> > +	int mode;
+> > +	int fs;
+> > +	int odr;
+> > +	int filter;
+> 
+> All of them are supposed to be signed? Why?
+> 
+> > +};
+> 
+
+A later commit will use -1 for invalid values.
+
+> ...
+> 
+> > +struct inv_icm42607_hw {
+> > +	uint8_t whoami;
+> 
+> What's wrong with u8?
+
+Nothing, I'll make the change.
+
+> 
+> > +	const char *name;
+> > +	const struct inv_icm42607_conf *conf;
+> > +};
+> 
+> ...
+> 
+> > +#include <linux/delay.h>
+> > +#include <linux/dev_printk.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
+> > +#include <linux/property.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/regulator/consumer.h>
+> 
+> IWYU, please.
+> 
+> ...
+> 
+
+This may sound like a dumb question, but what's the best way to invoke
+iwyu for a kernel? None of the readmes or man pages seem to be getting
+me anywhere...
+
+> > +/**
+> > + *  inv_icm42607_setup() - check and setup chip
+> > + *  @st:	driver internal state
+> > + *  @bus_setup:	callback for setting up bus specific registers
+> > + *
+> > + *  Returns 0 on success, a negative error code otherwise.
+> 
+> If you do kernel-doc, validate it. Return section is missing here.
+> 
+
+I'll just nuke it, most of the stuff is fairly self explanatory anyway.
+
+> > + */
+> 
+> ...
+> 
+> > +{
+> > +	const struct device *dev = regmap_get_device(st->map);
+> > +	unsigned int val;
+> > +	int ret;
+> > +
+> > +	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	if (val != st->hw->whoami)
+> > +		dev_warn(dev, "Unknown whoami %#02x expected %#02x (%s)\n",
+> > +			 val, st->hw->whoami, st->hw->name);
+> 
+> dev_warn_probe() ?
+> 
+> > +	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
+> > +			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
+> > +	if (ret)
+> > +		return ret;
+> 
+> > +	fsleep(INV_ICM42607_RESET_TIME_MS * 1000);
+> 
+> USEC_PER_MSEC (needs time.h)
+
+> 
+> > +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+> > +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+> > +				       INV_ICM42607_RESET_TIME_MS * 100,
+> > +				       INV_ICM42607_RESET_TIME_MS * 10000);
+> 
+> These are weird, as in the first case it's actually 1/10th of _RESET_TIME_MS.
+> Perhaps you need to reconsider what you use as that constant. Personally I
+> prefer to see just plain values with the multipliers (to convert to µs).
+> 
+
+I honestly don't know what a good wait period between polling should
+be, so I guessed at 1/10th the timeout period. I will however change
+the timeout to us.
+
+> > +	if (ret)
+> > +		return dev_err_probe(dev, ret,
+> > +				     "reset error, reset done bit not set\n");
+> > +
+> > +	/* Sync the regcache again after a reset. */
+> > +	regcache_mark_dirty(st->map);
+> > +	ret = regcache_sync(st->map);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = bus_setup(st);
+> 
+> Hmm... This is bad name with potential of name collision in the future (in case
+> driver bus code wants to have the same name for the function).
+
+Thanks, I'll rename the function.
+
+> 
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
+> > +			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
+> > +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK,
+> > +				 INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return inv_icm42607_set_conf(st, st->hw->conf);
+> > +}
+> 
+> ...
+> 
+> > +int inv_icm42607_core_probe(struct regmap *regmap,
+> > +			    const struct inv_icm42607_hw *hw,
+> > +			    inv_icm42607_bus_setup bus_setup)
+> > +{
+> > +	struct device *dev = regmap_get_device(regmap);
+> > +	struct inv_icm42607_state *st;
+> > +	int ret;
+> > +
+> > +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> > +	if (!st)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = devm_mutex_init(dev, &st->lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	st->hw = hw;
+> > +	st->map = regmap;
+> > +
+> > +	ret = iio_read_mount_matrix(dev, &st->orientation);
+> > +	if (ret)
+> 
+> > +		return dev_err_probe(dev, ret,
+> > +				     "failed to retrieve mounting matrix %d\n", ret);
+> 
+> Remove duplicate ret printing.
+> 
+
+Understood.
+
+> > +
+> > +	ret = devm_regulator_get_enable(dev, "vdd");
+> > +	if (ret)
+> > +		return dev_err_probe(dev, ret,
+> > +				     "Failed to get vdd regulator\n");
+> > +
+> > +	st->vddio_supply = devm_regulator_get(dev, "vddio");
+> > +	if (IS_ERR(st->vddio_supply))
+> > +		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
+> > +				     "Failed to get vddio regulator\n");
+> > +
+> > +	ret = inv_icm42607_enable_vddio_reg(st);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = devm_add_action_or_reset(dev, inv_icm42607_disable_vddio_reg, st);
+> > +	if (ret)
+> > +		return ret;
+> 
+> > +	/* Setup chip registers (includes WHOAMI check, reset check, bus setup) */
+> > +	ret = inv_icm42607_setup(st, bus_setup);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return 0;
+> 
+> Just
+> 
+> 	return inv_icm42607_setup(st, bus_setup);
+> 
+> ? Or is it going to be extended in the next changes?
+> 
+> > +}
+
+It will get extended, so I'll keep this for now if that's okay.
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+
+Thank you for your feedback. And please let me know about the iwyu
+tool, that seems like it would be useful.
+
+- Chris
