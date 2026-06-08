@@ -1,111 +1,108 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548DA3B4E84
-	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 08:53:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60B73A0E8A;
+	Mon,  8 Jun 2026 09:03:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780908814; cv=none; b=JjRQ6QdRj0IYO99N6HKWYsnNbK60Ki8U8Lj8GPBfsOrj8pRuJwDiKSnjxVqNgJBJl7vcIvYN8h+aFytHOlFCU2OjsrRfgOcrXKF88UsBmdi+RpSyKwPcpdpadBH/+Ybw8o5VjvoFuPT1YFCGXEF2cR5c5FnOCjv267is+GDlebs=
+	t=1780909385; cv=none; b=CZzB4zk5bz1aUR4GrSXErog40//iu809ZE5PqdXtKtGLt/IBsBdqMsGC46tD6dFUGrluedMPJ92KGJwd/5r5WEvtq0m/BhreubETWKtyEl8YIjn50Xn6SLQmD/Q2laiMqWSXbTnutbLDcRZdOSu153k06juVNHjmJbih6EIDwT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780908814; c=relaxed/simple;
-	bh=w0Y03KI/WXTiM1lCd2IZX/tU84nMGP9fpRNtF8Hfbbo=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YlnZZAM/PuP8n8gYhqdoW0c4PTsUdp+aT4vodDrvytm4ugupInPIp+DC2IDh02ixiTIzvo/O2xjljruU7cWktC1t+qHI7P0E5aIt82zxAcgQ7DStMz/0IY4GmJvmmGZrz5MiaNsV7J/CB8+5DLXsqCYRZPmHtbgeKlyP8UwfAUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TM5xGRzk; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780909385; c=relaxed/simple;
+	bh=I1zEkOL1G5g5puFmA2/onCAQPfw2kl/uPlhwlPno3Dw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=lwAMdJkbI3ffN+nnX2h/rwBQIvcXQ68tiGpYFzdtiJv48XJd7A3Tf7DCOFOUBl+JUbc4WfeUyLhdutEP3o7+ne0w3xv3rQbHfJ5YLb9BHET3OnYiJAAeFP2pCKIJAsdbhkQAu820b/WlQXsgAYrX9WOynzRO4ZrCwQSknjqV4h8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fwLoAdL3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TM5xGRzk"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-beb8a08a6c8so568428866b.2
-        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 01:53:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780908812; x=1781513612; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DF9J0yB3N5s3rQCL1ritzyWIRkWZ9b7iIV38e1+B5kI=;
-        b=TM5xGRzkZdNZpaRCT79uyM2cYsWP7DT9kd5wSC1BlM1kXDno2nnXmv9NoiM7aIJ+hX
-         9ucBxrWMeI1TtWs4m25rnJPwbERB7H074lqrX6Cze6EMKOmzrJFnWP3H+1hZjR5mcOqq
-         eAo+Cthrd/xrvhcJJu3EuDVjS6dotacuypZ238JL/2e/8/QypqcFZeZn+J6grRM5Nr9e
-         ZNGhc7Oym0Y6Ulw1QAJrY7jfJNoIAY/gUG28uaZy1qYaDNccfLtu4pSK1fATGfr5L2Oc
-         /P8B373ivCmnWWcVo9t8ZW93UUnE6OKJudRXJpSaG2hQ9CNpzDulFb9CVGvUeuvJsvxl
-         i4rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780908812; x=1781513612;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DF9J0yB3N5s3rQCL1ritzyWIRkWZ9b7iIV38e1+B5kI=;
-        b=oubVs2018uSinDLlgthPXIs6av4jn5eWqd7L3WwiXsS61PxFlJg0F29Rp9zHlKJEWV
-         fYndpPB1jBLz9vhXshoI8YF6MEsRHLcKaG9B/vTj/QNWbF1rvVUF3UEdUL4HSDqYzfHc
-         3SrGc3NnGNwVDpxwsNw0XTjKOFvwK9UdygY7ovWFuEG3gGX9QIeCuKlVytGcv0SAETDY
-         bNK2ddF8w9SXJMVRlb8T3yvP0ytG0YwzUH678X7DKo5SgWvtmFvunI9/nm7DhkpjBeZm
-         8E/feOPURRaB00lGAOFVVB7Ost2EeytL9WvQgVr59WBT71i4bNTSX6X8YbsvFpZSrPQG
-         JTvw==
-X-Forwarded-Encrypted: i=1; AFNElJ+Li26QH3FYksthdjYRICFYElokqqQkOVcmWEbpxbGMhNVp7DA4ddiRtkgGiKB3rP/ys64X+MUfzwY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzhfnIWhSd8rpukTHkXGJ9WzaDNUKojx8NkSqVTO7YYxaJFveYi
-	GKLuahmx2RaJBohciEBkFET5MWbQPbAXEB91tQEUzAHuhsCl6CddMapr
-X-Gm-Gg: Acq92OHwvFq++0Z4TCsj/ut/qxgaxSh1O3Zttj2vIxUK9KPaIavkso3k9JpHXAeKidT
-	Nu7jZjFK7i32+NbY+0Ir6L4jq0RJ7kzooVwi8uD4WPgsMb6GX5QZpQqQM3i/p3jvxiI9Iqwc1na
-	RCU5MI4eAL0glzLmWf11pPRuRoAYrsDW2nJyE324x6o4ymbhK5oJgq7S/L+zcDFPIdC0o1I42IV
-	jYGqH9ekA04YWLGWden3uE0sMBon4VNRI01vV9C1t4+UrbPhbUA01ZYJXWuDbZu3mXLmKVkTY2F
-	AUE0oWYEZx+bm6y+uNxVHBqLy+a12+5EQvlCy6XLkPvRPnjpoLd9E63Z0ZeUx4GpobYx5FdNvxn
-	rzfttFPdT4cwwuGJaQBYFdmHepd0n2xBzhCvSbYi0BAHH6PJV1nCvvAxm/9mXNTxNgrd35fRG7M
-	jJtmzu1GbwKM3iwGqzK3xFyZZ4B3JKk6Vw8UujznZ+c793XgjZxLH7Hpn1zinYGaEJ0vaoShRlQ
-	N5sI23ncMLA46QUiKOA4JokXgZ9jgrKBoaH8Opw53eExRGEOw==
-X-Received: by 2002:a17:907:8020:b0:bf4:ad51:bfd4 with SMTP id a640c23a62f3a-bf4ad51c05fmr226578266b.45.1780908811088;
-        Mon, 08 Jun 2026 01:53:31 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bf41f05041esm424435966b.62.2026.06.08.01.53.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2026 01:53:30 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 8 Jun 2026 09:53:28 +0100
-To: Wadim Mueller <wafgo01@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: types: add IIO_VOLUMEFLOW channel type
-Message-ID: <6at5vkw3byvbdw3przfchwrqscghdfhuwkv5xf6v6dkvfpplt5@3k3gjxn2ua26>
-References: <20260530205435.37326-1-wafgo01@gmail.com>
- <20260530205435.37326-2-wafgo01@gmail.com>
- <ahx5cuM1xlOVP6DT@debian-BULLSEYE-live-builder-AMD64>
- <20260601104233.310ac930@jic23-huawei>
- <20260602-slf3s-v3-reply-03-wafgo01@gmail.com>
- <20260604094436.3c50f123@jic23-huawei>
- <20260607-slf3s-v3-reply-femto-wafgo01@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fwLoAdL3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 70ABBC2BCB0;
+	Mon,  8 Jun 2026 09:03:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1780909384;
+	bh=I1zEkOL1G5g5puFmA2/onCAQPfw2kl/uPlhwlPno3Dw=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=fwLoAdL3bD1Y/Gk6b4nHbGkB9XQdIcJdLa49Y9wKlQBcB1BpGe//rIzjUUceB6Lzu
+	 mdro1WJ5124Ze15fZEHXne60g7sUKHtcquLSdjvJExTYaTNevp7x2f9gGb+uQT5xBD
+	 nVo6qfn6tL7o3fdl62hNRRzLsPxbGSJTud2XUXcxxuXAgbfDIYr2NR530ms8bDOeti
+	 CJVgzORPQwjmVd5tWJ0GcShRxHs3d9obfY7kUQxJMuG7ByaL9XOKhndBxrxUUMpkNs
+	 H2U6gtD2HLGlZRtTBHqevKjhFA/muzVdK1/afl07pbV6A1hrZY95vl4qHISjrcFYaa
+	 rniIqLmXGKLqg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5548DCD8C9F;
+	Mon,  8 Jun 2026 09:03:04 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Date: Mon, 08 Jun 2026 12:02:54 +0300
+Subject: [PATCH] iio: adc: ad_sigma_delta: allow COMPILE_TEST in isolation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260607-slf3s-v3-reply-femto-wafgo01@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260608-ad_sigma_delta_spi-v1-1-61e37666d9b6@analog.com>
+X-B4-Tracking: v=1; b=H4sIAD2FJmoC/x2M0QpAQBAAf+XaZ1frRPgV6TpuscXRraTk310ep
+ 2nmAaHIJNCqByJdLLyHBHmmYFxcmEmzTwwGTYUV1tp5KzxvznpaT2flYJ1EMRnEvCkHSOERaeL
+ 7n3b9+37rS1+aZAAAAA==
+X-Change-ID: 20260608-ad_sigma_delta_spi-6063f200195b
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Radu Sabau <radu.sabau@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1780909381; l=1341;
+ i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
+ bh=GA54EjBngw5qAiuNb6r1BBeWyhMJfGxCv8whjAQhc6M=;
+ b=UK0M5bL9QqeHBi4QSmvPvewHW+zOL4F9Uxuc/DLQAmRv27fffcJObgR/JhgQlzi0Vk/fZqLBM
+ j1b2i/O8jlKDx0qbtSvGu9NMXKY2psENCTp8THEnnAYOQogwIjUOK5S
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
+ auth_id=642
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
 
-On 26/06/07 12:45PM, Wadim Mueller wrote:
-> On Thu, 4 Jun 2026 09:44:36 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > Yes, I'd prefer that for consistency (m^3/sec).  Hopefully the scaling is
-> > fine with the new forms that are happy with more leading zeros.
-> 
-> Ok for m^3/s if you prefer SI, but two things before i switch:
-> 
-> 1) The scaling is not quite fine with pico. In m^3/s the SLF3S-0600F scale
->    is ~1.667e-12, so IIO_VAL_DECIMAL64_PICO keeps only a single digit
->    again. It would need IIO_VAL_DECIMAL64_FEMTO, which Rodrigo's series
->    does not define yet (only MILLI..PICO). Rodrigo, you offered FEMTO
->    earlier - could you add it? Then i base v4 on top of it.
+From: Radu Sabau <radu.sabau@analog.com>
 
-v16 is essentially ready to be accepted! I suppose adding the FEMTO format
-could be done here if needed.
+AD_SIGMA_DELTA is a hidden tristate that can only be enabled by
+selecting drivers (AD7124, AD7192, etc.), all of which require SPI.
+This prevents compile-testing the library code directly with allmodconfig
+or by manually enabling it with COMPILE_TEST.
+
+Add a prompt string guarded by "if COMPILE_TEST" so the symbol becomes
+directly selectable when COMPILE_TEST is set.
+
+Also add an explicit "depends on SPI" since the ad_sigma_delta library
+directly calls SPI core symbols such as spi_bus_lock(), spi_bus_unlock(),
+and spi_sync_locked().
+
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+---
+ drivers/iio/adc/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index a9dedbb8eb46..329d1f6e5106 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -33,7 +33,8 @@ config AB8500_GPADC
+ 	  and USB voltages integral to the U8500 platform.
  
--- 
-Kind regards,
+ config AD_SIGMA_DELTA
+-	tristate
++	tristate "Analog Devices Sigma-Delta Modulator support" if COMPILE_TEST
++	depends on SPI
+ 	select IIO_BUFFER
+ 	select IIO_BUFFER_DMAENGINE
+ 	select IIO_TRIGGERED_BUFFER
 
-Rodrigo Alencar
+---
+base-commit: 4549871118cf616eecdd2d939f78e3b9e1dddc48
+change-id: 20260608-ad_sigma_delta_spi-6063f200195b
+
+Best regards,
+-- 
+Radu Sabau <radu.sabau@analog.com>
+
+
