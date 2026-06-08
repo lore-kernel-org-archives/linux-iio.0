@@ -1,81 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB41347BC1;
-	Mon,  8 Jun 2026 11:47:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EDF8370AE4
+	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 12:15:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780919250; cv=none; b=iAREZyGGvFtOqpbPNj2nZMPtbH6FIQkapslm5Mxt3WF4Kf7hrjk0+z4QYFt8kJWNKmDGr7oJo+qQfkYxkYJCOT7rZ1sW+tH0WK+VjFYhl5O4xx+KnyR8frDM9QpWItAEbk2jHDh19DbtAYBPIjRZsQswrrNFJbeN13DEomuPPVo=
+	t=1780920933; cv=none; b=PJARYWxGT4Imsd9Zghyw5vIHk5yP9x6JKOec/NLkEpxdZsePvUuoBV1doHA2PPsfgxnhrJuoLRhWL9pjgsqBASEBgtgSlzEW7Jgp846HBYXZVHcGZ6W9piNu5fDMvwZwxhBw+DKSW7rqvghmP9dFySMxqF0JLfVjGWgMMy69/+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780919250; c=relaxed/simple;
-	bh=CaMoWbxy1Acm/40iWQtcnXgEWbWN5Y9bTDMXnIWeI4c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p+gKOyRurLc5YVVZkbh3Zq6fSUWXD0TK98jeaNLBZAkk3H9DFKTjNjtE0JE0syubnISlgEDQebguwcuCGKSJ7vs6BqZe812NID4YEPOe6m02ii7cVZM9nDOj+fEeGwA6nwkh1HeJUP5MyBQN0EopQgrZf4hYQnirVwBLHoGwjWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KIZ19v2K; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KIZ19v2K"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1780919249; x=1812455249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CaMoWbxy1Acm/40iWQtcnXgEWbWN5Y9bTDMXnIWeI4c=;
-  b=KIZ19v2KJEjjhxUwkk3y7B108c2q/qn9VABN7umZaMzGc6zt07nEoZqe
-   jpcnu4EmXcPmpjy1Wdv6MYQj/KvXB5w/bQhtnre8W7Y8ozrxe9NVvyU6w
-   z6IUvD9xR+qbRDHl0lfiwycKAlws4wcBY9x9XS1z7fpwJ9OJjClEVj3s5
-   znlWGnlKHRh0YiJkNhbxgRIcdOOIDiL1WbYsai5bNXjf7dZyLkZOTvxhV
-   hEliRUV3yn5lqOQOwIhr1Fe/sPCtnZXcnn2TrSHga0wgYrfQNu8LXa4Ro
-   T6/ql27kC9lz+Uy+aNp/a0gcRP26OoBySSD46dCtPfZFxZmKREedx5W+k
-   Q==;
-X-CSE-ConnectionGUID: NyiWCeErQECbi5SQC7TUHw==
-X-CSE-MsgGUID: 1ZL3cRISRkGgp2IW8BRMgQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11810"; a="92757529"
-X-IronPort-AV: E=Sophos;i="6.24,194,1774335600"; 
-   d="scan'208";a="92757529"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2026 04:47:29 -0700
-X-CSE-ConnectionGUID: 3c4tQCdMQpKilFdtpplXpw==
-X-CSE-MsgGUID: QksngxkkTOmln9oWt+4azw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,194,1774335600"; 
-   d="scan'208";a="249826528"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.110])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2026 04:47:27 -0700
-Date: Mon, 8 Jun 2026 14:47:24 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Hungyu Lin <dennylin0707@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: bmg160: use __func__ in error message
-Message-ID: <aiarzOI6nzXV_LsM@ashevche-desk.local>
-References: <20260607141435.60229-1-dennylin0707@gmail.com>
+	s=arc-20240116; t=1780920933; c=relaxed/simple;
+	bh=6pIVlUaGebknt3SPtWJ3Y5JVklajwnERGTgadc5keb0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=G+JB1+j1iyiRzmp87R/2oez58ENnfz+j69u5VFy6kA1R4KIg7jRmYfffx2MSChiJ4HH2XHfivUo+S1DnvoGqUxvdgE0OBCGtal4qdIc8I3uYXi1S7VFd92kGioX068P9jNoqLWAzB2TZ85ZmNoN5cOjW62b9O5RCSpnmWgDnuRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-7e16f05fd79so42962037b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 05:15:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780920931; x=1781525731;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=6pIVlUaGebknt3SPtWJ3Y5JVklajwnERGTgadc5keb0=;
+        b=eJfAwTYB1aS+Dk1W2dTJOGw8RPx4SeVBtvsCUV0GD0f8kPPead2O5Ruz59AcVxZkNZ
+         oUamTsVZazVUpeUdC/1BnqDbVNdX1Mxqv5UqdpACoECRAb1ndcnglrHIIhB8Gf1Ibdow
+         Q5GMqJP0uEfv60hq/OcNPqFKLzQw0LQ1pcgONmKHMsQlq2M7C7+j7fy1loDMYFsbXTa4
+         J8U//ah4Uao5ivWqkjUJksUdkiIHc+RJDOaTSj/xazv9iN0ilmxImKj0a4a9ed9Jt7M1
+         HF2H+RxDFV3Kb19M0adR0X0WM9FsiGSNYvbUjBZvoigo1/uN6r9JvtjjaRM3FeqQP/ky
+         bcYQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/HU6/0ePTJfj892xZlGZi+XAfE6tSwysbmvvwMFqwPvE2Kfjxa/vZTn+7s8z5u1lVhYgFq/ItXeNs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyFSTVyTPUteGxIQ1ijkdG++3wI+eRPznvMciU1fQzL1DCnPC/b
+	fVwvFBXTedncfRtdtCKLAAJxIn7wiI1xd2Qpozt7CyhBNEJdm0b1bOBVG6J0iNZu
+X-Gm-Gg: Acq92OEpIXwg8uNS3O2yGSJrMuz3/u5mnAf61h1wZ+gqsOSQrE7kWsUmkXSURCqtNtW
+	B09Tdp9TpzOurlImBLYp2rkMTPax7aIbzCbNaVXXcvzi5F56hhaFWUJVndOYGLHQAGozXX+a6it
+	DwL2zigZy2YmjKUa0WfgcUpsk+c5LkXi8NFTZh/BaNLLHr4v11y1WzaWnPkbxiQdASzxFkF8aYR
+	LMQmXbD7HxtZmYNkyEd90pCdeHlDBPrDAQZn2QSr2ki57kcTWLY9pifl9wE/uyxenMBK1tQs0/U
+	l/ElxQFxXwUGQrXl1sUYj9pRhEWbTf/0enuW3frbYIzeD/HMJlkHhLuTXcYVf0fWH4sC93KdOoT
+	+Ck4H6tvW3XmZ0+LuaicfTAFo1XSRY1ABHm9sTg6alhJ/OWmUkycyX7drDSUEyPEP2SH8x1Cy14
+	eQKYslNb9e9z/rYdDwcA/jJNmKtqRBi6Qbqu8hZvpo250NAQWGi10uNjYJ1ufDUw7g7HBzKtC4V
+	xsFCA+07q2V75Ku053W/hIl/Co/zbVIhbu2i+0GkqyYRpFDknrShHrzrSSl/jF8finkPM5oRYf1
+	e0t4HmW2Of58
+X-Received: by 2002:a05:690c:d87:b0:7dc:a5a8:8a8 with SMTP id 00721157ae682-7ed0e57661emr144358967b3.5.1780920931013;
+        Mon, 08 Jun 2026 05:15:31 -0700 (PDT)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7ea23591b26sm81819987b3.31.2026.06.08.05.15.29
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Jun 2026 05:15:29 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7e16f05fd79so42961307b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2026 05:15:29 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ+Z+nMiKOL+/9WtcqG7WY1/4ed1mW91yTHkgWH7AbDyUFPUk12t77JQ5arTvBnkzm82JY523UwpD24=@vger.kernel.org
+X-Received: by 2002:a05:690c:6181:b0:7bd:73f3:7a70 with SMTP id
+ 00721157ae682-7ed109c657bmr141533827b3.32.1780920929050; Mon, 08 Jun 2026
+ 05:15:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260607141435.60229-1-dennylin0707@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260608033218.26514-1-email@sirat.me> <20260608033218.26514-2-email@sirat.me>
+ <aiaqAEMj4mX9un--@ashevche-desk.local>
+In-Reply-To: <aiaqAEMj4mX9un--@ashevche-desk.local>
+From: Sirat <email@sirat.me>
+Date: Mon, 8 Jun 2026 18:15:17 +0600
+X-Gmail-Original-Message-ID: <CANn+LWJkOnWoXrjjqECMJgJuXOcXPUbH2U6TV1T2A=tMBCe=xw@mail.gmail.com>
+X-Gm-Features: AVVi8Cc4abFKp5xaHNmaVkn2H-uT4dHna6_npeCydL0TG1OTBZ3ZIwsYapSIRQQ
+Message-ID: <CANn+LWJkOnWoXrjjqECMJgJuXOcXPUbH2U6TV1T2A=tMBCe=xw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] iio: proximity: cleanup fixes for vl53l1x-i2c
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 07, 2026 at 02:14:35PM +0000, Hungyu Lin wrote:
-> Use __func__ instead of hardcoding the function name in the
-> error message.
-
-No, __func__ in non-debug messages means that the message itself is badly
-written and/or not unique enough. Rather than use __func__ try to rephrase
-message that it will be unique to this type of devices.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+On Mon, Jun 8, 2026 at 5:39=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Mon, Jun 08, 2026 at 09:32:06AM +0600, Siratul Islam wrote:
+> > - Sort register defines list
+> > - Extract vl53l1x_wait_data_ready() polling logic
+> > - Logically split regmap_read_poll_timeout()
+>
+> You may want to rephrase the commit message as in the current form it fee=
+ls
+> like it has to be split to a few patches. In practice, it's basically one=
+ with
+> small amendments in the code that may or may not be split depending on th=
+e
+> Jonathan's preferences.
+>
+I will rephrase the commit message to be simpler. It is very small
+change and I don't think it needs to be multiple commits.
+>
+> Also, you don't need a cover letter for a single patch. The cover letter =
+makes
+> sense for the series and rarely for a single patch.
+>
+I will remember that.
+>
+>
+Thanks
+Sirat
