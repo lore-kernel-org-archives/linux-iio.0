@@ -1,165 +1,103 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D79FF25B0B4
-	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 03:34:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A12E324B2C;
+	Mon,  8 Jun 2026 06:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780889674; cv=none; b=P/fODQ6ytQjUDLJzHhgAQoyoB3XZJx6m24UD3o8m3bSPK1cm10+YKh4Bmc7dBlleFsV5FndXEFg9UbB9fZCvLKfxOVVz6Y0ehW3Ni5y0CRlVRO+TGHjKBBELPDplGW5u/KMSwEYK4u7m2CTkl4nRbJpu90f5kLtehjDttw0QylU=
+	t=1780898863; cv=none; b=AywV7ovkph7lryHEIa6JXRmm8NLzW8ppT1efqlcY9ZunZNwSR8Fy8Sfsem4xtYes5Kgrh6XucxNpRdye2wVRkDaf7gKXAvFPLHuJUjBKD9uJcTmbgz9zlcKwDVqPC25p8UiC/8JJu2CRVpoDQg4H0svAb9SQAbW6o1rjc1YChE4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780889674; c=relaxed/simple;
-	bh=Wrzvc03qcJAI2fJFG5Y+43Rc2qKa7QvoUxtDVB+jgKc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RriGs1droBE6Wj69Z1J6nDEolbgJqYcaxcpQV0sFNMJ3mbblXYGf8XiqdWLRJbqKNSKpnDTJNX5IhWi7PCKMDmkB/q7Ivmx+Ti2Qyv2EPxlTguXXMCk5X4wLZ2N6Nn9U0VlsJsH4314sbICzXEPz4i7CYLQFQAVqD82uYHOL8TQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-36babe2c4bdso2189160a91.1
-        for <linux-iio@vger.kernel.org>; Sun, 07 Jun 2026 20:34:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780889672; x=1781494472;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=46YxaO4ofqI9vyglwTBha2ZlTUmES9KzjNe4ZaBWo1M=;
-        b=YE9HV09msAsK7dZYePsLGmmf7Dqg/g/5B4QdrcklS2pnAoPVdgtCv5ZZen4Im4DasS
-         UL1UcAJJXP50HoXhhzL0wEHq/Tf0Hi7i94o7lnFfdraM+tQ7aBiNq4bsPvxiNiAPtJ0g
-         +FF/whmoSXQKlY83YRF9658OMIlgAYTUkuHO3ZGSs7Mz52DGBAKHtJLf5GV/6jyg5RlO
-         y2TX2Jm7vJ0nd3ffooa8ke0/B6kpffW7jShltFjSJjuC4RAau36IPXgIovK8fEzQZOtQ
-         Q5j+bv13igUopARZtHXgcTVkie0gC8XjeWlJgU3SXmSR5GVcqFn4U+QJTjEjj004bFJv
-         cM8w==
-X-Forwarded-Encrypted: i=1; AFNElJ/SBLimj/fKRjr2danZ67hup3FioX2+GhfjXoaiAREew3kGbIbw2u/KDWx0NGkmsy0sZJMsxdfR2Nc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdywtxbluVwoMFfWkVi3AXsx9CkaXvCneBs/AN2o7vHJb/aj77
-	CANEVIgzAFODzVmWB+TbYqzbHzFyOzOh9ht+dRepIyJ6Mds7657FFGzD
-X-Gm-Gg: Acq92OFu4JoI89drhpGCZuCXpAPlw+aMSaqS1VTNHxeS2cyilWgNlaCapGtFb57JyLc
-	EimrM5Oe/w+uWquezcWIUJW5BYNMn2PIbUJCA0D+1kXM+22cr1NMSa8PVOus+3jBW7wGpC9N58o
-	mcauhkyj4fvMgr4CZhqM8FR6hRZa/VG+notrdn4xg8CG/VK5zHRDhWsp7oG7+9iV0ZjHPiGysOX
-	ACbM+rpWm92RXuy6S/xBRuGlCMOPr+PitxARXSkXHwsnVJw9+duO7HJTJmNLuDjhWoL6rRNzHMc
-	TdWEDW7yLPZZX+Q/PTzKR2DaMI34qqJxiGFHqOVkw3r/Zn6svpgRPyVK84BGJzQP62rvtq5hGW/
-	bkMaZYO2vg0KNrEwsrE1YUwFo7w6dJkYwUm2YYImKNVbgh5JvETqMp6idS9BOqjD9uNAy0FweRw
-	Zrkl1FGeE1+ICC4zEV7tjnuOT+k3BiaikGrWf0HKHDsEs1T2uJZ+FHnsZaeuk3/DF9W+tUYJqYz
-	l7lW5uPpnNB18WD6T4SoJs5tN9TUE05/bICuzXy
-X-Received: by 2002:a17:90b:4b0b:b0:36b:a2cc:4857 with SMTP id 98e67ed59e1d1-370efdaca8fmr17829661a91.18.1780889672056;
-        Sun, 07 Jun 2026 20:34:32 -0700 (PDT)
-Received: from fedora ([59.152.111.50])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-36f6c76f55asm14102286a91.7.2026.06.07.20.34.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Jun 2026 20:34:31 -0700 (PDT)
-From: Siratul Islam <email@sirat.me>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Siratul Islam <email@sirat.me>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH 1/1] iio: proximity: cleanup fixes for vl53l1x-i2c
-Date: Mon,  8 Jun 2026 09:32:06 +0600
-Message-ID: <20260608033218.26514-2-email@sirat.me>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260608033218.26514-1-email@sirat.me>
-References: <20260608033218.26514-1-email@sirat.me>
+	s=arc-20240116; t=1780898863; c=relaxed/simple;
+	bh=+dcXv4zWRWzCmRcsErz8MQZtU9CNwLr2zjetIe+6/mU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Xn2AVMx6wEWrQ2FEEdJXgRvO9u4kupEAJzXP3YAOD8C8vv0aHOa7IgzKwUS6qEKpbdTJFbSBROKKpX6itwCek0LZXGB5+P+VGqgPe8cGA2zWt4lDwZpdNxPmR6mIvNnV9xsS1WDXHSKlUfOG2Y8HHuEsSpgeW7/GernjFPLCF0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=cC6g03sH; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="cC6g03sH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1780898531;
+	bh=+dcXv4zWRWzCmRcsErz8MQZtU9CNwLr2zjetIe+6/mU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=cC6g03sHSs7sp0X5XtqVYnhJz00Uw3zFpcwqUhkUucc6F0kHJCHwMQNJxLBtV4ddH
+	 CAOXalB+zZrHkCubP+10Ybf8fcDusR7qJNzEoSHS+mi1S2hjID+glOPxE9hcKwlgyQ
+	 wL4qXWKoA66eKfBt5qmagENkIzxnE01oQcxp6z47lc/OTeUHUXzeYqo/nhAJOxUIku
+	 B5dZfirRuaT5Spp780ySds1KFEkboyCM0lRaxl+oPRZXE8TTr9LMMmJqgrjdIGtuDD
+	 6wtnI9i3hVY0sPv/twP6cDGJzieUteCMN6mTL4CzOi5fGQdyzLQOS9vPWLxAdJ6v6T
+	 BOm6jWb0VfGMA==
+Received: from [100.64.1.21] (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 66B0217E0416;
+	Mon,  8 Jun 2026 08:02:10 +0200 (CEST)
+Message-ID: <4947ceab-e60e-4f11-9553-5341cdd12a47@collabora.com>
+Date: Mon, 8 Jun 2026 08:02:09 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND v8 00/10] SPMI: Implement sub-devices and migrate
+ drivers
+To: Stephen Boyd <sboyd@kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ arnd@arndb.de, gregkh@linuxfoundation.org, srini@kernel.org,
+ vkoul@kernel.org, neil.armstrong@linaro.org, sre@kernel.org,
+ krzk@kernel.org, dmitry.baryshkov@oss.qualcomm.com, quic_wcheng@quicinc.com,
+ melody.olvera@oss.qualcomm.com, quic_nsekar@quicinc.com,
+ ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org, luca.weiss@fairphone.com,
+ konrad.dybcio@oss.qualcomm.com, mitltlatltl@gmail.com,
+ krishna.kurapati@oss.qualcomm.com, linux-arm-msm@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, kernel@collabora.com
+References: <20260511100805.121432-1-angelogioacchino.delregno@collabora.com>
+ <20260511141743.251a47e4@jic23-huawei>
+ <07739437-4720-4a15-87cc-40f6f92f3759@kernel.org>
+ <178001901320.7182.15120759905441640016@lazor>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <178001901320.7182.15120759905441640016@lazor>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-- Sort register defines list
-- Extract vl53l1x_wait_data_ready() polling logic
-- Logically split regmap_read_poll_timeout()
+On 5/29/26 03:43, Stephen Boyd wrote:
+> Quoting AngeloGioacchino Del Regno (2026-05-20 04:51:26)
+>> On 5/11/26 15:17, Jonathan Cameron wrote:
+>>> On Mon, 11 May 2026 12:07:55 +0200
+>>> AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wrote:
+>>>
+>>> Hi Angelo,
+>>>
+>>> Why the resend?  If marking a series with that I expect to see it
+>>> called out as first thing in the cover letter.
+>>>
+>>
+>> Right, forgot to mention why.
+>>
+>> The v8 was sent on January 2026, I pinged maintainers to pick it on
+>> March 2026, even if this was fully reviewed by multiple people nobody
+>> picked anything here.
+>>
+>> ....and I've resent it because pinging multiple times didn't work, and
+>> because the series got old all that much. :-)
+>>
+> 
+> I take it you want me to apply these patches to the spmi tree?
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Siratul Islam <email@sirat.me>
----
- drivers/iio/proximity/vl53l1x-i2c.c | 36 ++++++++++++++---------------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+Yeah, sounds like the easiest option.
 
-diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-index 4d9cb3983dba..ed83999cf735 100644
---- a/drivers/iio/proximity/vl53l1x-i2c.c
-+++ b/drivers/iio/proximity/vl53l1x-i2c.c
-@@ -43,6 +43,7 @@
- #define VL53L1X_REG_SOFT_RESET						0x0000
- #define VL53L1X_REG_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND		0x0008
- #define VL53L1X_REG_VHV_CONFIG__INIT					0x000B
-+#define VL53L1X_REG_DEFAULT_CONFIG					0x002D
- #define VL53L1X_REG_GPIO_HV_MUX__CTRL					0x0030
- #define VL53L1X_REG_GPIO__TIO_HV_STATUS					0x0031
- #define VL53L1X_REG_SYSTEM__INTERRUPT_CONFIG_GPIO			0x0046
-@@ -64,7 +65,6 @@
- #define VL53L1X_REG_RESULT__OSC_CALIBRATE_VAL				0x00DE
- #define VL53L1X_REG_FIRMWARE__SYSTEM_STATUS				0x00E5
- #define VL53L1X_REG_IDENTIFICATION__MODEL_ID				0x010F
--#define VL53L1X_REG_DEFAULT_CONFIG					0x002D
- 
- #define VL53L1X_MODEL_ID_VAL		0xEACC
- 
-@@ -191,6 +191,17 @@ static int vl53l1x_stop_ranging(struct vl53l1x_data *data)
- 			    VL53L1X_MODE_START_STOP);
- }
- 
-+static int vl53l1x_wait_data_ready(struct vl53l1x_data *data)
-+{
-+	unsigned int val;
-+
-+	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
-+	return regmap_read_poll_timeout(data->regmap,
-+				       VL53L1X_REG_GPIO__TIO_HV_STATUS,
-+				       val, (val & 1) != data->gpio_polarity,
-+				       1 * USEC_PER_MSEC, 1 * USEC_PER_SEC);
-+}
-+
- /*
-  * Default configuration blob from ST's VL53L1X Ultra Lite Driver
-  * (STSW-IMG009).
-@@ -230,10 +241,9 @@ static int vl53l1x_chip_init(struct vl53l1x_data *data)
- 	}
- 
- 	ret = regmap_read_poll_timeout(data->regmap,
--				       VL53L1X_REG_FIRMWARE__SYSTEM_STATUS, val,
--				       val & BIT(0),
--				       1 * USEC_PER_MSEC,
--				       100 * USEC_PER_MSEC);
-+				       VL53L1X_REG_FIRMWARE__SYSTEM_STATUS,
-+				       val, val & BIT(0),
-+				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "firmware boot timeout\n");
- 
-@@ -261,12 +271,7 @@ static int vl53l1x_chip_init(struct vl53l1x_data *data)
- 	if (ret)
- 		return ret;
- 
--	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
--	ret = regmap_read_poll_timeout(data->regmap,
--				       VL53L1X_REG_GPIO__TIO_HV_STATUS, val,
--				       (val & 1) != data->gpio_polarity,
--				       1 * USEC_PER_MSEC,
--				       1000 * USEC_PER_MSEC);
-+	ret = vl53l1x_wait_data_ready(data);
- 	if (ret)
- 		return ret;
- 
-@@ -461,14 +466,7 @@ static int vl53l1x_read_proximity(struct vl53l1x_data *data, int *val)
- 		if (!wait_for_completion_timeout(&data->completion, HZ))
- 			return -ETIMEDOUT;
- 	} else {
--		unsigned int rdy;
--
--		/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
--		ret = regmap_read_poll_timeout(data->regmap,
--					       VL53L1X_REG_GPIO__TIO_HV_STATUS, rdy,
--					       (rdy & 1) != data->gpio_polarity,
--					       1 * USEC_PER_MSEC,
--					       1000 * USEC_PER_MSEC);
-+		ret = vl53l1x_wait_data_ready(data);
- 		if (ret)
- 			return ret;
- 	}
--- 
-2.54.0
+> Can you
+> respond to the Sashiko bot comments about why it's wrong or fix issues
+> it found?
 
+I will do that asap; sorry about being late but I just came back from a work trip
+and might be a bit too late now, but still, I'll make sure to get this done between
+today and tomorrow.
+
+Thanks,
+Angelo
