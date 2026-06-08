@@ -1,224 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C8B3CCFB2;
-	Mon,  8 Jun 2026 14:41:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7273DCDAF
+	for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2026 15:05:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780929673; cv=none; b=SDYr/nKBe5Ke6jE2SI71spq/KI/PcPFEmtNHLGqd5PlG+dBsjWoJ6T3wtvmaSO4eD0R26XD0a3GA1s00qTFCECdGvMaDCwDZEMid9Ed98l/UqqBUBstzFWFvZSILvaSdgQNqkTVXfpe4z9gM++d+ayh16OucswjhjhiRQQh7Mgw=
+	t=1780931131; cv=none; b=Mv2Sn2eVcbu2XqYuME0o4tzjuv3bhW6/iuW9zHZJ1nlhi2wHAHsfk9b0LdqRJxcWlz78KCMpxOfL9iD7+pEU0qauQc8IsCO1MbQPsU0cqihsMFxx3S8H+QYP/QNNBz/NRumbkxqTxg4vpDmj6qYFk8Jmlu/GSD2W2FZfvrPbn1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780929673; c=relaxed/simple;
-	bh=fE1b9m6X8tZfpvHfiMJ+gOS3cPimN0u2PkMXjJQx/Xk=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=Fx0WJY9leRl4YeHz5mmYMXbFpsUJ5DD0CYqpN1IScSbcW/R5IAy+iZ0dIJwHQgk8xftqlWWGYaThg93RbW1fUbZxNCLeEtCGnnFpWJmLq7w6HNfHeXIYQ5TUH/tPd1vua46rjUGn2TAKYV9WSaHyy6wCwFdhzn2n6/Iyq1tGyrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eYgNgmKS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1780931131; c=relaxed/simple;
+	bh=RWEsvSAq7ltiLSc4M7S0u33C9h51EmAl0FCKmQlIJrk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=eiiJNkJm0lriu73RSgZv6juSsvtFoaTcKqG1ON9BhkH76RbTTdNdthWDO7YOX1tP/fI/15ZhNjpOreMoMK5/KivhmYagOeN8XP/00THZ3pdh7AOe7wFAbohxl4E8fKmem7w2oipfR923pvwXFXtjjj/OYomWj8OZygKpZVqseyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=2g7NN/Td; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eYgNgmKS"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BCD421F00893;
-	Mon,  8 Jun 2026 14:41:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780929672;
-	bh=L9ZUAyPA++9VU0oc6CUX2aYB7mPcCRmX32/6vz2s6h8=;
-	h=Date:Subject:Cc:From:To:References:In-Reply-To;
-	b=eYgNgmKSz8+8vUuSqQLqjGrIl5qnT7M50Z/l7zNFcZI6k+OTPILcDfXGjawgWrhHB
-	 DPTjMxWmNUGswh8HlOQkYtyl7NQobtkFASCTBzwVdl6BdxHJERevU6fsS12SS17T50
-	 /I9GXjvrHcJRc3rKD95RM34f36WJq5cj50yDXzt4HJhOx2NQl5DO0YiA4ccBhNzE3M
-	 5ZcTuULoOuKVYVNYdaaXKo+IAZYqBUZLRA2MF3U76/VUMl7ue22RAEFaMTUk+grOKo
-	 XuMS4MZA9OkL3AVLDuKPZFSTPTtu0r15VKgPdI73Yx2n8CiaTbOoKssberufKbUKSV
-	 U+yhd0NpMJdGw==
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="2g7NN/Td"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 34C19C5147B;
+	Mon,  8 Jun 2026 15:05:27 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 25C525FFB7;
+	Mon,  8 Jun 2026 15:05:26 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9E22A106A012C;
+	Mon,  8 Jun 2026 17:05:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1780931125; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 in-reply-to:references; bh=2iO37rqCp8Bs5CHZkoCFUdRXh+bredeUM2BucmQS/c8=;
+	b=2g7NN/TdRn+HON9Qz7VDE8oxJ54eXQ8Xw6enEE3N39Bgcj2RHx9LNzvdVG6G+Kho9qkMki
+	lLG7kSQKadxtVi6CCDnm2RxVpDGZTdXmnwgmvCWtPOnMxY/mUAVro3ojwULhBgaar6pG0p
+	u3Tfd2Rlwnci14p9HX2QPpFHxC0C6A9YMkpHsxWceCx4d0g6JMwI8DcY1ASf+Fa6UA9N1Y
+	azeBHhISVaj8/rE5Cvr5jXWRQYYifLCNGhS0DvgYPNUhhFnih8gEYBBxPTUMeWAKRKvXNM
+	KAmcJqqux7555Mv8voJvUcHj4LmYNPNDkxNmnrLW7lyN9tCuSkj6fPM7X7eZwQ==
+From: Romain Gantois <romain.gantois@bootlin.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Puranjay Mohan <puranjay@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ Wil Stark <wil_stark@keysight.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject:
+ Re: [PATCH 1/2] dt-bindings: iio: ti,tmp117: add binding for the TMP119
+Date: Mon, 08 Jun 2026 17:05:20 +0200
+Message-ID: <0JXKC01fTuif-8VlbZtc5Q@bootlin.com>
+In-Reply-To: <20260605152005.4d888f6b@jic23-huawei>
+References:
+ <20260605-tmp119-v1-0-349f45f17d12@bootlin.com>
+ <ft-705oeTSiaftSGNjv94A@bootlin.com> <20260605152005.4d888f6b@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=ab88639452d187061230192ab1490bf4846f6d9975e50bf2597a3d568188;
- micalg=pgp-sha384; protocol="application/pgp-signature"
-Date: Mon, 08 Jun 2026 16:41:08 +0200
-Message-Id: <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Cc: "linusw@kernel.org" <linusw@kernel.org>, "robh@kernel.org"
- <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
- "conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com"
- <afaerber@suse.com>, "wbg@kernel.org" <wbg@kernel.org>,
- "mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
- "lars@metafoo.de" <lars@metafoo.de>, "Michael.Hennerich@analog.com"
- <Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
- "nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org"
- <andy@kernel.org>, "dlechner@baylibre.com" <dlechner@baylibre.com>,
- =?utf-8?b?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-realtek-soc@lists.infradead.org"
- <linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, =?utf-8?b?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?=
- <cy.huang@realtek.com>, =?utf-8?b?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?=
- <stanley_chang@realtek.com>, =?utf-8?b?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?=
- <james.tai@realtek.com>, =?utf-8?b?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?=
- <eleanor.lin@realtek.com>
-From: "Michael Walle" <mwalle@kernel.org>
-To: "Bartosz Golaszewski" <brgl@kernel.org>, "Andy Shevchenko"
- <andriy.shevchenko@intel.com>
-X-Mailer: aerc 0.20.0
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
- <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
-In-Reply-To: <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPartkwe-YhX2RNmWXg_K9c85Xw";
+ micalg="pgp-sha512"; protocol="application/pgp-signature"
+X-Last-TLS-Session-Version: TLSv1.3
 
---ab88639452d187061230192ab1490bf4846f6d9975e50bf2597a3d568188
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+--nextPartkwe-YhX2RNmWXg_K9c85Xw
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
+From: Romain Gantois <romain.gantois@bootlin.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 08 Jun 2026 17:05:20 +0200
+Message-ID: <0JXKC01fTuif-8VlbZtc5Q@bootlin.com>
+In-Reply-To: <20260605152005.4d888f6b@jic23-huawei>
+MIME-Version: 1.0
 
-Hi,
+On Friday, 5 June 2026 16:20:05 CEST Jonathan Cameron wrote:
+> On Fri, 05 Jun 2026 14:24:45 +0200
+...
+> > 
+> > > The second patch then just resolves the print that would happen on older
+> > > kernels using that fallback due to ID mismatch.  That's fine but nice
+> > > if older kernels can work with this part.
+> > 
+> > Sorry I don't quite understand: since this is a feature patch, I don't
+> > expect it would get backported onto older kernels. Therefore why would
+> > the second patch resolve the print happening on older kernels?
+> 
+> The point of a fallback compatible is that we don't have to backport
+> anything. New device tree comes along that lists
+> 
+> compatible = "ti,tmp119", "ti,tmp117"
+> 
+> will just work. Older kernel will think it has a tmp117 which is fine as
+> they are register interface compatible.  It will print a message to say
+> that it found an unknown ID but then assume it is what the firmware told
+> it, here the tmp117 fallback.  With your second patch in place, that
+> harmless message will disappear for new kernels.
 
-On Mon Jun 8, 2026 at 4:10 PM CEST, Bartosz Golaszewski wrote:
-> On Wed, 3 Jun 2026 02:34:40 +0200, Andy Shevchenko
-> <andriy.shevchenko@intel.com> said:
->> On Mon, May 25, 2026 at 12:04:09PM +0000, Yu-Chun Lin [=E6=9E=97=E7=A5=
-=90=E5=90=9B] wrote:
->>> > On Tue, May 12, 2026 at 11:33:12AM +0800, Yu-Chun Lin wrote:
->>> > > Expose an accessor function to retrieve the gpio_chip pointer from =
-a
->>> > > gpio_regmap instance.
->>> > >
->>> > > This is needed by drivers that use gpio_regmap but also manage thei=
-r
->>> > > own irq_chip, where gpiochip_enable_irq()/gpiochip_disable_irq() mu=
-st
->>> > > be called with the gpio_chip pointer.
->>> > >
->>> > > Add gpio_regmap_get_gpiochip() to allow drivers with complex custom
->>> > > IRQ implementations.
->>> >
->>> > Hmm... Can't we rather add
->>> > gpio_regmap_enable_irq()/gpio_regmap_disable_irq()
->>> > that take regmap or GPIO regmap (whatever suits better for the purpos=
-e) and
->>> > do the magic inside GPIO regmap library code?
->>
->>> Thanks for the review! I apologize for the misleading commit message.
->>> The real reason I need the struct gpio_chip pointer is to properly set =
-up a custom
->>> IRQ domain. Our SoC GPIO controller is quite complex. It routes differe=
-nt trigger
->>> types to multiple parent IRQs, which doesn't fit the generic regmap_irq=
- framework.
->>> Therefore, we have to create our own irq_domain and pass it to
->>> gpio_regmap_config.irq_domain.
->>>
->>> The core problem occurs inside our custom irq_domain_ops.map() callback=
-:
->>>
->>> static int rtd1625_gpio_irq_map(struct irq_domain *domain, unsigned int=
- irq,
->>>                                 irq_hw_number_t hwirq)
->>> {
->>> 	struct rtd1625_gpio *data =3D domain->host_data;
->>> 	struct gpio_chip *gc =3D data->gpio_chip;
->>>
->>> 	/*
->>> 	 * The second argument MUST be struct gpio_chip *.
->>> 	 * If we pass our custom data structure here, the kernel will panic la=
-ter
->>> 	 * in gpiochip_irq_reqres() when it calls irq_data_get_irq_chip_data()
->>> 	 * and strictly expects it to be a gpio_chip.
->>> 	 */
->>> 	irq_set_chip_data(irq, gc);
->>>
->>> 	irq_set_lockdep_class(irq, &rtd1625_gpio_irq_lock_class,
->>> 				&rtd1625_gpio_irq_request_class);
->>>
->>> 	irq_set_chip_and_handler(irq, &rtd1625_iso_gpio_irq_chip, handle_bad_i=
-rq);
->>> 	irq_set_noprobe(irq);
->>>
->>> 	return 0;
->>> }
->>>
->>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retrieve=
- the
->>> gpio_chip instantiated inside gpio-regmap.c to fulfill these requiremen=
-ts in our
->>> map() function.
+Ok I understand, thanks for the explanation.
 
-Why is gpiochip_irq_reqres() called in the first place? Isn't that
-only called if the irq handling is set up via gc->irq.chip and not
-via gpiochip_irqchip_add_domain() like in gpio-regmap?
+Thanks,
 
->> This is all good and needs to be depicted in the cover-letter and/or com=
-mit message.
->>
->>> Before I send a v4, I see 3 possible paths:
->>>
->>> Option 1: Keep the accessor (Current v3 approach)
->>> We keep gpio_regmap_get_gpiochip() but I will completely rewrite the co=
-mmit message
->>> to explain the custom irq_domain_ops.map and lockdep requirements.
->>>
->>> Option 2: Let gpiolib create the irq_domain via gpio_regmap_config
->>> Instead of creating the irq_domain in our driver, we add all necessary =
-IRQ fields
->>> (irq_chip, irq_handler, irq_parents, etc.) into struct gpio_regmap_conf=
-ig. Then
->>> gpio-regmap.c populates the gpio_irq_chip structure before calling
->>> gpiochip_add_data(). This prevents an early return and allows the core =
-gpiolib
->>> (gpiochip_add_irqchip()) to automatically create the irq_domain for us.
->>> Drawback: This adds a lot of fields to gpio_regmap_config and might vio=
-late the
->>> original design philosophy of gpio-regmap.c (commit ebe363197e52), whic=
-h explicitly
->>> states that it does not implement its own IRQ chip and delegates it to =
-the parent
->>> driver.
->>>
->>> Option 3: Drop gpio-regmap entirely (Revert to v2 approach)
->>> Currently, all drivers using gpio-regmap (mostly simple CPLDs and exter=
-nal I/O cards)
->>> use regmap-irq to get their domain. Since our SoC has a complex IRQ rou=
-ting scheme
->>> with multiple parents, maybe gpio-regmap is simply not the right tool f=
-or this
->>> hardware, and we should just implement a standard GPIO driver directly =
-using gpiolib.
->>>
->>> Which approach would you prefer upstream?
->>
->> This question to Bart, Linus, and poissibly gpio-regmap stakeholders. I'=
-m not sure
->> that my personal opinion will be the best fit here.
->>
->
-> My preference would be for #2 but I understand that this could risk getti=
-ng
-> stuck in endless bikeshedding so I'm fine with going #3 with potential fo=
-r
-> future refactoring if we have more similar users.
+-- 
+Romain Gantois, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
-Yeah, I'd like to keep that stuff out of gpio-regmap. But I'm on the
-same boat regarding the refactoring if we have more data and
-potential users.
-
--michael
-
---ab88639452d187061230192ab1490bf4846f6d9975e50bf2597a3d568188
+--nextPartkwe-YhX2RNmWXg_K9c85Xw
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCaibUhBIcbXdhbGxlQGtl
-cm5lbC5vcmcACgkQEic87j4CH/hoHwF+L2/C0SzzRn4Jx1XywdW3IuoaQvOH/CyM
-tM+DiaJqPgiaiQHKQPw34Zd2pdQ6KAWfAX4i8MWoU3pRuIBrOY9/uz1/yXmfdz0h
-BO8TtdBsdvvFAiFlxOBrtRXZDI/pOWJBA7U=
-=N+gM
+iQIzBAABCgAdFiEEIcCsAScRrtr7W0x0KCYAIARzeA4FAmom2jAACgkQKCYAIARz
+eA6Kdw/+IvNTcDnK8CkAkEHWwWhIAZQYNqPrbIIAqQUnCoicoZaPGqof3+YMIsbi
+jBJlkDj9LXlxB9RvjGBMt48PajUlUcB4jGQDXOGG94nvO8TFj43Nn5yHfJ3L7xZS
+p7xbezI1Txhkfb3m8ddZ+XTGOH9lHH1+aBWf9uX0j12cIxfHAkhd21CdwRGZhsnn
+MScyK1lCNfWpmShL+wOGK8hfw/fkJrKMKshSBJdNTdx8Nv7Ujj2qoy4rt0PYTadH
+CAY87MUT5VMLQsgf+e1GFu5l0Qchb3URYPf6zexy5bPLSIYiAFXA20xUa7yxP64i
+BuNR65pgET4JltJKUSULVCgQ97qnNoJuGiJalQ5pJTuvH1oDtJ/lPmpZ7NA2aUO4
+XzpeNcPzgOVDfwDkS3OhgoV77cOS0VYTWl/GFZkKdCwr+FAQ0Vic5BvVhDKwCIlS
+iONnF22RdMjroHFoer0plYV18k/9Itv72v5DjzQe7LSvHeeq4oh/Wo5SOaAClQwI
+paA/fXXxvS/i8KNaaaHEm/UwuAbmEQ6aIgcLhjuelYrF7gg1sm65t6KLmuW/TF4K
+Wr8sIn63QHwa6931mPkxUjk4CIXtcMb0BdFgFCrsvwbttyqdJh8CUNFc98fmX8Xv
+43wYU6/ZuZZpx3oU4eNjEXEOV7VDOkFRPSfgmSaQGiJS1FnXYWM=
+=X4hH
 -----END PGP SIGNATURE-----
 
---ab88639452d187061230192ab1490bf4846f6d9975e50bf2597a3d568188--
+--nextPartkwe-YhX2RNmWXg_K9c85Xw--
+
+
+
