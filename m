@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12B349252E;
-	Tue,  9 Jun 2026 18:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C4B33C1B4;
+	Tue,  9 Jun 2026 18:15:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781028662; cv=none; b=LmZHJI+j9xWqXvNiDR/N484Qs6XbOmboyZIrQ4o8+yYAVTsyEwRQY9Enb/k8RSBV9pJ3utpN0eZWSJxLnEHcW5Zl+8rvy5oJGZgXbXBdVOW7j1W5/i/y+IInnp57VBg81HwZpcdpM7oef39njAz1x5mdOI7N3Wyjy7SuBDx7vWM=
+	t=1781028932; cv=none; b=qBDLHuSU+EAKj4GWNCSm+hDCSkl9wtrSqfmj8NLFwXA6Ki8Aeexp21YJMv3o9LrhfUHstySwpGrSjrCZvJP0SbM8/7HQJwxZNln0h/eNHSm9UNpcCYRviTnCB1pbDoZz07vRmPh1O0+O/7sYTsOhwLmWQw9MYwFTFS8DmrZl5aw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781028662; c=relaxed/simple;
-	bh=bsjNyBxRz8YS6RKsFP6WDu6uG2sl4t0KVw70RlXVf88=;
+	s=arc-20240116; t=1781028932; c=relaxed/simple;
+	bh=j0UdTejC7lDY6owPw/rHcM5IerPjB3ei0m6x7ygaqeo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AtEqcGPt0i/ySnjeOEPN61NdoQeBq5+jIaJ1anTL7s23+cdFnf65ylBxtUkDrsefe1jGdVqE1+doW8ptlg5PI7X26yqEOoED1l7gRuH2LUYq5cpFpMDNSsUGbdcIZw7JJgOkVOK+fKgGuOcjFIFNFn5zEN3ZDDKUraE0Ji3YWVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MMua/g8T; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=btbl47VtPHb0ff0iG8+gu2i1zr6srYngsyhVKzmleBch0INQ2PMtsItDzLYuBG2OkUk7kxjL/t1IaO+Uscq1ayPc/ylfSfI6wlhKT2C+HkJvmkBVDqbKaB6uWsQofogJSaro/QWD7ksYZ3JHZ47ZmYGWC9sUBlDC3OzTeM3ap8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I5l27M27; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MMua/g8T"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I5l27M27"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781028662; x=1812564662;
+  t=1781028931; x=1812564931;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=bsjNyBxRz8YS6RKsFP6WDu6uG2sl4t0KVw70RlXVf88=;
-  b=MMua/g8TGQGHKGE9s23t2tix+ChmC50AjBLi2+EOj0cCl70+DwscaCcS
-   zm6S5J/BN+nRzTJCoM6PdXAAqHz8DgPfJQIPQbcWwpdwZZ5XggVHvdpOV
-   1nipPC5JKZ7vbpeFa6AZcEYZnUmOjQiNdlKLD4b2fp1Kj+/E3qqaf2F4z
-   rGLTTUp4cFElOOnkgFZ+Aiom4oGsAMHgJGP2ajuzUwmmGXHjNAtfFbxeK
-   pGQo20o72CxzYhPQP06Xqij1iibmlZflPUh/+idR5J2LruBopAKUa0/zL
-   Byhi7Y1yPJydPztNcSJ4ST/QvVJFG6kC1wC60iZXL4AXsr2vgfKyL+RtZ
-   A==;
-X-CSE-ConnectionGUID: 4G2Vz28JTwWn1PWmYJAdcA==
-X-CSE-MsgGUID: Luf3IWtyRiSpxV35WCmgFw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="85427737"
+  bh=j0UdTejC7lDY6owPw/rHcM5IerPjB3ei0m6x7ygaqeo=;
+  b=I5l27M27KISj/ih++qrKuaE5HIKMqIOK6uhWyriSms+NWd1DKqnw5ALs
+   gmnH7mv9AyQFg5abykO+OEhpIRv44p8HhQG6G07eq/Th6/7smm6+D6iM1
+   Xq16HRrJtwOo5MgXFhdroJjSCFza8hmzqaVao2rkKcQM4Rni7/NHJZJtu
+   IKjGnVsX4xYBUJg9Y7a8EmF2ezi33/EukI2f24O2/CWEigbxyuRhgGirO
+   TtkRb8vg298gu7m0tgdWF5F1dRUSuh2p9IisdvkHkcSIKTLTcKhe4yqkI
+   +3KsD7/uU/HQ0PAq96j+dtp6DqLKtmPhV2Ox7ZbSfXuY6kmmldulFC8Oa
+   Q==;
+X-CSE-ConnectionGUID: qmFGsM+0Sm6GoKPssamscg==
+X-CSE-MsgGUID: iCAI51w3QuqlUH4TEK1+CA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="81809195"
 X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="85427737"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:11:02 -0700
-X-CSE-ConnectionGUID: qkJMqDy0Qai6ZCHnTuN7jw==
-X-CSE-MsgGUID: 7DLVE2nEQlK47x9HVPjrog==
+   d="scan'208";a="81809195"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:15:30 -0700
+X-CSE-ConnectionGUID: 9kniI4o8RyKcX0xGasrMTA==
+X-CSE-MsgGUID: pMo0qlBaQIOaUKcLim9kUA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="244791961"
+   d="scan'208";a="245791285"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.162])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:10:56 -0700
-Date: Tue, 9 Jun 2026 21:10:54 +0300
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:15:26 -0700
+Date: Tue, 9 Jun 2026 21:15:23 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
@@ -57,11 +57,10 @@ Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
 	Conor Dooley <conor+dt@kernel.org>,
 	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v2 09/12] iio: dac: ad5686: implement new sync() op for
- the spi bus
-Message-ID: <aihXLuU5m8ngxm80@ashevche-desk.local>
+Subject: Re: [PATCH v2 12/12] iio: dac: ad5686: add gain control support
+Message-ID: <aihYO_X9YEqabaFi@ashevche-desk.local>
 References: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
- <20260609-ad5686-new-features-v2-9-70b423f5c76d@analog.com>
+ <20260609-ad5686-new-features-v2-12-70b423f5c76d@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,51 +69,73 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260609-ad5686-new-features-v2-9-70b423f5c76d@analog.com>
+In-Reply-To: <20260609-ad5686-new-features-v2-12-70b423f5c76d@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 09, 2026 at 11:13:04AM +0100, Rodrigo Alencar via B4 Relay wrote:
+On Tue, Jun 09, 2026 at 11:13:07AM +0100, Rodrigo Alencar via B4 Relay wrote:
 
-> Use of local SPI bus data to manage a collection of SPI transfers and
-> flush them to the SPI platform driver with the sync() operation. This
-> allows for faster handling of multiple channel DAC writes, avoiding kernel
-> overhead per spi_sync() call, which will be helpful when enabling
-> triggered buffer support.
+> Most of the supported devices rely on a GAIN pin to control a 2x
+> multiplier applied to the output voltage. Other devices, e.g. the
+> single-channel ones, provides a gain control through a bit field in the
+> control register. Some designs might have the GAIN pin hardwired to
+> VDD/VLOGIC or GND, which would still be fine for this patch, that allows
+> the scale property to be configurable with two available options.
+> vref_mv field is moved down in the ad5686_state struct, so that
+
+Slightly better to use same terminology as in C and documentation, id est
+
+"...the struct ad5686_state, ..."
+
+> overall size increase is reduced.
 
 ...
 
->  static int ad5686_spi_probe(struct spi_device *spi)
->  {
-> -	return ad5686_probe(&spi->dev, spi_get_device_match_data(spi),
-> -			    spi->modalias, &ad5686_spi_ops);
-> +	const struct ad5686_chip_info *info = spi_get_device_match_data(spi);
-
-	struct device *dev = &spi->dev;
-
-> +	struct ad5686_spi_data *bus_data;
-> +	unsigned int capacity;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
+> +			st->double_scale = false;
+> +		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
+> +			st->double_scale = true;
+> +		else
+> +			return -EINVAL;
 > +
-> +	/* read operation requires at least 2 transfers */
-> +	capacity = max(info->num_channels, 2);
-> +	bus_data = devm_kzalloc(&spi->dev,
-> +				struct_size(bus_data, xfers, capacity),
-> +				GFP_KERNEL);
+> +		switch (st->chip_info->regmap_type) {
+> +		case AD5310_REGMAP:
+> +			return ad5310_control_sync(st);
+> +		case AD5683_REGMAP:
+> +			return ad5683_control_sync(st);
+> +		case AD5686_REGMAP:
+> +			/*
+> +			 * Even if the gain pin is hardwired on the board, the
+> +			 * user is able to control the scale such that it
+> +			 * matches the actual gain setting.
 
-	bus_data = devm_kzalloc(dev, struct_size(bus_data, xfers, capacity),
-				GFP_KERNEL);
+Rebalance the line lengths to
 
-> +	if (!bus_data)
-> +		return -ENOMEM;
-> +
-> +	bus_data->capacity = capacity;
-> +
-> +	return ad5686_probe(&spi->dev, info, spi->modalias, &ad5686_spi_ops,
-> +			    bus_data);
+			 * Even if the gain pin is hardwired on the board,
+			 * the user is able to control the scale such that
+			 * it matches the actual gain setting.
 
-	return ad5686_probe(dev, info, spi->modalias, &ad5686_spi_ops, bus_data);
+makes it more consistent.
 
->  }
+> +			 */
+> +			gpiod_set_value_cansleep(st->gain_gpio,
+> +						 st->double_scale ? 1 : 0);
+> +			return 0;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +	unsigned short			vref_mv;
+
+_mV
+
 
 -- 
 With Best Regards,
