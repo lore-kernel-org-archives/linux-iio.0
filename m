@@ -1,81 +1,165 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23BBD368D55;
-	Tue,  9 Jun 2026 13:28:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09592266B72;
+	Tue,  9 Jun 2026 13:32:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781011720; cv=none; b=HkKJpUzMSG13VsRI0FTZ+QmGd+HUSNxqBskzS3yNJmdpFmDgjG4S6+xzHVZTRq775fnDY3pYA0ohN8dKIci2qZcvHzXiRPZnjDqkP0ggD1M5yB+aAL6dWgaZbp0gykKVi2V+Zd6/lUbYp/ZO2d3BSpHRnYvpx/MyvvZouBMMY9U=
+	t=1781011941; cv=none; b=ElgVkrhHjPiMULbKSNh86jNqw8XqQGr8bJkzQvPDAUluYks+E1B2X94lnIXm4cb3KUW6HHdURDdQi8fFok+PhLHl0PitVxmie1cYl12WM7C+tsLTKd0BkRj9NUhli4A2RKRnRhV4H4ZZqQusA8Xo6Ik7oNcuO5+MgGN+Mqf9PsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781011720; c=relaxed/simple;
-	bh=+2DobK6PWj/gRo+sYKQRjT3nRO6wDy9v2BbBlQOiL0c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=faA67uuEmuqKgAeYnIu3KZzTzXmrCqYGmGb9pr7u09lZYNUwzDImyNszjl8cQTg2eeqJRhsyRbA7npv0CplX0SZP8j5b9cUUJvDuWlTpyVvfpRUDfU63fBlx7yD07iN7a/F3fFSJmXix9c2L3un3y2G5z3rTPqHFfGlLAKWqIPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kb4AG1u7; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1781011941; c=relaxed/simple;
+	bh=iwYiXIT9llWB6yjm72Z8ZHdd1IzHCnWdkfebl9GXjGc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=SpZavfA+nlA5SZMe0GXmcdT8DI1GDZdM7tppwwEVxpPxwcWjcQzgR7xthHuRoXmP2vNYQTDA/PdxAuudFWka4XtfkPxkQRVP6Md3lCzLxepMXx6LF8XHuzvTJ/EikOu1xW4jUd2shdJRwuv9rw8BUbhBuKC0/cn1SWQo5JOT5vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YYe+wnSu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kb4AG1u7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781011717; x=1812547717;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+2DobK6PWj/gRo+sYKQRjT3nRO6wDy9v2BbBlQOiL0c=;
-  b=kb4AG1u7Dtk7FdWAV/qzwM8xYuuht5fRTgMxW/MhG6AmWEeldugIB52e
-   IEyUGhnQTSt2cmU7XYe/04rvyZQpR61+DS7XInMXO43hvLroBju9MYHk2
-   bAN/ObrDuIkuKCMxEEssVMAGC4dBnIDj3Vbi5YivUGrPeBVmQnPdoHq1M
-   7ASLSdnmysRuYRhowGZCJ/l2G37Aumnll6WP/ssZdA79l+IG1c055+R7c
-   wrwDQvLTTXRMKViZnerwEu4JGP2n1vD1PWmvM+jVC/kQcMbzggtLBaVAK
-   uAyRQEgNq+0Yloe6fWI+lKhplMrwpyG0EhmPp4Gp/trvc78yOuxdeGz0T
-   g==;
-X-CSE-ConnectionGUID: +8TVKRgzS6C/utl6ghPUHw==
-X-CSE-MsgGUID: EfPv7IRTQi2/X7aQ9aTPzQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11811"; a="107207616"
-X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="107207616"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 06:28:36 -0700
-X-CSE-ConnectionGUID: etG0tbUdQy+E3LaZph+UkA==
-X-CSE-MsgGUID: rgW8aYkjSQiR5b1zIvFoww==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="245710022"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.39])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 06:28:33 -0700
-Date: Tue, 9 Jun 2026 16:28:31 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Hungyu Lin <dennylin0707@gmail.com>
-Cc: jagathjog1996@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: bmi323: remove unnecessary cast in
- watermark limit
-Message-ID: <aigU_yoAQxKb6POn@ashevche-desk.local>
-References: <20260608121558.85429-1-dennylin0707@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YYe+wnSu"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BEBA3C2BCB9;
+	Tue,  9 Jun 2026 13:32:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1781011940;
+	bh=iwYiXIT9llWB6yjm72Z8ZHdd1IzHCnWdkfebl9GXjGc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=YYe+wnSuZoYQxBvLNoZP6AFAVxZUg31hrUbVCEplN54opDfLuRerXNoIDIgV+dfLG
+	 jEdEkfsK3xWeqBhCoim5sLH+L0LY8t5LU99o1cGS5vyY083swFkalFgV1e9g0RvXWT
+	 8bOMXOG7zvFNLEzH9LtPqB51gkrAcDeogKmmWzoFzjCrlfJU1a3sJf/+cJ41GxXzr6
+	 vZBBgaXWsbeWThf2W7Zm17RurXrSB96ktZfZHbOXuWMQRcfA1MnRZpIn7R2Fb0sop7
+	 9ItW1Q4MIwNehlBQK7R4jHehp3oOFuDmubYzIx12dP+pxd4oJOiVjZhLp/kY69d3KI
+	 5pK5x/4s2QwBQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946E3CD8CA4;
+	Tue,  9 Jun 2026 13:32:20 +0000 (UTC)
+From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Date: Tue, 09 Jun 2026 16:31:58 +0300
+Subject: [PATCH v2 1/4] dt-bindings: iio: adc: mediatek,mt6359-auxadc: add
+ mt6323 PMIC AUXADC
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260608121558.85429-1-dennylin0707@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260609-mt6323-adc-v2-1-aa93a22309f9@protonmail.com>
+References: <20260609-mt6323-adc-v2-0-aa93a22309f9@protonmail.com>
+In-Reply-To: <20260609-mt6323-adc-v2-0-aa93a22309f9@protonmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Lee Jones <lee@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>, 
+ Roman Vivchar <rva333@protonmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781011938; l=3261;
+ i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
+ bh=2ntdcG3iJNF7AwclR2zkmNJdf2x17p5Cqag448ZGi54=;
+ b=Np19izuOKD2w0vVHaCiXPsgFwBRAk/H3d8qkFHsxzWOuCGGcj3mFqVTgxRQzxvhcIUv/2/XWc
+ TZH3+ze3YorDGEjWp623VeU8CcLKDZbS9uGOrFHjhMPG/4i4Smd+/hT
+X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
+ pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
+X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
+ auth_id=777
+X-Original-From: Roman Vivchar <rva333@protonmail.com>
+Reply-To: rva333@protonmail.com
 
-On Mon, Jun 08, 2026 at 12:15:58PM +0000, Hungyu Lin wrote:
-> Remove the explicit u32 cast in the watermark limit calculation.
-> 
-> The BMI323_FIFO_FULL_IN_FRAMES macro can be used directly with
-> min() without triggering type issues.
+From: Roman Vivchar <rva333@protonmail.com>
 
-Right, now it looks much better.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+The MediaTek mt6323 PMIC includes an AUXADC used for battery voltage,
+temperature, and other internal measurements.
+
+Add the devicetree binding documentation and the associated header file
+defining the ADC channel constants.
+
+Also change the description to 'MT6350 series and similar' because
+the binding already includes more than mt635x series PMICs.
+
+Finally, add the MAINTAINERS entry for the header with ADC constants.
+
+Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+---
+ .../bindings/iio/adc/mediatek,mt6359-auxadc.yaml   |  3 ++-
+ MAINTAINERS                                        |  6 ++++++
+ .../dt-bindings/iio/adc/mediatek,mt6323-auxadc.h   | 24 ++++++++++++++++++++++
+ 3 files changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.yaml
+index 5d4ab701f51a..852eb7336a5a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/adc/mediatek,mt6359-auxadc.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: MediaTek MT6350 series PMIC AUXADC
++title: MediaTek MT6350 series and similar PMIC AUXADC
+ 
+ maintainers:
+   - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+@@ -19,6 +19,7 @@ description:
+ properties:
+   compatible:
+     enum:
++      - mediatek,mt6323-auxadc
+       - mediatek,mt6357-auxadc
+       - mediatek,mt6358-auxadc
+       - mediatek,mt6359-auxadc
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d1cc0e12fe1f..2551c8cd9e9d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16256,6 +16256,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+ F:	drivers/mmc/host/mtk-sd.c
+ 
++MEDIATEK MT6323 PMIC AUXADC DRIVER
++M:	Roman Vivchar <rva333@protonmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
++
+ MEDIATEK MT6735 CLOCK & RESET DRIVERS
+ M:	Yassine Oudjana <y.oudjana@protonmail.com>
+ L:	linux-clk@vger.kernel.org
+diff --git a/include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h b/include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
+new file mode 100644
+index 000000000000..6ee9a9ecffc1
+--- /dev/null
++++ b/include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef _DT_BINDINGS_MEDIATEK_MT6323_AUXADC_H
++#define _DT_BINDINGS_MEDIATEK_MT6323_AUXADC_H
++
++#define MT6323_AUXADC_BATON2		0
++#define MT6323_AUXADC_CH6		1
++#define MT6323_AUXADC_BAT_TEMP		2
++#define MT6323_AUXADC_CHIP_TEMP		3
++#define MT6323_AUXADC_VCDT		4
++#define MT6323_AUXADC_BATON1		5
++#define MT6323_AUXADC_ISENSE		6
++#define MT6323_AUXADC_BATSNS		7
++#define MT6323_AUXADC_ACCDET		8
++#define MT6323_AUXADC_AUDIO0		9
++#define MT6323_AUXADC_AUDIO1		10
++#define MT6323_AUXADC_AUDIO2		11
++#define MT6323_AUXADC_AUDIO3		12
++#define MT6323_AUXADC_AUDIO4		13
++#define MT6323_AUXADC_AUDIO5		14
++#define MT6323_AUXADC_AUDIO6		15
++#define MT6323_AUXADC_AUDIO7		16
++
++#endif
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.54.0
 
 
