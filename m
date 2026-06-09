@@ -1,208 +1,578 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazolkn19012016.outbound.protection.outlook.com [52.103.11.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31BD336212D;
-	Tue,  9 Jun 2026 19:51:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.11.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781034685; cv=fail; b=qK3r1NU08bHrJggIvPWD+TsSMRfqHz6Kspmmc7RUU42ck5EQK6na/TsXMVSfUuhSyGvUbdDLfzENFjie/9BuCz5+giqoal6jOpp6q+6/4XTlUPhoccn57yr5gDxXydGHWuBkQAjJZthsO2c8JsNXr5S+BYXz9CXYptf/fnjjX+c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781034685; c=relaxed/simple;
-	bh=LtUW/poypDDX9Slw6v7bi1HmRAv75Q8xJLY53NOq3HY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tZTvBISnbU1LirnJDK5Xlk4t67ofq7REuWcNoSGQ/vmI/DVSpGah/JUiub49KY/LXY+/nltruLePtbhPvebsXoT8fr2nBuzyhgAf5GbpSjbb5TvHHy3gGEMO0EKQlXg2bezI0ZaqplSl85tqwr2ZGmXA3T0qTv1LFnIbdyEoZNI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=kr68Bwb+; arc=fail smtp.client-ip=52.103.11.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A325B40D565
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 21:47:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781041679; cv=none; b=GXv+MXtwV8pQr2dAqKBjIJ91uimhFTFIaNJQwsE8JdL2rNq1mgCAb4Z2Tm5N3I5weU+3MPsAPAjnltTGFaTdcfjW1NkAAF+vIaf7TQbaD1JvK4dQRVYaI4u4XAc+vYgpaGtpB3RPACWdE623Tf1OC3cpooQ1Q3FTIZgK4QR70nM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781041679; c=relaxed/simple;
+	bh=+5QjyCIXqoOD2KG8ssN0Jyq+DP5GNSKO2p3MUpiIhNk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uRzaT/6Lc/yyaQyXPh2zSDD6WP+89zn+BGQSYJtvx++VK41TW9WSvkoq36xHs+DS6BTlR0vhC29HO5WqnWAiHg2BQb68WuYQniRXTOFYGHIFBx6IGXP+JWA0/zu43ApsXXWn++1WYlXTWlI7sZUA/f86HEHxttrh2nd9qQhNBIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dv2/jfWs; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="kr68Bwb+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PUvtkp9YuoCtx0wFz/XPXpVCnCC8IexCG7KfxvW/kiW+Rh3vckepeZ2XwpFYEmngoawee0YnOymH8Omvuaif/KY1wKjmQP11QPreZg2xzmTwM8OlpMotGS80yqRTmGMgu/3q6es2DmMVYtWGabXX9zWr9bju00SNu+2lMOPSDfSE/Pm+thmxxHECKceXxrBtafdJb6t8HVd0MB0WVH1b9FbM/LCvf5ZfFqJg0wdPlxzmOmSBLPs2puZ98LUNImI7T803+CbGJavD1qZfqJVc5XYI9ApO0kCXIiTsNcCRAdPU/M8mSAQo4SZz527FAYC1BVML1T6HNjCV36anG5EGaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mjPVfW7E0uLs103JPukwkRgdsD8ogCjHEXhIG9Gtpfk=;
- b=ecuaiVhSVWs9KuQI/xebHpeJnKLUfByzIMNvuF2GmhoTy4/XYcbfr8Z1aEEzQ4ZctpZFoBt1uhfAM5aq1DO6JpFmShSXSFQAw4+73KQr9eMgGro42HkLJj4IsW2Qetdz6vk8wGqbrU6zD9jMLnIQX5ZcQJ6V5Gjx+439PBiAr0gXWK7bWuhbYeZR14B7/O6OxsXb8e1qAb7XRn3LcBjV4CdrxzIfoWLb8A5g5cx3BKlsHNPTVVqs90Yj0v6TYkDnjYu90n2I17IoLr/mLOfFuvN7mNKWX4mi81AxTYbMaCjSs2hX86F3irm9y6IARmh9JQ0HvbtmZoZUT7qUFWqdkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mjPVfW7E0uLs103JPukwkRgdsD8ogCjHEXhIG9Gtpfk=;
- b=kr68Bwb+CFpaViRzXJjOg5aA+lPv9wz9r7KkiVW4xnuPpKKMnM0BUm8TMGgHzCbCl7EuHdU2doEU75AoN92WP2zVHpc2qQdRCwWaBILquQb4nEjHa9Je+alEAXwBXpNqSA0wFzaKhdaaSvlCJG9wBWHUxj4spXgCyS42wHmJtyAVyGbyeHEW0vQf8PJMOYabDh431Uyh+tR+ZfixUWBE34Ro+gzfCiqyHYg6VxfmnQS7cEbP/K+o8GY5mbU9COfDAGlnyeqnag70q+yqXN7PdbLalKVUFvqUcXyWmPtKS+ADLeQsG2BB11mte9Jc8b7vHkOPuRhR6XI0/y7I3NoC5w==
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18) by DS4PPF57586ABE6.namprd19.prod.outlook.com
- (2603:10b6:f:fc00::a1d) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.11; Tue, 9 Jun
- 2026 19:51:14 +0000
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.21.0092.011; Tue, 9 Jun 2026
- 19:51:14 +0000
-Date: Tue, 9 Jun 2026 14:51:09 -0500
-From: Chris Morgan <macromorgan@hotmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-	heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org,
-	robh@kernel.org
-Subject: Re: [PATCH V10 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID:
- <PH0PR19MB99733822F73EF61B82CC16C616A51D2@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260604201832.60656-1-macroalpha82@gmail.com>
- <20260604201832.60656-4-macroalpha82@gmail.com>
- <aiL0g8d0Y_JeAC5c@ashevche-desk.local>
- <PH0PR19MB99733851DADB0671AE5F76B788A51C2@PH0PR19MB997338.namprd19.prod.outlook.com>
- <aihiM5Ao-vuAsUyh@ashevche-desk.local>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aihiM5Ao-vuAsUyh@ashevche-desk.local>
-X-ClientProxiedBy: BN1PR13CA0002.namprd13.prod.outlook.com
- (2603:10b6:408:e2::7) To PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <aihurag8rYoaFxvy@wintermute.localhost.fail>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dv2/jfWs"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-396bed274b9so53037181fa.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 14:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781041676; x=1781646476; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hGfk7FpNxoN7FBp84SSHRB57Da80W+DmQSUfqc67OcI=;
+        b=dv2/jfWsvb15/hf3xKi2QrRmRrerH/U0NTNK2NzlMJF78h5VU26SgQvyOEqO63Lpt/
+         UaHTVZEIcmujvI0/8NiAVEXjxDSIf3x/qXfO2nw8KlkDS+B2Ra+K2L7lspJ++P0o78J3
+         qzbL1KnOT2lLdvaH5sV8txWkfe4T13oKIzckqqozG0DSFd8njIPW5dQoaieWdWpH+yXl
+         wRRAyhldhhsR3glHMtAZSaOJRRKroZmJ1w5dBAWqRgrOpCnTUZ3tnq/1U5y8A+VGfW72
+         6oq2TbtSXT5/+yd8YR9+1Z6U2bOkzB62i/1S7YSc6B9Kl6f3GBmuOHKGqkJU7JIMaQAn
+         rLGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781041676; x=1781646476;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hGfk7FpNxoN7FBp84SSHRB57Da80W+DmQSUfqc67OcI=;
+        b=QHQYx+07FjabpUHaoZups8WE+ruA55C+cky2HUZx99yrNQCCJ4LsnsE4QLW05pGVI6
+         OnB8jeg3FlpcZ6+vsd9GwH+RcErd8gseXsfkmAD6cTEXokYMF72dstxgJK6/cUSBcmkQ
+         naZP2L6qMmw3WQ1fKXlTmkYik+fxaTzYcsJzSW2uiHG+42jsfN11iHDOZLpBT/HjXniW
+         M/E4ZCKHHhnddMPqsBUjCOIL0vHN136adH9GiOd5/7zH2Vv1dK8Jg3SQp3DI768monHj
+         KJjKgu2fcK9bcKnsECZLIDnV+vYCA/+rn4BlzDdBXfxIi2HzqL+/IaoX7O/+Era8UMUf
+         jROQ==
+X-Gm-Message-State: AOJu0Yw9MRG9867sCFvdnvb4S6oQkrUNkwLEgRdFeSm4hlhWqitZRahS
+	caKTWNNlwdZa2KW6FEMiXn1lEwV+RInvKnQlvBxNtnskzLSR//9DuB/tsdHu198v
+X-Gm-Gg: Acq92OEwUtZ2bwuwPeq9m1TMWrPAAZANdd9qRdaD97JaJwLH108gsjJ2yVVUdsCu/eN
+	ZC4zU5mGmVlsJRqGiorU02fXjDyu2lXwTVCU4Ho/EgimclLEEOC2MYSVEUIxEglVboHPPI55Hn0
+	i6cTo0felisAvlvumbvEnKlPnLR5grGJJAQsV8/8ykN5erQrt4d/5fYwLtktu/pF6Dn86WYT9mr
+	Q1FTaXn/at9/DS5oJLM2p59uY3jw6o5lH4BdvomWEL6NCtgzIdji55oCODaWJrfGwc9T+CAsSFy
+	K+WCPPi7p+xQe6CQ9pW8iHu5cS6b7sr22Ul4vyWbg41EDA0dKbDPSg2nJTJ+Twomam9Afznix5B
+	zXRFpPA331e218Zi5SQ/Z/tBhYHEca/9pVMjfcu0qXpVP5SHoFvbKb8uf89MrUaZkj+6tC5ZljH
+	MwCyrGLQAXwzwuvo1bkCVUwQ4s0TBMPESUfpORjEd+z4R+7M3P8nklvjJxs253PN5YW9A=
+X-Received: by 2002:a05:651c:220e:b0:393:903c:2258 with SMTP id 38308e7fff4ca-396d08e3ff4mr64729811fa.16.1781041675533;
+        Tue, 09 Jun 2026 14:47:55 -0700 (PDT)
+Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-396ac07aa0csm57996191fa.10.2026.06.09.14.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 14:47:55 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	Md Shofiqul Islam <shofiqtest@gmail.com>
+Subject: [PATCH] dt-bindings: iio: accel: Convert lis302 binding to YAML schema
+Date: Wed, 10 Jun 2026 00:47:53 +0300
+Message-ID: <20260609214753.4479-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|DS4PPF57586ABE6:EE_
-X-MS-Office365-Filtering-Correlation-Id: 30654a6d-6085-4117-9982-08dec66076c2
-X-MS-Exchange-SLBlob-MailProps:
-	znQPCv1HvwUXBahuwteIkQeW30lJPuxOwwMqWN8zwtxT59/18TtI5easvhHGN0AXaTa3e7B7e9g5/aGOySUppcOcTVnEhG7iyyLMi48jZaU1K8L+h+tGCbCUA1CYY1jpxiA15nhsceoi6ucyfNRcPpdDCiahMsWMj6CsAqpJPtSDl/dbnrvoFyExrSUMgYSIUjLmZYGRYPrNazgooAE1j8BduPBxfKayNmWxyCutcne5MvJBzCK/rAze4qLtd7Zpeu7pw9cduG7nuK/gVZJz7cZJXWWUL2ZRab6uf4Fzv5YzPWGKKFk6x09QeLYrr2HkVvsrZsFoMOwW6dk7lSvpyc66PiAPQFTEnfyyjMjxqqkecmWSBXKBxSYSmJMsdN5nVopWJhv60HypXptj9ANZJOBPZS8IFhatgQloqNuBTi9zI6s6mZ2tvD03cGynZlRfLcxaPYAd3jz5xAKvKvAUEjemmSQzPD2M52bj+6MS8k2BBpEwbynCj/o8sZTuydwUt4dIBR5BW4Qc6/A60lRQz7+7roL6uHlc0QwDm5OoNTDQRn9Rd75ODIjzkNQo2oB1BfUYm8gTeeB2xqbBIbF0bRjU4OCtyLPiMCyeor9T/agbB1sKPCrXOiN7Rat6J4+oFxW2NsGb5yJm5YCZqfWMksRsbVkivyr5dUAO3zRVJmqlYh09BxRLazlVJt7YeE0X1nwYRtL0Bc7sNGmKfp2jBUV1WUD5Aea9uNoS8sW6VZDSBfFQypNiL8/J5qMF/EEByqoIL9rnnpU=
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|23021999003|15080799012|51005399006|8060799015|5072599009|25031999004|37011999003|24021099003|19110799012|6090799003|3412199025|440099028|56899033|40105399003;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?6MEjvzxQRHGNxVsnUhTBDZzuN3kRqe+TZTEyopQUTTr1psgG+M+vH/KqMq1z?=
- =?us-ascii?Q?+BxJUBsWFq9XGMGGuLuo4s0de7ZWnRmqHc3/pVBCr2u21N32Pm/kobgxITA+?=
- =?us-ascii?Q?qOJlklxRApsbtBlgifdHRDBBMp9y3TU2//Z7f+pectqP6tVx5TELevIQCWds?=
- =?us-ascii?Q?NYYDPpzx7k4/N8orC1hPxwgtebm3ZSE1ZAC5ubCrSgXbkgMs2R20PY7i6I4s?=
- =?us-ascii?Q?Kf0xSt77ZhyqaZpKW/BsVq+HaPDuKicAClrvGYdJSqz4mTGN9AeGqPRCI7S4?=
- =?us-ascii?Q?7llx/RT9onxUZVfpRWNburAp5ZvPEB7/uJZGw7BLKSutMqO5H0gGjxQYo8ag?=
- =?us-ascii?Q?2UqHAk38fU2pwr7OXFZkfA+ABhtq5NfEFALzXenjr/xqaUzJiEiUlMYCDMFe?=
- =?us-ascii?Q?dbQHQc3bNUFHEEc4tUUlOYz4w9OsgUsnq6y4IaLZbcSoKs30rtMvHnZHFEIr?=
- =?us-ascii?Q?Ef4mMQRoA/3AIzbTI7ICPwahA1sY3qoA1wvDjgR47zJ0BTO+nx/s7JFqTsZ0?=
- =?us-ascii?Q?0w41z7ngcfJVFYpGyykgI6WgF/40P+Gj98vyv/t1H2rWfLDJblsA1Hni4Hh3?=
- =?us-ascii?Q?ZjYsO6fxWBTUSj41BB+C++xpn45DyuT7jZrinJjo1Yro3MldyWrIfc8EPl8e?=
- =?us-ascii?Q?UmJ8U2OqikVTQVW4G0ygncsUn3ZcX8Bo/pGbKUzVT5KL/XiSNBQIjcvC9PR8?=
- =?us-ascii?Q?9fLTvQ0QnBd4uekS14AvOOM49OAQTLt5NfS+qMTefxjQGQkLoBVqMqzlht4t?=
- =?us-ascii?Q?AQGCU1yfgPtoZn4AjYFIRjhGA3rwo4qZ7DqS/yMYYvMuMGIKFJjpuwXhNuJU?=
- =?us-ascii?Q?m2cEwdTbgKZRn0PELgwaZSGEftfSM+1uhFAkI530O/KwbhO4mzsANY7ymcsk?=
- =?us-ascii?Q?74Y/VXDjOliPwSNjlC5txu9Ih4ZKOwiOVTYKah2rwrZHP7SsPIAXdHs/gHD0?=
- =?us-ascii?Q?o0yRF8yyDHd36OnIUn9vVA3gsCgweIhsBK+uVV+P+lU13h3MlvS/b3V9X6Yy?=
- =?us-ascii?Q?A0K1omDhLZn7QLQlIGoWo8u0LA=3D=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Gl44N2EnOf6LifvZeyHNOM1kxyY67eKxFPCDnt8rirM4KvzGtf/k8Y36CBQJ?=
- =?us-ascii?Q?P1s0ZlI3hkVWJjj79PQ5un8ZhxKLm0dxL3+ljssrToI9xzoGKNi+yypclZsH?=
- =?us-ascii?Q?ZyFte4JXLt01V6NWHuA6Qw0P7ynwX93TxhKayOApa4LuRu3/SQFGHgbgG9cI?=
- =?us-ascii?Q?ge28JpYSN1TmkRAkWNLWnsACoGPub8iHjBp7q9R9ErfkN9RISNfvnUR2bXq0?=
- =?us-ascii?Q?dBfmt97piSdjff/yDJFDAJlNMXzoYglprK8u6Lppy4qmStGu3kieVLvtPTnf?=
- =?us-ascii?Q?D5j57S6DAPVD7i1qdWRNqj9ZPhhYv8O/HTW7y8qrrxdC2YP8SnF0c1PKVgwG?=
- =?us-ascii?Q?PdyYjkHcRqE4T5nc11Bo/DAmIUet/kI/UHIDxltK0c6jvZ1aXOegtKysZ7kt?=
- =?us-ascii?Q?eF0yqChWAUsUb5/zBFmMQ57DRaelkSp52dZuR8A+1/Qcw9zeXWYYdTRhLsg3?=
- =?us-ascii?Q?oH+7Iz1I6XlFXyjnN5ZVkeHXtFUHriJKpgNPjRviFoSBEIsp8oJA6BbadTPd?=
- =?us-ascii?Q?Ct75Uk+VzGZqTCkTE2gQAdZwVRhnWi4EUrO/SeQhjw+fDlHM3Ix7M6FvuQ/3?=
- =?us-ascii?Q?5HQwUb1icALaCBVD3AgECz49BDovBY0AXMztx7m2mVsD59G+rtIvOfMSDN6I?=
- =?us-ascii?Q?cMFpeyI3SgotvuWStf7tDbcpe3IbHIEMmUmhQ7DvcQ16oeKKndMUFI2G0yxZ?=
- =?us-ascii?Q?8Yy4KwSWXnND59w2+TTIaaCzFKDfH5jA+Tmtu75gnktDCsQ9M5XK9I3qcfUx?=
- =?us-ascii?Q?gcjVlCAW59cOccJ9ZLpOF3uLPtRkvhJvCH/I/yiOkJlRkqW89bV/3Xlk7+sE?=
- =?us-ascii?Q?jIclcUdRGXrb5PeetezMKTt6nbqhyaTbbq3qj6bwilvIj6wpCPF8WKOVHun3?=
- =?us-ascii?Q?xOYDn22HsKa9ZosUI2YsCfa7Hc8dt42bQSJuUFfJYyTclWNXfuxWix8VVFYo?=
- =?us-ascii?Q?/BZ5TqdJC/LLm5akQdTSdzTn/yk58XA5kUyuv+lK0r+b3LFB5kWpAF6y8lsJ?=
- =?us-ascii?Q?sZA20xYC9mFcVxUhCViVNj9nOf8Hr5sEyjj/2JKCjkVUxreZN+uV+d2Lf5OA?=
- =?us-ascii?Q?FO5HuoVwRuNj6Go8ibInBW7iUpu0/Nbh5nf9waCl6ykbAI9kKuJk4H+Cnxfa?=
- =?us-ascii?Q?PUb9AUJfOVsr7fy6DZ8w9I+KZR3kQB57SeVWo55wMcTFKG9ITz9jBdA/PjHL?=
- =?us-ascii?Q?43j82sXCKx94Pm0Wp1wpZ3V2CQ6K1upxY91LrYuRBerCaqMUE6d+fVHDx0sa?=
- =?us-ascii?Q?t0NBdRE8S5C49d2y5yapqVOHwflMQMniVeIIyfqYcF8GdobMDjuX1+4fjy3J?=
- =?us-ascii?Q?u8vJE1Qz2l7k74A/jqXkH2xT/pQ6Hmkukm3hTTy6U3R81UC2jZE7FdcaQDbD?=
- =?us-ascii?Q?RSM3ewQxdTSO42W1GoiZ4t3QCpqOpWktqslQ1mpMicIzGU+RNg=3D=3D?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30654a6d-6085-4117-9982-08dec66076c2
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2026 19:51:14.8244
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PPF57586ABE6
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 09, 2026 at 09:57:55PM +0300, Andy Shevchenko wrote:
-> On Mon, Jun 08, 2026 at 03:52:38PM -0500, Chris Morgan wrote:
-> > On Fri, Jun 05, 2026 at 07:08:35PM +0300, Andy Shevchenko wrote:
-> > > On Thu, Jun 04, 2026 at 03:18:25PM -0500, Chris Morgan wrote:
-> 
-> ...
-> 
-> > > > +struct inv_icm42607_sensor_conf {
-> > > > +	int mode;
-> > > > +	int fs;
-> > > > +	int odr;
-> > > > +	int filter;
-> > > 
-> > > All of them are supposed to be signed? Why?
-> 
-> > > > +};
-> > 
-> > A later commit will use -1 for invalid values.
-> 
-> Okay, perhaps add a comment on top that negative values will mean invalid case?
+Convert the STMicroelectronics LIS302DL/LIS3LV02D accelerometer device
+tree binding from plain text format to YAML schema format.
 
-Will do.
+The binding covers two variants matched via their respective bus drivers:
+- SPI: st,lis302dl-spi (drivers/misc/lis3lv02d/lis3lv02d_spi.c)
+- I2C: st,lis3lv02d   (drivers/misc/lis3lv02d/lis3lv02d_i2c.c)
 
-> 
-> ...
-> 
-> > > > +#include <linux/delay.h>
-> > > > +#include <linux/dev_printk.h>
-> > > > +#include <linux/interrupt.h>
-> > > > +#include <linux/iio/iio.h>
-> > > > +#include <linux/module.h>
-> > > > +#include <linux/mutex.h>
-> > > > +#include <linux/property.h>
-> > > > +#include <linux/regmap.h>
-> > > > +#include <linux/regulator/consumer.h>
-> > > 
-> > > IWYU, please.
-> > 
-> > This may sound like a dumb question, but what's the best way to invoke
-> > iwyu for a kernel? None of the readmes or man pages seem to be getting
-> > me anywhere...
-> 
-> In this list we (I mean community related to IIO) discussed iwyu tool and
-> its best configuration. Yep, it's barely good and far from ideal, but that's
-> what we have currently. Otherwise `git grep ...` and cscope are your friends
-> to answer this. Also doing review on regular basis makes this knowledge
-> developed better.
-> 
+Document all vendor-specific properties read by the driver via
+of_property_read_*(), including click detection, IRQ routing, free-fall/
+wake-up engines, high-pass filtering, axis remapping, output data rate,
+and self-test limits.
 
-Since git grep (and elixir.bootlin.com) are the tools I know best, I'll
-try to sensibly pare down the includes where I can. I do see that the
-interrupt include isn't needed anymore so I can drop that one. If
-anything else jumps out let me know and I'll exclude it too. There's a
-few other things I'm going to pare out since sashiko.dev bot correctly
-pointed out some of my code is now dead since I removed buffers support
-(because I don't have an interrupt on this device).
+Also correct the click threshold property names: the driver reads
+"st,click-threshold-{x,y,z}" but the old .txt documented them as
+"st,click-thresh-{x,y,z}".
 
-> ...
-> 
-> > It will get extended, so I'll keep this for now if that's okay.
-> 
-> It's okay.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+Validated with: make dt_binding_check   DT_SCHEMA_FILES=Documentation/devicetree/bindings/iio/accel/st,lis302dl.yaml
 
-Thank you,
-Chris
+Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+---
+ .../devicetree/bindings/iio/accel/lis302.txt  | 119 ------
+ .../bindings/iio/accel/st,lis302dl.yaml       | 343 ++++++++++++++++++
+ 2 files changed, 343 insertions(+), 119 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/accel/lis302.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/st,lis302dl.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/accel/lis302.txt b/Documentation/devicetree/bindings/iio/accel/lis302.txt
+deleted file mode 100644
+index 457539647f36..000000000000
+--- a/Documentation/devicetree/bindings/iio/accel/lis302.txt
++++ /dev/null
+@@ -1,119 +0,0 @@
+-LIS302 accelerometer devicetree bindings
+-
+-This device is matched via its bus drivers, and has a number of properties
+-that apply in on the generic device (independent from the bus).
+-
+-
+-Required properties for the SPI bindings:
+- - compatible: 		should be set to "st,lis3lv02d-spi"
+- - reg:			the chipselect index
+- - spi-max-frequency:	maximal bus speed, should be set to 1000000 unless
+-			constrained by external circuitry
+- - interrupts:		the interrupt generated by the device
+-
+-Required properties for the I2C bindings:
+- - compatible:		should be set to "st,lis3lv02d"
+- - reg:			i2c slave address
+- - Vdd-supply:		The input supply for Vdd
+- - Vdd_IO-supply:	The input supply for Vdd_IO
+-
+-
+-Optional properties for all bus drivers:
+-
+- - st,click-single-{x,y,z}:	if present, tells the device to issue an
+-				interrupt on single click events on the
+-				x/y/z axis.
+- - st,click-double-{x,y,z}:	if present, tells the device to issue an
+-				interrupt on double click events on the
+-				x/y/z axis.
+- - st,click-thresh-{x,y,z}:	set the x/y/z axis threshold
+- - st,click-click-time-limit:	click time limit, from 0 to 127.5msec
+-				with step of 0.5 msec
+- - st,click-latency:		click latency, from 0 to 255 msec with
+-				step of 1 msec.
+- - st,click-window:		click window, from 0 to 255 msec with
+-				step of 1 msec.
+- - st,irq{1,2}-disable:		disable IRQ 1/2
+- - st,irq{1,2}-ff-wu-1:		raise IRQ 1/2 on FF_WU_1 condition
+- - st,irq{1,2}-ff-wu-2:		raise IRQ 1/2 on FF_WU_2 condition
+- - st,irq{1,2}-data-ready:	raise IRQ 1/2 on data ready condition
+- - st,irq{1,2}-click:		raise IRQ 1/2 on click condition
+- - st,irq-open-drain:		consider IRQ lines open-drain
+- - st,irq-active-low:		make IRQ lines active low
+- - st,wu-duration-1:		duration register for Free-Fall/Wake-Up
+-				interrupt 1
+- - st,wu-duration-2:		duration register for Free-Fall/Wake-Up
+-				interrupt 2
+- - st,wakeup-{x,y,z}-{lo,hi}:	set wakeup condition on x/y/z axis for
+-				upper/lower limit
+- - st,wakeup-threshold:		set wakeup threshold
+- - st,wakeup2-{x,y,z}-{lo,hi}:	set wakeup condition on x/y/z axis for
+-				upper/lower limit for second wakeup
+-				engine.
+- - st,wakeup2-threshold:	set wakeup threshold for second wakeup
+-				engine.
+- - st,highpass-cutoff-hz=:	1, 2, 4 or 8 for 1Hz, 2Hz, 4Hz or 8Hz of
+-				highpass cut-off frequency
+- - st,hipass{1,2}-disable:	disable highpass 1/2.
+- - st,default-rate=:		set the default rate
+- - st,axis-{x,y,z}=:		set the axis to map to the three coordinates.
+-				Negative values can be used for inverted axis.
+- - st,{min,max}-limit-{x,y,z}	set the min/max limits for x/y/z axis
+-				(used by self-test)
+-
+-
+-Example for a SPI device node:
+-
+-	accelerometer@0 {
+-		compatible = "st,lis302dl-spi";
+-		reg = <0>;
+-		spi-max-frequency = <1000000>;
+-		interrupt-parent = <&gpio>;
+-		interrupts = <104 0>;
+-
+-		st,click-single-x;
+-		st,click-single-y;
+-		st,click-single-z;
+-		st,click-thresh-x = <10>;
+-		st,click-thresh-y = <10>;
+-		st,click-thresh-z = <10>;
+-		st,irq1-click;
+-		st,irq2-click;
+-		st,wakeup-x-lo;
+-		st,wakeup-x-hi;
+-		st,wakeup-y-lo;
+-		st,wakeup-y-hi;
+-		st,wakeup-z-lo;
+-		st,wakeup-z-hi;
+-	};
+-
+-Example for a I2C device node:
+-
+-	lis331dlh: accelerometer@18 {
+-		compatible = "st,lis331dlh", "st,lis3lv02d";
+-		reg = <0x18>;
+-		Vdd-supply = <&lis3_reg>;
+-		Vdd_IO-supply = <&lis3_reg>;
+-
+-		st,click-single-x;
+-		st,click-single-y;
+-		st,click-single-z;
+-		st,click-thresh-x = <10>;
+-		st,click-thresh-y = <10>;
+-		st,click-thresh-z = <10>;
+-		st,irq1-click;
+-		st,irq2-click;
+-		st,wakeup-x-lo;
+-		st,wakeup-x-hi;
+-		st,wakeup-y-lo;
+-		st,wakeup-y-hi;
+-		st,wakeup-z-lo;
+-		st,wakeup-z-hi;
+-		st,min-limit-x = <120>;
+-		st,min-limit-y = <120>;
+-		st,min-limit-z = <140>;
+-		st,max-limit-x = <550>;
+-		st,max-limit-y = <550>;
+-		st,max-limit-z = <750>;
+-	};
+-
+diff --git a/Documentation/devicetree/bindings/iio/accel/st,lis302dl.yaml b/Documentation/devicetree/bindings/iio/accel/st,lis302dl.yaml
+new file mode 100644
+index 000000000000..befc419f7f39
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/st,lis302dl.yaml
+@@ -0,0 +1,343 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/accel/st,lis302dl.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: STMicroelectronics LIS302DL/LIS3LV02D 3-Axis Accelerometer
++
++maintainers:
++  - Jonathan Cameron <jic23@kernel.org>
++
++description: |
++  STMicroelectronics LIS302DL (SPI) and LIS3LV02D (I2C) 3-axis MEMS
++  accelerometers. Supports click detection, free-fall/wake-up interrupts,
++  high-pass filtering, axis remapping, and self-test functions.
++
++  Driver located at drivers/misc/lis3lv02d/.
++
++properties:
++  compatible:
++    enum:
++      - st,lis302dl-spi
++      - st,lis3lv02d
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  Vdd-supply:
++    description: Main power supply regulator (I2C variant).
++
++  Vdd_IO-supply:
++    description: I/O power supply regulator (I2C variant).
++
++  st,click-single-x:
++    type: boolean
++    description: Enable single-click detection on X axis.
++
++  st,click-double-x:
++    type: boolean
++    description: Enable double-click detection on X axis.
++
++  st,click-single-y:
++    type: boolean
++    description: Enable single-click detection on Y axis.
++
++  st,click-double-y:
++    type: boolean
++    description: Enable double-click detection on Y axis.
++
++  st,click-single-z:
++    type: boolean
++    description: Enable single-click detection on Z axis.
++
++  st,click-double-z:
++    type: boolean
++    description: Enable double-click detection on Z axis.
++
++  st,click-threshold-x:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click detection threshold for X axis.
++
++  st,click-threshold-y:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click detection threshold for Y axis.
++
++  st,click-threshold-z:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click detection threshold for Z axis.
++
++  st,click-time-limit:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click time limit, 0 to 127.5 ms in 0.5 ms steps.
++
++  st,click-latency:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click latency, 0 to 255 ms in 1 ms steps.
++
++  st,click-window:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Click window, 0 to 255 ms in 1 ms steps.
++
++  st,irq1-disable:
++    type: boolean
++    description: Disable IRQ1 pin.
++
++  st,irq1-ff-wu-1:
++    type: boolean
++    description: Route free-fall/wake-up 1 event to IRQ1 pin.
++
++  st,irq1-ff-wu-2:
++    type: boolean
++    description: Route free-fall/wake-up 2 event to IRQ1 pin.
++
++  st,irq1-data-ready:
++    type: boolean
++    description: Route data-ready event to IRQ1 pin.
++
++  st,irq1-click:
++    type: boolean
++    description: Route click event to IRQ1 pin.
++
++  st,irq2-disable:
++    type: boolean
++    description: Disable IRQ2 pin.
++
++  st,irq2-ff-wu-1:
++    type: boolean
++    description: Route free-fall/wake-up 1 event to IRQ2 pin.
++
++  st,irq2-ff-wu-2:
++    type: boolean
++    description: Route free-fall/wake-up 2 event to IRQ2 pin.
++
++  st,irq2-data-ready:
++    type: boolean
++    description: Route data-ready event to IRQ2 pin.
++
++  st,irq2-click:
++    type: boolean
++    description: Route click event to IRQ2 pin.
++
++  st,irq-open-drain:
++    type: boolean
++    description: Configure IRQ lines as open-drain.
++
++  st,irq-active-low:
++    type: boolean
++    description: Configure IRQ lines as active-low.
++
++  st,wu-duration-1:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Duration register for free-fall/wake-up interrupt 1.
++
++  st,wu-duration-2:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Duration register for free-fall/wake-up interrupt 2.
++
++  st,wakeup-x-lo:
++    type: boolean
++    description: Enable wake-up on X axis lower threshold crossing.
++
++  st,wakeup-x-hi:
++    type: boolean
++    description: Enable wake-up on X axis upper threshold crossing.
++
++  st,wakeup-y-lo:
++    type: boolean
++    description: Enable wake-up on Y axis lower threshold crossing.
++
++  st,wakeup-y-hi:
++    type: boolean
++    description: Enable wake-up on Y axis upper threshold crossing.
++
++  st,wakeup-z-lo:
++    type: boolean
++    description: Enable wake-up on Z axis lower threshold crossing.
++
++  st,wakeup-z-hi:
++    type: boolean
++    description: Enable wake-up on Z axis upper threshold crossing.
++
++  st,wakeup-threshold:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Threshold for wake-up engine 1.
++
++  st,wakeup2-x-lo:
++    type: boolean
++    description: Enable wake-up engine 2 on X axis lower threshold.
++
++  st,wakeup2-x-hi:
++    type: boolean
++    description: Enable wake-up engine 2 on X axis upper threshold.
++
++  st,wakeup2-y-lo:
++    type: boolean
++    description: Enable wake-up engine 2 on Y axis lower threshold.
++
++  st,wakeup2-y-hi:
++    type: boolean
++    description: Enable wake-up engine 2 on Y axis upper threshold.
++
++  st,wakeup2-z-lo:
++    type: boolean
++    description: Enable wake-up engine 2 on Z axis lower threshold.
++
++  st,wakeup2-z-hi:
++    type: boolean
++    description: Enable wake-up engine 2 on Z axis upper threshold.
++
++  st,wakeup2-threshold:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Threshold for wake-up engine 2.
++
++  st,highpass-cutoff-hz:
++    enum: [1, 2, 4, 8]
++    description: High-pass filter cut-off frequency in Hz.
++
++  st,hipass1-disable:
++    type: boolean
++    description: Disable high-pass filter 1.
++
++  st,hipass2-disable:
++    type: boolean
++    description: Disable high-pass filter 2.
++
++  st,axis-x:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: |
++      Map physical X axis. Negative values invert the direction.
++      Valid range -3 to 3, excluding 0.
++
++  st,axis-y:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: |
++      Map physical Y axis. Negative values invert the direction.
++      Valid range -3 to 3, excluding 0.
++
++  st,axis-z:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: |
++      Map physical Z axis. Negative values invert the direction.
++      Valid range -3 to 3, excluding 0.
++
++  st,default-rate:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Default output data rate in Hz.
++
++  st,min-limit-x:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Minimum self-test limit for X axis.
++
++  st,min-limit-y:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Minimum self-test limit for Y axis.
++
++  st,min-limit-z:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Minimum self-test limit for Z axis.
++
++  st,max-limit-x:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Maximum self-test limit for X axis.
++
++  st,max-limit-y:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Maximum self-test limit for Y axis.
++
++  st,max-limit-z:
++    $ref: /schemas/types.yaml#/definitions/int32
++    description: Maximum self-test limit for Z axis.
++
++required:
++  - compatible
++  - reg
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - if:
++      properties:
++        compatible:
++          enum:
++            - st,lis302dl-spi
++    then:
++      required:
++        - spi-max-frequency
++        - interrupts
++  - if:
++      properties:
++        compatible:
++          enum:
++            - st,lis3lv02d
++    then:
++      required:
++        - Vdd-supply
++        - Vdd_IO-supply
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        accelerometer@0 {
++            compatible = "st,lis302dl-spi";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            interrupt-parent = <&gpio>;
++            interrupts = <104 IRQ_TYPE_EDGE_RISING>;
++            st,click-single-x;
++            st,click-single-y;
++            st,click-single-z;
++            st,click-threshold-x = <10>;
++            st,click-threshold-y = <10>;
++            st,click-threshold-z = <10>;
++            st,irq1-click;
++            st,irq2-click;
++            st,wakeup-x-lo;
++            st,wakeup-x-hi;
++            st,wakeup-y-lo;
++            st,wakeup-y-hi;
++            st,wakeup-z-lo;
++            st,wakeup-z-hi;
++        };
++    };
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        accelerometer@18 {
++            compatible = "st,lis3lv02d";
++            reg = <0x18>;
++            Vdd-supply = <&lis3_reg>;
++            Vdd_IO-supply = <&lis3_reg>;
++            st,click-single-x;
++            st,click-single-y;
++            st,click-single-z;
++            st,click-threshold-x = <10>;
++            st,click-threshold-y = <10>;
++            st,click-threshold-z = <10>;
++            st,irq1-click;
++            st,irq2-click;
++            st,wakeup-x-lo;
++            st,wakeup-x-hi;
++            st,wakeup-y-lo;
++            st,wakeup-y-hi;
++            st,wakeup-z-lo;
++            st,wakeup-z-hi;
++            st,min-limit-x = <120>;
++            st,min-limit-y = <120>;
++            st,min-limit-z = <140>;
++            st,max-limit-x = <550>;
++            st,max-limit-y = <550>;
++            st,max-limit-z = <750>;
++        };
++    };
++...
+-- 
+2.51.1
+
