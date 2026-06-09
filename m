@@ -1,125 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C7D4D2ED3;
-	Tue,  9 Jun 2026 18:58:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F69A4C954B;
+	Tue,  9 Jun 2026 19:02:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781031485; cv=none; b=KWHm5MONDJ+b/d+L53rOCD79WeT+bdyMH6nklJSi1CdJ9JXwUbBdk8i+VHi7SMJWhis/6j+78bL0uGeZjX+EpoPAsN2NBsLOin+rPqA4mq0YB0/GD5A7EkQv4yLGaEhe1jML4KGw9VRq5jBdmUWpVld/mWRLJcsZXLFFi765RjA=
+	t=1781031774; cv=none; b=H5Rdc6vNALpRd08pFSRy0IJBQp1LwEYF4HlboB7rvPy5sIRh16UcXw5JF+ACrg+GjuDTBJLoIuNXn9KSUPv1HC9UH/bUr4SuYkxUGjv7OJn3rHPpXG1fTjRkb5y06SDngdMbHA6OaGNRjrYG4eOD7I27ubg1cBFYKWFWVqljbxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781031485; c=relaxed/simple;
-	bh=qBaTipJIBdrNj5yARfGrmu93QPHd7TPizSBTvXriavg=;
+	s=arc-20240116; t=1781031774; c=relaxed/simple;
+	bh=deUspC86kBJfg0o/64mhshqzhfCZxHh4On4fEBT3WEI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=niXnr8iy7sIOyULWKWy5lru0puADk6qsdGBSuzaYRrbMG+NWQPirrKGlh5+lNZHRmMe7rSOboqLjV3rVxfXRORLWMo8090WBngMzSw+xWXAvrWBrYHZCdLM5kjGvw9w/p3pJr62p+zM86mB3i5AYMna1KL7HRazDEb9d1emiqSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ByG5abzW; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=qzvToyS4AG3KWrimrdw9L3XYdDF2E3vtnEWoX8LHYKckptJZi+HldDn43yMyy8fRjNwZiiJNcanF1zBJLhQx0ewJYIV127ew1u166YmPf2xB60+YGbMuqZ4rXiXxF/yXWCZJSj20UgGKGoZG2YqPcgkJYpSpnPoW+o1+6u8lyDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zl3Uy0gZ; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ByG5abzW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zl3Uy0gZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781031485; x=1812567485;
+  t=1781031773; x=1812567773;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qBaTipJIBdrNj5yARfGrmu93QPHd7TPizSBTvXriavg=;
-  b=ByG5abzWfmWTRhc3dbMP93gqS7JY13aoNTcnvLkwE+IC7fnrjUMTcWeW
-   aKD+zUtquuuW5XQsuJCIEkidUAmcve59/o8mK3t/8LaYoT/VGI5YYWSqd
-   xGoQkPUTbMKEfrrHiIYKQ7UEdMJg72tUJj1XhxfC7xE4OHo0r3E5mKwwu
-   X1g7/xrWX2dbCGIoUrzLx7DV1MLtl3ZO9C27GH48Od10f6oSp3qi3xFx0
-   PK7cJ5UUJshcg7WtRKG3aOzVlWUBxrw2tXfNGT+j+Ztm+E4wA4NQ/GfdB
-   75UtyehFCwy0Oq8h37iv1EVJVIskhXXFV/bk9E9+5PQIh4nbuTKNgC3iY
-   w==;
-X-CSE-ConnectionGUID: 6Hj95BXdQaSG3kdP/x9PMw==
-X-CSE-MsgGUID: molkidvMRSiULTcKwoZtcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="81553312"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=deUspC86kBJfg0o/64mhshqzhfCZxHh4On4fEBT3WEI=;
+  b=Zl3Uy0gZbwwyzsRUlofJ30QLYh5uLxgNSyajb1qludHqM3HxLCMPGy2W
+   aHyOsPPKO333BpxcfRMS/QcTxvEo4zxXUpFNWStbfMbuQZKdF17q/NQki
+   PMvi+52pF4V1CTKeuGXOod2u+oQMEZex7V5+VXAChaKC6ZiDQFLgSmbyl
+   5onuuy1d+CN2T55z1l4YAuGC/Y8Pckr0ykKvOIleQiHxp5xI9SCUxRNFC
+   6QgbTiTGWbQfNHu5str8RaBdKS4ckZ/Z8YWt6IGb8yVpRusdTT8FGTnH1
+   nfaFci4JMVVX/EfjY8f/t+pi2vrslQf+tVDFxoHwmvtnoCnW8yOaIj4A2
+   Q==;
+X-CSE-ConnectionGUID: Gb6YBAo4R4W93nXv0IEZUw==
+X-CSE-MsgGUID: Uh9r/mbURiqocDF3ZSaLoQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="69341469"
 X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="81553312"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:58:02 -0700
-X-CSE-ConnectionGUID: Rx+734n5QG2Xmo6vFLT3SQ==
-X-CSE-MsgGUID: EvwIZx1rR36cJPrntihkMA==
+   d="scan'208";a="69341469"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 12:02:52 -0700
+X-CSE-ConnectionGUID: QGqNAd4uTc+4Ed3shPeszQ==
+X-CSE-MsgGUID: Ak0qUeEaSXmuteJyhUjHrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,196,1774335600"; 
-   d="scan'208";a="241520510"
+   d="scan'208";a="284012438"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.162])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 11:57:58 -0700
-Date: Tue, 9 Jun 2026 21:57:55 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2026 12:02:47 -0700
+Date: Tue, 9 Jun 2026 22:02:45 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-	heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org,
-	robh@kernel.org
-Subject: Re: [PATCH V10 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID: <aihiM5Ao-vuAsUyh@ashevche-desk.local>
-References: <20260604201832.60656-1-macroalpha82@gmail.com>
- <20260604201832.60656-4-macroalpha82@gmail.com>
- <aiL0g8d0Y_JeAC5c@ashevche-desk.local>
- <PH0PR19MB99733851DADB0671AE5F76B788A51C2@PH0PR19MB997338.namprd19.prod.outlook.com>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v4 02/14] mfd: lm3533: Remove driver specific regmap
+ wrappers
+Message-ID: <aihjVZ9xvM2BRFu4@ashevche-desk.local>
+References: <20260606045738.21050-1-clamor95@gmail.com>
+ <20260606045738.21050-3-clamor95@gmail.com>
+ <aiPDzdKuccdLIvlF@ashevche-desk.local>
+ <CAPVz0n2rdgw8Xr3uxVdQGwrHTNFqK4SKQDFU2FEB8LzLwPhQ_A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <PH0PR19MB99733851DADB0671AE5F76B788A51C2@PH0PR19MB997338.namprd19.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPVz0n2rdgw8Xr3uxVdQGwrHTNFqK4SKQDFU2FEB8LzLwPhQ_A@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jun 08, 2026 at 03:52:38PM -0500, Chris Morgan wrote:
-> On Fri, Jun 05, 2026 at 07:08:35PM +0300, Andy Shevchenko wrote:
-> > On Thu, Jun 04, 2026 at 03:18:25PM -0500, Chris Morgan wrote:
+On Sat, Jun 06, 2026 at 10:22:43AM +0300, Svyatoslav Ryhel wrote:
+> сб, 6 черв. 2026 р. о 09:53 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
+> > On Sat, Jun 06, 2026 at 07:57:26AM +0300, Svyatoslav Ryhel wrote:
 
 ...
 
-> > > +struct inv_icm42607_sensor_conf {
-> > > +	int mode;
-> > > +	int fs;
-> > > +	int odr;
-> > > +	int filter;
-> > 
-> > All of them are supposed to be signed? Why?
-
-> > > +};
+> > > +     ret = regmap_assign_bits(als->lm3533->regmap, LM3533_REG_ALS_ZONE_INFO,
+> > > +                              LM3533_ALS_INT_ENABLE_MASK, enable);
+> >
+> > In cases like this perhaps leaving mask would be fine and together with
 > 
-> A later commit will use -1 for invalid values.
-
-Okay, perhaps add a comment on top that negative values will mean invalid case?
-
-...
-
-> > > +#include <linux/delay.h>
-> > > +#include <linux/dev_printk.h>
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/iio/iio.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/mutex.h>
-> > > +#include <linux/property.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/regulator/consumer.h>
-> > 
-> > IWYU, please.
+> I prefer to remove intermediate variables it the helper allows to
+> directly pass needed value.
 > 
-> This may sound like a dumb question, but what's the best way to invoke
-> iwyu for a kernel? None of the readmes or man pages seem to be getting
-> me anywhere...
+> >         struct regmap *map = als->lm3533->regmap;
+> 
+> next patch drops lm3533 so there will be als->regmap which IMHO is
+> more logical instead of passing entire lm3533 to child devices.
 
-In this list we (I mean community related to IIO) discussed iwyu tool and
-its best configuration. Yep, it's barely good and far from ideal, but that's
-what we have currently. Otherwise `git grep ...` and cscope are your friends
-to answer this. Also doing review on regular basis makes this knowledge
-developed better.
+Still it's longer than map. A local variable may help with making lines
+shorter.
 
-...
-
-> It will get extended, so I'll keep this for now if that's okay.
-
-It's okay.
+> > this be nice one-liner:
+> >
+> >         ret = regmap_assign_bits(map, LM3533_REG_ALS_ZONE_INFO, mask, enable);
+> >
+> > >       if (ret) {
+> > >               dev_err(&indio_dev->dev, "failed to set int mode %d\n",
+> > >                                                               enable);
+> >
+> > In many cases it won't increase LoC count.
 
 -- 
 With Best Regards,
