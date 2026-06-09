@@ -1,62 +1,62 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5034D36BCC4
-	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:07:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A39D372042
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:07:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781021262; cv=none; b=LIuigiMyCS4wGFhN/45ZOmcVsdmV/2jNhmtmfo8misrebOETaI5RY2hHzTCRnqYned+hEFqIHWOTr7w7KczgEd6ZGqZKzHfGsfwcAiY/ZiRDH9Pe2kdOUopT1zlW6Cz6QlPNDuA2yH9p6HRsbTqa42YoTk8ZPoXzJ0iv8c4hPiY=
+	t=1781021269; cv=none; b=u5ZLs0LWpkJGowNQbeACv7lIXMOtPulAZgj6k9ZuFFaGeXzJhteFPqhWrSzMcoWGq798Bevv0PlffJ3s4WwTiR7mz8JSz62nOGz9FACr/Ct08Sl94I9Pn2GtqNWEVMzCkk/IYZzsAwYx5tRoUYlO4Pky+tADrqcKlc1dFZzkpCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781021262; c=relaxed/simple;
-	bh=361oEKtxig/ZO4ZBGEPBYw1FqFEZJe2SX/B1yZfG8zg=;
+	s=arc-20240116; t=1781021269; c=relaxed/simple;
+	bh=Q79k8W9vOzEUW+r+p6LYN1WSF1e8vDMkHgr6pRQpJOo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qGrxM4yE2ymyBu9dSPJ04DOVAUHFf6O90UMsGV2DcE7aal8H4b3h8H9n+niDw8y7HeV3QClaWvi0dkhA0MaMXpDzZWdB1yIz/Xol32+/mW3Uxx+qvg04FnADpC7YUa6U2yi2dAg9VpQ1uYYJgpSPWAi7/ZUdMwvwODt+8Dsj7N8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mHQgtB0i; arc=none smtp.client-ip=209.85.160.42
+	 MIME-Version; b=AZwi8NgCz2JzkRnpVSFvOBK1yoL2D8OtAKyc8WI/LsS2t8wFpEMnCg9ju0g24D9bcqAEb4CfSemMnx5E0rgDG6RAjgvKLL2LMBbO08q/jwkOWEr0X0XNoJy6CX4eLs2ZEoigkFLJgVe+CgYvBWCe8bR82NRzakqX6Trz6qGlUdA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pxLUNHnL; arc=none smtp.client-ip=209.85.161.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mHQgtB0i"
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-43ca73487d2so3504306fac.1
-        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:07:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pxLUNHnL"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-69dead44101so3406852eaf.3
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:07:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781021260; x=1781626060; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781021266; x=1781626066; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uRgcfOA2oS4UODi/g3jRay2TiYVv7cy0S1ZZ/4hXi6o=;
-        b=mHQgtB0il5002K27XzTJ0nEOiDEeu4jpXNmJeCWshk9/ccnRBFtFE5APt42AHJ8B6w
-         SKDUm8CHayF9yr+vJ9oSYBpcHi3oBq6LHRl/wat3IkYPiMZ3KaS5BUcBZ2sIuEDixT57
-         jJ6uQBrTP1tYp8KbHXcQzwfsjuDTFtIncj/AayfLEIF67zwEGrY9JrAxYSZdSUZLoxqU
-         qxurnChCARs8+7Yq/rWJX+sCfjkqLWfv1yQjtC9XquCTNZR4G1oT/8qMmBpfq10FZwVi
-         6TwzXMBnvhCwjsGiilRLQgqIrod6NatgPVjt5J8Z+ZRw+k7QPM0hJNm6lg1hHcSecFiv
-         2odA==
+        bh=Tr78Ec++ZHHyKCmRsLimyTQ1g5Bjk2CPqZ1jeJIAnco=;
+        b=pxLUNHnLhN1rM1Yxf2R1VcR4carlwTLN7F8S9MCsduhpkCCYmkwqkKIksCEpwWTa1l
+         +NYPbkrwMVe+63ej+U/caOhcF7faUsWfSCdKUMW18qh2L6KY/XDZN7w65DyxXgAl9JK0
+         Gpheg2SvffT2omcqQETFgISEWlv8wPtfmt6fksrSWRKwBt6ESvdMBPjg9miOnQ9QntZg
+         BGIJfOZinIK/gjIT0tfqyAYbbeewqKLsO+TDJIeSH5JPUOzGI3HPR41kuhAYYL2TOHY7
+         Sdc35XF9gl4tMVDYsDNFpjI0LBc2GYGYlfTVVo83rd7KJHN+hxREddJjefS40Nt1vBzo
+         vBAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781021260; x=1781626060;
+        d=1e100.net; s=20251104; t=1781021266; x=1781626066;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=uRgcfOA2oS4UODi/g3jRay2TiYVv7cy0S1ZZ/4hXi6o=;
-        b=iwEY3oGA+wJ7UkkzgpRL4LcRFn5KywNzmPSUEffbEj7kZ+g6TErGDuSzgNIjS7O3OK
-         l7orlRyLRiX4OBs6qM9jCGeescv5YKCTh1oOz90ZYFFjVVji0QBIp+DXAlb0sUzkRThU
-         UnCVLLCGTzLkTR09fbqLkKo38WqZ0/fxIzB3aROEgBnn2/kOFcZl+A8B17szYUbc5zRx
-         ueeDSU/mSdvTBilgpaSeAsuxVZwwP+kfUmBpP6U6NMbTrF8iQTO4OVVJ0g3B3lYjOOnh
-         TSGfDiMLuiBx6sfSZTBnF1Xb/cO2tIw0cGQ8v1qHYeTieA6O7jlUfIbcZ9xv9/ZepP4o
-         A/mw==
-X-Gm-Message-State: AOJu0YxHJClIbbOVt7rHhcRG+fYXcaqxeIOghP3VSaUJRebwTxIDF90s
-	8TuDi7PGr8B8XfzbZv8SXtIZYAGomdTQxqfPGrXoEgEhYYtVsFpLu+n5
-X-Gm-Gg: Acq92OGivaLj79GBY/ceoW916nfr9cNmYS1UQRPTdgN0/JQ8S3+8+vo9GBoXrKv2Gy+
-	O9KGq5ZG3vyhsRG3Pwj3QaPkn0Yz6g1yqUXtzg29PPWol0aOEIOUDD//gFV6Dwc/2dIzPYYS6EO
-	LssdpFmdFwYii7AId++4ONU9PWrP27alwzS2mJltLROqcvixGfIbIH7dKF8H1k/1RaxlwDTTZuK
-	232Nfx/n1AzPnmAiukGpKDvE+vcbUUnD2E8XiQ/xn90vYPFS40+yNhqwfpJcbI7wXq/xDx+LdOF
-	BpahU/G4SeJhlsWGQ4tHb+ejLEEATLcrnISMcgFuN1pSS8hijv/qqJ6flm/WedjCFGrOzs9+ltn
-	orIm9nsBlqBESS6AysqB1CHG73bZIcP/lhjFAdGGYHyJfCrASaeWu7CAu59Cxayt1OJKNYi4zlC
-	eCXIwDDDaLeSDjefmn1I1J1ncOP3kSC1KoERCL5VmVCTelGLUQlUCz9/yU1Dc5orG3JleU
-X-Received: by 2002:a05:6820:81e:b0:69e:3360:6338 with SMTP id 006d021491bc7-69e6d3bca9bmr6683557eaf.13.1781021260326;
-        Tue, 09 Jun 2026 09:07:40 -0700 (PDT)
+        bh=Tr78Ec++ZHHyKCmRsLimyTQ1g5Bjk2CPqZ1jeJIAnco=;
+        b=Zh4a4MA6OYLWSG7CsvUDln0S45HrzMwFMxFZ1HfK8lNXhUOe/5TjBJv99WfCVvE6rj
+         vPVAO7E75o/1U6fG36mGHPIfA1rJQCWCE9UuXdPTma887YwTi3soRZodvmvzyqOy+lYZ
+         FybgsPhHLexbPkU8sDU5dqIaUtzCQkBnjbYOn2aCXEEBR+vRbl6NSk+obpQ6m80IpI5v
+         K2BgoSVEKGdgdtERU+GJYjlFTMyPMPj9lGPIIEqkT17udfySpJFnPIHQzDH994+m3aad
+         ZKyoKSCHTctGoUjqgefpdMJEESLjGnGqE2wKP2T6gcWuOno4mY5dzmZzINZm92M65r8L
+         Bb+A==
+X-Gm-Message-State: AOJu0Yy0y4ZUzA+RWdfbgL8muZLuEy2fGfVbaef4MraoqTtZfkq1QAGT
+	c61voNlzfSSC/4X4/oGsquKo41UcRVau9DlH8sreA7r6OAWfH9TyCqvG
+X-Gm-Gg: Acq92OFku33CymyVEY8GoqLcYujSw5+/mEqCg1DHumtHjqK7vFhzqwSYnZF3VZZVAO+
+	j3yNV2qIvXdryi/AsfNwV7J9WDS5C3AiHe9DhtINFgHgHzj/9ZuQ+F2XFn1gHNZhp6an0pm0NnE
+	XHGY7VTK3mjlWqHqCmgUmgEHu5A/FXguVxUV6sz//QjEMnkRg8rCPiTEFK2HBjSilZQrhwJarNg
+	uERzqNMHGpW40XWD3r7TGskaFo1+sR94XIrFxZ3nGWHPUX/dFgS5Y2pb8D9KM1QQovCvHzWJtQf
+	mgKwxWERI0UxV/eKyV/qyZ88uKCZlZpuBDPk9WhS3QOGbD7R+4+UNvgz5FBiFi6i/AgotESK0ml
+	4Fm7t0xWItrytjQUL9vk6h6ayQ0XdN7DIWLyjWcsbW0O33eYCZiMw/BUyLx9r3AtMOnXgR78en+
+	KfHAAZUTcPq0pPPdpEHtChPpNRizcKHW8S2CG284M0JlAd5Pffya7ZGTeY+9YyRnCBWjD/
+X-Received: by 2002:a05:6820:1687:b0:696:89e4:5493 with SMTP id 006d021491bc7-69e68c06d10mr12662859eaf.34.1781021266482;
+        Tue, 09 Jun 2026 09:07:46 -0700 (PDT)
 Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69e464050fasm11393859eaf.9.2026.06.09.09.07.38
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69e464050fasm11393859eaf.9.2026.06.09.09.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 09:07:39 -0700 (PDT)
+        Tue, 09 Jun 2026 09:07:45 -0700 (PDT)
 From: Maxwell Doose <m32285159@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -71,10 +71,10 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Tomasz Duzsynski <tduszyns@gmail.com>
-Subject: [PATCH 1/2] dt-bindings: iio: plantower,pms7003: Add myself as maintainer
-Date: Tue,  9 Jun 2026 11:03:25 -0500
-Message-ID: <20260609160326.45123-2-m32285159@gmail.com>
+	Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH 2/2] MAINTAINERS: Add myself as maintainer for PMS7003
+Date: Tue,  9 Jun 2026 11:03:26 -0500
+Message-ID: <20260609160326.45123-3-m32285159@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260609160326.45123-1-m32285159@gmail.com>
 References: <20260609160326.45123-1-m32285159@gmail.com>
@@ -87,28 +87,28 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 Tomasz's entry is no longer valid, as he is not active anymore. Add
-myself as maintainer to replace his entry.
+myself as maintainer of the PMS7003 to replace his entry.
 
 Link: https://lore.kernel.org/linux-iio/20260609140712.2e5d1640@jic23-huawei/
-Cc: Tomasz Duzsynski <tduszyns@gmail.com>
+Cc: Tomasz Duszynski <tduszyns@gmail.com>
 Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 ---
- .../devicetree/bindings/iio/chemical/plantower,pms7003.yaml     | 2 +-
+ MAINTAINERS | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
-index 1fe561574019..292e32d9645b 100644
---- a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
-+++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Plantower PMS7003 air pollution sensor
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e035a3be797c..d1b0a40c02e0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21147,7 +21147,7 @@ F:	Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+ F:	drivers/input/keyboard/pinephone-keyboard.c
  
- maintainers:
--  - Tomasz Duszynski <tduszyns@gmail.com>
-+  - Maxwell Doose <m32285159@gmail.com>
- 
- description: |
-   Air pollution sensor capable of measuring mass concentration of dust
+ PLANTOWER PMS7003 AIR POLLUTION SENSOR DRIVER
+-M:	Tomasz Duszynski <tduszyns@gmail.com>
++M:	Maxwell Doose <m32285159@gmail.com>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
+ F:	drivers/iio/chemical/pms7003.c
 -- 
 2.54.0
 
