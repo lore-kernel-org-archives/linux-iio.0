@@ -1,301 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABF1F3F99ED;
-	Tue,  9 Jun 2026 10:13:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15914383C64
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 10:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780999993; cv=none; b=C8fygLQPVh1PanacvBXaKtk2OkSUkgg7GGj+46l5XAC4NHAck849R/0V4F3fHEUuncFNjEdMDnKcE8Pw/rLCpWeO6uqMKawfHdX0TCIypihffU7Oiy2mr00BFGpbSXicWkE43lHJv+rqCF8/lTLM6kTXtr+hxd2stfV/kBzSybM=
+	t=1781000770; cv=none; b=f+illkmTR551Mfc4m2NX6DloL56MdSXiPy7NlmJZKXJ7/LJrYkiVNFTQzFIgp6YdSdjLnXlcjfJGAIctX9xWpau2hMvA7pjxAtNajzkLOTUJwNbQIN4VZQJNVDbaC0VfXavoYkBlOI7hxicjyq5/voGFYIPTbl7vBjCxaKH2jJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780999993; c=relaxed/simple;
-	bh=NGp3R/nl7+7+w9K/3IW9Slc5vbtQEIIHlEB7ZV4KBzs=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=W3tDjcKGcZKqFYsLLTdWwvyowNRe/Qw9oIDIBTYVCUvs4lAkhIEk+ODO3gzVwwlAAqBHzcxXB+PB3mYH6CkEMgHaU5JxzBGRiluNvqR7U8xHnGSO73RIcnsga9yh1FiEFjQQxAyWcFnyozUgi9IgKYDCwCn140SaH/THDV2I+xc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dlx6VP8J; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1781000770; c=relaxed/simple;
+	bh=CvjWP4qfaUy4Vu+fDzXdcGiVNmiLKemDkKshBGQW93w=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=j0vzwiUI1MtYIKJIs+5prK9/yx1sgLOUbi+BZZK6JK6aQXsnRiPQ88Ch7lYv5vvZnF6B/LVS0RV8ZRDrvjresEG1qEyUFbkve/kVgggu8kDOlVdGKYc+C4u6oeGqT0Dal1NJiy6FNuOPbna12Bpdwrd8wUfKX/sR853psyPLOLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lG5GqU2M; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dlx6VP8J"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 897BCC4AF48;
-	Tue,  9 Jun 2026 10:13:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1780999993;
-	bh=NGp3R/nl7+7+w9K/3IW9Slc5vbtQEIIHlEB7ZV4KBzs=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dlx6VP8JtF5b45DOJQPPndOq9YyVE3+BofE6KoyY9jWid3SInvLI5ULwGz0wEPyeo
-	 QDFZGISBenSQbCcgKXWhInLgvK4jnXfLLRauYiGFqL3IveHrfU0bM/w6N/NAANxuEy
-	 QRIUREaMJmTcT+FCgaVnR7sr/Ov2VqWRqKrA5Kdo0ZcgBwe0zo+g0pk2b2ClkEO28A
-	 S5ChpzTG5H3FOnrLuRGUndIGhW1zAITAqirmDQ+ZTHqq7M2kcbrQ0FPmaOKOFPRtlI
-	 RjLpJNNUYbEVdr7SYiznDAyFQQ6zDTzNNtdxfsFHY1dVdudUUs3lA1QEZbAGmE5GPj
-	 2gECFMiZFz7Lg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73851CD8CA8;
-	Tue,  9 Jun 2026 10:13:13 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 09 Jun 2026 11:13:07 +0100
-Subject: [PATCH v2 12/12] iio: dac: ad5686: add gain control support
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lG5GqU2M"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-45ef189aa1cso3799026f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 03:26:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781000767; x=1781605567; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F7DTan2GpF6A2ycsVVtBoKDWhROO13NhyoThWfu3oNA=;
+        b=lG5GqU2M9gegkg9vFEFFMnkpnVwp1jbANzRWvLajAMLdRMO/9Hhc3V1U1cEKsLCK0U
+         S1xaig0sweqAdOVpXG7wjQp+/9NVR5wEsevopKt1+x4E+LfXkR+WolseLKDfCbDvPFIi
+         UozLQpUXgmlxdSw1+Bu5IMpEC2gg1G37UMom+vaTY4OMhfBwIRVUH/diMxMfC6yOXLl1
+         qbQ9pcpDCwuJp7l1UnjW2mc8otAej/rzHDGBpCYyfBGRjl26ZOPqN3WvY5glzVuHzYp3
+         MQCFhQtZ7KMx0DW1WBqxAKVOsrws6F2/Ld4rgzUK1nxo56/H6sFhivbfbuNPdEJ22eWQ
+         ZKjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781000767; x=1781605567;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=F7DTan2GpF6A2ycsVVtBoKDWhROO13NhyoThWfu3oNA=;
+        b=mbh7l97OVyHPk5dYmaayRxDOm1SPB29WUzbvjgs05nkLASuszbGK3Kce7B2zftGSDm
+         AQGolTbQZs0X8fZndLMFfjw45E0tFSo1N2dU+FJOsUoNbHUistFcr2TRy/+D9KBUeyKn
+         W1Qmmx0+LjvQHvjm1DYheSVqOdARudXJf6UZUyOFuEUbRLMolouVK7ZFgiNS8GYvKq7D
+         bn3gAR55KWR4nW9uG5usE5WKkLZyReem94sNySgGdzp01S7xwje/j1bVaOBHj3nc155+
+         cdK+csKhUhke/b1er5OlmtxRfiO/LRdaSWf/mJgYx/F/DxHh2Gd1E1iCrNUXXQCUy743
+         wKow==
+X-Forwarded-Encrypted: i=1; AFNElJ9TT5O3G1tizwlNwf/YqZPzYfe50mXX89/V652iQTWtpUYeOonWI3Q0kqXHlZOxb0Fi+zujbKEd8aM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzF5bF5tms1DZSOcHRNBBD9UN8EmwgXGxyz4q4bzSrFZYpUM/Ij
+	J125hSVtQHBoSStQj4rXqZf60t/9QOItvy63pqDbTfVbeL2WVgEG+hlY
+X-Gm-Gg: Acq92OGJ+hzl58Gs0Dr2LPGEi6w4Tj9YB20hqbrwokEG0C+7W+OLgsteBEIlS80ZqYn
+	2Eno34+gFiUoIWpvNlDyywjXoycEdZebGBfQggKx68pfCmyAWWM2+PdpIG4LBahbRz12ycDQgxK
+	SUi3yqcjwaWtOJmla1+d8p8V22Z4bCh7OrDBwhj5y2xaFFpMIt0oxi7+QGfvPe6+zs6Rh7HgNw7
+	pFyODzjN+5dILjxuITNeiNtT2fzqvgce9no6rf0NOdPLG5U0+wwHSiOwwg+5Dw/so+xbyyteRoX
+	kxKhLZw3gJqjfmjUkD037sr8vjMRFNLZL8v+Ha8nAC+EiV7arj6ySb/ANHukddNMjhBTdRWzfQJ
+	cJ5rJrN7Imeov1o2K1pHcufwXINHlb+TmY7gxtx49JqbseQJ9UNBAiDaLEBZDJE19aJDB7wwtB0
+	0GZprllXx9kPSjILComINuQT1MNrdmQRuPxgcDhcFL4ANrZ9/1ipjGWJ8oMTgAGdR0FAD7ZY1gB
+	qiy9QEP0rgOx+2aXFOmMhFNMrd537vSTucWw1J/Js3VK3AbQeSoR2InckFj+FZ3rJ+yPs+Y8ubq
+	1/CLqWfm7RNLWNq80ThxtyAWF59SGSeBcVUhePQT3Udt5MkeZHFKwC/hSavbN3CRiMS7tUJzQ1b
+	u
+X-Received: by 2002:a05:600c:4e43:b0:490:3d62:f5df with SMTP id 5b1f17b1804b1-490c25d24f4mr315035765e9.30.1781000767236;
+        Tue, 09 Jun 2026 03:26:07 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490bc391aaasm543448335e9.1.2026.06.09.03.26.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 03:26:07 -0700 (PDT)
+Date: Tue, 9 Jun 2026 12:26:05 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
+ <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, "Gustavo A. R.
+ Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v2 11/12] iio: dac: ad5686: write_raw: use
+ guard(mutex)()
+Message-ID: <20260609122605.000010b9@gmail.com>
+In-Reply-To: <20260609-ad5686-new-features-v2-11-70b423f5c76d@analog.com>
+References: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
+	<20260609-ad5686-new-features-v2-11-70b423f5c76d@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260609-ad5686-new-features-v2-12-70b423f5c76d@analog.com>
-References: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
-In-Reply-To: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1780999989; l=8097;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=KY9ad0xkEl7EuPbLqWCJM/t51fvMmXrflOq4Re3IqJw=;
- b=T/Rdsg7Wjw1tlF6D9F/yXYvnzwz1KacMGpAA0wBVGMGqT817vQ7NH6xPPD7WRTEbn9D32qnPv
- EDYNHMo1If1CmHOwR4TAWLmOWVF4uy5j8SiXYU4Mxekms+jMGU5zM9M
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Tue, 09 Jun 2026 11:13:06 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-Most of the supported devices rely on a GAIN pin to control a 2x
-multiplier applied to the output voltage. Other devices, e.g. the
-single-channel ones, provides a gain control through a bit field in the
-control register. Some designs might have the GAIN pin hardwired to
-VDD/VLOGIC or GND, which would still be fine for this patch, that allows
-the scale property to be configurable with two available options.
-vref_mv field is moved down in the ad5686_state struct, so that
-overall size increase is reduced.
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> Use guarded mutex lock to facilitate code review when adding new
+> attributes. This will allow for early returns, avoiding error-prone
+> locking and unlocking in error paths. Gain-control support will add
+> the scale attribute.
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 96 +++++++++++++++++++++++++++++++++++++++++++++---
- drivers/iio/dac/ad5686.h | 12 +++++-
- 2 files changed, 101 insertions(+), 7 deletions(-)
+Althoug <linux/cleanup.h> is included in <linux/device.h>, it's better
+to explicitly add the include for it as IIO drivers are currently being
+moved away from these catch-all headers.
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index d9022c6a3201..d49390af71f9 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -14,10 +14,12 @@
- #include <linux/export.h>
- #include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- #include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
-@@ -40,7 +42,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5310_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5310_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
-@@ -49,7 +52,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5683_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5683_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -192,9 +196,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->vref_mv;
--		*val2 = chan->scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		if (st->double_scale) {
-+			*val = st->scale_avail[2];
-+			*val2 = st->scale_avail[3];
-+		} else {
-+			*val = st->scale_avail[0];
-+			*val2 = st->scale_avail[1];
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 	return -EINVAL;
- }
-@@ -216,6 +225,63 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
- 				    chan->address, val << chan->scan_type.shift);
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
-+			st->double_scale = false;
-+		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
-+			st->double_scale = true;
-+		else
-+			return -EINVAL;
-+
-+		switch (st->chip_info->regmap_type) {
-+		case AD5310_REGMAP:
-+			return ad5310_control_sync(st);
-+		case AD5683_REGMAP:
-+			return ad5683_control_sync(st);
-+		case AD5686_REGMAP:
-+			/*
-+			 * Even if the gain pin is hardwired on the board, the
-+			 * user is able to control the scale such that it
-+			 * matches the actual gain setting.
-+			 */
-+			gpiod_set_value_cansleep(st->gain_gpio,
-+						 st->double_scale ? 1 : 0);
-+			return 0;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	struct ad5686_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*vals = st->scale_avail;
-+		*length = ARRAY_SIZE(st->scale_avail);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -224,6 +290,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5686_info = {
- 	.read_raw = ad5686_read_raw,
- 	.write_raw = ad5686_write_raw,
-+	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
-+	.read_avail = ad5686_read_avail,
- };
- 
- static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
-@@ -245,6 +313,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
- 		.channel = chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
- 		.address = addr,				\
- 		.scan_index = chan,				\
- 		.scan_type = {					\
-@@ -471,6 +540,16 @@ const struct ad5686_chip_info ad5679r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
-+static void ad5686_init_scale_avail(struct ad5686_state *st)
-+{
-+	int realbits = st->chip_info->channels[0].scan_type.realbits;
-+	s64 tmp;
-+
-+	tmp = 2ULL * st->vref_mv * NANO >> realbits;
-+	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-+	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-+}
-+
- static irqreturn_t ad5686_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -576,6 +655,13 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
- 				     "Failed to get LDAC GPIO\n");
- 
-+	st->gain_gpio = devm_gpiod_get_optional(dev, "gain", GPIOD_OUT_LOW);
-+	if (IS_ERR(st->gain_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
-+				     "Failed to get GAIN GPIO\n");
-+
-+	ad5686_init_scale_avail(st);
-+
- 	fsleep(5); /* power-up time */
- 	reset_control_assert(rstc);
- 	fsleep(1); /* reset pulse: comfortably bigger than the spec */
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 6f47493906d4..b74a641d8fa4 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -39,9 +39,11 @@
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
- 
-+#define AD5310_GAIN_BIT_MSK			BIT(7)
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5310_PD_MSK				GENMASK(10, 9)
- 
-+#define AD5683_GAIN_BIT_MSK			BIT(11)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5683_PD_MSK				GENMASK(14, 13)
- 
-@@ -124,9 +126,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-  * @ldac_gpio:		LDAC pin GPIO descriptor
-- * @vref_mv:		actual reference voltage used
-+ * @gain_gpio:		GAIN pin GPIO descriptor
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-+ * @scale_avail:	pre-calculated available scale values
-+ * @vref_mv:		actual reference voltage used
-+ * @double_scale:	flag to indicate the gain multiplier is applied
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-  * @lock:		lock to protect access to state fields, which includes
-  *			the data buffer during regmap ops
-@@ -138,9 +143,12 @@ struct ad5686_state {
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
- 	struct gpio_desc		*ldac_gpio;
--	unsigned short			vref_mv;
-+	struct gpio_desc		*gain_gpio;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
-+	int				scale_avail[4];
-+	unsigned short			vref_mv;
-+	bool				double_scale;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 	void				*bus_data;
+With that fixed,
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
 -- 
-2.43.0
+Kind regards
 
-
+CJD
