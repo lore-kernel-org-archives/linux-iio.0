@@ -1,186 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5D6376A0D;
-	Tue,  9 Jun 2026 16:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7242F3B5303
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:17:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781021557; cv=none; b=F6PNst8KXRwYlXLtxxuEB5+puxYzz4NOuLXS7i94l9OeePp1kel/7nv1P4oJFt7UK1uiugm8BYS+gHJrKxTlCDVhZfTmJOc/xVVL0CMdG8cja9RcwFNwDR3haIaJqiYt7FjUSUxsQnSi9BG+6DT+7l9LMi1M76JcbcO21cHMaYk=
+	t=1781021849; cv=none; b=QmzShgsLTk87eRoPVFm9vCRxki/z4NrGQHgQvrx7kqlX4WwQVNF8e4+e18aSJngCNd/4LVWYlBZg4cTxCT4fSP9EbJaEwkdsrraO7C3o15ph7HpGUzJqc4lltz0Ix/K76Wt8Rb+OF062RlazXzDjIP4QeY6MlE2HUlReJIjkm9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781021557; c=relaxed/simple;
-	bh=/UURgH5Qf3Ks4NgWvaAnJhm/0raqfkZdF7dKdO0qZ30=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=guADOQz6ymKgshA+FmieSxze/B9kv1eVsYGgDmLA34yYx9LOiPDGSEZ6gIx/USog0Uqb5lDnlx2dTdgFgRTvxkaKjOMnxGsWYHwXGCSiDVQW38UeI6sliqJ/DgGsIqpF71VyjJw3vEcHduyuG7KHXVZ6bqBy6xQawbQOp4C5Hgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J/762SPZ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781021849; c=relaxed/simple;
+	bh=iGsfYaqqPaggYpWFXvV7wMfdK7JOLFerDStcNgsImFU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Sni8F3SwH8DCAMASrto6xVohf/KAoWGWr+Wxr7HQHSyM1J3MEV87NmyXLx2qFCNcL8lfYnWoQ6reVM6RUtXqQx6OrWPzPF2vTGl6kNQLC+2/w+pyhANx9QAJy1RdBoru9EhFWFmvF4JPdWmL/8jx9W/FKyiO6mn8g/tbaX7mixE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SgaPRNEt; arc=none smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J/762SPZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84431F00893;
-	Tue,  9 Jun 2026 16:12:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781021555;
-	bh=5VVwuYc+JPi9X2IeRUGdOivDGFfg6Xm7j28YitwgkZ8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=J/762SPZuTdaYqk1FKDUm2TFm2jX9WCbwPeqvTTRCH5XkyP4pv0rLyrMK2Qn8GHBq
-	 dVC4j4zoT2828Q7MOA0uWf1GfVEkejd4ThfQMYYRRLmpHHIqfxNTp5X/x9IMqm231M
-	 p04l4FIcXch0WRrU4iylOtaIuClhj9IBS28DAIHW5HOmSgPHam/9uDt9IQQXBiaDkA
-	 j05RIWo0708v0Y4bgnTmM4caIZj3S8EEf7B0l0WWyQ/5+3xJF2o3q2v7BX2oayZjwm
-	 qCBTdQxWpfq6415npLFH/mmOxIw8si6dtUccArjO41YZp95wgDeAtKTeayJ/5XFXbd
-	 aNxJGkfp+rEDA==
-Date: Tue, 9 Jun 2026 17:12:29 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
-	linux@analog.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SgaPRNEt"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-43b7e186a0cso2230642fac.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781021847; x=1781626647; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uYl15/ixnkO8fppgHDZZ9tihfmZdCVJsYU8HZ5wS+/I=;
+        b=SgaPRNEtSLpbQl07cHTi8gtXIdnKkml1FEXtDskZftpgDIRKyIzzGb6TWnbfm+OGnR
+         PaxOK9dJ+zJLITd2f/PEEMBooAduajcLyXX/sAxmbnhaVBfQy3togpawbt3oM7V1QW66
+         JhcgREU9y22H+x93ZICR8Efu75kOH35cP+/XYTONZy0Lfxn9fzkKGR1JILZ8g5Z7SfVn
+         XL6D083gXQdl+S5GmPXHVGF04Tb51BhTINyDi9hDcNYTwQhznlhblPT9MZ/4LaPMwgLZ
+         M2niZLruMthNrlwBILnGxChGqAVI3gUnkw3WgmNrsjvOOluwI4wAxP6BBiuBfx0kjQJQ
+         quVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781021847; x=1781626647;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uYl15/ixnkO8fppgHDZZ9tihfmZdCVJsYU8HZ5wS+/I=;
+        b=Qvguk3umOOCnHhc4uHNaX9FrmIDRTJLIKg6WraAD5qGq7gT2WljXWNIjAYEi9D2F4T
+         fECeaKl/Tw4ZG8Mc9K/QSVEZeeC7rjzmBmyeaa05XBBEbI6RIfF3ikOiWJkQptUyb7Uc
+         H6wtY7JtPyBLrYAHsIubmHWLhjh7A6p5lLNlwouZj2AcwD6wr41HXDUcl0y4Dy+Wfk++
+         FB0sU+ixwBLszLQ4rsVkUGmWPfjpThmpjFEsWQsMooZcDBcRpMIq6ba2x2IydsaXlv4y
+         Mj3H2ikIi6gKfDIUvYpTqFtV1dJUF176Ec3JTPFbzuE40txdbD0DWnMrQNS0OFiZd761
+         k6YA==
+X-Gm-Message-State: AOJu0YymyQoVJTqe1AlUjs7jl9QscyTyKfZ51YGX4q6pFuosQZJNfUKl
+	FezKhsbaRh/kV1MnS2P4H6F2hNgivwrHK8U89WLZI14LP8DHMDTKr55b
+X-Gm-Gg: Acq92OHG5MVoOzTD1LpMAeHT5iCXAmsArHXNtBYI71WgwjaDUXjy/kegTvIjMfWGRui
+	4CPaJxhGDGQoxcnVIEGn+5Zxm8N/3fUDRoTbEpyOT/frHXSFxRaBmm6xQwqR1EV4vELMm0r5bw6
+	TD79R6McSvX7dA7iSe11trNXqURgtXHU9zWJdL5EkbRB7G1FzrFruWhjSpLwwxWeEYYuBc6EHfO
+	Yu6hb0vrPI5i7M+rn9Y7iAwrdmQCqf8DIXrVD/C2dEAEvlsAYTHnD/mQEKjjdpamrCuBgHCdAIR
+	8lX5laV8YTvMRySh2523ibZuK4eXZELv5rFUtWgMl+Qb5RgajEWxLLjHLUJ4vTLOwMwoYEaCkQN
+	Li2x69+Htp4SY09Sv5nBJtEzB0e/hY3Ypm9uixFFl0683cBbE6H5C0ksiEpIaTLVw3Qe2iUQu+t
+	aLHh7TKPmrXZTNYuM+bcHTp2BWTXwJFItFGo5tBA9BbpWYgzP5Dfv4jDscAvMFOfnQ/077
+X-Received: by 2002:a05:6870:558f:b0:43d:7b24:7c with SMTP id 586e51a60fabf-4413da479aamr11950799fac.20.1781021847366;
+        Tue, 09 Jun 2026 09:17:27 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-440d8448e3csm18797906fac.13.2026.06.09.09.17.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 09:17:26 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v2 02/12] dt-bindings: iio: dac: ad5696: rework on power
- supplies
-Message-ID: <20260609-manhunt-napkin-04b11606ea49@spud>
-References: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
- <20260609-ad5686-new-features-v2-2-70b423f5c76d@analog.com>
- <eduvmlupbcxlskscx6xphd7ipbwug3kqxjqtcewk6n6f2eqzo4@2avqjjrdem2v>
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Replace Tomasz Duszynski as maintainer for SPS30
+Date: Tue,  9 Jun 2026 11:16:59 -0500
+Message-ID: <20260609161701.52513-2-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="tl5HP9+ch7loODtr"
-Content-Disposition: inline
-In-Reply-To: <eduvmlupbcxlskscx6xphd7ipbwug3kqxjqtcewk6n6f2eqzo4@2avqjjrdem2v>
+Content-Transfer-Encoding: 8bit
 
+Hi all.
 
---tl5HP9+ch7loODtr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is basically the 2nd half of replacing Tomasz's entries, once
+again, in the SPS30 dt-bindings and his entry in MAINTAINERS. All of his
+entries across IIO appear to be dead, which is why this is being sent.
+Jonathan Cameron's approved of this [1] so his entries in iio are being
+replaced and an RFC regarding this topic with Tomasz Cced has been
+sitting on lore.kernel.org for about a month now.
 
-On Tue, Jun 09, 2026 at 12:40:08PM +0100, Rodrigo Alencar wrote:
-> On 09/06/26 10:28, sashiko-bot@kernel.org wrote:
-> > Thank you for your contribution! Sashiko AI review found 2 potential is=
-sue(s) to consider:
-> > - [High] Adding `vdd-supply`, `vlogic-supply`, and unconditionally requ=
-iring `vref-supply` breaks backward compatibility for existing device trees.
-> > - [Medium] Making `vlogic-supply` unconditionally required forces devic=
-e trees to document a non-existent hardware connection for single-channel d=
-evices.
-> > --
-> >=20
-> > commit 8357cd3efa5f819678f24f0cbf0a39208f4078bc
-> > Author: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > Subject: dt-bindings: iio: dac: ad5696: rework on power supplies
-> >=20
-> > This commit reworks the power supply bindings for the ad5696 DAC series=
-=2E It
-> > adds vdd-supply, vlogic-supply, and vref-supply, deprecates vcc-supply,=
- and
-> > updates the required properties.
-> >=20
-> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yam=
-l b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> > > index 2dcc049f30e91..e5fbaec4adf71 100644
-> > > --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> >=20
-> > [ ... ]
-> >=20
-> > > @@ -55,8 +65,21 @@ properties:
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > > +  - vdd-supply
-> > > +  - vlogic-supply
-> >=20
-> > [Severity: High]
-> > Does adding vdd-supply and vlogic-supply to the global required list br=
-eak
-> > backward compatibility for existing device trees? Older device trees th=
-at
-> > omitted these will now fail dtbs_check.
->=20
-> Yes, for correctness, it breaks the dtbs_check. In the driver side
-> we would rely on the dummy/stub regulator in case those are not declared.
+Maxwell Doose (2):
+  dt-bindings: iio: sensirion,sps30: Add myself as maintainer
+  MAINTAINERS: Add myself as maintainer for SPS30
 
-Ye I wouldn't be overly worried here. Sashiko has particular difficulty
-with these kinds of changes.
+ .../devicetree/bindings/iio/chemical/sensirion,sps30.yaml       | 2 +-
+ MAINTAINERS                                                     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
->=20
-> > [Severity: Medium]
-> > Does making vlogic-supply unconditionally required force device trees to
-> > document a non-existent hardware connection? Single-channel devices in =
-this
-> > family (such as adi,ad5693, adi,ad5693r, and adi,ad5311r) physically do=
- not
-> > have a dedicated VLOGIC pin.
->=20
-> VLOGIC does exist for those parts. However, as mentioned before, for some
-> tiny packages it is internally connected to VDD:
->=20
-> - 10-Lead MSOP package for AD5693R/AD5691R exposes the VLOGIC pin
-> - 8-Lead LFCSP package for AD5693R/AD5692R/AD5691R/AD5693 does NOT expose=
- the VLOGIC pin
->=20
-> I think we agreed to make it required and user can just repeat the vdd-su=
-pply
-> value or not have it at all. Driver would rely on the dummy/stub regulato=
-r.
-
-Yeah, I dunno. I think this is just a judgement call, and maybe worth
-having a comment in the binding for to explain it.
-
-> =20
-> > > =20
-> > >  allOf:
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            anyOf:
-> > > +              - const: adi,ad5693
-> > > +              - const: adi,ad5694
-> > > +              - const: adi,ad5696
-> > > +    then:
-> > > +      required:
-> > > +        - vref-supply
-> >=20
-> > [Severity: High]
-> > Does unconditionally requiring vref-supply break older device trees that
-> > correctly utilized the formerly valid vcc-supply?
-> >=20
-> > To preserve DT ABI compatibility, should the schema allow either vcc-su=
-pply or
-> > vref-supply to satisfy the reference voltage requirement?
->=20
-> Same here. For correctness, it breaks DT ABI.
->=20
-> > --=20
-> > Sashiko AI review =B7 https://sashiko.dev/#/patchset/20260609-ad5686-ne=
-w-features-v2-0-70b423f5c76d@analog.com?part=3D2
->=20
-> --=20
-> Kind regards,
->=20
-> Rodrigo Alencar
-
---tl5HP9+ch7loODtr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaig7bQAKCRB4tDGHoIJi
-0gqBAP48zQaBb7ur6lhscPDI6mzZQUkscA/cTvwtzandj308wAEAi6bCvPvAzwBf
-yYpPO9Td+XdF0mR8pNDVgn84BtG2uQo=
-=+nmB
------END PGP SIGNATURE-----
-
---tl5HP9+ch7loODtr--
+[1] https://lore.kernel.org/linux-iio/20260609140712.2e5d1640@jic23-huawei/
+-- 
+2.54.0
