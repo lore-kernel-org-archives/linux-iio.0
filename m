@@ -1,111 +1,186 @@
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1815D37268B
-	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:10:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5D6376A0D;
+	Tue,  9 Jun 2026 16:12:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781021406; cv=none; b=Zyn+TE8tSx/qlKWvL4g2UnQjBtft5e/SOMgYvFR8OmOQH3Wz4KDVwWxa7zE7b/CIwZiSqTzjM76XxN0pZa+DbdeEgyjF/00qI3BZczVbVEPXx7expqucOe+y7SHl++agrrsZtPP+BQJ1zi+M2K1IL6GGeu2mfr6AwCLIiL/eDhg=
+	t=1781021557; cv=none; b=F6PNst8KXRwYlXLtxxuEB5+puxYzz4NOuLXS7i94l9OeePp1kel/7nv1P4oJFt7UK1uiugm8BYS+gHJrKxTlCDVhZfTmJOc/xVVL0CMdG8cja9RcwFNwDR3haIaJqiYt7FjUSUxsQnSi9BG+6DT+7l9LMi1M76JcbcO21cHMaYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781021406; c=relaxed/simple;
-	bh=RLoEiDvQI23Ox8jg30VQGX4Iwfm7ISwxXbu9I23mu5s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uIZvBUV++ogIeBarquLd5tr9fxqV7tt2dRe+nML4g/SjbmX+1f/+lJ27wP6MaN/AW8JYURyZr3kZU2sVkhA71Cj6B20FIAnS6JnRM/kSa40uxPMLo/JVBOaOHljLpNlF/RUN3Sl/UCmqr1t31ydJCEPWZZ6jbwwD/6xjB7g9kEI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=kp679Dua; arc=none smtp.client-ip=209.85.160.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1781021557; c=relaxed/simple;
+	bh=/UURgH5Qf3Ks4NgWvaAnJhm/0raqfkZdF7dKdO0qZ30=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=guADOQz6ymKgshA+FmieSxze/B9kv1eVsYGgDmLA34yYx9LOiPDGSEZ6gIx/USog0Uqb5lDnlx2dTdgFgRTvxkaKjOMnxGsWYHwXGCSiDVQW38UeI6sliqJ/DgGsIqpF71VyjJw3vEcHduyuG7KHXVZ6bqBy6xQawbQOp4C5Hgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J/762SPZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="kp679Dua"
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-440d9bfa309so4294597fac.2
-        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:10:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781021404; x=1781626204; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/RNb4id2txtpLRqVF8IkFMdlDYN5r4X9vT3DkpgA6KE=;
-        b=kp679DuaqNkmFHhbB8cN9yxOjupAJ+LBTHfPGyJzmFq1zeQ5NXcbY/cUivYMwfxmxf
-         jWYGuBwGddCUENJ1KsCoq6EXNRA0o5JLb8a3Pn1RrKOnFFEpRnRxcjlNUvmsf+CHOpbi
-         IAPje4uoPbtIY0SJirLhSl0cdsBWeS6dBMlpcxn2NsWS38NYyYL12AND0zNZHAqnWcSE
-         nAox8u8g83YNLO3yXErnLEipvBki4xCeW297UBRvQHjFto5FEaMXrRW6DZ5a7mCMaSpk
-         9YGfsqgPaLC5cnVBcLOC1Un8paOEu7TjYRTE3XuJRZRXddzyeJYVjwdApycnJv6c6pT2
-         5RwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781021404; x=1781626204;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/RNb4id2txtpLRqVF8IkFMdlDYN5r4X9vT3DkpgA6KE=;
-        b=YxsQwI7t/Te8bERUgc8B2xcdjfF6rigRYkPt0ganz+pREewSx342r/CWx8DCtAICQD
-         EcMVyTT6Xvc0orFuMJ9PYT6S6fxwOdU2nNI3LPVa/yXaY7G3mTZLcfiGBvP7MZ+Q+4yc
-         j34rieZ2QWkJErFq+1YOgYR6B1neKM376+UPbkVp5CKe1p6M0hEZiOG/HxS3L+8j/C8T
-         rPI7DYgfLG7f5Njykjf0iWqyYg7dUZCY6wBFWnFBiMvaG+vQLtVl4MKQgR5T22K2C71Y
-         ID4+iD+Dcel5kYiwqWOhtf7pp6wpH5IUzrDw4ZLaGL+FYRSud/MRZZB3CRhI+1xM6f44
-         W4nA==
-X-Forwarded-Encrypted: i=1; AFNElJ/tRYKmYc0GzHo3y/3Mt7TbTEix06tdXvoFVbAy52QQydfGjfmrHuU0WIPstkkhCI4zGKTM1NVMxHA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzuiIl6mB/w++9jMYCzK95VHlUrxjUP9kqDRaxQ6+kzZuYHd1gS
-	ghHxMguUbDc7tgTjyyhRpUHUUbHkctOC6RLcTtVMgIWpDzbH7hPPfXMx2atSTw9ADn8=
-X-Gm-Gg: Acq92OG48HWyHKJ6+hGowI/whOQSwJxkaXY2ifxIP2FfmuoLbyLXwGFHy9p1W7BvOW8
-	pp/7zE2DiTXeO2sfHqHxlepuLvEnukLmu7i4+5Y0fApPNQZUH6l5Ct+0jUCya4YC4ek32Bz8EEH
-	TSge5sa+OWae6eVBV4GKx58kvalgL56trwOsPP4uu/UWDyk0E4k0rT+i9iZPaj3PrxdhW0OXAnt
-	p2aayHoC5VThC7Gx3MaPQRTEumKcQtoTmu96vKMwri/xA5VE45pz7iWxd9Ad4xfDmnZh9tOI62C
-	MqwS5xWgx6B/T0h18jzF8VdPkA7DadclwxqzvYio6RrhoeCsbMq5BSZd8tW+Ukhv/JvOknNq6Iz
-	pwVIUqLfoC4qPWw5NPDoOGv6KeB0SFB4HChEhKFdBtdg7hMKKhaY8K9SQ0qK2KOwEtIBmYmoEik
-	Z3U4CFA4r6DaSPoUKdLx8pY+OVf7mJxhGtYOl7fkOmucOiz6xRSjfSaCMn1+aMWPVQJX0ay2nBA
-	D3Qa7GuaOkzWvHIF0vSqXg=
-X-Received: by 2002:a05:6871:28a8:b0:439:b99e:441e with SMTP id 586e51a60fabf-4413d68f54emr12001176fac.1.1781021403980;
-        Tue, 09 Jun 2026 09:10:03 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:2516:8f73:2dbb:a61e? ([2600:8803:e7e4:500:2516:8f73:2dbb:a61e])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-440d84def23sm18401345fac.17.2026.06.09.09.10.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Jun 2026 09:10:03 -0700 (PDT)
-Message-ID: <6305149b-d334-491f-85c2-085fe42cae98@baylibre.com>
-Date: Tue, 9 Jun 2026 11:10:02 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J/762SPZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84431F00893;
+	Tue,  9 Jun 2026 16:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781021555;
+	bh=5VVwuYc+JPi9X2IeRUGdOivDGFfg6Xm7j28YitwgkZ8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=J/762SPZuTdaYqk1FKDUm2TFm2jX9WCbwPeqvTTRCH5XkyP4pv0rLyrMK2Qn8GHBq
+	 dVC4j4zoT2828Q7MOA0uWf1GfVEkejd4ThfQMYYRRLmpHHIqfxNTp5X/x9IMqm231M
+	 p04l4FIcXch0WRrU4iylOtaIuClhj9IBS28DAIHW5HOmSgPHam/9uDt9IQQXBiaDkA
+	 j05RIWo0708v0Y4bgnTmM4caIZj3S8EEf7B0l0WWyQ/5+3xJF2o3q2v7BX2oayZjwm
+	 qCBTdQxWpfq6415npLFH/mmOxIw8si6dtUccArjO41YZp95wgDeAtKTeayJ/5XFXbd
+	 aNxJGkfp+rEDA==
+Date: Tue, 9 Jun 2026 17:12:29 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+	linux@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v2 02/12] dt-bindings: iio: dac: ad5696: rework on power
+ supplies
+Message-ID: <20260609-manhunt-napkin-04b11606ea49@spud>
+References: <20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com>
+ <20260609-ad5686-new-features-v2-2-70b423f5c76d@analog.com>
+ <eduvmlupbcxlskscx6xphd7ipbwug3kqxjqtcewk6n6f2eqzo4@2avqjjrdem2v>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/3] iio: adc: Extend ti-ads1100 driver
-To: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org,
- marcelo.schmitt@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, mike.looijmans@topic.nl, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, jorge.marques@analog.com,
- antoniu.miclaus@analog.com, mazziesaccount@gmail.com,
- jishnu.prakash@oss.qualcomm.com, duje@dujemihanovic.xyz, wens@kernel.org,
- sakari.ailus@linux.intel.com, linusw@kernel.org
-References: <20260607183542.368184-1-jakubszczudlo40@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260607183542.368184-1-jakubszczudlo40@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tl5HP9+ch7loODtr"
+Content-Disposition: inline
+In-Reply-To: <eduvmlupbcxlskscx6xphd7ipbwug3kqxjqtcewk6n6f2eqzo4@2avqjjrdem2v>
 
-On 6/7/26 1:35 PM, Jakub Szczudlo wrote:
-> Extend ADS 1100 driver to support ADS1110, which is a pin-to-pin 
-> compatible device with higher resolution. This patch also updates the 
-> device tree bindings and Kconfig description to reflect the new 
-> supported device.
-> 
-> Signed-off-by: jszczudlo <jakubszczudlo40@gmail.com>
-> ---
-> jszczudlo (3):
->   dt-bindings: iio: adc: Update title and enum
->   iio: adc: Update Kconfig description for TI_ADS1100
->   iio: adc: Add ti-ads1110 support to ti-ads1100 driver
-> 
->  .../bindings/iio/adc/ti,ads1100.yaml          |   3 +-
->  drivers/iio/adc/Kconfig                       |   6 +-
->  drivers/iio/adc/ti-ads1100.c                  | 165 +++++++++++++-----
->  3 files changed, 131 insertions(+), 43 deletions(-)
-> 
 
-I assume this is v2 of [1]? the subject should include [PATCH v2] and the
-cover letter should include a changelog. See [2].
+--tl5HP9+ch7loODtr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[1]: https://lore.kernel.org/linux-iio/20260527164312.355729-1-jakubszczudlo40@gmail.com/
-[2]: https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+On Tue, Jun 09, 2026 at 12:40:08PM +0100, Rodrigo Alencar wrote:
+> On 09/06/26 10:28, sashiko-bot@kernel.org wrote:
+> > Thank you for your contribution! Sashiko AI review found 2 potential is=
+sue(s) to consider:
+> > - [High] Adding `vdd-supply`, `vlogic-supply`, and unconditionally requ=
+iring `vref-supply` breaks backward compatibility for existing device trees.
+> > - [Medium] Making `vlogic-supply` unconditionally required forces devic=
+e trees to document a non-existent hardware connection for single-channel d=
+evices.
+> > --
+> >=20
+> > commit 8357cd3efa5f819678f24f0cbf0a39208f4078bc
+> > Author: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > Subject: dt-bindings: iio: dac: ad5696: rework on power supplies
+> >=20
+> > This commit reworks the power supply bindings for the ad5696 DAC series=
+=2E It
+> > adds vdd-supply, vlogic-supply, and vref-supply, deprecates vcc-supply,=
+ and
+> > updates the required properties.
+> >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yam=
+l b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> > > index 2dcc049f30e91..e5fbaec4adf71 100644
+> > > --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> >=20
+> > [ ... ]
+> >=20
+> > > @@ -55,8 +65,21 @@ properties:
+> > >  required:
+> > >    - compatible
+> > >    - reg
+> > > +  - vdd-supply
+> > > +  - vlogic-supply
+> >=20
+> > [Severity: High]
+> > Does adding vdd-supply and vlogic-supply to the global required list br=
+eak
+> > backward compatibility for existing device trees? Older device trees th=
+at
+> > omitted these will now fail dtbs_check.
+>=20
+> Yes, for correctness, it breaks the dtbs_check. In the driver side
+> we would rely on the dummy/stub regulator in case those are not declared.
+
+Ye I wouldn't be overly worried here. Sashiko has particular difficulty
+with these kinds of changes.
+
+>=20
+> > [Severity: Medium]
+> > Does making vlogic-supply unconditionally required force device trees to
+> > document a non-existent hardware connection? Single-channel devices in =
+this
+> > family (such as adi,ad5693, adi,ad5693r, and adi,ad5311r) physically do=
+ not
+> > have a dedicated VLOGIC pin.
+>=20
+> VLOGIC does exist for those parts. However, as mentioned before, for some
+> tiny packages it is internally connected to VDD:
+>=20
+> - 10-Lead MSOP package for AD5693R/AD5691R exposes the VLOGIC pin
+> - 8-Lead LFCSP package for AD5693R/AD5692R/AD5691R/AD5693 does NOT expose=
+ the VLOGIC pin
+>=20
+> I think we agreed to make it required and user can just repeat the vdd-su=
+pply
+> value or not have it at all. Driver would rely on the dummy/stub regulato=
+r.
+
+Yeah, I dunno. I think this is just a judgement call, and maybe worth
+having a comment in the binding for to explain it.
+
+> =20
+> > > =20
+> > >  allOf:
+> > > +  - if:
+> > > +      properties:
+> > > +        compatible:
+> > > +          contains:
+> > > +            anyOf:
+> > > +              - const: adi,ad5693
+> > > +              - const: adi,ad5694
+> > > +              - const: adi,ad5696
+> > > +    then:
+> > > +      required:
+> > > +        - vref-supply
+> >=20
+> > [Severity: High]
+> > Does unconditionally requiring vref-supply break older device trees that
+> > correctly utilized the formerly valid vcc-supply?
+> >=20
+> > To preserve DT ABI compatibility, should the schema allow either vcc-su=
+pply or
+> > vref-supply to satisfy the reference voltage requirement?
+>=20
+> Same here. For correctness, it breaks DT ABI.
+>=20
+> > --=20
+> > Sashiko AI review =B7 https://sashiko.dev/#/patchset/20260609-ad5686-ne=
+w-features-v2-0-70b423f5c76d@analog.com?part=3D2
+>=20
+> --=20
+> Kind regards,
+>=20
+> Rodrigo Alencar
+
+--tl5HP9+ch7loODtr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaig7bQAKCRB4tDGHoIJi
+0gqBAP48zQaBb7ur6lhscPDI6mzZQUkscA/cTvwtzandj308wAEAi6bCvPvAzwBf
+yYpPO9Td+XdF0mR8pNDVgn84BtG2uQo=
+=+nmB
+-----END PGP SIGNATURE-----
+
+--tl5HP9+ch7loODtr--
