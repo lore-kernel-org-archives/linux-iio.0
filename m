@@ -1,132 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E20673AEF2D;
-	Tue,  9 Jun 2026 16:19:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D068A348C6C
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781021967; cv=none; b=erdUmw7z9fDeA/P10eo7AjAUZqDZnx3iuvwDCZ63XMhfKzesRhgkImzsuLy7VRaWOV9OspDbtyw1ceRW07toq87khvZ/1DMOnnoM7vA/GleDVISsKgPFhlAz0W5gTIsDOgjCrqCndVJ6GXRBgudVoTL/AOg38QvmmFHc/cGuPoA=
+	t=1781022170; cv=none; b=XLmSoa9/gRtRkTPq/x2jQQ2+ebdVdsYh6rTrEj7MzyMdQsC4e8kFq6Cgvgno/hcgqQoSokSlkTHcnR/Z3dtC5XNAiKOLHyRaHnbZKRxhc4bojysigyZRopGaqSC6xHMJ3ztfiejxi8GJzx0ZTys/2c/3hHgm44fpOi74i76kHIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781021967; c=relaxed/simple;
-	bh=B6EI/h1LWS0Jqv2kTyDAtsKf2l7T9n0epCWtM2Pmz/E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fuk6L2WfKK5m1BN+HFwJfTSu90brTo9Ii74VoQ4YWjSp9Dz4NoqiFU3bFMfDvSLDVvz1uebs20Hc6rHYOhrQdszmGiZnN8Qx6lUictdpAIWUrQFHqUDheFM3aPMdV5jWc522qVdVWLbakZ2wCT8JyZQ7UsxRrkgt+OQeyvkJQJA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V1q2sXJP; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781022170; c=relaxed/simple;
+	bh=BBJfUI2zXdYPvtD7vnqTs3Bc2wvnZAzUqtvUNsC0480=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=USuOOQ6ub4eepIqtX98EDlVFtpX3gI1shXnuAjLRZZABtnxz/bLIVoBkqUcDFlFFaIDCm8jWsarUf+w2nN4UCmzJprdvrpFEalzYpYQ47FJP3KqG3XCMrjUbQ98UHKiON7j1ibW6R6EMmH41aj4TTtpPV5tNTfh02yZE3V/MfFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Ia0CHvf1; arc=none smtp.client-ip=209.85.167.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V1q2sXJP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FCDE1F00893;
-	Tue,  9 Jun 2026 16:19:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781021964;
-	bh=7/SJnNWoDhHlr5d4lRtke1mim+L3BgF0cgfIn7ih1+8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=V1q2sXJPcn9SSS3e4eRDIMTteqZbXBSgHqCUZP5WMrndNvubEYKDKKEvxXB/dhbBE
-	 QQmqyOTwy6PkbhTBpIqRrXcLrZYa/xnDu86iHdFWm1v+s6zT1P9MSt15pIq2p9L54r
-	 eTs0PxR3TBLQNrNDSNemcBA4Ncd60ipXTGfZ1xRR/2Jk5o2w/APEtkSkZz4lURa7cZ
-	 icHWl0VqkbWUGNRZcLcvOdzCHm4UfTqAIdcyeC532zwAReVY6t512uomw+EAChF0qd
-	 V8TA1fZL8Y048uT1vA4wK1YG+iltGw9aYmJDFSiQsTMnhDgdH/vPcOSFqDdzrSKwO4
-	 KaD6UO9rIQLqg==
-Date: Tue, 9 Jun 2026 17:19:19 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH RFC v4 1/6] dt-bindings: iio: add Open Sensor Fusion
- device
-Message-ID: <20260609-glacial-colossal-38b4937ec620@spud>
-References: <20260607234343.22109-1-kimjinseob88@gmail.com>
- <20260607234343.22109-2-kimjinseob88@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Ia0CHvf1"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-486badc02ecso1322264b6e.3
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1781022165; x=1781626965; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=4cZzfc9MyNs9MhTESYDputWthSBFsNrc01XRKBY0nJA=;
+        b=Ia0CHvf1mn0vquMxLkzvBhRAC3kS6orLHeZGQ+9zSKiwLNBP6R4g6ltAbYwiVJ5m/u
+         /vJ+Sze/879z0+BJjwbyXyH/giGski8QFfXIDWjs75YmpLw45W0vniRGqprsKyDXUOjP
+         AY1gd35nW/ZbFD2nN66ajEPiapyBiHxQeHn2xtLEuhGlnFpR0l6bSfkH0Kh4zz+jWr40
+         TGCv29w+X486hH/C34h+3q/nkPDpQzhOfwI3UF6W+OuS83Ixh3nSJr+6tQhDTM8YTjX7
+         yOTLGFfog2X7fMak0nuH1ILIyCWag/zV2lYI19dzBXJ53HrwXKyDQd7B9kf8p3OgGXo6
+         ofLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781022165; x=1781626965;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4cZzfc9MyNs9MhTESYDputWthSBFsNrc01XRKBY0nJA=;
+        b=dKoxG/MXkHhmFcwgtTDF1J4BPUVG09ncZS+P9i6EWkmD2yMKV9ObwnpkZdk+XoYY44
+         EymmBqLjYDqvGZaH2sQpaLojf4nfKgTiOAM6CWbrIVKAld3/D0G6nQ+5XB1/xu3FRgtr
+         KZzDXNgddn/avevLKHt+5ZeZOWvvhKzCicAzstdr75NLV5vlDZaK1hhwd48fpeJvL7Nf
+         lQcAkYFJ5DzWv2G3vIQm++ibMXfHgz9jUzxOE27kbYBaf3w0SRpKDsJig8YxOe/3szZz
+         ylFZ5E9Bvb/+SNaAL7R/GBAgS2NBgrnintdk97GS8hggn7BB8HiyVV7Lm1ZIRZ5T1R/M
+         XKNw==
+X-Forwarded-Encrypted: i=1; AFNElJ+WlZ5IVhqWlSwfw93mSCg+xwsDEV58yYDIoBycuQgdgcuA+eKvQHgDh4SLBOyTwql4PiQFwt158fU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzO2mal9qa3p8g+mo0nzmtRbl4bnoAvntYsQqYyG+KrPaEiMWAD
+	mPxWwNrp1vM9UeHEHzFHvvYHeiQ+udnmA/D8fqbiVWxAyUKFugFyAm3XROjqCRcUhTM=
+X-Gm-Gg: Acq92OFL00AJH9dVc7YUJUVMY6OLsoE7779WTu9tQVhzKlzB55OBDtFBFxxIKwAd5JO
+	3Ut8albfB+Z60vuvtPxTIYOLjN4jKnNDwj+6iqv0dc/RtBHN8ETts/7RRnrHItIYLHAG4U+HA43
+	tEVZ5sQD4h9lV9JHazuwlVAgsoHSDM92rnfvuRJpxAI6juL9iKXcUlD+0sGPCznLxlt2mqrZ+7c
+	YYtrJNsf/E0/gHHxDr8gaKs2n6aV6z3/OKDVEaGPpcosMHuFtSLtwL/TzKoSMYjHke8mcBc3HlE
+	GRd8Xd5w6FAvjO/z4dGHzzX7fPmUb6CYdYqxg75xvt8kY3OE/hDQ2/Ed/7Qw6zQbaThda0m/x3N
+	T6OLQKNxYJmQjM0vqjop7BKOdFLVEgAboDnckYIurYkmEV5aRdLeu2G4l8zymGGQDNsuPMdypB8
+	az6878u7KaH5zDMgU9RNfCOIgBpHV+LiM+YqpmLh/ciPgbk0IDbPilFfDuaSNtmPUWBaVtAv8J+
+	XbgVEJxd/sj
+X-Received: by 2002:a05:6808:4feb:b0:485:3dd3:7727 with SMTP id 5614622812f47-4868dddb451mr12699969b6e.28.1781022165556;
+        Tue, 09 Jun 2026 09:22:45 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:2516:8f73:2dbb:a61e? ([2600:8803:e7e4:500:2516:8f73:2dbb:a61e])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4865b5a39fbsm16294587b6e.1.2026.06.09.09.22.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Jun 2026 09:22:45 -0700 (PDT)
+Message-ID: <c9418ca9-5563-45a8-b995-d2bf7514d819@baylibre.com>
+Date: Tue, 9 Jun 2026 11:22:44 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="F4y7872aqCtHrHPU"
-Content-Disposition: inline
-In-Reply-To: <20260607234343.22109-2-kimjinseob88@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] Replace Tomasz Duszynski as maintainer for SPS30
+To: Maxwell Doose <m32285159@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+References: <20260609161701.52513-2-m32285159@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260609161701.52513-2-m32285159@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 6/9/26 11:16 AM, Maxwell Doose wrote:
+> Hi all.
+> 
+> This is basically the 2nd half of replacing Tomasz's entries, once
+> again, in the SPS30 dt-bindings and his entry in MAINTAINERS. All of his
+> entries across IIO appear to be dead, which is why this is being sent.
+> Jonathan Cameron's approved of this [1] so his entries in iio are being
+> replaced and an RFC regarding this topic with Tomasz Cced has been
+> sitting on lore.kernel.org for about a month now.
+> 
+> Maxwell Doose (2):
+>   dt-bindings: iio: sensirion,sps30: Add myself as maintainer
+>   MAINTAINERS: Add myself as maintainer for SPS30
+> 
+>  .../devicetree/bindings/iio/chemical/sensirion,sps30.yaml       | 2 +-
+>  MAINTAINERS                                                     | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> [1] https://lore.kernel.org/linux-iio/20260609140712.2e5d1640@jic23-huawei/
 
---F4y7872aqCtHrHPU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Jonathan/IIO folks,
-
-On Mon, Jun 08, 2026 at 08:43:38AM +0900, Jinseob Kim wrote:
-
-> diff --git a/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> new file mode 100644
-> index 000000000..a4049715a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> @@ -0,0 +1,43 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/opensensorfusion,osf.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Open Sensor Fusion Sensor Aggregation Hub
-> +
-> +maintainers:
-> +  - Jinseob Kim <kimjinseob88@gmail.com>
-> +
-> +description: |
-> +  Open Sensor Fusion is a sensor aggregation hub. The hub exposes an OSF
-> +  protocol data stream over its host interface and may report capabilities and
-> +  samples for multiple sensor classes. The Linux driver discovers the actual
-> +  sensor channels from OSF capability reports instead of describing those
-> +  sensors in Device Tree.
-> +
-> +  Open Sensor Fusion is not a generic industry standard. Public project
-> +  documentation is available at:
-> +
-> +    https://github.com/opensensorfusion
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: opensensorfusion,osf
-> +
-> +required:
-> +  - compatible
-
-Do you think it makes sense to permit a regulator here, so that the
-"host" OS can power on/off the board running the osf stack?
-
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    serial {
-> +        sensor {
-> +            compatible = "opensensorfusion,osf";
-> +        };
-> +    };
-> +...
-
---F4y7872aqCtHrHPU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaig9BwAKCRB4tDGHoIJi
-0hG/AP4hOCzIQNNjnnrRnQE3z/CD1lLuIvpAI2jwssxsab2H0gD+O2rB5gXCoAzW
-8hHQlJX15NIvlN0EFLeu4rHiADANewQ=
-=0y3g
------END PGP SIGNATURE-----
-
---F4y7872aqCtHrHPU--
+Do you have this hardware?
