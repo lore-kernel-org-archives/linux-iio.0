@@ -1,189 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DF92328B56;
-	Tue,  9 Jun 2026 16:01:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B7F370AD9
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 16:07:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781020886; cv=none; b=E9Uldp7o8gPr1dsUXaK5VelSDjo3+ELJ5En1hyBj6MYrhrqIKxggDkqGeKi4vdhfqFzgf4Iaiho8F2/8bt5W/AGjfdDnLdkBl/CSsXJ0RTpFjim2nFsuK+dgSr9Z7fqm3+W3ZWDQ4EloApKZLXPULb9rXB7qZIzIgukiU6cFOhs=
+	t=1781021251; cv=none; b=FI2KJ2YXtkXFCPjoTIxcS+W14JeZmpiuoBGy0Dq2X6zHRcvCIyo2t05bx7483mAepzw8O8UF0RI6lCMGFoMToJVfw9bNx4b/kuWYx+tgduOOBynfi7fiBnHZVOmNVL/vXl8NSIgk+e4evzFP9f/BUSOQOKMpWRHSdNFtAgEYmB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781020886; c=relaxed/simple;
-	bh=Im/zrKokHnC01B8LSWBgOKLo4xVrio7gHFjgiwW2Ub4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gnv1xs0+Yn1x6yxOSlfT8HZcdNcXXXk66E1X4GGzAdu0RInTb6U2LDUNRvzeyeO7smQmLxL3GXRKiJc0ZN5YY7XD2n0SExfzGOfitIPU1/U7zJH33K1LTxUzVsQ6qkL5XGY6T08Vb4EK4dIva3WDMMQDWsXMmYuP44Rtev2OVgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sa2WZLV3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781021251; c=relaxed/simple;
+	bh=0oG4tFe6RxchaDBi636FO+9cLdt8UjZ6HP7n572C5wM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jrdMXNQwtFPN1PyxIKubDGOYSOKrWME/InEtd/BZEkFjykUpkic7jWQuYlqsfFfQe95yYbeSHm12eC0u8iq67AxyExvq/pdoYpmiuW5VJRHP4Wy+10gPsGJnS3oqPAIOiUeGHDXcumFI4pXm7t+iPOmM+DtOrwaWqWo7k3reXiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=klXmveWR; arc=none smtp.client-ip=209.85.161.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sa2WZLV3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9879B1F00899;
-	Tue,  9 Jun 2026 16:01:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781020884;
-	bh=cPoTQhxanAhm9Gm2AUInHKfMoTxSR1RmkShaozP3V4A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Sa2WZLV3Z/gRbC9cLbpzc2ifg6LubkZcfCSWQG7FV2d8JsCb+mdBu4dmJHD541Z3V
-	 /kD8uv+/6aO/kp2rayhW6MoaQsL5I7bSR+xiLxCg51/2GHaKdl/PlPrO3k30H/tBXd
-	 p/hPiFsDPpWsWgAH+xtIeCdJ9PP8WYBIHehKOeXs4tBrDo7/zz/yBtMnYkO1HGUblu
-	 2sFmDy1ZEHmSzk+ZSAvo7JCO6bzWqxVGazO7CZM9a+n1yphej6KBMj83H8t2z2lwkO
-	 ZgcwFZlxpbS/qtFDmR4CWh4l263ZIeXv4aZhjO+ZqqDAaDn8T2oU7HRzknkz+OSu9N
-	 aD41EyS+HxtZQ==
-Date: Tue, 9 Jun 2026 17:01:19 +0100
-From: Conor Dooley <conor@kernel.org>
-To: rva333@protonmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="klXmveWR"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-69d8f70cb0cso4041644eaf.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 09:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781021249; x=1781626049; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=emqDFhzdC/Zsgjy69nTK+24HGtCnjO31EuqUD/X+UTo=;
+        b=klXmveWRXjlObZbOQTRNUCU7aeRfxukRlG1jnr04qGfVH5xpe1rAJi42vLGsYZ9e95
+         AHQVhN9tUO4VaXqQR7W5MDlR01LBW2uG8pds78ONeL0JbBNNborqdMCJrEQZzGulHa34
+         GVnV4Kp4CD+nfFfLio5TZDznCBDfczwMlUeQWND7BP9/irUXQGXaWV9DfW6Fdy3Qb/fb
+         aKymtatrQCWhQrEk6CHT1eQHVaEfB2yiZULSF9hQ8CgSX10SlMlrWL/vT58Bb3WhGALr
+         pf/j4SditECg3jaxQytGCN/89pIigmIgj3TCFym/RV7TdoU2/8YcdQ6uVRZX13/x/W09
+         EfTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781021249; x=1781626049;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=emqDFhzdC/Zsgjy69nTK+24HGtCnjO31EuqUD/X+UTo=;
+        b=NfmslPcd2uKT/MTIsWr1tiKEpwtJhaAwl83LclEehzxHeYHO0GJLZG3YOec0Ff8KuU
+         gknFg4e2SoF43TmruVe+71om9/lOGHz4tbn5oGGRjA4SeH6+seTEZFEphTtbPLdqoc0Y
+         biPEkMZQWJjMjOWzaHurdAcwiFccfZJrJ/Pi9+i5gBlA4I6EslKsyTP+8JhxN6e7z34x
+         y/m5gefd22BSVz3lpldFH42igzD2sPw+pW51IaeCA1dHufWux5qUPSxqjteW+l1o/A6y
+         cqnlxP91zbff7GdTxIAe3jiLYdIx+6Gl+vb6Dh3VgNSIt+7K3PjWhgqoRLpKKMVZqljo
+         0TqA==
+X-Gm-Message-State: AOJu0YwqOCn+nt4cCvgrrFh4YTs5EZAKwIKiIpABYqGzp/Lcn+nmYI9O
+	ilH5/UsFvSNrXE4AUo1/HrJkviLCElBiGTzF1MMd7vpMFUZ5E4iTRW0T
+X-Gm-Gg: Acq92OFF1dXAeVU9Li9d0pXYtGMNJMZzp0szQVLIs8UJM5BHaBnDXxJp29KWPDEE4hh
+	ehM5Yu2M3j5nBOWPFqxi0QcLcWwSFM6Ae0sn8jOXvstiHcYgbKRWFCKwLs0VQFtk7UNghvh/MNy
+	xgG6Ak5g0YrEg5U3tfxD322cSE9vslSi8RmzngR4JpyqGFiuN5/oC+KkaK0dNqCnl3LZuK/iLrm
+	ctbFc8lhbEmUx1YErH/Qc2EsOkRcqi2UUnkxd3HJNqKuQaG7Zu6uW1sSHED++poptFWh+JhVZhT
+	o4/gIc8H5KnSxfvwWT2BW1ZBQl8R5x3TgQczzBKxoMdaHfo9yLt8s4YnmqvjibcWuPWw7tbxjIT
+	bYhb6H9nNYVdOZsogTiAft64qFoyg3UF1osfPFwsub8jEo38RROPFm/ktFP/H862LrUix60RTv3
+	2PUP+CYuB/7xZs0Y6xSMgFORQpcsxabreM6S++Cneh/k2v4ksZWc9YiY0e3uzzwZzIUiWQ
+X-Received: by 2002:a05:6820:188f:b0:69d:9288:66c8 with SMTP id 006d021491bc7-69e68b41cc5mr12659270eaf.13.1781021249548;
+        Tue, 09 Jun 2026 09:07:29 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69e464050fasm11393859eaf.9.2026.06.09.09.07.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jun 2026 09:07:28 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org,
-	Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: adc: mediatek,mt6359-auxadc:
- add mt6323 PMIC AUXADC
-Message-ID: <20260609-gangway-frayed-366f6d3cc867@spud>
-References: <20260609-mt6323-adc-v2-0-aa93a22309f9@protonmail.com>
- <20260609-mt6323-adc-v2-1-aa93a22309f9@protonmail.com>
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Replace Tomasz Duszynski as maintainer for PMS7003
+Date: Tue,  9 Jun 2026 11:03:24 -0500
+Message-ID: <20260609160326.45123-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Lzw7ey4J+6nnG0oo"
-Content-Disposition: inline
-In-Reply-To: <20260609-mt6323-adc-v2-1-aa93a22309f9@protonmail.com>
+Content-Transfer-Encoding: 8bit
 
+Hi all.
 
---Lzw7ey4J+6nnG0oo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch series covers replacing Tomasz's entries in both the
+PMS7003 dt-bindings and his entry in MAINTAINERS. All of his entries
+across IIO appear to be dead, which is why this is being sent.
+Jonathan Cameron's approved of this [1] so his entries in iio are being
+replaced and an RFC regarding this topic with Tomasz Cced has been
+sitting on lore.kernel.org for about a month now.
 
-On Tue, Jun 09, 2026 at 04:31:58PM +0300, Roman Vivchar via B4 Relay wrote:
-> From: Roman Vivchar <rva333@protonmail.com>
->=20
-> The MediaTek mt6323 PMIC includes an AUXADC used for battery voltage,
-> temperature, and other internal measurements.
->=20
-> Add the devicetree binding documentation and the associated header file
-> defining the ADC channel constants.
->=20
-> Also change the description to 'MT6350 series and similar' because
-> the binding already includes more than mt635x series PMICs.
->=20
-> Finally, add the MAINTAINERS entry for the header with ADC constants.
->=20
-> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> ---
->  .../bindings/iio/adc/mediatek,mt6359-auxadc.yaml   |  3 ++-
->  MAINTAINERS                                        |  6 ++++++
->  .../dt-bindings/iio/adc/mediatek,mt6323-auxadc.h   | 24 ++++++++++++++++=
-++++++
->  3 files changed, 32 insertions(+), 1 deletion(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-au=
-xadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxad=
-c.yaml
-> index 5d4ab701f51a..852eb7336a5a 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.ya=
-ml
-> +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6359-auxadc.ya=
-ml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/iio/adc/mediatek,mt6359-auxadc.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: MediaTek MT6350 series PMIC AUXADC
-> +title: MediaTek MT6350 series and similar PMIC AUXADC
-> =20
->  maintainers:
->    - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> @@ -19,6 +19,7 @@ description:
->  properties:
->    compatible:
->      enum:
-> +      - mediatek,mt6323-auxadc
+Maxwell Doose (2):
+  dt-bindings: iio: plantower,pms7003: Add myself as maintainer
+  MAINTAINERS: Add myself as maintainer for PMS7003
 
-Commit message needs to explain why a fallback is not suitable.
-pw-bot: changes-requested
+ .../devicetree/bindings/iio/chemical/plantower,pms7003.yaml     | 2 +-
+ MAINTAINERS                                                     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
->        - mediatek,mt6357-auxadc
->        - mediatek,mt6358-auxadc
->        - mediatek,mt6359-auxadc
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d1cc0e12fe1f..2551c8cd9e9d 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -16256,6 +16256,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/mmc/mtk-sd.yaml
->  F:	drivers/mmc/host/mtk-sd.c
-> =20
-> +MEDIATEK MT6323 PMIC AUXADC DRIVER
-> +M:	Roman Vivchar <rva333@protonmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
+[1] https://lore.kernel.org/linux-iio/20260609140712.2e5d1640@jic23-huawei/
+-- 
+2.54.0
 
-Why is the binding not being included here?
-
-Cheers,
-Conor.
-
-> +
->  MEDIATEK MT6735 CLOCK & RESET DRIVERS
->  M:	Yassine Oudjana <y.oudjana@protonmail.com>
->  L:	linux-clk@vger.kernel.org
-> diff --git a/include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h b/inclu=
-de/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
-> new file mode 100644
-> index 000000000000..6ee9a9ecffc1
-> --- /dev/null
-> +++ b/include/dt-bindings/iio/adc/mediatek,mt6323-auxadc.h
-> @@ -0,0 +1,24 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +
-> +#ifndef _DT_BINDINGS_MEDIATEK_MT6323_AUXADC_H
-> +#define _DT_BINDINGS_MEDIATEK_MT6323_AUXADC_H
-> +
-> +#define MT6323_AUXADC_BATON2		0
-> +#define MT6323_AUXADC_CH6		1
-> +#define MT6323_AUXADC_BAT_TEMP		2
-> +#define MT6323_AUXADC_CHIP_TEMP		3
-> +#define MT6323_AUXADC_VCDT		4
-> +#define MT6323_AUXADC_BATON1		5
-> +#define MT6323_AUXADC_ISENSE		6
-> +#define MT6323_AUXADC_BATSNS		7
-> +#define MT6323_AUXADC_ACCDET		8
-> +#define MT6323_AUXADC_AUDIO0		9
-> +#define MT6323_AUXADC_AUDIO1		10
-> +#define MT6323_AUXADC_AUDIO2		11
-> +#define MT6323_AUXADC_AUDIO3		12
-> +#define MT6323_AUXADC_AUDIO4		13
-> +#define MT6323_AUXADC_AUDIO5		14
-> +#define MT6323_AUXADC_AUDIO6		15
-> +#define MT6323_AUXADC_AUDIO7		16
-> +
-> +#endif
->=20
-> --=20
-> 2.54.0
->=20
->=20
-
---Lzw7ey4J+6nnG0oo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaig4zwAKCRB4tDGHoIJi
-0n6MAQCnDXNVMnWZGe4f1faCEvn5pbBT50qSq8LSnOk1vjV8+AEAlL1snbNccP0J
-r3m520zkbDUiyuIurTwNMF1q1kkMLwg=
-=adwT
------END PGP SIGNATURE-----
-
---Lzw7ey4J+6nnG0oo--
