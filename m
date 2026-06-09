@@ -1,149 +1,114 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87DE43E9C21
-	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 08:09:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14083E715E
+	for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2026 08:32:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780992557; cv=none; b=j3GrjjvLwVi2TMLJBS425LTo7IrgiRoDXIr9P8LcSQ8ZoX9exW9UogO3qqXLTCo/jcS8LVF3AFwXjIQEmBmrxnjSeIQv2I0Mtu+VIDabi+9gMVNomPzioCTvOjzuhocTb9JxGQrnP1B6QkGnkQtsUBPESn1bF9mvLK7DKmJGFJo=
+	t=1780993953; cv=none; b=TcWy4nq3qMGJLEygVoE8r1QMXm6PVoqUCHaKHY5x1Br4JSsnuSEoZdX/2CETv5n74bc16GQqppNJiz4KX4TRSnmo0m0KIvjtIIHaLK9fP4lngSxbcyG5M3R8anmwldcM2xwCE9RGDGxFb4ArD0k3Z3dMdkixHNwQmddcgQTpV5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780992557; c=relaxed/simple;
-	bh=vi+VOT8rSuprhEiLqbw4rh2nm8VodjS4a3hs2w+jxc0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WpCOhIgtvUiRB8SVniXnkLC2saidwuUyyRKWuw7Cibo0hFqSq9/tyCOVfTpjwvOas9BuxMlVMnf5ie/Dr67NabLyfT94VOMi658X5ludfUurbFo7L9Ba2Jz/OiCck3wCvyFS+qJa2FPy28GA1O0C2P6qJx/rjJXF2chB4sgEjP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IbCGkngm; arc=none smtp.client-ip=209.85.221.46
+	s=arc-20240116; t=1780993953; c=relaxed/simple;
+	bh=dwkFkckx8A4lLBC7MNotRBFCE13hS9ANi2U4ayVEduI=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WBFFujSy+NrO0cf47gvc1xSQprZvVP38KPNL5mAEfDx36MKJZhJav7jplBKUK7MFd6roNPS2JNNhCd82Zc0suspK2iQ4+GBbXhxuwSIJGMafIXJ3RKsz6bxAVzkMuK5H1U8l/AyYkKwsM52f3KNNubZuM5qvSSBADUuqdSazXsA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yot3jYum; arc=none smtp.client-ip=209.85.208.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IbCGkngm"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-460166910e6so2653469f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 01:09:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yot3jYum"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-68cc6c7df99so7506347a12.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 01:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780992555; x=1781597355; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mNDXjDnKJx4rH6WjQAFNVVztRW9DfM4vW7rViQVW+to=;
-        b=IbCGkngmJ8VJkTa0Ah5r2izsEYEoQB2VUylIXKcEj3PBMF9Ou9EOk3rCrRc5tcGf6K
-         KSWx8Q4+IcZ0PHPQsMiHUUfyeepuRB6E8+xg9BdcindFHUPDSm0kaB3juOsF5F4ppD/Z
-         HGaqsv7nM5pkermJ54UlwsDhEFFRog3QoHkuifRFH2S+45LL4aR8SuzOFPOoCV4O7KF9
-         MZHSs98EcO7X6NB4c2h5Q6nS3wh3dD2PXXZa2Qi6zJA6nBtShVu+D5MMkYndNGHfZpNr
-         eSdMQqTMLyZAoo2bkdiEHV6LT1p1XgWV0SPuUiouroj1j23eqQ6eFbN8+PFuzn4aaTtj
-         aZaw==
+        d=gmail.com; s=20251104; t=1780993951; x=1781598751; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vRVsCUYNC1QWFnnUTXYvdwCGlZn2yVPna1uH1jTZ0bw=;
+        b=Yot3jYumJmO/y0b6nP/Qr/mWyuzoYZXV3MSuhzesudnqoMUzFE5zBOvf/KbCws8bfT
+         Ps3JZ+sVVSPWPq71RZyx7LIGHjWD2jrOq0cZsIty/yq9CkJwX6dRuYJfJ8g7r610odVW
+         QrCk/hZG3apyqTD+zwkzuT0hlDRjl7w1EU2Xa6f7ffyWuNP0P8h7U8WamUnlk7edNvhy
+         ipuyz2+ykNrK2TLo9LrJkjAqArFLcjgBWbZpW5SF3Yhop855O6pvR9+qm3d03fwdPpws
+         s/3niytXMv8fIaj9r4azaxcWVyzDqdkEt3xsygvIKdiMeKFwg/tSIm2bP3SJuAcN+LT3
+         JPpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780992555; x=1781597355;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mNDXjDnKJx4rH6WjQAFNVVztRW9DfM4vW7rViQVW+to=;
-        b=pyaRZITUTkkw1tAYOpXhRH05Dcv8EZb/FeMdu/K6N5kV5nPZNpodLJKh/9nGxlk3wu
-         WBkCeW7YWulnS8uip/9A7Z8oWhgwobIijb5f12XMp/aJZJRMqroVWt1M1RRuK5pcsKjO
-         QmJjZ0jbmC1Fm9/7mCKzZO0iFXZQ2f0E9xr0v27p0rgIJK9MDACnPZy2CH0J7wLrpVLr
-         k4mG/c8Ph//abwLYh5Hi674NEQdGkX3CRgmTXCkFkQNwL3RMo1sxmYNG25Tt4sThUtlD
-         bYCGBmoY/RJGqCHXn3ew/Y0g6WlOfuII97UzgW5mO8Ym6pfuMyVyv8kQaMNHCUjvpPov
-         9AkA==
-X-Forwarded-Encrypted: i=1; AFNElJ/m6rxaCPizH+kDgAlxaFk4EUzZj8Hp2VxssQIRjwd9jJHmqFpitYHUR8dR4UlqltH6d4kcYqL9Oho=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzE7t0p7yHnf6Uh11n8PwODZYqfGPbBuNR8PAGBgORjSiEQnLR5
-	IlVq7VydW0wa/qCseHu8vWBAUU/dHSMqFGfvgoV3bvMYh7GP6bDokeBe
-X-Gm-Gg: Acq92OHV82HKnmR3w8z/6aqlUb8Ap/A7hXOdPGxCCCI5oe7Em0dN1QRtf4hzslk5Gsf
-	x3P1V3Qh2SSr6/TKW82S8hxJHNwsrn6Rt0XWQNESJIpgr+hjHTsofClg3vDRTarJ3LtGTx0w290
-	SjmyKFsw0IakEvtyaUUuDMA/z831X/FPRDANfuecCb3Z7gOy7DL4RiHOL6natLd6OJkC3vVoP83
-	rHo/pgO9APUeI58wKZNDrw3Xc19s5O3wQ5agPIyMirjeqj6yqBFld2i2QNNysgnnMp+UqLg81ZW
-	svoMdpwlRPuMCrZ27iTqJUrRZewVj/Ih+P4mse4qYKVYXdFONbA1r9dweChn1eU6VU0IwZsmPd4
-	D9dseGtXAR8AZwLx7ubedAtMGqxduhuzvIxCQQnhJXNz+lMMCtr7hGWbgxS8kRRjYVImwORqvvE
-	lRJR18KIjtLcHxxJwBnDDg3lhEUw==
-X-Received: by 2002:adf:e848:0:b0:460:cfc:eb24 with SMTP id ffacd0b85a97d-460304fec2bmr24364856f8f.22.1780992554596;
-        Tue, 09 Jun 2026 01:09:14 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4601f351d69sm108188629f8f.29.2026.06.09.01.09.13
+        d=1e100.net; s=20251104; t=1780993951; x=1781598751;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vRVsCUYNC1QWFnnUTXYvdwCGlZn2yVPna1uH1jTZ0bw=;
+        b=bLHSSCJrUt53ckq/hqe/5kaP5KSKRHCguZb9yP2Itu5ygrHXPhxFT/Jqw2eF5JmYdt
+         FyyG0cAFokmgHFo+vOymb+xo8FQAPR/nlsGx43KmLrfixPEv4Biw26Ud6eFsUoTuqlN/
+         b4p/qWsRIaZ7ygDqtYHLi426uEo+6wHvWT54AXLK1vEKrJ/GbdBlvgdvHyF1UCjQED6T
+         GLhCO2c9QVYD0T7SRa5HpgtWBWeXBSxCovwIph8uHzAeUbVCwvSYR5a7O86ye3HBh4hR
+         W1FwyfobD80bSqfYv9e37XudJGK3/EgTZmxvrssmJG4XAV/7w3FZ3I4IGoVuig34oVQO
+         XnfQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/Yie9JEQlDoSoEXaoMPdhHhxpw06swj0TVNc2hjYaQZm0PBsqeVUMzr6zIVWAJYiURI2pPHrbV0i0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzHN9FcWTPRFGeBJz2fCzwiT8LXxhL8f1SL3BCLnCHQ1iZzOLSt
+	i5vjEuIg3VQt7X7GjT4+NTyPetJAIFt+jHSp2szCc3jhcpGthC17/Ru+
+X-Gm-Gg: Acq92OFxfV8YGFgFWOQ3ALCMD7/0d/JihcdnKoSX4+Uz+bS2lP/40ExwYdH7cvvMJhg
+	JHBCHs0f7uQE3f9zRdAVYsp3FNVekLxgt4g8HsKJoGYL9SCKgD4k6FM6uI/FOHHPzNUJbaFN1iV
+	Mab48dnAtlIVhiQaz0uKRnLPmIZBVdx4ffj/yZBsA3bJGh9kmWj9n4+PefZMNk72WrTBBv1ru7i
+	peHnPEZVAVw37Y2S6r+Jv1fXHzRO9Zbej0JEzCkrCUeREdDGFSnPVeF86D/ORxrE0NTmNT5JpEZ
+	nkSaEZgzQ0YmqUJ+kdUaB9cJ+E76dBmtngk9XbU+vP3klQWmyWmTKQoqKXlliP8bOxPc5Y6WMZj
+	qGsEc4x2fAjB12GWpTu5EuRY/ikHSiRMexvH5Uwz6PZlL+L8hoFxb78oHi4wbPIilOdPzkRtVkC
+	zPu/cbJMHwWEbq+aJKQyQ6RlG8ia5rnU5L3VAr7zyuZ+GCeE9okU3MGjAgzSIuJYNs+WWXK6VD8
+	IAsBM4ukwS2q/v53PIzhGLbb2JuIFqoIS8TknWXbo4fYHR01w==
+X-Received: by 2002:a05:6402:3988:b0:691:6fc9:da93 with SMTP id 4fb4d7f45d1cf-6916fc9ded9mr4253991a12.19.1780993950904;
+        Tue, 09 Jun 2026 01:32:30 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6915a637180sm4254235a12.26.2026.06.09.01.32.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 01:09:14 -0700 (PDT)
-Date: Tue, 9 Jun 2026 09:10:14 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Dan Carpenter <error27@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Nuno Sa <nuno.sa@analog.com>, Olivier Moysan <olivier.moysan@foss.st.com>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-Message-ID: <aifJtgLkM2m3KciV@nsa>
-References: <aiEtIGOFhF8AfUCT@stanley.mountain>
- <aiExQzpIOwPgwd3-@ashevche-desk.local>
- <aiE3N6zErq2WcCvS@ashevche-desk.local>
- <aiFVuvVtaWbjfVzA@stanley.mountain>
- <aiFWg6vC2cVbONTK@stanley.mountain>
- <aiGRzFrSU6QUL4R2@ashevche-desk.local>
- <aiJo1kjN3_XDUdBc@stanley.mountain>
- <aiKIoqR0IQBZ-1ZD@ashevche-desk.local>
- <da949cdf51727f74d1f0f5b3e8248d5dc34e2219.camel@gmail.com>
- <20260608165138.16b88dbc@linuxescape>
+        Tue, 09 Jun 2026 01:32:29 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 9 Jun 2026 09:32:20 +0100
+To: Wadim Mueller <wafgo01@gmail.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iio: types: add IIO_VOLUMEFLOW channel type
+Message-ID: <b5llqv5gikxjffro4rc4avcotwlaiizl5fk4mc2zt5fbpbotjh@bbycp7etmj23>
+References: <20260530205435.37326-1-wafgo01@gmail.com>
+ <20260530205435.37326-2-wafgo01@gmail.com>
+ <ahx5cuM1xlOVP6DT@debian-BULLSEYE-live-builder-AMD64>
+ <20260601104233.310ac930@jic23-huawei>
+ <20260602-slf3s-v3-reply-03-wafgo01@gmail.com>
+ <20260604094436.3c50f123@jic23-huawei>
+ <20260607-slf3s-v3-reply-femto-wafgo01@gmail.com>
+ <6at5vkw3byvbdw3przfchwrqscghdfhuwkv5xf6v6dkvfpplt5@3k3gjxn2ua26>
+ <20260608-slf3s-v3-reply-unit-decision-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260608165138.16b88dbc@linuxescape>
+In-Reply-To: <20260608-slf3s-v3-reply-unit-decision-wafgo01@gmail.com>
 
-On Mon, Jun 08, 2026 at 04:51:38PM -0500, Maxwell Doose wrote:
-> On Mon, 08 Jun 2026 21:31:14 +0100
-> Nuno Sá <noname.nuno@gmail.com> wrote:
+On 08/06/26 14:24, Wadim Mueller wrote:
+> On Mon, 8 Jun 2026 09:53:28 +0100
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 > 
-> > On Fri, 2026-06-05 at 11:28 +0300, Andy Shevchenko wrote:
-> > > On Fri, Jun 05, 2026 at 09:12:38AM +0300, Dan Carpenter wrote:  
-> > > > On Thu, Jun 04, 2026 at 05:55:08PM +0300, Andy Shevchenko wrote:  
-> > > > > On Thu, Jun 04, 2026 at 01:42:11PM +0300, Dan Carpenter wrote:  
-> > > > > > On Thu, Jun 04, 2026 at 01:38:50PM +0300, Dan Carpenter wrote:  
-> > > > > > >    168          ret = sscanf(buf, "%i %i", &back->cached_reg_addr, &val);
-> > > > > > >                              ^^^
-> > > > > > > Uninitialized variable.  
-> > > > > > 
-> > > > > > s/variable/data/.  
-> > > > > 
-> > > > > With what I asked in the previous reply and what you explained there
-> > > > > (thanks, btw!) I still think your patches are not fully correct. They
-> > > > > will require to atomically write all or nothing. If we want support
-> > > > > partial writes we need to go with that differently (reset ppos when
-> > > > > we got enough or more than enough data).  
-> > > > 
-> > > > Requiring writes to syfs and debugfs be atomic is pretty normal and
-> > > > works well in practice.  These are very small writes.  
-> > > 
-> > > Perhaps. In any case your patch will break existing partial writes, right?
-> > > I'm still considering that resetting ppos is the right thing to do. Just
-> > > need to find where the best place is to do that.  
-> > 
-> > I think anyone doing partial writes on a debugfs interface like this one is very
-> > unlikely but it is a fair point, yes. But can't we be more relaxed on debugfs? No
-> > userspace app should be relying on debugfs in order to work (though I know that
-> > actually happens).
-> > 
-> > Anyways, this is one of those interesting edge cases and easy enough to get wrong. I
-> > guess we should either:
-> > 
-> > 1. Improve simple_write_to_buffer() docs;
-> > 2. Or come up with a new simple_write_once_to_buffer() helper?
-> >
+> > v16 is essentially ready to be accepted! I suppose adding the FEMTO format
+> > could be done here if needed.
 > 
-> When you say "simple_write_once_to_buffer()" do you mean a wrapper
-> around simple_write_to_buffer() that also checks if *ppos is 0 and
-> returns -EINVAL if *ppos isn't 0? If so I can start writing that
-> function. Though I guess we probably want to ask Jonathan about it
-> first since obviously he'll have his own opinions.
-
-Yeah basically not allowing partial writes. Partial writes are also very
-tricky to handle in terms of concurrency (assuming userspace can do
-whatever they want). But I would not rush into writing the helper
-without understanding how people feel about it (at least the ones in
-this thread). Might not be super beneficial.
-
-- Nuno Sá
-
+> Thanks Rodrigo,
 > 
-> -- 
-> best regards,
-> max
+> then let's go with m^3/s as Jonathan prefers. That does need FEMTO (the
+> SLF3S-0600F scale is ~1.667e-12 m^3/s), so could you fold
+> IIO_VAL_DECIMAL64_FEMTO into v16? I'll base v4 on top of it.
+
+v16 was sent Thursday last week:
+https://lore.kernel.org/linux-iio/20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com/
+
+It does not have FEMTO. I meant you could add it here (in your series).
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
