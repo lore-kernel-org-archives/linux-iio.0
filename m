@@ -1,197 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CDDC222582;
-	Wed, 10 Jun 2026 18:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 877407DA66;
+	Wed, 10 Jun 2026 18:47:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781116687; cv=none; b=p7wVnXB8wqM7vz5EgXnwX7kmyqX0i93vp92EVZz5EbsX0yo1hkvT7AhYa25Hd5rNGE4xbowQC58fJMwdie90okodMPpmTCGvxdPRH9Pho/6Vw2XmKWeDRE7NyAT07C7DWNY8XoKDwzZ8ExR5BOrV5USD7JkoFPVECQE2CkKaFPg=
+	t=1781117236; cv=none; b=gTa80XaivQCFGmwle2arvJvVeJQtU/hQktVHNwuKZ/c8ErNvw8geQs7ctU9CIQHMFW+aabLRyz6Ilo5/o1wZUXjioQMkWKIX6PClXnY8KIjAV+xhVPoqnUR90bg1gnrkMWe8f5r0Zd/A8GgQTfNywHBKg8kyA9KpT1HSSgYnWWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781116687; c=relaxed/simple;
-	bh=7NxpVDL3U9isnRJLHACxXEAsc4azboP8sWPfRYo80Ds=;
+	s=arc-20240116; t=1781117236; c=relaxed/simple;
+	bh=XJn1nN80Mrs0zfneGaUZpf4iFT0ELWNA2OOHfHR7TjI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sTH2G+eOz8EcnM0VmCkBXeGVZJKaamv5wCti1/kjfPYZ0jsMhoQA0N5AiyjnSao7OVWN+goA1YdebF/PHn6FZfxxd03Yvn+nSxX5SHYACVd9OL49hKoJbJhuRElDtWGdwtbNBu0E1qUrefqZ69EDjYzCX8uA4pZKsRz5HwP3sx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J289lOQh; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=DWL7sImzRo8sJi48iAL4rTtRT0mMCKpNAudzm+Wxp5/nR7nVpwqcpCKaroN1ifq8g34Fhvzrubhzf/PVraJGUm4Ht4Y5Tul47AafwrEfAaVbgrqW6kBIeP0IiAbj3wcYZHzWz+p4SPVBPN7rME22nNh7Qp72wUc97V/6UE+8Y0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hkZ9ibz1; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J289lOQh"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hkZ9ibz1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781116684; x=1812652684;
+  t=1781117235; x=1812653235;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7NxpVDL3U9isnRJLHACxXEAsc4azboP8sWPfRYo80Ds=;
-  b=J289lOQhzVhWJEV+KLeamRZJqxa6e1vBtxfpdhmSRjQf4JkQqPSDFQgR
-   fznddfv7LrvYf5a+bUtfujfSH50riO2oa+XwfblK6yIbZPAc7H8NzHMjm
-   v/LLRp1q2cFJeiZ96AJnGWzAwwZIhgFr3kQmVeKUCvC5Mjjefinp/SgH9
-   fNK9oqhpFn8aGs+xT9RKYq0f5uhCouC6k/1LnWSCIJZZF6H+JVOJgxbzm
-   IjPacT5DxlfIxxcRvE812BVG4PYwuqZFr8fXk+ew7+vyuk4uefatT70bo
-   2v0GNf43TpSH0VQvy0MZtLlADC/S4yelayqix8LnDf5gE9zJaIrw0caLM
-   A==;
-X-CSE-ConnectionGUID: UOnsywIkR9qtIM/d1QLu9g==
-X-CSE-MsgGUID: IsvhnkQXSmabfLxcIoM8ng==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="81983191"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=XJn1nN80Mrs0zfneGaUZpf4iFT0ELWNA2OOHfHR7TjI=;
+  b=hkZ9ibz1WkwKpzctFQ6KyshrYOe9R1rib7fEuFQmd1IdMPru7ODYNrZ9
+   7ukBbVsbOEiBnQhJjhJl47Ch0N3+5wOOL1nEX7bCkOkj3nMMe77zPK1/i
+   +jQHMOyUfGD7urgqZom27yJDkTABJiK0/kJ3rhiw27H1d3zkz7kUubWoH
+   K2cDGTeoPsQ1dCaeDs15Tce2SjKp36TAxGkkVAW03UBY5N9XJi7DgcMfs
+   Fna3rXtsCrCfKdnXR6OcCRQiSYOseNuTJpUoU8mCA691QPFyo0Fd9/MoZ
+   OKa72FcefpYcz69SFEuWb8Oinf/KIfCo2rGtflmV6gqEaSdNAm4AqDRHB
+   g==;
+X-CSE-ConnectionGUID: y5+KJpPfT7mZPfUw0mBFrg==
+X-CSE-MsgGUID: t4b0h80tRR2jCQaLUQQuVg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="85761837"
 X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
-   d="scan'208";a="81983191"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 11:38:04 -0700
-X-CSE-ConnectionGUID: At8iO3BCQcekizLr5CqvQw==
-X-CSE-MsgGUID: y8KMfhWISiKYJbKXdkM3nw==
+   d="scan'208";a="85761837"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 11:47:15 -0700
+X-CSE-ConnectionGUID: ivWHGwvZSiytIpJqYiLNEQ==
+X-CSE-MsgGUID: GJXOPYqCQs++8PYQ2zipPg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
-   d="scan'208";a="248120180"
+   d="scan'208";a="246110154"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.38])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 11:38:01 -0700
-Date: Wed, 10 Jun 2026 21:37:58 +0300
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 11:47:09 -0700
+Date: Wed, 10 Jun 2026 21:47:07 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Louis Adamian <adamianlouis@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
- temperature compensation
-Message-ID: <aimvBvJp8CsNKlPU@ashevche-desk.local>
-References: <20260610020458.104818-1-adamianlouis@gmail.com>
- <20260610020458.104818-3-adamianlouis@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v4 07/14] mfd: lm3533: Switch sysfs_create_group() to
+ device_add_group()
+Message-ID: <aimxK3asZjebYrNt@ashevche-desk.local>
+References: <20260606045738.21050-1-clamor95@gmail.com>
+ <20260606045738.21050-8-clamor95@gmail.com>
+ <aihl9yIqN3adKWLr@ashevche-desk.local>
+ <CAPVz0n2+27QVeWNgPm3PH6V2Ceuym6sbMtUrh7hSHe9PcRmfMA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260610020458.104818-3-adamianlouis@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPVz0n2+27QVeWNgPm3PH6V2Ceuym6sbMtUrh7hSHe9PcRmfMA@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian wrote:
-> Add correct temperature compensation for ms5637-30BA, MS5803-01BA,02BA,
-> 05BA, 14BA, 30BA, MS5837-30BA. The temperature compensation formula is
-> shared across these sensors but with different constants. Add
-> ms_tp_comp_consts to capture these per-device differences. Add pressure
-> variant specific pressure scale variable.
+On Wed, Jun 10, 2026 at 05:38:38PM +0300, Svyatoslav Ryhel wrote:
+> вт, 9 черв. 2026 р. о 22:14 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
+> > On Sat, Jun 06, 2026 at 07:57:31AM +0300, Svyatoslav Ryhel wrote:
+> > > Switch from sysfs_create_group() to device_add_group() including device
+> > > managed where appropriate.
+> >
+> > This should use .dev_groups member of struct device_driver.
+> 
+> Specify pls, device_add_group literally uses dev_groups, I don't
+> understand what is wrong.
 
-Is there SPI driver? If so, why only i2c is affected?
-
-...
-
-> +/* apply second order temperature compensation */
-> +static void ms_tp_compensate(const struct ms_tp_comp_consts *c,
-> +			     s32 temp, s32 dt, s64 *t2, s64 *off2, s64 *sens2)
-> +{
-> +	if (temp < 2000) {
-> +		s64 tmp = (s64)temp - 2000;
-
-Why casting?
-
-> +
-> +		*t2 = (c->low_t2_multiplier * ((s64)dt * (s64)dt)) >>
-> +		      c->low_t2_shift;
-> +		*off2 = (c->low_off2_multiplier * tmp * tmp) >>
-> +			c->low_off2_shift;
-> +		*sens2 = (c->low_sens2_multiplier * tmp * tmp) >>
-> +			 c->low_sens2_shift;
-
-
-> +		if (temp < -1500) {
-> +			s64 tmp_vlow = (s64)temp + 1500;
-
-Missing blank line. But Q here is why tmp can't be used here?
-
-> +			*off2 += c->vlow_off2_multiplier * tmp_vlow * tmp_vlow;
-> +			*sens2 +=
-> +				c->vlow_sens2_multiplier * tmp_vlow * tmp_vlow;
-
-Make it one line.
-
-> +		}
-> +	} else {
-> +		*sens2 = 0;
-> +		if (c->has_vhigh_temp && temp > 4500)
-> +			*sens2 -= (((s64)temp - 4500) * ((s64)temp - 4500)) >> 3;
-
-Here...
-
-> +		*t2 = (c->high_t2_multiplier * ((s64)dt * (s64)dt)) >>
-> +		      c->high_t2_shift;
-> +		*off2 = (c->high_off2_multiplier *
-> +			 ((s64)temp - 2000) * ((s64)temp - 2000)) >>
-
-...and here you may also use tmp, just make it global to the function.
-
-> +			c->high_off2_shift;
-> +	}
-> +}
-
-Overall this all needs a good comment or even comments to explain all
-calculations with the references to the respective sections / tables / pages
-in the datasheet.
+dev_groups of the struct device_driver. It means that the data should be
+static and be available before driver probe is called.
 
 ...
 
-> int ms_sensors_read_temp_and_pressure(struct ms_tp_dev *dev_data,
+> > > +     ret = devm_device_add_group(&bd->dev, &lm3533_bl_attribute_group);
+> >
+> > This will make Greg KH very grumpy. (For the record, original code as well
+> > but it already is in upstream. So, thanks for trying to address this, just
+> > needs a bit more of work.)
+> 
+> In the prev iteration YOU asked to me to adjust this. I have adjusted
+> and now you say that this is not appropriate. I will just drop this
+> commit altogether.
 
->  	s32 dt, temp;
->  	s64 off, sens, t2, off2, sens2;
->  	u16 *prom = dev_data->prom, delay;
-> +	const struct ms_tp_comp_consts *c = dev_data->comp_consts;
+Yes, and I still tell that this is the way to fix that issue.
 
-Try to keep more or less reversed xmas tree order.
+You can even do it yourself in a few clicks (hint: `git log --grep` is the tool
+of the day): 93afe8ba9b01 ("ACPI: TAD: Use dev_groups in struct device_driver").
+This is an example of what I meant.
 
-...
-
->   * struct ms_tp_dev - Temperature/Pressure sensor device structure
->   * @client:	i2c client
-
->   * @prom:	array of PROM coefficients used for conversion. Added element
->   *              for CRC computation
->   * @res_index:	index to selected sensor resolution
-> + * @comp_consts: temperature compensation constants
->   */
->  struct ms_tp_dev {
->  	struct i2c_client *client;
-
->  	const struct ms_tp_hw_data *hw;
->  	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
->  	u8 res_index;
-> +	const struct ms_tp_comp_consts *comp_consts;
-
-Please, check with `pahole` if this is the best layout.
-
->  };
-
->  struct ms_tp_data {
->  	const char *name;
->  	const struct ms_tp_hw_data *hw;
-> +	const struct ms_tp_comp_consts *comp_consts;
->  };
-
-Can this be simply embedded into ms_tp_dev (and copied there if required)?
-
-...
-
->  		case IIO_PRESSURE:	/* in kPa */
-> -			*val = pressure / 1000;
-> -			*val2 = (pressure % 1000) * 1000;
-> +			*val = pressure / dev_data->comp_consts->press_scale;
-> +			*val2 = (pressure %
-> +				 (s64)dev_data->comp_consts->press_scale) *
-> +				(1000000 / dev_data->comp_consts->press_scale);
-
-MICRO (might need units.h)?
-
->  			return IIO_VAL_INT_PLUS_MICRO;
-
-...
-
-Have you considered to prepare the infrastructure in one patch and add
-the actual compensation data tables in another?
+> > > +     if (ret < 0)
+> > > +             return dev_err_probe(&pdev->dev, ret,
+> > > +                                  "failed to create sysfs attributes\n");
 
 -- 
 With Best Regards,
