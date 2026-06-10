@@ -1,205 +1,129 @@
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35EB411679
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 14:45:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.175
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781102742; cv=pass; b=KjmjwrTCnkJ7CHFPylMn/VMYYRlaeSAzEEfB1W5TDUV6lE+C+5hpqyLKiqRHIbyG/k9HfLGIxkEk1Dnvw4DFry6JgYer2rl5S0EoefvohEUX0yWqkXP3JQPJwfCVCJ29UlMU+0bOsa1cHqXs7BNIjwF8khZo0tUINQgszIIVYp0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781102742; c=relaxed/simple;
-	bh=GswxPypzPfEQ3WUnspGh8ax+2FMG/mXlBTk2AXjL34M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Wy8GvSYQqAslZWkNw/1ByHNWZEBlQ0ozArkdzsAU4yfMqCOiXDHSDBBQ6b0XPIc661utIUK8ohY3AWv9dwFldjIiSe9kra1Dq2AXiV7vhTU3FlVEmjerN6sPj5kL2v/yx5HULrRigCnPD99FZ3ugQ5Mr8cAN06BkU/E2fnubkLY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PS+V+z/l; arc=pass smtp.client-ip=74.125.82.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E332A3BA23A
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 15:13:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781104431; cv=none; b=t/ZouDCPYWZ9jh5GOZLCb67PCvotFSJdHzbO3Gdzk/pq62D58c67AJJKdRGPYwQK+GJSkk6sUZeK7+xlBLoR7o9mebzVrwAZrXBz7geXI/AEBhW3JC9L6GLO03A3Y+i/pc/+YeXHZVXXAdtAO92vW0Is4Fyk4O6pzsaqsUcgP2w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781104431; c=relaxed/simple;
+	bh=ZywlfbF41j2Nded7OQmsl0r2Xwazx+xj+hhYFdpigSM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cQcWYgMresGIwC9KgCcP5QtE6BE4Tf/H0Qhl8iCxYFIOLSfWjTudQY8GcLOKrAqw+ELOSSG5JZUeAKWA3ihopFjwz88AgF4FGkQnT4g1VLFZjKnyvZ3NJJ8X+HoEgQlZCDDmzrui6tGRtdX5AheMyDNlSrP2uTWqSal39JJptbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fdrfmLXd; arc=none smtp.client-ip=209.85.215.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PS+V+z/l"
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-3075ce9c05aso919283eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 07:45:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781102740; cv=none;
-        d=google.com; s=arc-20240605;
-        b=C6kzzhTKX3JAIHZRyJsI7QLBcs5OsYPu93CegaM+3pyrVZpUyoojF78NBQbUnl+D6W
-         uzmmWFO5lwTaxrWaKbgykn2gue7BBePbUTc13LMXGTOngPzSe2OHra+dqoNIPQ+KhQ+b
-         U/qSHWLH97jFiQE2YhP3n647OyztiVAQ5lASGmUkiBA2uyqvAbDpCo1Y194dX2uoRl9d
-         TwvnnwRcoMzI61yL2FXWWLm7yzRo3Ld1cfQyf1jrJWZvNGVQyEcmGegHIvxzEA6A1bp8
-         ACq5rSxJQBhPcaRNXORmLuPGDhbsR2sFSssFat1pDHeP7DCrAPy/F7D4v+d5RNIYnjZb
-         /Gwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=c9jdnGhl8zT/c5+VTx28YYMOorOCQjdA4WuOVZ2PMo0=;
-        fh=hWJVztGCvsSTLIirC4ncYXPGiUez+4Zi1faMpIJmptI=;
-        b=kMcn/4huurAozS8fRsbiKeTQFWSl1hblnYM9QeiEPDFt2Mmx46xhPS4pBmLZ7Wdx0t
-         sfsh+/ubh0c6HEqb6FZSM6YYaseEJf7I1GxXwlhlZzn8tI3sDmTd5Op4vrwKN2fnA29S
-         Ybo4LtI4CFlzg7lmc4Ouq1GSc507svVgpF/TgNdK1ilYS0i3hTDGGwpFU8GTu9wobOv/
-         ONMbWlkxo0lsYT5ok0NERAwR5Y6t2uFhMCJgTqN/dNiRwv1tgs7cggfFQr7zD+Ht8EO+
-         OCaVBKMomW7jhpBfyQqic0NeY1+Ccy1s98yYpq60k1ItM5F2JbArcCtTtP8KeQ0MYwIW
-         55lg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fdrfmLXd"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-c857fba35cfso3430497a12.1
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 08:13:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781102740; x=1781707540; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c9jdnGhl8zT/c5+VTx28YYMOorOCQjdA4WuOVZ2PMo0=;
-        b=PS+V+z/lvGHsNMiNLqAsuwXOJkGXmiJ7LdnOhP8LK5ZZ9ZfeboGuHxsVDIoBJsGeST
-         qNCto5PN+wb7quOFQQdpV0kU4Hu+YaoYXZVqPMUurk6HluuoWyOPymeXxzolPkocYUDi
-         EwsWfEFqo2XSpWWX6Cu3HFv3RqI2SdG0afwCDT3XMDVcNs6XGHQMbZZmqaCDuX5eWFrL
-         N8ewC4XeYxBO9tSOG2FAnC2X43MxtriY0lh9PedRNcZ0ghV2JV4L2BiKDAq4fkJLKD57
-         ghmcWTg4mfbxLje27RUG6Uu4P33Mr8oUt0b858zMNFeohBFYIPUxGY55huG86dzO6Thl
-         ZSRQ==
+        d=gmail.com; s=20251104; t=1781104429; x=1781709229; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SN2WYk0Xb543ogGLjaeUCwmB6Ei9KYDO2yTRMSZaVpY=;
+        b=fdrfmLXdLBBmNFgpj9WWZcpjiv2zJ4H4C9+UzMHGJcfN+ItNolsWGwwYzaHjYRH7Ee
+         HlSLYKpRFqjupt70WkgSATJiOIn8GTyvD8W5l+AflrxX5cx6ULpCmlZbjPoRamF6fpZ8
+         4uxzy15VhwDngIyZKUgNoFDjza/5EzTyAKBckGzeiINSFinAbNoV1GdzTlir6hlBqojj
+         yifKHid4vhlffYStiQzMmqOeJdkdQjvzYYO1/tX0WGstUblvTnuNpcrpYbMxxpEDiQ4I
+         ByVGft2oIgZTBT8DSYC8KwMRT/eb1cRwRprpAOYQ2wa2TvGd5tnuTR/VQ5ZPp53a18eT
+         5kHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781102740; x=1781707540;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=c9jdnGhl8zT/c5+VTx28YYMOorOCQjdA4WuOVZ2PMo0=;
-        b=fZCrKYFk6eyXnjJ51ldXM7axhQ6zGaF74tPpk4INGRn/AkZ9wCewrG+m54p+1F4rum
-         NDX3TydkWKeCWXck2yAFebLB+1zgyB3I+3RBE4XFuD8PzMnUoDO3YpDIXNWwlg2bzhCm
-         Fpk7IwO+q6hgepAeKeFQPsik6zzo/2MM+g5YsUvUKOFEOrZntXFDwYXzxbWWeL6APOxo
-         cvZvd1PX/aK8ddKX7Y6ABBKVFge+gh8Ork6vAifCbvwbEzk48jc4I3X6ekTbJLdNm4Nj
-         Tcv09vsM3St+U72nHh+PSNctLQoPtvZcKdorOlAzbdnrmb9JekzjPqWHI+EBaXr6HpS2
-         iLBQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9sq19oCPR0PFdxjzDaNga1lNFVzjAf4rTgML+foEv+wj89vYUVIeC7qle2fKyjuYPtgv9L8LfFylQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz8hwPT5vteGqQVvl/FOcxVt/PB4vbJ/OH7zegqMVKzNIgLP6A6
-	p7wMcTbzthTkPrNVsoxj8lZlZsg8LxMXiwKkxYPLF+/tmxM7HDrmm8TklY+5r/3uQn8iPnvABMK
-	qZDZhPCeUVxO6iwwnAuAnLSDJ22YynfE=
-X-Gm-Gg: Acq92OFaGwnALTM49qU+PcWnZXCAv5V4ZHfDrEvZ7tpkknGNCFop10WF5UxRRQQJXxQ
-	o+a/OQCzQdAcI8/39M+EIPsADlKz0+WspTS5VKPv3khwy00p3EFlfR2wShNrnFF7gdcziBPCPaz
-	SqdhJczdsttxgVE9mhmXrReOneLxRLNwEJxCq/k/xp9fwJaX28Y0sNM80cQ1/HnLm273aZUGwL0
-	ZV//0SBFD8yhY0pWftjyX9EawCb2ompFiXfM65aArxnS0KQsS1E6bB5iBPRKyeOggDbCrW2cJEZ
-	OgG+IcDck/NORGJOYNo=
-X-Received: by 2002:a05:7300:4307:b0:2ce:3aa1:d39b with SMTP id
- 5a478bee46e88-3077b1e1921mr16407205eec.20.1781102739833; Wed, 10 Jun 2026
- 07:45:39 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1781104429; x=1781709229;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SN2WYk0Xb543ogGLjaeUCwmB6Ei9KYDO2yTRMSZaVpY=;
+        b=IWSaatYsueC/Yk9FgbkwArNPCgJMx/JIakR1hf1z9bbOufcpwzl/J9VoLFvrupYePN
+         C8Wryk2j54OVWWseZaegQloNG+WkXOF/UMdlf6izPON6T9cBBLgwncDWlhjIL+vWQ9dK
+         JYrJM/HXltVcmeEexqjU9fdkjfH9BIuqjaJyQxAsOCQhUvmvp7Lqp3sYMhs5YxY6fRnc
+         C2cbVi/2hGohFTv9Wd/Ncomu39S7Ixam1JSJbNPzUJTroBZ3h6y+xES4jKIllwaO2+rM
+         moVcN9dkH1UfDUHswoEwf/Wa8n0czSKrXPmY3ldr9V8OXbKlgJwgqSyinfSFiaQ4CB/e
+         zppg==
+X-Gm-Message-State: AOJu0YwxChH6EzkhL6UT3L2ivw7wDUhDmJxL1XtRkvtDhhwPzp09ykHI
+	ItbarHLdqXkWLyFZx+10+CTmX8z9z6J1RKC/jrwXPugr7mHgnXWa6H5q
+X-Gm-Gg: Acq92OHnYJim8LjktjjkjI6BLv6nDBlVMdEonddlLpC1DM+k96qHn+EmNl1FlyXoxCw
+	I03a0OIIBZ4GgrPnd1yirFCP+6m1jO2V19YdS+KnLEj+2dKDj+7KQoD/PRBjZqWiAlENXTFMmOi
+	Xc33Z7kqKmsB9VV8kQJB/oxGyFuJX2Qk0Mp/X7D/5rt1uoc4vYore/NZ8Hkj1RmQmaLh47rkZra
+	jFl+VH565i68s33anZLuhs4MsxLpmGuy0PHWin7tm1xhIHz/bzXdcz3c8JPKlr05iWoZID0QPLo
+	qS9H7CHrVPWVNsMNPLiJDLoLT534+zAHm91sJ4nsTEeN3f/Wpes8P90mZhFAPKVb58OeFJGDejh
+	3TMvsxknj+KQHH1aL4uvUHaftzL+Wfaxpdm1kKo4dHNXEWebdhxqYgN1ebjye4QFAiYaJq9BAf8
+	3jweikqmqNSgIPYZB1Nb+yS1Y=
+X-Received: by 2002:a17:903:1252:b0:2c0:c625:4010 with SMTP id d9443c01a7336-2c1e8102377mr281161125ad.32.1781104429228;
+        Wed, 10 Jun 2026 08:13:49 -0700 (PDT)
+Received: from ltu.. ([171.245.6.72])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c1664a67b0sm254066195ad.80.2026.06.10.08.13.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jun 2026 08:13:48 -0700 (PDT)
+From: Nguyen Minh Tien <zizuzacker@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	zizuzacker@gmail.com
+Subject: [PATCH 0/2] iio: adc: Add Texas Instruments ADS1220 ADC
+Date: Wed, 10 Jun 2026 22:13:40 +0700
+Message-Id: <20260610151342.44274-1-zizuzacker@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-15-clamor95@gmail.com>
- <aihoH9Pmzufa9pnE@ashevche-desk.local>
-In-Reply-To: <aihoH9Pmzufa9pnE@ashevche-desk.local>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Wed, 10 Jun 2026 17:45:28 +0300
-X-Gm-Features: AVVi8CdnB8ApS2xg5kxxnd98RqCsR1fmVPgPcGfJlrd3mQBMI1CAmZLqR9DFIrc
-Message-ID: <CAPVz0n0m+i7wexfC0BWwvdOuJxDk_=x+EpxEbNmoHN1AsEmfNg@mail.gmail.com>
-Subject: Re: [PATCH v4 14/14] video: leds: backlight: lm3533: Support getting
- LED sources from DT
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-=D0=B2=D1=82, 9 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 22:23=
- Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Sat, Jun 06, 2026 at 07:57:38AM +0300, Svyatoslav Ryhel wrote:
-> > Add Control Bank to HVLED/LVLED muxing support based on the led-sources
-> > defined in the device tree.
->
-> ...
->
-> >  static int lm3533_led_setup(struct lm3533_led *led)
-> >  {
-> > -     int ret;
-> > +     u32 output_cfg_shift =3D 0;
->
-> No need to assign the default to this.
->
+This series adds support for the Texas Instruments ADS1220, a 24-bit,
+2-kSPS, 4-channel delta-sigma ADC with an SPI (mode 1) interface, a
+programmable gain amplifier (1 to 128), an internal 2.048V reference and
+a dedicated DRDY data-ready output.
 
-This is a personal preference, compiler will optimize it if this is not nee=
-ded.
+The driver supports:
+ - single-ended and differential voltage channels described as
+   device-tree child nodes;
+ - per-channel programmable gain (via _scale) and data rate (via
+   _sampling_frequency), with the matching *_available attributes;
+ - the internal 2.048V reference, an external reference on REFP0/REFN0
+   via a regulator, or the analog supply (AVDD) as a ratiometric
+   reference for single-supply measurements;
+ - single-shot conversions gated on the DRDY interrupt, or on a
+   data-rate-derived delay when no interrupt is wired;
+ - a DRDY-interrupt-driven triggered buffer for streaming;
+ - runtime PM (power-down between conversions).
 
-> > +     u32 output_cfg_val =3D 0;
-> > +     u32 output_cfg_mask =3D 0;
-> > +     int ret, i;
->
-> No need to add 'i'.
->
+I tested this on a Lichee Pi Nano (Allwinner F1C100s) running Linux 7.0:
+with a potentiometer on AIN0 (single-ended against AVSS, AVDD as the
+reference), in_voltage0_raw tracks the wiper linearly across the full
+0..3.3V range (0 to 0x7fffff). Nothing in the driver is board-specific -
+it only uses the SPI and IIO frameworks - so it should work on any SPI
+host.
 
-This is personal preference as well. There is no strict rule that
-iteration variable must be defined strictly in the for loop.
+This is my first kernel contribution. I modelled the driver on the
+existing TI ADS-family IIO drivers - ti-ads1119 for the structure and
+ti-ads124s08 for the SPI side - so I'd welcome any feedback on things
+I've missed.
 
-> > +     if (led->num_leds) {
-> > +             for (i =3D 0; i < led->num_leds; i++) {
->
->                 for (unsigned int i =3D 0; i < led->num_leds; i++) {
->
-> > +                     if (led->leds[i] >=3D LM3533_LVCTRLBANK_MAX)
-> > +                             continue;
-> > +
-> > +                     output_cfg_shift =3D led->leds[i] * 2;
-> > +                     output_cfg_val |=3D led->id << output_cfg_shift;
-> > +                     output_cfg_mask |=3D OUTPUT_LVLED_MASK << output_=
-cfg_shift;
-> > +             }
-> > +
-> > +             /* LVLED1, LVLED2 and LVLED3 */
-> > +             ret =3D regmap_update_bits(led->regmap, LM3533_REG_OUTPUT=
-_CONF1,
-> > +                                      output_cfg_mask << OUTPUT_CONF1_=
-SHIFT,
-> > +                                      output_cfg_val << OUTPUT_CONF1_S=
-HIFT);
-> > +             if (ret)
-> > +                     return ret;
-> > +
-> > +             /* LVLED4 and LVLED5 */
-> > +             ret =3D regmap_update_bits(led->regmap, LM3533_REG_OUTPUT=
-_CONF2,
-> > +                                      output_cfg_mask >> OUTPUT_CONF2_=
-SHIFT,
-> > +                                      output_cfg_val >> OUTPUT_CONF2_S=
-HIFT);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
->
-> ...
->
-> > +     if (led->num_leds > 0) {
-> > +             ret =3D device_property_read_u32_array(&pdev->dev, "led-s=
-ources",
-> > +                                                  led->leds, led->num_=
-leds);
-> > +             if (ret) {
-> > +                     dev_err(&pdev->dev, "failed to get led-sources\n"=
-);
-> > +                     goto err_deregister;
-> > +             }
-> > +     }
->
-> This and other pieces may benefit from local variable
->
->         struct device *dev =3D &pdev->dev;
->
-> defined at the top of the function.
->
+Nguyen Minh Tien (2):
+  dt-bindings: iio: adc: Add TI ADS1220
+  iio: adc: Add TI ADS1220 driver
 
-Yes, but this would require an additional patch, which I will not add
-to this already overinflated series.
+ .../bindings/iio/adc/ti,ads1220.yaml          | 146 +++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/adc/Kconfig                       |  12 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ti-ads1220.c                  | 835 ++++++++++++++++++
+ 5 files changed, 1001 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1220.yaml
+ create mode 100644 drivers/iio/adc/ti-ads1220.c
 
-> ...
->
-> >  static int lm3533_bl_setup(struct lm3533_bl *bl)
->
-> As per above.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+
+base-commit: ae696dfa47c30016cd429b9db5e70b259b8f509e
+-- 
+2.34.1
+
