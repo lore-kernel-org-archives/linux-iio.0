@@ -1,1002 +1,204 @@
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF37742B753
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 15:13:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686E83191C8;
+	Wed, 10 Jun 2026 15:32:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781104444; cv=none; b=GVWwI2EL2uWH2xBNXSlVf2SDJ0a/xBZ3eTYtQFokqTNp8deYJ3JKfClAQQmNXnFaabviTw/DjOYe7bS/eB9AMJNHyrY7OigF3ZS7whOlvQR2FHD+8TOi1xvaN2PJmjSvqAVSGAe8mwhYBgnaVowIhTpgzXt5obtJ6TFF37sOneg=
+	t=1781105559; cv=none; b=uL7CKhPogkjU5qz49hZOFZ4P43Rn++PZYk2KbIPJdZf/rEgWxC6+Fe2EmoPvix9M/592VXjuvDOrouIs/vXib1A8FesQX1puh3f7CPJQZH2rdmZwrB+lcRZrU7hns548WAb2yjJ+cGND80jVeZBhtzKx5iWJpnrQVdUX4wREehY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781104444; c=relaxed/simple;
-	bh=VwA3L67UKTDML+f8VbCioU+MJxNrCzkpA6rIkQMVCVs=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=DYuYm+Mv9/Vi91QdlikIEC4Od27ZHmPKA65YXKL1hNwLYqbfIskdesJf+wGxplU1Ry0sD1d+3w9KxZ2OMkWJU5619jlbNVqvGMd00fUiL38e3JR1xE/hueOp1XWgBzxyBCyc+lc5IQOCuFO57BRqo/JCaDGJtiqmyw2IIyqz8yU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Afx8U6ZM; arc=none smtp.client-ip=209.85.215.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781105559; c=relaxed/simple;
+	bh=U/XhO5JM8x+rjwnsud02zH/tVfKZWUQLrplEP8EHfaE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RkggcPNzaGaJ04umf0BHXPOW87tdI5+mVFAOVzPgjbJThWGrxBHrtECJthGEdg3MkFs9+LphwpqnjlgRy+T1M5CITU5b/FI2/lU/qiKVVvkvYyqDUsEgd4bXnKHirfjIM8aZWQPBzomMt+i5TC3gmOndlfyqGbix1Hs8f/RZMTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kY5FZhxg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Afx8U6ZM"
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-c85b2139015so2396590a12.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 08:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781104439; x=1781709239; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Gi0Ps2XCKJXsFPQDpJw7w7zkAX5o4+D2ns7wkWiRAKo=;
-        b=Afx8U6ZMurVV3fRwtFTjPEOq9+wDjY/CaSG+vX4wmnKVWpOpyS2jqtK3LN2EbIdKSS
-         pdurEARl186QkgKidjHZtzbJ9N5gfw4tKCIvcfFwByt1rsLFMFMgR2xZXEfhCaGZ1qlI
-         sEbvKlbctI6oIbkqQXRL5W+XXLgoshZ7RBOj2zZ6X8JUazxgmlfgqTBzm4SzXFUZs8vW
-         Ln7DBcFXS8Dc/PmQOOQD21ldpBiQBgdhGLaIfIvibycH5+U3KcrdntL0zHul1CNSjPs9
-         wiILhhp1o1u778w65HAO3VBpp5ZlGCyMiNh98acyw5TUEUrtAoEU/c50SiuZ4YFvCO6z
-         4j4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781104439; x=1781709239;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Gi0Ps2XCKJXsFPQDpJw7w7zkAX5o4+D2ns7wkWiRAKo=;
-        b=sYGdCxpNh8iW/3Q+gNOMmEihEXsxQnvMVq5XKPOc6gKhr0u5DIHhMke+9wlWh7inqW
-         VtcFkU2A7BJO3Gpeqy8HiSw28oajnl3U+SHgCs4MKqsPIuoMNU7vYVbFVk/b3zlGVcpS
-         Rb2GlJX56AXLnLY34GEaZpXkwhl/SMbbc3RkjcUPMI6o7+Nhxo7LXDy4pNWNL7YXPU0y
-         DQ9pn3riabjP2PgT7kPLvmaVtBJfi3GE+/p5Kg9vBVlNprgUrZtrUTk+Ksm8orwPX1oj
-         pK1NCjRzckuv2w1ljauKFVsjUphLwKhMWjmv5nVKY7/vPdi7WcWAIVvrZWyEbeu+lAOY
-         jv6g==
-X-Gm-Message-State: AOJu0Yz87f0OHl0fbX5zh/44SYXquGzUHZuvijwXIzk0e7kWFRUzAdyt
-	wx2UIRBnF70jiyDr1/FMCvGm5RQq8KCxMElUgAxlv76tDGX14S2WtJIV
-X-Gm-Gg: Acq92OE1r4VQ2AuDjrokUesSCddDsQNICqNp7CNl133WvhG3XtAYR/ArQ4pkYPLihcB
-	3DJN2/hCyYKC3S9UrjkcuxKgnGSlPb8V3Zxf4048ncrVG6owIBVfasMTtkWmoidCSmIFtlaupfw
-	6r9zSvqlpYiMHXnh+6pvQdo4I7SSMRqQFn8dgg4PMuHZVsEVwyEp0uji/rkJ+uZqvjU4n2+fuIz
-	c6ve4SXIAIhhSs4o2liXAkrJ4mC3ZYuIhYD8d+ugC32vO++K6+yb/R0clYqnlV6jHwjQ55X2QEH
-	xq769brskaoi9K29VNDG83oj/aQVztlVFQUMavoA53FE9rpz2ezgIaXpM5Xpu1h7oskX4SvhnFO
-	CSmbtURW2PlkjMPF6sSjdcMBvqnjbe97U5ZyTABMSWWbwFJyEKsotRAWVxojB3V9+YSdvgUVX8t
-	bJGqAuTBv3u8ZxwdJItwu7kxXVtq+13R46Uw==
-X-Received: by 2002:a17:902:ebc3:b0:2c2:7baf:139f with SMTP id d9443c01a7336-2c2a1c9b30dmr96230165ad.30.1781104438813;
-        Wed, 10 Jun 2026 08:13:58 -0700 (PDT)
-Received: from ltu.. ([171.245.6.72])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c1664a67b0sm254066195ad.80.2026.06.10.08.13.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 08:13:58 -0700 (PDT)
-From: Nguyen Minh Tien <zizuzacker@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	zizuzacker@gmail.com
-Subject: [PATCH 2/2] iio: adc: Add TI ADS1220 driver
-Date: Wed, 10 Jun 2026 22:13:42 +0700
-Message-Id: <20260610151342.44274-3-zizuzacker@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260610151342.44274-1-zizuzacker@gmail.com>
-References: <20260610151342.44274-1-zizuzacker@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kY5FZhxg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE5D51F00893;
+	Wed, 10 Jun 2026 15:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781105558;
+	bh=zGWAOjvUhZA6rxPGTdmrBORNmUdL9GLH5oxpXT19z1o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=kY5FZhxgWP06ckUS5O6fg0rdXcQAplr9H3Trx0DlJjdRfpmIOyCHrvBNup4bSgj0q
+	 B3R4hc0cA6JmZEK5iIYOUz7dGKgsmhUBQgqcVXf4geiPe9xJDMyWVAu7RPtJYHYXBM
+	 iDSnwSnDW52282nQJ6PgKhKmGGoC+GImieHUaQ7FOunCh6BAq7UwuspFJg5OQZLuQF
+	 Qd4uuhfH9U1BxsACvC7Y9NdvxnH8JEtw3felJriuGv+jGrri2iOO4WPPi7OGsBLTbo
+	 VTMZrGU+Z22EQDSXN+IvIOqJWAXe7wx8Yq8fP/wlJDQLuaCJ9T0lnJqvQGRrRmRpw3
+	 S2gt0vyzFyBWQ==
+Date: Wed, 10 Jun 2026 16:32:30 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Hungyu Lin <dennylin0707@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] iio: magnetometer: bmc150: use FIELD_PREP and
+ FIELD_GET helpers
+Message-ID: <20260610163230.51d5866c@jic23-huawei>
+In-Reply-To: <20260610135831.91739-3-dennylin0707@gmail.com>
+References: <20260610135831.91739-1-dennylin0707@gmail.com>
+	<20260610135831.91739-3-dennylin0707@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add an IIO driver for the Texas Instruments ADS1220 24-bit delta-sigma
-SPI ADC. The driver supports single-ended and differential voltage
-channels described as device-tree child nodes, per-channel programmable
-gain (exposed through scale) and data rate (exposed through sampling
-frequency), the internal 2.048V reference, an external reference via a
-regulator, or the analog supply (AVDD) as a ratiometric reference,
-single-shot conversions and a DRDY-interrupt-driven triggered buffer.
-Conversions are gated either on the DRDY interrupt or, when no interrupt
-is wired, on a data-rate-derived delay. Runtime PM powers the device down
-between conversions.
+On Wed, 10 Jun 2026 13:58:31 +0000
+Hungyu Lin <dennylin0707@gmail.com> wrote:
 
-Signed-off-by: Nguyen Minh Tien <zizuzacker@gmail.com>
----
- MAINTAINERS                  |   7 +
- drivers/iio/adc/Kconfig      |  12 +
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-ads1220.c | 835 +++++++++++++++++++++++++++++++++++
- 4 files changed, 855 insertions(+)
- create mode 100644 drivers/iio/adc/ti-ads1220.c
+> Replace open-coded bitfield operations with FIELD_PREP() and
+> FIELD_GET() helpers where appropriate.
+> 
+> Also simplify bmc150_magn_set_odr() by returning directly from
+> the matching table entry.
+> 
+> Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+Andy mentioned in previous patch - slow down!  More than one version a day
+is very rarely appropriate.  That creates a lot of noise on the list
+and means that you aren't gathering up multiple bits of feedback before
+posting a new verison.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 396d4e76d..1797af05c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -26661,6 +26661,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/adc/ti,ads1119.yaml
- F:	drivers/iio/adc/ti-ads1119.c
+Anything I apply for IIO is now 7.3 material so this isn't going upstream
+for about 3 months anyway so take your time!
+
+The alignment is not the preferred amount for pretty much all cases.
+Rather than go to v7, applied but with this fix up:
+Note that it is on the testing branch of iio.git which will get rebased
+on rc1 once available in about 3 weeks time.
+
+diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+index ee8092d4006c..32dff9cdd0f7 100644
+--- a/drivers/iio/magnetometer/bmc150_magn.c
++++ b/drivers/iio/magnetometer/bmc150_magn.c
+@@ -248,13 +248,13 @@ static int bmc150_magn_set_power_mode(struct bmc150_magn_data *data,
+                                          BMC150_MAGN_REG_OPMODE_ODR,
+                                          BMC150_MAGN_MASK_OPMODE,
+                                          FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
+-                                                 BMC150_MAGN_MODE_SLEEP));
++                                                    BMC150_MAGN_MODE_SLEEP));
+        case BMC150_MAGN_POWER_MODE_NORMAL:
+                return regmap_update_bits(data->regmap,
+                                          BMC150_MAGN_REG_OPMODE_ODR,
+                                          BMC150_MAGN_MASK_OPMODE,
+                                          FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
+-                                                 BMC150_MAGN_MODE_NORMAL));
++                                                    BMC150_MAGN_MODE_NORMAL));
+        }
  
-+TI ADS1220 ADC DRIVER
-+M:	Nguyen Minh Tien <zizuzacker@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/ti,ads1220.yaml
-+F:	drivers/iio/adc/ti-ads1220.c
-+
- TI ADS1018 ADC DRIVER
- M:	Kurt Borja <kuurtb@gmail.com>
- L:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a3a93a47b..cb17a89f0 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1784,6 +1784,18 @@ config TI_ADS1119
-          This driver can also be built as a module. If so, the module will be
-          called ti-ads1119.
+        return -EINVAL;
+@@ -312,10 +312,10 @@ static int bmc150_magn_set_odr(struct bmc150_magn_data *data, int val)
+                        continue;
  
-+config TI_ADS1220
-+	tristate "Texas Instruments ADS1220 ADC"
-+	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  If you say yes here you get support for Texas Instruments ADS1220
-+	  24-bit, 4-channel, delta-sigma ADC chip.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-ads1220.
-+
- config TI_ADS124S08
- 	tristate "Texas Instruments ADS124S08"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 707dd7089..076cd51ed 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -153,6 +153,7 @@ obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
- obj-$(CONFIG_TI_ADS1018) += ti-ads1018.o
- obj-$(CONFIG_TI_ADS1100) += ti-ads1100.o
- obj-$(CONFIG_TI_ADS1119) += ti-ads1119.o
-+obj-$(CONFIG_TI_ADS1220) += ti-ads1220.o
- obj-$(CONFIG_TI_ADS124S08) += ti-ads124s08.o
- obj-$(CONFIG_TI_ADS1298) += ti-ads1298.o
- obj-$(CONFIG_TI_ADS131E08) += ti-ads131e08.o
-diff --git a/drivers/iio/adc/ti-ads1220.c b/drivers/iio/adc/ti-ads1220.c
-new file mode 100644
-index 000000000..06bcc8841
---- /dev/null
-+++ b/drivers/iio/adc/ti-ads1220.c
-@@ -0,0 +1,835 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Texas Instruments ADS1220 ADC driver
-+ *
-+ * Datasheet: https://www.ti.com/lit/gpn/ads1220
-+ *
-+ * Copyright (C) 2026 Nguyen Minh Tien <zizuzacker@gmail.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/completion.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/log2.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/spi/spi.h>
-+#include <linux/units.h>
-+#include <linux/unaligned.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+
-+/* SPI commands (Table 8-7) */
-+#define ADS1220_CMD_RESET	0x06
-+#define ADS1220_CMD_START	0x08
-+#define ADS1220_CMD_POWERDOWN	0x02
-+#define ADS1220_CMD_RDATA	0x10
-+#define ADS1220_CMD_RREG	0x20
-+#define ADS1220_CMD_WREG	0x40
-+/* RREG/WREG operate on one register (nn = 0 => 1 byte) at address rr */
-+#define ADS1220_CMD_RREG_REG(reg)	(ADS1220_CMD_RREG | ((reg) << 2))
-+#define ADS1220_CMD_WREG_REG(reg)	(ADS1220_CMD_WREG | ((reg) << 2))
-+
-+/* Configuration registers (Table 8-8) */
-+#define ADS1220_REG_CONFIG0	0x00
-+#define ADS1220_REG_CONFIG1	0x01
-+#define ADS1220_REG_CONFIG2	0x02
-+#define ADS1220_REG_CONFIG3	0x03
-+#define ADS1220_MAX_REG		ADS1220_REG_CONFIG3
-+
-+/* CONFIG0 */
-+#define ADS1220_CFG0_MUX	GENMASK(7, 4)
-+#define ADS1220_CFG0_GAIN	GENMASK(3, 1)
-+#define ADS1220_CFG0_PGA_BYPASS	BIT(0)
-+
-+/* CONFIG1 */
-+#define ADS1220_CFG1_DR		GENMASK(7, 5)
-+#define ADS1220_CFG1_MODE	GENMASK(4, 3)
-+#define ADS1220_CFG1_CM		BIT(2)
-+#define ADS1220_CFG1_TS		BIT(1)
-+#define ADS1220_CFG1_BCS	BIT(0)
-+
-+/* CONFIG2 */
-+#define ADS1220_CFG2_VREF	GENMASK(7, 6)
-+#define ADS1220_CFG2_FILTER	GENMASK(5, 4)
-+#define ADS1220_CFG2_PSW	BIT(3)
-+#define ADS1220_CFG2_IDAC	GENMASK(2, 0)
-+
-+/* CONFIG3 */
-+#define ADS1220_CFG3_I1MUX	GENMASK(7, 5)
-+#define ADS1220_CFG3_I2MUX	GENMASK(4, 2)
-+#define ADS1220_CFG3_DRDYM	BIT(1)
-+
-+/* VREF[1:0] sources */
-+#define ADS1220_VREF_INTERNAL	0
-+#define ADS1220_VREF_REFP0_REFN0 1
-+#define ADS1220_VREF_AIN0_AIN3	2
-+#define ADS1220_VREF_AVDD	3
-+#define ADS1220_INTERNAL_VREF_uV 2048000
-+
-+/* Input multiplexer codes (Table 8-10) */
-+#define ADS1220_MUX_SINGLE(ain)	(0x8 | (ain))	/* AINx vs AVSS */
-+#define ADS1220_MUX_SHORTED	0x0e		/* (AVDD + AVSS) / 2 */
-+
-+#define ADS1220_DATA_BYTES	3
-+#define ADS1220_DATA_BITS	24
-+
-+#define ADS1220_NUM_GAINS	8	/* 1, 2, 4, 8, 16, 32, 64, 128 */
-+#define ADS1220_MAX_SE_GAIN	4	/* single-ended forces PGA bypass */
-+
-+#define ADS1220_MAX_CHANNELS	7	/* 4 single-ended + 3 differential-ish */
-+#define ADS1220_MAX_AIN		4
-+
-+/* Worst-case single conversion: 20 SPS => 50 ms, plus margin. */
-+#define ADS1220_CONV_TIMEOUT_MS	100
-+#define ADS1220_CONV_MARGIN_US	2000
-+
-+#define ADS1220_SUSPEND_DELAY_MS 2000
-+
-+/* Data rate (samples per second) in normal mode, indexed by DR[2:0]. */
-+static const int ads1220_datarates[] = {
-+	20, 45, 90, 175, 330, 600, 1000,
-+};
-+
-+/*
-+ * Available scales expressed as gain reciprocals (val / val2), matching the
-+ * convention used by the sibling ti-ads1119 driver: writing 0.25 selects a
-+ * gain of 4. The full list is used for differential channels; single-ended
-+ * channels (which force the PGA into bypass) are limited to the first three
-+ * entries (gains 1, 2, 4).
-+ */
-+static const int ads1220_scale_avail[] = {
-+	1, 1,
-+	1, 2,
-+	1, 4,
-+	1, 8,
-+	1, 16,
-+	1, 32,
-+	1, 64,
-+	1, 128,
-+};
-+
-+#define ADS1220_SE_SCALE_AVAIL_LEN	(3 * 2)
-+#define ADS1220_SCALE_AVAIL_LEN		ARRAY_SIZE(ads1220_scale_avail)
-+
-+struct ads1220_channel_config {
-+	unsigned int mux;
-+	unsigned int gain;
-+	unsigned int datarate;
-+	bool single_ended;
-+};
-+
-+struct ads1220_state {
-+	struct spi_device *spi;
-+	struct completion completion;
-+	struct iio_trigger *trig;
-+	struct ads1220_channel_config *channels_cfg;
-+	unsigned int num_channels_cfg;
-+	int vref_uV;
-+	unsigned int vref_source;
-+
-+	/*
-+	 * DMA-safe buffers. tx is used for command/register writes, rx for
-+	 * register and conversion-result reads. scan holds one sample plus a
-+	 * timestamp for the triggered buffer.
-+	 */
-+	u8 tx[2] __aligned(IIO_DMA_MINALIGN);
-+	u8 rx[ADS1220_DATA_BYTES];
-+	struct {
-+		s32 sample;
-+		aligned_s64 timestamp;
-+	} scan;
-+};
-+
-+static int ads1220_command(struct ads1220_state *st, u8 cmd)
-+{
-+	st->tx[0] = cmd;
-+
-+	return spi_write(st->spi, st->tx, 1);
-+}
-+
-+static int ads1220_write_reg(struct ads1220_state *st, u8 reg, u8 val)
-+{
-+	st->tx[0] = ADS1220_CMD_WREG_REG(reg);
-+	st->tx[1] = val;
-+
-+	return spi_write(st->spi, st->tx, 2);
-+}
-+
-+static int ads1220_read_reg(struct ads1220_state *st, u8 reg, u8 *val)
-+{
-+	int ret;
-+
-+	st->tx[0] = ADS1220_CMD_RREG_REG(reg);
-+
-+	ret = spi_write_then_read(st->spi, st->tx, 1, st->rx, 1);
-+	if (ret)
-+		return ret;
-+
-+	*val = st->rx[0];
-+
-+	return 0;
-+}
-+
-+static int ads1220_reset(struct ads1220_state *st)
-+{
-+	int ret;
-+
-+	ret = ads1220_command(st, ADS1220_CMD_RESET);
-+	if (ret)
-+		return ret;
-+
-+	/* Wait at least 50us + 32 x tCLK after RESET before any command. */
-+	fsleep(100);
-+
-+	return 0;
-+}
-+
-+static unsigned int ads1220_datarate_to_code(unsigned int datarate)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ads1220_datarates); i++)
-+		if (ads1220_datarates[i] == datarate)
-+			return i;
-+
-+	return 0;
-+}
-+
-+static int ads1220_configure(struct ads1220_state *st, unsigned int mux,
-+			     unsigned int gain, unsigned int datarate,
-+			     bool single_ended, bool continuous)
-+{
-+	u8 reg0, reg1;
-+	int ret;
-+
-+	reg0 = FIELD_PREP(ADS1220_CFG0_MUX, mux) |
-+	       FIELD_PREP(ADS1220_CFG0_GAIN, ilog2(gain));
-+	/*
-+	 * For single-ended inputs (AINN = AVSS) the PGA must be bypassed; the
-+	 * datasheet only allows gains 1, 2 and 4 in that case.
-+	 */
-+	if (single_ended)
-+		reg0 |= ADS1220_CFG0_PGA_BYPASS;
-+
-+	ret = ads1220_write_reg(st, ADS1220_REG_CONFIG0, reg0);
-+	if (ret)
-+		return ret;
-+
-+	reg1 = FIELD_PREP(ADS1220_CFG1_DR, ads1220_datarate_to_code(datarate));
-+	if (continuous)
-+		reg1 |= ADS1220_CFG1_CM;
-+
-+	return ads1220_write_reg(st, ADS1220_REG_CONFIG1, reg1);
-+}
-+
-+static int ads1220_read_sample(struct ads1220_state *st, unsigned int datarate,
-+			       int *val)
-+{
-+	int ret;
-+
-+	if (st->spi->irq) {
-+		unsigned long timeout = msecs_to_jiffies(ADS1220_CONV_TIMEOUT_MS);
-+
-+		if (!wait_for_completion_timeout(&st->completion, timeout))
-+			return -ETIMEDOUT;
-+	} else {
-+		/*
-+		 * No DRDY interrupt: wait for the conversion to finish. In
-+		 * single-shot mode the result stays latched until the next
-+		 * START, so waiting longer than one conversion is harmless;
-+		 * wait two periods plus a margin to comfortably cover the
-+		 * oscillator start-up and its tolerance.
-+		 */
-+		fsleep(2 * DIV_ROUND_UP(MICRO, datarate) + ADS1220_CONV_MARGIN_US);
-+	}
-+
-+	/*
-+	 * Once DRDY is low the result can be clocked out directly, MSB first,
-+	 * without an RDATA command (datasheet section 8.5.4).
-+	 */
-+	ret = spi_read(st->spi, st->rx, ADS1220_DATA_BYTES);
-+	if (ret)
-+		return ret;
-+
-+	*val = sign_extend32(get_unaligned_be24(st->rx), ADS1220_DATA_BITS - 1);
-+
-+	return 0;
-+}
-+
-+static int ads1220_single_conversion(struct ads1220_state *st,
-+				     const struct iio_chan_spec *chan,
-+				     int *val, bool calib_offset)
-+{
-+	struct device *dev = &st->spi->dev;
-+	struct ads1220_channel_config *cfg = &st->channels_cfg[chan->address];
-+	unsigned int mux = cfg->mux;
-+	bool single_ended = cfg->single_ended;
-+	int ret;
-+
-+	if (calib_offset) {
-+		mux = ADS1220_MUX_SHORTED;
-+		single_ended = false;
-+	}
-+
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = ads1220_configure(st, mux, cfg->gain, cfg->datarate,
-+				single_ended, false);
-+	if (ret)
-+		goto out;
-+
-+	if (st->spi->irq)
-+		reinit_completion(&st->completion);
-+
-+	ret = ads1220_command(st, ADS1220_CMD_START);
-+	if (ret)
-+		goto out;
-+
-+	ret = ads1220_read_sample(st, cfg->datarate, val);
-+	if (ret)
-+		goto out;
-+
-+	ret = IIO_VAL_INT;
-+out:
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return ret;
-+}
-+
-+static int ads1220_read_raw(struct iio_dev *indio_dev,
-+			    const struct iio_chan_spec *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct ads1220_channel_config *cfg = &st->channels_cfg[chan->address];
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+		ret = ads1220_single_conversion(st, chan, val, false);
-+		iio_device_release_direct(indio_dev);
-+		return ret;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+		ret = ads1220_single_conversion(st, chan, val, true);
-+		iio_device_release_direct(indio_dev);
-+		return ret;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* scale [mV] = vref / (gain * 2^23); gain is a power of two. */
-+		*val = st->vref_uV / MILLI;
-+		*val2 = (chan->scan_type.realbits - 1) + ilog2(cfg->gain);
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = cfg->datarate;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ads1220_read_avail(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct ads1220_channel_config *cfg = &st->channels_cfg[chan->address];
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_FRACTIONAL;
-+		*vals = ads1220_scale_avail;
-+		*length = cfg->single_ended ? ADS1220_SE_SCALE_AVAIL_LEN :
-+					      ADS1220_SCALE_AVAIL_LEN;
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*type = IIO_VAL_INT;
-+		*vals = ads1220_datarates;
-+		*length = ARRAY_SIZE(ads1220_datarates);
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ads1220_write_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct ads1220_channel_config *cfg = &st->channels_cfg[chan->address];
-+	unsigned int gain;
-+	int i;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		/* The available scales are the gain reciprocals (e.g. 1/4). */
-+		if (val == 0 && val2 == 0)
-+			return -EINVAL;
-+
-+		gain = MICRO / (val * MICRO + val2);
-+		if (!is_power_of_2(gain) || gain > BIT(ADS1220_NUM_GAINS - 1))
-+			return -EINVAL;
-+		if (cfg->single_ended && gain > ADS1220_MAX_SE_GAIN)
-+			return -EINVAL;
-+
-+		cfg->gain = gain;
-+		return 0;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (i = 0; i < ARRAY_SIZE(ads1220_datarates); i++) {
-+			if (ads1220_datarates[i] == val) {
-+				cfg->datarate = val;
-+				return 0;
-+			}
-+		}
-+		return -EINVAL;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ads1220_debugfs_reg_access(struct iio_dev *indio_dev,
-+				      unsigned int reg, unsigned int writeval,
-+				      unsigned int *readval)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	u8 val;
-+	int ret;
-+
-+	if (reg > ADS1220_MAX_REG)
-+		return -EINVAL;
-+
-+	if (readval) {
-+		ret = ads1220_read_reg(st, reg, &val);
-+		if (ret)
-+			return ret;
-+		*readval = val;
-+		return 0;
-+	}
-+
-+	return ads1220_write_reg(st, reg, writeval);
-+}
-+
-+static const struct iio_info ads1220_info = {
-+	.read_raw = ads1220_read_raw,
-+	.read_avail = ads1220_read_avail,
-+	.write_raw = ads1220_write_raw,
-+	.debugfs_reg_access = ads1220_debugfs_reg_access,
-+};
-+
-+static int ads1220_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct device *dev = &st->spi->dev;
-+	struct ads1220_channel_config *cfg;
-+	unsigned int index;
-+	int ret;
-+
-+	index = find_first_bit(indio_dev->active_scan_mask,
-+			       iio_get_masklength(indio_dev));
-+	cfg = &st->channels_cfg[index];
-+
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = ads1220_configure(st, cfg->mux, cfg->gain, cfg->datarate,
-+				cfg->single_ended, true);
-+	if (ret)
-+		goto err;
-+
-+	ret = ads1220_command(st, ADS1220_CMD_START);
-+	if (ret)
-+		goto err;
-+
-+	return 0;
-+err:
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+	return ret;
-+}
-+
-+static int ads1220_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct device *dev = &st->spi->dev;
-+
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops ads1220_buffer_setup_ops = {
-+	.preenable = ads1220_buffer_preenable,
-+	.postdisable = ads1220_buffer_postdisable,
-+	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-+};
-+
-+static const struct iio_trigger_ops ads1220_trigger_ops = {
-+	.validate_device = &iio_trigger_validate_own_device,
-+};
-+
-+static irqreturn_t ads1220_irq_handler(int irq, void *dev_id)
-+{
-+	struct iio_dev *indio_dev = dev_id;
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+
-+	if (iio_buffer_enabled(indio_dev) && iio_trigger_using_own(indio_dev))
-+		iio_trigger_poll(indio_dev->trig);
-+	else
-+		complete(&st->completion);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t ads1220_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = spi_read(st->spi, st->rx, ADS1220_DATA_BYTES);
-+	if (ret) {
-+		dev_err(&st->spi->dev, "Failed to read sample: %d\n", ret);
-+		goto done;
-+	}
-+
-+	st->scan.sample = sign_extend32(get_unaligned_be24(st->rx),
-+					ADS1220_DATA_BITS - 1);
-+
-+	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
-+				    iio_get_time_ns(indio_dev));
-+done:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int ads1220_map_mux(struct device *dev, u32 ain_pos, u32 ain_neg,
-+			   bool differential, unsigned int *mux,
-+			   bool *single_ended)
-+{
-+	static const u8 diff_mux[ADS1220_MAX_AIN][ADS1220_MAX_AIN] = {
-+		[0][1] = 0x0, [0][2] = 0x1, [0][3] = 0x2,
-+		[1][2] = 0x3, [1][3] = 0x4, [1][0] = 0x6,
-+		[2][3] = 0x5,
-+		[3][2] = 0x7,
-+	};
-+
-+	if (!differential) {
-+		if (ain_pos >= ADS1220_MAX_AIN)
-+			return -EINVAL;
-+		*mux = ADS1220_MUX_SINGLE(ain_pos);
-+		*single_ended = true;
-+		return 0;
-+	}
-+
-+	if (ain_pos >= ADS1220_MAX_AIN || ain_neg >= ADS1220_MAX_AIN)
-+		return -EINVAL;
-+
-+	/* Only the input pairs the multiplexer can route are valid. */
-+	if (ain_pos == ain_neg || (diff_mux[ain_pos][ain_neg] == 0 &&
-+				   !(ain_pos == 0 && ain_neg == 1)))
-+		return -EINVAL;
-+
-+	*mux = diff_mux[ain_pos][ain_neg];
-+	*single_ended = false;
-+
-+	return 0;
-+}
-+
-+static int ads1220_alloc_channels(struct iio_dev *indio_dev)
-+{
-+	const struct iio_chan_spec ads1220_channel = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE) |
-+				      BIT(IIO_CHAN_INFO_OFFSET) |
-+				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE) |
-+						BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = ADS1220_DATA_BITS,
-+			.storagebits = 32,
-+			.endianness = IIO_CPU,
-+		},
-+	};
-+	const struct iio_chan_spec ads1220_ts = IIO_CHAN_SOFT_TIMESTAMP(0);
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+	struct device *dev = &st->spi->dev;
-+	struct iio_chan_spec *channels, *chan;
-+	unsigned int num_channels, i = 0;
-+	int ret;
-+
-+	st->num_channels_cfg = device_get_child_node_count(dev);
-+	if (st->num_channels_cfg == 0 ||
-+	    st->num_channels_cfg > ADS1220_MAX_CHANNELS)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Invalid channel count %u (max %u)\n",
-+				     st->num_channels_cfg, ADS1220_MAX_CHANNELS);
-+
-+	st->channels_cfg = devm_kcalloc(dev, st->num_channels_cfg,
-+					sizeof(*st->channels_cfg), GFP_KERNEL);
-+	if (!st->channels_cfg)
-+		return -ENOMEM;
-+
-+	/* One extra channel for the timestamp. */
-+	num_channels = st->num_channels_cfg + 1;
-+	channels = devm_kcalloc(dev, num_channels, sizeof(*channels),
-+				GFP_KERNEL);
-+	if (!channels)
-+		return -ENOMEM;
-+
-+	device_for_each_child_node_scoped(dev, child) {
-+		struct ads1220_channel_config *cfg = &st->channels_cfg[i];
-+		bool differential;
-+		u32 ain[2];
-+
-+		differential = fwnode_property_present(child, "diff-channels");
-+		if (differential)
-+			ret = fwnode_property_read_u32_array(child,
-+							     "diff-channels",
-+							     ain, 2);
-+		else
-+			ret = fwnode_property_read_u32(child, "single-channel",
-+						       &ain[0]);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to read channel property\n");
-+
-+		ret = ads1220_map_mux(dev, ain[0], ain[1], differential,
-+				      &cfg->mux, &cfg->single_ended);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Invalid input combination\n");
-+
-+		cfg->gain = 1;
-+		cfg->datarate = ads1220_datarates[0];
-+
-+		chan = &channels[i];
-+		*chan = ads1220_channel;
-+		chan->channel = ain[0];
-+		chan->address = i;
-+		chan->scan_index = i;
-+		if (differential) {
-+			chan->channel2 = ain[1];
-+			chan->differential = 1;
-+		}
-+
-+		i++;
-+	}
-+
-+	channels[i] = ads1220_ts;
-+	channels[i].scan_index = i;
-+
-+	indio_dev->channels = channels;
-+	indio_dev->num_channels = num_channels;
-+
-+	return 0;
-+}
-+
-+static int ads1220_init(struct ads1220_state *st)
-+{
-+	u8 reg2;
-+	int ret;
-+
-+	ret = ads1220_reset(st);
-+	if (ret)
-+		return ret;
-+
-+	reg2 = FIELD_PREP(ADS1220_CFG2_VREF, st->vref_source);
-+
-+	ret = ads1220_write_reg(st, ADS1220_REG_CONFIG2, reg2);
-+	if (ret)
-+		return ret;
-+
-+	/* DRDY only on the dedicated pin (DRDYM = 0). */
-+	return ads1220_write_reg(st, ADS1220_REG_CONFIG3, 0);
-+}
-+
-+static void ads1220_powerdown(void *data)
-+{
-+	struct ads1220_state *st = data;
-+
-+	ads1220_command(st, ADS1220_CMD_POWERDOWN);
-+}
-+
-+static int ads1220_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct iio_dev *indio_dev;
-+	struct ads1220_state *st;
-+	int avdd_uV;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	st->spi = spi;
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	/* The ADS1220 uses SPI mode 1 (CPOL = 0, CPHA = 1). */
-+	spi->mode |= SPI_CPHA;
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "SPI setup failed\n");
-+
-+	indio_dev->name = "ads1220";
-+	indio_dev->info = &ads1220_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = devm_regulator_get_enable(dev, "dvdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable dvdd\n");
-+
-+	avdd_uV = devm_regulator_get_enable_read_voltage(dev, "avdd");
-+	if (avdd_uV < 0)
-+		return dev_err_probe(dev, avdd_uV, "Failed to get avdd\n");
-+
-+	/*
-+	 * Reference source, in priority order:
-+	 *  - external reference on REFP0/REFN0 if a "vref" regulator is given;
-+	 *  - the analog supply (AVDD) for ratiometric single-supply setups if
-+	 *    "ti,vref-avdd" is set - no extra pins, full 0..AVDD input range;
-+	 *  - otherwise the internal 2.048V reference.
-+	 */
-+	st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "vref");
-+	if (st->vref_uV >= 0) {
-+		st->vref_source = ADS1220_VREF_REFP0_REFN0;
-+	} else if (st->vref_uV != -ENODEV) {
-+		return dev_err_probe(dev, st->vref_uV, "Failed to get vref\n");
-+	} else if (device_property_read_bool(dev, "ti,vref-avdd")) {
-+		st->vref_source = ADS1220_VREF_AVDD;
-+		st->vref_uV = avdd_uV;
-+	} else {
-+		st->vref_source = ADS1220_VREF_INTERNAL;
-+		st->vref_uV = ADS1220_INTERNAL_VREF_uV;
-+	}
-+
-+	ret = ads1220_alloc_channels(indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	init_completion(&st->completion);
-+
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-+					      ads1220_trigger_handler,
-+					      &ads1220_buffer_setup_ops);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to set up IIO buffer\n");
-+
-+	if (spi->irq > 0) {
-+		ret = devm_request_irq(dev, spi->irq, ads1220_irq_handler,
-+				       IRQF_NO_THREAD, "ads1220", indio_dev);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to request irq\n");
-+
-+		st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-+						  indio_dev->name,
-+						  iio_device_id(indio_dev));
-+		if (!st->trig)
-+			return -ENOMEM;
-+
-+		st->trig->ops = &ads1220_trigger_ops;
-+		iio_trigger_set_drvdata(st->trig, indio_dev);
-+
-+		ret = devm_iio_trigger_register(dev, st->trig);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to register trigger\n");
-+	}
-+
-+	ret = ads1220_init(st);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to initialize device\n");
-+
-+	pm_runtime_set_autosuspend_delay(dev, ADS1220_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_set_active(dev);
-+
-+	ret = devm_pm_runtime_enable(dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to enable pm runtime\n");
-+
-+	ret = devm_add_action_or_reset(dev, ads1220_powerdown, st);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int ads1220_runtime_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct ads1220_state *st = iio_priv(indio_dev);
-+
-+	return ads1220_command(st, ADS1220_CMD_POWERDOWN);
-+}
-+
-+static int ads1220_runtime_resume(struct device *dev)
-+{
-+	/*
-+	 * A START/SYNC command wakes the analog parts from power-down; it is
-+	 * issued by the conversion path, so there is nothing to do here beyond
-+	 * letting the device settle after the supplies are active again.
-+	 */
-+	fsleep(100);
-+
-+	return 0;
-+}
-+
-+static DEFINE_RUNTIME_DEV_PM_OPS(ads1220_pm_ops, ads1220_runtime_suspend,
-+				 ads1220_runtime_resume, NULL);
-+
-+static const struct spi_device_id ads1220_id[] = {
-+	{ "ads1220" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ads1220_id);
-+
-+static const struct of_device_id ads1220_of_match[] = {
-+	{ .compatible = "ti,ads1220" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ads1220_of_match);
-+
-+static struct spi_driver ads1220_driver = {
-+	.driver = {
-+		.name = "ads1220",
-+		.of_match_table = ads1220_of_match,
-+		.pm = pm_ptr(&ads1220_pm_ops),
-+	},
-+	.probe = ads1220_probe,
-+	.id_table = ads1220_id,
-+};
-+module_spi_driver(ads1220_driver);
-+
-+MODULE_DESCRIPTION("Texas Instruments ADS1220 ADC Driver");
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Nguyen Minh Tien <zizuzacker@gmail.com>");
--- 
-2.34.1
+                return regmap_update_bits(data->regmap,
+-                                        BMC150_MAGN_REG_OPMODE_ODR,
+-                                        BMC150_MAGN_MASK_ODR,
+-                                        FIELD_PREP(BMC150_MAGN_MASK_ODR,
+-                                                bmc150_magn_samp_freq_table[i].reg_val));
++                                         BMC150_MAGN_REG_OPMODE_ODR,
++                                         BMC150_MAGN_MASK_ODR,
++                                         FIELD_PREP(BMC150_MAGN_MASK_ODR,
++                                                    bmc150_magn_samp_freq_table[i].reg_val));
+        }
+ 
+> ---
+>  drivers/iio/magnetometer/bmc150_magn.c | 33 ++++++++++++--------------
+>  1 file changed, 15 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+> index f6639d7fab04..ee8092d4006c 100644
+> --- a/drivers/iio/magnetometer/bmc150_magn.c
+> +++ b/drivers/iio/magnetometer/bmc150_magn.c
+> @@ -9,6 +9,7 @@
+>   * (C) Copyright 2011~2014 Bosch Sensortec GmbH All Rights Reserved
+>   */
+>  
+> +#include <linux/bitfield.h>
+>  #include <linux/cleanup.h>
+>  #include <linux/delay.h>
+>  #include <linux/i2c.h>
+> @@ -246,14 +247,14 @@ static int bmc150_magn_set_power_mode(struct bmc150_magn_data *data,
+>  		return regmap_update_bits(data->regmap,
+>  					  BMC150_MAGN_REG_OPMODE_ODR,
+>  					  BMC150_MAGN_MASK_OPMODE,
+> -					  BMC150_MAGN_MODE_SLEEP <<
+> -					  BMC150_MAGN_SHIFT_OPMODE);
+> +					  FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
+> +						  BMC150_MAGN_MODE_SLEEP));
+Should be aligned as:
+					  FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
+						     BMC150_MAGN_MODE_SLEEP));
+
+>  	case BMC150_MAGN_POWER_MODE_NORMAL:
+>  		return regmap_update_bits(data->regmap,
+>  					  BMC150_MAGN_REG_OPMODE_ODR,
+>  					  BMC150_MAGN_MASK_OPMODE,
+> -					  BMC150_MAGN_MODE_NORMAL <<
+> -					  BMC150_MAGN_SHIFT_OPMODE);
+> +					  FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
+> +						  BMC150_MAGN_MODE_NORMAL));
+Same here.
+
+>  	}
+>  
+>  	return -EINVAL;
+> @@ -291,7 +292,7 @@ static int bmc150_magn_get_odr(struct bmc150_magn_data *data, int *val)
+>  	ret = regmap_read(data->regmap, BMC150_MAGN_REG_OPMODE_ODR, &reg_val);
+>  	if (ret < 0)
+>  		return ret;
+> -	odr_val = (reg_val & BMC150_MAGN_MASK_ODR) >> BMC150_MAGN_SHIFT_ODR;
+> +	odr_val = FIELD_GET(BMC150_MAGN_MASK_ODR, reg_val);
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++)
+>  		if (bmc150_magn_samp_freq_table[i].reg_val == odr_val) {
+> @@ -304,21 +305,17 @@ static int bmc150_magn_get_odr(struct bmc150_magn_data *data, int *val)
+>  
+>  static int bmc150_magn_set_odr(struct bmc150_magn_data *data, int val)
+>  {
+> -	int ret;
+>  	u8 i;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++) {
+> -		if (bmc150_magn_samp_freq_table[i].freq == val) {
+> -			ret = regmap_update_bits(data->regmap,
+> -						 BMC150_MAGN_REG_OPMODE_ODR,
+> -						 BMC150_MAGN_MASK_ODR,
+> -						 bmc150_magn_samp_freq_table[i].
+> -						 reg_val <<
+> -						 BMC150_MAGN_SHIFT_ODR);
+> -			if (ret < 0)
+> -				return ret;
+> -			return 0;
+> -		}
+> +		if (bmc150_magn_samp_freq_table[i].freq != val)
+> +			continue;
+> +
+> +		return regmap_update_bits(data->regmap,
+> +					 BMC150_MAGN_REG_OPMODE_ODR,
+> +					 BMC150_MAGN_MASK_ODR,
+> +					 FIELD_PREP(BMC150_MAGN_MASK_ODR,
+> +						 bmc150_magn_samp_freq_table[i].reg_val));
+and here should be
+		return regmap_update_bits(data->regmap,
+					  BMC150_MAGN_REG_OPMODE_ODR,
+					  BMC150_MAGN_MASK_ODR,
+					  FIELD_PREP(BMC150_MAGN_MASK_ODR,
+						     bmc150_magn_samp_freq_table[i].reg_val));
+
+>  	}
+>  
+>  	return -EINVAL;
+> @@ -801,7 +798,7 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  
+>  	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
+>  				 BMC150_MAGN_MASK_DRDY_EN,
+> -				 state << BMC150_MAGN_SHIFT_DRDY_EN);
+> +				 FIELD_PREP(BMC150_MAGN_MASK_DRDY_EN, state));
+>  	if (ret < 0)
+>  		return ret;
+>  
 
