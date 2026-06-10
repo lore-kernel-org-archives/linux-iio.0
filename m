@@ -1,67 +1,67 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC7A4921B4
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 20:35:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA4A5481248
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 20:35:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781123722; cv=none; b=rYVF1YajPtciZS/NNd092+6r836sH0M6hhIDjkg0pNq8F49hgA4H0kiPh4qs7fOrJ4oCe/kISR53lzxFj1MKn8WxmrLUfKvfydm7Xti7fJhFxNp8q8mnesD8guF1OHuAhAyZHSu+YzRGbKdle7+ntyEzWxAZkZhQrxge+uHtRf4=
+	t=1781123723; cv=none; b=RaQJt9hx4v5SLtdzG4KdirfsvU3xrM1UCIcWKMWBL2k+tlBml5x+0rzNPpFEsPTVrDoFG//xV+TjQdt8nfaMlM7dY7fWvDlu6B4P3xa8s3GaYH8eWL1hx8i76KYeNKCbmqHzKNYmeOLw4DjK5MdFzi0ZugDqQfEX6gvqXmEqN1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781123722; c=relaxed/simple;
-	bh=vZ/qSwgZaeGKIkwuebGoICNFAldlYX5GSoxxjgASp5s=;
+	s=arc-20240116; t=1781123723; c=relaxed/simple;
+	bh=YWCo0UPczhvIV2SL2MXAUbqXZZjhlakNrPODxWaLZ98=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MvBtZ1Q63FNaxeJoectrZDBRLMRW4ypQsoUsk/iw1D1ccENryz2/c+2svyZhUcxz7xMEDqud58hOhNOLyy9AA+JZ8yUeItGhf3Wke9itBWt3vqm948sC0nrvlOFeZ0LQIBHH8r648stOYs6JespKetx7WoQsjkiYIxB7HIZLOcY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Nq0RblO/; arc=none smtp.client-ip=209.85.128.42
+	 In-Reply-To:To:Cc; b=urzJtzi26i8Ect9wJKIUxieFgmFYqPdaPeyg50Qvq5O3L5tpKponVMq/IGe+va2F7Aa2MVWFtq5QyfrdHVlLryLKUYlYLVXXetXinFvFrFp3yLxKWbs/EMfk+ZMxnyE1cS6jtKX4kNixim2GkQSuHlYMMnIFi/4CsSOjLDXk47Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LDbKTzM/; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Nq0RblO/"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4903d730b1fso83592855e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 13:35:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LDbKTzM/"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4908b92904fso82825855e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 13:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781123719; x=1781728519; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781123720; x=1781728520; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=pwc20oinFS38+HtcTxr0JzZGF6h7M1rDzYuEvdtO6Lo=;
-        b=Nq0RblO/EWeJqMpByCkEky5yHnh/OoEJUP2/zr7iABmhgkSFS/LiC1B2HZM9n+oAaW
-         0CwrxlM4nqPri5OR4h2oX/wMxntMXHKxvaIbtH4hBNvkSZJrPHS8XiWGY0H//s9jSFNL
-         jnJg5loJw2iVFB2rIkFtsHRQ/p3z3rlgnPpN0q0783NI8EPbje3WbhSWonUeJRslAu7n
-         LmYsL/7oLrbGUj22L+XGUBTWTf5Czjs4/lbPxZGT/k93vsXw6VR/omMg3P3dyiKsO8zb
-         qMweO9kG5nj+3eMMoFASGG4BWFGsfoneglX1b2ugg93+4yg767/rRtj3LIZYTEsC8K2A
-         Oq3A==
+        bh=KL7s4MPM/6KRRYwpVkRdhAUbHaRI876v8WnTKEx4jhw=;
+        b=LDbKTzM/SNawXiR04ccOCA5FvBGuUhFbLWVXoJh+b6rT3Mcxyk7lP9f686M3qSv82K
+         /kJ6DCFUJCCw5oETJAEs1XtPStkhB33cNvOdV4ADmVtn+W+hVtA/iTf0DA3GN9lilCN4
+         kLFdSO3Wmvui69oB4PuUPKGKKg6gTZDJkunfAVDI0W5h5yeSkcC6A/f4CnmeEEy9lrH1
+         kgC4snIfQLHMZM/E0SBQygjhlShCcTEezro33O+PBbQlPnX9sOkWZM5+4gjw3pjjMqP6
+         TYyqHhJmxvVyvEqD+p+p1OoqSIuD0ckQmUgdsM2RUT+6DsdCF1ApUdROvWOwMVnX8goW
+         VOAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781123719; x=1781728519;
+        d=1e100.net; s=20251104; t=1781123720; x=1781728520;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=pwc20oinFS38+HtcTxr0JzZGF6h7M1rDzYuEvdtO6Lo=;
-        b=e5nQeeGq19bSmLZsLMitNl3lKKJpcvw+zZmoP1icT7NfzUqFhT350S35GlVdfpSbft
-         p6JEAZiE3HdU5NQWC5wPb34VjDLXWGV2pdO4PE7NHt3gAEyoaj8hAfiBvPD3yUKgpTts
-         CUBng/7biwp77qPrTuayryQnC4DULoh6fSh6Co2bMzgS7A8mC70VJ+sIJLSvhPTxVnUH
-         JuO0qhPO2qIqXBuBlcjErh5ic3LDjiPsQJUeaq+rJqFNzVW/vqjVQYOYFAWq178rryf/
-         0iSyVu6cNj+46i5vxpNp6WIXDIP5tMJfx+6eJTrCVNSgAhTuNFT83+A3LBldxksLIpAs
-         1dgw==
-X-Forwarded-Encrypted: i=1; AFNElJ+HiMMzfGLsuIyQwmjKEkP4QmLJ+0/EAUruF02qrdvkoUKNRnxG0QJWRZWvMzF0r509ll76YN3UKYw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxImm5JP4VbDFP2oavQFIStCtdQ5Xze/fFg1e0FE9ikf2umm9zq
-	IFO/OwY1tEWnMV6kn8NbfJpbwyGj4hQonffNtHjSklWI4r3fU3oO3iw7rxGh7wpwtRA=
-X-Gm-Gg: Acq92OH6cHaOJbBBqVf/lK4eJaXOAr7s3NJRiSGxQwDP1hzhr6fphxrGREye9cYevRY
-	Ogoi/JDAUWdJiIn6CFpMSAU0GfMZ+jSv+RIfWXu0saR0nvgs2Mm0vqxQW1DUlXCKAJ1Rfd+Kxc9
-	R4n0yAyaJuYCTKGtOQeQwarFBdsakwbdXc5PhgHiPUM7EPbiFOPD0/9M1NZEwIax1LdUz+/eqIb
-	nVyC7TViH3B3oyVL3azhKMOKF075HDIpRw0FcDs0MezdJETX5lYeFYrRXtaJWst9ihjiGz89R+E
-	e5TV8zgVDY21tuiRC9Cu43qWP3FGr0ZS3ilFHgK5hhP8JTx+BQ903evSUbhlqhp4Wk1ain6fZY/
-	FqoP7DXk4y2F8GzSdKGs3d3l/IG16M6HhGSRJyNNO7oyesmnWZK7J9YpT+j3eh0ZP7LOjGfaQ7m
-	QQ+TCzOOQ3ct6b0/+cR3Tvgy7TjTtevpGhs9rXay8LmA==
-X-Received: by 2002:a05:600c:6792:b0:48a:f18:ece4 with SMTP id 5b1f17b1804b1-490c25ee920mr437886825e9.24.1781123718858;
-        Wed, 10 Jun 2026 13:35:18 -0700 (PDT)
+        bh=KL7s4MPM/6KRRYwpVkRdhAUbHaRI876v8WnTKEx4jhw=;
+        b=e/SbYDytcDeinWpMti05xsp1095rv1gOVVU2+jqCNjqTzY/14SetOQokpwWOmxvOq5
+         MF3cBLrepxDnXFAeMgvu6/yZ/Xk2Gc4mPa1WqYwkTqVHhXbSjA/8edP7Aa2wl5/6/sYg
+         Xe6yYh/CKuJHwvDjxaNXKv+cuOJrJR6u+SHVDMpuYHJ4g1KNu3M/agc+xWwS+UpNHgoC
+         RaLnkupo8snZtuw2XWn7m8jc+g8TDoA0+jYuh9hunxTpAm2rQUb2TUB8Zz+rVZM0bNf7
+         rR/9d4NfpjWqUEDk+/BPWyOCnYeFUzLmnlfu5AY151SIYzLrIBb5+GXpHODr9YFFob+Q
+         QJmw==
+X-Forwarded-Encrypted: i=1; AFNElJ9s1UTDj11/QWfLGKqxdyDEgLy6Zq9sC4b2nKspiXbods2jEQ/syPOaqkZrFF/ywKILUpFBnmEBN90=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwdNrPQVq7d5GFSg4ThNuCiT9oQdRC9sMhhfWCH84wKEluW03vu
+	bkr9/nMb/pAoiazAAp3IkO6Umeb4VeEQt191qZ3ZJs58LqC41XyOj7IeCP7qlFYJuGw=
+X-Gm-Gg: Acq92OF7N97rZDuzjyxt2dHa/gZd+hrwfNyFmcXRJH6V6J/pVzYkWEVpm9H76YbrRbI
+	9BSfalXMaIC5izbZAICTvx2yPJtrgxD9nAIxZRH7ghAqv0ZZmMX5aM2dj+ZSLQbtcijkFfUrncY
+	/tM5H8XY8XhKN2azG2AnzvKuRHbxgZ3FkxTBOZv/Mjbj4CsD3K/amDhBX9RPmEeS5JT4S8DfrVt
+	tAJ/ixOezeqmnLTaL6w2KW7KlPQA7i+7DiJIDht5Ch95ErWvHcnXCsN6XUrBSfguH3cY558gYQZ
+	NL1D/g1VBSLeZmtWW992KKuSDMaYkje4J0DlSrPZAtkhKk3g/agp9ApaIFv14UE52jMai2FJWeo
+	FkiiC8+yIw+Auqc5EUP4mQu5VmiW05NMnD/aE3d2WinnP9sBa51JVpYsrury7V/fmhWq+M5qv7F
+	wQwd5s2yGS/EaNNK/54ctOikWhYjd+eAC1fKhYWYSEyw==
+X-Received: by 2002:a05:600c:1d99:b0:490:b8c0:d470 with SMTP id 5b1f17b1804b1-490e2e58474mr5692325e9.19.1781123720314;
+        Wed, 10 Jun 2026 13:35:20 -0700 (PDT)
 Received: from [192.168.0.2] ([2a07:7e81:7daa:0:202:c9ff:fe53:eda4])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490dc4715e4sm62390975e9.0.2026.06.10.13.35.17
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490dc4715e4sm62390975e9.0.2026.06.10.13.35.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 13:35:18 -0700 (PDT)
+        Wed, 10 Jun 2026 13:35:19 -0700 (PDT)
 From: Angelo Dureghello <adureghello@baylibre.com>
 X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
-Date: Wed, 10 Jun 2026 22:35:12 +0200
-Subject: [PATCH v5 07/10] m68k: stmark2: add mcf5441x DAC platform devices
+Date: Wed, 10 Jun 2026 22:35:13 +0200
+Subject: [PATCH v5 08/10] m68k: stmark2: enable DACs outputs
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,7 +70,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260610-wip-stmark2-dac-v5-7-b76b83366d5c@baylibre.com>
+Message-Id: <20260610-wip-stmark2-dac-v5-8-b76b83366d5c@baylibre.com>
 References: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
 In-Reply-To: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
 To: Greg Ungerer <gerg@linux-m68k.org>, 
@@ -88,56 +88,43 @@ X-Mailer: b4 0.15.2
 
 From: Angelo Dureghello <adureghello@baylibre.com>
 
-Add mcf5441x DAC platform devices.
+Enabled DAC0 and DAC1 outpus disabling shared ADC inputs on ADC3 and ADC7.
 
 Reviewed-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
 ---
 Changes in v2:
-- fix copy-paste error on naming
-- use DEFINE_RES()
-Changes in v3:
-- simplified DACs as single resource entries in place of an array
-Changes in v5:
-- move include <linux/ioport.h> in previous patch
-- use predefined "mcfdac" clock/device names
+- using mcf_read16/mcf_write16
+- remove unuseful comment
 ---
- arch/m68k/coldfire/stmark2.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/m68k/coldfire/stmark2.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/arch/m68k/coldfire/stmark2.c b/arch/m68k/coldfire/stmark2.c
-index 7eed6097f501..a6f9eb3a75d8 100644
+index a6f9eb3a75d8..25452079056b 100644
 --- a/arch/m68k/coldfire/stmark2.c
 +++ b/arch/m68k/coldfire/stmark2.c
-@@ -84,8 +84,28 @@ static struct platform_device dspi_spi0_device = {
- 	},
- };
+@@ -113,6 +113,8 @@ static struct platform_device *stmark2_devices[] __initdata = {
+  */
+ static int __init init_stmark2(void)
+ {
++	u16 val;
++
+ 	/* DSPI0, all pins as DSPI, and using CS1 */
+ 	mcf_write8(0x80, MCFGPIO_PAR_DSPIOWL);
+ 	mcf_write8(0xfc, MCFGPIO_PAR_DSPIOWH);
+@@ -125,6 +127,11 @@ static int __init init_stmark2(void)
+ 	/* CAN pads */
+ 	mcf_write8(0x50, MCFGPIO_PAR_CANI2C);
  
-+static struct resource dac0_resource = DEFINE_RES_MEM(MCFDAC_BASE0, 0x100);
++	val = mcf_read16(MCF_CCM_MISCCR2);
++	val &= ~(MCF_CCM_MISCCR2_ADC3_EN | MCF_CCM_MISCCR2_ADC7_EN);
++	val |= MCF_CCM_MISCCR2_DAC0_SEL | MCF_CCM_MISCCR2_DAC1_SEL;
++	mcf_write16(val, MCF_CCM_MISCCR2);
 +
-+static struct platform_device dac0_device = {
-+	.name = "mcfdac",
-+	.id = 0,
-+	.num_resources = 1,
-+	.resource = &dac0_resource,
-+};
-+
-+static struct resource dac1_resource = DEFINE_RES_MEM(MCFDAC_BASE1, 0x100);
-+
-+static struct platform_device dac1_device = {
-+	.name = "mcfdac",
-+	.id = 1,
-+	.num_resources = 1,
-+	.resource = &dac1_resource,
-+};
-+
- static struct platform_device *stmark2_devices[] __initdata = {
- 	&dspi_spi0_device,
-+	&dac0_device,
-+	&dac1_device,
- };
+ 	platform_add_devices(stmark2_devices, ARRAY_SIZE(stmark2_devices));
  
- /*
+ 	spi_register_board_info(stmark2_board_info,
 
 -- 
 2.54.0
