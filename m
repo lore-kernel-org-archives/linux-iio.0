@@ -1,95 +1,94 @@
-Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A00241363D
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 14:34:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98082419306
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 14:35:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.173
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781102083; cv=pass; b=Q2SjBpGRJ43C9w/0F//jrEJz6QQoMj1XhnGh+9qO9jIiOZJZEIevJFA4MkN0UCynaPa/eGUHykjAMLrO/aEox4+ytFNEPj1EON5SHfRC0cVjtC/aUnLKv9ZJLAcJxnuDCXkZh/6azbkmz/VCcyv/zm+QBpmDd4a80TjtMOSKGfQ=
+	t=1781102133; cv=pass; b=R2w6Qc3wO2Cy7ZgPGF1F5jPUnIZuq3BN6awAyokMUNoe+vb499u9nyCIc+NTRZ6t+ph7nCOejYIOJ0nsap4S6QZGstNxQj3kJue6QQbRzRLcak436UZqt8ELJMHaqk6YAikI7LNnL+x59lQMlxAapTDTOghBpPGLuogsX4pFs9c=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781102083; c=relaxed/simple;
-	bh=eHGHo1CpzP+Lhry2jDKXXEgAfPF4V1nf1rNJycM0IZ8=;
+	s=arc-20240116; t=1781102133; c=relaxed/simple;
+	bh=QQx6HdrZCLg1/bCUL3imDIU0SHjoIZfIndkzDKlCI1U=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tkxN5NS8avpbr4OB7k/SYA8GHyQ4NNwW26IUvLv4qd9GRyvzpd3896RDLGSr+KT0XfoQAW3JzgTf/PQ6ErKm59wpR8Pruld0Jj+IP3IkYMw/sS8fV+m8aeF315a128eLM7VMOsk+kMpHle+pvtFMvO5K+Bsg8MKeTg+ZAdLwRB4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GEDQcYYX; arc=pass smtp.client-ip=74.125.82.178
+	 To:Cc:Content-Type; b=IejwnMWEh3fU/ZfAW9MM/vhr5Igl+FEKOhoWdUWM/NLzf2xwUGGLvOFKsR1yBgN6tztKNrU1bt97WBYZC6tHGB+8wfNhP79M4V04UgLaD7zOK/IiKlglEqov8gdQ8KARlP3pR57nqku2X2H+BIhdbjKKAJgtmS8K6OMmeFdHViw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KQm7/gRU; arc=pass smtp.client-ip=74.125.82.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GEDQcYYX"
-Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-30749947917so2890458eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 07:34:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781102077; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KQm7/gRU"
+Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-307631dbfedso14727751eec.0
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 07:35:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781102132; cv=none;
         d=google.com; s=arc-20240605;
-        b=CzqryeNRAyDDRTTAuB+0pCDg8gTCmF6L7l8G0Ng/A1MPjfI/iJe2LvYKA8kT9y3ec3
-         EYbYJy5kK3z4Ec6YKIcgPS4js5MDLPskJIhvcAYOx3e9y6Bw7LTOkyP+iGC91uVen8Nd
-         meb+WdilIZS043MmBs4bA85lZuzYiky6ZizAQ+7oo+WIiuJUsZetqcA1hIvgjMSiJUA/
-         L47Nj2OwHm+uosiB0mNLysUyMY3o7VnrL2FvmT6wm5Ng2MRBn5g5mPCG9w/4z2mBNFP8
-         gRhTZ5Qg/scDb4ZTKQEuLFaR7kD79CG+fb4TMMIRq//hPVd/uGMy9OTtEo7XV3YC4lQ0
-         qzRw==
+        b=NA7mJWf5QYvLyVujLgDE9sSuE4kUB94ptBcEMfwCLVK2wLVofmM77HnmJbr1RSmP0P
+         cPUr6lcCTVgYfPFUK0xjrRMS6TLF8EZ/QrSxArH4kt4185On0ekR1e7SecZvLFAGoqSf
+         ooUjZrAdoI+j/uT0soG2fjed5vODlOvv0H6PJNjxKZgQxvWz0Wr5d9HYTg9XqxEy21XX
+         NXx09NvyuVcd7BhtQ3dUsagurn2MWNwHmPSECXQIYYCDbp+YLvbRBXCurNYucyODCDJj
+         iyMA7QNGUuBnns/JQ0KeAkq5Q9YViKXYNby91OE27IcjLVXEbrpAgVxL3QHiVFstJ2xK
+         toIA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
-        fh=62OZMEnihY/HkOCxVjyF/hrUSwzUp4LxoO6EtTVj/OA=;
-        b=Ts13cHWz+ibgdsubehqCmH0ckCRSi997Ck6ZUxo281v9lS7j4wvGQn/tzEmNJk2pEf
-         nqu5l+TACbiRxTL8bzLQ8PFcwSRh3diInUOsEVUwpc0gitvmJ6LZPUezCy91Ux9SzVy1
-         sNW6A6Rq4bOJlw9sgGqFVrX03D5KqRU4znTSa48kSjp5k+ntJ0x3ZnK59YC/loiEdOnL
-         IU8bAfzcAPtKiTYjHMUYA9heHVXiPLQ7zVUWok/rX0/dkVRftaWYOZegcP99RtsQh7PH
-         GyCAzie2npR1LczTtd1U47pDqdz51JARqV1o0UWRRtwZLYfzWo2qcW+wPbp6BOyI+UKH
-         GYCA==;
+        bh=5u4rWfzB/dXcaizEq3FSq09DXlW+GebEr04lNWgXuHI=;
+        fh=R3DDbWi8G+1DSxanED0fwEvf1oWu+njBnmoBj3qL4zE=;
+        b=SEfUKk0g1Eea31QHQpM2KAnPfewOiPgF/ONFW6AChS8B/zgd5UePqOK3VmxCxMh4j2
+         y4GOZdhl7bkopEK/D8JaQrl6yFEKhrzT4Vx/MgZ9WCeb0dwpJpAJZGvJYkyK3t2mra+T
+         OsvZJcCULH1sV9BHRJOydBdDJf/zxGsZiGP3XCwCJKunk1Qy/ECOHJaiqico9uFzvSBC
+         6JR29zdfxUsXWRyir997dgBL6B6p7SfFVkCVaezS2lCJeaaK3Iq23AFIOEGZP5BzCkwi
+         vWA/5xspDauOdEqXv3kR2b+/kj3rcYdYUMre0urjuESquJlMyIZO9EA75VKJ5MizczIc
+         +p5w==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781102077; x=1781706877; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781102132; x=1781706932; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
-        b=GEDQcYYXmyqDTIeTwRUeJGjkgrgVo4QvCPnJpFto2PCMedbmf6U86eQL8mQzXpK7KB
-         VIcIsjPFjnPZtqjm+frmahsCAFcV/Tpc/oitHdYuiF0Ffi+0cRZmuqrXDUcf+G6s9TGC
-         /bzSIVTtAwpbDrFirH3japNOGBYg3M1htuK759cGRP60+yjTFW5fLes48bA0LLAa+XcY
-         4kzfilYX1T+jE4SR2K1U8f2SUC6TvKPwYZBok08tpVVWloEVr2vFsnhxHQ40EbNbde1m
-         atKqXT/ycgTAmLOV5EyI56oWW2pd/Ulhw2vv2HgWj1rkJdpLctB+8zAWCHnjTUXQUrzg
-         0Uzg==
+        bh=5u4rWfzB/dXcaizEq3FSq09DXlW+GebEr04lNWgXuHI=;
+        b=KQm7/gRUZfsFKZqtrRX/8Gv0F6bhmSvFCeIsHmKzg4zXiy5wml4L2DCsSYXvR9y6VT
+         dakAcxRGvyiyeLEmi/m/zwtHybvTK2vGxqItzgALr+8oc4OGZyYciXirvN9GSOw2RLkK
+         49Vn92bndAK2aGF8/CBb1krYV8XgERip/wUWOu/2gqfs+ZtfENmUS6MNzPv1lIc8FRIX
+         sC8lAPSWJ2RzX3/CQeIgHwZpONkaUhzMNPtYIc1hOpnirAwqodCd4glpOxDEpUKLRR35
+         ws/Yz+J9Dp50xOxLOKTmZ38zDkB6qSGaeeevLFcfTPWN5pVFpAZuUXlPzW8qBX5pAkNk
+         eTVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781102077; x=1781706877;
+        d=1e100.net; s=20251104; t=1781102132; x=1781706932;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
-        b=LL2t7GprFJGnZqeO3Cv/TvHclAsiBXsz4N61YyADDA2ysXorEjOtoN9P3VNhQfWCTW
-         qLo27EdgF7UIDtcV3o9O+PHiLE4KdEKyQaFNfi/2vVp9D/NsCKELhUK6LOyOs1zKcpbK
-         fiGNBBnK6Nw/zDe6this7AgHoJv7KxcT0YYGKEQOQMGab9FAZorLVnMPjDWehiVUONN5
-         Pn9lXwn6z23PVBrA4Pm1Wz+AeOKw/BjvAqyy2+ZuT9wFSV8a92Rii6yNyLjquhaQDPIT
-         cFEHNX+lFH0i/KxRFMCr81qXCLN4GCKjkib4Jph+jJAJTh9HjHGleQ0bLZjjQJuxvCEe
-         qouw==
-X-Forwarded-Encrypted: i=1; AFNElJ/DQXFL7lv7b8Q5ItGyMAemcMYLd30M8XId1YAaPde5h1XumcB9OJ/UccpYbvYhBsKd2pa65QX4Qp4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZXqOI4cF+KON9nzuXwwf6NQi6M9zT5xH3KTLQ5fpLT4eeEfY1
-	obCdExwtjYtOBQrQy/27E9nX5w9NG6XoOR5XJW2BVjexcFyohXf2nDGdQD6M+pufisf/8M91+C5
-	9EPACZiNZ8XgRGvnOLYlN4cKilbQkj88=
-X-Gm-Gg: Acq92OHZmUJGxAI1C/soCj4n0TeYybSbEEYaCgS9jw0mOLxGgtM+GZ1vCrdr393nRzp
-	YjhrfXH/Or086Zy6muYAeUEun6PEEmZjDygBbMrsu4ZOgoODWVvqN9mqyYvs1OmeX6AHTUIkdYs
-	0c2Pjk10ATcHFqL8l/DzU+S4r4YbMOXkF6yybwldGBOmXGBJdonYTRlXwbDNR1ASmVSN9Ipe3O6
-	LqPXmJUjcgIgkPwepJvb+tWfdEHXgZtZNzr62p91qSBxPz0RMnre08Vz/3XGP0PpswKFtrqNFdx
-	CxqeC41X+nJJu0wydZ0=
-X-Received: by 2002:a05:7300:4311:b0:304:d32e:65f5 with SMTP id
- 5a478bee46e88-3077b7d84c8mr15465647eec.26.1781102076873; Wed, 10 Jun 2026
- 07:34:36 -0700 (PDT)
+        bh=5u4rWfzB/dXcaizEq3FSq09DXlW+GebEr04lNWgXuHI=;
+        b=S8jIbPhLXqjCTe6N7tp5uICGYUQJTQzbowb0G4bT4zqzHPeXmZk9eiSMHcU12Pgd19
+         WeFXhWGqzj5HRJRyjzA/oIyrZnY9DJ1oUwlHf8KWEg1gYVU9r9Y7A9Co1CWFBBg+NHRl
+         LEsLN3XBtvo7mKmsz0klM90APx9eqwLle2VoEk4tBcj1lwoejbzS4BBUNFBDEFAHs4rU
+         7tNOYWvEH+LXXww/btYIofx9jN9on+UEPqSijVwoIf0nKHaVTICRwWaze8O7K6rk7vr9
+         Rn+ilbE49CDKeoDq2No2yrzxoprUHW4nzSehssbM9tm+WB3wl3wivECms45t4PDk2d0s
+         Nf/w==
+X-Forwarded-Encrypted: i=1; AFNElJ9L/UlmdBXhh3qm0l6yimJwW7lk97p9QLhTp25iqQbszoezgyw++PGpQ6KN+Pmx9/UUPA6uBBOB1Pw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzvO6V0bCRiWn6Janebg/goCAjnlVC7nL2+fbALZ8WNNz7/6Qty
+	8F/bF2af/EWRjLRWmaZPcbZkgPfU/TTwKkgoUtGpzsygpZyjlDab8VGjM+8qiG+Z5mF8DqEO3pa
+	qL2P43IwlyD3aF51YwVplpZxCUwPO4+M=
+X-Gm-Gg: Acq92OGB14I6cYzrcLWHNQxo/LVm4xzlkLCka1+bG3BCOUSJQ5KWqebr8lYiyOF5UAE
+	uzNfWNUuMncjJPMQCFBcCStI3P4WtXfkwVx20QHr/T12Xoogb9d+COp0WzZCe7KcllWLEhjDxym
+	IL4VBSYPiPvz2C54uP1mDjPnjp5pet316XuqkjzB/cyKZ4twQ8GA0bR5jhXLfODX1VrmXxmp+Km
+	tVVm2wlfHsLU5JPaIDRBl+juQmNq/eS0wIWpZQ0q7RZodsOb6WYsG4/8U3801LKnVTCPb3Dd534
+	gwhyorqaiBoSTMWPfJg=
+X-Received: by 2002:a05:7301:4186:b0:2ef:9961:27fa with SMTP id
+ 5a478bee46e88-307d62ddc77mr6085557eec.18.1781102131738; Wed, 10 Jun 2026
+ 07:35:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-5-clamor95@gmail.com>
- <aihkNekrgfu6-6Q_@ashevche-desk.local>
-In-Reply-To: <aihkNekrgfu6-6Q_@ashevche-desk.local>
+References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-6-clamor95@gmail.com>
+ <aihlDGNZRuHI-vMR@ashevche-desk.local>
+In-Reply-To: <aihlDGNZRuHI-vMR@ashevche-desk.local>
 From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Wed, 10 Jun 2026 17:34:25 +0300
-X-Gm-Features: AVVi8CdXjWV2Xn6oo1ydHrhUl2T2tO1QvChE8BglKpS9ooBB10CdbUEM-do5fqk
-Message-ID: <CAPVz0n2WG=35W7Z8USDck+xQ4sQSxkfhJR9oeYGe_vBkkXGKFg@mail.gmail.com>
-Subject: Re: [PATCH v4 04/14] mfd: lm3533: Pass only regmap and light sensor
- presence to child devices
+Date: Wed, 10 Jun 2026 17:35:20 +0300
+X-Gm-Features: AVVi8CeF2WtE8NAfRo3Ry4_ONFpQ60FlY7Ry_ggOsna45f4Sc2pO4GqWSxBW8Fo
+Message-ID: <CAPVz0n17uAvpyuF5_E1L49eoz8LvHULE0-SVjJpHvu4veWWjEQ@mail.gmail.com>
+Subject: Re: [PATCH v4 05/14] iio: light: lm3533-als: Remove redundant pdata helpers
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
 	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -103,46 +102,70 @@ Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-=D0=B2=D1=82, 9 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 22:06=
+=D0=B2=D1=82, 9 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 22:10=
  Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
 >
-> On Sat, Jun 06, 2026 at 07:57:28AM +0300, Svyatoslav Ryhel wrote:
-> > Instead of passing the entire lm3533 core data structure, only pass the
-> > regmap and the light sensor presence flag to child devices.
+> On Sat, Jun 06, 2026 at 07:57:29AM +0300, Svyatoslav Ryhel wrote:
+> > The lm3533_als_set_input_mode and lm3533_als_set_resistor functions are
+> > used only in lm3533_als_setup. Incorporate their code into
+> > lm3533_als_setup directly to simplify driver readability.
 >
+> Use func() when referring to a function in the commit message.
+>
+
+I must have missed, thanks.
+
 > ...
 >
-> >  struct lm3533_als {
-> > -     struct lm3533 *lm3533;
-> > +     struct regmap *regmap;
-> >       struct platform_device *pdev;
+> >  static int lm3533_als_setup(struct lm3533_als *als,
+> >                           const struct lm3533_als_platform_data *pdata)
+> >  {
+> > +     struct device *dev =3D &als->pdev->dev;
+> >       int ret;
+> >
+> > -     ret =3D lm3533_als_set_input_mode(als, pdata->pwm_mode);
+> > +     ret =3D regmap_assign_bits(als->regmap, LM3533_REG_ALS_CONF,
+> > +                              LM3533_ALS_INPUT_MODE_MASK, pdata->pwm_m=
+ode);
+> >       if (ret)
+> > -             return ret;
+> > +             return dev_err_probe(dev, ret, "failed to set input mode =
+%d\n",
+> > +                                  pdata->pwm_mode);
+> >
+> >       /* ALS input is always high impedance in PWM-mode. */
+> >       if (!pdata->pwm_mode) {
+> > -             ret =3D lm3533_als_set_resistor(als, pdata->r_select);
+> > +             if (pdata->r_select < LM3533_ALS_RESISTOR_MIN ||
+> > +                 pdata->r_select > LM3533_ALS_RESISTOR_MAX)
+> > +                     return dev_err_probe(dev, -EINVAL,
+> > +                                          "invalid resistor value\n");
+> > +
+> > +             ret =3D regmap_write(als->regmap, LM3533_REG_ALS_RESISTOR=
+_SELECT,
+> > +                                pdata->r_select);
+> >               if (ret)
+> > -                     return ret;
+> > +                     return dev_err_probe(dev, ret, "failed to set res=
+istor\n");
+> >       }
+> >
+> >       return 0;
 >
-> And this pdev is probably not needed. But I haven't checked the whole lot=
- of
-> the patches yet.
+> Wondering if it would be better to
+>
+>         /* Bail out when in PWM-mode */
+>         if (pdata->pwm_mode)
+>                 return 0;
+>
+>         /* ALS input is always high impedance in PWM-mode. */
+>         ...
+>
+> as the above changes almost every line in that conditional.
 >
 
-It is needed since it holds childs pdev (dev would be better, but not
-in this patchset), you cannot get childs dev from regmap since regmap
-holds cores dev.
+This is a decent idea, thank you!
 
-> >       unsigned long flags;
->
-> ...
->
-> >  struct lm3533_ctrlbank {
-> > -     struct lm3533 *lm3533;
-> > +     struct regmap *regmap;
-> >       struct device *dev;
->
-> Ditto.
->
-
-Same here, dev holds either LEDs dev or backlight dev.
-
-> >       int id;
-> >  };
->
 > --
 > With Best Regards,
 > Andy Shevchenko
