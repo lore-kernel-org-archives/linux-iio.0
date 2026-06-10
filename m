@@ -1,59 +1,69 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DEC3407CE8
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 13:41:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2EA840DFDE;
+	Wed, 10 Jun 2026 13:44:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781098921; cv=none; b=TO+R/coo9cc1D7wngLHjOi6SYAwZoVlXwCj/X7ewDXtj/CwlZwSbdM2M/2yKC4JlLxlJe+zpK8pJKu6f6tB2rwRl1gBvh1SNnr0v5i6cVMZXhwgSwwOsPpjuFq5IwZvk8vFvCCP0vvfblNctUx37/fuXg7dQhUEpX+kCVOAiDgI=
+	t=1781099101; cv=none; b=MIyR7qARQhKaWOrdHhfimUXWUH2+QpAm/6RNJEQWLQsFMyCT7LZFPIi81AhyyJtdXUA6iBNJ6aVZNgRb+FA5Has9u7VvElqjtxBgagx3Ae9V9RcvzcT+gHf397CWLE73fN41JxwLS2y+FOMcAnk4Zd7Ie0I6iegSSNdLnwScQCs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781098921; c=relaxed/simple;
-	bh=JbgH2vjeNXAYPeBLMuiK/bFUXIaif+j7YwH+UiOBSL4=;
+	s=arc-20240116; t=1781099101; c=relaxed/simple;
+	bh=JWdh/JmClR11NyXpjCWwx0d2V5ZBz9B66Qvj5kfvU+Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ase0mR8JkOSGmcw4R+rx9B4jQq2N85pYZ/ntaMKYyT9Z5o0EX4jyCLfP1FJy/ZxqpnoiMhcUNV2Ywas/6yNdkBhmzqyU4slyTyammROe9KLDAA1xAuNaXm6mBDYDvM4tUiKz9IqNfktl65gZWJQJbQb0L1YGUNq3JdIc/jw1nnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aTb2GD1B; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=iYdsAAxOwUe4p9co2JTqgoi2NJ0q9xvLEEQxRFTzGkQWBfhvbBD+5KdUgWbqnA9OdSagnPxu7Ar2Zp7jJdTvUw9g2QPQWUJIWBFA///bJUCDQl/TjsIIbGhENS09/j2Dfw2wMRtIsgaccRaZgkA+CclJlOeicCNTl6xfpOy64s4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aSAbhYXS; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aTb2GD1B"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aSAbhYXS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781098919; x=1812634919;
+  t=1781099099; x=1812635099;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=JbgH2vjeNXAYPeBLMuiK/bFUXIaif+j7YwH+UiOBSL4=;
-  b=aTb2GD1BX7xlo8a3xRDJ0z38rED63KQVOA6sjuY/lo1El06o4/6KDWbq
-   QHREAZ7w9sSS/uZNbGHMnvRo4a0tU0pUaQzDtabyzynhX93NkI8rxhS/A
-   1X0Aksnk7jfCwEgl+T6ZUWGt3cikYF3zAW6+Q8gTG8Wzju1WRuNKb3BvX
-   1eOwkDO07GzKf/cWnab5IB3eh3rm8SIZ/vRLVq0gn/NoN+bevhlPBp2s+
-   vhqgTVY0NHe0zlc/vunyWRgUfmo5VufnFk0L8xsHYv7j+agnIRKNB2VY/
-   AtxOl2pJzdHKY7b90cGVHgKSGBubgPFQRPUBIDlPqttiJ+Gi0rLCLhLkG
-   w==;
-X-CSE-ConnectionGUID: 4TKpEE4VT3Kp5Qvp8rB0FQ==
-X-CSE-MsgGUID: Lhx6KYbWTDm6c7o5k4QmNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="81021193"
+  bh=JWdh/JmClR11NyXpjCWwx0d2V5ZBz9B66Qvj5kfvU+Y=;
+  b=aSAbhYXSNF86FodDLdR4dfDkOls7PPXp+O583DuspNnw/bsrU/nnXuQW
+   y4y3lHZ9GKNE/yv5EzzA++b2/TrNdupnfUEmFISgKfAxXngahW5jssUOz
+   gJlg2Qs2U1P0ODnicLoOh/3mwkKdmE0b1Bx/wEmljQ/CLLCbN8Jl//FIT
+   Dwb9Bm+fy9AOGSRszlcqYpl+ugJtucdy4RN6kANiYXUiWEwq/c9sMITQE
+   qYxjl70DsU2wmQe6A25sgsRkws7fZPaJANF9lzDWfIBXnMK8kscbPUK5v
+   ml6O9lhcuplB58O/ysUIJF2tsc1Cxd2CQXNYAcrzTAyMdi++gtZoGYp/t
+   Q==;
+X-CSE-ConnectionGUID: rauG9dOeRKeR5yvKOV0DaA==
+X-CSE-MsgGUID: 7iYW1rtuS2mlDSBrXvrlIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="84461787"
 X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
-   d="scan'208";a="81021193"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 06:41:58 -0700
-X-CSE-ConnectionGUID: iNAkvPd3QH+QJCuqushTJw==
-X-CSE-MsgGUID: CTL25fDbQWWnrDjq5D8igw==
+   d="scan'208";a="84461787"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 06:44:59 -0700
+X-CSE-ConnectionGUID: nvKBqN0pSOqEeJtQ67NZuQ==
+X-CSE-MsgGUID: XDhS6DEiR12XRaWf8bBRIg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
-   d="scan'208";a="270181672"
+   d="scan'208";a="242043297"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.38])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 06:41:57 -0700
-Date: Wed, 10 Jun 2026 16:41:54 +0300
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 06:44:57 -0700
+Date: Wed, 10 Jun 2026 16:44:54 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+To: Dan Carpenter <error27@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>, Nuno Sa <nuno.sa@analog.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH] iio: core-trigger: correct CONFIG_IIO_TRIGGER macro name
- in #endif comment
-Message-ID: <ailpoosKZwGskxUo@ashevche-desk.local>
-References: <20260610040501.204967-1-enelsonmoore@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
+Message-ID: <ailqVhzMh1zLBujf@ashevche-desk.local>
+References: <aiExQzpIOwPgwd3-@ashevche-desk.local>
+ <aiE3N6zErq2WcCvS@ashevche-desk.local>
+ <aiFVuvVtaWbjfVzA@stanley.mountain>
+ <aiFWg6vC2cVbONTK@stanley.mountain>
+ <aiGRzFrSU6QUL4R2@ashevche-desk.local>
+ <aiJo1kjN3_XDUdBc@stanley.mountain>
+ <aiKIoqR0IQBZ-1ZD@ashevche-desk.local>
+ <aiewiqInppHKilw1@stanley.mountain>
+ <aik_bXUpVc90_eIy@ashevche-desk.local>
+ <ailWP0rNKbVAn4kG@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,39 +72,45 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260610040501.204967-1-enelsonmoore@gmail.com>
+In-Reply-To: <ailWP0rNKbVAn4kG@stanley.mountain>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 09, 2026 at 09:05:01PM -0700, Ethan Nelson-Moore wrote:
-> A comment in drivers/iio/iio_core_trigger.h incorrectly refers to
-> CONFIG_TRIGGER_CONSUMER instead of CONFIG_IIO_TRIGGER. Correct it.
+On Wed, Jun 10, 2026 at 03:19:11PM +0300, Dan Carpenter wrote:
+> On Wed, Jun 10, 2026 at 01:41:49PM +0300, Andy Shevchenko wrote:
+> > On Tue, Jun 09, 2026 at 09:19:54AM +0300, Dan Carpenter wrote:
+> > > On Fri, Jun 05, 2026 at 11:28:18AM +0300, Andy Shevchenko wrote:
+> > > > On Fri, Jun 05, 2026 at 09:12:38AM +0300, Dan Carpenter wrote:
+> > > > > On Thu, Jun 04, 2026 at 05:55:08PM +0300, Andy Shevchenko wrote:
+> > > > > > On Thu, Jun 04, 2026 at 01:42:11PM +0300, Dan Carpenter wrote:
+> > > > > > > On Thu, Jun 04, 2026 at 01:38:50PM +0300, Dan Carpenter wrote:
+> > > > > > > >    168          ret = sscanf(buf, "%i %i", &back->cached_reg_addr, &val);
+> > > > > > > >                              ^^^
+> > > > > > > > Uninitialized variable.
+> > > > > > > 
+> > > > > > > s/variable/data/.
+> > > > > > 
+> > > > > > With what I asked in the previous reply and what you explained there
+> > > > > > (thanks, btw!) I still think your patches are not fully correct. They
+> > > > > > will require to atomically write all or nothing. If we want support
+> > > > > > partial writes we need to go with that differently (reset ppos when
+> > > > > > we got enough or more than enough data).
+> > > > > 
+> > > > > Requiring writes to syfs and debugfs be atomic is pretty normal and
+> > > > > works well in practice.  These are very small writes.
+> > > > 
+> > > > Perhaps. In any case your patch will break existing partial writes, right?
+> > > 
+> > > partial writes never worked
+> > 
+> > I don't get this. Does it mean it never worked at all, or in this particular case?
+> > Also "never worked" means the same issue you pointed out (uninitialised buffer) or
+> > something else?
 > 
-> Discovered while searching for CONFIG_* symbols referenced in code but
-> not defined in any Kconfig file.
+> I mean in this case.  The patch doesn't introduce a regression because
+> partial writes were already broken.
 
-(Btw, did you do that manually or using some scripts?)
-
-Wow! This line is from 2009
-
-  commit 1637db44413e32a0f100dd4bd164644e641842f7
-  Author: Jonathan Cameron <jic23@cam.ac.uk>
-  Date:   Tue Aug 18 18:06:26 2009 +0100
-
-    Staging: IIO: Trigger support added to core.
-
-and that time it might have been correct one, dunno. In any case your change is
-correct. The new header split was done in
-
-  commit a980e046098b0a40eaff5e4e7fcde6cf035b7c06
-  Author: Jonathan Cameron <jic23@kernel.org>
-  Date:   Wed Apr 25 15:54:59 2012 +0100
-
-    IIO: Move the core files to drivers/iio
-
-and kept till now.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+OK, now clear.
 
 -- 
 With Best Regards,
