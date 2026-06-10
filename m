@@ -1,62 +1,62 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504AF352017
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 17:57:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02264351C2A
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 17:57:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781114252; cv=none; b=lwAjRgTG4elqUgAsQTHbQ+efwcIf8yF35S2xrSILPtxSBDdTsNgGU43edBMkYv1Tf0lAhBnSHCdKQHrnh7Ss3oYf9ZJKQ7q3fk11KKAo7QUFkM5rRJQJJnaNNm8yqq494gp+dl5DFW3horhHRGAnqEiUQON/gp5FDmi+x+Z50JQ=
+	t=1781114252; cv=none; b=UeimKeZR/BrZPijjkfrVHA1TCvDSH5eOh3wgB5mwyiQXSUFQMu+wkXACFoz7DrTxTa0Hs2NNQ9MVWnCU/eimHgQNCd+gWoHVjZrUx7BcDWXCSX0tdDm2VbUp6GOwPGDEKlYALVHkuXhOuTqjGpoD0e5AhlZol8yOAmO1IUnR8YM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1781114252; c=relaxed/simple;
-	bh=NzH6hJ4P7+Odrab9SVY5sT6MsTS1bIWvbXq6dNHEYE4=;
+	bh=KRniYgqzMuhf3/FrGYSUNcaldaSpF/e49p0iizba66Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pyD5nGDs4+ssmox54Ko2IVrQOglgeuECjUxpfCOmyUQNNBRbm2Jc8TcAAkrAFVfFd6I709LtVG+TFaqVlF1dwI5y/PP268rF1yB7Qttw3ojs+4KW3tgUNwVrfK2NYOE3LO3QzDXr4Dex06KwA2BBdLw3k9Kr0R1q1kQzWgEOhjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tHrK8FuS; arc=none smtp.client-ip=209.85.160.48
+	 MIME-Version; b=pM6ldySIZ3FQVqTBRou48HgLdAIz7I7kUNZqbWwg4hVweVKi1oHZYFJA2gW0vcxXWJnzAiTxi4M7SH0U6nExsJp+N04w3VWzSB5UN9fmRISgLaJXxkijcjjKovfwyarozI6Nb4ZHUKWZxUvbAq3XuqmVzeNGI4H0mLjP5lCshdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AGKT+VEm; arc=none smtp.client-ip=209.85.167.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tHrK8FuS"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-43d3031a750so3900013fac.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 10:57:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AGKT+VEm"
+Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-487135fd4f9so194085b6e.0
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 10:57:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781114249; x=1781719049; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781114247; x=1781719047; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CW8Syt234OPRTlLmgS/3iLS5D5+Ulgv06ZIc/zfEuUM=;
-        b=tHrK8FuSAxsRFMbab9Par8UdbSI5B+MeNOVzb85BPSloPEyzZhGj+1Blx9mzAWq6fT
-         5vSrNqRZcI4eyXwgPL7a4v7K2IZ5b9X4S/F+2o9dsrCthEnIlSwmuDCZ1+Vcd3LTaRrC
-         Fc5hhX4G6pJE4BmYOl0EIRpIDTk7yQfTg7XSdjkSxUpt/cR2ZbuY2iu8ONZNigafMPiw
-         Za8o/5BFhVcjkM5ZlOpurHEFSTTmBUErB6h2M1YbizWHCZL9Uo3hpkHXuBhqVIRNSPfc
-         1D8m2PZZ5wKvbUyPDkuiSiwft2qInrxzOjQHcIPSZSEyYGcbHmOz90MEBdWXate8x5+D
-         2B5Q==
+        bh=Mfzs8uTJmUQmDhJfatDPCLZ0J8m8PsuCFYV16g7qpto=;
+        b=AGKT+VEmmgm+1eRgR+mlvO6MI9JvZHvQQMmqFoqTlDSEWRR0AogL1rLaGXRaSF12uH
+         0bmwzfOtmkmf7UZxe4HUHbxm4lzUxfvqAvBLR8SRreb5YLO1+KC0YfNZ6NuPhjypemY3
+         buB951KTOJMsGhqsehXR/7hNEtkUJZKs4+IMYjaoVFgcvjAB0bo8BrwVWZLypNAEeXPq
+         /lZax5nfOWXES28gHsK/HuGj8QcKaVeIInwQtvffxWurUek69naWE4Trx9lkY0klckXz
+         W04rr8wrpp1E2/x23SWVAvRAw18uuKk/n48VakoeIiyrngZxpaRAnNIkcKPdGIO/rRyc
+         ekgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781114249; x=1781719049;
+        d=1e100.net; s=20251104; t=1781114247; x=1781719047;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=CW8Syt234OPRTlLmgS/3iLS5D5+Ulgv06ZIc/zfEuUM=;
-        b=ot4wrpENlaVv34BFSiaDwJIRQkt81jzGkkyy5ZSaznFf+iuuJROnPRI49vCn0mjjXN
-         Q73XX67Sfl4OTJH+Jbz7zc7/gndee2LkNICLhOmBaqXgTZMJo5AMNhfCPGuerPgtTqFU
-         6Oz4MtJRA8iEvlpEEb1Yva/9UwMWAy8EGZ1DgcGLZVL81Ru3UEkLJCATN9H96HtHKHTb
-         24/H3gL4PLJynyQ+aDf2jK5cx+jozXMia9MkEioKTrh6T3r+AwGSE5qXDGUGCiZUqI5F
-         Ho0+UGH0jI2Wnwdwd7EpYynSTrZFrFMyE2W0hDC1CCCJT0dq9IHrB1GdyTBQMJf4LPbO
-         Rtxw==
-X-Gm-Message-State: AOJu0Yz0/8JYWdqZ3F2kUowc8W6K5DeiJobHDFhjSfwar28VEML85Gw4
-	Uw4nKTU/2IsiJKzWUxsYGR0SnGsAe9j9eYhmCFLUNkx62EOgNZjJI2hsE8c0Yg==
-X-Gm-Gg: Acq92OECESrWf7Se9TAMiNUOzcpdhRVtAgoJgRgcgvNrgqXLDUL81Ejo6ceVsHB9ISn
-	ufPYwzAxdCrnmSNvwVabsgOnzNLtzMHsWcQAeQkLPy2PeIvXvhKMwY72b2GGVGn+9lwfGs7eWyo
-	0LTpzZD2N8jBdUs6wz/QUEW+mvZr/tpEzi51nKcV2ASVUlpRrwRAVzpR+XJdp3FdP24tk/lPiou
-	O3C6X4IzX2ozpP6QjyiPwQPOJd+jY795sg0wSR0XMbau3tmeuTcEenyxIB+cPA/fQjgpYto28DD
-	S4MnISu+D+CegezY7LJ+87PDtNRSQCNBYndKwPfDPh/SGKgUWEXb0fEWDVXDOad0U6uF0ko4gEG
-	Y+5/JAqFS8Z6xEKhkrhNAuzM0suvj421wdK89NHYohLUBPsS1BNadVT1m3X2rSTYlqJAVbY2Nuw
-	T5ZcVHifWTOPyMNYq0JRkO7e7trkdRsGSdmCj9q913DFngUg1nMHoAwB3+oD0sHkji
-X-Received: by 2002:a05:6870:b61f:b0:43d:1d30:7ea6 with SMTP id 586e51a60fabf-4413d32eb67mr15919489fac.2.1781114249085;
-        Wed, 10 Jun 2026 10:57:29 -0700 (PDT)
+        bh=Mfzs8uTJmUQmDhJfatDPCLZ0J8m8PsuCFYV16g7qpto=;
+        b=Ph/OyPgIjF8qSszlmvmJRL9Xx50Y2+7j7kJL7FtsIn90kKE+VqJq9VgwGggEhXkszs
+         ttpPncFwSRmsbarneMw5nWk42YmujJMxZpTwyhU9JVYZhSUO3Xa9tv/gglczj+vDQAFl
+         nNz2JZ6pQOfabvM743PxfYHpf2F4oPxseOI3Dk9vY6VNmTyObbFYUZZkuG5HLr+IQrqh
+         6uBliqm9ZgC61OhWHTTsAMPfHYDCFn6as+TGuD0UmaQ8KmO2swRDry+UPGEPnkIKLcwH
+         6xoJura5j61VyaQa1YzTrsMm2BIqnVDmyvlO8WlIFID/hebxkjDQKBPj8V2ddHyiZrXU
+         3CaA==
+X-Gm-Message-State: AOJu0Yy1k2Ea52WocuSXoNdSpsAbA9RyJbED2gT42J2nYtLJHZzf36xT
+	mRIyDDkH+f7P/eyU5E1FcrvJq+KM5sbgYmYRXw6dn/RBx+o1+lY6PG9Rg19itA==
+X-Gm-Gg: Acq92OGK9zjwtgotdLFmoZuWkHeQzoht/xW/yUC6h+H80oxbEXQKnh7nykDiMFvzNZr
+	WKTODQocalkAoS7V/1dyeb938AKQwgrN2Z2GBjT9zNpNk7unVK9MPrezp8bzL00Dag3lYU5Wir8
+	HvcL38N5js+3flmk4IawQyL5/eMSb85OJZmrwoSl9Q/QjoiWwSejzzHLeXoPdxToeya6CdD2TaP
+	GvzfsP3KCEvNsfAMPgufClGtrq30wly+BJOgAi9J/uSLyXvyieVtB1RKVama/nsMHngPRRHe/fY
+	jhvnVl4/TXVFb+bKS8Ug8wpt+B8JGTlTXqa/eHnI4GAswDEnS+4p8OSWP4sIl6w2CTGk1xZI3XB
+	II2mBALvepqgCPuoJFONZc4DnUdyJeiJ0PAMA8ZXvrVEQvmhnFRs/uh5mK5PtfCKlDKRzTtKx+B
+	e5tgLBHzWdSzSDiaCiX6fu0YRdGD0MnbbUk3p+vDWXeaYLbI0tgd945NtMpbVdBqFQ
+X-Received: by 2002:a05:6808:17a7:b0:479:f7e7:4a81 with SMTP id 5614622812f47-4868d89dc2dmr16452260b6e.0.1781114246842;
+        Wed, 10 Jun 2026 10:57:26 -0700 (PDT)
 Received: from localhost.localdomain ([2600:1700:fb0:1bc0:b86b:51ed:28ca:695f])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-440d7d4f449sm21180794fac.8.2026.06.10.10.57.27
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-440d7d4f449sm21180794fac.8.2026.06.10.10.57.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 10:57:28 -0700 (PDT)
+        Wed, 10 Jun 2026 10:57:26 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: andy@kernel.org,
@@ -72,9 +72,9 @@ Cc: andy@kernel.org,
 	robh@kernel.org,
 	andriy.shevchenko@intel.com,
 	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V11 5/9] iio: imu: inv_icm42607: Add PM support for icm42607
-Date: Wed, 10 Jun 2026 12:54:49 -0500
-Message-ID: <20260610175455.19006-6-macroalpha82@gmail.com>
+Subject: [PATCH V11 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core Driver
+Date: Wed, 10 Jun 2026 12:54:47 -0500
+Message-ID: <20260610175455.19006-4-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260610175455.19006-1-macroalpha82@gmail.com>
 References: <20260610175455.19006-1-macroalpha82@gmail.com>
@@ -88,286 +88,561 @@ Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-Add power management support for the ICM42607 device driver.
+Add the core component of a new inv_icm42607 driver. This includes
+a few setup functions and the full register definition in the
+header file.
 
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
- drivers/iio/imu/inv_icm42607/inv_icm42607.h   |  18 +++
- .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 125 ++++++++++++++++++
- .../iio/imu/inv_icm42607/inv_icm42607_i2c.c   |   1 +
- .../iio/imu/inv_icm42607/inv_icm42607_spi.c   |   1 +
- 4 files changed, 145 insertions(+)
+ drivers/iio/imu/inv_icm42607/inv_icm42607.h   | 334 ++++++++++++++++++
+ .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 197 +++++++++++
+ 2 files changed, 531 insertions(+)
+ create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
+ create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
 
 diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-index 743a15fb1b89..1f1397eaa00e 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
+new file mode 100644
+index 000000000000..716fc0f1c3fd
+--- /dev/null
 +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-@@ -9,6 +9,7 @@
- #include <linux/bits.h>
- #include <linux/iio/iio.h>
- #include <linux/mutex.h>
-+#include <linux/pm.h>
- #include <linux/regmap.h>
- #include <linux/types.h>
- 
-@@ -103,22 +104,32 @@ struct inv_icm42607_hw {
- 	const struct inv_icm42607_conf *conf;
- };
- 
-+struct inv_icm42607_suspended {
-+	enum inv_icm42607_sensor_mode gyro;
-+	enum inv_icm42607_sensor_mode accel;
-+	bool temp;
+@@ -0,0 +1,334 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2026 InvenSense, Inc.
++ */
++
++#ifndef INV_ICM42607_H_
++#define INV_ICM42607_H_
++
++#include <linux/bits.h>
++#include <linux/iio/iio.h>
++#include <linux/mutex.h>
++#include <linux/regmap.h>
++#include <linux/types.h>
++
++enum inv_icm42607_sensor_mode {
++	INV_ICM42607_SENSOR_MODE_OFF = 0,
++	INV_ICM42607_SENSOR_MODE_STANDBY = 1,
++	INV_ICM42607_SENSOR_MODE_LOW_POWER = 2,
++	INV_ICM42607_SENSOR_MODE_LOW_NOISE = 3,
++	INV_ICM42607_SENSOR_MODE_NB
 +};
 +
- /**
-  *  struct inv_icm42607_state - driver state variables
-  *  @lock:		lock for serializing multiple registers access.
-  *  @hw:		Hardware specific data.
-  *  @map:		regmap pointer.
-  *  @vddio_supply:	I/O voltage regulator for the chip.
-+ *  @vddio_en:		I/O voltage status for runtime PM.
-  *  @orientation:	sensor chip orientation relative to main hardware.
-  *  @conf:		chip sensors configurations.
-+ *  @suspended:		suspended sensors configuration.
-  */
- struct inv_icm42607_state {
- 	struct mutex lock;
- 	const struct inv_icm42607_hw *hw;
- 	struct regmap *map;
- 	struct regulator *vddio_supply;
-+	bool vddio_en;
- 	struct iio_mount_matrix orientation;
- 	struct inv_icm42607_conf conf;
-+	struct inv_icm42607_suspended suspended;
- };
- 
- /* Virtual register addresses: @bank on MSB (4 upper bits), @address on LSB */
-@@ -337,11 +348,18 @@ struct inv_icm42607_state {
- #define INV_ICM42607_GYRO_STARTUP_TIME_MS		30
- #define INV_ICM42607_TEMP_STARTUP_TIME_MS		77
- 
-+/*
-+ * Suspend delay assumed from other icm42600 series device, not
-+ * documented in datasheet.
-+ */
-+#define INV_ICM42607_SUSPEND_DELAY_MS			2000
++/* gyroscope fullscale values */
++enum inv_icm42607_gyro_fs {
++	INV_ICM42607_GYRO_FS_2000DPS = 0,
++	INV_ICM42607_GYRO_FS_1000DPS = 1,
++	INV_ICM42607_GYRO_FS_500DPS = 2,
++	INV_ICM42607_GYRO_FS_250DPS = 3,
++	INV_ICM42607_GYRO_FS_NB
++};
 +
- typedef int (*inv_icm42607_bus_setup)(struct inv_icm42607_state *);
- 
- extern const struct regmap_config inv_icm42607_regmap_config;
- extern const struct inv_icm42607_hw inv_icm42607_hw_data;
- extern const struct inv_icm42607_hw inv_icm42607p_hw_data;
-+extern const struct dev_pm_ops inv_icm42607_pm_ops;
- 
- int inv_icm42607_core_probe(struct regmap *regmap,
- 			    const struct inv_icm42607_hw *hw,
++/* accelerometer fullscale values */
++enum inv_icm42607_accel_fs {
++	INV_ICM42607_ACCEL_FS_16G = 0,
++	INV_ICM42607_ACCEL_FS_8G = 1,
++	INV_ICM42607_ACCEL_FS_4G = 2,
++	INV_ICM42607_ACCEL_FS_2G = 3,
++	INV_ICM42607_ACCEL_FS_NB
++};
++
++/* ODR values  - Note Gyro does not support ODR less than 12.5Hz */
++enum inv_icm42607_odr {
++	INV_ICM42607_ODR_1600HZ = 5,
++	INV_ICM42607_ODR_800HZ = 6,
++	INV_ICM42607_ODR_400HZ = 7,
++	INV_ICM42607_ODR_200HZ = 8,
++	INV_ICM42607_ODR_100HZ = 9,
++	INV_ICM42607_ODR_50HZ = 10,
++	INV_ICM42607_ODR_25HZ = 11,
++	INV_ICM42607_ODR_12_5HZ = 12,
++	INV_ICM42607_ODR_6_25HZ_LP = 13,
++	INV_ICM42607_ODR_3_125HZ_LP = 14,
++	INV_ICM42607_ODR_1_5625HZ_LP = 15,
++	INV_ICM42607_ODR_NB
++};
++
++/* Low-Noise mode sensor data filter (bandwidth) */
++enum inv_icm42607_filter_bw {
++	INV_ICM42607_FILTER_BYPASS = 0,
++	INV_ICM42607_FILTER_BW_180HZ = 1,
++	INV_ICM42607_FILTER_BW_121HZ = 2,
++	INV_ICM42607_FILTER_BW_73HZ = 3,
++	INV_ICM42607_FILTER_BW_53HZ = 4,
++	INV_ICM42607_FILTER_BW_34HZ = 5,
++	INV_ICM42607_FILTER_BW_25HZ = 6,
++	INV_ICM42607_FILTER_BW_16HZ = 7,
++	INV_ICM42607_FILTER_BW_NB
++};
++
++/* Signed so that negative values can signify an invalid condition. */
++struct inv_icm42607_sensor_conf {
++	int mode;
++	int fs;
++	int odr;
++	int filter;
++};
++
++struct inv_icm42607_conf {
++	struct inv_icm42607_sensor_conf gyro;
++	struct inv_icm42607_sensor_conf accel;
++	bool temp_en;
++};
++
++struct inv_icm42607_hw {
++	u8 whoami;
++	const char *name;
++	const struct inv_icm42607_conf *conf;
++};
++
++/**
++ *  struct inv_icm42607_state - driver state variables
++ *  @lock:		lock for serializing multiple registers access.
++ *  @hw:		Hardware specific data.
++ *  @map:		regmap pointer.
++ *  @vddio_supply:	I/O voltage regulator for the chip.
++ *  @orientation:	sensor chip orientation relative to main hardware.
++ *  @conf:		chip sensors configurations.
++ */
++struct inv_icm42607_state {
++	struct mutex lock;
++	const struct inv_icm42607_hw *hw;
++	struct regmap *map;
++	struct regulator *vddio_supply;
++	struct iio_mount_matrix orientation;
++	struct inv_icm42607_conf conf;
++};
++
++/* Virtual register addresses: @bank on MSB (4 upper bits), @address on LSB */
++
++/* Register Map for User Bank 0 */
++#define INV_ICM42607_REG_MCLK_RDY			0x00
++
++#define INV_ICM42607_REG_DEVICE_CONFIG			0x01
++#define INV_ICM42607_DEVICE_CONFIG_SPI_AP_4WIRE		BIT(2)
++#define INV_ICM42607_DEVICE_CONFIG_SPI_MODE		BIT(0)
++
++#define INV_ICM42607_REG_SIGNAL_PATH_RESET		0x02
++#define INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET	BIT(4)
++#define INV_ICM42607_SIGNAL_PATH_RESET_FIFO_FLUSH	BIT(2)
++
++#define INV_ICM42607_REG_DRIVE_CONFIG1			0x03
++#define INV_ICM42607_DRIVE_CONFIG1_I3C_DDR_MASK		GENMASK(5, 3)
++#define INV_ICM42607_DRIVE_CONFIG1_I3C_SDR_MASK		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_DRIVE_CONFIG2			0x04
++#define INV_ICM42607_DRIVE_CONFIG2_I2C_MASK		GENMASK(5, 3)
++#define INV_ICM42607_DRIVE_CONFIG2_ALL_MASK		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_DRIVE_CONFIG3			0x05
++#define INV_ICM42607_DRIVE_CONFIG3_SPI_MASK		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_INT_CONFIG			0x06
++#define INV_ICM42607_INT_CONFIG_INT2_LATCHED		BIT(5)
++#define INV_ICM42607_INT_CONFIG_INT2_PUSH_PULL		BIT(4)
++#define INV_ICM42607_INT_CONFIG_INT2_ACTIVE_HIGH	BIT(3)
++#define INV_ICM42607_INT_CONFIG_INT2_ACTIVE_LOW		0x00
++#define INV_ICM42607_INT_CONFIG_INT1_LATCHED		BIT(2)
++#define INV_ICM42607_INT_CONFIG_INT1_PUSH_PULL		BIT(1)
++#define INV_ICM42607_INT_CONFIG_INT1_ACTIVE_HIGH	BIT(0)
++#define INV_ICM42607_INT_CONFIG_INT1_ACTIVE_LOW		0x00
++
++/* all sensor data are 16 bits (2 registers wide) in big-endian */
++#define INV_ICM42607_REG_TEMP_DATA1			0x09
++#define INV_ICM42607_REG_TEMP_DATA0			0x0A
++#define INV_ICM42607_REG_ACCEL_DATA_X1			0x0B
++#define INV_ICM42607_REG_ACCEL_DATA_X0			0x0C
++#define INV_ICM42607_REG_ACCEL_DATA_Y1			0x0D
++#define INV_ICM42607_REG_ACCEL_DATA_Y0			0x0E
++#define INV_ICM42607_REG_ACCEL_DATA_Z1			0x0F
++#define INV_ICM42607_REG_ACCEL_DATA_Z0			0x10
++#define INV_ICM42607_REG_GYRO_DATA_X1			0x11
++#define INV_ICM42607_REG_GYRO_DATA_X0			0x12
++#define INV_ICM42607_REG_GYRO_DATA_Y1			0x13
++#define INV_ICM42607_REG_GYRO_DATA_Y0			0x14
++#define INV_ICM42607_REG_GYRO_DATA_Z1			0x15
++#define INV_ICM42607_REG_GYRO_DATA_Z0			0x16
++#define INV_ICM42607_DATA_INVALID			-32768
++
++#define INV_ICM42607_REG_TMST_FSYNCH			0x17
++#define INV_ICM42607_REG_TMST_FSYNCL			0x18
++
++/* APEX Data Registers */
++#define INV_ICM42607_REG_APEX_DATA0			0x31
++#define INV_ICM42607_REG_APEX_DATA1			0x32
++#define INV_ICM42607_REG_APEX_DATA2			0x33
++#define INV_ICM42607_REG_APEX_DATA3			0x34
++#define INV_ICM42607_REG_APEX_DATA4			0x1D
++#define INV_ICM42607_REG_APEX_DATA5			0x1E
++
++#define INV_ICM42607_REG_PWR_MGMT0			0x1F
++#define INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL		BIT(7)
++#define INV_ICM42607_PWR_MGMT0_IDLE			BIT(4)
++#define INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK		GENMASK(3, 2)
++#define INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK		GENMASK(1, 0)
++
++#define INV_ICM42607_REG_GYRO_CONFIG0			0x20
++#define INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK		GENMASK(6, 5)
++#define INV_ICM42607_GYRO_CONFIG0_ODR_MASK		GENMASK(3, 0)
++
++#define INV_ICM42607_REG_ACCEL_CONFIG0			0x21
++#define INV_ICM42607_ACCEL_CONFIG0_FS_SEL_MASK		GENMASK(6, 5)
++#define INV_ICM42607_ACCEL_CONFIG0_ODR_MASK		GENMASK(3, 0)
++
++#define INV_ICM42607_REG_TEMP_CONFIG0			0x22
++#define INV_ICM42607_TEMP_CONFIG0_FILTER_MASK		GENMASK(6, 4)
++
++#define INV_ICM42607_REG_GYRO_CONFIG1			0x23
++#define INV_ICM42607_GYRO_CONFIG1_FILTER_MASK		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_ACCEL_CONFIG1			0x24
++#define INV_ICM42607_ACCEL_CONFIG1_AVG_MASK		GENMASK(6, 4)
++#define INV_ICM42607_ACCEL_CONFIG1_FILTER_MASK		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_APEX_CONFIG0			0x25
++#define INV_ICM42607_APEX_CONFIG0_DMP_POWER_SAVE_EN	BIT(3)
++#define INV_ICM42607_APEX_CONFIG0_DMP_INIT_EN		BIT(2)
++#define INV_ICM42607_APEX_CONFIG0_DMP_MEM_RESET_EN	BIT(0)
++
++#define INV_ICM42607_REG_APEX_CONFIG1			0x26
++#define INV_ICM42607_APEX_CONFIG1_SMD_ENABLE		BIT(6)
++#define INV_ICM42607_APEX_CONFIG1_FF_ENABLE		BIT(5)
++#define INV_ICM42607_APEX_CONFIG1_TILT_ENABLE		BIT(4)
++#define INV_ICM42607_APEX_CONFIG1_PED_ENABLE		BIT(3)
++#define INV_ICM42607_APEX_CONFIG1_DMP_ODR_MASK		GENMASK(1, 0)
++
++#define INV_ICM42607_REG_WOM_CONFIG			0x27
++#define INV_ICM42607_WOM_CONFIG_INT_DUR_MASK		GENMASK(4, 3)
++#define INV_ICM42607_WOM_CONFIG_INT_MODE		BIT(2)
++#define INV_ICM42607_WOM_CONFIG_MODE			BIT(1)
++#define INV_ICM42607_WOM_CONFIG_EN			BIT(0)
++
++#define INV_ICM42607_REG_FIFO_CONFIG1			0x28
++#define INV_ICM42607_FIFO_CONFIG1_MODE			BIT(1)
++#define INV_ICM42607_FIFO_CONFIG1_BYPASS		BIT(0)
++
++#define INV_ICM42607_REG_FIFO_CONFIG2			0x29
++#define INV_ICM42607_REG_FIFO_CONFIG3			0x2A
++#define INV_ICM42607_FIFO_WATERMARK_VAL(_wm)		\
++		cpu_to_le16((_wm) & GENMASK(11, 0))
++/* FIFO is 2048 bytes, let 12 samples for reading latency */
++#define INV_ICM42607_FIFO_WATERMARK_MAX			(2048 - 12 * 16)
++#define INV_ICM42607_FIFO_1SENSOR_PACKET_SIZE		8
++#define INV_ICM42607_FIFO_2SENSORS_PACKET_SIZE		16
++
++#define INV_ICM42607_REG_INT_SOURCE0			0x2B
++#define INV_ICM42607_INT_SOURCE0_ST_INT1_EN		BIT(7)
++#define INV_ICM42607_INT_SOURCE0_FSYNC_INT1_EN		BIT(6)
++#define INV_ICM42607_INT_SOURCE0_PLL_RDY_INT1_EN	BIT(5)
++#define INV_ICM42607_INT_SOURCE0_RESET_DONE_INT1_EN	BIT(4)
++#define INV_ICM42607_INT_SOURCE0_DRDY_INT1_EN		BIT(3)
++#define INV_ICM42607_INT_SOURCE0_FIFO_THS_INT1_EN	BIT(2)
++#define INV_ICM42607_INT_SOURCE0_FIFO_FULL_INT1_EN	BIT(1)
++#define INV_ICM42607_INT_SOURCE0_AGC_RDY_INT1_EN	BIT(0)
++
++#define INV_ICM42607_REG_INT_SOURCE1			0x2C
++#define INV_ICM42607_INT_SOURCE1_I3C_ERROR_INT1_EN	BIT(6)
++#define INV_ICM42607_INT_SOURCE1_SMD_INT1_EN		BIT(3)
++#define INV_ICM42607_INT_SOURCE1_WOM_INT1_EN		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_INT_SOURCE3			0x2D
++#define INV_ICM42607_INT_SOURCE3_ST_INT2_EN		BIT(7)
++#define INV_ICM42607_INT_SOURCE3_FSYNC_INT2_EN		BIT(6)
++#define INV_ICM42607_INT_SOURCE3_PLL_RDY_INT2_EN	BIT(5)
++#define INV_ICM42607_INT_SOURCE3_RESET_DONE_INT2_EN	BIT(4)
++#define INV_ICM42607_INT_SOURCE3_DRDY_INT2_EN		BIT(3)
++#define INV_ICM42607_INT_SOURCE3_FIFO_THS_INT2_EN	BIT(2)
++#define INV_ICM42607_INT_SOURCE3_FIFO_FULL_INT2_EN	BIT(1)
++#define INV_ICM42607_INT_SOURCE3_AGC_RDY_INT2_EN	BIT(0)
++
++#define INV_ICM42607_REG_INT_SOURCE4			0x2E
++#define INV_ICM42607_INT_SOURCE4_I3C_ERROR_INT2_EN	BIT(6)
++#define INV_ICM42607_INT_SOURCE4_SMD_INT2_EN		BIT(3)
++#define INV_ICM42607_INT_SOURCE4_WOM_Z_INT2_EN		BIT(2)
++#define INV_ICM42607_INT_SOURCE4_WOM_Y_INT2_EN		BIT(1)
++#define INV_ICM42607_INT_SOURCE4_WOM_X_INT2_EN		BIT(0)
++
++#define INV_ICM42607_REG_FIFO_LOST_PKT0			0x2F
++#define INV_ICM42607_REG_FIFO_LOST_PKT1			0x30
++
++#define INV_ICM42607_REG_INTF_CONFIG0			0x35
++#define INV_ICM42607_INTF_CONFIG0_FIFO_COUNT_FORMAT	BIT(6)
++#define INV_ICM42607_INTF_CONFIG0_FIFO_COUNT_ENDIAN	BIT(5)
++#define INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN	BIT(4)
++#define INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK	GENMASK(1, 0)
++#define INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_SPI_DIS	\
++	FIELD_PREP(INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK, 2)
++#define INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_I2C_DIS	\
++	FIELD_PREP(INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK, 3)
++
++#define INV_ICM42607_REG_INTF_CONFIG1			0x36
++#define INV_ICM42607_INTF_CONFIG1_I3C_SDR_EN		BIT(3)
++#define INV_ICM42607_INTF_CONFIG1_I3C_DDR_EN		BIT(2)
++#define INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK		GENMASK(1, 0)
++#define INV_ICM42607_INTF_CONFIG1_CLKSEL_INT		0
++#define INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL		1
++#define INV_ICM42607_INTF_CONFIG1_CLKSEL_OFF		2
++
++#define INV_ICM42607_REG_INT_STATUS_DRDY		0x39
++#define INV_ICM42607_INT_STATUS_DRDY_DATA_RDY		BIT(0)
++
++#define INV_ICM42607_REG_INT_STATUS			0x3A
++#define INV_ICM42607_INT_STATUS_ST			BIT(7)
++#define INV_ICM42607_INT_STATUS_FSYNC			BIT(6)
++#define INV_ICM42607_INT_STATUS_PLL_RDY			BIT(5)
++#define INV_ICM42607_INT_STATUS_RESET_DONE		BIT(4)
++#define INV_ICM42607_INT_STATUS_FIFO_THS		BIT(2)
++#define INV_ICM42607_INT_STATUS_FIFO_FULL		BIT(1)
++#define INV_ICM42607_INT_STATUS_AGC_RDY			BIT(0)
++
++#define INV_ICM42607_REG_INT_STATUS2			0x3B
++#define INV_ICM42607_INT_STATUS2_SMD			BIT(3)
++#define INV_ICM42607_INT_STATUS2_WOM_INT		GENMASK(2, 0)
++
++#define INV_ICM42607_REG_INT_STATUS3			0x3C
++#define INV_ICM42607_INT_STATUS3_STEP_DET		BIT(5)
++#define INV_ICM42607_INT_STATUS3_STEP_CNT_OVF		BIT(4)
++#define INV_ICM42607_INT_STATUS3_TILT_DET		BIT(3)
++#define INV_ICM42607_INT_STATUS3_FF_DET			BIT(2)
++
++/*
++ * FIFO access registers
++ * FIFO count is 16 bits (2 registers) big-endian
++ * FIFO data is a continuous read register to read FIFO content
++ */
++#define INV_ICM42607_REG_FIFO_COUNTH			0x3D
++#define INV_ICM42607_REG_FIFO_COUNTL			0x3E
++#define INV_ICM42607_REG_FIFO_DATA			0x3F
++
++#define INV_ICM42607_REG_ACCEL_WOM_X_THR		0x4b
++#define INV_ICM42607_REG_ACCEL_WOM_Y_THR		0x4c
++#define INV_ICM42607_REG_ACCEL_WOM_Z_THR		0x4d
++
++#define INV_ICM42607_REG_WHOAMI				0x75
++#define INV_ICM42607P_WHOAMI				0x60
++#define INV_ICM42607_WHOAMI				0x67
++
++/* Timings as listed in section 3 of datasheet */
++#define INV_ICM42607_POWER_UP_TIME_US			100000
++#define INV_ICM42607_RESET_TIME_MS			1
++#define INV_ICM42607_ACCEL_STARTUP_TIME_MS		10
++#define INV_ICM42607_GYRO_STARTUP_TIME_MS		30
++#define INV_ICM42607_TEMP_STARTUP_TIME_MS		77
++
++typedef int (*inv_icm42607_bus_setup)(struct inv_icm42607_state *);
++
++extern const struct regmap_config inv_icm42607_regmap_config;
++extern const struct inv_icm42607_hw inv_icm42607_hw_data;
++extern const struct inv_icm42607_hw inv_icm42607p_hw_data;
++
++int inv_icm42607_core_probe(struct regmap *regmap,
++			    const struct inv_icm42607_hw *hw,
++			    inv_icm42607_bus_setup bus_setup);
++
++#endif
 diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-index 26dc09bbeaed..5e1f924a3e34 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+new file mode 100644
+index 000000000000..334264120b42
+--- /dev/null
 +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-@@ -8,6 +8,7 @@
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/time.h>
-@@ -71,6 +72,51 @@ const struct inv_icm42607_hw inv_icm42607p_hw_data = {
- };
- EXPORT_SYMBOL_NS_GPL(inv_icm42607p_hw_data, "IIO_ICM42607");
- 
-+static int inv_icm42607_set_pwr_mgmt0(struct inv_icm42607_state *st,
-+				      enum inv_icm42607_sensor_mode gyro,
-+				      enum inv_icm42607_sensor_mode accel,
-+				      bool temp, unsigned int *sleep_ms)
+@@ -0,0 +1,197 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2026 InvenSense, Inc.
++ */
++
++#include <linux/delay.h>
++#include <linux/dev_printk.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
++#include <linux/time.h>
++
++#include "inv_icm42607.h"
++
++static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
++				 const struct inv_icm42607_conf *conf)
 +{
-+	enum inv_icm42607_sensor_mode oldgyro = st->conf.gyro.mode;
-+	enum inv_icm42607_sensor_mode oldaccel = st->conf.accel.mode;
-+	bool oldtemp = st->conf.temp_en;
-+	unsigned int sleepval;
 +	unsigned int val;
 +	int ret;
 +
-+	if (gyro == oldgyro && accel == oldaccel && temp == oldtemp)
-+		return 0;
-+
-+	val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, gyro);
-+	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, accel);
-+	if (!temp)
++	val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, conf->gyro.mode);
++	val |= FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, conf->accel.mode);
++	/*
++	 * No temperature enable reg in datasheet, but BSP driver selected RC
++	 * oscillator clock in LP mode when temperature was disabled.
++	 */
++	if (!conf->temp_en)
 +		val |= INV_ICM42607_PWR_MGMT0_ACCEL_LP_CLK_SEL;
 +	ret = regmap_write(st->map, INV_ICM42607_REG_PWR_MGMT0, val);
 +	if (ret)
 +		return ret;
 +
-+	st->conf.gyro.mode = gyro;
-+	st->conf.accel.mode = accel;
-+	st->conf.temp_en = temp;
++	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK, conf->gyro.fs);
++	val |= FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_ODR_MASK, conf->gyro.odr);
++	ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG0, val);
++	if (ret)
++		return ret;
 +
-+	sleepval = 0;
-+	if (temp && !oldtemp)
-+		sleepval = max(sleepval, INV_ICM42607_TEMP_STARTUP_TIME_MS);
++	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_FS_SEL_MASK, conf->accel.fs);
++	val |= FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_ODR_MASK, conf->accel.odr);
++	ret = regmap_write(st->map, INV_ICM42607_REG_ACCEL_CONFIG0, val);
++	if (ret)
++		return ret;
 +
-+	if (accel != oldaccel)
-+		sleepval = max(sleepval, INV_ICM42607_ACCEL_STARTUP_TIME_MS);
++	val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG1_FILTER_MASK, conf->gyro.filter);
++	ret = regmap_update_bits(st->map, INV_ICM42607_REG_GYRO_CONFIG1,
++				 INV_ICM42607_GYRO_CONFIG1_FILTER_MASK, val);
++	if (ret)
++		return ret;
 +
-+	if (gyro != oldgyro)
-+		sleepval = max(sleepval, INV_ICM42607_GYRO_STARTUP_TIME_MS);
++	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG1_FILTER_MASK, conf->accel.filter);
++	ret = regmap_update_bits(st->map, INV_ICM42607_REG_ACCEL_CONFIG1,
++				 INV_ICM42607_ACCEL_CONFIG1_FILTER_MASK, val);
++	if (ret)
++		return ret;
 +
-+	if (sleep_ms)
-+		*sleep_ms = sleepval;
-+	else if (sleepval)
-+		fsleep(sleepval * USEC_PER_MSEC);
++	st->conf = *conf;
 +
 +	return 0;
 +}
 +
- static int inv_icm42607_set_conf(struct inv_icm42607_state *st,
- 				 const struct inv_icm42607_conf *conf)
- {
-@@ -181,12 +227,17 @@ static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
- {
- 	int ret;
- 
-+	if (st->vddio_en)
-+		return 0;
-+
- 	ret = regulator_enable(st->vddio_supply);
- 	if (ret)
- 		return ret;
- 
- 	fsleep(INV_ICM42607_POWER_UP_TIME_US);
- 
-+	st->vddio_en = true;
-+
- 	return 0;
- }
- 
-@@ -194,7 +245,12 @@ static void inv_icm42607_disable_vddio_reg(void *_data)
- {
- 	struct inv_icm42607_state *st = _data;
- 
-+	if (!st->vddio_en)
-+		return;
-+
- 	regulator_disable(st->vddio_supply);
-+
-+	st->vddio_en = false;
- }
- 
- int inv_icm42607_core_probe(struct regmap *regmap,
-@@ -209,6 +265,8 @@ int inv_icm42607_core_probe(struct regmap *regmap,
- 	if (!st)
- 		return -ENOMEM;
- 
-+	dev_set_drvdata(dev, st);
-+
- 	ret = devm_mutex_init(dev, &st->lock);
- 	if (ret)
- 		return ret;
-@@ -244,10 +302,77 @@ int inv_icm42607_core_probe(struct regmap *regmap,
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_pm_runtime_set_active_enabled(dev);
-+	if (ret)
-+		return ret;
-+
-+	pm_runtime_set_autosuspend_delay(dev, INV_ICM42607_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
- 
-+static int inv_icm42607_suspend(struct device *dev)
++static int inv_icm42607_setup(struct inv_icm42607_state *st,
++			      inv_icm42607_bus_setup inv_icm42607_bus_setup)
 +{
-+	struct inv_icm42607_state *st = dev_get_drvdata(dev);
++	const struct device *dev = regmap_get_device(st->map);
++	unsigned int val;
 +	int ret;
 +
-+	ret = pm_runtime_force_suspend(dev);
++	ret = regmap_read(st->map, INV_ICM42607_REG_WHOAMI, &val);
 +	if (ret)
 +		return ret;
 +
-+	inv_icm42607_disable_vddio_reg(st);
++	/* Warn, but don't fail. */
++	if (val != st->hw->whoami)
++		dev_warn(dev, "Unknown whoami %#02x expected %#02x (%s)\n",
++			 val, st->hw->whoami, st->hw->name);
++
++	ret = regmap_write(st->map, INV_ICM42607_REG_SIGNAL_PATH_RESET,
++			   INV_ICM42607_SIGNAL_PATH_RESET_SOFT_RESET);
++	if (ret)
++		return ret;
++
++	fsleep(INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC);
++
++	/*
++	 * No polling interval specified in datasheet, so use reset time as
++	 * polling interval and 10x reset time as timeout period.
++	 */
++	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
++				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
++				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC),
++				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC * 10));
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "reset error, reset done bit not set\n");
++
++	/* Sync the regcache again after a reset. */
++	regcache_mark_dirty(st->map);
++	ret = regcache_sync(st->map);
++	if (ret)
++		return ret;
++
++	ret = inv_icm42607_bus_setup(st);
++	if (ret)
++		return ret;
++
++	ret = regmap_set_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
++			      INV_ICM42607_INTF_CONFIG0_SENSOR_DATA_ENDIAN);
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
++				 INV_ICM42607_INTF_CONFIG1_CLKSEL_MASK,
++				 INV_ICM42607_INTF_CONFIG1_CLKSEL_PLL);
++	if (ret)
++		return ret;
++
++	return inv_icm42607_set_conf(st, st->hw->conf);
++}
++
++static int inv_icm42607_enable_vddio_reg(struct inv_icm42607_state *st)
++{
++	int ret;
++
++	ret = regulator_enable(st->vddio_supply);
++	if (ret)
++		return ret;
++
++	fsleep(INV_ICM42607_POWER_UP_TIME_US);
 +
 +	return 0;
 +}
 +
-+static int inv_icm42607_resume(struct device *dev)
++static void inv_icm42607_disable_vddio_reg(void *_data)
 +{
-+	struct inv_icm42607_state *st = dev_get_drvdata(dev);
++	struct inv_icm42607_state *st = _data;
++
++	regulator_disable(st->vddio_supply);
++}
++
++int inv_icm42607_core_probe(struct regmap *regmap,
++			    const struct inv_icm42607_hw *hw,
++			    inv_icm42607_bus_setup inv_icm42607_bus_setup)
++{
++	struct device *dev = regmap_get_device(regmap);
++	struct inv_icm42607_state *st;
 +	int ret;
++
++	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
++	if (!st)
++		return -ENOMEM;
++
++	ret = devm_mutex_init(dev, &st->lock);
++	if (ret)
++		return ret;
++
++	st->hw = hw;
++	st->map = regmap;
++
++	ret = iio_read_mount_matrix(dev, &st->orientation);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "failed to retrieve mounting matrix\n");
++
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Failed to get vdd regulator\n");
++
++	st->vddio_supply = devm_regulator_get(dev, "vddio");
++	if (IS_ERR(st->vddio_supply))
++		return dev_err_probe(dev, PTR_ERR(st->vddio_supply),
++				     "Failed to get vddio regulator\n");
 +
 +	ret = inv_icm42607_enable_vddio_reg(st);
 +	if (ret)
 +		return ret;
 +
-+	return pm_runtime_force_resume(dev);
++	ret = devm_add_action_or_reset(dev, inv_icm42607_disable_vddio_reg, st);
++	if (ret)
++		return ret;
++
++	/* Setup chip registers (includes WHOAMI check, reset check, bus setup) */
++	ret = inv_icm42607_setup(st, inv_icm42607_bus_setup);
++	if (ret)
++		return ret;
++
++	return 0;
 +}
++EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
 +
-+static int inv_icm42607_runtime_suspend(struct device *dev)
-+{
-+	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-+
-+	guard(mutex)(&st->lock);
-+
-+	/* save sensors state */
-+	st->suspended.gyro = st->conf.gyro.mode;
-+	st->suspended.accel = st->conf.accel.mode;
-+	st->suspended.temp = st->conf.temp_en;
-+
-+	return inv_icm42607_set_pwr_mgmt0(st, INV_ICM42607_SENSOR_MODE_OFF,
-+					  INV_ICM42607_SENSOR_MODE_OFF, false,
-+					  NULL);
-+}
-+
-+static int inv_icm42607_runtime_resume(struct device *dev)
-+{
-+	struct inv_icm42607_state *st = dev_get_drvdata(dev);
-+
-+	guard(mutex)(&st->lock);
-+
-+	/* restore sensors state */
-+	return inv_icm42607_set_pwr_mgmt0(st, st->suspended.gyro,
-+					  st->suspended.accel,
-+					  st->suspended.temp, NULL);
-+}
-+
-+EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42607_pm_ops, IIO_ICM42607) = {
-+	SYSTEM_SLEEP_PM_OPS(inv_icm42607_suspend, inv_icm42607_resume)
-+	RUNTIME_PM_OPS(inv_icm42607_runtime_suspend,
-+		       inv_icm42607_runtime_resume, NULL)
-+};
-+
- MODULE_AUTHOR("InvenSense, Inc.");
- MODULE_DESCRIPTION("InvenSense ICM-42607x device driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_i2c.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_i2c.c
-index 2946d5465853..0c2ff8e12643 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_i2c.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_i2c.c
-@@ -80,6 +80,7 @@ static struct i2c_driver inv_icm42607_driver = {
- 	.driver = {
- 		.name = "inv-icm42607-i2c",
- 		.of_match_table = inv_icm42607_of_matches,
-+		.pm = pm_ptr(&inv_icm42607_pm_ops),
- 	},
- 	.id_table = inv_icm42607_id,
- 	.probe = inv_icm42607_probe,
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
-index 3485777ac5b6..1a7f6b0fa86b 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
-@@ -92,6 +92,7 @@ static struct spi_driver inv_icm42607_driver = {
- 	.driver = {
- 		.name = "inv-icm42607-spi",
- 		.of_match_table = inv_icm42607_of_matches,
-+		.pm = pm_ptr(&inv_icm42607_pm_ops),
- 	},
- 	.id_table = inv_icm42607_spi_id_table,
- 	.probe = inv_icm42607_probe,
++MODULE_AUTHOR("InvenSense, Inc.");
++MODULE_DESCRIPTION("InvenSense ICM-42607x device driver");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_INV_SENSORS_TIMESTAMP");
 -- 
 2.43.0
 
