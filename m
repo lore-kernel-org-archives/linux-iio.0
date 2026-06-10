@@ -1,63 +1,63 @@
-Received: from mail-dl1-f66.google.com (mail-dl1-f66.google.com [74.125.82.66])
+Received: from mail-dl1-f67.google.com (mail-dl1-f67.google.com [74.125.82.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A188C3630AF
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 04:24:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7BE7363089
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 04:24:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781065476; cv=none; b=QCbMYeY/fKqp62sqPIik6DToQgdZSc25ob5WMSY3azq5xf48DOrr32rhh7otJk3btckc4iw4Pa+s/Hca5KBe1/jWNN6tKmUYaYcakt96IlpFx6JTLQhP8UMjyLNeQN3UaaDYzO7xeL3112a7iVOqBtogEpvQufAr8feBsM8sl+M=
+	t=1781065477; cv=none; b=gYtW70cd8hmLpRnCbTCy8Uvv/uR6Wv3Ry62UuKoMRNWKOpCu16qUEIbaG1wehx4KGUxdaDMgcAfUyhHTrXsbmvSZQ8fHFwwRiwc3kinutkLtOpQtUZ8xZRGKqLrtmFPR1HExql/Kq8jbjzCak8MjnVZ7wwyhOPTQhBnluoDhSI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781065476; c=relaxed/simple;
-	bh=9M5GPmdNqIXqkG9CpsR2NODL59ShANf4I82yZOxyN2Q=;
+	s=arc-20240116; t=1781065477; c=relaxed/simple;
+	bh=e7NHbDHvB0LL9s23hKboeGP83ERY9Fa460rVgG483Sk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IHT6U5G2FIEj5z7Di5JFcNMHoezqGO8jmfaaoTgnDqC4kKNyNnM8ECsQ3sgiQlXnq8VJmriw4kvENJNJL3yOVBJ+3vmE4lVv8bySqzA/oLadsw6q5xrepwoiE44Kn4LhRy+sjsVmj2zyMtr9FFUCczu7+G1yy4heez5i6h1Y70M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cF5yS1ET; arc=none smtp.client-ip=74.125.82.66
+	 MIME-Version; b=qEHisuCsWKUveCTU8EQMUsHb1NHVh3H5A2esMnJrno11BXjZbqX8fm83+EIDPklIy9XPO2cZYJUVuBIYLphaKIWSOFAwABX52vwlbc2bEkBFMkVc+eCRrhZ/8j6fT2AQzp6kBZJREgSIcpgechjtezjxlXfnffZP5176TUVTE7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bOBiUTZQ; arc=none smtp.client-ip=74.125.82.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cF5yS1ET"
-Received: by mail-dl1-f66.google.com with SMTP id a92af1059eb24-1370417c01cso8301995c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 21:24:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bOBiUTZQ"
+Received: by mail-dl1-f67.google.com with SMTP id a92af1059eb24-1382533d428so2749042c88.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2026 21:24:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781065475; x=1781670275; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781065474; x=1781670274; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3jjXyfjM9Y5GYTs/KbPwC5lsFRedcbtN53s1l4Z8gmM=;
-        b=cF5yS1ETCgRWu4rxRvSVqd1Vx76SkbZ6APUOI1JcSiMoJk070YdE0h9iuUms99l9HT
-         bdKaYbwRg3RMXbsilNIxGOS2U0fbUpN+LH2h5Asgug9czvlB4MV0hIAzi396/qQB+W0W
-         gMn3B0F00zbH23t0IsFtlvy34BvjFJO+NUzT/Aq6Tns3WiUHvXuqbKv4ye2wHw68MWEy
-         80evx9kbaEvCATBkKWEfbCrd9Y9MZ0quKgL/F+qdfoy1ClPnhzJ81BJkPKAUGURGDy3h
-         YlzA+fZMUUa7G4Wdhjc0gRqLwXv4dn5o8ZTxUg8ZY/O9pxOx+gsf22oMfqq5C16bXcKZ
-         ++TQ==
+        bh=BOyuVcPENX+3J+cj9H/+//SNzPslISxsapH678b5nC8=;
+        b=bOBiUTZQNH7AMB0ozqdhGPLj16DRUaLIIW+KHd5emNVXTkPfpFMCotPWefARTO9sQq
+         gmdaog1ZLb953q1YRyEiWUIYfjFTzMj5Oez0Tgb3tEto43WXpz97PcC9yDjyMGd8+xQX
+         Qcqfc6ge0R74b/Ghvl0q22JdibCxi4KfVYzdSQF5FzteLEHmL+2E6AgzdqOfkz/dapoV
+         zEc7dSQ1NSUXK7s6qwY0m7E+nICCcYDXXBlkJ+7Zigc4DVHGx9CAPCB6mwoGsbRzzkPL
+         q9MDmeLL82y/dIj5CP6Z0HB1KQgG01Wqx388iOHLBytsMr6yb0X+LMJhLLUFf6zgLt00
+         myVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781065475; x=1781670275;
+        d=1e100.net; s=20251104; t=1781065474; x=1781670274;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=3jjXyfjM9Y5GYTs/KbPwC5lsFRedcbtN53s1l4Z8gmM=;
-        b=tQMeISs4l4Re/jieuqtp91mv2gx7jOgnBxScPqSNKKPMh5g9dYP7CRti7xodl77mjP
-         +TsVnWAvxXnAOzoowiEyLpZNFUNR/k+KH/J46NQ2eDvUM423ZYZylXbES5uwTgbfG8xc
-         gs+319iwIx+BUz6B3X5rihHldzN2jzSSYhSYcKTist0R0MS+wvYMJT5g+bzLTP9ZMwMF
-         48wFRUEbVH7YbEU3wu9dzcv10vw+3WbahvlTKkS787fspGBCdFSNNokhVXf/GK3a12W3
-         Lr5GTedD7EsXzTSrGsOywUhHhFzlvPWB2gfciNVwulFPsVMY81R7Lf+nQOsZgnwm2J96
-         5ATQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+p9mM65BuerZYJ9m9jOaC0F1RbOK7LZ3dJo1GcCOyZ+BSFGKYgt7zSq9jphaPznLW8PvDH4tOlpGg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwS9V/5O8tCBP0IQR+/QlL15U98zDB4s6U76nXhA+njRubnoLNy
-	403QUOXqjC8DXjRfvE1vnaTZfZBb0pLvPpWVFt33JG9AfAWVl0FBGriM
-X-Gm-Gg: Acq92OEuItcDsSdODDFEuvZsMRxdYA/uRANBX4Q3sxVyskEGCB4qIKgbUczQlqji4/o
-	BY14+G5hnCPRQQqiYXeNOvitpekYLilXDYX5L08vLA6A/sdMG4Sc7dFNwyzpM4I/kOnZHHuldL9
-	EJWuTj9KvrmIhhTtWijtg8ZJoPlfCHBhBjAv3OMHe6Z4BC7gpUiHkas6HNjtHQLGKKN4yXrELmI
-	GBdHd1ASqXcvKR4NaAffVZRjyNMGs1cT3l5L9JvTzF/sxkpJCZq1mUbz3XKb/W4dw1g3u/0TrPQ
-	xlNaSYI/ReE3oCNgKqEO7IIrRucN4F8O8dfEnGRYfQtfonv9WEJm91OVi0CsSToJiBhhYzCMfce
-	G4QiJQwnTtVfJaOwPiW9JCwWigVTj10Hf3mFdm+ENaalOtBmPpzghJCeRvcB26GehAM8cVZvthm
-	FpB/w5DSvGSVm6Lbb+WSR6UxV43YVylVBbdtMwvP4c7e/HWzgcmbY/+liUAvIKLKDKng==
-X-Received: by 2002:a05:7022:2222:b0:138:63d:e328 with SMTP id a92af1059eb24-138065b6855mr11419781c88.0.1781065474802;
-        Tue, 09 Jun 2026 21:24:34 -0700 (PDT)
+        bh=BOyuVcPENX+3J+cj9H/+//SNzPslISxsapH678b5nC8=;
+        b=J5yfbTqA/kFbD+XhjmYghgmhw4KRR0F22eKgTJQbA94W/oPvxWkDesqJ+8E+ZTP+MO
+         Uvtk9lXApOnV6CFvwyHh5lzTjOUPe+evVjF2R+wZ3VDp91tVeSyaghfvT77gVSq60GS0
+         uhDk1JEkkuvSpAoadiYmHanjjpPy6xaL54+c000IiKN0gAaYMZKG3/ZobX1IsQdR9Wac
+         3OhIaZ2MsT0VfSiMgIKxi8hcfUMy4nYhm19Fg5ZJPmgTlhAo4ww597PnnzO2Dl24JbbL
+         ydGmBKX/pyziWxnVhybVVuZC249DX0Iy0/jbiDmUDfhR6sQ8YPq72hl5wgILL9xkKd06
+         NcvA==
+X-Forwarded-Encrypted: i=1; AFNElJ/Kaeu3ng4euLMBJXEPQPwhgS5bUgOq5K8CUI9E0n0prSNQJIMW9FmObUlLUMPOf13vcH5gVM3GS3Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yycv4Rw0iGUJutQ24ONa2gcS5n4CITa/ZzFP+AdgaIBnwQ6x4MG
+	8nDoEFIeGnkWtbl1y+lh6gxyTULMHAcKVm1YM+XU41XrYDeLyaeya25+
+X-Gm-Gg: Acq92OHzJdZQP/nEA5o4nAF9FO5YM/MsbUrsVtvXKGTdoLT2zUkeDqY5hrGRjg/qV1l
+	8Exw3YiRJ4G4NvnO6pWNuhT4o6uCkBrYBUdNpjbVSFT4IaOpp086Zj3v2wrMRkFeyMnntV0TNtt
+	DI1TxBe1OhRLlgpmya0a2ICzR6O9GCy6M7d2JlcTdLOO/Q26GElPKMVG0zOI+Nlipi21dbG9xeg
+	AvrRpRmfi0gqot8zIaikgs5Pjc2se5E0PZ5+0N+EnvdAqwDFuJWRrhvQMo9O2XBoLzi4MFJB9bq
+	V2Xl+Gy/HfWu1Yxrw1+x7qt3Yp6i8XBzMr5ZIXjzEteXVCUOfxi7ZLAggJjk9b6nUx8kUNaDS1J
+	pf6IPfpXkwYTmxkVGUnMjIeiB61orX3UwQqixv3RVpPqLG5LDGpxKUDJYx/GufyRxghOZwnHRCp
+	HUzLRW9uSzoaKgL1uCDqQcb6YJ+4pGVcS3UDygPZ4CZVlwqjAP6+3cGrVINIXLsYMJTg==
+X-Received: by 2002:a05:7022:2397:b0:128:bae0:e03c with SMTP id a92af1059eb24-13806726c70mr13862240c88.30.1781065473990;
+        Tue, 09 Jun 2026 21:24:33 -0700 (PDT)
 Received: from localhost.localdomain ([76.32.119.210])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1381495bb00sm10941619c88.3.2026.06.09.21.24.34
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1381495bb00sm10941619c88.3.2026.06.09.21.24.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2026 21:24:34 -0700 (PDT)
+        Tue, 09 Jun 2026 21:24:33 -0700 (PDT)
 From: Hungyu Lin <dennylin0707@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -65,10 +65,11 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Hungyu Lin <dennylin0707@gmail.com>
-Subject: [PATCH 2/2] iio: magnetometer: bmc150: use FIELD_PREP and FIELD_GET helpers
-Date: Wed, 10 Jun 2026 04:24:18 +0000
-Message-Id: <20260610042418.90308-3-dennylin0707@gmail.com>
+	Hungyu Lin <dennylin0707@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH 1/2] iio: magnetometer: bmc150: sort includes
+Date: Wed, 10 Jun 2026 04:24:17 +0000
+Message-Id: <20260610042418.90308-2-dennylin0707@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260610042418.90308-1-dennylin0707@gmail.com>
 References: <20260610042418.90308-1-dennylin0707@gmail.com>
@@ -80,96 +81,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace open-coded bitfield operations with FIELD_PREP() and
-FIELD_GET() helpers where appropriate.
+Sort the include list alphabetically.
 
-Also simplify bmc150_magn_set_odr() by returning directly from
-the matching table entry.
-
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 34 ++++++++++++--------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/iio/magnetometer/bmc150_magn.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 6f2a4a863fbe..c402ac852efb 100644
+index bf2551988008..6f2a4a863fbe 100644
 --- a/drivers/iio/magnetometer/bmc150_magn.c
 +++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -9,6 +9,7 @@
+@@ -9,23 +9,23 @@
   * (C) Copyright 2011~2014 Bosch Sensortec GmbH All Rights Reserved
   */
  
-+#include <linux/bitfield.h>
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+-#include <linux/interrupt.h>
  #include <linux/cleanup.h>
  #include <linux/delay.h>
- #include <linux/i2c.h>
-@@ -245,14 +246,14 @@ static int bmc150_magn_set_power_mode(struct bmc150_magn_data *data,
- 		return regmap_update_bits(data->regmap,
- 					  BMC150_MAGN_REG_OPMODE_ODR,
- 					  BMC150_MAGN_MASK_OPMODE,
--					  BMC150_MAGN_MODE_SLEEP <<
--					  BMC150_MAGN_SHIFT_OPMODE);
-+					  FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
-+						  BMC150_MAGN_MODE_SLEEP));
- 	case BMC150_MAGN_POWER_MODE_NORMAL:
- 		return regmap_update_bits(data->regmap,
- 					  BMC150_MAGN_REG_OPMODE_ODR,
- 					  BMC150_MAGN_MASK_OPMODE,
--					  BMC150_MAGN_MODE_NORMAL <<
--					  BMC150_MAGN_SHIFT_OPMODE);
-+					  FIELD_PREP(BMC150_MAGN_MASK_OPMODE,
-+						  BMC150_MAGN_MODE_NORMAL));
- 	}
+-#include <linux/slab.h>
+-#include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
++#include <linux/i2c.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/events.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/slab.h>
  
- 	return -EINVAL;
-@@ -290,7 +291,8 @@ static int bmc150_magn_get_odr(struct bmc150_magn_data *data, int *val)
- 	ret = regmap_read(data->regmap, BMC150_MAGN_REG_OPMODE_ODR, &reg_val);
- 	if (ret < 0)
- 		return ret;
--	odr_val = (reg_val & BMC150_MAGN_MASK_ODR) >> BMC150_MAGN_SHIFT_ODR;
-+
-+	odr_val = FIELD_GET(BMC150_MAGN_MASK_ODR, reg_val);
- 
- 	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++)
- 		if (bmc150_magn_samp_freq_table[i].reg_val == odr_val) {
-@@ -303,21 +305,17 @@ static int bmc150_magn_get_odr(struct bmc150_magn_data *data, int *val)
- 
- static int bmc150_magn_set_odr(struct bmc150_magn_data *data, int val)
- {
--	int ret;
- 	u8 i;
- 
- 	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++) {
--		if (bmc150_magn_samp_freq_table[i].freq == val) {
--			ret = regmap_update_bits(data->regmap,
--						 BMC150_MAGN_REG_OPMODE_ODR,
--						 BMC150_MAGN_MASK_ODR,
--						 bmc150_magn_samp_freq_table[i].
--						 reg_val <<
--						 BMC150_MAGN_SHIFT_ODR);
--			if (ret < 0)
--				return ret;
--			return 0;
--		}
-+		if (bmc150_magn_samp_freq_table[i].freq != val)
-+			continue;
-+
-+		return regmap_update_bits(data->regmap,
-+					 BMC150_MAGN_REG_OPMODE_ODR,
-+					 BMC150_MAGN_MASK_ODR,
-+					 FIELD_PREP(BMC150_MAGN_MASK_ODR,
-+						 bmc150_magn_samp_freq_table[i].reg_val));
- 	}
- 
- 	return -EINVAL;
-@@ -800,7 +798,7 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 
- 	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
- 				 BMC150_MAGN_MASK_DRDY_EN,
--				 state << BMC150_MAGN_SHIFT_DRDY_EN);
-+				 FIELD_PREP(BMC150_MAGN_MASK_DRDY_EN, state));
- 	if (ret < 0)
- 		return ret;
+ #include "bmc150_magn.h"
  
 -- 
 2.34.1
