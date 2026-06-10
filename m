@@ -1,106 +1,79 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4E003E3C41
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 13:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CB1A3E314E;
+	Wed, 10 Jun 2026 14:10:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781099966; cv=none; b=UAwmyw2Tadu/8s55w+IK3hbaiKzqQNBmfssoUvElzXswJ1Ef8bUfub1uW+brYYGA6ZxkwT6XEXFZvAg/wgOSgKEmWsWhk3XVBzdggYhnRgPGEwThNQKjDNVMEJ5eO9RY5DvvMbmxJPdrF0GABmFdDrihDAn1LFKsv8pZ10B+pbs=
+	t=1781100654; cv=none; b=E93gXqvM5Z8O4OVHVksN+bab7vMlW9ikS9Iey+lsgd+zDA3PQOHgxhGKFt7DHHLnZKHYg0hi5cduN3vsuYTWkIIJ01giHjyDpgM84rEF2+x4TIYniUBrgf0KVfCoMa4z7wGeOT949xGFulTIF5Iufz5pkW1e4eyoGq4F2HuRlts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781099966; c=relaxed/simple;
-	bh=t1Vx0WWczc68f+U8q9DeNEAnrtMP4GtI8eWuzGkkt/o=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cb8+1y3wA86pycQo8Rp/M7093d+ouIA0+L4zXEUUS3IMj4T6juuUJWSUkc02yuJLTogN84stoaVktMdYTYGxVU+vfnZOAwPR5gbEMP9aSaNDWMgHjSO0qwuXLFkD5SHAIOJCkdzQ8ml4wtzSOGnO1nB191Nf6vMZcHwad0CbG50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UXZo2n26; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781100654; c=relaxed/simple;
+	bh=xn1LXUaxDVOnPGW1ZtD+bChDwMCc+ZU6DDXXbAl/XtY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GjcgmCiKxeo6e+fdBkfsZybeFVMm2rdEfVcWoPU+RqFjMhKLHVReXrW/EXhJGD6G+jMn8WdF4jgZOMw+oq3SUIBS+lW+PVeDzv+m/vApZfMtWhV9vXfLP+8sJY7qRoE7pNA91vYekO1vzouh/FW4+ZVBunT8whDERXzMmAT0ZHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VuIuMbWy; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UXZo2n26"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490bc6a7958so60539075e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 06:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781099963; x=1781704763; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2F9Bu27zhLAQxo3bpwCcfJfzXxxZFv8Hb8JSD4aipxM=;
-        b=UXZo2n26mFkwC1lTed07AlrKxix9tRTk9TbBMKK0hkw5/B0LXWOKzdFC3xnHUelz2Y
-         FDKAte/+bDepp7TlVLSRaF3yeQk8xS2H6ERmz+QOtHG8iXfr3QmHQINGZwFi0AGH1Tnk
-         NwVXB9cMfnDbUBF2CkP67pkJXRA8Hpf1dTkVC0kXlo0eSBIf/Lfg7PLdD5ZFHmI4/kHC
-         uPBMa49tewgYsFvDPyrR1Z26KG7wIuGFW/C7MfQVxoJc1p7O3HLaYmUqPceCld9DG1Ca
-         pdvftPYPJFIECtKlEWW9J8vWEVN9EHmev7CKZEgjNS04WQztDxkFF0SI1qCeejORznSk
-         FKoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781099963; x=1781704763;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=2F9Bu27zhLAQxo3bpwCcfJfzXxxZFv8Hb8JSD4aipxM=;
-        b=m9nr4oCEFl9u55wyle91JbYlUrSUIdvfJGSSTrwjuYL8yisVOszeXk6Kh5sqcKsyBq
-         MjcXRn2c/tqKffbeetNcShSmUg7VWMbXkUiHBjMFGJMH1uqBOJEd9j4z/GUKv1IShId4
-         9ZQnWhlsmd03b0Nn/qwGfZslI5YqiJDN1VtnukPY4N+qhSZx5iIKURUUJo2fqyAu9E4Z
-         SJZBjD8u1hXIpIU1tFx2O3Nxps1rrc6A6x0PCdERzr3JJL6Tj6tlDnDrGeAnRbEJ+vRZ
-         hoLHjW8zp07PeTcGggBHW93mXn13IOr/fjkFtrE/Ej8gr5IBpSFDCPK9KrWy6nvaBpcr
-         mm8w==
-X-Forwarded-Encrypted: i=1; AFNElJ8D4Lk7xzz8Rx9xOU89VV0PgjiHv4E8XECfmyUyOvQUsXVYpoxGCCOQ8cESm3i70nwP70LjKS3BIWU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxr6Ekp6OMbnjNMdaw1izSLSUEwtctuaetyNjxP/vKnu0gpHr/X
-	XNkt+q2NV2wqOOgoOmGWllO60ckUMmNN4M6chrn0wi4mWh7QMgayG0Qw
-X-Gm-Gg: Acq92OGdmzphm5txYVCoLa881TURxpetoVlzKCie9uDDpD7HHaiPaRpY4zwhkHonCft
-	NUuyyag+Rw6b5JUuhSi4+aEvl1lC/ylMlulfpMSv14Fuy7dmDNHQhwsrD8zwBsa8T4saKQxRim8
-	3OJqm08m3RaqScNm+TLMVNtocT0eOMKZQuroHLSImTEHmCNXKJtqWwAv2wUhX7Slyc4Q863gScs
-	lK/9Obee+mnAd8+Mpv0tXCiswcSr/9JigdX3xsGyMztY22GzZl72CC5/hfc3rgVytxkLPCKPjGt
-	9kpEzaez+yxyQk0Jt9+l4RNoQ/eEEpgPHgi25hubhorlpWgSsEY5adJlLFbcn7Wol6t6f3p9K8c
-	z+3N7zuYLsDkqC259zmbJrLjizp/WQwvEV1kBcYG2IdXJGHVcP0bgw78X+ZRvhHsZX5tymdnr8e
-	8zOqiG2qswthkKATXxz2XZUmV7VLRuzDVclIPyopiBaFUMc2ZYLsbhGz4zMvFdBH+j/rPkpIGhh
-	Bl79j6I9TT77UC6qXAKbrQUFmkjeZhsGTrFXZgX0CfAMDkGTluEIXjWHs2FuL5pg3GPPQrObYe0
-	8FzLXtU3CisBgsFOEYZXEYPBI63RTxDAkCEhrot01+UrCKi/F3aQZr61Ld4QzknjOlVkY2y6h+B
-	K
-X-Received: by 2002:a05:600c:3b04:b0:490:af63:2cb1 with SMTP id 5b1f17b1804b1-490c2cdd2bemr336741045e9.7.1781099962639;
-        Wed, 10 Jun 2026 06:59:22 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-490bc3cc0f8sm559386445e9.8.2026.06.10.06.59.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 06:59:22 -0700 (PDT)
-Date: Wed, 10 Jun 2026 15:59:21 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>
-Subject: Re: [PATCH] iio: core-trigger: correct CONFIG_IIO_TRIGGER macro
- name in #endif comment
-Message-ID: <20260610155921.0000655c@gmail.com>
-In-Reply-To: <ailpoosKZwGskxUo@ashevche-desk.local>
-References: <20260610040501.204967-1-enelsonmoore@gmail.com>
-	<ailpoosKZwGskxUo@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VuIuMbWy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781100654; x=1812636654;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xn1LXUaxDVOnPGW1ZtD+bChDwMCc+ZU6DDXXbAl/XtY=;
+  b=VuIuMbWyHtZC1UMbYAH+865myhawSJ+fP+CVKcGmOkWGS9Po9TNwrwUl
+   /VWrMaXgXOiIJUIrrMNWLrWEcvBcWswU15aA0AIRVOix7gtWhDSNOYc28
+   U7k0sF3QF8MglXnBSox/jCRZbaA1KZ3EyJG1h2dN47oNooRyxpxAkp+gB
+   H7sq8tKuDqqso/rjByh/jZGj6Ntg9B7qPV8fLa4e4wYd/zPVHTUgCJRe0
+   Ws47wO3IVHGH4KamSqDX/pku+ygwsK3bUVCky5J+MVIBrtDbjyXnhkpDy
+   TDUkeApkCgcoAte+PdHDY8miySb0OUOkNEGKiAUfbXKDZcu3Y7ST2DBJz
+   w==;
+X-CSE-ConnectionGUID: 6XuJ/IThTnWXdUz/OO3ovw==
+X-CSE-MsgGUID: QaSTAkSRSBunnBAxgoWbkA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11812"; a="81740532"
+X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
+   d="scan'208";a="81740532"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 07:10:53 -0700
+X-CSE-ConnectionGUID: 0aUnaCiZTjSKM9NroArG2g==
+X-CSE-MsgGUID: TD/XocS1TXO6fX7YenI/+Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,197,1774335600"; 
+   d="scan'208";a="246204457"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.38])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 07:10:51 -0700
+Date: Wed, 10 Jun 2026 17:10:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hungyu Lin <dennylin0707@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 0/2] iio: magnetometer: bmc150: use FIELD_PREP and
+ FIELD_GET helpers
+Message-ID: <ailwaGpVa_SFTOx1@ashevche-desk.local>
+References: <20260610135831.91739-1-dennylin0707@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260610135831.91739-1-dennylin0707@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 10 Jun 2026 16:41:54 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, Jun 10, 2026 at 01:58:29PM +0000, Hungyu Lin wrote:
 
-> On Tue, Jun 09, 2026 at 09:05:01PM -0700, Ethan Nelson-Moore wrote:
-> > A comment in drivers/iio/iio_core_trigger.h incorrectly refers to
-> > CONFIG_TRIGGER_CONSUMER instead of CONFIG_IIO_TRIGGER. Correct it.
-> > 
-> > Discovered while searching for CONFIG_* symbols referenced in code
-> > but not defined in any Kconfig file.  
-> 
-> (Btw, did you do that manually or using some scripts?)
-> 
-> Wow! This line is from 2009
- 
-Perhaps there should be an award for finding issues this old :)
+Both now are fine to me,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
