@@ -1,126 +1,126 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5BCE40D56B
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 12:19:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24E9407CE1;
+	Wed, 10 Jun 2026 13:20:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781093963; cv=none; b=PFN0pgZIGm0Eg0ZOSNI87boLMuneE9GWgy0Xyp/wlQ9A+95/urVYAtjYtrcYvMkR17BuTcmG+rzYPbcQvsIkn1gZEK9jD9D20oTdbYYuC3izELYlsEv0yUbO8lSggWlyuniZ9eSbCjeY8DA4xPC3/fYqawtP1w0wk/bxhgGN4eI=
+	t=1781097635; cv=none; b=JCwB39KXGD7Ugz+BVbZ6Wvcf91cfhbqqih5phLC041uug8w+TQCN1hSHyyQMFBUsboeEDXJOUKDvLx8dhb1eXaaN4ofJMCb1DH8rDdAwOGf1WIKC431/kP0miMor1OMMVM1V01KSsjyt0PpxGjJNOAIoqq4JmulsIqZHbE+IK+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781093963; c=relaxed/simple;
-	bh=zxYJs+l4vwEP1WsqTw7YX4PmfhSmZk3Nu7mRqrVorus=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P9QcPU3ZMychl7XE5Vo63J25wTxVCdaLpVF4eqQwurpGBoWPH9b7W4XFS7jKAdppILJ1/nNXQb3Ttlr+yyFLnyPOEy6qDgcmHhihDp4ldvwy8RfuoPP6FQtbc1p0jMd9qVSZOFJc6SWH7BY/DITcq3bvfs2DAC0ECEIZK9JM7yI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bZjzbMbs; arc=none smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781097635; c=relaxed/simple;
+	bh=pLfnxG8CRgB2w2CIPqE1uqZRrr2lOmlh/ZfKh14Oc+g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XAfz9haOmUucJr+OaXs79u0+UkXRPN29bvzC2tmdi2vMjR1Lp6qQgMRjcbQaORzM0uItrH0zW9AtBsO7v977ksKsozslQu6auEtHNYkH2tLFHRvfCbvYaHqRK3vzwwzaUjbBdK8oUtNIbLzBPr6s4/T2FrAaOyARqNOuZBcwTd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=ioFXR+3k; arc=none smtp.client-ip=185.246.85.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bZjzbMbs"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-8ced8f44da0so73302276d6.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 05:19:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781093960; x=1781698760; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GX8so8D0LdsxLyGx+h3I0h7Z/PH7ZZYi77dt1OsmmTU=;
-        b=bZjzbMbsL2upz4g3Q8tnYU/piqtm12xzjhtoaMnfuwn7xF60673QjBt/tCx7YuS2Dy
-         CpEHRkhcKf8ODGN6Cf8nOWJMNbIhEyJwxCdR6RvAwLnH5R1QNZivbL6budXcJmrWzKZu
-         XVzyZ0O20l0mfEWgui6ovCYVb4b+InM3L/qPDb7PjpYxcFk8q543AdxsJcNnrzyLMynB
-         DU5UIiIIeiID7UbcBnSZOYuLvKUkFJVdw0mfDwBBNit01dbFVWTV6Pvnoe/0b+XFRNrF
-         gdo/fcy5FxfSACzwrjceDAMYsrVKdr208+hkNeFX4MGYVqhiYOFIKiwCEGGIg+Uww+Pq
-         lYyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781093960; x=1781698760;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GX8so8D0LdsxLyGx+h3I0h7Z/PH7ZZYi77dt1OsmmTU=;
-        b=cwBbbZ6N3sRERXQ7ive5o9fDovP/cWCSiB5yIKTKq1VPhjSHgR6vzjRgVuj8i1X0Nw
-         aLocaxhES1jl+xYIi9x2dw/3BLY+I2T9uU1Hn+oSJwROTyJqMjMTbodpcz++OFwkiwzu
-         OkcLUFRqbjN3k5aTthPqAmi0NVhPbTdNBSjuV/+XVjS9eDMZu8bHsOyjb7HmazSOTxQN
-         ovUxAGF0iCCGuE56A0VgIUaMj7Rh7OAHwIsrtg6rIpNPkxsR51G0V3dbJZ6FbBhLRp1X
-         Y58Iunbi/Z1264hDYoVroCSYXOsXezDQcM0MIyN6HEvRxKKb8Z8/g2+xuVVr2D/Bk8xK
-         wwZA==
-X-Forwarded-Encrypted: i=1; AFNElJ9sdpTafNz6QPuXRE2oBGDLS0ieWOy3EcNHDQx/hIugTIkZw3ySmvhVEbSDx1ckEccy2dBKA9koRlY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyB0FQNkp/9vbSWnOKxNcahKMwru4evtE9ACdiGzPQcdj/4FDTG
-	rVZs8F9drjCPU9rbI/OtAlAZNgEuxXxaWKxisSIqxO6sEUJn8uO2aAT+
-X-Gm-Gg: Acq92OFZ+KBu65v4ZbxePO6BOygBrZlJWy4iVhS81YbRCPOWdobN2mk9d08PlgINjOE
-	MzmP5KOPmY60/Qx14wwr90atCXouQhkE1D4P0/FwpW8tqplrByaAqYQts5eOWomgZnRARcPPQc4
-	E2NkRpd/O6lHCBLjDrZI0l9uHdV/6mtmb0BCU+PlOPmQ0qKJ7FOIymGi2xG+X+Hw65QwU3cnn/f
-	j6jN7cT21Pe/a7UafFZuH/3LL6962yG050DUy0OkSH4fS82flWIEtvwf+EDMi34gp3Zdas9kHhe
-	Nksdl2bDrXvHLkhk5hbwhdJTCiDFvnlsiWzG7hDBmst4UfkgYXERU1kXre3c6GJ4gJoBvAyiCBq
-	juCbccx/MOIRldWDtil3psLEnDrtxUS8xkYXYmbAcG/cijN4SmPnpJdM90WEYNFkMOwJX7ZxwE8
-	dh8H4P85htUkWk3v1VwEVhuMGnv2nl
-X-Received: by 2002:ad4:52c7:0:b0:8ac:a6bd:503b with SMTP id 6a1803df08f44-8cee5fed5damr322934136d6.15.1781093960602;
-        Wed, 10 Jun 2026 05:19:20 -0700 (PDT)
-Received: from localhost ([43.225.189.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8ceccdb9bd6sm258065746d6.13.2026.06.10.05.19.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Jun 2026 05:19:18 -0700 (PDT)
-Date: Wed, 10 Jun 2026 15:19:11 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Maxwell Doose <m32285159@gmail.com>, Nuno Sa <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix uninitialized data in debugfs
-Message-ID: <ailWP0rNKbVAn4kG@stanley.mountain>
-References: <aiEtIGOFhF8AfUCT@stanley.mountain>
- <aiExQzpIOwPgwd3-@ashevche-desk.local>
- <aiE3N6zErq2WcCvS@ashevche-desk.local>
- <aiFVuvVtaWbjfVzA@stanley.mountain>
- <aiFWg6vC2cVbONTK@stanley.mountain>
- <aiGRzFrSU6QUL4R2@ashevche-desk.local>
- <aiJo1kjN3_XDUdBc@stanley.mountain>
- <aiKIoqR0IQBZ-1ZD@ashevche-desk.local>
- <aiewiqInppHKilw1@stanley.mountain>
- <aik_bXUpVc90_eIy@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ioFXR+3k"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-03.galae.net (Postfix) with ESMTPS id 2DBC44E42E01;
+	Wed, 10 Jun 2026 13:20:32 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id F2C7A5FFC9;
+	Wed, 10 Jun 2026 13:20:31 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C622E106B9316;
+	Wed, 10 Jun 2026 15:20:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1781097631; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 in-reply-to:references; bh=S/sAbNVC/Zw03oyI6CPc1uAG9o/25ixggU+uAfnF4sc=;
+	b=ioFXR+3ks6+ilxULAkEMKUNAbVQhEil8Jc/xfAV6m0T4dhyDz7FdJWRrdUFRvDEsHh75i9
+	Sdwf1oNZ3mHMdj2kia2Tu2Iw2OESVPIGN4T/SUXjZCmPvfRmmEIJapmW6xZUh8XxLb6YCT
+	0LGNanMDOemjN7AZFV3k8ZmkrFrL7eMJRtbbj4GuPkJBsg8vxNZXbTX0XNtNjkhtS8lUxd
+	LFSkgW2TiIar1Tr0TH//nBM1McjFKIyTGwgw4qQ7ALKdWzft5bu8lJkQEplhCjJ6lsYRpw
+	06b++Mtvt0sAb6VtjvwtcUKQ228zk6gNCfeBgMrfvoaIcimdPFJi5etTs7E/4A==
+From: Romain Gantois <romain.gantois@bootlin.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Puranjay Mohan <puranjay@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+ Wil Stark <wil_stark@keysight.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject:
+ Re: [PATCH v2 0/2] iio: temperature: tmp117: Support the TMP119 sensor
+Date: Wed, 10 Jun 2026 15:20:22 +0200
+Message-ID: <Wejeq12mSna7icR-VLLjig@bootlin.com>
+In-Reply-To: <aigpNx-8rbXfJecC@ashevche-desk.local>
+References:
+ <20260608-tmp119-v2-0-30c3537d5097@bootlin.com>
+ <20260608182412.4738f1d4@jic23-huawei> <aigpNx-8rbXfJecC@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aik_bXUpVc90_eIy@ashevche-desk.local>
+Content-Type: multipart/signed; boundary="nextPartgUvre__ZQNuAi-rCuc2NKw";
+ micalg="pgp-sha512"; protocol="application/pgp-signature"
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Wed, Jun 10, 2026 at 01:41:49PM +0300, Andy Shevchenko wrote:
-> On Tue, Jun 09, 2026 at 09:19:54AM +0300, Dan Carpenter wrote:
-> > On Fri, Jun 05, 2026 at 11:28:18AM +0300, Andy Shevchenko wrote:
-> > > On Fri, Jun 05, 2026 at 09:12:38AM +0300, Dan Carpenter wrote:
-> > > > On Thu, Jun 04, 2026 at 05:55:08PM +0300, Andy Shevchenko wrote:
-> > > > > On Thu, Jun 04, 2026 at 01:42:11PM +0300, Dan Carpenter wrote:
-> > > > > > On Thu, Jun 04, 2026 at 01:38:50PM +0300, Dan Carpenter wrote:
-> > > > > > >    168          ret = sscanf(buf, "%i %i", &back->cached_reg_addr, &val);
-> > > > > > >                              ^^^
-> > > > > > > Uninitialized variable.
-> > > > > > 
-> > > > > > s/variable/data/.
-> > > > > 
-> > > > > With what I asked in the previous reply and what you explained there
-> > > > > (thanks, btw!) I still think your patches are not fully correct. They
-> > > > > will require to atomically write all or nothing. If we want support
-> > > > > partial writes we need to go with that differently (reset ppos when
-> > > > > we got enough or more than enough data).
-> > > > 
-> > > > Requiring writes to syfs and debugfs be atomic is pretty normal and
-> > > > works well in practice.  These are very small writes.
-> > > 
-> > > Perhaps. In any case your patch will break existing partial writes, right?
+--nextPartgUvre__ZQNuAi-rCuc2NKw
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
+From: Romain Gantois <romain.gantois@bootlin.com>
+Subject:
+ Re: [PATCH v2 0/2] iio: temperature: tmp117: Support the TMP119 sensor
+Date: Wed, 10 Jun 2026 15:20:22 +0200
+Message-ID: <Wejeq12mSna7icR-VLLjig@bootlin.com>
+In-Reply-To: <aigpNx-8rbXfJecC@ashevche-desk.local>
+MIME-Version: 1.0
+
+On Tuesday, 9 June 2026 16:54:47 CEST Andy Shevchenko wrote:
+> On Mon, Jun 08, 2026 at 06:24:12PM +0100, Jonathan Cameron wrote:
+> > On Mon, 08 Jun 2026 18:00:23 +0200
 > > 
-> > partial writes never worked
+> > Romain Gantois <romain.gantois@bootlin.com> wrote:
+> > > This is version two of my series which adds support for the TMP119,
+> > > which has an identical programming model to the TMP117, but slightly
+> > > different specs and electrical characteristics.
+> > 
+> > Other than the DT indent thing Conor calls out this looks fine to me.
+> > However, unless the cycle is extended IIO is effectively closed for this
+> > kernel cycle. Anything I queue up now will be targeting 7.3 now.
+> > On the plus side no rush for v3!
 > 
-> I don't get this. Does it mean it never worked at all, or in this particular case?
-> Also "never worked" means the same issue you pointed out (uninitialised buffer) or
-> something else?
+> Please, incorporate what I commented on. Id est add #include
+> <linux/array_size.h>
 
-I mean in this case.  The patch doesn't introduce a regression because
-partial writes were already broken.
+ACK, I will.
 
-regards,
-dan carpenter
+Thanks,
+
+-- 
+Romain Gantois, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--nextPartgUvre__ZQNuAi-rCuc2NKw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEIcCsAScRrtr7W0x0KCYAIARzeA4FAmopZJYACgkQKCYAIARz
+eA559Q//aHgExb9JS0/Xuu3+ZLPeDq/zBtdD0TeSjjeUMQddcl/Cn6QYRf9KbRd7
+zF2pr+g4CvxUqnORxdFXUU8nVGhts3iT7Dxe9NnxhiQu1EvJY1D8yZeR44lnPS30
+4G8KEUZD7Ctl9V45GqgepIZnGVIdSW8VVJuGC1/4uesZgrTev84LWe+XwbJ7nxuX
+2X/VaNQTzQDxN+tASUsnnE3jBb4SuBv8hHYbivd63VKxSURdCRuHGPtwqFtGtDz8
+pbXcoP74KEFxhWkRkM7lGDiiksnjnEYTLJBSEzIcE7HG1WYR/CHS/CySBh/gaByg
+SDRNHHiwb5HQ0+gOSebmeDkbwc64xNQOl2pB33HpYlR2QXog3GX8SnyFaE+gyRei
+Xs3+EoGG8qB7wv9vHFnhOrv5KGYbw1Arp5ujYpq/8Jmoe/kgYhd/++d8s4WD7S+c
+n5v1paQkiOubpHvBgYzuTW4DNxUWGwbT7EX4XnplMFUEc2hnMXK/3SXjBQx4EQJw
+kFwkjoT2qUnsPARdmWiDTJEHYOV3RHIysmbeqgGOtGN6gNCEZv2NJp4+6nWY0Ld9
+A3+sFkUwk8CF8ifL3oDHfp/UTQZgN2Gc3jJxYfThuFDwEMbk+mmH20LBMfBChtCv
+tpP9p5Pmxx7RyzDShy4ALbqX3K0pf+k7JclfTHDT37nzSoSSbNo=
+=PdVB
+-----END PGP SIGNATURE-----
+
+--nextPartgUvre__ZQNuAi-rCuc2NKw--
+
+
 
