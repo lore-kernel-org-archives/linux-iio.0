@@ -1,205 +1,120 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011023.outbound.protection.outlook.com [40.93.194.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D0B3932F7;
-	Wed, 10 Jun 2026 11:57:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781092621; cv=fail; b=t1+k6HTAQaFb1J3I92MQeEiUzz84aDsW4XdXqmepEtQfcjnX+EkYUmJKwZxqv286O4MTX8qT2mLiyqypBeI93z+mNcVE1G304w9tH0s+qEgHJmOtDZUeTSBctokpWLKJXf6dp+iD2Ix1FEoK+YJSSp1gQPZsV7P7epYgruCV4wc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781092621; c=relaxed/simple;
-	bh=GBUkSxra48CobRabLu5WReIvPyyIMK0K2dIBlYRcYAU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=njLXczkTog91ZAFIauFtvafCzLzmq05lAmWEWi2nJmSyq9IOb7Q0l1kgz8MryvRhW1g1cF5tPj2Yw/+NHdIvYBKlx1yI0VjjtQpwoBOvX+xu2/PquBfaHQBumPA3GK+1f975utAP1WxXYX6XzCLyCLPkgP0bNJLOEIpcBUGhOvY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=avcxcumx; arc=fail smtp.client-ip=40.93.194.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEFB84028E8
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 11:57:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781092629; cv=none; b=uDM2l1EE5JGqOu+Qa05p6AP78i4Cm7Qh4SLbRLUUpIbdnEm9PQq13JrzkrvITjH4rFvjVqzA97Bj/O4bv8uqZckuKpTtQirI96H20e/CsGqzd9Tkj5MiRcM33sB4PpEKe7UqMNJJ24ifTovetyFBGy7Zm2mUhIv9GpkuDi/Sgg0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781092629; c=relaxed/simple;
+	bh=3Ow1vhYaiddpdkYNnZdeAh7QrGmJJKJ8rVShuvEylN0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OCrwbgIb0+G15QG62TMdD19M8B0oH1I0hmn/cPTQUXHTfmP41z5ktNBc4XR3JTDHyzALOCwKiYrpPcrauZFdc+enaJ9tpbF2hrJFebXWJfOeK+OOfWzDrOyyg3z9sW2vn2VHua+bQtmIidyKd1xXB/YPuiSxiVWSzjoHt3EQ5cU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=snu.ac.kr; spf=pass smtp.mailfrom=snu.ac.kr; dkim=pass (1024-bit key) header.d=snu.ac.kr header.i=@snu.ac.kr header.b=NtH2ChHi; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=snu.ac.kr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=snu.ac.kr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="avcxcumx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SVbYhR3jNBOWRrYVUmlL6eZkGysjiWxvTZNY8l/5ia9KB4K8hIc30zl0iHHKab93dM8Qsd2ojgfC4hr4IfrbkOsVS8hrEA9w7xhZBCHL6WitdbcKW38IMek9ogt1hEH0ImSPHzG4IHAR3wVnp+DWdhwHD2P60awlkUPUukIl9Md3RKOsBfwNPmNah3FrzJnIMZI7QYJqk8wTtl1RkMOKb2pxnang+89MEuPlzHcPItPtvhxUZe1OexGskVo7UZYChek5WetvVsyAUyZAuEaffasCkIJihbGUqKSu8TlAHQzT4QhRu5LGjfV9fh/L3qoflT5HkDYwpEi3nKKj1IPjHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gBg9uFwfE4or8TQrsajeNEKuEqcyGKpEWOhmI9bfJAM=;
- b=hGLkhR/hdfAW0lY5opu/4eUdUcmO3nFgP0t9Fws9ptvv0E6r9z71bHsXFQ5Xpel7ESWAO+fj4LNZV57ie4/hZIEBkWpRo3P+GKdNTWB71SdbvDer7gv8N0nFhG63HF91hEcSzEKqPCSLC3S7OSQZDIrKVg8M8Wd6Zzu8fzCTLmemkYP1BjIrctgTJ8UgYhP/1izw8hlbiIRrcuc8IKszOIbz+odV5Pyp7SSHOuJ7R5AJATrVZsX6RE/Oyw9Pb8GIBBnl0mXbYr/l/tXW0xkmWcKFd8w8qe2SjI3etCxGz2+fQTyqBZpGpmFpvFPiQ+2zRr15YnDoCc3JpWjfP/OOYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gBg9uFwfE4or8TQrsajeNEKuEqcyGKpEWOhmI9bfJAM=;
- b=avcxcumx+aP0PY9KUF1WUdEivaqgRH8OjAhZOWfPtMLJI2IAydFxXUckpRS4JaQnU691O4obykPlH7fIWm88ATReh6+faf/KqPpTLWKqGaUDv3lUm1NxNufWbKbUxodYOMnSVfHdfeFQ3zDD5P3wzKxQogsJjZ1nmZVJq3BpWzQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by PH7PR12MB8427.namprd12.prod.outlook.com (2603:10b6:510:242::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.13; Wed, 10 Jun
- 2026 11:56:56 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0092.011; Wed, 10 Jun 2026
- 11:56:56 +0000
-Message-ID: <4416c930-73a1-43c2-a60a-852898c64f1a@amd.com>
-Date: Wed, 10 Jun 2026 12:56:52 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/5] iio: adc: versal-sysmon: add I2C driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, conall.ogriofa@amd.com, michal.simek@amd.com,
- linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260608183801.1257051-1-salih.erim@amd.com>
- <20260608183801.1257051-4-salih.erim@amd.com>
- <aihPvR0u5Lo3xELX@ashevche-desk.local>
-Content-Language: en-US
-From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <aihPvR0u5Lo3xELX@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO6P265CA0027.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2ff::13) To IA1PR12MB7736.namprd12.prod.outlook.com
- (2603:10b6:208:420::15)
+	dkim=pass (1024-bit key) header.d=snu.ac.kr header.i=@snu.ac.kr header.b="NtH2ChHi"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-84230ab8857so2988399b3a.1
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 04:57:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=snu.ac.kr; s=google; t=1781092627; x=1781697427; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5jBBtH27kqbFTX1MrIF55iLAuenItTJhzKigqLVUXl8=;
+        b=NtH2ChHiWKs17UL18Bhscf+iCSjRRx37h0SKjVwvNddTafg9mBRWYQsbfiE8tl/LD9
+         XoVS2OU7vv+8iKANIwXpvuN97VrVB+WEMzfHMEtuENLwAFZy0ZIgaGogknD7+tT38phr
+         J+ORK1A/duqfhB1RX7gNdzdbeAopkgIqfaGiA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781092627; x=1781697427;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5jBBtH27kqbFTX1MrIF55iLAuenItTJhzKigqLVUXl8=;
+        b=IHRODeEVZagjWJXwKpZkRvlvn14bQ1FxjFgu8TYKZBt/iaHy4GYSTcXoJaOqECJWPk
+         xcuShCi/IEZkQ/Zr368RU6IaO5QMpz80eIvFLX7Ja82SZWV8M3vP+lijnU+9Sfpwj7sk
+         0tYd0Zduk9DBYX6LlVlZpLGJNOxtBkMV8hKM/AOlXi59Y2DuLebne1dy75xncsqPgB1U
+         BvQRK+CjYB5VXf23TwAfUhe+nrUX94tN4JZ1Eh5a5OZ3YQiIPVJoyKYRy26AwPBGhjDg
+         fkfStpmyJ5TbYJiUPOB+5n30lXYotnd5EhzSuS+erdcoIErlh7AK91PCsm1g6U0tT/9r
+         VJCA==
+X-Forwarded-Encrypted: i=1; AFNElJ8w6ltnZY06ReM2v3TayX2LOedYn1QMxJknykQTOCgoBilACdujIgNIj+ZMWzwBjxhoa1pFnLwPYH8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyle1cpvdGn7ah5dUuAK4RMHkeObfTTywyLuz274FR8+WFv7aAi
+	UhZBODYC+cSv5OWLGla/kOywPjZDlgybbD+/ftj9XKH/RENKeH7KyMDz7M8LHaQmrvI=
+X-Gm-Gg: Acq92OHlyBa3rRY27RzFBcETq6UPm1p+WJcYAVXqvShCbYWJzMYYufHrCF4P3W31Jt3
+	uLdTy+uT3TZzwiTEu5h0hQRqVdL9NnBN1w0o7IA/lXktuHtkf8vusWbeC+hFUKs8ViityA/nZWt
+	dn6KilwqECDnqpEYPxcHzZMniUpwFstVMSIsOScsoU/6Pvl7a3bP04HfpWx92vYa3lXjg0R3HhC
+	xzGPv4CyzDWUV6Cy7wz5swWRP+UY2VeFfeZXi8mE60mYhTYrhu8X0weE/nZL2GBj0Jf6FIYZWdO
+	MDSbiVBHwmM81bvL9f2AQLFOYNvL1g9EAMvJU5ggqNMFWV9IqEkx8KbjYBleLoQqIDpoFGOMdxb
+	pMPv/HCL/OiDgCmapw8gkJGNPJhbocE8SF76CkbNaZ1TVXmEwNvrNg/Ig+O7ns+dR8WjbDKJjI/
+	Qa38AjEuJDoeXB1AT/9KkHZutuetf0EWaw2sfzCO9r5WAF1XW3aTe8xW5lt+WKL3MVl2M=
+X-Received: by 2002:a05:6a00:a10:b0:835:3949:3c1f with SMTP id d2e1a72fcca58-842b0f52ec3mr26405130b3a.24.1781092627121;
+        Wed, 10 Jun 2026 04:57:07 -0700 (PDT)
+Received: from nunu.. (nunu.snu.ac.kr. [147.46.112.82])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8428288002asm24249042b3a.31.2026.06.10.04.57.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jun 2026 04:57:06 -0700 (PDT)
+From: Jaeyoung Chung <jjy600901@snu.ac.kr>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>
+Cc: Jaeyoung Chung <jjy600901@snu.ac.kr>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Sangyun Kim <sangyun.kim@snu.ac.kr>,
+	Kyungwook Boo <bookyungwook@gmail.com>
+Subject: iio: adc: KASAN wild-memory-access in complete() on early IRQ
+Date: Wed, 10 Jun 2026 20:57:00 +0900
+Message-Id: <20260610115700.774689-1-jjy600901@snu.ac.kr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|PH7PR12MB8427:EE_
-X-MS-Office365-Filtering-Correlation-Id: ac379902-6e5d-4cbf-a81b-08dec6e75e71
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|1800799024|7416014|376014|11063799006|3023799007|56012099006|4143699003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	IDVMzKqFoIHdAlMsdVoMotzmADSxHP15pVLrcO/cu6jmlzq+ZbyrVSgNeD3bpybWzf/XWbMoTbxPC88gjTJgk1Wqmk8QyUprHwHNrFD8ecmM6VFFJU+j4IqO2GTya4fEMu97Kz6vh8ARgEox4Gmjiu4wdNwF0oDAlfBn2iqaISWiz0dRjSXKLtalKQ8p+ikYjXcfFmPqF+PGhFvWPo63J6uMVh2DmmB70ObOFRU74B05ygKj8g+PKE3rdEPmowgqSp7LRjkbqpz7p2kYG9JmjYN4Q7EP6SM8+CAWORdXw8KcYYr6EeMRvP5fRhghHIWWUOXkkY+kYdrXmGaq9jV+agJw1zHGz3Wkal32uDf8T3xr5OBq33B5oDJDL23Y3VxLWQO2IFCUeFxn3kuhBtKZXayawp3bjYYvDAmTkJKCi8ew6D1pZkBtXThCBOur78RwzMBOKhnVN3xwODak8KGYieTNiXC/MUmH7VR4RkmUfmKpNy3itjN3+0Vr/7NOnOrFqbBbcgN4fqy/DC8zj6UGmyo4wCNJpoOF3hTZlINvwEooXxAR0uF7QCTc1VUbJTNzWSN1LlB9cDp4G6f8ou3N4D8AmesbjO5ZcTGGuYfzVLPyNcMmtmg6fXmRghWmNyoBSaZwgUiqCz3OdWVWWmfMBqY12i29bWW++UL8TlViVlAyB9xP87NOL6UIWfMFA567
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(7416014)(376014)(11063799006)(3023799007)(56012099006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TFN3VU0rL3E1b2g0cjFKNUtSNWMvaDU4bHZFSlNkZTRtT2ZWbGlNd0c0WWk3?=
- =?utf-8?B?VXJBQjJhSDQ0R2wxNUtRK3BkTGlTSnZ3OEluQnU0cGdrQ3I5K0c0VThITlVM?=
- =?utf-8?B?ZHM3NHdVT0s0NnI1bUN3UnhqY0pTd0tNYkh1ZlVtOGZKdmxIYXZ6Q1AvV3lh?=
- =?utf-8?B?SWhFUVlLaVFlWTlneng0aDRMNzhiZ25DN0pPRm1FUFNyTjlheDdlancwWS9S?=
- =?utf-8?B?ckFFWERScjB6cndXL2xKL0VLcXp0YTkyUlJpN216Mi9LQTF0cEZrbGcxKzhQ?=
- =?utf-8?B?YXlQMC9FeWJrdHNxTlNGLzVnQnpTdG8xZGVjOFBhZGUwYVU1QVNVZHJteEVJ?=
- =?utf-8?B?RW0ra0lEdER3eVM0L3Jnb3RTV21KRXo4MFlMMUxIZ1RTYWVYTVBvSlAxSm1X?=
- =?utf-8?B?R2szZk9sZFA0ZjhPRGMrMHlFUVp0TjgrSmtvOVVFN2Rxem1CbjFOeFlXZmhK?=
- =?utf-8?B?a0tDWkdRNVlmWENYV21mWUkxVmJPMHR3WXA1eUs4YU1MOW5LVW15aGR2VXVO?=
- =?utf-8?B?TDloMzMyY1Jmb05lLytUZ1hZVEZTQWVZK2h2UEY0eDRIYU1PaTJGdkorUU5w?=
- =?utf-8?B?eGFvdW9JWWQxSzI4a09ZRXdJaUlVSFRURGx5UmdNZDE2cThFT2hGRHZ2T3ds?=
- =?utf-8?B?bXNKT0RIOUc0cU5zamkvYVBqbVJIem5UenRzWmM5cGY2YnNCbWNvTGZKaXli?=
- =?utf-8?B?TDZPMldrelpXU3hPelVFZkFjQlR0dzlDUEJBcWU2QkVuODNCaStEcXlEL00r?=
- =?utf-8?B?bXhRanp3S0ZSOXE0b1pzVSt1Z0lYYVQ5SGl6V3JaUlc2c3hwc0pxNTEwSVNV?=
- =?utf-8?B?U3B5MTVab0ZSYkxBemc0SlhGOG1OVGpHZHc5eTV5aUkyNksxMWdJU0lFNWM4?=
- =?utf-8?B?ZTNMczNZWmFld0F2NlVXcUZQSHJ3WHRWUFR4YjIvbVNMcVdGK2tHMFdHdDl6?=
- =?utf-8?B?NFJQeW1VLzNFMHRSc1VzcWFJSGQ5VTB1dkxLdkxQSW9oM3AvNFhDQ1FDMWhJ?=
- =?utf-8?B?azVWVUxRcHNiRFVuT3FzdXFWTjZjV2dNYjFsVXRBakFBWWtBRmorQ0ZjWnoz?=
- =?utf-8?B?UjY1eFN5ZmIyenJCRjJLb1lzRk5hZEdwekQ5WW12VzdjVjRDZUVWL2hxSGYy?=
- =?utf-8?B?cGc1MFFjM2pIZStYM1cxbW00V0dTNXpyQitIbDV3SkJQSTVXbzUyL1c3V3Vq?=
- =?utf-8?B?RHEzVUpYYVFUcUdrZjFJZUx6RHh0U0oxMUlkbkNrTlRsbzVwL2JieUJvb0FZ?=
- =?utf-8?B?aU9Ub2VvWWJVbnhVZm0xcytBSEM4M3pQY0NkWUJQNlc2TlJ1dFBhVHRVN05X?=
- =?utf-8?B?eXNzQkd3ZGdWcW54VVVZbUF2dHZlUXpQRmJ3K0lQVUZJYS9nc3A0UGwwaVNS?=
- =?utf-8?B?NTFWdTBuYTdMLytjQ1Q1eWt3UGFvMW1EaUlKWnNjZkcxVGwxWlRyZTZvWWJF?=
- =?utf-8?B?TmRZSHNJWnJtV3FRaHJOMXhQZXc2cUpKeVFnZWlSd2JJMGNkaTl6a1h1VlRO?=
- =?utf-8?B?QjNMMEtQK29OeHkyaDJOaEhDRzNWc2VKbUVlaCtodWtHbmdhYkcwUGxEejVY?=
- =?utf-8?B?RVVIRzdwYjlTY05sVWlRSU1jd1ZhSnlHMTZ5VzdOcU9MV1phYjFKRmhSTGJP?=
- =?utf-8?B?alpCMFNYQms5eDh5VHRNaWMyME5kRjROZ0VJNUxxclVmbGpadEJXTm85SW5x?=
- =?utf-8?B?SENOVHcvOVFLVWpjd3JKbHFQTUoveGVjYjdjVmlxbjRGc2JHT2ZqUS9yUG1u?=
- =?utf-8?B?ajRBOEY0VVJmRDU3U3JBSzhmN0xSWEhZVEtLZkxzbDdOL3dWMVJCTWhta2hD?=
- =?utf-8?B?dkJHRVgyYjJXdGgzNVUrVmVmV0tXWEFoaVN2MEYvRVA4VXMyVllFSVZha3k4?=
- =?utf-8?B?dlRNQUwyYW9ZM3liamJ4YW1yQlloWVMrb1hSdHpVR2VkZnNBWFFmN0VCOWg1?=
- =?utf-8?B?MVdDbXJoRlgzaERYeUNBdjNCQk1KVlVYano0Tjh0MUhMdlk4SUtLamFMSklJ?=
- =?utf-8?B?MVF0ZWVsend3bkRKUHVxcGlPa2l5dVZoVTlRelhEYVM1czlYbUFvQUVoWnhK?=
- =?utf-8?B?OGdEd0Yva29BQXdrSnA5aUNKaC9sa3lWOWxYaWFmTWR1S0lVdm1YZWZzalEw?=
- =?utf-8?B?TEd1alcyaEphU21Cc083Qk8vME5xZW0welQ0VldQR0VNTCtBY0lVeG5nN2po?=
- =?utf-8?B?K2lRNG15aVBOMGRNR1dRZG5yQXJFcGdGS1ZWR0dZYzYzbi9aeCtDY0ROSFZV?=
- =?utf-8?B?a3dWWVowZUxsYVcvUVNyZkJ2b3JPR1B0T0FYSy9ibGYvZmtONVlBRGJXWUgw?=
- =?utf-8?Q?FHCnA04utYHy2ZDWnp?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac379902-6e5d-4cbf-a81b-08dec6e75e71
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2026 11:56:56.0196
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g6sqBE9LslJrMwtxdcf+pJbjKiudkG6tlPK/AjDfEEfSORAMWFef0ShIAyJlGNoH
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8427
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
+Hi,
 
-On 09/06/2026 18:39, Andy Shevchenko wrote:
-> On Mon, Jun 08, 2026 at 07:37:59PM +0100, Salih Erim wrote:
->> Add an I2C transport driver for the Versal SysMon block. The SysMon
->> provides an I2C slave interface that allows an external master to
->> read voltage and temperature measurements through the same register
->> map used by the MMIO path.
->>
->> The I2C command frame is an 8-byte structure containing a 4-byte data
->> payload, a 2-byte register offset, and a 1-byte instruction field.
->> Read operations send the frame with a read instruction, then receive
->> a 4-byte response containing the register value.
->>
->> Events are not supported on the I2C path because there is no
->> interrupt line and the I2C regmap backend cannot be called from
->> atomic context.
-> 
-> ...
-> 
->> +#include <linux/bits.h>
->> +#include <linux/err.h>
->> +#include <linux/i2c.h>
->> +#include <linux/mod_devicetable.h>
->> +#include <linux/module.h>
->> +#include <linux/regmap.h>
-> 
-> + types.h // uXX
+lpc32xx_adc_probe() in drivers/iio/adc/lpc32xx_adc.c and
+spear_adc_probe() in drivers/iio/adc/spear_adc.c register their
+interrupt handler with devm_request_irq() before they initialize
+st->completion with init_completion(). If an interrupt arrives after
+devm_request_irq() and before init_completion(), the handler calls
+complete() on an uninitialized completion, causing a kernel panic.
 
-Accepted. Needed for u8/u16/u32.
+The probe path, in lpc32xx_adc_probe():
 
-> 
->> +#include <linux/unaligned.h>
->> +
->> +#include "versal-sysmon.h"
-> 
-> ...
-> 
->> +static int sysmon_i2c_probe(struct i2c_client *client)
->> +{
-> 
->          struct device *dev = &client->dev;
-> 
->> +     struct regmap *regmap;
->> +
->> +     regmap = devm_regmap_init(&client->dev, NULL, client,
->> +                               &sysmon_i2c_regmap_config);
-> 
->          regmap = devm_regmap_init(dev, NULL, client, &sysmon_i2c_regmap_config);
-> 
-> (exactly 80 characters, so inside the limit).
+    iodev = devm_iio_device_alloc(&pdev->dev, sizeof(*st)); /* st kzalloc-zeroed */
+    ...
+    retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
+                              LPC32XXAD_NAME, st);           /* register handler */
+    ...
+    init_completion(&st->completion);                       /* initialize completion */
 
-Accepted.
+spear_adc_probe() has the same ordering: devm_request_irq() for
+spear_adc_isr() before init_completion(&st->completion).
+
+Both interrupt handlers, lpc32xx_adc_isr() and spear_adc_isr(), call
+complete():
+
+    complete(&st->completion);
+
+If the device raises an interrupt before init_completion() runs,
+complete() acquires the uninitialized wait.lock and walks the zeroed
+task_list in swake_up_locked(). The zeroed task_list makes list_empty()
+return false, so swake_up_locked() dereferences a NULL list entry,
+triggering a KASAN wild-memory-access.
+
+Suggested fix: move init_completion(&st->completion) above
+devm_request_irq(), so the completion is valid before the handler can run.
+
+Reported-by: Sangyun Kim <sangyun.kim@snu.ac.kr>
+Reported-by: Kyungwook Boo <bookyungwook@gmail.com>
 
 Thanks,
-Salih
-
-> 
->> +     if (IS_ERR(regmap))
->> +             return PTR_ERR(regmap);
->> +
->> +     /* I2C has no IRQ connection; events are not supported */
->> +     return sysmon_core_probe(&client->dev, regmap);
->> +}
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-
+Jaeyoung Chung
