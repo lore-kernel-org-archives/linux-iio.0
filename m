@@ -1,95 +1,95 @@
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26E8633B6D3
-	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 14:32:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A00241363D
+	for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 14:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781101953; cv=pass; b=tA3q4YYdyAOBMlQarvE/BbWx1jE9agITlG+jrW/HvRSYu7cAxIoyC7wVGp2PahSjxNypasOpK7sEIsnc+gt4pP+gKZRbyoq3ZBUOXpd9YN/WtHNjxk5Nj3JNi6J93moCLtEGiXgk1NQn8qkRTGPQxG1MWxRg8Ee8IXFQwlOvTAM=
+	t=1781102083; cv=pass; b=Q2SjBpGRJ43C9w/0F//jrEJz6QQoMj1XhnGh+9qO9jIiOZJZEIevJFA4MkN0UCynaPa/eGUHykjAMLrO/aEox4+ytFNEPj1EON5SHfRC0cVjtC/aUnLKv9ZJLAcJxnuDCXkZh/6azbkmz/VCcyv/zm+QBpmDd4a80TjtMOSKGfQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781101953; c=relaxed/simple;
-	bh=ES4Wwnm7LDTekDfxBkRjueXtU+JExOHrirYIoXL7mMA=;
+	s=arc-20240116; t=1781102083; c=relaxed/simple;
+	bh=eHGHo1CpzP+Lhry2jDKXXEgAfPF4V1nf1rNJycM0IZ8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rqoHqdCzT8k3seltqwwaNK+IJIjZgwwS1bXaDj/5QtPfgpi5Q+nQZlSRz1X5j+TYPFQpUVEmYxrMQHKUhfSrdGkqxEFL73syjE2AAOQ7fznjiLvN3j6YzFUbqxfxTtqiR65ZVv0KbnL3seZSxl2cS9j/TUi3aT/VsRWiULdyuRM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WFfICjz2; arc=pass smtp.client-ip=74.125.82.176
+	 To:Cc:Content-Type; b=tkxN5NS8avpbr4OB7k/SYA8GHyQ4NNwW26IUvLv4qd9GRyvzpd3896RDLGSr+KT0XfoQAW3JzgTf/PQ6ErKm59wpR8Pruld0Jj+IP3IkYMw/sS8fV+m8aeF315a128eLM7VMOsk+kMpHle+pvtFMvO5K+Bsg8MKeTg+ZAdLwRB4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GEDQcYYX; arc=pass smtp.client-ip=74.125.82.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WFfICjz2"
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-304c520fe9aso2186792eec.0
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 07:32:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781101951; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GEDQcYYX"
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-30749947917so2890458eec.1
+        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2026 07:34:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781102077; cv=none;
         d=google.com; s=arc-20240605;
-        b=Nfw3zT90GeGW2PMecO/t4CO1YQ9L7Gx1RJ8J1HaowhnfncdJF8QfjwNH9Q4/NktNoE
-         67u7wuRsr3rgAsQWZmQU2eP+7PsSH4ymFuToqz+nhLbDyha6RH3a9lQHs/Nrur5f+lQE
-         P8EuPZqCMDpJYt+ocPFiDIL6DUmueJ9yMWkk5Gh8ZaiLa1Y8UIoQ7ByJrtWYu7AiHess
-         C18LK5Icv1cc2oGO/R80mVuHdh9WvASL6RWC/gbM8EsDdVFES4ymXwO1j3GcTkaitC3T
-         c5lh69GRCdAiN7gIGu398/bVGHxHIKxRazPHcJQVphuJt7Dp62O8gOo0zlf9ldoXzx3v
-         06kA==
+        b=CzqryeNRAyDDRTTAuB+0pCDg8gTCmF6L7l8G0Ng/A1MPjfI/iJe2LvYKA8kT9y3ec3
+         EYbYJy5kK3z4Ec6YKIcgPS4js5MDLPskJIhvcAYOx3e9y6Bw7LTOkyP+iGC91uVen8Nd
+         meb+WdilIZS043MmBs4bA85lZuzYiky6ZizAQ+7oo+WIiuJUsZetqcA1hIvgjMSiJUA/
+         L47Nj2OwHm+uosiB0mNLysUyMY3o7VnrL2FvmT6wm5Ng2MRBn5g5mPCG9w/4z2mBNFP8
+         gRhTZ5Qg/scDb4ZTKQEuLFaR7kD79CG+fb4TMMIRq//hPVd/uGMy9OTtEo7XV3YC4lQ0
+         qzRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=oYlaQ1NUVVCcD2TPrqOfDsKTXd5iB9hu+Glwj3KNaZ4=;
-        fh=7OM8vwiqH/W4tENQ469U9Z/nBsX5dVFGAe3balKW4IQ=;
-        b=kqidbtMtS7J6OFrxUX2m73Or1tizMgUJ/dYyQQUt4v750LEeqt21OWwTyXHzvdTYmm
-         tf7hSkEY0f4RjOGELz/7cc+6poT1X8sil941mvU9UquS8nrBJ/TwQ4540I3du+c+IyDZ
-         RAcdIob33d6ZBHp19IPB/niOrJ6jftp/2ZZVzGLfOz5tUJnfzItnc6xrVNAf2M9PAge3
-         P69CCUfUx0YzI0MI3TBr9lLquA3dQOgq+fY81+s5ZUa1ZzO5lWoN27+cw+xmxHKKkJVw
-         4Com8SOO5mKo1tpv/iJnNq7X5cVl3RtgWSL85KvJ6XsUYzmXSDs/6kWHVaFlAcubq3JE
-         FpTQ==;
+        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
+        fh=62OZMEnihY/HkOCxVjyF/hrUSwzUp4LxoO6EtTVj/OA=;
+        b=Ts13cHWz+ibgdsubehqCmH0ckCRSi997Ck6ZUxo281v9lS7j4wvGQn/tzEmNJk2pEf
+         nqu5l+TACbiRxTL8bzLQ8PFcwSRh3diInUOsEVUwpc0gitvmJ6LZPUezCy91Ux9SzVy1
+         sNW6A6Rq4bOJlw9sgGqFVrX03D5KqRU4znTSa48kSjp5k+ntJ0x3ZnK59YC/loiEdOnL
+         IU8bAfzcAPtKiTYjHMUYA9heHVXiPLQ7zVUWok/rX0/dkVRftaWYOZegcP99RtsQh7PH
+         GyCAzie2npR1LczTtd1U47pDqdz51JARqV1o0UWRRtwZLYfzWo2qcW+wPbp6BOyI+UKH
+         GYCA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781101951; x=1781706751; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781102077; x=1781706877; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oYlaQ1NUVVCcD2TPrqOfDsKTXd5iB9hu+Glwj3KNaZ4=;
-        b=WFfICjz241T2kl0XBGu8welhc92Wlr0xtBHWITgpIxMHe5DxxLf3s5BWWcXF40Xct6
-         DrvQRQNtctSuTLpSt0XKQtpeKOMV/lQcK/UvwFeXNjn58A0px0zqWy+yvwvzd5LMmEYX
-         mgPRZFEgtH8pZsOaQdbUlGyeI/lmOxLN9cIAZLWnYPpLijeRi/9z+aVo5dChJ3yYHZWx
-         TtiLfrcb3JcHBjf/RXCLb4KPIBxjVQ0LTSWoe9A9ENoedrCLZMrUGAR5UZPoW5xv1ta0
-         LI5J7MH/UfQFJ2bFvddlrEMHUSicdIIpUCEsQ2tt4o2yFLWF7f3YdQP7G4W0Fa3Xbp2O
-         V1bw==
+        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
+        b=GEDQcYYXmyqDTIeTwRUeJGjkgrgVo4QvCPnJpFto2PCMedbmf6U86eQL8mQzXpK7KB
+         VIcIsjPFjnPZtqjm+frmahsCAFcV/Tpc/oitHdYuiF0Ffi+0cRZmuqrXDUcf+G6s9TGC
+         /bzSIVTtAwpbDrFirH3japNOGBYg3M1htuK759cGRP60+yjTFW5fLes48bA0LLAa+XcY
+         4kzfilYX1T+jE4SR2K1U8f2SUC6TvKPwYZBok08tpVVWloEVr2vFsnhxHQ40EbNbde1m
+         atKqXT/ycgTAmLOV5EyI56oWW2pd/Ulhw2vv2HgWj1rkJdpLctB+8zAWCHnjTUXQUrzg
+         0Uzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781101951; x=1781706751;
+        d=1e100.net; s=20251104; t=1781102077; x=1781706877;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=oYlaQ1NUVVCcD2TPrqOfDsKTXd5iB9hu+Glwj3KNaZ4=;
-        b=H2z/w6R+CFa+1Z93er653M5uQ/o0zTqUeyVUkN9eYumKuQEBubV4iwYR5lQrcAyOFT
-         DAILoFuKNL3JKpT7byfLWEn3eaKnYDCxO21R+0e2NJOqFbL54l1tDqffHksaYHRgpK0z
-         RF9mzYarDrhs0wqDUuU2d109pjD8SAyIcOLbATo7hHwIj9wL4rG18Kb9gHVGdRL6Jb7B
-         ZqIIXSGzxpCPIVbxG57Pd5ZC1vMn6cJKd/IzDW2CwCBVm2nRhjUhc5GbZN2KrZrZpQwt
-         gFzMwmfGZMNMeMHdRlh9v9RXJKPG4KKP0Y48ZANc7YEP7NB5K0TCLhLVGjKshiI1auST
-         D8VA==
-X-Forwarded-Encrypted: i=1; AFNElJ9yKmSXTy/iumSA8UjFiq4EJ/aiGiGnGRCpNGtr0DhsMjXyqVf7c52Y1RRbdiht3UIgHYHdp4BmXiA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyum0H4gyfRggf2XxOwGIYu3lBOCrpZfhqQ1oQFB0yA4vIb1o74
-	bsXB6NuDqJMwf4Kvj4E/rR0Ycr+K5pEK2I3u+dEVQYOEM9Rm4lZnGfQ6DzpBfmEJawZ89B2UcUw
-	fsnv0lq8WKzzkdCiqdb0cd2IeY5UvzCI=
-X-Gm-Gg: Acq92OEtS2tfGsj0lJYAP49AHtBeSYpOywSutknjTY+VD8RNKYwCTyhE2VXRE4B/g95
-	Td4xC7QkwSgAWJoolfL8RZsNBxHF9d7rHJbFjWWIKBY0wr61P6oi/hFZivsr21+50h9r6m6iw2w
-	jyl0QcyX97rMVcpXXcGZxamNMRLPWoXrM7U2b1ggutJUuqV7CiSdHkJvEf8qXTqsXwxT2D4lvRu
-	AZd+4V2M2OdJXQf7Zp+WbGvhlPc/+V6R/oxETGkSVxGqkktM2314BSMq7IfeZz5R4Un5h9gmpIl
-	ZDc63WH2bgTOEHbQq+I=
-X-Received: by 2002:a05:7300:7304:b0:2be:2cfe:68b7 with SMTP id
- 5a478bee46e88-3077b3c7767mr18495535eec.11.1781101951047; Wed, 10 Jun 2026
- 07:32:31 -0700 (PDT)
+        bh=Y4QsNr9+C2sksb8f9hiRst13xYKm9uscJWoJD0+yoDM=;
+        b=LL2t7GprFJGnZqeO3Cv/TvHclAsiBXsz4N61YyADDA2ysXorEjOtoN9P3VNhQfWCTW
+         qLo27EdgF7UIDtcV3o9O+PHiLE4KdEKyQaFNfi/2vVp9D/NsCKELhUK6LOyOs1zKcpbK
+         fiGNBBnK6Nw/zDe6this7AgHoJv7KxcT0YYGKEQOQMGab9FAZorLVnMPjDWehiVUONN5
+         Pn9lXwn6z23PVBrA4Pm1Wz+AeOKw/BjvAqyy2+ZuT9wFSV8a92Rii6yNyLjquhaQDPIT
+         cFEHNX+lFH0i/KxRFMCr81qXCLN4GCKjkib4Jph+jJAJTh9HjHGleQ0bLZjjQJuxvCEe
+         qouw==
+X-Forwarded-Encrypted: i=1; AFNElJ/DQXFL7lv7b8Q5ItGyMAemcMYLd30M8XId1YAaPde5h1XumcB9OJ/UccpYbvYhBsKd2pa65QX4Qp4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZXqOI4cF+KON9nzuXwwf6NQi6M9zT5xH3KTLQ5fpLT4eeEfY1
+	obCdExwtjYtOBQrQy/27E9nX5w9NG6XoOR5XJW2BVjexcFyohXf2nDGdQD6M+pufisf/8M91+C5
+	9EPACZiNZ8XgRGvnOLYlN4cKilbQkj88=
+X-Gm-Gg: Acq92OHZmUJGxAI1C/soCj4n0TeYybSbEEYaCgS9jw0mOLxGgtM+GZ1vCrdr393nRzp
+	YjhrfXH/Or086Zy6muYAeUEun6PEEmZjDygBbMrsu4ZOgoODWVvqN9mqyYvs1OmeX6AHTUIkdYs
+	0c2Pjk10ATcHFqL8l/DzU+S4r4YbMOXkF6yybwldGBOmXGBJdonYTRlXwbDNR1ASmVSN9Ipe3O6
+	LqPXmJUjcgIgkPwepJvb+tWfdEHXgZtZNzr62p91qSBxPz0RMnre08Vz/3XGP0PpswKFtrqNFdx
+	CxqeC41X+nJJu0wydZ0=
+X-Received: by 2002:a05:7300:4311:b0:304:d32e:65f5 with SMTP id
+ 5a478bee46e88-3077b7d84c8mr15465647eec.26.1781102076873; Wed, 10 Jun 2026
+ 07:34:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-3-clamor95@gmail.com>
- <aiPDzdKuccdLIvlF@ashevche-desk.local> <CAPVz0n2rdgw8Xr3uxVdQGwrHTNFqK4SKQDFU2FEB8LzLwPhQ_A@mail.gmail.com>
- <aihjVZ9xvM2BRFu4@ashevche-desk.local>
-In-Reply-To: <aihjVZ9xvM2BRFu4@ashevche-desk.local>
+References: <20260606045738.21050-1-clamor95@gmail.com> <20260606045738.21050-5-clamor95@gmail.com>
+ <aihkNekrgfu6-6Q_@ashevche-desk.local>
+In-Reply-To: <aihkNekrgfu6-6Q_@ashevche-desk.local>
 From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Wed, 10 Jun 2026 17:32:19 +0300
-X-Gm-Features: AVVi8CeI8hlh1GbQ3AYGIMwG28HB2xx8su6lqiYAmfvLYDOtgithK37JF5bkrak
-Message-ID: <CAPVz0n1fHWCpHN93v-dKfzGYhvB-dC1E3JgQmXpvfr6bGNLqcA@mail.gmail.com>
-Subject: Re: [PATCH v4 02/14] mfd: lm3533: Remove driver specific regmap wrappers
+Date: Wed, 10 Jun 2026 17:34:25 +0300
+X-Gm-Features: AVVi8CdXjWV2Xn6oo1ydHrhUl2T2tO1QvChE8BglKpS9ooBB10CdbUEM-do5fqk
+Message-ID: <CAPVz0n2WG=35W7Z8USDck+xQ4sQSxkfhJR9oeYGe_vBkkXGKFg@mail.gmail.com>
+Subject: Re: [PATCH v4 04/14] mfd: lm3533: Pass only regmap and light sensor
+ presence to child devices
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
 	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -103,52 +103,45 @@ Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-=D0=B2=D1=82, 9 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 22:02=
+=D0=B2=D1=82, 9 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 22:06=
  Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
 >
-> On Sat, Jun 06, 2026 at 10:22:43AM +0300, Svyatoslav Ryhel wrote:
-> > =D1=81=D0=B1, 6 =D1=87=D0=B5=D1=80=D0=B2. 2026=E2=80=AF=D1=80. =D0=BE 0=
-9:53 Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5=
-:
-> > > On Sat, Jun 06, 2026 at 07:57:26AM +0300, Svyatoslav Ryhel wrote:
+> On Sat, Jun 06, 2026 at 07:57:28AM +0300, Svyatoslav Ryhel wrote:
+> > Instead of passing the entire lm3533 core data structure, only pass the
+> > regmap and the light sensor presence flag to child devices.
 >
 > ...
 >
-> > > > +     ret =3D regmap_assign_bits(als->lm3533->regmap, LM3533_REG_AL=
-S_ZONE_INFO,
-> > > > +                              LM3533_ALS_INT_ENABLE_MASK, enable);
-> > >
-> > > In cases like this perhaps leaving mask would be fine and together wi=
-th
-> >
-> > I prefer to remove intermediate variables it the helper allows to
-> > directly pass needed value.
-> >
-> > >         struct regmap *map =3D als->lm3533->regmap;
-> >
-> > next patch drops lm3533 so there will be als->regmap which IMHO is
-> > more logical instead of passing entire lm3533 to child devices.
+> >  struct lm3533_als {
+> > -     struct lm3533 *lm3533;
+> > +     struct regmap *regmap;
+> >       struct platform_device *pdev;
 >
-> Still it's longer than map. A local variable may help with making lines
-> shorter.
+> And this pdev is probably not needed. But I haven't checked the whole lot=
+ of
+> the patches yet.
 >
 
-Introducing and assigning a local variable for a single use regmap
-operation seems excessive especially since next patch removes operator
-chaining leaving only als->regmap.
+It is needed since it holds childs pdev (dev would be better, but not
+in this patchset), you cannot get childs dev from regmap since regmap
+holds cores dev.
 
-> > > this be nice one-liner:
-> > >
-> > >         ret =3D regmap_assign_bits(map, LM3533_REG_ALS_ZONE_INFO, mas=
-k, enable);
-> > >
-> > > >       if (ret) {
-> > > >               dev_err(&indio_dev->dev, "failed to set int mode %d\n=
-",
-> > > >                                                               enabl=
-e);
-> > >
-> > > In many cases it won't increase LoC count.
+> >       unsigned long flags;
+>
+> ...
+>
+> >  struct lm3533_ctrlbank {
+> > -     struct lm3533 *lm3533;
+> > +     struct regmap *regmap;
+> >       struct device *dev;
+>
+> Ditto.
+>
+
+Same here, dev holds either LEDs dev or backlight dev.
+
+> >       int id;
+> >  };
 >
 > --
 > With Best Regards,
