@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F322030215A;
-	Thu, 11 Jun 2026 06:37:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291C63655C1;
+	Thu, 11 Jun 2026 06:48:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781159858; cv=none; b=aSRnv3j+kNZh4oM5265j5iD7sxMGUvU9Nz3unB1RlvbOCsGVnWlureaBPv0F8Skkif7mWvP0S6/Mjzc5YBA/jX0IBEkAr+gtlRLI7PvLPBT11BcqiVWHBI13zgTwCyaxmS4QSYMO2IIYt6opmIQWZRLCMM+KcaFw6/XbeG+vYoY=
+	t=1781160496; cv=none; b=qYmrNbLTHmOCDYsF8IWXF8xhbCRfmn+NbzXCgGV58R8q1fpqvtLVwb9GIs7Hwwt5PtuVzyC25dvq5BkWsUNTpOcyE6abR+ouP0B+pg+Nn3lUMuCWd7wl8JpNzY1pPDy+WPqjUmicJBdgy0U0RwmoWYPVFAR0ImeoprOh6a1+c80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781159858; c=relaxed/simple;
-	bh=LCzUSLlLBxMHkcEUHdVY6zCGDcYTuAzRJagDFXfCAXs=;
+	s=arc-20240116; t=1781160496; c=relaxed/simple;
+	bh=436zbTt2shd9fmkt6lKrd093fXSsTh+T2F1PodjR5v8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=F1w5M6pUEV8jNihka1iY64JE2LH9i92iBZZFhkXpX4mwwc8QLNblQenDcrAz+z1akE22g25WNDdX+9ORgW+XfpYMLsIDJE4fxCYfkjIfK3MsIfoGjFjCiOfyj1K0kDihHNDqGEJ1E3FyWSnwuaeQqB1NHOFn+BMFWqv0/DXs+z8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cAKvDsR6; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=eLgHeD7D/MvNkvwBhd56YkENlYGXa6sgq1RD1OdCsbYSXgQ92k44klwHzOfdcWDatKiUfUjL3IFBg6lSCDJX75MDMtmKw6A49CHzz0zBZZchiokxfyOUVHMqJtSwSGMPTAI1Zh9ccbIhXTytH5n3P9+dnP/NWx08aaJXdQD+O6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b8s2R/eZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cAKvDsR6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC7D1F00893;
-	Thu, 11 Jun 2026 06:37:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b8s2R/eZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFC691F00893;
+	Thu, 11 Jun 2026 06:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781159857;
-	bh=b3jjrJqNE5+aT6EQfH9w4i2dwPWtXpiwzScoWFn9o/w=;
+	s=k20260515; t=1781160494;
+	bh=A5oR4FauPfbxaGx2mdOuPjSXxXIDmQ/r7zGhamjwQ0g=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=cAKvDsR6LFqko6D+nfwB5YgtyH357CT93VTP+L56v6GcCDv1p8XXF4vtZey40QU3H
-	 1rrz40YbFQ8Zk7wtQthQByp8lRp06twgEmhSAH2wmAHIWhllB/QICQM+MmmoMe44hW
-	 3HiISMwr5NiO9xxIgrOJSEISeEUUvg5RavaXMCGQ1TeCVl54C5+j4gQdPIJJ/0Tfwm
-	 IE5cuMcJPLbTHX3JyxwtUQurptmGOVu42Pdw5MZcba/PKml4BtlLr7UG1/U4XEdxLT
-	 YhbC5owK2UYJtss9kid6IgkL5g09sRfQWOf3fh7mNLCOO4zSrV4ZpuzHlX2DKarH8s
-	 FaqUwetgRBpJA==
-Message-ID: <e00caff5-55e4-428f-bc57-3885699b221c@kernel.org>
-Date: Thu, 11 Jun 2026 08:37:33 +0200
+	b=b8s2R/eZZPx4Yz+i1c528OVOtoKFJVqYb+qirZy7lWiHTzvezYgKD72ySHgmhvCEN
+	 Bp+e+JzqY0KUq2QgbYYrXa0jP+K7nTlWk22/GoxCtXdmgdQgTjGIt9Xrt5irAOFV7b
+	 6gMNrCjvLQIQ7LiwbD8cJ/6GxAHhbUo/69k6xgQS0vIbR2+hSsR88vc5xu4mBGqgPk
+	 0w6KtoYPZRHumn6C/HLQ3pyCDcoUiJSPyF7xUviPh/9venHdwkOCzeX8M39QSH0lO8
+	 Ol2647ix83zN4Aew234zVraW2RMqFelp5tEUFos6WKSSsgFOoWeTQodNBkfQ/x8777
+	 RJetMGIQHVTBA==
+Message-ID: <db0656c3-ce57-44ba-b827-b95aeb958876@kernel.org>
+Date: Thu, 11 Jun 2026 08:48:10 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,7 +35,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] MAINTAINERS: Add myself as maintainer for PMS7003
+Subject: Re: [PATCH 1/2] dt-bindings: iio: sensirion,sps30: Add myself as
+ maintainer
 To: Maxwell Doose <m32285159@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -45,11 +46,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
  "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
  <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
- Tomasz Duszynski <tduszyns@gmail.com>
-References: <20260609160326.45123-1-m32285159@gmail.com>
- <20260609160326.45123-3-m32285159@gmail.com>
- <20260610-pastoral-dark-ostrich-5ca3f6@quoll>
- <CAKqfh0Hi8EkShh3s4dUqAJRDExQLR0NVOvd4An+bY5hat4-Lhw@mail.gmail.com>
+ Tomasz Duzsynski <tduszyns@gmail.com>
+References: <20260609161701.52513-2-m32285159@gmail.com>
+ <20260609161701.52513-3-m32285159@gmail.com>
+ <20260610-silver-elk-of-eternity-2beed0@quoll>
+ <CAKqfh0GNcOAtW2wEBPhKi2GwdVAJNGcgjdJVidQYvOF7oJ2HVA@mail.gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -95,24 +96,32 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <CAKqfh0Hi8EkShh3s4dUqAJRDExQLR0NVOvd4An+bY5hat4-Lhw@mail.gmail.com>
+In-Reply-To: <CAKqfh0GNcOAtW2wEBPhKi2GwdVAJNGcgjdJVidQYvOF7oJ2HVA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 11/06/2026 00:24, Maxwell Doose wrote:
-> On Wed, Jun 10, 2026 at 4:09 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On 11/06/2026 00:27, Maxwell Doose wrote:
+> On Wed, Jun 10, 2026 at 4:10 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
 >>
->> On Tue, Jun 09, 2026 at 11:03:26AM -0500, Maxwell Doose wrote:
+>> On Tue, Jun 09, 2026 at 11:17:00AM -0500, Maxwell Doose wrote:
 >>> Tomasz's entry is no longer valid, as he is not active anymore. Add
+>>> myself as maintainer for the SPS30 to replace his entry.
+>>>
+>>> Link: https://lore.kernel.org/linux-iio/20260609140712.2e5d1640@jic23-huawei/
+>>> Cc: Tomasz Duzsynski <tduszyns@gmail.com>
+>>> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+>>> ---
+>>>  .../devicetree/bindings/iio/chemical/sensirion,sps30.yaml       | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
 >>
->> Why is not longer valid? I see activity in Feb...
+>> How many separate patches are you going to send?
 >>
 > 
-> Strange. According to git log --author="Tomasz Duszynski" last commit
-> I have from him is 2023. We also did have an RFC open for a month on
-> linux-iio with Tomasz Cced with no response.
+> Sorry. I guess the reason these are separate patches is because these
+> are basically across two different subsystems (iio and dt-bindings). I
+> ought to quit doing this.
 
-So you did not check enough... and no one needs to read RFC :/
+You sent four patches, not two.
 
 Best regards,
 Krzysztof
