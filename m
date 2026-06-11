@@ -1,120 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1AAC3B636A;
-	Thu, 11 Jun 2026 07:12:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07B09443;
+	Thu, 11 Jun 2026 07:18:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781161933; cv=none; b=VmN5XJM4oztzVRMcJFYbG4qk1ULC/IkMqiUlWxSqRNqxVF2xcjO06UlvE9AuTAfD2WWpNRKrU11Ljtxv3sQ3YzVdO8UN+7dgGllxczHnYITsQrIl0bs6XRqA2MqQEnhglODG2kSc3Xx1pHddyUal4zxZWIMEBn3HFpmaqx5DkXo=
+	t=1781162329; cv=none; b=GxE+h0rHK2G4CE8QmXPHP1h/Gfkj9kEmXDJIHu9ORh/ljIaRygRNuiLaukm3moX432Pob+pp5a8s3ibOOQEhsnLy+9SbptcgzbFzlfnOxXs793uWQrQzAZm4Y0EcyMD46unUW1gcWUqTk1P+M3DarAsAEPXtTEyurWcOf4s3MeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781161933; c=relaxed/simple;
-	bh=6/exjtGUI+H+BFU2tn1CFAXIxqVdrkenpMmUmWZvrj8=;
+	s=arc-20240116; t=1781162329; c=relaxed/simple;
+	bh=CR47QW2aqYQi3jjpuH+JWQWF89PSQdAAS2jmeVBQZyk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PVL+TGjoyJgK3+aVQWb/5aILvF/ILoZ4pt/9WyjNepDEr+sMSp7alxu4Rpv2beDYbjsianXZIZP/MLZTi2umiNfylYR0f6Wxv+kGh6B7UeI6FxwA+heQSjF1fc7JcSbqMrziTAxLtnr/4987T8zBUUAHxKtqXw8JnZCL8acaqAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Or9QGCKh; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=NPkk6Otwd8MfIlCzsEW2PAnHwbme25HJH6zCsFiMDvrdPy1WH7c+/j1jGMTPRPHksBaUDqZT9r35Ch3E4anDR5gkCLhbtm+eTARpnfxVXOA/nWOqcSmYu+ROKJCe/JpMDdCjy0wOzFXqkfMg3gMYAFQOJK2eEDXscGCEd+rGzeg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gt3dN2fC; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Or9QGCKh"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gt3dN2fC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781161930; x=1812697930;
+  t=1781162328; x=1812698328;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=6/exjtGUI+H+BFU2tn1CFAXIxqVdrkenpMmUmWZvrj8=;
-  b=Or9QGCKhD/hmtcywWER6ZxEGOSTCmZ/4AKGMEztBVHQuO6SoCTFbhsCy
-   8NXcw+c9buwS+Tt8blcmcKjrEciy5RoMnJVa98xedkuJPLNn3tDdUteSb
-   3r2aBJZHgoZiVH2+xjPwf+Uz7rg33jtOiI1TNRqq5QH4azhCXCfKzHCjw
-   6XeUnzSrb8Oya9Klr9BPwrWkvCBcS+6FHn2XXQt/YGWMqfsKnfUv4TxrN
-   384iluA2S8cP1ix26d5MOfeDGo0qsix5y4OUfJrHuen1VSF7ovn5WhUPf
-   ycY82nfOZI8VPoM8zcVMgEbneASt/NBmaRGT3sywZYDUOzp6NykgFGzu4
-   A==;
-X-CSE-ConnectionGUID: FQOqnbIxSreMQPuSVs/g8w==
-X-CSE-MsgGUID: /3NWd2IATIKVoCUFwGHoOQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="81973325"
+   mime-version:in-reply-to;
+  bh=CR47QW2aqYQi3jjpuH+JWQWF89PSQdAAS2jmeVBQZyk=;
+  b=Gt3dN2fCK2ivIDU1syRBFnYYmNySsYUXDLcKehqyGDgfrZkGh6M0gCyu
+   kh46Tnp+sgbo67uZIsg0mLi0D+t6eY4IeSuVWkFy4PSp8OJ8MbYA9LIMc
+   9F3hO1+cnp1p7locK3MTeka8zxlU//gQo03C6aQGHgsmWAZooY+eYnlex
+   BYc/odg2SZ+9tVtMX4/QeGOuJCV96ggo4qF9mSrgt7WcihZmmhZC0xIl6
+   Kgnv4vDWIimQipDpSo8pqSaCuxXBRLZgzlEy+2XRjknbdWhPO7h45BHKA
+   Cn+RrkIwc8moTiL2M/uYxSuhjdnEdpgC85kQgCh9Z7jezFzUle0L+WThL
+   g==;
+X-CSE-ConnectionGUID: I3lou6b4SN2UoLanD90/Uw==
+X-CSE-MsgGUID: /ZsTVR3NQjmEtr+47g7LlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="82076698"
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="81973325"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:12:10 -0700
-X-CSE-ConnectionGUID: RbYTuUx7ScGeDpYa6Q4KPQ==
-X-CSE-MsgGUID: CHyDdo05QcCi2c3czCuREA==
+   d="scan'208";a="82076698"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:18:47 -0700
+X-CSE-ConnectionGUID: WyffcMEbQ3ya3qcBYdFtvw==
+X-CSE-MsgGUID: hStgdhTMQNqoCp3tMzGfrQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="243947336"
+   d="scan'208";a="243456670"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:12:07 -0700
-Date: Thu, 11 Jun 2026 10:12:04 +0300
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:18:43 -0700
+Date: Thu, 11 Jun 2026 10:18:41 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Maxwell Doose <m32285159@gmail.com>,
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	Tomasz Duszynski <tduszyns@gmail.com>
-Subject: Re: [PATCH 2/2] MAINTAINERS: Add myself as maintainer for PMS7003
-Message-ID: <aipfxL3ttO1-7W1T@ashevche-desk.local>
-References: <20260609160326.45123-1-m32285159@gmail.com>
- <20260609160326.45123-3-m32285159@gmail.com>
- <20260610-pastoral-dark-ostrich-5ca3f6@quoll>
- <CAKqfh0Hi8EkShh3s4dUqAJRDExQLR0NVOvd4An+bY5hat4-Lhw@mail.gmail.com>
- <e00caff5-55e4-428f-bc57-3885699b221c@kernel.org>
- <aipatjyVcltbspRJ@ashevche-desk.local>
- <6c5a657b-f316-4982-8cb8-8c09f1b1669a@kernel.org>
- <aipfPwT4RJGdA4TT@ashevche-desk.local>
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 06/10] m68k: stmark2: use ioport.h macros for resources
+Message-ID: <aiphUQvNzzaoTjxX@ashevche-desk.local>
+References: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
+ <20260610-wip-stmark2-dac-v5-6-b76b83366d5c@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aipfPwT4RJGdA4TT@ashevche-desk.local>
+In-Reply-To: <20260610-wip-stmark2-dac-v5-6-b76b83366d5c@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 11, 2026 at 10:09:57AM +0300, Andy Shevchenko wrote:
-> On Thu, Jun 11, 2026 at 08:58:47AM +0200, Krzysztof Kozlowski wrote:
-> > On 11/06/2026 08:50, Andy Shevchenko wrote:
-> > > On Thu, Jun 11, 2026 at 08:37:33AM +0200, Krzysztof Kozlowski wrote:
-> > >> On 11/06/2026 00:24, Maxwell Doose wrote:
-> > >>> On Wed, Jun 10, 2026 at 4:09 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > >>>> On Tue, Jun 09, 2026 at 11:03:26AM -0500, Maxwell Doose wrote:
-> > >>>>> Tomasz's entry is no longer valid, as he is not active anymore. Add
-> > >>>>
-> > >>>> Why is not longer valid? I see activity in Feb...
-> > >>>
-> > >>> Strange. According to git log --author="Tomasz Duszynski" last commit
-> > >>> I have from him is 2023. We also did have an RFC open for a month on
-> > >>> linux-iio with Tomasz Cced with no response.
-> > >>
-> > >> So you did not check enough... and no one needs to read RFC :/
-> > > 
-> > > Hmm... lore.kernel.org shows last activity November last year (07-11-2025).
-> > > What other sources do you suggest to check?
-> > 
-> > No, only lore.
-> 
-> I used this request:
-> https://lore.kernel.org/all/?q=f%3A%22Tomasz+Duszynski%22
-> 
-> > As I said, February this year.
-> > 
-> > https://lore.kernel.org/all/CAObtm8zKUAWNS23nRMhc9ZR-zn7xeVOFPiV4ai_x7Bkd5puiyA@mail.gmail.com/
-> 
-> Okay, you used UTF-8 name, Where did you get it from? MAINTAINERS has no
-> diacritics.
+On Wed, Jun 10, 2026 at 10:35:11PM +0200, Angelo Dureghello wrote:
 
-OTOH, you may have used simply email approach. With
-https://lore.kernel.org/all/?q=f%3Atduszyns%40gmail.com
-I got it as well.
+> Change resource declaration using DEFINE_RES_*() macros.
+> DEFINE_DMA_RES() is for a single dma channel, not a range, so used twice.
+> 
+> Also, some drivers assume IRQ resources are from index 1, so just to stay
+> uniform, moved IRQ resource at index 1.
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
