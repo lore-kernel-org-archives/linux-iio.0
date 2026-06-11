@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49313ACA4D;
-	Thu, 11 Jun 2026 14:01:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB4AC2DC78C;
+	Thu, 11 Jun 2026 14:01:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781186478; cv=none; b=d18oXLtKVH/K/Je9ipIrlJZRtuj+2TuSFUEnTcCms0NZbmbxTKrOmcBYVmifDWuDQ7HOv8/dYhITXARW2MWYy36PjEz4AfgMyeBWi5mP71kbYcj74WKQgqgAN/cKEZEnP7yhNA8OAJtU5rbLzzpAcB7gAxKry36oHStt0iu0OYQ=
+	t=1781186499; cv=none; b=HohkvMx7ZkxegoIB+TgNajkjmzFwsO6HxGRp2OO2uEtmajiRg++c39O7F8+xFIg4k+kVNDUaV21yNyKvzNns3T2FuK461KzSlTy3okompEzTJyySVBNB45z40MMKyKXe66XGFKXBZroa27qvwTpgkSPTxfOXrYGOjG2f6FowQf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781186478; c=relaxed/simple;
-	bh=n4ULx6DpD9LTgzFht1l1c+bH5Mk3FOccOpCCMuh4K88=;
+	s=arc-20240116; t=1781186499; c=relaxed/simple;
+	bh=hr31422ITT6oi3ciJ3BZ0qO/H+rJv9Awy4u57zfU2AE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UmKtQ7t/ztsvW4k9R2DyqcaCsrksQlYbb4vULONE1dWFFm2yavAGFCTIH5nOQiPVT5SfUelOlmdrxGK7W+tUZpShcZ6awPbsG2WqjfqFrLe0exTrIMT/W18IHeowv+NTZ6OLnMOv7xy62qGi7ih7mQIEfZqidqhEjpEpePzBR3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KLVCebqn; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=Be2SfkDtr5xAmxK9tjnMbqjRH+4Sn/2qVCa1CKGUmrASfBPztlsX2rxdd41ja+UrrVpSdB+nFvQxTX3NH9RvoqBj0/Do1V3F8eTHaLi4xZA8NbHmQsq5b/T1VGcGDtkFEAuzUxW1d5+P0lt9xY8J7u7T2reXl72VrtGMnvv++bY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SlZdeqp9; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KLVCebqn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D86A1F00898;
-	Thu, 11 Jun 2026 14:01:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SlZdeqp9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235EE1F00893;
+	Thu, 11 Jun 2026 14:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781186477;
-	bh=Yp0nzIlkKz94xz4/lEK7awG/NincgjbDsyAngGGlQ8k=;
+	s=k20260515; t=1781186498;
+	bh=mKXMESzDOLvWgkm73L5GRgiwKVK8YW90hgAonyyGue4=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=KLVCebqnlAzoEWlhPc1iRdLny1axzXTG+pjiHwxoQz5HDzmNooTSUixJFUt9ysnu6
-	 6Tdc0j3dRdyKORqYw649NoCcwge1mWK2hBCfVLPNtpy2q7OV3ACxRYsm1KrqPjp7p/
-	 PCYrNcJ5dpajgUKJkddJ2K2Io2wN/FXjMsEj5tV/gGM2RCx1iyWb05w9h06NsgP7a2
-	 E82KGB1awf5VUhfcCZme3tUqpmDeO33k07QjQH4wKq98frPcMliDthsOFsB2Uqpa+4
-	 xbxW/wLzmTgeh6w4CYlrctXo8u8VLlzPhW7GYEw786cy5c5amW/48V1L4KvpOdFQXL
-	 1Kwd2ljI61/hA==
-Message-ID: <e01d100b-9809-4af3-8f21-055f687ca6c6@kernel.org>
-Date: Thu, 11 Jun 2026 16:01:12 +0200
+	b=SlZdeqp9SOoPB6lrGK5RlvUdP1hLSriaSt9/T/GbuHVyA426pQLEm9yz4dLmAkEKJ
+	 PFvDaneebzs2++mGYEy4LNiio+MFmTMmxkpmvOJUd9Nx+iVbIHbhH4WaSHLsoHtxhR
+	 98zIuO2K55cZX7PsQoXW2nifz+JmDRoy4cw2Ee0jg2YZAg6zT43dtHX3Qbt3d0KB/J
+	 DD8zRdy3t7q7VdltKtiCqXjWiAC0TPiP2qEMTU636CdACCLSw+o9201SKwTPhsF1SU
+	 FNOs4veBKx9z1gqyf2Gaj+NaJJTsW8kqzpg5S8ghGkbStqtxUnGezF8vvjh9E7GWbo
+	 PXPG06bADlVew==
+Message-ID: <8529b3dd-7a3a-4f93-adc7-3ba678696dbc@kernel.org>
+Date: Thu, 11 Jun 2026 16:01:33 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/4] iio: flow: add Sensirion SLF3S liquid flow sensor
- driver
+Subject: Re: [PATCH v4 2/4] dt-bindings: iio: flow: add Sensirion SLF3S liquid
+ flow sensor
 To: Wadim Mueller <wafgo01@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
@@ -46,7 +46,7 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
  Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 References: <20260611132700.671322-1-wafgo01@gmail.com>
- <20260611132700.671322-5-wafgo01@gmail.com>
+ <20260611132700.671322-3-wafgo01@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -92,19 +92,29 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260611132700.671322-5-wafgo01@gmail.com>
+In-Reply-To: <20260611132700.671322-3-wafgo01@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 11/06/2026 15:27, Wadim Mueller wrote:
-> +
-> +static const struct of_device_id slf3s_of_match[] = {
-> +	{ .compatible = "sensirion,slf3s-0600f", .data = &slf3s_variants[0] },
-> +	{ .compatible = "sensirion,slf3s-1300f", .data = &slf3s_variants[1] },
-> +	{ .compatible = "sensirion,slf3s-4000b", .data = &slf3s_variants[2] },
+On 11/06/2026 15:26, Wadim Mueller wrote:
+> Document the bindings for the Sensirion SLF3S family of digital
+> liquid-flow sensors on I2C.  The family currently covers the
+> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
+> 
+> All variants share the same register map and are fully detectable
+> from the product-information register at probe time, so
+> sensirion,slf3s-1300f serves as the fallback compatible for the
+> other variants.
+> 
+> The active calibration medium (water / IPA) is runtime-switchable
+> via the in_volumeflow_medium sysfs attribute and therefore not a
+> DT property.
+> 
+> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+> ---
 
-You should have only 1300f here and detect the variants. That was my
-point when I suggested to use the fallback.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
