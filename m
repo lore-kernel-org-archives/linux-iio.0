@@ -1,67 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07B09443;
-	Thu, 11 Jun 2026 07:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE2335F163;
+	Thu, 11 Jun 2026 07:35:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781162329; cv=none; b=GxE+h0rHK2G4CE8QmXPHP1h/Gfkj9kEmXDJIHu9ORh/ljIaRygRNuiLaukm3moX432Pob+pp5a8s3ibOOQEhsnLy+9SbptcgzbFzlfnOxXs793uWQrQzAZm4Y0EcyMD46unUW1gcWUqTk1P+M3DarAsAEPXtTEyurWcOf4s3MeI=
+	t=1781163357; cv=none; b=X/eA2+dePnRs9lGP3HSc8wj7Gq4B18odWmAku1tPn0ayrGfhvaspfb+/XSJrSNoPc5AK/OTokCUokI0ot1FD4b8rdTXYqRVsQdZi1ZArmDVXYI36OgblnvrUJwbFPrNcQFyRSw26VXDHzkRxXb+CTkdqnCKm/l+sfbz72hwmdAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781162329; c=relaxed/simple;
-	bh=CR47QW2aqYQi3jjpuH+JWQWF89PSQdAAS2jmeVBQZyk=;
+	s=arc-20240116; t=1781163357; c=relaxed/simple;
+	bh=eUTaZdcVlZ7mbhJNGVeR+srWl7fhfY1SzOK+RRIWYq0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NPkk6Otwd8MfIlCzsEW2PAnHwbme25HJH6zCsFiMDvrdPy1WH7c+/j1jGMTPRPHksBaUDqZT9r35Ch3E4anDR5gkCLhbtm+eTARpnfxVXOA/nWOqcSmYu+ROKJCe/JpMDdCjy0wOzFXqkfMg3gMYAFQOJK2eEDXscGCEd+rGzeg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gt3dN2fC; arc=none smtp.client-ip=192.198.163.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=oJTjaimt1aHTO5Cs67hu3iynKYhyrMzHijAvMjt9NCVFr/bIeU3g1w+UX3CfCkyPFVKXuhUyTwY5antRfuPOXkLGvpculwznwntef9Yes/Y34bNmfBeDeKWC1Cdy89logI6uN/BlV0a8h8LQcxDzqzPJEwy1GKl1O6xRyPUalnk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C8AdGcZb; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gt3dN2fC"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C8AdGcZb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781162328; x=1812698328;
+  t=1781163356; x=1812699356;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=CR47QW2aqYQi3jjpuH+JWQWF89PSQdAAS2jmeVBQZyk=;
-  b=Gt3dN2fCK2ivIDU1syRBFnYYmNySsYUXDLcKehqyGDgfrZkGh6M0gCyu
-   kh46Tnp+sgbo67uZIsg0mLi0D+t6eY4IeSuVWkFy4PSp8OJ8MbYA9LIMc
-   9F3hO1+cnp1p7locK3MTeka8zxlU//gQo03C6aQGHgsmWAZooY+eYnlex
-   BYc/odg2SZ+9tVtMX4/QeGOuJCV96ggo4qF9mSrgt7WcihZmmhZC0xIl6
-   Kgnv4vDWIimQipDpSo8pqSaCuxXBRLZgzlEy+2XRjknbdWhPO7h45BHKA
-   Cn+RrkIwc8moTiL2M/uYxSuhjdnEdpgC85kQgCh9Z7jezFzUle0L+WThL
-   g==;
-X-CSE-ConnectionGUID: I3lou6b4SN2UoLanD90/Uw==
-X-CSE-MsgGUID: /ZsTVR3NQjmEtr+47g7LlQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="82076698"
+  bh=eUTaZdcVlZ7mbhJNGVeR+srWl7fhfY1SzOK+RRIWYq0=;
+  b=C8AdGcZbJdGWhvXnnuEtrRZNv79yUv9xyLe61zZZyskpehMYy1ADCRbj
+   +ekjPDS1PSVMh72pC54JCkXHU6anS/nEojUvzUIGyENzAQ1onhuU62mG0
+   bGdcEOgctE5DBIsRtQmlha2DVaVIUXt8CYXyU+mCeo7wYzgGQWRfqYMq0
+   r7lqzD2M80FWzs9+lEmM8+NSI22a8Z3j8s0DCBhV+023HHkFYaw7XCMLG
+   3K4CFtAsRcFjqtgrrmSv4LjFdY2i/VVGJe/KopdqzEAeNhovNhA2F2+lf
+   YUklaYoE7q9sAQF9QUU0z+fKEHIQCo+Cal2x7DqcxsGXpYt270QNeZHMu
+   Q==;
+X-CSE-ConnectionGUID: LTubp02LTPygbwDyALbilw==
+X-CSE-MsgGUID: JZPg5AVJR4CECA5omA+jmg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="99393278"
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="82076698"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:18:47 -0700
-X-CSE-ConnectionGUID: WyffcMEbQ3ya3qcBYdFtvw==
-X-CSE-MsgGUID: hStgdhTMQNqoCp3tMzGfrQ==
+   d="scan'208";a="99393278"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:35:56 -0700
+X-CSE-ConnectionGUID: gc9XZ82lQ06NICssykO0vQ==
+X-CSE-MsgGUID: mjaJF0ZNR6i0VLMXbF0kdg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="243456670"
+   d="scan'208";a="276595139"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:18:43 -0700
-Date: Thu, 11 Jun 2026 10:18:41 +0300
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:35:53 -0700
+Date: Thu, 11 Jun 2026 10:35:49 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Angelo Dureghello <adureghello@baylibre.com>
-Cc: Greg Ungerer <gerg@linux-m68k.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
-	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 06/10] m68k: stmark2: use ioport.h macros for resources
-Message-ID: <aiphUQvNzzaoTjxX@ashevche-desk.local>
-References: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
- <20260610-wip-stmark2-dac-v5-6-b76b83366d5c@baylibre.com>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+	dlechner@baylibre.com, jic23@kernel.org,
+	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+	krzk+dt@kernel.org, robh@kernel.org,
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V11 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
+ Driver
+Message-ID: <aiplVZRI-0TCDnjL@ashevche-desk.local>
+References: <20260610175455.19006-1-macroalpha82@gmail.com>
+ <20260610175455.19006-4-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,19 +65,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260610-wip-stmark2-dac-v5-6-b76b83366d5c@baylibre.com>
+In-Reply-To: <20260610175455.19006-4-macroalpha82@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 10, 2026 at 10:35:11PM +0200, Angelo Dureghello wrote:
+On Wed, Jun 10, 2026 at 12:54:47PM -0500, Chris Morgan wrote:
 
-> Change resource declaration using DEFINE_RES_*() macros.
-> DEFINE_DMA_RES() is for a single dma channel, not a range, so used twice.
-> 
-> Also, some drivers assume IRQ resources are from index 1, so just to stay
-> uniform, moved IRQ resource at index 1.
+> Add the core component of a new inv_icm42607 driver. This includes
+> a few setup functions and the full register definition in the
+> header file.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+>  2 files changed, 531 insertions(+)
+>  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
+>  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+
+I'm not sure this is correct split by files. These files are not:
+- being build
+- being mentioned in MAINTAINERS
+
+...
+
+> +#ifndef INV_ICM42607_H_
+> +#define INV_ICM42607_H_
+> +
+> +#include <linux/bits.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/mutex.h>
+
+mutex_types.h ?
+
+> +#include <linux/regmap.h>
+> +#include <linux/types.h>
+
+Do you need forward declaration for regulator data type?
+
+...
+
+> +#define INV_ICM42607_POWER_UP_TIME_US			100000
+
+100 * USEC_PER_MSEC (will require time.h)?
+
+...
+
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
+
++ bitfields.h
+
+> +#include <linux/delay.h>
+> +#include <linux/dev_printk.h>
+
++ device/devres.h
++ err.h
+
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/time.h>
+
+Also check if you need types.h.
+
+...
+
+> +	fsleep(INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC);
+> +
+> +	/*
+> +	 * No polling interval specified in datasheet, so use reset time as
+> +	 * polling interval and 10x reset time as timeout period.
+> +	 */
+> +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+> +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+> +				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC),
+> +				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC * 10));
+
+Besides too many parentheses, this can be switched to regular patter of "num * what".
+Also, TBH, the plain values would be better here
+
+	fsleep(1 * USEC_PER_MSEC);
+
+	/*
+	 * No polling interval specified in datasheet, so use reset time as
+	 * polling interval and 10x reset time as timeout period.
+	 */
+	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
+				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
+				       1 * USEC_PER_MSEC, 10 * USEC_PER_MSEC);
+
+And in the similar way in other fsleep() / _read_poll_timeout() cases.
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "reset error, reset done bit not set\n");
 
 -- 
 With Best Regards,
