@@ -1,94 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BF92E8B98
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 05:38:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F322030215A;
+	Thu, 11 Jun 2026 06:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781156302; cv=none; b=YKksETQlQ6ssF1he3BSCTVdeXTU9wk8Ieq8ERtLJr6Uloz2+ztk9rm4AS/DmEVTl+NnWXC7FnfvXLkYes5q0zYz6vZLvHwD2hBLFSWgjkZ32d47tLyqScOXF0VMEYgOy4Y4EmJnZUSzPlXqsz4X4zvp81HyKCwa5pd1p8wY5WD0=
+	t=1781159858; cv=none; b=aSRnv3j+kNZh4oM5265j5iD7sxMGUvU9Nz3unB1RlvbOCsGVnWlureaBPv0F8Skkif7mWvP0S6/Mjzc5YBA/jX0IBEkAr+gtlRLI7PvLPBT11BcqiVWHBI13zgTwCyaxmS4QSYMO2IIYt6opmIQWZRLCMM+KcaFw6/XbeG+vYoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781156302; c=relaxed/simple;
-	bh=AarmvC7Mz26BvWZGJaNXVHm1cFoMe4K9LemHQABCtEE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T4uM9fQtBZkDPBkuzozn//OHXLznQ9i99hqE7xc4LNbiR0mmSoX2efVpK0Q6z9YvZp1+PAaAX6u41L1QILKGOv3xDbaDOcJxfe3zBIuIPAT+FsHFChPtmepUYxzAc0RpbIQv6UQa0oyiqMs/iudrZiZMHQRcECOhB423xzqtcfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I+miWUgA; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1781159858; c=relaxed/simple;
+	bh=LCzUSLlLBxMHkcEUHdVY6zCGDcYTuAzRJagDFXfCAXs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F1w5M6pUEV8jNihka1iY64JE2LH9i92iBZZFhkXpX4mwwc8QLNblQenDcrAz+z1akE22g25WNDdX+9ORgW+XfpYMLsIDJE4fxCYfkjIfK3MsIfoGjFjCiOfyj1K0kDihHNDqGEJ1E3FyWSnwuaeQqB1NHOFn+BMFWqv0/DXs+z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cAKvDsR6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I+miWUgA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781156301; x=1812692301;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=AarmvC7Mz26BvWZGJaNXVHm1cFoMe4K9LemHQABCtEE=;
-  b=I+miWUgA+6KEpYmpYOVzfBdUd8lbY3GuKX/FKlPk2aEE9ZZE6SUvQ5aL
-   4d6oVboa6uUCGuSiGQ6R2N4mJEqNJF2vYUlMfW/JSpT0Dywb08fU9DVGF
-   5DcKURUHeP1lP7xv+9k5zehv6ooxxeNjaFi8VhEhjyH12zoDPDd4Rz0tP
-   I29MAoeDvirHqzcVU8Qj1s8NBYgePvg96B/xHEwXNacjO3QkmfBqAcdPa
-   cmtof2VOtdklt4aZLJjQqFUt4+Z/4rC0n6K4WrDn6x5DnFLUEVH3EFXGr
-   Geck9n1BxsYKSeezL2ZzD+KC8qtTcvWYYbvwLh9XHTe8cUCcaKFI1XxRE
-   g==;
-X-CSE-ConnectionGUID: OflC8pwoSjqf1KvSKOvLVA==
-X-CSE-MsgGUID: zN7goqykSPeiSHJ6Y02Owg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="92283534"
-X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="92283534"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 22:38:21 -0700
-X-CSE-ConnectionGUID: +5j2PMl8TxivX8WfEYFhEg==
-X-CSE-MsgGUID: NsFpn8OBTQyTjPJ52hHK9w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="240034931"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2026 22:38:18 -0700
-Date: Thu, 11 Jun 2026 08:38:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH] iio: core-trigger: correct CONFIG_IIO_TRIGGER macro name
- in #endif comment
-Message-ID: <aipJyK_-QH7LiVnt@ashevche-desk.local>
-References: <20260610040501.204967-1-enelsonmoore@gmail.com>
- <ailpoosKZwGskxUo@ashevche-desk.local>
- <20260610155921.0000655c@gmail.com>
- <CADkSEUj1WgANDfQD_8RKM+sWgWgJZ-f9p9jRuniQYs7RA=Eg7A@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cAKvDsR6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC7D1F00893;
+	Thu, 11 Jun 2026 06:37:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781159857;
+	bh=b3jjrJqNE5+aT6EQfH9w4i2dwPWtXpiwzScoWFn9o/w=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=cAKvDsR6LFqko6D+nfwB5YgtyH357CT93VTP+L56v6GcCDv1p8XXF4vtZey40QU3H
+	 1rrz40YbFQ8Zk7wtQthQByp8lRp06twgEmhSAH2wmAHIWhllB/QICQM+MmmoMe44hW
+	 3HiISMwr5NiO9xxIgrOJSEISeEUUvg5RavaXMCGQ1TeCVl54C5+j4gQdPIJJ/0Tfwm
+	 IE5cuMcJPLbTHX3JyxwtUQurptmGOVu42Pdw5MZcba/PKml4BtlLr7UG1/U4XEdxLT
+	 YhbC5owK2UYJtss9kid6IgkL5g09sRfQWOf3fh7mNLCOO4zSrV4ZpuzHlX2DKarH8s
+	 FaqUwetgRBpJA==
+Message-ID: <e00caff5-55e4-428f-bc57-3885699b221c@kernel.org>
+Date: Thu, 11 Jun 2026 08:37:33 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] MAINTAINERS: Add myself as maintainer for PMS7003
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+ Tomasz Duszynski <tduszyns@gmail.com>
+References: <20260609160326.45123-1-m32285159@gmail.com>
+ <20260609160326.45123-3-m32285159@gmail.com>
+ <20260610-pastoral-dark-ostrich-5ca3f6@quoll>
+ <CAKqfh0Hi8EkShh3s4dUqAJRDExQLR0NVOvd4An+bY5hat4-Lhw@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <CAKqfh0Hi8EkShh3s4dUqAJRDExQLR0NVOvd4An+bY5hat4-Lhw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CADkSEUj1WgANDfQD_8RKM+sWgWgJZ-f9p9jRuniQYs7RA=Eg7A@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 10, 2026 at 12:18:34PM -0700, Ethan Nelson-Moore wrote:
-> On Wed, Jun 10, 2026 at 6:59 AM Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-> > On Wed, 10 Jun 2026 16:41:54 +0300
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > > (Btw, did you do that manually or using some scripts?)
+On 11/06/2026 00:24, Maxwell Doose wrote:
+> On Wed, Jun 10, 2026 at 4:09 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> On Tue, Jun 09, 2026 at 11:03:26AM -0500, Maxwell Doose wrote:
+>>> Tomasz's entry is no longer valid, as he is not active anymore. Add
+>>
+>> Why is not longer valid? I see activity in Feb...
+>>
 > 
-> I used a script I am writing. It attempts to filter out enums,
-> changelog entries, and example/dummy values, which makes the list
-> significantly shorter, although it does so by committing the cardinal
-> sin of parsing C using grep :). It also has an easily editable list of
-> known false positives. Once I reduce the rate of false positives to an
-> acceptable level (I notably need to exclude typedefs), I will post the
-> script on GitHub.
+> Strange. According to git log --author="Tomasz Duszynski" last commit
+> I have from him is 2023. We also did have an RFC open for a month on
+> linux-iio with Tomasz Cced with no response.
 
-Okay. When modifying C code (not text or comments), consider using coccinelle.
+So you did not check enough... and no one needs to read RFC :/
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Krzysztof
