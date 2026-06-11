@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE2335F163;
-	Thu, 11 Jun 2026 07:35:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AEFB36CE1C;
+	Thu, 11 Jun 2026 07:49:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781163357; cv=none; b=X/eA2+dePnRs9lGP3HSc8wj7Gq4B18odWmAku1tPn0ayrGfhvaspfb+/XSJrSNoPc5AK/OTokCUokI0ot1FD4b8rdTXYqRVsQdZi1ZArmDVXYI36OgblnvrUJwbFPrNcQFyRSw26VXDHzkRxXb+CTkdqnCKm/l+sfbz72hwmdAg=
+	t=1781164188; cv=none; b=f/4GxC+6cFmPi3Xt52JXyme/vVWlvlPfnZXz0SERaW4YZA+yvRrjuFNvdb2At48BDKk1o26R3PY/HghUp6dbtEI3kPmWLnyVitN7sx43zGIXhWheTwepaeIfCT/5vD1LK1eEhiyx+I3dhJEO6/ne3OPwQGjA/3V0JEFK3l3Sz4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781163357; c=relaxed/simple;
-	bh=eUTaZdcVlZ7mbhJNGVeR+srWl7fhfY1SzOK+RRIWYq0=;
+	s=arc-20240116; t=1781164188; c=relaxed/simple;
+	bh=K5X9+pmxCxTI6gxbp/ASC2g7N87EzDwCesA1chssCo0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oJTjaimt1aHTO5Cs67hu3iynKYhyrMzHijAvMjt9NCVFr/bIeU3g1w+UX3CfCkyPFVKXuhUyTwY5antRfuPOXkLGvpculwznwntef9Yes/Y34bNmfBeDeKWC1Cdy89logI6uN/BlV0a8h8LQcxDzqzPJEwy1GKl1O6xRyPUalnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C8AdGcZb; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=f284ttRNmdYJ0qPB4rwblv2x5bKlVXF1nMThzPbh9yE8v+ASWk/Aj9334hZUiirB9iTfHc288vaWiWkpBRcUXc6J3n+KR4dZLht+ubpJq6G38pW1trHlBEqasY81eqaRAwQRYfOmfCnnEVHISW/A7iMX7EI1FKx5TZ0Ne6GsP98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NdyGeSYJ; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C8AdGcZb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NdyGeSYJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781163356; x=1812699356;
+  t=1781164187; x=1812700187;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=eUTaZdcVlZ7mbhJNGVeR+srWl7fhfY1SzOK+RRIWYq0=;
-  b=C8AdGcZbJdGWhvXnnuEtrRZNv79yUv9xyLe61zZZyskpehMYy1ADCRbj
-   +ekjPDS1PSVMh72pC54JCkXHU6anS/nEojUvzUIGyENzAQ1onhuU62mG0
-   bGdcEOgctE5DBIsRtQmlha2DVaVIUXt8CYXyU+mCeo7wYzgGQWRfqYMq0
-   r7lqzD2M80FWzs9+lEmM8+NSI22a8Z3j8s0DCBhV+023HHkFYaw7XCMLG
-   3K4CFtAsRcFjqtgrrmSv4LjFdY2i/VVGJe/KopdqzEAeNhovNhA2F2+lf
-   YUklaYoE7q9sAQF9QUU0z+fKEHIQCo+Cal2x7DqcxsGXpYt270QNeZHMu
-   Q==;
-X-CSE-ConnectionGUID: LTubp02LTPygbwDyALbilw==
-X-CSE-MsgGUID: JZPg5AVJR4CECA5omA+jmg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="99393278"
+  bh=K5X9+pmxCxTI6gxbp/ASC2g7N87EzDwCesA1chssCo0=;
+  b=NdyGeSYJyGyXhPLT1LWITls/Oigyj65SeJK1ELB6Z0WiiwT+IA3+qO58
+   tUeaDoH4U/gGZbCyT55DAApJF0Wk7ysd2TOPoVKYdzdRXASEZkyuMuUQe
+   WUukjXPyfxSURy8E1KxbFkCibNvDMB49vw8/41/rtc+keHE9KYfyBMcKW
+   FwUbjFQ2xog4ij0Xn0Nfkk8zKdXW1+srG3KuPsKXRc11qQz7PDISYPCU1
+   DvjI/jxkQtupKBTjQAAlfkrOR/lLR3Zm0oXY5nJAz6yUQLJLmHtAEvD3+
+   0neDwNPqCBVl1o2ZltPX/FGM+I+pk4g5fKjlV8AGVjk3QdQcEAWRuH9yd
+   A==;
+X-CSE-ConnectionGUID: rHGBog9JT5W1kFBEHz+DXQ==
+X-CSE-MsgGUID: TI8z2ZBdSfS8j8x7taGyrQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="93078706"
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="99393278"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:35:56 -0700
-X-CSE-ConnectionGUID: gc9XZ82lQ06NICssykO0vQ==
-X-CSE-MsgGUID: mjaJF0ZNR6i0VLMXbF0kdg==
+   d="scan'208";a="93078706"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:49:47 -0700
+X-CSE-ConnectionGUID: 9gmyUkDjQM6Ss/UD92v01g==
+X-CSE-MsgGUID: 97pEHKhtS8OvqbJzmqJh+g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,198,1774335600"; 
-   d="scan'208";a="276595139"
+   d="scan'208";a="251503107"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:35:53 -0700
-Date: Thu, 11 Jun 2026 10:35:49 +0300
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 00:49:43 -0700
+Date: Thu, 11 Jun 2026 10:49:41 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Chris Morgan <macroalpha82@gmail.com>
 Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
@@ -52,11 +52,11 @@ Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
 	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
 	krzk+dt@kernel.org, robh@kernel.org,
 	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V11 3/9] iio: imu: inv_icm42607: Add inv_icm42607 Core
- Driver
-Message-ID: <aiplVZRI-0TCDnjL@ashevche-desk.local>
+Subject: Re: [PATCH V11 4/9] iio: imu: inv_icm42607: Add I2C and SPI For
+ icm42607
+Message-ID: <aipolU1W3QNXdd5b@ashevche-desk.local>
 References: <20260610175455.19006-1-macroalpha82@gmail.com>
- <20260610175455.19006-4-macroalpha82@gmail.com>
+ <20260610175455.19006-5-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,100 +65,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260610175455.19006-4-macroalpha82@gmail.com>
+In-Reply-To: <20260610175455.19006-5-macroalpha82@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 10, 2026 at 12:54:47PM -0500, Chris Morgan wrote:
+On Wed, Jun 10, 2026 at 12:54:48PM -0500, Chris Morgan wrote:
 
-> Add the core component of a new inv_icm42607 driver. This includes
-> a few setup functions and the full register definition in the
-> header file.
-
-...
-
->  2 files changed, 531 insertions(+)
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607.h
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-
-I'm not sure this is correct split by files. These files are not:
-- being build
-- being mentioned in MAINTAINERS
+> Add I2C and SPI driver support for InvenSense ICM-42607 devices.
+> Add necessary Kconfig and Makefile to allow building of (incomplete)
+> driver.
 
 ...
 
-> +#ifndef INV_ICM42607_H_
-> +#define INV_ICM42607_H_
+>  drivers/iio/imu/Kconfig                       |   1 +
+>  drivers/iio/imu/Makefile                      |   1 +
+>  drivers/iio/imu/inv_icm42607/Kconfig          |  30 +++++
+>  drivers/iio/imu/inv_icm42607/Makefile         |  10 ++
+
+These should be part of the previous patch.
+
+...
+
+> +config INV_ICM42607
+> +	tristate
+
+To make it compilable w.o. SPI/I2C make this as
+
+	tristate "Inven... Core driver" if COMPILE_TEST
+
+
+> +	select IIO_BUFFER
+> +	select IIO_INV_SENSORS_TIMESTAMP
+
+...
+
+> +obj-$(CONFIG_INV_ICM42607_I2C) += inv-icm42607-i2c.o
+> +inv-icm42607-i2c-y += inv_icm42607_i2c.o
 > +
-> +#include <linux/bits.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/mutex.h>
+> +obj-$(CONFIG_INV_ICM42607_SPI) += inv-icm42607-spi.o
+> +inv-icm42607-spi-y += inv_icm42607_spi.o
 
-mutex_types.h ?
-
-> +#include <linux/regmap.h>
-> +#include <linux/types.h>
-
-Do you need forward declaration for regulator data type?
+Add each of them in a separate patch.
 
 ...
 
-> +#define INV_ICM42607_POWER_UP_TIME_US			100000
+> +#include <linux/device.h>
 
-100 * USEC_PER_MSEC (will require time.h)?
+Why?
+And a lot of missing headers (bitfield.h, dev_printk.h, mod_devicetable.h, err.h)
 
-...
-
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-
-+ bitfields.h
-
-> +#include <linux/delay.h>
-> +#include <linux/dev_printk.h>
-
-+ device/devres.h
-+ err.h
-
-> +#include <linux/iio/iio.h>
+> +#include <linux/i2c.h>
 > +#include <linux/module.h>
-> +#include <linux/mutex.h>
 > +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/time.h>
-
-Also check if you need types.h.
 
 ...
 
-> +	fsleep(INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC);
+> +static int inv_icm42607_probe(struct i2c_client *client)
+> +{
+> +	const struct inv_icm42607_hw *hw;
+> +	struct regmap *regmap;
 > +
-> +	/*
-> +	 * No polling interval specified in datasheet, so use reset time as
-> +	 * polling interval and 10x reset time as timeout period.
-> +	 */
-> +	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
-> +				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
-> +				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC),
-> +				       (INV_ICM42607_RESET_TIME_MS * USEC_PER_MSEC * 10));
+> +	hw = i2c_get_match_data(client);
+> +	if (!hw)
+> +		return dev_err_probe(&client->dev, -ENODEV,
+> +				     "Failed to get i2c data\n");
 
-Besides too many parentheses, this can be switched to regular patter of "num * what".
-Also, TBH, the plain values would be better here
+Add
 
-	fsleep(1 * USEC_PER_MSEC);
+	struct device *dev = &client->dev;
 
-	/*
-	 * No polling interval specified in datasheet, so use reset time as
-	 * polling interval and 10x reset time as timeout period.
-	 */
-	ret = regmap_read_poll_timeout(st->map, INV_ICM42607_REG_INT_STATUS,
-				       val, val & INV_ICM42607_INT_STATUS_RESET_DONE,
-				       1 * USEC_PER_MSEC, 10 * USEC_PER_MSEC);
+and modify this and other eligible pieces accordingly.
 
-And in the similar way in other fsleep() / _read_poll_timeout() cases.
+		return dev_err_probe(dev, -ENODEV, "Failed to get i2c data\n");
 
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "reset error, reset done bit not set\n");
+> +	regmap = devm_regmap_init_i2c(client, &inv_icm42607_regmap_config);
+> +	if (IS_ERR(regmap))
+> +		return dev_err_probe(&client->dev, PTR_ERR(regmap),
+> +				     "Failed to register i2c regmap %ld\n",
+
+Do not duplicate a printing of an error code.
+
+> +				     PTR_ERR(regmap));
+
+		return dev_err_probe(dev, PTR_ERR(regmap),
+				     "Failed to register i2c regmap\n");
+
+> +	return inv_icm42607_core_probe(regmap, hw, inv_icm42607_i2c_bus_setup);
+> +}
+> +
+
+...
+
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_spi.c
+
+As per above.
 
 -- 
 With Best Regards,
