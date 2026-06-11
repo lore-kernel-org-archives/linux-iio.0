@@ -1,136 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58E98404BCF;
-	Thu, 11 Jun 2026 18:53:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326DC44A739
+	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 19:10:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781204023; cv=none; b=j+tr/fNynsn/fvtlHnxsd3VustRZ4f/iYsXDpnw7q67ZC56+axvoYrv2f4SZU28ZToFRGvr+TORv7IfyLfXHsBNirwS0ai77VZFtP0v6Yq5H8YQrQ9cClAv4OYba0QWVvG7Z3UpBNnxKCoHVhclGUj55av8TLV7Uwj6hozyq4ck=
+	t=1781205035; cv=none; b=JAd8ZElTGwjDxtN9Nraq7RDS2G/tMrbPqsT4d0Cxsz0yycehU1guQ2MwaFh7kZnZlgLIQWe6IotWwQTX3a9O7b45DsMbuFTf3WD8ODmyNSMmfVtdAQAt5sNuMIjOnNLmfOC6vsBpA8eL+NG8m9JLqu3GTNM51uHDd1Yhbqp59Ko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781204023; c=relaxed/simple;
-	bh=23V39ldrqwWRAB/niUph+06vp/6uCDNAdAo0YdkcaPE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N6T4XbO4+QM6ZYayuA4VYMrH1yo0xevQ9SqruJkxKGw8MXohxdHM15bN4GcH3ViF6Q6DD9IHhrcFR8waaCmk2uyenLMzVv8fqBLpHBhOBDPkfQNQIXv8yfMQTiWUbty4XD2VZdCfqt+EicQ95KuciJMleA9Z6VM3dk2yYpdNYcM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nfHEFl7D; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1781205035; c=relaxed/simple;
+	bh=0i91wvPsoFNz5NqYStg6Ytvr9GyMmPyJSl+LIKrKv/0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qP6kC23ODAMV/zm6Z94Y2MmW/8ufH+zHAqVJlU3uPQJK1PPhtK48OC2m77RHWk1GLATWJMF0oXfZ2iYlTky3vi6eC/l0xvk3dAdzpBzSP36E1aXovwHJHta0mPYZn8AjVX4JWrUBLV0lWODzLeqJwVkw9uLWoq/BXnCje3tVfUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PWryWPyt; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nfHEFl7D"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781204021; x=1812740021;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=23V39ldrqwWRAB/niUph+06vp/6uCDNAdAo0YdkcaPE=;
-  b=nfHEFl7DX1NLvK1lKJM1V37bbDDHeW6Pa67vK780lqcbi96UNVM1ZZyF
-   ZI/x2KCC7Llms2eJ3flBhj0SlW48ffa+vZyc+DdmaJjthMi3+RuaEX9hJ
-   RGJyiYBbnbzt1I0Wkxqw77onw4/uYz8dzwHpg57paiSx6vRH17q31kIEn
-   vi88fouk+iaV5GI1Hf+NdgPJbCSxu7Yv8RCLbWh4t83t7Lck9TCXHoULD
-   ZXQOJozGnjvjEYa5HDm8ksPY9Q5qLwO5PbSqhXKx3882BRmQ73zqg+HdC
-   9RmOUNeinP3tLvdtZ58M5K+m5WBGJaD8Lg3kblpwgQjBl752kKkdnaV9g
-   g==;
-X-CSE-ConnectionGUID: 5A+9LAtOSFWxWNjW6G3Z7A==
-X-CSE-MsgGUID: 4/k0kTyTTKmBVKv/bmK5XA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="85658020"
-X-IronPort-AV: E=Sophos;i="6.24,199,1774335600"; 
-   d="scan'208";a="85658020"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 11:53:40 -0700
-X-CSE-ConnectionGUID: 4DcHKMqVSvCRPyH3Ekivlw==
-X-CSE-MsgGUID: I93WhNpvQnGs3+X+1wm2ug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,199,1774335600"; 
-   d="scan'208";a="242446551"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 11:53:35 -0700
-Date: Thu, 11 Jun 2026 21:53:33 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
-	David Collins <david.collins@oss.qualcomm.com>,
-	Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Stephan Gerhold <stephan.gerhold@linaro.org>
-Subject: Re: [PATCH v2 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ
- with ADC_TM auxiliary driver
-Message-ID: <aisELR6v1EWGcmqb@ashevche-desk.local>
-References: <20260526-gen3_adc_tm-v2-0-702fbac919ac@oss.qualcomm.com>
- <20260526-gen3_adc_tm-v2-1-702fbac919ac@oss.qualcomm.com>
- <ah9ouLQFI7VtHCWL@ashevche-desk.local>
- <20260604114630.23ca427a@jic23-huawei>
- <aiGPMqHcz_AkUezI@ashevche-desk.local>
- <d095233e-ac2a-4b50-8a62-29fe1e36c2d1@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PWryWPyt"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-8ccef9eabccso13064276d6.1
+        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 12:10:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781205033; x=1781809833; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1akxBa9Yj2eO0ezJOdd0PYMsv5JHqMaTxTbB2PVknqc=;
+        b=PWryWPytKiNqSIwCJek3s5jXpIzc8dTdnKWtrb/UsrCbVZ/pjn5/aL11z2E/lSOt2M
+         CzgeSqAMUZYnFteoc7fvhKVESI0W3NkYA1MTzooNi74PnKie0Y2MH9TTW+85ctWY9SPY
+         JaCOfVWroKRHIuWg6GkEJQCCvIfk3QkOWRJmV2j/f1zisD+6c/0U9qfpsys3OxHrX++d
+         4Wek+hV3aohJVK6AXfZhSQBgViA9eyaFNlD8q6cT1accQEGm2mkaPJLLegxaR19vMaGY
+         ssn/TUAbwNxFM1FxqE5s35SFp7S1McJygBqUPNqlnQ9W7xUHHAMtp+JoWh34mFTSI7WY
+         ycug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781205033; x=1781809833;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=1akxBa9Yj2eO0ezJOdd0PYMsv5JHqMaTxTbB2PVknqc=;
+        b=oUJY+Y3EDFnxD9XNXGiQBI66kXUOYNzIra7kkVAixNT6ID+MaHdk5PxwXOxSGdvfds
+         AtljYATOwHS7sqzzHUdYvv1xdHyGobYYJ/J2KGKwqHMN+sjOH9cGw0hGiKYYuF5zlxrh
+         /QQhA/i2I0r3218j2kLKO3J3OzZcAxyfYbZADmoUciUz7r3xpEObXvrToENKC9gAhjTx
+         tv4vAZsIVPZugdwLiFDFyUjVqtx0oj2frZzk4/qLS4MVmu1e+XHqfLAUDm7u0GOpdXO2
+         HUiI9bAB8rBcUz9sppReL1TbarILQmLVevf+O3PEHQqDE7z5WcQ2+oUeFPrCSiUTfWL4
+         W7tg==
+X-Forwarded-Encrypted: i=1; AFNElJ+01bcFW40ec0plFXpF8bL0FlvekN+f0FCffw+3O5gvXwbUoaKx3pjeG9oSsQW00BJdBGLeY9BFYpY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxrJzAz5duBGieIaQXBnTaB74xwGt0rdlRemP+G6xrim+4a/cuI
+	BKyNxf6TQqW+uaCOH9bSsDr6SL2mURTtDWx/aVyaqusVrD1gY211gzKKXVYzEHZrmL8=
+X-Gm-Gg: Acq92OELwpOTHlrEmgA4W6n1DreDL7CzQSdwbR/8MCaLqavyATQlSir+CdE9NJ1L++J
+	M7BZ+cU/ITdXIKNHLlI94zSA82fTLeQgGQ/E0pQ95UDTEeKzr2jQglIX5LoWacwRIk5Fd7G9s06
+	0KDuCH+uiMyx1CzUBNESAml5IvqfsTcdrGlBko9SvVqGIvnc14zY53ZykiEV4ecYyb1xq/YjfhH
+	1DP7CX6lTGUxyUYI0RZGYcMq/sy0zamyseckJvrbzaw/5dGUlyBPTCfouBFVFX3PIunBEyqhPnR
+	DHi50c73jJlkLtlgHz6rQgbgjxz0XbBIe4QOR7lCH+pPgmOcqnYjmbjPSXRnii4oDYac2cQOmvZ
+	WLONVJSC5EkiwAdjAt0+LSz/Oj/bPKN/8QYsNoTuuZSZpLy3bpqTrP2h1AiCJ65hkr1SIy+EGXR
+	Znuqnp0D03iIMK+DoazQuOhg/UqEwjyfqHrEGfyfmCczsqqNI=
+X-Received: by 2002:a05:622a:c18:b0:517:5f11:b353 with SMTP id d75a77b69052e-517ef177b41mr47422321cf.41.1781205033020;
+        Thu, 11 Jun 2026 12:10:33 -0700 (PDT)
+Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb63e594sm1333661cf.8.2026.06.11.12.10.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Jun 2026 12:10:32 -0700 (PDT)
+Date: Thu, 11 Jun 2026 15:10:26 -0400
+From: Louis Adamian <adamianlouis@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
+ temperature compensation
+Message-ID: <20260611151026.4abf8804@louisarchdesktop>
+In-Reply-To: <aimvBvJp8CsNKlPU@ashevche-desk.local>
+References: <20260610020458.104818-1-adamianlouis@gmail.com>
+	<20260610020458.104818-3-adamianlouis@gmail.com>
+	<aimvBvJp8CsNKlPU@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d095233e-ac2a-4b50-8a62-29fe1e36c2d1@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jun 11, 2026 at 04:13:07PM +0530, Jishnu Prakash wrote:
-> On 6/4/2026 8:14 PM, Andy Shevchenko wrote:
-> > On Thu, Jun 04, 2026 at 11:46:30AM +0100, Jonathan Cameron wrote:
-> >> On Wed, 3 Jun 2026 02:35:20 +0300
-> >> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >>> On Tue, May 26, 2026 at 04:26:09PM +0530, Jishnu Prakash wrote:
+On Wed, 10 Jun 2026 21:37:58 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-...
-
-> >>>> +	ret = devm_request_threaded_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
-> >>>> +					NULL, adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,
-> >>>> +					adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
-> >>>> +					adc);
-> >>>>  	if (ret)
-> >>>>  		return dev_err_probe(dev, ret,
-> >>>>  				     "Failed to request SDAM%d irq\n",  
-> >>>
-> >>> Also add a patch to drop this duplicate message.
-> >>
-> >> There is another thread going on this.  It might not be duplicate
-> >> if -EPROBE_DEFER is returned.  The message won't be printed but it
-> >> will be logged for helping debug deferred probe reasons.
-> > 
-> > Yes, and I explained that it is duplicated as long as I understand current
-> > code base.
+> On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian wrote:
+> > Add correct temperature compensation for ms5637-30BA,
+> > MS5803-01BA,02BA, 05BA, 14BA, 30BA, MS5837-30BA. The temperature
+> > compensation formula is shared across these sensors but with
+> > different constants. Add ms_tp_comp_consts to capture these
+> > per-device differences. Add pressure variant specific pressure
+> > scale variable.  
 > 
-> After I checked for Andy's first comment, my understanding was that
-> devm_request_threaded_irq would internally call dev_err_probe in case
-> of an error, so this dev_err_probe print above would not be needed.
+> Is there SPI driver? If so, why only i2c is affected?
 
-Correct.
+As Jonathan noted, there is no SPI driver currently and the
+modified function is only used by i2c. 
 
-> Please let me know if it's better to keep or remove this print.
+> > +		s64 tmp = (s64)temp - 2000;  
+> 
+> Why casting?
 
-You already know my position here :-)
+This is extraneous, I will remove it.
 
-> And if I make the change, shall I add it in a separate patch
-> before or after this patch in the next series?
+> Overall this all needs a good comment or even comments to explain all
+> calculations with the references to the respective sections / tables
+> / pages in the datasheet.
 
-The rule of thumb is to make sure your series won't do ping-pong type of
-changes: when one patch introduces (or moves) some code that is removed or
-modified in different way by another patch in the same series.
+I'll add comments here explaining the shared equations. There are
+also references to the individual datasheets in the constant structures
+because they differ per device.
 
-> >> So maybe we have been a little too energetic in removing these.
-> > 
-> > Or maybe sashiko consumed a bit of LSD :-)
+> >  struct ms_tp_dev {
+> >  	struct i2c_client *client;  
+> 
+> >  	const struct ms_tp_hw_data *hw;
+> >  	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
+> >  	u8 res_index;
+> > +	const struct ms_tp_comp_consts *comp_consts;  
+> 
+> Please, check with `pahole` if this is the best layout.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I will correct the packing on this per pahole's finding.
+> >  struct ms_tp_data {
+> >  	const char *name;
+> >  	const struct ms_tp_hw_data *hw;
+> > +	const struct ms_tp_comp_consts *comp_consts;
+> >  };  
+> 
+> Can this be simply embedded into ms_tp_dev (and copied there if
+> required)?
 
+Copying in ms_tp_comp_consts provides no benefit over
+referencing the pointer; the values are per-descriptor, not
+per-instance and never modified. I'll keep the pointer (same as
+ms_tp_hw_data).
 
+> Have you considered to prepare the infrastructure in one patch and add
+> the actual compensation data tables in another?
+
+I can split this patch for V3 and I will fix the other formatting
+issues.
+
+Thanks,
+Louis
