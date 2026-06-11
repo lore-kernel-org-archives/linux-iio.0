@@ -1,191 +1,263 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59CC93D45DE
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 10:43:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51C863C9881;
+	Thu, 11 Jun 2026 10:48:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781174597; cv=none; b=hRQbL4w3wH4DScwD4Ji6SNViMzxbjvGSA3Sr9NQJbsUyAQUiujlZvtL4voVFMuiicXuS+DVk1bBCNItI89Qq5NvAKLbJEVnAsVxZYc2c0rieSOUnzXuXHjCEV8bbAW1u7GypjSVssOt2j0LClV0yqp3sFj0uEbZAFc2yXbx6hX4=
+	t=1781174894; cv=none; b=HwioCnpYxmnof2NmtaA00oenEl7L1w9PcPX78tqSxfvYCyxeDd689GyRXn7faecdmhaMbuwgpYph1j+FWwYTEGBTdk+DMmnskrmM8kytqO40WzcC0ZPt/02MN6BNKWsFL55iUThFZRaAe1hACaO8i2eD+EFdCR0ky81hP4Dz4zg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781174597; c=relaxed/simple;
-	bh=zmNw8D5zWNdKNVzgv5ao0F5vgRAQeg0ZOCSSRFKMbzI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QnsxKGND7M0WwtoCzG3nZG1EVg/xgt1RzU7QO1fJf0n6o86bjcAUkf8D98JkPy/113lBYP4ZA60T0uwv4gHRJWr7RsnpiWQ6+CJ7g/dz1mQkw+JlbpZKq1m+QYwjyr0yJoRHm4SWShSSmrg0uNfyaW6ZxJR9d8P2HnvAYHunVBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZYyu8GuP; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=RjL5FUiV; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1781174894; c=relaxed/simple;
+	bh=W9pB9DtRk4kvn3JwX+GidSwhJ0s18lhYEd/I1zdnBz8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VIYmkJ4Cr/b0iyPaJu0ZW5j3gl67K+wCM8WIrh3Kbrl2fxVcdldTkbKysYa+FgvRgXNjJDWxOFjgL37uE/KlLF4Ykr9sS0wzw+etOWFmJjnGeJpOiART8klPZfh4GgBvUXOEAy6AaXfQBEvbwfgneU78FMo1FUJL/WqcQjkAuWU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gp8xOUoJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZYyu8GuP";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="RjL5FUiV"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65BA0oNP303952
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 10:43:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	kSoVFawRRZBWzshRPZGQRk+ptUMUxsYND+WmlIf6M1c=; b=ZYyu8GuPzXmQwecG
-	/46W6j0yy8QoY2yaWBVkoaYJXyPoCqSUqqpO9TuoSDJRCjod0KVPEiyxxZa8WL9n
-	uu4bLqwh3zjurJHH9r5RW92S7yGrOoJk/5e3RtqHKzAGop7yjCzuBmwue5yBKy42
-	p53S98jB4FJQz8l0J/XujeMMqHfOOoHPNsh6o4XdLKq+TKZUeA3u8qxE2urYwpsC
-	7CYjLJXCNO9soKoPQxaM818l78Mo0jkNUmaSd/bcwy8F01lpGgy+BqMyFh8Yw5Ta
-	7Tmmt30KqitKhXN78BxlzEznoPwUibWyEw6A9/qEUye7fig7M0ZwNc/gyMxBPK+y
-	CyP1yQ==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4eqtb5g9th-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 10:43:15 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2c2b64850easo42312725ad.1
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 03:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781174594; x=1781779394; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kSoVFawRRZBWzshRPZGQRk+ptUMUxsYND+WmlIf6M1c=;
-        b=RjL5FUiVqvr7WLuaqrZ9pv3fTyXWxAGxNZn+S95u/meMehKhLOipxdTx8X9RjNfGqB
-         PWS6wpSazkPY88r1c0NAXyJ6vCtX98tPSA9ifYlgPmlqP3eAuv1FehK/a9fj0mSlorhX
-         DO1H/wcuUC3qaoEU45/sl4lOHh9ITzTMGGQKTga7GM9fu/99rOgnvtAWJN6WHLzU+mot
-         XZaPL/x44jDJKlbI+yf3GGi4fSVJgq8NlZBDlPMbMqo2ISoAPB/p9Z8dLppeRr9JVi8o
-         LJ+9w39OJZTlVG8D53DrWZTrwMMTs8S3BSszGv0gYDTIO/ULAH6MYlAfhlwjGuKu62kA
-         uXMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781174594; x=1781779394;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kSoVFawRRZBWzshRPZGQRk+ptUMUxsYND+WmlIf6M1c=;
-        b=jlxZGsCniKH2Mmu6f2RDYeSENdS4CbWDm974RNOQ2vzt1KA8weI7azb5Ab2s4qWTjd
-         8v9enqWcH54xnqbtBivg38+/VWzHQSt3H0lKjB9XNRHTwktwe9uKMJzKwGP6YbsvxpR+
-         Dk3UF+ZzMBm3E9+Bn5hKd/o5E0Bo4NPQ1/sT6KJcCI1W2VndZ1Ijy4RsK6gv4P1S10JT
-         NoGrQDclW8xZo72rcyYO2CNj19zXEfXF5V1cQmU9Msg9LKTwl9OpMzyfIGuTtgbF461E
-         7mpcpi6pAOCBT/dfe5Vc5SvGCCeOoR1FxKoweNEgj60MEkWtcARRVp7ZTGmsL3i85klC
-         MhWg==
-X-Forwarded-Encrypted: i=1; AFNElJ8Cuw7hkg6JZOKx4r23YDToN0LBzlvm/sSVi/qgx5qMtt5OdLSLPVTt/BgXC5rkxqk/VtdDZk/+Pz4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/sgFE320TQU8FF10gxcAQMG8u0zoSL7/TOXqc3VyMxbW6yl+P
-	XmZeD9C2T8e7mWQeOscFnwMSq6zmYyl88ABJJKDrkkivmLWT1wutrmzxRkbo9VcVbVZ7G6CEJkF
-	/Bjb+H8a75EvFEnVBhPln0MYOJLamK6XWILUj0oMxIdpMicw1QFCJcID5sRvG7WU=
-X-Gm-Gg: Acq92OEIXfqoBDrwSCjZJVHIVM5EotG+DLFu7CsmyOseku5hzGRKqwehnFfa5KhAa6W
-	0ZeIoCA4LBcnMuml8depZsOBR6JjSKUvy6sMhJdryXdjK2pF7sdtLwQWssNfL7G+u9+oY2rWt7Q
-	VHHDE6gtR/7S4iQbc3bTQ/WkbBTprOENSmpDMpe0W/5xepN1NS9Bk4d6xy9aOfJrR8pFvZas7aB
-	All8DylGTrCn4sAhNkwiN8MtKKlgnXEHoeQKz2jPMs/ji5R07pm9BwQD8uByNYB9XM/Oj5UdXb7
-	9BpKnTV4khWk6oDZAaP8f8qOr2JA6XLFIeLNLS+VoHrGxqW5niIuuxatW/eczys9q6Vo4h0oXed
-	CCUvswz8EkOwmC5F+f4Qe93a+Z4aEXxasIxc4bmW1nHe8+/9GHczrAPrLY/uV56nl
-X-Received: by 2002:a17:902:c40d:b0:2c1:4d9:c8db with SMTP id d9443c01a7336-2c2f51c94d1mr25512295ad.37.1781174594279;
-        Thu, 11 Jun 2026 03:43:14 -0700 (PDT)
-X-Received: by 2002:a17:902:c40d:b0:2c1:4d9:c8db with SMTP id d9443c01a7336-2c2f51c94d1mr25511865ad.37.1781174593840;
-        Thu, 11 Jun 2026 03:43:13 -0700 (PDT)
-Received: from [10.217.217.28] ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c164f84335sm273881735ad.19.2026.06.11.03.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Jun 2026 03:43:13 -0700 (PDT)
-Message-ID: <d095233e-ac2a-4b50-8a62-29fe1e36c2d1@oss.qualcomm.com>
-Date: Thu, 11 Jun 2026 16:13:07 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gp8xOUoJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04FB01F00893;
+	Thu, 11 Jun 2026 10:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781174893;
+	bh=crmNupD7hZaxlPv3WiFM5BGDGkQfFm+0iK/KcjZ0EVc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=gp8xOUoJw7DR55PdOTHPoduThWtKOCaI4yUYsuybdRvLig8x4hic9KEcJFBkqLYy3
+	 eTqqGarae18Vwav/snfztbmDhU+Cxr5i6UTyDs6R0xuYfQbUwVBsV7IX1xxdAxXAf2
+	 mfLjqBhyZz4AwS5Stq/9XCHGyHYfsDf5rVGsjrGGASuzlBm4BDyswgtZasxxYty/l7
+	 tFq7XC72F/SS63YJqo7dvJb2GPSkHvpCAVa8f9w91cKaQ4ekZ/NfQ83hkuS2TxXhA+
+	 OYFqceyOb0vPJsGcu8i/mz0xDWEZZUJNxgMq3CQmV0kf7BUGpFwqmrDN4lN1o6OB2A
+	 MFl2vU6TPSBlQ==
+Date: Thu, 11 Jun 2026 11:48:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven
+ <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann
+ <arnd@arndb.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
+ Torgue <alexandre.torgue@foss.st.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>,
+ linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, Michael
+ Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Brian
+ Masney <bmasney@redhat.com>
+Subject: Re: [PATCH v5 09/10] iio: dac: add mcf54415 DAC
+Message-ID: <20260611114800.009d9797@jic23-huawei>
+In-Reply-To: <20260610-wip-stmark2-dac-v5-9-b76b83366d5c@baylibre.com>
+References: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
+	<20260610-wip-stmark2-dac-v5-9-b76b83366d5c@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] iio: adc: qcom-spmi-adc5-gen3: Share SDAM0 IRQ
- with ADC_TM auxiliary driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
-        David Collins <david.collins@oss.qualcomm.com>,
-        Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Stephan Gerhold <stephan.gerhold@linaro.org>
-References: <20260526-gen3_adc_tm-v2-0-702fbac919ac@oss.qualcomm.com>
- <20260526-gen3_adc_tm-v2-1-702fbac919ac@oss.qualcomm.com>
- <ah9ouLQFI7VtHCWL@ashevche-desk.local> <20260604114630.23ca427a@jic23-huawei>
- <aiGPMqHcz_AkUezI@ashevche-desk.local>
-Content-Language: en-US
-From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-In-Reply-To: <aiGPMqHcz_AkUezI@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjExMDEwNyBTYWx0ZWRfX0EfnlVryZGfG
- qULV+JxCIvWR+xh6CieJ80SsGEMLj+eaTvV4UqmLJ8KbQV9jlb4dKbXXQOfNvLKG4rVFjNknR2Y
- y+PfNm7A7J3mP4L0Ae5ItiwMjoI+nj3b0Pc7JLqfF2P8fV4yqkYRsnvUTy88b5oUpJMxydsvcu6
- X+I5/KGOyUPq9dvtqTkvVSFVtlV+k6IgXU06XVuMSRFu7r5sDXWLPN+VLxNPOReMUqe7AKq/xaa
- kd54Dh5Bi00Qy1mOUMc1wcR6dxzqnmA0rK5yeBuuyV3FvYnUddBXGtJgH89pEnodwsIFT11PCTm
- 9MhrQH25IUOOWVb4cJIgy0FIE4DlbADAJM2THAaFXrf4OxYxf/tbHMlICk3Ba0bsFi7oBW8Xl0h
- PblEMcRYwPIz4VaZpE9CMcZHBazdf60+iaLZeoPqOKbZRgMd3Ik8P6IN+D5f6TvNpko+YYMB8+G
- F8HtLFXYSImlC1QSJ/w==
-X-Proofpoint-ORIG-GUID: s-s_vQ2dWBCR-40r2A5N7uTENJq9vVkK
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjExMDEwNyBTYWx0ZWRfX8WNyS0zLvuvu
- 7c0bp4QRenjm4loRtKv17aN/mHioSJVgmND+JdSj8LK3Vx6QVAOKGaXojYvM63VzHgUWVLEimCP
- d3JyUUVVUunjpH8auxmRut8P3XF76GM=
-X-Authority-Analysis: v=2.4 cv=e6g2j6p/ c=1 sm=1 tr=0 ts=6a2a9143 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=QyXUC8HyAAAA:8 a=8gGmNC2uT6na8rc2OTkA:9 a=QEXdDO2ut3YA:10
- a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-GUID: s-s_vQ2dWBCR-40r2A5N7uTENJq9vVkK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-11_02,2026-06-09_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
- phishscore=0 clxscore=1015 impostorscore=0 adultscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606040000 definitions=main-2606110107
 
-On 6/4/2026 8:14 PM, Andy Shevchenko wrote:
-> On Thu, Jun 04, 2026 at 11:46:30AM +0100, Jonathan Cameron wrote:
->> On Wed, 3 Jun 2026 02:35:20 +0300
->> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->>> On Tue, May 26, 2026 at 04:26:09PM +0530, Jishnu Prakash wrote:
+On Wed, 10 Jun 2026 22:35:14 +0200
+Angelo Dureghello <adureghello@baylibre.com> wrote:
+
+> From: Angelo Dureghello <adureghello@baylibre.com>
 > 
-> ...
+> Add basic version of mcf54415 DAC driver. DAC is embedded in the SoC and
+> DAC configuration registers are mapped in the internal IO address space.
 > 
->>>> +	ret = devm_request_threaded_irq(dev, adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq,
->>>> +					NULL, adc5_gen3_isr, IRQF_ONESHOT | IRQF_SHARED,
->>>> +					adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
->>>> +					adc);
->>>>  	if (ret)
->>>>  		return dev_err_probe(dev, ret,
->>>>  				     "Failed to request SDAM%d irq\n",  
->>>
->>> Also add a patch to drop this duplicate message.
->>
->> There is another thread going on this.  It might not be duplicate
->> if -EPROBE_DEFER is returned.  The message won't be printed but it
->> will be logged for helping debug deferred probe reasons.
+> The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
+> analog output varying from DAC_VREFL to DAC_VREFH. The DAC module
+> consists of a conversion unit, an output amplifier, and the associated
+> digital control blocks. Default register values for DAC_VREFL and DAC_VREFH
+> are respectively 0 and 0xfff, left untouched in this initial version.
 > 
-> Yes, and I explained that it is duplicated as long as I understand current
-> code base.
+> This initial version of the driver is minimalistic, "output raw" only, to
+> be extended in the future. DMA and external sync are disabled, default mode
+> is high speed, default format is right-justified 12-bit on 16-bit word.
+> 
+> Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+I'm lazy so didn't check earlier versions but assume the two bits
+of feedback from Sashiko are false positives:
+https://sashiko.dev/#/patchset/20260610-wip-stmark2-dac-v5-0-b76b83366d5c%40baylibre.com
 
-Hi Jonathan, Andy,
+The one about clock underflow if resume fails, and then devm cleanup happens later
+is a bit nasty.
 
-After I checked for Andy's first comment, my understanding was that
-devm_request_threaded_irq would internally call dev_err_probe in case
-of an error, so this dev_err_probe print above would not be needed.
+I did a bit of digging and maybe it is better to just leave the clock on?
+The status dev.power.is_suspended is set to false whether or not resume succeeded
+and I believe a following suspend will not take into account that resume failed.
 
-Please let me know if it's better to keep or remove this print.
+I'm not set up to poke the combinations but it might be worth trying that.
++CC common clk people who may immediately know what the right answer is.
 
-And if I make the change, shall I add it in a separate patch
-before or after this patch in the next series?
+Otherwise just a few minor style comments inline.
 
 Thanks,
-Jishnu
 
+Jonathan
+
+> ---
+> Changes in v2:
+> - remove tests from commit message, moved to patch 0
+> - remove additional blank lines
+> - remove dead code and unused definitions
+> - use regmap
+> - add limit check on raw write
+> - non functional style fixes
+> - add COMPILE_TEST to Kconfig
+> Changes in v3:
+> - add comments where needed
+> - code style changes
+> - remove unneeded variables
+> - use regmap_set_bits where possible
+> - remove macro not needed to define a single channel
+> - set up regmap to big_endian accesses for next patches that will come,
+>   that will adjust ColdFire readx/writex as standard LE (links in 0/x).
+> - add return value check on regmap calls
+> - sashiko: remove unneeded .io_port from regmap init.
+> - sashiko: add select REGMAP_MMIO in Kconfig
+> Changes in v4:
+> - remove unused includes
+> - sashiko: return "ret" as regmap_read ret value in case of error
+> - sashiko: using u32 as regmap_read value
+> - use local variable in mcf54415_dac_init() for better readability
+> - sashiko: check mcf54415_dac_init return value also in resume()
+> Changes in v5:
+> - commit syntax fixes
+> - minor code style fixes
+> - use include <linux/type.h>
+> - removed unneeded cast
+> - disable clock in case of DAC init error
+> - use unsigned int for regmap_read and GENMASK for masking 12 bits
+> - add id table to match "mcfdac" platform device name
+> ---
+>  drivers/iio/dac/Kconfig        |  11 +++
+>  drivers/iio/dac/Makefile       |   1 +
+>  drivers/iio/dac/mcf54415_dac.c | 216 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 228 insertions(+)
 > 
->> So maybe we have been a little too energetic in removing these.
-> 
-> Or maybe sashiko consumed a bit of LSD :-)
-> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index cd4870b65415..b1a578076188 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -516,6 +516,17 @@ config MAX5821
+>  	  Say yes here to build support for Maxim MAX5821
+>  	  10 bits DAC.
+>  
+> +config MCF54415_DAC
+> +	tristate "NXP MCF54415 DAC driver"
+> +	depends on M5441x || COMPILE_TEST
+> +	select REGMAP_MMIO
+> +	help
+> +	  Say yes here to build support for NXP MCF54415
+> +	  12bit DAC.
+
+Rewrap this.
+
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called mcf54415_dac.
+> +
+> diff --git a/drivers/iio/dac/mcf54415_dac.c b/drivers/iio/dac/mcf54415_dac.c
+> new file mode 100644
+> index 000000000000..f223aa80aabf
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcf54415_dac.c
+
+> +
+> +static int mcf54415_dac_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct mcf54415_dac *info;
+> +	void __iomem *regs;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	info = iio_priv(indio_dev);
+> +
+> +	regs = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(regs))
+> +		return dev_err_probe(dev, PTR_ERR(regs), "failed to get io regs\n");
+> +
+> +	info->map = devm_regmap_init_mmio(dev, regs, &mcf54415_dac_regmap_config);
+> +	if (IS_ERR(info->map))
+> +		return PTR_ERR(info->map);
+> +
+> +	info->clk = devm_clk_get_enabled(dev, "dac");
+> +	if (IS_ERR(info->clk))
+> +		return dev_err_probe(dev, PTR_ERR(info->clk), "failed getting clock\n");
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->name = "mcf54415";
+> +	indio_dev->info = &mcf54415_dac_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = &mcf54415_dac_iio_channel;
+> +	indio_dev->num_channels = 1;
+> +
+> +	ret = mcf54415_dac_init(info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(dev, mcf54415_dac_exit, info);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static int mcf54415_dac_suspend(struct device *dev)
+> +{
+> +	struct mcf54415_dac *info = iio_priv(dev_get_drvdata(dev));
+> +
+> +	mcf54415_dac_exit(info);
+> +	clk_disable_unprepare(info->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mcf54415_dac_resume(struct device *dev)
+> +{
+> +	struct mcf54415_dac *info = iio_priv(dev_get_drvdata(dev));
+> +	int ret;
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = mcf54415_dac_init(info);
+> +	if (ret) {
+> +		dev_err(dev, "could not resume device\n");
+> +		clk_disable_unprepare(info->clk);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static DEFINE_SIMPLE_DEV_PM_OPS(mcf54415_dac_pm_ops,
+> +				mcf54415_dac_suspend, mcf54415_dac_resume);
+> +
+> +static const struct platform_device_id mcf54415_dac_ids[] = {
+> +	{ .name = "mcfdac", .driver_data = 0 },
+
+Don't set .driver_data if you aren't using it.  Given very strong
+preference for always using a pointer for that (rather than a numeric
+value) this line will change if you ever add support for more devices
+anyway, so no value in having that there now.
+
+> +	{ }, /* sentinel */
+	{ }
+
+No comma and I don't see value in the sentinel marking given that is
+fairly obvious.
+
+> +};
+> +
+No blank line here.  Intent is to keep the macro and the function closely
+coupled.
+
+> +MODULE_DEVICE_TABLE(platform, mcf54415_dac_ids);
+
 
