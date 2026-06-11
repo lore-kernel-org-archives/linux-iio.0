@@ -1,149 +1,333 @@
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326DC44A739
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 19:10:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B36EC30DEB2;
+	Thu, 11 Jun 2026 19:19:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781205035; cv=none; b=JAd8ZElTGwjDxtN9Nraq7RDS2G/tMrbPqsT4d0Cxsz0yycehU1guQ2MwaFh7kZnZlgLIQWe6IotWwQTX3a9O7b45DsMbuFTf3WD8ODmyNSMmfVtdAQAt5sNuMIjOnNLmfOC6vsBpA8eL+NG8m9JLqu3GTNM51uHDd1Yhbqp59Ko=
+	t=1781205543; cv=none; b=uapY4wl62LaC4Mqa7loit8pROb83jJkz89GHLgZaiPOpU/1q0JbtoGB/C81keYT0Yj88l5z/afjNI9FL1vBkfGV5kHC4YvKX1yk4IVJ90PC4QqQDpyqEcDG50mvCNazbhXS4nmluNIqb5ThwUuHnNauIFCgdJ9znm4rA1cuBNy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781205035; c=relaxed/simple;
-	bh=0i91wvPsoFNz5NqYStg6Ytvr9GyMmPyJSl+LIKrKv/0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qP6kC23ODAMV/zm6Z94Y2MmW/8ufH+zHAqVJlU3uPQJK1PPhtK48OC2m77RHWk1GLATWJMF0oXfZ2iYlTky3vi6eC/l0xvk3dAdzpBzSP36E1aXovwHJHta0mPYZn8AjVX4JWrUBLV0lWODzLeqJwVkw9uLWoq/BXnCje3tVfUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PWryWPyt; arc=none smtp.client-ip=209.85.219.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781205543; c=relaxed/simple;
+	bh=5nxcyfEk13pHgk0As9EfYqkxvLW36vPzzkocZwEQJbo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GmL3SlO5JjyO/kAitwfSTqM+4cE7zoasmaisITHoy9FoFvfPvh0G5X/3ltR0zrcFkuhYxfXsvz7L7rn7ES0ttEuv2sepqxSvzKwl6kHUyeWCmqxiyeTRrL+HkcbStANYYJJS2xtsDwmBIqOjBXD/UhiQ7tWlczBe6fPIl/Sz55g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=htOpT3Ds; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PWryWPyt"
-Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-8ccef9eabccso13064276d6.1
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 12:10:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781205033; x=1781809833; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1akxBa9Yj2eO0ezJOdd0PYMsv5JHqMaTxTbB2PVknqc=;
-        b=PWryWPytKiNqSIwCJek3s5jXpIzc8dTdnKWtrb/UsrCbVZ/pjn5/aL11z2E/lSOt2M
-         CzgeSqAMUZYnFteoc7fvhKVESI0W3NkYA1MTzooNi74PnKie0Y2MH9TTW+85ctWY9SPY
-         JaCOfVWroKRHIuWg6GkEJQCCvIfk3QkOWRJmV2j/f1zisD+6c/0U9qfpsys3OxHrX++d
-         4Wek+hV3aohJVK6AXfZhSQBgViA9eyaFNlD8q6cT1accQEGm2mkaPJLLegxaR19vMaGY
-         ssn/TUAbwNxFM1FxqE5s35SFp7S1McJygBqUPNqlnQ9W7xUHHAMtp+JoWh34mFTSI7WY
-         ycug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781205033; x=1781809833;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=1akxBa9Yj2eO0ezJOdd0PYMsv5JHqMaTxTbB2PVknqc=;
-        b=oUJY+Y3EDFnxD9XNXGiQBI66kXUOYNzIra7kkVAixNT6ID+MaHdk5PxwXOxSGdvfds
-         AtljYATOwHS7sqzzHUdYvv1xdHyGobYYJ/J2KGKwqHMN+sjOH9cGw0hGiKYYuF5zlxrh
-         /QQhA/i2I0r3218j2kLKO3J3OzZcAxyfYbZADmoUciUz7r3xpEObXvrToENKC9gAhjTx
-         tv4vAZsIVPZugdwLiFDFyUjVqtx0oj2frZzk4/qLS4MVmu1e+XHqfLAUDm7u0GOpdXO2
-         HUiI9bAB8rBcUz9sppReL1TbarILQmLVevf+O3PEHQqDE7z5WcQ2+oUeFPrCSiUTfWL4
-         W7tg==
-X-Forwarded-Encrypted: i=1; AFNElJ+01bcFW40ec0plFXpF8bL0FlvekN+f0FCffw+3O5gvXwbUoaKx3pjeG9oSsQW00BJdBGLeY9BFYpY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxrJzAz5duBGieIaQXBnTaB74xwGt0rdlRemP+G6xrim+4a/cuI
-	BKyNxf6TQqW+uaCOH9bSsDr6SL2mURTtDWx/aVyaqusVrD1gY211gzKKXVYzEHZrmL8=
-X-Gm-Gg: Acq92OELwpOTHlrEmgA4W6n1DreDL7CzQSdwbR/8MCaLqavyATQlSir+CdE9NJ1L++J
-	M7BZ+cU/ITdXIKNHLlI94zSA82fTLeQgGQ/E0pQ95UDTEeKzr2jQglIX5LoWacwRIk5Fd7G9s06
-	0KDuCH+uiMyx1CzUBNESAml5IvqfsTcdrGlBko9SvVqGIvnc14zY53ZykiEV4ecYyb1xq/YjfhH
-	1DP7CX6lTGUxyUYI0RZGYcMq/sy0zamyseckJvrbzaw/5dGUlyBPTCfouBFVFX3PIunBEyqhPnR
-	DHi50c73jJlkLtlgHz6rQgbgjxz0XbBIe4QOR7lCH+pPgmOcqnYjmbjPSXRnii4oDYac2cQOmvZ
-	WLONVJSC5EkiwAdjAt0+LSz/Oj/bPKN/8QYsNoTuuZSZpLy3bpqTrP2h1AiCJ65hkr1SIy+EGXR
-	Znuqnp0D03iIMK+DoazQuOhg/UqEwjyfqHrEGfyfmCczsqqNI=
-X-Received: by 2002:a05:622a:c18:b0:517:5f11:b353 with SMTP id d75a77b69052e-517ef177b41mr47422321cf.41.1781205033020;
-        Thu, 11 Jun 2026 12:10:33 -0700 (PDT)
-Received: from louisarchdesktop ([2601:184:417f:5ad5:c570:9008:5a2b:8db7])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb63e594sm1333661cf.8.2026.06.11.12.10.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 12:10:32 -0700 (PDT)
-Date: Thu, 11 Jun 2026 15:10:26 -0400
-From: Louis Adamian <adamianlouis@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: pressure: ms5637: Add variant specific
- temperature compensation
-Message-ID: <20260611151026.4abf8804@louisarchdesktop>
-In-Reply-To: <aimvBvJp8CsNKlPU@ashevche-desk.local>
-References: <20260610020458.104818-1-adamianlouis@gmail.com>
-	<20260610020458.104818-3-adamianlouis@gmail.com>
-	<aimvBvJp8CsNKlPU@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="htOpT3Ds"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781205542; x=1812741542;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5nxcyfEk13pHgk0As9EfYqkxvLW36vPzzkocZwEQJbo=;
+  b=htOpT3DsoVUJBwKpVl/bjrtdWLKmSFz/y8CZ9vpL3DPwjKXEcXOOq+Vj
+   5/Z+ycdDYwlLjQhLhVs+X25vXQueTm/eELXrexRygy5Y1NL1K/QJaSclO
+   6dCxholGX/8Jtn9EZKbui/A2a04xqBzOVTmttWdBJGAVdFOroacnrp/x4
+   bkan2KIx2TsT3dD5ZNjnER6a/Vx6G/15HFIXnvhlh8ypxw1WoDySXc+0n
+   CKFeCn3Q6ZEyJ7Os0wBQhKn2Qzn9EDREXzufMCrzp8Bi4FFBWkUlQrTHZ
+   vlvOuksZ9rmtGqYawepX7PPO+PsUymKEviF0agiMaF5mDle9uFcJrLRRJ
+   Q==;
+X-CSE-ConnectionGUID: VWbvhnOfSNuli9sXf+e81A==
+X-CSE-MsgGUID: UIfhqqWKTDmJJljU0vH5sQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11813"; a="85871577"
+X-IronPort-AV: E=Sophos;i="6.24,199,1774335600"; 
+   d="scan'208";a="85871577"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 12:19:01 -0700
+X-CSE-ConnectionGUID: e1a9XoP2SCq+YIQZ/Mj9mQ==
+X-CSE-MsgGUID: w0uxETYaTOeXm3bJ6k89GA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,199,1774335600"; 
+   d="scan'208";a="245697181"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.123])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2026 12:18:58 -0700
+Date: Thu, 11 Jun 2026 22:18:55 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Subject: Re: [PATCH v4 4/4] iio: flow: add Sensirion SLF3S liquid flow sensor
+ driver
+Message-ID: <aisKH1Gu0HvRtX3N@ashevche-desk.local>
+References: <20260611132700.671322-1-wafgo01@gmail.com>
+ <20260611132700.671322-5-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260611132700.671322-5-wafgo01@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 10 Jun 2026 21:37:58 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-
-> On Tue, Jun 09, 2026 at 10:04:58PM -0400, Louis Adamian wrote:
-> > Add correct temperature compensation for ms5637-30BA,
-> > MS5803-01BA,02BA, 05BA, 14BA, 30BA, MS5837-30BA. The temperature
-> > compensation formula is shared across these sensors but with
-> > different constants. Add ms_tp_comp_consts to capture these
-> > per-device differences. Add pressure variant specific pressure
-> > scale variable.  
+On Thu, Jun 11, 2026 at 03:27:00PM +0200, Wadim Mueller wrote:
+> Add a driver for the Sensirion SLF3S family of digital
+> liquid-flow sensors on I2C.  Currently supported variants are
+> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B; they share the same
+> register map and differ only in flow-scale factor and calibrated
+> measurement range.  The variant (and therefore the scale) is
+> auto-detected from the product-information register at probe time;
+> a sensor reporting an unknown sub-type falls back to the variant
+> named in the device tree, as promised by the fallback compatible.
 > 
-> Is there SPI driver? If so, why only i2c is affected?
-
-As Jonathan noted, there is no SPI driver currently and the
-modified function is only used by i2c. 
-
-> > +		s64 tmp = (s64)temp - 2000;  
+> Each measurement frame returns a 16-bit signed flow value, a
+> 16-bit signed temperature reading and a status word, each
+> protected by a CRC-8 byte.  The driver exposes the flow rate as
+> IIO_VOLUMEFLOW and the temperature as IIO_TEMP via the standard
+> IIO read_raw / read_scale interface.
 > 
-> Why casting?
-
-This is extraneous, I will remove it.
-
-> Overall this all needs a good comment or even comments to explain all
-> calculations with the references to the respective sections / tables
-> / pages in the datasheet.
-
-I'll add comments here explaining the shared equations. There are
-also references to the individual datasheets in the constant structures
-because they differ per device.
-
-> >  struct ms_tp_dev {
-> >  	struct i2c_client *client;  
+> The volume-flow scale is reported in m^3/s.  As the per-LSB scale
+> is on the order of 1e-12 m^3/s, it is emitted as a 64-bit
+> fixed-point value with femto (1e-15) resolution
+> (IIO_VAL_DECIMAL64_FEMTO) so the small SI value keeps full
+> precision.  This relies on the IIO_VAL_DECIMAL64_FEMTO format type
+> added earlier in this series, which extends the IIO_VAL_DECIMAL64
+> core formatting introduced by Rodrigo Alencar's ADF41513 series.
 > 
-> >  	const struct ms_tp_hw_data *hw;
-> >  	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
-> >  	u8 res_index;
-> > +	const struct ms_tp_comp_consts *comp_consts;  
+> The active calibration medium can be switched at runtime between
+> the factory-calibrated water and isopropyl-alcohol modes via the
+> in_volumeflow_medium sysfs attribute; the sensor starts in water
+> mode after probe.
 > 
-> Please, check with `pahole` if this is the best layout.
-
-I will correct the packing on this per pahole's finding.
-> >  struct ms_tp_data {
-> >  	const char *name;
-> >  	const struct ms_tp_hw_data *hw;
-> > +	const struct ms_tp_comp_consts *comp_consts;
-> >  };  
+> The sensor has no low-power state of its own, so system suspend
+> stops the measurement and disables the vdd supply; resume powers
+> the sensor back up, waits out the power-up time and restarts the
+> measurement with the previously active medium, following the
+> scd30/scd4x precedent.
 > 
-> Can this be simply embedded into ms_tp_dev (and copied there if
-> required)?
+> This driver also creates the drivers/iio/flow/ subdirectory and
+> the corresponding Kconfig/Makefile glue.
 
-Copying in ms_tp_comp_consts provides no benefit over
-referencing the pointer; the values are per-descriptor, not
-per-instance and never modified. I'll keep the pointer (same as
-ms_tp_hw_data).
+...
 
-> Have you considered to prepare the infrastructure in one patch and add
-> the actual compensation data tables in another?
+> +#include <linux/array_size.h>
+> +#include <linux/bitops.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/crc8.h>
+> +#include <linux/delay.h>
+> +#include <linux/dev_printk.h>
+> +#include <linux/device.h>
+> +#include <linux/errno.h>
 
-I can split this patch for V3 and I will fix the other formatting
-issues.
+Should be err.h // PTR_ERR(), et cetera
 
-Thanks,
-Louis
+> +#include <linux/i2c.h>
+> +#include <linux/math64.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +#include <linux/unaligned.h>
+> +#include <linux/units.h>
+
+...
+
+> +/**
+> + * struct slf3s_variant - per-variant calibration constants
+> + * @sub_type:	product-info sub-type byte returned by the sensor
+> + * @name:	name reported via @iio_dev.name
+> + * @scale_num:	flow scale numerator (l/s per LSB)
+> + * @scale_den:	flow scale denominator (l/s per LSB)
+> + */
+> +struct slf3s_variant {
+> +	u8 sub_type;
+> +	const char *name;
+
+> +	int scale_num;
+> +	int scale_den;
+
+	struct s32_fract scale;
+
+> +};
+
+...
+
+> +static const struct slf3s_variant slf3s_variants[] = {
+> +	[0] = {
+> +		.sub_type	= 0x03,
+> +		.name		= "slf3s-0600f",
+> +		.scale_num	= 1,
+> +		.scale_den	= 600 * MICRO,
+> +	},
+> +	[1] = {
+> +		.sub_type	= 0x02,
+> +		.name		= "slf3s-1300f",
+> +		.scale_num	= 1,
+> +		.scale_den	= 30 * MICRO,
+> +	},
+> +	[2] = {
+> +		.sub_type	= 0x05,
+> +		.name		= "slf3s-4000b",
+> +		.scale_num	= 1,
+> +		.scale_den	= 1920 * MILLI,
+> +	},
+
+Either split this to per HW structures, or introduce a enum for having these be
+robust against any indices shuffling. The plain numbers are semantic-less, easy
+to mess up with them.
+
+> +};
+
+...
+
+> +/**
+> + * struct slf3s_data - per-device state
+> + * @client:	I2C client this instance is bound to
+> + * @vdd:	supply regulator, disabled while suspended
+> + * @variant:	pointer into @slf3s_variants for the detected device
+> + * @medium:	currently active calibration medium
+> + * @lock:	serialises the multi-step command/response exchanges
+> + * @crc_table:	pre-computed CRC-8 lookup table for SLF3S_CRC8_POLY
+> + */
+> +struct slf3s_data {
+> +	struct i2c_client *client;
+> +	struct regulator *vdd;
+> +	const struct slf3s_variant *variant;
+> +	enum slf3s_medium medium;
+> +	struct mutex lock; /* serialises command/response exchanges */
+> +	u8 crc_table[CRC8_TABLE_SIZE];
+
+Does `pahole` agree with the layout?
+
+> +};
+> +
+> +static int slf3s_send_cmd(struct i2c_client *client, const u8 cmd[at_least 2])
+
+Hmm... Do we really need to be overprotective here?
+
+> +{
+> +	int ret = i2c_master_send(client, cmd, 2);
+> +
+> +	if (ret == 2)
+
+In long-term this is hard to maintain. The preferred way is to decouple the
+assignment and the definition as the value is getting validated in the code.
+
+> +		return 0;
+> +
+> +	return ret < 0 ? ret : -EIO;
+
+The usual pattern is to check for errors first
+
+	if (ret < 0)
+		return ret;
+	if (ret != 2)
+		return -EIO;
+	return 0;
+
+> +}
+
+...
+
+> +static int slf3s_read_sample(struct slf3s_data *sf, int *flow, int *temp)
+> +{
+> +	/*
+> +	 * A measurement frame is flow, temperature and a signaling-flags
+> +	 * word, each followed by a CRC byte.  Only flow and temperature are
+> +	 * used, so the read is stopped after their two words (6 bytes).
+> +	 */
+> +	u8 buf[6];
+> +	int ret;
+> +
+> +	ret = i2c_master_recv(sf->client, buf, ARRAY_SIZE(buf));
+
+sizeof() will do the job.
+
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != ARRAY_SIZE(buf))
+
+Ditto.
+
+> +		return -EIO;
+> +
+> +	for (unsigned int i = 0; i < ARRAY_SIZE(buf); i += 3) {
+
+Ditto.
+
+> +		if (!slf3s_crc_valid(sf, &buf[i]))
+> +			return -EIO;
+> +	}
+> +
+> +	*flow = sign_extend32(get_unaligned_be16(&buf[0]), 15);
+> +	*temp = sign_extend32(get_unaligned_be16(&buf[3]), 15);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int slf3s_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan, int *val,
+> +			  int *val2, long mask)
+> +{
+> +	struct slf3s_data *sf = iio_priv(indio_dev);
+> +	int flow, temp, ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		scoped_guard(mutex, &sf->lock)
+> +			ret = slf3s_read_sample(sf, &flow, &temp);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = (chan->type == IIO_VOLUMEFLOW) ? flow : temp;
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type == IIO_VOLUMEFLOW) {
+> +			/*
+> +			 * scale_num/scale_den is the flow per LSB in l/s, but
+> +			 * IIO reports volume flow in m^3/s (1 l = 1e-3 m^3).
+> +			 * These values are tiny (~1.67e-12 m^3/s for the
+> +			 * SLF3S-0600F), so emit a 64-bit fixed-point value with
+> +			 * femto (1e-15) resolution to preserve precision.
+> +			 * Converting l/s to m^3/s (/ MILLI) and scaling to femto
+> +			 * (* FEMTO) leaves a net * (FEMTO / MILLI) factor.
+> +			 */
+> +			const struct slf3s_variant *v = sf->variant;
+> +			s64 num = (s64)v->scale_num * FEMTO / MILLI;
+
+Since the FEMTO and MILLI are of the same base, there might be better to use
+them in parentheses. Can you check if that affects code generation? (I hope
+compiler is smart enough to prove the above and basically simply multiply the
+scale_num.)
+
+> +			s64 scale = DIV_S64_ROUND_CLOSEST(num, v->scale_den);
+> +
+> +			iio_val_s64_decompose(scale, val, val2);
+> +
+> +			return IIO_VAL_DECIMAL64_FEMTO;
+> +		}
+> +		/* Temperature LSB = 1/200 degC; IIO_TEMP wants milli-degC. */
+> +		*val = 1000 / 200;
+
+MILLIDEGREE_PER_DEGREE ?
+
+> +
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
