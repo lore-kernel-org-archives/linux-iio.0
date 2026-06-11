@@ -1,63 +1,63 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E2AE3FADED
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 13:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 456F54028D7
+	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 13:27:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781184426; cv=none; b=qcQ/qwuveXk4YtpX3cPhpafcDohHczGNSzjbDDLYhQ9Wga+KBmQQk79GLyhYB1KzAAXRaPVByuogvKbfPgoEssXK06VwzxdjDWsW81t3NNv1vefUxw/b72f5GJSLVkNk/Gily83J7by2FUZZxUU6ByOh+nh6s7ATJd5S2cEzZqs=
+	t=1781184427; cv=none; b=gB/vArY9GZXvnxHyqj5HOUEhzM9ieu39d8tyC9TvGkWjUlKk+olunMBIttzvGwr7h/r/kxpVcIup1um6mJf0I8Ml7UHW4tANS1MenEHDAC2swns9JkuXOyYBJR6ZwRNI3kt8JUza5nau+HPCJxrcOxikb2jvuRPWQJYwaewLgsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781184426; c=relaxed/simple;
-	bh=bZtWTA8Pdq+LUNldR7nbPKimHL2bnByMD6C88jjspQQ=;
+	s=arc-20240116; t=1781184427; c=relaxed/simple;
+	bh=R8VBiD+QXC251qgkXFGljnCBmfK+Jfx8IbBGreOEHZo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gnmxIHLC+5O9HGr8cj7YYYvr3f3cwlM2+3gy1dkACWPydZ/OMzgJb1akRgqzCYpVElZ4oPcRVNHcnaWHrL9I+zxVHeC56iXtkDq9Xvaq3YAAfPATyRtJ7yx+zR6M0aujrR2qU3WWP66RkrbOXhvadUTIAhqn7fm9rYAlEWAeoDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EmMTdxYA; arc=none smtp.client-ip=209.85.218.53
+	 MIME-Version; b=DXuA/gwdpnqrYn5gMkzSdooq+C/WNwFtjow0xh+t2fXhTKTmkTO7gsVuCNS5oPatH7v2vSwzck2zBP6rdkTCNkk7CHut3SvPxdfQLeLuNk18R+9nC7iNGq+j+5lD0R9n+iKEXFqeg0lUI1lvdoKSsiQIr/FuZY//2QAtsRfNqL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dvzCOYsJ; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EmMTdxYA"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-bebac79fff8so857018966b.0
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 06:27:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dvzCOYsJ"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-bebc80100efso855420466b.1
+        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 06:27:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781184423; x=1781789223; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781184425; x=1781789225; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/g1+4hPRTHeyQw8XjLZ/+qucq0mVKpC87N/BcdVJkGI=;
-        b=EmMTdxYAUfKHAHXu4AZA7R1o9LSQjOaZq/4XlXp5ls8Z15WSH3ryqKwHmjfmTZVlsA
-         Xlq0W9Z09doyZ2KIv3ApxFdhOIyH5v0H5peg4fEO0wr0fm3VHpABZZz683gk3Rs167u2
-         7w3TUg6ME7V4bkKcpEz4zUrjawiFeFYdfvw4TQ7IySIHxJxvMqC0vxKNAJvNOsU+N7Mf
-         koFvjvhnrAgxDh7yQbKRS4E+t3XyHcwF9U50T/SBmulJJxkJjNHCDj+2NFBP4Bl2fvgr
-         HKjZ05PAMi/upAueJzARGJ6POi5M1a2P7PdCCiDWpKutHiCbOXsZlbFFkEXA4L2X8EoV
-         7KGA==
+        bh=T6oEo+zVW0utqGa0HgsB8AO2WeB1C1W2F+2/mB2GeSE=;
+        b=dvzCOYsJ5BcQnQ2ITm0wkP8sf1v6slWMwjxwCrYImZMKZq3N2VzXJVtWdwXkP0L27D
+         kAUiu1xej6nFuorgG4cUrJi1rZ+MpmuaAZ4aHZknMnOkKyPFzTGS7uRnaeetMNhY0P4/
+         nYI0HCtd6GBWpq9Ra347TINVPFgtW9a7tp5uPYD23T3B8MiQzjEoJlw+LmkSf0PJImNI
+         s2CuSHydufl8thlfgFOVP6TVe6vpGZQMwXHQzXq9ABKn3pyxkMkjyjxZJTbXtqYxMgsn
+         /5IPylPAvKlwgq7WLNVmjdM77095aBX1pcDdFAi2SY1z3iFnsh6BukjQ5liH1gYfcjPy
+         2RwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781184423; x=1781789223;
+        d=1e100.net; s=20251104; t=1781184425; x=1781789225;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=/g1+4hPRTHeyQw8XjLZ/+qucq0mVKpC87N/BcdVJkGI=;
-        b=OgPK411ZefRMxsLs3u0/mnu0CIB5Qr0759nwEpHgvKvOdPOv1I9OhzpF37XHFIhl9p
-         AHcnN6EKytwjdqd6HuQC357WAQXoqhjxT4Q4nbj78KNRrPfRH17vtX35q/eEvW5ZoQR1
-         fAwnSxrl/duN9hMc5HWPQUpdZXu0tyHb9B4GCHit5eRqJv1XBhwSNKVfv59zVs1hGRme
-         JlqzGyo+VQC+cAopYlFTi79WsuazE94dAg34VL+fv+b9P4LzR8sgBzWzoWc95+1vaXIi
-         y3O+mzzQn5IhdGVv98KWDE3NBHm0umN7h02zY0bO3Z+QgNShsEBUyZDx2SjgMMj6L73r
-         DWxQ==
-X-Gm-Message-State: AOJu0YwmH7xDihgoMdqwjPREw8jpDs9lkrv6AM7+MRfwDpcpfgyR7BTU
-	KQB3Bc5EYlLuLLUA+4Lrji3boGG+o7uUO+0E2bTbKGepSAxlUw7AiFDO
-X-Gm-Gg: Acq92OHsSzSVL1zUzZ3/D4yBrC18C1xhHEno6ubHihGVU5CwMDah2dapqPMsln+ohEK
-	cQrUwWVyKOHtXMcztjTLOZsgejqS39OojXTYSaCpfUySr67SNaYB2CJ3AZdTpSJHt4zvkbmgwQo
-	5pH1vLm3j9p23tNCIqZfitj2mxb3a901fiOAIISGYZrjVFi+aR//vOH7Q6WktK06TpTfOrsxzqD
-	iT0eNaz0a4hGz8R55wASPRu80ez0KZO1NGn8CcvkS7cqisGJAchT+fRNNZOF8lZTKF98uxuC0r7
-	8SNvnYqmgrOWRj0eq18tqxylahXdoBm5FrtPkRHT2ovlVUo4qPz1VcBxEeL98T7XRfPhAMNH//2
-	f4R7WsbBoPI+6uU3PJEvLA7S40/9bDgUPrNNnVDBoyujZ6Zdh1Ay72vVx8e/ztoj+qFAuGgun0u
-	8ZHNY+vJcSFgR2Uki/CiWGXvWKuA9usx1bT0/BZ7JKMveB6icA/kjiN3dii/xF3HkLg88iWDVpm
-	fdR
-X-Received: by 2002:a17:906:630b:b0:bd8:6ac6:d722 with SMTP id a640c23a62f3a-bfc87af8941mr134047566b.24.1781184423339;
-        Thu, 11 Jun 2026 06:27:03 -0700 (PDT)
+        bh=T6oEo+zVW0utqGa0HgsB8AO2WeB1C1W2F+2/mB2GeSE=;
+        b=VBr335nV8UX9EvY3KVHrq3RvCyfBTD1XJ6tWvL/sNQgcC7oo32Qdfa1uH/VMbAx6+j
+         RbmtwKj3vDEkOTx9QQGy3zNPtuQHjwAqxeOmA8qLCSdnk+LJntq9BXHLlJSg8Tm39cWg
+         76VL13WC1HheEVVVXd6tg3YOahT9Mfewqb4b/ZSOIPtkGX043NqHLSc/0A9izFi7F4Gj
+         FaW6KUurNCFgaoO0XwaOn3CuYgCWUJ9ektlkd26qxKYj1HjAviknI97FJX/nq5M0SBhx
+         uJYMPZR5nR1dRF3LWHO0r18mHFx+CH1uwavjxJkjD+uj1JNU7z3HftMI6hnFtrK4N31Z
+         xIPA==
+X-Gm-Message-State: AOJu0YwwqpEG1tsSupytf4vHArnFcmwiarT+FNcPVQuXpd/9Bpica9/e
+	9eKAHCjIhUKwLkTyczIu6oKqgZT/8A1GPItPRoACBEh8s6upAd6rcyIe
+X-Gm-Gg: Acq92OGZOI3UfFKMonbCut1jN9C/bl3L4zNt4E+pne4dCynuh1ri8DL3JwTKYE+BnHz
+	b+Hps3YLgobHarr9bL5fmQKhZutJvxsJcCivRUqqnUK7IAV/UV7ZfDtkDpnkxhJdxBkAGw6vv54
+	+bgjg4huBBpb4WVxtdKw9wsplN61B886sRFkYtVdB6XsXR4P4MML7usfYFL0N88m5Rk3h2+oDEA
+	ojH4zXMdWGqAmLMja8k3/BQJ1wrblz/jGGBWz0CLUH8IIqTphbAAZgEj2BBrLFdek26OedSJyOW
+	Es57nsEiny4qP9JjTM9qaET0havMnK6NCvI5PdYa4HNY3tsgcZ4FV+u8T/DHnLAyiQhJff4Aiy9
+	3Tyiy6m2rz2+XA1wGw1DHVefLY6Ki2U692BLVfVEQTSQcMGfeouSKGlTwhU/MsXzXNQ2fSoFHMD
+	NfOMpsopVEneBYGvKLiGPN947Jbnu9PK8zPu/9ZAQJb3s4MbLZUbFTVxiMQ0U3VG1kX5Sz46a3S
+	VA0
+X-Received: by 2002:a17:906:c10c:b0:bde:a3cf:d268 with SMTP id a640c23a62f3a-bfc85c7f9acmr150749166b.13.1781184424344;
+        Thu, 11 Jun 2026 06:27:04 -0700 (PDT)
 Received: from fedora.clients.cmblu.de (p5df027fc.dip0.t-ipconnect.de. [93.240.39.252])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bfcb1cf077asm65719566b.26.2026.06.11.06.27.02
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bfcb1cf077asm65719566b.26.2026.06.11.06.27.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 06:27:02 -0700 (PDT)
+        Thu, 11 Jun 2026 06:27:03 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -73,9 +73,9 @@ Cc: linux-iio@vger.kernel.org,
 	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
 	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
 	Wadim Mueller <wafgo01@gmail.com>
-Subject: [PATCH v4 1/4] iio: types: add IIO_VOLUMEFLOW channel type
-Date: Thu, 11 Jun 2026 15:26:57 +0200
-Message-ID: <20260611132700.671322-2-wafgo01@gmail.com>
+Subject: [PATCH v4 2/4] dt-bindings: iio: flow: add Sensirion SLF3S liquid flow sensor
+Date: Thu, 11 Jun 2026 15:26:58 +0200
+Message-ID: <20260611132700.671322-3-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
 In-Reply-To: <20260611132700.671322-1-wafgo01@gmail.com>
 References: <20260611132700.671322-1-wafgo01@gmail.com>
@@ -87,94 +87,108 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a new IIO channel type for liquid volumetric flow sensors.  The
-unit exposed via the standard _scale attribute is cubic metres per
-second (m^3/s), following the SI convention used by the other IIO
-channel types.
+Document the bindings for the Sensirion SLF3S family of digital
+liquid-flow sensors on I2C.  The family currently covers the
+SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
 
-Update iio-core's name table, the iio_event_monitor whitelist and
-the sysfs-bus-iio ABI document to match.  The new _scale attribute is
-folded into the existing shared _scale block; only the per-type _raw
-needs a fresh entry.
+All variants share the same register map and are fully detectable
+from the product-information register at probe time, so
+sensirion,slf3s-1300f serves as the fallback compatible for the
+other variants.
+
+The active calibration medium (water / IPA) is runtime-switchable
+via the in_volumeflow_medium sysfs attribute and therefore not a
+DT property.
 
 Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/uapi/linux/iio/types.h          |  1 +
- tools/iio/iio_event_monitor.c           |  2 ++
- 4 files changed, 15 insertions(+)
+ .../bindings/iio/flow/sensirion,slf3s.yaml    | 58 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++
+ 2 files changed, 65 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 5f87dcee7..e278fda4b 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -507,6 +507,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_red_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_green_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_blue_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_co2_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_volumeflow_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_volumeflowY_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -2458,3 +2460,12 @@ Description:
- 		seconds, expressed as:
- 
- 		- a range specified as "[min step max]"
+diff --git a/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml b/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
+new file mode 100644
+index 000000000..c054a505b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/flow/sensirion,slf3s.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_volumeflow_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_volumeflowY_raw
-+KernelVersion:	7.3
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled) volumetric flow rate reading from the channel.
-+		To convert to standard units (cubic metres per second, m^3/s)
-+		apply the channel's _scale (and _offset, when present).
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 93c7b8c46..571b8ba4e 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -98,6 +98,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CHROMATICITY] = "chromaticity",
- 	[IIO_ATTENTION] = "attention",
- 	[IIO_ALTCURRENT] = "altcurrent",
-+	[IIO_VOLUMEFLOW] = "volumeflow",
- };
++title: Sensirion SLF3S liquid flow sensor
++
++maintainers:
++  - Wadim Mueller <wafgo01@gmail.com>
++
++description:
++  Family of digital liquid-flow sensors from Sensirion with I2C interface. All
++  family members share the same register map; sub-types differ only in the flow
++  scale factor and the calibrated measurement range. The sub-type can be
++  identified from the product-information register.
++
++properties:
++  compatible:
++    oneOf:
++      - const: sensirion,slf3s-1300f
++      - items:
++          - enum:
++              - sensirion,slf3s-0600f
++              - sensirion,slf3s-4000b
++          - const: sensirion,slf3s-1300f
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        flow-sensor@8 {
++            compatible = "sensirion,slf3s-0600f", "sensirion,slf3s-1300f";
++            reg = <0x08>;
++            vdd-supply = <&reg_3v3>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <0 IRQ_TYPE_EDGE_RISING>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 06a8c7457..cdc18a601 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -24187,6 +24187,13 @@ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
+ F:	drivers/iio/chemical/sgp40.c
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 6d269b844..49480f321 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -53,6 +53,7 @@ enum iio_chan_type {
- 	IIO_CHROMATICITY,
- 	IIO_ATTENTION,
- 	IIO_ALTCURRENT,
-+	IIO_VOLUMEFLOW,
- };
- 
- enum iio_modifier {
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 03ca33869..078004750 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -65,6 +65,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CHROMATICITY] = "chromaticity",
- 	[IIO_ATTENTION] = "attention",
- 	[IIO_ALTCURRENT] = "altcurrent",
-+	[IIO_VOLUMEFLOW] = "volumeflow",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -193,6 +194,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_CHROMATICITY:
- 	case IIO_ATTENTION:
- 	case IIO_ALTCURRENT:
-+	case IIO_VOLUMEFLOW:
- 		break;
- 	default:
- 		return false;
++SENSIRION SLF3S LIQUID FLOW SENSOR DRIVER
++M:	Wadim Mueller <wafgo01@gmail.com>
++R:	Maxwell Doose <m32285159@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/flow/sensirion,slf3s.yaml
++
+ SENSIRION SPS30 AIR POLLUTION SENSOR DRIVER
+ M:	Tomasz Duszynski <tduszyns@gmail.com>
+ S:	Maintained
 -- 
 2.52.0
 
