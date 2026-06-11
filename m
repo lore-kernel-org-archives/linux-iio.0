@@ -1,164 +1,110 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7FE40861A
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 13:43:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49313ACA4D;
+	Thu, 11 Jun 2026 14:01:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781185414; cv=none; b=lnKoheTdqldLXuDWN1Mex3eTjFmg/98KKAow2ZpxGiAtCNfXdE4yyLCLbPcpTUmAEE+YhboYkKGo4tWmedVqFRVVLc3zstsyQ7dYKJux/vK34S2+OR2tW7iUZJMvBET9qGUeOJhd6GX1TH6+JTPCfn5Mk4RIU9kgcGTVfwhpojc=
+	t=1781186478; cv=none; b=d18oXLtKVH/K/Je9ipIrlJZRtuj+2TuSFUEnTcCms0NZbmbxTKrOmcBYVmifDWuDQ7HOv8/dYhITXARW2MWYy36PjEz4AfgMyeBWi5mP71kbYcj74WKQgqgAN/cKEZEnP7yhNA8OAJtU5rbLzzpAcB7gAxKry36oHStt0iu0OYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781185414; c=relaxed/simple;
-	bh=Q7YgnevcuJEA2r9KmDYoDbclADke6XSQZ/42JtuLJMM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ufIR29pKRCBDGb7dSTLKUEEE4ftHcZrZivy34Ba8mzvUthGKiTWze/xzfwpRrFYjA4IKn5burHHTSaI5z0GM4kK96/pIpXCY1tbt48+zTy5vkX+e1WThSY/YN3b4RdFd/OxYkvwrJXC4cVEbU9knTz+a6xlDQuGLMdM6iwXWH5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c86484d35d1so840493a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 06:43:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781185413; x=1781790213;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=vNpam1TbwdO296xgcg7l4uXi2a4BgIEj5/UIbNIv2nE=;
-        b=KdUyz6LcHaud+x8rwVNtCu+AX96liiWgIhB9Znvjk73ExMJtBDXjles7+Qyqf+/zho
-         nP0JBVgXBvaRzZ/BRApsS9PSKrXwq+g2gD/+bIW4dZDUupu6tI/xCA1FhYqYSHK2Gk0G
-         cam8hRC1XGPhKK2C+ZiqikczjbBkTypXVTYa+UNKOsaJT7NYTM02vRieelU5xjO+4bMz
-         PgLaNGiZK7TRJ06ruUDJO0EMz6bHYehDZuGkkqlmh6jv+TexvM+LCAGDxQ8Wsd1zowPZ
-         iCl0ORsDekpCrkeEMwIWjd4136z8zeS9jGuIEuSHl4B15q+PalLcD+rTpOXKfoZDKakH
-         e0wA==
-X-Forwarded-Encrypted: i=1; AFNElJ9j6z2RzDAqxugKJcRpClPJ6XeFo+WPvy0oliyvTD7RyVRVHWieRBlUAN/IART4zs1BSzN84UTRDkg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw+wm9GgxzYR1oHF8CrOuPKEWzUHRmyhjde5yq/OT8JiZ9+KHAa
-	ZlCNA+J3X6v5EKPmaq4GeAAOgeOXwM9IbK3lM5Jk+eGTU3NdKIvmyvy9
-X-Gm-Gg: Acq92OGyarWAf9MZUN1akDijdjBJJVSwQBTfPoc7/Ykk21VBU/o0Tb5nBcZBQ1A9uol
-	OZ1/FNjW9DC+iiJ7ufy+RtMzgKtzEQlLyZvLl8ADotVe+PmPL7fE2tq4yTzbhOdHzx+8sNNpJVF
-	/yZRq9k11EjZHDqDpLXDnGHv3cZQj5vYc7YScAZ0keDaCJL/NQwlDmwKQW+FK69UnO6YC+ZIm4F
-	16DiqT883LHXh6MlJUIwgpliOJzWASlaQ4le2JXLWALhhjNRC+614UktuQ6XiXodf8q93pt17b/
-	b8JMn2xvfwP++9wF3aL/cqUoY0F9i0Fp6xhC4UWG0m1hhW7HwUCbcD9vvFQjX0y+B6rV24XAgQl
-	IiTHM9Xs72LGRqNQAeNN7P9adXWucdpMF+0oYpklTSe8fwsmw/c5iA78vfKEQDFX820PJ1fTCWw
-	NtHCXsTtMoTQGXGaZjtoe1rCtg6tCh1O+IuedJZeJQ8KEcH/c1GJ3irYYPdgvYCQb9XoGmP2Mpb
-	2/jfGKzUmynRQ60DmPUWORICop1lsXS9jtA7wPvGdv7HHAbYpINi6rU0OyF24/M2AxjqaxDaULd
-	lpEs9V9iGLdwWkNIORoA
-X-Received: by 2002:a05:6a21:6f11:b0:3b4:5c6f:cf30 with SMTP id adf61e73a8af0-3b5e33e3b13mr3499266637.38.1781185412681;
-        Thu, 11 Jun 2026 06:43:32 -0700 (PDT)
-Received: from fedora ([59.152.111.50])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c86585b20e0sm1757973a12.11.2026.06.11.06.43.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jun 2026 06:43:32 -0700 (PDT)
-From: Siratul Islam <email@sirat.me>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Siratul Islam <email@sirat.me>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v3 2/2] iio: proximity: cleanup fixes for vl53l1x-i2c
-Date: Thu, 11 Jun 2026 19:42:30 +0600
-Message-ID: <20260611134245.30042-3-email@sirat.me>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260611134245.30042-1-email@sirat.me>
-References: <20260611134245.30042-1-email@sirat.me>
+	s=arc-20240116; t=1781186478; c=relaxed/simple;
+	bh=n4ULx6DpD9LTgzFht1l1c+bH5Mk3FOccOpCCMuh4K88=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UmKtQ7t/ztsvW4k9R2DyqcaCsrksQlYbb4vULONE1dWFFm2yavAGFCTIH5nOQiPVT5SfUelOlmdrxGK7W+tUZpShcZ6awPbsG2WqjfqFrLe0exTrIMT/W18IHeowv+NTZ6OLnMOv7xy62qGi7ih7mQIEfZqidqhEjpEpePzBR3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KLVCebqn; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KLVCebqn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D86A1F00898;
+	Thu, 11 Jun 2026 14:01:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781186477;
+	bh=Yp0nzIlkKz94xz4/lEK7awG/NincgjbDsyAngGGlQ8k=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=KLVCebqnlAzoEWlhPc1iRdLny1axzXTG+pjiHwxoQz5HDzmNooTSUixJFUt9ysnu6
+	 6Tdc0j3dRdyKORqYw649NoCcwge1mWK2hBCfVLPNtpy2q7OV3ACxRYsm1KrqPjp7p/
+	 PCYrNcJ5dpajgUKJkddJ2K2Io2wN/FXjMsEj5tV/gGM2RCx1iyWb05w9h06NsgP7a2
+	 E82KGB1awf5VUhfcCZme3tUqpmDeO33k07QjQH4wKq98frPcMliDthsOFsB2Uqpa+4
+	 xbxW/wLzmTgeh6w4CYlrctXo8u8VLlzPhW7GYEw786cy5c5amW/48V1L4KvpOdFQXL
+	 1Kwd2ljI61/hA==
+Message-ID: <e01d100b-9809-4af3-8f21-055f687ca6c6@kernel.org>
+Date: Thu, 11 Jun 2026 16:01:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/4] iio: flow: add Sensirion SLF3S liquid flow sensor
+ driver
+To: Wadim Mueller <wafgo01@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+ Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+References: <20260611132700.671322-1-wafgo01@gmail.com>
+ <20260611132700.671322-5-wafgo01@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260611132700.671322-5-wafgo01@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Extract data-ready polling into a helper, fix regmap_read_poll_timeout()
-argument alignment, and add field definitions for BIT(0).
-No functional changes.
+On 11/06/2026 15:27, Wadim Mueller wrote:
+> +
+> +static const struct of_device_id slf3s_of_match[] = {
+> +	{ .compatible = "sensirion,slf3s-0600f", .data = &slf3s_variants[0] },
+> +	{ .compatible = "sensirion,slf3s-1300f", .data = &slf3s_variants[1] },
+> +	{ .compatible = "sensirion,slf3s-4000b", .data = &slf3s_variants[2] },
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+You should have only 1300f here and detect the variants. That was my
+point when I suggested to use the fallback.
 
-Signed-off-by: Siratul Islam <email@sirat.me>
----
- drivers/iio/proximity/vl53l1x-i2c.c | 38 +++++++++++++++--------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-index 8302e0049e7c..1782c89d5277 100644
---- a/drivers/iio/proximity/vl53l1x-i2c.c
-+++ b/drivers/iio/proximity/vl53l1x-i2c.c
-@@ -82,6 +82,9 @@
- 
- #define VL53L1X_OSC_CALIBRATE_MASK	GENMASK(9, 0)
- 
-+#define VL53L1X_FIRMWARE__SYSTEM_STATUS_BOOTED	BIT(0)
-+#define VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY	BIT(0)
-+
- /* Inter-measurement period uses PLL divider with 1.075 oscillator correction */
- static const struct u32_fract vl53l1x_osc_correction = {
- 	.numerator = 1075,
-@@ -191,6 +194,18 @@ static int vl53l1x_stop_ranging(struct vl53l1x_data *data)
- 			    VL53L1X_MODE_START_STOP);
- }
- 
-+static int vl53l1x_wait_data_ready(struct vl53l1x_data *data)
-+{
-+	unsigned int val;
-+
-+	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
-+	return regmap_read_poll_timeout(data->regmap,
-+					VL53L1X_REG_GPIO__TIO_HV_STATUS,
-+					val, (val & VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY) !=
-+					data->gpio_polarity,
-+					1 * USEC_PER_MSEC, 1 * USEC_PER_SEC);
-+}
-+
- /*
-  * Default configuration blob from ST's VL53L1X Ultra Lite Driver
-  * (STSW-IMG009).
-@@ -230,10 +245,9 @@ static int vl53l1x_chip_init(struct vl53l1x_data *data)
- 	}
- 
- 	ret = regmap_read_poll_timeout(data->regmap,
--				       VL53L1X_REG_FIRMWARE__SYSTEM_STATUS, val,
--				       val & BIT(0),
--				       1 * USEC_PER_MSEC,
--				       100 * USEC_PER_MSEC);
-+				       VL53L1X_REG_FIRMWARE__SYSTEM_STATUS,
-+				       val, val & VL53L1X_FIRMWARE__SYSTEM_STATUS_BOOTED,
-+				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "firmware boot timeout\n");
- 
-@@ -261,12 +275,7 @@ static int vl53l1x_chip_init(struct vl53l1x_data *data)
- 	if (ret)
- 		return ret;
- 
--	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
--	ret = regmap_read_poll_timeout(data->regmap,
--				       VL53L1X_REG_GPIO__TIO_HV_STATUS, val,
--				       (val & 1) != data->gpio_polarity,
--				       1 * USEC_PER_MSEC,
--				       1000 * USEC_PER_MSEC);
-+	ret = vl53l1x_wait_data_ready(data);
- 	if (ret)
- 		return ret;
- 
-@@ -461,14 +470,7 @@ static int vl53l1x_read_proximity(struct vl53l1x_data *data, int *val)
- 		if (!wait_for_completion_timeout(&data->completion, HZ))
- 			return -ETIMEDOUT;
- 	} else {
--		unsigned int rdy;
--
--		/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
--		ret = regmap_read_poll_timeout(data->regmap,
--					       VL53L1X_REG_GPIO__TIO_HV_STATUS, rdy,
--					       (rdy & 1) != data->gpio_polarity,
--					       1 * USEC_PER_MSEC,
--					       1000 * USEC_PER_MSEC);
-+		ret = vl53l1x_wait_data_ready(data);
- 		if (ret)
- 			return ret;
- 	}
--- 
-2.54.0
-
+Best regards,
+Krzysztof
