@@ -1,153 +1,227 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F619403B13
-	for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 16:07:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781194055; cv=pass; b=BSb9b6wqOlTAKEcR9LApOlU6XgP/80c/yiLEDchUT4dG9CnPNbV2rkQ2fB1BvJuibksLNveK/Qn2rom5TFyPsdzi8DQniRm2VfvNtto9pSBIx9MwC6cCHEF8DbijzSSp5zSGs8BLiUagWGSSPUq2YeRDJ1nPPo6GVkF5KrnJq4s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781194055; c=relaxed/simple;
-	bh=pMIPPfvXhysxiiMWPWBMU/WNhyGFXzFylEplC/HXXRM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z/DKk23DjoEmayY1ZXMgzT7BKNvi/UsVqyAtg1ZqBn77pchLI2q4tdZmERqvcJn6ddSxnD4vtix2csTGAQzEifd1VLnpBcKCO9IbJCIvEErgaUgZGjwOoHBYSsvyRG6TS3GGA3GMfVAXUh+xdMwXNive0M7Vsp6kjq8SAOSVaHI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JjiwFc3A; arc=pass smtp.client-ip=209.85.128.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 109422D739C;
+	Thu, 11 Jun 2026 16:15:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781194530; cv=none; b=e1Dtx/U37MHlxGammzo9wwGXjOak48VvFQlWIFvlN3jY334EuUGT8OC4/NpNkxrSXFyETvpjS4h9jT9yl4QmFlszBXau6oe5XrnV8XB9EGpNqtTB1O5Qw55v+sZ7rvad1nggcFm1oNZ8k2mNCBzrngYCXT+YeG3VioWf3sgvF3w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781194530; c=relaxed/simple;
+	bh=GzkMLOVGVfU5e/d/r0lVlmABkdCJ1H8QifQwXSQU02Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aCM7sqVfARU8faTcZzTERk0dKMWoNtemb5Xg8Os/Z8MOUfL2+V9Aw9USpK90jqhVGeqwiKMzkEM1wd4Kj6coM0vd9WZ4npLwdG6InJvN7+VA07MU3PrYN9r0bjhrDCnTS36hVXZAIcAs+2Boj3S8AXltsxru5NhXZBn210Oj2MI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Krci5kwN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JjiwFc3A"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7e2fd65f968so78834277b3.3
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jun 2026 09:07:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781194053; cv=none;
-        d=google.com; s=arc-20240605;
-        b=DYrSQVBr2oXbeHalTBZEAhufV4NF6eni4zz/XdRqPYtXq74IbkcWkTgwUZfmwIfr3E
-         s4vn/O9PHPKpTN30kR0NcbjaxrupNqIS3XIKkgZrlEgjAUh4F1brzfGEqBnkxAHrJfBG
-         jbv0Yq9FFGLSHBOohGy1C8GNRwHtJxtooIn1wT9RvX3YVwKX2bBzA/6Hl7lb252HPvuC
-         ddCfMFazE4+As5RaTo/dr7d/VZFn4RGZVVWpuZIAFE9q/VD3fi6LSKHaR4Uf5/bmf82T
-         hYHLxCsOaPX5bjGvuB4mf5TcIs+A2wVpBPDVIbYHuMLt1a/MJqpBzgbjCA2QM5DlGJzf
-         K7JA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=qXXzo4vROWpZwVJN1pIQILOm2VIbpgsaN8smw0A/DuA=;
-        fh=AG2UXpcVn8HdSo9Z8NHjSMcVDaL1EXrrMg5SM9QuwvQ=;
-        b=AOwPNLsB7jkLKoWpNm6LbNxE5fU7lQghU+7eQ2938zRVrhThzweaUUrcoZegJY+AvN
-         WncwybHTkcA0UAelaMMaiLRgrDAvNc2W/OKvzlTD9W2vkFobnNd9TkaT/l9T0pRQFGLh
-         fG9mMr6LFDBdZ2TWWFjUYLCXok/JUodlmWSsyEDrcmqLz472VUWWM+TEZBF2ptMA0W2g
-         5AiIawle4qIb5QqHBYEUqRNcrilqDsHM0Yteeq5kp1CUvpkB1lKM3/HE7RqYNaEaDF5G
-         4yK6hIKAvR3FBsr0X3SybM0gRn18a4cl6Gh158GsgbVvJ4swqFDyprW2wq/1vveHxkrA
-         cywA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781194053; x=1781798853; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qXXzo4vROWpZwVJN1pIQILOm2VIbpgsaN8smw0A/DuA=;
-        b=JjiwFc3A9FXpg39bP6bbypX418hKcZY5IM8m4aK/TC6wjQLNgN9gwZ/Za2Pn7nAACe
-         WWajf321OGOPHQkgMNwYicFN7Um67BF/6BKMm2CZTLoFH/HVX2VXCS8EGkHpImICWwAL
-         ivrqJtwASnsKt3Nw7bO85J/7dha3zs0KPDCooeW+SCZXJwX0XNNiVAlB9/9whSq5trSt
-         OH+lGhgJCdvybOUlGMUhixJbYz8t6vvM9ApPaRLvq+RZgyfdcCYOTSkHQWXeotu2Z5WM
-         6t0JY9SGHDF/FVknK+9FlUkiq4x+HjWSDSMQ5YUrT4PAYad1akDfrCKkGPzfnV5uNnda
-         s/lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781194053; x=1781798853;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=qXXzo4vROWpZwVJN1pIQILOm2VIbpgsaN8smw0A/DuA=;
-        b=IcuwvaMRPEsdCpFHNkMbmSWlYvEB94rA9q9/XzuDSoByIngoY2pAorUXsdz3n+qhs4
-         O0Z7knAtYWob+6lOZ4cOB7pIojvePbRzCRwViEknSgKVUKpyfbYURHSRTN3XiV310ibD
-         cpKyqndUPPZixR2hYMvvvdrJRpnGpHBMz7dG349kBTvk/1EGlNfroSpcJM4tz1Yg5+i4
-         cqXUX68sq7Md5Vxj1r6ZSGJeCR5k7ljEyojAHlqZsbdOCVkvhSj8DRpwWwn94fv+4lsy
-         2pCqzfrNGnkO7u7BDJg5rHB90CZrGnUFA0HYp5ANGDNXk8S5kRsvhYrOGq//qlO/1FCp
-         XwaQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+eN9XkTXX9yHc2AUymq2rZsdgOKqz8pvBNvFCtQ5i3CjxYOa88VdusKSpxMM5LEs1ksR1OL7SfOlY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzgJIx7Sso8Kx/0fd3TWC/gUuADLgKQTmaybX9wq46f8p6EkzEE
-	psTX7/xlxlZPNolprpeXSTAahREcrEOyIS1xe5j7JiBOF/dkxpncja4Kwk235xu7XNIewKF3ZSS
-	iwieLQXvsXEzMcSFtPKU47s7jHI2OcVs=
-X-Gm-Gg: Acq92OGmB9RUcfL5B19CxlUqN9s4pgQtuwYNU+FO+8eX9JF9RAfJUZ5XvaC3jTZxIVe
-	tT8z5Ii1uuIew/jCh270RN44yjAXHN6oWqRcJaOXbMW9Jo19VzFNdAupgr8lj7kgOveMXfQfY3o
-	ee4Z/zXDwfluTNPb8iiawWGzQ28nMTgizBfx/7cwmi8JEBxtcvk8tYA0nuueeF+PREYVyAzCbbq
-	N69487TAfXTGGNLwIBJqetYy0p5l9yys8VTvFB7r1C9bAQshXB4XqMbrAOamCMcMQvuyihumJw7
-	Hsy2
-X-Received: by 2002:a05:690c:4c09:b0:7f5:69b8:4287 with SMTP id
- 00721157ae682-7f6553f7899mr38398427b3.9.1781194053316; Thu, 11 Jun 2026
- 09:07:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Krci5kwN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C311F00893;
+	Thu, 11 Jun 2026 16:15:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781194528;
+	bh=6wmtbsCr7ejFnlzM5tVGEOU70X2V3AM+TP+NKFtSlQI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Krci5kwN7SYrle7M4FUyQwrZerY2qAbcr+kND0cF8ALKb7cxzhx1HJ3JlM4Fb81mK
+	 XwGJIIOIDYGMqal/ggMrUBIhyKmL3YUIAr8VRjrNQgYrDMcOiXE+Xesydkb3dHMlNz
+	 2hJ+0LBo3FyvDGilmWCUlh8EEVLQetnFa+aeNVGkL6JRdraamDX4q4wO817JDLsLGN
+	 jDlNHtIDBU8arPYli5Y9L0YDt/VU+jGAXML2uzxX7k+pODJ3BvSYsbMzQgo6cR+YKq
+	 pPGnAv4Qk1ktBmMVj4w/6D15o5CwMmhbKugQxSlrx02yM9xPM+vxL+9b8zd4kQ7X0/
+	 KXCr28h0VVuzQ==
+Date: Thu, 11 Jun 2026 17:15:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Manuel Ebner <manuelebner@mailbox.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+ Andy Shevchenko  <andy@kernel.org>, open list
+ <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] Documentation: ABI: fix brackets and bracelets
+Message-ID: <20260611171520.0a96ac83@jic23-huawei>
+In-Reply-To: <54d15f70bd8ec76eea0a792ca701195b8472ee2a.camel@mailbox.org>
+References: <20260611085620.127959-2-manuelebner@mailbox.org>
+	<20260611104643.2a5ed6c2@jic23-huawei>
+	<54d15f70bd8ec76eea0a792ca701195b8472ee2a.camel@mailbox.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260610115700.774689-1-jjy600901@snu.ac.kr>
-In-Reply-To: <20260610115700.774689-1-jjy600901@snu.ac.kr>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Thu, 11 Jun 2026 11:07:21 -0500
-X-Gm-Features: AVVi8CeHf7uwhPM76_RfCblG7fJdBhGq4QR16eMi2j2amXBgrgzWYA0X7OPgM7k
-Message-ID: <CAKqfh0GVDpfP=TJZPQ2UYkUj=pe1KGn4j1zqbaz_19xawekdnw@mail.gmail.com>
-Subject: Re: iio: adc: KASAN wild-memory-access in complete() on early IRQ
-To: Jaeyoung Chung <jjy600901@snu.ac.kr>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Vladimir Zapolskiy <vz@mleia.com>, 
-	Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>, linux-iio@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	Sangyun Kim <sangyun.kim@snu.ac.kr>, Kyungwook Boo <bookyungwook@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 10, 2026 at 7:04=E2=80=AFAM Jaeyoung Chung <jjy600901@snu.ac.kr=
-> wrote:
->
-> Hi,
->
-> lpc32xx_adc_probe() in drivers/iio/adc/lpc32xx_adc.c and
-> spear_adc_probe() in drivers/iio/adc/spear_adc.c register their
-> interrupt handler with devm_request_irq() before they initialize
-> st->completion with init_completion(). If an interrupt arrives after
-> devm_request_irq() and before init_completion(), the handler calls
-> complete() on an uninitialized completion, causing a kernel panic.
->
-> The probe path, in lpc32xx_adc_probe():
->
->     iodev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*st)); /* st kzall=
-oc-zeroed */
->     ...
->     retval =3D devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
->                               LPC32XXAD_NAME, st);           /* register =
-handler */
->     ...
->     init_completion(&st->completion);                       /* initialize=
- completion */
->
-> spear_adc_probe() has the same ordering: devm_request_irq() for
-> spear_adc_isr() before init_completion(&st->completion).
->
-> Both interrupt handlers, lpc32xx_adc_isr() and spear_adc_isr(), call
-> complete():
->
->     complete(&st->completion);
->
-> If the device raises an interrupt before init_completion() runs,
-> complete() acquires the uninitialized wait.lock and walks the zeroed
-> task_list in swake_up_locked(). The zeroed task_list makes list_empty()
-> return false, so swake_up_locked() dereferences a NULL list entry,
-> triggering a KASAN wild-memory-access.
->
-> Suggested fix: move init_completion(&st->completion) above
-> devm_request_irq(), so the completion is valid before the handler can run=
-.
->
-> Reported-by: Sangyun Kim <sangyun.kim@snu.ac.kr>
-> Reported-by: Kyungwook Boo <bookyungwook@gmail.com>
->
+On Thu, 11 Jun 2026 13:54:04 +0200
+Manuel Ebner <manuelebner@mailbox.org> wrote:
 
-Thanks for reporting this; I can start working on a fix shortly
-(assuming nobody else is already working on it).
+> On Thu, 2026-06-11 at 10:46 +0100, Jonathan Cameron wrote:
+> > On Thu, 11 Jun 2026 10:56:21 +0200
+> > Manuel Ebner <manuelebner@mailbox.org> wrote:
+> >  =20
+> > > Fix missing and needless brackets
+> > > Fix missing bracelets
+> > >=20
+> > > Signed-off-by: Manuel Ebner <manuelebner@mailbox.org>
+> > > ---
+> > > =C2=A0Documentation/ABI/stable/sysfs-class-infiniband=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 | 4 ++--
+> > > =C2=A0Documentation/ABI/testing/sysfs-bus-iio=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 4 ++--
+> > > =C2=A0Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192=C2=A0=C2=A0 =
+| 2 +- =20
+> >=20
+> > Take a look at hos this stuff is routed into upstream.=C2=A0 Each=20
+> > subsystem 'owns' their own documentation.=C2=A0 So this needs splitting=
+ up
+> > on a per subsystem basis.=C2=A0 I'll also note that you've only +CC IIO=
+ folk
+> > so you aren't going to get much review on the rest! =20
+>=20
+> I send it to the addresses get_maintainer returned, except the git blame
+> ones. How can I find out who to send this to?
+
+Some are easier to track down than others - look up related subsystems
+in maintainers + look at anyone who has made significant changes to the fil=
+es
+in question.  However, some folk who work on Docs don't necessarily hang
+around so also useful to use lore.kernel.org to see if they have been
+on the list recently.  Also sometimes it is a bit fiddlier so look
+at the original commits - that lets you find out what the files are associa=
+ted
+with.
 
 
---
-best regards,
-max
+INFINIBAND SUBSYSTEM
+M:	Jason Gunthorpe <jgg@nvidia.com>
+M:	Leon Romanovsky <leonro@nvidia.com>
+L:	linux-rdma@vger.kernel.org
+
+DMI/SMBIOS SUPPORT
+M:	Jean Delvare <jdelvare@suse.com>
+S:	Maintained
+
+gsmi needed a bit of digging:
+GOOGLE FIRMWARE DRIVERS
+M:	Tzung-Bi Shih <tzungbi@kernel.org>
+R:	Brian Norris <briannorris@chromium.org>
+R:	Julius Werner <jwerner@chromium.org>
+L:	chrome-platform@lists.linux.dev
+
+Similar digging needed for sysfs-uevent, though I could probably have
+guessed this one
+
+DRIVER CORE, KOBJECTS, DEBUGFS AND SYSFS
+M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+M:	"Rafael J. Wysocki" <rafael@kernel.org>
+M:	Danilo Krummrich <dakr@kernel.org>
+L:	driver-core@lists.linux.dev
+
+IIO was the only one to have a specific match on these files.
+It might be worth asking the other folk if they'd be happy to have
+the MAINTAINERS entries updated to add one so that others find it easier
+in future.
+
+Jonathan
+
+>=20
+> > A few comments inline.
+> >  =20
+> > > =C2=A0Documentation/ABI/testing/sysfs-firmware-dmi-entries | 2 +-
+> > > =C2=A0Documentation/ABI/testing/sysfs-firmware-gsmi=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 | 2 +-
+> > > =C2=A0Documentation/ABI/testing/sysfs-uevent=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 2 +-
+> > > =C2=A06 files changed, 8 insertions(+), 8 deletions(-)
+> > >=20
+> > > diff --git a/Documentation/ABI/stable/sysfs-class-infiniband
+> > > b/Documentation/ABI/stable/sysfs-class-infiniband
+> > > index 694f23a03a28..e48a0d2fb4e5 100644
+> > > --- a/Documentation/ABI/stable/sysfs-class-infiniband
+> > > +++ b/Documentation/ABI/stable/sysfs-class-infiniband
+> > > @@ -157,8 +157,8 @@ Description:
+> > > =C2=A0		all VLs from this port. This may include packets with errors.
+> > > =C2=A0		This is 64 bit counter.
+> > > =C2=A0
+> > > -		port_rcv_packets: (RO) Total number of packets (this may include
+> > > -		packets containing Errors. This is 64 bit counter.
+> > > +		port_rcv_packets: (RO) Total number of packets, this may include
+> > > +		packets containing Errors. This is a 64 bit counter. =20
+> > Comma doesn't feel like the right choice here.=C2=A0 Perhaps,
+> >=20
+> > 		port_rc_packets: (RO) Total number of packets. May include
+> > 		packets containing Errors. This is a 64 bit counter.
+> >=20
+> > Or just add the closing bracket. =20
+>=20
+> will do this.
+>=20
+> > > =C2=A0
+> > > =C2=A0		link_downed: (RO) Total number of times the Port Training sta=
+te
+> > > =C2=A0		machine has failed the link error recovery process and downed
+> > >=20
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> > > b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> > > index 28be1cabf112..108ea0abbdb6 100644
+> > > --- a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> > > @@ -16,7 +16,7 @@ Description:
+> > > =C2=A0		In bridge applications, such as strain gauges and load cells,
+> > > =C2=A0		the bridge itself consumes the majority of the current in the
+> > > =C2=A0		system. To minimize the current consumption of the system,
+> > > -		the bridge can be disconnected (when it is not being used
+> > > +		the bridge can be disconnected when it is not being used
+> > > =C2=A0		using the bridge_switch_en attribute. =20
+> >=20
+> > I think intent would be better reflected here by adding the closing )
+> > That last bit is kind of a 'by the way' rather than the dominant point =
+of
+> > the sentence. =20
+>=20
+> 		system. To minimize the current consumption of the system,
+> -		the bridge can be disconnected (when it is not being used
+> +		the bridge can be disconnected (when it is not being used)
+>  		using the bridge_switch_en attribute.
+> like this?
+
+Looks good.
+
+>=20
+> >  =20
+> > > =C2=A0
+> > > =C2=A0What:		/sys/bus/iio/devices/iio:deviceX/in_voltage2-voltage2_sh=
+orted_raw =20
+> >  =20
+> > > diff --git a/Documentation/ABI/testing/sysfs-firmware-gsmi
+> > > b/Documentation/ABI/testing/sysfs-firmware-gsmi
+> > > index 7a558354c1ee..88ca75d323d1 100644
+> > > --- a/Documentation/ABI/testing/sysfs-firmware-gsmi
+> > > +++ b/Documentation/ABI/testing/sysfs-firmware-gsmi
+> > > @@ -18,7 +18,7 @@ Description:
+> > > =C2=A0
+> > > =C2=A0		/sys/firmware/gsmi/vars:
+> > > =C2=A0
+> > > -			This directory has the same layout (and
+> > > +			This directory has the same layout and
+> > > =C2=A0			underlying implementation as /sys/firmware/efi/vars.
+> > > =C2=A0			See `Documentation/ABI/*/sysfs-firmware-efi-vars`
+> > > =C2=A0			for more information on how to interact with =20
+> > I think I'd add the bracket after implementation as this file is about =
+ABI
+> > so that's less important than the rest of the sentence. =20
+>=20
+> 			This directory has the same layout (and
+> - 			underlying implementation as /sys/firmware/efi/vars.
+> + 			underlying implementation) as /sys/firmware/efi/vars.
+>  			See `Documentation/ABI/*/sysfs-firmware-efi-vars`
+>  			for more information on how to interact with
+>=20
+> like this?
+
+yes
+
+Thanks,
+
+Jonathan
+
+>=20
+> Thanks=20
+>  manuel
+
