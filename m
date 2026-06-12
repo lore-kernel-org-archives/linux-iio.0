@@ -1,143 +1,205 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 658953988E1
-	for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 09:11:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68DD5367296;
+	Fri, 12 Jun 2026 10:36:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781255500; cv=none; b=kBORCxVCzUcv8ayrBDX85Fa18dnmCaFL4rhqnvQc5CxuPAMBSDxNWxrcD0FNeiIbte65hZSCsBGTSVoeKuA/q0fTJp/H+NDSNWtt1F73cn9SXx8LDhuJstUxrw1aQIV5IHNLLGBUXIZYEnPSF0usUl+ko1EtXtLF3EpQeU8r0XM=
+	t=1781260571; cv=none; b=VDHXC3iLt/3cLR/eMQVcSjv3bBHPAWQkhF/io4F9sqzRkS0d/YyWjvv3xUK+ngq6rH3zJAuUJA54vHJIoMakGEPJtP8r6Cq8+1za3uqgOtbNZd9tm6B2UOZzEI2cfyzPlGxL06xplggwnL3cP54r4bXWgnyxr8yXzux2g1nRc/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781255500; c=relaxed/simple;
-	bh=zGwXx7r0raUE81oCn824BrKeKDOdBBGsvz4O9QbLsMc=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cLP9yUwaX3trb5mQ65fHA4vBU9YoxQwEmVXb+o5zl89PgCXlipgwpjOv38kOooDX9jlYw4dY3YVoflFIhJJcjEObLFkIeyDpFi2XrWmcw7RvTsagnWN3JPVu8/WAiJqiUAt3wYAFeoSBg56bPMIPoUbjkZ2342izKOzoLvYnopI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rFCU/nUr; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781260571; c=relaxed/simple;
+	bh=91FxiJV0N6BmdAmvTdC5cs67r+8PYu041zNku9q03f4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k5+RXBPLHsIJAnn9v2lPn3hMtoOoXSYXqV8wTapp8dzyCf4usqKuCz3XObg51ka1dczSCXpVUYkaHP+hOX4m2NZ8ARYoc+9IRnpeEPpBwoTFsKPbzpF5hta5jkT3TbaSQqpgZeWVlsO0apypysDJG2jQCZQVFxQc1CyjjmUKTYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CC1V4yX/; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rFCU/nUr"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6924a68e3f3so1306786a12.1
-        for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 02:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781255494; x=1781860294; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jI8LnQZv8N81B+lAF6GsOhfvywQIVQpCH2REI+wbnnY=;
-        b=rFCU/nUrlZTsDQVwtFOdGSCtPNdRlxqx0e0N9GR0nqkKMn/VjCJOzDgIlBglbnc1ZC
-         HpZsSNccs4H8QfcEHsPwczRJukViMCg9ccMeZyICXFAkw4wvWiDVytyHtLqMQNtsDLVl
-         72qD473YJzPiUJe7mXlsoSfl2VkyO7UCSA13Rnhm0i/eeXgzFzvbQHwDPopWi6jk/Nmv
-         mmFZl2L3n4q52O+JYRVBNUIaYvLuzypO7q98OJeLjiDZWa4TtP147zknsU/A67h5W3Qm
-         N3coJmJ/QZhwX3pnOIbHM4dlJ18YrjYSNh8CTvMKysjKawoflZhiXotbo1/jQq0viLWD
-         1gtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781255494; x=1781860294;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jI8LnQZv8N81B+lAF6GsOhfvywQIVQpCH2REI+wbnnY=;
-        b=C3BZ+fmpVoxN5YeIwbD5CoYok7mvP0hNbn/Khm89mvKN4mwJhq7fZkbyfcB2LfYT0g
-         a5OY0vVP+hB8IK/9ZLoZoPCZeFgor9Fpw8SbYqukDHNG+a+v3PjEH2zucesdxbiUyeCl
-         QWl2AdOAGcwc2pYSZBiP6PheWmZvEA9RkC3HSA4G9/Kks2Pk+VeMPCSCd/qOJe+o1UNl
-         sjZNH9oSJ+AttWaLgrU7hMwFO0z3e9Jkry5RHMtsMPB0gWlBmo9zV+El4PebQMPM91HC
-         n2iCMXKHR2RV8x7GOghepagQjocSxPUk/csP2yQC/u9FzuRbcxs1Jh8u4909s0iX/P/q
-         GMUg==
-X-Gm-Message-State: AOJu0Yz6CBfGV8l8sgigOhnIgzo8IRI1RfssbJjygnD5YfIk+M8YI4N8
-	2DXVO9pjb596ei1AVdKC5eX3G8DIOdmotTO8NkRSQm8Bh4REwNm9/Za5
-X-Gm-Gg: Acq92OE3Yt0CXtzNEry+cCuR/8TC6KtD6CYmpPUSIehxzbXoMsS3XWYoK53R6URmaBU
-	tcLib/ARXCQRrLm/O+GPpq/+02WS+8Tdyu9/AhcursQgVJlS5lawCS+JxVxeIaKOs1O+chU/AhE
-	1LejUBRQ/fdXMn6ftZc4R4SqGwg2B5YX31OsAjOYgTqCobjIREOWIgDe1Mg7XibuMxdFCYlvXAj
-	c5lXtK/vjaQct6ac/Jep6/lGQ8VB80XLCHktlNpLE4n/l+s/yVkwHWXMVrc2cPxJd1TTdLdwrbr
-	Gl3d2eoJoh7bm/iixNcP427DhAW1X638AXsjnDFV2S+1uLtNJqNJxJx0pvI7UFFE7/aGf29CCZo
-	SIPBGhcSVyU7ZvGGhuVBcJshOX4CvFQa+IIi3k9+NhxjApCuiUkBF5pfMXvROXroRTD2ZGrEcbK
-	4YbUyTCWFoBP/uc0eKhzRhdv0WBTjBuOBJh36q2mtNYK65/D0WCcEYj5Z9y0bj8VEgOtRqc0LVj
-	4oYWiElHkaWuJ8XmQw+SHTDi+kHBC3HMnKuZ7g=
-X-Received: by 2002:a05:6402:5d0:b0:67b:cd1f:9cc1 with SMTP id 4fb4d7f45d1cf-693784eab8cmr881007a12.6.1781255493455;
-        Fri, 12 Jun 2026 02:11:33 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6937938a3dbsm425280a12.16.2026.06.12.02.11.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 02:11:32 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Fri, 12 Jun 2026 10:11:25 +0100
-To: Wadim Mueller <wafgo01@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	Maxwell Doose <m32285159@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt1@gmail.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Subject: Re: [PATCH v4 3/4] iio: core: add IIO_VAL_DECIMAL64_FEMTO format type
-Message-ID: <5zznk6hw5snapkpyftxqmmhqd4ih6y7it7v7yrnhgjbc5jk2ok@7bwn4xst5iwz>
-References: <20260611132700.671322-1-wafgo01@gmail.com>
- <20260611132700.671322-4-wafgo01@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CC1V4yX/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04F6E1F000E9;
+	Fri, 12 Jun 2026 10:36:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781260569;
+	bh=O+SMa7id15Wth7GsodU20nw/Xw2vDDaUwg6RH/UuNDY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=CC1V4yX/m7C0c2G9l1EVCxLTDxtaeL/CQu6ZrHz3tdfM/fEnAw4AMO+Zihb/o+AO0
+	 ogQ0l4mvt0YCNo6GJLidH0brquaBFublaY6/Ye7i37aLuswQRGh74skt3pej27hh1Q
+	 tP+0YwF8vABMNODWjTOkzSb6VLhi/9XtJfpL0I6sOllhgcEdU+Ds7yY3qYZiB1Pxf3
+	 7P5wWz18glxwwRkc5QOxpLvhgPdmF33DWGaAsjBCafLJv5QaBJrnhHcVNIe9PPYnTp
+	 EWQqp1+c8gweY0jBgMgnQiRGLzBTkklhHlVHIdr6NUQHeUzDpu/TiqSrYdYzFiTvh4
+	 r9CnfvBFTaiOw==
+Date: Fri, 12 Jun 2026 11:35:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Manuel Ebner <manuelebner@mailbox.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, Leon
+ Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org, Jean Delvare
+ <jdelvare@suse.com>, Tzung-Bi Shih <tzungbi@kernel.org>, Brian Norris
+ <briannorris@chromium.org>, Julius Werner <jwerner@chromium.org>,
+ chrome-platform@lists.linux.dev, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>,
+ Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org (open list), linux-iio@vger.kernel.org, Randy
+ Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2] Documentation: ABI: fix brackets and bracelets
+Message-ID: <20260612113559.1675cb66@jic23-huawei>
+In-Reply-To: <20260612074916.169195-3-manuelebner@mailbox.org>
+References: <20260612074916.169195-3-manuelebner@mailbox.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260611132700.671322-4-wafgo01@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 11/06/26 15:26, Wadim Mueller wrote:
-> Extend the IIO_VAL_DECIMAL64_* family with a femto-scaled variant
-> (scale 15), following the existing MILLI/MICRO/NANO/PICO pattern. Both
-> the read formatting path in __iio_format_value() and the write parsing
-> path in iio_write_channel_info() (via kstrtodec64()) already derive
-> their scale from "type - IIO_VAL_DECIMAL64_BASE", so the new type only
-> needs to be added to the respective switch cases.
+On Fri, 12 Jun 2026 09:49:18 +0200
+Manuel Ebner <manuelebner@mailbox.org> wrote:
+
+> Fix missing and needless brackets and bracelets.
+> Fix minor grammar issues.
 > 
-> This is needed by drivers reporting very small SI quantities where the
-> existing pico scale loses precision. For example the Sensirion SLF3S
-> liquid flow sensor reports its volume-flow scale in m^3/s, where the
-> SLF3S-0600F scale is ~1.667e-12 m^3/s: at pico scale only a single
-> significant digit survives, whereas femto scale preserves the full
-> sensor resolution.
-> 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+> Signed-off-by: Manuel Ebner <manuelebner@mailbox.org>
+I guess I was unclear in my v1 review. This needs to be split up by subsystem
+to which a patch applies.  Each change will probably take a different route to
+upstream as other changes in these files that may clash will generally be routed
+via the appropriate subsystem.
+
+The two IIO files can be one patch, but others should all be one
+patch per file touched.
+
+Thanks,
+
+Jonathan
+
 > ---
-
-Reviewed-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-
->  drivers/iio/industrialio-core.c | 2 ++
->  include/linux/iio/types.h       | 1 +
->  2 files changed, 3 insertions(+)
+> [v1] -> [v2]
+> change from removing single bracket to adding missing bracket
+> add recipients
+>  Thanks Jonathan for researching the e-mail addresses.
+> use proper english punctuation in changelog
+> "is 64 bit counter" -> "is a 64-bit counter"
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 571b8ba4e..685661cd8 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -713,6 +713,7 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
->  	case IIO_VAL_DECIMAL64_MICRO:
->  	case IIO_VAL_DECIMAL64_NANO:
->  	case IIO_VAL_DECIMAL64_PICO:
-> +	case IIO_VAL_DECIMAL64_FEMTO:
->  	{
->  		int scale = type - IIO_VAL_DECIMAL64_BASE;
->  		s64 frac;
-> @@ -1030,6 +1031,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
->  		case IIO_VAL_DECIMAL64_MICRO:
->  		case IIO_VAL_DECIMAL64_NANO:
->  		case IIO_VAL_DECIMAL64_PICO:
-> +		case IIO_VAL_DECIMAL64_FEMTO:
->  			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
->  			fallthrough;
->  		case IIO_VAL_INT_64:
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 3b8a2d82f..1f2f03d5d 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -41,6 +41,7 @@ enum iio_event_info {
->  #define IIO_VAL_DECIMAL64_MICRO		(IIO_VAL_DECIMAL64_BASE + 6)
->  #define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
->  #define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
-> +#define IIO_VAL_DECIMAL64_FEMTO		(IIO_VAL_DECIMAL64_BASE + 15)
+> ---
+>  Documentation/ABI/stable/sysfs-class-infiniband      |  8 ++++----
+>  Documentation/ABI/testing/sysfs-bus-iio              | 10 +++++-----
+>  Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192   |  2 +-
+>  Documentation/ABI/testing/sysfs-firmware-dmi-entries |  2 +-
+>  Documentation/ABI/testing/sysfs-firmware-gsmi        |  2 +-
+>  Documentation/ABI/testing/sysfs-uevent               |  2 +-
+>  6 files changed, 13 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/ABI/stable/sysfs-class-infiniband b/Documentation/ABI/stable/sysfs-class-infiniband
+> index 694f23a03a28..7ba116103429 100644
+> --- a/Documentation/ABI/stable/sysfs-class-infiniband
+> +++ b/Documentation/ABI/stable/sysfs-class-infiniband
+> @@ -148,17 +148,17 @@ Description:
+>  		**Data info**:
 >  
->  static inline s64 iio_val_s64_compose(s32 val0, s32 val1)
->  {
-> -- 
-> 2.52.0
-> 
+>  		port_xmit_data: (RO) Total number of data octets, divided by 4
+> -		(lanes), transmitted on all VLs. This is 64 bit counter
+> +		(lanes), transmitted on all VLs. This is a 64-bit counter
+>  
+>  		port_rcv_data: (RO) Total number of data octets, divided by 4
+> -		(lanes), received on all VLs. This is 64 bit counter.
+> +		(lanes), received on all VLs. This is a 64-bit counter.
+>  
+>  		port_xmit_packets: (RO) Total number of packets transmitted on
+>  		all VLs from this port. This may include packets with errors.
+> -		This is 64 bit counter.
+> +		This is a 64-bit counter.
+>  
+>  		port_rcv_packets: (RO) Total number of packets (this may include
+> -		packets containing Errors. This is 64 bit counter.
+> +		packets containing Errors). This is a 64-bit counter.
+>  
+>  		link_downed: (RO) Total number of times the Port Training state
+>  		machine has failed the link error recovery process and downed
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d8d6d85235b0..4ea5598e7cd2 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -917,7 +917,7 @@ Description:
+>  
+>  		Note the driver will assume the last p events requested are
+>  		to be enabled where p is how many it supports (which may vary
+> -		depending on the exact set requested. So if you want to be
+> +		depending on the exact set requested). So if you want to be
+>  		sure you have set what you think you have, check the contents of
+>  		these attributes after everything is configured. Drivers may
+>  		have to buffer any parameters so that they are consistent when
+> @@ -973,7 +973,7 @@ Description:
+>  
+>  		Note the driver will assume the last p events requested are
+>  		to be enabled where p is however many it supports (which may
+> -		vary depending on the exact set requested. So if you want to be
+> +		vary depending on the exact set requested). So if you want to be
+>  		sure you have set what you think you have, check the contents of
+>  		these attributes after everything is configured. Drivers may
+>  		have to buffer any parameters so that they are consistent when
+> @@ -1528,9 +1528,9 @@ Description:
+>  		the unused bits, so to get a clean value the bits value must be
+>  		used to mask the buffer output value appropriately. The storagebits
+>  		value also specifies the data alignment. So s48/64>>2 will be a
+> -		signed 48 bit integer stored in a 64 bit location aligned to a 64
+> -		bit boundary. To obtain the clean value, shift right 2 and apply a
+> -		mask to zero the top 16 bits of the result.
+> +		signed 48-bit integer stored in a 64-bit location aligned to a
+> +		64-bit boundary. To obtain the clean value, shift right 2 and apply
+> +		a mask to zero the top 16 bits of the result.
+>  		For other storage combinations this attribute will be extended
+>  		appropriately.
+>  
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192 b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> index 28be1cabf112..d44eb5f8728b 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ad7192
+> @@ -16,7 +16,7 @@ Description:
+>  		In bridge applications, such as strain gauges and load cells,
+>  		the bridge itself consumes the majority of the current in the
+>  		system. To minimize the current consumption of the system,
+> -		the bridge can be disconnected (when it is not being used
+> +		the bridge can be disconnected (when it is not being used)
+>  		using the bridge_switch_en attribute.
+>  
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage2-voltage2_shorted_raw
+> diff --git a/Documentation/ABI/testing/sysfs-firmware-dmi-entries b/Documentation/ABI/testing/sysfs-firmware-dmi-entries
+> index b6c23807b804..ed7d9d06a9ff 100644
+> --- a/Documentation/ABI/testing/sysfs-firmware-dmi-entries
+> +++ b/Documentation/ABI/testing/sysfs-firmware-dmi-entries
+> @@ -93,7 +93,7 @@ Description:
+>  		  /sys/firmware/dmi/entries/15-0/system_event_log
+>  
+>  		and has the following attributes (documented in the
+> -		SMBIOS / DMI specification under "System Event Log (Type 15)":
+> +		SMBIOS / DMI specification under "System Event Log (Type 15)"):
+>  
+>  		- area_length
+>  		- header_start_offset
+> diff --git a/Documentation/ABI/testing/sysfs-firmware-gsmi b/Documentation/ABI/testing/sysfs-firmware-gsmi
+> index 7a558354c1ee..3b3c3ae6f458 100644
+> --- a/Documentation/ABI/testing/sysfs-firmware-gsmi
+> +++ b/Documentation/ABI/testing/sysfs-firmware-gsmi
+> @@ -19,7 +19,7 @@ Description:
+>  		/sys/firmware/gsmi/vars:
+>  
+>  			This directory has the same layout (and
+> -			underlying implementation as /sys/firmware/efi/vars.
+> +			underlying implementation) as /sys/firmware/efi/vars.
+>  			See `Documentation/ABI/*/sysfs-firmware-efi-vars`
+>  			for more information on how to interact with
+>  			this structure.
+> diff --git a/Documentation/ABI/testing/sysfs-uevent b/Documentation/ABI/testing/sysfs-uevent
+> index 0b6227706b35..c15e18c47a0e 100644
+> --- a/Documentation/ABI/testing/sysfs-uevent
+> +++ b/Documentation/ABI/testing/sysfs-uevent
+> @@ -8,7 +8,7 @@ Description:
+>  
+>                  Recognized extended format is::
+>  
+> -			ACTION [UUID [KEY=VALUE ...]
+> +			ACTION [UUID [KEY=VALUE ...]]
+>  
+>                  The ACTION is compulsory - it is the name of the uevent
+>                  action (``add``, ``change``, ``remove``). There is no change
+
