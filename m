@@ -1,654 +1,240 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0512C3E1225
-	for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 12:47:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A4E738550C;
+	Fri, 12 Jun 2026 12:52:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781268424; cv=none; b=cpVb0SJk9Ozg0uFtvEe3XOt21kQR/5+ckTUzLVYuANcZppsOzz6DxxDbM603Jz38CdqC1YZGVTfIYeh2yFSY5c/rOk+1I/uu8qg5oGKjs/c7i1e0mUidv74X9SyLANgE9Tgf5lZOKuKJP5uI5IN/chfFS040KYt9dxtYElnEwH8=
+	t=1781268755; cv=none; b=KGzUKpRdeJe+xRs3TAcFelXEmBfeT2Jjk83Smzuo4eKcYEeOEtIZkxAHjzNLB/3o723z8ahfgitbSQwFbMyrgJSnQjYK+AqVzBvv3jFbKcIcwSZjpf1Dfp3ZUlpXZTUJbYY4cEEIcW1o8NIw57J3zvNJbpq2xUxHxMUTCHJ3txo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781268424; c=relaxed/simple;
-	bh=xah7VFRzlEFUau6mIgXs6EJoh2v1zXmwPgirU/EsoqE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Y1jU5maOKPMk/taOAKVMzBfaSCUpAx7S8BZYVkdli9jqCuvbeJmGsjA2GIS28CWbk9vj4tnCvX68XzIbAR+RBaoUNus7btWtHV3QB6adJDjOxZKSJeZ3gtn3AuOZmTt4HLBbdoK71qiTN41V7HH6vsGUnQiT/hIP8Ie7YUp35q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-36b7b7b7a80so949157a91.1
-        for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 05:47:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781268421; x=1781873221;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=8dFNczRq0wIo8VSVYeWK76HT6EIccHPqEp9QW39ONxQ=;
-        b=BR1wS3W15yug4HkP5KiOl3zgKUCp8/d/pLRgZ1+LBJUoO6m5PsJiHGvGcqdB8NpxB4
-         Vnqi6k6GtN8tyYcSKmfB2rMW2zKqCOnw0+btlsQNTB2vg8sqzvaU8WebLEUNOLDJmDPQ
-         M8CHlDzywrHTvj4lw2semPBNoqLE6AF9I9/Hh5h20loXpmtfAJfjZXUiaMXQJdhFlwMq
-         5TFLRwvlaLGHpYsRoR42xUvFPcEa+X4O5eQELH/7CRcUtxJLb9M5ZygXJCQdeDdjjUA7
-         HZg9+9f52cpYKgC7TCHuIT9z9pHxrk8zqMNk9D75SGQ+j20qLS3Ci0ysxeyymLMOzuHd
-         1BpA==
-X-Forwarded-Encrypted: i=1; AFNElJ9rCoNQ7KeRlMwzQgUmb7xjyYZeFNOx5DThDUbfQHXwz3eU991sXAkxQHt4RZJ/ToN1/EWA7FsHl8E=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxg0w2vrffrhNlXjZXx6/jA/HfM4IecwCcTOK0Q/AWx2KeUAbPm
-	WQFEPWwOKjIV6vzIwLy8asbqI5mCUPS0fW5xUYAQeIy60FbA6c1UUjBf
-X-Gm-Gg: Acq92OH6H/t26bBTCcZI8FLXZ1khgorqwn9p2dCRBjjYm4YVDtWAQVNqLGWFHzSXDT9
-	OHtAfIoyoNnrSbLclBMFnxBJd/DkuzUMu4/CIiuYAAFjSnOEY/D3Af6YXvN/hEJDa5ohV1hs/bk
-	+SV/XrdJnT0FZSuN0zUB1aZyNi05zOgUZCV3JKx8uGNPXXAW4GfJNB94csGAurTKCc0DH/XteyN
-	jkdP94tk/kTsIF9zGCzF8odOc5G9REmRgnmUYZ95hsdtUro11PxoUkoHhrfxWVzC0dNxUpTncHS
-	vQ6hHBYt4zd/+0xIG0/3Sq1oaR4u6WCWNqKrIuli9ZEQu8SHnEfYwlrTBw1IfqodWYM32k7L4ar
-	Jkl44SVqv0DXUaHBO3b9bXw7Joej2nkptCh1N/FqzucIlZ9smj5igZPSl4iYo4ZoP8URcwgowVb
-	xRI32udghQ7av8BG1HBv1yAurL9hXgCmlY3DtwpMO0PnePkmcFkGucZAB55Wbio5LyDqPEUX9pq
-	yPPxj9qGLUnW3VP59ymGtZAc0I4szOfPU+Sy7nnBjNT1yJj2VZeJBT993YIFFgRWFTiRA+Y/R4Q
-	QC/2uQ==
-X-Received: by 2002:a17:903:3b88:b0:2ba:6601:8e3d with SMTP id d9443c01a7336-2c3fb4ec4f4mr29212065ad.9.1781268421151;
-        Fri, 12 Jun 2026 05:47:01 -0700 (PDT)
-Received: from fedora ([42.0.4.231])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c42fbb5411sm21115625ad.32.2026.06.12.05.46.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 05:47:00 -0700 (PDT)
-From: Siratul Islam <email@sirat.me>
-To: jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Siratul Islam <email@sirat.me>
-Subject: [PATCH 3/3] iio: magnetometer: add driver for QST QMC5883L Sensor
-Date: Fri, 12 Jun 2026 18:45:27 +0600
-Message-ID: <20260612124557.13750-4-email@sirat.me>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260612124557.13750-1-email@sirat.me>
-References: <20260612124557.13750-1-email@sirat.me>
+	s=arc-20240116; t=1781268755; c=relaxed/simple;
+	bh=v5chSWBWmC7VLMjAZbVh9OAnibCPxEDZipEc5qXY8x0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UN2Q4UYTqnad8GQmxX/UbkLnGpqDywz3oPxkXckf34vDx1C1v22njwAY9jR93996pH+jgk2iRNjE5WB/tJnRWCGRJQJI2QOh1bQE2wDAcus8YKhMx7kgD8iZOwhCkSljhOMEfCWkvasruz61kpzyJR2cT8g8AkNaLiEsdr3p+XU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IgkgRHx7; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IgkgRHx7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE0E1F000E9;
+	Fri, 12 Jun 2026 12:52:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781268750;
+	bh=PmMLaJXjhRYelS8/jPqk9Km7Z0RgyZ6vCRvUCQiJvys=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=IgkgRHx7FYloM1vvW3IahbabCu1JC15CHQFRjCdwxE7jAqjKklXjFkrBWRIjMzXTn
+	 ChEzT3rR0V/zSsKbQwMt6mJKYsCkANMcxfD0p5iXhexRVL7jNqmuH6sfC0mbAEtzjD
+	 iw+P63YtjTLC0wTZJz1mJqNj1vkXl0720SCnFMc2p23xyazlIPiRJQyseTRzz9lLyn
+	 9UCQOrk+fFbzQYmnBYFO9mV5xYQL6h21LhdhDAVbZeoWgP5UCdmNcaPl9tao9kb74G
+	 gBVWPrbyXXxHm/T2UxfhF6svDGb/ouYsDEz2OrO11rVmR3tiIhGeaWbcqSSLrs6d8f
+	 qD25nXiaNT1uQ==
+Date: Fri, 12 Jun 2026 13:52:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Salih Erim <salih.erim@amd.com>
+Cc: <andy@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <conall.ogriofa@amd.com>, <michal.simek@amd.com>, <linux@roeck-us.net>,
+ <erimsalih@gmail.com>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 4/5] iio: adc: versal-sysmon: add threshold event
+ support
+Message-ID: <20260612135222.0cec353b@jic23-huawei>
+In-Reply-To: <20260611222738.2035062-5-salih.erim@amd.com>
+References: <20260611222738.2035062-1-salih.erim@amd.com>
+	<20260611222738.2035062-5-salih.erim@amd.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
-connected via i2c.
+On Thu, 11 Jun 2026 23:27:37 +0100
+Salih Erim <salih.erim@amd.com> wrote:
 
-Signed-off-by: Siratul Islam <email@sirat.me>
----
- MAINTAINERS                         |   1 +
- drivers/iio/magnetometer/Kconfig    |  11 +
- drivers/iio/magnetometer/Makefile   |   2 +
- drivers/iio/magnetometer/qmc5883l.c | 512 ++++++++++++++++++++++++++++
- 4 files changed, 526 insertions(+)
- create mode 100644 drivers/iio/magnetometer/qmc5883l.c
+> Add threshold event support for temperature and supply voltage
+> channels.
+> 
+> Temperature events:
+>   - Rising threshold with configurable value
+>   - Over-temperature (OT) alarm with separate threshold
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 310074b34072..f94da70b91af 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21792,6 +21792,7 @@ M:	Siratul Islam <email@sirat.me>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883l.yaml
-+F:	drivers/iio/magnetometer/qmc5883l.c
- 
- QT1010 MEDIA DRIVER
- L:	linux-media@vger.kernel.org
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index fb313e591e85..615564174086 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -198,6 +198,17 @@ config INFINEON_TLV493D
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called tlv493d.
- 
-+config QMC5883L
-+	tristate "QST QMC5883L 3-Axis Magnetic Sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  Say Y here to add support driver for QST QMC5883L 3-Axis
-+	  Magnetic Sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called qmc5883l.
-+
- config SENSORS_HMC5843
- 	tristate
- 	select IIO_BUFFER
-diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-index 5bd227f8c120..552682555d86 100644
---- a/drivers/iio/magnetometer/Makefile
-+++ b/drivers/iio/magnetometer/Makefile
-@@ -26,6 +26,8 @@ obj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o
- 
- obj-$(CONFIG_INFINEON_TLV493D)		+= tlv493d.o
- 
-+obj-$(CONFIG_QMC5883L)			+= qmc5883l.o
-+
- obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
- obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
- obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-diff --git a/drivers/iio/magnetometer/qmc5883l.c b/drivers/iio/magnetometer/qmc5883l.c
-new file mode 100644
-index 000000000000..055e51570635
---- /dev/null
-+++ b/drivers/iio/magnetometer/qmc5883l.c
-@@ -0,0 +1,512 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/*
-+ * Support for QST QMC5883L 3-Axis Magnetic Sensor on i2c bus.
-+ *
-+ * Copyright (C) 2026 Siratul Islam <email@sirat.me>
-+ *
-+ * Datasheet available at
-+ * <https://www.qstcorp.com/upload/pdf/202512/13-52-04%20QMC5883L%20Datasheet%20Rev.%20B.pdf>
-+ *
-+ * Default 7-bit i2c slave address 0x0D.
-+ *
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/bitfield.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/iio/iio.h>
-+#include <linux/i2c.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/time.h>
-+
-+#include <asm/byteorder.h>
-+
-+#define QMC5883L_REG_X_LSB	0x00
-+#define QMC5883L_REG_STATUS1	0x06
-+#define QMC5883L_REG_CTRL1	0x09
-+#define QMC5883L_REG_CTRL2	0x0A
-+#define QMC5883L_REG_SET_RESET	0x0B
-+#define QMC5883L_REG_ID		0x0D
-+
-+#define QMC5883L_CHIP_ID	0xFF
-+
-+#define QMC5883L_MODE_MASK	GENMASK(1, 0)
-+#define QMC5883L_ODR_MASK	GENMASK(3, 2)
-+#define QMC5883L_RNG_MASK	GENMASK(5, 4)
-+#define QMC5883L_OSR_MASK	GENMASK(7, 6)
-+
-+#define QMC5883L_MODE_STANDBY	FIELD_PREP_CONST(QMC5883L_MODE_MASK, 0x00)
-+#define QMC5883L_MODE_CONT	FIELD_PREP_CONST(QMC5883L_MODE_MASK, 0x01)
-+
-+#define QMC5883L_ODR_10HZ	FIELD_PREP_CONST(QMC5883L_ODR_MASK, 0x00)
-+#define QMC5883L_ODR_50HZ	FIELD_PREP_CONST(QMC5883L_ODR_MASK, 0x01)
-+#define QMC5883L_ODR_100HZ	FIELD_PREP_CONST(QMC5883L_ODR_MASK, 0x02)
-+#define QMC5883L_ODR_200HZ	FIELD_PREP_CONST(QMC5883L_ODR_MASK, 0x03)
-+
-+#define QMC5883L_RNG_2G		FIELD_PREP_CONST(QMC5883L_RNG_MASK, 0x00)
-+#define QMC5883L_RNG_8G		FIELD_PREP_CONST(QMC5883L_RNG_MASK, 0x01)
-+
-+#define QMC5883L_OSR_512	FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x00)
-+#define QMC5883L_OSR_256	FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x01)
-+#define QMC5883L_OSR_128	FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x02)
-+#define QMC5883L_OSR_64		FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x03)
-+
-+#define QMC5883L_STATUS_DRDY	BIT(0)
-+#define QMC5883L_STATUS_OVL	BIT(1)
-+
-+#define QMC5883L_SET_RESET_VAL	BIT(0)
-+#define QMC5883L_INT_DISABLE	BIT(0)
-+#define QMC5883L_SOFT_RESET	BIT(7)
-+
-+#define QMC5883L_SCALE_2G	83333
-+#define QMC5883L_SCALE_8G	333333
-+
-+/* POR completion time max per datasheet */
-+#define QMC5883L_PORT_US	350
-+
-+struct qmc5883l_data {
-+	struct regmap *regmap;
-+	struct mutex mutex; /* update and read regmap data */
-+	u8 range;
-+	u8 odr;
-+	u8 osr;
-+};
-+
-+enum qmc5883l_chan {
-+	QMC5883L_AXIS_X,
-+	QMC5883L_AXIS_Y,
-+	QMC5883L_AXIS_Z,
-+};
-+
-+static const int qmc5883l_odr_avail[] = { 10, 50, 100, 200 };
-+
-+static const int qmc5883l_osr_avail[] = { 512, 256, 128, 64 };
-+
-+static const int qmc5883l_rng_avail[] = {
-+	0, QMC5883L_SCALE_2G,	/* 2G */
-+	0, QMC5883L_SCALE_8G,	/* 8G */
-+};
-+
-+static int qmc5883l_take_measurement(struct iio_dev *indio_dev, int index,
-+				     int *val)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	unsigned int status;
-+	__le16 buf[3];
-+	int ret;
-+
-+	scoped_guard(mutex, &data->mutex)
-+	{
-+		/* 50ms headroom over the slowest ODR (10Hz) */
-+		ret = regmap_read_poll_timeout(data->regmap,
-+					       QMC5883L_REG_STATUS1, status,
-+					       (status & QMC5883L_STATUS_DRDY),
-+					       2 * USEC_PER_MSEC,
-+					       150 * USEC_PER_MSEC);
-+		if (ret)
-+			return ret;
-+
-+		if (status & QMC5883L_STATUS_OVL)
-+			return -ERANGE;
-+
-+		ret = regmap_bulk_read(data->regmap, QMC5883L_REG_X_LSB, buf,
-+				       sizeof(buf));
-+		if (ret)
-+			return ret;
-+
-+		*val = (s16)le16_to_cpu(buf[index]);
-+	}
-+
-+	return 0;
-+}
-+
-+static int qmc5883l_read_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan, int *val,
-+			     int *val2, long mask)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+		ret = qmc5883l_take_measurement(indio_dev, chan->address, val);
-+		iio_device_release_direct(indio_dev);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			*val = 0;
-+			*val2 = data->range == QMC5883L_RNG_2G ?
-+					QMC5883L_SCALE_2G :
-+					QMC5883L_SCALE_8G;
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			switch (data->odr) {
-+			case QMC5883L_ODR_200HZ:
-+				*val = 200;
-+				break;
-+			case QMC5883L_ODR_100HZ:
-+				*val = 100;
-+				break;
-+			case QMC5883L_ODR_50HZ:
-+				*val = 50;
-+				break;
-+			case QMC5883L_ODR_10HZ:
-+				*val = 10;
-+				break;
-+			default:
-+				return -EINVAL;
-+			}
-+		}
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			switch (data->osr) {
-+			case QMC5883L_OSR_64:
-+				*val = 64;
-+				break;
-+			case QMC5883L_OSR_128:
-+				*val = 128;
-+				break;
-+			case QMC5883L_OSR_256:
-+				*val = 256;
-+				break;
-+			case QMC5883L_OSR_512:
-+				*val = 512;
-+				break;
-+			default:
-+				return -EINVAL;
-+			}
-+		}
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int qmc5883l_write_raw(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan, int val,
-+			      int val2, long mask)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	u8 rng;
-+	u8 osr;
-+	u8 odr;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		switch (val2) {
-+		case QMC5883L_SCALE_2G:
-+			rng = QMC5883L_RNG_2G;
-+			break;
-+		case QMC5883L_SCALE_8G:
-+			rng = QMC5883L_RNG_8G;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			ret = regmap_update_bits(data->regmap,
-+						 QMC5883L_REG_CTRL1,
-+						 QMC5883L_RNG_MASK, rng);
-+			if (ret)
-+				return ret;
-+			data->range = rng;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		switch (val) {
-+		case 200:
-+			odr = QMC5883L_ODR_200HZ;
-+			break;
-+		case 100:
-+			odr = QMC5883L_ODR_100HZ;
-+			break;
-+		case 50:
-+			odr = QMC5883L_ODR_50HZ;
-+			break;
-+		case 10:
-+			odr = QMC5883L_ODR_10HZ;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			ret = regmap_update_bits(data->regmap,
-+						 QMC5883L_REG_CTRL1,
-+						 QMC5883L_ODR_MASK, odr);
-+			if (ret)
-+				return ret;
-+			data->odr = odr;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		switch (val) {
-+		case 64:
-+			osr = QMC5883L_OSR_64;
-+			break;
-+		case 128:
-+			osr = QMC5883L_OSR_128;
-+			break;
-+		case 256:
-+			osr = QMC5883L_OSR_256;
-+			break;
-+		case 512:
-+			osr = QMC5883L_OSR_512;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		scoped_guard(mutex, &data->mutex)
-+		{
-+			ret = regmap_update_bits(data->regmap,
-+						 QMC5883L_REG_CTRL1,
-+						 QMC5883L_OSR_MASK, osr);
-+			if (ret)
-+				return ret;
-+			data->osr = osr;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int qmc5883l_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = qmc5883l_odr_avail;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(qmc5883l_odr_avail);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		*vals = qmc5883l_osr_avail;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(qmc5883l_osr_avail);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = qmc5883l_rng_avail;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*length = ARRAY_SIZE(qmc5883l_rng_avail);
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int qmc5883l_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan,
-+				      long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return IIO_VAL_INT;
-+	}
-+}
-+
-+static const struct iio_info qmc5883l_info = {
-+	.read_raw = qmc5883l_read_raw,
-+	.write_raw = qmc5883l_write_raw,
-+	.read_avail = qmc5883l_read_avail,
-+	.write_raw_get_fmt = qmc5883l_write_raw_get_fmt,
-+};
-+
-+static int qmc5883l_init(struct qmc5883l_data *data)
-+{
-+	unsigned int reg;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, QMC5883L_REG_ID, &reg);
-+	if (ret)
-+		return ret;
-+
-+	/* Not failing because rev 1.0 had this register reserved */
-+	if (reg != QMC5883L_CHIP_ID)
-+		dev_warn(regmap_get_device(data->regmap),
-+			 "unknown chip id: 0x%02x, continuing\n", reg);
-+
-+	ret = regmap_write(data->regmap, QMC5883L_REG_CTRL2,
-+			   QMC5883L_SOFT_RESET);
-+	if (ret)
-+		return ret;
-+
-+	fsleep(QMC5883L_PORT_US);
-+
-+	/* DRDY pin no used in this version of the driver */
-+	ret = regmap_write(data->regmap, QMC5883L_REG_CTRL2,
-+			   QMC5883L_INT_DISABLE);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(data->regmap, QMC5883L_REG_SET_RESET,
-+			   QMC5883L_SET_RESET_VAL);
-+	if (ret)
-+		return ret;
-+
-+	data->odr = QMC5883L_ODR_50HZ;
-+	data->range = QMC5883L_RNG_2G;
-+	data->osr = QMC5883L_OSR_64;
-+
-+	ret = regmap_write(data->regmap, QMC5883L_REG_CTRL1,
-+			   (QMC5883L_MODE_CONT | data->odr | data->range |
-+			    data->osr));
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static bool qmc5883l_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	return reg <= QMC5883L_REG_STATUS1;
-+}
-+
-+static bool qmc5883l_writable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case QMC5883L_REG_CTRL1:
-+	case QMC5883L_REG_CTRL2:
-+	case QMC5883L_REG_SET_RESET:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config qmc5883l_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = QMC5883L_REG_ID,
-+	.cache_type = REGCACHE_MAPLE,
-+	.volatile_reg = qmc5883l_volatile_reg,
-+	.writeable_reg = qmc5883l_writable_reg
-+};
-+
-+#define QMC5883L_CHANNEL(_axis)                                \
-+	{                                                      \
-+		.type = IIO_MAGN,                              \
-+		.modified = 1,                                 \
-+		.channel2 = IIO_MOD_##_axis,                   \
-+		.address = QMC5883L_AXIS_##_axis,              \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),  \
-+		.info_mask_shared_by_type =                    \
-+			BIT(IIO_CHAN_INFO_SCALE) |             \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ) |         \
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-+		.info_mask_shared_by_type_available =          \
-+			BIT(IIO_CHAN_INFO_SCALE) |             \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ) |         \
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-+	}
-+
-+static const struct iio_chan_spec qmc5883l_channels[] = {
-+	QMC5883L_CHANNEL(X),
-+	QMC5883L_CHANNEL(Y),
-+	QMC5883L_CHANNEL(Z),
-+};
-+
-+static int qmc5883l_probe(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev;
-+	struct regmap *regmap;
-+	struct qmc5883l_data *data;
-+	struct device *dev = &client->dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	regmap = devm_regmap_init_i2c(client, &qmc5883l_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		return dev_err_probe(dev, PTR_ERR(regmap),
-+				     "regmap initialization failed\n");
-+	}
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable VDD regulator\n");
-+
-+	ret = devm_regulator_get_enable(dev, "vddio");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable VDDIO regulator\n");
-+
-+	fsleep(QMC5883L_PORT_US);
-+
-+	data = iio_priv(indio_dev);
-+	data->regmap = regmap;
-+	ret = devm_mutex_init(dev, &data->mutex);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "qmc5883l";
-+	indio_dev->info = &qmc5883l_info;
-+	indio_dev->channels = qmc5883l_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(qmc5883l_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = qmc5883l_init(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "qmc5883l init failed\n");
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id qmc5883l_match[] = {
-+	{ .compatible = "qstcorp,qmc5883l" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, qmc5883l_match);
-+
-+static const struct i2c_device_id qmc5883l_id[] = {
-+	{ "qmc5883l" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, qmc5883l_id);
-+
-+static struct i2c_driver qmc5883l_driver = {
-+	.driver = {
-+		.name = "qmc5883l",
-+		.of_match_table = qmc5883l_match,
-+	},
-+	.id_table = qmc5883l_id,
-+	.probe = qmc5883l_probe,
-+};
-+
-+module_i2c_driver(qmc5883l_driver);
-+
-+MODULE_DESCRIPTION("QST QMC5883L 3-Axis Magnetic Sensor driver");
-+MODULE_AUTHOR("Siratul Islam <email@sirat.me>");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.54.0
+Ah. I ask about this below.  If this applies to the same channel
+as the main threshold we generally don't support that in IIO and
+definitely not by introducing a 'magic' extra channel.
+See below.
+
+>   - Per-channel hysteresis as a millicelsius value
+>   - Event direction is IIO_EV_DIR_RISING (hysteresis mode)
+> 
+> Supply voltage events:
+>   - Rising/falling threshold per supply channel
+>   - Per-channel alarm enable via alarm configuration registers
+> 
+> The hardware supports both window and hysteresis alarm modes for
+> temperature. This driver uses hysteresis mode, where the upper
+> threshold triggers the alarm and the lower threshold clears it
+> (re-arm point). The hardware has a single ISR bit per temperature
+> channel with no indication of which threshold was crossed, so
+> hysteresis mode is the natural fit. The lower threshold register
+> is computed internally as (upper - hysteresis).
+> 
+> Hysteresis is stored in the driver as a millicelsius value,
+> initialized from the hardware registers at probe. Writing the
+> rising threshold or hysteresis recomputes the lower register.
+> ALARM_CONFIG is hard-coded to hysteresis mode during init.
+> 
+> The interrupt handler masks active threshold interrupts (which are
+> level-sensitive) and schedules a delayed worker to poll for condition
+> clear before unmasking. When no hardware IRQ is available, event
+> channels are not created and interrupt init is skipped, since the
+> I2C regmap backend cannot be called from atomic context.
+> 
+> When disabling a supply channel alarm, the group interrupt remains
+> active if any other channel in the same alarm group still has an
+> alarm enabled.
+> 
+> Signed-off-by: Salih Erim <salih.erim@amd.com>
+
+Some follow on questions on the temperature channels and one thing
+Sashiko noticed that looks real.
+
+> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
+> index c875d156dbe..20fd3a87d44 100644
+> --- a/drivers/iio/adc/versal-sysmon-core.c
+> +++ b/drivers/iio/adc/versal-sysmon-core.c
+> @@ -11,7 +11,9 @@
+>  #include <linux/bitops.h>
+>  #include <linux/cleanup.h>
+>  #include <linux/device.h>
+> +#include <linux/devm-helpers.h>
+>  #include <linux/err.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+> @@ -19,10 +21,19 @@
+>  #include <linux/sysfs.h>
+>  #include <linux/units.h>
+>  
+> +#include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+>  
+>  #include "versal-sysmon.h"
+>  
+> +/* OT and TEMP hysteresis mode bits in SYSMON_TEMP_EV_CFG */
+> +#define SYSMON_OT_HYST_MASK		BIT(0)
+> +#define SYSMON_TEMP_HYST_MASK		BIT(1)
+> +
+> +/* Compute alarm register offset from a channel address */
+> +#define SYSMON_ALARM_OFFSET(addr) \
+> +	(SYSMON_ALARM_REG + ((addr) / SYSMON_ALARM_BITS_PER_REG) * SYSMON_REG_STRIDE)
+> +
+>  #define SYSMON_CHAN_TEMP(_chan, _address, _name)		\
+>  {								\
+>  	.type = IIO_TEMP,					\
+> @@ -34,14 +45,87 @@
+>  	.datasheet_name = _name,				\
+>  }
+>  
+> +#define SYSMON_CHAN_TEMP_EVENT(_chan, _address, _name, _events)	\
+> +{								\
+> +	.type = IIO_TEMP,					\
+> +	.indexed = 1,						\
+> +	.address = _address,					\
+> +	.channel = _chan,					\
+> +	.event_spec = _events,					\
+> +	.num_event_specs = ARRAY_SIZE(_events),			\
+> +	.datasheet_name = _name,				\
+> +}
+> +
+> +enum sysmon_alarm_bit {
+> +	SYSMON_BIT_ALARM0 = 0,
+> +	SYSMON_BIT_ALARM1 = 1,
+> +	SYSMON_BIT_ALARM2 = 2,
+> +	SYSMON_BIT_ALARM3 = 3,
+> +	SYSMON_BIT_ALARM4 = 4,
+> +	SYSMON_BIT_OT = 8,
+> +	SYSMON_BIT_TEMP = 9,
+> +};
+
+>  /* Static temperature channels (always present) */
+> -static const struct iio_chan_spec temp_channels[] = {
+> +static const struct iio_chan_spec temp_channels_no_events[] = {
+>  	SYSMON_CHAN_TEMP(0, SYSMON_TEMP_MAX, "temp"),
+>  	SYSMON_CHAN_TEMP(1, SYSMON_TEMP_MIN, "min"),
+>  	SYSMON_CHAN_TEMP(2, SYSMON_TEMP_MAX_MAX, "max_max"),
+>  	SYSMON_CHAN_TEMP(3, SYSMON_TEMP_MIN_MIN, "min_min"),
+>  };
+>  
+> +/* Static temperature channels with event support (when IRQ available) */
+> +static const struct iio_chan_spec temp_channels_with_events[] = {
+> +	SYSMON_CHAN_TEMP(0, SYSMON_TEMP_MAX, "temp"),
+> +	SYSMON_CHAN_TEMP(1, SYSMON_TEMP_MIN, "min"),
+> +	SYSMON_CHAN_TEMP(2, SYSMON_TEMP_MAX_MAX, "max_max"),
+> +	SYSMON_CHAN_TEMP(3, SYSMON_TEMP_MIN_MIN, "min_min"),
+> +	SYSMON_CHAN_TEMP_EVENT(4, SYSMON_ADDR_TEMP_EVENT, "temp",
+> +			      sysmon_temp_events),
+Is this not an event on channel 0?  Why does it need a separate one?
+> +	SYSMON_CHAN_TEMP_EVENT(5, SYSMON_ADDR_OT_EVENT, "ot",
+
+Why two separate channels for events? Are we dealing with two separate
+events on the same signal? Generally we don't support that for IIO because
+it's largely meaningless except in hwmon usecases - what is the point in two
+thresholds if they are reported through the same path?  Just use one and update
+it if you want to add another level of detection.
+
+> +			      sysmon_temp_events),
+> +};
+
+> +
+> +static int sysmon_read_event_config(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan,
+> +				    enum iio_event_type type,
+> +				    enum iio_event_direction dir)
+> +{
+> +	u32 alarm_event_mask = sysmon_get_event_mask(chan->address);
+> +	struct sysmon *sysmon = iio_priv(indio_dev);
+> +	unsigned int imr;
+> +	int config_value;
+> +	int ret;
+> +
+> +	ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* IMR bits are 1=masked, invert to get 1=enabled */
+> +	imr = ~imr;
+> +
+> +	switch (chan->type) {
+> +	case IIO_VOLTAGE:
+> +		config_value = sysmon_read_alarm_config(sysmon, chan->address);
+> +		if (config_value < 0)
+> +			return config_value;
+> +		return config_value && (imr & alarm_event_mask);
+> +
+> +	case IIO_TEMP:
+> +		return !!(imr & alarm_event_mask);
+
+Sashiko made a perhaps insightful observation here.  When the interrupt
+is masked between sending an event and the worker reenabling it does
+this give an unexpected value to userspace?  I think that condition
+we'd kind of expect this to return 0.
+https://sashiko.dev/#/patchset/20260611222738.2035062-1-salih.erim%40amd.com
+
+I think the rest of the feedback is probably false positives or debatable
+stuff but this one rang true. Please do take a look at the other stuff
+as I may have missed something (maybe the comment about needing to disable
+event interrupt generation is true?)
+
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+
+
+
+
+> +	
 
