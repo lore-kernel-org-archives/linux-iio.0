@@ -1,102 +1,104 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD693F7A84;
-	Fri, 12 Jun 2026 16:35:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F2F31F998;
+	Fri, 12 Jun 2026 16:49:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781282121; cv=none; b=VKnlMmAPNaSw62+pKO//dOdMNH2KrqMVsaSf1eJw3xI+TzcLQ6JKLRVmuO9beaotzO24Xm5qRoWTJPyh1tdbS5Yz162m2rvffALIISprciszNCYS6bVDWXh+XSYD004gcB0NDFHvQlXAmho6BEse6wO+od3YQrlbxF8V6WidOJw=
+	t=1781282946; cv=none; b=M3gXuWYbJOKY9uBdR0h/EwbEsNlMXGgbzRlbI8gpBzCh0nYIQtT3wbAe0hIHaPzKDdI05MnY0+IEmPHn0h6ynFqzsC20P7nzYSOx9LtB9CZa+9/joTXriHAWgpuxXMHpZ+O7OD4kXWNFfQgopeZE6LJgGymy0+5nEjO/YMdz7iY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781282121; c=relaxed/simple;
-	bh=QhO66wGa8dpax8QyyxAxAgJMNCsuTqfg6dhuXO9n2Y0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OeltYxp765UALZHDs+SKC4sl+nuXHt/v0NbHR8tHnLOQd8VNR3Oh0vw5lHk1DFbydlF5sMa/seRVbpEYcq0zCwXWnqDS7NhHB5XD8lM4UdhVSV+KPJmARmKCBkxsRccB8/NPWTC37kMZj2LUisGJm2Q7Dw4AtXvi65vNmrIJvTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dhR4/+K4; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781282946; c=relaxed/simple;
+	bh=bT9lRJt+dwm52f6uacmaifEuDH9YT7X/eCng14IOZ+E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nrojc0hY04ecogqVlzcBKcFKthy7d7BLNR82EpFwfU2pL+lS1Ec93OmcmK32T31PvS2/qwugf3aUMqx5Sf9pZBfPQMfalBgkcUGtYhne4eO3344OAc1kKbNsxJuWgylAmwoQAdRZv8QpqQTIq/1gJ1/TNMkufpqEawTc4XAZ80s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPaiYc6O; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dhR4/+K4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E50F1F000E9;
-	Fri, 12 Jun 2026 16:35:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPaiYc6O"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7A41F000E9;
+	Fri, 12 Jun 2026 16:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781282118;
-	bh=IE1t3ciRaWNCvOLYw1cgrR91YZzgxvGHt+e93lnNrU8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dhR4/+K45PIUkLy/v6GVNJzCz1LtznCgBv+FVXfMjYLexXYxBok+AXAVMFsY2s0DD
-	 x/+zP95F026+Unt95noeXJVg3+9yFuPk+KS1+Wkd5962sk+/HaRaUvIwxJAeoB7Xlc
-	 6uXrmGnPhs62KZX4JW1d2v83vZebBFoZ0JQxo6GZrvxSdrMhBl0cxAL8eY706uvb82
-	 U41v3/Dd00FTNhnnYkK/bxRYhr+9wQmHWclJPNQAgkC8b1WoVPPhyGvgR8GyXWz6KD
-	 IwDGYXT7MfmmbyBk9oZlQTOxxLPnRZIheDtmEHwzTQ0xUhTlZUC5ipRSd1yoTKD+jN
-	 1QRIfwXvn8Tsw==
-Date: Fri, 12 Jun 2026 17:35:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Siratul Islam <email@sirat.me>, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: magnetometer: add driver for QST QMC5883L
- Sensor
-Message-ID: <20260612173509.2d10b77e@jic23-huawei>
-In-Reply-To: <20260612154922.00003723@gmail.com>
+	s=k20260515; t=1781282945;
+	bh=S832i2jSNg4cBamp8N6WT5Eh3SFFvEOMTQE4vCId6qk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=PPaiYc6OrwfmbXE6Vf5bZxB+lEU6BNsq52xUoEUdYTE1fbMFIZMcygF1r2KJSIckI
+	 VpDupvgYar7fFpHTheMQHDvAhgWiVQqmR7xr2LVuFuEMq2lQIS4Y/xpE8Jv9VdvvRf
+	 k5NP13iooljPo6caPprKmTGyMRI1bgVBtdBI9wLGR8CDGeApoc9liY3o9zggLnJLcE
+	 PdxKx1JfoNHYH6zISI9yG/0yeJ8uFqWwet+8ASHZtJ7D3taE56OMPF9mqK6w5qYgmo
+	 0wCed+MN2vmoRpvznQle1utLKnIX3Gmq3qnAUttAbMoelAPj77qIgorl9UCn7DC5p8
+	 VUWN6mguoHx4g==
+Date: Fri, 12 Jun 2026 17:49:01 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Siratul Islam <email@sirat.me>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: add entry for qstcorp
+Message-ID: <20260612-kinsman-wind-ee21a6ca0fef@spud>
 References: <20260612124557.13750-1-email@sirat.me>
-	<20260612124557.13750-4-email@sirat.me>
-	<20260612154922.00003723@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+ <20260612124557.13750-2-email@sirat.me>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="5CjzBW7JmYQ5EH6Q"
+Content-Disposition: inline
+In-Reply-To: <20260612124557.13750-2-email@sirat.me>
 
 
-> 
-> > +	{
-> > +		/* 50ms headroom over the slowest ODR (10Hz) */
-> > +		ret = regmap_read_poll_timeout(data->regmap,
-> > +					       QMC5883L_REG_STATUS1, status,
-> > +					       (status & QMC5883L_STATUS_DRDY),
-> > +					       2 * USEC_PER_MSEC,
-> > +					       150 * USEC_PER_MSEC);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		if (status & QMC5883L_STATUS_OVL)
-> > +			return -ERANGE;  
-> 
-> Sashiko has a remark:
-> 
-> If we return -ERANGE here when the overflow flag (OVL) is set, does the
-> sensor get permanently stuck in an overflow state?
-> In typical I2C magnetometers, the Data Ready (DRDY) and Overflow (OVL)
-> status bits are only cleared by reading the data registers. By returning
-> early without reading the data registers via regmap_bulk_read(), the DRDY
-> and OVL flags might remain set indefinitely. 
-> On subsequent measurement attempts, regmap_read_poll_timeout() will return
-> immediately and this check will instantly fail again, potentially locking up
-> the sensor until a reset.
-> 
+--5CjzBW7JmYQ5EH6Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I was curious so checked the datasheet.
-https://www.qstcorp.com/upload/pdf/202512/13-52-04%20QMC5883L%20Datasheet%20Rev.%20B.pdf
+On Fri, Jun 12, 2026 at 06:45:25PM +0600, Siratul Islam wrote:
+> Add an entry for QST Corporation Limited
+>=20
+> Signed-off-by: Siratul Islam <email@sirat.me>
 
-Sashiko looses this time as overflow resets if the next value is in range.
+Link: https://www.qstcorp.com/
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-I'm with Sashiko for explicit access being needed for data ready (or a write 1 to clear)
-but overflow is more of an intermittent thing so both styles exist for devices
-(with and without need for specific action to clear).
 
-Jonathan
-> > +
-> > +		ret = regmap_bulk_read(data->regmap, QMC5883L_REG_X_LSB, buf,
-> > +				       sizeof(buf));
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		*val = (s16)le16_to_cpu(buf[index]);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
+Cheers,
+Conor.
+=02
+
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
+umentation/devicetree/bindings/vendor-prefixes.yaml
+> index 28784d66ae7b..11aac47f90ce 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -1355,6 +1355,8 @@ patternProperties:
+>      description: Shenzhen QiShenglong Industrialist Co., Ltd.
+>    "^qnap,.*":
+>      description: QNAP Systems, Inc.
+> +  "^qstcorp,.*":
+> +    description: QST Corporation Limited
+>    "^quanta,.*":
+>      description: Quanta Computer Inc.
+>    "^radxa,.*":
+> --=20
+> 2.54.0
+>=20
+
+--5CjzBW7JmYQ5EH6Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaiw4fQAKCRB4tDGHoIJi
+0jSMAP9Z2ImdyL4CMc4szu9odY8gpkujm+mcZ0ZSzAqUUrnewQEA0LHzFy+gwFiL
+rSsofo/4p2hLZnFFv9zhE+WUQq8r7g0=
+=X33N
+-----END PGP SIGNATURE-----
+
+--5CjzBW7JmYQ5EH6Q--
