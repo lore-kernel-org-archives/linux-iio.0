@@ -1,43 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9BCA38E8C3;
-	Fri, 12 Jun 2026 17:44:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D5633CEA7;
+	Fri, 12 Jun 2026 17:47:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781286292; cv=none; b=QeSzUcwBlaZh3Brmgkeu2qUYmlC5D0hHP6Uw6vHfNEbkf2/rboEQVCrJE4QVpYwphIFgFYtZGz84Cl6bNx6TSUAmewnUdSVVCRFLl9Lnb7mlo8G3q0EQISGjm8vywJg5fw2J9ywnFb8qhIWg8+cCI+FDFlge5Ue151L1WCwBXDc=
+	t=1781286460; cv=none; b=CXdupW7vNTIqqCLXVMVkqaEMacEaDnAYJOfZm3DARYX5RtY76MI3c+dVlooaOEzPVxbXV1BobbvdXp0mZNk3/cJKMbj7UDCe2Gub6MS3JjhsFiAlWIq7u3/oFxVPxAX7EmpG6RfEBPW1W7R9bStUawMSo+Lx4STy0eaaNwvj5/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781286292; c=relaxed/simple;
-	bh=vMkt3r8xxEC4zTyLP/nj1AjH8MMnvnZetJTlaCvH2ac=;
+	s=arc-20240116; t=1781286460; c=relaxed/simple;
+	bh=8oIhSfDEBAL5PNUzU+kQvWvCMy0RABzWiIVT1xpfcPo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N0cd7LD+OW0V9ogDfQiGfFQyQMGyiV4Eq3e/fs7Tg8QnprVI0cxC1t/uWZP4RHqJPArSTHwR9bsM51Ggdu3d5mQaRNd3P713B91QztPe2nibZ8Jo8EdfHhIYOG9olxkwSRBv1raSr9eyfC1XxtbWMufB/vK+nX2XVQ0Z4h9bqII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N6mp8dgG; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=PGS99nxDwNiBJTPNLeeusA7sjwmqay7pIrwYLkSEWVcCLzbK8EgfEDUioAuqwwAnVooyeoM8+bRnmIspekH+ol+lmvSkHLGLIOZbVKSeatzoe9ZxtkSpzKqajlM+kDDxbbQhHNNSUhTesfsekWWFBSZVVu84PMoKp56CbLPW59A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gEo822KC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N6mp8dgG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1368F1F000E9;
-	Fri, 12 Jun 2026 17:44:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gEo822KC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A1F1F000E9;
+	Fri, 12 Jun 2026 17:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781286291;
-	bh=/9huSYuQ0my0GKsr+0l57cbc554pe/WnQvStQwuz3Ns=;
+	s=k20260515; t=1781286458;
+	bh=8u++oG2ZPjZsczXp4b3WPdxtDV26Zx4lTOT+5rxQeFU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=N6mp8dgGDyjQZw2/W4nMs6Qmw+JTAswr9iYX9tto1LXtC74PuzMOCq+8ZPX6V1s2H
-	 79ltTg0zpU4iCs3HrsVEmuXD+U3Ee//yJYipYEEGO6qWxu4PrWyRUWPg7GHgn0EYa0
-	 LM4SoMVLd+4nDVAb2Scab824i0J4smye63rbfJgUNg944y7k+nR2kdS2SqJYrzUU+2
-	 a4G9ndbrUiYJGSgqA4q+jQ31v2oQjXSi5PXtQ+0/Yb4yPUP4MUEK81Vs3XocjaCzQZ
-	 p4TlxuYQaVA7uB4EmzyACAj5PqlwgjyQxGGgu24iB+h/RRfunyKbeoSg6+gMw356rx
-	 xhsFMAVDki7Xw==
-Date: Fri, 12 Jun 2026 18:44:45 +0100
+	b=gEo822KCcn5Z++ECtm/9tP4Gt2nZV7ofls05wm/uwfS5cb8T6SzTQZDfmYNNl8nzU
+	 eeATQatsle8Q+qvApmmGP5qPNqsbARlPRiodYBD5OJQR9Jse0f1VYXUdhyDuG0iuiO
+	 ToUHuGZH1ozsiHmxsLlv4smYJYO/u/nvCQpq0/gCdoRl0umBZDWaOIvA1ot9h0fGkA
+	 H/LNN8FSHtuZKE3RfedJ7vQKxUaoe/anZ9Gl4Dx+93EvRTQwauVU/UGxrdZHer61db
+	 UTE9fu4FIM2WT4/AjRzTg5mvwO6DvSc1gaS8VBzeysQB1itWgPagVizfLLeLZ+Rq2p
+	 4ifuaBwGClBUA==
+Date: Fri, 12 Jun 2026 18:47:29 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Siratul Islam <email@sirat.me>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: proximity: cleanup fixes for vl53l1x-i2c
-Message-ID: <20260612184445.124d0119@jic23-huawei>
-In-Reply-To: <aisLMs0Y5na9G-Qc@ashevche-desk.local>
-References: <20260611134245.30042-1-email@sirat.me>
-	<20260611134245.30042-3-email@sirat.me>
-	<aisLMs0Y5na9G-Qc@ashevche-desk.local>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Wadim Mueller <wafgo01@gmail.com>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Marcelo Schmitt
+ <marcelo.schmitt1@gmail.com>, Rodrigo Alencar
+ <455.rodrigo.alencar@gmail.com>
+Subject: Re: [PATCH v4 4/4] iio: flow: add Sensirion SLF3S liquid flow
+ sensor driver
+Message-ID: <20260612184729.795e0e84@jic23-huawei>
+In-Reply-To: <e01d100b-9809-4af3-8f21-055f687ca6c6@kernel.org>
+References: <20260611132700.671322-1-wafgo01@gmail.com>
+	<20260611132700.671322-5-wafgo01@gmail.com>
+	<e01d100b-9809-4af3-8f21-055f687ca6c6@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,50 +54,26 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 11 Jun 2026 22:23:30 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, 11 Jun 2026 16:01:12 +0200
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> On Thu, Jun 11, 2026 at 07:42:30PM +0600, Siratul Islam wrote:
-> > Extract data-ready polling into a helper, fix regmap_read_poll_timeout()
-> > argument alignment, and add field definitions for BIT(0).
-> > No functional changes.  
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-> ...
-> 
-> > +static int vl53l1x_wait_data_ready(struct vl53l1x_data *data)
-> > +{
-> > +	unsigned int val;
+> On 11/06/2026 15:27, Wadim Mueller wrote:
 > > +
-> > +	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
-> > +	return regmap_read_poll_timeout(data->regmap,
-> > +					VL53L1X_REG_GPIO__TIO_HV_STATUS,
-> > +					val, (val & VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY) !=
-> > +					data->gpio_polarity,  
+> > +static const struct of_device_id slf3s_of_match[] = {
+> > +	{ .compatible = "sensirion,slf3s-0600f", .data = &slf3s_variants[0] },
+> > +	{ .compatible = "sensirion,slf3s-1300f", .data = &slf3s_variants[1] },
+> > +	{ .compatible = "sensirion,slf3s-4000b", .data = &slf3s_variants[2] },  
 > 
-> I would put it this way
-> 					val,
-> 					(val & VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY) != data->gpio_polarity,
+> You should have only 1300f here and detect the variants. That was my
+> point when I suggested to use the fallback.
 > 
-> but it goes over even 100! So up to Jonathan.
-It's ugly whatever we do but 100 is too fa.  This may be a case for just not aligning with the bracket.
 
-	return regmap_read_poll_timeout(data->regmap,
-		VL53L1X_REG_GPIO__TIO_HV_STATUS, val,
-		(val & VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY) != data->gpio_polarity,  
-		1 * USEC_PER_MSEC, 1 * USEC_PER_SEC);
+I'm lost. How does that work?  They cannot fallback to that part because
+it relies on in driver detection of the fact that they are incompatible.
+
+Jonathan
 
 
-or at least avoiding the mix of a full parameter and half of next one lin line.
-	return regmap_read_poll_timeout(data->regmap,
-					VL53L1X_REG_GPIO__TIO_HV_STATUS,
-					val,
-					(val & VL53L1X_GPIO__TIO_HV_STATUS_DATA_READY) !=
-					data->gpio_polarity,
-					1 * USEC_PER_MSEC, 1 * USEC_PER_SEC);
-
-I think I'd go with the first option of just not aligning after the bracket.
-}  
-> 
+> Best regards,
+> Krzysztof
 
