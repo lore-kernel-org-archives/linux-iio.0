@@ -1,213 +1,170 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28778279DAF;
-	Fri, 12 Jun 2026 22:00:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0DE43002CF
+	for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 22:47:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781301641; cv=none; b=BrF6q1N4hlLTuKxUVl4snIuYHjfEzUtE4KIupFNfAWYitcol3IbkW3w1YiC72vDEBj9kUne13R7yqICAdake6IWQ499B5JnLMLXD1KQ+puDMD/rKDiucXI11NQfNU5ujo5y/PUizGSRuF/yAdR5r85o06cjUAkAExNpVuLBotF0=
+	t=1781304423; cv=none; b=io0g1kf++B00nv2coJezf+6zea8LFeHIEWTjHoARktrNxGGHzUCZWNmmQQ8p2+poFuNxkU+JAk7DC7ECUiI5r8B2f2AFOyVZ7aLCt+JsiJOfaHBGb6VmMtGZu0MqSE5j3v6KSJEAGB5uUvd39OXVehQYFMrULpg5rvz59uJwXc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781301641; c=relaxed/simple;
-	bh=wlf9ZQnOV85DoqcF1uIAIGioOBiU+efF3Efz8F5pQ1I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OTcuK3C/4dqId+3nBeENoefJHTC/qNAYtgsLtOTXlAap+Qd0BjaNh/HrQ1NCA0Xjhy8kyO/wqsLH33QVdY0L3J7xOooprD5GFJXj3nMDKr7nJLBv/g7Vw2a4omIK1JPOR764b7VRqRCTrrrmUXqbdiuVHsQxQ0A6nLMGWiotLiA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L5XuX0zQ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781304423; c=relaxed/simple;
+	bh=DnQqRk8Wr3CWD8K3b2VzKXlVynzHi8xJBBFO2aUAQTw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=EZrOmmOkEuyfy68GbUUZwsIsoFpFHuqvlKPt+0H8dKG929IEozOlRQlXyS+f3o4hBwSBDK4mmChxDBp+Hd2c+UFQBOzsXKEvReSlFzdnipLGLgvMcrOZ3Do48ltsCL9w6KhqMSwR3raSuS6ykTaBcWz4Vah1hNWd2X/CjdS5z2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F2dDb9UD; arc=none smtp.client-ip=209.85.221.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L5XuX0zQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B8201F000E9;
-	Fri, 12 Jun 2026 22:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781301639;
-	bh=D+YSTYoQ7GqxqAcW6PUBkEPM5pJV9AVmonvuxFY/zts=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=L5XuX0zQInySl+v2Y6jt8M81H5uOu3ky/3e3VsMMS4h96B/NwrkuoEH5N+X58Vmca
-	 B15KOYcenCPD7kqVVAwMkNIKnkpEdNgneFuZWJp8f4772dQho+O1A0j3CCjdXOkLo+
-	 A3e2Q7jrzPx7ugdHu8bW+JxI5J2qTQDeb+vtXioNu2cYhht3vKPDk6f+SxyQVClMEF
-	 MaF3BZwZ8PJ6wXisQSi92AwKipVwDbAgKrvmxZ3NsvJ3onu9rBEa4kmqYNp6E22emT
-	 MlCRxxI03RZkzw5ujGviOqqo+3MYgu0gqr5WRcTxJKi1kusHsN/orY5xegobv3k+dK
-	 pgNmri53ae/tQ==
-Date: Fri, 12 Jun 2026 23:00:35 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Wadim Mueller <wafgo01@gmail.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Maxwell Doose <m32285159@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: flow: add Sensirion SLF3S
- liquid flow sensor
-Message-ID: <20260612-engraved-graves-6ff82d41d68e@spud>
-References: <20260530205435.37326-1-wafgo01@gmail.com>
- <20260530205435.37326-3-wafgo01@gmail.com>
- <20260601-banana-narwhal-of-music-0b4d3a@quoll>
- <20260601150959.49bbf125@jic23-huawei>
- <1dbd3ab3-de6c-44dd-8100-e8ee60f558c8@kernel.org>
- <20260604100304.11d0e003@jic23-huawei>
- <200a6c34-3321-4c2c-9746-52348e700cd9@kernel.org>
- <20260605132135.141422d8@jic23-huawei>
- <20260607-quixotic-steel-puma-133410@quoll>
- <20260612190543.34d90b87@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F2dDb9UD"
+Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-59be89d310aso1511524e0c.0
+        for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 15:47:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781304421; x=1781909221; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=jPinIBTvadn6Wv8oxclaLI9sZqTMC+eS72l1Gak81fk=;
+        b=F2dDb9UDuHSQP0ItNP+xI2ylfUd3azMotZ3Xc7DWDo0wzpRjSPqhsfHerV5TzNaADG
+         ar8woOvvc1rRGwxNeDYfzS/bOX92wIG21MTaYQWDbXQ7SINYEuQsx9H2N9ShYM877WtY
+         WYRprkBYIWlfnlyiD9ACJYfGw+cDAXBi8rDOV2zsiE9nf3HdHtGxHLs88MWdaCHBioZU
+         zMpWjE1zMWbOZgFbI167WwN+Z9WfjoM9f8RBKCxjhPv9BXwhMDvBBR8mAZcjAkvPyWOg
+         2s1h6bDF5Drfolf+jUftAI229ECze52jiB2QbTyTfGYEsOhy5491BMtVao/W63+A0cY0
+         s6IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781304421; x=1781909221;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jPinIBTvadn6Wv8oxclaLI9sZqTMC+eS72l1Gak81fk=;
+        b=ZAtjh6hnYpb477JKDgiyLpDbR/uOCInaTs755xvI5AWN1SfqkIw3+uCaWytVgaemrE
+         pEGb93Zj/wZDuLbqaEr3JLmVNbSwMq/7dVlQPEszqbGbApA4EG0sgdO8dJBEpvgl9iU9
+         jVIXiurraDdDEsrhYxRfai7KLa3qpyhhDrkq+Lh7jkEqkd5QAPUQz3z/di5EO2BTWEaT
+         V8BqgSuvcyftIZ+0NpSJV/GcG1lcqIZtaGPifougJQrzS/pl7W6EFt2n2c+Vn1gqmQ2l
+         RvcE7TwLTLYV+5kPy/J2bZMh9fI5UpaaMp6WXNIovni0jVWKWithhVMydEBNQexvrfiP
+         XCWQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8dGey6pz/pzxvEpbsfgelRFsHQr4f/7Napb2QDC+npvlTVhpuuM5znFIo41ltKyBwluP8RJBcItmo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz4u2147/NWFmkrqIEEr2VT1TGRuNaKduFzJNPKKNu94lQxpag/
+	QzQgVFpYf6c70Wy5u1bu6yqqtOOg4EvaS8AipwOMI6L4SBtrDH7xrGmF
+X-Gm-Gg: Acq92OHauQcUHHrEDY5SVkoYwu8ahXt1lEPlbUOmjMYG6DUMJJF0kEe9SGkDeoE1eTv
+	PHdG86HwsZQVUulDr/xEnFDkyR3Rbf9rsajDuKltiNLsvUbbwo0VJMFFoKgyq4yeeKnrMjTtVh9
+	ihYAgUZ7q5QAF+DUTA51UyOg830zwTYKUQGrinTP4UGCbsoLSAX3dJNg79sUYDstlJJ9diojkPi
+	OZMwrFo29tQjdRD5E8VolGLYc4/uPB/kiQVSv+Wp5N4jyt6xuj2AsCs2N6zdTLz/jfFhmpt1QKH
+	PWRqaIQ3UrEV8oI1hkGkK0ewtOf2SWO26P53Q4YqGy5ieHrg6CblIC6mKAPvuAYq1zZ/K9qhPnA
+	xHZe+DgqtS0dDC7dzgs+TFSJaYF/sflwCyjr01jzFEX3Hv097UHV4NRhDkpuzwcj/owog56fW6o
+	nEgXtCL6O3eLiwh5p8s3pdFg==
+X-Received: by 2002:ac5:c0c9:0:b0:59c:627b:8425 with SMTP id 71dfb90a1353d-5bb6a20c818mr1891552e0c.10.1781304420670;
+        Fri, 12 Jun 2026 15:47:00 -0700 (PDT)
+Received: from [192.168.100.6] ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bb691fd8adsm4244553e0c.13.2026.06.12.15.46.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jun 2026 15:47:00 -0700 (PDT)
+From: Kurt Borja <kuurtb@gmail.com>
+Subject: [PATCH 0/5] iio: adc: Add TI ADS126X ADC family support
+Date: Fri, 12 Jun 2026 17:46:18 -0500
+Message-Id: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="2ecldXCkI3oxCYD8"
-Content-Disposition: inline
-In-Reply-To: <20260612190543.34d90b87@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1NDQyNL3cSUYkMjswrdtCQzQwNzUwPT5MRUJaDqgqLUtMwKsEnRsbW1AEJ
+ Wc4ZZAAAA
+X-Change-ID: 20251129-ads126x-fb6107505cae
+To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+ Bartosz Golaszewski <brgl@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, Kurt Borja <kuurtb@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2823; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=DnQqRk8Wr3CWD8K3b2VzKXlVynzHi8xJBBFO2aUAQTw=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFk6PSEvDK5L/5u+Ol4odc5EIRk1ljh9gcUGlyb32k3+f
+ Yex4U53RykLgxgXg6yYIkt7wqJvj6Ly3vodCL0PM4eVCWQIAxenAEzEaykjw7LT5VwlE576GuQa
+ 3GN7n9l58b9ajESEs8ybKLty16nrgxkZLgkdjwnYy76p89nThz15b4qnC+n/F77VKt38ueiUxBE
+ tTgA=
+X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
+ fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
+Hi all,
 
---2ecldXCkI3oxCYD8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series introduces support for TI ADS1262 and ADS1263 ADCs [1].
+These devices are very similar (if not the same), except ADS1263
+includes a secondary auxiliary ADC.
 
-On Fri, Jun 12, 2026 at 07:05:43PM +0100, Jonathan Cameron wrote:
-> On Sun, 7 Jun 2026 10:30:07 +0200
-> Krzysztof Kozlowski <krzk@kernel.org> wrote:
->=20
-> > On Fri, Jun 05, 2026 at 01:21:35PM +0100, Jonathan Cameron wrote:
-> > > On Thu, 4 Jun 2026 13:22:17 +0200
-> > > Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > >  =20
-> > > > On 04/06/2026 11:03, Jonathan Cameron wrote: =20
-> > > > > On Wed, 3 Jun 2026 16:29:10 +0200
-> > > > > Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > > > >    =20
-> > > > >> On 01/06/2026 16:09, Jonathan Cameron wrote:   =20
-> > > > >>> On Mon, 1 Jun 2026 13:53:23 +0200
-> > > > >>> Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> > > > >>>      =20
-> > > > >>>> On Sat, May 30, 2026 at 10:54:31PM +0200, Wadim Mueller wrote:=
-     =20
-> > > > >>>>> Document the bindings for the Sensirion SLF3S family of digit=
-al
-> > > > >>>>> liquid-flow sensors on I2C.  The family currently covers the
-> > > > >>>>> SLF3S-0600F, SLF3S-1300F and SLF3S-4000B variants.
-> > > > >>>>>
-> > > > >>>>> The driver auto-detects the variant from the product-informat=
-ion
-> > > > >>>>> register at probe time; the per-variant compatible strings ex=
-ist
-> > > > >>>>> for documentation and dt_binding_check purposes.       =20
-> > > > >>>>
-> > > > >>>> Here...
-> > > > >>>>     =20
-> > > > >>>>> +description:
-> > > > >>>>> +  Family of digital liquid-flow sensors from Sensirion with =
-I2C
-> > > > >>>>> +  interface.  All family members share the same register map=
-; sub-types
-> > > > >>>>> +  differ only in the flow scale factor and the calibrated me=
-asurement
-> > > > >>>>> +  range, both of which are detected at probe time via the
-> > > > >>>>> +  product-information register.       =20
-> > > > >>>>
-> > > > >>>> And here...
-> > > > >>>>     =20
-> > > > >>>>> +
-> > > > >>>>> +properties:
-> > > > >>>>> +  compatible:
-> > > > >>>>> +    enum:
-> > > > >>>>> +      - sensirion,slf3s-0600f
-> > > > >>>>> +      - sensirion,slf3s-1300f
-> > > > >>>>> +      - sensirion,slf3s-4000b       =20
-> > > > >>>>
-> > > > >>>> And here something else. Confusing. Didn't you say device vari=
-ants are
-> > > > >>>> auto-detectable? So you have only one compatible sensirion,slf=
-3s.     =20
-> > > > >>>
-> > > > >>> And then future fallback compatibles can never work.=20
-> > > > >>> Basically as far as I have ever been able to establish this is =
-why
-> > > > >>> generic compatibles are almost always the wrong way to go.
-> > > > >>>
-> > > > >>> If we get a future part with an unknown ID and don't have these=
- existing
-> > > > >>> specific compatibles, then we have no way to specify which one =
-it is     =20
-> > > > >>
-> > > > >> But why would you have future part with unknown ID?   =20
-> > > > >=20
-> > > > > That's what manufacturers do on a very frequent basis.  They twea=
-k something
-> > > > > that has no affect on the interface or channel scaling etc and re=
-lease a new part
-> > > > > with a different ID.  Can be something like a part suited to diff=
-erent operating
-> > > > > conditions, or with a different supply tolerance.   =20
-> > > >=20
-> > > > and it will have a different, known that time ID. How could be "unk=
-nown"? =20
-> > >=20
-> > > Known to us, sure, know to old kernel (or other software), not so muc=
-h.
-> > > For this sort of driver the main use of fallback compatibles is to wo=
-rk on
-> > > a not yet aware kernel. =20
-> >=20
-> > So you mean a case that sometime in the future, someone will write a DTS
-> > with sensirion,slf3s fallback for a sensirion,slf3s-WAHTEVER_NEW_MODEL,=
- use
-> > old kernel and be surprised it does not work?
->=20
-> To me that is exactly what a fallback compatible is promising - if we have
-> any kernel / driver that supports the part that we are saying is a valid
-> fallback then we are saying we support at least the functionality of that
-> part (sure there may be extra stuff that doesn't work)
->=20
-> We had a long discussion a few years back on whether code that did
->=20
-> 	if (read_reg_whoami() !=3D EXPECTED_ID)
-> 		return -ENODEV;
->=20
-> was correct. Someone (maybe Rob?) strongly argued that we must not
-> do that because it effectively made fallbacks pointless as we always
-> needed to upgrade the driver. I argued against this (on basis that
-> swapping in incompatible parts is annoyingly common) but was eventually
-> persuaded.
->=20
-> If that is not a valid reading of what fallback compatibles mean, is
-> there any documentation of the rules I can refer to?
->=20
-> >=20
-> > Our goal is not to stop whatever poor code people can ever come up with.
-> >=20
-> > Every future user wanting to the fallback MUST understand what the
-> > fallback means.
->=20
-> This is where we disagree.
->=20
-> This is not hard to support, it just means not using generic compatibles
-> when the device differ (and they are not self describing which these are
-> not).
+The main ADC has quite a few features supported the main driver
+(ti-ads1262), including:
 
-FWIW, I think the no generic compatible approach is reasonable.
-The devices might be able to self-identify, but the featureset is not
-discoverable, which makes the self-identification much less valuable.
-Permitting drop-in replacement parts (or knock off devices from other
-manufacturers etc) to use a compatible device as a fallback seems to me
-exactly what fallbacks are intended for.
+  - Power management
+  - IIO direct and buffer modes
+  - Channel hot-reloading
+  - Internal or external oscillator
+  - Internal or external voltage reference
+  - Filter configuration
+  - Sensor bias configuration
+  - IDAC configuration
+  - Level-shift voltage configuration
+  - Manual calibration support
+  - GPIO controller capabilities
 
-If the driver has to be updated every time a new device is created then
-I think a generic compatible has effectively no value.
+I plan to add these features to the main driver soon:
 
---2ecldXCkI3oxCYD8
-Content-Type: application/pgp-signature; name="signature.asc"
+  - SPI offload support (38400 SPS turns out to be too high for some
+    systems)
+  - User triggered, automatic calibration (Datasheet 9.4.9)
 
------BEGIN PGP SIGNATURE-----
+Additionally, full support for the (less capable) auxiliary ADC is
+introduced by the auxiliary ti-ads1263-adc2 driver included in this
+series.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaiyBgwAKCRB4tDGHoIJi
-0p28AP9XOSHQnbHHjhRjTvlneq0BUeJFGPwNagekD+j0yVA5JgD/RF3ZeQWplfvK
-kpDJA8GrSRLVp6jhZAyabO+COPB/6gI=
-=JqHC
------END PGP SIGNATURE-----
+The auxiliary ADC operates almost completely independent of the main
+ADC. The only consideration that has to be taken for interoperability is
+when reading conversion data in direct mode (Datasheet 9.4.7.1), which
+happens only in buffer mode, when multiple channels are enabled.
 
---2ecldXCkI3oxCYD8--
+When reading data in direct mode, all SPI activity is forbidden between
+the data-ready signal and the data retrieval. To achieve this a second
+mutex called xfer_lock was introduced to block SPI activity on the
+device.
+
+This is one of the biggest drivers I've developed, so I hope the code
+and the comments are self-explainatory. If not, please let me know so I
+can clarify them.
+
+As always, thanks for your reviews and help. Submitting upstream is
+always a great learning experience :)
+
+[1] https://www.ti.com/lit/ds/symlink/ads1263.pdf
+
+Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+---
+Kurt Borja (5):
+      dt-bindings: iio: adc: Add TI ADS126x ADC family
+      iio: adc: Add ti-ads1262 driver
+      iio: adc: ti-ads1262: Add GPIO controller support
+      iio: adc: ti-ads1262: Add calibration support
+      iio: adc: Add ti-ads1263-adc2 driver
+
+ .../devicetree/bindings/iio/adc/ti,ads1262.yaml    |  308 +++
+ .../bindings/iio/adc/ti,ads1263-adc2.yaml          |   49 +
+ MAINTAINERS                                        |   10 +
+ drivers/iio/adc/Kconfig                            |   26 +
+ drivers/iio/adc/Makefile                           |    2 +
+ drivers/iio/adc/ti-ads1262.c                       | 2180 ++++++++++++++++++++
+ drivers/iio/adc/ti-ads1262.h                       |   39 +
+ drivers/iio/adc/ti-ads1263-adc2.c                  |  470 +++++
+ 8 files changed, 3084 insertions(+)
+---
+base-commit: ae696dfa47c30016cd429b9db5e70b259b8f509e
+change-id: 20251129-ads126x-fb6107505cae
+
+-- 
+Thanks, 
+ ~ Kurt
+
