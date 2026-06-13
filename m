@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17C03ACF17;
-	Sat, 13 Jun 2026 10:09:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE8623B9610;
+	Sat, 13 Jun 2026 10:10:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781345383; cv=none; b=qv+6sDHVl1EWRXzVhKqQggNR6e0M0Jec+sCAix06cKyqCiYBpCpr81D8uJKxahd93I3lSvLkLsTRvKZnC5IvjnPq0WKFRXCGpASpiN3PZqJsKNRR+SnKHWd5GuXA9F9yN7XQ2fwzH7oIdQUXL7brzIAOqYRjZRMsxkcqy9ALePE=
+	t=1781345453; cv=none; b=ctbiY3R/ysw49Sk0ATQjzZYnW6TPoP5gpnwrUrAvNzXtiVBz99stwVPqU3IO/dLGNvqF2j8Pr5QTnTq6SnQ1m/kOX/pBaiPM3y1t8i/WzA7eRE2fJByma6snIlnmvXoZw9NTXsYF8YcxPNNR1p+P6s0IP0JDKtamx8JIuQ1n5Kk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781345383; c=relaxed/simple;
-	bh=LRCJuzdgcnepvht2bWBT+iKICZzGD3zNXigrl8GmM0M=;
+	s=arc-20240116; t=1781345453; c=relaxed/simple;
+	bh=3gSgCjGDyTONWM6UlfUTvK+FThXio/Ud8bdvqljEYhs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KMi2u1SOnClX3zCaQgR15wVrDqKnFw6PNqqmPvQ+qn+L6jdUkDryz5Ukh1KVnI04soAF2rtStEJIF97oCthAzHmXhhu3ZB5OwrP1fvT5pFGMixGMBkvQmEfxBNyDyg/n8gHVPgvyxGJp6UqbpoRVN5ItzbQGcWuvasDLKRWmPgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJW6+Ahi; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=oyAenYFRHmAYJhjPlGJqKk+Omz/uETMtE8wXndgl7Q/w2gR44WNGAe8j615o1U9tb+iMNClWtcQ1Mg1dnuiwbgZtkwKAu9/UmVzK8cBPoiVd3KCIusWNDlCAnu1IZ8f/sd7bXe8yp6rXxCjKzQBI08aabtVrew7OlLCm/MLOsTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hOVO8/m0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJW6+Ahi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 380091F000E9;
-	Sat, 13 Jun 2026 10:09:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hOVO8/m0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 635D01F000E9;
+	Sat, 13 Jun 2026 10:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781345380;
-	bh=P0BXYzjr6w3+jMq0yJXiRdx6FfTaAxNl+69lgFc2F8I=;
+	s=k20260515; t=1781345450;
+	bh=56MO/PWG6Ib9yUFU34ThnLS9zPVnZVEboAJqbyCYvEA=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=XJW6+AhicnUYOl3N/Dzk15xgcsI8aNcbwr49UynaoV3W4bH06gntgEoRkTwEthGe4
-	 Hk+koZqHRBoLVDO2W09cbHsrAMAvaNNYdSR5ukgaq07Wd4dEOtI1S4U561eU8fh0Tm
-	 fjiTLKFzq6WzOyZEyWwDBFv6Ka6jQS4TO05lfrkhzjm4utpQv3axEosdhkdhPaCJs6
-	 Aapbxm2654LCsnHqr1ckZXWYIhhvmgJLVEP+uqnQ2nuKELFMXB4axdLZaM9Ox7V7j8
-	 fAGioQtAJVar6lzDdQd2cAKg4aeNkN2IzECOmqKeyIn/wkP/Y9PrcIRNDP2KOmi+os
-	 9t1BOraK/eR1w==
-Message-ID: <77f52421-42ea-499a-aa57-a834825a8829@kernel.org>
-Date: Sat, 13 Jun 2026 13:09:31 +0300
+	b=hOVO8/m0hHnWg8qAspMgvmR4pQMkWX/m9xr62Nfgk48m/5xvnislE17EhHGh8K6Jh
+	 1zt/RXuS5APwl8xBw5WTTgoli/a8FR17H8urDmsBVbc/tZ47LbdU3WYdO7MR1qFGsc
+	 tpreSli1keARbtaD3/MW7BWEQw7HGdDfhbNVdD6DrdbdJsnW1driRnpUK8YSUB8TPO
+	 S9p6o6KaV054JhdWC1RcLeK+uKCfNHvDTxcZbeEmZTLA/haSFo1vwxLap2dppAIPzD
+	 1R66nk2TsIXDHPJO3PjrJWZPbxzM0/e/jj4AHSt4Ipp1Rt5N2fLb3DDJkGkQ/dstEZ
+	 y5obb0p+8BpYg==
+Message-ID: <d94f5548-9621-4e9b-afba-1835d95799d2@kernel.org>
+Date: Sat, 13 Jun 2026 13:10:46 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iio: adc: lpc32xx: Initialize completion before
+Subject: Re: [PATCH 2/2] iio: adc: spear: Initialize completion before
  requesting IRQ
 To: Maxwell Doose <m32285159@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
  David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
@@ -49,31 +49,31 @@ To: Maxwell Doose <m32285159@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
 Cc: Sangyun Kim <sangyun.kim@snu.ac.kr>,
  Kyungwook Boo <bookyungwook@gmail.com>, Jaeyoung Chung <jjy600901@snu.ac.kr>
 References: <20260613005812.160572-1-m32285159@gmail.com>
- <20260613005812.160572-2-m32285159@gmail.com>
+ <20260613005812.160572-3-m32285159@gmail.com>
 From: Vladimir Zapolskiy <vz@kernel.org>
-In-Reply-To: <20260613005812.160572-2-m32285159@gmail.com>
+In-Reply-To: <20260613005812.160572-3-m32285159@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 6/13/26 03:58, Maxwell Doose wrote:
 > In the report from Jaeyoung Chung:
 > 
-> "lpc32xx_adc_probe() in drivers/iio/adc/lpc32xx_adc.c registers its
+> "spear_adc_probe() in drivers/iio/adc/spear_adc.c registers its
 > interrupt handler with devm_request_irq() before it initializes
 > st->completion with init_completion(). If an interrupt arrives after
 > devm_request_irq() and before init_completion(), the handler calls
 > complete() on an uninitialized completion, causing a kernel panic.
 > 
-> The probe path, in lpc32xx_adc_probe():
+> The probe path, in spear_adc_probe():
 > 
 >      iodev = devm_iio_device_alloc(&pdev->dev, sizeof(*st)); /* st kzalloc-zeroed */
 >      ...
->      retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
+>      retval = devm_request_irq(&pdev->dev, irq, spear_adc_isr, 0,
 >                                LPC32XXAD_NAME, st);           /* register handler */
 >      ...
 >      init_completion(&st->completion);                       /* initialize completion */
 > 
-> lpc32xx_adc_isr() calls complete():
+> spear_adc_isr() calls complete():
 > 
 >      complete(&st->completion);
 > 
@@ -86,38 +86,37 @@ On 6/13/26 03:58, Maxwell Doose wrote:
 > Fix the chance of a spurious IRQ causing an uninitialized pointer
 > dereference by moving init_completion() above devm_request_irq().
 > 
-> Fixes: 7901b2a1453e ("staging:iio:adc:lpc32xx rename local state structure to _state")
+> Fixes: b586e5d9eee0 ("staging:iio:adc:spear rename device specific state structure to _state")
 > Reported-by: Sangyun Kim <sangyun.kim@snu.ac.kr>
 > Reported-by: Kyungwook Boo <bookyungwook@gmail.com>
 > Reported-by: Jaeyoung Chung <jjy600901@snu.ac.kr>
 > Closes: https://lore.kernel.org/linux-iio/20260610115700.774689-1-jjy600901@snu.ac.kr/
 > Signed-off-by: Maxwell Doose <m32285159@gmail.com>
 > ---
->   drivers/iio/adc/lpc32xx_adc.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   drivers/iio/adc/spear_adc.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/lpc32xx_adc.c b/drivers/iio/adc/lpc32xx_adc.c
-> index 43a7bc8158b5..db3a602327ff 100644
-> --- a/drivers/iio/adc/lpc32xx_adc.c
-> +++ b/drivers/iio/adc/lpc32xx_adc.c
-> @@ -179,6 +179,8 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
->   	if (irq < 0)
->   		return irq;
+> diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
+> index 4be722406bb5..ab02a14682ed 100644
+> --- a/drivers/iio/adc/spear_adc.c
+> +++ b/drivers/iio/adc/spear_adc.c
+> @@ -283,6 +283,7 @@ static int spear_adc_probe(struct platform_device *pdev)
+>   	st = iio_priv(indio_dev);
+>   	st->dev = dev;
 >   
 > +	init_completion(&st->completion);
-> +
->   	retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
->   				  LPC32XXAD_NAME, st);
->   	if (retval < 0) {
-> @@ -197,8 +199,6 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+>   	mutex_init(&st->lock);
 >   
->   	platform_set_drvdata(pdev, iodev);
+>   	/*
+> @@ -329,8 +330,6 @@ static int spear_adc_probe(struct platform_device *pdev)
+>   
+>   	spear_adc_configure(st);
 >   
 > -	init_completion(&st->completion);
 > -
->   	iodev->name = LPC32XXAD_NAME;
->   	iodev->info = &lpc32xx_adc_iio_info;
->   	iodev->modes = INDIO_DIRECT_MODE;
+>   	indio_dev->name = SPEAR_ADC_MOD_NAME;
+>   	indio_dev->info = &spear_adc_info;
+>   	indio_dev->modes = INDIO_DIRECT_MODE;
 
 Reviewed-by: Vladimir Zapolskiy <vz@kernel.org>
 
