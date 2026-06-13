@@ -1,100 +1,126 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DD5F39B49E
-	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 08:57:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17C03ACF17;
+	Sat, 13 Jun 2026 10:09:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781341078; cv=none; b=NtoIoK2dgrDAK/FRmzbNQU4tLNnVYrLbq0VNt32L+pTC90h6+3yejHeqinjGSFx7pIr3vRPOJpEW55eZf+T4yt9IINGgfA4xAJWF6KfAlcWKYcbSPlP12/AqkSrq1MkgPHOTVJgDp9bff2kljDBahImAPu2ORmfhnNHSMwvlNss=
+	t=1781345383; cv=none; b=qv+6sDHVl1EWRXzVhKqQggNR6e0M0Jec+sCAix06cKyqCiYBpCpr81D8uJKxahd93I3lSvLkLsTRvKZnC5IvjnPq0WKFRXCGpASpiN3PZqJsKNRR+SnKHWd5GuXA9F9yN7XQ2fwzH7oIdQUXL7brzIAOqYRjZRMsxkcqy9ALePE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781341078; c=relaxed/simple;
-	bh=KxmEFsiaYYNkfspFB8uKNZ4vxVJa1iAcPyPU4pJgezM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Yr8gcMd2oxkyHgbWVnxoPqRo6rmfieifMfBS2v89tILiZgzV/tk/dYFEAg5p7RzPBeIRR3EACaFFx+NWaHMyhQhvW3PoXAnDX8MJoHdE3RCpa1ku5wnbYMwQNB+C9V+JTVn6ECgLGA8XjADhruUP/dFT1i9paBLC4WBf19It8TY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7e0aa486af8so20381147b3.1
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:57:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781341075; x=1781945875;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=8EVlQKkEG7RLm/aT+nw257EWmKYSXeMTO6xqdrR77mE=;
-        b=c2aRKXxmNsDUIuWcit7ng+7Cw5T5L36kFdKMHf/L09Ul0BFpKyl4wkyTjqo0EM2WJC
-         2xNI3CteJ7elxYpUbNzo7FxdluZfQMVtT1mwS8iuO4VJe847xqj2K5hI4qyWLmJhe1zf
-         orEWXg9dPaqt6N1/lyEa3KclrVY2ddBA9axUXp+yyrnnpZqLLlCClpN1xknutCOuWSrZ
-         g87mFANvEVr6mxqd6sOlU8MO+mBEHc1L67ojo5+DBhO5wk7+IslxCsQtQkzhka7wQ987
-         Pokyk0z32dCwN8FS5vsLZQxVBJz2uke08KWjPvDIrcg4azIa84TRGOkMPNFGQsqpbrnK
-         RY2A==
-X-Forwarded-Encrypted: i=1; AFNElJ8Q8jauJMtI5Q50lIQS3jJNVztiR4/yBBZ4Uh06U03Df1Dz7e0KxghJqZfuE0RaqId0DkivyZaxlGA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyvmGCHeifC+jYq1n1v7irZS23ZdM/HC/EDMO7BgqEFNGlQG+RJ
-	15FlZkRlhKcu0g0teGU3mBY4Re1gvolu168fV/7VMj61GtDzXANMbkUBCBLkIqIq
-X-Gm-Gg: Acq92OHSW+6ghbrsDfgohOI/XZogqDI9g4cI5fbObquwOUioFKkelEy4X1/PbRsw05i
-	k7QrGmaW0HUYZ5AdBP7p1VoSQFZW68rJiKkjbiJTs/TdJXEjp4zU7ZWIaLhne9UII8ezstqavJr
-	xKR62vyMr9+hRVVhgluRxg5lFqLxoJiZB3OQdvUrVbC2Kah0uQtdP0NUuOWwJbKy3hk24s10neB
-	UppfSfMbrxDpNwH1CpG24Y3y4QUWmTl/3R7QxWw3CXRgNgmVhumyIa9r+g1GaOdFeg+LBjiGtE8
-	jdRqcNA6XaRCMRTGU/XCDz5zavRSmtW4PXsNN62tHuCdVRO4spqD8V8uYsCouxmWwgu6Yyg8AJn
-	EC/rAs/cEORdK1E2AMZLXW3eOWjjAsr5Y5TemSPcDD9iq5WzAgVuo1EHqVOOkI0RCVFa7No2L1n
-	XZiVv0U7S9fomQgUPVew9cZVVBjzv5R0xotDFlwU9W9/Mk6azbRfCewxksQXm0YlWUlyvRw9Px5
-	N/kd84nCE27YY6TwTIj+t0NQdL5KmM1LrimSJQm3Fj9AasqRhle+WL+GI23xNeRunhLX/y7UqUH
-	d8mhZlUHdtQgFHjbFEex5WeZLwE4dLaZ2NEdEFL+BlPH8MLT0E91Os3EZw==
-X-Received: by 2002:a05:690c:358a:b0:7e8:60bd:979d with SMTP id 00721157ae682-7f7ce3fd2c3mr47651777b3.23.1781341075253;
-        Sat, 13 Jun 2026 01:57:55 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7f7712f3c11sm20546117b3.41.2026.06.13.01.57.54
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Jun 2026 01:57:54 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-7f015f87fddso19354997b3.0
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:57:54 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9HwcSJJHb/YTCMIOgRWbvEnHmgjZAtox1DRL5FmEu3uJ/4yCBsKvGqDgaz9kXt+NArVhV5WxYEqtI=@vger.kernel.org
-X-Received: by 2002:a05:690c:4a0c:b0:7ef:e7ec:b6e7 with SMTP id
- 00721157ae682-7f7988731cfmr51443407b3.27.1781341074163; Sat, 13 Jun 2026
- 01:57:54 -0700 (PDT)
+	s=arc-20240116; t=1781345383; c=relaxed/simple;
+	bh=LRCJuzdgcnepvht2bWBT+iKICZzGD3zNXigrl8GmM0M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KMi2u1SOnClX3zCaQgR15wVrDqKnFw6PNqqmPvQ+qn+L6jdUkDryz5Ukh1KVnI04soAF2rtStEJIF97oCthAzHmXhhu3ZB5OwrP1fvT5pFGMixGMBkvQmEfxBNyDyg/n8gHVPgvyxGJp6UqbpoRVN5ItzbQGcWuvasDLKRWmPgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJW6+Ahi; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJW6+Ahi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 380091F000E9;
+	Sat, 13 Jun 2026 10:09:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781345380;
+	bh=P0BXYzjr6w3+jMq0yJXiRdx6FfTaAxNl+69lgFc2F8I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=XJW6+AhicnUYOl3N/Dzk15xgcsI8aNcbwr49UynaoV3W4bH06gntgEoRkTwEthGe4
+	 Hk+koZqHRBoLVDO2W09cbHsrAMAvaNNYdSR5ukgaq07Wd4dEOtI1S4U561eU8fh0Tm
+	 fjiTLKFzq6WzOyZEyWwDBFv6Ka6jQS4TO05lfrkhzjm4utpQv3axEosdhkdhPaCJs6
+	 Aapbxm2654LCsnHqr1ckZXWYIhhvmgJLVEP+uqnQ2nuKELFMXB4axdLZaM9Ox7V7j8
+	 fAGioQtAJVar6lzDdQd2cAKg4aeNkN2IzECOmqKeyIn/wkP/Y9PrcIRNDP2KOmi+os
+	 9t1BOraK/eR1w==
+Message-ID: <77f52421-42ea-499a-aa57-a834825a8829@kernel.org>
+Date: Sat, 13 Jun 2026 13:09:31 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260612124557.13750-1-email@sirat.me> <20260612124557.13750-3-email@sirat.me>
- <20260612173013.64f435ab@jic23-huawei>
-In-Reply-To: <20260612173013.64f435ab@jic23-huawei>
-From: Sirat <email@sirat.me>
-Date: Sat, 13 Jun 2026 14:57:42 +0600
-X-Gmail-Original-Message-ID: <CANn+LW+OSfo3u+7wZu11j7tQd-PGyhrz3a9+st-FwjOLbT4NBw@mail.gmail.com>
-X-Gm-Features: AVVi8CfkEVa8jbtmbQfja_oWdfvUZG5fvSdkCptWn5Mrht3KziUi5MBOh60cRjA
-Message-ID: <CANn+LW+OSfo3u+7wZu11j7tQd-PGyhrz3a9+st-FwjOLbT4NBw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: magnetometer: add QST QMC5883L Sensor
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] iio: adc: lpc32xx: Initialize completion before
+ requesting IRQ
+To: Maxwell Doose <m32285159@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "moderated list:ARM/LPC32XX SOC SUPPORT"
+ <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>
+Cc: Sangyun Kim <sangyun.kim@snu.ac.kr>,
+ Kyungwook Boo <bookyungwook@gmail.com>, Jaeyoung Chung <jjy600901@snu.ac.kr>
+References: <20260613005812.160572-1-m32285159@gmail.com>
+ <20260613005812.160572-2-m32285159@gmail.com>
+From: Vladimir Zapolskiy <vz@kernel.org>
+In-Reply-To: <20260613005812.160572-2-m32285159@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jun 12, 2026 at 10:30=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
-> wrote:
->
-> On Fri, 12 Jun 2026 18:45:26 +0600
-> Siratul Islam <email@sirat.me> wrote:
->
-> > Add devicetree binding for the QST QMC5883L 3-Axis Magnetic Sensor
-> > connected via i2c.
-> > Interrupt not implemented in driver but kept in the binding for future
-> > addition.
-> No need to mention that
-Got it. In the past I was advised to mention certain choices in the
-commit message. I am still looking for the balance.
->
-> The rest looks good to  me.
->
-> Thanks,
->
-> Jonathan
->
-Thanks
-Sirat
+On 6/13/26 03:58, Maxwell Doose wrote:
+> In the report from Jaeyoung Chung:
+> 
+> "lpc32xx_adc_probe() in drivers/iio/adc/lpc32xx_adc.c registers its
+> interrupt handler with devm_request_irq() before it initializes
+> st->completion with init_completion(). If an interrupt arrives after
+> devm_request_irq() and before init_completion(), the handler calls
+> complete() on an uninitialized completion, causing a kernel panic.
+> 
+> The probe path, in lpc32xx_adc_probe():
+> 
+>      iodev = devm_iio_device_alloc(&pdev->dev, sizeof(*st)); /* st kzalloc-zeroed */
+>      ...
+>      retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
+>                                LPC32XXAD_NAME, st);           /* register handler */
+>      ...
+>      init_completion(&st->completion);                       /* initialize completion */
+> 
+> lpc32xx_adc_isr() calls complete():
+> 
+>      complete(&st->completion);
+> 
+> If the device raises an interrupt before init_completion() runs,
+> complete() acquires the uninitialized wait.lock and walks the zeroed
+> task_list in swake_up_locked(). The zeroed task_list makes list_empty()
+> return false, so swake_up_locked() dereferences a NULL list entry,
+> triggering a KASAN wild-memory-access."
+> 
+> Fix the chance of a spurious IRQ causing an uninitialized pointer
+> dereference by moving init_completion() above devm_request_irq().
+> 
+> Fixes: 7901b2a1453e ("staging:iio:adc:lpc32xx rename local state structure to _state")
+> Reported-by: Sangyun Kim <sangyun.kim@snu.ac.kr>
+> Reported-by: Kyungwook Boo <bookyungwook@gmail.com>
+> Reported-by: Jaeyoung Chung <jjy600901@snu.ac.kr>
+> Closes: https://lore.kernel.org/linux-iio/20260610115700.774689-1-jjy600901@snu.ac.kr/
+> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+> ---
+>   drivers/iio/adc/lpc32xx_adc.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/lpc32xx_adc.c b/drivers/iio/adc/lpc32xx_adc.c
+> index 43a7bc8158b5..db3a602327ff 100644
+> --- a/drivers/iio/adc/lpc32xx_adc.c
+> +++ b/drivers/iio/adc/lpc32xx_adc.c
+> @@ -179,6 +179,8 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+>   	if (irq < 0)
+>   		return irq;
+>   
+> +	init_completion(&st->completion);
+> +
+>   	retval = devm_request_irq(&pdev->dev, irq, lpc32xx_adc_isr, 0,
+>   				  LPC32XXAD_NAME, st);
+>   	if (retval < 0) {
+> @@ -197,8 +199,6 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+>   
+>   	platform_set_drvdata(pdev, iodev);
+>   
+> -	init_completion(&st->completion);
+> -
+>   	iodev->name = LPC32XXAD_NAME;
+>   	iodev->info = &lpc32xx_adc_iio_info;
+>   	iodev->modes = INDIO_DIRECT_MODE;
+
+Reviewed-by: Vladimir Zapolskiy <vz@kernel.org>
+
+-- 
+Best wishes,
+Vladimir
