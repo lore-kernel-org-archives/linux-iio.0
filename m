@@ -1,46 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF890281532;
-	Sat, 13 Jun 2026 14:10:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D5730D40F
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 14:14:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781359859; cv=none; b=R1XgBB4piuG6S5M+af6BbI8dCcuaAvRjmJ5GrMBusmRAhV/JrFQaPSD7wmIw6xpDVad+EUoHcirZozUc1ASElk8zEMvhg81aHUDFxZdWN4GM06O2sshlfLGh7+R9ogdp5jXjx0eDeB9HOvtzs9wsF1+xri2zLEwZAGgGKec7pfs=
+	t=1781360083; cv=none; b=JaDNzkaRVj0KKf00s0WW8C12vdNifJzF3u99xn3iIV2BfidsTo7QZQUAwyAKzGEGGDbyFf3XcT1S5XS+WmXHY1zUEQeeVZPjvsOGre7dfD78AXBjj9j4abSDeWjuk0w1ETLUxjO8Oe1d3To+Wry2z7iUAAbCAp1Jc/CWgCgpLVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781359859; c=relaxed/simple;
-	bh=fp/hivSY/csefW+Za2qgpVIDyRY27Ux0kAZB2mSCX8k=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YoHBMFGnossXupRqKYNtVrmrWOEziPORK5CDE/9Jv++bjnfj3LYDZD+9UjMRim0o/w7jhrccR06X3LlHf6M6FIIvE5Rd+8SbPjiZXUwvq44Fnf0bk8blVtZrTJqbzzKMGOewKfgPIvrWtjKPrG+HdWjD1ITROwb0+ZOv0QtgxWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GudeV6gu; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781360083; c=relaxed/simple;
+	bh=M1hjX1i4YyyGNJA93VHLJ7AY2mFDMpU6PlQU0/s911Q=;
+	h=Date:From:To:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=g/pXj4CqBK19Yv4nqvKDulCspaQgDF737/x9G9rpNBWTdheXP2TRwbmSPJb/JVuo1fLRk43NF1Nt2r1Vj45Q3y+rl9VWy8v9PM51udPoUW8FCC1wIn4BbB0oegsZ/bqfqiuG3g319sh5EywuH1EVbI55DfXbKyk1/Y2w7aWShXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b7TbwTZm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GudeV6gu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BFCC1F000E9;
-	Sat, 13 Jun 2026 14:10:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b7TbwTZm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BE11F000E9;
+	Sat, 13 Jun 2026 14:14:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781359857;
-	bh=/oG4sz904dx7/lDkPQwUAT1EDQGFByh5pdsU8cchgfc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GudeV6guJQw0NAPcT9CFGk3vaTA4gJsTW1lMh1gfRBXgxd/950JuoWoOKP4+8uNBV
-	 rBKRyZYYcZr15ad26hadYQmnc1AXXGd87vpRrXDXrYs9Is8j500EHRiR2bKgWc30QJ
-	 MZ4/+GLTz9syR3/UGWP+nHwb3E/H5lGGtoCyrGXhk+5KFNTT8L43qs61D68cCni9E5
-	 KDu8xIdEsu4Ta7qw4O/+7+7oHTPo6rRSUtxO8Ax/5vUZhcOmSZsUd57ybE8p0e6x3f
-	 UznPtX8GCpnNog+3Y/bkl9Tg2KVEll0OqzJttw/rYJY8OtK4n759c8O8M92hNW/jX9
-	 ELIj2cvNZFlgg==
-Date: Sat, 13 Jun 2026 15:10:47 +0100
+	s=k20260515; t=1781360081;
+	bh=JBNZeMbNZHU+3nlS1hbjb2kWmviadtq6h4Jw97wuw4I=;
+	h=Date:From:To:Subject:In-Reply-To:References;
+	b=b7TbwTZmz8btY4g+tj7IfXutnrIG1u/twcb7MPzlychg0xp6uIdsefmOB0E7BS8gJ
+	 Sy2UdTKMoxmJbnZ+bOd7QXDQt1YpODuX8BOAB5qEXLsVatGHdlzE9exG6Fv81zEN85
+	 vjWBB6Q62M14y8/BdsX7hcYSBYXsHTBYHeiSeP3TTi95piYPoYFIggETJNBwvmOcuV
+	 RLeq3h527bio0F9s3HUz6nmlcedebdBF8RouExSPu2lthczizORhg1YxMIuBjtEem5
+	 850nr+Qkm4VbrSeaUOAOsF4EW+xii6snV6B2KilE51siDa1c32RGL6uTiDZfOU/jv5
+	 ydrtdxZjlA6AA==
+Date: Sat, 13 Jun 2026 15:14:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kurt Borja <kuurtb@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 5/5] iio: adc: Add ti-ads1263-adc2 driver
-Message-ID: <20260613151047.57cd074f@jic23-huawei>
-In-Reply-To: <20260612-ads126x-v1-5-894c788d03ed@gmail.com>
-References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
-	<20260612-ads126x-v1-5-894c788d03ed@gmail.com>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: Re: [PULL] IIO: 2nd set of fixes for the 7.1 cycle
+Message-ID: <20260613151436.4ed833ef@jic23-huawei>
+In-Reply-To: <20260602151415.1c17664b@jic23-huawei>
+References: <20260602151415.1c17664b@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,417 +43,146 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 12 Jun 2026 17:46:23 -0500
-Kurt Borja <kuurtb@gmail.com> wrote:
+On Tue, 2 Jun 2026 15:14:15 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> The TI ADS1263 includes an auxiliary, 24-bit, delta-sigma ADC (ADC2).
-> ADC2 operation is independent of ADC1, with independent selections of
-> input channel, reference voltage, sample rate, and channel gain
+> The following changes since commit 329db447f8f02e82ff3acf130c892e1a4063d493:
 > 
-> Add support for this ADC as an independent IIO device, through the
-> auxiliary bus API.
-
-A few things inline.
-
+>   Merge tag 'iio-fixes-for-7.1a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-05-15 13:45:33 +0200)
 > 
-> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.1b
+> 
+> for you to fetch changes up to 91bc6767a4f55dc470d8a56b55b9f2ea09094efe:
+> 
+>   iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices (2026-05-29 09:57:23 +0100)
+> 
+Hi Greg,
 
-> diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
-> index b33505e7fdc7..1a4b2f934d43 100644
-> --- a/drivers/iio/adc/ti-ads1262.c
-> +++ b/drivers/iio/adc/ti-ads1262.c
+I think this pull request is outstanding.  No problem with queuing it for the merge
+window and if we are too late for that I don't mind if it waits for rc1.
 
-> +static int ads1262_aux_device_setup(struct ads1262 *st)
-> +{
-> +	struct device *dev = &st->spi->dev;
-> +	struct ads1263_adc2_channel *chans;
-> +	struct auxiliary_device *adev;
-> +	struct ads1263_adc2_ctx *ctx;
-> +	struct fwnode_handle *node;
-> +	int id, ret;
-> +
-> +	node = device_get_named_child_node(dev, "adc");
-> +	if (!node)
-> +		return 0;
-> +
-> +	ctx = kzalloc_obj(*ctx);
-> +	if (!ctx) {
-> +		ret = -ENOMEM;
-> +		goto out_node_put;
-> +	}
-> +
-> +	id = ida_alloc(&ads1262_ida, GFP_KERNEL);
-> +	if (id < 0) {
-> +		ret = id;
-> +		goto out_free_adc2;
-> +	}
-> +
-> +	chans = kcalloc(st->num_channels, sizeof(*chans), GFP_KERNEL);
-> +	if (!chans) {
-> +		ret = -ENOMEM;
-> +		goto out_free_id;
-> +	}
-> +
-> +	for (unsigned int i = 0; i < st->num_channels; i++) {
-> +		chans[i].negative_input = st->channels[i].negative_input;
-> +		chans[i].positive_input = st->channels[i].positive_input;
-> +	}
-> +
-> +	ctx->chip = st;
-> +	ctx->num_channels = st->num_channels;
-> +	ctx->channels = chans;
-> +	ctx->enable = ads1263_adc2_enable;
-> +	ctx->start = ads1263_adc2_start;
-> +	ctx->stop = ads1263_adc2_stop;
-> +	ctx->read = ads1263_adc2_read;
-> +	mutex_init(&ctx->chan_lock);
-devm_mutex_init()
+Thanks,
 
-> +
-> +	adev = &ctx->adev;
-> +	adev->name = "ads1263_adc2";
-> +	adev->id = id;
-> +	adev->dev.release = ads1262_aux_device_release;
-> +	adev->dev.parent = dev;
-> +	device_set_node(&adev->dev, no_free_ptr(node));
-> +
-> +	ret = auxiliary_device_init(adev);
-> +	if (ret)
-> +		goto out_free_channels;
-> +
-> +	ret = auxiliary_device_add(adev);
-> +	if (ret) {
-> +		auxiliary_device_uninit(adev);
-> +		return ret;
-> +	}
-> +
-> +	return devm_add_action_or_reset(dev, ads1262_aux_device_destroy, adev);
-> +
-> +out_free_channels:
-> +	kfree(chans);
-> +out_free_id:
-> +	ida_free(&ads1262_ida, id);
-> +out_free_adc2:
-> +	kfree(ctx);
-> +out_node_put:
-> +	fwnode_handle_put(node);
-> +
-> +	return ret;
-> +}
+Jonathan
 
-> diff --git a/drivers/iio/adc/ti-ads1262.h b/drivers/iio/adc/ti-ads1262.h
-> new file mode 100644
-> index 000000000000..98697d771da3
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads1262.h
-> @@ -0,0 +1,39 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * Texas Instruments ADS1262 ADC driver
-> + *
-> + * Copyright (C) 2025 Kurt Borja <kuurtb@gmail.com>
-> + */
-> +
-> +#ifndef _ADS1262_H_
-> +#define _ADS1262_H_
-> +
-> +#include <linux/auxiliary_bus.h>
-> +#include <linux/types.h>
-> +
-> +struct ads1263_adc2_channel {
-
-As with earlier patch avoid bitfields where layout matters.
-Better to just use defines for the field makss.
-
-> +	/* ADC2CFG */
-> +	u8 gain:3;
-> +	u8 refmux:3;
-> +	u8 data_rate:2;
-> +
-> +	/* ADC2MUX */
-> +	u8 negative_input:4;
-> +	u8 positive_input:4;
-> +};
-> +
-> +struct ads1263_adc2_ctx {
-> +	struct auxiliary_device adev;
-> +	struct ads1262 *chip;
-> +	/* Protects channel state */
-> +	struct mutex chan_lock;
-> +	struct ads1263_adc2_channel *channels;
-> +	unsigned int num_channels;
-> +	int (*enable)(struct ads1263_adc2_ctx *ctx,
-> +		      const struct ads1263_adc2_channel *chan);
-> +	int (*start)(struct ads1263_adc2_ctx *ctx);
-> +	int (*stop)(struct ads1263_adc2_ctx *ctx);
-> +	int (*read)(struct ads1263_adc2_ctx *ctx, __be32 *val);
-
-I'm not sure I see this loose coupling as that useful. I'd just export the
-functions from the other module and add them to this header.
-Maybe I'm missing why you need this complexity.
-> +};
-> +
-> +#endif
-> diff --git a/drivers/iio/adc/ti-ads1263-adc2.c b/drivers/iio/adc/ti-ads1263-adc2.c
-> new file mode 100644
-> index 000000000000..d21f08bbd9ee
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads1263-adc2.c
-
-> +
-> +static int ads1263_adc2_read_raw(struct iio_dev *indio_dev,
-> +				 struct iio_chan_spec const *chan,
-> +				 int *val, int *val2, long mask)
-> +{
-> +	struct ads1263_adc2 *st = iio_priv(indio_dev);
-> +	struct ads1263_adc2_ctx *ctx = st->ctx;
-> +	struct ads1263_adc2_channel *chan_data;
-> +	u8 realbits;
-> +	__be32 raw;
-> +	u32 cnv;
-> +	int ret;
-> +
-> +	chan_data = &st->ctx->channels[chan->scan_index];
-> +	realbits = chan->scan_type.realbits;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ads1263_adc2_channel_read(indio_dev, chan_data, &raw);
-> +		if (ret)
-> +			return ret;
-> +
-> +		cnv = be32_to_cpu(raw);
-> +		cnv >>= chan->scan_type.shift;
-
-Is that really an unaligned be24?  Might be better to handle it as such.
-
-> +		*val = sign_extend32(cnv, realbits - 1);
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		u64 divd, divr, tmp, rem;
-> +
-> +		mutex_lock(&ctx->chan_lock);
-> +		divd = st->vref_uV;
-> +		divr = BIT_ULL(chan_data->gain + realbits - 1) * 1000;
-> +		mutex_unlock(&ctx->chan_lock);
-> +
-> +		tmp = div64_u64(divd * 1000000000ULL, divr);
-> +		*val = div64_u64_rem(tmp, 1000000000ULL, &rem);
-
-NANO
-
-> +		*val2 = rem;
-
-> +static int
-This is oddly different to formatting of most other functions.
-static int ads1263_adc2_read_avail(struct iio_dev *indio_dev,
-				   struct iio_chan_spec const *chan,
-				   const int **vals, int *type,
-				   int *length, long mask)
-Seems to be under 80 chars + for this sort of thing, going a bit
-over is fine anyway.
-
-> +ads1263_adc2_read_avail(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan, const int **vals,
-> +			int *type, int *length, long mask)
-> +{
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> +		*type = IIO_VAL_INT;
-> +		*vals = ads1263_adc2_gain_avail;
-> +		*length = ARRAY_SIZE(ads1263_adc2_gain_avail);
-> +		return IIO_AVAIL_LIST;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*type = IIO_VAL_INT;
-> +		*vals = ads1263_adc2_data_rate_avail;
-> +		*length = ARRAY_SIZE(ads1263_adc2_data_rate_avail);
-> +		return IIO_AVAIL_LIST;
-> +
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static int ads1263_adc2_write_raw(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec const *chan,
-> +				  int val, int val2, long mask)
-> +{
-> +	struct ads1263_adc2 *st = iio_priv(indio_dev);
-> +	struct ads1263_adc2_ctx *ctx = st->ctx;
-> +	struct ads1263_adc2_channel *chan_data;
-> +	unsigned int i;
-> +
-> +	chan_data = &ctx->channels[chan->scan_index];
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> +		for (i = 0; i < ARRAY_SIZE(ads1263_adc2_gain_avail); i++) {
-> +			if (val == ads1263_adc2_gain_avail[i])
-> +				break;
-> +		}
-> +		if (i == ARRAY_SIZE(ads1263_adc2_gain_avail))
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&ctx->chan_lock);
-> +		chan_data->gain = i;
-> +		mutex_unlock(&ctx->chan_lock);
-> +
-> +		return 0;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0; i < ARRAY_SIZE(ads1263_adc2_data_rate_avail); i++) {
-> +			if (val == ads1263_adc2_data_rate_avail[i])
-> +				break;
-> +		}
-> +		if (i == ARRAY_SIZE(ads1263_adc2_data_rate_avail))
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&ctx->chan_lock);
-
-Slightly nicer to add scope got each cases block and then do just guard() for these
-
-> +		chan_data->data_rate = i;
-> +		mutex_unlock(&ctx->chan_lock);
-> +
-> +		return 0;
-> +
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return ads1263_adc2_channel_hot_reload(st, chan);
-> +}
-
-> +
-> +static int ads1263_adc2_channels_setup(struct iio_dev *indio_dev)
-> +{
-> +	struct ads1263_adc2 *st = iio_priv(indio_dev);
-> +	struct device *dev = &st->ctx->adev.dev;
-> +	struct ads1263_adc2_ctx *ctx = st->ctx;
-> +	struct iio_chan_spec *chns;
-> +	unsigned int i;
-> +
-> +	/* Account for the timestamp channel */
-> +	chns = devm_kcalloc(dev, ctx->num_channels + 1, sizeof(*chns),
-> +			    GFP_KERNEL);
-> +	if (!chns)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < ctx->num_channels; i++) {
-> +		guard(mutex)(&ctx->chan_lock);
-> +
-> +		ctx->channels[i].refmux = st->refmux;
-> +
-> +		chns[i] = ads1263_adc2_iio_voltage_template;
-Rather than using a template like this I'd just set it all here using
-a designated initializer.  Means there is one place to see all the fields.
-
-		chns[i] = (struct iio_chan_spec) {
-			.type = IIO_VOLTAGE,
-			.indexed = true,
-			.differential = true, //not sure why this wasn't in your template.
-			.channel = ctx->channels[i].positive_input;
-			.channel2 = ctx->channels[i].negative_input;
-			.scan_index = i,
-			.scan_type = {
-				.format = IIO_SCAN_FORMAT_SIGNED_INT,
-				.realbits = 24,
-				.storagebits = 32,
-				.shift = 8,
-				.endianness = IIO_BE,
-			},
-			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-				BIT(IIO_CHAN_INFO_SCALE) |
-				BIT(IIO_CHAN_INFO_HARDWAREGAIN) |
-				BIT(IIO_CHAN_INFO_SAMP_FREQ),
-			.info_mask_shared_by_all_available = 
-				BIT(IIO_CHAN_INFO_HARDWAREGAIN) |
-				BIT(IIO_CHAN_INFO_SAMP_FREQ),
-		}
-> +		chns[i].scan_index = i;
-> +		chns[i].channel = ctx->channels[i].positive_input;
-> +		chns[i].channel2 = ctx->channels[i].negative_input;
-> +		chns[i].differential = true;
-> +	}
-> +
-> +	chns[i] = (struct iio_chan_spec)
-> +		IIO_CHAN_SOFT_TIMESTAMP(ctx->num_channels - 1);
-That macro has recently become a designated intializer so
-	chns[i] = IIO_CHAN_SOFT_TIMESTAMP(ctx->num_channels - 1);
-
-> +	chns[i].scan_index = i;
-
-Isn't this just overwriting the ctx->num_channels - 1 we just
-passed in above?
-
-> +
-> +	indio_dev->num_channels = ctx->num_channels + 1;
-> +	indio_dev->channels = chns;
-> +
-> +	return 0;
-> +}
-
-> +
-> +static int ads1263_adc2_probe(struct auxiliary_device *auxdev,
-> +			      const struct auxiliary_device_id *id)
-> +{
-> +	struct ads1263_adc2_ctx *ctx =
-> +		container_of(auxdev, struct ads1263_adc2_ctx, adev);
-> +	struct device *dev = &auxdev->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct ads1263_adc2 *st;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +	st->ctx = ctx;
-> +	st->indio_dev = indio_dev;
-> +
-> +	ret = ads1263_adc2_regulator_setup(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->name = (char *)id->driver_data;
-
-See below.
-
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &ads1263_adc2_iio_info;
-> +	ret = ads1263_adc2_channels_setup(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> +					      iio_pollfunc_store_time,
-> +					      ads1263_adc2_trigger_handler,
-> +					      &ads1263_adc2_buffer_ops);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct auxiliary_device_id ads1263_adc2_auxiliary_match[] = {
-> +	{ .name = "ti_ads1262.ads1263_adc2",
-> +	  .driver_data = (kernel_ulong_t)"ads1263_adc2" },
-	{
-		.name = "ti_ads1262.ads1263_adc2",
-	  	.driver_data = (kernel_ulong_t)"ads1263_adc2",
-
-Though I really don't like forcing that cast in there and it should be irrelevant
-given there is only one entry in this table.  Should be fine to just hard code that
-where used.  If you need this later, wrap it in a structure.
-
-	},
-
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(auxiliary, ads1263_adc2_auxiliary_match);
-
+> ----------------------------------------------------------------
+> IIO: 2nd set of fixes for the 7.1 cycle.
+> 
+> Usual mixed bag of ancient issues and the recently introduced.
+> 
+> Various drivers
+> - Ensure use of simple_write_to_buffer() in debugfs callbacks doesn't
+>   result in reading off   the end of intended data by checking the
+>   position is always 0.
+> buffer/hw-consumer
+> - Ensure scan_mask is freed on buffer release.
+> acpi-als
+> - Check ACPI_COMPANION() against NULL to close corner case where a
+>   driver is overridden.
+> adi,ad4062
+> - Add GPIOLIB dependency to avoid undefined ref to gpiochip_get_data()
+> adi.ad7768-1
+> - Add GPIOLIB dependency to avoid several undefined functions.
+> adi,ad2s1210
+> - Ensure possible recovery path if a read fails in the interrupt handler.
+> bosch,bmg160
+> - Increase sleep on startup to ensure device is ready.
+> bosch,bmp280
+> - Ensure buffer pushed to kfifo is zeroed to avoid leaking uninitialized
+>   stack data to userspace.
+> dyna-image,al3010
+> - Fix refactor that stopped reading one of the two measurement registers.
+> dyna-image,al3320a
+> - Fix refactor that stopped reading one of the two measurement registers.
+> qcom,spmi-iadc
+> - Ensure disable_irq_wake() is called on remove path.
+> sensiron,scd30
+> - Fix a sign extension bug.
+> st,vl5310x
+> - Ensure possible recovery path if a read fails in the interrupt handler.
+> ti,adc1298
+> - Bounds check for pga_settings index. Hardening against device returning
+>   unexpected values.
+> ti,tmp006
+> - Ensure trigger correctly released on remove path.
+> vishay,veml6030
+> - Fix incorrect channel type in events.
+> vishay,veml6074
+> - Bounds check for veml6075_it_ms. Hardening against device returning
+>   unexpected values.
+> 
+> ----------------------------------------------------------------
+> Alexander A. Klimov (2):
+>       iio: light: al3010: read both ALS ADC registers again
+>       iio: light: al3320a: read both ALS ADC registers again
+> 
+> Arnd Bergmann (1):
+>       iio: adc: ad4062: add GPIOLIB dependency
+> 
+> Dan Carpenter (3):
+>       iio: dac: ad3552r-hs: fix uninitialized data ni ad3552r_hs_write_data_source()
+>       iio: backend: fix uninitialized data in debugfs
+>       iio: core: fix uninitialized data in debugfs
+> 
+> David Carlier (1):
+>       iio: pressure: bmp280: zero-init bmp580 trigger handler buffer
+> 
+> Felix Gu (1):
+>       iio: buffer: hw-consumer: free scan_mask on buffer release
+> 
+> Javier Carrasco (1):
+>       iio: light: veml6030: fix channel type when pushing events
+> 
+> Jonathan Cameron (1):
+>       iio: adc: ad7768-1: Select GPIOLIB
+> 
+> Joshua Crofts (1):
+>       iio: light: opt3001: fix missing state reset on timeout
+> 
+> Maxwell Doose (1):
+>       iio: chemical: scd30: Cleanup initializations and fix sign-extension bug
+> 
+> Radu Sabau (2):
+>       iio: adc: ad_sigma_delta: fix CS held asserted and state leaks
+>       iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices
+> 
+> Rafael J. Wysocki (1):
+>       iio: light: acpi-als: Check ACPI_COMPANION() against NULL
+> 
+> Sam Daly (2):
+>       iio: light: veml6075: add bounds check to veml6075_it_ms index
+>       iio: adc: ti-ads1298: add bounds check to pga_settings index
+> 
+> Stepan Ionichev (6):
+>       iio: gyro: bmg160: bail out when bandwidth/filter is not in table
+>       iio: gyro: bmg160: wait full startup time after mode change at probe
+>       iio: proximity: vl53l0x: notify trigger and clear IRQ on error paths
+>       iio: resolver: ad2s1210: notify trigger and clear state on fault read error
+>       iio: temperature: tmp006: use devm_iio_trigger_register
+>       iio: adc: qcom-spmi-iadc: balance enable_irq_wake() on driver unbind
+> 
+>  drivers/iio/adc/Kconfig                       |  2 ++
+>  drivers/iio/adc/ad_sigma_delta.c              | 39 +++++++++++++++++++++++----
+>  drivers/iio/adc/qcom-spmi-iadc.c              | 18 ++++++++++---
+>  drivers/iio/adc/ti-ads1298.c                  |  7 ++++-
+>  drivers/iio/buffer/industrialio-hw-consumer.c |  2 ++
+>  drivers/iio/chemical/scd30_core.c             | 19 ++++++++++---
+>  drivers/iio/dac/ad3552r-hs.c                  |  2 +-
+>  drivers/iio/gyro/bmg160_core.c                | 16 +++++++++--
+>  drivers/iio/industrialio-backend.c            |  2 +-
+>  drivers/iio/industrialio-core.c               |  2 +-
+>  drivers/iio/light/acpi-als.c                  |  6 ++++-
+>  drivers/iio/light/al3010.c                    |  8 +++---
+>  drivers/iio/light/al3320a.c                   |  8 +++---
+>  drivers/iio/light/opt3001.c                   |  6 +++--
+>  drivers/iio/light/veml6030.c                  |  8 +++---
+>  drivers/iio/light/veml6075.c                  |  8 ++++--
+>  drivers/iio/pressure/bmp280-core.c            |  2 +-
+>  drivers/iio/proximity/vl53l0x-i2c.c           |  7 +++--
+>  drivers/iio/resolver/ad2s1210.c               |  2 +-
+>  drivers/iio/temperature/tmp006.c              |  2 +-
+>  20 files changed, 127 insertions(+), 39 deletions(-)
+> 
 
