@@ -1,151 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99EF13C3C07;
-	Sat, 13 Jun 2026 08:13:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B11E385D75
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 08:47:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781338399; cv=none; b=tCUhjIAkvIWcdCX6tA130XDVREU44Uu40g1YbvR+BimAG+IcRmZHQQGDf3EK3fc6lIecLHOSzbbgil7AsZZ6TNYQ5l8FN2gNhqB0qhtJNucNhcWgGgr7edekB0YNALVQQ+TsJC/wX9sS6t7Op8IuTbs56F5yj02gHvsVxusXdqE=
+	t=1781340463; cv=none; b=BMqm7brjSUgk+MO2UQyzlWSbEndv6CUV25xdZU7THdb5oioEtGqYWEegVSpYXGqiQXGraHZODlJoGPtQrz/THBqqmCipUIGRKtz7pe6mOMcLMASLE8uU9DGkIq4Sid07nauO+vwpNO2YdME+l8TXpIFIFynJT/t8187EV2Kkmtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781338399; c=relaxed/simple;
-	bh=tyoM3rTkPdiM/lN903783vOG1wz7eBOsIx+fjRonJEg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=jCC7Bu40JyDLIkF/hSEY703X0tTRPbXb6+Clv2Q/otnQkExDQ1C50ZajHPSDCeF0XIQJCSFtSxJmXVgA1W9h7Ra4rP4WKZmDcActqi5Qdewl84gUz/JqeWB2FV0SYlH9XQDedDWDkMzmUHhqCTlhWrjpPHrFTDRU+yVzXMixB+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BgQUaUz/; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BgQUaUz/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3B684C19425;
-	Sat, 13 Jun 2026 08:13:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1781338399;
-	bh=tyoM3rTkPdiM/lN903783vOG1wz7eBOsIx+fjRonJEg=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=BgQUaUz/I8oO/rG9/kaGQ6U3K2s3VVlFOQLAfFBONFpKj+mErTJ5hEQ5SZbAkvzyv
-	 J0VuMmhn3ZmTCMTGj42+dS800OZ0rEk+FHedvlH4x+3ITkQybjq//KOiMzJ7PXTQ1R
-	 hwSThjN3sDiUei70v7wTS0Dmq92rOTWvgMAP2qMo+dpNd88ahHpqYV/wX3H/10dvbo
-	 t1Lf0lxvhxQD6kysEzew3M6dkEGsAMji0uf349O1LaMJfACnH75v4F54fLQK2WQfjZ
-	 cQtfYPsHsL1GuqWSljgC6aJCYjzxTbLFqlPwA2vJ2QQ0x8Z5WkC+/2zvpyPAXCGKSe
-	 T94kTk1SzsA4A==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B1FCD98D2;
-	Sat, 13 Jun 2026 08:13:19 +0000 (UTC)
-From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
-Date: Sat, 13 Jun 2026 03:13:19 -0500
-Subject: [PATCH] iio: accel: fxls8962af: clamp the device-reported FIFO
- sample count
+	s=arc-20240116; t=1781340463; c=relaxed/simple;
+	bh=RO5qDwNntsWRVf3hk2MbhYoXXAqEmMOVwsDvzO/JX+I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MCQsfbifih5ZvlxzXIkjFQJQESMVuxZR40+Yj0lqtc3jDEp9cFR+l6HoLIqL99guggMNe7ecQl+GIKc44tBYZkXaYjs3DvZvUnsW8EL6SCppj+ChbwXpITv4OprxakPHJ0uvDYa6FR+k/YgMtU7MqNVqh135aaw3EkGUfVxjxF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7dc2b658544so12143197b3.2
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:47:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781340459; x=1781945259;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=jGiCJ3o3O6zZWSIlnyakLQENXzMeJV1nXpt/hPjZYFY=;
+        b=ah18EoQh3ljHDeaZuWS7zygnkjacwu+ha0yFdUi6iPk3unsLNewjkgBZKgtaiEA9K0
+         3oVncFtoJCAh+kEnlW6vAURZGPaULEzthkxkTLZvQC//cjQlNVF4o5WMR+3dquLGVMjZ
+         Gh1eHwkUk5a30u5Stwkh42XWB1WFf/PUC2k4dYhNB97dypdY9vnygjmXgd1StI+Hl1Jf
+         WuIlnjVBB9YiWRW0/F9Kjw3+20uf4Q/XbkaI5FYm0L1oKozAlbjywD9Fme2cjm1AnqbZ
+         t4e9zWtzcrXpfm751z2HK+Sx3Q2GisNI7U6OWCT0xLL7E8XOxPGaCFKJQW72R3lZKh6q
+         eUfA==
+X-Forwarded-Encrypted: i=1; AFNElJ9Qpd3OuFbPJ7OeasrUMDwfNZwMpVS416QW+/CKCzrJhJGNMRbC/mfdToC30NwOwFRVVir1wRspFRs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzIzFGXMubUCPsVn9B4CYi5qZ926PY9bcttXzS4Z5WEsjryI/Zh
+	typ1ICAr/FeScPKqvjEat/0LLpnwOC37G6FDd+GJSgQsb2VBiYyCu/BfyEJXYS/b
+X-Gm-Gg: Acq92OHjXDVYZgEHD3FzD6XFthwkFASWeBUNVXRwx8qLM2G5p0pZ+urt8QslxvrMQpf
+	Jb+c52LWB4NktFhYlzDyXmdYCGNBTr0rvOQweTVb0PY31SOP0EtrnSJKGd/wNbThfNf5taAA6nh
+	gj60pV+rVZmlLtqI3L8CVvhurPDhOO6sjI0+Z5zBHvUqqoL+QSyEQodmIBX/wNoRWXUsqhywIIJ
+	f8Z33r4Zd+ec+dC55EOFTL/i1AJ0YIASRVl4pW7W7zStWsvp2ZkmCjIGo3iHRoZiaG+HLTCgsOy
+	Vzofc3b9gy32bVrSTJ1h1vOvugY8I+10zfKPhNEh+/eQBTXQLNhS5DlFcJ0Rc29+0a+UpebI7zq
+	DQkaigJ9jC2KrMCwITm+y6DR7mHoobSWEM3apSOiS8pv2SsrG5LjzOOU90SfS7VMQf4MUBo4cHn
+	uUNdDeMof8h60oWbFuoIh0zEkZuNBS0jV6S7HOe6agluKIkRRJYaXWfuINJS/aFwJ5RCJ8ghw9j
+	Ll52ZK93mHJC8xuABIWNNMZOjp+eJbU/oHmv7rleyUa/+LcjYPakAPVhj3NXb7Np4kNJ0+/x1eU
+	4nsAgvavAvqH8cvYxzhlvUvFjApYf23pvEx2LtzJKteZroyxeT73lbh9Ew==
+X-Received: by 2002:a05:690c:c501:b0:7b1:fa45:72e3 with SMTP id 00721157ae682-7f7b56466c2mr63363547b3.4.1781340458732;
+        Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7f76e8991ccsm20251067b3.16.2026.06.13.01.47.38
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7dc2b658544so12143177b3.2
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9baVg9eQUzNLMJmZe5z5ThkayMLqe3zuyiSJjJtsZbcrmDue0fWYb/2i1ZLsthaSliavZic0ffld0=@vger.kernel.org
+X-Received: by 2002:a05:690c:8d13:b0:7f8:7e31:28a9 with SMTP id
+ 00721157ae682-7f87e312c90mr32729197b3.49.1781340457950; Sat, 13 Jun 2026
+ 01:47:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260613-b4-disp-22362900-v1-1-c5e49f6af027@proton.me>
-X-B4-Tracking: v=1; b=H4sIAB4RLWoC/x3MMQqAMAxA0atIZgNpWgt6FXFQGzVLlRZEkN7d4
- viG/1/IklQyDM0LSW7NesYK0zawHnPcBTVUAxN78sbi4jBovpDZeu6JcPNk3BKo651Aza4kmz7
- /cpxK+QDbkw+JYgAAAA==
+References: <20260612124557.13750-1-email@sirat.me> <20260612124557.13750-4-email@sirat.me>
+ <20260612180235.3e505c66@jic23-huawei>
+In-Reply-To: <20260612180235.3e505c66@jic23-huawei>
+From: Sirat <email@sirat.me>
+Date: Sat, 13 Jun 2026 14:47:25 +0600
+X-Gmail-Original-Message-ID: <CANn+LWJoSiCY8cTBNZd9w0H-b-D6C7rH2j8QmB57eTKO0g-x_A@mail.gmail.com>
+X-Gm-Features: AVVi8CfiNR2HD_SQ5WBiWnwoLYHNxM04uaXSAZAXJUuauVTe4aUCPJODiEkEFXs
+Message-ID: <CANn+LWJoSiCY8cTBNZd9w0H-b-D6C7rH2j8QmB57eTKO0g-x_A@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: magnetometer: add driver for QST QMC5883L Sensor
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Sean Nyekjaer <sean@geanix.com>, 
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781338398; l=3598;
- i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
- bh=pREP1uFWXVwXkWAbHlcUOetdWzMCYtAeass2fBY2qT0=;
- b=shQQc3236zNSZVFnsbDnoULPUcXvIHQbtvFHgVXQnMnpeW4Z+ucOBouVpbSGkkZytolKsj33O
- ABt4f+wueGcD2hxkWGS5niBY0pO9EJOco1iJG9kzLzd3i+eNu2XJGMt
-X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
- pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
-X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
- auth_id=814
-X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
-Reply-To: hexlabsecurity@proton.me
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Bryam Vargas <hexlabsecurity@proton.me>
+On Fri, Jun 12, 2026 at 11:02=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
+> wrote:
+>
+> On Fri, 12 Jun 2026 18:45:27 +0600
+> Siratul Islam <email@sirat.me> wrote:
+>
+> > Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
+> > connected via i2c.
+> >
+> > Signed-off-by: Siratul Islam <email@sirat.me>
+>
+> Trying to avoid repeating stuff Joshua already covered.
+> Various comments inline.
+>
+> Thanks,
+>
+> Jonathan
+>
+> > diff --git a/drivers/iio/magnetometer/qmc5883l.c b/drivers/iio/magnetom=
+eter/qmc5883l.c
+> > new file mode 100644
+> > index 000000000000..055e51570635
+> > --- /dev/null
+> > +++ b/drivers/iio/magnetometer/qmc5883l.c
+...
+> > +#define QMC5883L_OSR_512     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x00)
+> > +#define QMC5883L_OSR_256     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x01)
+> > +#define QMC5883L_OSR_128     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x02)
+> > +#define QMC5883L_OSR_64              FIELD_PREP_CONST(QMC5883L_OSR_MAS=
+K, 0x03)
+> These are used for matching - normally we'd add defines for the filed val=
+ue and
+> then use FIELD_GET() to extract it for matching.
+> e.g.
+> #define QMC5883L_OSR_512                0x0
+> #define QMC5883L_OSR_256                0x1
+> rather these.
+>
+I thought using _CONST would be better for compile time checks and not
+needing to use FIELD_GET everywhere. The values 0x01, 0x02 don't have
+a lot of meaning in a vacuum. But of course you would have more
+experience about it and I'd love to know why we shouldn't use const.
+> > +
+...
 
-fxls8962af_fifo_flush() copies the number of samples the device reports
-in its hardware FIFO into an on-stack buffer
+> > +static const int qmc5883l_rng_avail[] =3D {
+> > +     0, QMC5883L_SCALE_2G,   /* 2G */
+>
+> I'm not sure the defines really help. Perhaps push the value down here
+> and then look it up from this array when matching.
+>
+But then the array will be serving more than 1 purpose? kind of like a
+side effect I think.
+>
+...
+> > +
+> > +     /* DRDY pin no used in this version of the driver */
+> > +     ret =3D regmap_write(data->regmap, QMC5883L_REG_CTRL2,
+> > +                        QMC5883L_INT_DISABLE);
+> I don't mind if these sorts of cases go a little over 80 chars as sometim=
+es
+> it helps readability.
+>
+I try to disable clang-format for cases like this. It's an oversight on my =
+side.
+>
+> Does it really reset with interrupts on?  That's odd.  Mind you the
+> INT_ENB sounds like it would be an enable but as you have named it here
+> it is actually a disable so all bets are off when it comes to sensible ;)
+>
+The datasheet says "The interrupt can be disabled by set 0AH[0] =3D 1"
+which I took as it's enabled by default.
+I explicitly disable it just to be safe.
+>
+...
+> > +static const struct of_device_id qmc5883l_match[] =3D {
+> > +     { .compatible =3D "qstcorp,qmc5883l" },
+> > +     { },
+>
+> As below, no comma.
+>
+I did it so that clang-format doesn't wrap it all in 1 line. I forgot
+to remove the comma before sending the patch. Sorry.
+> > +};
+>
 
-	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
-
-which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The count
-is read from the BUF_STATUS register and masked with a 6-bit field:
-
-	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
-
-where FXLS8962AF_BUF_STATUS_BUF_CNT is GENMASK(5, 0), so count can be
-0..63 - nearly double the 32-deep FIFO the buffer is sized for. The only
-check applied to it is the zero test; unlike the bmc150 flush there is no
-caller-supplied bound at all. count samples are then transferred into
-buffer[]:
-
-	fxls8962af_fifo_transfer(data, buffer, count);
-
-fxls8962af_fifo_transfer() reads count * 3 * sizeof(u16) = count * 6
-bytes through regmap, so a malfunctioning, malicious or counterfeit
-accelerometer (or an attacker tampering with the I2C/SPI bus) that
-reports a count of 33..63 writes up to 63 * 6 = 378 bytes into the
-192-byte buffer: a stack out-of-bounds write of up to 186 bytes that
-clobbers the stack canary, saved registers and the return address.
-
-Clamp count to FXLS8962AF_FIFO_LENGTH, the number of samples buffer[] is
-sized for, before the transfer, mirroring the watermark clamp already
-done in fxls8962af_set_watermark(). A well-formed flush reports at most
-FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are unaffected.
-
-Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
----
-This is a different bug from CVE-2025-38485, the use-after-free in the same
-function fixed by commit 1fe16dc1a2f5 ("iio: accel: fxls8962af: Fix use after
-free in fxls8962af_fifo_flush"): that commit added a synchronize_irq() in
-fxls8962af_buffer_predisable and did not bound the FIFO sample count, so this
-stack overflow is still present at mainline HEAD.
-
-I reproduced the out-of-bounds write with an in-kernel test that drives
-the fxls8962af_fifo_flush() buffer geometry verbatim under KASAN
-(CONFIG_KASAN_STACK=y), with the device-supplied sample count:
-
-  count=36, no clamp:
-    BUG: KASAN: stack-out-of-bounds in ...fifo_flush
-    Write of size 216 ... [32, 224) 'buffer'   (the 192-byte buffer)
-  with this patch (clamp to FXLS8962AF_FIFO_LENGTH): the transfer is
-    bounded to 32 samples, no KASAN report.
-  a well-formed (<= 32 sample) flush is unaffected, no KASAN report.
-
-The full device range - count=63, a 378-byte write = 186 bytes past the
-buffer, smashing the stack canary and the return address - reproduces the
-same way under userspace AddressSanitizer on both -m32 and -m64.
-
-The FIFO sample count is read over I2C/SPI from the accelerometer, so
-triggering this requires a malicious or defective device, or tampering
-on the bus.
----
- drivers/iio/accel/fxls8962af-core.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 8763e91c63d2..fdd049223006 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -970,6 +970,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
- 	if (!count)
- 		return 0;
- 
-+	count = min_t(u8, count, FXLS8962AF_FIFO_LENGTH);
-+
- 	data->old_timestamp = data->timestamp;
- 	data->timestamp = iio_get_time_ns(indio_dev);
- 
-
----
-base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
-change-id: 20260613-b4-disp-22362900-f6014bd0594e
-
-Best regards,
--- 
-Bryam Vargas <hexlabsecurity@proton.me>
-
-
+Thanks
+Sirat
