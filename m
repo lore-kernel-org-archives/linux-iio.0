@@ -1,128 +1,104 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58FC01B983F
-	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 03:31:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1716F3546F7
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 06:23:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781321500; cv=none; b=Ct5JNVuc01M0wDIf0dnyrO9R5CXcoCzCQ6ySNNqVbmCN6slHXXTiTP4OB8qDJZIf1nvQUoQt7Ri+cUmzw5uWwf2qXbHTKot6iM9fFynwNuNY7sEkLZGY7n9XWahrJfJapMaAHRWhTY+GGnSsdnQ54g5h8o28iLWhjAL7z+qyLPo=
+	t=1781331815; cv=none; b=OMkXSn4r1nwbKimmpmcMKvpMnKyEiK+/Ek39XEXoVR9enFaCUqy6B2Z1PQ7rGh+dasUii6LpTpv8PSEyyV5FY1kQ8qMOfaQqCORpdqDgje0PaV/6q550nNg/CdauLy8eLPN1jH/VLrAgulkyF0gbhicG4VZyehpIcalyQeo6oIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781321500; c=relaxed/simple;
-	bh=3QcTyECCLOCka24VJfZAkp7UFl5yFcqwWb2J5pZl44I=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cfHyhuAb6r6B7oV6PcvC4IUaEYbWEIzRpL/grAaXv+dQRI3mNpW1AWNBB/HNYWQP5jHMhdzRsFi7r3ye6h8U72X98T6vgVnlarekACj0tVSnOlUOAR2MLSPVPUH7vJlbANdqpdPodCreokyfpDkPIfpdElDUfuYTfkM994+AfkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b9624W6D; arc=none smtp.client-ip=209.85.210.173
+	s=arc-20240116; t=1781331815; c=relaxed/simple;
+	bh=k5G02N1zKzfIjIVmFuEqHkT8drwuzrUmLQ3UCGPXm5Q=;
+	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
+	 References:In-Reply-To; b=hlyhI2tDK4+ROFWrw71aBrGuDRSQNLcmoMyXmD01U798pQ6M2mOarJjSmQ3SRZape8VroKRflg+hVCKqvltN88eIqkcNGJwXLad/Al407ZhrnHw1CH3m2RIKSQtvSm8rzt3LsOOsx5YcKWvsxdVulBv8z4N5S1nGa+4r/BZHsFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=juhxLx5J; arc=none smtp.client-ip=209.85.221.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b9624W6D"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-84226d0f1d2so1185087b3a.1
-        for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 20:31:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="juhxLx5J"
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-59eb57ed4cbso696889e0c.0
+        for <linux-iio@vger.kernel.org>; Fri, 12 Jun 2026 23:23:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781321498; x=1781926298; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PDY//a8rpdrcO/gjVmj6uG+7B05UN/rgwOnkWQY0HtM=;
-        b=b9624W6DOc03ozn/05I6W8mPQhuqhGrtnk0zFI3pWNK7QXNbJh9erAPw9BChtT6lFw
-         XwGyIQM+YQOxYEWNCS5XUFK0uGjrTHSgqFxPlCHlczp5ovbph8V8Vltc3UlPFpci4LFS
-         9c/iWduOBAnjr65rC6cWD66usCHMvKWHsQyWvRt+yG8YnPy1iFSL6OOyylmQqAPDmKTT
-         8M1N6kBpf+pyAa0RAZroY1kBeRuKpc1NPdAUXFVlWcnuCWZ2HJayaB8mGMjsbEZQiNl0
-         hJ0B2gAV4QZ9lYG/cyc+McLakKiQY3+fQAZw/a648M+rT2R5tAumYDh0lp1GWj4MLXlw
-         6GIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781321498; x=1781926298;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1781331813; x=1781936613; darn=vger.kernel.org;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PDY//a8rpdrcO/gjVmj6uG+7B05UN/rgwOnkWQY0HtM=;
-        b=Lw3UczcFJ294Q8R4D2LML9MP+LY+bSZX9H4wg4dMx30qQ4DemGeFzf1vqRo1rAvnhc
-         l73iPxCtTUvexbxuiyDu9JxE44Q+Hj3o33T5DcxRqPZnCNmkY/sK+DW9R+UaeXC1CIUq
-         F5gWc5v4zuO21A8wU9c1Ue2V9dTjhv4/qAqHgWzhSNSCp9qUc36o1XuMoiXcQ1mknM1r
-         0QuK9Ve20zKeKC810UGdNal0ZZI8kznpwlHfC0/LaMQNePwLO/DNDaNmjISQFMcH45Wt
-         2BUE2+zyOxZy4exGzb211HIbVIdrOqwqJKsZ4k8jpO4DS5bRw4dAn8zYjT3KdRp/Ixss
-         wm6w==
-X-Forwarded-Encrypted: i=1; AFNElJ8vzkvRO5URdy92KmDLm0tK5KLb/9QLxwoJM6KLDeMlmLQlvj0HlJWulqD7LxEIWIxX+/N8v93AgTI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxvj7w4n9qwEZ5q5Wu5Lbhzo5SEcMi/aF/CctJ8f43Fw7tYmFzH
-	aPOEGuP8amimPf7YBDyPjPHUd6ZzwnEFxcItDlt2ca2OoZQcQohCc5oNX1X9UQ==
-X-Gm-Gg: Acq92OHlesGgu0uTXRPN8yv1GuR3GjsMaN9PXg2f9rDnvkfgLXKZULHzU7kTUF5+h+F
-	xahSda3/pUBLe5U9wdLM2YOk7lvpVPqyp0FplOqjMjVSOoqAwW4tf9q/Zsq7osaf5aJIcNg+PTN
-	hLmpazXosWNGA6v4WzohDvd98PA255N9GrqIugLfsgQAHTlrOXa6vkN9NBY8fUrWJV1Yd9dUz8l
-	+iZyuWQScT9jnc3/12zEFGo/HzZPCm9bB6eYfMZCV2+xu5zkGiDZNP29H19R04Bo1boYg5e8NHy
-	WIsZBQIUeF7sxyVYJ1N/Ij7kMUWEfm99G8NVvvUQUuP0OniJI5orltN6/T3gOQuxyTfzU9raHsJ
-	CeCxAi+dDvNd/I/aAKjxDgiZcWoMR7MnqTMcfjKdvpzSCk0tVp6Hf2luAQn+6dGDpcjnuFi2fZW
-	EDDdGkMBXta8g1fTyUzFff7Wpk4uwBefyNo+kS5o306NENrFFj
-X-Received: by 2002:a05:6a00:3e29:b0:842:6ec3:2352 with SMTP id d2e1a72fcca58-8434cd73dfemr5736712b3a.18.1781321497673;
-        Fri, 12 Jun 2026 20:31:37 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434afc9fa8sm4010727b3a.32.2026.06.12.20.31.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Jun 2026 20:31:37 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: todo: fix typo and refine resource management items
-Date: Sat, 13 Jun 2026 09:01:32 +0530
-Message-Id: <20260613033132.2344644-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=k5G02N1zKzfIjIVmFuEqHkT8drwuzrUmLQ3UCGPXm5Q=;
+        b=juhxLx5J8zYDQcGQreyFHgYc+i/xO8M3b2cPSJc7ti9UKUMcRkX9fGd3wBv0IpQcn3
+         WBUbydMX7l+mfx3vu3ddEurmOBnnKlw5JBoytQ22R+TbeHyvGjqstggTDheRAvXIdRKn
+         aeCdHXFoyQ1bicb8Kpu98Kr+ro/toay8eGIZoKu+kiSLJPqa2RIEAWUgnnO2Vj9x1Xpb
+         cKUZ0LMPI4VAB+yR/wWJ72mFakNW9iQ/zzkjdUlSSrKjowX5pkbURX0Hbn8bCcHAc8zW
+         n5MJYyUIfI6AHSHXK+ZWWRS4BE3xbUu5+YZbYWtVjX5ilSjTvmMtty83u8H1kAmlA7NX
+         A8gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781331813; x=1781936613;
+        h=in-reply-to:references:from:subject:cc:to:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=k5G02N1zKzfIjIVmFuEqHkT8drwuzrUmLQ3UCGPXm5Q=;
+        b=gYmI+enNWzaNykNHulfN5UZoBBAKo6qFzPaz9Hz1gZ96XLdJMbwBzzC7gAcEwwYFDC
+         q5Lq62nlUZiR9goexa5n6pp7RZtDWs1k6yhz/vpelFcIgI2PHEP03MBhBuqsL3DQwGJL
+         Igli7ENyhh9anYJ9Kz0Amu0I6nicG5GU4kltGtD3cBh2bemCpLp7PDkmq5wW7cQahwJp
+         E95xst1Mu/OnOMlx6jsCSwG6Sh/2zsHIrKHoQE+kEJlqy7GaY0bJAVhkci59qen3Esns
+         oqXR63xtL5Hw1Q0NdSeTvizsO1YBZKRpjfkKYYiLrh0MhbSF9qPES97Ag+YYzJ414eB2
+         tYmQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/vGu8s4NJU9IIgweAWHH+Iwcc5zjaq2TFTF49P40oYJwRxVwn7RS7HvspVtOUl0/Owt0eYUV17FLk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzI5y/N50W0FDIqvCItQ6kIQZGewqlKhQVm4NHM5LFp0NfmSmAg
+	aYCsfUjPY1dNfiuo9xztQ/+E/+uF0g/Gk6UjWWgPIhH5LDmXSEqC/G57oi6QlQ==
+X-Gm-Gg: Acq92OGFRobMjVjevhtOhE6d/Jvp8lYI/4mUExKzhDX1+dMHsA2dy6ojLoOiBpyKrKX
+	rhDtWBVoNGWDj47v7fV/5a0PPn7u1iHOftGNaoCbFQlFWG+t7IuEe+2BPIHXPTqkLQUrlx6aIfE
+	ED2mzsXIAYioWOtY1QsK5RdfXx7X4YdYEtwYhzPM686zqVVdxW4qTXfZGmWUhadxIbg6ndzvybt
+	Nqx789kk9dxxZjPYz0IvFzMy/PHdAkWz+mKCgF75CO1lhK4iEcHsfdhovtZDSYl1cR+fzWq5QUh
+	8azpkcbG8M1HretyrTev4VdMoAKNTf12EImeMTSOPMYZ+qqHTt2dP1n6ptyPXmzUEJ58HkWB7LR
+	Htz39QZqi8wvtMc5qaFP0HH0oX8TSLuljAQ2oQebm+OqZWA2xxmf4v6wcDvKZGiVk7xOLTy7MlI
+	ie+pSQunUypmjikHsoWMF4LBwi
+X-Received: by 2002:a05:6122:32c3:b0:5a4:b5ab:b5f8 with SMTP id 71dfb90a1353d-5bb6bfa4474mr3583733e0c.2.1781331813101;
+        Fri, 12 Jun 2026 23:23:33 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bb691bc485sm5244018e0c.12.2026.06.12.23.23.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Jun 2026 23:23:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 13 Jun 2026 01:23:25 -0500
+Message-Id: <DJ7PFABQGQ5X.Q9W1BXLAQXGP@gmail.com>
+To: "Kurt Borja" <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>,
+ "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Linus Walleij"
+ <linusw@kernel.org>, "Bartosz Golaszewski" <brgl@kernel.org>
+Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>
+Subject: Re: [PATCH 3/5] iio: adc: ti-ads1262: Add GPIO controller support
+From: "Kurt Borja" <kuurtb@gmail.com>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
+ <20260612-ads126x-v1-3-894c788d03ed@gmail.com>
+In-Reply-To: <20260612-ads126x-v1-3-894c788d03ed@gmail.com>
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Fri Jun 12, 2026 at 5:46 PM -05, Kurt Borja wrote:
+> Add support for the GPIO controller capability found in both TI ADS1262
+> and ADS1263 ADCs.
+>
+> Eight analog input pins can be programmed as GPIO. This configuration
+> does not prevent the pins from being used as analog inputs at the same
+> time, so no considerations were taken in that regard.
+>
+> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
 
-Fix a typo in the staging documentation path and adjust formatting of
-existing entries for readability.
+After going through Sashiko's feedback I realized this patch wasn't
+properly tested and the gpiochip callbacks were carelessly implemented.
 
-Add TODO items to track conversion of selected drivers to device managed
-resource APIs and evaluate usage of cleanup.h helpers for simplifying
-resource management.
+I'll do better for the next version and I apologize in advance for the
+time lost.
 
-These updates aim to better reflect ongoing cleanup efforts within the
-IIO subsystem.
-
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
-Changes in v2:
-- rectify sentences/info following input comment from Andy and Jonathan
-- v1 link: https://lore.kernel.org/all/20260601190836.2766703-1-sanjayembedded@gmail.com/
----
- drivers/iio/TODO | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/TODO b/drivers/iio/TODO
-index 2ace27d1ac62..7b05308248d7 100644
---- a/drivers/iio/TODO
-+++ b/drivers/iio/TODO
-@@ -5,12 +5,17 @@ Documentation
- tree
-   - Yaml conversions for abandoned drivers
-   - ABI Documentation
--  - Audit driviers/iio/staging/Documentation
-+  - Audit drivers/staging/iio/Documentation
- 
--- Converting drivers from device tree centric to more generic
--property handlers.
-+- Converting drivers from device tree centric to generic property handlers.
- 
- - Refactor old platform_data constructs from drivers and convert it
--to state struct and using property handlers and readers.
-+  to state struct and using property handlers and readers.
-+
-+- Convert selected IIO drivers to use fully device managed resource APIs.
-+
-+- Evaluate and possibly adopt cleanup.h helpers (guard()(), __free(), et cetera)
-+  in drivers where manual resource management is still used and there is a
-+  significant improvement to the code flow and complexity to be had.
- 
- Mailing list: linux-iio@vger.kernel.org
--- 
---
-
+--=20
+Thanks,
+ ~ Kurt
