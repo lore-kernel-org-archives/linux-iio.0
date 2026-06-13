@@ -1,202 +1,143 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A84539657A
-	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 19:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D112032D;
+	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781377843; cv=none; b=Q+1B1YcpsJpjLit+0N4tpcQPVb+dxdslgszNtIp3trfhe0IP7KSR4uS23W26uW40N3fkS3PI/QM1kLHB0SahDHIJbxWyx3Cf70MGB8rfqBZrHvZp+wMKfY+/D46MBX5ieVX3Dst9Rc4B3kUCTjcYI5frm1VqOuMHKUInO0idZUc=
+	t=1781390808; cv=none; b=nkk2TgqR63QePyO8E5OQ3rHwcQ29TpJg5VIw9LqMv7i6YCPHImv3C4U+3d6wjykUi7Gws3RNaapyqhOzqKMABSkPAKMJCjuZW5mkwwCxRg8O5aY72pF23g+lqCcMUN4q6hTrGN22eKhS+dL3fBI1hbxS2zBaT4wn1VsJS1ao+1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781377843; c=relaxed/simple;
-	bh=P7pHfBuzRGXNEHM0qtcu5fedmFVFkDeg8kglyBrhLbA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZMpLJtg+08GiGynw6p9Az0A59kSDDrAEDwKvGnoZSc3dchv7t6HWyP6MywUEA5xQEab+gSNOoPo3tEbNaujRtDQw3Nyyev5NmHBmSGxd4z+0ae6r60MDDn7IB1aM2ua8bo0tvNOAr3STsEv5snoe9oobj98c/Ol8g4qSEfxvXXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nEUAXmcj; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781390808; c=relaxed/simple;
+	bh=0sO1aTmYZ63HOcRq5p87x6LvnbtY7xR2PQWf+R7IwOo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=c/ermk8I2ZDu9250l03DhQuKI5oZKRjAg07wPkl7UdOXUptVlJdp0xmKnOgjTFpDqH5TUpflr0bxmS3Pj1NzDAHHKa0BZet/9BBdCQ4FDWJXfZ7gnjpD62Y5eZocAbniZxyUolTcZGvqAwVY5b3mLY4G8DHj+4ABUAFM5KGzRIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CDKeo8nj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nEUAXmcj"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-beeba001887so279339266b.3
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 12:10:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781377841; x=1781982641; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kjXinVBWr5oKzZT7R8oqfYcCkCKQtwdSjnXjkSKyW/w=;
-        b=nEUAXmcjD3ATLqvi+Hu8IBVjxVJwlSTOq7SA+trCzFT/H63cQNEzubMeCFIO15NKQ/
-         VLwKVmbjBrOaGA8t9zcL6GqdY5HH6r1UaB/Y4ok1zCzEgfZpkvW81vaj4c4vTIlhnn5R
-         9ymjOCXBORRPhTowj7oq5mSruqyiWtuLe+XX2pPOSsc1ucIrTENaup6WD+i39WQ/qtjt
-         FStphAd52lPYvQfIvnqjmiXvJ+01dGkxfoomja7h63DYM1UDTGu2IBgZOmWZi19XZmTR
-         4gRFnJfnuHWXh+ViIkfO88fYAzkGq/k7+hEa3ctkRqIy++fMKypmPwfP2kt5o0ReBgXq
-         Cnbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781377841; x=1781982641;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=kjXinVBWr5oKzZT7R8oqfYcCkCKQtwdSjnXjkSKyW/w=;
-        b=dskbQxEXqbPvOYCJQ4AmN4RXO46R3EPcdj1NKAIHvQNeJ0bfCg7jA/wr14aNSkyl1h
-         WULb5mIyuU7ekrCUWNRnAUmQCubzC+a6OzNF25CFAHEA42XkqXUexPf3hDy9AKDmqaWA
-         lMNQBqsLhxMwsYptO//M3kS1Aaz8B6LT0obG4fPVxB+U38PX7iXj94nyg/C0T+GKV2kO
-         q27EhiQPn4tMsewOJkdRHqD5PrzKW72D5/1U/1uLODW/6eU4DCd7OtT3ysVawRIyJVDy
-         18VnqQW8T6Zc5HmSmTvMoJUmRgUHSCjkSR3gr1eqk9ZYPvJTrFuBUud7L1akbmgd7cc3
-         mNgg==
-X-Gm-Message-State: AOJu0YyOnBquNnoTmk9Rpg/7BSG874ViUAj2HGEA8zMe1utBvu4tKJrZ
-	JhH0k2RNcojD3Ci+2nN5Nq7dk5f830YuQRl+4Zx7K2+0BJongFtlwWJN4GKDmxKS
-X-Gm-Gg: Acq92OFuRzcTRhjUtZaf4XWBDIXCqEbn8DxIvCEB8CumcA/px1GvEYFgwTrB5Pr8zvs
-	UeEX9gYqEufQz0g5wMQcuzeSlkVWSEFj/ATzwgzmZt6DlaE+SQ8kdySG1vlssQK7rYm/WRm+ASS
-	NkhdQjVZKZG/9lKYl6rr0h+6cPtWFQqk4qpKDJj2Ba7f6Z6lS3OOQ4Y+gKCE3lv1lMfoKbmFiTr
-	3M4Gyadm4HXfivbEUpEM8Icjtts0RMY3lH7vOeEcFFl6OD9i5gFWvLnbQXNiFZ8CS5kUwTWkuDX
-	V2vGB7DuoKeUI5JnmoKGX+8Evwron60v5P5TbtJxuApMx3kO2x5XYqF6NLuiY5UORi8KPJvqsuO
-	1egVAHJ1Ll1tUMy4Or6FIObL9gP2nUbRlAwQYy5/x1zqn8qbTZ+wcpMxkXErZ1bJMrE75SoMKME
-	yJPl9SIW/JzIFBxHRHQP5C5hXnT/QoUSQ7Hjp4aw/3cR8aHfRbglOPGgrWQA==
-X-Received: by 2002:a17:907:9414:b0:beb:7979:47dd with SMTP id a640c23a62f3a-bff4bbfb265mr241347866b.27.1781377840480;
-        Sat, 13 Jun 2026 12:10:40 -0700 (PDT)
-Received: from MSI-LINUX.kielce.vectranet.pl ([2a02:2a40:27ec:2900:9790:7740:8855:4d8c])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bfdb4b2276fsm237193366b.17.2026.06.13.12.10.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Jun 2026 12:10:40 -0700 (PDT)
-From: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: andy@kernel.org,
-	antoniu.miclaus@analog.com,
-	conor+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	dlechner@baylibre.com,
-	duje@dujemihanovic.xyz,
-	jic23@kernel.org,
-	jishnu.prakash@oss.qualcomm.com,
-	jorge.marques@analog.com,
-	krzk+dt@kernel.org,
-	linusw@kernel.org,
-	linux-kernel@vger.kernel.org,
-	marcelo.schmitt@analog.com,
-	mazziesaccount@gmail.com,
-	mike.looijmans@topic.nl,
-	nuno.sa@analog.com,
-	robh@kernel.org,
-	sakari.ailus@linux.intel.com,
-	wens@kernel.org,
-	joshua.crofts1@gmail.com,
-	Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Subject: [PATCH v3 3/3] iio: adc: Fix incorrect reading when datarate changed in single mode
-Date: Sat, 13 Jun 2026 21:09:57 +0200
-Message-ID: <20260613190957.654798-4-jakubszczudlo40@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260613190957.654798-1-jakubszczudlo40@gmail.com>
-References: <20260613190957.654798-1-jakubszczudlo40@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CDKeo8nj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 396F0C2BCB3;
+	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1781390808;
+	bh=0sO1aTmYZ63HOcRq5p87x6LvnbtY7xR2PQWf+R7IwOo=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=CDKeo8nj6XJqWj9zUns74X0TSU1qFI6eYTxhwaRMyBCZ7e6L0uMU4k/PhgX8gEsWB
+	 nAp1KAOzEIpleGPzi4tz8WTByT1clZVLa6dK5ENlCluVpY1JDOUM4u8evtPmBqUxX5
+	 UPNZHp/SovSBGmk3mj3fbC1ePI0bUVNBkULvmhHDtodtr15Z1os3AP4eW2H8chQD7R
+	 jVcF/pgSu3ytPRKwzRxvOsZRBw38L7c0Su45kOVARPfAumjn0Mhb9iWn/NO0nzsOQn
+	 TpEWV4L0U2qpYt4LPargm8NlDd9/PB2CDU6wRaA2BLT19qr0Y0rFZLbEOHYtzvHMyS
+	 TypwxcEaZiYNA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314C4CD8CA8;
+	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
+From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Date: Sat, 13 Jun 2026 17:46:47 -0500
+Subject: [PATCH] iio: imu: inv_icm45600: clamp the device-reported FIFO
+ sample count
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me>
+X-B4-Tracking: v=1; b=H4sIANbdLWoC/x3MQQqAIBBA0avErBvQNNGuEi1Sx5qNhUIE0d2Tl
+ m/x/wOVClOFqXug0MWVj9wg+w7CvuaNkGMzDGIwwkiFXmPkeuJovbM6KVRESQgXtFUBWnYWSnz
+ /y3l53w/F0hEGYgAAAA==
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Remi Buisson <remi.buisson@tdk.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781390806; l=3435;
+ i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
+ bh=v9HoACtqsgCt5jGG137Jw9QKYokE8rIehp0YKXfbLsQ=;
+ b=71Phw+TgwC3If+2IjJnDpn664vnnU5uqlLYSibalvvYCC/VSOL54m6xH2pxzGtTieNJ96NDKi
+ nEpnwrWwVbCB7PwBem+A9DTWH4/MOfzFh3LXHG6VcU0VNau16GQpA0g
+X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
+ pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
+X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
+ auth_id=814
+X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
+Reply-To: hexlabsecurity@proton.me
 
-When device is suspended and it is in single mode then changing
-datarate doesn't make it actual wait for new measurement, so to
-be sure that read after change is correct functions that changes
-datarate and gain will wait for new data.
+From: Bryam Vargas <hexlabsecurity@proton.me>
 
-Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+inv_icm45600_buffer_fifo_read() takes the number of samples to fetch from
+the device's FIFO_COUNT register and uses it, unclamped, as the length of a
+regmap_noinc_read() into the fixed 8 KiB st->fifo.data buffer:
+
+	fifo_nb = le16_to_cpup(raw_fifo_count);
+	...
+	if (max > 0 && fifo_nb > max)
+		fifo_nb = max;
+	st->fifo.count = fifo_nb * packet_size;
+	regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
+			  st->fifo.data, st->fifo.count);
+
+The only bound on fifo_nb is "max", but the interrupt handler calls
+inv_icm45600_buffer_fifo_read(st, 0), so on that path the clamp is
+skipped. A malfunctioning or malicious device (a counterfeit or
+compromised IMU, or a bus interposer) can then report up to 65535 in
+FIFO_COUNT, making fifo_nb * packet_size (16 bytes per packet) as large
+as ~1 MiB and overflowing the 8 KiB st->fifo.data heap buffer with
+device-controlled data.
+
+Clamp fifo_nb to the buffer capacity (INV_ICM45600_FIFO_SIZE_MAX /
+packet_size), mirroring the existing watermark cap in
+inv_icm45600_wm_truncate() and the sibling inv_icm42600 driver, which
+bounds its FIFO count to the buffer size. The clamp is a no-op for
+well-behaved hardware, whose FIFO never exceeds the buffer size.
+
+Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 ---
- drivers/iio/adc/ti-ads1100.c | 55 ++++++++++++++++++++++++++++++++++--
- 1 file changed, 52 insertions(+), 3 deletions(-)
+Reproduced with an in-kernel KASAN litmus mirroring the exact allocation and
+the FIFO_COUNT -> regmap_noinc_read() length computation, plus a userspace
+AddressSanitizer model for the full magnitude:
 
-diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
-index 76de2466dc53..195394665cd1 100644
---- a/drivers/iio/adc/ti-ads1100.c
-+++ b/drivers/iio/adc/ti-ads1100.c
-@@ -123,6 +123,36 @@ static int ads1100_get_voltage_microvolts(struct ads1100_data *data)
- 	return ads1100_get_voltage_milivolts(data) * MICRO / MILLI;
- }
+  Without this patch (device FIFO_COUNT = 0x208 = 520 packets -> 8320 bytes):
+    BUG: KASAN: slab-out-of-bounds ... Write of size 8320
+    ... the buggy address belongs to the cache kmalloc-8k of size 8192
+    ... located 0 bytes inside of allocated 8192-byte region
+  With this patch (count clamped to 8192 bytes): clean, no KASAN report.
+  ASan model at the full magnitude (FIFO_COUNT = 0xFFFF -> 1048560 bytes):
+    AddressSanitizer: heap-buffer-overflow WRITE of size 1048560,
+    0 bytes after the 8192-byte region (reproduces on 64- and 32-bit).
+
+The sibling inv_icm42600 driver bounds its FIFO count to the buffer size on
+the same interrupt path (max == 0 -> max_count = sizeof(st->fifo.data)); this
+restores the equivalent guard for inv_icm45600.
+
+Reproducer and full logs available on request.
+---
+ drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+index 2b9ea317385c..0021c3dc0888 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+@@ -422,6 +422,9 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
+ 	if (max > 0 && fifo_nb > max)
+ 		fifo_nb = max;
  
-+static bool ads1100_new_data_ready(struct ads1100_data *data)
-+{
-+	int ret;
-+	u8 buffer[3];
++	/* Limit to the internal buffer capacity; the count is device-provided. */
++	fifo_nb = min_t(size_t, fifo_nb, INV_ICM45600_FIFO_SIZE_MAX / packet_size);
 +
-+	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
-+	if (ret < 3) {
-+		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
-+}
-+
-+static int ads1100_poll_data_ready(struct ads1100_data *data)
-+{
-+	u8 buffer[3];
-+	bool data_ready;
-+	int datarate = data->ads_config->data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
-+   // To be sure we wait 5 times more than datarate
-+	unsigned long wait_time = DIV_ROUND_CLOSEST(MICRO, 5 * datarate);
-+
-+	/* To be sure that polled value will have value after config change */
-+	i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
-+
-+	return read_poll_timeout(ads1100_new_data_ready, data_ready,
-+				 !data_ready, wait_time,
-+				 ADS1100_MAX_DRDY_TIMEOUT, false, data);
-+}
-+
- static int ads1100_data_bits(struct ads1100_data *data)
- {
- 	return ads1100_data_rate_bits[FIELD_GET(ADS1100_DR_MASK, data->config)];
-@@ -165,6 +194,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- {
- 	int microvolts;
- 	int gain;
-+	int ret;
- 
- 	/* With Vdd between 2.7 and 5V, the scale is always below 1 */
- 	if (val)
-@@ -185,21 +215,40 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- 	if (gain < BIT(0) || gain > BIT(3))
- 		return -EINVAL;
- 
-+	ret = pm_runtime_resume_and_get(&data->client->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	ads1100_set_config_bits(data, ADS1100_PGA_MASK, ffs(gain) - 1);
- 
--	return 0;
-+	ret = ads1100_poll_data_ready(data);
-+
-+	pm_runtime_put_autosuspend(&data->client->dev);
-+
-+	return ret;
- }
- 
- static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
- {
- 	unsigned int i;
- 	unsigned int size;
-+	int ret;
- 
- 	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
- 	for (i = 0; i < size; i++) {
--		if (data->ads_config->data_rate[i] == rate)
--			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
-+		if (data->ads_config->data_rate[i] != rate)
-+			continue;
-+
-+		ret = pm_runtime_resume_and_get(&data->client->dev);
-+		if (ret < 0)
-+			return ret;
-+
-+		ads1100_set_config_bits(data, ADS1100_DR_MASK,
- 					FIELD_PREP(ADS1100_DR_MASK, i));
-+		ret = ads1100_poll_data_ready(data);
-+
-+		pm_runtime_put_autosuspend(&data->client->dev);
-+		return ret;
- 	}
- 
- 	return -EINVAL;
+ 	/* Try to read all FIFO data in internal buffer. */
+ 	st->fifo.count = fifo_nb * packet_size;
+ 	ret = regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
+
+---
+base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+change-id: 20260613-b4-disp-58b984f3-3eef009c483c
+
+Best regards,
 -- 
-2.47.3
+Bryam Vargas <hexlabsecurity@proton.me>
+
 
