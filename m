@@ -1,92 +1,120 @@
-Received: from mail-24418.protonmail.ch (mail-24418.protonmail.ch [109.224.244.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5352984039
-	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 07:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D66DA2032D
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 07:48:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781336128; cv=none; b=abJK3o7ay1tK8wDAioWivGSlTpPhZnPcxL5DCfciWF8bfPcaPvUxfwDcdzLfMTICMLzp/3WOGTufi97lCVHiZk+mI5j8dK0R3asxckgJZyVqHs7HjbacFGU7ptM3XFnT7Og2+sIbg2DYVTcRv/JeeKfcX/7P75CCUxClePVBlqM=
+	t=1781336892; cv=none; b=RX1Z5wujzQHAzGJPpEbEisdcOQaF/Rin0sD/sG6n9HpuDPrt7M1oJGVGVX++Eh+GnrsPnV6gVO5ofx/qn2Jwdr+U0KhXGhlThoGjiRph2QSSxDQwe3Qu5o01EPlu6ge7wYAOCn7AjBh1Wzjj0wSWurRj6wMCvtVTpG1Tk18oflI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781336128; c=relaxed/simple;
-	bh=3XJZ1J9oWgYD/IjK1U+r7zqufXSKRyqkCBO4NDLtKAI=;
-	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=cLGNAR9w/nmJgbc4gHJRti2NjVcOT7ZlI88sFmPGRG02yyH2oktXtxa9mqBfweQqR//J+Tls2VTWlilpeVuxw58JWHjrm9uskxIlgm+4g+AZ3ETZI2LvOTIjJ26qP2+g5Fttlg9NpvfM1mGiLg/ryJT8aeRud8MO5B+lC3tiVYQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=ZKCiFf5l; arc=none smtp.client-ip=109.224.244.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1781336892; c=relaxed/simple;
+	bh=okg1GB5TKk6RnGeE91jA5n9VVKA8b0YkN3zZoZtCWQI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=R9dk4SbWnrc5x6oljAu9Uwz5bknvJMWcaEQykjX3L381KBNEKs+lPV1NSDd7UkrN5P2N6vnch9XE93ZXWKgn8jfBm9VrN0KKz5ad6MM1HIylqE5v+mvRAniRlaq2av9eGRKHuYwE3zZyAJd+AB1DE21u7EKJSLnrZHepumO1QPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LrEWm9c7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="ZKCiFf5l"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=u7dovgts3facxb4h6mju454o6y.protonmail; t=1781336116; x=1781595316;
-	bh=62Qj2B1ZGPXQDg2S3MHWkUrOrjr3PUWyPmghTLuwPK0=;
-	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=ZKCiFf5lsWcerIdlRynZAYdIEEJtuIMXvwirBARbeHl43DNNXd9VZtTrRfE+1CzlH
-	 inm0WIy7IrYVpJ/JFjJ3N37Xi7WF5u2Tt8zVpFCWXLUMKbPJpyAUCZZ/TaPgy6SZst
-	 3yEaqhFvEdSepsRzcHmp+94m6T1XupWAo7YKDIo3LA/V+dUJ05WNnb8n0sBZLNZyVq
-	 X+mVJGk1ZukWkYSfxu9daJGkqB9LVQVeOtU/Zo9wqgEbpUC3BtxoBVIh7gMt0Y33ae
-	 Dc1zag1MtE8152l2D3EJbRfY1W/G1oG5tBeB/owbVvSCsBOJe7BF6nN30veGHWBWYz
-	 jQrYdieAC3APg==
-Date: Sat, 13 Jun 2026 07:35:09 +0000
-To: Jonathan Cameron <jic23@kernel.org>
-From: Bryam Vargas <hexlabsecurity@proton.me>
-Cc: =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: bmc150: clamp the device-reported FIFO frame count
-Message-ID: <20260613073504.168858-1-hexlabsecurity@proton.me>
-Feedback-ID: 199661219:user:proton
-X-Pm-Message-ID: 1bba523b52315f3ac8ada9cea31e8ece63058061
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LrEWm9c7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 829CD1F000E9;
+	Sat, 13 Jun 2026 07:48:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781336888;
+	bh=/qw/aU/CITkflD5cCUXBgFVFBea0Sdp+VsUwxXyZJ+k=;
+	h=Date:Subject:To:References:From:In-Reply-To;
+	b=LrEWm9c7aeJ93yhED0yGdx9XLo98LAQHz/QIM5a2K8+fbRQfsQJNzmP4wQq0RKxkE
+	 RS1xeJctpXrECmCNVL0R73MGdZvBLhrV7f0wN9Aeuw0M2pwHYGoi0/tUoczpUV1c6A
+	 W2xO4poyG3oCZUXCezrS3YPle+dcxYrIF3KBrkGsAqSwRLkV4cQXDauPyiGRMnVH8c
+	 OielEyORXhM2l/MnE8CEtL0XsSj6ok2d5pc6BJ8MDbwiuXXJu3YN9emUNBX06U4C85
+	 lcPlCDdjxJ02KtQHn/SMlQAG+UP6W4MiYjJKO3IM9WQm84+V3M2nuwqPigDfRzltWK
+	 YR1ErxT/XHmqw==
+Message-ID: <dcfef506-a7e5-473e-899b-07bf3dd546a5@kernel.org>
+Date: Sat, 13 Jun 2026 09:48:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: adi,ad5337: add dt-bindings
+To: Marcin Bis <marcin@bis-linux.com>, linux-iio@vger.kernel.org
+References: <20260612133125.196208-1-marcin@bis-linux.com>
+ <20260612133125.196208-2-marcin@bis-linux.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260612133125.196208-2-marcin@bis-linux.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-A couple of things that belong with the patch I just sent: the reproducer
-I used, and a heads-up about an in-flight series on this file.
+On 12/06/2026 15:31, Marcin Bis wrote:
+> Add dt-bindings for the AD5337 dual 8-bit I2C voltage-output DAC driver.
+> 
+> Signed-off-by: Marcin Bis <marcin@bis-linux.com>
 
-Reproducer
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-I reproduced the out-of-bounds write with an in-kernel test that drives the
-__bmc150_accel_fifo_flush() buffer geometry verbatim under KASAN
-(CONFIG_KASAN_STACK=3Dy), with the device-supplied frame count:
+Please use scripts/get_maintainers.pl to get a list of necessary people
+and lists to CC. It might happen, that command when run on an older
+kernel, gives you outdated entries. Therefore please be sure you base
+your patches on recent Linux kernel.
 
-  count=3D127, samples=3D0 (flush-all), no clamp:
-    BUG: KASAN: stack-out-of-bounds in ...fifo_flush
-    Write of size 762 ... 'buffer'   (the 192-byte buffer)
-  with the patch (clamp to BMC150_ACCEL_FIFO_LENGTH): the transfer is
-    bounded to 32 samples, no KASAN report.
-  a well-formed (<=3D 32 sample) flush is unaffected, no KASAN report.
+Tools like b4 or scripts/get_maintainer.pl provide you proper list of
+people, so fix your workflow. Tools might also fail if you work on some
+ancient tree (don't, instead use mainline) or work on fork of kernel
+(don't, instead use mainline). Just use b4 and everything should be
+fine, although remember about `b4 prep --auto-to-cc` if you added new
+patches to the patchset.
 
-The full 762-byte write -- a 570-byte overflow past buffer[] that smashes t=
-he
-stack canary and the return address -- reproduces the same way under usersp=
-ace
-AddressSanitizer on -m32 and -m64. The FIFO frame count is read over I2C/SP=
-I
-from the accelerometer, so triggering this requires a malicious or defectiv=
-e
-device, or tampering on the bus. No CVE has been assigned.
+You missed at least devicetree list (maybe more), so this won't be
+tested by automated tooling. Performing review on untested code might be
+a waste of time.
 
-In-flight series on this file
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-There is an in-flight cleanup from Gabriel Rondon converting this driver's
-locking to guard(mutex):
+Please kindly resend and include all necessary To/Cc entries.
 
-  [PATCH v3] iio: accel: bmc150: use guard(mutex) for mutex handling
-  https://lore.kernel.org/all/20260525110130.61284-1-grondon@gmail.com/
+Please organize the patch documenting the compatible (DT bindings)
+before the patch using that compatible.
+See also:
+https://elixir.bootlin.com/linux/v6.14-rc6/source/Documentation/devicetree/bindings/submitting-patches.rst#L46
 
-That series only rewrites the mutex_lock()/mutex_unlock() pairs -- includin=
-g
-the bmc150_accel_fifo_flush() wrapper -- and does not touch the count handl=
-ing
-in __bmc150_accel_fifo_flush(), so this fix is independent of it and the tw=
-o
-apply cleanly together. This patch is against mainline; if the guard(mutex)
-series lands first it needs only a context-line refresh.
-
-Thanks,
-Bryam
-
+Best regards,
+Krzysztof
