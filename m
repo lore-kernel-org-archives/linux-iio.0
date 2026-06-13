@@ -1,73 +1,73 @@
 Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B11E385D75
-	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 08:47:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DD5F39B49E
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 08:57:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781340463; cv=none; b=BMqm7brjSUgk+MO2UQyzlWSbEndv6CUV25xdZU7THdb5oioEtGqYWEegVSpYXGqiQXGraHZODlJoGPtQrz/THBqqmCipUIGRKtz7pe6mOMcLMASLE8uU9DGkIq4Sid07nauO+vwpNO2YdME+l8TXpIFIFynJT/t8187EV2Kkmtc=
+	t=1781341078; cv=none; b=NtoIoK2dgrDAK/FRmzbNQU4tLNnVYrLbq0VNt32L+pTC90h6+3yejHeqinjGSFx7pIr3vRPOJpEW55eZf+T4yt9IINGgfA4xAJWF6KfAlcWKYcbSPlP12/AqkSrq1MkgPHOTVJgDp9bff2kljDBahImAPu2ORmfhnNHSMwvlNss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781340463; c=relaxed/simple;
-	bh=RO5qDwNntsWRVf3hk2MbhYoXXAqEmMOVwsDvzO/JX+I=;
+	s=arc-20240116; t=1781341078; c=relaxed/simple;
+	bh=KxmEFsiaYYNkfspFB8uKNZ4vxVJa1iAcPyPU4pJgezM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MCQsfbifih5ZvlxzXIkjFQJQESMVuxZR40+Yj0lqtc3jDEp9cFR+l6HoLIqL99guggMNe7ecQl+GIKc44tBYZkXaYjs3DvZvUnsW8EL6SCppj+ChbwXpITv4OprxakPHJ0uvDYa6FR+k/YgMtU7MqNVqh135aaw3EkGUfVxjxF8=
+	 To:Cc:Content-Type; b=Yr8gcMd2oxkyHgbWVnxoPqRo6rmfieifMfBS2v89tILiZgzV/tk/dYFEAg5p7RzPBeIRR3EACaFFx+NWaHMyhQhvW3PoXAnDX8MJoHdE3RCpa1ku5wnbYMwQNB+C9V+JTVn6ECgLGA8XjADhruUP/dFT1i9paBLC4WBf19It8TY=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sirat.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7dc2b658544so12143197b3.2
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:47:39 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7e0aa486af8so20381147b3.1
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:57:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781340459; x=1781945259;
+        d=1e100.net; s=20251104; t=1781341075; x=1781945875;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=jGiCJ3o3O6zZWSIlnyakLQENXzMeJV1nXpt/hPjZYFY=;
-        b=ah18EoQh3ljHDeaZuWS7zygnkjacwu+ha0yFdUi6iPk3unsLNewjkgBZKgtaiEA9K0
-         3oVncFtoJCAh+kEnlW6vAURZGPaULEzthkxkTLZvQC//cjQlNVF4o5WMR+3dquLGVMjZ
-         Gh1eHwkUk5a30u5Stwkh42XWB1WFf/PUC2k4dYhNB97dypdY9vnygjmXgd1StI+Hl1Jf
-         WuIlnjVBB9YiWRW0/F9Kjw3+20uf4Q/XbkaI5FYm0L1oKozAlbjywD9Fme2cjm1AnqbZ
-         t4e9zWtzcrXpfm751z2HK+Sx3Q2GisNI7U6OWCT0xLL7E8XOxPGaCFKJQW72R3lZKh6q
-         eUfA==
-X-Forwarded-Encrypted: i=1; AFNElJ9Qpd3OuFbPJ7OeasrUMDwfNZwMpVS416QW+/CKCzrJhJGNMRbC/mfdToC30NwOwFRVVir1wRspFRs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzIzFGXMubUCPsVn9B4CYi5qZ926PY9bcttXzS4Z5WEsjryI/Zh
-	typ1ICAr/FeScPKqvjEat/0LLpnwOC37G6FDd+GJSgQsb2VBiYyCu/BfyEJXYS/b
-X-Gm-Gg: Acq92OHjXDVYZgEHD3FzD6XFthwkFASWeBUNVXRwx8qLM2G5p0pZ+urt8QslxvrMQpf
-	Jb+c52LWB4NktFhYlzDyXmdYCGNBTr0rvOQweTVb0PY31SOP0EtrnSJKGd/wNbThfNf5taAA6nh
-	gj60pV+rVZmlLtqI3L8CVvhurPDhOO6sjI0+Z5zBHvUqqoL+QSyEQodmIBX/wNoRWXUsqhywIIJ
-	f8Z33r4Zd+ec+dC55EOFTL/i1AJ0YIASRVl4pW7W7zStWsvp2ZkmCjIGo3iHRoZiaG+HLTCgsOy
-	Vzofc3b9gy32bVrSTJ1h1vOvugY8I+10zfKPhNEh+/eQBTXQLNhS5DlFcJ0Rc29+0a+UpebI7zq
-	DQkaigJ9jC2KrMCwITm+y6DR7mHoobSWEM3apSOiS8pv2SsrG5LjzOOU90SfS7VMQf4MUBo4cHn
-	uUNdDeMof8h60oWbFuoIh0zEkZuNBS0jV6S7HOe6agluKIkRRJYaXWfuINJS/aFwJ5RCJ8ghw9j
-	Ll52ZK93mHJC8xuABIWNNMZOjp+eJbU/oHmv7rleyUa/+LcjYPakAPVhj3NXb7Np4kNJ0+/x1eU
-	4nsAgvavAvqH8cvYxzhlvUvFjApYf23pvEx2LtzJKteZroyxeT73lbh9Ew==
-X-Received: by 2002:a05:690c:c501:b0:7b1:fa45:72e3 with SMTP id 00721157ae682-7f7b56466c2mr63363547b3.4.1781340458732;
-        Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7f76e8991ccsm20251067b3.16.2026.06.13.01.47.38
+        bh=8EVlQKkEG7RLm/aT+nw257EWmKYSXeMTO6xqdrR77mE=;
+        b=c2aRKXxmNsDUIuWcit7ng+7Cw5T5L36kFdKMHf/L09Ul0BFpKyl4wkyTjqo0EM2WJC
+         2xNI3CteJ7elxYpUbNzo7FxdluZfQMVtT1mwS8iuO4VJe847xqj2K5hI4qyWLmJhe1zf
+         orEWXg9dPaqt6N1/lyEa3KclrVY2ddBA9axUXp+yyrnnpZqLLlCClpN1xknutCOuWSrZ
+         g87mFANvEVr6mxqd6sOlU8MO+mBEHc1L67ojo5+DBhO5wk7+IslxCsQtQkzhka7wQ987
+         Pokyk0z32dCwN8FS5vsLZQxVBJz2uke08KWjPvDIrcg4azIa84TRGOkMPNFGQsqpbrnK
+         RY2A==
+X-Forwarded-Encrypted: i=1; AFNElJ8Q8jauJMtI5Q50lIQS3jJNVztiR4/yBBZ4Uh06U03Df1Dz7e0KxghJqZfuE0RaqId0DkivyZaxlGA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvmGCHeifC+jYq1n1v7irZS23ZdM/HC/EDMO7BgqEFNGlQG+RJ
+	15FlZkRlhKcu0g0teGU3mBY4Re1gvolu168fV/7VMj61GtDzXANMbkUBCBLkIqIq
+X-Gm-Gg: Acq92OHSW+6ghbrsDfgohOI/XZogqDI9g4cI5fbObquwOUioFKkelEy4X1/PbRsw05i
+	k7QrGmaW0HUYZ5AdBP7p1VoSQFZW68rJiKkjbiJTs/TdJXEjp4zU7ZWIaLhne9UII8ezstqavJr
+	xKR62vyMr9+hRVVhgluRxg5lFqLxoJiZB3OQdvUrVbC2Kah0uQtdP0NUuOWwJbKy3hk24s10neB
+	UppfSfMbrxDpNwH1CpG24Y3y4QUWmTl/3R7QxWw3CXRgNgmVhumyIa9r+g1GaOdFeg+LBjiGtE8
+	jdRqcNA6XaRCMRTGU/XCDz5zavRSmtW4PXsNN62tHuCdVRO4spqD8V8uYsCouxmWwgu6Yyg8AJn
+	EC/rAs/cEORdK1E2AMZLXW3eOWjjAsr5Y5TemSPcDD9iq5WzAgVuo1EHqVOOkI0RCVFa7No2L1n
+	XZiVv0U7S9fomQgUPVew9cZVVBjzv5R0xotDFlwU9W9/Mk6azbRfCewxksQXm0YlWUlyvRw9Px5
+	N/kd84nCE27YY6TwTIj+t0NQdL5KmM1LrimSJQm3Fj9AasqRhle+WL+GI23xNeRunhLX/y7UqUH
+	d8mhZlUHdtQgFHjbFEex5WeZLwE4dLaZ2NEdEFL+BlPH8MLT0E91Os3EZw==
+X-Received: by 2002:a05:690c:358a:b0:7e8:60bd:979d with SMTP id 00721157ae682-7f7ce3fd2c3mr47651777b3.23.1781341075253;
+        Sat, 13 Jun 2026 01:57:55 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7f7712f3c11sm20546117b3.41.2026.06.13.01.57.54
         for <linux-iio@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7dc2b658544so12143177b3.2
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:47:38 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9baVg9eQUzNLMJmZe5z5ThkayMLqe3zuyiSJjJtsZbcrmDue0fWYb/2i1ZLsthaSliavZic0ffld0=@vger.kernel.org
-X-Received: by 2002:a05:690c:8d13:b0:7f8:7e31:28a9 with SMTP id
- 00721157ae682-7f87e312c90mr32729197b3.49.1781340457950; Sat, 13 Jun 2026
- 01:47:37 -0700 (PDT)
+        Sat, 13 Jun 2026 01:57:54 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-7f015f87fddso19354997b3.0
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 01:57:54 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9HwcSJJHb/YTCMIOgRWbvEnHmgjZAtox1DRL5FmEu3uJ/4yCBsKvGqDgaz9kXt+NArVhV5WxYEqtI=@vger.kernel.org
+X-Received: by 2002:a05:690c:4a0c:b0:7ef:e7ec:b6e7 with SMTP id
+ 00721157ae682-7f7988731cfmr51443407b3.27.1781341074163; Sat, 13 Jun 2026
+ 01:57:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260612124557.13750-1-email@sirat.me> <20260612124557.13750-4-email@sirat.me>
- <20260612180235.3e505c66@jic23-huawei>
-In-Reply-To: <20260612180235.3e505c66@jic23-huawei>
+References: <20260612124557.13750-1-email@sirat.me> <20260612124557.13750-3-email@sirat.me>
+ <20260612173013.64f435ab@jic23-huawei>
+In-Reply-To: <20260612173013.64f435ab@jic23-huawei>
 From: Sirat <email@sirat.me>
-Date: Sat, 13 Jun 2026 14:47:25 +0600
-X-Gmail-Original-Message-ID: <CANn+LWJoSiCY8cTBNZd9w0H-b-D6C7rH2j8QmB57eTKO0g-x_A@mail.gmail.com>
-X-Gm-Features: AVVi8CfiNR2HD_SQ5WBiWnwoLYHNxM04uaXSAZAXJUuauVTe4aUCPJODiEkEFXs
-Message-ID: <CANn+LWJoSiCY8cTBNZd9w0H-b-D6C7rH2j8QmB57eTKO0g-x_A@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: magnetometer: add driver for QST QMC5883L Sensor
+Date: Sat, 13 Jun 2026 14:57:42 +0600
+X-Gmail-Original-Message-ID: <CANn+LW+OSfo3u+7wZu11j7tQd-PGyhrz3a9+st-FwjOLbT4NBw@mail.gmail.com>
+X-Gm-Features: AVVi8CfkEVa8jbtmbQfja_oWdfvUZG5fvSdkCptWn5Mrht3KziUi5MBOh60cRjA
+Message-ID: <CANn+LW+OSfo3u+7wZu11j7tQd-PGyhrz3a9+st-FwjOLbT4NBw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] dt-bindings: iio: magnetometer: add QST QMC5883L Sensor
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
 	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
@@ -76,91 +76,25 @@ Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 12, 2026 at 11:02=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
+On Fri, Jun 12, 2026 at 10:30=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
 > wrote:
 >
-> On Fri, 12 Jun 2026 18:45:27 +0600
+> On Fri, 12 Jun 2026 18:45:26 +0600
 > Siratul Islam <email@sirat.me> wrote:
 >
-> > Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
+> > Add devicetree binding for the QST QMC5883L 3-Axis Magnetic Sensor
 > > connected via i2c.
-> >
-> > Signed-off-by: Siratul Islam <email@sirat.me>
+> > Interrupt not implemented in driver but kept in the binding for future
+> > addition.
+> No need to mention that
+Got it. In the past I was advised to mention certain choices in the
+commit message. I am still looking for the balance.
 >
-> Trying to avoid repeating stuff Joshua already covered.
-> Various comments inline.
+> The rest looks good to  me.
 >
 > Thanks,
 >
 > Jonathan
 >
-> > diff --git a/drivers/iio/magnetometer/qmc5883l.c b/drivers/iio/magnetom=
-eter/qmc5883l.c
-> > new file mode 100644
-> > index 000000000000..055e51570635
-> > --- /dev/null
-> > +++ b/drivers/iio/magnetometer/qmc5883l.c
-...
-> > +#define QMC5883L_OSR_512     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x00)
-> > +#define QMC5883L_OSR_256     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x01)
-> > +#define QMC5883L_OSR_128     FIELD_PREP_CONST(QMC5883L_OSR_MASK, 0x02)
-> > +#define QMC5883L_OSR_64              FIELD_PREP_CONST(QMC5883L_OSR_MAS=
-K, 0x03)
-> These are used for matching - normally we'd add defines for the filed val=
-ue and
-> then use FIELD_GET() to extract it for matching.
-> e.g.
-> #define QMC5883L_OSR_512                0x0
-> #define QMC5883L_OSR_256                0x1
-> rather these.
->
-I thought using _CONST would be better for compile time checks and not
-needing to use FIELD_GET everywhere. The values 0x01, 0x02 don't have
-a lot of meaning in a vacuum. But of course you would have more
-experience about it and I'd love to know why we shouldn't use const.
-> > +
-...
-
-> > +static const int qmc5883l_rng_avail[] =3D {
-> > +     0, QMC5883L_SCALE_2G,   /* 2G */
->
-> I'm not sure the defines really help. Perhaps push the value down here
-> and then look it up from this array when matching.
->
-But then the array will be serving more than 1 purpose? kind of like a
-side effect I think.
->
-...
-> > +
-> > +     /* DRDY pin no used in this version of the driver */
-> > +     ret =3D regmap_write(data->regmap, QMC5883L_REG_CTRL2,
-> > +                        QMC5883L_INT_DISABLE);
-> I don't mind if these sorts of cases go a little over 80 chars as sometim=
-es
-> it helps readability.
->
-I try to disable clang-format for cases like this. It's an oversight on my =
-side.
->
-> Does it really reset with interrupts on?  That's odd.  Mind you the
-> INT_ENB sounds like it would be an enable but as you have named it here
-> it is actually a disable so all bets are off when it comes to sensible ;)
->
-The datasheet says "The interrupt can be disabled by set 0AH[0] =3D 1"
-which I took as it's enabled by default.
-I explicitly disable it just to be safe.
->
-...
-> > +static const struct of_device_id qmc5883l_match[] =3D {
-> > +     { .compatible =3D "qstcorp,qmc5883l" },
-> > +     { },
->
-> As below, no comma.
->
-I did it so that clang-format doesn't wrap it all in 1 line. I forgot
-to remove the comma before sending the patch. Sorry.
-> > +};
->
-
 Thanks
 Sirat
