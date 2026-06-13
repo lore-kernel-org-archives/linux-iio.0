@@ -1,228 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787F01A6817;
-	Sat, 13 Jun 2026 18:59:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04723394E91
+	for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 19:10:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781377183; cv=none; b=uIN/mMcrxYtMu16OL+KElNMVfGYtdzCIi1oTjN+sHtWG/W/9R6LuUbBX4nvnJ9MYWobZexHLfFSrBSq7PiW9V1fuTrqW4oHO7xzsoNaH778272z59poO99zbLPvdzRz8pZJNNqIQmVVisgmb9jYn7x3e4mChxigL/TSL9J4jjjM=
+	t=1781377822; cv=none; b=eHXImNLDZEXNtdRcd7YYjdQk9SdWsD2WBhC1P5EMufrTkDPA+kERrI6JM/d1qPhJnV6tijz9pMfKzAky6KRwF5qmYprnRO+ZecTFU4rKuZlAh5ugIhxqohHbfDdUDlylxoj+cDIldk1npnUC3VcnyPgkIlNl5dRrNlW1uh5QUwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781377183; c=relaxed/simple;
-	bh=CmzhQib4fvHKdIxjOsJLEXVLLDCn7oEgJ/0AWrT4BFQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QQa5DFA1DQoQWIAG/2kG0dpGLqfr3PPYdwn/gY8sQb+/VGBdWenL93LQIol0LVvU5F7lONBtblKoKcGSpO11kXBgpCQEkwwp+L7ID2dx+r2D/HFSQOYNDQQBpXMh0s11Ev/Ie4doZOTTRPS7LvyynOoCICiFCw03Rsy+inRdwBw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dli7VO1i; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781377822; c=relaxed/simple;
+	bh=IarGWq0h4k7YgRYkX36nCoK+3Jt6gr7vdYY/leCwb9M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LKwpemeohtgESeDA69KYvntSgE+rEhD1GRLAcNgl/rkQ48t6S/SeHN3paPGJrEITzE/CY5T2P2RGX5D8IBhmt2vQ5CF3NOcY00uCVkbmMpNDIZqOXpQdoHzAYFmWamWKxooTPo5odKcV4GkIWfcXo5KNAYLQNiysR5Zmx7ynjWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YENmbA6k; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dli7VO1i"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6937F1F000E9;
-	Sat, 13 Jun 2026 18:59:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781377182;
-	bh=eRoI+4eIP0KMU8IMBuQepEAJ6uz5U/Oa0zjpt3Woq5I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=dli7VO1ioqFM57aM/olMUdHMmeicJyK3DKilzhq/lJXvVewx+4isK91XqJG2QH6K1
-	 kYIcKD/7h2QJ2/SR6u+Oqt6JiS1lWtAwFUdzVg6w2zabeUtupJyvjsc/xr/PSq6Unc
-	 M8ToI1PIc5CSjnOefkEB4aZlutA6R9Yy9zIupLilYEqqL+VE4JsPi+z5GevZVWK1Cp
-	 kFNcqYItF/DIpn/C+lI4neZlQGbQmg7Ly6eicN36IcBZeNmSMkGTsegSrQKc8s4tSe
-	 n2R6O3IaZ9TPVQDfbU/P1sWnaQHw2Pyfk3y31oycXU3nWf3IkxCxDNSLQSI2eqjt1r
-	 airTh8GLFMfFg==
-Date: Sat, 13 Jun 2026 20:59:39 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Kurt Borja <kuurtb@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
-Message-ID: <20260613-sparkling-naughty-tuna-3e9bf1@quoll>
-References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
- <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YENmbA6k"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6919f40a0c8so3718343a12.0
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jun 2026 12:10:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781377818; x=1781982618; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=463x8kT/wzRlmQHGudSYziOyf/LSV3/qWwdmBIWyYR0=;
+        b=YENmbA6kPGE6vQhr4skKsJnq+te3NSsKplGNts63Qs+b5s+NNjLTDe5fx+MtEgdW7T
+         iB/VVCuO76MKSvBpoTZwmgwEWZymCOOMjqvDDzCh8Z5Gg8B03dAFIUJ9NzfXoLTW+IK4
+         Ww3/+J0W7FUgoBCh6A5cx6wnsYLPYuTQIk7e2CCFx+g8qLHo/2r1a1L5GDRXnQmD6aVt
+         bS5JPXNltIJL57AN2xNjuBp8RUFhmb6SbkJuQGLfURAOk0zLsz3NcffFpBid00T/yoes
+         wWjZq+xXGMhrq/WM3wujSlViEZk0I/oRxh/QQM3WBmIjSavgeAzS/1jt577mw0lcCPsN
+         teXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781377818; x=1781982618;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=463x8kT/wzRlmQHGudSYziOyf/LSV3/qWwdmBIWyYR0=;
+        b=VlrtunmQ6N2tM2k4YPXNIWsOvnIjTvtaVNnohl6PtiCmZXJ90ED+bOudMCkZGX13zb
+         Rde2j50dKH6BTgTzKuXcC5O2h1G34KAGRDdobnHfZQvvWkHnnQsfwLhv/l4tu5dOtIdv
+         ayaB78T/wpcoFx6Ym2F5RVLnoXhUi6QD7PwxzSN/Vy3E/j7jh6BhrttBibMVJ2gozQul
+         JD4PCfLUPD76hx+2SOIKblVcelGwMdPbSwfqzEGorPWY6PJx7q97Sg6S1XT7Uilnu0zC
+         n9r5rgTRyEHgJ3vc+LhmOK0bmtUHQWQqbRcTwpj3z7XTQy5GDkKVw4qQ+sIUVg9+8wZU
+         whoA==
+X-Gm-Message-State: AOJu0YzDDf6vQPVA+VxgwT+1YPi6Pxe14FdNdJxEiTTreSZ4NvEIHsrj
+	v+2Ue/KKAtNWFMulTFbVMNLte7tQG7q442taQ03dde+F1ISoW4iXGJfby09GHV28
+X-Gm-Gg: Acq92OGyYkoop/f7YOdqwIOgrcfNAMqnmPvweRocd9uss7Ug3J3/JZB97zdp0juoNPN
+	eFIYxvk9uimBRWWVxI/aQPKfCaBKGD13pvpccfcfZf/9NyRV0bFqquOu6PQkp0SvYfIiv5Asw+g
+	ZFQ4pzC+YtUaPadaKKZyG6Z2otLlUkKu2ZaJ4wZrn07EbZ0aWpF/T9utlZCOduYCMnWoHday8/2
+	qcorK2Ly8Dqz8UtlmyVvzeP0iS619zE/4FoO9yqZs65gSqBELOEasUE67f2Lj83QAiPODddcOIn
+	5P8fOmLT411FYi6Es3Vap8In759T6lhZSlJdPTObnQFaICvIzuK64Q7Jk9Oprm1DeMSCTRZrnX5
+	fbZMNPU1wqu7/MOnh8SJ2oEv2w2taD8QhlesgL+NKq9/bOI2wCI2ngQTPMMtv23UzFfoXo/mty0
+	3ilpAJGUlJc7bIHsaTksSf4Pl7wP0Nd/6ra1YYjaiBS4XqQuwz/MpE9Dl9fw==
+X-Received: by 2002:a17:907:7f86:b0:bec:894d:dd45 with SMTP id a640c23a62f3a-bff4cdd5123mr180433266b.38.1781377818222;
+        Sat, 13 Jun 2026 12:10:18 -0700 (PDT)
+Received: from MSI-LINUX.kielce.vectranet.pl ([2a02:2a40:27ec:2900:9790:7740:8855:4d8c])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-bfdb4b2276fsm237193366b.17.2026.06.13.12.10.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Jun 2026 12:10:16 -0700 (PDT)
+From: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: andy@kernel.org,
+	antoniu.miclaus@analog.com,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	dlechner@baylibre.com,
+	duje@dujemihanovic.xyz,
+	jic23@kernel.org,
+	jishnu.prakash@oss.qualcomm.com,
+	jorge.marques@analog.com,
+	krzk+dt@kernel.org,
+	linusw@kernel.org,
+	linux-kernel@vger.kernel.org,
+	marcelo.schmitt@analog.com,
+	mazziesaccount@gmail.com,
+	mike.looijmans@topic.nl,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	sakari.ailus@linux.intel.com,
+	wens@kernel.org,
+	joshua.crofts1@gmail.com,
+	Jakub Szczudlo <jakubszczudlo40@gmail.com>
+Subject: [PATCH v3 0/3] iio: adc: Add support for TI ADS1110 to  ti-ads1100 driver
+Date: Sat, 13 Jun 2026 21:09:54 +0200
+Message-ID: <20260613190957.654798-1-jakubszczudlo40@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 12, 2026 at 05:46:20PM -0500, Kurt Borja wrote:
-> +
-> +	val = FIELD_PREP(ADS1262_IDACMAG_MAG1_MASK, idac_mags[0]);
-> +	val |= FIELD_PREP(ADS1262_IDACMAG_MAG2_MASK, idac_mags[1]);
-> +
-> +	return regmap_update_bits(st->regmap, ADS1262_IDACMAG_REG,
-> +				  ADS1262_IDACMAG_MAG1_MASK |
-> +				  ADS1262_IDACMAG_MAG2_MASK, val);
-> +}
-> +
-> +static int ads1262_gpio_setup(struct ads1262 *st)
-> +{
-> +	struct device *dev = &st->spi->dev;
-> +	struct gpio_desc *gpiod;
-> +	const char *con_id;
-> +
-> +	con_id = "start";
+Add support for the TI ADS1110 to the existing ADS1100 ADC IIO driver.
+The ADS1110 is pin-to-pin compatible with the ADS1100 while providing
+higher resolution and an internal voltage reference. This patch series
+extends driver support for ADS1110, updates device tree bindings and
+Kconfig text, and improves the overall hardware description for the
+TI ADS1100 family.
 
-Nope, see further
+Tested on: Raspberry pi 3b+ with 7.0 stable kernel
 
-> +	gpiod = devm_gpiod_get_optional(dev, con_id, GPIOD_OUT_LOW);
-> +	if (IS_ERR(gpiod))
-> +		return dev_err_probe(dev, PTR_ERR(gpiod),
-> +				     "Failed to get %s GPIO\n", con_id);
-> +	st->start_gpiod = gpiod;
-> +
-> +	con_id = "reset";
+Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
 
-Nope
+---
+V2 -> V3:
+- clean patch from unreleated changes
+- divide adding support for ads1110 into separate patch
+- add missing changelog
+- Link to v2: https://lore.kernel.org/linux-iio/20260607183542.368184-1-jakubszczudlo40@gmail.com/
 
-> +	gpiod = devm_gpiod_get_optional(dev, con_id, GPIOD_OUT_HIGH);
-> +	if (IS_ERR(gpiod))
-> +		return dev_err_probe(dev, PTR_ERR(gpiod),
-> +				     "Failed to get %s GPIO\n", con_id);
-> +	st->reset_gpiod = gpiod;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads1262_clk_setup(struct ads1262 *st)
-> +{
-> +	struct device *dev = &st->spi->dev;
-> +	struct clk *clk;
-> +	int ret;
-> +
-> +	clk = devm_clk_get_optional_enabled(dev, NULL);
-> +	if (IS_ERR(clk))
-> +		return dev_err_probe(dev, PTR_ERR(clk),
-> +				     "Failed to get external clock\n");
-> +
-> +	/*
-> +	 * The nominal clock frequency as indicated by the datasheet is
-> +	 * 7372800.
-> +	 */
-> +	ret = clk_set_rate(clk, 7372800);
-> +	if (ret)
-> +		return dev_err_probe(dev, PTR_ERR(clk),
-> +				     "Failed to set the nominal clock frequency.\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static int ads1262_regulator_setup(struct ads1262 *st)
-> +{
-> +	struct device *dev = &st->spi->dev;
-> +	const char *reg_id, *prop;
-> +	u32 mux[2] = {};
-> +	int val, ret;
-> +
-> +	reg_id = "dvdd";
-> +	ret = devm_regulator_get_enable(dev, reg_id);
-> +	if (ret)
-> +		goto err_regulator_get;
-> +
-> +	reg_id = "avdd";
+V1 -> V2:
+- go from creating new driver to extending ADS1100 driver to support ADS1110
+- Link to v1: https://lore.kernel.org/linux-iio/20260527164312.355729-1-jakubszczudlo40@gmail.com/
 
-Nope.
+Jakub Szczudlo (3):
+  dt-bindings: iio: adc: ti,ads1100: add support for ADS1110
+  iio: adc: Add ti-ads1110 support to ti-ads1100 driver
+  iio: adc: Fix incorrect reading when datarate changed in single mode
 
-> +	ret = devm_regulator_get_enable(dev, reg_id);
-> +	if (ret)
-> +		goto err_regulator_get;
-> +
-> +	prop = "ti,neg-refmux";
-> +	device_property_read_u32(dev, prop, &mux[0]);
-> +	if (mux[0] >= ADS1262_RMUX_COUNT)
-> +		return dev_err_probe(dev, -ENXIO, " %s out of range\n", prop);
-> +
-> +	prop = "ti,pos-refmux";
+ .../bindings/iio/adc/ti,ads1100.yaml          |  10 +-
+ drivers/iio/adc/Kconfig                       |   6 +-
+ drivers/iio/adc/ti-ads1100.c                  | 136 +++++++++++++++---
+ 3 files changed, 123 insertions(+), 29 deletions(-)
 
-Don't do such syntax. You make git grep unnecesssary difficult.
-
-> +	device_property_read_u32(dev, prop, &mux[1]);
-
-And this shows in `git grep` as completely pointless code.
-
-> +	if (mux[1] >= ADS1262_RMUX_COUNT)
-> +		return dev_err_probe(dev, -ENXIO, " %s out of range\n", prop);
-> +
-> +	if (mux[0] == ADS1262_RMUX_INTER && mux[1] == ADS1262_RMUX_INTER) {
-> +		/* The internal voltage reference is 2.5 V */
-> +		st->vref_uV = 2500000;
-> +		return 0;
-> +	}
-> +
-> +	val = FIELD_PREP(ADS1262_REFMUX_RMUXN_MASK, mux[0]);
-> +	val |= FIELD_PREP(ADS1262_REFMUX_RMUXP_MASK, mux[1]);
-> +	ret = regmap_update_bits(st->regmap, ADS1262_REFMUX_REG,
-> +				 ADS1262_REFMUX_RMUXN_MASK |
-> +				 ADS1262_REFMUX_RMUXP_MASK, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	reg_id = "vref";
-
-Nope.
-
-> +	st->vref_uV = devm_regulator_get_enable_read_voltage(dev, reg_id);
-> +	if (st->vref_uV < 0)
-> +		goto err_regulator_get;
-> +
-> +	return 0;
-> +
-> +err_regulator_get:
-> +	return dev_err_probe(dev, ret, "Failed to get regulator %s\n", reg_id);
-> +}
-> +
-
-Functions used by probe() should be before probe(), not somewhere in the
-middle of the code. IOW, entire probe is together.
-...
-
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static int ads1262_runtime_suspend(struct device *dev)
-> +{
-> +	struct ads1262 *st = dev_get_drvdata(dev);
-> +
-> +	if (!st->reset_gpiod)
-> +		return 0;
-> +
-> +	regcache_cache_only(st->regmap, true);
-> +
-> +	return ads1262_dev_power_off(st);
-> +}
-> +
-> +static int ads1262_runtime_resume(struct device *dev)
-> +{
-> +	struct ads1262 *st = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	if (!st->reset_gpiod)
-> +		return 0;
-> +
-> +	ret = ads1262_dev_power_on(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	regcache_cache_only(st->regmap, false);
-> +	regcache_mark_dirty(st->regmap);
-> +
-> +	return regcache_sync(st->regmap);
-> +}
-> +
-> +DEFINE_RUNTIME_DEV_PM_OPS(ads1262_runtime_pm, ads1262_runtime_suspend,
-> +			  ads1262_runtime_resume, NULL);
-> +
-> +static const struct of_device_id ads1262_of_match[] = {
-> +	{ .compatible = "ti,ads1262" },
-> +	{ .compatible = "ti,ads1263" },
-
-So devices are fully compatible? Then it should be expressed in the
-binding and drop one entry here.
-
-Best regards,
-Krzysztof
+-- 
+2.47.3
 
