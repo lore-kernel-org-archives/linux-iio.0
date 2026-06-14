@@ -1,143 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D112032D;
-	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3231D247291
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 05:57:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781390808; cv=none; b=nkk2TgqR63QePyO8E5OQ3rHwcQ29TpJg5VIw9LqMv7i6YCPHImv3C4U+3d6wjykUi7Gws3RNaapyqhOzqKMABSkPAKMJCjuZW5mkwwCxRg8O5aY72pF23g+lqCcMUN4q6hTrGN22eKhS+dL3fBI1hbxS2zBaT4wn1VsJS1ao+1Y=
+	t=1781416655; cv=none; b=Prcb30yYBGyseQfQtlptH0QdIxqIBXh+hvDqrBODv0sS1BSMRZs2OzJT/JjZF+ckDZCF2UYfiYkvzkhv4F0qKRNtalKtkLcK1SGOA/B/XhcE7png9gERO+6bFspTxgWyIZQ6wbDFWQv5cla3jph03vH+YHpHyy+IOETVKLoPvEY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781390808; c=relaxed/simple;
-	bh=0sO1aTmYZ63HOcRq5p87x6LvnbtY7xR2PQWf+R7IwOo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=c/ermk8I2ZDu9250l03DhQuKI5oZKRjAg07wPkl7UdOXUptVlJdp0xmKnOgjTFpDqH5TUpflr0bxmS3Pj1NzDAHHKa0BZet/9BBdCQ4FDWJXfZ7gnjpD62Y5eZocAbniZxyUolTcZGvqAwVY5b3mLY4G8DHj+4ABUAFM5KGzRIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CDKeo8nj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1781416655; c=relaxed/simple;
+	bh=pbz6P86RgnamRdlbGB4RjGbZ9JA7M01FmqxRp98j+No=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kdpfDS9cnbSAoNCbswPc/OlX74vd9vBcbaQR7cUxqFHcOAxyCgeaidkOFfo8NORpBviiUNjPB1XVgBXOP/3eUWpKVdjhidqzvUO+0mm2bFpUcV6gIC6OBvoLUP+T9YOjvyzg0Q91TL3AT+xSUJlR5VsnTsTgXKvt5SMf1dnW0vE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=O/Cr9Ab+; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CDKeo8nj"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 396F0C2BCB3;
-	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1781390808;
-	bh=0sO1aTmYZ63HOcRq5p87x6LvnbtY7xR2PQWf+R7IwOo=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=CDKeo8nj6XJqWj9zUns74X0TSU1qFI6eYTxhwaRMyBCZ7e6L0uMU4k/PhgX8gEsWB
-	 nAp1KAOzEIpleGPzi4tz8WTByT1clZVLa6dK5ENlCluVpY1JDOUM4u8evtPmBqUxX5
-	 UPNZHp/SovSBGmk3mj3fbC1ePI0bUVNBkULvmhHDtodtr15Z1os3AP4eW2H8chQD7R
-	 jVcF/pgSu3ytPRKwzRxvOsZRBw38L7c0Su45kOVARPfAumjn0Mhb9iWn/NO0nzsOQn
-	 TpEWV4L0U2qpYt4LPargm8NlDd9/PB2CDU6wRaA2BLT19qr0Y0rFZLbEOHYtzvHMyS
-	 TypwxcEaZiYNA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 314C4CD8CA8;
-	Sat, 13 Jun 2026 22:46:48 +0000 (UTC)
-From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
-Date: Sat, 13 Jun 2026 17:46:47 -0500
-Subject: [PATCH] iio: imu: inv_icm45600: clamp the device-reported FIFO
- sample count
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="O/Cr9Ab+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252D81F000E9;
+	Sun, 14 Jun 2026 05:57:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1781416653;
+	bh=E8oVs44uVI7TLSkF5uHRhT433pHsJNZZ47ey07OMI50=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=O/Cr9Ab+uqj8vVsk3VzWB5tJWActF4medJm1ngC5b2gn0CjKIbWm0vo8OcMd+O3td
+	 e1E+N9CtrZXQddKXDJ7wPT67U7r1I5cHWzJfLmuqM/4Pgxvrcu0wc+dCoS+8kF2GUu
+	 YDtVn0Z8ploFe4jMo+XCCcT5yKghitH6kXUlR+Io=
+Date: Sun, 14 Jun 2026 07:56:32 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL] IIO: 2nd set of fixes for the 7.1 cycle
+Message-ID: <2026061459-unzip-linguini-6af8@gregkh>
+References: <20260602151415.1c17664b@jic23-huawei>
+ <20260613151436.4ed833ef@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me>
-X-B4-Tracking: v=1; b=H4sIANbdLWoC/x3MQQqAIBBA0avErBvQNNGuEi1Sx5qNhUIE0d2Tl
- m/x/wOVClOFqXug0MWVj9wg+w7CvuaNkGMzDGIwwkiFXmPkeuJovbM6KVRESQgXtFUBWnYWSnz
- /y3l53w/F0hEGYgAAAA==
-To: Jonathan Cameron <jic23@kernel.org>, 
- Remi Buisson <remi.buisson@tdk.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781390806; l=3435;
- i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
- bh=v9HoACtqsgCt5jGG137Jw9QKYokE8rIehp0YKXfbLsQ=;
- b=71Phw+TgwC3If+2IjJnDpn664vnnU5uqlLYSibalvvYCC/VSOL54m6xH2pxzGtTieNJ96NDKi
- nEpnwrWwVbCB7PwBem+A9DTWH4/MOfzFh3LXHG6VcU0VNau16GQpA0g
-X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
- pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
-X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
- auth_id=814
-X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
-Reply-To: hexlabsecurity@proton.me
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260613151436.4ed833ef@jic23-huawei>
 
-From: Bryam Vargas <hexlabsecurity@proton.me>
+On Sat, Jun 13, 2026 at 03:14:36PM +0100, Jonathan Cameron wrote:
+> On Tue, 2 Jun 2026 15:14:15 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > The following changes since commit 329db447f8f02e82ff3acf130c892e1a4063d493:
+> > 
+> >   Merge tag 'iio-fixes-for-7.1a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-05-15 13:45:33 +0200)
+> > 
+> > are available in the Git repository at:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.1b
+> > 
+> > for you to fetch changes up to 91bc6767a4f55dc470d8a56b55b9f2ea09094efe:
+> > 
+> >   iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices (2026-05-29 09:57:23 +0100)
+> > 
+> Hi Greg,
+> 
+> I think this pull request is outstanding.  No problem with queuing it for the merge
+> window and if we are too late for that I don't mind if it waits for rc1.
 
-inv_icm45600_buffer_fifo_read() takes the number of samples to fetch from
-the device's FIFO_COUNT register and uses it, unclamped, as the length of a
-regmap_noinc_read() into the fixed 8 KiB st->fifo.data buffer:
+Ugh, gmail considered it spam for some reason, very sorry about that.
+I'll just go add it to the pull request for 7.2-rc1.
 
-	fifo_nb = le16_to_cpup(raw_fifo_count);
-	...
-	if (max > 0 && fifo_nb > max)
-		fifo_nb = max;
-	st->fifo.count = fifo_nb * packet_size;
-	regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
-			  st->fifo.data, st->fifo.count);
-
-The only bound on fifo_nb is "max", but the interrupt handler calls
-inv_icm45600_buffer_fifo_read(st, 0), so on that path the clamp is
-skipped. A malfunctioning or malicious device (a counterfeit or
-compromised IMU, or a bus interposer) can then report up to 65535 in
-FIFO_COUNT, making fifo_nb * packet_size (16 bytes per packet) as large
-as ~1 MiB and overflowing the 8 KiB st->fifo.data heap buffer with
-device-controlled data.
-
-Clamp fifo_nb to the buffer capacity (INV_ICM45600_FIFO_SIZE_MAX /
-packet_size), mirroring the existing watermark cap in
-inv_icm45600_wm_truncate() and the sibling inv_icm42600 driver, which
-bounds its FIFO count to the buffer size. The clamp is a no-op for
-well-behaved hardware, whose FIFO never exceeds the buffer size.
-
-Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
----
-Reproduced with an in-kernel KASAN litmus mirroring the exact allocation and
-the FIFO_COUNT -> regmap_noinc_read() length computation, plus a userspace
-AddressSanitizer model for the full magnitude:
-
-  Without this patch (device FIFO_COUNT = 0x208 = 520 packets -> 8320 bytes):
-    BUG: KASAN: slab-out-of-bounds ... Write of size 8320
-    ... the buggy address belongs to the cache kmalloc-8k of size 8192
-    ... located 0 bytes inside of allocated 8192-byte region
-  With this patch (count clamped to 8192 bytes): clean, no KASAN report.
-  ASan model at the full magnitude (FIFO_COUNT = 0xFFFF -> 1048560 bytes):
-    AddressSanitizer: heap-buffer-overflow WRITE of size 1048560,
-    0 bytes after the 8192-byte region (reproduces on 64- and 32-bit).
-
-The sibling inv_icm42600 driver bounds its FIFO count to the buffer size on
-the same interrupt path (max == 0 -> max_count = sizeof(st->fifo.data)); this
-restores the equivalent guard for inv_icm45600.
-
-Reproducer and full logs available on request.
----
- drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-index 2b9ea317385c..0021c3dc0888 100644
---- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-@@ -422,6 +422,9 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
- 	if (max > 0 && fifo_nb > max)
- 		fifo_nb = max;
- 
-+	/* Limit to the internal buffer capacity; the count is device-provided. */
-+	fifo_nb = min_t(size_t, fifo_nb, INV_ICM45600_FIFO_SIZE_MAX / packet_size);
-+
- 	/* Try to read all FIFO data in internal buffer. */
- 	st->fifo.count = fifo_nb * packet_size;
- 	ret = regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
-
----
-base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
-change-id: 20260613-b4-disp-58b984f3-3eef009c483c
-
-Best regards,
--- 
-Bryam Vargas <hexlabsecurity@proton.me>
-
-
+greg k-h
