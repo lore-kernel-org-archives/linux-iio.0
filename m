@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40FA31E9906;
-	Sun, 14 Jun 2026 13:43:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767733254BB;
+	Sun, 14 Jun 2026 13:46:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781444627; cv=none; b=DO7SyyBaO3SbHjlGbseJ/cuU93EIOn3rejIJAuRmEmkHVx3CcVGYHWO8L9s6NKeCBWq6mCn+AuxNO5QRB3uYEOx+GdxRKvEjjviAuW3wC3Ch7LoKcVMKB2WHWpMsof5E2Hh37Ie797+nrgPHi9CjHjl458dgXeOprUc7+jonoHA=
+	t=1781444768; cv=none; b=iEtAnt91TTQNHCxvySeUuIMY98F6z75WI4+67tk5I2w6omx4nUm8z6gxZYUwMxW3u21LzaOJK9+3hJwOEnGijd+PdG8OfTYuTjglVAEd89AIN3aQ1OJXLWBc4iZPsJPkvwpPTUhav5hhUx3SuAc58ihwPZ1xbRpfEzttX1VhLmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781444627; c=relaxed/simple;
-	bh=1CZk57uWiTNkvoe9qoZCkq9HwRvWgXl5T03N4WMUFes=;
+	s=arc-20240116; t=1781444768; c=relaxed/simple;
+	bh=CCz3/HWhXafUNdizzInn8loXGosyI/oqe0WHSJ/xQsg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R771IEl+y7Kvoy3jW/YHk5ipV3Y2hNCBDZyGRuKpcvv6Va+AnlPc1+clu9CXhO2/zrn/+/4T/NsOuIzIof+Ck3h4xfG0MYxa3czH+upiJ3rcJYv4lsuOf9dTVuNeBRBhgEH45x0A/rgZ2dDk2BsC45mogNpqVjOjmrmwKJQzeYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kJl00PWA; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=rgrtX0bo7uQUPgLZMue/hTBLt2aXSn3ujaBlQ8sa/5RPQY4JPzwi6OktiqgoKicKzL9WVjqfH9wnxqDRfi46KxZ1SPNv0uJalWdNk3Rk7qajLsHkcMo/Iu8Z9XHBVfpG97GZxups/IEk6m1J87YnJJPTpy8m/BipLZ+ukPzcjxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GICC2s7w; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kJl00PWA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36BB81F000E9;
-	Sun, 14 Jun 2026 13:43:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GICC2s7w"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB581F000E9;
+	Sun, 14 Jun 2026 13:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781444625;
-	bh=XqOvS20kQQt1NLy1h7pBComeb+T88c1sfGmRi4KqfUI=;
+	s=k20260515; t=1781444767;
+	bh=bVqsWawdrS47Qg/2iPcKmJJOn1ah47LP9PNis2XNtSo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kJl00PWAF5qB4RB7I+je9Ud376P7Q6lPjaruw4u8MLVp9TSYT+5ABL4OGe9QAuRCF
-	 08wGnoOaT52O5ZGCqOv2PmjG6v9ElMq0pmImqHDYGExZgt0DNsAvM3KTqVKmAirsqF
-	 pOn5cDsO0TaXk5LAW+rA2WtfQo0cgbtXfmYum1RdIV8YE7kMjCLIKYpTz/D/fqxOQh
-	 MNf7EoAzu6Qz0zWGtjbOhke4Cws6cWk3IxoYuzaelzQThBc0+bjzwcAlh7JaPhA9MA
-	 /aqggyJy0Cr1S7mQgiB/49FlLTqIc3dWiRIt8mNviQGHV7B6grDhUZJz2F7RTXxL9x
-	 A4awaeA0BXG+w==
-Date: Sun, 14 Jun 2026 14:43:37 +0100
+	b=GICC2s7wxGrn6W4mbGU/XI8xFsPFgbCXzwRVV459j+wFdyyduj9lPubp2W+cHqxPu
+	 tAiZGmVKT3ylTyAOwlvZjm5f99+BYr3rbC1BsXfpjOCvfJXA80tODRA/rZJEVUvl4T
+	 JvXE6IdmhUqNXu3gLMTfEXAHSE+LaKMcnHxHGjUO8YpCDJPqaBpmFp7NjtmYCftOj8
+	 vbs0pYh1Sr0TDXAODnopz06TZxpSxidDloXCFgtL9oEndtPFug4VJ5wUkngsvaklDp
+	 ujVMm7X7mQ1aUuLrAzgDqfhjquYQ4LbheQXT4EnGjw/DRSPaLaQPJg3JL++D+sCFui
+	 ZDXxrJGyvR/RA==
+Date: Sun, 14 Jun 2026 14:45:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
-Cc: hexlabsecurity@proton.me, linux-iio@vger.kernel.org, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Sean Nyekjaer <sean@geanix.com>, linux-kernel@vger.kernel.org, David
- Lechner <dlechner@baylibre.com>
-Subject: Re: [PATCH] iio: accel: fxls8962af: clamp the device-reported FIFO
+Cc: hexlabsecurity@proton.me, Remi Buisson <remi.buisson@tdk.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_icm45600: clamp the device-reported FIFO
  sample count
-Message-ID: <20260614144337.3b3dab1a@jic23-huawei>
-In-Reply-To: <20260613-b4-disp-22362900-v1-1-c5e49f6af027@proton.me>
-References: <20260613-b4-disp-22362900-v1-1-c5e49f6af027@proton.me>
+Message-ID: <20260614144557.196a5c4c@jic23-huawei>
+In-Reply-To: <20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me>
+References: <20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,102 +48,93 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 13 Jun 2026 03:13:19 -0500
+On Sat, 13 Jun 2026 17:46:47 -0500
 Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org> wrote:
 
 > From: Bryam Vargas <hexlabsecurity@proton.me>
 > 
-> fxls8962af_fifo_flush() copies the number of samples the device reports
-> in its hardware FIFO into an on-stack buffer
+> inv_icm45600_buffer_fifo_read() takes the number of samples to fetch from
+> the device's FIFO_COUNT register and uses it, unclamped, as the length of a
+> regmap_noinc_read() into the fixed 8 KiB st->fifo.data buffer:
 > 
-> 	u16 buffer[FXLS8962AF_FIFO_LENGTH * 3];
+> 	fifo_nb = le16_to_cpup(raw_fifo_count);
+> 	...
+> 	if (max > 0 && fifo_nb > max)
+> 		fifo_nb = max;
+> 	st->fifo.count = fifo_nb * packet_size;
+> 	regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
+> 			  st->fifo.data, st->fifo.count);
 > 
-> which is sized for at most FXLS8962AF_FIFO_LENGTH (32) samples. The count
-> is read from the BUF_STATUS register and masked with a 6-bit field:
+> The only bound on fifo_nb is "max", but the interrupt handler calls
+> inv_icm45600_buffer_fifo_read(st, 0), so on that path the clamp is
+> skipped. A malfunctioning or malicious device (a counterfeit or
+> compromised IMU, or a bus interposer) can then report up to 65535 in
+> FIFO_COUNT, making fifo_nb * packet_size (16 bytes per packet) as large
+> as ~1 MiB and overflowing the 8 KiB st->fifo.data heap buffer with
+> device-controlled data.
 > 
-> 	count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT;
+> Clamp fifo_nb to the buffer capacity (INV_ICM45600_FIFO_SIZE_MAX /
+> packet_size), mirroring the existing watermark cap in
+> inv_icm45600_wm_truncate() and the sibling inv_icm42600 driver, which
+> bounds its FIFO count to the buffer size. The clamp is a no-op for
+> well-behaved hardware, whose FIFO never exceeds the buffer size.
 > 
-> where FXLS8962AF_BUF_STATUS_BUF_CNT is GENMASK(5, 0), so count can be
-> 0..63 - nearly double the 32-deep FIFO the buffer is sized for. The only
-> check applied to it is the zero test; unlike the bmc150 flush there is no
-> caller-supplied bound at all. count samples are then transferred into
-> buffer[]:
-> 
-> 	fxls8962af_fifo_transfer(data, buffer, count);
-> 
-> fxls8962af_fifo_transfer() reads count * 3 * sizeof(u16) = count * 6
-> bytes through regmap, so a malfunctioning, malicious or counterfeit
-> accelerometer (or an attacker tampering with the I2C/SPI bus) that
-> reports a count of 33..63 writes up to 63 * 6 = 378 bytes into the
-> 192-byte buffer: a stack out-of-bounds write of up to 186 bytes that
-> clobbers the stack canary, saved registers and the return address.
-> 
-> Clamp count to FXLS8962AF_FIFO_LENGTH, the number of samples buffer[] is
-> sized for, before the transfer, mirroring the watermark clamp already
-> done in fxls8962af_set_watermark(). A well-formed flush reports at most
-> FXLS8962AF_FIFO_LENGTH samples, so legitimate devices are unaffected.
-> 
-> Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
-
-This is hardening against broken devices. Nice to have, but not a fix and
-not back port material. In general we do harden against the simple cases
-but to catch the more complex interactions would require both a hard to do
-audit and significant extra code.
-
-So nice to have this but not a fix.
-
-One comment inline.
-
+> Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
 > Cc: stable@vger.kernel.org
+
+Similar comments to the earlier patch.  Not a fix - rather this is nice to have
+hardening against devices doing something odd.  I don't want to open the can of
+worms that would be suggesting we fully audit drivers against this stuff
+(particularly as I suspect that AI bots will be very good at finding complex
+chains of things that happen if the hardware replies with garbage).
+
+Same thing about min() rather than min_t() below.  It is pretty rare in
+modern times to need min_t()
+
+Jonathan
+
 > Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 > ---
-> This is a different bug from CVE-2025-38485, the use-after-free in the same
-> function fixed by commit 1fe16dc1a2f5 ("iio: accel: fxls8962af: Fix use after
-> free in fxls8962af_fifo_flush"): that commit added a synchronize_irq() in
-> fxls8962af_buffer_predisable and did not bound the FIFO sample count, so this
-> stack overflow is still present at mainline HEAD.
+> Reproduced with an in-kernel KASAN litmus mirroring the exact allocation and
+> the FIFO_COUNT -> regmap_noinc_read() length computation, plus a userspace
+> AddressSanitizer model for the full magnitude:
 > 
-> I reproduced the out-of-bounds write with an in-kernel test that drives
-> the fxls8962af_fifo_flush() buffer geometry verbatim under KASAN
-> (CONFIG_KASAN_STACK=y), with the device-supplied sample count:
+>   Without this patch (device FIFO_COUNT = 0x208 = 520 packets -> 8320 bytes):
+>     BUG: KASAN: slab-out-of-bounds ... Write of size 8320
+>     ... the buggy address belongs to the cache kmalloc-8k of size 8192
+>     ... located 0 bytes inside of allocated 8192-byte region
+>   With this patch (count clamped to 8192 bytes): clean, no KASAN report.
+>   ASan model at the full magnitude (FIFO_COUNT = 0xFFFF -> 1048560 bytes):
+>     AddressSanitizer: heap-buffer-overflow WRITE of size 1048560,
+>     0 bytes after the 8192-byte region (reproduces on 64- and 32-bit).
 > 
->   count=36, no clamp:
->     BUG: KASAN: stack-out-of-bounds in ...fifo_flush
->     Write of size 216 ... [32, 224) 'buffer'   (the 192-byte buffer)
->   with this patch (clamp to FXLS8962AF_FIFO_LENGTH): the transfer is
->     bounded to 32 samples, no KASAN report.
->   a well-formed (<= 32 sample) flush is unaffected, no KASAN report.
+> The sibling inv_icm42600 driver bounds its FIFO count to the buffer size on
+> the same interrupt path (max == 0 -> max_count = sizeof(st->fifo.data)); this
+> restores the equivalent guard for inv_icm45600.
 > 
-> The full device range - count=63, a 378-byte write = 186 bytes past the
-> buffer, smashing the stack canary and the return address - reproduces the
-> same way under userspace AddressSanitizer on both -m32 and -m64.
-> 
-> The FIFO sample count is read over I2C/SPI from the accelerometer, so
-> triggering this requires a malicious or defective device, or tampering
-> on the bus.
+> Reproducer and full logs available on request.
 > ---
->  drivers/iio/accel/fxls8962af-core.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-> index 8763e91c63d2..fdd049223006 100644
-> --- a/drivers/iio/accel/fxls8962af-core.c
-> +++ b/drivers/iio/accel/fxls8962af-core.c
-> @@ -970,6 +970,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
->  	if (!count)
->  		return 0;
+> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> index 2b9ea317385c..0021c3dc0888 100644
+> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+> @@ -422,6 +422,9 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
+>  	if (max > 0 && fifo_nb > max)
+>  		fifo_nb = max;
 >  
-> +	count = min_t(u8, count, FXLS8962AF_FIFO_LENGTH);
-As in the other patch, why not min()?
-
+> +	/* Limit to the internal buffer capacity; the count is device-provided. */
+> +	fifo_nb = min_t(size_t, fifo_nb, INV_ICM45600_FIFO_SIZE_MAX / packet_size);
 > +
->  	data->old_timestamp = data->timestamp;
->  	data->timestamp = iio_get_time_ns(indio_dev);
->  
+>  	/* Try to read all FIFO data in internal buffer. */
+>  	st->fifo.count = fifo_nb * packet_size;
+>  	ret = regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
 > 
 > ---
 > base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
-> change-id: 20260613-b4-disp-22362900-f6014bd0594e
+> change-id: 20260613-b4-disp-58b984f3-3eef009c483c
 > 
 > Best regards,
 
