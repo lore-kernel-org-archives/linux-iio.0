@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95DA2848BA;
-	Sun, 14 Jun 2026 19:26:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079722848BA;
+	Sun, 14 Jun 2026 19:28:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781465214; cv=none; b=hvBSJ1lcKlOAhBPzZAuFzMLPJOz7WwBv+Rsuz+DduQkaMuNWnyFrFC+iqWs/yWPUKWS3D0n9vHMq6CHrjP36KqsWnE0ZZmpiKOW8Cu7SnK/ZYcaiXT4gq7Zid10cS5r4VQzwHnC0/d3mLs6Gq7rQ0oVjnkH8ypWI8tbjQdjDztE=
+	t=1781465305; cv=none; b=gPM9Bo2A8azIvWuViTYfzwzBxUSMTcFC6YhuBhswg52uGJeO5TcybF3UDIpuz7aMtriTB0HQSUzTycYRVYQjuU1mX8MfT8GXmiu0OjBDtPagejBpc6Kr0ClJwVrWCRh7V43aK1DXy8WGYTX2+ahyNyR6OXxOzHsbeH6IGViYXKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781465214; c=relaxed/simple;
-	bh=/8pA34IzCBkrIK9F9LZ23tMSYqYL5unjQzijEOpqOTs=;
+	s=arc-20240116; t=1781465305; c=relaxed/simple;
+	bh=DuHU0W+I7Q0zIttDUkxf5VKqykFgDFqT1/PREiCGvaU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sraHNIeU0T1/LxryHuIW1NApINt7R5+K4JXBKcyzQ8yJqgI/3wMuffAfX7hmfVd4weB5hXESjSYsVls/Oj6nRuV7iWWn4OXpIqm5oTn4Czk7Z23559vtRSXYbZqSUUnAnAoV2+Ig+pJk9Fqbp5tuUnj0nLOPU4KSTme1h1YXfLs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N70ROeTC; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=tyGMW7bWciHMlL0MN+ONsGZnRn6qEveLlaCyDZ8pvV6h1RDHfc1Pkw6+maYBcYEAqJcEAUeDSKyVcU94rh8JtVEo29SpY06odH6HHZOy1NlsdmXsO6yDc5tEW+eEkb0b5irYYn+C1jF/bJP22elnk4DHqVgkvd2tkllZ2C8lcxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ab5xNooA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N70ROeTC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD731F000E9;
-	Sun, 14 Jun 2026 19:26:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ab5xNooA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A961F000E9;
+	Sun, 14 Jun 2026 19:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781465213;
-	bh=MVQC/+kkbxIS+yQxyLx6DeV/H2tQQoWSbcyzeWxhTAo=;
+	s=k20260515; t=1781465303;
+	bh=AqkXQhg4DIPdFfl1AP7SfTKxKcCnu+ok9f1PnQjA/Jc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=N70ROeTC4PdIdQGjqBvyYJNcNjC4096/DEZQYi/VDBmU7XllmObbZnqFuyhHpoa2r
-	 yLJjqaKALQ9+SM0nB9iuJEwkMJyGgdaF/CfSYxgR6AT34BlaCR7O1BI6jiAz1A2Lxa
-	 47eNkL8mXdpDYYnPZ3Ad5ZBIyVXOuDCFKRCulSQyVdqwR3z30TWyM326+KLMdq/Cbc
-	 gOf/r7MtviD3F8cjiQaxF2eicek5AARjDYL7Kmi7SoTdjUx1eq8yUZFZ2C8VkDS5AX
-	 gBASf0Pgglz7j40feIT+CEoGSAQ6Pg0K53BI3MKNK19krU/IapngpJRix9/2GKLPIL
-	 8LCuoiqJHa0TQ==
-Date: Sun, 14 Jun 2026 20:26:44 +0100
+	b=ab5xNooApYYZ9Rrsf22AP6FPtJ1mjFAKT0gHWbrwdWIrZJcTCIOJMj1TWL7E9aSbe
+	 dOe3bKbYntDObC9WYTVle2KnqOJpfpkNBuYrgUowIeUXtpqDLPGGYL/4sxCdThssfB
+	 9FGRMIj/YyqR3Bl5ZXl+ttLl8HR4KzPjLJhPTvgBXbNWsNancX4i7d6WNgdIBvJSwb
+	 m87aUIDvUzjDl7YtiRFwfRAKitIQ8Rnfs0KLWxgYGcqn6/wCGGGayGzaw3aF9eTx/6
+	 yUlK1EHhlIEN4W0hmZXbBGPXw2CCKd6i+HY3QFSgYPw6k2LbeLvUX03swqm25R/fvT
+	 GnpHJ/o8OjWLg==
+Date: Sun, 14 Jun 2026 20:28:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Runyu Xiao <runyu.xiao@seu.edu.cn>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -34,7 +34,7 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Michael.Hennerich@analog.com, nuno.sa@analog.com
 Subject: Re: [PATCH v2 0/2] iio: add IRQF_NO_THREAD to hardirq-only trigger
  helpers
-Message-ID: <20260614202644.113d0852@jic23-huawei>
+Message-ID: <20260614202815.2a4df6b1@jic23-huawei>
 In-Reply-To: <20260604014247.124724-1-runyu.xiao@seu.edu.cn>
 References: <20260604014247.124724-1-runyu.xiao@seu.edu.cn>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
@@ -84,10 +84,9 @@ Runyu Xiao <runyu.xiao@seu.edu.cn> wrote:
 > - move build/runtime validation notes out of the per-patch commit
 >   messages
 > 
-Both applied to the fixes-togreg branch of iio.git. Note I'll be
-rebasing that on rc1 before sending a pull request.
-
-Thanks,
+I forgot to say - there was something corrupted in the 1st patch so
+I made the same edit by hand.  That is probably what stopped Sashiko
+from looking at these.
 
 Jonathan
 
