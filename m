@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4187256C61;
-	Sun, 14 Jun 2026 14:49:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FED13C5836;
+	Sun, 14 Jun 2026 14:54:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781448548; cv=none; b=jZiPqGoFTUVGOEUbkglxcJfDUYc21gJ6RZsdbSlyEbNByHEqOm6G6UC+cqEWjNLrlCoU8lmk1miEHITv6lHeV6CdEY+A0Mpo3py2nSg9yLeK1g4nAXSnVoC/zQRsjs2p3ylXWPFLY+gTdpSEwxKTFnhIFUJNjVzyN1yX93nNj7k=
+	t=1781448886; cv=none; b=TNIEgy2XiB1ED+1141cWGXMSdPwb+trFpspyGcLMg0sTxKujGwV/fC6zymJiEPEr4YpQCNbHMCz3KCU33Jwhsd1Rp9WsGMpLUO1Lp67EYGilfmThUrqIUQM76mGoKDhJc5mo7qgKNVn+PEpduqJ+o+B0R7O8DoP0l19OUvpDkNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781448548; c=relaxed/simple;
-	bh=9HNhS0Wr07mVvaWL+DZO9QP8Czcm4BKRR1KCuC0D+6U=;
+	s=arc-20240116; t=1781448886; c=relaxed/simple;
+	bh=qzzY6h8LqddyYWPBwcIxL3r9GsVRsycqq6spKH2tM+U=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QB5zYEFgE2p/bjAVFGRNACKzVjiMvlmU7t1wIVClpm9QOiO6UvUEJLUuEzDVGDibWm0h6KeYqPcrHdiZOmI8VqseZbCkef6xVB2RJc4H0++uL4vbKHqtYBSeATrTLbISwRqNtVWxuOARjws7sbOVisKqV+xDcbjFnRo5fck6ICg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oyj5aKZK; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=E72RdgfTZATv+oeUAufQcgPp7KEwcOKtz696fuCgYduM0se5hfJBfww3QbpKyg75lZhsqsU/e1CtJgXX6jhNzOEoNo7Bor/f9n/NNLYwq6CVc1FxSktTXd+O9KnCLfw7YlUgC1IVnMQWK4Z628YILKqCZRpyJPodsvgkposv1e8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=npvdJCHk; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oyj5aKZK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9BEA1F000E9;
-	Sun, 14 Jun 2026 14:48:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="npvdJCHk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6620C1F00A3A;
+	Sun, 14 Jun 2026 14:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781448547;
-	bh=K181SurXMOCKnbDeZLwM6hC2gj+SqOl7Sd4if4LutGM=;
+	s=k20260515; t=1781448884;
+	bh=Ei+Ds3JjVfneIYj2QV09C4uT4QbM2W46FkJMShUZQ74=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oyj5aKZKEUPLlZqNuzzbUN1vEAuiP16w+GUo97O6bPXMyJYH6mpBu5TDo9z4nDO7V
-	 h+OfXgEde7hnMBqDzF5HFMDBerPku1Cz4a+ToylJG2uJZ/1I5PY18/E04eglUCgbcU
-	 TABbsIkqs6GjWvkWBwVxpannLAeSYrLCM4Mha0YjBZ3A/oN3BLyWDse0t325RFODO5
-	 YBgEIysdIQk/+8A1cwEqpK2vV4VlPc8QHQQKhGyI5srjhwxwd2eU0mARZqaR7RsyCc
-	 5C9MT2naZ1x6Nl03yTvV9dOELNs0cu1o+2daK4nsv+aHeVqFUIc50vvlVIS0qFn/gT
-	 UG/KHZ3anXhbw==
-Date: Sun, 14 Jun 2026 15:48:54 +0100
+	b=npvdJCHkIJd+CHK+6608GAhps4AyxMVigJBXIYnVuBCiQC1Kwbvv4TYQ7Njeqlwsd
+	 jsgy3p1jiP99CKl2D7WcLdsiV4lqU5K7XhT/FtYMSM6fWyY8nzGCDCpxK0nZvzeXgr
+	 TtaKP8PZCKeoVuGILT7wVsKs/dvcKr/FPp6BJbS/PJ4kI/DesHOeEPgljh1dK4l3Q+
+	 GluMsrmA9uvSebaVrMe27gQNgLIwp2FLXMcnA5TKonSAy9Miiz1HlidJUoPqsQ8qQF
+	 tOC0M40DCUamraTityQae5F5fuj2ohe173CwYibhtdWz0dldgSHSlqP4n/hvXNxXH1
+	 jXcb+jCfRlDiw==
+Date: Sun, 14 Jun 2026 15:54:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
 Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
@@ -37,12 +37,12 @@ Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
  mazziesaccount@gmail.com, mike.looijmans@topic.nl, nuno.sa@analog.com,
  robh@kernel.org, sakari.ailus@linux.intel.com, wens@kernel.org,
  joshua.crofts1@gmail.com
-Subject: Re: [PATCH v3 2/3] iio: adc: Add ti-ads1110 support to ti-ads1100
- driver
-Message-ID: <20260614154854.6b8ea2db@jic23-huawei>
-In-Reply-To: <20260613190957.654798-3-jakubszczudlo40@gmail.com>
+Subject: Re: [PATCH v3 3/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+Message-ID: <20260614155433.30a11301@jic23-huawei>
+In-Reply-To: <20260613190957.654798-4-jakubszczudlo40@gmail.com>
 References: <20260613190957.654798-1-jakubszczudlo40@gmail.com>
-	<20260613190957.654798-3-jakubszczudlo40@gmail.com>
+	<20260613190957.654798-4-jakubszczudlo40@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,68 +53,138 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 13 Jun 2026 21:09:56 +0200
+On Sat, 13 Jun 2026 21:09:57 +0200
 Jakub Szczudlo <jakubszczudlo40@gmail.com> wrote:
 
-> Add ADS1110 support that have faster datarate than ADS1100, it also uses
-> internal voltage reference of 2.048V for measurement.
-> 
-> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Hi Jakub
+> When device is suspended and it is in single mode then changing
+> datarate doesn't make it actual wait for new measurement, so to
+> be sure that read after change is correct functions that changes
+> datarate and gain will wait for new data.
 
-A few minor things spotted on a fresh read,
+Fix should normally be the first patch in the series to make it
+easier (or at least more obvious) to backport.
 
-Thanks,
+Also needs a fixes tag.
+
+A few things inline,
+
+thanks,
 
 Jonathan
+
+> 
+> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+> ---
+>  drivers/iio/adc/ti-ads1100.c | 55 ++++++++++++++++++++++++++++++++++--
+>  1 file changed, 52 insertions(+), 3 deletions(-)
+> 
 > diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
-> index aa8946063c7d..76de2466dc53 100644
+> index 76de2466dc53..195394665cd1 100644
 > --- a/drivers/iio/adc/ti-ads1100.c
 > +++ b/drivers/iio/adc/ti-ads1100.c
+> @@ -123,6 +123,36 @@ static int ads1100_get_voltage_microvolts(struct ads1100_data *data)
+>  	return ads1100_get_voltage_milivolts(data) * MICRO / MILLI;
+>  }
+>  
+> +static bool ads1100_new_data_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +	u8 buffer[3];
+> +
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+> +	if (ret < 3) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return ret;
 
+This is odd given it returns bool (and don't print ret = 1 or 2 here as that
+is rather unexpected in an error print.).
+
+
+> +	}
+> +
+> +	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
+> +}
+> +
+> +static int ads1100_poll_data_ready(struct ads1100_data *data)
+> +{
+> +	u8 buffer[3];
+> +	bool data_ready;
+> +	int datarate = data->ads_config->data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
+> +   // To be sure we wait 5 times more than datarate
+
+Left over from writing the code?  If you want a comment then /* */ and
+get the indent right.
+
+> +	unsigned long wait_time = DIV_ROUND_CLOSEST(MICRO, 5 * datarate);
+> +
+> +	/* To be sure that polled value will have value after config change */
+> +	i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+
+Check return value probably even though we don't care about the data.
+
+> +
+> +	return read_poll_timeout(ads1100_new_data_ready, data_ready,
+> +				 !data_ready, wait_time,
+> +				 ADS1100_MAX_DRDY_TIMEOUT, false, data);
+> +}
+> +
 >  static int ads1100_data_bits(struct ads1100_data *data)
 >  {
 >  	return ads1100_data_rate_bits[FIELD_GET(ADS1100_DR_MASK, data->config)];
-> @@ -107,9 +145,9 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
+> @@ -165,6 +194,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
+>  {
+>  	int microvolts;
+>  	int gain;
+> +	int ret;
 >  
->  	pm_runtime_put_autosuspend(&data->client->dev);
+>  	/* With Vdd between 2.7 and 5V, the scale is always below 1 */
+>  	if (val)
+> @@ -185,21 +215,40 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
+>  	if (gain < BIT(0) || gain > BIT(3))
+>  		return -EINVAL;
 >  
-> -	if (ret < 0) {
-> +	if (ret < 2) {
+> +	ret = pm_runtime_resume_and_get(&data->client->dev);
+> +	if (ret < 0)
+> +		return ret;
 
-If ret < 0 we don't want to eat the error value. So normally these have some dance
-like
-	if (ret < 0) {
-		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-		return ret;
-	} else if (reg < 2) {
-		dev_err(&data->client->dev, "Short I2C read\n");
-		return -EIO;
-	}
+Might be worth looking at the ACQUIRE macros in pm_runtime.h as they might simpify things
+a little.
 
->  		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-> -		return ret;
-> +		return -EIO;
->  	}
-
-...
-
-> @@ -338,6 +371,12 @@ static int ads1100_probe(struct i2c_client *client)
->  	if (ret)
->  		return ret;
->  
-> +	model = device_get_match_data(dev);
-> +	if (!model)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "Can't get device data from firmware\n");
 > +
-> +	data->ads_config = (struct ads1100_config *)model;
-
-Why is the cast needed?   If you find yourself casting away a const
-it normally implies there should be a const somewhere else.
-In this case I think the pointer in the structure should simply be const.
-
->  	ret = ads1100_setup(data);
->  	if (ret)
->  		return dev_err_probe(dev, ret,
+>  	ads1100_set_config_bits(data, ADS1100_PGA_MASK, ffs(gain) - 1);
+>  
+> -	return 0;
+> +	ret = ads1100_poll_data_ready(data);
+> +
+> +	pm_runtime_put_autosuspend(&data->client->dev);
+> +
+> +	return ret;
+>  }
+>  
+>  static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
+>  {
+>  	unsigned int i;
+>  	unsigned int size;
+> +	int ret;
+>  
+>  	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
+>  	for (i = 0; i < size; i++) {
+> -		if (data->ads_config->data_rate[i] == rate)
+> -			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
+> +		if (data->ads_config->data_rate[i] != rate)
+> +			continue;
+> +
+> +		ret = pm_runtime_resume_and_get(&data->client->dev);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ads1100_set_config_bits(data, ADS1100_DR_MASK,
+>  					FIELD_PREP(ADS1100_DR_MASK, i));
+> +		ret = ads1100_poll_data_ready(data);
+> +
+> +		pm_runtime_put_autosuspend(&data->client->dev);
+> +		return ret;
+>  	}
+>  
+>  	return -EINVAL;
 
