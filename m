@@ -1,40 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D833537FB;
-	Sun, 14 Jun 2026 13:05:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76B0139FCBF;
+	Sun, 14 Jun 2026 13:11:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781442321; cv=none; b=bYoQN/zogX2UuRg26r2Tdt4aqnIVae0vZmQgDMx3qrzXpV/I6P5A0T7xkXuTSFdBQk2KS9BKd5Ut/YvopffdFJHVM8NqqcQcFFxhUTBjKznwB5GFWv3uFQHz0Jfb00pPdX9QazomAaadR32FpdTxiF9MxfFmTl1s6K7UsFIiXtU=
+	t=1781442715; cv=none; b=MebrjQxcrqms5mv8eMcEVglUhbx29+Z9efvEivgedeRPqahKtO8OoG2dlTsOCar7HUwx0nYux39HZdQ35ePneWq9ITzjt4dVNbS4Eqa7fM7QmRfz6FTfm6Mj4hqf+l8B3P++vxOgcl/130AYAsaV9BeaEdyFqf0jf1Y6u5bCUAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781442321; c=relaxed/simple;
-	bh=thhprmwI8/zTw8oYPTuF002KaEL2YI22oDxA7cG577E=;
+	s=arc-20240116; t=1781442715; c=relaxed/simple;
+	bh=fJvBFQC+Ke6uclRe9o1SV5f0OByvNrsZAzcryGkdzO0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mt7pKJRKofm7O18AckFHM3x+g4X8cUzCeAra/u6zOYhQPfIeSI/YqcIGZ7d2dvinmeWKjjflCRNYRD0E0hiotekL9J9TpB5tpS4xTA86J3fXcxMwhkc0jBAWXBm7JZe0uLYfeBFNWXy3zFItKVhyO77ukYQ3YFPahR06IJ81GiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DgKq8LNY; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=YnSlE237W0nDvF63C+HwcZLhj4cOmKtePusP8sLmBOMiDKmdpGmfSA54MAcp1ZifpWGAUrbHtKk5rKDdMq2dO58A+BVac5eSkW2A48Bcv4GpW5ZiOffzIfuD5rC2VuV9ePyw2O7HC8CGbq2BHS/bxc9trmMYL7OhGihklJM9r9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o1X0uK+w; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DgKq8LNY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC8BE1F000E9;
-	Sun, 14 Jun 2026 13:05:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o1X0uK+w"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167501F000E9;
+	Sun, 14 Jun 2026 13:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781442320;
-	bh=TI2uFsNZwTo2e+iXd8A9AUahqQkAj8k4o473BA8RjuI=;
+	s=k20260515; t=1781442714;
+	bh=75u5cjmHDQ4BpCAdFk59dTu+UZQbhDAoNNk3d+PgrTk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DgKq8LNYGTyYO2CMW0eBnwboPTbl1TwtVwGUe1ZRhBNQ63QD4GNALp3UEnl8qJLTN
-	 TyhJKzcSUPw3PII9ZF9zni3lealfp+7LwXDIr7LIiv4XIOK6RlZIgTI9oA05kf5LgH
-	 XifHdJV0sndYkFTgu6A/+llSL8wpUrYrGvbpHpm+9oYL164kRdPkbTJidu1FscbHJT
-	 30kG/ORSEx4vgOx8lFg+tWBRJVtDUCo3cn0Me6BJdOtBoSpj/kQPdAqzLODqnmpdKn
-	 Rpg3HjZh3ta8dVRH+9nhAZAmnfgBlzNk1enfNOdDRPSNvghPNy36kJc2nZHA/LXf3v
-	 BvAl0AxTuTT7Q==
-Date: Sun, 14 Jun 2026 14:05:13 +0100
+	b=o1X0uK+wTcrAR/XtZ06ym3CjmNaKEFeT1HbsgMDOUsmRTjc75WfFI3VxgqBLZDow4
+	 u/W0CIThELg6huGwsMeNm0V6F4HogZQO+NrERVbyweoUyMLkcYfKOAmy0mk6LMuM+7
+	 /9cq9jtd1aUb2J0OrntxCWOib4/RVNk4erqjQx43RqM2es9SSDK3flD45Bm1lDbsR5
+	 NvgMp4hv3CUXxrQVa0T1lz/OSmxVNM7wdxwTgBGZ9+kOdxidcZpXJ4Qk4lgzkkzGy6
+	 zVGmp9aP8aP4WeWnbbnU6U8GvrrjMPyL1ePncuXFrFC/7APkFvcPzlVIxkVflRCgza
+	 rNkaT5SfxExyQ==
+Date: Sun, 14 Jun 2026 14:11:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Siratul Islam <email@sirat.me>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] iio: proximity: cleanup fixes for vl53l1x-i2c
-Message-ID: <20260614140513.0482ed22@jic23-huawei>
-In-Reply-To: <20260614084349.25823-1-email@sirat.me>
-References: <20260614084349.25823-1-email@sirat.me>
+To: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Cc: hexlabsecurity@proton.me, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
+Subject: Re: [PATCH] iio: accel: bmc150: clamp the device-reported FIFO
+ frame count
+Message-ID: <20260614141146.697dde04@jic23-huawei>
+In-Reply-To: <20260613-b4-disp-24d6b15f-v1-1-f5c3fe7294fc@proton.me>
+References: <20260613-b4-disp-24d6b15f-v1-1-f5c3fe7294fc@proton.me>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,51 +47,89 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 14 Jun 2026 14:43:38 +0600
-Siratul Islam <email@sirat.me> wrote:
+On Sat, 13 Jun 2026 02:18:39 -0500
+Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org> wrote:
 
-> This patch series adds some cleanup fixes for the vl53l1x-i2c
-> proximity sensor driver.
+> From: Bryam Vargas <hexlabsecurity@proton.me>
 > 
-> - Sort register defines list
-> - Extract data-ready polling into a helper
-> - Fix regmap_read_poll_timeout() arguments alignment
-> - Add field definitions for BIT(0).
+> __bmc150_accel_fifo_flush() copies the number of samples the device
+> reports in its hardware FIFO into an on-stack buffer
 > 
-> No functional changes.
+> 	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
 > 
-Series applied to the testing branch of iio.git.
-Note that will be rebased on rc1 once that is available.
+> which is sized for at most BMC150_ACCEL_FIFO_LENGTH (32) samples. The
+> frame count is read from the FIFO_STATUS register and only masked to its
+> 7 valid bits:
+> 
+> 	count = val & 0x7F;
+> 
+> so it can be 0..127. The only other limit applied to it is the optional
+> caller-supplied sample budget:
+> 
+> 	if (samples && count > samples)
+> 		count = samples;
+> 
+> which does not constrain count on the flush-all path (samples == 0), and
+> leaves it well above 32 whenever samples is larger. count samples are
+> then transferred into buffer[]:
+> 
+> 	bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+> 
+> bmc150_accel_fifo_transfer() reads count * 6 bytes through regmap, so a
+> malfunctioning, malicious or counterfeit accelerometer (or an attacker
+> tampering with the I2C/SPI bus) that reports up to 127 frames writes up
+> to 762 bytes into the 192-byte buffer: a stack out-of-bounds write of up
+> to 570 bytes that clobbers the stack canary, saved registers and the
+> return address.
+> 
+> Clamp count to BMC150_ACCEL_FIFO_LENGTH, the number of samples buffer[]
+> is sized for, before the transfer, mirroring the watermark clamp already
+> done in bmc150_accel_set_watermark(). A well-formed flush reports at most
+> BMC150_ACCEL_FIFO_LENGTH frames, so legitimate devices are unaffected.
+> 
+Agreed on the analysis. Thanks for doing this.
 
-Thanks,
+I wonder why the field is 7 bits given it can only contain 0 to 32 which only
+needs 6 bits...  (Digs in datasheet...) Ah, you can enable just one channel
+at a time, however I can't find a statement that doing so increases the number
+of frames stored (rather than masking what is read out).  There is plenty
+of stuff saying the buffer is full at 32. 
 
-Jonathan
+Anyhow, never mind that as we don't really care why the datasheet
+is illogical ;)
 
+One small thing inline.
+
+
+> Fixes: 3bbec9773389 ("iio: bmc150_accel: add support for hardware fifo")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 > ---
-> Changes in v4:
-> - Remove blank line in commit message tag block
-> - Align regmap_read_poll_timeout arguments
+>  drivers/iio/accel/bmc150-accel-core.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Changes in v3:
-> - Use proper field definitions
-> - Split changes in two commits
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 2398eb7e12cd..dc8a6285cf3d 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -991,6 +991,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  	if (samples && count > samples)
+>  		count = samples;
+>  
+> +	count = min_t(u8, count, BMC150_ACCEL_FIFO_LENGTH);
+
+Why not min()?   I believe that will do the operation as an integer, but
+the compiler should be fine spotting that the value that results will
+always fit in count.
+
+> +
+>  	ret = bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+>  	if (ret)
+>  		return ret;
 > 
-> Changes in v2:
-> - Rephrase commit message
-> - Remove cover letter
+> ---
+> base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+> change-id: 20260613-b4-disp-24d6b15f-90f0487ac141
 > 
-> Link to v3: https://lore.kernel.org/linux-iio/20260611134245.30042-1-email@sirat.me/
-> Link to v2: https://lore.kernel.org/linux-iio/20260608124027.35879-1-email@sirat.me/
-> Link to v1: https://lore.kernel.org/linux-iio/20260608033218.26514-1-email@sirat.me/
-> 
-> Siratul Islam (2):
->   iio: proximity: sort the register values for vl53l1x-i2c
->   iio: proximity: cleanup fixes for vl53l1x-i2c
-> 
->  drivers/iio/proximity/vl53l1x-i2c.c | 39 +++++++++++++++--------------
->  1 file changed, 20 insertions(+), 19 deletions(-)
-> 
-> --
-> 2.54.0
-> 
+> Best regards,
 
