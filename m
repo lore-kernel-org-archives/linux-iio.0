@@ -1,139 +1,102 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8AA12C534
-	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 19:19:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95DA2848BA;
+	Sun, 14 Jun 2026 19:26:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781464765; cv=none; b=LiYlhh3vx9wnrfxYLNgJZ+qo6YNToSZNV7qeAp3OrneT2eqfoIoWm9PPbSIZ62531+sCKXdquhy748Y5wzVRmqX3NSgZFRM4D0taTHJFM40ScIAudCoIMDNgs/+0/4468L6L7e692C42YEhesqw6bfmFlqMpc51xiICyCnWA7PA=
+	t=1781465214; cv=none; b=hvBSJ1lcKlOAhBPzZAuFzMLPJOz7WwBv+Rsuz+DduQkaMuNWnyFrFC+iqWs/yWPUKWS3D0n9vHMq6CHrjP36KqsWnE0ZZmpiKOW8Cu7SnK/ZYcaiXT4gq7Zid10cS5r4VQzwHnC0/d3mLs6Gq7rQ0oVjnkH8ypWI8tbjQdjDztE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781464765; c=relaxed/simple;
-	bh=kwRwajX0NpTQhq/ferE78iMulVMJWONC7haTFQi7XJg=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=D9bOB6TXRw104OyFmkSEssueB/WztCw2LteoQytNAEF4bYaYduxu8uy16VKdg9fQKaIrtYFi8ajj4sIJ+FZICOWVmi6MFlSOs1ihYT/GRsUa6GkV2GrvWUdxDPlrm2zUnGM5F0f2t6KZMc2r1i+Gkv4KF4v6IDS+dWTS9LwOe5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EBrcdlxD; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781465214; c=relaxed/simple;
+	bh=/8pA34IzCBkrIK9F9LZ23tMSYqYL5unjQzijEOpqOTs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sraHNIeU0T1/LxryHuIW1NApINt7R5+K4JXBKcyzQ8yJqgI/3wMuffAfX7hmfVd4weB5hXESjSYsVls/Oj6nRuV7iWWn4OXpIqm5oTn4Czk7Z23559vtRSXYbZqSUUnAnAoV2+Ig+pJk9Fqbp5tuUnj0nLOPU4KSTme1h1YXfLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N70ROeTC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EBrcdlxD"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-5175cb5946dso20095321cf.0
-        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 12:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781464763; x=1782069563; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=yIMALptmH08hDIBGn9+50C8C0r6VnVr/CsdRlyfvq20=;
-        b=EBrcdlxDcVDSGWsP9KANCJ41/mGJT09SxGnxSFr20cZs36sHdcDOddqC4i/UoOS2KA
-         3LFvlumx7LWs718cQr1xAkS/S5BCPEDFpKc2dSLz+MwZDG6LvyMFqf4sZBA/V5TapsZS
-         yj/u0JZuV8PuLlX3FdnDpm7Vux0iPMKSg++IIRIaFi73xgHpN9d8zRnl92Do6TkGAd/z
-         2uFsBMOXPwC53+0YWjUBVsWGx6J9o23AeUVY+TzcoC6cHoPGvl9jukc/i7EkXyLAyEJn
-         31E1kO6YaMzHlFA+ul2vY7+SooiHq1q+2L42HhEO/oOe9aLJS4uqdIDL+23InrQiunws
-         FCHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781464763; x=1782069563;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yIMALptmH08hDIBGn9+50C8C0r6VnVr/CsdRlyfvq20=;
-        b=Q3Qph3iRYH9XuReCBwQIJjULx6QwnBJfsZNoq+/xFwW7UWvIuOt1WYx4oV/jtjzd2c
-         TJr9p58ESEbsY1LccHwOJPecCyzKgvlFVOZssMGUMC1iTgxLNT+7NXJcUeRNGNMA11vi
-         J2FkmvlIowB1r8JT+8piGfI/vdq03Cj+1cLedNaL28w1eO1/CAWHM5Fou42f+5gdI1Bo
-         klGszE1N6gC6r2MBnA+xREIPep4VQKJr2Q14SJPvDP4Lw6XVy5/bbfbehV79l+zLlYTI
-         jyd8dsJyNUmK4rMxwvgaP/nAV/wuXrGw2r7uyw1Ud+na/N9DZOMoWn1ca7jl4/RrjYZQ
-         AbDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ96TPDH4Yak5rawDGpyB/rohRAhP0YXscSp8zyR6dKn2r4TcGd5y8BVUcWQDcPqItY2rLaN1D91u/k=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxEJufgyLx4jvWjkbS9zONaFi3/BYrOBFM+cW+fL1hwfUIaCZiA
-	oV4ovlphEjr7XgG/1H15tSAGDYory+nP1YS1oa80rzw+7a+1NnH7O5XR0snt6J/bjDA=
-X-Gm-Gg: Acq92OEvFDGJ7oaBgbf/iQKBBN3L2CaZkuP7VUQ832bP+i74TmjtK2JdcDM5euf/z8a
-	70qTadpWxetxFoDEC1vviH70hf9+YHjfVmXl2REFwXavPWan/LtoBOHOFQ+sRab6Fie4B4bybkc
-	TjRHBaoEJRLW0cG908fwKXBwKhCZBXYc/07H4MNNH1kcbD4ZcaSH8WIx0uvdcw6mptv5+I66jpX
-	tJtifVaSQihOdk+rhn7Gg5PjJ6qG6TP+u4tgmgv+/5KuXbgEkPQi7sttieOIJpBremuRyCoSPsH
-	GH2fB1BIfWm0Kur3PlIuPZqZlqPClgRwJDy6uVmeHw3K6SiD3SfPQbn3yWx9BwGfbijP64dc3EM
-	gzdYernV2ChaX4FAhrgwhZcAk/4YBBYnZN5y52AHS+ERN1Vl570KHgTMIF/MTNlhke0YFAA10V6
-	68quJflRp6AH+ibF13DXrt/Lj5HZsDpiK0drJpjYOtIuHVxWz4747IKQyvsjZXQxmUcfDtS7Wtq
-	r8f72zrhsWf
-X-Received: by 2002:a05:622a:8d12:b0:50e:6139:492b with SMTP id d75a77b69052e-517fe52f307mr156447131cf.23.1781464763075;
-        Sun, 14 Jun 2026 12:19:23 -0700 (PDT)
-Received: from localhost.localdomain ([2607:fb90:a8d1:8eec:5c3c:2f7e:d7e3:b1bd])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb61fb15sm82414491cf.5.2026.06.14.12.19.22
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 14 Jun 2026 12:19:22 -0700 (PDT)
-From: Shuangpeng Bai <shuangpeng.kernel@gmail.com>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	bentiss@kernel.org,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [BUG] KASAN: slab-use-after-free in _raw_spin_lock_irqsave from hid-sensor-custom
-Date: Sun, 14 Jun 2026 15:19:21 -0400
-Message-ID: <178144969601.60470.12928355382146160896@gmail.com>
-X-Mailer: git-send-email 2.47.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N70ROeTC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD731F000E9;
+	Sun, 14 Jun 2026 19:26:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781465213;
+	bh=MVQC/+kkbxIS+yQxyLx6DeV/H2tQQoWSbcyzeWxhTAo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=N70ROeTC4PdIdQGjqBvyYJNcNjC4096/DEZQYi/VDBmU7XllmObbZnqFuyhHpoa2r
+	 yLJjqaKALQ9+SM0nB9iuJEwkMJyGgdaF/CfSYxgR6AT34BlaCR7O1BI6jiAz1A2Lxa
+	 47eNkL8mXdpDYYnPZ3Ad5ZBIyVXOuDCFKRCulSQyVdqwR3z30TWyM326+KLMdq/Cbc
+	 gOf/r7MtviD3F8cjiQaxF2eicek5AARjDYL7Kmi7SoTdjUx1eq8yUZFZ2C8VkDS5AX
+	 gBASf0Pgglz7j40feIT+CEoGSAQ6Pg0K53BI3MKNK19krU/IapngpJRix9/2GKLPIL
+	 8LCuoiqJHa0TQ==
+Date: Sun, 14 Jun 2026 20:26:44 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Runyu Xiao <runyu.xiao@seu.edu.cn>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ andy@kernel.org, dlechner@baylibre.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, nuno.sa@analog.com
+Subject: Re: [PATCH v2 0/2] iio: add IRQF_NO_THREAD to hardirq-only trigger
+ helpers
+Message-ID: <20260614202644.113d0852@jic23-huawei>
+In-Reply-To: <20260604014247.124724-1-runyu.xiao@seu.edu.cn>
+References: <20260604014247.124724-1-runyu.xiao@seu.edu.cn>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Kernel Maintainers,
+On Thu,  4 Jun 2026 09:42:45 +0800
+Runyu Xiao <runyu.xiao@seu.edu.cn> wrote:
 
-I hit the following report while testing current upstream kernel:
+> This series fixes two IIO trigger registration sites that pass
+> iio_trigger_generic_data_rdy_poll() to request_irq() without
+> IRQF_NO_THREAD.
+> 
+> Both sites are intended to drive iio_trigger_poll() from hardirq
+> context, but under forced IRQ threading they can otherwise run through
+> irq/... thread context instead.
+> 
+> This issue was first flagged by our static analysis tool while scanning
+> request_irq() sites that register iio_trigger_generic_data_rdy_poll(),
+> then manually audited on Linux v6.18.21.
+> 
+> It was further validated with a no-device QEMU selftest using irq_sim
+> to model a parent IRQ and a child IIO trigger IRQ under threadirqs. The
+> same trigger path ran from irq/... thread context without IRQF_NO_THREAD
+> and stayed in hardirq context after adding IRQF_NO_THREAD. The selftest
+> logged:
+> 
+>   3395 selftest: phase=bad current=irq/30-patchpar in_hardirq=0
+>   3395 selftest: phase=fixed current=swapper/0 in_hardirq=1
+>   3395 selftest: validation succeeded
+> 
+> Patch 1 fixes the ADIS non-FIFO managed trigger path.
+> Patch 2 fixes the BMI160 data-ready trigger path.
+> 
+> Build-tested by compiling adis_trigger.o and bmi160_core.o.
+> 
+> No ADIS or BMI160 hardware was available for end-to-end runtime testing
+> on this submission branch.
+> 
+> Changes in v2:
+> - move build/runtime validation notes out of the per-patch commit
+>   messages
+> 
+Both applied to the fixes-togreg branch of iio.git. Note I'll be
+rebasing that on rc1 before sending a pull request.
 
-KASAN: slab-use-after-free in _raw_spin_lock_irqsave from hid-sensor-custom
+Thanks,
 
-on commit: e8c2f9fdadee7cbc75134dc463c1e0d856d6e5c7 (May 25 2026)
+Jonathan
 
-The reproducer and .config files are here.
-https://gist.github.com/shuangpengbai/d82ac0d19fda016e81d7fa1ab028d967
+> Runyu Xiao (2):
+>   iio: imu: adis: add IRQF_NO_THREAD to non-FIFO trigger IRQ
+>   iio: imu: bmi160: add IRQF_NO_THREAD to data-ready trigger IRQ
+> 
+>  drivers/iio/imu/adis_trigger.c       | 3 +--
+>  drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
 
-I'm happy to test debug patches or provide additional information.
-
-Reported-by: Shuangpeng Bai <shuangpeng.kernel@gmail.com>
-
-[   73.157590][ T8356] BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave (include/linux/instrumented.h:112 include/linux/atomic/atomic-instrumented.h:1300 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:166)
-[   73.161235][ T8356] Write of size 4 at addr ffff88810eb72528 by task hid_sensor_cust/8356
-[   73.163453][ T8356] Hardware name: QEMU Ubuntu 24.04 PC v2 (i440FX + PIIX, arch_caps fix, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[   73.163457][ T8356] Call Trace:
-[   73.163461][ T8356]  <TASK>
-[   73.163464][ T8356]  dump_stack_lvl (lib/dump_stack.c:94 lib/dump_stack.c:120)
-[   73.163471][ T8356]  print_report (mm/kasan/report.c:378 mm/kasan/report.c:482)
-[   73.163486][ T8356]  kasan_report (mm/kasan/report.c:595)
-[   73.163495][ T8356]  kasan_check_range (mm/kasan/generic.c:? mm/kasan/generic.c:200)
-[   73.163500][ T8356]  _raw_spin_lock_irqsave (include/linux/instrumented.h:112 include/linux/atomic/atomic-instrumented.h:1300 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:166)
-[   73.163539][ T8356]  add_wait_queue (kernel/sched/wait.c:23)
-[   73.163547][ T8356]  hid_sensor_custom_poll (include/linux/poll.h:45 drivers/hid/hid-sensor-custom.c:706)
-[   73.163556][ T8356]  do_sys_poll (include/linux/poll.h:82 fs/select.c:877 fs/select.c:920 fs/select.c:1015)
-[   73.163692][ T8356]  __x64_sys_poll (fs/select.c:1072 fs/select.c:1060 fs/select.c:1060)
-[   73.163708][ T8356]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 arch/x86/entry/syscall_64.c:94)
-[   73.163714][ T8356]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:121)
-[   73.163755][ T8356]  </TASK>
-[   73.214615][ T8356] Freed by task 781 on cpu 1 at 72.569353s:
-[   73.215524][ T8356]  kasan_save_track (mm/kasan/common.c:57 mm/kasan/common.c:78)
-[   73.216247][ T8356]  kasan_save_free_info (mm/kasan/generic.c:584)
-[   73.217018][ T8356]  __kasan_slab_free (mm/kasan/common.c:253 mm/kasan/common.c:285)
-[   73.217739][ T8356]  kfree (include/linux/kasan.h:235 mm/slub.c:2689 mm/slub.c:6251 mm/slub.c:6566)
-[   73.218335][ T8356]  devres_release_all (drivers/base/devres.c:50 drivers/base/devres.c:547 drivers/base/devres.c:576)
-[   73.219108][ T8356]  device_release_driver_internal (drivers/base/dd.c:598 drivers/base/dd.c:1357 drivers/base/dd.c:1375)
-[   73.220034][ T8356]  bus_remove_device (drivers/base/bus.c:657)
-[   73.220796][ T8356]  device_del (drivers/base/core.c:3895)
-[   73.221458][ T8356]  platform_device_unregister (drivers/base/platform.c:797 drivers/base/platform.c:839)
-[   73.222310][ T8356]  mfd_remove_devices_fn (drivers/mfd/mfd-core.c:385)
-[   73.223121][ T8356]  device_for_each_child_reverse (drivers/base/core.c:4065)
-[   73.224033][ T8356]  mfd_remove_devices (drivers/mfd/mfd-core.c:401)
-[   73.224779][ T8356]  hid_device_remove (drivers/hid/hid-core.c:?)
-[   73.225537][ T8356]  device_release_driver_internal (drivers/base/dd.c:619 drivers/base/dd.c:1352 drivers/base/dd.c:1375)
-[   73.226449][ T8356]  bus_remove_device (drivers/base/bus.c:657)
-[   73.227200][ T8356]  device_del (drivers/base/core.c:3895)
-[   73.227857][ T8356]  hid_destroy_device (drivers/hid/hid-core.c:3064 drivers/hid/hid-core.c:3086)
-[   73.228617][ T8356]  usbhid_disconnect (drivers/hid/usbhid/hid-core.c:1476)
-[   73.238613][ T8356] The buggy address belongs to the object at ffff88810eb72400
-[   73.238613][ T8356]  which belongs to the cache kmalloc-512 of size 512
-[   73.240744][ T8356] The buggy address is located 296 bytes inside of
-[   73.240744][ T8356]  freed 512-byte region [ffff88810eb72400, ffff88810eb72600)
-
-
-Best,
-Shuangpeng
