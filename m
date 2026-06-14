@@ -1,63 +1,63 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD38B39060B
-	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 07:16:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CE338E8A7
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 07:16:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781421367; cv=none; b=h4UDTHzKBW3RDBvo5J74Sb1n96U2GyNXL5gwSRnqnuVmeuLTFL1wn4w+1G9ktobTPcfOmSMfTqvTvyw/F9R+Kz6zfbEcMrBruxMYyJEmaOS2jkCbSKI0EbR66KCUyRqujBfNb/p0/ySzlXIOnFmBsCEQrW9+2Vydc0CsbOukO5s=
+	t=1781421371; cv=none; b=cZtX9iQbH7+9Q+zpufb7Cx3GJ7pYskAs+myjNQEyOHDK6z41Cd4ifa4lqluIq9VGquOERWNHurod2KcePVJHSEWMd7aWyeyu0HzvC3b1in3ZJShHBFFR0apygOyayLJ9jwP+5lAhaFZB6RXsDRih82rchgfxyNffj9eiUKQl9no=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781421367; c=relaxed/simple;
-	bh=Q/HEefTnk+HMBECsWjuwyiZGiULsgxVX0PT+SNENidA=;
+	s=arc-20240116; t=1781421371; c=relaxed/simple;
+	bh=xa5Oy/MOGjty2VAEj7N4ZNdroBueekxG642XjGEeo8Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oE+1j8oND3esCYVTCE7kAGluXjMv7ax6fEURTWOeDxvOfuJGcQgyD+zvi+YnJMaChaF9j7demMqmh9oQUvmCoBwa8JXgU2npE/RGrJCGidIDnNndCW5VD/jz9rFJg0cNAQLZxKrq2aWcnNztEyXkNW+6ZW8o/aw5rkuNV35a7q0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TUJllCaH; arc=none smtp.client-ip=209.85.214.170
+	 MIME-Version; b=jPoh3jW9HCUjnC+zeewUbF2Hfg0t4Y10HN9VkEFhq+L7kHgSRGxsrdxFsKRhnL1Y+zO5t6FCteKzdbL9qyXzx7o3caX5Ke0ZVMUlGcwlLOJwx/lohBLVfU8IC6Tom4Ujrb8SIVMTQfjWpxJ3yw8U4FZi/+gJhLLmbuIhcBqNd4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cx+vODH8; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TUJllCaH"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2c0a5354da1so18918485ad.0
-        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 00:16:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cx+vODH8"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2c0b9328c4aso17199525ad.0
+        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 00:16:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781421365; x=1782026165; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781421370; x=1782026170; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=S6W9hVs9rgfrH0Ohbm4YeCJWMFoA5fpt1e9nnZXUhFk=;
-        b=TUJllCaHPalQ6HTEeemcsrnicKHTexYHJWpEUCZFPNdcNswY+jrNadiN1FlBVJpMnF
-         aW1g2x3Jh1DX6jAWVQ9V88+37S/KwpjkcRc3FtiRW3Q6WVK2Y31C+sjPUmNHOINHzS2+
-         giuEedM2aQ9vcP+bugIfNLTwCbxz6/tlLAtx6n0GSewWZVGVkt733kNOUIPB8IxFrXSz
-         P6e2LC9WpotOtjYrV6aKbdg3WauPI2OMTgPqAlyEZ6hughLgES6c4kFMdFU3M8SVElUg
-         p4SMDFPQSg0Lc7Xt17fKfRGLadtzCFiBqpGoMk5D3qS+25+Kwot9U+Uf/ze3eGDw5rHN
-         5sqw==
+        bh=TQpCDuMxakljX0z6oHih9q1noq/+hfefR1O95FjQ9QE=;
+        b=cx+vODH8FN2Zh45hRQNuHVCU1/qG6eWbsLvmI4hpMZRQNtBmS4jWLR9Qn0NQt36J+V
+         pHvXA+SHTSNQ9D3BQvfkVg12svdftkihAVNt0xMA9QrKMFaxmWlHPSCjmDyVCIi27umT
+         EsZ8MT8V56p3iUEfOHR340X0nHZhdjMMqg0slfU/LkKzLgvZLIwa20ah3pp83LgpNiIV
+         mJfR1it6U9TKLrQJtLHRr41QomikNZKvaTmZxI7gZvNZ5c9/CChzsu2Lhdcci/JwTiIa
+         xilUj2GEmLCJM5yLv4d6qWcu19U8mx2DtgNdcAYUJyUjd76NzY40KgkVG4arBR/9pnhv
+         1Qpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781421365; x=1782026165;
+        d=1e100.net; s=20251104; t=1781421370; x=1782026170;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=S6W9hVs9rgfrH0Ohbm4YeCJWMFoA5fpt1e9nnZXUhFk=;
-        b=HolHOIsYTZ/JkuwrqYbS86rRMrzrJHzWsU4iosAqx3pDb42IKayAY2ZaP1lWNYOq+m
-         7j+Gj9e+6ZgUcRs2ifXdpsB/ailClsXNZNNfrcLg+Et/AGg0zgAFvsawzq8OoU3WDZcC
-         O1RakplTWoiES2Hlht8YAqvKOzKRQQHNtP4NwDRoEYBqd7eG3WIeSVnrV+NZc7rnanPv
-         zVECLrXJARP+IFpqMgfQOXiPUQPZMTaWA9DCR6yFTZEjNjwMPIhOLob2RqzNt7M0C4vW
-         wHM6lHaD/jQ7UuoB9reQMCZQtqocnn3VQWDUU9x5vXuH7v23HpzvWXJRzUKc4Mjk423y
-         zVew==
-X-Forwarded-Encrypted: i=1; AFNElJ/SyqKrVPn9Z2loNl8YpILjXJH+8+nMKIJYfZ+jbRKazJD2aJIfYwTVfaktFllmIhhq//B7zJNUMjA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YykZ8yLFVxO0pb5XokfVF+mUSs6sdESkkecZmBh+KvuRIuth2bi
-	WHGrrVXzMHlab4gMaNlUKzCMxrhr4s5Mc71h74EqbObJHfHHnhzpulVX
-X-Gm-Gg: Acq92OFFVR02ub99Uxj5EUbKcHH9LODfAJgInyi2+eZX7O/wkDnwMQAJftH8TyeTbYh
-	uA6ZmpVq4J2QdPcVWts31GutVFzvxSy+nIrsUahkfVLtffZAoCSp5TsgPJSPiiGIbrtBOxq8Vzp
-	F9Jt7l1CBlgKihpYO3mnuIObA/QaBbHMSAejqNNgYN+whqZTEFdtSs+xjE8UgyyyfkpkrueNTTH
-	dP7nd4AoaN0ZVx8MoegeGPcNWhGaN0/bMSFmfs3MoIwwl3xuG7STTKc4VHRHhLYVsbk+iV4fi9d
-	Q+2EaVSAqNPyMjI3KQtAuFGpKMw3RSwB3o0W9SQmiG+0OTNgj1cIhjbBfKQII5sftfQV4NxBTKg
-	Yc+5lcn/RmcY52eEybUYCKKvFzhCBpzBifVrdsFrYzNvJYx6cQ/9vhBflmnFZwEGhYd+7LaiTBn
-	8EeI7fXi3m/i112dhig6LMObEY0/sEnLSt1tEvoAQmFRB1ju800QHC9EeZ90Ch4UE=
-X-Received: by 2002:a17:902:f552:b0:2c6:6425:b343 with SMTP id d9443c01a7336-2c66425b436mr44729515ad.6.1781421365151;
-        Sun, 14 Jun 2026 00:16:05 -0700 (PDT)
+        bh=TQpCDuMxakljX0z6oHih9q1noq/+hfefR1O95FjQ9QE=;
+        b=Xc5/q8GZPK0sh0/PGRg69zWdyeLXOdX99Y4SCPQkV6rqv8lrdLzEHnCQ79YsDR+TlR
+         qsCv7nyUekQenJuZgg+T4aCPgMQEW5ie/AZB8Quue0RdIbPfM5Dnrrj+4ObtM2U5cZsg
+         W5VcvYzUiSuwoYCXKZ+OEJd25eZ+vxk/yCJnigq6y9eVImNzB1wDadbD6J9JH2/TmxHT
+         istx7c2jOsA1upBQVOlvNY4XuCIWJbsq35pXJMLtcfLGe256lixamkvf3SU3ZeQcZVtK
+         Z7x63Xgia93PKoNMcfRnkiJ260Q5Z1EdQqn13vHpUgyGCRfw67zymbz+FtcgqVArcveW
+         7yvA==
+X-Forwarded-Encrypted: i=1; AFNElJ9NUduys5cx7hRTBgi2IuCxDexrlByaxa+7hFOu1lg2KOMDWdd9M/vsoKi+p0m8g/42Qhd+w+qCgOY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydCAKzlCrN3jHRE4KSzQ+Hzc5MhQa0RUP7NIqJpXP7JUqJMjfz
+	6oXPrxiUzeoRTVHmWyd8BXg6ZbhDGdC6teR3m5fQUFhxqH07VrNUDE1U
+X-Gm-Gg: Acq92OG3/LOSsd/Q79S9JrKyT1uPqE3CwJSxUQPcdKJucyjmL4a8v+LOxKhV9wRtUgb
+	eaW8q3DJhhze4j30+0MabaTZSwdzlG9ngYt8kLn6NYyfD8s7ymIJPbFz/3BbmOdthbCCxINOtNX
+	ZWNkr+Da+RBgFyTtUU1nWjwZuqP/k4QRtFCCh/5uR6b3WIPG3ak1DTlw0dXhPs3WJ5k8fKW7RQd
+	lg1ATgTV2gw83Ev8LxP6veJo6J0a4mSyvqMqcsS22Img5d/NfbLAj2ooaxAm3vINlPCvkvQz3Ri
+	5hDPQh9vfcvuw8uPOHv8KDfjoiiJmpvOtbAugubtXMpky6m45R2MJpGnF85m0+lNyOa7wrVUxPT
+	aEP7mcth6n5/EGnOAwGyeCVZMec+xZ3NymapS10/JkrupP4RZzaKWB0xFhUxDYgg+n+LqnLAFQ4
+	OicQ2GG9rGWlGnjjAORhnx13j/VHZqLCyO4EVKuYmcGEnOrTnW3Yh8
+X-Received: by 2002:a17:903:3888:b0:2c2:7baf:139f with SMTP id d9443c01a7336-2c41255f17dmr105953765ad.30.1781421370143;
+        Sun, 14 Jun 2026 00:16:10 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.217.37])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4327ac794sm65595295ad.46.2026.06.14.00.16.01
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4327ac794sm65595295ad.46.2026.06.14.00.16.05
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 14 Jun 2026 00:16:04 -0700 (PDT)
+        Sun, 14 Jun 2026 00:16:08 -0700 (PDT)
 From: Biren Pandya <birenpandya@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Linus Walleij <linusw@kernel.org>,
@@ -67,9 +67,9 @@ Cc: Linus Walleij <linusw@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Biren Pandya <birenpandya@gmail.com>
-Subject: [PATCH v1 2/4] iio: gyro: mpu3050: fix runtime PM leak when enabling trigger fails
-Date: Sun, 14 Jun 2026 12:45:47 +0530
-Message-ID: <20260614071549.81920-3-birenpandya@gmail.com>
+Subject: [PATCH v1 3/4] iio: pressure: mpl115: fix runtime PM leak on read error
+Date: Sun, 14 Jun 2026 12:45:48 +0530
+Message-ID: <20260614071549.81920-4-birenpandya@gmail.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260614071549.81920-1-birenpandya@gmail.com>
 References: <20260614071549.81920-1-birenpandya@gmail.com>
@@ -81,78 +81,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when the
-trigger is enabled, but several error paths in the enable branch return
-directly without dropping the usage counter again. pm_runtime_get_sync()
-increments the usage counter, so every failed enable leaks a runtime PM
-reference and the device can no longer autosuspend. The driver state flag
-hw_irq_trigger is also left set after a failed enable.
+mpl115_read_raw() takes a runtime PM reference with pm_runtime_get_sync()
+before reading the processed pressure or raw temperature, but on the read
+error path it returns without calling pm_runtime_put_autosuspend(). Each
+failed read therefore leaks a runtime PM reference and prevents the device
+from autosuspending.
 
-Jump to a common error label that drops the reference and clears
-hw_irq_trigger, mirroring the disable path. The success path deliberately
-keeps the reference, as the device must stay resumed while the trigger is
-active.
+Drop the reference before checking the return value so both the success
+and error paths are balanced.
 
 Signed-off-by: Biren Pandya <birenpandya@gmail.com>
 Assisted-by: Claude:claude-opus-4-8 coccinelle
 ---
- drivers/iio/gyro/mpu3050-core.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/iio/pressure/mpl115.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index d84e04e4b431..783be9a786df 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -994,14 +994,14 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 		/* Disable all things in the FIFO */
- 		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
- 		if (ret)
--			return ret;
-+			goto err_power_down;
+diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+index 830a5065c008..16e112b796ba 100644
+--- a/drivers/iio/pressure/mpl115.c
++++ b/drivers/iio/pressure/mpl115.c
+@@ -106,18 +106,18 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		pm_runtime_get_sync(data->dev);
+ 		ret = mpl115_comp_pressure(data, val, val2);
++		pm_runtime_put_autosuspend(data->dev);
+ 		if (ret < 0)
+ 			return ret;
+-		pm_runtime_put_autosuspend(data->dev);
  
- 		/* Reset and enable the FIFO */
- 		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
- 				      MPU3050_USR_CTRL_FIFO_EN |
- 				      MPU3050_USR_CTRL_FIFO_RST);
- 		if (ret)
--			return ret;
-+			goto err_power_down;
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_RAW:
+ 		pm_runtime_get_sync(data->dev);
+ 		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
+ 		ret = mpl115_read_temp(data);
++		pm_runtime_put_autosuspend(data->dev);
+ 		if (ret < 0)
+ 			return ret;
+-		pm_runtime_put_autosuspend(data->dev);
+ 		*val = ret >> 6;
  
- 		mpu3050->pending_fifo_footer = false;
- 
-@@ -1013,12 +1013,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 				   MPU3050_FIFO_EN_GYRO_ZOUT |
- 				   MPU3050_FIFO_EN_FOOTER);
- 		if (ret)
--			return ret;
-+			goto err_power_down;
- 
- 		/* Configure the sample engine */
- 		ret = mpu3050_start_sampling(mpu3050);
- 		if (ret)
--			return ret;
-+			goto err_power_down;
- 
- 		/* Clear IRQ flag */
- 		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-@@ -1037,10 +1037,16 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 
- 		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
- 		if (ret)
--			return ret;
-+			goto err_power_down;
- 	}
- 
- 	return 0;
-+
-+err_power_down:
-+	pm_runtime_put_autosuspend(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = false;
-+
-+	return ret;
- }
- 
- static const struct iio_trigger_ops mpu3050_trigger_ops = {
+ 		return IIO_VAL_INT;
 -- 
 2.50.1 (Apple Git-155)
 
