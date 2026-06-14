@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4832F3C37;
-	Sun, 14 Jun 2026 16:35:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9884C285C8B;
+	Sun, 14 Jun 2026 16:43:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781454904; cv=none; b=bnKYkneBRMnf85Cz/VoPIrF6vCnJ7MYzwJ9B5JCsWAmOGy4CPfHkp6gS3m6MLsXOQloxS0FgYpwIxwV8RHne9lx1sac6cXCsvrSICmGnzru0j0BaeOMZVGlkUrTGHfGjAFd0I6ENQpVbAXTZkoYCtHx6RV0LBEXgFa73WzBbCag=
+	t=1781455408; cv=none; b=h0veM5oW0OsDddU9cfw9YxUG7DpFmr12qVpjS48HAtuIK0f2MFKdPh2NkO05XgM+RHinffi4sJuLgA1m/+qxDFQylNuxHxYTllnV02kFwNdBkhqMZ+15oiVmAmWTxLd/x2DPYl8876mfZ1MavDURIxhrMS5xeXa5BxgxObut4Sg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781454904; c=relaxed/simple;
-	bh=Wu/RmZC3h2lCsa7pOcbEM1+r8DClzSk6d127sxlLH2Q=;
+	s=arc-20240116; t=1781455408; c=relaxed/simple;
+	bh=wE/6l/nRZHv2l0ccE0H+IabZswGjTrYZVjOhrGcQXu8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eGsA7P8qJwJTOI8vhy9u+ROe96aFd9tg8+uqRQIG/nRcNVlIOjMXfFhybSlZ2yFcTAtXxGhyM5WbpetMEwj+NslKi2oJHtbbmsc3X50T/pKzMDbvtRGUN2+OuV8xeRCUCzFolbgWeF57yls00+BaSMs2TMhOsLWsYjLhXjdMXAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vnf08imH; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lxM8bzHYDnm5jcyBTuDUPesGq8ZD5GifzPNpXwXseVugZMa5b4q6JdSiORb4Z5VQsCsb2YJy3CXgoUelfdSa6KiCeNb6WtwH4lbw2oSO924iyrhws+1pPbSWfkxoTRacs4GryPziyFM6KdY76SbzvCgsFmbnRh4bxWRArrIAhFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MirJXAQL; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vnf08imH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B3881F000E9;
-	Sun, 14 Jun 2026 16:34:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MirJXAQL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11A7B1F000E9;
+	Sun, 14 Jun 2026 16:43:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781454903;
-	bh=idYHJBBU/SGZVcFt0UoqqHmT+v7vxO/szRsvlKZMY08=;
+	s=k20260515; t=1781455407;
+	bh=+zQw4+hL3j1CnxUb4Aobd/oKysJEMwCgjzSj2E8RaI8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Vnf08imHxkrAx5spB3j0OrCVRmU6tnfytvx6wYMbEc4PAO6RK6v4DqaFH7yLGtSjD
-	 pMuS/clZUsNSJg8H2sYDoQGCakIN5Ye0XYdBhc1e8T3kEpRoVK+K88ac4sWMvAjU6S
-	 /KEhbXsoFdsL782CUAimrE80NKOcuQ9dvXS0W5fHnHEqmRfkp7sOqfJaguAXYCwk7X
-	 IYePgX6mol6cfcDMc9MZXg66CYcZOdQMDwUsQ4BaGoxApQOBtW8IfG+EkSAr8yFifm
-	 BYAxGE81oy3a2y+/TyB3pAW5qf4UWklvdHv6IoCiFGU3xFj+l84WFrrROLfDfVLTz+
-	 3DhJ7fQl97jAw==
-Date: Sun, 14 Jun 2026 17:34:53 +0100
+	b=MirJXAQLQ1ouWWPrnVTflWkZrsaooPTYk5UZWheC234L3+YabMcEFvH0ZLVALK8bR
+	 WdvoCx1xPkAvCljhKgSgdc3awm2pBpWQnsrIUeKWgUIBjQueXd1R47vZTC7+c4akcs
+	 iKOmuiNKza1kytdk3lFP6L0k8pvwMPhXoMH5aHSl1llTs324nU0ASEOz0xSdMyQKR0
+	 kKdOiJyoxyaUWMajuBvgJf3i0iU37P5DcJFr6zJok8vvETXypyi54d+HiiTtq3undz
+	 D/lHRH+jQ2XKjV1WdwWoC2s9joQkbFOM6drW+3cd+QxbfhY6PtQSaDkZjicw2Z16yS
+	 VpytERaNj8s2g==
+Date: Sun, 14 Jun 2026 17:43:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Chris Morgan <macroalpha82@gmail.com>
 Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
@@ -34,12 +34,12 @@ Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
  linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
  heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
  andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V12 6/9] iio: imu: inv_icm42607: Add Temp Support in
+Subject: Re: [PATCH V12 7/9] iio: imu: inv_icm42607: Add Accelerometer for
  icm42607
-Message-ID: <20260614173453.0db01d3f@jic23-huawei>
-In-Reply-To: <20260611202607.85376-7-macroalpha82@gmail.com>
+Message-ID: <20260614174317.2a47f191@jic23-huawei>
+In-Reply-To: <20260611202607.85376-8-macroalpha82@gmail.com>
 References: <20260611202607.85376-1-macroalpha82@gmail.com>
-	<20260611202607.85376-7-macroalpha82@gmail.com>
+	<20260611202607.85376-8-macroalpha82@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,72 +50,106 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 11 Jun 2026 15:26:03 -0500
+On Thu, 11 Jun 2026 15:26:04 -0500
 Chris Morgan <macroalpha82@gmail.com> wrote:
 
 > From: Chris Morgan <macromorgan@hotmail.com>
 > 
-> Add functions for reading temperature sensor data.
+> Add icm42607 accelerometer sensor for icm42607.
 > 
 > Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-The buffer isn't safe for use for DMA.  See below.
-I'm not sure I'd have noticed. This used to be a common bug but not seen it that
-often recently for some reason!
+Really trivial stuff that I'd not have mentioned if you weren't
+doing a v13 for other reasons.
 
-Jonathan
-
-  
 > ---
->  drivers/iio/imu/inv_icm42607/Makefile         |  1 +
->  drivers/iio/imu/inv_icm42607/inv_icm42607.h   |  5 ++
->  .../iio/imu/inv_icm42607/inv_icm42607_core.c  | 18 +++++
->  .../iio/imu/inv_icm42607/inv_icm42607_temp.c  | 76 +++++++++++++++++++
->  .../iio/imu/inv_icm42607/inv_icm42607_temp.h  | 37 +++++++++
->  5 files changed, 137 insertions(+)
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
->  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
-> 
-> diff --git a/drivers/iio/imu/inv_icm42607/Makefile b/drivers/iio/imu/inv_icm42607/Makefile
-> index be109102e203..c04953ed42ce 100644
-> --- a/drivers/iio/imu/inv_icm42607/Makefile
-> +++ b/drivers/iio/imu/inv_icm42607/Makefile
-> @@ -2,6 +2,7 @@
->  
->  obj-$(CONFIG_INV_ICM42607) += inv-icm42607.o
->  inv-icm42607-y += inv_icm42607_core.o
-> +inv-icm42607-y += inv_icm42607_temp.o
->  
->  obj-$(CONFIG_INV_ICM42607_I2C) += inv-icm42607-i2c.o
->  inv-icm42607-i2c-y += inv_icm42607_i2c.o
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> index 28edc12d5373..53dd23509a53 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-> @@ -114,6 +114,7 @@ struct inv_icm42607_suspended {
->  
->  /**
->   *  struct inv_icm42607_state - driver state variables
-> + *  @buffer:		data transfer buffer aligned for DMA.
->   *  @hw:		Hardware specific data.
->   *  @map:		regmap pointer.
->   *  @vddio_supply:	I/O voltage regulator for the chip.
-> @@ -124,6 +125,7 @@ struct inv_icm42607_suspended {
->   *  @orientation:	sensor chip orientation relative to main hardware.
->   */
->  struct inv_icm42607_state {
-> +	__be16 buffer[3] __aligned(IIO_DMA_MINALIGN);
+>  drivers/iio/imu/inv_icm42607/Makefile         |   1 +
+>  drivers/iio/imu/inv_icm42607/inv_icm42607.h   |  34 ++
+>  .../iio/imu/inv_icm42607/inv_icm42607_accel.c | 376 ++++++++++++++++++
+>  .../iio/imu/inv_icm42607/inv_icm42607_core.c  |  61 +++
+>  4 files changed, 472 insertions(+)
+>  create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
 
-Look in more depth at what this does.   Key thing is there is a reason
-this should always be at the end of the iio_priv() structure.
+> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+> new file mode 100644
+> index 000000000000..5e260ddad641
+> --- /dev/null
+> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+> @@ -0,0 +1,376 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * Copyright (C) 2026 InvenSense, Inc.
+> + */
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "inv_icm42607.h"
+> +#include "inv_icm42607_temp.h"
+> +
+> +#define INV_ICM42607_ACCEL_CHAN(_modifier, _index, _ext_info)		\
+> +{									\
+> +	.type = IIO_ACCEL,						\
+> +	.modified = 1,							\
+> +	.channel2 = _modifier,						\
+> +	.info_mask_separate =						\
+> +		BIT(IIO_CHAN_INFO_RAW),					\
+> +	.info_mask_shared_by_type =					\
+> +		BIT(IIO_CHAN_INFO_SCALE),				\
+> +	.info_mask_shared_by_type_available =				\
+> +		BIT(IIO_CHAN_INFO_SCALE),				\
+> +	.info_mask_shared_by_all =					\
+> +		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
+> +	.info_mask_shared_by_all_available =				\
+> +		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
+Maybe for these, just go a bit long on line length (so 81 chars).
+I don't really care either way!
 
-(Sashiko caught this btw)
+> +	.scan_index = _index,						\
+> +	.scan_type = {							\
+> +		.sign = 's',						\
+> +		.realbits = 16,						\
+> +		.storagebits = 16,					\
+> +		.endianness = IIO_BE,					\
+> +	},								\
+> +	.ext_info = _ext_info,						\
+> +}
 
->  	const struct inv_icm42607_hw *hw;
->  	struct regmap *map;
->  	struct regulator *vddio_supply;
-> @@ -363,6 +365,9 @@ extern const struct inv_icm42607_hw inv_icm42607_hw_data;
->  extern const struct inv_icm42607_hw inv_icm42607p_hw_data;
->  extern const struct dev_pm_ops inv_icm42607_pm_ops;
->  
 
+> +
+> +static int inv_icm42607_accel_write_odr(struct iio_dev *indio_dev,
+> +					int val, int val2)
+> +{
+> +	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
+> +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
+> +	struct device *dev = regmap_get_device(st->map);
+> +	unsigned int idx;
+> +	int ret;
+> +
+> +	for (idx = 5; idx < ARRAY_SIZE(inv_icm42607_accel_odr); ++idx) {
+> +		if (val == inv_icm42607_accel_odr[idx][0] &&
+> +		    val2 == inv_icm42607_accel_odr[idx][1])
+> +			break;
+> +	}
+> +	if (idx >= ARRAY_SIZE(inv_icm42607_accel_odr))
+> +		return -EINVAL;
+> +
+> +	conf.odr = idx;
+> +
+> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
+> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +	if (ret)
+> +		return ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = inv_icm42607_set_accel_conf(st, &conf, NULL);
+> +	if (ret)
+> +		return ret;
 
+return inv_icm....
+
+> +
+> +	return 0;
+> +}
