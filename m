@@ -1,51 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C48930EF89;
-	Sun, 14 Jun 2026 19:45:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242EF31714B;
+	Sun, 14 Jun 2026 19:51:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781466309; cv=none; b=eUZVEMt56+ex9yNYKiE/8/VTXGSZzdpslHwiBRuVWgLMMFkGQ8geI82HvvE7KZzlIVw3SKqbRoDKhjfQQwrbH2lVw9tcYPk3xL5RxEfmyX41ArK1BNdVr7x9kHguWyYWJyIJWsr6tkkoXSWSoL/fpJBJsX62GWvOmsPPCzaWM7s=
+	t=1781466704; cv=none; b=OSu89Dp03UEGp6fzZ/C9AO/NILQrcV8lHixsqYpDIJ+0sg5HgyMzEzRGf1stH2P2DbTlpuibKUA1NBAKlDfMNXb2M1pg4sI/3Vj1A21vU6Q/bpdLvmRBSbgPPk3C25Xgq9OpoCgW3XJbJR/LjvYiezFqVGX3Hq9rsidlqMUKLYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781466309; c=relaxed/simple;
-	bh=7ha0LiReNGNW/bxB6b9lPIfBwVFFY9y3NVorZGR09fo=;
+	s=arc-20240116; t=1781466704; c=relaxed/simple;
+	bh=2LUvsEZYLmYA95+lLjblKu4+Mb/N2E++mvok7V/fcF0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QY6ntKi4wrzJ1Rn9B9DmJsNvHvM8VUdNzsgC/jRl80c2xRL2jI7z5p3cJmhRGdLO3ASnUUDPiPq/wxeZUSL/r+MgDKQcg+oDQKG6NcvfALQlDKLELWiHRCazt5Ge2YukGEl7UKo06dRVwAn4nnBb5wDRXEAbjAdR/hcrC+/7EqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kK/wwZ7a; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=en8wEAr3s21W9jRko6+FCed9jXADrPy34EfOpzJ+0qrDdZBh4ZXe+ugY3uk5IbB/09LlbOT1eGxiauL6b0QsY2mHnLd17Ps92lK38OHt+w2qCjteo6+D3G1kLfxqWExIywnEFrBsu/ceDzh4ZLh/P9YPG+c+55tuCGmNuTuWi3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T/8SAooQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kK/wwZ7a"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DEA1F000E9;
-	Sun, 14 Jun 2026 19:45:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T/8SAooQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F8D1F000E9;
+	Sun, 14 Jun 2026 19:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781466307;
-	bh=fMUJLPXzP2s81hMzrXh6+NPZ/9tUeZuJA5qZT/vFyT8=;
+	s=k20260515; t=1781466701;
+	bh=hFA78dOwnGzgW/0GtADABUlpTH6ZRssXUVW0ddOA1F4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kK/wwZ7abRBhC96sNjunOCOKE+Fo9AFHPZ+fO4Te+tKWtJMNNAsvsYjayjimxgQWH
-	 D9rii8prKwzUyJYCZmccnI/SzPOFLbgfZi4GANAfohSMdsZ12ikz/a/j1OH0rW+wt5
-	 uwnpbmBQBWdFOI07elXGxr42OahnBTUsPrXtSTpH6x5FRU/C0YNI/iq2T90AFqpuNE
-	 KszxD+RZgM9ApB0h/X5RaTDnbq1ueF7CHbZLQtZ+A4nC9+Wzg/wclCtoo2mPlxGOSQ
-	 ODtZ/xvFwZuaE1X+e0zY5+OGtfB2d9iFoSQCE4mF17wTpC3U0K4+96TEweEXG+uLWr
-	 HfLCL2v7zBWAw==
-Date: Sun, 14 Jun 2026 20:44:55 +0100
+	b=T/8SAooQ095tRIfvFQXfaEWKRigTG8RcWJ/fFjnVOhQhi9ZK0IFfAiOsFdjGi7+ag
+	 wG16sZ+oiewkbV5T4TQ2porulLGADyYsn5lpjfX7EO7rBn9L8do8rrwTgwwpetmQ1g
+	 hYupctkzGsJwdu7OOCXMceI5A+uui0SLEJrjSb/mmhA5CB5PmHvKAq/D9A+05+hC/2
+	 F082mVIAFk2sVd23JGY33QbNyJgBO1/dFQkhvMmys+oIx8gBQEum5SCP6hr7HYqsQk
+	 4UD6bNHWxQK/oTy5qw54CEF6hY6kz9Q08mj4n9i/bUj/eQd+2znKc2+26TwEIW6aRy
+	 JYObWQpGKQZMQ==
+Date: Sun, 14 Jun 2026 20:51:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <jan.sun97@gmail.com>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Janani Sunil
- <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260614204455.408c4d40@jic23-huawei>
-In-Reply-To: <603473ac-30e6-45e5-8a3b-c9902715cc9e@gmail.com>
-References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
-	<20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
-	<25mh6grzh7zh3b4uytcqnusyv5zjuf6ia4if3ce3oqzqz56ehi@le72iqv7ye3d>
-	<603473ac-30e6-45e5-8a3b-c9902715cc9e@gmail.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: github.com@herrie.org, me@herrie.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, tomasborquez13@gmail.com, masneyb@onstation.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: light: isl29018: add
+ isil,cover-comp-gain
+Message-ID: <20260614205131.7449d180@jic23-huawei>
+In-Reply-To: <20260608-raft-auction-6305f9f324cd@spud>
+References: <20260604100617.3486541-1-github.com@herrie.org>
+	<20260604100617.3486541-3-github.com@herrie.org>
+	<20260604-energy-lid-e7949164431a@spud>
+	<20260605140449.1d7538ee@jic23-huawei>
+	<b6919a62f06ad8e4e80232d9b2a0e706@herrie.org>
+	<bb7c65095dc53dd8723c1ecd9c33796c@herrie.org>
+	<20260608-raft-auction-6305f9f324cd@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,233 +52,198 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 9 Jun 2026 16:47:23 +0200
-Janani Sunil <jan.sun97@gmail.com> wrote:
+On Mon, 8 Jun 2026 18:49:13 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-> On 5/26/26 15:11, Rodrigo Alencar wrote:
-> > On 26/05/19 05:42PM, Janani Sunil wrote:  
-> >> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> >> buffered voltage output digital-to-analog converter (DAC) with an
-> >> integrated precision reference.  
-> > ...
-> > Probably others may comment on that, but...
-> >
-> > This parent node may support device addressing for multi-device support through
-> > those ID pins. I suppose that each device may have its own power supplies or
-> > other resources like the toggle pins or reset and enable.
-> >
-> > That way I suppose that an example would look like...
-> >  
-> >> +
-> >> +patternProperties:
-> >> +  "^channel@([0-9]|1[0-5])$":
-> >> +    type: object
-> >> +    description: Child nodes for individual channel configuration
-> >> +
-> >> +    properties:
-> >> +      reg:
-> >> +        description: Channel number.
-> >> +        minimum: 0
-> >> +        maximum: 15
-> >> +
-> >> +      adi,output-range-microvolt:
-> >> +        description: |
-> >> +          Output voltage range for this channel as [min, max] in microvolts.
-> >> +          If not specified, defaults to 0V to 5V range.
-> >> +        oneOf:
-> >> +          - items:
-> >> +              - const: 0
-> >> +              - enum: [5000000, 10000000, 20000000, 40000000]
-> >> +          - items:
-> >> +              - const: -5000000
-> >> +              - const: 5000000
-> >> +          - items:
-> >> +              - const: -10000000
-> >> +              - const: 10000000
-> >> +          - items:
-> >> +              - const: -15000000
-> >> +              - const: 15000000
-> >> +          - items:
-> >> +              - const: -20000000
-> >> +              - const: 20000000
-> >> +
-> >> +    required:
-> >> +      - reg
-> >> +
-> >> +    additionalProperties: false
-> >> +
-> >> +required:
-> >> +  - compatible
-> >> +  - reg
-> >> +  - vdd-supply
-> >> +  - avdd-supply
-> >> +  - hvdd-supply
-> >> +
-> >> +dependencies:
-> >> +  spi-cpha: [ spi-cpol ]
-> >> +  spi-cpol: [ spi-cpha ]
-> >> +
-> >> +allOf:
-> >> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> >> +
-> >> +unevaluatedProperties: false
-> >> +
-> >> +examples:
-> >> +  - |
-> >> +    #include <dt-bindings/gpio/gpio.h>
-> >> +
-> >> +    spi {
-> >> +        #address-cells = <1>;
-> >> +        #size-cells = <0>;
-> >> +
-> >> +        dac@0 {
-> >> +            compatible = "adi,ad5529r-16";
-> >> +            reg = <0>;
-> >> +            spi-max-frequency = <25000000>;
-> >> +
-> >> +            vdd-supply = <&vdd_regulator>;
-> >> +            avdd-supply = <&avdd_regulator>;
-> >> +            hvdd-supply = <&hvdd_regulator>;
-> >> +            hvss-supply = <&hvss_regulator>;
-> >> +
-> >> +            reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-> >> +
-> >> +            #address-cells = <1>;
-> >> +            #size-cells = <0>;
-> >> +
-> >> +            channel@0 {
-> >> +                reg = <0>;
-> >> +                adi,output-range-microvolt = <0 5000000>;
-> >> +            };
-> >> +
-> >> +            channel@1 {
-> >> +                reg = <1>;
-> >> +                adi,output-range-microvolt = <(-10000000) 10000000>;
-> >> +            };
-> >> +
-> >> +            channel@2 {
-> >> +                reg = <2>;
-> >> +                adi,output-range-microvolt = <0 40000000>;
-> >> +            };
-> >> +        };
-> >> +    };  
-> > ...
-> >
-> > 	spi {
-> > 		#address-cells = <1>;
-> > 		#size-cells = <0>;
-> >
-> > 		multi-dac@0 {
-> > 			compatible = "adi,ad5529r-16";
-> > 			reg = <0>;
-> > 			spi-max-frequency = <25000000>;
-> >
-> > 			#address-cells = <1>;
-> > 			#size-cells = <0>;
-> >
-> > 			dac@0 {
-> > 				reg = <0>;
-> > 				vdd-supply = <&vdd_regulator>;
-> > 				avdd-supply = <&avdd_regulator>;
-> > 				hvdd-supply = <&hvdd_regulator>;
-> > 				hvss-supply = <&hvss_regulator>;
-> >
-> > 				reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-> >
-> > 				#address-cells = <1>;
-> > 				#size-cells = <0>;
-> >
-> > 				channel@0 {
-> > 					reg = <0>;
-> > 					adi,output-range-microvolt = <0 5000000>;
-> > 				};
-> >
-> > 				channel@1 {
-> > 					reg = <1>;
-> > 					adi,output-range-microvolt = <(-10000000) 10000000>;
-> > 				};
-> >
-> > 				channel@2 {
-> > 					reg = <2>;
-> > 					adi,output-range-microvolt = <0 40000000>;
-> > 				};
-> > 			}
-> >
-> > 			dac@1 {
-> > 				reg = <1>;
-> > 				vdd-supply = <&vdd_regulator>;
-> > 				avdd-supply = <&avdd_regulator>;
-> > 				hvdd-supply = <&hvdd_regulator>;
-> > 				hvss-supply = <&hvss_regulator>;
-> >
-> > 				reset-gpios = <&gpio0 88 GPIO_ACTIVE_LOW>;
-> >
-> > 				#address-cells = <1>;
-> > 				#size-cells = <0>;
-> >
-> > 				channel@0 {
-> > 					reg = <0>;
-> > 					adi,output-range-microvolt = <0 5000000>;
-> > 				};
-> >
-> > 				channel@1 {
-> > 					reg = <1>;
-> > 					adi,output-range-microvolt = <(-10000000) 10000000>;
-> > 				};
-> > 			}
-> > 		};
-> > 	};
-> >
-> > then you might need something like:
-> >
-> > 	patternProperties:
-> > 		"^dac@[0-3]$":
-> >
-> > and put most of the things under this node pattern.
-> >
-> > So the main driver that you're putting together might need to handle up to four instances.
-> > Even if your current driver cannot handle this, the dt-bindings might need cover that.
-> >
-> > Need to double check if each dac node needs a separate compatible, so you would maybe populate
-> > a platform data to be shared with the child nodes, which would be a separate driver.
-> > (not sure if it would make sense to mix and match ad5529r-16 and ad5529r-12).  
-> 
-> Hi Rodrigo,
-> 
-> Thank you for looking at this.
-> 
-> For now, I would prefer to keep the binding scoped to a single AD5529R device instance. The current
-> hardware/use case we have only needs one device node and the driver is written around that model as well.
-> While the device addressing pins could allow multi-device topology, we do not have an actual platform using
-> that configuration at the moment, so I would prefer not to introduce an extra parent/child binding structure
-> speculatively without a validating use case.
+> On Fri, Jun 05, 2026 at 09:28:03PM +0200, me@herrie.org wrote:
+> > On 2026-06-05 15:18, me@herrie.org wrote: =20
+> > > On 2026-06-05 15:04, Jonathan Cameron wrote: =20
+> > > > On Thu, 4 Jun 2026 18:01:08 +0100
+> > > > Conor Dooley <conor@kernel.org> wrote:
+> > > >  =20
+> > > > > On Thu, Jun 04, 2026 at 12:06:16PM +0200, Herman van Hazendonk wr=
+ote: =20
+> > > > > > Document the new optional property that seeds the ISL29018 cali=
+bration
+> > > > > > scale factor at boot from firmware, allowing boards with tinted=
+ cover
+> > > > > > glass to ship with correct luminance readings without a userspa=
+ce helper.
+> > > > > >
+> > > > > > The value is a positive integer (minimum 1, maximum 65535) that=
+ is
+> > > > > > multiplied with the raw lux reading.  Userspace can still overr=
+ide it
+> > > > > > at runtime through in_illuminance0_calibscale.
+> > > > > >
+> > > > > > Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+> > > > > > ---
+> > > > > >  .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++=
+++++++++
+> > > > > >  1 file changed, 13 insertions(+)
+> > > > > >
+> > > > > > diff --git a/Documentation/devicetree/bindings/iio/light/isl290=
+18.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+> > > > > > index 0ea278b07d1c..92ea2742bbd3 100644
+> > > > > > --- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+> > > > > > +++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+> > > > > > @@ -34,6 +34,19 @@ properties:
+> > > > > >    vcc-supply:
+> > > > > >      description: Regulator that provides power to the sensor
+> > > > > >
+> > > > > > +  isil,cover-comp-gain:
+> > > > > > +    description: |
+> > > > > > +      Multiplier applied to the ambient-light reading at start=
+up to
+> > > > > > +      compensate for optical loss in the board's cover glass. =
+Boards
+> > > > > > +      that mount the sensor under a tinted or coated window ty=
+pically
+> > > > > > +      need a value between a few and a few hundred. =20
+> > > >=20
+> > > > Is it useful to support decimal points on these values?  The
+> > > > userspace interface
+> > > > does and you mention the 'right' answer might be only a few which
+> > > > means precision
+> > > > at that range will be terrible - less of an issue if 100s!
+> > > >=20
+> > > > Thanks
+> > > >=20
+> > > > Jonathan
+> > > >  =20
+> > > Hard to say, my old HP TouchPad needs 100 as a value here (taken from
+> > > legacy 2.6.35
+> > > kernel and binaries). So we probably don't need precision, but I have=
+ no
+> > > other
+> > > references to substantiate.
+> > >=20
+> > > Thanks
+> > > Herman =20
+> > Scratch that. Did some more research. Proof is in the legacy webOS bina=
+ries:
+> >=20
+> > What legacy webOS actually does here:
+> >=20
+> > 1. Per-device calibration via factory token reads an ALSCal token from
+> > system storage
+> > containing JSON with calibration points at lux_0, lux_50, lux_100, lux_=
+400
+> > (measured
+> > ADC counts at known reference illuminance levels).
+> >=20
+> > 2. Computes a floating-point ratio AlsToLux_Ratio_WhiteLED =3D average =
+of
+> > expected_lux /
+> > measured_count across the JSON calibration points. This is a real numbe=
+r,
+> > not an integer.
+> >=20
+> > 3. Adjusts for light source spectrum at runtime detects illuminant type=
+ from
+> > ALS:IR
+> > ratio, then applies a fractional spectrum correction:
+> > Fluorescent above 100 counts: ratio x 0.4652
+> > Incandescent above 700 counts: ratio x 0.4
+> > Incandescent 50-100 counts:    ratio x 0.9
+> > Fluorescent < 50 counts:       ratio x (-0.000724=C2=B7N + 0.7463)
+> >=20
+> > 4. Final lux =3D ALSCount / spectrum_corrected_ratio - a true floating-=
+point
+> > division.
+> >=20
+> > Implications
+> >=20
+> > - The "right" cover-comp value is per-device factory-measured, not
+> > per-board. Different
+> > units off the same production line have different optical transmission =
+due
+> > to coating
+> > tolerance.
+> > - The values are fractional by nature. Examples from the legacy code:
+> > 0.4652, 0.7463,
+> > 0.8333. None are integers.
+> >=20
+> > The ISL29023 datasheet itself says nothing about cover compensation - i=
+t's
+> > strictly
+> > board-level optical correction. So there's no "right" answer from the c=
+hip
+> > side;
+> > it's whatever the board's cover glass + coating attenuates.
+> >=20
+> > ALSCal values found on the particular device:
+> >=20
+> > {"lux_50":{"c":31}, "lux_100":{"c":58}, "lux_400":{"c":164}}
+> >=20
+> > This is device specific TouchPad's factory calibration:
+> >   - At 50 lux, ADC reads 31 counts  lux/count =3D 1.613
+> >   - At 100 lux, ADC reads 58 counts lux/count =3D 1.724
+> >   - At 400 lux, ADC reads 164 counts  lux/count =3D 2.439
+> >=20
+> > Note the ratio isn't constant - the response is mildly non-linear, but =
+per
+> > the legacy
+> > code the driver computes the average ratio as the calibration:
+> >=20
+> >   ratio =3D (1.6129 + 1.7241 + 2.4390) / 3 =3D 1.9253 lux/count
+> >=20
+> > Independent verification:
+> >   - At calibscale=3D34: lux =3D 1295
+> >   - Implied raw count: 1295 / (34 x 0.015258) =3D 2496 counts
+> >   - Applying legacy formula: 2496 / 1.9253 =3D 1296.4 =3D 1295
+> >=20
+> > The factory-calibrated value for this specific TouchPad is 34.04 (not 1=
+00).
+> > Per-point
+> > calibscale values from the ALSCal JSON:
+> >=20
+> > Cal point=E2=80=9A lux/count ratio=E2=80=9A Equivalent calibscale
+> > lux_50    =E2=80=9A 1.6129          =E2=80=9A 40.64
+> > lux_100   =E2=80=9A 1.7241          =E2=80=9A 38.01
+> > lux_400   =E2=80=9A 2.4390          =E2=80=9A 26.87
+> > average   =E2=80=9A 1.9253          =E2=80=9A 34.04
+> >=20
+> > What this means concretely
+> >=20
+> > 1. Decimal precision is necessary, not nice-to-have. Real per-device fa=
+ctory
+> > values
+> > span 26.9 - 40.6 across the chip's response curve. A single scalar
+> > approximation costs
+> > precision; restricting to integer compounds it.
+> >=20
+> > 2. Updated v5 plan: switch to two-cell <int micro> for fractional value=
+s,
+> > and change
+> > the tenderloin DTS default from <100> to <34 040000> (or close to that).
+> >=20
+> > Thoughts on this? =20
+>=20
+> Instead of going 2-cell, it might be worth moving the property to be
+> based in some fractional unit to begin with. I just don't know what to
+> call that, milligain? I dunno.
+>=20
+>=20
+> Jonathan's call here I think
 
-Interesting feature - kind of similar to address control on a typical i2c bus device, or
-looking at it another way a kind of distributed SPI mux.
+If this is varying that a lot per device, then, unless you plan to
+have a bootloader inject it into DT, are we better off making this
+a userspace problem?  There is a hybrid we've done before, which is
+to make it a firmware loading problem but that requires some way to
+generate a suitable file to load and typically a calibration sequence
+that goes with it.
 
-Challenge of a binding is we need to anticipate the future.  So I think we do need something
-like Rodrigo is suggesting even if we only (for now) support a single instance in the driver.
-That would leave the path open to supporting the addressing at a later date.
-An alternative might be to look at it like a chained device setup. In those we pretend there
-is just one device with a lot of channels etc.  The snag is that here things are more loosely
-coupled whereas for those devices it tends to be you have to read / write the same register
-in all devices in the chain as one big SPI message.
+If it is 'fairly constant' for a given device then fine to be in DT
+- it will just be a case of picking the average of a bunch of measured
+devices and assuming it is good enough.
 
-+CC Mark Brown as he may know of some precedence for this feature. For his reference..
-- Each of these device has 2 ID pins.  The SPI transfers have to contain the 2 bit
-value that matches that or they are ignored.  Thus a single bus + 1 chip select can
-be used to talk to 4 devices.  Question is what that looks like in device tree + I guess
-longer term how to support it cleanly in SPI.
+If it does end up in dt, then a fractional type like Conor suggests
+is fine.
 
 Jonathan
 
-
-> 
-> Best Regards,
-> Janani Sunil
-> 
-> 
 
