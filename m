@@ -1,138 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5832C23AE62;
-	Sun, 14 Jun 2026 19:06:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8AA12C534
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 19:19:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781464003; cv=none; b=ei+MJEEu/YYPENPAqTreLnUe6HIeUt8Whu22DNKfQN9DtPwtkjQvvb+Q3T4+YpHwmyqnLy2e7DLfLCuDjN5Ql/R+tsg2ljLRlqBHTftKgCzhf4enuBA/Men6SMGY+OjDNCMPHHvqIVPmQJU/qXsKK38Pyb7w7iksv42IKpEinr4=
+	t=1781464765; cv=none; b=LiYlhh3vx9wnrfxYLNgJZ+qo6YNToSZNV7qeAp3OrneT2eqfoIoWm9PPbSIZ62531+sCKXdquhy748Y5wzVRmqX3NSgZFRM4D0taTHJFM40ScIAudCoIMDNgs/+0/4468L6L7e692C42YEhesqw6bfmFlqMpc51xiICyCnWA7PA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781464003; c=relaxed/simple;
-	bh=hhKZmyCl1nlGbiSgRi6ImyY7Yqw8WFjGuQaj8NpEvnE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=csvn11MjKHZRsXETTuWvIDFmDrTxMp2OvCGtbTBTJsxZiAStPnpFZa9lWvPBxzcvlH8y2+njSeqiSgh9TIQIw4B0NWNCwmnIQCCS/MbiUn0TDvSjzAk1Tt3X+15CByyiSd3sDzFz4BQx9spZEtp6y80NIGo0P6YnDG1hwvXeuTM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JvGXkcTy; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781464765; c=relaxed/simple;
+	bh=kwRwajX0NpTQhq/ferE78iMulVMJWONC7haTFQi7XJg=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=D9bOB6TXRw104OyFmkSEssueB/WztCw2LteoQytNAEF4bYaYduxu8uy16VKdg9fQKaIrtYFi8ajj4sIJ+FZICOWVmi6MFlSOs1ihYT/GRsUa6GkV2GrvWUdxDPlrm2zUnGM5F0f2t6KZMc2r1i+Gkv4KF4v6IDS+dWTS9LwOe5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EBrcdlxD; arc=none smtp.client-ip=209.85.160.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JvGXkcTy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B1241F000E9;
-	Sun, 14 Jun 2026 19:06:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781464002;
-	bh=/VXI67DOMw8cHtqaIo95wnFIHVXV1YBH75iWiT6gYus=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JvGXkcTyauddm+aN+4xKc5839Gd9wa/VspObJOABk7DcvqpnvBBuk3Hv+SoI8OMFW
-	 r8N/bO9tT8PuZyYqdNh+py/lfqHFqMc98n79O5xqpybLrEHAIw2WDmqRdMZyqrnZwA
-	 5ohztof/Sg2BKNQv9qVF2jTzRvOf1f1GPxZ7yHfslrMEkCDiopxnRxSOgiX9gD7E1F
-	 xle7//iqSPS7BKLakB5h6K1IxPafP5IYGx0dATU1yObrKiCuXBeexud/CJNllzH7eE
-	 BbPel9Y/WBOhzh64JYFx0VbvzE4qGQti5HQiEG6juDEhZF25h5EBwvQdm1FTg5ZgLi
-	 ifNwcTh3pNtEQ==
-Date: Sun, 14 Jun 2026 20:06:30 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Amit Kucheria
- <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J.
- Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
- <kamal.wadhwa@oss.qualcomm.com>, David Collins
- <david.collins@oss.qualcomm.com>, Anjelique Melendez
- <anjelique.melendez@oss.qualcomm.com>, Neil Armstrong
- <neil.armstrong@linaro.org>, Stephan Gerhold <stephan.gerhold@linaro.org>
-Subject: Re: [PATCH v2 2/2] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-Message-ID: <20260614200630.2ea04817@jic23-huawei>
-In-Reply-To: <27631a0f-b5ba-4181-94f9-aa7726a4054b@oss.qualcomm.com>
-References: <20260526-gen3_adc_tm-v2-0-702fbac919ac@oss.qualcomm.com>
-	<20260526-gen3_adc_tm-v2-2-702fbac919ac@oss.qualcomm.com>
-	<20260527124220.39ac0b64@jic23-huawei>
-	<27631a0f-b5ba-4181-94f9-aa7726a4054b@oss.qualcomm.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EBrcdlxD"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-5175cb5946dso20095321cf.0
+        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 12:19:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781464763; x=1782069563; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yIMALptmH08hDIBGn9+50C8C0r6VnVr/CsdRlyfvq20=;
+        b=EBrcdlxDcVDSGWsP9KANCJ41/mGJT09SxGnxSFr20cZs36sHdcDOddqC4i/UoOS2KA
+         3LFvlumx7LWs718cQr1xAkS/S5BCPEDFpKc2dSLz+MwZDG6LvyMFqf4sZBA/V5TapsZS
+         yj/u0JZuV8PuLlX3FdnDpm7Vux0iPMKSg++IIRIaFi73xgHpN9d8zRnl92Do6TkGAd/z
+         2uFsBMOXPwC53+0YWjUBVsWGx6J9o23AeUVY+TzcoC6cHoPGvl9jukc/i7EkXyLAyEJn
+         31E1kO6YaMzHlFA+ul2vY7+SooiHq1q+2L42HhEO/oOe9aLJS4uqdIDL+23InrQiunws
+         FCHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781464763; x=1782069563;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yIMALptmH08hDIBGn9+50C8C0r6VnVr/CsdRlyfvq20=;
+        b=Q3Qph3iRYH9XuReCBwQIJjULx6QwnBJfsZNoq+/xFwW7UWvIuOt1WYx4oV/jtjzd2c
+         TJr9p58ESEbsY1LccHwOJPecCyzKgvlFVOZssMGUMC1iTgxLNT+7NXJcUeRNGNMA11vi
+         J2FkmvlIowB1r8JT+8piGfI/vdq03Cj+1cLedNaL28w1eO1/CAWHM5Fou42f+5gdI1Bo
+         klGszE1N6gC6r2MBnA+xREIPep4VQKJr2Q14SJPvDP4Lw6XVy5/bbfbehV79l+zLlYTI
+         jyd8dsJyNUmK4rMxwvgaP/nAV/wuXrGw2r7uyw1Ud+na/N9DZOMoWn1ca7jl4/RrjYZQ
+         AbDQ==
+X-Forwarded-Encrypted: i=1; AFNElJ96TPDH4Yak5rawDGpyB/rohRAhP0YXscSp8zyR6dKn2r4TcGd5y8BVUcWQDcPqItY2rLaN1D91u/k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxEJufgyLx4jvWjkbS9zONaFi3/BYrOBFM+cW+fL1hwfUIaCZiA
+	oV4ovlphEjr7XgG/1H15tSAGDYory+nP1YS1oa80rzw+7a+1NnH7O5XR0snt6J/bjDA=
+X-Gm-Gg: Acq92OEvFDGJ7oaBgbf/iQKBBN3L2CaZkuP7VUQ832bP+i74TmjtK2JdcDM5euf/z8a
+	70qTadpWxetxFoDEC1vviH70hf9+YHjfVmXl2REFwXavPWan/LtoBOHOFQ+sRab6Fie4B4bybkc
+	TjRHBaoEJRLW0cG908fwKXBwKhCZBXYc/07H4MNNH1kcbD4ZcaSH8WIx0uvdcw6mptv5+I66jpX
+	tJtifVaSQihOdk+rhn7Gg5PjJ6qG6TP+u4tgmgv+/5KuXbgEkPQi7sttieOIJpBremuRyCoSPsH
+	GH2fB1BIfWm0Kur3PlIuPZqZlqPClgRwJDy6uVmeHw3K6SiD3SfPQbn3yWx9BwGfbijP64dc3EM
+	gzdYernV2ChaX4FAhrgwhZcAk/4YBBYnZN5y52AHS+ERN1Vl570KHgTMIF/MTNlhke0YFAA10V6
+	68quJflRp6AH+ibF13DXrt/Lj5HZsDpiK0drJpjYOtIuHVxWz4747IKQyvsjZXQxmUcfDtS7Wtq
+	r8f72zrhsWf
+X-Received: by 2002:a05:622a:8d12:b0:50e:6139:492b with SMTP id d75a77b69052e-517fe52f307mr156447131cf.23.1781464763075;
+        Sun, 14 Jun 2026 12:19:23 -0700 (PDT)
+Received: from localhost.localdomain ([2607:fb90:a8d1:8eec:5c3c:2f7e:d7e3:b1bd])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-517fb61fb15sm82414491cf.5.2026.06.14.12.19.22
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 14 Jun 2026 12:19:22 -0700 (PDT)
+From: Shuangpeng Bai <shuangpeng.kernel@gmail.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com,
+	bentiss@kernel.org,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [BUG] KASAN: slab-use-after-free in _raw_spin_lock_irqsave from hid-sensor-custom
+Date: Sun, 14 Jun 2026 15:19:21 -0400
+Message-ID: <178144969601.60470.12928355382146160896@gmail.com>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
+Hi Kernel Maintainers,
 
-> >> +static irqreturn_t adctm5_gen3_isr_thread(int irq, void *dev_id)
-> >> +{
-> >> +	struct adc_tm5_gen3_chip *adc_tm5 = dev_id;
-> >> +	int sdam_index = -1;
-> >> +	u8 tm_status[2] = { };
-> >> +	u8 buf[16] = { };
-> >> +
-> >> +	for (int i = 0; i < adc_tm5->nchannels; i++) {
-> >> +		struct adc_tm5_gen3_channel_props *chan_prop = &adc_tm5->chan_props[i];
-> >> +		int offset = chan_prop->tm_chan_index;
-> >> +		bool upper_set, lower_set;
-> >> +		int ret;
-> >> +
-> >> +		scoped_guard(adc5_gen3, adc_tm5) {
-> >> +			if (chan_prop->sdam_index != sdam_index) {
-> >> +				sdam_index = chan_prop->sdam_index;
-> >> +				ret = adc5_gen3_tm_status_check(adc_tm5, sdam_index,
-> >> +								tm_status, buf);  
-> > 
-> > I think the clear of other sdam interrupt status that sashiko was pointing out
-> > is here as somewhat unexpectedly a function called status_check clears as well.
-> >   
-> 
-> This is the full comment from Sashiko at this point:
-> 
-> > "Does the threaded handler clear statuses across all SDAMs indiscriminately?  
-> 
-> > Since this thread loops over all channels and clears the high status on any
-> > SDAM with an active event, could it clear a pending event on a different SDAM
-> > than the one that triggered the IRQ?  
-> 
-> > Because each SDAM has its own independent IRQ line, if the thread clears a
-> > pending event on SDAM 1 while servicing SDAM 0, couldn't SDAM 1's subsequent
-> > hardirq read a status of 0 and return IRQ_NONE? Could repeated IRQ_NONE
-> > returns cause the IRQ subsystem to shut down SDAM 1's interrupt line as a
-> > spurious interrupt storm?"  
-> 
-> This sequence of events can happen, but it should not be an issue.
-> 
-> It is possible that the threaded handler is called for servicing an
-> interrupt on SDAM0, and in the loop there is a violation detected on
-> a TM channel on SDAM1, and the SDAM1 TM status is cleared. But in this
-> case, this violation would also be handled after we notify the thermal
-> framework at the end of the loop, by some threshold update or disablement.
-> 
-> Even if the subsequent hardirq fires for SDAM1 and it returns IRQ_NONE
-> as the TM status was cleared, the violation would have been handled
-> by some threshold update, so the interrupt would not keep getting
-> triggered afterwards for the same threshold's violation.
-> 
-> 
-> I also checked the conditions from note_interrupt() in kernel/irq/spurious.c,
-> for enough repeated IRQ_NONE returns to happen to cause a spurious interrupt
-> disablement. 
-> It looks like there needs to be more than one interrupts returning IRQ_NONE
-> within 0.1 second to increment the irqs_unhandled counter once, but there can be
-> at most one TM interrupt in one second since we set the time period of
-> recurring TM measurement as one second here in the probe:
-> 
-> 		adc_tm5->chan_props[i].timer = MEAS_INT_1S;
-> 
-> So a spurious interrupt storm is not possible here.
+I hit the following report while testing current upstream kernel:
 
-Whilst sounds valid, it's a convoluted argument given it relies
-on us getting spurious interrupts reported, but not enough to trigger
-the stuff to stop interrupt storms. The rules around that may change
-in future given it's a heuristic to stop us seeing problems on dodgy
-hardware.
+KASAN: slab-use-after-free in _raw_spin_lock_irqsave from hid-sensor-custom
 
-Can we just avoid handling interrupts for SDAMs that weren't the one that
-triggered this particular interrupt?
+on commit: e8c2f9fdadee7cbc75134dc463c1e0d856d6e5c7 (May 25 2026)
 
-Thanks,
+The reproducer and .config files are here.
+https://gist.github.com/shuangpengbai/d82ac0d19fda016e81d7fa1ab028d967
 
-Jonathan
+I'm happy to test debug patches or provide additional information.
+
+Reported-by: Shuangpeng Bai <shuangpeng.kernel@gmail.com>
+
+[   73.157590][ T8356] BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave (include/linux/instrumented.h:112 include/linux/atomic/atomic-instrumented.h:1300 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:166)
+[   73.161235][ T8356] Write of size 4 at addr ffff88810eb72528 by task hid_sensor_cust/8356
+[   73.163453][ T8356] Hardware name: QEMU Ubuntu 24.04 PC v2 (i440FX + PIIX, arch_caps fix, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   73.163457][ T8356] Call Trace:
+[   73.163461][ T8356]  <TASK>
+[   73.163464][ T8356]  dump_stack_lvl (lib/dump_stack.c:94 lib/dump_stack.c:120)
+[   73.163471][ T8356]  print_report (mm/kasan/report.c:378 mm/kasan/report.c:482)
+[   73.163486][ T8356]  kasan_report (mm/kasan/report.c:595)
+[   73.163495][ T8356]  kasan_check_range (mm/kasan/generic.c:? mm/kasan/generic.c:200)
+[   73.163500][ T8356]  _raw_spin_lock_irqsave (include/linux/instrumented.h:112 include/linux/atomic/atomic-instrumented.h:1300 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:166)
+[   73.163539][ T8356]  add_wait_queue (kernel/sched/wait.c:23)
+[   73.163547][ T8356]  hid_sensor_custom_poll (include/linux/poll.h:45 drivers/hid/hid-sensor-custom.c:706)
+[   73.163556][ T8356]  do_sys_poll (include/linux/poll.h:82 fs/select.c:877 fs/select.c:920 fs/select.c:1015)
+[   73.163692][ T8356]  __x64_sys_poll (fs/select.c:1072 fs/select.c:1060 fs/select.c:1060)
+[   73.163708][ T8356]  do_syscall_64 (arch/x86/entry/syscall_64.c:63 arch/x86/entry/syscall_64.c:94)
+[   73.163714][ T8356]  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:121)
+[   73.163755][ T8356]  </TASK>
+[   73.214615][ T8356] Freed by task 781 on cpu 1 at 72.569353s:
+[   73.215524][ T8356]  kasan_save_track (mm/kasan/common.c:57 mm/kasan/common.c:78)
+[   73.216247][ T8356]  kasan_save_free_info (mm/kasan/generic.c:584)
+[   73.217018][ T8356]  __kasan_slab_free (mm/kasan/common.c:253 mm/kasan/common.c:285)
+[   73.217739][ T8356]  kfree (include/linux/kasan.h:235 mm/slub.c:2689 mm/slub.c:6251 mm/slub.c:6566)
+[   73.218335][ T8356]  devres_release_all (drivers/base/devres.c:50 drivers/base/devres.c:547 drivers/base/devres.c:576)
+[   73.219108][ T8356]  device_release_driver_internal (drivers/base/dd.c:598 drivers/base/dd.c:1357 drivers/base/dd.c:1375)
+[   73.220034][ T8356]  bus_remove_device (drivers/base/bus.c:657)
+[   73.220796][ T8356]  device_del (drivers/base/core.c:3895)
+[   73.221458][ T8356]  platform_device_unregister (drivers/base/platform.c:797 drivers/base/platform.c:839)
+[   73.222310][ T8356]  mfd_remove_devices_fn (drivers/mfd/mfd-core.c:385)
+[   73.223121][ T8356]  device_for_each_child_reverse (drivers/base/core.c:4065)
+[   73.224033][ T8356]  mfd_remove_devices (drivers/mfd/mfd-core.c:401)
+[   73.224779][ T8356]  hid_device_remove (drivers/hid/hid-core.c:?)
+[   73.225537][ T8356]  device_release_driver_internal (drivers/base/dd.c:619 drivers/base/dd.c:1352 drivers/base/dd.c:1375)
+[   73.226449][ T8356]  bus_remove_device (drivers/base/bus.c:657)
+[   73.227200][ T8356]  device_del (drivers/base/core.c:3895)
+[   73.227857][ T8356]  hid_destroy_device (drivers/hid/hid-core.c:3064 drivers/hid/hid-core.c:3086)
+[   73.228617][ T8356]  usbhid_disconnect (drivers/hid/usbhid/hid-core.c:1476)
+[   73.238613][ T8356] The buggy address belongs to the object at ffff88810eb72400
+[   73.238613][ T8356]  which belongs to the cache kmalloc-512 of size 512
+[   73.240744][ T8356] The buggy address is located 296 bytes inside of
+[   73.240744][ T8356]  freed 512-byte region [ffff88810eb72400, ffff88810eb72600)
 
 
+Best,
+Shuangpeng
