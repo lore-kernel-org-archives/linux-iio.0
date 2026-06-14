@@ -1,63 +1,63 @@
 Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CE338E8A7
-	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 07:16:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16DE039183A
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 07:16:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781421371; cv=none; b=cZtX9iQbH7+9Q+zpufb7Cx3GJ7pYskAs+myjNQEyOHDK6z41Cd4ifa4lqluIq9VGquOERWNHurod2KcePVJHSEWMd7aWyeyu0HzvC3b1in3ZJShHBFFR0apygOyayLJ9jwP+5lAhaFZB6RXsDRih82rchgfxyNffj9eiUKQl9no=
+	t=1781421376; cv=none; b=sBr8iJeck6uG4ompYNYGAjxq1c5/IltfT20a5WULB72K4Wcz3r5F6e0W2Dj/PKpNwwe8/V4tSoNvgPxicsSIsjCZ8IfIhv8C0ul5tiefXd6lFEhIxJn2r3hjmvypFUxydLT+Vbx7/IQEh10KCcPplfcO1Dfz4UV7tKq4Xd9BCTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781421371; c=relaxed/simple;
-	bh=xa5Oy/MOGjty2VAEj7N4ZNdroBueekxG642XjGEeo8Y=;
+	s=arc-20240116; t=1781421376; c=relaxed/simple;
+	bh=ImOyXwGqY9R+Xsddf0l/0dtCBwFyC6spjxLxs+Vzb0k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jPoh3jW9HCUjnC+zeewUbF2Hfg0t4Y10HN9VkEFhq+L7kHgSRGxsrdxFsKRhnL1Y+zO5t6FCteKzdbL9qyXzx7o3caX5Ke0ZVMUlGcwlLOJwx/lohBLVfU8IC6Tom4Ujrb8SIVMTQfjWpxJ3yw8U4FZi/+gJhLLmbuIhcBqNd4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cx+vODH8; arc=none smtp.client-ip=209.85.214.179
+	 MIME-Version; b=brg5io8mG5pdqRZTtuoWWSJuvHBz8QkNMCeqShN5TU4cYwWPEqYkHgJqZ28C37124L/uILh36cIMcmjP7kCOogRIjarhW2hLlxK9pF8BHbwHpcd3Rn8BDLRbrY7UtIej/0VeFkMKnxYiaV1DPE3kmeM1JyzW/D9BqUuepKdKhF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rD0MimvX; arc=none smtp.client-ip=209.85.214.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cx+vODH8"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2c0b9328c4aso17199525ad.0
-        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 00:16:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rD0MimvX"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2c0c3546924so14311185ad.3
+        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 00:16:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781421370; x=1782026170; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781421374; x=1782026174; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TQpCDuMxakljX0z6oHih9q1noq/+hfefR1O95FjQ9QE=;
-        b=cx+vODH8FN2Zh45hRQNuHVCU1/qG6eWbsLvmI4hpMZRQNtBmS4jWLR9Qn0NQt36J+V
-         pHvXA+SHTSNQ9D3BQvfkVg12svdftkihAVNt0xMA9QrKMFaxmWlHPSCjmDyVCIi27umT
-         EsZ8MT8V56p3iUEfOHR340X0nHZhdjMMqg0slfU/LkKzLgvZLIwa20ah3pp83LgpNiIV
-         mJfR1it6U9TKLrQJtLHRr41QomikNZKvaTmZxI7gZvNZ5c9/CChzsu2Lhdcci/JwTiIa
-         xilUj2GEmLCJM5yLv4d6qWcu19U8mx2DtgNdcAYUJyUjd76NzY40KgkVG4arBR/9pnhv
-         1Qpw==
+        bh=rraZsIATQSyWjxZIPsZ4xXDf9f10gJ+mVeYVyqxPx4w=;
+        b=rD0MimvXBZQCueqw/1gHSamZ7kjkZiRoWD58B6cmZ+zHa1MkTrfitejzbpovMUDdUT
+         ksgktQb0aQctr9MWPT3FUHQJne7j171vJA0+kSu531WlRXuPqTgOYp7/T8pc6GFMzHt6
+         KACL63BP+7A3UfHZSxrd8mE5wUbUdDFanGkX/MbLUsIi9tllY73EJr0MKBDMdPAtswIm
+         11PQ4MFMfRutnqqR9KsfmyfDL20bXZVUQVv9/9cQkHJLXPL0SNzTDldFbE1Kk+KoTSxc
+         puCfe88veKot0O1GOaRuJRbDO56CIC5bYisEIYLUHRkD8Fxikht96FzypmbkFE8rTtAN
+         b96A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781421370; x=1782026170;
+        d=1e100.net; s=20251104; t=1781421374; x=1782026174;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=TQpCDuMxakljX0z6oHih9q1noq/+hfefR1O95FjQ9QE=;
-        b=Xc5/q8GZPK0sh0/PGRg69zWdyeLXOdX99Y4SCPQkV6rqv8lrdLzEHnCQ79YsDR+TlR
-         qsCv7nyUekQenJuZgg+T4aCPgMQEW5ie/AZB8Quue0RdIbPfM5Dnrrj+4ObtM2U5cZsg
-         W5VcvYzUiSuwoYCXKZ+OEJd25eZ+vxk/yCJnigq6y9eVImNzB1wDadbD6J9JH2/TmxHT
-         istx7c2jOsA1upBQVOlvNY4XuCIWJbsq35pXJMLtcfLGe256lixamkvf3SU3ZeQcZVtK
-         Z7x63Xgia93PKoNMcfRnkiJ260Q5Z1EdQqn13vHpUgyGCRfw67zymbz+FtcgqVArcveW
-         7yvA==
-X-Forwarded-Encrypted: i=1; AFNElJ9NUduys5cx7hRTBgi2IuCxDexrlByaxa+7hFOu1lg2KOMDWdd9M/vsoKi+p0m8g/42Qhd+w+qCgOY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YydCAKzlCrN3jHRE4KSzQ+Hzc5MhQa0RUP7NIqJpXP7JUqJMjfz
-	6oXPrxiUzeoRTVHmWyd8BXg6ZbhDGdC6teR3m5fQUFhxqH07VrNUDE1U
-X-Gm-Gg: Acq92OG3/LOSsd/Q79S9JrKyT1uPqE3CwJSxUQPcdKJucyjmL4a8v+LOxKhV9wRtUgb
-	eaW8q3DJhhze4j30+0MabaTZSwdzlG9ngYt8kLn6NYyfD8s7ymIJPbFz/3BbmOdthbCCxINOtNX
-	ZWNkr+Da+RBgFyTtUU1nWjwZuqP/k4QRtFCCh/5uR6b3WIPG3ak1DTlw0dXhPs3WJ5k8fKW7RQd
-	lg1ATgTV2gw83Ev8LxP6veJo6J0a4mSyvqMqcsS22Img5d/NfbLAj2ooaxAm3vINlPCvkvQz3Ri
-	5hDPQh9vfcvuw8uPOHv8KDfjoiiJmpvOtbAugubtXMpky6m45R2MJpGnF85m0+lNyOa7wrVUxPT
-	aEP7mcth6n5/EGnOAwGyeCVZMec+xZ3NymapS10/JkrupP4RZzaKWB0xFhUxDYgg+n+LqnLAFQ4
-	OicQ2GG9rGWlGnjjAORhnx13j/VHZqLCyO4EVKuYmcGEnOrTnW3Yh8
-X-Received: by 2002:a17:903:3888:b0:2c2:7baf:139f with SMTP id d9443c01a7336-2c41255f17dmr105953765ad.30.1781421370143;
-        Sun, 14 Jun 2026 00:16:10 -0700 (PDT)
+        bh=rraZsIATQSyWjxZIPsZ4xXDf9f10gJ+mVeYVyqxPx4w=;
+        b=UfYLhMZ9RO+Y49KXsLs7seov/GVPsd7ZWaFY2F7RkA7BO0ZqUx7dZ2N8fW6G1KvhG+
+         g80ZineBv0QGU3TntVBiTcKcka15Fvu0pyYXNZanxCxJw/vkD6a4K5KCLSAeNuoVNJpD
+         0vtLFC/RcBK1eaPcNi9CfrJBPutXA7Bt82XCU0QzuBAReCcK+zavX6Tamx8UVoqnNvgb
+         NDrPmdFjbwyFdeqSVcsDPj/7AomvBUx7DlELR5yE9jGtnQjcuqvry5f6NN1sIdmsBr3x
+         KvY8Aym0vIwi+0Lyl+XImlEGS0ScAMEBomW3jC3klxCheLxo9yaQ/VKZ68nzvkbHavh5
+         0fpg==
+X-Forwarded-Encrypted: i=1; AFNElJ9ODxGYMVn+RXjWmsnx7Ip3pnVsugxey6QZ11Xmah4WlktpHhc06ykGUQ/0LbByTi3+I1xtIR36buQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxVVTGWkI1qeW6pdD8dICfqmwnKkyT0k82WA+/vDrvhYm35FN4e
+	k1g02d8NETscBtbNcPk5XunevQhajaEDL+7nGFj3clkZfsKotpFa0skm
+X-Gm-Gg: Acq92OEP88TMH0w8huF/Sy9Q/NL1yhtbxkWxMR6QxgNSu+jaJ4t0cZLWgw23oFB0eJ6
+	6O5zndlRdxgxHbwHRVFtmQbEWkx2UT3kmd5tJxxFQ51a/yJRYTeMTxTwviEGU9UQSUKpwO2f19s
+	ZR2mPWiN4XZlLGcpwJpoI07gXSSDeQ/ENPLJSuEHFib1CMKfzm4N+JFv5BULYzgBDZs3o3uiRaw
+	x2yoZBoHJsX2xpYOth8JwYwN+Ej9+T1DB4C3oG/nNKjzCAFHKm7NG2/xcNwIYmRvOPyf7gaaN7Z
+	ZMEGYKJQsxunytwnEanLcxvQvMXTL9Hxe7R1/dHkZDwox5KqYGrNb9dcbLiEOj4jWxp8Eq/Ei39
+	am969hc72zxRilKRVOte7oY+HX24WBB5O2eWAH1fvTcLTHFOiPkC7y5W9wF6q/P3KdNSZXuikUV
+	qy9zO+DUdGkeQFFelgHrarqS1BVckHt90wsrFoVPYn5yQ9mGfWwkxR
+X-Received: by 2002:a17:903:b46:b0:2b2:5515:661c with SMTP id d9443c01a7336-2c6642b0dc3mr58122065ad.31.1781421374403;
+        Sun, 14 Jun 2026 00:16:14 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.217.37])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4327ac794sm65595295ad.46.2026.06.14.00.16.05
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4327ac794sm65595295ad.46.2026.06.14.00.16.10
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 14 Jun 2026 00:16:08 -0700 (PDT)
+        Sun, 14 Jun 2026 00:16:13 -0700 (PDT)
 From: Biren Pandya <birenpandya@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Linus Walleij <linusw@kernel.org>,
@@ -67,9 +67,9 @@ Cc: Linus Walleij <linusw@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Biren Pandya <birenpandya@gmail.com>
-Subject: [PATCH v1 3/4] iio: pressure: mpl115: fix runtime PM leak on read error
-Date: Sun, 14 Jun 2026 12:45:48 +0530
-Message-ID: <20260614071549.81920-4-birenpandya@gmail.com>
+Subject: [PATCH v1 4/4] iio: light: gp2ap002: fix runtime PM leak on read error
+Date: Sun, 14 Jun 2026 12:45:49 +0530
+Message-ID: <20260614071549.81920-5-birenpandya@gmail.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260614071549.81920-1-birenpandya@gmail.com>
 References: <20260614071549.81920-1-birenpandya@gmail.com>
@@ -81,46 +81,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-mpl115_read_raw() takes a runtime PM reference with pm_runtime_get_sync()
-before reading the processed pressure or raw temperature, but on the read
-error path it returns without calling pm_runtime_put_autosuspend(). Each
-failed read therefore leaks a runtime PM reference and prevents the device
+gp2ap002_read_raw() calls pm_runtime_get_sync() before reading the
+lux value, but if gp2ap002_get_lux() fails, it returns directly. This
+skips the pm_runtime_put_autosuspend() call at the "out" label,
+permanently leaking a runtime PM reference and preventing the device
 from autosuspending.
 
-Drop the reference before checking the return value so both the success
-and error paths are balanced.
+Replace the direct return with a "goto out" to ensure the reference
+is properly dropped on the error path.
 
 Signed-off-by: Biren Pandya <birenpandya@gmail.com>
-Assisted-by: Claude:claude-opus-4-8 coccinelle
 ---
- drivers/iio/pressure/mpl115.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/light/gp2ap002.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-index 830a5065c008..16e112b796ba 100644
---- a/drivers/iio/pressure/mpl115.c
-+++ b/drivers/iio/pressure/mpl115.c
-@@ -106,18 +106,18 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PROCESSED:
- 		pm_runtime_get_sync(data->dev);
- 		ret = mpl115_comp_pressure(data, val, val2);
-+		pm_runtime_put_autosuspend(data->dev);
- 		if (ret < 0)
- 			return ret;
--		pm_runtime_put_autosuspend(data->dev);
- 
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_RAW:
- 		pm_runtime_get_sync(data->dev);
- 		/* temperature -5.35 C / LSB, 472 LSB is 25 C */
- 		ret = mpl115_read_temp(data);
-+		pm_runtime_put_autosuspend(data->dev);
- 		if (ret < 0)
- 			return ret;
--		pm_runtime_put_autosuspend(data->dev);
- 		*val = ret >> 6;
- 
- 		return IIO_VAL_INT;
+diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
+index a0d8a58f2704..886accf5e859 100644
+--- a/drivers/iio/light/gp2ap002.c
++++ b/drivers/iio/light/gp2ap002.c
+@@ -258,7 +258,7 @@ static int gp2ap002_read_raw(struct iio_dev *indio_dev,
+ 		case IIO_LIGHT:
+ 			ret = gp2ap002_get_lux(gp2ap002);
+ 			if (ret < 0)
+-				return ret;
++				goto out;
+ 			*val = ret;
+ 			ret = IIO_VAL_INT;
+ 			goto out;
 -- 
 2.50.1 (Apple Git-155)
 
