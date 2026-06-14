@@ -1,68 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3231D247291
-	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 05:57:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0088238171
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 07:15:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781416655; cv=none; b=Prcb30yYBGyseQfQtlptH0QdIxqIBXh+hvDqrBODv0sS1BSMRZs2OzJT/JjZF+ckDZCF2UYfiYkvzkhv4F0qKRNtalKtkLcK1SGOA/B/XhcE7png9gERO+6bFspTxgWyIZQ6wbDFWQv5cla3jph03vH+YHpHyy+IOETVKLoPvEY=
+	t=1781421358; cv=none; b=P3UF86igz0gwgTmOhSim4TQl6WYUcrpX8UB9mhYwpy7+kKEy7xt9epWJjCfpfBXX2ZHmuQTprGHz6M9Hsh7ExNVw33ZVVsyvAqmKN6lq2wZJgdUhkrt67KRQeebVIOHdJSKTDzp1K611ks60GcDt8KLnThUwJ0dhdumI6RIQJ7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781416655; c=relaxed/simple;
-	bh=pbz6P86RgnamRdlbGB4RjGbZ9JA7M01FmqxRp98j+No=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kdpfDS9cnbSAoNCbswPc/OlX74vd9vBcbaQR7cUxqFHcOAxyCgeaidkOFfo8NORpBviiUNjPB1XVgBXOP/3eUWpKVdjhidqzvUO+0mm2bFpUcV6gIC6OBvoLUP+T9YOjvyzg0Q91TL3AT+xSUJlR5VsnTsTgXKvt5SMf1dnW0vE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=O/Cr9Ab+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781421358; c=relaxed/simple;
+	bh=K2VtNtOTg4JTqEJPz8l8V2BZEMJdfWdaxQdOL2bpO1Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Zf2vqTM6eOldnHAv09SI9V6yP0R0XJo+x4/D5S5Dc5ds7jqkeh0uYt1q1xw5HGTGMs6jTPdl7frWYubwbmyI59SJyXqUkiwhTvS3+GuILVFcEQRC1Gd7T20LQM0ak9A1Qh6zT1kUjicAM815g2zl4ag75zkHxUwpTZcfJxYmzas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s9qBKU2E; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="O/Cr9Ab+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252D81F000E9;
-	Sun, 14 Jun 2026 05:57:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1781416653;
-	bh=E8oVs44uVI7TLSkF5uHRhT433pHsJNZZ47ey07OMI50=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=O/Cr9Ab+uqj8vVsk3VzWB5tJWActF4medJm1ngC5b2gn0CjKIbWm0vo8OcMd+O3td
-	 e1E+N9CtrZXQddKXDJ7wPT67U7r1I5cHWzJfLmuqM/4Pgxvrcu0wc+dCoS+8kF2GUu
-	 YDtVn0Z8ploFe4jMo+XCCcT5yKghitH6kXUlR+Io=
-Date: Sun, 14 Jun 2026 07:56:32 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s9qBKU2E"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2c0c379e8ffso15152285ad.3
+        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 00:15:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781421356; x=1782026156; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lQfu2OUaGHpeNjGbW3RP4BXWwDLaOh41nK5inzTYXHU=;
+        b=s9qBKU2Ex9PhEZ3lW/mUGqUS1UbNb16azEA/0RkWpJ281cGE0I8ixy39RqOqd8ZSov
+         1WgmOj/e/tAzc9Mx/YHlihzv2hlXODDM92aEunIxlcxvJH3NDaKt2/eYylRKJOToCiLh
+         TXl1uLji544/7qTc/qoMwHM2K1Mfg8g884TcVsAVk3pKw3Sr6HLHPtFYS+xZj4J2pLM1
+         oOi+DmGHEnmfPEunoe3hnUg7SS/b/1twdaeMoI7YgGxld0oWcXMYD1iTQ4EvOVobbUus
+         pQ2+OtcP5BsR2LhqiAdHsUNg+SVyC7HmGOw4GNK2qR4FTmRjP9YWn5Q6ijOSTssOjeBY
+         rIyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781421356; x=1782026156;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lQfu2OUaGHpeNjGbW3RP4BXWwDLaOh41nK5inzTYXHU=;
+        b=V2wmg0Lo4ovC4S0ISaUOpsra3s7E0rXatQ0AfdwmbpAdYFcHHhtvqq80+SrNTcIShL
+         9FUWbrorShNaqSJF3N245EUqhA09uuUhz2SUgrcpsbsXy/6bM9X+buLvw/1NCeOjRwEg
+         1hAS/xjZHYGP1AleMU8ZungfZMTiVLcc5H4vEXur/Jj6Orx03dguNU/m8884K7f8vNMc
+         cf/aW6/XRN0gybgXaXu0VWpD24VvcXClq7K1qEcN2/TKUzOVOBjl1ozcN+K6YwyaWPyw
+         Y6lqFElIlD/nF43aXS2ge2eUzTzSV4P6YOEeDF/LfvEmeHujWD62plqTKDfbmP0XFeiV
+         5Icw==
+X-Forwarded-Encrypted: i=1; AFNElJ8GiWPjy88X4TcQ4GhYTtPQMYNbO/dV0vwnFyssEYS+OJvN7TU8JokUiaKfpLW8Knl6QnFOBo61sKg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxMgvRMVA50sTb18TC72k1KJcupPfJh4JsgY+ZtuewDvwtdJZXA
+	1IoElBu1hZQ8oltDcJw9W8gCiX4Y6QV2e509F0ylYzkEUjLkt4xYIFuf
+X-Gm-Gg: Acq92OHbX3URQeRh5gBX6Y0DLZ1Qvk4bQsrpP3njcV8WCLnaDMPYWvUwF0dkAh3DRAA
+	yWxYOl9GQ6hPUrl+nEuVRRiWhlIYMikDGrKkZm39eZVJ0k5VqauVb8QhXKLADJslHoRPZ+jUJ46
+	AN/4BmDk1l2iNkPbQlmwrajwJ1/7JMzgmt4e6N70oyBPR9mDVc8vZlFRxIg3ujmEhvdAcc3XFQm
+	nLGJHTko+eKrE4rnvOM6KY+Yr6e3abvA6gvhnf8F1/2004GAZcXIf0R45C8Qjqo13jINtbCudJM
+	8/0QFIwMMuIRNNENuTcXcEXTB8oVrtLTxqc7tGEOHTy/0AnHEVICLl16QJdHD1s3P1UvZFT42kb
+	0KAQxVyE4OAxhROcHLmcoeP4f01ieiKhxk9yWoNmc31q5R0onWPMEPKDjd9UX0YNid6JvQlkMW4
+	NSCr8RdnSB4WTfcFau/ONstlYoEuB+Nl78zGndt5z7hEMmwzNV6WEkXpPxKKTJ3ao=
+X-Received: by 2002:a17:902:d48c:b0:2c1:ed61:36ab with SMTP id d9443c01a7336-2c6641e2cadmr66279985ad.19.1781421356211;
+        Sun, 14 Jun 2026 00:15:56 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.217.37])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c4327ac794sm65595295ad.46.2026.06.14.00.15.52
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 14 Jun 2026 00:15:55 -0700 (PDT)
+From: Biren Pandya <birenpandya@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO: 2nd set of fixes for the 7.1 cycle
-Message-ID: <2026061459-unzip-linguini-6af8@gregkh>
-References: <20260602151415.1c17664b@jic23-huawei>
- <20260613151436.4ed833ef@jic23-huawei>
+Cc: Linus Walleij <linusw@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Biren Pandya <birenpandya@gmail.com>
+Subject: [PATCH v1 0/4] iio: Fix runtime PM leaks across multiple drivers
+Date: Sun, 14 Jun 2026 12:45:45 +0530
+Message-ID: <20260614071549.81920-1-birenpandya@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260613151436.4ed833ef@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Jun 13, 2026 at 03:14:36PM +0100, Jonathan Cameron wrote:
-> On Tue, 2 Jun 2026 15:14:15 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > The following changes since commit 329db447f8f02e82ff3acf130c892e1a4063d493:
-> > 
-> >   Merge tag 'iio-fixes-for-7.1a' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/jic23/iio into char-misc-linus (2026-05-15 13:45:33 +0200)
-> > 
-> > are available in the Git repository at:
-> > 
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-7.1b
-> > 
-> > for you to fetch changes up to 91bc6767a4f55dc470d8a56b55b9f2ea09094efe:
-> > 
-> >   iio: adc: ad_sigma_delta: fix clear_pending_event for registerless devices (2026-05-29 09:57:23 +0100)
-> > 
-> Hi Greg,
-> 
-> I think this pull request is outstanding.  No problem with queuing it for the merge
-> window and if we are too late for that I don't mind if it waits for rc1.
+Hi Jonathan,
 
-Ugh, gmail considered it spam for some reason, very sorry about that.
-I'll just go add it to the pull request for 7.2-rc1.
+While auditing the IIO subsystem, I noticed a recurring pattern in 
+several drivers where early returns or error paths fail to drop their 
+pm_runtime_get_sync() references. This permanently leaves the device 
+active and prevents autosuspension.
 
-greg k-h
+This series provides four independent fixes for these imbalances across 
+the kxsd9, mpu3050, mpl115, and gp2ap002 drivers.
+
+Because these drivers are independent, these patches do not depend on 
+each other and can be merged individually.
+
+Best regards,
+Biren Pandya
+
+
+ drivers/iio/accel/kxsd9.c       |  5 +++--
+ drivers/iio/gyro/mpu3050-core.c | 16 +++++++++++-----
+ drivers/iio/light/gp2ap002.c    |  2 +-
+ drivers/iio/pressure/mpl115.c   |  4 ++--
+ 4 files changed, 17 insertions(+), 10 deletions(-)
+
+-- 
+2.50.1 (Apple Git-155)
+
