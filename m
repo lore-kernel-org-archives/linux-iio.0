@@ -1,186 +1,130 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CC830C142
-	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 21:57:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781474244; cv=none; b=lRqTJl8WVAZhRUsuAvz2br2bSn7W0VMy7BEtZ653uTMnSjZhUkpSwj1FZRWJ2Xf9yZvn29ADRznFd34AjSwqgzX5OW3YaMMlhYlzwjXjIidzJt15QzwCrqk3b4WUIAHBjhM3kbHS4hSmovKLDtsiAhA8qEsLuS14WJ8jiIWEGXA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781474244; c=relaxed/simple;
-	bh=sGk/U72tZEkF2KYoBS0hK0weNNaNbKa7jZafhRh3xvc=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=DB+v00uOvqscz1rlS4ko6Bbv0HPchxel8Ssieq+Mcq4SB8V0AdW25j+JH+KC6LHzVFsV62er1tF23eR/JiV8Nfpr8+pwk3PafLIkBBQ6QDPpU2uRAJ+bB2JKM7jhvs284nPJSCmw/f1bkXL2gjiMOz2bcU/i7czHPA5rUqsyUbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ju/bKq0M; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C34512882BE
+	for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 23:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781478261; cv=pass; b=iqPSyNh7sB0HLQVgUmVwOJxp57cc3xyAnXr5qDAwLKi0fD/kRDvPcRr0++3htLGp0pdJJVZ0H/KuHEMR1Qg6U4nB9UdUPQ83MIOzWTzMJxnBZHiSzK2wlUWMlMVhm8XW+qqgIqoUF2213joJckFHhE8zbYNu0NHpi+Du78lSeqU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781478261; c=relaxed/simple;
+	bh=rzW3LaS9K4mSg6IJCxAjz00Q7mrH4V7agp6NPZUYSYU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Ob0IsHT4A+91ZgjK7G0A5gbXwMDHktrSNg+Mt5qf9oRRmFKBZcoKFkhYmoPu+DGqpF4sk5byBOFreAE1eN7iWDqFH7b+mNKXRQWvOtJoD6Pv1Kgj2+Ap2qc09DAfPYabVGnXXJcdsgVVrRXQTDTm5C9Ieqb6FD1IBwbROBe1asg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wtdnv3HF; arc=pass smtp.client-ip=74.125.82.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ju/bKq0M"
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-59dc1714d44so824387e0c.3
-        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 14:57:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wtdnv3HF"
+Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-13809223fd4so2764982c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 14 Jun 2026 16:04:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781478260; cv=none;
+        d=google.com; s=arc-20240605;
+        b=bVHvtjENc8haBT3DsEoWCm20FVXu/Vsm/pj3BFi4lophsv1ry40UU4xiX7xsa85Jy0
+         /3W3UdD97CNAUdvlnnS9szQrrmXKXqZ+SUXJMIK6pmB1yCq40LdHdlPYrTOtiOnVgeH8
+         iC3fswA9ojkP4R80bHrt5nT8Kb7Bkls4Loje7n4+OJgtceW0xpdd+Iro8TicuPdRQbN+
+         1gIEdJphg8Qgk3ggwkKJA90MGVuyqO8RR54rJ1cKuGciyrh1cZGGjp4VpkXfdYCb1/SP
+         Ffo/Mcced+9Q3OjbJvyETm6wewWPz5K6aJWO3dlkSoypqN/YdgFDncgUt/wFrIlyMjui
+         PCNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=qQFoZgJYV1TW//O4GE6lS9bPSVNoPKLwy+jMEzoPsoY=;
+        fh=QdXIv3k3u41e/UG+0MGgjxMP/PFVIctwmM5c6X20cK4=;
+        b=GbliseUQxMqFA+j6aermFrJfKtWz2qQS7dfHvcmfQZT955ZWRXELqQ5Xcy30GntVy5
+         j9kEFwVUey3MIHAlvd2/1WtBRmUefv++aAZ63sUnQR/LuRsZ1tnGeZ27CWDgkmf9mMrE
+         gG4GXEZ7jXGuxuqPrDCohLsrxJoBxAMqh4kztPmadL5OVsMGzxcgH0FDWGIfMHtqWtC2
+         lYRm++QTdu0ZdwzlZEGElEOdyCLdz6Een8OPnADScmy1vrXbdQo/u7pNDX6m3GK6fjz9
+         Z7jbBOI0BX2Ibhc03RGMD1AE45xjvW45h7Bb0rlj1/iPRaZm/4VRTOazggIsj96hZ+eN
+         rWYQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781474242; x=1782079042; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1781478260; x=1782083060; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=slxehqDwE4bbkZOJYryV9/GE1Y8sTVTKoHQjRDCh1JI=;
-        b=Ju/bKq0MhFa19gp5dONOLYd8mG/3iCYnjUMY8795tyzVGI+KTIe9eEpQwKJnYCF2Db
-         xxJkh6znSl25lMreue0JZsWuTdAz67YQyowKquBG0keX+ij7U726SV0ZhFcrqaFydJfZ
-         GP3L7YsUZy6lgYJf9qsD4Hg0ne4MKl/rJvry5F//RWjTil3ewhELx6zk04zOOqYMnG9r
-         hui1dKm/2CjzbfLE4/Vu7EMXBGDASFzZjYo+EujfIUl9V/2/rl+UXRawFA7Rlw8GylNd
-         oOO384t7A0uoNYvXHDRm0uOS7BepVsqXXXQNflW9RQQixfsYMJQj0yHIoCtYR1Xf2qup
-         x5RA==
+        bh=qQFoZgJYV1TW//O4GE6lS9bPSVNoPKLwy+jMEzoPsoY=;
+        b=Wtdnv3HF1dOWaenZWZJsMUv06Wmjm5VfuKIBs7NEzsxdSUnOnLCZiMxgStk3LSOLSe
+         aU6UdoF2yPTVtwydTwAcFj8yDEnenmbw7uVJEw2HOll8/2l5ck8rQVfPBR9cjhLNBAyk
+         +sFYHDY3n8Y0UilqOjS8LgC4Cua0DEeL/llKDCF7tWJmC1+/nRJEEJU3ilbIMeG0SjG3
+         WKna0bONp5JmUHzPMtriIkmDUfegxe+17NLZ952zaAYkksTTIUH2WSxIxbRZMRj7zuAs
+         EeOlJshiQUbEAtUfB3CegGJfqtbrCWOsj6YQgh6KHqCa0dgOh+Z9soKpEbvbMbPBTsBx
+         pKsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781474242; x=1782079042;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=slxehqDwE4bbkZOJYryV9/GE1Y8sTVTKoHQjRDCh1JI=;
-        b=cZTstF+BG+6Nf+CdPr2DuA5qXOflSJRfB5xDiu4C97J0572j2U7TXiRrqhceyxW1hC
-         +Ldq1lUrnZUYTQHT4FGzaxh16Rhm3F7Oym6VFPysio5qnJaoTF/Z4P26XKN4P7HvsR7b
-         XyEkfFRVcD/HU+xeRCIwJ7keMiDb/RawlHgdyADCXGOd5NVIoPuBSVCsgjYaeHTxImN1
-         l+pt/VH2+OvanJXE+Um1nNAIRUkpuCojU/9lmdiTGvrcV8KAi9RV+OyFjOzr6YcWsxVz
-         lavJLIlK8vk8Z87oNTfHwnoKFxRGYHc4VCFOG8DJ4y/faCXlNtLBsTajXEXrhrAcXfbJ
-         uY1Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9C6KFMzvYLCv61qQltfqa8Qm9oQ2SpIh+uNAn6kH5x9VtDC2gCOAD3uIdxv9a/hVreIJ7he2TYWGE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwHc5AkA7jNgbjnWQ6wJ+gqNTctjZvw/G2kdzaQ2VfAlvX+yR1A
-	fLk9FQ32IaVsM44CevOIrhHHDjqFJtjVfGicP4IT7X0Wrb5n5gTw45Aa
-X-Gm-Gg: Acq92OGHKp3d7/0RzFAySOgtpVVBTLqRqybt4kzaUX7JdIRG5OnAwrru0G5NE3ztyKe
-	k6RI/JRfq/49M3Ki+Gs8r04KJhBZTB5N0heoNSvvv7eIhn/cB5G3k2rk3lyEzKwwx+upUnqsjVW
-	7cucrO4uWkbgdo1DrrLQW7P13MqCkFs0ozWRRrW7vn5oz70SOCswwEou1MXHBObg+VkrurWQZpr
-	pxXGLfE/0i+1zqUy7XPqkLnisJ56VLChQT8Bi2FIAmKTMujb951J9RTAxZ5tPaIjN2nB7o31Zmc
-	kNGveIR7G95DF1L00ruyiSlHP99norUv5GOe6bRSzLE5pSAt2lkiQ5UaT2PH1dXn4IOwtvmIsln
-	gwhfOHq88qd33iNOLlhpp/FZo+HCFbl+cKn590ABRHA6ApJpYDFvvJjHgPxjogvuwvf1Q/TGpBj
-	vYVZYXb/CrVvXD2A==
-X-Received: by 2002:a05:6122:513:b0:575:24a9:78da with SMTP id 71dfb90a1353d-5bb6c0ec1b4mr5565063e0c.11.1781474242047;
-        Sun, 14 Jun 2026 14:57:22 -0700 (PDT)
-Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bb8ff961e3sm2159691e0c.3.2026.06.14.14.57.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Jun 2026 14:57:21 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1781478260; x=1782083060;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=qQFoZgJYV1TW//O4GE6lS9bPSVNoPKLwy+jMEzoPsoY=;
+        b=YuieYoLQL+43rgq9wmz6HB2Aw73u/qymmfgS8ElGCvvJuOK49UnhQ0tS3qoJl2D6/I
+         UUajnQpEbMEvNL9qGBFgOdKXMLR1Pr5q26XQFHhv9AA2unswDS5dAPVgOprfDjMxD31G
+         WxejAllstPmpFxfuQBstXFa+eIQ6EiNJp7TC87Ol5cyEKopqAxo9uCGyp+EkVPcV48M+
+         HYopN6iYO+2FwSfSvtHvVaiMS/Ek7bLCol81+0SrrWzkgD2w/NP+xR2F7tCk30rsi/HY
+         ysRdUIOjMGm6dAUr70Qst0ojDdUTMBM/W8QtnGEyP5DjJCdGD8B7yq8Z7RZOThsmTiuV
+         TqUg==
+X-Forwarded-Encrypted: i=1; AFNElJ/KLtjMdaVhFTDlbV3m7QJa6i/mBPVBQ5C3va1zBCcj3xc4KGZC8FxmEIV4OSkLUo+4ZS0gVpUxy1U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzs/LZeRICKSvwKY7YXmdKq6EmoAkjIX7mKQ9nxPNSfnCsPJ06R
+	IGQ1Y3qtmesA+8TWlu16WCeijoSUe5gnCyVEry9f4XUWfIsN2TD5nSx3udWNHi8cS7IZeQ+C+aV
+	yLrjr4O7IfkEkdJQ1ItUgwOIH0E0yGxM=
+X-Gm-Gg: Acq92OEiD4SUeaCJZTtB0BzBUkIIO3jzVxLxm4niXZTi9i8eZaZnRmzs61M8TXUAIT4
+	/pKZ8lhN53QVPLWuMUJGUD+4gCmc2My1ykAhGJsVfX50JYjxFFqQVwKmZmgG26EGJ8f23fXzRJw
+	Koidbl6NzEMdFHSrw3enKnwL+0hzIFTw64Q6gcilRdSTDvO8ZG9QdbS0J9Mn+7fHiTAbMVk2gfW
+	8uWFWVjLP5ZM7wpFcety6VIUw+1r5YYSOWw1l2xqtplv8qCyox6s4zuZ+izvJVLcJGrK48y5WOt
+	DYLK/SoI2DYQxmcGe0xzuCwQl91o7abnSzV2RRRKwQGEdOHGwz/uXd8XH+QvKsJURp96xEo=
+X-Received: by 2002:a05:7301:1e8a:b0:304:3c33:7ae7 with SMTP id
+ 5a478bee46e88-3081ff40823mr6282361eec.7.1781478259594; Sun, 14 Jun 2026
+ 16:04:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20260607234343.22109-1-kimjinseob88@gmail.com>
+ <20260607234343.22109-2-kimjinseob88@gmail.com> <20260609-glacial-colossal-38b4937ec620@spud>
+ <CALMSew+cL0_kG6W15RapxLtE+Fw2_DYdrYoRFSjENQktWw2H4Q@mail.gmail.com> <20260614185551.10ca9e0f@jic23-huawei>
+In-Reply-To: <20260614185551.10ca9e0f@jic23-huawei>
+From: Kim Jinseob <kimjinseob88@gmail.com>
+Date: Mon, 15 Jun 2026 08:04:08 +0900
+X-Gm-Features: AVVi8Cc1I5qF5SI6k_QOccx57286vKkIyKY9ls4Qi2qkv9NyvMEQc1iX0U3ok0I
+Message-ID: <CALMSew+y_S2LJ6bBiRWyZniEaD+V21kvOiXg_=Gr9dnppUZ3mw@mail.gmail.com>
+Subject: Re: [PATCH RFC v4 1/6] dt-bindings: iio: add Open Sensor Fusion device
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Conor Dooley <conor@kernel.org>, linux-iio@vger.kernel.org, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andriy.shevchenko@intel.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 14 Jun 2026 16:57:13 -0500
-Message-Id: <DJ93WSYC3HTT.3NXQW390CLQ82@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
- <conor+dt@kernel.org>, "Linus Walleij" <linusw@kernel.org>, "Bartosz
- Golaszewski" <brgl@kernel.org>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH 1/5] dt-bindings: iio: adc: Add TI ADS126x ADC family
-From: "Kurt Borja" <kuurtb@gmail.com>
-To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
- <kuurtb@gmail.com>, "Krzysztof Kozlowski" <krzk@kernel.org>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
- <20260612-ads126x-v1-1-894c788d03ed@gmail.com>
- <20260613-loyal-azure-goldfish-cf6d54@quoll>
- <DJ92JT0CPSXJ.1113K3KLSRHH4@gmail.com>
- <f13b9c55-770e-454c-9bfb-5847ff17813b@baylibre.com>
-In-Reply-To: <f13b9c55-770e-454c-9bfb-5847ff17813b@baylibre.com>
 
-On Sun Jun 14, 2026 at 4:37 PM -05, David Lechner wrote:
-> On 6/14/26 3:53 PM, Kurt Borja wrote:
+2026=EB=85=84 6=EC=9B=94 15=EC=9D=BC (=EC=9B=94) =EC=98=A4=EC=A0=84 2:55, J=
+onathan Cameron <jic23@kernel.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
 >
-> ...
+> On Wed, 10 Jun 2026 18:33:54 +0900
+> Kim Jinseob <kimjinseob88@gmail.com> wrote:
+
+> When a device needs power, the regulator is required, not optional from a=
+ binding
+> point of view.  If it is always one people can use a fixed regulator to r=
+epresent it.
 >
->>> Not a separate device node. Fold into the parent... or explain in
->>> commit msg. You have entire commit msg to explain odd things.
->>>
->>> In that binding description you call it "independent", so it should hav=
-e
->>> its own SPI chip select? Why "independent" and part of this binding?
->>> Maybe not independent, so basically part of this device?
->>=20
->> It's independent in the sense that it is a proper subdevice on the same
->> chip. It shares the serial interface but operates completely in
->> parallel.
->>=20
->> I decided to add a subnode because other devices might request their
->> io-channels and most importantly a different voltage reference might be
->> connected to it.
->>=20
->> I'll clarify this in the commmit message on the next version. Although
->> after seeing this submitted bindings [1], I wonder if it's a better
->> approach to do something like
->>=20
->> 	spi@0 {
->> 		mydevice@0 {
->> 			...
->> 			adc@0 { ... };
->> 			adc@1 { ... };
->> 		};
->> 	};
->>=20
->> Any thoughts?
->
-> I don't see how this relates to the linked patch at all. The linked
-> patch looks just like a normal DAC binding.
+> Now from a driver point of view, the regulator framework in linux provide=
+s stub regulators
+> for missing ones - on assumption they are always on.  So we can just requ=
+est the
+> regulators in the driver.  Keep it simple for now and use a
+> devm_regulator_get_enable() in probe so we have power on for all the time
+> the driver is loaded. Can do fancy stuff later when you have a board wher=
+e the
+> power is controlled.
 
-Ah, wrong link. This is the correct one [1]. The suggestion just at the
-end.
+Understood, thanks.
 
->
-> What is the point of the 2nd ADC in this chip? Is it just to be able
-> to do simultaneous sampling of two different measurements at the same
-> time? We have other simultaneous sampling ADC chips and just model them
-> as a single device.
+I will make vcc-supply a required property in the binding and use
+devm_regulator_get_enable() in probe in the next revision, keeping the
+power handling simple for now.
 
-It does simultaneous sampling of the same channel, as well as different
-channels. Also the secondary ADC is only 24 bit instead of 32 bit, has a
-different noise profile and has a different PGA configuration (goes up
-to 128 gain, instead of 32).
-
-Taken from the datasheet (Section 9.3.15):
-
-	Use ADC2 to perform main channel (ADC1) cross-checking
-	measurements (for example, diagnostics purposes and redundant
-	channel measurements), system background measurements, or
-	temperature compensation of the primary sensor (such as
-	thermocouple cold junction compensation). Using data rates of
-	10, 100, and 400 SPS for both ADCs, ADC2 performs virtual
-	parallel conversions with ADC1 on the same input channel.
-
->
-> Since everything can be muxed to either ADC at runtime, I don't see
-> any reason the devicetree should care about it. Forcing certain pins
-> to be assigned to a certain ADC seems overly restrictive.
->
-> And unless you have an application that specifically needs it, I
-> wouldn't bother trying to implement the 2nd ADC in the IIO driver.
-> I didn't see any hints in the datasheet as to when it would actually
-> make sense to use this 2nd ADC. My first thought is that it might
-> make sense to use the 2nd ADC for a 2nd buffer so that you can do
-> 2 buffered reads at the same time. But without knowing why this chip
-> was designed this way, I don't know if that is the right idea or not.
-
-I myself don't have an application for this feature. But I don't see why
-not adding support for this feature, given that I already implemented a
-driver (Patch 5) and is capable, as you said, of 2 buffered reads at the
-same time.
-
-I do believe I have to explain all this better in commit messages
-though.
-
->
->
->> Ack to the rest of comments.
->>=20
->> [1] https://lore.kernel.org/linux-iio/20260519-ad5529r-driver-v3-1-267c0=
-731aa68@analog.com/
->>=20
-
-[1] https://lore.kernel.org/linux-iio/25mh6grzh7zh3b4uytcqnusyv5zjuf6ia4if3=
-ce3oqzqz56ehi@le72iqv7ye3d/
-
---=20
-Thanks,
- ~ Kurt
+Jinseob
