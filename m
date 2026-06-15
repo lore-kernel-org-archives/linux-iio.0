@@ -1,178 +1,147 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 266973B585C
-	for <linux-iio@vger.kernel.org>; Mon, 15 Jun 2026 20:05:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9252E3B6C15;
+	Mon, 15 Jun 2026 20:43:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781553928; cv=none; b=EKaxlNYlHdasZ8w4nZFiWwkAS24itvJ/92iUGHaXruzNOg+O7pd3B5wHzr/bMU0lSE8D0G5RmrRey3udaLIkBweXezZFZTZdq5EvpTotBUtst3L0uJqYxijYZxhuIsM2MCJUHLVstI+dOZAftbFOY+OYPWSI/lQ0LmiprhMtmBE=
+	t=1781556198; cv=none; b=BTXpV2WfOnFd2ulhTq3PkWvCITy2NiFg+OdIsb8pofPOB7v1GjrRx1eFyKRqN91hJivPz7ToWuzMflvBKZJAWycOuQBmELc+0QzAGPjJnEvvVZpdW4m9ErBpsYJp/0/u8LNsu6eFeUopWtSAEqeaST5GCc6vtVC2GVkUH3uLXzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781553928; c=relaxed/simple;
-	bh=hy0kUEdyAzGkpXs2bNUP9twvB0sX3g16t5dxLsuXeY4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LssZgwP8eKjej2O6OmdUq3z6oqe4qx9wMhgIBOhVNY0R64UJIJPUwzgbbJdX5EOrnmCb0ehA9JAbrWu3BdHkz3TuKh/wWZ42CzD1ohFRYxuLPeJjouOUH6yo+8Ae/XHCopS+KR1yK8bPc9QPNjBFIXDW59aBGvetnHMYcXkQdlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iP+CH8NE; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781556198; c=relaxed/simple;
+	bh=fpjIHetr0SzMrBfzKQ4r/eaKYkdsvtCuloijxjKKTPE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=pDCqQBccTlAn72dn2SLXX6YessSGRQskBclfPo+tAoNXRpqU5wT/aBzAJMIGh37Cg/liWSOXmFEJopVE3mky/Vct5uMCrsTZzgaNuBXwn5PARg8nKVPPscf2UH4uPncC1sYu6mJHpIdtXSV0e0IvdLn3kORsZEiv1/DQgfYIwWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GUDd5zcA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iP+CH8NE"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-45efb698ef2so1986687f8f.3
-        for <linux-iio@vger.kernel.org>; Mon, 15 Jun 2026 13:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781553925; x=1782158725; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wpagMfDboOlmTEBILYrzaPkkT8D8ogdxdbm3KFmEmxI=;
-        b=iP+CH8NET3bhRHzAa6fURZ4HozcHjXWMYVrSyfMREXqEvBQgUeRzrVa06d9vmC3f57
-         +JWEDLK36Mvis0/yWicuW11QSr3r9m8svbXy1UMSU0jGOWsLaM7KnOzmhUA+Da83u1N3
-         VN9nMzxlVApCfSCHwdz1hX/+8QWor90vS3RUNdY1UQc5yVmLHvBB+HJcWIpqeXSJK6je
-         8BSb7aUTkr/HDx948qBacIBJEsA+QAWdhd8HF96vf9eVEvmcrx/wKFMcMtvHJ2VDQQ0w
-         BfLyMVEvqjAhWQt5NDZ56lA0HMmFauHSh6HkbJ4HXeoUb7gxPTUDgysLxjYd9V2FpEOV
-         bAug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781553925; x=1782158725;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wpagMfDboOlmTEBILYrzaPkkT8D8ogdxdbm3KFmEmxI=;
-        b=IeznDNN2lEkA8+BxV9mGynn75Z+IyyT35aJzeeNvFvU33WIFw6oLOFEXIbuc9ulwvp
-         S4AOvj2MRvK3NU1U6NogbD2qdMoXsmbEP8cFPpWdhRDMpbEY5PL0ItBmvIUDr6pQDTYa
-         FUQThLcTh39smdtevjvQ4QusgSGkAy8IpzGK95wEgGxy6jKUbBdS7egs9WjjsfuMMYTk
-         gOriWOsu59/AzHYaen4mDmC053p6VxEgtusJ4YOvgFexnpXVF8gbwF5WW7p38s7MQvym
-         wSJc0DH2DVID2T7+2ygCDvGF6U+ZJswn/FEKfcoDsW6pAT6i+g3WARAGGCJkMkOMQqgJ
-         z6/A==
-X-Forwarded-Encrypted: i=1; AFNElJ9h69W2i6ufBSdEVsYj3ppdIqKRSo9o6a0u4s1qOU6MIIKiRWbK0GNO2AN8Hnw7CYfdopK7LyAwmqc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyyxvtk2w6jkxDpJPnC0xyLD/y67tvxk2duOPAi+WQqfGBaPLs9
-	2Tzqf3DRMtsZCULtwRrifUqiDk5hY2VmUxzZz0AEEYNP8dqlY1ANaYN8
-X-Gm-Gg: Acq92OHOraa86tQLWQTLAr1rRvVugVdiucRtCIZRr/9URRalrql014ouPl7grvZ96N/
-	+nFUs1dFCrABUjL+MciuEg9TNKPk7AcjoZmiyrE4mAmUmEu4ZarqrRKfRUQF2bOBcYKaQwHnne9
-	zL3vHvW4oTgdGZE+hjY22UIWB1SVTv9f+Z4ekORT0eWKuTdngrhgW3ThvmBNIcMa5EZgBWmeFoP
-	IZShhla+8snLkwt3PFFcHQA1wWmaqifAMkmh9shNGdaeDWoMOtnBy2UaBXvwI99MaknmudmBd8E
-	O4Dx86Y2zE9Oeb+4AZ10wKz3CC0fK/utD8CIMw+QUA0lUnSi/NaDMZumxxh2EV67hBSM+YB5Y+d
-	LIoT77bZYJxZXSjnZJxT5EUXkDBy/rpfc6sYlMHw+n/1fG9uyqsoGtzDtbBN34vvXt8Q5Vaphrp
-	h9gIaqp7HTDE4FSPZsjcmtb0yOktboeqRJm5Spqgx8eTpxCM1nM7aTBINUo0nenhYZjG1Lus+bQ
-	QS3UA==
-X-Received: by 2002:a05:6000:4a05:b0:460:1223:a044 with SMTP id ffacd0b85a97d-460749fab6amr17635560f8f.0.1781553925504;
-        Mon, 15 Jun 2026 13:05:25 -0700 (PDT)
-Received: from arch.lan ([91.230.98.156])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4606f2e592csm40267547f8f.36.2026.06.15.13.05.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jun 2026 13:05:23 -0700 (PDT)
-From: Tomasz Duszynski <tduszyns@gmail.com>
-To: m32285159@gmail.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH 2/2] iio: chemical: scd30: update email
-Date: Mon, 15 Jun 2026 22:04:59 +0200
-Message-ID: <20260615200459.8272-3-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260615200459.8272-1-tduszyns@gmail.com>
-References: <20260615200459.8272-1-tduszyns@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GUDd5zcA"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1FF7FC2BCB8;
+	Mon, 15 Jun 2026 20:43:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1781556198;
+	bh=fpjIHetr0SzMrBfzKQ4r/eaKYkdsvtCuloijxjKKTPE=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=GUDd5zcA/McTeL8TkKO+UDtpLX64lwk5DLJuhg6Pv/F71r5QZdrDn6VQfPOKzRL57
+	 pH3oMW4QcnOsnjUwSk2hAnlQrukjm+KOkvljWtd4EUjZ33PTrX7709ZeRJQuriTbye
+	 CDamBeVZ4wmQyyRYwqPbndq0T95qpZTaiEZ6fV+s8ix/FNE0wekAfpi4ThKiNxpujS
+	 If9xzIyzWtIvTNwXLd3sMjtn5q/bwz/f68qZy9TR8BCI2z/diiqdj+u8VXRvOpKpwz
+	 EY43knTdOJos2p3AMs7yn6cuNHq0kL3e6PMzBMuOcuxMXnQ02lUjvCl1HW1VQKmH+o
+	 zxm1wAn9oMFRA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5DCCD98E2;
+	Mon, 15 Jun 2026 20:43:17 +0000 (UTC)
+From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Date: Mon, 15 Jun 2026 15:43:17 -0500
+Subject: [PATCH v2] iio: accel: bmc150: clamp the device-reported FIFO
+ frame count
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260615-b4-disp-ef4f7a59-v2-1-af5e980bcdd7@proton.me>
+X-B4-Tracking: v=1; b=H4sIAORjMGoC/x3MQQqAIBBA0avErBswS8uuEi2mHGs2FgoRRHdPW
+ r7F/w9kTsIZxuqBxJdkOWKBritYd4obo/hi0EpbZRuDS4de8okcutCTcdgqGpyzREY7KNmZOMj
+ 9L6f5fT8b2nTZYgAAAA==
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andy@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, linux-kernel@vger.kernel.org, 
+ linux-iio@vger.kernel.org, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781556196; l=3276;
+ i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
+ bh=E/bT4EkVn+3iqP2XSaNpCV/pBBTqGy2zQ21wB6ceRL4=;
+ b=PXWkrkqYThMHD3rxqBUcbkAjG9XFvr/XtEHGnLGpaM6Rl8UniD1G4+hYuGQvmXh5B1lWL8K7z
+ 9qyuqeCpzzNCP7N6DkgCr/ntZiTPcLbb9fV3aTwTdbmmD3I//M3J+vG
+X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
+ pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
+X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
+ auth_id=814
+X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
+Reply-To: hexlabsecurity@proton.me
 
-The old email has been inactive for a while. Replace all occurrences
-with the current address.
+From: Bryam Vargas <hexlabsecurity@proton.me>
 
-While at it, add myself to MAINTAINERS as relevant driver files still
-hold my address.
+__bmc150_accel_fifo_flush() copies the number of samples the device
+reports in its hardware FIFO into an on-stack buffer
 
-Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
+
+which is sized for at most BMC150_ACCEL_FIFO_LENGTH (32) samples. The
+frame count is read from the FIFO_STATUS register and only masked to its
+7 valid bits:
+
+	count = val & 0x7F;
+
+so it can be 0..127. The only other limit applied to it is the optional
+caller-supplied sample budget:
+
+	if (samples && count > samples)
+		count = samples;
+
+which does not constrain count on the flush-all path (samples == 0), and
+leaves it well above 32 whenever samples is larger. count samples are
+then transferred into buffer[]:
+
+	bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+
+bmc150_accel_fifo_transfer() reads count * 6 bytes through regmap, so a
+malfunctioning, malicious or counterfeit accelerometer (or an attacker
+tampering with the I2C/SPI bus) that reports up to 127 frames writes up
+to 762 bytes into the 192-byte buffer: a stack out-of-bounds write of up
+to 570 bytes that clobbers the stack canary, saved registers and the
+return address.
+
+Clamp count to BMC150_ACCEL_FIFO_LENGTH, the number of samples buffer[]
+is sized for, before the transfer, mirroring the watermark clamp already
+done in bmc150_accel_set_watermark(). A well-formed flush reports at most
+BMC150_ACCEL_FIFO_LENGTH frames, so legitimate devices are unaffected.
+
+Fixes: 3bbec9773389 ("iio: bmc150_accel: add support for hardware fifo")
+Cc: stable@vger.kernel.org
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 ---
- MAINTAINERS                         | 1 +
- drivers/iio/chemical/scd30_core.c   | 4 ++--
- drivers/iio/chemical/scd30_i2c.c    | 4 ++--
- drivers/iio/chemical/scd30_serial.c | 4 ++--
- 4 files changed, 7 insertions(+), 6 deletions(-)
+v2: use min() instead of min_t(u8, ...) per Jonathan Cameron's review [1].
+    count is u8 and BMC150_ACCEL_FIFO_LENGTH is 32, so min() does the
+    comparison as int and the clamped result (<= 32) fits back in count;
+    builds clean under make W=1.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b051eccafa60..4cab384e8864 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -24271,6 +24271,7 @@ F:	drivers/iio/chemical/sunrise_co2.c
+[1] https://lore.kernel.org/all/20260614141146.697dde04@jic23-huawei/
+v1: https://lore.kernel.org/all/20260613-b4-disp-24d6b15f-v1-1-f5c3fe7294fc@proton.me/
+
+Reachable on every FIFO flush (watermark IRQ or the sysfs buffer-disable
+an in-kernel KASAN litmus (CONFIG_KASAN_STACK=y) and a userspace ASan model
+on x86_64 and i386: without the clamp, a device reporting 127 frames drives
+bmc150_accel_fifo_transfer() past the 192-byte on-stack buffer (stack
+out-of-bounds write); with the clamp it is bounded to 32. Reproducer and
+full logs available on request.
+
+path: bmc150_accel_fifo_flush -> __bmc150_accel_fifo_flush). Verified with
+---
+ drivers/iio/accel/bmc150-accel-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 2398eb7e12cd..24152be18cb4 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -991,6 +991,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 	if (samples && count > samples)
+ 		count = samples;
  
- SENSIRION SCD30 CARBON DIOXIDE SENSOR DRIVER
- M:	Maxwell Doose <m32285159@gmail.com>
-+M:	Tomasz Duszynski <tduszyns@gmail.com>
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/chemical/sensirion,scd30.yaml
- F:	drivers/iio/chemical/scd30.h
-diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
-index 104a29550a22..1765cbbbb3b9 100644
---- a/drivers/iio/chemical/scd30_core.c
-+++ b/drivers/iio/chemical/scd30_core.c
-@@ -2,7 +2,7 @@
- /*
-  * Sensirion SCD30 carbon dioxide sensor core driver
-  *
-- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
-+ * Copyright (c) 2020 Tomasz Duszynski <tduszyns@gmail.com>
-  */
- #include <linux/bits.h>
- #include <linux/cleanup.h>
-@@ -763,6 +763,6 @@ int scd30_probe(struct device *dev, int irq, const char *name, void *priv,
- }
- EXPORT_SYMBOL_NS(scd30_probe, "IIO_SCD30");
- 
--MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
- MODULE_DESCRIPTION("Sensirion SCD30 carbon dioxide sensor core driver");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/chemical/scd30_i2c.c b/drivers/iio/chemical/scd30_i2c.c
-index 9e841f565149..406f650a0083 100644
---- a/drivers/iio/chemical/scd30_i2c.c
-+++ b/drivers/iio/chemical/scd30_i2c.c
-@@ -2,7 +2,7 @@
- /*
-  * Sensirion SCD30 carbon dioxide sensor i2c driver
-  *
-- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
-+ * Copyright (c) 2020 Tomasz Duszynski <tduszyns@gmail.com>
-  *
-  * I2C slave address: 0x61
-  */
-@@ -137,7 +137,7 @@ static struct i2c_driver scd30_i2c_driver = {
- };
- module_i2c_driver(scd30_i2c_driver);
- 
--MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
- MODULE_DESCRIPTION("Sensirion SCD30 carbon dioxide sensor i2c driver");
- MODULE_LICENSE("GPL v2");
- MODULE_IMPORT_NS("IIO_SCD30");
-diff --git a/drivers/iio/chemical/scd30_serial.c b/drivers/iio/chemical/scd30_serial.c
-index e8b453aae859..05d9e0e9de1e 100644
---- a/drivers/iio/chemical/scd30_serial.c
-+++ b/drivers/iio/chemical/scd30_serial.c
-@@ -2,7 +2,7 @@
- /*
-  * Sensirion SCD30 carbon dioxide sensor serial driver
-  *
-- * Copyright (c) 2020 Tomasz Duszynski <tomasz.duszynski@octakon.com>
-+ * Copyright (c) 2020 Tomasz Duszynski <tduszyns@gmail.com>
-  */
- #include <linux/crc16.h>
- #include <linux/device.h>
-@@ -258,7 +258,7 @@ static struct serdev_device_driver scd30_serdev_driver = {
- };
- module_serdev_device_driver(scd30_serdev_driver);
- 
--MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
- MODULE_DESCRIPTION("Sensirion SCD30 carbon dioxide sensor serial driver");
- MODULE_LICENSE("GPL v2");
- MODULE_IMPORT_NS("IIO_SCD30");
++	count = min(count, BMC150_ACCEL_FIFO_LENGTH);
++
+ 	ret = bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+ 	if (ret)
+ 		return ret;
+
+---
+base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+change-id: 20260615-b4-disp-ef4f7a59-30a8996aa529
+
+Best regards,
 -- 
-2.54.0
+Bryam Vargas <hexlabsecurity@proton.me>
+
 
