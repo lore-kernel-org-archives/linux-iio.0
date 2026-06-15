@@ -1,50 +1,50 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012005.outbound.protection.outlook.com [40.107.209.5])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012065.outbound.protection.outlook.com [52.101.53.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93121406281;
-	Mon, 15 Jun 2026 15:41:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F2B2407596;
+	Mon, 15 Jun 2026 15:42:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.65
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781538083; cv=fail; b=Mp0jCJmxj5cTZyuwuXZLBTxOt0QhoedJxNln8jtpGHYuabCIqDjZ7jY+8s9NWGqFt29XdSnE2cm+CZcxyOz6Ffx3U9cDA3wLx3VQ3SIAmyOX0/YpW7lwNSyoyQh2iquJOA9CjiGzUzYxjq3pOFDKVf81vE7ArA+byFyt4e1xgk8=
+	t=1781538176; cv=fail; b=X48CCjOtE+WjL1iJnH+SsU3boFsXHMrhce92vqlPe+6WjJ9GHhSHJE3B8wAPcQj6AmZF3pN0hzGBAcr6+tPzh9Fn7SISZLCx3ipIv4bf7Kmb/SK6JcFOFDVKtPB+8Q5ZGahjuvmxOuoVo3foOUVG/rnMIhaCJl/JQCuLueC/SjI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781538083; c=relaxed/simple;
-	bh=FiwTSftOC8j/PPfBQdN0nUQb5xvxidTVLbaXSdczKn4=;
+	s=arc-20240116; t=1781538176; c=relaxed/simple;
+	bh=HwqZ66rHxLZiwgAWIeexEv+9PnIzUh9mddzL7wQ9VpA=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ArBZ1GZ3+dHEv+C2CVcQagL/+IocFN+5Rv+d8XnB4a8wvkpKJeV+W7kG1LYA0m8KTm6dFG4XbN17EmG2H6CBL6nIVG63jFR1vuq8KjJLWkFFyKds+uUYE8Cqi+16rmEiQNBkdLWtmWURBPU0S2aC6JfgSH6KBaeTA/H1DvW8qDw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=sKawbtup; arc=fail smtp.client-ip=40.107.209.5
+	 Content-Type:MIME-Version; b=Og5XQlVQ7qdCPmFGD20lDSU2Xy0eo0Rzdoi7+X/Ii2BKKJiu+JHtC+ygOYZhN68KcYb2A9qy4oRn3LHP0x06mhWPQ9Q9A/s2BJWjF64+nIH6SXiEGxA4Q/1rk3VV47SJ+uYNj/dCNxm5rXSE7QmxmCRb2TXz43WdY299LhKmwic=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=vF3DlBYA; arc=fail smtp.client-ip=52.101.53.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="sKawbtup"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="vF3DlBYA"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Dm3sG9zBpi5PwVtXI0bwiTat66TjGa5yYFE/UkvXvmEMovIpil7+fWDVBVW5d2IbVDNQoF+0xuKu156GMp90AVUDkJBdwwwqjNEHj1JnOFS1yNlSrQ643agb5gzK+kRCQA11tWX6EJiJlN/jXe7Y59zhuh9v1aK6zTz+Z0bF7DZRlDBVUraZh3sr+1cV0H9hvNBvnaItJbbf087CvA/5sKcUG0GhRiqCY+g0VoSTWMn4kfxW6Fd/9KmzAm0KP1AoqmF0LgUJm0QLMv0IMW+qg1uE+ccR/CsXuE4g38pgmJ3XG+u0n+pu8QEj+e31tLfIehwNQY/3d804cw0ixcohPg==
+ b=Phw+rnKAlS4IILU5T1CO2e9q7j0hFnufCz3nr33uS3/WZyMzz9sGoxcdS434UsTGFypcnSiPTA4L2eWne8bncu/Zw9BV5o9q9yEctTTAujny4zK+3yGHe8asZbGUM5t3IBD4YWPXGwGDy5aHURCC2Is8c9zcnjl7dvJunMH7F/V9fQDxvNi1mNKuXY2HE6Ok0iurzCvbB8uROk8juUE9KniDNVFQcVj83nYVwd+c0yXFfnDn2G9gL+H0uoAMSLcs7gKrizwXfPEgyp9W7s3EN/38yIGXDBkSCkgKggTWuzQfBPoLk/ihjjvgTgQhRNAhQHuLBUTYBMkRwm8ZAQCdBw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S/Mkeab5tkDLLmdEbbzRY2CBZdPgQEMBImictorD/FE=;
- b=oQ5XmpZ1zLXd0mhU43D9HT++WPRtzHcAEAIPcDO/jwL1mSrdKv3tGN2bKTxB8IWV6DC67ZBhlEK6+nwp/3YTooMrC4n4Dijb3QraWQ2yUu6I7/MD+4t55B68+ZriW2oDuaIAyKb0mrQi3qCxEbqeHQRVmGjRMCqu4jd5nRbfTPgTQVneH8XUpIftqJyptma1bwcMMml3K4rGGFHSg+ztl9JiI6XxmLoggFrnYFsuAySeIGjunVh+4ZVaipOPtmlwokcanxVkjYGOAEsAse9gknT85oGJ2/fJ4Txow9PkEQXpaWk8D7dndaghs469nvKiPlAMg0FEU0C4invxKo/90w==
+ bh=GmCDuu4E3cOGY7q/KISCO3ygT6G8Qvn0n0pFmEhFKLg=;
+ b=A4zDUXtoJUdJPjtI5BNHWg0sl61u2C5wWEHCwxRedbB27a6nJsPDdEPjI3dTfPKKN+EH+wEcM7zTk1ZhQxfQu4X6jrO63lcFyzucBuCIIPipM4x7cxN53KM5M5Pyn9MRugYIFoHPEFwnm0AyxCC8RJJWE4izEUwBFafxWO0DruNm0kAwgFw7aqwRjWMHXMU4aw/dM5nIfHDkx451ZxGb889WJGzqDLIJDPPXtIJGPH50pggmS790QLM++GGr8YabNgit6kuNE6pLzTT+BXIguYorT/P/r2IlXk1x6v0fP4EFjpES9UNgQ0gUNkMuXiBIM3UY1NLbvvsoiyCsVu+owg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S/Mkeab5tkDLLmdEbbzRY2CBZdPgQEMBImictorD/FE=;
- b=sKawbtup88qMVeGWDkdpWAEOgdmDsXZyoD+zi+1nHTFtYKg4fYE/EGuXifAPOFIw4J/SVNvQBXsOXa0eKpfqaWuezfaDNI+AlTdUf6712kYzvkXPGGzGsmPBEyHndZHz7NliQB77wzvx54DLqLOWneoPTbYjDZmgVaLe0XptN9Q=
+ bh=GmCDuu4E3cOGY7q/KISCO3ygT6G8Qvn0n0pFmEhFKLg=;
+ b=vF3DlBYApnGmGUm6Zj0PuFxPUs2aL2R7R6HyibcK/mpATeP6+uNK4pxPzFKXgOrO/7txkDT7cMeGujt8Tb+WOp+zcyKprN3QqpDMinqw+woAceX6nDI63TAew8O71jTE86bZAqb/AVj7zJ00XbZS5KfBl/cSsVD6tRYQm1kNR+c=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by CY5PR12MB6551.namprd12.prod.outlook.com (2603:10b6:930:41::9) with
+ by IA0PR12MB8906.namprd12.prod.outlook.com (2603:10b6:208:481::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Mon, 15 Jun
- 2026 15:41:16 +0000
+ 2026 15:42:50 +0000
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
- 15:41:16 +0000
-Message-ID: <2998a9fc-4b9f-49bd-8020-697081401f85@amd.com>
-Date: Mon, 15 Jun 2026 16:41:12 +0100
+ 15:42:46 +0000
+Message-ID: <15d14eee-8384-4605-ad83-5aad774541ac@amd.com>
+Date: Mon, 15 Jun 2026 16:42:43 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/5] iio: adc: add Versal SysMon driver
+Subject: Re: [PATCH v7 3/5] iio: adc: versal-sysmon: add I2C driver
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
  nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
@@ -52,15 +52,15 @@ Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
  linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260614233722.2603459-1-salih.erim@amd.com>
- <20260614233722.2603459-3-salih.erim@amd.com>
- <ajAKkqMO5jdQjKgS@ashevche-desk.local>
+ <20260614233722.2603459-4-salih.erim@amd.com>
+ <ajAMjZzfTqplts_B@ashevche-desk.local>
 Content-Language: en-US
 From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <ajAKkqMO5jdQjKgS@ashevche-desk.local>
+In-Reply-To: <ajAMjZzfTqplts_B@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PA7P264CA0045.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:34b::7) To IA1PR12MB7736.namprd12.prod.outlook.com
+X-ClientProxiedBy: PA7P264CA0039.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:34b::8) To IA1PR12MB7736.namprd12.prod.outlook.com
  (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -69,290 +69,106 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|CY5PR12MB6551:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f20a4ab-f16f-49ba-fc9a-08decaf4898f
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|IA0PR12MB8906:EE_
+X-MS-Office365-Filtering-Correlation-Id: 98a9671a-dfd6-457e-0211-08decaf4bf69
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|366016|7416014|376014|22082099003|18002099003|4143699003|6133799003|56012099006|3023799007|11063799006;
+	BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|7416014|18002099003|3023799007|56012099006|4143699003|11063799006|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	7uONAtXIw9CP/ljh5zeMAAcgSnXrZsaHHuXNHH0YWi4BLVoMooiRcfGBE+UZQknHOdUgTyR1JA19fPvFgeF5NKG2N9plzz55sksM3WATUhB4dT0iTkH83DDaTy6Bqm/h72O0jc5b+3IhiLOvdaxpyMF9eoMdvwb1mvjpdleDkN/ABfWE51b8wWbueGHHNb5Lu06H8L+vF1zwok4C5RVr2DAimTo7lRSzmWR24CcYSPyFQW3I6jX6lhrbJWguCgvdsKulPM/83/8Sxdzhi1RCYAMQgv/1mjN/lM6YRJEVKvHWw3kmN5bKkpsPp2VsTO1/a2MkmWbQEU2AVWixGg92oFuI/bwBxO+fPPKkyZ/tI3uIG6ZghfvaZYE8CkyXaitP1Ob/hz2ywlHQcwzZZje0bNW87NUT9PCiEaW6E92wqJa0UVHB73PWdSir7Lg1x8wNfsc5G5IIOg1KlIL3+jtbduH6qTBhYvlMHckHEKoPhuaWOiq4Fmezy4uK9s+pmVZaP8OQYBZMjLQvAr5aBBA4q3vJpQ/lqunpAD2bR8BLcEWsEjvkkPWcUZo316S+uvRvOqRYTvegTFBdKsDE4qSWO1o8QnPMyZUmH0euQWkXXDbJrMKlN5ZH9HpxwNk+5KS5PNBP1LfTzdPqSrG48LlVK0kt/pQyKZv2y8w7HvRVe+aTAxJh6FESibDEhdR+ij8/
+	ySgqNDbre0ZKUzlfjETYON4UFb+X2ycVedMbWuI/0aOaEL6+V9iU9U9o3RFquc7crZ6iRY29iAPNoN100KzHvZcPTFdOldFkFWG9tPLEXqM9+thvV0yBZiTPh97m6JfXUZw5zmmSZyp0MFp2JQvNEIqIn5XEckQDhK4mxJHQjlmPRmGkj7syrD3072PB860RnHBOAjRynFriaqK77vy0JDppV3stkBoBYIbOtElsOKjB4eS3NvE7H8RizCaBAAg6KJ8yScG6uA+McKP4Y04vmpHiwWWjeYX4uRD2waE4Ipudb23SDebMCG7G/O2kUKvXTlwbDub2DpKU85tbc/1x2VwgCRVZQJaDdLJIWl/J9i41aToF0i/TVc50bLcwluUxEYlD7uDIalmV80NF5JmA5odUzUHIMu6Qf021I35gXKsjH+TYXfV5KREXSA4qWuIND9+FeiofEO9COHBsqXnNOfWkM3fWuDM0PDsVGg+bvgcyQ0grOczRb4HNfQkeQpJh+Zsf/52AWZ7ipprSLCJSRvZf7MvBg4AGpiTmQSpI1xrIjX2gQMohOWv4iVlWh5ntr1By57btkj5dUlYMZyOd5Of/8uwyX4qoY+0CAJCrB7wHlGbn1RgtmXpuieqbLd8ZBaWWFjgDBDF802Wrp3Pua4Pma+AqZe+l1FoPXI6aFCUYZg1YHPMO9EQ6yei4j2zV
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(7416014)(376014)(22082099003)(18002099003)(4143699003)(6133799003)(56012099006)(3023799007)(11063799006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(7416014)(18002099003)(3023799007)(56012099006)(4143699003)(11063799006)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R1Bnam9yQVV6LzBHWVNGcm9USU5uMG9pOFVVWWxreGVaeFVLbHRnZnVEd1pS?=
- =?utf-8?B?TnBERzU4dXBzN3E1dUlFU3NmN1hHN2JnVGRqeTNEK2ZnK3BuTEEwanQ2d1dU?=
- =?utf-8?B?UnZMMUNIeDhxSkRmY2N1bEdKT2tWKy9rd3hKaHBoN2ZtNGRXbjJJUnVLSWls?=
- =?utf-8?B?dmlpQS91bGJlWDJSTmZRc25yVEdyalkyeUxvZTZ4dktDTjBzTW5iS1FZZXY1?=
- =?utf-8?B?djNEQWZaS0JXbTJGUGlLUDg0d1NpcmhGNUJVSHZCSW4vMGxWTGh3R3VwRWR5?=
- =?utf-8?B?TURSUjBpRnVUUXJpc2dQU3lVdlVaSmZKaHEyYnRmcGhyNHo0aVBYdVVTKy9M?=
- =?utf-8?B?K3RaanhFc1VqS0xTTDdHQjRkdlhSYmpsM0xRMU94a0d3SlR6dllsVHBOazEv?=
- =?utf-8?B?T1Q4UnZkaDk0TFo1NHRaQnZkbzhFZ1FtMWFUVWpWN1BxYWwrTjgwS3lqeG9O?=
- =?utf-8?B?NHgwRitzdVFsQ1VoMG1RWTZqQlFhbHAxM3dTZ3IvbWlmYldOcEM0VkRNc2xU?=
- =?utf-8?B?RUZaa3QxeU5PUm5vOHI1Z0FGNys1UGhQNXNGMExhK3o5SjZpL0ZvZG9hSCtl?=
- =?utf-8?B?S0E4bHpocmdTemE0QVlNTzhPSncrdWxvbEhsQURDdVA1d1ROUkJUWE9kYUtB?=
- =?utf-8?B?SXpVRjczS2Nma08zWVdmV3VJQUc5SS9NZmRpamMvMUxEd2g4L1lidTN3RjdH?=
- =?utf-8?B?MzgrL0xIV0V3ckp5UXFHcDhHWXVoVEJyeCtRcGpYOG94SDhGNWxtK1g2T0NI?=
- =?utf-8?B?UXJOS3MvMGltWFA0R1pkQTVwY1JzQUpPckR2TzNuM3lUckZFT3U4UmxpYnZa?=
- =?utf-8?B?WUI5NnlFc0dVZUozVDU4K2k2Q2t5NXZUdDN5ZG5vdU1jRFZTZmJtS1E2VW9h?=
- =?utf-8?B?eUJvU29INDU2dEpsSjZPVDdYd3BsUWgrMU01SWJMWFd1QytiOWtlSW82cnFQ?=
- =?utf-8?B?TFQ0SlpEbUUwR0dYMjlGbEpPRXhmQ3hndVQva0YzRmlubldxT24vanhnaWpH?=
- =?utf-8?B?ZnNua1Exd1A0cUkvWmFwSkdBZlAwa2o2bUlHbEZwMzFrRnhseG45eW9TY3Zi?=
- =?utf-8?B?eHY1SVVaTW1zSFRQcXNMQkNwT3lmaG96TW5GbWlrL1B6TGUrUG1hdHVWdkpy?=
- =?utf-8?B?VnBWeWVJclFaVVgxWklkVG9Pei81SFlyMHdoTU9kMDIraGxsbkFmL084dlV2?=
- =?utf-8?B?b2FCSmh0ZEJDU0tjVlNUK2ttZzAybDRpYnpmQmlYQlVNWjRhUnJpdWJ1RkFK?=
- =?utf-8?B?VFMwL2d2RXBXZEZMTWd0dkc1YWRwNUhqZ3RUNm9zQ0ZMV2RPeU1xNzVLZFBX?=
- =?utf-8?B?UnhVNWlQc3JaZ2NqUDI3K0N6VHlhTFlNaUtvUitaMXZLVFZ1ZHdFYUliamRG?=
- =?utf-8?B?SjdBNHdyZUtWRmI2NGoxRDQveU5XYnlCeGdXQzV0VXFLZklFbGIzS0FXWkhP?=
- =?utf-8?B?ODNKdUtuODZUSGZuWUNTYVhNZ2RaOGEzdFNFaVlId3JjcDNtVUJEa3hCOHVH?=
- =?utf-8?B?MDlvcTB5azZLcEpzemlZQ285SEp0b2pIbDgwcng3WEpHb0NzQlpSSUxJWmtW?=
- =?utf-8?B?WlI5MDhuYUVOc1V0dEpQSzhpbjZvRjhoTjZ2czcvMW5SOFQ5aWl6RlQzUk1F?=
- =?utf-8?B?SWtTaVBPK3pEdXBVbmZLMmQ0dWdQTGZKYlU0TUtGZDdvUU1kMXN5NDRSZVhO?=
- =?utf-8?B?RXZpWEVlN2JQVUVzQ1Y4bmFBbGhPeDhhVGd5MFpJS290SnlCckpaYW9ORXpm?=
- =?utf-8?B?eXZhQU8xc3daUWd0SXVnSlZBZnJKMkJSbnBlOENiSEpMWXhMeWR5LzlISVQz?=
- =?utf-8?B?ZXBIR0tqVWs4ZFRLcGhOK0tRQVpBc1VkY3Vjc29rOGNaWmc4R0hpenArTGFs?=
- =?utf-8?B?ZE8xbk9pdmJhNVJOTXlQckp5ZEU1YUdkcWtLU2VrTDF3cGxZNjJlTnZQME5a?=
- =?utf-8?B?YVNNMldzVjZ5VlVMRHpsRDZNWm5URURnb3dUUWJWcWNhQSs0N2VjdTcyNndm?=
- =?utf-8?B?QkxtbkZKd1JVd0tTVko1UXkzRWFqeTUwZmRDREMwWjE1WjNlejRVSHFCZUFw?=
- =?utf-8?B?RHUrbHBFZEJqMHB5ang5V2ZKOWluaTEzRUhrUnlZaWNFVnJ4WVo0UFJ2OEJn?=
- =?utf-8?B?UXZPcGg1SisxUVN6SGxnY01XYnpmYVhUNFY3Qkx5U1NvSzR5YWpUYzBZRDMr?=
- =?utf-8?B?NXN3UXc3bGZBT01yUHZkTDlrRnNLSEtrTyt5YVIxYnMzNGJ6WXZ2WW1uZGZ3?=
- =?utf-8?B?L09xL24xWVFkVE9uRWFVQm1ZbnRodEZVU3FnQkRRcXhaNmRubE1DQ21aU3A2?=
- =?utf-8?Q?h2bQotLvDOtzjezYgV?=
+	=?utf-8?B?Z0tMUzlhSDNMTGJBWVpaWVVtZVJuWmdpM3pNdCtlOTNuWUV2TC9VUGVpa2FU?=
+ =?utf-8?B?b1FDbVVDc2ZlalIyMU5tYnBjVWZpalk3cWZTU2p4Z3V2M3Z2NjdYNklPOVJ4?=
+ =?utf-8?B?dTZtdnNESFEvMHBxRFhVT0E2dmNsdk1UQmxJVHV0NVQyblA5TmhuSEpPL0E2?=
+ =?utf-8?B?QkllU2U2cWJDL3hIZWFVcTNScEhYMmdhQ0dZSWIvUTlPRmwrYkNaUVI3c290?=
+ =?utf-8?B?Y093OVAyZzg4amY4M0gwNFhrdzJtS0FZSGc3U1FiQTR2QjNrQjN3ZjlDUVBG?=
+ =?utf-8?B?YzVUbjN3dnNPK1Z4MUdoaXkzbXUybUNPQkFhS3hYblN6bzJndXAwcmVFM2pw?=
+ =?utf-8?B?bXdCNHUyTitKL0QzWEt0eVhWK21nT25Wcy9xMnluUXBBYktZS3crZTF6UFhi?=
+ =?utf-8?B?MjBsTnBUQ3EwaXA3eGdvckIxamZwbzh3WHM1OXU3M3EyOUpNZFVxSVNQMzN4?=
+ =?utf-8?B?cC9Oa3UxdkE2dWRsaFZVcURyVlM4REgwNWV2Wm1tSGw2bDluVWRyZS9JcDVn?=
+ =?utf-8?B?Rnp4WWFFNGhGQmxxUUVsYnZpT2t4RlZ1Z1pMT3pKZU9ZbmQ3aVBXVmpYb0NI?=
+ =?utf-8?B?Z043RFB0Nms4WFNPUldOU3ZsNFRZblUxS1A0NjJJUVRwZGNoM3dJTlNicExU?=
+ =?utf-8?B?eEs0TTlTK2ZLN0M3Sm9kY1J5d1MrWUh3dWd1ME8vd002cEt3dEZZdHR6V2sw?=
+ =?utf-8?B?QWJRYVA5ak1TdktGVld3bkJsdWJkTStqWWtLSzZsanBCTFlkYTlDRUxXWUdW?=
+ =?utf-8?B?YUZZZ3dqR0RjOXo2RjJCREU2SWJOR0o0TEQ4M2M5ZEhyQitmc2psdk8vb0JJ?=
+ =?utf-8?B?dTM3SDkrT3RHWk5wcXZBVWhVc3lNcWV4MVl3eVZ5T2hWQXB5K0dad0diUWNn?=
+ =?utf-8?B?NG9EZVZNS2srSDg5ZUV4VjlaU1FoQkhHbTFBSmI1M1hGQVBwaVNaL0tyVlUx?=
+ =?utf-8?B?anByaXkyWHcrUnMwcFNhelY0Yk5QS3plbnptL3QvUkluOWcyRG9adUl5WGZN?=
+ =?utf-8?B?WW1YYzNNK1RKMWQ4dW8wOEpudU1zM2xUMVRuNWlsWXRSWHFmVFlsZmxhYzFY?=
+ =?utf-8?B?dlRYUVN6dHh6U0dodEZwRkdLd2NkcjZ5TGVNT0paNnliYm1BejNiOExqb2lR?=
+ =?utf-8?B?aUQzYXVSTVdvTHNuNUk1OFhLUzE3ZVcyZ1Z1NWlodmxyVFVFc1Z3bVkyc3FS?=
+ =?utf-8?B?Y3lraE9sUS85SHlGNmYrVXlmQStuWDFnbU5EL3R2bzVmZ3krWE1FeEh2UFVS?=
+ =?utf-8?B?ZmFYaWdUVUZkYWhaOEdWckpScWs4SUZ2MktMOFJPMnlMb0tIZTVaUUZUMHdB?=
+ =?utf-8?B?Qys2UCt0bGZreHgyZGl6KzlWcWtlMkl6T0ErajlZSi9LeHdyRVJmNUlKOUpj?=
+ =?utf-8?B?dHFOOWVxNTNrVjhwL2t0blhraVVsbDNMYWI0NFBJbHNiZER6ZEEyanhDcWFM?=
+ =?utf-8?B?M0V2c2VXTlAxbmZQT0U0T1ZkVUFRT3ZkaTZ1RURGTXNYdmZCLzVSQXNudTJY?=
+ =?utf-8?B?c2F3TXFFQmlrQ3lUWFpOWVAxZEVyN3RhUjFwU3RUa3lGVm55c1phVFF0ZHM1?=
+ =?utf-8?B?SG5lSnUzeXJVbWZZdWZCT1VEZFZtZEppdzQ3RTAzTUJmalNxZTEyVktEMTh2?=
+ =?utf-8?B?eXZPWGk1bVhQODVtemVYOEFnNlVqSFJQaXZQRjRockN1RzlhUlo3OWwwQXVC?=
+ =?utf-8?B?Z0NHbkZka21tRTFoMTA3eUswWkNHZjhSQ2h5QUdhZ2pSbjkyejR3OUZnQ1VO?=
+ =?utf-8?B?eXZ1RXI4WkRjTEFOYUFTL2YrS3R5Um5YeWhNcFY2VTgvSFpGS1JDQmErR3hU?=
+ =?utf-8?B?MjVHN2FZcUNESGNvM2xINVg1TVdZeUl1bDRLQldYWFk2TkNVdDlYc0dJLy9Q?=
+ =?utf-8?B?RU1NSGpTZUtsTFFqdjIxbGFGR0xwYU5OcnRSS1g0eHlPSEdCbG9oNnpmSEpu?=
+ =?utf-8?B?QnphU3JDUUxnYUN1MzVzb1RlNUhOdWo0YUtuZ2pjNUkwUjhEbGR6eTl0TllD?=
+ =?utf-8?B?YmQzeEdpMVBJV2ZvVGhUM1JkSWU0K3lrQmdqcWV0WDR4c0V6WHBkdVh1TU52?=
+ =?utf-8?B?L1p0VU9GNWFsWWpGMVZtZWlrMERUeThhazhGSWRxU2w0Mmg5M0pWOWl0ekFk?=
+ =?utf-8?B?Wkt4eHpxdDNMZ1owNGtPYUVTMHN6WVhMV0J3dU9uMTdHSUxRZ3poRnI4ZCtO?=
+ =?utf-8?B?VXMxZDdkVGsvWHkxSXV5c3VGVWh0NkRHK0dRUHhnMWxsQ0tzS1IxU2EvbnFt?=
+ =?utf-8?B?dnpHUU1CWnprVVlqanFKaVYzRnlIOXZsSkdwbXdaNUd1TWRrMEowdkN1QXZn?=
+ =?utf-8?Q?XYoNUkCOmyrGFQahZn?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f20a4ab-f16f-49ba-fc9a-08decaf4898f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98a9671a-dfd6-457e-0211-08decaf4bf69
 X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 15:41:16.4288
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 15:42:46.7102
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +14tzdTlFjVdVgTYG/kOkzd//J8682Hf2AuTgdOTwPkcNwVPvqXzLXvw88eeOlR1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6551
+X-MS-Exchange-CrossTenant-UserPrincipalName: UOU8qvAxa5gFlAsza2mQ6V2BMleEPzaAlDYoP30e/8uLvose37TRGXdF0puPTZBB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8906
 
 Hi Andy,
 
-Thanks for the review, replies inline.
-
-On 15/06/2026 15:22, Andy Shevchenko wrote:
-> On Mon, Jun 15, 2026 at 12:37:19AM +0100, Salih Erim wrote:
->> Add the core driver and MMIO platform driver for the AMD/Xilinx Versal
->> System Monitor (SysMon) block.
+On 15/06/2026 15:30, Andy Shevchenko wrote:
+> On Mon, Jun 15, 2026 at 12:37:20AM +0100, Salih Erim wrote:
+>> Add an I2C transport driver for the Versal SysMon block. The SysMon
+>> provides an I2C slave interface that allows an external master to
+>> read voltage and temperature measurements through the same register
+>> map used by the MMIO path.
 >>
->> The SysMon block resides in the platform management controller (PMC) and
->> provides on-chip voltage and temperature monitoring through a 10-bit,
->> 200 kSPS ADC. It can monitor up to 160 voltage channels and 64
->> temperature satellites distributed across the SoC, with a consistent
->> sample rate of 8 kSPS per channel regardless of how many channels are
->> enabled.
+>> The I2C command frame is an 8-byte structure containing a 4-byte data
+>> payload, a 2-byte register offset, and a 1-byte instruction field.
+>> Read operations send the frame with a read instruction, then receive
+>> a 4-byte response containing the register value.
 >>
->> The hardware also provides four aggregate temperature registers that
->> are always present regardless of the device tree configuration: the
->> current max and min across all active satellites, and the peak and
->> trough values recorded since the last hardware reset.
->>
->> The driver is split into two compilation units:
->>    - versal-sysmon-core: Channel parsing, IIO registration, read_raw
->>    - versal-sysmon: MMIO platform driver with custom regmap accessors
->>
->> Voltage results are stored in a 19-bit modified floating-point format
->> and converted to millivolts. Temperature results are stored in Q8.7
->> signed fixed-point Celsius format and converted to millicelsius.
->>
->> The MMIO regmap backend uses a custom reg_write accessor that
->> automatically unlocks the NPI (NoC programming interface) lock
->> register before each write, as required by the hardware. The regmap
->> is configured with fast_io since the underlying MMIO accessors are
->> safe to call from atomic context.
+>> Events are not supported on the I2C path because there is no
+>> interrupt line and the I2C regmap backend cannot be called from
+>> atomic context.
 > 
 > ...
 > 
->> +static int sysmon_read_raw(struct iio_dev *indio_dev,
->> +                        struct iio_chan_spec const *chan,
->> +                        int *val, int *val2, long mask)
->> +{
->> +     struct sysmon *sysmon = iio_priv(indio_dev);
->> +     unsigned int regval;
->> +     int ret;
->> +
->> +     guard(mutex)(&sysmon->lock);
->> +
->> +     switch (chan->type) {
->> +     case IIO_TEMP:
->> +             if (mask == IIO_CHAN_INFO_SCALE) {
->> +                     /* Q8.7 to millicelsius: raw * 1000 / 128 */
->> +                     *val = MILLI;
+>> +static const struct regmap_config sysmon_i2c_regmap_config = {
+>> +     .reg_bits = 32,
+>> +     .val_bits = 32,
+>> +     .reg_stride = SYSMON_REG_STRIDE,
+>> +     .max_register = SYSMON_MAX_REG,
+>> +     .reg_read = sysmon_i2c_reg_read,
+>> +     .reg_write = sysmon_i2c_reg_write,
+>> +};
 > 
-> Since this is about temperature, wouldn't be better to use
-> 
->          MILLIDEGREE_PER_DEGREE
-> 
-> here?
+> No cache?
 
-Agreed, MILLIDEGREE_PER_DEGREE is semantically correct here.
-Will change in v8.
-
-> 
->> +                     *val2 = BIT(SYSMON_FRACTIONAL_SHIFT);
->> +                     return IIO_VAL_FRACTIONAL;
->> +             }
->> +             if (mask != IIO_CHAN_INFO_RAW)
->> +                     return -EINVAL;
->> +
->> +             ret = regmap_read(sysmon->regmap, chan->address, &regval);
->> +             if (ret)
->> +                     return ret;
->> +
->> +             *val = sign_extend32(regval, 15);
->> +             return IIO_VAL_INT;
->> +
->> +     case IIO_VOLTAGE:
->> +             if (mask != IIO_CHAN_INFO_PROCESSED)
->> +                     return -EINVAL;
->> +
->> +             ret = regmap_read(sysmon->regmap,
->> +                               chan->address * SYSMON_REG_STRIDE +
->> +                               SYSMON_SUPPLY_BASE, &regval);
->> +             if (ret)
->> +                     return ret;
->> +
->> +             sysmon_supply_rawtoprocessed(regval, val);
->> +             return IIO_VAL_INT;
->> +
->> +     default:
->> +             return -EINVAL;
->> +     }
->> +}
-> 
-> ...
-> 
->> +static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
->> +{
->> +     unsigned int num_chan, idx, temp_chan_idx, volt_chan_idx;
->> +     unsigned int num_supply, num_temp;
->> +     struct iio_chan_spec *sysmon_channels;
->> +     const char *label;
->> +     u32 reg;
->> +     int ret;
->> +
->> +     struct fwnode_handle *supply_node __free(fwnode_handle) =
->> +             device_get_named_child_node(dev, "voltage-channels");
->> +     num_supply = fwnode_get_child_node_count(supply_node);
->> +
->> +     struct fwnode_handle *temp_node __free(fwnode_handle) =
->> +             device_get_named_child_node(dev, "temperature-channels");
->> +     num_temp = fwnode_get_child_node_count(temp_node);
->> +
->> +     num_chan = size_add(num_temp, size_add(ARRAY_SIZE(temp_channels), num_supply));
-> 
-> + overflow.h
-
-Accepted, Will add.
-> 
->> +     sysmon_channels = devm_kcalloc(dev, num_chan, sizeof(*sysmon_channels), GFP_KERNEL);
->> +     if (!sysmon_channels)
->> +             return -ENOMEM;
->> +
->> +     /* Static temperature channels first */
->> +     memcpy(sysmon_channels, temp_channels, sizeof(temp_channels));
->> +     idx = ARRAY_SIZE(temp_channels);
->> +
->> +     /* Supply channels from DT */
->> +     fwnode_for_each_child_node_scoped(supply_node, child) {
->> +             ret = fwnode_property_read_u32(child, "reg", &reg);
->> +             if (ret)
->> +                     return dev_err_probe(dev, ret,
->> +                                          "missing reg for supply channel\n");
->> +
->> +             if (reg > SYSMON_SUPPLY_IDX_MAX)
->> +                     return dev_err_probe(dev, -EINVAL,
->> +                                          "supply reg %u exceeds max %u\n",
->> +                                          reg, SYSMON_SUPPLY_IDX_MAX);
->> +
->> +             ret = fwnode_property_read_string(child, "label", &label);
->> +             if (ret)
->> +                     return dev_err_probe(dev, ret,
->> +                                          "missing label for supply channel\n");
->> +
->> +             sysmon_channels[idx++] = (struct iio_chan_spec) {
->> +                     .type = IIO_VOLTAGE,
->> +                     .indexed = 1,
->> +                     .address = reg,
->> +                     .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +                     .datasheet_name = label,
->> +             };
->> +     }
->> +
->> +     /* Temperature satellite channels from DT */
->> +     fwnode_for_each_child_node_scoped(temp_node, child) {
->> +             ret = fwnode_property_read_u32(child, "reg", &reg);
->> +             if (ret)
->> +                     return dev_err_probe(dev, ret,
->> +                                          "missing reg for temp channel\n");
->> +
->> +             if (reg < 1 || reg > SYSMON_TEMP_SAT_MAX)
->> +                     return dev_err_probe(dev, -EINVAL,
->> +                                          "temp reg %u out of range [1..%u]\n",
->> +                                          reg, SYSMON_TEMP_SAT_MAX);
->> +
->> +             ret = fwnode_property_read_string(child, "label", &label);
->> +             if (ret)
->> +                     return dev_err_probe(dev, ret,
->> +                                          "missing label for temp channel\n");
->> +
->> +             sysmon_channels[idx++] = (struct iio_chan_spec) {
->> +                     .type = IIO_TEMP,
->> +                     .indexed = 1,
->> +                     .address = SYSMON_TEMP_SAT_BASE +
->> +                                (reg - 1) * SYSMON_REG_STRIDE,
->> +                     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +                     .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
->> +                     .datasheet_name = label,
->> +             };
->> +     }
->> +
->> +     indio_dev->num_channels = idx;
->> +     indio_dev->info = &sysmon_iio_info;
->> +
->> +     /*
->> +      * Assign per-type sequential channel numbers.
->> +      * IIO sysfs uses type prefix (in_tempN, in_voltageN)
->> +      * so numbers only need to be unique within each type.
->> +      */
->> +     temp_chan_idx = 0;
->> +     volt_chan_idx = 0;
->> +     for (unsigned int idx = 0; idx < indio_dev->num_channels; idx++) {
->> +             if (sysmon_channels[idx].type == IIO_TEMP)
->> +                     sysmon_channels[idx].channel = temp_chan_idx++;
->> +             else
->> +                     sysmon_channels[idx].channel = volt_chan_idx++;
->> +     }
->> +
->> +     indio_dev->channels = sysmon_channels;
->> +
->> +     return 0;
->> +}
-> 
-> ...
-> 
->> +/**
->> + * sysmon_core_probe() - Initialize Versal SysMon core
-> 
-> It is managed, please name it accordingly: devm_sysmon_core_probe().
-
-Will rename to devm_sysmon_core_probe() and update callers.
+No, the registers are live ADC readings and interrupt status.
+Caching would return stale voltage and temperature data.
 
 Thanks,
 Salih
 
-> 
->> + * @dev: Parent device
->> + * @regmap: Register map for hardware access
->> + *
->> + * Return: 0 on success, negative errno on failure.
->> + */
 > 
 > --
 > With Best Regards,
