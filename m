@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA5F02AD2C;
-	Mon, 15 Jun 2026 04:27:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9E2246782;
+	Mon, 15 Jun 2026 04:30:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781497628; cv=none; b=J8kXlFGEeN0NU5I3NjFpXOJYdr8AxF0SPKgMkVNgwvWdEA75YL5zuD7PU2Dac3E/xqnOZWQsgemvubU8+rRbgTKt4ekBOQrvocxq8VDIlTTkMMx4Wksw1RGUPmTNdsP14XhulgB7wZ9VN2Fmm2PJbiDfg/uC7I9HqGkbXSHGROg=
+	t=1781497837; cv=none; b=Relu5A67bSF1FdAsZazjP8yYYSLtDpNM0u2+Zevqcpi9rzbz7DzAx7VGwaa875UC1b0a1V2K2ypbcUN/adBT5/6M+xUt95HVnJjfw20tvO1PM7Ec17JbDP7G1jlVuywMqqnvzM7Wm5m3RogTnru2t6t1DBj2Gl82s3S1nVGRJIA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781497628; c=relaxed/simple;
-	bh=cSJeumcbp4HbRcl5MBu/rRqVYBXDtiOSnAElKqKZ2cA=;
+	s=arc-20240116; t=1781497837; c=relaxed/simple;
+	bh=ewGf8oIzKXQ3ZBVFpQYznhFWEZrzEE/ebiL+LGv6YUE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RMEnvvXBM7SLvXazcAWGqr+puaU8ejoUPXmcGT9apXz7YbldjRBb5XgOS2K58tAhH8EpoyAunCldpyeEvdddc7pfqUoo9RZQS6cp26TwnXzqG2YKcY6VPGIqENZQjgLQgN1SZNQotkIdM1v2HhoQNKuqvW/cePG2MIGPChXmKeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I9VEeFT5; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=HZiSga9ohDLQ7mo7T706wJ3yRsj91D+PD8hJT+tLN6NAYUr3GONoaPpMfbyjd3se+K+z+jMz127+qvtN9bkOiyW5ThoPzn+IIs3K+ogKToeATH0ZcHgzoijnGPKHCrdRixxMXbqgW7GQSDPHq3o/aZKiPf3XPDh131zLO6eUDCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jyJuHP1d; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I9VEeFT5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 265951F000E9;
-	Mon, 15 Jun 2026 04:27:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jyJuHP1d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772711F00A3F;
+	Mon, 15 Jun 2026 04:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781497627;
-	bh=PutqXygEbgIrZ8v6ecbxnI9XjwAfh8YhF6fviR77oRI=;
+	s=k20260515; t=1781497836;
+	bh=jCOpBnN2WN+1gnLJFareRT3Ws8bdVxpn1CVCHXYIgCc=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=I9VEeFT5TKwjlmYkmIaaWQzejwExOLAetOZ/bgoVdNHR8dwLRCuzsDR6AwyKBE+PS
-	 YHFnDLx4YRjNst+iFtlPE5jyupzBqxwKS97ZPLD2IoLnb/alan5U6wfyvdJfP2vGRP
-	 lQmRk4zjmI2NhThoZJBLdYh7OHcjFnERKyZ5Sfy7GdJbC5jvHdLa1KbWdDjmHB83GF
-	 GuTYlAA7CEVqfKJh3MPkH5Me5PgoWjvm8j/udLqjc/mBfSj7L2m8z143yb7JsXTViI
-	 jwjAEq6+sKi8xJjtaXCDsplStKF/fpa4HJma0dtQWhNJF89jCCDk9LsrAsIWnH5bZG
-	 mnhKwC00+egkw==
-Message-ID: <84503093-4bff-4c93-aff8-aa07e1a6a1a1@kernel.org>
-Date: Mon, 15 Jun 2026 06:27:00 +0200
+	b=jyJuHP1dayYAcHJGXmtLR2Gle71m6G5i0dN4os6GwZKWjIRABoiW/1k2nHZizLteF
+	 2Jvkbx8f/7ZukGNEmjMngZiYPGKKVtdxOjeCaXpV40Xe5UiCJSuiNcqbwkJPAIRw2v
+	 +jHEtI2YUSBjqsxSQccUIiRbKP/67w8apUsVfcMZnBUuOu0GmR76xIJz5NcyHiAprm
+	 Y4q3I68gBkDSmcEACK8uFgtRlnvv4bdBfzwDIB0FtS49kzzA1/2A+HsrGC3MP4rZde
+	 5cPq5QujBS54GKlZGMAnvPtHEGf2294jcjJsCRcQ+/dRt5YSfyFq2G+7lgywDaYbXg
+	 H4gwkUlpwwxWg==
+Message-ID: <a994993e-7459-48a2-a8d7-823c1b0c9545@kernel.org>
+Date: Mon, 15 Jun 2026 06:30:28 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,23 +35,20 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/4] iio: flow: add Sensirion SLF3S liquid flow sensor
- driver
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Wadim Mueller <wafgo01@gmail.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
- Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-References: <20260611132700.671322-1-wafgo01@gmail.com>
- <20260611132700.671322-5-wafgo01@gmail.com>
- <e01d100b-9809-4af3-8f21-055f687ca6c6@kernel.org>
- <20260612184729.795e0e84@jic23-huawei>
- <4e4ef1ae-62e7-4639-914c-19f49930be02@kernel.org>
- <20260614161011.7f7946f1@jic23-huawei>
+Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
+To: Kurt Borja <kuurtb@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org
+References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
+ <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
+ <20260613-sparkling-naughty-tuna-3e9bf1@quoll>
+ <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -97,71 +94,34 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260614161011.7f7946f1@jic23-huawei>
+In-Reply-To: <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 14/06/2026 17:10, Jonathan Cameron wrote:
-> On Sat, 13 Jun 2026 09:51:13 +0200
-> Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On 14/06/2026 22:56, Kurt Borja wrote:
+> On Sat Jun 13, 2026 at 1:59 PM -05, Krzysztof Kozlowski wrote:
 > 
->> On 12/06/2026 19:47, Jonathan Cameron wrote:
->>> On Thu, 11 Jun 2026 16:01:12 +0200
->>> Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>>   
->>>> On 11/06/2026 15:27, Wadim Mueller wrote:  
->>>>> +
->>>>> +static const struct of_device_id slf3s_of_match[] = {
->>>>> +	{ .compatible = "sensirion,slf3s-0600f", .data = &slf3s_variants[0] },
->>>>> +	{ .compatible = "sensirion,slf3s-1300f", .data = &slf3s_variants[1] },
->>>>> +	{ .compatible = "sensirion,slf3s-4000b", .data = &slf3s_variants[2] },    
->>>>
->>>> You should have only 1300f here and detect the variants. That was my
->>>> point when I suggested to use the fallback.
->>>>  
->>>
->>> I'm lost. How does that work?  They cannot fallback to that part because
->>> it relies on in driver detection of the fact that they are incompatible.
->>>   
+> [...]
+> 
+>> Functions used by probe() should be before probe(), not somewhere in the
+>> middle of the code. IOW, entire probe is together.
+> 
+> I they all are, it's just that regmap stuff takes a huge chunk. I'll
+> check how to reorganize.
+> 
+> [...]
+> 
+>>> +static const struct of_device_id ads1262_of_match[] = {
+>>> +	{ .compatible = "ti,ads1262" },
+>>> +	{ .compatible = "ti,ads1263" },
 >>
->> I am lost too. Then why were they made compatible in the binding?
->>
->> Entire discussion was that these are FULLY compatible due to variant
->> detection. That was the entire point of discussing more generic
->> fallback. Using specific fallback does not change that - it is the same
->> concept.
->>
->> If devices are not detectable, why were we discussing any compatibility?
+>> So devices are fully compatible? Then it should be expressed in the
+>> binding and drop one entry here.
 > 
-> They are detectable, but the feature set is not, so to me there is zero valid
-> in a generic fallback, we have to update the driver every time a new part comes
-> along. (i.e. I agree with Conor's reply to the previous version thread).
-> A specific fallback to a completely compatible part would be fine as there
-> would be sufficient info to not need the ID lookup.
+> Not fully compatible as Jonathan said. One is a subset of the other.
 
-This patch has specific fallback and we discuss this now.
+This is THE meaning of compatible!
 
-> 
-> The case in the binding for this version is the worst of all options because
-> it implies it is valid to fallback to something that gives a false impression
-> of being specific when it's relying on ID matching to say actually it's something
-> else.
-> 
-> So definitely not
-> +  compatible:
-> +    oneOf:
-> +      - const: sensirion,slf3s-1300f
-> +      - items:
-> +          - enum:
-> +              - sensirion,slf3s-0600f
-> +              - sensirion,slf3s-4000b
-> +          - const: sensirion,slf3s-1300f
-> +
-> 
-> Falling back to slf3s is better than this, but I'd rather not have a fallback
-> at all, thus allowing correct fallback to the parts listed here in future.
-
-Why? These devices are fully detectable thus fully compatible.
 
 Best regards,
 Krzysztof
