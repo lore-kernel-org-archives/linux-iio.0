@@ -1,191 +1,246 @@
-Received: from outbound3.mail.transip.nl (outbound3.mail.transip.nl [136.144.136.12])
+Received: from outbound7.mail.transip.nl (outbound7.mail.transip.nl [136.144.136.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C6DA3E451D;
-	Mon, 15 Jun 2026 11:25:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD053E3172;
+	Mon, 15 Jun 2026 11:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781522733; cv=none; b=kSbVDR5WW5NF22vpMRX6uB+4xcSCtHul7M6xntHuv2odzvWv/KJvHqfmJ7VPRxl5DN9nM42k7n0Smzcukms8PO8iq91Zfeeri5T97yR0si/BHFtYwSviIkR8cY1dyNWMTHAd1zjzqXG4DgWBbFrMSaHSziRzdgLhdd+gGT1xpyc=
+	t=1781522910; cv=none; b=mXX3yKXrCmCdbsKh4DWykOTyN9fZ8W9p0ly4otUTDIUdjCBC5CK9kZzq0mvHr423D9COYcX1Kc2QhKb6DJXJIh+8sFvE/eqNgmygqLt6wOlHKcgqD+eBhDydoCUaiO0/crupX6jVwDajJl74A92OZQdSNxssfq+Dr3mHnQaS7+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781522733; c=relaxed/simple;
-	bh=cQH1sK9ywuIvxsElmR4fYXGHy8mHdAWvIiisK90YMoU=;
+	s=arc-20240116; t=1781522910; c=relaxed/simple;
+	bh=VyF+tEcxEs62cFwn6ieRGy2ts08RJpAiM5Fc/+TM/tM=;
 	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=f/FZqcwrsczlmCcS6aznT9vskSSysXvQ+aPfVTt+adcMYFg5aNsIK/l+tJuAv20XTDV+LVbahTLS1LuTtcDyvADPctV30TWO0Cq3zHPOJOB3KNhMhEI4O0SZd5QDtlt5mzrNrqsY451JxUsK5Umzw0QbOWIteqN7KiwS4k63d0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=gXMH3QkN; arc=none smtp.client-ip=136.144.136.12
+	 Message-ID:Content-Type; b=m7c+323DRpRKos4MUK+KLToLizMA3fOdkAS2AnRFpOcWBcvlTouCa0bDoa9K8loHt9xM3Ncsr919HhpR6adPEjsl/8nMV9gIgl2ZsHpArwb2aYtoF/FBJjFYQFOv/wTHgNhK4GX7K8G5ZDenIF2Q2VU9AwylsJrkl5ubNzoTVBI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=R33EQat/; arc=none smtp.client-ip=136.144.136.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="gXMH3QkN"
-Received: from submission3.mail.transip.nl (unknown [10.100.4.72])
-	by outbound3.mail.transip.nl (Postfix) with ESMTP id 4gf6yY6295znJN6;
-	Mon, 15 Jun 2026 13:16:53 +0200 (CEST)
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="R33EQat/"
+Received: from submission9.mail.transip.nl (unknown [10.103.8.160])
+	by outbound7.mail.transip.nl (Postfix) with ESMTP id 4gf72W6HgXzQvwk1;
+	Mon, 15 Jun 2026 13:20:19 +0200 (CEST)
 Received: from transip.email (unknown [10.100.4.34])
-	by submission3.mail.transip.nl (Postfix) with ESMTPA id 4gf6yX3fmPzf52bR;
-	Mon, 15 Jun 2026 13:16:52 +0200 (CEST)
+	by submission9.mail.transip.nl (Postfix) with ESMTPA id 4gf72W1yTrz3NZKgd;
+	Mon, 15 Jun 2026 13:20:19 +0200 (CEST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 15 Jun 2026 13:16:52 +0200
+Date: Mon, 15 Jun 2026 13:20:19 +0200
 From: me@herrie.org
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Herman van Hazendonk <github.com@herrie.org>, linusw@kernel.org,
- denis.ciocca@st.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, sanjayembeddedse@gmail.com, maudspierings@gocontroll.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: iio: st,st-sensors: add st,fullscale-mg
+Cc: Conor Dooley <conor@kernel.org>, github.com@herrie.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, tomasborquez13@gmail.com,
+ masneyb@onstation.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] dt-bindings: iio: light: isl29018: add
+ isil,cover-comp-gain
 Reply-To: github.com@herrie.org
 Mail-Reply-To: github.com@herrie.org
-In-Reply-To: <20260614194442.61191f68@jic23-huawei>
-References: <cover.1780652883.git.github.com@herrie.org>
- <e49aba850b1f48ea00089e7142c00584541001eb.1780652883.git.github.com@herrie.org>
- <20260614194442.61191f68@jic23-huawei>
+In-Reply-To: <20260614205131.7449d180@jic23-huawei>
+References: <20260604100617.3486541-1-github.com@herrie.org>
+ <20260604100617.3486541-3-github.com@herrie.org>
+ <20260604-energy-lid-e7949164431a@spud>
+ <20260605140449.1d7538ee@jic23-huawei>
+ <b6919a62f06ad8e4e80232d9b2a0e706@herrie.org>
+ <bb7c65095dc53dd8723c1ecd9c33796c@herrie.org>
+ <20260608-raft-auction-6305f9f324cd@spud>
+ <20260614205131.7449d180@jic23-huawei>
 User-Agent: Webmail
-Message-ID: <6475e269775789d61ade326190b0d234@herrie.org>
+Message-ID: <5ab0c054be89432db7cf6917f2528a30@herrie.org>
 X-Sender: me@herrie.org
-Content-Type: text/plain; charset=US-ASCII;
+Content-Type: text/plain; charset=UTF-8;
  format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: ClueGetter at submission3.mail.transip.nl
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: ClueGetter at submission9.mail.transip.nl
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1781522212; h=from:reply-to:subject:to:
+ s=transip-a; d=herrie.org; t=1781522419; h=from:reply-to:subject:to:
  cc:references:in-reply-to:date:mime-version:content-type;
- bh=bqvfzkE4HUcU/icIm8AEDN04DpjOTFRGQukbi8ELWCs=;
- b=gXMH3QkNxJccoPsoWEeFIsHrljeeC2nSqfX/VeSn+mAXG75V803+0g8Y4Inw527neDtcXH
- MwV5D/qA9fddFOCTyufXUdHHJLHeWaiq089QLjo07vvaT1mIp/p54I8+QvoW32ZAuQ8t+v
- aGvXRT70YlQ9oFr/xYmkvC0vywePzHspADUMX9WU0jeesw1ocl5JwzOA8IF2bFtiGOGHam
- 8ZN88pUcbl3bBq0DCoN89GT05UUykpAFCbiEvOD41U9FHCoF2thaDX5AnMd6xVkTTK0aDO
- yhU2RGpm3NiX45Whyto9eB23HAw+oX5WAAxEscX0oKhzho/ZmXA+CCvMV31kUA==
+ bh=/OiORrqSOn5XJRaVbRclzkXa59IhgUb4CGdw0dXXDxQ=;
+ b=R33EQat/Vj9Tkib92GCeVN5WnFcvdoqBEw6PqufPaNIJc7Rt7ZUf1ksc1S/SVmb0wrw6ZG
+ tlzZCOkTODHMuG/wXEiEe6jbQroj0RNdRICWD2lZlg2KZmIvaSLeJ7eXA7s2h5Ysd02o/i
+ pcE/p4GObYzjqCnTSxqzgccyZxqveAd/cwROqqwiB0k32F9ovn+5tbUVowCoTHU7z3Idx7
+ bYdihawBiRLEuB+oS40ms7cw89OKczo2sA4STz7guW5GswhC8DywRe1ezhv/IftkMW3euv
+ X8tWrhQfbb4NQjrAuInn3tHLFdN7AXH7G0yW/F1NY+7Mc9f8fzTbiXrDNSyXQQ==
 X-Report-Abuse-To: abuse@transip.nl
 
-On 2026-06-14 20:44, Jonathan Cameron wrote:
-> On Fri,  5 Jun 2026 12:08:42 +0200
-> Herman van Hazendonk <github.com@herrie.org> wrote:
+On 2026-06-14 21:51, Jonathan Cameron wrote:
+> On Mon, 8 Jun 2026 18:49:13 +0100
+> Conor Dooley <conor@kernel.org> wrote:
 > 
->> Add an optional st,fullscale-mg property that selects the initial
->> full-scale range of an ST MEMS sensor at probe time, expressed in
->> milligauss for magnetometers (and analogous engineering units for
->> other ST sensor families that may grow this property in the future).
+>> On Fri, Jun 05, 2026 at 09:28:03PM +0200, me@herrie.org wrote:
+>> > On 2026-06-05 15:18, me@herrie.org wrote:
+>> > > On 2026-06-05 15:04, Jonathan Cameron wrote:
+>> > > > On Thu, 4 Jun 2026 18:01:08 +0100
+>> > > > Conor Dooley <conor@kernel.org> wrote:
+>> > > >
+>> > > > > On Thu, Jun 04, 2026 at 12:06:16PM +0200, Herman van Hazendonk wrote:
+>> > > > > > Document the new optional property that seeds the ISL29018 calibration
+>> > > > > > scale factor at boot from firmware, allowing boards with tinted cover
+>> > > > > > glass to ship with correct luminance readings without a userspace helper.
+>> > > > > >
+>> > > > > > The value is a positive integer (minimum 1, maximum 65535) that is
+>> > > > > > multiplied with the raw lux reading.  Userspace can still override it
+>> > > > > > at runtime through in_illuminance0_calibscale.
+>> > > > > >
+>> > > > > > Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+>> > > > > > ---
+>> > > > > >  .../devicetree/bindings/iio/light/isl29018.yaml     | 13 +++++++++++++
+>> > > > > >  1 file changed, 13 insertions(+)
+>> > > > > >
+>> > > > > > diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>> > > > > > index 0ea278b07d1c..92ea2742bbd3 100644
+>> > > > > > --- a/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>> > > > > > +++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+>> > > > > > @@ -34,6 +34,19 @@ properties:
+>> > > > > >    vcc-supply:
+>> > > > > >      description: Regulator that provides power to the sensor
+>> > > > > >
+>> > > > > > +  isil,cover-comp-gain:
+>> > > > > > +    description: |
+>> > > > > > +      Multiplier applied to the ambient-light reading at startup to
+>> > > > > > +      compensate for optical loss in the board's cover glass. Boards
+>> > > > > > +      that mount the sensor under a tinted or coated window typically
+>> > > > > > +      need a value between a few and a few hundred.
+>> > > >
+>> > > > Is it useful to support decimal points on these values?  The
+>> > > > userspace interface
+>> > > > does and you mention the 'right' answer might be only a few which
+>> > > > means precision
+>> > > > at that range will be terrible - less of an issue if 100s!
+>> > > >
+>> > > > Thanks
+>> > > >
+>> > > > Jonathan
+>> > > >
+>> > > Hard to say, my old HP TouchPad needs 100 as a value here (taken from
+>> > > legacy 2.6.35
+>> > > kernel and binaries). So we probably don't need precision, but I have no
+>> > > other
+>> > > references to substantiate.
+>> > >
+>> > > Thanks
+>> > > Herman
+>> > Scratch that. Did some more research. Proof is in the legacy webOS binaries:
+>> >
+>> > What legacy webOS actually does here:
+>> >
+>> > 1. Per-device calibration via factory token reads an ALSCal token from
+>> > system storage
+>> > containing JSON with calibration points at lux_0, lux_50, lux_100, lux_400
+>> > (measured
+>> > ADC counts at known reference illuminance levels).
+>> >
+>> > 2. Computes a floating-point ratio AlsToLux_Ratio_WhiteLED = average of
+>> > expected_lux /
+>> > measured_count across the JSON calibration points. This is a real number,
+>> > not an integer.
+>> >
+>> > 3. Adjusts for light source spectrum at runtime detects illuminant type from
+>> > ALS:IR
+>> > ratio, then applies a fractional spectrum correction:
+>> > Fluorescent above 100 counts: ratio x 0.4652
+>> > Incandescent above 700 counts: ratio x 0.4
+>> > Incandescent 50-100 counts:    ratio x 0.9
+>> > Fluorescent < 50 counts:       ratio x (-0.000724·N + 0.7463)
+>> >
+>> > 4. Final lux = ALSCount / spectrum_corrected_ratio - a true floating-point
+>> > division.
+>> >
+>> > Implications
+>> >
+>> > - The "right" cover-comp value is per-device factory-measured, not
+>> > per-board. Different
+>> > units off the same production line have different optical transmission due
+>> > to coating
+>> > tolerance.
+>> > - The values are fractional by nature. Examples from the legacy code:
+>> > 0.4652, 0.7463,
+>> > 0.8333. None are integers.
+>> >
+>> > The ISL29023 datasheet itself says nothing about cover compensation - it's
+>> > strictly
+>> > board-level optical correction. So there's no "right" answer from the chip
+>> > side;
+>> > it's whatever the board's cover glass + coating attenuates.
+>> >
+>> > ALSCal values found on the particular device:
+>> >
+>> > {"lux_50":{"c":31}, "lux_100":{"c":58}, "lux_400":{"c":164}}
+>> >
+>> > This is device specific TouchPad's factory calibration:
+>> >   - At 50 lux, ADC reads 31 counts  lux/count = 1.613
+>> >   - At 100 lux, ADC reads 58 counts lux/count = 1.724
+>> >   - At 400 lux, ADC reads 164 counts  lux/count = 2.439
+>> >
+>> > Note the ratio isn't constant - the response is mildly non-linear, but per
+>> > the legacy
+>> > code the driver computes the average ratio as the calibration:
+>> >
+>> >   ratio = (1.6129 + 1.7241 + 2.4390) / 3 = 1.9253 lux/count
+>> >
+>> > Independent verification:
+>> >   - At calibscale=34: lux = 1295
+>> >   - Implied raw count: 1295 / (34 x 0.015258) = 2496 counts
+>> >   - Applying legacy formula: 2496 / 1.9253 = 1296.4 = 1295
+>> >
+>> > The factory-calibrated value for this specific TouchPad is 34.04 (not 100).
+>> > Per-point
+>> > calibscale values from the ALSCal JSON:
+>> >
+>> > Cal point‚ lux/count ratio‚ Equivalent calibscale
+>> > lux_50    ‚ 1.6129          ‚ 40.64
+>> > lux_100   ‚ 1.7241          ‚ 38.01
+>> > lux_400   ‚ 2.4390          ‚ 26.87
+>> > average   ‚ 1.9253          ‚ 34.04
+>> >
+>> > What this means concretely
+>> >
+>> > 1. Decimal precision is necessary, not nice-to-have. Real per-device factory
+>> > values
+>> > span 26.9 - 40.6 across the chip's response curve. A single scalar
+>> > approximation costs
+>> > precision; restricting to integer compounds it.
+>> >
+>> > 2. Updated v5 plan: switch to two-cell <int micro> for fractional values,
+>> > and change
+>> > the tenderloin DTS default from <100> to <34 040000> (or close to that).
+>> >
+>> > Thoughts on this?
 >> 
->> The property is purely additive: if absent, drivers fall back to
->> their existing chip default, and if present but unsupported by the
->> specific sensor the driver warns and falls back. No existing in-tree
->> DTS is affected.
+>> Instead of going 2-cell, it might be worth moving the property to be
+>> based in some fractional unit to begin with. I just don't know what to
+>> call that, milligain? I dunno.
 >> 
->> The motivating case is the LSM303DLH magnetometer on the HP TouchPad
->> (apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
->> saturates the X axis to the chip's 0xF000 overflow sentinel out of
->> probe, because the chip is mounted close to surrounding power planes
->> and picks up enough DC bias to exceed the smallest range. The driver
->> core hardcodes fs_avl[0] as the starting range, so userspace cannot
->> recover without racing the driver to write the in_magn_x_scale sysfs
->> attribute after probe. st,fullscale-mg lets the device tree declare
->> a wider initial range up-front and avoids the race entirely.
+>> 
+>> Jonathan's call here I think
 > 
-> I'm trying to understand what you mean here by racing.
+> If this is varying that a lot per device, then, unless you plan to
+> have a bootloader inject it into DT, are we better off making this
+> a userspace problem?  There is a hybrid we've done before, which is
+> to make it a firmware loading problem but that requires some way to
+> generate a suitable file to load and typically a calibration sequence
+> that goes with it.
 > 
-> If we get this overflow condition the chip is wedged until reset, or
-> userspace simply has to change the range to recover?
+> If it is 'fairly constant' for a given device then fine to be in DT
+> - it will just be a case of picking the average of a bunch of measured
+> devices and assuming it is good enough.
 > 
-> I'm wondering if a UDEV rule is sufficient in theory to fix this.
-> 
-> I'm not necessarily against having the range in DT as it is effectively
-> hardware dependent but just want to make sure I fully understand the 
-> issue.
+> If it does end up in dt, then a fractional type like Conor suggests
+> is fine.
 > 
 > Jonathan
-> 
-> 
-> 
->> 
->> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
->> ---
->>  .../devicetree/bindings/iio/st,st-sensors.yaml | 18 
->> ++++++++++++++++++
->>  1 file changed, 18 insertions(+)
->> 
->> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml 
->> b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
->> index a1a958215cdb..335f38e9f78f 100644
->> --- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
->> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
->> @@ -126,6 +126,24 @@ properties:
->>    mount-matrix:
->>      description: an optional 3x3 mounting rotation matrix.
->> 
->> +  st,fullscale-mg:
->> +    description: |
->> +      Selects the initial sensor full-scale at probe time, expressed 
->> in
->> +      milligauss for magnetometers (or analogous engineering units 
->> for
->> +      other sensor families that may grow this property in the 
->> future).
->> +      The value must match one of the sensor-specific full-scale 
->> ranges
->> +      supported by the chip; if the chip does not support the 
->> requested
->> +      range the driver falls back to its built-in default.
->> +
->> +      This is intended for boards where the magnetometer chip picks 
->> up
->> +      enough DC bias from nearby PCB structures (power planes, 
->> ferrous
->> +      shields, etc.) that the kernel's chip-default 
->> highest-sensitivity
->> +      range saturates one or more axes to the chip's overflow 
->> sentinel,
->> +      and userspace observes that axis as permanently stuck. 
->> Declaring
->> +      a wider initial range avoids the saturation at the cost of a
->> +      slightly coarser quantisation.
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +
->>  allOf:
->>    - if:
->>        properties:
 Hi Jonathan,
 
-"racing" was loose wording on my part. The chip is not wedged. Once 
-userspace writes a wider range to in_magn_x_scale,
-the next conversion comes back with sensible data and everything works. 
-A UDEV rule on add of the IIO device would, in principle, fix
-the steady-state problem.
-
-What I was clumsily pointing at is the probe-time window: the IIO 
-consumers in our stack (sensorfw's iio-sensors-adaptor, geomagnetic
-/ orientation services) start polling in_magn_x_raw essentially the 
-moment the device node appears, and they treat the saturated
-0xF000 sentinel as a legitimate sample rather than as overflow. Until 
-the UDEV rule fires and the kernel commits the new range, every
-read returns the stuck sentinel, so orientation/compass features are 
-wrong from boot for some non-trivial number of samples (and on
-slow-boot paths the consumer may have already cached a bogus calibration 
-baseline by the time UDEV catches up).
-
-So the trade-off as I see it is:
-
-- UDEV rule: works for steady state, fully out-of-tree, but the 
-per-board configuration ends up split between two places (DTS for
-"this board has an LSM303DLH at i2c@... in this orientation"; UDEV for 
-"and by the way it needs a wider range or its raw readings are
-nonsense"). The wider-range requirement is purely a property of how the 
-magnetometer is mounted on the board, which is what DT is for.
-
-- st,fullscale-mg in DT: keeps all hardware-dependent calibration in one 
-place, available before any IIO consumer can open the device,
-and harmless on boards that don't need it (absent property existing 
-chip-default behaviour, no   DTS in tree changes).
-
-I'm happy to drop the wording about "racing" in v2 and replace it with a 
-more accurate description of the early-consumer issue if that
-reads better. And of course if you'd rather we ship a UDEV rule 
-downstream instead of adding a binding, I'll yield, but my read is that
-this is hardware-dependent enough to belong in DT.
+I have about 8-10 devices in slightly different configurations using 
+this I guess,
+so I can quickly run the numbers and see how the values look like, so we 
+have more
+data to go by.
 
 Thanks,
 Herman
+
