@@ -1,43 +1,43 @@
-Received: from mail-10696.protonmail.ch (mail-10696.protonmail.ch [79.135.106.96])
+Received: from mail-24429.protonmail.ch (mail-24429.protonmail.ch [109.224.244.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96F33BB9F3;
-	Mon, 15 Jun 2026 22:54:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF3723BE635;
+	Mon, 15 Jun 2026 23:10:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.29
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781564046; cv=none; b=Lnl4O444yu7O+3d5CthdGnp4rPRssRW8CmbMCspxZHR5tS+D5uFPxYZ9T0WJJp3W5NoF65eeyVIs8jOr1MSD/yBfv8dctzIY4m21AxFraRtYXweio9B1EBaMZSvFKCv4OUfpHZbskjtGh9E36cgkjpPC/Jpuj2LV+dg8BWfWfLs=
+	t=1781565035; cv=none; b=aOcozwIfgXAaDiihIS+cwVurmapevOUJ6dXsCkeoDlASft7Op0v13b9pKLgY5dOl9u+lCQwv/chjYr9KdprT/bzUBMFa9hcQOCK0WzuXAjxQFDqt1EhZMooiZdnMGYH1XaUpYP+hZW7hBOl48QdGM3QTYBafb7B8eAnBSzV0Y0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781564046; c=relaxed/simple;
-	bh=JhEkFslAU6fhEK9JU38VGi9NfC7U3tqQMjnFGk+Aq0U=;
+	s=arc-20240116; t=1781565035; c=relaxed/simple;
+	bh=hbHVIkwcbFkz9MPv+duQJkasWp3O14EJ/lbKHL2f1F4=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IAF/FDR0RKOjpC3BuBAHn7E0wPMZSchpoH+Y1nZRfPNcul6CUvAxhbayXNbcbpix3PlvuzlRB+ETuwDj9Rig7SyYUittbR5I5ivARXegnY8hsBJaxSn8QI9ugZiEmOb4V8Zqolx0VuXFCi6o5rJiSpXlciL/0vnCgL6/I28kiIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=N1NMtcJH; arc=none smtp.client-ip=79.135.106.96
+	 MIME-Version:Content-Type; b=UGTaNIngfd3fC9CF0CFlvXaf3KLVFVfnRqo9JkwikTEPPushC47HRXC71CP9g+1r0WkQGeJsMqAUUvaF695jl2WcSR0/WY5jgF60SYRCAWa42cmEqHfd4nzRyxBKDFdkzjU8es6oFyvKyruWwJlnRg/sn9yuI+7fQ8eKKbKPons=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=ihtlWpy5; arc=none smtp.client-ip=109.224.244.29
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="N1NMtcJH"
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="ihtlWpy5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1781564035; x=1781823235;
-	bh=r/gjY+tiP6Q990ZKxbsr2C9qQXKBuiCDXC4VdCYZdiw=;
+	s=protonmail3; t=1781565025; x=1781824225;
+	bh=HkBQfJ5TxwQinnF2S5Nb1OwyL2FsUW+lAQB1x+AgnVc=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
 	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
 	 Message-ID:BIMI-Selector;
-	b=N1NMtcJH8qaIp8aWHopwJAMhIp+0afBCHYBGMk1a7yNPPFvH0IUD+E0lg82PbCXAC
-	 lDn2yefILSBfBN0V2abnmi67D+yvj1/BeTlEdmFEgxNmP2iSNuTlNYLvQqIx1Bg996
-	 Ippdqv0SzLJsyHMzRos2tau8AcLSLHmKqF4stSRwvHqVTH/1onJH9LpwN0iM/gNGmc
-	 +CCZyZvKzNSJuKGH8rXX/0/Aerthe3tDhExEHbxVpJfOh4X2xbAsZsjR2YLabxSpJv
-	 MvYvgFR94+smSVXBrEdE4ltvU6WhRddiRIipZgLjpg2Mr+qi/KduIcrPmMJxhfen+I
-	 hYH6F7VeumdVA==
-Date: Mon, 15 Jun 2026 22:52:57 +0000
-To: Jonathan Cameron <jic23@kernel.org>
+	b=ihtlWpy52uFD/PcKYtX0bwhDVrPMOQVTrn4j23/qRLTnFvUE9KEr3rvvYRkmFIBzS
+	 U5ZD8uxPvPZoogWGtS4pEY5TH60k6pe2kWDytm7X4u2Y3qfkYTV0NseUbTYiwzG/K7
+	 g4PbtS46MUk9J6kXchKsNYhOeDPb8QDXdVcqUxiGsKUqz45zU99mpOEUDNji2KNRlP
+	 g2eJAxBAMMTkoA5EhBWCppM9hIwqi5MXNHf5wTjhTuH4oWXysMPeMtxn7Iu5vyzGoJ
+	 ZuIR7HHXvovo2Dh2PCgSz8px0MFus0qO9141fKTQo6sh+OE2C1v7BUR3uRdZ+5duXO
+	 mFAA8E4dzBNXw==
+Date: Mon, 15 Jun 2026 23:10:20 +0000
+To: Lee Jones <lee@kernel.org>
 From: Roman Vivchar <rva333@protonmail.com>
-Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>
-Subject: Re: [PATCH v2 2/4] iio: adc: mt6323-auxadc: add mt6323 PMIC AUXADC driver
-Message-ID: <E5H72l1Cg-JQGpaYAFl5TIyITmghqMsTaHQTR8VkuFtlzmfCGTpVlceNp8c2BDW7UoheO0Fx6NLJHmu56WHRNWdPNLsaoIKMCftj_bnyvEI=@protonmail.com>
-In-Reply-To: <20260614182214.65d052e4@jic23-huawei>
-References: <20260609-mt6323-adc-v2-0-aa93a22309f9@protonmail.com> <20260609-mt6323-adc-v2-2-aa93a22309f9@protonmail.com> <20260614182214.65d052e4@jic23-huawei>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH 3/4] mfd: mt6397-core: add mt6323 AUXADC support
+Message-ID: <ycj3k-vV_tQv6u9OfCTP9G9kkeeE-_dbzg_oeHPXn2pb1oZe_Sa1BH6GUGuSd_gD6uPSJiTX7tz6MTlFcqGdWX-f3GMfyW2sLgAOCw6YeNE=@protonmail.com>
+In-Reply-To: <20260611163748.GB1212816@google.com>
+References: <20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com> <20260602-mt6323-adc-v1-3-68ec737508ee@protonmail.com> <20260611163748.GB1212816@google.com>
 Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: c61ec01342be96adbdf14dac7b7b7d5c99c1cee8
+X-Pm-Message-ID: 182c5d52f74017e86f4085f21809f8879f8a1b6b
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,148 +47,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jonathan,
+Hi Lee,
 
-On Sunday, June 14th, 2026 at 8:22 PM, Jonathan Cameron <jic23@kernel.org> =
-wrote:
-> On Tue, 09 Jun 2026 16:31:59 +0300
-> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wro=
-te:
-
-...
-=20
-> > +
-> > +#define MTK_PMIC_IIO_CHAN(_name, _chan, _addr)                  \
-> > +{                                                               \
-> > +=09.type =3D IIO_VOLTAGE,                                    \
-> > +=09.indexed =3D 1,                                           \
-> > +=09.channel =3D _chan,                                       \
-> > +=09.address =3D _addr,                                       \
-> > +=09.datasheet_name =3D __stringify(_name),                   \
-> > +=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |          \
-> > +=09=09=09      BIT(IIO_CHAN_INFO_SCALE),         \
-> > +}
-> > +
-> > +static const struct iio_chan_spec mt6323_auxadc_channels[] =3D {
-> > +=09MTK_PMIC_IIO_CHAN(baton2,    MT6323_AUXADC_BATON2,    MT6323_AUXADC=
-_ADC6),
-> > +=09MTK_PMIC_IIO_CHAN(ch6,       MT6323_AUXADC_CH6,       MT6323_AUXADC=
-_ADC11),
-> > +=09MTK_PMIC_IIO_CHAN(bat_temp,  MT6323_AUXADC_BAT_TEMP,  MT6323_AUXADC=
-_ADC5),
+On Thursday, June 11th, 2026 at 7:37 PM, Lee Jones <lee@kernel.org> wrote:
+> Interesting.  Has this been considered?
 >=20
-> Reasonable query from Sashiko on why temperature channels are presented a=
-s voltages.
-> If for some reason that is the right choice, then maybe a comment here.
-
-mt6323 ADC always returns voltage. The thermal driver (which was in the
-previous series and will be sent later) is required to map these to the
-actual temperature. Ack.
-
-...
-
-> > +/*
-> > + * The MediaTek MT6323 (as well as a lot of other PMICs) has the follo=
-wing hierarchy:
-> > + * PMIC AUXADC <- PMIC MFD <- SoC PWRAP (wrapper for PWRAP FSM)
-> > + *
-> > + * Therefore, PWRAP regmap should be obtained using dev->parent->paren=
-t.
-> > + */
-> > +struct mt6323_auxadc {
-> > +=09struct regmap *regmap;
-> > +=09struct mutex lock;
-> Locks should always have a comment on what data they are protecting.
-> I think this one is about protecting the state of a device during a chann=
-el read
-> by serializing those reads.
-
-Nuno said kerneldoc looks unnecessary on v1 [1]. How the comment should
-look?
-
-...
-
-> > +static int mt6323_auxadc_request(struct mt6323_auxadc *auxadc,
-> > +=09=09=09=09 unsigned long channel)
-> > +{
-> > +=09struct regmap *map =3D auxadc->regmap;
-> > +=09int ret;
-> > +
-> > +=09ret =3D regmap_set_bits(map, MT6323_AUXADC_CON11, AUXADC_CON11_VBUF=
-_EN);
-> > +=09if (ret)
-> > +=09=09return ret;
-> > +
-> > +=09return regmap_set_bits(map, MT6323_AUXADC_CON22, BIT(channel));
+> /* Sashiko Automation: Issues Found (1 Findings) */
 >=20
-> I'm not sure whether the sashiko question on this is valid or not. Make s=
-ure to take
-> a look.
+> On Tue, 02 Jun 2026, Roman Vivchar via B4 Relay wrote:
 >=20
-> https://sashiko.dev/#/patchset/20260609-mt6323-adc-v2-0-aa93a22309f9%40pr=
-otonmail.com
-> You may have carefully selected the numbering so the channel numbering ma=
-tches
-> the bits in this register.  If so, it is probably worth a comment in the =
-header
-> to provide a cross reference.  No idea if Sashiko will notice that, but a=
-t least
-> humans should!
-
-The hardware is pretty weird, but dt-bindings have correct numbers.
-I have double checked with the vendor driver and the logic is the same.
-
-'If regmap_set_bits() fails to set MT6323_AUXADC_CON22, does this leave the
-AUXADC voltage buffer (VBUF) permanently enabled?' - if this happens,
-then there's something really wrong with PWRAP and disabling VBUF may
-not be possible. Same about the 'mt6323_auxadc_release' comment.
-
-...
-
-> > +=09case IIO_CHAN_INFO_RAW:
+> > From: Roman Vivchar <rva333@protonmail.com>
+> >
+> > The mt6323 PMIC includes an AUXADC. Register the AUXADC in the mt6323
+> > devices array to allow the corresponding driver to probe using compatib=
+le
+> > string.
+> >
+> > Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2n=
+d Generation)
+> > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> > ---
+> >  drivers/mfd/mt6397-core.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
+> > index 3e58d0764c7e..013b0857fb54 100644
+> > --- a/drivers/mfd/mt6397-core.c
+> > +++ b/drivers/mfd/mt6397-core.c
+> > @@ -125,6 +125,9 @@ static const struct resource mt6323_pwrc_resources[=
+] =3D {
+> >
+> >  static const struct mfd_cell mt6323_devs[] =3D {
+> >  =09{
+> > +=09=09.name =3D "mt6323-auxadc",
+> > +=09=09.of_compatible =3D "mediatek,mt6323-auxadc",
 >=20
-> What Andy suggested here is the preferred path in IIO at least.
-> Mainly because it reduced indent without hurting readability.
-> Just be careful to define the scope with { }
-
-Ack.
-
+> [Severity: High]
+> Does adding this compatible string expose an unhandled edge case in the
+> auxadc driver?
 >=20
+> If this device is instantiated directly from a Device Tree without an MFD
+> parent (e.g., at the DT root), dev->parent could be the platform bus
+> (which has a NULL parent) or NULL itself.
 >=20
-> > +=09=09scoped_guard(mutex, &auxadc->lock) {
-> > +=09=09=09ret =3D mt6323_auxadc_prepare_channel(auxadc);
-> > +=09=09=09if (ret)
-> > +=09=09=09=09return ret;
-> > +
-> > +=09=09=09ret =3D mt6323_auxadc_request(auxadc, chan->channel);
-> > +=09=09=09if (ret)
-> > +=09=09=09=09return ret;
-> > +
-> > +=09=09=09/* Hardware limitation: the AUXADC needs a delay to become re=
-ady. */
-> > +=09=09=09fsleep(300);
-> > +
-> > +=09=09=09ret =3D mt6323_auxadc_read(auxadc, chan, val);
-> > +
-> > +=09=09=09if (mt6323_auxadc_release(auxadc, chan->channel))
-> > +=09=09=09=09dev_err(&indio_dev->dev,
-> > +=09=09=09=09=09"failed to release channel %d\n", chan->channel);
-> > +
-> > +=09=09=09if (ret)
-> > +=09=09=09=09return ret;
-> > +=09=09}
-> > +=09=09return IIO_VAL_INT;
-> > +=09default:
-> > +=09=09return -EINVAL;
-> > +=09}
-> > +}
+> Looking at mt6323_auxadc_probe() in drivers/iio/adc/mt6323-auxadc.c:
 >=20
+>     regmap =3D dev_get_regmap(dev->parent->parent, NULL);
 >=20
+> Could blindly dereferencing dev->parent->parent here, or passing a NULL
+> device to dev_get_regmap() (which calls devres_find()), result in a
+> kernel oops if probed as a root node?
 
-After these changes, should I keep or drop Andy's Reviewed-by?
-
-[1]: https://lore.kernel.org/linux-iio/2df4cad5e29fbcb4c5c5f59ea0bf322c7a30=
-1bdc.camel@gmail.com/
+This is intended behavior, ADC always should be probed as a child of
+the mt6323 MFD because it doesn't have own MMIO space. Otherwise the
+devicetree is malformed. Recent mt6359 ADC driver has same thing with
+dev->parent->parent regmap.
 
 Best regards,
 Roman
