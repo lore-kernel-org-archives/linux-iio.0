@@ -1,137 +1,172 @@
-Received: from outbound8.mail.transip.nl (outbound8.mail.transip.nl [136.144.136.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16CFC3E3153;
-	Mon, 15 Jun 2026 11:12:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.8
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781521970; cv=none; b=Q6xjf1o5GIGdf81hViIwP4RkjxzfE3N5ItjRjQZT4Xai643C8ftX7EEQGJZI8aUGwSrPJT/Ao5pSfYNsxsCS+SGYs9pRBAqIbtmBCHvzXAvDgrt9zbfxtV6ourLpPWhFcSnJmVZh+sm6DL+55gJbzR82DdzBP8OaO1ArvjbrWiQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781521970; c=relaxed/simple;
-	bh=i1fJphGInHt+MH5vnYGByStkYCIbzrGiFpLXbuB18bI=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=PTkjxx0g46SmmPhMq0Qn+dvsrj67h+zd2a4lJ6mOPr04u4W72bnUVDDOd3TTkPNzyFBK7eyZDgU4TnO24/yPK0AVfdkQ9ZkFVlCACt6gGI6wiaBHe7RwJDGMUdB2CTT328SdhsAwkzVFqsJvF6F9v/rgIIphS/OggFnYTW+o2sU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=pqjz8gmU; arc=none smtp.client-ip=136.144.136.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BD603DA5B7
+	for <linux-iio@vger.kernel.org>; Mon, 15 Jun 2026 11:20:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781522429; cv=pass; b=otmIi+Rwfv72C9KrqHZup2dGzZ2THBIt9j1Pl9xJ4uceHt/bYMwEmozd+Qqb2zle4rf11JhynjRMDkZqte26hkQ1uzAsZ+96NrN7zKaVHbXHYC46qwgih9wBmvUHzXaD3IwoqI7pc6breh22psBcNzt57CENKjdU0Rzf+e4dL5Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781522429; c=relaxed/simple;
+	bh=6mqHKqlBvXA+4paxQcgIh7H4kij3XKYmw9YFuF/cKw8=;
+	h=From:References:MIME-Version:In-Reply-To:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mOfAP0yZO+SJRikRqrJ6/5iIIEZ3o+jWqE6mbLo4ZaKQzXBZ11aH8y15Qvfaj8tJwSDJWQHT+KMuvzGjU5Owgo9YIEcv1+6wlJnkC2ELoWh0RSZgn6Ri2QjdXOdzSqMQhZhWQDi/MjRoOhIpN3tJBIxYfh/BQQBFQ5jjoy6wAHQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=fz46ShLH; arc=pass smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="pqjz8gmU"
-Received: from submission15.mail.transip.nl (unknown [10.103.8.166])
-	by outbound8.mail.transip.nl (Postfix) with ESMTP id 4gf6sc0KN4zY76j3;
-	Mon, 15 Jun 2026 13:12:36 +0200 (CEST)
-Received: from transip.email (unknown [10.100.4.34])
-	by submission15.mail.transip.nl (Postfix) with ESMTPA id 4gf6sb2nl3z3R3nyj;
-	Mon, 15 Jun 2026 13:12:35 +0200 (CEST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="fz46ShLH"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-6930f7e83b1so5404863a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 15 Jun 2026 04:20:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781522424; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ExQPSGvEswHCAsZ268fiOmV7msmJ2jN7gabxw7YwX0+N11fgI9J1qd7mH4/twTp9GM
+         UJsP6b6pNJ3a85iGIZFS/D+RH7/4xop5bjhrsRefvo1idDK3SoKYp/wBMaCI3hMIX0M6
+         pMAqmCeEtlozgqqkm9mKF/VR8mLenZlZGtGcX2AZpt6okUm8Ok6i2r5+B5XTrjEUxXm/
+         GQhanjJ/C9LqQZVN8U2C+o4hEusJjhmNS8gxlTL9m/vsHOQNLu1HId2m9SXaXhHJdKeE
+         dm4rtRYfPSCVGMWXZZ06mS/tGB6Db+41tvK1G4kP3/1nPWibZOiEC7Op6M0dPXoOIK4j
+         PgjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :mail-followup-to:from:dkim-signature;
+        bh=6mqHKqlBvXA+4paxQcgIh7H4kij3XKYmw9YFuF/cKw8=;
+        fh=asBLdDbbDpiZcO1QngnUpyrgYyGJlnGmhqdsL2Bu4hI=;
+        b=PGQEg66LWwFTPKfTdM0M3bxQvOSxjl1W0XRDd8zMojgy4f8FsLnJdCHZIefCRQEs6l
+         Cl6eY7EI8ceYlihMnrFv4ywWCsG4jqq5IpQGR43FPhnI357bdo/DlTjeylnGJcR+BfWW
+         khEc4Qcb8WdgmbCfRrfHz4IKxWABg66MtX6Tqug4yRIAzn1D9zMFmTpbFj4uxc6ymuLT
+         hB+j+HTMNE6lPIBPx6pS9AJ/YGAwynBCMQARDlfTAySYyvA3rwaBdzfvKmyTWYqUCSFL
+         LtESDCApgGMjUWxhiur/VEuu5H5kf4WsJaLsYJNTQLWNxsGddDnDWck4U9akBhMQLSy6
+         OOOA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1781522424; x=1782127224; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :mail-followup-to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6mqHKqlBvXA+4paxQcgIh7H4kij3XKYmw9YFuF/cKw8=;
+        b=fz46ShLHelBOIcOXMaxrq2z8mNr4Z1uvUjkO0BHd4XhH9EH34r4KBRQVNd4PerjLSU
+         s8C03reZzS9zJ7F9DyecRjfBltY8XVP1WFA93piIw2jdqyMAI9oPbAo8dPVtfGunsKcJ
+         oGMiIjG1rfY2hikqaRBhmOcY2O/+aH4MNilzyINR0z2wdsWZxqsHPfFr2uKGat+BAght
+         zEzAomYpmGCjujlC2XeLN9veAJcmpojzHwoZ/UxWJU4jU69p++/9rqic4AriJJ8Og2P0
+         r4ud+jUrgWkd7gd4/AtZDzyRnLZyIdCS3CJX/d1Ib/0O2Aek3xbum6s6gbeDKCNnlt/O
+         3gSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781522424; x=1782127224;
+        h=cc:to:subject:message-id:date:in-reply-to:mime-version:references
+         :mail-followup-to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=6mqHKqlBvXA+4paxQcgIh7H4kij3XKYmw9YFuF/cKw8=;
+        b=hqqbZ9dMX6UpzYsB1ALyntYJIOhm+FPg0fdr1N8cW9jdfWU2BXBo3dwdbMAw5pl5nf
+         UtlfK8TION5rxRdMUQj+nnuDJiOJhj0TbldiW5SXteRVQGkjLVMO/QrB+98tmpQeUpwD
+         RkAmLfhHHHZEGJha5JyKSId4QU/B73a0Fg7gAHZQSdpqPaQiGI7ZTg3x3M4Qh+CeTv5q
+         J1207pPvkBGThNNMgBwEMV7nvpF2X9Mxu+y9FiMJwMSV32/qAHPzbf3cYM0oaaHHon6W
+         he9KU+otEtoSzILdLwK+QEEanSVaQJchiFtrb2JXFGuWUFs9vy8LUYOOvilztsh9B8cz
+         FSGQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9fV4laI96YDoZgZBfBtNpy0QVFfxW9UpxvE2y+pW3WBNC0uXNqnxlBWpAiq40gZ4s5FdltEvBSzlM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYZseRHffpl/3LfxZTlau1PcsENtsMeVA2KYwTJP01jChy9wlP
+	Bk8IJUSDo/W4u+aWQDiujvuiSaL6XGPgDUA3WVULVOxUMyJPyU1O39ETDD6RdupQQUlv0CrDjM8
+	tkOZ/XMTBEDciSGKzOii9LmV3Ltwy0FFNa4qBS/YDvQ==
+X-Gm-Gg: Acq92OEKmsCxHoSVkAxat/V12WpCfvEM4F4r1nostzj4V8sOgu7ClfyLER8TGKkT75F
+	juk3MZRlRMcLORnuONbH1yIqN27mNCE+gwwTQS5tf/Aq2JYaxbFqF5v/LEpSJFV6+SHl/iJRKLk
+	mlOiT0lzALITvcUdAX3xNwahqdpxSgcvaLL0cYmh2lLO4Qg6hF40BQ7y6RjirErXMvgNOBOgVbi
+	928ieKwuEx8zpVuCMQMAQ3SuTDI2EcpZ3KayMX2u4szYs3/3vvdII7C1P/1xa1W4bK/aWVSy4rY
+	dV+727/em6nKhtCatO6PfE69JM/jcDSmKZ4m
+X-Received: by 2002:a17:907:7342:b0:bf2:6d61:3268 with SMTP id
+ a640c23a62f3a-bfe2a713a05mr372243766b.23.1781522424173; Mon, 15 Jun 2026
+ 04:20:24 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 15 Jun 2026 20:20:21 +0900
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 15 Jun 2026 20:20:21 +0900
+From: Angelo Dureghello <adureghello@baylibre.com>
+Mail-Followup-To: Jonathan Cameron <jic23@kernel.org>, 
+	Angelo Dureghello <adureghello@baylibre.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+	linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney@redhat.com>
+References: <20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com>
+ <20260610-wip-stmark2-dac-v5-9-b76b83366d5c@baylibre.com> <20260611114800.009d9797@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 15 Jun 2026 13:12:35 +0200
-From: me@herrie.org
+In-Reply-To: <20260611114800.009d9797@jic23-huawei>
+Date: Mon, 15 Jun 2026 20:20:21 +0900
+X-Gm-Features: AVVi8CcVAgC1MKZdgPIabfG_bEsJqD-RTAVk9pERfc6y7h_8h9norD6F9V9jiEU
+Message-ID: <CALSJ-wC9Rsq6WJ_=X87R74jPrg2Y+=L8m0wRRp=1zvN5vSOw6A@mail.gmail.com>
+Subject: Re: [PATCH v5 09/10] iio: dac: add mcf54415 DAC
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Herman van Hazendonk <github.com@herrie.org>, linusw@kernel.org,
- denis.ciocca@st.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, sanjayembeddedse@gmail.com, maudspierings@gocontroll.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: common: st_sensors: honour channel endianness in
- read_axis_data
-Reply-To: github.com@herrie.org
-Mail-Reply-To: github.com@herrie.org
-In-Reply-To: <20260614193908.522272ed@jic23-huawei>
-References: <cover.1780652883.git.github.com@herrie.org>
- <0dac8e8e2872dc180b138923b5cd4fd18eee047b.1780652883.git.github.com@herrie.org>
- <20260614193908.522272ed@jic23-huawei>
-User-Agent: Webmail
-Message-ID: <7a4f25be10eae7c22125863a2523f435@herrie.org>
-X-Sender: me@herrie.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: ClueGetter at submission15.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1781521955; h=from:reply-to:subject:to:
- cc:references:in-reply-to:date:mime-version:content-type;
- bh=mGJ7Z6B3aU7tj5WDPKIkd1Iu5EsLo/qlOIAj54yFA7c=;
- b=pqjz8gmUMMeg9l3q3+K6SDEuW4aNABMp3Nz66ahoWw5ju7E9ZaNpnbq34VPAnKYuWRiiwM
- nMEyXcCQ6JXsMLmLQmy9lr80RFtmcCR2bqzowwjhqZUs1SIyCUZMY6ncgwZrxawW6NWGfm
- IbLWrOeK78pPQNwZSg4VJs730hzzJZzaawUW7NJcV/S+abkFc01Vgt5Ys38/R2JHSqVc48
- p+qyn0L/ikixyqvhMzw5RyYx7AdgC1IDKizfsq8AhDlGHO2VuOkFZ2TnJz8BIkvzpfaA4o
- ZocIA2lx8oWmpUvYZcZKxVtlPF1Gq5mwgKJ9vIpzjXSZHHd+22Zdz0IC0BMZLw==
-X-Report-Abuse-To: abuse@transip.nl
+Cc: Angelo Dureghello <adureghello@baylibre.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Geert Uytterhoeven <geert@linux-m68k.org>, Steven King <sfking@fdwdc.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org, 
+	linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2026-06-14 20:39, Jonathan Cameron wrote:
-> On Fri,  5 Jun 2026 12:08:41 +0200
-> Herman van Hazendonk <github.com@herrie.org> wrote:
-> 
->> st_sensors_read_axis_data() unconditionally decoded multi-byte
->> results with get_unaligned_le16() / get_unaligned_le24() regardless
->> of the channel's declared scan_type.endianness.
->> 
->> For every ST sensor that has used this helper since it was introduced
->> this happened to be fine because the ST IMU/accel/gyro/pressure
->> families publish their data registers as little-endian and the
->> channel specs in those drivers declare IIO_LE accordingly.
->> 
->> The LSM303DLH magnetometer however publishes its X/Y/Z output as a
->> pair of big-endian bytes (the H register sits at the lower address,
->> 0x03/0x05/0x07, and the L register immediately after), and its
->> channel specs in st_magn_core.c correctly declare IIO_BE -- but
->> read_axis_data() ignored that and decoded as little-endian, swapping
->> the high and low bytes of every magnetometer sample.
->> 
->> The bug is most visible on a stationary chip: in earth's field the
->> true X reading is small and the high byte sits at 0x00, so swapping
->> the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
->> = 240). Y and Z still appear "to vary" because their magnitudes are
->> larger and the noise in the low byte produces big swings in the
->> swapped high byte:
->> 
->>   before (chip flat, sysfs in_magn_*_raw):
->>       X=240 (stuck), Y= 12032..23296, Z=-16128..-9728
->> 
->>   after (direct i2c-dev big-endian decode, same chip same 
->> orientation):
->>       X≈-4096, Y≈210, Z≈80     (sensible values reflecting earth's
->>                                 ambient field at low gauss range)
->> 
->> Fix read_axis_data() to dispatch on ch->scan_type.endianness and
->> call get_unaligned_be16() / get_unaligned_be24() when the channel
->> declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
->> st_pressure, st_lsm6dsx and others) are unaffected because their
->> channel specs already declare IIO_LE and the LE path is unchanged.
->> 
-> Hi Herman,
-> 
-> Fixes tag please.   We want to know how far to backport and provide
-> info to those trying to work out if the bug affects their kernel
-> trees.
-> 
-> Thanks
-> 
-> Jonathan
-> 
->> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
 Hi Jonathan,
 
-I've been working with the HP TouchPad which uses the Qualcomm APQ8060 
-to bring this to mainline kernel, which was running a very ancient 
-2.6.35 kernel where I could compare things since it was working there 
-without issues, hence I could compare them side by side, check values 
-etc.
+On Thu, Jun 11, 2026 at 11:48:00AM +0100, Jonathan Cameron wrote:
+> On Wed, 10 Jun 2026 22:35:14 +0200
+> Angelo Dureghello <adureghello@baylibre.com> wrote:
+>
+> > From: Angelo Dureghello <adureghello@baylibre.com>
+> >
+> > Add basic version of mcf54415 DAC driver. DAC is embedded in the SoC and
+> > DAC configuration registers are mapped in the internal IO address space.
+> >
+> > The DAC accepts a 12-bit digital signal and creates a monotonic 12-bit
+> > analog output varying from DAC_VREFL to DAC_VREFH. The DAC module
+> > consists of a conversion unit, an output amplifier, and the associated
+> > digital control blocks. Default register values for DAC_VREFL and DAC_VREFH
+> > are respectively 0 and 0xfff, left untouched in this initial version.
+> >
+> > This initial version of the driver is minimalistic, "output raw" only, to
+> > be extended in the future. DMA and external sync are disabled, default mode
+> > is high speed, default format is right-justified 12-bit on 16-bit word.
+> >
+> > Signed-off-by: Angelo Dureghello <adureghello@baylibre.com>
+> I'm lazy so didn't check earlier versions but assume the two bits
+> of feedback from Sashiko are false positives:
+> https://sashiko.dev/#/patchset/20260610-wip-stmark2-dac-v5-0-b76b83366d5c%40baylibre.com
+>
+> The one about clock underflow if resume fails, and then devm cleanup happens later
+> is a bit nasty.
+>
+> I did a bit of digging and maybe it is better to just leave the clock on?
+> The status dev.power.is_suspended is set to false whether or not resume succeeded
+> and I believe a following suspend will not take into account that resume failed.
+>
+> I'm not set up to poke the combinations but it might be worth trying that.
+> +CC common clk people who may immediately know what the right answer is.
+>
 
-It seems this "bug" was introduced with 3.9:
+was about testing this, there are no bus faults on read/write of registers
+with clock disabled, nor warnings in dmesg on double disable.
 
-Fixes: 23491b513bcd ("iio:common: Add STMicroelectronics common 
-library")
+Anyway, i see now from arch Kconfig that is not possible to have CONFIG_PM
+for this specifig CPU (with MMU, PM is force-disabled), so would remove pm_ops.
+Ok ?
 
-That's the commit that introduced st_sensors_read_axis_data() with the 
-unconditional get_unaligned_le16() decode.
+Will fix all other things you pointyed out in v6.
 
-I'll include that for the v2.
+> Otherwise just a few minor style comments inline.
+>
+> Thanks,
+>
+> Jonathan
+>
 
-Thanks,
-Herman
+thanks,
+regards,
+angelo
