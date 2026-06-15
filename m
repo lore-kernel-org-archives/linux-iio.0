@@ -1,100 +1,101 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E791B36AB7C;
-	Mon, 15 Jun 2026 09:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097603DB62E;
+	Mon, 15 Jun 2026 09:57:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781515339; cv=none; b=LgooIAj6Ww1WVW7MdtxYzWs8V2blqf3Fy1TaN1W48L+ZUGchJNeMSa1BGjlQro1V0Aa56+/uLSnT1z9LeF4ni6+5KPo1qTlyirXhOQBZtA42/cmmrNxy9lpuLWVB8hCrF9ca67RuWT6J6D1v1uX86CThWE0Ur29LjGZqPJtWvAM=
+	t=1781517448; cv=none; b=RYnkCQEuUMrE0NCewetIcWdNmrtc+51/dwh6Tpkh0nlyKijjJHP2eTOTzdPuZ3a/FkQbor6EwG0jSmlyahJkuEPzbooPVyS45ojbVUVcTVdgV1p5OOQYdFvAc8Ga+0XhxkqQKrPHVfRLE6sGg2KzK5TJJq5TPTJFOQXIWHz9eTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781515339; c=relaxed/simple;
-	bh=2B+f/otx+dF724Cm0W3m3qHgqodJciFDXkzHJbQH4AI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=KscEDdvGpCOZpQSOrAdVGe854thQtmiAPT1dn0jdeVec8DhB1phiA69ihGDlgyiLKQZktNam7xcgnf7dMKMwp/lSbwfUITciZ/25BhxhzitBzFmZUOtVUmlQu69LzpGTP2czSMrt8x52K4S6VLMiCB2gaSQsvZ2rDz1ruUQZwX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=dYRtCbSf; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1781517448; c=relaxed/simple;
+	bh=udTSSnKrhXMOY6CeQUkrdu3X/stsvprBhVZx6Ma23kw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mM6ZOymgpMKlZixIKNsbF+JHfiHvuERBMv36EhyBUJVkOzCBEwlh0fyWsRWm0jCBvdiGnfV91xShCht+EDiESzBJvaKJOkgFJ2vC71aAkOFDieOp9cWiFtOxjqeFPxEaskvlbFgJoaXuoCjjraq2LUsBi28XFVPHjduaBCxNE9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kmDPN3aA; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="dYRtCbSf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=T4
-	Sg98Uq7LX9gU82QE2rAw62hWaPbz/t3iE3+6piGcE=; b=dYRtCbSfq/+By8G56t
-	SDGOW5Hd4fXg/dxX/h6Ce5V7hxKLRTYH50KgiiKqV7+Ow4DWZpMp4vERkQ4R36jU
-	5IxKcWpgF3r+YQY7n5d1QU09s1n5XrPT3d5mG2dqLSXA1qAsApOqlaPnLPiyL4Az
-	anT8u5Ks9vQ/VnOEBn/h5f0G0=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wAH9nIOxC9qK8oVDg--.37443S2;
-	Mon, 15 Jun 2026 17:21:20 +0800 (CST)
-From: Miao Li <limiao870622@163.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	bigeasy@linutronix.de,
-	dixitparmar19@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	limiao870622@163.com,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kmDPN3aA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781517446; x=1813053446;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=udTSSnKrhXMOY6CeQUkrdu3X/stsvprBhVZx6Ma23kw=;
+  b=kmDPN3aAQTYzn5nBwiCVLWJEmziHK487F0S5C+usQdXe+PsmJMsGwupD
+   l1yHVChdoJ/zi0Lj0xbgZl34RIkaeGmPOarxLQ1fUH31Qel/uey0FucLS
+   VTAJG3aefHdCyfNa73uuMNshzABf3JVLU3l48mH8VxLwpjRvQNMgcPiec
+   R12/f2kpv2GIzdwbsdifJIwWwrwrjzX7g8odShQkpA7m5EsIaIuV9/c/L
+   1Id2N0mADLZxQg3nxhcbgH1KRSU7bPm1wWMg7P6tbaJcOepZrJ9xGnytX
+   bmFTVAJ2jFD1iqYItac1gvCl6XceQ8XbE31kgXyd7Ui6qiC0aLRj217ed
+   w==;
+X-CSE-ConnectionGUID: wlhXrygwTsK8pNr404dDGw==
+X-CSE-MsgGUID: XyGmrsQMRGS6KPCGxdwXlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11817"; a="92925999"
+X-IronPort-AV: E=Sophos;i="6.24,206,1774335600"; 
+   d="scan'208";a="92925999"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2026 02:57:25 -0700
+X-CSE-ConnectionGUID: 101coR5BSYuI0eYY1pGqyw==
+X-CSE-MsgGUID: L1kBRlRbQ36Z5ndKWnHEAg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,206,1774335600"; 
+   d="scan'208";a="251705290"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2026 02:57:22 -0700
+Date: Mon, 15 Jun 2026 12:57:20 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Miao Li <limiao870622@163.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, bigeasy@linutronix.de, dixitparmar19@gmail.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Miao Li <limiao@kylinos.cn>
-Subject: [PATCH v2] iio: accel: stk8ba50: Update includes to match IWYU
-Date: Mon, 15 Jun 2026 17:21:16 +0800
-Message-Id: <20260615092116.83850-1-limiao870622@163.com>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: [PATCH v2] iio: accel: stk8ba50: Update includes to match IWYU
+Message-ID: <ai_MgM_5WGs2y8FC@ashevche-desk.local>
+References: <20260615092116.83850-1-limiao870622@163.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wAH9nIOxC9qK8oVDg--.37443S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZF13Kr17Cry7CFWfuryxAFb_yoW8Gr1rpF
-	4DCF4kGrsrtw18GFn7uF1avFy5Xan8Gr17Jry2ga4jyrZxtr1qg39Y9Fnaqr1DArZrKay5
-	WFy3Krs8urW5ZrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pisqXdUUUUU=
-X-CM-SenderInfo: 5olpxtbryxiliss6il2tof0z/xtbC8BGbaWovxBGdOAAA3m
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260615092116.83850-1-limiao870622@163.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Miao Li <limiao@kylinos.cn>
+On Mon, Jun 15, 2026 at 05:21:16PM +0800, Miao Li wrote:
+> From: Miao Li <limiao@kylinos.cn>
+> 
+> Update the list of included headers in stk8ba50.c using
+> Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
+> and add missing headers such as array_size.h, bits.h,
+> dev_printk.h, etc.
 
-Update the list of included headers in stk8ba50.c using
-Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
-and add missing headers such as array_size.h, bits.h,
-dev_printk.h, etc.
+...
 
-Changes in v2:
-- Drop linux/iio/types.h as it is already included by linux/iio/iio.h
-- Link to v1: 
-  https://lore.kernel.org/all/20260603015033.187735-1-limiao870622@163.com/
+> Changes in v2:
+> - Drop linux/iio/types.h as it is already included by linux/iio/iio.h
+> - Link to v1: 
+>   https://lore.kernel.org/all/20260603015033.187735-1-limiao870622@163.com/
 
-Signed-off-by: Miao Li <limiao@kylinos.cn>
----
- drivers/iio/accel/stk8ba50.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Put the changelog in the corresponding place...
 
-diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-index a9ff2a273fe1..6a60c0fcebe9 100644
---- a/drivers/iio/accel/stk8ba50.c
-+++ b/drivers/iio/accel/stk8ba50.c
-@@ -7,12 +7,19 @@
-  * STK8BA50 7-bit I2C address: 0x18.
-  */
- 
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/dev_printk.h>
-+#include <linux/errno.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
--#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/sysfs.h>
- #include <linux/types.h>
-+
- #include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+> Signed-off-by: Miao Li <limiao@kylinos.cn>
+> ---
+
+...id est somewhere here. (Basically after '---' cutter line.)
+
+>  drivers/iio/accel/stk8ba50.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+
+Code wise looks good to me, feel free to add
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+after addressing the above issue in the commit message.
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
