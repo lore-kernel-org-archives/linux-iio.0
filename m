@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9E2246782;
-	Mon, 15 Jun 2026 04:30:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F240025F7A9;
+	Mon, 15 Jun 2026 04:33:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781497837; cv=none; b=Relu5A67bSF1FdAsZazjP8yYYSLtDpNM0u2+Zevqcpi9rzbz7DzAx7VGwaa875UC1b0a1V2K2ypbcUN/adBT5/6M+xUt95HVnJjfw20tvO1PM7Ec17JbDP7G1jlVuywMqqnvzM7Wm5m3RogTnru2t6t1DBj2Gl82s3S1nVGRJIA=
+	t=1781497988; cv=none; b=q6K937s1gXXgwXel94kKSISbz+M9O6kpKoZEQvLa03QWgkpDI2vGYFW7kqhA8u0l1/dWOSTD/xcKsXwdiuQnVCwOp+dH9UV1syxOwSK+8FdvrKtEwaOkV/lBB/TbSzbzda25RCHaGDU7U1wkwqJxR6PxGGU6lp6aQWIy2uBIvsY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781497837; c=relaxed/simple;
-	bh=ewGf8oIzKXQ3ZBVFpQYznhFWEZrzEE/ebiL+LGv6YUE=;
+	s=arc-20240116; t=1781497988; c=relaxed/simple;
+	bh=P3zSckp5h+c44Cd8qDORRvZEvrslvL+AnavpACqEy34=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HZiSga9ohDLQ7mo7T706wJ3yRsj91D+PD8hJT+tLN6NAYUr3GONoaPpMfbyjd3se+K+z+jMz127+qvtN9bkOiyW5ThoPzn+IIs3K+ogKToeATH0ZcHgzoijnGPKHCrdRixxMXbqgW7GQSDPHq3o/aZKiPf3XPDh131zLO6eUDCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jyJuHP1d; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=ScuT6RfermgmOpxOfxr3soxD25wh5oKGyjFP1sAuR+gHsEjE4Dp8qleWCjAmRyQ/y81yrqyAlFAKSj3PBuU0c8lggu2bmbdnbI044MbdKDFYQ/2FkddJpPP/rd+0H3PE1YPJWrUR0YZ/KvGUEPhWf4MJEHtTO4tMeHTnelgw01o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n2SHkEin; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jyJuHP1d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772711F00A3F;
-	Mon, 15 Jun 2026 04:30:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n2SHkEin"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C4801F000E9;
+	Mon, 15 Jun 2026 04:33:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781497836;
-	bh=jCOpBnN2WN+1gnLJFareRT3Ws8bdVxpn1CVCHXYIgCc=;
+	s=k20260515; t=1781497987;
+	bh=2K0ZyeO5lKCHZiIJsQJRuxND50txb5KnZhkTjhYsL5Y=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=jyJuHP1dayYAcHJGXmtLR2Gle71m6G5i0dN4os6GwZKWjIRABoiW/1k2nHZizLteF
-	 2Jvkbx8f/7ZukGNEmjMngZiYPGKKVtdxOjeCaXpV40Xe5UiCJSuiNcqbwkJPAIRw2v
-	 +jHEtI2YUSBjqsxSQccUIiRbKP/67w8apUsVfcMZnBUuOu0GmR76xIJz5NcyHiAprm
-	 Y4q3I68gBkDSmcEACK8uFgtRlnvv4bdBfzwDIB0FtS49kzzA1/2A+HsrGC3MP4rZde
-	 5cPq5QujBS54GKlZGMAnvPtHEGf2294jcjJsCRcQ+/dRt5YSfyFq2G+7lgywDaYbXg
-	 H4gwkUlpwwxWg==
-Message-ID: <a994993e-7459-48a2-a8d7-823c1b0c9545@kernel.org>
-Date: Mon, 15 Jun 2026 06:30:28 +0200
+	b=n2SHkEinxB46GtyrXTE2pkV3/WM5DFjIBH1keEY6PlU1ftfvIeeUrxF2jH4tT9PXV
+	 dExiFRdfC9LPVKKC4/YrdpIJFrlxsnzs3Bk0OYpoGNoKI/985U0fi8Fpx7vR6WWf0O
+	 b7PCFVw8hClR27DsJzrBKg28QzXIyddJroIW0O7UeWY08RTLCiyvN7W6LTBjG6pwHo
+	 lDgAre/FT4Q0T1CydX00FbHl9QYFXgjZnxFAGO5k9swwU9DMmsRndeRcAyG6pLrx/a
+	 eR6hIHPckajisatZ2HUKIC/KTuyLbTjhIHZrhWDpHh7MitmoJtZvslJmIOKGvuijCT
+	 kEAEJ2U9KNYtw==
+Message-ID: <08a9a68a-f0f3-45eb-b018-43007a0acfdf@kernel.org>
+Date: Mon, 15 Jun 2026 06:33:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -36,8 +36,8 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
-To: Kurt Borja <kuurtb@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
  Bartosz Golaszewski <brgl@kernel.org>, David Lechner
@@ -48,7 +48,7 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
  <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
  <20260613-sparkling-naughty-tuna-3e9bf1@quoll>
- <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
+ <20260614143918.35503c5a@jic23-huawei>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,33 +94,38 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
+In-Reply-To: <20260614143918.35503c5a@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 14/06/2026 22:56, Kurt Borja wrote:
-> On Sat Jun 13, 2026 at 1:59 PM -05, Krzysztof Kozlowski wrote:
+On 14/06/2026 15:39, Jonathan Cameron wrote:
 > 
-> [...]
-> 
->> Functions used by probe() should be before probe(), not somewhere in the
->> middle of the code. IOW, entire probe is together.
-> 
-> I they all are, it's just that regmap stuff takes a huge chunk. I'll
-> check how to reorganize.
-> 
-> [...]
-> 
+>>> +
+>>> +DEFINE_RUNTIME_DEV_PM_OPS(ads1262_runtime_pm, ads1262_runtime_suspend,
+>>> +			  ads1262_runtime_resume, NULL);
+>>> +
 >>> +static const struct of_device_id ads1262_of_match[] = {
 >>> +	{ .compatible = "ti,ads1262" },
->>> +	{ .compatible = "ti,ads1263" },
+>>> +	{ .compatible = "ti,ads1263" },  
 >>
 >> So devices are fully compatible? Then it should be expressed in the
 >> binding and drop one entry here.
 > 
-> Not fully compatible as Jonathan said. One is a subset of the other.
+> They aren't. It's relying on one of them having a subnode that spins up an
 
-This is THE meaning of compatible!
+I don't  see anything in the this patch that would be using the other
+compatible, so driver looks like handling it fully compatible.
+
+
+
+> auxdev for the hardware block they don't share.  A fallback would be fine
+
+Patch #5 adding auxdev still does it uncoditionally, thus driver
+clearly treats them as 100% compatible.
+
+Or I missed piece of code - please point me where is any incompatible
+behavior coded.
+
 
 
 Best regards,
