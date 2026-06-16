@@ -1,187 +1,228 @@
-Received: from outbound7.mail.transip.nl (outbound7.mail.transip.nl [136.144.136.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB4F3644A2;
-	Tue, 16 Jun 2026 13:02:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BD13644A2
+	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 13:07:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781614942; cv=none; b=mfQ02ARJrkyvZk8MDOMZqzuSjOXo3Sy34KM/KbBq80LEoy4hcIluOEjDxfqSAgzPVJ5VBFqIgbCPkQNcrcUBzbzx29eZiuXDdN0uGF0UUz6VPHCQm5wWAhOHRz5ieyFzFj736Ditug5yIwpSzBRu58bvvRx06TaEvlvqxmKu1Rw=
+	t=1781615233; cv=none; b=tH5SvIleISWLgvbuXJVW8uzI0NGMdH9XS5Q1bo0+1Th2dKjJqeG7lDHS/slByjv4BKWrtU9WE9jS8FTn9qmhuv8igp5czUs6TNAtvBMQbYytj/TAEfo1pks3hctU8wbNTwf6Jn+fZJPlWHHVUZJeM5+z7quwzuN9KxzOwXkYRMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781614942; c=relaxed/simple;
-	bh=ptFCoVl4ejPQq6L4t3OjIwSPGRB4OMjQlhaTVIC6B98=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PZ+BtFjJDrtbOP4EpJVacZ+ndTfpGWUwwhEmAO8j12qOGtmb0x5Y8DVEq2qBhV81x0vDF1jZa9rkAeXHIIIUloTVhstkuYZc7L+70K+1MHWxPFPx4jUAy9v3oUIjf+gIXUwaSt/ZuGWmXE46nkwvV2w/HvOUZpD6Jjj2LNBeZmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=stD0q1WY; arc=none smtp.client-ip=136.144.136.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	s=arc-20240116; t=1781615233; c=relaxed/simple;
+	bh=VypmrAivzn5922wpb53YtlgIG9kmZNcmnIIjDM/FuVw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Rzlhs0jECkrd1ea2fDOgXgBUa6rVZ5q2bbZMd4uuXW8dTpZtBUA+wFzSNKoKjr2+Y4dxW3r9SVAPLFo94BI+v6xcQl9kMcAJ9rRsIKYz/skL29/WTBIS75QaG7mxT9szb+lxd+Lo2y2nfP5NULymkW1QTIIrYJf0YjEhRwjHPGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rRnI4s3+; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="stD0q1WY"
-Received: from submission12.mail.transip.nl (unknown [10.103.8.163])
-	by outbound7.mail.transip.nl (Postfix) with ESMTP id 4gfnFY08WVzQvxwW;
-	Tue, 16 Jun 2026 15:02:09 +0200 (CEST)
-Received: from [127.0.1.1] (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission12.mail.transip.nl (Postfix) with ESMTPA id 4gfnFX1Qrpz3SJ37Q;
-	Tue, 16 Jun 2026 15:02:08 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-Date: Tue, 16 Jun 2026 15:02:06 +0200
-Subject: [PATCH v2 3/3] iio: magnetometer: st_magn: honour
- st,fullscale-milligauss DT property
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rRnI4s3+"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2bf2e8ccca1so28344855ad.0
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 06:07:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781615231; x=1782220031; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q7f1le5tzm5fRbVe0E9jP8qxNwgcJ6Pf+ghXkipVpu4=;
+        b=rRnI4s3+ieXhYvRZCCyb35j4zU89YWhVEAa7DvwZiHvufi4R9eItwk7gkksalTlCIk
+         NKpKoJ334Yy5sWkt1nOxgN4wQrMD69dBDNELQ/0GW9FPZOx2p46csd/zhSaHAW4yQf08
+         SDVsyMzpCswhWFVATrZFHNgWy+7XXwWSwWrZv8+rS1VDuDGAcXZfQAQjy3sv9Rz+rpa8
+         FiLu1VZIMZKzASoWeEgTQmaL4LJ+Fedhw8t/vwtOFfCmFsP5i3DHXaKpbBNIfl3GuHGg
+         XAlGoUkumVEaQZMFy4zsrNxAIDEZz4hpugo1w0x1OtxsxjmptdSRWmVM7B42Ss1x+ocb
+         bVTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781615231; x=1782220031;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q7f1le5tzm5fRbVe0E9jP8qxNwgcJ6Pf+ghXkipVpu4=;
+        b=Lfgk388GS3lYynodw0ubQqjAeIbubU1WmKUjm1K+zl+xVw2Ta3GGsZCQsNqm214cbg
+         kAF7QpF+ljGmkq3RyEAfnL6hMwfEvs7iviMOA1D1lUS8xQ1/X7HSqXCmK9Z3z5piKk4i
+         fCeaN4ojMOgEMU1hceuPC3kSMYZqrvJ74HkWSG+VXkuyk3iD7u+viwRGWXuaRJLXu0l+
+         WSUv/ru6d9rDHk+FMhMQRRqbhRABnApd/EXUd5tOZWRh0ZMnjtr49x26qcSKWJEtJfR7
+         RUjlYg0triLQzvGdytzIDuja7Vlqbo8DMqC9tzJesgsnwB4zSuOR2fAGDk/lWCjonHz/
+         zC6w==
+X-Forwarded-Encrypted: i=1; AFNElJ9hqsqw84OA9Y7jtzAq1VZqqEjlG1qQNQ1rE88zCwR+htpGucVUwWH7nAMO+jYWKusgassuJ36Ovj8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx8LSs4kZUSlbAzPyppBEz6w1pFhV1gwwE617jGca3ZJQ6k6dRX
+	uKrraOuoH34c2u7FbNs2f0SCenY71CpIgimyenMOtF9LqO6AGDAeLCkUJT/tlbDghUr0Wd2G
+X-Gm-Gg: Acq92OEAoar6M6e9pRqHrfpWXVaL43V0uOykeOycN/oxL9vDnrj8V5aoUizrJsjzpbo
+	ifxtZD4o5P1jM2X+QWLpOlnlkcQwZnzEEAZZcJ0yhmYtFL1Sb2eFaZjWZZxprevRrXnJarHdDv5
+	PHeun2DXvplmBRIKpegSIYR5zoII8xulU6PsIzokhjUp4S7jdXHUwvJC1/qjjVpRYneVMOzYtdE
+	4NobTU7CEsLupYJf2eeo/t4FX7Teuo/ck5hg0rdp6Ss5kc6YGYktp1ifFzNgmxvOFHgpXAYrE74
+	iqhEyFdAtTNTSsxZpnL3PLByU+gshN+zonnypox0RK/GvRPxKwSzsUsmbPOKklqfzv+4Phr1wuF
+	AA1pR5c4s03rw7W3aSr7WC5PsqJdgMtKg8HpAf5pUk0jls3DYqZa0n8vx21oxgPDQqLzhp5l2nf
+	7OIx8vJ1iiteQEyHuDWCDH/OW79/hvkZHPSTtt88fc9cW39PG35kg+ACscVQcWeW7u5cenyF4gC
+	omstL89eX+ahQ==
+X-Received: by 2002:a17:903:1a87:b0:2c0:d9b7:b7b0 with SMTP id d9443c01a7336-2c69a1b8a67mr38225485ad.31.1781615231338;
+        Tue, 16 Jun 2026 06:07:11 -0700 (PDT)
+Received: from thorfinn ([223.185.61.3])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c6a403b242sm14942915ad.31.2026.06.16.06.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2026 06:07:10 -0700 (PDT)
+From: Prashant Rahul <prashantrahul23@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Shuah Khan <shuahkhan@gmail.com>,
+	Prashant Rahul <prashantrahul23@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Dixit Parmar <dixitparmar19@gmail.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: ti-adc*: use dev_err_probe for probe time errors
+Date: Tue, 16 Jun 2026 18:35:43 +0530
+Message-ID: <20260616130612.73122-1-prashantrahul23@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
-References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
- Denis Ciocca <denis.ciocca@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Denis Ciocca <denis.ciocca@st.com>, 
- Linus Walleij <linusw@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- llvm@lists.linux.dev, devicetree@vger.kernel.org, 
- Herman van Hazendonk <github.com@herrie.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781614923; l=4762;
- i=github.com@herrie.org; s=20240417; h=from:subject:message-id;
- bh=ptFCoVl4ejPQq6L4t3OjIwSPGRB4OMjQlhaTVIC6B98=;
- b=nsmHBF4qPcS6fWpU4qhjDeRybgbXWZTf8rrNPKTaeVu4nPQ1Puhoyx6JWvWFYIKNKBj5NfiwK
- oF6vgd/TsUSB5vvBuFD6bCODUShiEf54RQX1aUA7JVhPYuAxn3cy/0Q
-X-Developer-Key: i=github.com@herrie.org; a=ed25519;
- pk=YYxdq8fb5O9vhkW3n2dCH044FPZZO5718v/du7fRhFw=
-X-Scanned-By: ClueGetter at submission12.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1781614928; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version:content-type;
- bh=X+nCpIryhHub4FcQjDYfT4e8eh2iGorvyop023rL09I=;
- b=stD0q1WYODJbp98Nn08n1Jnf+vCkO7w+K4rFGAe6NtQUEO6VpZkQhDt9mrKF1FwZL561zR
- jD76ALv1lvYA871V2qK5PRXJh6Nm1uuwYkR+npWzJljR16i8K+h1F9DomoyOojPva+Serx
- mxYJpFyf8iMj8pYCW4TprNqpuctf9ztsRAbopPqql4tSyfzrw4b2oLHRjaPo7qWLkFJt3S
- bTWtKT26LYP6HyahjBkNkS+L2xoD+bpXfQdZBhSdN/VUY1MxnoZnnwSuhWOl3lnn7D1DIx
- rz0aToPacdiBCt9oz7uGm7yZLqlO9PNJR+TKIuCiiciajG8LJMBpkDO6+DQtsw==
-X-Report-Abuse-To: abuse@transip.nl
+Content-Transfer-Encoding: 8bit
 
-The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
-highest-sensitivity full-scale supported by the chip -- as the
-starting range. For the LSM303DLH that is +/-1.3 G; for the
-LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
+This simplifies error handling and ensures consistent error reporting.
+Also add missing error messages in a few probe paths where failures were
+previously returned without any diagnostics.
 
-That is the right default for "minimal noise floor at a desk", but
-it leaves no margin for boards that pick up appreciable DC bias from
-nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
-LSM303DLH magnetometer is mounted close enough to the surrounding
-power planes that X reads back as the chip's 0xF000 overflow
-sentinel (== -4096 raw, the value the chip publishes when the ADC
-saturates) on every sample at the chip-default range, while Y and Z
-fall well within the +/-1.3 G window.
-
-Parse the st,fullscale-milligauss device-tree property (documented
-separately in dt-bindings/iio/st,st-sensors.yaml) in the
-magnetometer common probe to select the initial fs_avl entry by its
-mg value. The DT binding pins the accepted value set per compatible
-via allOf/if-then enum clauses, so a malformed mg value fails
-dt_binding_check rather than reaching the driver. Sensors with a
-fixed full-scale (fs.addr == 0: LSM303AGR, LIS2MDL, IIS2MDC) have no
-register to switch and the property is rejected outright for them
-in the binding; the parse block is additionally gated on fs.addr as
-defence in depth against stale DTBs.
-
-Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
-LSM303DLH and LSM303DLHC/DLM the valid values are 1300, 1900, 2500,
-4000, 4700, 5600 and 8100; for LIS3MDL, LSM9DS1-magn and LSM303C-magn
-they are 4000, 8000, 12000, 16000.
-
-Empirical scale sweep on the HP TouchPad confirmed that on this
-board any fs_avl >= 1 produces non-saturated X readings:
-
-    scale (0.001 G/LSB)  | X raw    Y raw    Z raw
-    --------------------+-------------------------------
-            1.100        | -4096    44       46    (X saturated)
-            0.855        |  -547    37       37    (clean)
-            0.670        |  -433    94      103    (clean)
-            0.450        |  -266    44       71    (clean)
-            0.400        |  -235    34       65    (clean)
-            0.330        |  -196    27       56    (clean)
-            0.230        |  -145    15       40    (clean)
-
-2500 mg is the natural choice for tenderloin: comfortably outside
-the saturation regime while keeping useful precision for compass
-applications.
-
-Assisted-by: Claude:claude-opus-4-7 sparse smatch clang-analyzer coccinelle checkpatch
-Assisted-by: Sashiko:claude-opus-4-7
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
 ---
- drivers/iio/magnetometer/st_magn_core.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/iio/adc/ti-adc081c.c    | 10 ++++------
+ drivers/iio/adc/ti-adc0832.c    |  6 +++---
+ drivers/iio/adc/ti-adc084s021.c |  3 +--
+ drivers/iio/adc/ti-adc108s102.c |  2 +-
+ drivers/iio/adc/ti-adc128s052.c |  2 +-
+ drivers/iio/adc/ti-adc161s626.c |  6 +++---
+ 6 files changed, 13 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index ef348d316c00..6f369e8dddea 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/property.h>
- #include <linux/sysfs.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -608,6 +609,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 	struct device *parent = indio_dev->dev.parent;
- 	struct st_sensors_platform_data *pdata = dev_get_platdata(parent);
-+	const char *propname;
- 	int err;
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -628,6 +630,36 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 	mdata->current_fullscale = &mdata->sensor_settings->fs.fs_avl[0];
- 	mdata->odr = mdata->sensor_settings->odr.odr_avl[0].hz;
- 
-+	/*
-+	 * Skip fixed-FS chips (fs.addr == 0): no register to switch.
-+	 * The binding rejects the property on these compatibles too;
-+	 * the gate guards stale DTBs.
-+	 */
-+	propname = "st,fullscale-milligauss";
-+	if (mdata->sensor_settings->fs.addr &&
-+	    device_property_present(parent, propname)) {
-+		struct st_sensor_fullscale *fs = &mdata->sensor_settings->fs;
-+		u32 fs_mg;
-+		int i;
-+
-+		err = device_property_read_u32(parent, propname, &fs_mg);
-+		if (err)
-+			return err;
-+
-+		for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
-+			if (!fs->fs_avl[i].num)
-+				break;
-+			if (fs->fs_avl[i].num == fs_mg) {
-+				mdata->current_fullscale = &fs->fs_avl[i];
-+				break;
-+			}
-+		}
-+		if (mdata->current_fullscale->num != fs_mg)
-+			dev_warn(parent, "%s=%u not supported, using %u\n",
-+				 propname, fs_mg,
-+				 mdata->current_fullscale->num);
-+	}
-+
- 	if (!pdata)
- 		pdata = (struct st_sensors_platform_data *)&default_magn_pdata;
- 
+diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+index 33f82bdfeb94..f6ce23975b80 100644
+--- a/drivers/iio/adc/ti-adc081c.c
++++ b/drivers/iio/adc/ti-adc081c.c
+@@ -174,26 +174,24 @@ static int adc081c_probe(struct i2c_client *client)
 
--- 
-2.43.0
+ 	err = regulator_enable(adc->ref);
+ 	if (err < 0)
+-		return err;
++		return dev_err_probe(&client->dev, err, "failed to enable regulator\n");
 
+ 	err = devm_add_action_or_reset(&client->dev, adc081c_reg_disable,
+ 				       adc->ref);
+ 	if (err)
+-		return err;
++		return dev_err_probe(&client->dev, err, "failed to register cleanup action\n");
+
+ 	iio->name = dev_name(&client->dev);
+ 	iio->modes = INDIO_DIRECT_MODE;
+ 	iio->info = &adc081c_info;
+
+ 	iio->channels = model->channels;
+ 	iio->num_channels = ADC081C_NUM_CHANNELS;
+
+ 	err = devm_iio_triggered_buffer_setup(&client->dev, iio, NULL,
+ 					      adc081c_trigger_handler, NULL);
+-	if (err < 0) {
+-		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+-		return err;
+-	}
++	if (err < 0)
++		return dev_err_probe(&client->dev, err, "iio triggered buffer setup failed\n");
+
+ 	return devm_iio_device_register(&client->dev, iio);
+ }
+diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
+index cfcdafbe284b..ecd5dbb76e75 100644
+--- a/drivers/iio/adc/ti-adc0832.c
++++ b/drivers/iio/adc/ti-adc0832.c
+@@ -289,17 +289,17 @@ static int adc0832_probe(struct spi_device *spi)
+
+ 	ret = regulator_enable(adc->reg);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "failed to enable regulator\n");
+
+ 	ret = devm_add_action_or_reset(&spi->dev, adc0832_reg_disable,
+ 				       adc->reg);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "failed to register cleanup action\n");
+
+ 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
+ 					      adc0832_trigger_handler, NULL);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
+
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
+index a100f770fa1c..9c7ee09955ca 100644
+--- a/drivers/iio/adc/ti-adc084s021.c
++++ b/drivers/iio/adc/ti-adc084s021.c
+@@ -230,8 +230,7 @@ static int adc084s021_probe(struct spi_device *spi)
+ 					    adc084s021_buffer_trigger_handler,
+ 					    &adc084s021_buffer_setup_ops);
+ 	if (ret) {
+-		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "Failed to setup triggered buffer\n");
+ 	}
+
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+index 7d615e2bbf39..440afe584f5d 100644
+--- a/drivers/iio/adc/ti-adc108s102.c
++++ b/drivers/iio/adc/ti-adc108s102.c
+@@ -256,7 +256,7 @@ static int adc108s102_probe(struct spi_device *spi)
+ 					      &adc108s102_trigger_handler,
+ 					      NULL);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
+
+ 	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret)
+diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+index 4ae65793ad9b..14ed60895ac7 100644
+--- a/drivers/iio/adc/ti-adc128s052.c
++++ b/drivers/iio/adc/ti-adc128s052.c
+@@ -225,7 +225,7 @@ static int adc128_probe(struct spi_device *spi)
+
+ 	ret = devm_mutex_init(&spi->dev, &adc->lock);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "failed to initialize mutex\n");
+
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
+index be1cc2e77862..10c25770a7a6 100644
+--- a/drivers/iio/adc/ti-adc161s626.c
++++ b/drivers/iio/adc/ti-adc161s626.c
+@@ -207,17 +207,17 @@ static int ti_adc_probe(struct spi_device *spi)
+
+ 	ret = regulator_enable(data->ref);
+ 	if (ret < 0)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "failed to enable regulator\n");
+
+ 	ret = devm_add_action_or_reset(&spi->dev, ti_adc_reg_disable,
+ 				       data->ref);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "failed to add cleanup action\n");
+
+ 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
+ 					      ti_adc_trigger_handler, NULL);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
+
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+--
+2.54.0
