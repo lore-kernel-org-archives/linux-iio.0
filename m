@@ -1,228 +1,171 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outbound0.mail.transip.nl (outbound0.mail.transip.nl [149.210.149.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BD13644A2
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 13:07:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20DE36F429;
+	Tue, 16 Jun 2026 13:09:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=149.210.149.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781615233; cv=none; b=tH5SvIleISWLgvbuXJVW8uzI0NGMdH9XS5Q1bo0+1Th2dKjJqeG7lDHS/slByjv4BKWrtU9WE9jS8FTn9qmhuv8igp5czUs6TNAtvBMQbYytj/TAEfo1pks3hctU8wbNTwf6Jn+fZJPlWHHVUZJeM5+z7quwzuN9KxzOwXkYRMU=
+	t=1781615356; cv=none; b=O+Pb3gjU7rvUZcc6eHAroF7Bg00yA/wdDvNLGq5AtJFDcCdyBDIfoDg7toZxpiEaX1zDCTS27SQDDeeiRmr/Xic61C/5mfDAQIE9Q/O/+ilC6bz6KtwgkYMMCyfghhvu/dgzjCVwE9UxImPjNhPbw9Ri2rOh78KtvkPM1qf4YGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781615233; c=relaxed/simple;
-	bh=VypmrAivzn5922wpb53YtlgIG9kmZNcmnIIjDM/FuVw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Rzlhs0jECkrd1ea2fDOgXgBUa6rVZ5q2bbZMd4uuXW8dTpZtBUA+wFzSNKoKjr2+Y4dxW3r9SVAPLFo94BI+v6xcQl9kMcAJ9rRsIKYz/skL29/WTBIS75QaG7mxT9szb+lxd+Lo2y2nfP5NULymkW1QTIIrYJf0YjEhRwjHPGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rRnI4s3+; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781615356; c=relaxed/simple;
+	bh=tkpQ7s8w0fK4taqHJRA/B2dU7gCPwT5NhFTac1ssF7E=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=iGq6zjKpIO/lpHu50Y5RMUCnElUoGhhm4b+NFwDJOv1RkCW20I7llKoREpat/+DKLh3AM/Nr2m/SZ7AMQG673wv54c+Fc+3lFBzGLBivVPY+ELcMavqZO2EjMolWSBUH5kpL3LTrUl243COn8k4jUUHpYXd+kvMACuZ4MwdnZLA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=N7D6eyHg; arc=none smtp.client-ip=149.210.149.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rRnI4s3+"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2bf2e8ccca1so28344855ad.0
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 06:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781615231; x=1782220031; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q7f1le5tzm5fRbVe0E9jP8qxNwgcJ6Pf+ghXkipVpu4=;
-        b=rRnI4s3+ieXhYvRZCCyb35j4zU89YWhVEAa7DvwZiHvufi4R9eItwk7gkksalTlCIk
-         NKpKoJ334Yy5sWkt1nOxgN4wQrMD69dBDNELQ/0GW9FPZOx2p46csd/zhSaHAW4yQf08
-         SDVsyMzpCswhWFVATrZFHNgWy+7XXwWSwWrZv8+rS1VDuDGAcXZfQAQjy3sv9Rz+rpa8
-         FiLu1VZIMZKzASoWeEgTQmaL4LJ+Fedhw8t/vwtOFfCmFsP5i3DHXaKpbBNIfl3GuHGg
-         XAlGoUkumVEaQZMFy4zsrNxAIDEZz4hpugo1w0x1OtxsxjmptdSRWmVM7B42Ss1x+ocb
-         bVTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781615231; x=1782220031;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q7f1le5tzm5fRbVe0E9jP8qxNwgcJ6Pf+ghXkipVpu4=;
-        b=Lfgk388GS3lYynodw0ubQqjAeIbubU1WmKUjm1K+zl+xVw2Ta3GGsZCQsNqm214cbg
-         kAF7QpF+ljGmkq3RyEAfnL6hMwfEvs7iviMOA1D1lUS8xQ1/X7HSqXCmK9Z3z5piKk4i
-         fCeaN4ojMOgEMU1hceuPC3kSMYZqrvJ74HkWSG+VXkuyk3iD7u+viwRGWXuaRJLXu0l+
-         WSUv/ru6d9rDHk+FMhMQRRqbhRABnApd/EXUd5tOZWRh0ZMnjtr49x26qcSKWJEtJfR7
-         RUjlYg0triLQzvGdytzIDuja7Vlqbo8DMqC9tzJesgsnwB4zSuOR2fAGDk/lWCjonHz/
-         zC6w==
-X-Forwarded-Encrypted: i=1; AFNElJ9hqsqw84OA9Y7jtzAq1VZqqEjlG1qQNQ1rE88zCwR+htpGucVUwWH7nAMO+jYWKusgassuJ36Ovj8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8LSs4kZUSlbAzPyppBEz6w1pFhV1gwwE617jGca3ZJQ6k6dRX
-	uKrraOuoH34c2u7FbNs2f0SCenY71CpIgimyenMOtF9LqO6AGDAeLCkUJT/tlbDghUr0Wd2G
-X-Gm-Gg: Acq92OEAoar6M6e9pRqHrfpWXVaL43V0uOykeOycN/oxL9vDnrj8V5aoUizrJsjzpbo
-	ifxtZD4o5P1jM2X+QWLpOlnlkcQwZnzEEAZZcJ0yhmYtFL1Sb2eFaZjWZZxprevRrXnJarHdDv5
-	PHeun2DXvplmBRIKpegSIYR5zoII8xulU6PsIzokhjUp4S7jdXHUwvJC1/qjjVpRYneVMOzYtdE
-	4NobTU7CEsLupYJf2eeo/t4FX7Teuo/ck5hg0rdp6Ss5kc6YGYktp1ifFzNgmxvOFHgpXAYrE74
-	iqhEyFdAtTNTSsxZpnL3PLByU+gshN+zonnypox0RK/GvRPxKwSzsUsmbPOKklqfzv+4Phr1wuF
-	AA1pR5c4s03rw7W3aSr7WC5PsqJdgMtKg8HpAf5pUk0jls3DYqZa0n8vx21oxgPDQqLzhp5l2nf
-	7OIx8vJ1iiteQEyHuDWCDH/OW79/hvkZHPSTtt88fc9cW39PG35kg+ACscVQcWeW7u5cenyF4gC
-	omstL89eX+ahQ==
-X-Received: by 2002:a17:903:1a87:b0:2c0:d9b7:b7b0 with SMTP id d9443c01a7336-2c69a1b8a67mr38225485ad.31.1781615231338;
-        Tue, 16 Jun 2026 06:07:11 -0700 (PDT)
-Received: from thorfinn ([223.185.61.3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c6a403b242sm14942915ad.31.2026.06.16.06.07.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 06:07:10 -0700 (PDT)
-From: Prashant Rahul <prashantrahul23@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Shuah Khan <shuahkhan@gmail.com>,
-	Prashant Rahul <prashantrahul23@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Petr Mladek <pmladek@suse.com>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Dixit Parmar <dixitparmar19@gmail.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: ti-adc*: use dev_err_probe for probe time errors
-Date: Tue, 16 Jun 2026 18:35:43 +0530
-Message-ID: <20260616130612.73122-1-prashantrahul23@gmail.com>
-X-Mailer: git-send-email 2.54.0
+	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="N7D6eyHg"
+Received: from submission12.mail.transip.nl (unknown [10.103.8.163])
+	by outbound0.mail.transip.nl (Postfix) with ESMTP id 4gfnFW1tDtzxNs0;
+	Tue, 16 Jun 2026 15:02:07 +0200 (CEST)
+Received: from [127.0.1.1] (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
+	by submission12.mail.transip.nl (Postfix) with ESMTPA id 4gfnFV32wBz3SJ37Q;
+	Tue, 16 Jun 2026 15:02:06 +0200 (CEST)
+From: Herman van Hazendonk <github.com@herrie.org>
+Date: Tue, 16 Jun 2026 15:02:04 +0200
+Subject: [PATCH v2 1/3] iio: common: st_sensors: honour channel endianness
+ in read_axis_data
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Message-Id: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-1-063edcf74e60@herrie.org>
+References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
+In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ Denis Ciocca <denis.ciocca@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Denis Ciocca <denis.ciocca@st.com>, 
+ Linus Walleij <linusw@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ llvm@lists.linux.dev, devicetree@vger.kernel.org, stable@vger.kernel.org, 
+ Herman van Hazendonk <github.com@herrie.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781614923; l=4262;
+ i=github.com@herrie.org; s=20240417; h=from:subject:message-id;
+ bh=tkpQ7s8w0fK4taqHJRA/B2dU7gCPwT5NhFTac1ssF7E=;
+ b=GI5PZ+oz2NFvgfwhyuleiebfezY9nbuPin+gd+rEGiVlt+jZLvEaPpWKs8qihHjbR8ZleLlPi
+ T3tI5oWspXBBiZ0ImsRyxevx6zgotpmrREsx0YEJoTIFBcGmcIGAhtB
+X-Developer-Key: i=github.com@herrie.org; a=ed25519;
+ pk=YYxdq8fb5O9vhkW3n2dCH044FPZZO5718v/du7fRhFw=
+X-Scanned-By: ClueGetter at submission12.mail.transip.nl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=transip-a; d=herrie.org; t=1781614926; h=from:subject:to:cc:
+ references:in-reply-to:date:mime-version:content-type;
+ bh=GanE+LwpMU/3dQ/iAwCN0mrZ872UhY+IqsGotY1ZLxE=;
+ b=N7D6eyHgncaQ149sHTL2rgYz9+StpPgtNRBwjTHOKQC4LxzqeYTJv4sVHepV5QI0KV+pdx
+ GCEWLYMextRaU/3lDoXov/gw1VZ6yMrbH1Jp4oo8Drkn//mDbTSJKP1cjNY5rgOT3fZRmD
+ a3V9AB6XDcKI8JWOi9JTp+5+OryKNTttPv4Y71qETvsu5hNo1sHnp1svMvGxegdeAwGZlv
+ Xp4OED4ylfERg+ryYFBQMCj3dogwwjphxhj4CE3De2fVoyGlajjW4ULdN5xQyy0NTIrKot
+ 34m9IQjqXDN5tYOmvOm4U2zJ//kTzmaQCCQBrqJ3uaov3ePzoaXvcM7l7b/AfQ==
+X-Report-Abuse-To: abuse@transip.nl
 
-This simplifies error handling and ensures consistent error reporting.
-Also add missing error messages in a few probe paths where failures were
-previously returned without any diagnostics.
+st_sensors_read_axis_data() unconditionally decoded multi-byte
+results with get_unaligned_le16() / get_unaligned_le24() regardless
+of the channel's declared scan_type.endianness.
 
-Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
+For every ST sensor that has used this helper since it was introduced
+this happened to be fine because the ST IMU/accel/gyro/pressure
+families publish their data registers as little-endian and the
+channel specs in those drivers declare IIO_LE accordingly.
+
+The LSM303DLH magnetometer however publishes its X/Y/Z output as a
+pair of big-endian bytes (the H register sits at the lower address,
+0x03/0x05/0x07, and the L register immediately after), and its
+channel specs in st_magn_core.c correctly declare IIO_BE -- but
+read_axis_data() ignored that and decoded as little-endian, swapping
+the high and low bytes of every magnetometer sample. The LSM303DLHC
+and LSM303DLM share the same st_magn_16bit_channels (IIO_BE) and
+were therefore byte-swapped by the same bug; users of those parts
+will see different in_magn_*_raw values after this fix lands.
+
+The bug is most visible on a stationary chip: in earth's field the
+true X reading is small and the high byte sits at 0x00, so swapping
+the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
+= 240). Y and Z still appear "to vary" because their magnitudes are
+larger and the noise in the low byte produces big swings in the
+swapped high byte:
+
+  before (LSM303DLH flat, sysfs in_magn_*_raw):
+      X=240 (stuck), Y= 12032..23296, Z=-16128..-9728
+
+  after (direct i2c-dev big-endian decode, same chip same orientation):
+      X≈-4096, Y≈210, Z≈80     (sensible values reflecting earth's
+                                ambient field at low gauss range)
+
+Fix read_axis_data() to dispatch on ch->scan_type.endianness and
+call get_unaligned_be16() / get_unaligned_be24() when the channel
+declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
+st_pressure, st_lsm6dsx and others) are unaffected because their
+channel specs already declare IIO_LE and the LE path is unchanged.
+
+While restructuring the branches, replace the previously implicit
+silent-success-with-uninitialised-*data fall-through for
+byte_for_channel outside 1..3 with an explicit return -EINVAL. No
+in-tree ST sensor publishes such a channel, but the new behaviour
+is strictly safer than handing userspace garbage.
+
+Fixes: 23491b513bcd ("iio:common: Add STMicroelectronics common library")
+Cc: stable@vger.kernel.org
+Assisted-by: Claude:claude-opus-4-7 sparse smatch clang-analyzer coccinelle checkpatch
+Assisted-by: Sashiko:claude-opus-4-7
+Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
 ---
- drivers/iio/adc/ti-adc081c.c    | 10 ++++------
- drivers/iio/adc/ti-adc0832.c    |  6 +++---
- drivers/iio/adc/ti-adc084s021.c |  3 +--
- drivers/iio/adc/ti-adc108s102.c |  2 +-
- drivers/iio/adc/ti-adc128s052.c |  2 +-
- drivers/iio/adc/ti-adc161s626.c |  6 +++---
- 6 files changed, 13 insertions(+), 16 deletions(-)
+ drivers/iio/common/st_sensors/st_sensors_core.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-index 33f82bdfeb94..f6ce23975b80 100644
---- a/drivers/iio/adc/ti-adc081c.c
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -174,26 +174,24 @@ static int adc081c_probe(struct i2c_client *client)
-
- 	err = regulator_enable(adc->ref);
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index dbc5e16fbde4..76f91696f66a 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -498,6 +498,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	u8 *outdata;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 	unsigned int byte_for_channel;
++	u32 tmp;
+ 
+ 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
+ 					ch->scan_type.shift, 8);
+@@ -508,12 +509,22 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
  	if (err < 0)
--		return err;
-+		return dev_err_probe(&client->dev, err, "failed to enable regulator\n");
-
- 	err = devm_add_action_or_reset(&client->dev, adc081c_reg_disable,
- 				       adc->ref);
- 	if (err)
--		return err;
-+		return dev_err_probe(&client->dev, err, "failed to register cleanup action\n");
-
- 	iio->name = dev_name(&client->dev);
- 	iio->modes = INDIO_DIRECT_MODE;
- 	iio->info = &adc081c_info;
-
- 	iio->channels = model->channels;
- 	iio->num_channels = ADC081C_NUM_CHANNELS;
-
- 	err = devm_iio_triggered_buffer_setup(&client->dev, iio, NULL,
- 					      adc081c_trigger_handler, NULL);
--	if (err < 0) {
--		dev_err(&client->dev, "iio triggered buffer setup failed\n");
--		return err;
--	}
-+	if (err < 0)
-+		return dev_err_probe(&client->dev, err, "iio triggered buffer setup failed\n");
-
- 	return devm_iio_device_register(&client->dev, iio);
+ 		return err;
+ 
+-	if (byte_for_channel == 1)
+-		*data = (s8)*outdata;
+-	else if (byte_for_channel == 2)
+-		*data = (s16)get_unaligned_le16(outdata);
+-	else if (byte_for_channel == 3)
+-		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
++	if (byte_for_channel == 1) {
++		tmp = *outdata;
++	} else if (byte_for_channel == 2) {
++		if (ch->scan_type.endianness == IIO_BE)
++			tmp = get_unaligned_be16(outdata);
++		else
++			tmp = get_unaligned_le16(outdata);
++	} else if (byte_for_channel == 3) {
++		if (ch->scan_type.endianness == IIO_BE)
++			tmp = get_unaligned_be24(outdata);
++		else
++			tmp = get_unaligned_le24(outdata);
++	} else {
++		return -EINVAL;
++	}
++	*data = sign_extend32(tmp, BYTES_TO_BITS(byte_for_channel) - 1);
+ 
+ 	return 0;
  }
-diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-index cfcdafbe284b..ecd5dbb76e75 100644
---- a/drivers/iio/adc/ti-adc0832.c
-+++ b/drivers/iio/adc/ti-adc0832.c
-@@ -289,17 +289,17 @@ static int adc0832_probe(struct spi_device *spi)
 
- 	ret = regulator_enable(adc->reg);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "failed to enable regulator\n");
+-- 
+2.43.0
 
- 	ret = devm_add_action_or_reset(&spi->dev, adc0832_reg_disable,
- 				       adc->reg);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "failed to register cleanup action\n");
-
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
- 					      adc0832_trigger_handler, NULL);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
-
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
-diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
-index a100f770fa1c..9c7ee09955ca 100644
---- a/drivers/iio/adc/ti-adc084s021.c
-+++ b/drivers/iio/adc/ti-adc084s021.c
-@@ -230,8 +230,7 @@ static int adc084s021_probe(struct spi_device *spi)
- 					    adc084s021_buffer_trigger_handler,
- 					    &adc084s021_buffer_setup_ops);
- 	if (ret) {
--		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "Failed to setup triggered buffer\n");
- 	}
-
- 	return devm_iio_device_register(&spi->dev, indio_dev);
-diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
-index 7d615e2bbf39..440afe584f5d 100644
---- a/drivers/iio/adc/ti-adc108s102.c
-+++ b/drivers/iio/adc/ti-adc108s102.c
-@@ -256,7 +256,7 @@ static int adc108s102_probe(struct spi_device *spi)
- 					      &adc108s102_trigger_handler,
- 					      NULL);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
-
- 	ret = devm_iio_device_register(&spi->dev, indio_dev);
- 	if (ret)
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 4ae65793ad9b..14ed60895ac7 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -225,7 +225,7 @@ static int adc128_probe(struct spi_device *spi)
-
- 	ret = devm_mutex_init(&spi->dev, &adc->lock);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "failed to initialize mutex\n");
-
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
-diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
-index be1cc2e77862..10c25770a7a6 100644
---- a/drivers/iio/adc/ti-adc161s626.c
-+++ b/drivers/iio/adc/ti-adc161s626.c
-@@ -207,17 +207,17 @@ static int ti_adc_probe(struct spi_device *spi)
-
- 	ret = regulator_enable(data->ref);
- 	if (ret < 0)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "failed to enable regulator\n");
-
- 	ret = devm_add_action_or_reset(&spi->dev, ti_adc_reg_disable,
- 				       data->ref);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "failed to add cleanup action\n");
-
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
- 					      ti_adc_trigger_handler, NULL);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
-
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
---
-2.54.0
