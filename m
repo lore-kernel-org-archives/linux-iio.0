@@ -1,113 +1,108 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEB4427A14
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 10:27:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F4D1425CEE;
+	Tue, 16 Jun 2026 10:29:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781605634; cv=none; b=RmoALozYCeWDzuuJGW3qGd882YS/zzt9HxjgNve6brlqO8akhD2yd3iHVWe8tx6KPOyl8FC/XLn4TPjJh67rhaTbInvb081Lx3UkmUa1l/nlIHVd4DkdfhSmEqknkVdPkRiot3dH3obUN/1X5jxz0lnswmE99xtefFSqz/eU/j8=
+	t=1781605771; cv=none; b=igwNhG+NNkd+G5W1xPeug2mDJ0qvua0Aw4M8jjNPKsyvr/t7Jn9tgLpaXLJzFOQfLC1X7y3t31qMF02iJ6JlL36MyQx9vHNOzpm1EAYYej5R6XTFR4nnMKOoJu413B/gTf/iuyYTZjqYkXyUYQyaZxymm6OCzGB9xKQHLdyLsKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781605634; c=relaxed/simple;
-	bh=nchTERKMiySHyAcZgin+UDOqk+gFtUFbtrkMUhOWUzU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=pNvpIPiOhswAG78TuYBK2dibphAI2TfOHPrLyWFvPWqAipcqRgmH84QVkx4YvYNY/QtKikkeQ3235ZGBLB8aQvA/NIp5X+AhqYNAVQVAN4n6q7WpwA/Ac4kDe+Rka7ARdFdmPwnUJ65xPxl/2X0tyowk4yjTUQI4Y/wZkruVYsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ro0+YWKu; arc=none smtp.client-ip=209.85.216.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781605771; c=relaxed/simple;
+	bh=ia2P2OC7AAQYxqoOSkKtV7D7+hDtxPaa3ogxt3k4Cw0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gdFlQf2j8eDshOH3HVUQ2LWzlCEAvdq7FSaina05kBeQTC9DExxGZOCgZkMJpi2o6/iyzigcxUHYVVeddYOw/rVs1+hwDo+cWiTbCxo/Swg0MSSmIZznErHaSYlUSMi+In8aZQ30NyyV9lx/dHaaVGxiGoCSqrVn7Gls5oV2MVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AwEKyzpr; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ro0+YWKu"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-36ba706ab46so2784483a91.1
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 03:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781605632; x=1782210432; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dW00z0Rs/ytIerSqqtTuZoAD4LbTMtwdm5yjmtjWEIY=;
-        b=ro0+YWKuaJMgOVg6+o9rsVQuz1R7JuZiFZWQbFnPwsfo6O8NefCQJSJ18MyJUlZVdI
-         K38Dfkn2qIodLBEwmTWHbAi69p6JltGNUMWRkWPfyM9Mr86D4DTLKD6ihRKykcZS5tTM
-         tmwP7aIHmsSg2gY44MaJvf1J2Fcn2GW8e9w5FJNQ1nSWEW39eaFWmVjc/BYwitmLbyp6
-         L6RyApTA/zO/LX7TXYXL+hMJlHnE01Fn/DX8X1tIlP3WesRfz4hGR3MrAUBslX7lwhbG
-         3GjI8DD2MMZS4lXFeylZiFxnyewbKui0oNnWpmwCOKyWUs7icq/DDzD9W9gedYBtzgWB
-         g3YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781605632; x=1782210432;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=dW00z0Rs/ytIerSqqtTuZoAD4LbTMtwdm5yjmtjWEIY=;
-        b=aCZLcEPErsZ5rhW5mqxO8B30WrHvNFWyXUDxUujZ4eGVu/1cQ1MuxTuu7t2RJaY1qz
-         ChHNrTJHjxpR51GIMk2re30TcrHmW3Ol15eIX+XjCAfLuU3Sx7S7yzMWr017jpew66qe
-         uxTnNJQyis1TPMOkyprVQfQSeqAlhRzQFg2h96bF+mlH5NV1WRde6jf8vV/7PMx2d0fw
-         VEkeugu+VSBmz26i4l3K8VAFYqTnWN6AqqCedOv+J2HcxiekBKvz0WonhGov5bTfMApo
-         vd4vGFvQ8evvhcMOr271Q5dC9rtPeXvJFF41EYdXXSQGZphxMPxuBwVEM9iGrc/dgZKS
-         VBeQ==
-X-Gm-Message-State: AOJu0YyV2td/GE7MtXiyk3uRb1sWTvQdqDDoEq7S2jXBviQR9m6dnQgB
-	ritcGnBuMerZBzHNhX+jwWWeaJWYyyIV1Caw6cEUsU7PxNF/OMzaDZky
-X-Gm-Gg: Acq92OE3inZ324tRdspvVMbnlvqwPXEmqkbNs2kezRoUGtN5QqztmRzpbjrlWEv56Z4
-	RVvkf6mtsY2yV6sCeD/yOwAZmMZgU9yuzo6qnV9tnLN/9cshrr1KCZBZG3PjhnffAxw4S2O8YE5
-	NUHV/9xJClhFyEN/7HbPiyWUDDouNTEqhMXnbAPEuJlDZVd1ICILI8EM5heW9NvUmlLDuLTBg2H
-	7W49k1Q2iTzgYxk3IyDcxtHv9QhU6M1kHNcZ0NLcRcW+cZbEChKOp1+K9Wt8rNRmyqPwxwJp50P
-	Sf+KNIL/eZTrixyNFQ87mshUJOImlkpQDSl0QlAQO3Urap1W8YMYdzs0mtUECxFHK0LcL4YXF4j
-	gifU59q5wmTIKeiEU4ohW98hIi8tc78uOeyYtktVmExCm9r8WgzxYzHOLiY0XnUTdt2FF6uwGtD
-	RkDJBlFrTkkAuX0l2QCJumelbN3XIPO037FsTw69dNTFUGKLi0
-X-Received: by 2002:a17:90b:5625:b0:369:971:4888 with SMTP id 98e67ed59e1d1-37c528e104emr3379915a91.15.1781605632620;
-        Tue, 16 Jun 2026 03:27:12 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-379e88d546dsm8079269a91.2.2026.06.16.03.27.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 03:27:11 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-Date: Tue, 16 Jun 2026 15:56:15 +0530
-Subject: [PATCH 10/11] iio: hid-sensor-incl-3d: use ! instead of explicit
- NULL check
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AwEKyzpr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781605770; x=1813141770;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ia2P2OC7AAQYxqoOSkKtV7D7+hDtxPaa3ogxt3k4Cw0=;
+  b=AwEKyzprUkjnTmqNRD2bfQ1eaitR3NgmrL+voj/BCMlHbrTO0lIKTQzp
+   AkJSupO7g2m59pi4QRKRb3/4/drBWZdkN2J5LnDvQI60uUTW878zloX11
+   VuboZJQqDKQI2T2dk85MMGmtrrFPWbWRBk1rYOnITQFJRZ6tDchps27uF
+   0CwWckbq6Urgy1YmVpAigB4k/REXvxq05kqoIZ0A0JA+RAMwhrDrjYBvO
+   tggxOA5DSkzUn/kVnTHluJ+ENre6YApe0NofMEhLxl6w5RbMZpIBLWop4
+   SyfyjJo7GezlStjUzG9xNcDYFOMvEXjCwwDqqubV3JcvwGEcyvAb2t5Lk
+   w==;
+X-CSE-ConnectionGUID: aP77m4PNTTS99UaZ6+llMA==
+X-CSE-MsgGUID: QEUxiVB5THmNgpsOESBURQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="93748019"
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="93748019"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 03:29:29 -0700
+X-CSE-ConnectionGUID: DNuA6ZG3R6GJzvcMdgVfGQ==
+X-CSE-MsgGUID: cbyy/BpcS/ubSimPBa6nCg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="247798375"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 03:29:25 -0700
+Date: Tue, 16 Jun 2026 13:29:22 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
+	rodrigo.alencar@analog.com,
+	Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v3 05/12] iio: dac: ad5686: add support for missing power
+ supplies
+Message-ID: <ajElghg9rnqm5ukt@ashevche-desk.local>
+References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
+ <20260616-ad5686-new-features-v3-5-f829fb7e9262@analog.com>
+ <20260616113322.00005273@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-15-jun-hid-iio-alignment-v1-10-0cd544286575@gmail.com>
-References: <20260616-15-jun-hid-iio-alignment-v1-0-0cd544286575@gmail.com>
-In-Reply-To: <20260616-15-jun-hid-iio-alignment-v1-0-0cd544286575@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-input@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Mailer: b4 0.15.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260616113322.00005273@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Tue, Jun 16, 2026 at 11:33:22AM +0200, Joshua Crofts wrote:
+> On Tue, 16 Jun 2026 09:21:11 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-Replace 'if (indio_dev == NULL)' with 'if (!indio_dev)' in to follow
-the preferred kernel style.
+...
 
-No functional change.
+> >  	st->use_internal_vref = ret == -ENODEV;
+> >  	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/orientation/hid-sensor-incl-3d.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> I'd use a macro from <linux/units.h> instead of just doing / 1000.
 
-diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-index c7fbff498be7..4c4b0ef2e01c 100644
---- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-+++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-@@ -307,7 +307,7 @@ static int hid_incl_3d_probe(struct platform_device *pdev)
- 
- 	indio_dev = devm_iio_device_alloc(&pdev->dev,
- 					  sizeof(struct incl_3d_state));
--	if (indio_dev == NULL)
-+	if (!indio_dev)
- 		return -ENOMEM;
- 
- 	platform_set_drvdata(pdev, indio_dev);
+In this case we use (MICRO / MILLI) as we don't have (yet?) the
+MILLIVOLTS_PER_VOLT and so on. Feeling like you want to add those?
+
+...
+
+> > +	fsleep(5); /* power-up time */
+> 
+> I'd recommend using a macro to define the sleep time, removing
+> the need for a comment.
+
+OTOH macro might hide the actual value. The comment is fine, but I would extend
+it with a reference to a data sheet page, table, section, et cetera.
 
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
