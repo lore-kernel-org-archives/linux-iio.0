@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD0B413D62;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C568F4183AE;
 	Tue, 16 Jun 2026 08:21:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781598072; cv=none; b=rmxodPzKjhpZr5QGHp1U35JfTDkbVuuxPEvcaNf4N0gSD3eNs44yKQ471f1WUNcIFIqVjtZvU5mhkktSrD5kqGWbc0swgNADIlmF/T7NVxSmhuwXsrvjFdohf/pPrCTX51XMivQzWy8s+7goJV+L51USVZRBKN3+Fco0dBRqsXg=
+	t=1781598072; cv=none; b=NI6JaJfd3laK3tJcuNu2xg2CNKsYZyTFctMOzJZUVK/MHxdIRAg9RbxLDBtEnBjeHxnwFPH06XO+uNlK3dm99esXEGg+iHITBGjJeSO6USPX/QsRLfryjtzrRcoqkEZaMnHfjzmJ1KJcKfr+uXDog14mBKwla5N+ZtKwyM6vhwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1781598072; c=relaxed/simple;
-	bh=T10KPJOOKWuZ5Fq017Sn3oeb8mnAxJ/S5xjvvdfQiK4=;
+	bh=/swyioDg+TxAgHM57Vi2HChrRyJZFYYXkbig2NsgQSc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kwTGD0t78Jicz6gMZSWBr6NVAr/JTDZuEyOFqapC86Jyr/Fdz/BhiJ3S9cOheqpnnC5iP7ioPW89cDQ29DRX2z9NzzRDN6HZ6rwk5WSiBUUGSZZ8gr7UyjDAzcInS7JQjp82h0gRnp3NEOZub59ubnSzKH5J34Nd7dhT00aKB84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pvcwfrT6; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=CRT97H7rMZCvLbLG9gG58qn4jaFcFK6bbeaXCFNEqnSpcFkZHRTsaxjTFk26HxtfbiBFSiUz2hiojrVjXeqJITl7bHHQ1M9tEfuKWM35j02iA71L7NF4ONxjKlp2CBwYw9KLq0joYOawKhfPajzeXxFRF/oB9RROUVvWHm3g6cQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=us9+D8J8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pvcwfrT6"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8DE6AC2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="us9+D8J8"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A693BC2BCB7;
 	Tue, 16 Jun 2026 08:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1781598072;
-	bh=T10KPJOOKWuZ5Fq017Sn3oeb8mnAxJ/S5xjvvdfQiK4=;
+	bh=/swyioDg+TxAgHM57Vi2HChrRyJZFYYXkbig2NsgQSc=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=pvcwfrT6r2WC3rJLK9I5tUtBnszNT2RplfZTxe4ACHjof1Z/Mp6DT2ACYs1Co6O1+
-	 gELDgab7ReG4vWZtTyPnDXe2AHtGYtDt32YVCiIM3tSVv1GcP7OZtYg3pqHpL6F0Mf
-	 9g7HLcdWVOpcGkKhml2n0+LALJ+4BUoOgYObBSfifk7HGowVcRHRGqPJpGi5IHEW4D
-	 DVNR5Li9qL8mikRwJ6mo8bVlhGSfIG2WXXdS/dN0lWoxkzxyHjRcGgldTSZDmqNzLp
-	 jwzatcvaEbfBbGXDF67kDjO5mFMORxdJ74UdbI8rmeAgx8Aia1xbtUXXGoh5Z2pkjs
-	 fyD5Vy00fU1Fw==
+	b=us9+D8J8IW1iwgFY2TDrezyDBUPIAJk9V9TRyfTuPYxLMYEC8TCdUSUWG1KTkbsiU
+	 PZX2jEp/VdOEa5m1ODafGL0x3vTypL4u9ZnVWcd5v9ibyAd5LQeqPEwlQFzizZQjOJ
+	 R6k0Qn9CbinS8G3PE9QmN2NUmD9looWB/45owseyXaJkWmF8mcCz88yyP6ChYG1WW4
+	 hTq8OjW6oc+0rFBHP0Sg94fkcY/ijIPm0SMKOP0Pn8EC3TkTwNinGYnndlFqyU53JE
+	 62wePpYmATxBcumRfGFL0tvV0eG1EnOKVeacINVbIN7X+gLNKQLj49ISxg40HqOc0y
+	 r3kdGwP9uXv4Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8539ECD98CF;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D25ECD98E0;
 	Tue, 16 Jun 2026 08:21:12 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 16 Jun 2026 09:21:13 +0100
-Subject: [PATCH v3 07/12] iio: dac: ad5686: add ldac gpio
+Date: Tue, 16 Jun 2026 09:21:14 +0100
+Subject: [PATCH v3 08/12] iio: dac: ad5686: introduce sync operation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-ad5686-new-features-v3-7-f829fb7e9262@analog.com>
+Message-Id: <20260616-ad5686-new-features-v3-8-f829fb7e9262@analog.com>
 References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
 In-Reply-To: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -54,11 +54,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781598070; l=2240;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781598070; l=1436;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=E84ULT/Vw/G5qLeMh29ivnSFEoa859ccYBvweeQdKOc=;
- b=tMLyqKmy3xKUR2xPpSl6VqCtFlpxl3Lsf58PkMv31NG6gey8/gQ+iv2PufuDj/7Obsu4kYdNM
- G076RR4JXYsB7BBhTbxcBQjeGP+jb1kUutXb38mwCUra9e2AtfdfIMc
+ bh=857MKEkbtP+CzDEmhI5ZYzKG1rm429EH3KJ6KRFQH60=;
+ b=pjZ7TCU6qUGGYOQZGucxxO08hHeDQzftl32VhS/OmjGqMW36Wj4woL8RwyRzR5ERs2bNmeGeE
+ SJ5QHSIblYnD+PIUMaQ0EKewRfeWd+6T8zCOTBwOd3rKqmktZhKnud/
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,68 +68,47 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-If wired LDAC, should be held low when unused (pin is active-low), which
-allows for synchronous DAC updates. This will be used to update all the
-channels at the same time when adding buffer support.
+Add sync() to operation to ad5686_bus_ops, which can be used to flush
+multiple pending data transfers at once. This is going to be used when
+implementing triggered buffer support.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 6 ++++++
- drivers/iio/dac/ad5686.h | 3 +++
- 2 files changed, 9 insertions(+)
+ drivers/iio/dac/ad5686.h | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index a48acedff51c..73105c197964 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -12,6 +12,7 @@
- #include <linux/dev_printk.h>
- #include <linux/errno.h>
- #include <linux/export.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-@@ -515,6 +516,11 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(rstc),
- 				     "Failed to get reset control\n");
- 
-+	st->ldac_gpio = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->ldac_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
-+				     "Failed to get LDAC GPIO\n");
-+
- 	reset_control_assert(rstc);
- 	fsleep(1); /* reset pulse: comfortably bigger than the spec */
- 	reset_control_deassert(rstc);
 diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index a06fe7d89305..f3110410d89b 100644
+index f3110410d89b..1da5f1b4d52a 100644
 --- a/drivers/iio/dac/ad5686.h
 +++ b/drivers/iio/dac/ad5686.h
-@@ -60,6 +60,7 @@ enum ad5686_regmap_type {
- 	AD5686_REGMAP,
+@@ -67,10 +67,12 @@ struct ad5686_state;
+  * struct ad5686_bus_ops - bus specific read/write operations
+  * @read: read a register value at the given address
+  * @write: write a command, address and value to the device
++ * @sync: ensure the completion of the write operation (optional)
+  */
+ struct ad5686_bus_ops {
+ 	int (*read)(struct ad5686_state *st, u8 addr);
+ 	int (*write)(struct ad5686_state *st, u8 cmd, u8 addr, u16 val);
++	int (*sync)(struct ad5686_state *st);
  };
  
-+struct gpio_desc;
- struct ad5686_state;
- 
  /**
-@@ -119,6 +120,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @dev:		device instance
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-+ * @ldac_gpio:		LDAC pin GPIO descriptor
-  * @vref_mv:		actual reference voltage used
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-@@ -131,6 +133,7 @@ struct ad5686_state {
- 	struct device			*dev;
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
-+	struct gpio_desc		*ldac_gpio;
- 	unsigned short			vref_mv;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
+@@ -159,7 +161,13 @@ int ad5686_probe(struct device *dev,
+ 
+ static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
+ {
+-	return st->ops->write(st, cmd, addr, val);
++	int ret;
++
++	ret = st->ops->write(st, cmd, addr, val);
++	if (ret)
++		return ret;
++
++	return st->ops->sync ? st->ops->sync(st) : 0;
+ }
+ 
+ static inline int ad5686_read(struct ad5686_state *st, u8 addr)
 
 -- 
 2.43.0
