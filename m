@@ -1,67 +1,67 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010009.outbound.protection.outlook.com [52.101.46.9])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013000.outbound.protection.outlook.com [40.93.196.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC412DC77F;
-	Tue, 16 Jun 2026 13:16:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 273092D780E;
+	Tue, 16 Jun 2026 13:16:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.0
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781615790; cv=fail; b=Zxn/5pBqriRskb8sSYgxKoVvwlI0RL2hHeQPW4UtsC7fiMAIoxbGo7SPtDXaDyzHiGDrEBH8Sma79aBw8PyQl1vvgntUpLyYof+NM8olTXzle4AlOYhGQw2ZSh+20iTLlkI223REo9b+RaQx2LJkHZGc7BNSSwMbByDCQ1eqoWQ=
+	t=1781615798; cv=fail; b=kzlPq6WqitI65pDyN1v2Ngak2Yg/He/VndBsL6wAIG9AroIEIkgrn9+X3+CW9+n5cgnSoH1vvGWAGz95cOZvXonvKBtazWKAfbXF/F+pxvYQibzp3FQenlH4ZEGueUL1w8Hr+HzNUyuoeGHSgLxU97yDqklo8VFSPqP4y+yw1js=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781615790; c=relaxed/simple;
-	bh=nQXKEUkRsykbVCKbSCZcbRfv8uV82K6yy1O0ETZUZWQ=;
+	s=arc-20240116; t=1781615798; c=relaxed/simple;
+	bh=hZ55YXjx5iTniFLdHFEcOfhLENFh5FqckSxm+IknzM4=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gzlfNM35vqNrbQ3CqkwNL4lgtP/fwjx7ovOmvHlv4NIdcVMBezvwrwysNeSY+t6sLug//IymMhogwhjRdQwuMhoIEijYJfOnFPr6vDYMMFKOP995bzyazgv9VljFJgrjx0VTFei5V+tJiCvcH/HU9hOeP/g1ZNSaUct+iE4oom8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=WhmPjun7; arc=fail smtp.client-ip=52.101.46.9
+	 MIME-Version:Content-Type; b=XeSe4MiIuii/Ap4ikAfnGU+sFws2RqZBa9xTOKa+vpmZVantP8VNtkHB/ooYt/gk8p+KtaNiTyeUxkhSAyOp6klFdB2WtzRNt4Vt5Ab3ssWQw2bP9eYLSS8jH0vEskF2ujXHPcj61rXysf5MRVry8tZeSfN/ZAn0CoWSE+0Qgi0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=j5mYge6r; arc=fail smtp.client-ip=40.93.196.0
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="WhmPjun7"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="j5mYge6r"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v5CUDeYvqrjaUxE2RRvC56NU5lw2lJ/S/awjnX6A1X5hugOaPvW407gYGM7pb4YShvPirqnU2AT1MuTX4uBrllY6ONwciQSlMamJrmSb+fsX/+DXAUKAlPcEvCoq/u6ZuuC7Mr2Fcf1j3J9Ay1TIS5OeGBU72Y/QwPSKmGUuEZ0vINvG/GFDWTFjGxF1MTWy2BLip66IG9sIJG5OQu/55cCy1aDGgs66U0+38dbwjCZf9tr2D0GcfIre+cTBjvQnmOLC+E4EWlAuuwIjkQXw71Pbp0GXksqEsn5VCNUc+yWnkg+PW8Qvm2mPDTEL8jgk9UDjXeZ7BT6EtNgA57q8Zw==
+ b=hxXjoMR4SAzxKTV4gqZ7vb8tinWlPT2/Inm90h2xuB+qAcYbjrheBj+yA+WvMWlQVH4FYNRjtUH9nHHb8mTEDSMUlRzbmgiDN1M0dNEW8uIuluMNklTRLBKNsb4GjaB1TYewP0JTioCgZbQA2Oc9Gn6isgRvALV05m5MmZDPS4RgNQgnYWnmfY2/bLxtg0CDNeuQdf0chuSqHR7Ko+g6yzVX3jBIjshPKOMEqFCUvR7H1lES1OYT+k17f402uYYoSDzk+skWGWR/cPO95pdyZY7d2bo9HsSXpj2J8H0k3nA6PAYVjnSmkZWnz/v1m3Hi8hge/VupFrbpfFxlfCknzQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dlicb56cmY+Y856z75fJmeR0iy/8z9F9sEyocMKdcPw=;
- b=T560BxnmvKwhg88H6PX8ZI1ATzdUWbmWtMOwD39BMsyUVYEqfaGE/qLKEy4GVvHCt6k29FeHhxno3dfgKoNxsu7oaGKzA7kukBYQKDG/81MF1egDl3ft55IZ0kuVXhTU7XGnnCEONAkvucMi03cABAVDVAycDWOG5yMX6mSOHZmnMoI6b2SJpDIhBGjbLE9dz87VqCogjZP9vQDhhZ1+C2vE9kA/w/K01++5CHZpD1NiAZfvg3DA/FYndDZYwOxkuxUIRNkcSrcFJncqt3un/B/cY9Xux024uK6YTa2fTz4jwBNVZSMhgw9owkXgNpwujsgmtUoh78sce/GIq+4wFA==
+ bh=UII5f7HnL/nvPKBI99b5LyZ5lfzjBrXSdQQ4ijzAS9c=;
+ b=hr/lGDf1WbFlvqY9rFeCYXgO/f1bile/t3m5Kie8h9OcWs7V9pSItSQT5D2YBAhBxDuIwqRxKH1a4Rcfkk2VS8aqi5hcr0uFMgHqNuKtHhXExSE+ZoW8tnnB5BP0YXPBdRPbCE5iW4dksfVTc5qukiVmhiYZDjAxuou676/Wg0egQezd2fZwGq3yC+wXm/2IosHHAErkM3Ee5hCdTv+DlxQ4usINt3LVutfD5KMnaLpLv6gteW7LO97TlwLLB441rKuWRDlILKfmE0mvqLbWhS7gFWj+l+d+Vg7vepwuQRJlbvYwqQWt6boAW2QEA8oS7AhOFevIqtb/jm1tb1k4Tw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dlicb56cmY+Y856z75fJmeR0iy/8z9F9sEyocMKdcPw=;
- b=WhmPjun7kb9BEV6aXqGuzx2dPCoOv0eJqO0OEIoKd+Fey4pJ+jaTwTEsp3XDxPe9tSZ4sbS+u5SZDz/wRbYFPGgSwfM3Zp6ysD9tWL1AzDlxPOuGWC9MLWgXd2XqiSVU5sDfgqV737azv0r+XzyUvXpXxRBmiZPf8VVvXM43Qzw=
-Received: from MW4P220CA0020.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::25)
- by IA1PR12MB8335.namprd12.prod.outlook.com (2603:10b6:208:3fa::19) with
+ bh=UII5f7HnL/nvPKBI99b5LyZ5lfzjBrXSdQQ4ijzAS9c=;
+ b=j5mYge6rZ0kkJ9nWGEMSL1i7rFA1BiLb/ofWhBlY8ViRDl/1/sPCRTtYFvnTX9S8WpUDs5WL2E4Ek5alzKuxftTyxijDiCud1ePc9VsUyyMchKu9zpJp/zJ0euuQUzN2kKV8LO8EXWqZxZIYS6QyUanbunJkV8BJjAZtr2+rTAs=
+Received: from BY1P220CA0039.NAMP220.PROD.OUTLOOK.COM (2603:10b6:a03:59e::7)
+ by CHAPR12MB999247.namprd12.prod.outlook.com (2603:10b6:610:2ff::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Tue, 16 Jun
- 2026 13:16:23 +0000
-Received: from SJ1PEPF00001CE7.namprd03.prod.outlook.com
- (2603:10b6:303:115:cafe::71) by MW4P220CA0020.outlook.office365.com
- (2603:10b6:303:115::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.113.18 via Frontend Transport; Tue,
- 16 Jun 2026 13:16:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.16; Tue, 16 Jun
+ 2026 13:16:27 +0000
+Received: from SJ1PEPF000026C6.namprd04.prod.outlook.com
+ (2603:10b6:a03:59e:cafe::ac) by BY1P220CA0039.outlook.office365.com
+ (2603:10b6:a03:59e::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.113.16 via Frontend Transport; Tue,
+ 16 Jun 2026 13:16:26 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SJ1PEPF00001CE7.mail.protection.outlook.com (10.167.242.23) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ SJ1PEPF000026C6.mail.protection.outlook.com (10.167.244.103) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.139.8 via Frontend Transport; Tue, 16 Jun 2026 13:16:22 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.139.8 via Frontend Transport; Tue, 16 Jun 2026 13:16:25 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 16 Jun
- 2026 08:16:17 -0500
+ 2026 08:16:21 -0500
 Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
  (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 16 Jun
- 2026 08:16:17 -0500
+ 2026 08:16:21 -0500
 Received: from xirsalihe40.xilinx.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
- Transport; Tue, 16 Jun 2026 08:16:15 -0500
+ Transport; Tue, 16 Jun 2026 08:16:19 -0500
 From: Salih Erim <salih.erim@amd.com>
 To: <jic23@kernel.org>, <andy@kernel.org>
 CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <robh@kernel.org>,
@@ -69,9 +69,9 @@ CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <robh@kernel.org>,
 	<michal.simek@amd.com>, <linux@roeck-us.net>, <erimsalih@gmail.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, Salih Erim <salih.erim@amd.com>
-Subject: [PATCH v8 2/5] iio: adc: add Versal SysMon driver
-Date: Tue, 16 Jun 2026 14:15:56 +0100
-Message-ID: <20260616131559.3029543-3-salih.erim@amd.com>
+Subject: [PATCH v8 4/5] iio: adc: versal-sysmon: add threshold event support
+Date: Tue, 16 Jun 2026 14:15:58 +0100
+Message-ID: <20260616131559.3029543-5-salih.erim@amd.com>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20260616131559.3029543-1-salih.erim@amd.com>
 References: <20260616131559.3029543-1-salih.erim@amd.com>
@@ -85,345 +85,538 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE7:EE_|IA1PR12MB8335:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7f692f17-fd07-40cb-3354-08decba9766a
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C6:EE_|CHAPR12MB999247:EE_
+X-MS-Office365-Filtering-Correlation-Id: 811d53c9-7172-4e0c-77cd-08decba97834
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|36860700016|376014|82310400026|23010399003|1800799024|11063799006|56012099006|5023799004|22082099003|18002099003|3023799007|6133799003;
+	BCL:0;ARA:13230040|376014|7416014|36860700016|82310400026|23010399003|1800799024|6133799003|56012099006|3023799007|11063799006|22082099003|18092099006|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	U/bTtZRCoAbZ1aE0f1LlLwIlKMDR4iFLj8/d9pdWwJ+RNZ6I9UuLM6X1SO00BeDfed9tdWdI8m8/5S4ga4JK9ugISzsPjcZEfs/xTwI9MhTl4ARWBY++Z/V9c6KtV5zc74rdRaqLxchj6nAwv8QYwsKrIIypuLThaA38nzp7FtAt9NtSqKdpJGURiZPE6pA20vC31s8Jx1D1ZzMPnHMtX24B/InnXMl74obCehGMwzwVqZKIACisEFiugqDZ+NAQ78//768xr+jNJhtw5Ek50nzZrlmIRRb1nf3ljEWGJjdNHiKqzKkdT036p2KAOBKiYOLAAS8GDYPDCrCCTG4l5jh5MMDof5i+WWoytrMwem+/VBjqXKY1aqZH5WjLlyCGsLQxu5GinJKqfWlmG6fIV0oVXGZk1gvtutKEXpcM2ZvICPYumFHj8fCkcNL8kK4GGdokQArUsJL82tN02XPdWJugoVVc7h1Ky9Mk66CwFXOMsXqFzA+C1xBOdWtRpFTmW2f38iKsddicAa3YzsuCI7KD8EwfTKXrRQb33qHaezU/xNcuPP2uA0sVRVxpO0RNQ2u7B3VzRH45zZHsfYrLQ7i+Ud36Rbd3XkfWDeya1OthYp1+gkGXIa4RigwUE3pIBtnLxcRuHOto6fv1JBm7Ade7X4ZEz95E5wN9HlwAIfnKMFYuHAXdN3flaCtZEsJvmhk+XK5BLCTcnUnM0naiYHvJW6+n7x5r83jr/pI12hE=
+	8bcyejuBu6ZeU4zvzBzQihH7lpinmoHywdcMO7LESDPVbQYT4sHWWSSRHuoIMe0k38N+Cxp6grm9r93Wi+ZNUwWzsRmEwS/pu+wvcuL50uD9BInc5DjpNg+67x18LkR8kiZ8CaM0Cbl69AT499EQ75GLc5BruppIGvDeFuOhatbLq2QxZFbr1n9Zk0Pz+HoBJxy9tFhO1imzAkxlL7SzaXCrm4VndFWvBasWIOPGqzHyUCgSos8FTUSZAP+HiSX+xxGUAZjuDY6Vi0XUfebulO4ActN0VZ4N/jXiXVIwFOvLtjPWi04DBKHLK9oT4HjMfnjbpGXZjAlTxPGv9Wfzh9vvHqb2lHw96DWJ8CAelSPPQeLMCIxWeLHl69EEuQlL4M6c/rvbW3gpZpLsRTowsA2XidB0NfSERvUqPcgNq+iKog+mBB/ulfgk/ha7dhJ1iXopN8cuJqgiJNk8H2X99mb9efplh/zmlXDgAa09mdZph2nNWgCiQDO2r1eSWTRp2PX8vFRZx8x0dI2gXt1OFwRq8QjdamISK95G3E/lm0EfqGFp12rYPWfdy7cRZ098WZNs59h7J0IKZHA8yAo4Myseh5PoEGNf6u8UvEpyyaJhIHfJzhrDIHftX9h5PLsus96wQMVGCmcL6aKuWeWza/LY93uIge3xHPVFlD0m4RLFApUDFNXMBysmElFUbEkrKYMzFzY5I57FD9yvCRwxjtmH9G5TTwuJjT4ki/ondhk=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(36860700016)(376014)(82310400026)(23010399003)(1800799024)(11063799006)(56012099006)(5023799004)(22082099003)(18002099003)(3023799007)(6133799003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700016)(82310400026)(23010399003)(1800799024)(6133799003)(56012099006)(3023799007)(11063799006)(22082099003)(18092099006)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	b1QNpN9//990PWanZalMT6aVzOqjdE58I7UiOkRPv/2/euO1NFBrG5RvYaBfQ3CVwDeYVs2Vk22l727iq+4Za7PFJq6CDDv4omlc+8eYYFM1ytOvnYRNEKqPrepb4D5lhlBz4+E4bneZ4sODsdq+xyv7Usko6ai7fHj5C4/ilgl2DWm5rmvaDHkbz81BIUwF5bD4VsQWb/C5/gdfxgFOVLcCsFo1e/LazK8KjfoWgl6wBsAzQvD1jyLSTZIcR3mcbdKd41WcMK6l0H9rvgBUTqQ3P4s/GYLFNl8ABcwYnPfVoOyLG39JaxcEP/z58z6gf5y8H/6ulUnlrMDcRIBgWfzVuQyVoFdzDa09eHFQobbsct5ecJqOPDNzHXUXw77hujm75Y4MS5b0J5nmfBT3CN81FL5yexWul7DakMYtxChH0ZXwCvE4Sj1dOwCsyjbk
+	kW5ksSqIttztU67R4nkv6pmbSsnL0fbahiaGHhCDiDA4LixXztX5l8ha1iVZMjeBOriQIg501riQ/zYTjAi52KyQn/c7XR4J5dCgCcvkGdfYYrPzYJNeISkVdKouIn3f3b14sVbj1eKwGE4QYb+HXtyzkDNAMpIGSBgPI2+6V4R+hssenxg7yy+T1Ziqv7b+Fbzw7fcnThcbbCjNlFkXBsAluQYN8c/DVvb5pQ5dlPBc5dOpWiEAsA+9Kif+RPuI0O7EGVcMjtssn6GchoL1O1Q3Y2WBOXhTQuu+sfUjG7IFsBOLn514ysFOOiwJtbFhI8+bml41EYrUjbrk1nqx5avscLPznanfbxY6I5PuQw39h+ATAbov1uAKoLrvsU8ET9MS7dFHE+L9NvEFsf3nyR1kI2Mku7zahpneSXMVNh5yOw0+bjiC4ZIi0PrOT+ha
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2026 13:16:22.8765
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2026 13:16:25.8696
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f692f17-fd07-40cb-3354-08decba9766a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 811d53c9-7172-4e0c-77cd-08decba97834
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE7.namprd03.prod.outlook.com
+	SJ1PEPF000026C6.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8335
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CHAPR12MB999247
 
-Add the core driver and MMIO platform driver for the AMD/Xilinx Versal
-System Monitor (SysMon) block.
+Add threshold event support for temperature and supply voltage
+channels.
 
-The SysMon block resides in the platform management controller (PMC) and
-provides on-chip voltage and temperature monitoring through a 10-bit,
-200 kSPS ADC. It can monitor up to 160 voltage channels and 64
-temperature satellites distributed across the SoC, with a consistent
-sample rate of 8 kSPS per channel regardless of how many channels are
-enabled.
+Temperature events:
+  - Rising threshold with configurable value on the device
+    temperature channel (current max across all satellites)
+  - Per-channel hysteresis as a millicelsius value
+  - Event direction is IIO_EV_DIR_RISING (hysteresis mode)
 
-The hardware also provides four aggregate temperature registers that
-are always present regardless of the device tree configuration: the
-current max and min across all active satellites, and the peak and
-trough values recorded since the last hardware reset.
+Supply voltage events:
+  - Rising/falling threshold per supply channel
+  - Per-channel alarm enable via alarm configuration registers
 
-The driver is split into two compilation units:
-  - versal-sysmon-core: Channel parsing, IIO registration, read_raw
-  - versal-sysmon: MMIO platform driver with custom regmap accessors
+The hardware supports both window and hysteresis alarm modes for
+temperature. This driver uses hysteresis mode, where the upper
+threshold triggers the alarm and the lower threshold clears it
+(re-arm point). The hardware has a single ISR bit per temperature
+channel with no indication of which threshold was crossed, so
+hysteresis mode is the natural fit. The lower threshold register
+is computed internally as (upper - hysteresis).
 
-Voltage results are stored in a 19-bit modified floating-point format
-and converted to millivolts. Temperature results are stored in Q8.7
-signed fixed-point Celsius format and converted to millicelsius.
+Hysteresis is stored in the driver as a millicelsius value,
+initialized from the hardware registers at probe. Writing the
+rising threshold or hysteresis recomputes the lower register.
+ALARM_CONFIG is hard-coded to hysteresis mode during init.
 
-The MMIO regmap backend uses a custom reg_write accessor that
-automatically unlocks the NPI (NoC programming interface) lock
-register before each write, as required by the hardware. The regmap
-is configured with fast_io since the underlying MMIO accessors are
-safe to call from atomic context.
+The hardware also provides a separate over-temperature (OT)
+threshold, but it is not exposed through IIO as it serves as a
+hardware safety mechanism for platform shutdown. OT will be
+exposed through the thermal framework in a follow-up series.
 
-Co-developed-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Michal Simek <michal.simek@amd.com>
+The interrupt handler masks active threshold interrupts (which are
+level-sensitive) and schedules a delayed worker to poll for condition
+clear before unmasking. When no hardware IRQ is available, event
+specs are not attached and interrupt init is skipped, since the
+I2C regmap backend cannot be called from atomic context.
+
+When disabling a supply channel alarm, the group interrupt remains
+active if any other channel in the same alarm group still has an
+alarm enabled.
+
+A devm cleanup action masks all interrupts on driver unbind to
+prevent unhandled interrupt storms after the IRQ handler is freed.
+
 Signed-off-by: Salih Erim <salih.erim@amd.com>
 ---
 Changes in v8:
-  - Use MILLIDEGREE_PER_DEGREE instead of MILLI for temperature
-    scale (Andy)
-  - Add overflow.h include for size_add() (Andy)
-  - Rename sysmon_core_probe to devm_versal_sysmon_core_probe (Andy)
+  - Use MILLIDEGREE_PER_DEGREE in q8p7 conversion functions (Andy)
+  - Use regmap_test_bits() in sysmon_read_alarm_config (Andy)
+  - Join sysmon_parse_fw signature onto one line (Andy)
+  - Fix devm teardown race: replace devm_delayed_work_autocancel
+    with INIT_DELAYED_WORK; fold cancel_delayed_work_sync into
+    sysmon_disable_interrupts to prevent the worker from
+    re-enabling interrupts after the IRQ handler is freed (Sashiko)
+  - Drop devm-helpers.h include (no longer needed)
 
 Changes in v7:
-  - Add documentation comment explaining the four static aggregate
-    temperature registers (Jonathan)
+  - Move TEMP threshold event onto channel 0; drop OT as
+    separate IIO channel -- OT is a hardware safety mechanism
+    better suited for the thermal framework follow-up (Jonathan)
+  - Use single temp_channels array; attach event spec to
+    channel 0 at runtime when IRQ is available, matching the
+    pattern used for supply channels (Jonathan)
+  - Remove sysmon_temp_thresh_offset; use SYSMON_TEMP_TH_UP
+    and SYSMON_TEMP_TH_LOW defines directly at call sites
+  - Return administrative state from temp_mask in
+    read_event_config instead of transient hardware IMR
+    (Jonathan, Sashiko)
+  - Add devm_add_action_or_reset to mask all HW interrupts
+    on driver unbind (Sashiko)
+  - Remove SYSMON_CHAN_TEMP_EVENT macro, SYSMON_ADDR_TEMP_EVENT,
+    SYSMON_ADDR_OT_EVENT, SYSMON_BIT_OT, SYSMON_OT_HYST_MASK,
+    OT_TH_LOW/UP registers, ot_hysteresis from struct
+  - Simplify sysmon_get_event_mask, sysmon_update_temp_lower,
+    sysmon_init_hysteresis -- all now operate on single TEMP
+    channel only
+
 
 Changes in v6:
-  - Macro brace on separate line for SYSMON_CHAN_TEMP (Andy)
-  - Remove unneeded = 0 init on num_supply, num_temp (Andy)
-  - Use temporary variable for channel count allocation (Andy)
-  - Initialize idx directly after memcpy (Andy)
-  - Join info_mask_separate on one line (Andy)
-  - Join info_mask_shared_by_type on one line (Andy)
-  - Join devm_kcalloc on one line (Andy)
-  - Reversed xmas tree ordering in sysmon_parse_fw
+  - Remove types.h from header (not needed at any stage) (Andy)
+  - Macro brace on separate line for SYSMON_CHAN_TEMP_EVENT (Andy)
+  - switch(chan->type) in all event functions instead of cascading
+    if statements (Andy)
+  - switch(info) in read/write_event_value for nested
+    dispatch (Andy)
+  - Reversed xmas tree in sysmon_update_temp_lower and
+    sysmon_init_hysteresis (Andy)
+  - scoped_guard(spinlock_irq) with error check in
+    sysmon_unmask_worker (Andy)
+  - Combined regmap_read error check with || in
+    sysmon_iio_irq (Andy)
+  - Join devm_request_irq on one line (Andy)
+  - Fix fwnode_irq_get() to propagate only -EPROBE_DEFER;
+    treating all negatives as fatal broke probe on I2C nodes
+    without interrupts property
 
 Changes in v5:
-  - Add err.h include to core (IWYU) (Andy)
-  - Drop (int) cast on MILLI in scale assignment (Andy)
-  - sign_extend32() instead of (s16) cast for temperature raw (Andy)
-  - Remove unneeded parentheses in voltage address calculation (Andy)
-  - Drop NULL checks before fwnode_get_child_node_count (Andy)
+  - clamp() instead of clamp_t() (Andy)
+  - regmap_assign_bits() instead of separate set/clear (Andy)
+  - Remove unneeded parentheses (2 places) (Andy)
+  - for_each_set_bit on single line (Andy)
+  - regmap_clear_bits() instead of regmap_update_bits() (Andy)
+  - Simplify unmask XOR to ~status & masked_temp (Andy)
+  - Add comment explaining unmask &= ~temp_mask logic (Andy)
+  - Split container_of across two lines (Andy)
+  - Move ISR write after !isr check to avoid writing 0 (Andy)
+  - unsigned int for init_hysteresis address param (Andy)
+  - Add comment explaining error check policy in worker/IRQ (Andy)
   - Nested size_add() for overflow-safe allocation (Andy)
-  - if (ret) instead of if (ret < 0) for fwnode property reads (Andy)
-  - Remove outer parentheses in satellite address calculation (Andy)
-  - Loop index declared in for() scope (Andy)
-  - MMIO: add err.h, types.h includes (IWYU) (Andy)
-  - Header: remove unused types.h include and struct iio_dev
-    forward declaration (Andy)
+  - Propagate negative from fwnode_irq_get() for
+    EPROBE_DEFER (Andy)
+  - Pass irq instead of has_irq to sysmon_parse_fw (Andy)
 
 Changes in v4:
-  - Temperature: RAW + SCALE (IIO_VAL_FRACTIONAL, 1000/128) instead
-    of PROCESSED (Jonathan)
-  - Voltage: PROCESSED only, drop RAW (Jonathan)
-  - Drop scan_type from all channel macros (Jonathan)
-  - Move __free(fwnode_handle) declarations down to just above use
-    (Jonathan)
-  - devm_regmap_init() on one line (Jonathan)
-  - Lock comment: describe RMW sequences and cached state (Jonathan)
-  - Remove sysmon_q8p7_to_millicelsius() from this patch; the function
-    is now introduced in P4 where it is first used
+  - Merge event channels into static temp array; two arrays
+    (with/without events) selected by has_irq (Jonathan)
+  - Event-only channels have no info_mask; their addresses are
+    logical identifiers, not readable registers
+  - Drop RAW for voltage events, keep PROCESSED only (Jonathan)
+  - Drop scan_type from event channel macro (Jonathan)
+  - Blank lines between call+error-check blocks (Jonathan)
+  - Fit under 80 chars on one line where possible (Jonathan)
+  - default case returns -EINVAL instead of break (Jonathan)
+  - sysmon_handle_event: return early in each case (Jonathan)
+  - guard(spinlock) in sysmon_iio_irq, return IRQ_NONE/IRQ_HANDLED
+    directly (Jonathan)
+  - Take irq_lock in write_event_config for temp_mask updates to
+    synchronize with unmask worker (Sashiko)
 
 Changes in v3:
-  - IWYU: add array_size.h, string.h, types.h to core; audit and
-    fix header and MMIO driver includes (Andy)
-  - Rename _ext to _name in SYSMON_CHAN_TEMP macro parameter (Andy,
-    Jonathan)
-  - Use .info_mask_separate = BIT() style in SYSMON_CHAN_TEMP (Andy)
-  - Use s16 parameter in sysmon_q8p7_to_millicelsius (Andy)
-  - Use sign_extend32() in sysmon_supply_rawtoprocessed (Andy)
-  - Split sysmon_read_raw parameters logically across lines (Andy)
-  - Remove redundant (int) casts on regval (Andy)
-  - Split num_supply/num_temp initialization (Andy)
-  - Use __free(fwnode_handle) cleanup, remove goto err_put (Andy)
-  - Use size_add() for overflow-safe allocation (Andy)
-  - Use dev_err_probe() in sysmon_parse_fw error paths (Jonathan)
-  - Move fwnode_irq_get() to core_probe, remove irq parameter
-    from bus driver interfaces (Jonathan)
-  - Use (int)MILLI at call sites, drop SYSMON_MILLI define (Andy,
-    Jonathan)
-  - Remove sysmon->dev, sysmon->indio_dev, sysmon->irq from struct;
-    pass as local variables or use regmap_get_device() (Jonathan)
-  - Use struct device *dev local in sysmon_platform_probe (Andy)
-  - Describe protected data in lock comment (Jonathan)
-  - Add comment explaining RAW+PROCESSED co-exposure (Jonathan)
+  - IWYU: add new includes, group iio headers with blank line (Andy)
+  - Reduce casts in millicelsius_to_q8p7, consistent style with
+    q8p7_to_millicelsius (Andy)
+  - Use clamp_t with typed constants, remove tmp & U16_MAX (Andy)
+  - Use !! to return 0/1 from read_alarm_config (Andy)
+  - Use regmap_set_bits/clear_bits in write_alarm_config (Andy)
+  - Add comment explaining spinlock is safe (I2C never reaches
+    event code path) (Andy)
+  - Add comment explaining IMR negation logic (Andy)
+  - Split read_event_value/write_event_value parameters logically
+    across lines (Andy)
+  - Move mask/shift after regmap_read error check (Andy)
+  - Remove redundant else in read_event_value and
+    write_event_value (Andy)
+  - Use named constant for hysteresis bit, if-else not ternary
+    (Andy)
+  - Loop variable declared in for() scope (Andy)
+  - Add error checks in sysmon_handle_event (Andy)
+  - Use IRQ_RETVAL() macro (Andy)
+  - Use devm_delayed_work_autocancel instead of manual INIT +
+    devm_add_action (Andy)
+  - Use FIELD_GET/FIELD_PREP for hysteresis register bits
+    (Jonathan)
+  - Split OT vs TEMP handling with FIELD_GET (Jonathan)
+  - Rework hysteresis: store as millicelsius value, hardcode
+    ALARM_CONFIG to hysteresis mode, compute lower threshold
+    from (upper - hysteresis), initialize from HW at probe
+    (Jonathan)
+  - Remove falling threshold for temperature; single event
+    spec per channel with IIO_EV_DIR_RISING (Jonathan)
+  - Push IIO_EV_DIR_RISING events for temperature,
+    IIO_EV_DIR_EITHER for voltage (Jonathan)
 
 Changes in v2:
-  - Split into core (versal-sysmon-core.c) + MMIO platform driver
-    (versal-sysmon.c) + shared header (versal-sysmon.h)
-  - Uses regmap API instead of direct readl/writel
-  - MMIO regmap uses custom callbacks with NPI unlock in write path
-  - Reverse Christmas Tree variable ordering throughout
-  - Header include order fixed
-  - MAINTAINERS entry folded in with wildcard F: pattern
-  - Kconfig: hidden VERSAL_SYSMON_CORE + VERSAL_SYSMON selects it
-  - Kconfig/Makefile: alphabetical ordering (VERSAL before VF610)
-  - Bounds validation on DT reg values
-  - Named constants replace magic numbers (SYSMON_REG_STRIDE,
-    SYSMON_SUPPLY_MANTISSA_BITS, SYSMON_MILLI)
-  - kernel-doc for exported sysmon_core_probe() and sysmon_parse_fw()
-  - Supply voltage conversion uses proper two's complement sign
-    extension (s16 cast) matching the hardware specification
-  - Register offsets sorted by address in header
-  - Each patch introduces only the defines, fields, and includes
-    it uses (no dead code in any commit)
-  - Removed unused linux/limits.h and linux/units.h includes
-  - Renamed iio_dev_info to sysmon_iio_info
-  - regmap_write return values checked in probe init path
- MAINTAINERS                          |   7 +
- drivers/iio/adc/Kconfig              |  20 ++
- drivers/iio/adc/Makefile             |   2 +
- drivers/iio/adc/versal-sysmon-core.c | 291 +++++++++++++++++++++++++++
- drivers/iio/adc/versal-sysmon.c      |  93 +++++++++
- drivers/iio/adc/versal-sysmon.h      |  67 ++++++
- 6 files changed, 480 insertions(+)
- create mode 100644 drivers/iio/adc/versal-sysmon-core.c
- create mode 100644 drivers/iio/adc/versal-sysmon.c
- create mode 100644 drivers/iio/adc/versal-sysmon.h
+  - Reverse Christmas Tree variable ordering in all functions
+  - Named constants for hysteresis bits: SYSMON_OT_HYST_BIT,
+    SYSMON_TEMP_HYST_BIT instead of magic 0x1/0x2
+  - SYSMON_ALARM_BITS_PER_REG replaces magic number 32
+  - SYSMON_ALARM_OFFSET() helper macro deduplicates alarm register
+    offset computation
+  - BIT() macro for shift expressions in conversion functions
+  - Hysteresis input validated to single-bit range (0 or 1)
+  - Event channels only created when irq > 0 (I2C safety)
+  - Group alarm interrupt stays active while any channel in the
+    group has an alarm enabled
+  - write_event_value returns -EINVAL for unhandled types
+  - IRQ_NONE returned for spurious interrupts
+  - Q8.7 write path uses multiplication instead of left-shift
+    to avoid undefined behavior with negative temperatures
+  - (u16) mask prevents garbage in reserved register bits
+  - regmap_write return values checked for IER/IDR writes
+  - devm cleanup ordering: cancel_work before request_irq
+ drivers/iio/adc/versal-sysmon-core.c | 610 ++++++++++++++++++++++++++-
+ drivers/iio/adc/versal-sysmon.h      |  36 ++
+ 2 files changed, 638 insertions(+), 8 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2fb1c75afd1..46762c8496d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -29216,6 +29216,13 @@ F:	Documentation/devicetree/bindings/memory-controllers/xlnx,versal-net-ddrmc5.y
- F:	drivers/edac/versalnet_edac.c
- F:	include/linux/cdx/edac_cdx_pcol.h
- 
-+XILINX VERSAL SYSMON DRIVER
-+M:	Salih Erim <salih.erim@amd.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
-+F:	drivers/iio/adc/versal-sysmon*
-+
- XILINX WATCHDOG DRIVER
- M:	Srinivas Neeli <srinivas.neeli@amd.com>
- R:	Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a9dedbb8eb4..c7f19057484 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1943,6 +1943,26 @@ config TWL6030_GPADC
- 	  This driver can also be built as a module. If so, the module will be
- 	  called twl6030-gpadc.
- 
-+config VERSAL_SYSMON_CORE
-+	tristate
-+	select REGMAP
-+
-+config VERSAL_SYSMON
-+	tristate "AMD Versal SysMon driver"
-+	depends on ARCH_ZYNQMP || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	select VERSAL_SYSMON_CORE
-+	help
-+	  Say yes here to have support for the AMD/Xilinx Versal System
-+	  Monitor (SysMon). This driver provides voltage and temperature
-+	  monitoring through the IIO subsystem.
-+
-+	  The SysMon measures up to 160 supply voltages and reads up to
-+	  64 temperature satellites distributed across the SoC.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called versal-sysmon.
-+
- config VF610_ADC
- 	tristate "Freescale vf610 ADC driver"
- 	depends on HAS_IOMEM
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 097357d146b..d7696b1b157 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -167,6 +167,8 @@ obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
- obj-$(CONFIG_TI_TSC2046) += ti-tsc2046.o
- obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
- obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
-+obj-$(CONFIG_VERSAL_SYSMON_CORE) += versal-sysmon-core.o
-+obj-$(CONFIG_VERSAL_SYSMON) += versal-sysmon.o
- obj-$(CONFIG_VF610_ADC) += vf610_adc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
- obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
 diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
-new file mode 100644
-index 00000000000..a1d4a13b724
---- /dev/null
+index a1d4a13b724..8d567f9fa05 100644
+--- a/drivers/iio/adc/versal-sysmon-core.c
 +++ b/drivers/iio/adc/versal-sysmon-core.c
-@@ -0,0 +1,291 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD Versal SysMon core driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
+@@ -12,6 +12,7 @@
+ #include <linux/cleanup.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
++#include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/overflow.h>
+ #include <linux/property.h>
+@@ -20,10 +21,18 @@
+ #include <linux/sysfs.h>
+ #include <linux/units.h>
+ 
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ 
+ #include "versal-sysmon.h"
+ 
++/* TEMP hysteresis mode bit in SYSMON_TEMP_EV_CFG */
++#define SYSMON_TEMP_HYST_MASK		BIT(1)
 +
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/cleanup.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/overflow.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/string.h>
-+#include <linux/sysfs.h>
-+#include <linux/units.h>
++/* Compute alarm register offset from a channel address */
++#define SYSMON_ALARM_OFFSET(addr) \
++	(SYSMON_ALARM_REG + ((addr) / SYSMON_ALARM_BITS_PER_REG) * SYSMON_REG_STRIDE)
 +
-+#include <linux/iio/iio.h>
-+
-+#include "versal-sysmon.h"
-+
-+#define SYSMON_CHAN_TEMP(_chan, _address, _name)		\
-+{								\
-+	.type = IIO_TEMP,					\
-+	.indexed = 1,						\
-+	.address = _address,					\
-+	.channel = _chan,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.datasheet_name = _name,				\
-+}
-+
-+/*
-+ * Static temperature channels (always present).
-+ *
-+ * These are hardware-computed aggregate registers across all active
-+ * temperature satellites:
-+ *   temp:     current max temperature across all active satellites
-+ *   min:      current min temperature across all active satellites
-+ *   max_max:  highest peak recorded since last hardware reset
-+ *   min_min:  lowest trough recorded since last hardware reset
-+ */
-+static const struct iio_chan_spec temp_channels[] = {
-+	SYSMON_CHAN_TEMP(0, SYSMON_TEMP_MAX, "temp"),
-+	SYSMON_CHAN_TEMP(1, SYSMON_TEMP_MIN, "min"),
-+	SYSMON_CHAN_TEMP(2, SYSMON_TEMP_MAX_MAX, "max_max"),
-+	SYSMON_CHAN_TEMP(3, SYSMON_TEMP_MIN_MIN, "min_min"),
+ #define SYSMON_CHAN_TEMP(_chan, _address, _name)		\
+ {								\
+ 	.type = IIO_TEMP,					\
+@@ -35,6 +44,45 @@
+ 	.datasheet_name = _name,				\
+ }
+ 
++enum sysmon_alarm_bit {
++	SYSMON_BIT_ALARM0 = 0,
++	SYSMON_BIT_ALARM1 = 1,
++	SYSMON_BIT_ALARM2 = 2,
++	SYSMON_BIT_ALARM3 = 3,
++	SYSMON_BIT_ALARM4 = 4,
++	SYSMON_BIT_TEMP = 9,
 +};
 +
-+static void sysmon_supply_rawtoprocessed(int raw_data, int *val)
++/* Temperature event specification: rising threshold + hysteresis only */
++static const struct iio_event_spec sysmon_temp_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
++				 BIT(IIO_EV_INFO_VALUE) |
++				 BIT(IIO_EV_INFO_HYSTERESIS),
++	},
++};
++
++/* Supply event specifications */
++static const struct iio_event_spec sysmon_supply_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	},
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	},
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
+ /*
+  * Static temperature channels (always present).
+  *
+@@ -52,6 +100,16 @@ static const struct iio_chan_spec temp_channels[] = {
+ 	SYSMON_CHAN_TEMP(3, SYSMON_TEMP_MIN_MIN, "min_min"),
+ };
+ 
++static void sysmon_q8p7_to_millicelsius(s16 raw_data, int *val)
 +{
-+	int mantissa, format, exponent;
-+
-+	mantissa = FIELD_GET(SYSMON_MANTISSA_MASK, raw_data);
-+	exponent = SYSMON_SUPPLY_MANTISSA_BITS - FIELD_GET(SYSMON_MODE_MASK, raw_data);
-+	format = FIELD_GET(SYSMON_FMT_MASK, raw_data);
-+	/*
-+	 * When format bit is set the mantissa is two's complement
-+	 * (per hardware spec); sign-extend to int for correct arithmetic.
-+	 */
-+	if (format)
-+		mantissa = sign_extend32(mantissa, 15);
-+
-+	*val = (mantissa * (int)MILLI) >> exponent;
++	*val = (raw_data * MILLIDEGREE_PER_DEGREE) >> SYSMON_FRACTIONAL_SHIFT;
 +}
 +
-+static int sysmon_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
++static void sysmon_millicelsius_to_q8p7(u32 *raw_data, int val)
++{
++	*raw_data = (val << SYSMON_FRACTIONAL_SHIFT) / MILLIDEGREE_PER_DEGREE;
++}
++
+ static void sysmon_supply_rawtoprocessed(int raw_data, int *val)
+ {
+ 	int mantissa, format, exponent;
+@@ -69,6 +127,34 @@ static void sysmon_supply_rawtoprocessed(int raw_data, int *val)
+ 	*val = (mantissa * (int)MILLI) >> exponent;
+ }
+ 
++static void sysmon_supply_processedtoraw(int val, u32 reg_val, u32 *raw_data)
++{
++	int exponent = FIELD_GET(SYSMON_MODE_MASK, reg_val);
++	int format = FIELD_GET(SYSMON_FMT_MASK, reg_val);
++	int scale, tmp;
++
++	scale = BIT(SYSMON_SUPPLY_MANTISSA_BITS - exponent);
++	tmp = (val * scale) / (int)MILLI;
++
++	if (format)
++		tmp = clamp(tmp, S16_MIN, S16_MAX);
++	else
++		tmp = clamp(tmp, 0, U16_MAX);
++
++	*raw_data = (u16)tmp;
++}
++
++static int sysmon_supply_thresh_offset(int address,
++				       enum iio_event_direction dir)
++{
++	if (dir == IIO_EV_DIR_RISING)
++		return (address * SYSMON_REG_STRIDE) + SYSMON_SUPPLY_TH_UP;
++	if (dir == IIO_EV_DIR_FALLING)
++		return (address * SYSMON_REG_STRIDE) + SYSMON_SUPPLY_TH_LOW;
++
++	return -EINVAL;
++}
++
+ static int sysmon_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -115,6 +201,259 @@ static int sysmon_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static u32 sysmon_get_event_mask(const struct iio_chan_spec *chan)
++{
++	if (chan->type == IIO_TEMP)
++		return BIT(SYSMON_BIT_TEMP);
++
++	return BIT(chan->address / SYSMON_ALARM_BITS_PER_REG);
++}
++
++static int sysmon_read_alarm_config(struct sysmon *sysmon,
++				    unsigned long address)
++{
++	u32 shift = address % SYSMON_ALARM_BITS_PER_REG;
++	u32 offset = SYSMON_ALARM_OFFSET(address);
++
++	return regmap_test_bits(sysmon->regmap, offset, BIT(shift));
++}
++
++static int sysmon_write_alarm_config(struct sysmon *sysmon,
++				     unsigned long address, bool enable)
++{
++	u32 shift = address % SYSMON_ALARM_BITS_PER_REG;
++	u32 offset = SYSMON_ALARM_OFFSET(address);
++
++	return regmap_assign_bits(sysmon->regmap, offset, BIT(shift), enable);
++}
++
++static int sysmon_read_event_config(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
 +{
 +	struct sysmon *sysmon = iio_priv(indio_dev);
-+	unsigned int regval;
++	unsigned int imr;
++	int config_value;
++	u32 mask;
++	int ret;
++
++	mask = sysmon_get_event_mask(chan);
++
++	ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
++	if (ret)
++		return ret;
++
++	/* IMR bits are 1=masked, invert to get 1=enabled */
++	imr = ~imr;
++
++	switch (chan->type) {
++	case IIO_VOLTAGE:
++		config_value = sysmon_read_alarm_config(sysmon, chan->address);
++		if (config_value < 0)
++			return config_value;
++		return config_value && (imr & mask);
++
++	case IIO_TEMP:
++		/*
++		 * Return the administrative state, not the hardware IMR.
++		 * The IRQ handler temporarily masks the interrupt during
++		 * the polling window; reading IMR would show it as disabled.
++		 * temp_mask bit is set when administratively disabled.
++		 */
++		return !(sysmon->temp_mask & mask);
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sysmon_write_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir,
++				     bool state)
++{
++	u32 offset = SYSMON_ALARM_OFFSET(chan->address);
++	struct sysmon *sysmon = iio_priv(indio_dev);
++	u32 ier = sysmon_get_event_mask(chan);
++	unsigned int alarm_config;
++	int ret;
++
++	guard(mutex)(&sysmon->lock);
++
++	switch (chan->type) {
++	case IIO_VOLTAGE:
++		ret = sysmon_write_alarm_config(sysmon, chan->address, state);
++		if (ret)
++			return ret;
++
++		ret = regmap_read(sysmon->regmap, offset, &alarm_config);
++		if (ret)
++			return ret;
++
++		if (alarm_config)
++			return regmap_write(sysmon->regmap, SYSMON_IER, ier);
++
++		return regmap_write(sysmon->regmap, SYSMON_IDR, ier);
++
++	case IIO_TEMP:
++		if (state) {
++			ret = regmap_write(sysmon->regmap, SYSMON_IER, ier);
++			if (ret)
++				return ret;
++
++			scoped_guard(spinlock_irq, &sysmon->irq_lock)
++				sysmon->temp_mask &= ~ier;
++		} else {
++			ret = regmap_write(sysmon->regmap, SYSMON_IDR, ier);
++			if (ret)
++				return ret;
++
++			scoped_guard(spinlock_irq, &sysmon->irq_lock)
++				sysmon->temp_mask |= ier;
++		}
++		return 0;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++/*
++ * Recompute the lower threshold register from upper threshold and
++ * cached hysteresis. Called when either upper threshold or hysteresis
++ * is written.
++ */
++static int sysmon_update_temp_lower(struct sysmon *sysmon)
++{
++	unsigned int upper_reg;
++	int upper_mc, lower_mc;
++	u32 raw_val;
++	int ret;
++
++	ret = regmap_read(sysmon->regmap, SYSMON_TEMP_TH_UP, &upper_reg);
++	if (ret)
++		return ret;
++
++	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
++
++	lower_mc = upper_mc - sysmon->temp_hysteresis;
++	sysmon_millicelsius_to_q8p7(&raw_val, lower_mc);
++
++	return regmap_write(sysmon->regmap, SYSMON_TEMP_TH_LOW, raw_val);
++}
++
++static int sysmon_read_event_value(struct iio_dev *indio_dev,
++				   const struct iio_chan_spec *chan,
++				   enum iio_event_type type,
++				   enum iio_event_direction dir,
++				   enum iio_event_info info,
++				   int *val, int *val2)
++{
++	struct sysmon *sysmon = iio_priv(indio_dev);
++	unsigned int reg_val;
++	int offset;
 +	int ret;
 +
 +	guard(mutex)(&sysmon->lock);
 +
 +	switch (chan->type) {
 +	case IIO_TEMP:
-+		if (mask == IIO_CHAN_INFO_SCALE) {
-+			/* Q8.7 to millicelsius: raw * 1000 / 128 */
-+			*val = MILLIDEGREE_PER_DEGREE;
-+			*val2 = BIT(SYSMON_FRACTIONAL_SHIFT);
-+			return IIO_VAL_FRACTIONAL;
-+		}
-+		if (mask != IIO_CHAN_INFO_RAW)
++		switch (info) {
++		case IIO_EV_INFO_VALUE:
++			ret = regmap_read(sysmon->regmap, SYSMON_TEMP_TH_UP, &reg_val);
++			if (ret)
++				return ret;
++
++			sysmon_q8p7_to_millicelsius(reg_val, val);
++
++			return IIO_VAL_INT;
++
++		case IIO_EV_INFO_HYSTERESIS:
++			*val = sysmon->temp_hysteresis;
++			return IIO_VAL_INT;
++
++		default:
 +			return -EINVAL;
-+
-+		ret = regmap_read(sysmon->regmap, chan->address, &regval);
-+		if (ret)
-+			return ret;
-+
-+		*val = sign_extend32(regval, 15);
-+		return IIO_VAL_INT;
++		}
 +
 +	case IIO_VOLTAGE:
-+		if (mask != IIO_CHAN_INFO_PROCESSED)
-+			return -EINVAL;
++		offset = sysmon_supply_thresh_offset(chan->address, dir);
++		if (offset < 0)
++			return offset;
 +
-+		ret = regmap_read(sysmon->regmap,
-+				  chan->address * SYSMON_REG_STRIDE +
-+				  SYSMON_SUPPLY_BASE, &regval);
++		ret = regmap_read(sysmon->regmap, offset, &reg_val);
 +		if (ret)
 +			return ret;
 +
-+		sysmon_supply_rawtoprocessed(regval, val);
++		sysmon_supply_rawtoprocessed(reg_val, val);
++
 +		return IIO_VAL_INT;
 +
 +	default:
@@ -431,352 +624,493 @@ index 00000000000..a1d4a13b724
 +	}
 +}
 +
-+static int sysmon_read_label(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     char *label)
++static int sysmon_write_event_value(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir,
++				    enum iio_event_info info,
++				    int val, int val2)
 +{
-+	if (chan->datasheet_name)
-+		return sysfs_emit(label, "%s\n", chan->datasheet_name);
++	struct sysmon *sysmon = iio_priv(indio_dev);
++	unsigned int reg_val;
++	u32 raw_val;
++	int offset;
++	int ret;
 +
-+	return -EINVAL;
++	guard(mutex)(&sysmon->lock);
++
++	switch (chan->type) {
++	case IIO_TEMP:
++		switch (info) {
++		case IIO_EV_INFO_VALUE:
++			sysmon_millicelsius_to_q8p7(&raw_val, val);
++
++			ret = regmap_write(sysmon->regmap, SYSMON_TEMP_TH_UP, raw_val);
++			if (ret)
++				return ret;
++
++			/* Recompute lower = upper - hysteresis */
++			return sysmon_update_temp_lower(sysmon);
++
++		case IIO_EV_INFO_HYSTERESIS:
++			if (val < 0)
++				return -EINVAL;
++
++			sysmon->temp_hysteresis = val;
++
++			return sysmon_update_temp_lower(sysmon);
++
++		default:
++			return -EINVAL;
++		}
++
++	case IIO_VOLTAGE:
++		offset = sysmon_supply_thresh_offset(chan->address, dir);
++		if (offset < 0)
++			return offset;
++
++		ret = regmap_read(sysmon->regmap, offset, &reg_val);
++		if (ret)
++			return ret;
++
++		sysmon_supply_processedtoraw(val, reg_val, &raw_val);
++
++		return regmap_write(sysmon->regmap, offset, raw_val);
++
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static const struct iio_info sysmon_iio_info = {
-+	.read_raw = sysmon_read_raw,
-+	.read_label = sysmon_read_label,
-+};
-+
-+/**
-+ * sysmon_parse_fw() - Parse firmware nodes and configure IIO channels.
-+ * @indio_dev: IIO device instance
-+ * @dev: Parent device
-+ *
-+ * Reads voltage-channels and temperature-channels container nodes from
-+ * firmware and builds the IIO channel array. Static temperature channels
-+ * are prepended, followed by supply and satellite channels from DT.
-+ *
-+ * Return: 0 on success, negative errno on failure.
-+ */
-+static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
+ static int sysmon_read_label(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     char *label)
+@@ -128,24 +467,245 @@ static int sysmon_read_label(struct iio_dev *indio_dev,
+ static const struct iio_info sysmon_iio_info = {
+ 	.read_raw = sysmon_read_raw,
+ 	.read_label = sysmon_read_label,
++	.read_event_config = sysmon_read_event_config,
++	.write_event_config = sysmon_write_event_config,
++	.read_event_value = sysmon_read_event_value,
++	.write_event_value = sysmon_write_event_value,
+ };
+ 
++static void sysmon_push_event(struct iio_dev *indio_dev, u32 address)
 +{
-+	unsigned int num_chan, idx, temp_chan_idx, volt_chan_idx;
++	const struct iio_chan_spec *chan;
++	enum iio_event_direction dir;
++
++	for (unsigned int i = 0; i < indio_dev->num_channels; i++) {
++		if (indio_dev->channels[i].address != address)
++			continue;
++
++		chan = &indio_dev->channels[i];
++		/* Temp uses hysteresis mode (rising only), voltage uses window */
++		dir = (chan->type == IIO_TEMP) ? IIO_EV_DIR_RISING :
++						 IIO_EV_DIR_EITHER;
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(chan->type,
++						    chan->channel,
++						    IIO_EV_TYPE_THRESH,
++						    dir),
++			       iio_get_time_ns(indio_dev));
++	}
++}
++
++static int sysmon_handle_event(struct iio_dev *indio_dev, u32 event)
++{
++	u32 alarm_flag_offset = SYSMON_ALARM_FLAG + event * SYSMON_REG_STRIDE;
++	u32 alarm_reg_offset = SYSMON_ALARM_REG + event * SYSMON_REG_STRIDE;
++	struct sysmon *sysmon = iio_priv(indio_dev);
++	unsigned long alarm_flag_reg;
++	unsigned int reg_val;
++	u32 address, bit;
++	int ret;
++
++	switch (event) {
++	case SYSMON_BIT_TEMP:
++		sysmon_push_event(indio_dev, SYSMON_TEMP_MAX);
++
++		ret = regmap_write(sysmon->regmap, SYSMON_IDR, BIT(SYSMON_BIT_TEMP));
++		if (ret)
++			return ret;
++
++		sysmon->masked_temp |= BIT(SYSMON_BIT_TEMP);
++		return 0;
++
++	case SYSMON_BIT_ALARM0:
++	case SYSMON_BIT_ALARM1:
++	case SYSMON_BIT_ALARM2:
++	case SYSMON_BIT_ALARM3:
++	case SYSMON_BIT_ALARM4:
++		ret = regmap_read(sysmon->regmap, alarm_flag_offset, &reg_val);
++		if (ret)
++			return ret;
++
++		alarm_flag_reg = reg_val;
++
++		for_each_set_bit(bit, &alarm_flag_reg, SYSMON_ALARM_BITS_PER_REG) {
++			address = bit + SYSMON_ALARM_BITS_PER_REG * event;
++			sysmon_push_event(indio_dev, address);
++			ret = regmap_clear_bits(sysmon->regmap, alarm_reg_offset, BIT(bit));
++			if (ret)
++				return ret;
++		}
++
++		return regmap_write(sysmon->regmap, alarm_flag_offset, alarm_flag_reg);
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static void sysmon_handle_events(struct iio_dev *indio_dev,
++				 unsigned long events)
++{
++	unsigned int bit;
++
++	for_each_set_bit(bit, &events, SYSMON_NO_OF_EVENTS)
++		sysmon_handle_event(indio_dev, bit);
++}
++
++static void sysmon_unmask_temp(struct sysmon *sysmon, unsigned int isr)
++{
++	unsigned int unmask, status;
++
++	status = isr & SYSMON_TEMP_INTR_MASK;
++
++	unmask = ~status & sysmon->masked_temp;
++	sysmon->masked_temp &= status;
++
++	/* Only unmask if not administratively disabled by userspace */
++	unmask &= ~sysmon->temp_mask;
++
++	regmap_write(sysmon->regmap, SYSMON_IER, unmask);
++}
++
++/*
++ * Versal threshold interrupts are level-sensitive. Active threshold
++ * interrupts are masked in the handler and polled via delayed work
++ * until the condition clears, then unmasked.
++ */
++static void sysmon_unmask_worker(struct work_struct *work)
++{
++	struct sysmon *sysmon =
++		container_of(work, struct sysmon, sysmon_unmask_work.work);
++	unsigned int isr;
++
++	/*
++	 * If the ISR read fails, skip processing to avoid acting
++	 * on undefined data.
++	 */
++	scoped_guard(spinlock_irq, &sysmon->irq_lock) {
++		if (regmap_read(sysmon->regmap, SYSMON_ISR, &isr))
++			break;
++		regmap_write(sysmon->regmap, SYSMON_ISR, isr);
++		sysmon_unmask_temp(sysmon, isr);
++	}
++
++	if (sysmon->masked_temp)
++		schedule_delayed_work(&sysmon->sysmon_unmask_work,
++				      msecs_to_jiffies(SYSMON_UNMASK_WORK_DELAY_MS));
++	else
++		regmap_write(sysmon->regmap, SYSMON_STATUS_RESET, 1);
++}
++
++static irqreturn_t sysmon_iio_irq(int irq, void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct sysmon *sysmon = iio_priv(indio_dev);
++	unsigned int isr, imr;
++
++	guard(spinlock)(&sysmon->irq_lock);
++
++	if (regmap_read(sysmon->regmap, SYSMON_ISR, &isr) ||
++	    regmap_read(sysmon->regmap, SYSMON_IMR, &imr))
++		return IRQ_NONE;
++
++	isr &= ~imr;
++	if (!isr)
++		return IRQ_NONE;
++
++	regmap_write(sysmon->regmap, SYSMON_ISR, isr);
++
++	sysmon_handle_events(indio_dev, isr);
++	schedule_delayed_work(&sysmon->sysmon_unmask_work,
++			      msecs_to_jiffies(SYSMON_UNMASK_WORK_DELAY_MS));
++
++	return IRQ_HANDLED;
++}
++
++static void sysmon_disable_interrupts(void *data)
++{
++	struct sysmon *sysmon = data;
++
++	regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
++
++	scoped_guard(spinlock_irq, &sysmon->irq_lock)
++		sysmon->masked_temp = 0;
++
++	cancel_delayed_work_sync(&sysmon->sysmon_unmask_work);
++}
++
++static int sysmon_init_interrupt(struct sysmon *sysmon,
++				 struct device *dev,
++				 struct iio_dev *indio_dev,
++				 int irq)
++{
++	unsigned int imr;
++	int ret;
++
++	/* Events not supported without IRQ (e.g. I2C path) */
++	if (!irq)
++		return 0;
++
++	INIT_DELAYED_WORK(&sysmon->sysmon_unmask_work, sysmon_unmask_worker);
++
++	ret = regmap_read(sysmon->regmap, SYSMON_IMR, &imr);
++	if (ret)
++		return ret;
++	sysmon->temp_mask = imr & SYSMON_TEMP_INTR_MASK;
++
++	ret = devm_request_irq(dev, irq, sysmon_iio_irq, 0, "sysmon-irq", indio_dev);
++	if (ret)
++		return ret;
++
++	return devm_add_action_or_reset(dev, sysmon_disable_interrupts, sysmon);
++}
++
++/*
++ * Initialize the cached hysteresis for a temperature channel from the
++ * current hardware threshold registers: hysteresis = upper - lower.
++ */
++static int sysmon_init_hysteresis(struct sysmon *sysmon, int *hysteresis)
++{
++	unsigned int upper_reg, lower_reg;
++	int upper_mc, lower_mc;
++	int ret;
++
++	ret = regmap_read(sysmon->regmap, SYSMON_TEMP_TH_UP, &upper_reg);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(sysmon->regmap, SYSMON_TEMP_TH_LOW, &lower_reg);
++	if (ret)
++		return ret;
++
++	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
++	sysmon_q8p7_to_millicelsius(lower_reg, &lower_mc);
++	*hysteresis = upper_mc - lower_mc;
++
++	return 0;
++}
++
+ /**
+  * sysmon_parse_fw() - Parse firmware nodes and configure IIO channels.
+  * @indio_dev: IIO device instance
+  * @dev: Parent device
++ * @irq: IRQ number (positive enables event channels, 0 disables)
+  *
+  * Reads voltage-channels and temperature-channels container nodes from
+  * firmware and builds the IIO channel array. Static temperature channels
+- * are prepended, followed by supply and satellite channels from DT.
++ * and event channels are prepended, followed by supply and satellite
++ * channels from DT.
++ *
++ * Event channels and per-channel event specs are only added when the
++ * device has an IRQ. I2C devices have no interrupt line, and the I2C
++ * regmap cannot be called from atomic context, so events are not
++ * supported on that path.
+  *
+  * Return: 0 on success, negative errno on failure.
+  */
+-static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
++static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int irq)
+ {
+-	unsigned int num_chan, idx, temp_chan_idx, volt_chan_idx;
+-	unsigned int num_supply, num_temp;
++	unsigned int num_chan, num_static, idx, temp_chan_idx, volt_chan_idx;
+ 	struct iio_chan_spec *sysmon_channels;
 +	unsigned int num_supply, num_temp;
-+	struct iio_chan_spec *sysmon_channels;
-+	const char *label;
-+	u32 reg;
-+	int ret;
+ 	const char *label;
+ 	u32 reg;
+ 	int ret;
+@@ -158,14 +718,21 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
+ 		device_get_named_child_node(dev, "temperature-channels");
+ 	num_temp = fwnode_get_child_node_count(temp_node);
+ 
+-	num_chan = size_add(num_temp, size_add(ARRAY_SIZE(temp_channels), num_supply));
++	num_static = ARRAY_SIZE(temp_channels);
++	num_chan = size_add(num_temp, size_add(num_static, num_supply));
+ 	sysmon_channels = devm_kcalloc(dev, num_chan, sizeof(*sysmon_channels), GFP_KERNEL);
+ 	if (!sysmon_channels)
+ 		return -ENOMEM;
+ 
+-	/* Static temperature channels first */
+ 	memcpy(sysmon_channels, temp_channels, sizeof(temp_channels));
+-	idx = ARRAY_SIZE(temp_channels);
 +
-+	struct fwnode_handle *supply_node __free(fwnode_handle) =
-+		device_get_named_child_node(dev, "voltage-channels");
-+	num_supply = fwnode_get_child_node_count(supply_node);
-+
-+	struct fwnode_handle *temp_node __free(fwnode_handle) =
-+		device_get_named_child_node(dev, "temperature-channels");
-+	num_temp = fwnode_get_child_node_count(temp_node);
-+
-+	num_chan = size_add(num_temp, size_add(ARRAY_SIZE(temp_channels), num_supply));
-+	sysmon_channels = devm_kcalloc(dev, num_chan, sizeof(*sysmon_channels), GFP_KERNEL);
-+	if (!sysmon_channels)
-+		return -ENOMEM;
-+
-+	/* Static temperature channels first */
-+	memcpy(sysmon_channels, temp_channels, sizeof(temp_channels));
-+	idx = ARRAY_SIZE(temp_channels);
-+
-+	/* Supply channels from DT */
-+	fwnode_for_each_child_node_scoped(supply_node, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &reg);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing reg for supply channel\n");
-+
-+		if (reg > SYSMON_SUPPLY_IDX_MAX)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "supply reg %u exceeds max %u\n",
-+					     reg, SYSMON_SUPPLY_IDX_MAX);
-+
-+		ret = fwnode_property_read_string(child, "label", &label);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing label for supply channel\n");
-+
-+		sysmon_channels[idx++] = (struct iio_chan_spec) {
-+			.type = IIO_VOLTAGE,
-+			.indexed = 1,
-+			.address = reg,
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+			.datasheet_name = label,
-+		};
++	/* Attach event spec to channel 0 when IRQ is available */
++	if (irq > 0) {
++		sysmon_channels[0].event_spec = sysmon_temp_events;
++		sysmon_channels[0].num_event_specs = ARRAY_SIZE(sysmon_temp_events);
 +	}
 +
-+	/* Temperature satellite channels from DT */
-+	fwnode_for_each_child_node_scoped(temp_node, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &reg);
++	idx = num_static;
+ 
+ 	/* Supply channels from DT */
+ 	fwnode_for_each_child_node_scoped(supply_node, child) {
+@@ -189,6 +756,10 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
+ 			.indexed = 1,
+ 			.address = reg,
+ 			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++			.event_spec = irq > 0 ?
++				sysmon_supply_events : NULL,
++			.num_event_specs = irq > 0 ?
++				ARRAY_SIZE(sysmon_supply_events) : 0,
+ 			.datasheet_name = label,
+ 		};
+ 	}
+@@ -254,6 +825,7 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct sysmon *sysmon;
++	int irq;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*sysmon));
+@@ -266,6 +838,7 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
+ 	ret = devm_mutex_init(dev, &sysmon->lock);
+ 	if (ret)
+ 		return ret;
++	spin_lock_init(&sysmon->irq_lock);
+ 
+ 	/* Disable all interrupts and clear pending status */
+ 	ret = regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
+@@ -275,13 +848,34 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
+ 	if (ret)
+ 		return ret;
+ 
++	irq = fwnode_irq_get(dev_fwnode(dev), 0);
++	if (irq == -EPROBE_DEFER)
++		return dev_err_probe(dev, irq, "failed to get IRQ\n");
++
+ 	indio_dev->name = "versal-sysmon";
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = sysmon_parse_fw(indio_dev, dev);
++	ret = sysmon_parse_fw(indio_dev, dev, irq);
+ 	if (ret)
+ 		return ret;
+ 
++	if (irq > 0) {
++		/* Set hysteresis mode for temperature threshold */
++		ret = regmap_set_bits(sysmon->regmap, SYSMON_TEMP_EV_CFG,
++				      SYSMON_TEMP_HYST_MASK);
 +		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing reg for temp channel\n");
++			return ret;
 +
-+		if (reg < 1 || reg > SYSMON_TEMP_SAT_MAX)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "temp reg %u out of range [1..%u]\n",
-+					     reg, SYSMON_TEMP_SAT_MAX);
-+
-+		ret = fwnode_property_read_string(child, "label", &label);
++		/* Initialize cached hysteresis from hardware registers */
++		ret = sysmon_init_hysteresis(sysmon, &sysmon->temp_hysteresis);
 +		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing label for temp channel\n");
++			return ret;
 +
-+		sysmon_channels[idx++] = (struct iio_chan_spec) {
-+			.type = IIO_TEMP,
-+			.indexed = 1,
-+			.address = SYSMON_TEMP_SAT_BASE +
-+				   (reg - 1) * SYSMON_REG_STRIDE,
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+			.datasheet_name = label,
-+		};
++		ret = sysmon_init_interrupt(sysmon, dev, indio_dev, irq);
++		if (ret)
++			return ret;
 +	}
 +
-+	indio_dev->num_channels = idx;
-+	indio_dev->info = &sysmon_iio_info;
-+
-+	/*
-+	 * Assign per-type sequential channel numbers.
-+	 * IIO sysfs uses type prefix (in_tempN, in_voltageN)
-+	 * so numbers only need to be unique within each type.
-+	 */
-+	temp_chan_idx = 0;
-+	volt_chan_idx = 0;
-+	for (unsigned int idx = 0; idx < indio_dev->num_channels; idx++) {
-+		if (sysmon_channels[idx].type == IIO_TEMP)
-+			sysmon_channels[idx].channel = temp_chan_idx++;
-+		else
-+			sysmon_channels[idx].channel = volt_chan_idx++;
-+	}
-+
-+	indio_dev->channels = sysmon_channels;
-+
-+	return 0;
-+}
-+
-+/**
-+ * devm_versal_sysmon_core_probe() - Initialize Versal SysMon core
-+ * @dev: Parent device
-+ * @regmap: Register map for hardware access
-+ *
-+ * Return: 0 on success, negative errno on failure.
-+ */
-+int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
-+{
-+	struct iio_dev *indio_dev;
-+	struct sysmon *sysmon;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*sysmon));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	sysmon = iio_priv(indio_dev);
-+	sysmon->regmap = regmap;
-+
-+	ret = devm_mutex_init(dev, &sysmon->lock);
-+	if (ret)
-+		return ret;
-+
-+	/* Disable all interrupts and clear pending status */
-+	ret = regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(sysmon->regmap, SYSMON_ISR, SYSMON_INTR_ALL_MASK);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "versal-sysmon";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = sysmon_parse_fw(indio_dev, dev);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+EXPORT_SYMBOL_GPL(devm_versal_sysmon_core_probe);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("AMD Versal SysMon Core Driver");
-+MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
-diff --git a/drivers/iio/adc/versal-sysmon.c b/drivers/iio/adc/versal-sysmon.c
-new file mode 100644
-index 00000000000..ee56e4e029b
---- /dev/null
-+++ b/drivers/iio/adc/versal-sysmon.c
-@@ -0,0 +1,93 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD Versal SysMon MMIO platform driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+
-+#include "versal-sysmon.h"
-+
-+struct sysmon_mmio {
-+	void __iomem *base;
-+};
-+
-+static int sysmon_mmio_reg_read(void *context, unsigned int reg,
-+				unsigned int *val)
-+{
-+	struct sysmon_mmio *mmio = context;
-+
-+	*val = readl(mmio->base + reg);
-+	return 0;
-+}
-+
-+static int sysmon_mmio_reg_write(void *context, unsigned int reg,
-+				 unsigned int val)
-+{
-+	struct sysmon_mmio *mmio = context;
-+
-+	/* NPI must be unlocked before any register write except to NPI_LOCK */
-+	if (reg != SYSMON_NPI_LOCK)
-+		writel(SYSMON_NPI_UNLOCK_CODE, mmio->base + SYSMON_NPI_LOCK);
-+	writel(val, mmio->base + reg);
-+
-+	return 0;
-+}
-+
-+static const struct regmap_config sysmon_mmio_regmap_config = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = SYSMON_REG_STRIDE,
-+	.max_register = SYSMON_MAX_REG,
-+	.reg_read = sysmon_mmio_reg_read,
-+	.reg_write = sysmon_mmio_reg_write,
-+	.fast_io = true,
-+};
-+
-+static int sysmon_platform_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct sysmon_mmio *mmio;
-+	struct regmap *regmap;
-+
-+	mmio = devm_kzalloc(dev, sizeof(*mmio), GFP_KERNEL);
-+	if (!mmio)
-+		return -ENOMEM;
-+
-+	mmio->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mmio->base))
-+		return PTR_ERR(mmio->base);
-+
-+	regmap = devm_regmap_init(dev, NULL, mmio, &sysmon_mmio_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	return devm_versal_sysmon_core_probe(dev, regmap);
-+}
-+
-+static const struct of_device_id sysmon_of_match_table[] = {
-+	{ .compatible = "xlnx,versal-sysmon" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sysmon_of_match_table);
-+
-+static struct platform_driver sysmon_platform_driver = {
-+	.probe = sysmon_platform_probe,
-+	.driver = {
-+		.name = "versal-sysmon",
-+		.of_match_table = sysmon_of_match_table,
-+	},
-+};
-+module_platform_driver(sysmon_platform_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("AMD Versal SysMon Platform Driver");
-+MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_GPL(devm_versal_sysmon_core_probe);
 diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
-new file mode 100644
-index 00000000000..e27a5357575
---- /dev/null
+index e27a5357575..9fe2793757a 100644
+--- a/drivers/iio/adc/versal-sysmon.h
 +++ b/drivers/iio/adc/versal-sysmon.h
-@@ -0,0 +1,67 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * AMD Versal SysMon driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
+@@ -11,6 +11,8 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/mutex.h>
++#include <linux/spinlock_types.h>
++#include <linux/workqueue.h>
+ 
+ struct device;
+ struct regmap;
+@@ -18,12 +20,22 @@ struct regmap;
+ /* Register offsets (sorted by address) */
+ #define SYSMON_NPI_LOCK			0x000C
+ #define SYSMON_ISR			0x0044
++#define SYSMON_IMR			0x0048
++#define SYSMON_IER			0x004C
+ #define SYSMON_IDR			0x0050
+ #define SYSMON_TEMP_MAX			0x1030
+ #define SYSMON_TEMP_MIN			0x1034
+ #define SYSMON_SUPPLY_BASE		0x1040
++#define SYSMON_ALARM_FLAG		0x1018
++#define SYSMON_ALARM_REG		0x1940
++#define SYSMON_TEMP_TH_LOW		0x1970
++#define SYSMON_TEMP_TH_UP		0x1974
++#define SYSMON_SUPPLY_TH_LOW		0x1980
++#define SYSMON_SUPPLY_TH_UP		0x1C80
++#define SYSMON_TEMP_EV_CFG		0x1F84
+ #define SYSMON_TEMP_MIN_MIN		0x1F8C
+ #define SYSMON_TEMP_MAX_MAX		0x1F90
++#define SYSMON_STATUS_RESET		0x1F94
+ #define SYSMON_TEMP_SAT_BASE		0x1FAC
+ #define SYSMON_MAX_REG			0x24C0
+ 
+@@ -35,8 +47,12 @@ struct regmap;
+ 
+ #define SYSMON_SUPPLY_IDX_MAX		159
+ #define SYSMON_TEMP_SAT_MAX		64
++#define SYSMON_NO_OF_EVENTS		32
+ #define SYSMON_INTR_ALL_MASK		GENMASK(31, 0)
+ 
++/* ISR/IMR temperature alarm mask (bit 9) */
++#define SYSMON_TEMP_INTR_MASK		BIT(9)
 +
-+#ifndef _VERSAL_SYSMON_H_
-+#define _VERSAL_SYSMON_H_
+ /* Supply voltage conversion register fields */
+ #define SYSMON_MANTISSA_MASK		GENMASK(15, 0)
+ #define SYSMON_FMT_MASK			BIT(16)
+@@ -46,11 +62,21 @@ struct regmap;
+ #define SYSMON_FRACTIONAL_SHIFT		7U
+ #define SYSMON_SUPPLY_MANTISSA_BITS	16
+ 
++/* Bits per alarm register */
++#define SYSMON_ALARM_BITS_PER_REG	32
 +
-+#include <linux/bits.h>
-+#include <linux/mutex.h>
++#define SYSMON_UNMASK_WORK_DELAY_MS	500
 +
-+struct device;
-+struct regmap;
-+
-+/* Register offsets (sorted by address) */
-+#define SYSMON_NPI_LOCK			0x000C
-+#define SYSMON_ISR			0x0044
-+#define SYSMON_IDR			0x0050
-+#define SYSMON_TEMP_MAX			0x1030
-+#define SYSMON_TEMP_MIN			0x1034
-+#define SYSMON_SUPPLY_BASE		0x1040
-+#define SYSMON_TEMP_MIN_MIN		0x1F8C
-+#define SYSMON_TEMP_MAX_MAX		0x1F90
-+#define SYSMON_TEMP_SAT_BASE		0x1FAC
-+#define SYSMON_MAX_REG			0x24C0
-+
-+/* NPI unlock value written to SYSMON_NPI_LOCK */
-+#define SYSMON_NPI_UNLOCK_CODE		0xF9E8D7C6
-+
-+/* Register stride: 4 bytes per 32-bit register */
-+#define SYSMON_REG_STRIDE		4
-+
-+#define SYSMON_SUPPLY_IDX_MAX		159
-+#define SYSMON_TEMP_SAT_MAX		64
-+#define SYSMON_INTR_ALL_MASK		GENMASK(31, 0)
-+
-+/* Supply voltage conversion register fields */
-+#define SYSMON_MANTISSA_MASK		GENMASK(15, 0)
-+#define SYSMON_FMT_MASK			BIT(16)
-+#define SYSMON_MODE_MASK		GENMASK(18, 17)
-+
-+/* Q8.7 fractional shift */
-+#define SYSMON_FRACTIONAL_SHIFT		7U
-+#define SYSMON_SUPPLY_MANTISSA_BITS	16
-+
-+/**
-+ * struct sysmon - Driver data for Versal SysMon
-+ * @regmap: register map for hardware access
-+ * @lock: protects read-modify-write sequences on threshold registers
-+ *        and cached state that spans multiple regmap calls
-+ */
-+struct sysmon {
-+	struct regmap *regmap;
+ /**
+  * struct sysmon - Driver data for Versal SysMon
+  * @regmap: register map for hardware access
+  * @lock: protects read-modify-write sequences on threshold registers
+  *        and cached state that spans multiple regmap calls
++ * @irq_lock: protects interrupt mask register updates (MMIO path only)
++ * @masked_temp: currently masked temperature alarm bits
++ * @temp_mask: temperature interrupt configuration mask
++ * @temp_hysteresis: cached DEVICE_TEMP hysteresis in millicelsius
++ * @sysmon_unmask_work: re-enables events after alarm condition clears
+  */
+ struct sysmon {
+ 	struct regmap *regmap;
+@@ -60,6 +86,16 @@ struct sysmon {
+ 	 * that spans multiple regmap calls.
+ 	 */
+ 	struct mutex lock;
 +	/*
-+	 * Protects read-modify-write sequences on threshold registers
-+	 * and cached state (oversampling ratios, hysteresis values)
-+	 * that spans multiple regmap calls.
++	 * Protects interrupt mask register updates.  Only used on the
++	 * MMIO path (fast_io regmap); I2C has no IRQ and never reaches
++	 * the event code that takes this lock.
 +	 */
-+	struct mutex lock;
-+};
-+
-+int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
-+
-+#endif /* _VERSAL_SYSMON_H_ */
++	spinlock_t irq_lock;
++	unsigned int masked_temp;
++	unsigned int temp_mask;
++	int temp_hysteresis;
++	struct delayed_work sysmon_unmask_work;
+ };
+ 
+ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
 -- 
 2.48.1
 
