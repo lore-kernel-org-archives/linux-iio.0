@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25CD540B398;
-	Tue, 16 Jun 2026 07:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83B723451AF;
+	Tue, 16 Jun 2026 07:45:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781595793; cv=none; b=US1Tj5rca2W9JVK8soYb+w9Oyc1G+EU7VUUoJM8rrqQZTaJimvswyACzCzM+tLEzrERfzbwUjnC0apfF7uLydVBXICap/2c/ZUOAfulazMXL+O2akK/sKvE6i2oGVTQpLo4fYvWwaZe5HzA9SKfa9uFaYXdAQx3gwdg6ZZPj7G8=
+	t=1781595960; cv=none; b=S2HkC8tMJghUHBQaixS7F3emqPRGq/+kk+zz6ATHG8U2yo1H9/wG9vUJF0rWsh2MQiUuUO2b4g+UsB65k4uJKqqmmWhXXOomsxcUZp2F1pnKqh0pGX9NcsEtXlscpzcvsDLkMXGwx2zjXdfwrGTg43itL5UsCllMNM97I7hSbaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781595793; c=relaxed/simple;
-	bh=GJtFDRilXTuZRcJctFaE5YyUlDIoJGp0D9pkihkxevU=;
+	s=arc-20240116; t=1781595960; c=relaxed/simple;
+	bh=cSpIO01dwoZkOcphBMbOJEH9iYkzihUlHXoiNLKwxTg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WqHWodBG+XYm0DICNwMEfZTgWwoLa/cJbacoTvHBoAZuLzT9qfy/XPPVjCTJbQizNOOo2hYP3C8Ggmc0Vd/tbISYdS5kwtY/rq0hoBiHTvJhV+OH5+YIL5fQ/pVrw0RmKlb5Bu46JlP9SOfYLMhHa6SB9QPV4v00KMeIXfbrsHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AffMyYVU; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=tqclTWJjKD/gVEGxqDJn7L9fdGg1AnHVfMEhA1iouGlSNZaYFv7MhHbKXVV06c11T1VdvqSY7jJMwEWS5d88qzcaCp5jtwFPODDik+oVC+34N3hYxRgpIqIx94EtK286xKHbbm96WjK0h4xYakpdotdCffvqVKiyz8ZEd3ISldo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C/G4UuI6; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AffMyYVU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C/G4UuI6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781595792; x=1813131792;
+  t=1781595959; x=1813131959;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=GJtFDRilXTuZRcJctFaE5YyUlDIoJGp0D9pkihkxevU=;
-  b=AffMyYVUenyYAZLHpEnOBDtjvBtyxF17t9FVB5mNj2VhHjpeC+l+M4c8
-   EjjBfzgfS05uhhseq+n6WO1wR2SCl9fp55EchRXsDGUrwYbHqIlzrw4sP
-   F+xNcStuyUw3ZFiRkJ+ioVDiafvNaec9ZJeEwlJsq+FVLObGSXXXwTnEW
-   UoDL3ELIp9GwPSPC2E4EqgjOKviEVEcvthta9MwgJvPj0ZIhMqltL5TdR
-   CO/nbnasuxxEnLf8i5Nh9SwGW/Uo3o0E3R5i65FPzL+mOfC6Uh7YDG9Ri
-   h8DKeN6gVVx8OyQHIb/F1n8s93eqw4ZoQuMBGl12/d0gz71I3LqmocTUD
+  bh=cSpIO01dwoZkOcphBMbOJEH9iYkzihUlHXoiNLKwxTg=;
+  b=C/G4UuI6khxpXOmPwvAHzNMw1PUY0Uk0aXgVAPguTDzNm8wN6NkI/hG5
+   gGt6fJ1uEWJyAhUIcP5d6KiLZ+CtRbWkQyU+0O4P4g2ScYN0nhR3brt4T
+   fsMIZzci/2bVJt6XqcXyGp/8r6/xKj7kGhNCSkB7Bjw0ObioGdqtvphQU
+   2daUuIwvi9KNgtEwYTtdD+mC39995woIQ5Q4KpHUnZ07aTFkN6p6IlVmU
+   YlgGdW3ecTcwnNY/kBgF68ZGGfhVzfEdnHAuvHj5NHcDiGCo4M6S8MC1m
+   1RNiP5dBx4MS5t4liSPYPjRviigMIas7LnBzYQj1AfGTPlrdyZsFgEAqK
    w==;
-X-CSE-ConnectionGUID: zPffoZE+SG+ZK7Vw/hWWrQ==
-X-CSE-MsgGUID: bhT6ARI6RhmAmUcbiqRznw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="82395845"
+X-CSE-ConnectionGUID: /udz+58CSc2tAJpVGj855A==
+X-CSE-MsgGUID: XJgIoPV0THW+1a6RjkFMtA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="85987333"
 X-IronPort-AV: E=Sophos;i="6.24,207,1774335600"; 
-   d="scan'208";a="82395845"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:43:11 -0700
-X-CSE-ConnectionGUID: JGqqX0CQTxitv246kc/ang==
-X-CSE-MsgGUID: uv8xi63kRma/+gD3t+egQg==
+   d="scan'208";a="85987333"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:45:58 -0700
+X-CSE-ConnectionGUID: u0CiTTV8SWuIj7qysjQgew==
+X-CSE-MsgGUID: 2d95d2CQRga/nNVNIRnjGQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,207,1774335600"; 
-   d="scan'208";a="277892646"
+   d="scan'208";a="252001072"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:43:07 -0700
-Date: Tue, 16 Jun 2026 10:43:05 +0300
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 00:45:55 -0700
+Date: Tue, 16 Jun 2026 10:45:52 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: "Erim, Salih" <salih.erim@amd.com>
 Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
@@ -51,12 +51,12 @@ Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
 	conor+dt@kernel.org, conall.ogriofa@amd.com, michal.simek@amd.com,
 	linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/5] iio: adc: add Versal SysMon driver
-Message-ID: <ajD-iS3nANaXOZty@ashevche-desk.local>
+Subject: Re: [PATCH v7 3/5] iio: adc: versal-sysmon: add I2C driver
+Message-ID: <ajD_MMpiVQIwtbV3@ashevche-desk.local>
 References: <20260614233722.2603459-1-salih.erim@amd.com>
- <20260614233722.2603459-3-salih.erim@amd.com>
- <ajAKkqMO5jdQjKgS@ashevche-desk.local>
- <2998a9fc-4b9f-49bd-8020-697081401f85@amd.com>
+ <20260614233722.2603459-4-salih.erim@amd.com>
+ <ajAMjZzfTqplts_B@ashevche-desk.local>
+ <15d14eee-8384-4605-ad83-5aad774541ac@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,32 +65,37 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2998a9fc-4b9f-49bd-8020-697081401f85@amd.com>
+In-Reply-To: <15d14eee-8384-4605-ad83-5aad774541ac@amd.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jun 15, 2026 at 04:41:12PM +0100, Erim, Salih wrote:
-> On 15/06/2026 15:22, Andy Shevchenko wrote:
-> > On Mon, Jun 15, 2026 at 12:37:19AM +0100, Salih Erim wrote:
+On Mon, Jun 15, 2026 at 04:42:43PM +0100, Erim, Salih wrote:
+> On 15/06/2026 15:30, Andy Shevchenko wrote:
+> > On Mon, Jun 15, 2026 at 12:37:20AM +0100, Salih Erim wrote:
 
 ...
 
-> > > +/**
-> > > + * sysmon_core_probe() - Initialize Versal SysMon core
+> > > +static const struct regmap_config sysmon_i2c_regmap_config = {
+> > > +     .reg_bits = 32,
+> > > +     .val_bits = 32,
+> > > +     .reg_stride = SYSMON_REG_STRIDE,
+> > > +     .max_register = SYSMON_MAX_REG,
+> > > +     .reg_read = sysmon_i2c_reg_read,
+> > > +     .reg_write = sysmon_i2c_reg_write,
+> > > +};
 > > 
-> > It is managed, please name it accordingly: devm_sysmon_core_probe().
+> > No cache?
 > 
-> Will rename to devm_sysmon_core_probe() and update callers.
+> No, the registers are live ADC readings and interrupt status.
+> Caching would return stale voltage and temperature data.
 
-I believe you also want to have a proper namespace. The sysmon is to broad.
+So, basically what you are saying is this:
+  "All registers are volatile in this HW."
+Or alternatively:
+  "Almost all registers are volatile in this HW. The rest is not being accessed
+   too often to cache."
 
-The easiest solution is to name it as devm_versal_sysmon_core_probe().
-
-> > > + * @dev: Parent device
-> > > + * @regmap: Register map for hardware access
-> > > + *
-> > > + * Return: 0 on success, negative errno on failure.
-> > > + */
+Choose the one that fits and add on top of this regmap_config initialiser.
 
 -- 
 With Best Regards,
