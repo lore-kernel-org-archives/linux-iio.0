@@ -1,240 +1,195 @@
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB0DB47AF4D
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 17:31:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD62546AEFC
+	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 18:16:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781631068; cv=none; b=gAZv/BVZ3Xs4cLlcfdBW6aBbbzucLZDLlXopjciCfySjBdyyw8DHCIzPBpc5XaaB1bN+Ok3vNPxxFUlTMkD1RYFSB6oeAs2/qgGwOjlh4XgQpGUH/dpeCPvUJE2fnu9PNzbO/r8+u1cVvhLomWjMafMGo72SBOqbMCOIROC3bzg=
+	t=1781633813; cv=none; b=m9/NrXxMRy8tfdi8Mx7GMFSSZvaoXNgpreeGdkCmiVlEaFOhf06jWTDXXBxM+j1K6FAcZFTAHf/N4MchxfT5w+i+WAHsYKQ2fIQrQob7TEm8OaUVX4QrRGRpvcCkQFn4CrWQ8dVVzJDfRvNjxHLFZbJzT2bYjBctg3romk8Sg34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781631068; c=relaxed/simple;
-	bh=7wN6KFQ63zy7Pi56yP46VHM+3T2LvLOCz0Ue4+tT8e4=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=BtTjFLzo3vatJGcRs08twnPNgWRJlyaYYH6kM8L0NEDjxgNRrzp46j30Jqtz+HnhJ+0zbYjq60CWMse060P3rKcHBP/4zTpAregdr252fMZYswAB5/3e1BM1vBAU58AFpSdfW/lhvt2X/FHWzGQ+757wTIwuN08LGAYAXTd68xU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GrrLHhyW; arc=none smtp.client-ip=209.85.221.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781633813; c=relaxed/simple;
+	bh=HMXSDipecyxoyMLf9IBRX9tSy9InflZQp8u8Vm4182Q=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GBG3xZtMlUL1TI2d/Q4uL3UfgQVezCN0HEOqed4UjMz7XNw/CDRwSL6a5dMSE1YY3jzGGe9eSyTRM4oamVwCnGtcYlmIuuMe4sXQAh5F9nQRpj8g8D0a94DAc3w/FhftViOxz+Njo7GV0tWQ5YEg+5fzMeKV5h/Uq6Qh+iA9GQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=CTssDelQ; arc=none smtp.client-ip=209.85.210.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GrrLHhyW"
-Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5a1490272bfso65920e0c.0
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 10:31:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="CTssDelQ"
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7e6cdd78fe6so2762517a34.2
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 11:16:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781631066; x=1782235866; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TusoqYXQtC7ZEmYrVS88Qf1B/mtpW5yAVVSfmOzzRUo=;
-        b=GrrLHhyWfLp4E+g7W27h5MbIa/bxTm1Mw65Fi7mjXKSKpw9jeBkb97bCFdLUT6svDh
-         7Zd9g2VrRvNNEldCBNVvvgzgsbskxgDhVoQnhr6do16mmV9fxv1TBxuNy+wsYBCnBOl/
-         ViCgPW6j9oaBZH5VicdpAD+Hw8RLHGeqD1O7oL7XBqZlsr/4trYvLHnARNSM3DG7+EZC
-         4cjBYOXgQCOJULYYk6Qb8hvA2xPDb2HbrZbx7Uwk1HXFOyAveqT89isaq+vpfxrFkmRc
-         pCTIBAiaaeyjMpaQWlzkMl2QgT0wNDU2gMUePc7IYHUHbQfJEbwNvFDshQ/R+7isv/iC
-         hEnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781631066; x=1782235866;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+        d=baylibre.com; s=google; t=1781633808; x=1782238608; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=TusoqYXQtC7ZEmYrVS88Qf1B/mtpW5yAVVSfmOzzRUo=;
-        b=G8xEWnYm3aMCa1MZKyOBXAvom5PoNfLJiov4/Odcx/GYf3nKZT1JdxmKiEdtx0p6PT
-         kfq4d5IwZw5mqVl+40jbWsj7AkEqp98pk0HnRoig5NjiSHJxuMDCu34NOdxDuF0FGt1U
-         eAaR8qfWbNehy7KzTAOPlviNA8HJ0HiEAsZzJAyehdz9U5oRPdtNeEhQFfkRchHdr+Yk
-         LkEeJEFCNvj/HUIcuL33jlhxVyH39DWuRZyRZzpoqc+nLkSvQgXC/WEY8RNmmGSZjk3I
-         eChIivOvrZkXvLmjZMVTwl8v2BEJ3hRUAao5z6GNAjLsFY1vIC/hk6jEJu81TL+VFCN7
-         tqlw==
-X-Forwarded-Encrypted: i=1; AFNElJ8RVsGHaDE8ishfyJ9x6t0Yc2qtX0gAK/vhHMMHf2iXfPEyn5OPAzewHKc33X+EnUSAxZfMyrRatUI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXVcjTaFAGIRNzuxOt0TQYIKADS24igtBTdlwU6yODnDSAqSxs
-	TbWce60xIgijaQv4OE1mrcgkBKEu5u8lNWiNOeRdrCmkLOFJGaJzA5yu
-X-Gm-Gg: Acq92OEdLMJSQCqKxYcu6uFfeiDJKL2YnjrhoHjtrRB4+NAJcyjCi3Svpgsa5b2fd3r
-	JVsTDagEnCHezsIbDPW7+WUrHy+PpPIdn8v4GvOvgNWp5X9aK2yfLWJgJyNU7ZW2lECBl5nIoWm
-	jlmqWOOCIT+8nDBQd/zK7JGHY/aorhVhzcEVy4cwKproEgwMCSzjiRWpkGtMkWLMDbRQ3sDNeha
-	rkrcZ50vM/JMMwTI6g1VklBQV43Iv7U83/8kmon7vgaqkCU9Yh6t5UNVt2hPvS7NOw/XKAU1bqw
-	UyqWotSw+OsTcmSn+4tkWyNM6n6Ue7qRpN4kPqdaIuFT7Ob/9AbPtst2zqLFJwry0btRS7Ke+iC
-	IhsS3+4tUrgUcYY2PvUsmiLmLIS2FdZGp6BdWm3NIzB0dHEc4bRAhoSTPcVBdHhWnt+iyz37Y/5
-	35OsqXMdyedGLfEw==
-X-Received: by 2002:a05:6122:3486:b0:575:f155:8cd4 with SMTP id 71dfb90a1353d-5bbbdc1651bmr455091e0c.0.1781631065662;
-        Tue, 16 Jun 2026 10:31:05 -0700 (PDT)
-Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bb901ac4d6sm6540419e0c.13.2026.06.16.10.31.04
+        bh=fNH/J02lBrL7hdVnRQ4UVLWbhNp0HeLEy22DRQvVDN8=;
+        b=CTssDelQeTtO+25elTtTQHjoAcDKPG/bHuFKV+vi5qf+kPyTFEV0spTbx8gT67ZnX5
+         07EhZMJ6JKI/l9nKEcyQf6vxuThE2cL6vbYsIvgMr025V4jKcb2ncLtZKHJ72SOSZMo9
+         YNdhbYo1XY9veO3Zjvy8gaXSxHEU9QM3PtYyTx/avdRarrYLaASHNB/rGrCoXbf3x91T
+         uwdEoKgGj+kUNrNsSc3pCcfky/CNOqrN94Ol3wDQraquIODmRUCzA4qmvrX+Uk9uYHSN
+         E41ENjFwZUFqReIZYciKZPhElmicrfBbJ39hEYdnPWyFy9RZOBVtsvU5agtJOg3jz5cd
+         3R0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781633808; x=1782238608;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fNH/J02lBrL7hdVnRQ4UVLWbhNp0HeLEy22DRQvVDN8=;
+        b=qZ/SKqOM8/hvd6QWauVwvo+MMLwXej4cvLXI/fZVPjSU8Z7sb73Qbfzn6JiLB6JFdt
+         5Kx3/FjtlIdVv3IgCIaAJXv1m2lO92Erq15MIvSUJz3OPs72dkt/Ctkk/0lTxQ7TSleC
+         BOB4pnw+QN2RbLzRf1oHjQ4HVKFhHE+MVH9LUlrbIcQ5zGOjHM0HmyhcIu+A1e5c7voK
+         oQYEpBl+aBZPVw3ldPFu5pyCo5ryWKKJaYn2GDughaY0flaJ8B3DEMUDyAkvlLmeKhBc
+         seNFwEE4nyI0ZKSm5HzRVkhuH7WQ8rqSDs0UK1AZuDgir7kwk7Xrr3hDnhna2G4ov5dA
+         n9dA==
+X-Forwarded-Encrypted: i=1; AFNElJ8geu/M8iY8ZJZ6IaIiYvA/roIgjYnpaECW0w972gr5wHm1xVIQFAznk0HYeTTbamhCJ52nWLpN+8E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwsrSPTQJKVX6doBL5NQKk3WzC0raPGFNqZG+CalB3QGDSUo9Fw
+	Lx2q02XLrUpOettlRrjX7eLwFR9NSsiIy0NY8cMFch6l2+ckaiAQSUAxndfcmmUsvh8=
+X-Gm-Gg: Acq92OGCUZie1C2XPeosH6qYKyAC9N0spZGGqyv7RwV6XjtEMO2LiIY9N/ef/dEbH+A
+	UedmdgL1gMtx6WE2GB+vUbspvxlbJzIOT06t4Oosle8q1y1742gUMJRWIaB803BEuqvyi/xNqlP
+	aJZsJIxMkdTXHdWtqVp7V28phiSB000vLXgXqF2lh5m3zO0x7v44MPAq3jfhIAVwcm18Xv6ULsA
+	tOECsiEaeM9+0xXHFFORUU49PYGs9XnAJuUHh0mmRccBc0MMWTE1kyUlC/K0k7cib6UtjoB4G3H
+	7byHenhoBe06FT0xwXKgMwggbW4IkFzdDeLGrZZXtxoQoEBMw4TgkP1Wy2pyEBnm31m+1pM1+Bm
+	eGnMiA0sCf1obsqxYBaBZG92otTMGbovV9txufJIvbyYgHurLv3wvwj2jsdW+yHcFzxU3AiixRE
+	PH+YCnVxyeREIcxdmG48EeUIT+0W0F7M7tc9KvmDxPE3dTXQG37swjy4L9pVkAHsQm1dT2U8ok4
+	w==
+X-Received: by 2002:a05:6830:438c:b0:7d7:4fc7:21a with SMTP id 46e09a7af769-7e90b3bdab8mr714067a34.13.1781633808548;
+        Tue, 16 Jun 2026 11:16:48 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:16b0:5133:47b1:a939? ([2600:8803:e7e4:500:16b0:5133:47b1:a939])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e79f6df8e1sm7215347a34.20.2026.06.16.11.16.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Jun 2026 10:31:05 -0700 (PDT)
+        Tue, 16 Jun 2026 11:16:47 -0700 (PDT)
+Message-ID: <9b8d5cfc-e392-45aa-9adc-867c364dd36e@baylibre.com>
+Date: Tue, 16 Jun 2026 13:16:46 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 16 Jun 2026 12:31:03 -0500
-Message-Id: <DJANI38U2UC6.2RX60CFL2K7DE@gmail.com>
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add ti,ads122c14
-From: "Kurt Borja" <kuurtb@gmail.com>
-To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
- <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>,
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>
-Cc: "Nguyen Minh Tien" <zizuzacker@gmail.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/4] iio: adc: new ti-ads112c14 driver
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
- <20260615-iio-adc-ti-ads122c14-v1-1-e6bdadf7cb2b@baylibre.com>
- <DJA1PXNS9SFP.VAURJH1MR9BK@gmail.com>
- <88f29dc3-7929-4d94-a1bc-6268c41ee3dd@baylibre.com>
-In-Reply-To: <88f29dc3-7929-4d94-a1bc-6268c41ee3dd@baylibre.com>
+ <DJA1J8D91ESA.2XU7OCVKN7LXU@gmail.com>
+ <d3270250-ae18-4c0f-a0fe-e0fdabfce046@baylibre.com>
+ <DJANEYYA4QTA.1JBN2L78PNXDD@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <DJANEYYA4QTA.1JBN2L78PNXDD@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue Jun 16, 2026 at 10:22 AM -05, David Lechner wrote:
-> On 6/15/26 7:26 PM, Kurt Borja wrote:
->> On Mon Jun 15, 2026 at 4:59 PM -05, David Lechner (TI) wrote:
->>> Add new bindings for ti,ads122c14 and similar devices.
+On 6/16/26 12:26 PM, Kurt Borja wrote:
+> On Tue Jun 16, 2026 at 10:21 AM -05, David Lechner wrote:
+>> On 6/15/26 7:18 PM, Kurt Borja wrote:
+>>> On Mon Jun 15, 2026 at 4:59 PM -05, David Lechner (TI) wrote:
+
+...
+
+>>>> All of these chips have in common that they are designed for use with
+>>>> RTDs and thermocouples and so they look very similar to each other in
+>>>> terms of wiring and feature set, even if the register maps are
+>>>> different. They are in the gray area where we could either keep them
+>>>> separate because they are just different enough, or we could do like
+>>>> we've done before with ad_sigma_delta and have a bit of an abstraction
+>>>> layer for the register differences and otherwise try to share as much
+>>>> code as possible. Normally, I would lean towards keeping them separate,
+>>>> but in this case, I'm considering trying to share code because the
+>>>> devicetree bindings for the inputs is complex and is going to be mostly
+>>>> the same across all of these chips.
 >>>
->>> This is an ADC that is primarily intended for use with temperature
->>> sensors. There are a few unusual properties because of this. In
->>> particular, the reference voltage source and current output requirement=
-s
->>> can be different for each measurement, so these are included in the
->>> channel bindings.
+>>> The channel configuration is indeed very similar for the three chips.
+>>> All three have IDAC, BOC and VREF configurations.
+>>
+>> Hmm... I forgot to include the burnout current in the DT bindings. Following
+>> the channel = "conditions for measurement" pattern that I have set out here
+>> I guess that would mean that we would need to have the same inputs twice
+>> when using the burnout. One "channel" would be the one used to do a "precision"
+>> measurement and the other would be the one to do open/short circuit detection.
+>>
+>>
+>>     i2c {
+>>         #address-cells = <1>;
+>>         #size-cells = <0>;
+>>
+>>         adc@40 {
+>>             compatible = "ti,ads112c14";
+>>             reg = <0x40>;
+>>
+>>             avdd-supply = <&avdd>;
+>>             dvdd-supply = <&dvdd>;
+>>
+>>             refp-supply = <&avdd>;
+>>
+>>             #address-cells = <1>;
+>>             #size-cells = <0>;
+>>
+>>             channel@0 {
+>>                 reg = <0>;
+>>                 diff-channels = <1>, <2>;
+>>                 excitation-channels = <0>, <3>;
+>>                 excitation-current-microamp = <500>;
+>>                 current-chopping;
+>>                 ti,vref-source = <ADS112C14_VREF_SOURCE_EXTERNAL>;
+>>                 label = "rtd-precision";
+>>             };
+>>
+>>             channel@1 {
+>>                 reg = <0>;
+>>                 diff-channels = <1>, <2>;
+>>                 excitation-channels = <0>, <3>;
+>>                 excitation-current-microamp = <500>;
+>>                 burnout-current-nanoamp = <1000>;
+>>                 ti,vref-source = <ADS112C14_VREF_SOURCE_EXTERNAL>;
+>>                 label = "rtd-diagnostic";
+>>             };
+> 
+> This would mean we wouldn't be able to use iio_chan_spec .channel and
+> .channel2 to describe inputs because of duplicate sysfs attributes, no?
+> 
+
+Yes, that is a bit unfortunate. At least there the labels to tell them
+apart. I guess we would just need to use consecutive channel and channel2
+when dynamically allocating the channels to avoid conflict. 
+
+>>>> This makes things more flexible, but does make the driver a bit more
+>>>> complex. For example, knowing when the current output needs to be
+>>>> enabled or disabled. For now, I have chosen a lazy-enable where they
+>>>> are not turned on until the first measurement is taken that requires
+>>>> them, but then they stay on until another measurement is taken that
+>>>> doesn't require them. This can lead to some oddness with the diagnostic
+>>>> channels that may be measuring something that indirectly requires the
+>>>> current output (i.e. the external reference voltage when it is connected
+>>>> to a resistor rather than a power supply). This means you need to take
+>>>> a measurement that requires the current output to be enabled before the
+>>>> diagnostic channels will give accurate readings.
 >>>
->>> The REFP/REFN reference voltage is usually just connected to a resistor
->>> that is being driven by the ADC's current outputs, so there is special
->>> property for this case rather than requiring a regulator to be defined
->>> to represent that.
->>>
->>> ti,vref-source is reused from ti,tlv320adcx140.yaml (otherwise might
->>> have preferred an enum of strings).
->>>
->>> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
->>> ---
->>>  .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 224 +++++++++++++=
-++++++++
->>>  MAINTAINERS                                        |   7 +
->>>  include/dt-bindings/iio/adc/ti,ads112c14.h         |  11 +
->>>  3 files changed, 242 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yam=
-l b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
->>> new file mode 100644
->>> index 000000000000..dc7f37cad772
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
->>> @@ -0,0 +1,224 @@
->>=20
->> [...]
->>=20
->>> +patternProperties:
->>> +  ^channel@[0-7]$:
->>> +    $ref: adc.yaml
->>> +
->>> +    unevaluatedProperties: false
->>> +
->>> +    properties:
->>> +      reg:
->>> +        maximum: 16 # arbitrary limit, channel@ can be any combination=
- of AIN0-AIN7
->>> +
->>> +      single-channel:
->>> +        maximum: 7
->>> +
->>> +      diff-channels:
->>> +        items:
->>> +          maximum: 7
->>> +
->>> +      bipolar:
->>> +        description:
->>> +          Set this flag if the differential input can be negative.
->>> +
->>> +      excitation-channels:
->>=20
->> I noticed this doesn't have the "ti," prefix. Is your plan to add this
->> to adc.yaml?
->
-> I hadn't really though about it. I guess it could make sense.
+>>> This is the same approach I took around the BOC, it feels kinda hacky
+>>> but it makes sense. Just an idea I thought about just now: What if we
+>>> have an additional write-only "_enable" sysfs attribute for these
+>>> channels?
+>>
+>> I would not want to make a write-only attribute, we always want to be
+>> able to read back what the current state is.
+> 
+> Yeah, I don't know why I said WO. Reading would be fine too.
+> 
+>>
+>> Do you mean an _enable for just the BOC? I think I would do it like I
+>> suggested above instead.
+> 
+> No, no just the BOC. The BOC, IDAC and rest of side effects. Thinking
+> about it some more, it would be a bit redundant but clearer if proper
+> documentation is provided.
+> 
+I would be interested to see what Jonathan has to say about this too.
+Generally, his advice has been to avoid attributes that power things
+on and off if we can help it.
 
-I think it would be valuable, given that TI is producing quite a few of
-this kind of devices.
-
->
->>=20
->> Also, do you think excitation-pins might be a better name?
->
-> I used -channels to match e.g. diff-channels. The same values apply to
-> both properties.
->
->>=20
->>> +        description: AINx pins used as current output.
->>> +        $ref: /schemas/types.yaml#/definitions/uint32-array
->>> +        minItems: 1
->>> +        maxItems: 2
->>> +        items:
->>> +          maximum: 7
->>> +
->>> +      excitation-current-microamp:
->>> +        description: The current output of the excitation channels in =
-microamps.
->>> +        minimum: 1
->>> +        maximum: 1000
->>> +
->>> +      current-chopping:
->>=20
->> If you agree with the above comment, I think this too should be added.
->> In that case, can we call this something like
->> excitation-current-rotation for less ambiguity?
->
-> I think excitation-channel-rotation would be fine.
-
-I like it.
-
->
->>=20
->> I say this because my device has an "IDAC rotation mode", but it also ha=
-s
->> a "Chop Mode" which rotates analog inputs and averages consecutive
->> conversions.
->
-> And this one sounds like it could be named input-channel-rotation. Would
-> this also need a 2nd set of single-channel or diff-channels to the extra
-> inputs?
-
-No, just one set. It rotates the positive and negative inputs.
-
-I'll go with input-channel-rotation then!
-
->
->>=20
->>> +        $ref: /schemas/types.yaml#/definitions/flag
->>> +        description:
->>> +          If provided, the two excitation channels are to be used with=
- current
->>> +          chopping enabled.
->>> +
->>> +      ti,vref-source:
->>> +        description: |
->>> +          Indicates the source for the reference voltage for this chan=
-nel.
->>> +          0 - Internal 2.5V reference
->>> +          1 - Internal 1.25V reference
->>> +          2 - External reference (REFP-REFN)
->>> +          3 - AVDD as reference
->>> +
->>> +          For convenience, macros for these values are available in
->>> +          dt-bindings/iio/adc/ti,ads112c14.h.
->>> +        $ref: /schemas/types.yaml#/definitions/uint32
->>> +        maximum: 3
->>> +        default: 0
->>> +
->>> +    dependencies:
->>> +      excitation-channels: [ excitation-current-microamp ]
->>> +      excitation-current-microamp: [ excitation-channels ]
->>> +      current-chopping: [ excitation-channels ]
->>> +
->>> +    oneOf:
->>> +      - required: [ single-channel ]
->>> +      - required: [ diff-channels ]
->>=20
->> [...]
->>=20
-
---=20
-Thanks,
- ~ Kurt
