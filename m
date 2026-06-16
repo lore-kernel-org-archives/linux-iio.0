@@ -1,94 +1,142 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9901428837
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 10:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A069731F98D;
+	Tue, 16 Jun 2026 10:24:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781604894; cv=none; b=gK3mZAbFKSOZz3qZwRewzpNGHXlx0EQIGHmpo28NXdPL8WusiPQJmr4hwf7QdssOhVfqZ5FGiwfQ3ecf8Xk9Cr/mM36WMRaUDPMUq00VHgJAjTq/9Lw/dqnF/2bxeoMz7CEWzvUfkTyNCB5AhqTlUFfL2sQPC0BYFiwwIBYGWCY=
+	t=1781605443; cv=none; b=l4HPNflwHEmgyaEccgf7DAuIrY8fe5pRlGSkMwlpI7AX3/Jqv5kVd8OnB95Inbbgxd7eQPq+GotOg7eD1GUiQBCmrmPExEWYWyBfESJXeXaOBbBRTqj5l8/Vk8fTIz6PLD/LxG8V7eGp6N8bjtLY6Oxf1qWcgiapIb0Fm0OAre0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781604894; c=relaxed/simple;
-	bh=8b70yKWpOsIo+GoNeGTAEHv6IM1G81H2vP9yISmiMuU=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=jN8t3+laXNxFsz6ruOdJfLz3h620WTiRTAXERwrECB54phrve5oI1NYsi3zK6TJk4NTp1wbtOxnGqUBFqsb+09CQCCvcOfoHBw4YFHY3Va++GjD2vd0Z+RdaKSOEuMAQHX9xEUFxvUTNQaiXx5V+LL3DU9MyBS07KcJ8b/bFG9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nI9VgRO2; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781605443; c=relaxed/simple;
+	bh=CEXNjaIlVsCIdMHVHjvrvDM1R2gS21qhhCMlHhiszZg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mtmMks5GtLkurPwizL3TcvWepxW4RPuGGSEy7vGpEaQ/9Gtd1hICA2ue3vM6Zoxs+3BaxxSPF4OIsMiavhvsSRxIFvKXZyQGmDFdO8CijD/Jf5fPiLqubWdkn+OQUWmG2MjNscuO13BrOv5ezIfjybcsXlfEc4dvo96/TWb5ryU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I30+xcl7; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nI9VgRO2"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-36ba3ea5c46so2534952a91.1
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 03:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781604892; x=1782209692; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8b70yKWpOsIo+GoNeGTAEHv6IM1G81H2vP9yISmiMuU=;
-        b=nI9VgRO23HICh/jCOilQlvCHU6LvSKC7nwVtjJGBYHe0zrKV+XCPuDZd2LscHPBLuJ
-         Zu9jPpMPXSN//mjMjK5psGyWtn/nkx3FfLhvHOoQLfIIZzNjp10RkXYMJVK+75z1sSMT
-         Zvx3jGMePyJBxNmtCg8qotU8LmuWQeeH35osSVMKIgiedubfZ3FcPcMDfWixZClFUAIs
-         iJLXzpxTJdre8+r94D+YA0eTynG+Mvq8edwkQaZI7NWwK/nvYabWWum1By36TWqZW6Os
-         jBYA42wWywmiXZZW7WmKgZibPy8FgU6ybrJKdHbiKrqMMBSzrXvJchGEeB78YpjlNTsq
-         lHfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781604892; x=1782209692;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8b70yKWpOsIo+GoNeGTAEHv6IM1G81H2vP9yISmiMuU=;
-        b=gf75/owiEnGvJ5xDsRgIR7gcmP2zkjCrjHw0l1AT90AsuwB5MI5ddrUdf2fv2xGRbd
-         dblMHWAn6WKniPTqu/lpbtntlAW25Fz9PcrwGbbLgxMMca4AWWSc8lupILNgzd8RoAMe
-         pKoLdOrfdoQDe/dE2a9IGTxrsCtOuwqa1T3tIOw/nv0R/CKngvwlEwFLDLZJOtlvS8Dy
-         35iFnafI2JLCw7s8u1OVwCh4Z82xiY+Gd1bjvzx2hpmhzC9A4uV+wSiCZfyJzdjLdEEQ
-         0rq9mFnbBFrQJoSXRUHuhgqlBFK99CyUqSHgnVK3gTVUnk0IS6IqtuXNO1u5eW+e36s/
-         CO4A==
-X-Forwarded-Encrypted: i=1; AFNElJ9VxHpAGUgObm2BuBLt41bn7A1gRaAX+VtW9ElTLYxX5L/x3NKWHxQFO8Bec4EU8VLsXSivnLO66Lk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzkbR/FWeVVDB2cxjCwPuKWWg2Gat/JyaCtE1OtOmwij41atLI2
-	ccI8nMIlQQA69nKNS6gf1iRn+bMR+/FSI4hfPaxMXNqmo/kjDPvuTAeC
-X-Gm-Gg: Acq92OFqpiTO8KVUtklclOsKwI0idii5BnEGHVizVy9C9uodCpOhk0/jK2Tz6bCPA15
-	BtyJ0Y/vG7U+SMdrqq590a7xpkz2J6/JOzqTxXkD1lGIg6Z4GPyUjHooa85PXQe03K9W3RusvOo
-	kMrl2AZ8qg9XkTK1EaRDoNwp/vsLSWdicvVW9fZAxwtzSGLUlmGbF9ZYELwPolm9IJ9acK3bm5J
-	fwqldZs8GGoN2VvBalDMuv9qn0KWexbJeuZfSEkfo/a2Z+F2nhybqx/K6mnQWY7lA2ihMBlMXk9
-	nVfmmydIw20OLmVmtlycptidLRvJ1PzK5M1+/O9pZVnUnqGhuomlitH98KQRbHzdMobQLEo+LQK
-	bCGdLYXVG2bUZbQJ24tgdU6zgsSgZadwcifpLCoA+l91Gr0X1PPtjCHZB2fRZQvIIJWCPFXqdYh
-	edAWb/Lu3k03dqmJVSZvdfntYwfMfeGWf8FVW8bRfDRE2B7K5g7veiNqhqfLPbWJZsisUPzt/0T
-	k4h9OfNY14bFqcPe3A=
-X-Received: by 2002:a17:90b:2749:b0:369:932a:2b8a with SMTP id 98e67ed59e1d1-37a01e2e4d2mr17930433a91.1.1781604892262;
-        Tue, 16 Jun 2026 03:14:52 -0700 (PDT)
-Received: from localhost ([2401:4900:8834:3eb8:533:5f44:73b9:f15a])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c866325d156sm11434067a12.13.2026.06.16.03.14.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Jun 2026 03:14:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I30+xcl7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781605442; x=1813141442;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CEXNjaIlVsCIdMHVHjvrvDM1R2gS21qhhCMlHhiszZg=;
+  b=I30+xcl77jPmA6e4ccJ79bPRQu6XlDMNi1wt0e5KeKj5ziMx527AMOdM
+   ZI44He2HVLt5zr5FrMKjlqofR/yQntVZqH1HHuNsDGP+dV0aPeUdjEoo6
+   uI9u5rXlSTWFqsqhOR5w2NTpidIWgn6FjPyAH/Vf4rNQzCmsfleX/BZNX
+   8oYIwK8XUtG/F5saMxs42nAtdGZ2k517GvEI4Rlt7/U/YU+NqOEUl+jKD
+   J1yrnRecPWq1vapeDRb20+QLVRvhOIMTZ3xiCFwwhzZ+xF9Uwa4vITzyV
+   JbVejAPxan+/Cqv6cgcQI+gX/LcRFOT4CoYhK0I3A59QzOysR2vRR3qE/
+   w==;
+X-CSE-ConnectionGUID: lyTeHCDpRXCOBaUyI543Cg==
+X-CSE-MsgGUID: jO/guQlWQRisLb4ar+KQhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="93038275"
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="93038275"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 03:24:01 -0700
+X-CSE-ConnectionGUID: K9R0zYVGTZqoBjPo+7qc7Q==
+X-CSE-MsgGUID: 0YyydkiHR8OXAzhNi8YnbQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="252037591"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 03:23:58 -0700
+Date: Tue, 16 Jun 2026 13:23:56 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Yash Suthar <yashsuthar983@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, salah.triki@gmail.com,
+	sakari.ailus@linux.intel.com, Achim.Gratz@stromeko.de
+Subject: Re: [PATCH] iio: pressure: bmp280: return on runtime PM resume
+ failure
+Message-ID: <ajEkPFyOJAI_TO-5@ashevche-desk.local>
+References: <20260616093126.66312-1-yashsuthar983@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 16 Jun 2026 15:44:45 +0530
-Message-Id: <DJAE81LLF9XM.1ANC0QLJWQ9ZQ@gmail.com>
-Subject: Re: [PATCH] iio: adc: ti-adc12138: fail init on calibration timeout
-From: "Prashant Rahul" <prashantrahul23@gmail.com>
-To: "John Ogness" <john.ogness@linutronix.de>, "Prashant Rahul"
- <prashantrahul23@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>,
- <linux-iio@vger.kernel.org>
-Cc: "Shuah Khan" <shuahkhan@gmail.com>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Petr Mladek" <pmladek@suse.com>,
- "Krzysztof Kozlowski" <krzk@kernel.org>, "Oleg Nesterov" <oleg@redhat.com>,
- <linux-kernel@vger.kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20260615111156.199906-1-prashantrahul23@gmail.com>
- <87h5n4uhn2.fsf@jogness.linutronix.de>
-In-Reply-To: <87h5n4uhn2.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260616093126.66312-1-yashsuthar983@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon Jun 15, 2026 at 5:42 PM IST, John Ogness wrote:
-> After the timeout, the driver checks the status. If the calibration is
-> not complete, it already returns an error with the appropriate
-> information. I would expect that error is preferrable to a context-less
-> "wait eoc timeout".
+On Tue, Jun 16, 2026 at 03:01:26PM +0530, Yash Suthar wrote:
+> Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() and
+> propagate error.
 
-I agree with you. Apologies for not realising that earlier. Thank you for p=
-ointing it you.
+...
+
+> static int bmp280_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct bmp280_data *data = iio_priv(indio_dev);
+>  	int ret;
+
+No, here must be a blank line. And so on...
+
+> +	ret = pm_runtime_resume_and_get(data->dev);
+> +	if (ret < 0)
+> +		return ret;
+>  
+> -	pm_runtime_get_sync(data->dev);
+>  	ret = bmp280_read_raw_impl(indio_dev, chan, val, val2, mask);
+>  	pm_runtime_put_autosuspend(data->dev);
+
+...
+
+>  static int bmp280_buffer_preenable(struct iio_dev *indio_dev)
+>  {
+>  	struct bmp280_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  
+> -	pm_runtime_get_sync(data->dev);
+> -	data->chip_info->set_mode(data, BMP280_NORMAL);
+> +	ret = pm_runtime_resume_and_get(data->dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = data->chip_info->set_mode(data, BMP280_NORMAL);
+> +	if (ret) {
+> +		pm_runtime_put_autosuspend(data->dev);
+> +		return ret;
+> +	}
+>  
+>  	return 0;
+
+Also possible
+
+	ret = data->chip_info->set_mode(data, BMP280_NORMAL);
+	if (ret)
+		pm_runtime_put_autosuspend(data->dev);
+
+	return ret;
+
+>  }
+
+...
+
+> static void bmp280_pm_disable(void *data)
+>  {
+>  	struct device *dev = data;
+>  
+> -	pm_runtime_get_sync(dev);
+> -	pm_runtime_put_noidle(dev);
+
+> +	if (pm_runtime_resume_and_get(dev) >= 0)
+
+Why this change?
+
+> +		pm_runtime_put_noidle(dev);
+>  	pm_runtime_disable(dev);
+>  }
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
