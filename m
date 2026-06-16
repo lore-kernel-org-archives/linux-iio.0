@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D5545BD7B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4D94611C2;
 	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781624393; cv=none; b=HJZnKtVp9/lIHUeVc6olEYupjTZ0NR/bpLuMOBq+3SPEY/KBbN3aZrj0+ryKLJLjfKs6YDlzvc0GcOrfhzgVKzI2pp3CqSqzWFypRYlNGFsbcVwdhh9VgfIr9tdZ6LmvnBBcANtx2XdhOOuYeHm3ikR9HtgHpzvIlkuRLOzCM90=
+	t=1781624393; cv=none; b=JWAfshpayK9jJroNgwDaHd/Nkf/DV5QRVfNcI/FXtcLquA2Ivsw025p0a0FjZjREzrBiUAYs0GS04325aNVsfHM8N2hU7Unqsrcgy0/pGeP0DKyPL2Rr9HHDP4Xx8FjZqnP9gm4CL2r9hHdo0Fr/JUc5DM6pDcV2ITYfxhfjkMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1781624393; c=relaxed/simple;
-	bh=+QIasRBIyKP+WO6TXZ4SAPt7bwYYwVLv6m09mqd7suk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=XazVkf4vrEkz1YoXEqkWuAoqlyFOmJUeFfLu2APRhpYThqsRj0WNTx/z6DDonmnwzBlGcEmfTt0rnUl+FA3LWNDiAVfAbAQNVG7x8XYLUS/U49fz07leMoksCNbUu1TEmm6UbsDegdF/8xgNtnsSqZYCRYMNsCVOyaYvWfmxTCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JsEiA380; arc=none smtp.client-ip=10.30.226.201
+	bh=9YduD/I8X79t3FvQLrN1PE7Uvr/ztG1CU093KHyWSAU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=mob59e0+KlR799z8MVDtn+OKfxfY+SeVz0PF6mlmNWVaOSNzmBfp0gzzWqb0H2uaSLVvtNcGjgQ+gm95cXrXtUfNFgkrmVfkbDodBNunXNKsYGd3mpGOVr2EkfZKdhplZdAnARtdQQKAYjcIaRvzc+cZRj75+8gxZlRsp0xq9O4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p6GtiEc6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JsEiA380"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 24704C2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p6GtiEc6"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4CE69C4AF10;
 	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1781624393;
-	bh=+QIasRBIyKP+WO6TXZ4SAPt7bwYYwVLv6m09mqd7suk=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=JsEiA380aj0j9LMObot7jmLtf+FKXqw9tgLs2YnVufvU/YsPY/6ZVvXxXSqZjLlXJ
-	 RMLLy47FV/r2gyRUvLHhC9TwBw8a/npPmx9Wj4ZJE+Uw8Lu1SP76zIsNR1WSczAgSn
-	 1CMAcrnnGah/FShzOSjYdgUXAGefEckkrPtPt0xq5k5eMzk+WMYL7ajwUGhNp6caRP
-	 0RF2zit2Pzi437fgwU4i1Dov15cKVHIpxFBNgfHYdvXfXh7SxCrULTgzH89TWRbbVN
-	 1Wyam9R+rOjZgNl+yD5u/W4par+gu6rbqPnl4WVGwKCVuvv+ezXDjE5Ty8DM8tueCh
-	 8rHp16bEo982g==
+	bh=9YduD/I8X79t3FvQLrN1PE7Uvr/ztG1CU093KHyWSAU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=p6GtiEc69HEZo5L+S5v2QtkN5freQHqy1mqBvLyTZ18JKgtubk22GhdzrbstvKJDM
+	 w3qXk+I7WHHf4aE8/dEzS2cSkGjlH4gmF7dbP6NmfhNHHzxJAOQ7+ZRbfGExWk3Wrm
+	 HgygSHy1dXoEsk0ie6rrsfNBC51pfSUkJqgOaa8p8P0S16GRuJ9gpKrtN3t1hKya9g
+	 6A2Es4R5h4zQNDaZEHQ3nUCiw3JHuQeaiDMFRbg+uiC1YWbX+NKZIzr89Pbr/8Sk3/
+	 kVRWYyXT+3/zv3M9ni8IrrBYF8egkwo3EEa+QJckdSl1X00jB7QaSgjv4OqD6313qD
+	 cftXrUzDfMj3Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A828CD98DA;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 379FACD98E4;
 	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Subject: [PATCH RFC 0/3] dmaengine: Support address bus widths of 32 bytes
- and above
-Date: Tue, 16 Jun 2026 16:40:51 +0100
-Message-Id: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+Date: Tue, 16 Jun 2026 16:40:53 +0100
+Subject: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,20 +41,19 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWNywrCMBAAf6Xs2YUm2Ba9Cn6AV/GwJmtdpWnI9
- iGU/rupHmcOMwsoJ2GFY7FA4klU+pDB7ApwTwoto/jMYEtbl7Wp0HfEoZXAqGOMfRpwFs9p89i
- RvhUrImfs/tCwbSB3YuKHfH6PK1zOJ7j9pY73F7thq8O6fgGmfC+IigAAAA==
-X-Change-ID: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
+Message-Id: <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+In-Reply-To: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
 To: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
  Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781624455; l=3227;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781624455; l=1786;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=+QIasRBIyKP+WO6TXZ4SAPt7bwYYwVLv6m09mqd7suk=;
- b=tmf6UE3hfFI9WDOrUkRnTII+gZl3A+Vv7vcWdbRAns06aGK8bkU1u75Fgv3aTUwKERpKBz1vT
- 6OwhDyHlp6tAkBYJavrwXTdFMq+JocGbj3yAVY8J96Qm/9RwqSIdw9p
+ bh=sU9DQsd6byszeh5ncz5ZqdeyVxN/jL4K0IVccBygpEg=;
+ b=tjT7QgQ5D3btARwUqFiFGLvPT5JLa8ANAMSz53rWXUoroAu4yXPqJSmDVOTpx2RsSz3WSBuaT
+ qfKt3V467FXB9RLgdEACH1DEnK1z+D1HplPt3ueSSVqKGtDtRNh5ZQV
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -62,73 +61,54 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-The DMA engine slave capabilities advertise the supported source and
-destination bus widths in src_addr_widths / dst_addr_widths. These are
-plain u32 bitmasks where a set bit's position equals the corresponding
-enum dma_slave_buswidth value, e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets
-bit 4.
+From: Nuno Sá <nuno.sa@analog.com>
 
-The consequence is that widths of 32 bytes and above cannot be
-represented at all: DMA_SLAVE_BUSWIDTH_32/64/128_BYTES would need bits
-32, 64 and 128, which simply do not fit in a u32. Hardware with wider
-data paths is becoming common, so we need a representation that can
-express these widths while still using enum dma_slave_buswidth.
+Advertise the source and destination bus widths through the new
+dma_set_{src,dst}_addr_mask() helpers instead of open-coding the legacy
+BIT() mask. This moves the driver onto the representation that can
+express widths of 32 bytes and above and allows the legacy u32 field to
+be removed once all users are converted.
 
-This series switches the masks to bitmaps that span the full enum
-range. Because there are many producers (DMA controllers) and a number
-of consumers spread across the tree, converting everything in one go is
-not realistic. To allow an incremental migration, the legacy u32 fields
-are kept alongside the new bitmaps:
+While at it, give the channel width members their proper
+enum dma_slave_buswidth type.
 
-- producers set the bitmap via the new dma_set_{src,dst}_addr_mask()
-helpers, which also mirror the low 32 bits back into the legacy u32;
-- legacy producers that still assign the u32 directly keep working, and
-dma_get_slave_caps() folds such a u32 into the bitmap it returns, so
-new consumers always see a complete bitmap;
-- consumers can read either the legacy u32 or the new bitmap during the
-transition.
-
-The axi-dmac controller and the IIO dmaengine buffer are converted as
-examples of a producer and a consumer. And this actually fixes a very
-open coded path to undefined behavior in the axi-dmac driver and
-possibly others.
-
-The end goal is to convert every producer and consumer, then drop the
-legacy u32 src/dst_addr_widths fields and rename the *_mask members.
-I cannot commit to a timeline for that conversion (it touches a lot of
-drivers across several subsystems), but I do intend to see it through.
-
-Sending as RFC mainly to agree on the approach!
-
-I'm also not sure if the dma_slave_caps_get_{src,dst}_width_min() accessors
-are worth having? Their purpose is purely to keep consumers from touching
-the representation directly, so that the eventual u32 removal + mask
-rename is a no-op for consumers. The alternative is to let consumers use
-the bitmap directly (find_first_bit()/test_bit()/etc.) and just delete the
-u32 members at the end. I mean, now we do have a bitmask so the _mask
-suffix can of makes sense.
-
-This issue was discussed before here:
-
-https://lore.kernel.org/dmaengine/abkoXXbaxaiqbBuX@vaman/
-
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
-Nuno Sá (3):
-      dmaengine: Support address bus widths of 32 bytes and above
-      dmaengine: dma-axi-dmac: Switch to bitmap-based address width masks
-      iio: buffer-dmaengine: Use dma_slave_caps width accessors
+ drivers/dma/dma-axi-dmac.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
- drivers/dma/dma-axi-dmac.c                         |  12 ++-
- drivers/dma/dmaengine.c                            |  18 ++++
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |  15 ++--
- include/linux/dmaengine.h                          | 100 ++++++++++++++++++++-
- 4 files changed, 129 insertions(+), 16 deletions(-)
----
-base-commit: 7524fe142b5a772f8421aeee2132cf7e21a00103
-change-id: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
---
+diff --git a/drivers/dma/dma-axi-dmac.c b/drivers/dma/dma-axi-dmac.c
+index d47ff27e1408..19c258d511ca 100644
+--- a/drivers/dma/dma-axi-dmac.c
++++ b/drivers/dma/dma-axi-dmac.c
+@@ -152,8 +152,8 @@ struct axi_dmac_chan {
+ 	struct list_head active_descs;
+ 	enum dma_transfer_direction direction;
+ 
+-	unsigned int src_width;
+-	unsigned int dest_width;
++	enum dma_slave_buswidth src_width;
++	enum dma_slave_buswidth dest_width;
+ 	unsigned int src_type;
+ 	unsigned int dest_type;
+ 
+@@ -1262,8 +1262,12 @@ static int axi_dmac_probe(struct platform_device *pdev)
+ 	dma_dev->device_terminate_all = axi_dmac_terminate_all;
+ 	dma_dev->device_synchronize = axi_dmac_synchronize;
+ 	dma_dev->dev = &pdev->dev;
+-	dma_dev->src_addr_widths = BIT(dmac->chan.src_width);
+-	dma_dev->dst_addr_widths = BIT(dmac->chan.dest_width);
++	ret = dma_set_src_addr_mask(dma_dev, &dmac->chan.src_width, 1);
++	if (ret)
++		return ret;
++	ret = dma_set_dst_addr_mask(dma_dev, &dmac->chan.dest_width, 1);
++	if (ret)
++		return ret;
+ 	dma_dev->directions = BIT(dmac->chan.direction);
+ 	dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
+ 	dma_dev->max_sg_burst = 31; /* 31 SGs maximum in one burst */
 
-Thanks!
-- Nuno Sá
+-- 
+2.54.0
 
 
