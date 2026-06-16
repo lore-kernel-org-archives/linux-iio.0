@@ -1,132 +1,139 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D074A32B118
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 13:25:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F343385B9
+	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 14:04:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781616344; cv=none; b=VjVef8pIuyP2NfNJnd7gfIXBVOMRgybvyVN59C3qiL+FK5ERIku5ABV3FU4rfrfT7c6L5kEhCZ6YWbwI+we+IupksKD1ROgpuxImVt2KqhIjwGpkflJ5FkMMjQN0EvzWMojtNy0qbHTzM94QJFJGJlG8NFP8774L16uJbZZT6Vc=
+	t=1781618655; cv=none; b=ZzofBojsWP5EERkcteWpWeBI1fuepStrKzcWeBNtbPOtmRYzpgIgKDTrS+UttX6xwTOWzBx274AL3EN4O8rRxFlMTAJhGuQ+RpET4fVRtwjF/ju8ayYHhWYG5p5F1wx+U0UwN5IgjpKM72FyE9L4SkaouWSe1pfBZKJ7LbKRrT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781616344; c=relaxed/simple;
-	bh=hFI0bsXMz+2PaBf6GvmdWgvuDy1uZynADtqdNcaOw4c=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IE2zsTK2gvmv+PT83X7DiOuLZSfRH92ul9H17/uKVT874xaRuKrmw14RjgqW1m2ba0WC/61PHlcBYQZTZkGboZwQx0JKANWMM0lPDwKHTm6xjCKDtClwZHFF/AFc5CUdC9+DDu91ygRjhen55G350XGHHgnicVWmh6oHUV1kpJg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mRm2KgY5; arc=none smtp.client-ip=209.85.210.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781618655; c=relaxed/simple;
+	bh=aHRpwy+EAF3xTCyfACBtdq+MbNPIl2cnmy723dQYE8g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ehy4li26iCu/qmChnVxLnYE1nDyBXLtdF3fQzJ6eTrpyD5dC6XkS+mct+wRE+Vi42R3Fm0gAerADKD5lQzFk6petJNiJEBsScVlIKhHZgP2Xm2U/04YIHzkcy4fylmUdXhCzKJNOBPxcW2wc2NOSLwWWuHDhbl0Elt/Uz31tMn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Y3LzmORL; arc=none smtp.client-ip=209.85.167.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mRm2KgY5"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-84347ad88edso3159112b3a.1
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 06:25:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Y3LzmORL"
+Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-4866834f8deso1762965b6e.2
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 07:04:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781616343; x=1782221143; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KEukyJG+XRwKezQQnUjo18fsrtOq5mlzoNiWZ/icNHY=;
-        b=mRm2KgY5XjwKdtmFQTDUv5D/OFJzQdcRh3wPATQ7/L5OYK/RvanB6oKgmnG1ZvQosp
-         bpt3iZtPEYTWYK57+dlYmu038yDWyV1Xcgc9mZZmbRRdvY+ouwO2KTaAScTWWY8nRVF8
-         npUJNkxwJ+2kAZ0V1uqgcBC04jHyYuyepU/E1V2Lw8F63fXBinskUop9c0sfUqg+aWFu
-         Ja6s4U657h8ZpSgIOO+9q5hT5Rx148rd63sJ9TV0fcSTlwTLJD3Ajl2MkQZf47Xs4996
-         crHBHjgfv4ePBCIxMUk2l5UCtUlsjpQvJReB1358D+mVUYQcBjHiMvfgurKBy6zIveBr
-         BaMQ==
+        d=baylibre.com; s=google; t=1781618652; x=1782223452; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Xr4xaFxz+eK1eveJR03WaFSuuQiuLngSW1aqKxuBcYE=;
+        b=Y3LzmORLSb2wv3e5zgwWNlSKlTzDwai9o1A2Z0PdrVBcfMpcL5VkFuTcarULEvkIZr
+         OFvveS1H95g7EWs5IZ+ICojuBt0QP09T70I2axyY28i+48K2kWibu2RskKtcAWodLYwK
+         pdSkT3a8NkxtsYicavEpteOWmqNa7LwCphl2edYce/SPQLAIEZBqDP8PzvQmavz6k7RT
+         clcL65p0E9+8gF77x0mg5ew360B8fnqWHYS2iURr6rxS4hRAUkWIypy61Y51dEKtqf3+
+         S2kWV5wE8UaJ/+1S5QBbS8RZzDm/3yTvky6GchgwgrYH5DB9ruHm+3EGozh7jXVILF4C
+         dFWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781616343; x=1782221143;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=KEukyJG+XRwKezQQnUjo18fsrtOq5mlzoNiWZ/icNHY=;
-        b=AJjxl5U0vEcBV2KWOp634roH0CycDx+qlgUDfWsU7t/h0SL3RKsIlnSzuvdOW/CmGi
-         7a695cAF9rtWFJtW8Mkz/QTcAfscJk8yagJWV42G1jGszciYbsN+K5meNrPnzHn/zCiq
-         DSIO/3kwD1wl/l6nrE4QGZ9j0A69jvBdEJVgKQ/Kz5jjgohgPLRdQ4ObhNSznzHWxKk2
-         NGhB+dw423Kzw4lsnr2ILWmD8t3ZqVV2B9LJnWKYYGRf0y/uD3IKME/guNusGssdkQzj
-         7nrqHwgciblXMNwy83oGrTYxz+WU6qSx+1salJTk4di0ftsJBk9DlHIr7LnM0l7OjdEV
-         mpEg==
-X-Forwarded-Encrypted: i=1; AFNElJ+TFqK9EDEwurndywKWE1mTB3W0EzQJgor2OCqcTmexJPiXPCMpI+RUvO8yFd2HKHbp5+fB0gyNirI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVkScOOSWS5+M5ZP1n10i0I4o14njJTNwY5n0A52yM3sewqLWT
-	IqhjaFAykKqJSeAMjF3GY+1D3VmR0/zgk2SzsoBptwQ5N8Gj7kR/9XUC
-X-Gm-Gg: Acq92OFPSO6HtzHCBmUaj617vx7c0qqyXWyrZZlJVYqNVo71W9cM0bv6d7/2Qoom7Gx
-	YcKIDwhQMKbQbG90oWjTBZLA7C0pKO0jEdFvjU02ufBjsHKLrtAE2Mu7MX5uPU6aK5MzZKWvN7r
-	t5OpJ6crrJ5kE3A6yCFjPcexF2XbcN6IMr1d3nhlzfnsDgdIfcxB+CV2euUErBkLdwPXTwPk5oc
-	MeaO1nY/oAxciBVpz5id0IGUsIDfoSd/zUA88LhpJBQHsOBdr7XBx9+EGKZ0bGcRHElAvMHOKVI
-	AbbgrPLhg/1XNuFP+IIzdv8ZIfOBHneCNF/QXuclOpH6QrObRpQ2wuxkh/597geqHWUFJtzeyIa
-	SEYUSZ0wj1b5qP8/vj1duK0WnvSOEq5oA2G9cqXujqRufrB6Zkp+ShVWxWJZhzPTTganZx1F6+z
-	bw0rs/wYzlLSFYNwBaCgroPkZwuGXxI8LIb2iNW1R0m+e/LFDYXoAHQgRuikA=
-X-Received: by 2002:a05:6a00:32c3:b0:842:7e7f:2914 with SMTP id d2e1a72fcca58-845153dc547mr4127758b3a.4.1781616343317;
-        Tue, 16 Jun 2026 06:25:43 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8434b046911sm13105079b3a.53.2026.06.16.06.25.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jun 2026 06:25:42 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-Date: Tue, 16 Jun 2026 18:55:22 +0530
-Subject: [PATCH 3/3] iio: hid-sensor-custom-intel-hinge: use u32 instead of
- unsigned int
+        d=1e100.net; s=20251104; t=1781618652; x=1782223452;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Xr4xaFxz+eK1eveJR03WaFSuuQiuLngSW1aqKxuBcYE=;
+        b=KR7AU1jO78i5G7FrdfGRbhYMKQL1lJyYBj9/Pqs7qeTw+DmXseqEg4w+ImvvwWidYi
+         bknr4zzkfC3te9BFDeiKLuIFszQm49DId100erZTA9U1E6+jEazV8sQ82RDguUXw4Pgc
+         zO2cMImjNgF7nQ4ta1DLxeAr0hVVcQq/fgwoNxZhFgXhLVEu5pfSJCMdI6l/koBPUk2u
+         jtjbiWuD2Ch+yzWN7SZcI42eTdgzhW3DHSUWPpdHLtQZNOtIG0rV6P959KQvGFPbOZUI
+         /qJxT/Z8lYA65EYIq3u4cDzTNmpeGAk5vjGgXreuf6uUYT6yP2WuUVFvQ6oUJz3FnXrI
+         F1Rg==
+X-Forwarded-Encrypted: i=1; AFNElJ+gSPhpZaCrR1I0oZHDlSCyuTnH5XmHcwZXXoyfVC4WAJZUUf4o1H/TJSLcicqtDrPtpivezCHAqIE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy0rFczbusN+07qIljF+G4+ldXie7XgYQ04sUiuFlFkPR5KTFY8
+	KfDo3D6Fhpb1EQheaRwNFIBgj0tz9nfBE4umWmP0eObL9+dSOsPoxpV9Qnvu6CSm904=
+X-Gm-Gg: Acq92OFxd3nBPNNeB+SA6mxRU6PRhoigTYz3GG0u36kB5laTfsa41gT/7D1uMaZ86eb
+	eo2agABtE7nrjNSHZt3emBC9buuj0BD7PUBqPN831WKT+6fmQtRIkG+VlyG3JiUkqKILtH2pSgW
+	m+rlXVldYyD726dY6bCcWMHc6EM+c5OOUfXsCKygOIfUvFZoijqCI8Tlp3x5aQkdeCtTGlCT74l
+	iLyhFbS16yrgrpnOjfKMBiqxq3DoW1jxVrdpc4KMMmpbmLCsP5tcnT0eF1M69DPm7pFn99XK4U0
+	4qokHZ+h/2RR5hhnE3/6kbyjAxZ3THIwX38t2/N8oKAJBs9sgxWHG63qkvJ6Lskv+0aXc1c4FSx
+	n8HKqBbb22ESdlgVzL9/BZnv4dBjghWwdiIREWDkt2sjXNPKeYGsfBkG0WO4JiKfAA7R+xUCwNa
+	Lb3Fm+kD2pHsKJGEffVnyt2kxtdiXtXSXsEfO7gPK9s3HjYNutEEQZVpd8QBf5Tmzk7PO0St3HN
+	Hzzwdvg2D0N
+X-Received: by 2002:a05:6808:30a6:b0:486:89d8:6d57 with SMTP id 5614622812f47-4872f353fc2mr12652737b6e.8.1781618616673;
+        Tue, 16 Jun 2026 07:03:36 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:16b0:5133:47b1:a939? ([2600:8803:e7e4:500:16b0:5133:47b1:a939])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4875dfb4574sm4543917b6e.16.2026.06.16.07.03.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Jun 2026 07:03:35 -0700 (PDT)
+Message-ID: <f3165ebd-c359-49dc-a46a-0edacedf52d7@baylibre.com>
+Date: Tue, 16 Jun 2026 09:03:35 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: adc: ti-adc*: use dev_err_probe for probe time
+ errors
+To: Prashant Rahul <prashantrahul23@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Shuah Khan <shuahkhan@gmail.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, Petr Mladek <pmladek@suse.com>,
+ Oleg Nesterov <oleg@redhat.com>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?=
+ <u.kleine-koenig@baylibre.com>, John Ogness <john.ogness@linutronix.de>,
+ Dixit Parmar <dixitparmar19@gmail.com>, linux-kernel@vger.kernel.org
+References: <20260616130612.73122-1-prashantrahul23@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260616130612.73122-1-prashantrahul23@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-16-jun-hid-iio-u32-api-type-v1-3-952c74195f46@gmail.com>
-References: <20260616-16-jun-hid-iio-u32-api-type-v1-0-952c74195f46@gmail.com>
-In-Reply-To: <20260616-16-jun-hid-iio-u32-api-type-v1-0-952c74195f46@gmail.com>
-To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Mailer: b4 0.15.2
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On 6/16/26 8:05 AM, Prashant Rahul wrote:
+> This simplifies error handling and ensures consistent error reporting.
+> Also add missing error messages in a few probe paths where failures were
+> previously returned without any diagnostics.
+> 
+> Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
+> ---
+>  drivers/iio/adc/ti-adc081c.c    | 10 ++++------
+>  drivers/iio/adc/ti-adc0832.c    |  6 +++---
+>  drivers/iio/adc/ti-adc084s021.c |  3 +--
+>  drivers/iio/adc/ti-adc108s102.c |  2 +-
+>  drivers/iio/adc/ti-adc128s052.c |  2 +-
+>  drivers/iio/adc/ti-adc161s626.c |  6 +++---
+>  6 files changed, 13 insertions(+), 16 deletions(-)
 
-Prefer 'u32' instead of 'unsigned int' for usage_id variable.
-This matches expected callback API type and improves code clarity.
+Please make one patch per file.
 
-No functional change.
+> 
+> diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+> index 33f82bdfeb94..f6ce23975b80 100644
+> --- a/drivers/iio/adc/ti-adc081c.c
+> +++ b/drivers/iio/adc/ti-adc081c.c
+> @@ -174,26 +174,24 @@ static int adc081c_probe(struct i2c_client *client)
+> 
+>  	err = regulator_enable(adc->ref);
+>  	if (err < 0)
+> -		return err;
+> +		return dev_err_probe(&client->dev, err, "failed to enable regulator\n");
+> 
+>  	err = devm_add_action_or_reset(&client->dev, adc081c_reg_disable,
+>  				       adc->ref);
+>  	if (err)
+> -		return err;
+> +		return dev_err_probe(&client->dev, err, "failed to register cleanup action\n");
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/position/hid-sensor-custom-intel-hinge.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Please don't add new error messages. If there is a really good
+reason to, please do that in a separate patch with a justification
+as to why it is needed.
 
-diff --git a/drivers/iio/position/hid-sensor-custom-intel-hinge.c b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-index a26d391661fd..2139ddb670c4 100644
---- a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-+++ b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-@@ -190,7 +190,7 @@ static const struct iio_info hinge_info = {
-  * and captured.
-  */
- static int hinge_proc_event(struct hid_sensor_hub_device *hsdev,
--			    unsigned int usage_id, void *priv)
-+			    u32 usage_id, void *priv)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
- 	struct hinge_state *st = iio_priv(indio_dev);
-@@ -209,7 +209,7 @@ static int hinge_proc_event(struct hid_sensor_hub_device *hsdev,
- 
- /* Capture samples in local storage */
- static int hinge_capture_sample(struct hid_sensor_hub_device *hsdev,
--				unsigned int usage_id, size_t raw_len,
-+				u32 usage_id, size_t raw_len,
- 				char *raw_data, void *priv)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-@@ -236,7 +236,7 @@ static int hinge_capture_sample(struct hid_sensor_hub_device *hsdev,
- static int hinge_parse_report(struct platform_device *pdev,
- 			      struct hid_sensor_hub_device *hsdev,
- 			      struct iio_chan_spec *channels,
--			      unsigned int usage_id, struct hinge_state *st)
-+			      u32 usage_id, struct hinge_state *st)
- {
- 	int ret;
- 	int i;
+In this particular case, the only error is -ENOMEM, which we never
+have an error message for.
 
--- 
-2.34.1
+Above, for regulator_enable(), an error is already printed in many cases
+when it fails, so needing to add an additional error message is questionable.
+
+The same comments apply to the rest of the changes as well. Unless you actually
+hit one of these errors and found it difficult to troubleshoot without an
+additional message, then it probably isn't an improvement.
 
