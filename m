@@ -1,639 +1,174 @@
-Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010014.outbound.protection.outlook.com [52.101.56.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F39A37756E
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 11:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781610620; cv=none; b=rrCjWp15FCbIYwntCERNwf1xBgTmCFlF21Lrch2WWkIJcZpaZmNDkewwE6sF1S7WHLwDi/ymzpLFPOwHvgoEwngsdw3eLr3jZQ9t6huAFozlqHiFZazokqaMf1nmxjZU4cyBnESh7FS4PkSRlI8tqnvCb1e4y32qplmBu3Mg/HM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781610620; c=relaxed/simple;
-	bh=oWW0v5ipwftBruO6rRkNB+1oC2DlGwhG/hHA3msNojc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ia0t09s1W+1e3ej08Qhwwmpme5dCndwQOMSnm17DS59hv+HZ02C/z9aHBkmIDO+AVJzeLQCBjLC1EnWeOE3s/RbgYlO6mWoa8NH5Xumxx3K9Tt6Umne5l4oLffULVFSeYauU42JZCfgNV/XdWYlyh6bl2Un0axASDyvNpVZz8mg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=D0syg95G; arc=none smtp.client-ip=91.218.175.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99CE438FF3;
+	Tue, 16 Jun 2026 12:12:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781611962; cv=fail; b=VvN3sWTAd997POmy+sUVy0H3t2zTQFJ3hiknmrJf/sQHNyeYSLaObOLdqYRVckgAFGfHYgXVXinQZy/nAbUDXyVz8aQdk1mzqroGFQ9g0uaQHN25UiNQTRlUm4pSBMKumeDPLyzPAwrDM4YK+ijxxEMOvoLOosubH5JuTKIcm2c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781611962; c=relaxed/simple;
+	bh=P5hcl0bp8GvsNHBsedI+6CcSf/Wn3tLzCYZqe8vQuQg=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=rHkN9a731QyjU70ocKfXPsS98ZrTNUI97cB6aM5tPkDTtu/8JpYRADaXMAa3JSV+QzD0g7ocSF3usvHpaOFRDs9N4bfj35UNyva+SQQBmS5uWBrkB8R11BcezITT2QOVM6WaO1BD3mcDRJQBjr5hBQY7OtvEjoqd7Uh13dLR4Ms=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=jvmHKzHy; arc=fail smtp.client-ip=52.101.56.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="D0syg95G"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1781610616;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oGbV2+/1+IKbnWwdP+VogChNJTLG23ow0u9o8bvhEus=;
-	b=D0syg95GbiMw7rV+AZtZ2f0HOzsXCZ/mTCaNOs7whZsqE7Uq1thuCnkyLqrXYTB7SBaWMV
-	CD0E71LKkg0AVIZtjetGtmUIRZrDyq9s0blK4LXoD3N5PaShw9J8EEqp3MxXc+M92h7Pet
-	CipCYVjQhwxrPGRaY8r3VeMRWUIU26o=
-From: Siratul Islam <siratul.islam@linux.dev>
-To: jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: siratul.islam@linux.dev,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] iio: magnetometer: add driver for QST QMC5883L Sensor
-Date: Tue, 16 Jun 2026 17:49:39 +0600
-Message-ID: <20260616114942.37241-4-siratul.islam@linux.dev>
-In-Reply-To: <20260616114942.37241-1-siratul.islam@linux.dev>
-References: <20260616114942.37241-1-siratul.islam@linux.dev>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="jvmHKzHy"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=W3FSYXEVT0Snjv7GGAO9B2joWioK5xLzSRsM9JTO2hMqrvdseU/a2v3+XlXE5W9c+UfLQh2si8OHc/AmhTZZ6RjltK6SMBDaN9DDTsuDJNLejq9gloh6XhmcVekOCj8NkdRoHPNqWVkkgATLVnXbF8/A328L7vKqjyKr9xWdtqNKlc4sYYIzw5knpAzIbaGPCyueJVQ8mjaenM+ZPfVOA2ThmYHZ7MiZJBZR3w56Xtb1qM96tg3riH5kvhUZfFkz5g3uNWUx4q2p51AEWpOpcTZzG3P/VBbB+9UfzawNLu6mKnt6H2jA14mCfUboHRugsAARu+s1nPaOn/7c9/A6uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=P0Fbvv3+lZ2wPeCVG3dVuCzMpp8sXBrFkG9ADMLH4Nc=;
+ b=GCi+FnYpTsQQErqV2mVHXYeJenajUHv14kKK55IhY+Zg3UckPWZVAtzUX3oVt8Y8sGlOuQ2QGENXEYwpAv1mOclDuWYFDtQPlgMVPUdm2nYFKkS0Vrt9e0eh3eDsUsjhMlmaZQ0JObqwGXK+t9+qMD8+Ah1O8RxaetCYR8xyDDtHLmnRGV3k6dkcibk6cRJds+ggGNmbsk63OebcxeCWbDhN+k2ahyl1q+g+77PuonOT8pbguzyo4hNUzRtf1WmdlqbaNlB/5LcQZjXV/dAy1qeicXhKn6EuwFMgjwkZrG4iJBPRS42aJL2dvHjfe2Hhoq//7iZJzW21LuXMVOd5ig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P0Fbvv3+lZ2wPeCVG3dVuCzMpp8sXBrFkG9ADMLH4Nc=;
+ b=jvmHKzHy9mU9BkRKh2wTFWxcYKDzbIGpvH2B6Oti42URqZj6U0HJPLjkED9HmHSaCDTg1pxO7CZbc0SEKbH7W0atat4fLP2PzcLHdrneENTKsvh4OvpliGm3rpHa9xHvMVBGQqoqvKQQznVydp7VrCi/0NQ+DQ5n6/3LptaOH+k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by DS7PR12MB6189.namprd12.prod.outlook.com (2603:10b6:8:9a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Tue, 16 Jun
+ 2026 12:12:34 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0113.015; Tue, 16 Jun 2026
+ 12:12:34 +0000
+Message-ID: <2b3d95ff-cd1d-4a1e-a9ac-66df9344cb5d@amd.com>
+Date: Tue, 16 Jun 2026 13:12:32 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/5] iio: adc: add Versal SysMon driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, conall.ogriofa@amd.com, michal.simek@amd.com,
+ linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260614233722.2603459-1-salih.erim@amd.com>
+ <20260614233722.2603459-3-salih.erim@amd.com>
+ <ajAKkqMO5jdQjKgS@ashevche-desk.local>
+ <2998a9fc-4b9f-49bd-8020-697081401f85@amd.com>
+ <ajD-iS3nANaXOZty@ashevche-desk.local>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <ajD-iS3nANaXOZty@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO2P265CA0493.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:13a::18) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|DS7PR12MB6189:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50ea0a0c-06f8-48d1-8b2d-08decba08c64
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|376014|23010399003|1800799024|22082099003|18002099003|56012099006|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	ONAa0UOFuINgxrCG9j8nEVzWT3DUEUor/U12Kbtir0U/1voMH9h2KJG37jqnlEgBpGO/hDAm0Tdb8zNZRbpvpxFi1GhMtxocd1504fRbKTWMMFNW8Ke4w1kMHQVwT0JJ06tQdw9eQ0BYKD2zQBJqL/w1E/pZqEGHmrjtkd88i10d1Xm09EFCkZxuioa8SEqjs47tTfBmOnFKeQDRTPdRAtZuKDkjlITMm6NEMQKkmy7Dz+QU3Gdlf6MChHO0BjKRzlk4a8AHu83JC9tnRkM4O40H9Onpp7Trq5uJTcfYdz9yQJbLew9gi5v78hGuTO474VlnPf5SSws0xLqyWeLCwed7F8CRwly5XfPtbFtrPj6CHQx18U5dDZg7WNyThHg5LaF7ZGDBJvhVnIBygpUFbOaPZjPyz4U9jkWDR45c2Lmm33EZ/OQgbTvxCL6n0Yij6vMkSzGo/8xWYebxqivxSe9etrbCxgqRPCG6iefcKYlHP7n3YL+wyFqqg3mDw7lspsdTtoJaScfn02TUjYu94B/s7Tr8gLc6xo3WxNZSl9cMMKO1KCEepaWa0UMhI20PKtXXdfcbkDm1TigsL62AfhsTpFY2G/7xsEb/0l8Le6fSF10BIr8lT2mlmibMog3xXv4H1vrnBSt82B1/YZrDvJozrmjYwYVmra9UAV55IovYfGpat/oZgLZS0NmRrCh4
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(1800799024)(22082099003)(18002099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?M2dsSUZOeDAxQjZpMkM5Q3JKNWdjek1TTzh4bWFrOEdRNjU0ZVArOUZYdk5a?=
+ =?utf-8?B?b3prUzB3K2dEcy83cHVBWWtSTmoyTi9hK1lKbVV3alFxMnBBeU1VejROeUc5?=
+ =?utf-8?B?L3dCeXErb2g3bGJlNEFSdFR4bndLU2lQK2daUjBTNVM4Rjh6NGVteFl1eFda?=
+ =?utf-8?B?YkZvNXBGVG1OYUlwclo4bktJcEFXQXpkUjduQVBHTDlnOWdOSlVlYk8rVzM3?=
+ =?utf-8?B?RVptOFhpK0NpNlJwVDRURHZuenlrNXZHZDg3N3k3K3hzVm5PR2lvdFlDUkVR?=
+ =?utf-8?B?UEhxdkVpM1BJT1NsbStXbE9wL3VGcktaTGowZDZqcld3VkRaL2ZIWEwzdDFs?=
+ =?utf-8?B?Vi9ibUVRMHQ2QmJPaVVvQlpMOU5PTW1IMUxzL2E4Z1NRV0ZKeE9IWFRRRHdz?=
+ =?utf-8?B?S21tK1J4cWo4dnF6SisrcWYwWGZLSjBaTmxOZ3hXMmQ1VWwvd1FqcEkxaDEv?=
+ =?utf-8?B?VC94VEpvU1ZtN0xxaksydE5JMFA4K1J5RWszelN0S1ZsR09JYU4rTmgrU2VX?=
+ =?utf-8?B?bTNiVHFta1Zwb3p4YllIdWJHdWhVZHp5OE80SW5vOTQzcDl4ekdFM2UyVG1O?=
+ =?utf-8?B?SmQ4cTA2cVlxMjdNWGRFSXRBTTdqcFJ4Wk96c3JNcVFYemg0V2JmelNZUEYv?=
+ =?utf-8?B?NlVnL25GRGorRlcxcUZkSHZ3V2dnU0VWS1NYM2MvT2dRU3d4a0JzeUIwRVcz?=
+ =?utf-8?B?a28yU1pIWU0wMFFIRzd5YTRXeXZhTTM5Y0V6Tzc5Q1dFbzE2elQ1SGJONGY4?=
+ =?utf-8?B?V0JBYlpMWmp5WmVoRTlldEdIUmVTZmM3VXBTWjhsYkJyZU1YRWY1UVVsYmRX?=
+ =?utf-8?B?MEl0RCtoSWtsMVAyNlZhdzJwVlhDUE9MT01YRWZFMXd5RVJ4MkxJYTZYNmlk?=
+ =?utf-8?B?OHlFcmdIazAxT3VidVNBY3c5bUhqdjBoZ1NwTXFQTFg1YmkwcWNkVWYvSmpL?=
+ =?utf-8?B?TVZybGF2MVRjd1BZS1lPdEE2aGJ5RWt0Q0FMUk1rSVl6cm5oRjVNbVJKa2J1?=
+ =?utf-8?B?YWJudWZGNFZPMzZQd0J4SDVWZUZFNXoyc0dkS014YUp2UFVXemM2VWhENU1I?=
+ =?utf-8?B?blAwdHFSWTh6TGdEN0Z3N3JXdlNjMFZRSXJ2WFh6Y3BZVTJ3d3RQVFdJNHB6?=
+ =?utf-8?B?cWhwZDZUVzNkMTJuSFpNVWVFUzIycjhCK3ZPZ0Zhd09WMW0vTHdlWEs5MjFT?=
+ =?utf-8?B?ajMvZ3RCeFQzdGF1UG53U0hya3JNbTFFK1NwbXpMdnFzSTNmRDI0MmMxMnlw?=
+ =?utf-8?B?RE5Pd3FDUThwRmQ5OUNETThoamhxOW94QUl2RCt4VnhrZm1FTnpjVVpCbUVp?=
+ =?utf-8?B?SW1yL1RMbHA5RGd3WjB4OG0vbWxOR3VORjFoQXlnd0Q4R0psMms1SEI3c29L?=
+ =?utf-8?B?ejdyQVhHWGVHSnhCcEVlR0lvM041S0FlOTZRUW03RndPK3ppMzZ2VFNtK0c4?=
+ =?utf-8?B?eXU0SEpBemkwNVF6ZlA2R2Q5SkFMdnIxZFJNeXlpdFJ2aENHT0lBSzNSd3Jk?=
+ =?utf-8?B?M0ZuTE5oRjJFN3JHd2srU0Z0a3VDRDNBc0NVYjVPMzVNSzVHTEt6aUN1YVBh?=
+ =?utf-8?B?Wk5kanF0SS8wK2xlK0JBQzRDdE1UYll5MUJoZzY0TWpmaWV1Y29HQWlNVUp2?=
+ =?utf-8?B?YURSR1l4dVJLTk0rUFRMRWZDbGR2NldSbUplYmVRdnEzZ2NMUGcxUDVEczZn?=
+ =?utf-8?B?Z3dubitKRzNqbXBPaVVXaHhRMjFxTUpFM1hTTWVCRFlmQ2VWRGloY1JncFVm?=
+ =?utf-8?B?ZUtXaTNTVkdybXVNeTFWZGtvYjFVVTdaeWwxSlNib1NPL1laVnRBOUpuazNR?=
+ =?utf-8?B?eHp2VG4vd09VYnZkUXNnVUFWOHJ4QVpiZXEvZnBkMzFSbXgyWnRoSGtBQWRq?=
+ =?utf-8?B?RlNqb3lRckVoRHRKTzJEdSs0YlM4RlVWTDRGeU1MU2pUallOTmlYbXhmV0pX?=
+ =?utf-8?B?b2llclpPbXczditaK3k0K1FoQ1NYZXkxV1NSUWpWTEdPckgyS3pYbGNFVnJI?=
+ =?utf-8?B?UlpCaE5idit5eG43YXkrT3g3OXhtYm5kcDcvMFZ1T2NlWVJSYmZ3bWpCU3Mx?=
+ =?utf-8?B?SE5xWGN1YnFETXJVVlQyYzE4ekFlMVI4NHI0QVgrcWxSQllOL0YrWU1YZVRl?=
+ =?utf-8?B?dlB3clA2QWgwRlh2ZHdBQm9URnBwZm93UkNDak9SWVV3T09rcnprb3JxV2Jv?=
+ =?utf-8?B?UUFKdnEyRjlyZEM1MHlaWEt1MHhjMmNNT3hpNUNTb2JXZFRzeHNDZjg2Z2tU?=
+ =?utf-8?B?bTBqYkpUeHhiUnBsa2ZaYXhESEcyUEFTTUVmaXRHOVpSNnpQK2pyRTBWR0M4?=
+ =?utf-8?Q?ds8inkQbIM29MCjEZi?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50ea0a0c-06f8-48d1-8b2d-08decba08c64
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2026 12:12:34.6552
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WJBCwjm+FJ7BQCwDTR50gJ7Jdwm0dxb6r8QwQvuJmNQXn6TUjXNCQrLeiWbktTHI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6189
 
-Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
-connected via i2c.
+Hi Andy,
 
-Signed-off-by: Siratul Islam <siratul.islam@linux.dev>
----
- MAINTAINERS                         |   1 +
- drivers/iio/magnetometer/Kconfig    |  11 +
- drivers/iio/magnetometer/Makefile   |   2 +
- drivers/iio/magnetometer/qmc5883l.c | 516 ++++++++++++++++++++++++++++
- 4 files changed, 530 insertions(+)
- create mode 100644 drivers/iio/magnetometer/qmc5883l.c
+On 16/06/2026 08:43, Andy Shevchenko wrote:
+> On Mon, Jun 15, 2026 at 04:41:12PM +0100, Erim, Salih wrote:
+>> On 15/06/2026 15:22, Andy Shevchenko wrote:
+>>> On Mon, Jun 15, 2026 at 12:37:19AM +0100, Salih Erim wrote:
+> 
+> ...
+> 
+>>>> +/**
+>>>> + * sysmon_core_probe() - Initialize Versal SysMon core
+>>>
+>>> It is managed, please name it accordingly: devm_sysmon_core_probe().
+>>
+>> Will rename to devm_sysmon_core_probe() and update callers.
+> 
+> I believe you also want to have a proper namespace. The sysmon is to broad.
+> 
+> The easiest solution is to name it as devm_versal_sysmon_core_probe().
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1127403c579b..0f9ad3b49a5d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21792,6 +21792,7 @@ M:	Siratul Islam <siratul.islam@linux.dev>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc5883l.yaml
-+F:	drivers/iio/magnetometer/qmc5883l.c
- 
- QT1010 MEDIA DRIVER
- L:	linux-media@vger.kernel.org
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index fb313e591e85..615564174086 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -198,6 +198,17 @@ config INFINEON_TLV493D
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called tlv493d.
- 
-+config QMC5883L
-+	tristate "QST QMC5883L 3-Axis Magnetic Sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  Say Y here to add support driver for QST QMC5883L 3-Axis
-+	  Magnetic Sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called qmc5883l.
-+
- config SENSORS_HMC5843
- 	tristate
- 	select IIO_BUFFER
-diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-index 5bd227f8c120..552682555d86 100644
---- a/drivers/iio/magnetometer/Makefile
-+++ b/drivers/iio/magnetometer/Makefile
-@@ -26,6 +26,8 @@ obj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o
- 
- obj-$(CONFIG_INFINEON_TLV493D)		+= tlv493d.o
- 
-+obj-$(CONFIG_QMC5883L)			+= qmc5883l.o
-+
- obj-$(CONFIG_SENSORS_HMC5843)		+= hmc5843_core.o
- obj-$(CONFIG_SENSORS_HMC5843_I2C)	+= hmc5843_i2c.o
- obj-$(CONFIG_SENSORS_HMC5843_SPI)	+= hmc5843_spi.o
-diff --git a/drivers/iio/magnetometer/qmc5883l.c b/drivers/iio/magnetometer/qmc5883l.c
-new file mode 100644
-index 000000000000..e1addcaf0551
---- /dev/null
-+++ b/drivers/iio/magnetometer/qmc5883l.c
-@@ -0,0 +1,516 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/*
-+ * Support for QST QMC5883L 3-Axis Magnetic Sensor on I2C bus.
-+ *
-+ * Copyright (C) 2026 Siratul Islam <siratul.islam@linux.dev>
-+ *
-+ * Datasheet available at
-+ * <https://www.qstcorp.com/upload/pdf/202512/13-52-04%20QMC5883L%20Datasheet%20Rev.%20B.pdf>
-+ *
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/bitfield.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/time.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#include <asm/byteorder.h>
-+
-+#define QMC5883L_REG_X_LSB	0x00
-+#define QMC5883L_REG_STATUS1	0x06
-+#define QMC5883L_REG_CTRL1	0x09
-+#define QMC5883L_REG_CTRL2	0x0A
-+#define QMC5883L_REG_SET_RESET	0x0B
-+#define QMC5883L_REG_ID		0x0D
-+
-+#define QMC5883L_CHIP_ID	0xFF
-+
-+#define QMC5883L_MODE_MASK	GENMASK(1, 0)
-+#define QMC5883L_ODR_MASK	GENMASK(3, 2)
-+#define QMC5883L_RNG_MASK	GENMASK(5, 4)
-+#define QMC5883L_OSR_MASK	GENMASK(7, 6)
-+
-+#define QMC5883L_MODE_STANDBY	0x00
-+#define QMC5883L_MODE_CONT	0x01
-+
-+#define QMC5883L_ODR_10HZ	0x00
-+#define QMC5883L_ODR_50HZ	0x01
-+#define QMC5883L_ODR_100HZ	0x02
-+#define QMC5883L_ODR_200HZ	0x03
-+
-+#define QMC5883L_RNG_2G		0x00
-+#define QMC5883L_RNG_8G		0x01
-+
-+#define QMC5883L_OSR_512	0x00
-+#define QMC5883L_OSR_256	0x01
-+#define QMC5883L_OSR_128	0x02
-+#define QMC5883L_OSR_64		0x03
-+
-+#define QMC5883L_STATUS_DRDY	BIT(0)
-+#define QMC5883L_STATUS_OVL	BIT(1)
-+
-+#define QMC5883L_SET_RESET_VAL	BIT(0)
-+#define QMC5883L_INT_DISABLE	BIT(0)
-+#define QMC5883L_SOFT_RESET	BIT(7)
-+
-+/* POR completion time max per datasheet */
-+#define QMC5883L_PORT_US	350
-+
-+struct qmc5883l_data {
-+	struct regmap *regmap;
-+	/*
-+	 * Protect data->range/odr/osr.
-+	 * Protect poll and read during measurement.
-+	 */
-+	struct mutex mutex;
-+	u8 range;
-+	u8 odr;
-+	u8 osr;
-+};
-+
-+enum qmc5883l_chan {
-+	QMC5883L_AXIS_X,
-+	QMC5883L_AXIS_Y,
-+	QMC5883L_AXIS_Z
-+};
-+
-+static const int qmc5883l_odr_avail[] = { 10, 50, 100, 200 };
-+
-+static const int qmc5883l_osr_avail[] = { 512, 256, 128, 64 };
-+
-+static const int qmc5883l_scales[][2] = {
-+	[QMC5883L_RNG_2G] = { 0, 83333 },
-+	[QMC5883L_RNG_8G] = { 0, 333333 },
-+};
-+
-+static int qmc5883l_take_measurement(struct iio_dev *indio_dev, int index,
-+				     int *val)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	unsigned int status;
-+	__le16 buf[3];
-+	int ret;
-+
-+	guard(mutex) (&data->mutex);
-+
-+	/* 50ms headroom over the slowest ODR (10Hz) */
-+	ret = regmap_read_poll_timeout(data->regmap,
-+				       QMC5883L_REG_STATUS1,
-+				       status, (status & QMC5883L_STATUS_DRDY),
-+				       2 * USEC_PER_MSEC, 150 * USEC_PER_MSEC);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, QMC5883L_REG_X_LSB, buf,
-+			       sizeof(buf));
-+	if (ret)
-+		return ret;
-+
-+	if (status & QMC5883L_STATUS_OVL)
-+		return -ERANGE;
-+
-+	*val = (s16)le16_to_cpu(buf[index]);
-+
-+	return 0;
-+}
-+
-+static int qmc5883l_read_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = qmc5883l_take_measurement(indio_dev, chan->address, val);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE: {
-+		guard(mutex)(&data->mutex);
-+
-+		*val = qmc5883l_scales[data->range][0];
-+		*val2 = qmc5883l_scales[data->range][1];
-+
-+		return IIO_VAL_INT_PLUS_NANO;
-+	}
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		guard(mutex)(&data->mutex);
-+
-+		switch (data->odr) {
-+		case QMC5883L_ODR_200HZ:
-+			*val = 200;
-+			break;
-+		case QMC5883L_ODR_100HZ:
-+			*val = 100;
-+			break;
-+		case QMC5883L_ODR_50HZ:
-+			*val = 50;
-+			break;
-+		case QMC5883L_ODR_10HZ:
-+			*val = 10;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO: {
-+		guard(mutex)(&data->mutex);
-+
-+		switch (data->osr) {
-+		case QMC5883L_OSR_64:
-+			*val = 64;
-+			break;
-+		case QMC5883L_OSR_128:
-+			*val = 128;
-+			break;
-+		case QMC5883L_OSR_256:
-+			*val = 256;
-+			break;
-+		case QMC5883L_OSR_512:
-+			*val = 512;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		return IIO_VAL_INT;
-+	}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int qmc5883l_write_raw(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct qmc5883l_data *data = iio_priv(indio_dev);
-+	u8 rng, osr, odr;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE: {
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		if (val2 == qmc5883l_scales[QMC5883L_RNG_2G][1])
-+			rng = QMC5883L_RNG_2G;
-+		else if (val2 == qmc5883l_scales[QMC5883L_RNG_8G][1])
-+			rng = QMC5883L_RNG_8G;
-+		else
-+			return -EINVAL;
-+
-+		guard(mutex)(&data->mutex);
-+
-+		ret = regmap_update_bits(data->regmap, QMC5883L_REG_CTRL1,
-+					 QMC5883L_RNG_MASK,
-+					 FIELD_PREP(QMC5883L_RNG_MASK, rng));
-+		if (ret)
-+			return ret;
-+
-+		data->range = rng;
-+
-+		return 0;
-+	}
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		switch (val) {
-+		case 200:
-+			odr = QMC5883L_ODR_200HZ;
-+			break;
-+		case 100:
-+			odr = QMC5883L_ODR_100HZ;
-+			break;
-+		case 50:
-+			odr = QMC5883L_ODR_50HZ;
-+			break;
-+		case 10:
-+			odr = QMC5883L_ODR_10HZ;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		guard(mutex)(&data->mutex);
-+
-+		ret = regmap_update_bits(data->regmap, QMC5883L_REG_CTRL1,
-+					 QMC5883L_ODR_MASK,
-+					 FIELD_PREP(QMC5883L_ODR_MASK, odr));
-+		if (ret)
-+			return ret;
-+
-+		data->odr = odr;
-+
-+		return 0;
-+	}
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO: {
-+		switch (val) {
-+		case 64:
-+			osr = QMC5883L_OSR_64;
-+			break;
-+		case 128:
-+			osr = QMC5883L_OSR_128;
-+			break;
-+		case 256:
-+			osr = QMC5883L_OSR_256;
-+			break;
-+		case 512:
-+			osr = QMC5883L_OSR_512;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		guard(mutex)(&data->mutex);
-+
-+		ret = regmap_update_bits(data->regmap, QMC5883L_REG_CTRL1,
-+					 QMC5883L_OSR_MASK,
-+					 FIELD_PREP(QMC5883L_OSR_MASK, osr));
-+		if (ret)
-+			return ret;
-+
-+		data->osr = osr;
-+
-+		return 0;
-+	}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int qmc5883l_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = qmc5883l_odr_avail;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(qmc5883l_odr_avail);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		*vals = qmc5883l_osr_avail;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(qmc5883l_osr_avail);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = (const int *)qmc5883l_scales;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*length = ARRAY_SIZE(qmc5883l_scales) * 2;
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int qmc5883l_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan,
-+				      long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return IIO_VAL_INT;
-+	}
-+}
-+
-+static const struct iio_info qmc5883l_info = {
-+	.read_raw = qmc5883l_read_raw,
-+	.write_raw = qmc5883l_write_raw,
-+	.read_avail = qmc5883l_read_avail,
-+	.write_raw_get_fmt = qmc5883l_write_raw_get_fmt,
-+};
-+
-+static int qmc5883l_init(struct qmc5883l_data *data)
-+{
-+	struct regmap *regmap = data->regmap;
-+	unsigned int reg;
-+	int ret;
-+
-+	ret = regmap_read(regmap, QMC5883L_REG_ID, &reg);
-+	if (ret)
-+		return ret;
-+
-+	/* Not failing because rev 1.0 had this register reserved */
-+	if (reg != QMC5883L_CHIP_ID)
-+		dev_warn(regmap_get_device(regmap),
-+			 "Unknown chip id: 0x%02x, continuing\n", reg);
-+
-+	ret = regmap_write(regmap, QMC5883L_REG_CTRL2, QMC5883L_SOFT_RESET);
-+	if (ret)
-+		return ret;
-+
-+	fsleep(QMC5883L_PORT_US);
-+
-+	/* DRDY pin no used in this version of the driver */
-+	ret = regmap_write(regmap, QMC5883L_REG_CTRL2, QMC5883L_INT_DISABLE);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(regmap, QMC5883L_REG_SET_RESET, QMC5883L_SET_RESET_VAL);
-+	if (ret)
-+		return ret;
-+
-+	data->odr = QMC5883L_ODR_50HZ;
-+	data->range = QMC5883L_RNG_2G;
-+	data->osr = QMC5883L_OSR_64;
-+
-+	return regmap_write(regmap, QMC5883L_REG_CTRL1,
-+			    FIELD_PREP(QMC5883L_MODE_MASK, QMC5883L_MODE_CONT) |
-+			    FIELD_PREP(QMC5883L_ODR_MASK, data->odr) |
-+			    FIELD_PREP(QMC5883L_RNG_MASK, data->range) |
-+			    FIELD_PREP(QMC5883L_OSR_MASK, data->osr));
-+}
-+
-+static void qmc5883l_power_down_action(void *priv)
-+{
-+	struct qmc5883l_data *data = priv;
-+
-+	regmap_update_bits(data->regmap, QMC5883L_REG_CTRL1,
-+			   QMC5883L_MODE_MASK,
-+			   FIELD_PREP(QMC5883L_MODE_MASK, QMC5883L_MODE_STANDBY));
-+}
-+
-+static bool qmc5883l_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	return reg <= QMC5883L_REG_STATUS1;
-+}
-+
-+static bool qmc5883l_writable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case QMC5883L_REG_CTRL1:
-+	case QMC5883L_REG_CTRL2:
-+	case QMC5883L_REG_SET_RESET:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config qmc5883l_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = QMC5883L_REG_ID,
-+	.cache_type = REGCACHE_MAPLE,
-+	.volatile_reg = qmc5883l_volatile_reg,
-+	.writeable_reg = qmc5883l_writable_reg
-+};
-+
-+#define QMC5883L_CHANNEL(_axis)                                \
-+	{                                                      \
-+		.type = IIO_MAGN,                              \
-+		.modified = 1,                                 \
-+		.channel2 = IIO_MOD_##_axis,                   \
-+		.address = QMC5883L_AXIS_##_axis,              \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),  \
-+		.info_mask_shared_by_type =                    \
-+			BIT(IIO_CHAN_INFO_SCALE) |             \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ) |         \
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-+		.info_mask_shared_by_type_available =          \
-+			BIT(IIO_CHAN_INFO_SCALE) |             \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ) |         \
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-+	}
-+
-+static const struct iio_chan_spec qmc5883l_channels[] = {
-+	QMC5883L_CHANNEL(X),
-+	QMC5883L_CHANNEL(Y),
-+	QMC5883L_CHANNEL(Z)
-+};
-+
-+static int qmc5883l_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct qmc5883l_data *data;
-+	struct iio_dev *indio_dev;
-+	struct regmap *regmap;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	regmap = devm_regmap_init_i2c(client, &qmc5883l_regmap_config);
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(dev, PTR_ERR(regmap),
-+				     "regmap initialization failed\n");
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable VDD regulator\n");
-+
-+	ret = devm_regulator_get_enable(dev, "vddio");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to enable VDDIO regulator\n");
-+
-+	fsleep(QMC5883L_PORT_US);
-+
-+	data = iio_priv(indio_dev);
-+	data->regmap = regmap;
-+
-+	ret = devm_mutex_init(dev, &data->mutex);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "qmc5883l";
-+	indio_dev->info = &qmc5883l_info;
-+	indio_dev->channels = qmc5883l_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(qmc5883l_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = qmc5883l_init(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "qmc5883l init failed\n");
-+
-+	ret = devm_add_action_or_reset(dev, qmc5883l_power_down_action, data);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id qmc5883l_match[] = {
-+	{ .compatible = "qstcorp,qmc5883l" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, qmc5883l_match);
-+
-+static const struct i2c_device_id qmc5883l_id[] = {
-+	{ .name = "qmc5883l" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, qmc5883l_id);
-+
-+static struct i2c_driver qmc5883l_driver = {
-+	.driver = {
-+		.name = "qmc5883l",
-+		.of_match_table = qmc5883l_match,
-+	},
-+	.id_table = qmc5883l_id,
-+	.probe = qmc5883l_probe
-+};
-+module_i2c_driver(qmc5883l_driver);
-+
-+MODULE_DESCRIPTION("QST QMC5883L 3-Axis Magnetic Sensor driver");
-+MODULE_AUTHOR("Siratul Islam <siratul.islam@linux.dev>");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.54.0
+Agreed, will use devm_versal_sysmon_core_probe() in v8.
+
+Thanks,
+Salih
+
+> 
+>>>> + * @dev: Parent device
+>>>> + * @regmap: Register map for hardware access
+>>>> + *
+>>>> + * Return: 0 on success, negative errno on failure.
+>>>> + */
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
 
