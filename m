@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32EB3369D66;
-	Tue, 16 Jun 2026 12:48:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30748366DC1;
+	Tue, 16 Jun 2026 12:50:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781614132; cv=none; b=JHWi40DEseAfAj6HEVmyUGJ5eyONiyO8mbFZAk/A2E8ekSXM0LTj1uehxzBDRz4MvSljE+JvfGIibMURVn+kT/ptqr0JnJZ9wMGT7zl82+0sBJUTrHt2pujPOdL1jDjHd0RHHszrP+rhTovmT7YxsNvJc2w1eQUJHxTSTvkvDqU=
+	t=1781614257; cv=none; b=uSWmdgZCvQh8+dThBv9f3n0/TKntC9xS1xTO/EDtexucTZWmUoxy1EtbNLRgZF3fIdC+M/Vrp+XnEO+8s8ACnLtF7DEivR3NUsUxIUuGBw4saVcf9oUqz836CPysoT148iAepFTSWK7BjYVF4dGqD0tPjzladcsNF8qaik+gvTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781614132; c=relaxed/simple;
-	bh=ptlGfy/lUDXS6Kd6BftR6iAAChpLwjOXNMssQw7so4I=;
+	s=arc-20240116; t=1781614257; c=relaxed/simple;
+	bh=WdTbRohIJp+J0+HovuDcRU1SvBGZVBR/rOte8Qw8fWc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tQCSV6GOBmxhWyJu4QamOMl4B2Hmy5LaSNK052E8d2Bsml2I5ksHkMqSZah1Jzb+tJBXc7s9fmf+/tA4dFL95vvpDqmxMerkWD1ssX94GQgjxvIQN+KWRXrCCWb7lbxa+MVhMhQ973bn76/aL7AB5k9v87185rns9M+9toykYSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GLovY09p; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=W47fJL3AJjfCr9olZaUq7ezU+/sike4uULzq8OX8UNyj3IkN11pNlfcu1Zhr5sv5L9Wb6o2ZcRLuwyb3Z8QeYSP4zHZj8pAv0czohOe/wf/JBq8KJ7ALexL+gV7j2PWgi3YE2hYYUMCNtAJZmSZSpKO7fiLDPJxnJGAsZMhHE5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NjX0WWuW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GLovY09p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CA41F000E9;
-	Tue, 16 Jun 2026 12:48:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NjX0WWuW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B26A81F000E9;
+	Tue, 16 Jun 2026 12:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781614131;
-	bh=BCDH1/TFXIBzrlHpB57SMH7DJDpo4r6QcyhDMjLB3vw=;
+	s=k20260515; t=1781614255;
+	bh=D/uL7ccNv8hLbk4DhZvmPMACt/+EDCqsBiFwWLvr/P0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=GLovY09pAx/Y2NhjWy7LCjpFRVrMY9Q3gmMJ77NlU+z6mQjS8EbT08ibXjbKjxyMw
-	 E12umMiG8lchyDgoY99NYcX8DwEvM305yxo11f79q3VNLjFVRVO21OKUClrkNerX+6
-	 8x3JyFlJ0dtLqGwkNiiDaN56k8S5bt4jcx7xshWaT09QPbVLiFx9+tO+S1gMIIYp5c
-	 cVszUHYQWf1toplkypkJrEkiyOAYzVb0GVGj+AHNo5KpalRl9upz9rEhGdxVAN9Q/r
-	 dE0RnMy0GwuePXEJVmhewWo4GELsEilgN5buiFTG2364SKMLrAwl+LZK8JzhUdDy+J
-	 dtsVGWEFidhEQ==
-Date: Tue, 16 Jun 2026 07:48:47 -0500
+	b=NjX0WWuWND5mig2GSR+jIBOMpvNc4iCmkL6fnsPATHzz3hgAwQZgGmqGICjg6uqIM
+	 31ksKm9X0h7CUm4VpS5Rgr4yTva9DVQpTdR/bqYVyP9rblUQAH8upZ4Se4E7vgGpAn
+	 TmsFpoVavrESWhH+bMBcPlLYj86boNTOoUrT0CSbBrUO2PrfVWoZX+LFPMVoHB0n2f
+	 oW3L+BElmmPH0bPwt7HxOPpg5PKXGtQQcsA7/efMyFnS2lHT4LdqZRnN1u20n30cnv
+	 9hKWI1cUT7iy6qUCeEXKS7uUDfSFftfIW3zm2uRSAyuk34/q1401kIJ+x9RFM+IijA
+	 Zt+cWm7qRSXbA==
+Date: Tue, 16 Jun 2026 07:50:52 -0500
 From: Rob Herring <robh@kernel.org>
 To: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
@@ -41,11 +41,11 @@ Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
 	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v3 01/12] dt-bindings: iio: dac: ad5696: add
- reset/ldac/gain support
-Message-ID: <20260616124847.GA2142515-robh@kernel.org>
+Subject: Re: [PATCH v3 02/12] dt-bindings: iio: dac: ad5696: rework on power
+ supplies
+Message-ID: <20260616125052.GA2147234-robh@kernel.org>
 References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
- <20260616-ad5686-new-features-v3-1-f829fb7e9262@analog.com>
+ <20260616-ad5686-new-features-v3-2-f829fb7e9262@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,77 +54,69 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260616-ad5686-new-features-v3-1-f829fb7e9262@analog.com>
+In-Reply-To: <20260616-ad5686-new-features-v3-2-f829fb7e9262@analog.com>
 
-On Tue, Jun 16, 2026 at 09:21:07AM +0100, Rodrigo Alencar wrote:
-> Add GPIO property for RESET, LDAC and GAIN pin. RESET is active-low, LDAC
-> is used to load DAC channels with values from input registers and GAIN
-> can double the voltage in output channels. The gain-gpios property is
-> not available to all supported parts. The adi,range-double property
-> indicates that GAIN pin is hardwired to high in case gain-gpios is not
-> set, otherwise it sets the initial value for the gain setting.
+On Tue, Jun 16, 2026 at 09:21:08AM +0100, Rodrigo Alencar wrote:
+> Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
+> property is deprecated, once it does not really exist as none of the
+> devices describe any power input with that name. VCC is also misleading as
+> it sounds like the input power supply, but it is being used as an external
+> voltage reference, which should be called VREF. Certain devices require
+> vref-supply to be available once an internal reference voltage is absent.
+> For correct operation vdd and vlogic supplies are required.
 > 
 > Acked-by: Conor Dooley <conor.dooley@microchip.com>
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > ---
->  .../devicetree/bindings/iio/dac/adi,ad5696.yaml    | 41 +++++++++++++++++++++-
->  1 file changed, 40 insertions(+), 1 deletion(-)
+>  .../devicetree/bindings/iio/dac/adi,ad5696.yaml    | 34 ++++++++++++++++++++--
+>  1 file changed, 31 insertions(+), 3 deletions(-)
 > 
 > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> index b5a88b03dc2f..c55158c464fd 100644
+> index c55158c464fd..7b936824917e 100644
 > --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
 > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> @@ -37,14 +37,52 @@ properties:
->      description: |
->        The regulator supply for DAC reference voltage.
+> @@ -33,9 +33,22 @@ properties:
+>    reg:
+>      maxItems: 1
 >  
-> +  reset-gpios:
-> +    description: Active-low RESET pin to reset the device.
-> +    maxItems: 1
+> +  vdd-supply:
+> +    description: Input power supply.
 > +
-> +  ldac-gpios:
+> +  vlogic-supply:
 > +    description:
-> +      Active-low LDAC pin used to asynchronously update the DAC channels.
-> +    maxItems: 1
+> +      Digital power supply. On some tiny package variants for single-channel
+> +      devices, this supply is internally connected to vdd; in that case, specify
+> +      this property with the same regulator as vdd.
 > +
-> +  gain-gpios:
+> +  vref-supply:
 > +    description:
-> +      GAIN pin that sets a multiplier for the DAC output voltage. When high,
-> +      the DAC output voltage is multiplied by 2, otherwise it is unchanged.
-> +    maxItems: 1
+> +      Reference voltage supply. If not supplied the internal reference is used.
 > +
-> +  adi,range-double:
-> +    description:
-> +      Sets the initial voltage output range from 0 to 2xVREF. On devices that
-> +      have a GAIN pin and no gain-gpios property is set, this indicates the pin
-> +      is hardwired high.
-> +    type: boolean
-> +
+>    vcc-supply:
+> -    description: |
+> -      The regulator supply for DAC reference voltage.
+> +    deprecated: true
+> +    description: Use vref-supply instead.
+>  
+>    reset-gpios:
+>      description: Active-low RESET pin to reset the device.
+> @@ -62,8 +75,21 @@ properties:
 >  required:
 >    - compatible
 >    - reg
+> +  - vdd-supply
+> +  - vlogic-supply
 >  
-> -additionalProperties: false
-> +allOf:
+>  allOf:
 > +  - if:
 > +      properties:
 > +        compatible:
 > +          contains:
 > +            anyOf:
-> +              - const: adi,ad5311r
-> +              - const: adi,ad5691r
-> +              - const: adi,ad5692r
 > +              - const: adi,ad5693
-> +              - const: adi,ad5693r
+> +              - const: adi,ad5694
+> +              - const: adi,ad5696
 
-Just 'enum' instead of anyOf+const.
-
-> +    then:
-> +      properties:
-> +        gain-gpios: false
-> +
-> +unevaluatedProperties: false
-
-sashiko is correct. No need for unevaluatedProperties here.
+enum rather than anyOf+const.
 
 Rob
