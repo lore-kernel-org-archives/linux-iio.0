@@ -1,171 +1,262 @@
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AC344CAEA
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 15:38:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74DF94611C1;
+	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781624288; cv=none; b=ICdXc8eu/g92cWpFfrabwMeEx6eALiHmz0GOIi5BbF5ntbFKNVLwtAytmy3svLRvXmdjvf6sIrkJGjMAuUhghJIbqg10pG0XKWpXQGKYDc5SwGSOanmSF3i6oozA258PcYoYogp3xYI0JYq+gBqJA4I/o7l5Oi/K3YbnZAHZod0=
+	t=1781624393; cv=none; b=rBHwq9ov+FoiSo7qNR8r1938DnxfLsR53wOoqvnlq4TL8fW49Hp8kaphsmh7to0HQZ8/Hp3OT4CvXfsBXWJRLZ43cTC/fRbJ07Enu7nhiLjlE5Dhq6VJNkAkhscOUFWjZQZD5ShF0pz+bjEdKk5hmzFrl67GfBE3K4QaDm9yuMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781624288; c=relaxed/simple;
-	bh=ZOzn+odfXtFFxDtwV9vEd3/BbYpMJLOkeAries1nWdc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Mbko41evLzzlV4/FWLk/BKme4AWMHUy8X1def5PVfhZ1f9ijcfeb5ieBBrY0BaTOU9KY5GjGRvmyZ6Mf6mP2aey+rzUnVldFmAPtGyBzStlQXSdhY781B3e6jGEWE2rR7NHioBDE+wqt/Fx3VdU8DuzMf8+cGMqZypO0YxBh+To=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=hidi0kXr; arc=none smtp.client-ip=209.85.160.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1781624393; c=relaxed/simple;
+	bh=oQq3yLuyHGjLa0GJ346W7tMuWSX4yq2K+HhZggGzkAk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=HEYdKGoLsFm330KOQOMsEcKdveqAxNvCl2130HVfNU4Ej+vqMO612o5U0PcbUYADmegg2vO96e0O4BXyztFb5LzVUGVsJutf82ln2vIFAN6mccTTh9S0x7hMT+RE4JY/47NpJaXTpsH1GXm0RPoozayUfa8RfUcyfE+Xs8iqSKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HsZYz83h; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="hidi0kXr"
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-442a79dd881so1147648fac.2
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 08:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781624286; x=1782229086; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LWBVUzoZFxqMG63T0Dz57hnXBNXtwIr43k2T9IWtKTs=;
-        b=hidi0kXr565KLhnZVr/AmYFvHFHZ57Hu34YyWTRKi7uMuUWcgYAo96nsB5Up9/50wt
-         cwYCrp74bzn3KnwLEXmjD4fCo48lAeYmGy0T4cP9I9kJ1JlPVfOZlZXq4oOSfFdXRI7q
-         21aeu+cEczDZYerTeetoo8OPqxUPOiINN/uK15cwrxpJASTgVuBUwg9PKo2OQiq2T99A
-         rj+6QvYv43paFJTvnwbuXbXaL4sTUU5z0HhkippKSDXTNJrXur+F2xDNxay4V4s62+Jm
-         wx3Z+JDfGRDMLyK62FT686ovRZGDG/uK/D3lmr2phaUJmaLm+X3uh3YWabvkuEHY71ub
-         kZyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781624286; x=1782229086;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LWBVUzoZFxqMG63T0Dz57hnXBNXtwIr43k2T9IWtKTs=;
-        b=Zm4YBM0QhC3OWrZoMfbu249lesD5bTelJYew5GBFSMRKciwgjW263qYBsaCcQiBOhx
-         FTYodYTCgQVrqNy0c2ZYKhNPRlr2mx/PJ86IgLdR3TAMgoiyGmdhbElPjfudlabAUwY6
-         qKtYm/XT3uhww6mkqEK3WOLBHhFDDMv12Kl5SpU68FICcG3f0nYrNTkFCJUA3RSf1LGx
-         6Gq14jQhMUdOVANSD9G/xSpCHBbHHsp1LbPPjEZ6maKmzd0hPmAplUkfhcSCne/nzhOh
-         U16gs0sya9iQlhIy6CKZ/mhGkgj/cGU0a1pHb8CcfkowpB+SbO0ymva4GWBjXzxe+CrE
-         gPNA==
-X-Forwarded-Encrypted: i=1; AFNElJ9lvz8ifQRWOGciB2cORKZ6u32QxGFpjF8FaEQCwxip/rg1zS5Omo5QZCsBS/0fE+h96hQ4mjzfK4c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyvUBCVIvLr2xAXd5W0IelerYNeihwPvKL/9/RfXieFKecs3pOe
-	Im0HmlNWKLTQ9lO36XNdXBupckFzz1lV0MApikF1qPv6c/4BMCujJZ83VcF/Kf9b92g=
-X-Gm-Gg: Acq92OFvDgQulrh185S9qISraLiqvt1S/w5HzybNl29lyLbXM0TEYGlCx24P5ID8BLF
-	Xd+Mom7lu91pJcprCymmUFPLmdIzHlcwCbhoVdok744ATXNeC9rsyevrzTdAl3Iw+F/OR/LspRR
-	NtIGFtSD+j8Zjn7eYLVMNCLMKgI/DM9Xbm8hGLRneQB4caqqUcljZUi4gA6EfksB51C7HjB7PzL
-	9R1CbEoMWccJuAEpNOT6dCITzJNJNsaXLgtOCI2y3KWh4kT4BS+SADKzn3cwY0yYWO2NtaAIhSh
-	ngPCTjU7CILdw2+DQX4YbpH+xeGr82d7UKsJ/VWWEP74WVqBf/RdCO4wqX6mdbnbDe6MGrQYHLO
-	tDpKvO0tZeQk/5yz9dwMDrNC0N4BMTfyYc+5LvuajNjbNXvqsFtLcvIGs255E3wK2PfCf1puUn/
-	WEtBPGf1ebflQA7HqaJlYr2o0zkcYQOYXb8Kh0UDxzxvR81mhWPzn9Ni13OTJB3YrRoiKD/OtcI
-	Q==
-X-Received: by 2002:a05:6871:3427:b0:43d:3251:7070 with SMTP id 586e51a60fabf-4428c7a4087mr10250880fac.25.1781624286084;
-        Tue, 16 Jun 2026 08:38:06 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:16b0:5133:47b1:a939? ([2600:8803:e7e4:500:16b0:5133:47b1:a939])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44308a66827sm2398625fac.2.2026.06.16.08.38.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Jun 2026 08:38:05 -0700 (PDT)
-Message-ID: <12831fd9-8a6f-442e-b1ca-f39248a5baf0@baylibre.com>
-Date: Tue, 16 Jun 2026 10:38:05 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HsZYz83h"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3B35BC4AF0F;
+	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1781624393;
+	bh=oQq3yLuyHGjLa0GJ346W7tMuWSX4yq2K+HhZggGzkAk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=HsZYz83hZhomdTI4kWBdepJKb5rxQ1UFC5fcazRHKEwxVLAINMptjQUQIwM/VOlAd
+	 lHh2pPr4Tw5a9dx6PlHpA4Wf1Kt/ZOjMG87H2dfTUOToBk7YKhYE25yE1UZHfbATDR
+	 OApDAGSRIzGwAHG9zPpWYlvC4mQu0Y+bysjYYXTxzetz9ACa9pAh1eDvqObhL7vAel
+	 FEYvVwbK3II2BgoAtBAxrXRP7oiROU3lAy2eNNbX7QpOMfFQC1rNH/bcabh91GCOXy
+	 CgsTNw4cpih4Hi3QSwfv0HCyOME1ekmHZy0rn2TsA+xiUrslwnMWR1HSVjfRXCdUoa
+	 Bjb75C9X6TS8A==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2586DCD98E1;
+	Tue, 16 Jun 2026 15:39:53 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Tue, 16 Jun 2026 16:40:52 +0100
+Subject: [PATCH RFC 1/3] dmaengine: Support address bus widths of 32 bytes
+ and above
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] iio: adc: add ti-ads112c14 driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
- Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
- <20260615-iio-adc-ti-ads122c14-v1-2-e6bdadf7cb2b@baylibre.com>
- <ajD8Gxkp66kkDflE@ashevche-desk.local>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ajD8Gxkp66kkDflE@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260616-dmaengine-support-wider-dma-masks-v1-1-da23a8dcb756@analog.com>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+In-Reply-To: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+To: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781624455; l=6136;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=seK2wQ1gP5/CY+c6SdU0DSHpgs7+1OD32PnCpLFnNMU=;
+ b=VaSoQ22ie0zIfavrrNdBnJAYVMaoPhET+P1sK1CJcaHwofsEfWskGzpE1WIYXko/2LjABb4Bg
+ 9RDlOcrGB3sC+T4i94u/b9UbtFuta4UtWqxEHLuYX8weyX0HFdrgZQA
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On 6/16/26 2:32 AM, Andy Shevchenko wrote:
-> On Mon, Jun 15, 2026 at 05:00:00PM -0500, David Lechner (TI) wrote:
->> Add a new driver for the TI ADS112C14/ADS122C14 ADC chips.
->>
->> This first step is adding a very basic driver that only supports power
->> on/reset and reading the system monitor channels.
->>
->> ADS112C14_SYS_MON_CHANNEL_SHORT is the last channel rather than being in
->> logical order by address to keep the voltage channels together and in
->> case we find we need to add variants of this channel with different
->> voltage reference later.
-> 
-> ...
+From: Nuno Sá <nuno.sa@analog.com>
+
+The src_addr_widths and dst_addr_widths capability masks encode each
+supported width as a bit whose position equals the corresponding
+enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets
+bit 4). As these masks are plain u32, widths of 32 bytes and above
+(DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
+be represented at all.
+
+Introduce bitmap-based masks that span the full enum range. To allow
+controllers and consumers to be converted incrementally, the legacy
+u32 fields are kept alongside the new bitmaps: producers populate the
+bitmap (mirroring the low 32 bits back into the legacy field) and
+dma_get_slave_caps() folds a legacy-only producer's u32 into the
+returned bitmap.
+
+Add dma_set_{src,dst}_addr_mask() for producers and
+dma_slave_caps_get_{src,dst}_width_min() for consumers so that, once
+every user is converted, the legacy u32 fields can be dropped and the
+bitmaps renamed without further churn.
+
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/dma/dmaengine.c   |  18 +++++++++
+ include/linux/dmaengine.h | 100 ++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 114 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
+index 9049171df857..a21bc9c140aa 100644
+--- a/drivers/dma/dmaengine.c
++++ b/drivers/dma/dmaengine.c
+@@ -593,7 +593,25 @@ int dma_get_slave_caps(struct dma_chan *chan, struct dma_slave_caps *caps)
+ 		return -ENXIO;
+ 
+ 	caps->src_addr_widths = device->src_addr_widths;
++	if (bitmap_empty(device->src_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX)) {
++		bitmap_zero(caps->src_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		bitmap_from_arr32(caps->src_addr_widths_mask,
++				  &device->src_addr_widths, 32);
++	} else {
++		bitmap_copy(caps->src_addr_widths_mask,
++			    device->src_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++	}
++
+ 	caps->dst_addr_widths = device->dst_addr_widths;
++	if (bitmap_empty(device->dst_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX)) {
++		bitmap_zero(caps->dst_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		bitmap_from_arr32(caps->dst_addr_widths_mask,
++				  &device->dst_addr_widths, 32);
++	} else {
++		bitmap_copy(caps->dst_addr_widths_mask,
++			    device->dst_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++	}
++
+ 	caps->directions = device->directions;
+ 	caps->min_burst = device->min_burst;
+ 	caps->max_burst = device->max_burst;
+diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+index b3d251c9734e..e249158aa4a5 100644
+--- a/include/linux/dmaengine.h
++++ b/include/linux/dmaengine.h
+@@ -5,6 +5,7 @@
+ #ifndef LINUX_DMAENGINE_H
+ #define LINUX_DMAENGINE_H
+ 
++#include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/uio.h>
+@@ -391,6 +392,7 @@ enum dma_slave_buswidth {
+ 	DMA_SLAVE_BUSWIDTH_32_BYTES = 32,
+ 	DMA_SLAVE_BUSWIDTH_64_BYTES = 64,
+ 	DMA_SLAVE_BUSWIDTH_128_BYTES = 128,
++	DMA_SLAVE_BUSWIDTH_MAX
+ };
+ 
+ /**
+@@ -509,8 +511,14 @@ enum dma_residue_granularity {
+  * resubmitted multiple times
+  */
+ struct dma_slave_caps {
+-	u32 src_addr_widths;
+-	u32 dst_addr_widths;
++	struct {
++		DECLARE_BITMAP(src_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		u32 src_addr_widths;
++	};
++	struct {
++		DECLARE_BITMAP(dst_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		u32 dst_addr_widths;
++	};
+ 	u32 directions;
+ 	u32 min_burst;
+ 	u32 max_burst;
+@@ -887,8 +895,14 @@ struct dma_device {
+ 	struct module *owner;
+ 	struct ida chan_ida;
+ 
+-	u32 src_addr_widths;
+-	u32 dst_addr_widths;
++	struct {
++		DECLARE_BITMAP(src_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		u32 src_addr_widths;
++	};
++	struct {
++		DECLARE_BITMAP(dst_addr_widths_mask, DMA_SLAVE_BUSWIDTH_MAX);
++		u32 dst_addr_widths;
++	};
+ 	u32 directions;
+ 	u32 min_burst;
+ 	u32 max_burst;
+@@ -1678,4 +1692,82 @@ static inline struct device *dmaengine_get_dma_device(struct dma_chan *chan)
+ 	return chan->device->dev;
+ }
+ 
++static inline enum dma_slave_buswidth
++__dma_slave_caps_get_width_min(const unsigned long *bitmask)
++{
++	enum dma_slave_buswidth width = find_first_bit(bitmask,
++						       DMA_SLAVE_BUSWIDTH_MAX);
++
++	if (width == DMA_SLAVE_BUSWIDTH_MAX)
++		return DMA_SLAVE_BUSWIDTH_UNDEFINED;
++
++	return width;
++}
++
++static inline enum dma_slave_buswidth
++dma_slave_caps_get_src_width_min(const struct dma_slave_caps *caps)
++{
++	return __dma_slave_caps_get_width_min(caps->src_addr_widths_mask);
++}
++
++static inline enum dma_slave_buswidth
++dma_slave_caps_get_dst_width_min(const struct dma_slave_caps *caps)
++{
++	return __dma_slave_caps_get_width_min(caps->dst_addr_widths_mask);
++}
++
++static inline int __dma_set_addr_mask(unsigned long *bitmask,
++				      enum dma_slave_buswidth *widths,
++				      unsigned int n_widths)
++{
++	for (unsigned int i = 0; i < n_widths; i++) {
++		switch (widths[i]) {
++		case DMA_SLAVE_BUSWIDTH_1_BYTE:
++		case DMA_SLAVE_BUSWIDTH_2_BYTES:
++		case DMA_SLAVE_BUSWIDTH_3_BYTES:
++		case DMA_SLAVE_BUSWIDTH_4_BYTES:
++		case DMA_SLAVE_BUSWIDTH_8_BYTES:
++		case DMA_SLAVE_BUSWIDTH_16_BYTES:
++		case DMA_SLAVE_BUSWIDTH_32_BYTES:
++		case DMA_SLAVE_BUSWIDTH_64_BYTES:
++		case DMA_SLAVE_BUSWIDTH_128_BYTES:
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		__set_bit(widths[i], bitmask);
++	}
++
++	return 0;
++}
++
++static inline int dma_set_src_addr_mask(struct dma_device *device,
++					enum dma_slave_buswidth *widths,
++					unsigned int n_widths)
++{
++	int ret;
++
++	ret = __dma_set_addr_mask(device->src_addr_widths_mask, widths, n_widths);
++	if (ret)
++		return ret;
++
++	device->src_addr_widths = bitmap_read(device->src_addr_widths_mask, 0, 32);
++	return 0;
++}
++
++static inline int dma_set_dst_addr_mask(struct dma_device *device,
++					enum dma_slave_buswidth *widths,
++					unsigned int n_widths)
++{
++	int ret;
++
++	ret = __dma_set_addr_mask(device->dst_addr_widths_mask, widths, n_widths);
++	if (ret)
++		return ret;
++
++	device->dst_addr_widths = bitmap_read(device->dst_addr_widths_mask, 0, 32);
++	return 0;
++}
++
+ #endif /* DMAENGINE_H */
+
+-- 
+2.54.0
 
 
->> +static int ads112c14_read_label(struct iio_dev *indio_dev,
->> +				struct iio_chan_spec const *chan, char *label)
->> +{
->> +	const char *label_source;
-> 
-> I don't see the need of having this. Can't be returned directly?
-
-Then this would have to be split into two functions. One to return
-it directly and one to do the sysfs_emit(). I don't think it is
-worth it.
-
-> 
->> +	/* System monitor channels. */
->> +	switch (chan->channel) {
->> +	case ADS112C14_SYS_MON_CHANNEL_TEMP:
->> +		label_source = "Internal temperature sensor";
->> +		break;
->> +	case ADS112C14_SYS_MON_CHANNEL_EXT_REF:
->> +		label_source = "External reference";
->> +		break;
->> +	case ADS112C14_SYS_MON_CHANNEL_AVDD:
->> +		label_source = "AVDD";
->> +		break;
->> +	case ADS112C14_SYS_MON_CHANNEL_DVDD:
->> +		label_source = "DVDD";
->> +		break;
->> +	case ADS112C14_SYS_MON_CHANNEL_SHORT:
->> +		label_source = "Internal short";
->> +		break;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	return sysfs_emit(label, "%s\n", label_source);
->> +}
-> 
-
-
->> +	/*
->> +	 * The reset may cause an -EREMOTEIO error because of failing to get the
->> +	 * I2C ACK at the end of the message. The device still gets reset.
->> +	 */
->> +	if (ret != -EREMOTEIO)
->> +		return ret;
-> 
-> I would do it separately as
-> 
-> 	if (ret == -EREMOTEIO)
-> 		/* ...big comment here... */
-> 		return 0;
-
-We should not return early here. We just continue with the rest
-of the function as normal. So I think the way I had it was
-simplest. Otherwise we would need a goto or something like that.
-
-
-> 	if (ret) // which is regular pattern and doesn't need any comment.
-> 		return ret;
-> 
->> +	fsleep(ADS112C14_DELAY_RESET_us);
->> +
->> +	ret = regmap_read(data->regmap, ADS112C14_REG_STATUS_MSB, &reg_val);
->> +	if (ret)
->> +		return ret;
->> +
->> +	if (FIELD_GET(ADS112C14_STATUS_MSB_RESETN, reg_val))
->> +		return dev_err_probe(dev, -EIO, "reset failed\n");
->> +
