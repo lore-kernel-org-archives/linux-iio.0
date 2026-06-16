@@ -1,221 +1,281 @@
-Received: from outbound6.mail.transip.nl (outbound6.mail.transip.nl [136.144.136.128])
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011038.outbound.protection.outlook.com [52.101.52.38])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B27BE374A1B;
-	Tue, 16 Jun 2026 13:09:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.144.136.128
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781615370; cv=none; b=d+5RHA2a0WrAlNP3HshxdRyhnzrR5l56ZAg16HJa1YV1pMfyAYtJBuDh7bsJewNzmNel32WHSnO8CiHdTwyZu/Mf+N3FIfuxgclm8tMyo/KbmzfZst2Ck98xZquPVjdj0JczFsLtDHXxOMulLJUm00Vszg46Dx6G8axSZH7+v6k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781615370; c=relaxed/simple;
-	bh=CK33TNa9SheLY8lCX11VLFemMv+xC1hg4xSfmjqQv2Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=H42UbhGWu/urQJNQev93xAov1PcX+b/pSVH8JmQ5tAnYP04sdSH1iec6VxQbMnHNRq2Pp8RUzXLa4tha/DGLKE/XR1tzF7sxMucYtAAtpC7flvYEZLmQ+1//xKhxtvCDBjJ6cpUhEMstx6s4EgMfMKuAmhgzjkUyOh4aGK+r6tA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org; spf=pass smtp.mailfrom=herrie.org; dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b=AJkYqrVK; arc=none smtp.client-ip=136.144.136.128
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=herrie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=herrie.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCF132D780E;
+	Tue, 16 Jun 2026 13:16:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.38
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781615781; cv=fail; b=CIVVBgRBgM5aQNALFjekIZVUjoXbfxU6YgQ3SIof8P51XaAoqnQwhysoikzVtXIPxjKmbS+UCwyT+zlEnDzBZtUfD6b1k5vOx5GS69DT75cjlH5GWZVgmP5aYIB5MzH6b/Pn8P/t7TXCMZhzGs1osswoWqUo0p7dxwGHcRZh7MQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781615781; c=relaxed/simple;
+	bh=zRsZNZQCGieb+jODP5AFZylx9TOXY4GLVHqwKfi/kx4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=jHnSoaJz/NzV0QMR6GXLFokp80u4alyS8BdQL5z7j+Pmnc9Kd1plP8UoBzMnwjFsCVjzcsHcLCQKJpxMic1B4XALcc21XJjwa3jHqaqyd4wMzeRJTfgZwsGAicDFbeGp8OEhKPf35seIly9/uWFcdGD1VuBgOvYpiJy6uK1ht1M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=w/lydmiV; arc=fail smtp.client-ip=52.101.52.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=herrie.org header.i=@herrie.org header.b="AJkYqrVK"
-Received: from submission12.mail.transip.nl (unknown [10.103.8.163])
-	by outbound6.mail.transip.nl (Postfix) with ESMTP id 4gfnFX1GcCzwLHdX;
-	Tue, 16 Jun 2026 15:02:08 +0200 (CEST)
-Received: from [127.0.1.1] (180-93-184-31.ftth.glasoperator.nl [31.184.93.180])
-	by submission12.mail.transip.nl (Postfix) with ESMTPA id 4gfnFW26Y3z3SJ37P;
-	Tue, 16 Jun 2026 15:02:07 +0200 (CEST)
-From: Herman van Hazendonk <github.com@herrie.org>
-Date: Tue, 16 Jun 2026 15:02:05 +0200
-Subject: [PATCH v2 2/3] dt-bindings: iio: st,st-sensors: add
- st,fullscale-milligauss
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="w/lydmiV"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=PO5t9lhZwEFDUKeNFmGR8D20CktgYh+swmoGJ+BRr4FQoiXO+ukdiJsMyNmUAgjiGocQs7+LFtTTKxRnX9bl/3Y6wP7CTHGZ5VHcXK2YGQ5uBFfBOe6yAL9Grmr03nChB9hJOKwbi3L1HuYwpZatWGsAlGNIIzRhAciMWCDeDflM89BHwRoxmpnNszgkBervEjDyVMngzevQ/Pb16XzpGTRB1KIeSLZgQ7Jvbv1hCp8AsFKCqaNz3U7XkpJGkgfbAApK6l5s7RjxbRDeZx4AMPiVJi5WO2SKDid+xQlKj52o5/R61eZheohOxVYSiOzoRmJMUzsqM2m5vakq3hrpGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9YXuqvgXniMM/gf9uXzmP9Vbf7MgFbyXSkGaz4ZAqWw=;
+ b=xUCuZYcQEnfuhuxFcZU6wy7jM4Ml6QidE9McfrtGoky0JSgSNg0Y3dsSCFWTXiCxPfZp5YH22bWIEprCbp3J+usPhndq690KEPQYZdKZrivWrtlpLvygdLCePRBWlYVNb4ymtjTt7paB5y8z0LmLDbiFzzjps6tUvj59J+mEHuh0AXz+Z2tawwuZwAld+ynKu8e7Dat1W6vQZ3CqRbDB0Yi9ETbJzxd4NV5S0CMOI/20NEueMDwpgYKcsfFRQ0A5t5+3ocIcFnIzjqLe/z42/ZRBIfpXZ3HPJluQtZ4DqWmWKT8Blag5xKdk3eLo4oui3rAxkB4bleGPYcH1AQGI4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9YXuqvgXniMM/gf9uXzmP9Vbf7MgFbyXSkGaz4ZAqWw=;
+ b=w/lydmiVzcAVJCYnenv8FLRopygZ/R1QMkkhwl6Tq6JVqf+zZr/Ggajd6HDeROuoPdpn24GSSwTxpbFSkveAc0hEUyd0Qw0hi6+c5FleCQ64zMOD36A/lR5524S8UNxXXeoCstXtHcQpak3nPJwhXYcZAF0cocN70O31bhQlTk4=
+Received: from SJ0PR05CA0073.namprd05.prod.outlook.com (2603:10b6:a03:332::18)
+ by PH8PR12MB7424.namprd12.prod.outlook.com (2603:10b6:510:228::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Tue, 16 Jun
+ 2026 13:16:14 +0000
+Received: from SJ1PEPF000026C5.namprd04.prod.outlook.com
+ (2603:10b6:a03:332:cafe::a8) by SJ0PR05CA0073.outlook.office365.com
+ (2603:10b6:a03:332::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.139.11 via Frontend Transport; Tue,
+ 16 Jun 2026 13:16:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ SJ1PEPF000026C5.mail.protection.outlook.com (10.167.244.102) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.139.8 via Frontend Transport; Tue, 16 Jun 2026 13:16:14 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 16 Jun
+ 2026 08:16:13 -0500
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
+ (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Tue, 16 Jun
+ 2026 08:16:13 -0500
+Received: from xirsalihe40.xilinx.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
+ Transport; Tue, 16 Jun 2026 08:16:11 -0500
+From: Salih Erim <salih.erim@amd.com>
+To: <jic23@kernel.org>, <andy@kernel.org>
+CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <conall.ogriofa@amd.com>,
+	<michal.simek@amd.com>, <linux@roeck-us.net>, <erimsalih@gmail.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Salih Erim <salih.erim@amd.com>
+Subject: [PATCH v8 0/5] iio: adc: add Versal SysMon driver
+Date: Tue, 16 Jun 2026 14:15:54 +0100
+Message-ID: <20260616131559.3029543-1-salih.erim@amd.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-2-063edcf74e60@herrie.org>
-References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
- Denis Ciocca <denis.ciocca@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Denis Ciocca <denis.ciocca@st.com>, 
- Linus Walleij <linusw@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- llvm@lists.linux.dev, devicetree@vger.kernel.org, 
- Herman van Hazendonk <github.com@herrie.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781614923; l=5598;
- i=github.com@herrie.org; s=20240417; h=from:subject:message-id;
- bh=CK33TNa9SheLY8lCX11VLFemMv+xC1hg4xSfmjqQv2Q=;
- b=z09ZgHaePo74W3jkJkUturnBGept6GYOOZ107fhh9YwTjWjsuj+i5+pRpTasmft+bVMUioZa/
- bJik5Km4t5SCPjIRb2z8ZbLs/DhZpFC2CW9mpW/FlsqCdqunf8rTdb1
-X-Developer-Key: i=github.com@herrie.org; a=ed25519;
- pk=YYxdq8fb5O9vhkW3n2dCH044FPZZO5718v/du7fRhFw=
-X-Scanned-By: ClueGetter at submission12.mail.transip.nl
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=transip-a; d=herrie.org; t=1781614927; h=from:subject:to:cc:
- references:in-reply-to:date:mime-version:content-type;
- bh=VAxElGXdunDODgznWU+hK4uck2vrkbcn6Yab79LlD1M=;
- b=AJkYqrVK6LvozlJfi/qeeGBH9qVMAzVRLqzx58I6NlMcoiCFwsMPd8WqXa3QjI/Z7wXXok
- IeL8zXVHppjBikmb9PftGmnGKF8oLm1BQyKAsAjYTXG5b5aYMAE7mirwYxvugXjiM7pE2F
- esNOjHLaGr+uk2rlMfvOk09cbpOi1MI90t3LHVuGFlDTlRRhPSs2a0Pyyt4WwvkDh4rWY0
- xkI45TvdFGq/D1CjxQGTno81J1+lj1a5dWUriwB/RrqBNFQbzSytF7eoL+QMeUzhhNZel/
- P/01tN9F0jQwvEbsH/wYtrfp08BVLRc0p9V5wLEf1jFo0wU7q8XGM7IoO9nhTQ==
-X-Report-Abuse-To: abuse@transip.nl
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026C5:EE_|PH8PR12MB7424:EE_
+X-MS-Office365-Filtering-Correlation-Id: 59a4f14e-a0ec-4ae2-f4d8-08decba97128
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|36860700016|82310400026|7416014|376014|11063799006|56012099006|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	1KoJ5NBQrusnjwE6FzmY7q498oBiUy8/o6l9c5Qimqe88EwkmE1UbDlq4H83/lK9aHadtzC9RxcOTF+QiLzDq8pEEj4OAMS8xfDzuhuqXeoJR1MxqnKK++vjD8PMVYG1dIZGDUyKO/1T0KLp+JbmMeQUlhLqFw9KuT0miQBG0TiQmqNXKTNjNLFtJFWjJefNnyU2DxmJtd19TJih3im5MOlcXkD9uHCKrrGW/kYO1RKZKpz7VqsjU6QddYbX/MydAfQ6wCzIAmt7a3fgVD0qd4CdTO0nxvHgq9Y3jgc3ElI8PGF1n2GxQJUFCYoG0H9iP2jT+ub/kYUrS7JmADu8VJ0ZaFdGS/jNE6ImTOTsn6hPgfG7RrLI3cN/ZqNVjLPU0l5u8LpA6XE03Dop2Mn25kTSsfWb4S5K6bfUt/qal3z1xNnvsde5deKec3JRUR7GkRKB49sDMYePtdlqLDO6WIEBKMd6zTYaNrQmpLQc1WUj8Eav1wj2t+zMYKOtmZ/mQnIhXUP6AYuAxneq1X0sZOeuYXKjRAUfiXKfYBSOO2LM5KcSdhOZwvlMf2xKs69u3dqHWKDz+BIk1VahixYsOZkDGev6/NmoCN/66jBAQWeysvE9LmY2geJAMcl1zmRPlZBbkoM/wPNc9o6l9WlhJ3kApAxmC3VHpSKHzP+P61OpnTsYBjWzL6nEJUayUYMrMbcstwUk91HICSBWQCFOoGm7BkK1a6SQcrlVXp0sNNc=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(36860700016)(82310400026)(7416014)(376014)(11063799006)(56012099006)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	NeN0MANQXJg65szXgxAdmDAscFDafEfardQAcouKSnPbfJdUckVMcZbDPKmtQrnRqPenxKJII2n6H34qfHVpu/qsxIs0pqs7YFrjX2rcwdfd1vm8S+S0tm4AKX1TteOCaT/fcVoUaI7NQI6yNEWjwAPBX8P+KFTmHicvbd786RT4DktzQImnuv4gmUbrHnh8aCLDNEBn33dbFpDY6yRt3DUzuQyZt4YdN8oMmXKAbcWTIdEl5rk3sgBtWE7yhPkiXZZZGIQi9hxSePVG26x6+CVbvWRMRTNm1guh6eO8eOF3KjLfytrTXE0h6yWKM7UMdbbO82NKTDS+OvW5ntvUQPXOz/4xjxDX4epKkPKseZDHH87Z/wmVLyTD0bEtPgGst3Rzxv6L60kLGnvDP5UDoQL6G8kjHmw7DlJ3nosr+cignli5o0G8Qc05/ZM1hTLw
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2026 13:16:14.0524
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59a4f14e-a0ec-4ae2-f4d8-08decba97128
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000026C5.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7424
 
-Add an optional st,fullscale-milligauss property that selects the
-initial magnetometer full-scale range at probe time, expressed in
-milligauss.
+This series adds a new IIO driver for the AMD/Xilinx Versal System
+Monitor (SysMon), providing on-chip voltage and temperature monitoring.
 
-The motivating case is the LSM303DLH magnetometer on the HP TouchPad
-(apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
-saturates the X axis to the chip's 0xF000 overflow sentinel out of
-probe, because the chip is mounted close to surrounding power planes
-and picks up enough DC bias to exceed the smallest range.
+The Versal SysMon measures up to 160 supply voltages and reads up to
+64 temperature satellites distributed across the SoC. The hardware
+also provides aggregated device temperature registers: the current
+max and min across all active satellites, and peak/trough values
+recorded since last hardware reset. The device can be accessed via
+memory-mapped I/O or via an I2C interface.
 
-The chip is not wedged by the saturation: a sysfs write of a wider
-range to in_magn_x_scale recovers it on the next conversion, and a
-UDEV rule on add of the IIO device is a viable steady-state
-workaround. What the DT property buys is the probe-time window: the
-in-tree consumers we use (sensorfw's iio-sensors-adaptor and the
-geomagnetic / orientation services on top of it) start polling
-in_magn_x_raw essentially as soon as the device node appears and
-treat the 0xF000 sentinel as a legitimate sample. Until a UDEV rule
-fires and commits the wider range, every read returns the stuck
-sentinel, and on slow-boot paths the consumer may have already
-cached a bogus calibration baseline by the time UDEV catches up.
+The driver is split into a bus-agnostic core module using the regmap
+API, an MMIO platform driver, and an I2C driver. This allows the
+same IIO logic to be shared across different bus transports.
 
-st,fullscale-milligauss lets the device tree declare a wider
-initial range up-front so the correct range is in effect before any
-IIO consumer can open the device, and keeps the board-specific
-magnetometer calibration alongside the rest of the hardware
-description rather than splitting it between DTS and per-distro
-UDEV rules.
+Previous submissions:
+  v7: https://lore.kernel.org/all/20260614233722.2603459-1-salih.erim@amd.com/
+  v6: https://lore.kernel.org/all/20260611222738.2035062-1-salih.erim@amd.com/
+  v5: https://lore.kernel.org/all/20260608183801.1257051-1-salih.erim@amd.com/
+  v4: https://lore.kernel.org/all/20260606051707.535281-1-salih.erim@amd.com/
+  v3: https://lore.kernel.org/all/20260527114211.174288-1-salih.erim@amd.com/
+  v2: https://lore.kernel.org/all/20260502111951.538488-1-salih.erim@amd.com/
+  v1: https://lore.kernel.org/all/cover.1757061697.git.michal.simek@amd.com/
 
-The full property name is spelled out rather than abbreviated to
-"-mg" because this same binding file already covers ST accelerometers
-where the conventional shorthand "mg" reads as milli-g (acceleration);
-the explicit "-milligauss" suffix makes the unit unambiguous if a
-similar tunable is ever introduced for the accel/gyro/pressure
-families.
+Changes in v8:
+  - Address Andy v7 review items: MILLIDEGREE_PER_DEGREE, overflow.h,
+    devm_versal_sysmon_core_probe rename, volatile register comment,
+    regmap_test_bits, unsigned int for osr_write, ~0 instead of
+    ~0U (Andy)
+  - Fix devm teardown race in interrupt cleanup (Sashiko)
 
-The property is scoped to magnetometer compatibles via allOf/if-then
-clauses, with per-family enum lists of the accepted milligauss
-values (1300..8100 for LSM303DLH/DLHC/DLM, 4000..16000 for
-LIS3MDL/LSM9DS1/LSM303C). LSM303AGR / LIS2MDL / IIS2MDC have a
-single fixed full-scale (15000 mg) with no register to switch
-ranges, so the property is rejected outright for them. DTSes that
-misspell the value, place the property on an accelerometer /
-gyroscope / pressure node, or set it on a fixed-FS magnetometer
-fail dt_binding_check rather than emitting a runtime warning.
+Changes in v7:
+  - Move TEMP event onto channel 0; drop OT as separate IIO
+    channel; use single temp_channels array with runtime event
+    attachment (Jonathan)
+  - Return administrative state from temp_mask in read_event_config
+    instead of transient hardware IMR (Jonathan, Sashiko)
+  - Add devm cleanup to mask HW interrupts on driver unbind (Sashiko)
+  - Add documentation comment for static aggregate temp channels
+    (Jonathan)
+  - Split sysmon_osr_write into per-type helpers (Jonathan)
 
-The property is purely additive: if absent, drivers fall back to
-their existing chip default. No existing in-tree DTS is affected.
+Changes in v6:
+  - Address all Andy v5 review items: switch(chan->type) in event
+    functions, reversed xmas tree ordering, macro brace placement,
+    scoped_guard in unmask worker, combined regmap error checks,
+    join single-line constructs, IWYU header fixes (Andy)
+  - Fix fwnode_irq_get() to propagate only -EPROBE_DEFER; treating
+    all negatives as fatal broke probe on I2C nodes without
+    interrupts property
 
-Assisted-by: Claude:claude-opus-4-7 dt_binding_check checkpatch
-Assisted-by: Sashiko:claude-opus-4-7
-Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
----
- .../devicetree/bindings/iio/st,st-sensors.yaml     | 71 ++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+Changes in v5:
+  - Core: add err.h include (IWYU) (Andy)
+  - Core: drop (int) cast on MILLI in scale assignment (Andy)
+  - Core: sign_extend32() instead of (s16) cast (Andy)
+  - Core: remove unneeded parentheses in voltage address
+    calculation (Andy)
+  - Core: drop NULL checks before fwnode_get_child_node_count
+    (NULL-aware) (Andy)
+  - Core: nested size_add() for overflow-safe allocation (Andy)
+  - Core: if (ret) instead of if (ret < 0) for fwnode property
+    reads (Andy)
+  - Core: remove outer parentheses in satellite address
+    calculation (Andy)
+  - Core: loop index declared in for() scope (Andy)
+  - MMIO: add err.h, types.h includes (IWYU) (Andy)
+  - Header: remove unused types.h include and struct iio_dev
+    forward declaration at P2 stage (Andy)
+  - I2C: add err.h, mod_devicetable.h includes (IWYU) (Andy)
+  - Events: clamp() instead of clamp_t() (Andy)
+  - Events: regmap_assign_bits() instead of separate set/clear (Andy)
+  - Events: remove unneeded parentheses (2 places) (Andy)
+  - Events: for_each_set_bit on single line (Andy)
+  - Events: regmap_clear_bits() instead of regmap_update_bits() (Andy)
+  - Events: simplify unmask XOR to ~status & masked_temp (Andy)
+  - Events: add comment explaining unmask &= ~temp_mask logic (Andy)
+  - Events: split container_of across two lines (Andy)
+  - Events: move ISR write after !isr check (Andy)
+  - Events: unsigned int for init_hysteresis address param (Andy)
+  - Events: add comment explaining error check policy in
+    worker/IRQ (Andy)
+  - Events: nested size_add() for overflow-safe allocation (Andy)
+  - Events: propagate negative from fwnode_irq_get() for
+    EPROBE_DEFER (Andy)
+  - Events: pass irq instead of has_irq to sysmon_parse_fw (Andy)
+  - Oversampling: remove unneeded parentheses (Andy)
+  - Oversampling: use struct regmap *map local variable (Andy)
+  - Oversampling: switch instead of redundant if/if on
+    channel_type (Andy)
+  - Oversampling: add CONFIG register readback fence after
+    oversampling update to prevent NoC bus hang from posted
+    writes (found during hardware stress testing)
 
-diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-index a1a958215cdb..f0805604c849 100644
---- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-+++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-@@ -126,6 +126,13 @@ properties:
-   mount-matrix:
-     description: an optional 3x3 mounting rotation matrix.
- 
-+  st,fullscale-milligauss:
-+    description:
-+      Initial magnetometer full-scale at probe time, in milligauss.
-+      Per-chip allowed values are enumerated in the allOf clauses
-+      below.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
- allOf:
-   - if:
-       properties:
-@@ -163,6 +170,70 @@ allOf:
-           maxItems: 1
-         st,drdy-int-pin: false
- 
-+  # Per-chip enum lists for st,fullscale-milligauss. Out-of-range
-+  # values fail dt_binding_check instead of being demoted to a
-+  # runtime warning by the driver.
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - st,lsm303dlh-magn
-+              - st,lsm303dlhc-magn
-+              - st,lsm303dlm-magn
-+    then:
-+      properties:
-+        st,fullscale-milligauss:
-+          enum: [1300, 1900, 2500, 4000, 4700, 5600, 8100]
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - st,lis3mdl-magn
-+              - st,lsm303c-magn
-+              - st,lsm9ds1-magn
-+    then:
-+      properties:
-+        st,fullscale-milligauss:
-+          enum: [4000, 8000, 12000, 16000]
-+
-+  # Single fixed full-scale, no register to switch: reject.
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - st,iis2mdc
-+              - st,lis2mdl
-+              - st,lsm303agr-magn
-+    then:
-+      properties:
-+        st,fullscale-milligauss: false
-+
-+  # Reject st,fullscale-milligauss on non-magnetometer compatibles.
-+  # Keep this enum in sync with the three magn clauses above when
-+  # adding a new magnetometer compatible.
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              enum:
-+                - st,iis2mdc
-+                - st,lis2mdl
-+                - st,lis3mdl-magn
-+                - st,lsm303agr-magn
-+                - st,lsm303c-magn
-+                - st,lsm303dlh-magn
-+                - st,lsm303dlhc-magn
-+                - st,lsm303dlm-magn
-+                - st,lsm9ds1-magn
-+    then:
-+      properties:
-+        st,fullscale-milligauss: false
-+
- required:
-   - compatible
-   - reg
+Changes in v4:
+  - Core: temperature channels use RAW + SCALE (IIO_VAL_FRACTIONAL,
+    1000/128) instead of PROCESSED; voltage channels use PROCESSED
+    only, drop RAW; drop scan_type from all channel macros (Jonathan)
+  - Core: move __free(fwnode_handle) declarations down to just
+    above use; devm_regmap_init() on one line; lock comment
+    describes RMW sequences and cached state (Jonathan)
+  - Events: merge event channels into static temp array -- two
+    arrays (with/without events) selected by has_irq; event-only
+    channels have no info_mask (Jonathan)
+  - Events: blank lines, fit under 80 chars, default returns error,
+    return early in each case, guard(spinlock) in IRQ handler
+    (Jonathan)
+  - Events: take irq_lock in write_event_config for temp_mask
+    updates (Sashiko)
+  - I2C: replace enum with defines, use unaligned accessors for
+    data and register offset packing, named initializer in
+    i2c_device_id (Jonathan)
+  - I2C: drop bitfield.h, add unaligned.h
+  - Oversampling: return directly, remove else after early returns,
+    rename mask defines, blank lines (Jonathan)
+  - Oversampling: move oversampling read inside guard(mutex) scope
+  - Fix v2 lore link in cover letter
+
+Changes in v3:
+  - DT binding: single compatible, voltage-channels rename, single
+    quotes, drop label/bipolar/xlnx,aie-temp (Krzysztof)
+  - Core: IWYU throughout, __free(fwnode_handle), sign_extend32(),
+    size_add(), dev_err_probe(), s16 param, remove (int) casts,
+    drop SYSMON_MILLI in favor of (int)MILLI, rename _ext to _name
+    in SYSMON_CHAN_TEMP macro (Andy, Jonathan)
+  - Core: fwnode_irq_get() moved to core_probe, remove sysmon->dev/
+    indio_dev/irq from struct, describe protected data in lock
+    comment, add RAW+PROCESSED comment (Jonathan)
+  - I2C: IWYU, remove wrapper struct, explicit enum values, sizeof()
+    for buffers, = { } initializers, adapt to core_probe interface
+    change (Andy, Krzysztof)
+  - Events: IWYU, FIELD_GET/FIELD_PREP, regmap_set/clear_bits,
+    clamp_t, !!, IRQ_RETVAL(), devm_delayed_work_autocancel,
+    loop var scope, error checks, remove redundant else, logical
+    param splits, spinlock safety comment (Andy)
+  - Events: hysteresis rework -- store as millicelsius, hardcode
+    ALARM_CONFIG to hysteresis mode, compute lower threshold from
+    (upper - hysteresis), remove falling threshold for temperature,
+    single event spec per channel with IIO_EV_DIR_RISING, push
+    IIO_EV_DIR_RISING for temp and IIO_EV_DIR_EITHER for voltage
+    (Jonathan)
+
+Tested on VCK190 (single SLR, MMIO path, 7 supplies, 10 temperature
+satellites). I2C compile-tested.
+
+A follow-up series will add thermal zone integration, secure firmware
+access, and I2C remote monitoring.
+
+
+Salih Erim (5):
+  dt-bindings: iio: adc: add xlnx,versal-sysmon binding
+  iio: adc: add Versal SysMon driver
+  iio: adc: versal-sysmon: add I2C driver
+  iio: adc: versal-sysmon: add threshold event support
+  iio: adc: versal-sysmon: add oversampling support
+
+ .../bindings/iio/adc/xlnx,versal-sysmon.yaml  |  154 +++
+ MAINTAINERS                                   |    7 +
+ drivers/iio/adc/Kconfig                       |   33 +
+ drivers/iio/adc/Makefile                      |    3 +
+ drivers/iio/adc/versal-sysmon-core.c          | 1036 +++++++++++++++++
+ drivers/iio/adc/versal-sysmon-i2c.c           |  133 +++
+ drivers/iio/adc/versal-sysmon.c               |   93 ++
+ drivers/iio/adc/versal-sysmon.h               |  120 ++
+ 8 files changed, 1579 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
+ create mode 100644 drivers/iio/adc/versal-sysmon-core.c
+ create mode 100644 drivers/iio/adc/versal-sysmon-i2c.c
+ create mode 100644 drivers/iio/adc/versal-sysmon.c
+ create mode 100644 drivers/iio/adc/versal-sysmon.h
 
 -- 
-2.43.0
+2.48.1
 
