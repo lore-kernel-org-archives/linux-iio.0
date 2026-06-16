@@ -1,158 +1,169 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50F8A3043C8;
-	Tue, 16 Jun 2026 11:32:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBCA9388E7D
+	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 11:46:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781609554; cv=none; b=WeouoN0AphDdyXU0FGmW6tH1WvZcRmXkjkuZ+1HhPoAJIPmos5ipV/KVgzm3MChjTFE9jOicXnMMgxtJCHE22ZsUadyL2owpieM2HZbVkwLiyfH9e0f2h3b/08POT4/vrKSs8xFGK+RsqW59naYemm6aOg7rcK3BoNy/a9yz7rk=
+	t=1781610392; cv=none; b=ID0YluE17LXKMhnyM3E0dGJWLdqmQ53etEeraDt6qKsq8v3K2HVFD3oTGAtqXga9u0obZix/f+SR6yRi/V9796XOeKr8p5I5B+/WLvMrkcnI0GI4PIF1Vg2TtRFMYAk8XyubdmppeuwzclL/nKgFvqHLcJ1e4l0HpkjtfAEaHL4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781609554; c=relaxed/simple;
-	bh=fQ2AA+B5HXg+9VGEjKTj0JjSlcUTHbf1yHvGGfrbrfE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JD+fsS3VxK2PGeZgq4LQecbX8yYr7Koqa55+p91NSbWzEuZn7BKH6O0g3thTBWAk0znv4AMEBLbVE2OQdKgMsN8VYOy5Wts+uciy0vYyPoM6zbe+vhOBnLz4fnS6WAUB1zVpYXplNeh1EYps3tCj2HGnVfnDo7hX2bEMvSJJXow=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=en4cbng2; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1781610392; c=relaxed/simple;
+	bh=B/5zCf5qxtCKHH0leXzgYelc7fOtETg9twMXugSJIls=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=aE7M2zvdOYnVAUN14vAuzKoHhjoQ5kAsJTH3EcfVUdmPN0GLthjMJiDGsBdKXLSYAqDu5MlkQbPsARyFnritGU8s62YmE2X74szyxPPg2lzZOaYt8Tq2ScpagyBu9cO2quuks/CmW9EcbhXbSvn2KvZyOyllRIEfIuz4XZYPl8k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jGPK3j/A; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="en4cbng2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781609553; x=1813145553;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fQ2AA+B5HXg+9VGEjKTj0JjSlcUTHbf1yHvGGfrbrfE=;
-  b=en4cbng2upN4Bz2ddIxOrL1GgigAaCjfgeQF6Snuu72ROb/2K4mnvlBS
-   f/NlRIjiQ8vf47b9NPONfdMUxlA124Z5pq/lN7rU58hJCzGEb7CjGnTHg
-   ynDJrvX7qKbgLT1IfQd2YWDnNzmd7PdYuSbsdKGOVvf/IIXMd5+0dco/W
-   r4C1/zBI9EDZ9+4SnFAxYhIllajIC0tepBVgemFbAMuqsPNfSmAx33hNg
-   H5hd3RRkaM0f/xQtP507yAY94m+2tt7OCUTaQi4WcC2/bhO5C4gqmpgi7
-   +NdFBE1zWfJdo+/9Hh3vGRYTLg32aDAD48kljy5ICwdXt9qUxYIKJ9Az2
-   w==;
-X-CSE-ConnectionGUID: rgk3QDc3Te2E//zDcGMx4A==
-X-CSE-MsgGUID: 0pIsejHvTciWi+gV50SOrw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="99788903"
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="99788903"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 04:32:33 -0700
-X-CSE-ConnectionGUID: jo3l7CJ9R367mJbNikhgWQ==
-X-CSE-MsgGUID: ANnVecl1QBm9K0FuCXVuzg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="245376373"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 04:32:30 -0700
-Date: Tue, 16 Jun 2026 14:32:27 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v5 6/6] iio: osf: register IIO devices from
- capabilities
-Message-ID: <ajE0S4gQ7yMoxX51@ashevche-desk.local>
-References: <20260616072242.3942-1-kimjinseob88@gmail.com>
- <20260616072242.3942-7-kimjinseob88@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jGPK3j/A"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2c0c379e8ffso30069585ad.3
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 04:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781610390; x=1782215190; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2SZwmLoyOVnXN8nI4Eki4lO2D5PAd8xlSte9gW+ZCNM=;
+        b=jGPK3j/Aj30BhTVuaxTrTTwZUJU39KooiyunH+RgGxNNqFxwWBrfKi4DbEPawPmEgW
+         YDzDMj+4Bhgd7KP/fwXhn7pfq9p9BJoYV46h3hNBEaEqvepC6mCNBlBw0AsJ3o3Et4Ss
+         E/+sI6ov07/Umbb8HEjKWFKxKHXrRukASJy+o/Y/X4jE5doYDHAswyx5fZ0s98rLGK2u
+         +qYv+GuGEywDnR1rssX2cN1svp0AUbXV9s4J1KQG3e2u6h7VtNkWVG8IELfcTtXysWiX
+         LmmdQA0hxygCwebjlC2DQEktcpliNfkA9AFtTMJ5ckuQURkjjQMrIvWVCx2/EbSIFnIz
+         WLSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781610390; x=1782215190;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2SZwmLoyOVnXN8nI4Eki4lO2D5PAd8xlSte9gW+ZCNM=;
+        b=Yj0Wo+XSDq56Ygdm4cdKd9m9zT6KGiFMTBxYgLlua9qMKmMyIg5gJ+jGRj+AJocbih
+         sB5rSMATTA3fqskbMfUAR8Okojg9uNTzMOSjfznI9tkIZ7macXB7Hm10RlQudhXrO9o6
+         jMyzPiHY9SHd4YPxxf/a7it/R7eOCjt7d7OOg8A9yDuTQ26zFmR0J5axls2LBgp/WXqt
+         1DmGE8mqHq/XjBr6fJIb5cqAzpV073B3WfrpNarqgFNwfOx6/oNLthIxzAV80V4ubGVp
+         a1R7rnSPOsc4BdDifc2ALeY5WIsuZLFhSlC6zHmAu/FKVV2HODLLbxKYNCieo5L1FhcN
+         dBbw==
+X-Gm-Message-State: AOJu0YwoJ5fMr0C2WnZ/X50cHFbEWr0LIhH7l0QupC3iK6GI2oMacRuo
+	e/zSUZpChhvfccm/zcHjzTBCNYqd/5VYfOJOZc0GGDiEWuzfg0Q1HTqKRMOBtCnV
+X-Gm-Gg: Acq92OEbr5GKPPt7AZYL4SUb89r2LRRs0/7/1w4bJZB/+mVZ1QGqWAN1bOiCP35ivih
+	2MUFjJJkzl7xIeBCVp5LTyqqSD9rBCtORrYt42z+CBdk4yEeGz5E7jIS31+P1+qgit8aa6REIdl
+	6rE+Tw+1haYzLncqg4WXvO8rKkrQVvTyo2Ry0SdArGOaOrFuEahL8X134Mayeof51yV1nidnyIt
+	HI2Sd0WHjfmkyc6hT1CK272zcFQnzMUm4/up51qKsU+kiokVy93Pcfp4MlFHFEtI8IyvBQTSc5x
+	/bniK86LHZaW48mVSnm+qcrCO/D9mVAPLe4T2OB3VQMw9/+gvenNKeH8PhyHRWuxWRUy5j8ons2
+	PaaRl6HGb2yziHCqAWURj4oA/U/K8OWS5J0FUX1jnkLsrDazNBoS6NAOzcVSqkTufoBeSTu+f0e
+	xTwN7AZzq+8gjevjv+U6bYLW/aJCnFjGtXqwIJZ7G6NKSI
+X-Received: by 2002:a17:903:40ce:b0:2b2:57f3:8d07 with SMTP id d9443c01a7336-2c664148d86mr162923495ad.7.1781610390142;
+        Tue, 16 Jun 2026 04:46:30 -0700 (PDT)
+Received: from yash-Bravo-15-B5DD.local ([14.99.167.142])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c42fbb50bfsm131128635ad.33.2026.06.16.04.46.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jun 2026 04:46:29 -0700 (PDT)
+From: Yash Suthar <yashsuthar983@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	andriy.shevchenko@intel.com,
+	salah.triki@gmail.com,
+	sakari.ailus@linux.intel.com,
+	Achim.Gratz@Stromeko.DE,
+	Yash Suthar <yashsuthar983@gmail.com>
+Subject: [PATCH v2] iio: pressure: bmp280: return on runtime PM resume failure
+Date: Tue, 16 Jun 2026 17:16:21 +0530
+Message-ID: <20260616114621.16480-1-yashsuthar983@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260616093126.66312-1-yashsuthar983@gmail.com>
+References: <20260616093126.66312-1-yashsuthar983@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260616072242.3942-7-kimjinseob88@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 16, 2026 at 04:22:42PM +0900, Jinseob Kim wrote:
-> Register IIO devices for supported Open Sensor Fusion capability entries
-> and push received samples into IIO buffers when enabled.
+Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() and
+propagate error.
 
-...
+Signed-off-by: Yash Suthar <yashsuthar983@gmail.com>
+---
+ drivers/iio/pressure/bmp280-core.c | 32 +++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
->  	help
-> -	  Build the Open Sensor Fusion UART receive path.
-> +	  Build the Open Sensor Fusion UART IIO driver.
->  
-> -	  The driver receives OSF protocol frames over a serdev UART.
-> -	  Frames are decoded and validated before being passed to the
-> -	  driver core.
-> -	  This patch only adds the transport path.
-> -	  IIO device registration is added separately.
-> +	  The driver receives OSF protocol frames over a serdev UART and
-> +	  registers IIO devices for supported capability entries.
-
-Can't you fix this in the initial patch?
-
-...
-
->  obj-$(CONFIG_OPEN_SENSOR_FUSION) += open-sensor-fusion.o
->  
-> -open-sensor-fusion-y := osf_core.o osf_protocol.o osf_serdev.o osf_stream.o
-> +open-sensor-fusion-y := osf_core.o osf_iio.o osf_protocol.o osf_serdev.o \
-> +			 osf_stream.o
-
-Modify the original code the way that this will only have a + line.
-
-...
-
->  void osf_core_unregister_iio(struct osf_device *osf)
->  {
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < osf->iio_dev_count; i++)
-
-For all for-loops where it's not going outside it
-
-	for (unsigned int i = 0; i < osf->iio_dev_count; i++)
-
-> +		osf_iio_unregister_sensor(osf->iio_devs[i].indio_dev);
-> +
-> +	osf->iio_dev_count = 0;
-> +}
-
-...
-
-> -		ret = osf_core_validate_sensor_sample(&frame);
-> -		break;
-> +		return osf_core_handle_sensor_sample(osf, &frame);
->  	case OSF_MSG_DEVICE_STATUS:
-> -		ret = osf_core_validate_device_status(&frame);
-> -		break;
-> +		return osf_core_handle_device_status(osf, &frame);
->  	case OSF_MSG_CAPABILITY_REPORT:
-> -		ret = osf_core_validate_capability_report(&frame);
-> -		break;
-> +		return osf_core_handle_capability_report(osf, &frame);
->  	default:
->  		if (frame.message_type >= OSF_RESERVED_MSG_FIRST &&
->  		    frame.message_type <= OSF_RESERVED_MSG_LAST)
-> -			ret = 0;
-> -		else if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
-> -			ret = 0;
-> -		else
-> -			ret = -EOPNOTSUPP;
-> -		break;
-> +			return 0;
-> +		if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
-> +			return 0;
-> +		return -EOPNOTSUPP;
-
-With my suggestion this can be done in the initial patch.
-So, this indeed needs a lot of work as for RFC :-)
-
-I stop here.
-
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index d983ce9c0b99..e2e22b1c7288 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -750,7 +750,10 @@ static int bmp280_read_raw(struct iio_dev *indio_dev,
+ 	struct bmp280_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	pm_runtime_get_sync(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
++		return ret;
++
+ 	ret = bmp280_read_raw_impl(indio_dev, chan, val, val2, mask);
+ 	pm_runtime_put_autosuspend(data->dev);
+ 
+@@ -924,7 +927,10 @@ static int bmp280_write_raw(struct iio_dev *indio_dev,
+ 	struct bmp280_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	pm_runtime_get_sync(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
++		return ret;
++
+ 	ret = bmp280_write_raw_impl(indio_dev, chan, val, val2, mask);
+ 	pm_runtime_put_autosuspend(data->dev);
+ 
+@@ -2254,7 +2260,10 @@ static int bmp580_nvmem_read(void *priv, unsigned int offset, void *val,
+ 	struct bmp280_data *data = priv;
+ 	int ret;
+ 
+-	pm_runtime_get_sync(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
++		return ret;
++
+ 	ret = bmp580_nvmem_read_impl(priv, offset, val, bytes);
+ 	pm_runtime_put_autosuspend(data->dev);
+ 
+@@ -2328,7 +2337,10 @@ static int bmp580_nvmem_write(void *priv, unsigned int offset, void *val,
+ 	struct bmp280_data *data = priv;
+ 	int ret;
+ 
+-	pm_runtime_get_sync(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
++		return ret;
++
+ 	ret = bmp580_nvmem_write_impl(priv, offset, val, bytes);
+ 	pm_runtime_put_autosuspend(data->dev);
+ 
+@@ -3108,11 +3120,17 @@ EXPORT_SYMBOL_NS(bmp085_chip_info, "IIO_BMP280");
+ static int bmp280_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	struct bmp280_data *data = iio_priv(indio_dev);
++	int ret;
+ 
+-	pm_runtime_get_sync(data->dev);
+-	data->chip_info->set_mode(data, BMP280_NORMAL);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
++		return ret;
+ 
+-	return 0;
++	ret = data->chip_info->set_mode(data, BMP280_NORMAL);
++	if (ret)
++		pm_runtime_put_autosuspend(data->dev);
++
++	return ret;
+ }
+ 
+ static int bmp280_buffer_postdisable(struct iio_dev *indio_dev)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
