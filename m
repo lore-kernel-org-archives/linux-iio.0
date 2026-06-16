@@ -1,67 +1,67 @@
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A108144CAC2
-	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 15:30:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AC344CAEA
+	for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 15:38:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781623821; cv=none; b=TIEQlmUOu5UENKXRmP+nrtub57hBGtg81Tf1w2Tv/kBb/KvbiRVlgusP/PnZStZtr/iNNaqZVXNFyFKbNzxb9AgHP+6vJ2kiGW+uXVmhuoYU3rcK3WYnltgfdyLFCyzMnWUyO4mbKess9G+m4Dznu+OaLFPkWmTsZ3x0aLaVHms=
+	t=1781624288; cv=none; b=ICdXc8eu/g92cWpFfrabwMeEx6eALiHmz0GOIi5BbF5ntbFKNVLwtAytmy3svLRvXmdjvf6sIrkJGjMAuUhghJIbqg10pG0XKWpXQGKYDc5SwGSOanmSF3i6oozA258PcYoYogp3xYI0JYq+gBqJA4I/o7l5Oi/K3YbnZAHZod0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781623821; c=relaxed/simple;
-	bh=P8HCEBD70snqwKdpaO75cGCjmvTTJXjD8qQCQ1uOKdM=;
+	s=arc-20240116; t=1781624288; c=relaxed/simple;
+	bh=ZOzn+odfXtFFxDtwV9vEd3/BbYpMJLOkeAries1nWdc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jvrGEnVLXWvtZg4bcIhhIH3qsAKIbXtJn8/CovAAJsw409fBwKTdwHvQB7tJIOAX733zItOS055uym7Vr75rlRqs+YWGmyMy37Swz3cU9O35CGSqjaM/+gTJ8+I3I56fVPL0X3iLbyXvBp1hWpmczbcajFJR/hAnXPMhoC26tX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=HDQjCFpY; arc=none smtp.client-ip=209.85.160.43
+	 In-Reply-To:Content-Type; b=Mbko41evLzzlV4/FWLk/BKme4AWMHUy8X1def5PVfhZ1f9ijcfeb5ieBBrY0BaTOU9KY5GjGRvmyZ6Mf6mP2aey+rzUnVldFmAPtGyBzStlQXSdhY781B3e6jGEWE2rR7NHioBDE+wqt/Fx3VdU8DuzMf8+cGMqZypO0YxBh+To=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=hidi0kXr; arc=none smtp.client-ip=209.85.160.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="HDQjCFpY"
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-43cce34c881so4046812fac.2
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 08:30:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="hidi0kXr"
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-442a79dd881so1147648fac.2
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jun 2026 08:38:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781623819; x=1782228619; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781624286; x=1782229086; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=xgEPcrFDybOilEEFxetPSI7iakaIrltXJjjOqciP8Q4=;
-        b=HDQjCFpYx1KaurIpevULR3IqppU1wtTzjAsWAnYJXgapPmPDBY0/KjkxEr7Cv2IC6K
-         pQbXhbIB2vyAe9nBWOkmtYneBvMctAHrvdeu7DBUc8R6dpJdXrpylGdcVlGsPyuq+RUA
-         5OxP0esCwr06jQLsFoA873DSdVK+1X6N81a+iGF2gCPpTT7LTcwS88AEYr5Ea1aYfesw
-         koWb8E0o6j5ycztFTrdzd3Dn0BOjMMm5SwNKpDL0NfYSrNVEBPv2W1DcLUsqjybjqsX4
-         JTS6Ot5tK/je/XLsDfudwI01xKzbtf06l9zQHPPtKfRaPuzOYbtG3StcOIdcF6Q6/ArK
-         p2RQ==
+        bh=LWBVUzoZFxqMG63T0Dz57hnXBNXtwIr43k2T9IWtKTs=;
+        b=hidi0kXr565KLhnZVr/AmYFvHFHZ57Hu34YyWTRKi7uMuUWcgYAo96nsB5Up9/50wt
+         cwYCrp74bzn3KnwLEXmjD4fCo48lAeYmGy0T4cP9I9kJ1JlPVfOZlZXq4oOSfFdXRI7q
+         21aeu+cEczDZYerTeetoo8OPqxUPOiINN/uK15cwrxpJASTgVuBUwg9PKo2OQiq2T99A
+         rj+6QvYv43paFJTvnwbuXbXaL4sTUU5z0HhkippKSDXTNJrXur+F2xDNxay4V4s62+Jm
+         wx3Z+JDfGRDMLyK62FT686ovRZGDG/uK/D3lmr2phaUJmaLm+X3uh3YWabvkuEHY71ub
+         kZyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781623819; x=1782228619;
+        d=1e100.net; s=20251104; t=1781624286; x=1782229086;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=xgEPcrFDybOilEEFxetPSI7iakaIrltXJjjOqciP8Q4=;
-        b=Ev98nXPyVZOZ4yiLToy90nFagNxEFDbipFIvXBUvGczJJtNHjBbrpG8lNCmu3pNVbT
-         Pyanopnb5uG4qUIah/pe9kg9PFe7nqKa1lVvslAFP6C6aCu1yel+UcL2xe+MLelncTdo
-         fwytRvtp7lZm+uyWnwXnLE7snq8VvaA18SUDWG91esDo0NMCMDmFOXYDAvY0mEXfTwMU
-         vTxdOsvjk+6mAISdnDqqDCZa3+MOvylLx1ZM0e5IXMD4YbMlqQ7On1Ntobg+EvEz0sH3
-         QTT0FEG+3griiba20vIfRsf4nYSHoBuoeGU5UhRuEs0UMkxWSpAZxeNed1bqy6w2inEx
-         kUEQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/50S4j1kSY2EVLmx2NbQr4Rje7Fx+mUMdC8BjbPDxYE81rZQm6OYR50ORdhIAUk2yJi1Cd1jBAh28=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSBkbc57E8Dbhvwo4TIpeZq4uzVwwfnCdNfb16u4g4sNlQyDSc
-	ZYoJQQEij3nHaEFOYnmm5oJLQ+TREztRQwfbye6gWMsAvJnXJxARLcfaReWQGTR+tpY=
-X-Gm-Gg: Acq92OGWnHLjHnIPJguHisNlD9qkDTnh/Yp3HrDOaEVRTzHArBqX7KocnHf159pG9d0
-	GuwyucyE+/iBw+unaFZTDzPz3TJwqh/vGt1QqJQMgNk+/83kHgwvwo9ZF9P/ozo4r05bPA9LsOE
-	GMzWeg1do53JIimsE1+u3Y1jAft0Dby9lXLhSariCWECCpaSjWTqtA6qP3sB4H0NT5DDy7uXmyw
-	YRwa/MZVpnNS3tsf/W0qoguyjeTvM4+EB4FBB3j8OkvQqMhipgDdJqmhwOS2hyHKp9UzpRGApV6
-	7odufa+2+I5Imab2hYHCRQLyd9Y1NF3Ih/jB3N6ukZQ420CQ48E5g7c4WWLgirc1pSggBaSdPVT
-	8y25Dwyfsea8qzpTm5btlqNIeIgkRSNb3cakWtLwcMii1NniH0tOte8Dbn5S+kJg3NoeBrAzsX+
-	s9YKVRmuSQYSgDhllJ4BKbrDxlQWlPh1+jNTEsVxHwq+wt0Cp1FPxGcWCWG0VKzknhMTEZ3qI1x
-	fFL5T/SgYKh
-X-Received: by 2002:a05:6870:e314:b0:42c:24f6:f190 with SMTP id 586e51a60fabf-4430b5e7c76mr3275033fac.17.1781623818663;
-        Tue, 16 Jun 2026 08:30:18 -0700 (PDT)
+        bh=LWBVUzoZFxqMG63T0Dz57hnXBNXtwIr43k2T9IWtKTs=;
+        b=Zm4YBM0QhC3OWrZoMfbu249lesD5bTelJYew5GBFSMRKciwgjW263qYBsaCcQiBOhx
+         FTYodYTCgQVrqNy0c2ZYKhNPRlr2mx/PJ86IgLdR3TAMgoiyGmdhbElPjfudlabAUwY6
+         qKtYm/XT3uhww6mkqEK3WOLBHhFDDMv12Kl5SpU68FICcG3f0nYrNTkFCJUA3RSf1LGx
+         6Gq14jQhMUdOVANSD9G/xSpCHBbHHsp1LbPPjEZ6maKmzd0hPmAplUkfhcSCne/nzhOh
+         U16gs0sya9iQlhIy6CKZ/mhGkgj/cGU0a1pHb8CcfkowpB+SbO0ymva4GWBjXzxe+CrE
+         gPNA==
+X-Forwarded-Encrypted: i=1; AFNElJ9lvz8ifQRWOGciB2cORKZ6u32QxGFpjF8FaEQCwxip/rg1zS5Omo5QZCsBS/0fE+h96hQ4mjzfK4c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvUBCVIvLr2xAXd5W0IelerYNeihwPvKL/9/RfXieFKecs3pOe
+	Im0HmlNWKLTQ9lO36XNdXBupckFzz1lV0MApikF1qPv6c/4BMCujJZ83VcF/Kf9b92g=
+X-Gm-Gg: Acq92OFvDgQulrh185S9qISraLiqvt1S/w5HzybNl29lyLbXM0TEYGlCx24P5ID8BLF
+	Xd+Mom7lu91pJcprCymmUFPLmdIzHlcwCbhoVdok744ATXNeC9rsyevrzTdAl3Iw+F/OR/LspRR
+	NtIGFtSD+j8Zjn7eYLVMNCLMKgI/DM9Xbm8hGLRneQB4caqqUcljZUi4gA6EfksB51C7HjB7PzL
+	9R1CbEoMWccJuAEpNOT6dCITzJNJNsaXLgtOCI2y3KWh4kT4BS+SADKzn3cwY0yYWO2NtaAIhSh
+	ngPCTjU7CILdw2+DQX4YbpH+xeGr82d7UKsJ/VWWEP74WVqBf/RdCO4wqX6mdbnbDe6MGrQYHLO
+	tDpKvO0tZeQk/5yz9dwMDrNC0N4BMTfyYc+5LvuajNjbNXvqsFtLcvIGs255E3wK2PfCf1puUn/
+	WEtBPGf1ebflQA7HqaJlYr2o0zkcYQOYXb8Kh0UDxzxvR81mhWPzn9Ni13OTJB3YrRoiKD/OtcI
+	Q==
+X-Received: by 2002:a05:6871:3427:b0:43d:3251:7070 with SMTP id 586e51a60fabf-4428c7a4087mr10250880fac.25.1781624286084;
+        Tue, 16 Jun 2026 08:38:06 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:16b0:5133:47b1:a939? ([2600:8803:e7e4:500:16b0:5133:47b1:a939])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4430866fa15sm2376561fac.0.2026.06.16.08.30.17
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44308a66827sm2398625fac.2.2026.06.16.08.38.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Jun 2026 08:30:18 -0700 (PDT)
-Message-ID: <1aec0172-68b4-4542-83d4-5c05680c0096@baylibre.com>
-Date: Tue, 16 Jun 2026 10:30:17 -0500
+        Tue, 16 Jun 2026 08:38:05 -0700 (PDT)
+Message-ID: <12831fd9-8a6f-442e-b1ca-f39248a5baf0@baylibre.com>
+Date: Tue, 16 Jun 2026 10:38:05 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,56 +69,103 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] iio: adc: ti-ads112c14: add measurement channel
- support
-To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+Subject: Re: [PATCH 2/4] iio: adc: add ti-ads112c14 driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
+ Conor Dooley <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
- <20260615-iio-adc-ti-ads122c14-v1-4-e6bdadf7cb2b@baylibre.com>
+ <20260615-iio-adc-ti-ads122c14-v1-2-e6bdadf7cb2b@baylibre.com>
+ <ajD8Gxkp66kkDflE@ashevche-desk.local>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260615-iio-adc-ti-ads122c14-v1-4-e6bdadf7cb2b@baylibre.com>
+In-Reply-To: <ajD8Gxkp66kkDflE@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/15/26 5:00 PM, David Lechner (TI) wrote:
-> Add support for parsing devicetree properties for measurement channels
-> and doing direct reads on these.
+On 6/16/26 2:32 AM, Andy Shevchenko wrote:
+> On Mon, Jun 15, 2026 at 05:00:00PM -0500, David Lechner (TI) wrote:
+>> Add a new driver for the TI ADS112C14/ADS122C14 ADC chips.
+>>
+>> This first step is adding a very basic driver that only supports power
+>> on/reset and reading the system monitor channels.
+>>
+>> ADS112C14_SYS_MON_CHANNEL_SHORT is the last channel rather than being in
+>> logical order by address to keep the voltage channels together and in
+>> case we find we need to add variants of this channel with different
+>> voltage reference later.
 > 
-> There are quite a lot of conditions that have to be met for each
-> measurement to be made, so quite a bit of state and algorithms are
-> required to handle it.
+> ...
+
+
+>> +static int ads112c14_read_label(struct iio_dev *indio_dev,
+>> +				struct iio_chan_spec const *chan, char *label)
+>> +{
+>> +	const char *label_source;
 > 
-> Channels are created dynamically since the number of possibilities is
-> unreasonably large.
+> I don't see the need of having this. Can't be returned directly?
+
+Then this would have to be split into two functions. One to return
+it directly and one to do the sysfs_emit(). I don't think it is
+worth it.
+
+> 
+>> +	/* System monitor channels. */
+>> +	switch (chan->channel) {
+>> +	case ADS112C14_SYS_MON_CHANNEL_TEMP:
+>> +		label_source = "Internal temperature sensor";
+>> +		break;
+>> +	case ADS112C14_SYS_MON_CHANNEL_EXT_REF:
+>> +		label_source = "External reference";
+>> +		break;
+>> +	case ADS112C14_SYS_MON_CHANNEL_AVDD:
+>> +		label_source = "AVDD";
+>> +		break;
+>> +	case ADS112C14_SYS_MON_CHANNEL_DVDD:
+>> +		label_source = "DVDD";
+>> +		break;
+>> +	case ADS112C14_SYS_MON_CHANNEL_SHORT:
+>> +		label_source = "Internal short";
+>> +		break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return sysfs_emit(label, "%s\n", label_source);
+>> +}
 > 
 
-...
 
->  static void ads112c14_populate_tables(struct ads112c14_data *data)
->  {
->  	u32 vref_uV, fsr_bits;
-> -	int i;
-> +
-> +	for (u32 i = 0; i < data->num_measurements; i++) {
-> +		struct ads112c14_measurement *measurement = &data->measurements[i];
-> +
-> +		switch (measurement->vref_source) {
-> +		case ADS112C14_VREF_SOURCE_EXTERNAL:
-> +			if (data->ext_ref_ohms)
-> +				vref_uV = measurement->idac_current_uA *
-> +					  measurement->iadc_count * data->ext_ref_ohms;
+>> +	/*
+>> +	 * The reset may cause an -EREMOTEIO error because of failing to get the
+>> +	 * I2C ACK at the end of the message. The device still gets reset.
+>> +	 */
+>> +	if (ret != -EREMOTEIO)
+>> +		return ret;
+> 
+> I would do it separately as
+> 
+> 	if (ret == -EREMOTEIO)
+> 		/* ...big comment here... */
+> 		return 0;
 
-One thing I am considering is that if we have a resistor between
-REFP and REFN rather than a voltage supply, then we should consider
-the channel IIO_RESISTANCE rather than IIO_VOLTAGE.
-
-In this case, the user doesn't care about voltage at all, but rather
-the ratio of the REFP-REFN resistor to the measured resistance.
+We should not return early here. We just continue with the rest
+of the function as normal. So I think the way I had it was
+simplest. Otherwise we would need a goto or something like that.
 
 
+> 	if (ret) // which is regular pattern and doesn't need any comment.
+> 		return ret;
+> 
+>> +	fsleep(ADS112C14_DELAY_RESET_us);
+>> +
+>> +	ret = regmap_read(data->regmap, ADS112C14_REG_STATUS_MSB, &reg_val);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if (FIELD_GET(ADS112C14_STATUS_MSB_RESETN, reg_val))
+>> +		return dev_err_probe(dev, -EIO, "reset failed\n");
+>> +
