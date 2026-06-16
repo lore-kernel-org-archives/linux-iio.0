@@ -1,405 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011042.outbound.protection.outlook.com [52.101.70.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5612F3A16AC;
-	Tue, 16 Jun 2026 16:07:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781626046; cv=none; b=Gsl1q54XGf2/0+797mCJqQLAsRvcP67GML9byVnEzOW4+gYbYG0uAR30EEW19fHPch+OfyQKRW5JPw1uFobyJpNr2S24KJ0s5wTiNzW0FdMQoGPjzqmf8ofQstc2XP26cSA7kXVJY8JSVSNOzFd/HULMOWR1t9mpFkW/9mynvys=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781626046; c=relaxed/simple;
-	bh=3tzZnjmNjmotFZ7uaMnAomU+ygB5XKg7WBs+mh1XAQM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gr+/OcmQjsehN1C/Tsccmneg1Rn4YceKuZDA+rKzrnBvDxwya7nF0YYhJfDLII2iacIx0EyvOousWkr8/tlhHn8DhKQL5Esyfgd07syvpxTGhLp1QFyquSavK0tUl85b6r29pX8y1OM3Z125f0GRDmtTP6SjKRmO1PBn55FCAJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lA6q07+2; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D860646AF02;
+	Tue, 16 Jun 2026 16:20:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781626807; cv=fail; b=ez83v6JXr/nl8SJCHayWgY8nGtiqLclE5YK639yRy0wcWMoTqJIF9E7wyr2Zphcw6dNh+X9p6g90N80jm25NfwQhit7uZSm4fJE4c/LKaTzsHOa3kzV4pdZv9oRr2QMjZveHDT030JNKtdTxsHJoXiRp2sZaU+/XgdePuMrODEM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781626807; c=relaxed/simple;
+	bh=0tPVsU1mWz9wSmMUc82YdrO1HTQND1o57hQQsAs+9dA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=kxjQ1Im5CvJkxSmbnhxWDQdNKccdKo6WbSbS7EblCnWnoaLtS3SAOQX8Nz75WX4QZ0mk23U0z7PNx4rMu+YbrlL4WL3k8TEawpO3qh3Z7u4A0FhhRmoP1z2HuX0JDwn7qEMgPfCBOd/Ajym/DMKjdypCT6TNAeD3JRifT34UzJE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=D226Db+Y reason="signature verification failed"; arc=fail smtp.client-ip=52.101.70.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lA6q07+2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D30B11F00A3A;
-	Tue, 16 Jun 2026 16:07:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781626045;
-	bh=A6qXeT9XxkhSfASDVonIFYEzG76sxThY93rvQLvFR0g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lA6q07+2xJLK/v8OrIBxStGcP66KNC8c6KjWyLNkiLJf/nPedtW53EXjSBgCILpWV
-	 BPgGEcI7LWuvZh8ue0yovKueIU4QS/Hbw4m7fpd9/rb7TB5vkhTVo1ldeT+50ngsQL
-	 91Yc5mBwkJpNnmL9BfqFTtN8RWpYf8SKmqTuArXUr8cLmo7Fjim6n6+Gd1AaKCG6am
-	 OcXN1YWZ1MNaQv+jGxrddNLA0MJtqDyKtPjj4ERZeYikD9lXjfvsNuLjs77MzNeRmF
-	 xEuiUMCsDIC2XGcQWjdByyvKFiJObCARtTsf3CMv9qqu25NE0wEwuY/w9FFW3uCVdZ
-	 TgxQrJyKrxl0w==
-Date: Tue, 16 Jun 2026 17:07:20 +0100
-From: Conor Dooley <conor@kernel.org>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
-	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add ti,ads122c14
-Message-ID: <20260616-spoon-ducky-b05e9bf7e999@spud>
-References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
- <20260615-iio-adc-ti-ads122c14-v1-1-e6bdadf7cb2b@baylibre.com>
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="D226Db+Y"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=UIA3cau9Vl1wX0bgpRO4d++C+D9lkF0X8DGkoKOFrISSIrGr2QMBFtfn7RD+4frJAWWY+e6uP3fdqke92n5NUDfy6m7+dT4eZXb5+1a552J41XYFCm9Gi2O3IIzWJ5oNoksLC/wX8pAr+4cO1ZBf0jQPXf6i4VXoBhtx64PCrXO5Ud4ytTzKnavf8vTSpXf2m/SvLRZAV+8tuPbZuDlwzrwQqKUlKnainEaepA3WTxsGE96wZ+LlkSnBfk21z10YqVOSzkpy3KwjrcdvgpuhOiVBMOdhbvlEXe9sysl5pJEV1SIZAVqrP36nyDICgBBOJDa/jl50qoqLMIy1Ivd0vg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2jL8SScgggZZDP8fe2pvH0oxteJaNYGAZGn22FZFSU4=;
+ b=d38O2iDPXzMJYqoPqY4mu5RR7t1OTdUkzx6A8+/noU/WMnwIIcvP77VBDMnmFv1a2tRq7Qtn2R6gtON9ZuT5ram4l3i+vPMyKkGBz0+7Fg+2NbmDhc7Q/C1g47e5XfkiFPeK6NAkss8ojI5C5fWbF9w4re9rXXUrB42UX5dTuGQJCr4Grb17m82AsYMJC27qG8DLwFDuiiB1KstNYfawU6WFzNJlHPu6wr7FoVjoxxL+uMcLulBLxzmZkSbK1Ts9Ns+Ae//qJPD3juUQmABisqmHkljqeNUZPJVv6GL78O6LXjirr99TQexHukLjbNYKJRx4kKDrdNxXJ/iBXxoTcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2jL8SScgggZZDP8fe2pvH0oxteJaNYGAZGn22FZFSU4=;
+ b=D226Db+YSaHm3Cvi89bO4ttjuQreIiIC+I3Vid9Ljbm9Bb4RlWAtYb8y2vm7W9i+Zy4BBkh+jfoNhumEs5zkCLX1Wvyi21i4e3pQMdro9C7fxMkSxcB5WSXLd5PJFVhjac6ud42cI+mCz4FYZAGVCc8Ju1a+bnp4+LenGAhMgk+9JTeazFQHHIaiU/LWVbv2T6J6iRTs0ErHJKGe3RQdfYVG+lQ4IV+fL8biZ2FzD5cyqmEDnPVANx1fWu59K3TkRC4oHRpdnfFU1bO4fVo2ik+hH3fbN3vSZ779B2IoLgGkO58E42nqQfx1mCKYPdS54xePp9S6o+NVQ/d1HgmULQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by GV1PR04MB10773.eurprd04.prod.outlook.com (2603:10a6:150:202::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Tue, 16 Jun
+ 2026 16:20:01 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0113.015; Tue, 16 Jun 2026
+ 16:20:01 +0000
+Date: Tue, 16 Jun 2026 11:19:51 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: nuno.sa@analog.com
+Cc: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 1/3] dmaengine: Support address bus widths of 32
+ bytes and above
+Message-ID: <ajF3p3Vu_pOx9z_V@SMW015318>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+ <20260616-dmaengine-support-wider-dma-masks-v1-1-da23a8dcb756@analog.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260616-dmaengine-support-wider-dma-masks-v1-1-da23a8dcb756@analog.com>
+X-ClientProxiedBy: PH8PR02CA0033.namprd02.prod.outlook.com
+ (2603:10b6:510:2da::6) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="HSGwlUuCraZwW8tT"
-Content-Disposition: inline
-In-Reply-To: <20260615-iio-adc-ti-ads122c14-v1-1-e6bdadf7cb2b@baylibre.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|GV1PR04MB10773:EE_
+X-MS-Office365-Filtering-Correlation-Id: c913b59c-ec09-4bd9-21ab-08decbc31d63
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|19092799006|376014|23010399003|1800799024|56012099006|4143699003|11063799006|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	iOSatcJ6P10gR4Mc4bYfI+P01G/ZGitK7ad4EClAgLc0aWouaC7W24iepyDE4z9SyfdGGHccGuBDOtFcZEeaoC6LC72KHYUTD8LTpGpHIWExqu56gehbk3SFZKhP7KOtux8hdwS0JfcAaSLHSko8PriHi3A8y9dp/rAwijZXMnFxlarIPy5BdIqhxWnR/v3Oqr9nZB7IpD+NfEZEukUr7vNlfXgrVIh4+msFJ2GYeXPMmyPNcEJCwUKbnj1c10BWWZ7M4adgTeDK5G9VOpJeJy+eJz715pmq3nEe0spjAFNu5Y7R1VsuCVCcv3JR6htJCCzBtOIXlLl9tLkyNCiJK0EGyN1uuF5cvVpqe6OYwf11A+QS0FJEvEqihL7/m+QAliqbOd2j6Q8vYZKHBwfThmkLU1wYjhzRPf9UjEFE3amjJORJXcy9x3yPHUKD+QsHPn9n0GDf6feNbRmkftOONTeODFvD9hfIpGNcxgAcO6W3MvRdDlqnWuK+zSODbSy0feH2Be03XmkqOh0pr58uSG5hml+VXgcDHMyGzt0c1WfRlJJs0NZF29O1BN4z56LevPqiuAbMVbhN8xcdCIS15odEbnRb1O8HWW2j+oCLH5VyKqIDfc+VgGlF2uv7egKbVSx9kLuVgnjBWKVfZ/aABYYkF+P5PXzNHRP1w/wCnGb25ZNtHL5gTAT30yCFP4Du
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(19092799006)(376014)(23010399003)(1800799024)(56012099006)(4143699003)(11063799006)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?Eyu5QWhuAW3rzXdV2Fv+Fhy4dAXMoTZece7kKxgX3Lc5WX31RSF8eHddDW?=
+ =?iso-8859-1?Q?/hd8Om1DWtWWMU5mfwQZNNjHEcQLuaXd+b93PFMKI4nLKW3xtGcIlgu9pk?=
+ =?iso-8859-1?Q?BmTYZPGGeKzHPSIrPAd0/sXPHGIBxy5/aNHHPkW4ITg+KrjwZ01HNyOU+N?=
+ =?iso-8859-1?Q?60TOdBkBFAG8xumYUUMbngPewmTz87JDAPEBjZzoV5r94DQ6t47nnz97k+?=
+ =?iso-8859-1?Q?3FXC1rX1VSqitIMtlTFp/vwYetv8j6fs5nMCsvbEEIEWP5MfaxWoD4fboo?=
+ =?iso-8859-1?Q?40jCfCryPdB/y0lZEGnSRadrYka61EMMYp9k9kzGk8kqa0RfkdJ4jK9zS0?=
+ =?iso-8859-1?Q?EFAXlNp2FdD8wNYEwxDwV2ntyTOqTce0tZiauC1aW72Jpv58c2rKH3nkyK?=
+ =?iso-8859-1?Q?G90MS67KkiwKEgKVB2SbFQy9NWFpZg1sDGkq2GMeCkzhxiLfWKgJQZcnCZ?=
+ =?iso-8859-1?Q?O/HnmzQsfl6UCMcHO4L8BNwuXWF+YP7PJ4Hik9mTSLLu4+vSOtr1Hk4M1a?=
+ =?iso-8859-1?Q?96XTjS8POBUBHVwdJeiz6gYjMNDcLgAkO6bvnKuaQ1jLM3uSc2I09xOVW6?=
+ =?iso-8859-1?Q?4+qiHo8dWMnSvcKAsyTGxfc015wul2Q//sJVN5Gc8VHXQtia784Yuoz25U?=
+ =?iso-8859-1?Q?b/l8NzncFfVc6d1CUh6H/3I7mkkPhR5iZiPG/hAixBZjzA60xTTFBBkHHX?=
+ =?iso-8859-1?Q?mAX7M0+eot1Zr04XsnA+7/+hGnvY1yOkeLIPqemvF0I5q6aeOmFqQaExbC?=
+ =?iso-8859-1?Q?19bK1TPtwmYAKY7PRPIiWzMC9up9CqgKk9mNJ9nS7dUwE8hnP+z0HRH37w?=
+ =?iso-8859-1?Q?94QA01i+cda8nDkqHs6My9ukTV1GtlP+lx0G/spbCjhF3FADetA5BF6eY0?=
+ =?iso-8859-1?Q?VtgSAwVGC15Js/T09JM9YQEAbKUk9qHIfG6z1c4UN/YMRakfbbpSTYVGAw?=
+ =?iso-8859-1?Q?lAXoLOgyYxpCqoNJJ1UzY6u/KqyUm54VkqY7Bu4TXNOND5MTVZyQLZGYtz?=
+ =?iso-8859-1?Q?ypaXTubYn0j50wzvvmSOne3PtiHHBK/X5TjN4ev9i54NVGTt8JHwifROeJ?=
+ =?iso-8859-1?Q?Jy+f0u9SbFDlUwr3l5QJ/A5ukX0+P7BnrHa9jdd1ksZy2WS4cBkTQ0lznQ?=
+ =?iso-8859-1?Q?txW4wbziMykmw8/Rgg9G16QINY+uKW9vxodzea/+ZKVMWM9sTCb+y1GFfc?=
+ =?iso-8859-1?Q?O8tcZ2noYxZI2TCJVz4gLfq9SKa0suAfr76PPAsnUVrjRkbqlg7VljpoM2?=
+ =?iso-8859-1?Q?JE/XVSt6YMiO0hPaE6PNZ64DQZMNSfmuZyJUCcCgcqZBm1rGlyQ7MLzuYg?=
+ =?iso-8859-1?Q?gZnEOSjPitz5oDhTBGQ3lpebz62rqN77mXGRaoseAQOnKwZX38jQiL5WB2?=
+ =?iso-8859-1?Q?tsbnpfvhuhrOBY1nE4rF4p02LVXaHE3j7FrdxkjYVgNSI2KpESW6JbIb18?=
+ =?iso-8859-1?Q?qat2QYhkFwL6O+699Nef7w31XVgcM2JixUD654Fp0A103p/N2WkDAoGq5e?=
+ =?iso-8859-1?Q?v3UlObrcatdoSiwQ8Nt1on/wWVHzYE8Tb1QHGUA0c3HVdS2f5xWPgGOEfB?=
+ =?iso-8859-1?Q?SH1fVY0V4I7g10tnVfkc6KzR6QTJvjYwcroDCFE3gQQpA6JClVcGzD23wA?=
+ =?iso-8859-1?Q?d6GHaBK21cOv6eJb9/ek4qMbUyofhB4ii0U8owimGZrSEITcD0ktjJNPAq?=
+ =?iso-8859-1?Q?Xr21Hxbrhr1Su5IZbfhM0DuMMgAPDkDZNPW0GUcgH6NkgI+zRSQcCRKvW2?=
+ =?iso-8859-1?Q?njyw8ZeTXJ32fvcmiUphLysXOnnmhittV3jaVBjMzOEJJ0pyMoiYlxAMC/?=
+ =?iso-8859-1?Q?eeKvITTh23fEjVaNb+hkT3bExOKGbnXyOSUQXLgzJ85ZDZgJOEzd?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c913b59c-ec09-4bd9-21ab-08decbc31d63
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2026 16:20:00.9289
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: trX9Oe+EP7H2N4QEImB+8Bqdd8iZ1X89qo1cmKRJZ8AaP0+VgwrFpaktDC4C2FPGdEC2LX4Faa/zWbzJKSTLkW1JhcjCYF/kEn6Kli3rBpkP/BOobRHEHC1OA9DUG1a0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB10773
 
+On Tue, Jun 16, 2026 at 04:40:52PM +0100, Nuno Sá via B4 Relay wrote:
+> [You don't often get email from devnull+nuno.sa.analog.com@kernel.org. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>
+> From: Nuno Sá <nuno.sa@analog.com>
+>
+> The src_addr_widths and dst_addr_widths capability masks encode each
+> supported width as a bit whose position equals the corresponding
+> enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets
+> bit 4). As these masks are plain u32, widths of 32 bytes and above
+> (DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
+> be represented at all.
 
---HSGwlUuCraZwW8tT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is problem, which should be fixed.
 
-On Mon, Jun 15, 2026 at 04:59:59PM -0500, David Lechner (TI) wrote:
-> Add new bindings for ti,ads122c14 and similar devices.
->=20
-> This is an ADC that is primarily intended for use with temperature
-> sensors. There are a few unusual properties because of this. In
-> particular, the reference voltage source and current output requirements
-> can be different for each measurement, so these are included in the
-> channel bindings.
->=20
-> The REFP/REFN reference voltage is usually just connected to a resistor
-> that is being driven by the ADC's current outputs, so there is special
-> property for this case rather than requiring a regulator to be defined
-> to represent that.
->=20
-> ti,vref-source is reused from ti,tlv320adcx140.yaml (otherwise might
-> have preferred an enum of strings).
->=20
-> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> ---
->  .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 224 +++++++++++++++=
-++++++
->  MAINTAINERS                                        |   7 +
->  include/dt-bindings/iio/adc/ti,ads112c14.h         |  11 +
->  3 files changed, 242 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml =
-b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-> new file mode 100644
-> index 000000000000..dc7f37cad772
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-> @@ -0,0 +1,224 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c14.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments' ADS112C14 and similar ADC chips
-> +
-> +description: |
-> +  Supports the following Texas Instruments' ADC chips:
-> +  - ADS112C14 (16-bit)
-> +  - ADS122C14 (24-bit)
-> +
-> +  https://www.ti.com/lit/ds/symlink/ads122c14.pdf
-> +
-> +  These chips are primarily designed for use with temperature sensors su=
-ch as
-> +  RTDs and thermocouples. The channel bindings reflect this in that each=
- channel
-> +  represents the conditions required to make a measurement rather than s=
-trictly
-> +  just the physical input channels.
-> +
-> +maintainers:
-> +  - David Lechner <dlechner@baylibre.com>
-> +
-> +unevaluatedProperties: false
+>
+> Introduce bitmap-based masks that span the full enum range. To allow
+> controllers and consumers to be converted incrementally, the legacy
+> u32 fields are kept alongside the new bitmaps: producers populate the
+> bitmap (mirroring the low 32 bits back into the legacy field) and
+> dma_get_slave_caps() folds a legacy-only producer's u32 into the
+> returned bitmap.
+>
+> Add dma_set_{src,dst}_addr_mask() for producers and
+> dma_slave_caps_get_{src,dst}_width_min() for consumers so that, once
+> every user is converted, the legacy u32 fields can be dropped and the
+> bitmaps renamed without further churn.
 
-Weird positioning of this.
+Good mirgration plan.
 
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,ads112c14
-> +      - ti,ads122c14
-> +
-> +  reg:
-> +    items:
-> +      - minimum: 0x40
-> +        maximum: 0x47
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Optional external clock connected to GPIO3 pin.
-> +
-> +  avdd-supply: true
-> +  dvdd-supply: true
-> +
-> +  refp-supply: true
-> +  refn-supply: true
-> +
-> +  refp-refn-resistor-ohms:
-
-Missing prefix here and elsewhere.
-
-> +    description:
-> +      The resistance of the external resistor between REFP and REFN when=
- using
-> +      resistor bridge driven by current outputs for RTD measurements.
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    items:
-> +      - description: FAULT interrupt (GPIO2 pin)
-> +      - description: DRDY interrupt (GPIO3 pin)
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 2
-> +    items:
-> +      enum: [fault, drdy]
-> +
-> +  gpio-controller: true
-> +  '#gpio-cells':
-> +    const: 2
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  ^channel@[0-7]$:
-> +    $ref: adc.yaml
-> +
-> +    unevaluatedProperties: false
-> +
-> +    properties:
-> +      reg:
-> +        maximum: 16 # arbitrary limit, channel@ can be any combination o=
-f AIN0-AIN7
-> +
-> +      single-channel:
-> +        maximum: 7
-> +
-> +      diff-channels:
-> +        items:
-> +          maximum: 7
-> +
-> +      bipolar:
-> +        description:
-> +          Set this flag if the differential input can be negative.
-> +
-> +      excitation-channels:
-
-(here)
-
-> +        description: AINx pins used as current output.
-> +        $ref: /schemas/types.yaml#/definitions/uint32-array
-> +        minItems: 1
-> +        maxItems: 2
-> +        items:
-> +          maximum: 7
-> +
-> +      excitation-current-microamp:
-
-(here)
-
-> +        description: The current output of the excitation channels in mi=
-croamps.
-> +        minimum: 1
-> +        maximum: 1000
-> +
-> +      current-chopping:
-
-(and here)
-
-> +        $ref: /schemas/types.yaml#/definitions/flag
-> +        description:
-> +          If provided, the two excitation channels are to be used with c=
-urrent
-> +          chopping enabled.
-> +
-> +      ti,vref-source:
-> +        description: |
-> +          Indicates the source for the reference voltage for this channe=
-l.
-> +          0 - Internal 2.5V reference
-> +          1 - Internal 1.25V reference
-> +          2 - External reference (REFP-REFN)
-> +          3 - AVDD as reference
-
-My usual complaint here about things you have to make macros for, could
-these just be strings from the get-go?
-
-> +
-> +          For convenience, macros for these values are available in
-> +          dt-bindings/iio/adc/ti,ads112c14.h.
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        maximum: 3
-> +        default: 0
-> +
-> +    dependencies:
-> +      excitation-channels: [ excitation-current-microamp ]
-> +      excitation-current-microamp: [ excitation-channels ]
-> +      current-chopping: [ excitation-channels ]
-> +
-> +    oneOf:
-> +      - required: [ single-channel ]
-> +      - required: [ diff-channels ]
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - avdd-supply
-> +  - dvdd-supply
-> +
-> +dependencies:
-> +  refn-supply: [ refp-supply ]
-> +
-> +allOf:
-> +  - oneOf:
-
-"allOf: - oneOf:" is equivalent to just writing "oneOf:"
-
-pw-bot: changes-requested
-
-Thanks,
-Conor.
-
-
-> +      - required: [ refp-supply ]
-> +      - required: [ refp-refn-resistor-ohms ]
-> +      - properties:
-> +          refp-supply: false
-> +          refn-supply: false
-> +          refp-refn-resistor-ohms: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/iio/adc/ti,ads112c14.h>
-> +
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        adc@40 {
-> +            compatible =3D "ti,ads112c14";
-> +            reg =3D <0x40>;
-> +
-> +            avdd-supply =3D <&avdd>;
-> +            dvdd-supply =3D <&dvdd>;
-> +
-> +            /* 3-Wire RTD: Two IDACs, One Measurement (AIN1-AIN2) */
-> +
-> +            refp-refn-resistor-ohms =3D <500>;
-> +
-> +            #address-cells =3D <1>;
-> +            #size-cells =3D <0>;
-> +
-> +            channel@0 {
-> +              reg =3D <0>;
-> +              diff-channels =3D <1>, <2>;
-> +              excitation-channels =3D <0>, <3>;
-> +              excitation-current-microamp =3D <500>;
-> +              current-chopping;
-> +              ti,vref-source =3D <ADS112C14_VREF_SOURCE_EXTERNAL>;
-> +              label =3D "rtd";
-> +            };
-> +        };
-> +    };
-> +  - |
-> +    #include <dt-bindings/iio/adc/ti,ads112c14.h>
-> +
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        adc@40 {
-> +            compatible =3D "ti,ads112c14";
-> +            reg =3D <0x40>;
-> +
-> +            avdd-supply =3D <&avdd>;
-> +            dvdd-supply =3D <&dvdd>;
-> +
-> +            /* Resistive Bridge Measurement With a Thermistor for Temper=
-ature Compensation*/
-> +
-> +            refp-supply =3D <&avdd>;
-> +
-> +            #address-cells =3D <1>;
-> +            #size-cells =3D <0>;
-> +
-> +            channel@0 {
-> +              reg =3D <0>;
-> +              diff-channels =3D <6>, <7>;
-> +              bipolar;
-> +              ti,vref-source =3D <ADS112C14_VREF_SOURCE_EXTERNAL>;
-> +              label =3D "bridge";
-> +            };
-> +
-> +            channel@1 {
-> +              reg =3D <1>;
-> +              diff-channels =3D <1>, <2>;
-> +              ti,vref-source =3D <ADS112C14_VREF_SOURCE_INTERNAL_2_5V>;
-> +              label =3D "thermistor";
-> +            };
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f1caa6e5198b..9ce7c61b0c14 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -26911,6 +26911,13 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/adc/ti,ads1119.yaml
->  F:	drivers/iio/adc/ti-ads1119.c
-> =20
-> +TI ADS112C14 ADC DRIVER
-> +M:	David Lechner <dlechner@baylibre.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-> +F:	include/dt-bindings/iio/adc/ti,ads112c14.h
-> +
->  TI ADS1018 ADC DRIVER
->  M:	Kurt Borja <kuurtb@gmail.com>
->  L:	linux-iio@vger.kernel.org
-> diff --git a/include/dt-bindings/iio/adc/ti,ads112c14.h b/include/dt-bind=
-ings/iio/adc/ti,ads112c14.h
-> new file mode 100644
-> index 000000000000..96906642fe41
-> --- /dev/null
-> +++ b/include/dt-bindings/iio/adc/ti,ads112c14.h
-> @@ -0,0 +1,11 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +
-> +#ifndef _DT_BINDINGS_TI_ADS112C14_H
-> +#define _DT_BINDINGS_TI_ADS112C14_H
-> +
-> +#define ADS112C14_VREF_SOURCE_INTERNAL_2_5V	0
-> +#define ADS112C14_VREF_SOURCE_INTERNAL_1_25V	1
-> +#define ADS112C14_VREF_SOURCE_EXTERNAL		2
-> +#define ADS112C14_VREF_SOURCE_AVDD		3
-> +
-> +#endif /* _DT_BINDINGS_TI_ADS112C14_H */
->=20
-> --=20
-> 2.43.0
->=20
-
---HSGwlUuCraZwW8tT
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajF0uAAKCRB4tDGHoIJi
-0mcJAP44DrE0LNcsX+Iafys5e3uy5YT7UIkD0S12BY0qT9TBKQEAqf1acULQmuGU
-ChznUhI4oo46RSs451RW9ZuV9MoAYgI=
-=/Zhv
------END PGP SIGNATURE-----
-
---HSGwlUuCraZwW8tT--
+Frank
