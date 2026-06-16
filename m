@@ -1,233 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE082F7EE5;
-	Tue, 16 Jun 2026 11:16:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFD162D8DD0;
+	Tue, 16 Jun 2026 11:21:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781608608; cv=none; b=bjLAu6Ryst+3P3ji1tJEdh1FM1rJjpjUJjnD+j/GzsLhJ03Iy4tOhdyRnabnMIqis3ynZ73i24zc2694LSCNbZOkwDZyoURWF6GbsV+6bjnNe6sEixa4qIqrtwzjd+W6S4uaSuFLOTclixOfRcsURpyvMxjdXnjVYdGXozyxl+E=
+	t=1781608861; cv=none; b=G8/hVWwqALUszYA7ZsoF/VOUK8eTSKGc539N0cBussNxZF/QXUON0Oz+PvuOzjJs+dWYbrziqlu7qsOi/X2odmb0oCLM2HAHi5XSR9IPDDjq0i/Jo5s26525zuYzTCynbxVQgeJQKTXxNnL9nmqqSxHSXVazYq76M5t3QIl37sI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781608608; c=relaxed/simple;
-	bh=oDxOtVrOzDh6MvwAYljgCU2APhYTV/mMaD2dgqtmdiY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pKDw7gw1Hz7zqhyH+NqQxXFR+0dyf8tPhKrxjPThQwuKVUt0EvpsPe+G1MWTzC+H6nqLAC9FC30DZngcMgljHpTmJQLyuT4ypKP3ticlDHSrczeU+2MzqutaxTQFWIumx/++3qa+JBmEuKuCSdLj8nFtGJDYyNbiVBeOMp4x0+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZF1oxy3x; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1781608861; c=relaxed/simple;
+	bh=X8T9Tmlqf3XGCnobtfauvJdva1tl6CNngz7OPS+hfgw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Kls6OLyZ9TbAQnpFmAhW1OAH8vFfnYl+l5mujJ7QILcPTKJVVUFiW50lcqFakqK1sRJCPCA2N6aIocy1alGHIMid+3IxhQyl9VHIh/Jc56GEvAZqRxQAw0MEYMtPhxXAhyCJcqQrd38oh1mvt5SBlL/AOUcdH+DM2pbQvaCuIY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=li8jNUFE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZF1oxy3x"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781608606; x=1813144606;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oDxOtVrOzDh6MvwAYljgCU2APhYTV/mMaD2dgqtmdiY=;
-  b=ZF1oxy3xjWCUVwRbuWEfOfUoaHveC/GaU5Bum4cEHT1bw/Gop7FfT6mr
-   0Vn8dj6+VO4FXCtm3flz44Qd+lNYv30cEOJ3hhnsWJQEAPf+cGuZGStv6
-   Zgpv2eUgwhEOAcr5jWNG8C6tjc1n8cV+cc7VpTtdMwm452GmQXDYOh6CM
-   vaJ0lpNug+1lSJt5rNNLv1dfMMzbDcK8dNIEVyDN13p+BtfqJZ1c6VQX8
-   B9/0RX5e2xUxfHX1MLJ7uUBFvbciw2otMw13bYXEmU1MnxT8PQ++P8wk2
-   +W46eSr6IrAR6FiP+QklKcLfJbHi01z71ts3aXELes/Ygc0mOywbdG+6w
-   g==;
-X-CSE-ConnectionGUID: F+nZxR1VS3mk6+NRohnxBg==
-X-CSE-MsgGUID: TuObY2fpTXCcrXGY0oO17w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="86272005"
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="86272005"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 04:16:37 -0700
-X-CSE-ConnectionGUID: Ym9Sqpc4QZyxM79Wc1Oerg==
-X-CSE-MsgGUID: 6bl6RVMkTEi8oTpoqraQ4g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
-   d="scan'208";a="247617556"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 04:16:34 -0700
-Date: Tue, 16 Jun 2026 14:16:31 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v5 4/6] iio: osf: add stream parser
-Message-ID: <ajEwj390mBxc9tfs@ashevche-desk.local>
-References: <20260616072242.3942-1-kimjinseob88@gmail.com>
- <20260616072242.3942-5-kimjinseob88@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="li8jNUFE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F3A1F000E9;
+	Tue, 16 Jun 2026 11:20:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781608860;
+	bh=c9rCYmQcNWYh6GYSmzGVxgSn2ykLJf9JNCx9twaHgz0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=li8jNUFEyjHLFckFDMpqqZccDysxcK+C+3L1GwvUjrW9DniqCp8k0PyQmA9t7HDso
+	 zBjwE9/q8AnJykykOUXIL3trcP6UO0SnpL2bvlqvX0PpYZdxO/8EtYvExKDoNWz1Op
+	 FzMIZmHISOQF0deJY7gzA+skvIegQO+v/WKMYZhMR/3Ydt0JXVyJzZGaEwyLEDwlD7
+	 YQyRYpc45gS8PhPOldpCplHY64l5imN+En43/R318yeHEyZDHC6uC5CqA+m7/j/7hM
+	 g6oU+32dpVw+42e0mCsXP71PS6LBHl6jz0MbnRIsIXAXFY6elxQSN+Zl/wzFPgNxyM
+	 zXQ/QGaRSZnIA==
+Date: Tue, 16 Jun 2026 12:20:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, kernel test
+ robot <lkp@intel.com>
+Subject: Re: [PATCH] lib: math: test_mul_u64_u64_div_u64: define
+ div64_s64_rem
+Message-ID: <20260616122051.462c48aa@jic23-huawei>
+In-Reply-To: <ajD9wGjqFo9UHGed@ashevche-desk.local>
+References: <20260615-test-mul-div-u64-fixup-v1-1-ea186d825745@analog.com>
+	<ajD9wGjqFo9UHGed@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260616072242.3942-5-kimjinseob88@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 16, 2026 at 04:22:40PM +0900, Jinseob Kim wrote:
-> Add a byte-stream parser that resynchronizes on OSF frame magic, validates
-> complete frames, and forwards decoded frames to the OSF core.
+On Tue, 16 Jun 2026 10:39:44 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-...
+> On Mon, Jun 15, 2026 at 04:51:15PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> > 
+> > Define div64_s64_rem to avoid multiple definition or exports.  
+> 
+> Thanks for fixing this.
+> 
+> > ---
+> > Recently added div64_s64_rem() is causing issues in a the
+> > test build. This could be a fixup patch amended to:
+> > 
+> > https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=adebf76278116a06166d0b5f8b4112ad5dd6389a  
+> 
+> I agree with this. Since the testing branch is subject to rebase on top of
+> -rc1, this can be also injected before or during that time.
+> 
+Smashed into original patch as a fixup.
 
-> +static const u8 osf_stream_magic[OSF_STREAM_MAGIC_LEN] = {
-> +	'O', 'S', 'F', '0',
-> +};
+Thanks,
 
-Why?! You have already a definition, use it instead.
-
-...
-
-> +static size_t osf_stream_discard_to_magic(struct osf_stream *stream)
-> +{
-> +	size_t old_len = stream->len;
-> +	size_t match_len;
-
-> +	size_t i;
-> +
-> +	for (i = 0; i < stream->len; i++) {
-
-In current form it's as simple as
-
-	for (size_t i = 0; i < stream->len; i++) {
-
-> +		match_len = stream->len - i;
-> +		if (match_len > OSF_STREAM_MAGIC_LEN)
-> +			match_len = OSF_STREAM_MAGIC_LEN;
-> +
-> +		if (osf_stream_magic_match(stream->buf + i, match_len)) {
-> +			if (i)
-> +				osf_stream_discard(stream, i);
-> +			return i;
-> +		}
-> +	}
-> +
-> +	stream->len = 0;
-> +	return old_len;
-> +}
-
-...
-
-> +static int osf_stream_process(struct osf_stream *stream)
-> +{
-> +	size_t discarded;
-> +	size_t frame_len;
-> +	u32 payload_len;
-> +	int first_err = 0;
-> +	int ret;
-> +
-> +	while (stream->len) {
-> +		discarded = osf_stream_discard_to_magic(stream);
-> +		if (discarded) {
-> +			stream->stats.bad_magic_resyncs++;
-> +			stream->stats.dropped_bytes += discarded;
-> +			if (!first_err)
-> +				first_err = -EPROTO;
-> +		}
-> +
-> +		if (!stream->len)
-> +			break;
-> +
-> +		if (stream->len < OSF_FRAME_HEADER_LEN)
-> +			break;
-
-> +		if (get_unaligned_le16(stream->buf + 6) !=
-> +		    OSF_FRAME_HEADER_LEN) {
-
-Make it a single line for readability.
-
-> +			stream->stats.dropped_bytes++;
-> +			osf_stream_drop_invalid_head(stream);
-> +			if (!first_err)
-> +				first_err = -EPROTO;
-> +			continue;
-> +		}
-> +
-> +		payload_len = get_unaligned_le32(stream->buf + 10);
-> +		if (payload_len > OSF_STREAM_MAX_PAYLOAD_LEN) {
-> +			stream->stats.dropped_bytes++;
-> +			osf_stream_drop_invalid_head(stream);
-> +			if (!first_err)
-> +				first_err = -EMSGSIZE;
-> +			continue;
-> +		}
-> +
-> +		frame_len = OSF_FRAME_HEADER_LEN + payload_len + OSF_FRAME_CRC_LEN;
-> +		if (stream->len < frame_len)
-> +			break;
-> +
-> +		ret = osf_core_receive_frame(stream->osf, stream->buf, frame_len);
-> +		if (ret) {
-> +			if (ret == -EBADMSG) {
-> +				stream->stats.bad_crc_frames++;
-> +				stream->stats.dropped_bytes++;
-> +				osf_stream_drop_invalid_head(stream);
-> +			} else {
-> +				osf_stream_discard(stream, frame_len);
-> +			}
-> +			if (!first_err)
-> +				first_err = ret;
-> +			continue;
-> +		}
-> +
-> +		stream->stats.valid_frames++;
-> +		osf_stream_discard(stream, frame_len);
-> +	}
-
-> +	return first_err;
-
-Why do we continue on the error and then still return an error?
-Same Q for the receive part.
-
-> +}
-
-...
-
-> +void osf_stream_init(struct osf_stream *stream, struct osf_device *osf)
-> +{
-> +	if (!stream)
-> +		return;
-> +
-> +	stream->osf = osf;
-> +	stream->len = 0;
-> +	memset(&stream->stats, 0, sizeof(stream->stats));
-> +}
-> +
-> +void osf_stream_reset(struct osf_stream *stream)
-> +{
-> +	if (stream) {
-> +		stream->len = 0;
-> +		memset(&stream->stats, 0, sizeof(stream->stats));
-> +	}
-
-As per above
-
-	if (!stream)
-		return;
-
-> +}
-
-...
-
-> +struct osf_stream_stats {
-> +	u64 valid_frames;
-> +	u64 bad_magic_resyncs;
-> +	u64 bad_crc_frames;
-> +	u64 partial_frames;
-> +	u64 dropped_bytes;
-> +};
-
-Don't you want to use linux/u64_stats_sync.h APIs?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Jonathan
 
 
