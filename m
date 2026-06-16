@@ -1,341 +1,509 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C55A421A02;
-	Tue, 16 Jun 2026 08:21:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C60DE29346F;
+	Tue, 16 Jun 2026 08:36:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781598073; cv=none; b=BkmWbEKHNN32HISpw0xl6zL5JIM3DxFPLUPQq88/QrLmMV88SmnhKNKvUzl2Ts3ZjcMP3rL3xMxas0yULYjwWa+SFq24u1m9cqS6CeraAYpyX5Gnh8DqutgcUUxkPA1IT+eEOuXcU4CcvSiKRov1n0jcMbGdnwyDIb6Un0MouXw=
+	t=1781599013; cv=none; b=rYrT0uf+l7Z0VL7V+Sw0e50XCtZjo7iBxwS78ZQ4KsxixnZ/P5Wkis2pLWsa0ZKuZ9zr41EYgJxNIbP1nLvllvr7VsKC5pqXaU6VqhKGmHDZgusR4hPvsDXvGUhy3umBXW8+QW/Y7a2dmTcpunw4BQr+0E7Fo4DnWw8Kxdp6OLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781598073; c=relaxed/simple;
-	bh=5+tApaeaHYh3LMbH5ZVDkofgmH74zipmMX/tube63jQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tRoHy/8kpt8hBuANQ/51HyDwlaaYfTyakgQuUwGoEP5Uf9x+VoPSi/RnZePYq9bnhfNrAAvA+MymI+iGJkaeODfOnsZSYFh6hHeBM2icAD9JcebY5mTyzQUDStigMMbRJIq0qU3gpFFLuU+sAWUjIHFQZbCSt+A4f55KkEvByaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p6wsSnGH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1781599013; c=relaxed/simple;
+	bh=rCS4bzSYozHmyxajgR4yfN2ZlRwalgccsJhMLts4DWE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kazTNywwHhrA3s55kqiTOozAZ7egjIA7pIlz+gHoQn/uLd/QN3GnIkZPzcKGiRjw2N6fWPcCXsKOO3q9GBqFiWqUqeZ8cjn4CTjKL6s9/8E9xdI0DyPRwfw+105O68EW5mojZxOhlBUO+n0MwfsxN7GBMT7zMJFBlWsQb0GcsQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gyP1R3iR; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p6wsSnGH"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 24FB6C4AF48;
-	Tue, 16 Jun 2026 08:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1781598073;
-	bh=5+tApaeaHYh3LMbH5ZVDkofgmH74zipmMX/tube63jQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=p6wsSnGHYHP/NeRkMDb1SiQn/q/d1IpOwgkV66YcRtDeMSez9f5zDHMN+t0WUcV4q
-	 +e+k3pWkvhPEAvCWBN/3QJUqVRvX9cRU5k/DhWAwRI0Mh8DgGbuTMjnkoJZd9G9rZs
-	 6kvjWjnJwOodIq/OsNOeeQSYrLnD40NEX7TCZxiwpmqTldJ8eQYDxj1pw4OZRt4Esq
-	 n8Km4YnXZPJgeQNNd46OvHnP+LRu6KHuij4OqQN1eLsODq8iwp2KyOTZbxBgga7Lh9
-	 Muzda65HallY5ZWSTPohQasprF1dcb/eBXRVv4nN9xY/rO2MSE9kjUzjmEBKCY2Vxs
-	 CAQds5mjLUmbA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D1ECD98DA;
-	Tue, 16 Jun 2026 08:21:13 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 16 Jun 2026 09:21:18 +0100
-Subject: [PATCH v3 12/12] iio: dac: ad5686: add gain control support
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gyP1R3iR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781599011; x=1813135011;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rCS4bzSYozHmyxajgR4yfN2ZlRwalgccsJhMLts4DWE=;
+  b=gyP1R3iRXRy5GutdNqJq492X+kmgx9DvEXgSXbfUq+qpAgue9dDrwYeY
+   ERzXK0mAvdGCfBcWOyl0VfqI75cyOaHOPmtq0P5aAjxpsIQQuP0LnJ1pm
+   H+UU6IUWACxzCsAi9DLF8dheGwob0IuwRLKA8CfSEMlPsrW4+f9ZE1ijD
+   UKjJCxgRw316LPvD0slYnExSej6zwRiAriGL/Coo4KUS7+SsMvNiwXiri
+   drpKKnD+uMdwxSOzo4tmlQAeQKuEBO/QrlqZSHiUz2RynhQrwor/f18JI
+   VX+ewXjeSx6P7BRzUQk/cW1xP7VKpKm08VzAX/vXMobqCN+359Oj1cUQg
+   g==;
+X-CSE-ConnectionGUID: CFc+Ojb3RJOkwNXWOqBmQg==
+X-CSE-MsgGUID: t0Zz7JCmRmW2vKUmlk0viA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11818"; a="82462029"
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="82462029"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 01:36:49 -0700
+X-CSE-ConnectionGUID: Rgg0GD4uQ3uEEHEK8Osuvg==
+X-CSE-MsgGUID: eROkFS8YRD68BVaBFgVMeQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,208,1774335600"; 
+   d="scan'208";a="249597319"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.153])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2026 01:36:45 -0700
+Date: Tue, 16 Jun 2026 11:36:43 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: "David Lechner (TI)" <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
+	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] iio: adc: ti-ads112c14: add measurement channel
+ support
+Message-ID: <ajELGxonxsQp-Ut2@ashevche-desk.local>
+References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
+ <20260615-iio-adc-ti-ads122c14-v1-4-e6bdadf7cb2b@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260616-ad5686-new-features-v3-12-f829fb7e9262@analog.com>
-References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
-In-Reply-To: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781598070; l=9118;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CH/87HjeJOyDzyYqIaDUuWsXuTpId8ZgQlFamkbg9wA=;
- b=PVBU6RVXoKKeUm8kvP4uhUmCyLB1q7Ee6LQzZOE3OqzN/WMh4QOWIzDZcEvw/e2WCjsG8byZ1
- IhgMkdtO/SZDFja83VWwAmDQRbmDbmuuw5ITP54oxxfxim6Tqub3Mm1
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260615-iio-adc-ti-ads122c14-v1-4-e6bdadf7cb2b@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Mon, Jun 15, 2026 at 05:00:02PM -0500, David Lechner (TI) wrote:
+> Add support for parsing devicetree properties for measurement channels
+> and doing direct reads on these.
+> 
+> There are quite a lot of conditions that have to be met for each
+> measurement to be made, so quite a bit of state and algorithms are
+> required to handle it.
+> 
+> Channels are created dynamically since the number of possibilities is
+> unreasonably large.
 
-Most of the supported devices rely on a GAIN pin to control a 2x
-multiplier applied to the output voltage. Other devices, e.g. the
-single-channel ones, provides a gain control through a bit field in
-the control register. Some designs might have the GAIN pin hardwired
-to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
-being able to set "adi,range-double" if it is hardwired to VDD. The
-vref_mv field is moved down in the struct ad5686_state, so that the
-overall size increase is reduced.
+...
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 122 +++++++++++++++++++++++++++++++++++++++++++++--
- drivers/iio/dac/ad5686.h |  12 ++++-
- 2 files changed, 127 insertions(+), 7 deletions(-)
+> +struct ads112c14_measurement {
+> +	const char *label;
+> +	u32 vref_source;
+> +	u32 idac_current_uA;
+> +	u8 iadc_count;
+> +	u8 idac1_mux;
+> +	u8 idac2_mux;
+> +	bool current_chop;
+> +	bool bipolar;
+> +	u8 gain_val;
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 6ae788f665b4..c186213a46f6 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -15,10 +15,13 @@
- #include <linux/export.h>
- #include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- #include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
-@@ -41,7 +44,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5310_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5310_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
-@@ -50,7 +54,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5683_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5683_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -193,9 +198,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->vref_mv;
--		*val2 = chan->scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		if (st->double_scale) {
-+			*val = st->scale_avail[2];
-+			*val2 = st->scale_avail[3];
-+		} else {
-+			*val = st->scale_avail[0];
-+			*val2 = st->scale_avail[1];
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 	return -EINVAL;
- }
-@@ -207,6 +217,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct ad5686_state *st = iio_priv(indio_dev);
-+	bool double_scale;
-+	int ret;
- 
- 	guard(mutex)(&st->lock);
- 
-@@ -217,6 +229,84 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
- 				    chan->address, val << chan->scan_type.shift);
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
-+			double_scale = false;
-+		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
-+			double_scale = true;
-+		else
-+			return -EINVAL;
-+
-+		if (st->double_scale == double_scale)
-+			return 0; /* no change */
-+
-+		st->double_scale = double_scale;
-+		switch (st->chip_info->regmap_type) {
-+		case AD5310_REGMAP:
-+			ret = ad5310_control_sync(st);
-+			break;
-+		case AD5683_REGMAP:
-+			ret = ad5683_control_sync(st);
-+			break;
-+		case AD5686_REGMAP:
-+			if (!st->gain_gpio) {
-+				ret = -EINVAL;
-+				break;
-+			}
-+
-+			ret = gpiod_set_value_cansleep(st->gain_gpio,
-+						       st->double_scale ? 1 : 0);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+		}
-+		if (ret)
-+			st->double_scale = !double_scale; /* revert on failure */
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	struct ad5686_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+
-+		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio) {
-+			/*
-+			 * GAIN pin is board-strapped, so only the current
-+			 * scale is available.
-+			 */
-+			*vals = st->double_scale ? &st->scale_avail[2] :
-+						   &st->scale_avail[0];
-+			*length = 2;
-+			return IIO_AVAIL_LIST;
-+		}
-+
-+		*vals = st->scale_avail;
-+		*length = ARRAY_SIZE(st->scale_avail);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -225,6 +315,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5686_info = {
- 	.read_raw = ad5686_read_raw,
- 	.write_raw = ad5686_write_raw,
-+	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
-+	.read_avail = ad5686_read_avail,
- };
- 
- static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
-@@ -246,6 +338,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
- 		.channel = chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
- 		.address = addr,				\
- 		.scan_index = chan,				\
- 		.scan_type = {					\
-@@ -472,6 +565,15 @@ const struct ad5686_chip_info ad5679r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
-+static void ad5686_init_scale_avail(struct ad5686_state *st)
-+{
-+	int realbits = st->chip_info->channels[0].scan_type.realbits;
-+	s64 tmp = 2ULL * st->vref_mv * NANO >> realbits;
-+
-+	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-+	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-+}
-+
- static irqreturn_t ad5686_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -579,6 +681,14 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
- 				     "Failed to get LDAC GPIO\n");
- 
-+	st->gain_gpio = devm_gpiod_get_optional(dev, "gain", GPIOD_OUT_LOW);
-+	if (IS_ERR(st->gain_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
-+				     "Failed to get GAIN GPIO\n");
-+
-+	st->double_scale = device_property_read_bool(dev, "adi,range-double");
-+	ad5686_init_scale_avail(st);
-+
- 	reset_control_assert(rstc);
- 	fsleep(1); /* reset pulse: comfortably bigger than the spec */
- 	reset_control_deassert(rstc);
-@@ -621,6 +731,8 @@ int ad5686_probe(struct device *dev,
- 				   st->use_internal_vref ? 0 : AD5686_REF_BIT_MSK);
- 		if (ret)
- 			return ret;
-+
-+		gpiod_set_value_cansleep(st->gain_gpio, st->double_scale ? 1 : 0);
- 		break;
- 	default:
- 		return -EINVAL;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 6f47493906d4..b74a641d8fa4 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -39,9 +39,11 @@
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
- 
-+#define AD5310_GAIN_BIT_MSK			BIT(7)
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5310_PD_MSK				GENMASK(10, 9)
- 
-+#define AD5683_GAIN_BIT_MSK			BIT(11)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5683_PD_MSK				GENMASK(14, 13)
- 
-@@ -124,9 +126,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-  * @ldac_gpio:		LDAC pin GPIO descriptor
-- * @vref_mv:		actual reference voltage used
-+ * @gain_gpio:		GAIN pin GPIO descriptor
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-+ * @scale_avail:	pre-calculated available scale values
-+ * @vref_mv:		actual reference voltage used
-+ * @double_scale:	flag to indicate the gain multiplier is applied
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-  * @lock:		lock to protect access to state fields, which includes
-  *			the data buffer during regmap ops
-@@ -138,9 +143,12 @@ struct ad5686_state {
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
- 	struct gpio_desc		*ldac_gpio;
--	unsigned short			vref_mv;
-+	struct gpio_desc		*gain_gpio;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
-+	int				scale_avail[4];
-+	unsigned short			vref_mv;
-+	bool				double_scale;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 	void				*bus_data;
+Hmm... Can we group u8:s for a better visual?
+
+> +	int scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
+> +};
+
+...
+
+>  struct ads112c14_data {
+>  	const struct ads112c14_chip_info *chip_info;
+>  	struct i2c_client *client;
+>  	struct regmap *regmap;
+> +	u32 avdd_uV;
+> +	u32 ext_ref_uV;
+> +	bool refp_is_avdd;
+> +	bool refn_is_gnd;
+> +	u32 ext_ref_ohms;
+> +	struct ads112c14_measurement *measurements;
+> +	u32 num_measurements;
+>  	u8 sys_mon_chan_short_gain_val;
+
+If you run `pahole` you will see a gap that can be easily avoided.
+
+>  	int sys_mon_chan_short_scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
+>  };
+
+...
+
+
+> +static int ads112c14_prepare_measurement_channel(struct ads112c14_data *data,
+> +						 const struct iio_chan_spec *chan)
+> +{
+> +	struct ads112c14_measurement *measurement = &data->measurements[chan->scan_index];
+
+> +	bool iunit = measurement->idac_current_uA > 100;
+> +	u32 idac1_val = measurement->iadc_count > 0 ?
+> +		measurement->idac_current_uA / (iunit ? 100 : 10) : 0;
+> +	u32 idac2_val = measurement->iadc_count > 1 ? idac1_val : 0;
+
+These three will look much better when decoupled from the definitions.
+
+> +	u32 refp_buf_en, refn_buf_en;
+> +	u32 ref_val, ref_sel;
+> +	int ret;
+
+	iunit = measurement->idac_current_uA > 100;
+	if (measurement->iadc_count > 0)
+		idac1_val = measurement->idac_current_uA / (iunit ? 100 : 10);
+	else
+		idac1_val = 0;
+	idac2_val = measurement->iadc_count > 1 ? idac1_val : 0;
+
+> +	ret = regmap_write(data->regmap, ADS112C14_REG_MUX_CFG,
+> +			   FIELD_PREP(ADS112C14_MUX_CFG_AINP, chan->channel) |
+> +			   FIELD_PREP(ADS112C14_MUX_CFG_AINN, chan->channel2));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(data->regmap, ADS112C14_REG_DIGITAL_CFG,
+> +				 ADS112C14_DIGITAL_CFG_CODING,
+> +				 FIELD_PREP(ADS112C14_DIGITAL_CFG_CODING,
+> +					    measurement->bipolar ? 0 : 1));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(data->regmap, ADS112C14_REG_GAIN_CFG,
+> +				 ADS112C14_GAIN_CFG_SYS_MON | ADS112C14_GAIN_CFG_GAIN,
+> +				 FIELD_PREP(ADS112C14_GAIN_CFG_SYS_MON, 0) |
+> +				 FIELD_PREP(ADS112C14_GAIN_CFG_GAIN,
+> +					    measurement->gain_val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->regmap, ADS112C14_REG_IDAC_MAG_CFG,
+> +			   FIELD_PREP(ADS112C14_IDAC_MAG_CFG_I2MAG, idac2_val) |
+> +			   FIELD_PREP(ADS112C14_IDAC_MAG_CFG_I1MAG, idac1_val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->regmap, ADS112C14_REG_IDAC_MUX_CFG,
+> +			   (iunit ? ADS112C14_IDAC_MUX_CFG_IUNIT : 0) |
+> +			   FIELD_PREP(ADS112C14_IDAC_MUX_CFG_I2MUX,
+> +				      measurement->idac2_mux) |
+> +			   FIELD_PREP(ADS112C14_IDAC_MUX_CFG_I1MUX,
+> +				      measurement->idac1_mux));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(data->regmap, ADS112C14_REG_DATA_RATE_CFG,
+> +				 ADS112C14_DATA_RATE_CFG_GC_EN,
+> +				 FIELD_PREP(ADS112C14_DATA_RATE_CFG_GC_EN,
+> +					    measurement->current_chop));
+> +	if (ret)
+> +		return ret;
+> +
+> +	refp_buf_en = !data->refp_is_avdd &&
+> +		      measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL;
+> +	refn_buf_en = !data->refn_is_gnd &&
+> +		      measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL;
+> +
+> +	ref_val = measurement->vref_source == ADS112C14_VREF_SOURCE_INTERNAL_2_5V;
+> +
+> +	switch (measurement->vref_source) {
+> +	case ADS112C14_VREF_SOURCE_AVDD:
+> +		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_AVDD;
+> +		break;
+> +	case ADS112C14_VREF_SOURCE_EXTERNAL:
+> +		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_EXTERNAL;
+> +		break;
+> +	default:
+> +		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_INTERNAL;
+> +		break;
+> +	}
+> +
+> +	return regmap_update_bits(data->regmap, ADS112C14_REG_REFERENCE_CFG,
+> +				  ADS112C14_REFERENCE_CFG_REFP_BUF_EN |
+> +				  ADS112C14_REFERENCE_CFG_REFN_BUF_EN |
+> +				  ADS112C14_REFERENCE_CFG_REF_VAL |
+> +				  ADS112C14_REFERENCE_CFG_REF_SEL,
+> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFP_BUF_EN,
+> +					     refp_buf_en) |
+> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFN_BUF_EN,
+> +					     refn_buf_en) |
+> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_VAL,
+> +					     ref_val) |
+> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_SEL,
+> +					     ref_sel));
+> +}
+
+...
+
+> -	if (chan->channel >= 100) {
+> -		ret = ads112c14_prepare_sys_mon_channel(data, chan);
+> +	if (chan->channel < 100) {
+> +		ret = ads112c14_prepare_measurement_channel(data, chan);
+>  		if (ret)
+>  			return ret;
+>  	} else {
+> -		/* Not implemented yet. */
+> -		return -EINVAL;
+> +		ret = ads112c14_prepare_sys_mon_channel(data, chan);
+> +		if (ret)
+> +			return ret;
+>  	}
+
+Why ping-ponging this? Leave the condition as is. Or start with the < 100 in
+the previous patch.
+
+...
+
+> +	if (chan->channel < 100) {
+
+For the consistency's sake keep it the similar to the above.
+
+> +		measurement = &data->measurements[chan->scan_index];
+> +		fsr_bits = data->chip_info->resolution_bits - measurement->bipolar;
+> +	} else {
+> +		/* All SYS_MON channels are using signed coding. */
+> +		fsr_bits = data->chip_info->resolution_bits - 1;
+> +	}
+
+...
+
+>  		if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT) {
+> -			int *scale_avail = data->sys_mon_chan_short_scale_available[
+> +			scale_avail = data->sys_mon_chan_short_scale_available[
+>  				data->sys_mon_chan_short_gain_val
+>  			];
+
+Oh, can we simply move the index to the temporary variable and make this look
+better?
+
+...
+
+> -		for (u32 i = 0; i < ARRAY_SIZE(data->sys_mon_chan_short_scale_available); i++) {
+> -			if (val == data->sys_mon_chan_short_scale_available[i][0] &&
+> -			    val2 == data->sys_mon_chan_short_scale_available[i][1]) {
+> -				data->sys_mon_chan_short_gain_val = i;
+> -				return 0;
+> -			}
+> +	for (u32 i = 0; i < ARRAY_SIZE(ads112c14_pga_gains_x10); i++) {
+> +		if (val == scale_avail[i][0] && val2 == scale_avail[i][1]) {
+> +			*gain_val = i;
+> +			return 0;
+>  		}
+> -		return -EINVAL;
+> -	}
+
+Can this be written in a better form initially to make less churn here?
+
+...
+
+> +	/* measurement channels */
+> +	if (chan->channel < 100) {
+> +		struct ads112c14_measurement *measurement =
+> +			&data->measurements[chan->scan_index];
+
+> +		if (!measurement->label)
+> +			return -EINVAL;
+
+Hmm... Can it be true?
+
+> +		return sysfs_emit(label, "%s\n", measurement->label);
+> +	}
+
+...
+
+> +static int ads112c14_parse_channels(struct iio_dev *indio_dev,
+> +				    bool *need_avdd_ref, bool *need_ext_ref)
+> +{
+> +	struct ads112c14_data *data = iio_priv(indio_dev);
+> +	struct device *dev = &data->client->dev;
+> +	struct iio_chan_spec *channels;
+> +	u32 pair[2];
+
+> +	int i = 0;
+
+Why signed? Also decouple assignment from definition.
+
+> +	int ret;
+> +
+> +	*need_avdd_ref = false;
+> +	*need_ext_ref = false;
+> +
+> +	data->num_measurements = device_get_named_child_node_count(dev, "channel");
+
+> +	data->measurements = devm_kcalloc(dev, data->num_measurements,
+> +					  sizeof(*data->measurements), GFP_KERNEL);
+> +	if (!data->measurements)
+> +		return -ENOMEM;
+> +
+> +	data->num_measurements += ARRAY_SIZE(ads112c14_sys_mon_channels);
+> +
+> +	channels = devm_kcalloc(dev, data->num_measurements +
+> +				ARRAY_SIZE(ads112c14_sys_mon_channels),
+
+size_add()? But here you add it twice, why?
+
+> +				sizeof(*channels), GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
+> +
+> +	device_for_each_named_child_node_scoped(dev, child, "channel") {
+> +		struct ads112c14_measurement *measurement = &data->measurements[i];
+> +		struct iio_chan_spec *spec = &channels[i];
+> +
+> +		if (!fwnode_device_is_available(child))
+> +			continue;
+> +
+> +		spec->type = IIO_VOLTAGE;
+> +		spec->indexed = 1;
+> +		spec->scan_index = i;
+> +		measurement->gain_val = 1;
+> +
+> +		fwnode_property_read_string(child, "label", &measurement->label);
+
+> +		if (fwnode_property_present(child, "single-channel")) {
+> +			ret = fwnode_property_read_u32(child, "single-channel", &spec->channel);
+> +			if (ret)
+> +				return dev_err_probe(dev, ret,
+> +						     "failed to read single-channel property\n");
+> +
+> +			if (spec->channel >= 8)
+> +				return dev_err_probe(dev, -EINVAL,
+> +						     "single-channel value must be between 0 and 7\n");
+> +		} else if (fwnode_property_present(child, "diff-channels")) {
+> +			ret = fwnode_property_read_u32_array(child, "diff-channels", pair, ARRAY_SIZE(pair));
+> +			if (ret)
+> +				return dev_err_probe(dev, ret,
+> +						     "failed to read diff-channels property\n");
+> +
+> +			if (pair[0] >= 8 || pair[1] >= 8)
+> +				return dev_err_probe(dev, -EINVAL,
+> +						     "diff-channels values must be between 0 and 7\n");
+> +
+> +			spec->channel = pair[0];
+> +			spec->channel2 = pair[1];
+> +			spec->differential = 1;
+> +		} else {
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "channel node missing channel type property\n");
+> +		}
+
+Looking how it's going to spread (I mean the above pattern), perhaps it's a time to introduce bunch of
+
+	fwnode_property_read_*_optional()
+
+and the respective device_property_read_*_optional()?
+
+Let's start from u32 case only, as it will be most used anyway.
+
+> +		if (fwnode_property_present(child, "excitation-channels")) {
+> +			ret = fwnode_property_count_u32(child, "excitation-channels");
+> +			if (ret < 0)
+> +				return dev_err_probe(dev, ret,
+> +						     "failed to read excitation-channels property\n");
+> +
+> +			if (ret < 1 || ret > 2)
+> +				return dev_err_probe(dev, -EINVAL,
+> +						     "excitation-channels property must have 1 or 2 values\n");
+> +
+> +			measurement->iadc_count = ret;
+> +			pair[1] = 0;
+> +
+> +			ret = fwnode_property_read_u32_array(child, "excitation-channels", pair, measurement->iadc_count);
+> +			if (ret)
+> +				return dev_err_probe(dev, ret,
+> +						     "failed to read excitation-channels property\n");
+> +
+> +			if (pair[0] >= 8 || pair[1] >= 8)
+> +				return dev_err_probe(dev, -EINVAL,
+> +						     "excitation-channels values must be between 0 and 7\n");
+> +
+> +			measurement->idac1_mux = pair[0];
+> +			measurement->idac2_mux = measurement->iadc_count > 1 ? pair[1] : 0;
+> +
+> +			ret = fwnode_property_read_u32(child, "excitation-current-microamp",
+> +						       &measurement->idac_current_uA);
+> +			if (ret)
+> +				return dev_err_probe(dev, ret,
+> +						     "failed to read excitation-current-microamp property\n");
+> +
+> +			measurement->current_chop = fwnode_property_read_bool(child, "current-chopping");
+> +		}
+> +
+> +		measurement->bipolar = fwnode_property_read_bool(child, "bipolar");
+> +
+> +		fwnode_property_read_u32(child, "ti,vref-source", &measurement->vref_source);
+> +		if (measurement->vref_source > ADS112C14_VREF_SOURCE_AVDD)
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "invalid vref-source value\n");
+> +
+> +		if (measurement->vref_source == ADS112C14_VREF_SOURCE_AVDD)
+> +			*need_avdd_ref = true;
+> +		if (measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL)
+> +			*need_ext_ref = true;
+> +
+> +		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE);
+> +		spec->info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE);
+> +
+> +		i++;
+> +	}
+> +
+> +	memcpy(channels + i, ads112c14_sys_mon_channels, sizeof(ads112c14_sys_mon_channels));
+> +
+> +	indio_dev->channels = channels;
+> +	indio_dev->num_channels = i + ARRAY_SIZE(ads112c14_sys_mon_channels);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static void ads112c14_populate_scale_available(int scale_avail[][2],
+> +					       u32 vref_uV, u32 fsr_bits)
+> +{
+> +	for (u32 i = 0; i < ARRAY_SIZE(ads112c14_pga_gains_x10); i++) {
+> +		int *entry = scale_avail[i];
+> +		u32 gain_x10 = ads112c14_pga_gains_x10[i];
+> +
+> +		entry[0] = div_u64_rem(div64_u64((u64)(NANO * 10 /
+> +						       (MICRO / MILLI)) * vref_uV,
+> +						 (u64)gain_x10 * BIT(fsr_bits)),
+
+Hmm... This differs from the previous implementation. Why?
+
+> +				       NANO, &entry[1]);
+> +	}
+> +}
+
+...
+
+> +	if (device_property_present(dev, "refp-refn-resistor-ohms")) {
+> +		if (refp_uV != 0 || refn_uV != 0)
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "refp-refn-resistor-ohms property should not be present when refp-supply or refn-supply is present\n");
+> +
+> +		ret = device_property_read_u32(dev, "refp-refn-resistor-ohms",
+> +					       &data->ext_ref_ohms);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "failed to read refp-refn-resistor-ohms property\n");
+
+Using
+
+	const char *propname;
+	...
+	propname = "refp-refn-resistor-ohms";
+
+makes this
+
+	if (device_property_present(dev, propname)) {
+		if (refp_uV != 0 || refn_uV != 0)
+			return dev_err_probe(dev, -EINVAL,
+					     "%s property should not be present when refp-supply or refn-supply is present\n",
+					     propname);
+
+		ret = device_property_read_u32(dev, propname, &data->ext_ref_ohms);
+		if (ret)
+			return dev_err_probe(dev, ret, "failed to read %s property\n", propname);
+
+Also the rest can be improved in the similar way.
+
+> +	} else {
+> +		if (need_ext_ref && data->ext_ref_uV == 0)
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "external reference measurements require either refp-supply or refp-refn-resistor-ohms property\n");
+> +	}
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
