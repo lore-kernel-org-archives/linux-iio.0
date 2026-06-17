@@ -1,66 +1,66 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FAD830C617
-	for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 22:18:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3801C3783DE
+	for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 22:33:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781734740; cv=none; b=T+3PTLdU+l9pKoPfgO8MbYvkZzR0ZGHbxCeka9mSO4T4RbMWDzKS566+JywqeXKzORJLtE33YU+BgBqf4wbQICriy4iTLtFtM9hELNj+ZhIsKvdc5h4ML+rEmgniZrGiGiHhPyq7L4EH+dQyrFeT3zAIxspjtSpjtzZEs6h6hM0=
+	t=1781735591; cv=none; b=S2f4iMoAWNezD4Cz5F/KIyYi34J3yehYQdlx4+e44Ez4RzPn2n0NdBKbTape68u0y2oQhvGYum85CF19Y4L51YfsLmo7FiSQqRAGzS7TV7ZO4Mdm5IRF61Sha+N8FCtvlr8OoRUOiYCYXJXA4mv+X1MUT4RnMpTHndbSgt9EoGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781734740; c=relaxed/simple;
-	bh=XmadC3jjanZdVIoOxf4obLCYzmNZJcjJ+JmN4lZXX2g=;
+	s=arc-20240116; t=1781735591; c=relaxed/simple;
+	bh=7XyKUNIOL46jZur+YvXtih0JCTOGsfPQw2wktLsAwsU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i2IbjTAU3ioc0dQ6JjqY3HuUCY9uytD9FN6+CZT8WaivAX/WzJ/XlRGfSb6092nUc81Yy6a7jK4zoV32WImcegbtH7UY6WLnnEfYaogF3Nx6lPJ0BG9UlZfKgnvV/dwHX4f588AxAW5uD96zTdfWFFxN8aClfLFh1ebFssOg430=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=bAUxOWgw; arc=none smtp.client-ip=209.85.161.42
+	 In-Reply-To:Content-Type; b=X/Rz0FI35FMeXrEMeLFFjs2iwBn1t2J8W/VybsR/2m2sOyK7uODIZtfr89s+d02jzMhKK6dQQ4MGVm9jQbJwTADtufdQxpvOHPsTJxFZLvg1CvoNbeHpI2S/5kud+QoFfBmI3QyUfGqg5RTx/NCEX9XS77XPbzUdFCcGW5TzH6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=J5w9Otzl; arc=none smtp.client-ip=209.85.160.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="bAUxOWgw"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-69d862236ddso245668eaf.0
-        for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 15:18:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="J5w9Otzl"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-43cce34c881so189965fac.2
+        for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 15:33:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781734737; x=1782339537; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781735588; x=1782340388; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=tGSAX6SJosLEq+XA2blfrGkbQdqeFnb2GRKEkQRBDgI=;
-        b=bAUxOWgw91upVyTIEAktPhs+3CG9KDH9rCtsXfq4eI2WaQ7RSacCWVcOst4F4sFg8S
-         JosD5u4EXlW9YOO1kCOnuII1ybMTtwpSAIUqKcskXdbHcAuW1Bsjg8qjEmdr9OmhMYLw
-         mtnwnOyPiIOaN1UHz6tPLrJcKPAPswQqvbO9GUfy5kCDUaouhK/mXUBYneFlKKnhckK5
-         jTbsj0pGdgrPIFnGzkqsCeoVM76DgzatudNjMqcnPUwx16G8X5O9/yu8OP+DCCq2JBcq
-         mhPT9hUUfve5KjxcOWDCKKwDQAQsJIs3Fz7ChQ8CY0ufNmvKA+W8Zz8d2yESKRzcoCZ9
-         CGfg==
+        bh=w3NNNLn3FzT6ruT5UBTY8dZFvASj4Gla53dS/0lXbqE=;
+        b=J5w9OtzlcRAI6NCAwROEIOE4GpSq2dwHFIVVDmLKYlmP2ojhN4yezW1AR1xli6prVo
+         XsdyCp/d/BT5YdS8o65ZMZkYPGE0rcH5VG24FTG6p57tkkCUvkn0TJZ6RcjB7FgFjI+s
+         hTYTOUNXqvF1/pnHkIL0M+TH1HgMie0B4gWmJs4v+U9MYZTs1CaKE9K4TPueMH6McV9T
+         7tvtwW0I25zSdHaLQ28+W3SGQhCq1ETqp86AbGUcU9vUprJXUY+8NvLgrfNNv7T1nsWn
+         VAN601uG/6y0pjlvyV+grd9RUdTQh+Jru/w8HauTEwd9YQDs0AJ2m0PGVOfxR3f2dYGK
+         /eLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781734737; x=1782339537;
+        d=1e100.net; s=20251104; t=1781735588; x=1782340388;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=tGSAX6SJosLEq+XA2blfrGkbQdqeFnb2GRKEkQRBDgI=;
-        b=NbVg4JI/qaFqce9HlFDIgGs2likFkuLPXR3T4KyYXPQY8h7INVrTQENZsmBIogU1y8
-         +oX7Z5ZDE3S0l/TR+DB/tJ61k5CwxX6yuJPcZd6StT40J8aoWpzxGEi8T5xqCRWv2XR9
-         DirHIy+WF3lFeyU/76KinxEZ8J0zaiNxTiHHIOg/OMNLfM01ykqFQpkJGvuaaU0xtEO3
-         kdvc4r85bt8cIQxsH/okusexglBf6IJJ6AltGjP58fzvAB7QFLS1JDEAtcw1UIJDvetS
-         PjEghF0n1YvdUUdX7FzJc4qOXUbhyqi3wYfqanGebmhhjV7rb5fL6Bg5a4MAuQWWhrwn
-         psTw==
-X-Forwarded-Encrypted: i=1; AFNElJ8+IBoiEZRtaBJ8r4yZz0fSrwEEViUuvAcmPUig3/sHcX9v/vbYNUsZhpK2x9aWUOIiBrZCTfGXSwY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzwQ7qYcX7wzwx8A3qZj1uHMsuY9GMx4cUcQp7EX7Da0QfDT4zr
-	EpxPblChWgzg09/DhiHQ5A3AnjsR2Hgq5uK++BPbe8HbQVI8UX43TQk66hfG2BLOPWU=
-X-Gm-Gg: Acq92OGDIOvkH/wVDucksw0CRnbhbnEc4XlTW260oYcrwmewfLrXSeFOmUy6ojHB/6/
-	5aIoDi+pgRzP/ESXwvF++9Hkucdub8kJ4AH28cJaU5Kx6IOTQjb6UhWfwN4Qy7RlDaOMoV9MOEI
-	SMiVox31CVArlTrMEaKP5XeZPzggyJ6jKv+URQZFnftprixc2Gdzyt9QEPPnoLzgDK3+iTuoYyr
-	T/xAKJPSGd3xOmF3RlMtXccHfQ4ZMR72Lx+0ovBNUDb4mPVpw9fGCd6BgX5RD3+JnGUl398vUmr
-	eTihyGOx405dS1fCz1KPDeGI1+LKzxJkZWCBvvhancsn2OjpgMM/JZdLsy4YyrPJyaZhkGhsURt
-	n+EybYeVHa2+7IvbZiocNIwrBV1jKgExDPt64dmkevayuTu4pWtMhrMHQMytraVCbq1OQrn3xSI
-	wcGhfWkMPle8lmhh3yzOZ++jU+KUXc+QCnuIX9JNX51TFRZfeJQJ4yOPisiEIjSZI=
-X-Received: by 2002:a05:6820:80c8:b0:69e:4008:13e4 with SMTP id 006d021491bc7-6a0c75f70a9mr1066623eaf.17.1781734737030;
-        Wed, 17 Jun 2026 15:18:57 -0700 (PDT)
+        bh=w3NNNLn3FzT6ruT5UBTY8dZFvASj4Gla53dS/0lXbqE=;
+        b=p5AsLpPq4PZ37odbDhDHIITn+4NYjSOfEmC593DzmoYMBIQlxJuX6IPApbHLPVfUfw
+         BT7Md/0DTOErU3+Mfh+9h8LEil57vvfnYRvRZWuJiDwVoFc5F5q8lEq0ljlZT0plkbdu
+         Es3JJs1RZGBRhlxn73yaZBpfsuu06aepczm5zcEa8+P5SesW7SRUUfT1JZ11Gr90p+QI
+         eF005otYDJrjP+9rGm6aGaJ9Vi7Wz0Sk0F+MqZ9yRN3LaDT9kWoRgb80v/4zlIz3xCnn
+         3iKDC6iByoh83rlz3pDBRM8iYEcXIbHxroOcl6Ba4vEdKeSpWVJK+ZXCmWYVae+NQ5/q
+         o2WQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/gTKppjHpwvOB3O4oOQnhhX9j7tN8wF68/OQyVYv0eVvbkIV0Xcyha8A67MGpUVD8wBm2c3KKP1/g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUVN3sRWgjGDQ2JIrViPrnPakhOQLTDNfaV7UFdvJjT4R3gTSV
+	cd4lO6ncqN35tybjwdVBmIbhyDBnCUIulpmWRUHli+YZ/AokXuXUEj0OC+cuLw0nkZ4=
+X-Gm-Gg: Acq92OF7P5mhOlew0qVjA8P+WMzweWEzilzBAgZteBE1Q4nyoPKn8qX0z+EQ2dBg/z7
+	6YOxvvXNeSj9gg2mL7gTb5AZ8FiYz63UZIQumG9E187gLqNEee0CXrNivHTMco+5U0IdEn9Lb7K
+	e5va37CJHuYpSkifocfD6DDynNB9ylsKeNdb/oXazf+wEVHsO5xg+XQkBcD/Eq/IKHzmZ5w6xLi
+	wU+lNW6jSZjhc9v4hZc6z65U8KIZQht3sUvFljasLvo9H2JvzoJ7EsdZxz88u8ySS3l9MBkP2oB
+	6rRVTmTii0qsYdsiDtjBS7XI7OiC6qR111KJDnt+r7rzRwscV7//FceCPsTl7tHZHQ/lY5t33h6
+	aT6L02M8rp2MuBsTT1n6bzVTWrviRz8xPhBMwycBzd9vw2Wk63FD0f+lFLF8yXRjO6OT6fgZWhM
+	Vrq2SP4oMJph+AmTeRpIhIXmHGr0MXdxcRfQ3oZWAAXtHQzy4k2MmVFGzxA877lCw=
+X-Received: by 2002:a05:6870:31ab:b0:442:87b:c83 with SMTP id 586e51a60fabf-4469041bcd2mr4724545fac.22.1781735588136;
+        Wed, 17 Jun 2026 15:33:08 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:9458:d356:778c:22ac? ([2600:8803:e7e4:500:9458:d356:778c:22ac])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-69f00d609e9sm7325069eaf.7.2026.06.17.15.18.55
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44308f09405sm5253268fac.12.2026.06.17.15.33.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jun 2026 15:18:56 -0700 (PDT)
-Message-ID: <caa0e48d-ed13-4aec-96d9-9be88e6cb79a@baylibre.com>
-Date: Wed, 17 Jun 2026 17:18:55 -0500
+        Wed, 17 Jun 2026 15:33:07 -0700 (PDT)
+Message-ID: <3787d23b-6dd8-4e89-9a03-c3fddbbe8bf8@baylibre.com>
+Date: Wed, 17 Jun 2026 17:33:06 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,179 +68,175 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/5] iio: adc: ltc2378: Add support for LTC2378-20 and
- similar ADCs
+Subject: Re: [PATCH v3 4/5] iio: adc: ltc2378: Enable high-speed data capture
 To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
  andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
  pop.ioan-daniel@analog.com, marcelo.schmitt1@gmail.com
 References: <cover.1781661028.git.marcelo.schmitt@analog.com>
- <5c18e7a370119ddfd5faefe147b294b39f78894a.1781661028.git.marcelo.schmitt@analog.com>
+ <9f173c47928446aa3e900cf0becb6130dd76846b.1781661028.git.marcelo.schmitt@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <5c18e7a370119ddfd5faefe147b294b39f78894a.1781661028.git.marcelo.schmitt@analog.com>
+In-Reply-To: <9f173c47928446aa3e900cf0becb6130dd76846b.1781661028.git.marcelo.schmitt@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/16/26 9:03 PM, Marcelo Schmitt wrote:
-> Support for LTC2378-20 and similar analog-to-digital converters.
+On 6/16/26 9:04 PM, Marcelo Schmitt wrote:
+> Make use of SPI transfer offloading to speed up data capture, enabling data
+> acquisition at faster sample rates (up to 2 MSPS).
 > 
-
-...
-
-> +static int ltc2378_probe(struct spi_device *spi)
-> +{
-> +	struct device *dev = &spi->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct ltc2378_state *st;
-> +	int ret;
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> ---
+> Change log v2 -> v3:
+> - Fixed the evaluation loop conditions for CNV PWM and SPI Engine trigger PWM,
+>   avoiding potential infinite loop if and CPU stall.
+> - Added comment to about initial PWM disable.
+> - Adjusted SPI offload setup initialization to not print error on a valid condition.
+> - Fully initialize IIO channel scan_type.
+> - Reworked to make offload support not imply all dependencies to be built in.
+> - Made sampling_frequency a buffer attribute.
+> - Made offload support not require DMA and other features to be built in.
+> - Now using same scan_type configuration for all use cases.
+> 
+>  drivers/iio/adc/Kconfig                  |  19 ++
+>  drivers/iio/adc/Makefile                 |   6 +
+>  drivers/iio/adc/ltc2378-lib-core.c       |  35 +++
+>  drivers/iio/adc/ltc2378-offload-buffer.c | 305 +++++++++++++++++++++++
+>  drivers/iio/adc/ltc2378.c                |  46 ++++
+>  drivers/iio/adc/ltc2378.h                |  42 ++++
+>  6 files changed, 453 insertions(+)
+>  create mode 100644 drivers/iio/adc/ltc2378-lib-core.c
+>  create mode 100644 drivers/iio/adc/ltc2378-offload-buffer.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 2b8203451367..f96d9262b891 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -944,6 +944,9 @@ config LTC2378
+>  	tristate "Analog Devices LTC2378 ADC driver"
+>  	depends on SPI
+>  	depends on GPIOLIB
+> +	select LTC2378_LIB
+> +	select LTC2378_LIB_OFFLOAD_BUFFER if SPI_OFFLOAD && PWM && SPI_OFFLOAD_TRIGGER_PWM && IIO_BUFFER && IIO_BUFFER_DMAENGINE
+> +	select LTC2378_LIB_TRIGGERED_BUFFER if IIO_BUFFER
+>  	help
+>  	  Say yes here to build support for Analog Devices LTC2378-20 and
+>  	  similar analog to digital converters.
+> @@ -2027,3 +2030,19 @@ config XILINX_AMS
+>  	  xilinx-ams.
+>  
+>  endmenu
 > +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
+> +config LTC2378_LIB
+> +	tristate
+> +	help
+> +	  Say yes here to build support for buffered data capture with LTC2378
 > +
-> +	st = iio_priv(indio_dev);
-> +	st->spi = spi;
+> +config LTC2378_LIB_OFFLOAD_BUFFER
+> +	bool
+> +	help
+> +	  Say yes here to build support for high speed data capture with LTC2378
 > +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "failed to read ref regulator\n");
+> +config LTC2378_LIB_TRIGGERED_BUFFER
+> +	bool
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+
+Why do these need to be compile-time options to only select one or the other?
+In all other SPI offload ADCs we've done so far, they always support both and
+gets selected at runtime based on devicetree config.
+
+> +	  Say yes here to build support for buffered data capture with LTC2378
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 1814fb78dde3..109cd39237c9 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -82,6 +82,12 @@ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+>  obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
+>  obj-$(CONFIG_LTC2309) += ltc2309.o
+>  obj-$(CONFIG_LTC2378) += ltc2378.o
 > +
-> +	st->ref_uV = ret;
+> +ltc2378_lib-y += ltc2378-lib-core.o
+> +ltc2378_lib-$(CONFIG_LTC2378_LIB_OFFLOAD_BUFFER) += ltc2378-offload-buffer.o
+> +ltc2378_lib-$(CONFIG_LTC2378_LIB_TRIGGERED_BUFFER) += ltc2378-triggered-buffer.o
+> +obj-$(CONFIG_LTC2378_LIB) += ltc2378_lib.o
 
-add blank line here
+Why do these need to be split into separate files? The driver isn't that
+long, so seems better to just do it all in one file to make it easier to
+read.
 
-> +	st->info = spi_get_device_match_data(spi);
-> +	if (!st->info)
-> +		return -EINVAL;
 > +
-> +	indio_dev->name = st->info->name;
-> +	indio_dev->info = &ltc2378_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	st->cnv_gpio = devm_gpiod_get(dev, "cnv", GPIOD_OUT_LOW);
-> +	if (IS_ERR(st->cnv_gpio))
-> +		return dev_err_probe(dev, PTR_ERR(st->cnv_gpio),
-> +				     "failed to get CNV GPIO");
-> +
-> +	st->num_iio_chans = 0;
-> +	st->chans[st->num_iio_chans++] = (struct iio_chan_spec) {
-
-Why can't we make this static const (part of chip info) like we do in most
-drivers?
-
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.format = st->info->bipolar ? IIO_SCAN_FORMAT_SIGNED_INT :
-> +						      IIO_SCAN_FORMAT_UNSIGNED_INT,
-> +			.realbits = st->info->resolution,
-> +			/*
-> +			 * Buffer elements could be 16-bit for low precision
-> +			 * parts. Though, using more storage bits allows keeping
-> +			 * the same scan_type configuration for both types of
-> +			 * buffer support.
-> +			 */
-
-Won't this make non-SPI offload buffered reads more complicated later?
-I.e. have to shift the value or not before pushing to buffers depending
-on CPU endianness.
-
-> +			.storagebits = 32,
-> +		},
-> +	};
-> +
-> +	st->xfer.rx_buf = &st->scan.data;
-> +	st->xfer.len = st->info->resolution > 16 ? 4 : 2;
-
-Can use spi_bpw_to_bytes() here.
-
-> +	st->xfer.bits_per_word = st->info->resolution;
-> +
-> +	indio_dev->channels = st->chans;
-> +	indio_dev->num_channels = st->num_iio_chans;
-> +
-> +	return devm_iio_device_register(&spi->dev, indio_dev);
-> +}
-> +
-
-...
-
-> diff --git a/drivers/iio/adc/ltc2378.h b/drivers/iio/adc/ltc2378.h
+>  obj-$(CONFIG_LTC2471) += ltc2471.o
+>  obj-$(CONFIG_LTC2485) += ltc2485.o
+>  obj-$(CONFIG_LTC2496) += ltc2496.o ltc2497-core.o
+> diff --git a/drivers/iio/adc/ltc2378-lib-core.c b/drivers/iio/adc/ltc2378-lib-core.c
 > new file mode 100644
-> index 000000000000..a3a69351de6c
+> index 000000000000..1160f4324d01
 > --- /dev/null
-> +++ b/drivers/iio/adc/ltc2378.h
-> @@ -0,0 +1,63 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
+> +++ b/drivers/iio/adc/ltc2378-lib-core.c
+> @@ -0,0 +1,35 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 > +/*
-> + * Analog Devices LTC2378 and similar ADCs common definitions and properties
-> + * Copyright (C) 2026 Analog Devices, Inc.
+> + * Analog Devices LTC2378 ADC series driver
+> + *
+> + * Copyright (C) 2026 Analog Devices Inc.
 > + * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
 > + */
 > +
-> +#ifndef __DRIVERS_IIO_ADC_LTC2378_H__
-> +#define __DRIVERS_IIO_ADC_LTC2378_H__
-> +
+> +#include <linux/err.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/delay.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/types.h>
-> +#include <linux/units.h>
 > +
-> +#define LTC2378_TDSDOBUSYL_NS		5
-> +#define LTC2378_TBUSYLH_NS		13
-> +#define LTC2378_TCNV_HIGH_NS		20
+> +#include "ltc2378.h"
 > +
-> +struct ltc2378_chip_info {
-> +	const char *name;
-> +	int resolution;
-> +	bool bipolar;
-> +};
-> +
-> +struct ltc2378_state {
-> +	const struct ltc2378_chip_info *info;
-> +	struct gpio_desc *cnv_gpio;
-> +	struct spi_device *spi;
-> +	struct spi_transfer xfer;
-> +	unsigned int num_iio_chans;
-> +	struct iio_chan_spec chans[2]; /* 1 physical chan + 1 timestamp chan */
-> +	int ref_uV;
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	struct {
-> +		union {
-> +			u16 sample_buf16;
-> +			u32 sample_buf32;
-> +		} data;
-> +		aligned_s64 timestamp;
-> +	} scan __aligned(IIO_DMA_MINALIGN);
-> +};
-> +
-> +static inline int ltc2378_convert_and_acquire(struct ltc2378_state *st)
+> +int ltc2378_lib_buffer_setup(struct iio_dev *indio_dev, struct ltc2378_state *st)
 > +{
+> +	struct device *dev = &st->spi->dev;
 > +	int ret;
 > +
-> +	/* Cause a rising edge of CNV to initiate a new ADC conversion */
-> +	gpiod_set_value_cansleep(st->cnv_gpio, 1);
-> +	fsleep(4);
-> +	ret = spi_sync_transfer(st->spi, &st->xfer, 1);
-> +	gpiod_set_value_cansleep(st->cnv_gpio, 0);
+> +	ret = __ltc2378_set_offload_ops(st);
+> +	if (ret == -EOPNOTSUPP)
+> +		return 0; /* Let device setup complete without buffer support */
 > +
-> +	return ret;
-> +}
+> +	if (!ret)
+> +		ret = st->ops->buffer_setup(indio_dev, st);
 > +
-> +#endif /* __DRIVERS_IIO_ADC_LTC2378_H__ */
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "error on SPI offload setup\n");
 
-Why do we need a header for this stuff? If there is a good reason
-the commit message should explain it. Otherwise, it makes the driver
-harder to read.
+Would be better to just return early instead of doing the !ret check.
+
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(ltc2378_lib_buffer_setup, "IIO_LTC2378");
+> +
+
+...
+
+> diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
+> index 88582bdcd6a6..bf17b202230b 100644
+> --- a/drivers/iio/adc/ltc2378.c
+> +++ b/drivers/iio/adc/ltc2378.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/spi/spi.h>
+>  #include <linux/types.h>
+> +#include <linux/units.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/types.h>
+> @@ -26,120 +27,160 @@
+>  static const struct ltc2378_chip_info ltc2338_18_chip_info = {
+>  	.name = "ltc2338-18",
+>  	.resolution = 18,
+> +	.max_sample_rate_hz = HZ_PER_MHZ,
+
+1 * HZ_PER_MHZ would make a bit more sense
+
+> +	.tconv_ns = 527,
+>  	.bipolar = true,
+>  };
+>  
 
 
