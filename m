@@ -1,132 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7FF3CA4BF;
-	Wed, 17 Jun 2026 09:57:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAC5388374;
+	Wed, 17 Jun 2026 10:03:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781690281; cv=none; b=ql1Ux5Q72EaWxFPyXa2G4XDMY7ozkP8P0+Xid9r2Y2f3lxIRO/BNZDyL/aS2ISf8qpy5D/PS5QIdU35sZYiBpUReotBDSytcjgvPffmzMzA2j4IgauYcnBTnif42m8lR7aO2CDmzAaSLrcb4FvWuEW5REXCz7NvLrBzS9U0PzTc=
+	t=1781690583; cv=none; b=W9357bzpxO62RITdLXY5WiQ69Hg9TObBv0bKPQrBEsqQW7hIR7jqBQjqD7FS40LpuKjdUc9JV4LGw39jN9SknyKCN0AMVHJ5xAtSrmkK51U0Sp86xHvI8AmzKy0YL/g/bGioSKNj5GJtgyPn7LiNdRlRPyNWAq77XT4uZxYptZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781690281; c=relaxed/simple;
-	bh=G7eYxoqDYKJCLMufa2vb/0b5tYXLZLxtXsNPoHeFCXg=;
+	s=arc-20240116; t=1781690583; c=relaxed/simple;
+	bh=ADT1HTaUENYBvVMSSkOSh6M3ht4EbVqx/pv3emwAuw8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QgYFpap8C7sxr55EWXcYOYa1VasknT4HtPCE6Zbl1kYXk9mg3Vp7YmKRsfDZTWYug6fqQ0O8MwYH4wcwcTZ2PCwc2VnPGN8CG7Xt2JCxx3P4Pc5QfWY8pxUw0PysgoD7+uyxcsi0dx8AgSohDNfJRUa4S77yt6x+PYvrSOxMA4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g7MrVU3s; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=BdPx4NhdIO38H9tFf23Zylc9TBpTzZC7RvC33zfKKT0YlIbcVYb4mqPziw6hZsH0sI8omrwGJQGJ+jGXEKujMqaESWAzo0/Zw5+0EHtB7ZAPENtJbO20lX/78V1V45OK4f3PC0oS/Jc76TqpLKBo82MAXCDjc1/zq9asLiifYYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AddNqM8C; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g7MrVU3s"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AddNqM8C"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1781690280; x=1813226280;
+  t=1781690582; x=1813226582;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=G7eYxoqDYKJCLMufa2vb/0b5tYXLZLxtXsNPoHeFCXg=;
-  b=g7MrVU3sBoa8K+mD8n2NgnQGhRlNWIrj8T5Rk/IdfvCli4Qj10w/YSoe
-   CqmPNciF95f0jMvr01jnvTxsbMX21NyiezoGTBtbTDa2kbiMaU3BKLF6g
-   mlYFtxy8/iXLoxZUTbR541G+qb7u80tql/zgqCjTd6sFIUzjAR3h+v0Ru
-   XCspn12ykV19+tOeEd1rXfxisUtsqOltW1mqLkVLZ1J5n+cRYxkSsKPl6
-   g2qhe7OMgvyDzv1C87QW1DAAjWwl1fD91MftdfhIs9xwUz+ds8x1nBa2p
-   v03degp3GB+plhmN+nAoyOnzTQ5Fu2XAHIyIQ0MG99evXhhyoQrv6QjxB
+  bh=ADT1HTaUENYBvVMSSkOSh6M3ht4EbVqx/pv3emwAuw8=;
+  b=AddNqM8C9K+oKR+5vfS2NfCq5+FWoFj5WdeR/aG72aHkWixNDHroTY2l
+   ScPuIjEBa/bucAQ/suMmZeeYyTJLeSC+RzNdI9zm5eUEDupQNhrAbFx18
+   YLpKOcd39ib4ndFkY3pogBbQzh8LnUQwNOhw/JnWvvY1ftmbN3gxUn1RG
+   3rkpp/vhH8LX5RLEg9Ocd2NiImNn+SwoEqj3iAyXwjuwKWDU+8Hi4+ED5
+   mYjQPrR5Co+MjLYMLRIfiFgbyCC21kds7mWGlWqx+l8h+TJWZV2MMnVaP
+   muxViv/D7Si0aZ93E6Lk24gFmme2D1/cHkNUyVcscgQ9G4MJKEp2appcL
    Q==;
-X-CSE-ConnectionGUID: K4lIdHFMS0ahiArCkQzC+Q==
-X-CSE-MsgGUID: HRRVprkMQNWWNlJ4ZDM3IA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="82356643"
+X-CSE-ConnectionGUID: Bc9n01ruRWKVMT3wbgHm8Q==
+X-CSE-MsgGUID: K/7RkrteSnqNrIncLBYwrA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="92830362"
 X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="82356643"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 02:57:59 -0700
-X-CSE-ConnectionGUID: KEiNLP+6Tu6VQJvvCrzQIg==
-X-CSE-MsgGUID: AWDweLUGRvShQVqwJTgCrw==
+   d="scan'208";a="92830362"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 03:03:01 -0700
+X-CSE-ConnectionGUID: bZbkiVwWRMOty6xxyFJ5Rw==
+X-CSE-MsgGUID: /4h9CwtxROmFk31G+h49uw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
-   d="scan'208";a="253134475"
+   d="scan'208";a="241663123"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.69])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 02:57:56 -0700
-Date: Wed, 17 Jun 2026 12:57:54 +0300
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 03:02:56 -0700
+Date: Wed, 17 Jun 2026 13:02:54 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: nuno.sa@analog.com
-Cc: dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Herman van Hazendonk <github.com@herrie.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 0/3] dmaengine: Support address bus widths of 32
- bytes and above
-Message-ID: <ajJvouBANqhVaHXJ@ashevche-desk.local>
-References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	Linus Walleij <linusw@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+	devicetree@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: common: st_sensors: honour channel
+ endianness in read_axis_data
+Message-ID: <ajJwzsIMxX3Ew1x_@ashevche-desk.local>
+References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
+ <20260616-submit-iio-lsm303dlh-magn-fixes-v2-1-063edcf74e60@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-1-063edcf74e60@herrie.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 16, 2026 at 04:40:51PM +0100, Nuno S� via B4 Relay wrote:
-> The DMA engine slave capabilities advertise the supported source and
-> destination bus widths in src_addr_widths / dst_addr_widths. These are
-> plain u32 bitmasks where a set bit's position equals the corresponding
-> enum dma_slave_buswidth value, e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets
-> bit 4.
+On Tue, Jun 16, 2026 at 03:02:04PM +0200, Herman van Hazendonk wrote:
+> st_sensors_read_axis_data() unconditionally decoded multi-byte
+> results with get_unaligned_le16() / get_unaligned_le24() regardless
+> of the channel's declared scan_type.endianness.
 > 
-> The consequence is that widths of 32 bytes and above cannot be
-> represented at all: DMA_SLAVE_BUSWIDTH_32/64/128_BYTES would need bits
-> 32, 64 and 128, which simply do not fit in a u32. Hardware with wider
-> data paths is becoming common, so we need a representation that can
-> express these widths while still using enum dma_slave_buswidth.
+> For every ST sensor that has used this helper since it was introduced
+> this happened to be fine because the ST IMU/accel/gyro/pressure
+> families publish their data registers as little-endian and the
+> channel specs in those drivers declare IIO_LE accordingly.
 > 
-> This series switches the masks to bitmaps that span the full enum
-> range. Because there are many producers (DMA controllers) and a number
-> of consumers spread across the tree, converting everything in one go is
-> not realistic. To allow an incremental migration, the legacy u32 fields
-> are kept alongside the new bitmaps:
+> The LSM303DLH magnetometer however publishes its X/Y/Z output as a
+> pair of big-endian bytes (the H register sits at the lower address,
+> 0x03/0x05/0x07, and the L register immediately after), and its
+> channel specs in st_magn_core.c correctly declare IIO_BE -- but
+> read_axis_data() ignored that and decoded as little-endian, swapping
+> the high and low bytes of every magnetometer sample. The LSM303DLHC
+> and LSM303DLM share the same st_magn_16bit_channels (IIO_BE) and
+> were therefore byte-swapped by the same bug; users of those parts
+> will see different in_magn_*_raw values after this fix lands.
 > 
-> - producers set the bitmap via the new dma_set_{src,dst}_addr_mask()
-> helpers, which also mirror the low 32 bits back into the legacy u32;
-> - legacy producers that still assign the u32 directly keep working, and
-> dma_get_slave_caps() folds such a u32 into the bitmap it returns, so
-> new consumers always see a complete bitmap;
-> - consumers can read either the legacy u32 or the new bitmap during the
-> transition.
+> The bug is most visible on a stationary chip: in earth's field the
+> true X reading is small and the high byte sits at 0x00, so swapping
+> the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
+> = 240). Y and Z still appear "to vary" because their magnitudes are
+> larger and the noise in the low byte produces big swings in the
+> swapped high byte:
 > 
-> The axi-dmac controller and the IIO dmaengine buffer are converted as
-> examples of a producer and a consumer. And this actually fixes a very
-> open coded path to undefined behavior in the axi-dmac driver and
-> possibly others.
+>   before (LSM303DLH flat, sysfs in_magn_*_raw):
+>       X=240 (stuck), Y= 12032..23296, Z=-16128..-9728
 > 
-> The end goal is to convert every producer and consumer, then drop the
-> legacy u32 src/dst_addr_widths fields and rename the *_mask members.
-> I cannot commit to a timeline for that conversion (it touches a lot of
-> drivers across several subsystems), but I do intend to see it through.
+>   after (direct i2c-dev big-endian decode, same chip same orientation):
+>       X≈-4096, Y≈210, Z≈80     (sensible values reflecting earth's
+>                                 ambient field at low gauss range)
 > 
-> Sending as RFC mainly to agree on the approach!
+> Fix read_axis_data() to dispatch on ch->scan_type.endianness and
+> call get_unaligned_be16() / get_unaligned_be24() when the channel
+> declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
+> st_pressure, st_lsm6dsx and others) are unaffected because their
+> channel specs already declare IIO_LE and the LE path is unchanged.
+> 
+> While restructuring the branches, replace the previously implicit
+> silent-success-with-uninitialised-*data fall-through for
+> byte_for_channel outside 1..3 with an explicit return -EINVAL. No
+> in-tree ST sensor publishes such a channel, but the new behaviour
+> is strictly safer than handing userspace garbage.
 
-I have another idea. Why not having 8-bit mask for power-of-two and 8-bit mask
-for non-standard ones?
-
-So, u8 power_of_2_mask represents the respective sizes directly as ORed values
-and u8 non_standard_mask (only to cover 3, 5, 6, and 7) does the original
-approach for it, id est ORed BIT():s of the sizes? And yes, I understand that
-it's not so KISS as above from data type point of view, but I think wei should
-never need to have a heavy bitmap() API calls just for them.
-
-The whole exercise seems due to DMA_SLAVE_BUSWIDTH_3_BYTES. and we have less
-than dozen drivers that use it.
-
-> I'm also not sure if the dma_slave_caps_get_{src,dst}_width_min() accessors
-> are worth having? Their purpose is purely to keep consumers from touching
-> the representation directly, so that the eventual u32 removal + mask
-> rename is a no-op for consumers. The alternative is to let consumers use
-> the bitmap directly (find_first_bit()/test_bit()/etc.) and just delete the
-> u32 members at the end. I mean, now we do have a bitmask so the _mask
-> suffix can of makes sense.
+Sounds like inevitable change in ABI, but worth doing it.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
