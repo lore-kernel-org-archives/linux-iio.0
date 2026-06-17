@@ -1,164 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from out-180.mta1.migadu.com (out-180.mta1.migadu.com [95.215.58.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 977BC2FE59C;
-	Wed, 17 Jun 2026 11:20:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3E6F37880B
+	for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 13:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781695205; cv=none; b=UPbfKLqgYahHPy2XMzTgZshnd7av/nbE/7BDdJ5gpAi1DwAt07/ptyR4PXT04mxRB7Dwmcq2lF9W8Sci7Yoy/l5k8075i2sSSM0VItvTgONFB4pLDcFg3xZZ6Bhf2VpmXShwCRF/j5AMQQ1IeHPEBKUssTT8KjDGlykndWhK1TI=
+	t=1781704778; cv=none; b=UrE03YiJjSt3WNSzc+frOUEAAlK4tV1v+F/tt7dacuQK3RkPvy8znLvJM4R5V81RxDOk3x9gW7k0JNUPOPDgXE0FiQ89Xf6YD8SxdM+1ureWgY3QgkTATO4NOGVCh/QTe07pS4inYqYSRSfo69ApVdsAPrYnHpYWuoNVHP1IFk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781695205; c=relaxed/simple;
-	bh=QmpVju6t1H4zbdKM4jpMagQX9IqAMGicbUC5PSgBpBQ=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=ExU55O5ToqvKQE7ZoInaXVJIfPXLKxBBSYs7yfZWoMJ1nxujYAq8PuIbsG8qzZUkk65BguNPDzHFH/9CmrgRdcFWsPZAu+Jksyn/Kv4zTBhdJYEhSizMAyJ9ipV2YHYY/GaVOuzlgAuyHO6KwILrK/vAiNiAwbNRRsQJk0TGJAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PhZtZrAG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781704778; c=relaxed/simple;
+	bh=dCBd6QOWdSfna80tO7lgRPNepVJ8z4/9yjwTGHpHQIE=;
+	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
+	 In-Reply-To:References; b=maFQACwotDHSMkaFzBg5TPTfJcD/IaXAXYfS53D2TvMGONChqZ9YWF9VAUT4WVpr2k/Ps7CdPD6S00Wh81LiX/QV4YXu+0QCb/Dx/ffu53LgGpm8LGc/64bJqmDjd8GVtP4+1YqjlOC3Eas7X0xNqWSwzkAnK8YyzwHWh3LvnR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=AgDg2q8A; arc=none smtp.client-ip=95.215.58.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PhZtZrAG"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 8A03E1F000E9;
-	Wed, 17 Jun 2026 11:20:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781695201;
-	bh=QmpVju6t1H4zbdKM4jpMagQX9IqAMGicbUC5PSgBpBQ=;
-	h=Date:Subject:Cc:From:To:References:In-Reply-To;
-	b=PhZtZrAG+elWGzO5YoCFGusWT/CYMgHWieRPrvrURowNfPQ3i90TlohgdoYcZWStV
-	 63YhnI3BEDnLp5pOeFtRmfuARqqxNNxDhOQBibpKrVfEpRUJ/jLpgUka9Xe/kxuX0L
-	 8xm8dxJsy5nDd1ML0Wlkpm3O3TLHWPbZ+YVom7RLrXbub6DtIw740NjKhMPj2dSzTH
-	 iXTyyDktgyQ1pGUf7Qja511gLgGeKC4saFivTLL14M9sbarXAmMUFN622usU9e8zo6
-	 LBq5lmcQUPVmNk6vga/hZra0w+OqfwBJoS6mJHaQr2DApaZDdDPQL8goTVyk3UfXIK
-	 sUlA5j1Pdejxw==
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="AgDg2q8A"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=30991a780f930c85dbe063c06cf260d6554dfbcf048d534393a8b0204307;
- micalg=pgp-sha384; protocol="application/pgp-signature"
-Date: Wed, 17 Jun 2026 13:19:56 +0200
-Message-Id: <DJBA8HX2E2HL.3H9NMHA9PW7N2@kernel.org>
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Cc: "linusw@kernel.org" <linusw@kernel.org>, "robh@kernel.org"
- <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
- "conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com"
- <afaerber@suse.com>, "wbg@kernel.org" <wbg@kernel.org>,
- "mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
- "lars@metafoo.de" <lars@metafoo.de>, "Michael.Hennerich@analog.com"
- <Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
- "nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org"
- <andy@kernel.org>, "dlechner@baylibre.com" <dlechner@baylibre.com>,
- =?utf-8?b?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-realtek-soc@lists.infradead.org"
- <linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, =?utf-8?b?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?=
- <cy.huang@realtek.com>, =?utf-8?b?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?=
- <stanley_chang@realtek.com>, =?utf-8?b?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?=
- <james.tai@realtek.com>
-From: "Michael Walle" <mwalle@kernel.org>
-To: =?utf-8?b?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?= <eleanor.lin@realtek.com>,
- "Bartosz Golaszewski" <brgl@kernel.org>, "Andy Shevchenko"
- <andriy.shevchenko@intel.com>
-X-Mailer: aerc 0.20.0
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
- <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
- <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
- <39de4d4ada5446e7a33e48c43f410439@realtek.com>
- <DJB6XO07EC8Q.1X9P752MLFB4N@kernel.org>
- <61c053a5a8e6461f9e6fcd40b6b5064d@realtek.com>
-In-Reply-To: <61c053a5a8e6461f9e6fcd40b6b5064d@realtek.com>
-
---30991a780f930c85dbe063c06cf260d6554dfbcf048d534393a8b0204307
+MIME-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1781704765;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0esiTjT2bh6BlTAeIet0hO+XCKrhmouZR2UAUKmVqSI=;
+	b=AgDg2q8A1u5L9oBFy6syZlCFggXZH38jJ724tm/ppHkiXyWaJ2MmVPmNq18UTPtUP1cCKL
+	j6IXeRvOw6xb1qT8ev2gadePk2HNs3M9/RioLy7VeLldQs553IUnCC7EiTYOiffrht2bqx
+	MAjTDXQLkjdGIejA3KF/fOEBNxwQq68=
+Date: Wed, 17 Jun 2026 13:59:18 +0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Siratul Islam" <siratul.islam@linux.dev>
+Message-ID: <8016d51ceb01974ae6d47185717d8e42dcc499bc@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH v2 3/3] iio: magnetometer: add driver for QST QMC5883L
+ Sensor
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+In-Reply-To: <ajJI_KK0eLXeHK0A@ashevche-desk.local>
+References: <20260616114942.37241-1-siratul.islam@linux.dev>
+ <20260616114942.37241-4-siratul.islam@linux.dev>
+ <ajJI_KK0eLXeHK0A@ashevche-desk.local>
+X-Migadu-Flow: FLOW_OUT
 
-Hi,
+June 17, 2026 at 1:13 PM, "Andy Shevchenko" <andriy.shevchenko@intel.com =
+mailto:andriy.shevchenko@intel.com?to=3D%22Andy%20Shevchenko%22%20%3Candr=
+iy.shevchenko%40intel.com%3E > wrote:
 
-On Wed Jun 17, 2026 at 11:54 AM CEST, Yu-Chun Lin [=E6=9E=97=E7=A5=90=E5=90=
-=9B] wrote:
-> Hi Michael,
+
+>=20
+>=20On Tue, Jun 16, 2026 at 05:49:39PM +0600, Siratul Islam wrote:
+>=20
+>=20>=20
+>=20> Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
+> >  connected via i2c.
+> >=20
+>=20...
+>=20
+>=20>=20
+>=20> +enum qmc5883l_chan {
+> >  + QMC5883L_AXIS_X,
+> >  + QMC5883L_AXIS_Y,
+> >  + QMC5883L_AXIS_Z
+> >=20
+>=20Leave trailing comma, it's not a dedicated terminator.
+>=20
+>=20>=20
+>=20> +};
+I generally have a habit of not adding a comma at the end as it reminds m=
+e of javascript/json. But sometimes I add it to help clang-format. Jonath=
+an suggested me to remove the commas at "terminating" entries. So I took =
+the opportunity to remove them everywhere. Apparently it was a wrong deci=
+sion. Thnaks for pointing this out, I'll make it a new habit. As always I=
+'m learning a lot from these reviews.
+> ...
+>=20
+>=20>=20
+>=20> +
+> >  + return 0;
+> >  +}
+> >=20
+>=20...
+> Ideally this should have a comment with a reference to the datasheet wh=
+ere this
+> delay is specified. Otherwise a comment why this exact value has been c=
+hosen.
+>=20
+I=20have a comment where I define this, about this value being from the d=
+atasheet. I'll update it to specify where though.
+> >=20
+>=20> + fsleep(QMC5883L_PORT_US);
+...
+>=20
+>=20>=20
+>=20> +};
+> >=20
+>=20--=20
+>=20With Best Regards,
+> Andy Shevchenko
 >
->> Hi,
->>
->> On Wed Jun 17, 2026 at 10:36 AM CEST, Yu-Chun Lin [=E6=9E=97=E7=A5=90=E5=
-=90=9B] wrote:
->>>>>>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot=20
->>>>>>> retrieve the gpio_chip instantiated inside gpio-regmap.c to=20
->>>>>>> fulfill these requirements in our
->>>>>>> map() function.
->>>>
->>>> Why is gpiochip_irq_reqres() called in the first place? Isn't that=20
->>>> only called if the irq handling is set up via gc->irq.chip and not=20
->>>> via
->>>> gpiochip_irqchip_add_domain() like in gpio-regmap?
->>>>
->>>
->>> The panic was caused by my driver including=20
->>> 'GPIOCHIP_IRQ_RESOURCE_HELPERS', which forced the call to 'gpiochip_irq=
-_reqres()' and crashed.
->>
->> But why did you use it if your irq domain isn't managed by the gpiolib, =
-but rather your own >irq domain? Before going with option #3 I'd double che=
-ck if that is correct in your driver.
->>
->> -michael
->
-> Do you mean that a custom IRQ domain shouldn't be mixed with gpiolib feat=
-ures like
-> 'GPIOCHIP_IRQ_RESOURCE_HELPERS'?
 
-Honestly, I'm not sure. I've never done anything with irq domains
-except for using the regmap_irq_chip. But from what I can tell is
-that GPIOCHIP_IRQ_RESOURCE_HELPERS are tied to the handling with
-gc->irq.chip, which isn't used at all if you add the domain via
-gpiochip_irqchip_add_domain(). Please correct me if I'm wrong
-though.
-
--michael
-
-> Additional information: our GPIO controller receives 3 separate interrupt=
- lines.
-> Because the standard 'regmap_irq_chip' mechanism in 'gpio-regmap' does no=
-t support
-> this multi-line hardware design, we are forced to create our own IRQ doma=
-in and pass
-> it via 'config->irq_domain'.=20
->
-> Given this constraint (that we must use our own IRQ domain), are you sugg=
-esting
-> that we should implement our own 'irq_request_resources' and
-> 'irq_release_resources' callbacks instead of relying on
-> 'GPIOCHIP_IRQ_RESOURCE_HELPERS'?
->
-> But if that is the case, we would much prefer to let the core gpiolib han=
-dle
-> these resource and state management tasks for us *as proposed in option 3=
-), rather=20
-> than duplicating the effort in our driver.
->
-> Best Regards,
-> Yu-Chun
-
-
---30991a780f930c85dbe063c06cf260d6554dfbcf048d534393a8b0204307
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCajKC3RIcbXdhbGxlQGtl
-cm5lbC5vcmcACgkQEic87j4CH/iFxwGA9GnpxKtX1eMaDBRZLS2qXUO5rwxnfcPH
-PrpuryubAiSmq4+/qWts4440bm64mrTxAYC8thI7zuN+jL1FtOZG+peZJT8y/pS2
-Y9xeRMo/jVCMUytnXmfeeRq8Ax2WJG+bC3Q=
-=l7H9
------END PGP SIGNATURE-----
-
---30991a780f930c85dbe063c06cf260d6554dfbcf048d534393a8b0204307--
+Thanks
+Sirat
