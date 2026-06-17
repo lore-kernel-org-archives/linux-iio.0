@@ -1,256 +1,219 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012014.outbound.protection.outlook.com [40.93.195.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C263D47A8;
-	Wed, 17 Jun 2026 16:05:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781712359; cv=none; b=KYO58U7ZCCvIiUv8IT/zjOoD3EaTy4ezEvfzQq/eFPM4B0F2gEez0XJrEFOxMfQqtIUVhRiyQtKDrGeS3YyT6hjdSCFFm5HFOEfjUE3Z2gHYtA2lBnf/tG17jbwLmt55HE+8KpBoJtTZIZdWoXpfittO6rlmruyjPhAyPPAbILI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781712359; c=relaxed/simple;
-	bh=BPAjDDex4tjdRIGT9/paeMxEwlx0JO2iK9bEzbFk6D8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lVBXa2fIcUfIfn0pe22xEfkjakGeEtXy8udAoD81NhRW+5I2XtQhaAJWoNPjABGLHkXVA5XBDWl5zl6gIavAj4Fj/e16ovPzBnFechvOhux5XEnH1omyDr/tpMu6poKNtLMyCmfv+fx1wjCic56M8iN3Zgm9UqOSnbY1g38WSY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mGCXUk8W; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E535481253;
+	Wed, 17 Jun 2026 16:23:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781713402; cv=fail; b=hL6MzM7ORVJx1MDzZHgv0sf+wZb1O9jFxXRImygZQxfhi19pPAB9/eEL3zH8XB52hZeswwJswdjU4Dh63+HzV4+ztKnhLNaPK1amkzIhO9FK00RWp7uBB2LmNE88A1x0446MRciu+7Cdg+If1iPY/vUkX8Lbmt+glLVJMH37qDA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781713402; c=relaxed/simple;
+	bh=EEq2XPFeqVh6JJPmkX+STKTBTV9qZMfEXiJC2xW5ThI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Wn5ig0wd06tyQT33Rqzwoy28dNpMFvrhMNbpiewXb/Xly4prUFlglNRWNyoNmTRAbMFdX+LDb7TEGlxAEqaiVBpcvGisu7xE2njMyATkwFPSPQCz4lenBBrD+Ffcprfq5c3ASCnGuIP6cN5xowP0lnCXJMThn3ywM4uUY44RZQU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=B6juE4O1; arc=fail smtp.client-ip=40.93.195.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mGCXUk8W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BA4F1F00A3F;
-	Wed, 17 Jun 2026 16:05:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781712347;
-	bh=ja3WzpMJouNk4MtJCPPp/AEeCMz7nlYpwbRDd6xEyvQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mGCXUk8WflRE1E4vG/c/TGEHoxh89baeVhLwhFb1HebaaNh+j5xZa/EIW++7XOj3L
-	 /N33+MgwxkJauXUYVZcx6K/yDq6ODJqxpRhYjZJYHJzrkgQGs2eRz5TPmEAVz23sqQ
-	 0IfHSYynNoD6u5OMzGGHg8KlZnBVqIGOWikTGBTNQkA5sxK44w3GCO0H5KnkmuOCdz
-	 GB4FcnBS4cs7dFicBLkNBXtNtHFb0WYeROdZUODci6Fie4wfmDrha1JomiXbqLtGVv
-	 SzW9WO1OKHYKWI/TMdyihZuiGXsNr1kzwdOmqG3Viw1oj4icGF/iMuEJCsOMaS8319
-	 ZrVSpD007BaSw==
-Date: Wed, 17 Jun 2026 17:05:42 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, pop.ioan-daniel@analog.com,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v3 1/5] dt-bindings: iio: adc: Add ltc2378
-Message-ID: <20260617-bok-gains-9a1af41cf0de@spud>
-References: <cover.1781661028.git.marcelo.schmitt@analog.com>
- <f9e88abdbd23df8039282497a81d3c8698a10665.1781661028.git.marcelo.schmitt@analog.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="B6juE4O1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=BWArnLE0UV0M25bAl+HQCKNW+9Eqli9cBiXAzxNqZxk+6ylFgGWJjuvbojH08pmHRglyR3e5UfjR+1gRKt3aq1XzkrpubeigfapqQBjNRpE67+ZllPFZmbq4X77Ak/AIH9x5h7/nVotz0DBON8LtVoKfwW1V3tAKFSL8pd5myrcPU3xduaA9flzXgopZNlgweNsWBoDHdkpZe065BhQ3dZJ6lpHWpSSScjmx8rYGipMETEfdfKXfd9mLeM9PubPDmo9AouyYJGqoOOiXeadJVLCuaDc9+f2rR1QNQA1FQF0qaBblA7JXDYqjL8cKtDtEVbrKT6V0XvUhvDYZ9eNC+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=esxh389dRPmaWu2oReTEGfdrGYSw1MvmyZmwL+YPHE0=;
+ b=aKDF3jpeWb9UX81arFKO6Fd/VgdXzO1vHUU/KB2i3zYo2XzEHua3wAKftR2YrR79jBVIVi/reQvji/w75Jt0THHgtSyK5pruLRGvFY2LQ4Q+wnIQNQIZR3AO8AFZAFW+HabALIqRtzEfe1dAHPA0/+ML6w9isTr4+CDfjAPDRAW1Af6V+8fOQuC6PIjmLbv5mB6tKR5Zv0ZZtxOIW21loF/CNap6r+m5wIIbya/02T5bXSzpjcmIefNrM6b+3GL88yUCTuceECTtG6EFOfhI5HrwtH58ZtbQyjTU5/kIMcwYbrC7tAlXu5oGBTB3HZbRXAz39hglWgzlLKRcljbl3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=esxh389dRPmaWu2oReTEGfdrGYSw1MvmyZmwL+YPHE0=;
+ b=B6juE4O1m9pVFGSqo4b1/8oDh/VKGnHeWRRg+bxiKd7/oS9vWe4MitGPZW9Gt+e6vYrounNqWMZl7AjYDTpjUpu/vzQia7LI3nWyenzmiH9fDnIFFZmprhLJfkUzGFqaN+/aLNTJmU3mS4wanXAxoHvWHtNTuktXKdprrMBnEis=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by PH0PR12MB7080.namprd12.prod.outlook.com (2603:10b6:510:21d::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.13; Wed, 17 Jun
+ 2026 16:23:13 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0139.009; Wed, 17 Jun 2026
+ 16:23:13 +0000
+Message-ID: <2a87a404-9fc0-49b9-9ddb-f5a4b25b78ca@amd.com>
+Date: Wed, 17 Jun 2026 17:23:09 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 2/5] iio: adc: add Versal SysMon driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, conall.ogriofa@amd.com, michal.simek@amd.com,
+ linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260616131559.3029543-1-salih.erim@amd.com>
+ <20260616131559.3029543-3-salih.erim@amd.com>
+ <ajK0phP9-pt9njrb@ashevche-desk.local>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <ajK0phP9-pt9njrb@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P265CA0197.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:318::13) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="cozC65bBU2iQaoDJ"
-Content-Disposition: inline
-In-Reply-To: <f9e88abdbd23df8039282497a81d3c8698a10665.1781661028.git.marcelo.schmitt@analog.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|PH0PR12MB7080:EE_
+X-MS-Office365-Filtering-Correlation-Id: 020dbce4-394e-411d-79ce-08decc8cba79
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|23010399003|18002099003|22082099003|3023799007|11063799006|56012099006|4143699003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	scN3MLt/SuEATq8uDxWX0YkcPipybOYHRuYGRlxoa3liTSpXVN1cVTkccK5JrvkeeC+buGjw8xgUxQ2gLPIpMWN48lX4FtvMTuy/zi6Bqm6xxc2sNe8nIorAeTAUxd7ysI3vSMKDOujVv1QUwwnvf/bUA/8GldQZHgTpazOh4YWGRfRkbHjsJtwg3Yth8ZEvg3OF3lK0mf0yVqW2qk2pnXtNmnJrTl0FQ41xFn0Vk5V69P6lNTLQ00Yw7JdePvYFfPGuNYFK17OKBd2S3k/7gbvCqS5UtoqdqDNlhAnahRPV2IXMRshfsON6HOUCInjHq2rGGc05vhsSciS/GMgzM2aEY/rP1ElQz9AwC1zWr1/OEHQj+rUc681gcs0wMNlpymoJnY5z1ljRbWST19sB45w6YyQ6P1jNjhaiIi9WNvwJ5vJBiCSxC9PmfzwEz31qoL5Pvu0NNOJ8HJe1O0b+RTtTjv1oB90AeGInJRdLme39vbcmbj5b8pVhqASougYd1hvtVkqSItMMBAfy701DNunzNvPF2T6TiDoj193tR1t3oQgm3+7LVffEvbRnpu4G9gMEkILnw+29PC6UPyec3jT6bRSc5Lz68QsIJuwSzOPCjF+2wgqQevlQNl4BSCU0Md+iGZ25ITdHRGxbogqOQKzQyUKT/Ms0LHD9kdQIoPWMNYAAiaA/igI9iDI9YO0f
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(23010399003)(18002099003)(22082099003)(3023799007)(11063799006)(56012099006)(4143699003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?QkxZVmM2c1FpaG5SSVQxTnVySFJpWmxjOUpSd1VwVitEVDdZRFVXeXZJYSs1?=
+ =?utf-8?B?Q25HYjhFVGxRaTN2YzI4eDluOEdJNjBQSURTSW52T29tZkRHWmdBdnVWTVpX?=
+ =?utf-8?B?dE5NamYvUndnU21XSS9YVTQxeGtXZ2M5ZzdOSmQvdkdITHNrdEVJd055YWlW?=
+ =?utf-8?B?djkwK0VrVWE2ZVlsdUs1MXVITmhKR2VUR2s0VnFJWjdYNnM1M2RyRC9Rajl0?=
+ =?utf-8?B?clpPWTZxdjBabnhZM2E3UGpHam9wYVFiWEZHSGh5OXlYWURvWjlRUFgvR1Q1?=
+ =?utf-8?B?NzBRa3pUWm00Q3ZzdUw4bkxlRE9mVmlicVF0VWNPbERQb1paUTcxQzI0VnpR?=
+ =?utf-8?B?VnM4TFpoTmlUaTBiVmdwN2JXVVhUQ1hLQlo3UStXeDY4LzR3NVliV0V1ZFJi?=
+ =?utf-8?B?QURuQUZwMmJ6akdiY1VzcFcvd2hMKzBpZE9nTWJFd3JWRXpXeVdxMFJMUFFP?=
+ =?utf-8?B?NjV5QmZ3aWM1TkdRY1hFWXJnNGJRV1FUTGVCR3RIRldpRXRPUFF0a0E4ZzMx?=
+ =?utf-8?B?VGcvVG43c3VWWlh5WmlXZmNUbWFlWFhFUVVCczF3M2gyRkQwL2FBSXloYmUx?=
+ =?utf-8?B?bWZYbTI5RmM5TytYV1FWYXZ4VFhIZDN5ZzQ5VHMwNWRPSVdwUVJCTkJGRHJS?=
+ =?utf-8?B?SGxVK3FFOGZZNjdNQk8xNzhlaHpwUDQrK2xiOUVTOFZ1MzdIWkpOYWk4T1dX?=
+ =?utf-8?B?K1dPV2FtQjN6R2pIU05EM3VTd1NFSkhrUW1nY09KbUxJZldOOXVLaUg5SnZw?=
+ =?utf-8?B?T3ZPSllzUGE5K3JyOEZNcFBUSjNxc1N6dEFIY05xOVRBY1VlWTVzTmpiV3FW?=
+ =?utf-8?B?bml0OEhMWUFiWnFlbVByTEV6ZjU1MGFsTUEyL0gxR0RwNnZmSHc2RjlJeVNE?=
+ =?utf-8?B?Y3c1SGlvaU9qeStoZXl5ajdXSm1DelpMMlRrSVo3RVFRZ2VXdlc5aXNaVS9W?=
+ =?utf-8?B?K3MyUGdPSWIxMnZiZUl2bzRIUjY4YnpnZndaS0w3YjVvL3VLcSsyZmlHcUhY?=
+ =?utf-8?B?M1lwTWE3MHRyY01qN2Y0cWNwRVd2Rit6UjlONzJJMjZ5WHc3SzhXaVBMdkVB?=
+ =?utf-8?B?Ky9FRkpKQjFwYUlWMFlnOG1nUjh4alFjYnJRZHZYTy8yN3ZZZ1hrMFE4STRa?=
+ =?utf-8?B?U2txM2NtbU9BU3lMcXVnQjVpSkxtSHB0alg1WE11Zk5JS3JjVllReDV4dy9B?=
+ =?utf-8?B?eW1pUlpJR25uZUZkcTd1ZlBIRW9Nb2U0WitvaDBmLzhOTWMyK0JVV2dWUDk2?=
+ =?utf-8?B?VG1PVnlqcWExZDVrWTdvd2dXVHZBL1BqQlgyeC9mWUlxbUJOVFpabzQrcHUv?=
+ =?utf-8?B?VTRPYTl5aG15SmNTbVA3MGpmMTEyOHh0REJYZjE4TllEWjhwSkZWanA2dkhu?=
+ =?utf-8?B?bXVyeUo0QkMvTHNyS3pmUmdFZGoyMHo2MHRiSVE3U1dsRW1jeGxEMXFuZitn?=
+ =?utf-8?B?bTJFVGlPdW9Od21kNysrNElOd3MwQlRRNkI2Zm1iZFZIa3hJTEttQlFEZ1kx?=
+ =?utf-8?B?Z2dkMDUxdWxweitReGhLV2pwZ3Jmc21iNWtKemVBRDlqVFR2WHUzYXdTS1hQ?=
+ =?utf-8?B?UDVUeFVXUXRLbTQ1NkxIUGFuZ09yZXltRHR4UGNsVW0zVDdmc0JLTElJR0hL?=
+ =?utf-8?B?bWVsaGpSbmZENTlzdVFRYzduUFRUZDlocTNrZHpKbml5elR3T1JRWTY2aUd4?=
+ =?utf-8?B?S3lkVW5DbnpkK1RwaU16eDZxd3VyQXEwS2lLVFhBV29QbzRPazRYa2QvelRK?=
+ =?utf-8?B?UFVxWVU2WER0Q0FTL0VwYUh2bHBvenVTc1hyTFBEL1QyRDR2ZG85ZmhiTDlj?=
+ =?utf-8?B?d1lIU0Z5VDRJbG1wV094SDBQc0h1Ny9scGt1UkdWRXRJbDBhYjNtbndRL0Nz?=
+ =?utf-8?B?L2xzUFlqcXliSjNMS213bEk2VlI4TEdSbDdBTjIwVDJGWnV1YW91eWJQeTBj?=
+ =?utf-8?B?bnhRWDE2QWtHNTBuNUE1MW1nVG1Kd2x1RVNnZUtKdTJOYml5YzZqK0tmYk9F?=
+ =?utf-8?B?elFibEducjlKM2VQdGx3VmRFZ2FzUHVxb25MQ0ZTNlBVQ1F6TnpEeW1hYnZo?=
+ =?utf-8?B?Sk5wVFpsMys3bEVmY1BSMnBuN2grSHl4dXJXTVFudTlHZjM3WE9kMmVCZVpH?=
+ =?utf-8?B?SHhYbUJMZ1lDSFlER0NRaU5hZXh4RnlEb09yUjNvdGNHcDhjTENBTnlDUkVx?=
+ =?utf-8?B?ZUlhcDc2TUFFN0s1SjNWNDVxdEk1aEk5U05iOVFkV1R2OEk0ZlVUdXZrd0pS?=
+ =?utf-8?B?T1R1VURaN1RYQWNGWEFGTVdjNmpnSE4xRWVaYTVRWWRjUER2RlphcWhvMUM4?=
+ =?utf-8?Q?437H6rFhwiTFjqWdST?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 020dbce4-394e-411d-79ce-08decc8cba79
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2026 16:23:13.1405
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y+HgtIofK2JpwTY4SW3brwagUx9c8Afe9abAlBR2VDp0GoKk0CeehwPK/6G8g7qR
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7080
 
+Hi Andy,
 
---cozC65bBU2iQaoDJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 17/06/2026 15:52, Andy Shevchenko wrote:
+> On Tue, Jun 16, 2026 at 02:15:56PM +0100, Salih Erim wrote:
+>> Add the core driver and MMIO platform driver for the AMD/Xilinx Versal
+>> System Monitor (SysMon) block.
+>>
+>> The SysMon block resides in the platform management controller (PMC) and
+>> provides on-chip voltage and temperature monitoring through a 10-bit,
+>> 200 kSPS ADC. It can monitor up to 160 voltage channels and 64
+>> temperature satellites distributed across the SoC, with a consistent
+>> sample rate of 8 kSPS per channel regardless of how many channels are
+>> enabled.
+>>
+>> The hardware also provides four aggregate temperature registers that
+>> are always present regardless of the device tree configuration: the
+>> current max and min across all active satellites, and the peak and
+>> trough values recorded since the last hardware reset.
+>>
+>> The driver is split into two compilation units:
+>>    - versal-sysmon-core: Channel parsing, IIO registration, read_raw
+>>    - versal-sysmon: MMIO platform driver with custom regmap accessors
+>>
+>> Voltage results are stored in a 19-bit modified floating-point format
+>> and converted to millivolts. Temperature results are stored in Q8.7
+>> signed fixed-point Celsius format and converted to millicelsius.
+>>
+>> The MMIO regmap backend uses a custom reg_write accessor that
+>> automatically unlocks the NPI (NoC programming interface) lock
+>> register before each write, as required by the hardware. The regmap
+>> is configured with fast_io since the underlying MMIO accessors are
+>> safe to call from atomic context.
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> with a caveat of using namespaced exports (see below).
 
-On Tue, Jun 16, 2026 at 11:03:11PM -0300, Marcelo Schmitt wrote:
-> Document how to describe LTC2378-20 and similar ADCs in device tree.
->=20
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> ---
-> Change log v2 -> v3:
-> - Re-added device tree fallback compatibles for LTC2378 chips, now with o=
-ptions
->   to provide a single compatible string or a pair of single compatible st=
-ring
->   plus a fallback string to a slower sample rate spec in case a driver fo=
-r the
->   specific part is not found.
->=20
->  .../bindings/iio/adc/adi,ltc2378.yaml         | 160 ++++++++++++++++++
->  MAINTAINERS                                   |   7 +
->  2 files changed, 167 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2378=
-=2Eyaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml b=
-/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
-> new file mode 100644
-> index 000000000000..7d30a2cade8f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
-> @@ -0,0 +1,160 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ltc2378.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices LTC2378 and similar Analog to Digital Converters
-> +
-> +maintainers:
-> +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
-> +
-> +description: |
-> +  Analog Devices LTC2378 series of ADCs.
-> +  Specifications can be found at:
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-233818fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236416fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236418f.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236716fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236718f.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236816f.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236818f.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-236918fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237016fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237616fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237618fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237620fb.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237716fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237718fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237720fb.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237816fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237818fa.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237820fb.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-237918fb.pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-238016fb.pdf
-> +
-> +$ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      # Single compatible string match.
-> +      - enum:
-> +          - adi,ltc2338-18
-> +          - adi,ltc2364-16
-> +          - adi,ltc2364-18
-> +          - adi,ltc2367-16
-> +          - adi,ltc2367-18
-> +          - adi,ltc2368-16
-> +          - adi,ltc2368-18
-> +          - adi,ltc2369-18
-> +          - adi,ltc2370-16
-> +          - adi,ltc2376-16
-> +          - adi,ltc2376-18
-> +          - adi,ltc2376-20
-> +          - adi,ltc2377-16
-> +          - adi,ltc2377-18
-> +          - adi,ltc2377-20
-> +          - adi,ltc2378-16
-> +          - adi,ltc2378-18
-> +          - adi,ltc2378-20
-> +          - adi,ltc2379-18
-> +          - adi,ltc2380-16
-> +
-> +      # Low sample rate fallback for 16-bit unipolar sensors.
-> +      - items:
-> +          - enum:
-> +              - adi,ltc2370-16 # 2 MSPS
-> +              - adi,ltc2368-16 # 1 MSPS
-> +              - adi,ltc2367-16 # 500 kSPS
-> +          - const: adi,ltc2364-16 # fallback (250 kSPS)
+Thank you for the review!
 
-Your driver still matches on ltc2370-16, which makes me question the
-value of these fallbacks. That said, the chip info struct contains no
-information about sampling rate. What actually is the impact of the
-sample rate on the programming model?
-Is there actually a benefit to matching on ltc2370-16, or can you just
-match on the fallback?
-+static const struct ltc2378_chip_info ltc2370_16_chip_info =3D {
-+	.name =3D "ltc2370-16",
-+	.resolution =3D 16,
-+	.bipolar =3D false,
-+};
+> 
+> ...
+> 
+>> +EXPORT_SYMBOL_GPL(devm_versal_sysmon_core_probe);
+> 
+> Please, also use symbol namespace.
 
-+static const struct ltc2378_chip_info ltc2368_16_chip_info =3D {
-+	.name =3D "ltc2368-16",
-+	.resolution =3D 16,
-+	.bipolar =3D false,
-+};
+Will use EXPORT_SYMBOL_NS_GPL(devm_versal_sysmon_core_probe, 
+"VERSAL_SYSMON") and add MODULE_IMPORT_NS("VERSAL_SYSMON") to both 
+platform and I2C drivers.
 
-+static const struct ltc2378_chip_info ltc2367_16_chip_info =3D {
-+	.name =3D "ltc2367-16",
-+	.resolution =3D 16,
-+	.bipolar =3D false,
-+};
+> 
+> ...
+> 
+>> +static int sysmon_mmio_reg_read(void *context, unsigned int reg,
+>> +                             unsigned int *val)
+> 
+> Make it a single line. It will be more readable.
+> 
+> static int sysmon_mmio_reg_read(void *context, unsigned int reg, unsigned int *val)
 
-+static const struct ltc2378_chip_info ltc2364_16_chip_info =3D {
-+	.name =3D "ltc2364-16",
-+	.resolution =3D 16,
-+	.bipolar =3D false,
-+};
+Done.
+> 
+> ...
+> 
+>> +static int sysmon_mmio_reg_write(void *context, unsigned int reg,
+>> +                              unsigned int val)
+> 
+> In the similar way.
+> 
+> static int sysmon_mmio_reg_write(void *context, unsigned int reg, unsigned int val)
 
-All the devices have the same match data, other than the name, as the
-fallback.
+Done.
 
-> +
-> +      # Low sample rate fallback for 18-bit unipolar sensors.
-> +      - items:
-> +          - enum:
-> +              - adi,ltc2369-18 # 1.6 MSPS
-> +              - adi,ltc2368-18 # 1 MSPS
-> +              - adi,ltc2367-18 # 500 kSPS
-> +          - const: adi,ltc2364-18 # fallback (250 kSPS)
-> +
-> +      # Low sample rate fallback for 16-bit bipolar sensors.
-> +      - items:
-> +          - enum:
-> +              - adi,ltc2380-16 # 2 MSPS
-> +              - adi,ltc2378-16 # 1 MSPS
-> +              - adi,ltc2377-16 # 500 kSPS
-> +          - const: adi,ltc2376-16 # fallback (250 kSPS)
-> +
-> +      # Low sample rate fallback for 18-bit bipolar sensors.
-> +      - items:
-> +          - enum:
-> +              - adi,ltc2379-18 # 1.6 MSPS
-> +              - adi,ltc2338-18 # 1 MSPS
-> +              - adi,ltc2378-18 # 1 MSPS
-> +              - adi,ltc2377-18 # 500 kSPS
-> +          - const: adi,ltc2376-18 # fallback (250 kSPS)
-> +
-> +      # Low sample rate fallback for 20-bit bipolar sensors.
-> +      - items:
-> +          - enum:
-> +              - adi,ltc2378-20 # 1 MSPS
-> +              - adi,ltc2377-20 # 500 kSPS
-> +          - const: adi,ltc2376-20 # fallback (250 kSPS)
+Thanks,
+Salih
 
-I didn't check these, but I assume they are the same.
+> 
+> In both cases it's only 83 characters.
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
 
---cozC65bBU2iQaoDJ
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajLF1gAKCRB4tDGHoIJi
-0szDAP9gj0vofKdfA/Kp0z6I4Ap/DJ5Wrp6jTjMR95csENDCRQEAsdJc4trP1URx
-dleJPNku9BuaepRcK/79m9dBeVscggs=
-=oNjY
------END PGP SIGNATURE-----
-
---cozC65bBU2iQaoDJ--
