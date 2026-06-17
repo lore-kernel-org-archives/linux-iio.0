@@ -1,123 +1,167 @@
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9673D6CC1;
-	Wed, 17 Jun 2026 10:05:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BFA42EEE68;
+	Wed, 17 Jun 2026 10:05:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781690740; cv=none; b=j69BFkzAP2fNg+2vcxGlFW/aAafvayXPp39QlJ8lVaV3JB+Gdg5mlYHaL2Po6LpOfSfrpwoiqJwmWwmr14yfdoqqx3lcCAmBY/Lw9ZusaknEb4eJkAZfUDDFhNuartK5LywikOHUhBRgBT1YxJvHLWQAAr4tag8kR7odC46TnyQ=
+	t=1781690760; cv=none; b=PCFQlRfzzKiK2l5rQyvqw+Y/Yg59UI4o1KuKoNWDUrxkXGi8iKpb0mqAXpC8l7hMzpSOESHSBtWo7mv0r0gDkU5phhfltgEUbp2gcOG3yT0UYvn1KrqmFPPQnxKlNvlduGFEmNfjrmje8UIWhLMfZfh/7VeJQ4+NUqc9R4+HSbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781690740; c=relaxed/simple;
-	bh=moujiGOu9PAJ3ZlhRbXA7SWL1BST4vazsX9fofw7HTI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=MtNuSLuuIDLjzu4TrDRg7Zu0A/VIhPD3Yd8flBUggX+Vocwr2ktdr3u7KMt4wuBeDE4rzr1o4Aq6Fw68GNMMFniyevCFAxLHOpyj9ezvT7yDj9fbcDJJXyyOQt+bZj3v0T4XYbdkMsyS0SRfKq5wGII7+56V4GVdbx4nVgHJahk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=Z8INmZOW; arc=none smtp.client-ip=211.75.126.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
+	s=arc-20240116; t=1781690760; c=relaxed/simple;
+	bh=OLeVBB6qlE0iZ/ufAhTpyQ+OClTsi9u7Xc5hNVrjvek=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NVcUBYWwZZ0AXLX61IEu0+9qED6zaagZHDZv0s9bifqYycYZw02YOKpGZaV4Qn9OG/6QFWNcHFh1gFjjgBQriaWXipqkSPCvFA+impOtgGda/wf9mw5pv8NoTblCAeybgDWFMt1iqXe+in79hw5klvRwntyF05IDZ3kECGh+Ti4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XG7cpH0R; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="Z8INmZOW"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 65H9sREk92672371, This message is accepted by code: ctloc85258
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1781690067; bh=moujiGOu9PAJ3ZlhRbXA7SWL1BST4vazsX9fofw7HTI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	b=Z8INmZOWK5z00I2KVZAR9ytDHODlboHrX57M3opOQjVa4KUmNXll1kjvNmuj2qeJ6
-	 ZYzulV0QFjZa/i9o5Y5exjKiVHbOoGnDmQRvaexKEZZuQAsXMyoPwVakiNC/BAH+8R
-	 KHZOhjQBpOJjmMN6oyPdeB4lC0DnJ9dV4pwhqj70Zsnph9V6Q8bmW9myl/M7R7n6Vb
-	 wi/JnDuNzvzCPlPKRrYnGLP6Cvl7wDlyWAC48R6p39ldmITbooIhiiLtK/+UmtNawC
-	 4sdVjBjCS47qYNlrLsUXnLvISeUoarVJZrGFX8yGmDNgdonr1dwwc/nkGsgd8pVuhQ
-	 EGoqfnUBdzWPg==
-Received: from mail.realtek.com (rtkexhmbs02.realtek.com.tw[172.21.6.41])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 65H9sREk92672371
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 17 Jun 2026 17:54:27 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS02.realtek.com.tw (172.21.6.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Wed, 17 Jun 2026 17:54:27 +0800
-Received: from RTKEXHMBS06.realtek.com.tw ([::1]) by
- RTKEXHMBS06.realtek.com.tw ([fe80::e6fd:5a3f:8946:92c4%10]) with mapi id
- 15.02.2562.017; Wed, 17 Jun 2026 17:54:27 +0800
-From: =?big5?B?WXUtQ2h1biBMaW4gW6pMr6enZ10=?= <eleanor.lin@realtek.com>
-To: Michael Walle <mwalle@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: "linusw@kernel.org" <linusw@kernel.org>, "robh@kernel.org"
-	<robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com"
-	<afaerber@suse.com>, "wbg@kernel.org" <wbg@kernel.org>,
-	"mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
-	"lars@metafoo.de" <lars@metafoo.de>, "Michael.Hennerich@analog.com"
-	<Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org"
-	<andy@kernel.org>, "dlechner@baylibre.com" <dlechner@baylibre.com>,
-	=?big5?B?VFlfQ2hhbmdbsWmkbLZoXQ==?= <tychang@realtek.com>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-realtek-soc@lists.infradead.org"
-	<linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, =?big5?B?Q1lfSHVhbmdbtsDgsq7LXQ==?=
-	<cy.huang@realtek.com>, =?big5?B?U3RhbmxleSBDaGFuZ1up96h8vHdd?=
-	<stanley_chang@realtek.com>, =?big5?B?SmFtZXMgVGFpIFvAuafTrnBd?=
-	<james.tai@realtek.com>
-Subject: RE: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Thread-Topic: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Thread-Index: AQHc4cATn1PDC9J2iUegNlC3h35mQ7YJuQgAgBT/RkCADN+cAIAIv5wAgAAIjACADkT7EP//fG0AgACZdFA=
-Date: Wed, 17 Jun 2026 09:54:27 +0000
-Message-ID: <61c053a5a8e6461f9e6fcd40b6b5064d@realtek.com>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
- <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
- <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
- <39de4d4ada5446e7a33e48c43f410439@realtek.com>
- <DJB6XO07EC8Q.1X9P752MLFB4N@kernel.org>
-In-Reply-To: <DJB6XO07EC8Q.1X9P752MLFB4N@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XG7cpH0R"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781690758; x=1813226758;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OLeVBB6qlE0iZ/ufAhTpyQ+OClTsi9u7Xc5hNVrjvek=;
+  b=XG7cpH0RZh9SEFjfA/j0IjvIq+VhfOda3Y+7rNP+Xlq9jMo09g+XrNcR
+   deZsj0EpaCXFR4dLqoFZZnYKbbWu1GXh88fn2UDXC0YKVLTen6CamZV8j
+   cX/FFX4VOhfI4qY1ePWl1Ak/lK3hKJy9kWnpQHkanpPVHPTEizq2WRYXE
+   GA+++yivQ1uw5rL1YJVR/raylqE3DPkRj6EX8bfY/6YRVjaIxWw5QHIP+
+   AV3+BMhb3mrk5+dUr3fuV7HtRX4ZuwJqJs2AB5W2KBV/+HKl9yeD5Xhnr
+   qkhUrd3m5qFjSJNdfQZA/GhBYomP6PkdRt+a3U+mDhiSTgHONMZurQ+H6
+   w==;
+X-CSE-ConnectionGUID: qIDIFzr9TWW0396XXP3KxA==
+X-CSE-MsgGUID: hlU4DowpSx6hw/z8W6BfCQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="82536029"
+X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
+   d="scan'208";a="82536029"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 03:05:58 -0700
+X-CSE-ConnectionGUID: PTAcu+LyS7iF1NphgD7NBw==
+X-CSE-MsgGUID: Z8Ar9FZWS++0ppbBrttrWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
+   d="scan'208";a="252328680"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.69])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 03:05:53 -0700
+Date: Wed, 17 Jun 2026 13:05:50 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Herman van Hazendonk <github.com@herrie.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	Denis Ciocca <denis.ciocca@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Denis Ciocca <denis.ciocca@st.com>,
+	Linus Walleij <linusw@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] iio: magnetometer: st_magn: honour
+ st,fullscale-milligauss DT property
+Message-ID: <ajJxfi3V-EGz4KTF@ashevche-desk.local>
+References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
+ <20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-SGkgTWljaGFlbCwNCg0KPiBIaSwNCj4NCj4gT24gV2VkIEp1biAxNywgMjAyNiBhdCAxMDozNiBB
-TSBDRVNULCBZdS1DaHVuIExpbiBbqkyvp6dnXSB3cm90ZToNCj4+Pj4+PiBXaXRob3V0IGFuIGFj
-Y2Vzc29yIGxpa2UgZ3Bpb19yZWdtYXBfZ2V0X2dwaW9jaGlwKCksIHdlIGNhbm5vdCANCj4+Pj4+
-PiByZXRyaWV2ZSB0aGUgZ3Bpb19jaGlwIGluc3RhbnRpYXRlZCBpbnNpZGUgZ3Bpby1yZWdtYXAu
-YyB0byANCj4+Pj4+PiBmdWxmaWxsIHRoZXNlIHJlcXVpcmVtZW50cyBpbiBvdXINCj4+Pj4+PiBt
-YXAoKSBmdW5jdGlvbi4NCj4+Pg0KPj4+IFdoeSBpcyBncGlvY2hpcF9pcnFfcmVxcmVzKCkgY2Fs
-bGVkIGluIHRoZSBmaXJzdCBwbGFjZT8gSXNuJ3QgdGhhdCANCj4+PiBvbmx5IGNhbGxlZCBpZiB0
-aGUgaXJxIGhhbmRsaW5nIGlzIHNldCB1cCB2aWEgZ2MtPmlycS5jaGlwIGFuZCBub3QgDQo+Pj4g
-dmlhDQo+Pj4gZ3Bpb2NoaXBfaXJxY2hpcF9hZGRfZG9tYWluKCkgbGlrZSBpbiBncGlvLXJlZ21h
-cD8NCj4+Pg0KPj4NCj4+IFRoZSBwYW5pYyB3YXMgY2F1c2VkIGJ5IG15IGRyaXZlciBpbmNsdWRp
-bmcgDQo+PiAnR1BJT0NISVBfSVJRX1JFU09VUkNFX0hFTFBFUlMnLCB3aGljaCBmb3JjZWQgdGhl
-IGNhbGwgdG8gJ2dwaW9jaGlwX2lycV9yZXFyZXMoKScgYW5kIGNyYXNoZWQuDQo+DQo+IEJ1dCB3
-aHkgZGlkIHlvdSB1c2UgaXQgaWYgeW91ciBpcnEgZG9tYWluIGlzbid0IG1hbmFnZWQgYnkgdGhl
-IGdwaW9saWIsIGJ1dCByYXRoZXIgeW91ciBvd24gPmlycSBkb21haW4/IEJlZm9yZSBnb2luZyB3
-aXRoIG9wdGlvbiAjMyBJJ2QgZG91YmxlIGNoZWNrIGlmIHRoYXQgaXMgY29ycmVjdCBpbiB5b3Vy
-IGRyaXZlci4NCj4NCj4gLW1pY2hhZWwNCg0KRG8geW91IG1lYW4gdGhhdCBhIGN1c3RvbSBJUlEg
-ZG9tYWluIHNob3VsZG4ndCBiZSBtaXhlZCB3aXRoIGdwaW9saWIgZmVhdHVyZXMgbGlrZQ0KJ0dQ
-SU9DSElQX0lSUV9SRVNPVVJDRV9IRUxQRVJTJz8NCg0KQWRkaXRpb25hbCBpbmZvcm1hdGlvbjog
-b3VyIEdQSU8gY29udHJvbGxlciByZWNlaXZlcyAzIHNlcGFyYXRlIGludGVycnVwdCBsaW5lcy4N
-CkJlY2F1c2UgdGhlIHN0YW5kYXJkICdyZWdtYXBfaXJxX2NoaXAnIG1lY2hhbmlzbSBpbiAnZ3Bp
-by1yZWdtYXAnIGRvZXMgbm90IHN1cHBvcnQNCnRoaXMgbXVsdGktbGluZSBoYXJkd2FyZSBkZXNp
-Z24sIHdlIGFyZSBmb3JjZWQgdG8gY3JlYXRlIG91ciBvd24gSVJRIGRvbWFpbiBhbmQgcGFzcw0K
-aXQgdmlhICdjb25maWctPmlycV9kb21haW4nLiANCg0KR2l2ZW4gdGhpcyBjb25zdHJhaW50ICh0
-aGF0IHdlIG11c3QgdXNlIG91ciBvd24gSVJRIGRvbWFpbiksIGFyZSB5b3Ugc3VnZ2VzdGluZw0K
-dGhhdCB3ZSBzaG91bGQgaW1wbGVtZW50IG91ciBvd24gJ2lycV9yZXF1ZXN0X3Jlc291cmNlcycg
-YW5kDQonaXJxX3JlbGVhc2VfcmVzb3VyY2VzJyBjYWxsYmFja3MgaW5zdGVhZCBvZiByZWx5aW5n
-IG9uDQonR1BJT0NISVBfSVJRX1JFU09VUkNFX0hFTFBFUlMnPw0KDQpCdXQgaWYgdGhhdCBpcyB0
-aGUgY2FzZSwgd2Ugd291bGQgbXVjaCBwcmVmZXIgdG8gbGV0IHRoZSBjb3JlIGdwaW9saWIgaGFu
-ZGxlDQp0aGVzZSByZXNvdXJjZSBhbmQgc3RhdGUgbWFuYWdlbWVudCB0YXNrcyBmb3IgdXMgKmFz
-IHByb3Bvc2VkIGluIG9wdGlvbiAzKSwgcmF0aGVyIA0KdGhhbiBkdXBsaWNhdGluZyB0aGUgZWZm
-b3J0IGluIG91ciBkcml2ZXIuDQoNCkJlc3QgUmVnYXJkcywNCll1LUNodW4NCg==
+On Tue, Jun 16, 2026 at 03:02:06PM +0200, Herman van Hazendonk wrote:
+> The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
+> highest-sensitivity full-scale supported by the chip -- as the
+> starting range. For the LSM303DLH that is +/-1.3 G; for the
+> LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
+> 
+> That is the right default for "minimal noise floor at a desk", but
+> it leaves no margin for boards that pick up appreciable DC bias from
+> nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
+> LSM303DLH magnetometer is mounted close enough to the surrounding
+> power planes that X reads back as the chip's 0xF000 overflow
+> sentinel (== -4096 raw, the value the chip publishes when the ADC
+> saturates) on every sample at the chip-default range, while Y and Z
+> fall well within the +/-1.3 G window.
+> 
+> Parse the st,fullscale-milligauss device-tree property (documented
+> separately in dt-bindings/iio/st,st-sensors.yaml) in the
+> magnetometer common probe to select the initial fs_avl entry by its
+> mg value. The DT binding pins the accepted value set per compatible
+> via allOf/if-then enum clauses, so a malformed mg value fails
+> dt_binding_check rather than reaching the driver. Sensors with a
+> fixed full-scale (fs.addr == 0: LSM303AGR, LIS2MDL, IIS2MDC) have no
+> register to switch and the property is rejected outright for them
+> in the binding; the parse block is additionally gated on fs.addr as
+> defence in depth against stale DTBs.
+> 
+> Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
+> LSM303DLH and LSM303DLHC/DLM the valid values are 1300, 1900, 2500,
+> 4000, 4700, 5600 and 8100; for LIS3MDL, LSM9DS1-magn and LSM303C-magn
+> they are 4000, 8000, 12000, 16000.
+> 
+> Empirical scale sweep on the HP TouchPad confirmed that on this
+> board any fs_avl >= 1 produces non-saturated X readings:
+> 
+>     scale (0.001 G/LSB)  | X raw    Y raw    Z raw
+>     --------------------+-------------------------------
+>             1.100        | -4096    44       46    (X saturated)
+>             0.855        |  -547    37       37    (clean)
+>             0.670        |  -433    94      103    (clean)
+>             0.450        |  -266    44       71    (clean)
+>             0.400        |  -235    34       65    (clean)
+>             0.330        |  -196    27       56    (clean)
+>             0.230        |  -145    15       40    (clean)
+> 
+> 2500 mg is the natural choice for tenderloin: comfortably outside
+> the saturation regime while keeping useful precision for compass
+> applications.
+
+Not sure if we need that big commit message, better to move to the point.
+
+> +	propname = "st,fullscale-milligauss";
+> +	if (mdata->sensor_settings->fs.addr &&
+> +	    device_property_present(parent, propname)) {
+> +		struct st_sensor_fullscale *fs = &mdata->sensor_settings->fs;
+> +		u32 fs_mg;
+
+> +		int i;
+
+Instead...
+
+> +		err = device_property_read_u32(parent, propname, &fs_mg);
+> +		if (err)
+> +			return err;
+
+> +		for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+
+		for (unsigned int i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+
+> +			if (!fs->fs_avl[i].num)
+> +				break;
+> +			if (fs->fs_avl[i].num == fs_mg) {
+> +				mdata->current_fullscale = &fs->fs_avl[i];
+> +				break;
+> +			}
+> +		}
+> +		if (mdata->current_fullscale->num != fs_mg)
+> +			dev_warn(parent, "%s=%u not supported, using %u\n",
+> +				 propname, fs_mg,
+> +				 mdata->current_fullscale->num);
+> +	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
