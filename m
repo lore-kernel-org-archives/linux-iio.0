@@ -1,119 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99E13C870E;
-	Wed, 17 Jun 2026 08:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9670E37880B;
+	Wed, 17 Jun 2026 09:31:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781685894; cv=none; b=XySXgupR4SUc+i6SPi8uOySgk6vZi/TEe5EP1d8fPqtXdPuOOUwCnocSrD79nJuZIj6jnVJt7ugXjXGJECZQe7CAyU/Q6KXMeRgJSMJhzmNLcFnLTclodtDcByEb5uiG1RMSmEP3R9Sl5Ps5sBiclBrLrIfMfqI/bttIvlqVDWU=
+	t=1781688706; cv=none; b=IwVqIzBZ8jQ4EPp6JBOB1Vc8S+2AXctZA+aa7dcQ7JbIjZDAPz6a42h/IfsuEKC40MTxg1BMdhAyqkUiKUke719pUDM0dMZcBhrALKD8NZaqNn3pOs0GhHTySXPibSuo4lvEOIj8JHF68RTsKH60DtEtiJgI5btSdu8PhaK45z8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781685894; c=relaxed/simple;
-	bh=q+cUJZOydKXdWDpZXEceW0s0RozWR5kA7NjUSuPBp1M=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=Q0T4QoefJEfuZ3dHbmdcR3ksROo0c5UAybpCLgD8sqSrIrji8Mf1Ycaiz6PD4adZGGgImCULpO2sLwWPrPxl+zZGF2pHtgWDS40VKcRuCPvWbbEIINtv9pUto9cfQDrdlBdCmTjm+SNZV+nBbm/T0IPBvOYyAiszVUUVx4BjHp4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fJqsmqL5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1781688706; c=relaxed/simple;
+	bh=d04o9Z94VpuhEZ52SAkH9ZLcQLVemN5/ad721qLmT2I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k/+TmmZCFxkUwYbwXOWkab0s4RVdUaBVowxN7qi46tsMpdpngyxyXWMDxSgon5rkUrXja1zMhKwcGe3vn81g4TiSODbYIid8AmGqYo6j+PJyKr7p4t9xmy+c6Kie2nV+MbPBRdR56C3l1apdWNzsGxeZRYMNd9k1n82/XLZrJDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DZSV3tlV; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fJqsmqL5"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 4CC831F0155C;
-	Wed, 17 Jun 2026 08:44:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781685888;
-	bh=q+cUJZOydKXdWDpZXEceW0s0RozWR5kA7NjUSuPBp1M=;
-	h=Date:Subject:Cc:From:To:References:In-Reply-To;
-	b=fJqsmqL5tZ/r2VH0IDbyLmtJ/fMTxFUKdxTuwnVob95x+LB24GU7YsTTyi0kN1dQF
-	 HKvf3Emei2d/BcrOnOP1KutEq1B6Ic8FXQLLNstMBnQ+vCB8arEO2UAMlNqolz/yZz
-	 O1kzRxFmtv4oway1kQfPzAixZQxuVvW5lPcAxfoVBRkLr7dAcJk5KhyqqGFNwKnQ5x
-	 M2TjnNUC1yfK5Xx+cZjrGR6UTDHD3Mf/1vySIaaSQ45uQIs/+wxJeaNRDB5oCGkTYW
-	 TdWIw29fD8sraD3l/V4vuCaOUGHPF7BaCUrbPm+XkwJkxx1+9hAO8VomFrq08nyW0R
-	 eo3cPgfwBLH5g==
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DZSV3tlV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781688704; x=1813224704;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=d04o9Z94VpuhEZ52SAkH9ZLcQLVemN5/ad721qLmT2I=;
+  b=DZSV3tlV78AN0YUlYoL3Z5lJ97gUjsFtjA1kC9k7isPmruGISpLeTJZj
+   m7ZawGvYrVB6RSkADemdNV48DzzCFb25D2GuoXmbVItqxsdTtqh8enYg5
+   vnE6c0pybnUNdFuT8gn0Bk8oB5PjAufYtvKXNZM1fEGwCaX4EuDB3gevb
+   piGceFV3z1LOlRefSHwq9JLrxq2BiT6v4Uc2EEunoxK8zmeKBXhc0ta+y
+   ZJp+vUqfGNUBLFlVYOp7ug0x1/CnE+plOnaO1FGQnjsAOqGB1SkVA5iNY
+   ajxmeZ4lkeztPYhS6hRu0+BKNtCpwiRoCE6FqvqRwEQQCA0k+OVnLvd7Z
+   g==;
+X-CSE-ConnectionGUID: wZCK9ykDRp6jNSO/FeKxpA==
+X-CSE-MsgGUID: mw9ej7GhT/Cl7oXhnKg2Wg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11819"; a="93141943"
+X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
+   d="scan'208";a="93141943"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 02:31:43 -0700
+X-CSE-ConnectionGUID: 7sQftczmTB290X5GoDEGPg==
+X-CSE-MsgGUID: deAacQA0Rr+SVGnQKg4vVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,209,1774335600"; 
+   d="scan'208";a="252972881"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.69])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 02:31:41 -0700
+Date: Wed, 17 Jun 2026 12:31:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: hexlabsecurity@proton.me
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: accel: bmc150: clamp the device-reported FIFO
+ frame count
+Message-ID: <ajJpekcHULrcCbU2@ashevche-desk.local>
+References: <20260616-b4-disp-9546bfb4-v3-1-5acc59a06636@proton.me>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=ae7d6270ac9333222e92442123309da8a5c3fc1e7564e8b96e096513da81;
- micalg=pgp-sha384; protocol="application/pgp-signature"
-Date: Wed, 17 Jun 2026 10:44:44 +0200
-Message-Id: <DJB6XO07EC8Q.1X9P752MLFB4N@kernel.org>
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Cc: "linusw@kernel.org" <linusw@kernel.org>, "robh@kernel.org"
- <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
- "conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com"
- <afaerber@suse.com>, "wbg@kernel.org" <wbg@kernel.org>,
- "mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
- "lars@metafoo.de" <lars@metafoo.de>, "Michael.Hennerich@analog.com"
- <Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
- "nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org"
- <andy@kernel.org>, "dlechner@baylibre.com" <dlechner@baylibre.com>,
- =?utf-8?b?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-realtek-soc@lists.infradead.org"
- <linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, =?utf-8?b?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?=
- <cy.huang@realtek.com>, =?utf-8?b?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?=
- <stanley_chang@realtek.com>, =?utf-8?b?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?=
- <james.tai@realtek.com>
-From: "Michael Walle" <mwalle@kernel.org>
-To: =?utf-8?b?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?= <eleanor.lin@realtek.com>,
- "Bartosz Golaszewski" <brgl@kernel.org>, "Andy Shevchenko"
- <andriy.shevchenko@intel.com>
-X-Mailer: aerc 0.20.0
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
- <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
- <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
- <39de4d4ada5446e7a33e48c43f410439@realtek.com>
-In-Reply-To: <39de4d4ada5446e7a33e48c43f410439@realtek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260616-b4-disp-9546bfb4-v3-1-5acc59a06636@proton.me>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
---ae7d6270ac9333222e92442123309da8a5c3fc1e7564e8b96e096513da81
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+On Tue, Jun 16, 2026 at 08:56:51PM -0500, Bryam Vargas via B4 Relay wrote:
 
-Hi,
+> __bmc150_accel_fifo_flush() transfers the frame count the device reports
+> in FIFO_STATUS into an on-stack buffer sized for BMC150_ACCEL_FIFO_LENGTH
+> (32) samples, but the count is masked to 7 bits (0..127) and the optional
+> caller budget does not bound the flush-all path. A device, or an attacker
+> on the I2C/SPI bus, reporting up to 127 frames overflows the buffer by up
+> to 570 bytes: a stack out-of-bounds write.
+> 
+> Clamp the count to BMC150_ACCEL_FIFO_LENGTH before the transfer, mirroring
+> the clamp already applied in bmc150_accel_set_watermark(). Conforming
+> hardware reports at most that many frames and is unaffected.
 
-On Wed Jun 17, 2026 at 10:36 AM CEST, Yu-Chun Lin [=E6=9E=97=E7=A5=90=E5=90=
-=9B] wrote:
->>>>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot=20
->>>>> retrieve the gpio_chip instantiated inside gpio-regmap.c to fulfill=
-=20
->>>>> these requirements in our
->>>>> map() function.
->>
->> Why is gpiochip_irq_reqres() called in the first place? Isn't that only
->> called if the irq handling is set up via gc->irq.chip and not via=20
->> gpiochip_irqchip_add_domain() like in gpio-regmap?
->>
->
-> The panic was caused by my driver including 'GPIOCHIP_IRQ_RESOURCE_HELPER=
-S',
-> which forced the call to 'gpiochip_irq_reqres()' and crashed.
+LGTM now,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-But why did you use it if your irq domain isn't managed by the
-gpiolib, but rather your own irq domain? Before going with option #3
-I'd double check if that is correct in your driver.
+-- 
+With Best Regards,
+Andy Shevchenko
 
--michael
 
---ae7d6270ac9333222e92442123309da8a5c3fc1e7564e8b96e096513da81
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCajJefRIcbXdhbGxlQGtl
-cm5lbC5vcmcACgkQEic87j4CH/hggAGA48SYycuQ31SATiLygkbvb0W1zefVePET
-gk6JbWW8iIuoG0dOdIPsod0/pPg692m9AYDoGRmD/J1tvhi2B28P6PCSOkTa7yRs
-HmpBeIQ/pXUXteE59FADrOs+i7f7s0N8AxU=
-=kuX1
------END PGP SIGNATURE-----
-
---ae7d6270ac9333222e92442123309da8a5c3fc1e7564e8b96e096513da81--
