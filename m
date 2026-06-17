@@ -1,163 +1,95 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013070.outbound.protection.outlook.com [40.107.201.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BC534ADDA5;
-	Wed, 17 Jun 2026 16:24:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.70
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781713485; cv=fail; b=uWXFSr2HcfWc/QH/5NCJaYKhAcbHf0PqsqhgpAPr9MLDoQxDivIiYVBao/x2TdNwuZKuuw74s6OFOpI2pHaS6EQi+xtJCMo5Kpi5UAj5FANO2AD+l8E7YBw1c58m8X42XknBGnUUxOSqomZ76fjVpz8O97MIW2kecMi91n3eaIs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781713485; c=relaxed/simple;
-	bh=5FdCGCVjy7/4H6XFuResQkZbLliACE/0K7RiXyD/J+U=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=prPFgI/YKbv6pQXiRcvKaQZqW2bRgB7HH6nidox9TOZuziT6AnVAwbh8JqkXz+K60yrZZmS3iOK0nHgqnxBEPvPnUvAGejRNwqiaBlanp6XBYTeY7y2CC2I4dCyR982H2chxNM664G+sAvtiO1fJQzQunPnOdikfSfkOuxYxuRg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eEpY/x1p; arc=fail smtp.client-ip=40.107.201.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19FB2396B6F
+	for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 16:26:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781713603; cv=none; b=CL2g+Vbglndl3HVMObP6Ur3cn4k6uAa763dzZV6PFvaLy7EDEEJ4pjKAZIedbMbcPhV0ZdTO/AgLLwgCdlpBy3VXyoofcmxNFy2nBsul53BgIAjYTSm2BiK4TZ1wHqpD8LsOnsPUmBo+IYo1LnVRR+BuWAA/ulFRJApGKXQ8uFQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781713603; c=relaxed/simple;
+	bh=yuTjtCSL6nDqPw5bh1+o5icGaaHPmtOBvYQ8hXVMyTQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=koi0+yqVReWEaL/phX7A0R4CxvuSLMtvttCcG6J3LoxblzppZAvX7xw4uczF9tOcuZoz73ZgknnnG97oqYHEBf3OlYW37KWyEYmQ4shxyYFvGuPtIDaPLeZNfQuZcgN42uzsUwmcrOq9uegluP9ahE944/R3aueT/vnHXN4ZtCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c2+DqcHQ; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eEpY/x1p"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=b61U/BNf467QaJXhBXo+8EfPtmSSCCv6jGeGUdDJ21dMh2sPKQ/biRsDHF9VpXfUZbvlxvoiqu1RtOG1tc243vGgC//HxkDTf8SVJ4yGnoRhip7QcyFyf6HRxcV5yJzgLL+6j5HTKQRUyJYrVzMe4VnZByF6HNUqWzXQgeD90HhpT0synPXp+ZcJqUiL96iegykRKUsdV1esDauuOWcjx+KJOLPPY1LFSSlC8XDP0HjxSL7ryW8KJpW5SAHJ/HPEeuA83fL8tf9qXHkIbdZsdI/hR/7JUSx6WY0RYINsh8kYWkOCyVqHtPskCGfYgNH5ev7VLaVwvr1gn+PID3O/xQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xfV0C/0f6DnUmyf2q0BqR7zdD+Hfl2/6donVf+tACpU=;
- b=L6ePRVOWIMzaPrixQpaCaTLnkw4wux3S1UcK+Ey7uIFhGkuIErkock0RZ6X9bDc/7E8dz2V4uR/GwU38guqAoXf4w40ctz1ElhSdNTHq+k8crySAyDZalTSNPICPa7FP36A/PmoyMchBQNVrz7iVpchfSGpsLPLhzuX+u9WiLc55gYRg/r1PqHPTNcnVkDWJOjBCRQUBUyQ+BdYOPlV5kDvkM2ZAUPfOwMNDMEe+zF43iHAehOvLJbrA18G3EIW1gfzL9HIFrWWFsNQFMCxV13byfr8xche4TzWOgUKrpDnjH3ffhRxeZ3SBjLtbIRPCXcV3pYb27q8uN3FwAwWK2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xfV0C/0f6DnUmyf2q0BqR7zdD+Hfl2/6donVf+tACpU=;
- b=eEpY/x1poCjZ1dKRWyGWK7NnkXUnyEcyUIycjVq3ZFEYvVgiXoEca6CHWSW3BhgfY8EATqpgMdWJq3TvPYUNA4aOXw45+wf8Y1E0ZZBs640aRK/3+oWfFcavALTKycMM8SBpEQJWB4AeCaqVY3PB73QdIqyvrErFdtuNOU/APB4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by BY5PR12MB4162.namprd12.prod.outlook.com (2603:10b6:a03:201::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.11; Wed, 17 Jun
- 2026 16:24:32 +0000
-Received: from IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
- ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0139.009; Wed, 17 Jun 2026
- 16:24:32 +0000
-Message-ID: <6dddc1ce-fe78-4883-940f-56589149980c@amd.com>
-Date: Wed, 17 Jun 2026 17:24:28 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 3/5] iio: adc: versal-sysmon: add I2C driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, conall.ogriofa@amd.com, michal.simek@amd.com,
- linux@roeck-us.net, erimsalih@gmail.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260616131559.3029543-1-salih.erim@amd.com>
- <20260616131559.3029543-4-salih.erim@amd.com>
- <ajK0-KmjxDPW_g4M@ashevche-desk.local>
-Content-Language: en-US
-From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <ajK0-KmjxDPW_g4M@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0203.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:318::17) To IA1PR12MB7736.namprd12.prod.outlook.com
- (2603:10b6:208:420::15)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c2+DqcHQ"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49222b6e871so44441415e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 09:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781713597; x=1782318397; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=048WwcP8hXWTPpyEKeHyvAZ7Iw1D9/1dB7sPBKVJt9E=;
+        b=c2+DqcHQjA0QrGtPnP6aYWJ3HqvwIzBbXk1wtIKhw5z9PZuoMvnbSNesMTs6cc5o7z
+         aEr8agzlZqx7k7C4LYOyBygwml5GvEhIWNWpXP8kqAtBdVbJiddnbCHAQw3wjSJB+0HP
+         g0C46SKN7qxjcjMopoVwMF1mVXxzPgGd9EjTvGzJTPELusbua8p1P3wjKD5ZsecIsUcW
+         kEYy4O6RevMsZQ2oNmeAyXA+I8htA1dp1UfnZY2x7WO0ltbYsIjttsKCBvoDnLAHakzI
+         3aGNKTEx1vj18+PAv9yPaaayUYCl9SvDYNSckuNSsMryGD0ckwQXEw0NAsSu8CzLEPae
+         WKAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781713597; x=1782318397;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=048WwcP8hXWTPpyEKeHyvAZ7Iw1D9/1dB7sPBKVJt9E=;
+        b=s8lfLdRtYXem248htcR3bX7WT0yW+Tex+Zcb5tSQJPFBmsTMfJe6GQvRo/Es7V1h+b
+         4JVMAwMdxfJ96DvQ016bLFoE1080/90FlmOW0pG35CQ1bmkdP63ldq68beYVlcB4VSMN
+         J4tieno/LKjOSRrUyPAtGHDo397wS9RfTbBzojL4HC0VUWcwZKHJ975c5N6GNAfG1Bb6
+         4ia9AOaVN1zggDkXZS82XLYoNv8TnLc/kFNQNybO2V6MITnbk4kEVH9QZ8MdlSCfKTOL
+         Pia7EjsIu8BQ2kt32cPx+Wx3awwWEPaDrz53C3WO3A5InRN8pkmbW8Adpbx5AdLH72rQ
+         exkQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/UH1WOLyKtEBr4m4AM4w+cib/ot5AR58vAvbQvdoK0BTMZaTSs37IDkHbdSC099Bm2tYC7TclUNuw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxYTa04SgjJdwieKbrQx02IFp6n1E7IFoEE8Y5i0W7C5J4i8p4
+	vQHsKnZCRPAsESA91cG6+XEZv45JIUNn1hbVu+shBcs3sYMgqiIlQULE
+X-Gm-Gg: Acq92OEA//eIOybYmS1Dwl26+eAPUQDfDFU/ti4vpGxRYlZrSSUbkQOhKBPWeWpbhry
+	ow/T+UuByNZwCRLApZi/R3yzundndDbJZg5pft8sgYOVFTfR/VnbCO3Qo1LjClrZQgOaXE59k7Q
+	XnLmJiqj6rb83XU6A8T3BF2xJ5TNutCN3gQDQ450S+qYi0UCGEbWK9osBp2NrFH5f7Aq5ZIKaO/
+	1LehnbLPGjTX5zDcWy5GFZSFgtDisi3INe+5mftgZq/yySJ1HbDykD4mYhhdSSQPTdI6DWzHJUZ
+	N230lGSRDHWJ2bNlrGo7uOth+6z+bdoDnDE7nvf4Bh6NQfShkCYcGvM3yZPrXMbo9I/NPl5IwWH
+	th/uUjjZ9tI57X83aZnz2rtJSiG3uMJ16iBlRD6GETeH6BRUfelZ/g4fiE3zXqObPr4TsRDsgBT
+	emhpQ9xh5ZuRXW4k9saHsk9wbAIDT17l6y4lS2qxAOxiQ1Q3bOrm5mQxt/KfH5b4q92pUphbjex
+	pid1vk=
+X-Received: by 2002:a05:600c:b43:b0:492:1e36:8c4c with SMTP id 5b1f17b1804b1-49234142053mr49117205e9.37.1781713597036;
+        Wed, 17 Jun 2026 09:26:37 -0700 (PDT)
+Received: from [10.128.11.42] (195-23-151-163.net.novis.pt. [195.23.151.163])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4923687d2casm25491995e9.0.2026.06.17.09.26.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Jun 2026 09:26:36 -0700 (PDT)
+Sender: Julian Braha <julian.braha@gmail.com>
+Message-ID: <1d0b09e0-66b1-4170-bbac-1e3a39ca7be2@gmail.com>
+Date: Wed, 17 Jun 2026 17:26:35 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|BY5PR12MB4162:EE_
-X-MS-Office365-Filtering-Correlation-Id: 630ef501-aab1-475a-21a2-08decc8ce9e7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|23010399003|18002099003|22082099003|3023799007|11063799006|56012099006|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	no7IHB+2te4j1Zm4SvGX96snzoHZA/5PGIX3rpHvgVuHxLWmIo4xOwmxBHiaDwJH0T5dKRuaJ8lf+bNu3PXLiakaxH5gOJB14gNkXMcOlTIIDIVu3JnvOJUsJfIY/5cT02ovLnqMWWumgYilonLl4pD0A60kxuuF8JHftt5sTNHxCGoGGrnzKNA2nVLRtSSHkqwW8kIu6UnbIbtdt9VUXDvqBGOg0om5juvZg8FMwgqzq2wGwrBzuB7lApyW6JcO7XqjYqt6WDJhRVfttj1VNnnuO7rpHK4qdOu4HaAQ5oPjCwJBbHjJEDBSN9pBzooalcOpAxsHyu9GYeua6TyYUQ5RbbG0gWBVH7n4r7FG6MGi/YgHW6SIyggRQcQ7vYAkdcWuUq+4otX+ekzKLv1GNlz1efOiypJBK/T3V5OkO/weGgQ53lS3Co00VTSdS2wR/AA4mpbGsJaK5SbY3JMrr/sKTJ35Zwg6WNuwwDMdjD/nuvj3QoBTP0d16QUOI5OiD7IVL2xWoOqzvoZ5Pv2GVNfeGc8Gf4hYFu3YSI6UheOYjmV9SAN/u8uVcuUARdIg7+RP07bk+IQYP8d90WWtUtBZCwuFujy5atsbv2bxZM6piLQn1XokgIx1KlxpMCqsj7RTlqOUXi2mKdeyIF+Viy9fVRVUkAR3LywWW/y8/MSG1XcC7SiGRkkmeV+Cqq4k
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(23010399003)(18002099003)(22082099003)(3023799007)(11063799006)(56012099006)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TXE2dVIxUys0Z1VYYnp2M1lOMks0cUR1a0Y3VXVYSFY5QTcrS1FRSkMzVjZm?=
- =?utf-8?B?UEZMK1pRMjJGRTRaZ2lXWFI3b3I0dW9KRjBhK1F4Y1dmbmlFMkVmaW5TQ3pq?=
- =?utf-8?B?NnJ6N0pDQkZCRkt6YncrcG1NSGRMYmdEc0RjaUFENVpjd3U5VEJTdG9LMFVX?=
- =?utf-8?B?TzhQZU4ydXNxdXpBSFM1dE9YOVJaeTJDbWVWU0ZIYlZ1RUM0UW12S3FmMlNo?=
- =?utf-8?B?d3pVZmZmb0xpQnNhemtpQS80Z3NUaENaR04rQTV1Q25GY25vTWk3RXg3UUJY?=
- =?utf-8?B?WXlIMXBPTkwxWnJMUjRDbnNIempIclNiUTlpcG1ESGoxbWozZTRyMUZUNWM4?=
- =?utf-8?B?WEFQd0wwcXlFdUdFa1N3NmhTQVBjU0FseEZ2VFlWRlZCVDAvL2ErdGRUUVZB?=
- =?utf-8?B?Y3VxdHRsUlpka2x4VXYxaTJuSG1TNFVMRDdqL1QrWGlPd1VqL0hLUE85RzBF?=
- =?utf-8?B?V3F6UUVCQVJsUTJpOGpjdFN6VDBpNjllai9oUWRydHZyTXdiWDVTUC9EYzd6?=
- =?utf-8?B?SUZhSTNzZkdMaS9IY1RBTWpTM1d4ZVVOMi9DeVJ1SmVTNkI5aUxhaysrU0pP?=
- =?utf-8?B?ZnZmUkpETTRiQzA3cGl4Zys5NUF3S3pQU0ZKSjh3bThiQ0h6OWczZ2hSaXla?=
- =?utf-8?B?UXZjSTlWdEdodTlHSWF5U2FqTU9ocDNmcUVLbXdaTUwweTNHZzFzZVoya3VM?=
- =?utf-8?B?MFdIZnVrWlluQzhVMFh6ckgwb2kzNmVOcnpPTk1QWjYyNkNRR1F5cGRpOUxo?=
- =?utf-8?B?b1dnQWxQdXF4QkhleWJhbVdadmRvWWpNTklzL1Bsbkg1Vk9pZmVLYkx5ejc5?=
- =?utf-8?B?K0IvL0RSWW9Ndm5jMWpRZDdNMDhDeWNpbEQ5RjlrWHBuTVpYUGdpbWVpYzdO?=
- =?utf-8?B?UVE0cWNTWjd1UWh6ZFlvTDhhR0VpOTRRSFcxenFxVDZpTVlpSE5zMnVzbGkv?=
- =?utf-8?B?YlZHOHpSWW5SYVFOWG85N3U2NFpaODkvUjFqNVFCdnloYmM5YkNxbEpLbFMz?=
- =?utf-8?B?SHVWMHA3ZG9FekRkNkpTZnZsSklTUm1uK3ZWeTEweGljMDBzc2t6RlI2aUNt?=
- =?utf-8?B?NkFQdkhpUmJ1RHZ3MHEvVVpUbDVYVHhzdXVpNzliTHFIc1BnUDh1SS9yMkdn?=
- =?utf-8?B?RDhWZWJOL25WZCs1Y0l2UjVpVWNhSGdhcWlIdXA5bUx0V0l0c21RRi9vYTk5?=
- =?utf-8?B?MVVycjJ4TE1iN21IY3B4bGpYcHM3N0NxSkdZejRjVk5OaTRBbTJPMHA2S2pM?=
- =?utf-8?B?NkVaNktxdTcwd1orQ2FRSDk3OUQ5VzJlUWQrNXVWMStrK2dMVnd2VEtqSExi?=
- =?utf-8?B?a3ZkdWttOVFIWWMwc2w5U0hKdXBmVG5VcWYzaUZzUWFpWjBBbmhmM2szbVdh?=
- =?utf-8?B?b1lBbXpFWjg5SW9xUGlzQjJmS1k1M3F5NGNiUGRneW9XZG9OcWRyRi9hUTU3?=
- =?utf-8?B?eWpJMzh5TmVLNXpSQm9FVzFvNW1KOWwyanlhSDVONkYyc1hYdEtqeTNDTXZM?=
- =?utf-8?B?RUh5Q3BJUnRnQTJIeUlXL0NXQ1l6N0k5ZzZsMWdMUFM4NG9PYVlUaGJnajVD?=
- =?utf-8?B?djU4b3RZS0lqUHFvQUhHUXpaSzRIeFgycFh4eDY0dHhIOVJaekticmdQV3VM?=
- =?utf-8?B?enIzWnRIaDBWS0xVZ0tMamlrQWF2T0JFYXQrTEY5czE0Y2pDdW1reXcrbVN6?=
- =?utf-8?B?TWZpVzcyWnU2YTZJbDNOVDJsaUVIaDZrand5Z09mc3R6ekdNZTVqTlFBSk9S?=
- =?utf-8?B?eUo2aE85NWt4TTlBbThsa1pHVXkydG95UWU2WUxWK3hZVyt6ZFg4b0FrRjJM?=
- =?utf-8?B?RHprVWwxRncrSkRsS0RQVS9xUDJYN0ZlQkFuOCtXYXhYaW9JVG1od2FRcXFV?=
- =?utf-8?B?dStLa1p4S3VZRjQxd2dIYTNWRitWMC81OVp2WG1GRzE3VW9xZEJzTVdVOWUv?=
- =?utf-8?B?am1rT2VYbzJRZjlkbVJvM0dkRDlnTWFKUjlwUXlaY0Fhekkwd01KczMxMGdN?=
- =?utf-8?B?RHBBNkVFb2xXNGNUMjVWL3dGcTFjb1liZVdkT2ZIMDlZZUNUUkd4dmg2YXJ0?=
- =?utf-8?B?ZGppRlphd0k2OEhENHVkNXoxT3dEcm4xUkE5YyszT2t4Y241MFRTMmp5UDg4?=
- =?utf-8?B?QUxKZEFYaml3Qit2bG4vam1oMkpCdWFzVGxZc3NjSGpTNWEyTUd3T1BCcSty?=
- =?utf-8?B?UEdla3BMbmI2UDNhRG1KL1k0ajgrQ2RJemkvWEl5MlM5UHM0OXpvSTd2b1NJ?=
- =?utf-8?B?c2VLcEZraU91RC9DOTRSYkI2a2VmbU5aL29JUGFZaEhQdnFnTFBpWW5PSWxm?=
- =?utf-8?Q?k0O8KIMS6fvN7S+60B?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 630ef501-aab1-475a-21a2-08decc8ce9e7
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2026 16:24:32.6174
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a7ysA6Bp9b+TI1G/Mcoihz6LJj23SWCF64QiU+Ml72FwZVseduRO0LR3ahXtlmre
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4162
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/5] iio: adc: ltc2378: Enable high-speed data capture
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, pop.ioan-daniel@analog.com, marcelo.schmitt1@gmail.com
+References: <cover.1781661028.git.marcelo.schmitt@analog.com>
+ <9f173c47928446aa3e900cf0becb6130dd76846b.1781661028.git.marcelo.schmitt@analog.com>
+Content-Language: en-US
+From: Julian Braha <julianbraha@gmail.com>
+In-Reply-To: <9f173c47928446aa3e900cf0becb6130dd76846b.1781661028.git.marcelo.schmitt@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi Marcelo,
 
-On 17/06/2026 15:53, Andy Shevchenko wrote:
-> On Tue, Jun 16, 2026 at 02:15:57PM +0100, Salih Erim wrote:
->> Add an I2C transport driver for the Versal SysMon block. The SysMon
->> provides an I2C slave interface that allows an external master to
->> read voltage and temperature measurements through the same register
->> map used by the MMIO path.
->>
->> The I2C command frame is an 8-byte structure containing a 4-byte data
->> payload, a 2-byte register offset, and a 1-byte instruction field.
->> Read operations send the frame with a read instruction, then receive
->> a 4-byte response containing the register value.
->>
->> Events are not supported on the I2C path because there is no
->> interrupt line and the I2C regmap backend cannot be called from
->> atomic context.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+On 6/17/26 03:04, Marcelo Schmitt wrote:
 
-Thank you!
+> +	select LTC2378_LIB_OFFLOAD_BUFFER if SPI_OFFLOAD && PWM && SPI_OFFLOAD_TRIGGER_PWM && IIO_BUFFER && IIO_BUFFER_DMAENGINE
+The PWM in this expression is unnecessary since you're && it with
+SPI_OFFLOAD_TRIGGER_PWM.
 
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-
+- Julian Braha
