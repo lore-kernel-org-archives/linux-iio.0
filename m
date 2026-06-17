@@ -1,108 +1,136 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E2A2E7384;
-	Wed, 17 Jun 2026 01:39:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95B512EA498;
+	Wed, 17 Jun 2026 01:56:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781660377; cv=none; b=Vh+tULYLGjZv9A8Gm4hgwOn44XUShleHDhXj89M69B32wk7pKu88YDaVhYxmbDCd2tki/2v/HgEauPKM+/YNuHC/N5sZ0mjMUdyow9o29jQ5QvCXQ4XVrS+oVJ0E07+swPVqfMbaOBoGuzXmtvK8Skv3QwQwrcFhhYmlZ5+8VPI=
+	t=1781661376; cv=none; b=YL96SG8KglSKg2uiNzO1YEPkgHNu0FzUep54QzaCHshjIRGaePoAT8CUKIWJAgIXzimVtEgxNVq2n48brZJ4T5K4iW9hcXrxoEG39mHGH211FqX5kE6J0TlGiGoxbg4lx3bVLRiyIBkHAWmAMw+VXyafc7RY5RoKAKxiBjWnPf8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781660377; c=relaxed/simple;
-	bh=/au6Pg/xeEvTwBIrMjSliICkYgiDjNXSuy5vlTSgzzs=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=M+XruN+prG+DB/xBp1z9benSG91yO18hqLRAHphhHi5Sc51uZH1fpQdldkyhrLcokN/cmLNsNbxKH4Q/r7Vged0Qp9BcALpNhcHQKkhU04tYeOezq5OgGYE3vaysnJC8Lf0o+GNcT5P9LfG+RTPd3j768GcWidhjKi1MWbaUXWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=DN/PbDHf; arc=none smtp.client-ip=117.135.210.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1781661376; c=relaxed/simple;
+	bh=qjPeqOlmNU/riWbGt7a4NeYXglZ96U7tySJCrMzrRSU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=LKHoIBtYCgsT7LUUcS+oxrt/Pcaj80hSviZMqcbQJ/oFEocR/c1MF8bBVw1OBfYsnBCKyduCn8wD9XxDHCi/oBWtlwpWTXWH4DvAnIsO3OaRdeLxdDxeoi9xkATh+Nz18n4LtFLQ+mLVv/IsY1nVMptFJWp02E0jgS2dHwUB+f0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qgjyk3iq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="DN/PbDHf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=Zj
-	OHM/C115qhlt9RvXY/5JvPeHHMNDBANHZ5oNJ3Ptc=; b=DN/PbDHfxyRSyMriqe
-	Y8T8K2lDUwigsPDrSSnVFBCc/F58QUeERf/x9ea16EwzyNSw//LCy1jjZ5B1atjc
-	+aDUbLLVVi3TmPZP3lUmvJNgdEC5Cb8QmcHwqbLmaYIa3JZkWupEyS9+FqxexWR5
-	wgr5WkyQNElgZ17cR8Efnd4LI=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wDHkGec+jFqG2+ADw--.45939S2;
-	Wed, 17 Jun 2026 09:38:37 +0800 (CST)
-From: Miao Li <limiao870622@163.com>
-To: jic23@kernel.org
-Cc: andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	dixitparmar19@gmail.com,
-	bigeasy@linutronix.de,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	limiao870622@163.com,
-	Miao Li <limiao@kylinos.cn>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v3] iio: accel: stk8ba50: Update includes to match IWYU
-Date: Wed, 17 Jun 2026 09:38:34 +0800
-Message-Id: <20260617013834.166337-1-limiao870622@163.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qgjyk3iq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2DD1FC4AF0F;
+	Wed, 17 Jun 2026 01:56:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1781661376;
+	bh=qjPeqOlmNU/riWbGt7a4NeYXglZ96U7tySJCrMzrRSU=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=Qgjyk3iq1b/QOD3z2sqrhyKsfsw4eOE5h/T/gFse21Uw1zdBAtXGKBJJ35hPB1XMB
+	 t/4BY4WBehFtNp70zg9vBgXUuwsKIvShaH+qfFAT9qhNkw5uRMkYVDBZ5AlTTWRH2J
+	 coJuJEP/wdszYxeoEvl3tOsaILf/2Td52TyJ4kRzlqr2yP3fgZLOmAJimUPbT2v2ST
+	 gIC6ZfsPtIACH7Fjd+F06FB+ImTUh0gQicacUfL64SL/sbOJ3t5HQxU8DPnTvkWvVC
+	 a1/Yq1PQEKMlOPQU3E811FKQ+hQ7NB7Y6ABy0VYNxY1bFHZNyDBlnwDeE5L7kcDOs7
+	 dfwrgRFgYUjiA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C46CD98E1;
+	Wed, 17 Jun 2026 01:56:16 +0000 (UTC)
+From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Date: Tue, 16 Jun 2026 20:56:15 -0500
+Subject: [PATCH v3] iio: accel: fxls8962af: clamp the device-reported FIFO
+ sample count
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDHkGec+jFqG2+ADw--.45939S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZF13Kr17Cry7Zr13XF1DKFg_yoW8Wr17pF
-	4DCF4kGrsxtw18GFnruF1avF98Xan8GF1xtry7Ka4YvrWayryqg39Y9Fnagr1DArZrKay3
-	XFW3Kr4qkrW5ZrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pisXo7UUUUU=
-X-CM-SenderInfo: 5olpxtbryxiliss6il2tof0z/xtbCzR-Mmmox+p9yFAAA3c
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260616-b4-disp-2e8d94cf-v3-1-c4e092eef3a2@proton.me>
+X-B4-Tracking: v=1; b=H4sIAL7+MWoC/x3MQQqAIBBA0avErBswLa2uEi3KGWs2FgoRRHdPW
+ r7F/w9kTsIZxuqBxJdkOWKBqSvw+xI3RqFi0EpbZRuLa4sk+UTNPQ2tDxhccEoTOWM7KNmZOMj
+ 9L6f5fT/3yoFuYgAAAA==
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+ linux-iio@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781661374; l=3254;
+ i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
+ bh=EYfWdZDOsGfm+jKR7ChwMWskcYwWWhSAnxO/QMWeWw8=;
+ b=K9AHdy7tvI85JfpIVDolk41qGKVXg8rHTKKMFmLUVNIqCo+1DKiEV3Hi7gCLahXu/Z7gLgkOp
+ Zm1NYspPsY3CnZY+H/s0serk7QH8AKerPap17lARqBjVPjM2ZDmqNfx
+X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
+ pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
+X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
+ auth_id=814
+X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
+Reply-To: hexlabsecurity@proton.me
 
-From: Miao Li <limiao@kylinos.cn>
+From: Bryam Vargas <hexlabsecurity@proton.me>
 
-Update the list of included headers in stk8ba50.c using
-Include-What-You-Use (IWYU) tool, mainly to remove kernel.h
-and add missing headers such as array_size.h, bits.h,
-dev_printk.h, etc.
+fxls8962af_fifo_flush() transfers the sample count the device reports in
+BUF_STATUS into an on-stack buffer sized for FXLS8962AF_FIFO_LENGTH (32)
+samples, but the count is a 6-bit field (0..63) that is only checked for
+zero. A device, or an attacker on the I2C/SPI bus, reporting 33..63
+overflows the buffer by up to 186 bytes: a stack out-of-bounds write.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Miao Li <limiao@kylinos.cn>
+Clamp the count to FXLS8962AF_FIFO_LENGTH before the transfer, mirroring
+the clamp already applied in fxls8962af_set_watermark(). Conforming
+hardware reports at most that many samples and is unaffected.
+
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 ---
+v3 (Andy [2]): shrink the commit message; the register/byte detail, the
+not-for-stable rationale and the introducing commit moved below the cut.
+v2 (Jonathan [1], Andy [2]): clamp with min() instead of min_t(u8, ...);
+drop Fixes: and Cc: stable -- this hardens against a malformed
+device-reported count, not reachable with conforming hardware ("not a fix
+and not back port material", Jonathan).
 
-Changes in v3:
-- Put the changelog after cutter line, no functional changes.
-- Link to v2:
-  https://lore.kernel.org/all/20260615092116.83850-1-limiao870622@163.com/
+[1] https://lore.kernel.org/all/20260614144337.3b3dab1a@jic23-huawei/
+[2] https://lore.kernel.org/all/ai_RF9BG17SZ7Tiz@ashevche-desk.local/
+v1: https://lore.kernel.org/all/20260613-b4-disp-22362900-v1-1-c5e49f6af027@proton.me/
+v2: https://lore.kernel.org/all/20260615-b4-disp-1a8c7886-v2-1-072a8d1721e9@proton.me/
 
-Changes in v2:
-- Drop linux/iio/types.h as it is already included by linux/iio/iio.h
-- Link to v1:
-  https://lore.kernel.org/all/20260603015033.187735-1-limiao870622@163.com/
+count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT is GENMASK(5, 0), so 0..63;
+fxls8962af_fifo_transfer() then reads count * 3 * sizeof(u16) bytes, so a
+count of 33..63 writes up to 378 bytes into the 192-byte buffer (up to 186
+past its end), clobbering the stack canary, saved registers and the return
+address. The unbounded count has been present since commit 79e3a5bdd9ef
+("iio: accel: fxls8962af: add hw buffered sampling"); not marked for stable
+as it needs a malicious or defective device, or bus tampering.
 
- drivers/iio/accel/stk8ba50.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+This is a different bug from CVE-2025-38485, the use-after-free in the same
+function fixed by commit 1fe16dc1a2f5 ("iio: accel: fxls8962af: Fix use
+after free in fxls8962af_fifo_flush"): that commit added a synchronize_irq()
+and did not bound the FIFO count, so this overflow is still present at
+mainline HEAD.
 
-diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-index a9ff2a273fe1..6a60c0fcebe9 100644
---- a/drivers/iio/accel/stk8ba50.c
-+++ b/drivers/iio/accel/stk8ba50.c
-@@ -7,12 +7,19 @@
-  * STK8BA50 7-bit I2C address: 0x18.
-  */
+Verified with an in-kernel KASAN litmus (CONFIG_KASAN_STACK=y) and a
+userspace ASan model on x86_64 and i386: without the clamp a device
+reporting count=63 drives the transfer 186 bytes past the buffer
+(stack-out-of-bounds write, both ABIs); with the clamp it is bounded to 32.
+Reproducer and full logs available on request.
+---
+ drivers/iio/accel/fxls8962af-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+index 8763e91c63d2..1ecffbf41f64 100644
+--- a/drivers/iio/accel/fxls8962af-core.c
++++ b/drivers/iio/accel/fxls8962af-core.c
+@@ -970,6 +970,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
+ 	if (!count)
+ 		return 0;
  
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/dev_printk.h>
-+#include <linux/errno.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
--#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/sysfs.h>
- #include <linux/types.h>
++	count = min(count, FXLS8962AF_FIFO_LENGTH);
 +
- #include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+ 	data->old_timestamp = data->timestamp;
+ 	data->timestamp = iio_get_time_ns(indio_dev);
+ 
+
+---
+base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+change-id: 20260616-b4-disp-2e8d94cf-f7f702dd7365
+
+Best regards,
 -- 
-2.25.1
+Bryam Vargas <hexlabsecurity@proton.me>
+
 
