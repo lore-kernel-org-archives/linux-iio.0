@@ -1,242 +1,161 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23EE31079B
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 15:56:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB403403EB
+	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 16:01:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781798211; cv=none; b=fKeEnb3edDuS1gUVZLbeiO6VD0TfkPB5Xpbfx2CO9p/vvjgiG8dDYCaZZL040IOnj7qK8HGG8/1Vq3d17OrSsis9pktSp0r6msEe8revtU3IQUll2eyIt19QB8KdOtUoJFrgtn/oFwNYDJGf1o/RIdrfDGgIb5equgeGuZEAiSc=
+	t=1781798516; cv=none; b=f5OjzG+wFuXYiL5rbe+0Vqc0pk6AduZ0CVSwB0Xi5yAMi9xpZW1u5pIIpmf1Ozq6ZbyEmogeseueljjKPPmQEq844Qul2mZoGjk+4RQn0CUlicin8kHYiYTyqEcUbE5BCC3yqgtgR3EhHIvnrk3rkFc2aTjvlMyVfPxVOveD7nM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781798211; c=relaxed/simple;
-	bh=ISo22YJnXNXqaVnPUdI2iwKWaaF1NM0ILyuyDS+MJCk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=okoI5I4CaN9Pqbn8JMmnFSkGpRHpfc3ASFIdDds0MdoMpQki7EZ4lz1bdBxx6nuK7xCYGAJmtyvYxj5eyAD9z5Dkbm2c92ZIgm7YSOVvyNB+pZKCCT3OSLI4MNcw3Ej2hdNgn0RHv8+5zF+V80fzuQN81Ww9RmsK0wBaf+8xKe0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HMEMYtpU; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Sse376YP; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1781798516; c=relaxed/simple;
+	bh=+ZfrwAlHc1DvcFEr/8rwstlWpm9IWgekDz2iNBTwKzQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BCo2h//QpAME5KKbTvtj04q+kggqUa8wt1Xq/rKptq9WbV9+bHSmRQxVF8DgCYhZ1nneytFDQDF2NEwvBQH8RLaxOwb//gwZNMmdIclHjvTvcTfo4auuQ/+LAlwpXuGaJgpbYTRUhXCbxFCRD8pX4p1zvYp+6SRvLgbo76+76zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LvVNtPgB; arc=none smtp.client-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HMEMYtpU";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Sse376YP"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65IFGWCQ2094594
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 15:56:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	/dDt5YgHrQVTFxBlDvUvkUD1S0U2BleXm5ZDJEm+gpk=; b=HMEMYtpU19n4fkV1
-	DQ37Sr1kDaOTWB/nWmvLonPglOnDbbEK8K+ZHjGmuf1oYnizmR4qzxhH8Um4/xTn
-	GzAoy3tPV1X6X7wJjUDx0LRDgXSBr5IfcEf8QStMbGZM/2GQG+S+L1BOXvs5Ze65
-	1P+yGX97azGWM6SHP4yR3BgzxcU3EDgXS3b6Q8hjSetrRP5vAmSpWJ3eyRKo0Rkv
-	duA+cpOdN4Dqo0oKjtjK/rq2UVuGZHe+LGmfnyg2k4ieWpWxs1ss00sODjm+Sijf
-	pHJQW2SiUinz1bpcstciCx3dnKPgWRP9mT453bdZVIreLV0nqJt76xOQ+fe/QjJ9
-	AGL4yA==
-Received: from mail-dl1-f69.google.com (mail-dl1-f69.google.com [74.125.82.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ev19a45h1-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 15:56:46 +0000 (GMT)
-Received: by mail-dl1-f69.google.com with SMTP id a92af1059eb24-1382674ba2eso1919185c88.0
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 08:56:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LvVNtPgB"
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-36d630c0e35so1134843a91.3
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 09:01:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781798206; x=1782403006; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/dDt5YgHrQVTFxBlDvUvkUD1S0U2BleXm5ZDJEm+gpk=;
-        b=Sse376YPExR+7s0Tz2BAlSM/FPPDm57lP3mbbSccTGGSKMwbYpJ8lJ3P906ymPWko3
-         N0oKS1g48w1sRDw0FV3VXYbJqQ+HOJB45hcmS1tyn9pvASNwwMU/zkUUPCL49zTLRgVI
-         v5RCiiNjEIreZAc2Y7/Tv6pYcG1SlNyLb+7SjR7IZSfADXYsuB0y9A3bc3BdCE1LLlsJ
-         yljdDktIzXyceDIvgLggvs2/qxXQNxkn8kKNJAGSihBswfcTkwVrnY3RYwM9tPUrX4jb
-         aXzakm1g9f16tpsjZsTUSxms5N/762MNHh9q6xe00uRKsoDQxkTXwOs5xrmz+tEL8CKi
-         T+NA==
+        d=gmail.com; s=20251104; t=1781798515; x=1782403315; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=o9+PJwtSfKZ+xGloTz14vmNyTIImuf5/PM4ChtjIZSY=;
+        b=LvVNtPgBSGSYPPZcZbqC7+gWOU9EsJfmV76IHmkQ6298gxcXXQ1xUJY2Zj+gRnrY3W
+         MI0va8rxmkTSpx1HIM9HR+depjl364HNIasllkeSLNrO8ddT9AyIMZexfU878tK0ezT4
+         szj1lkkAdhWxMq8g9JCwLh38kbI1DDXiNKE4EKW6H1sBKqZYcwiPcBhMYhOw+MVxytUg
+         TUFvQbYcLEzb8RzleWNjkm7XdOUD9/ELGPzH2+D6Rdy8NgTeAYimrrLc/DR0LJ/Ze8IO
+         jv7/TcKFQEn7sX73l7ZDSASX68+6QjFAxU6CXxIF2vAPgHcy3jsT6iOP55zJGjEYxirs
+         V1vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781798206; x=1782403006;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=/dDt5YgHrQVTFxBlDvUvkUD1S0U2BleXm5ZDJEm+gpk=;
-        b=pTCi2je93eqdmR5QQyJXyB2zl+sZ2HIas1F3tyuJFijHyThmcNTatWzDuRP+S3kR5I
-         Td4aoKgkoNvCxjkNkwYKeGUN+ytfdItk7AvvvlL25iBbpqQ6oSvBlMZFFFiCJMHsrciL
-         DfkuetnzCHhRA8i8Gxu01XqwuoM91L/Qd7QtH+WXUw/GoEKVJcB8HGih25fa49U+pPwl
-         WQ7AqDGz9hya86tuAsCe8tESmukYUmPgyekjec2Xmd4DJTjvUcz4bGi2t8QMGxbDpXNt
-         p2rnc4iiBCYyk+CUodKJlbg3emckXm6RVHpzuFNo2blQn0TjPsRiLommKprxX0HKrCcP
-         RMMw==
-X-Forwarded-Encrypted: i=1; AFNElJ/TsQCXvQpKpkkA9yvj0Qt+YNYlMhbM+u4aYYNNPoQkTP0HlrvKKD7im0fUA71Au2IGaIH09sm1Jbk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIDKaQ6ZWOMUiHj2xJhPqURsw3gDMW9kvx0+qaMH7mhrOXiHvg
-	kZVTO11E0DeuEzBsndB3t1T7p+hU7oF3s9FwEn70+QBT3TopobkOP81p1y1nGw3fV+oGKTA8fqt
-	nqRVZ8ZgEAbsqjYaHk2vtLG0QuzD0UpXVgwZrOOjlz7tixXiZMxhZ9uiA+5T6vuA=
-X-Gm-Gg: AfdE7ckurygrqXo2dQALv82uYnpF39kQ7JU9Z9gIwGsDJXCZjAePLvjyzBpL63xyeO1
-	K5YSmNK/PXxnfS9qttppF2M6grswTkjS2Dr5+o9GmFa8BzA571IBKNDwaqR3aK/gPSfqbTWK6OH
-	WmqSndEmrRRcErqZd0I2io9MIht7AjkbDcicdbzMzj1Nbhdn/N+6/1kE+RJiLK2zahD/4cYx4t2
-	ZSO66oQts0qV02r/569pji3+nYmur4xz9zexNZweut1a6zbp/xHP/MPOLxPCC4eVwQ+KTNRqiMG
-	/TRsKIb4kNJX7MwexyeIt6VGK2dpuDHcQnImNUx3bVc8tgJ+HN03fS776F/i9cOpPBiaGYCZICh
-	GNC+bddzGFjZZsrYdjFOzLj80XgZm9MGUgQu2rJ1uzFwHhCmG0HdV
-X-Received: by 2002:a05:7022:e0a:b0:137:8bc2:f501 with SMTP id a92af1059eb24-139a20b8f2fmr156805c88.7.1781798205883;
-        Thu, 18 Jun 2026 08:56:45 -0700 (PDT)
-X-Received: by 2002:a05:7022:e0a:b0:137:8bc2:f501 with SMTP id a92af1059eb24-139a20b8f2fmr156745c88.7.1781798205339;
-        Thu, 18 Jun 2026 08:56:45 -0700 (PDT)
-Received: from [169.254.0.13] (Global_NAT1.qualcomm.com. [129.46.96.20])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1384b9110d3sm19671267c88.5.2026.06.18.08.56.43
+        d=1e100.net; s=20251104; t=1781798515; x=1782403315;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=o9+PJwtSfKZ+xGloTz14vmNyTIImuf5/PM4ChtjIZSY=;
+        b=VBYTQ53xYFm63ZJ3Xanj6URvkEMypHmgsKl6vZZQJtS/NXS2VprN55Zow/h36EQLm2
+         5NtWZ9+gtrSTl6KnzLzZhVzCSeuMZH4V54a8Zapy7bKbLBLfrbM3fh892D5EDrSTU3YO
+         ttM3/uxW1MgidpinqfT+Lf4gmU7gY/PuMZj6HcI0/8HfqNXn7ECFyr0FRHYb5yLA9K4x
+         j+g5p9idmqhoMh42ZL84qMaDDY4VY03/sZyiBQuMg56cMkwBfs/OZpSAfKxW1GN5sCBE
+         vcF89Z47X8pfYomBQRywUu7fd+2uEV6lipiYikuOcYQOwL3LhsXObkkAdzKPUB+Zbuw9
+         D07g==
+X-Gm-Message-State: AOJu0Yxo1NQg66tyYl0svRf9B0Zv2/tw6QwByuPyjHLHcbRfJ7zB2ijv
+	upAZtAu9cKLPq6HbsGlH0CTGV2rgR8NhZC7p4/IYJXURtXbKm0GxHGYVxcwTt0JBqw==
+X-Gm-Gg: AfdE7cn55Ub57PR0NFBq+zmvE4VoPLqP6AF657kOMlnXmMVQcl8zwGFR//XuwUOXpdy
+	7+WQvwO9PtOUoNcFVWcyFoCtLZvPiFMGupjXijSNguZM2DvXaH9WpHdx+vy/9/twM38TsphY7gs
+	YmW47tW5VLlVAW+0wut8dNR6e2I5lIat3aW1uUFh58/JaX73QZdpFwSZCUADIGfO/rky5PfB5gk
+	8iGKkAGjQVJaDCjSVeEwn0LmJUs6hATSRoDUnpLF0UJB4I6TfbXwH73c2J044uEBWaH6cV0jG2S
+	zr7eKehzxDhf1JRpPPLUS7EGjGHWlph/PcNBMv5l+frUZSMGUzlAyR7voq8JdHSRnbhrF06ghaB
+	P+lpqehUBK6Yo4uJjSz3lZ6Ua32RTRkA1+IsfBlrI01UrN8DMe/IvPCxQD1mabe/OLfPcvVQtw8
+	NcHvTOXK396p2Hy/DN/4pbsFH92ZfABOWXM8Gyv4VMG1sXipKIii8U
+X-Received: by 2002:a17:90b:3a47:b0:36b:9512:871b with SMTP id 98e67ed59e1d1-37d15df8a20mr46056a91.11.1781798514599;
+        Thu, 18 Jun 2026 09:01:54 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.62.180])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37d15361af5sm53807a91.4.2026.06.18.09.01.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2026 08:56:44 -0700 (PDT)
-From: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
-Date: Thu, 18 Jun 2026 15:56:35 +0000
-Subject: [PATCH v2 2/2] firmware: arm_scmi: request modules for discovered
- protocols
+        Thu, 18 Jun 2026 09:01:53 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v2 0/2] iio: magnetometer: add support for Melexis MLX90393
+Date: Thu, 18 Jun 2026 21:31:39 +0530
+Message-Id: <20260618160141.11409-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260618-scmi-modalias-v2-2-8c7547c1be21@oss.qualcomm.com>
-References: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
-In-Reply-To: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
-To: Sudeep Holla <sudeep.holla@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nsc@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc: arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        Hans de Goede <johannes.goede@oss.qualcomm.com>,
-        Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, Guenter Roeck <linux@roeck-us.net>,
-        Jyoti Bhayana <jbhayana@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulfh@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
-        imx@lists.linux.dev, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781798198; l=3118;
- i=bjorn.andersson@oss.qualcomm.com; s=20230915; h=from:subject:message-id;
- bh=ISo22YJnXNXqaVnPUdI2iwKWaaF1NM0ILyuyDS+MJCk=;
- b=5f2jzig78+7i8GOi9XkZud3yAV6oYQt+ilyEeUyLhW2skjQn50HhCx+V7eK5vQ/uA0ZWG+L0c
- UxiYpJMAspCAqqob00Y6y3CAenu9vXBzFSvBJJIOzsu/L/kkrEbLYzL
-X-Developer-Key: i=bjorn.andersson@oss.qualcomm.com; a=ed25519;
- pk=VkhObtljigy9k0ZUIE1Mvr0Y+E1dgBEH9WoLQnUtbIM=
-X-Authority-Analysis: v=2.4 cv=YbmNIQRf c=1 sm=1 tr=0 ts=6a34153e cx=c_pps
- a=kVLUcbK0zfr7ocalXnG1qA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=IkcTkHD0fZMA:10 a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=EUspDBNiAAAA:8 a=SFLdN7fYUvWWIfk3OzkA:9 a=QEXdDO2ut3YA:10
- a=vr4QvYf-bLy2KjpDp97w:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE4MDE0NyBTYWx0ZWRfX+53MwliLRJ8M
- kF8X+3ut9MRtkDkJqXR2+Ocijf9VjFtdKKe9XEiNpzdREcoBZvaeo7mtWwJAqg6HMNrk9D52g4T
- EPQVAOh9Djso8liKfz1lDloHTohXks0=
-X-Proofpoint-GUID: ZkB4cog-I152UXVUruPRBtWmEDgu1FKB
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE4MDE0NyBTYWx0ZWRfX0N1S8Mwavi/c
- P9AltQe+DxKfcRzBFxm2B8Ds5tLTf16ataSzjbZUjnaJuGgWDt8OBoWWZ3X59ArA8pPCzAp0891
- D4ejSRGKQVWsMIj5lanE11n1nwoZGRR1dopp+1ciniJZhyggjUc9LJqxRdS9DDBKLIlRpGaxdZK
- qPEo+YzbS/4b35arT64P6vyHG4Vu6gZ5SwC4bNgWlVzjKg3Y/t0juFt0RX5clLB8jBXMCFIcnLp
- oxqOryqlD1B9dh156rwtV2c/vWWsWuzF64nj0a0R+ayVZTCnp+eyF3WaeVwyabZWscuFh4cHbtO
- Mk2bAxN4YoVJoGvAfgB/FjxSbFItdrfSTjMOK4wa/VphhUC5PoeeMNF+Nat+JfVdmVQ0eUEV1nh
- zYuR7qnANDmtfgb4Ud47P94l6XnGye77ChxcaHFa0W82mDmsV6ydZFxvC84c/fYw0btV8qaWoR9
- O9YwR7axOUhLFrcv0PA==
-X-Proofpoint-ORIG-GUID: ZkB4cog-I152UXVUruPRBtWmEDgu1FKB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-18_02,2026-06-18_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0
- clxscore=1011 impostorscore=0 spamscore=0 phishscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606180147
+Content-Transfer-Encoding: 8bit
 
-SCMI client devices are created from SCMI driver id tables. If such a
-driver is modular, the core does not know the driver's client name until
-the module has already loaded, so normal device uevent based autoloading
-cannot break the dependency cycle.
+Hi,
 
-Emit a protocol-level alias for each SCMI device id table entry and
-request that alias when the SCMI core discovers an implemented protocol.
-This loads modules that have registered interest in the protocol; their
-normal SCMI driver registration then requests the concrete client device
-and the SCMI bus matches it by protocol and name.
+This series adds initial Industrial I/O subsystem support for the
+Melexis MLX90393 3-axis magnetometer and temperature sensor.
 
-This allows e.g. ARM_SCMI_CPUFREQ=m to autoload on systems that expose
-only the SCMI Performance protocol node, where the cpufreq client name
-is Linux-internal and not available from firmware before loading the
-module.
+The MLX90393 supports both I2C and SPI interfaces. This series
+implements support for the I2C interface while keeping the driver
+structure transport-independent to simplify future SPI support.
 
-Assisted-by: Codex:GPT-5.5
-Reviewed-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
----
- drivers/firmware/arm_scmi/driver.c | 2 ++
- include/linux/mod_devicetable.h    | 1 +
- scripts/mod/file2alias.c           | 4 +++-
- 3 files changed, 6 insertions(+), 1 deletion(-)
+Currently supported features:
 
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index 0fd6a947499e..7d33fab94e28 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -48,6 +48,7 @@
- #include <trace/events/scmi.h>
- 
- #define SCMI_VENDOR_MODULE_ALIAS_FMT	"scmi-protocol-0x%02x-%s"
-+#define SCMI_MODULE_ALIAS_FMT		SCMI_PROTOCOL_MODULE_PREFIX "0x%02x"
- 
- static DEFINE_IDA(scmi_id);
- 
-@@ -3363,6 +3364,7 @@ static int scmi_probe(struct platform_device *pdev)
- 		}
- 
- 		of_node_get(child);
-+		request_module_nowait(SCMI_MODULE_ALIAS_FMT, prot_id);
- 		scmi_create_protocol_devices(child, info, prot_id, NULL);
- 	}
- 
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 769382f2eadd..2cc7e78e35a3 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -477,6 +477,7 @@ struct rpmsg_device_id {
- 
- #define SCMI_NAME_SIZE		32
- #define SCMI_MODULE_PREFIX	"scmi:"
-+#define SCMI_PROTOCOL_MODULE_PREFIX	"scmi-protocol-"
- 
- struct scmi_device_id {
- 	__u8 protocol_id;
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index a5283f4c8e6f..40a37b6bf1ad 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -852,7 +852,7 @@ static void do_rpmsg_entry(struct module *mod, void *symval)
- 	module_alias_printf(mod, false, RPMSG_DEVICE_MODALIAS_FMT, *name);
- }
- 
--/* Looks like: scmi:NN:S */
-+/* Looks like: scmi:NN:S and scmi-protocol-0xNN */
- static void do_scmi_entry(struct module *mod, void *symval)
- {
- 	DEF_FIELD(symval, scmi_device_id, protocol_id);
-@@ -860,6 +860,8 @@ static void do_scmi_entry(struct module *mod, void *symval)
- 
- 	module_alias_printf(mod, false, SCMI_MODULE_PREFIX "%02x:%s",
- 			    protocol_id, *name);
-+	module_alias_printf(mod, false, SCMI_PROTOCOL_MODULE_PREFIX "0x%02x",
-+			    protocol_id);
- }
- 
- /* Looks like: i2c:S */
+* Raw magnetic field measurements for X/Y/Z axes
+* Raw temperature measurements
+* Configurable gain/scale selection
+* Configurable oversampling ratio
+* Direct mode operation through the IIO subsystem
+* I2C interface support
+
+The driver has been tested on Raspberry Pi 5 hardware using an
+MLX90393 sensor connected over I2C. Magnetic field and temperature
+measurements were verified through the IIO sysfs interface.
+
+Previous Submission:
+Link: https://lore.kernel.org/linux-iio/20260510191010.155380-1-nikhilgtr@gmail.com/
+
+Changes in v2:
+[DT]
+- Extended the DT binding to document power supply regulators and
+  optional interrupt and trigger GPIOs.
+[IIO]
+- Removed the RFC tag based on reviewer feedback.
+- Added a MAINTAINERS entry as part of the initial submission and
+  expanded it in the driver patch.
+- Reworked the scale availability implementation to simplify the
+  data layout and eliminate the need for constructing a temporary
+  table, avoiding potential race conditions.
+- Replaced usleep_range() with fsleep() where appropriate and
+  documented initialization delays.
+- Simplified helper functions and improved error handling by
+  returning directly where appropriate.
+- Reduced unnecessary local variables and line wrapping to improve
+  readability and align with kernel coding style.
+- Added comments for lock protection and command definitions to
+  improve code clarity.
+- Switched to devm_mutex_init() and cleaned up include usage in
+  accordance with the "include what you use" principle.
+- Improved consistency across the driver, including conditional
+  handling, switch statements, formatting, and general code style.
+- Addressed all review comments from Jonathan Cameron.
+
+I would like to thank Jonathan Cameron for the prompt and thorough
+review of the previous revision. The detailed feedback on both the
+submission process and the implementation has significantly improved
+the quality and maintainability of this series.
+
+Further review and comments are greatly appreciated.
+
+Thanks,
+Nikhil Gautam
+
+Nikhil Gautam (2):
+  dt-bindings: iio: magnetometer: add Melexis MLX90393
+  iio: magnetometer: add support for Melexis MLX90393
+
+ .../iio/magnetometer/melexis,mlx90393.yaml    |  55 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  10 +
+ drivers/iio/magnetometer/Makefile             |   2 +
+ drivers/iio/magnetometer/mlx90393.h           |  74 ++
+ drivers/iio/magnetometer/mlx90393_core.c      | 681 ++++++++++++++++++
+ drivers/iio/magnetometer/mlx90393_i2c.c       |  72 ++
+ 7 files changed, 901 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/melexis,mlx90393.yaml
+ create mode 100644 drivers/iio/magnetometer/mlx90393.h
+ create mode 100644 drivers/iio/magnetometer/mlx90393_core.c
+ create mode 100644 drivers/iio/magnetometer/mlx90393_i2c.c
 
 -- 
-2.53.0
+2.39.5
 
