@@ -1,174 +1,226 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053C331D372
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 16:09:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781798951; cv=pass; b=l7dd2VG3dKcXCfdkDaxNNmIMaJqLmgsLdddMnXx7MqKddo6VibdINvevEtWwp1I4EAOEwZvOqPZvabJ/LnBr6PpNbqvnrzmnpu9Q8NetTmKfGb5qSMSnX88g7LzGZAhMtOeuV06b/XzfOKSBtzr3gqfmyB1txNlkomUj0xSpXpc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781798951; c=relaxed/simple;
-	bh=8wx8t4bqhd+6+tvVThmvfZR3L3RfIEgcgOG7fIXSdmg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RZoofh7UFXmiBZJTMpNTT8F4xhyCUOJN9xQbVv9iJzCp3zVfj37bVUMT4rBrTzhRRQNDSpyAewcN1bgob2bHxFErg1z/zkY4/SU/a9ppiugy0VZHuPqrEHo4QdtQgLqa08mCc7g/vZ58VzPpmfap9+cJ32b7FkIKXzFjqKy2lh4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HlkyZ3ez; arc=pass smtp.client-ip=74.125.224.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E601343887
+	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 16:14:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781799269; cv=none; b=ravU6DBULRWU9t/HK08lFWovnMB1Rf3ZoXWD6kbiKvCN6f4F2zY+Z1UV+CqE26Uaw0srtmmpNpmY6u/iC9Z7aMMBRJvk93TgXdLi0xxW8S1dw2ToEHMNuM05NuYN8siTuMDoLJGaCFliLCTrklYI6rUkWdM+cvPGuUvqnA8+FFk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781799269; c=relaxed/simple;
+	bh=R1gVtYDN5n2fZ9vAVumO58wI1lDs+qlEx2tCz1NSsPs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IKmPlk24V6l8SyeVeFj71E7Ls0FTRsByy4Wb/udn7WWsqfgRlI1GSXDt1NW5o5bp5/HBiuo4RdLsNQzCpITLX+marmY1KqBZBFLyy66NZgICOx8+TN33QmOZ/uYIjKqDM9PJ0i+jbOs+RkXto6huVACu+8WYopixbzRrA1uXwHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ydjv7Wfc; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HlkyZ3ez"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-662bb8b1f93so1167694d50.1
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 09:09:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781798949; cv=none;
-        d=google.com; s=arc-20240605;
-        b=hb1XpWjQ7a3vge7Uq3pmjYl4dmWi1mBRGvrIqaWbNI/KYqtw5b5rEnMp795fLtP4jH
-         Tlp9578oH9h9SDV5AjJnHQDMlRmgUWZWSctLj06QSX311fL7/VthexIcq8ZaIwU98W1q
-         zxGOXYBmlxapXq4tvPdDUMUrPteYUtUHEXYqXFj/qLgleYyK2ERXWdebFuzmCY9TbP3R
-         qYaOjABbflrHVAI2MHmPBiysjHrI0xGemYUIQaVpqFhaUBijWaDNR2ZCukgrW4NWgRGM
-         9hqvdndF6BHWP89yAMlo0xuARyiI4i9A8xf5Fc1URPpSLvdeasIemP9FM8t/heTaQByB
-         GosQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=GF814YAtiEeXBHiC2MuT/drbm9cT+XUCwN1wt61uRQ8=;
-        fh=yCne8v5XWeKG9Rcp8NraJNN4UeL6u+jnLiFOpSxPRx8=;
-        b=GDfjY1ShBfHEl7+AzL7+/GgOV/q7Sw/7kGtMV19Z+8XjOMzgAaDaWaMD4ThakgSqNd
-         nOJg8Y+lubz9KWfFyVB8cr8CwWX9yqWNhmp6KDy/gfjQeGNLkSFzZdmSDZD+/WbFyqUG
-         DYG6ijbNZiTgjZ/eyDPf0qY41G25+cdIJvMsy6GLLNYUEagTniMRWPUsyC+UW84jlg1s
-         UMtYBpPnV/6jqIjAc209TIJADMH/CStuwwE7gP++f0Pf/AUPiUDpiOGDwSrG4IAMP39a
-         9/xaKQWiBUF4uTYqvy/kfHfyatsihLOIcDw7K5EwuP6D+TD/P2lrfqSfjMHOREqkIvaj
-         BDdA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ydjv7Wfc"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490cdae130cso6289365e9.0
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 09:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781798949; x=1782403749; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GF814YAtiEeXBHiC2MuT/drbm9cT+XUCwN1wt61uRQ8=;
-        b=HlkyZ3ezh77xCfek22KardETr/a9X2ZqIR9wXpmu0M7Xz6yRhA65AgT/zII+lf2OrW
-         USjHrAv8UNv6NzFjJszC3iwSyctfq8kad5rSMtlGgFAqguShP1kIwEfWXHrxS452EqPs
-         N7V7WYveSOfRnyUL8IiZeNlbx97Oceky9vhIX2S7DHJKuc3XFmXX6VBE6LvBQ4p2bEmP
-         9hIezHRbSCKy+rNL84luRDexHWU1eofdPrTjPEbMK3IKazwKthFKP/1xGnsNMP6rrQHU
-         6vRVemxIBB7RcrsvP+Caa9tB0wKQ44+KmN7lm9pVYZJXWIfsmL0QOHsNcWtOMnthQxBS
-         oFTQ==
+        d=gmail.com; s=20251104; t=1781799265; x=1782404065; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0IWtEiXv9qCkFIqBuOVncrIVNf4UpfLhl+LRYC+5jmc=;
+        b=Ydjv7WfcNupDygwjHKP55HyWwXE5Dja8Xerx5b5tcK9fsStG8yGcwy3ACC+5ke16/X
+         VgDTGgWryNMIHP8+R2QnRPJSDbyaCyYa4OOYI1AfG4+ygzMXSdVLo3r9jxfxeCPbjlq0
+         bmmkPWgwSq8M7950u0hX2u/5dk8AG4h8fihPHSKCiBOQIIY93vfoUqQ+PzHTewf/eZjm
+         GiGlm5RLhj7OjjtEWTr2BlOl27CV9aQTfWCg4T8kDrHrSmXebfsvUUdBBQ1uwCYVCGII
+         EMTgFcwlQ4CqRIq2utb9RhidtKJS5RXuJaItrfYwdwMppkdmgCByzGljTffUHVDOJ07h
+         TY5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781798949; x=1782403749;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=GF814YAtiEeXBHiC2MuT/drbm9cT+XUCwN1wt61uRQ8=;
-        b=SifmUwKSM0lTeGJVs+rlVXPtjKrxdPSied6qjUlqFG5ECbQuMvdxz1pxfD0eRP9PYC
-         uoqHjiqsv/AQmQjkynQBudjad1A9WLlUepbCw+iCJGacZzdgxmC+ktaBnltr4SsXPYES
-         W+ozyrDb2SeIZaUrq/9vrvjtNuBvgPJN2dvku3o/xd4WyohBjLR/0bSbj6L5xWY/4sIs
-         C4rzt0Mv0QVygoE8waizcHCm+mUy3yXmYryq7pX6i/G6HVCIBYBzMasvxksszqn3vovT
-         hZi1i/YGcM2G7HJn+ViknBKvqiJPx5nZNve32db1/MyhNqS2hUWGMk43dH2X6SncT1iC
-         TNyQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/C0Wyc7TvW+bXfUV46JW/aAx3bIXoCQ41x90ylvgRjK3rMbGH1xXXaPVjSuhGTmgharYy/t35p28k=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyISS0NzutechD2FWdiaX0moBag2Ch36UJHwhjqiCJ3lkMnCkon
-	r1R/9ngMyI3A3L26gmSRmw3wa6jkm4B3Rif/5zJx3jIszBgcmYKiG6wcNnQIZXt8w3GvRb5C4Rz
-	cKqS0fZJzpD+XroGyhuM/L3rHcuKUNlw=
-X-Gm-Gg: AfdE7cmT3G+NYr18BYWsH0foA2qVS1hLqNI3dhyA9ZErLDViLwKpfcBAqbIvG7JoSyA
-	DKikZ83Zm+i0hwa6qcdpbKxJ+tW4w5ebJrGU8+W0bZu8yjGBkY2vlth1sDWwIwPcy82F0rTj6Ni
-	/EHL4m3xoY7jNGOVN82kLrlCKW/ax1rY+Xyfk4WNs+X6EbSGKF304NLk38K8ZsBR4LulKHE1hvr
-	PTT3a0zoPPtNJ0uNmc5eKd9fbqYe8/mvfl2hlTf+4ZKMQV386EDb+SXnthExoYaT6CCnGI/vvth
-	WsI4qae77UZaTTIzbYV5jYwkvJAZKFlK0URmLQ==
-X-Received: by 2002:a05:690e:5c7:b0:660:e5b0:12b8 with SMTP id
- 956f58d0204a3-662fccc25a1mr171395d50.53.1781798948718; Thu, 18 Jun 2026
- 09:09:08 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1781799265; x=1782404065;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0IWtEiXv9qCkFIqBuOVncrIVNf4UpfLhl+LRYC+5jmc=;
+        b=bVDXNH4i6qPt/Egp7WWwG2I7idOfKNAfGsG8xJ0MXxAnZnX+OkCBX1Aw7O/xMecPCA
+         7hlFbnt8EetWQfPpZBt7wbLwz029HDrXySv/cLLAL9ioUX+1HLd0yOXtLMTO3XU7KWhF
+         mYGz0e4FIacC8Ga2jmVtOvekWh05s3yGNJ9iCfR/0OFS7xb0b/GRD+khYSPa7yN0XLq1
+         miaOfQpXTJRCs1n04CROHXhEy5caUE8mf1NlSZSRMuHyvPeyxE4rY+bz+avg7hQIRUVY
+         Ppf8M/XAERXVgH1E6+vSzFqgYrPwMw/x2bMFzzV4oHOME0bva/iWhKQiOwR2Lm47bb1X
+         7xxg==
+X-Gm-Message-State: AOJu0YzxGWNyk/mMO0Y4B30IqRKZe+i357Bq6hn5Wg/Uu/jC6dF4A0Do
+	LuvXAQcHWPV6e1vr8PVAJKgOcbzRjeP3RP8/o/j+lJ+287UkCKbmqW38
+X-Gm-Gg: AfdE7clQh67GBcN4OJdzDbGGkIXITFTG1224bFZazKTOY6GeKUsmHeGs45rQifrRdDi
+	7EVvcDzcS9JqyY3ggpQyxigKkU4x3KBj/BqVzJZTOgd68JP+huuCcfTzPZg0PXx9CC1/x7dW7Tv
+	LP2O61dHImXKluJOpLzv1qRdmgbAxDII+3JPcd5VWelFxZnbgg6PFuCOJAOZ2cSk2c4HERbVOdH
+	ZLfbLqGpYZN9rLdwI6b/34+FBkLhp/Es2s3Gl/EsGMPIf4MPDmudUv2+t3VwgpRWSg5OrumG/hB
+	g9275NWIS5NRvoNN7JsQBxboTEFY/Pe0/c8CTyJ3BokbEXj6OEerY3BrYQXCkxAtYkHqSwMLqtC
+	z4czuciv/HwElPWh4rc4kD3MELQc/kvfw6vQbxsY8wh20YtsZuWI1TVgcuMlxabFQPbY4iYwjRH
+	r9TBAj7ZSL0OGLaO1y/SAmkHQC1FmALrVaSCEQWo2bLKVtO9iAJOwxKOcR7Cj4EjfeSqPQOm4sm
+	PaKmXH2FJXe0Xk1lxym6hP3I9d5
+X-Received: by 2002:a05:600c:8b24:b0:48a:93f8:dd02 with SMTP id 5b1f17b1804b1-4923f439be6mr4090255e9.14.1781799265192;
+        Thu, 18 Jun 2026 09:14:25 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-462236047c8sm20330838f8f.10.2026.06.18.09.14.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2026 09:14:24 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Thu, 18 Jun 2026 17:14:19 +0100
+To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>, 
+	rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v6 06/16] iio: core: create local
+ __iio_chan_prefix_emit() for reuse
+Message-ID: <x3aijvc4buo7aqbchikuoyyrgiq3afidtkla37h2rg4tvfdbc3@h42qp3estg2s>
+References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
+ <20260618-ad9910-iio-driver-v6-6-79125ffbe430@analog.com>
+ <ajQGTQ1_qcOwfzne@nsa>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CAA3NoopBN5qXGvcBY3M-oxXzez+up3-mXZF2kqtzDmnZ50T3Vw@mail.gmail.com>
- <CAKqfh0E2479wCvQCRq24vB7r6HP7tgy6YKEVF1U0wHF=uchVog@mail.gmail.com>
-In-Reply-To: <CAKqfh0E2479wCvQCRq24vB7r6HP7tgy6YKEVF1U0wHF=uchVog@mail.gmail.com>
-From: Mert Seftali <mertsftl@gmail.com>
-Date: Thu, 18 Jun 2026 18:08:58 +0200
-X-Gm-Features: AVVi8Cd9co5u1TVh6thT0HtX7miDCWB5v1wIeUdt8KlpTG-i7lLI-xEGz_oRXJ4
-Message-ID: <CAA3Nooq9J67DvK1FQr7jmnvTk8LvYRj4m=6+ax1d+xbu1eTq2A@mail.gmail.com>
-Subject: Re: iio: accel: dmard09: in_accel_scale always returns -EINVAL
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: jic23@kernel.org, jelle@vdwaa.nl, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ajQGTQ1_qcOwfzne@nsa>
 
-Hey Max,
+On 18/06/26 16:06, Nuno Sá wrote:
+> On Thu, Jun 18, 2026 at 02:27:22PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Move logic to create a channel prefix for naming attribute files into a
+> > separate __iio_chan_prefix_emit() function for reuse.
 
-Thanks for the reply and hints. I checked Documentation/ and the
-bindings and dmard09 is only in
-trivial-devices.yaml, no datasheet notes or scale anywhere in tree.
+...
 
-Will wait for the maintainers call and If they agree on
-implementation, I'll try to reach Domintech for the datasheet first so
-the scale is a real number.
+> > +static int __iio_chan_prefix_emit(const struct iio_chan_spec *chan,
+> > +				  enum iio_shared_by shared_by,
+> > +				  char *buf, size_t len)
+> > +{
+> > +	const char *dir = iio_direction[chan->output];
+> > +	const char *type = iio_chan_type_name_spec[chan->type];
+> > +	int n = 0;
+> > +
+> > +	switch (shared_by) {
+> > +	case IIO_SHARED_BY_ALL:
+> > +		buf[0] = '\0'; /* empty channel prefix */
+> > +		break;
+> > +	case IIO_SHARED_BY_DIR:
+> > +		n = scnprintf(buf, len, "%s", dir);
+> > +		break;
+> > +	case IIO_SHARED_BY_TYPE:
+> > +		n = scnprintf(buf, len, "%s_%s", dir, type);
+> > +		if (chan->differential)
+> > +			n += scnprintf(buf + n, len - n, "-%s", type);
+> > +		break;
+> > +	case IIO_SEPARATE:
+> > +		if (chan->indexed) {
+> > +			n = scnprintf(buf, len, "%s_%s%d", dir, type,
+> > +				      chan->channel);
+> > +			if (chan->differential)
+> > +				n += scnprintf(buf + n, len - n, "-%s%d", type,
+> > +					       chan->channel2);
+> > +		} else {
+> > +			if (chan->differential) {
+> > +				WARN(1, "Differential channels must be indexed\n");
+> > +				return -EINVAL;
+> > +			}
+> > +			n = scnprintf(buf, len, "%s_%s", dir, type);
+> > +		}
+> > +
+> > +		if (chan->modified) {
+> > +			if (chan->differential) {
+> > +				WARN(1, "Differential channels can not have modifier\n");
+> > +				return -EINVAL;
+> 
+> WARN() looks too much to me. dev_error() as we're treating it as such. I
+> guess you don't want to pass struct device but not really an issue IMHO.
 
-Mert
+__iio_device_attr_init() also used WARN(), probably because it didnt have
+access to a dev pointer. It would not be a problem to add an extra param.
+ 
+> 
+> > +			}
+> > +			n += scnprintf(buf + n, len - n, "_%s",
+> > +				       iio_modifier_names[chan->channel2]);
+> > +		}
+> > +
+> > +		if (chan->extend_name)
+> > +			n += scnprintf(buf + n, len - n, "_%s", chan->extend_name);
+> > +		break;
+> > +	}
+> > +
+> > +	if (n > 0 && n < len - 1) { /* prefix termination if not empty */
+> > +		buf[n++] = '_';
+> > +		buf[n] = '\0';
+> > +	}
+> > +
+> 
+> Can't we handle the above in the caller on kasprintf()? Then we could
+> simplify and return in place.
 
-Am Do., 18. Juni 2026 um 17:47 Uhr schrieb Maxwell Doose <m32285159@gmail.c=
-om>:
->
-> Hi Mert,
->
-> On Wed, Jun 17, 2026 at 11:10=E2=80=AFAM Mert Seftali <mertsftl@gmail.com=
-> wrote:
-> >
-> > Hi,
-> >
-> > I've been digging into IIO to learn my way around it, and the dmard09
-> > accelerometer driver caught my eye as I think its scale attribute has
-> > been broken since day one, so I wanted to flag it.
-> >
-> > The channels advertise scale:
-> >
-> >     .info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),
-> >
-> > which makes the core create in_accel_scale. The trouble is
-> > dmard09_read_raw() never handles IIO_CHAN_INFO_SCALE, it only does
-> > RAW, and SCALE drops straight into 'default: return -EINVAL'. So
-> > reading the scale just errors out:
-> >
-> >     $ cat .../iio:deviceX/in_accel_scale
-> >     cat: in_accel_scale: Invalid argument
-> >
-> > and userspace is left with raw counts it can't turn into m/s^2.
-> >
->
-> Interesting, so userspace was broken from the start.
->
-> >
-> > To be clear about how I found this: I don't have the hardware, I traced
-> > it through the core (iio_read_channel_info() -> read_raw() with the
-> > SCALE mask) rather than seeing it fail on a device. But the path looks
-> > unambiguous.
-> >
-> > I went looking to fix it properly; add a SCALE case returning the
-> > sensitivity, the way dmard06 and dmard10 do, but I couldn't find a
-> > DMARD09 datasheet anywhere. Digging through the list archives, it looks
-> > like the scale was declared in the original 2016 submission but never
-> > implemented, and the driver was written from a vendor source without a
-> > datasheet to begin with. So I don't have a real number to use, and I'd
-> > rather not make one up.
-> >
->
-> If you can, try contacting the vendor, they may have a datasheet to
-> reference. Otherwise check Documentation/iio/ because sometimes
-> dev-written datasheets will end up in there.
->
-> >
-> > Hence the email instead of a patch: would you prefer to just drop the
-> > scale declaration so the driver stops advertising something it can't
-> > deliver, or does anyone happen to have the DMARD09 sensitivity so it
-> > can be done right? I'm happy to send a patch either way.
-> >
->
-> Perhaps the scale declaration should be dropped; I'd argue if it's
-> unimplemented it's dead, and dead code removal is always a good thing
-> :) Let's let the maintainer for this driver chime in first though
-> because I wonder if they might just want you to implement it.
->
-> --
-> best regards,
-> max
+I felt like doing this here would get a cleaner logic in the caller, which
+would have to add the '_' conditionally.
+
+> 
+> > +	return n;
+> > +}
+> > +
+> >  /**
+> >   * iio_device_id() - query the unique ID for the device
+> >   * @indio_dev:		Device structure whose ID is being queried
+> > @@ -1100,106 +1159,19 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
+> >  						size_t len),
+> >  			   enum iio_shared_by shared_by)
+> >  {
+> > -	int ret = 0;
+> > -	char *name = NULL;
+> > -	char *full_postfix;
+> > +	char prefix[NAME_MAX + 1];
+> > +	int ret;
+> >  
+> >  	sysfs_attr_init(&dev_attr->attr);
+> >  
+> > -	/* Build up postfix of <extend_name>_<modifier>_postfix */
+> > -	if (chan->modified && (shared_by == IIO_SEPARATE)) {
+> > -		if (chan->extend_name)
+> > -			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+> > -						 iio_modifier_names[chan->channel2],
+> > -						 chan->extend_name,
+> > -						 postfix);
+> > -		else
+> > -			full_postfix = kasprintf(GFP_KERNEL, "%s_%s",
+> > -						 iio_modifier_names[chan->channel2],
+> > -						 postfix);
+> > -	} else {
+> > -		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
+> > -			full_postfix = kstrdup(postfix, GFP_KERNEL);
+> > -		else
+> > -			full_postfix = kasprintf(GFP_KERNEL,
+> > -						 "%s_%s",
+> > -						 chan->extend_name,
+> > -						 postfix);
+> > -	}
+> > -	if (full_postfix == NULL)
+> > +	ret = __iio_chan_prefix_emit(chan, shared_by, prefix, sizeof(prefix));
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	dev_attr->attr.name = kasprintf(GFP_KERNEL, "%s%s", prefix, postfix);
+> > +	if (!dev_attr->attr.name)
+> >  		return -ENOMEM;
+> 
+> I don't oppose the change. Looks like a nice cleanup. But bear in mind
+> this very sensible as any subtle mistake means ABI breakage.
+
+Yes! I tried to be careful... this is dangerous stuff!
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
