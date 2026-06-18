@@ -1,276 +1,183 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223AD3403F9
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 20:31:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B64933F383
+	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 21:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781814679; cv=none; b=lP8r1FokLc0WJu3qgW2NUffiDAZpo2QIox6+EH3fbZf0sxUT8HLzWcuuSKNmFw1ANCjo5mAMjcd6DARw9gVuafZYqvLxhbg728Pdy/BdREqs0sAD6VyZOL5WpOC82sbC8W+rYYb1HHINLLucPjaQPz9WGUsT9aNkJ17QRKZSazk=
+	t=1781816663; cv=none; b=Ag+5IGtsgwX6g7kcrb9R6D7Tydg8wYpfGdbqt6rKYIImJ6MEvbH/Fx4hm2cQNoKizJCWTNl2WXyhVGinVnvXmCvsi4dcBCuaU0JmTEq0mR+yK+/n1rqgnOXBVvLV/GjqUTaY3/vsrdiSLEXZm5z0DDo+Y27KUxSQoyyZUf4TyGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781814679; c=relaxed/simple;
-	bh=HLxQCCXxvKkwoegsbUnC3g4wlzqBB87zcGLg24R2AW4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uMHfWSRR0JkwmzHglvby1vY6t92Sf0k1TlQAAuOsWXfAL4Dh+nZkLLQtwQ3+N2yBUyt00rgR2EoIWaratCo+euFyISeop4hs5QIExtdrVqH3xKdsYJSpbbLswDGC1sh4j4677qZ5MMPvOP3Ur4auk7KPR7hw+YibjdGprFhKYNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=A9i66YWd; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cKDgJ9Kr; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1781816663; c=relaxed/simple;
+	bh=8ifrEc9753CCi5Bhow6JmLPVihw5ePsw/Trj3+jkHt0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=hG7+IQzHSsq/YQ+bnGwDKdgIuVffzS2hATJgHIHCaO0tslimqORBQhfktm8LfefA7o32USzXuQprmpXy+EmRkj+blPh+tke88sj0+v+cQHV9XqB6eVx5xwse9Vj8dUsEVm4YcmfM0x4oJwAG/+1w9sY1GqVzsg2PVCRDc/y+TLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OZEiiUv/; arc=none smtp.client-ip=209.85.167.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="A9i66YWd";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cKDgJ9Kr"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65IIfcTR2079945
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 20:31:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	mMV94ArRUWNb5oU3/kS47SDy5ZbaBXLZRnnNKRvZXFA=; b=A9i66YWdpU6YBRKd
-	Y/MBdL3leGrrJahi74KTM4KDUukQ+j5qURMvDHv/h26fAMH3YQ7DGji15TAnMGwL
-	USEPfEP8AD8iQcYvd1iG1lfmSmz7UW+zAngX+q6y2E0CUnCSI7j/tqtfhJrqkhqe
-	Bb7YKc+I5KSThSi349qRKDQodq8XXrVZwF8jlfC8noswCAbuAmfFSXFNt6pILgF2
-	eX7GqmBqg+WDX9b4uCvVGCkgfKaMMi1FrJfZJo0n6j3P5s0uMfYxkHKqzunR9kjq
-	QH8VKdbeCj2Uku3j8+w1XmjnU3du0rg0dmLmftvJ50lp7ioEz2fD83urICNDRRJs
-	2WsO5Q==
-Received: from mail-vs1-f70.google.com (mail-vs1-f70.google.com [209.85.217.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4evp670gyw-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 20:31:17 +0000 (GMT)
-Received: by mail-vs1-f70.google.com with SMTP id ada2fe7eead31-6cfd2a26ab0so576225137.2
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 13:31:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OZEiiUv/"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5ad583dc38eso5798e87.3
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 14:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1781814676; x=1782419476; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mMV94ArRUWNb5oU3/kS47SDy5ZbaBXLZRnnNKRvZXFA=;
-        b=cKDgJ9KrjXfgYkuAz0ahLGqygx6y96tTuM5gD3C6jnlyEPsEzOJG6rZPFM8HnOjgUr
-         mUUny6jmwB4C/3MTNm+teD5GdMiZP4WuTn4qqsJ5IwzrdGdmc1LMEd6BrdJug9uYUOH5
-         UjwoYLe660iDTEj3y+WbBF7B1rOWE/xxbvbgUh+iJNROoAE4T1ZJDGBbAOWbP0g0TKgS
-         TqF2WQuS+7G1kv8+QSLOrPaiarGne3IBo0DlY8/mkZYSMvM0Eu9mMTxPIJznjIbl4ekn
-         g6vBVFmRWSKHwZr6T7cU8YN0opsqUwy6g/ine6B3F6pss1S7DEZRDUXbkiD0E2sLaYvZ
-         V4tQ==
+        d=baylibre.com; s=google; t=1781816659; x=1782421459; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=E9z0pIRRQq0JjZLgtfI21RJrv64iSxf66JeOGPUHps0=;
+        b=OZEiiUv/3ThYD9n1LhEBRB3xvTVXLPRi3qDnaDQQ1YQ5tIj6ySzF+GINE1Te646Rem
+         ewchhODruaOrUhckAOc7KKjZ7wQhtxBfLuv0fCbf11vPmuujFE7db3knEaOiJLb/yh3f
+         KpZWLmNvLSbv6ms5LR2xTWnWT5vkZDFq3vjW42578xMUN17y6E9/2gReQqXrQPznjru/
+         sk+X0BoHb0XwFVvVgZ89MXUwSjPX6xit5baykRxuqNo8IWILmc7C/sjzpNsuYi0vjYG2
+         IMA27J2ZlJn8oEXg5n9p9SXWILi+gdQQGRpiyS/MrJGfgaR7LPhLp4mUHvYIrh5fNYF2
+         B9WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781814676; x=1782419476;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mMV94ArRUWNb5oU3/kS47SDy5ZbaBXLZRnnNKRvZXFA=;
-        b=NXSD13WX6NAvCpqBQVmwnUBWZL1BXmqQ6bt/7nKdR0WQZOyUwssr9WrRPIGVi48/u5
-         7rPizSFinOT8Y6+jILNXHx94ZOAtqBZuPLejU31ohjGqIy1MSFCaDx/rvNL58xiPriht
-         03SnFw/nEs8zFLCAc+PjeNS06k5GWg/kq8zofU3Fyiw00Vu+pZ5PIBaD+3zVePz8UIx2
-         Runkf+lcFu9PnTdIsFjxLF0hAO65turFX49Du0Or0k6+p5QLZHojuftR5dA1xHxceViy
-         H32oCJOP5g4/hSOJucT8gV+vibe41KMoX9F90W0gM0kG+JADkEcJLFRvwpwgKE9UDf1t
-         NNRQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+K+ypndhWzp6N5zufVpzJcwowuZdcbdlI8lM74NvjLhxJHxD8VFROpOhL6T93HuwYN3bSlF7+dciA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsPpk+7Edv/xBoqJM7aHgj7G32TKoTCQBrDndFI64hwe/niYmd
-	LM9JBmQSVMGf8RxKhG+krHPuKEXAfQpn/ddavSP7TkO8Pnt7AEKxn4Fxso4y1Nfr4K/Qvve4/R8
-	FeVykZe7Utcn5C61la0tOlIgwcEEG0uULb4V/e76tUUkPqlz/iNgCQPBmxEUiULU=
-X-Gm-Gg: AfdE7cl86qbMxz/X+MPQrxsxjeonRxhBUUr1Ofn8PzzhSmfpBEwkcQX+/e+PNIPRtLI
-	uNl4lgPMRXsZZcpoGkYBw0a0JNHOjl8PI1Hamp2tSCuvQNOMDmSMVez5VZZK0Ti3WuqyAx1WbUC
-	StFxLc50voYgI10SWfp5eC8keEZqNsyMTo+QcgXbri7aJyfBP2Ef4kEkwCoR6DWsRVfspVlEOw5
-	IflhfeOdHcW0njDNVvl1b5h3naljDQPN4f2EMBeLYyk3p1vHJZGHcR8+cpXzh+6XJ6HVL7uIXAi
-	lal5rerzf14DkO+z6b722Fn5Drx4zrjKyK3BXtvdsVVdPn1i5qDRjRKd5XFHkEczveBxq20QSm+
-	lfm1boclcTruwXAH77fG+QnFbFAxo/u5YJJND4sV6/CjEvEZVEJIiZROyeoIUrWRz+f7QhOZt1q
-	BdX60Uh1d/Htv+wGex7wQc3LRvo6Q/liH98IUBxDJ5JH5EcUWXQ8VSZLT6yFurUN4dmXnNmLCvG
-	e+ZRw==
-X-Received: by 2002:a05:6102:448b:b0:650:aa33:5dd7 with SMTP id ada2fe7eead31-72a01884599mr1095683137.2.1781814676210;
-        Thu, 18 Jun 2026 13:31:16 -0700 (PDT)
-X-Received: by 2002:a05:6102:448b:b0:650:aa33:5dd7 with SMTP id ada2fe7eead31-72a01884599mr1095628137.2.1781814675743;
-        Thu, 18 Jun 2026 13:31:15 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c0a8490b104sm2351966b.14.2026.06.18.13.31.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Jun 2026 13:31:14 -0700 (PDT)
-Message-ID: <8c2a4ae3-95cc-489a-a7a4-90a3ee2597e9@oss.qualcomm.com>
-Date: Thu, 18 Jun 2026 22:31:12 +0200
+        d=1e100.net; s=20251104; t=1781816659; x=1782421459;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=E9z0pIRRQq0JjZLgtfI21RJrv64iSxf66JeOGPUHps0=;
+        b=iMcAPfBpWYCgG/Wk/KEHr3Lb12SfpTJDwlpXs81fqevweQMAMiGCZ+B3Mer7/Yd7Xu
+         Le0iayLTThReblexE6PCH66CKD5Fk2x+7y4fJcl2/tU+dPFCfeFhZM9UbSghtye/WRob
+         vE9CAwICzzTL+LhiMYEDVdNtSTe5YrQarvT2ap12Y8z7upDHEse0853QFqWH4UptoNqn
+         GOObmrvVPCit3SeLz7huxGxhIpEYSRdilgisju/Mst6h2rFdwxk40Hn/K+XrDo7niiRk
+         6W0lXke7QwHK16jUA/hi9yBVpX9R8g6hDEoD84El85LK2w6juQuO5O9Wtkm4ojpk+ZL7
+         u2fQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9ufBR/lG8utd1v4MbJtKjY3JVMDbxKoFE07LVL3RQfl8PBlc7e1ErC5OHtSqa4ehaKEoY3SP3oAvE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyWUEdcow3uvQEXOhK6NQNOnhl7uea4LTEu8nPDwWkyXI1yHYa2
+	qTaHjw52Y7YsZ/v+G4EvUZRl7oa3VEHGPVHcJ1EEAnd8tx8guW46grgvm9jGoS6Y3cg=
+X-Gm-Gg: AfdE7cmhciZlu6dUX9AHdHtT2F1yBRvpKvow/E9OyLZpHeIzK0VtSK3y4qSheeEqV2o
+	06RC47tObqGgVuH1zB3yBNhwKzZE/F+LA26UlWh3yPcCCqQiY6OAX9tgcNmSFK2oNsk+8g9HdM8
+	pU7sGAp11bpdJS0JkjHNMrBJIVAnJEqUDBBIhvt51MJ8dbguzE4+2okRKBtoOBCk5f99nOi/xQW
+	5jNXABQM5wf/CQ70P0K3/jm0stTk05X+yqaig6NYry6ZTQ0DMBP+7N7tyuMzvmb8W7QndsKbP21
+	+xcJ9vSzFlycoyBfgDeajLD8g/VdKlkmWR6Y0q+sNcxd76+kNhqBI3KGiNa8pF01fNSojbrbDME
+	018ChF9yz36IV65eM7Skz3uSb4yr317X+rpmqCcQQttmghP8NyLDJTlE/hNmK2uxz5sEJohwWIB
+	p7BecbMbXrS3hYix/+hYLo
+X-Received: by 2002:a05:6512:8013:20b0:5aa:b6a:738e with SMTP id 2adb3069b0e04-5ad57715b49mr98736e87.44.1781816659260;
+        Thu, 18 Jun 2026 14:04:19 -0700 (PDT)
+Received: from [192.168.0.2] ([2a07:7e81:7daa:0:202:c9ff:fe53:eda4])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad57493145sm108586e87.69.2026.06.18.14.04.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jun 2026 14:04:18 -0700 (PDT)
+From: Angelo Dureghello <adureghello@baylibre.com>
+X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
+Subject: [PATCH v6 0/2] add mcf54415 DAC driver
+Date: Thu, 18 Jun 2026 23:04:14 +0200
+Message-Id: <20260618-wip-stmark2-dac-v6-0-48761dbb96d7@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/2] firmware: arm_scmi: Ensure automatic module
- loading
-To: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-        Sudeep Holla <sudeep.holla@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nsc@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc: arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, Guenter Roeck <linux@roeck-us.net>,
-        Jyoti Bhayana <jbhayana@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ulf Hansson <ulfh@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
-        imx@lists.linux.dev, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-References: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
-From: Hans de Goede <johannes.goede@oss.qualcomm.com>
-Content-Language: en-US, nl
-In-Reply-To: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 11PlblUBSRpIgFSw-HD_LO2u8k76j9tJ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjE4MDE4NyBTYWx0ZWRfX36EqLO9UaDn5
- W3+B9jdQmGlQKsMd+x9p/OXdAlqETqKW1gJr5BJ5fPdEBMxkglw9Qw8Kwo7GIpIMD8uD9mRqknC
- ZnORW8bJghbOu1uJDqNE04b/D1BTJFBwcWA8ZjpgjtDbn9/xRB1RUv34UsiVBcy6ruyTb+q2wD8
- L9K3zZF0kObKjeykOgFUoWS2JYE9FocHKoS/XvYCRAcsSg6jYh6uUf9FvdWHGfx6KsVJoy/mnP7
- gKsqLLfgG+rZzygvhu5RK6rt1IJjwKtas0WFTlqQs2R/1KwCkymm8pt/R0J57z+XGIIO5E0JufH
- fUFxOzEGrYa+o/bHX867y+3ah8OrKhKdYgoEVpDpcofpo1n+vTIOfVlKdTRdhdQUyUTj+mNMDuE
- A6fASM0YWMvCxZeEaGyyb83sTdtPL7uOhkyEev21nWKMSgRX13DBR8cBGne3W3eXksQTMal2H9T
- j4/Q7Bmen5R50SAtlEA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjE4MDE4NyBTYWx0ZWRfX/P5HYYoJ2r5t
- qr35fPl8oDR8EyQiVb8ObpJzPbYoj+dHBVHDi9k+X8XmJaC08pWB12UxdOGqqTQDKLE0w9s1ohu
- x+1YkwxcGR6hx9h+TBi7zJSzRBD1j+Y=
-X-Proofpoint-GUID: 11PlblUBSRpIgFSw-HD_LO2u8k76j9tJ
-X-Authority-Analysis: v=2.4 cv=TdOmcxQh c=1 sm=1 tr=0 ts=6a345595 cx=c_pps
- a=N1BjEkVkxJi3uNfLdpvX3g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=FelO9ux0wxsA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22 a=bC-a23v3AAAA:8
- a=EUspDBNiAAAA:8 a=VwQbUJbxAAAA:8 a=7CQSdrXTAAAA:8 a=IpJZQVW2AAAA:8
- a=20KFwNOVAAAA:8 a=KKAkSRfTAAAA:8 a=8AirrxEcAAAA:8 a=pGLkceISAAAA:8
- a=_jlGtV7tAAAA:8 a=1XWaLZrsAAAA:8 a=gAnH3GRIAAAA:8 a=P-IC7800AAAA:8
- a=JfrnYn6hAAAA:8 a=5KGQkzpS6Bu23flkvY0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=crWF4MFLhNY0qMRaF8an:22 a=FO4_E8m0qiDe52t0p3_H:22 a=a-qgeE7W1pNrGK8U0ZQC:22
- a=IawgGOuG5U0WyFbmm1f5:22 a=cvBusfyB2V15izCimMoJ:22 a=ST-jHhOKWsTCqRlWije3:22
- a=nlm17XC03S6CtCLSeiRr:22 a=d3PnA9EDa4IxuAV0gXij:22 a=1CNFftbPRP8L7MoqJWF3:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-18_03,2026-06-18_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 impostorscore=0 spamscore=0 phishscore=0 malwarescore=0
- clxscore=1011 suspectscore=0 bulkscore=0 priorityscore=1501 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606180187
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XRy07DMBAF0F+pvMZo/JokXfEfiMX4RQ20qZwQq
+ Kr8O05YFKgrlleae64ln9kQcgoD227OLIcpDak/lIB3G+Z2dHgOPPmSmQSJoBXwj3Tkw7in/Cq
+ 5J8cbQIi6877TkZXWMYeYPlfx8ek7D+/2JbhxYZaLXRrGPp/WyUkud7f1SXLgQVFssXUaSDxYO
+ r0lm8O96/eLtlaNUPVqdJ6CAReNoN/V5W2Tuqwb0NeEKgQYqUlEJ5y6tS5lvSrQBiCvDGFTWRf
+ /rItCtI12Ckl3AnyF0D8IJa4JXYgmoCGrpTC+RpgLgaLyA6YQtkHbKoXojftDzPP8Ben+oGRFA
+ gAA
+X-Change-ID: 20260430-wip-stmark2-dac-7060f49dd94f
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Geert Uytterhoeven <geert@linux-m68k.org>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-m68k@lists.linux-m68k.org, linux-stm32@st-md-mailman.stormreply.com, 
+ linux-arm-kernel@lists.infradead.org, 
+ Angelo Dureghello <adureghello@baylibre.com>
+X-Mailer: b4 0.15.2
 
-Hi,
+This patchset adds a minimalistic DAC driver for the NXP mcf54415/6/7/8
+builtin DACs.
 
-On 18-Jun-26 17:56, Bjorn Andersson wrote:
-> SCMI drivers such as the Arm SCMI CPUfreq driver are allowed to built as
-> modules, but they are then not automatically loaded. Rework the SCMI
-> device table alias support to make modpost consume the information from
-> MODULE_DEVICE_TABLE(scmi, ...) and allow drivers to be loaded based on
-> this information, if known. Also add a protocol-based alias to also
-> trigger driver loading when only the SCMI protocol id is known.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
+Currently the driver enables the raw write only. Feature as dma, sync, or
+format are not supoprted for this version.
 
-So I just gave this a test spin and unfortunately it does not work.
+Additional options suppoerted by the DAC module will be added to the driver
+later on, as needed.
 
-The problem with Fedora's kernel-config / setup is that the
-request_module() from patch 2/2 runs from the initramfs, but
-the scmi_cpufreq module is only available in the rootfs.
+The same patchset prepares the m68k/coldfire architecture to support
+the driver.
 
-It does work if I explictly add the scmi_cpufreq module to
-the initramfs, then it does get autoloaded.
+Below some basic tests done on stmark2 mcf54415-based board, voltage check
+on DAC0 and DAC1:
 
-We really need some place to put a uevent sysfs attr which then
-gets replayed when udev is restarted from the rootfs and then
-re-reads all the uevent files as part of its coldplug
-enumeration.
+~ # cd /sys/bus/iio/devices/iio:device0/
+/sys/bus/iio/devices/iio:device0 # ls
+name               out_voltage_scale  uevent
+out_voltage_raw    subsystem
+/sys/bus/iio/devices/iio:device0 # cat name
+mcf54415
+/sys/bus/iio/devices/iio:device0 # echo 4095 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 2048 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 4096 > out_voltage_raw 
+sh: write error: Invalid argument
+/sys/bus/iio/devices/iio:device0 # cat out_voltage_raw 
+2048
+/sys/bus/iio/devices/iio:device0 # 
 
-I wonder if it is ok for a single uevent file to have
-multiple MODALIAS= lines in there.
+Same behavior for /sys/bus/iio/devices/iio:device1.
 
-Regards,
+Generated a sine wave by shell script, sine shape is good.
 
-Hans
+is actually in progress:
 
+Note: this patchset depends on mew mcf_read/mcf_write implementation that
+Link: https://lore.kernel.org/linux-m68k/209d0653-6386-4b64-9e15-e358f84453ab@app.fastmail.com/T/#t
+Link: https://lore.kernel.org/linux-m68k/20260506142644.3234270-2-gerg@kernel.org/
+---
+Changes in v6:
+- Removed patches 1 to 8, already pushed in m68knommu for-next by
+  Greg Ungerer <gerg@linux-m68k.org>
+- keeping changelog in each single patch, where any
+- Link to v5: https://patch.msgid.link/20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com
 
+Changes in v5:
+- keeping changelog in each single patch, where any
+- Link to v4: https://patch.msgid.link/20260531-wip-stmark2-dac-v4-0-7e65ab4215dd@baylibre.com
 
-> ---
-> Changes in v2:
-> - Use request_module_nowait()
-> - Drop #include <linux/mod_devicetable.h> from scmi_protocol.h
-> - Link to v1: https://patch.msgid.link/20260616-scmi-modalias-v1-0-662b8dd52ab2@oss.qualcomm.com
-> 
-> To: Sudeep Holla <sudeep.holla@kernel.org>
-> To: Cristian Marussi <cristian.marussi@arm.com>
-> To: Michael Turquette <mturquette@baylibre.com>
-> To: Nicolas Schier <nsc@kernel.org>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Brian Masney <bmasney@redhat.com>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Viresh Kumar <viresh.kumar@linaro.org>
-> Cc: Frank Li <Frank.Li@nxp.com>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jyoti Bhayana <jbhayana@google.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: David Lechner <dlechner@baylibre.com>
-> Cc: Nuno Sá <nuno.sa@analog.com>
-> Cc: Andy Shevchenko <andy@kernel.org>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Ulf Hansson <ulfh@kernel.org>
-> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Nathan Chancellor <nathan@kernel.org>
-> Cc: arm-scmi@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-clk@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Cc: imx@lists.linux.dev
-> Cc: linux-hwmon@vger.kernel.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-input@vger.kernel.org
-> Cc: linux-rtc@vger.kernel.org
-> Cc: linux-kbuild@vger.kernel.org
-> 
-> ---
-> Bjorn Andersson (2):
->       module: add SCMI device table alias support
->       firmware: arm_scmi: request modules for discovered protocols
-> 
->  drivers/clk/clk-scmi.c                         |  1 +
->  drivers/cpufreq/scmi-cpufreq.c                 |  1 +
->  drivers/firmware/arm_scmi/bus.c                | 20 ++++++++++----------
->  drivers/firmware/arm_scmi/driver.c             |  3 +++
->  drivers/firmware/arm_scmi/scmi_power_control.c |  1 +
->  drivers/firmware/imx/sm-cpu.c                  |  1 +
->  drivers/firmware/imx/sm-lmm.c                  |  1 +
->  drivers/firmware/imx/sm-misc.c                 |  1 +
->  drivers/hwmon/scmi-hwmon.c                     |  1 +
->  drivers/iio/common/scmi_sensors/scmi_iio.c     |  1 +
->  drivers/input/keyboard/imx-sm-bbm-key.c        |  1 +
->  drivers/pmdomain/arm/scmi_perf_domain.c        |  1 +
->  drivers/pmdomain/arm/scmi_pm_domain.c          |  1 +
->  drivers/powercap/arm_scmi_powercap.c           |  1 +
->  drivers/regulator/scmi-regulator.c             |  1 +
->  drivers/reset/reset-scmi.c                     |  1 +
->  drivers/rtc/rtc-imx-sm-bbm.c                   |  1 +
->  include/linux/mod_devicetable.h                | 12 ++++++++++++
->  include/linux/scmi_protocol.h                  |  5 +----
->  scripts/mod/devicetable-offsets.c              |  4 ++++
->  scripts/mod/file2alias.c                       | 13 +++++++++++++
->  21 files changed, 58 insertions(+), 14 deletions(-)
-> ---
-> base-commit: 8d6dbbbe3ba62de0a63e962ee004afb848c8e3ac
-> change-id: 20260616-scmi-modalias-0f32421bd452
-> 
-> Best regards,
-> --  
-> Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
-> 
-> 
+Changes in v4:
+- keeping changelog in each single patch, where any
+- Link to v3: https://patch.msgid.link/20260522-wip-stmark2-dac-v3-0-16be0ad35a67@baylibre.com
+
+Changes in v3:
+- keeping changelog in each single patch, where any
+- Link to v2: https://patch.msgid.link/20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com
+
+Changes in v2:
+- keeping changelog in each single patch, where any
+- Link to v1: https://patch.msgid.link/20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com
+
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+To: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+
+---
+Angelo Dureghello (2):
+      iio: dac: add mcf54415 DAC
+      m68k: defconfig: update stmark2 defconfig
+
+ arch/m68k/configs/stmark2_defconfig |   2 +
+ drivers/iio/dac/Kconfig             |  11 +++
+ drivers/iio/dac/Makefile            |   1 +
+ drivers/iio/dac/mcf54415_dac.c      | 183 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 197 insertions(+)
+---
+base-commit: d43c76b1fd85cf6f9a53145ed397d10e76f99213
+change-id: 20260430-wip-stmark2-dac-7060f49dd94f
+
+Best regards,
+--  
+Angelo Dureghello <adureghello@baylibre.com>
 
