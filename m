@@ -1,134 +1,87 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54AD135F5E5
-	for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 22:46:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9703B14B2;
+	Thu, 18 Jun 2026 06:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781736421; cv=none; b=uyO0OdhVgS+DEw6QO3TwQrl2GxlznBGS+Ut4UQxDoCWrtQKdvI8UYnjnBx2dHRoiulLiuYjiP4/0PR8c+fEC7kcXIVOzexJ81tpuhsfArF5DmEqLEUDMgAK744TiickFa6ePV265nxwrbGEQpgnAo2oNIKbgN5rIEGzdE89+iE0=
+	t=1781765935; cv=none; b=AUvG+77rMoLIEIspxNeu7IETt/KO0a0ZppF6o00vzjNxmt9HRdUOLqba9V2Qa9AsafohOz+Uxo0w+0idhXrvLJKd1bZD3jc4D4LHT3id5G/0RbeS3QJ1yLWWgEqaEptdc32cLkihZNXJ9dkJXg8M988GKuD7KCs4Th6b6z6AN34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781736421; c=relaxed/simple;
-	bh=NdBv8CH1OyvBd6FHXsWX1J+AfJHEOUFXjblfCrHMQ/s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bnAa+w9ey8+oXn2Ywueghov1armYigJvD3rWHJ9LYIxZYfbXqshA5SGN47c0L9DvY+aclbRYX/VMnO2oG6Oc64ioqS/jRmCDvmFBB9aQTBMBg50aIlvgvlVdT80x+fI+0yoNNWf6zGeFPJvcPnb9n/W7UEy6x8OnO0CRxTUc2WI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=dBgliTBp; arc=none smtp.client-ip=209.85.167.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1781765935; c=relaxed/simple;
+	bh=Tq/dT8JFO6HS4UbFJa31X6TBwZiDgp2XMEg0iJqJqF4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SM58EoflSZXlfsgBu86FhoFTfBraRlqZruN59odoF04H5oO7p3U3+fFhuBZNtmX/xaesdxRx+m/ZkIBe3qdiPb5lm1FEpKuIlrifHzC/ghXXF4AV4R4apxqdqi4BsXkruwQB6vgEAWuxuKDLIeCGa8xSRFlxHcSS1KX94UPEF+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dCELgPZp; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="dBgliTBp"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-4863cd278d7so160839b6e.1
-        for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2026 15:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781736418; x=1782341218; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hKLKgVwL+aLhwhqEZehXmpj4T1hE0+NeLKRsW/zEUZ0=;
-        b=dBgliTBpuwrwTTDIAQA1XIi/nWDPcbKkkNGHV4CX5RPX6VjAw9VSCQqo1sfuTEUVkz
-         6iFvzEc95e/IoucgHU5rUoAHG3Q7vl0hLNUnLTdS9MI2nQHmzUjAZUgXKnenzEGxzNFw
-         Xss5crU/0sJaQAPc2H9rjD//3mrn67ve4MvdRNoAS3JR6795Y8/cZ9Np91pfIdKVbOvc
-         nY99QmH7ucsCa4dRvIHXcYKHoNmV9WHODrAmANmEUsf9XznrSM9YC7lo+o0ycspFSxEo
-         2Et+DWXmSso+0a3YyzwRm8B3QUWk5jarkyR5NTBQVh0+2buL0d7elfNrf/XFX7jZBUS4
-         S33A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781736418; x=1782341218;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hKLKgVwL+aLhwhqEZehXmpj4T1hE0+NeLKRsW/zEUZ0=;
-        b=fwa6bRb2wEpDPNLrqQcmiGP+sgr+wFFk/8ni2pUSsbu5QD4yONKH3UulBQWBVDA4iS
-         NQtG/+wrXjatIpI7QLBvaIsFevTSbtMuiW17FBaLzB3E5xjZEyGeTyF4j5msFaYh9QBg
-         tTD8wMHLRM3rTU0OjPAxQc4a9o7yVhXF4jF8ON2FTX1DPJAbS9e9cNfDWWMAMpfEcmft
-         Mmq9xDVX1Epwt7fLKp+JJjMeSOPSVUp4JBtnJAd5nNDOxDNTZKPivrp3OPqSFROwtoVZ
-         k+ylnGx14Gc//PTroD62Eq1avB+wShdNSpckWmt6HoRN693Pkff1iHlikBTXR7Hn5C65
-         VLLQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+BJ66SqVmGnCg55QgUNqAg7aDAETC5Jj1KIrgNGVetFRFb//BUSKcC3BP5f1lNQoVHc7nJSH3Q/JQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwwvX9PA3EzMGcRDqfukMNSnI1xYVHhSFxOB9j7Np5CXdytdEla
-	2mtRM9MCuF5iBET3VVddZOLYYonbfZkkxuQfxcX0VK/jyc3UmFihpoCtXsExaL0fsMc=
-X-Gm-Gg: Acq92OEK7qbgdRh4hM52OUPy/ZQo0ap3uV/Z58X90/MgBnrOFDRXEukOyImLWjel78S
-	7rywxwrqkwGmMBu1D5EOwg2PnkhPTeAnpllkk/JxhEn5bpYE/wDimH2omv4V9/Uz48eF/i0+LGW
-	zMMP4cF6aNvkkYhVmYRf26L7R4flS7V1gX1wHnCfce8DrIe7lKXTdPMS9jrka6ogvae3gBBN/YP
-	GMbZJ/ICgCmejCNhXL4xFndB5gJsl1Lw0bfsWzUxKpDu1yHM1XGRYh4cB9izmHHIpSBRSwXu1Xl
-	XtVcOSf7ot5/cGOv71AuWhoyMyFUiv+7V9uQLy2jX2iXXmTRbHFifUzbPCZR4gmhW5+SE0rfT1V
-	2L8p5dg7QkcppWDyvG2EqYJcaY5ZmCaJHHzLFT4/n9T8R8YGI2J2K6xP260Gfl+4S2YdnjogX8h
-	Y8/AiHDK30moiohxO1zA1GwVh5LdAblvRIEyipkkJxsq9glL24CbtMzfCOgAO8eg0=
-X-Received: by 2002:a05:6808:1707:b0:485:4179:aae3 with SMTP id 5614622812f47-489571173cfmr971671b6e.43.1781736418299;
-        Wed, 17 Jun 2026 15:46:58 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:9458:d356:778c:22ac? ([2600:8803:e7e4:500:9458:d356:778c:22ac])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4875ddd98e8sm7060538b6e.6.2026.06.17.15.46.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Jun 2026 15:46:57 -0700 (PDT)
-Message-ID: <bf510afd-4009-4908-9bbc-35abdb635dfd@baylibre.com>
-Date: Wed, 17 Jun 2026 17:46:56 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dCELgPZp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781765933; x=1813301933;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Tq/dT8JFO6HS4UbFJa31X6TBwZiDgp2XMEg0iJqJqF4=;
+  b=dCELgPZpqXqEpVs05XbxHohhJ/YajbA5O62q52MsGCCY59vSRQNTD6CL
+   zsmZF6LcerG9EtBjnXvct7RFXvTT7QekSOBZOM4XDtKblM2X4h9xn3dPE
+   +Wgj2pvUwpdliXT31Ksm7819uX4SuEuqVS7g18iZqW8vCj7MsIILRTmMn
+   R9IzoM6H81V0KAEafp9oI5RXV7V8h9B4xWltphIM9tJXvaotuJm7Wk/vy
+   qsnAOO+E2AXqslkfhsy820RrGpUNAiLXfKnFGehTW3Na5DcfnLZNzokG4
+   kVA/4YKHO3SYTHL2ecsedET/tsKXUvMrpUZmfK6k6G7n43g+si5m1LS9e
+   Q==;
+X-CSE-ConnectionGUID: hRVOOnYTSbqrhjhJhPkfqg==
+X-CSE-MsgGUID: C6oLX4mISC6dhgx4skqCIw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11820"; a="93191391"
+X-IronPort-AV: E=Sophos;i="6.24,211,1774335600"; 
+   d="scan'208";a="93191391"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 23:58:52 -0700
+X-CSE-ConnectionGUID: SFCaozCfTwinXXvlheVnRA==
+X-CSE-MsgGUID: hQTWXFcPSUS+AnFaSFHkpg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,211,1774335600"; 
+   d="scan'208";a="247138515"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.10])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2026 23:58:51 -0700
+Date: Thu, 18 Jun 2026 09:58:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tomasz Duszynski <tduszyns@gmail.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	m32285159@gmail.com, nuno.sa@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iio: chemical: sps30: update email
+Message-ID: <ajOXKKDWrTURPpro@ashevche-desk.local>
+References: <20260617172138.114572-1-tduszyns@gmail.com>
+ <20260617172715.115019-1-tduszyns@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/5] iio: adc: Add support for LTC2378 and similar ADCs
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- pop.ioan-daniel@analog.com, marcelo.schmitt1@gmail.com
-References: <cover.1781661028.git.marcelo.schmitt@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <cover.1781661028.git.marcelo.schmitt@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260617172715.115019-1-tduszyns@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 6/16/26 9:02 PM, Marcelo Schmitt wrote:
-> This patch series adds support for LTC2378 and similar low noise, low power,
-> high speed, successive approximation register (SAR) ADCs. These ADCs are similar
-> among each other, varying mainly on the amount of precision bits, maximum sample
-> rate, and input configuration (either fully differential or pseudo-differential).
-> 
-> The first patch adds device tree documentation for LTC2378.
-> 
-> The second patch enables single-shot sample read with a GPIO connected
-> to the LTC2378 CNV pin.
-> 
-> The third patch extends IIO DMAengine buffer interface to make
-> sampling_frequency and sampling_frequency_available buffer attributes.
-> 
-> The fourth patch enables high-speed data captures with SPI offloading.
-> The setup is similar to AD4030, with a specialized PWM generator being used both
-> for SPI offload triggering and conversion start signaling.
-> 
-> The last support patch enables running buffered data captures without SPI offloading.
-> 
-> Even though these parts are somewhat similar to AD4000, the wiring configuration
-> for LTC parts is different as well as the available HDL for high speed sample
-> rate mode. Because of that, I propose creating a new device driver for
-> supporting LTC2378-like devices.
-> 
-> Specifications can be found at:
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/233818fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236416fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236418f.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236716fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236718f.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236816f.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236818f.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/236918fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237016fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237616fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237618fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237620fb.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237716fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237718fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237720fb.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237816fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237818fa.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237820fb.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/237918fb.pdf
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/238016fb.pdf
+On Wed, Jun 17, 2026 at 07:27:15PM +0200, Tomasz Duszynski wrote:
+> The old email has been inactive for a while. Replace all occurrences
+> with the current address.
 
-Putting `Link:` tags like this in the cover letter will cause b4 to apply all of these
-to all patches in the series, so we don't want to do that. I think it is enough that
-they are already in the code, we don't need to list them again here.
+...
+
+>  .mailmap                            | 1 +
+>  drivers/iio/chemical/sps30_i2c.c    | 4 ++--
+>  drivers/iio/chemical/sps30_serial.c | 4 ++--
+
+I don't care much, but the cleaner approach is to have a separate patch
+for .mailmap and put it at the end of the series. Otherwise it's confusing
+that it's related to a certain driver, while changes are applied across
+the whole tree.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
