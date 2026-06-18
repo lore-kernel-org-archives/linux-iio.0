@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA813FAE00;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E47013FBEC4;
 	Thu, 18 Jun 2026 13:27:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781789270; cv=none; b=CTtwOKfUtXNN4y360q+xjlbHihbOZN1GxKpRGi40JDa5YzzqmCX8XYwQcqgw7HvzSb/MDHVgTTs8EU7M7nSoXm8DzDP093TnDc53hMxmY72p6rCqle5uXlur5cY7XT8JEyIZI58RkAJJmS7yce7mdtzkbXMj4e12c9/+6SWqfnQ=
+	t=1781789271; cv=none; b=JhZ2JBtP0fTXeTPqRJTcLX9tOWCenOKmCJHn9RQakcE+ErYFVH+WoqTxt9kH+Ann0ovaf8R9xe3SNk5Cllhf7ZkJafWN987S4/a55rwLUweuloHK3I151mPydpqq5iRv4XTSNXtcpu/K6yaDxdlV5pDx5wDFJtIdidaWxKIIOvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781789270; c=relaxed/simple;
-	bh=BCFHWBWDxFjlFEkVYmB/PEwl4KAyIiPAkWflKEAjCnI=;
+	s=arc-20240116; t=1781789271; c=relaxed/simple;
+	bh=TvcJsvvaigww5PWGlnwsOVn78tFBfosRNvJALUF7z/A=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sGfcliSlkvHLJapo3Y9X74xsxSLOdkm5iOyf/INJ5563U8lEFeKRQcno8eWgNM4R3iHdozXZvf/1fCCiiD1LNo4BzprxBH0U7ZgSIvwIdVqLR+e6zN0TKYHpUOKwQn2fXT6i0GXvulZvVIXnJdoDrr1Bsir8ppcJ0MUkHTnMwsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pFK3r6mY; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=iIb65iS9B7lPSK2tXQCaFSs76kmM4jF7nW6KSz0AALoDJzF6dK3Ukc+wKucbugqyLvIfRVUnqTIU55ojdY2iQ+nKo4J7tDal8pnedIE+t/MeAHniaKGXHq/+SdwDV0GEpvBKc7KJR0u/qCM/H3r0lfbDOfURu4BydiOBNykA9hU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m+HpQ2KP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pFK3r6mY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8D9BFC2BCC7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m+HpQ2KP"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C0450C4AF0B;
 	Thu, 18 Jun 2026 13:27:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1781789270;
-	bh=BCFHWBWDxFjlFEkVYmB/PEwl4KAyIiPAkWflKEAjCnI=;
+	bh=TvcJsvvaigww5PWGlnwsOVn78tFBfosRNvJALUF7z/A=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=pFK3r6mYcpdIYMd6N6dVdoc+oNNlqvboA8fGV9yCWgE/vruf7eRzvg8lvX/m9/F2G
-	 nW3Tdm1i6Nu/dvajbLgMqlNYugsl+TjwoTPrClzJ0zehnlYNqObNFzSo/nR+vkAxrn
-	 Bhgm3j9zUZgIqdcZw9ysCM5MW3Wj09Jqi3DEYrLtcxiQWV2o+jVKu+ZYnKaIHnpt8G
-	 623/8ZZqM2zuwE2/eulq36sxQaGh1i24p+M1t4JA0RkZrcFy3sfgtdTFyI35uTMNDJ
-	 U+4F8Hi+kxLSMdj1NY4tFYpZ/XBvVKLZQCwqVW8bFMtNYN9gjmfESJFHuQk+brofDZ
-	 oVCr9vLeqnBTw==
+	b=m+HpQ2KP1gn6Mc02QngiQTp9irX65JKhkeIPi0sp098jG22tAxmRQR8vs4BaQqqI0
+	 FXsU4tAW3VKoZX2uGqP9kG6PQo6mYLupp+dTyMP7hK6kBItYgD3wKtW4bgs80eZHHl
+	 zy5WXMum7foQs4330rr2BoJM1WhB54tmrUq8kHCoFzKmBXNexmd2pyUvRAnmKCM2FC
+	 wYzgMNX3kLcLXSAOqCRAdgr9OMa9fkp4CxV6ph5a7dqbF3l7gqftBAAE/5zJx5tm+l
+	 442s6QpRa5GGKnPoyJHqeSF3lRtpnV974SsRH9ndwH3u3DarOc5uh9WDvx5zJZvxiD
+	 BJoK2xkgGA+rA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BEFCD98F8;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D04CD98ED;
 	Thu, 18 Jun 2026 13:27:50 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 18 Jun 2026 14:27:30 +0100
-Subject: [PATCH v6 14/16] iio: frequency: ad9910: show channel priority in
- debugfs
+Date: Thu, 18 Jun 2026 14:27:31 +0100
+Subject: [PATCH v6 15/16] iio: ABI: add docs for ad9910 sysfs entries
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260618-ad9910-iio-driver-v6-14-79125ffbe430@analog.com>
+Message-Id: <20260618-ad9910-iio-driver-v6-15-79125ffbe430@analog.com>
 References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
 In-Reply-To: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -57,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781789267; l=7922;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781789267; l=2448;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=2zh7yq4VdALrYfN5Jm1jQut+Vxd2/275MrZiji2eHTo=;
- b=QJ+9/GtmSVBLbdbzPW14LfMcf2oTidOsJvUxhJjbCMHcV4shM83G5DcBMeYBejyaiyke+r4cw
- cUgifnmwfRxBpr9gb4u/181IvS4XydJPFLFAMOt0/u/aQ1/Fx2aB8Tp
+ bh=Qx0Il4+U5HGLjGaisCVJ5kTA/vX8+mPuBjzgePK51fs=;
+ b=zUHyLfseHuYKjLSNhxyTmuSV7alih/K2k+NXr4/KSK+8kXKB+2ophkBcnAbkTfAdSzCtYBlUG
+ 4FKywUxXX1ODMFTeF0EmpvHKMdBNSchSGSf1jLooWYSQsvmxbB5fOYY
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,228 +70,60 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Expose frequency_source, phase_source and amplitude_source attributes in
-debugfs. Those indicate from which channel the specific DDS parameter is
-being sourced by returning its label. The implementation follows the
-priority table found in the datasheet.
+Add custom ABI documentation file for the DDS AD9910 with sysfs entries to
+control some parameters from the Digital Ramp Generator and OSK engine.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/ad9910.c | 173 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 173 insertions(+)
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     | 27 ++++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 28 insertions(+)
 
-diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-index 890499f67bd5..b39eeb8d9cd4 100644
---- a/drivers/iio/frequency/ad9910.c
-+++ b/drivers/iio/frequency/ad9910.c
-@@ -22,6 +22,7 @@
- #include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
-+#include <linux/seq_file.h>
- #include <linux/spi/spi.h>
- #include <linux/sysfs.h>
- #include <linux/types.h>
-@@ -183,6 +184,11 @@
- #define AD9910_RAM_ENABLED(st)		\
- 	FIELD_GET(AD9910_CFR1_RAM_ENABLE_MSK, (st)->reg[AD9910_REG_CFR1].val32)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+new file mode 100644
+index 000000000000..a54afeb64302
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+@@ -0,0 +1,27 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_dwell_en
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the sweep behavior at the configured limit. It enables dwell mode at a
++		sweep limit when set to 1, i.e., after the sweep is complete the output
++		value stays at the limit. Otherwise (setting this value to 0), the sweep
++		may stop or restart from the initial position, or even continue by
++		reversing the sweep direction.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the rate of change of the parameter in raw units per second (slope).
++		This value may be influenced by the channel sampling_frequency attribute
++		if available. Multiplying this value by the scale attribute of the
++		channel yields the rate of change in physical units per second.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc_available
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists the available roc values for the channel. Values are
++		space-separated in ascending order.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9b8cef7923ca..a76a15f02183 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1650,6 +1650,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	drivers/iio/frequency/ad9910.c
  
-+#define AD9910_DEST_FREQUENCY		0
-+#define AD9910_DEST_PHASE		1
-+#define AD9910_DEST_AMPLITUDE		2
-+#define AD9910_DEST_POLAR		3
-+
- /* PLL constants */
- #define AD9910_PLL_MIN_N		12
- #define AD9910_PLL_MAX_N		127
-@@ -310,6 +316,14 @@ enum {
- 	AD9910_CHAN_IDX_OSK,
- };
- 
-+enum {
-+	AD9910_SCAN_IDX_AMP,
-+	AD9910_SCAN_IDX_PHASE,
-+	AD9910_SCAN_IDX_FREQ,
-+	AD9910_SCAN_IDX_POLAR_AMP,
-+	AD9910_SCAN_IDX_POLAR_PHASE,
-+};
-+
- enum {
- 	AD9910_POWERDOWN,
- 	AD9910_DWELL_EN,
-@@ -1960,6 +1974,158 @@ static int ad9910_setup(struct device *dev, struct ad9910_state *st,
- 	return ad9910_io_update(st);
- }
- 
-+static inline const char *ad9910_frequency_source_get(struct iio_dev *indio_dev)
-+{
-+	struct ad9910_state *st = iio_priv(indio_dev);
-+	bool ram_en, mode_en;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/* RAM enabled and data destination is frequency */
-+	ram_en = AD9910_RAM_ENABLED(st);
-+	if (ram_en && AD9910_DEST_FREQUENCY ==
-+		      FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
-+				st->reg[AD9910_REG_CFR1].val32))
-+		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-+
-+	/* DRG enabled and data destination is frequency */
-+	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && AD9910_DEST_FREQUENCY ==
-+		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
-+				 st->reg[AD9910_REG_CFR2].val32))
-+		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_FREQ];
-+
-+	/* Parallel data port enabled and data destination is frequency */
-+	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && indio_dev->active_scan_mask &&
-+	    test_bit(AD9910_SCAN_IDX_FREQ, indio_dev->active_scan_mask))
-+		return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_FREQ];
-+
-+	/* FTW: RAM enabled and data destination is phase, amplitude, or polar */
-+	if (ram_en)
-+		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-+
-+	/* single tone profiles */
-+	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
-+}
-+
-+static int ad9910_frequency_source_show(struct seq_file *s, void *ignored)
-+{
-+	seq_printf(s, "%s\n", ad9910_frequency_source_get(s->private));
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(ad9910_frequency_source);
-+
-+static inline const char *ad9910_phase_source_get(struct iio_dev *indio_dev)
-+{
-+	struct ad9910_state *st = iio_priv(indio_dev);
-+	bool ram_en, mode_en;
-+	u32 destination;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/* RAM enabled and data destination is phase or polar  */
-+	ram_en = AD9910_RAM_ENABLED(st);
-+	if (ram_en) {
-+		destination = FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
-+					st->reg[AD9910_REG_CFR1].val32);
-+		if (destination == AD9910_DEST_PHASE ||
-+		    destination == AD9910_DEST_POLAR)
-+			return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-+	}
-+
-+	/* DRG enabled and data destination is phase */
-+	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && AD9910_DEST_PHASE ==
-+		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
-+				 st->reg[AD9910_REG_CFR2].val32))
-+		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_PHASE];
-+
-+	/* Parallel data port enabled and data destination is phase */
-+	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && indio_dev->active_scan_mask) {
-+		if (test_bit(AD9910_SCAN_IDX_PHASE, indio_dev->active_scan_mask))
-+			return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_PHASE];
-+		if (test_bit(AD9910_SCAN_IDX_POLAR_PHASE, indio_dev->active_scan_mask))
-+			return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE];
-+	}
-+
-+	/* POW: RAM enabled and data destination is frequency or amplitude */
-+	if (ram_en)
-+		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-+
-+	/* single tone profiles */
-+	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
-+}
-+
-+static int ad9910_phase_source_show(struct seq_file *s, void *ignored)
-+{
-+	seq_printf(s, "%s\n", ad9910_phase_source_get(s->private));
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(ad9910_phase_source);
-+
-+static inline const char *ad9910_amplitude_source_get(struct iio_dev *indio_dev)
-+{
-+	struct ad9910_state *st = iio_priv(indio_dev);
-+	bool ram_en, mode_en;
-+	u32 destination;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/* OSK enabled */
-+	mode_en = FIELD_GET(AD9910_CFR1_OSK_ENABLE_MSK,
-+			    st->reg[AD9910_REG_CFR1].val32);
-+	if (mode_en)
-+		return ad9910_channel_str[AD9910_CHAN_IDX_OSK];
-+
-+	/* RAM enabled and data destination is amplitude or polar */
-+	ram_en = AD9910_RAM_ENABLED(st);
-+	if (ram_en) {
-+		destination = FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
-+					st->reg[AD9910_REG_CFR1].val32);
-+		if (destination == AD9910_DEST_AMPLITUDE ||
-+		    destination == AD9910_DEST_POLAR)
-+			return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-+	}
-+
-+	/* DRG enabled and data destination is amplitude */
-+	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && AD9910_DEST_AMPLITUDE ==
-+		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
-+				 st->reg[AD9910_REG_CFR2].val32))
-+		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_AMP];
-+
-+	/* Parallel data port enabled and data destination is amplitude */
-+	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
-+			    st->reg[AD9910_REG_CFR2].val32);
-+	if (mode_en && indio_dev->active_scan_mask) {
-+		if (test_bit(AD9910_SCAN_IDX_AMP, indio_dev->active_scan_mask))
-+			return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_AMP];
-+		if (test_bit(AD9910_SCAN_IDX_POLAR_AMP, indio_dev->active_scan_mask))
-+			return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_POLAR_AMP];
-+	}
-+
-+	/* only way to control amplitude at this point is through OSK */
-+	if (ram_en)
-+		return ad9910_channel_str[AD9910_CHAN_IDX_OSK];
-+
-+	/* single tone profiles */
-+	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
-+}
-+
-+static int ad9910_amplitude_source_show(struct seq_file *s, void *ignored)
-+{
-+	seq_printf(s, "%s\n", ad9910_amplitude_source_get(s->private));
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(ad9910_amplitude_source);
-+
- static inline void ad9910_debugfs_init(struct ad9910_state *st,
- 				       struct iio_dev *indio_dev)
- {
-@@ -1975,6 +2141,13 @@ static inline void ad9910_debugfs_init(struct ad9910_state *st,
- 
- 	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/data", st->ram_fwu_name);
- 	debugfs_create_symlink("ram_data", d, buf);
-+
-+	debugfs_create_file("frequency_source", 0400, d, indio_dev,
-+			    &ad9910_frequency_source_fops);
-+	debugfs_create_file("phase_source", 0400, d, indio_dev,
-+			    &ad9910_phase_source_fops);
-+	debugfs_create_file("amplitude_source", 0400, d, indio_dev,
-+			    &ad9910_amplitude_source_fops);
- }
- 
- static int ad9910_probe(struct spi_device *spi)
 
 -- 
 2.43.0
