@@ -1,121 +1,142 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C56C2FB965
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 17:12:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C34A348C63
+	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 17:25:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781802768; cv=none; b=usaLL+60GcdtiC35mD/N0GT+VAXkTbQ+nHqMlnDN70nN5PPqJQr7x6ploYWoGnYsOvIuzajhi52GTuIqjbvq50IOnCDAEsLg16wBoIGj7DL44sSfNiHkfJ21nvtMiwn4vxhirGZkIMQeDPuj16VAAQ2GTv9EdZpNRbH5TM0P91k=
+	t=1781803552; cv=none; b=sdLOj/pe2RFz1EjeRH7GrHdu7Ko3H9kD9EIJy29P1uka63UMmmzD5BNI5541V0n09UP9BhArPfWNMcK1N/tGQ3iMo6J2BcB00h94DZMfpGUcm/BhkIgxxdzs6A21a50sOLQiGKKylx5f1QIqGEpyHjXtQJEWOgP20SywxsTZIhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781802768; c=relaxed/simple;
-	bh=XvyhWFfNg9ZTDu7ReKiTeTBhKhccySIyD/kmxK9wqcY=;
+	s=arc-20240116; t=1781803552; c=relaxed/simple;
+	bh=24kM4g3+wISlX1NWkhO/TxdeXtJj2lsQ+29OTn6CdrY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I1wKnMS376F9rSFhQyzn1euXOKdWv4IgO22zlhTI7U2as40+WFwIDV3Tt206H0GJfqQT7Bc7Nv5Rus/Q2ZUQiHkDuYdzxCBoM19fpoA/YGYDBtwB49ed6UpyDCe+n+MVsSjqTnA44px5xUhyyqeThS8GGsWCgoRVnjQHVZYHwZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HsTR2mAJ; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=L2C/V5AScyl7/+2XDBRXWk8xMSRwmVPOUEsUaVBISzLoa6E2pPclWuhnprFFL/L97mYZsndPBquUkpbApzKL+tokB18NiGFofuJrLHWuABqD0IFqMD4a2cgIgpZnFS8p1RCg5i7uLPvM0Ir/1eKX0gDSgtVDRSdfFcwxGI1S//A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=nXc7jAnr; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HsTR2mAJ"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-462bb734793so974809f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 10:12:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="nXc7jAnr"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-490cf322ed0so8756595e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 10:25:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781802766; x=1782407566; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=OPYldehot7tz8RCFgz3HrFSaMMAMdN8VU5l6kfPYI9k=;
-        b=HsTR2mAJjm9QdlJPx39o94YTkPgkk9NUDyDdNzCgq5ct/UDj+Xu2fzAYas60+z+uhO
-         hGFNy4Pofz1w2wbVVfXuI1d5kfVzKTuo8jcz2TNxVfHOtxAPiH0auhz2xUXxHYDjVqsz
-         Y5WfNNaYrgeY7FZm6s/fbdSofNiPLj/BahOxGSfLBAgSUmmehJblTLJEDWco6+t/OTf+
-         2Q1Yh+wFIlvLgtYvXrESPIpqRJyVzGGbTfDFtrTwzQuzXvL16fvzaDSSN3puXL21k13J
-         fyjIgmNY3lpFUr8m1u3pVwEjzngGSkXGLYm6PdIyst48osDAI6XTfvTapKEtiEQCUFK8
-         SCiQ==
+        d=baylibre.com; s=google; t=1781803547; x=1782408347; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pUs1pCYfgyslcqbM0nVDJGJ1LjB7KId+9/g65IhvUEc=;
+        b=nXc7jAnr/vNQgi4/QSm9DQDXbNNZ2zEFnh9uqAj0jZlRtayFwH81ilQw7tYercoSj5
+         lbaH6AHXZedZ5mGnoqWbDArmrHU1ZjcrhbmSPsg78o52dCzEeDOu6nOPud+JnfUCG/FF
+         5THhww5p5vVc+sf2fiTFo9yD0x/X46s1I38i63XAxtQh4eUvEJuC0DOQlFCn52/TX7is
+         cIaRSIrLZ1xeqzDsYpiIsf4ugsmrFTDb1WO9SjbSQxwxEjJCSifb3rZ8X4kcMBEkfkDC
+         mc4DY8urIsIE8WtlQguVywni3ToAfm4JE3O2Gf+cIAUhGQwAKsh6d1k1MWomsfUy64Re
+         zVcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781802766; x=1782407566;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OPYldehot7tz8RCFgz3HrFSaMMAMdN8VU5l6kfPYI9k=;
-        b=CFkztHcMF5jjuTDROoatZaITkP/4ntZjNgyCdAC9ovcPMOCdTYQHMWHcNl6p3rQ9Io
-         c6WVv8BRMj0DNPrL4OauBREP1IgH317/Seg3pcDwSVFaxSTzqICSZNa3TYOBbfRV4Q92
-         HicvdCbvJ2+m325SdunRWV1/68LLEW2q1nYZJqFNnBXXsFyl3JTEEFjqzzrucVxsmnKB
-         DLM8Lt6tMNQmmIBR3ViEKesbn4ZbhJFVKyUm2x2JtF6rYgTZTNp54AJFLUZkIW0/Odov
-         BK9Qbw5ere9FTzw8IXyHc5hlW+MBAwC5uNq97j0KEULq2GZLl2uQRtzn5vgP/RdL3cem
-         nADw==
-X-Forwarded-Encrypted: i=1; AFNElJ+ESjgYquCgD2k36UvUv1RlY0q9om8Wz/JXvlJ3rioVlFdty3EZfH89zlQFZBgZElT0rf9eI+iKuz8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzV29tjuLkv96YpcpSjt33BmkkKyB1lk0RLGuhWNXZQU1z9KAqc
-	J3RVucj7vAZEzjE89/9tsUAyNg064WQhMBl+mLy7fCjPdx79X6IneJ+x
-X-Gm-Gg: AfdE7cm6hrabrfPt3hyWGXqmWABRjFs4RVDDCoBXy84SnPjscx9fHTJHvXqmZEkDzi9
-	bqL7rZi36F272nSucY0qi17Q/6///19b730cRgKqfgfJL5XK/PrWZW2uykb9KXinqXHVFsr49q8
-	kZ/M0eoVY1OGRvC06KyW0rP9dWzH9QQjePADNqYTO3LBcRygakGaCE9Tq1c64UkRe6kSH4z4ajj
-	U1W8wrbb1a58g0X52Ka9YNo2E2idJpX4B2CvpdwicdBXW6pQI4sv5F76Kh9dlz28MlvTCZD+MR5
-	Diq/luGyQb7G29bt/MB4OHLWf9lGWOSi8E3bDLAdxfXWNktSgmbzaVHC/gmM45lZXyxge8lz/8B
-	4zu1ct4zRbGN1xx0Ehn2o3beo254NeWLW1XY4AKeRWU8/MxdeC5fHqd52yGNgMPstgqiEm/bIwV
-	x5dyvT
-X-Received: by 2002:a05:6000:46ce:b0:45e:f631:2c73 with SMTP id ffacd0b85a97d-464ffa952e2mr467310f8f.9.1781802765447;
-        Thu, 18 Jun 2026 10:12:45 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4650b76e7c9sm293604f8f.21.2026.06.18.10.12.44
+        d=1e100.net; s=20251104; t=1781803547; x=1782408347;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pUs1pCYfgyslcqbM0nVDJGJ1LjB7KId+9/g65IhvUEc=;
+        b=gHJf/sBjmIOIzk1nbWCjBsQolTMdJWL1/Bm3E1VAPcYJLDSoizpCa+/s0sbF4333TS
+         bUG+zECkgmZuvH6lOrwoj2nRWPL3+Nu7XEKleZ4Va5O3mqhdyT5sg+OSyJKG8ExAtKjy
+         T+66DlmMAY+dtmRdd6h+wJ0WnPW7HS99/6GCqD7NRAraut344QLJcl8VyLDRGLZOiANP
+         2KRm09Xv8UjaLVDzQvDcQV7KIsgKWOexh/A64euUV4YwUIl8hzfnKgxz5RfIzDgQ8UHr
+         EfgdTtp0Nump1R0kGb0KFkzIizf7PsXg4LNdjmkyYvdBFOr1EDmvkTRilDWBOxex3fIC
+         2bgw==
+X-Gm-Message-State: AOJu0YwVqL1O0vq/VFnYqPqa7WlivzR07MUicJh1HJQj0WPKh1jZ7Dey
+	9zKjHcCYrAv9B0Y5HH9ec64aoz5Chyrxbrcgckr6Jnu4R/DgfkY3e6ozxRZ/fLpBiM0=
+X-Gm-Gg: AfdE7cluAHsJwc8UCRbfqzn8kuBTyjwvzygn+0eTYdCZl7ATTEI8zW4eJvghsgX19XJ
+	HqvikuxnyYFypvQo87hevO5PKqJdM+p1V5aOEWCCbOoX8D9wIP9YwWuY7FrIK9R+0oj+m/T8urN
+	MsdsENlrMBGy+gkUOYWSZ7SlGsyiW+kQg+E/EWs0cfXee3G8o4xsfsWc22kbSzOwBFVq1f9zhIq
+	9j4IsXKvB9Mhe5R3q95oCF40OO055WH8PMMaJjNmOjly/nYMMU+5Ss6PYXhuizi3S6P6JxhKR7/
+	52nlJ1FyElgaJxFSaZORb/xvfPe+jF39YmPahyllIKth09k5TCLtgpLxTQo9YwQHpEIWvgdQU4k
+	9b7PapjWTTL3fr247Y91wMJe6AEOBDiF+IKRDs7AJ5IuBWw6Blk76GQOio88SftTN3c89HqQC6h
+	/xzpgEqUSeZuAMJji5K2bOypzvXXU+Yc7ymA53bV/UmBcfWfsSwPu/jECQGhDCsUpL08YQFygXw
+	dBZ
+X-Received: by 2002:a05:600c:3e86:b0:490:e18f:d112 with SMTP id 5b1f17b1804b1-4923f56c1b2mr8389095e9.21.1781803547407;
+        Thu, 18 Jun 2026 10:25:47 -0700 (PDT)
+Received: from localhost (p200300f65f47db04cea0a59ab11cac9f.dip0.t-ipconnect.de. [2003:f6:5f47:db04:cea0:a59a:b11c:ac9f])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4923fd33dafsm4270305e9.8.2026.06.18.10.25.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2026 10:12:45 -0700 (PDT)
-Date: Thu, 18 Jun 2026 18:13:47 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Frank Li <Frank.li@oss.nxp.com>
-Cc: nuno.sa@analog.com, dmaengine@vger.kernel.org, 
-	linux-iio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 1/3] dmaengine: Support address bus widths of 32
- bytes and above
-Message-ID: <ajQnE0e5a1JS7IWU@nsa>
-References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
- <20260616-dmaengine-support-wider-dma-masks-v1-1-da23a8dcb756@analog.com>
- <ajF3p3Vu_pOx9z_V@SMW015318>
+        Thu, 18 Jun 2026 10:25:46 -0700 (PDT)
+Date: Thu, 18 Jun 2026 19:25:44 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: magnetometer: add support for Melexis
+ MLX90393
+Message-ID: <ajQpq1yzA-ig2c7s@monoceros>
+References: <20260618160141.11409-1-nikhilgtr@gmail.com>
+ <20260618160141.11409-3-nikhilgtr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="kc2atgzcidxkklwd"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ajF3p3Vu_pOx9z_V@SMW015318>
+In-Reply-To: <20260618160141.11409-3-nikhilgtr@gmail.com>
 
-On Tue, Jun 16, 2026 at 11:19:51AM -0500, Frank Li wrote:
-> On Tue, Jun 16, 2026 at 04:40:52PM +0100, Nuno Sá via B4 Relay wrote:
-> > [You don't often get email from devnull+nuno.sa.analog.com@kernel.org. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
-> >
-> > From: Nuno Sá <nuno.sa@analog.com>
-> >
-> > The src_addr_widths and dst_addr_widths capability masks encode each
-> > supported width as a bit whose position equals the corresponding
-> > enum dma_slave_buswidth value (e.g. DMA_SLAVE_BUSWIDTH_4_BYTES sets
-> > bit 4). As these masks are plain u32, widths of 32 bytes and above
-> > (DMA_SLAVE_BUSWIDTH_32/64/128_BYTES map to bits 32, 64 and 128) cannot
-> > be represented at all.
-> 
-> This is problem, which should be fixed.
-> 
-> >
-> > Introduce bitmap-based masks that span the full enum range. To allow
-> > controllers and consumers to be converted incrementally, the legacy
-> > u32 fields are kept alongside the new bitmaps: producers populate the
-> > bitmap (mirroring the low 32 bits back into the legacy field) and
-> > dma_get_slave_caps() folds a legacy-only producer's u32 into the
-> > returned bitmap.
-> >
-> > Add dma_set_{src,dst}_addr_mask() for producers and
-> > dma_slave_caps_get_{src,dst}_width_min() for consumers so that, once
-> > every user is converted, the legacy u32 fields can be dropped and the
-> > bitmaps renamed without further churn.
-> 
-> Good mirgration plan.
 
-Cool! I'll then wait some more days and if nothing pops up will drop the
-RFC and send a new series addressing some valid AI inputs and converting
-more drivers.
+--kc2atgzcidxkklwd
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [PATCH v2 2/2] iio: magnetometer: add support for Melexis
+ MLX90393
+MIME-Version: 1.0
 
-- Nuno Sá
-> 
-> Frank
+Hello,
+
+On Thu, Jun 18, 2026 at 09:31:41PM +0530, Nikhil Gautam wrote:
+> +static const struct i2c_device_id mlx90393_id[] = {
+> +	{ "mlx90393" },
+> +	{ }
+
+Please make that:
+
+	{ .name = "mlx90393" },
+
+
+> +};
+> +MODULE_DEVICE_TABLE(i2c, mlx90393_id);
+> +
+> +static const struct of_device_id mlx90393_of_match[] = {
+> +	{ .compatible = "melexis,mlx90393" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, mlx90393_of_match);
+> +
+> +static struct i2c_driver mlx90393_i2c_driver = {
+> +	.driver = {
+> +		.name = "mlx90393",
+> +		.of_match_table = mlx90393_of_match,
+> +	},
+> +	.probe = mlx90393_i2c_probe,
+
+I guess you want
+
+	.id_table = mlx90393_id,
+
+here.
+
+Best regards
+Uwe
+
+--kc2atgzcidxkklwd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmo0KhUACgkQj4D7WH0S
+/k7GrwgAu1DSqOXoWtneHXUsxpm3BPvSSx7V4coHsGQIVhGMIzOuHlj1DdyrM3yA
+NuShM18WdXvHIZetC+I9MmN4vpQhgGcJKIe9uVh432ZK3s8JWcoOIOGufiLYTp8M
+Yynw6i077ytTSA6K0EYger1u/6sYlNh2rBAqe3JqLQ3AOceOVzrtXF3XaVvsRxcI
+WkaJBl9JnZwqidb063RRszj/iqWvAnMHz0VJocZIpXiIpsuhl+8WIzyITLEqGD8B
+j/FG79DvaiU5XsFollRc2y6zgN9Gr1sIzeiugDciAJgy36JGKnKq6PhkzEA2jbQP
+eF4QAbGXwI/F6wUFbhl2+Mw3U1DOKQ==
+=EHbj
+-----END PGP SIGNATURE-----
+
+--kc2atgzcidxkklwd--
