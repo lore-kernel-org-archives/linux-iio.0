@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7353EF672;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE963F54D8;
 	Thu, 18 Jun 2026 13:27:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781789270; cv=none; b=oUh5SHjK3hHRR3iTZ+7zV8yNVAYx9rgBWK2eYLuMQPI+45rIbT/yCjVh+Yc02OMrgHKcEH6BZ06yjsT7cBGT2h/YcTM0Yp7DUwHqfhPLmNRgXcYEhiu/d1QklboHh81f/icFwv3ttkwyczM7ldruKklxBiXEDVzdzEiAwQwqXDk=
+	t=1781789270; cv=none; b=JoYEd0fVSSwyB/aCrHete2bZyAAjT/rZITsW4PIfAPEy/8c0lX1eImrXQKK4bdD1tkMTWkfR65BjtlKlXxBJxAoP0ctqaRjXU1R7adLCMb03AeEXKe6ql3Uk5ZPZLMUUYx/PgIenLE/b74uZ7yFiaTXiCRqM+bDddgxQSiIgo0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1781789270; c=relaxed/simple;
-	bh=ANWYdmhblmRi7e3hQwnFzdKGxwZI0v27ACttUnDE+dY=;
+	bh=GvyTEnnfl+QPvPEUJcfk42iFBS+Q9KPEVXytEEvT/IU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=J8sAiqo+CajZEd1aeuFvzk/3R/vnqDbhOiOlEF6Pco50xKjE3FX0wwGPYjBm2KQK8ScCesOouT/ixKHhIM5+5CBLaRuQ7bDeqajMOG+xDn6k2ywCf2L5frj8tHguMvCJM2+1PCYAhirDgQOk+hX5cf8zF5zVVVTRQerf12s4CuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BBj30G3L; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=CkgMLLtOkS4moXGAHFuDvPr7Vl8JXjV0DEqH1dHlH8yfsl3479H7/grsIBYJddpqhqhOwS7z6k+7kGRukvHOgX1itMNKVesrkJm0wpbaMVbuWuf3VBSkfvlfYNd8fnZfzYed2PmjANbh6Lex8TEREZbA0RHhTQH3YYg35HhFM1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XSmoLB1t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BBj30G3L"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CAE25C2BCFF;
-	Thu, 18 Jun 2026 13:27:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XSmoLB1t"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0262CC2BCC7;
+	Thu, 18 Jun 2026 13:27:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1781789269;
-	bh=ANWYdmhblmRi7e3hQwnFzdKGxwZI0v27ACttUnDE+dY=;
+	s=k20201202; t=1781789270;
+	bh=GvyTEnnfl+QPvPEUJcfk42iFBS+Q9KPEVXytEEvT/IU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=BBj30G3LxU2GcWa3XzIVcuue+F+bPgPYzZ3u+rF22td4YPwF+/QuT05liiEnsnKx9
-	 ay+trL/yO7MkoX5Kw4Rcg5eKdwEf6Poot2QRDN4r/qpHGCeYuZ7DGjcTm7gToa11ZJ
-	 BmIOrZTrekZ+vgAmeIhSoP1KIw/uVDGNk+7gKFkBQhVJ2a3i2+62ncaZ82cc3GMcFm
-	 9TNLPMS6dNVGj1gpw0LO2v5yLDcj1mlcZ9rE72vzZNmEJNxBMSnzy6hAaSpT/GZ8LF
-	 MLj4GTxXOQ9MZt73ZD5Cx0XvP1q/VypGYX+SQln8DE3cZodKhUeZ+gNKIxYDmaWVMA
-	 xOWQnVBa9Ig4A==
+	b=XSmoLB1tWuPe8/9qX8tkxxpgVkzCpHvq0Ns82Nrv3m2hnO5NHLlG4U4NHwl0/LV68
+	 D2PP5p9cEZxgMwJMspZfYLBHwPrjgum/UKtZOhAf5rS8Ox/mpVrULqgT7oRGGf4jmU
+	 32PK8/pedpIX4+EnUoMzykxv/4A3cDIAO89XlhlFNU5V/SUGi32ZzGnXUDY7ozNx0l
+	 mS3EzTWM5tWgZ7eCYGsqpHdgcLqtdOEhF8bh344epy0mfWA4BKowDXUco/NQ2YTaa8
+	 IPUnf9gtlf7v9QzJwe7iTQiH/ayzjyNoF1KL250IrXZ4XiiVTaiuyOF0MJidOSBRcX
+	 BFFEPv8dupSjA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C054ECD98ED;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF471CD98F2;
 	Thu, 18 Jun 2026 13:27:49 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 18 Jun 2026 14:27:22 +0100
-Subject: [PATCH v6 06/16] iio: core: create local __iio_chan_prefix_emit()
- for reuse
+Date: Thu, 18 Jun 2026 14:27:24 +0100
+Subject: [PATCH v6 08/16] dt-bindings: iio: frequency: add ad9910
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260618-ad9910-iio-driver-v6-6-79125ffbe430@analog.com>
+Message-Id: <20260618-ad9910-iio-driver-v6-8-79125ffbe430@analog.com>
 References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
 In-Reply-To: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -57,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1781789267; l=6291;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1781789267; l=6512;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=wT0KGQQPimCY8zSXPY5+HInU0joJdP+RzJwP5aY3uU4=;
- b=dFpE3sHOYqS+HybINRAJb9gwLLHCL2vUpS7QyWumMhPdSld4vHYq2S5biv5L12EehZgyZGEfg
- K1Sw+/aTIi5Cr6H2eKJ2cNo17pzREU0LxS6+taxtxDXu5erOusLdNtE
+ bh=VQjcwp+c8pAMnx8TsXWYeDBQiz3KFbDqxEhElcDjE6o=;
+ b=chcTCQMngcgOyJMjrUBQkZO0pf75x8nDtgIhQloUxq1dsrZ0C+Ul748FtRNMkYu8MjvwcRz8I
+ 3bJrARMRdvcDbKYi4Vr5JEWiEfW3hKbGnJ9Peij7RDjIX6x758OopMx
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,218 +70,228 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Move logic to create a channel prefix for naming attribute files into a
-separate __iio_chan_prefix_emit() function for reuse.
+DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+configurations for clocks, DAC current, reset and basic GPIO control.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 167 ++++++++++++++++------------------------
- 1 file changed, 68 insertions(+), 99 deletions(-)
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 196 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 03019bf9327b..9373006235c8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -26,6 +26,7 @@
- #include <linux/property.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-+#include <linux/sprintf.h>
- #include <linux/wait.h>
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+new file mode 100644
+index 000000000000..a78fe33ba21f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -0,0 +1,189 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD9910 Direct Digital Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
++  14-bit DAC. It features single tone mode with 8 configurable profiles,
++  a digital ramp generator, RAM control, OSK, and a parallel data port for
++  high-speed streaming.
++
++  https://www.analog.com/en/products/ad9910.html
++
++properties:
++  compatible:
++    const: adi,ad9910
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 70000000
++
++  clocks:
++    minItems: 1
++    items:
++      - description: Reference clock (REF_CLK).
++      - description: Optional synchronization clock (SYNC_IN).
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: ref_clk
++      - const: sync_in
++
++  '#clock-cells':
++    const: 1
++
++  clock-output-names:
++    minItems: 1
++    maxItems: 3
++    items:
++      enum: [ sync_clk, pdclk, sync_out ]
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++    description:
++      Requires interrupt-names property with the same number of items. The
++      supported interrupts are 'drover' (digital ramp generator limit) and
++      'ram_swp_ovr' (end of RAM sweep).
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum: [ drover, ram_swp_ovr ]
++
++  dvdd-io33-supply:
++    description: 3.3V Digital I/O supply.
++
++  avdd33-supply:
++    description: 3.3V Analog DAC supply.
++
++  dvdd18-supply:
++    description: 1.8V Digital Core supply.
++
++  avdd18-supply:
++    description: 1.8V Analog Core supply.
++
++  reset-gpios:
++    description:
++      GPIOs controlling the Main Device reset.
++
++  io-reset-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_RESET pin.
++
++  powerdown-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the EXT_PWR_DWN pin.
++
++  update-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_UPDATE pin.
++
++  profile-gpios:
++    minItems: 3
++    maxItems: 3
++    description:
++      GPIOs controlling the PROFILE[2:0] pins for profile selection.
++
++  sync-err-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read SYNC_SMP_ERR pin status.
++
++  lock-detect-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read PLL_LOCK pin status.
++
++  adi,pll-enable:
++    type: boolean
++    description:
++      Indicates that a loop filter is connected and the internal PLL is enabled.
++      Often used when the reference clock is provided by a crystal or by a
++      single-ended on-board oscillator.
++
++  adi,charge-pump-current-microamp:
++    minimum: 212
++    maximum: 387
++    default: 212
++    description:
++      PLL charge pump current in microamps. Only applicable when the internal
++      PLL is enabled. The value is rounded to the nearest supported step. This
++      value depends mostly on the loop filter design.
++
++  adi,refclk-out-drive-strength:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ disabled, low, medium, high ]
++    default: disabled
++    description:
++      Reference clock output (DRV0) drive strength. Only applicable when
++      the internal PLL is enabled.
++
++dependencies:
++  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
++  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
++  lock-detect-gpios: [ 'adi,pll-enable' ]
++  interrupts: [ interrupt-names ]
++  clocks: [ clock-names ]
++  '#clock-cells': [ clock-output-names ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dvdd-io33-supply
++  - avdd33-supply
++  - dvdd18-supply
++  - avdd18-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
++
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
++                            <&gpio 5 GPIO_ACTIVE_HIGH>,
++                            <&gpio 6 GPIO_ACTIVE_HIGH>;
++
++            adi,pll-enable;
++            adi,charge-pump-current-microamp = <387>;
++            adi,refclk-out-drive-strength = "disabled";
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b051eccafa60..998b06fd97fd 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1645,6 +1645,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+ F:	drivers/iio/dac/ad9739a.c
  
- #include <linux/iio/buffer.h>
-@@ -199,6 +200,64 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_CONVDELAY] = "convdelay",
- 	[IIO_CHAN_INFO_POWERFACTOR] = "powerfactor",
- };
++ANALOG DEVICES INC AD9910 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
 +
-+static int __iio_chan_prefix_emit(const struct iio_chan_spec *chan,
-+				  enum iio_shared_by shared_by,
-+				  char *buf, size_t len)
-+{
-+	const char *dir = iio_direction[chan->output];
-+	const char *type = iio_chan_type_name_spec[chan->type];
-+	int n = 0;
-+
-+	switch (shared_by) {
-+	case IIO_SHARED_BY_ALL:
-+		buf[0] = '\0'; /* empty channel prefix */
-+		break;
-+	case IIO_SHARED_BY_DIR:
-+		n = scnprintf(buf, len, "%s", dir);
-+		break;
-+	case IIO_SHARED_BY_TYPE:
-+		n = scnprintf(buf, len, "%s_%s", dir, type);
-+		if (chan->differential)
-+			n += scnprintf(buf + n, len - n, "-%s", type);
-+		break;
-+	case IIO_SEPARATE:
-+		if (chan->indexed) {
-+			n = scnprintf(buf, len, "%s_%s%d", dir, type,
-+				      chan->channel);
-+			if (chan->differential)
-+				n += scnprintf(buf + n, len - n, "-%s%d", type,
-+					       chan->channel2);
-+		} else {
-+			if (chan->differential) {
-+				WARN(1, "Differential channels must be indexed\n");
-+				return -EINVAL;
-+			}
-+			n = scnprintf(buf, len, "%s_%s", dir, type);
-+		}
-+
-+		if (chan->modified) {
-+			if (chan->differential) {
-+				WARN(1, "Differential channels can not have modifier\n");
-+				return -EINVAL;
-+			}
-+			n += scnprintf(buf + n, len - n, "_%s",
-+				       iio_modifier_names[chan->channel2]);
-+		}
-+
-+		if (chan->extend_name)
-+			n += scnprintf(buf + n, len - n, "_%s", chan->extend_name);
-+		break;
-+	}
-+
-+	if (n > 0 && n < len - 1) { /* prefix termination if not empty */
-+		buf[n++] = '_';
-+		buf[n] = '\0';
-+	}
-+
-+	return n;
-+}
-+
- /**
-  * iio_device_id() - query the unique ID for the device
-  * @indio_dev:		Device structure whose ID is being queried
-@@ -1100,106 +1159,19 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 						size_t len),
- 			   enum iio_shared_by shared_by)
- {
--	int ret = 0;
--	char *name = NULL;
--	char *full_postfix;
-+	char prefix[NAME_MAX + 1];
-+	int ret;
- 
- 	sysfs_attr_init(&dev_attr->attr);
- 
--	/* Build up postfix of <extend_name>_<modifier>_postfix */
--	if (chan->modified && (shared_by == IIO_SEPARATE)) {
--		if (chan->extend_name)
--			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
--						 iio_modifier_names[chan->channel2],
--						 chan->extend_name,
--						 postfix);
--		else
--			full_postfix = kasprintf(GFP_KERNEL, "%s_%s",
--						 iio_modifier_names[chan->channel2],
--						 postfix);
--	} else {
--		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
--			full_postfix = kstrdup(postfix, GFP_KERNEL);
--		else
--			full_postfix = kasprintf(GFP_KERNEL,
--						 "%s_%s",
--						 chan->extend_name,
--						 postfix);
--	}
--	if (full_postfix == NULL)
-+	ret = __iio_chan_prefix_emit(chan, shared_by, prefix, sizeof(prefix));
-+	if (ret < 0)
-+		return ret;
-+
-+	dev_attr->attr.name = kasprintf(GFP_KERNEL, "%s%s", prefix, postfix);
-+	if (!dev_attr->attr.name)
- 		return -ENOMEM;
- 
--	if (chan->differential) { /* Differential can not have modifier */
--		switch (shared_by) {
--		case IIO_SHARED_BY_ALL:
--			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
--			break;
--		case IIO_SHARED_BY_DIR:
--			name = kasprintf(GFP_KERNEL, "%s_%s",
--						iio_direction[chan->output],
--						full_postfix);
--			break;
--		case IIO_SHARED_BY_TYPE:
--			name = kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    iio_chan_type_name_spec[chan->type],
--					    full_postfix);
--			break;
--		case IIO_SEPARATE:
--			if (!chan->indexed) {
--				WARN(1, "Differential channels must be indexed\n");
--				ret = -EINVAL;
--				goto error_free_full_postfix;
--			}
--			name = kasprintf(GFP_KERNEL,
--					    "%s_%s%d-%s%d_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    chan->channel,
--					    iio_chan_type_name_spec[chan->type],
--					    chan->channel2,
--					    full_postfix);
--			break;
--		}
--	} else { /* Single ended */
--		switch (shared_by) {
--		case IIO_SHARED_BY_ALL:
--			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
--			break;
--		case IIO_SHARED_BY_DIR:
--			name = kasprintf(GFP_KERNEL, "%s_%s",
--						iio_direction[chan->output],
--						full_postfix);
--			break;
--		case IIO_SHARED_BY_TYPE:
--			name = kasprintf(GFP_KERNEL, "%s_%s_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    full_postfix);
--			break;
--
--		case IIO_SEPARATE:
--			if (chan->indexed)
--				name = kasprintf(GFP_KERNEL, "%s_%s%d_%s",
--						    iio_direction[chan->output],
--						    iio_chan_type_name_spec[chan->type],
--						    chan->channel,
--						    full_postfix);
--			else
--				name = kasprintf(GFP_KERNEL, "%s_%s_%s",
--						    iio_direction[chan->output],
--						    iio_chan_type_name_spec[chan->type],
--						    full_postfix);
--			break;
--		}
--	}
--	if (name == NULL) {
--		ret = -ENOMEM;
--		goto error_free_full_postfix;
--	}
--	dev_attr->attr.name = name;
--
- 	if (readfunc) {
- 		dev_attr->attr.mode |= 0444;
- 		dev_attr->show = readfunc;
-@@ -1210,10 +1182,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 		dev_attr->store = writefunc;
- 	}
- 
--error_free_full_postfix:
--	kfree(full_postfix);
--
--	return ret;
-+	return 0;
- }
- 
- static void __iio_device_attr_deinit(struct device_attribute *dev_attr)
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
