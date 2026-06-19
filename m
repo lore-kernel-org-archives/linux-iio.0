@@ -1,66 +1,66 @@
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E5933CE8A
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 14:42:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC352DB785
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 14:48:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781880132; cv=none; b=NjcD7mzzwcHFCO9v/5XlgJcBAMmuXet3mGd1amMvOIxbjP5LSurUE1oVNgfMd7SPhWRvy9nBxlbRMGOEFeUFMnPqau1hgtvPzlVslXIY+iEWjiowErsdUVX7O/VbWEOyKGn373hphsXvkJwG9OB+a/EQmPYIVWduouQ5BkWVe9U=
+	t=1781880494; cv=none; b=TPDZqjp9XX/o0FZ6ahP5woXAWB2GU2bK6v9J8JhoIWpjfgtZYEJYQvAhbMQ81+QJlkosahFNKgxeVUSJD2Zn0fhM6ZHse/x+5HbMryoQKf8NgJBNsSUyvdQd3B6c0PpPuAWDGQ3HeEp+BE0fu3wZMDJ/2zHANyAn9YoRIX5QEc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781880132; c=relaxed/simple;
-	bh=EITmngCCMhar0hLU+x6qvbIAa+DctYKdDcsgG81q2Ps=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=GGDqpcTsmVfNX/jUW+WPGlIZ8hPbhuLZEq1HzdxWFdJ/aXInvsX7Wz2VB/E4jeP7RV/hiLda30vNH7xVpo+hbmwhYH07KXgARBaHhN5cCcuVuR8vl5cqtsC7WIunSM8SmuuGzCbfNPSpshFeqFBHxFStOluPX2si5vs1uAZsGFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=hF0T8MCf; arc=none smtp.client-ip=209.85.210.45
+	s=arc-20240116; t=1781880494; c=relaxed/simple;
+	bh=T16CAkRcPrCYYuEGKBgz2aVoKlV51H85ukzx9bmZNYw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=irFUqMdYFMxP2OAjJi5B5HPHkmZkopqIl3OzssN57CCBrfNSzxzc2E+syrywqdVrnBX+An+oH6wcUtBrH8cMjooOnCeveImsHHw6YNSbK5Gwa8A0aHSJwFfy+xbsDL5kydNZ770Ekk0Jhm+AAkRBXWhPFrvmdshS7aWfGsyTd5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=bzvI74mD; arc=none smtp.client-ip=209.85.161.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="hF0T8MCf"
-Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7e6e9408e30so1997290a34.2
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 07:42:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="bzvI74mD"
+Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6a0de515e54so413696eaf.0
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 07:48:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781880129; x=1782484929; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781880492; x=1782485292; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=FKnVjGucb6IkF6/IYcinWjlII+ulFbmjFsYIvp41Gig=;
-        b=hF0T8MCfMlcEX0q1bEu53byi+U/rZn+Uuz/YulvDqCYdyXZp/pYwScegTC9oVKHdEg
-         14R321KkBcxXVSMmnXt4d2zjid7Mzr370IKO0BZOB+4WZaaiZqOrOnrX8tb85CxTforg
-         QSFoT528CjPoMgWtTNRXHu6g2sm7vObutThSX+uTqgAQKWSPhItbNbQYOItsVgy/w86U
-         fPbPx+fg6+9eGGsr4oDhWiiHXlot4XwLq56oxTVxMCokk3sSvDNBBH4E73cWnKDVgX4k
-         WobNMB8RvKAT65lIKRJa6emae4tbrFo77HKgCWvJuDORKVpsFkL8MyhaOMQkIuuKeFwE
-         qrhA==
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eeUoNQ+ueS4ifg/7qGanjhe97BGVmwF4SnofeQb3fOs=;
+        b=bzvI74mDrZlJT3p4Y11W98P8CoXTQ5o19AQEYlKT6YZ9DZikBnG5jSQOGqqudQvLG0
+         KbbXu1GloFHtFNGO/k06D1FEE0yKZtTniuMr3HKr64ulxtxMvsCtR5WEAphexHz1Jyip
+         SLouR5PX4AICnSzpopLOkDwy9ql3/0i7W5QK89f0q3TDNRlaBSLEJxu3TVNepDQq6ahM
+         0TMEZE04P2HztTevS/jSdwhLnC879/eo1UaVQ7CD6IVPFMmjTMj6oErNb+Qf1pI1ZBf+
+         8O3FrI0yiRGgsEElhcaEUqrvqWjdeX//bGQyuZVmpQM50tIO+YfLZuy6Iqjif0jzTPGz
+         2kOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781880129; x=1782484929;
+        d=1e100.net; s=20251104; t=1781880492; x=1782485292;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FKnVjGucb6IkF6/IYcinWjlII+ulFbmjFsYIvp41Gig=;
-        b=Wn8/uz2QK1MO2U+35n6FzA94bdYi4cn66qReqRhtYgh/CHp+lotm/kH83VDVcM8y74
-         /u7GMyREa1XP2fO4IcpHB5Hg5YGa18TPSNQVWIKYk00Qic0iJG4Up5A2zQ/GTKVtGjH5
-         SBIh1FD/GocjnnHuMpRkU5jGnqfaajwfypwd/Wc67gNlguXM7TLL1FP1jx+0FkGHcv8a
-         TdfySfdAP97plbXAJ3F2bUqcIMiB3oyKIpnp9nO6zyFSCbLNro6q0eDiQu77ClE5GnyG
-         586gaEC68O2AXfLIyINarrtl6oaEjzpkNh3kuvtJqCnsFtLwoNcOl1WHTLJPZbwJUDi5
-         pz0g==
-X-Forwarded-Encrypted: i=1; AFNElJ8a+dAsbylgEwYIl2V8/qWy3hO4hOqVfETFGoRGtHBOE9EIxVYeF3CbBHsZekfrcgckkChB+dtNt0E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxKruA91YNPZtM0GK3z2oX/NCfjOEH6faEAXcz7e++jYe6gGBk3
-	IM0wsIYrnVzjLeiniwsw1VuswmjpQsvXWJI9MSHF+Y48+j12Y5FZhbCkVra0QMoN5Rs=
-X-Gm-Gg: AfdE7cnzXgR8LKz7oIZUvmveASkuH4/ZQoiUSpjEv3xIGCF/NXmivUII5GYoQIegkV0
-	6e63UHA5SBUE2xYLR56Xj4R4xXeBNfmjZTLgDESULjWeW6SWpoBvrO6G6RAp4od2ZrQdZwTdrO5
-	5qh+/FYZlbF+A/y2JG4Dp0XjroN4ic3C7DrgEK1Wbk2LsS3V+ZU6pujdycsGa8YWDK+aQp5JE3X
-	OPzk3I1hNVFPAwGqLOMNHHlEh7OUy0fmTFq9n/xG60RlHrYDlKeZxhGvLFxxhlr90X3Eh0em7kW
-	NKg+qaU3P+BFBl2vR0alGsl4Q3R4rYfpGIDhsQZGv19GZfVtiGM/xurdiJobzFs+EGTmHxVCs4Q
-	MT9S3iDBodCo8O/wFyLgvDHzDCxkBDvZZMc8ydYpMzLKDd7r3aiTN0GzkM49zBODjTqF6vWIqk/
-	qGrqvb2HPkES+v5n9cd7MBWVa9Niz6q8UFAuzFmT1bAjmfPXp914VV+BVMxQ==
-X-Received: by 2002:a05:6830:82d6:b0:7e6:50c0:87a6 with SMTP id 46e09a7af769-7e92d83a030mr2776195a34.8.1781880128987;
-        Fri, 19 Jun 2026 07:42:08 -0700 (PDT)
+        bh=eeUoNQ+ueS4ifg/7qGanjhe97BGVmwF4SnofeQb3fOs=;
+        b=e4hnxqwiS6nkv5yPHUqn8gBRVCWWpwFTCFMLf5zZOlWQ2kwCAw76X83seQS1iiWAd9
+         WcmgIUGMXz45DIQypfexow50i4OhpHz6rn3QdNv16zEKGXPiqvKQmoLD0KnZ4qR3Q/mN
+         15fVeStYtD1Ozrr9H72en0nk9XoUDM/cMDnbhGS8z8Ud1ek0SL4zRAGuKhek1IoBWR7G
+         HgaPdQ0zeoikKSFyc/msYyRxEBd3cChlALw/YVxJEYQHoisyRtusagP4GXjtfgNgSFxL
+         BNIFMD19oJD2cXhum8NcmO8bbF2sA6hQJlLC+WR7vV38LMrzIM4Kl8/wHcjrT2Yg3E2s
+         9Bog==
+X-Forwarded-Encrypted: i=1; AFNElJ+9i1WEmxcv3EH2ZKZIqIBVpLrH5HpraFoUZI6hEd4nak25x6+t2Va42zsZxAp8lLPiHg2nPN69p0E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx6r44VtVVqEnKek6n37sHIerkCiIuNJD0Ox1UejbcnRvrzA2Xc
+	eSAOaHNKiVXOUbMzDgHKpwwbbMDuf7GRmgJd5lPwSNecbVSsczu4Tg9nrA4LmI2PAFg=
+X-Gm-Gg: AfdE7ckUY6NOCS/ONnw826sTAo24AjlwP6Pw30koh9YFuGQv+RdcST5DDbRMRHzuLCY
+	4SSCSmXi7f017EpoLVJAXbeIRYTq3/MeSNpKjl2XflBSIgqaOUnh9gGctSXZqEJX610iswT0d6x
+	KyAQP3DxfKJMyD6pGWdyXxxZpscaPet7MsNhJrZO1sa3ItdJR9pPAZEGqJgsXOLMdjuMjlCFvSH
+	E8PgheJLdrKo48dQzZCxg/yc5sg7Whh5y/C3NjHXVsBcn9IYQB3Umc23j1ypV8wRFcI6DRkoW62
+	9xS0RzYw8cTJ0M8jSevaXcy1uW5b47CydRgLndDUz8EOWF+GZVOnCAeQQC4owu9FdYUvi3m3ghd
+	RdFiLvxT06IIyvxeF1PSViyNJAUW9W+5PCpLWYY77vwuXdHEUDm9HBvgVLHCAPtHAPnS8tj4hRR
+	IHDux9zDQa9HfL1KMye6vBO9YSPVWwfqtKhma/325JH7Iype+DWoSlGcUOOQ==
+X-Received: by 2002:a05:6820:4c82:b0:69e:3fd:5c7f with SMTP id 006d021491bc7-6a0d9fb8209mr2127496eaf.5.1781880492001;
+        Fri, 19 Jun 2026 07:48:12 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:dd8:d93b:3cde:c07? ([2600:8803:e7e4:500:dd8:d93b:3cde:c07])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e92e031985sm1998461a34.0.2026.06.19.07.42.08
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4472f0475e3sm20637fac.16.2026.06.19.07.48.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Jun 2026 07:42:08 -0700 (PDT)
-Message-ID: <af4dd7a8-4823-4f84-bc88-4b5d8d35237e@baylibre.com>
-Date: Fri, 19 Jun 2026 09:42:08 -0500
+        Fri, 19 Jun 2026 07:48:11 -0700 (PDT)
+Message-ID: <6b773354-6615-4cae-b7ad-d083d59133c8@baylibre.com>
+Date: Fri, 19 Jun 2026 09:48:11 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,74 +68,53 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: ti-ads7138: Disable STATS_EN bit while reading
- conversion results
-To: Paul Geurts <paul.geurts@prodrive-technologies.com>, jic23@kernel.org,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, tobias.sperling@softing.com
-References: <20260619090004.355053-1-paul.geurts@prodrive-technologies.com>
+Subject: Re: [PATCH 0/5] use dev_err_probe for probe time error
+To: Prashant Rahul <prashantrahul23@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Shuah Khan <shuahkhan@gmail.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Petr Mladek <pmladek@suse.com>, Oleg Nesterov <oleg@redhat.com>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ John Ogness <john.ogness@linutronix.de>, linux-kernel@vger.kernel.or
+References: <20260616130612.73122-1-prashantrahul23@gmail.com>
+ <20260618231543.413771-1-prashantrahul23@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260619090004.355053-1-paul.geurts@prodrive-technologies.com>
+In-Reply-To: <20260618231543.413771-1-prashantrahul23@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/19/26 4:00 AM, Paul Geurts wrote:
-> The device might update channel data while it's read by the host,
-> providing a data race. Disable the update of the channel stats before
-> reading the values.
+On 6/18/26 6:14 PM, Prashant Rahul wrote:
+> Using dev_err_probe as it simplifies error handling and ensures consistent
+> error reporting.
+> 
+> Errors are logged when enabling the regulator or adding the cleanup action
+> fails, but not when buffer setup fails. This adds that missing log.
 
-This description seems a bit short on details. It looks like this
-driver doesn't support buffered reads. So if we disable statistics
-during a direct read, why would we want to enable statistics in
-the first place?
+Isn't this a v2 of [1]? It should have a changelog and link to the previous
+discussion (and start a new thread instead of being in reply to the previous
+revision).
 
-(This driver suffers from the comments say "what" rather than "why"
-/* Enable statistics and digital window comparator */ so it is hard
-to say what the original intention was.)
+[1]: https://lore.kernel.org/linux-iio/20260616130612.73122-1-prashantrahul23@gmail.com/
 
-Can you explain more what this race condition is about and what
-happens before the fix vs. after the fix? People generally do this
-with two columns showing concurrent function calls.
-
-It seems to me like disabling statistics would break IIO_CHAN_INFO_PEAK. 
+No need to send a new version for that, but keep it in mind for future
+submissions.
 
 > 
-> Signed-off-by: Paul Geurts <paul.geurts@prodrive-technologies.com>
-> Fixes: 93a39542d3c3 ("iio: adc: Add driver for ADS7128 / ADS7138")
-> ---
+> Prashant Rahul (5):
+>   iio: adc: ti-adc081c: use dev_err_probe for probe time error
+>   iio: adc: ti-adc084s021: use dev_err_probe for probe time error
+>   iio: adc: ti-adc108s102: log buffer setup failure in probe
+>   iio: adc: ti-adc161s626: log buffer setup failure in probe
+>   iio: adc: ti-adc0832: log buffer setup failure in probe
 > 
-> V1 -> V2: Checked return values and prefixed iio: in commit msg
+>  drivers/iio/adc/ti-adc081c.c    | 6 ++----
+>  drivers/iio/adc/ti-adc0832.c    | 2 +-
+>  drivers/iio/adc/ti-adc084s021.c | 3 +--
+>  drivers/iio/adc/ti-adc108s102.c | 2 +-
+>  drivers/iio/adc/ti-adc161s626.c | 2 +-
+>  5 files changed, 6 insertions(+), 9 deletions(-)
 > 
-> v1: https://lore.kernel.org/all/20260619075646.4100193-1-paul.geurts@prodrive-technologies.com/
-> ---
->  drivers/iio/adc/ti-ads7138.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/ti-ads7138.c b/drivers/iio/adc/ti-ads7138.c
-> index ee5c1b8e3a8e..81380fd2badc 100644
-> --- a/drivers/iio/adc/ti-ads7138.c
-> +++ b/drivers/iio/adc/ti-ads7138.c
-> @@ -237,11 +237,21 @@ static int ads7138_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> +		/* Disable statistics update so the value is not updated mid read */
-> +		ret = ads7138_i2c_clear_bit(data->client, ADS7138_REG_GENERAL_CFG,
-> +					    ADS7138_GENERAL_CFG_STATS_EN);
-> +		if (ret)
-> +			return ret;
->  		ret = ads7138_i2c_read_block(data->client,
->  					     ADS7138_REG_RECENT_LSB_CH(chan->channel),
->  					     values, ARRAY_SIZE(values));
->  		if (ret)
->  			return ret;
-> +		/* Enable statistics update after read */
-> +		ret = ads7138_i2c_set_bit(data->client, ADS7138_REG_GENERAL_CFG,
-> +					  ADS7138_GENERAL_CFG_STATS_EN);
-> +		if (ret)
-> +			return ret;
->  
->  		*val = get_unaligned_le16(values);
->  		return IIO_VAL_INT;
+> --
+> 2.54.0
 
