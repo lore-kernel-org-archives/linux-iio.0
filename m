@@ -1,158 +1,139 @@
-Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F2E3976A7
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 14:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73FD9397AED
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 14:27:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781879202; cv=none; b=BzUqS42mRUmlBZh8qIS9NwDKtJdqr8Y8B91fW+YibP5jeZIZQwL3MCHK68ghL7DmRDfQWF+s8eX/zUZxX9wNUjfvu/GH4OTqmSV/N9JjEUTCIxW8O1Vod7u599Pp6KRq7nmOzDecKzrxyRsen5qI+5CFDl4CvTSwCpQEWUgc1Oc=
+	t=1781879233; cv=none; b=uOgwFAcyuCJIa2LD9wdlGh8H4BoiS8IZHhrOog/UuMm0J6osaGedkeu2DZChOlhcLIwrlqFqpmRQFs+VjHzS2neq5G0y+EP23Scw55vWsXXahNy0tZ6cDf/mQabMKAdhK13L0K5bQalGZ6grwEcYNoajVr6yeaxloRVQ5NG91zs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781879202; c=relaxed/simple;
-	bh=qcaWSGPvUy2u54fK8ZwK+zHysS4I1DayUEvb7c8WnWA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G71X32aIQgvNru7Qmz8dVx18JKWHfuSFLhWzfLlZH7gmjwgK1srrn3XoIe2hOj2snuL9TfjwKEDMvrg8KrgrdE9GtiukDLt0m8cuGPJ3P1jDi+6TlhrS+Wi7ar90m1812JxyMuGNGTjkbLiNi4BjQeV/YISpor8vXs3m7DcGWAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CMhxd+f3; arc=none smtp.client-ip=74.125.82.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781879233; c=relaxed/simple;
+	bh=tsZcS1Ql5O0PIy+kzQJ4rmy5aAwuUe8HeUYy8fIOpZI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ijI7WwDMcsaghl+GzdstfQL8qN1auZj0OcAj1Q1npk9nZW5HzR+RwzX4gZ7Z/6YuqFSWWX9kwQ2fGZfDaMmm7kW/Y6x6+/ZOEpiA1rB91cwteYlxIHhAdOTLH/O9D0fgVxHvCl2wePM0GYN2dck4AGno+tHhiIZ7fOgkG+vq9KM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=eB9DqW22; arc=none smtp.client-ip=209.85.210.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CMhxd+f3"
-Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-139986373b8so1984075c88.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 07:26:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="eB9DqW22"
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7e6f586a0d5so1078553a34.0
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 07:27:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781879199; x=1782483999; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q+NOFvW+oVtBVeLrjfLCqJyDxKh0T7V/dXs1RZ3OhYY=;
-        b=CMhxd+f3T0sWeh9EFmuzHt8LoaghepR4KFKr2Ncf/DNX5y8U/5g38b4OT/7wE+5Cd3
-         QI+dmyU1jbkSn6O88YOitKwit3n5+0Bd6EJ6R11L2kQIaozFeJolTlJSF9rpY3cJjljR
-         sA4SkXUOhbgdyY1616RXyuQGnFWwyL1E+enN7Sht+SFIpAusfH62L/wx9vSb1WUFUcDS
-         +NKca1BJ7ltroUSjJ00JEDgNC3RBz0EopG27HcPYihe7sdIjYdRppw+gkS3RySSfFy0C
-         AYO5JUZwi5coDqm72KEB3nJ7u2FHFWnsbztvDDi0U31ndj8cXu5NC3WphOnYDwtTP3hh
-         NFuQ==
+        d=baylibre.com; s=google; t=1781879231; x=1782484031; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1j0UgJOZIv8fQVrRLhrenC7+Pv2Rmi7dw33auXSxlrA=;
+        b=eB9DqW22xMMl2M9atWWa5RyFMuy6xbhWHUr6EgUWCirWCvJYQuePVj4Q419qTEm5Bn
+         fNVnL+DQ0K1vN6uN6YJtwibcaooSpDiFnSDeUpfEf2YEB/SWSysuiNMQqL8qw+QM3rPq
+         hjOCr72T5prolSR7rDUSmq9KwqF4o0Fba+tTLZVYdBtARSUo5RyVF3dWugoqWuQJSADC
+         rcAuTBxJRGuQ1XIJ8kZ5vE3t3DGY3zTdesgmPq1E5SDr2RWDIPWZTI/9xIenRd/YIjmr
+         NsNED22QZgNAV8JybGTMu2YHBJJgG/bak7LtxRZcfA4BWfPxgmxRNVqJyb2p2miteZV1
+         bwkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781879199; x=1782483999;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Q+NOFvW+oVtBVeLrjfLCqJyDxKh0T7V/dXs1RZ3OhYY=;
-        b=XxZbelXbl1lfgef58KnflWEzinz3FpAchsnOB/IcNrzwktdaF2QSFbZ4XZp0+8wM5J
-         Lv+voXEUCONlTt83QtxAPPJKXlzG1vUvoPnLXqWIEGXQRGGweehqVOv9LaUoif/o3LAH
-         mah4jDLqyLweJwPJcPO+RxdjYvrVCHhmwnhponLpCXqlcRpRiBLrFyoy0Kqpskgthhkz
-         mXgl6ocGeaTZ2U0rnOfzQ9ovZwt3K1jCfFbCtd3zDaj91PcpTlbeLKaJljtlWg6QQX3b
-         8/7M+g10H1tQm+JhwkiPqKiAq77LNsoQaSkraYtnuEdzwK37lUrOu5oD80jOB/jOgQnP
-         Zssg==
-X-Forwarded-Encrypted: i=1; AFNElJ9oedbinqk0V1zpOjrS3GJNL9U5kGoR5ulWzDipVXw6UXrbm7I9+IBeAGa1uhYBGEBYQ8BySEDDB7w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwiCcvy6+fFXUApY+ekz+XVXAeJKgalRWu1X+muDuoYvCD63b+O
-	WLWU2KRbPSMM0y5Ep4vRoZA3upg1XFVFkh+xCvivah01fjH93RK2k6TJ
-X-Gm-Gg: AfdE7cmyqp20yl3Bf+R7NST0o0aSpLhj+D6IKrWjXsapEqbil0tHGQGonV6bIZC+44g
-	dp3/u6CNKnkRChmIbapfzF9cWSbwHVtSg7cBYPawQmXj4VjsLE7RrK9EUYErFO0hlNlGp/xn/aj
-	dDIxQnZ/0WTiEeeBd/iwTcTetwscIYISZTlkJO+/ld4dSYFSfiearXrje/Ehr2JjdXOZQW0eZXo
-	10OPYzEjNqptM6C/+5C/IiS6NI3Hl9qXmcQAL+hM8eoOa6Aoy4PUK4y/5ZRYg/lisxS9En2IQmt
-	cw6InjJot7wLSoF8VCMp3ymBa9pYHNd9GOit5wM3o1Ai98giKAUv460TDe5784+SFecsFLFeeM9
-	FLoGR5hBLO+RCeKU+YLznj/EQoDGRJ0tS+El78ytqtOeU3a4wDCN/lQ+/D/U63EiHARXXUD44QI
-	I2/EmhVIlbBWiD+N6rnpqxGA==
-X-Received: by 2002:a05:7300:6c9f:b0:2ea:c085:44b1 with SMTP id 5a478bee46e88-30c071533c3mr2469687eec.19.1781879199101;
-        Fri, 19 Jun 2026 07:26:39 -0700 (PDT)
-Received: from localhost ([2804:30c:1f0a:b600:e457:1a16:4082:3e0a])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c1ba1f137sm1470eec.1.2026.06.19.07.26.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 07:26:38 -0700 (PDT)
-Date: Fri, 19 Jun 2026 11:27:16 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
-	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, pop.ioan-daniel@analog.com
-Subject: Re: [PATCH v3 5/5] iio: adc: ltc2378: Enable triggered buffer data
- capture
-Message-ID: <ajVRxCPejqxlo_Z4@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1781661028.git.marcelo.schmitt@analog.com>
- <22248e8ba646fbe8edfc87e2b9be527632d5b48c.1781661028.git.marcelo.schmitt@analog.com>
- <4f7f50ad-c305-4947-b4e9-3666a4f31031@baylibre.com>
+        d=1e100.net; s=20251104; t=1781879231; x=1782484031;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1j0UgJOZIv8fQVrRLhrenC7+Pv2Rmi7dw33auXSxlrA=;
+        b=hDcNTEpDcYtVoBiUbwjhb4qsszfMliEymKis8mNBybiOcQY/1RPyvsQxhnDOEIytCS
+         j8Vzy2Nv+YL08nAFQldUD5P4OQFYK2PuASqhceT1CtSbzkyP1lMR4DBWw0yq/ZWUqYQt
+         g69HZnKCamWir4z0rsOoolIb6OseV56drWFwCJz5GUI5cXcU6WCrgu7h9cJrbgtM/8Xl
+         UWzEJh0/ecG7rMI9W8Hr7bTXvagw6BhcBxakhNf7jA/6pJNBus66wcM9EMskdYdOdjaN
+         JhsqPqaqRKVf1xmUAMha858FehGWc7v1BWIo8bT5u2pGY4ERVVbigN91QG2aQT5HXvZi
+         Fr5Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9ZKdfdya2A40m0Zcji5NfUpeDPicIKSMJMLdT86Lz70ZrCiaI6WaODRQ5wASnV09lNVFzAcbmh0Eo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzsivUCLHG9wdzZ/HI4jAaakAFxgkiunmMXu7GQIMUp2z/K/7mK
+	x0L2G9cv/ND1htYNZfTc71v87zhgm12UjkXsIvqQx+R/B/4znzvcOhsyR552N7h5//w=
+X-Gm-Gg: AfdE7cnJQOY/pfgBlD5zsLB1/kJMINVlFMW15B5/gmz39oGRRgQqSfRw59cjuJixiM2
+	qHsNJVW49BsIxtZXJvWrmARSZd9xbXNvys0pINoRGHKWIJ+4l0IzUHXvGFq6nm4Qqte3XRgxuBI
+	fNBPQPXvy25icdFNX3m1M5vOLD+aEK9SmYsghRjDUXD3M+UqwFrxT3hs9dvarllz4B+ffAsrwWD
+	uUd44rB6HEZ7X3yMeZbJB9UQKARG/ZmTaY0bz3zcRIQZWF3GRu35xJzwB21pZPw86R7zQjVshSO
+	U3vrDtYzUpq5kbBoxlCra5ozFfY/0bfO/tg3lfe3zV9swlyZeNM/G/M/sCa5RexOs/xrKq0loXU
+	X+8nds5vxBVK2S0VIN9/WEcadMZWZB6mEeXqGksWDlhFQCVIUJyPhMs2sVTOzFWUAbr2BLMKzwc
+	Uc6pkXIpeItJ/PNq1T6GP7WKWuEfjJ05qqlkp8GuHip7UWbBmHPzkIiFqNSbpfXQLNocRj
+X-Received: by 2002:a05:6830:6504:b0:7d7:4fc7:21a with SMTP id 46e09a7af769-7e92d85d7aemr2596343a34.13.1781879231361;
+        Fri, 19 Jun 2026 07:27:11 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:dd8:d93b:3cde:c07? ([2600:8803:e7e4:500:dd8:d93b:3cde:c07])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e92ecfcc9csm1932228a34.21.2026.06.19.07.27.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Jun 2026 07:27:11 -0700 (PDT)
+Message-ID: <073b0a89-65af-4a21-837d-851d35e3e294@baylibre.com>
+Date: Fri, 19 Jun 2026 09:27:10 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4f7f50ad-c305-4947-b4e9-3666a4f31031@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 2/3] dt-bindings: iio: adc: Add excitation current
+ sources properties
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com>
+ <20260618-new-channel-props-v1-2-963c1b5cf40a@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260618-new-channel-props-v1-2-963c1b5cf40a@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 06/17, David Lechner wrote:
-> On 6/16/26 9:04 PM, Marcelo Schmitt wrote:
-> > Enable users to run triggered data captures with LTC2378 and similar ADCs.
-> > 
-> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > ---
-...
-> > @@ -27,6 +27,21 @@ int ltc2378_lib_buffer_setup(struct iio_dev *indio_dev, struct ltc2378_state *st
-> >  		return dev_err_probe(dev, ret, "error on SPI offload setup\n");
-> >  
-> >  	return 0;
-> > +
-> > +trigger_buf_setup:
-> > +	ret = __ltc2378_set_triggered_buf_ops(st);
-> > +	if (ret == -EOPNOTSUPP)
-> > +		return 0; /* Let device setup complete without buffer support */
-> > +
-> > +	if (!ret)
-> > +		ret = st->ops->buffer_setup(indio_dev, st);
-> > +
-> > +	if (ret)
-> > +		return dev_err_probe(dev, ret, "error on buffer setup\n");
+On 6/18/26 7:33 PM, Kurt Borja wrote:
+> Some ADCs incorporate current sources that provide excitation current to
+> resistive temperature devices (RTDs), thermistors diodes and other
+> resistive sensors that require constant current biasing.
 > 
-> This is repeating the code above. Seems like it would be better without
-> the goto.
-Ack
+> The maxItems constraint of 16 is arbitrary but should be big enough for
+> most devices.
+
+I wouldn't put an arbitrary limit here. The bindings that include it
+can extend it to add a limit that makes sense instead.
 
 > 
-> > +
-> > +	st->chans[st->num_iio_chans++] = IIO_CHAN_SOFT_TIMESTAMP(1);
+> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
 > 
-> Adding a channel here seems messy. I still think static const channel
-> data would be better. But at least would be better if this was moved
-> to the same function as the other channel setup.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> index c74c2084fdb68c..106b1e317411d5 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> @@ -83,6 +83,29 @@ properties:
+>        This array describes either a single reference source or a positive and
+>        negative reference sources.
+>  
+> +  excitation-channels:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    maxItems: 16
+> +    minItems: 1
+> +    description:
+> +      Excitation current sources provide current to resistive temperature
+> +      devices (RTDs), thermistors diodes and other resistive sensors that
+> +      require constant current biasing.
+> +
+> +      This array describes the mux configuration of the excitation current
+> +      sources.
+> +
+> +  excitation-current-microamp:
+> +    maxItems: 16
+> +    minItems: 1
+> +    description:
+> +      Excitation current sources provide current to resistive temperature
+> +      devices (RTDs), thermistors diodes and other resistive sensors that
+> +      require constant current biasing.
+> +
+> +      This array describes the current configuration of the excitation current
+> +      sources or the single matched current for all sources.
+> +
+>  anyOf:
+>    - oneOf:
+>        - required:
 > 
-Agree, will think of a better place to init the timestamp channel while
-switching to static const channel.
 
-> > +
-> > +	return 0;
-> >  }
-...
-> > +static irqreturn_t ltc2378_trigger_handler(int irq, void *p)
-> > +{
-> > +	struct iio_poll_func *pf = p;
-> > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > +	struct ltc2378_state *st = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	ret = ltc2378_convert_and_acquire(st);
-> > +	if (ret < 0)
-> > +		goto err_out;
-> 
-> As mentioned elsewhere, SPI xfer size may be 2 or 4 bytes, but
-> we are always pushing 4 bytes, so this only works on little-endian
-> architecture.
-> 
-> I think best would be to have storagesize = 16 when appropriate to
-> avoid having to manually handle this.
-> 
-Okay, it will probably be easier to do that with static const channels.
-Am checking out other sashiko comments as well.
-
-> > +
-> > +	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
-> > +				    pf->timestamp);
-> > +
-> > +err_out:
-> > +	iio_trigger_notify_done(indio_dev->trig);
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> 
-Thanks,
-Marcelo
