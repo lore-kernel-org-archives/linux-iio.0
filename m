@@ -1,146 +1,230 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F9830F52A
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 13:56:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED7373655DB;
+	Fri, 19 Jun 2026 14:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781877417; cv=none; b=m3yWn4uxXp2+Bt1/EbZwX0okK2lOfEhSiVqbJ9gKYGoyXjS9C+u1jeZ4x2ze9wTXxRNljeLztxMZyFeVkR5+0o7hAlokZn1c7xWOwn2nC1XH23c/NdYRrzUASZ3PnJVBrVpEYlKUSHWRLyFTG/4BDP63cbinUmTUMZxJTm8CMcM=
+	t=1781878041; cv=none; b=bz3oGH/ZJtb2C07Ckuvv0boz/lliRXMvC4UglMrj1M8TckkT7NnrPkCWjQ19pQ7r/CpcrIsGN4Sbg4z6+dygtKeTUWktRIheHiCDZe5Xff3ELuLlEiE683QbBFlMzZ23ufLFmsU2Dy/6GB1kAtOxuwSVyyd98zgzB6BKMzaxwrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781877417; c=relaxed/simple;
-	bh=Dq6TI8YSnjK4mhlS1koPWrY34aRB57Gm9MvuCf/uXZY=;
+	s=arc-20240116; t=1781878041; c=relaxed/simple;
+	bh=OnmjZprV81VdXfIiMoCVV49KGLZwelIZ8VrOHXHo6gM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l/NEfF2MomyluRQ8EU65buUxKZUVRlaDhj/Z97mYaain+ErmCgP118kzorrlu4knvAQOzjLOraP898qZJNnX3USR0/vY0oq7zWn6zRfqHJp24wGyx6DmfnwQ636zrDMiD7ASYQw95a5FWt5yf1yag7hH+xLn+RMZDzMPoC6l4T4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wx+h5WRa; arc=none smtp.client-ip=209.85.222.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=K8xVeQ5MuzRoFoN0KatWFS8Yp9CCFQz4LsMOfoaovxhjGd+csTqZwyepAJ4AuRIYHpS0CCIeIbeACbXcTyxqfrMeIzIZYwMJCr/Vk0duquD4r904sLnXPB3RlAvRqE3sHC+5hFuaZHWmSa08Pat45arQJhDxXXggvSueKi65qGM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NDNNQsWv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wx+h5WRa"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-9203654905eso97750185a.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 06:56:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781877415; x=1782482215; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iw3X4PKFr5GriGrArjFKfUuzUNJUeelMwfVvciorDKw=;
-        b=Wx+h5WRaRXJG2OtlQ6y0HDPSCXYcNk+WvyKAs0anjOtwAe+LQymmhqF+ZIgxcWSFPJ
-         br4b1RACaGjv8KEawU63tYknKH9/tiDIdvCAKiMLCwYxfMEz4g/2kQTLeRVZkTYf9X7m
-         D3Mc9mDqPy6JXNk/h1aFhIjMA5a+yksoMcH2uPx0QTgCwQH4n8MNcG+WKUolkaKLgVfC
-         SB4Ag41CmHO7G6QMKnZlGU237ua4VY4vArSlPdLICMvuJtkiGYqi7NCUp64u1C9Kxv2o
-         WHcXBFJ6HtdIPZcQrxWZrfi6ANL5QfFobd7dHqWBH2IbE9Vu3vWz3+MuG6nEO0pcg4Ff
-         b2tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781877415; x=1782482215;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iw3X4PKFr5GriGrArjFKfUuzUNJUeelMwfVvciorDKw=;
-        b=WD32TG/75VLthvJxph6jAgmHdCxCKDRFuYrSVtfmvNjSLpq/6F2iRDv8+a24z1qtsV
-         9ZA2AYrsqMjN8sMed8m/t8NNSkuPreGFR4FxhMkzvsc7IczsTY3cJwqBKX7XEvvHTNgE
-         MIwjZ0eLz2a8gb0JRcAGP2ljhOgPoM1gzRp44hh+5vAoTuV+lenyt5Xp0qZZWMK89o9j
-         9itU85DtKFQAPdJ9YqmcJv6r72q4LBC6cZzFsZFbYwdUWRqRDP9NLLy1u+MQYihZ42+a
-         4+uHHqXHGiFvWn5lAgBT+Un+ak8n7RLEsr7XQgqtJbqNpnR+6EUdxSX3JKRXJ9kZnXRv
-         0mQg==
-X-Forwarded-Encrypted: i=1; AFNElJ+Xr/faGle9mWeQQWpaprSwPQgfu4VG3uySHGRCckQIsfCtBCsy003e2RSgTm9p0Z5giubILkwmWQI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YydUV0FW8J+dMMcSAQPJICo45Y9e1vL9fhW/2n6Cj9V7G8KlL7f
-	toAQ9l+7b3gO+qlbw0leLqXXjXIW3GeV/YUq82WTFu1nT+yGneKJu4yQ
-X-Gm-Gg: AfdE7cmRm5/R0mq5u8V85wjHx6a96vYRSnqaDj+a5v5JCMHyjnIfuBO9SiKlPjfamUH
-	+fY13IanSSv/tGZspGfSiJCcpZUA+Q5C+4mXnD+B08caH5i+iCwJCZXQtgHo0dV/szZo/yziCTD
-	xh5JF4X/y7Tqj4sMr1atEFLhBUwTCGxuv0ojbeBiZroKNy59sh7olkYMjZV3VkD+fa7tos0jiSN
-	/2iWD3wApt79pUoJ6IHt33vZabpGCcFLpZNWBobK3LvikmPdMfSDuhZ6O8U3TaoSEr8wYuI2+SH
-	JlgXkLRBPMaBK0S3ZJ46O79Ts6WkqKTE3aXVa7MSWIwxhwj5Lorj/gxiSmR/8KPSgdPQ0pVoDBs
-	5Ar6GnHxxEs+q1z+yNkpzfYyeNYvyuzDJLPXOMaibMKU9pAjjp7g+MSD0QEbIZYF0YG2OOKqs1p
-	aXrz+TqsEQ14yoa6+BKbl2cQ==
-X-Received: by 2002:a05:620a:3944:b0:915:2aef:428b with SMTP id af79cd13be357-920910a4d42mr535836785a.39.1781877414541;
-        Fri, 19 Jun 2026 06:56:54 -0700 (PDT)
-Received: from localhost ([2804:30c:1f0a:b600:e457:1a16:4082:3e0a])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-920a4c5d74esm243751785a.38.2026.06.19.06.56.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 06:56:53 -0700 (PDT)
-Date: Fri, 19 Jun 2026 10:57:32 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, andy@kernel.org, robh@kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NDNNQsWv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 395B11F000E9;
+	Fri, 19 Jun 2026 14:07:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781878039;
+	bh=kW4v1Mu78MCErakvtUQ3kmAC8dtPDlYD27Od9rpdrII=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=NDNNQsWvXwc7MkdRrEIR/B1vtI3T7/u2XYGbvagzhKFCfp8Q0SAaUDKs3QD1B7KYF
+	 gPJ00wYBQ+fbm1GiVOvo3ARk8q2Y0RVzbdsbQYMKSWcM7Af+Rqaasls97z0VAUsZMx
+	 YhGNzxTBASKw5gFLAckGXJP57X4e5DihTNYIDa/+sxDuLUBbEki/t74rooR1BkvKRK
+	 Bu4lXE8rUEy4twuc/uUXvTt1uIQo6yX3quPrvxXDyjJMqHnQEi4RzqFMDZQQQ4JGnq
+	 MBTQlwh6s0Uf8zbr5UDW0Psm3I64DvjLunXnwcRNhuC28yDYUjLOGqiZsiqLd8Mv56
+	 r8Blgz7rdRrsg==
+Date: Fri, 19 Jun 2026 15:07:15 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
 	krzk+dt@kernel.org, conor+dt@kernel.org, pop.ioan-daniel@analog.com
-Subject: Re: [RFC PATCH v3 3/5] iio: buffer: Extend DMAengine buffer
- interfaces to take extra sysfs attributes
-Message-ID: <ajVKzNgGzoueI1lW@debian-BULLSEYE-live-builder-AMD64>
+Subject: Re: [PATCH v3 1/5] dt-bindings: iio: adc: Add ltc2378
+Message-ID: <20260619-barbecue-vascular-29c714614e0e@spud>
 References: <cover.1781661028.git.marcelo.schmitt@analog.com>
- <a09f2cac2d26fe385f1f7790b0db64b7d9953ac6.1781661028.git.marcelo.schmitt@analog.com>
- <3b96ec10-b022-4135-9ade-6fd9eb6e78a6@baylibre.com>
- <ajPJdoTgpw7Ndczh@nsa>
+ <f9e88abdbd23df8039282497a81d3c8698a10665.1781661028.git.marcelo.schmitt@analog.com>
+ <20260617-bok-gains-9a1af41cf0de@spud>
+ <ajLV-O60lCdlIbXR@debian-BULLSEYE-live-builder-AMD64>
+ <20260617-oat-handclasp-ddd3135c5b84@spud>
+ <ajU-_j1SWYbfjWla@debian-BULLSEYE-live-builder-AMD64>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="AivW+dRtBBf6OE2L"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ajPJdoTgpw7Ndczh@nsa>
+In-Reply-To: <ajU-_j1SWYbfjWla@debian-BULLSEYE-live-builder-AMD64>
 
-On 06/18, Nuno Sá wrote:
-> On Wed, Jun 17, 2026 at 04:43:18PM -0500, David Lechner wrote:
-> > On 6/16/26 9:03 PM, Marcelo Schmitt wrote:
-> > > Some devices using DMAengine buffers are connected to extra hardware that
-> > > allows setting how fast data is transferred to/from the buffer. However,
-> > > those extra pieces of harwdware are external to the sensor chip such that
-> > > supporting the transfer speed as a sensor property is a bit of an
-> > > inaccuracy. Expand IIO DMAengine buffer interfaces to take arguments for
-> > > extra sysfs attributes, enabling the transfer speed to be configured
-> > > through the buffer interface.
-> > 
-> > This message is a bit confusing. It sounds like it is attempting to
-> > control something about the DMA controller itself. But based on the
-> > later patches, it looks like this is just so we can add arbitrary
-> > sysfs attributes to the bufferX directory. And in this specific case,
-> > a sampling_frequency attribute.
-> 
-> Agreed. Seems like rate control comes from the buffer.
 
-For this series, that was the actual result. Since we already have extra
-sysfs attributes for kfifo and for triggered buffers, I thought of trying it
-wish DMAengine buffers as well. The intent is to decouple the sampling frequency
-sysfs attributes (which depend on SPI offload and PWM availability) from the ADC
-IIO device. And the reason for that is to avoid making the device driver
-directly select SPI_OFFLOAD and/or depend on PWM because these devices can be
-used without offloading.
+--AivW+dRtBBf6OE2L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> > 
-> > > 
-> > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > ---
-> > > New patch.
-> > > 
-> > > Now that I've come to this buffer "solution", I have pretty much convinced
-> > > myself it would be better to instead have some sort of IIO trigger to control
-> > > the signal source connected to SPI offloading trigger module.
-> > > 
-> > In the other chips with SPI offload we've done already, we just used
-> > IIO_CHAN_INFO_SAMP_FREQ to control the SPI offload trigger rate.
-> > Any reason why we can't do that here? In the original SPI offload
-> > discussions, IIRC the general consensus was that adding a trigger
-> > just to control that was overkill when I suggested the same.
-> > 
-> 
-> I tend to agree with David. Even if we come to a conclusion that we
-> can't use IIO_CHAN_INFO_SAMP_FREQ to control the trigger rate, I'm not
-> really convinced sysfs interfaces on the buffer itself are the place for
-> this.
+On Fri, Jun 19, 2026 at 10:07:10AM -0300, Marcelo Schmitt wrote:
+> On 06/17, Conor Dooley wrote:
+> > On Wed, Jun 17, 2026 at 02:14:32PM -0300, Marcelo Schmitt wrote:
+> > > On 06/17, Conor Dooley wrote:
+> > > > On Tue, Jun 16, 2026 at 11:03:11PM -0300, Marcelo Schmitt wrote:
+> > > > > Document how to describe LTC2378-20 and similar ADCs in device tr=
+ee.
+> > > > >=20
+> > > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > > ---
+> > > > > Change log v2 -> v3:
+> > > > > - Re-added device tree fallback compatibles for LTC2378 chips, no=
+w with options
+> > > > >   to provide a single compatible string or a pair of single compa=
+tible string
+> > > > >   plus a fallback string to a slower sample rate spec in case a d=
+river for the
+> > > > >   specific part is not found.
+> > > > >=20
+> > > > >  .../bindings/iio/adc/adi,ltc2378.yaml         | 160 ++++++++++++=
+++++++
+> > > > >  MAINTAINERS                                   |   7 +
+> > > > >  2 files changed, 167 insertions(+)
+> > > > >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi=
+,ltc2378.yaml
+> > > > >=20
+> > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ltc237=
+8.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> > > > > new file mode 100644
+> > > > > index 000000000000..7d30a2cade8f
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> > > > > @@ -0,0 +1,160 @@
+> > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > > +%YAML 1.2
+> > > > > +---
+> > > > > +$id: http://devicetree.org/schemas/iio/adc/adi,ltc2378.yaml#
+> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > +
+> > > > > +title: Analog Devices LTC2378 and similar Analog to Digital Conv=
+erters
+> > > > > +
+> > > > > +maintainers:
+> > > > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > > +
+> > > > > +description: |
+> > > > > +  Analog Devices LTC2378 series of ADCs.
+> > > > > +  Specifications can be found at:
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/233818fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236416fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236418f.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236716fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236718f.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236816f.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236818f.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/236918fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237016fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237616fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237618fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237620fb.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237716fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237718fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237720fb.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237816fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237818fa.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237820fb.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/237918fb.pdf
+> > > > > +    https://www.analog.com/media/en/technical-documentation/data=
+-sheets/238016fb.pdf
+> > > > > +
+> > > > > +$ref: /schemas/spi/spi-peripheral-props.yaml#
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    oneOf:
+> > > > > +      # Single compatible string match.
+> > > > > +      - enum:
+> > > > > +          - adi,ltc2338-18
+> > > > > +          - adi,ltc2364-16
+> > > > > +          - adi,ltc2364-18
+> > > > > +          - adi,ltc2367-16
+> > > > > +          - adi,ltc2367-18
+> > > > > +          - adi,ltc2368-16
+> > > > > +          - adi,ltc2368-18
+> > > > > +          - adi,ltc2369-18
+> > > > > +          - adi,ltc2370-16
+> > > > > +          - adi,ltc2376-16
+> > > > > +          - adi,ltc2376-18
+> > > > > +          - adi,ltc2376-20
+> > > > > +          - adi,ltc2377-16
+> > > > > +          - adi,ltc2377-18
+> > > > > +          - adi,ltc2377-20
+> > > > > +          - adi,ltc2378-16
+> > > > > +          - adi,ltc2378-18
+> > > > > +          - adi,ltc2378-20
+> > > > > +          - adi,ltc2379-18
+> > > > > +          - adi,ltc2380-16
+> > > > > +
+> > > > > +      # Low sample rate fallback for 16-bit unipolar sensors.
+> > > > > +      - items:
+> > > > > +          - enum:
+> > > > > +              - adi,ltc2370-16 # 2 MSPS
+> > > > > +              - adi,ltc2368-16 # 1 MSPS
+> > > > > +              - adi,ltc2367-16 # 500 kSPS
+> > > > > +          - const: adi,ltc2364-16 # fallback (250 kSPS)
+> > > >=20
+> ...
+> > > > What actually is the impact of the sample rate on the programming m=
+odel?
+> > > If the user tries to set a sample rate beyond the maximum supported, =
+software
+> > > can throw an error to indicate that.
+> >=20
+> > I think you have misunderstood this. I was asking how the driver
+> > interacts with the hardware. Do all devices come out of reset with the
+> > minimum sampling rate? Or a per-device default rate? Do the faster
+> > devices support all slower rates? If they do, do the registers have the
+> > same meaning and the same value sets 2370-16 device to 1 MSPS as
+> > 2368-16.
+>=20
+> Ah, the sampling rate is indirectly dictated both by how fast the CNV pin=
+ is
+> toggled and how fast SPI transfers run. Each rising edge of CNV starts a =
+new
+> ADC conversion. Software may take spi-max-frequency as default but it wil=
+l also
+> need to set a pace for CNV, and there is no default for that. The CNV pin=
+ may
+> also toggled on demand (e.g. single-shot read) and so I'd say all devices
+> support all slower sample rates. What software ought to do is orchestrate=
+ CNV
+> and SPI transfers to meet the timing requirements. No configuration regis=
+ters
+> to be set.
 
-I understand it might be odd and confusing to have the sampling freq attributes
-in the buffer. Using IIO_CHAN_INFO_SAMP_FREQ shall also work for this device
-so I'll probably switch to that. Though, an interesting point Jonathan made on
-v2 was that some devices have sampling frequency controls natively (e.g. ad7173).
-I wonder if having a trigger device would help with the SPI offload dependency
-separation. We might avoid attribute name clashing for some devices as bonus.
+I forget if I asked for other changes, but the compatible setup then is=20
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 
-Thanks,
-Marcelo
+--AivW+dRtBBf6OE2L
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajVNEwAKCRB4tDGHoIJi
+0sotAQCQcVebqtg8ICHEifSetaw82FpVZXXT9t219LG9X/l1yQD/fk87IEmu2/gs
+9yJTIxK62jUapNCX0eeURqfsOBCOhwU=
+=rHCT
+-----END PGP SIGNATURE-----
+
+--AivW+dRtBBf6OE2L--
