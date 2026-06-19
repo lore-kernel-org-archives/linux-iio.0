@@ -1,111 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E8EB17745
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 20:20:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB4CC3CB8FF
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 21:08:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781900407; cv=none; b=QU0frliYU2ejhnU2ExX0jOTP3Co+o0sfLed9Tn9EnXjOUxgcFxekIBTy5zEzE/cTZcTHwk8ad8ALHDIbT5eyFSmxtG1XFVe81he7oJryv8l+CffO0F7AgPWSvyx1SEi8uVewHSs979tELIr/ordykWYGNd/rz6gWWqNrZNTJNQs=
+	t=1781903326; cv=none; b=rRrOkq+ut90Ooygl9+59JWMGJWJhWijBHbEB3WpkOWnwhpOpQURd4xoXNC4dtP6gNAz4y7CjkO2wAHhc+g1tWatw+kaetWncoUlYr49uzJguYoBl/O663KxclylZ55g/IKLPCmEBj9SLzH5+fUhAeThEcwJIda8NLN9y14tHn8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781900407; c=relaxed/simple;
-	bh=tJdSLfUZqkt/ondKhbI6Q+VPmUn/ssKFPEMHr7+GfuI=;
+	s=arc-20240116; t=1781903326; c=relaxed/simple;
+	bh=FMSWI+gloufB0h0HTiPPqBp7P4ZIS2lTWu/Igajet9s=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=W8bTUfboelpPKTtL72w3jzhPlX9XtHYhJPxhNTRU3lwCDHnMrwerTNRBWfA8+kpDh+pAIZZipYCPZMlBmXC4dwhfSa6vc9W9dWRh9K5VxjyN+jU8L+FtumkvqQ8UD/O8M9l9uX4CtuYw2pA5bf20LiNU4xORiAn/dWLgyszL2SA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k40qUw8N; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=RmP3Tt10kFRb6PPBnH61YU/ipmJ4UysVKcZ1wW+k6Ly5hH5Aj0h4iuAaN8/7QbnM5yEaVQEm+/BCKeGmOwV4zajX+CVQDu8zni/zYAwZuWGO9e1w2FTfm8ubUmCXbjVh9jV0D6sdsIJyyHPlQQgX84njA0O+68TAw33m8SeeymY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cMmbUbYf; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k40qUw8N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9B1C1F000E9
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 20:20:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cMmbUbYf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2E31F01564
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 21:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1781900405;
-	bh=tJdSLfUZqkt/ondKhbI6Q+VPmUn/ssKFPEMHr7+GfuI=;
+	s=k20260515; t=1781903324;
+	bh=FMSWI+gloufB0h0HTiPPqBp7P4ZIS2lTWu/Igajet9s=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=k40qUw8NHCFEmEYdOIHmLwpghEfuhPSRWNBZS4/+LSbMPBYFg2Bq/auAoEKhWbWHd
-	 53n2sTraM4yUZReGDv3mz5RMMkjoY9G6Uk0m8+kGhABPq5+h8qPQFA9X54hD45IvfN
-	 yefUo5ZgCNpjWybZK3Dw0f9COM8ohUAP6QK7MdzRXGQIzf8ZN1GsuBCmu6nEe2FsuU
-	 81lYobbAkJasSAYeOBxOjs4nfdgnnrfoApyQgFKHXYOAbsERWVqare3AiqVg28CNGd
-	 PzKimfYCoxM7eVOQcVzg01i+wEet1RmLhckD3JL5nV8L8ebLSCGjykT7IqrAFtF2Og
-	 /JJfzCsSiuGVA==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5aa2c25c632so2464465e87.1
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 13:20:05 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ97Pyf7F0d/bznqtvz6YbPw2wnLtNs1OP8GxL5laITcEcDC+KUsQeodldXqLcgUGxcFCu8hTB2mYSw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8XuXxtpv8ScCd0aN1amwHAwCAkzkDPlp7Nt0yJm687ioRNu+H
-	EpF9RPwuRHjH/yveIzXXBsblTK1bjOtJ7O5HmFlopcacZT3u8GdAmk9UOAoSeeyHBEJhs4abyPZ
-	PzWODcqVYozU97pARf8wp0i0x37htvSs=
-X-Received: by 2002:a05:6512:6c7:b0:5ad:49da:61ce with SMTP id
- 2adb3069b0e04-5ad562de63bmr2001488e87.43.1781900403685; Fri, 19 Jun 2026
- 13:20:03 -0700 (PDT)
+	b=cMmbUbYfwQO5CI8iSeh+6t2SUNKHya5glLSJCb8DV6CntMMsxIktcwYeUmvlKQvmO
+	 ybB8ISM0w+kC9HyTbwLa3hR8N8oPyCXMMxYGJGAiV7pG7cRvGlNmk/oM+gZQ0C7IqG
+	 VFgAGvVR0MMXgLVZKqm2tfLtf7KYNqnzBOd6lNvphwkuSLkrZuKbfwzhVKfDWh8Jin
+	 +qFWl5S01GulWeCaSveSolV7YyO8Mm4k8Zqag5H1SPHluISqIep7t8/+5DRRKL5u8R
+	 HD0uaF/HZibyqylXS6ZVwDwDuUOnQSO+bUVjQvD+rNyE50XfyOX95o1K9oWDnB4LpI
+	 ZAwBSrYj+sajw==
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5aa624ff3cbso2733809e87.3
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 14:08:44 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ90MKaE3dtXqtW1XcUdIdwO2Jh6frq7ITwwDo4XYKpfYfXNan73BllgkgTBfS6enioNCyfv9IejOME=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9h9cUIEOE2iGUgPduMFsbvdZZQnYgTqRaMS405XllUlNP2MF7
+	fAxU6/NAImYY0YypJjyfGMAhbGw4kJ7WxwF5PWivE6cDFokNBektjFo4ZAb2uwBJ+CuxH4KGQAw
+	cMBbjEqHuf/Gaw2sYx17/5N6aRCbmV0U=
+X-Received: by 2002:a05:6512:239d:b0:5ad:4eac:f6d2 with SMTP id
+ 2adb3069b0e04-5ad58f3506amr1312078e87.23.1781903323139; Fri, 19 Jun 2026
+ 14:08:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1781883685.git.u.kleine-koenig@baylibre.com> <137deb1b7bcdd195c2b8555e8020870729728b78.1781883685.git.u.kleine-koenig@baylibre.com>
-In-Reply-To: <137deb1b7bcdd195c2b8555e8020870729728b78.1781883685.git.u.kleine-koenig@baylibre.com>
+References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
+ <20260512033317.1602537-3-eleanor.lin@realtek.com> <agMM9soiqpG-TRSb@ashevche-desk.local>
+ <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com> <ah92oEavMu4QRn8y@ashevche-desk.local>
+ <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com> <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
+In-Reply-To: <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
 From: Linus Walleij <linusw@kernel.org>
-Date: Fri, 19 Jun 2026 22:19:50 +0200
-X-Gmail-Original-Message-ID: <CAD++jLkRbaPMichpGGQnX5yasRHmY05=95qaOAvH9buHgTKa4Q@mail.gmail.com>
-X-Gm-Features: AVVi8CfVr11iCQW7AFxuozCaOSWQpMWs7KT0oEUYUwO6J0fGoyPyIe96ohjj4CM
-Message-ID: <CAD++jLkRbaPMichpGGQnX5yasRHmY05=95qaOAvH9buHgTKa4Q@mail.gmail.com>
-Subject: Re: [PATCH v1 11/13] iio: Initialize spi_device_id arrays using
- member names
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Puranjay Mohan <puranjay@kernel.org>, 
-	Marcelo Schmitt <marcelo.schmitt@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
-	Ramona Gradinariu <ramona.gradinariu@analog.com>, Esteban Blanc <eblanc@baylibre.com>, 
-	Sergiu Cuciurean <sergiu.cuciurean@analog.com>, Dragos Bogdan <dragos.bogdan@analog.com>, 
-	Alisa-Dariana Roman <alisa.roman@analog.com>, Matti Vaittinen <mazziesaccount@gmail.com>, 
-	Renato Lui Geh <renatogeh@gmail.com>, Ramona Bolboaca <ramona.bolboaca@analog.com>, 
-	Kim Seer Paller <kimseer.paller@analog.com>, 
-	Marilene Andrade Garcia <marilene.agarcia@gmail.com>, Marius Cristea <marius.cristea@microchip.com>, 
-	Marcus Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, 
-	Kurt Borja <kuurtb@gmail.com>, =?UTF-8?Q?Leonard_G=C3=B6hrs?= <l.goehrs@pengutronix.de>, 
-	kernel@pengutronix.de, Rodrigo Alencar <rodrigo.alencar@analog.com>, 
-	Gustavo Silva <gustavograzs@gmail.com>, 
-	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>, Janani Sunil <janani.sunil@analog.com>, 
-	Anshul Dalal <anshulusr@gmail.com>, Ricardo Ribalda <ribalda@kernel.org>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Alex Lanzano <lanzano.alex@gmail.com>, 
-	Jagath Jog J <jagathjog1996@gmail.com>, 
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Remi Buisson <remi.buisson@tdk.com>, 
-	Herve Codina <herve.codina@bootlin.com>, Petre Rodan <petre.rodan@subdimension.ro>, 
-	Andreas Klinger <ak@it-klinger.de>, Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>, 
-	Andrew Ijano <andrew.ijano@gmail.com>, 
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	Md Shofiqul Islam <shofiqtest@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Stepan Ionichev <sozdayvek@gmail.com>, Sam Daly <sam@samdaly.ie>, 
-	Dixit Parmar <dixitparmar19@gmail.com>, Colin Ian King <colin.i.king@gmail.com>, 
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Oleksij Rempel <o.rempel@pengutronix.de>, 
-	David Jander <david@protonic.nl>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Gabriel Rondon <grondon@gmail.com>, 
-	David Marinovic <david.marinovic@pupin.rs>, Lukas Schmid <lukas.schmid@netcube.li>, 
-	Shi Hao <i.shihao.999@gmail.com>, =?UTF-8?Q?Rahman_Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>, 
-	linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Fri, 19 Jun 2026 23:08:30 +0200
+X-Gmail-Original-Message-ID: <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+X-Gm-Features: AVVi8CciIShnYrkvWiar3ZeR88iI32EVeKlpP07bMr3Ga2S3qThBGTGjlcJfumA
+Message-ID: <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip() accessor
+To: Michael Walle <mwalle@kernel.org>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	"robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>, 
+	"conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com" <afaerber@suse.com>, 
+	"wbg@kernel.org" <wbg@kernel.org>, 
+	"mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>, "lars@metafoo.de" <lars@metafoo.de>, 
+	"Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>, 
+	"nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>, 
+	"dlechner@baylibre.com" <dlechner@baylibre.com>, =?UTF-8?B?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>, 
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"linux-realtek-soc@lists.infradead.org" <linux-realtek-soc@lists.infradead.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, =?UTF-8?B?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?= <cy.huang@realtek.com>, 
+	=?UTF-8?B?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?= <stanley_chang@realtek.com>, 
+	=?UTF-8?B?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?= <james.tai@realtek.com>, 
+	=?UTF-8?B?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?= <eleanor.lin@realtek.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 19, 2026 at 5:55=E2=80=AFPM Uwe Kleine-K=C3=B6nig (The Capable =
-Hub)
-<u.kleine-koenig@baylibre.com> wrote:
+On Mon, Jun 8, 2026 at 4:41=E2=80=AFPM Michael Walle <mwalle@kernel.org> wr=
+ote:
 
-> While being less compact, using named initializers allows to more easily
-> see which members of the structs are assigned which value without having
-> to lookup the declaration of the struct. And it's also more robust
-> against changes to the struct definition.
+> >>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retrie=
+ve the
+> >>> gpio_chip instantiated inside gpio-regmap.c to fulfill these requirem=
+ents in our
+> >>> map() function.
 >
-> The mentioned robustness is relevant for a planned change to struct
-> spi_device_id that replaces .driver_data by an anonymous union.
->
-> This patch doesn't modify the compiled arrays, only their representation
-> in source form benefits. The former was confirmed with x86 and arm64
-> builds.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
-aylibre.com>
+> Why is gpiochip_irq_reqres() called in the first place? Isn't that
+> only called if the irq handling is set up via gc->irq.chip and not
+> via gpiochip_irqchip_add_domain() like in gpio-regmap?
 
-Acked-by: Linus Walleij <linusw@kernel.org>
+Not really, the gpiochip_irq_reqres() is called to mark that a
+GPIO line is used for IRQ, so the gpiolib cannot turn this
+GPIO into an output line, gpiod_direction_out() will fail
+on lines used for IRQ. So it's a failsafe.
+
+You can live without it of course, but then you don't get
+this failsafe.
 
 Yours,
 Linus Walleij
