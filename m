@@ -1,114 +1,143 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CBEE3385AA
-	for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 23:16:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56BDE1A23A6
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 00:33:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781824609; cv=none; b=VBym1hwv0ZKJoxivl+ypAvlrE1BtQ2wx+QyEGcORHDAjq4l8DDQ3qzubTCo4YmLXrl8705CGtOiTBxiO2E7bSXY10rUdcFj1LOVL0sig4YWHxXnq2YlN0Q77WsA6UGVd8EVf1FWDxsUnPUnVSP6wQ88qmwiPCL0Ydrn/oOHZ4vQ=
+	t=1781829198; cv=none; b=ig86wF2Sqp4HTjwslXv1sCricZvcr03kxtRFS/OStLoBhqbRzJoXj6eNOUoDunTzaD8/GKTiUIdeCY0TOjK/aERj53DLJEe6xUkeHSYgi71DIplSTcHfoRMu/dkPH+DwzUSDiGZmC0TaPyJG1A6NRWAxFnxn1ZYw4NtaxT0bOgE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781824609; c=relaxed/simple;
-	bh=08OKc18r9CXgz6b6yf9/OSqnpT1r2NkykT91B1CcZQQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=GbzwZyoidjRlf8iWYSc+7U8Bi1z0Vm4uJXH5taXt7ExKW+N4JrLsr0hlIq4Rv4CUBpaU3uOvlVCwjIhrUrzk0jOL2ckp1GftwH01+JX1grNIP5XFSTRj6KhagxNEGOIq8dPHZXCuhkkoLajkr/2QM6ZvJ7Z1lbi+wEAaPJ1yrwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lskt0vst; arc=none smtp.client-ip=209.85.210.173
+	s=arc-20240116; t=1781829198; c=relaxed/simple;
+	bh=HfDwPSM3AgwjPehs4wPAUk58oPTdqwzoGiKVwh6DUPs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=u+ig1e+3Q0eohPDVUxkDCbUkDm/3AgKzyy76zWySshpVW9l7rh6aM05noRdL5f+tKNYxEjR3uEGY4z0YMwlbmK7I2FDJGfhd85wugQajA0ZhpXgcIgXzEhYlY7pkGqNvRdJn8OEjjsg1BEYBZToqjmhEGrHsyOXoZdX8dbD78Es=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L1QvTRoH; arc=none smtp.client-ip=209.85.221.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lskt0vst"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-84536e2857eso1062041b3a.0
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 16:16:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L1QvTRoH"
+Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5b22b023e1dso960307e0c.2
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 17:33:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781824608; x=1782429408; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wqcmHkc09d/LVU+mcShRey1+Nw8pGbrp4LNtryqVc8U=;
-        b=Lskt0vstRwKYublgU5Gy99vH+zpzswYyvJAVwJNge6GKEY+HyvNw5tNmxeeh7fOspI
-         MaDNMxPQGo+kChDz8TQKR5Zfsz21vLzhOF5Afxk6nLXFzB4SeIQvJs26f1qf7euwcE4l
-         jxmQMZvzcuAJz4aJmvYKLDnhIwaxoNIJcFNb8yeAUNlDYg41GWA8qSY0XRHp26YT1a+L
-         fUJkopx9JSkUNuHyXw5J4K1ZE0Yzoxd5rKTcOoDgwsIb2yYjYVAf4yCXPCcSqoFJ5Cqd
-         cBWfXhYQuOMBOLP4/oGXJru93VjpwgXhSF3mzNfeNv0tMc0D6GepGRw2MRTcgygVE2zO
-         7HKg==
+        d=gmail.com; s=20251104; t=1781829195; x=1782433995; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=znQu5cFGcYeDF1LB9ZZhOnWvhk6kupYFyYu/ENFjpMc=;
+        b=L1QvTRoHnjNmxzN2X48ewA4jCHcNbQ6ccDX5volKUW8f3FcjRhT6LSdB0GP/kT+8Rj
+         /ZJL/xO1OLOv0BogOOv67X3U1U3xL/u7W3ltub5Cv85umlruysA2c2wO30Va/vwrrJp6
+         AsxHGuk6equBXebPO9hboZcpTL4ZDTcD/X1gKl/2GEVGiQzUg8zKqdE+iy0UsGB6pSol
+         lDHb0IDQFeknphtOapqG5ZnurnQOho3USYwdl6A6dGsVfpj6hh0NuXTjrqPNNx4QW+IV
+         GOA540oIRD6YuKt8TX3SUD1Vehe6YIpPlW7VxyMRYNKIBefAWGyP/A0GIuR5oP93/Kuj
+         iomQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781824608; x=1782429408;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wqcmHkc09d/LVU+mcShRey1+Nw8pGbrp4LNtryqVc8U=;
-        b=GPolD2xhfNfG3cH0ra/QB1WRhcD1lLK+sQeJJ7In7ctAu+x4OO9mJu/4hELVDLLRK6
-         xB0ltA8UKYEeESMA05cOqttx/dSBBlNZksNNZrfBzMk6VGY2Nk1n1NZcgD1pSDhanW7S
-         ejukJua4eFdQYdLFXWm3D0KkWayv9y4zx1/0fkLCkYJptTDmgipryaCeUZcV+X+zW20U
-         YeOOW6+ajZNqovrNSIRetBjTcLt5IBnceNlndyUzVRd5PJB1aqc9VOJNRrmJbbH+SmOV
-         jwAIugyRq55ySu8S9GWdR5q0vyr1bu7InM2S72mTzP4gPVKc2oM1NhduDDzMBwaO63Dv
-         i6Lg==
-X-Forwarded-Encrypted: i=1; AFNElJ83TivKXgiLrI0ienVD8gI7e6K0LgaNlgc/sznfmsapD8/6veEi56X1J7PN1KqAyHJaQ8Tr6hGifRE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyUENUZbjmbLRONj6f/5aLbQOB6IWAJtIMSapnlXFzhYBnjNQQx
-	sNpZytFxxSJLhCZl4VYNCo9O+J6Tx73pI9MBh2aHWKOjfzPOAz/MDR5u
-X-Gm-Gg: AfdE7cnS8hFUy2A206OaEtun33BUQxOWftb7HoLMGNdQryiGhKfg5ZGDC2m7w6IJcM/
-	dH64Tj4wOBQX8zCPsHU11QslZ0/cIap7s1oeOcGChmJIaiJRkmkjfD9mWqmF3LKSoWt4P5v9H5N
-	oSULTzta7nM1hpeakLEdp8Mfh26efcX8aUK3FjPsjU35GyIdQWnKLpwMsl+6bzVXCObb3Y1BPot
-	H6sZegNUHLJjlpz3BEC2WiYy56SVqoET1hOVgm820nIkKf8kM/YjZSq8W0rc1sHy91ozqaBq3sd
-	gb6mR7pAOa/XS7qmbtvWmShh6XSrgby/osF2T2JtEvNNemIQM8Tgw7jKB9cLyqqoXY/8uTqi13K
-	ZtyoY2Wf7T5zISx/gPQ5cc1N9O7pilZ+uFOxWxw/H0Kc6IzC6hBoOG/gbKKBwgwgymYXzuIra0v
-	r1r07CODIoVRzxfBFcKvMWTPo55R6tG8J1icL53Oms/YYMrzsR6Wsp7lfwpQaDKW6aahNKPR57q
-	1AOy1xJ
-X-Received: by 2002:a05:6a00:9515:b0:822:6830:5900 with SMTP id d2e1a72fcca58-84550785d61mr1028705b3a.6.1781824607891;
-        Thu, 18 Jun 2026 16:16:47 -0700 (PDT)
-Received: from thorfinn ([2401:4900:8836:4853:aa0f:55df:e7d8:852f])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-845537fa3e9sm225135b3a.39.2026.06.18.16.16.43
+        d=1e100.net; s=20251104; t=1781829195; x=1782433995;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=znQu5cFGcYeDF1LB9ZZhOnWvhk6kupYFyYu/ENFjpMc=;
+        b=caNDlo+IlmjfoNaM+xierGfx/09he+GcW6Uwtw+MZcDsC1y7eu82gHqyrvhL5HZpAs
+         VMFYsVi35WC5JDS51q7NtFxn5k3Ze1JQrbOoXtpd52E41wA691crnQp6HxCTooOK9zWd
+         n1FT8nZdygGdmc3DWMXQPcjBG20U14TgXj13CuT4JJmhs0HOXjuLI8Eknn90Jv53zusn
+         G436f6rOURgFO5O74YQAEW06OT/T9yPe7OCsySwjIIMpcDTk2zkes8Y7+wLwkxk6wEsH
+         YGaWKQcWdqwCZYiFkY7wn4ilDpicpUTsa0e+vv74LR8qXQpA6Fnar8Lg3peM6F9O5mvF
+         TUBw==
+X-Forwarded-Encrypted: i=1; AFNElJ86yNq13qUnmUFl/5XIzTDEgOG1IRQpbGEKCScBcRgVyM/mnQDF3Zfyc2HcBxWRP+d1+xtwnWTrLwY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwkE+9/yNViicr+nAF74+g98Hy3PyFVOY7K68LuBPy1PAvs0qkP
+	vSUCQdexo7RF7SCEvB/ntbQTtXH6MnLuuWv7Brky+5Wf4eOjBmZcWQSE
+X-Gm-Gg: AfdE7clSQY1ucn0ZlEdwGYBx59VW9DO33jRH71yZ4UtRKtq9iTu/BVX4stCMe4TSDEM
+	wUuTUfeXczSw6qmSzItihrkqGeTuPgkKh70OmbFnq8rqeJ8wtlkUj4M+qPY2umyg0nxfJ4obTXF
+	6kO86k7Uw3vFxJpn0mz7ghWQuZIE2Hhdv/o3P/ViHSOBXlLvo8wkhH5LO5y1AAAQjmuT0Vy3/i+
+	uwh0Aju3t+dgJNJFzlunP66ygV5CbfCGyeUpdDtNH7dryxq0ez5SX7r7bdGGisIN2BFHY1dH2Qq
+	VO+9V9I9zTgI0E3Yc8KkrKzqrb91vy9rJOrz2HxRSbyhUzsPOnA5YlX34c9zDY9dkTn2/X5VFrs
+	sNZPWmiWCo0AvWLzdQs6jXy8T6tGOtrcmqduH4865AjI+Qnjb9mHR0AEdoi4a+T6VqU6zn6aob0
+	9WnTfUcwh6SVaemhllNJs51A7h2Q==
+X-Received: by 2002:a05:6122:4886:b0:59d:8734:e801 with SMTP id 71dfb90a1353d-5bbebc30bb9mr702133e0c.14.1781829195253;
+        Thu, 18 Jun 2026 17:33:15 -0700 (PDT)
+Received: from [192.168.100.222] ([2800:bf0:177:563:8f3c:3421:b12:7a09])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bbea36b5e6sm861581e0c.9.2026.06.18.17.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2026 16:16:47 -0700 (PDT)
-From: Prashant Rahul <prashantrahul23@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Shuah Khan <shuahkhan@gmail.com>,
-	Prashant Rahul <prashantrahul23@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-kernel@vger.kernel.or
-Subject: [PATCH 5/5] iio: adc: ti-adc0832: log buffer setup failure in probe
-Date: Fri, 19 Jun 2026 04:44:38 +0530
-Message-ID: <20260618231543.413771-6-prashantrahul23@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260618231543.413771-1-prashantrahul23@gmail.com>
-References: <20260616130612.73122-1-prashantrahul23@gmail.com>
- <20260618231543.413771-1-prashantrahul23@gmail.com>
+        Thu, 18 Jun 2026 17:33:14 -0700 (PDT)
+From: Kurt Borja <kuurtb@gmail.com>
+Subject: [PATCH RFC 0/3] dt-bindings: iio: adc: Add reference, excitation
+ and burn-out properties
+Date: Thu, 18 Jun 2026 19:33:00 -0500
+Message-Id: <20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDM0ML3bzUcl2QTF5qjm5BUX5Bsa5JWlKKKVDeICXRSAmor6AoNS2zAmx
+ mtFKQm7NSLESwuDQpKzW5BGSaUm0tAFaVyeN6AAAA
+X-Change-ID: 20260618-new-channel-props-4fbd52020da2
+To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>
+Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Kurt Borja <kuurtb@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2083; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=HfDwPSM3AgwjPehs4wPAUk58oPTdqwzoGiKVwh6DUPs=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkmfc5Wl7WF7UtMBX5sMp7B4Wj36VXujJcVHJs1bc4Kc
+ byuz5bvKGVhEONikBVTZGlPWPTtUVTeW78Dofdh5rAygQxh4OIUgImcns3wz+TD6oxHsfEqed8/
+ ej0UXJ+ovW1J5yRhfknnhzNL2/Zxnmdk6J/2vyYmdcl17YSnMU9T9h8WXxV5kfsEk+IqaYY3B4/
+ u5wQA
+X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
+ fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
-Errors are logged when enabling the regulator or adding the cleanup
-action fails, but not when buffer setup fails. Log the error returned by
-the buffer setup path as well.
+Hi all,
 
-Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
+After submitting a patch series adding support for TI ADS126X ADCs [1],
+I was made aware by David [2] that at least two more chip families,
+ads1220 [3] and ads1x2c14, share very similar features (though these
+chips are not really compatible between them). After that, I found one
+more chip with the same features which is already upstream, the
+AD4170-4.
+
+As David explained in [2], these chips are intended to be used with
+RTDs, thermocouples or other resistive sensors so they share the
+following per-channel features:
+
+  - Configurable reference selection
+  - Burn-out Current Sources (BOCS) for diagnostic purpuses
+  - Excitation current sources (usually called IDACs TI) for sensor
+    current biasing
+
+Given that these three features are present in all four devices and
+three of these drivers are still under review, my proposal is to have
+these features be described in adc.yaml and have this series merged
+before the three others [1] [2] [3].
+
+This series is sent as RFC because I still don't have much experience
+with dt-bindings and I don't know if this approach or the properties are
+general enough to be described like this.
+
+No dependencies between properties were provided because not all devices
+may be able to configure each one of them.
+
+[1] https://lore.kernel.org/linux-iio/20260612-ads126x-v1-0-894c788d03ed@gmail.com/
+[2] https://lore.kernel.org/linux-iio/20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com/
+[3] https://lore.kernel.org/linux-iio/20260610151342.44274-1-zizuzacker@gmail.com/
+
+Signed-off-by: Kurt Borja <kuurtb@gmail.com>
 ---
- drivers/iio/adc/ti-adc0832.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Kurt Borja (3):
+      dt-bindings: iio: adc: Add reference-source property
+      dt-bindings: iio: adc: Add excitation current sources properties
+      dt-bindings: iio: adc: Add burn-out current properties
 
-diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-index cfcdafbe284b..417e54223092 100644
---- a/drivers/iio/adc/ti-adc0832.c
-+++ b/drivers/iio/adc/ti-adc0832.c
-@@ -299,7 +299,7 @@ static int adc0832_probe(struct spi_device *spi)
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
- 					      adc0832_trigger_handler, NULL);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
- 
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
+ Documentation/devicetree/bindings/iio/adc/adc.yaml | 47 ++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+---
+base-commit: a50909aa46dec46de3c73235fc15a7d6f763d996
+change-id: 20260618-new-channel-props-4fbd52020da2
+
 -- 
-2.54.0
+Thanks, 
+ ~ Kurt
 
