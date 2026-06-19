@@ -1,361 +1,259 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-dl1-f54.google.com (mail-dl1-f54.google.com [74.125.82.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 298E438F236
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 13:00:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42243921CC
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 13:06:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781874011; cv=none; b=ljCe2npG+CAKdpHd8ZYmhnORxlitMTiRxy8dVnAkjQArDGvLMBfkvZP8EMeNUFKBoLl1UoKPjihYxMi0mrQ6NMOf+dEJRVdZ3QZ1BNTVAzKww2SfFAEANCuMdLK6kFOtERKG9H/YKNrcx19e6TNvLtvcsHlb7qwQNf/Dg2LjsCs=
+	t=1781874397; cv=none; b=HKkQKwmZD6t43Jj4gnY7aqdgzI9xDrTZ3dxbFOCiB3jChGKnek8s9WcSxslhYzWuTUeGc5uv6lanGfk2KjC6Z+aDr9ArabQd0EoavT+edsU+Y25q7sZz8dgub1ALd1NbUXWEPJWI3l9t7bSR48IzghilIs0TzbDq6YJQmHs0Kw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781874011; c=relaxed/simple;
-	bh=VnzYMuGGOZOFQ0lkAErjhznaopoAsL3miQ4uX60fQMA=;
+	s=arc-20240116; t=1781874397; c=relaxed/simple;
+	bh=hPq9GGLB/Xa4IfooWLsXz4nhu5OD3HFtkok0T2+uuA4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T1wBV9GBj+kdpyYmQU70IFewQXwLaoVpmTvweSJWUOQpTqsJdBc6Lmklqkthonsbz9a4FloZA6rNJPjhWzP9qsLipVpBXNgfnx9ZhXVLlC2UkAr9bgZNzlGFWQGdG+89tIN+PbzpgNbVYYAF2jtEwqlRdCFDlG5zWTMUsAqyAAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eJsy/YgJ; arc=none smtp.client-ip=209.85.221.44
+	 Content-Type:Content-Disposition:In-Reply-To; b=SS9toveiQwLSVFPRRXctcLd1FzvXmepqfNRmrauQ65c0YRsWYqyTzYs7VD5tivOIoAUBgXUP5mTE+ZLSW9g1/dGOLuKQ3eHpjtHFoCnG8yG3EUo8vqwwV6/HlqqVQz04g5NDThY/wPw29/C0nav7tpNWh1oIjkbewq7DnyMIQuE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QvE/fYcz; arc=none smtp.client-ip=74.125.82.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eJsy/YgJ"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-45ee5cdbd28so1859055f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 06:00:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QvE/fYcz"
+Received: by mail-dl1-f54.google.com with SMTP id a92af1059eb24-1390f75d8bbso2006420c88.0
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 06:06:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781874008; x=1782478808; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=qiZU2ur+yus0frcrsmwpHi+cHkIfW6hKIYxrtn8YRlk=;
-        b=eJsy/YgJO8yOtf7gg8rfx16lJcDo/XV/V8kKM6w6CAptkr8JVCqnYtkp+wrocw5Tdh
-         OiHZCocnHMGGP51+gSlK7UlvpjDfU4xFhYEFakcmZwHMchbak54dEkW+ItlME47WIc1F
-         IFtBS/BDfh3jlVZ+n7xgF2gysunXXAyR4WiWNZz7yC5jzm0FROfZrp/tHZ4VuA3M5KuF
-         y2RMp1joeArpSs3C1GZ29a/PLuDHlIO9nXazbvb8RjVH1Cbtw9RzcW3tZWaK6wZzS/UD
-         wJbGjELKKpDCDeshL2QOnvLiLCRa9PEpr7yXpIP0sjfTGrIYwXlps/yVS+qpocihVkZq
-         wX3A==
+        d=gmail.com; s=20251104; t=1781874392; x=1782479192; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FKWz+v75WavDxx9BcP+T8YEk8allFL24miMeH++hQ+0=;
+        b=QvE/fYczu0OE3VUksxaW9jmXDexJ3B/ZcFDtR/slEuRRWZj+dBvPky3WZfwG/kUEKT
+         /9hS1HQQO4ETAlhBMpAosYfQaQZ5sHZfDRKW17VvperOicg16NDpCzIwdBDlz6P1kGxI
+         Fahs5CLjDUj/mG8MyNRoI5tjlhZXvWB7+zwxbK5YbJyVDny5TfDQB/sUxk2Mz8Jb5cfN
+         TVZxNn9yHMbgb1jMjTUt7F8hN2JTAfOevXkVhEditiyeHZKp5GLK4O4Zv3S7Du2IvzBQ
+         IYt+amwvz8g44hLw4FwA5RQ+9kmPHtBvqfSq/e8YWyQDNHy+ZQx+FMI0oPrUUHSxFnVq
+         jcEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781874008; x=1782478808;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qiZU2ur+yus0frcrsmwpHi+cHkIfW6hKIYxrtn8YRlk=;
-        b=P7/QDVOIWzxNkqmvqKv4QRFQyz+PUNQQVLFygQ+HAGmTb8iaFDShO6woMz912ndQqy
-         WWtqTAyf7+/K+q9G179TUBhPcAkry6XJVJP4z50Vw4PXO6FeZbytkKBtf1R4F54kBGxw
-         0kphnsGsHCHVnbHNwgeQiPLmhyX49Kcwez+4XZGI9MfGUvP4pqcjTcQRj2NxZjz7fb6l
-         60OQ2NnEq9SlZmqFlVFuKGAOxi37kPAXYwQIK87OzBFl3hr5LVN08wuqnb8lb6e2qvYf
-         PXG98i3b+IjpEejYtuVgwjOq1NG1/EhD6LM+bx+W2Y2ZDpi2nnxH9OlWD9NztaP4T8ko
-         DESg==
-X-Forwarded-Encrypted: i=1; AFNElJ+F7peBfQuOUNZsd0yQ6iTTA5wxGbMLtMGSNcNxAxDAqHjAGe0ZzhIZYFGcZBydyeG61dZCsA/cU8Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzU3UaPy8jLvZaN1mTJ+TK/sqvLTppLK+p5eTV0pgrsLEXqpv6T
-	EjyWG6gp63mhyBg+UJAjzGdpoJLrCVsTlx8ngE/4ATu4lzGosiQ2al/U
-X-Gm-Gg: AfdE7ck2OVPLZxEDdD3HX7Umacc873Tr2SDr2y5O1d1ETMgCeIrEzIyuSXbfWgKOH/g
-	6r+5qvNVKZVnymbSOavSXTyaxB1WIhUJGhyXWDSgItoNBqhWEmqHKTaC3AWdibjLCyMxYPHgr+w
-	5+lGLm+c89/YOkMXbUR5iHR34TSLpButhyVOTZRQPGXsNictKv1Plhgd5lrfZJddWu4agK0wHAn
-	CI/x+ZRhfTqyyl3s8DXNUPozgOG8+GlHAR5650q/yBEvOWMiIMTFN4i2/sEkrQzGfHpfx3K90w5
-	OQ4Pw4BNm8af7ZTP46tCSO06wZlACg7T9NoDaplPjSL5409pGGuCazU5JskJyrBZ122LhjBKsmv
-	FTneXEU82huY/EzMgb7ZdDuXXM5vzFCdhGJwDxBJB4bPfK/5Qdgjb/TpArhpw86zdJVOUWBbKcr
-	lzRh8=
-X-Received: by 2002:a05:6000:611:b0:463:3184:6310 with SMTP id ffacd0b85a97d-4651e7b3b26mr5222838f8f.28.1781874007796;
-        Fri, 19 Jun 2026 06:00:07 -0700 (PDT)
-Received: from nsa ([185.128.9.171])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4650b67a253sm8027816f8f.23.2026.06.19.06.00.06
+        d=1e100.net; s=20251104; t=1781874392; x=1782479192;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FKWz+v75WavDxx9BcP+T8YEk8allFL24miMeH++hQ+0=;
+        b=FjqnclKPfo39lZmR65cYSnOI9WVXTwTU5deyuNVDMWbEVfs+woz+BYj+2/VE8n6K9t
+         TsLfGkGYO9m11MPpulnG9apiOmOEaswMCitPZ6FHlDFTMyOYoqevzfAnrmU4wceBs8ij
+         /NuzgWPSgcUQvTCldNpxBRat8Nldx+KbQje8mrPL5/JC6d8zk1krQUzetBokO5Df0q4r
+         3K9B0xEXGkezG5FVPd+dEh8gbG6/oMOIGei6dixD/Zqng3Vt+/ehu2pmxVmvNUk7SnzR
+         eSCKlvm6kWFaifA2LSPmcoDDu0LBOMjExINorORfhOqtaiRN7DKofTYoaepChx9iLTGl
+         hLiA==
+X-Forwarded-Encrypted: i=1; AFNElJ8+ODKCXCDM6UroV9CSuuTFVCpMlVsovHEhzOxzTRffC8MqcbMad3S372Cpl1dvbLu0VAElGTIj23o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzCwEumY59/fL5DJ/06dnTwSVvHFvz6HIpirDlYWwxI/ZDcjikZ
+	UwmTnlIaWUdhIWRU9JPrydX0hc4KJSMyhtj0nlENo7fwl5rmXmk4myd0
+X-Gm-Gg: AfdE7ckINQibgsiFWjqkCoj0/7pogTcSvlXsWr3Ydk/O0gwTRR9IUW36CWGQMBVvgmS
+	9YXQNLYmEi+IsHScP6f+OG+4xD4muROq/UOD2iz/q0tThdXydjGU0Mj1gJ+PCasFiHO1Gd7QsE8
+	GU3SM6IqtB1dLx9fMFlHP1HT4dzee/xgoREK3LFRZR5XE0pltHNJTQAZ903fDy2+vWi2YKCAx3t
+	3+IXXX93K13ZuUWIJDBfVviZ9audu4csVGb+X7l5hpaIzkqZRG5wfsO/URCecuhvlYuHc/kpBcX
+	U0DJ79Mc2o1c3jlp24S5jOGwJp/HOdQd8d+La/r/dOB+fKioKYTqQeslGYJj2jA5dxww5VbdciX
+	gPWr7HPuA32plmK4mBF7DfEbEBxBNsWb8YpdP6epeAxAS/GCHvm1jGlDGn15M/xwLPq04K8zfKQ
+	zH55j98vOwrHhH10vJPZIheg==
+X-Received: by 2002:a05:701b:4586:10b0:128:bae0:e03c with SMTP id a92af1059eb24-139a504feefmr814976c88.30.1781874392336;
+        Fri, 19 Jun 2026 06:06:32 -0700 (PDT)
+Received: from localhost ([2804:30c:1f0a:b600:e457:1a16:4082:3e0a])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-139a34bdc83sm1769503c88.8.2026.06.19.06.06.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 06:00:07 -0700 (PDT)
-Date: Fri, 19 Jun 2026 14:01:08 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+        Fri, 19 Jun 2026 06:06:31 -0700 (PDT)
+Date: Fri, 19 Jun 2026 10:07:10 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 To: Conor Dooley <conor@kernel.org>
-Cc: Janani Sunil <jan.sun97@gmail.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
-	Janani Sunil <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <ajU73_TkKrSbqD4f@nsa>
-References: <20260519-ad5529r-driver-v3-0-267c0731aa68@analog.com>
- <20260519-ad5529r-driver-v3-1-267c0731aa68@analog.com>
- <25mh6grzh7zh3b4uytcqnusyv5zjuf6ia4if3ce3oqzqz56ehi@le72iqv7ye3d>
- <603473ac-30e6-45e5-8a3b-c9902715cc9e@gmail.com>
- <20260614204455.408c4d40@jic23-huawei>
- <076d7d2d-81a0-49c2-af94-bd65ead66c09@gmail.com>
- <20260619-obstinate-polo-a230bef97fda@spud>
- <20260619-bunch-diocese-dd7805cc17ff@spud>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, pop.ioan-daniel@analog.com
+Subject: Re: [PATCH v3 1/5] dt-bindings: iio: adc: Add ltc2378
+Message-ID: <ajU-_j1SWYbfjWla@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1781661028.git.marcelo.schmitt@analog.com>
+ <f9e88abdbd23df8039282497a81d3c8698a10665.1781661028.git.marcelo.schmitt@analog.com>
+ <20260617-bok-gains-9a1af41cf0de@spud>
+ <ajLV-O60lCdlIbXR@debian-BULLSEYE-live-builder-AMD64>
+ <20260617-oat-handclasp-ddd3135c5b84@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260619-bunch-diocese-dd7805cc17ff@spud>
+In-Reply-To: <20260617-oat-handclasp-ddd3135c5b84@spud>
 
-On Fri, Jun 19, 2026 at 12:40:54PM +0100, Conor Dooley wrote:
-> On Fri, Jun 19, 2026 at 12:36:55PM +0100, Conor Dooley wrote:
-> > On Fri, Jun 19, 2026 at 12:33:11PM +0200, Janani Sunil wrote:
+On 06/17, Conor Dooley wrote:
+> On Wed, Jun 17, 2026 at 02:14:32PM -0300, Marcelo Schmitt wrote:
+> > On 06/17, Conor Dooley wrote:
+> > > On Tue, Jun 16, 2026 at 11:03:11PM -0300, Marcelo Schmitt wrote:
+> > > > Document how to describe LTC2378-20 and similar ADCs in device tree.
+> > > > 
+> > > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > ---
+> > > > Change log v2 -> v3:
+> > > > - Re-added device tree fallback compatibles for LTC2378 chips, now with options
+> > > >   to provide a single compatible string or a pair of single compatible string
+> > > >   plus a fallback string to a slower sample rate spec in case a driver for the
+> > > >   specific part is not found.
+> > > > 
+> > > >  .../bindings/iio/adc/adi,ltc2378.yaml         | 160 ++++++++++++++++++
+> > > >  MAINTAINERS                                   |   7 +
+> > > >  2 files changed, 167 insertions(+)
+> > > >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> > > > 
+> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> > > > new file mode 100644
+> > > > index 000000000000..7d30a2cade8f
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+> > > > @@ -0,0 +1,160 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > +%YAML 1.2
+> > > > +---
+> > > > +$id: http://devicetree.org/schemas/iio/adc/adi,ltc2378.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Analog Devices LTC2378 and similar Analog to Digital Converters
+> > > > +
+> > > > +maintainers:
+> > > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > +
+> > > > +description: |
+> > > > +  Analog Devices LTC2378 series of ADCs.
+> > > > +  Specifications can be found at:
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/233818fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236416fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236418f.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236716fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236718f.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236816f.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236818f.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/236918fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237016fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237616fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237618fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237620fb.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237716fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237718fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237720fb.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237816fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237818fa.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237820fb.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/237918fb.pdf
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-sheets/238016fb.pdf
+> > > > +
+> > > > +$ref: /schemas/spi/spi-peripheral-props.yaml#
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    oneOf:
+> > > > +      # Single compatible string match.
+> > > > +      - enum:
+> > > > +          - adi,ltc2338-18
+> > > > +          - adi,ltc2364-16
+> > > > +          - adi,ltc2364-18
+> > > > +          - adi,ltc2367-16
+> > > > +          - adi,ltc2367-18
+> > > > +          - adi,ltc2368-16
+> > > > +          - adi,ltc2368-18
+> > > > +          - adi,ltc2369-18
+> > > > +          - adi,ltc2370-16
+> > > > +          - adi,ltc2376-16
+> > > > +          - adi,ltc2376-18
+> > > > +          - adi,ltc2376-20
+> > > > +          - adi,ltc2377-16
+> > > > +          - adi,ltc2377-18
+> > > > +          - adi,ltc2377-20
+> > > > +          - adi,ltc2378-16
+> > > > +          - adi,ltc2378-18
+> > > > +          - adi,ltc2378-20
+> > > > +          - adi,ltc2379-18
+> > > > +          - adi,ltc2380-16
+> > > > +
+> > > > +      # Low sample rate fallback for 16-bit unipolar sensors.
+> > > > +      - items:
+> > > > +          - enum:
+> > > > +              - adi,ltc2370-16 # 2 MSPS
+> > > > +              - adi,ltc2368-16 # 1 MSPS
+> > > > +              - adi,ltc2367-16 # 500 kSPS
+> > > > +          - const: adi,ltc2364-16 # fallback (250 kSPS)
 > > > 
-> > > On 6/14/26 21:44, Jonathan Cameron wrote:
-> > > > On Tue, 9 Jun 2026 16:47:23 +0200
-> > > > Janani Sunil <jan.sun97@gmail.com> wrote:
-> > > > 
-> > > > > On 5/26/26 15:11, Rodrigo Alencar wrote:
-> > > > > > On 26/05/19 05:42PM, Janani Sunil wrote:
-> > > > > > > Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> > > > > > > buffered voltage output digital-to-analog converter (DAC) with an
-> > > > > > > integrated precision reference.
-> > > > > > ...
-> > > > > > Probably others may comment on that, but...
-> > > > > > 
-> > > > > > This parent node may support device addressing for multi-device support through
-> > > > > > those ID pins. I suppose that each device may have its own power supplies or
-> > > > > > other resources like the toggle pins or reset and enable.
-> > > > > > 
-> > > > > > That way I suppose that an example would look like...
-> > > > > > > +
-> > > > > > > +patternProperties:
-> > > > > > > +  "^channel@([0-9]|1[0-5])$":
-> > > > > > > +    type: object
-> > > > > > > +    description: Child nodes for individual channel configuration
-> > > > > > > +
-> > > > > > > +    properties:
-> > > > > > > +      reg:
-> > > > > > > +        description: Channel number.
-> > > > > > > +        minimum: 0
-> > > > > > > +        maximum: 15
-> > > > > > > +
-> > > > > > > +      adi,output-range-microvolt:
-> > > > > > > +        description: |
-> > > > > > > +          Output voltage range for this channel as [min, max] in microvolts.
-> > > > > > > +          If not specified, defaults to 0V to 5V range.
-> > > > > > > +        oneOf:
-> > > > > > > +          - items:
-> > > > > > > +              - const: 0
-> > > > > > > +              - enum: [5000000, 10000000, 20000000, 40000000]
-> > > > > > > +          - items:
-> > > > > > > +              - const: -5000000
-> > > > > > > +              - const: 5000000
-> > > > > > > +          - items:
-> > > > > > > +              - const: -10000000
-> > > > > > > +              - const: 10000000
-> > > > > > > +          - items:
-> > > > > > > +              - const: -15000000
-> > > > > > > +              - const: 15000000
-> > > > > > > +          - items:
-> > > > > > > +              - const: -20000000
-> > > > > > > +              - const: 20000000
-> > > > > > > +
-> > > > > > > +    required:
-> > > > > > > +      - reg
-> > > > > > > +
-> > > > > > > +    additionalProperties: false
-> > > > > > > +
-> > > > > > > +required:
-> > > > > > > +  - compatible
-> > > > > > > +  - reg
-> > > > > > > +  - vdd-supply
-> > > > > > > +  - avdd-supply
-> > > > > > > +  - hvdd-supply
-> > > > > > > +
-> > > > > > > +dependencies:
-> > > > > > > +  spi-cpha: [ spi-cpol ]
-> > > > > > > +  spi-cpol: [ spi-cpha ]
-> > > > > > > +
-> > > > > > > +allOf:
-> > > > > > > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > > > > > > +
-> > > > > > > +unevaluatedProperties: false
-> > > > > > > +
-> > > > > > > +examples:
-> > > > > > > +  - |
-> > > > > > > +    #include <dt-bindings/gpio/gpio.h>
-> > > > > > > +
-> > > > > > > +    spi {
-> > > > > > > +        #address-cells = <1>;
-> > > > > > > +        #size-cells = <0>;
-> > > > > > > +
-> > > > > > > +        dac@0 {
-> > > > > > > +            compatible = "adi,ad5529r-16";
-> > > > > > > +            reg = <0>;
-> > > > > > > +            spi-max-frequency = <25000000>;
-> > > > > > > +
-> > > > > > > +            vdd-supply = <&vdd_regulator>;
-> > > > > > > +            avdd-supply = <&avdd_regulator>;
-> > > > > > > +            hvdd-supply = <&hvdd_regulator>;
-> > > > > > > +            hvss-supply = <&hvss_regulator>;
-> > > > > > > +
-> > > > > > > +            reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-> > > > > > > +
-> > > > > > > +            #address-cells = <1>;
-> > > > > > > +            #size-cells = <0>;
-> > > > > > > +
-> > > > > > > +            channel@0 {
-> > > > > > > +                reg = <0>;
-> > > > > > > +                adi,output-range-microvolt = <0 5000000>;
-> > > > > > > +            };
-> > > > > > > +
-> > > > > > > +            channel@1 {
-> > > > > > > +                reg = <1>;
-> > > > > > > +                adi,output-range-microvolt = <(-10000000) 10000000>;
-> > > > > > > +            };
-> > > > > > > +
-> > > > > > > +            channel@2 {
-> > > > > > > +                reg = <2>;
-> > > > > > > +                adi,output-range-microvolt = <0 40000000>;
-> > > > > > > +            };
-> > > > > > > +        };
-> > > > > > > +    };
-> > > > > > ...
-> > > > > > 
-> > > > > > 	spi {
-> > > > > > 		#address-cells = <1>;
-> > > > > > 		#size-cells = <0>;
-> > > > > > 
-> > > > > > 		multi-dac@0 {
-> > > > > > 			compatible = "adi,ad5529r-16";
-> > > > > > 			reg = <0>;
-> > > > > > 			spi-max-frequency = <25000000>;
-> > > > > > 
-> > > > > > 			#address-cells = <1>;
-> > > > > > 			#size-cells = <0>;
-> > > > > > 
-> > > > > > 			dac@0 {
-> > > > > > 				reg = <0>;
-> > > > > > 				vdd-supply = <&vdd_regulator>;
-> > > > > > 				avdd-supply = <&avdd_regulator>;
-> > > > > > 				hvdd-supply = <&hvdd_regulator>;
-> > > > > > 				hvss-supply = <&hvss_regulator>;
-> > > > > > 
-> > > > > > 				reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-> > > > > > 
-> > > > > > 				#address-cells = <1>;
-> > > > > > 				#size-cells = <0>;
-> > > > > > 
-> > > > > > 				channel@0 {
-> > > > > > 					reg = <0>;
-> > > > > > 					adi,output-range-microvolt = <0 5000000>;
-> > > > > > 				};
-> > > > > > 
-> > > > > > 				channel@1 {
-> > > > > > 					reg = <1>;
-> > > > > > 					adi,output-range-microvolt = <(-10000000) 10000000>;
-> > > > > > 				};
-> > > > > > 
-> > > > > > 				channel@2 {
-> > > > > > 					reg = <2>;
-> > > > > > 					adi,output-range-microvolt = <0 40000000>;
-> > > > > > 				};
-> > > > > > 			}
-> > > > > > 
-> > > > > > 			dac@1 {
-> > > > > > 				reg = <1>;
-> > > > > > 				vdd-supply = <&vdd_regulator>;
-> > > > > > 				avdd-supply = <&avdd_regulator>;
-> > > > > > 				hvdd-supply = <&hvdd_regulator>;
-> > > > > > 				hvss-supply = <&hvss_regulator>;
-> > > > > > 
-> > > > > > 				reset-gpios = <&gpio0 88 GPIO_ACTIVE_LOW>;
-> > > > > > 
-> > > > > > 				#address-cells = <1>;
-> > > > > > 				#size-cells = <0>;
-> > > > > > 
-> > > > > > 				channel@0 {
-> > > > > > 					reg = <0>;
-> > > > > > 					adi,output-range-microvolt = <0 5000000>;
-> > > > > > 				};
-> > > > > > 
-> > > > > > 				channel@1 {
-> > > > > > 					reg = <1>;
-> > > > > > 					adi,output-range-microvolt = <(-10000000) 10000000>;
-> > > > > > 				};
-> > > > > > 			}
-> > > > > > 		};
-> > > > > > 	};
-> > > > > > 
-> > > > > > then you might need something like:
-> > > > > > 
-> > > > > > 	patternProperties:
-> > > > > > 		"^dac@[0-3]$":
-> > > > > > 
-> > > > > > and put most of the things under this node pattern.
-> > > > > > 
-> > > > > > So the main driver that you're putting together might need to handle up to four instances.
-> > > > > > Even if your current driver cannot handle this, the dt-bindings might need cover that.
-> > > > > > 
-> > > > > > Need to double check if each dac node needs a separate compatible, so you would maybe populate
-> > > > > > a platform data to be shared with the child nodes, which would be a separate driver.
-> > > > > > (not sure if it would make sense to mix and match ad5529r-16 and ad5529r-12).
-> > > > > Hi Rodrigo,
-> > > > > 
-> > > > > Thank you for looking at this.
-> > > > > 
-> > > > > For now, I would prefer to keep the binding scoped to a single AD5529R device instance. The current
-> > > > > hardware/use case we have only needs one device node and the driver is written around that model as well.
-> > > > > While the device addressing pins could allow multi-device topology, we do not have an actual platform using
-> > > > > that configuration at the moment, so I would prefer not to introduce an extra parent/child binding structure
-> > > > > speculatively without a validating use case.
-> > > > Interesting feature - kind of similar to address control on a typical i2c bus device, or
-> > > > looking at it another way a kind of distributed SPI mux.
-> > > > 
-> > > > Challenge of a binding is we need to anticipate the future.  So I think we do need something
-> > > > like Rodrigo is suggesting even if we only (for now) support a single instance in the driver.
-> > > > That would leave the path open to supporting the addressing at a later date.
-> > > > An alternative might be to look at it like a chained device setup. In those we pretend there
-> > > > is just one device with a lot of channels etc.  The snag is that here things are more loosely
-> > > > coupled whereas for those devices it tends to be you have to read / write the same register
-> > > > in all devices in the chain as one big SPI message.
-> > > > 
-> > > > +CC Mark Brown as he may know of some precedence for this feature. For his reference..
-> > > > - Each of these device has 2 ID pins.  The SPI transfers have to contain the 2 bit
-> > > > value that matches that or they are ignored.  Thus a single bus + 1 chip select can
-> > > > be used to talk to 4 devices.  Question is what that looks like in device tree + I guess
-> > > > longer term how to support it cleanly in SPI.
+...
+> > > What actually is the impact of the sample rate on the programming model?
+> > If the user tries to set a sample rate beyond the maximum supported, software
+> > can throw an error to indicate that.
+> 
+> I think you have misunderstood this. I was asking how the driver
+> interacts with the hardware. Do all devices come out of reset with the
+> minimum sampling rate? Or a per-device default rate? Do the faster
+> devices support all slower rates? If they do, do the registers have the
+> same meaning and the same value sets 2370-16 device to 1 MSPS as
+> 2368-16.
+
+Ah, the sampling rate is indirectly dictated both by how fast the CNV pin is
+toggled and how fast SPI transfers run. Each rising edge of CNV starts a new
+ADC conversion. Software may take spi-max-frequency as default but it will also
+need to set a pace for CNV, and there is no default for that. The CNV pin may
+also toggled on demand (e.g. single-shot read) and so I'd say all devices
+support all slower sample rates. What software ought to do is orchestrate CNV
+and SPI transfers to meet the timing requirements. No configuration registers
+to be set.
+
 > > 
-> > I'd swear I have seen this before, from some Microchip devices. Let me
-> > see if I can find what I am thinking of...
+> > With the code being proposed in this patch set, there is no benefit in matching
+> > the ltc2364-16 fallback if there is a faster ltc2370-16 device connected because
+> > device driver supports that. Though, other operating systems and/or platforms
+> > might not support all device variants and so the fallback might be useful.
+> > 
+> > > +static const struct ltc2378_chip_info ltc2370_16_chip_info = {
+> > > +	.name = "ltc2370-16",
+> > > +	.resolution = 16,
+> > In a later patch ...
+> > +	.max_sample_rate_hz = 2 * HZ_PER_MHZ,
+> > +	.tconv_ns = 322,
+> > > +	.bipolar = false,
+> > > +};
+> > > 
+> > > +static const struct ltc2378_chip_info ltc2368_16_chip_info = {
+> > > +	.name = "ltc2368-16",
+> > > +	.resolution = 16,
+> > +	.max_sample_rate_hz = HZ_PER_MHZ,
+> > +	.tconv_ns = 527
+> > > +	.bipolar = false,
+> > > +};
+> > > 
+> > > +static const struct ltc2378_chip_info ltc2367_16_chip_info = {
+> > > +	.name = "ltc2367-16",
+> > > +	.resolution = 16,
+> > +	.max_sample_rate_hz = 500 * HZ_PER_KHZ,
+> > +	.tconv_ns = 1500,
+> > > +	.bipolar = false,
+> > > +};
+> > > 
+> > > +static const struct ltc2378_chip_info ltc2364_16_chip_info = {
+> > > +	.name = "ltc2364-16",
+> > > +	.resolution = 16,
+> > +	.max_sample_rate_hz = 250 * HZ_PER_KHZ,
+> > +	.tconv_ns = 3000,
+> > > +	.bipolar = false,
+> > > +};
+> > > 
+> > ...
+> > > > +      # Low sample rate fallback for 20-bit bipolar sensors.
+> > > > +      - items:
+> > > > +          - enum:
+> > > > +              - adi,ltc2378-20 # 1 MSPS
+> > > > +              - adi,ltc2377-20 # 500 kSPS
+> > > > +          - const: adi,ltc2376-20 # fallback (250 kSPS)
+> > > 
+> > > I didn't check these, but I assume they are the same.
+> > 
+> > Yes, except for small variations on input (unipolar/bipolar) and precision bits,
+> > these devices are pretty much equal.
 > 
-> 
-> microchip,mcp3911 and microchip,mcp3564 both seem to do this with
-> slightly different properties.
-> 
->   microchip,device-addr:
->     description: Device address when multiple MCP3911 chips are present on the same SPI bus.
->     $ref: /schemas/types.yaml#/definitions/uint32
->     enum: [0, 1, 2, 3]
->     default: 0
-> 
-> and
-> 
-> 
->   microchip,hw-device-address:
->     $ref: /schemas/types.yaml#/definitions/uint32
->     minimum: 0
->     maximum: 3
->     description:
->       The address is set on a per-device basis by fuses in the factory,
->       configured on request. If not requested, the fuses are set for 0x1.
->       The device address is part of the device markings to avoid
->       potential confusion. This address is coded on two bits, so four possible
->       addresses are available when multiple devices are present on the same
->       SPI bus with only one Chip Select line for all devices.
->       Each device communication starts by a CS falling edge, followed by the
->       clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
->       which is first one on the wire).
-> 
-> This sounds exactly like the sort of feature that you're dealing with
-> here?
-> 
+> What I meant here was that 2378-20, 2377-20 and 2376-20 would follow the
+> same pattern of having identical match data (pre patch 4).
 
-The core idea yes but for this chip, things are a bit more annoying (but
-Janani can correct me if I'm wrong). Here, each device can, in theory,
-have it's own supplies, pins and at the very least, channels with maybe
-different scales. That is why Janani is proposing dac nodes. Given I
-honestly don't like much of that "adi,ad5529r-bus" compatible I wondered
-about solving this at the spi level.
-
-Ah and to make it more annoying, we can also mix 12 and 16 bits variants
-together in the same bus.
-
-- Nuno Sá
-
-
+Yes, devices that have same input type and precision bits have the same match
+data configuration (except for name). That's because the initial support patch
+only supports single-shot data read.
