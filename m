@@ -1,120 +1,217 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011002.outbound.protection.outlook.com [52.101.65.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2777732FA2E
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 16:17:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781885868; cv=none; b=nNZFzstfVXnNAdp5U2fPxm5ljs3Hm+Y/YaEQTlWHA2IYQ/dDg4olhKdw8knkf71rmdkDfucuAHsGh7reoshPXYRYNAUo5aLTkFaMpYELazW+CglRA/NdP/ge4FJFrhsPeEKczSsu2gWYEXgp0ImAfZ5lnCHllf2sYJa6jAaQBqY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781885868; c=relaxed/simple;
-	bh=juKFP4M3ulZMZvtYnJO+EyGKkoHe95cLoiQ9GeTdJzw=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qwr2EU8eBb0pKjwOivUxBsF1ObF+QqUK0tB9yiK05JoLPrf/enarVU0TVchPK0Gat2CMt1LGKDO7QLYcz6OPDarlSRANFlO1LtoyP0yWmO7JMCwv8U9SuD2/0VAWnGoEkE+6ohb+375Ofwq2eT6D5k88TZoeIntSyAVO+Jofl4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JKx0kjzu; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4D12C0296;
+	Fri, 19 Jun 2026 16:23:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781886189; cv=fail; b=fV0qKLb37cqWW9LLtfFWEeJCmKzhiTpqEXEXauHQ3mIlyOnxWhA+qrgWbf7fkV7gooT8LA57TzMQJaND/mCTQUphngR/t3RpRIW3FanU7x1WTM6VL8EfNpivC3msbkFst1758U8cgoqB1ZwFLBfqTgFM5nqtFUaLMPkps/xwYAg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781886189; c=relaxed/simple;
+	bh=tNJFFHXlg3DsSOI+ipTA1VVwOTMBl4L+3ua+Jdi5Q4o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=DUT0iSx0hvysyuJYllM9wCidRlhLO5wjulrJf/z9wBK/1InMJhjeWsf8myTLNiTtrBIPhdU5MhYDrl5TcgOn+NQA+IuymCiNHDkZtni0dGtDTLpSobTijgeKXTSKq5NL7w9uFE2ex8sXeOPXcf0vnDDTikt464B91/eAoHQdz1Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=T70NI01l reason="signature verification failed"; arc=fail smtp.client-ip=52.101.65.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JKx0kjzu"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49230a567a9so11507835e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 09:17:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781885864; x=1782490664; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=NHhY6r7tYGyh00foyp4fyhhHDc2Zg99GnNa/YDtNxNU=;
-        b=JKx0kjzuaL5MgQCNxoqYE+gI3UeRXYeWKa7Y9C1Fih8uARcV1fyU17AnN4MVGkDryu
-         d27V19+qTwpY0pMFWBgFPq3u9xtqFIdl+6WtsnUL68ELEpcyPXoP8+4Izdg1hbC1TpiR
-         qRUvkNK+VHWDx/eei9sruZw2eJ0NMkQ2Hi80wFreEDd493iW5SsRjvOLAMdB4sJTxC6d
-         E1I8Ty2GHIB7aOqMoxMngskkTYv5yvFP2ld5elA3GzYh7dsK32W0jajVVau4JQDlz+bh
-         /f++z4iUNqBR8h5SRMBLAiBEtbwlSDolkA87DIHsUko6otg+itAIywwX0TQemzskcdBA
-         TfSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781885864; x=1782490664;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NHhY6r7tYGyh00foyp4fyhhHDc2Zg99GnNa/YDtNxNU=;
-        b=FzaByqjphvOcCzeBVUAwtmmlud3V5K4XG33oCo8RrqqPmtSQWDkELNhYEHKp2TAoHi
-         Qa4T+1yf1pzocogAQoIMxi+9FVSwDXIYkUhLQS9T/R+oxbe+gvYbvfVbWEg1FqepDOX3
-         QLT+Ye3dBmwvYcRJhKRN+pOjCsUnTyLKiY80fizHpsTTSxakjsgsJc0B7guyXRBU3QnX
-         JQt6BOorPEjvxs0U5u9CQRJdGy9DXY/vt/8MVHFLhoNLN1Tj+c/+jpQEB66z3PiNucFE
-         PDhEah9Wmm1c4xxYziFBQwpzGRJp2Gv/jI99AGBmwW+jm82ybh4NCXlGXTjzGQV8BdsU
-         TFuQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/eAWBWgg3ow+GzYEw5etUd5+vYSbXcXIbd6g+O4Kb8Nej3isXl3sCFaaoZqxKRflEqRP1Kki6M6OU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyJQVo5tvLTj+ZCvtzcA4B22k7YbhKUFXkTsPPosMDhlSkrmIId
-	/2TNnwLsyLYPTBm0zdzeXnJxXUGjZGuXPhTD8D6MG+56Nb7lQ65DQ0am
-X-Gm-Gg: AfdE7cl25rqlHAHKB7CTKdie9k3zHzR9BhQ6gHDw7nRF8wvS5ztF4xLcsNixxiPTdBq
-	qwjQoy4IVwFtAlfZiy4S16tU0QerjyryowiNOaFyuHpDiqq5DgyPYZIm5RWl7bmcr9sgOTXSeam
-	MwRNmyq4BKqktaAR2xE3Tq7BjdMQlciOHWkZP6Qdq0ba7hAlf0Xnt6tOG/vqfgpdVmVZqu7emO3
-	o+fnfp9UUeMp55o0PlFC+mESIgW1vQdxi4XpbMsYzmqO7ZbCqV9O9DpHYhTEcFZ/FS8UzqCyP73
-	c/E6it2XXtGQEu9DjO+qTpm2aN5chCSGbdZsldxDwVa+swiFEv9/BAT8aa54BzGZ+UGmhG2V5fL
-	+CN1H/UVcXQbUxxX0tykn9zGJWOpVUNmTzLkW3Ms7fhqiAjLLYTyNYhDotMF85iG2o3lO4SGqq5
-	4KnOlVwGf2OCRFeT7SODtJYWWkm09wRQFZO97GO+aakVILUm4O7SjvP2Y+oEDKhGCBV/QsDrFDD
-	X+7JgJHlM4EiHQvQWep3EcZW4vc
-X-Received: by 2002:a05:600c:1f92:b0:492:3670:85a7 with SMTP id 5b1f17b1804b1-49240eb1347mr71855945e9.35.1781885864196;
-        Fri, 19 Jun 2026 09:17:44 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46666c57b8asm131866f8f.26.2026.06.19.09.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 09:17:43 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Fri, 19 Jun 2026 17:17:37 +0100
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v3 12/12] iio: dac: ad5686: add gain control support
-Message-ID: <jcn5gqsjezxrnk74hrsujp56e2iqlr2iw3nwvtwd26zvexri5p@a25egmpppagh>
-References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
- <20260616-ad5686-new-features-v3-12-f829fb7e9262@analog.com>
- <ajEppnu-AWSbbihS@ashevche-desk.local>
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="T70NI01l"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=a8shHcClg5+R671oC50ORmzznRq/1m5kSKona/MFtuVK/Pea4m4ee3rPABFaJRHV8dbZVAEV8tETSwYzuYJKgW7dQ/XliQhjmG0U8WILj8aS1OyWgEEnfQ9dj5xYcxkPpNH14Hcn5hqwwmBrUniTOfAUv/GQydJCXaHWu5VrnGezowMe6t+H1DGeW8clZ1yP9Ft4xgUNWejzWMwO+HxU422L1pnPWBmKTrfNJ/xw8Au5voZou0QsCgq8eS9pYbPBivFx6I0RsqAGzcWNjZOjjre6WsjPfJqgB1mD9YyWR71rnSWHMMaAQdoG7pxj7U48xr2AXfVdWvUOhggIRcmZCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FyEXtkulEBG3RiyB3zT4WoH2tXU9ehVl3KXL+YUZOjE=;
+ b=Kex9aaGU5MujCODgSGoNpd0rMucQZygeQxuVCxOoTbJdS2dT8ANhvIKVzQlMSiG6R3nJ+R//SBpwCzR/rIf7mcIftddcjN/aBjL8JfUsGUol5cmTxIzjwwiR3Z86WsIwsBZnvco60VVOlLo5bR7VEEV1WgEouolpN63X7MHP0efJWOB/O0AhK4cM1GDEQc5loIEmS6Sxzq/xVEPbdYjJrg8Vo7WUzWjE/kdA34PUfPgNwfi26BWHdb/UNJ8Rx9C5pVy7KPtTi7VrXODLWoIEiEk9ZPe80cSTGPDkmKuqE+I527HG/Rdl4Uqs2xR51LFcJz2gMlzNpKX8WQ5NttgWMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FyEXtkulEBG3RiyB3zT4WoH2tXU9ehVl3KXL+YUZOjE=;
+ b=T70NI01lzXrhLUOhl4qtdGt5gpTKoE833zFtwko7KIjZKZcuCU0Fwbh6GmYVxum2ScHag1DN8XGXSUjvFdg7/kj6SVipVnPInQgkktJSRbHYFgBm9x4MTK0PxWR8ZBqg092g2QDCzcEJVxr17/UUDVzhNbg2qamPTVN3FYO2wCVogxHpy0xqzhzpA9+Uyq9bAEUBfUFfRxXJSDO6zOh+jJ3PcaQ5XVw/Ce0/ZUHWs9gKr8c8Ep5XvuB9JJ/Zk0nmf38YIFSJzEoMdCB/m35yF8a/mf+tJjwd/cg1daSgDcefjmttCofdqJElj/tDJRvq2+uMzWwx7KGUrOjUs6LtFw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by AM7PR04MB7094.eurprd04.prod.outlook.com (2603:10a6:20b:11f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.18; Fri, 19 Jun
+ 2026 16:23:04 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0113.015; Fri, 19 Jun 2026
+ 16:23:03 +0000
+Date: Fri, 19 Jun 2026 11:22:54 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: nuno.sa@analog.com, dmaengine@vger.kernel.org,
+	linux-iio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
+Message-ID: <ajVs3jwoxq7Jhop1@SMW015318>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+ <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
+ <ajF4i3o0gNRtUelb@SMW015318>
+ <ajQkupPzv8-GdEjv@nsa>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ajQkupPzv8-GdEjv@nsa>
+X-ClientProxiedBy: PH8P220CA0051.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:510:2d9::34) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ajEppnu-AWSbbihS@ashevche-desk.local>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|AM7PR04MB7094:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4cd41d56-59a7-48d0-b357-08dece1f09a6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|19092799006|23010399003|1800799024|366016|376014|7416014|6133799003|13003099007|22082099003|18002099003|56012099006|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	Q/wW6UIxdtxf5sVa53Ydnb0mWcDSdx36NT4cFf7VkDjZkr+pKeMuWIHW9jkeuS3lWn3B22fPBSEBqA4OnJL7Kq/yfpgyc/rdGDcsTlp58SaP3iSrMSbMVYiOVTO5a/iy3MdSSMi93XMUpLjhbYFqY8E1/WT2gUJKhVsPGB6uUOUQc7nqX+Pw1FI2Z5QC3WjiAzg2+lgvyfE1E/ExlBIZ91tkGLZ3SpQPHkpciuaXKLiWY6sv1dK3cSyeFdqLqCJAWxNC2Pg8a4CxpSp97vDBZH2we1l3yqBhGeLmNDSqzJf9CYmDouC3itQLoT879p0zYudGAYd9PEibQr1dKmWAtH+uMCXFBq1O74lRHf+Buhr+F/Dmb50st9tOqb3i9uJ974eKnv7nVl8LYF5Usb78O1fHYPdeWfeIds9Vj9mcwX+DKV+x+iHo8G/gspOgjPFvpSKwfUN9I1CAO+XRayem9wh8tTbI+yterz/OoG3nJub3nmtvrw7iocDHSlbWntXWB88L3Cyf1IjlM0dALs9MxWo2R0gcXtUcYlKDLOsoV4YK7VDBUxyIbHtI9xqeAylS3ea2J3rva42gRwZRzZPG+pRT15P1zoG69k8oABOgudma2lwLK4FQVVFHpNbNuUPH
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(23010399003)(1800799024)(366016)(376014)(7416014)(6133799003)(13003099007)(22082099003)(18002099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?nYbWX1dC41Ove5UTZi5qh3iz2ip1UnYmtcifkvjPWpTrGGf1R8YnR1n78p?=
+ =?iso-8859-1?Q?98uWSIZiRC/h3Kpe3qxK84C49R7NA6HIlwMFQX84fMXZMCP7oN++bT7bMe?=
+ =?iso-8859-1?Q?tZeG0IslfeCB+0FutA7C4BQkFfXFCz/SzhNZxVZLbL29rWJDsOSZfZuzf9?=
+ =?iso-8859-1?Q?4eVf9Ha4ga+PYJ4+PODo/Bt1+3Q/MQw+NBn+cTKZBS8QNa68mpHzTn36qQ?=
+ =?iso-8859-1?Q?R+OodxhmMUil/Ul81ARWVFXEdc1ufhDmKDFK0TiXTjXa7bh3crjYDCRAQ/?=
+ =?iso-8859-1?Q?0pRsnJJk4oy8QW5fgKkm6zYQT2HWb/iiEjqxNdFVY4eo2er/PlunTa1ShB?=
+ =?iso-8859-1?Q?lWLlyVBV7w5jq+0vwpy1eK5MW2V+tEWCoGgQdGuQNxmCidPvCkv+6PAkcy?=
+ =?iso-8859-1?Q?y0ZAY2M/c+iQuBQoK9TJN+qIOS1NNz66iOIyF2qeaCW/ZBmU2hlN26a80f?=
+ =?iso-8859-1?Q?Y1Aq5kaB17kXEPNLzgpjt3Hkp5e3g8MeCwuOZ051xEvexoXrSWWU2iIgDX?=
+ =?iso-8859-1?Q?+x25xWtkxrtHlRi7iXHw6y2bZHdiJXWhNDweB8hwyToyEXioSZxU4KxRF8?=
+ =?iso-8859-1?Q?Z3uNx/LtQ9ZgtCaYTP/xUcfO42KYdmdaKJJ0mo2Ri2a5gMb2MI9+/f3rcB?=
+ =?iso-8859-1?Q?l+Q9sZlIFlzsuM7XwSlG4KXhcpgJAoSTR4ixv27OD1JAzp6/APWO+kTloK?=
+ =?iso-8859-1?Q?J2Z1z/IEoJzxAdwVO+OXL9fO07Uivh9cijiqTc8llGep+/2T31GuTa6LNA?=
+ =?iso-8859-1?Q?KQXxNT9fp5YsXykS8Wy6gJZC/LBzGJcYc7T+ewmXAIoG/nge+KSXNfp2NV?=
+ =?iso-8859-1?Q?kcVT6QLlEvdL4T5jEes2wqU0F1HZXrXPOrTKzfmo8XUMlN7w0Q5IoZ++54?=
+ =?iso-8859-1?Q?HqacWk0WKMf+Y4Sva4G6zRX3S8I/bplj0a/8CoXTduCGlyvl5xLrVOu0bj?=
+ =?iso-8859-1?Q?8wHNWp1MN+zYey0dtt7iH9X27DVK0vB4Ep1XmgCaNa7o4o+mFj9oWAePRj?=
+ =?iso-8859-1?Q?EAMsWxjFMNTOy8vPFR91BrcN0pc2X7CiaLK8RBfAsltcgkPqgJK8BLs9No?=
+ =?iso-8859-1?Q?yXtYXZ4GgS6axvlz6ZyceX4YUIkCxYG7Gs6qZO+BlFSV1vt/sQd8IPEv/6?=
+ =?iso-8859-1?Q?5APDuxbZ/iKWSmL239QpMWY2/9WccGuOGuroW/2mlQuld/HM/Xy0BMqsNi?=
+ =?iso-8859-1?Q?74woTGejVLbmof6SNRKdhoWkXsgqkgVvAkckQfsJgpzqdh3C485nN7Ms2E?=
+ =?iso-8859-1?Q?9bwOqiUNsN2WrIX4wfew+xr/RA52QdZpyr56AQHTKE35Syxz68vs8SOJ9g?=
+ =?iso-8859-1?Q?oZsTVO37L5HAIbzy95nfN7MBk0/UM1gL3w71sk7UxsQ22gNHVu7HYmTbvv?=
+ =?iso-8859-1?Q?YFgwGHsX6TsnbKiPQhFbvX2psCxptiV/k4QJgnO6Nc3o+4++bxQaUHap0j?=
+ =?iso-8859-1?Q?T7z1qi0M00KQt4/SJ/wbfZqu6GzXUGZk4dZcutnF6LeG7xEJgrjapMUiht?=
+ =?iso-8859-1?Q?RJDzvG23CzTjY/MMcbVDG54vJTQytX3XLK0rfPyy0DspZ0zhVfqXWFWp8u?=
+ =?iso-8859-1?Q?B0lDkIgJnz0Gztb6v608mSk5APuNRywAcEAOxl8JsENrSpLOOMDy2EDBrD?=
+ =?iso-8859-1?Q?EYI+1/7/JhbnmuLcxfIbki8dMLGMvga/rUYJSbGIPL0804dMJ0/KTJ1btI?=
+ =?iso-8859-1?Q?hyylzVUp/O3RIAyLO5vyoA8YhJpQpVZ1unnTVfMYOQ4L07J8/O++SYUEYA?=
+ =?iso-8859-1?Q?tPQN6IkBLHPGXyYuzTC+cG4gD3KlId9o4dZKM/gqkiMXxBO4GwVEWcCZpq?=
+ =?iso-8859-1?Q?I1Jsoi+mNdqMDfb/pzybUColjo8VztEJ1jsRitvhM3OC68RHPr0u?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cd41d56-59a7-48d0-b357-08dece1f09a6
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2026 16:23:03.6829
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jGtYVS3sdQdIdnC+B7NQB9sAY6mg+Qog48OlMj28dC7HB8vV9nu1xDF7DYAdKtw7RYUMV0cWCaMeSsG9RxMKsBKx/BS7WAvTOezdUwft7gASl/jQL6hj46H/AcXO23Zb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7094
 
-On 16/06/26 13:47, Andy Shevchenko wrote:
-> On Tue, Jun 16, 2026 at 09:21:18AM +0100, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Most of the supported devices rely on a GAIN pin to control a 2x
-> > multiplier applied to the output voltage. Other devices, e.g. the
-> > single-channel ones, provides a gain control through a bit field in
-> > the control register. Some designs might have the GAIN pin hardwired
-> > to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
-> > being able to set "adi,range-double" if it is hardwired to VDD. The
-> > vref_mv field is moved down in the struct ad5686_state, so that the
-> > overall size increase is reduced.
-> 
-> ...
-> 
-> > +static void ad5686_init_scale_avail(struct ad5686_state *st)
-> > +{
-> > +	int realbits = st->chip_info->channels[0].scan_type.realbits;
-> > +	s64 tmp = 2ULL * st->vref_mv * NANO >> realbits;
-> 
-> As Nuno noticed in other patch review, this can probably use mul_u64_u32_shr().
+On Thu, Jun 18, 2026 at 06:10:52PM +0100, Nuno Sá wrote:
+> [You don't often get email from noname.nuno@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>
+> On Tue, Jun 16, 2026 at 11:23:39AM -0500, Frank Li wrote:
+> > On Tue, Jun 16, 2026 at 04:40:53PM +0100, Nuno Sá via B4 Relay wrote:
+> > > [You don't often get email from devnull+nuno.sa.analog.com@kernel.org. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> > >
+> > > From: Nuno Sá <nuno.sa@analog.com>
+> > >
+> > > Advertise the source and destination bus widths through the new
+> > > dma_set_{src,dst}_addr_mask() helpers instead of open-coding the legacy
+> > > BIT() mask. This moves the driver onto the representation that can
+> > > express widths of 32 bytes and above and allows the legacy u32 field to
+> > > be removed once all users are converted.
+> > >
+> > > While at it, give the channel width members their proper
+> > > enum dma_slave_buswidth type.
+> > >
+> > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+> > > ---
+> > >  drivers/dma/dma-axi-dmac.c | 12 ++++++++----
+> > >  1 file changed, 8 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/dma/dma-axi-dmac.c b/drivers/dma/dma-axi-dmac.c
+> > > index d47ff27e1408..19c258d511ca 100644
+> > > --- a/drivers/dma/dma-axi-dmac.c
+> > > +++ b/drivers/dma/dma-axi-dmac.c
+> > > @@ -152,8 +152,8 @@ struct axi_dmac_chan {
+> > >         struct list_head active_descs;
+> > >         enum dma_transfer_direction direction;
+> > >
+> > > -       unsigned int src_width;
+> > > -       unsigned int dest_width;
+> > > +       enum dma_slave_buswidth src_width;
+> > > +       enum dma_slave_buswidth dest_width;
+> > >         unsigned int src_type;
+> > >         unsigned int dest_type;
+> > >
+> > > @@ -1262,8 +1262,12 @@ static int axi_dmac_probe(struct platform_device *pdev)
+> > >         dma_dev->device_terminate_all = axi_dmac_terminate_all;
+> > >         dma_dev->device_synchronize = axi_dmac_synchronize;
+> > >         dma_dev->dev = &pdev->dev;
+> > > -       dma_dev->src_addr_widths = BIT(dmac->chan.src_width);
+> > > -       dma_dev->dst_addr_widths = BIT(dmac->chan.dest_width);
+> > > +       ret = dma_set_src_addr_mask(dma_dev, &dmac->chan.src_width, 1);
+> > > +       if (ret)
+> > > +               return ret;
+> > > +       ret = dma_set_dst_addr_mask(dma_dev, &dmac->chan.dest_width, 1);
+> > > +       if (ret)
+> > > +               return ret;
+> >
+> >
+> > This patch is okay.  I think most system only set one width once, do we
+> > really need pass down arrary.
+>
+> I think so. See:
+>
+> https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/st_fdma.c#L723
+> https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c#L1565
+> https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/hsu/hsu.c#L475
+>
+> And likely there are more. To fully support all widths I'm not seeing
+> any other obvious way.
 
-This would be need in case the multiplication overflows, which is not the case
-here.
- 
-> > +	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-> > +	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-> > +}
+I need more time to understand why need src_addr_width, which looks like
+address alignmenet requirment.
 
--- 
-Kind regards,
+If it is address alginment requirement, only need lowest one, like suport
+byte, must be support other alignments.
 
-Rodrigo Alencar
+if it is total address space, which should be controller by dma-ranges.
+
+Frank
+
+>
+> - Nuno Sá
+> >
+> > Frank
+> >
+> > >         dma_dev->directions = BIT(dmac->chan.direction);
+> > >         dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
+> > >         dma_dev->max_sg_burst = 31; /* 31 SGs maximum in one burst */
+> > >
+> > > --
+> > > 2.54.0
+> > >
+> > >
