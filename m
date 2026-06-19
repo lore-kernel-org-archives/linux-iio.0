@@ -1,77 +1,76 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8063B3BBFBF
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 195513B6C05
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781884521; cv=none; b=Uyl1WUhSkygjgGVxBpThTropQmg2XT8u2L2MjFdvG6rAlC/xXOEAjWpKPs5rX62kY3M/7G8ZRZse5IEXcqTsTJFN5RE3ifgJEe3rVrepBhl3NUwqmbXDW2p/Q/SXH/TC3+RlldPqwZoc7sVS23kkrjZi03iakWjqxz+I3taoeJs=
+	t=1781884524; cv=none; b=hxzClRUMl2EQ2zWsFSycokm8vb+4yd8fZqP1LYn+CnVj7ABWKtMxKKDHXqAtjUl3srughsCCKL0n71ywU/tn0faz2j+BvdGTARJCyPjcSi+VU4JiJwkNt54xr6oHGXIOBhSvsjG/wsi9P9EEFrs8iGvBibRIZQGIAQlDzYgIWLo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781884521; c=relaxed/simple;
-	bh=d/BqkOd8UnlZcyZwheVg3ZHL4Z6gcR9SZRo4lXJJJFw=;
+	s=arc-20240116; t=1781884524; c=relaxed/simple;
+	bh=D/QKCbavfLYNx09LrXbgDPC/L79eEWPB5/ghbUmJIH4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Yo8vOhpz2T8M2ZAcB6LWJBdis+gPuPUMzqqKTgmjHegrP84Ta36nzn5VCAojakHWcGXdyugqPGJWeRKmrQGj1CXt8qps0277JaAdWBypd1eAUy69dlc4HbwzrqRF1E/Ev2TuMjHqwSpynekIrWHq1P23gsWQy4TcAIx2G7mh+c0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=NcQfI9Wn; arc=none smtp.client-ip=209.85.221.51
+	 MIME-Version:Content-Type; b=eAOvu7RV4SfpQiMXlawqvrEjEYZ8pHHf6Jjkga2l6SILF6nHUiv0wkFgG4eVgY75oyrTlWy61jOThCY9eT1ODGGgmV5sKH1b4FGQs+KHSGNYoN6b61FivdT/TXCv4OehqzE+XHCC8IdaZxXKUV3MWpTHE6edp+sEUX9zjIhLQGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=O2EPZ0e+; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="NcQfI9Wn"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-460166910e6so1421541f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="O2EPZ0e+"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-463b2f6fc9dso2311739f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781884514; x=1782489314; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781884516; x=1782489316; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KQtX4QqojvY/F1hB0BH2NWjP2ov2hjCjGN3l6t9rW2g=;
-        b=NcQfI9WneUj7zBLhA3cv4mOVWpigxvd4NmGwsG482JqXPmPZcPhLQqkalTMXlanhEP
-         j1p7faSyeR30TBvcco2oc7OekOMY5XXGFXz6DOlv0rTT29vI5rZ+zGX+2kRb2G5cpP9h
-         Ga8FcxlTMQWsXsi/FnJzrFjlJsA7LlbdhOVQgCjfqGXIlCFvuMNfcLSNUWm5WI+6zdfA
-         ZboX0sSkUsmS4jhvbF6isI653L6Gy7SXALw1eqoTSaF4MmVOuJYTI7mf5/RHcl7olhsq
-         22TvzQG13oIoj+LiQdBtXVuLl5ZdXZ9GNRsCI5c9Wbrx36lnx3wdp/TryrE7wzpYLLJL
-         j+Gg==
+        bh=+hYJtRsmpankB2fdFXy1nxiyXc6vRe6Y6eSBsNRxIfg=;
+        b=O2EPZ0e+Nkcm9yUC6MOlAnsAN8zCKowu1D0T5yZBkXwAPAWn928lyQyBj3WLhJpeAj
+         ojIzcm9/LgWxu5QdCrlW5goAJgNQYqMM6vFmBdEcc2zcamu98JNghOb62odMOCKTK1lJ
+         fHfg+GwdRv0avTuU/QlqkhDc7uE0PXLk3mN5gQ14g6i+NgsFSyb8bySCd4spqng8BsVZ
+         xR938zBEWowOQZ+/wcq9NoUpvnJ48oj4IqrIlDVBK0KfgKp+AzRbSBZrkmdUTA2pipa4
+         ducbB7RclstLgFJ68MPZPR6QrWfGi9sAKsdjJeiCef07uvK6+rD+b3KH3gw3Y5qxsljy
+         Yabw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781884514; x=1782489314;
+        d=1e100.net; s=20251104; t=1781884516; x=1782489316;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=KQtX4QqojvY/F1hB0BH2NWjP2ov2hjCjGN3l6t9rW2g=;
-        b=I9ktZ9VHk2gP8hWwZZgxiDAkxTo3aaVMo7tsfCcT1AjB2t/TnSIgktB5mYlXKGhN6p
-         aArmHqIVKE/nQwG+15jruxNOJ/pze+TFk/Q+KrZe5hQEnQZOX9smlQKNt3ElzTsilTz9
-         pMAIFpeJCk1aifk09V/GxNdXiXRBhsXnyY1baCzBDdIfK63ag6KEGeAqsOjWkH6XSEFP
-         6E3m+ANAlDx/zZfyG+i7bWOx9rf6PZVXu3D1WxoaQQRrvggO2mXvD/BsF0fACKaGIdkV
-         c2F+DzrMWDgF5jbAMbkgRPM7/F4fAt3WkZXjJWfmOfkCHBUUiKHQGPg39t0qmoQrmKnE
-         OdKw==
-X-Forwarded-Encrypted: i=1; AFNElJ8Bosb37cXB5a+pFpf3Be9kc4BAFueA6u2mLmZu8X8Y4RCmEj/nX/7/DrnYIr1BhtbkiFvyek00ja0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/9REqqyrgd452UBOX3N1HMFqBy8cXFhgwRBsF2+9+l0NqJhc2
-	fK4MYv4bKMlyIMhLa80fjEJFVI8z4duTJwsXUy38i174iNmbVGTP3DaD9RYesF7ktSw=
-X-Gm-Gg: AfdE7cmZzJNQbWyLawfF+PJ957pokMxTwZrZpOcbjz7+7U9QAjZQyS28aPQ+4G+fv76
-	RHRGnypK9JMVc4JMqY9L0+XqR13PuILIZvHmVPLZkvUAThpQte6qN8UrdEqIoQRo6LJrpvpv4E+
-	k/qVdM4ff8StD+MOk2QuUoa8Tb2nH9kbMpVNer8NAJSzYXdPmuIBcO202z2IK5xoxqqN3MbFXIy
-	cPcGWFl0pDnYcYwa2r4OdbkSZmkOKUEXiLqd7yGlW4QZpqfQEB28q1kKP67VAijMLktDhwX0THr
-	zfCslDEAY7QAlR5js4yCY2rksfw+TwOs2uHk9YLQ3jcx33KRAkRI+pI1T6p7sTd4IxNj/OEFBzC
-	jp7dqE4yZiakdYXi5LapA7EoMWN1qDjf4aXcuPhFUpMmEoC+Yo4jjgBmG4+/kpUU0TcFj/2y06H
-	XROBZfktxUlc83zI/pWzAdREGWKRWK8fWRiDCyzhj3lqTzO0uJrtVmpwsNVrUAG1sz0d61g2i+2
-	VjHSl/HNKN6pw==
-X-Received: by 2002:a05:600c:6383:b0:490:5cb3:e94a with SMTP id 5b1f17b1804b1-4923ef4c440mr78279435e9.2.1781884513746;
-        Fri, 19 Jun 2026 08:55:13 -0700 (PDT)
+        bh=+hYJtRsmpankB2fdFXy1nxiyXc6vRe6Y6eSBsNRxIfg=;
+        b=X8eZ5J5Y0zD7nvUZWKPKIDYPjPP64z55XqWuHHseylmFY1PbbWM65Vc373tu0NPzhH
+         evepAhBn8nY8i4u02BrFeocSrbfaKqlyOmxfS9BBAjg12a5m/Qx1vrN/WWL/M/+WolQ+
+         QyGNaTakjuIixWIWTjBoVK1GkNMiQfNMXgVuF4+n3RRaapZqaoO8W58QuUOBJ4VcA4il
+         s0a/bhJzc7r/D9uTRRgibmJBa8XgKoxZlqlpoh7ZgaMjP+OMSEkimoGW9i+pWUSYVK0l
+         sE87XyltMVrXJnG31mqfF5/LIzzGHsJdQVReZ5hByC0NkHTJGxpaG0+gO3gEZGjOdwY8
+         Uh/g==
+X-Forwarded-Encrypted: i=1; AFNElJ+LZTgMKlMZEJQIyG6UFUVsyKPB0Az+K03ERZ4n4dNFqzZW62mDLDuyErfiIwfcst1bxSESk46lpo8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwPIkc1LpVavv8EbTlvLs4kHZmi1d9IK9ceefuMVa68OH63d+PG
+	Ia+1s/EzGUhzLY4mGdlndioYGwdOGyU6BD3Sh5KemRw7rYEb3NyiKuHeOl/zIy/ghLc=
+X-Gm-Gg: AfdE7ckDNRrPtUzrHzA6iUN8MdoPfkqclqhOHeWl9HepyHoLFcHZK77j0ri39o1V+Z/
+	jJrhqair0ebbvaZlpHpwGeID8gC7COBIpKFh+7Nny/0DsbqsUucOUQE2FCuhLKQe4ddVM4HBHrC
+	nDPEgpuHbibZ3sEW3sQj8+A1d+APFpaCOb5F9CIIqidNBi/ZvaE53GW5TPmWPQJwvMVuPWqK8/j
+	lnhmvXAspU0+tGzWyu2rUu2tvsLCwswsPvhLdY5OvJ6hf4oTtPPEkT/WfyPzQq61LXPqg6w1xSY
+	Br7KuCBSbaMAFic/NwITYKVsxAx2eR4BWe+qKgBM/KCXuD0TiALW6bYHQnFFl8ri3XHy4Cd04jn
+	rHLGiYykcHh2e6ngireEe/ubWNWvdl7ammBkTx03eEeJYHNnx2L8XRaG48XxVJ5O7qAc9B6yDAU
+	mKeKFQpBJFf4mjbQY2JU92zNiabijLBuhfsOQa5BbxjydQQMUXKWdmmSwynX9F8rDJkktywo8C9
+	Ms=
+X-Received: by 2002:a05:6000:2088:b0:460:67e0:563c with SMTP id ffacd0b85a97d-465097867e8mr8353492f8f.38.1781884516255;
+        Fri, 19 Jun 2026 08:55:16 -0700 (PDT)
 Received: from localhost (p200300f65f47db04359fc0e70763236f.dip0.t-ipconnect.de. [2003:f6:5f47:db04:359f:c0e7:763:236f])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4923fd1ac18sm115542925e9.12.2026.06.19.08.55.12
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-466648c53fdsm43091f8f.10.2026.06.19.08.55.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 08:55:12 -0700 (PDT)
+        Fri, 19 Jun 2026 08:55:15 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	kernel@pengutronix.de,
+	David Lechner <dlechner@baylibre.com>,
 	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Vladislav Kulikov <vlad.kulikov.c@gmail.com>,
-	Kevin Tung <kevin.tung.openbmc@gmail.com>,
-	ChiYuan Huang <cy_huang@richtek.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 01/13] iio: Initialize i2c_device_id arrays using member names (part 2)
-Date: Fri, 19 Jun 2026 17:54:29 +0200
-Message-ID:  <db01a5dd94c1086bf39c99f798901d33c8cabaa1.1781883685.git.u.kleine-koenig@baylibre.com>
+Subject: [PATCH v1 02/13] iio: adc: ti-tsc2046: Simplify device abstraction
+Date: Fri, 19 Jun 2026 17:54:30 +0200
+Message-ID:  <da70cb6c053d44033a7f941cefd8e0cd8d382c1e.1781883685.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
 References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
@@ -82,49 +81,59 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1598; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=d/BqkOd8UnlZcyZwheVg3ZHL4Z6gcR9SZRo4lXJJJFw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWY3fnKp6jPT7cLw1JnhgD6IY8jRuZ/RQl7VW mO0Apd8RbWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmNwAKCRCPgPtYfRL+ TiFqB/41mRow/UtlZ2+jylWHKUsm8tj1ZCKroH50/B2Z3SSwuxv7ulGXeQ8Qhs435xip8TXyCx4 KTQJj0eemvuz0TvsA0nIUwV9QtvWyK9dXoYGD+v6BmkjEbvw0d/nhW2MR7eHVzJJYm8OGM1eOdR oQcMpPQaoOZnWvkSWHAaJbXeNdP3hDMa44EIY5DaE3UnKbp3CetboezFhndPT+cJrUYpCWU0219 cYRk4gooJdm3CFB/F/CsBsQ1r+gTWKy0bqOi7Z7VF7CA0YCJgINm9e760oBrHTAwFAnb3IZG5TY rcLvOp0OxkHuJBfplSYmi5p6lXHFaJIUdLYsKnzoFi3yCIP0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1768; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=D/QKCbavfLYNx09LrXbgDPC/L79eEWPB5/ghbUmJIH4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWY6/H0UfH0Rlo3N7ejAtJ+zEo1z49dqZ4Nc2 9cTbfS62cGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmOgAKCRCPgPtYfRL+ TlknB/9kdxaPjNWUc2yXSOQVxp1XijVaa6YcMR44ATHJMYLV9RLdU3+481cP1joNQFmAKNV11ve RhtgAC453OmvSXuaHzFyYVbB7CCs3Thrj+KnhNWVOX0C+KFmYmshoifiyp1pQ+Acmr4bj4EPGZ/ 2yE25wt3iq51fQ1zwMZewAvKtNQaEDQqPHsWQg8RnN2mq8U+DLUSFL2lOAUvmwuWAQtOvJHpOVV nSGytm/D51d7+7nXJoZeJd9BSPS4pWD1/eobwP39hrVJIwX4PFFLbZtQ56TmytrS1XVl62TOyaX nSR/orwFuX8+d0LT7owcnDU2UcoLWeh/hq1NgsqQwNfRfZDF
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-This is a follow-up for commit f68afce8e8a7 ("iio: Initialize
-i2c_device_id arrays using member names"). This previous commit missed
-these two instances because these drivers didn't exist yet in the tree
-where I prepared the respective patch.
+The driver was introduced in 2021 and since then only supports a single
+chip variant. Simplify the driver by hard-coding the device properties
+instead of using the id_table's abstraction for a single chip type.
 
 Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
 ---
- drivers/iio/adc/rtq6056.c          | 4 ++--
- drivers/iio/magnetometer/mmc5983.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ti-tsc2046.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/adc/rtq6056.c b/drivers/iio/adc/rtq6056.c
-index e2b1da13c0d3..ae50fb27bac9 100644
---- a/drivers/iio/adc/rtq6056.c
-+++ b/drivers/iio/adc/rtq6056.c
-@@ -872,8 +872,8 @@ static const struct richtek_dev_data rtq6059_devdata = {
- };
+diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+index aba4b10a17ac..a2e92ce363fe 100644
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -739,7 +739,7 @@ static void tsc2046_adc_parse_fwnode(struct tsc2046_adc_priv *priv)
  
- static const struct i2c_device_id rtq6056_id[] = {
--	{ "rtq6056", (kernel_ulong_t)&rtq6056_devdata },
--	{ "rtq6059", (kernel_ulong_t)&rtq6059_devdata },
-+	{ .name = "rtq6056", .driver_data = (kernel_ulong_t)&rtq6056_devdata },
-+	{ .name = "rtq6059", .driver_data = (kernel_ulong_t)&rtq6059_devdata },
+ static int tsc2046_adc_probe(struct spi_device *spi)
+ {
+-	const struct tsc2046_adc_dcfg *dcfg;
++	const struct tsc2046_adc_dcfg *dcfg = &tsc2046_adc_dcfg_tsc2046e;
+ 	struct device *dev = &spi->dev;
+ 	struct tsc2046_adc_priv *priv;
+ 	struct iio_dev *indio_dev;
+@@ -752,10 +752,6 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+ 		return -EINVAL;
+ 	}
+ 
+-	dcfg = spi_get_device_match_data(spi);
+-	if (!dcfg)
+-		return -EINVAL;
+-
+ 	spi->mode &= ~SPI_MODE_X_MASK;
+ 	spi->mode |= SPI_MODE_0;
+ 	ret = spi_setup(spi);
+@@ -829,13 +825,13 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+ }
+ 
+ static const struct of_device_id ads7950_of_table[] = {
+-	{ .compatible = "ti,tsc2046e-adc", .data = &tsc2046_adc_dcfg_tsc2046e },
++	{ .compatible = "ti,tsc2046e-adc" },
  	{ }
  };
- MODULE_DEVICE_TABLE(i2c, rtq6056_id);
-diff --git a/drivers/iio/magnetometer/mmc5983.c b/drivers/iio/magnetometer/mmc5983.c
-index a67b13393b6b..18f3f3d25c4e 100644
---- a/drivers/iio/magnetometer/mmc5983.c
-+++ b/drivers/iio/magnetometer/mmc5983.c
-@@ -328,7 +328,7 @@ static const struct of_device_id mmc5983_of_match[] = {
- MODULE_DEVICE_TABLE(of, mmc5983_of_match);
+ MODULE_DEVICE_TABLE(of, ads7950_of_table);
  
- static const struct i2c_device_id mmc5983_id[] = {
--	{ "mmc5983" },
-+	{ .name = "mmc5983" },
+ static const struct spi_device_id tsc2046_adc_spi_ids[] = {
+-	{ "tsc2046e-adc", (unsigned long)&tsc2046_adc_dcfg_tsc2046e },
++	{ .name = "tsc2046e-adc" },
  	{ }
  };
- MODULE_DEVICE_TABLE(i2c, mmc5983_id);
+ MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
 -- 
 2.47.3
 
