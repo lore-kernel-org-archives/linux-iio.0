@@ -1,76 +1,74 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F503C10AC
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F7A22BDC32
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781884535; cv=none; b=gKvP+2gIySkLIAj4XNdepNclbxG9whvGbP+w83gTsStBZvA4ayGTjwUwS9ZDAh3QjADsmXk8431Jlu5fpfg0X6jTf/xSLrTCgI7awHn9cE0lb40INV/kK2kozYId4a6BwO+8ZFst+ZBw2mWJmK5SXEnos8YRmr6ALkkJVPpjpkE=
+	t=1781884538; cv=none; b=hrhuQX429uNrnMOLJZFlC/ZFfCfdWNHVxUbKj+2vi2DRjLjuY54zSmVSwQoz9ikQCUx3CFKe9XE2wKyNZHPt6iwyfldLOVUs3WyVvWZGi3Vkb6Ui7e7BVkbsxfT3I2/3xNlRTQSyAIbM0jKVRB752w+442sKT/k+IkIuUJJTwxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781884535; c=relaxed/simple;
-	bh=KOURT6hbMcRBPRPh2w9x5SoQOt4jV2T7U4LqGwnj5gE=;
+	s=arc-20240116; t=1781884538; c=relaxed/simple;
+	bh=27dzNMNZQnxdSDnKXyGDYnEZfoL61bCTuPKi0nZZwDk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PsSO2eQgrzoDeMRzL3mDirP60NChbU+revOPyJyIUA4bu7ufq14oIjvI05C4x9/dLp1pM7+qZxH5g6WpfATrie36fNkkFdrY34G2yQcIKmH12KWeVly7m1iu4l9Yh/IsIm22cMCqgogwLv2doOZUt7Xt1uzYtb1XzJ82CTBJ6jM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Fjd+mxC0; arc=none smtp.client-ip=209.85.128.42
+	 MIME-Version:Content-Type; b=KG6fHEF4njBdqJi0TWNylo8F83M+JStNRT4B3AjkBghzR6G/LHdm9dCTs+QewsS0DQydwAtk4HqhCngvprAX6fbu4RYeGDd7cSouUQGcrX94IwueTdM1J9ypQDktVoe/oQyqIqALjr8NKfM5hPMtHwxVCh9R3lSxCIu5Pwqnfo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=IhwEdjWD; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Fjd+mxC0"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49241dbf9c1so8589515e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="IhwEdjWD"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-45fe59255beso1251332f8f.1
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781884526; x=1782489326; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1781884528; x=1782489328; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Zg+XvVR1erub0k2voL49iihmdIK8YUZ8wfaJ2L9SY2A=;
-        b=Fjd+mxC0GlmNHJWnMK+paUVS335KxMD7iycObin6+JLtjBMVZaUxU6xs0Jx5wIk0MV
-         /BcsEPZmie2UgosAGUSM2W+4bhA7TTADnI+AiAFsa3PmcaaPDcD6djVgIUxL8RuOIiA1
-         I1zAtTWqjQzmBRTBZFTXYJYmnJSeVcUsMkVHF7nBl2oPKvgMKv0TJWKUm9U4/8MLwjKB
-         WFZ42Hnc8IfvJMciIH/gUtHgl1IAuhBKXTVrl7QoH2CN4Dl7M95JgQyD35aZAO4TVMId
-         DQn+hjk9Vk4ZZYahjuB/otTIXgEMcMt0BVBmQow80kZjFgzPaDaWJ0eh2InsIrJDkq4z
-         z/Yw==
+        bh=CU6AY6iBLEOZiBP2qPyJskoabacOIMKcahMcvsaK3Zo=;
+        b=IhwEdjWDPZRTzGR9oYmXkKfb3Qrmp5EJsB8cS8jFII81rfUuPg8O61tDb3WgRMaugO
+         waeVlprlwb2h5YJAtCt7X3SghJJO0WewAF94IKNKjuNpXWu5OBG+3/RYDJ2uz+Lv+HUr
+         DlOZDehsyWaLOfwv4euUgdM172l/3iKRDPqQZxoCtx2Wj3ob0pje9mHvth09cqdbs01F
+         BhCHsf3ldmvt70QsoCDHvOuKfs9+Ao1JTk4Qnl3ognK+XU7EoDTycfQubysDZrl801a0
+         inLa6QbSsSM1l9GxxgBOAirzl8/QSJmPUZLDM6Z99dM2C8y/9Qez8k78q7ojPltuI7a9
+         C0cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781884526; x=1782489326;
+        d=1e100.net; s=20251104; t=1781884528; x=1782489328;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Zg+XvVR1erub0k2voL49iihmdIK8YUZ8wfaJ2L9SY2A=;
-        b=L09DJXzh2XT9sM/YRm4YelTFI2QtFRcYe/fAl8WXXeF9lOe7YD5VKcfQCTPRp7vP15
-         0G79gdNzMAWqiTXUGt0n5OHBa5zdnebae3a9RwePh8UbzIfNd5DWweOpgpiYws3+2Cei
-         qGyP7b9V3aPGA8YC4CVPRgU/ntO5GC71lisDL0gitOngC7Yl1013zdoTf9qpl3W09pn8
-         ActfohW5R9qfoUtKHpksLNW7SfAI4HmhzGORRi58PuZEfDZl77D3HY8nWstOSRfNA8DX
-         pc5RZWgPO99c+moft32dtDF0p7cecX/IjKjZ1M5xNjT8Ir/NPUttg01IB8GG4bClIa9y
-         2T3Q==
-X-Forwarded-Encrypted: i=1; AFNElJ8oAFCjpOzoQzlO+VcYtWblmPRVEo2ahdn/BUAyH5KpNPu7Z/1hH/XyD3z9YIp0izmmDY/H3VSWfnE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwExLNwuZkS7tgScIImEFrqqobopFsY3RyDDgRd4xFcCEi9uCJq
-	2U7nl1RttpKe2CT96XcXLZR4DnOMMOAKiTB8SjQ6cjsba/VPxB+ieAHXKh9640jV0Wg=
-X-Gm-Gg: AfdE7cnOuQ1hk9AEBtGwgnfUK+ubyoFwOsb+OHGz+G8wDuBquitaZ0jGlp758xIVTX5
-	ndgSSl6CELznJyw693hZkRTI1LV62UcPRJlEq4idq8qM92r5/cTxhkrr2zb/R/hIqhnoQXv9Uje
-	vrMwj+QBkfz50tlQgz8NOHazK+btOw5vbM5PTd/teSxHU+sHM694xJ3F7fj/+8PsWbhB4z2boxM
-	vVxQOjb6kFYdF1sdYsC03DNCctNAVsTzh5WfEL4rCax+eVRsNujl8fYdZ4JKHO+wOOl4RssPw/l
-	msyNUZsd+3wVOrR0r588nm7f6vHVbJNc6IDIZV1pPgFxTJ3VmTYfwGemuVJ/9LBpTQ9C3MnCiGh
-	rzeOgRoOWOQVHzHNMauiMm3vT4QCDOy4GpoFwIzP75bx6LtpU1V268ivhl+muQMuMEXpyIedSf+
-	tA57Bh8U0eVfNKunTTMY7Zz/0ZEOQYh7l/HgnW/IRsFG8YtsHxQP2xVPah3Ky0cRbSBjHca29m5
-	cc=
-X-Received: by 2002:a05:600c:c4b7:b0:492:3773:a230 with SMTP id 5b1f17b1804b1-49240e9cb38mr65281845e9.27.1781884526269;
-        Fri, 19 Jun 2026 08:55:26 -0700 (PDT)
+        bh=CU6AY6iBLEOZiBP2qPyJskoabacOIMKcahMcvsaK3Zo=;
+        b=F0x8H64EFAOA/FddR8vwXl/CThfY53VZLNScvMopLqMVyqvglbM2AiRjVemBqX6BgT
+         X8Bxvozcos3lfCXGoa+NHIFVsSkIwvKi6+IXgmroOAdYd0XXllid0vFd+r2/BU5m0mig
+         AS4+yBGE/Sjv+h6W3J7vrfHDlXbupWdJAMD1INkNmEBRFoPkOOUhbYGpGhniWdtYA2ID
+         Te9VWPfGq01XtWP2uuCj0g+N3R7CI02na01UdWUPp7pnIJmIBEnsJAfegP3Q7VJWGtnR
+         YlAo3x/vK8LphDz+TNC6c2o0B4FAkmjC8v7TOiBtYNSinepF+r8VsEvSGXdFoE1QGIHf
+         7lPQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/ZmpWH9PoPMPJHSosQNXEFhDg49d1yLgo3HWNXvmQomgovEwzj/rWhzd7zlio8qTLMFjwsrl4cDHY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwnSJuYDbeUsQUjcaOYV3z0VLfxl1rG6w4qwI9p/tkCuGnfVyDq
+	IMLE0TFKtlxX1eWVHWpDSgCmvKJ83dxQ85t9CijMSaCa160YNqZa/UVLCrva+2N1Wm0=
+X-Gm-Gg: AfdE7cnqbn32L2zA6mo02BbVjdLMwRPq7u2GPIWXQi17eRFFPx20pewMKt1rxPePLI4
+	zOpLc4VzoWg7PrB1aw5Tr2LqsadOSAnm1Frx7f3AFTLqWpTlconxcfAF0SmtCVrqIQ1DqHLIcKN
+	CAtgfi8Xf8r53AVkeQfjDPQloA4xFFMjxu4xJUQV5eDdVhEgl//CwVHlFD236I17fvmVtIwLLHW
+	nctHodMOF6do44Rq+gHJ+rIm2OVyHsdB768LB1rWanU4pAHajgU8sT1LVlUn+My/Q6nwemBp9I8
+	ANcSf1fG8vPW0atRiChI/zVuQDBX/lqSRGtKfbm8WcF/lXVR2q8jDxec2qPz5n2gDxuYgswq77c
+	JapuUaKxisHPrIFNGeoZZKHHDki35eS1NRckPD6nk8ljXCiQekhAyjAfX9eKyAZ1fxIASWfNnmx
+	GeHCS8fnxfhAwPO+eQCCifW6nPcprWBJbH9poQJXaiFUDeRgeWucgKa3t/YYA4DtWHNsR3KAd2L
+	V8BPsGocef4HA==
+X-Received: by 2002:a5d:5d10:0:b0:462:4b98:3c83 with SMTP id ffacd0b85a97d-4656f4704a9mr4518423f8f.23.1781884528364;
+        Fri, 19 Jun 2026 08:55:28 -0700 (PDT)
 Received: from localhost (p200300f65f47db04359fc0e70763236f.dip0.t-ipconnect.de. [2003:f6:5f47:db04:359f:c0e7:763:236f])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4923fd15517sm80746545e9.10.2026.06.19.08.55.25
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-466643f563dsm49973f8f.3.2026.06.19.08.55.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 08:55:25 -0700 (PDT)
+        Fri, 19 Jun 2026 08:55:27 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux@analog.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 07/13] iio: imu: adis16550: Simplify device abstraction
-Date: Fri, 19 Jun 2026 17:54:35 +0200
-Message-ID:  <d20edfa8ce9685c6c3d2654186e9b80625c61e24.1781883685.git.u.kleine-koenig@baylibre.com>
+Subject: [PATCH v1 08/13] iio: magnetometer: hmc5843: Simplify device abstraction
+Date: Fri, 19 Jun 2026 17:54:36 +0200
+Message-ID:  <e5cf8297220b8d560854f6c64e80f00c4d093593.1781883685.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
 References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
@@ -81,7 +79,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1461; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=KOURT6hbMcRBPRPh2w9x5SoQOt4jV2T7U4LqGwnj5gE=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWZHrcoVYtOYwPwRUMLwP1iDxoquLZx7cekRe FcMF3GkZBSJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmRwAKCRCPgPtYfRL+ Tp21B/9lbCrNKgc6Ayfej7VpgbMIEwgR16PIDeHoUKgHnBN2L8sL8uYyH+kA7oNn/cJZ55Ac1AF YmLX88dAJz+42RhD0v4cYeje+R7SFKCalQ27eqAOTF4NQAWfBvHkCz9ccOuvUZRRliIjswh/JNg DExENIiecDUZksJW4tvFmqFyYgGPHj6EfgCOWuXQtkMOWTToZnfJCGWWhrYQ0UVVBYRFEOevR0q MgsCCteFeAq5XT45THX8xkkIGe4l6yjw18hV3FlvGeO+8KSWZkfVZTBWF0HmyHfxFvwyBJyjfze 3khFbqbp6TkW1cLK3i3lESUJYAs1dws8Si2UzaORD1QIrdwY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1425; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=27dzNMNZQnxdSDnKXyGDYnEZfoL61bCTuPKi0nZZwDk=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWZJCVh+EQ7wWRpdJOw3RnI/73iYwUn6z7unr +ltyLId1VuJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmSQAKCRCPgPtYfRL+ TiHdCAChsDikYqNcvPQC8kOw9u+crijJX3Q8NhM94ae/728Hqt8L5DI45INKmJQJA9+iNwE2Yws rYLGoYrzOPE1bHlQEUlIOzJTKiC+fYN+K5A04HqOswoSZ/86n7QQZFgPTvWG/jTScvbd11bNQlj izutYTRo01JCHVSUE6lbb/Qv+29HvrpkIeIcuAfG/1pCuNaaGNZZau1coq0+ecb83XYQkn/gV8u FJe7N/9NXl1zWofBVi3Gq5F+XggxuxJ/0lOqdfgkTsUsjWZTzmFJKjemM9EReNtQN2PPMTBy8LX OHGCwVIwrNkWrMT74Px0Jv7s4IyXCWvANX3gGral9a+VxVfU
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
@@ -92,41 +90,40 @@ entry.
 
 Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
 ---
- drivers/iio/imu/adis16550.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/iio/magnetometer/hmc5843_spi.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16550.c b/drivers/iio/imu/adis16550.c
-index 75679612052f..0fd18e16942f 100644
---- a/drivers/iio/imu/adis16550.c
-+++ b/drivers/iio/imu/adis16550.c
-@@ -1064,9 +1064,8 @@ static int adis16550_probe(struct spi_device *spi)
- 		return -ENOMEM;
+diff --git a/drivers/iio/magnetometer/hmc5843_spi.c b/drivers/iio/magnetometer/hmc5843_spi.c
+index 6a55c1559b0d..29dee5dce2ae 100644
+--- a/drivers/iio/magnetometer/hmc5843_spi.c
++++ b/drivers/iio/magnetometer/hmc5843_spi.c
+@@ -56,7 +56,6 @@ static int hmc5843_spi_probe(struct spi_device *spi)
+ {
+ 	int ret;
+ 	struct regmap *regmap;
+-	const struct spi_device_id *id = spi_get_device_id(spi);
  
- 	st = iio_priv(indio_dev);
--	st->info = spi_get_device_match_data(spi);
--	if (!st->info)
--		return -EINVAL;
-+	st->info = &adis16550_chip_info;
-+
- 	adis = &st->adis;
- 	indio_dev->name = st->info->name;
- 	indio_dev->channels = st->info->channels;
-@@ -1117,13 +1116,13 @@ static int adis16550_probe(struct spi_device *spi)
+ 	spi->mode = SPI_MODE_3;
+ 	spi->max_speed_hz = 8000000;
+@@ -69,8 +68,7 @@ static int hmc5843_spi_probe(struct spi_device *spi)
+ 		return PTR_ERR(regmap);
+ 
+ 	return hmc5843_common_probe(&spi->dev,
+-			regmap,
+-			id->driver_data, id->name);
++			regmap, HMC5983_ID, "hmc5983");
  }
  
- static const struct spi_device_id adis16550_id[] = {
--	{ "adis16550",  (kernel_ulong_t)&adis16550_chip_info},
-+	{ .name = "adis16550" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, adis16550_id);
+ static void hmc5843_spi_remove(struct spi_device *spi)
+@@ -79,7 +77,7 @@ static void hmc5843_spi_remove(struct spi_device *spi)
+ }
  
- static const struct of_device_id adis16550_of_match[] = {
--	{ .compatible = "adi,adis16550", .data = &adis16550_chip_info },
-+	{ .compatible = "adi,adis16550" },
+ static const struct spi_device_id hmc5843_id[] = {
+-	{ "hmc5983", HMC5983_ID },
++	{ .name = "hmc5983" },
  	{ }
  };
- MODULE_DEVICE_TABLE(of, adis16550_of_match);
+ MODULE_DEVICE_TABLE(spi, hmc5843_id);
 -- 
 2.47.3
 
