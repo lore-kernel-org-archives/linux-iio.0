@@ -1,129 +1,127 @@
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60ED2561A2
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 00:33:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFE5D31E825;
+	Fri, 19 Jun 2026 06:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781829204; cv=none; b=ReCTxmzZFMYXbmlcuyc/cLuaCF6Vk/H32omGtFuEG3BaBT5ZPBwK3e82vA3xMxvlgmJixr8g90EuQXmbBrZhXdsboaar2y89G0GlsfQdmHv04lHEA39HLdhxtfywuktdpuvuFjfob4BKtjCTwp2t5ga5226R1nQ27oSLf1booDQ=
+	t=1781851213; cv=none; b=fq+dSKEv/NovNWDzB+jVg7iIjXZ1aNpQSXc0uZ+otfLbNYNZdhs8KfO6jk68SKz9eVFcX00Ilarr6fmcVNxDjFQ9Lr/eMx3Q3d5jlNvvlkPkXo/EUtXBekDKjITWwbCBLPVlYTUCly9fh0wKFBntqV6DhnHk8w5tFrBKhwdSm6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781829204; c=relaxed/simple;
-	bh=l2g7/z/AH31QQ2FPAVpxdJVGorUFIpJvHR3qJvSCt/M=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=et19eKnikSnsDg+v2kXtIiRSx2YVCFt6ws02jJp0+N/SJnlvo92MLhSw/msNknKndmM3FLZ2lNQs3LeT9vZM26DSngLe8s3pT3EQMx20idbj0TKXAKZzBd1x4z0ErlLAoo6PWNsblOt1EqXfw78uTHa0JHA3rpYX6Xs2RE4nDgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VTt7qKEx; arc=none smtp.client-ip=209.85.221.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781851213; c=relaxed/simple;
+	bh=cq3cEgExjy/ndV3bLTDz8OhSvHX2s/xyfXxLZHOPDDg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NtajReVLNo+ujQNOmhT+2MOr/Q2TRoS64BFMHs1XsWCjygknfQ/RnkOeeA2ggNGkijoKD3xHO9i2JGtlGpCkE6nQrdNHbhcGiZMB5KMCnc5xxgXKA8QQVRpM4KyPJnk6Te3iw34frIZ7Sd7kmAntgRZjAUoTgykh5Nk408DhTo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dZ1GQFkS; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VTt7qKEx"
-Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-59ccf81e6feso522074e0c.2
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jun 2026 17:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781829201; x=1782434001; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=JxJPuccmsizX1T5f4AHNlctz3loKgW1+YIRVdkkYLLY=;
-        b=VTt7qKExq3k5M8tPmcv0Mf8g6QQwloKGdpNFRZwTW/GQcyIRE4fPIM7x+lcuzB4Osr
-         RpzOa6kNgsF7L4fGbmmDFOiN+s0h5vunS99RCXievO8StkPs/XMC49ezlBxbJClX7A/q
-         lHAl9nw48AtBNEDhMEIFjxw22mRL2DXfFaK3FI/L1ksHliMzNJwY7KxwHAMk/4y+4wls
-         nNtsd512n5xQhN63ZvuIiRBy6XlzVxq7c2Ellbm26/FCAGPyrJh1SaQT/GmeRTb4UNYe
-         iRzL4k3WoHfhWeIv4keuM0OMjo84t/DSdo123G6UcQfRJH6nuecL+JO+vL99KdyocO9E
-         jrnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781829201; x=1782434001;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=JxJPuccmsizX1T5f4AHNlctz3loKgW1+YIRVdkkYLLY=;
-        b=HsXnxEQ7uDNoS+DfcyVQderP2MTHeOBnmSFnAIqzxVGkDWRAExxC8nhR04m/BODi5G
-         OFPrEm8UFWFxBJ6UqMo2Cs/4gcFw5fEtYpsBGGYszEpTW4Sa771s1htP1R0rQMEricrd
-         xM8jAr12XsuiVvO/Qd4sCIObBjZbt6RvpZcrZyGxEWfJRy73nt4hh3k78WK2SJWQV537
-         EHulUzL/oBe3bN3khl2vmb32cxVgm9/HAq5OI4Ru/tTcdhYfELDmi5n7+NUUidfVab3i
-         hk9Bz6hZc8HtidVbuCo8/+f4gfcnnw6ey3hkQDAo4i3t3AykdKCtigLZzx1Tw4yxUCA3
-         ezWA==
-X-Forwarded-Encrypted: i=1; AFNElJ+eGKMsUNu23eUZ/o4Qv1vi+8zb2lTcYWtLA2o0tU4P0icEGTzoC6pKLrYE6K8rDe3xKYslsn4VNVE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxV2K8EaiC3DJ3izLMvbAH7OLy61qm3QHw39MgfsBWS+eUVamqW
-	uHN58lrAqWmsIf4PzmwZwAirNNJZutvhxA3x5PkcAJMCspX8nXE7xQ07
-X-Gm-Gg: AfdE7clL+PGZM1W80y0sKDPJJ/pT5tK2nZb9YJ53SJ9Nm5JeUhTucjvRWu23n1OLaq5
-	qeyDsguxC2dKzl93pmAGY9ozIvq9XAvovqzX+ZrMIFJGQOJxEUrLNi9i2XohzpVhm4Gld86+Ldm
-	yQKQQnv/65a1FkaarliSDPqW2N57/UIX8BsNJIM3dI0I8vt4l0iQpqp1HecrD8zEDxb3FinIv9y
-	jP4b2TaLoOXvUpKaPbZyDvUccm7SkiWWudDi8YzhHBwwz6lxKug6Oq8IC4HmzpWbANiKPqqSBVP
-	+7jV7WBTRxsE0N8dFzY3FN5z+qkk6ZnYdZ684gFmJsniqmz39m1a5JtOUOlXMfgv6VVVBVPiWQt
-	zgMIVM2IU5IVgX8SRHW3Ytz/Kr9dShkU9Euh0ujMQjEgX/LnK2My9Vi19/wupkqqnhwmrkJ/3VX
-	Eq8jPS46ls6JZQhSU=
-X-Received: by 2002:a05:6122:a18:b0:5bb:d01d:451 with SMTP id 71dfb90a1353d-5bbebc4c13emr623003e0c.10.1781829201380;
-        Thu, 18 Jun 2026 17:33:21 -0700 (PDT)
-Received: from [192.168.100.222] ([2800:bf0:177:563:8f3c:3421:b12:7a09])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bbea36b5e6sm861581e0c.9.2026.06.18.17.33.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jun 2026 17:33:20 -0700 (PDT)
-From: Kurt Borja <kuurtb@gmail.com>
-Date: Thu, 18 Jun 2026 19:33:03 -0500
-Subject: [PATCH RFC 3/3] dt-bindings: iio: adc: Add burn-out current
- properties
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dZ1GQFkS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781851211; x=1813387211;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cq3cEgExjy/ndV3bLTDz8OhSvHX2s/xyfXxLZHOPDDg=;
+  b=dZ1GQFkSXq9sglLU5bgI7MAVkrj6hxzzlRo0Uy/KUuJ52Dw9uw9P2XLv
+   mluSv1iHPXtOK+AUU2LUWhbA20gBhOIcvduw5JfirzHmVvPyBSeBD6SWh
+   UA0+tW+koFJqlTu81qwKu8IJGfSN/4JFL8ViGhCj9cOAR91xgfyGuuto5
+   Do/iIUVUFAZqHl2QQql/jUruxAJ+GPgwkGw1P8O8VUDTFUoX//Tt+QdVQ
+   nKqdNGbXfDuGqGqkoGH1rh0EtzSApJ2j86JgRKFRRBK4wkmHowHi3G0fD
+   y66BBYthdhHcaazKLAnqK5E4SNsqcOFBAdW6VKxn5jZkZMbrK1pD7d9yL
+   Q==;
+X-CSE-ConnectionGUID: DDSYgdA9QfGax4zB4OS4dw==
+X-CSE-MsgGUID: 4VH/eiuMTSqjxuXEJs9ciw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11821"; a="93296906"
+X-IronPort-AV: E=Sophos;i="6.24,213,1774335600"; 
+   d="scan'208";a="93296906"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2026 23:40:10 -0700
+X-CSE-ConnectionGUID: fJkWZODdRR2GBQHVPzVKzg==
+X-CSE-MsgGUID: fcMWO612Q+etxoERFoDBEg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,213,1774335600"; 
+   d="scan'208";a="247426134"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.170])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2026 23:40:07 -0700
+Date: Fri, 19 Jun 2026 09:40:04 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: magnetometer: add support for Melexis
+ MLX90393
+Message-ID: <ajTkRHhhlpgWLTGU@ashevche-desk.local>
+References: <20260618160141.11409-1-nikhilgtr@gmail.com>
+ <20260618160141.11409-3-nikhilgtr@gmail.com>
+ <ajRGf0YT-fCZA1ih@ashevche-desk.local>
+ <98a08d17-5b70-4f4d-bf52-fe1073fde2b6@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260618-new-channel-props-v1-3-963c1b5cf40a@gmail.com>
-References: <20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com>
-In-Reply-To: <20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Kurt Borja <kuurtb@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1291; i=kuurtb@gmail.com;
- h=from:subject:message-id; bh=l2g7/z/AH31QQ2FPAVpxdJVGorUFIpJvHR3qJvSCt/M=;
- b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkmfZ73DRgZPy/582Flz/md3Le+/Pqcx83VIL5rBfcq9
- ZNHfQ96d5SyMIhxMciKKbK0Jyz69igq763fgdD7MHNYmUCGMHBxCsBEAlQYGb7kthZfK5MzUbHU
- CV688HPWW6n7LpsKfm39dmv3a14ZCU2G/wlenwPqpT7zB0krGu9IucLt+Ekxsaw6ZOOlnARWsxN
- LWAE=
-X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
- fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <98a08d17-5b70-4f4d-bf52-fe1073fde2b6@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Some ADCs incorporate burn-out current sources that provide current to
-the channel's input pins for open-circuit or short-circuit detection.
+On Fri, Jun 19, 2026 at 02:36:00AM +0530, Nikhil Gautam wrote:
+> On 19-06-2026 12:56 am, Andy Shevchenko wrote:
+> > On Thu, Jun 18, 2026 at 09:31:41PM +0530, Nikhil Gautam wrote:
+> 
+> Thank you very much for taking the time to do such a thorough review of this
+> patch series.
+> 
+> Your detailed comments and suggestions are very helpful.
+> I'll address the issues you've pointed out, update the cover letter to
+> better explain the design decisions,
+> and incorporate the requested coding style and API changes in the next
+> revision.
+> 
+> I appreciate your review and feedback.
 
-Signed-off-by: Kurt Borja <kuurtb@gmail.com>
----
- Documentation/devicetree/bindings/iio/adc/adc.yaml | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+You're welcome!
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-index 106b1e317411d5..6b63aac9ac04dd 100644
---- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-@@ -106,6 +106,20 @@ properties:
-       This array describes the current configuration of the excitation current
-       sources or the single matched current for all sources.
- 
-+  burn-out-current-microamp:
-+    description:
-+      Burn-out current sources provide current to the channel's input pins for
-+      open-circuit or short-circuit detection.
-+
-+  burn-out-current-polarity:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description:
-+      Burn-out current sources provide current to the channel's input pins for
-+      open-circuit or short-circuit detection.
-+    enum:
-+      - pull-up
-+      - pull-down
-+
- anyOf:
-   - oneOf:
-       - required:
+...
+
+> > > +config MLX90393
+> > > +	tristate "MELEXIS MLX90393 3-axis magnetometer sensor"
+> > > +	depends on I2C
+> > Why not a regmap?
+> The MLX90393 uses both register-based and command-based transactions.
+> Since regmap does not naturally model the command-based interface,
+> using it would require workarounds such as virtual registers or bypass
+> paths.
+> A custom transport abstraction is therefore simpler and better suited for
+> this device.
+> 
+> I already discussed this on thread, Link :
+> https://lore.kernel.org/linux-iio/20260423121834.4244-1-nikhilgtr@gmail.com/
+
+Right, but please, put a summary in the commit message as it's  important
+detail of implementation choice.
+
+...
+
+> > > +	for (unsigned int i = 0; i < MLX90393_OSR_MAX;  i++)
+> > > +		if (mlx90393_osr_avail[i] == val) {
+> > > +			*osr = i;
+> > > +			return 0;
+> > > +		}
+> > Missing {}.
+> Agreed, removed intentionally as single statement, will add as per
+> guidelines all the places
+> where needed
+
+It's also better to have them when it might be ambiguous. And also when even
+a single statement takes a few lines. TL;DR: Also apply a common sense.
 
 -- 
-2.54.0
+With Best Regards,
+Andy Shevchenko
+
 
