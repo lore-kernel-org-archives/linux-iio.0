@@ -1,62 +1,64 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543BF3BE621
-	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8063B3BBFBF
+	for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 15:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781884520; cv=none; b=kCD5IMEos/3A4e1iTXnyrwU0D9WmShGvaLDowhX6YvIeqaQfGF+CTlMFAGaWmVgovLMPYC8WGqhXdZQ5YG4/Ex+dc9r0rxGo0iPId9EBTX52gx9kqd4ZiBhFDmgLJyoH5Vz6IJ97nkYgn/A2g331wyX61PwyDoLFoRnCBr4IrTM=
+	t=1781884521; cv=none; b=Uyl1WUhSkygjgGVxBpThTropQmg2XT8u2L2MjFdvG6rAlC/xXOEAjWpKPs5rX62kY3M/7G8ZRZse5IEXcqTsTJFN5RE3ifgJEe3rVrepBhl3NUwqmbXDW2p/Q/SXH/TC3+RlldPqwZoc7sVS23kkrjZi03iakWjqxz+I3taoeJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781884520; c=relaxed/simple;
-	bh=rzyItKitX1xfdqxIj4i5MGbTVUb24C8vStiJf51sFK4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TPlGke3zYLOIdNT0T0ImWFaniZwyIuOuzmWF/5FI4AIpfWL5rq+UMq/FXBDwQocBtZTgmJiwzfhy4S8Ur/7TkEm/h/3mj0puhuI+bxqe0LxnF4xfw4OCjGJ7Dg0IPZMWj7fiLlBfD2tgavz8zSJowzpMeYd6ZseFgiM4A8WEfxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=O0VA8rQh; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1781884521; c=relaxed/simple;
+	bh=d/BqkOd8UnlZcyZwheVg3ZHL4Z6gcR9SZRo4lXJJJFw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Yo8vOhpz2T8M2ZAcB6LWJBdis+gPuPUMzqqKTgmjHegrP84Ta36nzn5VCAojakHWcGXdyugqPGJWeRKmrQGj1CXt8qps0277JaAdWBypd1eAUy69dlc4HbwzrqRF1E/Ev2TuMjHqwSpynekIrWHq1P23gsWQy4TcAIx2G7mh+c0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=NcQfI9Wn; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="O0VA8rQh"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4921e4dd62dso17171415e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="NcQfI9Wn"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-460166910e6so1421541f8f.2
+        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 08:55:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1781884511; x=1782489311; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=EWrlTknTS3aWmoT0Y0dSpEuXznmrIxwbC2fvomDiC3A=;
-        b=O0VA8rQhfPRGc4KOPKPrKTdJPhUHx2fQvNUjwvkEj4/+O91UqEieI8MjnnFU/id43T
-         5ZyC/BJOa0rcLQ5QUnR0XDL8Lf2shn6OSC0SLNa+PVP9CO50QHYO9Fbx/XK599DetnnI
-         xQFZnhNFAlRpZtJb89yiAEBchhBH4vL4uoygMLU3msHEdtNQZtpeFOXdR+MqM8o7E+Xf
-         YpK0IDb6FI0MStkJngIbyYp+pDs/rP7AtCwDlsMifsMn7claOTSV6Zs+RnPAm3z/Wvg6
-         RTH6ZSYjeziHMBgp9xl72YiEA9atDHVTYlEkActScTnMO/BXZ6LOlHx4kdKwdrFy/8jW
-         vwhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781884511; x=1782489311;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=baylibre.com; s=google; t=1781884514; x=1782489314; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EWrlTknTS3aWmoT0Y0dSpEuXznmrIxwbC2fvomDiC3A=;
-        b=L3GPwvnoIkCF9IP9ArImF/VBF/EGVUkodlGQpXO8/U2bgxmLAXrIeJcv83LicwBQJ8
-         D6EY13gtQy1yA5j7iJph5z9wxaMZKT+0Nu9SHuubPYvS7ZNKvkS4sm1j+86VXrQiZLFV
-         d40wkyw+KbQt1jGF58QDOSNFF4SUdOorI1lqKdMna6XBHnvMcJ9zLVIVhcZC8v68qKXo
-         TAiNth7p8PpvskcekfeWC85ZWeL4vgwmOpHLBVzHkDeZxXo38KWNaCD7yesGiIN/Uu59
-         /TbZVB8JjXSiiyjOvgzW4YgyzglPUarVGuQWRNjWwYJDT0huOx/HzPKepjrp6sFv23sN
-         BtMw==
-X-Forwarded-Encrypted: i=1; AFNElJ+N9e35wiTLMrQfT+NpB5tkiG/e7ftuSymtPdIOLChJONBuVkTqbE7D3Xy3wwBSnU2JKO2Ax+MByfM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwS9c29A8+xFriEu4xvk6GRpwIBmHaBPHQebCyMWUN5h2aq4zM+
-	pPLo/O5x5LO9DxsAPv0IuOCLZHs08/S9ZTiv+7JBtDebAZ6F6Gh0GjGK6+3WcZC1L+I=
-X-Gm-Gg: AfdE7cmjc/6isReuL8Kv3tG04WsEQguFswmQdfgvY03sdEZrwR5/Ifl7VXXTunfBtJM
-	OGhz8ITYzaCwkCaRI7cUSWwqkb5zDe7C3yAtdN0X9L0iYCfh0YzenGIJ9fygHyQctKfKWFBM49r
-	0NDCkzNmakzxA4HdgeS5vNrc6fHGxzGn+M0VufuXV+eCal1joSzNGhu7Gx7ABNMKk2NhsUmJj2o
-	92F03TLeF3qRcVTv/+yfmRyY6C23CvR0/7Bs86ix5u/2SuD/QP7P78z5w3NWrW3yEOamqPfZm2H
-	ph6Fw6HOH93ytGB2CiBLisMLRklAXMWHQeBAMuIMo8evCMsu46hackDBWakEgGLf1NZt7Y/w60J
-	3EQm1pqlMWzoKYigKoig0r+orlGVejdc1b0R+lQ/aXleetSXBaOIm4jxOg1pEP+GlpPKJJHowU6
-	ZRfreLz1f7EKdia1SkfXvQNh+p7ICC25jQDkhqzG3xHI/ykIkNQm6viJrCT/HYETwag+HdURRHv
-	ak=
-X-Received: by 2002:a05:600c:4fd6:b0:48a:53cb:8604 with SMTP id 5b1f17b1804b1-49240a44a04mr56924665e9.14.1781884511454;
-        Fri, 19 Jun 2026 08:55:11 -0700 (PDT)
+        bh=KQtX4QqojvY/F1hB0BH2NWjP2ov2hjCjGN3l6t9rW2g=;
+        b=NcQfI9WneUj7zBLhA3cv4mOVWpigxvd4NmGwsG482JqXPmPZcPhLQqkalTMXlanhEP
+         j1p7faSyeR30TBvcco2oc7OekOMY5XXGFXz6DOlv0rTT29vI5rZ+zGX+2kRb2G5cpP9h
+         Ga8FcxlTMQWsXsi/FnJzrFjlJsA7LlbdhOVQgCjfqGXIlCFvuMNfcLSNUWm5WI+6zdfA
+         ZboX0sSkUsmS4jhvbF6isI653L6Gy7SXALw1eqoTSaF4MmVOuJYTI7mf5/RHcl7olhsq
+         22TvzQG13oIoj+LiQdBtXVuLl5ZdXZ9GNRsCI5c9Wbrx36lnx3wdp/TryrE7wzpYLLJL
+         j+Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781884514; x=1782489314;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KQtX4QqojvY/F1hB0BH2NWjP2ov2hjCjGN3l6t9rW2g=;
+        b=I9ktZ9VHk2gP8hWwZZgxiDAkxTo3aaVMo7tsfCcT1AjB2t/TnSIgktB5mYlXKGhN6p
+         aArmHqIVKE/nQwG+15jruxNOJ/pze+TFk/Q+KrZe5hQEnQZOX9smlQKNt3ElzTsilTz9
+         pMAIFpeJCk1aifk09V/GxNdXiXRBhsXnyY1baCzBDdIfK63ag6KEGeAqsOjWkH6XSEFP
+         6E3m+ANAlDx/zZfyG+i7bWOx9rf6PZVXu3D1WxoaQQRrvggO2mXvD/BsF0fACKaGIdkV
+         c2F+DzrMWDgF5jbAMbkgRPM7/F4fAt3WkZXjJWfmOfkCHBUUiKHQGPg39t0qmoQrmKnE
+         OdKw==
+X-Forwarded-Encrypted: i=1; AFNElJ8Bosb37cXB5a+pFpf3Be9kc4BAFueA6u2mLmZu8X8Y4RCmEj/nX/7/DrnYIr1BhtbkiFvyek00ja0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/9REqqyrgd452UBOX3N1HMFqBy8cXFhgwRBsF2+9+l0NqJhc2
+	fK4MYv4bKMlyIMhLa80fjEJFVI8z4duTJwsXUy38i174iNmbVGTP3DaD9RYesF7ktSw=
+X-Gm-Gg: AfdE7cmZzJNQbWyLawfF+PJ957pokMxTwZrZpOcbjz7+7U9QAjZQyS28aPQ+4G+fv76
+	RHRGnypK9JMVc4JMqY9L0+XqR13PuILIZvHmVPLZkvUAThpQte6qN8UrdEqIoQRo6LJrpvpv4E+
+	k/qVdM4ff8StD+MOk2QuUoa8Tb2nH9kbMpVNer8NAJSzYXdPmuIBcO202z2IK5xoxqqN3MbFXIy
+	cPcGWFl0pDnYcYwa2r4OdbkSZmkOKUEXiLqd7yGlW4QZpqfQEB28q1kKP67VAijMLktDhwX0THr
+	zfCslDEAY7QAlR5js4yCY2rksfw+TwOs2uHk9YLQ3jcx33KRAkRI+pI1T6p7sTd4IxNj/OEFBzC
+	jp7dqE4yZiakdYXi5LapA7EoMWN1qDjf4aXcuPhFUpMmEoC+Yo4jjgBmG4+/kpUU0TcFj/2y06H
+	XROBZfktxUlc83zI/pWzAdREGWKRWK8fWRiDCyzhj3lqTzO0uJrtVmpwsNVrUAG1sz0d61g2i+2
+	VjHSl/HNKN6pw==
+X-Received: by 2002:a05:600c:6383:b0:490:5cb3:e94a with SMTP id 5b1f17b1804b1-4923ef4c440mr78279435e9.2.1781884513746;
+        Fri, 19 Jun 2026 08:55:13 -0700 (PDT)
 Received: from localhost (p200300f65f47db04359fc0e70763236f.dip0.t-ipconnect.de. [2003:f6:5f47:db04:359f:c0e7:763:236f])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4923fce9590sm79979625e9.4.2026.06.19.08.55.09
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4923fd1ac18sm115542925e9.12.2026.06.19.08.55.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 08:55:10 -0700 (PDT)
+        Fri, 19 Jun 2026 08:55:12 -0700 (PDT)
 From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -66,72 +68,13 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Kevin Tung <kevin.tung.openbmc@gmail.com>,
 	ChiYuan Huang <cy_huang@richtek.com>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Oleksij Rempel <o.rempel@pengutronix.de>,
-	kernel@pengutronix.de,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	linux@analog.com,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Petre Rodan <petre.rodan@subdimension.ro>,
-	Dan Robertson <dan@dlrobertson.com>,
-	Rui Miguel Silva <rmfrfs@gmail.com>,
-	Dragos Bogdan <dragos.bogdan@analog.com>,
-	Dixit Parmar <dixitparmar19@gmail.com>,
-	chuguangqing <chuguangqing@inspur.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Andrew Davis <afd@ti.com>,
-	Puranjay Mohan <puranjay@kernel.org>,
-	Ramona Gradinariu <ramona.gradinariu@analog.com>,
-	Esteban Blanc <eblanc@baylibre.com>,
-	Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-	Alisa-Dariana Roman <alisa.roman@analog.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Renato Lui Geh <renatogeh@gmail.com>,
-	Ramona Bolboaca <ramona.bolboaca@analog.com>,
-	Kim Seer Paller <kimseer.paller@analog.com>,
-	Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Kent Gustavsson <kent@minoris.se>,
-	Kurt Borja <kuurtb@gmail.com>,
-	=?utf-8?q?Leonard_G=C3=B6hrs?= <l.goehrs@pengutronix.de>,
-	Rodrigo Alencar <rodrigo.alencar@analog.com>,
-	Gustavo Silva <gustavograzs@gmail.com>,
-	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>,
-	Janani Sunil <janani.sunil@analog.com>,
-	Anshul Dalal <anshulusr@gmail.com>,
-	Ricardo Ribalda <ribalda@kernel.org>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Alex Lanzano <lanzano.alex@gmail.com>,
-	Jagath Jog J <jagathjog1996@gmail.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Remi Buisson <remi.buisson@tdk.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Andreas Klinger <ak@it-klinger.de>,
-	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-	Andrew Ijano <andrew.ijano@gmail.com>,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Md Shofiqul Islam <shofiqtest@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	Sam Daly <sam@samdaly.ie>,
-	Colin Ian King <colin.i.king@gmail.com>,
-	David Jander <david@protonic.nl>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Gabriel Rondon <grondon@gmail.com>,
-	David Marinovic <david.marinovic@pupin.rs>,
-	Lukas Schmid <lukas.schmid@netcube.li>,
-	Shi Hao <i.shihao.999@gmail.com>,
-	=?utf-8?q?Rahman_Mahmutovi=C4=87?= <mahmutovicrahman5@gmail.com>,
-	linux-staging@lists.linux.dev
-Subject: [PATCH v1 00/13] iio: Use named initializers for device_id structures
-Date: Fri, 19 Jun 2026 17:54:28 +0200
-Message-ID: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1 01/13] iio: Initialize i2c_device_id arrays using member names (part 2)
+Date: Fri, 19 Jun 2026 17:54:29 +0200
+Message-ID:  <db01a5dd94c1086bf39c99f798901d33c8cabaa1.1781883685.git.u.kleine-koenig@baylibre.com>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
+References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -139,222 +82,49 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11695; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=rzyItKitX1xfdqxIj4i5MGbTVUb24C8vStiJf51sFK4=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWY077mz+IneYUxYuaLpYax6i5fkl0MlbjCq/ twUo8BMy+eJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmNAAKCRCPgPtYfRL+ Tr2LCACm/YMyB8WhTFr6LRRdNciD+nrrFtcRo9T3TDmpK5UYOkk5HB6A0pFYp94gVfx45pAEsE8 bvIH8R2YT694urLQDuUp9OI1/XT2zQ7w1TBLeR88+7+zRh9BY0NZhrqUALEoK15Cky4MOC0isEP 6mVdmL/pgZBTZgbzGbTiBWnMIUfoJQWDTgvaZDhp9yQQxyuUfo61HzV4ZK8+fcn5m0PopH42m/t ckkXQcpdQB0QQCsmkCGXqHISYf5U99ZdseIINwkpyjxsDozWUYVyYWa4VC8qMY2B9WCbI8lnJwK wF8SrfUH11cXKZ4o6yp+ZK8NXpkuF3UZ8c1TCFTRyU5C/CFz
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1598; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=d/BqkOd8UnlZcyZwheVg3ZHL4Z6gcR9SZRo4lXJJJFw=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBqNWY3fnKp6jPT7cLw1JnhgD6IY8jRuZ/RQl7VW mO0Apd8RbWJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCajVmNwAKCRCPgPtYfRL+ TiFqB/41mRow/UtlZ2+jylWHKUsm8tj1ZCKroH50/B2Z3SSwuxv7ulGXeQ8Qhs435xip8TXyCx4 KTQJj0eemvuz0TvsA0nIUwV9QtvWyK9dXoYGD+v6BmkjEbvw0d/nhW2MR7eHVzJJYm8OGM1eOdR oQcMpPQaoOZnWvkSWHAaJbXeNdP3hDMa44EIY5DaE3UnKbp3CetboezFhndPT+cJrUYpCWU0219 cYRk4gooJdm3CFB/F/CsBsQ1r+gTWKy0bqOi7Z7VF7CA0YCJgINm9e760oBrHTAwFAnb3IZG5TY rcLvOp0OxkHuJBfplSYmi5p6lXHFaJIUdLYsKnzoFi3yCIP0
 X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 
-Hello,
+This is a follow-up for commit f68afce8e8a7 ("iio: Initialize
+i2c_device_id arrays using member names"). This previous commit missed
+these two instances because these drivers didn't exist yet in the tree
+where I prepared the respective patch.
 
-the first patch is a follow up for making iio's i2c_device_id arrays use
-named initializers. The two drivers adapted in it were missed before
-because they were not yet in the tree I used to prepare the patch. The
-remainder is a similar adaption for spi_device_id. Instead of adapting
-arrays with a single entry and .driver_data, rework these to not use
-.driver_data.
+Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
+---
+ drivers/iio/adc/rtq6056.c          | 4 ++--
+ drivers/iio/magnetometer/mmc5983.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-The ad9523 driver is a bit special here. It can only probe devices that
-have platform data. A device instantiated using dt never has platform
-data, so this driver only works for boards registering the device using
-a spi_board_info struct. There is no such board, and there never was
-one. So an alternative is to just drop this driver?!
-
-I was unsure if I should post the staging patches in a separate series,
-I hope it's fine to include them here.
-
-Best regards
-Uwe
-
-Uwe Kleine-König (The Capable Hub) (13):
-  iio: Initialize i2c_device_id arrays using member names (part 2)
-  iio: adc: ti-tsc2046: Simplify device abstraction
-  iio: adc: ti-tsc2046: Drop unused member from private data
-  iio: adc: max1241: Simplify device abstraction
-  iio: dac: max5522: Simplify device abstraction
-  iio: frequency: ad9523: Simplify driver a bit
-  iio: imu: adis16550: Simplify device abstraction
-  iio: magnetometer: hmc5843: Simplify device abstraction
-  iio: accel: bmc150: Explicitly set spi .driver_data
-  iio: Drop unused assignment of spi_device_id driver data
-  iio: Initialize spi_device_id arrays using member names
-  staging: iio: Drop unused assignment of spi_device_id driver data
-  staging: iio: Initialize spi_device_id arrays using member names
-
- drivers/iio/accel/adxl345_spi.c               |   4 +-
- drivers/iio/accel/adxl355_spi.c               |   4 +-
- drivers/iio/accel/adxl367_spi.c               |   2 +-
- drivers/iio/accel/adxl372_spi.c               |   4 +-
- drivers/iio/accel/adxl380_spi.c               |   8 +-
- drivers/iio/accel/bma220_spi.c                |   2 +-
- drivers/iio/accel/bma400_spi.c                |   2 +-
- drivers/iio/accel/bmc150-accel-spi.c          |  18 +--
- drivers/iio/accel/bmi088-accel-spi.c          |   6 +-
- drivers/iio/accel/fxls8962af-spi.c            |   4 +-
- drivers/iio/accel/kxsd9-spi.c                 |   2 +-
- drivers/iio/accel/mma7455_spi.c               |   4 +-
- drivers/iio/accel/sca3000.c                   |   8 +-
- drivers/iio/accel/sca3300.c                   |   4 +-
- drivers/iio/accel/st_accel_spi.c              |  40 +++---
- drivers/iio/adc/ad4000.c                      |  62 ++++-----
- drivers/iio/adc/ad4030.c                      |  14 +-
- drivers/iio/adc/ad4080.c                      |  22 +--
- drivers/iio/adc/ad4130.c                      |  12 +-
- drivers/iio/adc/ad4134.c                      |   2 +-
- drivers/iio/adc/ad4170-4.c                    |   6 +-
- drivers/iio/adc/ad4851.c                      |  18 +--
- drivers/iio/adc/ad7091r8.c                    |   6 +-
- drivers/iio/adc/ad7124.c                      |   4 +-
- drivers/iio/adc/ad7173.c                      |  26 ++--
- drivers/iio/adc/ad7191.c                      |   2 +-
- drivers/iio/adc/ad7192.c                      |  10 +-
- drivers/iio/adc/ad7266.c                      |   4 +-
- drivers/iio/adc/ad7280a.c                     |   2 +-
- drivers/iio/adc/ad7292.c                      |   2 +-
- drivers/iio/adc/ad7298.c                      |   2 +-
- drivers/iio/adc/ad7380.c                      |  36 ++---
- drivers/iio/adc/ad7476.c                      |  60 ++++----
- drivers/iio/adc/ad7606_spi.c                  |  22 +--
- drivers/iio/adc/ad7766.c                      |  12 +-
- drivers/iio/adc/ad7768-1.c                    |   8 +-
- drivers/iio/adc/ad7780.c                      |   8 +-
- drivers/iio/adc/ad7791.c                      |  10 +-
- drivers/iio/adc/ad7793.c                      |  18 +--
- drivers/iio/adc/ad7887.c                      |   2 +-
- drivers/iio/adc/ad7923.c                      |  14 +-
- drivers/iio/adc/ad7944.c                      |   6 +-
- drivers/iio/adc/ad7949.c                      |   6 +-
- drivers/iio/adc/ad9467.c                      |  14 +-
- drivers/iio/adc/ade9000.c                     |   2 +-
- drivers/iio/adc/hi8435.c                      |   2 +-
- drivers/iio/adc/max1027.c                     |  12 +-
- drivers/iio/adc/max1118.c                     |   6 +-
- drivers/iio/adc/max11205.c                    |   4 +-
- drivers/iio/adc/max11410.c                    |   2 +-
- drivers/iio/adc/max1241.c                     |   8 +-
- drivers/iio/adc/max14001.c                    |   4 +-
- drivers/iio/adc/mcp320x.c                     |  26 ++--
- drivers/iio/adc/mcp3564.c                     |  24 ++--
- drivers/iio/adc/mcp3911.c                     |  14 +-
- drivers/iio/adc/rohm-bd79112.c                |   2 +-
- drivers/iio/adc/rtq6056.c                     |   4 +-
- drivers/iio/adc/ti-adc0832.c                  |   8 +-
- drivers/iio/adc/ti-adc084s021.c               |   2 +-
- drivers/iio/adc/ti-adc108s102.c               |   2 +-
- drivers/iio/adc/ti-adc12138.c                 |   6 +-
- drivers/iio/adc/ti-adc128s052.c               |  24 ++--
- drivers/iio/adc/ti-adc161s626.c               |   4 +-
- drivers/iio/adc/ti-ads1018.c                  |   4 +-
- drivers/iio/adc/ti-ads124s08.c                |   4 +-
- drivers/iio/adc/ti-ads1298.c                  |   2 +-
- drivers/iio/adc/ti-ads131e08.c                |   6 +-
- drivers/iio/adc/ti-ads131m02.c                |  10 +-
- drivers/iio/adc/ti-ads7950.c                  |  24 ++--
- drivers/iio/adc/ti-ads8688.c                  |   4 +-
- drivers/iio/adc/ti-lmp92064.c                 |   2 +-
- drivers/iio/adc/ti-tlc4541.c                  |   4 +-
- drivers/iio/adc/ti-tsc2046.c                  |  12 +-
- drivers/iio/addac/ad74115.c                   |   2 +-
- drivers/iio/amplifiers/ad8366.c               |  26 ++--
- drivers/iio/amplifiers/ada4250.c              |   2 +-
- drivers/iio/chemical/bme680_spi.c             |   2 +-
- drivers/iio/chemical/ens160_spi.c             |   2 +-
- drivers/iio/dac/ad3530r.c                     |   8 +-
- drivers/iio/dac/ad5064.c                      |  32 ++---
- drivers/iio/dac/ad5360.c                      |  16 +--
- drivers/iio/dac/ad5380.c                      |  32 ++---
- drivers/iio/dac/ad5446-spi.c                  |  62 ++++-----
- drivers/iio/dac/ad5449.c                      |  14 +-
- drivers/iio/dac/ad5504.c                      |   4 +-
- drivers/iio/dac/ad5624r_spi.c                 |  12 +-
- drivers/iio/dac/ad5706r.c                     |   2 +-
- drivers/iio/dac/ad5755.c                      |  10 +-
- drivers/iio/dac/ad5758.c                      |   2 +-
- drivers/iio/dac/ad5761.c                      |   8 +-
- drivers/iio/dac/ad5764.c                      |   8 +-
- drivers/iio/dac/ad5766.c                      |   4 +-
- drivers/iio/dac/ad5770r.c                     |   2 +-
- drivers/iio/dac/ad5791.c                      |  10 +-
- drivers/iio/dac/ad7293.c                      |   2 +-
- drivers/iio/dac/ad7303.c                      |   2 +-
- drivers/iio/dac/ad8801.c                      |   4 +-
- drivers/iio/dac/ad9739a.c                     |   2 +-
- drivers/iio/dac/ltc1660.c                     |   4 +-
- drivers/iio/dac/ltc2632.c                     |  44 +++---
- drivers/iio/dac/ltc2664.c                     |   4 +-
- drivers/iio/dac/ltc2688.c                     |   2 +-
- drivers/iio/dac/max22007.c                    |   2 +-
- drivers/iio/dac/max5522.c                     |  31 +----
- drivers/iio/dac/mcp4821.c                     |  12 +-
- drivers/iio/dac/mcp4922.c                     |   8 +-
- drivers/iio/dac/rohm-bd79703.c                |   8 +-
- drivers/iio/dac/ti-dac082s085.c               |  12 +-
- drivers/iio/dac/ti-dac7311.c                  |   6 +-
- drivers/iio/dac/ti-dac7612.c                  |   2 +-
- drivers/iio/filter/admv8818.c                 |   2 +-
- drivers/iio/frequency/ad9523.c                |   3 +-
- drivers/iio/frequency/adf4350.c               |   4 +-
- drivers/iio/frequency/adf4371.c               |   4 +-
- drivers/iio/frequency/adf4377.c               |   4 +-
- drivers/iio/frequency/admv1013.c              |   2 +-
- drivers/iio/frequency/admv1014.c              |   2 +-
- drivers/iio/frequency/adrf6780.c              |   2 +-
- drivers/iio/gyro/adis16080.c                  |   4 +-
- drivers/iio/gyro/adis16136.c                  |   8 +-
- drivers/iio/gyro/adis16260.c                  |  12 +-
- drivers/iio/gyro/adxrs450.c                   |   4 +-
- drivers/iio/gyro/bmg160_spi.c                 |   7 +-
- drivers/iio/gyro/fxas21002c_spi.c             |   2 +-
- drivers/iio/gyro/st_gyro_spi.c                |  18 +--
- drivers/iio/health/afe4403.c                  |   2 +-
- drivers/iio/humidity/hts221_spi.c             |   2 +-
- drivers/iio/imu/adis16400.c                   |  30 ++--
- drivers/iio/imu/adis16460.c                   |   2 +-
- drivers/iio/imu/adis16475.c                   |  54 ++++----
- drivers/iio/imu/adis16480.c                   |  40 +++---
- drivers/iio/imu/adis16550.c                   |   9 +-
- drivers/iio/imu/bmi160/bmi160_spi.c           |   4 +-
- drivers/iio/imu/bmi270/bmi270_spi.c           |   4 +-
- drivers/iio/imu/bmi323/bmi323_spi.c           |   2 +-
- drivers/iio/imu/fxos8700_spi.c                |   2 +-
- .../iio/imu/inv_icm42600/inv_icm42600_spi.c   |  14 +-
- .../iio/imu/inv_icm45600/inv_icm45600_spi.c   |  16 +--
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  34 ++---
- drivers/iio/imu/smi240.c                      |   2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c   |  48 +++----
- drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_spi.c   |   4 +-
- drivers/iio/light/st_uvis25_spi.c             |   2 +-
- drivers/iio/magnetometer/bmc150_magn_spi.c    |   6 +-
- drivers/iio/magnetometer/hmc5843_spi.c        |   6 +-
- drivers/iio/magnetometer/mmc5983.c            |   2 +-
- drivers/iio/magnetometer/st_magn_spi.c        |  12 +-
- drivers/iio/potentiometer/max5481.c           |   8 +-
- drivers/iio/potentiometer/max5487.c           |   6 +-
- drivers/iio/potentiometer/mcp41010.c          |  12 +-
- drivers/iio/potentiometer/mcp4131.c           | 128 +++++++++---------
- drivers/iio/potentiometer/x9250.c             |   4 +-
- drivers/iio/pressure/abp2030pa_spi.c          |   2 +-
- drivers/iio/pressure/bmp280-spi.c             |  14 +-
- drivers/iio/pressure/hsc030pa_spi.c           |   2 +-
- drivers/iio/pressure/mpl115_spi.c             |   2 +-
- drivers/iio/pressure/mprls0025pa_spi.c        |   2 +-
- drivers/iio/pressure/ms5611_spi.c             |   4 +-
- drivers/iio/pressure/st_pressure_spi.c        |  24 ++--
- drivers/iio/pressure/zpa2326_spi.c            |   2 +-
- drivers/iio/proximity/as3935.c                |   2 +-
- drivers/iio/resolver/ad2s1200.c               |   4 +-
- drivers/iio/resolver/ad2s1210.c               |   2 +-
- drivers/iio/resolver/ad2s90.c                 |   2 +-
- drivers/iio/temperature/ltc2983.c             |  10 +-
- drivers/iio/temperature/max31856.c            |   2 +-
- drivers/iio/temperature/max31865.c            |   2 +-
- drivers/iio/temperature/maxim_thermocouple.c  |  18 +--
- drivers/staging/iio/adc/ad7816.c              |   6 +-
- drivers/staging/iio/addac/adt7316-spi.c       |  13 +-
- drivers/staging/iio/frequency/ad9832.c        |   4 +-
- drivers/staging/iio/frequency/ad9834.c        |   8 +-
- 172 files changed, 886 insertions(+), 927 deletions(-)
-
-
-base-commit: 3ce97bd3c4f18608335e709c24d6a40e7036cab8
+diff --git a/drivers/iio/adc/rtq6056.c b/drivers/iio/adc/rtq6056.c
+index e2b1da13c0d3..ae50fb27bac9 100644
+--- a/drivers/iio/adc/rtq6056.c
++++ b/drivers/iio/adc/rtq6056.c
+@@ -872,8 +872,8 @@ static const struct richtek_dev_data rtq6059_devdata = {
+ };
+ 
+ static const struct i2c_device_id rtq6056_id[] = {
+-	{ "rtq6056", (kernel_ulong_t)&rtq6056_devdata },
+-	{ "rtq6059", (kernel_ulong_t)&rtq6059_devdata },
++	{ .name = "rtq6056", .driver_data = (kernel_ulong_t)&rtq6056_devdata },
++	{ .name = "rtq6059", .driver_data = (kernel_ulong_t)&rtq6059_devdata },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, rtq6056_id);
+diff --git a/drivers/iio/magnetometer/mmc5983.c b/drivers/iio/magnetometer/mmc5983.c
+index a67b13393b6b..18f3f3d25c4e 100644
+--- a/drivers/iio/magnetometer/mmc5983.c
++++ b/drivers/iio/magnetometer/mmc5983.c
+@@ -328,7 +328,7 @@ static const struct of_device_id mmc5983_of_match[] = {
+ MODULE_DEVICE_TABLE(of, mmc5983_of_match);
+ 
+ static const struct i2c_device_id mmc5983_id[] = {
+-	{ "mmc5983" },
++	{ .name = "mmc5983" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mmc5983_id);
 -- 
 2.47.3
 
