@@ -1,64 +1,64 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5CB2233922
-	for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 17:48:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7181E2E7BD3
+	for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 17:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781977732; cv=none; b=mxFvlFJUNtF7GgNEbFLYZmxmVZKnvT1gQ4eIzkRF8cshI44S5MagAdj3fMBprjDSOO08Lhtjpll1q4hyzVy1mmpkYHy/dK9wlbEK8OWfWsuJyqiZNtTPv9Z6rHQkl1Lm4tMY0YgKCgwmYmi1l1tliel7L5/jRjgG7VrU+a224Z0=
+	t=1781977737; cv=none; b=jxr0G3eP5XZXj/Y8vG3Y02Q8kAn9Y4QkSavei66wAliqIm6hVEf9aGHiIJOH2BYU70rInOKT0J/OLsBrUeZhUJ8jczA5PLlPD9oGBMTe5upjJtmvnkch+SddzHOIDf+IrSew0XGFhvedT+0tXrDrFBJ52WBwZamjyg9WY8USKv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781977732; c=relaxed/simple;
-	bh=U0ol8M7MlQ6ddKGwEI+qqdztih/6bYefeO87FGJIRTQ=;
+	s=arc-20240116; t=1781977737; c=relaxed/simple;
+	bh=uYkbjUxKxZ2WrsbVYP5zIg8sM3STYeehqLx9On9ms1g=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nnKNgO0JUXvHpnb5C2gUVy5ZX1IWExhslbsu7xMjGiqUCExKQlE8m1oGEjFkT9Gg63fQBDZSY0w3WdOYrCF7RjaReZnuoC1b5590oS6ygr7saSmBw2d6Qs9XLgScv5ojfrE5FRMh0+5bHtW/i/nLegJ3n0bspoeHmNFmmFpZqZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rScImOPX; arc=none smtp.client-ip=209.85.216.48
+	 MIME-Version; b=poIYg7DrhmM83avWmt1fVnKq+L7cOrLfI26DK8INupVgKMLcX9fW9Ii6BGqsIdfck+azl9NBkjH6CwxgJWcgisu8qjTqnwtwiftyHGi6UQ1NGVZiHIJFBAI/GXVZ2rq0NS64dQTdQDIFRMDxobzFqIQ6L0mYn7U/KP5K+n0bqW4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ci6yt6Tz; arc=none smtp.client-ip=209.85.216.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rScImOPX"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-36d6bb38b44so1918918a91.0
-        for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 10:48:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ci6yt6Tz"
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-37cbcf49deaso1516896a91.1
+        for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 10:48:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781977731; x=1782582531; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1781977736; x=1782582536; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zmzDcj3m3a56iL87dLXydya4MHMnnAuEbZmbbAHEr1I=;
-        b=rScImOPXuE/aVL76ms/BaCHAn3VdBJO4GbrLz76uEgAND9kt3/6OECnvGrliFcf4PQ
-         V7MevSCr91GkZfIH3UHmt06yTw2riYCR+qVvWpyUwks4VpUYeZOZsRHh8u1FbHo6Vu6s
-         dDQRPFpHG3OzAS156agE/hVHQtmOvu57GnEBEojkZIjUN91JZv5J/1qWRkuwQimL4tda
-         0u0JUqXbvpLmfzUwDnWa0nziwmUaLzI7RqECqyLLOI1+Q8GsmBGUT/0n4/64oSucrQVX
-         PDPkMHJYW2xnavHnhzJQeLgTCQxJZKg1bvi3RDJ19vvh2auT5N8HagEq3KC05LwcuPJG
-         XAPQ==
+        bh=Y6nfe1mUm5w2Z2at1HYxXfkhKWhlbFCWlsl4N5d/Kxs=;
+        b=ci6yt6Tz0MRpqgZ3TlN7pGSEPysRkOQw+KY+R/2wRVAPwj2vpOyynqTMrVCezzokLb
+         fNaG2pR4VHz/cIwfsFhCIiGUphotLLCGwk4rDpRNnBR8UDWjnZ14NR3q34ysai6xdOdZ
+         5M9K1uo313Lx98ezNakhZe1GrH0ojDn23ZNeaS11ky/G0at0k2YLhiRjUdK/wh6wg3Nw
+         OuL4wj+tI0+xbkdWlPX56rW16aaTVggNJudGJwR+ePWvXarcBqtGd8jom8zDcL15QDAJ
+         WUA/cnY2nmwkDRiuN3kgrr4I0rbkSG4phknraVgASDH+ZMo8pc2ceZUea7Vq6Dua5URU
+         K/Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781977731; x=1782582531;
+        d=1e100.net; s=20251104; t=1781977736; x=1782582536;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=zmzDcj3m3a56iL87dLXydya4MHMnnAuEbZmbbAHEr1I=;
-        b=BFeR4GtG5fNySxXv45CX3l7Qas/k1+SyHbxhgZJWtNqQvRxZvyDu4eXYDOa42PzpDe
-         JOWnCCMVkSO7agwrai1jE43O+FhoEM1JjWpaXS6W2rRwdsaD/a84iQsOPOn3ZpFJ1P2y
-         AwoIQNPfv6g6SowTjyqCi8hpixX8lZvBrRQeUVTN0y+tR9jM9FPtsY2V3nAfKkMBLPts
-         jDH9GoLL/9aHRA05CG0I/C+6Avvgp5kJ19odhWu/Rh+uQ3PC+Bh6GoXnG6UVMO0EchMn
-         wGUtlctA2HLMkfVGtCe90HekGD0mFB1OSoglti1HLlVOH9Dhm2VV17MkW9YhNZLYPYlZ
-         lsDQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpO2dATJL1QbqyyJgO3zQ0Ufrewi/yK2ZKGEmbVypBcTshFMP8URaQmgy/UDgYiu4bK3KtiA4MPrQM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySMb6L73tzBcVwHLrgZa2sGH948UOC6aawtSrWyRaCcc/5qvoH
-	PPsPioks4Wm97O2CBmC0JOFS7y+AbArCIx/8LlDv/qjzZV0UYlzIX9Qc
-X-Gm-Gg: AfdE7cmWMYPKeF43QJ/Jzl0Vl2gnJ15I9TULm9ZGNBxui9YOEG2fR4ELb7Gw6rrVnJ1
-	87T3LK5iW3kDJGEq3A8B+SF7HrWNfqctRo2uX9N1rtbI0NXlM57efsX8w6LUVRgeKCfU54NdhAA
-	s85jJ3x3iP0Q8tXcX6TNE33H8OXsgZ0VGCtevpadn5fdhgbrjJxR32lm5bEEnc6wbON3NTHB+IF
-	o6fXINgE8sAqePruj/oJN/n1IG8HJVtXt8i2KEOweKKx8RLNiWtsgQaaBCY/7x4pox2X+cwSBl1
-	Lm8tWrNn3IyxhlXxr3L9FMqxGxGAnRMG6EAt0AsmqjeyKPdWqfy/bINwTjFT0U0JW52yZ9oK0tD
-	wxi7gPxQygzD8OT1JsfVp762Hzt62RGzk9qGEwab9XO7HKsOG7WchQ7TbLaFmwvChpcZCxh9mXy
-	+DG9KszBqP7z4r9lf6swjz0KmzpQVQVTeEAAJTVuhn+f1OrjS8t/PU3i5/MIAey2k2Hd7701tTl
-	UB/smr4
-X-Received: by 2002:a17:90b:3a05:b0:36d:df4f:ab2 with SMTP id 98e67ed59e1d1-37d160a030cmr8200824a91.13.1781977731049;
-        Sat, 20 Jun 2026 10:48:51 -0700 (PDT)
+        bh=Y6nfe1mUm5w2Z2at1HYxXfkhKWhlbFCWlsl4N5d/Kxs=;
+        b=GLEqbRjk+QicWNtVO7BGRgm7NHNtg803fGt1S3pCqD8ENWnVcN8w8I/DHp9yeEuhJG
+         YKjpbyKWP3WvTlW7tSFEiimGslM4MXkzEAiQvBub+K/PMx7MrF9OfR1CvWp3P4CPMifQ
+         x07C45jnRG+tMFFQy9xSB7+1+3V9mFOAsQ0t7fU8DTkqVMHpvPgYaJIz97bJrvn6JVfR
+         z8sq2YcJBZpNCwbtHE0llYrFUkArS6esonAUcno5Vu/iMq4VigYOHqVE6cyykz5PEGLG
+         z7L3OFwtrKg3BrlrZJczvOvWpnTPS3JDGle/vSHc6BtNgIAxAHLXiMpQ1URxMjY+2TnS
+         JcgA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp54IWbGbP4bkZmqKznJ4EXsjSGFnGZyzhGdSiK8DabzrJCB0ljNcfIlkhMJPc4YXRVBeVzpLNTOPk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzE36Q13AejiTSA/4jUrrQLM59dT9ppOp1N0VhSP1j1R14Uw/j7
+	Tlup2goRK2nELYEFp/rJDwCKZ9kfoX5kyr0dAIPMhJwJ5k5hxn/veZxk
+X-Gm-Gg: AfdE7ckO5aduvxOymnVEoPna+2uNRvDKV2nc511LxR5Wxj/RVHDNKRH23zqtEJQvJS6
+	lJMDr0USODxAn3RHcYc6DYwT8XExDbc9vyg/Ry8skFU+TDIbfufhAF7N0P8bbySqPafdE6zYsUZ
+	MxZ7JVVS1pck9bB4ZMX3szViFob22yc9oGhoOb2+LTvzLf18Qj9acOtQvd4HTS6oybS33neIeZ4
+	VOALBsBMgwpb3jnCt3vwmdO9Jv2SAPfJNW87RZVLUFkWDFfc1+LV3lXOnQKcMpf4ojp8Ed9whP8
+	8kp6CIapVckZOTVFf1KDzRADBhDrJWFeMcNAkeWUU4DVV+Nha/RCcyLX7U8eDtdDCD6I+/McsvW
+	LtdZWrGRHOufz3mGW8Mn9yLlujk24gD0Of5sdFwcFiA2XDbQaMeat4m9fjhprRsC0Xm3+kws6/v
+	AAfgsr0S+mUy8HElAeqXHI9lKroTOqZFRlGgeMvn0NLCdPuG2DvTwsbonXJYYVtzjLd7Iwg8+kV
+	u4aYnTF
+X-Received: by 2002:a17:90b:48cf:b0:37c:b248:1a58 with SMTP id 98e67ed59e1d1-37d15e13b28mr9737261a91.24.1781977735782;
+        Sat, 20 Jun 2026 10:48:55 -0700 (PDT)
 Received: from thorfinn ([2401:4900:8836:4853:6bd2:aa0a:1945:47e2])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37d1536b049sm6344222a91.2.2026.06.20.10.48.46
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37d1536b049sm6344222a91.2.2026.06.20.10.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Jun 2026 10:48:50 -0700 (PDT)
+        Sat, 20 Jun 2026 10:48:55 -0700 (PDT)
 From: Prashant Rahul <prashantrahul23@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org
@@ -72,9 +72,9 @@ Cc: Shuah Khan <shuahkhan@gmail.com>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	John Ogness <john.ogness@linutronix.de>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/5] iio: adc: ti-adc084s021: use dev_err_probe for probe time error
-Date: Sat, 20 Jun 2026 23:10:54 +0530
-Message-ID: <20260620174708.111470-3-prashantrahul23@gmail.com>
+Subject: [PATCH v2 3/5] iio: adc: ti-adc108s102: log buffer setup failure in probe
+Date: Sat, 20 Jun 2026 23:10:55 +0530
+Message-ID: <20260620174708.111470-4-prashantrahul23@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <20260620174708.111470-1-prashantrahul23@gmail.com>
 References: <20260620174708.111470-1-prashantrahul23@gmail.com>
@@ -86,30 +86,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This simplifies error handling and ensures consistent error reporting.
+Errors are logged when enabling the regulator or adding the cleanup
+action fails, but not when buffer setup fails. Log the error returned by
+the buffer setup path as well.
 
 Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
 ---
- drivers/iio/adc/ti-adc084s021.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/adc/ti-adc108s102.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
-index a100f770fa1c..2b4bd223d816 100644
---- a/drivers/iio/adc/ti-adc084s021.c
-+++ b/drivers/iio/adc/ti-adc084s021.c
-@@ -229,10 +229,8 @@ static int adc084s021_probe(struct spi_device *spi)
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
- 					    adc084s021_buffer_trigger_handler,
- 					    &adc084s021_buffer_setup_ops);
--	if (ret) {
--		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
+diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+index 7d615e2bbf39..440afe584f5d 100644
+--- a/drivers/iio/adc/ti-adc108s102.c
++++ b/drivers/iio/adc/ti-adc108s102.c
+@@ -256,7 +256,7 @@ static int adc108s102_probe(struct spi_device *spi)
+ 					      &adc108s102_trigger_handler,
+ 					      NULL);
+ 	if (ret)
 -		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret, "Failed to setup triggered buffer\n");
++		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
  
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
+ 	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret)
 -- 
 2.54.0
 
