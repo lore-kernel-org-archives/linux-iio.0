@@ -1,112 +1,101 @@
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56E76372B50
-	for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 04:40:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B2D40D596;
+	Sat, 20 Jun 2026 06:36:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781930420; cv=none; b=B1lirshrjB2Hu4V2kEvFoXb3wZ2oUf4z0EVqQv41Q5OCfO3vGAg97FjToeYC9t+IN+6g49RMIPy2BFDvZecdEBr67YrjPr4eOQ+ICxnhoPQVTd6btFF9MrOmunnW2lHbECLtrt9zNNKyTB0/GTftp7ItSdZX2cxdGgSSXsKD2xk=
+	t=1781937393; cv=none; b=FuvyS71MXxq0fzdOZLyTymFqpjTdbL0GZQ4Zro92BIBFRHTUPoDPr8E7COFEVZ0Ti2cUVRxXB3VMcl0P7ydbz76kzNNce7RUhE4nZGLu/+Qy4hwwaoCnlYQzrUcc0EPp6RamQM86Dn0wK3Nl1dXKKQzWeELF9dzzwVfRyv7I/p4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781930420; c=relaxed/simple;
-	bh=JBNIqf2eTrRXZ9/TbvTv1ucjbReEIe0UVXxGsCJYL8A=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=curTAYSd0HwlZd46k4zeTZgWABNvuplMZYb0cpyuvF0wyy4bk6oy4OHZaJX9w3FJl9+0kA1qv71W0waCG6aeEtAPGtJqv67b8r3A464IgeASqMJQGom8Oq4UnI0a/n7fmfedUYcwxRjOD2W3bw7zT3ngYAT8vMQYF9LrsF/UjYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D+c+VP6p; arc=none smtp.client-ip=209.85.167.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781937393; c=relaxed/simple;
+	bh=34MAQUITqz9A/cjCg7HPDw9HLDNgNCXRd246f3UT9TI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=guA4NkfOSB1vKCGIJGIBVUrMpq0oKRtfUpcTYJ5fD2XyZpXd993Opan8hhBbMCBP73DFihucSBJqsJnY+HA6DTPya2Y+xXbQ67DnuaL0i7NixUEDZXpmGWm0SH+U1cWEKpLMA8vfrsTKkYAwhuYvY6H1vpLTnStAMjIIJODUbsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ykp5me9r; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D+c+VP6p"
-Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-48650c78e09so971399b6e.2
-        for <linux-iio@vger.kernel.org>; Fri, 19 Jun 2026 21:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781930417; x=1782535217; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=p903FzlWhZFqXdoaSbD95bQ1EP9oEVzNqhz/9QS+ytE=;
-        b=D+c+VP6pkba9ufzIIcBqbloqJmRyDd+lxhRLa24pcWze362yc+rqddxtQY79q8kWKV
-         MHVfd3qfjR2vej9WLCErApEu5WI7VRCKx9t3bJTOiIG2AOzJ9E741sxDpFoc0Yr6Jp5f
-         ylxE/uho95dvRi+TbJ59GcIHWcc8KI920iZDhEmexAwkIFzeGvy3dsFSLxsJpvhsNIOn
-         lf556cxZz6IOeU6KBFuY4+drRtGI+eWtxGjP5RyVgEIJ547wMtje/It2qDii4/KbSfRM
-         Ss0QC4lPcBDQhh7xEOYd8KZLvPMm7xHtd5ol9mMdrMRc+5nVleOGKNlX1MDD052sgnT8
-         JqNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781930417; x=1782535217;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=p903FzlWhZFqXdoaSbD95bQ1EP9oEVzNqhz/9QS+ytE=;
-        b=iszDRaLGlCbcb8IMfxJNjVMtLVMx2Kl21zmTArP6WmjSfI7uw0dq1iC2rzU2QFLLcg
-         Ty1Kax4xaixXjaUUUpY0asA94gVCuj5NbLlTnNkzDMmkBG+LvivW/bctlqHinkOlQ0rC
-         bY5CV39igEeinOxKxqhoTCz9Q40z3fkP/57Dmw9zKckdHZ4/XtYX8m65sRCIquTzZA7u
-         2d6x/l//aIqkICUp6iJ/IZ66GB16eLISFttZiV+1cluLx3APzoIiVOYZI5rpE2LCOhqG
-         +aB6vrkaULDe7Vou6M5dnTmG+6SH2NtJZfB0dReCnwjs+VXQWzIDarpmATAohdKx2seP
-         D6wA==
-X-Forwarded-Encrypted: i=1; AFNElJ+iI0/9sUnXdky4YH14JXJluuWWOMoD8YKcWZO866+TpZUwSiSigTsg+V2OnYzEO6UkEu5ovbg6Fwo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwxRixBF8/HyW9ds451R1QnmSNZJ8m8odCb2Nl9mxYinH9ejAay
-	D+NRyVG8rY66Zdar3+lv/M3ybMINLW0ScU5fXP+fCO1o3zeVTOTaFyjn
-X-Gm-Gg: AfdE7cmk2Xsu05AIapTwQCP/nObxikv5p5K1uBHHzKd8B9vM+khNEM9XRLPUDQWdzHo
-	xJJn74Gk4FSinR7yXPRhUmfiBCUT1ekYv5xEP6b0geoCGl5dxbWfGHojEWVve5k6PvXieDcpDkQ
-	XyBFnXh3/XcCatoZCuxpOj/VD1Gv/B4CR1kzlhR0+TdpI/KnOfciyl/535NvhySHyh+7GqK0lMx
-	vcEob0bdXI9hQm3WJaRbTEMzTVZ5Ak6kDS3wDvV9Ggu8zNNNiyWUvYLjvaG52PjK0MH1G+E8w7b
-	g4ElhmTv02CAtcXycsUw/Oe4CPPFT9onnhRv8mxIrTMZ+EfoFILNpBuM8qoYOhA1yNLNOfVtKRR
-	EM0RW/r0iPjzmtzrDNv9jParongZYd3xW9o615mz8CUxW3OkWh/gV30ufFo79AeN/WQqwQehYy5
-	T2LZ16boZWdMcVc453KzW7PwOjeJ483hgHuncAPpEexu/DAig=
-X-Received: by 2002:a05:6808:4f08:b0:489:5dc7:dc55 with SMTP id 5614622812f47-4896ac76486mr4978993b6e.40.1781930417349;
-        Fri, 19 Jun 2026 21:40:17 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-48aec0ddd7bsm679754b6e.7.2026.06.19.21.40.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Jun 2026 21:40:16 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [RFC PATCH 3/3] MAINTAINERS: Add entry for Sensirion STS30 driver
-Date: Fri, 19 Jun 2026 23:40:07 -0500
-Message-ID: <20260620044010.1082621-4-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260620044010.1082621-1-m32285159@gmail.com>
-References: <20260620044010.1082621-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ykp5me9r"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1781937391; x=1813473391;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=34MAQUITqz9A/cjCg7HPDw9HLDNgNCXRd246f3UT9TI=;
+  b=Ykp5me9rNuIsw8R7mG0hDVVlbIfJi3f6oRJ6CZRBHIHZFOgfoj3VtVHE
+   yyWzIhC8AgkcSdibBvw+zWfwIsLqEjPd9BhNyLoVxcp4Mp9epOOXadeBq
+   0LuBTcwdQNpnvPLSI2sK7razJpngdUWYzh6qr6+UQs8EU5SJiq74Z0+cJ
+   ZhtPyKcyy1m7bSEdh+FmRv0B3zZlmnFZ0eoz/HVPPovzgfxpio6wWhPCy
+   IeHH6lXlJX2dW9WAcDi92Ab0n9Oyem5qVh2n6SHhMflYz7s7csKgi3O5u
+   oRkrBTdc1W8byUaGFHNjTv8JartD08EaLi4Xfvo9j8ZR4e10LCCLfd31Z
+   Q==;
+X-CSE-ConnectionGUID: pePUbCuBSc2uJOvdEcA5mQ==
+X-CSE-MsgGUID: 5tNJNtP1RZaV2kJnmJoJhA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11822"; a="82867593"
+X-IronPort-AV: E=Sophos;i="6.24,214,1774335600"; 
+   d="scan'208";a="82867593"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2026 23:36:30 -0700
+X-CSE-ConnectionGUID: NBFx1zhuShKnyE7ExYGhcg==
+X-CSE-MsgGUID: H38+LS1aTIWs/ikWubIvEA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,214,1774335600"; 
+   d="scan'208";a="246440541"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.0])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2026 23:36:27 -0700
+Date: Sat, 20 Jun 2026 09:36:25 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Paul Geurts <paul.geurts@prodrive-technologies.com>, jic23@kernel.org,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, tobias.sperling@softing.com
+Subject: Re: [PATCH v2] iio: ti-ads7138: Disable STATS_EN bit while reading
+ conversion results
+Message-ID: <ajY0pjnnzQX0IQm1@ashevche-desk.local>
+References: <20260619090004.355053-1-paul.geurts@prodrive-technologies.com>
+ <af4dd7a8-4823-4f84-bc88-4b5d8d35237e@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <af4dd7a8-4823-4f84-bc88-4b5d8d35237e@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add the entry for the STS30 temperature sensor driver in MAINTAINERS.
+On Fri, Jun 19, 2026 at 09:42:08AM -0500, David Lechner wrote:
+> On 6/19/26 4:00 AM, Paul Geurts wrote:
+> > The device might update channel data while it's read by the host,
+> > providing a data race. Disable the update of the channel stats before
+> > reading the values.
+> 
+> This description seems a bit short on details. It looks like this
+> driver doesn't support buffered reads. So if we disable statistics
+> during a direct read, why would we want to enable statistics in
+> the first place?
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+I believe this patch is initiated by
+"Until a new conversion result is available, previous values can be read from
+the statistics registers. Before reading the statistics registers, set STATS_EN
+to 0 to prevent any updates to this register block."
+from the datasheet.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d95d3ef77773..6bb361ac213f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -24487,6 +24487,12 @@ F:	drivers/iio/chemical/sps30.c
- F:	drivers/iio/chemical/sps30_i2c.c
- F:	drivers/iio/chemical/sps30_serial.c
- 
-+SENSIRION STS30 TEMPERATURE SENSOR DRIVER
-+M:	Maxwell Doose <m32285159@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
-+F:	drivers/iio/temperature/sts30.c
-+
- SERIAL DEVICE BUS
- M:	Rob Herring <robh@kernel.org>
- L:	linux-serial@vger.kernel.org
+I would rather like to know if this is IRL problem, or just a datasheet reading
+based code.
+
+> (This driver suffers from the comments say "what" rather than "why"
+> /* Enable statistics and digital window comparator */ so it is hard
+> to say what the original intention was.)
+> 
+> Can you explain more what this race condition is about and what
+> happens before the fix vs. after the fix? People generally do this
+> with two columns showing concurrent function calls.
+
 -- 
-2.54.0
+With Best Regards,
+Andy Shevchenko
+
 
