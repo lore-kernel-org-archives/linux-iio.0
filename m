@@ -1,185 +1,205 @@
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 765AB1FF7C8
-	for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 00:46:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12987136358;
+	Sun, 21 Jun 2026 12:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782002800; cv=none; b=I3FEaqc5la8wisDq/Bz6733+ESAIHVj0DjQ75Vgfn7Q6KBxjJbujB9VuIKv/icl2ELsmEbLCwtdGthiNf0WGvBTVIJ6Yz9XKg6sNzUIduwoC4TdqPgc82x+xgzPQb2aqKPv8+vdpMM049cbxiDlJougyPnnN3DQyw6YNuXZj3N0=
+	t=1782045704; cv=none; b=s+bSOsFM51oRiBvwFVA9jjgfjewN1INJD9j9MpNE/sxRjSRdQE8tXoG8A3btHp6WOd4DWJCbdnuh8MQ3revuhjzU33L2ZKrCtpH6SfIxOzVDDKa5o63zZ6d6wLGFThfKfv87tAcZCOl8KeLluOHwd7CXnAl0Q/2wMllscxDeKEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782002800; c=relaxed/simple;
-	bh=5TTxQ3I91yDsizRvGxC6wGurDup/AtF5mbCDjYKei1M=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bDQRbyzZ7CSXPaY/0YY8xBm40nzsjSE24wgl4FYgXo6qTJQO/7CplgBA+9kXbGEUIFd1DXv1q9rclgOneSxoA4rym1J40zjW6nfpfeY3ukpDJcNqGr/OeZglrU/PRKtrF8Ikr3oHkATuWSiMO+AbVrceycxuqzqppy0k4E6sVLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QQ+PYWpe; arc=none smtp.client-ip=209.85.160.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782045704; c=relaxed/simple;
+	bh=Iwvz1oB7F4H0M5UzMHPGtQ+J17Oz/OUR4eYiGvGm4BM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GO278e5MzMsgxrFVJh5Sd+PSxHPzHBDxiQIn8aW910WBYTaq2CxGiatkJ2fwLdpqptWmxfjW7ss+5H0ur9lHoUUjB0YDOW4G9ohYR8Nt7LOkFgO22YsPqAFE62UbA8Hd7K87OG/p+xyKtht3BMWLUDL+QX/J+wRNv1ezgdtyDo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b2ssSgFH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QQ+PYWpe"
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-43ccd4f6f6eso2236752fac.0
-        for <linux-iio@vger.kernel.org>; Sat, 20 Jun 2026 17:46:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782002790; x=1782607590; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6UcOBkVQ+LuwHq0/corgNyTz2DMj/Og0DSgHE/NFxEw=;
-        b=QQ+PYWpetG9zk+hisGM4B2Xa3x4V3uLwp9TShUJLa/29KnYerBghnhlDxw6UAUbjHB
-         0D/V/VMjTnue43rnDYXc4nci5HHvtawBUKrNl7hGHXmZ7C3Nt/mgPVjmPJLz9kaeMIRi
-         fcAeynmVeUzkE2HZ4mGnFGIEs6L4hoVZouAE7/LBtWWwnVTS33t+N2Z1kTgTA7Dvi+d9
-         uK9BKF7pIKmdMpBQVKJKE5rO1YYkolSzdJw/GinPfXYtbPKrUY2gx2qgz+1UH5B0Qk1s
-         WXJWG8Zjrz1cU0oyFzmb/XGi63UKTo2RWmJGoXKV8Nn1KDWxDMq9aNU7mpa7JA4mZz+w
-         dNAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782002790; x=1782607590;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=6UcOBkVQ+LuwHq0/corgNyTz2DMj/Og0DSgHE/NFxEw=;
-        b=Xj3hxPhwSjKI9NYlhMPp1alDStJ88H4akAOnoxLLSw5rxijfdY8Q9rf134qFVnhI0l
-         NmY27pYL7br9Td94IHG1yeZfUecMcJyWAx7duLg0YU9wOL8q9r1QwZS8B3JuQH9iRDF7
-         0v3r45G+dtCBzSbKUjYqO6YtDd6mlborGTndY1BpPs/3TilPz6QR1VdqY46452qkHOgz
-         UxeS8JFx2U1b8ba4wL9Dt2PBjLf+Piwno6ST+MJ13lU1vl2D08mcbZU6Fkst+xEEfqWS
-         iSDTNvR/hOiLa2/DTn+E5I14nsuveHZVdVr+D/O6QdHrEjr8t/fe3oSA62x5x+AD0Kw5
-         bbGw==
-X-Forwarded-Encrypted: i=1; AHgh+RrE96UXe7LLnhLihOIYqd3cciwnAbGCKBkrYlPJDS1vVjiNd6iAEekaKJBXnft+8Ro91hoTExQ6ihw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywru8vj+46J6zJtGz4vzndeqWOw06bUuLc4Dvsz81Fw25UKk98S
-	Vs8c3ZZ2frfECzIhW+S9vRqU7u6S6qCJtJEtJy+PVQCATSbi6gQz5BzR
-X-Gm-Gg: AfdE7cnUPu47tVxrORi1fpgws/LBZWQ2gNshXqpQYXfUF+RcMK5982vt5f9O3u01PdN
-	8JWTX953Fr76SRs21wSOj+5lkxU5BDNz2czhBu0PomncVIAtYWxgLFWFEYRpf8vg713GC06s733
-	iS6to3ZYScOFv6QVdv7iE7loli/GVrEj0rHOnt2D7nl/7SW+BPC5pVRXX3JsGheGOIg6JMXmL5U
-	Gtjx2KQ2QKjYi5sxdcXt+glKViABTNS9XQTxR61mPG+jg+zf+cAhNdsd9QF8/IhnlwneIx4NcHD
-	Vb2KOYq/9OdQ4hu129JpOLc53hgaZu9TgPFrjCM79gH1D7JFulamWL8IQBMOrcPQQphZCiJgwCa
-	mNLUe80jDKWcstwBXFq18JKOJsLPM3o5Foru4L+YwlcxHbfIWZwtBz/E7Holw0jw8oGGy1I3sD2
-	yKOznrEghSBcD4iyTsMoxqcL6aNFySzJekJw25O+aH+/eAgpE=
-X-Received: by 2002:a05:6870:e386:b0:430:3ddf:9712 with SMTP id 586e51a60fabf-44707c309dfmr7829163fac.5.1782002790326;
-        Sat, 20 Jun 2026 17:46:30 -0700 (PDT)
-Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4472ec5fd4csm3080457fac.2.2026.06.20.17.46.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Jun 2026 17:46:30 -0700 (PDT)
-From: Maxwell Doose <m32285159@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 1/2] dt-bindings: iio: temperature: Add STS30 devicetree bindings
-Date: Sat, 20 Jun 2026 19:46:23 -0500
-Message-ID: <20260621004626.66629-2-m32285159@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260621004626.66629-1-m32285159@gmail.com>
-References: <20260621004626.66629-1-m32285159@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b2ssSgFH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0EC1F000E9;
+	Sun, 21 Jun 2026 12:41:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782045702;
+	bh=5arIUg5n+BvsRbfOJFYCG+zJ+abvFikYKOsbm1AbBJg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=b2ssSgFH1RMS2OSr22xd0r66ptuhnHAFBBgDOUrYoj9Ol1FQ/n/PfsKD6/M2aDju1
+	 jeJ+fPQGgehhWagrtbb/m4wjF/1Bcpz9+o7LEdY2Y7pxqqodXTdSNRPzP4EDuC1lRY
+	 ENmd6Zxd5di3URzb0sp7YWKwoBtn7RkAReUVmW833oR3Iuqqq4p0VvlQBnc/IV7+b9
+	 vV7JHsQOxPdj6eFql9oKy0U1sP62zXj84IbLAtYq79XQQiPUGrBnNKDZFkQmO3gnkO
+	 Wx305tjG8cF3U+NtH16zR3qzguqASiBSlBG+KIoUHYqeyhdeh59frCpHpjL0hJn5yl
+	 mOdn2p4oOHM0w==
+Date: Sun, 21 Jun 2026 13:41:31 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: me@herrie.org
+Cc: github.com@herrie.org, linusw@kernel.org, denis.ciocca@st.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ sanjayembeddedse@gmail.com, maudspierings@gocontroll.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: iio: st,st-sensors: add
+ st,fullscale-mg
+Message-ID: <20260621134131.2341019c@jic23-huawei>
+In-Reply-To: <6475e269775789d61ade326190b0d234@herrie.org>
+References: <cover.1780652883.git.github.com@herrie.org>
+	<e49aba850b1f48ea00089e7142c00584541001eb.1780652883.git.github.com@herrie.org>
+	<20260614194442.61191f68@jic23-huawei>
+	<6475e269775789d61ade326190b0d234@herrie.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add the devicetree bindings for the STS30 family of temperature sensors.
-The STS30 family of sensors includes the STS30, STS31, and STS35.
+On Mon, 15 Jun 2026 13:16:52 +0200
+me@herrie.org wrote:
 
-All devices in the STS30 family share the same commands, timings, etc.
-The only difference between them is their measurement accuracy and
-tolerance.
+> On 2026-06-14 20:44, Jonathan Cameron wrote:
+> > On Fri,  5 Jun 2026 12:08:42 +0200
+> > Herman van Hazendonk <github.com@herrie.org> wrote:
+> >   
+> >> Add an optional st,fullscale-mg property that selects the initial
+> >> full-scale range of an ST MEMS sensor at probe time, expressed in
+> >> milligauss for magnetometers (and analogous engineering units for
+> >> other ST sensor families that may grow this property in the future).
+> >> 
+> >> The property is purely additive: if absent, drivers fall back to
+> >> their existing chip default, and if present but unsupported by the
+> >> specific sensor the driver warns and falls back. No existing in-tree
+> >> DTS is affected.
+> >> 
+> >> The motivating case is the LSM303DLH magnetometer on the HP TouchPad
+> >> (apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
+> >> saturates the X axis to the chip's 0xF000 overflow sentinel out of
+> >> probe, because the chip is mounted close to surrounding power planes
+> >> and picks up enough DC bias to exceed the smallest range. The driver
+> >> core hardcodes fs_avl[0] as the starting range, so userspace cannot
+> >> recover without racing the driver to write the in_magn_x_scale sysfs
+> >> attribute after probe. st,fullscale-mg lets the device tree declare
+> >> a wider initial range up-front and avoids the race entirely.  
+> > 
+> > I'm trying to understand what you mean here by racing.
+> > 
+> > If we get this overflow condition the chip is wedged until reset, or
+> > userspace simply has to change the range to recover?
+> > 
+> > I'm wondering if a UDEV rule is sufficient in theory to fix this.
+> > 
+> > I'm not necessarily against having the range in DT as it is effectively
+> > hardware dependent but just want to make sure I fully understand the 
+> > issue.
+> > 
+> > Jonathan
+> > 
+> > 
+> >   
+> >> 
+> >> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+> >> ---
+> >>  .../devicetree/bindings/iio/st,st-sensors.yaml | 18 
+> >> ++++++++++++++++++
+> >>  1 file changed, 18 insertions(+)
+> >> 
+> >> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml 
+> >> b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> >> index a1a958215cdb..335f38e9f78f 100644
+> >> --- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> >> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> >> @@ -126,6 +126,24 @@ properties:
+> >>    mount-matrix:
+> >>      description: an optional 3x3 mounting rotation matrix.
+> >> 
+> >> +  st,fullscale-mg:
+> >> +    description: |
+> >> +      Selects the initial sensor full-scale at probe time, expressed 
+> >> in
+> >> +      milligauss for magnetometers (or analogous engineering units 
+> >> for
+> >> +      other sensor families that may grow this property in the 
+> >> future).
+> >> +      The value must match one of the sensor-specific full-scale 
+> >> ranges
+> >> +      supported by the chip; if the chip does not support the 
+> >> requested
+> >> +      range the driver falls back to its built-in default.
+> >> +
+> >> +      This is intended for boards where the magnetometer chip picks 
+> >> up
+> >> +      enough DC bias from nearby PCB structures (power planes, 
+> >> ferrous
+> >> +      shields, etc.) that the kernel's chip-default 
+> >> highest-sensitivity
+> >> +      range saturates one or more axes to the chip's overflow 
+> >> sentinel,
+> >> +      and userspace observes that axis as permanently stuck. 
+> >> Declaring
+> >> +      a wider initial range avoids the saturation at the cost of a
+> >> +      slightly coarser quantisation.
+> >> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >> +
+> >>  allOf:
+> >>    - if:
+> >>        properties:  
+> Hi Jonathan,
+> 
+> "racing" was loose wording on my part. The chip is not wedged. Once 
+> userspace writes a wider range to in_magn_x_scale,
+> the next conversion comes back with sensible data and everything works. 
+> A UDEV rule on add of the IIO device would, in principle, fix
+> the steady-state problem.
+> 
+> What I was clumsily pointing at is the probe-time window: the IIO 
+> consumers in our stack (sensorfw's iio-sensors-adaptor, geomagnetic
+> / orientation services) start polling in_magn_x_raw essentially the 
+> moment the device node appears, and they treat the saturated
+> 0xF000 sentinel as a legitimate sample rather than as overflow. 
 
-Additionally add MAINTAINERS entry for the driver.
+Should this perhaps be returning -ERANGE or similar to indicate a failed
+read via the return value rather than reading out something
+that requires device specific userspace to handle?
 
-Signed-off-by: Maxwell Doose <m32285159@gmail.com>
----
-Changes since v1:
-- Squashed parts of the MAINTAINERS commit into this commit.
-- Added ALERT pin as an interrupt and in the examples.
+Not that this changes the requirements as obviously it still doesn't work
+when we want a reading!
 
- .../iio/temperature/sensirion,sts30.yaml      | 55 +++++++++++++++++++
- MAINTAINERS                                   |  5 ++
- 2 files changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
+> Until 
+> the UDEV rule fires and the kernel commits the new range, every
+> read returns the stuck sentinel, so orientation/compass features are 
+> wrong from boot for some non-trivial number of samples (and on
+> slow-boot paths the consumer may have already cached a bogus calibration 
+> baseline by the time UDEV catches up).
+> 
+> So the trade-off as I see it is:
+> 
+> - UDEV rule: works for steady state, fully out-of-tree, but the 
+> per-board configuration ends up split between two places (DTS for
+> "this board has an LSM303DLH at i2c@... in this orientation"; UDEV for 
+> "and by the way it needs a wider range or its raw readings are
+> nonsense"). The wider-range requirement is purely a property of how the 
+> magnetometer is mounted on the board, which is what DT is for.
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml b/Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
-new file mode 100644
-index 000000000000..9bb0f04795d4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/temperature/sensirion,sts30.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: STS30, STS31, and STS35 temperature iio sensors
-+
-+maintainers:
-+  - Maxwell Doose <m32285159@gmail.com>
-+
-+description: |
-+  Family of digital temperature sensors from Sensirion with I2C interface.
-+  All devices are compatible with each other, their only differences are
-+  their levels of accuracy.
-+
-+  Datasheet available at:
-+  https://sensirion.com/media/documents/1DA31AFD/65D613A8/Datasheet_STS3x_DIS.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - sensirion,sts30
-+      - sensirion,sts31
-+      - sensirion,sts35
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        temperature@4a {
-+            compatible = "sensirion,sts30";
-+            reg = <0x4a>;
-+            vdd-supply = <&reg_3v3>;
-+            interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d95d3ef77773..7f94b8cac3e2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -24487,6 +24487,11 @@ F:	drivers/iio/chemical/sps30.c
- F:	drivers/iio/chemical/sps30_i2c.c
- F:	drivers/iio/chemical/sps30_serial.c
- 
-+SENSIRION STS30 TEMPERATURE SENSOR DRIVER
-+M:	Maxwell Doose <m32285159@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
-+
- SERIAL DEVICE BUS
- M:	Rob Herring <robh@kernel.org>
- L:	linux-serial@vger.kernel.org
--- 
-2.54.0
+Fair enough to it being board dependent.
+
+> 
+> - st,fullscale-mg in DT: keeps all hardware-dependent calibration in one 
+> place, available before any IIO consumer can open the device,
+> and harmless on boards that don't need it (absent property existing 
+> chip-default behaviour, no   DTS in tree changes).
+> 
+> I'm happy to drop the wording about "racing" in v2 and replace it with a 
+> more accurate description of the early-consumer issue if that
+> reads better. And of course if you'd rather we ship a UDEV rule 
+> downstream instead of adding a binding, I'll yield, but my read is that
+> this is hardware-dependent enough to belong in DT.
+I'm fine with the DT solution with some of this extra info captured
+in the commit message.
+
+Thanks,
+
+Jonathan
+
+> 
+> Thanks,
+> Herman
 
