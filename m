@@ -1,45 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 991A930674E;
-	Sun, 21 Jun 2026 17:36:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74F041DDC38;
+	Sun, 21 Jun 2026 17:41:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782063391; cv=none; b=bz3vF2fgU715VCHlX+odJPbnfUrYZFObo/AoYex9AChEKagSwFwMglaf10iY47qp45D8WcSdncawZk3cwZDRRVrI0oJWwnlRPNrNbsP09QYRdtt2Ayg5D71nQTF0j3v+RrAeoZ1h9n3bw1TkHhg6A595cg1KzihVRJ4g6x7oz+g=
+	t=1782063707; cv=none; b=kY0x6rt7UBOaQHGDTZl3Hic+DMeAmfJKESyD2QaMZNBH5HiJwLSjaSJrXWFlghYiS6w/Fy01G8T0nuXAUHK4IFIV8TFxaSgpZJQutNVLQOkGyoFUDOgiOv/iiFEAgW0rYEdgoDCRfBZSVae3dwPCQUhIWoL+D3QLDqPY7p+vj/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782063391; c=relaxed/simple;
-	bh=YHnpvmz1ZJSBqGw7sTYK+x9Mfy35u2Ste/tbuveI0ac=;
+	s=arc-20240116; t=1782063707; c=relaxed/simple;
+	bh=L/+97sfte18DEDYYopfPHVii26ZDDwSpc8YN3nu6ovE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AP72WYq6UQXbZVrxuOEsigUsWbC4U8sIFJvorUjGgvP4ScNrrrggDNpOOG9PrvrEj7HC6FjwXqBjd8lbve4LyUCPb3vjJeIodNpUbFazgvCqVTItCWd3PqWjXXyn2yMgmZeC20zbgTLCEZ+RyyUUeoUrx+CzRhQpjsMONAkXKz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQcWocXv; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LgznFkaRKT/zsNTXybFSq30zf+O16DA3EfzvH4anT4lK4sQMIjV5yQjauAlpVxsJ2owCl1HqkYljMtVrIohuQGw8VWXHLlBZjancMYZhfIrM9xHlvFd4ElMGZojSWCCVTaMm09yMONOXOrU8ecF/KCsmAMJvlUM0V+gz7bW2ynk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mx/iBQG7; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQcWocXv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FCA1F000E9;
-	Sun, 21 Jun 2026 17:36:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mx/iBQG7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AF71F000E9;
+	Sun, 21 Jun 2026 17:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782063389;
-	bh=79ag9ElUJF477aZhr5OqDggdcMTsrOOZX7Pg2ovv39o=;
+	s=k20260515; t=1782063706;
+	bh=DBuUAQpuh//udmCVnimcxOsvNs2KgbowAkZ7xLpIk3k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HQcWocXvj3L0AOIzcVvPkIJ8sOIA/qzKcJr/CWadhi8d6EMtKLRR6Vmvw5EYSj9vv
-	 qZ0sngjyy0Ru1793mg3j10i1LOfhD6oCGef6F3PcvNqEYqwGIRmeDVk2yWexE6Fyuj
-	 7WO7Xd58A3WUIOwbEieAr9Tu9fA23j1xJDePlMrFuih4eENrLNC5Kta227nmMQWjVS
-	 fS0QDIQKYwcCtLV47MtLU/X9UrRXkFYkry069Sg2jt/TRatJYWXPulgPm8B9pYtAdI
-	 QZrCzNFe2cxt3zD4jBYcXLoOr+3bG5ECAu1cjTnqWt4dG2h4rYC6LwPMqgqCizL9dJ
-	 vWsYVOh99wDEw==
-Date: Sun, 21 Jun 2026 18:36:18 +0100
+	b=mx/iBQG79HkTVuW5Z15E5Qif0mgxTJMPoX4K5QLSF0ofGOCISeuJPhQ59rWBNf6Vj
+	 6h3re0KxvTIqPiT4Lg8bPxLVcvBAehyvFm7Uml5gCkUdqzAEvPLI/YEZFinKRIX0Vs
+	 JjUDZzWiinfT32uW/OVROAwlbPrMLgMsiAQRSZn12tR1mvUQ4Dk3f3zM2xOx3WMqsX
+	 2mQdYomJBHibPBtYdxewEZHPjAhgN9xqJ72CQtIP4O/hIT/Gaiok2/gm25kDhm53Iu
+	 ctYH1F7ot6GnMMGPq9ymOWP5fmbDtq19LhKVAixrsZGcUPdDr/eA8F208ZLl+hJU5G
+	 y68tALs3vrtaA==
+Date: Sun, 21 Jun 2026 18:41:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
- dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com, Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V13 7/9] iio: imu: inv_icm42607: Add Accelerometer for
- icm42607
-Message-ID: <20260621183618.31e8d704@jic23-huawei>
-In-Reply-To: <20260615172554.160910-8-macroalpha82@gmail.com>
-References: <20260615172554.160910-1-macroalpha82@gmail.com>
-	<20260615172554.160910-8-macroalpha82@gmail.com>
+To: Biren Pandya <birenpandya@gmail.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: kxsd9: Fix runtime PM error handling and
+ scoping
+Message-ID: <20260621184138.39540fda@jic23-huawei>
+In-Reply-To: <20260615200330.33207-1-birenpandya@gmail.com>
+References: <20260615200330.33207-1-birenpandya@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,16 +47,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 15 Jun 2026 12:25:50 -0500
-Chris Morgan <macroalpha82@gmail.com> wrote:
+On Tue, 16 Jun 2026 01:33:30 +0530
+Biren Pandya <birenpandya@gmail.com> wrote:
 
-> From: Chris Morgan <macromorgan@hotmail.com>
+> The kxsd9 driver uses pm_runtime_get_sync() in multiple places without
+> checking its return value, which can lead to silent failures. It also
+> relies on manual pm_runtime_put_autosuspend() calls in various return
+> paths, which is prone to memory leaks if a return path is missed.
 > 
-> Add icm42607 accelerometer sensor for icm42607.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-FWIW I think this has the same issue as the gyro patch around
-management of the cache of what is enabled, but
-this one sashiko gave a clean bill of health...
+> Fix the runtime PM handling by using the new scoped guards and proper
+> error checking:
+> - In kxsd9_write_raw() and kxsd9_read_raw(), use the scoped
+>   PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND() macro to safely automate
+>   cleanup on function return, while maintaining the behavior of
+>   waking up a suspended device via pm_runtime_resume_and_get().
+>   This allows us to cleanly remove all manual puts and error gotos.
 
-:)
+Somewhere here mention that one of the puts was missing.
+
+> - In kxsd9_buffer_preenable(), replace pm_runtime_get_sync() with
+>   pm_runtime_resume_and_get() to safely check for errors and handle
+>   usage-counter unwinding on failure.
+> - In kxsd9_common_remove(), replace pm_runtime_get_sync() with
+>   pm_runtime_resume_and_get() and only invoke kxsd9_power_down()
+>   if the resume succeeds. This prevents unbalanced regulator disable
+>   warnings and bus timeouts if the device is already suspended.
+> 
+> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+
+Given this fixes a path, needs a Fixes tag.
+
+Otherwise, what Andy said.
+
+> ---
+>  drivers/iio/accel/kxsd9.c | 50 +++++++++++++++++++--------------------
+>  1 file changed, 24 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index 4717d80fc24a..f23d1660e6da 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -139,68 +139,63 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
+>  			   int val2,
+>  			   long mask)
+>  {
+> -	int ret = -EINVAL;
+>  	struct kxsd9_state *st = iio_priv(indio_dev);
+>  
+> -	pm_runtime_get_sync(st->dev);
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(st->dev, pm);
+> +	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
+> +		return PM_RUNTIME_ACQUIRE_ERR(&pm);
+>  
+>  	if (mask == IIO_CHAN_INFO_SCALE) {
+>  		/* Check no integer component */
+>  		if (val)
+>  			return -EINVAL;
+
+This one is a real fix that needed addressing as it exits
+with an error code leaving the power on.
+
+> -		ret = kxsd9_write_scale(indio_dev, val2);
+> +		return kxsd9_write_scale(indio_dev, val2);
+>  	}
+>  
+> -	pm_runtime_put_autosuspend(st->dev);
+> -
+> -	return ret;
+> +	return -EINVAL;
+>  }
+
+
