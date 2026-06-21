@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E47AD2ED141;
-	Sun, 21 Jun 2026 17:45:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A48725B09D;
+	Sun, 21 Jun 2026 17:55:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782063911; cv=none; b=sAo+FhxIFAft1NKQKdiFDDIq/8PAVB5XKo9SZl+zI5Tm3b1xxHUMOouZ5LFgcTEVtveL100d8/b1rMdhPtg7hdLV4we7xp8Ra3yA0leYx/D/dozCkM8hK9Bl+rL4GNpmmG7pGLf9us8PG1mmq15Xe8Jce3TBAK/Bma36mCjUUm8=
+	t=1782064524; cv=none; b=gUADGVqYsvm7L+0TsDa9QLqFYZNvUBnqzUp27YnOcPxnQf7SGpdcpHGL+GfDiddoWBQSZRf5eTnjE6t4EBPtzuGMExwC5vVwBSgAB6DECrQ28yGDgt3t9BivcTMIXBWmVDakEoaPBn1KqAC9Sl7tjeAGY01PeDfXunT6HX+bkd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782063911; c=relaxed/simple;
-	bh=sqZEyJRV4wVnzaqKk/FXXmISdUGaS7beTCzqAAM6uac=;
+	s=arc-20240116; t=1782064524; c=relaxed/simple;
+	bh=R1p2i8T9fobYfjLn7MNjOtxU0/UI3jiT9j+0RhsmSVU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OSuACTONQ+exjGqFQIN25Vnh9lMCDz9S6z72mS6r+WwPwX94czlQ4l+tkQ+Q32SL4C0ZEdNdLLd3y3ILIE22bFQmnGjXO4PpYJ1oNpMeAtEtqXMHBlbJjML3qNN225f9Jt4SvLBmsmuCK98sI2CiDOiaI2vGQWmIw+q16UdyDOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mCAYQ3c/; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=YtXrF86AQeMrF4bUE7hdkaKcUpC6uybr1LtbA6vZqUzSunx+IFRTFGwbF4AxXFg/9bV/ZY8aq+V+7mlcMFhIYOqhGIM2VeAvUcA4KAV2RY4yoCR2WYrqijgbTDiAlnJy/b+yhw/EjclJ0qm7DSLrGEz6eIThXgiAP1rggpz7pZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vd83tb9S; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mCAYQ3c/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A661F000E9;
-	Sun, 21 Jun 2026 17:45:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vd83tb9S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE371F000E9;
+	Sun, 21 Jun 2026 17:55:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782063910;
-	bh=keA/Wzh3w0PmlgEJU+hlK1X0S+C/P8/vh/nuxU/5sKw=;
+	s=k20260515; t=1782064522;
+	bh=Fb4dUOiJ7SqvjrfHPS2Y/yRW1Y80P2NCg22R8V4I7Xw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mCAYQ3c/IsrtFnSYPgC4yz6zRqgUJbk03Q4wlAxiWfB35hsZzSoWkuW6Rgerfk57F
-	 TrmbOz/uX59I4lXjP1E63sSFF4aJsyY7L2DGE8xWAS5utOk79qiAXB/inuvQ/G8Vj6
-	 pRoWyAEx8ow5WHBe13twNnmJjcfCFhpYI0YT+6j2cPLK8tVQkIjK1jNtaxAG2W52dq
-	 LQax02UJhmnGKQ8C43v09dfD89YuSMpTsoTHNMsc7qcUIIryN71R8+34VE7awDq7T6
-	 o0KyPm1+kEV4uhgtYHVpczEn47KVQaTVmTIz0snajNWP2e2Bci26hP4jjxH70cf33U
-	 7zdK3O/GiA7Aw==
-Date: Sun, 21 Jun 2026 18:45:02 +0100
+	b=Vd83tb9SgcT2wKO7F7wSpSFY0lJ8lCezZq+rOba+8o8hyndLDN5M/uW8ZcUvQ5nU6
+	 HLM0diQ01J1g6fypnMwXfY/MIHSt6VMyBaF+AXwBSE42O8yc3WfbHcMI00RYWlgv94
+	 O574IUSXPxMoR3CSbLHynlXQH2nS4+9QTCGYUcTGk3X5Z/XMgLgYy5dXXSDRFsPvv0
+	 tDg5zs8kQkCwyMd0MtILPE/pOrc153GhhVz/e0zmayOFgvEht72EelzlCCyM2HmH8U
+	 bw+Zrc13LrP80NScHa+NPO1nUVmk9nI9Z2wlUjHvtdMmRvdhNF7QkewSaDnK70BXYr
+	 suYBETGABJmfg==
+Date: Sun, 21 Jun 2026 18:55:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Biren Pandya <birenpandya@gmail.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: gyro: mpu3050: Fix runtime PM leak and refactor
- trigger state
-Message-ID: <20260621184502.7c99616b@jic23-huawei>
-In-Reply-To: <20260615214504.38979-1-birenpandya@gmail.com>
-References: <20260615214504.38979-1-birenpandya@gmail.com>
+To: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Cc: hexlabsecurity@proton.me, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: accel: bmc150: clamp the device-reported FIFO
+ frame count
+Message-ID: <20260621185517.5893e494@jic23-huawei>
+In-Reply-To: <20260616-b4-disp-9546bfb4-v3-1-5acc59a06636@proton.me>
+References: <20260616-b4-disp-9546bfb4-v3-1-5acc59a06636@proton.me>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,45 +47,84 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 16 Jun 2026 03:15:04 +0530
-Biren Pandya <birenpandya@gmail.com> wrote:
+On Tue, 16 Jun 2026 20:56:51 -0500
+Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org> wrote:
 
-> mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when the
-> trigger is enabled, but several error paths in the enable branch return
-> directly without dropping the usage counter again. pm_runtime_get_sync()
-> increments the usage counter, so every failed enable leaks a runtime PM
-> reference and the device can no longer autosuspend. The driver state flag
-> hw_irq_trigger is also left set after a failed enable.
+> From: Bryam Vargas <hexlabsecurity@proton.me>
 > 
-> To fix the error unwind clearly and avoid an asymmetric goto block inside a
-> monolithic function, this patch breaks the trigger state handler into two
-> distinct helpers: mpu3050_drdy_trigger_enable() and
-> mpu3050_drdy_trigger_disable(). The enable helper correctly implements the
-> error unwind path to drop the PM reference and clear the flag.
+> __bmc150_accel_fifo_flush() transfers the frame count the device reports
+> in FIFO_STATUS into an on-stack buffer sized for BMC150_ACCEL_FIFO_LENGTH
+> (32) samples, but the count is masked to 7 bits (0..127) and the optional
+> caller budget does not bound the flush-all path. A device, or an attacker
+> on the I2C/SPI bus, reporting up to 127 frames overflows the buffer by up
+> to 570 bytes: a stack out-of-bounds write.
 > 
-> Additionally, pm_runtime_get_sync() is replaced with
-> pm_runtime_resume_and_get() for robust error checking.
+> Clamp the count to BMC150_ACCEL_FIFO_LENGTH before the transfer, mirroring
+> the clamp already applied in bmc150_accel_set_watermark(). Conforming
+> hardware reports at most that many frames and is unaffected.
 > 
-> Fixes: 3904b28efb2c ("iio: gyro: Add core driver for the MPU-3050")
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+> Fixes: 3bbec9773389 ("iio: bmc150_accel: add support for hardware fifo")
+I thought we had an earlier discussion about this. However that
+may well have been in a thread related to a similar patch from someone else!
+
+As far as I'm concerned this is nice to have hardening of a driver
+against buggy devices, not a fix that triggers all sorts of potential
+processes.  So applied but to the testing branch of iio.git with this
+and the stable tag dropped.  I don't see this as appropriate to backport
+unless we have had reports of it occurring on real hardware for some
+reason.
+
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
 > ---
+> v3 (Andy [2], [3]): shrink the commit message and move the register/byte
+> detail below the cut; fold the caller budget and the clamp into min3()/min()
+> per Andy [3] (no functional change; make W=1 clean).
+> v2 (Jonathan [1]): clamp with min() instead of min_t(u8, ...).
 > 
->  drivers/iio/gyro/mpu3050-core.c | 156 ++++++++++++++++++--------------
->  1 file changed, 87 insertions(+), 69 deletions(-)
+> [1] https://lore.kernel.org/all/20260614141146.697dde04@jic23-huawei/
+> [2] https://lore.kernel.org/all/ajEMUChqvxGzSLl_@ashevche-desk.local/
+> [3] https://lore.kernel.org/all/ajELw0x5DiyMuFYZ@ashevche-desk.local/
+> v1: https://lore.kernel.org/all/20260613-b4-disp-24d6b15f-v1-1-f5c3fe7294fc@proton.me/
+> v2: https://lore.kernel.org/all/20260615-b4-disp-ef4f7a59-v2-1-af5e980bcdd7@proton.me/
 > 
-> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> index d84e04e4b431..7dea7ab6b2d6 100644
-> --- a/drivers/iio/gyro/mpu3050-core.c
-> +++ b/drivers/iio/gyro/mpu3050-core.c
-> @@ -950,97 +950,115 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
->   * @trig: trigger instance
->   * @enable: true if trigger should be enabled, false to disable
->   */
-
-As the bot called out.  There are docs here that need to move
-with the function.
-
-> -static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
-> -					  bool enable)
+> count = val & 0x7F is 0..127; the only other limit is the optional caller
+> budget, which does not constrain the flush-all path (samples == 0).
+> bmc150_accel_fifo_transfer() reads count * 6 bytes, so a count of up to 127
+> writes up to 762 bytes into the 192-byte buffer (up to 570 past its end),
+> clobbering the stack canary, saved registers and the return address.
+> 
+> Reachable on every FIFO flush (watermark IRQ or the sysfs buffer-disable
+> path). Verified with an in-kernel KASAN litmus (CONFIG_KASAN_STACK=y) and a
+> userspace ASan model on x86_64 and i386: without the clamp a device
+> reporting 127 frames drives the transfer past the 192-byte buffer (stack
+> out-of-bounds write, both ABIs); with the clamp it is bounded to 32.
+> Reproducer and full logs available on request.
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 2398eb7e12cd..ecaa4782d847 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -988,8 +988,10 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+>  	do_div(sample_period, count);
+>  	tstamp = data->timestamp - (count - 1) * sample_period;
+>  
+> -	if (samples && count > samples)
+> -		count = samples;
+> +	if (samples)
+> +		count = min3(count, samples, BMC150_ACCEL_FIFO_LENGTH);
+> +	else
+> +		count = min(count, BMC150_ACCEL_FIFO_LENGTH);
+>  
+>  	ret = bmc150_accel_fifo_transfer(data, (u8 *)buffer, count);
+>  	if (ret)
+> 
+> ---
+> base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+> change-id: 20260616-b4-disp-9546bfb4-a26c55f33efc
+> 
+> Best regards,
 
