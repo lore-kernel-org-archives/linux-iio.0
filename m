@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBC1F42050;
-	Sun, 21 Jun 2026 18:08:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 810ED237180;
+	Sun, 21 Jun 2026 18:09:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782065291; cv=none; b=rqrgDk76CBOF7t7oQ8eC6+2kr9/xwNgnfdJTUX1YLjZv9dEW8cPQUJNv/vKY60pO8YCxPDmXNbxw120yi2dAbw+DErGPQnIbZdyCt9AUHT4p/KM1AsGtERqET4Gw7WtZtt3OQDt//dX4KRCv98q6Q9D/nCKk34oKKVBKsZUrZmQ=
+	t=1782065359; cv=none; b=FcuTMF+JfhFnjkXovAmjAOonDUVLN5lWMEeFjY5scwXADF/cYb56YOqJB3O+GHaHNSwS/wnFGi5jQoVg875cP6enlL8ZVD4C1vtJ5W/mE/hYrJU+MOIAPy/aLRgRbLdLyyNirRMOuw9BzkxezO3RasJwfYrXnuDYMLVxGQCqMLw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782065291; c=relaxed/simple;
-	bh=cG7nOhvF2K2FmPQEJ3w0qcibrKfH4r3OjvYmEZ3n4a0=;
+	s=arc-20240116; t=1782065359; c=relaxed/simple;
+	bh=YO+d+abx4/wg6lbW1kEBNRxmbTBswGTr+/uFi4gttFs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nxTnmR4WLmTxsQ6YAeW0b/QmqdaInuAVZd3eAZeVXbR2W25J9onRmVO2ufxIiRujcEBXiH66BexueajA9W7r3iLXaVdolYRd9AjfKOLnw1AMZJvAfnGgr0gtDRUolSw3DNSJOdinhWOQUajAq8E1iULCq62QwMc0txA3XIj9YQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cY//uzAE; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=qEYulUF2ZKK48oCrWMtmH/Ju3ss5VqYcXgUm2gasv25kjrW8AxnmKVQfbipwRDUM8opTsYd/QGaXf6jy8VZtwjONe4TF8Bc5djLw67tIlGEEI/gy2BU3SKDG9bBBS3hBoF4QVP+ykq8WLbiyGkdYzwPH4Ni7u85up4G98wwvcpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RaLsUoqY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cY//uzAE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8444C1F000E9;
-	Sun, 21 Jun 2026 18:08:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RaLsUoqY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F361F000E9;
+	Sun, 21 Jun 2026 18:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782065290;
-	bh=Wf+NE34DC6hdShPXcTCUG4WG/CoMfqf3iDvjuIdGiYM=;
+	s=k20260515; t=1782065358;
+	bh=nTM3wIcqATUv1drRh+8J+iX3OPQkQMDGvw1Isk2AAI4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cY//uzAELT6NtDHh8WhhCvlTJD2LIbGosrZuKoJxvEjiCCR8rV989HBgu33VAU0Dj
-	 sXSYgF38rMrVCvd639BpBTZlpbqDWXkL6uMWLvEeKt+F4KXabylPeJd/1sl1Xn61Lc
-	 rcgdVPfPrs+M9zp26xFCGO8uIDvw0r0UdYjX5rmc+3AbLC0R7o3fopnrQYanL3Sfog
-	 F62oEmMVrurVm3gJ5/gf5kD0WQhrsQekOLpz/QdgjF4JrUa2C0CDZEiQ1ZUkp6veLY
-	 kHGl4WdmC10WL/uboK3fhl2PRM8RPK9L4jgSJN7YwEp3lKuxGvCVycF3IPjbQS8clC
-	 Q2c33gk2/CfKg==
-Date: Sun, 21 Jun 2026 19:08:04 +0100
+	b=RaLsUoqYykiXZviJ0q/3L3lt8qEkSJY0faf0Tw6LD5MklpLhErWb8h4yLDpIxXzyE
+	 06SxM42u1bp7f3bseJg43qaRmzjN80e+kWJRxBOkBq1Wr4GnQfAG4D+7QnHJHXw9ZM
+	 J0UXUsV2G8vYjt32n+Sy89naJ2nYA8QbghkwLCM1F4N3g3nhhJiw6q/BD8daWtSIRb
+	 DBdFEHoWv8wPdEDj7BkpKNbQvjjqfNzdT8GkElfJGD8khZXKV4c6rkNN9pGSOF0McD
+	 o1OwmJKE3FbJTNm6+VFij00Uv5O/nbGzuAkNrUcak/Yti7ZkXMWWXSrmqtD1z0nT+8
+	 SuUCTehpQfQ2A==
+Date: Sun, 21 Jun 2026 19:09:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
-Cc: hexlabsecurity@proton.me, Remi Buisson <remi.buisson@tdk.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v3] iio: imu: inv_icm45600: clamp the device-reported
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: hexlabsecurity@proton.me, linux-kernel@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>, linux-iio@vger.kernel.org, Sean Nyekjaer
+ <sean@geanix.com>, Andy Shevchenko <andy@kernel.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>
+Subject: Re: [PATCH v3] iio: accel: fxls8962af: clamp the device-reported
  FIFO sample count
-Message-ID: <20260621190804.04894168@jic23-huawei>
-In-Reply-To: <20260616-b4-disp-76e3f743-v3-1-c20930aaf1cb@proton.me>
-References: <20260616-b4-disp-76e3f743-v3-1-c20930aaf1cb@proton.me>
+Message-ID: <20260621190913.0d6e05c2@jic23-huawei>
+In-Reply-To: <ajJ0LSXQmuOhj8Pr@ashevche-desk.local>
+References: <20260616-b4-disp-2e8d94cf-v3-1-c4e092eef3a2@proton.me>
+	<ajJ0LSXQmuOhj8Pr@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,89 +49,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 16 Jun 2026 20:57:28 -0500
-Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org> wrote:
+On Wed, 17 Jun 2026 13:17:17 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Bryam Vargas <hexlabsecurity@proton.me>
+> On Tue, Jun 16, 2026 at 08:56:15PM -0500, Bryam Vargas via B4 Relay wrote:
+> > 
+> > fxls8962af_fifo_flush() transfers the sample count the device reports in
+> > BUF_STATUS into an on-stack buffer sized for FXLS8962AF_FIFO_LENGTH (32)
+> > samples, but the count is a 6-bit field (0..63) that is only checked for
+> > zero. A device, or an attacker on the I2C/SPI bus, reporting 33..63
+> > overflows the buffer by up to 186 bytes: a stack out-of-bounds write.
+> > 
+> > Clamp the count to FXLS8962AF_FIFO_LENGTH before the transfer, mirroring
+> > the clamp already applied in fxls8962af_set_watermark(). Conforming
+> > hardware reports at most that many samples and is unaffected.  
 > 
-> inv_icm45600_buffer_fifo_read() uses the FIFO_COUNT the device reports,
-> unclamped, as the length of a regmap_noinc_read() into the fixed 8 KiB
-> st->fifo.data buffer. The only bound is the caller's "max", which the
-> interrupt path skips (it passes 0). A device, or an attacker on the bus,
-> reporting up to 65535 makes the read as large as ~1 MiB: a heap
-> out-of-bounds write of device-controlled data.
+> OK!
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> Clamp fifo_nb to the buffer capacity (INV_ICM45600_FIFO_SIZE_MAX /
-> packet_size) before the read, mirroring the watermark cap in
-> inv_icm45600_wm_truncate() and the sibling inv_icm42600 driver. The clamp
-> is a no-op for conforming hardware.
-> 
-> Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
-> ---
-> v3 (Andy [2]): shrink the commit message; the register/byte detail, the
-> not-for-stable rationale and the introducing commit moved below the cut.
-> v2 (Jonathan [1]): use min() instead of min_t(size_t, ...), and drop the
-> backport tags -- this is hardening against a malformed device-reported
-> count, not reachable with conforming hardware ("nice to have hardening",
-> Jonathan).
-> 
-> [1] https://lore.kernel.org/all/20260614144557.196a5c4c@jic23-huawei/
-> [2] https://lore.kernel.org/all/ajEMfH-_76M1OBqE@ashevche-desk.local/
-> v1: https://lore.kernel.org/all/20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me/
-> v2: https://lore.kernel.org/all/20260615-b4-disp-feb19207-v2-1-2d36f1e5fc54@proton.me/
-> 
-> fifo_nb = le16_to_cpup(raw_fifo_count) is 0..65535; the interrupt handler
-> calls inv_icm45600_buffer_fifo_read(st, 0), so the "max" clamp is skipped,
-> and fifo_nb * packet_size (16 bytes per packet) reaches ~1 MiB into the
-> 8 KiB st->fifo.data buffer. Present since 06674a72cf7a ("iio: imu:
-> inv_icm45600: add buffer support in iio devices"); not marked for stable as
-> it needs a malicious or defective device, or bus tampering.
-> 
-> Reproduced with an in-kernel KASAN litmus and a userspace ASan model:
-> without the clamp a FIFO_COUNT of 0x208 (520 packets -> 8320 bytes) gives a
-> slab-out-of-bounds write past the 8192-byte region, and the full magnitude
-> (0xFFFF -> 1048560 bytes) reproduces under ASan on x86_64 and i386; with the
-> clamp the read is bounded to the buffer. Reproducer and full logs available
-> on request.
-> ---
->  drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-> index 2b9ea317385c..5cde42f70c2e 100644
-> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
-> @@ -422,6 +422,9 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
->  	if (max > 0 && fifo_nb > max)
->  		fifo_nb = max;
->  
-> +	/* Limit to the internal buffer capacity; the count is device-provided. */
-> +	fifo_nb = min(fifo_nb, INV_ICM45600_FIFO_SIZE_MAX / packet_size);
-> +
-It is a little odd to clamp against a value / packet size just to multiply it
-by packet size.  However there is an oddity here in that we might not have
-a fully number of packets in the 8KiB buffer.
 
-Hmm. It actually is a though as the packets are either 8 or 16 bytes
-(only the bigger one relevant here).
+Applied to the testing branch of iio.git
 
-So could we just do this instead?
-	st->fifo.count = min(fifo_nb * packet_size, INV_ICM45600_FIFO_SIZE_MAX);
+Thanks,
 
-Also to make this much easier to spot, can we actually use the define in
-the allocation in _core.c to allocate the buffer?  That can be in the same
-patch as it's all related, but needs a tiny comment in the patch description.
-
-st->fifo.data = devm_kzalloc(dev, INV_ICM45600_FIFO_SIZE_MAX, GFP_KERNEL);
-
-
->  	/* Try to read all FIFO data in internal buffer. */
->  	st->fifo.count = fifo_nb * packet_size;
->  	ret = regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
-> 
-> ---
-> base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
-> change-id: 20260616-b4-disp-76e3f743-98d24c7e6ae4
-> 
-> Best regards,
-
+Jonathan
