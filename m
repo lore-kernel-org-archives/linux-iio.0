@@ -1,238 +1,391 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA062C2FF
-	for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 19:30:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A0972BE65B
+	for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 21:14:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782070252; cv=none; b=o/ozcWCyDmKy8AhftXpYNfWh6QlJ/yKH/AQzossy1Z/UzzkIu2fXQZ4tRXrr12Xd34EoIidruPJs5R01L4GURnW2B2WCxTe+dlUoVkP0hOdhuHemn3mUcS+0GmBpmAx+Cesj4unB/56C/smp2CJVOHbVH6jk5MKagpWWNfb2vxI=
+	t=1782076502; cv=none; b=ghYgJ6kqWMvCruoKnIglGbtrsQdu901CTqpSif1L2SihwN2YgB9TmbhbmFg4zi8GQBatdHj83v5RWTHfoAxJsXoU3gslqeUpvg/6KyvWgShOu9xdw4cu8AeJ6I8F+A4AZtlegROPwKsfYh254QiDp74Dbp/I3mPTXXKvl4RtKrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782070252; c=relaxed/simple;
-	bh=fTD1hTj9KEJ2FrSkhkNY6rr+H8me3UK+jbkkPO1nz/4=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ifDfXc+NJiWZAf+BckX3FA3CY5eGKSdFg6Obm9tVKpY5zSiu7F4XubIMuJyKFoYDks5l+qTymhcmo2FqUuA9YA4prxRes6DS+TR9VEpY+HfWI8hTC86ZWEm78fejy6RpmYHAulggkt9BSqfZDRrmdg8zPyRcqS6MQz3pLi5tzTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K+0WFH15; arc=none smtp.client-ip=209.85.216.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782076502; c=relaxed/simple;
+	bh=C0wQVxuqdiK/fp+BVmjKVlnDaGx0dHeZxItIBW4aD3g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Jln1up5PnwBmUKYVennuJ56mCZ63imV0EdENa+UZV8rjzkRrIcvclE1efSvoDUsrXkdUQQpoEgkyx6jzPT2znpJ6WbjVUjdlgUhlZC914VSuLHN3QIYjFk9p+99KcX9U3OvI0SZLHtoMKT3EmM8svf3YMQfissCzsmM1gr7pDPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=lZd/Q7rL; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K+0WFH15"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-36b8d414666so1942032a91.3
-        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 12:30:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="lZd/Q7rL"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7e6b5737bb2so3067237a34.1
+        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 14:14:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782070250; x=1782675050; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ovmYMPQs9wzJ5m3dA5QVnhFKoWOm1x+0ogBnUH/NFYw=;
-        b=K+0WFH15JYU+lK9TC4WF7jpyLaatdiDJ7shey1pZUElZjf/ZEwbhcDjVY92VmBuKbq
-         evE8R8F2WM9gMJgzbUHcaRtm15hV9rEtbwL/sdKSItNMxZUjWgSq/9Px2nX/bR2OH79c
-         eFua7IaNrhqa4U+u5mKaSHlXsjU68RBscLN7t+igSQWRQHG26aeIP0RHjJyfgcbnFpQO
-         niLejQ/M+GJpLe5QRxHegpkAL3PGsySLoRgEZZ6kNDP70NsUsGKLJAPSRjFbE1DTwuNZ
-         Pjtyod/bcUvhhGFiKgm97IAqoe8JP0g/VHK3JSZcyzOEUXdOYIgjxZEV8Rl/j52V0Qy1
-         2QJg==
+        d=baylibre.com; s=google; t=1782076498; x=1782681298; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=W03X9xRHhLEUFBz1GJVjBleFMPeYw6BCaCiOWFJSiAM=;
+        b=lZd/Q7rLCahdZK1G12DD0/uIAg3ki28n4ufaPNrxne15cHVARrKslpw70k+oZ+JHGB
+         rGxQ9bue58zPujN73r4EbA869RnXG60cQ71xYUrO7JMgmFWlesSwSJzkAZvc8ZQir4I7
+         CgmHRtgpF5u2XUW1EY44q66y4t3JqDYkWzrg4NZAUVECZ28QApkGanq775r6dbtMtY7C
+         mAICyXCIhe/BbNxISNdUB2cHuBNVhDtE1HFUpl6cUnsIjR1qfrA20HHaZ+t41a60YVkl
+         1L1tjss/JulfAmgZuagwmcNvPclDbKiHEKTKJxQc8UyGG5W3y1ETMWAyQlukgMV/FKQa
+         9i6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782070250; x=1782675050;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ovmYMPQs9wzJ5m3dA5QVnhFKoWOm1x+0ogBnUH/NFYw=;
-        b=nczkjut79XshLjDnh+id6J8XavUNCfE9gi42jmZ1yexWlzESFUgna+Vs19O1dQ4Lgj
-         bnFslPxWslMF+8G2D3DgQLf3n54e002kMTC8UNYZ3F8X8OAyFFMd+Snag9ENx+PRcNc3
-         I7WFT51fwqLHQlPNrunMTexZaMo17BnBCMOs7s57/xDQW+FJIpPw/TiShxkE31PqNGLY
-         6qjzkt4su6CVRutimoZI7UYyMY4Ma7/DZqpfPbxL9CH9ILC/oag5ytu53/aSRqPg11/H
-         trIipbqZGDPagx6nkiwL7fA/dHRo62/7WBmD6fT4b7t5edBhpD/37Vg/tCL1hNQg/wOA
-         H3HQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpGB21bq19r7JAUvLTG46PzCr1APAUKJknpG2laTDDmhjaspyMn278wjhdsmBxCJBxXWeII7HWao1Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzg1Hs437yfAl3sbzFA5Ptgn17a9n6nWPWIVdMG3GIU3b1uullh
-	jMnaKolUM6kJOXK+9Lv5b1WU4gD+8g7NzOF8lDyzNtU1XUntk2UrhNxP
-X-Gm-Gg: AfdE7clLZw873fV4+wu1YlLaavf8COP6e2H0JnYV+4jvzt3e8wC0kZ3iBCTPy4KH63S
-	Xo7yQrg/0Fr7i+XMAYQqEHReTHqLn9+ptp/Nzt+Dt7bliCYSs329TtN2kHs9IuZ/ej49VIA5Ih3
-	M0PSboNehWx8LztkZ0V37G/oH79vds9v7Fz8hnjZ9UPYaYN7UzsvyCxO1YLiMTadW9AFY1KcWg6
-	mKq5YcNijmi+WyUAFbJY0N4O96WtXpVrwDSwOUttSOhzqvf7AH4TMQwzUpOJ1WdPXf7FFNxNhp3
-	etRPHeAm9K+EfGK2dYmIlwtEP0RHVAzkq5YITWxDqQJxUl4POo/HiknqZ/ehmwcQp/cIMSL0fjc
-	covGTTT/WmFlQW5EawBNVnKEQXFq6SpCle/kU/OsRF9oVsmFKedq9CQ9n28cMyMPsoRzrpObntx
-	YoCHqPv1NKLJu9Mz8C9iYDQBuR69sDsjq8EJ13sCgrAg==
-X-Received: by 2002:a17:90b:38d1:b0:366:3517:1a95 with SMTP id 98e67ed59e1d1-37d4ae34f25mr7764045a91.0.1782070249951;
-        Sun, 21 Jun 2026 12:30:49 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.234.96])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-37d15de5d3dsm8305784a91.10.2026.06.21.12.30.46
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 21 Jun 2026 12:30:49 -0700 (PDT)
-From: Biren Pandya <birenpandya@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Biren Pandya <birenpandya@gmail.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Linus Walleij <linusw@kernel.org>,
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iio: accel: kxsd9: fix runtime PM leaks and unchecked returns
-Date: Mon, 22 Jun 2026 01:00:31 +0530
-Message-ID: <20260621193036.78549-2-birenpandya@gmail.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260615200330.1234-1-birenpandya@gmail.com>
-References: <20260615200330.1234-1-birenpandya@gmail.com>
+        d=1e100.net; s=20251104; t=1782076498; x=1782681298;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W03X9xRHhLEUFBz1GJVjBleFMPeYw6BCaCiOWFJSiAM=;
+        b=dNGKEw8WniJXsiKx5I5RZ/4TjFKtijN1GXkqTumU798RMjNJ6+rc6uMHySdGegu2Hd
+         B3uWaF9VatLnBvKTAj9IyOPkN1NvwD+HUhaPlSNwwPkuFQsE0XA7XapRcDTYKqyLCsqu
+         t3sqDMn+lWJxlRsn4PxpW/XjzU67ay8Xa5Dw8JsFkdhvoP2tiXIGGSsH3/ZkjN5Ldqyy
+         v13tD/W9iVNqSeEE+xr5H5aVu/NiupNC0rlsTh3uWoKmySfbWWnLFITcDxKUTo1Yf4jy
+         oxeOztAlnAIIMqkrIyRBCBn2OP5tAtT4WGNtxTdCgCJDT6OViJE3SG+wkvIjnhRyrPoW
+         /XaA==
+X-Forwarded-Encrypted: i=1; AFNElJ84LMcL8RpOL8uqOUH68h8/tMiB+2exB+RcyD3/fT0yN7SIwNpVa9M2g1jfPzgDkHQQ/IWrS++IoFE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoeN8FwGTDfYMe0/7EcpFNBvVnnGnAxCJk/PApRqj2bUPp83ss
+	TVDXbjsJqTN0t9N8amc4SqvlcZr2uZgVEf3Uerxo1T2TZi/ys8LiThBqFNpnvCpTRfk=
+X-Gm-Gg: AfdE7cnALhG2AaOucCukZt2cI6JEveAySdtXUX7X1qcW959e0rFFM1hSE9SK9HFdEr7
+	PuVxGJVVfz0IykAkQv8CkZmFjhjXm4D32mnbLEyypdD6BA6G6eqyTn2pK1m2RcaaojxTvwmvRGs
+	/CGlwCwzRa/iIFiu2FwD2fFfwirpWQfmPigCuPg7Haq6vMiiJDe+d9HPGwVuss0SrMF710AV28B
+	wdYlRUEsx8Wb22IRBhUYfuKY+8QTGuCBMQG2BIElT3VJgS1/JAuLDDzGnhC0R+8p0uwejQze1Mj
+	kzEFpurjWEC6ApaYxVpn2BtAJq0vkWRFjjJcwe3xdpP6/grfYBG52BzTmdQTE662BHEHFXSzz0p
+	4t+t6P2An/54N7cG3LafVy74v8Plx2a8BKg/IKnoZobl+y21GgWuM+JUSOUbi1cwCR4URdSREoS
+	zh4so8JJt2sPs65zkqMp176Af6wuteRmly6IT65pqqbD2MOIA5KjUtMzA36xwCG7A=
+X-Received: by 2002:a05:6830:67e7:b0:7dd:e032:3ce5 with SMTP id 46e09a7af769-7e9323916d6mr9434422a34.17.1782076498392;
+        Sun, 21 Jun 2026 14:14:58 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf? ([2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e943d5dc07sm5223437a34.0.2026.06.21.14.14.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Jun 2026 14:14:58 -0700 (PDT)
+Message-ID: <da875b00-6f93-444b-982c-30b8001dd8e0@baylibre.com>
+Date: Sun, 21 Jun 2026 16:14:57 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add ti,ads122c14
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
+ <20260615-iio-adc-ti-ads122c14-v1-1-e6bdadf7cb2b@baylibre.com>
+ <20260621194102.08d7fdd6@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260621194102.08d7fdd6@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The kxsd9 driver uses pm_runtime_get_sync() without checking its return
-value, which can lead to silent failures. It also relies on manual
-pm_runtime_put_autosuspend() calls, which is prone to leaks.
+On 6/21/26 1:41 PM, Jonathan Cameron wrote:
+> On Mon, 15 Jun 2026 16:59:59 -0500
+> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
+> 
+>> Add new bindings for ti,ads122c14 and similar devices.
+>>
+>> This is an ADC that is primarily intended for use with temperature
+>> sensors. There are a few unusual properties because of this. In
+>> particular, the reference voltage source and current output requirements
+>> can be different for each measurement, so these are included in the
+>> channel bindings.
+>>
+>> The REFP/REFN reference voltage is usually just connected to a resistor
+>> that is being driven by the ADC's current outputs, so there is special
+>> property for this case rather than requiring a regulator to be defined
+>> to represent that.
+>>
+>> ti,vref-source is reused from ti,tlv320adcx140.yaml (otherwise might
+>> have preferred an enum of strings).
+>>
+>> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> 
+> A few queries inline though I'm only just starting to get my head
+> around this device...
+> 
+> Thanks
+> 
+> Jonathan
+> 
+>> ---
+>>  .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 224 +++++++++++++++++++++
+>>  MAINTAINERS                                        |   7 +
+>>  include/dt-bindings/iio/adc/ti,ads112c14.h         |  11 +
+>>  3 files changed, 242 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
+>> new file mode 100644
+>> index 000000000000..dc7f37cad772
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
+>> @@ -0,0 +1,224 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c14.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Texas Instruments' ADS112C14 and similar ADC chips
+>> +
+>> +description: |
+>> +  Supports the following Texas Instruments' ADC chips:
+>> +  - ADS112C14 (16-bit)
+>> +  - ADS122C14 (24-bit)
+>> +
+>> +  https://www.ti.com/lit/ds/symlink/ads122c14.pdf
+>> +
+>> +  These chips are primarily designed for use with temperature sensors such as
+>> +  RTDs and thermocouples. The channel bindings reflect this in that each channel
+>> +  represents the conditions required to make a measurement rather than strictly
+>> +  just the physical input channels.
+>> +
+>> +maintainers:
+>> +  - David Lechner <dlechner@baylibre.com>
+>> +
+>> +unevaluatedProperties: false
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - ti,ads112c14
+>> +      - ti,ads122c14
+>> +
+>> +  reg:
+>> +    items:
+>> +      - minimum: 0x40
+>> +        maximum: 0x47
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +    description: Optional external clock connected to GPIO3 pin.
+>> +
+>> +  avdd-supply: true
+>> +  dvdd-supply: true
+>> +
+>> +  refp-supply: true
+>> +  refn-supply: true
+>> +
+>> +  refp-refn-resistor-ohms:
+>> +    description:
+>> +      The resistance of the external resistor between REFP and REFN when using
+>> +      resistor bridge driven by current outputs for RTD measurements.
+>> +
+>> +  interrupts:
+>> +    minItems: 1
+>> +    items:
+>> +      - description: FAULT interrupt (GPIO2 pin)
+>> +      - description: DRDY interrupt (GPIO3 pin)
+>> +
+>> +  interrupt-names:
+>> +    minItems: 1
+>> +    maxItems: 2
+>> +    items:
+>> +      enum: [fault, drdy]
+>> +
+>> +  gpio-controller: true
+>> +  '#gpio-cells':
+>> +    const: 2
+>> +
+>> +  '#address-cells':
+>> +    const: 1
+>> +
+>> +  '#size-cells':
+>> +    const: 0
+>> +
+>> +patternProperties:
+>> +  ^channel@[0-7]$:
+>> +    $ref: adc.yaml
+>> +
+>> +    unevaluatedProperties: false
+>> +
+>> +    properties:
+>> +      reg:
+>> +        maximum: 16 # arbitrary limit, channel@ can be any combination of AIN0-AIN7
+>> +
+>> +      single-channel:
+>> +        maximum: 7
+>> +
+>> +      diff-channels:
+>> +        items:
+>> +          maximum: 7
+>> +
+>> +      bipolar:
+>> +        description:
+>> +          Set this flag if the differential input can be negative.
+> 
+> I'd leave that description to adc.yaml   Maybe that doc could be improved though
+> given it basically says bipolar == bipolar mode ;)
 
-Specifically, kxsd9_write_raw() contains a bug where returning -EINVAL
-bypasses the pm_runtime_put_autosuspend() call, leaving the device
-powered on.
+It seems not always obvious to me which properties from adc.yaml apply
+and which ones don't to a given ADC that makes use of it. So I was
+hoping to have some way of saying that bipolar is applicable to this
+chip. 
 
-Modernize the runtime PM handling to fix these issues:
-- kxsd9_write_raw() & kxsd9_read_raw(): Use the scoped
-  PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND() macro to safely automate
-  cleanup on function return and remove all manual puts/error gotos.
-- kxsd9_buffer_preenable(): Use pm_runtime_resume_and_get() to safely
-  check for errors and handle usage-counter unwinding.
-- kxsd9_common_remove(): Use pm_runtime_resume_and_get(), and reverse
-  the disable ordering to call pm_runtime_disable() before powering down
-  to prevent background RPM race conditions.
+> 
+>> +
+>> +      excitation-channels:
+>> +        description: AINx pins used as current output.
+>> +        $ref: /schemas/types.yaml#/definitions/uint32-array
+>> +        minItems: 1
+>> +        maxItems: 2
+>> +        items:
+>> +          maximum: 7
+>> +
+>> +      excitation-current-microamp:
+> 
+> There seem to be separate controls. Are their usecases where this needs
+> to be in array?
 
-Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
-Signed-off-by: Biren Pandya <birenpandya@gmail.com>
----
-Changes in v2:
-- Changed subject to reflect broader PM modernization.
-- In kxsd9_common_remove(), reversed the order to call pm_runtime_disable()
-  before kxsd9_power_down() to prevent background RPM race conditions.
-- Used standard error checking idiom in kxsd9_common_remove() (Andy).
-- Clarified commit message regarding the exact write_raw() bug and added
-  the Fixes tag (Jonathan).
+I'll have to ask, but probably yes since there are separate controls
+so `maxItems: 2` would be appropriate.
 
- drivers/iio/accel/kxsd9.c | 47 ++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 25 deletions(-)
+> 
+>> +        description: The current output of the excitation channels in microamps.
+>> +        minimum: 1
+>> +        maximum: 1000
+>> +
+>> +      current-chopping:
+>> +        $ref: /schemas/types.yaml#/definitions/flag
+>> +        description:
+>> +          If provided, the two excitation channels are to be used with current
+>> +          chopping enabled.
+> 
+> Can I have a reference for that? My initial read suggests it's the input channels
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 4717d80fc24a..7aa23ae64b7c 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -139,68 +139,63 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
- 			   int val2,
- 			   long mask)
- {
--	int ret = -EINVAL;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 
--	pm_runtime_get_sync(st->dev);
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(st->dev, pm);
-+	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
-+		return PM_RUNTIME_ACQUIRE_ERR(&pm);
- 
- 	if (mask == IIO_CHAN_INFO_SCALE) {
- 		/* Check no integer component */
- 		if (val)
- 			return -EINVAL;
--		ret = kxsd9_write_scale(indio_dev, val2);
-+		return kxsd9_write_scale(indio_dev, val2);
- 	}
- 
--	pm_runtime_put_autosuspend(st->dev);
--
--	return ret;
-+	return -EINVAL;
- }
- 
- static int kxsd9_read_raw(struct iio_dev *indio_dev,
- 			  struct iio_chan_spec const *chan,
- 			  int *val, int *val2, long mask)
- {
--	int ret = -EINVAL;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 	unsigned int regval;
- 	__be16 raw_val;
- 	u16 nval;
-+	int ret;
- 
--	pm_runtime_get_sync(st->dev);
-+	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(st->dev, pm);
-+	if (PM_RUNTIME_ACQUIRE_ERR(&pm))
-+		return PM_RUNTIME_ACQUIRE_ERR(&pm);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
- 				       sizeof(raw_val));
- 		if (ret)
--			goto error_ret;
-+			return ret;
- 		nval = be16_to_cpu(raw_val);
- 		/* Only 12 bits are valid */
- 		nval >>= 4;
- 		*val = nval;
--		ret = IIO_VAL_INT;
--		break;
-+		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
- 		/* This has a bias of -2048 */
- 		*val = KXSD9_ZERO_G_OFFSET;
--		ret = IIO_VAL_INT;
--		break;
-+		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		ret = regmap_read(st->map,
- 				  KXSD9_REG_CTRL_C,
- 				  &regval);
- 		if (ret < 0)
--			goto error_ret;
-+			return ret;
- 		*val = 0;
- 		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
--		ret = IIO_VAL_INT_PLUS_MICRO;
--		break;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 
--error_ret:
--	pm_runtime_put_autosuspend(st->dev);
--
--	return ret;
-+	return -EINVAL;
- };
- 
- static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
-@@ -239,9 +234,7 @@ static int kxsd9_buffer_preenable(struct iio_dev *indio_dev)
- {
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 
--	pm_runtime_get_sync(st->dev);
--
--	return 0;
-+	return pm_runtime_resume_and_get(st->dev);
- }
- 
- static int kxsd9_buffer_postdisable(struct iio_dev *indio_dev)
-@@ -476,13 +469,17 @@ void kxsd9_common_remove(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct kxsd9_state *st = iio_priv(indio_dev);
-+	int ret;
- 
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	iio_device_unregister(indio_dev);
--	pm_runtime_get_sync(dev);
--	pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	pm_runtime_disable(dev);
-+	if (ret < 0)
-+		return;
-+
- 	kxsd9_power_down(st);
-+	pm_runtime_put_noidle(dev);
- }
- EXPORT_SYMBOL_NS(kxsd9_common_remove, "IIO_KXSD9");
- 
--- 
-2.50.1 (Apple Git-155)
+No. :-)
+
+I must have got two ideas mixed together in my head to come up with
+this. Clearly this should be `input-channel-rotation` or something like
+that (we discussed in another thread already). Also curious if you thing
+any of these properties are common enough to promote to adc.yaml or if we
+should just make them e.g. `ti,input-channel-rotation` (you might not have
+had time to read the threads on that yet).
+
+> that are chopped.  For GC_EN
+> "When enabled, the device automatically swaps
+> the analog inputs and takes the average of two consecutive conversions to
+> cancel the internal offset voltage"
+> 
+> 
+>> +
+>> +      ti,vref-source:
+>> +        description: |
+>> +          Indicates the source for the reference voltage for this channel.
+>> +          0 - Internal 2.5V reference
+>> +          1 - Internal 1.25V reference
+>> +          2 - External reference (REFP-REFN)
+>> +          3 - AVDD as reference
+>> +
+>> +          For convenience, macros for these values are available in
+>> +          dt-bindings/iio/adc/ti,ads112c14.h.
+>> +        $ref: /schemas/types.yaml#/definitions/uint32
+>> +        maximum: 3
+>> +        default: 0
+>> +
+>> +    dependencies:
+>> +      excitation-channels: [ excitation-current-microamp ]
+>> +      excitation-current-microamp: [ excitation-channels ]
+>> +      current-chopping: [ excitation-channels ]
+>> +
+>> +    oneOf:
+>> +      - required: [ single-channel ]
+>> +      - required: [ diff-channels ]
+> 
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/iio/adc/ti,ads112c14.h>
+>> +
+>> +    i2c {
+>> +        #address-cells = <1>;
+>> +        #size-cells = <0>;
+>> +
+>> +        adc@40 {
+>> +            compatible = "ti,ads112c14";
+>> +            reg = <0x40>;
+>> +
+>> +            avdd-supply = <&avdd>;
+>> +            dvdd-supply = <&dvdd>;
+>> +
+>> +            /* 3-Wire RTD: Two IDACs, One Measurement (AIN1-AIN2) */
+>> +
+>> +            refp-refn-resistor-ohms = <500>;
+>> +
+>> +            #address-cells = <1>;
+>> +            #size-cells = <0>;
+>> +
+>> +            channel@0 {
+>> +              reg = <0>;
+>> +              diff-channels = <1>, <2>;
+>> +              excitation-channels = <0>, <3>;
+>> +              excitation-current-microamp = <500>;
+>> +              current-chopping;
+>> +              ti,vref-source = <ADS112C14_VREF_SOURCE_EXTERNAL>;
+>> +              label = "rtd";
+>> +            };
+>> +        };
+>> +    };
+>> +  - |
+>> +    #include <dt-bindings/iio/adc/ti,ads112c14.h>
+>> +
+>> +    i2c {
+>> +        #address-cells = <1>;
+>> +        #size-cells = <0>;
+>> +
+>> +        adc@40 {
+>> +            compatible = "ti,ads112c14";
+>> +            reg = <0x40>;
+>> +
+>> +            avdd-supply = <&avdd>;
+>> +            dvdd-supply = <&dvdd>;
+>> +
+>> +            /* Resistive Bridge Measurement With a Thermistor for Temperature Compensation*/
+>> +
+>> +            refp-supply = <&avdd>;
+>> +
+>> +            #address-cells = <1>;
+>> +            #size-cells = <0>;
+>> +
+>> +            channel@0 {
+>> +              reg = <0>;
+>> +              diff-channels = <6>, <7>;
+>> +              bipolar;
+>> +              ti,vref-source = <ADS112C14_VREF_SOURCE_EXTERNAL>;
+>> +              label = "bridge";
+>> +            };
+>> +
+>> +            channel@1 {
+>> +              reg = <1>;
+>> +              diff-channels = <1>, <2>;
+>> +              ti,vref-source = <ADS112C14_VREF_SOURCE_INTERNAL_2_5V>;
+>> +              label = "thermistor";
+> 
+> Hmm. I'm interested to see where this goes, but generally when we have
+> a thermistor we attempt to ultimately convert it to a temperature
+> channel and I'm not seeing info here to allow us to do that.
+
+Since the hardware doesn't have any special features for handling
+specific sensor types, it seems like a case of the driver trying to
+do things that the hardware doesn't do, which we generally try to
+avoid in the kernel.
+
+For cases where we want a quick and easy (and not necessarily accurate)
+temperature conversion done in the kernel, we could make a generic thermistor
+analog front end binding and driver like we already have for RTDs and
+(linear) temperature transducers. This seems more sensible to me rather
+than having to re-implement such a thing in each ADC that could be used
+with a thermistor.
+
+> 
+>> +            };
+>> +        };
+>> +    };
+> 
+> 
 
