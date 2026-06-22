@@ -1,149 +1,358 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94BFE339875
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 16:59:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C85E3128B8;
+	Mon, 22 Jun 2026 17:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782147562; cv=none; b=d+BfJpGuYzWmp/AYvzvyM2vzLGAnqrs9eP0cKclULwzwpOUTEfznO4E9zj/KwsgCdCtx7iMGtKre0Le+jtPu0gtsC23pF+GAGZfaWKz2AJEeRijjIz4mYkSjbxW4y4IUX+DgYMn5rzD1ysF3mdbLPZixAKEC4++F+dxwIPGV+HM=
+	t=1782148064; cv=none; b=ADaGm/BW/kIJEF63903KOd+93oU3KY9ihjZb6NcpUqmbCv3cIB7UmOzN+bs8Jfa/+UxHvSgPHC+/3Npg030Wq1CExmosibZ3jSVbC14mk39o0iZzlmgsQwc2YqwSIsZAgXKzQ9UmbqLAZWxwJs4VRKJR0KvDiNAZwyFocn90J8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782147562; c=relaxed/simple;
-	bh=VwLgvQ79ZYX2f+aOk6E45c43BgvC+vyBko2Cz5vJ+KQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TDfsOH5YI8WM0pOFrWAIV4tU/T32CxBchC/ypong5nbO79pZBMKRrJ7q+/01BbAyKIyZjCQSE5G/hCkFWKDO6zTBWDSdftZ4EgrmTu4VZreGzdClrFR19Bo7G1HlZGmuDHby5DA4E2GHpgFXYDKSfIiceRe2M7q3+EHbHOj2UBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=A7SEhHJ3; arc=none smtp.client-ip=209.85.210.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782148064; c=relaxed/simple;
+	bh=rk5oTXt+kPbP1v2rv76tTIYpl2VT+0stJsBPM3BPE34=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=lmH4s+C5eXK4TtWvE+NRli8ezTlmt7I52HPigj1R5NxkbqfK++u3IcloVQU9Rn+O5lEq0IrJWN6neOeEuGYFqKontss4lK0i5EctAPaJOD68blpvrTqZeS/HUwHrkEFvzrLDkzXKhTGvSl/UckHFpJn/GonfonSkUzZ56i2xi8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hv6fzCiG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="A7SEhHJ3"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7e94cd6f99aso1574672a34.3
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 09:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782147559; x=1782752359; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=LgjPu8EjLkNonMouFLLepbJvfLSQfkmj1LSsNNlmiCw=;
-        b=A7SEhHJ3bTDgTFtOLfjzVo+enj32EmRN7j9vN8mfVTLTFBbFTQoP1NNWZLIxDMIdFf
-         8rGbvLK5qEA84k08RntU8Nqb6SYvzP3oV69vbQOi5nTBSypzEFWOXzlsap2nPRPuOivW
-         VFZguAQJrr8HtWuWJf2+xmEb9zVOU/XPQ8YOKGVkIDMLIMPeFVD1Jo66alTdg6r7IUhT
-         m8nPZyEC/6/fSYX7nhtf57t9Skt5FJjwsaV7v6zlBZhMGHdOk0x5aN2jbO8JFO3pql1A
-         nn8rQvedogk9ksTzGl4R8QNKZexSHbw1GE1H4/pJK42pi3ZSu+S+4+KEQ59+c4RFPoAv
-         Va1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782147559; x=1782752359;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LgjPu8EjLkNonMouFLLepbJvfLSQfkmj1LSsNNlmiCw=;
-        b=X+iQo0Mw+kgKVYUKO5VHCMG9r7poA6Bi3/3MiipdElphVKKoyuI1rwnXf+dtAyvB3S
-         D8pfi9SaAFyPUp3DoojImPqbtyoZLMiTbzYK3Pk7ddyFhDQgvZ6sfB8HfHngCrQLZLVC
-         CeyBjODgb89VEQGc2j0VDetaXtyuE9+M2RIYinQzgPc+E6zIg/GHu9+qFgwyCm1FjIMJ
-         PcvrUKdE9C6+oUd0qhcUgVtIMO4nmvTVDlygVWdum1GB+fL+iTPW3RosPt6pvVXqBOcv
-         Nn74XcFVi2SXqd3n3GszZ9HNeCKfd5rMF0euZ5uHUZhKoCKOLGfNhiA+4dPdegUttN9m
-         PNfg==
-X-Forwarded-Encrypted: i=1; AFNElJ/Y5+du7HSgJEs80EWRZAWX60AijNggn7hp6vL+cITdXJfbRmGPWDdnssJqMhsoaqXRr36r1MiG1h0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwHd8H5sZqgWI63XiZ7UeGc3/PcrfkJkJV9lDZGAiJufEtQKhaq
-	VxWGhNVpvoHq2EDD7WlbvTjXMQkDTyKaIvbDXbS53ZCB7zw1B5HVXQTyQ0sCy3wjfyU=
-X-Gm-Gg: AfdE7cl4MkPmQO0D3FTi6COMP8riZO6w7oLRPVcXZ2SJKbymRmKNjf4Eb5e5rc7otuq
-	GXUck93B2Toyp8+qdu0xSMmxcppADaFtNqwT/CJHiv0Zb3B4Sm+yPkbM6Ryl1jiJKnkl8eJTnRG
-	EYWoOUP64UVNeoVs5rSTNkpK7C9BIl0u2WEoZm731VNxi+bwB0p0/C5LVZ8r++KmtjtuX1sPqCZ
-	uy7V/gWBMuEqMqmaMkJ+MXNuGbIUTHyc4rISI2er1ESwsCMyUhCW6U0FgWan1w+N/oCFZETgA/y
-	3jjqE56TMncKpHgM2NqimtWXnvMBtSxX1oNzlAjXjmiKqvbhFBI+doAeeJHpaucT1+3XdiIxBLW
-	uzMRd5siCWN5OoyqpT3HTan9cvTx5Pdx1Z+NVMzYZcXEv8O/8uWIXDI1/RFb3bsD6z1PyYSfM62
-	W+ZbPpOw5bvgYdPfKr7kcnRB1FobPpSJnzg+ooOTPdlG+kDZIlHh3zPfc3IJoXHYo=
-X-Received: by 2002:a05:6830:3892:b0:7e6:ece3:80ed with SMTP id 46e09a7af769-7e92d9c6f71mr13440607a34.21.1782147559630;
-        Mon, 22 Jun 2026 09:59:19 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf? ([2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e944007d74sm6772717a34.5.2026.06.22.09.59.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2026 09:59:19 -0700 (PDT)
-Message-ID: <78d859ed-61a6-413e-9ecb-6af177f2f9ae@baylibre.com>
-Date: Mon, 22 Jun 2026 11:59:18 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hv6fzCiG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A5C1F000E9;
+	Mon, 22 Jun 2026 17:07:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782148062;
+	bh=TIOc4EZIcnfL8MMSPq6oZ8498vE1w7CZ5ipv3RaLpEQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=hv6fzCiGwPoY/UC9bzJGkpyLMQ7VWa9Q4NLhaYIb/5G8yox7OFP4CsXUX15OjCsCh
+	 0F3wyu+19FyfKT5wg+LkLr/eJbUF3orFoR7LLBuvOFsL6i1geeo7z5l+oO6OMUVafM
+	 NVHFrgsW5se/ewSmo5F6iUINMQ3tZUmNZfpMd+LfC7CBT0aYiiYTOycanLsLj9NiRL
+	 cPGO60GXaEA6SV12CfvngYQWeg7ThxJ3TrDQEt6BIx3lmgB5MzOKUQz6EudjEeVzt0
+	 8bKVFoinBNrWS50ekWXAoHqMsfScqXVLtOYisUhfxYrO9bNXLjg6Bd13Ikb55PmSPA
+	 o+QM9+GDY3XUQ==
+Date: Mon, 22 Jun 2026 18:07:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jinseob Kim <kimjinseob88@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v5 6/6] iio: osf: register IIO devices from
+ capabilities
+Message-ID: <20260622180733.290ac316@jic23-huawei>
+In-Reply-To: <20260616072242.3942-7-kimjinseob88@gmail.com>
+References: <20260616072242.3942-1-kimjinseob88@gmail.com>
+	<20260616072242.3942-7-kimjinseob88@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add ti,ads122c14
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Kurt Borja <kuurtb@gmail.com>,
- Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com>
- <20260615-iio-adc-ti-ads122c14-v1-1-e6bdadf7cb2b@baylibre.com>
- <20260621194102.08d7fdd6@jic23-huawei>
- <da875b00-6f93-444b-982c-30b8001dd8e0@baylibre.com>
- <20260622105546.69c6b4bb@jic23-huawei>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260622105546.69c6b4bb@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 6/22/26 4:55 AM, Jonathan Cameron wrote:
-> On Sun, 21 Jun 2026 16:14:57 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
+On Tue, 16 Jun 2026 16:22:42 +0900
+Jinseob Kim <kimjinseob88@gmail.com> wrote:
+
+> Register IIO devices for supported Open Sensor Fusion capability entries
+> and push received samples into IIO buffers when enabled.
 > 
->> On 6/21/26 1:41 PM, Jonathan Cameron wrote:
->>> On Mon, 15 Jun 2026 16:59:59 -0500
->>> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
->>>   
+> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+Sashiko had a few comments.  The last one on the unitilialized heap
+memory needs a new version of the fix from me.
 
-...
+Hopefully I'll get to that in the next few days,
 
->>>> +        description: The current output of the excitation channels in microamps.
->>>> +        minimum: 1
->>>> +        maximum: 1000
->>>> +
->>>> +      current-chopping:
->>>> +        $ref: /schemas/types.yaml#/definitions/flag
->>>> +        description:
->>>> +          If provided, the two excitation channels are to be used with current
->>>> +          chopping enabled.  
->>>
->>> Can I have a reference for that? My initial read suggests it's the input channels  
->>
->> No. :-)
->>
->> I must have got two ideas mixed together in my head to come up with
->> this. Clearly this should be `input-channel-rotation` or something like
->> that (we discussed in another thread already). Also curious if you thing
->> any of these properties are common enough to promote to adc.yaml or if we
->> should just make them e.g. `ti,input-channel-rotation` (you might not have
->> had time to read the threads on that yet).
+https://sashiko.dev/#/patchset/20260529121005.1470-1-kimjinseob88%40gmail.com
+
+The one about intermediate build issues (if correct) suggests you didn't
+ensure this series builds after each patch. Please make sure to do that
+to avoid breaking bisectability of the kernel.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/opensensorfusion/Kconfig    |  11 +-
+>  drivers/iio/opensensorfusion/Makefile   |   3 +-
+>  drivers/iio/opensensorfusion/osf_core.c | 253 ++++++++++++++++++++--
+>  drivers/iio/opensensorfusion/osf_core.h |  52 +++++
+>  drivers/iio/opensensorfusion/osf_iio.c  | 275 ++++++++++++++++++++++++
+>  drivers/iio/opensensorfusion/osf_iio.h  |  22 ++
+>  6 files changed, 586 insertions(+), 30 deletions(-)
+>  create mode 100644 drivers/iio/opensensorfusion/osf_iio.c
+>  create mode 100644 drivers/iio/opensensorfusion/osf_iio.h
 > 
-> It's turned up in a couple of drivers and the concept is fairly standard I think
-> so I'm fine with promoting this to a top level property if the definition can
-> be generic enough.
-> 
-> For a non TI example, the LTC2893 has this as well for it's thermistor settings.
-> It might be worth comparing the approach given here with what we have there.
-> In that case there are specific node types for different types of things that
-> are wired up with constraints on things like excitation currents.
-> It kind of constrains things to the sane known use cases.  However that is
-> partly because that device does (I think) more type specific handling than
-> we have here.
+> diff --git a/drivers/iio/opensensorfusion/Kconfig b/drivers/iio/opensensorfusion/Kconfig
+> index d393eb3aa..8b9376d28 100644
+> --- a/drivers/iio/opensensorfusion/Kconfig
+> +++ b/drivers/iio/opensensorfusion/Kconfig
+> @@ -5,11 +5,10 @@ config OPEN_SENSOR_FUSION
+>  	depends on IIO
+>  	depends on SERIAL_DEV_BUS
+>  	select CRC32
+> +	select IIO_BUFFER
+> +	select IIO_KFIFO_BUF
+>  	help
+> -	  Build the Open Sensor Fusion UART receive path.
+> +	  Build the Open Sensor Fusion UART IIO driver.
+>  
+> -	  The driver receives OSF protocol frames over a serdev UART.
+> -	  Frames are decoded and validated before being passed to the
+> -	  driver core.
+> -	  This patch only adds the transport path.
+> -	  IIO device registration is added separately.
+> +	  The driver receives OSF protocol frames over a serdev UART and
+> +	  registers IIO devices for supported capability entries.
+Avoid this churn. I wouldn't worry about it being a little forwards
+looking when added in the earlier patch and directly go to the final
+text.
 
-LTC2983 has current source rotation, so it has a adi,current-rotate property
-which would be the same as the excitation-current-rotation property that
-we have proposed here (named current-chopping in the patch, but better name
-was suggested in later discussion).
+> diff --git a/drivers/iio/opensensorfusion/osf_core.c b/drivers/iio/opensensorfusion/osf_core.c
+> index 137fb7166..61ef55646 100644
+> --- a/drivers/iio/opensensorfusion/osf_core.c
+> +++ b/drivers/iio/opensensorfusion/osf_core.c
 
-So not quite the same as the input-rotation property that we would need for
-this chip. Although ti,ads1262 that Kurt is working on will have both.
+>  
+> -static int osf_core_validate_sensor_sample(const struct osf_frame *frame)
+> +static int osf_core_register_capabilities(struct osf_device *osf,
+> +					  const struct osf_capability_cache *cache)
+>  {
+> +	struct iio_dev *indio_dev;
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	if (osf->capability_cache.valid)
+> +		return 0;
+> +
+> +	for (i = 0; i < cache->capability_count; i++) {
+> +		if (!osf_iio_sensor_supported(cache->entries[i].sensor_type,
+> +					      cache->entries[i].channel_count))
+> +			continue;
+> +
+> +		if (osf_core_capability_is_duplicate(cache, i))
+> +			return -EEXIST;
+> +	}
+> +
+> +	for (i = 0; i < cache->capability_count; i++) {
+> +		if (!osf_iio_sensor_supported(cache->entries[i].sensor_type,
+> +					      cache->entries[i].channel_count))
+> +			continue;
+> +
+> +		ret = osf_iio_register_sensor(osf->dev, &cache->entries[i],
+> +					      osf, &indio_dev);
+> +		if (ret)
+> +			goto err_unregister;
+> +
+> +		osf->iio_devs[osf->iio_dev_count].sensor_type =
+> +			cache->entries[i].sensor_type;
+> +		osf->iio_devs[osf->iio_dev_count].sensor_index =
+> +			cache->entries[i].sensor_index;
+> +		osf->iio_devs[osf->iio_dev_count].indio_dev = indio_dev;
+> +		osf->iio_dev_count++;
 
-> 
->>
->>> that are chopped.  For GC_EN
->>> "When enabled, the device automatically swaps
->>> the analog inputs and takes the average of two consecutive conversions to
->>> cancel the internal offset voltage"
->>>
->>>   
+Probably use a designated initializer for this one
+		ost->iio_dev[osf->iio_dev_count++] = (struct osf_iio_binding) {
+			.sensor_type = ...
+
+		};
+
+Not a problem if the lines are over 80 chars given this should be generally easier
+to read.
+
+> +
+> +static int osf_core_handle_sensor_sample(struct osf_device *osf,
+> +					 const struct osf_frame *frame)
+> +{
+> +	struct osf_latest_sample *latest;
+>  	struct osf_sensor_sample sample;
+> +	struct iio_dev *indio_dev;
+> +	s32 values[OSF_MAX_SAMPLE_CHANNELS] = { };
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	ret = osf_protocol_decode_sensor_sample(frame, &sample);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (sample.channel_count > OSF_MAX_SAMPLE_CHANNELS)
+> +		return -E2BIG;
+> +
+> +	for (i = 0; i < sample.channel_count; i++) {
+> +		ret = osf_protocol_sensor_sample_value(&sample, i, &values[i]);
+> +		if (ret)
+> +			return ret;
+> +	}
+>  
+> -	return osf_protocol_decode_sensor_sample(frame, &sample);
+> +	mutex_lock(&osf->latest_lock);
+
+This may well be better as a scoped_guard()
+
+> +	latest = osf_core_find_latest_sample(osf, sample.sensor_type,
+> +					     sample.sensor_index);
+> +	if (!latest) {
+> +		mutex_unlock(&osf->latest_lock);
+
+scoped_guard() would allow you to return here without worrying
+about the manual unlock.
+
+> +		return -E2BIG;
+> +	}
+> +
+> +	memcpy(latest->values, values, sizeof(values));
+> +	latest->sensor_type = sample.sensor_type;
+> +	latest->sensor_index = sample.sensor_index;
+> +	latest->channel_count = sample.channel_count;
+> +	latest->sample_format = sample.sample_format;
+> +	latest->scale_nano = sample.scale_nano;
+> +	latest->sequence = frame->sequence;
+> +	latest->timestamp_us = frame->timestamp_us;
+> +	latest->valid = true;
+> +	osf->last_sequence = frame->sequence;
+> +	mutex_unlock(&osf->latest_lock);
+> +
+> +	indio_dev = osf_core_find_iio_dev(osf, sample.sensor_type,
+> +					  sample.sensor_index);
+> +	if (!indio_dev)
+> +		return 0;
+> +
+> +	return osf_iio_push_sample(indio_dev, values, sample.channel_count);
+>  }
+
+>  
+> @@ -73,27 +260,47 @@ int osf_core_receive_frame(struct osf_device *osf, const u8 *buf, size_t len)
+>  
+>  	switch (frame.message_type) {
+>  	case OSF_MSG_SENSOR_SAMPLE:
+> -		ret = osf_core_validate_sensor_sample(&frame);
+> -		break;
+> +		return osf_core_handle_sensor_sample(osf, &frame);
+>  	case OSF_MSG_DEVICE_STATUS:
+> -		ret = osf_core_validate_device_status(&frame);
+> -		break;
+> +		return osf_core_handle_device_status(osf, &frame);
+>  	case OSF_MSG_CAPABILITY_REPORT:
+> -		ret = osf_core_validate_capability_report(&frame);
+> -		break;
+> +		return osf_core_handle_capability_report(osf, &frame);
+>  	default:
+>  		if (frame.message_type >= OSF_RESERVED_MSG_FIRST &&
+>  		    frame.message_type <= OSF_RESERVED_MSG_LAST)
+> -			ret = 0;
+> -		else if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
+> -			ret = 0;
+> -		else
+> -			ret = -EOPNOTSUPP;
+> -		break;
+> +			return 0;
+> +		if (frame.message_type >= OSF_VENDOR_PRIVATE_FIRST)
+> +			return 0;
+> +		return -EOPNOTSUPP;
+>  	}
+
+See if you can rework original code to reduce the churn here.
+
+> +}
+> +
+> +int osf_core_read_latest_sample(struct osf_device *osf, u16 sensor_type,
+> +				u16 sensor_index, unsigned int channel,
+> +				s32 *value)
+> +{
+> +	const struct osf_latest_sample *latest;
+> +	unsigned int i;
+> +	int ret = -ENODATA;
+> +
+> +	if (!osf || !value)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&osf->latest_lock);
+
+Looks like a good place to use guard(mutex)(&osf->latest_lock);
+Remember to include cleanup.h
+
+> +	for (i = 0; i < osf->latest_sample_count; i++) {
+> +		latest = &osf->latest_samples[i];
+> +		if (latest->sensor_type != sensor_type ||
+> +		    latest->sensor_index != sensor_index)
+> +			continue;
+> +
+> +		if (!latest->valid || channel >= latest->channel_count)
+> +			break;
+>  
+> -	if (!ret)
+> -		osf->last_sequence = frame.sequence;
+> +		*value = latest->values[channel];
+> +		ret = 0;
+With guard, you can return directly here.
+> +		break;
+> +	}
+> +	mutex_unlock(&osf->latest_lock);
+This gets handled automatically on leaving scope
+
+Then if you get here you can just do
+	return -ENODATA;
+
+>  
+>  	return ret;
+>  }
+
+
+> diff --git a/drivers/iio/opensensorfusion/osf_iio.c b/drivers/iio/opensensorfusion/osf_iio.c
+> new file mode 100644
+> index 000000000..862a797f4
+> --- /dev/null
+> +++ b/drivers/iio/opensensorfusion/osf_iio.c
+
+> +
+> +bool osf_iio_sensor_supported(u16 sensor_type, u16 channel_count)
+> +{
+> +	return !!osf_iio_find_sensor_spec(sensor_type, channel_count);
+The !! is getting used a lot less in modern kernel code. Linus Torvalds
+once pointed out how hard it is to read.  Maybe != 0 is clearer and
+let the compiler do the optimization if it wants.
+
+> +}
+> +
+> +const char *osf_iio_sensor_name(u16 sensor_type)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(osf_iio_sensor_specs); i++) {
+> +		if (osf_iio_sensor_specs[i].sensor_type == sensor_type)
+> +			return osf_iio_sensor_specs[i].name;
+> +	}
+> +
+> +	return NULL;
+> +}
+
+> +}
+
+
+> +
+> +int osf_iio_push_sample(struct iio_dev *indio_dev, const s32 *values,
+> +			unsigned int channel_count)
+
+As you are comparing it with the reported number of channels from spec->channel
+count I would match type with that (u16 I think)
+
+> +{
+> +	struct osf_iio_state *state = iio_priv(indio_dev);
+> +	s64 timestamp;
+> +
+> +	if (channel_count != state->spec->channel_count)
+> +		return -EPROTO;
+> +
+> +	/* This is only a fast path; IIO rechecks buffer state while pushing. */
+> +	if (!iio_buffer_enabled(indio_dev))
+> +		return 0;
+> +
+> +	timestamp = iio_get_time_ns(indio_dev);
+> +
+> +	return iio_push_to_buffers_with_ts_unaligned(indio_dev, values,
+> +						     channel_count * sizeof(*values),
+> +						     timestamp);
+> +}
+
