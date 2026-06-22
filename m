@@ -1,53 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38C223A1684;
-	Mon, 22 Jun 2026 09:47:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80D2937A496
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 09:55:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782121659; cv=none; b=eWCbos/N9LJBLQQrd5ImUupAOoS8nsekQOiJYsPPrNtbceM8+4zGRMMEx5YfcLZ5eLVFgu0USd5bqsOu36MMrclddFmjS3TJi4LE1k4Qt10SYngSZk+5uqwwOjTKOInOr/TU3kBrs7eNGQonY6aTWu9avBxuOThBvBQSLwxk0Jc=
+	t=1782122159; cv=none; b=PF4gye6VpYDw1FVbJCAciTFcYClcqb7Q34qj8rq+Z2iZ7obyFcHI1aW/b5piODKHlel8QDVDW0bPaA4v9gGEFQebQ3K304C9nh20rYcB7NL32GOqL5G2Ayieog+ye1Acuyw7FHOTayCOa1tKUIen4GqwFxeGguD1g26X4I1YoWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782121659; c=relaxed/simple;
-	bh=kq1TWWaWz4JxuT486DLHsuubNhsLfiudA7mhq6tfj2I=;
+	s=arc-20240116; t=1782122159; c=relaxed/simple;
+	bh=8BETki/jQ5baBxbQcFwkgeSsOIXzQof1N3Fqfu96PVI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sZUPtasDxqjAwrlQvuRBo1L7goY/M6LkmjseBIo+J6lA1CwcIOhWF2SMmpXB0fdlHgUdPm1xnUAsJ/+XEOF5cAWX1S7yz72mpSmlyTDczfJZlyP5kxt26166nU2tW1YLf6hXbkEqPxwFCwqn8RnaDYGTfjtRciqV/XmFAYkutdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vr7PVhbv; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=JLkPWXKXhs1CN5BtleuRlTg033PZO2x7HNruy7RqWPdazR8p8GYtw3ipHtBg3mxGBRsA8P3hjOGFycV7Q/x6f2FEXeCGo+4kOem7BR9GlZkZu7Wl7Bfr2S1b6B3jBTNzSj+HPxUGDIGykSo9cb6s9lMNV59Q0/2hJzYLbFJrzvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zuu8hF4n; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vr7PVhbv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796FF1F000E9;
-	Mon, 22 Jun 2026 09:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782121655;
-	bh=bWE7qvAYRYKI3hRdY2piIWvs0fVbJcPJuA/ePpRA8nY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Vr7PVhbvG/1UgKbHFvt58Wz4jeQ4diPANr6q+zYuH6HY1dh7euxOCK9Saq7GjpUo2
-	 yTU246ojHyZtR7baACzNequfN1CFzLtlWK38M/ZQRx0PHjOTfuNVu4Z4Ne7CepW4qn
-	 egIKpCDOtEAv8KtKo6zm8mwGn/zRO9MdfzPJAUhNg/SWAHCIQBE3Yr42M/iRZOpntN
-	 RJxWs+vedD/ohe022/LBbYNGWslyjfsDA1oHDfQH0LaR3wwjnR1u1uSVi/ZrSMmaPG
-	 Vxv1RYi82ct+Oj2yYeqp6lHsgjhiy7VI4rLVIOHqbslfeNmpOR2E/wbKWgjPVYKQJS
-	 bBVwb1UjlEoWg==
-Date: Mon, 22 Jun 2026 10:47:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Kurt Borja" <kuurtb@gmail.com>
-Cc: "Krzysztof Kozlowski" <krzk@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>, "Linus Walleij" <linusw@kernel.org>,
- "Bartosz Golaszewski" <brgl@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
-Message-ID: <20260622104728.039a5ea2@jic23-huawei>
-In-Reply-To: <DJF5ATR2RPDJ.3LSN8DY58E6RO@gmail.com>
-References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
-	<20260612-ads126x-v1-2-894c788d03ed@gmail.com>
-	<20260613-sparkling-naughty-tuna-3e9bf1@quoll>
-	<DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
-	<a994993e-7459-48a2-a8d7-823c1b0c9545@kernel.org>
-	<20260621153318.4a723e3b@jic23-huawei>
-	<DJF5ATR2RPDJ.3LSN8DY58E6RO@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zuu8hF4n"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-4624c1409c9so3044155f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 02:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782122154; x=1782726954; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P0E0JBlSRaUIEWVL2hII2Z9BSAc+EUsy9g19G1CKGLw=;
+        b=Zuu8hF4nPp9nD2umAtReOwK9izswYY0MJIN6LZNNZcT+zXe49MtUUcNNAMHOPvP0Ty
+         nUQmZqKS3LFIZei0V0G1Xcp4JIVuyZjmRBTEfnVK/CHOwhDIFld3qqrKzOegiaxqgapj
+         SA5xFEPzXSqFV1vROPsqm+SgD6aD9l96DDFoR03lZoL9I9wtZGCEO4ekl8EuonHVv6ne
+         So4+RsqLDKtX3dzJQou6Ayam5IxxNJA5FljormrbPKjxeOEP14QtQnq/lI8+rL/PXsAb
+         Y1qRHjPKc/h5YSrBo+3XJmbASLDyBuijtulJ3zeEcKk+yUPSo2flaK+e5C9VxgUKWJdp
+         iJtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782122154; x=1782726954;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=P0E0JBlSRaUIEWVL2hII2Z9BSAc+EUsy9g19G1CKGLw=;
+        b=bcWjNxi+FzLvM311k+1xK7p3Ul1PwywU86AFoCyiNeDR0viSCE4NOSDMSXQmvH03IQ
+         m6NyVt3dfZDwgSs/ije/7/B8AwUSsuV45yzZLyThnfDGM6OUjCTj8HiyTFf6tRwuQk3c
+         YKnBVjwV878z7yps5OsdI2RTNtjJIF9wU+C7kfNyNm7p2Ty2hb/riuQB6ZjNbdcctGqu
+         qQ8avQZkzoavCj1zpQZwV5WMig7jBSfGKProeJwTOk8Xr1lJsSHll1lIMEp0+BZvUmVW
+         AZPM/ifJWOGqdOCH8W2+8k/jPtjEV/lHCEH0SOexd/EUCi9WutXnYvqIB5tM71Q8ZmTR
+         Fj+w==
+X-Forwarded-Encrypted: i=1; AFNElJ8NOQEVB1pb7yHSS4o81LrIJSB6cuQvaQqHnYNEcszhqSv8UWhqvI8rhauV3/BGI3MaapvvvKQHylQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxxPq9WK2gmydKI1TrtEOzLuB2X/xrn/Avo1bj8qVlflwPchYnr
+	m90Du6gnfWKam44BImUygpA0hpmPU3IAOtZar9wqd/MMFySdH/Glu+JF
+X-Gm-Gg: AfdE7clP9CPRhFasI67V4aOv9ABk5NInrvGgs2ox8sjhoJOePpkhCEAPC+62rz/IFAT
+	ODSrYIe+FlR5GDNS+gsotYIOveyzbdEooEvhLFy1L7dBzgrvsCDfUcp3xmohZd+gSFnkm7dOv8f
+	Gju5Pw3rk/bx5YHsFGCZHpU303JyCjoWTu+HxFo1BCQ4QHUADcwyhhSUK6mDsncQ9Q7HoTrmF2P
+	aKyz+wttolFPoxjO8VVR4FXDJvWMT2NY8Pc4ggN7d1x0H3chqVJCun96vZUr3vMi+WNJXjms8rm
+	nmVzINodPg8MX0hKr8UIq/1PYKoszT8OburCgfZdL4py5nJUA8wKdFy1ZqjJtJNM2sRVakZHE5z
+	ixPE5ymS37SXNBe30ZbY4dhcLr/TSjvNq798GoZjLtNFZI24cxMrInomgfiX1nSDCRWX46+d/P9
+	z7Rv+dmzorMrml8eI5vbaWDVIy8dMS2lC0INe4dicFV6dVc4/676vxqdJMnIHR6oJbG0f0hqcE9
+	7YqWo6fYkqmaJCHQn9xIy69UFOSJN9qBrrUHqL+EnBttAw4pINXCA6uoieLvL1CEh49oLMiWsou
+	zGWu+1ut4IFDkgkbEZnSMQqf52s6jqzAJ5kC2/Z0yZrXPqGwV4RRF/I=
+X-Received: by 2002:a05:600c:6288:b0:490:e18f:d108 with SMTP id 5b1f17b1804b1-492490a7778mr137140915e9.19.1782122154243;
+        Mon, 22 Jun 2026 02:55:54 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4923fd15535sm313817465e9.3.2026.06.22.02.55.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2026 02:55:53 -0700 (PDT)
+Date: Mon, 22 Jun 2026 11:55:54 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Akhila Kavi <akavi@axiado.com>, Prasad Bolisetty
+ <pbolisetty@axiado.com>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Harshit
+ Shah <hshah@axiado.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: adc: add Axiado SARADC driver
+Message-ID: <20260622115554.000036a9@gmail.com>
+In-Reply-To: <20260622-axiado-ax3000-ax3005-saradc-v3-2-e57c7c7ae675@axiado.com>
+References: <20260622-axiado-ax3000-ax3005-saradc-v3-0-e57c7c7ae675@axiado.com>
+	<20260622-axiado-ax3000-ax3005-saradc-v3-2-e57c7c7ae675@axiado.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,110 +86,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 21 Jun 2026 19:18:33 -0500
-"Kurt Borja" <kuurtb@gmail.com> wrote:
+On Mon, 22 Jun 2026 00:47:28 -0700
+Petar Stepanovic <pstepanovic@axiado.com> wrote:
 
-> On Sun Jun 21, 2026 at 9:33 AM -05, Jonathan Cameron wrote:
-> > On Mon, 15 Jun 2026 06:30:28 +0200
-> > Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >  
-> >> On 14/06/2026 22:56, Kurt Borja wrote:  
-> >> > On Sat Jun 13, 2026 at 1:59 PM -05, Krzysztof Kozlowski wrote:
-> >> > 
-> >> > [...]
-> >> >     
-> >> >> Functions used by probe() should be before probe(), not somewhere in the
-> >> >> middle of the code. IOW, entire probe is together.    
-> >> > 
-> >> > I they all are, it's just that regmap stuff takes a huge chunk. I'll
-> >> > check how to reorganize.
-> >> > 
-> >> > [...]
-> >> >     
-> >> >>> +static const struct of_device_id ads1262_of_match[] = {
-> >> >>> +	{ .compatible = "ti,ads1262" },
-> >> >>> +	{ .compatible = "ti,ads1263" },    
-> >> >>
-> >> >> So devices are fully compatible? Then it should be expressed in the
-> >> >> binding and drop one entry here.    
-> >> > 
-> >> > Not fully compatible as Jonathan said. One is a subset of the other.    
-> >> 
-> >> This is THE meaning of compatible!  
-> >
-> > This one I'm in agreement with. It is a strict subset, so should be
-> > using a fallback.  If the fallback is used, you just get support of the
-> > stuff in the simpler chip (or if you can override it with a chip ID
-> > you might still 'upgrade' to the more complex driver support).
-> > If you do end up with properties that only apply to 'new' parts of
-> > the more complex chip then they should be verified as part of the
-> > binding (assuming you can do that without the verifier complaining
-> > - I haven't checked!)  
+> Add support for the SARADC controller found on Axiado AX3000 and
+> AX3005 SoCs.
 > 
-> In v1 I had the "adc" subnode which was specific to ADS1263. Then I
-> agreed to drop the subnode but I'm having second thoughts...
+> The driver supports single-shot voltage reads through the IIO
+> subsystem. The number of available input channels is selected from
+> the SoC match data, allowing AX3000 and AX3005 variants to use the
+> same driver.
 > 
-> If we dropped it, then we would still have some specific stuff.
-> #io-channel-cells would be "const: 2" in ADS1263 chips. Also ADS1263's
-> channels would have an extra ti,vref-adc2 prop, for ADC2 voltage
-> reference selection. I should maybe also add a vref-adc2-supply.
-> 
-> Maybe it's better to keep the subnode or, again, go for something like:
-> 
->     spi {
->         multi-adc@0 {
->             adc@0 {
->                 ...
->                 vref-suppy = <&adc1-vref>;
-> 
->                 channel@0 {
->                     ...
->                     reference-source = <ADS1262_VREF_AIN0_AIN1>;
->                 };
->             };
->             adc@1 {
->                 ...
->                 vref-suppy = <&adc2-vref>;
-> 
->                 channel@0 {
->                     ...
->                     reference-source = <ADS1262_VREF_AIN2_AIN3>;
->                 };
->             };
->         };
->     };
-> 
-> In this case we would have to kinda duplicate channel description, but I
-> don't think it's that bad.
-> 
-> Jonathan, Krzysztof, David, thoughts?
-> 
-> IMO the ADC2 specific voltage reference stuff is a strong argument for a
-> subnode or the above solution.
+> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+> ---
+> +	info->clk_rate = clk_get_rate(info->clk);
+> +	if (!info->clk_rate)
+> +		return dev_err_probe(dev, -EINVAL, "invalid clock rate\n");
+> +
+> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+> +	if (ret < 0)
+> +		return dev_err_probe(dev, info->vref_uV,
+> +				     "failed to get vref voltage\n");
 
-Given you end up with channel specific stuff that differs I think it probably
-makes sense - though I do wonder a bit if that is real.  What's the use case
-for using a different reference for the monitoring / debug than the main one?
-I could imagine some dynamic use where you want to sanity check against
-a wider reference range, but maybe that needs userspace control rather than
-in here?  
+Sashiko raised an issue that I've missed on previous reads - why
+are you using info->vref_uV in dev_err_probe()? The info struct
+is not zeroed out on initialization, which means that dev_err_probe
+will return a different value each time when read_voltage() fails.
+It was designed to accept the retval from whatever function we're
+checking. 
 
-Jonathan
+-- 
+Kind regards
 
-
-> 
-> >
-> > The SLF3F discussion is about (to me) less obvious case of not a strict
-> > subset, but rather being detectable parts with different channel related
-> > properties.  In that case the ID match is necessary for anything to work.
-> > Anyhow, that discussion is in a different thread and not really relevant
-> > here.
-> >
-> > Jonathan
-> >  
-> >> 
-> >> 
-> >> Best regards,
-> >> Krzysztof  
-> 
-
+CJD
