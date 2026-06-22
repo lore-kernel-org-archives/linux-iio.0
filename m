@@ -1,116 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3BB34DB6D;
-	Mon, 22 Jun 2026 20:50:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0C85364952
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 20:52:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782161425; cv=none; b=u8bAg9cX5tJQy5QKzlKefLEnmtm5G67eZd59st22+0pPmTCgzSUQq2pIs7FVFS7Ja2ShI57d22U+Btw7aGmAWRfP5rI01qC7U6IkLENb75UZulRV2RHrKBfc8ptLp6Qn+UJrsziLr0qrZiASJjj8vXrVvKKVGJYSrZSmpIFFkDM=
+	t=1782161545; cv=none; b=a433WJeTPYYiRqm3NEbfD37sE4R7EmBvChJySG2mg9ampabw495ki/g8xPsBYs6rrkUtFU+36HSF495NB0d9HfoZn39BcaFTsEZLjJD1M9GvU/luDbI4DV9vn/SW2QjPgF7727worheB2m+0qinMfIx/5ZL+mvwADBfxDwo41So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782161425; c=relaxed/simple;
-	bh=4UN0FYYUlyJKlj3muD2DkUJLBcMwl+r7FmRyfnAROpI=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=S+R1uXiziNyk8pxhdlRMb1BhbTrqguKmK0uQ2vIVkAK/Egjkm1yRLCWFktctLzOLYzeX6rKPhyC4DP7DkHPzXb+bPexYmXtQbBQR80RYWoqjBIjlkcisXTHOZqHBVW8lLDM2+Bs4QNstsfPk8q3HfXV3XzLGV1KPOzZITC0iurg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jXEz11FU; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1782161545; c=relaxed/simple;
+	bh=sptxQiOk2uc5U5lO1vn+poc8mRLH5/HRYMfY4hvAv5w=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=c0H3Bn3UHdK3d5fjDU2qWP4f7fw+LcKRC3MxYPja+XH0B0OUFdy6FOyquxft5qsjzl3L2oaRX/px2duL1tbwAxRvgott7QXSF54MRVl/6fa7RYxmJRYZFnI3RzuD3XMQORwSYKHvBlDKhj+cw3A5fJ6qm+dGVKw0OqarJBp1vLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X86jw2ND; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jXEz11FU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782161424; x=1813697424;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=4UN0FYYUlyJKlj3muD2DkUJLBcMwl+r7FmRyfnAROpI=;
-  b=jXEz11FUzEKMFN8/zdIU8ePa34MjYtQn5pxiSvnWCpkR3WXyNk0ts6Vu
-   3Cvs4LNsSXoGiWKgm12LPSOn+7+GPMgzYkPlSWrg+iCBhDpFVZlBLcldA
-   Reb0XHymTgyWY0Okcy323GeiaX1PTj9AAH6A0avniNpCwBibw7tKoy8SV
-   EAsNWhnLxXnDV/bLb5IsU2iJe5xeum1JleuBGOfsioEWWmKpocVfkVt+P
-   K6/Z1wiu34mHyA2gvvOMMv3JJNDfPnvgwjZsOKWDPgo8MCmonAMIrbRON
-   eoixd0Ch8DEAfTh2TKOqWy3YmZvd9kBtPwq4YXbbcjdatSUgGlcQ1/S4v
-   w==;
-X-CSE-ConnectionGUID: sCAY4N4AQ968DHjCusAEIQ==
-X-CSE-MsgGUID: nv9c7nAzQfyTnve0ghypbQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="85452194"
-X-IronPort-AV: E=Sophos;i="6.24,219,1774335600"; 
-   d="scan'208";a="85452194"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2026 13:50:23 -0700
-X-CSE-ConnectionGUID: PPxJxrSmStKavq/SUtumdQ==
-X-CSE-MsgGUID: u+ixyGcDQlSydsqmXYZM6g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,219,1774335600"; 
-   d="scan'208";a="287455780"
-Received: from schen9-mobl4.amr.corp.intel.com (HELO [10.125.108.85]) ([10.125.108.85])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2026 13:50:22 -0700
-Message-ID: <0e198f80c6f28e448611e02e1fe20af632931dd3.camel@linux.intel.com>
-Subject: Re: [PATCH v1] iio: temperature: hid-sensor-temperature: switch to
- non-devm iio_device_register()
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jikos@kernel.org, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, 	hongyan.song@intel.com, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Mon, 22 Jun 2026 13:50:22 -0700
-In-Reply-To: <CAKqfh0Hk12rA7wkU9wbse=n9qbOgbmxK0vhP6Enj-R2yKCohuQ@mail.gmail.com>
-References: <20260622052135.1804135-1-sanjayembedded@gmail.com>
-		 <767892206bf6a10de4122f5e1faa8481541170ca.camel@linux.intel.com>
-	 <CAKqfh0Hk12rA7wkU9wbse=n9qbOgbmxK0vhP6Enj-R2yKCohuQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X86jw2ND"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-490cf3000f0so51207015e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 13:52:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782161542; x=1782766342; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gjYoMdtdcI4yC90S9fK4NzlMv7Qu0CeURuck5n5j7G0=;
+        b=X86jw2NDdx9im1h5gMeol1qkRrQS1aND0kK9l7yT6KjFJh8AyGUuFPVrWhCis5dWvA
+         6H0Pv3yn9OJrDDs+ZaUtlCbdczgkWfZLR/xZIs0Iko617t1oeho6SH92rBaNuqZFt5OX
+         n/o5rnUVMI2Hr5t+0u1UFxG9nBHjoto5QmAqFX0pwlnh0bhOlcESmE2Ffb8eqy2pHz8Q
+         Zb5OV5vRhuWykyXAC/ebW5eFDWWDPZw14M8Us+v2HUxLJiwuJiHfrGtjeDo40Gm6n4EU
+         /uG9KiRWxSASfLXYNTP8EdoqOTFQhMwyNKscZoZsK/4qOMnWL5uSVOKEZJUUPTFLW/ls
+         WbAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782161542; x=1782766342;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=gjYoMdtdcI4yC90S9fK4NzlMv7Qu0CeURuck5n5j7G0=;
+        b=GSuqn7R+e1jd2c3b35XD+QrIzkXDriiQONKDk+PtlVREDxTLET8qIoeYO7nM9LTqop
+         rxku35Cys73AGWyDGyKqGkotbck8fSc72Y3FPamVPuzLS3qKoravP7fYAA3HBejaT2mw
+         YDK2UBSeWpmq9msresKvK3DXotDdttxzSGx/bjYqUYV9sLqZYI0A4W6l8e/eJ0Ggk3c1
+         2EJ72leoYRwQ8mlR1CzipNxeEaey46rXENtzQYGxzYLmhSujEbXLrDJ9LM8wXvfChzAm
+         y9wkGqJEvt2+TRhEePFNOqFZp64cHEOWzjKH44PRg3ceSLahYsxqsNLlmfdDpYOtMMQd
+         omqQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9jP1OOgWo8n1Wka9JKhjIiB0iXFL1Mejmi5DsT79RCkBsSiZRDZRKvKQO+mtkvi+Ehy/EN/4tJlK0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYHS4ltkILL3ZUPx5tW3S2gti5rMfmbpDA5AzWqUm26sbsuRxB
+	WQlWFuIoqbc1ut3dVFunIhtnbcp2xJqKF/2uC+JBqLZC8tzkfELwHxSUCmkhWEfCvZ4=
+X-Gm-Gg: AfdE7cmI6gUNNExtCwl2xZSTdHobn69m1OeQ3SlScTejM8t5pYLUQ7ccRzA6de83Mbx
+	AdYKfwdJGTG+xKXA+9XsnJdOAqNSQ6FZ3vbWtSoWayIaXOO/FqjpVCJa/tOkNOksd1VyuP4vm0n
+	Ok+gfi68zGNv5CXqTnyt7EOk8fOXbB1QVwsVdCmwlaY6vrnwBacKBR5LqnS6dTxlHagYE0NsK69
+	TS1r53jm8D+2foQwG/VF7lR+JD1U/9C8IlxWNM6fDKOjtufRh+aVO1gx1fVAOOk7TXkHbULZtga
+	c8A2+NZIXnmy0BgtlYRhSJzFiXsURZLjxl8ZpOB64jsLDC0po+D0IcjjNr6rMFGLXZiLGzGyZF9
+	CfiYxrvj/MIHz2mI7Xq6CwRg8MQ8PCCYbxSvaHF7gBkr6iGVrfwiOVnCUQhvEm3/udg8YSA==
+X-Received: by 2002:a05:600c:c493:b0:490:5466:8591 with SMTP id 5b1f17b1804b1-4924233c353mr199326685e9.12.1782161542107;
+        Mon, 22 Jun 2026 13:52:22 -0700 (PDT)
+Received: from sefo-laptop ([2a02:8071:50c5:5c0::361b])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46666c57afasm30101225f8f.29.2026.06.22.13.52.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2026 13:52:21 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+To: William Breathitt Gray <wbg@kernel.org>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	kernel@pengutronix.de,
+	conor+dt@kernel.org,
+	krzk+dt@kernel.org,
+	robh@kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/3] counter: add GPIO-based counter driver
+Date: Mon, 22 Jun 2026 22:51:40 +0200
+Message-ID: <20260622205210.10317-1-wafgo01@gmail.com>
+X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20260617074929.333876-1-wbg@kernel.org>
+References: <20260524193846.19216-3-wafgo01@gmail.com> <20260617074929.333876-1-wbg@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-06-22 at 10:27 -0500, Maxwell Doose wrote:
-> On Mon, Jun 22, 2026 at 10:26=E2=80=AFAM srinivas pandruvada
-> <srinivas.pandruvada@linux.intel.com> wrote:
-> >=20
-> > On Mon, 2026-06-22 at 10:51 +0530, Sanjay Chitroda wrote:
-> > > From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> > >=20
-> > > Avoid using devm_iio_device_register(), as this driver requires
-> > > explicit
-> > > error handling and teardown ordering.
-> > >=20
-> > > Mixing devm_* APIs with goto-based error unwinding breaks the
-> > > expected
-> > > LIFO resource release model and can introduce race windows during
-> > > device
-> > > removal. In particular, the IIO device may remain visible to
-> > > userspace
-> > > while dependent resources are already being freed, potentially
-> > > leading
-> > > to use-after-free issues.
-> >=20
-> > Please explain this use after free case here.
-> >=20
-> > Thanks,
-> > Srinivas
->=20
-> My guess is that because the device would still be registered but
-> would actually be removed, sysfs still has "wild" pointers to
-> read_raw() and write_raw() (which don't exist anymore), causing the
-> UAF. If I'm wrong feel free to correct me though.
+On Wed, 17 Jun 2026 16:49:25 +0900
+William Breathitt Gray <wbg@kernel.org> wrote:
 
-iio_device_unregister() will be last one to be called after device
-removal from devm action handler. This will cleanup attributes. So,
-read_raw() or write_raw() can be called. The problem can be handlers
-for read_raw() and write_raw() if anything there which are dependent on
-clean done by hid_temperature_remove(). Here callbacks are cleaned up,
-so nothing to respond to read  sensor_hub_input_attr_get_raw_value(),
-so it has to wait for 5 seconds to timeout, which is not great. So
-nothing against change done here.
+Hi William,
 
-But still not sure any use after free case, unless I am missing
-something.
+thanks for the review. Three things before I spin v6.
+
+> One change I consider is whether to make Signal B optional. [...]
+> I wonder whether this is substantially different enough from
+> simply using the interrupt-cnt module on the respective IRQ?
+> I'm CCing Oleksij and the Pengutronix team in case they wish to
+> comment.
+
+I want to keep signal-b mandatory in v6 (if no concerns from Oleksij). The single-line case is
+already covered by interrupt-cnt.
+
+> In such a configuration, we would have two Counts: Count 1 [...]
+> Count 2 supports only increase/decrease modes with a Synapse for
+> Signal B.
+
+Just to confirm, plan for v6 is:
+
+  Count 0 "AB Count": A + B + optional index0, all 8 functions
+  Count 1 "B Count":  B + optional index1, increase/decrease only
+
+One counter_ops, dispatch on count->id. Per-count state in
+struct gpio_counter_count_priv (value, ceiling, preset, preset_enabled,
+enabled, function, direction), held in priv->count_priv[2] as you
+suggested. prev_a/prev_b stay on priv (they describe the wire, not
+the count).
+
+For the second Index in DT I would just let index-gpios take 1..2
+entries (first = count0, second = count1), no new property. Ok for
+you and Conor?
+
+> Hmm, is it a problem that priv->enabled is changed to a false state
+> before the IRQs are actually disabled? Do any issues arise if an IRQ
+> is handled during that brief period of time?
+
+I guess it is a race. In v6 I will reorder:
+
+  enable=1: enable_irq();  lock; enabled = true;  unlock;
+  enable=0: lock; enabled = false; unlock;  disable_irq();
+
+Plus a mutex around enable_write so two writers can not interleave
+(disable_irq() can not run under the spinlock).
+
+All other points from your review (kill *_delta, STATE_CHANGED for
+all quadrature modes, INC/DEC both edges, drop prev_a check in
+pulse-direction, ...) go into v6 too.
+
+action_write and floor in a follow-up, as you suggested.
 
 Thanks,
-Srinivas
-
-
+Wadim
