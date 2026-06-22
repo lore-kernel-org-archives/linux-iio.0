@@ -1,153 +1,121 @@
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAF0A2DB7A3
-	for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 23:44:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782085446; cv=none; b=cCdrmn6n+SS07fUHYV5aRti3bbk5Ff4VijFt4ZidH1ol3UM03tXRY6a7D0PI79cbM04UE6ztrN4DVFglCsqSluYzw/w8gUbopaC0nU7CP4R9/U73Q/8a0kSjZS/LRF8D8of6+zq2+wv+z2SmgAYJSoZv5+4snTJh1jXcUyK3u4o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782085446; c=relaxed/simple;
-	bh=qC4ItL5aFduGXaZLJdmviE/chPrLA9OluRNtb03xoBM=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=sqdWLvAsHKBfxCsFc1OJsvO/qkzSBVp+KLvuF1miVUN1379pyGjSu+O1DNFjT/CKVif75uGHcTyFHs2EZRP6CBHGucA/I7Upz/rbg3ZxQIFIM3hNthfipwe6fbl4MvqszZSTa/TLkj8idND8JFRvnkwcMtRhhC6JRJTzlLsLedg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MdBDrtA7; arc=none smtp.client-ip=209.85.221.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B900379DA
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 00:06:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.175
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782086771; cv=pass; b=bOUIxHVhexzzsX+WGGgC4m5SWvxsN/a7ykhG+t/pQ81xfarbGE5r/IVzSmSpphddLAcKDaKxXaBF3LxyXCO8EFW6r0K+/HpZe2Qv3MigYoTOTcElyQ2zIWQXAPZNbJxydIngTPvhHMOdEZn0SEwpV80dK6ShVG2PDJDFvVv2Y14=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782086771; c=relaxed/simple;
+	bh=ErQ4AksUVGb6gjv5g0n/ymeD2WyZRJFl5+vFM5Os5cc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=iu2TFzSBbt1VgxbyarTdQydLc5SojKpW8/lA5SX1hebruc+QkbI1OctEBNeOFnFkgcP3cA8MZmhR/FPh8k6b6MLA54YtDNP/tOakeWvZrPQhhmBuyBcAv969Upq0YaQ2EVo9+NGxFTrhy0OAW59MEFryCFeFtupNr3Upcia2Enw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AC+BebHm; arc=pass smtp.client-ip=209.85.128.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MdBDrtA7"
-Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-5bbc6c99b5cso1049872e0c.1
-        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 16:44:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AC+BebHm"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-7ff0645d1d0so32206517b3.0
+        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 17:06:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782086770; cv=none;
+        d=google.com; s=arc-20240605;
+        b=iscci7JSyikR5oujXvM92WW3v2E5cCFj8UVIalIDGpvG2tBaWfKlz8YuQhy9dmJcRR
+         r0Qh2RXnUOzjC+FRhvyMBrgNqYSzrylKjECIL0/OUMivnPtm1Ls2bJdyNSL6tQY6qHOH
+         v1WxoxEJl664WWSrzaDJela6U1tQTbl5yK3BAvKVoWB+Kw+492qHg0I3WxC0+p7mfOSy
+         EBjfQkOT548CoVA3bBs+dXTLg1HbG9MIKO4UKUAjAsQuFNjQkWIYct9jhqlLYJ27Icxi
+         8Po0G1rXZbSL/+KOS6QnbG2wSsiH1l3YT4GJeH7b39UKnYgjUYBO8UUlHZxZldBhyUsX
+         wa+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ErQ4AksUVGb6gjv5g0n/ymeD2WyZRJFl5+vFM5Os5cc=;
+        fh=KtYNmc1eVi5km/k55He+DDvjZiLd0ozv25KeBmw1e8Y=;
+        b=jgvsal32RQG7bFdu+MDE7o5Vvntag+lTU8pog8+6TPq3JGQEA+vI+PnGu01V5MlB/O
+         ii977yyrleGtT/Tzh+J0pkzoZWgnLIOtxmMDiNFU7CcPBKb8e+PmbdtVW/0Bix+fihAc
+         GoHXG5O+M4d/EGT4ToAUz7GsQRgS+QdMdFr/3IAsRy7QsXgxRa6kAw3i6ihyt7h5QdyX
+         PkLDcStCO+H+dt1UbtUCuWC8BzyQ4oEDiqAk2jM3LSQfZk4wk9JRL2N8m1KhXyffvc2K
+         MOkpCKtYG0kygWd89nd5M5Q3xiCkZLLLfZXvXYouLvzi51BkZYoJpGZXHBZOxlvMbKh3
+         rmkA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782085444; x=1782690244; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1782086770; x=1782691570; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rMTEZuuJVYsmFX5xK+dFlO+dYqsMUYWoJOQqbQ9vGyA=;
-        b=MdBDrtA7yti3wdyYxt358jnfjrl3ONeaSjROjPbBzqrpOrfmAyui46fPFzJW3D7unD
-         4i2+NphgSzfUMeeL3gDy5lIPxNfSju1NXgcd2X4FXQrFsr1dAy2/+tVzpamQT0WgECQF
-         Z5OwtXdUyEDaHxg47ywJyDKUInj0hYcNThwUmdcIfo6SAnihIpjjIQoFT3CI+PQEi6so
-         /Uo0fgQjRvCxfkI69dYP2hkq7InxsVw0F0tzpEm/9k8fhhbQ1stICEj3cJ6MRNZUtEdx
-         b7nu+4Vk763OWYpBRqhKZXkaqkNSJDH7ZNJ7FHUNlOipr8U8J/piRST/2Bv+2WihT9aV
-         oU8Q==
+        bh=ErQ4AksUVGb6gjv5g0n/ymeD2WyZRJFl5+vFM5Os5cc=;
+        b=AC+BebHmg1S1wOnsAx3mrauXA4vyK6jqtemjwxloIAsaeIzl1UfLFTTCwJNZ4zbrVu
+         avewA8M8Y7tTJLi8sfwW+76LRh4NU1t3xcREVpnehUPZEdj/FLP48SOBO3nmEx1W6apg
+         wlCb8lhjEj8l05Euul0xvF7TrGhrnkh7Y8ctzpyHaeHo+JxxCo0ZFitijFVDBvrySFJH
+         U5CtjUeDpH8IoqTN2QjLZ2K4yYHGfBNid9OkHUKgpG4tNueau1cK9vSaADiXatHdtGAR
+         GJfOIT0ueZxNvjR+uUp8iRAo2nkHnh8u7PST1YcxUo6qw/BOy8jkkABi+WiimaCmSNjD
+         tmRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782085444; x=1782690244;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rMTEZuuJVYsmFX5xK+dFlO+dYqsMUYWoJOQqbQ9vGyA=;
-        b=mUmShYVtfo6aEUCTmhK5AZyrIBY79TKGBKdyn3IAhnPIE975YEiZaGfW700WrMZVLh
-         0xBnbqEAC58u2XOrx70Iy3tgeYpX7Pz3QvsPOKFohAHGCL4OJX0kpcA4cTxN2tWi3bGw
-         0D7DDnjJd4XWpjZmIn5jDs2RsO+2EjoUscUd9X/AWqvY7pGJWGOcERyjdG1Fwp+m3WMn
-         loWc26Gq7N1XN7PI7DeRcpjUshtyqjxUbSlgpPIPfXDmghtTSHJ9uCwnH9Y0KgcXTfmh
-         DVLlUitmKPEg2ETxtc2l5Ohb/+yJ/z7FVY1CGhKK+QDm9fag/A15z9OXi2i/GMb+Kg9Z
-         PujQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+l3cGgm1uKyNWAwMAY4xQqEEUusW3+t0XKb9KTeMwRembP+qmS5TMWGU0l9e0swUlbrqnQwhYDYeY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YziPFbHdMqSs6fBXFKB50EkrafkPZyfXdcK1TJZASV4bRedFXuN
-	TJ39MTA1LU4IVTaS8FETejKiv2eL6xIdTxHJCS653luLYAa86Tv6JEfD
-X-Gm-Gg: AfdE7ckR7otHb8T9bQ8TJZwJ/VoDvDF21b2kaCvFXyL4Vyzt/9EkcIEkaGmWYDMtALS
-	FizeLJldGHasRMknk0w6PzKARKk/cqmFYkjK0wgUatufwaU81whSMKvTg0KZRP0sgf606vVQUbe
-	GDUzJJ9QrXlom9bpspvujqZYzJY0iWXIzdwCfB1JY7qGYZBvrqQvdGrwzMoIMl7zzKiOoo1lGad
-	nG2AnDRXtwyjC4NN0D/tPYa2tZS1Q40tuCnAgVY7d7F/i4oiWJN0Y0SuKVj0OZk/jXuy30qJAM3
-	Ym3UjUIlz80mWB0KgIDHJS2RCd8YjafYpPWkGPxWNaNWxvyvVS++rDnuNd0vvQ5Bt0mDwa3n/BB
-	PBqRqy36aR1w/oslGLTBSkjGRcI0j2I/lM8mJulaGEU/+9iNmcff4LloaRaCGkUuQVmO1Jli08T
-	fYVeg=
-X-Received: by 2002:a05:6122:d22:b0:575:352f:eac0 with SMTP id 71dfb90a1353d-5bbebb8debcmr5801964e0c.7.1782085443832;
-        Sun, 21 Jun 2026 16:44:03 -0700 (PDT)
-Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bbfb7d30besm5441275e0c.2.2026.06.21.16.44.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Jun 2026 16:44:02 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782086770; x=1782691570;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ErQ4AksUVGb6gjv5g0n/ymeD2WyZRJFl5+vFM5Os5cc=;
+        b=eUrfu0fE/FfoRGesdEuREX+yjlIv8Zy2P4AT6e4ZiKq0PiwkFEQAd9WGlKzZUoD5Vb
+         66A+1amB5UAjShCEAaRXkh7uUOscB9m5eZDeQiz1FmQAwwLbq07PQOnNY8uenaFhrQuE
+         SBUPQspEWLgd8j5GtEMJriVjqGrXmBa2ESfIABY11KfcIyeuf4jmygbzJVcv6g5vAhI1
+         vzf040YKnmChcrm0gEbCFH605veL3W/LElYfYKXiHjt7AeJ783UWid6VBhDtGOVq0kyU
+         7NVBlbU0KMgbqDmKBRUhvYrzqe8G3PpOpwU/K8ENMiyRRl8PmzoC6tqev0uTTttAaPj9
+         a4Pg==
+X-Forwarded-Encrypted: i=1; AHgh+RoLpT4j02bddKSB84J16X1YdcEqsMGeAUT+hwrpv+JKCH47mHuIojLclNTUISqX9yXQn5m6UHvWuPw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzYHCXoVBnAROnWAVdaHs3ujmEdaloaW4YlbOpKXYvljKfYtRPf
+	jThVdFPkYJ4zOD+erZpeIMfXsc72N5Vxn+m67QWZb/IlGU/MkyDs47P5HWPWYbhofuo9AzK7Ymg
+	nYtpeowwJzFE+bAAnuYTQibPtwXLqq/E=
+X-Gm-Gg: AfdE7cniIUtD7LMiz6xB7gecYjueNM/YPCr/L0E6zf5eMqEZsV8PqUApkQe831h9i3q
+	kYw3A2gv+Wb1tLxrrJIsMZdhgnrlmXihNKjB93cm7M41uEa+RJ7zuU3j5/djmVgoQopZmgT13fU
+	OHFlDmgME56SaMoy7fJMwH57N6fs8j/6Pgfe7BoM5cyfxHEiFyT3cgJOrM/Ukp7A8fh1R4D2YQf
+	r8uwqjYfdclPfqOmLl5Hc6PDAp7HTD374ORCSQl6D933u9l0wFnpIKl4Dlxoo6VThDw+Ij70ZcC
+	PTam
+X-Received: by 2002:a05:690c:e0c:b0:7ff:5d6:201d with SMTP id
+ 00721157ae682-80134c779a5mr119196487b3.28.1782086769621; Sun, 21 Jun 2026
+ 17:06:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20260621004626.66629-1-m32285159@gmail.com> <20260621004626.66629-3-m32285159@gmail.com>
+ <20260621203303.0f8c5d08@systembl0wer>
+In-Reply-To: <20260621203303.0f8c5d08@systembl0wer>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Sun, 21 Jun 2026 19:05:58 -0500
+X-Gm-Features: AVVi8CeRhaBHZabaiTeL0-n8AlAEkTYDZRkLcdAkn06lqtsN7fSD7b_D7f6hllI
+Message-ID: <CAKqfh0HUih0q9PEh+5pwwMuBBkm6nsaZP9e2yPjHO3+Yccuvgw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] iio: temperature: Add STS30 temperature sensor driver
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, 
+	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 21 Jun 2026 18:43:55 -0500
-Message-Id: <DJF4KBA0LX3K.Q3XDAO3J1HMP@gmail.com>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC 3/3] dt-bindings: iio: adc: Add burn-out current
- properties
-From: "Kurt Borja" <kuurtb@gmail.com>
-To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
- <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com>
- <20260618-new-channel-props-v1-3-963c1b5cf40a@gmail.com>
- <0831356f-76ff-4eed-befa-7a35ffce921d@baylibre.com>
- <DJD6FJQUX2V7.SZWF8VSKBCPX@gmail.com>
- <38c5e5eb-2113-4a5c-ad14-348dc7966a1c@baylibre.com>
-In-Reply-To: <38c5e5eb-2113-4a5c-ad14-348dc7966a1c@baylibre.com>
 
-Hi David,
-
-On Sat Jun 20, 2026 at 10:57 AM -05, David Lechner wrote:
-> On 6/19/26 11:46 AM, Kurt Borja wrote:
->> On Fri Jun 19, 2026 at 9:28 AM -05, David Lechner wrote:
->>> On 6/18/26 7:33 PM, Kurt Borja wrote:
->>>> Some ADCs incorporate burn-out current sources that provide current to
->>>> the channel's input pins for open-circuit or short-circuit detection.
->>>>
->>>> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
->>>> ---
->>>>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 14 +++++++++++++=
-+
->>>>  1 file changed, 14 insertions(+)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Docu=
-mentation/devicetree/bindings/iio/adc/adc.yaml
->>>> index 106b1e317411d5..6b63aac9ac04dd 100644
->>>> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
->>>> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
->>>> @@ -106,6 +106,20 @@ properties:
->>>>        This array describes the current configuration of the excitatio=
-n current
->>>>        sources or the single matched current for all sources.
->>>> =20
->>>> +  burn-out-current-microamp:
->>>> +    description:
->>>> +      Burn-out current sources provide current to the channel's input=
- pins for
->>>> +      open-circuit or short-circuit detection.
->>>> +
->>>> +  burn-out-current-polarity:
->>>> +    $ref: /schemas/types.yaml#/definitions/string
->>>> +    description:
->>>> +      Burn-out current sources provide current to the channel's input=
- pins for
->>>> +      open-circuit or short-circuit detection.
->>>> +    enum:
->>>> +      - pull-up
->>>> +      - pull-down
->>>> +
->>>>  anyOf:
->>>>    - oneOf:
->>>>        - required:
->>>>
->>>
->>> This doesn't really work with chips that just have and enable bit to
->>> enable or disable the feature.
->>=20
->> Maybe those devices can use burn-out-current-microamp with a const
->> value? Is that okay or should another approach be taken?
->>=20
+On Sun, Jun 21, 2026 at 1:33=E2=80=AFPM Joshua Crofts <joshua.crofts1@gmail=
+.com> wrote:
 >
-> Maybe better to just leave this one out of the common file?
+> On Sat, 20 Jun 2026 19:46:24 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+> > +#include <linux/array_size.h>
+> > +#include <linux/bits.h>
+> > +#include <linux/cleanup.h>
+> > +#include <linux/crc8.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/device.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/export.h>
+> > +#include <linux/i2c.h>
+>
+> I am a numpty as I also forgot to mention a missing
+> mod_devicetable.h header.
+>
 
-IMO burn-out-current-microamp would be nice to have. I don't know how
-common it is for bindings to describe this kind of properties with a
-single const value though.
-
-On the other hand I do think we should drop burn-out-current-polarity,
-maybe it's too specific.
-
---=20
-Thanks,
- ~ Kurt
+D'oh, I ought to look at my includes a lot more closely as well.
