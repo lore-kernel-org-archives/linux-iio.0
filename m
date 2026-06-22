@@ -1,150 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D66AE345751;
-	Mon, 22 Jun 2026 18:39:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 401872F5485
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 19:31:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782153590; cv=none; b=tu/Vg6kXIS69MoZQGqPvoEkcpQiByjCj/SWYHq0LI68hJJMHiQfT/zW24D24eZuKyl0OhCVUPSD64eeU3LtjW3CQ1NCwMZH0Ey3hVn4zliqNta0Gz4aRy0kzRQt/URsqbFHOVQ5amGSTRuF7xV+476r1SC3wNdc/k+Qrv5aO+Xk=
+	t=1782156676; cv=none; b=SI5w6pqIRDsZJLHRVHzOB5NWFzsQKSnFkcZCfnTyXUgPm7E0z0Tajmwi6fPBCKOSXbjFyw3DBJ+BZ5E1TWD87W/VJJy0Qh51pQz1odyt8NsBQy9wYGs1EofGclgMY270Mqcjxa0+jG41gf5f9dPaBjouN6EHP0R3gRpAwqmwPA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782153590; c=relaxed/simple;
-	bh=P1Z8Kb1kgC1UU4dsPEHbpnrtWggCM0AVbBdG4S8RsTw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VhtvJSjSeVwwK6LM6dBdkXU+sT2s3R3NVEe74jFwsbCGR6rpHVpPBfxfVy2JMDLp6gyvzVEnlYUHwqUcrzlADWrKxin8M7TL6RKI5sdc5Fv96Y7yO9RjCjfg7gPzxm0pnQ3bwYpRr4S1mE+ORjYeZwDkkP1ZYenP1kh2p/q3p6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eddX1OD+; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782156676; c=relaxed/simple;
+	bh=SZnhDRaAj++G9Rfu8I9tt/ZNJq5ftejswAgLE6ndX9U=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WjY5VYw9XzZR3SCvtIJwgVViHC/bVqI2q1Gh6cV8sV9+FNU2xyeQJLaADxeHth8lsKmMc9wjFiquFHENF8in/keDaNy4uNGxOC4QbXutdcmfcbFO64z0f87BBLkfG+dxfQ7t+okFxGRKQEV4kJcdootXGnPe0rX8iskPIrQtowk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iCJXomwT; arc=none smtp.client-ip=209.85.221.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eddX1OD+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6644F1F000E9;
-	Mon, 22 Jun 2026 18:39:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782153589;
-	bh=mTAUX7iL8MIKP459YDbkJrM5XX2iCJ+gAz986kzvZy4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=eddX1OD+d1gw/xDyzjjgWxZnM+/v0Zw1KG0RgLC/osLVhHAAztmm6Ce5f4z2dZ8MV
-	 lKFPsXx4lyc8uYnYyWJgj7MFqyFQqsGhXSA9Cl7IWTX1CgB+6b7mUU5YKVGjXwyjo5
-	 U2wcw0DK5u2DkzvILF/UyuOeaEq5ukPeY6PNSq1HZqDaQ15/PeoTjk92FhM1R03LN1
-	 qnXFJ0iry1RWM0T7Ro5YZNZ9B1khrBJVM2kV86JZZWGb3vFpPjEfJzr1GZyqkiyxdi
-	 daKcQKVtOmfL8gkrCF8BnKhwsnTZsGfBQ9BYAEJwR5022V6bb3MSdACP8fK9AtvxJo
-	 Hflt/27xVeCzg==
-Date: Mon, 22 Jun 2026 19:39:43 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
-	Janani Sunil <jan.sun97@gmail.com>,
-	Janani Sunil <janani.sunil@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260622-captive-tux-067efd31ceac@spud>
-References: <076d7d2d-81a0-49c2-af94-bd65ead66c09@gmail.com>
- <20260619-obstinate-polo-a230bef97fda@spud>
- <20260619-bunch-diocese-dd7805cc17ff@spud>
- <ajU73_TkKrSbqD4f@nsa>
- <20260619-concierge-doozy-9c161533c369@spud>
- <ajVlD-j0nIGrRVow@nsa>
- <20260621153330.79b6600c@jic23-huawei>
- <5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
- <ajkMBh-R_7pYaoAn@nsa>
- <20260622172911.48259a0c@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iCJXomwT"
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-59ebb89109aso3624978e0c.1
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 12:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782156674; x=1782761474; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=JD/YQ+js7BeAGGBtm6f+AOwaKjGJfPoHFwNm6Y5Qb7w=;
+        b=iCJXomwTx0/17ZyOzLqhbYzzqaIdZPQD1apIAD9M0j7RO2XrE4fVdUdkA/juDMmjBl
+         sURwWqLGgbXe/PgnplsJAdLUNhlSFbVaKJ5ugw1w4ilJD5NhjCfkjTJpJ9IIPKjw5RgI
+         brgUc2aWgmmXjYAtRvMkIWDkUfQO4PID7hAtGW37XBKPvl4btKXiV559/O008q7/VQuO
+         1MQ06XWKkpMIDiMaAH9lHUDA/zdw+g2j3vDxPwobuzGeBOkRbSRhKy1BwxqIOIsRkQKp
+         4xy/Ad/0xs0qSnXHB/PpP/slel7LmKeJinn3o79OCeuh7ukdUDATNlXUDFxuoGIl+jbv
+         An5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782156674; x=1782761474;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JD/YQ+js7BeAGGBtm6f+AOwaKjGJfPoHFwNm6Y5Qb7w=;
+        b=aQIE6QGtv26oO9Bv2W+KRqTalswC/uqhroMphCVFHfffR7pj/6wbd/5XNQtivr8tVu
+         F5+rr4xgjB0U3wJI7U3gDEBXEBkv5lN2jQ2Cv7InqbvbwfXXvJa7JXjo9J3Hl+mB2goB
+         4FKiZpLkDhKHT6m4GnE0EXgcnGlHbp355Y40quEiAATUWby4Qhy+lSFDe1ZwOozurC29
+         vxdIYFzbfqaP12yAEVMlcfXCDijVkTXiymuxuXrvQfC8G5axp5sFbA0McjbGr1QSX25Z
+         1IkvWyLEN3BzJvyU9bnoVLMk+qwozrc7Oal+rlAbvLkVgIAEu3qow29/VupFfSf3ks2e
+         BbbA==
+X-Forwarded-Encrypted: i=1; AFNElJ+RUKgS7dSPCXtBHnUfLEKBbXkq9efYBkjpfc34V/MVqrx3eETFcMr1b5hh0C4JgI+EA775vmCjZMo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydFqEHqzwaBNKb8rTEpzzBaw+Vgb/JCrfTYn1ba2qG0bxVTSrt
+	5VNz1wQ5jPkqJqFf/kxwHFb6gBp/W/NgjBp1gSkHkE/UEo/on4uhO/6Ri1EXqQ==
+X-Gm-Gg: AfdE7ckNT+Jj8a3YHcaDzZ0tvmh8R4oSiNEcS6rCtaCjIt0ZGAUXyLzSfY6W9Rcddj/
+	wwGYfTz/hV+d5rhmkgUuS5FNly2kzJY1L2sCCsPwaWntSssxlNJdFxsSOS+X2ywrvzKPDFMzAAw
+	i6SeTQw92tyGqDV3+65KoswbxMgLdct5VSuJ6hA/27LqQ2cM8LGZMaFwqTpwcs5v2Dw9qMBbkpI
+	c+di+5G0RU4w9wwvXprO8ZIB1lJv8H1sdZJmBjCI2U8oHFbPvKbDzaHOQe8XuDMQgiDRL3HtCuf
+	rgxYwbYwWiAZl/vcYYu+tao06U01k3S8inc0a7QOOS7iPS7b6JuoJUZJ5doVFQWam1Plz397FLX
+	MLmiyO6aDkiElzC+D2/wdkvgFsPn6KJyyX9/VBqO1W34Eq8JJXBQ65Y4kd6RqWiG+LSVNG6QsDH
+	RJSMMBB3MPv9zqk6s=
+X-Received: by 2002:a05:6102:5e84:b0:6e7:5c89:3fc0 with SMTP id ada2fe7eead31-72a2000b9b2mr8751418137.25.1782156674142;
+        Mon, 22 Jun 2026 12:31:14 -0700 (PDT)
+Received: from [192.168.100.222] ([2800:bf0:177:563:8f3c:3421:b12:7a09])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9670c0e484bsm7227910241.2.2026.06.22.12.31.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Jun 2026 12:31:13 -0700 (PDT)
+From: Kurt Borja <kuurtb@gmail.com>
+Subject: [PATCH RFC v2 0/3] dt-bindings: iio: adc: Add reference,
+ excitation and burn-out properties
+Date: Mon, 22 Jun 2026 14:30:44 -0500
+Message-Id: <20260622-new-channel-props-v2-0-aafd5369f253@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="LINbEWIvA6tlgjut"
-Content-Disposition: inline
-In-Reply-To: <20260622172911.48259a0c@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/32NwQ6CMBBEf8Xs2TVtBaKeTEz8AK+GQykLrIGWt
+ Igawr9b8O5xZt7MTBDIMwU4bSbwNHJgZ6NQ2w2YRtuakMuoQQmViUwe0NILl8RSi713fcCkKso
+ 05qLUCmKv91Txe928w+16gfxnhmfxIDMsawvWcBic/6zPo1zhPyejRIHHbG9kkZoqEfpcd5rbn
+ XEd5PM8fwFys2QhyQAAAA==
+X-Change-ID: 20260618-new-channel-props-4fbd52020da2
+To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>
+Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Kurt Borja <kuurtb@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2506; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=SZnhDRaAj++G9Rfu8I9tt/ZNJq5ftejswAgLE6ndX9U=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFmWvcWS815MLpSSTG42Szq16tjt2Svkp9TYTBTi37Tiz
+ M4X8+YLd5SyMIhxMciKKbK0Jyz69igq763fgdD7MHNYmUCGMHBxCsBEtFgZ/gc8vHFM1fnw0/aH
+ PbdXZVsFzLfTbHtbFGA3dbGhobHYqjMMfyXLZPkDtE5rr3CasUjp7+dF7Fbe9tHLTz2x1pC+0um
+ wjBsA
+X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
+ fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
+Hi all,
 
---LINbEWIvA6tlgjut
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+After submitting a patch series adding support for TI ADS126X ADCs [1],
+I was made aware by David [2] that at least two more chip families,
+ads1220 [3] and ads1x2c14, share very similar features (though these
+chips are not really compatible between them). After that, I found one
+more chip with the same features which is already upstream, the
+AD4170-4.
 
-On Mon, Jun 22, 2026 at 05:29:11PM +0100, Jonathan Cameron wrote:
-> > > > Yeah. It's not clear to me how that works for the microchip devices
-> > > > (I suspect it doesn't!)
-> > > >=20
-> > > > Just thinking as I type, but could we do something a bit nasty with
-> > > > a gpio mux that doesn't actually switch but represents the GPIO bei=
-ng
-> > > > shared?  Given this is all tied to the spi bus that should all happ=
-en
-> > > > under serializing locks.=20
-> > > >=20
-> > > > Agreed though that this would be nicer as an SPI thing that let
-> > > > us specify that a single CS is share by multiple devices and their
-> > > > is some other signal acting to select which one we are talking to.
-> > > >  =20
-> > >=20
-> > > If the device-addressing on the same chip-select is to be handled
-> > > by the spi framework, wouldn't we lose device-specific features?
-> > >=20
-> > > I understand that this multi-device feature is there mostly to extend=
- the
-> > > channel count from 16 to 32, 48 or 64. I suppose the command:
-> > >=20
-> > > 	"MULTI DEVICE SW LDAC MODE"
-> > >=20
-> > > exists so that software can update channel values accross multiple de=
-vices. =20
-> >=20
-> > Right! You do have a point! I agree the main driver for a feature like
-> > this is likely to extend the channel count and effectively "aggregate"
-> > devices.
-> >=20
-> > But I would say that even with the spi solution the MULTI DEVICE stuff
-> > should be doable (as we still need a sort of adi,pin-id property).=20
-> >=20
-> > But yes, I do feel that the whole feature is for aggregation so seeing
-> > one device with 32 channels is the expectation here? Rather than seeing
-> > two devices with 16 channels.
->=20
-> Agreed - if we have messages that address both devices at once that needs
-> to be a unified driver and given they are about triggering simultaneous
-> update of all channels it needs to look like one big device.
-> This ends up similar to how we handle daisy chain devices.
->=20
-> The question of what to do on devices that don't have this feature
-> is rather different. Good thing you read the datasheet :)
+As David explained in [2], these chips are intended to be used with
+RTDs, thermocouples or other resistive sensors so they share the
+following per-channel features:
 
-I'm not sure it really is, the intent for the microchip devices I think
-is pretty similar. The mcp3911 datasheet cites three-phase power
-metering using three devices as a typical use-case, for example.
-Probably creating an amalgamated device is a good fit there too?
+  - Configurable reference selection
+  - Burn-out Current Sources (BOCS) for diagnostic purpuses
+  - Excitation current sources (usually called IDACs TI) for sensor
+    current biasing
 
-I assume an amalgamated device for this ADI product means per-channel ID
-properties? If so, I think they should be made generic and the Microchip
-products retrofitted to use them, with a fallback to the proprietary
-property. Not going to ask for the support for multiple devices in those
-drivers, since the current way doesn't work and there'd be no loss of
-support. Someone from Microchip can do that. The proprietary property
-to generic conversion should be straightforward and provides weight to
-an argument for this being generic, since that'd be three devices that
-can all share?
+Given that these three features are present in all four devices and
+three of these drivers are still under review, my proposal is to have
+these features be described in adc.yaml and have this series merged
+before the three others [1] [2] [3].
 
---LINbEWIvA6tlgjut
-Content-Type: application/pgp-signature; name=signature.asc
+This series is sent as RFC because I still don't have much experience
+with dt-bindings and I don't know if this approach or the properties are
+general enough to be described like this.
 
------BEGIN PGP SIGNATURE-----
+No dependencies between properties were provided because not all devices
+may be able to configure each one of them.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajmBbwAKCRB4tDGHoIJi
-0s7YAP0VfL1OuHJwk04s+lI2XMRzrfrP41oK6CFEBDAEWEQzfAEA1S8DE6xpjMxY
-7GwAtQ0Q8puQZd3ZbpZoY2n5JedDEgs=
-=W4pc
------END PGP SIGNATURE-----
+[1] https://lore.kernel.org/linux-iio/20260612-ads126x-v1-0-894c788d03ed@gmail.com/
+[2] https://lore.kernel.org/linux-iio/20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com/
+[3] https://lore.kernel.org/linux-iio/20260610151342.44274-1-zizuzacker@gmail.com/
 
---LINbEWIvA6tlgjut--
+Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+---
+v2:
+  - reference-source is now a string-array and now presents a couple of
+    quick examples
+  - excitation-* properties now do not enforce arbitrary limits
+  - Dropped burn-out-current-polarity because it was not general enough
+  - I kept burn-out-current-microamp because the discussion around it is
+    still ongoing
+
+v1: https://patch.msgid.link/20260618-new-channel-props-v1-0-963c1b5cf40a@gmail.com
+
+---
+Kurt Borja (3):
+      dt-bindings: iio: adc: Add reference-source property
+      dt-bindings: iio: adc: Add excitation current sources properties
+      dt-bindings: iio: adc: Add burn-out current properties
+
+ Documentation/devicetree/bindings/iio/adc/adc.yaml | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+---
+base-commit: a50909aa46dec46de3c73235fc15a7d6f763d996
+change-id: 20260618-new-channel-props-4fbd52020da2
+
+-- 
+Thanks, 
+ ~ Kurt
+
