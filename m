@@ -1,222 +1,179 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC31E3AEB39
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 13:14:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B0003B42D3
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 13:32:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782134092; cv=none; b=r4PJXGeb4y19aHjNqdPqP5NSHoVakn6g8Dg9cm1KaTxNEpeBRS2gt3RbfhQ/Ond8FZGMxhjBdsI6pUrepa8vHUqFn80qVr7IJWXN2UGt0mv6S6PQH0KOj3wUvyRq9TSuOvG/SGsHMoeL7QZ5Jv6Alqn2A9H4xvmuvbeYtiuWJEc=
+	t=1782135154; cv=none; b=dUhHr/uK1VxX+l52u/6Pd6vsbdJvq/atcFfHxP+Hd66yTqHFM2PjipLsxrysRShMxQj7vj3yHJwfHatK8kb5d4d4A2WQZqBMSfn+o+JwxAemYlxlXB8Q6uwSHd7ECvhIBTUyaqUaOUXGNWEZ1MncVoO5ataPeklLTxry0AsIszA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782134092; c=relaxed/simple;
-	bh=MiqYTUUKZ4s50r23PUmYCXguj6euConASaR2QHwnfS8=;
+	s=arc-20240116; t=1782135154; c=relaxed/simple;
+	bh=tbZVVOtwFYLwxLichiaXb/anhWmg2HaAr18TFUDTHVM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gyuPZQ0MH72ziKYx27MmJSzq+EO3dGH49qF+5eBIMNSNsuJPtlozQopVzv/WcHhxI060Zt5K6dxoy9hyu0AkE6pG5c4E0u+hMQQZeixVsdME9xOfpdiVdD0c5biV24r0vEcTfreHGsel9qWsPEvjDUSKhjpP6wZ6UbYzYimxbF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RpUE6m6K; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=BkhXxS06VCygpQjYSHGSZqJTUxuJVw9f8z9/pAKgwDNA7/6BS6ftHDAA4iSjpEEuNbJHMOw1HZr3T93bNi/jrVQu0zJtLakIegh8cwoV08ALhdbzr/7bI8pKkMsKKCO8ujz76S46AZwD8fNBCyy5euUNEiFNH26rhzWplJiDm74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=h4rkmYUH; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RpUE6m6K"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-49258ac7294so2696675e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 06:14:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="h4rkmYUH"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-45fd464d51fso2626339f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 06:32:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782134088; x=1782738888; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=P+q8fGHiiz6UE9tgA3SyIJs4m0VfOg89EkuI9d8DFfc=;
-        b=RpUE6m6K76urDO4q6XunKBN6iOeBpKcXZ5LTJV+OJPXOnFCc1IH4o/mfMie7eNVZHH
-         gfYPbfUnC1LoB9tUt9cc/8v2LNgRM0xbJK9f+hZENguXoToglbbxbgq5ZZdsjt6/V649
-         w4xc19fQ4sYz9VGyF3sOqMD8TAe9WVjs7H2sVOtqyGlnGR6VrJR5wHTyrRxtJhahaHO6
-         8Y116gwiTEfFa2MADKjmZ4SjORkqYApkfdoEa2l9y3hNgZM/4/C0Fay+vGljQIVKfxaW
-         qqli/FnoTlso9R1sPZiEtVCdo1Wzmp6xUg8D6zUwSvdkoTteHKX6OdUQxtFO8va/E4iw
-         kP1Q==
+        d=baylibre.com; s=google; t=1782135148; x=1782739948; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7jc5HSn+4K0JdQCOT1UOHDiDsJE6hyDUtS3E6IsWkNE=;
+        b=h4rkmYUHVLaK6oJMFCFO0Xi6U3R9YAJDh8o8xSF0Gb36QkXqN9t6nCjiAyhAiqw5CW
+         7HN0t89dT0E/VzPj6f7slbxUVGiKvdbJbNqnfjDxelyQAbfx5ai1Nya4ZxU5xBy968yj
+         Bl+3Gqoffxl+yWR7bfLfTbYmmhobbWwmMxrso88rAHIqgVvBgSJ7S5akK5ZuhSugrue0
+         Lf59Gg+rlGP5hvLd5dGagzpTo1j5NYDZaOU2sc7OJVjSTAT8JKbFX8t4ReJQQestvrrq
+         x33lV/O5sGRZWL+0jTC9sacqSqjDSDoD7N7DaQSDlQ6T2dipClK5tDu39yVeURdTuhP7
+         uFcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782134088; x=1782738888;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=P+q8fGHiiz6UE9tgA3SyIJs4m0VfOg89EkuI9d8DFfc=;
-        b=QNY2jeLKgwTPl24WRjJ9c8GelF6IICbQQVgb4Wy9BdqOAVEZdtWl9/7B/n5heqdGak
-         WAoaHpG2jTL3RPWInNmZ9VoOvu027ftrGyON77H5Ws8rCW8iozTrCW0TBylArxKk7aNA
-         KW0JgZDk3oHNc7dJYVPo+T+mfe7xehTsCnNMGdpz9Fhh6AUEC/OMyISsUQPjHDgrzkCN
-         ccPvqw1OuFMxJkgT7Z9YB5Q2g+jNXRwv6ts5gfae0kgBkzes6nBso4kw7LKapcBWGOWt
-         xccYUd27ujjCweU+9GXLBUhnhajEQF5ityHydha8HXKWps9tsHO2vQxcqc6G5wbp/MOM
-         KGbQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9Yxu+xErTBldcWcfTI61ZiuntiPXScPL1oN3d05WEpZ8FGCkOC4lSFPAyNsAoDF8p5r4XSAPl+ymE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyPOvZxe00jTT94dmunYIh7evqlAoUVXnIqGtU14cFyh9NVPYI0
-	PgoAd+Db7v7ZpsFsCWL8z3eC/s8IUDQhBWIafsaeeGC1PT58zmG51P8B
-X-Gm-Gg: AfdE7cn6SdcZHi+g3NNsb8C3Gvd2jvJC/1YpvnFYutf3N6P7gDrgErWU785/r0yubJz
-	Vb1/avQPlZ1sbH4SRtbMH386FUcl8R9RKM1Bv1zBlZUPU2wLntpj1DCKnsNL0rTJ3YbvTbnzk0Z
-	yetjFYyK+GCkBw/+EMTU8z/G0gk8QoJ+hnTMuOJsJOMLSN+ivNXvnziDe5L0duCUzvxy1fbQijh
-	97Y6GS7JwtBog0wQBwvTmWFuIxhur6BFrldjmL9wo94UmQEQq9MVmvcBBMmYWp7wSmiw6yKVrT5
-	ZWd84cCF7HSRQjx1Ss6uQx4Lv+ON29i2KLZapw/nptHNtO3gSLVDBrMMCzH7KK5rGUaPM0XeVix
-	jIr/AKB1Ppg6RdGpf50qC0ebYhIAToacuQf816YmrW35i4MDQbxQFRDCgbyEcrw/eNEsHEmz6YI
-	FgfvTP
-X-Received: by 2002:a05:600d:6451:20b0:492:25a0:1730 with SMTP id 5b1f17b1804b1-49240ea820bmr183786325e9.32.1782134088047;
-        Mon, 22 Jun 2026 06:14:48 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4923fd15470sm340432535e9.2.2026.06.22.06.14.47
+        d=1e100.net; s=20251104; t=1782135148; x=1782739948;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7jc5HSn+4K0JdQCOT1UOHDiDsJE6hyDUtS3E6IsWkNE=;
+        b=aogT9i2RwIwOvT65DcKyJxmoy9b/RI+Q+yY9+26GtgJ2wzgohctFRrNOLzTg9732EC
+         n0Pm367dG1jIeD1ppKwYlAuZ9Mw8Kb646SMYmG3yoGQdMgssDKN52eXUSuqeNFbtHNmu
+         puA8CY8EtQI4LjzTZ0FOPL5NgOy2CGrkkUzKiwC3k8aI89mNZNCk5VPzn2/NhDimy8bC
+         0lCPqy4/BW1SQLEE628xwEAXO2FCoRDvluXccBfxhMc9Hkz3amRz04rsEVrvo1K0mg1i
+         OPOZ9RMLr3H7IukwL4vBE//np+n+cv34l0Q4TSsMpz6kL2ZdnWQN+baAqIl2wCu7ZqwQ
+         J7UQ==
+X-Forwarded-Encrypted: i=1; AHgh+RonE7an/Rm12UtkmSRJu+WaNeaxWzml7eP4FY3DWAnMy8kX5kaJLGXmG9yPCEXGB7Z7G0idoZckn+g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwUsm9R/QrU1RVK+pxo4NgOtTD6zZld2orY4QEhdrnSeUcYVS0U
+	fAGtTHMijc7ahzWfMHPzztFIqNjkr4ggLYQMUDssnfbbKZ+1ttsr/xAQAF8ZneAVCYE=
+X-Gm-Gg: AfdE7clSFwxZUSIfrlIOgWq4jpVRn7Q9Xr6PsUh2CH79P2k2tyZJ87Jp6alGtsDJOpC
+	NkyKA8SuPtKOoCh1dL66iY5aMWar2w0oF6bsA2PTxuzsdlaB/E/so7lkY/xVkfY3/yHgD6IHZPp
+	QzIW379XQmWKaeKzUMIq/peU3uWt12O+gBZYknztK0jQ02HmnwI9MxBJb1F9AbAWzqoHDhyyu5z
+	SUjfysYksqlua3UH6YtaGPOrpwAi21kWl1gDjlM9lqBF1uKCULx3jTf40KxhLOAcd3RNYvGxoM5
+	XuekYFGBMpbr7lUEFycqd9E6SHdxUUBTkB4t3uzsVcnIwg0A/tcwqzNTgagjtNJelSPk/a9DuIo
+	/ObhycjW7JmS5TR4Ho0m6rSpnu2PT8m+B9RJsmpjqajYBNVEKg3gTB7GVvZmTo2hjoIPy8MTrXM
+	3z1BmWKOZ2beItdpfoVFMesM+U9w+P6LpVVjA/tW9TcenF0SUkyHDgYPVLlhRHbp3UvFK5+w8WM
+	L/U
+X-Received: by 2002:a05:6000:2386:b0:460:1967:abed with SMTP id ffacd0b85a97d-46503646b28mr23423097f8f.39.1782135147573;
+        Mon, 22 Jun 2026 06:32:27 -0700 (PDT)
+Received: from localhost (p200300f65f47db0439f7453c727e8fab.dip0.t-ipconnect.de. [2003:f6:5f47:db04:39f7:453c:727e:8fab])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-46667221da1sm25881623f8f.36.2026.06.22.06.32.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2026 06:14:47 -0700 (PDT)
-Date: Mon, 22 Jun 2026 14:15:50 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, 
-	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH] iio: buffer-dmaengine: Add support for cyclic DMA
- transfers
-Message-ID: <ajk1FX-d_KoW14f-@nsa>
-References: <20260611-iio-dma-cyclic-buffer-support-v1-1-bcf00e8d802c@analog.com>
- <e05dddef-2ffc-4ab6-8ce7-f676b7801eff@baylibre.com>
- <ai-0CIqteaSJJkau@nsa>
+        Mon, 22 Jun 2026 06:32:26 -0700 (PDT)
+Date: Mon, 22 Jun 2026 15:32:25 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 03/13] iio: adc: ti-tsc2046: Drop unused member from
+ private data
+Message-ID: <ajk3fihWcjRedEWa@monoceros>
+References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
+ <f90ca5b6d8b694ccd0649d36d590e5d64ae52d9d.1781883685.git.u.kleine-koenig@baylibre.com>
+ <ajkOsT8QCAL-0_hK@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="stbh7ln7otlrn7lo"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ai-0CIqteaSJJkau@nsa>
+In-Reply-To: <ajkOsT8QCAL-0_hK@ashevche-desk.local>
 
-On Mon, Jun 15, 2026 at 09:21:02AM +0100, Nuno Sá wrote:
-> On Sat, Jun 13, 2026 at 11:33:36AM -0500, David Lechner wrote:
-> > On 6/11/26 10:28 AM, Nuno Sá via B4 Relay wrote:
-> > > From: Nuno Sá <nuno.sa@analog.com>
-> > > 
-> > > Allow buffer blocks flagged as cyclic to be submitted as repeating DMA
-> > > transfers. For cyclic blocks, use DMA_PREP_REPEAT so the engine keeps
-> > > replaying the descriptor.
-> > 
-> > Is this for both directions (e.g ADCs and DACs) or only one?
-> 
-> We just have usecases of TX buffers. IIRC, there should be some
-> validation (some layers above in the call chain) not allowing cyclic RX.
-> > 
-> > > 
-> > > Skip installing the completion callback for cyclic blocks. Since the
-> > > transfer is continuously replayed, the callback would fire on every
-> > > period, throwing off the block refcount.
-> > > 
-> > > Because nothing prevents a new cyclic transfer from replacing an
-> > > already active cyclic one, always set DMA_PREP_LOAD_EOT so the engine
-> > > correctly terminates the active transfer before loading the new
-> > > descriptor.
-> > 
-> > Is there more to come after this to actually make use of it? Or is there
-> > a way to use this with DMABUF from userspace already?
-> 
-> Yes. One can do TX cyclic DMA transfer today. Some waveforms examples:
-> 
-> https://github.com/analogdevicesinc/iio-oscilloscope/tree/main/waveforms
-> 
-> For normal non cyclic transfers, libiio also handles DMABUF just fine.
-> Best way to use it is with USB where we support zero copy between IIO
-> and the USB stack.
 
-Jonathan,
+--stbh7ln7otlrn7lo
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v1 03/13] iio: adc: ti-tsc2046: Drop unused member from
+ private data
+MIME-Version: 1.0
 
-It seems there's not much activity on this one. What do you think about
-the changes?
+On Mon, Jun 22, 2026 at 01:30:09PM +0300, Andy Shevchenko wrote:
+> On Fri, Jun 19, 2026 at 05:54:31PM +0200, Uwe Kleine-K=F6nig (The Capable=
+ Hub) wrote:
+> > .dcfg is a write only field and thus it can be dropped.
+>=20
+> Why isn't squashed with the previous one?
 
-David, from you silence either you forgot about it or I guess you
-are happy with the reply :)
+Because they are two different logical changes. But I don't feel strong
+here and can squash them together.
 
-Just trying to move this one forward
+> Also, what about struct field and the accompanying data type
+> definition?
 
-- Nuno Sá
+It took me a while to understand that suggestion. I guess you're talking
+about
 
-> 
-> > 
-> > > 
-> > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> > > ---
-> > > There's one subtle choice in here. Given that the termination callback
-> > > is not set. We will never give the block refcount. That means cyclic
-> > > blocks are only completely freed when we disable the buffer and
-> > > iio_dmaengine_buffer_abort() get's called. So no leak, we just defer it
-> > > as it makes it more simple to handle. I also think this a fair
-> > > expectation from a cyclic transfer. We set it up and let it run until we
-> > > disable the buffer.
-> > 
-> > Makes sense.
-> > 
-> > > 
-> > > Alternatively, we can give in the refcount as soon as we give the block
-> > > to the DMA layer with dma_async_issue_pending(). But we also need to
-> > > make sure that the block is not added to the dmaengine_buffer->active list.
-> > > As said, I feel that the current approach is just simpler.
-> > > ---
-> > >  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 19 ++++++++++++++++---
-> > >  1 file changed, 16 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > > index 98acce909854..4a78cd3e7c7d 100644
-> > > --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > > +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > > @@ -80,6 +80,8 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-> > >  		dma_dir = DMA_MEM_TO_DEV;
-> > >  
-> > >  	if (block->sg_table) {
-> > > +		unsigned long flags;
-> > > +
-> > >  		sgl = block->sg_table->sgl;
-> > >  		nents = sg_nents_for_len(sgl, block->bytes_used);
-> > >  		if (nents < 0)
-> > > @@ -99,9 +101,18 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-> > >  			sgl = sg_next(sgl);
-> > >  		}
-> > >  
-> > > +		if (block->cyclic)
-> > > +			flags = DMA_PREP_REPEAT;
-> > > +		else
-> > > +			flags = DMA_PREP_INTERRUPT;
-> > > +
-> > > +		/*
-> > > +		 * There's nothing preventing a cyclic transfer to replace an active
-> > > +		 * cyclic one. So always set the EOT flag.
-> > 
-> > What about the non-cyclic case?
-> 
-> Non cyclic will also have DMA_PREP_LOAD_EOT which should stop an ongoing
-> cyclic transfer. If there's an active, non cyclic, it's business as
-> usual. The transfer get's queued and will fire after the current one
-> ends. IOW, DMA_PREP_LOAD_EOT is only meaningful for active cyclic
-> transfers (it's ignored for non-cyclic)
-> 
-> - Nuno Sá
-> 
-> > 
-> > > +		 */
-> > >  		desc = dmaengine_prep_peripheral_dma_vec(dmaengine_buffer->chan,
-> > >  							 vecs, nents, dma_dir,
-> > > -							 DMA_PREP_INTERRUPT);
-> > > +							 flags | DMA_PREP_LOAD_EOT);
-> > >  		kfree(vecs);
-> > >  	} else {
-> > >  		max_size = min(block->size, dmaengine_buffer->max_size);
-> > > @@ -122,8 +133,10 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
-> > >  	if (!desc)
-> > >  		return -ENOMEM;
-> > >  
-> > > -	desc->callback_result = iio_dmaengine_buffer_block_done;
-> > > -	desc->callback_param = block;
-> > > +	if (!block->cyclic) {
-> > > +		desc->callback_result = iio_dmaengine_buffer_block_done;
-> > > +		desc->callback_param = block;
-> > > +	}
-> > >  
-> > >  	cookie = dmaengine_submit(desc);
-> > >  	if (dma_submit_error(cookie))
-> > > 
-> > > ---
-> > > base-commit: ae696dfa47c30016cd429b9db5e70b259b8f509e
-> > > change-id: 20260609-iio-dma-cyclic-buffer-support-f18034f8f34c
-> > > --
-> > > 
-> > > Thanks!
-> > > - Nuno Sá
-> > > 
-> > > 
-> > 
+diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+index 97ecc429db27..125f6d7e2d84 100644
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -121,11 +121,6 @@ struct tsc2046_adc_group_layout {
+ 	unsigned int skip;
+ };
+=20
+-struct tsc2046_adc_dcfg {
+-	const struct iio_chan_spec *channels;
+-	unsigned int num_channels;
+-};
+-
+ struct tsc2046_adc_ch_cfg {
+ 	unsigned int settling_time_us;
+ 	unsigned int oversampling_ratio;
+@@ -213,11 +208,6 @@ const struct iio_chan_spec name ## _channels[] =3D { \
+=20
+ static DECLARE_TI_TSC2046_8_CHANNELS(tsc2046_adc, 12);
+=20
+-static const struct tsc2046_adc_dcfg tsc2046_adc_dcfg_tsc2046e =3D {
+-	.channels =3D tsc2046_adc_channels,
+-	.num_channels =3D ARRAY_SIZE(tsc2046_adc_channels),
+-};
+-
+ /*
+  * Convert time to a number of samples which can be transferred within this
+  * time.
+@@ -738,7 +728,6 @@ static void tsc2046_adc_parse_fwnode(struct tsc2046_adc=
+_priv *priv)
+=20
+ static int tsc2046_adc_probe(struct spi_device *spi)
+ {
+-	const struct tsc2046_adc_dcfg *dcfg =3D &tsc2046_adc_dcfg_tsc2046e;
+ 	struct device *dev =3D &spi->dev;
+ 	struct tsc2046_adc_priv *priv;
+ 	struct iio_dev *indio_dev;
+@@ -767,8 +756,8 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+=20
+ 	indio_dev->name =3D TI_TSC2046_NAME;
+ 	indio_dev->modes =3D INDIO_DIRECT_MODE;
+-	indio_dev->channels =3D dcfg->channels;
+-	indio_dev->num_channels =3D dcfg->num_channels;
++	indio_dev->channels =3D tsc2046_adc_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(tsc2046_adc_channels);
+ 	indio_dev->info =3D &tsc2046_adc_info;
+=20
+ 	ret =3D devm_regulator_get_enable_read_voltage(dev, "vref");
+
+on top of my changes. Yes, that makes sense.
+
+Best regards
+Uwe
+
+--stbh7ln7otlrn7lo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmo5OV0ACgkQj4D7WH0S
+/k4p6Af/SZg0/AqIJrKcgKI/q7SnZ69RMvMCHHDxKiNdlK4ejPyuIwfxvZpT8fjd
+DCUlqvNIX83EEFBha4DTCyGYkytoigmyP53CYg/DjxmrMpANcgqCcGrn/kGWMS+S
+6Sm6y0QsyIfYUoHI9oTc+RN9bb0ucUetcLpGSIo1zFQALOKEOCll/HfWee+E6c3Z
+EkZk5t7gPGUIyr1n1emAmjlKHKyEXRIMTBQ1ptAJINPmT3Vin+02LTU+7eIByG5I
+3sYWsbzE8XJzY/qTo1Wz/iZ7MM4WJY+Z38XfguMBU0ZwTAZWo80CDrJHPbUPN5MR
+HYB994+aDn4LBQX8yIy+KONYxcOPkA==
+=1nqN
+-----END PGP SIGNATURE-----
+
+--stbh7ln7otlrn7lo--
