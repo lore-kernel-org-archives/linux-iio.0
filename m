@@ -1,264 +1,157 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA1513911C0
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 08:51:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C27039060C;
+	Mon, 22 Jun 2026 08:55:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782118263; cv=none; b=ItCF8BSAMscQf0IChcNoAAALfrSpyQozmJH6xZ4XIcNA1bo+QbhE8bV273CL9NNL9hq+TOUO8DPI+A8+zRw/KZ7kAf19+ckmOLF94+td/5k9TN6/wcMxVhZXdQ7ti6MeVkdA7iGMwZOS4QlWPftVkuE8Ug3vY1drhCP+PNBbGdI=
+	t=1782118514; cv=none; b=gvKkv66n0EtCH2M2/tU7niuUenJfBrMn/PRHUz9Fg4I9ozLs6dfYO8bf9uH5mNu+J75tGrQBzb8jRWbujP34j07KMhVrWhMq3g4bDgHzqT7GuXaj9pJgAMSgEGaJ1wpeX0ucuvCab1xYOq7goTkAZTfXgaYQnxywU/kdWc9jNQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782118263; c=relaxed/simple;
-	bh=8cxYJffMTcRoiH1t6rIKcnnfOIswC1goyaxXlOhGaIw=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gIbL5BFg9Vtn3Mi+hF45uB1Im1U91mHe1A90vk20FtrsXWGX1jYbt9B9INXRz8LemYATtwAC+YfkNOAWsrTR2JnwmnI0Zwc8Zb8gL5+4sJfMZdHk/EHnH0HYo5VHBebBqX8FRCHBY5UGGDuN6b96wvvSgUvA5FNFqi9hQtboSGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aSTzfNdA; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782118514; c=relaxed/simple;
+	bh=4Apv8CsJQhRk7yelJjKg+7zpCvm7XJwJnAJQ0ESTBhw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Cwty/jwAjJ9CFF99naO96Eub1rdcw0JWTNBRHiCxh3gxOPqbpbxqpYiSOHZy36H7OaKUYaP82gADplgw8BikQPIR7IVsTSQ0n3FUBTrzVlX/C1r48X10h7S+0rQXNLI8/JiFMTqorGCdQaTgpVxjFb7azwmxF3QFaSqg3SxIaWs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=THLDSwwq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aSTzfNdA"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-6978f1eeb87so1943520a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 01:51:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782118260; x=1782723060; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nmNXJUQs9yO1XdMAOL14hcf+fv2uHMoUTTUvjBKx4vc=;
-        b=aSTzfNdApvgJ33BZ9psuFaGvsY4F67R5bDTR0SsAPKYwTMZ8ecD0hccM/14SWIDClF
-         v9pGkk345XGMz3IODs7zVc7Zo/eY4KuPnrRbjFL1VjKR4lyGNmpsQ73EY7nG8qFtUzbp
-         33KcLY+uPofqYOctyZN5JyAPPrbdYmjCYX1YZrbdxMVo4kcKWP9T8KEYGW4MHq3Wf3vG
-         Feoh5HmQovsBr+fJjGSW0ECcteVps/heI1AVeKKlPoM+10KFuCL4TS5tM6/99/8Jhmnq
-         AHIOyzpn3Icp+rPft1khqk574kKdsWTx/YxxzAWkhebF6pdd38cMDXI5lsNsjq4mGeRf
-         VoTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782118260; x=1782723060;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nmNXJUQs9yO1XdMAOL14hcf+fv2uHMoUTTUvjBKx4vc=;
-        b=oAschBZjLevc6jgqzuVzAEIWWl/56BoFiOHfEwupQ96gX0uuUtHqHkq0uOdGljRQEo
-         bnGyl2orHSlzvRFN8Q93HL6lHZTpVRaHyyomkbpIR4oPldir5APkheOuNmkyJmfkGRzR
-         O5cwkAbAo0MA7ZQRGFzA1M3VkC7rUZx2A3Sduo2Tajl5JVA6T3AJli0XQlmf3oAam/hF
-         f+fpiGQnaDgRJy8zYy9NmZb3O5qrsgS5w7FpY+8nJ7miNYv3NGOiWqblsNYWS0z4ovoO
-         r+HEmGx3twsPwhoWeA3fBGb+3YwbPY1WZ5mKtahWFxyMSc9I5snKisZPhQyfJPBF75EM
-         ifdg==
-X-Forwarded-Encrypted: i=1; AFNElJ8GGTec6VFCIhUzUhkd16nLlr4LpJbRMsgFFxLImu6tMskG5Er2Rg5EJR7QfB4/KmKlxqpw8+jNSm8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywn2Y9CMOpJi+UdnNvmw9+qhzgB3BtNf0cMd/7N48S1jPuMgdgb
-	G4ujHYXrIanJYIlHxotr+B3SpCO+tJZtDfk6AB2hLeo6ff7GDE1Hx4wa
-X-Gm-Gg: AfdE7cnwoiVsyLAfVz4RRh172jiQXLFIat8i6M0lkSjPx0Cq+sgTn1p9b2xemWyMLjj
-	U2BiMrQykRd1DvSGSZRgzIomVsL0HtOcNlsazzUpPOxb6u7yVip15uAatDhIgakuJHIL3wGGqb5
-	sYWMDMsiqZhtf9WurI/t/GALxZMcR+HiODvBzAPQb8TDxdmE2FQTw9Ott5v1d9GZnYbfN/rkAv+
-	Qyj4MffiJjft0l9MX6yief1QimBHgEZuIam/OyU+0moaqWpH0n2jZ8W+7T0sURQK8ZrqrPjCICw
-	X/6hr7m6yFqHcupE5yRz3ZuHY/2IVop1QDsUibbjoa5FWynWyN30ONMLji0D3PVF5qvWypEPqgC
-	v/NJDSPIf92H7kQ1k6pCi5gCMMxX4PySNW5BoVXODV3mTxtVzC7QctJxk9i6fmW3mB2WNjjD9rb
-	28ld0yYWPe9+gdps529ePbQk3Km5pUBRETcrT9xVR/Gjsfs3CPaxact9XSxjFm46f4O2P9CdVzW
-	eBhPOm3xTyGxCc7iGvqQUcH1ENH
-X-Received: by 2002:a17:907:c09:b0:be5:2bc0:5370 with SMTP id a640c23a62f3a-c097c9c79dcmr629568666b.36.1782118259798;
-        Mon, 22 Jun 2026 01:50:59 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c0c5ef8acaesm317407166b.27.2026.06.22.01.50.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jun 2026 01:50:59 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 22 Jun 2026 09:50:53 +0100
-To: David Lechner <dlechner@baylibre.com>, rodrigo.alencar@analog.com, 
-	Michael Auchter <michael.auchter@ni.com>, linux@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v3 09/12] iio: dac: ad5686: implement new sync() op for
- the spi bus
-Message-ID: <3i3fdq6qjd2h4o4wwicl4zlpzyggzb7gljm2acwz33k75ds57k@7mdevoavx3ao>
-References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
- <20260616-ad5686-new-features-v3-9-f829fb7e9262@analog.com>
- <50a7e765-ba20-45c0-8a13-5e672413b600@baylibre.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="THLDSwwq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CFB51C2BCB4;
+	Mon, 22 Jun 2026 08:55:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1782118513;
+	bh=4Apv8CsJQhRk7yelJjKg+7zpCvm7XJwJnAJQ0ESTBhw=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=THLDSwwqP8jh+LjVfgV9vRAW0Eu5byboWu2sXwX3seX+8i5TmFchw/Js3niju1MM/
+	 O1W4BKLYeeLaG0yT8f/l7XaYMOVc7H3IrSaugzxVo3vR9/aH85zh2CK+LPXrPDT4cq
+	 gat6SXYC8xsTnoW+zDS55AuhlLtwDZ3xgOvDnvOQUCUpv5cog30YtE3kUUqMl+eAi/
+	 RPnOLDZQFGWTiyHJXWE68jpYGiWeYOyx1qDxacCgtadyzxx3vMX0pwDiejYcGnqX7w
+	 h8lLqBSKoc3WCwbgsugUalD2MSEm/FHlRPluc8YYXhHDJ85MfzWiuuK7JCE86J6muQ
+	 zBq/fa2q03bmQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B23B7CDB46F;
+	Mon, 22 Jun 2026 08:55:13 +0000 (UTC)
+From: Bryam Vargas via B4 Relay <devnull+hexlabsecurity.proton.me@kernel.org>
+Date: Mon, 22 Jun 2026 03:55:13 -0500
+Subject: [PATCH v4] iio: imu: inv_icm45600: clamp the device-reported FIFO
+ sample count
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <50a7e765-ba20-45c0-8a13-5e672413b600@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260622-b4-disp-ca8d55df-v4-1-e306208ecbb0@proton.me>
+X-B4-Tracking: v=1; b=H4sIAHD4OGoC/x3MPQqAMAxA4atIZgMaTf25ijhoGzVLlRZEkN7d4
+ vgN770QJahEGIsXgtwa9fQZbVmAPRa/C6rLBqrIVIYI1xadxgvt0jtmt6FpBivMTcc1Qc6uIJs
+ +/3KaU/oAByG122IAAAA=
+To: Jonathan Cameron <jic23@kernel.org>, 
+ Remi Buisson <remi.buisson@tdk.com>
+Cc: David Lechner <dlechner@baylibre.com>, linux-kernel@vger.kernel.org, 
+ linux-iio@vger.kernel.org, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782118512; l=4600;
+ i=hexlabsecurity@proton.me; s=proton; h=from:subject:message-id;
+ bh=xe1uIrNY7gVIBxa290oSlcAmIpUHYZrdadGSkjhELaI=;
+ b=QQ5eQ4tI9Yqb3Hr8bVElRTvXB2EBhkg7jiFFTXerEl3cTtmmQFsc6E2y+R6StNHelF0GXigIX
+ s1RuWB0EEAZCzQT0tCmqjU2c6+OHTT/nu1v9bJ0DTQQJpbD2BB9t4YL
+X-Developer-Key: i=hexlabsecurity@proton.me; a=ed25519;
+ pk=dmppBMZNLLoPzxHi9l8tZDzEZUunPbgsYqIZYXeUrL0=
+X-Endpoint-Received: by B4 Relay for hexlabsecurity@proton.me/proton with
+ auth_id=814
+X-Original-From: Bryam Vargas <hexlabsecurity@proton.me>
+Reply-To: hexlabsecurity@proton.me
 
-On 20/06/26 11:33, David Lechner wrote:
-> On 6/16/26 3:21 AM, Rodrigo Alencar via B4 Relay wrote:
-> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > 
-> > Use of local SPI bus data to manage a collection of SPI transfers and
-> > flush them to the SPI platform driver with the sync() operation. This
-> > allows for faster handling of multiple channel DAC writes, avoiding kernel
-> > overhead per spi_sync() call, which will be helpful when enabling
-> > triggered buffer support.
+From: Bryam Vargas <hexlabsecurity@proton.me>
 
-...
+inv_icm45600_buffer_fifo_read() uses the FIFO_COUNT the device reports,
+unclamped, as the length of a regmap_noinc_read() into the fixed
+INV_ICM45600_FIFO_SIZE_MAX (8 KiB) st->fifo.data buffer. The only bound is
+the caller's "max", which the interrupt path skips (it passes 0). A device,
+or an attacker on the bus, reporting up to 65535 makes the read as large as
+~1 MiB: a heap out-of-bounds write of device-controlled data.
 
-> > +/**
-> > + * struct ad5686_spi_data - SPI bus specific data
-> > + * @msg: SPI message used for transfers
-> > + * @size: number of transfers currently in the message
-> > + * @capacity: maximum number of transfers that can be added to the message
-> > + * @xfers: array of SPI transfers, allocated with the provided capacity
-> > + */
-> > +struct ad5686_spi_data {
-> > +	struct spi_message msg;
-> > +	unsigned int size;
-> > +	unsigned int capacity;
-> > +	struct spi_transfer xfers[] __counted_by(capacity);
-> > +};
-> > +
-> >  static int ad5686_spi_write(struct ad5686_state *st,
-> >  			    u8 cmd, u8 addr, u16 val)
-> >  {
-> > -	struct spi_device *spi = to_spi_device(st->dev);
-> > -	u8 tx_len, *buf;
-> > +	struct ad5686_spi_data *bus_data = st->bus_data;
-> > +	struct spi_transfer *xfer;
-> >  
-> > +	if (bus_data->size >= bus_data->capacity)
-> > +		return -E2BIG;
-> > +
-> > +	if (bus_data->size)
-> > +		bus_data->xfers[bus_data->size - 1].cs_change = 1;
-> > +	else
-> > +		spi_message_init(&bus_data->msg);
-> 
-> Seems odd that spi_message_init() is called conditionally. What
-> prevents spi_message_add_tail() from growing the message unbounded
-> on repeated calls?
+Clamp st->fifo.count to the buffer capacity before the read, and allocate
+the buffer with the same INV_ICM45600_FIFO_SIZE_MAX define, so the bound
+and the allocation reference one constant. The clamp is a no-op for
+conforming hardware.
 
-The "size >= capacity" check right above this.
+Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
+---
+v4 (Jonathan [3]): clamp the byte count directly --
+    st->fifo.count = min(fifo_nb * packet_size, INV_ICM45600_FIFO_SIZE_MAX) --
+    rather than dividing then multiplying by packet_size. fifo_nb is unused
+    after this point (the read, the one-by-one fallback and the decode loop all
+    bound on st->fifo.count), so clamping the byte count is sufficient. Also
+    allocate st->fifo.data with INV_ICM45600_FIFO_SIZE_MAX in _core.c (was a
+    bare 8192) so the allocation and the clamp reference one define.
+v3 (Andy [2]): shrink the commit message; register/byte detail below the cut.
+v2 (Jonathan [1]): use min() instead of min_t(size_t, ...); drop the backport
+    tags -- hardening against a malformed device-reported count, not reachable
+    with conforming hardware.
 
-> 
-> > +
-> > +	xfer = &bus_data->xfers[bus_data->size];
-> >  	switch (st->chip_info->regmap_type) {
-> >  	case AD5310_REGMAP:
-> > -		st->data[0].d16 = cpu_to_be16(AD5310_CMD(cmd) |
-> > -					      val);
-> > -		buf = &st->data[0].d8[0];
-> > -		tx_len = 2;
-> > +		st->data[bus_data->size].d16 =
-> > +			cpu_to_be16(AD5310_CMD(cmd) | val);
-> > +		*xfer = (struct spi_transfer) {
-> > +			.tx_buf = &st->data[bus_data->size].d16,
-> > +			.len = sizeof(st->data[bus_data->size].d16),
-> > +		};
-> >  		break;
-> >  	case AD5683_REGMAP:
-> > -		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
-> > -					      AD5683_DATA(val));
-> > -		buf = &st->data[0].d8[1];
-> > -		tx_len = 3;
-> > +		st->data[bus_data->size].d32 =
-> > +			cpu_to_be32(AD5686_CMD(cmd) | AD5683_DATA(val));
-> > +		*xfer = (struct spi_transfer) {
-> > +			.tx_buf = &st->data[bus_data->size].d8[1],
-> > +			.len = sizeof(st->data[bus_data->size].d32) - 1,
-> > +		};
-> >  		break;
-> >  	case AD5686_REGMAP:
-> > -		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
-> > -					      AD5686_ADDR(addr) |
-> > -					      val);
-> > -		buf = &st->data[0].d8[1];
-> > -		tx_len = 3;
-> > +		st->data[bus_data->size].d32 =
-> > +			cpu_to_be32(AD5686_CMD(cmd) | AD5686_ADDR(addr) | val);
-> > +		*xfer = (struct spi_transfer) {
-> > +			.tx_buf = &st->data[bus_data->size].d8[1],
-> > +			.len = sizeof(st->data[bus_data->size].d32) - 1,
-> > +		};
-> >  		break;
-> >  	default:
-> >  		return -EINVAL;
-> >  	}
-> >  
-> > -	return spi_write(spi, buf, tx_len);
-> 
-> If this function no longer writes, should we change the name of
-> the function to something like ad5686_spi_write_prepare_msg()?
-> 
-> > +	spi_message_add_tail(xfer, &bus_data->msg);
-> > +	bus_data->size++;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int ad5686_spi_sync(struct ad5686_state *st)
-> > +{
-> > +	struct spi_device *spi = to_spi_device(st->dev);
-> > +	struct ad5686_spi_data *bus_data = st->bus_data;
-> > +
-> > +	bus_data->size = 0; /* always reset, even on sync failure */
-> > +	return spi_sync(spi, &bus_data->msg);
-> >  }
-> >  
-> >  static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
-> >  {
-> > -	struct spi_transfer t[] = {
-> > -		{
-> > -			.tx_buf = &st->data[0].d8[1],
-> > -			.len = 3,
-> > -			.cs_change = 1,
-> > -		}, {
-> > -			.tx_buf = &st->data[1].d8[1],
-> > -			.rx_buf = &st->data[2].d8[1],
-> > -			.len = 3,
-> > -		},
-> > -	};
-> >  	struct spi_device *spi = to_spi_device(st->dev);
-> > +	struct ad5686_spi_data *bus_data = st->bus_data;
-> > +	struct spi_transfer *xfer = &bus_data->xfers[0];
-> >  	u8 cmd = 0;
-> >  	int ret;
-> >  
-> > @@ -85,8 +117,21 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
-> >  				      AD5686_ADDR(addr));
-> >  	st->data[1].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP));
-> >  
-> > -	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
-> > -	if (ret < 0)
-> > +	xfer[0] = (struct spi_transfer) {
-> > +		.tx_buf = &st->data[0].d8[1],
-> > +		.len = sizeof(st->data[0].d32) - 1,
-> 
-> Would make more sense to say `sizeof(st->data[0].d8) - 1` since
-> the buffer is  &st->data[0].d8[1].
+[1] https://lore.kernel.org/all/20260614144557.196a5c4c@jic23-huawei/
+[2] https://lore.kernel.org/all/ajEMfH-_76M1OBqE@ashevche-desk.local/
+[3] https://lore.kernel.org/all/20260621190804.04894168@jic23-huawei/
+v1: https://lore.kernel.org/all/20260613-b4-disp-58b984f3-v1-1-352b2f925f58@proton.me/
+v2: https://lore.kernel.org/all/20260615-b4-disp-feb19207-v2-1-2d36f1e5fc54@proton.me/
+v3: https://lore.kernel.org/all/20260616-b4-disp-76e3f743-v3-1-c20930aaf1cb@proton.me/
 
-the buffer is d8[1], d8[2] and d8[3], skipping d8[0], for a len = 3.
+fifo_nb = le16_to_cpup(raw_fifo_count) is 0..65535; the interrupt handler calls
+inv_icm45600_buffer_fifo_read(st, 0), so the "max" clamp is skipped, and
+fifo_nb * packet_size (16 bytes per packet) reaches ~1 MiB into the 8 KiB
+buffer. Present since 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support
+in iio devices"); not marked for stable as it needs a malicious or defective
+device, or bus tampering.
 
-> > +		.cs_change = 1,
-> > +	};
-> > +	xfer[1] = (struct spi_transfer) {
-> > +		.tx_buf = &st->data[1].d8[1],
-> > +		.rx_buf = &st->data[2].d8[1],
-> > +		.len = sizeof(st->data[1].d32) - 1,
-> 
-> And here.
-> 
-> > +	};
-> > +
-> > +	spi_message_init_with_transfers(&bus_data->msg, xfer, 2);
-> > +
-> > +	ret = spi_sync(spi, &bus_data->msg);
-> > +	if (ret)
-> >  		return ret;
-> >  
-> >  	return be32_to_cpu(st->data[2].d32);
-> > @@ -95,12 +140,26 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
-> >  static const struct ad5686_bus_ops ad5686_spi_ops = {
-> >  	.write = ad5686_spi_write,
-> >  	.read = ad5686_spi_read,
-> > +	.sync = ad5686_spi_sync,
-> >  };
-> >  
+Reproduced with an in-kernel KASAN litmus and a userspace ASan model: without
+the clamp a FIFO_COUNT of 0x208 (520 packets -> 8320 bytes) gives a
+slab-out-of-bounds write past the 8192-byte region, and 0xFFFF (1048560 bytes)
+reproduces under ASan on x86_64 and i386; with the clamp the read is bounded to
+the buffer. Reproducer and full logs available on request.
+---
+ drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c | 7 +++++--
+ drivers/iio/imu/inv_icm45600/inv_icm45600_core.c   | 2 +-
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+index 2b9ea317385c..42111c543d3c 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_buffer.c
+@@ -422,8 +422,11 @@ int inv_icm45600_buffer_fifo_read(struct inv_icm45600_state *st,
+ 	if (max > 0 && fifo_nb > max)
+ 		fifo_nb = max;
+ 
+-	/* Try to read all FIFO data in internal buffer. */
+-	st->fifo.count = fifo_nb * packet_size;
++	/*
++	 * Read all FIFO data into the internal buffer, clamping the
++	 * device-reported count to the buffer capacity.
++	 */
++	st->fifo.count = min(fifo_nb * packet_size, INV_ICM45600_FIFO_SIZE_MAX);
+ 	ret = regmap_noinc_read(st->map, INV_ICM45600_REG_FIFO_DATA,
+ 				st->fifo.data, st->fifo.count);
+ 	if (ret == -ENOTSUPP || ret == -EFBIG) {
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+index d49053161a65..c1d7aa7e950d 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+@@ -716,7 +716,7 @@ int inv_icm45600_core_probe(struct regmap *regmap, const struct inv_icm45600_chi
+ 
+ 	dev_set_drvdata(dev, st);
+ 
+-	st->fifo.data = devm_kzalloc(dev, 8192, GFP_KERNEL);
++	st->fifo.data = devm_kzalloc(dev, INV_ICM45600_FIFO_SIZE_MAX, GFP_KERNEL);
+ 	if (!st->fifo.data)
+ 		return -ENOMEM;
+ 
+
+---
+base-commit: 8e65320d91cdc3b241d4b94855c88459b91abf66
+change-id: 20260622-b4-disp-ca8d55df-639ce5537512
+
+Best regards,
 -- 
-Kind regards,
+Bryam Vargas <hexlabsecurity@proton.me>
 
-Rodrigo Alencar
+
