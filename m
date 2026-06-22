@@ -1,67 +1,68 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B9535A3B8
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 05:30:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A73D35AC34
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 05:30:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782106217; cv=none; b=IWxbQi6zwvXbQ0ei4q8xMGMaugWdHJsRIBoNtzor5k94i4aWmAdxJrp0uKmN+CT9VaWVf17rGgtJZHcUqYcJ3RhMZtsXx8Q5Vhzs9vMp+TDUZc/xzIM2ofPRc5BI/twfeZr6z/eyy1ZDlW+sKGKq8ojjk2D9kIArjeAAs1SRnD4=
+	t=1782106222; cv=none; b=sbDL/ZTqSnHcQknHiHjsZraYXk6g8Ibg0rZCiaDCu2Gz/TXsCvxzHwInfzGcbz0BgAqcJwhQpRVpLYToyPciINDtym4vmAMlxRVrZENuX3tQeFn1+cTI6YBOSV9YjrFbhaYBhKMEygUB7YTNitwzEXa6ywbUE8pWwcynY3+92N4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782106217; c=relaxed/simple;
-	bh=Y82TrF2hjltbuUq5wvpY8/mWvTcHDHFnlrb+MK7r54M=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=uqx6R+ySqpRYcHsQXhldL9KXe7A69NnID0E/owc4TS+Ncdj75PXbgE7xRI26u3Q2O7xI2jiFGZK4L4/Z/Uo5NvBrEm1Wd1EGze+3xtyXRfQ5F2WNEuW6FJR7iip1pKunau7kqNMiymLAtEqBUQMRjfLb+q7olOYZMMC0zOIooic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oja2Gdqu; arc=none smtp.client-ip=209.85.214.179
+	s=arc-20240116; t=1782106222; c=relaxed/simple;
+	bh=ld/DcKmZo64YuVRlRKEx+gQgYH9N97OfbIW65kvt380=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=LbCFRMxCFvqV9PRGJu28AJo2jFCt/LtYAzHPrtQt58+3sLR0O6jQubPm0ApcXEH3GCyUwPzM8rCfYqsZ2YBjTvH1eFc0ETGtACaNAvOkk2PRDSbIndnqpt/4aCpwDT6l1ZOnCH9BtE4CcVTgCR8qNRULA4jPuy6LyOGHqwbRCrQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j8d+1PQ0; arc=none smtp.client-ip=209.85.216.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oja2Gdqu"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2c6bb8a5980so26024135ad.2
-        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 22:30:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j8d+1PQ0"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-37cae9b7536so2252762a91.3
+        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 22:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782106216; x=1782711016; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BQW1C6qb+lSsw+bGlEgRloEDW/3yda0n+8R2fJMon1I=;
-        b=oja2GdquBj6BFeY/l0Yg8lsz2SVapkQ0WduJ+TLanQCluPASGl1A8z1oRGOTK+g15S
-         wZChvcMjpcaH25OVWUvx96sYUI+dizU6De2dBEcw4kJxaojxLbUrsJST82GSei8nKYyd
-         BRLtLq7P1sSPi41nt2BEZDdXsKwlbIHI0aW4kiUdT2Vp0HwfMp7iFtXc+/1Sx3JwEnof
-         TJxxIxItC3DxOPn8eBBwczqD4gnyVdE3wACw7DzskVOKbL+k+XG+3PNdaSMX17mJ1HEv
-         WG6GmUoBaAWWoveo7I1VMR2FAj6sDmznSe8jtJDm6SnHkMCjeDOfhG+7SJOUBlSWFg0b
-         qoOQ==
+        d=gmail.com; s=20251104; t=1782106220; x=1782711020; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zxY4qpIdyAKznOWTpDO1hErhVIzCBpni+I5exEf2UL4=;
+        b=j8d+1PQ0tXhcUsTxHNqCKMTEpeXKEbwDVihVUrqE7oXoVLSaoyt4s0hl8131PnW2Cl
+         Yhx4zJnQR3oqw7riVcdE/uT0H/vu7iJVkQtkJnr4ecTGA1ZDL8YuXFGomLZup5fnO9/f
+         RE3U2FOmclVI8hTIDVF/4FSz9R5YgFAIE4Ubcq3VNKJ34RigbfgVY5t5XiIZMsxzj23Q
+         4VmFhxoXdNqpMOOl/Rgf8zvAb9JVgTTv8pGQmz4Pf2KEXwEP+C2e2nZfgC2hmfa1AXFr
+         6gD8U3ChBSgH545oz6W7Cv4yvlg/2bqjCiJmqYtPrt2Ll1vdNdzCGSlxiBibzt9cI90x
+         wo7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782106216; x=1782711016;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BQW1C6qb+lSsw+bGlEgRloEDW/3yda0n+8R2fJMon1I=;
-        b=J5m9q+he+vxHgEtnF2KfUifH6L/RR/+nIxZSJ7MuAdoctQKjewUVHsDjklyig04BCE
-         1cVOCpZfvVNMVTLQJBKS0QQCax2MQB9GXPj5s3cvJYFCtccUn6eqQqzRjX/bfTP+fz8o
-         ixESAxiGgYvDFXBgfjV4RadS76ZhaH+aT6qpkarx4gXAyPzSxcRHTVnGJjfFMW3l1hRU
-         7A3b2vL+/YN821iP1NBUHeOKe2MwjTyvJNKnCH7we/i4JouSG6SU/6LsgWsIYEt9m3fd
-         ZA2vElE6r4z26JG/yre/hpeVn5fRq1GxoQdJjz8UXv8HTu3xyzSikbWpMK/SLwGd3uaj
-         n8yQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqvcLpbZSSGWFlGzu7NzCVcecNnxb4IOuo5RP3U0iFnfDLaD0WmzT1Tjnv5iMtGDycaO5xHUYfhufI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxPpT0MxrusorqcYxbVbwotaQ8m1fpKhe/B/uWCfHqPlkdQWZnp
-	zrqdGSWbkz6WGm0laCAOrQ/iRpRD02Mcs8fu4ETdz7Vg5htl3FjP1gE8mARdDA==
-X-Gm-Gg: AfdE7clef70U+uwZzgzg9isMXZICMa1LwspX7bTS1YZHJNMKOX4FOFV/ObLmqf87syV
-	x+K4bnMDim/htgQ/FLl9Vf+weuCwAMyjwkOXLZxb7qxnFbXFYEuk57hKoicfaEHt4BVXpBUjmkh
-	wyy017H8CwUAxsMINcwy3daRRM2GNIFoDHUkkc7hHGIm/zV5F/JYa5u+zKutj0whR56ONIyx+59
-	u+OgGnBYiJo5iUn4tnnoOeuPtRVeeR7lI1MR5Bl4KFPB2NSQmvlW/FjNx31e+fVfpvbZ4jPUaq+
-	pTVvaGZY3a8YJvMEocidu9a5XlCqZyMfde/LanZ4C7wtLuibK7PcsJdl1cCQfBgPChnCdwskMtW
-	6OYRQKMo7lAwPvvYJo1R1pkjb/34+KlvIpC0NJkWvukgl6UO6GlcS0d7PRJg88mvzqTpg1zTLD2
-	jjxlHGLexZefWwY9FMPSVXRcNXdhh+6gGhyMljTg==
-X-Received: by 2002:a17:902:d4c8:b0:2c1:150d:6db5 with SMTP id d9443c01a7336-2c718f1f271mr131047735ad.6.1782106215644;
-        Sun, 21 Jun 2026 22:30:15 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782106220; x=1782711020;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=zxY4qpIdyAKznOWTpDO1hErhVIzCBpni+I5exEf2UL4=;
+        b=gHhKVx5W1TeV8e0P3uZDKVrl8GYM4C0GFVKZXEQ5kk4F5+YRTX7qjVTPxhxSpSrtTb
+         imMKMKnOWW9R6/6x3pDxVeIFxfOOv3Vex1XnantS2d3+agbo1crL1jKl/SRL8mFbQpUo
+         djPiZZkHQMu6fV/qIrBcyaNGyCsD8+VytSw4LAExhMC6bZsQfZQIQyWRhZxxmQvTt0p6
+         orVzAWykaEcPCxa+laEz22Da1ycZVXrhbsi5VCryqdy49eDNwS1/j2hHN4czb6TZb8zK
+         /49zUaW/N7HwQm4v8ZLUSx9wTbcaAgKeA02iZNXIuUldbNZkVRRjSByc0RiXyyfBVZ6z
+         Gfow==
+X-Forwarded-Encrypted: i=1; AHgh+RoPVa/pcg05Kx8sp9A8AV4ci2UGMh/4/jBax56pMqZnt0dQDu/amUnWbK9gxKeBfdQAcZrLyi7PkJ4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxNrFCZaL1Onj21daniPn9pv7o5oQI58vOvc+JFjVhOvKf3mdZu
+	cXtAfJ+JlRcXtZU3buMwk1e1uq0FU6SYgK/9Qjo6+aaHf06HXaXlLG2B/X/Caw==
+X-Gm-Gg: AfdE7ckFWIwL0N5HNfaCK6LIyRRpNzKJ0sIzuymG8JbNr+g7JV1IOi5W5qM7CSdyN26
+	rFzdgDpmxSZfWJHyToz2oTgeIPvEupcTcQQxA//Y9Vx4IS/qnVr23qXsfxh0/GaAj+iOyuzYhlh
+	v/Q5c6dNJ/WAc3JQvCWJTrX4aDJKBgHtLhn3OXzq0A0H781j4O/WBWphyvwVyN5PRzGUs9wnGv6
+	sGA9LhKu7fUT69eLcpyMexrypg8kqUyzWyLz1MzydCUt9QarsNY7ENbeDV61fbU91aBcVixUI5q
+	fTG46H/biMU5tXxUmpaWdP6cfWFGasCrN8ps2BDJQjzLXEj8lBx/8+xmC0REu5eTfe3fwIH5Gak
+	AXsEZADaUTpxBsZMxyyvwjW82TXTIe8VvYOPMhrrKGWPseCPSIOORPVfI6bqbWhZfOJ3XQFBAnv
+	ESiRdaZQeFxiFBOOw5OTjlOv0mbo/nNysc4omimg==
+X-Received: by 2002:a17:902:db0a:b0:2c0:e5ee:f55e with SMTP id d9443c01a7336-2c718f1f04fmr128770145ad.7.1782106220296;
+        Sun, 21 Jun 2026 22:30:20 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c743fd6420sm63932315ad.70.2026.06.21.22.30.11
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2c743fd6420sm63932315ad.70.2026.06.21.22.30.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Jun 2026 22:30:15 -0700 (PDT)
+        Sun, 21 Jun 2026 22:30:19 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-Subject: [PATCH v2 0/8] HID: iio: Avoid race between callback setup and
- device exposure
-Date: Mon, 22 Jun 2026 10:59:56 +0530
-Message-Id: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
+Date: Mon, 22 Jun 2026 10:59:57 +0530
+Subject: [PATCH v2 1/8] iio: orientation: hid-sensor-rotation: Avoid race
+ between callback setup and device exposure
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,12 +70,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAFTIOGoC/32NTQ6CMBBGr0Jm7ZjSWKiuvIdhUcoUhig1LRAN4
- e4WjFuXL9/PWyBSYIpwyRYINHNkPySQhwxsZ4aWkJvEIIUsRCEUKuyngbDjBpk9BmMJHb8ootP
- 1WedOy1oLSPtnoD1I81v15TjVPdlxO9waHcfRh/cun/Ot9/MUfzxzjgJlafRJW1Uq7a7tw/D9a
- P0DqnVdP/70XTLUAAAA
-X-Change-ID: 20260605-5-june-hid-iio-race-fixes-f8b981f82b80
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260622-5-june-hid-iio-race-fixes-v2-1-1cfabcd1881e@gmail.com>
+References: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
+In-Reply-To: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
  David Lechner <dlechner@baylibre.com>, 
@@ -88,69 +87,78 @@ Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
  Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Mailer: b4 0.15.2
 
-Hi all,
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-This series avoid a race condition in HID IIO drivers related to the
-ordering between callback registration and device exposure.
+The driver currently exposes the IIO device to userspace before
+completing sensor hub callback registration, and similarly removes
+callbacks while the device can still be accessed during teardown.
 
-Currently, several HID IIO drivers register the IIO device (making it
-visible to userspace and other kernel consumers) before all required
-callbacks and resources are fully initialized, or rely on devm-based
-cleanup in a way that does not guarantee correct teardown ordering.
-This creates a window where the device can be accessed while it is
-not fully initialized or is being torn down, potentially leading to
-sample drop or stale/no data.
+This creates a timing window where userspace may enable the buffer
+before callbacks are available. In such cases:
+- samples can be dropped,
+- buffered reads may observe stale or no data.
 
-To handle this, the series ensures that:
-  - All required callbacks and resources are set up before the device
-    is registered with the IIO core
-  - Resource cleanup is performed explicitly where ordering matters
+Reorder probe and remove paths to ensure callbacks are active before
+device exposure and are removed after device is no longer accessible.
 
-PS: This is prepratory series to convert all HID IIO driver to devm.
+This avoids a race window leading to data loss.
 
-Testing:
-  - Compiled with W=1 for each patch in series
-
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
-Changes in v2:
-- Drop fixes tag and rectify commit message with reference to that
-- Link to v1: https://patch.msgid.link/20260606-5-june-hid-iio-race-fixes-v1-0-27a848c5758f@gmail.com
-
-To: Jiri Kosina <jikos@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-Cc: linux-input@vger.kernel.org
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Sanjay Chitroda (8):
-      iio: orientation: hid-sensor-rotation: Avoid race between callback setup and device exposure
-      iio: orientation: hid-sensor-incl-3d: Avoid race between callback setup and device exposure
-      iio: gyro: hid-sensor-gyro-3d: Avoid race between callback setup and device exposure
-      iio: pressure: hid-sensor-press: Avoid race between callback setup and device exposure
-      iio: light: hid-sensor-prox: Avoid race between callback setup and device exposure
-      iio: light: hid-sensor-als: Avoid race between callback setup and device exposure
-      iio: magnetometer: hid-sensor-magn-3d: Avoid race between callback setup and device exposure
-      iio: accel: hid-sensor-accel-3d: Avoid race between callback setup and device exposure
-
- drivers/iio/accel/hid-sensor-accel-3d.c       | 20 ++++++++++----------
- drivers/iio/gyro/hid-sensor-gyro-3d.c         | 20 ++++++++++----------
- drivers/iio/light/hid-sensor-als.c            | 20 ++++++++++----------
- drivers/iio/light/hid-sensor-prox.c           | 20 ++++++++++----------
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 20 ++++++++++----------
- drivers/iio/orientation/hid-sensor-incl-3d.c  | 20 ++++++++++----------
  drivers/iio/orientation/hid-sensor-rotation.c | 20 ++++++++++----------
- drivers/iio/pressure/hid-sensor-press.c       | 20 ++++++++++----------
- 8 files changed, 80 insertions(+), 80 deletions(-)
----
-base-commit: cc746297b23e89bd5df9f91f3a0ca209e8991763
-change-id: 20260605-5-june-hid-iio-race-fixes-f8b981f82b80
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-Best regards,
---  
-Sanjay Chitroda <sanjayembeddedse@gmail.com>
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+index 20563d8efaf6..6773bb0ec204 100644
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -332,12 +332,6 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	ret = iio_device_register(indio_dev);
+-	if (ret) {
+-		dev_err(&pdev->dev, "device register failed\n");
+-		goto error_remove_trigger;
+-	}
+-
+ 	rot_state->callbacks.send_event = dev_rot_proc_event;
+ 	rot_state->callbacks.capture_sample = dev_rot_capture_sample;
+ 	rot_state->callbacks.pdev = pdev;
+@@ -345,13 +339,19 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 					&rot_state->callbacks);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "callback reg failed\n");
+-		goto error_iio_unreg;
++		goto error_remove_trigger;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "device register failed\n");
++		goto error_remove_callback;
+ 	}
+ 
+ 	return 0;
+ 
+-error_iio_unreg:
+-	iio_device_unregister(indio_dev);
++error_remove_callback:
++	sensor_hub_remove_callback(hsdev, hsdev->usage);
+ error_remove_trigger:
+ 	hid_sensor_remove_trigger(indio_dev, &rot_state->common_attributes);
+ 	return ret;
+@@ -364,8 +364,8 @@ static void hid_dev_rot_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct dev_rot_state *rot_state = iio_priv(indio_dev);
+ 
+-	sensor_hub_remove_callback(hsdev, hsdev->usage);
+ 	iio_device_unregister(indio_dev);
++	sensor_hub_remove_callback(hsdev, hsdev->usage);
+ 	hid_sensor_remove_trigger(indio_dev, &rot_state->common_attributes);
+ }
+ 
+
+-- 
+2.34.1
 
