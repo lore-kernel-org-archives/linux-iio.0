@@ -1,275 +1,274 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010044.outbound.protection.outlook.com [52.101.84.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72A03AFB11
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 13:55:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782136505; cv=none; b=ihy/htz2xyMGh0PDZW9zxxUrvZH/iM9/Lu58qvoXRz9z+n6CXeKnmDpmZtKPenQ4PlOu+nspnqXHUe59g0VvC/DNTMc3myunSmYPwh6S4gKrQUDpLT7Pe4sMnJ9KmapOZTXdx+DGgs+A4FpPMYq+FtqZKVhHltbCgh4ToYZMM1Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782136505; c=relaxed/simple;
-	bh=F7XgWmGDL57uyYW5zg/J1Ylcjm2e0uV/J9jDi+p/POY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=N99Ptu9RgEjO3uSdjU07mfF0Ldd43sD9mFmo/iFctDUpug3DWb+CFoZADUpnmUC/KS8xO9wR7zpv473haVOCnfQgbYq2mq4G2qQHiFJoIyP4360KUyURI7Us3UCpkGlsvQAYuA62GswpoipN+mkeJOOZKGPLWBs15WC3g3Lgrxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=hvpyWzC0; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C968430F526;
+	Mon, 22 Jun 2026 14:51:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782139921; cv=fail; b=cKTiM0jo9zHR331ynvCIAwC7nIvtvvIGcogxmmvvvk4dcs7yuBgk4GseHUFwte6PT2mkUyZ8puCFWxXPJAPE8fbHgcgWS9GLRq5xWwYTLH79+pQfXLnj/4UXDpehfuPA32fm1Tkcvtp2keBnYORk7+9M0AOuBdUWnwBYXkEiHks=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782139921; c=relaxed/simple;
+	bh=5FpQemXy/FJ96MhPlaOoGRsUSg+iRJtN9v+pHOiz9qw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=p200XkCemMuuClcE8/90KDHUj2HPtkMma/h/vymAfHI30CkbaKzBveJKbcr21fnxl2ppiHIbCMKVet8+lHlo7LJ8wuw0HRRCXxemNul+Q7u5Wx4sUuXLK7ngnhNcW69nSCEvRj9bZYv7GLKSAeyXISZwYwfww+Ck7vQA8vA1LZM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=SR7Y62XT reason="signature verification failed"; arc=fail smtp.client-ip=52.101.84.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="hvpyWzC0"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-44755d837e8so1047395fac.3
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 06:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782136503; x=1782741303; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=t6eEeMJPQKAtcX5MedkvnuksL17XF4JZiVXUHwmPZMc=;
-        b=hvpyWzC0DRo/o95xtWQBJMmsAt2M3ls8Rf198nqZqThac9euigfbSD16wE44vNgyCM
-         ZypKUZtUDYCmejZ8WKLu3rcUr35ifN1jfy9oZeovEH3g35KSn0646RxvDT5kq/ufVzsG
-         yrQ6UgLJKbUToM36aWvHeAJiJIzlVn7w5USvsFdWD5w3SwrZri+0U95hJK8FPRrNxzPo
-         Pii5X3b0RsIKktqvInaUx09LvXsuUswIx6uwN4n3Fp8bha9YhbjFrfJ9XKgMfWfdZ5nZ
-         1OGnc1njslYOchJ3OIWlSGCXseT7cYDh+fV17/D2mvExo+znRfPoJum6IixCnYEuPHkj
-         d7jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782136503; x=1782741303;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=t6eEeMJPQKAtcX5MedkvnuksL17XF4JZiVXUHwmPZMc=;
-        b=WlMVIrUhsB9uNm+zlGa2m9Ug5jO8nRuWEWHBxmdYOsheaFTG+UMx0fvyBTLjWt8sSG
-         K9rj1PIaSRTD84WBypsTFMnC1KBM3E+QcJm+JklGhJKPwny81oPSzho1CBMLgiGwH5TL
-         rBIKhJ8/kj2LWIw5It5KVlTMgKFAg7RB3j/JXjdglrSr3URNY5oU2U+md644HHNWnD73
-         L/ePTgyHShyE6NclbLy2sym9pn4BXYJrpXkZ6Zkcg+zJNxD/eMSD0kWWaBb9+ePhphMS
-         4V6Z5OxTckBAW9N4IbzZOBX1RtzyCZQ8MMDwyoYnI3aYBw9vFnEltnqqPBfv3OUm2xKw
-         xEUg==
-X-Forwarded-Encrypted: i=1; AFNElJ8BJnD0vf/tm8shXdZfw8CSZJ4VgIGP1DzKM0NRw+3Il2UOdB62JaZ8S2Ty0Aulxb1tRbHE25NRRFg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzpUOKhy4r7iHWFp4JHEKZY2O072LpY+eIHQ8i2niJ5g05e0CP3
-	IK5oxFAEJsOuASodJgR7pA0hzjPKHA/hg79wHW9NM6RumWNi3LExoQVank76aROsNnY=
-X-Gm-Gg: AfdE7ck404y1tzKV6bGtKhfDZrAbfrjWRMREvg4DsHsb5OyLFZs0pHd8UYDnHw+jfY8
-	542RJx/EUPGGbhvn/s1pb/s4Sv2dn37WoCijpxD3RtUA6/Tg30PJs1fkr+T7QDqliK+M8bFkhEH
-	0qvV2UscTawOQfkvg9IpinKpFyWZd2f8StMWBW3BlgxC7w5NhS5XJVeFmDd63Nq1RLoAB2rrqI5
-	AwuVpN7fFq5lGsmwjjg6GIFw5ZW/TBHPEkXQehmjD+OeoWh20KyS3dEizcJt03i1SV1wbeX7yfM
-	6Cfmp2PZh4kk9pkJayrcHZpGSzg/HXrKxh4Ac5SWOfpxkGqz7p+x+g1J5Bv2YlOQiQc7kREoMRp
-	4YJHioR1DFqnrGMUSWlSRGurk8YSQIO9+ldKbys0DBndCmzRgEOCUTW9fGNQfBmKied0W7d145h
-	gezgHcweqLhmP5tzkXwFB8Gnm+GAgrms7yH9ScckPdcB7LNsEBF12I57am09b1j6w=
-X-Received: by 2002:a05:6808:1183:b0:48b:4218:9326 with SMTP id 5614622812f47-48b42189df5mr7464007b6e.34.1782136502396;
-        Mon, 22 Jun 2026 06:55:02 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf? ([2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e944296d7asm6353944a34.19.2026.06.22.06.55.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2026 06:55:01 -0700 (PDT)
-Message-ID: <c7478348-452b-4659-a2f2-a8a2700c29dd@baylibre.com>
-Date: Mon, 22 Jun 2026 08:55:01 -0500
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="SR7Y62XT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Sg6oL7I9qsKyTaEmW0lSbPuGzzzi4GmDlL2DakgVkvteMlG/3MPx/0n3kaSF8LLLcxk7EZfoVS7s203m/BSwKDprQZF6jvaGilgoCIT5aJ29GHQTIct1fAGDp41zab/YbcoCSgyvercRjEWiPmZfsiFq1AGu37BBbGq7w3dZlLfTkqVQfPoS7/9fGr9cS+TzFmtL4m+IM8ciKjlN34tMagPlZcZ2xBFHmUCZVhQmFEbAPcbtKd3Om17F3Ia/ia+IAtlNhM54Hp5ZsxaqmQC0nHER57XBqTkcSXzyFhdqVWXLbX8s1PkUNFDQiIXjENzEDEfaqmG4EDTfvZghfBd8/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KbY0ZJec+Eps735eaMY6PCLL/hzgDtABymxIJKcBL1Q=;
+ b=B8Zdp90D+0Hn8RGVA/AsD1BMm/cDfjzHXaroRHoToQ2VVfz+NVsbCfbjGdZKGpf+h9gYsxMVG43g4K1yjiK2mGxp06opBVn1G3vIGydCJ6bG0CVYc3WN6Tokn0pEDpVihnMR7MueI4Tw7HWLZ7XWznn7VN3wmRM+WpuhkVD6YV8UmmJDQeMakEn6ih1isB/vyZIspMvW0bUIyZv4IYVLzQP78lmZ0vJEda71Sbj9DH924AkFaWQt4LT7oIFY/CtwQrFXAHAEAxq6jqcDHHc3j2C4Yu2hLxRZ/eWLBCtrxYtiHLOi5OIWjd0h0BikLvEp5EuW+om1c2WJurWm9z8bzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KbY0ZJec+Eps735eaMY6PCLL/hzgDtABymxIJKcBL1Q=;
+ b=SR7Y62XTcyOcZAWxwrqx3fDNKcPxjuH4u+c4USvoruGJn0DCVempf5k/zbLYxpszpGqkKYUUcw3kRjIu9pmWpkO8+uwVOyq8sVfkgHGk0NveTf1pQIP4ev6mlbMxlBvJ0xNF54wRPMSlQ5s2sq3PMAQY+8zJCh28X3SHuOahaspUih/tk4h31CS6MzF4tDnIqI/dbPm5kfp9FCb6uQTj0K7CgzFeiKoe/JFPD3Jn/spAeyiYX3O+yn9fthrcA7ci4fTIHl190mF2sS3KkVWJFDSjB1SB41OHmb6gXbd5sSkzedYKU0rBgx+zSgUHDpd/v9QisS9LRZBaXqmq2BSNsw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by GV2PR04MB11445.eurprd04.prod.outlook.com (2603:10a6:150:2af::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.11; Mon, 22 Jun
+ 2026 14:51:55 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0139.018; Mon, 22 Jun 2026
+ 14:51:55 +0000
+Date: Mon, 22 Jun 2026 09:51:46 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: nuno.sa@analog.com, dmaengine@vger.kernel.org,
+	linux-iio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+	Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
+Message-ID: <ajlMAijTUHsnOhEQ@SMW015318>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
+ <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
+ <ajF4i3o0gNRtUelb@SMW015318>
+ <ajQkupPzv8-GdEjv@nsa>
+ <ajVs3jwoxq7Jhop1@SMW015318>
+ <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
+ <ajj8AhN1YC3uvuLb@nsa>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ajj8AhN1YC3uvuLb@nsa>
+X-ClientProxiedBy: SA0PR11CA0165.namprd11.prod.outlook.com
+ (2603:10b6:806:1bb::20) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 09/12] iio: dac: ad5686: implement new sync() op for
- the spi bus
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
- rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-References: <20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com>
- <20260616-ad5686-new-features-v3-9-f829fb7e9262@analog.com>
- <50a7e765-ba20-45c0-8a13-5e672413b600@baylibre.com>
- <3i3fdq6qjd2h4o4wwicl4zlpzyggzb7gljm2acwz33k75ds57k@7mdevoavx3ao>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <3i3fdq6qjd2h4o4wwicl4zlpzyggzb7gljm2acwz33k75ds57k@7mdevoavx3ao>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|GV2PR04MB11445:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f470092-7374-4eb4-3cda-08ded06dcda8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|7416014|19092799006|4143699003|56012099006|11063799006|6133799003|22082099003|18002099003|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	h2azPfgFdATdAAkvTEcHIYA9WC1axzxObu1/sxLB8M7zppL9/AHzrdmfcqEUwdoBA8Yo8e8FOYAq7BUW7wCq5t9Xur9xd1ENK9R5I9nw2tkSFPeVXtGiEpTXpl8Az1Ri5HQQ3kx4GTNEtVGqxEy4X2Expp56jbdgJgNIwy9MeUyy/oicBqh6DvQwBQYKrT4PO/DyEWtek3OS+cvYhVXwet7azpfa5m5/bFfF2WpP1AuKCZZvYH9uyq9NaCO7z6NJvdpB9JLmyiuKfb4JhSmxo3tVAOeHZExyLyKNP835p6Z4GxB6dXB3YTdqdrawXdxKPdmMhy7HluO3jzz3RvF83vaL2eB/8uNQfpPYOIDgcxryN9+SO4WQ1PDFEqObeJbJIQNhVe2tUJjZ4NU8tNHQuFXOveInjPrqwIV++PHRIOrDGwlZl84Z3ci+SqkKzSh495hPkOPiLcq7rTawEIgyo80QHbplBPzjJAl/fFMWdHW+KJeLdIqohCCHDXGz4XNjr1IviG22Bm7y5oxkHW6rTJupP7Eywu6kNes/6j4iDYQDiGXvY319t5uFtCL+QIJhZOZNW6kkGXgpAfcHejV3YZ//ZKz0j3KK+cXicUNiDQV6KAyIsSRcm0qnGjNOLw+2
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(7416014)(19092799006)(4143699003)(56012099006)(11063799006)(6133799003)(22082099003)(18002099003)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?OqLgw82JhRK4lJo9Bg2bqfVZUPP0FJ+eIhOEMYhwutWhKQAvZ1SNHbLBAS?=
+ =?iso-8859-1?Q?oKwhr0UyTJSZ0ifJbqixAjLSEDis+OkDC4RL2k0kRbf66f77KPu8AP4cn6?=
+ =?iso-8859-1?Q?W1YXMmfeq30aWXZeH+2Do3oLJBtkcrGw4AFlaiorNEOfv1k2zybjWSHRc4?=
+ =?iso-8859-1?Q?9Qdz0G73YzWJf9CnTJhrjQrfwhDHAOz9Q1AJy7s76VFapMgi0fZaON1GdV?=
+ =?iso-8859-1?Q?f23ywn0Bj4d0clfqc0cEwQAUgTdsY0blQl8R1grSKO7N2hSbcIhMWFFU4v?=
+ =?iso-8859-1?Q?nU48QCRD2JXfOvaEklsSMcl4YHvitv68TA+8GH4a8EC45T64iqonj/Ib5e?=
+ =?iso-8859-1?Q?SkUgaFE8tdK71v1ldW9oO9Tiz4LYBWSX8r5zEgnWw6+W/BkVeiB+54LoBF?=
+ =?iso-8859-1?Q?oAX4kLy6vTaLQpcL9QvUuYWjKAeQv/RnrfXCg6IiAW2dL+ho3D+JJiNFvd?=
+ =?iso-8859-1?Q?ijbIw7FNpjTWki01Xs8p5bR6OV8BXCoH2Fak78ervcqml0ruF5t5lAA6wK?=
+ =?iso-8859-1?Q?dWZYlzgLMhx1+G0v3fLrSWxYXgsCwg9u3S4gGpMpIoPFTD4ZjhKF4KqA8/?=
+ =?iso-8859-1?Q?bsbgXkAcZO3QUGp37FyRe25USg831+XF1GMNUa9WAP8BdPLwSYAH7AKoGn?=
+ =?iso-8859-1?Q?cBOyKwDbMTu3vaYisIzXjfOiwDx67X2NBxWFNiCVQeABxb79wQAWuHS6uX?=
+ =?iso-8859-1?Q?r8wmrdwba5vo00z2UG7ILS6lT7kBe1AGZi2JEsp9DmVnE/5rwG+gj4NheK?=
+ =?iso-8859-1?Q?GO3tGbKm4TV4JAwMXf/haOKsoGkCvLgOLrzS8skw9KYJXrMWp7Z7KEd/Of?=
+ =?iso-8859-1?Q?Q4yuscAtT98IhFqpb2Q9g4VIJaYRPpESlDCDt5gimAXW9kGsOKhSNmyddA?=
+ =?iso-8859-1?Q?HeoJAJ66sOcVETLsyQ2uv502gfZ7oqJJnX7vawiWz9uNrHHmsxTLRRhhlc?=
+ =?iso-8859-1?Q?0zhRQ5WgPuxtJZwee5IE5v73JMzC0fEsYjdp/O4MRkxGgQ2ChElGgT2Inb?=
+ =?iso-8859-1?Q?P7rbQhBsOz/xW3VL+8F2J7D4gQh/UqEc2DMWZF1P5agU4Tp03UemjC0FHx?=
+ =?iso-8859-1?Q?Ztk+gsKEYkwp30Hj5UNnTYllj1tdGBy7nOihwI+MoqKK+MycJXsN576YoW?=
+ =?iso-8859-1?Q?RXKksp03MRhtRuaNPcLMBntg3J/Rdlykm0XWoI8Cl+VameZC8yXYAJzsve?=
+ =?iso-8859-1?Q?c59IBHZK86lCYIetvGQ9JESqV5avss+aGJNWHfJxN2Sq7Qz4ZBXie3pIm3?=
+ =?iso-8859-1?Q?UyGrpqfgFzC9iywvNQdUbGP8XLY50u65quE5I/qtopGXHp9IrjlgSANLgh?=
+ =?iso-8859-1?Q?ayImL29uqtg5a49B83AEDkOnATNbwYEm/IRgLEi6vociETMHoGqccldv1E?=
+ =?iso-8859-1?Q?q2SVllzDxBrJSebx9uygkRjOH3ZANI9TqtXfapyE3kPAag9k2skFVd+RKj?=
+ =?iso-8859-1?Q?B3LOQawFVAPhFox8uYLQdDSteDG4q/Q+yNT54k3kJ1LsdpHPVk90nZm+Bh?=
+ =?iso-8859-1?Q?l1THDfmFri/+25xyhQWg0R41Qv+7j9fEkPjb58WKV+cA9dcD6X2GIKEFUS?=
+ =?iso-8859-1?Q?JwPlNXhzEnE3JM8DZOV2Cl6MvztXJadoQFPSTscLraFhKHRAf6f/q8ARLe?=
+ =?iso-8859-1?Q?MEs1TVBNN0U3RtJ6RslbS60RVODOWtDWFQgSEs9YkCw0tDFP/o/Q26dLrq?=
+ =?iso-8859-1?Q?1zZqTtQgkFNNteky1Km9O3uz6vPDbrXJESM4BlbV1WAvGCNnuBhX2YZAbj?=
+ =?iso-8859-1?Q?5V6GHjNCmGgOYKzn4NNvgI7/jbtf2+B34TDFZivBgDuR3H0F7TAVeGtNoS?=
+ =?iso-8859-1?Q?/yfHqmNfisfy3VF/yKZ198efYzTS4VzQ9IP95qbFYJFRDszFw/Yn?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f470092-7374-4eb4-3cda-08ded06dcda8
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2026 14:51:55.7246
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NFfv4SLCmU5zOpnh1Fn6mMwO3G3B2JB2maiHNX4u+7WGO1GBmMW+fPw0QFrTNj+QZ/OVyLrzUjNIGmU/HRkJEVygMJhPgSwNon20SA+yPQ0WxHoPg4XSyYrKUiAQn7q4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR04MB11445
 
-On 6/22/26 3:50 AM, Rodrigo Alencar wrote:
-> On 20/06/26 11:33, David Lechner wrote:
->> On 6/16/26 3:21 AM, Rodrigo Alencar via B4 Relay wrote:
->>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->>>
->>> Use of local SPI bus data to manage a collection of SPI transfers and
->>> flush them to the SPI platform driver with the sync() operation. This
->>> allows for faster handling of multiple channel DAC writes, avoiding kernel
->>> overhead per spi_sync() call, which will be helpful when enabling
->>> triggered buffer support.
-> 
-> ...
-> 
->>> +/**
->>> + * struct ad5686_spi_data - SPI bus specific data
->>> + * @msg: SPI message used for transfers
->>> + * @size: number of transfers currently in the message
->>> + * @capacity: maximum number of transfers that can be added to the message
->>> + * @xfers: array of SPI transfers, allocated with the provided capacity
->>> + */
->>> +struct ad5686_spi_data {
->>> +	struct spi_message msg;
->>> +	unsigned int size;
->>> +	unsigned int capacity;
->>> +	struct spi_transfer xfers[] __counted_by(capacity);
->>> +};
->>> +
->>>  static int ad5686_spi_write(struct ad5686_state *st,
->>>  			    u8 cmd, u8 addr, u16 val)
->>>  {
->>> -	struct spi_device *spi = to_spi_device(st->dev);
->>> -	u8 tx_len, *buf;
->>> +	struct ad5686_spi_data *bus_data = st->bus_data;
->>> +	struct spi_transfer *xfer;
->>>  
->>> +	if (bus_data->size >= bus_data->capacity)
->>> +		return -E2BIG;
->>> +
->>> +	if (bus_data->size)
->>> +		bus_data->xfers[bus_data->size - 1].cs_change = 1;
->>> +	else
->>> +		spi_message_init(&bus_data->msg);
->>
->> Seems odd that spi_message_init() is called conditionally. What
->> prevents spi_message_add_tail() from growing the message unbounded
->> on repeated calls?
-> 
-> The "size >= capacity" check right above this.
+On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
+> On Fri, Jun 19, 2026 at 03:02:53PM -0400, Frank Li wrote:
+> > On Fri, Jun 19, 2026 at 11:22:54AM -0500, Frank Li wrote:
+> > > On Thu, Jun 18, 2026 at 06:10:52PM +0100, Nuno Sá wrote:
+> > > > [You don't often get email from noname.nuno@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> > > >
+> > > > On Tue, Jun 16, 2026 at 11:23:39AM -0500, Frank Li wrote:
+> > > > > On Tue, Jun 16, 2026 at 04:40:53PM +0100, Nuno Sá via B4 Relay wrote:
+> > > > > > [You don't often get email from devnull+nuno.sa.analog.com@kernel.org. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> > > > > >
+> > > > > > From: Nuno Sá <nuno.sa@analog.com>
+> > > > > >
+> > > > > > Advertise the source and destination bus widths through the new
+> > > > > > dma_set_{src,dst}_addr_mask() helpers instead of open-coding the legacy
+> > > > > > BIT() mask. This moves the driver onto the representation that can
+> > > > > > express widths of 32 bytes and above and allows the legacy u32 field to
+> > > > > > be removed once all users are converted.
+> > > > > >
+> > > > > > While at it, give the channel width members their proper
+> > > > > > enum dma_slave_buswidth type.
+> > > > > >
+> > > > > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+> > > > > > ---
+> > > > > >  drivers/dma/dma-axi-dmac.c | 12 ++++++++----
+> > > > > >  1 file changed, 8 insertions(+), 4 deletions(-)
+> > > > > >
+> > > > > > diff --git a/drivers/dma/dma-axi-dmac.c b/drivers/dma/dma-axi-dmac.c
+> > > > > > index d47ff27e1408..19c258d511ca 100644
+> > > > > > --- a/drivers/dma/dma-axi-dmac.c
+> > > > > > +++ b/drivers/dma/dma-axi-dmac.c
+> > > > > > @@ -152,8 +152,8 @@ struct axi_dmac_chan {
+> > > > > >         struct list_head active_descs;
+> > > > > >         enum dma_transfer_direction direction;
+> > > > > >
+> > > > > > -       unsigned int src_width;
+> > > > > > -       unsigned int dest_width;
+> > > > > > +       enum dma_slave_buswidth src_width;
+> > > > > > +       enum dma_slave_buswidth dest_width;
+> > > > > >         unsigned int src_type;
+> > > > > >         unsigned int dest_type;
+> > > > > >
+> > > > > > @@ -1262,8 +1262,12 @@ static int axi_dmac_probe(struct platform_device *pdev)
+> > > > > >         dma_dev->device_terminate_all = axi_dmac_terminate_all;
+> > > > > >         dma_dev->device_synchronize = axi_dmac_synchronize;
+> > > > > >         dma_dev->dev = &pdev->dev;
+> > > > > > -       dma_dev->src_addr_widths = BIT(dmac->chan.src_width);
+> > > > > > -       dma_dev->dst_addr_widths = BIT(dmac->chan.dest_width);
+> > > > > > +       ret = dma_set_src_addr_mask(dma_dev, &dmac->chan.src_width, 1);
+> > > > > > +       if (ret)
+> > > > > > +               return ret;
+> > > > > > +       ret = dma_set_dst_addr_mask(dma_dev, &dmac->chan.dest_width, 1);
+> > > > > > +       if (ret)
+> > > > > > +               return ret;
+> > > > >
+> > > > >
+> > > > > This patch is okay.  I think most system only set one width once, do we
+> > > > > really need pass down arrary.
+> > > >
+> > > > I think so. See:
+> > > >
+> > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/st_fdma.c#L723
+> > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c#L1565
+> > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/hsu/hsu.c#L475
+> > > >
+> > > > And likely there are more. To fully support all widths I'm not seeing
+> > > > any other obvious way.
+> > >
+> > > I need more time to understand why need src_addr_width, which looks like
+> > > address alignmenet requirment.
+> > >
+> > > If it is address alginment requirement, only need lowest one, like suport
+> > > byte, must be support other alignments.
+> > >
+> > > if it is total address space, which should be controller by dma-ranges.
+> >
+> > I grep kernel code, only sound/core/pcm_dmaegine.c check src/dst_addr_width.
+> > (I think src/dsk_bus_width is more reasonable). because the name is the
+> > same as dma_slave_cfg, it is easy to cause confuse.
+>
+> No complains for the new naming. If everyone agrees on that, I'm fine.
+>
+> >
+> > So far, still have not seen user case, which more than 8byte for cap.
+>
+> On the consumer side the IIO dmaengine will use more than that (we have
+> designs for that - that's how I found the issue). But yeah, it just uses the
+> min value (it is just that dma-axi-dmac only sets one).
+>
+> >
+> > Add it should only set min value should be enougth, if update only user
+> > sound/core/pcm_dmaegine.c
+> >
+>
+> Not sure how that works on the pcm_dmaegine.c. It sets more 'hw->formats' than the minimum.
+> And IIRC, this ends up being configurable from userspace so we might
+> really want all the available options.
+>
+> Hence, given that we do need more than 32bytes and some users (seems
+> like 1 only) do look for more than the minimum width,
 
-OK, but it could still grow to capacity, adding one xfer each
-time this function is called with bus_data->size > 0, right?
+If FIFO space require 32bytes data bus width,  4Bytes DMA engine should be
+match requirmment, cap just help filter dma channel.
 
-> 
->>
->>> +
->>> +	xfer = &bus_data->xfers[bus_data->size];
->>>  	switch (st->chip_info->regmap_type) {
->>>  	case AD5310_REGMAP:
->>> -		st->data[0].d16 = cpu_to_be16(AD5310_CMD(cmd) |
->>> -					      val);
->>> -		buf = &st->data[0].d8[0];
->>> -		tx_len = 2;
->>> +		st->data[bus_data->size].d16 =
->>> +			cpu_to_be16(AD5310_CMD(cmd) | val);
->>> +		*xfer = (struct spi_transfer) {
->>> +			.tx_buf = &st->data[bus_data->size].d16,
->>> +			.len = sizeof(st->data[bus_data->size].d16),
->>> +		};
->>>  		break;
->>>  	case AD5683_REGMAP:
->>> -		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
->>> -					      AD5683_DATA(val));
->>> -		buf = &st->data[0].d8[1];
->>> -		tx_len = 3;
->>> +		st->data[bus_data->size].d32 =
->>> +			cpu_to_be32(AD5686_CMD(cmd) | AD5683_DATA(val));
->>> +		*xfer = (struct spi_transfer) {
->>> +			.tx_buf = &st->data[bus_data->size].d8[1],
->>> +			.len = sizeof(st->data[bus_data->size].d32) - 1,
->>> +		};
->>>  		break;
->>>  	case AD5686_REGMAP:
->>> -		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
->>> -					      AD5686_ADDR(addr) |
->>> -					      val);
->>> -		buf = &st->data[0].d8[1];
->>> -		tx_len = 3;
->>> +		st->data[bus_data->size].d32 =
->>> +			cpu_to_be32(AD5686_CMD(cmd) | AD5686_ADDR(addr) | val);
->>> +		*xfer = (struct spi_transfer) {
->>> +			.tx_buf = &st->data[bus_data->size].d8[1],
->>> +			.len = sizeof(st->data[bus_data->size].d32) - 1,
->>> +		};
->>>  		break;
->>>  	default:
->>>  		return -EINVAL;
->>>  	}
->>>  
->>> -	return spi_write(spi, buf, tx_len);
->>
->> If this function no longer writes, should we change the name of
->> the function to something like ad5686_spi_write_prepare_msg()?
->>
->>> +	spi_message_add_tail(xfer, &bus_data->msg);
->>> +	bus_data->size++;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int ad5686_spi_sync(struct ad5686_state *st)
->>> +{
->>> +	struct spi_device *spi = to_spi_device(st->dev);
->>> +	struct ad5686_spi_data *bus_data = st->bus_data;
->>> +
->>> +	bus_data->size = 0; /* always reset, even on sync failure */
->>> +	return spi_sync(spi, &bus_data->msg);
->>>  }
->>>  
->>>  static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
->>>  {
->>> -	struct spi_transfer t[] = {
->>> -		{
->>> -			.tx_buf = &st->data[0].d8[1],
->>> -			.len = 3,
->>> -			.cs_change = 1,
->>> -		}, {
->>> -			.tx_buf = &st->data[1].d8[1],
->>> -			.rx_buf = &st->data[2].d8[1],
->>> -			.len = 3,
->>> -		},
->>> -	};
->>>  	struct spi_device *spi = to_spi_device(st->dev);
->>> +	struct ad5686_spi_data *bus_data = st->bus_data;
->>> +	struct spi_transfer *xfer = &bus_data->xfers[0];
->>>  	u8 cmd = 0;
->>>  	int ret;
->>>  
->>> @@ -85,8 +117,21 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
->>>  				      AD5686_ADDR(addr));
->>>  	st->data[1].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP));
->>>  
->>> -	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
->>> -	if (ret < 0)
->>> +	xfer[0] = (struct spi_transfer) {
->>> +		.tx_buf = &st->data[0].d8[1],
->>> +		.len = sizeof(st->data[0].d32) - 1,
->>
->> Would make more sense to say `sizeof(st->data[0].d8) - 1` since
->> the buffer is  &st->data[0].d8[1].
-> 
-> the buffer is d8[1], d8[2] and d8[3], skipping d8[0], for a len = 3.
+each transfer, dma_slave_cfg should set specific bus width requirement.
 
-Yes, I see that. This is why I suggested that it should be based on
-sizeof(...d8) - 1 rather than sizeof(...d32) - 1. It makes more sense
-to use the same field for both the size and the buffer pointer.
+If memory have requirement for 32bytes, typical cache line length for
+hardwaer coherence transfer, it should use dmaengine_alignment.
 
-> 
->>> +		.cs_change = 1,
->>> +	};
->>> +	xfer[1] = (struct spi_transfer) {
->>> +		.tx_buf = &st->data[1].d8[1],
->>> +		.rx_buf = &st->data[2].d8[1],
->>> +		.len = sizeof(st->data[1].d32) - 1,
->>
->> And here.
->>
->>> +	};
->>> +
->>> +	spi_message_init_with_transfers(&bus_data->msg, xfer, 2);
->>> +
->>> +	ret = spi_sync(spi, &bus_data->msg);
->>> +	if (ret)
->>>  		return ret;
->>>  
->>>  	return be32_to_cpu(st->data[2].d32);
->>> @@ -95,12 +140,26 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
->>>  static const struct ad5686_bus_ops ad5686_spi_ops = {
->>>  	.write = ad5686_spi_write,
->>>  	.read = ad5686_spi_read,
->>> +	.sync = ad5686_spi_sync,
->>>  };
->>>  
-> 
+So I think only need set min value should be enough if fix pcm_dmaegine.c.
 
+Frank
+
+> I would say the
+> array is fine. IMHO, it's also safer (from a "support all" point of view  and really not
+> complicated at all so I would just not risk it.
+
+
+
+>
+> (we can also have one liner helpers for the case where only width is
+> set).
+>
+> - Nuno Sá
+>
+> >
+> > >
+> > > Frank
+> > >
+> > > >
+> > > > - Nuno Sá
+> > > > >
+> > > > > Frank
+> > > > >
+> > > > > >         dma_dev->directions = BIT(dmac->chan.direction);
+> > > > > >         dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
+> > > > > >         dma_dev->max_sg_burst = 31; /* 31 SGs maximum in one burst */
+> > > > > >
+> > > > > > --
+> > > > > > 2.54.0
+> > > > > >
+> > > > > >
