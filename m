@@ -1,136 +1,131 @@
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F9FE3115A5
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 15:15:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782141333; cv=none; b=eBvGPVvaIMCc8F4IYVzMt7sfYjWnvcSW3E2aHb1TQ3TE4XMii7qWz5n5IEsiraJiCQlWIcGGgVvDbwTeHffld1yXBFBkhqyimzfZ4xT0V9XoBYQWvj8mY2AOPcX/+dSVxRJbyRysXp/ZPlDLyyawKxXjjmzWkleDxiQ2sHdXD8g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782141333; c=relaxed/simple;
-	bh=52v6EikHXqHTeK9jDU8zPQbmNRwFSleOTkI5p/vxXQY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hPfHaBQUph4RejqK6bI6SLg45xJSMRlUSoVIlJUcCwMLiQykO9t9o+MxRU7ep8zcSRYOtJbXeKTwqhJiuJlPIt7vgl1gv4l/xw5/KW8CamWdtMGqbJWJgacYknildvz5qEWlgolDRD7XNHfgzwHpHq1MbDfsYvAV3gOkVntXYaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ET+zK9qk; arc=none smtp.client-ip=209.85.210.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06653314B7
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 15:21:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.178
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782141670; cv=pass; b=lDTwQ9zSqqg5QWiA53pJt1N+3ZUO4Y024k++pPTWbmFOWiC4ItWXggoR6dkb7Kt0bnMnkDbnb8LgrSAHzyCGZZMz2POrKRZBrxgquTVJywd9tjfXEk6n1qkdprfBQwJT+/UlXByK0A22W2ws8SX9oyVUFM/T/wKkhkvlsWoZDfY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782141670; c=relaxed/simple;
+	bh=8zvipcslBvGLMROe27G8a4yy9yYjiXdUNW/PADn7MPY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UZQljne8nJnPh7c9GpWCkNHt2MbZr32mBFlgJcQHHinwKiLzSqUxDSWB4QmUBzJ+eDGBxQeG6jGJNILUrxHAa2DoiyChb3wtDF2df/HWDZ0bggKiGWIYI+g21NQjg9kulUBct/n7N/PZoRlj3myVt0/u9rQIh63u+4CIzF01jP8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hp/xCq0j; arc=pass smtp.client-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ET+zK9qk"
-Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7e92c443cbcso2360918a34.0
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 08:15:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hp/xCq0j"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7fffb090ddfso46041227b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 08:21:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782141668; cv=none;
+        d=google.com; s=arc-20240605;
+        b=MPZPRUxPSkv0yEQMgMYy/66qwTC+dqWc+HlAMfqfv/8hOfREyehZQhdggN/GcxKO64
+         zGGNho1OL9JA8lZGWSM6wVP31AqIUAJPD9Zo+bo5ONTmITTsEtyjiVkT4V423jfDp4/z
+         zING6YV14VF/AXIIqvuwfeEN78FQL6eG/es7WKhnEPOrZl3O7Jf9k9ECgfmz376dWLEh
+         4qDhleFtLaxW6bl0wiYPCTHIy/cezRZrZ7sq8rqzepXljsYaSzLHrllHLe0grqfTzseJ
+         nBV9yQl8SlmyTj9p3zQzwpNzP4huhhGeFUTQL/dXMQkOvCRQ2wj64SD8cwCd2t4Yupny
+         tykw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=8HFbjIkyjH5nmGj3I8BWSKEfArELaB0NC6yKhSNZlpI=;
+        fh=5KHue66Ap7xncvJ0S9LZ5fUYER/MadW42gWsY3F0Pb0=;
+        b=VutEnw6w/QBlthMphVLELcg+XRZXWxTfKXlnxm8bvqglKEzwMBG5/AeISfkJYSHfj8
+         ivROPtknMK7HWv4+mNBNVj483WX6+Lj8V45qymYEGjA2ggL7wNYXYKna/EdxNW3+ZQFu
+         ZGEtaDQvEMGgaa1eR1L0X7OBVNgkb0+DiuMv+jWG1D/dKjLrEjdnbZnVOEGCzrh/uIg0
+         yi7+sC1bNSQPNZuXWiqZ/E3TndtCwYLLKd7McFnFvMaAhT9EUGaq+sbwqo4Gjt8tifgg
+         io0XH6IIJPuM1fKg39YweT2HJTKumRItc7Fp4DX1x3MRRhz0sOG5ryvm9anfYGDa9Ryy
+         VSqw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782141330; x=1782746130; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OTX1ZL/gGgSNJBSIP8X1q3a0zVOqpxsfg6hzwDs9W2Q=;
-        b=ET+zK9qk8FWqzezVwmYZs3PdtILgEieEdybWYh5maqeZVtwxxJZ+L7imfhBchaauss
-         PO3GNQLqDwdD0y+otwKD8W60dYFsueVWnVRSVEoC1MOln1nglOgeaFBFkadH1GT0p3ZN
-         ToDhJ/91ldWemcb+xBxH7wQO27504bS2jtSdRfNdk9Zvbrf+4zd5SUTC3WJvensebzGG
-         p7hAz1O68MOxsdHLZXoaZor7d5BYdMs1GJGkMfQzq0PXghvFcqJUcU7TemZbYtR14tlf
-         pPqVLFCJx5dslJUw9QiHXZL2vr+GMOSdJ5XrhTik3bGS7ihD/YOmpsJw5hVKW+WZ1ktk
-         stsQ==
+        d=gmail.com; s=20251104; t=1782141668; x=1782746468; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8HFbjIkyjH5nmGj3I8BWSKEfArELaB0NC6yKhSNZlpI=;
+        b=Hp/xCq0jSmF/cz6Yersg9ROypQzUYsFPMudkA9AnxhQY9DVZmA2MNW1svteEvdjuJf
+         ZJN5bsAPITiqorkm11y0YhAZ4jw4tSTyp8PZtbODaXeMwZ3ue0M3a3Ts38ROalbmEZxt
+         JI5jE5mwEP2XebzDjD8dj6XhGJ01fATQHBfdwVj+nrHjqthwL0EUMKORPGyRYzAa9NjR
+         eGq2Y4MT8F6snMFB25EVbQQfIOB5l+HzDU5hfBkOwBE0xn9bMOh9+uStqPohgKFdy57r
+         claKS6y3XT2DmZ22+A9h+wfF6KyMwHxX60AGPdWGvfidTAuCz3x+VBOH+ibHV6i2+FVk
+         PbhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782141330; x=1782746130;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OTX1ZL/gGgSNJBSIP8X1q3a0zVOqpxsfg6hzwDs9W2Q=;
-        b=CPA6xdks44UsqJRbaPWNK1BkwxUdi2J/XiOLHcQ9KrMXuGz3iS3YcaaWwQOeUYM0Wi
-         9kLLjHent98bzDOFgJObzFj8QEIxuGxObEK+DOOBewAv96ELvZuQ1z1J8Uqn3fYdZuVN
-         ZeeYAhn6H1Q3djf9p3Lrrsl+4TPDOfZSSbjgjdCVuIR8SXTNG+xvCl9a8F2SzeEF/0Ge
-         u99jNRyYARfSYa6CXLra372ANYrljhSSWodSurrTWw9WvrFBt7kSClIKMdm/iA9Wyugg
-         7jICOpoCJFScp9F/4aFPGKPTLL3F0jDUOILrZ5RFK5J/eQNO7Sjal4oBx2Qklug3aitI
-         sF7Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9XlEtOm2VCN/Npusf5COGtD0IuK1lw3XVV7v/frNK5xKCi/jyvVe23wwo0uvrM6xsUoGVCGoZhMqQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJp/BqWT34BXk/D3AqvEO/zN73+z7Yjr1cgRuDFJu7KrBAe3i0
-	HrUSKy48s5CU5KD6Rcz046cvadHkDiOk0GroKdP78pKWUqVidWR+khwaPTGnHu1dLHD/V+0fuc/
-	wjHff+Ts=
-X-Gm-Gg: AfdE7cmuAG0gttK5FbS8C3hgfyqICBt0mQOrh/UGC7uWjMW5v+jCaOsVhmvZZXKLDCC
-	ShrGLZDg7p+quuRghbeFl5MLXBEDuUPVNu2CCad7aJKfN1fPbGoItOrWCUpIUhmCTMwHuvUsBm3
-	QrH95809SqAcojmA2atB3IH9EgRxNshpsdc6vcCfzIXYwU/xQMDryyt2BicCrVCeNuY5YTPH6yi
-	rCA4EYLYNgyzXLwDpzj1uk2ZDlRZUO7+NUJHWepDV6clp39JQ/Xz4MIiryTIewWr8PYPVcBwkx1
-	knJrcuTRS7i/Ifae344KH71akW7ADyaw96Ou0iALYi02OcvvIO8CpZ4lFPjBtx/u384tm3qZBAx
-	bVYz1Y7e4JlIZiCYGls6ksObpVJAHefqNmZPN25OspSckeie2TwNEIXuTXT+bTLU6kU4RqatuPz
-	NPoMJWwdQh9+yVLgMCPLdZcDNSKFHqECIgR5oN9tnWMyaIzpvhGgzAspkmciUKxi4=
-X-Received: by 2002:a05:6830:82c9:b0:7de:4f6b:9e10 with SMTP id 46e09a7af769-7e92d455b40mr11838367a34.0.1782141330386;
-        Mon, 22 Jun 2026 08:15:30 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf? ([2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9442e98c4sm6331134a34.26.2026.06.22.08.15.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2026 08:15:30 -0700 (PDT)
-Message-ID: <3e8c5c72-c2e7-4e81-ab03-907899d60333@baylibre.com>
-Date: Mon, 22 Jun 2026 10:15:29 -0500
+        d=1e100.net; s=20251104; t=1782141668; x=1782746468;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=8HFbjIkyjH5nmGj3I8BWSKEfArELaB0NC6yKhSNZlpI=;
+        b=orGxyIc89t6+9Swi+VpIdsT+sAtTJV27YubzyY6ofAq9AKJWVa2GTpo2r9GuR2xAK3
+         ZaUEvV+e4I87ChMh39nM7htu9yDEAzTqU7rmIK2tYmlb4QHVQwVk9x7XNlJhXuP9PYS5
+         8yUTDFbdWXDoiY874KySsBqfNBviCzzNIRVzji1p6jJX7HpQXDC2Hnt+soQJ5O/c4xZU
+         g1pSIXVAyWRKASy385yLgGvejc1HoICJj8Jn0ZB95wmSRy28nO/3AKR+HQvc19wwP84K
+         iQvb38i2OcrSoKb+ZVm0TnmO3YZ+/sU/oWAHkL8Es3SjG0mqVTsOHF0n1CujneMLFW7q
+         PMJA==
+X-Forwarded-Encrypted: i=1; AHgh+RpFEVVkZk2TIpDnq7ctzO2nE8HY8D6Xcmhk3+Ow0gVQoq3kUyO24wk+auCKb5w3wS3vNGA0vxJGs+8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YweFdAnooxK9HQZmWvJiqTCOad5hre9+BunojQRkOm9+HR+cLUR
+	UhJSfnzypD4azcTYYQFY/hGqHAlSrBefJxHOPW/CYuGf6AZ43gMaaORg1mlDcBbicyf44i+d3TW
+	g2td0MFhf+t5I5qwh3h6Ln2X+KLPbs68=
+X-Gm-Gg: AfdE7ckIfPyWlPS75yQ6D33JyzERVEM0KzmgT62D4oMdGagym/xBS4aJlk24CuhtVfx
+	swgVHwExmfIcBfCP9QA5MWwCAD/VGylGCxELcco+L4Lmw0zTOW81WOqcUj429bMVc+1Fn2f624e
+	ibE20qWF76YMpOndKbMi6Zt9Qyvf5SX84gud577YG43w9vhTKjUol5gro4JK6XnMpp9WIEuR0sq
+	cYMbb1bAqTIu2yfQjvO9RBU0CGiTD8Y9SsryLvhd9v/RW7whDl/W+BcefgGv1KYEr424nzJDg==
+X-Received: by 2002:a05:690c:39c:b0:7bd:73f3:7a58 with SMTP id
+ 00721157ae682-801216280e6mr120841637b3.11.1782141667701; Mon, 22 Jun 2026
+ 08:21:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: buffer-dmaengine: Add support for cyclic DMA
- transfers
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>
-Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
-References: <20260611-iio-dma-cyclic-buffer-support-v1-1-bcf00e8d802c@analog.com>
- <e05dddef-2ffc-4ab6-8ce7-f676b7801eff@baylibre.com> <ai-0CIqteaSJJkau@nsa>
- <ajk1FX-d_KoW14f-@nsa>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ajk1FX-d_KoW14f-@nsa>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260622052135.1804135-1-sanjayembedded@gmail.com>
+In-Reply-To: <20260622052135.1804135-1-sanjayembedded@gmail.com>
+From: Maxwell Doose <m32285159@gmail.com>
+Date: Mon, 22 Jun 2026 10:18:45 -0500
+X-Gm-Features: AVVi8CeJhQ1YA9yY3iSTy2JTki3SbfzKbLRF3Z3-5aNIG5o5PJNrGqwFOvwLbOQ
+Message-ID: <CAKqfh0HeGExuwMpdcW3=OH8Qm=Y261dc2AJs=e8Cyj79_FE48Q@mail.gmail.com>
+Subject: Re: [PATCH v1] iio: temperature: hid-sensor-temperature: switch to
+ non-devm iio_device_register()
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@linux.intel.com, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	hongyan.song@intel.com, linux-input@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 6/22/26 8:15 AM, Nuno Sá wrote:
-> On Mon, Jun 15, 2026 at 09:21:02AM +0100, Nuno Sá wrote:
->> On Sat, Jun 13, 2026 at 11:33:36AM -0500, David Lechner wrote:
->>> On 6/11/26 10:28 AM, Nuno Sá via B4 Relay wrote:
->>>> From: Nuno Sá <nuno.sa@analog.com>
->>>>
->>>> Allow buffer blocks flagged as cyclic to be submitted as repeating DMA
->>>> transfers. For cyclic blocks, use DMA_PREP_REPEAT so the engine keeps
->>>> replaying the descriptor.
->>>
->>> Is this for both directions (e.g ADCs and DACs) or only one?
->>
->> We just have usecases of TX buffers. IIRC, there should be some
->> validation (some layers above in the call chain) not allowing cyclic RX.
->>>
->>>>
->>>> Skip installing the completion callback for cyclic blocks. Since the
->>>> transfer is continuously replayed, the callback would fire on every
->>>> period, throwing off the block refcount.
->>>>
->>>> Because nothing prevents a new cyclic transfer from replacing an
->>>> already active cyclic one, always set DMA_PREP_LOAD_EOT so the engine
->>>> correctly terminates the active transfer before loading the new
->>>> descriptor.
->>>
->>> Is there more to come after this to actually make use of it? Or is there
->>> a way to use this with DMABUF from userspace already?
->>
->> Yes. One can do TX cyclic DMA transfer today. Some waveforms examples:
->>
->> https://github.com/analogdevicesinc/iio-oscilloscope/tree/main/waveforms
->>
->> For normal non cyclic transfers, libiio also handles DMABUF just fine.
->> Best way to use it is with USB where we support zero copy between IIO
->> and the USB stack.
-> 
-> Jonathan,
-> 
-> It seems there's not much activity on this one. What do you think about
-> the changes?
-> 
-> David, from you silence either you forgot about it or I guess you
-> are happy with the reply :)
+On Mon, Jun 22, 2026 at 12:21=E2=80=AFAM Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
+>
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+>
+> Avoid using devm_iio_device_register(), as this driver requires explicit
+> error handling and teardown ordering.
+>
+> Mixing devm_* APIs with goto-based error unwinding breaks the expected
+> LIFO resource release model and can introduce race windows during device
+> removal. In particular, the IIO device may remain visible to userspace
+> while dependent resources are already being freed, potentially leading
+> to use-after-free issues.
+>
+> Add explicit iio_device_unregister() call in the teardown path to ensure
+> deterministic cleanup and follow kernel resource management conventions.
+>
+> Fixes: 59d0f2da3569 ("iio: hid: Add temperature sensor support")
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> ---
+>  drivers/iio/temperature/hid-sensor-temperature.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
 
-I don't have anything more to add.
+My rb will be a tad redundant but
 
-> 
-> Just trying to move this one forward
-> 
-> - Nuno Sá
-> 
+Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+
+and should Cc stable as Andy said but hopefully Jonathan can amend :)
+
+--=20
+best regards,
+max
