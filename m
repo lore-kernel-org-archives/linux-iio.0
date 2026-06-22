@@ -1,126 +1,188 @@
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED991BF33
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 00:09:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.182
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782086964; cv=pass; b=tj2zc41skHyIUfkhU5zgdMmtTQM13+vJOP1kfSy6qiOmENzho93T3haQXSd6h3Zi7RL5Q2CZTFJpIP8doPxjT03lRfcrLXROhPAJLnYGfPysOjoTQKh1OMhEADqjdpichteIANp+mDZW0w2L1UUsnXcE5Qk3KomDhi0ruL17m24=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782086964; c=relaxed/simple;
-	bh=tJWgxbnhAq81DwIaWo6hvawWv37dgX0prh89deKA6hs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ffvqli+Oh6h2dSvCYAf1hBG3XlJmfWyHdTeMJjjfn4emSqe0RlumT86HXYqdYXKXWiYFwaW/tVpSXOeNVHV+kM4E5jlWu/e9D2vtiRsCQiEzTvSC6vVEsa+a0Zf+nAwIirjh2syAhd0wh8XN3ZV0YMdgKeVjN3giqJv7U4Q5sGs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m1fHexGG; arc=pass smtp.client-ip=209.85.128.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D072D617
+	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 00:18:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782087523; cv=none; b=ii5TkGvfPjV84nICBS/KdLrL3eahIb709gkJ7dwiWbBglgqKmNV8Ky2xYn8LoyUO14vRYDAXPwMyTuBXY+lhP4FOdbrHGS2i5dc+xDgn5pyKhAmHmws2Sb7Czo2tYESRrtHnrfiPg6A4eZF7CdXHLRwo3EewyezZkmW+1LexUzY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782087523; c=relaxed/simple;
+	bh=xCh2X6pjSEYFkzPWQKbcIxYIAG0zxBZt+ck9vKJzwM8=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=iW9tN4yK+z2jsZIovDRePc3JQ59iC+uGpAD8gaHpaW5WdAYP+cS82+8InR8Ecc5/PAA2XSRjjb2mWzlzzrut2BIQkiIMoPYlUsO131Hd+2a9n0lsjHyq9bvU51cebBqA9P6FwOBCXNid0rX2QbP8Pa5PyBH/2dTtg4YyemdgHUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JqJUN17D; arc=none smtp.client-ip=209.85.221.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m1fHexGG"
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-7ff0645d1d0so32219037b3.0
-        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 17:09:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1782086962; cv=none;
-        d=google.com; s=arc-20240605;
-        b=cvHBqpjYGKkrKV4HFwWdniZ2LpuuZOA91spsf4HpITneYxLFHsC2ekYwA/jLnnfW5I
-         doGCbHTzMofvNDYk4Vb43Oc2vZk/7Bxa10JR5CA7B43igHXHSfjauSJTur78eHbAPFCf
-         9Tfj2gQlrsd4gtAJ6wzZAGhxCMEPSZr7KyuQVmloRjEViC+U/1a7xEXRdNLwZX/Ow+s3
-         vqxitk7llfoLSc0kCsFZnz1T14vNj05DDyk/zirEuIEiV+y0V6AvgUMXrImR1jXsR/p3
-         pRZcG94v5FNFlXyG6c8ChCU3YBquMYQHEjypahdwB3P4sKvcFioISf+ixWr5GqQWnyFa
-         XYyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=tJWgxbnhAq81DwIaWo6hvawWv37dgX0prh89deKA6hs=;
-        fh=SePE1x0JZBSO5ix2FtkcoBRvin5iYes5JN/5Vma+ua4=;
-        b=RQe4by2qFLHcLtVZazu+RVkBXdLqC0P3sGzF5SdBvsRK9zn4q1cRvOU2+SZEqWbTBP
-         qjzdrZMfCkHUtiuTvcQY4mcjhuRSr8USK7AgM6wgkMqh9rWmbIp3sgJVBlCTrIW81Knz
-         PhPOnpdJre2PXiuH2iirxdgK+GTPqUJv60UWB+YbVwH3SDkiTTKUBaBcicM/jDGPOl2Z
-         /pBFgHuQLraNRZn9Y9KnnmtHwMfG3J52yBGR1t9rEdNzi3uFZGahEG6TtPmkmwhqVh4Z
-         Ewr913/2+3611faamBO15fa8fVeoXbVeOxjbnLu8V8uSKV7Tifvua//wUst24e70fjyu
-         nw5w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JqJUN17D"
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-59e2b96e3d3so3074344e0c.2
+        for <linux-iio@vger.kernel.org>; Sun, 21 Jun 2026 17:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782086962; x=1782691762; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1782087521; x=1782692321; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tJWgxbnhAq81DwIaWo6hvawWv37dgX0prh89deKA6hs=;
-        b=m1fHexGG2lZZw1yhJqXXsAU2YR2MWlWYlI4hiNWVvWezqFiCs30RpfWuiYs4zrpQUX
-         uJjLZ4OCyH9JBWFPiIcfAYhzEC1/CypREVyCCL/2NKF0T9HUcE8e9EpLZirUkl3pTU+p
-         5dNi9LyXCBGvVluMSD6MjXQmWNzKNMG4SY2EPmURayQhfJ9MIqH5VU3rWTSZS+nk2Idy
-         EDdyYKwMSlTUc41PVoYlzYkSLf8cRBTDhnPMrapejBGnVW2IpjLnZiCrLDvfee8GH3VJ
-         +tx+Dpi9cb9YHGSmdlsV1CVC9Tkl1jCtKzEXLvZHI2VUpp6MXVIRTDC0nvvXCtFZj0KI
-         vyIg==
+        bh=A93qYdMCJP1GrlM8oz/97lx9wA1Tl5BbdYs1SqoV3fY=;
+        b=JqJUN17DMQRLJ3K9pGULPawFgjkCluxO0hho3GmYgyzUps1Ii5FKEqmb2dDZxp+g6R
+         4Vq8bI4RLSw/Og00snhoECmGddJhGR48Q4nFj75guIk4+HOvlKqgGu8QuWXE+zKPvhoo
+         1sE1GsHzA1BDg4yhuTBF7HM7ogJrHR6wOGj0gyynn5+engilFVx215jby4uocjoK1TyT
+         dksUZusdDVBkEwsZa2T+v0dWAgX5Gn0/zvGbXa0ECyPvkRsEJpNktAyMTPJlH3WxkAcK
+         Zx0w5sl5QHO0XALVq/r4rJKEThCt+eFaC/TQzQ8Zm0Sen6W2Z0BWJgdDQOvGcZ1552QV
+         Wxug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782086962; x=1782691762;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=tJWgxbnhAq81DwIaWo6hvawWv37dgX0prh89deKA6hs=;
-        b=dyg1kcp9ucRZRKdktuRje++L+8ekNUux/PfHuUy+D23ekAvpUv1XKosOhNjHM5ScnP
-         QR98o12y6WRsCl5ipA9TNowhM7udflNxU3KQTYPlG9jr6B5uSiFyjV2wYDDolgTfE0/C
-         hyzycNHmJcFujHpjDBOvqVzkk90tjZBv4uUC5q905wzGS4KouavltSsR2Sa7wVqSfREt
-         4x1BcAUunWerayp1poyLHUWJfjG0BNK7yBhZgKC12Kip30FZwdThVPZiF2+qUn6439es
-         qZRJHbmzZkzqKAGktbikG9YDjzkMJK5oiY2zf3ziqyCvTTb55njU6PS/nRsTYFaUJwfs
-         r9gg==
-X-Forwarded-Encrypted: i=1; AHgh+RrZt5fk3rz8QdWKRDke9MoRntPpZALR38fMwb31nGHDiPDwDEhE9FKNPPdw4oMWwJw2kR/zm7VhO2o=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzIGMX8Ed0ukDvucyfH6GAT/Ubg2wIBHZ4ugBEsTBBfC7m876Ut
-	ISL25cXXLbMBUq4CzjWIHk2tV0SEqpJDHSk2T3ZW4AW0vYM8JSzZyGCBn2GNH8XeFUxZFROs52t
-	s8YrG1BIFVpcv8mXWV7E84Tr2XiXQkTs=
-X-Gm-Gg: AfdE7cnaejfBB8USYZwoEduooGFk8ttXrWBR3FrHP/wK99FlAcmBj/Zr+zajRRQUiu9
-	1EKfm8v2KDf8NVWFt9l6m0OHddxMiSgzFCUPvoJ6f4jGLvhQH1+ZADtPvYqV/IimdO/V9Ygdxtf
-	yMfISn497By/zdc0SFruhnHXoEzt/vcvH/BZFdSI8Lckde1fwQF29ka2dzoCzYs7hgeT13JbIkH
-	kQbO/Fpt/UlvRCyLuMZotcFvc6X1A1MnZH2tDAZz2BEwX9r2F/BXDaBMMgYy6cACR+daw==
-X-Received: by 2002:a05:690c:6e89:b0:7e1:fbf:aa7f with SMTP id
- 00721157ae682-80135258384mr123232397b3.34.1782086962289; Sun, 21 Jun 2026
- 17:09:22 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782087521; x=1782692321;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=A93qYdMCJP1GrlM8oz/97lx9wA1Tl5BbdYs1SqoV3fY=;
+        b=NHrKzqVBtuDHXpwg+rWa/Yibcm8klDunaPgngfIRjMNaYAFsBJa8KIaQI+Cas/xR9H
+         QqJOybXkzGOENueN+Al5CPrclmDbVmzbNMWSTOymKU/mBSaRLn8aEaVPev3uRiTXMYT/
+         pOS1GMU7J6gUDA3FNhTh3BHnWaPs46kOAJWnL9TrFJUbqktjQwxsGPeAKb8xhRrRrVFK
+         YByWhK60A2n9MfRGrouglF4Jhe/dfpNXuUwGbPQTLu7+IgEHO/cN6DrpIrouE9vfim/a
+         dxam9ascxfxjSOW34VW9ADljRPod5KVJP3cqRM/fASOX5pI4Ejr1TQcgFPa5pMvdC+h9
+         qZtw==
+X-Forwarded-Encrypted: i=1; AFNElJ/m01GrP8scL6MQ+bEFzeeyYKHmuXHx5MqLChLrK7oYqXOfYCYJuJAZl+ijzHfe5kzOCbdiwqqgBIg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBHLKt3dEoCj2bNHpA6kIqV4dBvI/lsgy7DqyFw9WPdQgIA5oo
+	3os659dS5AWWO1l8vcEF/i3RRkJL7znQ21lTHiE/9MkOFZY9lu+tdVhv
+X-Gm-Gg: AfdE7ckfb5MeNZRIfE2ObGkCdcEAF/DFQE1/qBQM7Ij64NSqMi+Wuml0xKxMi40fZMF
+	m3X+bEjatGEP+4cWsto7ZI15+HJtD1l8eNVfJztsesEu0L0m3Kndm7nTtP2GebUh9zgnRquU3Ts
+	gIqc0HUTSjldfHLzJaU67CDYId6tq7Bhm07FXeY5203Liw62/qqvTY1z6Wrhh+gHfJhLfgiCPI4
+	jcKtZPo1AkIPER/N1M5xWguq9itewFAc7YzPg6JHvVvZtkW6gWn2scdacZNjkMZ/AQMlambeyis
+	FQ3YQP9kNEgqMcjbR0CRMWVtaZFGOIQQWDhY4R5KYOQHS7LO8HnfJYyrne5dzsd+OoHGvGDdbXZ
+	TjV3Jfc7vtBXzk2X8BhcKDnILiKoxL2eHyjCL5zsTte3mPYpOBfj7rUzRTn8PM1jvB88wd4pXsy
+	q2dNI=
+X-Received: by 2002:a05:6122:3a0c:b0:577:51e4:ef20 with SMTP id 71dfb90a1353d-5bbebb85e52mr5302022e0c.10.1782087521178;
+        Sun, 21 Jun 2026 17:18:41 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bbfb7d309asm5740788e0c.1.2026.06.21.17.18.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 21 Jun 2026 17:18:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260621004626.66629-1-m32285159@gmail.com> <20260621004626.66629-3-m32285159@gmail.com>
- <20260621203303.0f8c5d08@systembl0wer> <CAKqfh0HUih0q9PEh+5pwwMuBBkm6nsaZP9e2yPjHO3+Yccuvgw@mail.gmail.com>
-In-Reply-To: <CAKqfh0HUih0q9PEh+5pwwMuBBkm6nsaZP9e2yPjHO3+Yccuvgw@mail.gmail.com>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Sun, 21 Jun 2026 19:09:11 -0500
-X-Gm-Features: AVVi8CeBoDXrbtClH1kwVIj7-gXFLAcOq-X0zP7Ou8EwKuQ0ysQLks4_-xoHIkc
-Message-ID: <CAKqfh0G1dcn4MLQ5jxjM8aDHVu=z-NEAR-y=xMjfOiW7M_HF-Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: temperature: Add STS30 temperature sensor driver
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, 
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 21 Jun 2026 19:18:33 -0500
+Message-Id: <DJF5ATR2RPDJ.3LSN8DY58E6RO@gmail.com>
+Cc: "Kurt Borja" <kuurtb@gmail.com>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Linus Walleij" <linusw@kernel.org>, "Bartosz
+ Golaszewski" <brgl@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>
+Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: "Jonathan Cameron" <jic23@kernel.org>, "Krzysztof Kozlowski"
+ <krzk@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
+ <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
+ <20260613-sparkling-naughty-tuna-3e9bf1@quoll>
+ <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
+ <a994993e-7459-48a2-a8d7-823c1b0c9545@kernel.org>
+ <20260621153318.4a723e3b@jic23-huawei>
+In-Reply-To: <20260621153318.4a723e3b@jic23-huawei>
 
-On Sun, Jun 21, 2026 at 7:05=E2=80=AFPM Maxwell Doose <m32285159@gmail.com>=
- wrote:
+On Sun Jun 21, 2026 at 9:33 AM -05, Jonathan Cameron wrote:
+> On Mon, 15 Jun 2026 06:30:28 +0200
+> Krzysztof Kozlowski <krzk@kernel.org> wrote:
 >
-> On Sun, Jun 21, 2026 at 1:33=E2=80=AFPM Joshua Crofts <joshua.crofts1@gma=
-il.com> wrote:
-> >
-> > On Sat, 20 Jun 2026 19:46:24 -0500
-> > Maxwell Doose <m32285159@gmail.com> wrote:
-> > > +#include <linux/array_size.h>
-> > > +#include <linux/bits.h>
-> > > +#include <linux/cleanup.h>
-> > > +#include <linux/crc8.h>
-> > > +#include <linux/delay.h>
-> > > +#include <linux/device.h>
-> > > +#include <linux/errno.h>
-> > > +#include <linux/export.h>
-> > > +#include <linux/i2c.h>
-> >
-> > I am a numpty as I also forgot to mention a missing
-> > mod_devicetable.h header.
-> >
+>> On 14/06/2026 22:56, Kurt Borja wrote:
+>> > On Sat Jun 13, 2026 at 1:59 PM -05, Krzysztof Kozlowski wrote:
+>> >=20
+>> > [...]
+>> >  =20
+>> >> Functions used by probe() should be before probe(), not somewhere in =
+the
+>> >> middle of the code. IOW, entire probe is together. =20
+>> >=20
+>> > I they all are, it's just that regmap stuff takes a huge chunk. I'll
+>> > check how to reorganize.
+>> >=20
+>> > [...]
+>> >  =20
+>> >>> +static const struct of_device_id ads1262_of_match[] =3D {
+>> >>> +	{ .compatible =3D "ti,ads1262" },
+>> >>> +	{ .compatible =3D "ti,ads1263" }, =20
+>> >>
+>> >> So devices are fully compatible? Then it should be expressed in the
+>> >> binding and drop one entry here. =20
+>> >=20
+>> > Not fully compatible as Jonathan said. One is a subset of the other. =
+=20
+>>=20
+>> This is THE meaning of compatible!
 >
-> D'oh, I ought to look at my includes a lot more closely as well.
+> This one I'm in agreement with. It is a strict subset, so should be
+> using a fallback.  If the fallback is used, you just get support of the
+> stuff in the simpler chip (or if you can override it with a chip ID
+> you might still 'upgrade' to the more complex driver support).
+> If you do end up with properties that only apply to 'new' parts of
+> the more complex chip then they should be verified as part of the
+> binding (assuming you can do that without the verifier complaining
+> - I haven't checked!)
 
-Forgot to mention, I'll be away for 2 weeks starting tomorrow so it'll
-have to wait :(
+In v1 I had the "adc" subnode which was specific to ADS1263. Then I
+agreed to drop the subnode but I'm having second thoughts...
+
+If we dropped it, then we would still have some specific stuff.
+#io-channel-cells would be "const: 2" in ADS1263 chips. Also ADS1263's
+channels would have an extra ti,vref-adc2 prop, for ADC2 voltage
+reference selection. I should maybe also add a vref-adc2-supply.
+
+Maybe it's better to keep the subnode or, again, go for something like:
+
+    spi {
+        multi-adc@0 {
+            adc@0 {
+                ...
+                vref-suppy =3D <&adc1-vref>;
+
+                channel@0 {
+                    ...
+                    reference-source =3D <ADS1262_VREF_AIN0_AIN1>;
+                };
+            };
+            adc@1 {
+                ...
+                vref-suppy =3D <&adc2-vref>;
+
+                channel@0 {
+                    ...
+                    reference-source =3D <ADS1262_VREF_AIN2_AIN3>;
+                };
+            };
+        };
+    };
+
+In this case we would have to kinda duplicate channel description, but I
+don't think it's that bad.
+
+Jonathan, Krzysztof, David, thoughts?
+
+IMO the ADC2 specific voltage reference stuff is a strong argument for a
+subnode or the above solution.
+
+>
+> The SLF3F discussion is about (to me) less obvious case of not a strict
+> subset, but rather being detectable parts with different channel related
+> properties.  In that case the ID match is necessary for anything to work.
+> Anyhow, that discussion is in a different thread and not really relevant
+> here.
+>
+> Jonathan
+>
+>>=20
+>>=20
+>> Best regards,
+>> Krzysztof
+
+--=20
+Thanks,
+ ~ Kurt
