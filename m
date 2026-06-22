@@ -1,213 +1,290 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25ACC32ED5C
-	for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 16:42:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C6D30EF77;
+	Mon, 22 Jun 2026 16:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782146555; cv=none; b=kkTBw0pf2CqLj38BQrq/zRIqNzbisM7WAiqKf82gZTnjKixiMPrhA9o1mzQBkCgeyNRoVEthSf4GlGbKsX5cEYID9mz5HC4BtjCpMl2Q5bE8paJGG9ns9NjxIM1FHAO3JRScqZI7DErkNRnZM2mbdhVdAaJjswO4/LdpA+V5fNc=
+	t=1782146600; cv=none; b=KxoEyz3uYCpaf2cMZ09kLjpzft2dzbNusmFx4Pne9co/xk0gZ9W4E0HaiG+g0mBGZfwTWkLRDSEWEx4UX9WqYBrfvg9WohO2rsc/GMcR+1/4zMFiUxyOn/VOL7o/SHN855Iyma2lqo0EDkGY/9+rIfZVNDrVqz2JP5eJzltSmjA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782146555; c=relaxed/simple;
-	bh=J6WjMdiSmsSd4l6O9aOiDfddho9ZkXNG7JRLQmJEDtM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dwBZHSS1HZgePcqFTS+wHx1+R3hoYr+YpRiwBmduiyg/CpbDVsDcS8PegPSrtgGL/M3Jg1CQtyuZZlgWuH/jHJVr0LL0YssEwYnrcpAQ2K6stMakYOm2a/r41/27ju+gRfhNKFfrnDqr8MF5mjAO9sIYPxLGLMvU1BwDqRhPaVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=XkfXOoDo; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782146600; c=relaxed/simple;
+	bh=JfUfVlp1q5Sx8xOkUr7zjRv4+KKQP318DZBVbbWXjv8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=P5epWcH+ZMYhdb+KJ0Uv/+JZV4YwTCJQ8qBjsQOgsbHR4y2GJq5GKaXRu8f5esp7u274h+bb27Pq2uQpS60GQ7C8zDnVrOyZrrMFLtqagArFCoIS/Ihf7bgdl8BOdVrpRyVClc59NTzgI0dN4bz6ltsZ9zlec1jJ5y5e2qaI40A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCtKujVJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="XkfXOoDo"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7e93d1dd156so1101646a34.0
-        for <linux-iio@vger.kernel.org>; Mon, 22 Jun 2026 09:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782146552; x=1782751352; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CxdyTp9jzcdAMNgLpztr1n4tuC5ymiq5XeXtaFtDt5o=;
-        b=XkfXOoDoIeHeOYHz5SunNd3ooJzqJMDsD296/xrp4hTwsH2opgLKzXGzdLl1AOlJTC
-         6o/pq5jpRmblqhyeVj/Q3yG+xWB55IBklzNh/1fjf9SRODUFE4pjLECBNeM6VMFM36FT
-         E963Wu1n5tkO7JL4ReUF87s8Z2mm4OfhqGdW8xQD/w2x1Ok0QgknZu2FzITuZhDJ3PEP
-         LHSs4PveSeZkJFgh+nnlUTBFCkoSdTYHxDZuhdSCa3+YpIOodQ+E05VHhi3Ze7kNkUBk
-         U17yNPTfRLDsjJJLU8Xr7FNnfSDWG88Q4NHl4y/+Lzvx67jD1013fDT1aWe/U3jARBDv
-         +7Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782146552; x=1782751352;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CxdyTp9jzcdAMNgLpztr1n4tuC5ymiq5XeXtaFtDt5o=;
-        b=Cg9vfQj1Sxa8XfkFVhLSy4rGtwfpvwtAH79ag7ACT2B4smcIcNIF2JD4rn4rfAH1rK
-         kR2NIipY8IfrjZ64ILqQrdsX0SuudKUuCmX2cp/A/FHDv5WVDwZEjCb8jySXWFvcIvap
-         NyR/4dZRn1uiJVxM29u5+WNrGURwf5PspkKj0M76HfZ38QKRCFw6+RP2rfBUsI/1sncT
-         N/KD1a/FmBnLvDbGA3Ka0/MTJY+sAaSMs+rK0/4Nm0J8srYZc6BB+m7HdGFGWAdyTBQc
-         epSmVxKxw+lN4vrxHi3HlPc1yDaNJohZwlTA+/C4qYtCevqbRxun8jZQxfKpS5eVPi07
-         vvsA==
-X-Forwarded-Encrypted: i=1; AFNElJ/SpF9A7fKbHMHWYuI4+wAA2BfCZ5OT386Bvd3qACNXFE7vYzcK7mw4yqD2x/Fl45qgR7omV1kh5tI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YymhJBJgHywPh5zspRHefVtm7+wMPpgZRXKbs+nLs6vimM2KZLa
-	h7xF2jGwPbs3lOqkrVYcENjWlVumqicK+HicP72rtSLwvHMSd0LdkGaalaYB0E0Fe3k=
-X-Gm-Gg: AfdE7cn2r3gKKZ2H2/MAHrGzF2tjkAUfStDmwD7aRzUjIKmHMp01Ax2ViJQtsZqeOSD
-	Fl2blADDJ4F5vMCGDXpE/BSKtstQCHGLA/5OcExTSP+NSK4PxB0gw0YAdTjThjD/RxJd8Ui1Uc7
-	XET1fVP8f1InKmebQnW2LlQcbuLLBvaWTk890Rjsijb5CSS5wiRxRwiQ9O90TsNavggwhVi38Pe
-	vz+1kmuWmAqg9G6T1Ad+pLMkB1L9h7mmkxPC35xrTQYnVaPHJd0oiZjlu9vxdbsVQOIp2olcQcR
-	40buHequMaDutxbQGy3Vx3MNIQoOD2HrMyMMn/3XuEPKXdpak0NOdzaeQCpnuOsgsIpdtUrdoPm
-	Yo87Ex3UxklZGCmozWPqPDNM2mz7vPnEPRu8bKE3YKEepoegt2JjWn9nuu2bFyGkRBkYZ352Yu3
-	O4heLFp6o108WcMNJw0OUP1bFhZARkIgIT9Bs5KBKXZ4USjHTpr3zak2i9azrvY/8=
-X-Received: by 2002:a05:6830:718d:b0:7d7:ea9f:c0f9 with SMTP id 46e09a7af769-7e92d37a1efmr11978490a34.0.1782146552063;
-        Mon, 22 Jun 2026 09:42:32 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf? ([2600:8803:e7e4:500:b69c:5a77:b8fb:a5cf])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9442e98c4sm6502970a34.26.2026.06.22.09.42.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Jun 2026 09:42:31 -0700 (PDT)
-Message-ID: <4980824f-070d-4da9-a291-5563aec6dd09@baylibre.com>
-Date: Mon, 22 Jun 2026 11:42:30 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCtKujVJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E10A1F000E9;
+	Mon, 22 Jun 2026 16:43:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782146598;
+	bh=U+Zp+zSEV717V8WStKNxZNZGPjCrFr18PbH75OwVmQ4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=fCtKujVJ0DaUxWhBYsY7iB/Lbino8ntCRghxj6VwFifvL4hU0IGxPUEpEZZH0TQJQ
+	 ZJzKJ2it5GZoxvJGEUfXKpIl8oHwHQcL0vheq8yyd+o+4EA4xtpGMXOHZEI0RqLAJl
+	 QXchL0Hu7CtkNp/QOJl0erZB9973ugf7T8OPL5kbbjOBAvMcin4HHOzCuHubyz8xct
+	 u3dXdYeyx1RUeQ6K6Ry/RLYVaDFyY5PDZ6dH4v9bjyhH1aIctoyCOARWxkL2IyHsSW
+	 cTc6kYgsgWNvhXdkHfeDXJZLpqMzJ9GGpcQkFm8SxAwEvtemuXDV44LbIKRkjqguET
+	 unHq2UT/mZk5g==
+Date: Mon, 22 Jun 2026 17:43:09 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jinseob Kim <kimjinseob88@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v5 3/6] iio: osf: add protocol decoding
+Message-ID: <20260622174309.35904c86@jic23-huawei>
+In-Reply-To: <20260616072242.3942-4-kimjinseob88@gmail.com>
+References: <20260616072242.3942-1-kimjinseob88@gmail.com>
+	<20260616072242.3942-4-kimjinseob88@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/5] iio: adc: Add ti-ads1262 driver
-To: Jonathan Cameron <jic23@kernel.org>, Kurt Borja <kuurtb@gmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
-References: <20260612-ads126x-v1-0-894c788d03ed@gmail.com>
- <20260612-ads126x-v1-2-894c788d03ed@gmail.com>
- <20260613-sparkling-naughty-tuna-3e9bf1@quoll>
- <DJ92M0ZMSI2C.2I39LHFRNQS7W@gmail.com>
- <a994993e-7459-48a2-a8d7-823c1b0c9545@kernel.org>
- <20260621153318.4a723e3b@jic23-huawei> <DJF5ATR2RPDJ.3LSN8DY58E6RO@gmail.com>
- <20260622104728.039a5ea2@jic23-huawei>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260622104728.039a5ea2@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 6/22/26 4:47 AM, Jonathan Cameron wrote:
-> On Sun, 21 Jun 2026 19:18:33 -0500
-> "Kurt Borja" <kuurtb@gmail.com> wrote:
-> 
->> On Sun Jun 21, 2026 at 9:33 AM -05, Jonathan Cameron wrote:
->>> On Mon, 15 Jun 2026 06:30:28 +0200
->>> Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>>  
->>>> On 14/06/2026 22:56, Kurt Borja wrote:  
->>>>> On Sat Jun 13, 2026 at 1:59 PM -05, Krzysztof Kozlowski wrote:
->>>>>
->>>>> [...]
->>>>>     
->>>>>> Functions used by probe() should be before probe(), not somewhere in the
->>>>>> middle of the code. IOW, entire probe is together.    
->>>>>
->>>>> I they all are, it's just that regmap stuff takes a huge chunk. I'll
->>>>> check how to reorganize.
->>>>>
->>>>> [...]
->>>>>     
->>>>>>> +static const struct of_device_id ads1262_of_match[] = {
->>>>>>> +	{ .compatible = "ti,ads1262" },
->>>>>>> +	{ .compatible = "ti,ads1263" },    
->>>>>>
->>>>>> So devices are fully compatible? Then it should be expressed in the
->>>>>> binding and drop one entry here.    
->>>>>
->>>>> Not fully compatible as Jonathan said. One is a subset of the other.    
->>>>
->>>> This is THE meaning of compatible!  
->>>
->>> This one I'm in agreement with. It is a strict subset, so should be
->>> using a fallback.  If the fallback is used, you just get support of the
->>> stuff in the simpler chip (or if you can override it with a chip ID
->>> you might still 'upgrade' to the more complex driver support).
->>> If you do end up with properties that only apply to 'new' parts of
->>> the more complex chip then they should be verified as part of the
->>> binding (assuming you can do that without the verifier complaining
->>> - I haven't checked!)  
->>
->> In v1 I had the "adc" subnode which was specific to ADS1263. Then I
->> agreed to drop the subnode but I'm having second thoughts...
->>
->> If we dropped it, then we would still have some specific stuff.
->> #io-channel-cells would be "const: 2" in ADS1263 chips. Also ADS1263's
->> channels would have an extra ti,vref-adc2 prop, for ADC2 voltage
->> reference selection. I should maybe also add a vref-adc2-supply.
->>
->> Maybe it's better to keep the subnode or, again, go for something like:
->>
->>     spi {
->>         multi-adc@0 {
->>             adc@0 {
->>                 ...
->>                 vref-suppy = <&adc1-vref>;
->>
->>                 channel@0 {
->>                     ...
->>                     reference-source = <ADS1262_VREF_AIN0_AIN1>;
->>                 };
->>             };
->>             adc@1 {
->>                 ...
->>                 vref-suppy = <&adc2-vref>;
->>
->>                 channel@0 {
->>                     ...
->>                     reference-source = <ADS1262_VREF_AIN2_AIN3>;
->>                 };
->>             };
->>         };
->>     };
->>
->> In this case we would have to kinda duplicate channel description, but I
->> don't think it's that bad.
->>
->> Jonathan, Krzysztof, David, thoughts?
->>
->> IMO the ADC2 specific voltage reference stuff is a strong argument for a
->> subnode or the above solution.
-> 
-> Given you end up with channel specific stuff that differs I think it probably
-> makes sense - though I do wonder a bit if that is real.  What's the use case
-> for using a different reference for the monitoring / debug than the main one?
-> I could imagine some dynamic use where you want to sanity check against
-> a wider reference range, but maybe that needs userspace control rather than
-> in here?  
+On Tue, 16 Jun 2026 16:22:39 +0900
+Jinseob Kim <kimjinseob88@gmail.com> wrote:
 
-
-I think is is going to mostly be the same, so could be simpler to just
-add extra channel properties on an as-needed basis if things do actually
-differ between ADC1 and ADC2 rather than having to define all channels
-twice.
-
-This seems pretty similar to the discussion of how to handle e.g. measuring
-the same inputs with and without the burn-out current enabled in the
-ti,ads112c14 series and I think you have convinced me that we should not
-be having a separate channel in the devicetree for that either.
-
+> Add helpers for validating and decoding Open Sensor Fusion frames and the
+> message payloads used by the initial receive path.
 > 
-> Jonathan
-> 
-> 
->>
->>>
->>> The SLF3F discussion is about (to me) less obvious case of not a strict
->>> subset, but rather being detectable parts with different channel related
->>> properties.  In that case the ID match is necessary for anything to work.
->>> Anyhow, that discussion is in a different thread and not really relevant
->>> here.
->>>
->>> Jonathan
->>>  
->>>>
->>>>
->>>> Best regards,
->>>> Krzysztof  
->>
-> 
+> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+A few things inline.
 
+> ---
+>  drivers/iio/opensensorfusion/osf_protocol.c | 249 ++++++++++++++++++++
+>  drivers/iio/opensensorfusion/osf_protocol.h |  97 ++++++++
+>  2 files changed, 346 insertions(+)
+>  create mode 100644 drivers/iio/opensensorfusion/osf_protocol.c
+>  create mode 100644 drivers/iio/opensensorfusion/osf_protocol.h
+> 
+> diff --git a/drivers/iio/opensensorfusion/osf_protocol.c b/drivers/iio/opensensorfusion/osf_protocol.c
+> new file mode 100644
+> index 000000000..5bee545f3
+> --- /dev/null
+> +++ b/drivers/iio/opensensorfusion/osf_protocol.c
+
+> +int osf_protocol_decode_frame(const u8 *buf, size_t len,
+> +			      struct osf_frame *frame, size_t *frame_len)
+> +{
+> +	u32 expected_crc;
+> +	u32 actual_crc;
+> +	u32 payload_len;
+> +	size_t total_len;
+> +	u8 major;
+> +
+> +	if (!buf || !frame || !frame_len)
+> +		return -EINVAL;
+> +
+> +	if (len < OSF_FRAME_MIN_LEN)
+> +		return -EMSGSIZE;
+> +
+> +	if (get_unaligned_le32(buf) != OSF_FRAME_MAGIC)
+> +		return -EPROTO;
+> +
+> +	major = buf[4];
+> +	if (major != OSF_PROTOCOL_MAJOR)
+> +		return -EPROTO;
+> +
+> +	if (get_unaligned_le16(buf + 6) != OSF_FRAME_HEADER_LEN)
+> +		return -EPROTO;
+> +
+> +	payload_len = get_unaligned_le32(buf + 10);
+> +	if (payload_len > len - OSF_FRAME_MIN_LEN)
+> +		return -EMSGSIZE;
+> +
+> +	if (get_unaligned_le32(buf + 34))
+> +		return -EPROTO;
+> +
+> +	total_len = OSF_FRAME_HEADER_LEN + payload_len + OSF_FRAME_CRC_LEN;
+> +	expected_crc = osf_crc32_ieee(buf, OSF_FRAME_HEADER_LEN + payload_len);
+> +	actual_crc = get_unaligned_le32(buf + OSF_FRAME_HEADER_LEN + payload_len);
+> +
+> +	if (actual_crc != expected_crc)
+> +		return -EBADMSG;
+> +
+> +	frame->protocol_minor = buf[5];
+> +	frame->message_type = get_unaligned_le16(buf + 8);
+> +	frame->payload_len = payload_len;
+> +	frame->sequence = get_unaligned_le64(buf + 14);
+> +	frame->timestamp_us = get_unaligned_le64(buf + 22);
+> +	frame->flags = get_unaligned_le32(buf + 30);
+> +	frame->payload = buf + OSF_FRAME_HEADER_LEN;
+> +	frame->crc = actual_crc;
+
+Same as below wrt to to using designated initializers for these
+structure fills
+
+> +	*frame_len = total_len;
+> +
+> +	return 0;
+> +}
+> +
+> +int osf_protocol_decode_sensor_sample(const struct osf_frame *frame,
+> +				      struct osf_sensor_sample *sample)
+> +{
+> +	u16 channel_count;
+> +	u16 sample_format;
+> +	u16 sensor_type;
+> +	size_t expected_len;
+> +	const u8 *payload;
+> +
+> +	if (!frame || !sample || !frame->payload)
+> +		return -EINVAL;
+> +
+> +	if (frame->message_type != OSF_MSG_SENSOR_SAMPLE)
+> +		return -EPROTO;
+> +
+> +	if (frame->payload_len < OSF_SENSOR_SAMPLE_BASE_LEN)
+> +		return -EMSGSIZE;
+> +
+> +	payload = frame->payload;
+> +	sensor_type = get_unaligned_le16(payload);
+> +	channel_count = get_unaligned_le16(payload + 4);
+> +	sample_format = get_unaligned_le16(payload + 6);
+> +
+> +	if (!osf_sensor_type_valid(sensor_type))
+> +		return -EPROTO;
+> +
+> +	if (!channel_count)
+> +		return -EPROTO;
+> +
+> +	if (sample_format != OSF_SAMPLE_FORMAT_S32)
+> +		return -EPROTO;
+> +
+> +	if (get_unaligned_le32(payload + 12))
+> +		return -EPROTO;
+> +
+> +	if (channel_count > (SIZE_MAX - OSF_SENSOR_SAMPLE_BASE_LEN) / sizeof(s32))
+> +		return -EOVERFLOW;
+> +
+> +	expected_len = OSF_SENSOR_SAMPLE_BASE_LEN + channel_count * sizeof(s32);
+> +	if (frame->payload_len != expected_len)
+> +		return -EMSGSIZE;
+> +
+> +	sample->sensor_type = sensor_type;
+> +	sample->sensor_index = get_unaligned_le16(payload + 2);
+> +	sample->channel_count = channel_count;
+> +	sample->sample_format = sample_format;
+> +	sample->scale_nano = get_unaligned_le32(payload + 8);
+> +	sample->samples = payload + OSF_SENSOR_SAMPLE_BASE_LEN;
+See below. Designated initializer would help readability a little here.
+
+> +
+> +	return 0;
+> +}
+> +
+> +int osf_protocol_sensor_sample_value(const struct osf_sensor_sample *sample,
+> +				     unsigned int index, s32 *value)
+
+Given channel count is a u16 and we can't be equal or bigger than it, perhaps
+use a u16 for index as well.
+
+> +{
+> +	if (!sample || !sample->samples || !value)
+> +		return -EINVAL;
+> +
+> +	if (index >= sample->channel_count)
+> +		return -ERANGE;
+> +
+> +	/* Samples are little-endian two's-complement signed values. */
+> +	*value = (s32)get_unaligned_le32(sample->samples + index * sizeof(s32));
+
+sizeof(__le32) slightly more appropriate given that is what you are treating it
+as.
+
+> +
+> +	return 0;
+> +}
+> +
+> +int osf_protocol_decode_device_status(const struct osf_frame *frame,
+> +				      struct osf_device_status *status)
+> +{
+> +	const u8 *payload;
+> +
+> +	if (!frame || !status || !frame->payload)
+> +		return -EINVAL;
+> +
+> +	if (frame->message_type != OSF_MSG_DEVICE_STATUS)
+> +		return -EPROTO;
+> +
+> +	if (frame->payload_len != OSF_DEVICE_STATUS_LEN)
+> +		return -EMSGSIZE;
+> +
+> +	payload = frame->payload;
+> +	if (get_unaligned_le32(payload + 16))
+> +		return -EPROTO;
+> +
+> +	status->uptime_s = get_unaligned_le32(payload);
+> +	status->status_flags = get_unaligned_le32(payload + 4);
+> +	status->error_flags = get_unaligned_le32(payload + 8);
+> +	status->dropped_frames = get_unaligned_le32(payload + 12);
+Similar to below. I'd use a designated initializer for status as it
+is all written in one place.
+
+> +
+> +	return 0;
+> +}
+
+> +
+> +int osf_protocol_decode_capability_entry(const struct osf_capability_report *report,
+> +					 unsigned int index,
+> +					 struct osf_capability_entry *entry)
+> +{
+> +	u16 sample_format;
+> +	u16 sensor_type;
+> +	u32 flags;
+> +	const u8 *payload;
+> +
+> +	if (!report || !report->entries || !entry)
+> +		return -EINVAL;
+> +
+> +	if (index >= report->capability_count)
+
+Neater to size index to match capability_count.  Not that
+important though.
+
+> +		return -ERANGE;
+> +
+> +	payload = report->entries + index * OSF_CAP_SENSOR_ENTRY_LEN;
+> +	sensor_type = get_unaligned_le16(payload);
+> +	sample_format = get_unaligned_le16(payload + 6);
+> +	flags = get_unaligned_le32(payload + 12);
+> +
+> +	if (!osf_sensor_type_valid(sensor_type))
+> +		return -EPROTO;
+> +
+> +	if (sample_format != OSF_SAMPLE_FORMAT_S32)
+> +		return -EPROTO;
+> +
+> +	if (flags & ~OSF_CAPABILITY_FLAGS_MASK)
+> +		return -EPROTO;
+> +
+> +	if (get_unaligned_le32(payload + 16))
+> +		return -EPROTO;
+> +
+> +	entry->sensor_type = sensor_type;
+> +	entry->sensor_index = get_unaligned_le16(payload + 2);
+> +	entry->channel_count = get_unaligned_le16(payload + 4);
+> +	entry->sample_format = sample_format;
+> +	entry->scale_nano = get_unaligned_le32(payload + 8);
+> +	entry->flags = flags;
+neater as designated initializer I think.
+
+	*entry = (struct osf_capability_entry) {
+		.sensor_type = sensor_type,
+		.sensor_index = get_unaligned_le16(payload + 2),
+etc
+	};
+> +
+> +	return 0;
+> +}
