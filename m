@@ -1,52 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67D0F38B142;
-	Tue, 23 Jun 2026 19:23:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22AC938D402;
+	Tue, 23 Jun 2026 19:27:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782242624; cv=none; b=lMrHSb0na2xm3P46w4gFHGkpUMDpDgsvpBGKn7EVMQnvMvE6lGvHzAoSycUi3zgKBRFLPO30rc6vR4q9/qf1h69sC8fX1iC9XblEiI3TkfvLVSx7sWkfkcLctreauhZfBqsKvrbgIEVHToq2RLbXfpfcG2OiiT2kCQYb9hU8fuY=
+	t=1782242826; cv=none; b=IKCtZbGNo3el8naQ/ljGZHqrY3Pe7EyLTPIP+a0YcNRaL/zSmK637SMs9gYF0rclO/pbvGq9v+MKcyLByPeI9XByadoSiekAXhXPqZdp5kwHYELlQ8q2IL8DJmBd7xmaK5BaciuB51yAed8JZTTC5Gp1ZOKHmB1ILSH5kd0CVcQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782242624; c=relaxed/simple;
-	bh=O7DR9ILkd2nJoHBh2TQnDbYT3Y7Ne14/dVuQzQqfa9k=;
+	s=arc-20240116; t=1782242826; c=relaxed/simple;
+	bh=UdJQ7MF+bWrHcMAMYbY3yufjN5biEaDg61DrZgkfktE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fdlo3GaTifF/lhesZvYzgEMoxkN7MG8lljtf7FHw6nQednR8JfRW7xy0kndH1SJW08xQFj/H2KBuqwpAt6TRM4TWDwyPJv47yHJ4Fb/SAspC28z2YtW9lrEaNqjZBp/xMyadO+s8fYWSIv2tgi7Z5PXb0XLgoSAU3RXnAy11ck4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WShvWu8F; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Go76do+SgoQoP21ZWevBcWerBzrlvAyAPUqmndv683f8LMuudXtlyCGr0287Bi95tCZAnAIWqlBJ4rpXev6xRRgzniLM/9PgT3BdLU933ReRMCIC2X266JH2c36C8PL1PSyYcDewEdaN6UlOrUXbcPM9ikiNCA11hR0XD7Gor/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=osKsdsds; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WShvWu8F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1B61F000E9;
-	Tue, 23 Jun 2026 19:23:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="osKsdsds"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0571F000E9;
+	Tue, 23 Jun 2026 19:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782242623;
-	bh=/eUnBmyw2rFOllRrbRo6eVqfdlq5TkvvC1+VM9YXfiw=;
+	s=k20260515; t=1782242825;
+	bh=fY7+Qjso6OV5dU6LiTyf8OW91V/vJT0ZeQDfUV9KiE8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WShvWu8FV9VtCbeNSuU3WtBZKK/Ri3PUigE77CXwQuUY0D3+bwB26QgV+gnHoITwV
-	 n7K3XMkwYI71pqkqNpj5mv+02apbsy8aGitAfGB/8T6XQwE59w+PMP5dZATy+g+Jlm
-	 B/cc5C+aRK4aBueXfjtAwsozb3Zrck8Af0uYhTAGnByUGn5cKojNNwdfyfy5Vbrm3f
-	 bswxYtvL5qtpB6dnfEtg6WIg8UVvlym6aANEoHU4dVfxM0xPMpRoZN24DmZcAn8t8B
-	 Oyp5fWMyGs/lLSnBAl6UrDe4TZFjYO27HxPVf9dlk2X23M0+NkDrVnemc5xWBNhdZs
-	 AfRFMm5ZD/Sdg==
-Date: Tue, 23 Jun 2026 20:23:34 +0100
+	b=osKsdsdsdSRrb1vztVn6OBLsx1boENTPDo0pPGyGgFxNUjqW30dFvb0qG9ZyKB0Q7
+	 tWdqTH1vjkFvJ4Cwl6Xo2q6yF4qCluempfiUnUz2EE014VaK/27T9B7dOvJ0LI7Wgm
+	 H26JPQSLtWuljqo8rCYjSszZpDgHFtN80eRMja4fYWL4dHJv8QKgSfgvVoV8+5N1jJ
+	 qXRUFGvlFn4raTzOjNxKehSkbaGcBuwxbQMn2kaKpJ5hp/5wU8kapt27eC4UsgTfjq
+	 aeHjjccUMdZTUcBf5TC5ssYp2E/6mI1WWsVuTQe/i2SCThTSM+x2VIZzDL4/YFqznF
+	 0CtRCPiD8R/jg==
+Date: Tue, 23 Jun 2026 20:26:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Herman van Hazendonk <github.com@herrie.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nick
- Desaulniers <nick.desaulniers+lkml@gmail.com>, Bill Wendling
- <morbo@google.com>, Justin Stitt <justinstitt@google.com>, Denis Ciocca
- <denis.ciocca@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Denis Ciocca <denis.ciocca@st.com>, Linus Walleij
- <linusw@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
- devicetree@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] iio: common: st_sensors: honour channel
- endianness in read_axis_data
-Message-ID: <20260623202334.2217b1d4@jic23-huawei>
-In-Reply-To: <ajJwzsIMxX3Ew1x_@ashevche-desk.local>
+To: Herman van Hazendonk <github.com@herrie.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Nathan Chancellor
+ <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
+ Denis Ciocca <denis.ciocca@gmail.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Denis Ciocca
+ <denis.ciocca@st.com>, Linus Walleij <linusw@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ llvm@lists.linux.dev, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] dt-bindings: iio: st,st-sensors: add
+ st,fullscale-milligauss
+Message-ID: <20260623202652.2f29a1fe@jic23-huawei>
+In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-2-063edcf74e60@herrie.org>
 References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-1-063edcf74e60@herrie.org>
-	<ajJwzsIMxX3Ew1x_@ashevche-desk.local>
+	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-2-063edcf74e60@herrie.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,66 +52,108 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 17 Jun 2026 13:02:54 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 16 Jun 2026 15:02:05 +0200
+Herman van Hazendonk <github.com@herrie.org> wrote:
 
-> On Tue, Jun 16, 2026 at 03:02:04PM +0200, Herman van Hazendonk wrote:
-> > st_sensors_read_axis_data() unconditionally decoded multi-byte
-> > results with get_unaligned_le16() / get_unaligned_le24() regardless
-> > of the channel's declared scan_type.endianness.
-> >=20
-> > For every ST sensor that has used this helper since it was introduced
-> > this happened to be fine because the ST IMU/accel/gyro/pressure
-> > families publish their data registers as little-endian and the
-> > channel specs in those drivers declare IIO_LE accordingly.
-> >=20
-> > The LSM303DLH magnetometer however publishes its X/Y/Z output as a
-> > pair of big-endian bytes (the H register sits at the lower address,
-> > 0x03/0x05/0x07, and the L register immediately after), and its
-> > channel specs in st_magn_core.c correctly declare IIO_BE -- but
-> > read_axis_data() ignored that and decoded as little-endian, swapping
-> > the high and low bytes of every magnetometer sample. The LSM303DLHC
-> > and LSM303DLM share the same st_magn_16bit_channels (IIO_BE) and
-> > were therefore byte-swapped by the same bug; users of those parts
-> > will see different in_magn_*_raw values after this fix lands.
-> >=20
-> > The bug is most visible on a stationary chip: in earth's field the
-> > true X reading is small and the high byte sits at 0x00, so swapping
-> > the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
-> > =3D 240). Y and Z still appear "to vary" because their magnitudes are
-> > larger and the noise in the low byte produces big swings in the
-> > swapped high byte:
-> >=20
-> >   before (LSM303DLH flat, sysfs in_magn_*_raw):
-> >       X=3D240 (stuck), Y=3D 12032..23296, Z=3D-16128..-9728
-> >=20
-> >   after (direct i2c-dev big-endian decode, same chip same orientation):
-> >       X=E2=89=88-4096, Y=E2=89=88210, Z=E2=89=8880     (sensible values=
- reflecting earth's
-> >                                 ambient field at low gauss range)
-> >=20
-> > Fix read_axis_data() to dispatch on ch->scan_type.endianness and
-> > call get_unaligned_be16() / get_unaligned_be24() when the channel
-> > declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
-> > st_pressure, st_lsm6dsx and others) are unaffected because their
-> > channel specs already declare IIO_LE and the LE path is unchanged.
-> >=20
-> > While restructuring the branches, replace the previously implicit
-> > silent-success-with-uninitialised-*data fall-through for
-> > byte_for_channel outside 1..3 with an explicit return -EINVAL. No
-> > in-tree ST sensor publishes such a channel, but the new behaviour
-> > is strictly safer than handing userspace garbage. =20
->=20
-> Sounds like inevitable change in ABI, but worth doing it.
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Applied to the fixes-togreg branch of iio.git. I'll wait until after
-rc1 to send a pull request though (and rebase on rc1 in the meantime).
-The other patches may have to wait, I haven't checked yet!
+> Add an optional st,fullscale-milligauss property that selects the
+> initial magnetometer full-scale range at probe time, expressed in
+> milligauss.
+> 
+> The motivating case is the LSM303DLH magnetometer on the HP TouchPad
+> (apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
+> saturates the X axis to the chip's 0xF000 overflow sentinel out of
+> probe, because the chip is mounted close to surrounding power planes
+> and picks up enough DC bias to exceed the smallest range.
+> 
+> The chip is not wedged by the saturation: a sysfs write of a wider
+> range to in_magn_x_scale recovers it on the next conversion, and a
+> UDEV rule on add of the IIO device is a viable steady-state
+> workaround. What the DT property buys is the probe-time window: the
+> in-tree consumers we use (sensorfw's iio-sensors-adaptor and the
+> geomagnetic / orientation services on top of it) start polling
+> in_magn_x_raw essentially as soon as the device node appears and
+> treat the 0xF000 sentinel as a legitimate sample. Until a UDEV rule
+> fires and commits the wider range, every read returns the stuck
+> sentinel, and on slow-boot paths the consumer may have already
+> cached a bogus calibration baseline by the time UDEV catches up.
+> 
+> st,fullscale-milligauss lets the device tree declare a wider
+> initial range up-front so the correct range is in effect before any
+> IIO consumer can open the device, and keeps the board-specific
+> magnetometer calibration alongside the rest of the hardware
+> description rather than splitting it between DTS and per-distro
+> UDEV rules.
+> 
+> The full property name is spelled out rather than abbreviated to
+> "-mg" because this same binding file already covers ST accelerometers
+> where the conventional shorthand "mg" reads as milli-g (acceleration);
+> the explicit "-milligauss" suffix makes the unit unambiguous if a
+> similar tunable is ever introduced for the accel/gyro/pressure
+> families.
+> 
+> The property is scoped to magnetometer compatibles via allOf/if-then
+> clauses, with per-family enum lists of the accepted milligauss
+> values (1300..8100 for LSM303DLH/DLHC/DLM, 4000..16000 for
+> LIS3MDL/LSM9DS1/LSM303C). LSM303AGR / LIS2MDL / IIS2MDC have a
+> single fixed full-scale (15000 mg) with no register to switch
+> ranges, so the property is rejected outright for them. DTSes that
+> misspell the value, place the property on an accelerometer /
+> gyroscope / pressure node, or set it on a fixed-FS magnetometer
+> fail dt_binding_check rather than emitting a runtime warning.
+> 
+> The property is purely additive: if absent, drivers fall back to
+> their existing chip default. No existing in-tree DTS is affected.
+> 
+> Assisted-by: Claude:claude-opus-4-7 dt_binding_check checkpatch
+> Assisted-by: Sashiko:claude-opus-4-7
+> Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
+> ---
+>  .../devicetree/bindings/iio/st,st-sensors.yaml     | 71 ++++++++++++++++++++++
+>  1 file changed, 71 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> index a1a958215cdb..f0805604c849 100644
+> --- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> @@ -126,6 +126,13 @@ properties:
+>    mount-matrix:
+>      description: an optional 3x3 mounting rotation matrix.
+>  
+> +  st,fullscale-milligauss:
+> +    description:
+> +      Initial magnetometer full-scale at probe time, in milligauss.
+> +      Per-chip allowed values are enumerated in the allOf clauses
+> +      below.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +
+>  allOf:
+>    - if:
+>        properties:
+> @@ -163,6 +170,70 @@ allOf:
+>            maxItems: 1
+>          st,drdy-int-pin: false
+>  
+> +  # Per-chip enum lists for st,fullscale-milligauss. Out-of-range
+> +  # values fail dt_binding_check instead of being demoted to a
+> +  # runtime warning by the driver.
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - st,lsm303dlh-magn
+> +              - st,lsm303dlhc-magn
+> +              - st,lsm303dlm-magn
+> +    then:
+> +      properties:
+> +        st,fullscale-milligauss:
+> +          enum: [1300, 1900, 2500, 4000, 4700, 5600, 8100]
+Can we also add default: to these entries to document what happens
+when nothing is provided?
+
+Thanks,
 
 Jonathan
-
->=20
-
