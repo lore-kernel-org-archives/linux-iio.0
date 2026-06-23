@@ -1,79 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2295C8EB;
-	Tue, 23 Jun 2026 21:31:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0B4248867
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 23:07:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782250315; cv=none; b=aWss9CrAEe4W1no0Yeb9YqR35pMDXlF3d3/WMgfAH6dB1zSk8igxfh+74dUodPsznNy6AZFe3AlhoqwSPl8IglJ07D9OqWJuR9auBLjKZSNN702PeFtsos829PjxzQdXfJMWqNDZddTA4Xb+3YG9ljPh/zZKNi/XB7ugvEzSZUI=
+	t=1782256063; cv=none; b=BPlmTE/pUqBHonBQUaebG9f0W3zQwLQ24cChC/Z7YZyZ3J+Pw5zCpR/gQegztzQH2Qg5GJ1g8qKGLb1HX+dvr4y7yM+bOKdNF2lwdZ9+cpahRnh3jkNO9Cj4ViByz++t9xzu1Egp1XT5K0nyhPbf/92E6pSvWv4eO9vJVohOJlI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782250315; c=relaxed/simple;
-	bh=cf0oS5S/91R9fvs2GKviyAfHVEuZAezatD/Tez9Z0HI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C+LWB92pN4BRL+/0SNxY/hLoaCQlXdp8bydUMDzeQnvZ3q8WUdrYiT/Rj6Vk6Sfw3nfhw4InEL3svr+JDdY4+DSlizESvP+vpPdhJgh/qNwNl87HRPakr50XKfXbrdN0xrL9IPj3B4koR6w8hZE4AgaI/0KxdLm2FSEItys3EGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Az6deyot; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782256063; c=relaxed/simple;
+	bh=Th3M91vLEzz4QsKEAF44aVXS/vKeaClDHR0cuSVmgV4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=qLXsOeemdIxH4UbSVXo4PVrWU9ucPm8W56+QL4nPcvHeg/J7p9NibJzYAUZYBu36dJKrv5U7g4KXtNcsZiYp7lxnHMPJ8mZexOeUKLk/zKMD3QBF2klJRIO9krh0NF5yVb3maVd9nRieq61M3Dyoo/tiHBtxpAz0sdarwuoYAUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=RjfW6j1B; arc=none smtp.client-ip=209.85.210.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Az6deyot"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782250315; x=1813786315;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cf0oS5S/91R9fvs2GKviyAfHVEuZAezatD/Tez9Z0HI=;
-  b=Az6deyotcAdZi7T9S5Atkt0j0ztGM8nwdEnnDPV/rJw2cyqsrsOw3i0f
-   3QeG4hyitdihpHVmfkrH+aU1OltM9ajP1Nlct6rXjoriOgPSWd2ZLpAsE
-   dIcVo7P7q5Qu0BBZDyAAE+gro+sWpyUF+yuFtXNAvFrRBEAmst8Hsjr5M
-   AhogS/e/AbVIhJF/Fyj0bQXS9MLw0rDoQZaqmYJSyRKuEoZ3KVtUHOQt3
-   2nmAjYLj9w0BwAMKz0CcrWBDt5t8jhHOaY1KvUHxImI+Q5RflD52+fC0+
-   fIxVUgABULAMx8iHj/TH+OIr5yQaznnmicE1mI/nv3MZ+vRUuyWsvQrPa
-   A==;
-X-CSE-ConnectionGUID: ExgV4uJrQFqXEMeZZfnEoA==
-X-CSE-MsgGUID: i6cDnRGZQb2J6tq5AsysoA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="93366532"
-X-IronPort-AV: E=Sophos;i="6.24,221,1774335600"; 
-   d="scan'208";a="93366532"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 14:31:54 -0700
-X-CSE-ConnectionGUID: Bs5y3FkPQV6eV0KYWZBwaQ==
-X-CSE-MsgGUID: YIBK4drXQQSWVGXIT0+ZIA==
-X-ExtLoop1: 1
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 14:31:51 -0700
-Date: Wed, 24 Jun 2026 00:31:49 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Siratul Islam <siratul.islam@linux.dev>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: magnetometer: add driver for QST QMC5883L
- Sensor
-Message-ID: <ajr7RUNUPZSsBjAs@ashevche-desk.local>
-References: <20260619104524.10172-1-siratul.islam@linux.dev>
- <20260619104524.10172-4-siratul.islam@linux.dev>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="RjfW6j1B"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7e92c443cbcso301825a34.0
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 16:07:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782256061; x=1782860861; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=FF7cw5Yy+S7hLKfjPxOoTaPYvYHLSl3mlqulkut8dFI=;
+        b=RjfW6j1B2498R1oPv1UQspk/DNcE1IjaL9pkYJEUjAjH1dIUACvKdnWeQfPcQOXVRn
+         6TUAHnxlPdKg1X/r45lHNKTjTN30eg0gwbvO65FvKLC1kklw6arN+ep3BQdDH7CAXFrm
+         3b1Z2gORS6RCvxtSpM+txZv3T0xZ+Das1uVRKUysdEPUQWsVGZSdQiII2obSciDZoyki
+         ok7iwwRWlUrZ46RMnpRK6MWhkZYATF6XGHeZnn1D1oVnNb5r/fL448hgLQuusHulxHr9
+         yalbSUjz7aQzNeN5RBzL2DPjECYU0rddPV84RceK58oRJMO/9APDyyG7Gw116huhZu2E
+         kXqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782256061; x=1782860861;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FF7cw5Yy+S7hLKfjPxOoTaPYvYHLSl3mlqulkut8dFI=;
+        b=CO/UhkObRIlBD0UAXn55lho1rldlyKewfAweZKCtobUjfO5LTd6tAJZfDz7CMbLE4Q
+         4caVo1BUWU/tQ4WgEK6lwk9IWkty/ypfeWPNquccAnWbbfuniJiK7w2L30H8LHVHIKul
+         ahwWcaZ3L0E2vyK0beGJo/Q3xQRVUOP47P9vubC4a3REbv0NvR8MXf/k52icU5/u54Ch
+         ezns/dZCHm1Pz0hH6GCTfxDjj9YanAfgK4VVC70JH+uoanMXgcrD8dQQywPeESe4jmpb
+         cUDmZyg0GPwz0/KWU5Nfl36zcy3VKmphrfUJBo2Xc0N3rounz1W6Fyjc40b4tJDD5XnW
+         +YMA==
+X-Forwarded-Encrypted: i=1; AFNElJ+MxvQt7d13qOwPeXro6iktFpYRJQVdRPeyDXqn2FGqOTO8GPHGf/UjBrB/RqYmqOn8S0uGfDN5kv0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyDl26+Y8PBPZ6McHqKIdm5tJZKWvCwCIUhKG9GEhs1RHBt6Hnb
+	HFw09vzWUBgF4Uk2k/R6UHzLtz7wUUEAIwOfPge1Awb8gHZEvbNSOWv3CkCoMcMG/3U=
+X-Gm-Gg: AfdE7cmofQX22Ba6gFFBzyg7ReddGdLKEkU+xigIM/sphVzDPK9NQ4dtr/z9+Zclq9p
+	U9VeY7tWoSf4AlB657ge61XHtpfzssH62jiii+Shu8Z1YyrRNSyH4o5q+ZYL/9GTSVRq9/+hmDI
+	6ZmmI+oSF1Wz/iOkEcOZQe/Zzp3B71uQfd8plTszNUo6EDeT5dKl7Ix8DmelcLprmZ/foh/3X4I
+	oLBmIcA3wnmUouOe7I8j1yPrmneykzhF22nu2oHyZimenWfcJ6FWMWi8D95AT2bAvhApkw1kx2E
+	oJOS1J60FIvMlsKBn51TQHOauGR8MLGuGx1pMhldliAwTGxTwGrLbLoaM2IN31NDlpN0/O/xGdw
+	RLp3O4zWSPsh3lBl8At/yNKxRToOpLuL1mwWQWOgHT0iN6Gk8vCc2kP4DQKDerK0uH7G5MO5boX
+	JcHcUBOSt2WKm7rlLehXvEm8HNo4pfYcmAtOcO9d2YIHxXJt8di3B/cuQE6iBp3cAtZW7+kQDST
+	A==
+X-Received: by 2002:a05:6830:6c11:b0:7e6:ed97:ce6e with SMTP id 46e09a7af769-7e9868d2c27mr1014776a34.19.1782256060796;
+        Tue, 23 Jun 2026 16:07:40 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e94424f2e2sm9998156a34.17.2026.06.23.16.07.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jun 2026 16:07:40 -0700 (PDT)
+Message-ID: <3caf5748-0da2-4f11-a0ff-d3dd5fdf339f@baylibre.com>
+Date: Tue, 23 Jun 2026 18:07:39 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260619104524.10172-4-siratul.islam@linux.dev>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iio: adc: ad4080: configure backend data size
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260623090717.3296-1-antoniu.miclaus@analog.com>
+ <20260623090717.3296-3-antoniu.miclaus@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260623090717.3296-3-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jun 19, 2026 at 04:45:06PM +0600, Siratul Islam wrote:
-> Add driver for the QST QMC5883L 3-Axis Magnetic Sensor
-> connected via i2c.
+On 6/23/26 4:07 AM, Antoniu Miclaus wrote:
+> The AXI backend needs to know the ADC word width in order to pack the
+> sample data correctly on the bus. During channel setup, program the
+> backend packet format via iio_backend_data_size_set() using the channel
+> resolution, so the data is transferred according to the device's
+> realbits.
+> 
 
-LGTM now,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Do we need a Fixes: tag?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+>  drivers/iio/adc/ad4080.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
+> index 8d2953341b15..8feb0c7f7fcb 100644
+> --- a/drivers/iio/adc/ad4080.c
+> +++ b/drivers/iio/adc/ad4080.c
+> @@ -698,6 +698,11 @@ static int ad4080_setup_channel(struct ad4080_state *st, unsigned int ch)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = iio_backend_data_size_set(st->back[ch],
+> +					st->info->channels[0].scan_type.realbits);
+> +	if (ret)
+> +		return ret;
+> +
+>  	if (!st->lvds_cnv_en)
+>  		return 0;
+>  
 
