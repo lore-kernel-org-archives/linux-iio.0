@@ -1,127 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5673F34574B;
-	Tue, 23 Jun 2026 05:38:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E83A3A960F;
+	Tue, 23 Jun 2026 06:52:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782193087; cv=none; b=BjGSDRl/KfTjO+FbUkhe9WaFwBx1gOgZBfOCCZWbY4ZdgAY3c2OI4DqQybRB8KQPEZ5UrUD31itzqDILiTebSLl0WOveyuKM/zz8Eu62dP2m7zBvkwJC1SCmyQDOUY+A5CayOfW2nxUObI2xDu1i81t2oVYRerq98WvzT6xo4hU=
+	t=1782197564; cv=none; b=EdP97NdJlZnnaG0Eatq5S4mOSo3LzPiT0oZdCnYLiqIgo7VsLL1ojRynUHc6qb7ytMdXvu4hf03+6wB4uPH8+npBFPb0QBeXQdAwEX3IP1K0fct6QR1F4M4ljiSq6Zytuq6m8m+3YjPislMPXcwyJKSPdZ2AWNYAJuVV6zwOP9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782193087; c=relaxed/simple;
-	bh=fSlXsmtduOo632A404s2f1KOxF4Sgvn19HBOe3QMr/k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EXQPP94prsntP8eS3XQQwHxC6IzLzM/hXHNFAE2DbQezGYxJDnmrliZ/D9Q8N6Lmqo6ER1BlKkKaiQh61naalz+pQnscVUeBWGp/4GkkvBbDaDLHnsGtiArNgRV1TM8MNCvIS+ouaLIdsvv3IfAZwW3qnsWGTj8NHngsXw+hqYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lQ+khwzS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782197564; c=relaxed/simple;
+	bh=M5C03jwMOVPk3qADcuqWCbvD9inoDB6D4PE8mc9m/iM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KXWTvNfLyJeYDD+y4XLODTG9bdbi4id5KkNWLhhcCDkHRQ40S3NXQAXZqDPTUYd68q9nNbYKGEBfrkN6MwRUtzMZTlF8dfM7RmjDwa38HXSpgihQfeTw9kfmN2tqisQQv5EI9t42iiluxyYEHcez+AETxjG2OTet7+CYP4rf/Ms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a4x6XwGt; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lQ+khwzS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB5C1F000E9;
-	Tue, 23 Jun 2026 05:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782193085;
-	bh=9XqQY2XCM9PJYXxeaCmLp6Mj6zmOd5xGvltapxjirDg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=lQ+khwzSkve0u2pjb/QK0VlmLf4qYBGDV543Q6ttnWa6KU7Cde/IFReyHlyDLI1KP
-	 Y4U8S+XsZWGsAniRo0+ai0+ZaddvaSnqg0b0gxVj0MyLfJfHJfDSZTlp0sEapCfU/x
-	 gwoEejYnTpGmRqRpZiFyOlCVBcZJ28iGbvc2rcDXRwOWT5rh1KN/u7rOpNVv/RjQ0Q
-	 sb+3Z+r4nAp4sElJpQzkAdi2FbfGZ4PEAPT3+hu5fhSgWbkSnK/c3LEBd1WJXKTMpE
-	 ocBudP6qCGgm233OBcy1VZOlD5mCI4g8TQyEOCD93foGSq2zA18xdxUzcESGhSw4tc
-	 R9H/F5daetkow==
-From: William Breathitt Gray <wbg@kernel.org>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: William Breathitt Gray <wbg@kernel.org>,
-	Oleksij Rempel <o.rempel@pengutronix.de>,
-	kernel@pengutronix.de,
-	conor+dt@kernel.org,
-	krzk+dt@kernel.org,
-	robh@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] counter: add GPIO-based counter driver
-Date: Tue, 23 Jun 2026 14:37:59 +0900
-Message-ID: <20260623053800.120909-1-wbg@kernel.org>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260622205210.10317-1-wafgo01@gmail.com>
-References: <20260622205210.10317-1-wafgo01@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a4x6XwGt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782197563; x=1813733563;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=M5C03jwMOVPk3qADcuqWCbvD9inoDB6D4PE8mc9m/iM=;
+  b=a4x6XwGtb1HFSMq8HyCXAvsAXL3FktvrmyzLMsV11GVbRJsPBWpZAho0
+   8XGpiOC9kdxemxf6zz1YLRifM6wXQpHXNm72lrWXpHbLOyd/6pwgn7Qaq
+   eqwhBt/j4VYY8xmkotJWcK2X1hcwPBwQ6v/Jq5tbwaIBpflsPVH59JqIn
+   Vh/mwxf/pbwvzEcsMBDpY0TT55hWyVjW+wTS2Gngurde8XnrD11CI4jDG
+   diTJ9TZtl9pjGg57tbDfGQCqkhGM/aTaFrp3Wrmzr/4zGEsbsBWJY6k/N
+   HezcTvm8qU8vuzt2kOnecF8yd2O/getWdKPlE6SxJHbLWnDkmE4f/OCfh
+   g==;
+X-CSE-ConnectionGUID: jJJmeD8XRhGhUk1w87QgMQ==
+X-CSE-MsgGUID: /YkrHp1fTmqn0cqGEOtKuw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="94322747"
+X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
+   d="scan'208";a="94322747"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2026 23:52:42 -0700
+X-CSE-ConnectionGUID: ljiDnSQ9TuKBoxJEyKJ3Iw==
+X-CSE-MsgGUID: 0pnfVr1AR7mw7a/zjgqOXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
+   d="scan'208";a="254417836"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2026 23:52:39 -0700
+Date: Tue, 23 Jun 2026 09:52:36 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chris Morgan <macromorgan@hotmail.com>
+Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
+	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
+	jic23@kernel.org, jean-baptiste.maneyrol@tdk.com,
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+	heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org,
+	robh@kernel.org
+Subject: Re: [PATCH V13 8/9] iio: imu: inv_icm42607: Add Gyroscope to icm42607
+Message-ID: <ajotNPhg8fR3tLZp@ashevche-desk.local>
+References: <20260615172554.160910-1-macroalpha82@gmail.com>
+ <20260615172554.160910-9-macroalpha82@gmail.com>
+ <ajEhr0JIQwzRgoZa@ashevche-desk.local>
+ <PH0PR19MB997338E86152468CE26F60953FA5E42@PH0PR19MB997338.namprd19.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3146; i=wbg@kernel.org; h=from:subject; bh=fSlXsmtduOo632A404s2f1KOxF4Sgvn19HBOe3QMr/k=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFlW0hFHb0wK08pJOSc+e+qTs0p71XuPi6facn1zCYv4b h50fZpNRykLgxgXg6yYIkuv+dm7Dy6pavx4MX8bzBxWJpAhDFycAjAR/juMDDPvzFboWvZfWNa7 6cln1h+rbKQSXwvubBC2vBzJHfuhkovhn8ZR4Zhf83fOlr72yWs227rCmPwlLy9evPh40cXIRy7 S51kB
-X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR19MB997338E86152468CE26F60953FA5E42@PH0PR19MB997338.namprd19.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jun 22, 2026 at 10:51:40PM +0200, Wadim Mueller wrote:
-> On Wed, 17 Jun 2026 16:49:25 +0900
-> William Breathitt Gray <wbg@kernel.org> wrote:
-> 
-> Hi William,
-> 
-> thanks for the review. Three things before I spin v6.
-> 
-> > One change I consider is whether to make Signal B optional. [...]
-> > I wonder whether this is substantially different enough from
-> > simply using the interrupt-cnt module on the respective IRQ?
-> > I'm CCing Oleksij and the Pengutronix team in case they wish to
-> > comment.
-> 
-> I want to keep signal-b mandatory in v6 (if no concerns from Oleksij). The single-line case is
-> already covered by interrupt-cnt.
+On Wed, Jun 17, 2026 at 04:10:49PM -0500, Chris Morgan wrote:
+> On Tue, Jun 16, 2026 at 01:13:03PM +0300, Andy Shevchenko wrote:
+> > On Mon, Jun 15, 2026 at 12:25:51PM -0500, Chris Morgan wrote:
 
-All right, let's keep it required for v6. If for some reason we
-determine it should be optional, we can address that after v6.
+...
 
-> > In such a configuration, we would have two Counts: Count 1 [...]
-> > Count 2 supports only increase/decrease modes with a Synapse for
-> > Signal B.
+> > Can be some of the code deduplicated between gyro and accel?
 > 
-> Just to confirm, plan for v6 is:
-> 
->   Count 0 "AB Count": A + B + optional index0, all 8 functions
->   Count 1 "B Count":  B + optional index1, increase/decrease only
-> 
-> One counter_ops, dispatch on count->id. Per-count state in
-> struct gpio_counter_count_priv (value, ceiling, preset, preset_enabled,
-> enabled, function, direction), held in priv->count_priv[2] as you
-> suggested. prev_a/prev_b stay on priv (they describe the wire, not
-> the count).
+> Probably a fair amount, but the deduplication will likely need to be
+> undone somewhat if we get buffer, WoM or apex support added back
+> (I don't have any devices with such functionality, so if anyone will
+> do it then it won't be me). I can refactor more if you want, or we
+> can keep it split like this to make it easy if someone else wants to
+> tackle the buffers/IRQs stuff later? Your call.
 
-Yes, that is correct. However, I would not name the Counts "AB Count"
-and "B Count" -- it's possible that relationship will change in the
-future if we add support for more function modes to Count 2. Naming them
-"Count 1" and "Count 2" is adequate enough because the Signal
-relationship is apparent via the Synapses.
+Just asking. Jonathan, David, Nuno, what's your opinion on this?
+Personal opinion is to avoid solving the issues that do not exist.
+If you are not committing into those features, let's not prepare
+driver for them right now.
 
-> For the second Index in DT I would just let index-gpios take 1..2
-> entries (first = count0, second = count1), no new property. Ok for
-> you and Conor?
+-- 
+With Best Regards,
+Andy Shevchenko
 
-That seems okay to me. I'm generally indifferent to the DT so I'll leave
-it up to what you and Conor decide.
 
-> > Hmm, is it a problem that priv->enabled is changed to a false state
-> > before the IRQs are actually disabled? Do any issues arise if an IRQ
-> > is handled during that brief period of time?
-> 
-> I guess it is a race. In v6 I will reorder:
-> 
->   enable=1: enable_irq();  lock; enabled = true;  unlock;
->   enable=0: lock; enabled = false; unlock;  disable_irq();
-> 
-> Plus a mutex around enable_write so two writers can not interleave
-> (disable_irq() can not run under the spinlock).
-
-I think the race conditions still exist despite your reorder: after
-enable_irq() an interrupt could fire before you take the lock to set
-priv->enabled to true; similarly, after setting priv->enabled to false
-and unlocking, an interrupt could fire before you call disable_irq().
-
-We need some atomic way to update priv->enabled and enable/disable the
-IRQ at the same time, but I'm not sure how to accomplish that off the
-top of my head. I don't want to delay your v6, and I'm not even sure
-this race is actually a problem in practice, so let's discuss this again
-after your v6 submission.
-
-William Breathitt Gray
