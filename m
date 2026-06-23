@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E5333D1CA8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 234433D1705;
 	Tue, 23 Jun 2026 10:56:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782212160; cv=none; b=I9mfmc4WQmJxj72SDk/NjRms6kS/3CD9BOerbpy8+5JanVfrlenYkWg7g/wx2ixr0mNwaCqSHrMj2HdBv/cJVvWCCBw0R/oypkhh+l04yb6wFPTY4TMcUFCrtfmTKOX3VfjXv3BjqwvNn6LfxIyk5B9kIECJgipdZE+0IDhVdXw=
+	t=1782212160; cv=none; b=dzEcWQ/hdWrjuC54OT1jFTDIwFgTzEKTk8s1YDJ4euBNzd56L7SOYYziJ2IL9ue/VZsCUQW9YwcgYRHf2VPZWkHie8fgr+Fz8Vp/Q2OZRC2ge7JD3ltbiZ5bzTk6hzpgOLuCbnlM93iRpAt1vnUX5mdrRyTjmeQ/ntY426k/9lg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782212160; c=relaxed/simple;
-	bh=hL7Re/t/yiLNcH5PjRNoJluhv+GCRcTVUyTSOP5c3wU=;
+	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XZULoFpvxjyt1HFRT4EfXT0pzExINyhz1BRHKp1fW8erqLuyh9XLSKdAGMTALT0L9Sle9pofe18+ranWDFU+5nKkCM57TSYB8V/4PO+lSc7IV05nZWEQynUWeyZSuZjJpoXM3NQ30HJh2MJXcGHMK2QyzfE/mSNjuYPAbymU4k4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cgVaEIGR; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Ols5CiyLQz8gB6uCUhfkX+f9IaBE68vAdC3BfED3Ha1PbVVeT6EztyOhTgEhpzz3IRtJMXRIte7v4vRaKvJjateZ1H0Sz07ewncoZeJDhwos/5FcziHHm9bbBjw40ahzpsXm2hKaaz8EUHP8yny3X/I5/oHzza1CQlM4iHrjcZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oTyOj1vz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cgVaEIGR"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BAB36C2BCC9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oTyOj1vz"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E63F4C4AF17;
 	Tue, 23 Jun 2026 10:55:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1782212159;
-	bh=hL7Re/t/yiLNcH5PjRNoJluhv+GCRcTVUyTSOP5c3wU=;
+	s=k20201202; t=1782212160;
+	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=cgVaEIGR389C9/RUNrd1oO98tsW4imXXabrJBMTkLe8r1VSSzfhtZ/5qdL4aPJu3L
-	 HMuij6orNI2DTMnmyCB8N14fwvBdyEOI1bRxRmIYKoY0bRBIRTPUKbJIETy6vUXMAU
-	 XLU7DpS5Ci/3F0W3BRPe87GeSnhvUY/hug+41fuvK56m6rIIdSUtkBT2bviN9rbEIH
-	 6yWC4tBvPxKCyihKZ3JbeYsayeLeFJnr0lV0B7uxiCS9OTFX/2scl8K2uWzIUuvqhy
-	 6HJSg8tLSr8sGre5j/1mYqPQn3SEqRizKPfHawWszy5olCRmB0K0Dc4SozelHrczin
-	 f/8iOdP+mnKpg==
+	b=oTyOj1vz0MB/wLwxgFypdHQgy/oAe6KEraxnRNLJYbHzP78qNOEqnxFkcrDgXIBHe
+	 6LZdQ0BwoEmqsTAKEwqc1xcsoezmAUeTqyJR5zJ8cvNGrA+Huoe/mbS/y3fp+JYxKK
+	 MGjdiMpwQj4oW5+mhQXvQi7lXu2aRWSr2iV3ERpnWj4m6SoYcSBYHTAviL8O7Y0MP4
+	 gO3aFE/xUqsDyqa305pCvZPUuzBYhyLeaj48iWZe3Bi5QsII4LHIgiuX9nsgvJ5rHa
+	 MxDgMPiv2CN8i6a9dMUwC45nzC6J9TGulQ9CiwfShJJsrfi2/j4wErAlmHazX8u2cI
+	 nmL8KMc+bYugg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BDBCDB47F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE328CDB470;
 	Tue, 23 Jun 2026 10:55:59 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 23 Jun 2026 11:55:43 +0100
-Subject: [PATCH v4 03/12] dt-bindings: iio: dac: ad5686: add
- reset/ldac/gain support
+Date: Tue, 23 Jun 2026 11:55:46 +0100
+Subject: [PATCH v4 06/12] iio: dac: ad5686: consume optional reset signal
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260623-ad5686-new-features-v4-3-28962a57db0f@analog.com>
+Message-Id: <20260623-ad5686-new-features-v4-6-28962a57db0f@analog.com>
 References: <20260623-ad5686-new-features-v4-0-28962a57db0f@analog.com>
 In-Reply-To: <20260623-ad5686-new-features-v4-0-28962a57db0f@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -53,14 +52,13 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782212158; l=2649;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782212158; l=1786;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=tqSguVcv0F+ri4HoEKx7VIIb7gTICL++YlTges0Sc4s=;
- b=OBYuG73TFLFunnmvJqy7wCJHlF3zHlxn+91h7/5P4xBJJWim9yT7FpoMgGXyZD9Hl4Y5WwHXg
- u2oMG8X12PrDJbFkm1T5icju3b+nzXgC9tI8iYolcP4cwqDI1HqRAbq
+ bh=L5icfA5WYm8ov/3pCusG7IPcFnWQG1nvPrm0z48/efM=;
+ b=MVMCdyoQpw/jroXdTgtf58cOTj/B2vHiSakbCztsqc8uOdTuGHPMwhZQFvF/wK2u6raai4XJJ
+ b7h1meBrJnjAyTmqsNB9Rshyz0BUDZ1od2EhIjJ3PAmYlofG7QR/nuj
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,86 +68,59 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add GPIO property for RESET, LDAC and GAIN pin. RESET is active-low, LDAC
-is used to load DAC channels with values from input registers and GAIN
-can double the voltage in output channels. The gain-gpios property is
-not available to all supported parts. The adi,range-double property
-indicates that GAIN pin is hardwired to high in case gain-gpios is not
-set, otherwise it sets the initial value for the gain setting.
+Add RESET pin GPIO support through an optional reset control, which is
+local to the probe function. A reset pulse is manually generated after
+the device is powered up.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml    | 38 ++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ drivers/iio/dac/ad5686.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-index 713f535bb33a..d781baca6a6c 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-@@ -35,17 +35,53 @@ properties:
-   vcc-supply:
-     description: If not supplied the internal reference is used.
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index e2ebabca6887..8ad8931a3d7f 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -15,6 +15,7 @@
+ #include <linux/kstrtox.h>
+ #include <linux/module.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/reset.h>
+ #include <linux/sysfs.h>
+ #include <linux/wordpart.h>
  
-+  reset-gpios:
-+    description: Active-low RESET pin to reset the device.
-+    maxItems: 1
-+
-+  ldac-gpios:
-+    description:
-+      Active-low LDAC pin used to asynchronously update the DAC channels.
-+    maxItems: 1
-+
-+  gain-gpios:
-+    description:
-+      GAIN pin that sets a multiplier for the DAC output voltage. When high,
-+      the DAC output voltage is multiplied by 2, otherwise it is unchanged.
-+    maxItems: 1
-+
-+  adi,range-double:
-+    description:
-+      Sets the initial voltage output range from 0 to 2xVREF. On devices that
-+      have a GAIN pin and no gain-gpios property is set, this indicates the pin
-+      is hardwired high.
-+    type: boolean
-+
- required:
-   - compatible
-   - reg
+@@ -472,6 +473,7 @@ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+ 		 const char *name, const struct ad5686_bus_ops *ops)
+ {
++	struct reset_control *rstc;
+ 	struct ad5686_state *st;
+ 	struct iio_dev *indio_dev;
+ 	int ret, i;
+@@ -486,6 +488,11 @@ int ad5686_probe(struct device *dev,
+ 	st->ops = ops;
+ 	st->chip_info = chip_info;
  
- allOf:
-   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad5310r
-+              - adi,ad5681r
-+              - adi,ad5682r
-+              - adi,ad5683
-+              - adi,ad5683r
-+    then:
-+      properties:
-+        gain-gpios: false
++	rstc = devm_reset_control_get_optional_exclusive(dev, NULL);
++	if (IS_ERR(rstc))
++		return dev_err_probe(dev, PTR_ERR(rstc),
++				     "Failed to get reset control\n");
++
+ 	ret = devm_regulator_get_enable(dev, "vdd");
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
+@@ -509,6 +516,11 @@ int ad5686_probe(struct device *dev,
+ 	/* 4.5us power-up time: Datasheet Table 4: Timing Characteristics */
+ 	fsleep(5);
  
- unevaluatedProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/gpio/gpio.h>
-     spi {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -53,6 +89,8 @@ examples:
-             reg = <0>;
-             compatible = "adi,ad5310r";
-             vcc-supply = <&dac_vref0>;
-+            reset-gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
-+            ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
-         };
-     };
- ...
++	/* 1us >> 30ns reset pulse activation time: Datasheet Table 4 */
++	reset_control_assert(rstc);
++	fsleep(1);
++	reset_control_deassert(rstc);
++
+ 	/* Initialize masks to all ones */
+ 	st->pwr_down_mask = ~0;
+ 	st->pwr_down_mode = ~0;
 
 -- 
 2.43.0
