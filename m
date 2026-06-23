@@ -1,41 +1,41 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58BA83043B2;
-	Tue, 23 Jun 2026 16:08:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED55C30DD11;
+	Tue, 23 Jun 2026 16:08:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782230914; cv=none; b=KTLoO/dUaLKbJAP1dioOaZ9iAKXdXosUa8xpiROOXvc4keYoXiVBtHcEmx9YXryMP1QkaybCTbMkUpVvcc0KoQVxBgu2ZB2aSmV280vXJ5sQXcIDdYERx7OfJepGPFp570Fl+w5lYmbCjKhoxt4zeVcy2txFnFJa/Go3sUlNOns=
+	t=1782230916; cv=none; b=teqEcB5bd+lKoSPNKuET7nZpQiSVpN8wUYcOw9KDZaGozc7Pxp01gTMh9lAo2oI8u0U/V3E98vzoslluJ1iA4hGabT622L+d2TXmVrYBgR3Xth0b3lOWTYDROPbDTC/OJQv9lBH7F2hqQ8+Y6kA6E1FpjlHMKTuDtyGyuTu8U8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782230914; c=relaxed/simple;
-	bh=/d16Sieqk8yeRcOYDHX46mX63dJaYsjHBRnL9CwK+KY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ACPRxrgWh6gNeih0qvdH/URKagNI1zG3fN97/6/yMza0v2NO78TncDlDUJAcIPVkflbGPuT4hdCdIpinjup9JlOFKaLZPdZZp2fZTgSuLPZYsG86dIXx3Hi+LsQobvE0Vp9v1GXBvBC2Hl1Rpw/lAxKe62u7UDxHT8/vRGtcUu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b=dv+tVRbH; arc=none smtp.client-ip=212.227.15.15
+	s=arc-20240116; t=1782230916; c=relaxed/simple;
+	bh=RxvvIrWn/6wkhvP3V9MM9eHBVpFn2Xq4lJWH/BRzVFw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=LMRNsc39P1toIMFDA3/IidRBiPJy9R/+jS9mLKwq5xzP1vp5KS9HnjRT55GGXfchJ0vevULuGuwX2kGy/Tf/ASVd1HVgXT8oB/xUG2eW8Saxr00EhQBhN3ES2G0OPLIaNdqoKbX8cTgI4t4OsEMwqrLNbgK+ilfPndOuIK6GYgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b=geZLEkuw; arc=none smtp.client-ip=212.227.15.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b="dv+tVRbH"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b="geZLEkuw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1782230907; x=1782835707; i=lukas.metz@gmx.net;
-	bh=YQaX3VHKdD3WPqIuFdUCd3GK0GLWKKG+sZlaadadLXE=;
-	h=X-UI-Sender-Class:From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	s=s31663417; t=1782230906; x=1782835706; i=lukas.metz@gmx.net;
+	bh=7SjlYb0vXIyExb+MyafZT01AotT4yQ0/grBMUUp8uek=;
+	h=X-UI-Sender-Class:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:To:Cc:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=dv+tVRbHOUoSs8vJLMecQaszXxspcV6SgUS113qoHZpDoZadom6xoGLupGhY1TWr
-	 svwquB2riyD0tMO6QfqV6tuLiOtbGz7Pg8D2erJ1pmNZQmIC48sAgFKhZ7RXZdtCE
-	 Eyq2pjot+HfaU7A6iPuMd4SWbyaN5N3nHllQSNNLoROdWn6QzTzQfB6IBMIg0BmWl
-	 OuJ2JhZjatoZDaWymg8z6T1zYRVGoIW9zJ/3OOXW27tzRdyNEnB70vWrk6yo2etxP
-	 t2Kck1gyEUXM1Gvtfvf3MIMUWGrFfmvPqjidLGoaCuDJaWItqySdhauVpvJxO3XWK
-	 O9sL47u+U1MEkcYGkg==
+	b=geZLEkuw5szAgJp3kVTKjBKSm5+F1KWrgsVgrUsmOHYXkzlOtE4k3UdldTYKHtHp
+	 Joy1elq1jrKPVlicIFp1AN1pow4oD1CtAKOJzsisZAAeLipH/i14lW/u0K+CYJBR1
+	 PRfvF0Bw6SuygakS+9PZoh6Wf6cH5y3tHB2LcLOnSDe+k0W/bGWQIAXCmmJdCVgyp
+	 +lPhQfWBZ3JVZUAR3zb0/MeKblyzqWFTy33VKCNIpguON3nT/o0f5neVm+k3LEhoK
+	 25EKvOP9OGc/rf1Mj2qvXAaj96aIb4S4sKsfDQZtn/b6Jx5UljBBsGk77HAb0Trif
+	 +NPsTewNUJXVoYXOJQ==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from client.hidden.invalid by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MEUzA-1wM55c3dVq-00641c; Tue, 23
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MeCtZ-1xBw7h0w6h-00lDLd; Tue, 23
  Jun 2026 18:08:26 +0200
 From: Lukas Metz <lukas.metz@gmx.net>
-Date: Tue, 23 Jun 2026 18:07:28 +0200
-Subject: [PATCH 2/2] dt-bindings: iio: dac: Add DAC8163
+Subject: [PATCH 0/2] Add driver for DAC8163:
+Date: Tue, 23 Jun 2026 18:07:26 +0200
+Message-Id: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -44,9 +44,10 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
-References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
-In-Reply-To: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
+X-B4-Tracking: v=1; b=H4sIAD6vOmoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDE0Nj3ZTEZAtDM2Pd8vyibF0jQ2OLRHNz0yRTQ1MloJaCotS0zAqwcdG
+ xtbUALOslF14AAAA=
+X-Change-ID: 20260413-dac8163-work-2138a775b515
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -56,205 +57,139 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, Lukas Metz <lukas.metz@gmx.net>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782230905; l=2942;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782230905; l=1812;
  i=lukas.metz@gmx.net; s=20260616; h=from:subject:message-id;
- bh=I4z3yDFWiBkP4lYrlkuPuIyQvzLuax7/Rw3MLySZ/6k=;
- b=oAq/Mn2ajNEMtoaBZARgUYWJRZlytAKaPyiT0HQ9WTN/U9+wwzG00NmOKsj1//jVjlZwyKLV5
- rgncBX1UQFvC9Stl7UdkqvxG4lfbFndSscTb9sUI88HLPslkduHDdNS
+ bh=GTpGtMFf4FBmnGqbKP2PO7dmPxfA4Gcne6r7lNx7pDs=;
+ b=bGjWVGebi+NsWneYwCkc1QN73rcaQ7LkmupiNvfMomNDk6Hm2yWaB/lSPktS6cQAiS7vArLmj
+ G0rWSMuZxiVDx6ijxVTbR2oOvcISLEpoi7S2LCyWX2Zvm1weJygkG+6
 X-Developer-Key: i=lukas.metz@gmx.net; a=ed25519;
  pk=ljkIqYPVyHd9CYN4/koqGKt7Mym5FTTB+ZzvvlfD4yM=
-X-Provags-ID: V03:K1:/uscYcn37XUDxEaqUG7/S0YtZ46q9bGvWZCZ+SkWHaGACQzqR2j
- 1bSk+VfYqtCxVjhz+jLVSyz/u/qCgH9adcgx8mK+YI5JnU5udDWGdRexNBIUO72cTI/Adlw
- 8uENZA08bI4yWL08rMffRc89bfYII0lpqBsWKpQwQPxmLuE+2rOA9vnHtsb3iLKBzSxNqXh
- c/Q9iQ59xuJ1vLVJcuQVQ==
+X-Provags-ID: V03:K1:5FulpitLyYkxqKIFL6KTKXFtf8j1JvJxplW5ZbM8qxiYsEwYKW9
+ JLOtIYlqWEMVv1d7d420geBi64fJpz/lveLDCQeMhcsJSfLCD5rEGZlqqgoFQ8SCHmkelPF
+ 9jlb/N9Aby0kTed+gBq7LdHgaG3wZVy0KyJI0w7RmoAdqNofsa8ZA4UwpwRuZ030hMaqFWi
+ Npy/6aWBOCzmO6Cl1gBdQ==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:eRrasztFB/c=;RTKBtdkFRvPo0lnMcNpYrgZ45jE
- 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
- bvOnZw==
+UI-OutboundReport: notjunk:1;M01:P0:UPIspjnz6NQ=;iKiWJ5k/j+Tw4ssp0SxC7jPquJf
+ 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
 
-Add device tree binding for the Texas Instruments DAC8163 family
-including the DAC7562, DAC7563, DAC8162, DAC8163, DAC8562 and DAC8563.
+This series adds an IIO driver for the Texas Instruments DAC7562, DAC7563,
+DAC8162, DAC8163, DAC8562, and DAC8563 dual-channel voltage-output DACs.
+
+These devices are pin-compatible 12-, 14-, and 16-bit variants sharing the
+same 24-bit SPI command interface. Each device provides two independently
+addressable output channels and includes a 2.5 V, 4 ppm/=C2=B0C internal
+reference that can be enabled via device tree, or an external reference
+supplied through a regulator. The register and command structure differs
+from already existing drivers which makes adding a new driver a
+reasonable choice in my opinion.
+
+The driver supports:
+ - All six device variants via a shared chip info table
+ - DAC updates in synchronous mode
+ - Configurable internal or external voltage reference
+ - Optional LDAC GPIO which has to be asserted permanently when using
+   synchronous updates.
+ - IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_SCALE attributes per channel
+
+Datasheet (DAC8163):
+  https://www.ti.com/lit/gpn/dac8163
+
+The driver was tested with a DAC8163 on a custom STM32MP157F board with
+external reference enabled.
 
 Signed-off-by: Lukas Metz <lukas.metz@gmx.net>
 =2D--
- .../devicetree/bindings/iio/dac/ti,dac8163.yaml    | 75 +++++++++++++++++=
+Lukas Metz (2):
+      iio: dac: dac8163: Add driver for DAC8163
+      dt-bindings: iio: dac: Add DAC8163
+
+ .../devicetree/bindings/iio/dac/ti,dac8163.yaml    |  75 +++++
+ MAINTAINERS                                        |   7 +
+ drivers/iio/dac/Kconfig                            |  10 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ti-dac8163.c                       | 339 ++++++++++++++++=
 +++++
- MAINTAINERS                                        |  1 +
- 2 files changed, 76 insertions(+)
+ 5 files changed, 432 insertions(+)
+=2D--
+base-commit: 76b6720279964612111352ca5d09f5bd61e41ce4
+change-id: 20260413-dac8163-work-2138a775b515
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml b/D=
-ocumentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
-new file mode 100644
-index 000000000000..bb4bad389323
-=2D-- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
-@@ -0,0 +1,75 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/ti,dac8163.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments DAC8163 family of DACs
-+
-+description:
-+  The DAC756x, DAC816x, and DAC856x devices are low-power, voltage-output=
-,
-+  dual-channel, 12-, 14-, and 16-bit digital-to-analog converters (DACs),
-+  respectively. These devices include a 2.5-V, 4-ppm/=C2=B0C internal
-+  reference, giving a full-scale output voltage range of 2.5 V or 5 V.
-+
-+maintainers:
-+  - Lukas Metz <lukas.metz@gmx.net>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,dac7562
-+      - ti,dac7563
-+      - ti,dac8162
-+      - ti,dac8163
-+      - ti,dac8562
-+      - ti,dac8563
-+
-+  reg:
-+    maxItems: 1
-+
-+  ti,loaddacs-gpios:
-+    description:
-+      Pin needs to be asserted permanently when updating the DAC synchron=
-ously.
-+    maxItems: 1
-+
-+  vref-supply:
-+    description:
-+      Reference voltage for scaling if an external reference is used.
-+
-+  ti,internal-ref:
-+    type: boolean
-+    description:
-+      Flag if the internal reference is used (external otherwise).
-+
-+required:
-+  - compatible
-+  - reg
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      not:
-+        required:
-+          - ti,internal-ref
-+    then:
-+      required:
-+        - vref-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells =3D <1>;
-+        #size-cells =3D <0>;
-+
-+        dac@1 {
-+            compatible =3D "ti,dac8163";
-+            reg =3D <0x1>; /* CS1 */
-+            ti,loaddacs-gpios =3D <&gpiog 8 GPIO_ACTIVE_HIGH>;
-+            ti,internal-ref; /* internal reference used*/
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e82cc28e1bc3..5512f5eaab44 100644
-=2D-- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -26398,6 +26398,7 @@ TI DAC8163 DAC DRIVER
- M:	Lukas Metz <lukas.metz@gmx.net>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
- F:	drivers/iio/dac/ti-dac8163.c
-=20
- TI DATA TRANSFORM AND HASHING ENGINE (DTHE) V2 CRYPTO DRIVER
-
-=2D-=20
-2.43.0
+Best regards,
+=2D- =20
+Lukas <lukas.metz@gmx.net>
 
