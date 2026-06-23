@@ -1,60 +1,60 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CC49306764
-	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 15:56:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06733090C2
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 15:56:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782230163; cv=none; b=QhDArZayMrkZkkxrwRmTEFEOQdCeUMwTctzlowZzZqhneOYSsK0s8WfFdSQ22QGveMpncieQ6vk/vdqnY+4QGt49VwYfJ89mtEAaj6GkHTmAlzaY+FezTeRSwKOOVeEPtpcowUt8H/CbhRNgPMeCowEmOb4xwMvQfnZFPQLaWwk=
+	t=1782230165; cv=none; b=BqeLIw0YY1foHKdEnh/WcDiZltkbFjLSCzmfFoPDrWaqcdUqpKpqO8xn+0VIKzv7xrUSq+n3IopZ/LswXvkHXviDFpxjjYlJ0KPO358EFL6Srd/zTqSzI7qkBHZKLv4kyXapOPzR83byGFfC9O6x8JGJMJzBfoZ+PxsyocjgWJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782230163; c=relaxed/simple;
-	bh=T0SiTGRObhjsTPu+h1FAf6ljLkbOXP1HNR4jj07g41o=;
+	s=arc-20240116; t=1782230165; c=relaxed/simple;
+	bh=CbuV97VjT/KMon1hV6OEo+IcDzROYPl4T+hyY6k0nlM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HaKDB4uacEHQGdbI2cDVFwlpKMgam+lIpi489921v2S14Ayx5juZsp8FcT4n03CyvgoQOibAXI2mbl5X02pTgmyzFrcHmOnMmCm9RyMQaAuMYhKHr43oVH22DXh/oTpFsJL3lql0WBovId2SyoEo/JMewR93vEa6LZYPOql3uyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pl6QRMMb; arc=none smtp.client-ip=209.85.167.50
+	 MIME-Version; b=HQqIiyRLpzgA0z3H02SMRQwNyFHtoOqVyf41/0ol7yESHXW7USn+lPa4cD3X0Z3vCvEeeg81JtSZUUj5mxFYR1NS4sMtt704suTheEnyhhrNBphcy+uYtdNz6CGRfKqgeF81O6b5FZo05AN4FmnP3nMKdr8cYHxLQANsCbZkf98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fCqM29e4; arc=none smtp.client-ip=209.85.167.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pl6QRMMb"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5ad4c229861so4668232e87.2
-        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 08:56:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fCqM29e4"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5ad4d262fc1so4686127e87.3
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 08:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782230160; x=1782834960; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782230161; x=1782834961; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=55KrpsLVrgFVm6uOkBGmtvpWY3NBouDgLEEMArVVBP4=;
-        b=Pl6QRMMbajWc5rT9fyDk6HNtIoimUjVleHOLKMB5gs3yVIszFcWgQNSf1kgKoG6eXr
-         bErZkIMIiStMvd/whBOrCeO1VMqj3+sW06gh5KVSTMzU8LfTkgVNp3HNe8Zl033njdFC
-         QAJ5gGGZzG6/7ueqJCPStegxuPq7aOefGYOZAbZi8uyzFu8nyTPbAwxkmZ1tNNYQQC/+
-         XzxDYaYWaOuDvBlNph6cSedtbnxmmqNe+po7bRLJstzUtWeYHUgiOj1r5NHA4mR+JHIB
-         aP9FBiHcczVghcsbV1/2VFzL7iqm26p98QPCx4quLvgzPELVTZihbcQ2M92vWY80PiS8
-         qWmQ==
+        bh=QMN+DlPVMO7XwEUIB8KB3Q5KPG4C/k7irSNWdefCI4g=;
+        b=fCqM29e4FdND0ZlG+m4rRbr5bbJiDvJI3meB9zXDSwJQfi0Gue5R5IJ3hM+TY2mSJJ
+         ywYaOpRpR41IYnANzEV0pWHZCQXfFY6nqUqJlp0iVBOiIP3BD7XT/3/glMI2TkUJ/cRj
+         sdweupoYS9vbqqua+roM9YUshkRzsI8/WRulJAmWdK7rAn8sO1SMmxBdvWgLnlosSQkc
+         v3clBTX3ogAh3Njz6zPiezZXhgKnfTiELDe1h+TRzGBJZ8RGi9lxJvf86/w6MU3RBIy4
+         YMgGiniprXTo3rqO2fbeG07QkUEMPiVf8ocvw/plA6xm3XLe5B5J7pABVp05URJUQWN/
+         sbWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782230160; x=1782834960;
+        d=1e100.net; s=20251104; t=1782230161; x=1782834961;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=55KrpsLVrgFVm6uOkBGmtvpWY3NBouDgLEEMArVVBP4=;
-        b=GZRudOrXGyaFYHBewTKQIh3PG5QmBWc5FRgsnrguX4Pu9oB/WrzZwGdyoCXZoyjUop
-         l3jWkhIUu1tTTxiVVhLzsjB7cumfwy9eBtn8IUSqe5YCcdCfQCWhLFxf8mKESe3ZqqK7
-         MbJoyMlaoEjVQrGgNWWRCTZko18Tdy0v3QKJ1N6UKl5Y6JH6c1KLeTlC7niF2vlnVUr+
-         oiHHQ/4o9VHYs8JukWCILmOcY3fn2toXrXOCMk69Kou7ICuwmAeLT9kgOx2e2n0xYIGI
-         0vYcCh2LdmsjuKrv/HVofx47JDFQlnCxmuDdcPX+dyBUf7LCUCCR02oA9IhuPW9RftWW
-         PhAg==
-X-Gm-Message-State: AOJu0YxRb/wS8qF1pSXsY58Zfg4l+TRy3Dz/uJzLIaiPumXOb5oULR0i
-	RmI8yC4BvjhvIik5hJm0SDc9EaBruV7y2HT/UbMXnVsuWtsu+r+fVGUvZNIiMbI/EKdxAw==
-X-Gm-Gg: AfdE7cmMMNwf2AAfx44qCxnMYrSVNvf7FrpGCjI8hpFyAyD10zvx5iIx70UM1S3ph4O
-	LIkivyuMuPQXuSCXwwdXZHW17iza1TV8py3M5SCc8RlHcAl8xRoxI9K8yGdzHRN+hez55gg9q+A
-	xUwX8AORsdyu/H+wl9YP5UYc0zRa74bODrcdHmskTir8dcX3ibVLUY6xRsHiRtGIpjzbczhntiE
-	FoQveGYGZJuqluJDQf67MSLpVdPtkIyvGtgIPRQlT44nUfXEfL3c+VNjTGY9j+vxX98/HBPOYvJ
-	xdEZyKFpYELJDQhb4CVsI+Clp8G7PjLOvQ0DdCF7LvFUNLXNVRNOghQtaioXRMsr+J5nTCQ6FfV
-	xwHtwlGXd46seBqUVx6IZWxWtcCzD05E7vtWYJJ8T1dlL8oI2cnn08OZgJdoFzfhIo8eXZDtGcX
-	Y2P3wD8pXjEwuWYuDah1HmGdi7jPh6RpAPi8MNLxzg0I7o5w==
-X-Received: by 2002:a05:6512:6c9:b0:5aa:71de:74ca with SMTP id 2adb3069b0e04-5ae3511d20dmr877415e87.28.1782230159378;
-        Tue, 23 Jun 2026 08:55:59 -0700 (PDT)
+        bh=QMN+DlPVMO7XwEUIB8KB3Q5KPG4C/k7irSNWdefCI4g=;
+        b=gPCiuKuFc37q6+XMODz6b+iz0I/1mRJHYY+xTmU7jhsoxNF32/AEYBRgwsjPqxChqH
+         XKS5Wqowa/bZANsl4H7bYoeuhGPyI8s3CNH8gf6nc3VyFFeC9eiO65z529sVfdn3GIGr
+         SjjrWyTyw5n82dCYMoaW4OT75p/AaF0d+M4+ByXXgBQcagi3agjbbUay0k+aZXZ0zv7f
+         TvhgcuDMv0oe8NifIKseL+m/wJdDRc62xmApsR+s/H47Kk0ybiaxdc2nx72IAjdMdPTo
+         BXpGzBGpGKakqC8zUX6EpXbFbNesmubQrGP9psJW4t7FtucaFMdxY2l/LqE7g3L1SiGC
+         SA7Q==
+X-Gm-Message-State: AOJu0YyPb1ChJo7dWumZ33YERCOHninx2TjX6hxp/2VRWYVK5iAJhJfC
+	gbWvtajGSjxfJnQj0eM23x0e82KIx7A7mizONNT8vksUCRZBy9e5DqOBxLu7lH7wwbeI3A==
+X-Gm-Gg: AfdE7cnIhkMlgtH80T/juPa737Igp5c/4p1meVEE5rSuI08XAmPlzjRZSfD8FyoN9b6
+	XwGZAwI3qz/4PMIfMtbTHYYtn/gd+nM3L7BPaWDcDqoCn31xpjmgRWaqPhoGohKsewiam4AE+k9
+	K8TjCUvHPDfWOEj9rul5AOWvXS3kqE4xl6VlfqV98Uj3MP6GtHAw5Pbu/Uqqj0pxinSrVfZIs3c
+	Yp8aLrFuVfIsHW3ahpJOr9ett0yzVKdj63wIxFXrTY8TzE9u9RnnXZTuqjbl6HmtlRUEe6C+8C4
+	Hef4peZsaamzk966wn0PnQ1drYmPw1mFzOlN2T0mhgTbKsD2LoGm7dzKn5BbNix2sR2HqRyGVY+
+	vyJdSvIDGyye6rYJEyi+O/nm1V2gQjJeuyscax9l/r7ZURQ5rpdF6MmOJnC3yJK4LnjMbv8IgF6
+	PtnftUMs4ZTwDvPY3ujH1aZiik4AoWlYI7+ifECPDV602ZpQ==
+X-Received: by 2002:a05:6512:2446:b0:5aa:100a:8315 with SMTP id 2adb3069b0e04-5ad5be78be9mr4935223e87.45.1782230160859;
+        Tue, 23 Jun 2026 08:56:00 -0700 (PDT)
 Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad6957a6a2sm908946e87.46.2026.06.23.08.55.57
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad6957a6a2sm908946e87.46.2026.06.23.08.55.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 23 Jun 2026 08:55:59 -0700 (PDT)
 From: Md Shofiqul Islam <shofiqtest@gmail.com>
@@ -68,12 +68,13 @@ Cc: jic23@kernel.org,
 	devicetree@vger.kernel.org,
 	joshua.crofts1@gmail.com,
 	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v2 0/3] iio: health: add MAX86150 ECG and PPG biosensor driver
-Date: Tue, 23 Jun 2026 18:55:53 +0300
-Message-ID: <20260623155556.13701-1-shofiqtest@gmail.com>
+Subject: [PATCH v2 1/3] dt-bindings: iio: health: add maxim,max86150
+Date: Tue, 23 Jun 2026 18:55:54 +0300
+Message-ID: <20260623155556.13701-2-shofiqtest@gmail.com>
 X-Mailer: git-send-email 2.51.1
-In-Reply-To: <20260623140113.12574-1-shofiqtest@gmail.com>
+In-Reply-To: <20260623155556.13701-1-shofiqtest@gmail.com>
 References: <20260623140113.12574-1-shofiqtest@gmail.com>
+ <20260623155556.13701-1-shofiqtest@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,59 +83,90 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The MAX86150 (Maxim/Analog Devices) combines two PPG optical channels
-(Red/IR LED) and one ECG biopotential channel in a single I2C device.
-Data is produced at up to 3200 Hz and buffered in a 32-entry hardware
-FIFO with a configurable almost-full interrupt.
+Add YAML schema binding for the Maxim MAX86150 combined ECG and PPG
+biosensor.  The device communicates over I2C at up to 400 kHz and
+exposes an active-low interrupt when the 32-entry hardware FIFO
+reaches its configurable almost-full threshold.
 
-This series adds:
-  1. DT binding YAML schema for maxim,max86150
-  2. IIO driver with triggered buffer support
-  3. MAINTAINERS entry
+Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+---
+ .../bindings/iio/health/maxim,max86150.yaml   | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+ create mode 100755 Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
 
-Changes in v2 (addressing Sashiko AI review, Joshua Crofts, Krzysztof Kozlowski):
-  - Fix buffer overflow: expand scan buffer to s32 buf[6] to hold
-    3 x s32 channels + 4-byte pad + s64 timestamp (24 bytes total)
-  - Add iio_device_claim_direct() in read_raw to prevent concurrent
-    sysfs reads from corrupting FIFO pointers during buffer capture
-  - Fix FIFO-full detection: read OVF_COUNTER to distinguish a fully
-    saturated FIFO (wr_ptr == rd_ptr after wrap) from an empty one
-  - Fix active_scan_mask handling: pack only active channels at
-    consecutive positions using test_bit(idx, active_scan_mask)
-  - Remove IRQF_ONESHOT from IRQ request (not needed for edge-triggered;
-    iio_trigger_generic_data_rdy_poll is a hard-IRQ handler)
-  - Add set_trigger_state callback to enable/disable A_FULL interrupt
-    only when the IIO buffer is active, preventing the interrupt line
-    from asserting before the handler is registered
-  - Fix endianness: change scan_type.endianness from IIO_LE to IIO_CPU
-    to match native integers written directly into the buffer
-  - Add max86150_powerdown() devm action to disable interrupts and
-    assert SYS_SHDN on driver unload
-  - Add devm_regulator_get_enable() for vdd-supply and leds-supply
-    before any I2C access
-  - Add devm action for iio_trigger_put() to balance the reference
-    count increment from iio_trigger_get()
-  - Split DT binding into a separate first patch (requested by Joshua Crofts)
-  - Add MAINTAINERS entry (requested by Joshua Crofts)
-
-Known limitations (to be addressed in v3):
-  - IIO_CHAN_INFO_SCALE not yet implemented
-  - Runtime PM (SYS_CTRL SHDN bit) not yet implemented
-  - Not yet tested on physical hardware
-
-Md Shofiqul Islam (3):
-  dt-bindings: iio: health: add maxim,max86150
-  iio: health: add MAX86150 ECG and PPG biosensor driver
-  MAINTAINERS: add entry for MAX86150 IIO health driver
-
- .../bindings/iio/health/maxim,max86150.yaml   |  67 ++
- MAINTAINERS                                   |   7 +
- drivers/iio/health/Kconfig                    |  18 +
- drivers/iio/health/Makefile                   |   1 +
- drivers/iio/health/max86150.c                 | 612 ++++++++++++++++++
- 5 files changed, 705 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
- create mode 100644 drivers/iio/health/max86150.c
-
+diff --git a/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml b/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+new file mode 100755
+index 000000000000..1bf10fd1a3d2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/health/maxim,max86150.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX86150 ECG and PPG Biosensor
++
++maintainers:
++  - Md Shofiqul Islam <shofiqtest@gmail.com>
++
++description: |
++  The MAX86150 is an integrated biosensor SoC that combines:
++    - Two PPG (photoplethysmography) channels: Red LED and IR LED,
++      for heart rate and blood-oxygen saturation (SpO2) measurement.
++    - One ECG (electrocardiogram) channel for biopotential recording.
++
++  The device communicates over I2C at up to 400 kHz and raises an
++  active-low interrupt when the 32-entry hardware FIFO reaches its
++  configurable almost-full threshold.
++
++  Datasheet:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/MAX86150.pdf
++
++properties:
++  compatible:
++    const: maxim,max86150
++
++  reg:
++    maxItems: 1
++    description: I2C device address, always 0x5E.
++
++  interrupts:
++    maxItems: 1
++    description: |
++      Active-low interrupt line.  Asserted when the FIFO almost-full
++      threshold is reached or when a new PPG sample is ready.
++
++  vdd-supply:
++    description: Digital core supply, 1.71 V to 1.89 V.
++
++  leds-supply:
++    description: LED anode supply, 3.0 V to 5.5 V.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        biosensor@5e {
++            compatible = "maxim,max86150";
++            reg = <0x5e>;
++            interrupt-parent = <&gpio1>;
++            interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
++            vdd-supply = <&vdd_1v8>;
++            leds-supply = <&vdd_3v3>;
++        };
++    };
 -- 
 2.51.1
+
