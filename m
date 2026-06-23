@@ -1,128 +1,219 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719442DF15C;
-	Tue, 23 Jun 2026 09:08:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 227A73D1AAC;
+	Tue, 23 Jun 2026 09:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782205691; cv=none; b=iK7lQIgB4VM72CerAAQUbiwKqu6G6N7Hun69qBhcHHkiowDYp7UzQLqimwPhrvsmGDT7KCpJFQ4H/Ztnlv6ptq3qhazlLlvjKoqd1gq/dRFPLrR/E6U068cNvAITYhJbEtIdlAMmPRWCrbRN03UhBJxl+iyt4jyihF99NCtlM34=
+	t=1782206208; cv=none; b=Vx7jzpY5zV9TSwF3ATRPHUpY6oXkMCtHC0ztizXSePTTCFx0WJ+GwSYZxADMV5DSzw6enQjbiA3/GRcwzrvgcYU47VyL/aDPdRy7EQuk5IvocaLBm/k43W9FVNM03AbBp+x1ONZVwLYPBSED/WyacdDyzPlDI+O8MtsjubJe7iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782205691; c=relaxed/simple;
-	bh=kN4ID2xS2iFRuhGBGzQLcijKccXTmdkdsGuQkN1dDmI=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uDSAbH/HzpS3c54ZkbZu2yhSKRuK1qBWNNafNPYc1R//jDK+b5l1rlRg7sRZh9UfoXpuZFc+TnrkHMv7788R6H80/NC4i8pjJQEgqnHULtc8Rm1o+f0lDsbU2p979X3Crt0vIoPV3ByAWe5Rth+QuTdw/Mw6gh/gSjzODNVxnNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ZK4jFoqB; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1782206208; c=relaxed/simple;
+	bh=t2gFaC9cISyx2X0DVaDYFWgNpEQC/93Dagkq4FmN8D8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=piJQ6rJ/XezHMxnQQNUyhu5c3J9OQb1lHUd0d968xrpo+ezN4jg13PHXzTq69v/Tq1Js9q2zxUbsO47xB99kRNn0B4qQJnNWjgO3wC86yiZ9z3CC2Qt9K+1HXRbn8xT32udLJw1VkUErX76E7DHgjcB6Mf0yKTvrkPgGlfI4TbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ToUhdJgf; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ZK4jFoqB"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 65N6jbEU2205752;
-	Tue, 23 Jun 2026 05:08:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=jx0nZ
-	mkF8X1XyoIQMk+tpw+ry4LKq6Y8ojUZ624nAGQ=; b=ZK4jFoqBrpueuf5B76dB8
-	5b/9/9DQRZpt6Xc5kc5gGBM1pTx+hpw5rFqyeZr7yJbpBr39H4ta6cZTfOFV35Hl
-	TxAeExsCIP3/PZ/qpHRCcBQprampnW8IsXsSQ4H+azOYEZe4fvJhSgBb1PtqSCVZ
-	GHAjsinCuyW3Kz6yM4YbaX6BnGEumLYkCMntSHAP/rQtNv4ukWRnFI99kwvv9ejF
-	pPw8LCN7etsKssgm/GaT3TaabXGk15BidqNHktX+HRpuMIPZ4XWc8it9qJx0dmwe
-	h1oENx09SXbddO7nkouiTvRhwWKMCQ8wIQM6CLUn8qYq7wjbbNGniGhyxEcXcIW/
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4eyhsu9jq9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 23 Jun 2026 05:08:07 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 65N9868q030661
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 23 Jun 2026 05:08:06 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 23 Jun
- 2026 05:08:06 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 23 Jun 2026 05:08:06 -0400
-Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.223.86])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 65N97Yot008608;
-	Tue, 23 Jun 2026 05:07:55 -0400
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>, <linux@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] iio: adc: ad4080: configure backend data size
-Date: Tue, 23 Jun 2026 12:07:17 +0300
-Message-ID: <20260623090717.3296-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260623090717.3296-1-antoniu.miclaus@analog.com>
-References: <20260623090717.3296-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ToUhdJgf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782206207; x=1813742207;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t2gFaC9cISyx2X0DVaDYFWgNpEQC/93Dagkq4FmN8D8=;
+  b=ToUhdJgfPymAx8rp67SR2ne8eeCDUmGNXiNSejdKDA8nqknoNa0v88OJ
+   aXZUonbkKtLASXD2g9RzeKexDQ3gI7BLUxFiBrOwyo/dNOBmVQ1SYcLUm
+   Vwu0AD9ljuOS+j+d3ncXhDQR6QO52QHf0OkuC44fVxLYUAq94PhGx6brF
+   Z+MmYvpdmS2P67/UHLyYZ6w5cf0dHu1GlsHF7c1469ni92+alJF6RC+T1
+   y6O2F0HNlU1soYnFxZyFneomuodDZEU4NWROfftmuXxHU8Xsa+2VvBCKB
+   2Zax3xW59uaIGtvuvVoqZTMb3fbySIJfCgVCtn/r/MmUsi/6R8saZ1O9s
+   w==;
+X-CSE-ConnectionGUID: pdai4xSXRhGrUSGh7ppEGg==
+X-CSE-MsgGUID: ie4bTatDQ6qtl10gSnI/uA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="83036147"
+X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
+   d="scan'208";a="83036147"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:16:46 -0700
+X-CSE-ConnectionGUID: wfUzUzrgT5+Jg0uOTRfX0g==
+X-CSE-MsgGUID: pPtQ3sgxRq+utBGomAS/kA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
+   d="scan'208";a="245328583"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:16:42 -0700
+Date: Tue, 23 Jun 2026 12:16:39 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
+	conor+dt@kernel.org, devicetree@vger.kernel.org,
+	dlechner@baylibre.com, duje@dujemihanovic.xyz, jic23@kernel.org,
+	jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
+	joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
+	linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
+	mazziesaccount@gmail.com, mike.looijmans@topic.nl,
+	nuno.sa@analog.com, robh@kernel.org, sakari.ailus@linux.intel.com,
+	wens@kernel.org
+Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+Message-ID: <ajpO9zaZbIl3x1uC@ashevche-desk.local>
+References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
+ <20260622221550.374235-2-jakubszczudlo40@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNjIzMDA3MyBTYWx0ZWRfX8kvN3hyv2kMu
- wjtd5/Zv4Wc5EcaIsdfsDLUZojH0BX/Py/suJBaHF2jz2eoBCbhV14CF+4GSrPAP9r7Rp8fBJIb
- cM5ddO9WDdT1tsNPFnKoCpet7VDlppLpp2JeECk/DLaJTOMGavtj
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNjIzMDA3MyBTYWx0ZWRfXxKVhClxiBYmn
- Su6cFD7dzHGxTFS2F8159jSucMEvbg2PUP7hXRv21Nv9ZtQCL8QFLOMBDf1ieq4l6iExslpROPr
- ZAWb2lYE0LoBOUABSHDYPEVpm9HhGply0iim4YGOgoIcf+ADFIHaQOkDEMwxd5U94OWiX78SUzE
- GEh/5cAQLLveE8PDG6a9VNMm7KCn0BJSJ+BfBUiPEMXOVM73/0KlSVfjmEPy5xn++VlIO6OIjkH
- Nv8lPsDucbXOGiYe3VUdoYhKLf/quag9Mgbk3+07z0jDAcDxsR1gU8QOwGLFVHzjiBqxSkOKkuO
- FGKvqe1YH7p93T3PzotkI8UPcmMp6/0kRuYL3Br/5ZiAbLcZXaLGsmnu2aiBhAkWDi2Xrpa8qqh
- YGvWfmA/7Z18pukFF9VEx2lKHyldjP1NsZwLWp2FzTXcc18Jt4HDMUBQI3kCJZejuyG7nLCmbdA
- 1CI7RHmJfg09UzaF2Gw==
-X-Proofpoint-ORIG-GUID: 82WfojugNh1LDBozYfDpJ4Tx5DgkY15w
-X-Authority-Analysis: v=2.4 cv=JPgLdcKb c=1 sm=1 tr=0 ts=6a3a4cf7 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=FelO9ux0wxsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=ms0HThmbWh2te8tSNK0A:9
-X-Proofpoint-GUID: 82WfojugNh1LDBozYfDpJ4Tx5DgkY15w
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-06-23_02,2026-06-22_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 priorityscore=1501 impostorscore=0 bulkscore=0 adultscore=0
- clxscore=1015 spamscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2606230073
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260622221550.374235-2-jakubszczudlo40@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The AXI backend needs to know the ADC word width in order to pack the
-sample data correctly on the bus. During channel setup, program the
-backend packet format via iio_backend_data_size_set() using the channel
-resolution, so the data is transferred according to the device's
-realbits.
+On Tue, Jun 23, 2026 at 12:15:48AM +0200, Jakub Szczudlo wrote:
+> When device is suspended and it is in single mode then changing
+> datarate doesn't make it actual wait for new measurement, so to
+> be sure that read after change is correct functions that changes
+> datarate and gain will wait for new data.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/adc/ad4080.c | 5 +++++
- 1 file changed, 5 insertions(+)
+...
 
-diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-index 8d2953341b15..8feb0c7f7fcb 100644
---- a/drivers/iio/adc/ad4080.c
-+++ b/drivers/iio/adc/ad4080.c
-@@ -698,6 +698,11 @@ static int ad4080_setup_channel(struct ad4080_state *st, unsigned int ch)
- 	if (ret)
- 		return ret;
- 
-+	ret = iio_backend_data_size_set(st->back[ch],
-+					st->info->channels[0].scan_type.realbits);
-+	if (ret)
-+		return ret;
-+
- 	if (!st->lvds_cnv_en)
- 		return 0;
- 
+> +/* Timeout based on the minimum sample rate of 8 SPS (7.5s) */
+> +#define ADS1100_MAX_DRDY_TIMEOUT_US	7500000
+
+Not sure if the multiplier will look good here
+
+#define ADS1100_MAX_DRDY_TIMEOUT_US	(7500 * USEC_PER_MSEC)
+
+(comment might need an update to use 7500 ms, but see above).
+
+...
+
+> +static bool ads1100_new_data_not_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +	u8 buffer[3];
+> +
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return true;
+> +	} else if (ret < 3) {
+
+sizeof()
+
+> +		dev_err(&data->client->dev, "Short I2C read\n");
+> +		return true;
+> +	}
+> +
+> +	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
+> +}
+
+...
+
+> +static int ads1100_poll_data_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +	u8 buffer[3];
+> +	bool data_ready;
+> +	int datarate = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
+> +	/* To be sure we wait 5 times more than datarate */
+> +	unsigned long wait_time = DIV_ROUND_CLOSEST(MICRO, 5 * datarate);
+
+First of all, reversed xmas tree order can be better (especially
+when something is assigned). Second, use units in the variable name,
+wait_time_us. And at last, use USEC_PER_SEC instead of MICRO
+(this will need time.h to be included if not yet).
+
+> +	/* To be sure that polled value will have value after config change */
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return ret;
+> +	}
+
+> +	return read_poll_timeout(ads1100_new_data_not_ready, data_ready,
+> +				 !data_ready, wait_time,
+> +				 ADS1100_MAX_DRDY_TIMEOUT_US, false, data);
+
+Why not readx_poll_timeout()? It's a short cut for the one-argument "read"
+function.
+
+> +}
+
+...
+
+>  	ads1100_set_config_bits(data, ADS1100_PGA_MASK, ffs(gain) - 1);
+>  
+> -	return 0;
+> +	ret = ads1100_poll_data_ready(data);
+> +
+> +	return ret;
+
+Is it specifically done due to next patch? But this one is marked as Fix and
+will go deep back in the releases. For them this will look unjustified. Just
+use
+
+	return ads1100_...;
+
+here.
+
+
+>  static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
+>  {
+>  	unsigned int i;
+>  	unsigned int size;
+> +	int ret;
+>  
+>  	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
+>  	for (i = 0; i < size; i++) {
+> -		if (ads1100_data_rate[i] == rate)
+> -			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
+> -						       FIELD_PREP(ADS1100_DR_MASK, i));
+
+> +		if (ads1100_data_rate[i] != rate)
+> +			continue;
+
+This will look better if you break here and add a check
+
+	if (i == size)
+		return -EINVAL;
+
+	... then your new code...
+
+	return ads1100_...;
+
+
+> +		PM_RUNTIME_ACQUIRE_AUTOSUSPEND(&data->client->dev, pm);
+
+> +
+
+This blank line is not needed as they are coupled, but I don't know if we have
+an agreed style in IIO for this.
+
+> +		ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = ads1100_set_config_bits(data, ADS1100_DR_MASK,
+> +					      FIELD_PREP(ADS1100_DR_MASK, i));
+> +		if (ret)
+> +			return ret;
+
+> +		ret = ads1100_poll_data_ready(data);
+> +
+> +		return ret;
+
+As per above.
+
+>  	}
+>  
+>  	return -EINVAL;
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
