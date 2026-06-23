@@ -1,244 +1,119 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E11361DBA
-	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 19:17:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67D0F38B142;
+	Tue, 23 Jun 2026 19:23:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782242227; cv=none; b=IqosD8mWxhpyk4fQ66zulJZzCNYY46QcgnKtocak4Zg7GP4sR2UUSvh278Q1XRqkK9T5PSwVFB7thqbxsRU6eLw1wo1TQHebP4srZAMwv9V3Z3CwFdw8jL8MOcDLLwyVKWKA4JiajEtIOKco+6Ag9v8OXVtxTTQO+oNjvq0irDA=
+	t=1782242624; cv=none; b=lMrHSb0na2xm3P46w4gFHGkpUMDpDgsvpBGKn7EVMQnvMvE6lGvHzAoSycUi3zgKBRFLPO30rc6vR4q9/qf1h69sC8fX1iC9XblEiI3TkfvLVSx7sWkfkcLctreauhZfBqsKvrbgIEVHToq2RLbXfpfcG2OiiT2kCQYb9hU8fuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782242227; c=relaxed/simple;
-	bh=GZmwz/eq3EH0776LVBkc/Awev7J2/zhL0s8H3paK49U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=n/d63k5OBaBQhXAWdYtaJSXrr+CTlyNIByIRIkumhwSGPfSlli642GJxRKWy98CJV1hbfK+JEymEnU8RJ3G3hRu5XEmqReTwPj4xDtDEnenKWmkA4CA42Zf7K+di1tGcJMwZnzpoNHBb88ITpzo2hi8G22iC2qXXuQkbxKpKr9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=PY8EWM+Q; arc=none smtp.client-ip=209.85.161.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782242624; c=relaxed/simple;
+	bh=O7DR9ILkd2nJoHBh2TQnDbYT3Y7Ne14/dVuQzQqfa9k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fdlo3GaTifF/lhesZvYzgEMoxkN7MG8lljtf7FHw6nQednR8JfRW7xy0kndH1SJW08xQFj/H2KBuqwpAt6TRM4TWDwyPJv47yHJ4Fb/SAspC28z2YtW9lrEaNqjZBp/xMyadO+s8fYWSIv2tgi7Z5PXb0XLgoSAU3RXnAy11ck4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WShvWu8F; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="PY8EWM+Q"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-69d8f70cb0cso193212eaf.0
-        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 12:17:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782242225; x=1782847025; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HlgARPWBHtV3qLgQWXpXHi/OrSl0JXhyJKYyRqQxSsc=;
-        b=PY8EWM+QlzKiF4U1MHeZcI6SlAQgwwkIYoMyrhJ3BEyQZcriPpHHmQC0TcGgyYtv3A
-         B7yCE2xyjkXUBD7KbnHu502hRMHogfJNNtMMotMX+FocSN6u0vsXTz7+y2gbXFoC7Vx9
-         R/qp2f832WcIGxBYBgBf1EOuPF9huZS6icB95pluA8s/GIzH48wCyCY10oSNiMavENKI
-         kInPWxbjJnO/b53lYe+36sEo3ywNki2SCPSAyEF79WtVFy4H7JBkOXplxkgfTVcdewVx
-         h13F+QzxgxO9hW1ICJJ3XmJIQ0McOH663KILLBWmdD0fQetBdQT8TIUhFhlgMaG7/oEB
-         25Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782242225; x=1782847025;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HlgARPWBHtV3qLgQWXpXHi/OrSl0JXhyJKYyRqQxSsc=;
-        b=VBnu09CD+lRSF1c6QPkmwQVSLP02shCFNqtYyxF5rERjzWBzAsdtUc5vuhNtoXOjPr
-         rfC2QGKJh6ApTeMOqQIPzl2f/0Gv1njyahJMpCDnh7Kwl/nvJfaFWqwXykIxqxZAGovT
-         +MD4iq5Ep6HYgD1S3VrUZzRaRoQ2SoMVC+JBxPe7p7jFTC3oYeRUN+VCf1XgtUrbHmRY
-         hCRyXC1f8gNepL7m7KCyK9RiD1UxC3eqDBpFfhveYVkVP6K2fFEw2Qq/RY6nSekVf5Me
-         3gbixtQ1jTbiQhuIyOkZbI/gzgYEbCJ1WG7cV8iMDB0pR28USliBNcqiCbvRhr5C/XkL
-         Twvg==
-X-Forwarded-Encrypted: i=1; AFNElJ+fbkVVQswY7AnyoU7TLItNBQ1cZtNLyAv6qIsWlib933C/DTeavOJmeXUm95jWU7UYcXnT+ixNIfA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwV/2DgyjiwKb3y1vkMFPu6y4TCMikOHvDVHTcM1N9xbx46b2Eg
-	BAU0OqP7aneL9+gWGOJiK1e7UfSzZIgpWAn4nHypreczDSLGaZAxeddKGBI6y+xqh/s=
-X-Gm-Gg: AfdE7cn2hpu6P5T7+KYjDmg4vRdJFcwG+nnad8lPncccVUmvo1pylm1Ny5rb0LK3P++
-	M9pg2w0a/okxqN8lpFHUCXTEPgmvmERN/3XCFpy53pJGHlXGZNHbeA1gNq0inpp2X3pjHbAc6B0
-	nn8+uM9y4pr0Et5UMz5YISkr8ULrFwUYcLfOfnszMHUcA5+01fCJdonmFHSANti0QsELeahGGwO
-	ZGakok3OrVDr2Zl5/lJKWhLWzfDQfBruDKcsz369WRYkPUMdemsjRo7T6GlotpYvZUxyaF/62FX
-	BFAeRVMcAyAUHxspHEk0+JGC6sL1aRgwtDMef/2JJVUMiSSp8nFE6YPkAyt9TWza7vIKhdOS4hO
-	34ap/Eaq9ys1qOlBQT1l0TvRoWILpLdGkvNgn2vNJycbPUyZubrR24TMGcBrTPu6WwClcrVXR9b
-	ivRfv4OifozGWXBckKX4XXLzQnLabKf0hOHaOFSgrk29666plbUI2/dYwTUC+IgYlXmAa4hJ3eC
-	Q==
-X-Received: by 2002:a05:6820:617:b0:69b:36d5:dd52 with SMTP id 006d021491bc7-6a122e2a1ffmr78642eaf.9.1782242224879;
-        Tue, 23 Jun 2026 12:17:04 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a0e9f2a4e9sm7485652eaf.2.2026.06.23.12.17.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2026 12:17:04 -0700 (PDT)
-Message-ID: <5a19c272-e8fc-4fa9-b137-842b6ed6649b@baylibre.com>
-Date: Tue, 23 Jun 2026 14:17:04 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WShvWu8F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1B61F000E9;
+	Tue, 23 Jun 2026 19:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782242623;
+	bh=/eUnBmyw2rFOllRrbRo6eVqfdlq5TkvvC1+VM9YXfiw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=WShvWu8FV9VtCbeNSuU3WtBZKK/Ri3PUigE77CXwQuUY0D3+bwB26QgV+gnHoITwV
+	 n7K3XMkwYI71pqkqNpj5mv+02apbsy8aGitAfGB/8T6XQwE59w+PMP5dZATy+g+Jlm
+	 B/cc5C+aRK4aBueXfjtAwsozb3Zrck8Af0uYhTAGnByUGn5cKojNNwdfyfy5Vbrm3f
+	 bswxYtvL5qtpB6dnfEtg6WIg8UVvlym6aANEoHU4dVfxM0xPMpRoZN24DmZcAn8t8B
+	 Oyp5fWMyGs/lLSnBAl6UrDe4TZFjYO27HxPVf9dlk2X23M0+NkDrVnemc5xWBNhdZs
+	 AfRFMm5ZD/Sdg==
+Date: Tue, 23 Jun 2026 20:23:34 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Herman van Hazendonk <github.com@herrie.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nick
+ Desaulniers <nick.desaulniers+lkml@gmail.com>, Bill Wendling
+ <morbo@google.com>, Justin Stitt <justinstitt@google.com>, Denis Ciocca
+ <denis.ciocca@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Denis Ciocca <denis.ciocca@st.com>, Linus Walleij
+ <linusw@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+ devicetree@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: common: st_sensors: honour channel
+ endianness in read_axis_data
+Message-ID: <20260623202334.2217b1d4@jic23-huawei>
+In-Reply-To: <ajJwzsIMxX3Ew1x_@ashevche-desk.local>
+References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
+	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-1-063edcf74e60@herrie.org>
+	<ajJwzsIMxX3Ew1x_@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: Add DAC8163
-To: Lukas Metz <lukas.metz@gmx.net>, Jonathan Cameron <jic23@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
- <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-It is more logical to put the dt-bindings patch first in the series
-before the driver that makes use of it.
+On Wed, 17 Jun 2026 13:02:54 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-On 6/23/26 11:07 AM, Lukas Metz wrote:
-> Add device tree binding for the Texas Instruments DAC8163 family
-> including the DAC7562, DAC7563, DAC8162, DAC8163, DAC8562 and DAC8563.
-> 
-> Signed-off-by: Lukas Metz <lukas.metz@gmx.net>
-> ---
->  .../devicetree/bindings/iio/dac/ti,dac8163.yaml    | 75 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 76 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
-> new file mode 100644
-> index 000000000000..bb4bad389323
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
-> @@ -0,0 +1,75 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/dac/ti,dac8163.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments DAC8163 family of DACs
-> +
-> +description:
-> +  The DAC756x, DAC816x, and DAC856x devices are low-power, voltage-output,
-> +  dual-channel, 12-, 14-, and 16-bit digital-to-analog converters (DACs),
-> +  respectively. These devices include a 2.5-V, 4-ppm/°C internal
-> +  reference, giving a full-scale output voltage range of 2.5 V or 5 V.
-> +
-> +maintainers:
-> +  - Lukas Metz <lukas.metz@gmx.net>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,dac7562
-> +      - ti,dac7563
-> +      - ti,dac8162
-> +      - ti,dac8163
-> +      - ti,dac8562
-> +      - ti,dac8563
-> +
-> +  reg:
-> +    maxItems: 1
-> +
+> On Tue, Jun 16, 2026 at 03:02:04PM +0200, Herman van Hazendonk wrote:
+> > st_sensors_read_axis_data() unconditionally decoded multi-byte
+> > results with get_unaligned_le16() / get_unaligned_le24() regardless
+> > of the channel's declared scan_type.endianness.
+> >=20
+> > For every ST sensor that has used this helper since it was introduced
+> > this happened to be fine because the ST IMU/accel/gyro/pressure
+> > families publish their data registers as little-endian and the
+> > channel specs in those drivers declare IIO_LE accordingly.
+> >=20
+> > The LSM303DLH magnetometer however publishes its X/Y/Z output as a
+> > pair of big-endian bytes (the H register sits at the lower address,
+> > 0x03/0x05/0x07, and the L register immediately after), and its
+> > channel specs in st_magn_core.c correctly declare IIO_BE -- but
+> > read_axis_data() ignored that and decoded as little-endian, swapping
+> > the high and low bytes of every magnetometer sample. The LSM303DLHC
+> > and LSM303DLM share the same st_magn_16bit_channels (IIO_BE) and
+> > were therefore byte-swapped by the same bug; users of those parts
+> > will see different in_magn_*_raw values after this fix lands.
+> >=20
+> > The bug is most visible on a stationary chip: in earth's field the
+> > true X reading is small and the high byte sits at 0x00, so swapping
+> > the bytes pins sysfs X at exactly the low byte's pattern (e.g. 0x00F0
+> > =3D 240). Y and Z still appear "to vary" because their magnitudes are
+> > larger and the noise in the low byte produces big swings in the
+> > swapped high byte:
+> >=20
+> >   before (LSM303DLH flat, sysfs in_magn_*_raw):
+> >       X=3D240 (stuck), Y=3D 12032..23296, Z=3D-16128..-9728
+> >=20
+> >   after (direct i2c-dev big-endian decode, same chip same orientation):
+> >       X=E2=89=88-4096, Y=E2=89=88210, Z=E2=89=8880     (sensible values=
+ reflecting earth's
+> >                                 ambient field at low gauss range)
+> >=20
+> > Fix read_axis_data() to dispatch on ch->scan_type.endianness and
+> > call get_unaligned_be16() / get_unaligned_be24() when the channel
+> > declares IIO_BE. Existing IIO_LE consumers (st_accel, st_gyro,
+> > st_pressure, st_lsm6dsx and others) are unaffected because their
+> > channel specs already declare IIO_LE and the LE path is unchanged.
+> >=20
+> > While restructuring the branches, replace the previously implicit
+> > silent-success-with-uninitialised-*data fall-through for
+> > byte_for_channel outside 1..3 with an explicit return -EINVAL. No
+> > in-tree ST sensor publishes such a channel, but the new behaviour
+> > is strictly safer than handing userspace garbage. =20
+>=20
+> Sounds like inevitable change in ABI, but worth doing it.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Applied to the fixes-togreg branch of iio.git. I'll wait until after
+rc1 to send a pull request though (and rebase on rc1 in the meantime).
+The other patches may have to wait, I haven't checked yet!
 
-There are a couple of more SPI properties needed since this is not a "normal"
-SPI device. We can only write and not read because there is no D_OUT pin. So
+Jonathan
 
-spi-rx-bus-width:
-  items:
-    - const: 0
-
-will describe this.
-
-There is also no chip select, but now that I am looking, there doesn't seem to
-be anything to describe this.
-
-> +  ti,loaddacs-gpios:
-
-This should match the actual pin name. And we don't need vendor prefix on gpios.
-So `ldac-gpios`.
-
-We also want the binding to be complete even if the driver doesn't all of it, so
-`clear-gpios` and `sync-gpios` probably make sense too.
-
-Usually for SPI devices we also add:
-
-spi-max-frequency:
-  maximum: ...
-
-> +    description:
-> +      Pin needs to be asserted permanently when updating the DAC synchronously.
-> +    maxItems: 1
-> +
-> +  vref-supply:
-> +    description:
-> +      Reference voltage for scaling if an external reference is used.
-
-I prefer to use the actual pin name, i.e. vrefin-supply.
-
-And for the description, it is the actual external reference voltage
-supply, not just the voltage.
-
-And we also need `avdd-supply: true`.
-
-> +
-> +  ti,internal-ref:
-> +    type: boolean
-> +    description:
-> +      Flag if the internal reference is used (external otherwise).
-
-Usually, we don't bother with a property like this since it is redundant.
-If an external reference supply is given, then it gets used, otherwise
-the internal reference is used.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-
-avdd-supply will be required too
-
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +  - if:
-> +      not:
-> +        required:
-> +          - ti,internal-ref
-> +    then:
-> +      required:
-> +        - vref-supply
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        dac@1 {
-> +            compatible = "ti,dac8163";
-> +            reg = <0x1>; /* CS1 */
-
-These chips don't appear to have a chip select pin, so this comment
-doesn't make sense to me. More logical would be to just use dac@0
-and reg = <0>; since it should just be ignored.
-
-> +            ti,loaddacs-gpios = <&gpiog 8 GPIO_ACTIVE_HIGH>;
-
-The pin is marked active low in the datasheet, so I would expect
-this to be GPIO_ACTIVE_LOW.
-
-> +            ti,internal-ref; /* internal reference used*/
-> +        };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e82cc28e1bc3..5512f5eaab44 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -26398,6 +26398,7 @@ TI DAC8163 DAC DRIVER
->  M:	Lukas Metz <lukas.metz@gmx.net>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
->  F:	drivers/iio/dac/ti-dac8163.c
->  
->  TI DATA TRANSFORM AND HASHING ENGINE (DTHE) V2 CRYPTO DRIVER
-> 
+>=20
 
