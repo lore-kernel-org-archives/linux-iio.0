@@ -1,131 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7523C8C46;
-	Tue, 23 Jun 2026 15:01:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F7625F99F;
+	Tue, 23 Jun 2026 15:08:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782226895; cv=none; b=lLLK5FywpBzxVtc1G6DRudR7IOnW/t8dIdTGuD41wawpLTit9dy2NFbqV6ag1nffJaeGvWmk9eiEgqbFeMeXz5FhEQrt4wj52by3+ha657uYgZfWalHrShmNILhrtuSFgvPfy1w6GwK6lF/TgsDwp/ji5aMLgtFreM32Lj8M3kw=
+	t=1782227324; cv=none; b=HmAmxmGrG9xu50gXSCGwjIOegBE+8x8Q31yeOeVkm4iCA/fXLIoe0qg5ehAkw6f2PecaQ/Gtu7KD/a9fU3FWupv2a0sxh/S1OKEH/Nd51TW4vRdrCkTpYCG6Wa7bz+XdfBrCjF3cawrxuIiNSeaYQ+9sUGpnhQffT9d95RTcTgo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782226895; c=relaxed/simple;
-	bh=A/Z7Bq3js0vurwMDHDVFnbJkxpDvYREyQXj8IUK2YJ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kaK9AKA63FkmwX6lQueCGiAnSNQDWjWUit3ei2dEdvFxaKSMG/a0lHkQqpwuuOi8vwIV+KOg0KKS4vNc2JPdSO9LHA06tg8uKWKxKP2xaIGghA5FzsPoWxC7A9GU1j0Sjdhv73OWHUGJIdxNxT0Rddjc/I8L6EuhJQUEs+qhqfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FRxFtdR8; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782227324; c=relaxed/simple;
+	bh=swxMVi2/5GBeOkGZeUcQqpnIRK2v0l4JWY5Im7sAicQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VucKX12fKTECra7jHksFVc0UbLRmRwAjKSg5vJWcPux7o1ZWQ+jEAhscHc8sgK31f5Qmq69I9yBn9N9deHOpKgdegc/QrAbMzfPZgKnwMb2G6Q+maTOH3hFTnLr/NG3MR9A1VqsJna9tiDCDJvLTat9wWT2FpWafZRzq72v2szI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lDRHYHKw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FRxFtdR8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782226894; x=1813762894;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=A/Z7Bq3js0vurwMDHDVFnbJkxpDvYREyQXj8IUK2YJ4=;
-  b=FRxFtdR8w/pUX+Pe8HmVe/ulIUXqi9+G9cysPJ8jn/ebj6z+IoBiHwAk
-   EN30EsP7im/R1/mUVpNVTygJiK81M7Jsh/zelwqLuwINw8Ol+JYTfwN5U
-   iwrDKMhvQZqJWe6BNx23/Z1BUeEZPfuaUaVSAvquQ/VcxCuYZMcn7l2Bx
-   H9OeUv2YYtaSeNfSzH4AQtS6fc5QckjWxj4ii0ANObc7c7sHmF3xvCCM9
-   G2oRnF7WIIxbdTorQjVMG1SYW0285TKbpEHOSpD41DB3lcE+IYCyaTJMP
-   B02UECapaKqqx9f8jf19GTAbkLy/w2BPiMJBYPloyW+/iJrl79VIMxELO
-   g==;
-X-CSE-ConnectionGUID: 9NHNdwz0RS+J8QpcSTvRXQ==
-X-CSE-MsgGUID: 5ZTAGOw2QKeqwDIZQqniXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="100521991"
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="100521991"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 08:01:33 -0700
-X-CSE-ConnectionGUID: g4KZ+stwTHu+1GPZZUnSRQ==
-X-CSE-MsgGUID: N8cU/1L0QzuXCCmW/vs77w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="254528969"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 08:01:31 -0700
-Date: Tue, 23 Jun 2026 18:01:28 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Frank Li <Frank.li@oss.nxp.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>, nuno.sa@analog.com,
-	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
- address width masks
-Message-ID: <ajqfyOH0ZxxDCdJx@ashevche-desk.local>
-References: <ajF4i3o0gNRtUelb@SMW015318>
- <ajQkupPzv8-GdEjv@nsa>
- <ajVs3jwoxq7Jhop1@SMW015318>
- <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
- <ajj8AhN1YC3uvuLb@nsa>
- <ajlMAijTUHsnOhEQ@SMW015318>
- <ajlR9QiXiBAH4mWH@nsa>
- <ajmAP2nKzi2dPEVx@SMW015318>
- <ajpWzimx-5jlczpp@ashevche-desk.local>
- <ajqKD0BdQY5kSZjh@SMW015318>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lDRHYHKw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EDD1F000E9;
+	Tue, 23 Jun 2026 15:08:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782227323;
+	bh=lgxErHiAsUx2zyUgJpjq3vm+qoyUS3A23oDYQHZoGvs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=lDRHYHKw2S+xore/XuR0msYqrpqVZttTY/ssE+cnEcpCB88RupjnmQe0+xgBQc81O
+	 TISPJ363pHWDuvzAfFhVOqlYBiCMf/HelXPrGk8IcbKqsE2aNHRBi3j3FnX/+kyzNI
+	 Owb/7XlfB1dBhmSkEEBhqfvDl0Stjpx5nwDFtHwVRajtMDN0PhGU6iH/JPcxEW5Y/x
+	 LXgsQOkdShXslTv9OCivzytOJhM2WU46XuZurg4m4ypcTgrpJhGyfB2K/BWZTsUHjj
+	 Sk+g3O4WXXOzqdu4My9ag9DDlO3E9uDzjuTNNTv5dXGFiULb2rmGaW+fhJE2YP8zRy
+	 vRT/1/jVzmr5g==
+Date: Tue, 23 Jun 2026 16:08:30 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Rodrigo Alencar
+ <455.rodrigo.alencar@gmail.com>, Janani Sunil <jan.sun97@gmail.com>, Janani
+ Sunil <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
+ Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260623160830.42833ba9@jic23-huawei>
+In-Reply-To: <20260622-captive-tux-067efd31ceac@spud>
+References: <076d7d2d-81a0-49c2-af94-bd65ead66c09@gmail.com>
+	<20260619-obstinate-polo-a230bef97fda@spud>
+	<20260619-bunch-diocese-dd7805cc17ff@spud>
+	<ajU73_TkKrSbqD4f@nsa>
+	<20260619-concierge-doozy-9c161533c369@spud>
+	<ajVlD-j0nIGrRVow@nsa>
+	<20260621153330.79b6600c@jic23-huawei>
+	<5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
+	<ajkMBh-R_7pYaoAn@nsa>
+	<20260622172911.48259a0c@jic23-huawei>
+	<20260622-captive-tux-067efd31ceac@spud>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ajqKD0BdQY5kSZjh@SMW015318>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 23, 2026 at 08:28:47AM -0500, Frank Li wrote:
-> On Tue, Jun 23, 2026 at 12:50:06PM +0300, Andy Shevchenko wrote:
-> > On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
-> > > On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
-> > > > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
-> > > > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
+On Mon, 22 Jun 2026 19:39:43 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-...
-
-> > > > > If memory have requirement for 32bytes, typical cache line length for
-> > > > > hardwaer coherence transfer, it should use dmaengine_alignment.
-> > > > >
-> > > > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
-> > > >
-> > > > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
-> > > > there... The code seems to use the dma bus width to match against PCM
-> > > > formats supported and filter only the ones we can support (per dma cap).
-> > >
-> > > if cap is one byte, it should support 8, 16, 24, 32, 64
-> > > if cap is two byte, it should support 16, 32, 64
-> > > if cap is 4 byte,  it only support 32 and 64.
-> > >
-> > > Needn't mask each bit.
-> >
-> > I think you missed the point completely. It's other way around. If the HW
-> > supports say 32-byte bus width, one _might_ assume it supports lower sizes.
+> On Mon, Jun 22, 2026 at 05:29:11PM +0100, Jonathan Cameron wrote:
+> > > > > Yeah. It's not clear to me how that works for the microchip devices
+> > > > > (I suspect it doesn't!)
+> > > > > 
+> > > > > Just thinking as I type, but could we do something a bit nasty with
+> > > > > a gpio mux that doesn't actually switch but represents the GPIO being
+> > > > > shared?  Given this is all tied to the spi bus that should all happen
+> > > > > under serializing locks. 
+> > > > > 
+> > > > > Agreed though that this would be nicer as an SPI thing that let
+> > > > > us specify that a single CS is share by multiple devices and their
+> > > > > is some other signal acting to select which one we are talking to.
+> > > > >     
+> > > > 
+> > > > If the device-addressing on the same chip-select is to be handled
+> > > > by the spi framework, wouldn't we lose device-specific features?
+> > > > 
+> > > > I understand that this multi-device feature is there mostly to extend the
+> > > > channel count from 16 to 32, 48 or 64. I suppose the command:
+> > > > 
+> > > > 	"MULTI DEVICE SW LDAC MODE"
+> > > > 
+> > > > exists so that software can update channel values accross multiple devices.    
+> > > 
+> > > Right! You do have a point! I agree the main driver for a feature like
+> > > this is likely to extend the channel count and effectively "aggregate"
+> > > devices.
+> > > 
+> > > But I would say that even with the spi solution the MULTI DEVICE stuff
+> > > should be doable (as we still need a sort of adi,pin-id property). 
+> > > 
+> > > But yes, I do feel that the whole feature is for aggregation so seeing
+> > > one device with 32 channels is the expectation here? Rather than seeing
+> > > two devices with 16 channels.  
+> > 
+> > Agreed - if we have messages that address both devices at once that needs
+> > to be a unified driver and given they are about triggering simultaneous
+> > update of all channels it needs to look like one big device.
+> > This ends up similar to how we handle daisy chain devices.
+> > 
+> > The question of what to do on devices that don't have this feature
+> > is rather different. Good thing you read the datasheet :)  
 > 
-> what's 32-byte bus width affect software? It should only impact that if
-> memory address is 32byte align, preformnace will be better?
-
-Not only, it may lead to broken software.
-
-> > It's similar to what we have with MMIO. Some HW, for example, may only operate
-> > with 32-bit accesses, while only transferring a single byte (8 bits).
+> I'm not sure it really is, the intent for the microchip devices I think
+> is pretty similar. The mcp3911 datasheet cites three-phase power
+> metering using three devices as a typical use-case, for example.
+> Probably creating an amalgamated device is a good fit there too?
 > 
-> That's means, dma address can't start from odd address.  The length limited
-> should be controller by dma_slave_caps::min_burst
+> I assume an amalgamated device for this ADI product means per-channel ID
+> properties?
 
-> In dma_slave_config::src_addr_width, most like indicate how many data
-> transfer by one dma burst.
+Per device as they are 8 channel each, but effectively the same.
+(microchip devices are 2 channels each I think)
 
-And the burst is assumed to be aligned by most of DMA engines. Again it's quite
-similar case to the MMIO. I assume that this is due to bus mastering
-implementation: DMA, MMIO, or other means to access it doesn't really matter.
+> If so, I think they should be made generic and the Microchip
+> products retrofitted to use them, with a fallback to the proprietary
+> property. Not going to ask for the support for multiple devices in those
+> drivers, since the current way doesn't work and there'd be no loss of
+> support. Someone from Microchip can do that. The proprietary property
+> to generic conversion should be straightforward and provides weight to
+> an argument for this being generic, since that'd be three devices that
+> can all share?
 
--- 
-With Best Regards,
-Andy Shevchenko
+I think the practical difference is that for the ADI part we have to support
+it as a single device as some commands effectively don't use the address
+bits in the message.  For the microchip ones we could register multiple
+separate SPI devices and just provide one address for each.
+
+Equally we could treat the microchip ones as a unified device in which case
+the binding will be the same and there will be a property with a bunch
+of addresses (one for each device present). I'm fine with this option given
+as you say the datasheet calls out using this for channel expansion.
+
+Jonathan
+
 
 
