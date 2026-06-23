@@ -1,836 +1,228 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2169318EC1
-	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 16:43:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32ED331AA9B;
+	Tue, 23 Jun 2026 16:44:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782232997; cv=none; b=Sg0mA3Fuc6isiHhgGWnBryd6nNOlvIfwq+EychjxK2iH+UEcO0hXDx69imYXAZRalXmMgQh0qDXepLXpPpz99Nu/+Cag8g4eGGa8blgRoyBbHkD94WFiBwQLCwX/pq4HbDq7BQUVjDGwUhuYhN4M/y+EAIDly6PuCin1qJlvyc0=
+	t=1782233078; cv=none; b=NBYnQx+H1/pv1RZhshPPdbxJSbXq0117v11qRzrAztZ5Y1p+L6BQpxwt1bSEYWcjEQtgSGyserefvC6NPHybkhfZezbKNT2KvZzlUcjb7TTrgCmR5uP1siUhhJu7abulUThn+Su6WhoDtzHlkuAeIyOrblmH/UfH7hMVSRrIYYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782232997; c=relaxed/simple;
-	bh=TiJCudqryWyWiGj+V/UR2bmt5VriebNSpxT/ZGGmyPo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=lQJYWjreZ+0LkAIT4Hxw2FAM3TufTYASQjmUnyPfaWjLmgWbH3lxC9IgCWf/QmZrEa4H4aZOxBNowStsbkmL/4OvZBFBYEgclPU7p8zwtxJKDue36FpjjK1BpNeweu+Xc5p8CVRBsQg6fmBV8CeFJxjlky2bYkDSQyi2sCj134M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lN9AtThi; arc=none smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782233078; c=relaxed/simple;
+	bh=6SAVyQlrsSRNRMeAbGgF+sVjoaioeWif8dG3D2ESsyQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=LsB11A92YBCnvGxx6tBWYoiW+gJy2b1Be5eZzqL3FDtxspA+T1MrFIDDGt5aFrFEojvUBiGq1UMkXyLq0F/EpFLUvuxPmmwU8lxSfhzuU83Hh1HQtgElf+f5R1bv0sP0WnjSMjpfcEuX68g0CNISYZtO3fTuFiEHQotpmrm1YcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=im8D+SzY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lN9AtThi"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5ad536cd0c6so34130e87.2
-        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 09:43:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782232993; x=1782837793; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wLbW2Hd/NFrwZNXxygaUtDWLtXnpiTEJZqjr+d3yq5g=;
-        b=lN9AtThiRgNpaJc5Fswb3GzNvdXIra5r28LQuVmeUUedQzhOb0k82zmxIF5SsBUKpV
-         QxEOMAfiyzQv5lXluJUf9d9zYW+OHBC8MWnn0+cZLHXon0Ce3uT80EX/BJRHz4DoUTy2
-         5T/g+LB2aTmAPUl60LvAWZ1/C0dqH9HoDXMMyHthLAxsC/KCqh3ZcJllGUCpgc6IKn0J
-         3Bp+fPCwvLDgFO7Wko8FvVzbQ9fuM4AfIQ+oyrczjY/+3Da8KOy/aOXpyo+KwQXcyhvN
-         2rolORsxsjJUxHJldw1c5jUQiECz7ivQ1GFmMqQ6bFoxuD4osiI+cw4Ej41tHRe/rCBW
-         vMAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782232993; x=1782837793;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wLbW2Hd/NFrwZNXxygaUtDWLtXnpiTEJZqjr+d3yq5g=;
-        b=jIR7n1ikWrWfO3VYQzZrI8y6ViyyVDbc9A/l37/ppgG8v/SsozxznxbNFpT7440wBx
-         mZ7oIw64s6Gz7xboVrotaynrljy503GS08xwhqQbT5973AlqCbSCy48QMjYoAD8h6Mo4
-         tT4PlBqEvHEliDLmS9fVpL+wPkDAcG+yUdyk0BPVFZfITykR+tKp7f9gWh6k6iAEE+GM
-         UznQ5Qq/aJXJwZ3q2IKYtc17/S9rlDx5qaBnzWwkrtyFSdq0Y7XMbUnqaGlkyJeiRH+7
-         Z/hgg2WkCjPNTgEF930kfrN0X4OBawwKmoLw73HnHspqkRNawA71C+p89sRHPfSvA7QG
-         qoIQ==
-X-Gm-Message-State: AOJu0YwOEw7hy5qCPKRcf8UjFuZwmGOWgE8JQ9gJjwrHuIt0WCQPM8/2
-	RnUB7O+l61cqJzLX7ZhGs0iAy66o+YrCihuIpeSUU0/2Kg2DvTNGaduwhq+oEjshdIKoZg==
-X-Gm-Gg: AfdE7cn6ZDEjFA50qGjTV4DIhrqKfsuiTz7INwHxmHkVJVvbuezMjKPk2CsiJYPMnR/
-	dOS6HshlgRIZhiA4uYVZFtlvQXs+wIt5pXduCx/l/VDYLK/nTp+wByEJe+mdUt9fTD/KYuP6nSZ
-	XtJNss61o6E2o6dQsQi9NXYBSZ8sA54snx4hqxkJKLdROvbd+6WeYGzL6XcHucX2u3ST7c8iuGH
-	4hB5+v19cL9M+7tfnIwqH7BgWUlPvAO+QV5QwbdhQlBi1Yuec+GzOTu8nOl6OkuDF6BCApOCE4a
-	Rp6wdbrK5QaDWSgikwcRJeo8QFGDqFTisYDKaJn2sIvJLVX7fovQe1AfER/KpBjfn4pHPUj3lz7
-	iqxi39lOh9hys11j8VXYFR/D/M+PiCS0wfRK5n55WIiWeenqDhy8rT5MWM22mDWLIwRHh1/fxso
-	9Xp1bHzrRadkEYnf7/Z9IcwNGgy0rpFErbCMcORhjA67QyYOcl8QsBiiuN
-X-Received: by 2002:ac2:4f11:0:b0:5aa:6ede:5b with SMTP id 2adb3069b0e04-5ad576e60f4mr5508853e87.14.1782232992697;
-        Tue, 23 Jun 2026 09:43:12 -0700 (PDT)
-Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad69555c45sm948253e87.36.2026.06.23.09.43.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Jun 2026 09:43:12 -0700 (PDT)
-From: Md Shofiqul Islam <shofiqtest@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
-	robh@kernel.org,
-	conor+dt@kernel.org,
-	krzk+dt@kernel.org,
-	devicetree@vger.kernel.org,
-	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v3 2/3] iio: health: add MAX86150 ECG and PPG biosensor driver
-Date: Tue, 23 Jun 2026 19:43:08 +0300
-Message-ID: <20260623164309.16452-3-shofiqtest@gmail.com>
-X-Mailer: git-send-email 2.51.1
-In-Reply-To: <20260623164309.16452-1-shofiqtest@gmail.com>
-References: <20260623140113.12574-1-shofiqtest@gmail.com>
- <20260623164309.16452-1-shofiqtest@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="im8D+SzY"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B59ABC2BCC6;
+	Tue, 23 Jun 2026 16:44:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1782233077;
+	bh=6SAVyQlrsSRNRMeAbGgF+sVjoaioeWif8dG3D2ESsyQ=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=im8D+SzY/BfwUaAVrKg/Q3NgN6UH98OWdiA/dopLCnvbZo79hQYr1tM6hOH0FeZLA
+	 Cq8lXhqdG98vhgw/4mzzs6a6Or/wVnKvUojYxHz/OldAPI9V64trgGyRm/DP6vmnN4
+	 yN7Ct3LXSEO7oHUu6zL6L9nWlKRmWwj1338W3z/0dSgfd/gpqj1lhnZANSykfNN41z
+	 v5MllE/6f/+FF+FI68EMT5312I3SMGKqjIISzaDIYQUvm3CAIOA5N5m3uLPwFAtkp6
+	 Q78q7snQyWBnUz36PZqm4l40CzzsidkieUMZzTVFzADUK0H1vpCbTLDMysp1O6r8Pn
+	 +pHZARZs/3AuA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F35CD98F2;
+	Tue, 23 Jun 2026 16:44:37 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Tue, 23 Jun 2026 18:44:22 +0200
+Subject: [PATCH] iio: imu: inv_icm42600: fix timestamping by limiting FIFO
+ reading
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260623-inv-icm42600-fix-watermark-fifo-reading-v1-1-f3f5694a818a@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAOW3OmoC/yXN0QrCMAyF4VcZuTZQa63iq8guYpfOKOsknVMYe
+ 3ejXn5w+M8ClVW4wqlZQHmWKmMxbDcNpCuVnlE6M3jno4t+h1JmlDQEo8Msb3zRxDqQ3k15RGX
+ qpPQYfUiU3dEd9gGs9lC29e/p3P5dn5cbp+mbh3X9ACkT4EqLAAAA
+X-Change-ID: 20260623-inv-icm42600-fix-watermark-fifo-reading-624caf080754
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782233076; l=6594;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=3ssvSfe95gYTtmZ+Ylkig8dkoYCsEu/3jrM6HnnCLEs=;
+ b=C3WPzPI1kzun7KRJUGlHPK1Y/sND95/Y9cpUsm1S8n5dtocdhTWgKyMihRQwP6sH4Tyq+rHxX
+ 4/BB2mc+8IqBO/1ydz5o/bIfyeh/F7MRpjd4Nnu9KA+xW/CK+hkX1i2
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-The MAX86150 (Maxim/Analog Devices) combines two PPG optical channels
-(Red/IR LED) and one ECG biopotential channel in a single I2C device with
-a 32-entry hardware FIFO.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Driver features:
- - Three IIO channels: in_intensityred_raw, in_intensityir_raw, in_voltage0_raw
- - Triggered buffer path driven by the FIFO almost-full interrupt
- - set_trigger_state callback enables/disables the interrupt only while
-   the buffer is active; FIFO is flushed before capture starts
- - Per-sample timestamps reconstructed from IRQ capture time and the
-   configured 100 Hz sample period
- - regmap_noinc_read() burst reads into a struct-allocated (heap) buffer
-   to satisfy DMA mapping requirements of I2C host controllers
- - devm_regulator_get_enable_optional() for the two optional supplies
- - Powerdown devm action disables interrupts and asserts SYS_SHDN
+Timestamps are made by measuring the chip clock using the watermark
+interrupts. If we read more than watermark samples as done today, we
+are reducing the period between interrupts and distort the period
+measurement. Fix that by reading only watermark samples in the
+interrupt case.
 
-Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+Better watermark computation using gcd and store watermark value for
+FIFO reading.
+
+Fixes: 7f85e42a6c54 ("iio: imu: inv_icm42600: add buffer support in iio devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- drivers/iio/health/Kconfig    |  23 ++
- drivers/iio/health/Makefile   |   1 +
- drivers/iio/health/max86150.c | 651 ++++++++++++++++++++++++++++++++++
- 3 files changed, 675 insertions(+)
- create mode 100644 drivers/iio/health/max86150.c
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 68 +++++++++-------------
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h |  1 +
+ 2 files changed, 29 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
-index a89f3abf11f4..6496cf55290c 100644
---- a/drivers/iio/health/Kconfig
-+++ b/drivers/iio/health/Kconfig
-@@ -13,6 +13,7 @@ config AFE4403
- 	depends on SPI_MASTER
- 	select REGMAP_SPI
- 	select IIO_BUFFER
-+	select IIO_TRIGGER
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes to choose the Texas Instruments AFE4403
-@@ -26,6 +27,7 @@ config AFE4404
- 	depends on I2C
- 	select REGMAP_I2C
- 	select IIO_BUFFER
-+	select IIO_TRIGGER
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes to choose the Texas Instruments AFE4404
-@@ -39,6 +41,7 @@ config MAX30100
- 	depends on I2C
- 	select REGMAP_I2C
- 	select IIO_BUFFER
-+	select IIO_TRIGGER
- 	select IIO_KFIFO_BUF
- 	help
- 	  Say Y here to build I2C interface support for the Maxim
-@@ -52,6 +55,7 @@ config MAX30102
- 	depends on I2C
- 	select REGMAP_I2C
- 	select IIO_BUFFER
-+	select IIO_TRIGGER
- 	select IIO_KFIFO_BUF
- 	help
- 	  Say Y here to build I2C interface support for the Maxim
-@@ -62,4 +66,23 @@ config MAX30102
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index 68a395758031..0972294da227 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -5,6 +5,7 @@
  
- endmenu
+ #include <linux/kernel.h>
+ #include <linux/device.h>
++#include <linux/gcd.h>
+ #include <linux/minmax.h>
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
+@@ -182,25 +183,18 @@ static unsigned int inv_icm42600_wm_truncate(unsigned int watermark,
+  *
+  * FIFO watermark threshold is computed based on the required watermark values
+  * set for gyro and accel sensors. Since watermark is all about acceptable data
+- * latency, use the smallest setting between the 2. It means choosing the
+- * smallest latency but this is not as simple as choosing the smallest watermark
+- * value. Latency depends on watermark and ODR. It requires several steps:
+- * 1) compute gyro and accel latencies and choose the smallest value.
+- * 2) adapt the choosen latency so that it is a multiple of both gyro and accel
+- *    ones. Otherwise it is possible that you don't meet a requirement. (for
+- *    example with gyro @100Hz wm 4 and accel @100Hz with wm 6, choosing the
+- *    value of 4 will not meet accel latency requirement because 6 is not a
+- *    multiple of 4. You need to use the value 2.)
+- * 3) Since all periods are multiple of each others, watermark is computed by
+- *    dividing this computed latency by the smallest period, which corresponds
+- *    to the FIFO frequency. Beware that this is only true because we are not
+- *    using 500Hz frequency which is not a multiple of the others.
++ * latency, we need to use the biggest latency that is able to cope with accel
++ * gyro latencies. Using the shortest period and computing the gcd of the 2
++ * latencies will give the working result.
++ *
++ * Beware this is only working because we are not using the 500Hz frequency,
++ * resulting in FIFO having a fixed period.
+  */
+ int inv_icm42600_buffer_update_watermark(struct inv_icm42600_state *st)
+ {
+ 	size_t packet_size, wm_size;
+-	unsigned int wm_gyro, wm_accel, watermark;
+-	u32 period_gyro, period_accel;
++	unsigned int wm_gyro, wm_accel;
++	u32 period_gyro, period_accel, period;
+ 	u32 latency_gyro, latency_accel, latency;
+ 	bool restore;
+ 	__le16 raw_wm;
+@@ -222,32 +216,26 @@ int inv_icm42600_buffer_update_watermark(struct inv_icm42600_state *st)
+ 		return 0;
  
-+
-+config MAX86150
-+	tristate "MAX86150 ECG and PPG biosensor"
-+	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGER
-+	select IIO_TRIGGERED_BUFFER
-+	select REGMAP_I2C
-+	help
-+	  Say Y here to enable support for the Maxim MAX86150 combined
-+	  ECG and photoplethysmography (PPG) biosensor.
-+
-+	  The driver exposes three IIO channels: two PPG optical channels
-+	  (Red and IR LED) for heart rate and SpO2 monitoring, and one
-+	  ECG channel for biopotential recording.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called max86150.
-+
- endmenu
-diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
-index 910817112258..04fc73c58444 100644
---- a/drivers/iio/health/Makefile
-+++ b/drivers/iio/health/Makefile
-@@ -9,3 +9,4 @@ obj-$(CONFIG_AFE4403)		+= afe4403.o
- obj-$(CONFIG_AFE4404)		+= afe4404.o
- obj-$(CONFIG_MAX30100)		+= max30100.o
- obj-$(CONFIG_MAX30102)		+= max30102.o
-+obj-$(CONFIG_MAX86150)		+= max86150.o
-diff --git a/drivers/iio/health/max86150.c b/drivers/iio/health/max86150.c
-new file mode 100644
-index 000000000000..b6e241307646
---- /dev/null
-+++ b/drivers/iio/health/max86150.c
-@@ -0,0 +1,651 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * MAX86150 combined ECG and PPG biosensor driver
-+ *
-+ * Copyright (C) 2026 Md Shofiqul Islam <shofiqtest@gmail.com>
-+ *
-+ * The MAX86150 integrates two PPG optical channels (Red/IR LED) and one
-+ * ECG biopotential channel in a single I2C device.  Data is captured
-+ * through a 32-entry hardware FIFO with a configurable almost-full
-+ * interrupt, making it well-suited for continuous monitoring with a
-+ * low-power host.
-+ *
-+ * Datasheet:
-+ *   https://www.analog.com/media/en/technical-documentation/data-sheets/MAX86150.pdf
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+
-+/* Register addresses */
-+#define MAX86150_REG_INT_STATUS1	0x00
-+#define MAX86150_REG_INT_STATUS2	0x01
-+#define MAX86150_REG_INT_ENABLE1	0x02
-+#define MAX86150_REG_INT_ENABLE2	0x03
-+#define MAX86150_REG_FIFO_WR_PTR	0x04
-+#define MAX86150_REG_OVF_COUNTER	0x05
-+#define MAX86150_REG_FIFO_RD_PTR	0x06
-+#define MAX86150_REG_FIFO_DATA		0x07
-+#define MAX86150_REG_FIFO_CONFIG	0x08
-+#define MAX86150_REG_FIFO_DCTRL1	0x09  /* FD1[3:0]  FD2[7:4] */
-+#define MAX86150_REG_FIFO_DCTRL2	0x0A  /* FD3[3:0]  FD4[7:4] */
-+#define MAX86150_REG_SYS_CTRL		0x0D
-+#define MAX86150_REG_PPG_CONFIG1	0x10
-+#define MAX86150_REG_PPG_CONFIG2	0x11
-+#define MAX86150_REG_LED1_PA		0x14  /* Red LED pulse amplitude */
-+#define MAX86150_REG_LED2_PA		0x15  /* IR LED pulse amplitude  */
-+#define MAX86150_REG_ECG_CONFIG1	0x3C
-+#define MAX86150_REG_ECG_CONFIG3	0x3E
-+#define MAX86150_REG_PART_ID		0xFF
-+
-+/* Field masks */
-+#define MAX86150_PART_ID_VAL		0x1E
-+
-+/* INT_STATUS1 / INT_ENABLE1 */
-+#define MAX86150_INT_A_FULL		BIT(7)  /* FIFO almost full */
-+#define MAX86150_INT_PPG_RDY		BIT(6)  /* new PPG sample ready */
-+
-+/* SYS_CTRL */
-+#define MAX86150_SYS_SHDN		BIT(1)
-+#define MAX86150_SYS_RESET		BIT(0)
-+
-+/* FIFO_CONFIG */
-+#define MAX86150_FIFO_SMP_AVE		GENMASK(7, 5)
-+#define MAX86150_FIFO_ROLLOVER_EN	BIT(4)
-+#define MAX86150_FIFO_A_FULL		GENMASK(3, 0)
-+
-+/* FIFO slot data-type codes */
-+#define MAX86150_FD_NONE		0x0
-+#define MAX86150_FD_LED1		0x1   /* Red PPG */
-+#define MAX86150_FD_LED2		0x2   /* IR PPG  */
-+#define MAX86150_FD_ECG			0x9
-+#define MAX86150_FIFO_FD1		GENMASK(3, 0)
-+#define MAX86150_FIFO_FD2		GENMASK(7, 4)
-+#define MAX86150_FIFO_FD3		GENMASK(3, 0)
-+#define MAX86150_FIFO_FD4		GENMASK(7, 4)
-+
-+/* PPG_CONFIG1 */
-+#define MAX86150_PPG_ADC_RGE		GENMASK(7, 6)
-+#define MAX86150_PPG_SR			GENMASK(5, 1)
-+
-+/* Geometry */
-+#define MAX86150_FIFO_DEPTH		32
-+#define MAX86150_BYTES_PER_SLOT		3    /* 24-bit word per slot */
-+#define MAX86150_NUM_SLOTS		3    /* Red, IR, ECG */
-+#define MAX86150_SAMPLE_BYTES		(MAX86150_NUM_SLOTS * MAX86150_BYTES_PER_SLOT)
-+
-+/* Default hardware configuration */
-+#define MAX86150_LED_PA_DEFAULT		0x3F  /* ~50 mA */
-+#define MAX86150_PPG_SR_100HZ		4     /* PPG_SR field value for 100 Hz */
-+#define MAX86150_PPG_ADC_RGE_16384	2     /* 16384 nA full scale */
-+/* Fire A_FULL when 17 slots remain (32 - 15 = 17 samples in FIFO) */
-+#define MAX86150_FIFO_A_FULL_VAL	15
-+
-+/* Scan element indices */
-+enum max86150_scan_idx {
-+	MAX86150_IDX_PPG_RED = 0,
-+	MAX86150_IDX_PPG_IR  = 1,
-+	MAX86150_IDX_ECG     = 2,
-+	MAX86150_IDX_TS,
-+};
-+
-+/**
-+ * struct max86150_data - driver private state
-+ * @regmap:           register map for this device
-+ * @dev:              parent device (for dev_err logging)
-+ * @trig:             IIO hardware trigger backed by the device interrupt line
-+ * @sample_period_ns: sample period in nanoseconds (set from configured rate)
-+ * @fifo_raw:         DMA-safe buffer for regmap_noinc_read() FIFO bursts;
-+ *                    must be in struct (heap) not on the stack to satisfy
-+ *                    DMA mapping requirements of some I2C host controllers
-+ * @buf:              IIO push buffer sized for worst-case (all 3 channels
-+ *                    active): 3 x s32 (12 bytes) + 4-byte pad + s64
-+ *                    timestamp = 24 bytes.  __aligned(8) satisfies
-+ *                    iio_push_to_buffers_with_timestamp().
-+ */
-+struct max86150_data {
-+	struct regmap		*regmap;
-+	struct device		*dev;
-+	struct iio_trigger	*trig;
-+	u32			 sample_period_ns;
-+	u8			 fifo_raw[MAX86150_SAMPLE_BYTES];
-+	s32 buf[6] __aligned(8);
-+};
-+
-+/* IIO channel specification */
-+
-+static const struct iio_chan_spec max86150_channels[] = {
-+	{
-+		/* PPG Red LED - optical intensity, 19-bit unsigned */
-+		.type               = IIO_INTENSITY,
-+		.modified           = 1,
-+		.channel2           = IIO_MOD_LIGHT_RED,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.scan_index         = MAX86150_IDX_PPG_RED,
-+		.scan_type = {
-+			.sign        = 'u',
-+			.realbits    = 19,
-+			.storagebits = 32,
-+			.endianness  = IIO_CPU,
-+		},
-+	},
-+	{
-+		/* PPG IR LED - optical intensity, 19-bit unsigned */
-+		.type               = IIO_INTENSITY,
-+		.modified           = 1,
-+		.channel2           = IIO_MOD_LIGHT_IR,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.scan_index         = MAX86150_IDX_PPG_IR,
-+		.scan_type = {
-+			.sign        = 'u',
-+			.realbits    = 19,
-+			.storagebits = 32,
-+			.endianness  = IIO_CPU,
-+		},
-+	},
-+	{
-+		/* ECG biopotential - voltage, 18-bit signed two's complement */
-+		.type               = IIO_VOLTAGE,
-+		.channel            = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.scan_index         = MAX86150_IDX_ECG,
-+		.scan_type = {
-+			.sign        = 's',
-+			.realbits    = 18,
-+			.storagebits = 32,
-+			.endianness  = IIO_CPU,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(MAX86150_IDX_TS),
-+};
-+
-+/* Regmap configuration */
-+
-+static const struct regmap_config max86150_regmap_config = {
-+	.reg_bits     = 8,
-+	.val_bits     = 8,
-+	.max_register = MAX86150_REG_PART_ID,
-+};
-+
-+/* FIFO helper */
-+
-+/**
-+ * max86150_read_one_sample - burst-read one complete 3-slot FIFO entry
-+ * @data:    driver state
-+ * @ppg_red: out - 19-bit PPG Red ADC value (unsigned)
-+ * @ppg_ir:  out - 19-bit PPG IR ADC value (unsigned)
-+ * @ecg:     out - 18-bit ECG ADC value (sign-extended to s32)
-+ *
-+ * Each FIFO entry is 9 bytes (3 slots x 3 bytes).  FIFO_DATA is a
-+ * streaming register - the address does not auto-increment on each
-+ * byte, so regmap_noinc_read() is used instead of regmap_bulk_read().
-+ *
-+ * Byte layout in the 24-bit FIFO word (MSB first):
-+ *   PPG 19-bit unsigned: bits [18:0], top 5 bits are always zero
-+ *   ECG 18-bit signed:   bits [17:0], top 6 bits are sign extension
-+ */
-+static int max86150_read_one_sample(struct max86150_data *data,
-+				    u32 *ppg_red, u32 *ppg_ir, s32 *ecg)
-+{
-+	int ret;
-+
-+	/*
-+	 * Use data->fifo_raw (heap memory) not a local array so the buffer is
-+	 * DMA-mappable for I2C host controllers that use DMA for burst reads.
-+	 */
-+	ret = regmap_noinc_read(data->regmap, MAX86150_REG_FIFO_DATA,
-+				data->fifo_raw, sizeof(data->fifo_raw));
-+	if (ret)
-+		return ret;
-+
-+	/* Bytes [0..2]: PPG Red - 19-bit value in bits [18:0] */
-+	*ppg_red = (u32)(data->fifo_raw[0] & 0x07) << 16 |
-+		   (u32)data->fifo_raw[1] << 8 | data->fifo_raw[2];
-+
-+	/* Bytes [3..5]: PPG IR - same format */
-+	*ppg_ir  = (u32)(data->fifo_raw[3] & 0x07) << 16 |
-+		   (u32)data->fifo_raw[4] << 8 | data->fifo_raw[5];
-+
-+	/* Bytes [6..8]: ECG - 18-bit signed, sign-extend to s32 */
-+	*ecg = sign_extend32((u32)(data->fifo_raw[6] & 0x03) << 16 |
-+			     (u32)data->fifo_raw[7] << 8 | data->fifo_raw[8], 17);
-+
-+	return 0;
-+}
-+
-+/* IIO read_raw */
-+
-+static int max86150_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct max86150_data *data = iio_priv(indio_dev);
-+	u32 ppg_red, ppg_ir;
-+	s32 ecg;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		/*
-+		 * Claim direct mode to prevent concurrent sysfs reads from
-+		 * corrupting the FIFO pointers while a triggered buffer
-+		 * capture is active.
-+		 */
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+
-+		/*
-+		 * Single-shot path: reset FIFO pointers so the next sample
-+		 * read is one that arrived after this call.
-+		 */
-+		ret = regmap_write(data->regmap, MAX86150_REG_FIFO_WR_PTR, 0);
-+		if (!ret)
-+			ret = regmap_write(data->regmap,
-+					   MAX86150_REG_OVF_COUNTER, 0);
-+		if (!ret)
-+			ret = regmap_write(data->regmap,
-+					   MAX86150_REG_FIFO_RD_PTR, 0);
-+		if (ret) {
-+			iio_device_release_direct(indio_dev);
-+			return ret;
-+		}
-+
-+		/* Wait for one complete sample period at 100 Hz (<= 10 ms) */
-+		usleep_range(11000, 13000);
-+
-+		ret = max86150_read_one_sample(data, &ppg_red, &ppg_ir, &ecg);
-+		iio_device_release_direct(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		switch (chan->scan_index) {
-+		case MAX86150_IDX_PPG_RED:
-+			*val = ppg_red;
-+			break;
-+		case MAX86150_IDX_PPG_IR:
-+			*val = ppg_ir;
-+			break;
-+		case MAX86150_IDX_ECG:
-+			*val = ecg;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		return IIO_VAL_INT;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info max86150_iio_info = {
-+	.read_raw = max86150_read_raw,
-+};
-+
-+/* Trigger */
-+
-+/*
-+ * Enable or disable the FIFO almost-full interrupt when the IIO triggered
-+ * buffer is started or stopped.  Keeping the interrupt masked until capture
-+ * is active prevents a pre-existing FIFO fill from asserting the line before
-+ * the handler is ready to clear it.
-+ */
-+static int max86150_set_trigger_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct max86150_data *data = iio_priv(indio_dev);
-+	unsigned int mask = state ? MAX86150_INT_A_FULL : 0;
-+	int ret;
-+
-+	if (state) {
-+		/*
-+		 * Flush stale FIFO data before enabling capture so the first
-+		 * samples pushed to userspace are not from before buffer enable.
-+		 */
-+		ret = regmap_write(data->regmap, MAX86150_REG_FIFO_WR_PTR, 0);
-+		if (ret)
-+			return ret;
-+		ret = regmap_write(data->regmap, MAX86150_REG_OVF_COUNTER, 0);
-+		if (ret)
-+			return ret;
-+		ret = regmap_write(data->regmap, MAX86150_REG_FIFO_RD_PTR, 0);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return regmap_write(data->regmap, MAX86150_REG_INT_ENABLE1, mask);
-+}
-+
-+static const struct iio_trigger_ops max86150_trigger_ops = {
-+	.set_trigger_state = max86150_set_trigger_state,
-+};
-+
-+/* Triggered buffer */
-+
-+/**
-+ * max86150_trigger_handler - threaded IRQ handler for FIFO almost-full
-+ *
-+ * Called by the IIO buffer infrastructure when the hardware trigger fires.
-+ * Reads INT_STATUS1 to de-assert the interrupt, then drains all available
-+ * FIFO samples into the IIO push buffer, packing only the channels that
-+ * are currently enabled in active_scan_mask.
-+ */
-+static irqreturn_t max86150_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func	*pf   = p;
-+	struct iio_dev		*idev = pf->indio_dev;
-+	struct max86150_data	*data = iio_priv(idev);
-+	unsigned int status, wr_ptr, rd_ptr, ovf;
-+	u32 ppg_red, ppg_ir;
-+	s32 ecg;
-+	int ret, n_avail, i, j;
-+
-+	/*
-+	 * Reading INT_STATUS1 clears the interrupt.  Do this before touching
-+	 * the FIFO so the pin is de-asserted while we drain samples.
-+	 */
-+	ret = regmap_read(data->regmap, MAX86150_REG_INT_STATUS1, &status);
-+	if (ret)
-+		goto done;
-+
-+	ret = regmap_read(data->regmap, MAX86150_REG_FIFO_WR_PTR, &wr_ptr);
-+	if (ret)
-+		goto done;
-+	ret = regmap_read(data->regmap, MAX86150_REG_FIFO_RD_PTR, &rd_ptr);
-+	if (ret)
-+		goto done;
-+
-+	/*
-+	 * Read OVF_COUNTER to distinguish a full FIFO from an empty one:
-+	 * both produce wr_ptr == rd_ptr after the pointers wrap around.
-+	 * If OVF_COUNTER is non-zero the FIFO has saturated; treat all 32
-+	 * slots as available so we drain the entire FIFO and clear the
-+	 * interrupt condition.
-+	 */
-+	ret = regmap_read(data->regmap, MAX86150_REG_OVF_COUNTER, &ovf);
-+	if (ret)
-+		goto done;
-+
-+	if (ovf > 0)
-+		n_avail = MAX86150_FIFO_DEPTH;
-+	else
-+		n_avail = (wr_ptr - rd_ptr) & (MAX86150_FIFO_DEPTH - 1);
-+
-+	/*
-+	 * Reconstruct per-sample timestamps from the IRQ capture time.
-+	 * iio_pollfunc_store_time() stored the IRQ time in pf->timestamp;
-+	 * that corresponds to the newest sample in the FIFO.  Older samples
-+	 * are spaced by sample_period_ns going backward in time.
-+	 */
-+	for (i = 0; i < n_avail; i++) {
-+		s64 ts = pf->timestamp -
-+			 (s64)(n_avail - 1 - i) * data->sample_period_ns;
-+
-+		ret = max86150_read_one_sample(data, &ppg_red, &ppg_ir, &ecg);
-+		if (ret)
-+			break;
-+
-+		/*
-+		 * Zero the entire buffer before packing so padding bytes
-+		 * between enabled channels do not leak previous sample data
-+		 * to userspace when fewer than 3 channels are active.
-+		 */
-+		memset(data->buf, 0, sizeof(data->buf));
-+
-+		/*
-+		 * Pack only active channels at consecutive positions [0..j-1].
-+		 * iio_push_to_buffers_with_timestamp() uses scan_bytes (which
-+		 * accounts for the active channel count) to place the timestamp,
-+		 * so static indexing would misplace it when fewer than 3
-+		 * channels are enabled.
-+		 */
-+		j = 0;
-+		if (test_bit(MAX86150_IDX_PPG_RED, idev->active_scan_mask))
-+			data->buf[j++] = ppg_red;
-+		if (test_bit(MAX86150_IDX_PPG_IR, idev->active_scan_mask))
-+			data->buf[j++] = ppg_ir;
-+		if (test_bit(MAX86150_IDX_ECG, idev->active_scan_mask))
-+			data->buf[j++] = ecg;
-+
-+		iio_push_to_buffers_with_timestamp(idev, data->buf, ts);
-+	}
-+
-+done:
-+	iio_trigger_notify_done(idev->trig);
-+	return IRQ_HANDLED;
-+}
-+
-+/* Chip initialisation / teardown */
-+
-+static void max86150_powerdown(void *arg)
-+{
-+	struct max86150_data *data = arg;
-+
-+	regmap_write(data->regmap, MAX86150_REG_INT_ENABLE1, 0);
-+	regmap_write(data->regmap, MAX86150_REG_SYS_CTRL, MAX86150_SYS_SHDN);
-+}
-+
-+static int max86150_chip_init(struct max86150_data *data)
-+{
-+	int ret;
-+
-+	/* Software reset; the bit self-clears within 1 ms */
-+	ret = regmap_write(data->regmap, MAX86150_REG_SYS_CTRL,
-+			   MAX86150_SYS_RESET);
-+	if (ret)
-+		return ret;
-+	usleep_range(1000, 2000);
-+
-+	/*
-+	 * FIFO: no sample averaging, rollover enabled, assert A_FULL when
-+	 * 17 samples are in the FIFO (32 - 15 = 17 available to read).
-+	 */
-+	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_CONFIG,
-+			   MAX86150_FIFO_ROLLOVER_EN |
-+			   FIELD_PREP(MAX86150_FIFO_A_FULL,
-+				      MAX86150_FIFO_A_FULL_VAL));
-+	if (ret)
-+		return ret;
-+
-+	/* Slot 1 = PPG Red (LED1), Slot 2 = PPG IR (LED2) */
-+	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_DCTRL1,
-+			   FIELD_PREP(MAX86150_FIFO_FD1, MAX86150_FD_LED1) |
-+			   FIELD_PREP(MAX86150_FIFO_FD2, MAX86150_FD_LED2));
-+	if (ret)
-+		return ret;
-+
-+	/* Slot 3 = ECG, Slot 4 = disabled */
-+	ret = regmap_write(data->regmap, MAX86150_REG_FIFO_DCTRL2,
-+			   FIELD_PREP(MAX86150_FIFO_FD3, MAX86150_FD_ECG) |
-+			   FIELD_PREP(MAX86150_FIFO_FD4, MAX86150_FD_NONE));
-+	if (ret)
-+		return ret;
-+
-+	/* PPG: 100 Hz sample rate, 16384 nA ADC full-scale range */
-+	ret = regmap_write(data->regmap, MAX86150_REG_PPG_CONFIG1,
-+			   FIELD_PREP(MAX86150_PPG_ADC_RGE,
-+				      MAX86150_PPG_ADC_RGE_16384) |
-+			   FIELD_PREP(MAX86150_PPG_SR,
-+				      MAX86150_PPG_SR_100HZ));
-+	if (ret)
-+		return ret;
-+
-+	/* LED pulse amplitudes (~50 mA) */
-+	ret = regmap_write(data->regmap, MAX86150_REG_LED1_PA,
-+			   MAX86150_LED_PA_DEFAULT);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(data->regmap, MAX86150_REG_LED2_PA,
-+			   MAX86150_LED_PA_DEFAULT);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Record sample period for timestamp reconstruction in the trigger
-+	 * handler.  The PPG_SR field is fixed to 100 Hz in this driver.
-+	 */
-+	data->sample_period_ns = 10000000; /* 100 Hz = 10 ms */
-+
-+	/*
-+	 * Do NOT enable the A_FULL interrupt here.  It is enabled and
-+	 * disabled via max86150_set_trigger_state() when the IIO triggered
-+	 * buffer is started and stopped, which prevents the edge-triggered
-+	 * interrupt line from asserting before the handler is registered.
-+	 */
-+	return 0;
-+}
-+
-+/* Probe */
-+
-+static int max86150_probe(struct i2c_client *client)
-+{
-+	struct iio_dev		*indio_dev;
-+	struct max86150_data	*data;
-+	unsigned int		 part_id;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data      = iio_priv(indio_dev);
-+	data->dev = &client->dev;
-+
-+	/*
-+	 * Enable power supplies before any I2C access.  Both supplies are
-+	 * optional in the device tree; use _optional variant so probing
-+	 * succeeds on boards that power the device from fixed rails with no
-+	 * DT regulator node.
-+	 */
-+	ret = devm_regulator_get_enable_optional(&client->dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "Failed to get/enable vdd supply\n");
-+
-+	ret = devm_regulator_get_enable_optional(&client->dev, "leds");
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "Failed to get/enable leds supply\n");
-+
-+	data->regmap = devm_regmap_init_i2c(client, &max86150_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
-+				     "Failed to initialise regmap\n");
-+
-+	ret = regmap_read(data->regmap, MAX86150_REG_PART_ID, &part_id);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "Cannot read part ID\n");
-+
-+	if (part_id != MAX86150_PART_ID_VAL)
-+		return dev_err_probe(&client->dev, -ENODEV,
-+				     "Unexpected part ID 0x%02x (expected 0x%02x)\n",
-+				     part_id, MAX86150_PART_ID_VAL);
-+
-+	ret = max86150_chip_init(data);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "Chip initialisation failed\n");
-+
-+	ret = devm_add_action_or_reset(&client->dev, max86150_powerdown, data);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name         = "max86150";
-+	indio_dev->channels     = max86150_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max86150_channels);
-+	indio_dev->info         = &max86150_iio_info;
-+	indio_dev->modes        = INDIO_DIRECT_MODE;
-+
-+	/*
-+	 * If the device tree provides an interrupt, set up a hardware
-+	 * trigger so userspace can use the FIFO almost-full signal to
-+	 * drive capture without polling.
-+	 */
-+	if (client->irq > 0) {
-+		data->trig = devm_iio_trigger_alloc(&client->dev,
-+						    "%s-dev%d",
-+						    indio_dev->name,
-+						    iio_device_id(indio_dev));
-+		if (!data->trig)
-+			return -ENOMEM;
-+
-+		data->trig->ops = &max86150_trigger_ops;
-+		iio_trigger_set_drvdata(data->trig, indio_dev);
-+
-+		/*
-+		 * iio_trigger_generic_data_rdy_poll is a hard-IRQ handler
-+		 * that calls iio_trigger_poll() and returns IRQ_HANDLED.
-+		 * No IRQF_ONESHOT is needed for this edge-triggered line.
-+		 */
-+		ret = devm_request_irq(&client->dev, client->irq,
-+				       iio_trigger_generic_data_rdy_poll,
-+				       IRQF_TRIGGER_FALLING,
-+				       "max86150", data->trig);
-+		if (ret)
-+			return dev_err_probe(&client->dev, ret,
-+					     "Cannot request IRQ %d\n",
-+					     client->irq);
-+
-+		ret = devm_iio_trigger_register(&client->dev, data->trig);
-+		if (ret)
-+			return dev_err_probe(&client->dev, ret,
-+					     "Cannot register trigger\n");
-+
-+		/*
-+		 * Set the device's default trigger.  iio_trigger_get()
-+		 * increments the trigger refcount; the IIO core balances
-+		 * this with iio_trigger_put() in iio_dev_release() when
-+		 * the iio_dev is freed.  No additional devm action needed.
-+		 */
-+		indio_dev->trig = iio_trigger_get(data->trig);
-+	}
-+
-+	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
-+					      iio_pollfunc_store_time,
-+					      max86150_trigger_handler,
-+					      NULL);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
-+				     "Cannot setup triggered buffer\n");
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+/* I2C driver table */
-+
-+static const struct i2c_device_id max86150_id[] = {
-+	{ "max86150" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max86150_id);
-+
-+static const struct of_device_id max86150_of_match[] = {
-+	{ .compatible = "maxim,max86150" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max86150_of_match);
-+
-+static struct i2c_driver max86150_driver = {
-+	.driver = {
-+		.name           = "max86150",
-+		.of_match_table = max86150_of_match,
-+	},
-+	.probe    = max86150_probe,
-+	.id_table = max86150_id,
-+};
-+module_i2c_driver(max86150_driver);
-+
-+MODULE_AUTHOR("Md Shofiqul Islam <shofiqtest@gmail.com>");
-+MODULE_DESCRIPTION("MAX86150 ECG and PPG biosensor driver");
-+MODULE_LICENSE("GPL");
--- 
-2.51.1
+ 	if (latency_gyro == 0) {
+-		watermark = wm_accel;
+-		st->fifo.watermark.eff_accel = wm_accel;
++		period = period_accel;
++		latency = latency_accel;
+ 	} else if (latency_accel == 0) {
+-		watermark = wm_gyro;
+-		st->fifo.watermark.eff_gyro = wm_gyro;
++		period = period_gyro;
++		latency = latency_gyro;
+ 	} else {
+-		/* compute the smallest latency that is a multiple of both */
+-		if (latency_gyro <= latency_accel)
+-			latency = latency_gyro - (latency_accel % latency_gyro);
+-		else
+-			latency = latency_accel - (latency_gyro % latency_accel);
+-		/* all this works because periods are multiple of each others */
+-		watermark = latency / min(period_gyro, period_accel);
+-		if (watermark < 1)
+-			watermark = 1;
+-		/* update effective watermark */
+-		st->fifo.watermark.eff_gyro = latency / period_gyro;
+-		if (st->fifo.watermark.eff_gyro < 1)
+-			st->fifo.watermark.eff_gyro = 1;
+-		st->fifo.watermark.eff_accel = latency / period_accel;
+-		if (st->fifo.watermark.eff_accel < 1)
+-			st->fifo.watermark.eff_accel = 1;
++		/* use the shortest period and the gcd of the latencies */
++		period = min(period_gyro, period_accel);
++		latency = gcd(latency_gyro, latency_accel);
+ 	}
+ 
++	/* update effective watemarks */
++	st->fifo.watermark.value = max(latency / period, 1);
++	if (wm_gyro)
++		st->fifo.watermark.eff_gyro = max(latency / period_gyro, 1);
++	if (wm_accel)
++		st->fifo.watermark.eff_accel = max(latency / period_accel, 1);
++
+ 	/* compute watermark value in bytes */
+-	wm_size = watermark * packet_size;
++	wm_size = st->fifo.watermark.value * packet_size;
+ 
+ 	/* changing FIFO watermark requires to turn off watermark interrupt */
+ 	ret = regmap_update_bits_check(st->map, INV_ICM42600_REG_INT_SOURCE0,
+@@ -454,11 +442,10 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm42600_state *st,
+ 	st->fifo.nb.accel = 0;
+ 	st->fifo.nb.total = 0;
+ 
+-	/* compute maximum FIFO read size */
++	/* compute maximum FIFO read size (watermark for max = 0 interrupt case) */
+ 	if (max == 0)
+-		max_count = sizeof(st->fifo.data);
+-	else
+-		max_count = max * inv_icm42600_get_packet_size(st->fifo.en);
++		max = st->fifo.watermark.value;
++	max_count = max * inv_icm42600_get_packet_size(st->fifo.en);
+ 
+ 	/* read FIFO count value */
+ 	raw_fifo_count = (__be16 *)st->buffer;
+@@ -574,6 +561,7 @@ int inv_icm42600_buffer_init(struct inv_icm42600_state *st)
+ 
+ 	st->fifo.watermark.eff_gyro = 1;
+ 	st->fifo.watermark.eff_accel = 1;
++	st->fifo.watermark.value = 1;
+ 
+ 	/*
+ 	 * Default FIFO configuration (bits 7 to 5)
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
+index ffca4da1e249..88b8b9f780af 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
+@@ -34,6 +34,7 @@ struct inv_icm42600_fifo {
+ 		unsigned int accel;
+ 		unsigned int eff_gyro;
+ 		unsigned int eff_accel;
++		unsigned int value;
+ 	} watermark;
+ 	size_t count;
+ 	struct {
+
+---
+base-commit: cc746297b23e89bd5df9f91f3a0ca209e8991763
+change-id: 20260623-inv-icm42600-fix-watermark-fifo-reading-624caf080754
+
+Best regards,
+--  
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
 
