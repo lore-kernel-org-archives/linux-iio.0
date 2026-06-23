@@ -1,130 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C87453793AC;
-	Tue, 23 Jun 2026 10:27:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA6D359A8B;
+	Tue, 23 Jun 2026 10:30:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782210467; cv=none; b=oBRU6DrKZJXsWClzFIlDSnlBORt4qky/9bVXdlz47HUIt+0VwfD7esEbZ2UucsgOv4Pvsic/hz9c4s+mKK7SPAG/LI4Low+O6SHNGZE9U21p/4zYIeo2TZO5NTrUxNgAnYl7PJ4drzHVCariztSCUQiP+7raphJtsLY5VhL3E9E=
+	t=1782210635; cv=none; b=ccf9AFuk7po61CHz8qgNrFSuNE5u34XBhlaHZROyu86+B6khZBOj8f8V2zRgiVVwYJvgD1541IqqzDEw8/FTtiEPKDDj1M3umAouc0Fav4QjqB4ipJsT53q8S6JlT/T/1AR7BrrKG3o2wKnegKfrKjG6p7IpPSMjMMuzBjeMe2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782210467; c=relaxed/simple;
-	bh=vHvqJcg/E2q6BP1y4YVLBpMV3jKGlMVMhSXGfLPFk3Y=;
+	s=arc-20240116; t=1782210635; c=relaxed/simple;
+	bh=Dm4j/mvNVt9S5t1qetrhTySaQB3CVULjgBATeoR3e6s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dkMUQXy1tJWNb0PZVOx84382TUFMXZLhSeGYyxkMutf2sleQBX2IH6N8XvtbLysNNc7ILRcdGO8QDwMW/iqCEF1Ab1xS/2xuMoglhivuKTNXDWRGoLDlkPhVrgjbAdIAWoBeFiYdnlCBOB11AnprRxHb8ebQ/ekhQT065ujF+XM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R8nq5Wd4; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=bK1TGcayvI4jQFf6SJEPYAnvRGEzxp+1KCRItqoFmtkdxZPTmhh3nWqb1F1nqoCp9EU1PgH9POgE7Si80Y34wuA3O58cfCE+lbNN/gOK6U2mqHj4zSJTw/EPgFp+toOz5tFx8Xy+/HNHWGho9u073mEQzqlO33M5NCJ55thkjys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mCgxU1nu; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R8nq5Wd4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mCgxU1nu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782210466; x=1813746466;
+  t=1782210633; x=1813746633;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=vHvqJcg/E2q6BP1y4YVLBpMV3jKGlMVMhSXGfLPFk3Y=;
-  b=R8nq5Wd4S17X4cg9ZLrmc4bUEb9hnsJbVBUrwRAsWHxbl5Wmaek9KT+8
-   vt5QsNeFn5QUOm7Vymc4zvTCwXDqvTZZN35zj79J6DrK1XKdKnwqWZc+r
-   v5wG+S7AKCdRR9eyvffWaypIH55Fzc9eBQZ8ASrhurf+z5eLcdaZTWrui
-   uHatSzyfhmzb9CpiZniNjLBfR1rPV41vtoVEGF9hlE0mS2WCmTMbqi+pd
-   cINv3HR52sWS62Pu8oWJP+U6/UtF4VmAmEN20tXTq+4il/ZmucPcjfcpF
-   j+wCqd6UX27l1B6TWhwIlUKgPs2rkRRfe0vUggElWpuLyFCtVMjIVJou0
-   w==;
-X-CSE-ConnectionGUID: OanaHJtwT0CL5svtGVRX5Q==
-X-CSE-MsgGUID: S16mIpZLQfuXGveFZZ5Jkw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="82718592"
+   mime-version:in-reply-to;
+  bh=Dm4j/mvNVt9S5t1qetrhTySaQB3CVULjgBATeoR3e6s=;
+  b=mCgxU1nuxlWXhUJjUCb2/nVZLYeVt4dRQVpscJWXI57etl72SO+s+yaW
+   Svpg1ItmGc7DCYfA9m9UsKoCXLC/eBbP8DIEc8ZoTVxQIPP50yrpYZBMW
+   GoHvQNvj44d6Xt4Ztt2fBE5OuK89fkcs5mwe9DbLD/ymxtLNxZAVz4Sru
+   ZBBoLY60ljYT1XJIaK5T5uZbCf43gqOdOAi+EREQzPi9fU1IGwlvUfphw
+   iupqyU4gzu5u2fS4sVPB/ZkBKMaWOwXczWmo7FxUr1zL7ff/DicFVJ2Kv
+   ncc05/zpKS32c8nIR7FDwGVoH3+IAtCI3wNhRAmukdLHsghPldw9+s9TO
+   Q==;
+X-CSE-ConnectionGUID: ZSmwICo2TSipoBWsUJo8vQ==
+X-CSE-MsgGUID: Z51mpjLDTtivTGmeavcPWg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="100377668"
 X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="82718592"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 03:27:45 -0700
-X-CSE-ConnectionGUID: UgTo6Kh4TVC4cXe7Y0krvA==
-X-CSE-MsgGUID: QteRkIPSSse7ahlhOnon3w==
+   d="scan'208";a="100377668"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 03:30:33 -0700
+X-CSE-ConnectionGUID: 2wrNwMBpSQizc3b1aQwtHA==
+X-CSE-MsgGUID: Hz5IlPhdStmaeyXKtGDKMw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="245342363"
+   d="scan'208";a="251415531"
 Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 03:27:39 -0700
-Date: Tue, 23 Jun 2026 13:27:37 +0300
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 03:30:29 -0700
+Date: Tue, 23 Jun 2026 13:30:27 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Frank Li <Frank.li@oss.nxp.com>, nuno.sa@analog.com,
-	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
- address width masks
-Message-ID: <ajpfmQ6JID5rHLMF@ashevche-desk.local>
-References: <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
- <ajF4i3o0gNRtUelb@SMW015318>
- <ajQkupPzv8-GdEjv@nsa>
- <ajVs3jwoxq7Jhop1@SMW015318>
- <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
- <ajj8AhN1YC3uvuLb@nsa>
- <ajlMAijTUHsnOhEQ@SMW015318>
- <ajlR9QiXiBAH4mWH@nsa>
- <ajmAP2nKzi2dPEVx@SMW015318>
- <ajpYvzlHSPiJRvnX@nsa>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Archana Patni <archana.patni@linux.intel.com>,
+	Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH v2 0/8] HID: iio: Avoid race between callback setup and
+ device exposure
+Message-ID: <ajpgQ8vCHacv_klG@ashevche-desk.local>
+References: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ajpYvzlHSPiJRvnX@nsa>
+In-Reply-To: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jun 23, 2026 at 11:14:51AM +0100, Nuno Sá wrote:
-> On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
-> > On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
-> > > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
-> > > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
-
-...
-
-> > If support 4Byte, it native supportted any N*4Byte.
-> > 
-> > So needn't bit mask to indicate all support bytes.
+On Mon, Jun 22, 2026 at 10:59:56AM +0530, Sanjay Chitroda wrote:
 > 
-> > > > each transfer, dma_slave_cfg should set specific bus width requirement.
-> > > >
-> > > > If memory have requirement for 32bytes, typical cache line length for
-> > > > hardwaer coherence transfer, it should use dmaengine_alignment.
-> > > >
-> > > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
-> > >
-> > > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
-> > > there... The code seems to use the dma bus width to match against PCM
-> > > formats supported and filter only the ones we can support (per dma cap).
-> > 
-> > if cap is one byte, it should support 8, 16, 24, 32, 64
-> > if cap is two byte, it should support 16, 32, 64
-> > if cap is 4 byte,  it only support 32 and 64.
+> This series avoid a race condition in HID IIO drivers related to the
+> ordering between callback registration and device exposure.
 > 
-> Well, Now I see your point but not exactly. Because we do have
-> 
-> DMA_SLAVE_BUSWIDTH_3_BYTES
-> 
-> and it might be used by the pcm_dmaengine code,
-> 
-> There are also some controllers that set it. But it looks like all that
-> set it also set 1byte.
+> Currently, several HID IIO drivers register the IIO device (making it
+> visible to userspace and other kernel consumers) before all required
+> callbacks and resources are fully initialized, or rely on devm-based
+> cleanup in a way that does not guarantee correct teardown ordering.
+> This creates a window where the device can be accessed while it is
 
-But this might be not true for all HW in the world. In previous reply I made
-a comparison with MMIO accesses where not all HW that needs 1-byte read can
-cope with that. If there is some proof that this is the case when 1-byte
-DMA bus implies 3-bytes (or other odd number), I would like to see it.
+There is a difference between "this creates" and "this might create".
+I believe Srinivas and others were asking for the proof. So, what path
+in the code makes this happen or possible to happen?
 
-> So your suggestion might still hold and work but I'm not too convinced
-> that having the array complicates things that bad when compared with the
-> risk of breaking existing code.
+> not fully initialized or is being torn down, potentially leading to
+> sample drop or stale/no data.
+> 
+> To handle this, the series ensures that:
+>   - All required callbacks and resources are set up before the device
+>     is registered with the IIO core
+>   - Resource cleanup is performed explicitly where ordering matters
+> 
+> PS: This is prepratory series to convert all HID IIO driver to devm.
+> 
+> Testing:
+>   - Compiled with W=1 for each patch in series
+> 
+> ---
+> Changes in v2:
+> - Drop fixes tag and rectify commit message with reference to that
 
-> > Needn't mask each bit.
+You also dropped my tag. Why?
+
+> - Link to v1: https://patch.msgid.link/20260606-5-june-hid-iio-race-fixes-v1-0-27a848c5758f@gmail.com
 
 -- 
 With Best Regards,
