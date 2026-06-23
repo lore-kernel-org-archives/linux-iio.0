@@ -1,59 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F7625F99F;
-	Tue, 23 Jun 2026 15:08:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26D9025F99F;
+	Tue, 23 Jun 2026 15:10:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782227324; cv=none; b=HmAmxmGrG9xu50gXSCGwjIOegBE+8x8Q31yeOeVkm4iCA/fXLIoe0qg5ehAkw6f2PecaQ/Gtu7KD/a9fU3FWupv2a0sxh/S1OKEH/Nd51TW4vRdrCkTpYCG6Wa7bz+XdfBrCjF3cawrxuIiNSeaYQ+9sUGpnhQffT9d95RTcTgo=
+	t=1782227449; cv=none; b=RolEgRGqluc55PXkaieYy36Bgw6kbkkOjnCK5wKnh3kdJ7hbtAbeq7xRpDt2XO3OzgbnsPZbqCovUmWkV/7CM4ytJ2CmjWiWD4Vlng/13DNH1dlDkbtP6fFeACUqCLet7mxbr7tzMsvQFlkaKPD/tHjQ9jlKgr3rFIFB8BtF7Po=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782227324; c=relaxed/simple;
-	bh=swxMVi2/5GBeOkGZeUcQqpnIRK2v0l4JWY5Im7sAicQ=;
+	s=arc-20240116; t=1782227449; c=relaxed/simple;
+	bh=WidTaHwkogQl64oY8d9iqyW9XjIyn5296C/AG1GVeJs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VucKX12fKTECra7jHksFVc0UbLRmRwAjKSg5vJWcPux7o1ZWQ+jEAhscHc8sgK31f5Qmq69I9yBn9N9deHOpKgdegc/QrAbMzfPZgKnwMb2G6Q+maTOH3hFTnLr/NG3MR9A1VqsJna9tiDCDJvLTat9wWT2FpWafZRzq72v2szI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lDRHYHKw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=j1I79vfWpEkST+EI+CGa+/NktE70YZKq3ZHrq3x7NN4i5iVzn3YdiNXkpJzxNVeg5/A/mVhLHj0gJnrUI2LwqINOdAFYZv6vVXJBgjs4nAsarLxJTwcJCFBpkBEOzbGmg5566u9LFJZP+p838gw+1OOvbQlZNwGPYTwBHSCZ6IM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kR56Wa5R; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lDRHYHKw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EDD1F000E9;
-	Tue, 23 Jun 2026 15:08:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kR56Wa5R"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705741F00A3A;
+	Tue, 23 Jun 2026 15:10:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782227323;
-	bh=lgxErHiAsUx2zyUgJpjq3vm+qoyUS3A23oDYQHZoGvs=;
+	s=k20260515; t=1782227448;
+	bh=JbnEvt1HYbMhxvD0ZUEB9Wz8ezFMKa7Yiz789jn378Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lDRHYHKw2S+xore/XuR0msYqrpqVZttTY/ssE+cnEcpCB88RupjnmQe0+xgBQc81O
-	 TISPJ363pHWDuvzAfFhVOqlYBiCMf/HelXPrGk8IcbKqsE2aNHRBi3j3FnX/+kyzNI
-	 Owb/7XlfB1dBhmSkEEBhqfvDl0Stjpx5nwDFtHwVRajtMDN0PhGU6iH/JPcxEW5Y/x
-	 LXgsQOkdShXslTv9OCivzytOJhM2WU46XuZurg4m4ypcTgrpJhGyfB2K/BWZTsUHjj
-	 Sk+g3O4WXXOzqdu4My9ag9DDlO3E9uDzjuTNNTv5dXGFiULb2rmGaW+fhJE2YP8zRy
-	 vRT/1/jVzmr5g==
-Date: Tue, 23 Jun 2026 16:08:30 +0100
+	b=kR56Wa5RrjGIycvuXt4DdZ+TTHnp16yTDBAq8s2nyvOzJ1vTF3bi4uB02BN0S38sG
+	 kyChjWVQRlOI1eKTzdBc2obuYnPEN+kAiZAw9YUDragqBJs8TfdcKboC4dAyhRPAI0
+	 HR6j5obPwvpVx/rXNFh6TFvCRkueIuJXsuavEZ7COBAPg7oM24IZtZjarCuTXftaQc
+	 VXxqKMFWfH1SqoGossGvrdGGCu2FzrXbE358FI6gDIXBxMrea5BajbqDXmKoSj6Euf
+	 +c0kAIc2VcU9Wnz+6s33xSm9MGiwUMFa6gDMP/1git4w55pWNK4zyDWmsurANgzAzy
+	 DVQ+HEJYsHaDg==
+Date: Tue, 23 Jun 2026 16:10:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Rodrigo Alencar
- <455.rodrigo.alencar@gmail.com>, Janani Sunil <jan.sun97@gmail.com>, Janani
- Sunil <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260623160830.42833ba9@jic23-huawei>
-In-Reply-To: <20260622-captive-tux-067efd31ceac@spud>
-References: <076d7d2d-81a0-49c2-af94-bd65ead66c09@gmail.com>
-	<20260619-obstinate-polo-a230bef97fda@spud>
-	<20260619-bunch-diocese-dd7805cc17ff@spud>
-	<ajU73_TkKrSbqD4f@nsa>
-	<20260619-concierge-doozy-9c161533c369@spud>
-	<ajVlD-j0nIGrRVow@nsa>
-	<20260621153330.79b6600c@jic23-huawei>
-	<5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
-	<ajkMBh-R_7pYaoAn@nsa>
-	<20260622172911.48259a0c@jic23-huawei>
-	<20260622-captive-tux-067efd31ceac@spud>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Olivier MOYSAN <olivier.moysan@foss.st.com>, "Rob Herring (Arm)"
+ <robh@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, linux-iio@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: stm32-dfsdm: Treat flags as booleans
+Message-ID: <20260623161038.6429c3d7@jic23-huawei>
+In-Reply-To: <ajpX3E2zHYh2e8FG@ashevche-desk.local>
+References: <20260612215151.1886851-1-robh@kernel.org>
+	<ai1dhJWb9vKqxEEe@ashevche-desk.local>
+	<20260621151026.69714694@jic23-huawei>
+	<46fce99d-9dd5-435b-95cd-86ed4771aa83@foss.st.com>
+	<ajpX3E2zHYh2e8FG@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -64,83 +54,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 22 Jun 2026 19:39:43 +0100
-Conor Dooley <conor@kernel.org> wrote:
+On Tue, 23 Jun 2026 12:54:36 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, Jun 22, 2026 at 05:29:11PM +0100, Jonathan Cameron wrote:
-> > > > > Yeah. It's not clear to me how that works for the microchip devices
-> > > > > (I suspect it doesn't!)
-> > > > > 
-> > > > > Just thinking as I type, but could we do something a bit nasty with
-> > > > > a gpio mux that doesn't actually switch but represents the GPIO being
-> > > > > shared?  Given this is all tied to the spi bus that should all happen
-> > > > > under serializing locks. 
-> > > > > 
-> > > > > Agreed though that this would be nicer as an SPI thing that let
-> > > > > us specify that a single CS is share by multiple devices and their
-> > > > > is some other signal acting to select which one we are talking to.
-> > > > >     
-> > > > 
-> > > > If the device-addressing on the same chip-select is to be handled
-> > > > by the spi framework, wouldn't we lose device-specific features?
-> > > > 
-> > > > I understand that this multi-device feature is there mostly to extend the
-> > > > channel count from 16 to 32, 48 or 64. I suppose the command:
-> > > > 
-> > > > 	"MULTI DEVICE SW LDAC MODE"
-> > > > 
-> > > > exists so that software can update channel values accross multiple devices.    
-> > > 
-> > > Right! You do have a point! I agree the main driver for a feature like
-> > > this is likely to extend the channel count and effectively "aggregate"
-> > > devices.
-> > > 
-> > > But I would say that even with the spi solution the MULTI DEVICE stuff
-> > > should be doable (as we still need a sort of adi,pin-id property). 
-> > > 
-> > > But yes, I do feel that the whole feature is for aggregation so seeing
-> > > one device with 32 channels is the expectation here? Rather than seeing
-> > > two devices with 16 channels.  
-> > 
-> > Agreed - if we have messages that address both devices at once that needs
-> > to be a unified driver and given they are about triggering simultaneous
-> > update of all channels it needs to look like one big device.
-> > This ends up similar to how we handle daisy chain devices.
-> > 
-> > The question of what to do on devices that don't have this feature
-> > is rather different. Good thing you read the datasheet :)  
+> On Tue, Jun 23, 2026 at 11:43:49AM +0200, Olivier MOYSAN wrote:
+> > On 6/21/26 16:10, Jonathan Cameron wrote:  
+> > > On Sat, 13 Jun 2026 16:39:16 +0300
+> > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > > On Fri, Jun 12, 2026 at 04:51:50PM -0500, Rob Herring (Arm) wrote:  
 > 
-> I'm not sure it really is, the intent for the microchip devices I think
-> is pretty similar. The mcp3911 datasheet cites three-phase power
-> metering using three devices as a typical use-case, for example.
-> Probably creating an amalgamated device is a good fit there too?
+> ...
 > 
-> I assume an amalgamated device for this ADI product means per-channel ID
-> properties?
+> > > > > -	ret = of_property_read_u32_index(indio_dev->dev.of_node,
+> > > > > -					 "st,adc-alt-channel", chan_idx,
+> > > > > -					 &df_ch->alt_si);  
+> > > >   
+> > > > > +	df_ch->alt_si = of_property_present(indio_dev->dev.of_node,  
+> > > > 
+> > > > I believe it still has another (serious?) issue. We usually don't use indio_dev
+> > > > for device properties. It's not a device that is described in DT.
+> > > > It seems the only driver in IIO that does that. Note, I haven't conducted any
+> > > > deeper research, it might be (however I'm quite in doubt) that this is correct
+> > > > use and one device registers a few indio_dev:s.  
+> > > 
+> > > It is curious.  The registration sequence in this driver is complex, but I'm not
+> > > seeing anything that sets the fwnode for the struct iio_dev->dev before calling
+> > > the init() callbacks that end up in this code.  It is set later by iio_device_register()
+> > > (iirc that has something to do with consumers turning up later).
+> > > 
+> > > St folk could you take a look at this and see what we are missing
+> > > if it does currently work?
+> > > 
+> > > For now I'll apply this patch but might need to drop it if a fix clashes
+> > > with it.  
+> > 
+> > I confirm that the current legacy path is functional
+> > (With the st,adc-alt-channel property fix applied)  
+> 
+> Yeah, it's here
+> https://elixir.bootlin.com/linux/v7.1.1/source/drivers/iio/adc/stm32-dfsdm-adc.c#L1772
+> and should gone. Basically one wants to replace all these to use device and
+> fwnode propery APIs and proper device node, without that hack.
 
-Per device as they are 8 channel each, but effectively the same.
-(microchip devices are 2 channels each I think)
-
-> If so, I think they should be made generic and the Microchip
-> products retrofitted to use them, with a fallback to the proprietary
-> property. Not going to ask for the support for multiple devices in those
-> drivers, since the current way doesn't work and there'd be no loss of
-> support. Someone from Microchip can do that. The proprietary property
-> to generic conversion should be straightforward and provides weight to
-> an argument for this being generic, since that'd be three devices that
-> can all share?
-
-I think the practical difference is that for the ADI part we have to support
-it as a single device as some commands effectively don't use the address
-bits in the message.  For the microchip ones we could register multiple
-separate SPI devices and just provide one address for each.
-
-Equally we could treat the microchip ones as a unified device in which case
-the binding will be the same and there will be a property with a bunch
-of addresses (one for each device present). I'm fine with this option given
-as you say the datasheet calls out using this for channel expansion.
+If we 'were' going to keep this it should have been using the helper
+to set that. I thought all those had been cleaned up so didn't check
+for it being directly written :(  Obviously this comment is irrelevant
+given the code is going away!
 
 Jonathan
 
-
+> 
+> > It currently works because the driver initializes np from dev->of_node in
+> > probe, and that value is then used in init callbacks.
+> > 
+> > I agree that this approach is not robust, as it depends on initialization
+> > sequencing and on using an IIO object that is not the DT owner object. I
+> > will prepare a patch to use the DT device directly as the single source for
+> > DT properties.
+> > 
+> > I also suggest keeping a fallback path for st,adc-alt-channel so we do not
+> > break legacy DTs that have not yet migrated to the new binding.
+> > I prepare this also.  
+> 
 
