@@ -1,239 +1,242 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773C2364028;
-	Tue, 23 Jun 2026 09:50:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A21D367F25
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 09:53:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782208213; cv=none; b=doKlCum7Lm4r4bZBDnwxY2ZdTDN7CaJGmLLXY5b6r+SDmdpZaSHyr/QFAEEQpScYsYJuazZp+6R60iYD3vZlrqv8gUU6Y+dyMhr+IMY79wJsCDuJOXN9+PRslS7TK+cYxaZnl6JXoOroXlhF3zGStJ3yX1xDbChPgUE6lGZljqs=
+	t=1782208428; cv=none; b=buGZ7QOPOOqN9DmGEhhct+8ceGDH3zjK81i/2zm1cDgcCXVP8SxOHiEENuA8bvEjgfTnmsRihWii5SjoJmXjJbRaUbRG7jGL3ekJ62N0BmXmUKguHuNexpJADMHXzZLZT8VvcSbq676205GUyECz4TLxCPUihISsAqlG6bZpJ68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782208213; c=relaxed/simple;
-	bh=E8ME3jUr5NZJ1u/pCLY21u1GJkbr4nhtiz3fxeYF7rU=;
+	s=arc-20240116; t=1782208428; c=relaxed/simple;
+	bh=zrxHCEb1YYAwxHWMgXcqiWRejZEN2u5lEKgEdzsSSDI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fHSh4JYD47TRMLUgw8W2kQaY7lfFM6DrNE32imFmM3Awt8R+T+7vUsoGsZyT8E7MGfsiKRxaNcCyQuIms97qEA/6aPyXFzWE7Ch5ClhTqN/iss1pLo2yYX61ExayMyGxDCtwh8h2TAwM9cbY9Dy2mYbEX1FnFgjLBBzWftfa18Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QvtppI88; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=JQnbnfaVb5Gya5EMc67jao+r5rppEDu+Yys6wHpzq4J4p1Ba0/cJIZ66mBsy/PzQckvGb6IqA4zrMKI6FgjUdBAByj5Q+nbV1KVJ8L9+ZwTVC1SdXyn9VMPDbGTaHJiI9vYghutYs7qbfPoGXTc3OMKr234UFKnaKyrI9A+VItM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A74YO5c1; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QvtppI88"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782208212; x=1813744212;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=E8ME3jUr5NZJ1u/pCLY21u1GJkbr4nhtiz3fxeYF7rU=;
-  b=QvtppI88qA793xtjVD/0e6n+DaP8F5NoQ/F5NG9CRqw4OFhR4l4O2SJO
-   mtZxekXnwny+9A6ETzF71bBgyoOnOHPiOHntZpbSX4oK02KByLVS6JX1I
-   K5brzlDqGJf93Cr4tQLWxuA218Fu0MnL0pfyOl6a5xxWNw4/7I6pFUyjX
-   McqVdAly8cp6u6FluqZZn5HeBnXJqqIPNJ2vf+CdWBgVLhQME1zEk2mmX
-   zp1k7cWe18mtMvBvFYP1hIpSs2EOr6NpMDrta+c0iZ9e6ojUtQ/xKpNw5
-   iWVcLxKuxQLUiazXN8s/HxlNrcZdSihgJewUlocIQ06a7xmAqDSi35IR7
-   g==;
-X-CSE-ConnectionGUID: dEyVXKGySiO63xN1G5I+cA==
-X-CSE-MsgGUID: 5QhCHgioTxqLhUwt4EQEGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="94336765"
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="94336765"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:50:11 -0700
-X-CSE-ConnectionGUID: IH26D8UmRLCopMGYbxH9Hw==
-X-CSE-MsgGUID: 2DN7P0YPSxSLKcavwrDRcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="245333747"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:50:08 -0700
-Date: Tue, 23 Jun 2026 12:50:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Frank Li <Frank.li@oss.nxp.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>, nuno.sa@analog.com,
-	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
-	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
- address width masks
-Message-ID: <ajpWzimx-5jlczpp@ashevche-desk.local>
-References: <20260616-dmaengine-support-wider-dma-masks-v1-0-da23a8dcb756@analog.com>
- <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
- <ajF4i3o0gNRtUelb@SMW015318>
- <ajQkupPzv8-GdEjv@nsa>
- <ajVs3jwoxq7Jhop1@SMW015318>
- <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
- <ajj8AhN1YC3uvuLb@nsa>
- <ajlMAijTUHsnOhEQ@SMW015318>
- <ajlR9QiXiBAH4mWH@nsa>
- <ajmAP2nKzi2dPEVx@SMW015318>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A74YO5c1"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-490ac357c55so58611415e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 02:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782208425; x=1782813225; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=P04n1SaD92+9BNlquHR61xonqsYGq3F6LP2UBCvuI9w=;
+        b=A74YO5c1Y2jwrdtdUEpWKQ9WIGm67nrH7QHPIzW1DQd7GUzxi8rvMB9fTbGVQRq/Bo
+         /5P0B0zTNvx+0dKuQdU524mB22n+WSl+WBIy29gGsIrgR3UfLwYLXjOj9AHNvqzGAhka
+         mze2QSpRLgIy0aY3Kt6ftl02wQh7el+uQH+v146hEewXhNfhbpV5Hc4SWxBVYNZblvdr
+         zLMoLtNB/pufI4qOI8A2SLPzDPmMSIElSpzvopGfAA375N0RPM38GDb3J14kjsZSRg9l
+         a9gp8TId56F6LAIOIm+prCTYX/cC1pIATFBk8OK4Y+/31Isyd7+eyvulwJfcfbl5zw20
+         RPtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782208425; x=1782813225;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=P04n1SaD92+9BNlquHR61xonqsYGq3F6LP2UBCvuI9w=;
+        b=o7nOzz/GGjequNnEWT9P8Ms40V6LzH0e5WGKAOC0uoicNCbt++ahDgLI1y0skeTEb1
+         YrJ/nKmJ4LmTC7eib29L9dzRvKaDzKXxrxO5d2nYHHNUvCAy//Ajf0AEATgDZTU46vMr
+         AUPdOs3cnrgZyy9UgVuXBSea6puWJIL5uG4C9G6rERiK/xjJo8b4aPAKYqR3aSL2bfZo
+         tcn/Tl8mb1SJOal08cdRGmHd2KJNl9XdOQUMRcre+GQsMvhJc2+zv1iiejK6zjOTMQoV
+         OPA0MfZMoSV0hKDGqBrCnIaGCezJuR7UUPjP8ZAcsFzxfRgU06S3JZ+ERrU5FvjGfjOi
+         +b3g==
+X-Forwarded-Encrypted: i=1; AFNElJ9sY6Tr5myvb/F7NwJ3Uu7weWAvg9rghIudvb+bAR1IfjVHUk96rUPW8MAxWZB6ZbEmCVSzjkeL+Vs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywik04ZNW7r9l4bdH53SYnzToCs3MwSuj5y2xSsC6yIhNGv6f/w
+	+n34LrdNa3/iHGSWwu6SpW/0RjX2/eo71TlefftibaEYOr3Poga2DgUv
+X-Gm-Gg: AfdE7cmAMybc6fn5QgQ21bbFzHNdNl+Msu4pdrRxYpm8vZDGBa8rWcobCDAQsAuUESO
+	UJsZNOHZGPumLLnBX+qAiirk3yPe5GmR1m6Ncb8S6upHbLkoL4GLY1jt4cgaM2jquHJDaqM0X48
+	fSzgqGBFUL/cwCIrEwkVCjSxFETmf1CzUOZDEH8LxVORdhY9dArhqJHzmJYCZ31Vb3rhJG1qlm0
+	d5yBeqOqvoBBMUNy/IuTpMrkyQddK7boJxgc1fXfqahfP+Kw234w5GghrDxpLTQNLnMa4cqVpgR
+	84hGpTNPoft6pfrGuTpbbwWVdahnaWsgQK9QIWjWRSuWNc+iAKGAvyLrt3izamMPhFhdd2IkpDU
+	hwEPbUvilI/pUD5wy3Ztlq5Q3440a0s4cHYk9iDjI7RxKQYTVz8yVk7m2Bo78wXqUB0B2D+sRFR
+	hVshjXXhq9bb2yIjY=
+X-Received: by 2002:a05:600c:a48:b0:490:9df1:f0cf with SMTP id 5b1f17b1804b1-49240df7c34mr322418595e9.2.1782208424578;
+        Tue, 23 Jun 2026 02:53:44 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49240efc160sm346246235e9.2.2026.06.23.02.53.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2026 02:53:44 -0700 (PDT)
+Date: Tue, 23 Jun 2026 10:54:47 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, nuno.sa@analog.com, 
+	linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: buffer-dmaengine: Add support for cyclic DMA
+ transfers
+Message-ID: <ajpX2DN2atJ3kOPi@nsa>
+References: <20260611-iio-dma-cyclic-buffer-support-v1-1-bcf00e8d802c@analog.com>
+ <e05dddef-2ffc-4ab6-8ce7-f676b7801eff@baylibre.com>
+ <ai-0CIqteaSJJkau@nsa>
+ <ajk1FX-d_KoW14f-@nsa>
+ <20260622181209.791dfc6f@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ajmAP2nKzi2dPEVx@SMW015318>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260622181209.791dfc6f@jic23-huawei>
 
-On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
-> On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
-> > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
-> > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
-> > > > On Fri, Jun 19, 2026 at 03:02:53PM -0400, Frank Li wrote:
-> > > > > On Fri, Jun 19, 2026 at 11:22:54AM -0500, Frank Li wrote:
-> > > > > > On Thu, Jun 18, 2026 at 06:10:52PM +0100, Nuno Sá wrote:
-> > > > > > > On Tue, Jun 16, 2026 at 11:23:39AM -0500, Frank Li wrote:
-> > > > > > > > On Tue, Jun 16, 2026 at 04:40:53PM +0100, Nuno Sá via B4 Relay wrote:
-> > > > > > > > >
-> > > > > > > > > Advertise the source and destination bus widths through the new
-> > > > > > > > > dma_set_{src,dst}_addr_mask() helpers instead of open-coding the legacy
-> > > > > > > > > BIT() mask. This moves the driver onto the representation that can
-> > > > > > > > > express widths of 32 bytes and above and allows the legacy u32 field to
-> > > > > > > > > be removed once all users are converted.
-> > > > > > > > >
-> > > > > > > > > While at it, give the channel width members their proper
-> > > > > > > > > enum dma_slave_buswidth type.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> > > > > > > > > ---
-> > > > > > > > >  drivers/dma/dma-axi-dmac.c | 12 ++++++++----
-> > > > > > > > >  1 file changed, 8 insertions(+), 4 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/drivers/dma/dma-axi-dmac.c b/drivers/dma/dma-axi-dmac.c
-> > > > > > > > > index d47ff27e1408..19c258d511ca 100644
-> > > > > > > > > --- a/drivers/dma/dma-axi-dmac.c
-> > > > > > > > > +++ b/drivers/dma/dma-axi-dmac.c
-> > > > > > > > > @@ -152,8 +152,8 @@ struct axi_dmac_chan {
-> > > > > > > > >         struct list_head active_descs;
-> > > > > > > > >         enum dma_transfer_direction direction;
-> > > > > > > > >
-> > > > > > > > > -       unsigned int src_width;
-> > > > > > > > > -       unsigned int dest_width;
-> > > > > > > > > +       enum dma_slave_buswidth src_width;
-> > > > > > > > > +       enum dma_slave_buswidth dest_width;
-> > > > > > > > >         unsigned int src_type;
-> > > > > > > > >         unsigned int dest_type;
-> > > > > > > > >
-> > > > > > > > > @@ -1262,8 +1262,12 @@ static int axi_dmac_probe(struct platform_device *pdev)
-> > > > > > > > >         dma_dev->device_terminate_all = axi_dmac_terminate_all;
-> > > > > > > > >         dma_dev->device_synchronize = axi_dmac_synchronize;
-> > > > > > > > >         dma_dev->dev = &pdev->dev;
-> > > > > > > > > -       dma_dev->src_addr_widths = BIT(dmac->chan.src_width);
-> > > > > > > > > -       dma_dev->dst_addr_widths = BIT(dmac->chan.dest_width);
-> > > > > > > > > +       ret = dma_set_src_addr_mask(dma_dev, &dmac->chan.src_width, 1);
-> > > > > > > > > +       if (ret)
-> > > > > > > > > +               return ret;
-> > > > > > > > > +       ret = dma_set_dst_addr_mask(dma_dev, &dmac->chan.dest_width, 1);
-> > > > > > > > > +       if (ret)
-> > > > > > > > > +               return ret;
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > This patch is okay.  I think most system only set one width once, do we
-> > > > > > > > really need pass down arrary.
-> > > > > > >
-> > > > > > > I think so. See:
-> > > > > > >
-> > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/st_fdma.c#L723
-> > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c#L1565
-> > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/hsu/hsu.c#L475
-> > > > > > >
-> > > > > > > And likely there are more. To fully support all widths I'm not seeing
-> > > > > > > any other obvious way.
-> > > > > >
-> > > > > > I need more time to understand why need src_addr_width, which looks like
-> > > > > > address alignmenet requirment.
-> > > > > >
-> > > > > > If it is address alginment requirement, only need lowest one, like suport
-> > > > > > byte, must be support other alignments.
-> > > > > >
-> > > > > > if it is total address space, which should be controller by dma-ranges.
-> > > > >
-> > > > > I grep kernel code, only sound/core/pcm_dmaegine.c check src/dst_addr_width.
-> > > > > (I think src/dsk_bus_width is more reasonable). because the name is the
-> > > > > same as dma_slave_cfg, it is easy to cause confuse.
-> > > >
-> > > > No complains for the new naming. If everyone agrees on that, I'm fine.
-> > > >
-> > > > >
-> > > > > So far, still have not seen user case, which more than 8byte for cap.
-> > > >
-> > > > On the consumer side the IIO dmaengine will use more than that (we have
-> > > > designs for that - that's how I found the issue). But yeah, it just uses the
-> > > > min value (it is just that dma-axi-dmac only sets one).
-> > > >
-> > > > >
-> > > > > Add it should only set min value should be enougth, if update only user
-> > > > > sound/core/pcm_dmaegine.c
-> > > > >
-> > > >
-> > > > Not sure how that works on the pcm_dmaegine.c. It sets more 'hw->formats' than the minimum.
-> > > > And IIRC, this ends up being configurable from userspace so we might
-> > > > really want all the available options.
-> > > >
-> > > > Hence, given that we do need more than 32bytes and some users (seems
-> > > > like 1 only) do look for more than the minimum width,
-> > >
-> > > If FIFO space require 32bytes data bus width,  4Bytes DMA engine should be
-> > > match requirmment, cap just help filter dma channel.
-> >
-> > I'm not sure I'm getting your point but on dma caps, the src/dst addr
-> > widths is a mask. So for 32bytes widths, we need to set bit 32 (which
-> > currently is an open path for undefined behavior)
+On Mon, Jun 22, 2026 at 06:12:09PM +0100, Jonathan Cameron wrote:
+> On Mon, 22 Jun 2026 14:15:50 +0100
+> Nuno SÃ¡ <noname.nuno@gmail.com> wrote:
 > 
-> Bitmask does make sense, I don't think DMAEngine only support 32byte bus
-> width for slave FIFO.
+> > On Mon, Jun 15, 2026 at 09:21:02AM +0100, Nuno SÃ¡ wrote:
+> > > On Sat, Jun 13, 2026 at 11:33:36AM -0500, David Lechner wrote:  
+> > > > On 6/11/26 10:28 AM, Nuno SÃ¡ via B4 Relay wrote:  
+> > > > > From: Nuno SÃ¡ <nuno.sa@analog.com>
+> > > > > 
+> > > > > Allow buffer blocks flagged as cyclic to be submitted as repeating DMA
+> > > > > transfers. For cyclic blocks, use DMA_PREP_REPEAT so the engine keeps
+> > > > > replaying the descriptor.  
+> > > > 
+> > > > Is this for both directions (e.g ADCs and DACs) or only one?  
+> > > 
+> > > We just have usecases of TX buffers. IIRC, there should be some
+> > > validation (some layers above in the call chain) not allowing cyclic RX.  
+> > > >   
+> > > > > 
+> > > > > Skip installing the completion callback for cyclic blocks. Since the
+> > > > > transfer is continuously replayed, the callback would fire on every
+> > > > > period, throwing off the block refcount.
+> > > > > 
+> > > > > Because nothing prevents a new cyclic transfer from replacing an
+> > > > > already active cyclic one, always set DMA_PREP_LOAD_EOT so the engine
+> > > > > correctly terminates the active transfer before loading the new
+> > > > > descriptor.  
+> > > > 
+> > > > Is there more to come after this to actually make use of it? Or is there
+> > > > a way to use this with DMABUF from userspace already?  
+> > > 
+> > > Yes. One can do TX cyclic DMA transfer today. Some waveforms examples:
+> > > 
+> > > https://github.com/analogdevicesinc/iio-oscilloscope/tree/main/waveforms
+> > > 
+> > > For normal non cyclic transfers, libiio also handles DMABUF just fine.
+> > > Best way to use it is with USB where we support zero copy between IIO
+> > > and the USB stack.  
+> > 
+> > Jonathan,
+> > 
+> > It seems there's not much activity on this one. What do you think about
+> > the changes?
+> > 
+> > David, from you silence either you forgot about it or I guess you
+> > are happy with the reply :)
+> > 
+> > Just trying to move this one forward
 > 
-> If support 4Byte, it native supportted any N*4Byte.
+> Fiddly thing so I wanted to leave it till I'm up to date with the easier
+> stuff. 303 emails to go... Also going to be travelling later this
+> week and it's always a bit random if that means I have lots of time
+> to review or none at all.
 > 
-> So needn't bit mask to indicate all support bytes.
+> Jonathan
 
-> > > each transfer, dma_slave_cfg should set specific bus width requirement.
-> > >
-> > > If memory have requirement for 32bytes, typical cache line length for
-> > > hardwaer coherence transfer, it should use dmaengine_alignment.
-> > >
-> > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
-> >
-> > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
-> > there... The code seems to use the dma bus width to match against PCM
-> > formats supported and filter only the ones we can support (per dma cap).
+Alright then :)
+
+- Nuno SÃ¡
+
 > 
-> if cap is one byte, it should support 8, 16, 24, 32, 64
-> if cap is two byte, it should support 16, 32, 64
-> if cap is 4 byte,  it only support 32 and 64.
+> > 
+> > - Nuno SÃ¡
+> > 
+> > >   
+> > > >   
+> > > > > 
+> > > > > Signed-off-by: Nuno SÃ¡ <nuno.sa@analog.com>
+> > > > > ---
+> > > > > There's one subtle choice in here. Given that the termination callback
+> > > > > is not set. We will never give the block refcount. That means cyclic
+> > > > > blocks are only completely freed when we disable the buffer and
+> > > > > iio_dmaengine_buffer_abort() get's called. So no leak, we just defer it
+> > > > > as it makes it more simple to handle. I also think this a fair
+> > > > > expectation from a cyclic transfer. We set it up and let it run until we
+> > > > > disable the buffer.  
+> > > > 
+> > > > Makes sense.
+> > > >   
+> > > > > 
+> > > > > Alternatively, we can give in the refcount as soon as we give the block
+> > > > > to the DMA layer with dma_async_issue_pending(). But we also need to
+> > > > > make sure that the block is not added to the dmaengine_buffer->active list.
+> > > > > As said, I feel that the current approach is just simpler.
+> > > > > ---
+> > > > >  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 19 ++++++++++++++++---
+> > > > >  1 file changed, 16 insertions(+), 3 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > > > index 98acce909854..4a78cd3e7c7d 100644
+> > > > > --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > > > +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> > > > > @@ -80,6 +80,8 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
+> > > > >  		dma_dir = DMA_MEM_TO_DEV;
+> > > > >  
+> > > > >  	if (block->sg_table) {
+> > > > > +		unsigned long flags;
+> > > > > +
+> > > > >  		sgl = block->sg_table->sgl;
+> > > > >  		nents = sg_nents_for_len(sgl, block->bytes_used);
+> > > > >  		if (nents < 0)
+> > > > > @@ -99,9 +101,18 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
+> > > > >  			sgl = sg_next(sgl);
+> > > > >  		}
+> > > > >  
+> > > > > +		if (block->cyclic)
+> > > > > +			flags = DMA_PREP_REPEAT;
+> > > > > +		else
+> > > > > +			flags = DMA_PREP_INTERRUPT;
+> > > > > +
+> > > > > +		/*
+> > > > > +		 * There's nothing preventing a cyclic transfer to replace an active
+> > > > > +		 * cyclic one. So always set the EOT flag.  
+> > > > 
+> > > > What about the non-cyclic case?  
+> > > 
+> > > Non cyclic will also have DMA_PREP_LOAD_EOT which should stop an ongoing
+> > > cyclic transfer. If there's an active, non cyclic, it's business as
+> > > usual. The transfer get's queued and will fire after the current one
+> > > ends. IOW, DMA_PREP_LOAD_EOT is only meaningful for active cyclic
+> > > transfers (it's ignored for non-cyclic)
+> > > 
+> > > - Nuno SÃ¡
+> > >   
+> > > >   
+> > > > > +		 */
+> > > > >  		desc = dmaengine_prep_peripheral_dma_vec(dmaengine_buffer->chan,
+> > > > >  							 vecs, nents, dma_dir,
+> > > > > -							 DMA_PREP_INTERRUPT);
+> > > > > +							 flags | DMA_PREP_LOAD_EOT);
+> > > > >  		kfree(vecs);
+> > > > >  	} else {
+> > > > >  		max_size = min(block->size, dmaengine_buffer->max_size);
+> > > > > @@ -122,8 +133,10 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
+> > > > >  	if (!desc)
+> > > > >  		return -ENOMEM;
+> > > > >  
+> > > > > -	desc->callback_result = iio_dmaengine_buffer_block_done;
+> > > > > -	desc->callback_param = block;
+> > > > > +	if (!block->cyclic) {
+> > > > > +		desc->callback_result = iio_dmaengine_buffer_block_done;
+> > > > > +		desc->callback_param = block;
+> > > > > +	}
+> > > > >  
+> > > > >  	cookie = dmaengine_submit(desc);
+> > > > >  	if (dma_submit_error(cookie))
+> > > > > 
+> > > > > ---
+> > > > > base-commit: ae696dfa47c30016cd429b9db5e70b259b8f509e
+> > > > > change-id: 20260609-iio-dma-cyclic-buffer-support-f18034f8f34c
+> > > > > --
+> > > > > 
+> > > > > Thanks!
+> > > > > - Nuno SÃ¡
+> > > > > 
+> > > > >   
+> > > >   
 > 
-> Needn't mask each bit.
-
-I think you missed the point completely. It's other way around. If the HW
-supports say 32-byte bus width, one _might_ assume it supports lower sizes.
-
-It's similar to what we have with MMIO. Some HW, for example, may only operate
-with 32-bit accesses, while only transferring a single byte (8 bits).
-
-> > If we only set the min, that means the PCM code all of the sudden only
-> > supports one format and I'm not sure that should be always the case or
-> > that we won't break any user.
-> >
-> > I mean the dmaengine src/dst_addr_widths must be a mask for a reason,
-> > no?
-
-> > > > I would say the
-> > > > array is fine. IMHO, it's also safer (from a "support all" point of view  and really not
-> > > > complicated at all so I would just not risk it.
-> > >
-> > > > (we can also have one liner helpers for the case where only width is
-> > > > set).
-
-> > > > > > > > >         dma_dev->directions = BIT(dmac->chan.direction);
-> > > > > > > > >         dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
-> > > > > > > > >         dma_dev->max_sg_burst = 31; /* 31 SGs maximum in one burst */
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
