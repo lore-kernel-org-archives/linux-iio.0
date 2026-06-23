@@ -1,415 +1,311 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazolkn19012014.outbound.protection.outlook.com [52.103.14.14])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011016.outbound.protection.outlook.com [40.107.130.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8991A2DEA8C;
-	Tue, 23 Jun 2026 13:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.14.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 375772C0F7F;
+	Tue, 23 Jun 2026 13:28:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782221244; cv=fail; b=uKBjMVqDk+8TBQENuDeJohpLXbm6c2MNoKDUqPNOnrpwO1x6dwY8nM+YPRw8MfkP24Xp4gbDISNfY1AkvKBzmlKopDuFu30jEHQsqssOQCK4bZnOlYxv4ZadO/k7EborIcVw2TMzCbyYc8xMMVB0/QDB7Ulze/6Hjojfy3mPCpY=
+	t=1782221340; cv=fail; b=OLYkQTlBQoCSo7On5r7rUuQxWXWGVsyqzjsZvCGzdlQs+UpV4MUwsW5IUe0AgVtlBbXg/2aKupVWCja6bTbwZm/oH/SF7Pq8MtGHORvlXAT5gd+2bAuGeKQ7mQg72UP1CSPEICwpDbDz8VEe4RWJMO0kY6miBgb/9VgNPYtzyHg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782221244; c=relaxed/simple;
-	bh=7VlQbYl52y2iYuezps6xTejQaF7iOL6eDCW36Q42Zoo=;
+	s=arc-20240116; t=1782221340; c=relaxed/simple;
+	bh=rcz8w1ETQXcaolbCFX5+/btxvNmmMeXui4hRUlccB74=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=eaVGq29xb6IKywKWgHSXxGU43HY3IeU5bSUQX/YL5ePzrVKHVhCIQF2x35stKO9Iv/bDzaTDNrQ0uktQPTP3xlTQgvUOuFlUmfRpwCtkDezSSkUU2DxzE9WthWIKjpyw0nEb4NkFSIHBAUsTrdslyVydc4+wAIon7K45DQeYBh8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=Xx2tydtg; arc=fail smtp.client-ip=52.103.14.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	 Content-Disposition:In-Reply-To:MIME-Version; b=MJncvHLir5RDjs1hGdRZ/qEzGTJDbqDXjsx05ycEVYeCVUDT6w8kCmiPxBAPjpW6dDAW8VJsSA3IiUYx8LhIKtVXgwP+6eq7q5OE7kenKsosJf74UvLiIAQmevHNaqAytSIxp7GebAmu8weYtx6lqUe2cT5ur7zMWGCFlWo1cUA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=ibxvuruD reason="signature verification failed"; arc=fail smtp.client-ip=40.107.130.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="Xx2tydtg"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="ibxvuruD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xJcNZHrt1G1fSLhhJHV0fYm9VOnGG09B4fGixaiXejM6igWoXXU58Raa3KG50GvLGz03AFLQdZqNhV9UufArctL+ARQH38UgXgtCazvLWXgMdA40wPH8cUPssYcp0q5Ldxz12jQHGaOIguqqPYku2J1zO7pfryjhIYsxenLSO1bIxoaGTCIMs75ekiihFNn5qnYNDnkvPJkjKqAQ4EdOe8BM9rVgRKhYnGEGpa4QnhJjOc+q4RKGnO1Akq1OgfVQGAzOrECKAHZGmMLLF4GHTJ1lFGc/WwKQ310CsAG/FHgDjTRWBKyVhoEq3LevIdxc1LyIZY7UZK6Z2KaN/pUnWg==
+ b=WqAgxx2bSk1tX73nLFjABFXH0N684Rk7GGHLlxl2OtuW/eKw2en5wORQ6eprByvwuXLi7PQM+aS8axtgAj6LdyApfZ1Lc+pzl/RB4p5o4f9/pxaQIz+Mvt+6F0RXvw0FZ2Fak7AMlQlL67+tHVVsgOhePkOm+FgHwq8k0jg35xrrODR2YtXCpa4LhapflQty8zT5qGpKWbLvH0cWREA+qwt2SeW45pBeoPO3wdjLV7WGhYQU4e0OTdx+6I/vgZakUcZEViJ5GfMN1d6x+YlwX7+Gc49YcAtqmiuhRsjc9pJcl9gCEspw4+CD5mhoIJ+vrR9r8e+Ev9Y/H+Am896EnA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6Vrt/xRaVB/3mkLpMu+jiPdG3oiXO0dm/LFeOdVlpEs=;
- b=PxbZNfSLXR6RBbyaoH2LcfM03LIF4w9hMsAKUhHUIhqRzpG6SRrekLS1drd2u2fd50pjMUjWqcXdhAWknXUWsd5GAbTdySkm+Lfo1P2P5tW3gs+gpQebb97+byNX7WhzFxr5EIEs0p0WNh9CqONyxNOKIWFVtnv7VRMnzEa2Pc2B+2D1QOrCbBO+AiSJI5sFS5Jcwofb51+g9tyFmekgo0WGpNf+Tuw9iq0gWdPOXj1qUNcaP6De6RxVCtIwhB3JHA6aE485nmtm8biVUTQXzQHrNlaQBljaNOzRXmSHNsV5Z3LJwvTesrsRl4ZHlKZaRQ0vUTMx6pwM7mL9B31BJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
+ bh=okXdtSnPwGGJgXtSgcgSM+javHp2kXUoBVYY9BqqpSA=;
+ b=pOcGsjTjCbp0rD0mwCohWCElsfP2nyxmpbVs/usM7Xw1X4hFrakdheIgDGGn8d/2tJBnSNZLlWCxT2VP1vm2rbHcD0pUIBWVtoA73x18sbPGT9RHHlBJQPQdz2MNEV63gdF3R/xgXp3dMza/kvwwdHYfihfHStbKLVaMIpwQLatdVFatA0DnuqcSMkzbFJ63kvL316mLyZQaNShB5ZJjN4VwuuI+0TrbnYW8P/5XkzoTx4kx5zHMFy9N++fqjIFLNB71n17kHGJ0dOj/tgmOXKmrvsGPepA1QmE/yvMA/GyC3rfKKHNX+CwbX3Pfpw9Wid56/UYsZbx6WnhL6Q0sFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6Vrt/xRaVB/3mkLpMu+jiPdG3oiXO0dm/LFeOdVlpEs=;
- b=Xx2tydtgJjaxVQZkzg4dFvsmBsTxrVSDM+Lk+nfFfodlv0Srfg/dfRX0oaURRXZtNFHZmVQ6i6BJD4w2cLPgzLDHwEFyHnphn0nlL/NxTDAcLPvOTFmfP83eYYh3ZOY2TnwJOJNWWdfF1HeauPc44F6MuDEGIL29kTOVYOMBcRjnRXU2j/tc3S3E6y0FZlOGc1JWPSW0dTVyVk+kIb8BepEj0GOrkcDTGgWt+i3w76p/7WSYkYH81zKxF17UkradUg27RZKs68udrEMZjV0oHUxMKJuBYk+r+MYylkxVwZ0/d5URg8Lb+rqcZCe3zRKeSRWhmJUup8d7yvNSrdsm3g==
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18) by DS0PR19MB7499.namprd19.prod.outlook.com
- (2603:10b6:8:14e::8) with Microsoft SMTP Server (version=TLS1_2,
+ bh=okXdtSnPwGGJgXtSgcgSM+javHp2kXUoBVYY9BqqpSA=;
+ b=ibxvuruDdPWQ+3geNk8wCWZrrydtTqyz3uUdtC6BOyHmUZaBx+umdfx/ztHAeQsKXCfilfrPcJyWWvLfTjibZ3iEVZWwUG30A5+kUzOKaMW68nynvUOr9g1Kv4udMPVFDixNpV4l3v/iasAQdhVguqNYHkpztVuYvx768m1qSqzc29duYETz0f3QYZQE0FXL7Wgqhgz4ARJ1weQHA3hA9fYMSqPLYBWCLG9Yg+k2vabMXVAzjgsxvGE6fsJKVQMr9ooV1EuSno0IxDc8c+cKnE2Laa5rR9qgC+Dxg0TWYNWMFUSD2+AhygKzAbLGipQrHxY3KLE2stcVnMrGgRHqmw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by AS8PR04MB8913.eurprd04.prod.outlook.com (2603:10a6:20b:42c::15) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.12; Tue, 23 Jun
- 2026 13:27:19 +0000
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.21.0139.018; Tue, 23 Jun 2026
- 13:27:19 +0000
-Date: Tue, 23 Jun 2026 08:27:14 -0500
-From: Chris Morgan <macromorgan@hotmail.com>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Chris Morgan <macroalpha82@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"andy@kernel.org" <andy@kernel.org>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"heiko@sntech.de" <heiko@sntech.de>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>,
-	"andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH V13 2/9] dt-bindings: iio: imu: icm42600: Add icm42607
-Message-ID:
- <PH0PR19MB99733860984A8B229A2B3AC595A5EE2@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260615172554.160910-1-macroalpha82@gmail.com>
- <20260615172554.160910-3-macroalpha82@gmail.com>
- <20260621181804.27b44942@jic23-huawei>
- <BE1P281MB1426C557A66945951D382EDDCEEF2@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
- <PH0PR19MB997338ED05370F27B730FEE60CA5EE2@PH0PR19MB997338.namprd19.prod.outlook.com>
- <BE1P281MB1426349316BDFDBDB7C4BFE0CEEE2@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=utf-8
+ 2026 13:28:56 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0159.007; Tue, 23 Jun 2026
+ 13:28:55 +0000
+Date: Tue, 23 Jun 2026 08:28:47 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>, nuno.sa@analog.com,
+	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
+Message-ID: <ajqKD0BdQY5kSZjh@SMW015318>
+References: <20260616-dmaengine-support-wider-dma-masks-v1-2-da23a8dcb756@analog.com>
+ <ajF4i3o0gNRtUelb@SMW015318>
+ <ajQkupPzv8-GdEjv@nsa>
+ <ajVs3jwoxq7Jhop1@SMW015318>
+ <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
+ <ajj8AhN1YC3uvuLb@nsa>
+ <ajlMAijTUHsnOhEQ@SMW015318>
+ <ajlR9QiXiBAH4mWH@nsa>
+ <ajmAP2nKzi2dPEVx@SMW015318>
+ <ajpWzimx-5jlczpp@ashevche-desk.local>
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <BE1P281MB1426349316BDFDBDB7C4BFE0CEEE2@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-X-ClientProxiedBy: SN7PR04CA0183.namprd04.prod.outlook.com
- (2603:10b6:806:126::8) To PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <ajqJsnXXGFAsgk4B@wintermute.localhost.fail>
+In-Reply-To: <ajpWzimx-5jlczpp@ashevche-desk.local>
+X-ClientProxiedBy: SN7PR18CA0007.namprd18.prod.outlook.com
+ (2603:10b6:806:f3::27) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|DS0PR19MB7499:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5d33708-de8e-4c11-19fb-08ded12b26b0
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|AS8PR04MB8913:EE_
+X-MS-Office365-Filtering-Correlation-Id: babfb87e-4c44-4aa1-5a7c-08ded12b5fe9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|25010399006|4140399003|5072599009|15080799012|23021999003|37011999003|25031999004|10092599007|24021099003|51005399006|6090799003|41001999006|8060799015|19110799012|4302099013|440099028|3412199025|10035399007|40105399003|1602099012;
+	BCL:0;ARA:13230040|366016|7416014|376014|23010399003|19092799006|1800799024|11063799006|4143699003|56012099006|18002099003|22082099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NVllQWxTZm9jK0F5NG5QUjllYWJMb0lxek9IYUJmWVZYZDNWb3Q3c1N6RmVQ?=
- =?utf-8?B?SU1DWllaOHN3eDZaTDRpZWYyUzRVc0Y1SGZkVGR1QkRaejhlNDlhQXB6UTJk?=
- =?utf-8?B?QjM4NTUzNXhLaWNjWEN5Rkp3bnJZSXQyVktVWVJ5Q21SVkQ1RmlUSUMyalUz?=
- =?utf-8?B?OEFiOG1iVThZYTNydEZSOUZyV2dqbkt6TUtyY3I0YmIwSklsQmZUZ3Q0Nisy?=
- =?utf-8?B?VzZzVEpxYk0rQ0djam1YYmVXdm5RMDMzbG01dmNrSW90VEN2dnVWWjVNWStZ?=
- =?utf-8?B?S0dlQmMybFNNcGpSb1RZZ2wxRlFORzN0eXF1aklMTUxlbmlLeFRaaTl4KzNi?=
- =?utf-8?B?cjNZaDR1aCs1Sng4OUlqTzFxaWR4cmhoSmRGZk1yaWVTZ1dJZ0VwYWozeWV5?=
- =?utf-8?B?V0NNTVZGNVdqL3VKSTM2OWYvNHFzdk1qNzRtU0N3ZWFKS0hCSHh6REZscmtO?=
- =?utf-8?B?RVBiNW5mOCs1am1ZQU56ZnRVcURxeC93VGw4WlBWY3pZZUJVckFWQkhmRFBq?=
- =?utf-8?B?eE5ZdEFxYXI4RUljb3hmWHQ3dVpKV1NqNTJkcjVwV1R5aVNQL0NDcCtvRjRC?=
- =?utf-8?B?bEtwZ21YOHd4ZWZSNFFOQVVDN0pKT3NqWTNiVUx3eC85MnF1anlUQUtvT2Ry?=
- =?utf-8?B?Q2VlOVJzTkJtMElIbStxdC9PRE53aU5MQ0hRZy9OcUdHTW1XTG9XbS8zdUZU?=
- =?utf-8?B?RVpmSld2SzZSWGgzUXIvM0hCNFczSVhxSlR1RHBaN28vYzF0RFg3WUNiMjNF?=
- =?utf-8?B?c0g1T01HY2M0bEFDb1Y2R2FQRENrSFdBY2dTWnNFTEFaTlJacGt0dTJycjdC?=
- =?utf-8?B?U0N4Y2ZsUmFUbTRUT1NLQ2g0UDlSd1pWOVI4K0NwaWR6dS9DRElrQk5BR0FC?=
- =?utf-8?B?ZkRwWU5zeGttdG02ekwvUWxUK1pqL21pK1lTOXZZcGpIZU1tcEJRekthKzM4?=
- =?utf-8?B?VWorUm13VjVKdWF5d2JPSkhqZnlBejQ0S3FaaU8vL1FPZ04wUjlLdyt2S3Bz?=
- =?utf-8?B?YlljaUtReGN0Y2p2QUVlZVY1dnIwbjE1UktnTEdmelFzQ0ZlV3BzYmpMZkJD?=
- =?utf-8?B?YXd2LzRvUnJPUEtaLzkyK041UFBYYk9TcW1tTzFvM2ZZU0NTV2JweFZqR0Jt?=
- =?utf-8?B?eGs4WUtmbW5JSkE1RTNHbmI2SVZWTFRJc0RhODlBVDBIOWpXWTNWcStlM1RH?=
- =?utf-8?B?a3dQSG0wVllOd1VWUXMvWlI0WURObkhjWjJKc2dDbWRjallyTmVsbEtpVFIy?=
- =?utf-8?B?NEluVFg3azdkbCt6UHN5YjR2MXIxeEk4dmM0RzNnR3RZOUpGaHhiZGg1cStC?=
- =?utf-8?B?ZEhmcmtlZkVncWlSV2hrRE9KaU5YYUJmUGlodUF0bCtWMDhRdGhrS2hoamUy?=
- =?utf-8?B?RTdOK1Y4V3F4ZURQVVJhRXlVTldOcG8xTE1aNDk2emhCWkhYa2FDZGlSUFlT?=
- =?utf-8?B?NDlVUEpjWGVrMU93TU50ZllZV1hVcGYwQnpmVkhhb1I5NkQrYldNZ3dLSnlx?=
- =?utf-8?Q?orHFYpCwPFCsNZ+hlDEqrrunYlv?=
+	LEJp4ybkaf05e0v2J36Ht/80srMHQNTxPhHewv7USbhlEp89008gyHcwgl3x5EJ7YJanT89J4NgcdvXywyElZZXIgkEMNK2fKcl98ZMJEO/gz1pcYTs0BBzMPiU7RJiRt0zD1OsnyjjhJ1TfGMBosMhJ5qDH6FaLFqaF2DEDfVNXfsTVXH5CZl9O2hEtzQAie5gKQege818Ab0ovYiELOglxCjbjsTjA2wPEa15Ug99Um4lJNnRBfSkX2WwBLIEdPpXzIXnnL8Wr5TFhTFYJV8Ro3qyO7gtoNwMKq9anfxQt/li17frRkLFUGgcxzxsVuCy8UTcUQST6ewXbZSQwHFoM7Z61mSwy6TtPEVwC1Yea8JgsFmXmb1BjzWR5+NDHwRmAceI3/j7aAW+zUOXpha8CieSuCAOws+N4sIs2WN1hsjKC7frvN08N/C8QgsuMmvM0NHi5kuyBw2CTU4Gze/EBiVZRKEpiPxereiXzKISCdB9/+MIhwegQKi8skPfmCJ8Bz++W3W/jNTO7c/wS5DbBnE/phn13zctF7sXg4PIZd0medGsplmRrideZbPsTGP8QPgCTCR8OxcYibWuzGGk5StuaIgZF0glIsUz0OupsZp11KCzOeDAxJL0j9A1y
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(19092799006)(1800799024)(11063799006)(4143699003)(56012099006)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RDFtUEpxRy9BZ3pRTjNEQUV2eGovTXBreURQQUpiV1VTcCtUbG8xU25xMjFB?=
- =?utf-8?B?ZkhJR2szeTBlUStKY1QxNG1LZkFGQVJOTGR1Njk2VHY0bjVxVVgyT0lrZ0Zv?=
- =?utf-8?B?ZzlwMGZmcHdaZ3RSRVlnK2k4TEJPRUZyRFFjSEpycG5qZ1FTbnRDdWhTNW9R?=
- =?utf-8?B?NVdDZzdlM2lSaW9zeVk1aytoK3piWldTaHU1NmxLM1RwOG5Lb0E5L1B3bkZY?=
- =?utf-8?B?OVVMOHArdW1qNlFjZThXOXNxd0Zhb0JkbHNCbS9wSmZUMThEZmFLeWdaTlVE?=
- =?utf-8?B?aDdkRnZCMlFVQkd4Yi9jbG9vcVNsQk5uSjZsbFJuSHh5LzRONkpOSmREcWkx?=
- =?utf-8?B?cnNBd1hISTU1MldualBtMitpQk9QeDlJSHZpN1V3Rk9ueXhHa21GYXlSVFNC?=
- =?utf-8?B?cnhITjdRTlBOUDRMcEJhbDFFSlNkaVFsR3hjUDlDSzVMN3RkVG5jbDRHODl1?=
- =?utf-8?B?MzY5S2l3cW5LeWFvS2MvL1J6NysvOFYvYkkyVHNlbGxhZWpsY1JXaXJYS3Nv?=
- =?utf-8?B?RXo1QnE0Y3VlMFBNUTdNWmp6cTRUWkpIbGtIOFdTd0p5QjUwQUthMlBOVUxY?=
- =?utf-8?B?RkFMU3VRMjdHVllFS2VKdEFyNnc3eHhDb3Y3bkxmd2F0Y082OWJVZzQvd3Q4?=
- =?utf-8?B?YVVGTVpvcTE3Qm5wN2JWbktMMjFLSThrQ1U3dXdzT3NVUXV5cGVYNDQ2cDhh?=
- =?utf-8?B?Sk5VT3UyZzBuZERxWGp6dFBzeU45U1ZFZEttaDVrUjkxc0dGOGJaZDJIdjIw?=
- =?utf-8?B?MEhJR24wRmM5NkI5N2ZmSHR0YVk1U2xCM0ErK3lzb2REWUFaMk1nY01OakdV?=
- =?utf-8?B?Q1RNVUwrNU1BRG9QWWYrYmZ3ay80NDJyNW54bXl0enRYV1l2ZURKaWU3bEkv?=
- =?utf-8?B?amJUdW4zSWIvNW5MN1NMMDM2MW80RTY1SjZSdCtGb1dpSXJJalZidDRpZzg1?=
- =?utf-8?B?SHVHM0s5REI3Y1FnU0swdGU1bmlzOUtYTy9tTklOOEYweloyaXFoUGNUNDFL?=
- =?utf-8?B?TjFWZDhBZ29sRDNVcDRuOFNLaG02TXhWdFU3bUtUeHFISVpZNHZaUDFSYUt2?=
- =?utf-8?B?RFF1U0pOVTVsM1BwTTllbEpTOFF4M0M4VG9JVXZhMkg3WXRKaGZaZnBjREdK?=
- =?utf-8?B?ZUpNVVU2NkUzc3BrREdkSkhHNWsxWVBKRkU1WDlhWDlLRXFVMHJkMVpkMyt5?=
- =?utf-8?B?cVI2ZUJRUllGRTlqMkd0TEF1ckphVTRIVENKTDVWS0ErTmttYmpTZXROeGg3?=
- =?utf-8?B?VTZQUWpYOCs4U1RXRkNnWExvcUhMMzJiY1lCOFhrczY2OVQvT0Q5cHhtaEMr?=
- =?utf-8?B?NTk2TXJhOHNjRDgzalFKQitiVHozT1VjTlZydG1iNlh1d1oyQjJTUzJZc1RB?=
- =?utf-8?B?cW54V1MyVVNicVBYUUxzcXR1STRqNFRmV2ZwNlE5MThNVVY0TkI1ZlVnN3Jr?=
- =?utf-8?B?SjMxcWdUeDVoTDRrMktjYXVTNWVFU1AvbTlSOU5udTZRNU56QTBwRkxPUXBz?=
- =?utf-8?B?dW1acUFDYWxOSy9NbmVleUJ2eG9aYVR3Z2dOVGJpRnkvNXpiS3dVRzd5bnNP?=
- =?utf-8?B?SkJEUGZEU3dHRGxqc3IyUnp4UW51N3M5ZDRadTk1YXZuTHlrRWN3T2FDUjQ1?=
- =?utf-8?B?Y056SFdtSjB2U1pRbVd5SkxLOXRFaEtHZ1BheC9veVVTbzV1VjJzelo0c1Bm?=
- =?utf-8?B?bVU1ay9yWENuRHVmUlJ6dzc4UFpaOUg3L3FRRG1jbTJ4RkJCcEdEMWdzdExs?=
- =?utf-8?B?SjJ2ejdSbkcwcEZJTm15UjkzRWw2YTY5eUJXY096VHZza0VmekNmMmJmMTBk?=
- =?utf-8?B?ZW13bHZ4cjlaVFRSN2JUcytGT2Z3aVZGTHltOWR2QWFZYTcxRmhlWWVuTW5T?=
- =?utf-8?B?cXJiRDBiclpXSGFwVjNtU0VMcEgrRjlnS2pxNlpEUE1taEE9PQ==?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5d33708-de8e-4c11-19fb-08ded12b26b0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
+	=?iso-8859-1?Q?DCbWdDSE5/eeAZ2a4MfEfoo/NvJiFZjh21jstZ2unwvHPfeybVhqrrF4nS?=
+ =?iso-8859-1?Q?NO9mezCaqxQw1C2kEPWUzPOXg/cDb0Gg48XoLjNzhG7dk+tt3GggcRPr9r?=
+ =?iso-8859-1?Q?3q2l/vPUTZIhyDmbPBBZxLC8LmOB/f695lDEa0AlOhTmIoNDZy4/jdqWAd?=
+ =?iso-8859-1?Q?z3Zkfk60TXGxt9xKnMeBmVUQtKzM6obPmJBR5THxIBOwuKUxfYRBwrvr23?=
+ =?iso-8859-1?Q?JQhJ1vzrkeioUU2YNRPFsYtlbK1ffDXFUOYwLu6kcm0GZzXamSwmMol5lM?=
+ =?iso-8859-1?Q?kl7GiEaO6YCKFJKID3/nAe6CV1sUwzgi6VG2wguw0MrG1faeHARqwxOOlZ?=
+ =?iso-8859-1?Q?OGSX2qBJMokvwholaGmVO00AVi9JQBv8XAf0r/pW9cnl5nEP2GGw2y36sm?=
+ =?iso-8859-1?Q?eMJsCiKnhlE5Ye5pqYu6jUGGQM5nh6GzSTBqFqyykBUzkATNXcnAxy63+w?=
+ =?iso-8859-1?Q?U+MHsa2WmiLOmXmkhHaKGBHxlVNWUYEtyF99EG80s/NF/7rZFvZWfzbY06?=
+ =?iso-8859-1?Q?2Ee98TIMIX+Sdudvz3vOB0d+RgL+0IwztGSNbJrJ+0Qz1mh0+bMq2PgMoz?=
+ =?iso-8859-1?Q?SasVqqfdGP4j3y08jnR5C0j2gtnDT04uou98cFB18aUCbaZ63HbUFVO5Sf?=
+ =?iso-8859-1?Q?jSVpXiYNIATPWceB9GYpyuQCoV0RBByPfUT5a/nKAogkCjHN++u4s332UV?=
+ =?iso-8859-1?Q?21O3OX9ARz3mQaTP3apsITuHW3inlnEgC88qiSbmsR0VD9BDBc75zXyLlZ?=
+ =?iso-8859-1?Q?cxAhxf8xp5fjRVi8f+xz2bo9E5yynj+x+OYXIwxhGeflC/sTK6Up/Ac28+?=
+ =?iso-8859-1?Q?dza/y7kTHa5hS12RV5jo4qSYv3FBKa+x9oMIUuVLKOlS3wz2eWdr7o2H13?=
+ =?iso-8859-1?Q?7OtdYHBXf5k0m/uCQqlVr227jj4hG5PH3zww1LIEanxJMeBWGEl+DbVhoB?=
+ =?iso-8859-1?Q?I0DuaRP2cfP9SR7lUjJQAOGtZu1qw62ZjFgtCpYVtiaWbOxhsJEO/9htWi?=
+ =?iso-8859-1?Q?OPLKNmoZZyWtlT4nBmuhTOiMm2juInN96sxPQFhgDM2WRsARPVfynWgUK3?=
+ =?iso-8859-1?Q?GPwpkkAHP+jHGusjzrxdXuCQvnAtsRbSaK6NeMmqCZfn3/vC0FIQdT46Gc?=
+ =?iso-8859-1?Q?DDF9W+eoPgVXq6Fd0HAhcOk4Sv0ghpEFo3BLzjh8kbmY0NzDoVfthJhVef?=
+ =?iso-8859-1?Q?oThRR0B3inuOaOpaWEI7BLjBjYNjzIu3Tl9HazJZ3hKeaSg/XHKt+C59cg?=
+ =?iso-8859-1?Q?wCmKHTgw+g2rq8X+0jMUc9200rJ+LqCHfYaglBf0z/LhBTd4zZn8hwR+g3?=
+ =?iso-8859-1?Q?3WmQehb5QScEQrSDY0YzHCJDrlaqyPw1fDZNJw1OMvndqfj8pkZV1/ylQg?=
+ =?iso-8859-1?Q?KXPr4fEJxf/fLBQnG2gduacpCpHoXryAqeefKVlzHc3ftvziRoubKzpoCh?=
+ =?iso-8859-1?Q?+5xQd4xUUD726W+1i3i+HlXCUaGR4qtcr1fhsANVXxiN3P9dsB9xPnEz1H?=
+ =?iso-8859-1?Q?P9xkcMUKnssq25ko4tfGdnkHAQPCkXQUM8VjxXOtAJYIoeZl+WiAENZUjH?=
+ =?iso-8859-1?Q?053hMoqT7mau5lOV0fRWfy09DzHwMBTMocmYWbJIywU3umfINjE+0BRU+e?=
+ =?iso-8859-1?Q?sVp7a9RN/x20BQ1d8mrbIvuZKvTKsAaQlaXBfyhUvTuuGJRmTL5JSm04M4?=
+ =?iso-8859-1?Q?VwEsyuaFc0BTjfkfctf+C5FlOTGnv6QcZUvZU6145QeuKnSC9K37o/c9N2?=
+ =?iso-8859-1?Q?1bbjJWf0d3LraBb7AKzjy7U9vS9mzHcCDUCQWGh1rNHzFwfz5frpvHfo6t?=
+ =?iso-8859-1?Q?VshutoqvUDVnD285FqyVyv6qhw0sp+luMHyvYdnXu/S/zuphXETY?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: babfb87e-4c44-4aa1-5a7c-08ded12b5fe9
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 13:27:19.8325
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 13:28:55.9234
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR19MB7499
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xSLueNBqzgU4zn7SHetaYVjoZQ4MSFm5w/F8SLMl59Y2f5d15VxL1hdrUEhPrIMdNa6xUxHLVotD1KqLyRMGTgwzSAuEhZ5PoBBSKsWeqlBQOJVn6NmVi1/bPm4xmYdj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8913
 
-On Tue, Jun 23, 2026 at 08:14:28AM +0000, Jean-Baptiste Maneyrol wrote:
-> 
-> 
-> >From: Chris Morgan <macromorgan@hotmail.com>
-> >Sent: Tuesday, June 23, 2026 02:06
-> >To: Jean-Baptiste Maneyrol
-> >Cc: Jonathan Cameron; Chris Morgan; linux-iio@vger.kernel.org; andy@kernel.org; nuno.sa@analog.com; dlechner@baylibre.com; linux-rockchip@lists.infradead.org; devicetree@vger.kernel.org; heiko@sntech.de; conor+dt@kernel.org; krzk+dt@kernel.org; robh@kernel.org; andriy.shevchenko@intel.com; Krzysztof Kozlowski
-> >Subject: Re: [PATCH V13 2/9] dt-bindings: iio: imu: icm42600: Add icm42607
+On Tue, Jun 23, 2026 at 12:50:06PM +0300, Andy Shevchenko wrote:
+> [You don't often get email from andriy.shevchenko@intel.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>
+> On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
+> > On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
+> > > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
+> > > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
+> > > > > On Fri, Jun 19, 2026 at 03:02:53PM -0400, Frank Li wrote:
+> > > > > > On Fri, Jun 19, 2026 at 11:22:54AM -0500, Frank Li wrote:
+> > > > > > > On Thu, Jun 18, 2026 at 06:10:52PM +0100, Nuno Sá wrote:
+> > > > > > > > On Tue, Jun 16, 2026 at 11:23:39AM -0500, Frank Li wrote:
+> > > > > > > > > On Tue, Jun 16, 2026 at 04:40:53PM +0100, Nuno Sá via B4 Relay wrote:
+> > > > > > > > > >
+> > > > > > > > > > Advertise the source and destination bus widths through the new
+> > > > > > > > > > dma_set_{src,dst}_addr_mask() helpers instead of open-coding the legacy
+> > > > > > > > > > BIT() mask. This moves the driver onto the representation that can
+> > > > > > > > > > express widths of 32 bytes and above and allows the legacy u32 field to
+> > > > > > > > > > be removed once all users are converted.
+> > > > > > > > > >
+> > > > > > > > > > While at it, give the channel width members their proper
+> > > > > > > > > > enum dma_slave_buswidth type.
+> > > > > > > > > >
+> > > > > > > > > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+> > > > > > > > > > ---
+> > > > > > > > > >  drivers/dma/dma-axi-dmac.c | 12 ++++++++----
+> > > > > > > > > >  1 file changed, 8 insertions(+), 4 deletions(-)
+> > > > > > > > > >
+> > > > > > > > > > diff --git a/drivers/dma/dma-axi-dmac.c b/drivers/dma/dma-axi-dmac.c
+> > > > > > > > > > index d47ff27e1408..19c258d511ca 100644
+> > > > > > > > > > --- a/drivers/dma/dma-axi-dmac.c
+> > > > > > > > > > +++ b/drivers/dma/dma-axi-dmac.c
+> > > > > > > > > > @@ -152,8 +152,8 @@ struct axi_dmac_chan {
+> > > > > > > > > >         struct list_head active_descs;
+> > > > > > > > > >         enum dma_transfer_direction direction;
+> > > > > > > > > >
+> > > > > > > > > > -       unsigned int src_width;
+> > > > > > > > > > -       unsigned int dest_width;
+> > > > > > > > > > +       enum dma_slave_buswidth src_width;
+> > > > > > > > > > +       enum dma_slave_buswidth dest_width;
+> > > > > > > > > >         unsigned int src_type;
+> > > > > > > > > >         unsigned int dest_type;
+> > > > > > > > > >
+> > > > > > > > > > @@ -1262,8 +1262,12 @@ static int axi_dmac_probe(struct platform_device *pdev)
+> > > > > > > > > >         dma_dev->device_terminate_all = axi_dmac_terminate_all;
+> > > > > > > > > >         dma_dev->device_synchronize = axi_dmac_synchronize;
+> > > > > > > > > >         dma_dev->dev = &pdev->dev;
+> > > > > > > > > > -       dma_dev->src_addr_widths = BIT(dmac->chan.src_width);
+> > > > > > > > > > -       dma_dev->dst_addr_widths = BIT(dmac->chan.dest_width);
+> > > > > > > > > > +       ret = dma_set_src_addr_mask(dma_dev, &dmac->chan.src_width, 1);
+> > > > > > > > > > +       if (ret)
+> > > > > > > > > > +               return ret;
+> > > > > > > > > > +       ret = dma_set_dst_addr_mask(dma_dev, &dmac->chan.dest_width, 1);
+> > > > > > > > > > +       if (ret)
+> > > > > > > > > > +               return ret;
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > This patch is okay.  I think most system only set one width once, do we
+> > > > > > > > > really need pass down arrary.
+> > > > > > > >
+> > > > > > > > I think so. See:
+> > > > > > > >
+> > > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/st_fdma.c#L723
+> > > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c#L1565
+> > > > > > > > https://elixir.bootlin.com/linux/v7.1/source/drivers/dma/hsu/hsu.c#L475
+> > > > > > > >
+> > > > > > > > And likely there are more. To fully support all widths I'm not seeing
+> > > > > > > > any other obvious way.
+> > > > > > >
+> > > > > > > I need more time to understand why need src_addr_width, which looks like
+> > > > > > > address alignmenet requirment.
+> > > > > > >
+> > > > > > > If it is address alginment requirement, only need lowest one, like suport
+> > > > > > > byte, must be support other alignments.
+> > > > > > >
+> > > > > > > if it is total address space, which should be controller by dma-ranges.
+> > > > > >
+> > > > > > I grep kernel code, only sound/core/pcm_dmaegine.c check src/dst_addr_width.
+> > > > > > (I think src/dsk_bus_width is more reasonable). because the name is the
+> > > > > > same as dma_slave_cfg, it is easy to cause confuse.
+> > > > >
+> > > > > No complains for the new naming. If everyone agrees on that, I'm fine.
+> > > > >
+> > > > > >
+> > > > > > So far, still have not seen user case, which more than 8byte for cap.
+> > > > >
+> > > > > On the consumer side the IIO dmaengine will use more than that (we have
+> > > > > designs for that - that's how I found the issue). But yeah, it just uses the
+> > > > > min value (it is just that dma-axi-dmac only sets one).
+> > > > >
+> > > > > >
+> > > > > > Add it should only set min value should be enougth, if update only user
+> > > > > > sound/core/pcm_dmaegine.c
+> > > > > >
+> > > > >
+> > > > > Not sure how that works on the pcm_dmaegine.c. It sets more 'hw->formats' than the minimum.
+> > > > > And IIRC, this ends up being configurable from userspace so we might
+> > > > > really want all the available options.
+> > > > >
+> > > > > Hence, given that we do need more than 32bytes and some users (seems
+> > > > > like 1 only) do look for more than the minimum width,
+> > > >
+> > > > If FIFO space require 32bytes data bus width,  4Bytes DMA engine should be
+> > > > match requirmment, cap just help filter dma channel.
+> > >
+> > > I'm not sure I'm getting your point but on dma caps, the src/dst addr
+> > > widths is a mask. So for 32bytes widths, we need to set bit 32 (which
+> > > currently is an open path for undefined behavior)
 > >
-> >On Mon, Jun 22, 2026 at 09:â€Š23:â€Š28AM +0000, Jean-Baptiste Maneyrol wrote: > Hello Chris and Jonathan, > > concerning dt bindings, my initial understanding was that we had a file per > driver. But here, Chris is doing a new driver for
-> >ZjQcmQRYFpfptBannerStart
-> >This Message Is From an External Sender
-> >This message came from outside your organization.
+> > Bitmask does make sense, I don't think DMAEngine only support 32byte bus
+> > width for slave FIFO.
 > >
-> >ZjQcmQRYFpfptBannerEnd
+> > If support 4Byte, it native supportted any N*4Byte.
 > >
-> >On Mon, Jun 22, 2026 at 09:23:28AM +0000, Jean-Baptiste Maneyrol wrote:
-> >> Hello Chris and Jonathan,
-> >>
-> >> concerning dt bindings, my initial understanding was that we had a file per
-> >> driver. But here, Chris is doing a new driver for icm42607 while adding new
-> >> bindings here.
-> >>
-> >> Does it means we don't have 1 binding file per driver, and there is no need
-> >> to create a new binding file for inv_icm42607 driver?
-> >>
-> >> Despite the naming, icm42607 chips are a complete new design very different
-> >> than all other icm42600 chips. It using similar IPs for things like the FIFO,
-> >> but all other parts are different. Especially, it doesn't use banks for
-> >> registers access but indirect access delegated to the chip internals for
-> >> accessing certain registers.
+> > So needn't bit mask to indicate all support bytes.
+>
+> > > > each transfer, dma_slave_cfg should set specific bus width requirement.
+> > > >
+> > > > If memory have requirement for 32bytes, typical cache line length for
+> > > > hardwaer coherence transfer, it should use dmaengine_alignment.
+> > > >
+> > > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
+> > >
+> > > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
+> > > there... The code seems to use the dma bus width to match against PCM
+> > > formats supported and filter only the ones we can support (per dma cap).
 > >
-> >For what it's worth I'm not using any of those registers in the driver
-> >currently; from what I see in the datasheets I was able to find on the
-> >web the 42607p doesn't do the indirect register access (again unless
-> >I'm misreading). To be fair I don't have any other icm42607 chips to
-> >test against. The 42607c does appear to do such register access.
+> > if cap is one byte, it should support 8, 16, 24, 32, 64
+> > if cap is two byte, it should support 16, 32, 64
+> > if cap is 4 byte,  it only support 32 and 64.
 > >
-> >Thank you,
-> >Chris
-> 
-> Hello Chris,
-> 
-> here is a link to download ICM-42670-P datasheet, this chip is completely similar
-> to ICM-42607-P:
-> https://www.invensense.tdk.com/en-us/download-resource/ds-000451-icm-42670-p-datasheet
-> 
-> Indirect register access is required when you want to use the FIFO for configuring
-> which data is stored inside or when you want to update gyro/accel hardware
-> offsets (calibbias iio attribute usually). Also required for a lot of more
-> complex internal chip configuration.
-> 
-> I didn't had a chance to look at your driver currently. I hope to be able to
-> have a look soon.
-> 
-> I can you give the figures for the required maximum sleep time for accel and
-> gyro startups and stops. Usually, they are not provided in datasheet (only mean
-> values).
-> 
-> Thanks for your work,
-> JB
+> > Needn't mask each bit.
+>
+> I think you missed the point completely. It's other way around. If the HW
+> supports say 32-byte bus width, one _might_ assume it supports lower sizes.
 
-I guess I had an older or inaccurate datasheet because mine didn't list
-any of the additional user banks for the 42607p, only for the 42607c.
+what's 32-byte bus width affect software? It should only impact that if
+memory address is 32byte align, preformnace will be better?
 
-As of right now I'm not using any of those additional registers, my
-main goal all along has just been to get the accelerometer working
-honestly, and so far using things like monitor-sensor this driver seems
-to be outputting what I expect. I'm not using any of the fifo buffers,
-wom, or apex stuff currently either as it turns out my implementation
-doesn't even have an interrupt as best I can tell, I couldn't get any
-output on the designated IRQ line suggesting it probably wasn't
-used.
+>
+> It's similar to what we have with MMIO. Some HW, for example, may only operate
+> with 32-bit accesses, while only transferring a single byte (8 bits).
 
-I'm currently using the mean values from the datasheet for the startup
-times (10ms for the accelerometer, 30ms for the gyroscope). I had a
-misreading in earlier versions for the temp sensor of 77ms, but looking
-at the datasheet again it appears it should be 77us. Since the temp
-sensor needs one of the gyro or accel enabled to be read I'm just
-not messing with the startup time at all and relying on the longer
-startup times of the accel or gyro. In the latest version (not pushed
-yet as I'm still refactoring stuff) I am tracking the timestamp of
-the gyro start to ensure it has been on at least 45ms before it is
-shut off, as the datasheet also says minimum run time is 45ms.
+That's means, dma address can't start from odd address.  The length limited
+should be controller by dma_slave_caps::min_burst
 
-If you see anything else let me know, I'm happy to get any help I
-can.
+In dma_slave_config::src_addr_width, most like indicate how many data
+transfer by one dma burst.
 
-Thank you,
-Chris
+Frank
 
-> 
-> >
-> >>
-> >> Thanks,
-> >> JB
-> >>
-> >> >From: Chris Morgan <macromorgan@hotmail.com>
-> >> >
-> >> >Add the ICM42607 and ICM42607P inertial measurement unit.
-> >> >
-> >> >This device is functionally very similar to the icm42600 series with a
-> >> >very different register layout. The driver does not require an
-> >> >interrupt for these specific chip revisions.
-> >> >
-> >> >Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> >> >Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> >> >---
-> >> > .../bindings/iio/imu/invensense,icm42600.yaml  | 18 +++++++++++++++++-
-> >> > 1 file changed, 17 insertions(+), 1 deletion(-)
-> >> >
-> >> >diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >> >index 9b2af104f186..81b6e85decd5 100644
-> >> >--- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >> >+++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >> >@@ -30,6 +30,8 @@ properties:
-> >> >       - invensense,icm42600
-> >> >       - invensense,icm42602
-> >> >       - invensense,icm42605
-> >> >+      - invensense,icm42607
-> >> >+      - invensense,icm42607p
-> >> >       - invensense,icm42622
-> >> >       - invensense,icm42631
-> >> >       - invensense,icm42686
-> >> >@@ -67,10 +69,24 @@ properties:
-> >> > required:
-> >> >   - compatible
-> >> >   - reg
-> >> >-  - interrupts
-> >> >
-> >> > allOf:
-> >> >   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> >> >+  - if:
-> >> >+      properties:
-> >> >+        compatible:
-> >> >+          contains:
-> >> >+            enum:
-> >> >+              - invensense,icm42600
-> >> >+              - invensense,icm42602
-> >> >+              - invensense,icm42605
-> >> >+              - invensense,icm42622
-> >> >+              - invensense,icm42631
-> >> >+              - invensense,icm42686
-> >> >+              - invensense,icm42688
-> >> >+    then:
-> >> >+      required:
-> >> >+        - interrupts
-> >> >
-> >> > unevaluatedProperties: false
-> >> >
-> >> >--
-> >> >2.43.0
-> >
-> >
-> 
-> 
-> ________________________________________
-> From: Chris Morgan <macromorgan@hotmail.com>
-> Sent: Tuesday, June 23, 2026 02:06
-> To: Jean-Baptiste Maneyrol
-> Cc: Jonathan Cameron; Chris Morgan; linux-iio@vger.kernel.org; andy@kernel.org; nuno.sa@analog.com; dlechner@baylibre.com; linux-rockchip@lists.infradead.org; devicetree@vger.kernel.org; heiko@sntech.de; conor+dt@kernel.org; krzk+dt@kernel.org; robh@kernel.org; andriy.shevchenko@intel.com; Krzysztof Kozlowski
-> Subject: Re: [PATCH V13 2/9] dt-bindings: iio: imu: icm42600: Add icm42607
-> 
-> On Mon, Jun 22, 2026 at 09:â€Š23:â€Š28AM +0000, Jean-Baptiste Maneyrol wrote: > Hello Chris and Jonathan, > > concerning dt bindings, my initial understanding was that we had a file per > driver. But here, Chris is doing a new driver for
-> ZjQcmQRYFpfptBannerStart
-> This Message Is From an External Sender
-> This message came from outside your organization.
-> 
-> ZjQcmQRYFpfptBannerEnd
-> 
-> On Mon, Jun 22, 2026 at 09:23:28AM +0000, Jean-Baptiste Maneyrol wrote:
-> > Hello Chris and Jonathan,
-> >
-> > concerning dt bindings, my initial understanding was that we had a file per
-> > driver. But here, Chris is doing a new driver for icm42607 while adding new
-> > bindings here.
-> >
-> > Does it means we don't have 1 binding file per driver, and there is no need
-> > to create a new binding file for inv_icm42607 driver?
-> >
-> > Despite the naming, icm42607 chips are a complete new design very different
-> > than all other icm42600 chips. It using similar IPs for things like the FIFO,
-> > but all other parts are different. Especially, it doesn't use banks for
-> > registers access but indirect access delegated to the chip internals for
-> > accessing certain registers.
-> 
-> For what it's worth I'm not using any of those registers in the driver
-> currently; from what I see in the datasheets I was able to find on the
-> web the 42607p doesn't do the indirect register access (again unless
-> I'm misreading). To be fair I don't have any other icm42607 chips to
-> test against. The 42607c does appear to do such register access.
-> 
-> Thank you,
-> Chris
-> 
-> >
-> > Thanks,
-> > JB
-> >
-> > >From: Chris Morgan <macromorgan@hotmail.com>
+
+>
+> > > If we only set the min, that means the PCM code all of the sudden only
+> > > supports one format and I'm not sure that should be always the case or
+> > > that we won't break any user.
 > > >
-> > >Add the ICM42607 and ICM42607P inertial measurement unit.
-> > >
-> > >This device is functionally very similar to the icm42600 series with a
-> > >very different register layout. The driver does not require an
-> > >interrupt for these specific chip revisions.
-> > >
-> > >Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> > >Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> > >---
-> > > .../bindings/iio/imu/invensense,icm42600.yaml  | 18 +++++++++++++++++-
-> > > 1 file changed, 17 insertions(+), 1 deletion(-)
-> > >
-> > >diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> > >index 9b2af104f186..81b6e85decd5 100644
-> > >--- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> > >+++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> > >@@ -30,6 +30,8 @@ properties:
-> > >       - invensense,icm42600
-> > >       - invensense,icm42602
-> > >       - invensense,icm42605
-> > >+      - invensense,icm42607
-> > >+      - invensense,icm42607p
-> > >       - invensense,icm42622
-> > >       - invensense,icm42631
-> > >       - invensense,icm42686
-> > >@@ -67,10 +69,24 @@ properties:
-> > > required:
-> > >   - compatible
-> > >   - reg
-> > >-  - interrupts
-> > >
-> > > allOf:
-> > >   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > >+  - if:
-> > >+      properties:
-> > >+        compatible:
-> > >+          contains:
-> > >+            enum:
-> > >+              - invensense,icm42600
-> > >+              - invensense,icm42602
-> > >+              - invensense,icm42605
-> > >+              - invensense,icm42622
-> > >+              - invensense,icm42631
-> > >+              - invensense,icm42686
-> > >+              - invensense,icm42688
-> > >+    then:
-> > >+      required:
-> > >+        - interrupts
-> > >
-> > > unevaluatedProperties: false
-> > >
-> > >--
-> > >2.43.0
-> 
+> > > I mean the dmaengine src/dst_addr_widths must be a mask for a reason,
+> > > no?
+>
+> > > > > I would say the
+> > > > > array is fine. IMHO, it's also safer (from a "support all" point of view  and really not
+> > > > > complicated at all so I would just not risk it.
+> > > >
+> > > > > (we can also have one liner helpers for the case where only width is
+> > > > > set).
+>
+> > > > > > > > > >         dma_dev->directions = BIT(dmac->chan.direction);
+> > > > > > > > > >         dma_dev->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
+> > > > > > > > > >         dma_dev->max_sg_burst = 31; /* 31 SGs maximum in one burst */
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
