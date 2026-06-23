@@ -1,84 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.actia.se (mail.actia.se [212.181.117.226])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D4655478D;
-	Tue, 23 Jun 2026 15:15:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 890426BB5B;
+	Tue, 23 Jun 2026 15:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.181.117.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782227738; cv=none; b=sXJpzZphkKCjNsK/qnw87U099NtYFmdV2aJvteXcVjSwIwQ65l7/eKurtNIB8F9YOIqkk5c5zwSvVyQkFEJqpLFyikHMBo5oBMGu26E2+FBQsvMvRoYpj01xhrtYV91gyVBkARyPmKdJbL4gIalcf90FfLfhfiiqmRNTLH2H33U=
+	t=1782228614; cv=none; b=HQYvfXYtP5GBYBSm0uKA97w/pyevrT+aSPWKaJ1x4ob6QiYJKvCqY9GjZGGwjWjAyOekb7eSslfFeb4/2fNVmznqhn8+XRdwCNGMlAHZeTCzh1Wd5C69M7bOKhLnCYkQLFEx9HC37WOUrD93dLjwOStyDt3ZeeqKyQIT3R3w2Wk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782227738; c=relaxed/simple;
-	bh=gubHqCI4nHLzPzWT0NULmwIa3jzOA4oQFJSIRDBkE6M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ebDj5JBwaXfZrC52E4xnBo+j4WXEPgTbBGl3AcGFO08y/WJTTvoxkVBIi1ynAmes/PdIhGJI7ejEALqUwt0MmMFHAUrXzqVR4lpOyA+0CZujE9Q0tNXmfFvgUo5bDP8fqhNtNlHmnnvGDF4VvPPi0MFRxotkVeETMtzdiKkgImY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=COSxw0gF; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="COSxw0gF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA0E91F000E9;
-	Tue, 23 Jun 2026 15:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782227737;
-	bh=IPOBmqwVoyjRS2u66O6YAVJSo8yViJnEx+BNzty711k=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=COSxw0gF3QYuNJh9ZJ5fqD5kq/uiYqZSDMIVEkJqAbInBUU6mfevw8xAX3lrOhr7D
-	 rRyaZDnooKcpcVnE+vaibH+IHcdvJmnPooj//fkwNiKtJoS+pww2yPlQ41T9a3sQsF
-	 UnVnkNIkalwiYHlkpv9VfK2M17gPYXeXKqS8+Tt/gNtz6iO7hrsTM2LJPUETGLBzSN
-	 h5ph74zMF14l07AqIQtAfQMFEvSSCi9Jztm7bs9WuZWiSKPAyN5MHgZZLq0kW4psYK
-	 1z37dYL6gHV7M1aIu7F/sW1N/UgoVcO+Z1OodHFUmF+iiOS7wu9u1y6MxlZka6TMT2
-	 KVrsYfQ2Ux5dA==
-Date: Tue, 23 Jun 2026 16:15:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Chris Morgan <macromorgan@hotmail.com>, Chris Morgan
- <macroalpha82@gmail.com>, linux-iio@vger.kernel.org, andy@kernel.org,
- nuno.sa@analog.com, dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org
-Subject: Re: [PATCH V13 8/9] iio: imu: inv_icm42607: Add Gyroscope to
- icm42607
-Message-ID: <20260623161527.7b7b0ccb@jic23-huawei>
-In-Reply-To: <ajotNPhg8fR3tLZp@ashevche-desk.local>
-References: <20260615172554.160910-1-macroalpha82@gmail.com>
-	<20260615172554.160910-9-macroalpha82@gmail.com>
-	<ajEhr0JIQwzRgoZa@ashevche-desk.local>
-	<PH0PR19MB997338E86152468CE26F60953FA5E42@PH0PR19MB997338.namprd19.prod.outlook.com>
-	<ajotNPhg8fR3tLZp@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1782228614; c=relaxed/simple;
+	bh=ym+CGHg4rV/HzoFX45Nnzz7TrhI3xZ1CKvN/CSiGcLk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=lqXd1lnWJ5xMteZtBdl3/xutKNKz5RlopNambtl5x0FppTKlvWjSnPUDhxqHV3K42dNFRaQSSOHYNnUvaYhaBXx5uJ6B/ShKLoRm4estv3NeUs9zCjTZvrRneuD2loTQwFPiEzw4xkLWaHmDvJ+e959+p/4J73nhM+fxwubLLjs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=actia.se; spf=pass smtp.mailfrom=actia.se; arc=none smtp.client-ip=212.181.117.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=actia.se
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=actia.se
+Received: from S036ANL.actianordic.se (10.12.31.117) by S035ANL.actianordic.se
+ (10.12.31.116) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Tue, 23 Jun
+ 2026 17:15:00 +0200
+Received: from S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69]) by
+ S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69%3]) with mapi id
+ 15.01.2507.061; Tue, 23 Jun 2026 17:15:00 +0200
+From: Andreas Kempe <andreas.kempe@actia.se>
+To: Lorenzo Bianconi <lorenzo@kernel.org>
+CC: David Lechner <dlechner@baylibre.com>, Jonathan Cameron
+	<jic23@kernel.org>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, John Ernberg <john.ernberg@actia.se>
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: deselect shub page before reading
+ whoami
+Thread-Topic: [PATCH] iio: imu: st_lsm6dsx: deselect shub page before reading
+ whoami
+Thread-Index: AQHc9CXmt5PDPY90VUWMABLjTdSxxbYuTrCAgAADbYCAAAMsAIAADqyAgAAMk4CAAAKXgIABTP8AgAAZD4CAAAfsAIAcWzCA
+Date: Tue, 23 Jun 2026 15:15:00 +0000
+Message-ID: <ajqi8yvesZqK74-9@w570anl.actianordic.se>
+References: <20260604132646.1099072-1-andreas.kempe@actia.se>
+ <aiGH7x531jwzOVxF@lore-desk> <aiGKz9iMAUfFqxUP@w570anl.actianordic.se>
+ <aiGNeKTzOR30w-Qf@lore-desk> <aiGZxzz8DF-E-tux@w570anl.actianordic.se>
+ <CAMknhBG+u__qiLv0aRLYnUW3iYXkYDLHveQ-bs2gGZfBAD6Viw@mail.gmail.com>
+ <aiGmfzaSj3bNyXkM@w570anl.actianordic.se>
+ <20260605131518.072dad20@jic23-huawei>
+ <aiLS232YzmDvXhsN@w570anl.actianordic.se>
+ <20260605151320.415cc432@jic23-huawei>
+In-Reply-To: <20260605151320.415cc432@jic23-huawei>
+Accept-Language: sv-SE, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-esetresult: clean, is OK
+x-esetid: 37303A2956B1445F6D776A
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <5CE1D2B0C7781542911C3B01BADD743D@actia.se>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Tue, 23 Jun 2026 09:52:36 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+Den Fri, Jun 05, 2026 at 03:13:20PM +0100, skrev Jonathan Cameron:
+> On Fri, 5 Jun 2026 13:44:59 +0000
+> Andreas Kempe <andreas.kempe@actia.se> wrote:
+> >
+> > The reason I put the fix where it is, is because
+> > st_lsm6dsx_check_whoami() is what assigns hw->settings needed for
+> > st_lsm6dsx_set_page() to work. I moved that assignment to before the
+> > whoami check for that very reason.
+> >
+> > As I see it, moving my fix to a more reasonable place would mean a
+> > larger restructuring of the driver or making the whoami check advisory
+> > per your suggestion.
+>=20
+> That feels unwise (even though it would work) as a fix for this issue.
+> People would get very confused at the informational print.
+>=20
+> Ok. I guess maybe this is the best we can do.
+>=20
+> Lets see if Lorenzo is happy with earlier part of this thread
+>=20
 
-> On Wed, Jun 17, 2026 at 04:10:49PM -0500, Chris Morgan wrote:
-> > On Tue, Jun 16, 2026 at 01:13:03PM +0300, Andy Shevchenko wrote:  
-> > > On Mon, Jun 15, 2026 at 12:25:51PM -0500, Chris Morgan wrote:  
-> 
-> ...
-> 
-> > > Can be some of the code deduplicated between gyro and accel?  
-> > 
-> > Probably a fair amount, but the deduplication will likely need to be
-> > undone somewhat if we get buffer, WoM or apex support added back
-> > (I don't have any devices with such functionality, so if anyone will
-> > do it then it won't be me). I can refactor more if you want, or we
-> > can keep it split like this to make it easy if someone else wants to
-> > tackle the buffers/IRQs stuff later? Your call.  
-> 
-> Just asking. Jonathan, David, Nuno, what's your opinion on this?
-> Personal opinion is to avoid solving the issues that do not exist.
-> If you are not committing into those features, let's not prepare
-> driver for them right now.
-> 
-Agreed.  My only exception to this is normally when someone tells
-me they have the code and plan to post a follow up set very shortly.
-Then I get a bit more relaxed as they chances of 'preparing' for the
-future being relevant become much higher!
+A friendly ping to Lorenzo on this topic.
 
-Jonathan
+Best regards,
+Andreas Kempe=
