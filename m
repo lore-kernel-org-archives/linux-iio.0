@@ -1,226 +1,305 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazolkn19012067.outbound.protection.outlook.com [52.103.14.67])
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010018.outbound.protection.outlook.com [52.101.85.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F47540D572;
-	Tue, 23 Jun 2026 00:06:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.14.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A6B4DDA9;
+	Tue, 23 Jun 2026 00:06:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782173190; cv=fail; b=ZlcTHc4bgiA1cfWq14C1qHP9HYlh6ZVGYwRAy6Q1WAmU841R7PBXKPlacDpEPa7dtYkYHv/TRlRnwAAPS799znkGOp5oJ4kz0wrff/aMcau3x9/unNfv150Zy4sjwtvGbevqwcHRGHBPyON1gJHg0ehT+DhWhtpcLfedXRgIMJM=
+	t=1782173204; cv=fail; b=tfCi9e2lJAUGquUWY3H3PWMjEqCVUpVgkeZ994a+isoVOCNTnUliB7+Iyt8mPlAvtl0/bp6V6vH+NvoWNhBAr8PBE3SBrwQ0ooa9meI/jPzVUI/Bdx94m6Sz0zNaejLc9dZBVA7yp2no3x0a3xsludBEvgHp3BdtNwntb4iHUMA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782173190; c=relaxed/simple;
-	bh=nUNiXDwFXAQQEaJqF0DvCodNxIwcSPjkShUZykfyQag=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=O9CzlgAg2dhSwIdRlfHq4xA768WCTuCJ6OwO8jXsgDmhCcX5zpdJMsKCp2Kk5i6uYGtMdXGH49JSJgtGuOxTRNR33DdFtu7IyH2cw+nBFeheu04T73GQ0CXpd8btPlIgpKW25H5YmanKjPCWruvQMyhiPmxmQirojYoc1/uSjhg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=skpDo/Bk; arc=fail smtp.client-ip=52.103.14.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	s=arc-20240116; t=1782173204; c=relaxed/simple;
+	bh=b5Zdq0s8JZPJWvtuNv3AYpkdBk/+7uXU1u/tZb07p9Q=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jYF0DO+XD7u6Oyi8NlWd1vu2Mim1bEmhUnRQwpbRC2do+RavrKODr6akCJicAWnBO0GRZvO7TwWk3dPtgudyJzjPlsl3uvGV94R068wrt1X90kemzyiIEWQ+iOlXCwUvEBitagx0TvPwJ1iPhQpdiVa5KELmmRNLkvqk5SGekVg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=iLMlu3JC; arc=fail smtp.client-ip=52.101.85.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="skpDo/Bk"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="iLMlu3JC"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lUZ9FueFbRJ7gfdd4WBmbgWngTP/lPhVlOrprR1JOWGkShcOz7vOPHV3VuLEqCbffBWMZMrnt27fkF3A4ZT3B6xCt4IvJSNe9+7kY1uqvxpCaKwIJthNereINWTrEKi/sf8ZF+DKMOvgkc1TYyw8N6MnSJNJiR1SEqEyldmNDT1JoyGYMkBnnjvU9BaS5k54felAhZn4692ruIEpzLxR2/W35wMR/fOQqTMdE8nhzXQ6jG1rztSi88uQv3kRWUFcHK6hkNFKNUfTrKOjGIzCh8udzsO6EacOpslrSjkvoKEGuPSNiED1s+6YGKPT6RK94Y3CFXI29EFOrGX3O17VXg==
+ b=yBEAj9+caTzKJXIEhVgfAFuMiB+d0aqGKzJxSx64UbbWQCcjX5k+jx8Z8Hpk6FN0qONTLztcvrA3o5RmeL07wLFXUM4H3C2/oBvuPdbqaFdG+WnBB9oPSxC88l+ympCa2cTDfQSNCsyCKjqHUXZUGQfoaTRZBNN0AQq7/JjoU367Vk3PCgq13lsL+QIGwtlLv0Rf99i8XtIk/DVWQCcI1iefIEtFBxgwHMGe1/iBBSp4aXGg/EDfSC7gTG47+SIRxBwEZ/evx09MQLYeleqejAyCkP1yxWmXFMvFhy2qmfHP1qnboCnOwgqVaLs+UoaSoHA/e6vnicFOLAV1DEuI7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rCEBVp/XanFgUUvJQFDB/q2i8WlQf0QIV0ZbT9CAfY8=;
- b=PgBagARKKzT/bfxzVV1SPkAXBYqR3Gj4coppkMFLKDGz+MexkQ0enBj7ssVwbC6wwuEKApErfUV8lRh+TAGrrbFkluXe+hoKgVjfBHvTe8Rq81ocXPNjNcPZwhX0JhU4s0w4DHtAmVJ9hNZGelBMGE56Cjk2ySqz2zfHEhi2Z+zFsQB2oIysfuaEGxVrL3dPCGjg6HtDwC8HQuW6rPByzD+4s+ve8zuzcw5CkX7k8WvzXwH+5QO4WF1EBmaAvkLcypEvGA9N/5QAoa6lx7OvC1R6C/B/VVBYszcyJEgZ18OQtiLKd2Jzzg3Rd9Wyud3Pm2XEYQxdHBHHrRspA6yBNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
+ bh=vDfftv/HAQrFFA97plnPJQlpzrtFGlDvaKRbjIA4org=;
+ b=b/npEGIZnLAbWOxtgV5gbPXCJIjGQQrshpP3ZgBpP/FPNWMI9PpA7sWsyo08j/vlNvj19KdEK6EU28SbxtNiQoj/YnabeStMvEQifnG6Hyo5Y67QcoJ0yOziK7uR/epanRxHh1yV1QZAzzNf78eyULGbgeWknxcuYKO6ag9JkQnJmDwH7lUv2TFQKQaoMPYPEz/uPOvPkyudein9bia6j3fU4c+WBtwhlxC9nYB15tU3XnsTUGFXND60mH+WfCZbnwyDXjx+7qXOn866Gdpr9pQIoqS30FExTL44Dg4RgB2DfpKLPu6Trksp9riy9KD9J0mCfKBDWUYh/Ugg8LmbMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rCEBVp/XanFgUUvJQFDB/q2i8WlQf0QIV0ZbT9CAfY8=;
- b=skpDo/BkWpOl3hXxVK25Ue2t34NNqC0bYlpZNDXzd6dGuaTXKGn5ta7O3djWS0GxHyW0aHbtQtwQbuDt4w6b4H6U7MgC3rR+0h1RoHj52+GOAky02V7zQo7euBr8Aq8vPkm1lOacz9vj9kfxRRDRZMig/UAL3HYZsro6sBA2KZwtAX172A+sS78qcvOEpD0ytOJT+hcr1NtiYErTi9aTC/dXgGWRLbwzgRUoeNM8h3qUpMzrnOr0LaV2efKQtKro2dw65W+4IfnEMbdYL99ERnsIou5ohb56Qu8Ww86w6+VbLghs62i8ta5klaInd/iy1ew8j4AWKHmhBITAZPsaLw==
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18) by PH8PR19MB7143.namprd19.prod.outlook.com
- (2603:10b6:510:215::11) with Microsoft SMTP Server (version=TLS1_2,
+ bh=vDfftv/HAQrFFA97plnPJQlpzrtFGlDvaKRbjIA4org=;
+ b=iLMlu3JCoXBzLu8lsTiOU/cQsqaJI6hPyDTg0fSuVi1Xd8Vz8SOn79nsH80od1Ji85/NipL9Zk3xKBFotlfQ6h+GnCzEVU4RjLCs0QXUcQ7cmgqaVIPI050j2uFsVrpOF0m9EXfOMO6b71ZIJTiDvG7HVVzXBzlf+mqmqK8Ifzo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
+ by IA1PR12MB6114.namprd12.prod.outlook.com (2603:10b6:208:3ea::5) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.20; Tue, 23 Jun
- 2026 00:06:26 +0000
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.21.0139.018; Tue, 23 Jun 2026
- 00:06:26 +0000
-Date: Mon, 22 Jun 2026 19:06:23 -0500
-From: Chris Morgan <macromorgan@hotmail.com>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Chris Morgan <macroalpha82@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"andy@kernel.org" <andy@kernel.org>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"heiko@sntech.de" <heiko@sntech.de>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>,
-	"andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH V13 2/9] dt-bindings: iio: imu: icm42600: Add icm42607
-Message-ID:
- <PH0PR19MB997338ED05370F27B730FEE60CA5EE2@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260615172554.160910-1-macroalpha82@gmail.com>
- <20260615172554.160910-3-macroalpha82@gmail.com>
- <20260621181804.27b44942@jic23-huawei>
- <BE1P281MB1426C557A66945951D382EDDCEEF2@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BE1P281MB1426C557A66945951D382EDDCEEF2@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
-X-ClientProxiedBy: SN7PR04CA0031.namprd04.prod.outlook.com
- (2603:10b6:806:120::6) To PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <ajnN_7hWCUVrDadO@wintermute.localhost.fail>
+ 2026 00:06:38 +0000
+Received: from IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
+ ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0139.018; Tue, 23 Jun 2026
+ 00:06:38 +0000
+Message-ID: <ba8e1716-dd6d-4d6f-b8d2-859276b9aa36@amd.com>
+Date: Tue, 23 Jun 2026 01:06:34 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 5/5] iio: adc: versal-sysmon: add oversampling support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ conall.ogriofa@amd.com, michal.simek@amd.com, linux@roeck-us.net,
+ erimsalih@gmail.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
+References: <20260618101414.3462934-1-salih.erim@amd.com>
+ <20260618101414.3462934-6-salih.erim@amd.com>
+ <20260621172845.14460273@jic23-huawei>
+Content-Language: en-US
+From: "Erim, Salih" <salih.erim@amd.com>
+In-Reply-To: <20260621172845.14460273@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0133.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9e::17) To IA1PR12MB7736.namprd12.prod.outlook.com
+ (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|PH8PR19MB7143:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0935a4fc-c3ad-4414-4aef-08ded0bb448d
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|IA1PR12MB6114:EE_
+X-MS-Office365-Filtering-Correlation-Id: eefd5e46-9fac-4bc9-e196-08ded0bb4c04
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|19110799012|8060799015|4140399003|5072599009|25010399006|15080799012|37011999003|25031999004|23021999003|51005399006|6090799003|24021099003|40105399003|3412199025|440099028;
+	BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|366016|6133799003|22082099003|18002099003|4143699003|56012099006|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Io5jER4JHgC76cn3dmhPpa49VLk6kzRXfQTUNW6Uql3ZC6M2eQH5+MmywQmD?=
- =?us-ascii?Q?wrrnOFlIpG6bYH02g1XwZrJ5NKPGmSg04tYkKhDWwCRJEwuDc/SOZamaIrDh?=
- =?us-ascii?Q?9LX967rlDy7UaXzEOUr3hoVioK7f8LJSvIbxftTuZZmzPunZ6o6qfumR2sMG?=
- =?us-ascii?Q?N6y9wpuDGIQZqkGs6cEtYFEtWu2HHsDBR5yod37P7Ej4kBV/nATs8j6w3zWD?=
- =?us-ascii?Q?Hp2QE4o76N+BezQSqvfIptynrxjaDcMFdVwj4hJ+5k2ADy8tIL/PdKuHbSC9?=
- =?us-ascii?Q?DaEuLym4tZDAb3sjy2Gw1mm21xW2NamqNqq4WuIDeJP1HDsP/FTxk4t+6NN1?=
- =?us-ascii?Q?KTS9PdojwbhlVDD9KKQEd0vK0WA0j3nCknBbEiLezyusVfkrtw3ut9q8SyJE?=
- =?us-ascii?Q?4aAWi7ZQzblMEq5+wLfcGcvZIsOxmbunfdW0YhTpLXPxEE28E3mtfyUDOMAk?=
- =?us-ascii?Q?QqHFzeRz7cparwvfjUPSLbVJjVJup7GjENaD1chZXCkp9ejQ112qoj0UOJvW?=
- =?us-ascii?Q?VUVIQMa8eODnN3DPzcPiajcRkYADhTcXwBMTvEiMnATFkI6sJYZ9WGUHJ6Jp?=
- =?us-ascii?Q?x6qkYYdUJAEDZjR0LzYw9FxDXSsL4LIhd5yuG90qu3ILTr2fUqpHy8v7WLpb?=
- =?us-ascii?Q?CVSJIdVpXgJEg0yixKuONKgoS9gXG+4ChlyXxBxueTZAG2r2gB4vKXrYYV1D?=
- =?us-ascii?Q?J7/UUfQ/EGeyR1bVRcC+zMjaJMBnxXVzpQ1Arz5eMCZosuiSCCADLVrH6db1?=
- =?us-ascii?Q?e3tSmQDPdsv5VXX3QqTWKY6k6k9c8gmfelN2RRsxJhtdv02p9lsfWbWbNMat?=
- =?us-ascii?Q?5MboCKEyE482MSu2IDsN+H8cIFO9LqyAN5exnzcNyGkJuLsU2MrzhmUpGc50?=
- =?us-ascii?Q?uUrUhqUEBmfXJPDWkLbSzUzhbJapXItlzx4AJNYntfpmgPJbs9JOcTmQQ7GZ?=
- =?us-ascii?Q?n00W9vccAE92jFhsysb4if7BgomwcoBl/KtSi1SQMp3ujveCQrLYvkL7Y3AW?=
- =?us-ascii?Q?wU1AjyxH9QWk+PhOd2IvxOlfZQ=3D=3D?=
+	r8fidVUFfhi80d0PQQTiLMAEe7ra2bkP8N+oCuGsdyZUmjtJYWzFQj9QOm7nsQLi9qBlFme6CSltecn511r2q5qbv1uW2ifIv3iraj008MTYIdwTa+DffrqV1QsQIuc9vsSv7IdFkCpOVRYcnzBfe+eiQEufJPIT6GIiCl2MbJAbR4hMELD0gANSHJ+p0G4zkTkgDfwIqOZTdpCWmqDgw7BTCSllFa09LNt/gRmFWASt7JSkvxW00mXmhrp47kx5XdyVYGMSH1yZNoESGI8veWb5oUQTEsFFap6cm5Iq7WemTm3vS4nXFoLsJQglAuSyt3QH2oDegRyxVfjyxAkaVtXzgZV/B0fgb6EDpOVp6bGE4mfZiEICMc+FRpv+kYwWNMTkn+TvqwaKJPm/qJwqkChM6HR2PlPCer8Vzsrbb/ekwzdyGzaSNgf+adoqS48jgIIIL1SpAhDgUoOUl9+bbFwm5FRMO9too/3tb8cTmb9+9RLVSxrItXvpJN/woz41r1OYf46JnecL+Vr8XKpFSDCgPpieRp2UO4VaeASVJ04lh8o3NwjJaOJFsLN0Hs7k47164da/viklXeEuFYVUpKhlagpTBwxAXDJETnTFsht6Bh1k4wlp6vWH9DaHUxFTI24DMrrDdhQAuIdT0CsaymOYnax7zAF9erktLLANM8I=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(366016)(6133799003)(22082099003)(18002099003)(4143699003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?c1W4+7Yo/NzZ8ihGAoFNWDDKGryBzEyAfbbQLEGIwBHtFaRWpgO14vO0gH0J?=
- =?us-ascii?Q?KexETSocZOOXEOGb88dXT5uOQ52kp0trG/hWjn4cP2oZMBBL43XIxhX7yS4x?=
- =?us-ascii?Q?6OF63MJZW1T9b1YJdUMhnTlegpFm9/6G6gqEJmya0ZxU0+20ohAAxWjT5UNd?=
- =?us-ascii?Q?wRxhAgubNy/ZHZehUbDpf1j2RRBBwtvAXzvKeMZtBqKxwb7UN8oC+Nj2XCHU?=
- =?us-ascii?Q?oYRznKmmdbc41mbiEQixqjWFP4tQ5J6XCb0d3Yd2+uMyyKWzNa7WeHWqtjnr?=
- =?us-ascii?Q?eYnvGLO8n60D5hXv2jQvFmhk+coJMOHlmaupJ6NUxQMhVy90GuFhAZZuR7Gx?=
- =?us-ascii?Q?8p5xJAERKrCrLUs4hWuiBcpcFISplmbDHDbUiFu/kDQXblFqd0xUIwr4w6aR?=
- =?us-ascii?Q?2cbtM3rbjoTb6UZ7MLKQnQWLNQVZvycCTqoIJElYKxOKgZrJA9m32T2wTQeX?=
- =?us-ascii?Q?FDs9ltevL2yHC1ZNaqdGPLKuiXmab0W0UJBPwLol1D8pOgSuptKKZTMHPfn9?=
- =?us-ascii?Q?waEfGgUhQsbaNoCYiqWvrkxrpeRUBhS33D9Z5j50E3x14H07ZVp4scTR5l5U?=
- =?us-ascii?Q?lP5nX2eATUE4x947qUnDuUFEkT6yDXYL/R8y6ooorlcS28Moa/u71gBcQGbD?=
- =?us-ascii?Q?NbBO9uvgJ/ge4ddGes7VF3I9C8Jn6c1w2WnwT6dW0wuBieuKaZ8RuhvDwgjf?=
- =?us-ascii?Q?RQvy+K7deSc7hg8xwAVP3qcOuHDD8eMniqcmE8sbq2sW9eOiXHRDQtlZXb4N?=
- =?us-ascii?Q?I5kR1SmVNKCJC4k/FTUkUcBqG0rXArYZJKHqUk1wiTR1dj0dNy6b02u9NkF6?=
- =?us-ascii?Q?jQuW60Q+1L1mH2GlUVuEwIMPFoS415ysqnazLjpIQx5zgJYGJXxmCxClxOC5?=
- =?us-ascii?Q?k5KdkksUfXvx9kU1ZZTyW7JXOQ34dS3/kpM7T7ajgjjH+qo12zYLzSolzROs?=
- =?us-ascii?Q?elpX/1RQTG+2G4DGbaBt2MD5jrnj1ekSvx1W4+odZb5/OhehXf9g/71B5cvT?=
- =?us-ascii?Q?lykb9D1lX2LAf1X0MtI8Z4zGHnoyA9+NxjqZAhXNjGYxegtDMEQq9lKuyk2R?=
- =?us-ascii?Q?p7ZllFAuAgcpdrQfCp/bqb5LpzXw3E72DVTRcJpzxLsSqGD5gWWGoJBjVkvf?=
- =?us-ascii?Q?m47fY8wrtc16xGwLwkVwQ7Eiou6nAhg+lM5pz8w2699ZENDNRrZy4L2joHq1?=
- =?us-ascii?Q?c56RUkto1PLiFDmfu9RrDKYtRRBkBof9nSDn3GC3M9WqkzgCmR9nXRMBmVOZ?=
- =?us-ascii?Q?ZFthv7YmQ1GIhCcZTIRns8uflvyFnD5nXfey2JDDuUH9UKAR8EsOXmxeVUgO?=
- =?us-ascii?Q?67sTRqPwZbl8PvnEBVXWWUFXGeqmB0Yh+VjXbXS/VDToapVHlY/ydA7GWuXn?=
- =?us-ascii?Q?HzsoP805VoI2xJh2A9gVSWFTZ4WzAwJthMBYoQ5AaBVAEhxqgiPh6MPXQLp4?=
- =?us-ascii?Q?Zcnui7nhSFO1po6086c2GhWBmY3psQjm?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0935a4fc-c3ad-4414-4aef-08ded0bb448d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
+	=?utf-8?B?bGoxQ2FsVE8xa0gzZ1hUZWV2M29CMlRWSGFhN1ZyWi9IVFMxdnBIeU92cHRp?=
+ =?utf-8?B?c050TUtJSlQzM1hHWS92V1RNTGNiWTR2dXlOT0ZwMmM2Y3BBU0kxMzl0WDgr?=
+ =?utf-8?B?TWNqOHNyUHdUSFUxYXVMbGwrSTgzYm9ESEw4V3FFcmxhNnI5cWNUZWNSV0N4?=
+ =?utf-8?B?QXZvaTFpNnVEVlVLM1ZFeFJIbkRaNmFrZUREc3VHTXNWS0wrdXNvQ3d1eFl4?=
+ =?utf-8?B?b0k1aGVsYm9scFJhWXR4RFllQkp3OUxoWk16bFBLbXpHb1RKRGZZcDlXM21K?=
+ =?utf-8?B?N1ZQdW9Zc2J2cDNodUczTnA2TXZGNHVscVdUejdic2pGSTFsVDBaY2ZjWjEx?=
+ =?utf-8?B?L01vVVBiZkMvNkErVUJUbGRsOHNSbi91MkFCK05mTE5iTVRZbys3ZlNhdExH?=
+ =?utf-8?B?M1g5WWJZbkMzUHBSeSt2ZlZ4MDZoVkxIUDhhU2M5MDFhN3JXMm5hOXhRVXdH?=
+ =?utf-8?B?YmdvNEUvN0cvekQyWW82dlJIUXpsMmdjczVCQmtXd3BHVEY0YW1oQnlnakti?=
+ =?utf-8?B?MGxKWEE3QXFNOE5VaHY2UXN4VkZUVzhPcHhWOEs2YlVnZEQ1QkhMdEg1L1h3?=
+ =?utf-8?B?S2sxcG9FM0ZzbEJXd2JlWC9zZW9hUnpRc2dCTFljNEZYMExwQ1dyWTdyOXpj?=
+ =?utf-8?B?Wnc3cEF1ek5wdVY3N1RLUEVmRWdPUUtscDlpeDlZZVBOeTErZGMwczJVYUtw?=
+ =?utf-8?B?d290TUMvZGE0WTRSUm9WZ0Y2bGJVU2FDWkR0TkRLN2ZtRkswUWxzcXJoUHo3?=
+ =?utf-8?B?ZmE0WGUzc0E0NUVlcUtKVEpMQTAzOFVDVExjYlhTRDliM3pvTmtodjBxQkxL?=
+ =?utf-8?B?RzJBSmwxWFZHY2p1YUNWc0hKakI0cEUwZTdQSWU4Z1VTbFRGRjlvU00rOXFh?=
+ =?utf-8?B?QThLR3NMNWFWcVlmdjJxVHlERlVMZEpMZzNXV1UzZWs2SUtnQThYYlFZOG5V?=
+ =?utf-8?B?NlA0N2tMdFA5L0kxazY4S3lLT0ZoTjZncmpHalNoVklweGlQaVExY28zVG5P?=
+ =?utf-8?B?bzEwM1NaYjhITysyaUwzbkNteTJaamZ6a1JFVldMd0x3ZlZxRURwOUZDWHF0?=
+ =?utf-8?B?YTBpbXIzUVdLdlZsS0ltRy81OGJWTEcvUVhZUjlUYlY4eWhITzZtOUZiOTAw?=
+ =?utf-8?B?aDVpV3BjSTQyV0Qzc21neG96TFBuTXEwS2xYNlFoK0tSMlZWUTZwU1NvZnJ6?=
+ =?utf-8?B?c1cvL25CeEU5OGxrVHZpdFRHK0ZjM04yYmtvNXl6ZUFjMDlBR1ovdWJFS0Q2?=
+ =?utf-8?B?aytZWFpPTmNyWnRxV2trYjRQTmNpem1kZFhBOWdVZWw1QXo3czltRmxYYTZo?=
+ =?utf-8?B?cjVObzl5V2M2MHl1T3lEN1p3TXA1WE5hTkoxUWZrNzRsckVwS093aDBLOWhK?=
+ =?utf-8?B?NUVMZzRyMndvNU9hV3o1eDVSdlF3djdVNE5ERnRMRE9FY3lZVkg3OSs1dEcr?=
+ =?utf-8?B?K3R6d2ZwcDYydmswMWRsaFRvbkloaHRCeFN5VHN3VFYrNGtBRjV6ckZNaWNO?=
+ =?utf-8?B?QnBjSXRyaU4za2w4YXJ1aTFyOURYSXhPWDM1MGdpQncxWUg2bHJHUVYvUm43?=
+ =?utf-8?B?cm1pK3h1OUovbkpNcTBROGRPRXhhdEIzdkpUYkRGdm11aHRJS1hnUzFicHVG?=
+ =?utf-8?B?M3JyTVhoWXloc3pHRzdiNVJrV2FramhWK1NZYktRMW5mZlpULzNHSWFaTDZF?=
+ =?utf-8?B?dWVNejRTOFhRL1Z1VmNiaHFwUHptYmhVakk4eWdweThMODBWR0tsdFYrdUZJ?=
+ =?utf-8?B?ZSs4RFY2OXFnNnE4U0FZNXg4VzFHckpiazRvWmJ6WDQ1T2oyRENtUURRa0U4?=
+ =?utf-8?B?ekpvbmllZG9vRENjL0tJOU9zTUhoWUJrTHZFTVRTUkRTaTR6cGdUSWtkeDlr?=
+ =?utf-8?B?amNBK1l4ZEFJRnJjak1iV09idWpXZXVMVlc0MjY3dWg1SzJhTTdOQmNTZ1U2?=
+ =?utf-8?B?VUU0TFQwZEhuWEZJM0ZHSlFvRXEyQ0NOVU5WRTk2QzJCQzJJRVhOYU1uaXdw?=
+ =?utf-8?B?eEtOdkcvTkE5SDBwa3NUUkQvU05BYWd1RUZlSitWV2laZTZNWHJDYlhSUkRm?=
+ =?utf-8?B?ZnZkTEFUaGdQT2pENnh6Nmw1Q0VkVTBoVzg1RExTYmZ4aVU4c1NNcGxsNFBr?=
+ =?utf-8?B?Wmc5RlMvSVFEMWhyUjNPcXdHdGJYL09tYVo2SXQzT0s1cDNQVTJrVkY1ektW?=
+ =?utf-8?B?Y2JGTGNtMlBNN2VTN1lOZEZtb2RFY24xTTZGdTNqdDBubThIMXBJMEo2ZmMv?=
+ =?utf-8?B?S240YlZoTUk1RzJkNXlsUmltREE2ZlFpTjhiS2l5OVdEVXd3QzJVWGFOM2I3?=
+ =?utf-8?Q?UZjOdcNtmKwZGAp0dW?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eefd5e46-9fac-4bc9-e196-08ded0bb4c04
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 00:06:26.3666
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 00:06:38.7188
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR19MB7143
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: p6jXYcfFXkPmwc2PwJDUZ9IvXlybzFLgPTRRFTFhFV8M5o5gMa79Q2VHC3iywZHv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6114
 
-On Mon, Jun 22, 2026 at 09:23:28AM +0000, Jean-Baptiste Maneyrol wrote:
-> Hello Chris and Jonathan,
-> 
-> concerning dt bindings, my initial understanding was that we had a file per
-> driver. But here, Chris is doing a new driver for icm42607 while adding new
-> bindings here.
-> 
-> Does it means we don't have 1 binding file per driver, and there is no need
-> to create a new binding file for inv_icm42607 driver?
-> 
-> Despite the naming, icm42607 chips are a complete new design very different
-> than all other icm42600 chips. It using similar IPs for things like the FIFO,
-> but all other parts are different. Especially, it doesn't use banks for
-> registers access but indirect access delegated to the chip internals for
-> accessing certain registers.
+Hi Jonathan,
 
-For what it's worth I'm not using any of those registers in the driver
-currently; from what I see in the datasheets I was able to find on the
-web the 42607p doesn't do the indirect register access (again unless
-I'm misreading). To be fair I don't have any other icm42607 chips to
-test against. The 42607c does appear to do such register access.
+On 21/06/2026 17:28, Jonathan Cameron wrote:
+> On Thu, 18 Jun 2026 11:14:14 +0100
+> Salih Erim <salih.erim@amd.com> wrote:
+> 
+>> Add support for reading and writing the oversampling ratio through
+>> the IIO oversampling_ratio attribute. The hardware supports averaging
+>> 2, 4, 8, or 16 samples, plus a ratio of 1 (no averaging).
+>>
+>> Temperature and supply channels share oversampling configuration at
+>> the type level (all temperature channels share one ratio, all supply
+>> channels share another), exposed through info_mask_shared_by_type.
+>>
+>> The hardware encoding uses sample_count / 2 in a 4-bit field within
+>> the CONFIG register. Per-channel averaging enable registers must also
+>> be updated to activate or deactivate averaging.
+>>
+>> Signed-off-by: Salih Erim <salih.erim@amd.com>
+>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> Sashiko I think correctly calls out that you should have
+> the oversampling related bits set in info masks for the statically
+> declared temp channels as well.
+> 
+> Otherwise looks good to me.
 
-Thank you,
-Chris
+Agreed, will add the oversampling bits to the SYSMON_CHAN_TEMP
+macro.
+
+> 
+> I will note that sashiko was busy complaining about at least
+> some of these in earlier versions.  Please always take a look
+> before sending next version.  If it is spouting garbage (which
+> it does for I2C dma safety for instance) then best option I think
+> is to reply to your own posting saying what is wrong and what is
+> correct and to be addressed.
+
+That's a fair point. I should have been more proactive about
+responding to Sashiko on-list. Will reply to the findings on this
+version and do so going forward.
 
 > 
 > Thanks,
-> JB
 > 
-> >From: Chris Morgan <macromorgan@hotmail.com>
-> >
-> >Add the ICM42607 and ICM42607P inertial measurement unit.
-> >
-> >This device is functionally very similar to the icm42600 series with a
-> >very different register layout. The driver does not require an
-> >interrupt for these specific chip revisions.
-> >
-> >Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> >Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> >---
-> > .../bindings/iio/imu/invensense,icm42600.yaml  | 18 +++++++++++++++++-
-> > 1 file changed, 17 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >index 9b2af104f186..81b6e85decd5 100644
-> >--- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >+++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-> >@@ -30,6 +30,8 @@ properties:
-> >       - invensense,icm42600
-> >       - invensense,icm42602
-> >       - invensense,icm42605
-> >+      - invensense,icm42607
-> >+      - invensense,icm42607p
-> >       - invensense,icm42622
-> >       - invensense,icm42631
-> >       - invensense,icm42686
-> >@@ -67,10 +69,24 @@ properties:
-> > required:
-> >   - compatible
-> >   - reg
-> >-  - interrupts
-> > 
-> > allOf:
-> >   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> >+  - if:
-> >+      properties:
-> >+        compatible:
-> >+          contains:
-> >+            enum:
-> >+              - invensense,icm42600
-> >+              - invensense,icm42602
-> >+              - invensense,icm42605
-> >+              - invensense,icm42622
-> >+              - invensense,icm42631
-> >+              - invensense,icm42686
-> >+              - invensense,icm42688
-> >+    then:
-> >+      required:
-> >+        - interrupts
-> > 
-> > unevaluatedProperties: false
-> > 
-> >-- 
-> >2.43.0
+> Jonathan
+> 
+> 
+> 
+>> ---
+>> Changes in v10:
+>>    - No code changes
+>>
+>> Changes in v9:
+>>    - Add Reviewed-by tag from Andy Shevchenko
+>>    - No code changes
+>>
+>> Changes in v8:
+>>    - Use unsigned int for val parameter and hw_val in both
+>>      osr_write helpers (Andy)
+>>    - Use ~0 instead of ~0U for avg enable bitmask (Andy)
+>>
+>> Changes in v7:
+>>    - Split sysmon_osr_write into sysmon_osr_write_temp and
+>>      sysmon_osr_write_supply; caller dispatches with if/else
+>>      on chan->type (Jonathan)
+>>    - Restore HW encoding comment in both helpers; fix
+>>      cross-reference in sysmon_osr_write_supply
+>>
+>> Changes in v6:
+>>    - Fix FIELD_PREP indentation in sysmon_osr_write (Andy)
+>>    - unsigned int for loop index in sysmon_write_raw (Andy)
+>>
+>> Changes in v5:
+>>    - Remove unneeded parentheses in i * SYSMON_REG_STRIDE (Andy)
+>>    - Use struct regmap *map local variable in
+>>      sysmon_set_avg_enable (Andy)
+>>    - switch instead of redundant if/if on channel_type (Andy)
+>>    - Add CONFIG register readback fence after oversampling update
+>>      to prevent NoC bus hang from posted writes (found during
+>>      hardware stress testing)
+>>
+>> Changes in v4:
+>>    - Return directly from sysmon_set_avg_enable calls, remove
+>>      else after early returns, drop unreachable return 0 (Jonathan)
+>>    - Rename mask defines to SYSMON_CONFIG_SUPPLY_OSR and
+>>      SYSMON_CONFIG_TEMP_SAT_OSR (Jonathan)
+>>    - Drop "bits X:Y" from GENMASK comments (Jonathan)
+>>    - Blank lines after if (ret) return ret blocks (Jonathan)
+>>    - Move oversampling read inside guard(mutex) scope
+>>
+>> Changes in v3:
+>>    - No changes
+>>
+>> Changes in v2:
+>>    - EN_AVG per-channel bitmask registers written with all-ones
+>>      instead of boolean 1 when oversampling is enabled
+>>    - EN_AVG write errors propagated to userspace
+>>    - Oversampling limited to satellite temp and supply channels;
+>>      static temp channels do not participate
+>>    - Oversampling exposes actual sample counts (1,2,4,8,16) to
+>>      userspace with internal HW register translation
+>>    - write_raw_get_fmt returns IIO_VAL_INT for oversampling ratio
+>>    - HW encoding documented (sample_count/2, not log2)
+>>    - oversampling_avail is const int[] (type match fix)
+>>   drivers/iio/adc/versal-sysmon-core.c | 153 ++++++++++++++++++++++++++-
+>>   drivers/iio/adc/versal-sysmon.h      |  17 +++
+>>   2 files changed, 169 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
+>> index 50b5228aa22..bae229f27c6 100644
+>> --- a/drivers/iio/adc/versal-sysmon-core.c
+>> +++ b/drivers/iio/adc/versal-sysmon-core.c
+> 
+>> +
+>>   static int sysmon_read_label(struct iio_dev *indio_dev,
+>>                             struct iio_chan_spec const *chan,
+>>                             char *label)
+>> @@ -464,6 +602,9 @@ static int sysmon_read_label(struct iio_dev *indio_dev,
+>>
+>>   static const struct iio_info sysmon_iio_info = {
+>>        .read_raw = sysmon_read_raw,
+>> +     .write_raw = sysmon_write_raw,
+>> +     .write_raw_get_fmt = sysmon_write_raw_get_fmt,
+>> +     .read_avail = sysmon_read_avail,
+>>        .read_label = sysmon_read_label,
+>>        .read_event_config = sysmon_read_event_config,
+>>        .write_event_config = sysmon_write_event_config,
+>> @@ -755,6 +896,10 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>>                        .indexed = 1,
+>>                        .address = reg,
+>>                        .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +                     .info_mask_shared_by_type =
+>> +                             BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>> +                     .info_mask_shared_by_type_available =
+>> +                             BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>>                        .event_spec = irq > 0 ?
+>>                                sysmon_supply_events : NULL,
+>>                        .num_event_specs = irq > 0 ?
+>> @@ -786,7 +931,11 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>>                        .address = SYSMON_TEMP_SAT_BASE +
+>>                                   (reg - 1) * SYSMON_REG_STRIDE,
+>>                        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> -                     .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+>> +                     .info_mask_shared_by_type =
+>> +                             BIT(IIO_CHAN_INFO_SCALE) |
+>> +                             BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>> +                     .info_mask_shared_by_type_available =
+>> +                             BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>>                        .datasheet_name = label,
+> 
+> This stuff also needs to be set for the static channels as it applies
+> to them as well.  Obviously it only makes a practical difference if
+> you have no satellite sensors (in which case it makes little sense anyway)
+> but it is the 'right' thing to do to document they apply there as well.
+
+Agreed, Will fix.
+
+Thanks,
+Salih
+> 
+>>                };
+>>        }
+>> @@ -833,6 +982,8 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
+>>
+>>        sysmon = iio_priv(indio_dev);
+>>        sysmon->regmap = regmap;
+>> +     sysmon->temp_oversampling = 1;
+>> +     sysmon->supply_oversampling = 1;
+>>
+
