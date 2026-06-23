@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22AC938D402;
-	Tue, 23 Jun 2026 19:27:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78F521257E;
+	Tue, 23 Jun 2026 19:29:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782242826; cv=none; b=IKCtZbGNo3el8naQ/ljGZHqrY3Pe7EyLTPIP+a0YcNRaL/zSmK637SMs9gYF0rclO/pbvGq9v+MKcyLByPeI9XByadoSiekAXhXPqZdp5kwHYELlQ8q2IL8DJmBd7xmaK5BaciuB51yAed8JZTTC5Gp1ZOKHmB1ILSH5kd0CVcQ=
+	t=1782242970; cv=none; b=YFs2N8URG8tEEZs+LPSYuv06Pk9chr1qpVvQgeaG7YE9UdZcgxggNUx6vURp4QPVbtspVMqeXRBFLQUp2Pz/7GBywsGCMiK0THf56KzSTmr5qgL175ZBFRDFEGfOhbW56RqzWQk8pC/nudLQYzubbQiDt5Nyqi+FMvsYi41PfiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782242826; c=relaxed/simple;
-	bh=UdJQ7MF+bWrHcMAMYbY3yufjN5biEaDg61DrZgkfktE=;
+	s=arc-20240116; t=1782242970; c=relaxed/simple;
+	bh=3Uk7aiij/nlgnTzwr/9V5zYh/jVa35GVpxEhgJ4C5ZI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Go76do+SgoQoP21ZWevBcWerBzrlvAyAPUqmndv683f8LMuudXtlyCGr0287Bi95tCZAnAIWqlBJ4rpXev6xRRgzniLM/9PgT3BdLU933ReRMCIC2X266JH2c36C8PL1PSyYcDewEdaN6UlOrUXbcPM9ikiNCA11hR0XD7Gor/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=osKsdsds; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=HXQwH0jwK93YD0Gn+JIxK5P3sb1TjqWcMQEys3sGhcn4HW2n47x8T/vfPe4mjB4X9LaJicTDyPGWWudMh/tkne5nupki85acrwVHG1vlR7fDJxNGy9Rvaa1BWu3p0i840igFNbnoZE051iy+wvn9ApH3rDsnHLv5asa2z3MjXvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H5YgyPyV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="osKsdsds"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0571F000E9;
-	Tue, 23 Jun 2026 19:26:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H5YgyPyV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589FD1F000E9;
+	Tue, 23 Jun 2026 19:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782242825;
-	bh=fY7+Qjso6OV5dU6LiTyf8OW91V/vJT0ZeQDfUV9KiE8=;
+	s=k20260515; t=1782242969;
+	bh=iJcqmMwEL3J0why7rP4cK5dJzn3dBF4ek5FBrvwCnW0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=osKsdsdsdSRrb1vztVn6OBLsx1boENTPDo0pPGyGgFxNUjqW30dFvb0qG9ZyKB0Q7
-	 tWdqTH1vjkFvJ4Cwl6Xo2q6yF4qCluempfiUnUz2EE014VaK/27T9B7dOvJ0LI7Wgm
-	 H26JPQSLtWuljqo8rCYjSszZpDgHFtN80eRMja4fYWL4dHJv8QKgSfgvVoV8+5N1jJ
-	 qXRUFGvlFn4raTzOjNxKehSkbaGcBuwxbQMn2kaKpJ5hp/5wU8kapt27eC4UsgTfjq
-	 aeHjjccUMdZTUcBf5TC5ssYp2E/6mI1WWsVuTQe/i2SCThTSM+x2VIZzDL4/YFqznF
-	 0CtRCPiD8R/jg==
-Date: Tue, 23 Jun 2026 20:26:52 +0100
+	b=H5YgyPyVD3fzchVA5ErwI7QgItj7lLVP8pV+zD7QkdPkvZjof4bsQ2k9QmCiiRuLV
+	 YtA4hdXBq0jwSFIHbWvojatm8M202GKRkQIGPJCstQUg7CQuPT4+rJs1Tpm4sQN9R5
+	 rGpiWict5cjHq8EHLBKmAp/eW+7Gbq+JTXU6ZUVRy7XMWuhxxCTQz49mMQ06f8Zdfg
+	 mfC3PHdjweBCsTZC9Vlz3sw3m7nL4KSc9vdfao7mSyNtN4zaaFDsAPK5kvpyIRlxgZ
+	 tLS1UGx3X+VHaFbsi1h+FaMcKQE6NeWTxeDs93eOjU+ZCuGl46+aJIhGHW7Vwp/5wm
+	 s0GANIodugtRg==
+Date: Tue, 23 Jun 2026 20:29:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Herman van Hazendonk <github.com@herrie.org>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -39,12 +39,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <denis.ciocca@st.com>, Linus Walleij <linusw@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  llvm@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: st,st-sensors: add
- st,fullscale-milligauss
-Message-ID: <20260623202652.2f29a1fe@jic23-huawei>
-In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-2-063edcf74e60@herrie.org>
+Subject: Re: [PATCH v2 3/3] iio: magnetometer: st_magn: honour
+ st,fullscale-milligauss DT property
+Message-ID: <20260623202916.5f5d520e@jic23-huawei>
+In-Reply-To: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
 References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-2-063edcf74e60@herrie.org>
+	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,105 +55,102 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 16 Jun 2026 15:02:05 +0200
+On Tue, 16 Jun 2026 15:02:06 +0200
 Herman van Hazendonk <github.com@herrie.org> wrote:
 
-> Add an optional st,fullscale-milligauss property that selects the
-> initial magnetometer full-scale range at probe time, expressed in
-> milligauss.
+> The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
+> highest-sensitivity full-scale supported by the chip -- as the
+> starting range. For the LSM303DLH that is +/-1.3 G; for the
+> LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
 > 
-> The motivating case is the LSM303DLH magnetometer on the HP TouchPad
-> (apq8060 / tenderloin) where the kernel's chip-default +/-1.3 G range
-> saturates the X axis to the chip's 0xF000 overflow sentinel out of
-> probe, because the chip is mounted close to surrounding power planes
-> and picks up enough DC bias to exceed the smallest range.
+> That is the right default for "minimal noise floor at a desk", but
+> it leaves no margin for boards that pick up appreciable DC bias from
+> nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
+> LSM303DLH magnetometer is mounted close enough to the surrounding
+> power planes that X reads back as the chip's 0xF000 overflow
+> sentinel (== -4096 raw, the value the chip publishes when the ADC
+> saturates) on every sample at the chip-default range, while Y and Z
+> fall well within the +/-1.3 G window.
 > 
-> The chip is not wedged by the saturation: a sysfs write of a wider
-> range to in_magn_x_scale recovers it on the next conversion, and a
-> UDEV rule on add of the IIO device is a viable steady-state
-> workaround. What the DT property buys is the probe-time window: the
-> in-tree consumers we use (sensorfw's iio-sensors-adaptor and the
-> geomagnetic / orientation services on top of it) start polling
-> in_magn_x_raw essentially as soon as the device node appears and
-> treat the 0xF000 sentinel as a legitimate sample. Until a UDEV rule
-> fires and commits the wider range, every read returns the stuck
-> sentinel, and on slow-boot paths the consumer may have already
-> cached a bogus calibration baseline by the time UDEV catches up.
+> Parse the st,fullscale-milligauss device-tree property (documented
+> separately in dt-bindings/iio/st,st-sensors.yaml) in the
+> magnetometer common probe to select the initial fs_avl entry by its
+> mg value. The DT binding pins the accepted value set per compatible
+> via allOf/if-then enum clauses, so a malformed mg value fails
+> dt_binding_check rather than reaching the driver. Sensors with a
+> fixed full-scale (fs.addr == 0: LSM303AGR, LIS2MDL, IIS2MDC) have no
+> register to switch and the property is rejected outright for them
+> in the binding; the parse block is additionally gated on fs.addr as
+> defence in depth against stale DTBs.
 > 
-> st,fullscale-milligauss lets the device tree declare a wider
-> initial range up-front so the correct range is in effect before any
-> IIO consumer can open the device, and keeps the board-specific
-> magnetometer calibration alongside the rest of the hardware
-> description rather than splitting it between DTS and per-distro
-> UDEV rules.
+> Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
+> LSM303DLH and LSM303DLHC/DLM the valid values are 1300, 1900, 2500,
+> 4000, 4700, 5600 and 8100; for LIS3MDL, LSM9DS1-magn and LSM303C-magn
+> they are 4000, 8000, 12000, 16000.
 > 
-> The full property name is spelled out rather than abbreviated to
-> "-mg" because this same binding file already covers ST accelerometers
-> where the conventional shorthand "mg" reads as milli-g (acceleration);
-> the explicit "-milligauss" suffix makes the unit unambiguous if a
-> similar tunable is ever introduced for the accel/gyro/pressure
-> families.
+> Empirical scale sweep on the HP TouchPad confirmed that on this
+> board any fs_avl >= 1 produces non-saturated X readings:
 > 
-> The property is scoped to magnetometer compatibles via allOf/if-then
-> clauses, with per-family enum lists of the accepted milligauss
-> values (1300..8100 for LSM303DLH/DLHC/DLM, 4000..16000 for
-> LIS3MDL/LSM9DS1/LSM303C). LSM303AGR / LIS2MDL / IIS2MDC have a
-> single fixed full-scale (15000 mg) with no register to switch
-> ranges, so the property is rejected outright for them. DTSes that
-> misspell the value, place the property on an accelerometer /
-> gyroscope / pressure node, or set it on a fixed-FS magnetometer
-> fail dt_binding_check rather than emitting a runtime warning.
+>     scale (0.001 G/LSB)  | X raw    Y raw    Z raw
+>     --------------------+-------------------------------
+>             1.100        | -4096    44       46    (X saturated)
+>             0.855        |  -547    37       37    (clean)
+>             0.670        |  -433    94      103    (clean)
+>             0.450        |  -266    44       71    (clean)
+>             0.400        |  -235    34       65    (clean)
+>             0.330        |  -196    27       56    (clean)
+>             0.230        |  -145    15       40    (clean)
 > 
-> The property is purely additive: if absent, drivers fall back to
-> their existing chip default. No existing in-tree DTS is affected.
+> 2500 mg is the natural choice for tenderloin: comfortably outside
+> the saturation regime while keeping useful precision for compass
+> applications.
 > 
-> Assisted-by: Claude:claude-opus-4-7 dt_binding_check checkpatch
+> Assisted-by: Claude:claude-opus-4-7 sparse smatch clang-analyzer coccinelle checkpatch
 > Assisted-by: Sashiko:claude-opus-4-7
+Hmm. First time I remember seeing Sashiko credited like this. Seems like pretty much
+every patch series of any complexity would end up crediting sashiko.
+Out of curiosity were you just looking at reports, or were you running it locally to
+help with development?
+
+One thing inline.
 > Signed-off-by: Herman van Hazendonk <github.com@herrie.org>
 > ---
->  .../devicetree/bindings/iio/st,st-sensors.yaml     | 71 ++++++++++++++++++++++
->  1 file changed, 71 insertions(+)
+>  drivers/iio/magnetometer/st_magn_core.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-> index a1a958215cdb..f0805604c849 100644
-> --- a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
-> @@ -126,6 +126,13 @@ properties:
->    mount-matrix:
->      description: an optional 3x3 mounting rotation matrix.
+> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+> index ef348d316c00..6f369e8dddea 100644
+> --- a/drivers/iio/magnetometer/st_magn_core.c
+> +++ b/drivers/iio/magnetometer/st_magn_core.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+> +#include <linux/property.h>
+>  #include <linux/sysfs.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -608,6 +609,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+>  	struct st_sensor_data *mdata = iio_priv(indio_dev);
+>  	struct device *parent = indio_dev->dev.parent;
+>  	struct st_sensors_platform_data *pdata = dev_get_platdata(parent);
+> +	const char *propname;
+>  	int err;
 >  
-> +  st,fullscale-milligauss:
-> +    description:
-> +      Initial magnetometer full-scale at probe time, in milligauss.
-> +      Per-chip allowed values are enumerated in the allOf clauses
-> +      below.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +
->  allOf:
->    - if:
->        properties:
-> @@ -163,6 +170,70 @@ allOf:
->            maxItems: 1
->          st,drdy-int-pin: false
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -628,6 +630,36 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+>  	mdata->current_fullscale = &mdata->sensor_settings->fs.fs_avl[0];
+>  	mdata->odr = mdata->sensor_settings->odr.odr_avl[0].hz;
 >  
-> +  # Per-chip enum lists for st,fullscale-milligauss. Out-of-range
-> +  # values fail dt_binding_check instead of being demoted to a
-> +  # runtime warning by the driver.
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - st,lsm303dlh-magn
-> +              - st,lsm303dlhc-magn
-> +              - st,lsm303dlm-magn
-> +    then:
-> +      properties:
-> +        st,fullscale-milligauss:
-> +          enum: [1300, 1900, 2500, 4000, 4700, 5600, 8100]
-Can we also add default: to these entries to document what happens
-when nothing is provided?
+> +	/*
+> +	 * Skip fixed-FS chips (fs.addr == 0): no register to switch.
+> +	 * The binding rejects the property on these compatibles too;
+> +	 * the gate guards stale DTBs.
+Isn't it optional?  If so they aren't necessarily stale, people
+may have relied on the default - which I now notice isn't specified
+in the dt-binding (just replied to that patch).
 
-Thanks,
-
-Jonathan
+> +	 */
+> +	propname = "st,fullscale-milligauss";
+> +	if (mdata->sensor_settings->fs.addr &&
+> +	    device_property_present(parent, propname)) {
