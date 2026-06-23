@@ -1,127 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D2E3384CEE;
-	Tue, 23 Jun 2026 14:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7F2385D8C
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 14:38:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782224543; cv=none; b=akbaEbkHWAuOngqApOPppl8KX+TvpkqHD+5B0KiwoGEr0gydNyGfaeN4QehbFaeexaNbqR1BTK7uDweXPN4+7FbTXzkf85iwS+e2D3RZF0LTss+JSlP/fPn8Vws7KUvAxwaulb4rXpq02dDpc8E9V+T+XCUSpv6iWsX2iWMvFJE=
+	t=1782225513; cv=none; b=VprLlCG90OIX0qWal/3/F5qxPGnDTa5wOf8873sAoX+qgSWkVnrTkbhSQHaWUzZNyk05U+glwGD6LnaHmMo1xWvKGyE8tIXD7zRLdgoo/3RZspeSlaFgdgcfOjABeaYKcxWUrK9K/4so36C4Vz9j44GsgJgOHuMPOaNBrdHnNIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782224543; c=relaxed/simple;
-	bh=Pns2t7isW4RCFxxk1wQn9nVVZeXZt7jt9DQaH295GLQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=lrs8+D1hD/z9UOT0DV4IMgIFVP549GWrW5mnSgvcEswgnNMJXAD/ACIZGVAziDTq3q1kjA5R/RhV1EGLEC0KmBkchH2fjteLFN4pLHvA5mdsAPtUwz85kO37nkCxWkzgejrKmtQV4fnt2VsRSVESqBnvbxOmVWt7dT/AOgZnvl4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oqynbePo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1782225513; c=relaxed/simple;
+	bh=oVL6eH17uUbLQpEv24sREcpe+hDdZ4ElLtxAHWNQvO4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mChW2sjcVUVcdFz2De/pfdbK1c2h5Y14Kawoj9S8yGOsGNplJWOBHyLnGHiE+Djq2IAZsd61iFqZsTdNtbVtMAQ1y3eanZS22Z1NJUzcnfkU1/KVBWxUpt9RBs3iM2iIhqecJMMGSk1ZQOe5aLqCjjJ2ug/3+t/7RHEzSlsyESQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S4d1AmA4; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oqynbePo"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AE97BC2BCB8;
-	Tue, 23 Jun 2026 14:22:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1782224542;
-	bh=Pns2t7isW4RCFxxk1wQn9nVVZeXZt7jt9DQaH295GLQ=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=oqynbePo3+Qc+S0WAz4o9dVtuUICGNGmaRDhufmYJIPIGvZsS8sw6Qw+o0hyRpguk
-	 eDrWZBX/+74t2PE31Me+uZPjHdFEJvyUhuC8d5MQ15PKWYuEoXTvaWFyJhCUAm/r49
-	 xnIzem8cDgCNH6PXTsC7hjs/WiYyXS3utMtXDOeBKlDEteIjnjWyYty8EsKzTsJrou
-	 +QEirj/VSn2lZqCV7WxI87u/KMqyvNflj0WrDFMyVkLKXx+OJXY5zd+NwHrmvUf03i
-	 Mdt50+x25NmL77NxQi6WI3Po0vhUq711r3QHW6eVx4TxCoEOTu4wnGALPM/fTvv9Xn
-	 vjMXPFK6X96cQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E486CDB47C;
-	Tue, 23 Jun 2026 14:22:22 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Tue, 23 Jun 2026 16:22:15 +0200
-Subject: [PATCH] iio: imu: inv_icm42600: fix timestamp clock period by
- using lower value
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S4d1AmA4"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-45ef6565cfdso2480343f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 07:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782225510; x=1782830310; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w2Sd8g57ugFLdVox2kG3CaIMONKuSf0WLGf2qHcF74c=;
+        b=S4d1AmA4cxKt0CULjn2Rk2Sb2iTOIbb5gQ33Dkn+jIX1xYhD1OTalae4nYvp5G/+e4
+         bnIhHynGiN5A06hUGMUP03nkwn8rvPKEZ6bwm7nOfJsmZDv44lEm8+xpMI2Fwl7YFb2o
+         n1JH1lEAb13QA46W7PEhkcrPFWC0hfPjFwqJJFYJ2TQz1+Csmn7+SgOITuv1ak/blI37
+         DeISoDWxZC+VuXez5pT+DyFBXyux9BocQuHlkTMc1kOuoublcUxMAgYeyz2oJpb4SuSL
+         raBsVPx8RgGiqYy2jLKYZXabwFiFhc6PMh/qHr0vbB6U7VBtjIH0UfW0BuD5u8FH0WbM
+         47/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782225510; x=1782830310;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=w2Sd8g57ugFLdVox2kG3CaIMONKuSf0WLGf2qHcF74c=;
+        b=ITz3NWdyNq2WocBXsQTgtLkgeIM5bM1iJnggeXarKAAH6Ik1b+8GKYYzAoxw3i/7RB
+         w4HV7x9oqBC536CwPgAnuHPmPtqjqtbgPk8iCE+UNEfhyYMcCDNDbBCnQ+dCLcI4Y3VV
+         K/6y7kMjl4+RbpMjnpQ8ScyghVVurLUII6Wa4tOc58wtfAtDb8Q9bUzD6SsIc0IpgPQ0
+         NvgWLoEyQMtmj+zd3F2hXVKoghkg4aO7hJCVjAM6rfggAqvW652L/aAvQ8kkzJM9vJVZ
+         pbA2e4v0hiVDU+iu9gMAMQLrPXp1KyUrGdrV56KtAIk0TVFGSKxJCfLrOl4t5+FSEroX
+         NexA==
+X-Gm-Message-State: AOJu0YxJZgIGJuXQlW/norbGocGC5CuBZQrzAvvaL1PmP1bKWZrLfXJY
+	WWvU9FxMqRNv/d2SYRrCtRuTr3mJUtGV+QSoPRuEsZvs+38bhtRXf4AT
+X-Gm-Gg: AfdE7cnWHs714SQtK3jE59Z3fwm8k+uzMzDVRdVB72HtXff2yETEXABPZ3bTsMcQ40/
+	Ot/p1jC2I5pIgI2MddPqr3cBHZJ5ep2eyyrTRJVn+sbK9VYQWZpfe4T7eabJd19sBfaKnEpCKJH
+	b04SUNSc+lUxmJXqh13BUuM0jljubQx/K6RANxH9xTz8UpuJw1H6+5+iiA6YHYCWMSEvbtwFwBd
+	EDQbWj7ey+S+u1shPS5/O6e2gdpQpYc1kR7Nj9hnJuTUQveGUA7iA7Fz7yVVrKC1qt/ixoWHEA+
+	Il2Bkv/XyOK0lT8RtwkU3IbhjJEzmJDciPCBZkMJcuPB11apDYlgQxiUPSVORPqcU/ESLgOLSyz
+	1rgIQTix0EdRsBXtsq39kpZ6ll2fJS1mAeqwqtRXrI8S1w+DlV+7l+FF0YckYPM384fciSb2Kd2
+	ckXN/x+UME1mrjEJMO1gCzQvinM54YhCUGB2Di8VTmyRwM5iyykcBh/KHisyqJ3N+/fEHeYVpTw
+	WtKM2gwn9yFwamvHnoZtZTSAVNeDQe5GG3/3osvDYX55NrdqdDzm5V9vOf545t/OSF8oI25a5Uv
+	tnDfzdxFWlzKJAF+8tIshTPxh9xljVxCQ9/DSnn5+UiKjSXEnMRoowU=
+X-Received: by 2002:a05:6000:22c6:b0:460:3233:beed with SMTP id ffacd0b85a97d-4666348bb1dmr23233666f8f.41.1782225509853;
+        Tue, 23 Jun 2026 07:38:29 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-466643f4e3esm34607427f8f.8.2026.06.23.07.38.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2026 07:38:29 -0700 (PDT)
+Date: Tue, 23 Jun 2026 16:38:27 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Md Shofiqul Islam <shofiqtest@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/1] iio: health: add MAX86150 ECG and PPG biosensor
+ driver
+Message-ID: <20260623163827.000079f4@gmail.com>
+In-Reply-To: <20260623140113.12574-2-shofiqtest@gmail.com>
+References: <20260623140113.12574-1-shofiqtest@gmail.com>
+	<20260623140113.12574-2-shofiqtest@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260623-inv-icm42600-fix-timestamp-clock-period-v1-1-82184d2429f4@tdk.com>
-X-B4-Tracking: v=1; b=H4sIAJaWOmoC/yXNywrCMBCF4Vcps3YgbUqJvoq4iNNRR82FJBah9
- N0ddfnB4T8rVC7CFQ7dCoUXqZKiot91QDcfr4wyq2Eww2SmwaLEBYXCqDR4kTc2CVybDxnpmei
- BWYNpxr3trXXejY4saC0X1vXv6Xj6u77Od6b2zcO2fQBspTfIiwAAAA==
-X-Change-ID: 20260623-inv-icm42600-fix-timestamp-clock-period-931338a848c3
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782224541; l=2300;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=Pdi02nqbDQa7TGG6wvznAl8hOcvaYmTiUhks6dkcg2U=;
- b=xm8GSodRL9WngRPi2+R0IR6mKTwL9ZUkIpZsxO7Je5OQs03vmaxPnB45pRotaI8WLJR+bWPuS
- Z4vgx1huc2uAHhxa6MmgMmOjwRgItr9xK7WZdUHMYk15a8WOj8v8KY0
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+On Tue, 23 Jun 2026 17:01:13 +0300
+Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
 
-Clock period value is used for computing periods of sampling. There is
-no need for it to be higher than the maximum odr, otherwise we are
-losing precision in the computation for nothing.
+> The MAX86150 (Maxim/Analog Devices) integrates two PPG optical channels
+> (Red/IR LED) and one ECG biopotential channel in a single I2C device.
+> Data is captured via a 32-entry hardware FIFO with a configurable
+> almost-full interrupt.
+> 
+> The driver exposes three IIO channels:
+>   - in_intensity_red_raw   (PPG Red, 19-bit unsigned)
+>   - in_intensity_ir_raw    (PPG IR, 19-bit unsigned)
+>   - in_voltage0_raw        (ECG, 18-bit signed)
+> 
+> A hardware trigger is registered when an interrupt GPIO is provided in
+> the device tree, enabling the IIO triggered buffer path for continuous
+> low-overhead capture.
+> 
+> FIFO reads use regmap_noinc_read() to burst-read 9 bytes (3 slots x
+> 3 bytes) from the streaming FIFO_DATA register in a single I2C
+> transaction.
+> 
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+> ---
+>  .../bindings/iio/health/maxim,max86150.yaml   |  67 +++
+>  drivers/iio/health/Kconfig                    |  23 +
+>  drivers/iio/health/Makefile                   |   1 +
+>  drivers/iio/health/max86150.c                 | 512 ++++++++++++++++++
+>  4 files changed, 603 insertions(+)
+>  create mode 100755 Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+>  create mode 100755 drivers/iio/health/max86150.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml b/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+> new file mode 100755
+> index 000000000000..1bf10fd1a3d2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+> @@ -0,0 +1,67 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/health/maxim,max86150.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
 
-Switch clock period value to maximum odr period (8kHz).
+Split this into 2 patches - one for the new dt-binding and one for the
+actual driver, KConfig and Makefile.
 
-Fixes: 0ecc363ccea7 ("iio: make invensense timestamp module generic")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c | 4 ++--
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Additionally, since you're adding a brand new driver, a MAINTAINERS entry
+is required.
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index 532d5fdffaf8..7df920ef3cf0 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -1170,10 +1170,10 @@ struct iio_dev *inv_icm42600_accel_init(struct inv_icm42600_state *st)
- 	accel_st->filter = INV_ICM42600_FILTER_AVG_16X;
- 
- 	/*
--	 * clock period is 32kHz (31250ns)
-+	 * clock period is 8kHz (125000ns)
- 	 * jitter is +/- 2% (20 per mille)
- 	 */
--	ts_chip.clock_period = 31250;
-+	ts_chip.clock_period = 125000;
- 	ts_chip.jitter = 20;
- 	ts_chip.init_period = inv_icm42600_odr_to_period(st->conf.accel.odr);
- 	inv_sensors_timestamp_init(&accel_st->ts, &ts_chip);
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 11339ddf1da3..a18dcac93929 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -755,10 +755,10 @@ struct iio_dev *inv_icm42600_gyro_init(struct inv_icm42600_state *st)
- 	}
- 
- 	/*
--	 * clock period is 32kHz (31250ns)
-+	 * clock period is 8kHz (125000ns)
- 	 * jitter is +/- 2% (20 per mille)
- 	 */
--	ts_chip.clock_period = 31250;
-+	ts_chip.clock_period = 125000;
- 	ts_chip.jitter = 20;
- 	ts_chip.init_period = inv_icm42600_odr_to_period(st->conf.accel.odr);
- 	inv_sensors_timestamp_init(&gyro_st->ts, &ts_chip);
+Kind regards
 
----
-base-commit: cc746297b23e89bd5df9f91f3a0ca209e8991763
-change-id: 20260623-inv-icm42600-fix-timestamp-clock-period-931338a848c3
-
-Best regards,
---  
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-
-
+CJD
