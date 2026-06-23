@@ -1,154 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D1BF35AC37;
-	Tue, 23 Jun 2026 09:23:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D02EB3438B1
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 09:29:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782206631; cv=none; b=RwL4g9mXdjfNI5tzTOJmHxPKFz4jag3RucG43SNiaLGdYH8H1FLXmPY1dhuRoCb6QqiP+WML/+WuNj4Z6eiow6M7O4IALJllXiZSO+SjA705oVPrP5+ix5tdLchtcrqoRgclOf/E4mkMFWyv7ORGlMyQOjfqw7ZJW8O0DkzKBmk=
+	t=1782206999; cv=none; b=tEukS/R8yChf6NlMiFJiGAWwpG8aWbme1au/a8d+voGSHgkqnqm3Gn2kvRbBeVeE1OPOdOBk5hq3OPSsKtIA8ijb62R8pXjdVBgOL7RQ1pxc+7ROZa8l2b/leLAqROnVms5ZaWHlwtYlewQWCtHT2AXUIKwCFacDooTjDc6IFm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782206631; c=relaxed/simple;
-	bh=b7SBBkP92LoyGbJLJKjRg0pPH7QL1Sqs0ECoJC5aqVI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NeJXHWuEx8PAuZkU4j9ZuCFK+pMq7Rh81wTubzkdc1LwiCjo8xCMqHSsmWhvkxjPLd6PWNepadFPiSvA56ZinLQAknX82qy+C8fZfefWUiu6+Gew9UoDF9P7KCRYVnR5iBjRLo+KZkExegxzeilL7aGVunLD5bYLSaunclPioJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HyigetTA; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782206999; c=relaxed/simple;
+	bh=6kIH1ANk3srlp8dDNIH1duVV9MTpe+sd+seqU3mPp5A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=kfTOVMX+vYtx+IyIanFUAmdX/MkCjteJk4n9zp4dzQfzeXQcrXZ6tZXtO7YJP896ZEAS8cBoNHvAicVNPMVIEEaOGNHVr7cxXTuG5q0cABMDFYjtHrCNMsoV/y4DYKjhL/EZGPOxw7yfg6rujWtPYWfGXdrmUFT23ej0DUguvQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y9YazmGV; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HyigetTA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782206630; x=1813742630;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=b7SBBkP92LoyGbJLJKjRg0pPH7QL1Sqs0ECoJC5aqVI=;
-  b=HyigetTAhATejm0t6ofGWrrEqrv6t0qsdxfWvLxCZxPWjG2APhYeXway
-   K9jqivUQu6SxGnT31p9/uo7vH3FGwqGBVK09mpGHPtZA+/jZi2p0cbWDZ
-   NjNOMQ/bz25ivA9ICAErSV7EidG/RFTF2cLdQm3QzoYXwSjaIIGVMZah9
-   NB4KszAyCjFtX4Y+ytwCNfj+En5iti7nUFNKvX06WfCVG9J43LENU0zy+
-   zXimpTxlc4djgBuyUAs/mGusAUctkbCiqRM2YCUjGXdQLq3u8lnizwU9d
-   3/jVKTRXyq9o2dpxXdWRO/qaQIfg+D8H2OFP0JY0HD8gKQEdpamlduBFP
-   Q==;
-X-CSE-ConnectionGUID: UplY0aglQuiyn1apwXJu+A==
-X-CSE-MsgGUID: hBYzL4uTQjaSuNpBEy214w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11825"; a="108487708"
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="108487708"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:23:50 -0700
-X-CSE-ConnectionGUID: K6aslf0ARWG1BThGLFGx/g==
-X-CSE-MsgGUID: Rk95TOcdRIaQHTNg1aeXvQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
-   d="scan'208";a="254568117"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 02:23:45 -0700
-Date: Tue, 23 Jun 2026 12:23:43 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
-	conor+dt@kernel.org, devicetree@vger.kernel.org,
-	dlechner@baylibre.com, duje@dujemihanovic.xyz, jic23@kernel.org,
-	jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
-	joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
-	linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
-	mazziesaccount@gmail.com, mike.looijmans@topic.nl,
-	nuno.sa@analog.com, robh@kernel.org, sakari.ailus@linux.intel.com,
-	wens@kernel.org
-Subject: Re: [PATCH v4 3/3] iio: adc: Add ti-ads1110 support to ti-ads1100
- driver
-Message-ID: <ajpQn8EVOx3ssxG6@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y9YazmGV"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-4631679f204so388221f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 02:29:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782206996; x=1782811796; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OAhVKTcglJuremrfImjaywPyVqu4aubOLdy7WaNPAJg=;
+        b=Y9YazmGVEeLykjxhAkWcKLh/UnR7+AJyOVHELYjY7Kp4Lnl/GlA8ievUF57F0UjvW2
+         FcVcyc3X4n6nFUcfNNflcBUJ6FXQEIUjIBwGEMRgcM9mCvLrYcjfwhpQVK1R50pya/Nw
+         zl2iTT4TjFA/SDv39iCdAh4kUvo7JuqERKiRsbEsnETvDmG126gjpjQbFB54d2YO5g8i
+         JkOrgHK8OuODCq+/cWB/t66Z1AeQz4uy1Fonlbc/VsMLkE2mTUmczBjLv78dR13wcZpU
+         iSFBBNfIFD+4ZGNz+zqLIeaZj0AgXqpTa5LMTZGaUv/JutcEe6hAnwe1Q3w/iIDH/Mzb
+         cjYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782206996; x=1782811796;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=OAhVKTcglJuremrfImjaywPyVqu4aubOLdy7WaNPAJg=;
+        b=ITt64AoMkZrFDqE7rGSfOrI9Gx6cpppSWzTJerTPvtyIRk4jt2EPWpLSSlF/vpA5OY
+         zp3w9K7ORfxKrJ3gKOlrYQLswo3au3OKrNvSz1JYz55XCpSZXZY4sgMqC2K1o7H6m6eu
+         aeTR5yLGlXSGBj2DP3ZmKTOm3M6/SUSecmlAoyk27xaU4kfB4QDvGlUf4Xxz34Gw8KqQ
+         2tewvyYvsVqqFQ5EskAFftfJEmklM/jWUQButsY69TCZZCJykJt12kd/DCWSvZvPbKQi
+         /2e2qGLauHsBxTNxIF8peWVKvGVSE0F4voSk8RE/BVDMfGFP3dS356AKINRp709fZSEf
+         r0BQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rp2SxdcpEnv8cCA+nlBv4Z4Y2FWRcUp/zOA5RGTp8/h3QfjJPwD7l8Sx58hTQUxup9IWK+dY0KQfTw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxMg707/kv6kgIInkHjx4SROO9kMpccEqB7nI0OnmhiFSaQ+dom
+	uW1HKXrHjrtBgmG+4ZOUT93ldAMPhcQhEuutVxpo4c1yPP87l2Ixu9x+
+X-Gm-Gg: AfdE7cm/G/GUvjK26S3gYMwoddWb80O/33RdFRC7HdS8uyjCJDD3FXALwuPqKxRxD7Q
+	9b/TrvpNeZvY7B91dYcFOoj50L+B08DN46PUpICKhj8BUOBW8mka7rwzBK+RcBCBa8z2grnKBS6
+	OyWc5J6AWiNJiNaVZGkg5ye7/57khYRtFRSxi2pZWLzQzd+DlpTBnc04JrS0vV0B//CNTvFJ68V
+	0OV6ElNI3aBu6PMpTL807MRHmCpgjzWmGqYET/k/91wsa3gXT/ZBFHxDYl7+tcGjNQWlHlftMXU
+	81ZlaElRQpJau7OgAh6b2IqgTGkUfvna8tXym4pkcQPa6VD3q1Ke313Bak5qPL5I5KIxzoK229c
+	uzrdes/ljRbgbNQa2j5N2XuDBtUK4MYkHECCvK2I5USRB4/bcll+RjxwUf5NaRjfoZN4uGw4J4o
+	+xh41DAQwXP4t4tr5paw1Sxde91bH+xd0DMAQ1e4sNV2z4wyDdmI2VyB5Qr3tVJ++Cfn1eUu4J/
+	pADLvVjdd0SVsmsYY1yUrSbZlXCGdSRGzywN9feCpMaEXxPZ8PpBimDOD4kYL1sMoHo4L2c8bTL
+	i8M0EBP54K6NZ7mpmDbXmjm8uSFHgSvz4aHRHuXffgO4yPk7BPqjc5k=
+X-Received: by 2002:a05:6000:2489:b0:461:a15a:4160 with SMTP id ffacd0b85a97d-46a7fd24e47mr4547391f8f.13.1782206996068;
+        Tue, 23 Jun 2026 02:29:56 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46666c57a0esm31850073f8f.27.2026.06.23.02.29.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2026 02:29:55 -0700 (PDT)
+Date: Tue, 23 Jun 2026 11:29:53 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
+ andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
+ devicetree@vger.kernel.org, dlechner@baylibre.com, duje@dujemihanovic.xyz,
+ jic23@kernel.org, jishnu.prakash@oss.qualcomm.com,
+ jorge.marques@analog.com, krzk+dt@kernel.org, linusw@kernel.org,
+ linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
+ mazziesaccount@gmail.com, mike.looijmans@topic.nl, nuno.sa@analog.com,
+ robh@kernel.org, sakari.ailus@linux.intel.com, wens@kernel.org
+Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+Message-ID: <20260623112953.000066cc@gmail.com>
+In-Reply-To: <ajpO9zaZbIl3x1uC@ashevche-desk.local>
 References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
- <20260622221550.374235-4-jakubszczudlo40@gmail.com>
+	<20260622221550.374235-2-jakubszczudlo40@gmail.com>
+	<ajpO9zaZbIl3x1uC@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260622221550.374235-4-jakubszczudlo40@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 23, 2026 at 12:15:50AM +0200, Jakub Szczudlo wrote:
-> Add ADS1110 support that have faster datarate than ADS1100, it also uses
-> internal voltage reference of 2.048V for measurement.
+On Tue, 23 Jun 2026 12:16:39 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-...
+> > +	return read_poll_timeout(ads1100_new_data_not_ready, data_ready,
+> > +				 !data_ready, wait_time,
 
->  config TI_ADS1100
-> -	tristate "Texas Instruments ADS1100 and ADS1000 ADC"
-> +	tristate "Texas Instruments ADS1100 and similar single channel I2C ADC"
->  	depends on I2C
->  	help
-> -	  If you say yes here you get support for Texas Instruments ADS1100 and
-> -	  ADS1000 ADC chips.
-> +	  If you say yes here you get support TI ADS1100 and similar single
-> +	  channel I2C Analog to Digital Converters.
-
-User won't know what similar are really supported. The rule of thumb is to add
-the list of supported here as
-
-	  - ADS1000 (...perhaps some very short spec info...)
-	  - ADS1100 (...perhaps some very short spec info...)
-
-
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-ads1100.
+I'd actually be all for using `data_ready != 0`, to make the condition more
+readable.
 
 ...
 
-> +static int ads1100_get_vref_milivolts(struct ads1100_data *data)
-> +{
-> +	if (data->ads_config->has_internal_vref_only)
-> +		return ADS1110_INTERNAL_REF_mV;
-> +
-> +	return regulator_get_voltage(data->reg_vdd) / MILLI;
+> > +		PM_RUNTIME_ACQUIRE_AUTOSUSPEND(&data->client->dev, pm);  
+> 
+> > +  
+> 
+> This blank line is not needed as they are coupled, but I don't know if we have
+> an agreed style in IIO for this.
 
-For now we used "(MICRO / MILLI)" instead of "MILLI", to show the unit
-conversion.
-
-> +}
-
-...
-
->  	if (ret < 0) {
->  		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
->  		return ret;
-
-> +	} else if (ret < 2) {
-
-Redundant 'else'.
-
-> +		dev_err(&data->client->dev, "Short I2C read\n");
-> +		return -EIO;
->  	}
-
-...
-
-> -	microvolts = regulator_get_voltage(data->reg_vdd);
-> +	microvolts = ads1100_get_vref_milivolts(data) * (MICRO / MILLI);
-
-See above, here you correctly used the existing pattern, the above is
-inconsistent and needs to be addressed.
-
-...
-
-> +	model = i2c_get_match_data(client);
-> +	if (!model)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "Can't get device data from firmware\n");
-> +
-> +	data->ads_config = (struct ads1100_config *)model;
-
-You can't drop const like this. If you need to apply modification,
-use devm_kmemdup(). Otherwise it won't work correctly if you have two different
-sensors of the same driver in the system.
+I'd be surprised if there was an agreed style, as there aren't any IIO drivers
+that use this specific macro (not in mainline at least). Additionally, might I
+suggest using `PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND` as it is more generic?
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
