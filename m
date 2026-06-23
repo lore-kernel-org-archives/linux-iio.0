@@ -1,102 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4F7390CBA;
-	Tue, 23 Jun 2026 19:51:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB230390CAC
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 19:54:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782244294; cv=none; b=JW3EprkEl68UaUIhFucyHM9zRrRVod++wr8Yn8kHUZ/GZ7+yPheOnBNvt9aXhe/+dC4w7jd83jEOSzIIeOubgrIIqsQqdcXxnokPbzi6JMOe2cKVJIfIiSevbBOsr4lhaw3U8pUHLJGnLwexfXWA50L/VcYcK7r3RB7QrCg1LZ4=
+	t=1782244460; cv=none; b=e/3cjtgfdzWLhacGeEJngkIwWLxitH6NIye6F6brZfJurb6nea0aj1LcV7HsoXYjKptMpmDPhesp5cHgFBOnKNJj91k11xfIjng4ap/uFHZHB9UACVD1XeCds937MP3KoNyCCF1NLfUrVapzeJJusZgljpmqJws16Ysgg1nPZlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782244294; c=relaxed/simple;
-	bh=L7ueMmumLNJQBWWa9G7492qxrVzdPDUlpIfufx/09ZE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QfxGH9YT8wea/cQV/UGeZHgx3/2TNLK6GE/bUTnT+2UEGKcjUuZL8ZwTXsuETogs2YlnKkLMzNV9U27+KDtOaXGXvmwzfkUQmnTQm9AxhPar21REMaCibrQzVD9TVmlohcV1UdvuzPyP9pyNQ0iS8Nwf1C6efEIBTtF/iEHQi5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lrLmH1wY; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782244460; c=relaxed/simple;
+	bh=kEtYiwGGXfxf9OZgvwT4esSaZCDsxd/HBEXxCtejDdo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rs7Rjobz2tmnR7wqoioRzA1CjLgSBXN3mJgBBsBUBXxQwxc12FshoYzHTmtmXypqRugyLFyGTpYSDfN/ExioZhk2bE3rHBCAXokXO+sTFxD4emyZOxTNjdQ5mrq/UwjDFHSSnN88dKgAZz9mf9qmK4flMEEXeuZ4AXeP3EYp9aE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LxzfCC+2; arc=none smtp.client-ip=209.85.160.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lrLmH1wY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782244293; x=1813780293;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L7ueMmumLNJQBWWa9G7492qxrVzdPDUlpIfufx/09ZE=;
-  b=lrLmH1wY9VF0eOYkkH+RPoEGWHG0HlT8XeXeTz5PkIdcPEejZ1dn3Jim
-   gqtUFQoU2hvgIHT7Huqp3V4lL/RzQ314uBHNmJwuCdi8oePaSCE/IcPs1
-   Ml9c463aMYzefDDdqZHcoM/+tfp/dvpSs+GeZwgBJQh8RfrnMPmelWBwu
-   JaynJ1T/a+4iZtXn/ndGZ/ubbWfJIOMK1h5DUGuDGDDIktJFV0R7oAbcp
-   uETu6AzULFcmgXqRVa/Rgf8NS/Kx/jVBx3oUL7mSeomJecOBlBbZL8VZS
-   5CjlU+SAz8jpB5cH8so4ABBQN+mOg5kSSS9ylJkqT3K4y38AXJ+cEFaQE
-   Q==;
-X-CSE-ConnectionGUID: juvI6D6WS9qYYxd4+QE3kQ==
-X-CSE-MsgGUID: 1TTnAWVtSUWqjnU29c/mfw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="70513591"
-X-IronPort-AV: E=Sophos;i="6.24,221,1774335600"; 
-   d="scan'208";a="70513591"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 12:51:33 -0700
-X-CSE-ConnectionGUID: K5ME5PnuSDSfVcHEMMkHAg==
-X-CSE-MsgGUID: AgZLJ7u5To6S9OVeLhU9pg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,221,1774335600"; 
-   d="scan'208";a="273675763"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 12:51:29 -0700
-Date: Tue, 23 Jun 2026 22:51:27 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Prashant Rahul <prashantrahul23@gmail.com>,
-	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-	Shuah Khan <shuahkhan@gmail.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Petr Mladek <pmladek@suse.com>, Oleg Nesterov <oleg@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Dixit Parmar <dixitparmar19@gmail.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-adc*: use dev_err_probe for probe time
- errors
-Message-ID: <ajrjv4Ts_qtIF0my@ashevche-desk.local>
-References: <20260616130612.73122-1-prashantrahul23@gmail.com>
- <f3165ebd-c359-49dc-a46a-0edacedf52d7@baylibre.com>
- <DJCBXHCM2VTQ.1DBAHMPJHA9HP@gmail.com>
- <20260623203137.7c4aae1e@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LxzfCC+2"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-44104dac6f5so987216fac.0
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 12:54:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782244457; x=1782849257; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=psbJjHxePMcruU5APTrGLttW1uAsloPB1ho5xqlQwMM=;
+        b=LxzfCC+2hNSYGs88bSYlCl0yonuC40HHtpySn7CoiqT7ZQ+TY4JpX5nsKMKpsKgFxe
+         6qDMW9lmoDmjhmfZfP5vW2wDavmzb3dzMHZkDtuVkGmL748m/o6Np26Tj5+Ypk8KGabp
+         BHbROhKFYhpf59olIGOXisNWUjSwcHS2PJ9Sa5so6aoxeI+ESYBlCc1iNfkXfsht5TB9
+         rJ3gUuu3joXteh/oz0nd+SP2kdb0G+HFr61gWMx2fkMXLZLbr0vumo4utJVYjk5VCi65
+         aw+HXokES7pB1MFmToWul7GIf6b/xmInLVKT5WXUMKzPoUvpvmL0k0SzcePlPsP14ruJ
+         dNEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782244457; x=1782849257;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=psbJjHxePMcruU5APTrGLttW1uAsloPB1ho5xqlQwMM=;
+        b=AVlsIytKI+B7Ado6cCTr2NooksxIugvmfzJjtl4UOo98AGviTDe95VVuXONTzG73eZ
+         +E+l5vyhQI79HIWXs//tKBsHECxAMkJPyTs7UDBHZma4GNtAaaHm5TBjV5MwXMKeC+5m
+         gsxTnNwUQDcJ3Cwmw1411e/MVw+ThmeXHDTm4mKAtmfVRTjcypM8oQv6dh/DV79OF6uo
+         j3dfZRI2t56NRGpwRJ9KKJvYOXcFLpv8JWd+0CHgvBUezdnei3+n84ZXsTSxM6IcXO7n
+         6r0RnNualZzjB24Al7Ss1F0o3peWy6b28gq+paGL1AwvVCbbePlsvCVJkC+YAShYV++D
+         JDiw==
+X-Forwarded-Encrypted: i=1; AFNElJ/8pfkB8YM047on5Lq6ala3lVJWKRP0mn0Np/DL01GL7ay6CjRD35/YGgwi7qEJcpuKhGVfNOQ1pic=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQdrZEUawxaXonKR/Bc5WCMz2ZbAm+i/fpuvcEf6cPJ8VRjRSm
+	ZvHDf5+kDNlUaakstgMQGfvpITbmzuoCIjKTR2kreXjTzRVyVXI3/17Ba1Gv0Hwozd8=
+X-Gm-Gg: AfdE7cneMNdMxU1DRRpYNL8/ZA5px9kMwGBnI/WmlLVVoYEg/zTlo3MkXjgz2/qHg2L
+	SwZtMtFTxiEaNUjJ/7VnyOcVyq3EDxkOIVqXXUxaM1kWObSzTO86aTTpRGQNJHjbKfyEe+AsLvV
+	fM9v7dy+DzBPdWZCMxcP5l4Bq76ma0K1iSAO95V+dz8T9s5+JOy7yqAo638gXhmSgblK/0e4wlC
+	hUg/pWG3ftaazHpvHj9ZpkwxT96xCGJc7zZN1BZSge+qEiRACNUEowxi2UQWWPF2Sab8F6ek5xM
+	gt8LOID/zrYnOiivkHMnfJjmBYbV7v2l/5xAjG/DyicMmRrx5mIffD80lV+ERuUgvWgJOZS0hxk
+	ieWOTnyV3ihMvp20Xb2T1/F0/3FTDXYGLfgQz/fTBo3bDi/Md3mIp+hFvb6EwH+Cgv9E/WrE1+z
+	lX2eO9WbI5hQnucNUXmTHitTulnaZwPtZhkGZa3eWJbaBVGWtB3p2bMqMtx6UM5p4=
+X-Received: by 2002:a05:6808:6f93:b0:48a:c6b6:b76f with SMTP id 5614622812f47-48ee45925eemr3311675b6e.20.1782244456969;
+        Tue, 23 Jun 2026 12:54:16 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-48ae8b3b1efsm7202725b6e.0.2026.06.23.12.54.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jun 2026 12:54:16 -0700 (PDT)
+Message-ID: <9f206645-9503-41f6-b33f-9f96b472a1d7@baylibre.com>
+Date: Tue, 23 Jun 2026 14:54:15 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260623203137.7c4aae1e@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: Add DAC8163
+To: Lukas Metz <lukas.metz@gmx.net>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
+ <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 23, 2026 at 08:31:37PM +0100, Jonathan Cameron wrote:
-> On Thu, 18 Jun 2026 22:22:15 +0530
-> "Prashant Rahul" <prashantrahul23@gmail.com> wrote:
-> > On Tue Jun 16, 2026 at 7:33 PM IST, David Lechner wrote:
+On 6/23/26 11:07 AM, Lukas Metz wrote:
+> Add device tree binding for the Texas Instruments DAC8163 family
+> including the DAC7562, DAC7563, DAC8162, DAC8163, DAC8562 and DAC8563.
 
-...
+One other thing worth mentioning here as to why none of these are fallback
+compatible (in addition to the resolution bits) is that the xxx2 chips
+and xxx3 chips have a different output state when CLR is asserted.
 
-> > I understand. I will remove the additional logs, except the ones after
-> > `devm_iio_triggered_buffer_setup` for -ENOMEM.
 > 
-> This jumped out at me.  We very rarely do special prints for anything
-> that returns -ENOMEM as that tends to be very noisy on the rare occasion
-> it happens.  Note that dev_err_probe() doesn't print anything in this
-> case. 
-
-And I didn't check this as well, I though it might return more codes.
-In such case this series is doomed because it adds dead code.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> Signed-off-by: Lukas Metz <lukas.metz@gmx.net>
+> ---
+>  .../devicetree/bindings/iio/dac/ti,dac8163.yaml    | 75 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 76 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
+> new file mode 100644
+> index 000000000000..bb4bad389323
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ti,dac8163.yaml
+> @@ -0,0 +1,75 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/dac/ti,dac8163.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Texas Instruments DAC8163 family of DACs
+> +
+> +description:
+> +  The DAC756x, DAC816x, and DAC856x devices are low-power, voltage-output,
+> +  dual-channel, 12-, 14-, and 16-bit digital-to-analog converters (DACs),
+> +  respectively. These devices include a 2.5-V, 4-ppm/°C internal
+> +  reference, giving a full-scale output voltage range of 2.5 V or 5 V.
+> +
+> +maintainers:
+> +  - Lukas Metz <lukas.metz@gmx.net>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - ti,dac7562
+> +      - ti,dac7563
+> +      - ti,dac8162
+> +      - ti,dac8163
+> +      - ti,dac8562
+> +      - ti,dac8563
+> +
