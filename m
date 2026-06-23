@@ -1,50 +1,50 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010059.outbound.protection.outlook.com [52.101.56.59])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013040.outbound.protection.outlook.com [40.93.196.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EF8E3101C0;
-	Tue, 23 Jun 2026 00:27:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.59
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 131A4384254;
+	Tue, 23 Jun 2026 00:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.40
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782174450; cv=fail; b=pFVsivgvjOES+mq4NwheX1RMW78EJlAFsldOXVNBMl7DbHORacFgVPlhBdtaHDuN+lMWbbhcBfQ2Y6unwDY9/YtSzULOYEhAl3E01dIOj33igOH2OGD3XXJM9VKQCiDaJ7eVxKCDzGKWHFRzG6HP4cLt33144EqqRFIuSCNYvnk=
+	t=1782174868; cv=fail; b=uIO0WJ0c31Wp8yLC/yblO5SVbdMRNtQUCP28hXroqafEadviofTUoHnlofgWKqNnvD/1ZmiOdKePZMgUzRGw+bckkBMy0hGvk2le9HRriULCySiJ/ZCYidGh+dTVwAdn7gAZH4szSZ1yQo3Jeb6s7Ht9InTy8XgPeJUPNxK7b2I=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782174450; c=relaxed/simple;
-	bh=QvKBTATD2UGwB3HUUj4E2iwEkkDBLZw5F98JLnCpfRc=;
+	s=arc-20240116; t=1782174868; c=relaxed/simple;
+	bh=0NBveg5yf8cej7wW6vbF3wxpUkQ/YMdb4Htv7duRHb4=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=VWeOapCZkjdqZ5OlV+Z+BUgT/kFhi7IYXjjskYHQNDLEAljdSeIyiGAQSVACDyMWdbjG0WAcFyRacX5Pkrx4aOMOWDqBJdNvZTuS4Lxw6dOtL47hmfBvgfn4jz0sMMcm8HssFYc9nw6f9Ljf0aEsXhmct0MFWzRI1vMj/v/xMcA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=hg0y4h+7; arc=fail smtp.client-ip=52.101.56.59
+	 Content-Type:MIME-Version; b=PfeeHaniKhn+3MouAWpf/r446yVPfR1acXdpE1b99j5yp8APqKA/1vtlZXVQaMbVbtQaQHb6vNbhy+Uu2Eta6pDLk4pcBwyVQWskYMauORax9MAbHa2tncV6J679YTFtXyeGEvmu3avypT92eiaFFbuy1zFdt8IJCo+4xFV/eHU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=WZReK5OW; arc=fail smtp.client-ip=40.93.196.40
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="hg0y4h+7"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="WZReK5OW"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uoosygRkbYBjvE+hhKzR7V8YL0D62xCF7Qf8Y8ADjsFIUakAUxYIbQ3HjeH+a3f/OT4WMUVwdWsFM23RrSeOi4u7+Tick6odNIAQAHWJy7MTX2w/lxFq/356Yuvb+54piJJCUMgKK8xcaVOoKZ+vMFPk1rf8ckIwyxlK7LuAToHe1ypeHRL4tZLWi7wIPrcP5y7OFtyEgY6aT8P7ukb3NdPWunMVYdGQATjZJBIC1PZm/nW9MePJwehdPb8EYidNjLxCteekBsCDaNAk1cttds8Ua3gNhPX9AX3TC+SkdvgpFR6YPPT/NFv3JJ5hZn5yrq3Jdetpoxoyuocztjon0Q==
+ b=EtbzGLVI92DS2sU06bQrQ9OKFGe7FkMjZVpjORItw5gXlbXCnlpxLhO0SWJ2GqtkXSxpOHaLC+4oYJiL681BqC4v61pknOrHVcbJyGesFFYWgO3dQlF8RTqb8Gc7bkTiDrAp+DhhwB4/Ww1c1xD3SyF8DIFnklTIYH7yuV7mIk3qbsrRXZZqlaib8xxRHSw4k/ESw8IkXt5y1fAH4s9E4inpKFWkjCXhwM92Gh0obxX/2ZbHwswJKojZMRKBlcHYhI1YnexBc9NEs6iPeCkivr7/aABICa+GoGrBL4kk2rKSsMkbDurvwB5xySpnKpOKR7vKR1BbArr4T8qs7BGy7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hLTioV8XtWn87GltMvHFtlPSzB+cIaExQVIpMkL7lxY=;
- b=h+ClGmr2lTtXwSlCBYUBoGJlpXuPcI18RmOWOmvcAZAb/eN+e+NegpX5oVvxKmbQjD0sP9Pzcb//MinAuHDPnLnAeVFFwEXiolKtwLP6OohvHbog8Qx0iDVqQ+tJvnu116oacyLf9tNw7if571B7jKDHuyv5/quKRZw/Z0L2sx9t4gn6gPnnUVrYclAdTabIteBixNp0G3nhqOS7tvKCfNnUBAygCAWX+Wlf4eXYm3hrCB8y6dM1jPDwJFDSnPtl27Crcn71uFTL1EFub072UBuKkgpowC6+KYNZGdjN91GrB9aszpCWhZii8ZbGJMixhGoJ7M1yaGvO5lRfiQivCQ==
+ bh=KVdGO45pl5u+MeDLmMNePiyToyEjGnz2zuO4qSD1KNY=;
+ b=D08ctZeht0u0WAXMY8aocedHVfMFXbUYKbAn2cDtsq93T6CcXiQ2snd4rJTTwWW+TMqypJH/GxNPuE8Lflpprp6KqnhOYG/SKcNo0W9hiT5p3tLhWaRotEg1gV8+a6x8wxZyRRJiKc22P3CMlcXov8ruxA+ANYu+4tjFvAwwaWDDzrAhnNvOXsKeUqh+aiGrIeKt4wkefBQXPSEqvnyucuAhWc9V21ZTHj6I2vYYHsfLfB5sUGuu4gg+Gorkh4mS+nb3H1n9Ejm7jinoPu+vn1xovs8BTF2k17IJ8U1EcgL5BqWEQZKTpK6+SxhuFmN02QXmVKTkNIvv/pvhJWy4DA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hLTioV8XtWn87GltMvHFtlPSzB+cIaExQVIpMkL7lxY=;
- b=hg0y4h+75Vkx8F17kpWLIleB4iUpk1SMIsRdJrgW0vet/j+TgtbupJiEE+rdgEmazN4aJ8+U3hj8l6Be5WFVqjIE76AZV0Q8ZOT8zxEPWxZcl6g3UALcyzPJUfY4nmKbRqYfVzEDrmFVZ6slf6urtOIWqplJ21y+WF0zhPJUs7o=
+ bh=KVdGO45pl5u+MeDLmMNePiyToyEjGnz2zuO4qSD1KNY=;
+ b=WZReK5OWsRsRIo6SMPXe99oSlujg3ESrM7a2f8NKj56McPHSDjM6dP2XPAKhD3Lbh+hF/X1dogUy3tmnXYoXPMVgzynmM1lZkDUCfL4QP1va61uRrMexFY+1s+8AblFDD1zev1tkjpsexetW6u8rmVwn0lrSfQ8yZmVQ3uxXMNs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15)
- by DS7PR12MB8291.namprd12.prod.outlook.com (2603:10b6:8:e6::13) with
+ by CH3PR12MB9123.namprd12.prod.outlook.com (2603:10b6:610:1a4::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.20; Tue, 23 Jun
- 2026 00:26:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.12; Tue, 23 Jun
+ 2026 00:34:21 +0000
 Received: from IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550]) by IA1PR12MB7736.namprd12.prod.outlook.com
  ([fe80::2274:9fed:8f3:8550%6]) with mapi id 15.21.0139.018; Tue, 23 Jun 2026
- 00:26:54 +0000
-Message-ID: <49cb8cf8-0aa2-4255-860e-536ea4a29cef@amd.com>
-Date: Tue, 23 Jun 2026 01:26:49 +0100
+ 00:34:21 +0000
+Message-ID: <eaebd577-165e-4111-b27e-d63858c22856@amd.com>
+Date: Tue, 23 Jun 2026 01:34:17 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 3/5] iio: adc: versal-sysmon: add I2C driver
+Subject: Re: [PATCH v10 5/5] iio: adc: versal-sysmon: add oversampling support
 To: jic23@kernel.org, andy@kernel.org
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org, conall.ogriofa@amd.com,
@@ -52,14 +52,14 @@ Cc: dlechner@baylibre.com, nuno.sa@analog.com, robh@kernel.org,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
 References: <20260618101414.3462934-1-salih.erim@amd.com>
- <20260618101414.3462934-4-salih.erim@amd.com>
+ <20260618101414.3462934-6-salih.erim@amd.com>
 Content-Language: en-US
 From: "Erim, Salih" <salih.erim@amd.com>
-In-Reply-To: <20260618101414.3462934-4-salih.erim@amd.com>
+In-Reply-To: <20260618101414.3462934-6-salih.erim@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0124.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b9::16) To IA1PR12MB7736.namprd12.prod.outlook.com
+X-ClientProxiedBy: FR4P281CA0126.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b9::7) To IA1PR12MB7736.namprd12.prod.outlook.com
  (2603:10b6:208:420::15)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -68,108 +68,102 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|DS7PR12MB8291:EE_
-X-MS-Office365-Filtering-Correlation-Id: 410f4676-f7f5-4ba8-7a53-08ded0be205c
+X-MS-TrafficTypeDiagnostic: IA1PR12MB7736:EE_|CH3PR12MB9123:EE_
+X-MS-Office365-Filtering-Correlation-Id: 601ceefb-955c-4734-fa2f-08ded0bf2b1a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|366016|7416014|376014|6133799003|22082099003|18002099003|4143699003|11063799006|3023799007|56012099006;
+	BCL:0;ARA:13230040|23010399003|1800799024|7416014|376014|366016|56012099006|6133799003|11063799006|5023799004|18002099003|22082099003|4143699003;
 X-Microsoft-Antispam-Message-Info:
-	/ZOTaihNFblJhBkkplC97USD8ZOT5YpS/sGh9OsusewApQfJ2nRxU9aFITet/4Rrj2/xzAB2qCywabEXbftE7EhOvq1fUA5YDKn79QcR092uSzOawYFBelW1ctl8UDuSwsIHEGYt7dUMkhHvfd3xGzE0lKi/BA5bn+M+ghYGq/z1NPCN4dwH7K1FRltkhGnIEUurkSPjjBkrM8IgbhO0Mpnt/y5M9wz7x7lTW3MhycI7/h2MiDxid0tc52oE5PCUF+GPMDDQyGOgeLwOJmppauX5x7cZsV8Ev+bfd8YGIvk0XYmxj48pEsDkOvqdndQ8DcJTkJMq2B6mcW7MgD1iTVZIN/JFyMGu17dcRuVfmZjNf3pAV98LbK1vXVLDmrEMm6pDHYekmY8/7cNP034bGNT6IFaMOkLPT0UgopjwA2jsFJ+4gm5rP6uIVSvpFNrAlLHNrroSmorzhnxsuZLATXiMsiHDDFbcCdvNkBL4glSDkot5JFt5bSmMIslm56SKY19zTHj4krc5kzd+I4wjtxKCbZsY8QLD8jvNLarlZBiCkejPgUnRoL1Tacwe9cVn/UT7vPcIueXTsRTrtXPRNj8Ua2QNXGm/2CB5xpn4mB4emALiTSwjmqse8Gv3V3WR3ySQ7voZvP52YLKxqcrJqu+hq/wnrnE22/Sxqu4XOvM=
+	nxtZaWqC5e/W/cpFqm7gp5aqQ5VNWwOUrQ56vtzZMLHDzvm8itEA3BR4KfipTcn8xsdFIbuCuHWfzeW6AE/Dp0oThn3IsuyKkYeWVvmq0AmBOKFrZRyznGfqjdiQFYFNxCNuLcv3IvwDK+erXB4MoEi0URKVN4nyZE2YPuOz9mHDKndi/XeSfbCsONbkutZCEwXndgJXOZEj8r9uzFPIjTb3woCMQW41gNJ9vHDI2kLIR0YkNrAB22lIpPGJOYSeiY5z0Qj8lO35n4NpfF/RtksKL3LiWvX6Px0tXAxK79KIyO8Lkrcci5n0CX1ScC/yGyCW2EnfBaEm6JUyJas35ShjR+J8Vj7N/bje0J/uYFGZgQZvujBdp+shDEOvLup+Qo3P4DKaspVIhaBVzq8fzpQ1DXbjU+AdudQ23VxRQ3Z2qC9FnEAsWlKI4J+uh5C1y9W74YLIzkvdJ+567XWlx8h3BmArbGTZCuU2LQWY/1Hu4CJ5bVHM4D9U8yp1lNZrWjoYWy6Kf4zJkUNSioAhhwIyURZLhrnj0Yvk92CL4RpBgESC5kJTKbokgxWdZovVqpHwaKPT47c6LFQLlBq0nnf1gurhwhHPc9KT4Fk6BfgapBI1I+w3Z1Iv/6ynWR+m/vUmC4tY2r9k6Q6E41YEAcGzLvYJa73hNgCkoBDBcp0=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(7416014)(376014)(6133799003)(22082099003)(18002099003)(4143699003)(11063799006)(3023799007)(56012099006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB7736.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(7416014)(376014)(366016)(56012099006)(6133799003)(11063799006)(5023799004)(18002099003)(22082099003)(4143699003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MUJqMWxheHN4WWdKbkZxVTBFVVZqendpaHdndVN5MnpXbThTeXRxNUJLcUtL?=
- =?utf-8?B?S1gwTXVvczhrK1pGbzJmM3lBS2x6T0s0L1BTOEpOdEtPMWlxcTZyNjdiK2Fm?=
- =?utf-8?B?SXNMZGYwdUM1cFp5RFpzRzhZdVk4cXZGVXFEVXg0UEdnVCsxY0h3OXVmTlo3?=
- =?utf-8?B?MWxzazIwcTNvMEQ0Q1lhRFhZaDVSUGhhMWxOd0M4K1pmQmw4K0YxalBaN0d3?=
- =?utf-8?B?SktkUEdUL1F0YXlrK2g0K2F4OUd2aHMvREhLM2hMazBhRk5NMGFJYkMvNHhB?=
- =?utf-8?B?b1hpQUlObXVrb2Yvd01LNU1iT1QrWTRBemNaK05qd0tyNkhmRlRZdnZyQTly?=
- =?utf-8?B?VHV1Nml6bUtxWHdFYndGQzRQNmMyYThaYnQ4dXZ5Q2paK1YyYXJBbkFoeVdZ?=
- =?utf-8?B?aEc3M2FaOExUM3VlRGlVczhxaytVZmhOWWgzM1pXQ2Fpa0x6K3daRkZuRERx?=
- =?utf-8?B?WUl2UkhieXZYR3FHZG1rMi9zRFR4Q1orYXgzNi9BM1Z5S3VFdnRabVBOelFW?=
- =?utf-8?B?TlVFZzYreHorNHdMczIvbS9wbTU2TjJKY2NickNCSzBWSFQ5L29xM0hRdFlz?=
- =?utf-8?B?OVpWMnZLRVFRQWdNbEVydXVkcW9LMXBVcElPWWxqUXFKa0xQVnAzaW93Q2RY?=
- =?utf-8?B?OWRMd1cyUERQYloxTjdmcjFjUEhpSnJVemNwQVJvUE0xTkd3QWZWQ2cvNTk2?=
- =?utf-8?B?c3RYS0g0RmZiWk9QbnBaNDJuWEV0TXQ2R1pFN2tVMEtOVCtPS0ZyQlNYRGVq?=
- =?utf-8?B?Vi9yL3BiLytNemZiWkxqbkhUTUFPcXdMVzJqdW5heC94WDdQWmJuVE15YXdE?=
- =?utf-8?B?ODNDYkhQNXRnbitiQ3hBc3FuVXdqQWRZSk1HWXY1QVgwZFpIOWRQL3RuVjhy?=
- =?utf-8?B?UmVZSTBmVFU0NEgwRWJMbUlzclM2b1F0ZlVuUjRnMDRsVEVEWVB5UVdhZVlw?=
- =?utf-8?B?YjJhYVBzOGRJd1NpcDlTeHd5TjJlTE13YituMXZyS2JNdXlEWkhjR3VQa2FM?=
- =?utf-8?B?bzB2UjlYRWlVOTgyU3Q3a3RxNWpET0RaRWh5MmlnOXVDUkFSU0U0eS9wWlZ1?=
- =?utf-8?B?ZTU1MHFQdGVHWnpOQ1FuNVp0aXpmSzdhYXd6UEY4eXp2N1NtRzk1VmF3aGFZ?=
- =?utf-8?B?eEVzZlRzMUd0TFZ3aUppVlpHSkRWc3hRQ0wvMENKQ24rYkg0M1VmOVM4aTF0?=
- =?utf-8?B?OGVGa09JM2crOTd1QUUzY2pBVEc2amR3Y0YrbC9zMjhNRmlueG5WNFdwZnh2?=
- =?utf-8?B?TkJNR2FyZlhodGYzK05zaDhEcHdodi9ZNmRHRzlyMldydEthbVBkNUdaT2tz?=
- =?utf-8?B?aDBZMFR1eXIvcW95Wk8wUHo0dkhNWXVMSkh5VzAveGNGeFNIYUNRUkUwOXY3?=
- =?utf-8?B?cjltUEdubW9hTFp4WEVtMUlFUCtZaU5wb01iMk0xVHNzY0dEcmloV0huNGEx?=
- =?utf-8?B?bXlMaFhBeFZaMXczMktKclJRNzVqN2NXUkt3cVZnR2pHSHpUUUo5SC95NFB1?=
- =?utf-8?B?bWJQdG1iV3NzakRUbHNldEt4ZnNEMS9KMVNxdHFVZkt1Q09MNW1ITHBkN0tj?=
- =?utf-8?B?RUVrRUYwNm5LUzhOQ2RnVXE5aHBZNk5hNHRvODI4cGFmSmR4M2V0akdMSXdD?=
- =?utf-8?B?T1RQTFB3VGp3ajNCYUZIY3JSU0lSS2liWXdyNXBaeFhQL2k4VnNVVDVRamNM?=
- =?utf-8?B?TkcyN05sU1FVWXppK3NnUzJYNE84bitRUnlJMnpqN3VYZFNoSkZkZ3FXR3hs?=
- =?utf-8?B?QnN5citTaGF6aHgraitRMk40Q2F2aHQxaGNkWmVXSWFnTW10S1lraHc4d1Ny?=
- =?utf-8?B?MGFwdlkrb3RSQXdvcFZPc0NrbHpzSGczeG9jVEhsSjVjOGpBK29BNG52QnFV?=
- =?utf-8?B?cWozeGlvU0ZzYmlsRHRxUEtIV0tqRTYwK0tSRjRQSlkrYWRraldzbjJhYnpQ?=
- =?utf-8?B?dklkb09RUEFLek1NMjlsdnZ1akJQZFBUUlFFMjE3VTBoRk52LytEVHRjV0Uz?=
- =?utf-8?B?WEYycUVBYnRqbUtXZDU0YmN6TE1vMWhSQmJSWnJZRWRtMmxGTVZYM0FmWW9D?=
- =?utf-8?B?UVYyNTE2eHh0VkdQTFB0MjlsZmE0UDRNa2ZyaStONDVtUkRmZndFdGFiQWd5?=
- =?utf-8?B?Q29zUjU4bllGVnY0QS9lYnlhUE94RmRWL3lNbmdFMTh2OGtkbXJFdzNtck1a?=
- =?utf-8?B?cy9ENXZtVGhXeElZM0o4dFpKc2tBbzlnUWJTS3dZU1JFc3UxSkQvSG1PeSt4?=
- =?utf-8?B?bzVDdDFJcjdRVUp2Zk5qOWQwdDJRYk5KYVpnR1NidmRDQmM4MjJXaW1CRmRX?=
- =?utf-8?Q?6fUjTSLlgrlZLMXytI?=
+	=?utf-8?B?NlcrRHJQUjE1eXJmdnJsaDd6a0hYNDI5UUMyemVOVDhwci9tZml3WnJyRmR3?=
+ =?utf-8?B?a2NhWFJ4Vm5LcEY1c3dpZmtlelNrWk9neTBjSnNGSWYvZXlWc3VLOU1TMXVR?=
+ =?utf-8?B?Wm9EdHpSL28zWHo2enJOaE1peHBwVDB3cnFLS01CZzRhMnQ5Z1Z5Vkg2R2xQ?=
+ =?utf-8?B?THhIbUNyMUtSdUJ4WmlqUGoxY1I0ZlMxVFVvWVF3MEkxMmlnWU1WQUlJajVB?=
+ =?utf-8?B?TGdNVzRuVjRScGQ0TFh4Z00waVpjdkVVdjRYbU16bFRsOTRjaWhqbXpTMEcz?=
+ =?utf-8?B?dTV5VHZLUWVpR1l6R2JRU21pUnBnZjJOa3d5YlY5d1d3d21FblFtQk82d0lE?=
+ =?utf-8?B?ZVJ4a0pMeTEzdSsrNlBYS0o1c0lieDVwKzdGZCtpNTJ4M0RsTERCV2hGc1I4?=
+ =?utf-8?B?dWNUQmFZWm40d1JCSDVKRlBmNzVuV0h2WDdiR080NmQ1azczeGdkdjN1ZXVV?=
+ =?utf-8?B?SWdqMXEwSEhhVjBGVnJjeGpNRzU5UGxxaXhGSkNNOEh4aWhFTmQwRzFBS25T?=
+ =?utf-8?B?WGZ3Zjg0Wko4dG1CLzZuazR0a1RGVHgxQmQ4dEJwc1pZb0tQV3Bhdmo4a3pY?=
+ =?utf-8?B?YkhQb29TWjRsNTNIQklIVDNMRGtpaUcyMXlhM3FFamREaFFnbElZZVY1RnRu?=
+ =?utf-8?B?WmtJMlZMUWlTeEFZTk56eGpNejQveWszYjNERzNoMzU5S0MydWxZNng0cTRJ?=
+ =?utf-8?B?eVpMcnpRSWEya1RDeUkwMFpEYmxDaUx1MnlDcnBwb25BWkIyQ1lhOEUxOWxm?=
+ =?utf-8?B?bldhRTN6ZWh6anpPQVJpRHl0QWkwWXlzNVhpaTZsUENST0pVRVlNbSs3Y1Y5?=
+ =?utf-8?B?SGx1YmRwbTZONzFPa0plSnpTVzcvbzlSQ2cxRFhUTGJGaTJQMWQ2bE9XOTVY?=
+ =?utf-8?B?cDgyek1rK0F6c1N2cys4K2dQM0VSSElVb0REOUdZYmdRN3BBWTNuWEtadCtT?=
+ =?utf-8?B?SkJPZDdBdmZOZ3RrRDBTd2xYaHAzNWQ5ekg0ei96QTJXR0luOEFpYzl6azYz?=
+ =?utf-8?B?UmdtbU42bXpyZm1iNm5saS95cWZBcko0YUh3ZGFSeFRDSnhvLzJJb01zdWJq?=
+ =?utf-8?B?cmNZcG9VS3hGUytTYys0Q3UrSXBBRWFMb1JGVEM4QktXSGdNTVZVUEw2MjN2?=
+ =?utf-8?B?Z0w4V0xVcE1LSXdlSGw3T044TzhEQkFTUk9YaXA4N2IrTkFUQ0ZEV0FJeTdJ?=
+ =?utf-8?B?T2N3R2haT1dqUXEycWNpNStvZ21lbjBBQ3JWRk5GQ09VdG9tKy9GemtqbTZh?=
+ =?utf-8?B?ZjZSb0ltTFlneGhockoyZ0IzcFVEcVpEZHRrN3p4eG8yaWNNVnFLYkFWU1hn?=
+ =?utf-8?B?M3l4dXBnRE4zdGMzY294OURrS0hBSkF4cm1MSk9QODRJWG9GSUpaTlloejl4?=
+ =?utf-8?B?TUNLYm0wQU5UbGYxWXF4cldEZFFYVmJnK2Zkby9QYmtJUjllUm1FN2l3c3dO?=
+ =?utf-8?B?bmNtVGFrZW1vTG1jbzZKOHJRVnRLUlFsZnBZMzRwOERaRDgwNk40ZDM4SGNl?=
+ =?utf-8?B?ck9EL2FHT3FSUHdqcHhzZmZhR250cnUyZXd1NEt0bUtmMFBPMmhqSm9Mejlo?=
+ =?utf-8?B?M1praVR5dWdXMFNPQnpsYjhLZmEvSnh5YTYrWGFqdDF1N2NGTmpReTlKMTJY?=
+ =?utf-8?B?cFdVVkpaSXFjODlQTS8rdEFQdjZyR3llVkVnTkFLb2loNDA1aUlWUnRCa1Ix?=
+ =?utf-8?B?MXA4SG1HOWZXMWUvajhPTkM3MXdYaDVzSC9WVk5FQ1h5VkZUVjU0aHNMN0NN?=
+ =?utf-8?B?WFVDWnpvSW9IVkU4OUN4YkZhZlZQQzhvaWxVZnRZWEs2U2VHVWs2cDBoQ3FW?=
+ =?utf-8?B?T0xVMi9xUjNPRXRzOTY4ZkkrSXZNQU5rZkNqdHhEUHlvSGNBcGduRXRiQS8r?=
+ =?utf-8?B?bUdZZHovQnpDY3loYld0MVNuWmtIbnQzVHZ5QXRsUk5rbHR2c0FURUUwTWpi?=
+ =?utf-8?B?ZHBsMDdaMkpsMUhXRE1TZ1EzSTRQWEtFUi9zU0FHMkhtNU9SZ3NaZG9CQ2pp?=
+ =?utf-8?B?bnprK2hUdExVMmt2aWdqUGxPSHdPNzlxNks0U2pTSElmN1BsTXdMUGtrN1E0?=
+ =?utf-8?B?NEdIbFlzd1hQMnMzeklsSGExK3E1M1l5QllLczlSL0Ivb1lIZENaNEQzdWhM?=
+ =?utf-8?B?a0xQelJpRDZQdjFsYytsS2ZtTms4OStHQ3JnNTVnU2xzdFpxM3NOUFlQcHpo?=
+ =?utf-8?B?QlRLOXJ4NFlCMnJWZWlvaFkvaUZrTnArN3djVU5qWEx6cmJrQlFaRWJHRjQz?=
+ =?utf-8?B?UjBtcmVEbGltMThpLzdzMGs5VlVCOGZSdU9kMjR0N1lDajJxa3RTaW1WaTBM?=
+ =?utf-8?Q?jYvTcDPSNuWuiVrTp0?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 410f4676-f7f5-4ba8-7a53-08ded0be205c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 601ceefb-955c-4734-fa2f-08ded0bf2b1a
 X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB7736.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 00:26:54.0369
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 00:34:21.5913
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PcHIH9zmz1RoaQmPT1eDSj8kX9OfuyjH4lhJNBlZN7Z3X01Qrmzga2FLJZFakNg3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8291
+X-MS-Exchange-CrossTenant-UserPrincipalName: ajgOn5VSU1gvy/tCk9MTxU8Ffwo5uyVlyU3JdUq7hPI56hTnSg/lQXqgujyLBHwO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9123
 
 Addressing Sashiko findings on this patch:
 
-- [High] I2C transfer buffers are allocated on the stack, which
-   can cause a kernel panic if the underlying I2C adapter driver
-   uses DMA.
+- [Medium] Temperature oversampling sysfs attribute is hidden if
+   no satellite channels are defined.
 
-   Not applicable for this hardware. The Versal SysMon I2C
-   interface is accessed through Xilinx I2C controllers
-   (xiic/cdns-i2c) which use PIO, not DMA. No change needed.
+   Agreed. Will add oversampling info_mask bits to the static
+   temperature channel macro in v11.
 
-- [High] I2C regmap backend is executed in hardirq and spinlock
-   context if an IRQ is erroneously specified in the device tree.
+- [Medium] Hardware and software state desynchronization at
+   initialization for oversampling ratios.
 
-   The DT binding does not allow interrupts on the I2C node, and
-   the I2C probe code explicitly documents this. The core driver
-   only registers an IRQ handler if fwnode_irq_get() returns a
-   valid IRQ, which it won't for a correctly configured I2C node.
-   No change needed.
+   Not a bug. The driver does not own the hardware state at probe
+   time, writing a default could interfere with bootloader (PLM)
+   configuration. The cache initializes to 1 (no averaging), which
+   matches the hardware reset default. Discussed and dismissed in
+   v6 review.
 
 Thanks,
 Salih
 
 On 18/06/2026 11:14, Salih Erim wrote:
-> Add an I2C transport driver for the Versal SysMon block. The SysMon
-> provides an I2C slave interface that allows an external master to
-> read voltage and temperature measurements through the same register
-> map used by the MMIO path.
+> Add support for reading and writing the oversampling ratio through
+> the IIO oversampling_ratio attribute. The hardware supports averaging
+> 2, 4, 8, or 16 samples, plus a ratio of 1 (no averaging).
 > 
-> The I2C command frame is an 8-byte structure containing a 4-byte data
-> payload, a 2-byte register offset, and a 1-byte instruction field.
-> Read operations send the frame with a read instruction, then receive
-> a 4-byte response containing the register value.
+> Temperature and supply channels share oversampling configuration at
+> the type level (all temperature channels share one ratio, all supply
+> channels share another), exposed through info_mask_shared_by_type.
 > 
-> Events are not supported on the I2C path because there is no
-> interrupt line and the I2C regmap backend cannot be called from
-> atomic context.
+> The hardware encoding uses sample_count / 2 in a 4-bit field within
+> the CONFIG register. Per-channel averaging enable registers must also
+> be updated to activate or deactivate averaging.
 > 
-> Co-developed-by: Conall O'Griofa <conall.ogriofa@amd.com>
-> Signed-off-by: Conall O'Griofa <conall.ogriofa@amd.com>
 > Signed-off-by: Salih Erim <salih.erim@amd.com>
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > ---
@@ -178,230 +172,325 @@ On 18/06/2026 11:14, Salih Erim wrote:
 > 
 > Changes in v9:
 >    - Add Reviewed-by tag from Andy Shevchenko
->    - Add MODULE_IMPORT_NS("VERSAL_SYSMON") (Andy, from P2 namespace)
-> 
-> Changes in v8:
->    - Add volatile register comment for regmap cache (Andy)
->    - Update devm_versal_sysmon_core_probe call site (Andy, from P2 rename)
-> 
-> Changes in v7:
 >    - No code changes
 > 
+> Changes in v8:
+>    - Use unsigned int for val parameter and hw_val in both
+>      osr_write helpers (Andy)
+>    - Use ~0 instead of ~0U for avg enable bitmask (Andy)
+> 
+> Changes in v7:
+>    - Split sysmon_osr_write into sysmon_osr_write_temp and
+>      sysmon_osr_write_supply; caller dispatches with if/else
+>      on chan->type (Jonathan)
+>    - Restore HW encoding comment in both helpers; fix
+>      cross-reference in sysmon_osr_write_supply
+> 
 > Changes in v6:
->    - Add types.h include (IWYU) (Andy)
->    - Add local struct device *dev, join devm_regmap_init on
->      one line (Andy)
+>    - Fix FIELD_PREP indentation in sysmon_osr_write (Andy)
+>    - unsigned int for loop index in sysmon_write_raw (Andy)
 > 
 > Changes in v5:
->    - Add err.h, mod_devicetable.h includes (IWYU) (Andy)
+>    - Remove unneeded parentheses in i * SYSMON_REG_STRIDE (Andy)
+>    - Use struct regmap *map local variable in
+>      sysmon_set_avg_enable (Andy)
+>    - switch instead of redundant if/if on channel_type (Andy)
+>    - Add CONFIG register readback fence after oversampling update
+>      to prevent NoC bus hang from posted writes (found during
+>      hardware stress testing)
 > 
 > Changes in v4:
->    - Replace enum with defines for I2C frame offsets (Jonathan)
->    - Use get_unaligned_le32() for read data reassembly (Jonathan)
->    - Use put_unaligned_le32/le16() for write data and register offset
->      packing (Jonathan)
->    - Named initializer in i2c_device_id (Jonathan)
->    - Drop bitfield.h, add unaligned.h (FIELD_GET/FIELD_PREP replaced
->      by unaligned accessors)
+>    - Return directly from sysmon_set_avg_enable calls, remove
+>      else after early returns, drop unreachable return 0 (Jonathan)
+>    - Rename mask defines to SYSMON_CONFIG_SUPPLY_OSR and
+>      SYSMON_CONFIG_TEMP_SAT_OSR (Jonathan)
+>    - Drop "bits X:Y" from GENMASK comments (Jonathan)
+>    - Blank lines after if (ret) return ret blocks (Jonathan)
+>    - Move oversampling read inside guard(mutex) scope
 > 
 > Changes in v3:
->    - IWYU: fix includes (Andy)
->    - Enum: assign all values explicitly for HW-mapped fields (Andy)
->    - Remove sysmon_i2c wrapper struct, pass i2c_client directly
->      (Andy)
->    - Use sizeof() for I2C buffer lengths instead of defines (Andy)
->    - Use = { } instead of = { 0 } for initializers (Andy)
->    - Use single compatible xlnx,versal-sysmon (Krzysztof)
->    - Adapt to core_probe interface change: irq moved to core,
->      remove irq parameter from bus driver (Jonathan)
+>    - No changes
 > 
 > Changes in v2:
->    - New patch (I2C was deferred to Series B in v1)
->    - Uses regmap API with custom I2C read/write callbacks
->    - Shares core module with MMIO driver via sysmon_core_probe()
->    - No event support (I2C has no interrupt line)
->    - Separate VERSAL_SYSMON_I2C Kconfig symbol
->    - Reverse Christmas Tree variable ordering in read/write functions
->   drivers/iio/adc/Kconfig             |  13 +++
->   drivers/iio/adc/Makefile            |   1 +
->   drivers/iio/adc/versal-sysmon-i2c.c | 134 ++++++++++++++++++++++++++++
->   3 files changed, 148 insertions(+)
->   create mode 100644 drivers/iio/adc/versal-sysmon-i2c.c
+>    - EN_AVG per-channel bitmask registers written with all-ones
+>      instead of boolean 1 when oversampling is enabled
+>    - EN_AVG write errors propagated to userspace
+>    - Oversampling limited to satellite temp and supply channels;
+>      static temp channels do not participate
+>    - Oversampling exposes actual sample counts (1,2,4,8,16) to
+>      userspace with internal HW register translation
+>    - write_raw_get_fmt returns IIO_VAL_INT for oversampling ratio
+>    - HW encoding documented (sample_count/2, not log2)
+>    - oversampling_avail is const int[] (type match fix)
+>   drivers/iio/adc/versal-sysmon-core.c | 153 ++++++++++++++++++++++++++-
+>   drivers/iio/adc/versal-sysmon.h      |  17 +++
+>   2 files changed, 169 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index c7f19057484..8f9fc9de74a 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -1963,6 +1963,19 @@ config VERSAL_SYSMON
->   	  To compile this driver as a module, choose M here: the module
->   	  will be called versal-sysmon.
+> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
+> index 50b5228aa22..bae229f27c6 100644
+> --- a/drivers/iio/adc/versal-sysmon-core.c
+> +++ b/drivers/iio/adc/versal-sysmon-core.c
+> @@ -28,6 +28,12 @@
 >   
-> +config VERSAL_SYSMON_I2C
-> +	tristate "AMD Versal SysMon I2C driver"
-> +	depends on I2C
-> +	select VERSAL_SYSMON_CORE
-> +	help
-> +	  Say yes here to have support for the AMD/Xilinx Versal System
-> +	  Monitor (SysMon) via I2C interface. This driver enables voltage
-> +	  and temperature monitoring when the Versal chip has SysMon
-> +	  configured with I2C access.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called versal-sysmon-i2c.
-> +
->   config VF610_ADC
->   	tristate "Freescale vf610 ADC driver"
->   	depends on HAS_IOMEM
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index d7696b1b157..5abb611fe46 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -169,6 +169,7 @@ obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
->   obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
->   obj-$(CONFIG_VERSAL_SYSMON_CORE) += versal-sysmon-core.o
->   obj-$(CONFIG_VERSAL_SYSMON) += versal-sysmon.o
-> +obj-$(CONFIG_VERSAL_SYSMON_I2C) += versal-sysmon-i2c.o
->   obj-$(CONFIG_VF610_ADC) += vf610_adc.o
->   obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
->   obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
-> diff --git a/drivers/iio/adc/versal-sysmon-i2c.c b/drivers/iio/adc/versal-sysmon-i2c.c
-> new file mode 100644
-> index 00000000000..e9a7629159a
-> --- /dev/null
-> +++ b/drivers/iio/adc/versal-sysmon-i2c.c
-> @@ -0,0 +1,134 @@
-> +// SPDX-License-Identifier: GPL-2.0
+>   #include "versal-sysmon.h"
+>   
 > +/*
-> + * AMD Versal SysMon I2C driver
-> + *
-> + * Copyright (C) 2023 - 2026, Advanced Micro Devices, Inc.
+> + * Oversampling ratio values exposed to userspace via IIO.
+> + * Actual number of samples averaged: 1=none, 2=2x, 4=4x, 8=8x, 16=16x.
 > + */
+> +static const int sysmon_oversampling_avail[] = { 1, 2, 4, 8, 16 };
 > +
-> +#include <linux/bits.h>
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/types.h>
-> +#include <linux/unaligned.h>
+>   /* TEMP hysteresis mode bit in SYSMON_TEMP_EV_CFG */
+>   #define SYSMON_TEMP_HYST_MASK		BIT(1)
+>   
+> @@ -166,6 +172,12 @@ static int sysmon_read_raw(struct iio_dev *indio_dev,
+>   
+>   	guard(mutex)(&sysmon->lock);
+>   
+> +	if (mask == IIO_CHAN_INFO_OVERSAMPLING_RATIO) {
+> +		*val = (chan->type == IIO_TEMP) ? sysmon->temp_oversampling :
+> +						 sysmon->supply_oversampling;
+> +		return IIO_VAL_INT;
+> +	}
 > +
-> +#include "versal-sysmon.h"
-> +
-> +#define SYSMON_I2C_INSTR_READ	BIT(2)
-> +#define SYSMON_I2C_INSTR_WRITE	BIT(3)
-> +
-> +/*
-> + * I2C command frame layout (8 bytes):
-> + *   [0..3] data payload (little-endian u32)
-> + *   [4..5] register offset >> 2 (little-endian u16)
-> + *   [6]    instruction (read/write)
-> + *   [7]    reserved
-> + */
-> +#define SYSMON_I2C_DATA_OFS	0
-> +#define SYSMON_I2C_REG_OFS	4
-> +#define SYSMON_I2C_INSTR_OFS	6
-> +
-> +static int sysmon_i2c_reg_read(void *context, unsigned int reg,
-> +			       unsigned int *val)
+>   	switch (chan->type) {
+>   	case IIO_TEMP:
+>   		if (mask == IIO_CHAN_INFO_SCALE) {
+> @@ -452,6 +464,132 @@ static int sysmon_write_event_value(struct iio_dev *indio_dev,
+>   	}
+>   }
+>   
+> +static int sysmon_set_avg_enable(struct sysmon *sysmon,
+> +				 u32 base, u32 count, u32 val)
 > +{
-> +	struct i2c_client *client = context;
-> +	u8 write_buf[8] = { };
-> +	u8 read_buf[4];
+> +	struct regmap *map = sysmon->regmap;
 > +	int ret;
 > +
-> +	put_unaligned_le16(reg >> 2, &write_buf[SYSMON_I2C_REG_OFS]);
-> +	write_buf[SYSMON_I2C_INSTR_OFS] = SYSMON_I2C_INSTR_READ;
-> +
-> +	ret = i2c_master_send(client, write_buf, sizeof(write_buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(write_buf))
-> +		return -EIO;
-> +
-> +	ret = i2c_master_recv(client, read_buf, sizeof(read_buf));
-> +	if (ret < 0)
-> +		return ret;
-> +	if (ret != sizeof(read_buf))
-> +		return -EIO;
-> +
-> +	*val = get_unaligned_le32(read_buf);
+> +	for (unsigned int i = 0; i < count; i++) {
+> +		ret = regmap_write(map, base + i * SYSMON_REG_STRIDE, val);
+> +		if (ret)
+> +			return ret;
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static int sysmon_i2c_reg_write(void *context, unsigned int reg,
-> +				unsigned int val)
+> +static int sysmon_osr_write_temp(struct sysmon *sysmon, unsigned int val)
 > +{
-> +	struct i2c_client *client = context;
-> +	u8 write_buf[8] = { };
+> +	/*
+> +	 * HW register encoding is sample_count / 2:
+> +	 * 0=none, 1=2x, 2=4x, 4=8x, 8=16x (not log2-based).
+> +	 */
+> +	unsigned int hw_val = val >> 1;
+> +	unsigned int readback;
 > +	int ret;
 > +
-> +	put_unaligned_le32(val, &write_buf[SYSMON_I2C_DATA_OFS]);
-> +	put_unaligned_le16(reg >> 2, &write_buf[SYSMON_I2C_REG_OFS]);
-> +	write_buf[SYSMON_I2C_INSTR_OFS] = SYSMON_I2C_INSTR_WRITE;
-> +
-> +	ret = i2c_master_send(client, write_buf, sizeof(write_buf));
-> +	if (ret < 0)
+> +	ret = regmap_update_bits(sysmon->regmap, SYSMON_CONFIG,
+> +				SYSMON_CONFIG_TEMP_SAT_OSR,
+> +				FIELD_PREP(SYSMON_CONFIG_TEMP_SAT_OSR, hw_val));
+> +	if (ret)
 > +		return ret;
-> +	if (ret != sizeof(write_buf))
-> +		return -EIO;
+> +
+> +	/*
+> +	 * Readback fence: the SysMon CONFIG register resides in the
+> +	 * PMC domain behind the NoC. A posted write may not reach the
+> +	 * hardware before the next MMIO access. Reading the register
+> +	 * back forces the interconnect to complete the write, preventing
+> +	 * a bus hang on the subsequent access.
+> +	 */
+> +	regmap_read(sysmon->regmap, SYSMON_CONFIG, &readback);
+> +
+> +	return sysmon_set_avg_enable(sysmon, SYSMON_TEMP_EN_AVG_BASE,
+> +				     SYSMON_TEMP_EN_AVG_COUNT,
+> +				     hw_val ? ~0 : 0);
+> +}
+> +
+> +static int sysmon_osr_write_supply(struct sysmon *sysmon, unsigned int val)
+> +{
+> +	/* HW encoding: sample_count / 2 (see sysmon_osr_write_temp) */
+> +	unsigned int hw_val = val >> 1;
+> +	unsigned int readback;
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(sysmon->regmap, SYSMON_CONFIG,
+> +				SYSMON_CONFIG_SUPPLY_OSR,
+> +				FIELD_PREP(SYSMON_CONFIG_SUPPLY_OSR, hw_val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Readback fence -- see sysmon_osr_write_temp for details */
+> +	regmap_read(sysmon->regmap, SYSMON_CONFIG, &readback);
+> +
+> +	return sysmon_set_avg_enable(sysmon, SYSMON_SUPPLY_EN_AVG_BASE,
+> +				     SYSMON_SUPPLY_EN_AVG_COUNT,
+> +				     hw_val ? ~0 : 0);
+> +}
+> +
+> +static int sysmon_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	struct sysmon *sysmon = iio_priv(indio_dev);
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(sysmon_oversampling_avail); i++) {
+> +		if (val == sysmon_oversampling_avail[i])
+> +			break;
+> +	}
+> +	if (i == ARRAY_SIZE(sysmon_oversampling_avail))
+> +		return -EINVAL;
+> +
+> +	guard(mutex)(&sysmon->lock);
+> +
+> +	if (chan->type == IIO_TEMP) {
+> +		ret = sysmon_osr_write_temp(sysmon, val);
+> +		if (ret)
+> +			return ret;
+> +		sysmon->temp_oversampling = val;
+> +	} else {
+> +		ret = sysmon_osr_write_supply(sysmon, val);
+> +		if (ret)
+> +			return ret;
+> +		sysmon->supply_oversampling = val;
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +/*
-> + * Almost all registers are volatile (live ADC readings, interrupt
-> + * status). The rest are not accessed often enough to benefit from
-> + * caching.
-> + */
-> +static const struct regmap_config sysmon_i2c_regmap_config = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = SYSMON_REG_STRIDE,
-> +	.max_register = SYSMON_MAX_REG,
-> +	.reg_read = sysmon_i2c_reg_read,
-> +	.reg_write = sysmon_i2c_reg_write,
-> +};
-> +
-> +static int sysmon_i2c_probe(struct i2c_client *client)
+> +static int sysmon_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				    struct iio_chan_spec const *chan,
+> +				    long mask)
 > +{
-> +	struct device *dev = &client->dev;
-> +	struct regmap *regmap;
+> +	if (mask == IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return IIO_VAL_INT;
 > +
-> +	regmap = devm_regmap_init(dev, NULL, client, &sysmon_i2c_regmap_config);
-> +	if (IS_ERR(regmap))
-> +		return PTR_ERR(regmap);
-> +
-> +	/* I2C has no IRQ connection; events are not supported */
-> +	return devm_versal_sysmon_core_probe(dev, regmap);
+> +	return -EINVAL;
 > +}
 > +
-> +static const struct of_device_id sysmon_i2c_of_match_table[] = {
-> +	{ .compatible = "xlnx,versal-sysmon" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, sysmon_i2c_of_match_table);
+> +static int sysmon_read_avail(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     const int **vals, int *type,
+> +			     int *length, long mask)
+> +{
+> +	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> +		return -EINVAL;
 > +
-> +static const struct i2c_device_id sysmon_i2c_id_table[] = {
-> +	{ .name = "versal-sysmon" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, sysmon_i2c_id_table);
+> +	*vals = sysmon_oversampling_avail;
+> +	*type = IIO_VAL_INT;
+> +	*length = ARRAY_SIZE(sysmon_oversampling_avail);
 > +
-> +static struct i2c_driver sysmon_i2c_driver = {
-> +	.probe = sysmon_i2c_probe,
-> +	.driver = {
-> +		.name = "versal-sysmon-i2c",
-> +		.of_match_table = sysmon_i2c_of_match_table,
-> +	},
-> +	.id_table = sysmon_i2c_id_table,
-> +};
-> +module_i2c_driver(sysmon_i2c_driver);
+> +	return IIO_AVAIL_LIST;
+> +}
 > +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("AMD Versal SysMon I2C Driver");
-> +MODULE_IMPORT_NS("VERSAL_SYSMON");
-> +MODULE_AUTHOR("Conall O'Griofa <conall.ogriofa@amd.com>");
-> +MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
+>   static int sysmon_read_label(struct iio_dev *indio_dev,
+>   			     struct iio_chan_spec const *chan,
+>   			     char *label)
+> @@ -464,6 +602,9 @@ static int sysmon_read_label(struct iio_dev *indio_dev,
+>   
+>   static const struct iio_info sysmon_iio_info = {
+>   	.read_raw = sysmon_read_raw,
+> +	.write_raw = sysmon_write_raw,
+> +	.write_raw_get_fmt = sysmon_write_raw_get_fmt,
+> +	.read_avail = sysmon_read_avail,
+>   	.read_label = sysmon_read_label,
+>   	.read_event_config = sysmon_read_event_config,
+>   	.write_event_config = sysmon_write_event_config,
+> @@ -755,6 +896,10 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>   			.indexed = 1,
+>   			.address = reg,
+>   			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +			.info_mask_shared_by_type =
+> +				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +			.info_mask_shared_by_type_available =
+> +				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>   			.event_spec = irq > 0 ?
+>   				sysmon_supply_events : NULL,
+>   			.num_event_specs = irq > 0 ?
+> @@ -786,7 +931,11 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>   			.address = SYSMON_TEMP_SAT_BASE +
+>   				   (reg - 1) * SYSMON_REG_STRIDE,
+>   			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> -			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +			.info_mask_shared_by_type =
+> +				BIT(IIO_CHAN_INFO_SCALE) |
+> +				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+> +			.info_mask_shared_by_type_available =
+> +				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+>   			.datasheet_name = label,
+>   		};
+>   	}
+> @@ -833,6 +982,8 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
+>   
+>   	sysmon = iio_priv(indio_dev);
+>   	sysmon->regmap = regmap;
+> +	sysmon->temp_oversampling = 1;
+> +	sysmon->supply_oversampling = 1;
+>   
+>   	ret = devm_mutex_init(dev, &sysmon->lock);
+>   	if (ret)
+> diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
+> index 9fe2793757a..bb9a75bf71c 100644
+> --- a/drivers/iio/adc/versal-sysmon.h
+> +++ b/drivers/iio/adc/versal-sysmon.h
+> @@ -23,11 +23,13 @@ struct regmap;
+>   #define SYSMON_IMR			0x0048
+>   #define SYSMON_IER			0x004C
+>   #define SYSMON_IDR			0x0050
+> +#define SYSMON_CONFIG			0x0100
+>   #define SYSMON_TEMP_MAX			0x1030
+>   #define SYSMON_TEMP_MIN			0x1034
+>   #define SYSMON_SUPPLY_BASE		0x1040
+>   #define SYSMON_ALARM_FLAG		0x1018
+>   #define SYSMON_ALARM_REG		0x1940
+> +#define SYSMON_SUPPLY_EN_AVG_BASE	0x1958
+>   #define SYSMON_TEMP_TH_LOW		0x1970
+>   #define SYSMON_TEMP_TH_UP		0x1974
+>   #define SYSMON_SUPPLY_TH_LOW		0x1980
+> @@ -37,6 +39,7 @@ struct regmap;
+>   #define SYSMON_TEMP_MAX_MAX		0x1F90
+>   #define SYSMON_STATUS_RESET		0x1F94
+>   #define SYSMON_TEMP_SAT_BASE		0x1FAC
+> +#define SYSMON_TEMP_EN_AVG_BASE		0x24B4
+>   #define SYSMON_MAX_REG			0x24C0
+>   
+>   /* NPI unlock value written to SYSMON_NPI_LOCK */
+> @@ -53,6 +56,16 @@ struct regmap;
+>   /* ISR/IMR temperature alarm mask (bit 9) */
+>   #define SYSMON_TEMP_INTR_MASK		BIT(9)
+>   
+> +/* SYSMON_CONFIG: supply oversampling ratio */
+> +#define SYSMON_CONFIG_SUPPLY_OSR	GENMASK(17, 14)
+> +
+> +/* SYSMON_CONFIG: temperature satellite oversampling ratio */
+> +#define SYSMON_CONFIG_TEMP_SAT_OSR	GENMASK(27, 24)
+> +
+> +/* Per-channel averaging enable register counts */
+> +#define SYSMON_SUPPLY_EN_AVG_COUNT	5
+> +#define SYSMON_TEMP_EN_AVG_COUNT	2
+> +
+>   /* Supply voltage conversion register fields */
+>   #define SYSMON_MANTISSA_MASK		GENMASK(15, 0)
+>   #define SYSMON_FMT_MASK			BIT(16)
+> @@ -77,6 +90,8 @@ struct regmap;
+>    * @temp_mask: temperature interrupt configuration mask
+>    * @temp_hysteresis: cached DEVICE_TEMP hysteresis in millicelsius
+>    * @sysmon_unmask_work: re-enables events after alarm condition clears
+> + * @temp_oversampling: current temp oversampling ratio
+> + * @supply_oversampling: current supply oversampling ratio
+>    */
+>   struct sysmon {
+>   	struct regmap *regmap;
+> @@ -96,6 +111,8 @@ struct sysmon {
+>   	unsigned int temp_mask;
+>   	int temp_hysteresis;
+>   	struct delayed_work sysmon_unmask_work;
+> +	unsigned int temp_oversampling;
+> +	unsigned int supply_oversampling;
+>   };
+>   
+>   int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
 
