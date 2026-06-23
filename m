@@ -1,334 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E873D4123;
-	Tue, 23 Jun 2026 10:56:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7406C3D1ABD;
+	Tue, 23 Jun 2026 11:00:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782212160; cv=none; b=TNCnAl8ONwUc1KJxNrMDB9ynUcggKceNsqlqTe/ENyYzXf2LlZw43PZr6tQEEb0Ap/AOXvBn+b4Crqygoc3nMB2U6k1vZto3dWxlULZBzn2wFc0lnLS8qUrqw2nT1//TPo8ogqtvPdAbQfkvsk0W8Mes9U9sFA8YZOYFCN5dYwM=
+	t=1782212403; cv=none; b=JEoyaWf+Y5s1k9Nawl+PGWKzyZjuFPcZZKH/PVURPYMp206hYZJUVg8Tmshl81QmpCM+RXPu8jIlEKZUSlQsFhH2eTQpUmddDNJfDTntFRWx/Gq/cpl+rDqUr1M/5dFVH/z58wrjoTltkZGxj+MlNNSlP3T07Q+ZL6Q7LH9SS08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782212160; c=relaxed/simple;
-	bh=FMYiWlntRf+4p3ElnlLto5sa6XCSyH75HjPpKORhfP4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KEyWfql7/803kLVzjHUdL4DBUcm0Lo51xh5wSHYbiHx20j0DKgfcALlNS0PTkEBo4QyhB4EEDH9XaGpQ5kkiG/oyOmkpjKzgW+fIChFZ7s447YXQSiGWD1OL9KSm30ZjcaZ7Ig7fBo8wTSlN3sOiqYie9V8h21N0OsR2MIartyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H44SHkqN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1782212403; c=relaxed/simple;
+	bh=yHO/2t0Hb5A0w4vjeAuH+yDbJ1lP178mmCNx5z6M//k=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lSDa2yn3Cqcn0P8BEpHZxwNs7QAbt4P12Aj4sW25w4UJAz1tkb3ALHLckqgo+8FmIAIFkN7Zd+d0vSKufZG148IrGhsoVXSlLEwoGUntCmKCp+JyHyPsGxeMGMlxIgNTjHlRnb1ou3zwNI4mCV//Cxi86PJWEEguMLS/tlsJMO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=mCz6XYSQ; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H44SHkqN"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 79925C4AF13;
-	Tue, 23 Jun 2026 10:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1782212160;
-	bh=FMYiWlntRf+4p3ElnlLto5sa6XCSyH75HjPpKORhfP4=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=H44SHkqN4EP85rPtz4JIIU0IQAO8XFhmeKY3V6SE7RhKoILFEeTYL4r/PCSxrOXY6
-	 6kqwo7XXW8dNFR5MLNxAZegjtZDX92Pc+ap7pof45le0YhdUDt+RJNLmbZUwvwJSYF
-	 B69VPACgRkx/ko0h24ApKDOZaoki98m/Aj/4Iqo1URPlVqz6d20KB3G/ICsp0Yp+3z
-	 DJnRg+QIFXSc4ZHb8ptnBvMGxC0xk5TpkIpr03/YczJRul0XfOJeY8bFgIW8hHyS0l
-	 4Gpy+/mMlj17lcI4hz3kjkE0me7+ze54ZsPEtP2p56OPvSHvYBtobvACQO/aTbEXWM
-	 VC+azvAytc99Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E06DCDE000;
-	Tue, 23 Jun 2026 10:56:00 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 23 Jun 2026 11:55:52 +0100
-Subject: [PATCH v4 12/12] iio: dac: ad5686: add gain control support
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="mCz6XYSQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1782212402; x=1813748402;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=yHO/2t0Hb5A0w4vjeAuH+yDbJ1lP178mmCNx5z6M//k=;
+  b=mCz6XYSQB6qwVTm5zRj6e+rpspOwDbGqD32lUZKTnO5POsZqEY84+xze
+   JHQTgbkqWUNhAb3EqADTAWXVXUGwBAFmBtR3TtGPC+X/ilmJQDoqbxRbK
+   cSlSvMocUG3VM3jVm8cXVqjzsb7t15iJLtTXOukLrbTlxM/Drg2MBgU3Q
+   sJ0wUbKwsv7oAR4jVnD3FyxlKlbbRIXyjeqk66d1/CS4XJIqzUJyAuMQI
+   Rga36bRJ4MkpYsJxp9doPvDaowQqzpUGt5lIi9vPaaNWcaoGS3FuDyKI8
+   swVEGQH2SbmYe5lDo1x2QUE7vEsdaCBOivZUybSomYtzdWzniPZJl4AeE
+   g==;
+X-CSE-ConnectionGUID: Y3LtMIYZREylgqcL4yz3eg==
+X-CSE-MsgGUID: vSMo/dVLT82Qe5W0Vpni4w==
+X-IronPort-AV: E=Sophos;i="6.24,220,1774335600"; 
+   d="scan'208";a="59540448"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Jun 2026 03:59:56 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Tue, 23 Jun 2026 03:59:55 -0700
+Received: from che-ll-i67070.microchip.com (10.10.85.11) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.58 via Frontend Transport; Tue, 23 Jun 2026 03:59:49 -0700
+From: Varshini Rajendran <varshini.rajendran@microchip.com>
+To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+	<srini@kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>
+CC: <varshini.rajendran@microchip.com>
+Subject: [PATCH v2 00/12] Add thermal management support for sama7d65
+Date: Tue, 23 Jun 2026 16:29:32 +0530
+Message-ID: <20260623105944.128840-1-varshini.rajendran@microchip.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260623-ad5686-new-features-v4-12-28962a57db0f@analog.com>
-References: <20260623-ad5686-new-features-v4-0-28962a57db0f@analog.com>
-In-Reply-To: <20260623-ad5686-new-features-v4-0-28962a57db0f@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782212158; l=8874;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=+nJNDNZ0in3T3bA/lO3EbfAdJrgJ6562WucwwDCya5Y=;
- b=P4l8QakBgWyWTQXohNs08A8+Uv7XEoR5Ldp3xxuurnJOkIid0GyqjTxKCPKg9S1YAcn/HI61U
- Wmpt5dM9OqGDw/jWGxeCJtMHnIuHvltdsaMUTUAjWpgpk6ts32A9B6Z
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Apologies for the significant delay in following up this series.
+Thank you for your patience and the earlier reviews.
+This v2 reworks the series based on the feedback received on v1.
 
-Most of the supported devices rely on a GAIN pin to control a 2x
-multiplier applied to the output voltage. Other devices, e.g. the
-single-channel ones, provides a gain control through a bit field in
-the control register. Some designs might have the GAIN pin hardwired
-to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
-being able to set "adi,range-double" if it is hardwired to VDD. The
-vref_mv field is moved down in the struct ad5686_state, so that the
-overall size increase is reduced.
+The thermal management system of sama7d65 includes:
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 122 +++++++++++++++++++++++++++++++++++++++++++++--
- drivers/iio/dac/ad5686.h |  12 ++++-
- 2 files changed, 127 insertions(+), 7 deletions(-)
+- Temperature sensor as a part of ADC channel
+- Temperature calibration data retrieved from the OTP memory for
+  improved accuracy of the readings
+- DVFS implementation
+- Thermal system with DVFS as cooling cell.
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 4dc681eb077d..bad214b89257 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -15,10 +15,13 @@
- #include <linux/export.h>
- #include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- #include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
-@@ -41,7 +44,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5310_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5310_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
-@@ -50,7 +54,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5683_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5683_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -193,9 +198,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->vref_mv;
--		*val2 = chan->scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		if (st->double_scale) {
-+			*val = st->scale_avail[2];
-+			*val2 = st->scale_avail[3];
-+		} else {
-+			*val = st->scale_avail[0];
-+			*val2 = st->scale_avail[1];
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 	return -EINVAL;
- }
-@@ -207,6 +217,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct ad5686_state *st = iio_priv(indio_dev);
-+	bool double_scale;
-+	int ret;
- 
- 	guard(mutex)(&st->lock);
- 
-@@ -217,6 +229,84 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
- 				    chan->address, val << chan->scan_type.shift);
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
-+			double_scale = false;
-+		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
-+			double_scale = true;
-+		else
-+			return -EINVAL;
-+
-+		if (st->double_scale == double_scale)
-+			return 0; /* no change */
-+
-+		st->double_scale = double_scale;
-+		switch (st->chip_info->regmap_type) {
-+		case AD5310_REGMAP:
-+			ret = ad5310_control_sync(st);
-+			break;
-+		case AD5683_REGMAP:
-+			ret = ad5683_control_sync(st);
-+			break;
-+		case AD5686_REGMAP:
-+			if (!st->gain_gpio) {
-+				ret = -EINVAL;
-+				break;
-+			}
-+
-+			ret = gpiod_set_value_cansleep(st->gain_gpio,
-+						       st->double_scale ? 1 : 0);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+		}
-+		if (ret)
-+			st->double_scale = !double_scale; /* revert on failure */
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	struct ad5686_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+
-+		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio) {
-+			/*
-+			 * GAIN pin is board-strapped, so only the current
-+			 * scale is available.
-+			 */
-+			*vals = st->double_scale ? &st->scale_avail[2] :
-+						   &st->scale_avail[0];
-+			*length = 2;
-+			return IIO_AVAIL_LIST;
-+		}
-+
-+		*vals = st->scale_avail;
-+		*length = ARRAY_SIZE(st->scale_avail);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -225,6 +315,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5686_info = {
- 	.read_raw = ad5686_read_raw,
- 	.write_raw = ad5686_write_raw,
-+	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
-+	.read_avail = ad5686_read_avail,
- };
- 
- static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
-@@ -246,6 +338,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
- 		.channel = chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
- 		.address = addr,				\
- 		.scan_index = chan,				\
- 		.scan_type = {					\
-@@ -472,6 +565,15 @@ const struct ad5686_chip_info ad5679r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
-+static void ad5686_init_scale_avail(struct ad5686_state *st)
-+{
-+	int realbits = st->chip_info->channels[0].scan_type.realbits;
-+	s64 tmp = 2ULL * st->vref_mv * NANO >> realbits;
-+
-+	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-+	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-+}
-+
- static irqreturn_t ad5686_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -585,6 +687,16 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
- 				     "Failed to get LDAC GPIO\n");
- 
-+	st->double_scale = device_property_read_bool(dev, "adi,range-double");
-+	st->gain_gpio = devm_gpiod_get_optional(dev, "gain",
-+						st->double_scale ? GPIOD_OUT_HIGH :
-+								   GPIOD_OUT_LOW);
-+	if (IS_ERR(st->gain_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
-+				     "Failed to get GAIN GPIO\n");
-+
-+	ad5686_init_scale_avail(st);
-+
- 	/* Initialize masks to all ones */
- 	st->pwr_down_mask = ~0;
- 	st->pwr_down_mode = ~0;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index cb884334e94a..92012e1be48f 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -39,9 +39,11 @@
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
- 
-+#define AD5310_GAIN_BIT_MSK			BIT(7)
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5310_PD_MSK				GENMASK(10, 9)
- 
-+#define AD5683_GAIN_BIT_MSK			BIT(11)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5683_PD_MSK				GENMASK(14, 13)
- 
-@@ -125,9 +127,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-  * @ldac_gpio:		LDAC pin GPIO descriptor
-- * @vref_mv:		actual reference voltage used
-+ * @gain_gpio:		GAIN pin GPIO descriptor
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-+ * @scale_avail:	pre-calculated available scale values
-+ * @vref_mv:		actual reference voltage used
-+ * @double_scale:	flag to indicate the gain multiplier is applied
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-  * @lock:		lock to protect access to state fields, which includes
-  *			the data buffer during regmap ops
-@@ -139,9 +144,12 @@ struct ad5686_state {
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
- 	struct gpio_desc		*ldac_gpio;
--	unsigned short			vref_mv;
-+	struct gpio_desc		*gain_gpio;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
-+	int				scale_avail[4];
-+	unsigned short			vref_mv;
-+	bool				double_scale;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 	void				*bus_data;
+This patch series adds support for the following:
+
+- Tag-based packet lookup for the NVMEM OTPC driver while preserving
+  backward compatibility with existing ID-based access
+- Temperature calibration layout handling in the ADC driver to support
+  different SoC-specific calibration data formats
+- ADC driver adaptation for sama7d65
+- DT nodes for OTP, ADC, temperature sensor, and thermal zones for
+  sama7d65
+
+Changes in v2:
+    - Preserved backward compatibility with ID-based packet lookup to
+      avoid breaking existing users
+    - Removed sama7g5 DTS changes (not needed with backward compatible
+      driver - will be sent later to update to the new access method)
+    - Preserved the packet data structure returned not to break the
+      consumers
+    - Reworked ADC driver to use a calibration layout structure instead of
+      hardcoded indexes, for scalability
+    - Fixed kernel-doc Return section
+    - Removed stray blank line in mchp_otpc_read()
+    - Removed unnecessary UL suffix in writel_relaxed()
+    - Dropped unused packet types
+    - Fixed stray spaces before exclamation marks in error messages
+    - Added ASCII representation to TAG macro definition
+    - Removed odd MAX enum with trailing comma and refactored
+    - Moved DTS patches to the end of series
+    - Used cleanup.h helpers for NVMEM data buffer handling in ADC driver
+    - Combined multiple v1 patches into logical units
+    - Used correct subject prefixes for dt-bindings patches
+    - Used fixed-layout NVMEM syntax for sama7d65 DTS and binding
+      instead of deprecated syntax
+    - Added cpu-supply linkage for proper DVFS voltage scaling
+    - Updated stale stride=4 comment in dt-bindings header
+
+Link to v1: https://lore.kernel.org/linux-arm-kernel/20250804100219.63325-1-varshini.rajendran@microchip.com/
+
+
+Varshini Rajendran (12):
+  dt-bindings: iio: adc: at91-sama5d2: document sama7d65
+  iio: adc: at91-sama5d2_adc: rework temp calibration layout handling
+  iio: adc: at91-sama5d2_adc: adapt the driver for sama7d65
+  dt-bindings: nvmem: microchip,sama7g5-otpc: add sama7d65 and dt node
+    example
+  nvmem: microchip-otpc: add tag-based packet lookup
+  ARM: dts: microchip: sama7d65: add cpu opps
+  ARM: dts: microchip: sama7d65: Add ADC node
+  ARM: dts: microchip: sama7d65_curiosity: Enable ADC, DVFS
+  ARM: dts: microchip: sama7d65: add otpc node
+  ARM: dts: microchip: sama7d65: add cells for temperature calibration
+  ARM: dts: microchip: sama7d65: add temperature sensor
+  ARM: dts: microchip: sama7d65: add thermal zones node
+
+ .../bindings/iio/adc/atmel,sama5d2-adc.yaml   |   1 +
+ .../nvmem/microchip,sama7g5-otpc.yaml         |  28 +++-
+ .../dts/microchip/at91-sama7d65_curiosity.dts |  27 ++++
+ arch/arm/boot/dts/microchip/sama7d65.dtsi     | 132 ++++++++++++++++
+ drivers/iio/adc/at91-sama5d2_adc.c            | 116 ++++++++++----
+ drivers/nvmem/microchip-otpc.c                | 142 ++++++++++++++++--
+ .../nvmem/microchip,sama7g5-otpc.h            |   4 +-
+ 7 files changed, 409 insertions(+), 41 deletions(-)
 
 -- 
-2.43.0
-
+2.34.1
 
