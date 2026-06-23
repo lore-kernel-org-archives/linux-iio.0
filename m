@@ -1,105 +1,117 @@
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB013242D65
-	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 21:04:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1BD81DE4FB;
+	Tue, 23 Jun 2026 21:18:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782248657; cv=none; b=pQYDOzudxGQm6k7toj4EPKmu6+c4wpaFXnHctXX51o9AJ0RgNOQ7tmlynZTtrc2TZToY13pWnHEFaKMjQsodAGe84S4B8Pj29phBySee1VxMc+xInj4nmKPUUfuvDVjS2wc+UBWFgIfKbefM7za2iVopNXciztwLeLucLDSpH3o=
+	t=1782249525; cv=none; b=DF9YZZbj9UWpA6kE4/WKFQDTSLXc25qJuJPeoRkD0CubEO0zC154aNcq1eRjDt444LhM0q44ZTT2yTydy8AKwPEcIUqSVSnZHh7ZoEK27Ru68avuu5UYWSfa3Xp5ZBk2VQPdSuC9pIDjoMHbui1azRF0duLbsOehcGR/jcBbdSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782248657; c=relaxed/simple;
-	bh=G2O/RO+LnvNcHuRCY2ZDyqZgos6zxE4R7b3nGKbOZ3s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Iqd60xPD3+IjgemIIPQ2ntrEgQmDrEMSl9tpMFi/YtsbD2PlIHuYwCUJnlkOFQY5nWdFvy3DAylFK9+jhHzerLSXjZXNCUmAkAGmVj9wuIbj644+lz4ukTQ4HYlNOvx+dPmrI/4WWB2F50LF7TB3i+Br1LNPjjKyN47eZ3PoTnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=pKvFbOV+; arc=none smtp.client-ip=209.85.161.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782249525; c=relaxed/simple;
+	bh=PXOMq887K9FXPyqsb4vi8gGbLEYnXMywB+78wZBK9dY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YpN+ydVQY3RWri6KG7esoUuIIVIBIfmWGzGGDnfMTw3+vXjqILLsMTDfqQz5clAiBmIt5QNJZ0hFZzv6uJ89GeOtCUK2aWk/tYKJCb3uAM56ea6P52/PRQBP5rrC/HTg/eTuMifWMQv96g1VtvDbadT4B4DXDKRxTicMJHkMLLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jToUHbcF; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="pKvFbOV+"
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6a11eb98e8aso171261eaf.2
-        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 14:04:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782248655; x=1782853455; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yjxxtsMjV//5x1nEFpoBC5beYz3SbCaf566TA7ysPr8=;
-        b=pKvFbOV+J4qEM1LQqOLKRuGrSPe+6kjoGHDBSbSdApV/FPsAGP/nkSRMv9yKCezW9U
-         mKk5EAjVKx+RGaJdfV0WPY0PPXVde/VWD/SdgAg4i7gVK1wSsGLBb0aMZLMEnDKYWlVS
-         FGh5QrZPKg0Ycmzn9QZZVXl0SZyzyDTihPcQhK9Z+e0slWqvmW4qcJCbVCwiFAJuu1R9
-         k819Y6FN/LgIkOqCE4fqlOlBoJbItLPVmNKucrk+17QnRXDv6mjW8E6qVT/cLWhj5lYN
-         ny8O+0V+yQZrljfEpdFMfyoo1NFrUzbndIGLj+uCWE0B53fyZUsPanJI84znOU+uVtv/
-         P6aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782248655; x=1782853455;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yjxxtsMjV//5x1nEFpoBC5beYz3SbCaf566TA7ysPr8=;
-        b=FyNHilB8otf255PDJzeQclP0hHFzwjBcd8hVNgnoJVvNUukJEtWBoE4fOZMBVsdN9V
-         3cipPv54q9UKHJ2p+8faPOZTjPopu/GrFPp8n0n7OuqON5QeeH015HXA4Gjkqubt0rRF
-         mUhJJtmbMO1f5c2chPfxFD3p/Yw2+hqH47v8yNyQLHDvZbUSAWuMFu6bJyArkb2BJXsp
-         GlSQHCk6yrNQpvY8AnYIkO+/O/qS8sCEnI+scQ3/lpwnuvjUn0n2hqrujPJxky/sGSqR
-         KqV/uY2yD2zWUi7ip2L5YxlIb8MhUbfplfiLxt7v9xdStpabsvBMixumYpt3FVRnp3MB
-         uUfg==
-X-Forwarded-Encrypted: i=1; AFNElJ9jGYVUSnr9bzVd1hDxjRxRFST5e+Chgj+SiIHHxSl082iLqODMhrqklgnkG8GN6nfqoP4mL3cbBt8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy43hw3be+99QyakudUlB0f1JJkzgTh1rUDiWD7YPeyDivnm7b+
-	ofnXH+V7i0uBjBalVb8cnvOOT3xoC4w/RfY3IziJvWYYsf2K7L4SqFiVBd+B1Knk4HA=
-X-Gm-Gg: AfdE7ckraW4RQ4ErLAoLkVXWz1xxXz2xBTiDypZM+ZkukfnrA3WQFj6i90YyrLY3EBW
-	WQgJ2/q5tp0MzAkwVWBhA6mykiuf2q7UERNHv7mjZ17tVoJESZPLKe1IyCbkag79U4i4jAX23Jh
-	HebbKaFBReB2z6U3vM49ut5Vftrb3ke5hh3+r748TbhfXoCs0kukXbANqdlp4X8TLXgAlPY1tVC
-	A3UyDWSN24egKpMwVfq5BsmywuzYScLqwAkgwInyDVDgbQAmjp52cnsHvpBNU0qurVwC2ytFtT3
-	BXvBgDcGizRBeIiCOgsFAXrW34CPclJGEAWInmRlY9yhKmv2+Xsh2noXX2F7aOtOqtX5ZiLqfSm
-	y3a0ixgDz+Jz6d1Vj8oealPoEi5FvsP34QhGq22vZZlTG2zKfYla1f6986vDLtGHTEVRgoKfdzC
-	t+c71nEUVboRpyH8jhpsbc+SA/HJ8mYJ0HQR1VVgr6MFgMplLZiDBjJwBwFiJtzhY=
-X-Received: by 2002:a05:6820:2001:b0:69b:196a:de67 with SMTP id 006d021491bc7-6a122cece79mr392604eaf.0.1782248654734;
-        Tue, 23 Jun 2026 14:04:14 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a0ea0c378csm7162013eaf.10.2026.06.23.14.04.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2026 14:04:14 -0700 (PDT)
-Message-ID: <0ca506a8-29d1-4514-b4bf-296fbf547513@baylibre.com>
-Date: Tue, 23 Jun 2026 16:04:13 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jToUHbcF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782249523; x=1813785523;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PXOMq887K9FXPyqsb4vi8gGbLEYnXMywB+78wZBK9dY=;
+  b=jToUHbcF/qDvCpvBs3PyzAwOrhpfKswPVHRsV9QW0XvkDCZsK4MxMS57
+   eReTa7zWYYlxGOBT6WZvtbVqaSOlS1hVvw9iqVYsBnu/So3cg2kT1TrsQ
+   zHfO4wOE/F6Ods84SwVbkHJJWFxFrfNmPABe7YBD0VIagrsEo3l/5bP6Z
+   KsvkAGDjQxP6+azoFxnoOU+G0EaYYB9cbn5n51Tgo29WuL3mK1x0Duvtt
+   qtptqn2rA0ep+M2/qbTvcqR6dtOR66Y4juNhElE0ddERBM6+SSv5A7osu
+   N5ghKQFbWudHqr7smJ/pyGObZxPL74iIDWaSthpj0Cv7wdFqfgAbuATlA
+   A==;
+X-CSE-ConnectionGUID: ICRJBOB/TICDGW8DE4ahtw==
+X-CSE-MsgGUID: c75CmCYeTgWANBHeklduIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="94121910"
+X-IronPort-AV: E=Sophos;i="6.24,221,1774335600"; 
+   d="scan'208";a="94121910"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 14:18:43 -0700
+X-CSE-ConnectionGUID: NKkjQdtURQ+vCzlz1PrRGg==
+X-CSE-MsgGUID: 1QLw5JC5RqmGz1M/tKJ1sA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,221,1774335600"; 
+   d="scan'208";a="247287657"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.7])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2026 14:18:40 -0700
+Date: Wed, 24 Jun 2026 00:18:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Angelo Dureghello <adureghello@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v6 0/2] add mcf54415 DAC driver
+Message-ID: <ajr4LvdPZKHrqDVp@ashevche-desk.local>
+References: <20260618-wip-stmark2-dac-v6-0-48761dbb96d7@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/3] iio: health: add MAX86150 ECG and PPG biosensor
- driver
-To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- joshua.crofts1@gmail.com
-References: <20260623140113.12574-1-shofiqtest@gmail.com>
- <20260623155556.13701-1-shofiqtest@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260623155556.13701-1-shofiqtest@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260618-wip-stmark2-dac-v6-0-48761dbb96d7@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 6/23/26 10:55 AM, Md Shofiqul Islam wrote:
-> The MAX86150 (Maxim/Analog Devices) combines two PPG optical channels
-> (Red/IR LED) and one ECG biopotential channel in a single I2C device.
-> Data is produced at up to 3200 Hz and buffered in a 32-entry hardware
-> FIFO with a configurable almost-full interrupt.
+On Thu, Jun 18, 2026 at 11:04:14PM +0200, Angelo Dureghello wrote:
+> This patchset adds a minimalistic DAC driver for the NXP mcf54415/6/7/8
+> builtin DACs.
 > 
-> This series adds:
->   1. DT binding YAML schema for maxim,max86150
->   2. IIO driver with triggered buffer support
->   3. MAINTAINERS entry
+> Currently the driver enables the raw write only. Feature as dma, sync, or
+> format are not supoprted for this version.
 > 
-> Changes in v2 (addressing Sashiko AI review, Joshua Crofts, Krzysztof Kozlowski):
-Please don't send revisions in reply to previous series. It breaks
-many workflows and tools that expect each series to be it's own
-message thread.
+> Additional options suppoerted by the DAC module will be added to the driver
+> later on, as needed.
+> 
+> The same patchset prepares the m68k/coldfire architecture to support
+> the driver.
+> 
+> Below some basic tests done on stmark2 mcf54415-based board, voltage check
+> on DAC0 and DAC1:
+> 
+> ~ # cd /sys/bus/iio/devices/iio:device0/
+> /sys/bus/iio/devices/iio:device0 # ls
+> name               out_voltage_scale  uevent
+> out_voltage_raw    subsystem
+> /sys/bus/iio/devices/iio:device0 # cat name
+> mcf54415
+> /sys/bus/iio/devices/iio:device0 # echo 4095 > out_voltage_raw 
+> /sys/bus/iio/devices/iio:device0 # echo 2048 > out_voltage_raw 
+> /sys/bus/iio/devices/iio:device0 # echo 4096 > out_voltage_raw 
+> sh: write error: Invalid argument
+> /sys/bus/iio/devices/iio:device0 # cat out_voltage_raw 
+> 2048
+> /sys/bus/iio/devices/iio:device0 # 
+> 
+> Same behavior for /sys/bus/iio/devices/iio:device1.
+> 
+> Generated a sine wave by shell script, sine shape is good.
 
-Also, when submitting a series for a new driver, please wait at
-least one week to gather feedback before sending the next revision.
+Heard a presentation (Embedded Recipes IIRC) where one tried sine and real
+sound (it was about sound DAC) was really awful. So, Can you try a bit more
+sophisticated signal?
 
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
