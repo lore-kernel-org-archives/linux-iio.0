@@ -1,45 +1,45 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19010021.outbound.protection.outlook.com [52.103.7.21])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazolkn19012069.outbound.protection.outlook.com [52.103.14.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9743FBA7;
-	Tue, 23 Jun 2026 02:35:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.7.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9309D3FBA7;
+	Tue, 23 Jun 2026 02:37:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.14.69
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782182152; cv=fail; b=iDMjqSoSWmIfcQcXcfew/XeALL4mjTuYoTY3P/CWxCj8Q8ywWDR1tI+tgkR+KAZs/yaeiboIY2aqebgOYo4lTUg0pz+F1J/zjssIf4DO8dXzBEMrTR5MwWXyoRmDka2pZF+CMO37ZeM/lwxx1lRzyY6bkPmF/Zm6dyu6y2BpQic=
+	t=1782182231; cv=fail; b=nnxPyY65GT9FT3YOhcnS4BzejD/+51uekWXCchKJSP9hmG9wRHAnfB+BS2lRp+oKy7HwN6nn2U6xbTIn8dxsaOWxldwNKnPRgoW5ny3ksB23O2TNzZg7JQPnLgWpL4f+wOMVPTbLNoerWTF/ihOFXI721gddtIVgeIBiZpUfZ7c=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782182152; c=relaxed/simple;
-	bh=b4Tyzb1t54KiDBCn/9fd/SyVDUnW0ei0Aqc+ph4ntW4=;
+	s=arc-20240116; t=1782182231; c=relaxed/simple;
+	bh=j/SPtvkAvechWfaMntqWJUcyVchxjuq6T2S2DU/jyBs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rNVtGNSKKmNPuP60/7wVfL+xTvgqWCb84CX92PK80zCBO7dUiwGupD1pSln78vIxuUSNzm5g3IdR8MTAHbM9haFU+cThW24MEb7r10nviXdv1cZO1YVkhf8vq5yWx12VOcZppd+NBnDdBFofg69a3OWbIk+bkuWr/6UJB3+C2gk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=RyD6M9dU; arc=fail smtp.client-ip=52.103.7.21
+	 Content-Disposition:In-Reply-To:MIME-Version; b=rdN5Sefvkrg+kNTtFDoWSzSAIvZg8I4ZD8zoXddRRtOddw5aRG2vyxWoneGn9bB5+/C4V5/i1navph8ga732BheNRxz6aMLBIe0ukRorPrMEDhZyBl8vCEX9Mh5E7vg12oJHLd90Qg0oynShSW/o4Mg3Z7ae1TPaDgBdgLOcmP0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=Og+PIWna; arc=fail smtp.client-ip=52.103.14.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="RyD6M9dU"
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="Og+PIWna"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DZ+i8OwgZuiDwMDrr5IOt9fproRe2AGKINtvyH+h+w47qnACytQeZcjS8DhCjmjZjICm95mEW2md5Imndi6Qh9epMGjCW4sBsOwPZxPtB+Vjf98AAFu02q6oI5Hc2cTBWZeghSZuxSHzy4lCCC0VU1xz2a2TwCi+xeXUO6GWM6Ok/L4bW4Vx6jaD2QK8dganjhQVmv5XdvXJofAB7BDaW357uWMkvcAP3AWMNsN9VEDynxSs0dfx9nIlIoVrIPlC4C+EgfQ5qgga6ULU7APlobq8Lnf8JsFRSIbCVuEaHTd1otngpLHMfKr9afy0unFMve+gZeejUIBinxknUR9A0Q==
+ b=g/uPwx8gO8H7SHxtnRbqlFlVAO0lPwCqdBBlbV5YOL2WHpCGb9YZ7hCY/FSwaCPtRBSvff8VIr3CMQtP9a68TM8KhS4u0xcBrwCirj+XtLVLS7/WMQapC/g599MVZbPzln4pZmz7D89PqmOpOqIYIvZbBKWv/Hf9Td+GAvQR1oJeMKmjmDO8h4OMmQ4auqiyAB1AjItXvuXLZjpyd4IM+Pq7T2nKRgrryNjdxRyxbhD6h+EHYuis+b50g/to6tgUnrirD1SXp5PWc37SYk1Z7mC14dO+m2TrEHD+B6w0se9BG5xtC64dcTpVPttw1T2ShY7qBUKLVMMeSg52zNBitw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aN6Vyc0riks63YOupI1rBZRANrLDRL3MD5ID0Pf0pn8=;
- b=mXdhJtLLlQWd+cOI7O9mYQAVcbM4SogzNzZEb51g4qTpTHem+vGcwJdyJH0H3ubATBoy8QdqIJ+C4zfXRsLvbdvQTStazUxiKyNBTlMekhfOxmapaJ+Jp0xdIxajhuR26HeasB9LDJarHhk4FRG9Gz7zUE485EDfKrixnToRvGBHi9KlhESDcjC0dHSb2Jrnaf9xNGR0h8qul5xKe5eprFSIkDzKXtoWa7PYEPkJEYfYDp8Rf+RslC7JUzd98aOD6YQlYiSb+VmNhzqCWWndIvE3W+Cth0zBeZ5zwopa/dCbcAnXqnTQ5aikBsqasl/0UvW5Ww1CtUsm22090JwHXQ==
+ bh=r1zBoNzgqEZNdgaaydyBtOe2ZodEZYH5uu2uRrlM0a0=;
+ b=tamhz/v8Ef7u/MGf6ozDYbJQbmUxGzmOjVh4Om5ZDqHCAihFFjAG+bEagFwXBGFo8Rcw5acIfNaZA2l4WggKzBPhg1iZTlRoMflRhNBnm2sxHdiI2fmij2FaZu1VaUnhrlnXp5RnbqZEi1ScGpQb7JA+mYSZzDAOlP+22Q5ukUvdspAnCkc7hrJ1IFI3QDOs86oLtJ20TaDQr6CZPNykISzd2UiiI8FcLDOlkAUenaZzXx6Y1pSv6bNJlXjjfR7UAOM/LNmuiZ/BNbOGO17gGRjxib/pjgsKXRizB7gDP+6YEPUda9O4xgd3Nc6BFET3WnIK+3V0YG31c6vMa5Rjsw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aN6Vyc0riks63YOupI1rBZRANrLDRL3MD5ID0Pf0pn8=;
- b=RyD6M9dUx4NMsrgN8ZNDApMrnnfs6PmHE/vJYSXkD2uR6OplJ64sYvOIB+bsVxAK2CeJw/dNBS0bZAgt9ZaprcJmhcw1Dmf3Sv/jNAFm+HAh3+9uvLHabwfwv0VNdhz7l/MkPndX4SrXvmDA3MlyXPEpErSA5PhzPwQny8iHAKxElhsw1eYKW0d/mDYYpkPq3itd9kaJ5TKn4IwiXhGgJera/AZPyQ3tHMxtO0MM2ULNM1mnBpAG3o5Z3o8aRFUiK/oZnFFYmt3hUNPBfnrYhc8Q0FHjyaSJZngPTbzlhE09vnEZPSTDCoLHUssHxboBg7Bq5yDWP0LKCwWvPYSVFQ==
+ bh=r1zBoNzgqEZNdgaaydyBtOe2ZodEZYH5uu2uRrlM0a0=;
+ b=Og+PIWnaYXvEGZ8wincfNEvYNWM4Be8YWcBTC7xU4dehHKhAN9euW65AqLhk6SngqHpSfpwM6TwReraF6bnF8yehh+1Lq4GrNCGOa8fFV8GdrsPo1+ygWFms2xuoZpNvphTx2fzGxp6URtvNjOvp7utaBrtiSlPppjkSFlre+TI/bYsWO+UVdIeR8iqeeUUN3jKvgpx5hI1h4NU9vtKWxf4wlz90DF0PxoZzyZJ/s6v6gFnFea/jeGFmVBqMqB32P8cB8K4Ru4A2vX5gngkxaCOrKAv0lIVO1XdEQi14+slMfC8R/Nz3+rzq77cjK9QaOodW23sv1GBZeJxI3zf1Zw==
 Received: from PH0PR19MB997338.namprd19.prod.outlook.com
  (2603:10b6:510:3b1::18) by DM3PR19MB8305.namprd19.prod.outlook.com
  (2603:10b6:0:49::10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.139.20; Tue, 23 Jun
- 2026 02:35:48 +0000
+ 2026 02:37:07 +0000
 Received: from PH0PR19MB997338.namprd19.prod.outlook.com
  ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
  ([fe80::fd22:ee23:3e25:3172%6]) with mapi id 15.21.0139.018; Tue, 23 Jun 2026
- 02:35:48 +0000
-Date: Mon, 22 Jun 2026 21:35:44 -0500
+ 02:37:07 +0000
+Date: Mon, 22 Jun 2026 21:37:04 -0500
 From: Chris Morgan <macromorgan@hotmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
@@ -47,20 +47,19 @@ Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
 	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
 	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
 	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com
-Subject: Re: [PATCH V13 6/9] iio: imu: inv_icm42607: Add Temp Support in
- icm42607
+Subject: Re: [PATCH V13 8/9] iio: imu: inv_icm42607: Add Gyroscope to icm42607
 Message-ID:
- <PH0PR19MB997338E7823E60D7F02F80A491A5EE2@PH0PR19MB997338.namprd19.prod.outlook.com>
+ <PH0PR19MB9973380B3D3497F8688D845A60A5EE2@PH0PR19MB997338.namprd19.prod.outlook.com>
 References: <20260615172554.160910-1-macroalpha82@gmail.com>
- <20260615172554.160910-7-macroalpha82@gmail.com>
- <20260621182612.1a19278a@jic23-huawei>
+ <20260615172554.160910-9-macroalpha82@gmail.com>
+ <20260621183408.032e18b4@jic23-huawei>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260621182612.1a19278a@jic23-huawei>
-X-ClientProxiedBy: BN1PR10CA0010.namprd10.prod.outlook.com
- (2603:10b6:408:e0::15) To PH0PR19MB997338.namprd19.prod.outlook.com
+In-Reply-To: <20260621183408.032e18b4@jic23-huawei>
+X-ClientProxiedBy: SA1P222CA0111.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:3c5::8) To PH0PR19MB997338.namprd19.prod.outlook.com
  (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <ajnxACnr8SWHOAZ5@wintermute.localhost.fail>
+X-Microsoft-Original-Message-ID: <ajnxUEzPEmikfofo@wintermute.localhost.fail>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,61 +69,62 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|DM3PR19MB8305:EE_
-X-MS-Office365-Filtering-Correlation-Id: 414a1c9a-db79-4395-f96c-08ded0d022aa
+X-MS-Office365-Filtering-Correlation-Id: ed97f463-6cd6-4d34-4404-08ded0d0518a
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|6090799003|23021999003|51005399006|15080799012|24021099003|19110799012|37011999003|8060799015|12121999013|4140399003|5072599009|25010399006|25031999004|41001999006|440099028|3412199025|40105399003;
+	BCL:0;ARA:14566002|6090799003|23021999003|51005399006|15080799012|24021099003|19110799012|37011999003|8060799015|4140399003|5072599009|25010399006|25031999004|41001999006|10035399007|1141799003|1602099012|440099028|4302099013|3412199025|40105399003;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?SP2rvBomJJJ0NoqohsweK5PDhC2RNwqFlbQ4+yJhmwljb8itBQpF25p1Dj9G?=
- =?us-ascii?Q?hdXYx4H6MxQ9YMMV3XaT7ap7e9sJ8M649EZuzTDsAMOONr7kXLz2x9ZuNQJk?=
- =?us-ascii?Q?Asxw2uq38HCnBQYQJawRFBuRtwazlZJxbtFlvimTUkczRO0kjJBzWE5regDs?=
- =?us-ascii?Q?6fWYLtNAgo4unjIfd9TUH+KyLBQVqixyZU0H+14ul+95OAQ952+hJ25DIqzw?=
- =?us-ascii?Q?/91AFSrtjx2ZzT9Fn15SOWURGlAz6ZjI/W5u+IRBt4d+yN2arjorP7DXDQCE?=
- =?us-ascii?Q?PWbNzXwZr5DZRacFruFTNKZPApX5UzDcV5srq38b1Mh2PHGPtw48cOYixk4D?=
- =?us-ascii?Q?EdHbuM/Y8SYOsyvBg/tp3wPfxOxg7dxPiViUrSfGuAcuD+w/lx7sK38KEVLc?=
- =?us-ascii?Q?0qCukVQTyBPPKKX9SebhyojEwTDgefpybXYHgc6jRQ47wUFUWYlGSg0wu8/x?=
- =?us-ascii?Q?PVK2svoD3Avl9YRKVpQjdKiRK6ySwuuPVtygAaZxom1VcpIX3TzxJ7mxo3Pw?=
- =?us-ascii?Q?IENUeTFVfocdd5qJ6770/H19CFB1sWQEzpLKej5iTzbB403wwlIlZcEWyK4j?=
- =?us-ascii?Q?BESp8Y+KoZ1PpKbf77LEX8xMYaCkaOgv/iM43fdlsjs7NAWbHRAvwj/HG6eo?=
- =?us-ascii?Q?0K8xFSHgMzBq3DCkAbSzg6fIcEi3UXzhtKEm2xjQRDxILGQnxE392TL0SyT/?=
- =?us-ascii?Q?yD1ZrXsaI63I6pjeqdSFs8qqX3ubLrRLcXOyRDcrifBxYf1xd6RC4NkBS8P4?=
- =?us-ascii?Q?naHuRvZ9tG0wFIb3++NiWVS0oaWlqaZ5ezhLWm9afI+LB4GSC2AaH7XhAHIx?=
- =?us-ascii?Q?0E+V8cE45YIoSDkmpDsYw0CPNAo/rbfXjGJr3NC5vj7J0BR0u+yIm0mZboNM?=
- =?us-ascii?Q?zFvfllLmtwqiYH1/DxnCJcX2ndV/bE1Bdnne5lHajicW1b0MmUBbvyTwIY+V?=
- =?us-ascii?Q?rY1j/o/JFj+FneBAqn/a16XaFcKAA6Skv4yy4e0W7viI3baOMg3WZQnmZbW8?=
- =?us-ascii?Q?J98ncX5Psv/M2eVMap7TEY8kcCt+t3nEZzsqlghFdQbE4pRSnaYaNd3AkIfO?=
- =?us-ascii?Q?5OinsOQhgFOUoMSQwiBlaS+mnXmwQ0eDObzLhybNtKaKsGNMLho=3D?=
+	=?us-ascii?Q?uKfSQ2CCB2Qmx3Pr4nT9g8e/QFyYGOm3UbIVLqpA3SejtFXydfGXM26oeFyx?=
+ =?us-ascii?Q?cu4369EIYvykQjfxOlWktlXmfZJkGBbTqY4rv51DydbAp/zNRrpkyHVlblLS?=
+ =?us-ascii?Q?duF3ub88OWRblFTinkGJj/PcB8GTmIeGvVwONocm1FDxkhslA0o4LnvaodfC?=
+ =?us-ascii?Q?rTVGq9dRZW9It+Uc992Wbi99rWVcy7dwGPYiCLIk5okSYgJTgpBSZLOX5MQE?=
+ =?us-ascii?Q?A91u49QwfIpT6Iega5OPVI7JJyhoU1LyekgMkRZlJAaPNw/7FkxJpraMuT60?=
+ =?us-ascii?Q?+j+gSBuAqeNVylOcHxxJbQvzX1601pfUOdl4E9ypPt6nRZPmjWo/rkSbMpT2?=
+ =?us-ascii?Q?q9qb6o+e3zScDZkwoauhfBkgnEA6TgRwbFWLeeVBnSFKMk1VqyWlnZzfQ0Vs?=
+ =?us-ascii?Q?rYl9MJGnYVa+9w/iPHU8b+LFckue4XCWWCIqp1rS968eVd2T+JnHjAksyBaI?=
+ =?us-ascii?Q?WINGYZmqgHhqTiI5NNQQNrFuOz3rXaj294XheNF3YzF8QCwvKo2VYxL/HLsm?=
+ =?us-ascii?Q?V5vhsAY/rOtkJLiVe6fRaXOQ/RJs345RKAgYMmD3kRe5ESzabyVlutkB/0js?=
+ =?us-ascii?Q?SlmM+0ZN1UdpA8vzgGXReH2j0DLQDgsWuFxE8B5dq2O7/Uh5AlFjEKlfohXU?=
+ =?us-ascii?Q?PnTWovYkSWCrobimPJ5bRuS2VWlczM7kn90IPwj5Cn8hyLZmH5b/9933kSG7?=
+ =?us-ascii?Q?O3OO+GNaxhaiqLN4cqsqRdWFc5QRu/QEISeVOA4dnjY58C/0geyzsRvPhWdB?=
+ =?us-ascii?Q?1HU4JVpE2khltzJsE8dTYqiPIBfqo6xYW8As6N7CTvOIB9CvXcelE0WGBYS4?=
+ =?us-ascii?Q?gsP8XO2h0A6TVQoE71+paSs6u/sT85WXeMIk4Kw3SElGZxYjoyZVX+AkWnIS?=
+ =?us-ascii?Q?c0VvX1SfuBPbrmFlvmhiK7ciUfiFuBNhx4gQJPqzFIrlyaAoo3J84AHzqT2g?=
+ =?us-ascii?Q?ZsWHDBopT1twHQhsoE0RsYsoOAZMcSaZ/NOrDu+giUIvX+3u2wfu89ofjRrh?=
+ =?us-ascii?Q?L/3zp1iNn9rlPWnIPlTGSjfDoolj1Xfy2q+32GDoK6ffBjcVwUJc5RaMQWtO?=
+ =?us-ascii?Q?g5qAG2iqFDada1ssTLqQd9YppV6kXIXe7x0iZ1QgRuxLRTyMrw361TpCB7An?=
+ =?us-ascii?Q?ZQ6bKTDxpuOX?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Oq0LJl4Z8cYXucy611J9t+ZqSVHpWsGX+nZ7xaLByElLXtuVo2ELF9mVukxW?=
- =?us-ascii?Q?IgoovLYJKH6K3QF0z1b148BrlPn6QrA/IkAsrrQw3Z+wdBPcVGxc/2cPmXjm?=
- =?us-ascii?Q?gCCKX8CoNE9TiREVatfSR5TzY+xHgN8xgkP9mvb1//7ddPHo4RrSt5PndqBy?=
- =?us-ascii?Q?4V7dwwecm+dViUaMHL2x9H470o28skVKOFkwVJox0QNK5B9z0jodyYLwyQAM?=
- =?us-ascii?Q?rnwLnkqyBFlJrhUJ1ned9XjXDonEpZtKkctCjX8AggPN1yK9XwNkxX84f3Hm?=
- =?us-ascii?Q?bA/x63cLOYTm52jIlBoXBh2uXDfwugBwG5lYdb/fH+p5sNiIMRAt/ePoEKLe?=
- =?us-ascii?Q?228D5zZqwKWdRWgGYWBTIoXzSFxJPoxQCtfH4sgv3mKRakx0s0/QlT+UOmNo?=
- =?us-ascii?Q?nsApnqfPDTtYB1LM4hwWVSOQ5IWqYAV2VigOnmftSWifvujK8O+z3CjIBSP/?=
- =?us-ascii?Q?hyYtJbiUUl3sPDH42ARpjGSPKody3wXnIvcjpCzi5RSJpI+V8k+xCV26SFkq?=
- =?us-ascii?Q?DggJv3j7rQhpNVI6NpGoc3gPky0G4b3HTf+ZXrBzpjzPqaP8SlipQ5xd9cJ1?=
- =?us-ascii?Q?D/wNtat6dpAndxsmMQ+6ZjYQpYNfP4X0IYpl2ew7uxDfFIR1WoXWhG8kQH4F?=
- =?us-ascii?Q?H5ik/xwheV2o3LtctZnvtSQGQKfI9OVLGeWtxiBfSRYdc8Zvq3JfMaVkY0OD?=
- =?us-ascii?Q?PZR1uHVddP78FXElUMCoqpf8tleVWp1BV1UfA68OMkcSNjmKirokPVamhSAD?=
- =?us-ascii?Q?pYUhTYf4XWX0eKLtjz0Etl0OHNHh6Zrap1Tx8G2y/JChRpWmZvGEjSze+fP2?=
- =?us-ascii?Q?ygraUDzdCgUw2mvGHWae1pG0en40N6wT5CAFWb5iFiiqy/6w+VPkBlMnVhvf?=
- =?us-ascii?Q?bJ07MaqQ7HT8ZC+nlpTs1gA8unWJjK7JA1YXfZzAxzeUi/K3Pq5xLGg+pNdD?=
- =?us-ascii?Q?NhKcHX//AOAdt5q4M3dqmDVSXuMWO8bfWVLKU+SNoG6xerSNUHV7iX4YkySM?=
- =?us-ascii?Q?yM99FE5p+Eam4t0aMwQaUFcy507MWRJ/ZcU0Oi5dDn3HeV0+nfSmVe12SyNY?=
- =?us-ascii?Q?lwzTIiHkxq6c75BL3/27Orggf9HJ/yb4ywheP3TIOqzI6kn4g+ABi9PqrRMD?=
- =?us-ascii?Q?wXZM+nfua2/7xrA1g4P3p8AAJae3O2hqaeBYKUmt706fu1Rt3i4z/+SdF4bh?=
- =?us-ascii?Q?rCagUHqAs5Hn+YKzq2E8BMa60LlpKjPKAue2pXL8FvNzIeurT6UMAJpxWi7I?=
- =?us-ascii?Q?Fg89ExtjHDNhPjUOYYYseB4/HZ26tFd7inbYbSvlocPWUrV2KgT8iCM3MIVv?=
- =?us-ascii?Q?cyL2tAhPMBbai9bAJVuCfzYXH0LOSR383Ozv3YtobKine3aWDhhpvGaKqONw?=
- =?us-ascii?Q?fOpIpH+JyrP3acTNu/Pan+T+hJIPdLM4DcNHcD/MbjjebUFaZt/tPJrG2fGQ?=
- =?us-ascii?Q?O/YyAPThcYkybTxze9YF6jEiEj5uvOjy?=
+	=?us-ascii?Q?Xxp22r2FogSWj3pohLzjSAWOQdgGv9vnGGvtCbjiLLUW/vguSi8MnAKjxBME?=
+ =?us-ascii?Q?KkfAhsvWHg4N0+0OBEKVKB9bhNAY1G+v7ryui/7ctRRzNvD4FUXnfJmmZ6HC?=
+ =?us-ascii?Q?Ze0lfDfLcRmMLeBN8aioix3SBBiCKrzni9wrL3UwZcbaeKe3bdRcllLiycai?=
+ =?us-ascii?Q?+x6bHM7XDAF9cLsw8YNmYw8+LvJNL4X0/x3JEovm9eDf8W0PL9MzYAMqeOdH?=
+ =?us-ascii?Q?PdnbttyaBlTaE3CBPOzJ4NqiHbnJ4rjCm7A8UQYQydBNw37YGzOURlO354nC?=
+ =?us-ascii?Q?4IDJV+bBWxl/o0kHhH7EFdy1/ASf2mcBXOtj8MZARzMSfAmYOgd/pQQua2v7?=
+ =?us-ascii?Q?RM1IHk3nrqSh9WDzfCdUSqwZGVCWY8qsNynt5b6h5Ra7X43wKDMDLjMXe8dU?=
+ =?us-ascii?Q?z179t3alFw2ctxf/PaPa3kO77rmXNHNwmtA+UyIJagbqBUiRJwN11cynOBWn?=
+ =?us-ascii?Q?aXy2LSIqI1cbeh74GfdiWbAafOo3QUupxgIqftXRuB/sqLBHno66YpuhEki+?=
+ =?us-ascii?Q?aWjidFKJhZTsh5WEufAD0CbmDiFQDBzd5mg/wsFOp8q3ywVmMswcfGB6LtG8?=
+ =?us-ascii?Q?S8yBdqptio8b/ocESLvIm8w9Q2m7KL/TytgO6ukEbySX1z9/AW18HpZAA7n0?=
+ =?us-ascii?Q?vZkwScr6tTUtjBgFGAmmeTDTNMU9NwlzhnIpAGz3+OS8tzFkb+lYrjXfarO9?=
+ =?us-ascii?Q?cWK82Y3ai0ihzwM9tf80QV6NvOSQ0pZ9B2a7sq5Z5JTih98Vu1LbOpHZ/HS2?=
+ =?us-ascii?Q?jxrS9gG/+k/tzmPS6KFBDKLR4Qq2sR9p86guDzbFsdmjTdJ7sE+VHVs3Pon7?=
+ =?us-ascii?Q?RQryxyC0aAYeDhbgZoN06eUVnZGk8l5RYkI8CS54CZWgifN7nATpdnFNt0QT?=
+ =?us-ascii?Q?F1y1/e2Sc1ET/inNzmmjZOe1LOPPPLvpHz+rAScTrVkpElR8D60MIK7pPP/S?=
+ =?us-ascii?Q?5Crqxbf5TnaPqC3NHVZd0UxHPbyRUeDSVqr2Y1JT2dZuYQTlNbbEhbdbcGHs?=
+ =?us-ascii?Q?ljAHTFkyVZxL9RU2TevrwTgBFqNtK2ha7R4R1ojpEU90XQ0/oJJxwY9DCeTm?=
+ =?us-ascii?Q?hXhLL4ScWPPbDboNf50tZKBoj+2XKlYphP8tT9ThhDqE8B4K/Yo4b8NbHmXg?=
+ =?us-ascii?Q?iDnN2irUsCGJ70wDSbwEHU+gBJ90DO6H0PudNdgvu0pjmPGYBDDB+povHCLj?=
+ =?us-ascii?Q?kVGwxoL6LBr6WuepMc5fPW4l/4bkN6oCnbJU2gHybM7v3XhaQdn5tNLKmq4g?=
+ =?us-ascii?Q?QKU1GCv71ij8p/u4z1nA+JjtQdu5a5i5EGYwypOmL1dlFsWTg6i+cKbQrUSJ?=
+ =?us-ascii?Q?SUJta5twFBXAl753VpOX9xfYnDx30MWavr12lOvdRKgugzyC9lV7etQJbC7u?=
+ =?us-ascii?Q?nYjvRvl0+/prFEFgS9UPdCKypE9qwKkfR+CSsBnNEVNBRy5uxvs6psJ4RLiB?=
+ =?us-ascii?Q?7OegQhI5PVlbq2uGDsgqNUrvnc7ksvZU?=
 X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 414a1c9a-db79-4395-f96c-08ded0d022aa
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed97f463-6cd6-4d34-4404-08ded0d0518a
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 02:35:48.8194
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2026 02:37:07.4927
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -132,61 +132,118 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR19MB8305
 
-On Sun, Jun 21, 2026 at 06:26:12PM +0100, Jonathan Cameron wrote:
-> On Mon, 15 Jun 2026 12:25:49 -0500
+On Sun, Jun 21, 2026 at 06:34:08PM +0100, Jonathan Cameron wrote:
+> On Mon, 15 Jun 2026 12:25:51 -0500
 > Chris Morgan <macroalpha82@gmail.com> wrote:
 > 
 > > From: Chris Morgan <macromorgan@hotmail.com>
 > > 
-> > Add functions for reading temperature sensor data.
+> > Add gyroscope functions to the icm42607 driver.
 > > 
 > > Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> Another sashiko reported thing. I'd definitely have missed
-> this one and I think it is correct.
+> There is another bit of sashiko stuff in here. Please
+> take a look
+> https://sashiko.dev/#/patchset/20260615172554.160910-1-macroalpha82%40gmail.com
 > 
-> When I get caught up I'll post a thread to see if people
-> feel we should generally just ask for Sashiko to reply on
-> list.
+> I think it is correct about there being a path in which the
+> gyro ends up always enabled along side anything else after
+> the first read.
+> 
+> In general there seems to be a bit of mix on whether the caller
+> or the power management function should be responsible for the caching
+> of state.
+> 
+> I know you look at Sashiko so I could just have waited a bit, but
+> I was reviewing anyway so took a look and having done that might
+> as well highlight some stuff!
 > 
 > Jonathan
 > 
 > > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > index 64f5d263de4f..644cd7f821b9 100644
+> > index eb239987a1ce..23ca7529825c 100644
 > > --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
 > > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-> > @@ -162,6 +162,24 @@ static int inv_icm42607_set_pwr_mgmt0(struct inv_icm42607_state *st,
-> >  	return 0;
+> > @@ -218,6 +218,49 @@ int inv_icm42607_set_accel_conf(struct inv_icm42607_state *st,
+> >  					  st->conf.temp_en, sleep_ms);
 > >  }
 > >  
-> > +int inv_icm42607_set_temp_conf(struct inv_icm42607_state *st, bool enable,
+> > +int inv_icm42607_set_gyro_conf(struct inv_icm42607_state *st,
+> > +			       struct inv_icm42607_sensor_conf *conf,
 > > +			       unsigned int *sleep_ms)
 > > +{
+> > +	struct inv_icm42607_sensor_conf *oldconf = &st->conf.gyro;
 > > +	unsigned int val;
 > > +	int ret;
 > > +
-> > +	val = FIELD_PREP(INV_ICM42607_TEMP_CONFIG0_FILTER_MASK,
-> > +			 INV_ICM42607_FILTER_BW_34HZ);
-> > +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_TEMP_CONFIG0,
-> > +				 INV_ICM42607_TEMP_CONFIG0_FILTER_MASK, val);
-> > +	if (ret)
-> > +		return ret;
+> > +	if (conf->mode < 0)
+> > +		conf->mode = oldconf->mode;
+> > +	if (conf->fs < 0)
+> > +		conf->fs = oldconf->fs;
+> > +	if (conf->odr < 0)
+> > +		conf->odr = oldconf->odr;
+> > +	if (conf->filter < 0)
+> > +		conf->filter = oldconf->filter;
 > > +
-> > +	return inv_icm42607_set_pwr_mgmt0(st, st->conf.gyro.mode,
-> > +					  st->conf.accel.mode, enable,
-> > +					  sleep_ms);
+> > +	if (conf->fs != oldconf->fs || conf->odr != oldconf->odr) {
+> > +		val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK,
+> > +				 conf->fs);
+> > +		val |= FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_ODR_MASK,
+> > +				  conf->odr);
+> > +		ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG0, val);
+> > +		if (ret)
+> > +			return ret;
+> > +		oldconf->fs = conf->fs;
+> > +		oldconf->odr = conf->odr;
+> > +	}
+> > +
+> > +	if (conf->filter != oldconf->filter) {
+> > +		val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG1_FILTER_MASK,
+> > +				 conf->filter);
+> > +		ret = regmap_update_bits(st->map, INV_ICM42607_REG_GYRO_CONFIG1,
+> > +					 INV_ICM42607_GYRO_CONFIG1_FILTER_MASK, val);
+> > +		if (ret)
+> > +			return ret;
+> > +		oldconf->filter = conf->filter;
+> > +	}
+> > +
+> > +	return inv_icm42607_set_pwr_mgmt0(st, conf->mode, st->conf.accel.mode,
+> > +					  st->conf.temp_en, sleep_ms);
 > > +}
 > 
-> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
+> > diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
 > > new file mode 100644
-> > index 000000000000..9a60e1a478b0
+> > index 000000000000..ef73560b39d7
 > > --- /dev/null
-> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
+> > +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
 > 
-> > +static int inv_icm42607_temp_read(struct inv_icm42607_state *st, s16 *temp)
+> > +static int inv_icm42607_gyro_read_sensor(struct iio_dev *indio_dev,
+> > +					 struct iio_chan_spec const *chan,
+> > +					 s16 *val)
 > > +{
+> > +	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
+> > +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
+> > +	struct inv_icm42607_sensor_state *gyro_st = iio_priv(indio_dev);
 > > +	struct device *dev = regmap_get_device(st->map);
-> > +	u8 raw[2];
+> > +	unsigned int reg;
+> > +	u8 data[2];
 > > +	int ret;
+> > +
+> > +	if (chan->type != IIO_ANGL_VEL)
+> > +		return -EINVAL;
+> > +
+> > +	switch (chan->channel2) {
+> > +	case IIO_MOD_X:
+> > +		reg = INV_ICM42607_REG_GYRO_DATA_X1;
+> > +		break;
+> > +	case IIO_MOD_Y:
+> > +		reg = INV_ICM42607_REG_GYRO_DATA_Y1;
+> > +		break;
+> > +	case IIO_MOD_Z:
+> > +		reg = INV_ICM42607_REG_GYRO_DATA_Z1;
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
 > > +
 > > +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
 > > +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
@@ -195,37 +252,36 @@ On Sun, Jun 21, 2026 at 06:26:12PM +0100, Jonathan Cameron wrote:
 > > +
 > > +	guard(mutex)(&st->lock);
 > > +
-> > +	st->conf.temp_en = true;
+> > +	/* enable gyro sensor */
+> > +	conf.mode = gyro_st->power_mode;
+> > +	conf.filter = gyro_st->filter;
+> > +	ret = inv_icm42607_set_gyro_conf(st, &conf, NULL);
+> The sashiko report is basically:
 > 
-> Sashiko points out (seems right) that this sets the internal state
-> before the power management routine expects it to be set.  So why
-> is this here as opposed to just passing true into the
-> function that follows?
+> This turns it on, and runtime pm will turn it off but the
+> state cached ends up such that it is turned on again for
+> any runtime pm resume.
 
-I'm going to take setting of state out of the power management function
-entirely, as well as killing off any "temp_en" since technically there
-is nothing to enable on the temp sensor. I'll do a check when you try
-to read the temp to see if any sensors are on and if none are then I
-will power up the accel sensor (since it uses about 5x less power than
-the gyro per the datasheet).
+Yep, for this and for the accel sensor it looks like it gets stuck on.
+I've revamped this code for the next round and so far it looks like the
+sensor is powering down correctly.
 
 > 
-> > +	ret = inv_icm42607_set_temp_conf(st, st->conf.temp_en, NULL);
-> > +	st->conf.temp_en = false;
 > > +	if (ret)
 > > +		return ret;
 > > +
-> > +	ret = regmap_bulk_read(st->map, INV_ICM42607_REG_TEMP_DATA1,
-> > +			       raw, sizeof(raw));
+> > +	/* read gyro register data */
+> > +	ret = regmap_bulk_read(st->map, reg, data, sizeof(data));
 > > +	if (ret)
 > > +		return ret;
 > > +
-> > +	*temp = get_unaligned_be16(raw);
-> > +	if (*temp == INV_ICM42607_DATA_INVALID)
+> > +	*val = get_unaligned_be16(data);
+> > +	if (*val == INV_ICM42607_DATA_INVALID)
 > > +		return -EINVAL;
 > > +
 > > +	return 0;
 > > +}
+> 
 
 Thank you,
 Chris
