@@ -1,122 +1,140 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC152FF66B;
-	Tue, 23 Jun 2026 15:38:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CC49306764
+	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 15:56:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782229141; cv=none; b=mPg16ZxZ0m5h2Hrz/HrNaLe3MV5sYn2TkCyoV6vTh9jYbiz0mo+KxhSkGGYjh15RK34Y7w06wiE65pw0X+Kq1ETcjL39xBLKZVXDB5aaORGIhiXca7jnv/3GM8r8gLVv4l5Nb7+ZVkjMvOLQKpnmeBdaY9qsVQY8ycK7fJrSqsI=
+	t=1782230163; cv=none; b=QhDArZayMrkZkkxrwRmTEFEOQdCeUMwTctzlowZzZqhneOYSsK0s8WfFdSQ22QGveMpncieQ6vk/vdqnY+4QGt49VwYfJ89mtEAaj6GkHTmAlzaY+FezTeRSwKOOVeEPtpcowUt8H/CbhRNgPMeCowEmOb4xwMvQfnZFPQLaWwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782229141; c=relaxed/simple;
-	bh=lvkWCRdLIQ1oibJNqp8lgEMH7QPhpJ+NFkaWzYRiibc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QocdbhuKmJyHgcY2QzG+sh8n1PVbZA7KAK6c7u3/x7JA+oanzdVPRIfQrF2xzlDo98NXEGpT+XqE1ii4YtTDlEZCydGKa8ZhFSxA8AKfaKcgyFeUKs/96XHl+Hvrmwkwd6ZVdYFkh2l2Y5p1lnhShy12mT9f0h6VV4qZVkV6Y8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hu+NFjiH; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782230163; c=relaxed/simple;
+	bh=T0SiTGRObhjsTPu+h1FAf6ljLkbOXP1HNR4jj07g41o=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=HaKDB4uacEHQGdbI2cDVFwlpKMgam+lIpi489921v2S14Ayx5juZsp8FcT4n03CyvgoQOibAXI2mbl5X02pTgmyzFrcHmOnMmCm9RyMQaAuMYhKHr43oVH22DXh/oTpFsJL3lql0WBovId2SyoEo/JMewR93vEa6LZYPOql3uyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pl6QRMMb; arc=none smtp.client-ip=209.85.167.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hu+NFjiH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2CE71F000E9;
-	Tue, 23 Jun 2026 15:38:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782229139;
-	bh=MAHoh/g9U/1RkD0WKUJPkiqxlKeqPzq3Nsm71wRcAWk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=hu+NFjiHsXHDRq4qPIibL8pZijGP8VUxxZcgbDH9DXyAuxU4TcKvcRSSUd2zBvBXH
-	 uwj4ELAHzkdgX2BPfMzmbrE/WjT0to9hXKBXjSiAGXSvjhNnAv1LLaoxqDsIx25qxC
-	 jxcF2XeAEurgUnHN1RLGB5RK5tTWQ5M6Q+1zoGnm8hZcgW3bIPT36ZlcxqIqek32OQ
-	 KBkL9I/i2LPEj26YH6WiVPj6vRaYCPv49imk7u2C2LU3LaR7SlVxNdF5K8fS9pzm7p
-	 wg1IoaJKaao3gps4eXVzW0cKwH2rxgI+7mHFcn7CZU15OMqms5b4CP+T3ck1FOM/ET
-	 0lK0AANZw3C3g==
-Message-ID: <e07962a6-2260-4fee-9edd-844fd970081a@kernel.org>
-Date: Tue, 23 Jun 2026 17:38:53 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pl6QRMMb"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5ad4c229861so4668232e87.2
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 08:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782230160; x=1782834960; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=55KrpsLVrgFVm6uOkBGmtvpWY3NBouDgLEEMArVVBP4=;
+        b=Pl6QRMMbajWc5rT9fyDk6HNtIoimUjVleHOLKMB5gs3yVIszFcWgQNSf1kgKoG6eXr
+         bErZkIMIiStMvd/whBOrCeO1VMqj3+sW06gh5KVSTMzU8LfTkgVNp3HNe8Zl033njdFC
+         QAJ5gGGZzG6/7ueqJCPStegxuPq7aOefGYOZAbZi8uyzFu8nyTPbAwxkmZ1tNNYQQC/+
+         XzxDYaYWaOuDvBlNph6cSedtbnxmmqNe+po7bRLJstzUtWeYHUgiOj1r5NHA4mR+JHIB
+         aP9FBiHcczVghcsbV1/2VFzL7iqm26p98QPCx4quLvgzPELVTZihbcQ2M92vWY80PiS8
+         qWmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782230160; x=1782834960;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=55KrpsLVrgFVm6uOkBGmtvpWY3NBouDgLEEMArVVBP4=;
+        b=GZRudOrXGyaFYHBewTKQIh3PG5QmBWc5FRgsnrguX4Pu9oB/WrzZwGdyoCXZoyjUop
+         l3jWkhIUu1tTTxiVVhLzsjB7cumfwy9eBtn8IUSqe5YCcdCfQCWhLFxf8mKESe3ZqqK7
+         MbJoyMlaoEjVQrGgNWWRCTZko18Tdy0v3QKJ1N6UKl5Y6JH6c1KLeTlC7niF2vlnVUr+
+         oiHHQ/4o9VHYs8JukWCILmOcY3fn2toXrXOCMk69Kou7ICuwmAeLT9kgOx2e2n0xYIGI
+         0vYcCh2LdmsjuKrv/HVofx47JDFQlnCxmuDdcPX+dyBUf7LCUCCR02oA9IhuPW9RftWW
+         PhAg==
+X-Gm-Message-State: AOJu0YxRb/wS8qF1pSXsY58Zfg4l+TRy3Dz/uJzLIaiPumXOb5oULR0i
+	RmI8yC4BvjhvIik5hJm0SDc9EaBruV7y2HT/UbMXnVsuWtsu+r+fVGUvZNIiMbI/EKdxAw==
+X-Gm-Gg: AfdE7cmMMNwf2AAfx44qCxnMYrSVNvf7FrpGCjI8hpFyAyD10zvx5iIx70UM1S3ph4O
+	LIkivyuMuPQXuSCXwwdXZHW17iza1TV8py3M5SCc8RlHcAl8xRoxI9K8yGdzHRN+hez55gg9q+A
+	xUwX8AORsdyu/H+wl9YP5UYc0zRa74bODrcdHmskTir8dcX3ibVLUY6xRsHiRtGIpjzbczhntiE
+	FoQveGYGZJuqluJDQf67MSLpVdPtkIyvGtgIPRQlT44nUfXEfL3c+VNjTGY9j+vxX98/HBPOYvJ
+	xdEZyKFpYELJDQhb4CVsI+Clp8G7PjLOvQ0DdCF7LvFUNLXNVRNOghQtaioXRMsr+J5nTCQ6FfV
+	xwHtwlGXd46seBqUVx6IZWxWtcCzD05E7vtWYJJ8T1dlL8oI2cnn08OZgJdoFzfhIo8eXZDtGcX
+	Y2P3wD8pXjEwuWYuDah1HmGdi7jPh6RpAPi8MNLxzg0I7o5w==
+X-Received: by 2002:a05:6512:6c9:b0:5aa:71de:74ca with SMTP id 2adb3069b0e04-5ae3511d20dmr877415e87.28.1782230159378;
+        Tue, 23 Jun 2026 08:55:59 -0700 (PDT)
+Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad6957a6a2sm908946e87.46.2026.06.23.08.55.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jun 2026 08:55:59 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	joshua.crofts1@gmail.com,
+	Md Shofiqul Islam <shofiqtest@gmail.com>
+Subject: [PATCH v2 0/3] iio: health: add MAX86150 ECG and PPG biosensor driver
+Date: Tue, 23 Jun 2026 18:55:53 +0300
+Message-ID: <20260623155556.13701-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.51.1
+In-Reply-To: <20260623140113.12574-1-shofiqtest@gmail.com>
+References: <20260623140113.12574-1-shofiqtest@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iio: health: add MAX86150 ECG and PPG biosensor
- driver
-To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- robh@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
-References: <20260623140113.12574-1-shofiqtest@gmail.com>
- <20260623140113.12574-2-shofiqtest@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260623140113.12574-2-shofiqtest@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 23/06/2026 16:01, Md Shofiqul Islam wrote:
-> The MAX86150 (Maxim/Analog Devices) integrates two PPG optical channels
-> (Red/IR LED) and one ECG biopotential channel in a single I2C device.
-> Data is captured via a 32-entry hardware FIFO with a configurable
-> almost-full interrupt.
-> 
-> The driver exposes three IIO channels:
->   - in_intensity_red_raw   (PPG Red, 19-bit unsigned)
->   - in_intensity_ir_raw    (PPG IR, 19-bit unsigned)
->   - in_voltage0_raw        (ECG, 18-bit signed)
-> 
-> A hardware trigger is registered when an interrupt GPIO is provided in
-> the device tree, enabling the IIO triggered buffer path for continuous
-> low-overhead capture.
-> 
-> FIFO reads use regmap_noinc_read() to burst-read 9 bytes (3 slots x
-> 3 bytes) from the streaming FIFO_DATA register in a single I2C
-> transaction.
-> 
-> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+The MAX86150 (Maxim/Analog Devices) combines two PPG optical channels
+(Red/IR LED) and one ECG biopotential channel in a single I2C device.
+Data is produced at up to 3200 Hz and buffered in a 32-entry hardware
+FIFO with a configurable almost-full interrupt.
 
-Please run scripts/checkpatch.pl on the patches and fix reported
-warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
-patches and (probably) fix more warnings. Some warnings can be ignored,
-especially from --strict run, but the code here looks like it needs a
-fix. Feel free to get in touch if the warning is not clear.
+This series adds:
+  1. DT binding YAML schema for maxim,max86150
+  2. IIO driver with triggered buffer support
+  3. MAINTAINERS entry
 
-Best regards,
-Krzysztof
+Changes in v2 (addressing Sashiko AI review, Joshua Crofts, Krzysztof Kozlowski):
+  - Fix buffer overflow: expand scan buffer to s32 buf[6] to hold
+    3 x s32 channels + 4-byte pad + s64 timestamp (24 bytes total)
+  - Add iio_device_claim_direct() in read_raw to prevent concurrent
+    sysfs reads from corrupting FIFO pointers during buffer capture
+  - Fix FIFO-full detection: read OVF_COUNTER to distinguish a fully
+    saturated FIFO (wr_ptr == rd_ptr after wrap) from an empty one
+  - Fix active_scan_mask handling: pack only active channels at
+    consecutive positions using test_bit(idx, active_scan_mask)
+  - Remove IRQF_ONESHOT from IRQ request (not needed for edge-triggered;
+    iio_trigger_generic_data_rdy_poll is a hard-IRQ handler)
+  - Add set_trigger_state callback to enable/disable A_FULL interrupt
+    only when the IIO buffer is active, preventing the interrupt line
+    from asserting before the handler is registered
+  - Fix endianness: change scan_type.endianness from IIO_LE to IIO_CPU
+    to match native integers written directly into the buffer
+  - Add max86150_powerdown() devm action to disable interrupts and
+    assert SYS_SHDN on driver unload
+  - Add devm_regulator_get_enable() for vdd-supply and leds-supply
+    before any I2C access
+  - Add devm action for iio_trigger_put() to balance the reference
+    count increment from iio_trigger_get()
+  - Split DT binding into a separate first patch (requested by Joshua Crofts)
+  - Add MAINTAINERS entry (requested by Joshua Crofts)
+
+Known limitations (to be addressed in v3):
+  - IIO_CHAN_INFO_SCALE not yet implemented
+  - Runtime PM (SYS_CTRL SHDN bit) not yet implemented
+  - Not yet tested on physical hardware
+
+Md Shofiqul Islam (3):
+  dt-bindings: iio: health: add maxim,max86150
+  iio: health: add MAX86150 ECG and PPG biosensor driver
+  MAINTAINERS: add entry for MAX86150 IIO health driver
+
+ .../bindings/iio/health/maxim,max86150.yaml   |  67 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/health/Kconfig                    |  18 +
+ drivers/iio/health/Makefile                   |   1 +
+ drivers/iio/health/max86150.c                 | 612 ++++++++++++++++++
+ 5 files changed, 705 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/maxim,max86150.yaml
+ create mode 100644 drivers/iio/health/max86150.c
+
+-- 
+2.51.1
