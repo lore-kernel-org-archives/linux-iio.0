@@ -1,101 +1,109 @@
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E0453254A8;
-	Wed, 24 Jun 2026 05:53:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 443657E105;
+	Wed, 24 Jun 2026 06:22:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782280412; cv=none; b=gloXRD3c7zL/4jNx0+psTMQR/aHXcEDfOthjcJROGuuXVvl5KPhy6Zf6QF75+edq7kz20mNhPHhxV+I2o0jtHZiN0r4XYveJR7NPdT3ITQ51V0jOweaoLLMJ4gDo8PdKQsMfS+YScJ+upxKj8n686jnnxEbv+W0eb2ZoZ+2nLhg=
+	t=1782282175; cv=none; b=TLSNDr/OOCkszRFwWS4Lqx3KlsXeE/KbOvhi/m2HwP6n+dcmNdJxvW9Gw8CRVenvCD5Oq/UVk+7MlPHEsr8JSB1QH0h6GGbbAWcEfnnPXKC+rMtno9Oa3nns+0WOOz1z5qh/RXYoIwt6Vl6gumr11SiNr8jeA71aKu9T3Eyu96Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782280412; c=relaxed/simple;
-	bh=3r7dyKz0Aao1+l+/GtuvMKVzzk4LiO4Y2X4aYJayh7g=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YcemxOQTjfI8sCGpI/PqeqWhz1yORVof/dxVuOrldBnORwZv3v741ZP5J+7CIqQNrc+aCOPnqZUwlwbt2cwlKU5iYPiF8G6ksx17/84brs/5a8cH3OQPq26QTcVmGgCpoHsJ7CqRMuC7DQBgBwxLTEi/lbFavCkn/QrfahXqfS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.245.140])
-	by APP-03 (Coremail) with SMTP id rQCowACXuN_WcDtqrBetFQ--.13344S2;
-	Wed, 24 Jun 2026 13:53:26 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: ti-ads124s08: Return reset failures
-Date: Wed, 24 Jun 2026 13:53:25 +0800
-Message-ID: <20260624055325.32388-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1782282175; c=relaxed/simple;
+	bh=CKBn1dgMJuqZIZdpTf7HXZUqY1REh3RtW1cRCWROzcI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=akc0yRdFnokrC+4Rgp4ManZ5c9MPL6tRw/UC0ReuytfJ4PDfdEGihwHVfMszCrr6ZGV3eNV2sf63DDaLZpZL5SF+z3wDFmOdEZRVjsLcOIVuHOHtlsGNQb+aEqg3fFtEo+j1cLMIz68wcqoPwSTSHh8goG0xRGcQumwWJsH4/FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HtmOeJkD; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HtmOeJkD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2048F1F000E9;
+	Wed, 24 Jun 2026 06:22:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782282173;
+	bh=IoRnHzA7YhadGTplRR64MZRnEDfCI5atbJNgSXmN/YE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=HtmOeJkDb1NcWZ5UxUloc3YvJ92N+oAXakvOaJVp84x4rf5+ovvl7Os0my96Y/SKs
+	 cMHoMX5vApePowfulfNgFGySwOEPHM6ldbi2foDZvRD3YpBLPNMIvUpuX2rJeUx/ct
+	 rJYnICqJ6qhR7qoupH+5C5NfACBm0QlnJ9byqjeYqvH1VI1b17aZpGkKWxuOxTJYZv
+	 H/lfpAf0tVYFukHQVaAviy4BryZPoT+IDc4tsv80rK6h68k0GWuJGUlUp8JKt/WhN8
+	 lCTwJUqe7dkB+et0wvyhSo6wjsn32zjPBfHh6Mlj/EdBDeKBwqWp1b7U35Ky+E4V15
+	 c/+c5QAANx9TQ==
+Message-ID: <25846cbb-8318-43d1-a57e-16734cdad6bd@kernel.org>
+Date: Wed, 24 Jun 2026 08:22:48 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:rQCowACXuN_WcDtqrBetFQ--.13344S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7AF4UuF4fGrW5Gr1DJF45Awb_yoW8WFy8pF
-	s5XFy3tryvkF10vr4UX3WxuFWrC3Waka1UWF47Xw1Duw45Zw4YkF43KFyYvryrAFy8Zaya
-	qrWUKrW5uF10vw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-	6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-	Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
-	AVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkG
-	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
-	MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUmjgxUUU
-	UU=
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/3] MAINTAINERS: add entry for MAX86150 IIO health
+ driver
+To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, lars@metafoo.de, conor@kernel.org, conor+dt@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260623174600.17100-1-shofiqtest@gmail.com>
+ <20260623201124.18271-1-shofiqtest@gmail.com>
+ <20260623201124.18271-4-shofiqtest@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260623201124.18271-4-shofiqtest@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-devm_gpiod_get_optional() returns NULL when the optional GPIO is absent,
-but returns an ERR_PTR when the provider lookup fails.  Probe currently
-logs the ERR_PTR case and keeps the error pointer in reset_gpio.
+On 23/06/2026 22:11, Md Shofiqul Islam wrote:
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+> ---
+>  MAINTAINERS | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
 
-Later ads124s_reset() treats any non-NULL reset_gpio as valid and passes
-it to gpiod_set_value_cansleep().  Return the lookup error instead of
-retaining the ERR_PTR.
 
-Also return ads124s_reset() failures so probe does not register the IIO
-device after either the GPIO reset path or the software reset command
-failed.
+You need to slow down, please. One version per 24h.
 
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
----
- drivers/iio/adc/ti-ads124s08.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+And the last one is not even correct anymore...
 
-diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-index 8ea1269f74db..57eed8554bd9 100644
---- a/drivers/iio/adc/ti-ads124s08.c
-+++ b/drivers/iio/adc/ti-ads124s08.c
-@@ -321,7 +321,8 @@ static int ads124s_probe(struct spi_device *spi)
- 	ads124s_priv->reset_gpio = devm_gpiod_get_optional(&spi->dev,
- 						   "reset", GPIOD_OUT_LOW);
- 	if (IS_ERR(ads124s_priv->reset_gpio))
--		dev_info(&spi->dev, "Reset GPIO not defined\n");
-+		return dev_err_probe(&spi->dev, PTR_ERR(ads124s_priv->reset_gpio),
-+				     "Failed to get reset GPIO\n");
- 
- 	ads124s_priv->chip_info = &ads124s_chip_info_tbl[spi_id->driver_data];
- 
-@@ -342,7 +343,9 @@ static int ads124s_probe(struct spi_device *spi)
- 		return ret;
- 	}
- 
--	ads124s_reset(indio_dev);
-+	ret = ads124s_reset(indio_dev);
-+	if (ret)
-+		return ret;
- 
- 	return devm_iio_device_register(&spi->dev, indio_dev);
- }
--- 
-2.50.1 (Apple Git-155)
-
+Best regards,
+Krzysztof
