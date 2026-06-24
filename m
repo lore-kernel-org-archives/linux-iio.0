@@ -1,109 +1,156 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50CEC379979
-	for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 23:09:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7767123AE62
+	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 01:43:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782256146; cv=none; b=ebEzOffHG9p/ttT0u+kUy6t6zxgilSZt/taB+BPldzz+NneAzDYxKKFAakqFNVBn0HURuAcZu5Rc2774/aWF5pLSEgRhtRcIzLQ5Q1uw4YPYeuC2qC7NKvLAfZkk/ilOn3c4Ctfoj344/+fMkAviqJ4AhenJrTdG4gEmKisY6ng=
+	t=1782265410; cv=none; b=PVNeiCKEMylT/84AKb1d7A7nZ2zen0c3HoOh+Aa9o9BW3Dyk1ywOEaaFM4Qb9NFqv3kOZUSLAN37xPTcEAqms4cGO8M+kHAf57f8RlN9ZLYN9qM0dBKxKPXh3I+FzCwq2LZcsQ1tFqqr5bQajMcP/lt4GKuFfQPFGe/P93SpZ7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782256146; c=relaxed/simple;
-	bh=W6rsFmfTw3RYbSPkCGbJlZykQdK8UUiSToog+FQLz3M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Hx2mRFPQrI2RfZOraC2WP/r4wOjKPeLNO0U0UW05v5kU+7bIitsk8PwKmD9XdkwqdXV6NijURyl6/gqb9hWxWL/j/+d3YlhiRCCU3Xd2KbziiKTNblbgpZ4G69tyT0wMkVWhT0o44HjxvfGuNHCmDe3w9OWKOa6gOE+Dsd7T7Ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ZHkfs9iu; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782265410; c=relaxed/simple;
+	bh=qT3p9ECvEyAqV9oMGH9vEb2raKDM+oIo9iU4SgXJKfo=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=NDxnT6wJhLdY81dY8C5P2KB+kS4h0iejPslCckGtRlJCRD6doSaRRHbUpbF/bm9B1RUL4KDmDKCk5zDUFtrJ0aPdjWLgwSwbuDKeZ3Lj0K4xPc9rCdZx3ilNCMdfF1s3BrnDhWCCwdfOJV/ncIvkrhs5zZn1B+ISgHa2gMWDOtg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YfbN52/h; arc=none smtp.client-ip=209.85.210.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ZHkfs9iu"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7e93c3f1717so214220a34.2
-        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 16:09:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YfbN52/h"
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-8453bcf7276so376782b3a.2
+        for <linux-iio@vger.kernel.org>; Tue, 23 Jun 2026 18:43:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782256144; x=1782860944; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wtdeomxEC7+mkEA/dEebMKVj9k0wNEeEB423Anz1+qw=;
-        b=ZHkfs9iusZ9RNuip+syX+ABDjkw+ONMOWIk6sEvbf38srwZgx1PFVGbqxJYY3AqEuQ
-         AyfaSMSJFlZqyJp4Yk0Q7mbacW0FootTbpg+zsklToY2hDlrds5irhqsXBW0ZwHzDcdT
-         x/QhR/EJ2lK/hyAtx9JTG/5HFPX/4KBKK/RTIMBzF4HHReYtHhzamKUh9/4wYOCDP76w
-         mZ+pZj/kq6NmKdOUvyYDGf3VMCL8TE8dXITBKz0+RlmXZgQkKLiOhIJMChyxV1oOgq66
-         DUvSDhNAl+hn5t7qWzQb4I1YPKQGVOwy7ahwt3wKr2zJ9ofo7l0ELJt5D6d6un4Xxiou
-         NUrg==
+        d=gmail.com; s=20251104; t=1782265409; x=1782870209; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=+v7MiQ0V4iVBk/UhrVDYkv4lyovSCAad6aZiI8aKxu0=;
+        b=YfbN52/htX9SdBnU2XhKH3aNxyjyY5185gac1VA2MUpLqH7GdbgNVlH08PITpmHz3r
+         yaj+BiNvUz46MAaVNTVo2NZNeoUyYh1rKBwHTX0cW9GWAx1qM2PhaVBj9Io8rwzpttFp
+         5e99n8SquI5ba8jt7vChByth0mjtEu1mzyKdCr2CJjkbWnqh6wa/8rxEpJYpKzG55V2u
+         E7htWlwAH6tzYqiQOapEJWIf5A7T6FhkqHns1bc8T535zzc1IvlkyCPnbbTCOk6uBwx0
+         mGc+2ZiGTu5OZb6w8WuOhid71IKCUWg44LChDd2gXPtTYvWw17dNhCwmrn94q66DdvN5
+         CbfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782256144; x=1782860944;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wtdeomxEC7+mkEA/dEebMKVj9k0wNEeEB423Anz1+qw=;
-        b=sA1mhER8gEIoNbHCZYTI1Ljz0AlFIsgjyPFpcKLF/JIZvDKri1PygDAia002phez5S
-         ZTHkb+jSpBfnK2DtWkyrLnHUkwqFsrBFq/TEKaKDXvneG0XH6TAUrAzsox2WFSbYb/yO
-         Y39q17jWGhb44DreE+wHPEnJF2FcixB66ldOp8oqewFv9NFOGc+cd+tf4fm8SbA/eYV1
-         tJem+n2to4pmMnD5cUe9bpl9QOEHIFj006W497dAbgi1S6M3yQZU5yR6VTjYb+cRK54m
-         ev596VFzkzChQQkpbzNZ12zzX4+eF6N0s0ESzn8Um+3VWs7Dsj49ENjNgJLnusyjPavi
-         /neg==
-X-Forwarded-Encrypted: i=1; AFNElJ8e0KYKG0WBOV0Bq/Y/2Azv9oecsjwCsa9pVef/ZzrIsT84EVFAkEFwkpOOtGtR5v28z/rdrmXe6OM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwCpZynxmnVK7reZ4IWlHg4iAyLDCV2BGQigKmGeNxOwfHHb9R6
-	ul5nUzR5SXXTX93OTRAGXO5XPMCSjmshdhETa7QSCSwC5fJnkc6pbH1RA6HtgDpaTTA=
-X-Gm-Gg: AfdE7clal8pWPAa3AgXT6WMJS+06WWucoWfON1KLJAPeI3jWqMQAPq8w0mmvbFvkOX/
-	WNTW1Xy5aNp9GG7Rl28sEuvuryCliF0Zmt+eR9eg5lYafH9xfCvIO2mG2JSkp5ntYZKzxj5IYMl
-	inD7gQZg+PMm062uTZq0uI8e8ucd4bnjd1CuCjCfIAlVhlswixcWUzCddH2/fWbXMT1NYzRL2BS
-	gUX2wJexgM1pLiysJUN8MM6+DZa7+vh7Os88L0EX/HbSmrLZC2JNjoG7/RNeJEFWZqUVDwX3sVN
-	0/gWZ04bGq5shRsK5wZhqWuR9AUSIIC5WytHLFZYx08q0dUZG1GMlTv1HjN7A7bEUuKg0GG7lk9
-	e4rSB+2gK49CoeCrsGfoRFoOTgBCB/B6i60+PuaqXAlCOPyLs2UjEI2Db6FdS99TUVZxJmUkLYn
-	toIMpwlM+P01I8/bwLUINDEg9oCa54q1NZaKc701kUk7BqRjcAxZYFoPpJQTDOOcQ=
-X-Received: by 2002:a05:6830:6a12:b0:7dc:dd19:7f53 with SMTP id 46e09a7af769-7e97947c858mr3717034a34.14.1782256144259;
-        Tue, 23 Jun 2026 16:09:04 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e944068bb7sm9764689a34.9.2026.06.23.16.09.03
+        d=1e100.net; s=20251104; t=1782265409; x=1782870209;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+v7MiQ0V4iVBk/UhrVDYkv4lyovSCAad6aZiI8aKxu0=;
+        b=DeX//ILOMylZubzJpzzgGfmCucuo5l0ru3/1OXlU7P4A3AvY42mDvgKkNczShV9aB3
+         48TK2qNJAI2pmEQLbMLtUAqLdQo5jLOb415GHGyYSmoJVCGN1F3qcSwqdNe9iUCXBvQG
+         fkKMjO+SGnZp30spvmNrUMr1sHXpDqGHX266OtTsGN3BDoKfJuEzv0cKkEwUDSqqlJVw
+         YISIEflKd+Z/Cwdyo+JMgnSWG5RFBGKjaETs9d11+Tlp8xM51DkRKAC6ZDGAKfZ6jlnc
+         ykGMsEI0ZWRi28Q5R/PC0n29e364TgkqKIG4yLMQV4aZtvBr1BjY0c7YndPQxM0cKLnA
+         QuNg==
+X-Forwarded-Encrypted: i=1; AFNElJ9sGC6HK0xGJszVqdufboh/kp8WPW/Hi8DqX4ZyoRxz4Vp/s29xlq2aYBfqwyoYTqThBcofbyDz5+E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxpBOgHZgqz+cTWmAM6FPTfHHfFH/ukUQiJnYLrpyENElPPfGAe
+	LGdWBl4yBH0TSfrzD/u5NQ32BExETKQNTEsD2rXoDWeAe7QEIZ2auzpQ
+X-Gm-Gg: AfdE7cljMzaaUUI4C9Rk3hPXAHGscrIQx3ExjYGuKuMjUTAl12qn3PwRNT06LaZyHNU
+	xlpoUGi02YMuqGIDs1659czzVo+4P3ClryapKah6YZR6P//7nCrFhVRSQlICb1uZ7Un/RsSHuUD
+	KE/9rVwjgZnJDuwe1MIqLq6Z9POd8X165GPr8T8RUUzOe+wN5367euVe44xplXSXBeDI8+iyT/k
+	xr3lxnIlH29ftNOkss5yJo9MPG0tT9tdEJ2CN+Oy3qJr1TBhTCEfIM4WbKCN8cHr+Lnds4FBFbn
+	lPz0GqYN/R/V6yUeQidUNblZoqBWfAfxbryYi1noQZTjefDkgc3hVNYJIGxh/n89YHsuQwCfsbl
+	Fofhse3dvcsc7Vob+J+kkuWIZrqZ1OSStCJKsOUen0rQZ/NYIitA1PFPDVVUiClEGnGNMiXIGXG
+	8fYyhGYzpCBfGnvEW6RS6sN8dtsHMWfIey2SzP
+X-Received: by 2002:a05:6a00:bc8a:b0:842:5bf3:c53c with SMTP id d2e1a72fcca58-845a2a951famr1883030b3a.2.1782265408570;
+        Tue, 23 Jun 2026 18:43:28 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:8899:9e33:6ca3:2b46:9c45:afb1])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-845a3feb7a8sm476027b3a.19.2026.06.23.18.43.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Jun 2026 16:09:03 -0700 (PDT)
-Message-ID: <1a217276-17d3-4d3c-826d-24255b6d4018@baylibre.com>
-Date: Tue, 23 Jun 2026 18:09:03 -0500
+        Tue, 23 Jun 2026 18:43:28 -0700 (PDT)
+Date: Wed, 24 Jun 2026 07:13:12 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>,
+ Archana Patni <archana.patni@linux.intel.com>,
+ Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ srinivas pandruvada <srinivas.pandruvada@intel.com>
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_0/8=5D_HID=3A_iio=3A_Avoid_race_b?=
+ =?US-ASCII?Q?etween_callback_setup_and_device_exposure?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <ajpgQ8vCHacv_klG@ashevche-desk.local>
+References: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com> <ajpgQ8vCHacv_klG@ashevche-desk.local>
+Message-ID: <7288DEE7-91CD-4823-959B-229AEF1CAD97@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] iio: adc: ad4080: add backend data size configuration
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260623090717.3296-1-antoniu.miclaus@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260623090717.3296-1-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 6/23/26 4:07 AM, Antoniu Miclaus wrote:
-> The AD408X AXI core can pack sample data on the bus using different word
-> widths (20-bit, 16-bit and 14-bit), selected through the packet format
-> field of the CNTRL_3 register. Until now this was left at its default,
-> which only matched the AD4080 20-bit resolution.
-> 
-> This series exposes the packet format through a new data_size_set backend
-> operation and has the ad4080 driver program it during channel setup based
-> on the channel resolution, so the bus packing always matches the device
-> realbits.
-> 
-> Patch 1 adds the data_size_set operation to the adi-axi-adc backend.
-> Patch 2 calls iio_backend_data_size_set() from the ad4080 channel setup.
-> 
-> Link: https://analogdevicesinc.github.io/hdl/library/axi_ad408x/index.html
-> 
-> Antoniu Miclaus (2):
->   iio: adc: adi-axi-adc: add data size support for AD408X backend
->   iio: adc: ad4080: configure backend data size
-> 
->  drivers/iio/adc/ad4080.c      |  5 +++++
->  drivers/iio/adc/adi-axi-adc.c | 30 ++++++++++++++++++++++++++++++
->  2 files changed, 35 insertions(+)
-> 
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 
+On 23 June 2026 4:00:27=E2=80=AFpm IST, Andy Shevchenko <andriy=2Eshevchen=
+ko@intel=2Ecom> wrote:
+>On Mon, Jun 22, 2026 at 10:59:56AM +0530, Sanjay Chitroda wrote:
+>>=20
+>> This series avoid a race condition in HID IIO drivers related to the
+>> ordering between callback registration and device exposure=2E
+>>=20
+>> Currently, several HID IIO drivers register the IIO device (making it
+>> visible to userspace and other kernel consumers) before all required
+>> callbacks and resources are fully initialized, or rely on devm-based
+>> cleanup in a way that does not guarantee correct teardown ordering=2E
+>> This creates a window where the device can be accessed while it is
+>
+>There is a difference between "this creates" and "this might create"=2E
+>I believe Srinivas and others were asking for the proof=2E So, what path
+>in the code makes this happen or possible to happen?
+>
+iio_device_register() exposes the IIO device to user space, while sensor_h=
+ub_register_callback() registers callbacks for buffered IIO(streaming mode)=
+=2E
+
+This might create window where from userspace buffer mode is enabled and c=
+allbacks are not registered which would result into loss of samples until c=
+allback registration completes, although no explicit failure=2E In teardown=
+ path which can resulting in stale/no data=2E
+
+This was discussed in the v1 thread and v2 was posted based on discussion =
+and agreement:
+ https://lore=2Ekernel=2Eorg/all/3FED088A-651B-4E8B-840B-1B92CB4DF6F4@gmai=
+l=2Ecom/
+
+
+>> not fully initialized or is being torn down, potentially leading to
+>> sample drop or stale/no data=2E
+>>=20
+>> To handle this, the series ensures that:
+>>   - All required callbacks and resources are set up before the device
+>>     is registered with the IIO core
+>>   - Resource cleanup is performed explicitly where ordering matters
+>>=20
+>> PS: This is prepratory series to convert all HID IIO driver to devm=2E
+>>=20
+>> Testing:
+>>   - Compiled with W=3D1 for each patch in series
+>>=20
+>> ---
+>> Changes in v2:
+>> - Drop fixes tag and rectify commit message with reference to that
+>
+>You also dropped my tag=2E Why?
+>
+Thank you for the review and tag on v1=2E
+
+While code changes are intact in v2, the rational and commit message were =
+updated substantially=2E Since commit message is as important as change whi=
+ch will be permanent in history for future reference, I chose to drop the t=
+ag to request a fresh review=2E
+
+I shall highlight the same in change log=2E I'll make sure to note in futu=
+re revision=2E
+
+Thanks, Sanjay
+
+>> - Link to v1: https://patch=2Emsgid=2Elink/20260606-5-june-hid-iio-race=
+-fixes-v1-0-27a848c5758f@gmail=2Ecom
+>
