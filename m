@@ -1,804 +1,163 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013021.outbound.protection.outlook.com [40.107.201.21])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 573013C9895;
-	Wed, 24 Jun 2026 14:39:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782311976; cv=fail; b=Zs5VBCdLl1gU1i9fjpQsnP8wwLyU33WMDg6ezmOUgriuRirCuG9KSJtiqB8UEfQPmZqcb/oPWAk9k3E9X1FIP5W0KbXzWrX0GgseVX6+yaTHUO3yXQ/ffBFeLVfrqjNEIKxyL/gz/oC1QrZcclSvZiYhMgouvFqc3kavKSEZj8M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782311976; c=relaxed/simple;
-	bh=KYL9rO1cmtMVy40ZiIGea2SzzZM2kv/sWrFHKThouXI=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LHUS3p9jDHerJ+YdzOiuTK9BwdZEgPKjGj7tDUlSK7RhopGDd257ENbeixgMM0OLqhxoJ5OJSJfWbHH8eyRNoIddFDGrt+kO5akhkbM6cD7XdUZre4Fm8mOOP9jWZX/bKrNaISRH3a1bQNRvI2w3B3YpKxmtoVrdjNMcMeeTSPY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=s3w2dmGK; arc=fail smtp.client-ip=40.107.201.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE283CCA15;
+	Wed, 24 Jun 2026 14:47:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782312432; cv=none; b=LyHjiHgJdE9koQ5onhn4ioftErrtaPQEcDQv/2n9nbzQMWm3c2s1513WeEBA2J4FMhDTOM+D6dTRQy8CaIhO2+onGJp1gp1+jhrFdxFTA3d8d9OAgFMnNpRP6EofTotCQLwsIuSBPpj04eDoPyfXmXtz30CNFmu8XI0IxzHCweI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782312432; c=relaxed/simple;
+	bh=b83vd6KPIC5ZsCxUK9aSfpbv7XAx9lhJYPveEjRv8Qk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LZmnpaNLmF0Q400hFiEosXxGHyCVxN0QuWduzxE3vzvK7CSSC7ArFO9T+aqAJf5UnVC8xTaUm/3iS2Ib8TPJwlXjKqdbI1TRQ+4WRC1xLTow3XWFG8ZtIM7N8Etq9NK8UnijIqDIYgWa1s67JWnMMqh+7aA+szmF+zwGEiq01Qo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b=ZVykrv9+; arc=none smtp.client-ip=212.227.15.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="s3w2dmGK"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=n+ZisJ0aWLid/tgcCEr9pzqQ5ljwF9z1tceYUk5OxwKizqQCD1zckcggKr3JvBxJZ6urk7x6ybBcQ0o0bH8aKba8F1GbwX3Y9tV/fT7fEec8aBWAxcT/506XoLbHqzvOY/9B2ChtMsNhDpNA/2NQOJpz769F1sZYZLZJ78is892xaZspsAr1FuqSDzd5l0y56xdmXqcLwZJitkjEYPsIBRg6u6uc0XH5dYJHh5g2pPmnC/IUfwXxWFCb9EKEdo8y8h/dbgS4sZk/P0VB0xckHehxFZALUdpyoP7bzekJ/Y3FzgiOoLdZDJagiG5sqayHLEIL2Jo4T9r+khRTrCUsmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t+8ZQz4VV/DYnsuHlEYwcQmMiIRZo/FDaaZLw14oRp8=;
- b=kBUb2m4vgMNtmAmcvj5YQZ2VLvmlQ8dlQu2R72PJt1OqcyJ6YU6scW7TkhQaFC0CO9/yE4Se3UvLz39fl613GG2y5NEWmNdul0S+CENBuZ4zKzz94Aj9kQzhLWMAmXBU9tZaAxutdY4fcYWK+X/AtFbbNTCeZaz8j3+eEBbu2XWK/6CCisSLcVEbvNHHE5aeVHYCMi7osK2fnH/3KE7yOMe+IXB+mS1Dn8iAQMcv4KMK5OsyGOIAVic+3Suc8rIyR/FXaKhyVMcGFTZpk1KHUwygWFYDlsPl8bH/dSFYjN6wv24Rp4J8hMnNyfZSeP887UblBOYQ7mMLyuWarQmAcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t+8ZQz4VV/DYnsuHlEYwcQmMiIRZo/FDaaZLw14oRp8=;
- b=s3w2dmGKtXoaE8aT6dTe3iIiVGb8HTpUMfdzKQPisEpOjAOADhk5xPyRFkskyEDrMqlfsHAJth21LtVq6GltxgPJcVlSiqKYIFZCzYXRVlV9WGj3scd547+d9ZtuscDfyrdoi2W71OPl3vaSmQeAvxS/TvrZ11r/PlhUcVE90Cg=
-Received: from DS7PR03CA0246.namprd03.prod.outlook.com (2603:10b6:5:3b3::11)
- by MW6PR12MB8865.namprd12.prod.outlook.com (2603:10b6:303:23b::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.14; Wed, 24 Jun
- 2026 14:39:20 +0000
-Received: from SN1PEPF0002BA52.namprd03.prod.outlook.com
- (2603:10b6:5:3b3:cafe::31) by DS7PR03CA0246.outlook.office365.com
- (2603:10b6:5:3b3::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.159.13 via Frontend Transport; Wed,
- 24 Jun 2026 14:39:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SN1PEPF0002BA52.mail.protection.outlook.com (10.167.242.75) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.159.10 via Frontend Transport; Wed, 24 Jun 2026 14:39:19 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 24 Jun
- 2026 09:38:22 -0500
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb10.amd.com
- (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.41; Wed, 24 Jun
- 2026 09:37:58 -0500
-Received: from xirsalihe40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.41 via Frontend
- Transport; Wed, 24 Jun 2026 09:37:56 -0500
-From: Salih Erim <salih.erim@amd.com>
-To: <jic23@kernel.org>, <andy@kernel.org>
-CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <robh@kernel.org>,
-	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <conall.ogriofa@amd.com>,
-	<michal.simek@amd.com>, <sai.krishna.potthuri@amd.com>, <linux@roeck-us.net>,
-	<erimsalih@gmail.com>, <git@amd.com>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Salih Erim
-	<salih.erim@amd.com>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v12 2/5] iio: adc: add Versal SysMon driver
-Date: Wed, 24 Jun 2026 15:37:19 +0100
-Message-ID: <20260624143722.4047649-3-salih.erim@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260624143722.4047649-1-salih.erim@amd.com>
-References: <20260624143722.4047649-1-salih.erim@amd.com>
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=lukas.metz@gmx.net header.b="ZVykrv9+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1782312423; x=1782917223; i=lukas.metz@gmx.net;
+	bh=ZJ0yZxYcfiXSpEGRdwwCgv91OZx9waeGfd61/KpfhM8=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:In-Reply-To:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=ZVykrv9+AS/UVewcaWMAwNw1lpXrcwtHdn0Yl4kySH8rhLGiNexF6Aow/xEB8IiE
+	 ehqvBnszjyMXlPeuNGtJCh83zneshDLRVnpj/M/E6TQqBmUmunWw3KHWN7WRvUwxt
+	 ISZaesFaxgm/gdMlSl1gFFcoifc7at/7BL/xUXYW/1ghxx2YzSNUDlwfF3s2hqluc
+	 2iAObEA2vuTxJcqUFoPaNp8e/bV8TvO3d0dMb+pJ69L7sAHvBIQsYcB0l6Vw8AgiN
+	 F3Hq19rMp4Y7RF/e4B+EnrJy3N9u1FSgOqGN/IrMJzJ/E+W65iXndZ6clklpFiYoy
+	 pfqIpJEJhBBRHmHQIw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from client.hidden.invalid by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbivM-1x9nce3QY2-00ilXo; Wed, 24
+ Jun 2026 16:47:02 +0200
+Date: Wed, 24 Jun 2026 16:47:00 +0200
+From: Lukas <lukas.metz@gmx.net>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
+Message-ID: <ajvt5J5Cs5cOdTLt@berta-MS-7693>
+References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
+ <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
+ <ajrg62FtXNObGkmc@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA52:EE_|MW6PR12MB8865:EE_
-X-MS-Office365-Filtering-Correlation-Id: 41371805-d92c-420f-4d9a-08ded1fe6040
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|23010399003|7416014|376014|22082099003|18002099003|6133799003|3023799007|11063799006|5023799004|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	47GI8FG3cdWiHYIL81Ty3/FNDD9NfxWi8xde9y9VwzQ1zWMju57SzyLQY5Or9BYBNuYQs4D4rDTBkTW+qQUKt7RgHZjKvlCEgEZmzy5HayDW83SmA5X7DCmqNP0Ae69CexI+E/QFwJatfj1ta9o0LhMX768mC1kySCe7Dq3G6JufaMm82p3drw20DrAUdtpR2I1BFgSdGO8x+4RDuOyG3ZsqlVDNa9Zg2vLJf8hRRs90u8ei847RKzrOJypHIJyavS9/caXIYawIO4Vi3qS3pf8GepVjE8cimc6OQdVf9Fs9NcMohkxIzcvktMvr07RzI8aQ9ci8rB27GBk0Cx2B8q8IrDA+Cc7a4mJq9pXYU4KouE+v5fJ8bNffj/B+L6ZJWZxPSQcgWbbhr/Vt0MzB1KuJIdp7sJCZmN2FpIcsVz+XlMGJjCVowRirdRX2ZeLFjPmkyq9OHKh/XPYZL+fsaj5gIlteez0li+p/ZzrpNXmdhAZNnAV6yiModyafadd0F4DdZsVKV7sKUJZwunKQ0mHWbds2/EACVTBu3Ocw2Tfv3xgObuX7rT8zrHwrnee5tZnnIM1gddy3WDNRdhbVzmzDPHP4mYweit7dC66sRmAbiS90xpbP6yV7LfzxWEdBOjwr25iOhMh28hXC27D22gyHAS/dRNx7IQkZx+hhusKY87oLCGdQ9n9uTMGbTPbAb28Hc5l2/hWdP5xb7BNE8w==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(23010399003)(7416014)(376014)(22082099003)(18002099003)(6133799003)(3023799007)(11063799006)(5023799004)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	5FZ0dlE8vH/jr7OcykMAGRz7Ma9/v2liJ2h8ou3/6V08q8GFyGwqlBmLkdX1K63RQVzzxGOXp+0Q7DcJzGBj9YdU/3J/OjLkvnLMyPLEJP8vAGVTOlGLWkwqG4ZdUv15yQgUTJBETPZvEo1drCtrfZW8Kw1w2mBwbC1qCSvXgF2uREgiMFnoIocER5ZagPCU+a0D96UT2dOlA0hmbgoyJ1xn+7YB94Hb0PkbXxqACMkcn+MqawCNO636zTHpFEyJkLYSRIRfje3JWfgAD3YTvd3qcZpIvawSSZH2FoeKjTjr5GJL96IlQWr/lLzN4tA5cllioY5aSQKmqbKrRSAakxHjUsUHYqIywNKRAuX0ExHL96JRzpRHvIv96GRlsHlhuuigOgQp6x3pEnXvMwgJGkoBWLUUlzspFSXpCmKRaoIlG+wv7zzQpOGLp35Xf64F
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2026 14:39:19.9272
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 41371805-d92c-420f-4d9a-08ded1fe6040
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002BA52.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8865
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ajrg62FtXNObGkmc@ashevche-desk.local>
+X-Provags-ID: V03:K1:hnfAxXg9zFxBMPrLbWJlQYV3HQYjiD+QKSq5K6Un7URwWeAAWYZ
+ 3bK7aO0n16UDN6ZIVMQvLHU+u3xkF+mHDalRxj1kvkZnUtT9G+lvyGvANKmOtDxCgeVc75q
+ arCF773GyE2lTNNGKdpYQLAhTJYyx475FMLfzwadydVW1y2KYi8qpTzVyP07l+T45HdvIRp
+ AbJDsB6kRTYo3JDs6cJxg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:oXga12SGyp0=;Hbv8D/1dSWI+JfSEI6c3YO2TUTq
+ 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
+ XL4plOMcdCW6kP97vtKhkOMQ==
+Content-Transfer-Encoding: quoted-printable
 
-Add the core driver and MMIO platform driver for the AMD/Xilinx Versal
-System Monitor (SysMon) block.
+Thanks a lot for all the comments.
 
-The SysMon block resides in the platform management controller (PMC) and
-provides on-chip voltage and temperature monitoring through a 10-bit,
-200 kSPS ADC. It can monitor up to 160 voltage channels and 64
-temperature satellites distributed across the SoC, with a consistent
-sample rate of 8 kSPS per channel regardless of how many channels are
-enabled.
+On Tue, Jun 23, 2026 at 10:39:23PM +0300, Andy Shevchenko wrote:
 
-The hardware also provides four aggregate temperature registers that
-are always present regardless of the device tree configuration: the
-current max and min across all active satellites, and the peak and
-trough values recorded since the last hardware reset.
+> > +		dev_dbg(dev, "%s: val=3D%d val2=3D%d\n", __func__, val, val2);
+>=20
+> No. Is it RFC? PoC? Or production-ready? If not the latter, come when it=
+ will
+> be production-ready.
+>
 
-The driver is split into two compilation units:
-  - versal-sysmon-core: Channel parsing, IIO registration, read_raw
-  - versal-sysmon: MMIO platform driver with custom regmap accessors
+I will remove the debug print. I tried my best to make this driver product=
+ion-ready.
+I saw that other drivers also have similar debug messages so i didnt
+remove it after my first tests and thought it is ok to leave it in
+there. My intention was to try to apply the suggestions and comments i
+get and send a second revision. Do you think thats the right way?
 
-Voltage results are stored in a 19-bit modified floating-point format
-and converted to millivolts. Temperature results are stored in Q8.7
-signed fixed-point Celsius format and converted to millicelsius.
-
-The MMIO regmap backend uses a custom reg_write accessor that
-automatically unlocks the NPI (NoC programming interface) lock
-register before each write, as required by the hardware. The regmap
-is configured with fast_io since the underlying MMIO accessors are
-safe to call from atomic context.
-
-Co-developed-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Salih Erim <salih.erim@amd.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
----
-Changes in v12:
-  - Add Sai Krishna Potthuri as co-maintainer in MAINTAINERS
-
-Changes in v11:
-  - No code changes
-
-Changes in v10:
-  - Restructure variable declarations in sysmon_parse_fw:
-    group num_* and idx_* on separate lines (Andy)
-
-Changes in v9:
-  - Add Reviewed-by tag from Andy Shevchenko
-  - Use EXPORT_SYMBOL_NS_GPL with "VERSAL_SYSMON" namespace,
-    add MODULE_IMPORT_NS to MMIO driver (Andy)
-  - Join sysmon_mmio_reg_read and sysmon_mmio_reg_write
-    signatures to single lines (Andy)
-  - Introduce num_static variable in sysmon_parse_fw to reduce
-    churn in P4 (Andy)
-
-Changes in v8:
-  - Use MILLIDEGREE_PER_DEGREE instead of MILLI for temperature
-    scale (Andy)
-  - Add overflow.h include for size_add() (Andy)
-  - Rename sysmon_core_probe to devm_versal_sysmon_core_probe (Andy)
-
-Changes in v7:
-  - Add documentation comment explaining the four static aggregate
-    temperature registers (Jonathan)
-
-Changes in v6:
-  - Macro brace on separate line for SYSMON_CHAN_TEMP (Andy)
-  - Remove unneeded = 0 init on num_supply, num_temp (Andy)
-  - Use temporary variable for channel count allocation (Andy)
-  - Initialize idx directly after memcpy (Andy)
-  - Join info_mask_separate on one line (Andy)
-  - Join info_mask_shared_by_type on one line (Andy)
-  - Join devm_kcalloc on one line (Andy)
-  - Reversed xmas tree ordering in sysmon_parse_fw
-
-Changes in v5:
-  - Add err.h include to core (IWYU) (Andy)
-  - Drop (int) cast on MILLI in scale assignment (Andy)
-  - sign_extend32() instead of (s16) cast for temperature raw (Andy)
-  - Remove unneeded parentheses in voltage address calculation (Andy)
-  - Drop NULL checks before fwnode_get_child_node_count (Andy)
-  - Nested size_add() for overflow-safe allocation (Andy)
-  - if (ret) instead of if (ret < 0) for fwnode property reads (Andy)
-  - Remove outer parentheses in satellite address calculation (Andy)
-  - Loop index declared in for() scope (Andy)
-  - MMIO: add err.h, types.h includes (IWYU) (Andy)
-  - Header: remove unused types.h include and struct iio_dev
-    forward declaration (Andy)
-
-Changes in v4:
-  - Temperature: RAW + SCALE (IIO_VAL_FRACTIONAL, 1000/128) instead
-    of PROCESSED (Jonathan)
-  - Voltage: PROCESSED only, drop RAW (Jonathan)
-  - Drop scan_type from all channel macros (Jonathan)
-  - Move __free(fwnode_handle) declarations down to just above use
-    (Jonathan)
-  - devm_regmap_init() on one line (Jonathan)
-  - Lock comment: describe RMW sequences and cached state (Jonathan)
-  - Remove sysmon_q8p7_to_millicelsius() from this patch; the function
-    is now introduced in P4 where it is first used
-
-Changes in v3:
-  - IWYU: add array_size.h, string.h, types.h to core; audit and
-    fix header and MMIO driver includes (Andy)
-  - Rename _ext to _name in SYSMON_CHAN_TEMP macro parameter (Andy,
-    Jonathan)
-  - Use .info_mask_separate = BIT() style in SYSMON_CHAN_TEMP (Andy)
-  - Use s16 parameter in sysmon_q8p7_to_millicelsius (Andy)
-  - Use sign_extend32() in sysmon_supply_rawtoprocessed (Andy)
-  - Split sysmon_read_raw parameters logically across lines (Andy)
-  - Remove redundant (int) casts on regval (Andy)
-  - Split num_supply/num_temp initialization (Andy)
-  - Use __free(fwnode_handle) cleanup, remove goto err_put (Andy)
-  - Use size_add() for overflow-safe allocation (Andy)
-  - Use dev_err_probe() in sysmon_parse_fw error paths (Jonathan)
-  - Move fwnode_irq_get() to core_probe, remove irq parameter
-    from bus driver interfaces (Jonathan)
-  - Use (int)MILLI at call sites, drop SYSMON_MILLI define (Andy,
-    Jonathan)
-  - Remove sysmon->dev, sysmon->indio_dev, sysmon->irq from struct;
-    pass as local variables or use regmap_get_device() (Jonathan)
-  - Use struct device *dev local in sysmon_platform_probe (Andy)
-  - Describe protected data in lock comment (Jonathan)
-  - Add comment explaining RAW+PROCESSED co-exposure (Jonathan)
-
-Changes in v2:
-  - Split into core (versal-sysmon-core.c) + MMIO platform driver
-    (versal-sysmon.c) + shared header (versal-sysmon.h)
-  - Uses regmap API instead of direct readl/writel
-  - MMIO regmap uses custom callbacks with NPI unlock in write path
-  - Reverse Christmas Tree variable ordering throughout
-  - Header include order fixed
-  - MAINTAINERS entry folded in with wildcard F: pattern
-  - Kconfig: hidden VERSAL_SYSMON_CORE + VERSAL_SYSMON selects it
-  - Kconfig/Makefile: alphabetical ordering (VERSAL before VF610)
-  - Bounds validation on DT reg values
-  - Named constants replace magic numbers (SYSMON_REG_STRIDE,
-    SYSMON_SUPPLY_MANTISSA_BITS, SYSMON_MILLI)
-  - kernel-doc for exported sysmon_core_probe() and sysmon_parse_fw()
-  - Supply voltage conversion uses proper two's complement sign
-    extension (s16 cast) matching the hardware specification
-  - Register offsets sorted by address in header
-  - Each patch introduces only the defines, fields, and includes
-    it uses (no dead code in any commit)
-  - Removed unused linux/limits.h and linux/units.h includes
-  - Renamed iio_dev_info to sysmon_iio_info
-  - regmap_write return values checked in probe init path
- MAINTAINERS                          |   8 +
- drivers/iio/adc/Kconfig              |  20 ++
- drivers/iio/adc/Makefile             |   2 +
- drivers/iio/adc/versal-sysmon-core.c | 292 +++++++++++++++++++++++++++
- drivers/iio/adc/versal-sysmon.c      |  92 +++++++++
- drivers/iio/adc/versal-sysmon.h      |  67 ++++++
- 6 files changed, 481 insertions(+)
- create mode 100644 drivers/iio/adc/versal-sysmon-core.c
- create mode 100644 drivers/iio/adc/versal-sysmon.c
- create mode 100644 drivers/iio/adc/versal-sysmon.h
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2fb1c75afd1..e2bd5ee7a4a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -29216,6 +29216,14 @@ F:	Documentation/devicetree/bindings/memory-controllers/xlnx,versal-net-ddrmc5.y
- F:	drivers/edac/versalnet_edac.c
- F:	include/linux/cdx/edac_cdx_pcol.h
- 
-+XILINX VERSAL SYSMON DRIVER
-+M:	Salih Erim <salih.erim@amd.com>
-+M:	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
-+F:	drivers/iio/adc/versal-sysmon*
-+
- XILINX WATCHDOG DRIVER
- M:	Srinivas Neeli <srinivas.neeli@amd.com>
- R:	Shubhrajyoti Datta <shubhrajyoti.datta@amd.com>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a9dedbb8eb4..c7f19057484 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1943,6 +1943,26 @@ config TWL6030_GPADC
- 	  This driver can also be built as a module. If so, the module will be
- 	  called twl6030-gpadc.
- 
-+config VERSAL_SYSMON_CORE
-+	tristate
-+	select REGMAP
-+
-+config VERSAL_SYSMON
-+	tristate "AMD Versal SysMon driver"
-+	depends on ARCH_ZYNQMP || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	select VERSAL_SYSMON_CORE
-+	help
-+	  Say yes here to have support for the AMD/Xilinx Versal System
-+	  Monitor (SysMon). This driver provides voltage and temperature
-+	  monitoring through the IIO subsystem.
-+
-+	  The SysMon measures up to 160 supply voltages and reads up to
-+	  64 temperature satellites distributed across the SoC.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called versal-sysmon.
-+
- config VF610_ADC
- 	tristate "Freescale vf610 ADC driver"
- 	depends on HAS_IOMEM
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 097357d146b..d7696b1b157 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -167,6 +167,8 @@ obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
- obj-$(CONFIG_TI_TSC2046) += ti-tsc2046.o
- obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
- obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
-+obj-$(CONFIG_VERSAL_SYSMON_CORE) += versal-sysmon-core.o
-+obj-$(CONFIG_VERSAL_SYSMON) += versal-sysmon.o
- obj-$(CONFIG_VF610_ADC) += vf610_adc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
- obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
-diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
-new file mode 100644
-index 00000000000..03a745d3fb4
---- /dev/null
-+++ b/drivers/iio/adc/versal-sysmon-core.c
-@@ -0,0 +1,292 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD Versal SysMon core driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/cleanup.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/overflow.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/string.h>
-+#include <linux/sysfs.h>
-+#include <linux/units.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#include "versal-sysmon.h"
-+
-+#define SYSMON_CHAN_TEMP(_chan, _address, _name)		\
-+{								\
-+	.type = IIO_TEMP,					\
-+	.indexed = 1,						\
-+	.address = _address,					\
-+	.channel = _chan,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.datasheet_name = _name,				\
-+}
-+
-+/*
-+ * Static temperature channels (always present).
-+ *
-+ * These are hardware-computed aggregate registers across all active
-+ * temperature satellites:
-+ *   temp:     current max temperature across all active satellites
-+ *   min:      current min temperature across all active satellites
-+ *   max_max:  highest peak recorded since last hardware reset
-+ *   min_min:  lowest trough recorded since last hardware reset
-+ */
-+static const struct iio_chan_spec temp_channels[] = {
-+	SYSMON_CHAN_TEMP(0, SYSMON_TEMP_MAX, "temp"),
-+	SYSMON_CHAN_TEMP(1, SYSMON_TEMP_MIN, "min"),
-+	SYSMON_CHAN_TEMP(2, SYSMON_TEMP_MAX_MAX, "max_max"),
-+	SYSMON_CHAN_TEMP(3, SYSMON_TEMP_MIN_MIN, "min_min"),
-+};
-+
-+static void sysmon_supply_rawtoprocessed(int raw_data, int *val)
-+{
-+	int mantissa, format, exponent;
-+
-+	mantissa = FIELD_GET(SYSMON_MANTISSA_MASK, raw_data);
-+	exponent = SYSMON_SUPPLY_MANTISSA_BITS - FIELD_GET(SYSMON_MODE_MASK, raw_data);
-+	format = FIELD_GET(SYSMON_FMT_MASK, raw_data);
-+	/*
-+	 * When format bit is set the mantissa is two's complement
-+	 * (per hardware spec); sign-extend to int for correct arithmetic.
-+	 */
-+	if (format)
-+		mantissa = sign_extend32(mantissa, 15);
-+
-+	*val = (mantissa * (int)MILLI) >> exponent;
-+}
-+
-+static int sysmon_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	struct sysmon *sysmon = iio_priv(indio_dev);
-+	unsigned int regval;
-+	int ret;
-+
-+	guard(mutex)(&sysmon->lock);
-+
-+	switch (chan->type) {
-+	case IIO_TEMP:
-+		if (mask == IIO_CHAN_INFO_SCALE) {
-+			/* Q8.7 to millicelsius: raw * 1000 / 128 */
-+			*val = MILLIDEGREE_PER_DEGREE;
-+			*val2 = BIT(SYSMON_FRACTIONAL_SHIFT);
-+			return IIO_VAL_FRACTIONAL;
-+		}
-+		if (mask != IIO_CHAN_INFO_RAW)
-+			return -EINVAL;
-+
-+		ret = regmap_read(sysmon->regmap, chan->address, &regval);
-+		if (ret)
-+			return ret;
-+
-+		*val = sign_extend32(regval, 15);
-+		return IIO_VAL_INT;
-+
-+	case IIO_VOLTAGE:
-+		if (mask != IIO_CHAN_INFO_PROCESSED)
-+			return -EINVAL;
-+
-+		ret = regmap_read(sysmon->regmap,
-+				  chan->address * SYSMON_REG_STRIDE +
-+				  SYSMON_SUPPLY_BASE, &regval);
-+		if (ret)
-+			return ret;
-+
-+		sysmon_supply_rawtoprocessed(regval, val);
-+		return IIO_VAL_INT;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int sysmon_read_label(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     char *label)
-+{
-+	if (chan->datasheet_name)
-+		return sysfs_emit(label, "%s\n", chan->datasheet_name);
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info sysmon_iio_info = {
-+	.read_raw = sysmon_read_raw,
-+	.read_label = sysmon_read_label,
-+};
-+
-+/**
-+ * sysmon_parse_fw() - Parse firmware nodes and configure IIO channels.
-+ * @indio_dev: IIO device instance
-+ * @dev: Parent device
-+ *
-+ * Reads voltage-channels and temperature-channels container nodes from
-+ * firmware and builds the IIO channel array. Static temperature channels
-+ * are prepended, followed by supply and satellite channels from DT.
-+ *
-+ * Return: 0 on success, negative errno on failure.
-+ */
-+static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev)
-+{
-+	unsigned int num_chan, num_static, num_supply, num_temp;
-+	unsigned int idx, temp_chan_idx, volt_chan_idx;
-+	struct iio_chan_spec *sysmon_channels;
-+	const char *label;
-+	u32 reg;
-+	int ret;
-+
-+	struct fwnode_handle *supply_node __free(fwnode_handle) =
-+		device_get_named_child_node(dev, "voltage-channels");
-+	num_supply = fwnode_get_child_node_count(supply_node);
-+
-+	struct fwnode_handle *temp_node __free(fwnode_handle) =
-+		device_get_named_child_node(dev, "temperature-channels");
-+	num_temp = fwnode_get_child_node_count(temp_node);
-+
-+	num_static = ARRAY_SIZE(temp_channels);
-+	num_chan = size_add(num_temp, size_add(num_static, num_supply));
-+	sysmon_channels = devm_kcalloc(dev, num_chan, sizeof(*sysmon_channels), GFP_KERNEL);
-+	if (!sysmon_channels)
-+		return -ENOMEM;
-+
-+	/* Static temperature channels first */
-+	memcpy(sysmon_channels, temp_channels, sizeof(temp_channels));
-+	idx = num_static;
-+
-+	/* Supply channels from DT */
-+	fwnode_for_each_child_node_scoped(supply_node, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &reg);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing reg for supply channel\n");
-+
-+		if (reg > SYSMON_SUPPLY_IDX_MAX)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "supply reg %u exceeds max %u\n",
-+					     reg, SYSMON_SUPPLY_IDX_MAX);
-+
-+		ret = fwnode_property_read_string(child, "label", &label);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing label for supply channel\n");
-+
-+		sysmon_channels[idx++] = (struct iio_chan_spec) {
-+			.type = IIO_VOLTAGE,
-+			.indexed = 1,
-+			.address = reg,
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+			.datasheet_name = label,
-+		};
-+	}
-+
-+	/* Temperature satellite channels from DT */
-+	fwnode_for_each_child_node_scoped(temp_node, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &reg);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing reg for temp channel\n");
-+
-+		if (reg < 1 || reg > SYSMON_TEMP_SAT_MAX)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "temp reg %u out of range [1..%u]\n",
-+					     reg, SYSMON_TEMP_SAT_MAX);
-+
-+		ret = fwnode_property_read_string(child, "label", &label);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "missing label for temp channel\n");
-+
-+		sysmon_channels[idx++] = (struct iio_chan_spec) {
-+			.type = IIO_TEMP,
-+			.indexed = 1,
-+			.address = SYSMON_TEMP_SAT_BASE +
-+				   (reg - 1) * SYSMON_REG_STRIDE,
-+			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+			.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+			.datasheet_name = label,
-+		};
-+	}
-+
-+	indio_dev->num_channels = idx;
-+	indio_dev->info = &sysmon_iio_info;
-+
-+	/*
-+	 * Assign per-type sequential channel numbers.
-+	 * IIO sysfs uses type prefix (in_tempN, in_voltageN)
-+	 * so numbers only need to be unique within each type.
-+	 */
-+	temp_chan_idx = 0;
-+	volt_chan_idx = 0;
-+	for (unsigned int idx = 0; idx < indio_dev->num_channels; idx++) {
-+		if (sysmon_channels[idx].type == IIO_TEMP)
-+			sysmon_channels[idx].channel = temp_chan_idx++;
-+		else
-+			sysmon_channels[idx].channel = volt_chan_idx++;
-+	}
-+
-+	indio_dev->channels = sysmon_channels;
-+
-+	return 0;
-+}
-+
-+/**
-+ * devm_versal_sysmon_core_probe() - Initialize Versal SysMon core
-+ * @dev: Parent device
-+ * @regmap: Register map for hardware access
-+ *
-+ * Return: 0 on success, negative errno on failure.
-+ */
-+int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
-+{
-+	struct iio_dev *indio_dev;
-+	struct sysmon *sysmon;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*sysmon));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	sysmon = iio_priv(indio_dev);
-+	sysmon->regmap = regmap;
-+
-+	ret = devm_mutex_init(dev, &sysmon->lock);
-+	if (ret)
-+		return ret;
-+
-+	/* Disable all interrupts and clear pending status */
-+	ret = regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(sysmon->regmap, SYSMON_ISR, SYSMON_INTR_ALL_MASK);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "versal-sysmon";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = sysmon_parse_fw(indio_dev, dev);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+EXPORT_SYMBOL_NS_GPL(devm_versal_sysmon_core_probe, "VERSAL_SYSMON");
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("AMD Versal SysMon Core Driver");
-+MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
-diff --git a/drivers/iio/adc/versal-sysmon.c b/drivers/iio/adc/versal-sysmon.c
-new file mode 100644
-index 00000000000..529d0486c9f
---- /dev/null
-+++ b/drivers/iio/adc/versal-sysmon.c
-@@ -0,0 +1,92 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD Versal SysMon MMIO platform driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+
-+#include "versal-sysmon.h"
-+
-+struct sysmon_mmio {
-+	void __iomem *base;
-+};
-+
-+static int sysmon_mmio_reg_read(void *context, unsigned int reg, unsigned int *val)
-+{
-+	struct sysmon_mmio *mmio = context;
-+
-+	*val = readl(mmio->base + reg);
-+	return 0;
-+}
-+
-+static int sysmon_mmio_reg_write(void *context, unsigned int reg, unsigned int val)
-+{
-+	struct sysmon_mmio *mmio = context;
-+
-+	/* NPI must be unlocked before any register write except to NPI_LOCK */
-+	if (reg != SYSMON_NPI_LOCK)
-+		writel(SYSMON_NPI_UNLOCK_CODE, mmio->base + SYSMON_NPI_LOCK);
-+	writel(val, mmio->base + reg);
-+
-+	return 0;
-+}
-+
-+static const struct regmap_config sysmon_mmio_regmap_config = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = SYSMON_REG_STRIDE,
-+	.max_register = SYSMON_MAX_REG,
-+	.reg_read = sysmon_mmio_reg_read,
-+	.reg_write = sysmon_mmio_reg_write,
-+	.fast_io = true,
-+};
-+
-+static int sysmon_platform_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct sysmon_mmio *mmio;
-+	struct regmap *regmap;
-+
-+	mmio = devm_kzalloc(dev, sizeof(*mmio), GFP_KERNEL);
-+	if (!mmio)
-+		return -ENOMEM;
-+
-+	mmio->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(mmio->base))
-+		return PTR_ERR(mmio->base);
-+
-+	regmap = devm_regmap_init(dev, NULL, mmio, &sysmon_mmio_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	return devm_versal_sysmon_core_probe(dev, regmap);
-+}
-+
-+static const struct of_device_id sysmon_of_match_table[] = {
-+	{ .compatible = "xlnx,versal-sysmon" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sysmon_of_match_table);
-+
-+static struct platform_driver sysmon_platform_driver = {
-+	.probe = sysmon_platform_probe,
-+	.driver = {
-+		.name = "versal-sysmon",
-+		.of_match_table = sysmon_of_match_table,
-+	},
-+};
-+module_platform_driver(sysmon_platform_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("AMD Versal SysMon Platform Driver");
-+MODULE_IMPORT_NS("VERSAL_SYSMON");
-+MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
-diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
-new file mode 100644
-index 00000000000..e27a5357575
---- /dev/null
-+++ b/drivers/iio/adc/versal-sysmon.h
-@@ -0,0 +1,67 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * AMD Versal SysMon driver
-+ *
-+ * Copyright (C) 2019 - 2022, Xilinx, Inc.
-+ * Copyright (C) 2022 - 2026, Advanced Micro Devices, Inc.
-+ */
-+
-+#ifndef _VERSAL_SYSMON_H_
-+#define _VERSAL_SYSMON_H_
-+
-+#include <linux/bits.h>
-+#include <linux/mutex.h>
-+
-+struct device;
-+struct regmap;
-+
-+/* Register offsets (sorted by address) */
-+#define SYSMON_NPI_LOCK			0x000C
-+#define SYSMON_ISR			0x0044
-+#define SYSMON_IDR			0x0050
-+#define SYSMON_TEMP_MAX			0x1030
-+#define SYSMON_TEMP_MIN			0x1034
-+#define SYSMON_SUPPLY_BASE		0x1040
-+#define SYSMON_TEMP_MIN_MIN		0x1F8C
-+#define SYSMON_TEMP_MAX_MAX		0x1F90
-+#define SYSMON_TEMP_SAT_BASE		0x1FAC
-+#define SYSMON_MAX_REG			0x24C0
-+
-+/* NPI unlock value written to SYSMON_NPI_LOCK */
-+#define SYSMON_NPI_UNLOCK_CODE		0xF9E8D7C6
-+
-+/* Register stride: 4 bytes per 32-bit register */
-+#define SYSMON_REG_STRIDE		4
-+
-+#define SYSMON_SUPPLY_IDX_MAX		159
-+#define SYSMON_TEMP_SAT_MAX		64
-+#define SYSMON_INTR_ALL_MASK		GENMASK(31, 0)
-+
-+/* Supply voltage conversion register fields */
-+#define SYSMON_MANTISSA_MASK		GENMASK(15, 0)
-+#define SYSMON_FMT_MASK			BIT(16)
-+#define SYSMON_MODE_MASK		GENMASK(18, 17)
-+
-+/* Q8.7 fractional shift */
-+#define SYSMON_FRACTIONAL_SHIFT		7U
-+#define SYSMON_SUPPLY_MANTISSA_BITS	16
-+
-+/**
-+ * struct sysmon - Driver data for Versal SysMon
-+ * @regmap: register map for hardware access
-+ * @lock: protects read-modify-write sequences on threshold registers
-+ *        and cached state that spans multiple regmap calls
-+ */
-+struct sysmon {
-+	struct regmap *regmap;
-+	/*
-+	 * Protects read-modify-write sequences on threshold registers
-+	 * and cached state (oversampling ratios, hysteresis values)
-+	 * that spans multiple regmap calls.
-+	 */
-+	struct mutex lock;
-+};
-+
-+int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
-+
-+#endif /* _VERSAL_SYSMON_H_ */
--- 
-2.48.1
-
+Best regards
+Lukas
