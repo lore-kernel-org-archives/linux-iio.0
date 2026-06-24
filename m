@@ -1,110 +1,105 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 722603C197F
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 16:01:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D03E40D56B;
+	Wed, 24 Jun 2026 16:21:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782316907; cv=none; b=RBVTeCVRI6c66TsObpJi78LRaRiPgYCAcfeRY4AAxnq7PQLcKrfRDWkJ8BMbolURwWEVx10LAWEScaLYm4WNRs1zGsQD50bFNSRT3pixVLPTLwUWs9H7wVSQ1GoTy6by3OzfPS3gSt283R12lBoaYpsHDUtW+9d1PjOGwGnMjzE=
+	t=1782318088; cv=none; b=DfOkYWWWoZwoW/UXcQwoJYGDMVodOWbB2w2gGrS+uUIHyQ7j1g/IbVP3SNqjF9TyJ4d8vqLsYDa6ECkx70kOtZRnVN52/PywXue58jW1ZLsoPffpAi0DMGPalg+5vc8QLb18Yyw+Ku+TOv7bj0h+DDJOaRS5OKl/s/F/Qyvr2dU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782316907; c=relaxed/simple;
-	bh=Q6CCJRsOxKIkPpMuT8XEmO/ukJC4XnYqisb5E//FvA8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uypTPAgfLoGsugkmha9meCJHTAp7Dhl+9b4upWgKz/d3ddHx1hmX8Ag4fBAQquttoYxpNr9+vcpd8NRDzujTN6V46OqxnoNQykxQ65nHVlMTkxyi/IXyVxlyoqeL+vH1ANvtgJMP3Sojy5H5Q5bqs4JLODLye5wInPwbBsRi+Eg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MJBgdG5K; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782318088; c=relaxed/simple;
+	bh=4+aB0zt392xoae8OjYLBjO2crQ71y2MxyrXn2cyussU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=RB+Yk/seS0u7EsCeOy2LEtmor0ptrhKWTlYHCsFasDR9h4iJ6QjjuK5poTblZ0leyj0KxP2vKaYII00+IfytQU3/7nfjlMObi5Mz99u7uHbS5vy24nMcCXPfQKsc0eJxcJEAvRq1d7Gt5evbkgJrBbfrjNUpAUqM9+kUbsHbPJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e9BjNI2w; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MJBgdG5K"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49241dbf9c1so10104935e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 09:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782316904; x=1782921704; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xbd+VZy9Xtt5ID989pdKdPLVogIC6o/6YUS9xMFxJ7I=;
-        b=MJBgdG5KLHMGCIXaHWOkxyxhv/vaWTaC60s9cfCwcKVZfHYF1dsomMFgZYljrzIdvU
-         ty0V8k0TGm4NWQRi6c32yS+/dI0UOKRCLSsBd0EXBR/nYUtQVbiHWOfohzj5U3MNFZvP
-         LVTqxhcJ7PeTFcQSRkSGZ7ZIQNYW+KJEBBkp7J1jzHPnQbnIjv9ilkXsngKSbCCnIWdA
-         6HpyaQYJj/AIZmrRhKBfCM20Ym08WznLbv2n03mCsvln7F9mClBKvU0e1e2gBMhF3HIf
-         J7vyz0axC31TBPPoe2OukgaCIFbaNmkq0FqnQoeyCwMUZsZ396z8gnqtOlMHFkfEOuX6
-         s4MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782316904; x=1782921704;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=xbd+VZy9Xtt5ID989pdKdPLVogIC6o/6YUS9xMFxJ7I=;
-        b=XK78WJHu/Ss1YJ45dA3/PH+el2pLv9PEkxbtxPxy5yyaBulHkiDKWOVVpL51ylCKQs
-         RbE/2a+TMFJ2CJjYi9ftA1RL1YKBrTtdBgNeMtpTOPgiSryr3KYSlSZR/FJLcNBF4bfK
-         ChrPS90p+7flewcBP/KS8+lwCOzu3Oim0FNIKdSZkQeRmcHwoiRBHtRVYxAYGhfR+Adn
-         Z3xFe6O9fiZN53U98fbORi/Zg3DGdjVIRun78UHyIgM1K6qo4h2G1UfjIO2rn062/A3f
-         2mjULdlZQ0o5u6NuvIHyvTWyFDf/G5Og9s2+E27uyAI8vUs0BnBkCmY8SIc69T2eeC2l
-         yQyg==
-X-Forwarded-Encrypted: i=1; AFNElJ8q13g99swCrCw0O/jyiIvqjqPJokGL69oJqsDuXQ1nwV5cSVvlhWH27e7/gZoGMEbGE3MIfIFSQEc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyS7Qt8p9c50nf86h0vdnswCoQz5SJkRITHlV9ri9nokZ41tXoZ
-	gx/tN4JAlTaS5TqCADI75kIuYENwuDVr3XNwDI0j/rRJJLXYW92NukI8
-X-Gm-Gg: AfdE7cnWf7OfqQu/221sbdIVRw/4njtj5v2T1C6NpiqtXfNxPIPYLUs4oNbh1RAacS7
-	Kf/5c9ciY+Tb5v6WtA1L/s8scvQdQzZNNkCLt9jkrGqQa7Ltwr4eK2HeMKWLA6ja7LoLCIFzUvQ
-	b1H1tiLLMvautE0kCC4/DRwhKINoPuu8ly98vTwpXc+WEKtbUk8xY+hF26OD/KWc5Q7C6TXDo71
-	OJEFUO/jpnraDLtv/Ep/JTMplotXZtkyLxHV3XU6U5in5krYvIFtnTiM8EBCWW/tZDUwPVLK6wc
-	9KM3w2sU/jQf6ftjhl+CwIJcPa/20+Bhuzj/jb92ih+mXAMbYWktgaJdcoi7jNjX4qfe7Vx/ZAD
-	2txuYBG2D3q4idRGEaKD0Vu+Xoo/o3sOYaI2OTRWWYwi+EjVxJWuxsU41Np/qCS4EO0l92KiIuf
-	rsAf9kLfTT5U59eps+lXEEkRXz9aO4Tv6GpcztXzPHlAm8L4P/MwTl230IKRVjDA9aib4=
-X-Received: by 2002:a05:600c:6097:b0:492:4a56:68fa with SMTP id 5b1f17b1804b1-49260872e27mr58948635e9.24.1782316903491;
-        Wed, 24 Jun 2026 09:01:43 -0700 (PDT)
-Received: from arch.lan ([91.230.98.162])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492640821casm1368545e9.10.2026.06.24.09.01.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jun 2026 09:01:42 -0700 (PDT)
-From: Tomasz Duszynski <tduszyns@gmail.com>
-To: m32285159@gmail.com
-Cc: andriy.shevchenko@intel.com,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com,
-	tduszyns@gmail.com
-Subject: Re: [PATCH v2 0/2] iio: chemical: sps30, scd30
-Date: Wed, 24 Jun 2026 18:01:25 +0200
-Message-ID: <20260624160137.131207-1-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <CAKqfh0GF1WCF_85r4F0FTvwEdBPoihynx2VHmT+CtyDfYoRDbQ@mail.gmail.com>
-References: <CAKqfh0GF1WCF_85r4F0FTvwEdBPoihynx2VHmT+CtyDfYoRDbQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e9BjNI2w"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0630C2BCB4;
+	Wed, 24 Jun 2026 16:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1782318088;
+	bh=4+aB0zt392xoae8OjYLBjO2crQ71y2MxyrXn2cyussU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=e9BjNI2wcaSekGBoUErOQcy86S+TlxhHq3GZ6DygCzMFoHHt/35zcgdKPsWo4zzA2
+	 ZC1xTPo53WADQC08z2flYsH+wulzzzvPgPLFPrPWgAMVR7fW/FOSEcJfrEgUqDVbXv
+	 g5h+M+44fHjgrNH1AXTPfr0yD4FQhJf71tWTIYrQrpwRZOW6VmAzfLQnQgPuh/y3Wi
+	 2F7nB7gfU8lWwZKHRj+LS+aJgo9lBK22h0rfiFD5+8QXua9gtk8hUT9Q3pI0MZHiwD
+	 Y5UcBQnp4gLTYJyDolxIe0mmCI3JVr8e1/XEkXUfuBqtbs/Ym7A6YA58xgU0xYCnz5
+	 QYJqlEEmW+uOg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9602CDB479;
+	Wed, 24 Jun 2026 16:21:27 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Wed, 24 Jun 2026 18:21:18 +0200
+Subject: [PATCH v3 1/2] iio: imu: inv_icm42600: reorder includes for buffer
+ module
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260624-inv-icm42600-add-buffer-hwfifo_attributes-v3-1-5d9a4c662f50@tdk.com>
+References: <20260624-inv-icm42600-add-buffer-hwfifo_attributes-v3-0-5d9a4c662f50@tdk.com>
+In-Reply-To: <20260624-inv-icm42600-add-buffer-hwfifo_attributes-v3-0-5d9a4c662f50@tdk.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782318086; l=1087;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=/o86TiMkszwM4dpf3wC3v+DIzyJYtoJPgWoTuGRl3jI=;
+ b=FcYk9ni7DTyb0ss0gRnbqPeVl6irSAV+InRO7BAdqYnxVpoBfMiv8qvLtFUxQtsPJ7mVxCR3C
+ nfp2xUgrMsFBFo9coMfIdrenLMm2lR/jMIPljdcmpHIo60tifmOK3X6
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-> On Thu, Jun 18, 2026 at 10:40 AM Maxwell Doose <m32285159@gmail.com> wrote:
-> >
-> > On Wed, Jun 17, 2026 at 12:22 PM Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> > >
-> > > This series replaces old email addresses with a current one to
-> > > make sure changes show up in my mailbox.
-> > >
-> > > v2:
-> > > - add missing mailmap entry
-> > >
-> > > Tomasz Duszynski (2):
-> > >   iio: chemical: sps30: update email
-> > >   iio: chemical: scd30: update email
-> > >
-> >
-> > Even though you were the previous maintainer I should probably still
-> > ack this for the scd30 for good measure, so for scd30 patches:
-> >
-> > Acked-by: Maxwell Doose <m32285159@gmail.com>
->
-> I also neglected to mention this but I updated your entry in the
-> dt-bindings for this so you may want to go and add yourself to that as
-> well.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Yup, I'll modify that too for completeness.
+Reorder includes following rules and delete unneeded kernel.h.
+
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index 68a395758031..8ad6374409a9 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -3,18 +3,18 @@
+  * Copyright (C) 2020 Invensense, Inc.
+  */
+ 
+-#include <linux/kernel.h>
++#include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/minmax.h>
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+-#include <linux/delay.h>
+ 
+ #include <linux/iio/buffer.h>
+-#include <linux/iio/common/inv_sensors_timestamp.h>
+ #include <linux/iio/iio.h>
+ 
++#include <linux/iio/common/inv_sensors_timestamp.h>
++
+ #include "inv_icm42600.h"
+ #include "inv_icm42600_buffer.h"
+ 
+
+-- 
+2.54.0
+
+
