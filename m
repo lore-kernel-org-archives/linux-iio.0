@@ -1,98 +1,89 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47FB3AFAE2
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 10:13:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21A6D12C534;
+	Wed, 24 Jun 2026 11:10:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782296034; cv=none; b=P1HLGf1yxhmsB+9B4Gqff3tnZSy88MhnRzNYPDokVLTA/wCVWGleSds4VSBL4+HlHFCZEcwQSKjAOOt69QKVwYPvWS6layHg/Jup5n+3qySf5C7S9YeEx6w2z5/Z54s9CHn4aMZy/209UGeB5+LBgZFI1Z6TFud3bBic88L3PSM=
+	t=1782299427; cv=none; b=hI4dY7ooMw4DIFck5t00TXUtlOmJfsK4wXdf3aku6G5C7dTA/jGi+5baRZ32vCUNDLNV3LTWeOsmBgDcBjKzN99PxNzcnGNriVYkPaHSmVNE74vbKWKUARjvPcmEIlHFqVnxeg7bXjuMamqTn+sIt3OKd9eaCSFyyMtrko3inE4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782296034; c=relaxed/simple;
-	bh=zebcGPrceXHjgWE78xr/y7hHNy1EMamwmILQApdEpJ0=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=C9w2ZHuI+wwXYxu5wMaD4BYIum8uzNlMgSUUglMX9DtJak+SAc62623rRQb2sWVsQe9bceKekSK5dG7hWYGWheOtpHHsPT8bCyyb3OqEwx7sKx6auigE84g7nl4cZkdFsyRM+cH2X+0T8a6dBzcmfQzRGCfVnI7kgC90rbrH4A8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OJAJ+KXJ; arc=none smtp.client-ip=209.85.210.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782299427; c=relaxed/simple;
+	bh=OQW+QNxMNH7lIKb8i2cDF/KHWOI5CpORL0BtX8KUEos=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AqqZIIQev5J2z/U6fOWqSwgJwIZf5bWW87B7K7fOaY9Uq4AdK3803FRYcGSwXumTBaFTMrHpPQJjSj10y9ACoE2CFFs19SHdg1xxfKUW37mW1hxt3kbayv3pNJvdjT0PNY3QO0fbmAJQT9IunILC93Kvohy6xYes+y2xvCbBv3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DHnlJHpr; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OJAJ+KXJ"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-842307472d4so412317b3a.0
-        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 03:13:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782296031; x=1782900831; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tLzHkC9eNs2dWN9wH2HpWa/E1ENUCR9ZQ9gzLDAm6+s=;
-        b=OJAJ+KXJifcOhmE9PcJMCgFi2r/OA+q4Nvs8MXGIEAbnRtazDrcojbAmEqpOej/GJu
-         yh+GYMgYeG4WWiSLpGM9ys2WhklGp+MUqH4zGmLH9xrS0e+x20yLWqjp8oWc1l9acAAI
-         7WPVcpyEujpYKlpXKZRTkL/DdGFQ4Za1G9ECvAKJihnlZu+1X7qcXZxZmNwSCL0Q5zbZ
-         IwiHbHaRFPNziI7LVhDp++d4o9QiU3mIBY6KYV2yxK6f3QAMVItIjRClJZ6qTTmi6hmj
-         nHllB3z7UkwDkyUJ+37dh7K4vzrHUzSwB/Uzm24BuidOyb6V9c1wlbxKvTaxLoRzWoJk
-         VrfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782296031; x=1782900831;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tLzHkC9eNs2dWN9wH2HpWa/E1ENUCR9ZQ9gzLDAm6+s=;
-        b=YrMfukz4bAOyahkk/rmCFClMrB9PJVOcudDahODSlKrLMIXSAgjphuTtyaWP4YGCAi
-         eh6PdUUCAMN+R4odeHAHWsSsQKJNh0Qerp2kjjksAmI3LiFYcJsL+hQfRoTnBbrhjfoD
-         aqyedgosHAqYka/4jfaA9brHSgV6s1kp6M/H9h1BL+g6jOFZx3w0+n2PnSEBMkT/GaYF
-         56GmvMivuVcR0jxKaNyWK6zzOkDxQtDnAg4MB6RVeRNZbYrUfS/RLYyZGf98OhUK+fXx
-         YpCZVMG3dkGRrI5u4tGVGt94DFYfY6ntpLn2cSUeNX6KZB+mC4c6B3puVJ9/0NWyTdYL
-         GPFA==
-X-Gm-Message-State: AOJu0Yxbyh/qF5BAVpdYnssi3YkPcq0EvXHn8TuHuuEDuxIDtuUFlAMe
-	sGYFZXOak9psI7XZda5BI0SZIIxT2S6W209gBSG3dMNywnvKAZI8xacd
-X-Gm-Gg: AfdE7ckKuAovToaQ5G/B6blNFTIixm1j3QsGycAn0xri/vTavGJ64M4Sp3D6nxvHzsc
-	l8hZ4kvFMvXDYqj7pc0iWFgk/FdBosWpnNkzwsCrC+yCFqUJa/6IEc7FyuN8IvpmeudZyx8OZ+m
-	O8XFcAYZlpWdvUYWzHxBQh9JG9W2GJBQjGF5WPhdeOIkZT6dUng2NzKH86sUCUzdTnHThSe599Q
-	fVZfWa5uUFd/Hqzwj/bwZFNU+OnG8YVEYLT+9gkgwFzs7cW5Y187cR/F4JBBQsCbHlJS/GhfkwS
-	0MT/i0vVYQKmB23dQUjcbdVM6G4xWD13edL1wFxn1WZk8AC94+zHTHEBWmO5jmeZe+Wnq5jgn8d
-	fSQVGghEZ8+njWYI2RzdKEuZntsso+/gNt/LHAWILitKIK0BXzB/YmgiqO87RBo8kkd6mBN7suB
-	oX+h19o5hQMcYUYXNryNPJwNHykMzDsNrqHC/MCsDphO++a4r0tfjIGGnBuCPKaCQEvBMYabpP/
-	IGK0Jy99AdZqYA3SOy5
-X-Received: by 2002:a05:6a20:3d22:b0:3aa:c964:3c27 with SMTP id adf61e73a8af0-3bc5420cd6bmr21206958637.46.1782296031529;
-        Wed, 24 Jun 2026 03:13:51 -0700 (PDT)
-Received: from localhost ([2401:4900:8836:4853:acf2:b82e:a091:7b0b])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c8bc563c168sm12454599a12.20.2026.06.24.03.13.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2026 03:13:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DHnlJHpr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782299426; x=1813835426;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OQW+QNxMNH7lIKb8i2cDF/KHWOI5CpORL0BtX8KUEos=;
+  b=DHnlJHprOzQmdLtcDLXay3kvX3Lt4yxU5GN8J+4UBwYOKnKmKBOZqnYO
+   SNrg/x45iwtlMkMkXty021Th1mS1kupeTtyfHdDl5V23itGacVgO+Xf+h
+   XdiRi15V7lyCLeG2qsnhCkUhKN3+LxZg8DtGlcdtbbRnL84VuQOCXpwi5
+   eip5aog8nKuMHb8ixGUEMLIlQ/HiNtAL5MUG62/+iS6Xl2maHgax9162c
+   Q7qKbuc7KWe4WWbcTJetIMlvKXs++OHkNKy5tN6qA/KFcduAH1z/a3poK
+   n1cTgUdzJkNaEtyfVoPMU9NBN6JJzO62nGA0f2j8Xc02DSSWSgb7q6Uk8
+   A==;
+X-CSE-ConnectionGUID: dyEpmbLgRL6stWOzorPAVA==
+X-CSE-MsgGUID: 2Yp3uKa0RyKg6Gqw/Fhpiw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="82827478"
+X-IronPort-AV: E=Sophos;i="6.24,222,1774335600"; 
+   d="scan'208";a="82827478"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:10:25 -0700
+X-CSE-ConnectionGUID: Tleb+pMgQ0q3x25e7PXIog==
+X-CSE-MsgGUID: kqV70I/WTkiq0lDRhGXamw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,222,1774335600"; 
+   d="scan'208";a="254786460"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.156])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:10:23 -0700
+Date: Wed, 24 Jun 2026 14:10:21 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Pengpeng Hou <pengpeng@iscas.ac.cn>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads124s08: Return reset failures
+Message-ID: <aju7HbkcRBr9zcH9@ashevche-desk.local>
+References: <20260624055325.32388-1-pengpeng@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 24 Jun 2026 15:43:44 +0530
-Message-Id: <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
-Cc: <linux-iio@vger.kernel.org>, "David Lechner" <dlechner@baylibre.com>,
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, "Petr Mladek" <pmladek@suse.com>, "Oleg Nesterov"
- <oleg@redhat.com>, "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>,
- "John Ogness" <john.ogness@linutronix.de>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup
- failure in probe
-From: "Prashant Rahul" <prashantrahul23@gmail.com>
-To: "Jonathan Cameron" <jic23@kernel.org>, "Prashant Rahul"
- <prashantrahul23@gmail.com>
-X-Mailer: aerc 0.21.0
-References: <20260620174708.111470-1-prashantrahul23@gmail.com>
- <20260620174708.111470-5-prashantrahul23@gmail.com>
- <20260623203636.69a7429a@jic23-huawei>
-In-Reply-To: <20260623203636.69a7429a@jic23-huawei>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260624055325.32388-1-pengpeng@iscas.ac.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed Jun 24, 2026 at 1:06 AM IST, Jonathan Cameron wrote:
-> Why this particular one but not the devm_iio_device_register() below it?
-> Both pretty much only fail on driver bugs.  Or out of memory for
-> which dev_err_probe() doesn't print anything anyway (on basis that
-> is normally pretty noisy).
+On Wed, Jun 24, 2026 at 01:53:25PM +0800, Pengpeng Hou wrote:
+> devm_gpiod_get_optional() returns NULL when the optional GPIO is absent,
+> but returns an ERR_PTR when the provider lookup fails.  Probe currently
+> logs the ERR_PTR case and keeps the error pointer in reset_gpio.
+> 
+> Later ads124s_reset() treats any non-NULL reset_gpio as valid and passes
+> it to gpiod_set_value_cansleep().  Return the lookup error instead of
+> retaining the ERR_PTR.
+> 
+> Also return ads124s_reset() failures so probe does not register the IIO
+> device after either the GPIO reset path or the software reset command
+> failed.
 
-My apologies, I wasnt aware that dev_err_probe simply ignores `-ENOMEM`.
-Looking at drivers/base/core.c:5096, it is pretty evident that it does.
+Not sure about the latter, but the GPIO case should mention deferral probe and
+hence it needs a Fixes tag.
 
-My goal with the patch series was to change dev_err into dev_err_probe,
-as my understanding of dev_err_probe was that it's a specialization of
-dev_err for probe contexts.
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
