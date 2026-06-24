@@ -1,66 +1,56 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B5825B0AF;
-	Wed, 24 Jun 2026 11:26:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035A7364925;
+	Wed, 24 Jun 2026 11:38:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782300419; cv=none; b=SvA2HWzBz7qYZsM4zGRG2OfHBynGtjcs0QVjJt7gITiEmPhtqQzT3i2NTKoPl2wSpgHaul4nvArMQUivEpCX3W4lji+Nsbru0Drqn22BE4squ4YNUQhsmXdbGYnfICrU67a2jCode+H7dWBmoGtVX3hD0Ppe8BC8FkJJMiXrtko=
+	t=1782301083; cv=none; b=ern0Ohy1fSX9Z4NSww8d2O6QB96n5ky99trjcp08rJZKfaNjjUFuyntNYqOzZy9OD/xn7A4MdaH4C1H3cYsDfskXn12tjOMG3DxpnQv8+Cz0XrE/eqI47Co/b6MeiV9fHCV9bQ8k5A8y/XMrtkxA0UJQ+sfZAnDzYu9F6bhpqpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782300419; c=relaxed/simple;
-	bh=7GUqJlRMN6O8eqdlbPt2PVVp9u8tc7Jjc+XYqLUU4Co=;
+	s=arc-20240116; t=1782301083; c=relaxed/simple;
+	bh=3GSHxeyT9112m6bK0WlZR3PJhHo19/qNalU73sKaeaU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AaaOsCFSxBtMbwSMrU39vNPYmuVDrX8nTlkOj2aTGRv2d5i9AMo3kFeaJsH7L0/DHycwPoPyzLoBYJTwGSNJi89eiqXJqQ6YHMMyeCm7HJoWqZyy90aWyIyFA5b8Qu8B2UvWs5crHRLNRMWLpsF+Zk2eXmq3Fl+/t7DaKQwrVXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CgTUABwu; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=WD4aYwC3DxUCA2OLiYOQHGvp4vUFwgIwaRhCSVMj65EMjnPtaNC9Xo7kOjE+VXU4i83bpN+9eeLbCiDWKZFBkblME51jdwaMlfdTLp1Jd2JfPLemSy2dRMhXYYpZDo4+dEqxQRH1ZgAZaNefcoYCzWeJUzhzylJtdpPbnNzMXGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CExy3swe; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CgTUABwu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CExy3swe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782300418; x=1813836418;
+  t=1782301082; x=1813837082;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=7GUqJlRMN6O8eqdlbPt2PVVp9u8tc7Jjc+XYqLUU4Co=;
-  b=CgTUABwu6qAFV4m5wgvw1+ZywvkpDj6FHWf6ybvQ9viOFJrl0pcyrMoS
-   p34CdTb0jufwgU+keriqaZA2O1TKzkyya++gZBxbO9sak/axHotXOgKgJ
-   8s6FPrQCSMIitRum0CNWq/1jdqpLH0FSKzHlSgPmrk5f6LoGb2WihzdEJ
-   2whzdOaE9siIusa3ABGL8b7dGXm6wit0Jdxl7TAE3xwWoQk3QjzDQFpVu
-   g4BTVYGzFCllIIHace2JpWlDtiAfmwhnrAMYQfFt6a0pOFazBVuUdhW0S
-   dRaAePbQimstEtMUjvFY84ZJagVmB029gVMzXMA80sin89j8hgztdSgsl
-   A==;
-X-CSE-ConnectionGUID: 6iixoEarSHaNmEZWT3RVFw==
-X-CSE-MsgGUID: gSSVju0/R+yqgbmeM+Yy4Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="83108780"
+  bh=3GSHxeyT9112m6bK0WlZR3PJhHo19/qNalU73sKaeaU=;
+  b=CExy3swexoGZozC6srRLbYuXqfVy5nmTAO1xkYw+P6z6we/M3FRJauvN
+   Oyyemt114pAeOcBnK2JecZ1VbEgqymFFQ9Vo5Rlk219KZGpOoAGfbnDuo
+   CowkqxgHPA/hJIz+E0X2tbD9ISB+Xc3jBXwtoX6YUvD+WVnt+/ALKIXoN
+   tcN4y3fiXz54SbsGXnbbcoN8GbcqJjyQsEq0UJ118JCrXy3/ATly3pJHe
+   QzKzE1pavVIEe+Ju4Zvj0TQL+5mU+lyS+/SszUCkc6VS/pCpP90hLVSJf
+   QlKNb9JWnjkBzP0nsI8hUplv8Pb6qRWp3ZLeR4Qp5IyXR9a7TPLxG8tgq
+   Q==;
+X-CSE-ConnectionGUID: B3nXrlqmTrK3vABsxl4LoQ==
+X-CSE-MsgGUID: Cj4SdtZGTqKQl/VG7F224A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11826"; a="82173079"
 X-IronPort-AV: E=Sophos;i="6.24,222,1774335600"; 
-   d="scan'208";a="83108780"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:26:57 -0700
-X-CSE-ConnectionGUID: 3Zl/ea7FSgmVN7TwvgPpwQ==
-X-CSE-MsgGUID: QJzf/xn7RkamxYcvwwVBFg==
+   d="scan'208";a="82173079"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:38:00 -0700
+X-CSE-ConnectionGUID: F7kbfVG+Rje15kanj0Bhxw==
+X-CSE-MsgGUID: T9ycpteGSpGWUGGDxPY2pA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,222,1774335600"; 
-   d="scan'208";a="243439450"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.156])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:26:54 -0700
-Date: Wed, 24 Jun 2026 14:26:52 +0300
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2026 04:37:58 -0700
+Date: Wed, 24 Jun 2026 14:37:56 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Prashant Rahul <prashantrahul23@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup failure
- in probe
-Message-ID: <aju-_HSz6jNkR_NM@ashevche-desk.local>
-References: <20260620174708.111470-1-prashantrahul23@gmail.com>
- <20260620174708.111470-5-prashantrahul23@gmail.com>
- <20260623203636.69a7429a@jic23-huawei>
- <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
+To: Paul Geurts <paul.geurts@prodrive-technologies.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, tobias.sperling@softing.com
+Subject: Re: [PATCH v3] iio: ti-ads7138: Disable STATS_EN bit while reading
+ conversion results
+Message-ID: <ajvBlBValiK4VY2p@ashevche-desk.local>
+References: <20260624080131.3669357-1-paul.geurts@prodrive-technologies.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,30 +59,89 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
+In-Reply-To: <20260624080131.3669357-1-paul.geurts@prodrive-technologies.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 24, 2026 at 03:43:44PM +0530, Prashant Rahul wrote:
-> On Wed Jun 24, 2026 at 1:06 AM IST, Jonathan Cameron wrote:
-> > Why this particular one but not the devm_iio_device_register() below it?
-> > Both pretty much only fail on driver bugs.  Or out of memory for
-> > which dev_err_probe() doesn't print anything anyway (on basis that
-> > is normally pretty noisy).
+On Wed, Jun 24, 2026 at 10:01:31AM +0200, Paul Geurts wrote:
+> There is a data race in reading the STATS registers, resulting in wrong
+> data being read. When the data in the RECENT register switches between
+> 0x24F0 and 0x2500, occasionally value 0x2400 or 0x25F0 is read. This
+> happens when the value is updated inbetween reading MSB and LSB.
 > 
-> My apologies, I wasnt aware that dev_err_probe simply ignores `-ENOMEM`.
-> Looking at drivers/base/core.c:5096, it is pretty evident that it does.
-> 
-> My goal with the patch series was to change dev_err into dev_err_probe,
-> as my understanding of dev_err_probe was that it's a specialization of
-> dev_err for probe contexts.
+> Disable the update of the channel stats before reading the values, for
+> registers MIN, MAX and RECENT.
 
-Jonathan, actually the triggered buffer setup might return not -ENOMEM error
-code for the surprise. After all this series does add not a dead code, but
-a quite rare to be used one.
+It seems the commit message still needs some elaboration as you explained in
+the previous version thread.
 
-https://elixir.bootlin.com/linux/v7.1.1/source/drivers/iio/buffer/industrialio-triggered-buffer.c#L57
+> Signed-off-by: Paul Geurts <paul.geurts@prodrive-technologies.com>
+> Fixes: 93a39542d3c3 ("iio: adc: Add driver for ADS7128 / ADS7138")
 
+...
+
+>  	case IIO_CHAN_INFO_RAW:
+> +		/* Disable statistics update so the value is not updated mid read */
+> +		ret = ads7138_i2c_clear_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					    ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  		ret = ads7138_i2c_read_block(data->client,
+>  					     ADS7138_REG_RECENT_LSB_CH(chan->channel),
+>  					     values, ARRAY_SIZE(values));
+>  		if (ret)
+>  			return ret;
+> +		/* Enable statistics update after read */
+> +		ret = ads7138_i2c_set_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					  ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  
+>  		*val = get_unaligned_le16(values);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_PEAK:
+> +		/* Disable statistics update so the value is not updated mid read */
+> +		ret = ads7138_i2c_clear_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					    ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  		ret = ads7138_i2c_read_block(data->client,
+>  					     ADS7138_REG_MAX_LSB_CH(chan->channel),
+>  					     values, ARRAY_SIZE(values));
+>  		if (ret)
+>  			return ret;
+> +		/* Enable statistics update after read */
+> +		ret = ads7138_i2c_set_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					  ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  
+>  		*val = get_unaligned_le16(values);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_TROUGH:
+> +		/* Disable statistics update so the value is not updated mid read */
+> +		ret = ads7138_i2c_clear_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					    ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  		ret = ads7138_i2c_read_block(data->client,
+>  					     ADS7138_REG_MIN_LSB_CH(chan->channel),
+>  					     values, ARRAY_SIZE(values));
+>  		if (ret)
+>  			return ret;
+> +		/* Enable statistics update after read */
+> +		ret = ads7138_i2c_set_bit(data->client, ADS7138_REG_GENERAL_CFG,
+> +					  ADS7138_GENERAL_CFG_STATS_EN);
+> +		if (ret)
+> +			return ret;
+>  
+>  		*val = get_unaligned_le16(values);
+>  		return IIO_VAL_INT;
+
+This adds a lot of duplication? Can we have a wrapper on top of
+_i2c_read_block()?
+
+_i2c_read_statistics(client, reg, values, values_len)
 
 -- 
 With Best Regards,
