@@ -1,66 +1,66 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490853D9DBE
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 15:13:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF2D3D9DD1
+	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 15:27:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782314001; cv=none; b=knMj16xOGXbXGWqIAn2Z3ahy+gsLPOc28CjSuYHFxDAGdpnU5RmdeypDjvHWCJoGlnsGa1Hl3FqBEh8+rbtwaGeSZm6Yy/SDbqL0xeET59n9C7QUmbIhlvtuCRMlm/A1qDHoKLAg8E3tpTU3Ky7vmEAI8jEmO0ft7JvXOFtjvdg=
+	t=1782314843; cv=none; b=SDaUhAu4ztvCeWsiXrT79iAFetnJyD/JdXoP3F2s23glG7UO7lkQM7A6TuF5vPXALEyWFWvwFtntW+fJazQ3+l1svcT3w3PSDS4KU+PUKA3/6tKBqp+f2ChLJqJnq8ELvlZfMbnJs1Zad3KNAmzxqVXjglSQPGxHOoX8MpNI8u0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782314001; c=relaxed/simple;
-	bh=S7HTvQJvi9q3ObEnOv2xXX/hy6wHNAPvkD4FGpz2B8U=;
+	s=arc-20240116; t=1782314843; c=relaxed/simple;
+	bh=zQlht0IsyQB1oNhNfYXgYgQbV1Y7rokfYO480Nk79qY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AfczPVesJ2LtD12D5WljT2QIfDClSS89hoS24ADKWZc0NJLnxCNGG0Mq20XACIWP+RNKrt55CYNoKZyKxg3dnaf0nwT+4gt8Y8TWrH+TelJJQHZKFrf/pHkDZXyNUqRZTd5gFbNyoOkOGk43/8nsOfBQ7c/MEa/W15d4cMVUI0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=U/5Y866A; arc=none smtp.client-ip=209.85.210.54
+	 In-Reply-To:Content-Type; b=KLEZBsohyrzVCDzIdIpI/zSxhV8x38FaOTuytkfY52NTwybI9jGw73WDhQuUZcbMSHb4qq+ja58z8XdyN06kk7s9V1+/Bb+Lb7SNTBl7SfvnQFq2DAEtlF5pC71KFDnxF7/Z52LwioxgaNH1If3ucI+W+sBqMNghmj2dCgyb9ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TVI+Qcdp; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="U/5Y866A"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7e9483cd614so985596a34.1
-        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 08:13:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TVI+Qcdp"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso593195fac.1
+        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 08:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782313998; x=1782918798; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782314840; x=1782919640; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HAsvraZ6mLfXZddrVTxKfH+cnaP/AcM6qIT+GUf0HZM=;
-        b=U/5Y866AWO1pTARc3qO/TlN8hRIZ2uffotr8pLtTxATWLKSvnEzSrSM5+eXw2UmRPF
-         c0/LfCHSx0rUIsEY+8qvjXTh/YC/iBBZISXAXxGGWfJaWRNo2oGs0OjeW4oXdGG65GCP
-         yIYKwJpWKJ18OMQuvW7Q8cPaNdUfGlBONDRPKy84A3oaB9jVZWrIvgrhiD4DDcRt7T2x
-         vCGJswsw7jTz7KkZwPcKnXT+Zu8R63mlRIIOkMd0iyddFyW6vQZNtOdffEvUrg6ii43T
-         fanr2wAbfy4iZGfBxf7CVhFP/zDvnRRi/KNmA84lXWu7TihYTOVjnnJFEChwgWY/GvB7
-         D8bg==
+        bh=Fjq8lD80zO6HiyYMuWH6+pjiwlUb52f+5tf0ovQAwVM=;
+        b=TVI+QcdpMI3gzRx7l3JLLLB5sQGg3piLry+GcCTA5BxoD+KBsB3tPvy4HxUpIHxhqK
+         wSlAcvWsHnGKXG03VwM4A5aFP9xiyo+lB2WtFA6yWUS87wNocMowf3EOtiBHwEHcBHdu
+         U2Ir1u4g1w02xirvTNygo+DjlkTI3RSntD7iIes520e35AS00NKB8jtqaccxMrAm+Y8X
+         gC2OQ+gVV1inlg+5U/bPqKBT9KplfjhNOzBOLXjuW16lJdctd0mBgSppV3/9rbPARJh9
+         H1x4/mi5msywP21t3cglyP/VQjWp+BAVJ4ytVvH+f2VApXP1bAMRz64HIOrf5h/UAlZm
+         iiXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782313998; x=1782918798;
+        d=1e100.net; s=20251104; t=1782314840; x=1782919640;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HAsvraZ6mLfXZddrVTxKfH+cnaP/AcM6qIT+GUf0HZM=;
-        b=FP1n3/RPXcOda93EYRUPu4qhz2ad44kO+hxqY21mcj/Q+E1hLZSBb6Dkh2ygOmljwe
-         FXNNRo2suNFdUdXvq2KFIDmPM66o6oXgTXndUU12bQW+3D+s9TfyL+lf1iaHOJNk651Q
-         z3kbUcwLFUiQBnHDD22yCUSj8Fqre6CGvNx/UiBS7uDt/jjP54rIUmbeRJthY6LbR+lT
-         z6hSBMcPYaX3jvQN/nOPQymcqDYEgC97A5S2tFJlw1DBlXzfrmq3Tw0dEsILyxg54ESt
-         nkIStzo2KmgzWGlScy3WJTLCD3Dj89KvdFjUubShcNERoUh/RfGholGmyQ04Q7UyrKyR
-         RjSQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8Z0WfEFYf51uGqLnfZXd7xCSA8fZMm15I2uTOV2N9MiQh6YlAi99lNaNyFwJD6Vmvwoda/OefKdHc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxLqwv5KeUulz+Sk/7XA5hCgM+EkYES0NsPOvMy1B2dOXlqGRgU
-	YXJZmccUX1lUtcLX+vIW15VCxRML3nO5pfIe2DBpkm73p3DlzmauxZjTnN4KnJRH1v4=
-X-Gm-Gg: AfdE7clqcuX/1Yb3MgdpHcuLPgEnhz9C2gmz0g3/3PzYg2+QOIjEhvbka/KzwEJx7J+
-	zFp4hmztlJ/9emyq1zmdPbpDpFVes5bDtddFCH13m6XXNRBT4mqQH/X1hPwG13RlnHoLW7laX0u
-	RwBt1PNZs6mHXuqkx/idLeN+79D52DGeoXQ1t93qw7RQdDDgZiAPqB3FOpjWdHI572iEt4Z+yUs
-	5jqavc2PSQjBKl2lLDsTadCkobq1x0PTpn95jRqA6b4RVOEIY34Bch7byQFg84S3aoYwJD+6nWm
-	3rHa6Sxz0axjK24LFm4KcRFoHRShU1RbwCnvWPRSfJLthwXRKBbxvfMXMO8GcCudpL/hLlHFlz7
-	eDZr/wLCP2MZUzL0nRCe0aBrzVpojTiBwvNPQAPCO1pdRjIDtegYDPe2fnTsA/o7jyWyUGPevoI
-	aYBzWbebvpgsYgdOVo6HITxlzWksP6/Dq1SAYHfbudK+Gb7AvG+bGBN282tWuKuOo=
-X-Received: by 2002:a05:6830:7003:b0:7e7:24f9:55c8 with SMTP id 46e09a7af769-7e99152425fmr450926a34.5.1782313998318;
-        Wed, 24 Jun 2026 08:13:18 -0700 (PDT)
+        bh=Fjq8lD80zO6HiyYMuWH6+pjiwlUb52f+5tf0ovQAwVM=;
+        b=oM8onVY72uMACT/O1IgJ8W5d4bUguD5RTAdb6uJya8cudb1AZnHRrm8RdpBgeH8c+y
+         8ZTB2I4xsna3GNNrOURFfOwMeYAqX2d1OARuzAR3DiXpQB9YxSGN9tbhUSgVGOSnZKxB
+         3CvfHMft4TOgGPSFn1W8cbNKrTb8dLdhaUUkUw1YzjebPDgzMPiZwzbet+LSDt3jAR2B
+         pEI91+v5aO7G0LZZddcGDCHnojm8DFTYDCzh3MmoymN7Y1ATYQFzmwtO0GvBPYKP/A79
+         ZJAya1fYmJmSyOFoGvlpY4W9LmC6y04rSAauVivpwg2lWHxKYAeN9AxYqgQUNsFwdUgh
+         f0Hw==
+X-Forwarded-Encrypted: i=1; AFNElJ9/eIp6Gforln8mFHXFcKq009JThrbX2O8oY+Hv7pjgInRjwiuHMmfcryy685SELegV1WWthF8R6jo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyevXfGxMohqQES6brBikznZGWrxds32TG5Nm5K/NJWBJuUJOPC
+	kUmDhKfRvQEHnzzQuqahx7O9h/oJnlLnKA0GgCuXRznk9XoKILI+9Vr6JrB3xanT/WM=
+X-Gm-Gg: AfdE7cl31cfNd+SSQFopAvApBbV2oFbOj090bXX5TAEHzfeTLMh2Spve+pxVOO0NmEm
+	/bWR7c20WR1bHSu6LnveFNOxnD5F7F9cxxGoEpHue8h9h2Zpluat7NIJEXMJzsQzRxyjTawnoF/
+	rqG4xeXvriSqnyTlpZfhJwkZM6EhPzp7sSgU6X47vCyn8WdV5rODfIeOG3MlwtDfp6wsJewpepM
+	RgoP2+D0orSk8PUhNZ3I0RSvlZjuy+hPkthZjU7JnRJjGlrxxTS86mF3jvnShEOULyelk8m4mk0
+	sSqvJgjUABY00vfns5DtnZp0RDKfWNopeMX3fHxO1GT9c9BlZIAxv2/ikO1pbC/KBWOK5jeDJip
+	dS4hhf+exEsCB0TP3o+JOOiZEatkUKOBHyCL5brNJiBQvmDbyPfiWj3LfwSSiiObEXmHyS/FAFD
+	OKBEbmBxwCFCwpC8+3zgm1klOAJHeosZudFvrCh2MPva/hsTRNq3fpfyqj+PbZPko=
+X-Received: by 2002:a05:6871:7991:b0:42c:4c8:4a5a with SMTP id 586e51a60fabf-447dce9b4a5mr2572915fac.28.1782314840687;
+        Wed, 24 Jun 2026 08:27:20 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e94406d488sm11520762a34.8.2026.06.24.08.13.16
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4472ec6065esm10933021fac.4.2026.06.24.08.27.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2026 08:13:16 -0700 (PDT)
-Message-ID: <b5677860-8e14-4c90-b26d-32057e93b6fd@baylibre.com>
-Date: Wed, 24 Jun 2026 10:13:15 -0500
+        Wed, 24 Jun 2026 08:27:20 -0700 (PDT)
+Message-ID: <afebba8b-ec1e-4b91-a600-f4df0c576219@baylibre.com>
+Date: Wed, 24 Jun 2026 10:27:19 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,80 +68,52 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-To: Janani Sunil <jan.sun97@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
- Conor Dooley <conor@kernel.org>, Janani Sunil <janani.sunil@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- Mark Brown <broonie@kernel.org>
-References: <20260619-obstinate-polo-a230bef97fda@spud>
- <20260619-bunch-diocese-dd7805cc17ff@spud> <ajU73_TkKrSbqD4f@nsa>
- <20260619-concierge-doozy-9c161533c369@spud> <ajVlD-j0nIGrRVow@nsa>
- <20260621153330.79b6600c@jic23-huawei>
- <5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
- <ajkMBh-R_7pYaoAn@nsa>
- <pifhwgj3cp2vc7ia4m6penh52iekzjljrp75y5b7j57vvtooad@32wfqruiqqjl>
- <ajklksIDLsj0BZul@nsa>
- <5guhkvoxhkzevjm4b45hhk3772akpnz3givr3gb56x5ywamzyf@oiycreun4y62>
- <20260623155732.318f34f2@jic23-huawei>
- <9abc53d0-432f-48fc-9e21-4d9a3c5e129f@gmail.com>
+Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
+To: Lukas <lukas.metz@gmx.net>, Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
+ <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
+ <ajrg62FtXNObGkmc@ashevche-desk.local> <ajvt5J5Cs5cOdTLt@berta-MS-7693>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <9abc53d0-432f-48fc-9e21-4d9a3c5e129f@gmail.com>
+In-Reply-To: <ajvt5J5Cs5cOdTLt@berta-MS-7693>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
+On 6/24/26 9:47 AM, Lukas wrote:
+> Thanks a lot for all the comments.
+> 
+> On Tue, Jun 23, 2026 at 10:39:23PM +0300, Andy Shevchenko wrote:
+> 
+>>> +		dev_dbg(dev, "%s: val=%d val2=%d\n", __func__, val, val2);
 
->>>>>    
->>>>>> But yes, I do feel that the whole feature is for aggregation so seeing
->>>>>> one device with 32 channels is the expectation here? Rather than seeing
->>>>>> two devices with 16 channels.
->>>>> Yes, I think aggregation is the whole point there... so that the IIO driver
->>>>> is multi-device-aware.
->>>> Which makes me feel that different pins per device might be possible
->>>> from an HW point of view but does not make much sense. For example, for
->>>> the buffer example I would expect LDAC to be shared between all the
->>>> devices.
->>> That is why I would still suggest the multi-dac node in the middle...
->>> the parent node can hold shared resources, while the dac children can
->>> have their own, overriding or inheriting stuff.
->>>
->> Before going down that path I'd want confirmation this is something we
->> actually think anyone will build.
+Trimming down the reply is good, but in this case, it would have been
+helpful to leave a bit more context. I usually keep the full function
+in a reply to have enough context if it isn't too long.
+
 >>
->> Jonathan
+>> No. Is it RFC? PoC? Or production-ready? If not the latter, come when it will
+>> be production-ready.
+>>
 > 
-> To directly answer your question- we currently do not have a platform that supports multi device topology with independent supplies or reset lines.
-> Given that, I agree to start with the parallel wiring assumption and defer per chip resource variation under there is a solid use case. I will also drop the "adi,resolution" proposal and proceed with "adi,device-addrs" in the AD5529R binding.
-> With all of the above, the proposed binding for the multi-device follow up series would look like:
-> 
-> 
->     dac@0 {
->         compatible = "adi,ad5529r-16";
->         reg = <0>;
->         adi,device-addrs = <0 1>;
->         reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
->         vdd-supply  = <&vdd_reg>;
->         hvdd-supply = <&hvdd_reg>;
-> 
->         channel@0  { reg = <0>;  adi,output-range-microvolt = <0 5000000>; };
->         channel@16 { reg = <16>; adi,output-range-microvolt = <0 40000000>; };
->     };
-> 
-> Does this look reasonable to everyone?
-> 
-> Regards,
-> Janani Sunil
-> 
+> I will remove the debug print. I tried my best to make this driver production-ready.
+> I saw that other drivers also have similar debug messages so i didnt
 
-LGTM. Seems like the simplest way to handle it and should cover most
-use cases.
+This one jumped out to both of us as odd because of the __func__ and the
+fact that it is in a very common operation (raw write). Usually debug is
+for catching odd things that happen, not normal things.
+
+> remove it after my first tests and thought it is ok to leave it in
+> there. My intention was to try to apply the suggestions and comments i
+> get and send a second revision. Do you think thats the right way?
+
+Yes, you are doing it right. For a new driver like this, it is best
+to wait about a week before submitting the next revision to give ample
+time for review. Your replies so far where you think a suggestion was
+wrong or have asked for clarification are spot on as to what we expect
+for the review process.
+
