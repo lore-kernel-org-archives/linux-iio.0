@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013313D9696;
-	Wed, 24 Jun 2026 17:38:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2C434A3A5;
+	Wed, 24 Jun 2026 17:44:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782322727; cv=none; b=fmkvx8kK8ZTHoLkU0b7lnATGq+4e2QDOl+noB4hH/CWNrCDZhG91bbX2jpItkq7CtJq6A8FWek5PNWaCoTfrCoXrL6Ps64TVQTquIv+0Ia/Ov+4Ei0CyyCS/ty0QBAA/cBi5EbRyARkc7FFBwA1U/T29Zvn6dJrXtgzVrXCs+vU=
+	t=1782323046; cv=none; b=lzK3SEqVh67wCuprC6EZy/qYq8rt1bGjlhGyl/HZdJNeopYq06n8bQT1Gl6/Z8C7yO8+4sU8ufz4WSm9xW4NoOnGw0fn2XMluSI74RIcMw7Ci0/AagWFmatvAOAOF3St+/3EPwkLlMsWEkfak63TMf0xMfIWwXDcZLQMg2bxmOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782322727; c=relaxed/simple;
-	bh=IASPH+J9zyLtuspX4DI7ZNZML+anJ+yekJ9VOfYviGY=;
+	s=arc-20240116; t=1782323046; c=relaxed/simple;
+	bh=C709w00j4aaaNc2AYLcHLZdTwBtFLYynDAzqoJsvRQw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Ri1doxasze8z2Ubn6MI/aB3wDlPXgfHsAMw6L31O04kvg9OSbR1Tgk5pzypKK0l9oOT5aT3TGR6/xOi9iNCDqtX6R3mpOhpe7cHCpj+ieZ0Iy8MQwVo9h0poYAve60MeYFt/H0d/2hEXwwxk3Z+4OWhLlxxMhlzgNc5mjBU13uA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gNdTU5yS; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Un/GWtlqIEk13ZaC3wz8qCaQAcOZbBB2OfvzMVL3lJP3DxKlcdCQDAnAAsmZTp/HJoS1k88jwQrags+tR0XvXtlTrFH2rE8eKpAwW3+UsS4HONa29WL8vfPBn+V9XBZYN9XoY05eyDltoMTtOfJ120ZMlFS7wjTYEt7bXeahycg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GdXvlv5t; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gNdTU5yS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003F51F000E9;
-	Wed, 24 Jun 2026 17:38:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GdXvlv5t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0417D1F000E9;
+	Wed, 24 Jun 2026 17:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782322725;
-	bh=qxay9+T8ijJYfuxx34Mmihh8hZfPCL7wuWk/kbSUaBU=;
+	s=k20260515; t=1782323045;
+	bh=MSDaTJAlcrVaYg+zNAEzh01NunoWqYbg05RRuY4f9LI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gNdTU5ySRJaxJ9kGUGtjTJMlLN/6VTK02rqWFwHJAiNwfq+WONZICqjyjdPY/4PJq
-	 0esa/U+pjKj9o1zra5kcCroZjOeU6kdfBhk5art+Suvo0Al+hfSlxmg9v/2dNkrSFf
-	 rcHu9QBg5CJwhXcXmTcTD284gqodhSF2hctudGnvWPDzi7hRO/Fu4569Ztui072OOx
-	 /d9suKatibf/9Gu3mtXzTRlmTjQZR2rZPjzQd+lhE327hC/utYIMrQvdd1TbvP/+KA
-	 8weQyI+2+YyFwi/H/p+HycF6oHieVuOTC9UqoW5BzEY9Y0Nrkb0gWg1x2dYspIDQun
-	 /b574WjvLUpKQ==
-Date: Wed, 24 Jun 2026 18:38:37 +0100
+	b=GdXvlv5tgsiIajv8Wtptrl2HfG75uUzlSppZaWiKnDKX1FyUpkmioUt53spkzmLJy
+	 q3/X7K/78uy/rvJkvvfu1W+WvbZZOzCQv6VAHp6j1aPuBs0Dnfgs7T9JNeBQPA6WNJ
+	 rm0yUzwiLTsviC2HK+JTv+QmJSnJYRZc0z5jDPkRQNyPi4pqJypv/x4769EktmmiKO
+	 r9uAVziWI6tI950lnlqAUsxAs9qFzep/xmWhWrIi0hOIi5liRO46ankD6f9z5CWPBo
+	 cYjPSbbL3Z6ivIoTQ6KLkLU2d6rCmSVQS7VHAm61IvK9/Yli05nd7Ihwqu0vdKt+R4
+	 jLHAqUhOulCxA==
+Date: Wed, 24 Jun 2026 18:43:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
  <u.kleine-koenig@baylibre.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, linux-iio@vger.kernel.org,
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 05/13] iio: dac: max5522: Simplify device abstraction
-Message-ID: <20260624183837.78aae906@jic23-huawei>
-In-Reply-To: <54b79462e753b99c132a835f6b618b3cef76fa9c.1781883685.git.u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v1 06/13] iio: frequency: ad9523: Simplify driver a bit
+Message-ID: <20260624184356.01c4fce4@jic23-huawei>
+In-Reply-To: <620a617c03cc084a260c3441b8c9c6eed33efe0e.1781883685.git.u.kleine-koenig@baylibre.com>
 References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
-	<54b79462e753b99c132a835f6b618b3cef76fa9c.1781883685.git.u.kleine-koenig@baylibre.com>
+	<620a617c03cc084a260c3441b8c9c6eed33efe0e.1781883685.git.u.kleine-koenig@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,102 +49,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 19 Jun 2026 17:54:33 +0200
+On Fri, 19 Jun 2026 17:54:34 +0200
 Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
 e:
 
-> The driver only supports a single chip variant since it's birth in 2022.
-> Both the spi id_table and the of id_table are essentially unused (only
-> assigned to a write-only member in private data).
+> spi driver data is only set but never used, so the assignment can be
+> dropped. Also the spi id_table's .driver_data is unused and can be
+> dropped.
 >=20
-> Hardcode the device name and then drop various unused stuff from the
-> driver. While touching the spi id_table assign .name using a named
-> initializer.
+> While touching the spi id_table modify it to use a named initializer.
 >=20
 > Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
 aylibre.com>
-Hmm. This one was a bit silly wasn't it? :)
 
-Applied.
+Whilst you are here I think it makes sense to at least set the
+appropriate leg of:
+	indio_dev->name =3D (pdata->name[0] !=3D 0) ? pdata->name :
+			  spi_get_device_id(spi)->name;
+to the name string directly rather than via the spi_device_id.
+
+Maybe that's a job for someone who is ripping out the all the pdata in favo=
+ur of
+a device tree binding.   Ok I've argued myself into picking this up as it s=
+tands
+on basis that change probably fits better in a separate rather more complex
+series.
+
+ADI people, is this one on your list to either modernize, or potentially dr=
+op?
+
+In mean time I've applied this.
+
+Thanks,
+
+Jonathan
+
 
 > ---
->  drivers/iio/dac/max5522.c | 31 +++----------------------------
->  1 file changed, 3 insertions(+), 28 deletions(-)
+>  drivers/iio/frequency/ad9523.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 >=20
-> diff --git a/drivers/iio/dac/max5522.c b/drivers/iio/dac/max5522.c
-> index b52a9cc1da79..cfbe3a6e0449 100644
-> --- a/drivers/iio/dac/max5522.c
-> +++ b/drivers/iio/dac/max5522.c
-> @@ -25,15 +25,8 @@
+> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad952=
+3.c
+> index ea4d2763564a..1e393f40a8c8 100644
+> --- a/drivers/iio/frequency/ad9523.c
+> +++ b/drivers/iio/frequency/ad9523.c
+> @@ -990,7 +990,6 @@ static int ad9523_probe(struct spi_device *spi)
+>  	if (IS_ERR(st->sync_gpio))
+>  		return PTR_ERR(st->sync_gpio);
 > =20
->  #define MAX5522_REG_DATA(x)	((x) + MAX5522_CTRL_LOAD_IN_A)
+> -	spi_set_drvdata(spi, indio_dev);
+>  	st->spi =3D spi;
+>  	st->pdata =3D pdata;
 > =20
-> -struct max5522_chip_info {
-> -	const char *name;
-> -	const struct iio_chan_spec *channels;
-> -	unsigned int num_channels;
-> -};
-> -
->  struct max5522_state {
->  	struct regmap *regmap;
-> -	const struct max5522_chip_info *chip_info;
->  	unsigned short dac_cache[2];
->  	int vref_mV;
->  };
-> @@ -58,18 +51,6 @@ static const struct iio_chan_spec max5522_channels[] =
-=3D {
->  	MAX5522_CHANNEL(1),
->  };
-> =20
-> -enum max5522_type {
-> -	ID_MAX5522,
-> -};
-> -
-> -static const struct max5522_chip_info max5522_chip_info_tbl[] =3D {
-> -	[ID_MAX5522] =3D {
-> -		.name =3D "max5522",
-> -		.channels =3D max5522_channels,
-> -		.num_channels =3D 2,
-> -	},
-> -};
-> -
->  static inline int max5522_info_to_reg(struct iio_chan_spec const *chan)
->  {
->  	return MAX5522_REG_DATA(chan->channel);
-> @@ -140,9 +121,6 @@ static int max5522_spi_probe(struct spi_device *spi)
->  	}
-> =20
->  	state =3D iio_priv(indio_dev);
-> -	state->chip_info =3D spi_get_device_match_data(spi);
-> -	if (!state->chip_info)
-> -		return -EINVAL;
-> =20
->  	ret =3D devm_regulator_get_enable_read_voltage(&spi->dev, "vrefin");
->  	if (ret < 0)
-> @@ -159,22 +137,19 @@ static int max5522_spi_probe(struct spi_device *spi)
->  	indio_dev->modes =3D INDIO_DIRECT_MODE;
->  	indio_dev->channels =3D max5522_channels;
->  	indio_dev->num_channels =3D ARRAY_SIZE(max5522_channels);
-> -	indio_dev->name =3D max5522_chip_info_tbl[ID_MAX5522].name;
-> +	indio_dev->name =3D "max5522";
-> =20
->  	return devm_iio_device_register(&spi->dev, indio_dev);
+> @@ -1009,7 +1008,7 @@ static int ad9523_probe(struct spi_device *spi)
 >  }
 > =20
->  static const struct spi_device_id max5522_ids[] =3D {
-> -	{ "max5522", (kernel_ulong_t)&max5522_chip_info_tbl[ID_MAX5522] },
-> +	{ .name =3D "max5522" },
+>  static const struct spi_device_id ad9523_id[] =3D {
+> -	{"ad9523-1", 9523},
+> +	{ .name =3D "ad9523-1" },
 >  	{ }
 >  };
->  MODULE_DEVICE_TABLE(spi, max5522_ids);
-> =20
->  static const struct of_device_id max5522_of_match[] =3D {
-> -	{
-> -		.compatible =3D "maxim,max5522",
-> -		.data =3D &max5522_chip_info_tbl[ID_MAX5522],
-> -	},
-> +	{ .compatible =3D "maxim,max5522" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, max5522_of_match);
+>  MODULE_DEVICE_TABLE(spi, ad9523_id);
 
