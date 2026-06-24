@@ -1,66 +1,67 @@
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0E2C3BBFC1
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 14:14:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 343543BD63C
+	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 14:18:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782310488; cv=none; b=NIpGE8eJtkzrExdrW6LbUgWRCbZvvjFPvmKtv1ZYQd+kGTaf5Ioyl2Qrmhh3h9nCoLeQr/KIDJXLCAHDPSr8xpz7q6uj2Vq6A0+r59/F41zPrBEX8qSY33VKjfNn8WHUS4M/kknNnQhb+sqkNv7097U38adnoy8UygSSWv4RGdk=
+	t=1782310685; cv=none; b=HFSn3gQ0qp42X/1KPIs/8nF8YjTJImRk+ECi8VzIEjxjv3FMKdFlM5HqYeKDixVc2lgwVMOUamoBbRlMWLC+0zOwSnNd9O/1TrnkrKxaQpJJsuJjXJQIDo7pOYKh46jkQf4+sd1qXU2TY516OJmXgXVciTEku+8WDMzDsAje7P0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782310488; c=relaxed/simple;
-	bh=VElC9oMArW8E5DVw0C3OZ8uCAD3W1Xad/JX5R0ZfH4Y=;
+	s=arc-20240116; t=1782310685; c=relaxed/simple;
+	bh=XwINuM2d9r43k4pENtoklLvyYqq1bsSLEQaX73tWHzY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YDErJmhjQY+Z40lodXGCSS1n2rcaA4R++BFyQH8gEV4PyNGc2RN/MYkpCrY+k2PojgnRC2+57MKApUcR069PArLCqfhLaCOsBnQrT2WpUj8bMWPuBQpRI/+7MBcygfQHvMQ22mlZ7hifF5OUhjIDSadZmsPW0V82jGxrb5kHoOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Astq86Lv; arc=none smtp.client-ip=209.85.221.172
+	 In-Reply-To:Content-Type; b=ppsQSujczsqOe12ZymLbqKQq0oA2drUlslo5uVaIxM9Ej5mizfmB4I3lSyLGqbRth8HrN9qTTPpxrCO4W/vwNnEfRX2bPrN00vpuINcQ8eTCoIzcMSmFA4axUHCmMPRbAWvKDoOczUacb5bKsCRbjz7vkqPofDbm8/v9UwI3zlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Fb/UZ/8X; arc=none smtp.client-ip=209.85.210.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Astq86Lv"
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-59c2a81ca92so697026e0c.0
-        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 07:14:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Fb/UZ/8X"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7e6d37b7098so1076586a34.0
+        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 07:18:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782310486; x=1782915286; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782310683; x=1782915483; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=EKXkM/V9V+5iFe2v+ihivIbTjpQHj54cW+T1VhjBSuY=;
-        b=Astq86LvePsh3PutKYaFFizihoqbeHKR/2P4MhRLIDcTqIZgPpYkQeo32E08fGgmsN
-         oBR2hZvC3k3kwQJjIBdFcOcx6KybePc+fDET1E8XAhUcoM/XrAxgkYPj5Ef/RGSKzucW
-         Ojg6QaMSK2QYO3FqEP4gO2H3Vp2isrXEDS+httJNBesTPX2EJ7YPmxwWp/WDe400s7t8
-         3hynz5BjwJiQACYezdZ+esMl2GifDQA8v6hmgXlC3KGrnyvHPXQN1R0KmHefvBcow6Yp
-         3AAr1RVD09NgjBvpjnxmIhzoUO05x08xwCnL5w2b16d9C/eDLXcBCA3rxgXzlQV7EBIj
-         pi/Q==
+        bh=i+rebP8UcTIOnkK9eOy9m0DatNhwkLGwqp1CZQ/L0Yg=;
+        b=Fb/UZ/8X77WVJhHFR886hE3lfLHXT62B32x8VQ5+341CCcr18HxQ+2HmQDBHlw1GCN
+         2r+2lnri0fEmJJR42BspVn7F2aYJtd010DLGObMUoTPKvIFbdWCU9cRRkzzegsBx7EIR
+         1pedfH2Q465wm7WtOFMkmC3rOklQMXabu8765rl6IjMGI3tRCnR3WyxgvHJVgJeVrZmN
+         RDF2WlvWyHJrh9uOK/YfhPIplxVgzitCo7V5sIiPzkxho8Y8VcgRymV4LOcwqXwBkJmM
+         ZfAO7Av+ficeBoW4Ncll18M2p83yrlvxMeff2/yY8yJiTkSJpMlw3Hr3kq/FffLKjNYx
+         7MqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782310486; x=1782915286;
+        d=1e100.net; s=20251104; t=1782310683; x=1782915483;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=EKXkM/V9V+5iFe2v+ihivIbTjpQHj54cW+T1VhjBSuY=;
-        b=prhChMp3+9pGxtKULIc0IzAluLEzirmyyjFazOPc/Xc5Gsvw5FmNhk6MkDUzFSG6/g
-         buGavSbMeGYaWa3UkwmzdYzsphtfH71u8dsctsWMqJ/lF5/IKGE/Pm49Bh6dxNateYcu
-         U+fdgGfCA6hjuYH0b7XgJQW27633/hb1wxgMOd8BPMqPbjKIssCxvkK9mpZbCG0Dz74E
-         CiXErQwfmCT0Ug50yRW0grKvaJH9kIpXkL3Y/Pzmx4BFp40voOiSo9SDvEkvDBhFXHRs
-         Aj5C4HE1u94LhVXV2IJOh2Q3MQCAwXJeOBlzDiJMToBu9VPdj1Np4XQR7SDF78XA0o8q
-         fxdw==
-X-Forwarded-Encrypted: i=1; AHgh+RpKLWCg6Xkt+h/Qu5u5HhArLQuwUwuepT5jismWKwidKEsSjf8jI33pmMhdEgLE7UnTyUMt63+k0gA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwdAQQJG0Qb+J3OXNjxTFrFdAvq9IeJYnd5PkDwONsqAskXmExm
-	56EF9eslXb1ln2jRa8zmggzJZ9tCAFbZQJTPz+Nhn5cl3oeJw0rWhBOEf/Kr79GG+ts=
-X-Gm-Gg: AfdE7cniHrQ3/X6v3kwJXRAvTV1Q2Gs7aOwZpHGz2fOGi3uTaOf1j1t3i37Cp9lkAoH
-	Tiup0akZJlHCuH+ypWMJX1wj3OaYLGDst9Nj1G8WE/ylzjm+6R9maOum32JkDYryUgPm2UmiB20
-	+Pkdc8RLfnG0sej1wGBxnaYIIvnQszYsMgWZCO04SijI0jEuQrIwFrgLU9oF6xogESCnwSt6C0E
-	FGxar7qsAMZLVgUoWTqXqzGOh7iUsPZaV7+i4WDFvWTTWmFvBjr21GSWNvLAtnKb3tb9jgO52Y/
-	cgxmJB/Ro/B61UbP2jQJsPkaEnf60TodW1E6KvsRfEo3b20QP6qDdsDXHTxw+8j5+30bUCCYs1/
-	XeMEdpSuWGYG5dHAkiJH3Z4i9a80Yn2MP6jlvgpUKkVbGRJElZFUN8VUN6CxAfUCo0PmvgDKqiS
-	zU9FNYvd3aPHGhCxSdK7x4ezm1twuwWAEeeUDFxUfPsgywmYdEhGAnY6orp9qreUU=
-X-Received: by 2002:a05:6122:6c02:b0:5bc:42be:f7c4 with SMTP id 71dfb90a1353d-5bc42bf0a82mr1061612e0c.3.1782310485652;
-        Wed, 24 Jun 2026 07:14:45 -0700 (PDT)
+        bh=i+rebP8UcTIOnkK9eOy9m0DatNhwkLGwqp1CZQ/L0Yg=;
+        b=HsZIfCu/fuOfarMqbOgMIJumS9ABUTjlQYaKiRETRWwCLzIeGYyp2DTD3xukgLuRKK
+         9qT1RvgP6QMjM4ltCISWJJ3dm+TjXyqjGRbrXIY2yaxECKHGs4M3pJ8i7bGQHDd0Zw1d
+         ScOinix1ARxU2Oa08sNoOuP3wI/SqSwdUsY6jVuwM6NrrJsXvLtR5u9iHV0R5nfejdtt
+         mkFeP4o9QTTFNbiqtFMxqVcvdnR4JpMsQOEpQoE8bLQA2deb6J/32VXQquqvlxjQKIPA
+         UsK8T6Ot11rYFWn6j6/aPkm4f5QolmCR/7Wz32dE0IpJqBWUvUaIsBh7d0Uyuhjp/EWI
+         98/A==
+X-Forwarded-Encrypted: i=1; AFNElJ/tBQonc+pH01uuvlOv/HVy1Siz7bmN4Hwb6ioqVtdKmyf6vxyj7qjFlpcGKAK59D5fxP4xTpQnlPI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBKzRs+Iigt/y3z8Bldjv+/VOoLxOFJFbxpS5c7qwVmYgKZW8T
+	loDMl4w6gLiV8+YAa1NWcVUlOFOtTL2jWnZDItDqUSd2m5ptoyKwafI+QeoPU4IzOVw=
+X-Gm-Gg: AfdE7clpnHBGE15kJOSxpTUm4Bry27D1hzS+HjI0czgfdNhM925/mH/NGt+d7dZ7+2N
+	0oL48HoYIK3j03P4ymLvzQYFKFHSMZJZMbExYy+6jB176UKqEk/k+aUmwWfyxNuzOJP3nbkSjGo
+	KstE4jxvHxS4Obii6anPIunFRsNB3/Sg7unYLldZajtRTuJIWhoCeHbnDq1BUuLU6WduzIwZjzh
+	vzjWiTjwhEvPhO3+tY45aySlKd456s0c5mouB1aNY6oU+zjUMYnYJVRt25JZr+13Uu08v5ZHJ0v
+	uIn+ELgWBP6v0jD4V0ijp5JHtpGaENRCE6Z1Ryd4WiE3sD4SepNUQwQb2C0i1LwkOmn4460IC2z
+	pb+frEKn8naFLfFb79i3j+/NzmWhUocCUpxPEpoaBS9OlZVcPYerJxy4YKK35XuyV2gP8pOQJ+R
+	dm4KyXcDc0NrBY5ESnbz7dLgeAqCNlXKnlRPh0zEUNMLmu7hHQqDU5a0cAhcb0hE6T+6LfHXOJc
+	Q==
+X-Received: by 2002:a05:6830:210a:b0:7e6:deb1:484d with SMTP id 46e09a7af769-7e986a90b58mr2661944a34.13.1782310683152;
+        Wed, 24 Jun 2026 07:18:03 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bbfb878c91sm10694600e0c.6.2026.06.24.07.14.44
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e944068feesm10965181a34.11.2026.06.24.07.18.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2026 07:14:44 -0700 (PDT)
-Message-ID: <f57e9c71-189e-4316-aec4-5779d6211db7@baylibre.com>
-Date: Wed, 24 Jun 2026 09:14:43 -0500
+        Wed, 24 Jun 2026 07:18:02 -0700 (PDT)
+Message-ID: <c64ed5e8-90b2-4898-b218-b1e41382765d@baylibre.com>
+Date: Wed, 24 Jun 2026 09:18:00 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,88 +69,53 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: Add DAC8163
-To: Lukas Metz <lukas.metz@gmx.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
+To: Lukas <lukas.metz@gmx.net>, Siratul Islam <siratul.islam@linux.dev>
+Cc: andy@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
+ jic23@kernel.org, krzk+dt@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, nuno.sa@analog.com, robh@kernel.org
 References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
- <20260623-dac8163-work-v1-2-5b508158faa0@gmx.net>
- <5a19c272-e8fc-4fa9-b137-842b6ed6649b@baylibre.com>
- <ajt0vibLhh6Mmhoc@berta-MS-7693>
+ <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
+ <36ffe80feb5a521c28b1a6d10bf1338dc39ddef1.camel@linux.dev>
+ <ajuVjk-lw-DqUVnl@berta-MS-7693>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ajt0vibLhh6Mmhoc@berta-MS-7693>
+In-Reply-To: <ajuVjk-lw-DqUVnl@berta-MS-7693>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/24/26 1:25 AM, Lukas Metz wrote:
-> Thanks a lot for the review. This is my first time submitting a
-> patch so im grateful for the detailed comments and suggestions.
+On 6/24/26 3:30 AM, Lukas wrote:
+> Thanks for the review. As i said this is my first time submitting a
+> patch. I have looked at already existing spi dac drivers for reference
+> but i seemed to have missed quite a lot. But the comments are greatly
+> appreciated.
 > 
-> On Tue, Jun 23, 2026 at 02:17:04PM -0500, David Lechner wrote:
->> It is more logical to put the dt-bindings patch first in the series
->> before the driver that makes use of it.
+> On Wed, Jun 24, 2026 at 12:56:15AM +0600, Siratul Islam wrote:
+>> A link to the datasheet here would be nice.
 > 
-> I will reorder the commits in v2.
+> I will try to add all the small suggestions i dont mention explicitly,
+> like style issues or using guard instead of manual lock/unlock to v2.
+> 
+>>> +
+>>> +	if (st->internal_ref) {
+>>> +		st->vref_uv = 2500000; /* 2.5V internal reference */
+>> A note on where this value came from or why this was chosen, or a reference to datasheet would be better.
+> 
+> I think i would add the suggestion from David Lechner to remove the
+> internal_ref property completly and add "the way of doing optional
+> voltage references". This includes using the macro
+> DAC8163_INTERNAL_REF_mV. Would this be acceptable?
+> 
+>> You have a CMD_SOFT_RST defined but not used. Should this be used to reset before doing any configuration?
+> 
+> Yes this is a command which isnt used at this point. But maybe it makes
+> sense to reset the DAC first when probing.
 
-For future reference, you don't need to respond to comments that you
-agree with (save us time reading).
-
-> 
->> There are a couple of more SPI properties needed since this is not a "normal"
->> SPI device. We can only write and not read because there is no D_OUT pin. So
->>
->> spi-rx-bus-width:
->>   items:
->>     - const: 0
->>
->> will describe this. 
-> 
-> I will the add the suggested changes to v2. Are there any other poperties 
-> i have missed? Same for the other comments regarding vendor-prefix, 
-> spi-max-frequency, avdd-supply and vref supply name.
-> 
->> We also want the binding to be complete even if the driver doesn't all of it, so
->> `clear-gpios` and `sync-gpios` probably make sense too.
-> 
-> SYNC pin is the chip select pin of the device as described below. In
-> that case i dont need to add it here right?
-
-Ah, OK. It is probably worth mentioning that in the top-level description
-here in the bindings.
+In general we tend to reset IIO devices during probe. DACs can be an exception
+though since they are output devices and resetting it could change the output.
+This device is quite simple anyway, so reset probably isn't needed.
 
 > 
->> Usually, we don't bother with a property like this since it is redundant.
->> If an external reference supply is given, then it gets used, otherwise
->> the internal reference is used.
-> 
-> That sounds logical. I will remove the property completly.
-> 
->> These chips don't appear to have a chip select pin, so this comment
->> doesn't make sense to me. More logical would be to just use dac@0
->> and reg = <0>; since it should just be ignored.
-> 
-> The SYNC pin on the device acts like a chip select pin.
-> According to the datasheet: when the pin goes low it enables the input shift
-> register. At least that was my understanding. On my board i have tested the 
-> driver with the chip select signal connected to the SYNC pin. The
-> example comes straight from my own device tree where i have two devices
-> on the bus. Thats why i used reg<1> here but i can change it to 0 and
-> remove the comment.>  
->> The pin is marked active low in the datasheet, so I would expect
->> this to be GPIO_ACTIVE_LOW.
-> 
-> I wasnt sure about that. The pin needs to be held low continuously. I
-> thought when the pin is marked active low and i initialize the pin with
-> GPIOD_OUT_LOW the result will be that the pin is held high. To match the
-> datasheet description seems logical though.
-> 
-
-The GPIOD_OUT_LOW and GPIOD_OUT_HIGH names in the kernel are not ideal.
-Think of them as "deasserted" and "asserted". If the devicetree has
-GPIO_ACTIVE_LOW, then GPIOD_OUT_HIGH will "assert" the pin by pulling
-the voltage low (because it is active low).
+> Best regards
+> Lukas
 
