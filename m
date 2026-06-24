@@ -1,121 +1,206 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011062.outbound.protection.outlook.com [52.101.70.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED78314B8F;
-	Wed, 24 Jun 2026 16:35:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782318937; cv=none; b=kdcCXd8bpIv0C/k88q1C/UZOa8tNFhaKcvFvFBKLm9XWkwekKtPByU9wWHQ8lUcxlvUhvUtCkodTGU2yhdlcKHI79DNwHA8IdacQynnxJQJw2gA3f3IeoON/Zh8g2q0N+sloDGbxynfVyS6fvQqyT1YrFZVeUO86p0cBchtcS/c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782318937; c=relaxed/simple;
-	bh=iX+qCbQAUBwySYYfmw+ejL2gxBV075rCGNnrHZXjQes=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=o3SCLE9aNYkIsfvkGSwVvTgyVDaxjB1DPRkVwckKuetJ31dHeLD6ggYz9hPl3pm+mRFn3wSYKlW05LAJKww3kgUiKa7KvP+vPqkpunLqG97kQa2EW5tnPqTn4a1yfE+BQ04l0jiPTTVHFnII9OUdEr80ehK+T31ciCRzhYWs5JY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdT/RH5T; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9561C1E1A17;
+	Wed, 24 Jun 2026 16:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.62
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782319800; cv=fail; b=XQr4rI0uR/BMisNqM3FazgorkQ9xaUa+2S5V9cT0fW7sLFnDV+ajBSs44b7mETm5v9FfjNU0MzxQQQfwaQNOHtcKpcNlRxKIaEq3Ra86fsMkMcpx+7pzQMvB3bQO76lNfUqiYTtUzTxrPLSa1ctPYRDeL3TzOmM8rs36AEiNTGs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782319800; c=relaxed/simple;
+	bh=W3WVmGQAun057OaZVKhOZVX3UKd4Lvcv6G6wFiM5DgM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=a0Ee1H5wCNFJ+3n4stM1l9CQtteq5me4FSZhMmLQmvZQM4vxUZZWn/3+BCmzzgrUYSjX+sL5Wr94fYNPWyqSv//fX2DNRQgZZwWGR2oUHqTN3nl30jfN+nNr3VY2T6gWKodrfyn4TUXwPNK3vKiXl7wes/+SPdsiKrWkAZVc/3o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=fail (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=LW+5/IMk reason="signature verification failed"; arc=fail smtp.client-ip=52.101.70.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdT/RH5T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E2981F00A3A;
-	Wed, 24 Jun 2026 16:35:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782318936;
-	bh=Z4kk0HrMKq/Q0UwY7zGO5VYhmHv7vIkGKvZwhgl85Fs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bdT/RH5TtEIJC+MX16Olkc11UeyGwkBOEePW0zTcpTt3miR7VL0hd20cyubpFKtnp
-	 1NDBKOyvsHCqXz4j9th2dZ9+SVlQaCWTEG/Mr4mKnNJhN1FVqYkuX3vhI3WnUyI91O
-	 GvH0+0a10za14C9VHOjuK8ke0IWTf+dFA1zhnhXz6piMzdUEqAuXZIT/aRaLop7TR3
-	 8qD0uJozVkaPbUgcIjrF0kyShqLSKEFx+9phWInc2j+bgVHmOKBhEAjMhiKZDvtTXd
-	 wdEUa39chaVXdhbx3EUclxGlHcFkLqIw4Xzn5ihUgcoDLC8nHZYPhBr+aN+0Ix/RqS
-	 5OghWkvcBrthw==
-Date: Wed, 24 Jun 2026 17:35:30 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Janani Sunil <jan.sun97@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
-	Janani Sunil <janani.sunil@analog.com>,
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="LW+5/IMk"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vvQciDPTCcuHyHzafYSLruoXkR7o9d+5t87C2oKHThuJ9ovo8gvm0S9WYoOq9nlP759eAyh1CXRR1Xd+PJJgctS6s6/2CEAqzdFNb8EELIu/g/533+ZYz4k+eXoevWjd47xpMMx2360bawvv7uWGLvM1qdgBjnxurGCDM12HC3S9RsnwnxeCCnqI8BjL5BbECqozWbQhipiTIsZFnmEHXu+I/UwReu+gHqxgm1VCUk1ie69siQSBqb8N0TkdDw1Q/tee2gbZg74tRP1vvARMC/jIWjvLrsTgIMdzg0e0Y2xfmahhdA6NH+UvuNEa3ANpq32IsuJCSlPbCxAblEAi6Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l+r9Z0IiR7DvkXiQ+WAPskzBhfIgrx43Vh3wsaSIKtQ=;
+ b=mlo8VSc2AsuY7O4S/dvhM6o1xn4MSoZ4sRLqQlf1Ev28RQ/Q859DWh5lCKpudi0fDiWQ9A50K7jg1lQn7CFH/y7cLhYV+PkYkox7Yt7HcJrWhpIOu/dsMCreF80E7KxCtV8xbA6OHCKal9JGmRzNV16r86apbkkjT403h7K++2McZGESpXCYyNlk/mlJVFy5o7JXSQWmwXV6oNzDwAle827qCJugVDpATl9wCxVj7TQdCp5zXox67+gwLeuAh3UMJmYuQ2LBRYc5S0XQ/Mv0CD2fa54I6wnEeZv3SkvWGhx/Mvea3E2t4NVZjxPiuDawXYosQ4hZJ/zcDlbHOtf6LQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l+r9Z0IiR7DvkXiQ+WAPskzBhfIgrx43Vh3wsaSIKtQ=;
+ b=LW+5/IMkATZsVwNVdFnMIXJ23TH67fGRncezDOWlK/KETeRd3aKX9P+Qfbw+WZ+bL1etanxvzZsFK5q1cJ8G9nsK2YYXGUfzr6rDtAMvZc+DgD9ZtZN8p2tt1prgY4g5YOuuYQ4ezm+L+NadVDU8Wj/Z6WJNwauJNbAsa9GlTpDHY5s7T/he+RupcqERGpR0i+ZlGioNT/paWATgO6zIo22Zf+IBCeZ6GDz3B451P2gPmy/NFEEV1lH1FJfQPDCcW9cXaHgfWbi+QzIt8tRkRLe84SUP6+xuHnlHFob6LCeoHJRQrQaTIfcNjYBQmp13UPIwvQNaFVfxhVoVGDDUHQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com (2603:10a6:150:2cf::9)
+ by DU4PR04MB12009.eurprd04.prod.outlook.com (2603:10a6:10:641::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.12; Wed, 24 Jun
+ 2026 16:49:56 +0000
+Received: from GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c]) by GV2PR04MB11799.eurprd04.prod.outlook.com
+ ([fe80::2146:83a2:5329:b7c%6]) with mapi id 15.21.0159.007; Wed, 24 Jun 2026
+ 16:49:56 +0000
+Date: Wed, 24 Jun 2026 11:49:47 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, nuno.sa@analog.com,
+	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org,
+	Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260624-shriek-condone-b33de4f596ec@spud>
-References: <ajVlD-j0nIGrRVow@nsa>
- <20260621153330.79b6600c@jic23-huawei>
- <5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
- <ajkMBh-R_7pYaoAn@nsa>
- <pifhwgj3cp2vc7ia4m6penh52iekzjljrp75y5b7j57vvtooad@32wfqruiqqjl>
- <ajklksIDLsj0BZul@nsa>
- <5guhkvoxhkzevjm4b45hhk3772akpnz3givr3gb56x5ywamzyf@oiycreun4y62>
- <20260623155732.318f34f2@jic23-huawei>
- <9abc53d0-432f-48fc-9e21-4d9a3c5e129f@gmail.com>
- <20260624-decrease-protector-6c883bd1ac47@spud>
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
+Message-ID: <ajwKq0CB8sGdvvcO@SMW015318>
+References: <ajQkupPzv8-GdEjv@nsa>
+ <ajVs3jwoxq7Jhop1@SMW015318>
+ <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
+ <ajj8AhN1YC3uvuLb@nsa>
+ <ajlMAijTUHsnOhEQ@SMW015318>
+ <ajlR9QiXiBAH4mWH@nsa>
+ <ajmAP2nKzi2dPEVx@SMW015318>
+ <ajpYvzlHSPiJRvnX@nsa>
+ <ajpfmQ6JID5rHLMF@ashevche-desk.local>
+ <ajv4NVSmSR_dn9CJ@nsa>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ajv4NVSmSR_dn9CJ@nsa>
+X-ClientProxiedBy: SA0PR11CA0200.namprd11.prod.outlook.com
+ (2603:10b6:806:1bc::25) To GV2PR04MB11799.eurprd04.prod.outlook.com
+ (2603:10a6:150:2cf::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="WMWGjHXn8EdeWrF5"
-Content-Disposition: inline
-In-Reply-To: <20260624-decrease-protector-6c883bd1ac47@spud>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR04MB11799:EE_|DU4PR04MB12009:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2d791252-3718-4df8-a3f7-08ded2109ef7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|23010399003|19092799006|11063799006|18002099003|22082099003|56012099006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	TfziB35f40V+6Qph31x5VM3dksGcIFpjV11kwgBkz5GszLxrQ/DosF3z4UGalSGCIoWjMALWlazKc4ern+fCoQnvlpZP1ts0rTDx39OheQDqKfrji4fEzkSK8ZFgcz+n8E91mpH3eSpRobg458ESiJQVK/osuHF9tOQok2w6Wo1xJ4FDthbpNwCa5St+pTqXv6YFjdgGsGa415wKujNKVHy+9tmbaCVOXcCCxN9CXbn6J1zNjZp4IuKCu3o0zTI1P19pGxqLe2gTYyHvuIJpGwhsG9CLoY755VeRT31KynAcmMKWLTIAgTKvlmACuR7wGVoHYIUcUMTnPb+MsSIxp9W8t14mG1S6mSw0odLZLBr8frKJXop+Fl5ekj3zM0Sa3Hdp5wfj/8bFVAu0LQpAKOHSGIrWcCpaG1hwljROTiq6rgMcrXKwKOw2to2VFKpRsC+sZdSOu7eAfL/djKW7/Qc/kRjnrM/ls5O0jhLAvFZS6ahFKyDkiRNCRjhxZdAWCYMpdbOD37zxKOF5eeGvAlKT9SPYCt9+tZHDdb17h7rt9TgD4CuEW54MvIIESqJDd00O0W/bKBnKvTRgpx+kXKwx5vukChooPlM3D23ZII0pQf6q/dFuPCucxgR/CG5NaaEawu+SVmSXt2f/DTF/t9cXOvrxezvmAEqKUTL5HZA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR04MB11799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(23010399003)(19092799006)(11063799006)(18002099003)(22082099003)(56012099006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?q9urDjwASnzP5pGiVIf7MGKk8lCTOk6HpWm71VF1VtBjLaD3ivNNr7SbEM?=
+ =?iso-8859-1?Q?eJt6AhUXhG3QkX7ln1QljZiF+ZdLw2L9D6N0PyuS0LhqY50NF4LXUmrA9Y?=
+ =?iso-8859-1?Q?VhdVYDDXq8nToPEkvkuot3dP4crRpfao68VrOaicGskkBBrFUhGotVGg9u?=
+ =?iso-8859-1?Q?/mRnlcgZg2VdUvFwiVKnxo6JupxQV2d//DMpv6WVV55necRyHybbVyaBQb?=
+ =?iso-8859-1?Q?9czGFP8k1LHouNEobLQFO3AybobufcXYTr3zOhKzJSpfchZSxVNTkAc9BS?=
+ =?iso-8859-1?Q?BiSzIKJ4S4226mYhM/u5RlQe2Q0ipM8Wxuug1bgoBl3BZOYhzaXtWPKQap?=
+ =?iso-8859-1?Q?m5QrKtjtHKelzWd3CRD5pMU+jEbQbsYYYR0TrrYwMKTXCr9DAF9Ag9P4K6?=
+ =?iso-8859-1?Q?cuVV6oUokD5KmeW3q7lg24U3TRmGHOQKxlwd9S8sb16Bx97aWJyUMebhZn?=
+ =?iso-8859-1?Q?8cL1MKUIJEZpllNq6i60dWqIsJ/q83Ufw3CyqW6T6Q5LkoFV2oVWcHIdNZ?=
+ =?iso-8859-1?Q?Sd56DE5fFXuSLeSx2SQzhOMmAxxFnGcGykb4IY41sIeGOCZRTdgIx2lZ19?=
+ =?iso-8859-1?Q?wmpkiHd/Q9uo6TOs+mGw+R1aJk0nEMryBmIpoG6HdxDD5uZ/oTQLOgR5a0?=
+ =?iso-8859-1?Q?AFH3kJurtemgTxKdI/PeAGsNzD4zqW2K72tl5scYoUKpIRye0ZNjyVBaYl?=
+ =?iso-8859-1?Q?VLN7ggPLwsFWMIAuygK6VDMKKTnyJhq2mifnEr84T1QgLCWYC/R8EY5+AC?=
+ =?iso-8859-1?Q?lWJYdp3DgAsiq8fKbS4qfFFjoYdrpKlqqDqRx00J/3d+t26W7olb0HcxNr?=
+ =?iso-8859-1?Q?+YYYSq2xj0zQ9gmMNMc3FZkFMmcwA8+6JvkXx5QaW6r+phoClzMVXOVlDS?=
+ =?iso-8859-1?Q?wwz+H2NaFey+JH1RdXLgY3kP38FhNJT+e71PPSpUQ1EkCjsujBrHZV76Xn?=
+ =?iso-8859-1?Q?tS4x/z/IK1cuashE7YhH4m2GhjZriA6lD9gg4KcLAre8nnbodx34IL3qxj?=
+ =?iso-8859-1?Q?kO6i90fCyYji6r/QTG+DRLymMrBaVJIb8QmUoB9SNnnmBWxVnbVOp0Iv6x?=
+ =?iso-8859-1?Q?luZgT5tsUtLPUZ14vU6Aflc+qdhJHn87NVn/2bPII68fTc/IHRZkabbbv9?=
+ =?iso-8859-1?Q?ZFxT1V/XCIGE88ajoWaLgJqYT88eeVIFxLaJ8O8M1w1TNKV5hSM34C7X68?=
+ =?iso-8859-1?Q?Dt5ydZwgo2j358jDaYMPDHp4Dyg72065jrN4XXHEnEKD3/FeAIVQHerPq7?=
+ =?iso-8859-1?Q?4b37/W8ZyRz86eGM6YeA+zS5C3sRYOXwlpkRLJbAxH1jxMG63aiZQvBDdW?=
+ =?iso-8859-1?Q?Gsz7AwhlStRc7Z/j/XbqYkDRnQtDjiTEQBE+d8otZDtuiIBosHPmLPErL7?=
+ =?iso-8859-1?Q?iHq8+TXXkSa/j+ygXdqWXg5L+CXczZJV4KqHU75ADts0iTem7Q0AaPLsE1?=
+ =?iso-8859-1?Q?dqgKBdTverK91KYmwGkxfCgSeqVaXRsvEkAm/5FjN6obkgKa/maiJq575V?=
+ =?iso-8859-1?Q?NDDfUpil4m8nQ3zo1AEfr56InHZwQqS8D8eA2t4zt/+QMOSgngbPnZJ7JI?=
+ =?iso-8859-1?Q?3PFPV7K2mBbJZxyJ+cqzEkulsOrdqKNiI1YN20/xrgRUBkaervqzfmaUqG?=
+ =?iso-8859-1?Q?2oHKwF57P2qra2ZNzwLku6hXoREeuBb4O/btiZHhBKl6rXWrdjW/MuA4+j?=
+ =?iso-8859-1?Q?hVgYaM4V6MUHcsXCxueH0axw2RHuhuwOvJhATP5bVv+jkB5QJcoAKXL4WP?=
+ =?iso-8859-1?Q?iewH6wBmG3u/xMiq0FEh96fTCGG8ep/boYrmuo14sgs79xYwzxfm1Ml8YS?=
+ =?iso-8859-1?Q?o+cXnZ50YVNtUHFnWmNho+GXEKCxcSgCiLXX/y6bQlk4QCoM+2dK?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d791252-3718-4df8-a3f7-08ded2109ef7
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR04MB11799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2026 16:49:56.4103
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /b18QC42KfAGcw/dsxQNVxMEH7AYaASSBu/fqP6mv9x7QS9SuZsdvqh/b983j2/UOPJtTR68IY+Wz1ndAuFgB5wNLJyuaCk2sjkDJw7H1Z/86B0pS5PtLO0iu2C58A9y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR04MB12009
+
+On Wed, Jun 24, 2026 at 04:33:53PM +0100, Nuno Sá wrote:
+> On Tue, Jun 23, 2026 at 01:27:37PM +0300, Andy Shevchenko wrote:
+> > On Tue, Jun 23, 2026 at 11:14:51AM +0100, Nuno Sá wrote:
+> > > On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
+> > > > On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
+> > > > > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
+> > > > > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
+> >
+> > ...
+> >
+> > > > If support 4Byte, it native supportted any N*4Byte.
+> > > >
+> > > > So needn't bit mask to indicate all support bytes.
+> > >
+> > > > > > each transfer, dma_slave_cfg should set specific bus width requirement.
+> > > > > >
+> > > > > > If memory have requirement for 32bytes, typical cache line length for
+> > > > > > hardwaer coherence transfer, it should use dmaengine_alignment.
+> > > > > >
+> > > > > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
+> > > > >
+> > > > > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
+> > > > > there... The code seems to use the dma bus width to match against PCM
+> > > > > formats supported and filter only the ones we can support (per dma cap).
+> > > >
+> > > > if cap is one byte, it should support 8, 16, 24, 32, 64
+> > > > if cap is two byte, it should support 16, 32, 64
+> > > > if cap is 4 byte,  it only support 32 and 64.
+> > >
+> > > Well, Now I see your point but not exactly. Because we do have
+> > >
+> > > DMA_SLAVE_BUSWIDTH_3_BYTES
+> > >
+> > > and it might be used by the pcm_dmaengine code,
+> > >
+> > > There are also some controllers that set it. But it looks like all that
+> > > set it also set 1byte.
+> >
+> > But this might be not true for all HW in the world. In previous reply I made
+> > a comparison with MMIO accesses where not all HW that needs 1-byte read can
+> > cope with that. If there is some proof that this is the case when 1-byte
+> > DMA bus implies 3-bytes (or other odd number), I would like to see it.
+>
+> True. I'm also not too keen in making the above assumption and have no
+> proof that it will work for the controllers we support.
+
+Okay, I think it is fine by use bitmask. suggest change name to
+src_bus_widths,  addr_wdiths is quite confused.
+
+And since not much place use it. suggest change all consumers and cleanup
+original u32 src_addr_widths in followup patches.
+
+Frank
 
 
---WMWGjHXn8EdeWrF5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jun 24, 2026 at 05:32:26PM +0100, Conor Dooley wrote:
-
-> >     dac@0 {
-> >         compatible =3D "adi,ad5529r-16";
-> >         reg =3D <0>;
-> >         adi,device-addrs =3D <0 1>;
->=20
-> I think this should be put in the channel itself and made generic.
-
-I guess I should expand on that, putting it in the channel means it's
-not tied to some device-specific knowledge about when each device
-address is used.
-It should be generic because there are at least 3 devices, from 2
-different vendors, that we know of, using the exact same scheme.
-
-> >         reset-gpios =3D <&gpio0 87 GPIO_ACTIVE_LOW>;
-> >         vdd-supply  =3D <&vdd_reg>;
-> >         hvdd-supply =3D <&hvdd_reg>;
-> >=20
-> >         channel@0  { reg =3D <0>;  adi,output-range-microvolt =3D <0 50=
-00000>; };
-> >         channel@16 { reg =3D <16>; adi,output-range-microvolt =3D <0 40=
-000000>; };
-> >     };
-> >=20
-> > Does this look reasonable to everyone?
-> >=20
-> > Regards,
-> > Janani Sunil
-> >=20
-
-
-
---WMWGjHXn8EdeWrF5
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHQEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCajwHUgAKCRB4tDGHoIJi
-0nhLAP4wgrvst4IfZUk1vvpeL15upE92bqyykukZcM6dp2xoGwD1GqmVQmsZfafi
-heDcZmsOS6givl5H1Zm3U1zaYk5GCw==
-=8XW4
------END PGP SIGNATURE-----
-
---WMWGjHXn8EdeWrF5--
+>
+> - Nuno Sá
+>
+> >
+> > > So your suggestion might still hold and work but I'm not too convinced
+> > > that having the array complicates things that bad when compared with the
+> > > risk of breaking existing code.
+> >
+> > > > Needn't mask each bit.
+> >
+> > --
+> > With Best Regards,
+> > Andy Shevchenko
+> >
+> >
