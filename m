@@ -1,119 +1,151 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF2D3D9DD1
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 15:27:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CDB32F8E94
+	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 15:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782314843; cv=none; b=SDaUhAu4ztvCeWsiXrT79iAFetnJyD/JdXoP3F2s23glG7UO7lkQM7A6TuF5vPXALEyWFWvwFtntW+fJazQ3+l1svcT3w3PSDS4KU+PUKA3/6tKBqp+f2ChLJqJnq8ELvlZfMbnJs1Zad3KNAmzxqVXjglSQPGxHOoX8MpNI8u0=
+	t=1782315173; cv=none; b=R5zWyoaPVRo4rFSojXxWqO/kLCZxiW0yWTgfLt5pvV2Vun6Grjdg1y/urShoN96Z6ZCit5BJP1mhrHODhZLpYH+i1WSUDmefd3Fjw6XKv7rkGBM+nWa3wiY+PKQMbMWxoBH8xk87jI/KNaMD5h29gif0/6IA0tb02WSix4Ti6fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782314843; c=relaxed/simple;
-	bh=zQlht0IsyQB1oNhNfYXgYgQbV1Y7rokfYO480Nk79qY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KLEZBsohyrzVCDzIdIpI/zSxhV8x38FaOTuytkfY52NTwybI9jGw73WDhQuUZcbMSHb4qq+ja58z8XdyN06kk7s9V1+/Bb+Lb7SNTBl7SfvnQFq2DAEtlF5pC71KFDnxF7/Z52LwioxgaNH1If3ucI+W+sBqMNghmj2dCgyb9ww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TVI+Qcdp; arc=none smtp.client-ip=209.85.160.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782315173; c=relaxed/simple;
+	bh=zmaMjgv40gr9Cbe4PP1/xmSyogH/GhfILjqn5Z331oE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=e4jExEXXpHzhJ8qRKRlXLpB5iIlP5gqKA6SdSunyOr80w6Nagy1FtQ4oBmm5C3mq6aUF39dPOf6ciUHtxh0lcu2iEdm862Otee+O3dowe8P16V3apPUXrUlRjV3t6rBYrNA9PUfEquYii+rPfthjFgv2HXiPSvVUD8NGtnDg7rI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dkVTd9sq; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TVI+Qcdp"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso593195fac.1
-        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 08:27:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dkVTd9sq"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-45fd464d51fso740878f8f.3
+        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 08:32:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782314840; x=1782919640; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Fjq8lD80zO6HiyYMuWH6+pjiwlUb52f+5tf0ovQAwVM=;
-        b=TVI+QcdpMI3gzRx7l3JLLLB5sQGg3piLry+GcCTA5BxoD+KBsB3tPvy4HxUpIHxhqK
-         wSlAcvWsHnGKXG03VwM4A5aFP9xiyo+lB2WtFA6yWUS87wNocMowf3EOtiBHwEHcBHdu
-         U2Ir1u4g1w02xirvTNygo+DjlkTI3RSntD7iIes520e35AS00NKB8jtqaccxMrAm+Y8X
-         gC2OQ+gVV1inlg+5U/bPqKBT9KplfjhNOzBOLXjuW16lJdctd0mBgSppV3/9rbPARJh9
-         H1x4/mi5msywP21t3cglyP/VQjWp+BAVJ4ytVvH+f2VApXP1bAMRz64HIOrf5h/UAlZm
-         iiXg==
+        d=gmail.com; s=20251104; t=1782315171; x=1782919971; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ezPfHam7P5uRLw1NJIu4UguQk94Etz5IiSadwTXLKSc=;
+        b=dkVTd9sqb4bi34C+k5oIGqm8UsEVy4ygNm6mVnAcsttnDzcYOKef4buJhnP3mAVJ0U
+         X5seLZszpe0AeMVhfjAndjvez0yLyzyRMesY9mzp7pJPOF28D7dl3COJNJ8xWkcVJCZ2
+         ptr8SRL3kYU+xqF/VG2Afll0gWIs5TKGK2qXA+pZhz1sWxasx9xTZKYacPxeqttLbW9/
+         8O00R8wY8a7fZ9d8bCUamVfHp6SRKGMEceUq26891N67CfljPB4GF0YwTmP1TSOaXNU2
+         zvr55jKNS0U8Vj5B+E3hCwW+KRZNitA8mrTknuv1gXHCqioHYcbxx4xpjfgGFK+POXYh
+         2ebA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782314840; x=1782919640;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Fjq8lD80zO6HiyYMuWH6+pjiwlUb52f+5tf0ovQAwVM=;
-        b=oM8onVY72uMACT/O1IgJ8W5d4bUguD5RTAdb6uJya8cudb1AZnHRrm8RdpBgeH8c+y
-         8ZTB2I4xsna3GNNrOURFfOwMeYAqX2d1OARuzAR3DiXpQB9YxSGN9tbhUSgVGOSnZKxB
-         3CvfHMft4TOgGPSFn1W8cbNKrTb8dLdhaUUkUw1YzjebPDgzMPiZwzbet+LSDt3jAR2B
-         pEI91+v5aO7G0LZZddcGDCHnojm8DFTYDCzh3MmoymN7Y1ATYQFzmwtO0GvBPYKP/A79
-         ZJAya1fYmJmSyOFoGvlpY4W9LmC6y04rSAauVivpwg2lWHxKYAeN9AxYqgQUNsFwdUgh
-         f0Hw==
-X-Forwarded-Encrypted: i=1; AFNElJ9/eIp6Gforln8mFHXFcKq009JThrbX2O8oY+Hv7pjgInRjwiuHMmfcryy685SELegV1WWthF8R6jo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyevXfGxMohqQES6brBikznZGWrxds32TG5Nm5K/NJWBJuUJOPC
-	kUmDhKfRvQEHnzzQuqahx7O9h/oJnlLnKA0GgCuXRznk9XoKILI+9Vr6JrB3xanT/WM=
-X-Gm-Gg: AfdE7cl31cfNd+SSQFopAvApBbV2oFbOj090bXX5TAEHzfeTLMh2Spve+pxVOO0NmEm
-	/bWR7c20WR1bHSu6LnveFNOxnD5F7F9cxxGoEpHue8h9h2Zpluat7NIJEXMJzsQzRxyjTawnoF/
-	rqG4xeXvriSqnyTlpZfhJwkZM6EhPzp7sSgU6X47vCyn8WdV5rODfIeOG3MlwtDfp6wsJewpepM
-	RgoP2+D0orSk8PUhNZ3I0RSvlZjuy+hPkthZjU7JnRJjGlrxxTS86mF3jvnShEOULyelk8m4mk0
-	sSqvJgjUABY00vfns5DtnZp0RDKfWNopeMX3fHxO1GT9c9BlZIAxv2/ikO1pbC/KBWOK5jeDJip
-	dS4hhf+exEsCB0TP3o+JOOiZEatkUKOBHyCL5brNJiBQvmDbyPfiWj3LfwSSiiObEXmHyS/FAFD
-	OKBEbmBxwCFCwpC8+3zgm1klOAJHeosZudFvrCh2MPva/hsTRNq3fpfyqj+PbZPko=
-X-Received: by 2002:a05:6871:7991:b0:42c:4c8:4a5a with SMTP id 586e51a60fabf-447dce9b4a5mr2572915fac.28.1782314840687;
-        Wed, 24 Jun 2026 08:27:20 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4472ec6065esm10933021fac.4.2026.06.24.08.27.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Jun 2026 08:27:20 -0700 (PDT)
-Message-ID: <afebba8b-ec1e-4b91-a600-f4df0c576219@baylibre.com>
-Date: Wed, 24 Jun 2026 10:27:19 -0500
+        d=1e100.net; s=20251104; t=1782315171; x=1782919971;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ezPfHam7P5uRLw1NJIu4UguQk94Etz5IiSadwTXLKSc=;
+        b=Gth2mUe5/qLTBtEZXy4VfiFlXoyHsxIGI952GX7BBs8ZBWiqPaL+1NZudCf1bHYpXb
+         USGgljlnt74NNBpZHFSXV/Ix44VAnqwBB2UVxO/W2WO6PQwX1XqWG4vJxW9fPoLVg5Ed
+         wJpkKKwBJxMezJoC1jpHJweLKH5SG6aep+MEq/K5krdAcOjVFBsM6TIn1/yKpwsNFWX3
+         UCH3V4CB7cM4M2qQ0v4vUWOw7gm6JPCKzFMbpRAZHTrKUWH/WpHjQkcqEnFIes89pYGl
+         big9WF6jtOj1TN3sQxDozcBNQtiz3KkSRuO3PUjK0N34+CJPENKUXQ9UCdJDOitBi9SJ
+         HMtQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqT/eDP+Q+z3A/X8+1Rano/75R3jvYU9X0ewJZfGKrj+pernHhhJi5uqrHeMNhpuH0ZbGRBmKr5kpA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyFlTnMWHMM5mLehP9s4gq6YPN05Kz0ouw2G2Q7BpM59N8j1Tjo
+	rVHt4OcKG19Ps4n72yQl/QW4aDDIBSK0hm/G4ShCEzUxXsFi3bCLthVy
+X-Gm-Gg: AfdE7cn3g7nWGMwQ/BmVITmaIGj7aQfqJMtLLJCMFjB7UfFIUmTv/G9Mbo/jcs2Krng
+	69Sort/Yux4/CfH6AnS3OKTgOkoV/hFg4gQqmYp6gmVygACvc1LOgF9NhGmdQblhDVQNwIT6SI1
+	RMsSAjvw/qTngUUwTmwPimcPMQzen3L+6nRzakhKtOwlsC8YUmHf8aJV2bwqOdUItrg41b8WrMF
+	YkQKVjCzDLJsPGJPIr4NBms4qF4hOFKtieWo1FCWddM3DdthIquXvz2Y6hxsxHpjutnAu2ikACI
+	6oQIX2OjmC77OCqPUHqPXYhfmMzyuCW9t5Ob28UzQNzC5rqeOVqg7XxCrY3Zf74O2u/6UB9/22z
+	OWcVYEBc5GYPsNau5SNDiKAhA4XB2XkpCdHO82LsunexJ0rJkCVaNPptEWVwspR49f9p/8fKcNu
+	xlSNWc
+X-Received: by 2002:a05:6000:4305:b0:46c:f1be:2f9e with SMTP id ffacd0b85a97d-46cf1be307bmr2219481f8f.38.1782315170532;
+        Wed, 24 Jun 2026 08:32:50 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46caa798f43sm3963188f8f.8.2026.06.24.08.32.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Jun 2026 08:32:50 -0700 (PDT)
+Date: Wed, 24 Jun 2026 16:33:53 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Frank Li <Frank.li@oss.nxp.com>, nuno.sa@analog.com, 
+	dmaengine@vger.kernel.org, linux-iio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>, 
+	Frank Li <Frank.Li@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH RFC 2/3] dmaengine: dma-axi-dmac: Switch to bitmap-based
+ address width masks
+Message-ID: <ajv4NVSmSR_dn9CJ@nsa>
+References: <ajF4i3o0gNRtUelb@SMW015318>
+ <ajQkupPzv8-GdEjv@nsa>
+ <ajVs3jwoxq7Jhop1@SMW015318>
+ <ajWSXeq6h_OjNNqh@lizhi-Precision-Tower-5810>
+ <ajj8AhN1YC3uvuLb@nsa>
+ <ajlMAijTUHsnOhEQ@SMW015318>
+ <ajlR9QiXiBAH4mWH@nsa>
+ <ajmAP2nKzi2dPEVx@SMW015318>
+ <ajpYvzlHSPiJRvnX@nsa>
+ <ajpfmQ6JID5rHLMF@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
-To: Lukas <lukas.metz@gmx.net>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
- <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
- <ajrg62FtXNObGkmc@ashevche-desk.local> <ajvt5J5Cs5cOdTLt@berta-MS-7693>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ajvt5J5Cs5cOdTLt@berta-MS-7693>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ajpfmQ6JID5rHLMF@ashevche-desk.local>
 
-On 6/24/26 9:47 AM, Lukas wrote:
-> Thanks a lot for all the comments.
+On Tue, Jun 23, 2026 at 01:27:37PM +0300, Andy Shevchenko wrote:
+> On Tue, Jun 23, 2026 at 11:14:51AM +0100, Nuno Sá wrote:
+> > On Mon, Jun 22, 2026 at 01:34:39PM -0500, Frank Li wrote:
+> > > On Mon, Jun 22, 2026 at 05:09:10PM +0100, Nuno Sá wrote:
+> > > > On Mon, Jun 22, 2026 at 09:51:46AM -0500, Frank Li wrote:
+> > > > > On Mon, Jun 22, 2026 at 10:26:41AM +0100, Nuno Sá wrote:
 > 
-> On Tue, Jun 23, 2026 at 10:39:23PM +0300, Andy Shevchenko wrote:
+> ...
 > 
->>> +		dev_dbg(dev, "%s: val=%d val2=%d\n", __func__, val, val2);
-
-Trimming down the reply is good, but in this case, it would have been
-helpful to leave a bit more context. I usually keep the full function
-in a reply to have enough context if it isn't too long.
-
->>
->> No. Is it RFC? PoC? Or production-ready? If not the latter, come when it will
->> be production-ready.
->>
+> > > If support 4Byte, it native supportted any N*4Byte.
+> > > 
+> > > So needn't bit mask to indicate all support bytes.
+> > 
+> > > > > each transfer, dma_slave_cfg should set specific bus width requirement.
+> > > > >
+> > > > > If memory have requirement for 32bytes, typical cache line length for
+> > > > > hardwaer coherence transfer, it should use dmaengine_alignment.
+> > > > >
+> > > > > So I think only need set min value should be enough if fix pcm_dmaegine.c.
+> > > >
+> > > > What fix for pcm_dmaegine.c? Not sure there's anything to be fixed in
+> > > > there... The code seems to use the dma bus width to match against PCM
+> > > > formats supported and filter only the ones we can support (per dma cap).
+> > > 
+> > > if cap is one byte, it should support 8, 16, 24, 32, 64
+> > > if cap is two byte, it should support 16, 32, 64
+> > > if cap is 4 byte,  it only support 32 and 64.
+> > 
+> > Well, Now I see your point but not exactly. Because we do have
+> > 
+> > DMA_SLAVE_BUSWIDTH_3_BYTES
+> > 
+> > and it might be used by the pcm_dmaengine code,
+> > 
+> > There are also some controllers that set it. But it looks like all that
+> > set it also set 1byte.
 > 
-> I will remove the debug print. I tried my best to make this driver production-ready.
-> I saw that other drivers also have similar debug messages so i didnt
+> But this might be not true for all HW in the world. In previous reply I made
+> a comparison with MMIO accesses where not all HW that needs 1-byte read can
+> cope with that. If there is some proof that this is the case when 1-byte
+> DMA bus implies 3-bytes (or other odd number), I would like to see it.
 
-This one jumped out to both of us as odd because of the __func__ and the
-fact that it is in a very common operation (raw write). Usually debug is
-for catching odd things that happen, not normal things.
+True. I'm also not too keen in making the above assumption and have no
+proof that it will work for the controllers we support.
 
-> remove it after my first tests and thought it is ok to leave it in
-> there. My intention was to try to apply the suggestions and comments i
-> get and send a second revision. Do you think thats the right way?
+- Nuno Sá
 
-Yes, you are doing it right. For a new driver like this, it is best
-to wait about a week before submitting the next revision to give ample
-time for review. Your replies so far where you think a suggestion was
-wrong or have asked for clarification are spot on as to what we expect
-for the review process.
-
+> 
+> > So your suggestion might still hold and work but I'm not too convinced
+> > that having the array complicates things that bad when compared with the
+> > risk of breaking existing code.
+> 
+> > > Needn't mask each bit.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
