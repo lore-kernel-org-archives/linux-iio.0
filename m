@@ -1,156 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE5C3BED75;
-	Wed, 24 Jun 2026 15:09:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490853D9DBE
+	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 15:13:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782313755; cv=none; b=AbqoQRS2IYel7HqAFop9/3dEu5w4fKK1FeQrXD1OcsZZb3GLxIXY8gPKt94qRdX13aldHEreUMGYF3ZneQcPFBiR+ho32DbeuaodCgs1S/un+omtxpzN/vw/96O1V9cxLkC5M4JzL6RHFwcLoEdLi53HbMADFnGUyqAVqO2UZ4g=
+	t=1782314001; cv=none; b=knMj16xOGXbXGWqIAn2Z3ahy+gsLPOc28CjSuYHFxDAGdpnU5RmdeypDjvHWCJoGlnsGa1Hl3FqBEh8+rbtwaGeSZm6Yy/SDbqL0xeET59n9C7QUmbIhlvtuCRMlm/A1qDHoKLAg8E3tpTU3Ky7vmEAI8jEmO0ft7JvXOFtjvdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782313755; c=relaxed/simple;
-	bh=Q4STcZBn9jDOBlIWOz1TFM8jYawhcoN9Oj9kUsFELAI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TwBO+cpEI5S+wZZ711sB4FuP8sRbdxRZZSD52bayuX6oxaC/X28zdj6UOCjOY9N3UosFaW/rXAPZu6RZmCn0rhCc6hxHH7vmN+uo8r6VxLd4c8IeCpBays7wGb0NaEHYGmk/h/jvGypLaYnlZ2ZdivN2HgY19OEDSpaIlr0fCFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MgLhsE1g; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782314001; c=relaxed/simple;
+	bh=S7HTvQJvi9q3ObEnOv2xXX/hy6wHNAPvkD4FGpz2B8U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AfczPVesJ2LtD12D5WljT2QIfDClSS89hoS24ADKWZc0NJLnxCNGG0Mq20XACIWP+RNKrt55CYNoKZyKxg3dnaf0nwT+4gt8Y8TWrH+TelJJQHZKFrf/pHkDZXyNUqRZTd5gFbNyoOkOGk43/8nsOfBQ7c/MEa/W15d4cMVUI0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=U/5Y866A; arc=none smtp.client-ip=209.85.210.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MgLhsE1g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22D611F000E9;
-	Wed, 24 Jun 2026 15:09:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782313753;
-	bh=A6ImJfiFT1rjKG/4L8x7j/qD6P8AeigTAHUIZIXRv6A=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=MgLhsE1gVbNojleBdNPQso/54fAa900HQVb6C2i352kKJBD+mbDuOoG8lqyVvKXlN
-	 sTNXFni5jLj40pPpjYNpJxQV0eOSSRpQaZlad4S4T/I+TKrfMf2LKxFoSW7qVlahF5
-	 mlekdG3hvEJannXNh1q6YnKkn9PFfygAuLReAWAmf8G/2V2TL/qT+RoVbr9H99IWkf
-	 pf3snnjeEWbTEpFTictqgszYkVhpn4IVg1Ommzo7sC1V5xQiLJyKVArELxc1zyuNaX
-	 ApRLHmkwUdgrZ2AJyfkeBJbedDheuEDcJkczcRGoZtk/I59YSpKb7HrXoJUSKVAYTt
-	 qLNtp1eK0M2DQ==
-Date: Wed, 24 Jun 2026 16:09:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: me@herrie.org
-Cc: github.com@herrie.org, Andy Shevchenko <andriy.shevchenko@intel.com>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Nathan Chancellor
- <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- Denis Ciocca <denis.ciocca@gmail.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Denis Ciocca
- <denis.ciocca@st.com>, Linus Walleij <linusw@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- llvm@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: magnetometer: st_magn: honour
- st,fullscale-milligauss DT property
-Message-ID: <20260624160901.189ee5bf@jic23-huawei>
-In-Reply-To: <edcf262b530a88ee602fa07edc8382ac@herrie.org>
-References: <20260616-submit-iio-lsm303dlh-magn-fixes-v2-0-063edcf74e60@herrie.org>
-	<20260616-submit-iio-lsm303dlh-magn-fixes-v2-3-063edcf74e60@herrie.org>
-	<20260623202916.5f5d520e@jic23-huawei>
-	<ajrjRdEkZAho8h1E@ashevche-desk.local>
-	<edcf262b530a88ee602fa07edc8382ac@herrie.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="U/5Y866A"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7e9483cd614so985596a34.1
+        for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2026 08:13:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782313998; x=1782918798; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HAsvraZ6mLfXZddrVTxKfH+cnaP/AcM6qIT+GUf0HZM=;
+        b=U/5Y866AWO1pTARc3qO/TlN8hRIZ2uffotr8pLtTxATWLKSvnEzSrSM5+eXw2UmRPF
+         c0/LfCHSx0rUIsEY+8qvjXTh/YC/iBBZISXAXxGGWfJaWRNo2oGs0OjeW4oXdGG65GCP
+         yIYKwJpWKJ18OMQuvW7Q8cPaNdUfGlBONDRPKy84A3oaB9jVZWrIvgrhiD4DDcRt7T2x
+         vCGJswsw7jTz7KkZwPcKnXT+Zu8R63mlRIIOkMd0iyddFyW6vQZNtOdffEvUrg6ii43T
+         fanr2wAbfy4iZGfBxf7CVhFP/zDvnRRi/KNmA84lXWu7TihYTOVjnnJFEChwgWY/GvB7
+         D8bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782313998; x=1782918798;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HAsvraZ6mLfXZddrVTxKfH+cnaP/AcM6qIT+GUf0HZM=;
+        b=FP1n3/RPXcOda93EYRUPu4qhz2ad44kO+hxqY21mcj/Q+E1hLZSBb6Dkh2ygOmljwe
+         FXNNRo2suNFdUdXvq2KFIDmPM66o6oXgTXndUU12bQW+3D+s9TfyL+lf1iaHOJNk651Q
+         z3kbUcwLFUiQBnHDD22yCUSj8Fqre6CGvNx/UiBS7uDt/jjP54rIUmbeRJthY6LbR+lT
+         z6hSBMcPYaX3jvQN/nOPQymcqDYEgC97A5S2tFJlw1DBlXzfrmq3Tw0dEsILyxg54ESt
+         nkIStzo2KmgzWGlScy3WJTLCD3Dj89KvdFjUubShcNERoUh/RfGholGmyQ04Q7UyrKyR
+         RjSQ==
+X-Forwarded-Encrypted: i=1; AFNElJ8Z0WfEFYf51uGqLnfZXd7xCSA8fZMm15I2uTOV2N9MiQh6YlAi99lNaNyFwJD6Vmvwoda/OefKdHc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxLqwv5KeUulz+Sk/7XA5hCgM+EkYES0NsPOvMy1B2dOXlqGRgU
+	YXJZmccUX1lUtcLX+vIW15VCxRML3nO5pfIe2DBpkm73p3DlzmauxZjTnN4KnJRH1v4=
+X-Gm-Gg: AfdE7clqcuX/1Yb3MgdpHcuLPgEnhz9C2gmz0g3/3PzYg2+QOIjEhvbka/KzwEJx7J+
+	zFp4hmztlJ/9emyq1zmdPbpDpFVes5bDtddFCH13m6XXNRBT4mqQH/X1hPwG13RlnHoLW7laX0u
+	RwBt1PNZs6mHXuqkx/idLeN+79D52DGeoXQ1t93qw7RQdDDgZiAPqB3FOpjWdHI572iEt4Z+yUs
+	5jqavc2PSQjBKl2lLDsTadCkobq1x0PTpn95jRqA6b4RVOEIY34Bch7byQFg84S3aoYwJD+6nWm
+	3rHa6Sxz0axjK24LFm4KcRFoHRShU1RbwCnvWPRSfJLthwXRKBbxvfMXMO8GcCudpL/hLlHFlz7
+	eDZr/wLCP2MZUzL0nRCe0aBrzVpojTiBwvNPQAPCO1pdRjIDtegYDPe2fnTsA/o7jyWyUGPevoI
+	aYBzWbebvpgsYgdOVo6HITxlzWksP6/Dq1SAYHfbudK+Gb7AvG+bGBN282tWuKuOo=
+X-Received: by 2002:a05:6830:7003:b0:7e7:24f9:55c8 with SMTP id 46e09a7af769-7e99152425fmr450926a34.5.1782313998318;
+        Wed, 24 Jun 2026 08:13:18 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:68dc:b788:b3ac:e34e? ([2600:8803:e7e4:500:68dc:b788:b3ac:e34e])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e94406d488sm11520762a34.8.2026.06.24.08.13.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Jun 2026 08:13:16 -0700 (PDT)
+Message-ID: <b5677860-8e14-4c90-b26d-32057e93b6fd@baylibre.com>
+Date: Wed, 24 Jun 2026 10:13:15 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add AD5529R
+To: Janani Sunil <jan.sun97@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ Conor Dooley <conor@kernel.org>, Janani Sunil <janani.sunil@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ Mark Brown <broonie@kernel.org>
+References: <20260619-obstinate-polo-a230bef97fda@spud>
+ <20260619-bunch-diocese-dd7805cc17ff@spud> <ajU73_TkKrSbqD4f@nsa>
+ <20260619-concierge-doozy-9c161533c369@spud> <ajVlD-j0nIGrRVow@nsa>
+ <20260621153330.79b6600c@jic23-huawei>
+ <5u4dnsgxwcwie45f24cacyzf3dko4srhyyyhcpom6tsvhqtmpc@y7d7gmex6n7k>
+ <ajkMBh-R_7pYaoAn@nsa>
+ <pifhwgj3cp2vc7ia4m6penh52iekzjljrp75y5b7j57vvtooad@32wfqruiqqjl>
+ <ajklksIDLsj0BZul@nsa>
+ <5guhkvoxhkzevjm4b45hhk3772akpnz3givr3gb56x5ywamzyf@oiycreun4y62>
+ <20260623155732.318f34f2@jic23-huawei>
+ <9abc53d0-432f-48fc-9e21-4d9a3c5e129f@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <9abc53d0-432f-48fc-9e21-4d9a3c5e129f@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, 24 Jun 2026 06:18:45 +0200
-me@herrie.org wrote:
 
-> On 2026-06-23 21:49, Andy Shevchenko wrote:
-> > On Tue, Jun 23, 2026 at 08:29:16PM +0100, Jonathan Cameron wrote:  
-> >> On Tue, 16 Jun 2026 15:02:06 +0200
-> >> Herman van Hazendonk <github.com@herrie.org> wrote:
-> >>   
-> >> > The ST magnetometer core's common probe hardcodes fs_avl[0] -- the
-> >> > highest-sensitivity full-scale supported by the chip -- as the
-> >> > starting range. For the LSM303DLH that is +/-1.3 G; for the
-> >> > LSM303DLHC and LSM303DLM it is +/-2 G; for the LIS3MDL it is +/-4 G.
-> >> >
-> >> > That is the right default for "minimal noise floor at a desk", but
-> >> > it leaves no margin for boards that pick up appreciable DC bias from
-> >> > nearby PCB structures. On the HP TouchPad (apq8060 / tenderloin) the
-> >> > LSM303DLH magnetometer is mounted close enough to the surrounding
-> >> > power planes that X reads back as the chip's 0xF000 overflow
-> >> > sentinel (== -4096 raw, the value the chip publishes when the ADC
-> >> > saturates) on every sample at the chip-default range, while Y and Z
-> >> > fall well within the +/-1.3 G window.
-> >> >
-> >> > Parse the st,fullscale-milligauss device-tree property (documented
-> >> > separately in dt-bindings/iio/st,st-sensors.yaml) in the
-> >> > magnetometer common probe to select the initial fs_avl entry by its
-> >> > mg value. The DT binding pins the accepted value set per compatible
-> >> > via allOf/if-then enum clauses, so a malformed mg value fails
-> >> > dt_binding_check rather than reaching the driver. Sensors with a
-> >> > fixed full-scale (fs.addr == 0: LSM303AGR, LIS2MDL, IIS2MDC) have no
-> >> > register to switch and the property is rejected outright for them
-> >> > in the binding; the parse block is additionally gated on fs.addr as
-> >> > defence in depth against stale DTBs.
-> >> >
-> >> > Per-sensor mg ranges are listed in st_magn_sensors_settings[]. For
-> >> > LSM303DLH and LSM303DLHC/DLM the valid values are 1300, 1900, 2500,
-> >> > 4000, 4700, 5600 and 8100; for LIS3MDL, LSM9DS1-magn and LSM303C-magn
-> >> > they are 4000, 8000, 12000, 16000.
-> >> >
-> >> > Empirical scale sweep on the HP TouchPad confirmed that on this
-> >> > board any fs_avl >= 1 produces non-saturated X readings:
-> >> >
-> >> >     scale (0.001 G/LSB)  | X raw    Y raw    Z raw
-> >> >     --------------------+-------------------------------
-> >> >             1.100        | -4096    44       46    (X saturated)
-> >> >             0.855        |  -547    37       37    (clean)
-> >> >             0.670        |  -433    94      103    (clean)
-> >> >             0.450        |  -266    44       71    (clean)
-> >> >             0.400        |  -235    34       65    (clean)
-> >> >             0.330        |  -196    27       56    (clean)
-> >> >             0.230        |  -145    15       40    (clean)
-> >> >
-> >> > 2500 mg is the natural choice for tenderloin: comfortably outside
-> >> > the saturation regime while keeping useful precision for compass
-> >> > applications.
-> >> >
-> >> > Assisted-by: Claude:claude-opus-4-7 sparse smatch clang-analyzer coccinelle checkpatch
-> >> > Assisted-by: Sashiko:claude-opus-4-7  
-> >> Hmm. First time I remember seeing Sashiko credited like this. Seems 
-> >> like pretty much
-> >> every patch series of any complexity would end up crediting sashiko.
-> >> Out of curiosity were you just looking at reports, or were you running 
-> >> it locally to
-> >> help with development?  
-> > 
-> > I believe it's the second one, because LKML version uses Gemini (as far 
-> > as I
-> > understand the case). At least that's why I haven't commented on this 
-> > tag.  
-> I have the whole toolchain running locally to avoid too many submissions 
-> and
-> feedback from Sashiko with Gemini after submitting. For small drivers I 
-> can run
-> Gemini locally as well, usually stick with Claude Opus 4.7 since that's 
-> what I
-> have a subscription for. For very complicated and large drivers Claude 
-> Opus
-> tends to time out even with 1 or 2 hour, so I fall back to Claude Haiku 
-> 4.5
-> (which catches quite a few things, but is not as thorough as Opus or 
-> Gemini).
+>>>>>    
+>>>>>> But yes, I do feel that the whole feature is for aggregation so seeing
+>>>>>> one device with 32 channels is the expectation here? Rather than seeing
+>>>>>> two devices with 16 channels.
+>>>>> Yes, I think aggregation is the whole point there... so that the IIO driver
+>>>>> is multi-device-aware.
+>>>> Which makes me feel that different pins per device might be possible
+>>>> from an HW point of view but does not make much sense. For example, for
+>>>> the buffer example I would expect LDAC to be shared between all the
+>>>> devices.
+>>> That is why I would still suggest the multi-dac node in the middle...
+>>> the parent node can hold shared resources, while the dac children can
+>>> have their own, overriding or inheriting stuff.
+>>>
+>> Before going down that path I'd want confirmation this is something we
+>> actually think anyone will build.
+>>
+>> Jonathan
 > 
-> Seeing Sashiko tends to provide different feedback on different rounds, 
-> I try
-> to only submit when Sashiko and all others are clean.
+> To directly answer your question- we currently do not have a platform that supports multi device topology with independent supplies or reset lines.
+> Given that, I agree to start with the parallel wiring assumption and defer per chip resource variation under there is a solid use case. I will also drop the "adi,resolution" proposal and proceed with "adi,device-addrs" in the AD5529R binding.
+> With all of the above, the proposed binding for the multi-device follow up series would look like:
 > 
-> Hope this clarifies!
-Thank!  I loose track of all these models :)  So the summary is very
-useful. I've been meaning to get a similar flow in place myself for
-checking local stuff (not that I'm doing any development at the moment)
-
-Jonathan
-
 > 
-> Herman
+>     dac@0 {
+>         compatible = "adi,ad5529r-16";
+>         reg = <0>;
+>         adi,device-addrs = <0 1>;
+>         reset-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
+>         vdd-supply  = <&vdd_reg>;
+>         hvdd-supply = <&hvdd_reg>;
+> 
+>         channel@0  { reg = <0>;  adi,output-range-microvolt = <0 5000000>; };
+>         channel@16 { reg = <16>; adi,output-range-microvolt = <0 40000000>; };
+>     };
+> 
+> Does this look reasonable to everyone?
+> 
+> Regards,
+> Janani Sunil
+> 
 
+LGTM. Seems like the simplest way to handle it and should cover most
+use cases.
