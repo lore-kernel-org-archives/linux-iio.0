@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885E530100E;
-	Wed, 24 Jun 2026 17:48:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5759F399CFD;
+	Wed, 24 Jun 2026 17:50:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782323305; cv=none; b=VMrmyvbjkIbgFEf4ha1xAoLvyZgLUOE0z53iJi/Pd6Vl8UgEZLaS2yzUtxYD/C96LcFh5zcRBuuCDMGoL/L2DoPyrbMFF7FxANoPjmoopPgqzHG4BwzACPTd94ymRgEDE2ehBjm6Hu2G8/VoikJSCB3OMnK8VQs31dKqgoernOE=
+	t=1782323426; cv=none; b=f4+urrbmApc4GTCf/+4PsVndUIajJLfieBljFTrZoBJ3a3j9zfuAnWHuTXB0vqpjX7ce/HwxYc3fFfGOaGT/xe+80dy4DwwkzUQQ/OP+qEM6VaE3o5YZbBUIt5CwUvACynbSjyNBcvnBAEBdlRBQJwUzoDsyZPcF2jNoIxQYhxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782323305; c=relaxed/simple;
-	bh=jS4xKXj32iGjtDpyjpTzyrkRls/75g04CP5EFBo8heg=;
+	s=arc-20240116; t=1782323426; c=relaxed/simple;
+	bh=aAY9edTK8lFtYA3ZLHy3gApMQYyErzjc1pAoqQI9vxM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=W3Xx3LsL5llWyNq5NZHfjkIgjBp/wolom93Vag7QCBy2pZcyQ/W4ByK+iwoID1ybvu8Ty4WkwJQ/hsPqXWN9ek1mDmt08ISl2bgl7ETQKs+oa0mmKhQbFqGH2J5xiE8frmWOHZqDFIU3UCGVhuJite77QzcfH/S7Fy+AEZl5rAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oh/1u4HH; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=dPRgmcGF1vqop1T+tJPr8m0tPODm2pLt9iQDwznUuL+ersxBKrElrvO6pwo5L3JsUBpJGnCL43Q1p82KabksbR7/ItgLFwAmULozXupqYEKHCWBKQwYF1xE+Wa3a7C50j/aBz/0ZL2ON1+4KWhzCD+ChUJk6He5iOvIbmJsPFMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQvwIk/e; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oh/1u4HH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F4A1F000E9;
-	Wed, 24 Jun 2026 17:48:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQvwIk/e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E0131F000E9;
+	Wed, 24 Jun 2026 17:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782323304;
-	bh=jS4xKXj32iGjtDpyjpTzyrkRls/75g04CP5EFBo8heg=;
+	s=k20260515; t=1782323425;
+	bh=aAY9edTK8lFtYA3ZLHy3gApMQYyErzjc1pAoqQI9vxM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oh/1u4HHLuRE++kMKdWlA1XIVTrt2rf6yqGnRqPPq/B/TqkZhfpBIzHx+cCZb21UH
-	 Jximy6xcySdMgcgcjIS3pM8es06MZVEfIxPwXvmLC7rvgTnjCx5ZQZSjB954wd9WHh
-	 mBjvaU+/bGX3r5e4fQwcJuGGgTk+sPFeOgIcsqNjjOG+lcd5gN7t7duqDAMN+D7e/3
-	 gkn6k7m+GJ6l2yompF6WkEBsD/J5gLwOdOWKLJrtB8mRJEipU5O79noqpVEqBq7bwa
-	 fi7HhbcTMErwpRTgM3B1ifZgKzjarW01dwV0qb1GmJk6+Ebdm4YDrJP6vhVUTp0L+Z
-	 w1gxGt6XkK2sA==
-Date: Wed, 24 Jun 2026 18:48:17 +0100
+	b=HQvwIk/efX0TVSwkB5rthB3CdOyKESLUtY1hD2yoJPB6PnnHhteh5aI5IW5InVGp5
+	 7UZb6jyNdamrCwMPkDC8+SfSWxgna9H8W0JAEOWw1xSnRurv/YZgjQ//6duOAT67po
+	 gXjtiOYTiXKdulfbGp0y2UCCaeqO4DLioVky6bO/BdjRSqRkFWHH7am7lAumVYRMTA
+	 +Nk+sigcYLZwvWQ/8HtqzilO9YHMCEw/rvePr5nrZEn0dTBJhco1bfOf2BdR/llA6C
+	 GSSokvQNpHCdftgxCFlQaO39uj1+dh1XceZTIqTOBciwWMpdfQDX7LuMSe4KGzpWSu
+	 AdU7mx2XODAaQ==
+Date: Wed, 24 Jun 2026 18:50:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
  <u.kleine-koenig@baylibre.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 08/13] iio: magnetometer: hmc5843: Simplify device
- abstraction
-Message-ID: <20260624184817.3aa1783b@jic23-huawei>
-In-Reply-To: <e5cf8297220b8d560854f6c64e80f00c4d093593.1781883685.git.u.kleine-koenig@baylibre.com>
+Subject: Re: [PATCH v1 09/13] iio: accel: bmc150: Explicitly set spi
+ .driver_data
+Message-ID: <20260624185017.649ddfe7@jic23-huawei>
+In-Reply-To: <2f0bfff94332c5d42f29b33556bb6ba95935408d.1781883685.git.u.kleine-koenig@baylibre.com>
 References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
-	<e5cf8297220b8d560854f6c64e80f00c4d093593.1781883685.git.u.kleine-koenig@baylibre.com>
+	<2f0bfff94332c5d42f29b33556bb6ba95935408d.1781883685.git.u.kleine-koenig@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,19 +49,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 19 Jun 2026 17:54:36 +0200
+On Fri, 19 Jun 2026 17:54:37 +0200
 Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
 e:
 
-> The driver supports a single chip variant only. Simplify the driver by
-> hard-coding the device properties instead of using the id_table's
-> abstraction for a single chip type and a lookup in a table with only one
-> entry.
+> There is one id entry that has an explicit assignment to .driver_data.
+> To make the intention clearer, assign BOSCH_UNKNOWN (which is also 0)
+> for all previously ids that had .driver_data =3D 0 implicitly before.
+>=20
+> While touching all entries in this array, convert to named initializers.
+>=20
+> This change is similar to commit e50856dc41e8 ("iio: accel: bmc150:
+> Explicitly set .driver_data") but cares for the driver's spi part
+> instead of i2c.
 >=20
 > Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
 aylibre.com>
-Applied this one.
-
-Thanks,
-
-J
+Applied.
