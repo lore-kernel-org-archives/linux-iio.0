@@ -1,44 +1,80 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5759F399CFD;
-	Wed, 24 Jun 2026 17:50:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EEB03016F5;
+	Wed, 24 Jun 2026 17:53:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782323426; cv=none; b=f4+urrbmApc4GTCf/+4PsVndUIajJLfieBljFTrZoBJ3a3j9zfuAnWHuTXB0vqpjX7ce/HwxYc3fFfGOaGT/xe+80dy4DwwkzUQQ/OP+qEM6VaE3o5YZbBUIt5CwUvACynbSjyNBcvnBAEBdlRBQJwUzoDsyZPcF2jNoIxQYhxg=
+	t=1782323592; cv=none; b=svhva8MR81MALHy8bM94fSxxo9SGBbbks+jg7k9hiRJwSbnV+LPzmbWmfLzUfHOHQU3Mu3HDnsQ1dxRXQBRKZ90OFK26vMCaFCVMqsWtt7IGy9mNbg/WSAzphfSaWEyzR8P/BUr2RKpgNWjn0PvrSdQXRBvCgxLkqKq8JR7uinA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782323426; c=relaxed/simple;
-	bh=aAY9edTK8lFtYA3ZLHy3gApMQYyErzjc1pAoqQI9vxM=;
+	s=arc-20240116; t=1782323592; c=relaxed/simple;
+	bh=pikPUZngc86QtE3Tzxh67uRGuu2ebtEWzG9VZmYBMgQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dPRgmcGF1vqop1T+tJPr8m0tPODm2pLt9iQDwznUuL+ersxBKrElrvO6pwo5L3JsUBpJGnCL43Q1p82KabksbR7/ItgLFwAmULozXupqYEKHCWBKQwYF1xE+Wa3a7C50j/aBz/0ZL2ON1+4KWhzCD+ChUJk6He5iOvIbmJsPFMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQvwIk/e; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=OSdvvkfcDUEDqAnfntdAuj2xEI7b1pmwHqejiO4/9xLSSFx/hilCwbPcAOKZS/nIB9v+XRmMB/jLpYZjgj8cx12WXCoau0Y4ykWKFD8SFZB3PwrRXfIhQKZYd8ADjHKocNx4VBL10TcjKpH/fSrDQurpJmvpGfj+7CmpdKIBwJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kAjS7Drz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQvwIk/e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E0131F000E9;
-	Wed, 24 Jun 2026 17:50:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kAjS7Drz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F0D1F00A3A;
+	Wed, 24 Jun 2026 17:52:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782323425;
-	bh=aAY9edTK8lFtYA3ZLHy3gApMQYyErzjc1pAoqQI9vxM=;
+	s=k20260515; t=1782323590;
+	bh=pikPUZngc86QtE3Tzxh67uRGuu2ebtEWzG9VZmYBMgQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HQvwIk/efX0TVSwkB5rthB3CdOyKESLUtY1hD2yoJPB6PnnHhteh5aI5IW5InVGp5
-	 7UZb6jyNdamrCwMPkDC8+SfSWxgna9H8W0JAEOWw1xSnRurv/YZgjQ//6duOAT67po
-	 gXjtiOYTiXKdulfbGp0y2UCCaeqO4DLioVky6bO/BdjRSqRkFWHH7am7lAumVYRMTA
-	 +Nk+sigcYLZwvWQ/8HtqzilO9YHMCEw/rvePr5nrZEn0dTBJhco1bfOf2BdR/llA6C
-	 GSSokvQNpHCdftgxCFlQaO39uj1+dh1XceZTIqTOBciwWMpdfQDX7LuMSe4KGzpWSu
-	 AdU7mx2XODAaQ==
-Date: Wed, 24 Jun 2026 18:50:17 +0100
+	b=kAjS7DrzIZKDC48YdQ+Vga+nsxrFecPZFsyszJkl9KsoEkw7UttkHtzLYLSIHjkF8
+	 nfK8rZ1svTXQswVz+ue6wDf3CuFAGTVNrlsVALIZ9e0lmHnxKBGjGgKAUOa7+gvnc6
+	 hr2xRdX7t5QZQXZFaEHTznroj3R4iLOzpMy/y4tiUI2uH4ysVc8Nlpjn+s9YhUPrpM
+	 U/XfpO1yibpYqMe2tCCDdU6eLEnQtgGd98506x1qNMnzhr/seAEun56UuOtyWdT4H7
+	 BVLthcgZYsUtzXEyJFMGn1/uS8r2Z57a+qPAVPRnrfwFvoPPqY6iqv3Udf4xQf2QVb
+	 GQn/KavhxPQ0w==
+Date: Wed, 24 Jun 2026 18:52:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 09/13] iio: accel: bmc150: Explicitly set spi
- .driver_data
-Message-ID: <20260624185017.649ddfe7@jic23-huawei>
-In-Reply-To: <2f0bfff94332c5d42f29b33556bb6ba95935408d.1781883685.git.u.kleine-koenig@baylibre.com>
+To: Linus Walleij <linusw@kernel.org>
+Cc: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Puranjay Mohan
+ <puranjay@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, Ramona Gradinariu
+ <ramona.gradinariu@analog.com>, Esteban Blanc <eblanc@baylibre.com>, Sergiu
+ Cuciurean <sergiu.cuciurean@analog.com>, Dragos Bogdan
+ <dragos.bogdan@analog.com>, Alisa-Dariana Roman <alisa.roman@analog.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, Renato Lui Geh
+ <renatogeh@gmail.com>, Ramona Bolboaca <ramona.bolboaca@analog.com>, Kim
+ Seer Paller <kimseer.paller@analog.com>, Marilene Andrade Garcia
+ <marilene.agarcia@gmail.com>, Marius Cristea
+ <marius.cristea@microchip.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, Kurt Borja
+ <kuurtb@gmail.com>, Leonard =?UTF-8?B?R8O2aHJz?= <l.goehrs@pengutronix.de>,
+ kernel@pengutronix.de, Rodrigo Alencar <rodrigo.alencar@analog.com>,
+ Gustavo Silva <gustavograzs@gmail.com>, Alexis Czezar Torreno
+ <alexisczezar.torreno@analog.com>, Janani Sunil <janani.sunil@analog.com>,
+ Anshul Dalal <anshulusr@gmail.com>, Ricardo Ribalda <ribalda@kernel.org>,
+ Lorenzo Bianconi <lorenzo@kernel.org>, Alex Lanzano
+ <lanzano.alex@gmail.com>, Jagath Jog J <jagathjog1996@gmail.com>,
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Remi Buisson
+ <remi.buisson@tdk.com>, Herve Codina <herve.codina@bootlin.com>, Petre
+ Rodan <petre.rodan@subdimension.ro>, Andreas Klinger <ak@it-klinger.de>,
+ Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>, Andrew Ijano
+ <andrew.ijano@gmail.com>, Giorgi Tchankvetadze
+ <giorgitchankvetadze1997@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Md Shofiqul Islam <shofiqtest@gmail.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Stepan Ionichev <sozdayvek@gmail.com>, Sam
+ Daly <sam@samdaly.ie>, Dixit Parmar <dixitparmar19@gmail.com>, Colin Ian
+ King <colin.i.king@gmail.com>, Sebastian Andrzej Siewior
+ <bigeasy@linutronix.de>, Oleksij Rempel <o.rempel@pengutronix.de>, David
+ Jander <david@protonic.nl>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Bartosz Golaszewski <brgl@kernel.org>, Gabriel Rondon <grondon@gmail.com>,
+ David Marinovic <david.marinovic@pupin.rs>, Lukas Schmid
+ <lukas.schmid@netcube.li>, Shi Hao <i.shihao.999@gmail.com>, Rahman
+ =?UTF-8?B?TWFobXV0b3ZpxIc=?= <mahmutovicrahman5@gmail.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 11/13] iio: Initialize spi_device_id arrays using
+ member names
+Message-ID: <20260624185244.140b8368@jic23-huawei>
+In-Reply-To: <CAD++jLkRbaPMichpGGQnX5yasRHmY05=95qaOAvH9buHgTKa4Q@mail.gmail.com>
 References: <cover.1781883685.git.u.kleine-koenig@baylibre.com>
-	<2f0bfff94332c5d42f29b33556bb6ba95935408d.1781883685.git.u.kleine-koenig@baylibre.com>
+	<137deb1b7bcdd195c2b8555e8020870729728b78.1781883685.git.u.kleine-koenig@baylibre.com>
+	<CAD++jLkRbaPMichpGGQnX5yasRHmY05=95qaOAvH9buHgTKa4Q@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,20 +85,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 19 Jun 2026 17:54:37 +0200
-Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
-e:
+On Fri, 19 Jun 2026 22:19:50 +0200
+Linus Walleij <linusw@kernel.org> wrote:
 
-> There is one id entry that has an explicit assignment to .driver_data.
-> To make the intention clearer, assign BOSCH_UNKNOWN (which is also 0)
-> for all previously ids that had .driver_data =3D 0 implicitly before.
+> On Fri, Jun 19, 2026 at 5:55=E2=80=AFPM Uwe Kleine-K=C3=B6nig (The Capabl=
+e Hub)
+> <u.kleine-koenig@baylibre.com> wrote:
 >=20
-> While touching all entries in this array, convert to named initializers.
+> > While being less compact, using named initializers allows to more easily
+> > see which members of the structs are assigned which value without having
+> > to lookup the declaration of the struct. And it's also more robust
+> > against changes to the struct definition.
+> >
+> > The mentioned robustness is relevant for a planned change to struct
+> > spi_device_id that replaces .driver_data by an anonymous union.
+> >
+> > This patch doesn't modify the compiled arrays, only their representation
+> > in source form benefits. The former was confirmed with x86 and arm64
+> > builds.
+> >
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig=
+@baylibre.com> =20
 >=20
-> This change is similar to commit e50856dc41e8 ("iio: accel: bmc150:
-> Explicitly set .driver_data") but cares for the driver's spi part
-> instead of i2c.
+> Acked-by: Linus Walleij <linusw@kernel.org>
 >=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
-aylibre.com>
-Applied.
+> Yours,
+> Linus Walleij
+
+Applied. Thanks!
+
+J
+
