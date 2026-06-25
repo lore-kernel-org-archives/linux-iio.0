@@ -1,65 +1,67 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F7BA2F12AC
-	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 21:56:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11C5F377ECA
+	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 21:56:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782424572; cv=none; b=tnQPKE5iLgT8z/o/CCw6B+wPsorkZBeucx9MUKmoAPhinI8a9T5ji032oNyVEeMrte64PpvKjw0iqzrEGeZuKO4ZVJj6xU6UKATJSCASScL6KoMRS6GuMYHFTXF/ZIlKai5igkt3qc/iKPDlkj3d9O7tUahhSzZ0aT6sY746tXg=
+	t=1782424573; cv=none; b=ILNAwLtYKy/kqa4tBpyewKWX6ZUH+taNVuffYanGFmboCSTTLJ9tQ5GkYsgdkIK781qxRCgC0dABPhuk/N1Gcnjd8U+WnNDBqB8ZFO+YYdXGutai5l1aRLab8q6RYiHeDAlUgX+8C3qg3wkjcL0pXpYVtfzZvszBr9Jm0g48aXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782424572; c=relaxed/simple;
-	bh=nNMxTBc5fDicYoz2xcvYwtrUTa/XAdzjVSeQdkqOwIY=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ko6vApthCH8WIbVZigg79Jxk4w1xh9IJSSFVT6A5vln2VMvf19kKtBkdUbGmT4z6TwqnCVTQi3O+QYNCInMHinjijeQZzqTZ00PUYxPrpELSF0SzGmIb8Jpg61463dos6FYAANM2/0ZcrEZbDNsOAPgogsHWWtn83yFCXBza1k0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=MdjuYzMa; arc=none smtp.client-ip=209.85.210.54
+	s=arc-20240116; t=1782424573; c=relaxed/simple;
+	bh=TggGjnLxLvD14T0dE0NblmYQWNN9rL+6hvRLSO3FnI4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=oXulS6m0A+K85kCDLfBMBzES/SoeL9ihP8OtqWJDI/skYh7zEashxw0mfDpFZ9bWI2VM4t5KUqLVER6LSwYZMyEGrA9FNQjUaOOKzgVmqb+Xi7sQwS2LJmJKY0eXuhY0TgPU2XAX91yd2D1OecVmu9M2iFBsGStb/XODGzCkA6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=h3+R8ohF; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="MdjuYzMa"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7e94c26f9e0so146431a34.1
-        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 14:56:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="h3+R8ohF"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7e93e0a3364so210065a34.3
+        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 14:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782424568; x=1783029368; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MorUFOvH/y5//XS82u27kOV/BbsfEPmaMl8nnIWDcaE=;
-        b=MdjuYzMaUble3vCXQWbH8MwFb8MWimC8q64WoPnxG3zcdgRAbOKwmrnj4em/Q47MM8
-         npNNCm0B6WvjoWEapeOFlPo0DWhCBGbD9dSetet0YPCMFOACW3TV0dSqXrPcipewgpkI
-         zl80UJPxjJ2iq0Czh0OYoHVV3e128A3XQCNh+c6XOlK52hIwU+7+amtiHE4Mtad2zKxc
-         BDTDMcz6Sf320wKNUHSlwCiSspLpoKuJX1zNMm+z05Hu5FUf461T6D8vejYFt/YgGAB/
-         KB96ui4Zca4CM7B1gsF/HN6faySGCg7tYdVl0fxhqUBDaCvHMm9fxgQcqtTuncmQ8sDw
-         ttYg==
+        d=baylibre.com; s=google; t=1782424571; x=1783029371; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pFRQSgiksqu8Ptbyiz0jkzAbOI3VqHolla6r9XqaMjo=;
+        b=h3+R8ohFO8aVkaXxcpPhMeB2TBmXyL2RK4rkpwCut2m5Eftog5guZoqwu/24aNF5SL
+         VxTDmvXLQWQtXeMF5lJNeD2lmZAhNHBobH/dICG2D7Mz2KZvqUhXxKaaGK8pyG/ore3n
+         qSHm8yv/g98u7FoZv8b2hZ+01jzK8ASksdCm3CGyMpZRmpsk5cTlwakfpOPDe3ZVj/jO
+         Thz6159/H884L6CreUbrU7tkenVXIIwZY/uFPlY+yLKFCxEAeHZsGO/hw0n5yaJqUDVG
+         Qovn9OwH5/ImCW0RgfSaMgRePqBJaElv/fGstpVVLbo74yKVHjEAn4c4m8bYq9jqY0AD
+         BptQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782424568; x=1783029368;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MorUFOvH/y5//XS82u27kOV/BbsfEPmaMl8nnIWDcaE=;
-        b=lLTXLpcTuHv1In5+ghcltEySzV/Os2BooB1E3t6la8/TSkA73bRy1iUHFTpm2nmAoC
-         B6SoMnTSAdMi+XadbX3GzNxBGWUX9l0wUTyh2nkHuWRO3HB3uT4mFn3Iduux/eDRwMUT
-         8gLweWWkOfIEm3YOqiX6e1ALyK4GTXcgTOS1rdkxy6tq7xVzWMdgEBeds0SvOVLMZJOT
-         4XCd7XSft3GTN998vshc+iJxr/XQUnEpuefjLSrj++0qMNWvknEjg9YW3weV4dXYVYFd
-         JHWh5l9YFerzV4MiosUz1Q5vvLfQHQRw/N6lgY/ptptLhWeyL8VyR2dKJXRAN33uAUtb
-         qO/w==
-X-Forwarded-Encrypted: i=1; AFNElJ8UKW+IOqug/lSEDv+FviUZMG112upx2Se5zv7RM2eIyRbUt9sj1p6M7TCDBHSLXjdDAbHwIV30yy4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzSXgx5c4yBOPp16ELHDMOuvKKFmcRXte6v92kRxYI5aYoo8tKs
-	l7nXhM4RHwJA7gCvmzQBkeN60s5aYPT6ihft5aj5WVAJWi/SpwYcm3GooVUnuz1ouXA=
-X-Gm-Gg: AfdE7cluhqQqr4BOlxKFnFHaFBbYDdYpIoxf/OXy2iSHvg8CsYiIZPn+K55SyJWdzS7
-	Ydx7QeMpWakP4FhNm5agG0Czb8Z8ov462DRN4F86T7WzdtHGuGjEB39qx7guJOmfE5LU8TNahdl
-	Gteyk/FFzCjxby+LaEjy1Ek6vMt6cvu6AVCcJWPGkqu+By52I9V6bhRInadQANuiLvMiIcAPks7
-	00WtPp9aAejK4NgIv+Ia/YNvcwvrQa6cjY2zqh/AYt7QMgZivUwBfaJO/LoPugxyGbrm7G7LU65
-	PumDQCFWDvreHGqayD1kcecxWeYK9AE426fk81pRbW6HWzojstkmwAjZ1u17rumL1YYZVmvIAsi
-	dpXH5KxNpORPdDwJJhEGw2u7ryHlvBvGFN1RYqkHl2P0LTWvU5as96+SE332K3yI7e9crT2UKEH
-	xbEW0gvMM6GG/HKTlwqg==
-X-Received: by 2002:a05:6830:6d2c:b0:7e7:c1d:bf5b with SMTP id 46e09a7af769-7e99c24ef20mr4182941a34.24.1782424568258;
-        Thu, 25 Jun 2026 14:56:08 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782424571; x=1783029371;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pFRQSgiksqu8Ptbyiz0jkzAbOI3VqHolla6r9XqaMjo=;
+        b=TCu2Tx33QBP5mMDRYKukAKXv/DC/wUC5wYIM37JydHDDhVydlMZXN7ZU0YQwxEKihc
+         00PFir9ZSBPlLzYcAdUfbCpBdi8YsPhOKlLWxxRtcAOPI4Sh+tRMZ2lgnXcb4FeEN8iB
+         TTCa7vkJdl0MCsDHTLnS7VhkKel04qlKqcoZlZW7coEp5Fm/b4kwx5GFlz+xw0Jc9zI3
+         2QUKP6dEm5DFmkCfoXYjAeKZTHCKFMDU0B0WrBM8rSL1elAPrdUnn8/DQY1QciwF+CLr
+         ZWDn8pTHdO/rj1BLRAKwBMWkWC7nBgzQc+R4go/BGBNRcYQWumhFekJ0/iPQ+LoOqmyS
+         69nw==
+X-Forwarded-Encrypted: i=1; AFNElJ/W9eswwbUyyYj5TspJ/DT8WfFvc2M4g7o1O2M8i9XvzJRv7ZB1ENkx4qCMiGTjpllZMxQSv+W64Ac=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwxTrI9WV+ZlMAGzI9OwtQ2JHInXhmUhVC0cNeWg3EfDdZtB5Ik
+	CFuVvJliLLJGKxLrX2f0iknV7EAh7Z+wOMw/dCi/kYsa8N6LWp2SPQOqTBkF3x+w4gw=
+X-Gm-Gg: AfdE7ckMCYKrdqWUXOVKVCGlyKpp6LY3xrhBVJnFmJRFcq/qkxPcBNAOEyYeThSl8WG
+	IQnGaFrpIpx1boeP2D+cIxWTLs0MpX0vmhdscGc9S3qm3Ig25L43EOXXvjN0wj6qsY8MUnu2MwR
+	CJ/giPmIiyQxhULraxiAPykEzI9jsjLDu0M8jImYgL3lfAWEw0ZBJhXdTqC5HpvRNZouXQ9iMeq
+	xYMU6Bacvi0WiX2RRORYsA9yiJ+ih0SEDrGmKcgWdpWrienDLdJbUXp2pAlhBwzOEeM/ID961TW
+	0dndN8djqTUAKN4wozHuNTfVRaAR1OfS2OClKra5DasZkjR5YogQGlpI7n6dViPiXpexfO9kpC3
+	eWIFkt++XNfcV2CNPLMjkCv0mpWOT31kSinfdR/p3Nd0pu4UzXEb7vKUmV/YdUnV10R+v//dO1Y
+	UUte1h5F5Cr5v0uru4Dw==
+X-Received: by 2002:a05:6830:2b07:b0:7dc:d2ad:fb17 with SMTP id 46e09a7af769-7e99c57017bmr3818338a34.20.1782424571038;
+        Thu, 25 Jun 2026 14:56:11 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:f1f0:2d9f:2f31:3426])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9aa5e575csm206058a34.11.2026.06.25.14.56.07
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9aa5e575csm206058a34.11.2026.06.25.14.56.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2026 14:56:07 -0700 (PDT)
-From: David Lechner <dlechner@baylibre.com>
-Subject: [PATCH v2 0/8] iio: adc: new ti-ads112c14 driver
-Date: Thu, 25 Jun 2026 16:55:02 -0500
-Message-Id: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+        Thu, 25 Jun 2026 14:56:10 -0700 (PDT)
+From: "David Lechner (TI)" <dlechner@baylibre.com>
+Date: Thu, 25 Jun 2026 16:55:06 -0500
+Subject: [PATCH v2 4/8] dt-bindings: iio: adc: add input-channel-rotation
+ property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,11 +70,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22Nyw6CMBBFf4V0bU07vIIr/8Ow6LSDjFFqWiQSw
- r9bYOtqcib33rOISIEpiku2iEATR/ZDAjhlwvZmuJNkl1iAgkqVupDMXhpn5cjpRA1g09MpbKC
- omzwvSKTqO1DH33321h4cP/ggO25bW6LnOPow795Jb7lDUenyv2LSUkmq0BnX1RYBr2jmJ2Ogs
- /Uv0a7r+gPPhywMzQAAAA==
-X-Change-ID: 20260514-iio-adc-ti-ads122c14-d0b92479334e
+Message-Id: <20260625-iio-adc-ti-ads122c14-v2-4-ceb9b0b561cb@baylibre.com>
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+In-Reply-To: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -83,132 +83,54 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6186; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=nNMxTBc5fDicYoz2xcvYwtrUTa/XAdzjVSeQdkqOwIY=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqPaO7t3aP8rSr2GvZYEiPM7JHa+RjmhwtGcMim
- TA4oICkqwqJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaj2juwAKCRDCzCAB/wGP
- wE8aB/4m9s7mfif+beBlQhrqt41PtPqsACJEB/r2wDrFPVqp3T6+OMyOclHJM1JjWHjKUYLtSgT
- 6BdtHugSXOKxtiWwWC9XF2TlMqh6SWkaapsFewYPRX6NwW7ab8udEuNfz/f56KPoi3a+db1EogG
- KCo1G7xkNpWeWlb/ratQITOLH7SA2tGekBnCl+Ol/ZvBg9u20piGxH+6OgRN8joik+9DNi67kE/
- tVptqAC+AtPS6acqKSEjaDO+JSTJF72ZLSrqYGifdqpdf00YQGUYv95fj9WWoLgm26Dr2uoGGOn
- iMSfTS5k3VIov2vsGCXvOZLSs758MInKJa91xUVNhSei1JNl
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1545; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=TggGjnLxLvD14T0dE0NblmYQWNN9rL+6hvRLSO3FnI4=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqPaPWCVNA0rxmcXktKM0PGtTn+pdVqtBMYuRlM
+ Udd+W51bJqJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaj2j1gAKCRDCzCAB/wGP
+ wD3gB/9lt0x/nOh6e7AbvkQJq55VfyX/e66L/x606I1yr4sGXxZ+JrfkPu2iY08Z4+vMt5nabyT
+ 2uhkWtVjPX5HZ60Ti8/YL+X9GzP2xBU7x9ACN6+u1Ezx7YyWaF6zxFvOLoWIWtlq1MzmeUtBeCp
+ 2/83dD4Jy/HFDnq4chwnnoKz3ndcrsrBWYZzVigXSuTolcP7x/BiXdgXU52TmadiOFUOz5e9JR+
+ kR6PA9THJQfE+dRVDAoqi3wqti2Q0z2shhp30bNeUU51QnGmN8g4h2yMKuGS8arEsuXvHVHA/wI
+ cEKqsYHJ2/2gbUwJwbYS72Ek8kzuVvAtDGqR1BNuemt/ECk0
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-This adds support for TI ADS112C14 and ADS122C14 ADC chips.
+Add a generic input-channel-rotation property to adc.yaml. This is a
+feature seen frequently in ADCs that are designed to measure resistive
+loads, such as RTDs and strain gauges. Enabling this can reduce offset
+errors by swapping the positive and negative input channels on every
+other conversion. This can have side-effects in timing and filter
+response, so it is not always desirable to enable this feature in some
+applications. Therefore, it is best to make this a property that can be
+enabled or disabled in the device tree.
 
-The closest thing we've seen to this in the kernel already is ads124s08.
-However, that has a completely different register map and the DT
-bindings are incomplete and the driver is extremely basic. So I've just
-started from scratch here.
-
-We've also had a similar submission recently for ADS1220 [1]. That chip
-is in a similar situation to ads124s08 in that it has a different
-register map (but the submitted DT bindings are better than the ones for
-ads124s08, even if still a bit incomplete). And literally as I was
-writing the previous sentence, another series [2]  was sent for yet
-another similar family of chips (ADS1262). That one is even more complex
-in the feature set than the ones I am working on. I was going to polish
-up the driver a bit more before submitting it, but now it seems more
-urgent to coordinate with the other two series to align on how we would
-like to handle all of these.
-
-[1]: https://lore.kernel.org/linux-iio/20260610151342.44274-1-zizuzacker@gmail.com/
-[2]: https://lore.kernel.org/linux-iio/20260612-ads126x-v1-0-894c788d03ed@gmail.com/
-
-All of these chips have in common that they are designed for use with
-RTDs and thermocouples and so they look very similar to each other in
-terms of wiring and feature set, even if the register maps are
-different. They are in the gray area where we could either keep them
-separate because they are just different enough, or we could do like
-we've done before with ad_sigma_delta and have a bit of an abstraction
-layer for the register differences and otherwise try to share as much
-code as possible. Normally, I would lean towards keeping them separate,
-but in this case, I'm considering trying to share code because the
-devicetree bindings for the inputs is complex and is going to be mostly
-the same across all of these chips.
-
-If we decide to go the route of sharing code, we could still merge this
-series as-is and then do the refactoring to add the abstraction layer in
-a follow-up series that also adds support for the first of the other
-chips.
-
-This series includes just basic support for reading single measurements
-from the ADC and gain selection via the scale attribute. I plan to
-follow this up with additional series to add support for buffered reads,
-filtering/oversampling configuration, event support, gpio controller
-support and perhaps a few other things that are slipping my mind right
-now.
-
-The most interesting part about this (that I alluded to above) is the
-way channels are handled. These are multipling ADCs with differential
-and single-ended inputs. But what sets them apart from other similar
-chips is that since they are designed for use with RTDs, there can also
-be a current output required to excite the RTD and this current output
-might be different for different channels. So the way I conceptualized
-the channels is that the devicetree specifies the conditions needed
-to take a particular measurement rather than being purely a physical
-channel.
-
-This makes things more flexible, but does make the driver a bit more
-complex. For example, knowing when the current output needs to be
-enabled or disabled. For now, I have chosen a lazy-enable where they
-are not turned on until the first measurement is taken that requires
-them, but then they stay on until another measurement is taken that
-doesn't require them. This can lead to some oddness with the diagnostic
-channels that may be measuring something that indirectly requires the
-current output (i.e. the external reference voltage when it is connected
-to a resistor rather than a power supply). This means you need to take
-a measurement that requires the current output to be enabled before the
-diagnostic channels will give accurate readings.
-
-I have also pushed a branch to [3] that contains the start of some
-documentation for this driver that can give some more insight into how
-the implementation works. It still needs some work and also documents
-some things that haven't been implemented yet, so I haven't included it
-in this series yet.
-
-[3]: https://github.com/dlech/linux/blob/b4/iio-adc-ti-ads122c14/Documentation/iio/ads112c14.rst
-
-Signed-off-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
-Changes in v2:
-- Added patches for adding properties to adc.yaml.
-- Some of these are coming from: https://lore.kernel.org/linux-iio/20260622-new-channel-props-v2-0-aafd5369f253@gmail.com/
-- For now, I have stuck with one channel per single-channel pin or
-  diff-channels pin pair rather than some of the other ideas that were
-  discussed. Handling burn out current enable will be handled in a later
-  series. I'm leaning towards something like the _burnoutraw attribute
-  that Jonathan suggested.
-- See individual patches for details of changes (mostly renaming DT
-  properties, fixing some driver bugs and style issues).
-- Link to v1: https://patch.msgid.link/20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com
-
+v2 changes:
+* New patch.
 ---
-David Lechner (TI) (5):
-      dt-bindings: iio: adc: add input-channel-rotation property
-      dt-bindings: iio: adc: add ti,ads122c14
-      iio: adc: add ti-ads112c14 driver
-      iio: adc: ti-ads112c14: implement gain on internal short SYS_MON channel
-      iio: adc: ti-ads112c14: add measurement channel support
+ Documentation/devicetree/bindings/iio/adc/adc.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Kurt Borja (3):
-      dt-bindings: iio: adc: Add reference-sources property
-      dt-bindings: iio: adc: Add excitation current sources properties
-      dt-bindings: iio: adc: Add burn-out current properties
+diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+index 9ec1f447b565..3d52c00922c9 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+@@ -81,6 +81,13 @@ properties:
+       ADCs usually allow choosing between internal reference sources or a pair
+       of external pins.
+ 
++  input-channel-rotation:
++    type: boolean
++    description:
++      If set, the positive and negative input channels are allowed to be swapped
++      on every other conversion to reduce offset errors. This is also referred
++      to as "chop" in some datasheets.
++
+   excitation-channels:
+     $ref: /schemas/types.yaml#/definitions/uint32-array
+     description:
 
- Documentation/devicetree/bindings/iio/adc/adc.yaml |   41 +
- .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  |  205 ++++
- MAINTAINERS                                        |    7 +
- drivers/iio/adc/Kconfig                            |   12 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ti-ads112c14.c                     | 1186 ++++++++++++++++++++
- 6 files changed, 1452 insertions(+)
----
-base-commit: 948efecf22e49aa4bf55bb73ec79a0ddcfd38571
-change-id: 20260514-iio-adc-ti-ads122c14-d0b92479334e
-
-Best regards,
---  
-David Lechner (TI) <dlechner@baylibre.com>
+-- 
+2.43.0
 
