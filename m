@@ -1,67 +1,67 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B85A3271EA
-	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 19:38:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BAAE332614
+	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 19:38:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782416308; cv=none; b=DO8HJU8/O4rnjR9iVx3yCJwcoczglQtE2py2CYjx4jPvcvm7k/sxLj3Hu6xQ/AnExkPHvbJuadfybBtBGZz2fKgUSVdN7QH544iln//9S2qO6DDLm02rMKLlB2+ZW7GCfBRX6tPMmUCJ46xOlBXM6F/B8Oc7855oucElNoHyGfQ=
+	t=1782416308; cv=none; b=JbT8YGo6RvJfcb9iF72JHW8nOI1gYfqZoHB/6yzj09Z/kwO8+P7B93U9KHqqav2qFcQLcK8ZMTVBMbEM3fGhtGjfhZPiw3+bdoExZdLoLt8VAzoipOkYhffmr4daY7KgZAkbSY0DhEPkTV+sWl4Rg3+971d9OClTvDwq8rxCZvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782416308; c=relaxed/simple;
-	bh=fmCNaOwS//nANUitaKoJGfH5+DKcGrJDIi0C7C6O6t8=;
+	bh=5Gu4W3zrjgoKQUZ3pJHy+bbfKXzVWB8CfB1etnmT698=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YdFarQRk16sF+mdLXKrKBLUsgIEF8jMw51Y6yYiTTtPXXKfKsGqPX3N3FT2SposvNNJHqN0RXaFF7CklAyqu7rZ/SxfxcgxuGyu2KLNJXtG++GGCF7OPN4qYwn3A1CuJ7x52DIyzy5jhFhS0QjnPYNfbWYfWe9bxJcVCJbFZ8Kw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OHWCWsyf; arc=none smtp.client-ip=209.85.128.51
+	 In-Reply-To:To:Cc; b=eltQDNnJavs672Xu5kc0OrY45fZLBVoRcOXoKW5J2mdbU2IdZdDkGchkxtzkXdESLcYdPaD3Q9zZGufFzObKL2gWUCKiiw8b3ssYSIa/ljfe0UIf9rugDS6SYqonzaE4KjRATMW/Y1peLOKTnxds2bJyI4hOXeOw4MKJeOtSlJY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D2IQgiGv; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OHWCWsyf"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-492329c5514so686525e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 12:38:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D2IQgiGv"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-490b9318997so1711975e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 12:38:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782416305; x=1783021105; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782416306; x=1783021106; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=xbzw89aYRuONK1zkaaAl7AejLkHUYL03CzgmTvQUOA0=;
-        b=OHWCWsyf6MKkuYxwjAd+7azyUDA6aIYn1OfoGRqWF5e6kNhBmgIsk3Y9vSUEPlFCAX
-         rF0dUcKUk4Q6NojPdlDHESHnf8EKpneppSAFXOx2C5Gzs0Kg27YW3h5vLpFgSLLVEvkA
-         RqVVfa9ex4vXO21ntTeBVWrlpzMsA8WaKAlE5tVSpwu3VW+Z8H7qfehvWM0iMZW9GdZx
-         b7HmBDgIb/Jn1PI3082neVPOfFwR1O2oUcrng1LjOKYXPYryrc+X/Oee9+66CzlIM9m0
-         WI6NQZvksPu9EvmapclcvPlUaByAQnDiC2MR2MOjYExKCyJUh/TIdB2ZIlWmWMvcPVYn
-         h/6w==
+        bh=RfnIHa0NSYLbSacnMlyO53wtjVphfvS4tcH4fkmTPFs=;
+        b=D2IQgiGvqY2Kte1PaDZoRVuq5ESa7CCR/9yP40T0B+YuU9dseFt+cxpjiz+s/V7RDa
+         XNlovIU+ZIYpnDi/0Geuh8uTF0Smh2a34hzao78aikjbV7FTalFVqVWjIrhOsBFncmkU
+         5qz7t1YxERwdyKirKY/4bEVLOVh5/bwzuMYkVDsABHUgG0jy16NFV/JiQVg3E0CsMZVD
+         PAU9RTN++bUcsZlaXXaHg4X4KgPUpkn+3wU3Y0TYh2RaJ0N0bPt9xlkPPnLchsa0pmTp
+         8NiSKRDYS7Kbq6WH8Cn2mzFf2d5z6PQuACdyiG1TVRbcvwOaXo7Yeh6mli3uE4/FpWTs
+         Psmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782416305; x=1783021105;
+        d=1e100.net; s=20251104; t=1782416306; x=1783021106;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=xbzw89aYRuONK1zkaaAl7AejLkHUYL03CzgmTvQUOA0=;
-        b=ipE5JzNSbwGjKPyWm9zX8uXOXGchLG2/h6A3O1T/7a05qmVffEUobkAhUcv1Cv7e09
-         PyoKwwiPzZHGBWlIWK1dfX5GLh4Xblq4lbkLssbHChLub/b8rfrPcFD5j18wpoSvqSTK
-         hcy+XF/ZSIWY5UxQHSAYAgp0YxAsPsfOYkdDrJ6hC66xRu6eNEsdlwjE42/H8AEXCG46
-         6jkpnbXrP/yRFzrpdTeotwuxeGLrcY8psxAu+hNug3vak72jwugEie8SjSkgXXAPqIry
-         tYXQakGsI6iqbr4SByj6XJ/gHXI2a139MV386cci8ANuBk7OFSO4ZAh/5mP2k239yBl8
-         9eSw==
-X-Gm-Message-State: AOJu0Yyu+gQNCdA2dde/Mz+mKuyUARMt9coOd6Zvxzpx1DKXJBUYwbvC
-	XdoR5zAVba6+1+JOvVdisLCVUQzyWOTSoZMvzI8NlNWB8/wVY7eEfFcl
-X-Gm-Gg: AfdE7clNXCNCVBn4NE4KfuPYRht2rewsjxiSA6/+jRfHBxosWGBWv4HeHHdBVUIcjeY
-	sf7wq06BO/45h/USl2Gg0MsclwoSrWERfYndgrOfwoFBz7IYORHLiiDxPxnn3hYwLKpqxWORkzX
-	0JKrTLPiToXIPk7sT9RGjTj/mYiKPtifs0YrNz7ekcF424wy503jDf+EKWHSvS+1Xf0Cywu1tBr
-	RT9OrQdm3E3Z8HVnwpyx3IKw9JzS4DLIhJxaGATIUU5u90l+xTPphlWHZuRVaCPpBSqrfUpBZmU
-	ED9O+RJpa7N0vJ7tuNK1/0AbiAPN7lG2pCQVkaT3NaLxVxQiByV6zgFReE7o1bEfQxMyhIU/iyx
-	cM/UxWZMzKRhFXEXJgNr23pW0QJEY8Hyjo9m20RqNxkOXajxq7pD2KwS9n9BVAuNqrIGy6RTYbH
-	Mfnvntu/xaJ5x0F6wdiGzI9gN9LBj8faXz8x7/qV/8q6REaE+NNer4y/daTsl1b6pKPfBDCVkx3
-	GBSYo0bfxQJ7dThus3Wr61PGFttddEGrjf7JfW3C7QTT5e6aGaTbeotaaw8fMQql23Wnq3Y6l76
-	RzLP9uoS9Q==
-X-Received: by 2002:a05:600c:4e0e:b0:48f:e230:29f5 with SMTP id 5b1f17b1804b1-49266424176mr57772475e9.16.1782416305369;
-        Thu, 25 Jun 2026 12:38:25 -0700 (PDT)
+        bh=RfnIHa0NSYLbSacnMlyO53wtjVphfvS4tcH4fkmTPFs=;
+        b=ADPqtH7geTJTQZo+qMNLYtaNkJF+YNE+jaiU1s3kYx2tbEth1x4GqAazBfNYi62d/J
+         fQyTW7fDeHL5Y8sk3ZwOJ5fGd0fFUw172PFUN1Oa+xLDotY8o+Bf2aBhj/d9DympJw/J
+         nA/Ur8S9G+lMCJWy7DXUfuiwGOFlPvYkgj9i4o6q6oySwe6Y4BkroibYO1JUj2lbdfy5
+         T82PsbW/HlGcJxQzAM6huECTYCHffc9QtoCM81Irg8giGcGk9KtAD+Rvfuh+0EQc1dCh
+         5oqEm440ZDodvh/zZ67cIidEHYIlDd8xD/gawdLSf43pD5iI+Eezax7VnQGMuVXD4UDT
+         2THw==
+X-Gm-Message-State: AOJu0Yya/+byoPlsBqi0cB4dZ7XORkKhsr5Mc4b3ZhaoC2T/hi1HqSaJ
+	HSa3hygoV90kqCSsQgRlUmMZqXmcohHEsuxw1c3ZTZggqyUP5eKMhnAE
+X-Gm-Gg: AfdE7ckO3Ze+ctITmyQtgTFKg+D8h+wVsaOusR3BSE350dXjG9LvZ+lEHmYNR1l7ara
+	gLZe5Z4W426YOuKO/UMlbIhPQvgr5IvAg3fVmN//QwgwUEgR/2Ter+QntstkdyQ0MxbBnFopPSL
+	mwV6o1+13GxQPdnp/+K0+4axSLRMjiANYblDqfRnMXnEBR8MzZnskND3qZ+ArzkyAOlYbQkZMEg
+	dKaWma9Yh+aim3pPnWclx45FSbOghoZqN+ArLgErEHcMXYcumJFbISlTMlroBgHYClsKlF7vYRf
+	Dgy5rnjN4O4/yMk4QufCdWT1eaAuJkbdXyiQ6stSJjqxwdXwaGdMXIqvdpQ6Uhk6IEX9xe9abn0
+	yPpk/ueU5fwwxDP2DNntfujg3Py0fshdO+aynd5oSc6j/Q92IAHnZVrIHcoQ4myIf9YLCUGjf8n
+	mkHXsm6znQHZquNE4xuukT2U5Rp5Kl1tnlAE4cnOdg7ZGA3+Kz+rYivVEjbRQ6V0K0vVcPH+IfB
+	8Iyo36zfeslbVXg1OcdDI9e+yrsokoB/igaWh2pe/mC/Spa8RzhTVLHnjP4fwEFJYLOXZVytdik
+	bZaxClwPpQ==
+X-Received: by 2002:a05:600c:6b70:b0:490:b06a:649e with SMTP id 5b1f17b1804b1-49266893253mr37928005e9.25.1782416306069;
+        Thu, 25 Jun 2026 12:38:26 -0700 (PDT)
 Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492690168d5sm28898945e9.14.2026.06.25.12.38.24
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492690168d5sm28898945e9.14.2026.06.25.12.38.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 25 Jun 2026 12:38:25 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 25 Jun 2026 21:38:08 +0200
-Subject: [PATCH v2 1/3] iio: light: al3000a: add missing REGMAP_I2C to
+Date: Thu, 25 Jun 2026 21:38:09 +0200
+Subject: [PATCH v2 2/3] iio: light: al3010: add missing REGMAP_I2C to
  Kconfig
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260625-fix-al3xxx-kconfig-v2-1-796cf8d7cc49@gmail.com>
+Message-Id: <20260625-fix-al3xxx-kconfig-v2-2-796cf8d7cc49@gmail.com>
 References: <20260625-fix-al3xxx-kconfig-v2-0-796cf8d7cc49@gmail.com>
 In-Reply-To: <20260625-fix-al3xxx-kconfig-v2-0-796cf8d7cc49@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -83,35 +83,35 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782416304; l=715;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782416304; l=700;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=fmCNaOwS//nANUitaKoJGfH5+DKcGrJDIi0C7C6O6t8=;
- b=T26101z0i8qezjkK0yUeySXY4Eu5oiBr8pdXbreTOq6blKhDLqO7nEWNvHq64pvWpp2q/L7J7
- tlchPl3ugGhAJfJjm3GDVlYdY9LyQi3oG8AdlKBjbyabHyIpwHl0zb5
+ bh=5Gu4W3zrjgoKQUZ3pJHy+bbfKXzVWB8CfB1etnmT698=;
+ b=BU/D3SG5zfpHkhoo5W5CCN3xi07MW+NY1X/UrlTDvELmYGo0JGhj9GPRnVnEZxq6ntsSPRH9N
+ cGvQafJrzaGAwg9LSzW609Ztn84PnQRz/kkDxud61L5Ign9IWqy08uh
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-The KConfig entry for the al3000a is missing a `select REGMAP_I2C`,
+The KConfig entry for the AL3010 is missing a `select REGMAP_I2C`,
 causing build failures.
 
-Fixes: d531b9f78949 ("iio: light: Add support for AL3000a illuminance sensor")
+Fixes: 0e5e21e23dd6 ("iio: light: al3010: Implement regmap support")
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
  drivers/iio/light/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index ef36824f312f..a33920568904 100644
+index a33920568904..4ba3151ebea7 100644
 --- a/drivers/iio/light/Kconfig
 +++ b/drivers/iio/light/Kconfig
-@@ -45,6 +45,7 @@ config ADUX1020
+@@ -56,6 +56,7 @@ config AL3000A
  
- config AL3000A
- 	tristate "AL3000a ambient light sensor"
+ config AL3010
+ 	tristate "AL3010 ambient light sensor"
 +	select REGMAP_I2C
  	depends on I2C
  	help
- 	  Say Y here if you want to build a driver for the Dyna Image AL3000a
+ 	  Say Y here if you want to build a driver for the Dyna Image AL3010
 
 -- 
 2.54.0
