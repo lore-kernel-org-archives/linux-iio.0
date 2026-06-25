@@ -1,68 +1,69 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37EEA1E7C18;
-	Thu, 25 Jun 2026 14:03:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31A3735E1BD;
+	Thu, 25 Jun 2026 14:22:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782396198; cv=none; b=mdSbRGzCGSXRgSRcqAmnDJakO8SWwHna5+yEBfA9wDUc9qSpiO9LBUTARMaRaWpbinxAgeQtZleK+vZYoWZpJWEIEVa7GJa89w5xlJ7+O+5iMh+V1kz3BVKt8VAlnGp7cXQKiTSMmC1GsjWAuu2fbcB++IkcIsTYZlANf5dj5AQ=
+	t=1782397377; cv=none; b=e/gpTLVlk8I5350bg1MZi034eDPYbEKwmADrpIJdBrQWfspbjX7dANkoxVHpzOj4cJXoA/Y3RTNeiZE8X7kjmlK4AgCKy2mFPHx3ygfoOiL4KwJgDexfIJ0tHgxWvsAse4Tt/fud4B9oMYp5pl4RLuM13KhmyaTy2+SfB7NJBCk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782396198; c=relaxed/simple;
-	bh=NTjm2rZQNAK1mt3eLcZFkiCD8MOMhvD6eb9E7jtWBHc=;
+	s=arc-20240116; t=1782397377; c=relaxed/simple;
+	bh=7MQDuU8o9MSiYQtpjtzQhldLHBjQL3SGB2tbC/LnfCI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B+PbfueuGHOCXAeUIakS5WY9dW6+MR9Zn8hIiXUaWas4+V0f7NRdhsBezJZ7h6qspVlN0QsNms0pcg2ULBfUn44EDEhZAB3b8dKir0PNUmVjMvTQ6S+xixnY5rcA8XmjTJ5DoKYqyEu80pOrMSraXbtT1PB6YjxB5eXjFs4OPds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EbowL7cW; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=LPvUXggRcff2N0hfmEIBqLwnEi6e/TeTuEaxwKjN7EYsFM1lw1V+MUK+Qfx5nBDw6pQc9epeKF9wpv30XSYZasbZCY18A2mFjqodVieuLEtF+NFypFIq7kG2jbONui2JAqQmNgF0rWoRJBnR7EG/ZujliH44itOirhucnSNH3GU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RsNFaEL/; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EbowL7cW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RsNFaEL/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782396197; x=1813932197;
+  t=1782397376; x=1813933376;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=NTjm2rZQNAK1mt3eLcZFkiCD8MOMhvD6eb9E7jtWBHc=;
-  b=EbowL7cWAQvIsa3VRLmNb/Rl8/X5kMtSsFeFWDyH6vRUOpKJWJObTAv3
-   3U1WTVNckJywYXRm8AmWP1PKr1IQo2fvbmYhiTKOyZDL+s+Ptie0gSFoO
-   d24pbBi7NHefhBNLU4n5h6KFmYsWNAZseUk3A41lSXz5N8fA51Q7qPhoP
-   hxaJKo+/V+zcIWjfdlpZ0qvtiDBOZV/JWNA+z1ZCGqkC2Zq0GE97olg45
-   mD9Uqco7Pex8CU8YRUN7903fW/GDBpabfRb/v17D3W6/mGKsz2gNrtXnO
-   oGZ8Y9Gl3X42N12lGoR/n+Fosi6l6U6S+f0cKrRsaL4DL+doupQBmC7gl
+  bh=7MQDuU8o9MSiYQtpjtzQhldLHBjQL3SGB2tbC/LnfCI=;
+  b=RsNFaEL/rUmqjgw3jxqMFB8xoaqeiIyWMUXpIcKbFZThYQDg5YNAeN7f
+   1leHmsocsgnhUveLf3G/iHFsEq2j1QMc8RA89QHIn4Ow+8819eIVvBA35
+   na5aHciRyE3ODmO94EzD00eCkYTRT14y0Z5qSkv88fbiTj2GA4+L3yTkI
+   xIc1EveGCi7MZB9puq7XeHm83KyuPBN7xpjUBqnT4QQXmvg8ov35kmwnM
+   nwRJpwG6YeAHPOVprip5y0yrze6fMcuyjIRWTVs+mm1+oCDY1adsqqYml
+   f745j2tojdJgmlpV0mF5E1DgE8xlJLcSZPuW891WXTOcxLP7Ta89B5IdZ
    w==;
-X-CSE-ConnectionGUID: ax8/kJhQSWm6wivrBq77oQ==
-X-CSE-MsgGUID: ZLk8aCk0TiqetzbtGRZ2XQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11827"; a="82293088"
+X-CSE-ConnectionGUID: KoCG9b7mTByznsPUi48R2w==
+X-CSE-MsgGUID: cNQSrG24TRGl/FLGsAOKxw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11827"; a="82159077"
 X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="82293088"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 07:03:16 -0700
-X-CSE-ConnectionGUID: OIvGVlGkSDGrJj08jwoahg==
-X-CSE-MsgGUID: eHufPe/+T7+BUOqr3Aif0Q==
+   d="scan'208";a="82159077"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 07:22:55 -0700
+X-CSE-ConnectionGUID: 5JAQpopbRnaCYesx+RHT3Q==
+X-CSE-MsgGUID: 4+1dM9C7TgSLfRex6BG5MA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,224,1774335600"; 
-   d="scan'208";a="274093988"
+   d="scan'208";a="246372054"
 Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 07:03:14 -0700
-Date: Thu, 25 Jun 2026 17:03:11 +0300
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2026 07:22:52 -0700
+Date: Thu, 25 Jun 2026 17:22:50 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Prashant Rahul <prashantrahul23@gmail.com>, linux-iio@vger.kernel.org,
+To: "Paller, Kim Seer" <KimSeer.Paller@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Oleg Nesterov <oleg@redhat.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup failure
- in probe
-Message-ID: <aj01H48IHTyhn4ZR@ashevche-desk.local>
-References: <20260620174708.111470-1-prashantrahul23@gmail.com>
- <20260620174708.111470-5-prashantrahul23@gmail.com>
- <20260623203636.69a7429a@jic23-huawei>
- <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
- <aju-_HSz6jNkR_NM@ashevche-desk.local>
- <20260625120952.471ec21a@jic23-huawei>
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux <linux@analog.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] iio: dac: ad3530r: Add support for AD3532R/AD3532
+Message-ID: <aj05uiprjLOFzzvx@ashevche-desk.local>
+References: <20260615-iio-ad3532r-support-v2-0-84a0af8b83fa@analog.com>
+ <20260615-iio-ad3532r-support-v2-4-84a0af8b83fa@analog.com>
+ <ai_OeEegWavHcNF1@ashevche-desk.local>
+ <20260621174548.5eca5db6@jic23-huawei>
+ <PH0PR03MB7141524D6546CD0FF1EF43FAF9EC2@PH0PR03MB7141.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,52 +72,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260625120952.471ec21a@jic23-huawei>
+In-Reply-To: <PH0PR03MB7141524D6546CD0FF1EF43FAF9EC2@PH0PR03MB7141.namprd03.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 25, 2026 at 12:09:52PM +0100, Jonathan Cameron wrote:
-> On Wed, 24 Jun 2026 14:26:52 +0300
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Wed, Jun 24, 2026 at 03:43:44PM +0530, Prashant Rahul wrote:
-> > > On Wed Jun 24, 2026 at 1:06 AM IST, Jonathan Cameron wrote:  
+On Thu, Jun 25, 2026 at 10:07:47AM +0000, Paller, Kim Seer wrote:
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Monday, June 22, 2026 12:46 AM
+> > On Mon, 15 Jun 2026 13:05:44 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > > On Mon, Jun 15, 2026 at 02:20:18PM +0800, Kim Seer Paller wrote:
 
 ...
 
-> > > > Why this particular one but not the devm_iio_device_register() below it?
-> > > > Both pretty much only fail on driver bugs.  Or out of memory for
-> > > > which dev_err_probe() doesn't print anything anyway (on basis that
-> > > > is normally pretty noisy).  
-> > > 
-> > > My apologies, I wasnt aware that dev_err_probe simply ignores `-ENOMEM`.
-> > > Looking at drivers/base/core.c:5096, it is pretty evident that it does.
-> > > 
-> > > My goal with the patch series was to change dev_err into dev_err_probe,
-> > > as my understanding of dev_err_probe was that it's a specialization of
-> > > dev_err for probe contexts.  
-> > 
-> > Jonathan, actually the triggered buffer setup might return not -ENOMEM error
-> > code for the surprise. After all this series does add not a dead code, but
-> > a quite rare to be used one.
-> > 
-> > https://elixir.bootlin.com/linux/v7.1.1/source/drivers/iio/buffer/industrialio-triggered-buffer.c#L57
+> > > > +#define AD3532R_MAX_REG_ADDR			0x30F9
+> > Whilst we are here, Sashiko thinks there is an off by one on that value as it's
+> > the lower of the two registers that make up channel 15.
+> > https://urldefense.com/v3/__https://sashiko.dev/*/patchset/20260615-iio-
+> > ad3532r-support-v2-0-
+> > 84a0af8b83fa*40analog.com__;IyU!!A3Ni8CS0y2Y!88afCOStwucx32wuoeR
+> > SyZ9GpkZge9YDw5_PIMAf7SLs3OLykUC_qNRDUCnRw7wTwsxiIT1V-
+> > R8sH17sTg$
+> > It also suggests an existing bug that it would be good to look into.
 > 
-> Agreed and I'm not even sure why that is there (lost to the mists of time
-> / my failing memory ;)  However I think it's an obvious driver bug case
-> that should be trivial to see in basic tests so to me it's marginal on
-> whether a print on these is useful.
-> 
-> Maybe given that one is so rare we should just add a print in the core?
-> I'm not particularly keen on mass patches to print errors from the core
-> code but this one is perhaps a reasonable trade off vs series like this
-> one adding prints to drivers for something we don't think realistically
-> ever happens.
+> I don't think it's off-by-one. INPUT_CHn registers are listed by LSB, so
+> channel 15 is 0x30F8 (LSB) / 0x30F9 (MSB).  The driver addresses the MSB and
+> the part defaults to descending mode, so the access goes 0x30F9 -> 0x30F8.
+> 0x30F9 is also the highest valid address per the datasheet, so max_register
+> looks correct same for AD3530R's 0xF9.  Does that match our understanding, or
+> am I missing a case?
 
-While the series ends up not adding a dead code, the rareness of the case
-doesn't justify it, so I am still on the side of _not_ applying this series.
+If it's the value for .max_register in regmap configuration, then it's fine.
 
-For the core printing, I think for devm_*() or other managed resource APIs
-it makes a lot of sense (in general). Not sure about plain calls, though.
+> > > Hmm... I dunno if it's better to sort by values (so the "bank" 0 goes
+> > > together followed by "bank" 1). Jonathan, what's your preference here?
+> > Nuno, David?
+> > That is how people will typically check them vs the datasheet so I agree with
+> > numeric order.  Maybe with a comment at the top about there effectively
+> > being two banks. Many of the registers are effectively copies for the new
+> > channels but not all of them, so a macro approach would probably be even
+> > more confusing.
 
 -- 
 With Best Regards,
