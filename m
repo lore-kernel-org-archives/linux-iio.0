@@ -1,140 +1,121 @@
-Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FCA53E1225
-	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 12:16:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61BD2DAFA9;
+	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782389780; cv=none; b=VWwCpRQkCIAXgqBmj8uNP0IpkNFSoG7+qsTU0HmLdPCU/tTOEqGxkTFPbcX/cKYe1o6We5fyewIfQrR64bYVvR11GfIt7vQWqZgoSUsTKBnJ7cwKLTGK9nBUC43vS30TJLLA9ujrsDXyc196dWwLKyBzQe7tJNmmgcaKx9W2x50=
+	t=1782390312; cv=none; b=qKwQANrJEL/DGZo8txlV8vF10wvAPzSmXzcs21Phh94QDE3BDFoWxuyeXb3uoRAsJ/GgyRbrdx5bXMk2viu37bW//CVrGAiJu8ZRQ12Z5gidyzykGkXIRwegntj8VGeLtRX43NRfDTfzH+TYSETmjm4MBIDfDthcbB+gduNXThw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782389780; c=relaxed/simple;
-	bh=Q51q3+1nzHcLtThfBK/sUij3M5TX+iKxB/+fLsKtBYA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=bkd8IQCjvo8RJD9jX2/YSG7JvxKXpsfXT+pLO/uP53uzrO9M/ttA4g6rKIfSRbuJVqigIpe/YOSm11Yd+5oJgRHtbOrumbqUCBQA0giLKzLes7kS3Z8AczDNjq5JtHnlzsBmA2cFnw8265/MedpDpufwKBWGGHpLorJsX//RN3s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ceJ3v2iT; arc=none smtp.client-ip=74.125.82.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782390312; c=relaxed/simple;
+	bh=6rma1kTZbSPPl/oep7CF0HWuRcH1fnVvL/CiMdexe64=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=b1bVuCBJC3EntQIb9zG+DIHcHF4LIiaSv20oPlgIuLQRRxUEVJf5pM1GC2kY21EnSh6qSzI+In9JFk2mb5Vp79wy4+A5QrzQoeJ3BdMVbB3m6zYQpjk7n6E1dAltvV/rOLDMMc4hbLBufe0XV27ndxMpgrsYZNBG6Gq1+aVpU/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uTH5MVMk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ceJ3v2iT"
-Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-30bf132969bso3086836eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 05:16:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782389778; x=1782994578; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nNLU1KKI42jsfktVLjE0+EK3UfxEpxYOmYgYAhnpLzg=;
-        b=ceJ3v2iTRZWdFXPrB3IZMunwhLsMt1Xw4ptuMyRj0APtBFqrhdZWytTM/aQUqZI5TM
-         cTtYGKDLdPDWdJxRtqE4SF25RvYD/rnV9XvCUjHpzlE+wFHem3KdXIBneinSfoaNLfHX
-         yYoF2palrwhuz35scnbTJE3bk6GEXTFiOfBtQUmp7IETLyObNI5kiK7UyXAyNzpn5q4y
-         +vGG0ssx8G6cUMhBqmtNWnBPhDodezSdly11AKBlTNrurnf+hc9wru61Z0+lT1hJpbq/
-         sbtoy5vxpk4p+xMA9mzWf6D6aDNWFYqMosCfwqctRB+0XmjOmASPytU95GyIYX6sxa/O
-         HHhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782389778; x=1782994578;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nNLU1KKI42jsfktVLjE0+EK3UfxEpxYOmYgYAhnpLzg=;
-        b=FK+brWjI1Di2vH6Y6+jXjF3QMwrYZtdtdb1uQ72pBZOWKdtE21D6Ckos19cB5JGc36
-         qdGYRcpFp3G4VEgfSOoVbzCsdebMPx0S608Pvu9+qls/OuqmJ5763cfeld8vfeBQfSEG
-         Bvl7fzfsmVaSCEtLuoFqGbFTHp25JfhI3MLMFnqNdQg0kcoA+dafwUwcP5K24DYbwPv+
-         fFKq+BWatXObV3Epwx/gur7FTjAM3hcU74I0WT5/BPbvdUZ6pS5LcNEc1EsAOof8nEgW
-         +jIq9D4mn+XcFvboBn76wuV/ybKbQ4+9gFhyOcWay8j95MB6inmeAKKF8nkQIYlUM6mM
-         YF9A==
-X-Forwarded-Encrypted: i=1; AHgh+RpLK0jk2mLIqp4Wt1doCpIaztZn/iIh9esXl1qoHI1dTLVyHXpr6SOu7wZzdl3FiZOXCUZl/XR6BY0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVrr43GYcWLUJgVA3pLQpOwFf+Sq4POzXm4Chks8nQgRPjbVDb
-	5MsNpkgfYzoLmQ6ypu3x6qCV08Pcw3iGUeWqRYmXJF3cMFjOwVCN28oq
-X-Gm-Gg: AfdE7clvj6w1K/3pZK/hmVcfqhHRHw+nbs5peDnXoErtHbDu0+wNfgZRIdBG0j3VXFM
-	7m2nIs4KDsxSU17bFlIzW24J5KRc2CsRjrXuUR4urOfQuZOSdkUopBE60qKTDtjL+FkcLGfXhgU
-	Lh/fYhKEhrCZWaQEUMWTM8Ad/wYk7UxkXQrf2rb+o61KFViWrU0wtzMjDkRoLd9WNs2X5PSf/zC
-	JEj73Y9MfSYl+D/VJweod0aUIFvGr1chesa393ogvYuH8jBVCqcf7GdnW3CcXkHNJoQKjMZQb4C
-	bVse3wTXeNZUwPyXgHgDQrG/d7faJGOjz0x7fioFD6a3UQP4TTfUkeG0OvYEKESdvCDOP7NnVyJ
-	uiKDQ3Uv8ZSJa568USK22fFM+C485RWNixPezeVsBvloQbGDrF+IrXH5QKEjj4gGxU6bz+AUtRD
-	9L0BurQsn3/y0aLuHjSi9THV86TclNWIy8uA5QBw==
-X-Received: by 2002:a05:7301:2a08:b0:307:e4fa:894b with SMTP id 5a478bee46e88-30c84ba3223mr2902960eec.8.1782389778172;
-        Thu, 25 Jun 2026 05:16:18 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c7c8afca8sm7995178eec.17.2026.06.25.05.16.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2026 05:16:17 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	hongyan.song@intel.com,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: temperature: hid-sensor-temperature: switch to non-devm iio_device_register()
-Date: Thu, 25 Jun 2026 17:46:11 +0530
-Message-Id: <20260625121611.2003780-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uTH5MVMk"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3806EC2BCB3;
+	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1782390312;
+	bh=6rma1kTZbSPPl/oep7CF0HWuRcH1fnVvL/CiMdexe64=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=uTH5MVMk/1VlVSqBoarOvQkzGg5Mcr7ysvcw2Oyrk100+hx2DyQRzgQazcZpA7dBB
+	 hyEflTITtZyx+ikO/nfL6f50RxE0h/MND9TueYrZu7BXHbzwrRivuzgzTSb8a/1Qg+
+	 k94L3ceuEcgofbVThYWx1R+VFg/9KWwerb08kYDtfihN8Lajv9vK4Oj88klckZS863
+	 uDRO5Jo9X4WbzME1AEqjX0f3b7IXI5Uzj3bA1eX3DZLEJUZYZZhV2GV4NxRXsScOil
+	 Ql+a9/gdUIRffI1jtpTwqv27GuLDmSE7RPR1TNEidqcvRUlLcIAWqMRu52XnHEQ8Lz
+	 Rf3ooyNvpAKZg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAEECDE001;
+	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Subject: [PATCH v4 0/2] iio: imu: inv_icm42600: add hwfifo watermark
+ attributes
+Date: Thu, 25 Jun 2026 14:24:51 +0200
+Message-Id: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-0-8b4c8bfa96d7@tdk.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIABMePWoC/52OwU7EIBRFf2XC2mceFLB15X8YYyg87NNMa4CiZ
+ tJ/l44x6nJcnuTmnHsSmRJTFreHk0hUOfMyN9BXB+EnNz8RcGgsFCqLVinguQL7o26I4EKAcY2
+ REkxvkePy6EpJPK6FMjhPAbU01Gkpmu81UeT3c+v+4YvzOj6TL3tgX0ycy5I+zmeq3Hff3e6Cb
+ pUgIcgBe0SyGOiuhJdrvxzFXq3qt1df4lXNK5W9McoMZPv+r7f7t7cDBBMGp721Khr88W7b9gn
+ b6OgnogEAAA==
+X-Change-ID: 20260622-inv-icm42600-add-buffer-hwfifo_attributes-aced0415e341
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782390310; l=2106;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=6rma1kTZbSPPl/oep7CF0HWuRcH1fnVvL/CiMdexe64=;
+ b=PSZoOvlVZvLa5HUvoc4JN/BJQ4uf8xxzAcFA5yb0drcyRdSGq9TAiF0k28zHPLuzPWrxAbF/c
+ XRTyhT4U9w9BTcWnnIwpLu2D3Dg5H0y+oTCWNHkdfmPx65/nilloC12
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Add hwfifo_watermark_* buffer attributes.
 
-Avoid using devm_iio_device_register(), as this driver requires explicit
-error handling and teardown ordering.
+There is a preliminary patch for reordering includes first.
 
-With devm_iio_device_register(), IIO device remains registered until the
-devres cleanup phase. However, driver's remove() callback removes the
-sensor hub callback and trigger support. This can create a race window
-where IIO device is still visible and read_raw() requests are issued.
-These requests might call sensor_hub_input_attr_get_raw_value(), which
-waits up to 5 seconds for a response from the sensor hub callback that
-has already been removed.
-
-Add an explicit iio_device_unregister() call in the teardown path to
-ensure deterministic cleanup, so that userspace can no longer access the
-device once backend resources begin to be dismantled.
-
-Fixes: 59d0f2da3569 ("iio: hid: Add temperature sensor support")
-Cc: stable@vger.kernel.org
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
+Changes in v4:
+- Rework headers fix to just reorder includes but for all driver
+  sources.
+- Link to v3: https://patch.msgid.link/20260624-inv-icm42600-add-buffer-hwfifo_attributes-v3-0-5d9a4c662f50@tdk.com
+
+Changes in v3:
+- Add a preparatory patch for reordering includes.
+- Use IIO_DEVICE_ATTR_RO.
+- Link to v2: https://patch.msgid.link/20260624-inv-icm42600-add-buffer-hwfifo_attributes-v2-1-12675259e688@tdk.com
+
 Changes in v2:
-- Added review tags of Maxwell and Andy along with stable Cc
-- Based on input from Srinivas and investigation use-after-free
-  explanation was not sufficiently justified so updated the commit
-  message with appropriate information and kept Fixes tag
-- Link to v1: https://lore.kernel.org/all/20260622052135.1804135-1-sanjayembedded@gmail.com
----
- drivers/iio/temperature/hid-sensor-temperature.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+- Delete trailing comma after NULL terminator
+- Link to v1: https://patch.msgid.link/20260623-inv-icm42600-add-buffer-hwfifo_attributes-v1-1-d190800e60de@tdk.com
 
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-index a8d3a15f9c53..ab6ec8f659b8 100644
---- a/drivers/iio/temperature/hid-sensor-temperature.c
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -244,7 +244,7 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto error_remove_trigger;
- 
--	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto error_remove_callback;
- 
-@@ -264,6 +264,7 @@ static void hid_temperature_remove(struct platform_device *pdev)
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct temperature_state *temp_st = iio_priv(indio_dev);
- 
-+	iio_device_unregister(indio_dev);
- 	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
- 	hid_sensor_remove_trigger(indio_dev, &temp_st->common_attributes);
- }
--- 
---
+To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+---
+Jean-Baptiste Maneyrol (2):
+      iio: imu: inv_icm42600: reorder all driver headers
+      iio: imu: inv_icm42600: add buffer hwfifo watermark attributes
+
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h        | 10 +++--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  | 18 +++++----
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 43 ++++++++++++++++++++--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h |  3 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c   | 12 +++---
+ drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   | 16 ++++----
+ drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c    |  8 ++--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c    |  8 ++--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c   |  3 +-
+ 9 files changed, 84 insertions(+), 37 deletions(-)
+---
+base-commit: cc746297b23e89bd5df9f91f3a0ca209e8991763
+change-id: 20260622-inv-icm42600-add-buffer-hwfifo_attributes-aced0415e341
+
+Best regards,
+--  
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
 
