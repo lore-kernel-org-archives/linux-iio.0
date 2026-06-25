@@ -1,138 +1,122 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FE491F5842
-	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 07:30:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782372615; cv=none; b=B0GHRyyRc9DT70O8wpZd3y/k10QU9isrAafeH8VqMGwOieAuW1tptslnRM1yj5wkBKrXHiWK3c4PCKKf6pvDu186vRQ1eMOMLkrPKQyVc6WC5WLmCqPJpzgTfyCooqENJ823swNOHk0fzwElR4NgO/0xcaNZcH5GWuMkwTUvcGg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782372615; c=relaxed/simple;
-	bh=tcB1rds/uzzj4nfKHTALU46dqA5+55+NV76XtXupaQE=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QW5cBLt0xsZ0M1h1ZqP6ERWWdJRm5LLY1SIPvUyVi2ZMFIWgndI8wmixpyc5HzC/Uby/ZygoKaozpZjZtxenMBM7OL2L2O1WyBJx8d0SNfCy8WPldCGH09Uaar7jKpBEtbAICROP287kIvzojqcWNLyMeRyAXzp7OwEQ7QPWBuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DOGKFqeD; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACEF3373BE8
+	for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 07:55:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782374138; cv=pass; b=poiTBS7larIs6fo5Z9s6JCWGmDF8J4JO/eolyenGkHXlREjNVM5ijkyVH36d1cFSYTRKmWIzluhIlMnBAfh7MO6t/gXRcFiIWr3M6eqzbFuDjl29ygn+v1wsqY5A6DUO/YB8/IC3Ro9cKSuY7xsGKp6sdXgaBtNZ+poVd5RTDAY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782374138; c=relaxed/simple;
+	bh=UeixKLDd1bxLQVD2tdQf18Y4CR1YFUz/5IolhY6Scdw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tLtNYPq5QlG6Ik0ut2otEaLPLIezterVpoF0wbbH5Y+RUP4nPmHdzkH+h9z+tL4fRpVgyZzoaFqgNmyS0zWLLeEMwai+l+xqiKMGKyxNG6J/B2nuF85cLdrAkbrZxPFQteovyQ9FbMJLd8zpAvDygqe3By8QJnIMagu7RuhguxY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com; spf=pass smtp.mailfrom=melexis.com; dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b=1CWqQZZr; arc=pass smtp.client-ip=209.85.222.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=melexis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=melexis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DOGKFqeD"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49241896317so8446135e9.3
-        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 00:30:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="1CWqQZZr"
+Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-9204711e831so203053485a.2
+        for <linux-iio@vger.kernel.org>; Thu, 25 Jun 2026 00:55:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1782374136; cv=none;
+        d=google.com; s=arc-20260327;
+        b=GeuqjjNbK3We8tPmbrGE8Bywa1xuGl1FOO3ToxUByo8zxg61gSB6gYDC6+0t4QeBhh
+         C1/fDJFnBYBidnt89xTiIFsLdmnBwLpbHLKq9+vw1SpBSwV3zA8AeQ+KsddWBfjkswdo
+         Z6MQJ6suVHz2RPLNjIVVWnW8Arnzn48vBtvSVQP3OeHJh12lFB/9kK4rdhef5eRufNV4
+         LMkvP08OrkQ5pp86SNRqYH63AhckVxbdJUda0ypAWFghVODRdzxK5KdvoYuGfN4x8TNq
+         qRBqh5U2/BMeX+Qg767E9DDiteCPkcW4jQTkGpVXjX0fgEgh6YVNF5tPo9fukdM80x4D
+         E+kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=UeixKLDd1bxLQVD2tdQf18Y4CR1YFUz/5IolhY6Scdw=;
+        fh=oMif+kxu6hs0qxy6jQgRgF2PuS1oQHUxQFAaCEV/9v4=;
+        b=jxmvrPl2PkFix4o0/atU85l3njebS13ep4TUAgaafqvhvKMVPmHXuv3NGqnWTY2nxb
+         9hFkbveNmafY+jVP1+DPcftJw2dL3VQY0B8ltUZPMhkrtM+8dkBHJxizQpy2Lg7v/4Cd
+         IKuE5Egk+IaBNlfZoKcuiu8kDHaIpFIjbYb7igzMf/YDW3R11BNtg59LeTl+wL0yVB+N
+         wsxAGjsTaioiuK+z/YsbUYGaJtva+CnRc8r26Sne5AfG/8YuvvQsN4kkfLfTkdFcCnfr
+         N3utXnZ49DrEsQfwHtSxwLp9bBRmYr5m0Pf9nD8rYPLTw9MLV87CNN946kIb7qeW/mPr
+         X3yA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782372612; x=1782977412; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PTCS/VbEwbVfOVp9Z3suxyrpmFmcGl/hr2a+SPTASFs=;
-        b=DOGKFqeDZdfgryQh5cqzce+e/VkUFql6nuqLuUM/unH/FHWTJcf2ACw3pXk7U5CBUz
-         zCdtgrLUaryT/egHs4XPqBElXBSqoCDY5XTxxbP/6bdq9UpQuGjNyod72aqwP4I96IQ3
-         9HQOMSXWaSgeD2WsdMdVamZDvGfGZOcK8FL67sYstE/sSIODiKVA+knTnyjEVJzbcM2j
-         n/i2c7LYCO7vwWPCdAnGwSBgB/nJys+B2JLonNOvqPOGrhqdyoA6SOVEeb9W9ZGRO0b0
-         JPG8HBAN8lM/eolUPVEVza+zJI2S+2r14x+Ly0yCL6+Mg26M/aX7noaNTTWm1vwdnB6J
-         6naw==
+        d=melexis.com; s=google; t=1782374136; x=1782978936; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UeixKLDd1bxLQVD2tdQf18Y4CR1YFUz/5IolhY6Scdw=;
+        b=1CWqQZZrZRfJWTcyZ9Z+tZVza4eR5QbVhJcDmuIvP+87DTN73i0WeXLF7qR8ajFHrO
+         W9F0oJJ23MX42n1DUvnBCsARqXQe2deL26DjfyWRY51kTiqFiW7vprT+KyV2+Q2l516z
+         CdxkQuTYn42Paef64UUSVQ8zlevcKLwpZW31pzu4bPnnp2aJcYM38vy5/4BUeTVmamgI
+         cBZ8alAKH9kCewfzqO+OYhIHMbHWwsPCfrPlF2Pecp/VXaFheMz9ihs6MYBfams+w3Vx
+         eDX4tbR/Oy2ZrAwLRVzTf8SNAYCVuMAzwSfVZK4cDl5WA/zSUYb/Z+/ICI9DNPUONqo1
+         mPHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782372612; x=1782977412;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PTCS/VbEwbVfOVp9Z3suxyrpmFmcGl/hr2a+SPTASFs=;
-        b=LNNCERh0CPBqx0Ijr9zTNcPVrUD5yjYZ0h27ALa7T3E17quUA+ysdvWgzRLhKiyCWV
-         GbWyDFf/evXheehlr1bea0SwzIP/uKks9vzOJggcNWsUpnFXbaELK/YV23M9HHT3xbl+
-         05ilsMafq4NgyrkEscVjQKBdOcSVpW5PT7u1fyU4vthul08nvlGHWxAdcAPQBx95g3QR
-         jUokMddlUGcFvwZyIA3iDKvnEelDkP/bD0BIgdoKGJ1W/Vt0Lf0+nEc/zz7BqehD/7Ts
-         ZvYyvXyGCC4LL87WB34wf1YV2GfQJD1iCWPThQ/yQKkM25dZFX4528xuGmF1QwmUJM2Z
-         TzKA==
-X-Forwarded-Encrypted: i=1; AFNElJ+eT8vrYT9/X3ku5k4gs47xCzbn6ep3T2ryx3ZD94dOdVOGmlQEod6+Ga2104GDmGPTlepa0sLoYj8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YykFk6ym/yhjzqWi5ylaqFrPkgpEqBO7OPZULvmVtAKIw4ItHWP
-	8BO14k8izJ9IzQwVomN65vw4oGsMxKWljuTju87Lr++M0C1QT4OSqEv5
-X-Gm-Gg: AfdE7cmk8NTleqoFxAA5zKDYWT8TAWfOvzBAyRsWh89PLUMMT0qwsXtJZ9qB/mE6bxu
-	IGyJt65H8E6XxA1sIux3WaDmto7Yf6f0kskg+LAfUpcAskSqkqBWjnvUsSFQgGj11vyi/YmAsbj
-	FZ54g1Od9LAT+VlDFXmi6er3DZ4x2VKoCFEAUYTolzDvi4Dk3QuccIWrj8CSdfDDxg656j3nHQc
-	bNVAm9FaErbsPa+4U+Wu84XoshkOlUOBv9PV/jCdoq7AA5NOWvSSlx71wPTiKCl0loyoFmSayFr
-	tZU+2tmh55iesPHPxBa0FI/++1q1mNTt65+39gb1om/95mqr5fuJWwAa53pCkyvU6TPXjhJF1C1
-	GkjgPbhg12BD5DSnkuSmoZ+n7R5uGkwVqTbSK1ktp4dliDOFlQBvjsq6wvVl9sI6LvQidWiEpSz
-	zgjdH9UYK//igRW3/MKnI5l/zebOP/M55u5bL+cWt5x1Cer0A0Pp0uHDkot574/H7QUDwKqapcB
-	rc20eWsc+y2nlIhKMf37fXlII61
-X-Received: by 2002:a05:600c:4e94:b0:490:c2a2:b1d4 with SMTP id 5b1f17b1804b1-492668933e5mr14101565e9.35.1782372611740;
-        Thu, 25 Jun 2026 00:30:11 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492660e9f0esm32574495e9.9.2026.06.25.00.30.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Jun 2026 00:30:10 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Thu, 25 Jun 2026 08:30:07 +0100
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux@analog.com, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>, 
-	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v16 04/14] lib: kstrtox: add initial value to
- _parse_integer_limit()
-Message-ID: <ssrckqgv3rqpfgxwpx4ca3m5m2mp3frxs6sd673chvsorhsjiq@63t3eosivg3a>
-References: <20260604-adf41513-iio-driver-v16-0-1a7d09143bc2@analog.com>
- <20260604-adf41513-iio-driver-v16-4-1a7d09143bc2@analog.com>
- <rvx36i2ydmwhbbkdgbvh26uqchyoptzuu7tleuyarqn2skzkxz@owzwp62mzkdo>
- <20260614210044.19dfc8df@jic23-huawei>
- <20260624155414.61755e9a@jic23-huawei>
+        d=1e100.net; s=20251104; t=1782374136; x=1782978936;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UeixKLDd1bxLQVD2tdQf18Y4CR1YFUz/5IolhY6Scdw=;
+        b=Fnp4X+65J7JLEo4g1nMIkEs6a45DW65e/YisCda6VIk2kJgyE+hN6VG+9MlUKH+ILi
+         Sd9ZM9b/1TaOtB3f1QDzqLLbCacXja9Tm0bM6ExIn/A9fswVlwNA7Z8dmSlHgLn5Ce49
+         FUGj2i9TMR4OnGjRXNu64lbmIMCeU8c9CNjQl26P1OdLzwaD1XAGB1xaDX4UtrBZqri/
+         EOhbI2wYmBWwUmU7SbANcN6rxsCSMstwQjeg1KJInYquawFmPMoecbYMaCPzBNVH21lH
+         quTYFgw0VypzF5AmiPvp1xbTvYBwsPhWJxmX6IbBDvKdAEOAJdESv/cffZg5cBUPssgK
+         9f4w==
+X-Forwarded-Encrypted: i=1; AFNElJ9TMCG0YGMeKmPiwz1gWTh8wBpyVJIGqI6MyOUt54/pzqbnexcVOZXr6ESAFydfiL/+t1wkzJ59alw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3u7CZjkJGy3LIBE6OfylrrzgE4EEHyX4i+U02VustyMwMiLBc
+	yb3J+FKJhwwCAWtmDIouJ4bOwIYpIl3eXbdS9Tv3sW1JEoyG6B9dSjeMI0BnEAjJewKHrgcqheC
+	T0bMzOszGFSqSuHW5js3LB3uFIi77+NqTk7LtEs8P
+X-Gm-Gg: AfdE7cnZQ6y2NxBwgJG+oKjs+LCeuitbEqLsZyPpszgpv+vTwk9gJOVFBfp/FTCdm/L
+	/5bGKs7oYFu+h/NB2n9WmJNJZQdaT6WcAW+vA1xdTXjlOrkj+F5utPVmbkF17uyWNZPl+gs0Qic
+	2hUqAwgg3qZKCwaslupZqmhrYq+VIbMaTKzU484vG9uNb56n2i3es4Ng5FcMgAX8sAmTgdK1B5q
+	QioFqzOoPi761Ywjk9AHPYDo0FIG1zSd2JEyvBAL1a/WJMAgZbqPt/XImY3FH43XZLl0w==
+X-Received: by 2002:a05:620a:3912:b0:915:745a:70fe with SMTP id
+ af79cd13be357-9293c11e3cfmr179731185a.28.1782374135581; Thu, 25 Jun 2026
+ 00:55:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260624155414.61755e9a@jic23-huawei>
+References: <20260624081309.77805-1-pengpeng@iscas.ac.cn> <20260625054259.76774-1-pengpeng@iscas.ac.cn>
+ <ajzOA3MGaCqrgCDp@ashevche-desk.local>
+In-Reply-To: <ajzOA3MGaCqrgCDp@ashevche-desk.local>
+From: Crt Mori <cmo@melexis.com>
+Date: Thu, 25 Jun 2026 09:54:58 +0200
+X-Gm-Features: AVVi8Cf0Kq8KvxED7bUTegw9DwvGkx-iAJ0WMlc-jUAjlQ3zb6kIh99CFD1m9KI
+Message-ID: <CAKv63uupUcUGXwXJQL957YtUmP+OZ5makvGROvFuvS8BWF-sPQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: temperature: Build mlx90635 with CONFIG_MLX90635
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 24/06/26 15:54, Jonathan Cameron wrote:
-> On Sun, 14 Jun 2026 21:00:44 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Thu, 4 Jun 2026 11:09:33 +0100
-> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > 
-> > > On 26/06/04 10:58AM, Rodrigo Alencar via B4 Relay wrote:  
-> > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > 
-> > > > Add init parameter to _parse_integer_limit() that defines an initial
-> > > > value for the accumulated result when parsing an 64-bit integer. The
-> > > > new function prototype is adjusted so that the _parse_integer() macros
-> > > > stay consistent allowing for one more argument, which defaults to 0.    
-> > > 
-> > > ...
-> > >   
-> > > >  noinline
-> > > >  unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
-> > > > -				  size_t max_chars)
-> > > > +				  size_t max_chars, unsigned long long init)
-> > > >  {
-> > > >  	unsigned long long res;
-> > > >  	unsigned int rv;
-> > > >  
-> > > > -	res = 0;
-> > > > +	res = init;    
-> > > 
-> > > This might generate conflict, as the code around have changed in linux-next.
-> > > It is an easy fix though.
-> > >   
-> > Thanks for the heads up. Hopefully that will all fall out when I rebase testing
-> > on rc1 once that is out.
-> I've done a mid merge cycle rebase as the char-misc branches have merged.
-> So this should be resolve on my testing branch now.
+Thanks for spotting this Pengpeng Hou; it's strange that nobody
+noticed until now. I would like to apologize to everyone for this
+mistake.
 
-https://lore.kernel.org/oe-kbuild-all/202606250230.etPGuolf-lkp@intel.com/
+Acked-by: Crt Mori <cmo@melexis.com>
 
-Apparently, the documentation header now includes parameter descriptions.
-The new one is missing.
- 
--- 
-Kind regards,
-
-Rodrigo Alencar
+On Thu, 25 Jun 2026 at 08:43, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Thu, Jun 25, 2026 at 01:42:59PM +0800, Pengpeng Hou wrote:
+> > drivers/iio/temperature/Kconfig has a dedicated MLX90635 option, but
+> > the Makefile currently builds mlx90635.o under CONFIG_MLX90632.
+> >
+> > This means enabling CONFIG_MLX90635 alone does not carry its provider
+> > object into the build, while enabling CONFIG_MLX90632 unexpectedly also
+> > builds mlx90635.o.
+> >
+> > Gate mlx90635.o on the matching generated Kconfig symbol.
+>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
