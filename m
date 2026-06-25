@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62F63E120B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62593DE420;
 	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782390312; cv=none; b=V5WWi0vd9cd0JWkeqn0FSyiwwoxZG/XXYV4C0mmaEZBiDPEltny9uA1wXX56yBtsg1Mo5uyD1xNl/xcISY6izG3t41zlDS7fwCcDXBZ0hu8VmLdEtWhm4FAzHlAPPWAzu4wy4sBna8ZdrVDk0+H+NyEolFBdImhtKB6yvVBHQ4M=
+	t=1782390312; cv=none; b=pnijiuwRHo0uQxjQ0ctnMCm1fMxIslqvLl/+Isn60t084y67nB+S8GHajRarTyAIG2PvRWbjVYT0yvbVlE9/lDjsvyDgy2nYLJaiV8ivlXn7IzaoLeXdmr+9qNYJjUWOukxUv+KWDMmzOwj+8/3jLmnn6nv2Cwna2jKvwkR4z24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782390312; c=relaxed/simple;
-	bh=/jYIbOPw613lNUQGAbcZaAKMdwMql3FWfpbb2NN5FOQ=;
+	bh=nuTMAqKNcl4oahvmqGsS9XKX2zIJ+Og/FMK1GzRqDSw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Cj0VW3d3cx122eP4vJYaqI9bkD+7J7M5Lo3RUQ96BEvschqMJcz8oxRQVKHdeNxdHuggH4tmZ7AvBg32PwReROaxT47yTfHMRHcZzqvosnXcfL6/Lv6PsawiwWt0Dc/ITRaDyFIwUe/bYDel317MQ9KJyHzGndbpBP1Wylptvas=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IUlxH2iU; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Up7n6skJv8ZROuiXs8Yadd/O29g4maSaYFXsFnef6B3PGEoAp4wmSTevXhjhEV68Mf8QwZD0bebAoS00V/ZZcwKXW0HBF730KHIzH7BtlgF0gnigLHu6qfPzn4x/k1hVbfPLVEO/DJQ9M6oOC9QQ3fXtu/Zw05crZ9FNJVNn+iA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kTyd+fPx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IUlxH2iU"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5A89CC2BCB4;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kTyd+fPx"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7318EC2BCF5;
 	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782390312;
-	bh=/jYIbOPw613lNUQGAbcZaAKMdwMql3FWfpbb2NN5FOQ=;
+	bh=nuTMAqKNcl4oahvmqGsS9XKX2zIJ+Og/FMK1GzRqDSw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=IUlxH2iU1C98didPNBbEvE7sb2OOTko64OZ9/iWf5EfihQ5A/Bd4FrPYqgY0FQngU
-	 aDtdi5i9BYe29DEeqvU9TBy7oDVI/zbpqq9Oi/JjmfEj8zNrTdTzXwN/nG3bNZpt4P
-	 8RfDedKQbNanNoU40DkIHL0MdMKiqyaNKIA/sfdqXqVmc8jtyC+ZCkbCWDeQ2+PmKt
-	 8O0StYTL5LS+b50C58f0X83nG8e0FOTlQskmDTh2dMV0CTAYSZnzrZQcLoilO+XiMW
-	 g/Azn3Et6StBYe/QoO8BdI71LFQqiyWY4v1SCW/HyRGDAwXkx/YtANTmxOe2SrRt5t
-	 SGJVlM5QpV75g==
+	b=kTyd+fPxa8yGSsAiMdMJ2ITDMYVMfhXyIM77UtMrH8K1nBM3uhgdS1kp81SbtizWW
+	 Uko346GiZz5ehjg243MIbp/b2b3+6fFFQsbH5HN7G/YUDmGWpJlpk9KAWfS4MfZprx
+	 ghdtc/yHyp4eL0fBUa7vzRVTSeX46HniagNg8z2r2h9NjL/kuaBBs6u4dw1fuHaIIq
+	 3a52G1DVHvGG1pLymCBggnExtNapfnCV46MgerjbDhLTXfAb15muLNLD/ky4aE6D5U
+	 1YzcXVDHVqxGZopBRYz6Zo+Tr8xTW1VDF2KsO65DxYvXq4lk3mVK2wwR8qgR8A9ujp
+	 K7YuYnLnXShUQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BAECDB479;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F04BCDE000;
 	Thu, 25 Jun 2026 12:25:12 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Thu, 25 Jun 2026 14:24:52 +0200
-Subject: [PATCH v4 1/2] iio: imu: inv_icm42600: reorder all driver headers
+Date: Thu, 25 Jun 2026 14:24:53 +0200
+Subject: [PATCH v4 2/2] iio: imu: inv_icm42600: add buffer hwfifo watermark
+ attributes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-1-8b4c8bfa96d7@tdk.com>
+Message-Id: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-2-8b4c8bfa96d7@tdk.com>
 References: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-0-8b4c8bfa96d7@tdk.com>
 In-Reply-To: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-0-8b4c8bfa96d7@tdk.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -48,13 +49,14 @@ To: Jonathan Cameron <jic23@kernel.org>,
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782390310; l=7887;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782390310; l=5312;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=dqJTKh2aunfRO+/DEMHAfa8LgIQtEsznlvfnJJptMOw=;
- b=W4DlU9sb39Yfsr4uGPtShZFkkdajI7idx8cgw2+bRYC21RRVIdXUE+7VkcuQziq+l2VOkVo3s
- EpE8BwWnnSiBfgTdMRuw86fYuzFExx8tfALmzSWU3hZGxnoA7blTxET
+ bh=xTTypk63cfbs3ruz0DEPLY6CHuySY2XM5zYiCJd0h80=;
+ b=3wW7qYfVXxlqZ1QyhOcGqDoJV8Ac9+oZ5XoWJ4IgG1oT+aTVhXY88UndEuHTYWM9kx5a6n3Qh
+ fGCaPaO+I6BCqEoI2VEmsB/s3/Y0mexgYUMZbmYGm+eWPzFmsjWJwiW
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -64,246 +66,133 @@ Reply-To: jean-baptiste.maneyrol@tdk.com
 
 From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Reorder headers includes following linux rules.
+Add hwfifo_watermark/min/max/enabled buffer attributes.
+Hardware FIFO is always enabled and used.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600.h        |  8 +++++---
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  | 13 +++++++------
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c |  7 ++++---
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c   | 12 ++++++------
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   | 11 ++++++-----
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c    |  8 ++++----
- drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c    |  8 ++++----
- drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c   |  3 ++-
- 9 files changed, 39 insertions(+), 33 deletions(-)
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h        |  2 ++
+ drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  5 +--
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 36 ++++++++++++++++++++++
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h |  1 +
+ drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  5 +--
+ 5 files changed, 45 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index c8b48a5c5ed0..2ab863c9d53a 100644
+index 2ab863c9d53a..b55d993f0264 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -6,13 +6,15 @@
- #ifndef INV_ICM42600_H_
- #define INV_ICM42600_H_
+@@ -356,6 +356,8 @@ struct inv_icm42600_sensor_state {
+ 		cpu_to_le16((_wm) & GENMASK(11, 0))
+ /* FIFO is 2048 bytes, let 12 samples for reading latency */
+ #define INV_ICM42600_FIFO_WATERMARK_MAX			(2048 - 12 * 16)
++/* INV_ICM42600_FIFO_WATERMARK_MAX / 8 = 232 */
++#define INV_ICM42600_FIFO_WATERMARK_MAX_SAMPLES		232
  
--#include <linux/bits.h>
- #include <linux/bitfield.h>
--#include <linux/regmap.h>
-+#include <linux/bits.h>
- #include <linux/mutex.h>
--#include <linux/regulator/consumer.h>
- #include <linux/pm.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+
- #include <linux/iio/iio.h>
-+
- #include <linux/iio/common/inv_sensors_timestamp.h>
- 
- #include "inv_icm42600_buffer.h"
+ #define INV_ICM42600_REG_INT_CONFIG1			0x0064
+ #define INV_ICM42600_INT_CONFIG1_TPULSE_DURATION	BIT(6)
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index 532d5fdffaf8..87471e8c9bc7 100644
+index 87471e8c9bc7..2421de63f5bf 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -3,25 +3,26 @@
-  * Copyright (C) 2020 Invensense, Inc.
-  */
+@@ -1187,8 +1187,9 @@ struct iio_dev *inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ 	indio_dev->num_channels = ARRAY_SIZE(inv_icm42600_accel_channels);
+ 	indio_dev->available_scan_masks = inv_icm42600_accel_scan_masks;
  
--#include <linux/kernel.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/math64.h>
-+#include <linux/minmax.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
--#include <linux/delay.h>
--#include <linux/math64.h>
--#include <linux/minmax.h>
- #include <linux/units.h>
+-	ret = devm_iio_kfifo_buffer_setup(dev, indio_dev,
+-					  &inv_icm42600_buffer_ops);
++	ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev,
++					      &inv_icm42600_buffer_ops,
++					      inv_icm42600_buffer_attrs);
+ 	if (ret)
+ 		return ERR_PTR(ret);
  
- #include <linux/iio/buffer.h>
--#include <linux/iio/common/inv_sensors_timestamp.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/kfifo_buf.h>
- 
-+#include <linux/iio/common/inv_sensors_timestamp.h>
-+
- #include "inv_icm42600.h"
--#include "inv_icm42600_temp.h"
- #include "inv_icm42600_buffer.h"
-+#include "inv_icm42600_temp.h"
- 
- #define INV_ICM42600_ACCEL_CHAN(_modifier, _index, _ext_info)		\
- 	{								\
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-index 68a395758031..26817158ec78 100644
+index 26817158ec78..c3c2fbd8d9ce 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-@@ -3,18 +3,19 @@
-  * Copyright (C) 2020 Invensense, Inc.
-  */
- 
--#include <linux/kernel.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
-+#include <linux/kernel.h>
- #include <linux/minmax.h>
+@@ -10,9 +10,11 @@
  #include <linux/mutex.h>
  #include <linux/pm_runtime.h>
  #include <linux/regmap.h>
--#include <linux/delay.h>
++#include <linux/stringify.h>
  
  #include <linux/iio/buffer.h>
--#include <linux/iio/common/inv_sensors_timestamp.h>
  #include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
  
-+#include <linux/iio/common/inv_sensors_timestamp.h>
+ #include <linux/iio/common/inv_sensors_timestamp.h>
+ 
+@@ -438,6 +440,40 @@ const struct iio_buffer_setup_ops inv_icm42600_buffer_ops = {
+ 	.postdisable = inv_icm42600_buffer_postdisable,
+ };
+ 
++static ssize_t hwfifo_watermark_show(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	unsigned int wm;
 +
- #include "inv_icm42600.h"
- #include "inv_icm42600_buffer.h"
- 
++	guard(mutex)(&st->lock);
++
++	if (indio_dev == st->indio_accel)
++		wm = st->fifo.watermark.eff_accel;
++	else if (indio_dev == st->indio_gyro)
++		wm = st->fifo.watermark.eff_gyro;
++	else
++		return -EINVAL;
++
++	return sysfs_emit(buf, "%u\n", wm);
++}
++
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max,
++			     __stringify(INV_ICM42600_FIFO_WATERMARK_MAX_SAMPLES));
++static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_enabled, "1");
++
++const struct iio_dev_attr *inv_icm42600_buffer_attrs[] = {
++	&iio_dev_attr_hwfifo_watermark_min,
++	&iio_dev_attr_hwfifo_watermark_max,
++	&iio_dev_attr_hwfifo_watermark,
++	&iio_dev_attr_hwfifo_enabled,
++	NULL
++};
++
+ int inv_icm42600_buffer_fifo_read(struct inv_icm42600_state *st,
+ 				  unsigned int max)
+ {
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-index ffca4da1e249..6ab1eb1a0051 100644
+index 6ab1eb1a0051..3b81dba4b7c4 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-@@ -6,8 +6,8 @@
- #ifndef INV_ICM42600_BUFFER_H_
- #define INV_ICM42600_BUFFER_H_
+@@ -79,6 +79,7 @@ ssize_t inv_icm42600_fifo_decode_packet(const void *packet, const void **accel,
+ 					const void **timestamp, unsigned int *odr);
  
--#include <linux/kernel.h>
- #include <linux/bits.h>
-+#include <linux/kernel.h>
+ extern const struct iio_buffer_setup_ops inv_icm42600_buffer_ops;
++extern const struct iio_dev_attr *inv_icm42600_buffer_attrs[];
  
- struct inv_icm42600_state;
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index 76eb22488e5f..dc97d8a274e3 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -3,18 +3,18 @@
-  * Copyright (C) 2020 Invensense, Inc.
-  */
- 
--#include <linux/kernel.h>
--#include <linux/device.h>
--#include <linux/module.h>
--#include <linux/slab.h>
- #include <linux/delay.h>
--#include <linux/mutex.h>
-+#include <linux/device.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
--#include <linux/regulator/consumer.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/property.h>
- #include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
- 
- #include <linux/iio/iio.h>
+ int inv_icm42600_buffer_init(struct inv_icm42600_state *st);
  
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 11339ddf1da3..ea8aa64a3f33 100644
+index ea8aa64a3f33..881612a8e92d 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -3,22 +3,23 @@
-  * Copyright (C) 2020 Invensense, Inc.
-  */
+@@ -773,8 +773,9 @@ struct iio_dev *inv_icm42600_gyro_init(struct inv_icm42600_state *st)
+ 	indio_dev->available_scan_masks = inv_icm42600_gyro_scan_masks;
+ 	indio_dev->setup_ops = &inv_icm42600_buffer_ops;
  
--#include <linux/kernel.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/math64.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
--#include <linux/delay.h>
--#include <linux/math64.h>
+-	ret = devm_iio_kfifo_buffer_setup(dev, indio_dev,
+-					  &inv_icm42600_buffer_ops);
++	ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev,
++					      &inv_icm42600_buffer_ops,
++					      inv_icm42600_buffer_attrs);
+ 	if (ret)
+ 		return ERR_PTR(ret);
  
- #include <linux/iio/buffer.h>
--#include <linux/iio/common/inv_sensors_timestamp.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/kfifo_buf.h>
- 
-+#include <linux/iio/common/inv_sensors_timestamp.h>
-+
- #include "inv_icm42600.h"
--#include "inv_icm42600_temp.h"
- #include "inv_icm42600_buffer.h"
-+#include "inv_icm42600_temp.h"
- 
- #define INV_ICM42600_GYRO_CHAN(_modifier, _index, _ext_info)		\
- 	{								\
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-index 99d37ac53bbe..f422523207ee 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-@@ -3,13 +3,13 @@
-  * Copyright (C) 2020 InvenSense, Inc.
-  */
- 
--#include <linux/kernel.h>
- #include <linux/device.h>
--#include <linux/module.h>
--#include <linux/mod_devicetable.h>
- #include <linux/i2c.h>
--#include <linux/regmap.h>
-+#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
- #include <linux/property.h>
-+#include <linux/regmap.h>
- 
- #include "inv_icm42600.h"
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-index 13e2e7d38638..ec8dac9f24aa 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-@@ -3,13 +3,13 @@
-  * Copyright (C) 2020 InvenSense, Inc.
-  */
- 
--#include <linux/kernel.h>
- #include <linux/device.h>
--#include <linux/module.h>
-+#include <linux/kernel.h>
- #include <linux/mod_devicetable.h>
--#include <linux/spi/spi.h>
--#include <linux/regmap.h>
-+#include <linux/module.h>
- #include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
- 
- #include "inv_icm42600.h"
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-index 727b03d541a5..7f80bda471c3 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-@@ -3,11 +3,12 @@
-  * Copyright (C) 2020 Invensense, Inc.
-  */
- 
--#include <linux/kernel.h>
- #include <linux/device.h>
-+#include <linux/kernel.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
-+
- #include <linux/iio/iio.h>
- 
- #include "inv_icm42600.h"
 
 -- 
 2.54.0
