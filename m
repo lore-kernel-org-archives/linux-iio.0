@@ -1,62 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 494673F4837;
-	Fri, 26 Jun 2026 12:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50C5A3EBF01
+	for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 12:38:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782476772; cv=none; b=OxAAIMavpw63Aj+O9RrWrEROsY7fn9Lm8mEJOyEzjhwRjZAktMnrsKfcDiIhFpIHbID2IlhBJyX1HUIIuusI42BtaqqJE5E3gLcA3HFP3HXUD3AfGPUQLWvvJiNQRsYRUqNwOgZ3JoYLW/fCvkB2rWKS6AfTtAWbNev3iXzfC6Q=
+	t=1782477529; cv=none; b=edYaJhzc40t/pJtB6oaiN8F0hgv8Kppl8vFakPiCv6rpYN0nr0l7EBTqtNtB/ay7IKPZs8PjbisB0cA1yZmNy/6NVDFHWOrPM+/744nbAieyVrxP+/oKypfZKmuIUUepOC4K88Fz2FdsN8/5NdxYgDptPA98AyKKwsywHfX8+/U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782476772; c=relaxed/simple;
-	bh=4ANFMia0wbDzuK4Nho5SegwCPJiJIpotFgaVGjC2gUY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aruc4j3/aFth7kjDgG1+JDJHFOn7ZVNeQctEy0+3nlqIcViP+Lzwy9iaNDhNVzJS5NraR0eNe0QGBbfY0XMqecBzJLgao33J+vMjfTTLYvAs8v8zBfTA7H6dyMDNcsaqHZOwlMfV0x6K6C2dE9Rj+1YFd3Kv8zJg07U1cXYUhzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iD1ySbT8; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782477529; c=relaxed/simple;
+	bh=hu0SCgwCfY0yz/mE0xVirYl/PDMPSCl8AX9qMRbT5xk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=l3aPV+yb66ZqRPmK6kn1yRtlHumOtfGASnJcYEdIH8h/heIQwlGZmdS3WR/9ZtIp1/q9v5B2VoOI8XH6A/VrEKgyxvqGPdC4r0vlhc4AzHV+o/w9njhO6qNI00w96a1EghTp4ayG2geTV9XJD7gXSxc3pZLrVGJ8cuYwoB9BuEI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qMIPx6Ob; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iD1ySbT8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782476771; x=1814012771;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=4ANFMia0wbDzuK4Nho5SegwCPJiJIpotFgaVGjC2gUY=;
-  b=iD1ySbT8ZfulFuNYRyF1VMrF0Bndp7/Y2V14M2w4QACeT5EBisL1gmdQ
-   hEW2X9MfddpVBHMWUnMoRoPQbpo0P1AjQqAMOY5oLb8W38S4Q1Pg39zhA
-   9ERWFkiK+se0DuwS2cwHYO9D7RJKvW628XaUBWRTrcEkTHWWISqPiETrq
-   wQAyui2trGg9bWyHugn7TXZo16J2t1WmcG/4ltYe7PHKMIrC5CdEcGKMJ
-   TlJ/nvB74BzNs34svRFFAFb6dN55nIPHHOmG6q84Y4xk2I99VIF2C/TLt
-   AywZJ+NK2iT6OXHS6VKgh7aP43NWuSkTuKc4UaZ+ETPV8NoYb0tu1hPDJ
-   w==;
-X-CSE-ConnectionGUID: u7Yrg5/lR1yDT7tl8Y5ZoA==
-X-CSE-MsgGUID: y+jMuomjRf2m8cA3hiPomg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11828"; a="106062596"
-X-IronPort-AV: E=Sophos;i="6.24,226,1774335600"; 
-   d="scan'208";a="106062596"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2026 05:26:11 -0700
-X-CSE-ConnectionGUID: KHJZfFLWR32yp74CICU71Q==
-X-CSE-MsgGUID: LS1oS0WdSQqr97VPY9dRgg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,226,1774335600"; 
-   d="scan'208";a="247344598"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.1])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2026 05:26:08 -0700
-Date: Fri, 26 Jun 2026 15:26:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Svyatoslav Ryhel <clamor95@gmail.com>,
-	David Heidelberg <david@ixit.cz>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qMIPx6Ob"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4923fb1f095so8893065e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 05:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782477526; x=1783082326; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=13+1JyTSj7Gptc3kEkYewUZqpLdvoXqNZ1OaTPya0TQ=;
+        b=qMIPx6Obioy63qItChFG9qVpTwzCG1oQ7PF6MXXOTru886Izacrn4J1Sbx4potx8OS
+         KTE2Uc2d0GaszI6yvzDnwlU9G8qQYMMHECBKzVt3cbdrZ6k0CEJGwYgeqqF6xvQuk04Y
+         mZBdMNkzOjjDw2e/dyKtBI4imaupZm9CQSVZCRUfsXfcs/gObo8D9OriwEoAFeysNsWR
+         0tNL0aSyT1LrL+IyLq2kqSsenkBuB7N82RYqwnKFcoJJ9uCcxf5pZIQ1B1ZVWb+9YQCO
+         SEdwtfgziP1dStNoFlsLCyncqXpDyhb9J7UI3Pt+tcQW9DuG9i9NhZvWJzea3QGoLqho
+         GG9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782477526; x=1783082326;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=13+1JyTSj7Gptc3kEkYewUZqpLdvoXqNZ1OaTPya0TQ=;
+        b=SO6rdLXLc07j/AP9VxsvH8lClf2YnVusRhHBr496IMaBR5/v6YxK8kW1VKDb/uBobb
+         vXCGNAxvEkt6pqJLzTGk47JyxjTmX5LX9Ce57trqqPd3ibvoJnm6EDORz8X6SM7fbK9Y
+         DA8qRBlx78VQ6RVo6li6yKe67CS6KDN9wxxYE9JYwfaLlsXi6J18JZw4VFpd7EVUTlGo
+         5aPbgprbGCO0atiJ7wlKZef37HnHFiXmJcij+ah8GhmjMLlQli3bKgzqc8mUZu5CbgjF
+         E99WubKuyBRSjIfiErZbZcOxTsUNZ/rNMkp1+khUzEM3hcQmNHIrW/isku7PPcOspTE7
+         nBww==
+X-Forwarded-Encrypted: i=1; AFNElJ/9+/+3sG9iLB3TAT0qbvAMMCfNMBfvV+g1MPjyBe3nuFJFabtMDSJ27hTtMIE1bIixjQnDLmul2yM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwpaNUTS2DXFdDUs2ASBnnpqifltKnOTzAhnEsrOxY0e/a+PNIZ
+	AMqfFJ34ZLqPfswfX2x/OSF/oY0cs9T/akI7tNC+X6YZQs45zDqH/h6L
+X-Gm-Gg: AfdE7cmKzWi9iDMJ71Bto2QB90n8i+Wec5b9d1w8g76emZf0BCcqEGsGiaY9uEh5xoL
+	l+ww0+g8qHNLx32vf/dDT5k4Y/ftzicJTQWMfyc7c6WP3V0Znm8zelkQVexUwo7AxZfInnnkvRz
+	U4Vj5KWaU7IhUMKN1xpnu5Hk1qxQjGmWU089ii8XFjl/nrpPHuYCEVWpMNiwHFEHxX06L3/y4rt
+	Fi0uQibE0+2qpSsmffYTDns2z2RhMhvkeOTCGnGWDQmAEJZyCWW/P+BeqT3ollbCJxRQG6pG7Hf
+	tu2LoYiAMhFJyWvRy/pIIFIAUlEr0UMCTlYsjdNx6XcrF5AEES3VTX0r/7dcG478SETO9SPrhk3
+	xN1ObNNro+7HYrYhDr8pukRqc+EUCXAUb3mkn2/B/o5Ctd7TkCO9GsBuUFrtIh2ShqSlr0vwEPh
+	S47fEA+wm3d3idzzfb9YgokKPbYuMZZVLGzFFIonH2wuskc1MYjlhWkAZ+C9HIzyYWDY2+1O5bN
+	bjHbsTQPO1W7t1OhNaehTUc8VEFSY3SuCvxReGVooxFthHaw8wKy90mfqxkElqpmeZLM5W/JUV3
+	B7m9oSdZItJG+hHW9LgXpjst9aD+pBPoQSDKMrudrdTaKU3SOWIanUM=
+X-Received: by 2002:a05:600c:3b1e:b0:490:e190:3b50 with SMTP id 5b1f17b1804b1-4926686b374mr107679545e9.9.1782477525380;
+        Fri, 26 Jun 2026 05:38:45 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49269020266sm73586345e9.15.2026.06.26.05.38.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2026 05:38:45 -0700 (PDT)
+Date: Fri, 26 Jun 2026 14:38:43 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Svyatoslav Ryhel <clamor95@gmail.com>,
+ David Heidelberg <david@ixit.cz>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 0/3] iio: light: al3xxx: add missing REGMAP_I2C to
  Kconfig entries
-Message-ID: <aj5v3rDRlY7H39Tq@ashevche-desk.local>
+Message-ID: <20260626143843.00006fd7@gmail.com>
+In-Reply-To: <aj5v3rDRlY7H39Tq@ashevche-desk.local>
 References: <20260625-fix-al3xxx-kconfig-v2-0-796cf8d7cc49@gmail.com>
+	<aj5v3rDRlY7H39Tq@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,44 +82,23 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260625-fix-al3xxx-kconfig-v2-0-796cf8d7cc49@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 25, 2026 at 09:38:07PM +0200, Joshua Crofts wrote:
-> This series adds REGMAP_I2C support to three AL3xxx ambient light
-> sensors that were previously missing this dependency, causing build
-> failures.
-> 
-> To reproduce the build failure, run `make allnoconfig` and `make menuconfig`
-> in which you select IIO, I2C and any AL3xxx sensor and `make .` will
-> fail with errors such as:
-> 
-> drivers/iio/light/al3010.c: In function ‘al3010_probe’:
-> drivers/iio/light/al3010.c:185:24: error: implicit declaration of function ‘devm_regmap_init_i2c’ [-Wimplicit-function-declaration]
->   185 |         data->regmap = devm_regmap_init_i2c(client, &al3010_regmap_config);
->       |                        ^~~~~~~~~~~~~~~~~~~~
-> drivers/iio/light/al3010.c:185:22: error: assignment to ‘struct regmap *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
->   185 |         data->regmap = devm_regmap_init_i2c(client, &al3010_regmap_config);
->       |                      ^
-> drivers/iio/light/al3010.c: At top level:
-> drivers/iio/light/al3010.c:48:35: error: storage size of ‘al3010_regmap_config’ isn’t known
->    48 | static const struct regmap_config al3010_regmap_config = {
->       |                                   ^~~~~~~~~~~~~~~~~~~~
+On Fri, 26 Jun 2026 15:26:06 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > drivers/iio/light/al3010.c: At top level:
+> > drivers/iio/light/al3010.c:48:35: error: storage size of =E2=80=98al301=
+0_regmap_config=E2=80=99 isn=E2=80=99t known
+> >    48 | static const struct regmap_config al3010_regmap_config =3D {
+> >       |                                   ^~~~~~~~~~~~~~~~~~~~ =20
+>=20
+> Now all is better. The only thing is missing is Cc: stable@ line.
 
-Now all is better. The only thing is missing is Cc: stable@ line.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+I knew I was missing something - must be the heat!
 
-> I made a separate commit for each driver, to ensure a proper Fixes:
-> tag is appended for easy backporting. Let me know if you prefer
-> squashing!
+Hopefully Jonathan can mark it for stable while applying.
 
-I prefer per-driver patches, but let Jonathan to handle that.
+--=20
+Kind regards
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+CJD
