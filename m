@@ -1,273 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3342A1C862F;
-	Fri, 26 Jun 2026 16:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19BB3AF66E
+	for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 18:27:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782490702; cv=none; b=r7C/3CIMcVC6Toy0lZWJ0qDhpfmJ2kUOelPDDaPfzSRTYOWU3YKs+iF/SEx5N/tYnCQDyJqT5MireuA07GHDe7f4/hP79jFvveR3oIa/DEjex9v9K7d8DYoOpxm59nu5X/6h/VMLPHSg7D1ys2+0+jmI7cnP0kPvXytnFH8B4Eo=
+	t=1782498469; cv=none; b=OplMvqRFsecb6Nq6+9HCvg9ZBuJz7rNE+EZmPQ83852qg3PJb45/jjCKrhTO/u+zH1WWt+1IzGtP12RoDgAJF6hbhDAOMqqTe6/kwS9HbNn74wrx38yEzRnjspnR8v8etecvqaewBAcZtF7eW6bwxBPQrX2EOzt/KUxVn6eklck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782490702; c=relaxed/simple;
-	bh=rlty3jUdWI5sS0xw0KPmccsNt5s2yEgknfvnwikxVPI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dJPWEmISYb4Nk/O3eUU69tvzLjc+cAzAB32TfW7AdP5x0hqUUZi0LyNICWrAGHDEucwHmw3Mj4Mys7BVVnOwqBBzu68Mt32DGulgoRy4yvNNVMcUcbeddTr2UfGKvaJf9AurVM/zWWfJQNwR5N9TdYMrEzSuXxXWPeqYGkmLlVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5zEKvkH; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782498469; c=relaxed/simple;
+	bh=lyT3EldEfOwmkWtrBBWexrVqziEG/Bbdig+0Ag3t3Gw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=e4cejNGyFq12dhhu4ZtzbEByWoSRg1fhVIWuXpzsxXVYeAEa3Mc2N2zIVKjFAKE1dzl76q0C3yRwSwnxGmOU6CNi5D1unwD5lqjv96rqTvTPOvztWR+q/1M1HXVpT8DAO30PcxFcu8XRkvqp1+iHPbwPueECzy/1mRfN1gNxAeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=n/lZCXVh; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5zEKvkH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C251F000E9;
-	Fri, 26 Jun 2026 16:18:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782490701;
-	bh=GP0f5OXvLpgUfyxAYV0UgbN6TxEDBKuhQnhGy5yk0Xg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=N5zEKvkHxlbDiBz4cTLCbwB1G8l2eF5+p9Lk63ZGjKdF9fiV+uTIJz3TfzV37b0rf
-	 9kwSQqTq8/yPYuZw9vl1EawIASUpgFkkD8D/WIDRVqL9+qkPqefkBGMCp6BAfJRWxt
-	 40Ne1QMM/3euD4Aa7SdVN3K26u7XQ0mbHKLV4UkKJhOAEatqjrW0nDa9cWsUIsp4le
-	 15r0KUcq1cmOj8aVXoumvtVfrVQhfJiyBynaEve6W270TPk5+XXFujTqT/2MIugsF1
-	 gZsgzX2TuuSLN8Awc0HZJlJgo3SAaXqRYv5fDRhdtkzPBK7NvHgEv69X/2ZtAj6Dqt
-	 pDBto/nvebOXQ==
-Date: Fri, 26 Jun 2026 17:18:16 +0100
-From: Conor Dooley <conor@kernel.org>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
-	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/8] dt-bindings: iio: adc: add ti,ads122c14
-Message-ID: <20260626-rising-legged-dea08bb68bfe@spud>
-References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
- <20260625-iio-adc-ti-ads122c14-v2-5-ceb9b0b561cb@baylibre.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="n/lZCXVh"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7e94d272a86so942379a34.2
+        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 11:27:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782498466; x=1783103266; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=krATlrD1N0cNM2rn+k1nT4wMryr7v1KxfLrh9V1RBO8=;
+        b=n/lZCXVhgXWC2pwzMIxcD8af48WwPPkT+dAdcnRvuLI+EkO+bEiSQAhl+CtpTK7w+u
+         M37zdEUADfpzv/dTgMKuqBNNY08vDBvxP3mwyzY5rOkonFv1n8RChRzHi9G1GbUoHVIM
+         OkdfjtBsdt9inR+Ke3d4FZb6vsXFV78slIyJGyGArUBDecBd67Ldua7dSKu2JbZHv6y3
+         Wsi3ma2WpwIyWQmsjmGkLIcWkTIRf9W0DsF3NvxrJrWApcuRXgERfCgIOe9+AcRpkCJS
+         syu/kVWoAoujMvOVVDQIY+2yQKcAGiHHAZiF7EmSOBpTP7O+NoSEOvgOsJCfdyayg00w
+         RPwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782498466; x=1783103266;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=krATlrD1N0cNM2rn+k1nT4wMryr7v1KxfLrh9V1RBO8=;
+        b=n4ILiQbO2fHNtQzhZ738lqLWspEAqWeITP3/bi1laEro9IIybspIGg2fbbOw1RlMFY
+         ui3HgbBLbq4NvhXekk9ygzF81Y5aLkOFU6Wy7yFv+INTYl1xeT0cYPP1ONwqrxiXIwQH
+         nN/FPSI31kpY4S22psX563DOvVNvy+R9GNujKQBZesDwcFlD16flKIrs+QaYMFIRt6lT
+         InIOHIDqigDZZN9VgovhaKok7Qeu2ZpCPQRUM4bmGkQffHctcWqJOMZfbUKkjeCacrYd
+         IEf/bd2Qt2nY7lNpjX7RVmWOlKfIOAn3p7XKtkgh8flEvWpPSrwKWD9xt36yaFQeEcDc
+         m8sQ==
+X-Forwarded-Encrypted: i=1; AFNElJ9vBBoiqo94JNZTvtLrI6QXqBLoOaLf2CenIl6qcCew6T9FYWjq2twr0VJy2OAZhLo99C/rp72zWd4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YycDc77H4fJfbQ5js6H6pu9s7rlqPY9LsoF+pZQJ5DQox3sdhUW
+	0W33J1QxEGAbevKASeoV43mE2r1gpsB/IlOxh5Qo0FVubMKNYGjgZxJY1BJOp/b+wwo=
+X-Gm-Gg: AfdE7clnFWQyARxheLnIt6l0ouZoTcnsFSFxUw77DcTUMAlascjmt2Rpl5/TWPW9Kzw
+	zm9b5iCM5SsDmBcj6DGJmPROIsgLVHOLkg2/UOBIDAXRcr0JsrYKRtcz7ibpsMOfcX42ESx983s
+	Zt7MDcFj6MREWymEtrB7gDvppPifJgx+KfsJiHK6/ki8l8cR3WSHSptWKJzXCJuCtWZQR5Q7zcw
+	rLz9FJRcZSBl5ukmMAHUcUkrY6gAhVroyI4XNUuCPQ+UNI6DgzBocBOz9IStmBg1K0Cn4IUL+pV
+	Wx5+bA6saFO65r6ZSUrzZM52bv+MNZKqpuSgfGLlMWAwHiUx3/ov/VFqnSZTSVyIFg0ITKdozXx
+	niq+ppIpFGCG/Ry/omnX5RdUx8qttlfxrKRMVifcJlKhFAuUmlWYKSr0zS6/IBAQC8mrK2YQddu
+	8p2yPtYT5Pn1l6e081Rt3kBFRVVVLp6hvQSwKe92ziFXBpz3idTxGdepsKfgUqJlU=
+X-Received: by 2002:a05:6820:1629:b0:67e:251a:bd3e with SMTP id 006d021491bc7-6a135185364mr5830289eaf.18.1782498465840;
+        Fri, 26 Jun 2026 11:27:45 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:f1f0:2d9f:2f31:3426? ([2600:8803:e7e4:500:f1f0:2d9f:2f31:3426])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a1414ec350sm1856375eaf.12.2026.06.26.11.27.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Jun 2026 11:27:45 -0700 (PDT)
+Message-ID: <4a2c4c42-69fb-4491-ba77-b858623275ec@baylibre.com>
+Date: Fri, 26 Jun 2026 13:27:44 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Ba7fx8A4nBucjtA2"
-Content-Disposition: inline
-In-Reply-To: <20260625-iio-adc-ti-ads122c14-v2-5-ceb9b0b561cb@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/8] dt-bindings: iio: adc: add input-channel-rotation
+ property
+To: Conor Dooley <conor@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+ <20260625-iio-adc-ti-ads122c14-v2-4-ceb9b0b561cb@baylibre.com>
+ <20260626-retinal-thrash-1095940e36ab@spud>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260626-retinal-thrash-1095940e36ab@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 6/26/26 11:14 AM, Conor Dooley wrote:
+> On Thu, Jun 25, 2026 at 04:55:06PM -0500, David Lechner (TI) wrote:
+>> Add a generic input-channel-rotation property to adc.yaml. This is a
+>> feature seen frequently in ADCs that are designed to measure resistive
+>> loads, such as RTDs and strain gauges. Enabling this can reduce offset
+>> errors by swapping the positive and negative input channels on every
+>> other conversion. This can have side-effects in timing and filter
+>> response, so it is not always desirable to enable this feature in some
+>> applications. Therefore, it is best to make this a property that can be
+>> enabled or disabled in the device tree.
+>>
+>> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+>> ---
+>> v2 changes:
+>> * New patch.
+>> ---
+>>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 7 +++++++
+>>  1 file changed, 7 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> index 9ec1f447b565..3d52c00922c9 100644
+>> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> @@ -81,6 +81,13 @@ properties:
+>>        ADCs usually allow choosing between internal reference sources or a pair
+>>        of external pins.
+>>  
+>> +  input-channel-rotation:
 
---Ba7fx8A4nBucjtA2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I got some internal feedback after I sent this patch that "chopping" is the
+more common terminology for this feature industry-wide, so in the next revision
+I plan to change it into `input-chopping`.
 
-On Thu, Jun 25, 2026 at 04:55:07PM -0500, David Lechner (TI) wrote:
-> Add new bindings for ti,ads122c14 and similar devices.
->=20
-> This is an ADC that is primarily intended for use with temperature
-> sensors. There are a few unusual properties because of this. In
-> particular, the reference voltage source and current output requirements
-> can be different for each measurement, so these are included in the
-> channel bindings.
->=20
-> The REFP/REFN reference voltage is usually just connected to a resistor
-> that is being driven by the ADC's current outputs, so there is special
-> property for this case rather than requiring a regulator to be defined
-> to represent that.
->=20
-> ti,vref-source is reused from ti,tlv320adcx140.yaml (otherwise might
-> have preferred an enum of strings).
->=20
-> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> ---
->=20
-> v2 changes:
-> * Added ti, vendor prefix when appropriate.
-> * Others are now standardized properties from adc.yaml.
-> * Moved top-level unevaluatedProperties.
-> * Fixed some issues with the channel@ matching and reg property.
-> * Dropped description on bipolar property.
-> * Renamed currnet-chopping to input-channel-rotation.
-> * Drop header file and use string enum instead for reference-sources.
-> * Added burn-out-current-nanoamp property.
-> * Drop allOf: and just use oneOf: directly.
-> * Fix inconsistent indentation in the examples.
-> ---
->  .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 205 +++++++++++++++=
-++++++
->  MAINTAINERS                                        |   6 +
->  2 files changed, 211 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml =
-b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-> new file mode 100644
-> index 000000000000..59ee4d652a08
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-> @@ -0,0 +1,205 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c14.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments' ADS112C14 and similar ADC chips
-> +
-> +description: |
-> +  Supports the following Texas Instruments' ADC chips:
-> +  - ADS112C14 (16-bit)
-> +  - ADS122C14 (24-bit)
-> +
-> +  https://www.ti.com/lit/ds/symlink/ads122c14.pdf
-> +
-> +  These chips are primarily designed for use with temperature sensors su=
-ch as
-> +  RTDs and thermocouples. The channel bindings reflect this in that each=
- channel
-> +  represents the conditions required to make a measurement rather than s=
-trictly
-> +  just the physical input channels.
-> +
-> +maintainers:
-> +  - David Lechner <dlechner@baylibre.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,ads112c14
-> +      - ti,ads122c14
-> +
-> +  reg:
-> +    items:
-> +      - minimum: 0x40
-> +        maximum: 0x47
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Optional external clock connected to GPIO3 pin.
-> +
-> +  avdd-supply: true
-> +  dvdd-supply: true
-> +
-> +  refp-supply: true
-> +  refn-supply: true
-> +
-> +  ti,refp-refn-resistor-ohms:
-> +    description:
-> +      The resistance of the external resistor between REFP and REFN when=
- using
-> +      resistor bridge driven by current outputs for RTD measurements.
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    items:
-> +      - description: FAULT interrupt (GPIO2 pin)
-> +      - description: DRDY interrupt (GPIO3 pin)
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 2
-> +    items:
-> +      enum: [fault, drdy]
-> +
-> +  gpio-controller: true
-> +  '#gpio-cells':
-> +    const: 2
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  ^channel@[0-7a-f]$:
+>> +    type: boolean
+>> +    description:
+>> +      If set, the positive and negative input channels are allowed to be swapped
+>> +      on every other conversion to reduce offset errors. This is also referred
+>> +      to as "chop" in some datasheets.
+> 
+> "allowed to be swapped" means that this property says the feature can be
+> used, but userspace may have to be the thing that ultimately turns it
+> on?
 
-How does this work/what's the intention here?
+No, I don't expect a userspace control for it. More like the driver should
+enable it when possible, but a driver doesn't necessarily have to implement
+it and everything will still work, just with less accuracy.
 
-0-7 I get, why a-f but not 8 or 9?
+> 
+>> +
+>>    excitation-channels:
+>>      $ref: /schemas/types.yaml#/definitions/uint32-array
+>>      description:
+>>
+>> -- 
+>> 2.43.0
+>>
 
-> +    $ref: adc.yaml
-> +
-> +    unevaluatedProperties: false
-> +
-> +    properties:
-> +      reg:
-> +        items:
-> +          - maximum: 15 # arbitrary limit, channel@ can be any combinati=
-on of AIN0-AIN7
-> +
-> +      single-channel:
-> +        maximum: 7
-> +
-> +      diff-channels:
-> +        items:
-> +          maximum: 7
-> +
-> +      bipolar: true
-> +
-> +      input-channel-rotation: true
-> +
-> +      excitation-channels:
-> +        maxItems: 2
-> +        items:
-> +          maximum: 7
-> +
-> +      excitation-current-nanoamp:
-> +        maxItems: 2
-> +        items:
-> +          enum: [1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, =
-80000,
-> +                 90000, 100000, 200000, 300000, 400000, 500000, 600000, =
-700000,
-> +                 800000, 900000, 1000000]
-> +
-> +      burn-out-current-nanoamp:
-> +        enum: [200, 1000, 10000]
-> +
-> +      reference-sources:
-> +        items:
-> +          - enum: [internal-2.5v, internal-1.25v, external, avdd]
-> +            default: internal-2.5v
-> +
-> +    dependencies:
-> +      excitation-channels: [ excitation-current-nanoamp ]
-> +      excitation-current-nanoamp: [ excitation-channels ]
-> +
-> +    oneOf:
-> +      - required: [ single-channel ]
-> +      - required: [ diff-channels ]
-> +
-> +unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-
-reg?
-
-> +  - avdd-supply
-> +  - dvdd-supply
-> +
-> +dependencies:
-> +  refn-supply: [ refp-supply ]
-> +
-> +oneOf:
-> +  - required: [ refp-supply ]
-> +  - required: [ "ti,refp-refn-resistor-ohms" ]
-> +  - properties:
-> +      refp-supply: false
-> +      refn-supply: false
-> +      ti,refp-refn-resistor-ohms: false
-
-I assume you've tested this to make sure it enforces the behaviour that
-you want?
-
---Ba7fx8A4nBucjtA2
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaj6mSAAKCRB4tDGHoIJi
-0kQKAQCzm6Ngd4bmvsA0a/8j3qp8r7rd1AOC03u7TaB6+4HR5gEAl8h11GgLGanx
-ZuTmKBPaz8MQVl7JwsqP6sS24J4ehAs=
-=ldQ4
------END PGP SIGNATURE-----
-
---Ba7fx8A4nBucjtA2--
