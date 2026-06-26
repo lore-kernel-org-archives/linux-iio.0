@@ -1,132 +1,134 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 027B83F58C7
-	for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 13:39:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30503F20FC
+	for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 13:56:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782481162; cv=none; b=p54X3qwOm0WV+0GZnXPrLats3MZtzv20wuGd4OtUyq1y1a5UtNvtIEc9On//QO/KlRP+1oMZ3K+1u59WgvuCYINcO6bf1ArF8gQeMGRqggjKVdGk3ZCFTZZRW2NqvbSbxaIWxhg4Riz9a6O3JmK/skrCrX8mJSxd5uDy7fNgQHs=
+	t=1782482167; cv=none; b=Ptry1vTyFeYjeihb+V5iQARyuIg6dvh+15buD2+O47/UdktPPUe7ONjlsbPSWQoSnypK7DGAQ5wZmXyd/CrpYUVHuvc3VTvkZXu5BjgAPbfqo/ijWyqPDywC2adjXBFCe0a9P1Oq3rPRNHGRpE/vELmXupWCxlZa5UZvTthhl1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782481162; c=relaxed/simple;
-	bh=8IWGMBNMMaYvrEtzeOyPCy0ciX1dHwS/xUpWBpFHs7E=;
-	h=Mime-Version:Content-Type:Date:Message-Id:From:Subject:Cc:To:
-	 References:In-Reply-To; b=CTWx6ZK/vr14t8rhuxmQC2m+qrkPki/NMfpNGfkRuWJOjT18iiVBOlqSEdbQvAh7yMPGl/Q7aHrmTFrWBqlMgYxdVzJolJNrv2CyHgPtpTSa8Lwwf5Yr615iAyeBklz9as9nl22wqlpz+igi2/oCRwlj/0c8vyg5ATnybBjTYmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RyvQoPxa; arc=none smtp.client-ip=209.85.128.47
+	s=arc-20240116; t=1782482167; c=relaxed/simple;
+	bh=Ypj8YbpZh8DLGxiE+bf5181FYshu9+mBWbj2UyK6dBA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rbdZW2qd3KGRQ6GEivaDdzTz/ho4xinF2SQE7Gaf+P5/ho9Teg0+csQpSa++RNSJPhn2Tdo5Gj8gF2fnTX4wc++Iag4p/ooNNejEsa6AX1Fto7i53EQx1z5DQHY9QHfTQS6WCG0dbBk0yxGSJwDmumdLHPja8h3rmzaK6gsrlEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YPcS9bjK; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RyvQoPxa"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4923fb1f095so9510665e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 06:39:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YPcS9bjK"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4921eed3fa2so7156965e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 06:56:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782481159; x=1783085959; darn=vger.kernel.org;
-        h=in-reply-to:references:to:cc:subject:from:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=178Ey6oKnQQUab4uHEMxdjvdHtzJxPn/oHknzkZEjfI=;
-        b=RyvQoPxaLH4iun2lvEkUBiXqGTKCVdpCMb/IQjZXLaVUSqS2lYbz57n1xT4e3mvjg9
-         utTOuz3YjE1JZfoxSfEV4eMGX4mWivd3TaTnptTjcPu16n2XAAMlta9hiFiBDwedU5FA
-         2uwAb/rCh8bDx+LNJ+tIA9HX8vnMH2D0h1tkagN+9lBzzfzhUj0ao+qyUqXZ8yFmAQe7
-         PYyiBlVXezL7rUC86OBeeR20ihzEGh8GJlMS/AmliE76rITlHATrFbQNQG9pVEXsM1C4
-         6gIGh+nxmBL3CTzMElbPIEfmQfmyBaKFY5EQ3TNtm2Dpl0Wk2RFtRUBnVJ4EY0/ThdtW
-         aRuA==
+        d=gmail.com; s=20251104; t=1782482163; x=1783086963; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ALRbLCeBb0+qAmaWCzzB4bdRKDNWwVqd2KysEaQO224=;
+        b=YPcS9bjKZ0ny9A+W8Q9q9bPxRextRu5ido9d0TX0rQRzbBDbM9yK4DvdiyVlz93kPo
+         uGUu3aBR3uKHqr3JsBKk8vJDH/sHXLUOV6HMi9FH0YEIrjtO/IvCAOdlDi+ZFhUA+Cn0
+         Fx/lTt087Bp41q4KFWLoIPjYbTyb6Yqr3QGds8XxTFbBt8ckb1r9kazHG97uvXGE9n/t
+         95FOobmMno82zIVQLaLL6i6k0N9s6GqzksdzpCTHvjdxH9wSxwc2+IS6sY28ATlbyMuO
+         Z3LCQjT5E+dk0GqQk+Iskz2W4w4sbRQRk/RyQD9XpLjtKTa/drfzmu0YPAXUqw4fDGj5
+         8SBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782481159; x=1783085959;
-        h=in-reply-to:references:to:cc:subject:from:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=178Ey6oKnQQUab4uHEMxdjvdHtzJxPn/oHknzkZEjfI=;
-        b=ceel/geJ70/ORAaZTvLONrqRYSXXLUtKUQWZaylOexF949s5WERBaF5H185riSghd2
-         yr6Y75cyRm5ksbOm2CIEywJ6E9+yVOYFuDK6dfc9kDx7YOAXMD2VRHtp+m41ecVAh0Ke
-         jk98eHkQ5Ncedxw4nWytDg3DAo+i3PaCfvg5xksr6Dj1rZ+DNcVrDUKOV7sw5SWLwvBO
-         AG0hEKoNWb4a/dakdUKLS+i4Lc6IPmPga2CUScbqntkkG+u5KJKzhqvzJEL5Z60x8XCq
-         tahiuMdM6KCmE4ftEpVncavnr+7zjh5uKLOi8hB76rdS+gPrGy8mDFEqb6G4wjus1uSB
-         QM1A==
-X-Forwarded-Encrypted: i=1; AFNElJ9auMzxE42i3+8TxCNJgwqrjfa7Qlh8Jnim0BW5ri/hfzvhgtU0OzUXUHb5EYlU+YlDKXlCScgl5RQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyRliCX2abI/oqXctd4BwT3CmvuuOFk0W4dibZiwg9p7N69SBp7
-	L/uZkdlIPw2JNUGZwqXw1TYP/GAuyTggKaGJM4JlLAzNzCyw3gKLocqj8FHdxrze
-X-Gm-Gg: AfdE7cl3RwwfLhOrEpROpjuFGprCBL4GhozAjbckoFlGc4pw6APqIeqABBA6OKRAsok
-	AOBm+v23Z5vDKX4hx6shL0HA1PixooOgxP7WI0VhcwxgOgL83LZPfjCJaSGN5aKm4T6iJbbVvTc
-	quHRKqzYkFetLffY+gsDWXKGyS/XulVabdSAfLBt829pkdbZkMBP3SnmV/geh/nNkw+BP2026Yp
-	5pjrFz+RPHCycKSaTLQ/HTJcwF6OvETC3MtcCl9fMz/AiAmlGHesLZdqdww/Ad5JVpdOUxUyIJv
-	NVGw22HQ3NNsUU2JHbug5tJJMmJ7kX9kp9jwxX2BEDITQH0VBpM+YVdZ+aojSuXji3UwtfjEVBw
-	tKzXZpG9HJGNeKVdXBDwd5E5FLDnx6F3AgkT920ztQX/OBs5F8Ru9971VRjiJ4JJo7Q+3CCfoNs
-	2KE51C7k2UkDjAySe1EWR0Mvk=
-X-Received: by 2002:a05:600c:3549:b0:492:4363:e7eb with SMTP id 5b1f17b1804b1-492668acc8cmr101181495e9.32.1782481159145;
-        Fri, 26 Jun 2026 06:39:19 -0700 (PDT)
-Received: from localhost ([2001:4bb8:16f:1117:388:ce2:35e4:fb50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4926c278ab2sm33706745e9.1.2026.06.26.06.39.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jun 2026 06:39:18 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782482163; x=1783086963;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ALRbLCeBb0+qAmaWCzzB4bdRKDNWwVqd2KysEaQO224=;
+        b=RwSK9lyjLedc1cbv6aR4qgfg2QxQucv2hCPLhCWHZ4G0SS0mNwvO/QzyBdlcdSC4j4
+         bibvG6mEK+mj9GhEqn+91gqtZIgO8GrSuKK3+vFR6QiHEsPbpvzhwb8w3vOc+SsalZMR
+         4azhOLrSa1bL3XdGC8M+KsMkxXKvUO7Uutywxhmm3jy8Hi5fdLtP4Fd9+cSQAPo5G9m8
+         BKDWr74p5dHdtN4NqEoU3uQCtb8KbMBMVpHgF8k/24RAoiDx7NC0BW525vLrPHwOZN5t
+         9vp8tNZf2xzqfpqIyHaSVi/ZKq2r+rr1FQgtC63hhkqUUcTQ/H/rip0/TwW4ggbLaQGy
+         kUMw==
+X-Forwarded-Encrypted: i=1; AFNElJ+0Qrq3/mI71h7MkL1tQvwn/eGJWatsiN28Csb57fOQh+IZSv1A2CgyWWUme7NmwTiObU+SGB2e4mk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw39sYXhyrV/l7ZY5Q3cazJygbcHtwSQBTbikS/+xVskBY7SwVQ
+	Nkz9Owa8QL+kste2OxN4E9YT0QmtWdMcx2jJHx5MPBwNtiTWJzuMZ0Dc
+X-Gm-Gg: AfdE7ckvZLC5Iqgj6oJckQhXjf7qBCo/lPaRlyoIpy+DKBnrJdYIgJPpV34o/UandU4
+	PpkgGN+FW2IV2pEQSLkAVFJ16QbSDxrWeFr70CunIxW+MSrFZ43mXaGZSePclpLq4eXehLzy4vh
+	xbG7twhSoXqTNGRsabUERk0PX/7Mtxd1evbN+wwAY3dYJt40YG4zzYmJ6fGgCNWfm6JMKl/7OHX
+	pSq/XZXdFY05npVPG2HcN4aiVVJ/mEzJTip1Dtq/GYq+vlisc7sWkMm2I/UUgiiSf343+Wwq0jb
+	rSOzjk7RUqS7tCXf1yuqBZlaRRp4Tp7R/S34R3uc+9t7RcLDRcqR+ljj7Lr86irEjpTqgLv6vWx
+	HYwFbh0Vf0o2JldbYSg2dtHsh62X3Vq6dBPJQwM8MBkVl39DYqgfe3XsD43slCv1fXqRNza494H
+	RR95SW
+X-Received: by 2002:a05:600c:e557:20b0:490:a1dc:e542 with SMTP id 5b1f17b1804b1-49266862d71mr72584745e9.6.1782482162608;
+        Fri, 26 Jun 2026 06:56:02 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4926f94f213sm20636875e9.12.2026.06.26.06.56.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2026 06:56:02 -0700 (PDT)
+Date: Fri, 26 Jun 2026 14:57:05 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Svyatoslav Ryhel <clamor95@gmail.com>, David Heidelberg <david@ixit.cz>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] iio: light: al3xxx: add missing REGMAP_I2C to
+ Kconfig entries
+Message-ID: <aj6EhyuOxBqDDf0X@nsa>
+References: <20260625-fix-al3xxx-kconfig-v2-0-796cf8d7cc49@gmail.com>
+ <aj5v3rDRlY7H39Tq@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 26 Jun 2026 15:39:16 +0200
-Message-Id: <DJJ0U2MQA2I9.2UNT5E1OYW733@gmail.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Subject: Re: [PATCH] iio: light: veml6075: fix UV index reported at half
- value
-Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-To: "Shardul Deshpande" <iamsharduld@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>, "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
-References: <20260626110400.68885-1-iamsharduld@gmail.com>
-In-Reply-To: <20260626110400.68885-1-iamsharduld@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aj5v3rDRlY7H39Tq@ashevche-desk.local>
 
-On Fri Jun 26, 2026 at 1:04 PM CEST, Shardul Deshpande wrote:
-> veml6075_get_uvi_micro() normalises the UV index for the configured
-> integration time by dividing the summed, responsivity-weighted UVA/UVB
-> components by the integration-time scale factor relative to the 50 ms
-> base case (which is returned undivided).
->
-> The supported integration times are 50, 100, 200, 400 and 800 ms, i.e.
-> the register field index int_index in 0..4 selects (50 << int_index) ms,
-> so the correct scale factor is 2^int_index =3D=3D (1 << int_index).
->
-> The code instead divides by (2 << int_index) =3D=3D 2^(int_index + 1), wh=
-ich
-> is twice the correct value. The reported UV index is therefore half of
-> the true value for every integration time except 50 ms (handled as a
-> separate case). As the driver powers up with VEML6075_IT_100_MS, the UV
-> index is reported at half value out of the box.
->
-> Divide by (1 << int_index) instead; this also matches the undivided
-> 50 ms case (1 << 0 =3D=3D 1).
->
-> Fixes: 3b82f43238ae ("iio: light: add VEML6075 UVA and UVB light sensor d=
-river")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Shardul Deshpande <iamsharduld@gmail.com>
-> ---
->  drivers/iio/light/veml6075.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/light/veml6075.c b/drivers/iio/light/veml6075.c
-> index 59187244a..af71df69f 100644
-> --- a/drivers/iio/light/veml6075.c
-> +++ b/drivers/iio/light/veml6075.c
-> @@ -244,7 +244,7 @@ static int veml6075_get_uvi_micro(struct veml6075_dat=
-a *data, int uva_comp,
->  	case VEML6075_IT_200_MS:
->  	case VEML6075_IT_400_MS:
->  	case VEML6075_IT_800_MS:
-> -		return (uvia_micro + uvib_micro) / (2 << int_index);
-> +		return (uvia_micro + uvib_micro) / (1 << int_index);
->  	default:
->  		return -EINVAL;
->  	}
+On Fri, Jun 26, 2026 at 03:26:06PM +0300, Andy Shevchenko wrote:
+> On Thu, Jun 25, 2026 at 09:38:07PM +0200, Joshua Crofts wrote:
+> > This series adds REGMAP_I2C support to three AL3xxx ambient light
+> > sensors that were previously missing this dependency, causing build
+> > failures.
+> > 
+> > To reproduce the build failure, run `make allnoconfig` and `make menuconfig`
+> > in which you select IIO, I2C and any AL3xxx sensor and `make .` will
+> > fail with errors such as:
+> > 
+> > drivers/iio/light/al3010.c: In function ‘al3010_probe’:
+> > drivers/iio/light/al3010.c:185:24: error: implicit declaration of function ‘devm_regmap_init_i2c’ [-Wimplicit-function-declaration]
+> >   185 |         data->regmap = devm_regmap_init_i2c(client, &al3010_regmap_config);
+> >       |                        ^~~~~~~~~~~~~~~~~~~~
+> > drivers/iio/light/al3010.c:185:22: error: assignment to ‘struct regmap *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+> >   185 |         data->regmap = devm_regmap_init_i2c(client, &al3010_regmap_config);
+> >       |                      ^
+> > drivers/iio/light/al3010.c: At top level:
+> > drivers/iio/light/al3010.c:48:35: error: storage size of ‘al3010_regmap_config’ isn’t known
+> >    48 | static const struct regmap_config al3010_regmap_config = {
+> >       |                                   ^~~~~~~~~~~~~~~~~~~~
+> 
+> Now all is better. The only thing is missing is Cc: stable@ line.
 
-Hi Shardul, thank you for your patch.
+I'm not sure we have a defined policy for that in IIO. Now that you
+mention it, maybe time to ask...
 
-I agree with your reasoning, but why don't you get rid of the switch
-once the operation is the same for all cases?
+My understanding always was that Jonathan takes care of Ccing stable
+but maybe he just does it and being nice about it, does not complain :).
 
-Best regards,
-Javier
+So, Jonathan,
+
+Should the sender take care about Cc or not? Or it does not really matter
+:)?
+
+- Nuno Sá
+
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> > I made a separate commit for each driver, to ensure a proper Fixes:
+> > tag is appended for easy backporting. Let me know if you prefer
+> > squashing!
+> 
+> I prefer per-driver patches, but let Jonathan to handle that.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
