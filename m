@@ -1,63 +1,63 @@
-Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A48374192
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 13:25:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3410374192
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 13:25:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782566745; cv=none; b=qRg2mmYKuESpKlzlbZt6FLnkMu16utEhBisWezrZi7Tjf2HReksJNh67D5LtrF8g5TqhU2uTNmCe43nnqFQOW50UxLFt0Qs2xfmTANtK+8TYTWw9FrtuiyNqMBW8OGf8Z5r9T+KbT3/lwbBnBBEFgMHXM6gLWKLjlvleJWpWJeE=
+	t=1782566755; cv=none; b=HSMszc+zGtMcAcZRHH1mMsd6dIubjglVrpzrdaXzucmoNg6d/J1UnM95Fb5msFwMfRRig0pPaGnl28Yj+K2supt/3JMaXShRsTOxHhREiIN44JE8+Lg+1FHi/5nvyDGegrsLccxsFAxeXnOtVM4nblgVSMvh+AqT62uZUpLL3rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782566745; c=relaxed/simple;
-	bh=4IYaij18ypA6Oo1THTT+b/9xlPWdX5l6ib0435mY5YU=;
+	s=arc-20240116; t=1782566755; c=relaxed/simple;
+	bh=Vqr+P0fmW6i8ScqI3uNCd8zQy9Ct+INYWkMYXH0qaPQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TNb+UuDk+Ab/LebeUc0KU4VI9FXNuJHhsExYaGqkJM5kBOtt3VYD0a+uX/Y4beQ1dNrJ1HOciwnKqL4jBt4kWcXeLjr2FsKvUrSD5Qc7Ky1ckNeu2HG/bV9RD9F3FHZvkyINcSQ4DWoHSBl9zN/H0S2dpxUHKo5QbwYBE7ippRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=LqeRXXB/; arc=none smtp.client-ip=74.125.82.45
+	 MIME-Version; b=sSPtSHkEYRZTEBkEWJHxNs3Q5FZjrjGO4Lo5UERXH7H6U2O4ROlzI0YyejWOG5lFrXVELvXIy7427IfgQG3U+Bee5SxClFFKHKBVJH7ww0a0bgaybI7id7vz46vafmK05myowQ7d6JyWZjRX6IWZZILuqFnzeta/5dyXNQv+Ddk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=uAhOZeoX; arc=none smtp.client-ip=74.125.82.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="LqeRXXB/"
-Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1384ebe7a10so3179010c88.1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 06:25:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="uAhOZeoX"
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-30ca1b4b278so2556699eec.0
+        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 06:25:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1782566742; x=1783171542; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1782566753; x=1783171553; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GblxmKiRfcm1lT/JcVGoUyhh/yQstrpEWtgXJsE2xT8=;
-        b=LqeRXXB/tLEmTONXqfO4yQ0d0Fe/er6zqTyGAM95pQMquOgREmlkxXuSL5uJeZQMt4
-         Ni9t/AC1n3a8UHEe6X/x4kmG5ZGnxwCKVg2NXK3SgIu7TdYuHcr9zk8o8dRq1skNJ2iu
-         Pi4rL9Di3tGvwb/QYrGhqgh+tigePTweditfw28LNEtpZUjbThaL6mgwiAi90chrnPuY
-         zBrSde0mYFlU3xGc9ztmQqtOB3fzeHaOuBTG3O2mpU5heFILALLuHnQFlmszfrsXOu6w
-         fKX7s0CVu2GRrbYL23NLUsUEOTGmWMUdKgCAlcH0FVGaFMw/p7qvoTtx9dVfXTqDcCyn
-         l+zg==
+        bh=GMMcgVUjc6nJMeQ7kMm5VGBnEcDmSIKt9aMAjG7uLLY=;
+        b=uAhOZeoX+vkrOzpAvU9fCkb9jmPPpXJW2sNKDZ6uDCy3bA5B/gEl3N9QIfaKK4fi6W
+         JTCGa92xwbn7mvTl+66lo00Xeh9g38cMb8eS969IwUUOzG89vtNbZQfcded0dn/Qh89Z
+         tDmQAqK7G6k8WDPuJkkINY/5pgv6mXYGSux2gO3KVLH2jluAWzfMLVDkYae7ZhWbK1Xt
+         ttjTju/Xd8d3ZK16d70oD9esNlsxxSn6nHk7QnJ51/+XB4/y77DHIuK8L7GRnfyA9qJ6
+         FQBNTaLVJpj62GHXhkv1geBHqzpLFYVVu60oZL5W2vC0V55/1vjNLmeMDt2TBYCci0PV
+         aJwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782566742; x=1783171542;
+        d=1e100.net; s=20251104; t=1782566753; x=1783171553;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=GblxmKiRfcm1lT/JcVGoUyhh/yQstrpEWtgXJsE2xT8=;
-        b=laB4j/C5IbsXB20Eq/VOyfLIVGe0p8gPPy+GqSqU/GPa1+KVp5cAGNTeG+hUdx+ZWy
-         rhh2D+8g2E/5ugIGn9g500mhhKfSkVDBQTFS0ptn6TTFAyB8Wu+pW9YlC1si//G6Js50
-         N2U5p+6ey7e/wHzlAThsqYgQDTTiYAQboi3eGWbVFhzy/3DQ7D9xS/qKjo7seSIT8puQ
-         tHxHOUCMWF4ZPIejvv4uX9VVEqrZ6hbKSSfwuSZnGkW/5A+BA0AdK4JmfqxGnMOugaly
-         JesKivCY2BLJ2Cg5r2BPPCJ8rd+4ImJJ/S7UCgs8Uc4T7Oto8Vnul0UiuKbRkvP3dILJ
-         ESxQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/s/z2tjOIp6/NE/TEBauqAakLo39faSN01mLSYvtyE8XHZKxEqpjeT4K0Wcr4hahkVcUzpXkb1v28=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxmLAUXTy2IdYcBf+7AAbMbouXDBcMo1qCTN1fdXIecg3LOviS8
-	gvSmy7uvLtzxJ5PoqTByFEDR2rY6NQjmyOElTp8Q4lG9etURrqMUpeJYb5UE5Ii01VI=
-X-Gm-Gg: AfdE7cnjjs1EioR5f/7V4aZlIwUwDWpnquzxGvBvOW3M0FFIEPbxWSVtMx55C2Szqfe
-	BALs5XYkPbjZ1MSLP9vwHEhxz3etePob302V4KS3KvnyHi6J0hCCyaMYgabQFSdZTa8M1zRUwtd
-	X5dQmxKTLBPHVr7/C1gnfkvnPfsyvaPEjTRUF8+LX+IK5Q7jai6cwUQwiMYL3PkYYOEbQpKqNai
-	BjvdZscuJQ5mxzefwmWayTpBtekOx72naS5Vj1rOA6tTxtL56rxnxLSS9HpgBetP553A1lVIDD4
-	VnqGD458IZ8bi4PpN9HchGUQuLJrDTxqA16c8KBnZ2N8eK3WVnLjFkQw0mfXDjH6swpHLZ7rgTk
-	kC0CTzV+XBXI8QJv+dZrUi4BR85YB4OP8HRQmhKRvurvWgBBvCtNDB0/P6eZdfdxV2mDZKBmnEv
-	Hwfqh1QN3enzQSgJXb0uqDNklep0Y=
-X-Received: by 2002:a05:7023:908:b0:139:ed5d:3b7 with SMTP id a92af1059eb24-139ed5d0629mr2689711c88.48.1782566742017;
-        Sat, 27 Jun 2026 06:25:42 -0700 (PDT)
+        bh=GMMcgVUjc6nJMeQ7kMm5VGBnEcDmSIKt9aMAjG7uLLY=;
+        b=Oz7Nf7kb7SEZQf979fibcwiNFe4jjjWxmUriIfjXJQR9DEFs1UH9FMOnltFgs49MZj
+         Br2FKN8DsCKrr0AJWOkv/TGV8JjybHkE8NgbV1tOT7dfCBdhmma7uIUJMbeUs6TR6trT
+         A2nF7TxJ5vOICwRRqlGIBa6SvAGOK77joOINyuRwdplkwHUzxD2YKM3iTU/bs/odwfa6
+         k017YFbCmuZYuXQ5Xv2/FXyKWaTDJ6vX9y/kgXAITCep1UbHX2s4/uzvh/xxkMyPcuPQ
+         055zxA/Lcx9ZxJTM0AdsJ44SfHItiwq2MNqArkFf/7p6uB7/1qFCtjyCppoT8+JsePs8
+         nj0w==
+X-Forwarded-Encrypted: i=1; AHgh+Rqv71vzN8EnmCVN9NOM+/RMbqwT+Oa3WijRleZwH7kAVOUfdOW6ARkIvf6JNb1r9EGHd2bRla175Vg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyOJBZ0CA7GO09hN0bhnwVJ5F3NfHQAltbsSLyYTWic2zuiqoNr
+	cF4FSpofoSnzCrc2ES0UJNkjaFtM+VFUcpI4DMbXdXSIbj2Ggy6uXIAb0LqDuicwmAI=
+X-Gm-Gg: AfdE7cnc6DxhIzaqj1Uq3y70C+A5lIoqYN+bHjINPk++vaOHZ9x8SNJds2pgcsmroml
+	pNgWxocKa3yeB7bNPOARrT4putAIngUrHhv9Y7Xn0mV/LaW5NusCsHCSGhBlY8cjk8FbbRpLkDC
+	D5QGukg9sJapLsY2vt1c7dBM2Spcw8D3xTaXXWtyaeDRa0efZZyiayELx8x4+xIy45gIyGSYw0f
+	D7dfA47eb2nUmPgPJNsxTCicud72cEXVp89px1A1saTcwg00wLjSCCuJC6rcONPRoWLFFYkawqS
+	8ZgX4WIdBxzVCgdEJnAAjHxYHdDBUiqXeigsaqGY6UhvyakPbE7UR6/Q9Xc9V2DhjS7PRizkiy1
+	+J5DJEOQ0jVuw4tniUdzOmmaPNg1WpLDXfZukkVwTnOKdmm1yKWlkiOfH+1hPGLLbQOLRR9Uj4o
+	dFtogEddZl56Ld3mL8UNsswUHY594=
+X-Received: by 2002:a05:693c:2284:b0:30c:ab4d:3832 with SMTP id 5a478bee46e88-30cab4d3c56mr4286069eec.41.1782566753010;
+        Sat, 27 Jun 2026 06:25:53 -0700 (PDT)
 Received: from localhost ([2804:1b3:aa80:ec21:dab8:1927:ea27:9d41])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-139d90e95c6sm41183098c88.11.2026.06.27.06.25.40
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-30c7c8b1a75sm27747206eec.19.2026.06.27.06.25.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2026 06:25:41 -0700 (PDT)
+        Sat, 27 Jun 2026 06:25:52 -0700 (PDT)
 From: Erick Henrique <erick.henrique.rodrigues@usp.br>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -66,9 +66,9 @@ Cc: andriy.shevchenko@intel.com,
 	nuno.sa@analog.com,
 	linux-iio@vger.kernel.org,
 	Erick Henrique <erick.henrique.rodrigues@usp.br>
-Subject: [PATCH v4 1/3] iio: dac: m62332: Sort header includes alphabetically
-Date: Sat, 27 Jun 2026 10:25:28 -0300
-Message-ID: <20260627132530.96680-2-erick.henrique.rodrigues@usp.br>
+Subject: [PATCH v4 2/3] iio: dac: m62332: Clean up header includes
+Date: Sat, 27 Jun 2026 10:25:29 -0300
+Message-ID: <20260627132530.96680-3-erick.henrique.rodrigues@usp.br>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
 References: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
@@ -80,36 +80,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Sort the existing header includes alphabetically within their groups.
-No headers are added or removed; this only reorders them so the
-following include cleanup is easier to review.
+Follow the IWYU principle: include specific headers for the symbols
+used in this file and drop the unused slab.h. Add array_size.h, bits.h,
+mutex.h, pm.h and types.h for symbols that were previously pulled in
+only indirectly, and add mod_devicetable.h for the device ID table.
+This prepares the driver for the guard(mutex) conversion that follows.
 
 Signed-off-by: Erick Henrique <erick.henrique.rodrigues@usp.br>
 ---
- drivers/iio/dac/m62332.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/dac/m62332.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-index 3497513854d7..56cd0081afde 100644
+index 56cd0081afde..ee8fd3a71315 100644
 --- a/drivers/iio/dac/m62332.c
 +++ b/drivers/iio/dac/m62332.c
-@@ -8,13 +8,13 @@
+@@ -8,10 +8,16 @@
   *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
   */
  
-+#include <linux/err.h>
-+#include <linux/i2c.h>
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
  #include <linux/module.h>
- #include <linux/slab.h>
--#include <linux/i2c.h>
--#include <linux/err.h>
+-#include <linux/slab.h>
++#include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/types.h>
  
--#include <linux/iio/iio.h>
  #include <linux/iio/driver.h>
-+#include <linux/iio/iio.h>
- 
- #include <linux/regulator/consumer.h>
- 
+ #include <linux/iio/iio.h>
 -- 
 2.51.0
 
