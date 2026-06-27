@@ -1,76 +1,73 @@
-Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
+Received: from mail-dy1-f177.google.com (mail-dy1-f177.google.com [74.125.82.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A344E26738B
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 11:22:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFD6D374192
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 13:25:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782559337; cv=none; b=T+NgeYDfOgO5JcQPaE3mAtk9B1xtTRmWamy60V+3b8T4Pf/LtfFp2CoOCImb9lhv3V4GKG7wdeiCmeqfjZ5kEJB43dkEkzWBy08HhhFgEVZtCYnh3XPNIWw6OOedA7Knlhb/pzjur3KMBrN4u41hd7eb5qQcMg6nEYKVCNH/CL8=
+	t=1782566739; cv=none; b=hyEe2PaBbN3tnbkWuY64ORXZrClkUifkp0UkvdIjWhGZSKF3LdmEZm2sfjm3YMkuT1eLJgu7snqiYQf/4HAFcXKoh02+dzrtaDeEgf9uht/OagKPaxCRZiRqrHdw7NFxrpHvT1nkBoS8dAbcZztOJLOrA5GLzS8LHtXo4AL88mA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782559337; c=relaxed/simple;
-	bh=ZT/PZtgzdYRy73XPl/aMR13wYjd5GdwxwhY+llB5HPQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sN23WWMkiO2aOEH1NwHEuPnfpfNqH1a+eBUf9aJ7RLTJSf3D284tCMDtv4Y+swkAt0RuTYBKhXz9hkQxOQ3my1ILb7ZdtKFhwVb2ZLVHt+VKAVemihhRwBcE3gOjo5PkQc6sN2vm7XGhZYjiBZMN/+aWlfsofPCKCpST4nwXChQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HcQrRhMw; arc=none smtp.client-ip=74.125.82.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782566739; c=relaxed/simple;
+	bh=DI2Hhpda7T206NPAiNQfIVBz6jkJ+MQ8YRd8wwJpHPY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kkoWo54eRXFqa94x8f+vxIvfnJzkeMV/tx/HDh84mwTG3wSafE28zjVfmUBxD4SA1qo2avku/k2A292IuUBJDbEZ1fGirAcDVksUsmwKWx7t00HKm6/zShMURWi+c6Z10HSylbamiOIhfsb3OEa7/DEM4lTZ2CnCiv0y0yBep2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=Y0Se5vs0; arc=none smtp.client-ip=74.125.82.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HcQrRhMw"
-Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-30b9e755555so2077344eec.1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 04:22:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="Y0Se5vs0"
+Received: by mail-dy1-f177.google.com with SMTP id 5a478bee46e88-30c9c8c2697so2107057eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 06:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782559336; x=1783164136; darn=vger.kernel.org;
+        d=usp.br; s=usp-google; t=1782566735; x=1783171535; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LMRgtKqlNRIjgH8R3D1T5Dz4r8PEuj4RA5dDt7dU0ek=;
-        b=HcQrRhMwvSYam7mQCwcSzigvBaMw9j20dVZ/FuWSu6avhFjD6Iav0cXWor1ZqucbAQ
-         6wGTDDSs9grIKwX/6b/9IRbabo6oiTEdvKq8KJiAPLtgxMG9FtCZnXF59AFAq3Ayd04/
-         lMuydaIMWkV7gpjMSJLjJ1hwA68BtQbEfcDRWM7LpLtmNDPf1nlebr5TK0iiwOOrOi66
-         kfzQcOdeWqUegxCfcKUXmu3eSOVqGFpdL/sjNmMqwRfgJhEnJIufu5c+MkDnZrWtwwvw
-         O+rM5kNQk8zXylfVDrVvHy+bvz9jyfHBFcCPu7ECw5RhFNw7VydG7HQ0kDGTFA3V74zM
-         Rv4Q==
+        bh=WerEFzaFRM4ES8B0laSE1YeaDDNFufXGkMrsc6kmxrQ=;
+        b=Y0Se5vs04vU/ZzrPqZlzzLbozYcre74IRqn/2ukM57UebQ0RnSuzp4k0/t2h0Cazz/
+         E1bys62KCU5pTho1iIA+DdVJLHcDTxqgvrID0R3sSSbJLm1HruCXCueTl8tJ7R2L/dlV
+         wv/9FIlrwgRa+EpkYfafANqcxMyGsOSzMmag0WOFyWkQpNdIagbL0RTiO+1TH8eKC1z6
+         jRypb2Rrsu6A7TRD46Q4cdyUNXnbOvWS+18HyHK8APomF9hIYi0oQhD8Mw4qMJaajmN7
+         8ixOH7d3gXu0IfpJCRzDet7w+l9A7/gSZ8XmwTrUuQPFbeo8DklyuJHAfbrgdlQ4gUy6
+         p0fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782559336; x=1783164136;
+        d=1e100.net; s=20251104; t=1782566735; x=1783171535;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LMRgtKqlNRIjgH8R3D1T5Dz4r8PEuj4RA5dDt7dU0ek=;
-        b=lU7aI719hbaWeRbHxbRsLBsUEVu1aBYqRNNy8txEilEUpN7a87a/2/RqtlyQ9sbo2f
-         nC/4j6lzNRDItkAs5rKNXj7f3MF1ZHECkPP4eNG4iU9NweZ6gApg3/XeZSYW8Svsz/Ph
-         NyqMHKaH5Qn+ejzskQP8vngTjqKO+OCggt2jBJKnuzz6+b7zaB0P4ez7XbEBvqliUUO7
-         n6t1pVUUCfHIWiH/5i9quOw4i83Gm5wlowuCuiBa/TNBxAQFiG1HTOfhSVibfyIf9Tc9
-         1VqDgULXwaD+tZ10DaUJesRYCRKSpF5Fn5dK1CaF3eoLBGOto5Fa3OeaYKF4QFgTbklY
-         kMkA==
-X-Forwarded-Encrypted: i=1; AHgh+RoTZZueQNysMN8ltofqK0XyhDcz7EbqV8DP7oOIikJxzmimMXZh9Q/yRbI9n0ODZOnAMH6SZtFEEZQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyDXBFyHpwLowZ2WXK/ok4y035w2IzgIyOmpZf6iLIjctBypMMW
-	/Qq8bJYPbuUCIx/sy4M8SAWw3lGLrBpk0bIeZfYtCCACGSqAy0qsxjFd
-X-Gm-Gg: AfdE7ck9GMDo4aX3i3pgFdYQBjGg+kt2cpcuHb2brKt4OfNU2MSC7l1YtMuwmfVizfO
-	+63ntiZbzD5YXlNc2wMQ0v0ADQlpgvp4sjRPLTOGqi5oKsb+htCPjaI8xZxbBoIu/h75kQfTdbb
-	gCQaeXrMIrqli6vTOik0LtBkzCf1mWsDddDvcvyDdXDDCRaXjjP9oeNtmO3aDHR1DuTPWPdiF3C
-	ZEuAJ4lhQXZEcgBL7u7i8/aJx9hyCYEz3k9Hif0W8/2C09ku6CE+1Ss2W1h12l6qSpbmZ7ehy94
-	Gb1UsTYKWhZCdrW2Ud43z3QLWRUV7+5nbxb5q5gwpzjVv+Xy180zXONC8zEA/OG8NI70k5De7/c
-	TpAnlaW2ewQQqB5GhXGQArrUWIamLVybf6Mb0Ac3OiatVQCggJK5JFrgBJcDGWpG29aATGM9dhJ
-	C4+76VJKws6qsboJfbOHns/GE6Q4NQf6o6oU5fPttxWfCm6ciZVc0sNGkcqGt3X/XCVaC5eYToI
-	DSi
-X-Received: by 2002:a05:7300:6dac:b0:30c:9f31:b631 with SMTP id 5a478bee46e88-30c9f31c2f3mr5761269eec.33.1782559335623;
-        Sat, 27 Jun 2026 04:22:15 -0700 (PDT)
-Received: from moksh-Nitro-ANV15-51.. ([45.118.104.214])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c7c58831asm29719037eec.13.2026.06.27.04.22.11
+        bh=WerEFzaFRM4ES8B0laSE1YeaDDNFufXGkMrsc6kmxrQ=;
+        b=i+BimWzYgc369txmw+ycDulIkNXdd+aXn2KW2retpYBCk7Z1QXyMEShmkHebuLckXM
+         5Q10VsY2/f6Gcrlnbt22DF5cJBWdUr3SX0fU1xAf8kaXre/+MoVEt7180iP6Z/Lv4O6N
+         6tiipX/JIjiC6FfuunY2pjTtLWRR1L95KpP/y/GBnV47VLweSU4voolHDyaM4Y9PMFuE
+         VqbYUue0mfUDv9VjYHP6VeJ29ICkIHAaQclrLfJnqN7UJ/y+7+c1yLhHGu1PBkdkqqJ8
+         5StKPUWSZw88ztdf2KKCNly42bUWfj1QFxeGqkTTbFpuI+uOCq7pYSv0Pf4n1zajrLPq
+         dTEg==
+X-Forwarded-Encrypted: i=1; AHgh+RpRraKH/vVuFg0tKTkplzkeu1JENhdRC8Od90vyev+vfFDvjiN8oTOHGfyk8Kd4c5teL3t8b4Gpb+k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzlzXsIPM0CrQX4rjWRKouSTUDPNS0oIOjDe8gsL+mZWEcPDaLU
+	Sxq69ez/zISz1aY/J3bMjLuLrZD6TffSqTIRK469cEtflLWhd8CSX9fm2Cau4Uydu3M=
+X-Gm-Gg: AfdE7cmRtcm/zTmpzCTHjcjTgwAcdPQW+SqyIMtEJCNUvJtDExwuEex+BmrZJSR1T9h
+	g/5D7zpNmjLZNd2U15aEqgbhPPr7BGsfW8clkEKa9/QIPZqEGvLmr2w3PN2YITgQM+jEdxVYt4d
+	hQIxaSGvdS3WS2MQBPAw0kSOc9VfLtaJRDhZpGxsxz1JRq0tn238AG84f5Il79MfL1kX5f6SM6N
+	I69/t8oWEMJICUU4H8/P8F9zWYTkHpHVpHs8o6sZNniMPmi/AN0iPy9Ug/kGMMBSl6Kv3gq20fP
+	eh8ql9I9Wj9YgCztigoQd+ITI5YZ0OPpOtliYOs+cbaOILdOWnAZ0KL8wvOr8spu+cqnE8aGYbh
+	ME7Bm+lo/6wM28r03iOYi1nkKBJ8ZFQvHyF3C3QOtR84tHp3MKuuW/gpZVDMJErc2+87FAPtUoi
+	aJCeNtEFndsug502/U/gPoB4gbFMw=
+X-Received: by 2002:a05:7301:a84:b0:30c:52c5:6e5b with SMTP id 5a478bee46e88-30c84dd56f3mr9855212eec.29.1782566734930;
+        Sat, 27 Jun 2026 06:25:34 -0700 (PDT)
+Received: from localhost ([2804:1b3:aa80:ec21:dab8:1927:ea27:9d41])
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-30e79bc5ca6sm6452975eec.29.2026.06.27.06.25.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2026 04:22:14 -0700 (PDT)
-From: Moksh Panicker <mokshpanicker.7@gmail.com>
+        Sat, 27 Jun 2026 06:25:34 -0700 (PDT)
+From: Erick Henrique <erick.henrique.rodrigues@usp.br>
 To: jic23@kernel.org
-Cc: nuno.sa@analog.com,
-	Michael.Hennerich@analog.com,
+Cc: andriy.shevchenko@intel.com,
+	andy@kernel.org,
 	dlechner@baylibre.com,
+	nuno.sa@analog.com,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	Moksh Panicker <mokshpanicker.7@gmail.com>
-Subject: [PATCH] iio: adc: ad7779: Initialize completion before requesting IRQ
-Date: Sat, 27 Jun 2026 11:22:05 +0000
-Message-Id: <20260627112205.31409-1-mokshpanicker.7@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	Erick Henrique <erick.henrique.rodrigues@usp.br>
+Subject: [PATCH v4 0/3] iio: dac: m62332: header cleanup and guard(mutex)
+Date: Sat, 27 Jun 2026 10:25:27 -0300
+Message-ID: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,42 +76,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-init_completion() is called after devm_request_irq() in
-ad7779_setup_trigger(). If the IRQ fires before init_completion()
-runs, the completion is in an undefined state.
+This series cleans up the m62332 header includes and converts its locking
+to guard(mutex).
 
-Move init_completion() before devm_request_irq() to ensure the
-completion is ready before the IRQ handler can signal it.
+Changes in v4:
+- Split the include cleanup in two: 1/3 only re-sorts the existing
+  includes; 2/3 does the IWYU add/remove (per Jonathan's review).
+- 2/3: drop the unused slab.h and add the specific headers the file uses
+  (array_size.h, bits.h, mutex.h, pm.h, types.h, mod_devicetable.h).
+- 3/3 (guard(mutex)): unchanged from v3.
 
-Fixes: c9a3f8c7bfcb ("drivers: iio: adc: add support for ad777x family")
-Cc: stable@vger.kernel.org
-Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
----
- drivers/iio/adc/ad7779.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v3: https://lore.kernel.org/r/20260418130322.106769-1-erick.henrique.rodrigues@usp.br
 
-diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
-index 695cc79e78da..db8f5f4c6d6a 100644
---- a/drivers/iio/adc/ad7779.c
-+++ b/drivers/iio/adc/ad7779.c
-@@ -838,6 +838,8 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
- 	st->trig->ops = &ad7779_trigger_ops;
- 
- 	iio_trigger_set_drvdata(st->trig, st);
-+	init_completion(&st->completion);
-+
- 
- 	ret = devm_request_irq(dev, st->spi->irq, iio_trigger_generic_data_rdy_poll,
- 			       IRQF_NO_THREAD | IRQF_NO_AUTOEN, indio_dev->name,
-@@ -852,8 +854,6 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
- 
- 	indio_dev->trig = iio_trigger_get(st->trig);
- 
--	init_completion(&st->completion);
--
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      &iio_pollfunc_store_time,
- 					      &ad7779_trigger_handler,
+Erick Henrique (3):
+  iio: dac: m62332: Sort header includes alphabetically
+  iio: dac: m62332: Clean up header includes
+  iio: dac: m62332: Use guard(mutex) for locking
+
+ drivers/iio/dac/m62332.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
+
+
+base-commit: 4b570552ea4788d49373d3e31c5a802210f4ac45
 -- 
-2.34.1
+2.51.0
 
