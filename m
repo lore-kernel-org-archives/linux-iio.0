@@ -1,139 +1,116 @@
-Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92917374192
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 13:25:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827C61C5D72;
+	Sat, 27 Jun 2026 14:03:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782566759; cv=none; b=Kc+In2pGPOwDLgRFYeRa/vIqqRKsFChA5FDCk0xQDJspc6g8yqPc4EijNx+0bPU3S341OCULJf2iVSIFGRyurugs9q+JWKSCWR32OrqSMBre6zgzLA0ruKcu4NWJrVhbKFSvEtCiRrIil5VVtwPVF/uuc1v9s7V1wIOM4sIu8Vk=
+	t=1782569015; cv=none; b=HpICElIx240lX2oRSvhHYGHJC9ETloJ7lnO08QkPYMEqWkqS8xm3BFSV/u/gMoANvm2rnGG/x3YZE0m4CqhHSA6fvlA0V+mmWfeptoO5WvWZsfUiTBfTOfyX274GZWY1cFaSHRtkaoec2srM8al+qOjhX6W/8CRTLVmar/bexHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782566759; c=relaxed/simple;
-	bh=bTgAWl0aMuZggxL6S2YfcZkHPhtQwlNDjrT5kTr4OG0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=DuLemwe+ltTBTnmyMaBCfu2T62Ch1GN/KZrmxRcIO0kayktRbq0m3fvDv+rXpfHr5zaLQ2r4ZuAoamPT+MzKsz2Sy0GGz8n7LNLHiShyBYhk0N+CFJS3IjPoMNfsCVjk/yPjpvBssifI1wXrb29HmpnXhl1BEJQOE9i1JsMlw/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=GuaDdzHp; arc=none smtp.client-ip=74.125.82.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1782569015; c=relaxed/simple;
+	bh=2jp4dUgNN7qxpz2GlUubMNn0MTODUMmhv6mJ1wohE0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MEDdE7F2t9mbQehCz2dgy84ocEp8d3V6jqQ0wzh6EZ26qdRqZPBEQCcGBtycQH15Bz3fi7qnHfL/2V/zTUDx5ZXnhZ2lvHr4HCNsIL2zq3zmtwBnR99rhPEmln5tTeHP8aGjgt92DyaYkeAw2PLpU/lraWFNK3GdfiCrCzUHVxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=igug3ZAI; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="GuaDdzHp"
-Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-13810b63a1aso4431675c88.1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 06:25:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1782566757; x=1783171557; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2nT4+64T+6iyEjv1kvvsBVN7Pj/dKZkN6SoluY839/k=;
-        b=GuaDdzHpoxqs660z2qYbjcw2R7zAXybxpPaeLY/6cH7cIl31EIoycAio3E+5ArvBG5
-         AyFph1whYhxcKEua1A5slItxwt1aM+iG2qhrZ9k+sSxxvR+3TeWDWH1XujuwhmIqWhLn
-         GYck1PJaiWJnkKqx+dY8wggnlykPwszWQ6Rb5L7oab/tUJCunVF/+f3yF/8xXZa8756W
-         ED4QVkN6zHSJt8nts+mwA7+OQD1shxbtmbSeW/ljrdzF7iuPl+0g9YQsK95GL2Rvx6Hu
-         8vkqcYlPIfqZzx0BBAi/VFhXO63Bwbno9TXyjF0M2A0G4nYhL+AyVeFBh3fZxJcAF/4j
-         ja6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782566757; x=1783171557;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=2nT4+64T+6iyEjv1kvvsBVN7Pj/dKZkN6SoluY839/k=;
-        b=OOq/4x3Xhtk7tx5hv6GPvWwGhOtcjvx4Zdx8xEeG2e7SlytaAycVUgKik8UvUcfFwM
-         m5I55R6y5Ar+Nk8/GLGzK8syf8NbSTa9TWNA6GiGQxEDVRhLbFVi21uWq5J+NX3BK8EC
-         VYvQVvwL4ix+QH79MPmJaS8xTl7WTw1dORCDt9SVmK9tridT1AZdgxs6pUVr/ZuDRHKX
-         RFKvMqSOxH5zuYiUVSzGyFBKBoq4egAajMM6E++s2rwiL3El50mXLQao0WnKB5y1IaAB
-         cS0uVkbfBHEiLTJpYbzvBJxQYIZSSzMFqrd4TaIUez7nJ+6BLx9URxueUmmDA+RjYd4Z
-         e7RA==
-X-Forwarded-Encrypted: i=1; AFNElJ9yi+VKR7fhnPEpAB/PMh/i3FbiO40igkzsT7xpc2XpUKHRRApii9jSkTRfjmRoqSoB97+YciexEX8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyuMeMUavrVfdLUDtwWMJNQrt0aS1agjXU9WdnOL7c0561043mH
-	iai37eQK9sNWVIZz1UVT32Dn9xEk24MVPY1pwjgxlDHJDu3umkVcAHz6XQWQryWd+TS5JzQHOD7
-	sDa0J4oA=
-X-Gm-Gg: AfdE7cmLDE3sQY2N5DiHpoUzY4Ay7Bw12x+/6br32xD8Kr7CpSxckdUpc27+lISoO9r
-	B+PG04bhJKEjl9vfy+5jOITTt0SS+OIO4OcHj0ImdbpqduK11JXfgXbgTZhZt+5yI3dy9MiIxwd
-	hH04ktm0HquiIP7St4zevn7gbngFx0/KUrZMgg9Hkw02VGzca4+L6TZCuXmhFPZO2Tjvs56ewrh
-	V3zt/U5BgsZdRcr3WwK7ofvbyr9aq2Xj2PxU5qaO99C9DA5bLDyUY4NwnI9qF9kWnSYcrwb9beG
-	EQhTjVbiZ2GYIIjJNQQbvlttBkmS5rhLQl15HL61kp9HqMYptpo52fPKFdEKxpYE/7+wkERiVi8
-	1DvSLOuGAMWZHqGkpZvhr5PPeDpFpVuLQD2d+cQbrpIraVG4SvjE/Ofu49FVIUiymlhuW60Bi+l
-	DJEinby/W/pya7M848EK1/+eRfT+g=
-X-Received: by 2002:a05:7022:6b9d:b0:12d:de3e:86a8 with SMTP id a92af1059eb24-139eb5253acmr3369515c88.38.1782566756741;
-        Sat, 27 Jun 2026 06:25:56 -0700 (PDT)
-Received: from localhost ([2804:1b3:aa80:ec21:dab8:1927:ea27:9d41])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-139d8f31866sm39761163c88.1.2026.06.27.06.25.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2026 06:25:56 -0700 (PDT)
-From: Erick Henrique <erick.henrique.rodrigues@usp.br>
-To: jic23@kernel.org
-Cc: andriy.shevchenko@intel.com,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	linux-iio@vger.kernel.org,
-	Erick Henrique <erick.henrique.rodrigues@usp.br>
-Subject: [PATCH v4 3/3] iio: dac: m62332: Use guard(mutex) for locking
-Date: Sat, 27 Jun 2026 10:25:30 -0300
-Message-ID: <20260627132530.96680-4-erick.henrique.rodrigues@usp.br>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
-References: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="igug3ZAI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C381F000E9;
+	Sat, 27 Jun 2026 14:03:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782569014;
+	bh=9mCDnmGglO2sIeCdvnxemRXH84TvTrXTDYrvwilcTY0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=igug3ZAIsoMLorqrCWKf6R3eZ6aVNgYxZIs6W4ojHX0Hps5V/wB3ef52NoUDS4Bfs
+	 sHeL9YnpsVALScg+Norm49emNg1gr5W8PJeDxsr/pdQNy6d++j4CbfQqbpM8aVDnoR
+	 A9J7GOeYtYc8Ooo1L59GRbfVih0XY8nCy9e1MQvDd+eCu1lrhnfYSakZ0/bbhb4VRd
+	 8PMnXm9ptN5oRKI+NwnbWD2mCTktqjrPO57O+bq48VRXa/ID40zG3N8ioKJqtfObuB
+	 vfxh7RVDDlRrshc4aAq+ghcUBn5cQRmBhajoTfZa/XMsCuz0yjsb4j48oVnSz+d8UL
+	 VNKAjSAL2sQJw==
+Date: Sat, 27 Jun 2026 15:03:29 +0100
+From: Conor Dooley <conor@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
+	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/8] dt-bindings: iio: adc: add ti,ads122c14
+Message-ID: <20260627-corridor-word-0fbe89fd2294@spud>
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+ <20260625-iio-adc-ti-ads122c14-v2-5-ceb9b0b561cb@baylibre.com>
+ <20260626-rising-legged-dea08bb68bfe@spud>
+ <82294468-c4cf-4003-93f1-31a113c79979@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="cPC/5N2jzs1o5Frl"
+Content-Disposition: inline
+In-Reply-To: <82294468-c4cf-4003-93f1-31a113c79979@baylibre.com>
 
-Replace mutex_lock()/mutex_unlock() calls with guard(mutex)() to
-simplify locking and make cleanup automatic when the lock goes out
-of scope. Also simplify the i2c_master_send() error handling by
-using sequential early returns instead of a combined condition.
+--cPC/5N2jzs1o5Frl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Erick Henrique <erick.henrique.rodrigues@usp.br>
----
- drivers/iio/dac/m62332.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+On Fri, Jun 26, 2026 at 01:35:22PM -0500, David Lechner wrote:
 
-diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-index ee8fd3a71315..10ff6727b76c 100644
---- a/drivers/iio/dac/m62332.c
-+++ b/drivers/iio/dac/m62332.c
-@@ -47,33 +47,26 @@ static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
- 	outbuf[0] = channel;
- 	outbuf[1] = val;
- 
--	mutex_lock(&data->mutex);
-+	guard(mutex)(&data->mutex);
- 
- 	if (val) {
- 		res = regulator_enable(data->vcc);
- 		if (res)
--			goto out;
-+			return res;
- 	}
- 
- 	res = i2c_master_send(client, outbuf, ARRAY_SIZE(outbuf));
--	if (res >= 0 && res != ARRAY_SIZE(outbuf))
--		res = -EIO;
- 	if (res < 0)
--		goto out;
-+		return res;
-+	if (res != ARRAY_SIZE(outbuf))
-+		return -EIO;
- 
- 	data->raw[channel] = val;
- 
- 	if (!val)
- 		regulator_disable(data->vcc);
- 
--	mutex_unlock(&data->mutex);
--
- 	return 0;
--
--out:
--	mutex_unlock(&data->mutex);
--
--	return res;
- }
- 
- static int m62332_read_raw(struct iio_dev *indio_dev,
--- 
-2.51.0
+> >> +required:
+> >> +  - compatible
+> >=20
+> > reg?
+>=20
+> I thought reg being required by i2c-controller.yaml was already good enou=
+gh.
+>=20
+> https://github.com/devicetree-org/dt-schema/blob/2203c1720f4ebeebd7f8d10e=
+9dc1812993482fab/dtschema/schemas/i2c/i2c-controller.yaml#L219
 
+Nothing mandates that this is a device on a bus at all without requiring
+reg, since that's a schema applied by the parent.
+It's unlikely that that will actually occur, but I think properties
+mandated by schema that are not referenced in a binding should be
+required by the binding.
+
+>=20
+> >=20
+> >> +  - avdd-supply
+> >> +  - dvdd-supply
+> >> +
+> >> +dependencies:
+> >> +  refn-supply: [ refp-supply ]
+> >> +
+> >> +oneOf:
+> >> +  - required: [ refp-supply ]
+> >> +  - required: [ "ti,refp-refn-resistor-ohms" ]
+> >> +  - properties:
+> >> +      refp-supply: false
+> >> +      refn-supply: false
+> >> +      ti,refp-refn-resistor-ohms: false
+> >=20
+> > I assume you've tested this to make sure it enforces the behaviour that
+> > you want?
+>=20
+>=20
+> yes
+
+:)=20
+
+--cPC/5N2jzs1o5Frl
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaj/YMQAKCRB4tDGHoIJi
+0hkDAP0fT+KcpXeoZEwFJKmE0QbRfiO7M+R1m+EzEjRU5i4NegD/StMTfqxIlFFQ
+QfFYwRqT3ot3StMAeHG4I9X2WnKIsg0=
+=NIhp
+-----END PGP SIGNATURE-----
+
+--cPC/5N2jzs1o5Frl--
