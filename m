@@ -1,67 +1,67 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53FB7347BA9
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 21:39:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB6A933508E
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 22:31:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782596378; cv=none; b=sLWywY2D7zxgcSmWpau8yI/Nano1q8BzYeWkBbL7zdc18JTuc/sIFQhYOW2Gr/9TchrbPA9nmuGs1e2yrPQb40QWa+8PZR5OiQVdFWH8fFZSzinOV5HnI+IgKPm4b2CjHy/JgoRyk+ormVhDHd36/q+gqABIy0f9Mtp0qfoGCxI=
+	t=1782599491; cv=none; b=DX29opZF/T0g5s0dL3M5f7cfprcW0DKD9MT+T6UJ9kRRwzqzuL2OZUDa/UICpNOrYLAFQtym3D5uLGeGDRtTYmE9v4ZMV0WQ6K7om3u2+nwNTJROFc3/QZNfHoFMU98Bmxis4Bieyv9bduqbSoQUS7WHlWTSxJu7dxQzyPcfCjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782596378; c=relaxed/simple;
-	bh=Jrw43e9my7yjDySFOHdkZacbQ+d1cBOiqQNFbZ/fcC4=;
+	s=arc-20240116; t=1782599491; c=relaxed/simple;
+	bh=tOP/ncqJR9tQ1Kpjwwjs1DsUnFQQsFsCKUquXTGz2FE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VCBeS+wVqSOR4QBAr/zWjhXWKmTz6OPwKl/ik4WW4RJd3ATtUVjFBsS0sxhnq/+GZ0z/TF8N3GlR2W7LRraxdh+J/6PW4dx50z2XcFEgXPBX+zDxGEjE2d5ium3mkA7gpIU1+PnZyT5MEeZ0P+Bl/Dzc/VGoiVw0iSuzMwa9JuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=lwaDr6K7; arc=none smtp.client-ip=209.85.167.172
+	 In-Reply-To:Content-Type; b=KzWKce90OpZ5dk6C303nhu0mF0+iGoTdxTgbY+I4xO4jBIu4uv1YvzxiRMsxw6o4gGbdDfXinhTO51jST7NqdhKsm+xoanuWgVmyP32XfoHj4iLwpVFOLG8d52/yDI4+/TRxNzfX9jurRFQ+1Iy9l60Seuy+tzCPlcq0jkbTQ2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LgYv+/Ym; arc=none smtp.client-ip=209.85.210.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="lwaDr6K7"
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-48f0e5e6698so1568523b6e.1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 14:39:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LgYv+/Ym"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7e6b5737bb2so2423870a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 15:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782596374; x=1783201174; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782599487; x=1783204287; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Mi58OHINH72wJR2vpcoc/xSWHNR4hKCJuepbJpQnH/0=;
-        b=lwaDr6K7ErXT/qBQqketc+6HyPzQo76+PWB2I5vtxG/oEYY+KiCG3YgrWgSi4QA31d
-         o1p8T52d2btzdSk642f6zYAlqgXJuFl7NGU5YUI6DONsIVrVbDxISOawk8o9EJ3Myp37
-         W3jywzlHPQWTxm1KwHpXDq7H/U6OIbv2oL6Gxn8cHg5C6b2dG9h+dVBM+fZ7kU9281OZ
-         ZwL36uSeqCcbQWVVggWr0HTlQkmLpEms4SU1Yo1phV9JQI+rMRY7Yhukk/1RcxtXMLD3
-         zZe/WrGF825v69KlAnIlHE5UjZf+FOgqgKsCUFJCuMwf8UkZQlrqBXbba/njOQ2UoXUp
-         lfmQ==
+        bh=b/hsn5oXO1Y2F7PgZaWccBbIlkiaMD42rC1dxoRTlLw=;
+        b=LgYv+/Ym15oHC//cSW2LfJNH1Ubfm3aUOwTB4okduiBf9SGpuKhaLgUz7Y36jtTkt+
+         ezbp8ZrLhbIr1ImStGlUe9Tv4a+w82A3uzBwz2oOj0dSkpZaYHyq9t6ADlF21DjuX7+Q
+         FYB2mzPljP1wCnCtqZIURZU8zj0AdrLRsWX6v+8ormaR5zWwmaZAN+FLdxP+/UNfLivM
+         6DznYiwJTUX9+7/ntnRaB8p+HFaAScRWAB/lPM9SQiWQ9NIgrgj5NMwmX/6q/nyjeUeG
+         eDILeng3rQg7kEOHCGWSB6iJeqdFJbYkNW+szDLyMsLRwbTTS/YlRSFAdZMCh1ARoO7G
+         dzJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782596374; x=1783201174;
+        d=1e100.net; s=20251104; t=1782599487; x=1783204287;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Mi58OHINH72wJR2vpcoc/xSWHNR4hKCJuepbJpQnH/0=;
-        b=As2vI8jBoQTtPkaI+K/yc4iPLiqcA3rzdJ5by0PK0AuXoQzylJMsvwJm+kkpdCaqo1
-         idfJ5gzzJqCwVL45id8OtBxDmr4vPUdtnOVJvUECUWOJDyxPPZeLypr4FC8Z1D6n+TBc
-         wd3A9btIg25lEBVssNOBz8LLBovS/XXiRDKujg0M8onwoXG0a5MtGzvbq4dRUjLebmQk
-         XdQgzPS0jY295fONxOvO2Hh0tnZK26jIiVbEFbzMoZtZ8CuttrKDPfgJYmNNejIwX6G0
-         ay6QkVwLyE68iPIFNIA8HNnZAauhE0OHpY/qKaQXwDm/W1B8htvaAyRQxMN5lpEUw0/F
-         +SDQ==
-X-Forwarded-Encrypted: i=1; AFNElJ8NQTZaMEj+WLR4dyH0LH6QlPX0BuWKguU0wv0qkbw6+n7j92LGyhV0y1ro4k3CVWE8uf8AJb3f4yY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yygzl6yYmhcUpEQ1yIYpE8tVa6gCChpuewsZoldW8cOSup28kf0
-	1y4xWZ3BhN23VHtPiMQO95zAhLl79PKreg0Lo72HrXR6/grEGhMtUmN1rr3QLBqK3bw=
-X-Gm-Gg: AfdE7clHTTjk172xfwS55DmALSEAMNl8ndUGbFJFTctRmSqiDD4K82z1At92M83jHvm
-	tfKMjAzFTOOuAEIVDHwDr/M0mc9G2wvvAFUupHxa5oSyS/4qBMkSg8uTlobepVO0sUKGwdr1mQz
-	VxwvBIQrfjqbYqMQaupE33e0LT/ko30tSL4yKLSp8kIXDc/KIpQdJe9MoQD8RUmnJTlEO5V5zOs
-	9uk0c+IU2+jBqgNzPx/WJd0cYQ5l2XZppqlwL4hQsxfpaArLZrMypxddVqCNXa0a1czCEzeS+Ss
-	ue5+5B5avigIA5/h3fwpvmVxHcheaMpYL18lEW44k2WPRxxO9RqU7x1QY6/pVGfJuUiwvG26Sb1
-	83E5pDifcO94cyd95x86H3faoaSRl1wBGk2pMbgTAVmlM8oD/bQ89+mZIai1gQzeNpL/7YPpItx
-	AF8jcg+7x3NuItc+yj+CESmaLZIgXYqdzPWdiFJJS6KmpnWUVXpnuVOKXVRz5AVQ8+g3nBdgYUt
-	w==
-X-Received: by 2002:a05:6808:3442:b0:495:af31:c66a with SMTP id 5614622812f47-495af31ddc8mr752314b6e.15.1782596374257;
-        Sat, 27 Jun 2026 14:39:34 -0700 (PDT)
+        bh=b/hsn5oXO1Y2F7PgZaWccBbIlkiaMD42rC1dxoRTlLw=;
+        b=ZT7WJiYrucro+JS/ER9I2Jcv3ANOfh6n3OZgVXeD63AMKN+fQ4axjtHJNEWQwpuoHy
+         n44yd2SJoUM6LhjGJ2CbUStbjhfLi17xYkbqhUIKOQkKEtQWqN8s0r5ce/DQahGk/nei
+         7JXcYjuRv4vob1z5c6mcVGXxsjZj5URDYo8sE8aQ+AzV0+iGif3BbOlbEgNXHkPrqDdt
+         33kdJjFOkmBcK1x+0SNVfgX0oFtOaDnNq/+Gdu/PB6ZuljWo42k2qxEWTFP3w4RUr2oo
+         zoBxNp3JRciGMG41XSpaP47ImeBbgYE0IbvXCCX4qAx0Z3ZIm5+bxOks32CMviWCDRdd
+         tESA==
+X-Forwarded-Encrypted: i=1; AFNElJ9uFQgRBVaTSZH1oo3Zapd2y9yhvVyCf+8h4UOxdLorS4A936C5PzYiCY0PMUON6RD7kI8/cK4tBKU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyN6wOi1dsj7AeerFLK6UHSw0X/6rfS8VcI0K1NeW53uzqyOCl7
+	T03nbZf9jAlzH+kW+sl8plrCncM3b/WVHPzpKeQwgzknTdHWNOdYBqFlFVCuEayD/zo=
+X-Gm-Gg: AfdE7clEqAk6Vfn1JsBU2+MHpvBF7xyVGuuqwKVKSxqJLp0djIXEJlpim8990ftdrx7
+	smntmxYw0dY8oTYM82PZHDHL0FPWFQ0WFN2auRcgWOA/1jZPmEUik6+CRkR1xEopBsG5ROx1/pM
+	yXLTt+E81zinD/Sb+ozb1bgo62gL1ANlYWj4O5Ch93Ffiqp0rPyy+v+IKxOwUUkhvfvzIaDm4jl
+	bG8vJChPR8Ke7s+z4Jh4SudQoPkeVq654N4GHNpjAHJhBUMhs0aJKPJ7luhRuppC5it+GwAgIYU
+	7I2w6QiIlpoYp0IOxlT56H1JXS0E1PqmqoZBTiI1hJOjDL49ytzniswvp82JgxB9wDBg3Ptesss
+	/ZfmH++QnvRBpmpsBuiiB8jQTD5Gt19oLSFjnSwEAH47VsqtYltia2W43UliYvPhSpH/4+kc5bt
+	wD6KNbZ+9/y8K1jxlq8VKpEYxk0mNzqmzA3PniPdYo2CZeo1OvB6/WVLPs7n8rA6CLUe7NH+cXb
+	A==
+X-Received: by 2002:a05:6830:6d52:b0:7e6:ef1d:4aeb with SMTP id 46e09a7af769-7e99c208aabmr10277232a34.15.1782599486759;
+        Sat, 27 Jun 2026 15:31:26 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:f242:ecd6:f61e:d764? ([2600:8803:e7e4:500:f242:ecd6:f61e:d764])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-49352b057dasm3927523b6e.6.2026.06.27.14.39.32
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9b292029dsm3805497a34.22.2026.06.27.15.31.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Jun 2026 14:39:33 -0700 (PDT)
-Message-ID: <a2fa4d9b-1f09-4226-8f06-371bd11ef919@baylibre.com>
-Date: Sat, 27 Jun 2026 16:39:32 -0500
+        Sat, 27 Jun 2026 15:31:25 -0700 (PDT)
+Message-ID: <5e96801b-50dc-4752-8e00-1a80984ed997@baylibre.com>
+Date: Sat, 27 Jun 2026 17:31:24 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,28 +69,110 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/4] iio: adc: Add support for LTC2378 and similar ADCs
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- julianbraha@gmail.com, marcelo.schmitt1@gmail.com
-References: <cover.1782397418.git.marcelo.schmitt@analog.com>
+Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+To: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org
+Cc: andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
+ devicetree@vger.kernel.org, duje@dujemihanovic.xyz, jic23@kernel.org,
+ jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
+ joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
+ linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
+ mazziesaccount@gmail.com, mike.looijmans@topic.nl, nuno.sa@analog.com,
+ robh@kernel.org, sakari.ailus@linux.intel.com, wens@kernel.org
+References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
+ <20260622221550.374235-2-jakubszczudlo40@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <cover.1782397418.git.marcelo.schmitt@analog.com>
+In-Reply-To: <20260622221550.374235-2-jakubszczudlo40@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/25/26 9:34 AM, Marcelo Schmitt wrote:
-> This patch series adds support for LTC2378 and similar low noise, low power,
-> high speed, successive approximation register (SAR) ADCs. These ADCs are similar
-> among each other, varying mainly on the amount of precision bits, maximum sample
-> rate, and input configuration (either fully differential or pseudo-differential).
+On 6/22/26 5:15 PM, Jakub Szczudlo wrote:
+> When device is suspended and it is in single mode then changing
+> datarate doesn't make it actual wait for new measurement, so to
+> be sure that read after change is correct functions that changes
+> datarate and gain will wait for new data.
 > 
-I had a few minor comments and I suspect Sashiko found a few legitimate
-things. But this is looking really nice now.
+> Fixes: 541880542f2b ("iio: adc: Add TI ADS1100 and ADS1000")
+> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+> ---
+>  drivers/iio/adc/ti-ads1100.c | 74 ++++++++++++++++++++++++++++++++++--
+>  1 file changed, 70 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
+> index 9fe8d54cce83..e3c801381434 100644
+> --- a/drivers/iio/adc/ti-ads1100.c
+> +++ b/drivers/iio/adc/ti-ads1100.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/module.h>
+>  #include <linux/init.h>
+>  #include <linux/i2c.h>
+> +#include <linux/iopoll.h>
+>  #include <linux/mutex.h>
+>  #include <linux/property.h>
+>  #include <linux/pm_runtime.h>
+> @@ -43,6 +44,9 @@
+>  static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
+>  static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
+>  
+> +/* Timeout based on the minimum sample rate of 8 SPS (7.5s) */
+> +#define ADS1100_MAX_DRDY_TIMEOUT_US	7500000
+> +
+>  struct ads1100_data {
+>  	struct i2c_client *client;
+>  	struct regulator *reg_vdd;
+> @@ -123,10 +127,49 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
+>  	return 0;
+>  }
+>  
+> +static bool ads1100_new_data_not_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +	u8 buffer[3];
+> +
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+Do we actually need the cast here? char * is like void * and should not need it.
 
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return true;
+> +	} else if (ret < 3) {
 
+I don't think it is possible to return anything other than 3 or error.
+In other words, short read without error is not possible.
+
+> +		dev_err(&data->client->dev, "Short I2C read\n");
+> +		return true;
+> +	}
+> +
+> +	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
+> +}
+> +
+> +static int ads1100_poll_data_ready(struct ads1100_data *data)
+> +{
+> +	int ret;
+> +	u8 buffer[3];
+> +	bool data_ready;
+> +	int datarate = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
+> +	/* To be sure we wait 5 times more than datarate */
+> +	unsigned long wait_time = DIV_ROUND_CLOSEST(MICRO, 5 * datarate);
+
+This is a bit dense making it hard to read.
+
+Also, it's always helpful to include units in variable names. wait_time_us?
+data_rate_hz?
+
+> +
+> +	/* To be sure that polled value will have value after config change */
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return read_poll_timeout(ads1100_new_data_not_ready, data_ready,
+> +				 !data_ready, wait_time,
+> +				 ADS1100_MAX_DRDY_TIMEOUT_US, false, data);
+> +}
+> +
