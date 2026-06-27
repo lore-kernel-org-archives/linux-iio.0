@@ -1,180 +1,206 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9DE7258CE7
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 09:14:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC143391E51
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 09:55:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782551686; cv=none; b=OAsuEx2W1Gtyq989VxYqKSjws1YBV+9rqmUihd/zh37hRbh3/8ZaAVpqHIqS6omEHYf1gmk3JgGlXKT+IgA/mqnQGwE1Cc0zCxyCRkMfnZyH520gcQs7BTQr69TcMkKho5sSZM5EPG9ysqTlsvYgEfklXNFfdBP9AGe2iaGnkrw=
+	t=1782554133; cv=none; b=Oy55hVvPlQy7P103LdfDwjd9T9OqJlhdeOD6tL4ZNL0Z7u0A+ELmM9k5B6baQmEI+dVSwUv3e2as28MexHC4VGwdFgcYMUahs8hNMof9YX7Y9+2SZZHFkRCoqnF9cnOvI6j20Tg1ILxyvIpQCxLJBxaCbT4zYIRv8b8+/8LBIvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782551686; c=relaxed/simple;
-	bh=Z8uCPIIDNXooRopdDUOK8um3dmG4tMzYyiTEArCN3RE=;
-	h=Mime-Version:Content-Type:Date:Message-Id:From:Subject:Cc:To:
-	 References:In-Reply-To; b=rtXZgKJjBEpTgcb/Vxb7nxFwbv2Nqqc8a1bR7VtWqZscjKiojcME+Z+bfZmyaZJy5iFHSA88PDo5/wIH/qginf6TzFq3NZJvt7+h++GulkD0HXeAaNGjt7gmT8V2QQIxHfTSvOq1J3OoCqylvAAlLnhyX6k4bt4/3mOx7NJXieE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L2iZNxAE; arc=none smtp.client-ip=209.85.128.53
+	s=arc-20240116; t=1782554133; c=relaxed/simple;
+	bh=JYEB2GGzGuVGn3ZHt1Esr5e6a6hYBrKtQb9w6zIphMY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=cwMAzTcuRlgObv8I7HgOaa0XpS853CyCZ2wWNEM4FaKkdlq4Rssi3NC3vL3wz5oKPrAlB8LaZb/scaL6vwaqE/erIeFme6w23dUI7GXW5shzmbUYPJ8fXxwYqXgryHiubQKgZfWHemuwecmp8IroEEWtNyr61UFwxsR71TEUhcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eOfYp6sH; arc=none smtp.client-ip=74.125.82.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L2iZNxAE"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-49241a577d8so13271865e9.3
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 02:14:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eOfYp6sH"
+Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-139a5f4ca15so2061806c88.1
+        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 02:55:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782551683; x=1783156483; darn=vger.kernel.org;
-        h=in-reply-to:references:to:cc:subject:from:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UIu3t9txoYMi3zO+SM6qADSS3eQfqtRnLd308UxDVsg=;
-        b=L2iZNxAE+GfDf35Dk+f01WuBMdQCktKfGjHNtWcVKuGUIy1+PAwYQl3fOXazrdIghz
-         ZILEx/HBcucajngsfas43pp9VvPGOsUz15dgGel2iqNvEkERXeuKecbTWVX+gHeQUG/Z
-         adopPWpo0sYWXRFfQ8+vqXK1dHcaBtisK0kvOnFv7X10a9dVHjlkB0rCLZ9Zc/jVGMZf
-         k7W99VEYyjD7Z/LkMF2Ng3uQinh8aPH+FkwLVx0Mfr81Npu1o1k05qHNMdnJSazrjetA
-         WROv+/hxo0JsW7QKrYnpTnpellGKMOg8aZFGWHZ5kolCUtbG0U+1Xvur+TVJ8voAkVVa
-         YFRg==
+        d=gmail.com; s=20251104; t=1782554130; x=1783158930; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VUCiXf3YY6LMy+qULWgTh3NgENkEQgjFeYqpd4gaR3M=;
+        b=eOfYp6sHFVu7hT7nlbISn7oDnFEu6x+lNBSu7ZqKKgvtsYgbIo1YYzfC7Vv8/lW0gt
+         WA1f6oMKfBngfOm8Ta66/guJMswgfZGp2eATrSEs5B2rWj5pnenzk44RrhMxqNCPAI4m
+         wSVY/QK3OCaSSzPEJdp2zb1wg6QXAtQ7ALxZgJa5H7nYx0kPfIZ1TA+2fGz7NVg++FGZ
+         5BO8vQyOaa2eDNJY3h0JnWTzCLGHXQJABG1kZ8LgaU8/RlrnNhWK/G958CmaF8mLQopA
+         51wOnTyLZUFj2I+pPvXwCsLrOuvhtDIolx8o3QUkDkSjngYNv3+ruZZJw50hNDrAJPZp
+         YIPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782551683; x=1783156483;
-        h=in-reply-to:references:to:cc:subject:from:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UIu3t9txoYMi3zO+SM6qADSS3eQfqtRnLd308UxDVsg=;
-        b=jWax2O5zIIGO0eFCXFS7/ATDy+PeK3vp8NKKXdDEyDFgsl6PTz2TLgsk4vUTDQQunT
-         V3XmArvwY8vSz729ZzWGJGjAbIFWKemcMFHDfOIudoZk37AmGsJoex4tEzCHX9gAnZ2g
-         HANJdcyu/Q4tz7qcj7eu/MMT6eiUz3v1ahsai51JBYuBYUkplyOx6AIjZgtjveGcoVWf
-         +Ela0ZJFRG/WD6ztx0MtUzww0NpmSw1rRqy1qDVa6T4Et6LUr5J/dlcoJ2XU8Dt5o5I+
-         7im9wTGNob8lLoXccrSBR6tcZZPeK2guuuNjIOmpk42JzEJ3S6T5KMJ4BTfvuEu7k32X
-         2heA==
-X-Forwarded-Encrypted: i=1; AFNElJ8iU0x1DTEVhUNLlSKzJnaotIoNPLM6zPD7TY7dGLy9I5q84hoa3ozoVZvqMK19K8u9VB7Opq9tWDY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrNbFtDz6Npynir9zo5R89TeguP3XVz9PqEwQKy3tOrTqCASLi
-	2nx2sqUHNB9K4V/8yPCvuc66nJnyvB43gObCMAiq7Qh/cZnKXSuOyOtntzCC1ixC
-X-Gm-Gg: AfdE7cnIohLeguScG6/PT10bPnChqak0Joluh9roW2urwphX2J4bQV3RwtHSB6dXTww
-	n89xNnH9vIWkLWP9SREpUB2oXCQ2XgmvOOJVGxgBrJ8mtIJRHGg28J4n6oZMbMyOSuIpZKs76st
-	ONn1xxRKsRx95uYOSj5Z2z7dSfpzby3N400Ez43mihmjHs9uO7EciTP5VwUO0q5U7LvlwVcWdWP
-	XCu/XtVyHDWYE5iaydpWzm397AfIv/965KjGagIdHI3+iEm+e49EvbFEPOtEGNY5xoLHLXchEPd
-	gY17aWYmNodgvnXVJAKkh9nh94t5Zp8MoMONtCkyNKgLq1nYwW1mfLIDBFseAFgf8N+xMVL8xPa
-	jS1L3gcglr2dtsqC9rh5yxxQBLekfm2ulWtIyIpBktx6WpMqEAbdadHfrlsaK+wEa21jnxuFwOu
-	e0T/15l5oBoKwgd2hp/b88yt5QLg==
-X-Received: by 2002:a05:600c:4691:b0:492:4636:87ae with SMTP id 5b1f17b1804b1-49266880f9cmr146104325e9.17.1782551682986;
-        Sat, 27 Jun 2026 02:14:42 -0700 (PDT)
-Received: from localhost ([2001:4bb8:16f:1117:42e7:2f77:29e1:f0a2])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-492690a1a85sm250344055e9.15.2026.06.27.02.14.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Jun 2026 02:14:42 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782554130; x=1783158930;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VUCiXf3YY6LMy+qULWgTh3NgENkEQgjFeYqpd4gaR3M=;
+        b=G/1X/AUkIQGmbXpOLYH2+GIQjG8TsXQPqh7Mutfn3qiXezpqgkgxqQKp3K3FAayoCK
+         BodHGITPTIEmIrv72h5isrCu4lZz/3eUXleZCKFPtrV7hZxckochv/HRdDbrUeX5rPkA
+         2zYBNJ4PuC6LLad+gOp0zf1dPdeojdDYDQrSvT/zm95rQAC4ujhiDmj7LaOsPMHMDeZB
+         nEq7gxoxzlEJULqXpzwoGAct9lIKSK6dc3AqHsAwOKoAn9ikPPqecFDSfGt4Bi8nHTp7
+         fOq3493kwj3U3+kNrBfKdpn2xBHjooZ9J/xA7RdMl3iNPsj3lHJuK0Oozq+JbfrS+3V/
+         X1DQ==
+X-Gm-Message-State: AOJu0Yyi1U4M28WIMXj3MXWKFprS7nUom8jc/0CgVmDkRTJt8WeCvXwo
+	RniFYt53RhkcgzUVS9WjvDa6Whw3NHYdpg0ffweJIpWpE6T5LOMADLGnVQajDfw8Ug==
+X-Gm-Gg: AfdE7clzwL3cG1rCA0Nugar2/LCP7F2JBsHE/SuV4r0Q60lE3cfBYB+UAm/8SUQTTue
+	NFmGO10CwEpYehAlCm0GbsbzCPsyqyQDNY6cOCf8dhqxWq9Sv5ZBuq/QlipTpNAJb4/g0eDb09U
+	UDPhYmPXLzhkdAKAHrDYhhkAoa5sytO/UbSfmYnE08gIHakza5ibuB8ENLv7oHDqIlksJo6UOUy
+	VjV2QAnhaxWkOsQfhRb7Jvc2bhwx845FdN1CnXBE0EeUT+5oYfuOV3ZkUT5+n+chfvs4H1j+u40
+	4TM16X5BtXpw8CDl04aC9gcl+KDA1E2QUpvOmQ+3xVtqADfg0OsPpSqQAof8q4Auh0Z4wygEhFg
+	F9ztpfFLdiorUw7ua3RQHrNs0kuPsx2clN2nqHpGnLza27DES5ce8PKe8hc8hH3IsUjkth7GeNL
+	dtdqHrrMEAJeAaDSXBGp72aaErF6pUdcNTceucvAVD6CS9Fc7kZFRr
+X-Received: by 2002:a05:7022:6b9f:b0:137:4061:8cc2 with SMTP id a92af1059eb24-139dbb134d9mr7904228c88.35.1782554129383;
+        Sat, 27 Jun 2026 02:55:29 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.62.116])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-139e4c33af7sm12886141c88.5.2026.06.27.02.55.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Jun 2026 02:55:28 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	u.kleine-koenig@baylibre.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v4 0/2] iio: magnetometer: add support for Melexis MLX90393
+Date: Sat, 27 Jun 2026 15:25:17 +0530
+Message-Id: <20260627095519.8377-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date: Sat, 27 Jun 2026 11:14:39 +0200
-Message-Id: <DJJPU0OYEXMQ.EUU9J2PW7BKA@gmail.com>
-From: "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-Subject: Re: [PATCH v2] iio: light: veml6075: fix UV index reported at half
- value
-Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-To: "Shardul Deshpande" <iamsharduld@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>, "Javier Carrasco" <javier.carrasco.cruz@gmail.com>
-X-Mailer: aerc 0.21.0-143-g2f3a2e260c09
-References: <20260626110400.68885-1-iamsharduld@gmail.com>
- <20260627085313.7507-1-iamsharduld@gmail.com>
-In-Reply-To: <20260627085313.7507-1-iamsharduld@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Sat Jun 27, 2026 at 10:53 AM CEST, Shardul Deshpande wrote:
-> veml6075_get_uvi_micro() normalises the UV index for the configured
-> integration time. The raw UVA/UVB counts scale linearly with the
-> integration time, so the responsivity-weighted sum must be divided by the
-> integration-time scale factor relative to the 50 ms base case (which is
-> returned undivided).
->
-> Per the VEML6075 datasheet the UV_IT field selects the integration time
-> as 50, 100, 200, 400 and 800 ms for field values 0..4, i.e.
-> (50 << int_index) ms: each step doubles the integration time and hence
-> the accumulated counts. The correct scale factor relative to the 50 ms
-> base is therefore 2^int_index =3D=3D (1 << int_index). (See also the Vish=
-ay
-> application note "Designing the VEML6075 Into an Application" for the
-> UV-index responsivity calculation that these constants implement.)
->
-> The code instead divided by (2 << int_index) =3D=3D 2^(int_index + 1), i.=
-e.
-> twice the correct value, so the reported UV index was half of the true
-> value for every integration time except 50 ms. As the driver powers up
-> with VEML6075_IT_100_MS, the UV index was reported at half value out of
-> the box.
->
-> Divide by (1 << int_index) instead. int_index is already bounded to 0..4
-> by veml6075_read_int_time_index(), and (1 << 0) =3D=3D 1 reproduces the
-> undivided 50 ms case, so the per-integration-time switch collapses to a
-> single expression.
->
-> Fixes: 3b82f43238ae ("iio: light: add VEML6075 UVA and UVB light sensor d=
-river")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Shardul Deshpande <iamsharduld@gmail.com>
-> ---
-> Changes in v2:
-> - Collapse the per-integration-time switch into a single divide now that
->   all cases share the same expression -- int_index is bounded to 0..4 by
->   veml6075_read_int_time_index() and (1 << 0) reproduces the 50 ms case.
->   (Javier Carrasco)
-> - Add VEML6075 datasheet (UV_IT integration-time table) and application-
->   note references for the integration-time scaling in the changelog.
->
-> Link to v1:
-> https://lore.kernel.org/linux-iio/20260626110400.68885-1-iamsharduld@gmai=
-l.com/
->
->  drivers/iio/light/veml6075.c | 18 +++++++-----------
->  1 file changed, 7 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iio/light/veml6075.c b/drivers/iio/light/veml6075.c
-> index 59187244a..d0ec06eeb 100644
-> --- a/drivers/iio/light/veml6075.c
-> +++ b/drivers/iio/light/veml6075.c
-> @@ -237,17 +237,13 @@ static int veml6075_get_uvi_micro(struct veml6075_d=
-ata *data, int uva_comp,
->  	if (int_index < 0)
->  		return int_index;
->
-> -	switch (int_index) {
-> -	case VEML6075_IT_50_MS:
-> -		return uvia_micro + uvib_micro;
-> -	case VEML6075_IT_100_MS:
-> -	case VEML6075_IT_200_MS:
-> -	case VEML6075_IT_400_MS:
-> -	case VEML6075_IT_800_MS:
-> -		return (uvia_micro + uvib_micro) / (2 << int_index);
-> -	default:
-> -		return -EINVAL;
-> -	}
-> +	/*
-> +	 * The raw counts scale linearly with the integration time, which
-> +	 * doubles at each step (50, 100, 200, 400, 800 ms =3D=3D 50 << int_ind=
-ex
-> +	 * ms; int_index is bounded to 0..4 above). Normalise to the 50 ms
-> +	 * base by dividing by 2^int_index; (1 << 0) =3D=3D 1 leaves 50 ms as-i=
-s.
-> +	 */
-> +	return (uvia_micro + uvib_micro) / (1 << int_index);
->  }
->
->  static int veml6075_read_uvi(struct veml6075_data *data, int *val, int *=
-val2)
+Hi,
 
-Hello Shardul, thank your for your patch.
+This series adds initial Industrial I/O subsystem support for the
+Melexis MLX90393 3-axis magnetometer and temperature sensor.
 
-Please give potential reviewers more time to take a look at your
-patches. It's been less than 24 hours between v1 and v2, and that
-reduces the amount of people who could review and potentially improve
-your patches.
+The MLX90393 supports both I2C and SPI interfaces. This series
+implements support for the I2C interface while keeping the driver
+structure transport-independent to simplify future SPI support.
 
-In my opinion, the comment you added is way too verbose, and it includes
-information that is well known within the driver like the possible
-values for the integration time. Once it is fixed, it is clear that it
-is normalised to 50 ms because it is index 0. To be honest, I would even
-drop the comment completely.
+The device uses a command-based communication protocol rather than a
+conventional register-addressed interface. A small transport abstraction
+layer is therefore used instead of regmap to share the common sensor
+logic between the current I2C implementation and future SPI support.
 
-Best regards,
-Javier
+Currently supported features:
+
+* Raw magnetic field measurements for X/Y/Z axes
+* Raw temperature measurements
+* Configurable gain/scale selection
+* Configurable oversampling ratio
+* Direct mode operation through the IIO subsystem
+* I2C interface support
+
+The driver has been tested on Raspberry Pi 5 hardware using an
+MLX90393 sensor connected over I2C. Magnetic field and temperature
+measurements were verified through the IIO sysfs interface.
+
+Datasheet:
+https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90393
+
+Previous submission:
+v3: https://lore.kernel.org/linux-iio/20260627005843.7786-3-nikhilgtr@gmail.com/T/#u
+v2: https://lore.kernel.org/linux-iio/20260618160141.11409-1-nikhilgtr@gmail.com/T/#t
+v1: https://lore.kernel.org/linux-iio/20260510191010.155380-1-nikhilgtr@gmail.com/
+
+Changes in v4:
+[DT]
+* Updated the example to include the required vdd-supply and
+  vddio-supply properties.
+* Added fixed regulator nodes to the example so it passes dt_binding_check.
+
+[IIO]
+* No Change
+
+Changes in v3:
+[DT]
+
+* Made vdd-supply and vddio-supply required properties.
+* Moved the MAINTAINERS entry to the correct alphabetical position.
+
+[IIO]
+
+* Added the publicly available MLX90393 datasheet reference.
+* Clarified the motivation for introducing a dedicated MLX90393 driver.
+* Added the I2C device ID table and switched to designated initializers.
+* Added a forward declaration for struct device to reduce unnecessary
+  header dependencies.
+* Added symbol namespaces.
+* Improved include usage.
+* Improved status validation and consistency of conditional checks.
+* Added comments documenting protocol encoding, initialization delays,
+  and temperature conversion constants derived from the datasheet.
+* Improved naming, formatting, indentation and general coding style.
+* Addressed all review comments from Andy Shevchenko,
+  Uwe Kleine-König and Krzysztof Kozlowski.
+
+Changes in v2:
+[DT]
+
+* Extended the DT binding to document power supply regulators and
+  optional interrupt and trigger GPIOs.
+
+[IIO]
+
+* Removed the RFC tag based on reviewer feedback.
+* Added a MAINTAINERS entry as part of the initial submission and
+  expanded it in the driver patch.
+* Reworked the scale availability implementation to simplify the
+  data layout and eliminate the need for constructing a temporary
+  table, avoiding potential race conditions.
+* Replaced usleep_range() with fsleep() where appropriate and
+  documented initialization delays.
+* Simplified helper functions and improved error handling by
+  returning directly where appropriate.
+* Reduced unnecessary local variables and line wrapping to improve
+  readability and align with kernel coding style.
+* Added comments for lock protection and command definitions to
+  improve code clarity.
+* Switched to devm_mutex_init() and cleaned up include usage in
+  accordance with the "include what you use" principle.
+* Improved consistency across the driver, including conditional
+  handling, switch statements, formatting and general code style.
+* Addressed all review comments from Jonathan Cameron.
+
+Many thanks to Jonathan Cameron, Andy Shevchenko,
+Uwe Kleine-König and Krzysztof Kozlowski for their detailed reviews
+and valuable feedback, which significantly improved this series.
+
+Further review and comments are greatly appreciated.
+
+Thanks,
+Nikhil Gautam
+
+Nikhil Gautam (2):
+  dt-bindings: iio: magnetometer: add Melexis MLX90393
+  iio: magnetometer: add support for Melexis MLX90393
+
+ .../iio/magnetometer/melexis,mlx90393.yaml    |  63 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  10 +
+ drivers/iio/magnetometer/Makefile             |   2 +
+ drivers/iio/magnetometer/mlx90393.h           |  73 ++
+ drivers/iio/magnetometer/mlx90393_core.c      | 701 ++++++++++++++++++
+ drivers/iio/magnetometer/mlx90393_i2c.c       |  76 ++
+ 7 files changed, 932 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/melexis,mlx90393.yaml
+ create mode 100644 drivers/iio/magnetometer/mlx90393.h
+ create mode 100644 drivers/iio/magnetometer/mlx90393_core.c
+ create mode 100644 drivers/iio/magnetometer/mlx90393_i2c.c
+
+-- 
+2.39.5
+
