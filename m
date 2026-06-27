@@ -1,294 +1,197 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA383B71CB
-	for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 18:35:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1771E5B68
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 00:58:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782498927; cv=none; b=P+wGXUN9+GYCeL5Q5ctnWEkl26QlKT7eN1O5ccE8BRJnJeMC/5QYPWRijPmH8ZhigIa99Rj11o0JBzDvyhdCJjlqKp6KEt9QjaNMyU0o672rtZNkbn0q+yG4Sa3rzN94+5IaD8MyjgQmXeDATIndHb9hrhg7gW/gb6rHz6IgZrI=
+	t=1782521933; cv=none; b=XSeNzLxOM8jREqmN8rcB93ZEXn7pp8yt2Pl5FJ2P82M2vRDMcL/joXGtjNRgaHv0nvBgTH3sC4m/pqcJIn8AUedjVs+OthX7AsZjd6arEbvubu7PMeSzrCrLCdb8bUuIllanOJRaBXUrOsGCmnzeLGpdydnkraO+cMxDDolyl9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782498927; c=relaxed/simple;
-	bh=dPfHlgQgWfT+hU6VgO6lR7zUegvTyInzXHbdMXw7UNE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qD9Ai29eSoDCSeF1Eu9rUWza3S8ba2SuLxo0uvKAi11BVpZlomXLpOWqDCqrzrry/DrakHFjaB3sSMDrT7pCEHF32/LGgobGz5oHhR88Z23cvOmeDKvf4nBLHfmqw/fXswvnU9iSg6aaixL3T++rdEhKhmel0jQTwpg4VhsnjjY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OlVR12Dq; arc=none smtp.client-ip=209.85.210.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782521933; c=relaxed/simple;
+	bh=PodgZnbJRED924mVBo2w1V+mkOsOSuih7wFp4EZRS8g=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=cEOg2mfwuoMoKuX1h9acIBEnpdPYSOvFdLkijb81e3g71pUxoDLwm9HbPpgi3lLkCKKC9bi1LchycazKSZ9Uy/BrRI+aJWOHUqoEOj1LRNzJd47QFJ9Xx16xJS1VuTf1SElC+QmJRlbwip771R1dbz+2rc1y4XhKKOkzSlH1/ng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=faS/9r94; arc=none smtp.client-ip=74.125.82.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OlVR12Dq"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7e6dcc22cbcso997706a34.1
-        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 11:35:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="faS/9r94"
+Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-1397e093f90so940021c88.1
+        for <linux-iio@vger.kernel.org>; Fri, 26 Jun 2026 17:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782498924; x=1783103724; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=J8Kzxi9SsU9PSUvyY7AuuVFjnGlx1l2npBtoEXDb+RU=;
-        b=OlVR12Dql92QYjC5bpaCynMWUJ3W1dy26/XomWvWFRmeLweIdSuyEMR038qhbybbTW
-         zEA5xFmchT+BY2tA/DnO9kiGNMBNfYRokjazhS56UQAgvsWXJ2xAF9F1nb8GTbZ6ZUrO
-         Mi/vT5LnD+2Ms5QK4TOOMR/b2oatrbZGk2mj3GDOciHDivLun7RwKSs0/FmSwOG0oGge
-         q11HxtZi1KackdHccM3JyVZUkTXh/k/qCD+9bmfMnnXoE0zMMZlK5sd9rYlbvWp/M694
-         1jtkTx43e24O2S7THDVLxvbXiaax6qJIHcgr/2yVsFz7RGNwH2eL1Oel+bzfPF6U6n8d
-         KjDA==
+        d=gmail.com; s=20251104; t=1782521931; x=1783126731; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=EixgeXE6KkLS+YBHBaZszqWx1D/TOijdoC2xbqpvkwE=;
+        b=faS/9r94vJTemcgFl/xNmxLL1w59EVMsrmUYNW7iNvNbQAd5+hPn409AuUsaJmifl4
+         wjskIWtXIwoa5sQLxD5RwZeW9fY6XBOswNyhF4rEqpCna2FlnRopjVtn+gPrm/HEeEuC
+         bZbjrNa2orvjAqFEBxybJJKbRu8tnKJ7KrvNAGpaEJ4sbqiypbrZaiEiDNzLElD6Lzu8
+         GVpJq9dxheHwhHNMnxeCz35OvbfCj8vOWvsaRSIt9EuB7ka+oyIQDJ4Q8RiEXjpYermq
+         UNV9KkP80/ZO7Sm3iNS3eMpB/bRAm6zOWPElBtmbxs15GwFeqBL+dQuweasmrkxRXyjd
+         973A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782498924; x=1783103724;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=J8Kzxi9SsU9PSUvyY7AuuVFjnGlx1l2npBtoEXDb+RU=;
-        b=U99p7X1ECvfLBx7bFfAWO7n32PgujcNU0erMw1dT/wuuT8ysLHM52pdkxRnTaPA0XO
-         22KeeV1uXcwef/dhjAPSAK6RQRTLV4m8avuWgqBMUd6Qo4u69SvHfmHgANdxWMs1A09S
-         vpmzvY3aCNFgizmJHZTtzM2WsDgKOL/XgTepI3SLsYlycDKyngy9zvmiAeZ3vDf48FCd
-         qCcmNWcEltW0exh0oKz8nkvc8I3Rh/7SFrNtNz9qaU+MeLb/xGbXLbXOMclyl+Lw82Ck
-         4VZo6E5a5IG9CLL1XoCvckxBml6bk4lJxVaEkiVkxrL28OLkZxeqlZnHOYg7fd7NCdwZ
-         VP1w==
-X-Forwarded-Encrypted: i=1; AFNElJ9mYhs2RCCrmNnBTIPbTZf/uR8ydEW6chq8BoxbX5bpvCP1iWMwrV5jJFRYGvuFR4UqWkCAbkZ/uFc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwdR5DQLYmjGRe5ybkdOss2oGES+ye8dDUQVsNTMvRVW9ZABaVE
-	2Q2wRm9G+XnjXhVqsDBUGSGqkI/HdijvhBs5ApIFMgHuqjCeg8j9L7qLgPyVmSwolaQ=
-X-Gm-Gg: AfdE7cmnOc5kaleO/PlUpb8kHgzKVeEqim98MFj0x8z5933VVUTRN4y5XopQ48m3kDt
-	L0Inisw1tuAgnzB/yy6eBL135Sa2ByldwGHSgWKycnonj900mbCmilBHBJ5IdqLt0UclxHO5tFP
-	IyAw0mIwz61STJNnSMitwuxbgoWnCP+1M6hsccLyrPveFs9DIUEO/QI2DCHw3PnRTziOqEUjjW7
-	ttpPeMosBMMCxD1Q8ik/MSOJ9TbhliU1a9hf66aEEaDxSL5iD7vfTNa4+fVDJRH01fVN1CZQmow
-	tduOUCPTNiDuNsFvs0ug3kQl5qp3m+3btFipyNFNsSdg9htn903FZxPLc2jNNkAyx+qVvo1zjXj
-	GNbdeBVko87S0QVjOw/gY7kK9OFSlf6neeJxlgo1w8bT2HdPHdO8eqhtpVwJG/O0QjYmHiSlen3
-	fyaeqp11tWso1g5y/T7GKCKw5Qcmg24Y1TMS1NrL2iDN6W0mKifSD/I4P0wK27Wo8=
-X-Received: by 2002:a05:6830:2781:b0:7e9:b4d0:53a2 with SMTP id 46e09a7af769-7e9b4d05d30mr1036708a34.27.1782498924389;
-        Fri, 26 Jun 2026 11:35:24 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:f1f0:2d9f:2f31:3426? ([2600:8803:e7e4:500:f1f0:2d9f:2f31:3426])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9aa7d5b3asm2176015a34.23.2026.06.26.11.35.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jun 2026 11:35:23 -0700 (PDT)
-Message-ID: <82294468-c4cf-4003-93f1-31a113c79979@baylibre.com>
-Date: Fri, 26 Jun 2026 13:35:22 -0500
+        d=1e100.net; s=20251104; t=1782521931; x=1783126731;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EixgeXE6KkLS+YBHBaZszqWx1D/TOijdoC2xbqpvkwE=;
+        b=qMyzg+kYpT4sQdF5wHh16rMEFkfPTlN72EyrVW5a1HJ0G8IbHe0X825L+tM1hH0Udo
+         NyJcEAAIYDMEeWzmaoHfDS4jt67r3iyepFPU228KZvR9+fZGU9Qvis7SpRCBAUuHqhH9
+         90e90zAXxrjBaYhBnUFSxe3xLxir1mcrQiFWUA4xg4bE5qVehLljuE/dlU9iFotlvwuY
+         6ZAhYdMya9Uf3x46wPeCprnUQ08CjnUWZyXo50pvND9Swba1BaR2Pp95B/ltHrF6sZMK
+         CQtib25jeGhoOM6OQtXsxYuko2bW2tZ+lEgSgKamtiXHKFnzNX4XT6eKD//KfPdRP0Mt
+         BdVg==
+X-Gm-Message-State: AOJu0Ywq5svLYZJBKuTC69Xm91Ss0hXZJmY9lqAtkZQpOHCzmSckUy9H
+	fzJcVyI/SoC4K+uZzM+PiSntzG9XJ7G8ldX0tKHNg3iq00fNgIJMitLkpuEkQW4=
+X-Gm-Gg: AfdE7cm82V5pdsyACwvA+/t5XTLBaNxQbZ1t26XQEqfDv/WNQcGt9lVD/GqylwYM9Sk
+	AenORUw4HJW9AvAc6tkOHAYd5vWcrLaEqiRzGtNb/VA4+7ICHVJQ3P7YgLRnzaNZmqma6m3/5E8
+	BDR9iflgFnAYiZEqyUngzR2G0BQ5m2u/f/BApod/oou/Rdfgq3fmi6GHSzW1piqieQ3e3xivIOd
+	2/bMy2nWlrsJ7JEhwPVhUeOsDGReBOYql6Jvr/c+I1mbGatylxc6xXLbqSfnlCLaUuc6sNG1wc5
+	nUb/jHBjNWFt9M3hi4Ja4e3e8IaTcAcjDY3eM9uc38KuLe/Dj81gwJ+8qF3kPbRwY5ySKfi+jhu
+	5nK28/MDG0BbD1j+FlQc3++XjGfsu6oxaF3tB/1o9OzAsTXpmKEMI5pwOdMGdsd8+F+iF9q4qSm
+	ZOlXtGW2t3MStoRTj9QYNTSd+UM0Op3Ucveo+/jkX6uneb+miy1Ys6
+X-Received: by 2002:a05:7022:90c:b0:137:eb21:eafb with SMTP id a92af1059eb24-139dba279f6mr7228865c88.13.1782521931380;
+        Fri, 26 Jun 2026 17:58:51 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.63.254])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-139d8f6d2e4sm22387112c88.7.2026.06.26.17.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jun 2026 17:58:50 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	u.kleine-koenig@baylibre.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: 
+Date: Sat, 27 Jun 2026 06:28:41 +0530
+Message-Id: <20260627005843.7786-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/8] dt-bindings: iio: adc: add ti,ads122c14
-To: Conor Dooley <conor@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
- Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
- <20260625-iio-adc-ti-ads122c14-v2-5-ceb9b0b561cb@baylibre.com>
- <20260626-rising-legged-dea08bb68bfe@spud>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260626-rising-legged-dea08bb68bfe@spud>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 6/26/26 11:18 AM, Conor Dooley wrote:
-> On Thu, Jun 25, 2026 at 04:55:07PM -0500, David Lechner (TI) wrote:
->> Add new bindings for ti,ads122c14 and similar devices.
->>
->> This is an ADC that is primarily intended for use with temperature
->> sensors. There are a few unusual properties because of this. In
->> particular, the reference voltage source and current output requirements
->> can be different for each measurement, so these are included in the
->> channel bindings.
->>
->> The REFP/REFN reference voltage is usually just connected to a resistor
->> that is being driven by the ADC's current outputs, so there is special
->> property for this case rather than requiring a regulator to be defined
->> to represent that.
->>
->> ti,vref-source is reused from ti,tlv320adcx140.yaml (otherwise might
->> have preferred an enum of strings).
->>
->> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
->> ---
->>
->> v2 changes:
->> * Added ti, vendor prefix when appropriate.
->> * Others are now standardized properties from adc.yaml.
->> * Moved top-level unevaluatedProperties.
->> * Fixed some issues with the channel@ matching and reg property.
->> * Dropped description on bipolar property.
->> * Renamed currnet-chopping to input-channel-rotation.
->> * Drop header file and use string enum instead for reference-sources.
->> * Added burn-out-current-nanoamp property.
->> * Drop allOf: and just use oneOf: directly.
->> * Fix inconsistent indentation in the examples.
->> ---
->>  .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 205 +++++++++++++++++++++
->>  MAINTAINERS                                        |   6 +
->>  2 files changed, 211 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
->> new file mode 100644
->> index 000000000000..59ee4d652a08
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
->> @@ -0,0 +1,205 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iio/adc/ti,ads112c14.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Texas Instruments' ADS112C14 and similar ADC chips
->> +
->> +description: |
->> +  Supports the following Texas Instruments' ADC chips:
->> +  - ADS112C14 (16-bit)
->> +  - ADS122C14 (24-bit)
->> +
->> +  https://www.ti.com/lit/ds/symlink/ads122c14.pdf
->> +
->> +  These chips are primarily designed for use with temperature sensors such as
->> +  RTDs and thermocouples. The channel bindings reflect this in that each channel
->> +  represents the conditions required to make a measurement rather than strictly
->> +  just the physical input channels.
->> +
->> +maintainers:
->> +  - David Lechner <dlechner@baylibre.com>
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - ti,ads112c14
->> +      - ti,ads122c14
->> +
->> +  reg:
->> +    items:
->> +      - minimum: 0x40
->> +        maximum: 0x47
->> +
->> +  clocks:
->> +    maxItems: 1
->> +    description: Optional external clock connected to GPIO3 pin.
->> +
->> +  avdd-supply: true
->> +  dvdd-supply: true
->> +
->> +  refp-supply: true
->> +  refn-supply: true
->> +
->> +  ti,refp-refn-resistor-ohms:
->> +    description:
->> +      The resistance of the external resistor between REFP and REFN when using
->> +      resistor bridge driven by current outputs for RTD measurements.
->> +
->> +  interrupts:
->> +    minItems: 1
->> +    items:
->> +      - description: FAULT interrupt (GPIO2 pin)
->> +      - description: DRDY interrupt (GPIO3 pin)
->> +
->> +  interrupt-names:
->> +    minItems: 1
->> +    maxItems: 2
->> +    items:
->> +      enum: [fault, drdy]
->> +
->> +  gpio-controller: true
->> +  '#gpio-cells':
->> +    const: 2
->> +
->> +  '#address-cells':
->> +    const: 1
->> +
->> +  '#size-cells':
->> +    const: 0
->> +
->> +patternProperties:
->> +  ^channel@[0-7a-f]$:
-> 
-> How does this work/what's the intention here?
-> 
-> 0-7 I get, why a-f but not 8 or 9?
+Subject: [PATCH v3 0/2] iio: magnetometer: add support for Melexis MLX90393
 
-bah, just a typo, not intentional
+Hi,
 
-Should be [0-9a-f] to match maximum: 15 on reg.
+This series adds initial Industrial I/O subsystem support for the
+Melexis MLX90393 3-axis magnetometer and temperature sensor.
 
-> 
->> +    $ref: adc.yaml
->> +
->> +    unevaluatedProperties: false
->> +
->> +    properties:
->> +      reg:
->> +        items:
->> +          - maximum: 15 # arbitrary limit, channel@ can be any combination of AIN0-AIN7
->> +
->> +      single-channel:
->> +        maximum: 7
->> +
->> +      diff-channels:
->> +        items:
->> +          maximum: 7
->> +
->> +      bipolar: true
->> +
->> +      input-channel-rotation: true
->> +
->> +      excitation-channels:
->> +        maxItems: 2
->> +        items:
->> +          maximum: 7
->> +
->> +      excitation-current-nanoamp:
->> +        maxItems: 2
->> +        items:
->> +          enum: [1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000,
->> +                 90000, 100000, 200000, 300000, 400000, 500000, 600000, 700000,
->> +                 800000, 900000, 1000000]
->> +
->> +      burn-out-current-nanoamp:
->> +        enum: [200, 1000, 10000]
->> +
->> +      reference-sources:
->> +        items:
->> +          - enum: [internal-2.5v, internal-1.25v, external, avdd]
->> +            default: internal-2.5v
->> +
->> +    dependencies:
->> +      excitation-channels: [ excitation-current-nanoamp ]
->> +      excitation-current-nanoamp: [ excitation-channels ]
->> +
->> +    oneOf:
->> +      - required: [ single-channel ]
->> +      - required: [ diff-channels ]
->> +
->> +unevaluatedProperties: false
->> +
->> +required:
->> +  - compatible
-> 
-> reg?
+The MLX90393 supports both I2C and SPI interfaces. This series
+implements support for the I2C interface while keeping the driver
+structure transport-independent to simplify future SPI support.
 
-I thought reg being required by i2c-controller.yaml was already good enough.
+The device uses a command-based communication protocol rather than a
+conventional register-addressed interface. A small transport abstraction
+layer is therefore used instead of regmap to share the common sensor
+logic between the current I2C implementation and future SPI support.
 
-https://github.com/devicetree-org/dt-schema/blob/2203c1720f4ebeebd7f8d10e9dc1812993482fab/dtschema/schemas/i2c/i2c-controller.yaml#L219
+Currently supported features:
 
-> 
->> +  - avdd-supply
->> +  - dvdd-supply
->> +
->> +dependencies:
->> +  refn-supply: [ refp-supply ]
->> +
->> +oneOf:
->> +  - required: [ refp-supply ]
->> +  - required: [ "ti,refp-refn-resistor-ohms" ]
->> +  - properties:
->> +      refp-supply: false
->> +      refn-supply: false
->> +      ti,refp-refn-resistor-ohms: false
-> 
-> I assume you've tested this to make sure it enforces the behaviour that
-> you want?
+* Raw magnetic field measurements for X/Y/Z axes
+* Raw temperature measurements
+* Configurable gain/scale selection
+* Configurable oversampling ratio
+* Direct mode operation through the IIO subsystem
+* I2C interface support
 
+The driver has been tested on Raspberry Pi 5 hardware using an
+MLX90393 sensor connected over I2C. Magnetic field and temperature
+measurements were verified through the IIO sysfs interface.
 
-yes
+Datasheet:
+https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90393
+
+Previous submission:
+Link: https://lore.kernel.org/linux-iio/20260510191010.155380-1-nikhilgtr@gmail.com/
+
+Changes in v3:
+[DT]
+
+* Made vdd-supply and vddio-supply required properties.
+* Moved the MAINTAINERS entry to the correct alphabetical position.
+
+[IIO]
+
+* Added the publicly available MLX90393 datasheet reference.
+* Clarified the motivation for introducing a dedicated MLX90393 driver.
+* Added the I2C device ID table and switched to designated initializers.
+* Added a forward declaration for struct device to reduce unnecessary
+  header dependencies.
+* Added symbol namespaces.
+* Improved include usage.
+* Improved status validation and consistency of conditional checks.
+* Added comments documenting protocol encoding, initialization delays,
+  and temperature conversion constants derived from the datasheet.
+* Improved naming, formatting, indentation and general coding style.
+* Addressed all review comments from Andy Shevchenko,
+  Uwe Kleine-König and Krzysztof Kozlowski.
+
+Changes in v2:
+[DT]
+
+* Extended the DT binding to document power supply regulators and
+  optional interrupt and trigger GPIOs.
+
+[IIO]
+
+* Removed the RFC tag based on reviewer feedback.
+* Added a MAINTAINERS entry as part of the initial submission and
+  expanded it in the driver patch.
+* Reworked the scale availability implementation to simplify the
+  data layout and eliminate the need for constructing a temporary
+  table, avoiding potential race conditions.
+* Replaced usleep_range() with fsleep() where appropriate and
+  documented initialization delays.
+* Simplified helper functions and improved error handling by
+  returning directly where appropriate.
+* Reduced unnecessary local variables and line wrapping to improve
+  readability and align with kernel coding style.
+* Added comments for lock protection and command definitions to
+  improve code clarity.
+* Switched to devm_mutex_init() and cleaned up include usage in
+  accordance with the "include what you use" principle.
+* Improved consistency across the driver, including conditional
+  handling, switch statements, formatting and general code style.
+* Addressed all review comments from Jonathan Cameron.
+
+Many thanks to Jonathan Cameron, Andy Shevchenko,
+Uwe Kleine-König and Krzysztof Kozlowski for their detailed reviews
+and valuable feedback, which significantly improved this series.
+
+Further review and comments are greatly appreciated.
+
+Thanks,
+Nikhil Gautam
+
+Nikhil Gautam (2):
+  dt-bindings: iio: magnetometer: add Melexis MLX90393
+  iio: magnetometer: add support for Melexis MLX90393
+
+ .../iio/magnetometer/melexis,mlx90393.yaml    |  54 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/magnetometer/Kconfig              |  10 +
+ drivers/iio/magnetometer/Makefile             |   2 +
+ drivers/iio/magnetometer/mlx90393.h           |  73 ++
+ drivers/iio/magnetometer/mlx90393_core.c      | 701 ++++++++++++++++++
+ drivers/iio/magnetometer/mlx90393_i2c.c       |  76 ++
+ 7 files changed, 923 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/melexis,mlx90393.yaml
+ create mode 100644 drivers/iio/magnetometer/mlx90393.h
+ create mode 100644 drivers/iio/magnetometer/mlx90393_core.c
+ create mode 100644 drivers/iio/magnetometer/mlx90393_i2c.c
+
+-- 
+2.39.5
 
