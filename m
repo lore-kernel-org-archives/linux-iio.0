@@ -1,75 +1,75 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D271FBC8E
-	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 17:40:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE03288B1
+	for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 17:44:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782582020; cv=none; b=oK/ITTXnYsYGrNfQB8xHOE/jfgIQGbYaz3BpYKOUBAmuQSozFSObQ2dVjbWTM1p/1XDPmawrKi78UCDU6IO12Uy7oa+wLnJvWnLMm3msQ2zvtsCkKz0JTNvpFdwMrR01HkPz5eHM2y8oFRfpqsPiS9r70tHETg0Vf9vOFEwK2WY=
+	t=1782582297; cv=none; b=K/tjISTtiFJskJm8Q92lUCdVMg3ueVe3l3ttaLbBN7dPZqua0m3kNZiBUaiSkfy7ohI/aknYRyqXT2MDE3uMxC7J3PDB5PMYzxlTHtEg0Upqu88c73iOvwy3z1uVs8gE/HlWNvcNj+LRHvxxALMI2IwKgHxCt+o+yPrLuXhiW0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782582020; c=relaxed/simple;
-	bh=sH/OE4OZLnWemRgst6ORI6Z6Hzc1AeRnqslsUYw+TDM=;
+	s=arc-20240116; t=1782582297; c=relaxed/simple;
+	bh=A41M8uP44OawDz8zOzJX18CA8vhnP5nbbTzgUDs30ic=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GAjZrx+SHQhepxyfaz0J+kWQhLGpORwRwrYLN4yF9u3RvvMFZJinq+zxhwGa6lrct68P6kiiV17LnsbS94FyT0zvf1m2acZrd/TY2gZ+kgo1i4Tch0ecxh3tQ7yb/VJxSM4SdJDfwhX+sAkkrbSifRkhC5KVkdI0+7GGo4goEWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bYF1Nlq0; arc=none smtp.client-ip=209.85.128.54
+	 MIME-Version:Content-Type; b=A8oogidGmugLH/HLb3G/uoeeO2LBkMJaJFMIxnlXC4JryQbnTjz5a5aBVzWS+cslGt0QUtbKSX6GeQYW6CiFyl7A9AG9naTqPTrHlfkfZIxkg9pc3h8/tTxmxlj4yTmHgZc2h9cUSvlmIJBWR++BcX9mImhxLRnGGBm1IoaRUbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WWDJYUIo; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bYF1Nlq0"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493a440bc10so1801545e9.1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 10:40:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WWDJYUIo"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-4720f3bf164so161695f8f.1
+        for <linux-iio@vger.kernel.org>; Sat, 27 Jun 2026 10:44:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782582017; x=1783186817; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782582294; x=1783187094; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QLaUaEkMKqRuJ0ujKAXuF+B/7pYGukybQE5NVej1Dbk=;
-        b=bYF1Nlq0fVstjOj5ZapTOrHb+X0dsWw1xw1tn04aYGcx9FgUY2gyAAQn7eM8dZqEYP
-         v93O9c3oqMp7oj1nMzijCOvszQcBy70jQyMYfBqGRS0C3NDYQtK4CHxREl2F1/8AtUlY
-         GWhxWTsIwgqpGZ5op8iLNz3l1PmmcHt6Dw1/sWCsazwtIOj72HJXaRvyM9pJL6AnorOw
-         CHmBEPOlDW3ClnoPWH0reS+58UZJWtwHAxcUIl0uMB4BMoaWLqi17OoyNpocEKAwihc+
-         dDu7rK+NNjAPS9gI7OeXJI3MKhIRKuit2F0rkZGQIVKzKUQZQjEUFIjmwtSCKTatO0Zn
-         nL4w==
+        bh=WHEbbYYxlRHrBBYrZuyNBdVcf7muRXdd/OP7dB1/HX0=;
+        b=WWDJYUIo5hBmskhUcCs43C55yNt0DzNDCOI0EUvr7XuYA76snHxsnd4aGBvo0hANB2
+         Ok3duChcKTGpD4cNQLdYHju5XssxvZ2cdW6b8qE4xaBd9EVtQkoZVl7pvIKPOSM2PPmg
+         ueYPi7LVjLcZe71I2rQqsdN67/9hLE3orXFJB7gHwOD2XWCxnd1BIxyX40insuuZXUTQ
+         qkZzD48v9ZbQPcMWvFiD3M3/ZrEYbk8cXf/Sk1jpGL0QnGrAP2vbrmUO/JhstBxqK5K/
+         S4lsfnv2ZMcUVCy7B75RPsuQvUyeh7XfI9u9UxlwE0tErh0q2APTpd2j4XQLhLUDT/oN
+         aOHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782582017; x=1783186817;
+        d=1e100.net; s=20251104; t=1782582294; x=1783187094;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=QLaUaEkMKqRuJ0ujKAXuF+B/7pYGukybQE5NVej1Dbk=;
-        b=nPvhfPc0QIXRfX+O4+HB/Cmwlha8/4GtJqAcOsf0ICJKYb7t/rQ6UpHurHr9BlFpdZ
-         ETHWyIvA6MWMNl7P8Ug/wz59ajF6n50uWoEW+nvIMIRzT5s+VheKXI/ZwZVIWVXZM1Lx
-         Hm9cdRRuouK1ksU0xFQiJZ9WAuC86c+qxynnYqwcHZOdhmjXylWv79Vj+2i+yZseW776
-         7pk/3K/VF3tyQR9XRNzxiE1c1PD6flCA3dHmc9GXX3j5DWyNV7pCj4vw7kkX4Bk8on/R
-         gcS3UyQqZ3WdW/v9guh5TDh4TxXTkT5xA6w6UzqzSdXJEbL4y5tG6nwUyzxrg6LceeXj
-         GPVA==
-X-Forwarded-Encrypted: i=1; AFNElJ82IYG/LyDkRV2mySjTLKQe9t+L+VsTPORSVBgE4XIkHdZEbxpNWmCOGG3ps8SnYhfNRUCKaZEBSo0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMlCel1JaMQeoH6EfF2XmK9AQsC0DlvCmH2nlE3znOMR0s8Bq2
-	5J+qYYej0X6Aj1vGy1jp5LggocaAwqXLGXF4n/gbjulpDrhYQvXu1xQPPyfTXA==
-X-Gm-Gg: AfdE7cmNBQQUnZvWc5xOxaFKp/Wq0xUOVKdtqAk6IqPicTXPJ2TTKra7vC+gUbWURHB
-	K4gp6iWDKx8Ikh5LFrEpopX02WsBH1wnv5CiCLIfN5ZkGBtp8eQScbwXRErK9/MhrI787d8yMXO
-	SYdPnv0Ir+AUBOhnzqxZjbozM/9g2FRLaP5RpDyR7co1z1cE4zHGzeqdq8HAb6sFRN27NJcCye7
-	d1HLShiwEwKDzCJ/+fvjSQgrFtm4xAEro4nzhAcVCu+8kAt48uTQam0jqI4+T9CUybkCBmDe+oJ
-	Xj1kjAitpkK0v8qyDu4DmI7Bh0QyjR432tX3Lnl5KxBsY8FjeWMStKkvP7w3/vMXPCll8lrLIq/
-	g4axMwITOKZkt5Q1qrMBJXv0SRfHNY2rlYF4b6k6U3pHOxoKsvr3a2vY0bgBsV0zpjy5EePrSdI
-	cPeE+pCRnb+32nzqXVAnBqmLc518EQgNBpQnWtV0z5PphsB+iJyb6MMTh6vcdG+6rghlWUwjthk
-	miQH9nBscbyHbth5pHb+tb5vsBCrJ1eZPGDZPtMdPBOzKO9kcJ4AdNuqMaRins5wqjlgAzgWebM
-	n0LbJQ==
-X-Received: by 2002:a05:600d:6447:20b0:492:259d:567 with SMTP id 5b1f17b1804b1-4926689869amr129421395e9.23.1782582017046;
-        Sat, 27 Jun 2026 10:40:17 -0700 (PDT)
+        bh=WHEbbYYxlRHrBBYrZuyNBdVcf7muRXdd/OP7dB1/HX0=;
+        b=iWjE3spmTHftUzgwagf8oAUJZuDLWfWiVkK8aYWqG1i4LoVs93t60Npx3YZjuPgP1n
+         lt1UBRc7gZbOo1b3VAUlWmPraw6SJrPQgih17G4ysbhD3anyoAhl+ZppDqhrxpIx2umu
+         zZBRvm5FT4vlIr/KN2HpeGcpysF9AqQ5XrfxLKA/su1GcAPrre7wF44UK/SA/PfIPH99
+         M0EkO5FpIaMYZ76FljEwNlcmH6Mdr8q68jFhELD669ZqNNS83i/myZ52W6HjBu8dq9C0
+         JCTelnD/RADkeeVF2K67IJaFebpbAFF2UIPlkCzpuTtmo30ixFKJDIN9QDpvHG/qzWzR
+         G1ow==
+X-Forwarded-Encrypted: i=1; AHgh+RpkQZC/N7T2DvwJbJfKEok+itFEtcK/kf/oQmVtApJ4hPxPtbEt7RGcJupCc0dyggbwCp9OYhZyoQI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzjZ4i/YcPVOPO9Q/QdGqhFtX81SAm+6h6dswjd7DpjZHPfhoD1
+	pqz1rTQFL/K4LrueFeX1qJVF+RwvjpgFgRfoXKKG4m30V/RvTRcLffhr
+X-Gm-Gg: AfdE7cnUldyF4dATmo60I8gzOhlBwmeFTsY/6MhOznoTeMCAKXNpMxNncQckzkoFuG3
+	rcHtyGLHRmoE/jixm15MlvI3Z+BviV44Zy0uKDWM2xMS5Les3S4JBO9p/JLxkVN/VZKz1hPezzP
+	bLQRDLDjN/AMvTLQvKBKfwo7OPJIXhqIXTpDGyrBymA/UcjeYm+bMJ63qRFa22G9vnm/fdJs9Oj
+	0voRJgIdZuSURrwzmurZq2S9gJ9IzwyiQN1672HnFJdhqrex7fhIdx+WfrNh0yeH0iA/6a0NZQw
+	U0wd3bTmRlrzCoVndHWMKd7q9pKGeUH8NYW3SIIxY1onedtAi4vu/dvn8DrvnKKnoN7swnORdru
+	07v/7opQn3aQyx0UYJCIRfw2rA28iTTGSgwKZjYwVviBVt+VnCF54CbMY3OTONAmrRTmVT81Lon
+	0VdIHrvfsb5suNGLNiu+o/x3cJ6xBYZtRQV3eWX5LyipU90fP/t07Vx6NlowSDBLErGIvrvBblh
+	/NzlErMxQTemoUbnKlVUmA3sxVnfHOaSgY/MaPT6XVR+JV4pViPbubdqP2Yjvd5qzhjKOUyzWxu
+	UueFlA==
+X-Received: by 2002:a05:6000:18a9:b0:461:a15a:4160 with SMTP id ffacd0b85a97d-46da8c5fcb6mr18379220f8f.13.1782582294076;
+        Sat, 27 Jun 2026 10:44:54 -0700 (PDT)
 Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4701835b625sm10378043f8f.36.2026.06.27.10.40.16
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-46e95f3d71fsm19042615f8f.12.2026.06.27.10.44.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jun 2026 10:40:16 -0700 (PDT)
-Date: Sat, 27 Jun 2026 19:40:13 +0200
+        Sat, 27 Jun 2026 10:44:53 -0700 (PDT)
+Date: Sat, 27 Jun 2026 19:44:52 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Erick Henrique <erick.henrique.rodrigues@usp.br>
 Cc: jic23@kernel.org, andriy.shevchenko@intel.com, andy@kernel.org,
  dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] iio: dac: m62332: Clean up header includes
-Message-ID: <20260627194013.56ba5e36@systembl0wer>
-In-Reply-To: <20260627132530.96680-3-erick.henrique.rodrigues@usp.br>
+Subject: Re: [PATCH v4 3/3] iio: dac: m62332: Use guard(mutex) for locking
+Message-ID: <20260627194452.124793fd@systembl0wer>
+In-Reply-To: <20260627132530.96680-4-erick.henrique.rodrigues@usp.br>
 References: <20260627132530.96680-1-erick.henrique.rodrigues@usp.br>
-	<20260627132530.96680-3-erick.henrique.rodrigues@usp.br>
+	<20260627132530.96680-4-erick.henrique.rodrigues@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -80,19 +80,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 27 Jun 2026 10:25:29 -0300
+On Sat, 27 Jun 2026 10:25:30 -0300
 Erick Henrique <erick.henrique.rodrigues@usp.br> wrote:
 
-> Follow the IWYU principle: include specific headers for the symbols
-> used in this file and drop the unused slab.h. Add array_size.h, bits.h,
-> mutex.h, pm.h and types.h for symbols that were previously pulled in
-> only indirectly, and add mod_devicetable.h for the device ID table.
-> This prepares the driver for the guard(mutex) conversion that follows.
+> Replace mutex_lock()/mutex_unlock() calls with guard(mutex)() to
+> simplify locking and make cleanup automatic when the lock goes out
+> of scope. Also simplify the i2c_master_send() error handling by
+> using sequential early returns instead of a combined condition.
 > 
 > Signed-off-by: Erick Henrique <erick.henrique.rodrigues@usp.br>
 > ---
+>  drivers/iio/dac/m62332.c | 17 +++++------------
+>  1 file changed, 5 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
+> index ee8fd3a71315..10ff6727b76c 100644
+> --- a/drivers/iio/dac/m62332.c
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -47,33 +47,26 @@ static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
+>  	outbuf[0] = channel;
+>  	outbuf[1] = val;
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+You're missing #include <linux/cleanup.h>.
 
 -- 
 Kind regards
