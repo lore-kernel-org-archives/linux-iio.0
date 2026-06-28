@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBEE3AB26A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0083AC0C3;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782655794; cv=none; b=LwkuFG1zacZ3mO40SDaRXmuMmPUytkf5zGSK+xcycmfW7HhaXtsjKrFX1EslpASViS9gdsp1eZeUMvWBg7jocMobxaiy7QeXLMc5MURiUPRhyoSnnd+59nYWQABfFxD8CuJ+0V8obRjPxrObHKsujFGJaMHb536YoCQC5EliGVo=
+	t=1782655794; cv=none; b=gbeh3lUU7TI+mW8vUi1Jo940SmYjHCLI69UmwmDHAHf55vQy4jvBJ8WvHE7ZmAChBnZDYb8ygL9auWqrQGUmT73XWTfm0A0G9Ri3RILCEBkmpDTVyw8XLK3hpGig98N/MKwQkXI4f4tuSVRwP9/R03PXEIAUWYUdUy+p1YFsf+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782655794; c=relaxed/simple;
-	bh=nOZGZ62ICmUvfbsrw0b2DeF8zJum/jCmuLlyo00onIo=;
+	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iExqjMEQo3/1S1btbUrkEM6TMDZhYqBLIIG9C4IHfs0Gw2Eb9eoFRD08OTXZITsro6KDzG0kZoHs/mA7X8hayQS1P9nXvSqYjY08P8+FSMbslpGeEfoiP1cuS/4SHppxHlh/gD72xLt2F0OkcpKcbxgvltFlfgu6qm5h5rIH2oM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g8zEYnim; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=KDG/Ieh3SpCwB8jdcwhHZ7r0688cxR2MWXwSzxo7bLjGf5fhWXUk52GBrJewTwbl3qASqPoQhw7UFhG2916PcFTK6LUyaHBh9Sczkk5Bv4CAauadSqOlmVA06f0rXlnmBXJ1OBjLrPHR+iv+rnox47v3pElIVgxJq/OeoWngUdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gLCuCzE0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g8zEYnim"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 17BCDC2BD00;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gLCuCzE0"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 350F4C4AF12;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782655794;
-	bh=nOZGZ62ICmUvfbsrw0b2DeF8zJum/jCmuLlyo00onIo=;
+	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=g8zEYnimC1Zf3Y85UXyYj09KEQtw+sf399v/YJVmmSrfwQR8mR1chgNS+NQ/a75cg
-	 lNzX9UAYzMOyExIyvHXN9krGB4S1MlpxvDss4Dl0xLW8y4JJpW2G8J2XVtEQUZb3Lm
-	 V9cGk7JyQUt7uF107mqBUxIVbZXq7hly6qn1rr/rLOkCXaRiITaMsW8IxN1E/Oi5T4
-	 QhHiOASogRQ/Qm3EQ/OZsKn2QsWNFm6MYxOeEehWTf9ejIRc7eMlGsH3ygGHm31ITK
-	 AHf3JPBKtkCJGgrEziQMcxqdRUH64VbHaA8n4KtxHvkXNEF88c2Z1NzS/Ynp8VhxYW
-	 xokKfwRxVBSAg==
+	b=gLCuCzE0yUcefzDmcIdA7PdbwK3+dEgN4Kkvs0AUYEDlZWTs5jdc6P5nVoGAnOwtb
+	 w8aDDH/oSi5jbESZuZQwrc0/r+lcRMwjR5aZL27db2AxaQiToolf7dpd+oY5ck3lvR
+	 NpBEWPiuNwfdccwXuH/Y329T+NDo66lG7Luwkv4y521itt/MoBaTe7zXf3NmVpwrHM
+	 xSQL8c1M6Vkh70sKcqL1s1zIKIaKF4lMx7BNdQKCxed0BFJw8lkzWstbFWxVXeiscj
+	 PWr9W9RPNe46xIBDbBwnMYHWf8zJHchbE293ER7LTnQiZSrr4RP3cs5Bt6LYrWqzdk
+	 4KbHO5zMwaMVw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C8E2C43638;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289C0C43327;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 28 Jun 2026 15:08:11 +0100
-Subject: [PATCH v5 04/12] dt-bindings: iio: dac: ad5686: rework on power
- supplies
+Date: Sun, 28 Jun 2026 15:08:13 +0100
+Subject: [PATCH v5 06/12] iio: dac: ad5686: consume optional reset signal
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-ad5686-new-features-v5-4-577caadbf7c0@analog.com>
+Message-Id: <20260628-ad5686-new-features-v5-6-577caadbf7c0@analog.com>
 References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 In-Reply-To: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -53,14 +52,13 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=2700;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=1786;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=tuQmivHL8J10YKTbXaXhxrSTIqRwhQyNsgU1pD2pB7E=;
- b=p69fOARa4T5Zu5LaqRNHqy6UijRGWjyT2Soxkr4tIDdR6fruTEP5bhXKL+CYUtv/p9Mkuczak
- 2IKkCWhyZEPCLnVTm9wvW6C5135W+oXBAlDyTdQ7JPRtJGprtjT4f6J
+ bh=L5icfA5WYm8ov/3pCusG7IPcFnWQG1nvPrm0z48/efM=;
+ b=rUJtlI4GFgejRbhOQwEUfj+2xmTMfJLtXITC5yiUeXThi8to9fMto+r5s4kYAU0C7Sj7ou6s8
+ 0yyNps1xTOPBC14sDbiXjhAEmTlJbBWUlZk5C6zgE41EIPk/goc5i/6
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,83 +68,59 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add supplies for VDD, VLOGIC and VREF input voltage pins. The vcc-supply
-property is deprecated, once it does not really exist as none of the
-devices describe any power input with that name. VCC is also misleading as
-it sounds like the input power supply, but it is being used as an external
-voltage reference, which should be called VREF. Certain devices require
-vref-supply to be available once an internal reference voltage is absent.
-For correct operation vdd and vlogic supplies are required.
+Add RESET pin GPIO support through an optional reset control, which is
+local to the probe function. A reset pulse is manually generated after
+the device is powered up.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml    | 34 ++++++++++++++++++++--
- 1 file changed, 32 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5686.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-index d781baca6a6c..02e8c78e36d3 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-@@ -32,8 +32,22 @@ properties:
-   reg:
-     maxItems: 1
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index e2ebabca6887..8ad8931a3d7f 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -15,6 +15,7 @@
+ #include <linux/kstrtox.h>
+ #include <linux/module.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/reset.h>
+ #include <linux/sysfs.h>
+ #include <linux/wordpart.h>
  
-+  vdd-supply:
-+    description: Input power supply.
-+
-+  vlogic-supply:
-+    description:
-+      Digital power supply. On some tiny package variants for single-channel
-+      devices, this supply is internally connected to vdd; in that case, specify
-+      this property with the same regulator as vdd.
-+
-+  vref-supply:
-+    description:
-+      Reference voltage supply. If not supplied the internal reference is used.
-+
-   vcc-supply:
--    description: If not supplied the internal reference is used.
-+    deprecated: true
-+    description: Use vref-supply instead.
+@@ -472,6 +473,7 @@ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+ 		 const char *name, const struct ad5686_bus_ops *ops)
+ {
++	struct reset_control *rstc;
+ 	struct ad5686_state *st;
+ 	struct iio_dev *indio_dev;
+ 	int ret, i;
+@@ -486,6 +488,11 @@ int ad5686_probe(struct device *dev,
+ 	st->ops = ops;
+ 	st->chip_info = chip_info;
  
-   reset-gpios:
-     description: Active-low RESET pin to reset the device.
-@@ -60,9 +74,23 @@ properties:
- required:
-   - compatible
-   - reg
-+  - vdd-supply
-+  - vlogic-supply
++	rstc = devm_reset_control_get_optional_exclusive(dev, NULL);
++	if (IS_ERR(rstc))
++		return dev_err_probe(dev, PTR_ERR(rstc),
++				     "Failed to get reset control\n");
++
+ 	ret = devm_regulator_get_enable(dev, "vdd");
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
+@@ -509,6 +516,11 @@ int ad5686_probe(struct device *dev,
+ 	/* 4.5us power-up time: Datasheet Table 4: Timing Characteristics */
+ 	fsleep(5);
  
- allOf:
-   - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad5676
-+              - adi,ad5683
-+              - adi,ad5684
-+              - adi,ad5686
-+    then:
-+      required:
-+        - vref-supply
-   - if:
-       properties:
-         compatible:
-@@ -88,7 +116,9 @@ examples:
-         dac@0 {
-             reg = <0>;
-             compatible = "adi,ad5310r";
--            vcc-supply = <&dac_vref0>;
-+            vdd-supply = <&dac_vdd>;
-+            vlogic-supply = <&dac_vlogic>;
-+            vref-supply = <&dac_vref>;
-             reset-gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
-             ldac-gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
-         };
++	/* 1us >> 30ns reset pulse activation time: Datasheet Table 4 */
++	reset_control_assert(rstc);
++	fsleep(1);
++	reset_control_deassert(rstc);
++
+ 	/* Initialize masks to all ones */
+ 	st->pwr_down_mask = ~0;
+ 	st->pwr_down_mode = ~0;
 
 -- 
 2.43.0
