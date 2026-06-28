@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0083AC0C3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9188A3ACA58;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782655794; cv=none; b=gbeh3lUU7TI+mW8vUi1Jo940SmYjHCLI69UmwmDHAHf55vQy4jvBJ8WvHE7ZmAChBnZDYb8ygL9auWqrQGUmT73XWTfm0A0G9Ri3RILCEBkmpDTVyw8XLK3hpGig98N/MKwQkXI4f4tuSVRwP9/R03PXEIAUWYUdUy+p1YFsf+4=
+	t=1782655794; cv=none; b=WrYkRg6Or/Y1zu9zw9sZN8vix0PRz4FLloiWMBOqlmdaAUzIGTUI5ZXH7RUUwK8HaiMBEEbZAd93mlTyPit7rYBAQn1lIPTmVnLFFpS8kyU7N3IwMhCeDD8rTddAMnNs9Cl8bGwrfUK49MdahdfRJgMP+ffAnLe0UQnDOkM/KRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782655794; c=relaxed/simple;
-	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
+	bh=VjiUDIBmGY8ehJYKh3xdsRBq7blQiEQbpG6Chja0TYc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KDG/Ieh3SpCwB8jdcwhHZ7r0688cxR2MWXwSzxo7bLjGf5fhWXUk52GBrJewTwbl3qASqPoQhw7UFhG2916PcFTK6LUyaHBh9Sczkk5Bv4CAauadSqOlmVA06f0rXlnmBXJ1OBjLrPHR+iv+rnox47v3pElIVgxJq/OeoWngUdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gLCuCzE0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=qNY/QZzratE3FEYK7+01xzFMHZQ5lLsdFb+JzDB76u8IAsB0C/ZMCAbUbgz1TagRwYP3CFlpSPV1ESm1F81/6fE8Tsb8PoUeCzZMqLAmnTxld/WscVJb4CcjxB3WROXlePmlybuqPssVpep76O/mmyHd0bC34/B6hDIAyq/YSQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WtnLLXqo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gLCuCzE0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 350F4C4AF12;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WtnLLXqo"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FE59C2BCF7;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782655794;
-	bh=BX6XFLrrl7rQKzPIYZIJuegm0hFPGVT9h0aYfoKr/Ac=;
+	bh=VjiUDIBmGY8ehJYKh3xdsRBq7blQiEQbpG6Chja0TYc=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=gLCuCzE0yUcefzDmcIdA7PdbwK3+dEgN4Kkvs0AUYEDlZWTs5jdc6P5nVoGAnOwtb
-	 w8aDDH/oSi5jbESZuZQwrc0/r+lcRMwjR5aZL27db2AxaQiToolf7dpd+oY5ck3lvR
-	 NpBEWPiuNwfdccwXuH/Y329T+NDo66lG7Luwkv4y521itt/MoBaTe7zXf3NmVpwrHM
-	 xSQL8c1M6Vkh70sKcqL1s1zIKIaKF4lMx7BNdQKCxed0BFJw8lkzWstbFWxVXeiscj
-	 PWr9W9RPNe46xIBDbBwnMYHWf8zJHchbE293ER7LTnQiZSrr4RP3cs5Bt6LYrWqzdk
-	 4KbHO5zMwaMVw==
+	b=WtnLLXqo3inZMOVlT7QNkh6AlodLc0LF2yiR5LJ9MUfTB5GQQ/ayraj7Uq4kElRlC
+	 prPHGMFsBHIDbhZrpjYlhGGOu2xKyBHawKWCALKIUPutSpa4G2tN4em+eXFYxVK3JG
+	 pUV1k+PvfkPTiCUOH4h1E4Rr5ODB364eBurLZs3Y5aoI9gdozXkMYEpdUTkz2AfSVC
+	 I8o9ry1XIMPmtiM5BMUnGQHsker8ZsYqv7Tu+c0Fwh1mBIP4K5bGrNhW8iFFK8JNXw
+	 /kM+CCU9sLKeR7f/1e3QYV0nsu1fd6jPguo85KuLmKzJ+K2txJlOhoJRlQCsAtOeCH
+	 ms/7SgXoEqBeA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 289C0C43327;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 462ECC43458;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 28 Jun 2026 15:08:13 +0100
-Subject: [PATCH v5 06/12] iio: dac: ad5686: consume optional reset signal
+Date: Sun, 28 Jun 2026 15:08:15 +0100
+Subject: [PATCH v5 08/12] iio: dac: ad5686: introduce sync operation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-ad5686-new-features-v5-6-577caadbf7c0@analog.com>
+Message-Id: <20260628-ad5686-new-features-v5-8-577caadbf7c0@analog.com>
 References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 In-Reply-To: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -54,11 +54,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=1786;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=1436;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=L5icfA5WYm8ov/3pCusG7IPcFnWQG1nvPrm0z48/efM=;
- b=rUJtlI4GFgejRbhOQwEUfj+2xmTMfJLtXITC5yiUeXThi8to9fMto+r5s4kYAU0C7Sj7ou6s8
- 0yyNps1xTOPBC14sDbiXjhAEmTlJbBWUlZk5C6zgE41EIPk/goc5i/6
+ bh=aHIe2CXcz6kHJnvwwE3YrD49dPtg+rsFxmw4m2wDGs4=;
+ b=FFNHB3tB55jEjpiTZkrb8tgdvUG0rc+2WnIjdZIjntjuGxgPu6bwDqcULG1J6FpKgqXUVMklR
+ IEzLVWfqnLlATQUjqSpnTKitsZs2MYKiSpFG74ZjtLFCN2tEqwblhuU
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,59 +68,47 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add RESET pin GPIO support through an optional reset control, which is
-local to the probe function. A reset pulse is manually generated after
-the device is powered up.
+Add sync() to operation to ad5686_bus_ops, which can be used to flush
+multiple pending data transfers at once. This is going to be used when
+implementing triggered buffer support.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/iio/dac/ad5686.h | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index e2ebabca6887..8ad8931a3d7f 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -15,6 +15,7 @@
- #include <linux/kstrtox.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
- #include <linux/sysfs.h>
- #include <linux/wordpart.h>
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index c424720f8f72..9a192b0a2d7a 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -68,10 +68,12 @@ struct ad5686_state;
+  * struct ad5686_bus_ops - bus specific read/write operations
+  * @read: read a register value at the given address
+  * @write: write a command, address and value to the device
++ * @sync: ensure the completion of the write operation (optional)
+  */
+ struct ad5686_bus_ops {
+ 	int (*read)(struct ad5686_state *st, u8 addr);
+ 	int (*write)(struct ad5686_state *st, u8 cmd, u8 addr, u16 val);
++	int (*sync)(struct ad5686_state *st);
+ };
  
-@@ -472,6 +473,7 @@ int ad5686_probe(struct device *dev,
- 		 const struct ad5686_chip_info *chip_info,
- 		 const char *name, const struct ad5686_bus_ops *ops)
+ /**
+@@ -160,7 +162,13 @@ int ad5686_probe(struct device *dev,
+ 
+ static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
  {
-+	struct reset_control *rstc;
- 	struct ad5686_state *st;
- 	struct iio_dev *indio_dev;
- 	int ret, i;
-@@ -486,6 +488,11 @@ int ad5686_probe(struct device *dev,
- 	st->ops = ops;
- 	st->chip_info = chip_info;
- 
-+	rstc = devm_reset_control_get_optional_exclusive(dev, NULL);
-+	if (IS_ERR(rstc))
-+		return dev_err_probe(dev, PTR_ERR(rstc),
-+				     "Failed to get reset control\n");
+-	return st->ops->write(st, cmd, addr, val);
++	int ret;
 +
- 	ret = devm_regulator_get_enable(dev, "vdd");
- 	if (ret)
- 		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
-@@ -509,6 +516,11 @@ int ad5686_probe(struct device *dev,
- 	/* 4.5us power-up time: Datasheet Table 4: Timing Characteristics */
- 	fsleep(5);
- 
-+	/* 1us >> 30ns reset pulse activation time: Datasheet Table 4 */
-+	reset_control_assert(rstc);
-+	fsleep(1);
-+	reset_control_deassert(rstc);
++	ret = st->ops->write(st, cmd, addr, val);
++	if (ret)
++		return ret;
 +
- 	/* Initialize masks to all ones */
- 	st->pwr_down_mask = ~0;
- 	st->pwr_down_mode = ~0;
++	return st->ops->sync ? st->ops->sync(st) : 0;
+ }
+ 
+ static inline int ad5686_read(struct ad5686_state *st, u8 addr)
 
 -- 
 2.43.0
