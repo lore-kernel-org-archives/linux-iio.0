@@ -1,332 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0B7E3AD51F;
-	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689553AD527
+	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 14:34:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782655794; cv=none; b=fMbVyXjKA0c2teYD1Gy2BJJ1SBSw843iI1H2ToFsEKZgyAV6B+QXDJgx1ak8jFg9F51Dt7D8N/nEWvqAUMojrWMQWeT9dYXj+5hd1kKH0RW+vv2SUK9k95PLAw+pN3t+k6vxQ6JTV5lDk6li+NbEj42Rnif7mb9EyvGbFc02p/I=
+	t=1782657250; cv=none; b=jwLR7OjJ0vbIa3XEbjjidd+BafOczGvubALL9I/NrdamXWGJFSdRiyvW3Gez5D+xJrxjQ7bB60YLPhCtsO1qRgeEz1G6WpJhs8sZjxECEOCfTazOKowo/cdQ83/RyTLQCfZ2MIXC66amRntTQM2oKZflgeDIsLDIqaHwb3mC7K0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782655794; c=relaxed/simple;
-	bh=XxBshndXSYXtvJ+d03VTd4Auo+ZZSPQJOYr5GVH9EmY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=POQp3JN/boKRS2OPc7Z92vRr9Qmqc5XlPZ+kN4+U0PvY0DZmmbqcwAdegmd8Zf1pxSap+igji6FEroSpSUl/SYV3dEPRisPoXj8U6bOUrOhCzxhc7ijzbT2WZUFcDeXmJUYKFQBopKwR1pvMb8fwxGCvZl6Zf+FecNPu2He6pJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XzV5D3Fr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1782657250; c=relaxed/simple;
+	bh=X6xTrQxudXyfaxRG5i5at9fGETYdYW9TPIX+19qLRA0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=t5PlNjgcr1iUIOLXu6JvELUaq+0m1luE6EXgHHKyDuLLjaLpxPjAPjeoltIdSC1be+DhlT9xvWO0wUEtTttQ9TziFAsTgwEUiyIOb0iV5eQU5QVB5QfuySE91EWaNAnfHxpn9Jigqxh6vV8e3N0nVWEoff5DizChfUAT5Oh5fTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=U+W+wWC9; arc=none smtp.client-ip=209.85.167.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XzV5D3Fr"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8F95DC2BCC6;
-	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1782655794;
-	bh=XxBshndXSYXtvJ+d03VTd4Auo+ZZSPQJOYr5GVH9EmY=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=XzV5D3FrV7HjJTAj9ibwYQJqLkw4eiLLLvToJ9iqhYdulrkIHglzMpUmjyHWsxZKd
-	 JwdXkDUNPumfYjdqcWpEKqOu1d8mig2DkUWec1WLi7Zg1KCecNzXenFNpJYUppfAmH
-	 0xRz1QMVUWpd5L+h6Kn67puvd0WzlTph55z9CsKX1yX3v3N7m7WynfOz7PW2V1ObfG
-	 k86b8dcEwMN7UdQdKzNxafQKrq+ze7u0zbxcuh4AnhoF5bKj6muzCLK3O2n2ubvmKq
-	 oThg3YIWaIXUbAJP9h2jVuLHPS+gELG86DtNvA6pH7UO83LxgTCXSyP0xaYKyQadMo
-	 TAHzYvht5BKZg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88964C43327;
-	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 28 Jun 2026 15:08:19 +0100
-Subject: [PATCH v5 12/12] iio: dac: ad5686: add gain control support
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="U+W+wWC9"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-495bf7a71baso367181b6e.0
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 07:34:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782657241; x=1783262041; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rbOALEGU5h8PEFBnFCtxCFFHr0Kpct0HuRmpjhNUHoM=;
+        b=U+W+wWC90+08sqwmHduYxuzf1J/+3Ncak4wgsZzWL09RyEzodgFuA5vkHGRJn732tb
+         xDFP5b3YPxNnSIaW4OkMAIT+am1WZ1Ck9eTZW06b1ay/6ArwyPxkown4is3zhE9zAzih
+         FCYeXCccclJ8cth88iE8suAZoEorG6e9jNR+8MGVgwvuRS+NvJb4doZ3pj0t2UKeULQe
+         NDbxHEyPskqURU0mAPUyYeuaRNYKfy7usIa/QgH+Eub5/EIh/xZ5ftaTpk208PobHsh+
+         tIXPjBqqx9hRt4xlrA9+ZwfGjuiw0N0+7UE9EWqUthDeRJKy3GflgDxLOFC2OWZGrmuH
+         o3eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782657241; x=1783262041;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=rbOALEGU5h8PEFBnFCtxCFFHr0Kpct0HuRmpjhNUHoM=;
+        b=KvXkPY0VsgR1tzcZwL7t4/mqSszOnc/lzWzWWoSEETo0BrbEe+eAYaDwSXunp1InFC
+         JKs0ga0OMELI+bOOQfmQrOc8IvwUl4tfELMybIgDi3WYKk30gUacpw7v8IKnZ/cXNWCG
+         jbT6qDO9WVfihejYqHDNE3yjgxDqcxEnxI3NLE1bB/fq/nxdRqIu/LXg0fFT68tHggnf
+         jx8pDZ4cUuWWNPWz0UuZpw3Q/w/wTdQdnl6ajOhUm8zPP+TtNQHxZWz8m3rU6TCE4K8E
+         T8l2MGapCuPb74BoMe7kjD+ixr1YOAA2TV5x8dzFitxZUrOLzxbd+Ey0njOhv5VYnqXy
+         /f7A==
+X-Forwarded-Encrypted: i=1; AFNElJ+F+6TlZDCQie14S6wirFkePwz+mAu0qzfakussI0hwWXK6SmDD512BNjn8BVcEq/sl0zfClu1Hw3A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzPZqb3c1EToZ8R3HQpmnZWiXAEU/dIM090W0dY19C7ZqPq5imK
+	CjlVebdz005iNg6dfhnAM/M9MdwERzkzDlEfIdveSYcjlQ6PusTrvSP5BcaAE3Sjtpw=
+X-Gm-Gg: AfdE7cm3iVcFgYM8zfrd70k4VqNodPUp2cYw2o2pj9PApLz3RIp2UU6tvIrFZvZ3ZIx
+	bhUfiQ+SXSE3slk3E0DJO87vlvd+lLv338t3cRS7+FwwCSyXvmP+7SEAW3by2TF+Wkk5WkpynY1
+	rbJ2tZ6WmrqBUE1AmEb8QZCEramd+H3D4+OluSq+R9QUlVsY6h6T6QdpaXIRSiKgj5W1FN1Ishn
+	V9ke2gC/t8litWBZfjWJuF4p9ars3jxH+uZqHIUNuxLTPfWgDFThrXTeMNAo/ukixxeGpKg9uNu
+	0fURfn7pfRec+WW3G75yHdce/okKwvL5G/IfXx/INh72RNzLyXKwvu2PhXkN4gLbT/3wYwmdBtw
+	aizbvjUeH+zUW+ABAraV2jy5zKYAy05T6TSVCCzU3x9O3mS0b9wGbW+KSeNzp+YwaL+dgWaYERP
+	bdL/L/qXouWrKmlVZVBAboLWX1Ab4cpF3ZeJ6lkajjXRBrtCMw8On146dVq5wWmlA=
+X-Received: by 2002:a05:6808:c191:b0:492:c931:4d74 with SMTP id 5614622812f47-492c9316c3cmr10168764b6e.28.1782657241453;
+        Sun, 28 Jun 2026 07:34:01 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:f242:ecd6:f61e:d764? ([2600:8803:e7e4:500:f242:ecd6:f61e:d764])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-49352b057dasm4998783b6e.6.2026.06.28.07.34.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Jun 2026 07:34:01 -0700 (PDT)
+Message-ID: <2d478d88-807d-4eed-bcd1-a829d3cd12b6@baylibre.com>
+Date: Sun, 28 Jun 2026 09:34:00 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] iio: adc: ad7779: Remove unused completion field
+To: Joshua Crofts <joshua.crofts1@gmail.com>,
+ Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ skhan@linuxfoundation.org
+References: <20260627192638.5623df0e@systembl0wer>
+ <20260628071405.51030-1-mokshpanicker.7@gmail.com>
+ <20260628134154.39236df8@systembl0wer>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260628134154.39236df8@systembl0wer>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-ad5686-new-features-v5-12-577caadbf7c0@analog.com>
-References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
-In-Reply-To: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=8953;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=8PNTgcsX8ariNzvPC2jiv2tp2kx+hpm4rNxzzczoXBg=;
- b=yFwmpEsTAAl2rn+IMekaPUlt7o9lzrV2WEZWEnVRM3ECDbjB7RiPIXvNCKnnqMfLpah9WfsfD
- vpxTyZfwTRSBkw9UVnk+wJ+yaBaWBYWa71mIrlrNKsuVsz0OZNQTd7q
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On 6/28/26 6:41 AM, Joshua Crofts wrote:
+> On Sun, 28 Jun 2026 07:14:04 +0000
+> Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
+> 
+>> struct ad7779_state contains a completion field that is initialized
+>> in ad7779_setup_without_backend() but never waited on or signaled
+>> anywhere in the driver. Remove the dead code.
+>>
+>> Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+>> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+>> ---
+> 
+> If you're sending a patch series, please use a cover letter (if
+> you're using git send-email, add a cover letter with the
+> `--cover-letter` flag) where you can describe your changes in
+> detail, along with additional useful info (testing etc.)
 
-Most of the supported devices rely on a GAIN pin to control a 2x
-multiplier applied to the output voltage. Other devices, e.g. the
-single-channel ones, provides a gain control through a bit field in
-the control register. Some designs might have the GAIN pin hardwired
-to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
-being able to set "adi,range-double" if it is hardwired to VDD. The
-vref_mv field is moved down in the struct ad5686_state, so that the
-overall size increase is reduced.
+Also, please don't send new series or revisions of a series in reply
+to other series or previous revisions. It breaks existing workflows
+and tooling.
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/ad5686.c | 120 +++++++++++++++++++++++++++++++++++++++++++++--
- drivers/iio/dac/ad5686.h |  12 ++++-
- 2 files changed, 125 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 3120e6983d9e..9165ee07646a 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -15,10 +15,13 @@
- #include <linux/export.h>
- #include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- #include <linux/wordpart.h>
- 
- #include <linux/iio/buffer.h>
-@@ -41,7 +44,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5310_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5310_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5310_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static int ad5683_control_sync(struct ad5686_state *st)
-@@ -50,7 +54,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
- 
- 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
- 			    FIELD_PREP(AD5683_PD_MSK, pd_val & AD5686_PD_MSK) |
--			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1));
-+			    FIELD_PREP(AD5683_REF_BIT_MSK, st->use_internal_vref ? 0 : 1) |
-+			    FIELD_PREP(AD5683_GAIN_BIT_MSK, st->double_scale ? 1 : 0));
- }
- 
- static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
-@@ -193,9 +198,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->vref_mv;
--		*val2 = chan->scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		if (st->double_scale) {
-+			*val = st->scale_avail[2];
-+			*val2 = st->scale_avail[3];
-+		} else {
-+			*val = st->scale_avail[0];
-+			*val2 = st->scale_avail[1];
-+		}
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 	return -EINVAL;
- }
-@@ -207,6 +217,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct ad5686_state *st = iio_priv(indio_dev);
-+	bool double_scale;
-+	int ret;
- 
- 	guard(mutex)(&st->lock);
- 
-@@ -217,6 +229,82 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 
- 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
- 				    chan->address, val << chan->scan_type.shift);
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
-+			double_scale = false;
-+		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
-+			double_scale = true;
-+		else
-+			return -EINVAL;
-+
-+		if (st->double_scale == double_scale)
-+			return 0; /* no change */
-+
-+		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio)
-+			return -EINVAL; /* GAIN pin is board-strapped */
-+
-+		st->double_scale = double_scale;
-+		switch (st->chip_info->regmap_type) {
-+		case AD5310_REGMAP:
-+			ret = ad5310_control_sync(st);
-+			break;
-+		case AD5683_REGMAP:
-+			ret = ad5683_control_sync(st);
-+			break;
-+		case AD5686_REGMAP:
-+			ret = gpiod_set_value_cansleep(st->gain_gpio,
-+						       st->double_scale ? 1 : 0);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+		}
-+		if (ret)
-+			st->double_scale = !double_scale; /* revert on failure */
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5686_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     const int **vals, int *type, int *length,
-+			     long mask)
-+{
-+	struct ad5686_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+
-+		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio) {
-+			/*
-+			 * GAIN pin is board-strapped, so only the current
-+			 * scale is available.
-+			 */
-+			*vals = st->double_scale ? &st->scale_avail[2] :
-+						   &st->scale_avail[0];
-+			*length = 2;
-+			return IIO_AVAIL_LIST;
-+		}
-+
-+		*vals = st->scale_avail;
-+		*length = ARRAY_SIZE(st->scale_avail);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -225,6 +313,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad5686_info = {
- 	.read_raw = ad5686_read_raw,
- 	.write_raw = ad5686_write_raw,
-+	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
-+	.read_avail = ad5686_read_avail,
- };
- 
- static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
-@@ -246,6 +336,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
- 		.channel = chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
- 		.address = addr,				\
- 		.scan_index = chan,				\
- 		.scan_type = {					\
-@@ -472,6 +563,15 @@ const struct ad5686_chip_info ad5679r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
- 
-+static void ad5686_init_scale_avail(struct ad5686_state *st)
-+{
-+	int realbits = st->chip_info->channels[0].scan_type.realbits;
-+	s64 tmp = 2ULL * st->vref_mv * NANO >> realbits;
-+
-+	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
-+	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
-+}
-+
- static void do_ad5686_trigger_handler(struct iio_dev *indio_dev)
- {
- 	struct iio_buffer *buffer = indio_dev->buffer;
-@@ -585,6 +685,16 @@ int ad5686_probe(struct device *dev,
- 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
- 				     "Failed to get LDAC GPIO\n");
- 
-+	st->double_scale = device_property_read_bool(dev, "adi,range-double");
-+	st->gain_gpio = devm_gpiod_get_optional(dev, "gain",
-+						st->double_scale ? GPIOD_OUT_HIGH :
-+								   GPIOD_OUT_LOW);
-+	if (IS_ERR(st->gain_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
-+				     "Failed to get GAIN GPIO\n");
-+
-+	ad5686_init_scale_avail(st);
-+
- 	/* Initialize masks to all ones */
- 	st->pwr_down_mask = ~0;
- 	st->pwr_down_mode = ~0;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index cb884334e94a..92012e1be48f 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -39,9 +39,11 @@
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
- 
-+#define AD5310_GAIN_BIT_MSK			BIT(7)
- #define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5310_PD_MSK				GENMASK(10, 9)
- 
-+#define AD5683_GAIN_BIT_MSK			BIT(11)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5683_PD_MSK				GENMASK(14, 13)
- 
-@@ -125,9 +127,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-  * @ldac_gpio:		LDAC pin GPIO descriptor
-- * @vref_mv:		actual reference voltage used
-+ * @gain_gpio:		GAIN pin GPIO descriptor
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-+ * @scale_avail:	pre-calculated available scale values
-+ * @vref_mv:		actual reference voltage used
-+ * @double_scale:	flag to indicate the gain multiplier is applied
-  * @use_internal_vref:	set to true if the internal reference voltage is used
-  * @lock:		lock to protect access to state fields, which includes
-  *			the data buffer during regmap ops
-@@ -139,9 +144,12 @@ struct ad5686_state {
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
- 	struct gpio_desc		*ldac_gpio;
--	unsigned short			vref_mv;
-+	struct gpio_desc		*gain_gpio;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
-+	int				scale_avail[4];
-+	unsigned short			vref_mv;
-+	bool				double_scale;
- 	bool				use_internal_vref;
- 	struct mutex			lock;
- 	void				*bus_data;
-
--- 
-2.43.0
-
+> 
+> Nevertheless,
+> 
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
 
