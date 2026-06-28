@@ -1,62 +1,62 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05EAD37AA6F
-	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 21:02:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A749378D7B
+	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 21:02:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782680578; cv=none; b=AGcEJWT5sC4a9VIqbCToCfSvgksRX4wfTJMaLeXHqi1gjEHiz1WaaAFmMNEsyhLGQ3QDI9Hbwel9UT9SQbOcMl69UPcpj81TPAVd9UdcXUEkSbhZHLZevAtXMBj/KB/+Fm1tQ8uro9cPQ1ut1vOlKqfWWnLJlLu7pdmJP3N1zjg=
+	t=1782680580; cv=none; b=BZrONobXZ1xnXFGP04afuXsqD926wKfYT/GWUrJJUXadCSt0Zu4hN1ykyusGbN09Y4cWP3kTezXfn2oUSexvrk8NyJ6SaCjtrRQz+VCXs5jyezX4RuRqaqSW0rokVoAPdJ/Ucqq15hh09cWhZNucyLw32X/P5T1u+OBX1xcp3v0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782680578; c=relaxed/simple;
-	bh=EoXg8YRSGFrNb62Ri3nWJRasxX45nsi+d1TAdqBr9is=;
+	s=arc-20240116; t=1782680580; c=relaxed/simple;
+	bh=fXCOyDgJyxNrfY7eEulpdC9343m2GcRX/iqPs5XsHyQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C7qeQIVUFqQ1Nml9p07AEZqd72Kg8oTJIUpodxigmiUIeh5s7YU3WeTx53BH14r5SSXo8wynJ3YQrx8hGucYerSrRK7/r9QZFt2178KDSSuDWSt/ahjBYlbcZ6yfhtdxdIgWHgMTTa/1Y7Dz3KC7onYGWaKqGp29fWj1cpiWxts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DaYSadsg; arc=none smtp.client-ip=209.85.208.42
+	 MIME-Version; b=YOQfkQL9b01czIA0Vx0cJ/CtwQYjIcqohVvN9QJPZbIX65TPTNHt5Ft+ZzjP69uvw9OU4gf44ATQ9kSlZhnX/G8d9vIc1xABP5/4aqM4sayYsFyBI1YFz3A2WrC7qR+3IfcJTWr0Ol8Hz/OdJJIJCHeLjshUkAkSqoGTtDpsEew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l2zh941D; arc=none smtp.client-ip=209.85.208.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DaYSadsg"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-693c69b97e7so5170960a12.2
-        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 14:02:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l2zh941D"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-698439b6e8aso2662629a12.3
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 14:02:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782680574; x=1783285374; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782680576; x=1783285376; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7vh2WKONUS0wyNpH+ymwwTp/zqPOZYSgw0F9CWH+S7A=;
-        b=DaYSadsgOamxCWXic2oOBm66cnTzPE++vD7w6j/Du2Gzm6uIWcxZf+6HQ7z7Vo1TRP
-         YO1N9lVRHWOHp0iyzE8UFhD9C7zDUSecv2a6qOkT10hlt5vuj28HgjqpRWlNGP0RfCqT
-         QrPfaVrGrNxUOVe4n8hVcYwVyFumqpmHhH5s+X5dq9v4h6/cXsdvxxwcyGKvZLiRKHlC
-         xX5QxIcrmANGWFKLR/ArWXoBr5Dar5AyuqSyzgWOPfMwAyo6sCssQh8hi8VRVYsAgVpk
-         iZd2pfeurDZJXgZLgtVJw+QtcC9jpcY87f60U7IcCWrwPAjbfXMREEiPtVa3kEcUdKqB
-         LuqQ==
+        bh=AuuVA2J3wj6Irglzb6E1jbf7iwxHYqJ1/PNhtAoFqWY=;
+        b=l2zh941DZuXSxLVVbpbaxRQTX0/cpYGlGjMG9mKeA95oJmnn+/VSqI3e+YeaFikJLP
+         H0k6DjVP+2Z3VbB8GRUyQvBEpOP9+MpJRU6J/k4mfcusQyLYYgvrCrHC/H+TvYraZOTV
+         jEB/3tOwsRsNXoVB7UfdKQnSV5lDWuSC8w7p1fYxmUdqlxMSq7bD+YjlPEaEsS5GzorO
+         LbZxJAXJanSQwQq8Vgv5ujeAch6n5IwkIQGecUGSTKIt4wPzuv/bl3A9nvMYBWy6Juuz
+         lcoirB7oZPLHtDj123/9CU9u54vY6yMAFhW4XqQVHu00NY3x1DeeiysCBD9Rp1un+jyn
+         hXhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782680574; x=1783285374;
+        d=1e100.net; s=20251104; t=1782680576; x=1783285376;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=7vh2WKONUS0wyNpH+ymwwTp/zqPOZYSgw0F9CWH+S7A=;
-        b=InTk/a9zpy54EMVdLixck4zyOoGY1DLLz6J3NPky6hLzw9yXHoX7lNckVSC4jAEIKp
-         bo8RKsmyBUe/ddBVVhxt6g66MqagaounVQzbDxvDNoENPbHkjJGpDcDDM9onl/jTdaM9
-         91arS9GdmDLfH5ApwvaqMmSkTBtGGLUnwlJ0hcz4NnaVTAZyP/5Q9W3xFNzTnQ0owoqu
-         zVI3HaGBcRjbrA7oVb1WtOG8olrX9P5aT46P62L/irDe8HOLE+zbM0NTWTmXC+gzPJvO
-         2XcC3EWrevNPWLNjVgLOEMEnx7jd9pApC6U6y1SEE1nfmcy6agjfxASEKrkdpoRboSTC
-         8Q0A==
-X-Forwarded-Encrypted: i=1; AHgh+RrpzQaAd0gGPNc5YDft7fC0aLKsMEc6e/QPU2qdikja5XwVkZZVHNd7bSVIlHP1SThzdujj1Ik27JU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7kURQJQt1OYtEU3aFVnI4eAwsl4dbbaaVS0YlObvYQwtzWZ8e
-	p1TQbVkrsQOS5p5VL3AMJObTFomN74OPrLL5OdY6S4Tdrk/Of2WVxgBv
-X-Gm-Gg: AfdE7ckkUfaXxiJKxnv/yrbBw0EtlLuBTEPZL+Nk3w+sW7hTOcps4VW3RhqmhEYYZ7p
-	wKysTslPgU2se5sLGGCX/uKXHRNmbkRf3eYJrjQQ81yHwh5zlYLd1fZiPWxzzJ4xsvRH3tNZhll
-	2LxJhr4UzNMBBNZ2/9eJNJzE7Xc2TFvVl3DddO0J+uis6K3pE4c0BmHOc8FK9mNRQ5RtcVVWGzM
-	Fo/SZzNVzIOSj4wolaRS22xt1TW5FIbpx6JnbpAtgBlt/pSwg02+FF+FLA3vLu0fXQWHImsTY78
-	DEFP3TAy9f+Yert0jrRU/zHiczvLhIty615NeekBI6wLVnIxEcN5iTQ5Rb2ff8vTsMZLooRnHG0
-	PbRrKGbkNtIlagV8KhxNoLkVB16QRooIgZ6NtcPHo2z47FSNUgRIbb5RIHAtUY2pyYZPX6g==
-X-Received: by 2002:a05:6402:254e:b0:698:6f16:2290 with SMTP id 4fb4d7f45d1cf-6986f162860mr84807a12.23.1782680574152;
-        Sun, 28 Jun 2026 14:02:54 -0700 (PDT)
+        bh=AuuVA2J3wj6Irglzb6E1jbf7iwxHYqJ1/PNhtAoFqWY=;
+        b=cGpIrjIwd76fsju3OZlkUMcbmsGqERKix0X+lrZTKKFExcQn/X0CdZIrVZqSzmAaT2
+         0H+vmLRkf0Th9yIwZA815mj3XILG6dxIt/G57PxC+OVzIKVZVVecLiIOpSMdom7ZlkdJ
+         8WVle11EunriXFRF1z7UObpzO3KpGPBMcVH+J08nw1QFBtKGAKpuz2pe284tcRDLMaZP
+         19gb3l0Fny0YwC9hkeVyvGaOzT6VzgAYqxXvpgxdXUxYlYdeGhlAAgggarMCaIiPhycB
+         Hw1Q0mfn2aK0Cn+uTtbzZpYBomaCVmgphRUifSBZo7q/QvzsaxsxqnPnJM6CJSIbA5Hh
+         s4bg==
+X-Forwarded-Encrypted: i=1; AHgh+Rrq5S174SdIk3mbio4ceo0xci06zHv39kZu8kmnUK/BEZJ01bqOZ4v8qpA3wVAu9YxMZjqmROBy4Cw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQzY1SGP6z8snrQzh1y7B2r3TlqWJKyo/dk4ZdqiYEtzrF0t6i
+	wTQWyWjl9VHveL0m3q2v3qdqy9U5y50UpmKrkWEyDst6kkYqceqUqeTf
+X-Gm-Gg: AfdE7cmuigSYuzj9ijeQo/4kpEW6Kf8WLtRTsgO6vxC3jegvtZoXZKskyNlvsp0BaV4
+	dtLdmXruCH+dnmutrY0ynn/siTBYRsNdeqR8ffQKvLOb97f7iJtqRY29gpDjmMio1aKwyrHlphn
+	0nPIr6oiqYdGBBoKEU8aCVM6+D5YXxGbKPE5OgM9F/XvgyKsOr3MCHJuC2q7em/WLcjNfoTD/nP
+	tih8uXnp4qj7Ev7Mvpug6vUbM1he5IwpQ7atlSD8fvhihHSwbMvofcXpIy8DNKzMslH21rF7MbJ
+	SlfA2x0NKKonLhbU7tvzr1fpg5El2l8omjfPmS2oQFN+2I28CUkDGDHmaNufa10E2fF3rYZSj2p
+	CeBOvQgZwaTYg3aSpSosLKZXuJtQcYJXsn5BzrzPIAZzLPv8WxqKG/q1+ZmctwDWUPXSPmw==
+X-Received: by 2002:a05:6402:280d:b0:698:3602:d0d with SMTP id 4fb4d7f45d1cf-69836020e2cmr3563816a12.17.1782680575729;
+        Sun, 28 Jun 2026 14:02:55 -0700 (PDT)
 Received: from sefo-laptop ([2a02:8071:50c5:5c0::361b])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-69848e5ebc0sm2205656a12.3.2026.06.28.14.02.52
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-69848e5ebc0sm2205656a12.3.2026.06.28.14.02.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2026 14:02:53 -0700 (PDT)
+        Sun, 28 Jun 2026 14:02:55 -0700 (PDT)
 From: Wadim Mueller <wafgo01@gmail.com>
 To: wbg@kernel.org
 Cc: krzk+dt@kernel.org,
@@ -68,9 +68,9 @@ Cc: krzk+dt@kernel.org,
 	linux-kernel@vger.kernel.org,
 	Wadim Mueller <wafgo01@gmail.com>,
 	kernel@pengutronix.de
-Subject: [PATCH v6 1/3] dt-bindings: counter: add gpio-counter binding
-Date: Sun, 28 Jun 2026 23:02:39 +0200
-Message-ID: <20260628210241.119825-2-wafgo01@gmail.com>
+Subject: [PATCH v6 2/3] counter: add GPIO-based counter driver
+Date: Sun, 28 Jun 2026 23:02:40 +0200
+Message-ID: <20260628210241.119825-3-wafgo01@gmail.com>
 X-Mailer: git-send-email 2.52.0
 In-Reply-To: <20260628210241.119825-1-wafgo01@gmail.com>
 References: <20260628210241.119825-1-wafgo01@gmail.com>
@@ -82,82 +82,1095 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a binding for a generic GPIO-based counter. Two GPIOs (signal-a,
-signal-b) drive two Counts; optional index GPIOs load a preset. The
-counter function (quadrature, pulse-direction, increase/decrease) is
-selected at runtime via the counter sysfs interface.
+Add a platform driver that turns plain GPIOs into a counter device.
+Edge interrupts on signal-a, signal-b (and optional index) are
+decoded in software. Quadrature steps are validated with a 2-bit
+Gray-code parity check; direction comes from the same identity.
+
+The driver exposes two Counts on the same wires:
+
+  "Count 1" - Synapses on A, B and optional Index 1. Supports
+              QUADRATURE_X1_{A,B} / X2_{A,B} / X4, PULSE_DIRECTION,
+              INCREASE and DECREASE.
+  "Count 2" - Synapse on B and optional Index 2. Supports INCREASE
+              and DECREASE only.
+
+Per-Count state (value, ceiling, preset, enable, function, direction)
+lives in struct gpio_counter_count_priv so new per-Count features
+(e.g. floor) can be added without touching parallel arrays.
+
+Sleepable GPIO providers (I2C/SPI expanders) are rejected at probe
+since the ISRs run in hardirq context.
 
 Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
 ---
- .../bindings/counter/gpio-counter.yaml        | 59 +++++++++++++++++++
- 1 file changed, 59 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/counter/gpio-counter.yaml
+ drivers/counter/Kconfig        |   17 +
+ drivers/counter/Makefile       |    1 +
+ drivers/counter/gpio-counter.c | 1015 ++++++++++++++++++++++++++++++++
+ 3 files changed, 1033 insertions(+)
+ create mode 100644 drivers/counter/gpio-counter.c
 
-diff --git a/Documentation/devicetree/bindings/counter/gpio-counter.yaml b/Documentation/devicetree/bindings/counter/gpio-counter.yaml
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index d30d22dfe..c20044032 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -68,6 +68,23 @@ config INTEL_QEP
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called intel-qep.
+ 
++config GPIO_COUNTER
++	tristate "GPIO-based counter driver"
++	depends on GPIOLIB
++	help
++	  Select this option to enable the GPIO-based counter driver.  It
++	  reads A/B and an optional index signal via edge-triggered GPIO
++	  interrupts and decodes them according to the selected mode:
++	  Quadrature X1/X2/X4 (rotary or linear encoders), pulse-direction,
++	  and pure increase / decrease pulse counters.
++
++	  This is useful on SoCs that lack a dedicated hardware quadrature
++	  decoder or pulse counter, or where the signals are wired to
++	  generic GPIO pins rather than to a dedicated peripheral.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called gpio-counter.
++
+ config INTERRUPT_CNT
+ 	tristate "Interrupt counter driver"
+ 	depends on GPIOLIB
+diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+index fa3c1d08f..3959d69fb 100644
+--- a/drivers/counter/Makefile
++++ b/drivers/counter/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+ obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
+ obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
++obj-$(CONFIG_GPIO_COUNTER)		+= gpio-counter.o
+ obj-$(CONFIG_MICROCHIP_TCB_CAPTURE)	+= microchip-tcb-capture.o
+ obj-$(CONFIG_INTEL_QEP)		+= intel-qep.o
+ obj-$(CONFIG_TI_ECAP_CAPTURE)	+= ti-ecap-capture.o
+diff --git a/drivers/counter/gpio-counter.c b/drivers/counter/gpio-counter.c
 new file mode 100644
-index 000000000..79b7afd7d
+index 000000000..8d9fa0b61
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/gpio-counter.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/counter/gpio-counter.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/counter/gpio-counter.c
+@@ -0,0 +1,1015 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * GPIO-based Counter Driver
++ *
++ * Software A/B (+ optional Z) edge decoding exposed as two Counts:
++ *   Count 1: A + B (+ Index 1). Quadrature, pulse-direction, inc/dec.
++ *   Count 2: B (+ Index 2). Inc / dec.
++ *
++ * Copyright (C) 2026 CMBlu Energy AG
++ * Author: Wadim Mueller <wafgo01@gmail.com>
++ */
 +
-+title: GPIO-based Counter
++#include <linux/cleanup.h>
++#include <linux/counter.h>
++#include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++#include <linux/types.h>
 +
-+maintainers:
-+  - Wadim Mueller <wafgo01@gmail.com>
++enum gpio_counter_signal_id {
++	GPIO_COUNTER_SIGNAL_A = 0,
++	GPIO_COUNTER_SIGNAL_B,
++	GPIO_COUNTER_SIGNAL_INDEX1,
++	GPIO_COUNTER_SIGNAL_INDEX2,
++	GPIO_COUNTER_NUM_SIGNALS_MAX,
++};
 +
-+description: |
-+  GPIO-based software counter with two Counts:
-+    * Count 1: A + B. Quadrature X1/X2/X4, pulse-direction, inc/dec.
-+    * Count 2: B. Inc / dec.
-+  The function is selected at runtime via the counter sysfs ABI. Each
-+  Count has an optional Index (Z) that loads its preset on rising edge.
++enum gpio_counter_count_id {
++	GPIO_COUNTER_COUNT_1 = 0,
++	GPIO_COUNTER_COUNT_2,
++	GPIO_COUNTER_NUM_COUNTS,
++};
 +
-+properties:
-+  compatible:
-+    const: gpio-counter
++#define GPIO_COUNTER_COUNT1_NUM_SYNAPSES	3	/* A, B, Index 1 */
++#define GPIO_COUNTER_COUNT2_NUM_SYNAPSES	2	/* B, Index 2 */
++#define GPIO_COUNTER_MAX_INDEX			2
 +
-+  signal-a-gpios:
-+    maxItems: 1
-+    description: Signal A (phase A; pulse input in pulse-direction/inc/dec).
++/* per-count state */
++struct gpio_counter_count_priv {
++	u64				value;
++	u64				ceiling;
++	u64				preset;
++	bool				preset_enabled;
++	bool				enabled;
++	enum counter_function		function;
++	enum counter_count_direction	direction;
++};
 +
-+  signal-b-gpios:
-+    maxItems: 1
-+    description:
-+      Signal B (phase B; direction in pulse-direction; pulse input for
-+      Count 2).
++struct gpio_counter_priv {
++	struct gpio_desc *gpio_a;
++	struct gpio_desc *gpio_b;
++	struct gpio_desc *gpio_idx[GPIO_COUNTER_MAX_INDEX];
 +
-+  index-gpios:
-+    minItems: 1
-+    maxItems: 2
-+    description:
-+      Optional Index (Z) inputs. First entry indexes Count 1, second
-+      (optional) indexes Count 2.
++	int irq_a;
++	int irq_b;
++	int irq_idx[GPIO_COUNTER_MAX_INDEX];
 +
-+required:
-+  - compatible
-+  - signal-a-gpios
-+  - signal-b-gpios
++	int n_idx;
 +
-+additionalProperties: false
++	/* protects count state, prev_a, prev_b */
++	spinlock_t lock;
 +
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
++	/* serialises enable_write() callers and b_irq_users */
++	struct mutex enable_lock;
 +
-+    counter {
-+        compatible = "gpio-counter";
-+        signal-a-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
-+        signal-b-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
-+        index-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>,
-+                      <&gpio0 13 GPIO_ACTIVE_LOW>;
-+    };
++	/* irq_b is shared by Count 1 and Count 2 (under enable_lock) */
++	int b_irq_users;
 +
-+...
++	int prev_a;
++	int prev_b;
++
++	struct gpio_counter_count_priv count_priv[GPIO_COUNTER_NUM_COUNTS];
++
++	struct counter_signal  signals[GPIO_COUNTER_NUM_SIGNALS_MAX];
++	struct counter_synapse synapses_count1[GPIO_COUNTER_COUNT1_NUM_SYNAPSES];
++	struct counter_synapse synapses_count2[GPIO_COUNTER_COUNT2_NUM_SYNAPSES];
++	struct counter_count   counts[GPIO_COUNTER_NUM_COUNTS];
++};
++
++/* Gray-code: valid step <=> exactly one of A/B toggled. */
++#define GPIO_COUNTER_STATE_CHANGED(pa, pb, ca, cb)	\
++	((pa) ^ (pb) ^ (ca) ^ (cb))
++#define GPIO_COUNTER_GET_DIRECTION(pb, ca)			\
++	(((pb) ^ (ca)) ? COUNTER_COUNT_DIRECTION_FORWARD :	\
++			 COUNTER_COUNT_DIRECTION_BACKWARD)
++
++/* priv->lock held. */
++static void gpio_counter_value_step(struct gpio_counter_count_priv *cp)
++{
++	if (cp->direction == COUNTER_COUNT_DIRECTION_FORWARD) {
++		if (cp->value < cp->ceiling)
++			cp->value++;
++	} else {
++		if (cp->value > 0)
++			cp->value--;
++	}
++}
++
++/* priv->lock held. */
++static void gpio_counter_quadrature_x1_step(struct gpio_counter_count_priv *cp,
++					    int level)
++{
++	if (level && cp->direction == COUNTER_COUNT_DIRECTION_FORWARD)
++		gpio_counter_value_step(cp);
++	else if (!level && cp->direction == COUNTER_COUNT_DIRECTION_BACKWARD)
++		gpio_counter_value_step(cp);
++}
++
++static irqreturn_t gpio_counter_a_isr(int irq, void *dev_id)
++{
++	struct counter_device *counter = dev_id;
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp =
++		&priv->count_priv[GPIO_COUNTER_COUNT_1];
++	unsigned long flags;
++	bool enabled;
++	int a, b;
++
++	/* !! drops negative gpiod_get_value() errors. */
++	a = !!gpiod_get_value(priv->gpio_a);
++	b = !!gpiod_get_value(priv->gpio_b);
++
++	spin_lock_irqsave(&priv->lock, flags);
++
++	enabled = cp->enabled;
++	if (!enabled)
++		goto out;
++
++	switch (cp->function) {
++	case COUNTER_FUNCTION_QUADRATURE_X4:
++	case COUNTER_FUNCTION_QUADRATURE_X2_A:
++	case COUNTER_FUNCTION_QUADRATURE_X1_A:
++		if (!GPIO_COUNTER_STATE_CHANGED(priv->prev_a, priv->prev_b,
++						a, b))
++			break;
++		cp->direction = GPIO_COUNTER_GET_DIRECTION(priv->prev_b, a);
++		if (cp->function == COUNTER_FUNCTION_QUADRATURE_X1_A)
++			gpio_counter_quadrature_x1_step(cp, a);
++		else
++			gpio_counter_value_step(cp);
++		break;
++
++	case COUNTER_FUNCTION_PULSE_DIRECTION:
++		/* direction set in the B-ISR */
++		if (a)
++			gpio_counter_value_step(cp);
++		break;
++
++	case COUNTER_FUNCTION_INCREASE:
++	case COUNTER_FUNCTION_DECREASE:
++		gpio_counter_value_step(cp);
++		break;
++
++	default:
++		break;
++	}
++
++out:
++	priv->prev_a = a;
++	priv->prev_b = b;
++
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	if (enabled)
++		counter_push_event(counter, COUNTER_EVENT_CHANGE_OF_STATE,
++				   GPIO_COUNTER_COUNT_1);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t gpio_counter_b_isr(int irq, void *dev_id)
++{
++	struct counter_device *counter = dev_id;
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *c1 =
++		&priv->count_priv[GPIO_COUNTER_COUNT_1];
++	struct gpio_counter_count_priv *c2 =
++		&priv->count_priv[GPIO_COUNTER_COUNT_2];
++	bool c1_enabled, c2_enabled;
++	unsigned long flags;
++	int a, b;
++
++	a = !!gpiod_get_value(priv->gpio_a);
++	b = !!gpiod_get_value(priv->gpio_b);
++
++	spin_lock_irqsave(&priv->lock, flags);
++
++	c1_enabled = c1->enabled;
++	c2_enabled = c2->enabled;
++
++	/* Count 1: A+B decoding on this B edge */
++	if (c1_enabled) {
++		switch (c1->function) {
++		case COUNTER_FUNCTION_QUADRATURE_X4:
++		case COUNTER_FUNCTION_QUADRATURE_X2_B:
++		case COUNTER_FUNCTION_QUADRATURE_X1_B:
++			if (!GPIO_COUNTER_STATE_CHANGED(priv->prev_a,
++							priv->prev_b, a, b))
++				break;
++			c1->direction =
++				GPIO_COUNTER_GET_DIRECTION(priv->prev_b, a);
++			if (c1->function == COUNTER_FUNCTION_QUADRATURE_X1_B)
++				gpio_counter_quadrature_x1_step(c1, b);
++			else
++				gpio_counter_value_step(c1);
++			break;
++
++		case COUNTER_FUNCTION_PULSE_DIRECTION:
++			/* B is the direction line */
++			c1->direction = b ? COUNTER_COUNT_DIRECTION_BACKWARD
++					  : COUNTER_COUNT_DIRECTION_FORWARD;
++			break;
++
++		default:
++			break;
++		}
++	}
++
++	/* Count 2: B-only */
++	if (c2_enabled)
++		gpio_counter_value_step(c2);
++
++	priv->prev_a = a;
++	priv->prev_b = b;
++
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	if (c1_enabled)
++		counter_push_event(counter, COUNTER_EVENT_CHANGE_OF_STATE,
++				   GPIO_COUNTER_COUNT_1);
++	if (c2_enabled)
++		counter_push_event(counter, COUNTER_EVENT_CHANGE_OF_STATE,
++				   GPIO_COUNTER_COUNT_2);
++
++	return IRQ_HANDLED;
++}
++
++static void gpio_counter_index_pulse(struct counter_device *counter,
++				     enum gpio_counter_count_id count_id)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count_id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	if (cp->preset_enabled) {
++		cp->value = cp->preset;
++		if (cp->value > cp->ceiling)
++			cp->value = cp->ceiling;
++	}
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	counter_push_event(counter, COUNTER_EVENT_INDEX, count_id);
++}
++
++static irqreturn_t gpio_counter_index1_isr(int irq, void *dev_id)
++{
++	gpio_counter_index_pulse(dev_id, GPIO_COUNTER_COUNT_1);
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t gpio_counter_index2_isr(int irq, void *dev_id)
++{
++	gpio_counter_index_pulse(dev_id, GPIO_COUNTER_COUNT_2);
++	return IRQ_HANDLED;
++}
++
++static int gpio_counter_count_read(struct counter_device *counter,
++				   struct counter_count *count, u64 *val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*val = cp->value;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_count_write(struct counter_device *counter,
++				    struct counter_count *count, u64 val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++
++	if (val > cp->ceiling) {
++		spin_unlock_irqrestore(&priv->lock, flags);
++		return -EINVAL;
++	}
++	cp->value = val;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static const enum counter_function gpio_counter_count1_functions[] = {
++	COUNTER_FUNCTION_INCREASE,
++	COUNTER_FUNCTION_DECREASE,
++	COUNTER_FUNCTION_PULSE_DIRECTION,
++	COUNTER_FUNCTION_QUADRATURE_X1_A,
++	COUNTER_FUNCTION_QUADRATURE_X1_B,
++	COUNTER_FUNCTION_QUADRATURE_X2_A,
++	COUNTER_FUNCTION_QUADRATURE_X2_B,
++	COUNTER_FUNCTION_QUADRATURE_X4,
++};
++
++static const enum counter_function gpio_counter_count2_functions[] = {
++	COUNTER_FUNCTION_INCREASE,
++	COUNTER_FUNCTION_DECREASE,
++};
++
++static int gpio_counter_function_read(struct counter_device *counter,
++				      struct counter_count *count,
++				      enum counter_function *function)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*function = cp->function;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_function_write(struct counter_device *counter,
++				       struct counter_count *count,
++				       enum counter_function function)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	cp->function = function;
++
++	switch (function) {
++	case COUNTER_FUNCTION_INCREASE:
++		cp->direction = COUNTER_COUNT_DIRECTION_FORWARD;
++		break;
++	case COUNTER_FUNCTION_DECREASE:
++		cp->direction = COUNTER_COUNT_DIRECTION_BACKWARD;
++		break;
++	case COUNTER_FUNCTION_PULSE_DIRECTION:
++		cp->direction = !!gpiod_get_value(priv->gpio_b)
++					? COUNTER_COUNT_DIRECTION_BACKWARD
++					: COUNTER_COUNT_DIRECTION_FORWARD;
++		break;
++	default:
++		/* quadrature: direction is set in the ISR */
++		break;
++	}
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_action_read(struct counter_device *counter,
++				    struct counter_count *count,
++				    struct counter_synapse *synapse,
++				    enum counter_synapse_action *action)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	enum gpio_counter_signal_id signal_id = synapse->signal->id;
++	enum counter_function function;
++	enum counter_count_direction direction;
++	unsigned long flags;
++
++	if (signal_id == GPIO_COUNTER_SIGNAL_INDEX1 ||
++	    signal_id == GPIO_COUNTER_SIGNAL_INDEX2) {
++		*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++		return 0;
++	}
++
++	spin_lock_irqsave(&priv->lock, flags);
++	function = cp->function;
++	direction = cp->direction;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	*action = COUNTER_SYNAPSE_ACTION_NONE;
++
++	switch (function) {
++	case COUNTER_FUNCTION_QUADRATURE_X4:
++		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
++		return 0;
++
++	case COUNTER_FUNCTION_QUADRATURE_X2_A:
++		if (signal_id == GPIO_COUNTER_SIGNAL_A)
++			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
++		return 0;
++
++	case COUNTER_FUNCTION_QUADRATURE_X2_B:
++		if (signal_id == GPIO_COUNTER_SIGNAL_B)
++			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
++		return 0;
++
++	case COUNTER_FUNCTION_QUADRATURE_X1_A:
++		if (signal_id == GPIO_COUNTER_SIGNAL_A) {
++			if (direction == COUNTER_COUNT_DIRECTION_FORWARD)
++				*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++			else
++				*action = COUNTER_SYNAPSE_ACTION_FALLING_EDGE;
++		}
++		return 0;
++
++	case COUNTER_FUNCTION_QUADRATURE_X1_B:
++		if (signal_id == GPIO_COUNTER_SIGNAL_B) {
++			if (direction == COUNTER_COUNT_DIRECTION_FORWARD)
++				*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++			else
++				*action = COUNTER_SYNAPSE_ACTION_FALLING_EDGE;
++		}
++		return 0;
++
++	case COUNTER_FUNCTION_PULSE_DIRECTION:
++		if (signal_id == GPIO_COUNTER_SIGNAL_A)
++			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++		return 0;
++
++	case COUNTER_FUNCTION_INCREASE:
++	case COUNTER_FUNCTION_DECREASE:
++		if ((count->id == GPIO_COUNTER_COUNT_1 &&
++		     signal_id == GPIO_COUNTER_SIGNAL_A) ||
++		    (count->id == GPIO_COUNTER_COUNT_2 &&
++		     signal_id == GPIO_COUNTER_SIGNAL_B))
++			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
++		return 0;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int gpio_counter_signal_read(struct counter_device *counter,
++				    struct counter_signal *signal,
++				    enum counter_signal_level *level)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_desc *gpio;
++	int ret;
++
++	switch (signal->id) {
++	case GPIO_COUNTER_SIGNAL_A:
++		gpio = priv->gpio_a;
++		break;
++	case GPIO_COUNTER_SIGNAL_B:
++		gpio = priv->gpio_b;
++		break;
++	case GPIO_COUNTER_SIGNAL_INDEX1:
++		gpio = priv->gpio_idx[0];
++		break;
++	case GPIO_COUNTER_SIGNAL_INDEX2:
++		gpio = priv->gpio_idx[1];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = gpiod_get_value(gpio);
++	if (ret < 0)
++		return ret;
++
++	*level = ret ? COUNTER_SIGNAL_LEVEL_HIGH : COUNTER_SIGNAL_LEVEL_LOW;
++	return 0;
++}
++
++static int gpio_counter_watch_validate(struct counter_device *counter,
++				       const struct counter_watch *watch)
++{
++	if (watch->channel >= GPIO_COUNTER_NUM_COUNTS)
++		return -EINVAL;
++
++	switch (watch->event) {
++	case COUNTER_EVENT_CHANGE_OF_STATE:
++	case COUNTER_EVENT_INDEX:
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct counter_ops gpio_counter_ops = {
++	.count_read	= gpio_counter_count_read,
++	.count_write	= gpio_counter_count_write,
++	.function_read	= gpio_counter_function_read,
++	.function_write	= gpio_counter_function_write,
++	.action_read	= gpio_counter_action_read,
++	.signal_read	= gpio_counter_signal_read,
++	.watch_validate	= gpio_counter_watch_validate,
++};
++
++static int gpio_counter_ceiling_read(struct counter_device *counter,
++				     struct counter_count *count, u64 *val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*val = cp->ceiling;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_ceiling_write(struct counter_device *counter,
++				      struct counter_count *count, u64 val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	cp->ceiling = val;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_enable_read(struct counter_device *counter,
++				    struct counter_count *count, u8 *enable)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*enable = cp->enabled;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++/* enable_lock held */
++static void gpio_counter_enable_b(struct gpio_counter_priv *priv)
++{
++	if (priv->b_irq_users++ == 0)
++		enable_irq(priv->irq_b);
++}
++
++/* enable_lock held */
++static void gpio_counter_disable_b(struct gpio_counter_priv *priv)
++{
++	if (--priv->b_irq_users == 0)
++		disable_irq(priv->irq_b);
++}
++
++static void gpio_counter_enable_irqs(struct gpio_counter_priv *priv,
++				     enum gpio_counter_count_id count_id)
++{
++	switch (count_id) {
++	case GPIO_COUNTER_COUNT_1:
++		enable_irq(priv->irq_a);
++		gpio_counter_enable_b(priv);
++		if (priv->n_idx >= 1)
++			enable_irq(priv->irq_idx[0]);
++		break;
++	case GPIO_COUNTER_COUNT_2:
++		gpio_counter_enable_b(priv);
++		if (priv->n_idx >= 2)
++			enable_irq(priv->irq_idx[1]);
++		break;
++	default:
++		break;
++	}
++}
++
++static void gpio_counter_disable_irqs(struct gpio_counter_priv *priv,
++				      enum gpio_counter_count_id count_id)
++{
++	switch (count_id) {
++	case GPIO_COUNTER_COUNT_1:
++		if (priv->n_idx >= 1)
++			disable_irq(priv->irq_idx[0]);
++		gpio_counter_disable_b(priv);
++		disable_irq(priv->irq_a);
++		break;
++	case GPIO_COUNTER_COUNT_2:
++		if (priv->n_idx >= 2)
++			disable_irq(priv->irq_idx[1]);
++		gpio_counter_disable_b(priv);
++		break;
++	default:
++		break;
++	}
++}
++
++static int gpio_counter_enable_write(struct counter_device *counter,
++				     struct counter_count *count, u8 enable)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++	bool current_state;
++
++	guard(mutex)(&priv->enable_lock);
++
++	spin_lock_irqsave(&priv->lock, flags);
++	current_state = cp->enabled;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	if (current_state == enable)
++		return 0;
++
++	/* disable_irq() may sleep, so it can not run under the spinlock. */
++	if (enable) {
++		spin_lock_irqsave(&priv->lock, flags);
++		priv->prev_a = !!gpiod_get_value(priv->gpio_a);
++		priv->prev_b = !!gpiod_get_value(priv->gpio_b);
++		cp->enabled = true;
++		spin_unlock_irqrestore(&priv->lock, flags);
++		gpio_counter_enable_irqs(priv, count->id);
++	} else {
++		spin_lock_irqsave(&priv->lock, flags);
++		cp->enabled = false;
++		spin_unlock_irqrestore(&priv->lock, flags);
++		gpio_counter_disable_irqs(priv, count->id);
++	}
++
++	return 0;
++}
++
++static int gpio_counter_direction_read(struct counter_device *counter,
++				       struct counter_count *count,
++				       u32 *direction)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*direction = cp->direction;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_preset_read(struct counter_device *counter,
++				    struct counter_count *count, u64 *val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*val = cp->preset;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_preset_write(struct counter_device *counter,
++				     struct counter_count *count, u64 val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	if (val > cp->ceiling) {
++		ret = -EINVAL;
++		goto out;
++	}
++	cp->preset = val;
++out:
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return ret;
++}
++
++static int gpio_counter_preset_enable_read(struct counter_device *counter,
++					   struct counter_count *count,
++					   u8 *val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	*val = cp->preset_enabled;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static int gpio_counter_preset_enable_write(struct counter_device *counter,
++					    struct counter_count *count,
++					    u8 val)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	struct gpio_counter_count_priv *cp = &priv->count_priv[count->id];
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->lock, flags);
++	cp->preset_enabled = val;
++	spin_unlock_irqrestore(&priv->lock, flags);
++
++	return 0;
++}
++
++static struct counter_comp gpio_counter_count_ext[] = {
++	COUNTER_COMP_CEILING(gpio_counter_ceiling_read,
++			     gpio_counter_ceiling_write),
++	COUNTER_COMP_ENABLE(gpio_counter_enable_read,
++			    gpio_counter_enable_write),
++	COUNTER_COMP_DIRECTION(gpio_counter_direction_read),
++	COUNTER_COMP_PRESET(gpio_counter_preset_read,
++			    gpio_counter_preset_write),
++	COUNTER_COMP_PRESET_ENABLE(gpio_counter_preset_enable_read,
++				   gpio_counter_preset_enable_write),
++};
++
++static const enum counter_synapse_action gpio_counter_synapse_actions[] = {
++	COUNTER_SYNAPSE_ACTION_NONE,
++	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
++	COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
++	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
++};
++
++static const enum counter_synapse_action gpio_counter_index_synapse_actions[] = {
++	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
++};
++
++static int gpio_counter_get_index_gpios(struct device *dev,
++					struct gpio_counter_priv *priv)
++{
++	struct gpio_descs *descs;
++	int i;
++
++	descs = devm_gpiod_get_array_optional(dev, "index", GPIOD_IN);
++	if (IS_ERR(descs))
++		return dev_err_probe(dev, PTR_ERR(descs),
++				     "failed to get index GPIOs\n");
++	if (!descs) {
++		priv->n_idx = 0;
++		return 0;
++	}
++
++	if (descs->ndescs < 1 || descs->ndescs > GPIO_COUNTER_MAX_INDEX)
++		return dev_err_probe(dev, -EINVAL,
++				     "index-gpios: expected 1..%d entries, got %u\n",
++				     GPIO_COUNTER_MAX_INDEX, descs->ndescs);
++
++	for (i = 0; i < descs->ndescs; i++)
++		priv->gpio_idx[i] = descs->desc[i];
++	priv->n_idx = descs->ndescs;
++
++	return 0;
++}
++
++static int gpio_counter_setup_signals(struct gpio_counter_priv *priv)
++{
++	priv->signals[GPIO_COUNTER_SIGNAL_A].id   = GPIO_COUNTER_SIGNAL_A;
++	priv->signals[GPIO_COUNTER_SIGNAL_A].name = "Signal A";
++	priv->signals[GPIO_COUNTER_SIGNAL_B].id   = GPIO_COUNTER_SIGNAL_B;
++	priv->signals[GPIO_COUNTER_SIGNAL_B].name = "Signal B";
++
++	if (priv->n_idx >= 1) {
++		priv->signals[GPIO_COUNTER_SIGNAL_INDEX1].id =
++			GPIO_COUNTER_SIGNAL_INDEX1;
++		priv->signals[GPIO_COUNTER_SIGNAL_INDEX1].name = "Index 1";
++	}
++	if (priv->n_idx >= 2) {
++		priv->signals[GPIO_COUNTER_SIGNAL_INDEX2].id =
++			GPIO_COUNTER_SIGNAL_INDEX2;
++		priv->signals[GPIO_COUNTER_SIGNAL_INDEX2].name = "Index 2";
++	}
++
++	return 2 + priv->n_idx;
++}
++
++static int gpio_counter_setup_synapses(struct gpio_counter_priv *priv)
++{
++	int n_c1 = 2, n_c2 = 1;
++
++	priv->synapses_count1[0].actions_list = gpio_counter_synapse_actions;
++	priv->synapses_count1[0].num_actions =
++		ARRAY_SIZE(gpio_counter_synapse_actions);
++	priv->synapses_count1[0].signal = &priv->signals[GPIO_COUNTER_SIGNAL_A];
++
++	priv->synapses_count1[1].actions_list = gpio_counter_synapse_actions;
++	priv->synapses_count1[1].num_actions =
++		ARRAY_SIZE(gpio_counter_synapse_actions);
++	priv->synapses_count1[1].signal = &priv->signals[GPIO_COUNTER_SIGNAL_B];
++
++	if (priv->n_idx >= 1) {
++		priv->synapses_count1[2].actions_list =
++			gpio_counter_index_synapse_actions;
++		priv->synapses_count1[2].num_actions =
++			ARRAY_SIZE(gpio_counter_index_synapse_actions);
++		priv->synapses_count1[2].signal =
++			&priv->signals[GPIO_COUNTER_SIGNAL_INDEX1];
++		n_c1 = 3;
++	}
++
++	priv->synapses_count2[0].actions_list = gpio_counter_synapse_actions;
++	priv->synapses_count2[0].num_actions =
++		ARRAY_SIZE(gpio_counter_synapse_actions);
++	priv->synapses_count2[0].signal = &priv->signals[GPIO_COUNTER_SIGNAL_B];
++
++	if (priv->n_idx >= 2) {
++		priv->synapses_count2[1].actions_list =
++			gpio_counter_index_synapse_actions;
++		priv->synapses_count2[1].num_actions =
++			ARRAY_SIZE(gpio_counter_index_synapse_actions);
++		priv->synapses_count2[1].signal =
++			&priv->signals[GPIO_COUNTER_SIGNAL_INDEX2];
++		n_c2 = 2;
++	}
++
++	priv->counts[GPIO_COUNTER_COUNT_1].id = GPIO_COUNTER_COUNT_1;
++	priv->counts[GPIO_COUNTER_COUNT_1].name = "Count 1";
++	priv->counts[GPIO_COUNTER_COUNT_1].functions_list =
++		gpio_counter_count1_functions;
++	priv->counts[GPIO_COUNTER_COUNT_1].num_functions =
++		ARRAY_SIZE(gpio_counter_count1_functions);
++	priv->counts[GPIO_COUNTER_COUNT_1].synapses = priv->synapses_count1;
++	priv->counts[GPIO_COUNTER_COUNT_1].num_synapses = n_c1;
++	priv->counts[GPIO_COUNTER_COUNT_1].ext = gpio_counter_count_ext;
++	priv->counts[GPIO_COUNTER_COUNT_1].num_ext =
++		ARRAY_SIZE(gpio_counter_count_ext);
++
++	priv->counts[GPIO_COUNTER_COUNT_2].id = GPIO_COUNTER_COUNT_2;
++	priv->counts[GPIO_COUNTER_COUNT_2].name = "Count 2";
++	priv->counts[GPIO_COUNTER_COUNT_2].functions_list =
++		gpio_counter_count2_functions;
++	priv->counts[GPIO_COUNTER_COUNT_2].num_functions =
++		ARRAY_SIZE(gpio_counter_count2_functions);
++	priv->counts[GPIO_COUNTER_COUNT_2].synapses = priv->synapses_count2;
++	priv->counts[GPIO_COUNTER_COUNT_2].num_synapses = n_c2;
++	priv->counts[GPIO_COUNTER_COUNT_2].ext = gpio_counter_count_ext;
++	priv->counts[GPIO_COUNTER_COUNT_2].num_ext =
++		ARRAY_SIZE(gpio_counter_count_ext);
++
++	return 0;
++}
++
++static int gpio_counter_request_irqs(struct device *dev,
++				     struct counter_device *counter)
++{
++	struct gpio_counter_priv *priv = counter_priv(counter);
++	irq_handler_t idx_handlers[GPIO_COUNTER_MAX_INDEX] = {
++		gpio_counter_index1_isr,
++		gpio_counter_index2_isr,
++	};
++	const char *idx_names[GPIO_COUNTER_MAX_INDEX] = {
++		"gpio-counter-index1",
++		"gpio-counter-index2",
++	};
++	int ret, i;
++
++	ret = devm_request_irq(dev, priv->irq_a, gpio_counter_a_isr,
++			       IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
++				       IRQF_NO_AUTOEN,
++			       "gpio-counter-a", counter);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "failed to request IRQ for signal-a\n");
++
++	ret = devm_request_irq(dev, priv->irq_b, gpio_counter_b_isr,
++			       IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
++				       IRQF_NO_AUTOEN,
++			       "gpio-counter-b", counter);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "failed to request IRQ for signal-b\n");
++
++	for (i = 0; i < priv->n_idx; i++) {
++		ret = devm_request_irq(dev, priv->irq_idx[i], idx_handlers[i],
++				       IRQF_TRIGGER_RISING | IRQF_NO_AUTOEN,
++				       idx_names[i], counter);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "failed to request IRQ for index %d\n",
++					     i);
++	}
++
++	return 0;
++}
++
++static int gpio_counter_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct counter_device *counter;
++	struct gpio_counter_priv *priv;
++	int num_signals;
++	int i, ret;
++
++	counter = devm_counter_alloc(dev, sizeof(*priv));
++	if (!counter)
++		return -ENOMEM;
++
++	priv = counter_priv(counter);
++	spin_lock_init(&priv->lock);
++	ret = devm_mutex_init(dev, &priv->enable_lock);
++	if (ret)
++		return ret;
++
++	priv->gpio_a = devm_gpiod_get(dev, "signal-a", GPIOD_IN);
++	if (IS_ERR(priv->gpio_a))
++		return dev_err_probe(dev, PTR_ERR(priv->gpio_a),
++				     "failed to get signal-a GPIO\n");
++
++	priv->gpio_b = devm_gpiod_get(dev, "signal-b", GPIOD_IN);
++	if (IS_ERR(priv->gpio_b))
++		return dev_err_probe(dev, PTR_ERR(priv->gpio_b),
++				     "failed to get signal-b GPIO\n");
++
++	ret = gpio_counter_get_index_gpios(dev, priv);
++	if (ret)
++		return ret;
++
++	if (gpiod_cansleep(priv->gpio_a) || gpiod_cansleep(priv->gpio_b))
++		return dev_err_probe(dev, -EINVAL,
++				     "signal GPIO may sleep, not usable in hardirq\n");
++	for (i = 0; i < priv->n_idx; i++) {
++		if (gpiod_cansleep(priv->gpio_idx[i]))
++			return dev_err_probe(dev, -EINVAL,
++					     "index GPIO %d may sleep, not usable in hardirq\n",
++					     i);
++	}
++
++	priv->irq_a = gpiod_to_irq(priv->gpio_a);
++	if (priv->irq_a < 0)
++		return dev_err_probe(dev, priv->irq_a,
++				     "failed to get IRQ for signal-a\n");
++
++	priv->irq_b = gpiod_to_irq(priv->gpio_b);
++	if (priv->irq_b < 0)
++		return dev_err_probe(dev, priv->irq_b,
++				     "failed to get IRQ for signal-b\n");
++
++	for (i = 0; i < priv->n_idx; i++) {
++		priv->irq_idx[i] = gpiod_to_irq(priv->gpio_idx[i]);
++		if (priv->irq_idx[i] < 0)
++			return dev_err_probe(dev, priv->irq_idx[i],
++					     "failed to get IRQ for index %d\n",
++					     i);
++	}
++
++	priv->prev_a = !!gpiod_get_value(priv->gpio_a);
++	priv->prev_b = !!gpiod_get_value(priv->gpio_b);
++
++	priv->count_priv[GPIO_COUNTER_COUNT_1].function =
++		COUNTER_FUNCTION_QUADRATURE_X4;
++	priv->count_priv[GPIO_COUNTER_COUNT_1].direction =
++		COUNTER_COUNT_DIRECTION_FORWARD;
++	priv->count_priv[GPIO_COUNTER_COUNT_1].ceiling = U64_MAX;
++
++	priv->count_priv[GPIO_COUNTER_COUNT_2].function =
++		COUNTER_FUNCTION_INCREASE;
++	priv->count_priv[GPIO_COUNTER_COUNT_2].direction =
++		COUNTER_COUNT_DIRECTION_FORWARD;
++	priv->count_priv[GPIO_COUNTER_COUNT_2].ceiling = U64_MAX;
++
++	num_signals = gpio_counter_setup_signals(priv);
++	gpio_counter_setup_synapses(priv);
++
++	counter->name		= dev_name(dev);
++	counter->parent		= dev;
++	counter->ops		= &gpio_counter_ops;
++	counter->signals	= priv->signals;
++	counter->num_signals	= num_signals;
++	counter->counts		= priv->counts;
++	counter->num_counts	= ARRAY_SIZE(priv->counts);
++
++	ret = gpio_counter_request_irqs(dev, counter);
++	if (ret)
++		return ret;
++
++	ret = devm_counter_add(dev, counter);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "failed to add counter\n");
++
++	dev_info(dev,
++		 "GPIO counter registered (signals: A, B%s%s)\n",
++		 priv->n_idx >= 1 ? ", Index 1" : "",
++		 priv->n_idx >= 2 ? ", Index 2" : "");
++
++	return 0;
++}
++
++static const struct of_device_id gpio_counter_of_match[] = {
++	{ .compatible = "gpio-counter" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, gpio_counter_of_match);
++
++static struct platform_driver gpio_counter_driver = {
++	.probe = gpio_counter_probe,
++	.driver = {
++		.name = "gpio-counter",
++		.of_match_table = gpio_counter_of_match,
++	},
++};
++module_platform_driver(gpio_counter_driver);
++
++MODULE_ALIAS("platform:gpio-counter");
++MODULE_AUTHOR("Wadim Mueller <wafgo01@gmail.com>");
++MODULE_DESCRIPTION("GPIO-based counter driver");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("COUNTER");
 -- 
 2.52.0
 
