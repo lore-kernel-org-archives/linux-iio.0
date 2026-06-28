@@ -1,345 +1,162 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9400E262D0B
-	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 19:12:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5454630F95F
+	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 19:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782673940; cv=none; b=QSjDu3iO42zEsilCfdpHenX0+VYkResY7H7wnYrKhCNAgVa5jWUI6TROQhcFzqw8TqC/HNmzPhEtBxi2whEnNwcQX9DPNasqIIp3lZWHZAyjkJvkTtw73J+38x4VVYTshPjdEAijXUFVl5m9RAAdCY5D5xqlDubEl+tQE1lzT8A=
+	t=1782674058; cv=none; b=VLNXczE7KugDGUow6K5c85W4XWUfzzeibTGDK9bojIK/QFWKzVg5HEoSMjgHONJnxwoTitjDWq+yDnojqJqzBiNoqVvSTd0zML+RUcqJkdK1EU5OSDqi7pbZ0Qbjij7W6DrgCoEMgFtAIG2YQXKX/Q8vpc7PF2Fi3ZOKySoFiUA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782673940; c=relaxed/simple;
-	bh=uzKxSs3wj1DDWn6PbTpyv8n4uSRPDLJ0qpblP5/KdJ8=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
-	 References:In-Reply-To; b=qpOxhHLZ2utzFhzt7ZIfLkMRrptfkGtqX6d3Krl0yXNUURZiHbL2LTIDf0HI7qZQXOPKjifEOJPcVVeRI9NMqBQlmwJH25tldcmapXH7donn62uj5PMMgfBqrI4InHyyQ6O+xDdhYG8zKVSubnGEkSTWP5VPxFw8JO/Qv2nuZuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y0xEbb8S; arc=none smtp.client-ip=209.85.221.176
+	s=arc-20240116; t=1782674058; c=relaxed/simple;
+	bh=ZzTYGVCy8fODFj0xEVGqVe1G0+adzKhYacNbiy+2CXc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KvZdWz50ZIjhfGzh1FniGtBMAk0RIpomwqzfnxZ7NCTfasoUpHWPkM1x/JfktNkp6zeTI8dXu2zZc8OQOHqQmytXIYLYExL24xWy7OhJZ5lUGmRY8g/ACMmWv6Z2l/4dtDRZXJTyVFjSX2vxo3v3yJVvzDunnxwQlVmfUUYPjSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HY1VIDwS; arc=none smtp.client-ip=209.85.216.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y0xEbb8S"
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-59d4aa96ef2so2181933e0c.1
-        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 12:12:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HY1VIDwS"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-37fdee9276fso630723a91.3
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 12:14:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782673936; x=1783278736; darn=vger.kernel.org;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ei3Ybn1q5xfL7SskkyqusuhsxEuAlE8rA0GsK7EjwwY=;
-        b=Y0xEbb8S4SyN32t7mmG3LfB2vBJScfnqn1nHLZ002zHdqwiabJ5h04EA9BDZhdvkzE
-         xEidXP3VBDGnFO7JQkCk92tHEDuFYdvpQirB0+cexrlUtJtN7zZnrNeDHFXdkzNkCwco
-         eJNH3IE2YQuptoGUXbXhD2mPLS8A1RrIO7wxfBhTXdeR+t+ng2sh7L9WTc6+iGq6xfZW
-         9zeldUYNYGRl0VHDzBOm1HuwlvkWAJb/J/Qm5E92BmPXqHHXiriV5cfWwru8exCWmtah
-         d27/Spf4RjELuefxtkKdvOmTRBd9N2BvjlkvOvNczFeIwkRMQXwUySCc8IBHB2NCRhRD
-         o3yA==
+        d=gmail.com; s=20251104; t=1782674056; x=1783278856; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YjPPl2WZyg0oAL3UMriRRxZrSS5zvLZMLEmgTiAO/eA=;
+        b=HY1VIDwSjptksZ/Q+8klUFfIXQOk5AS5Z0CuTiBgZI/YJe2a3rTv0ZENA+j316SZWj
+         Sk8soowC4mlVldPIy9xWWrNrTGtb7nB2ZkjuOUK2lT6CJK6uxvD3p4w7xVUMo6cTaa3S
+         ZGrPreJBxBGg79oh3i5u1m0M7rDXcCD94YiV14LY/OG5RENOq8ey0Y0AdjVyWf4qfCbc
+         FlhpH0sUKAPU9/NXQtTb93QhELN8VRlcjEwylUAIpRqqxYYvQAkJHtRX2uaX+YyooxOR
+         MgT03nhBicGGdkYr0zC+iX5PEc9fY1ERq4WmydYUhiu4WAWqDIJdlaFXL7POSWqBvxcK
+         FSVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782673936; x=1783278736;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ei3Ybn1q5xfL7SskkyqusuhsxEuAlE8rA0GsK7EjwwY=;
-        b=b0Xps/Gab6dn+gtgn5ClLum8VIZ94dEQ7N+Dgprm5Ub6Qz2P09539eLP0oyuYOQC1t
-         YIgh3xSLyYIVdYT0ZOUFy3EqE5m9jEMDpDO7IZRnardzKuegJwX0JYKp5qiJAFpWsRjb
-         OB4AJcaBPd60VQwRZrEm37LYjvckKZ42rKh6VcHl2SYkqb2iyFALmuL0zqf+mRLPo9PS
-         kxwxNPgQI7o2t8Je7STvh7562i5vUKMuk3asXbiYT56e9c7umlH+wLjiT2dgPZvjTlSG
-         zUJrJQd0Kt5/vu7GTTAO87kAmdAoU1ZWSnFZY8QWAf5NSo3fUHEbnmRhEWX34/LRMhCU
-         tYCw==
-X-Forwarded-Encrypted: i=1; AHgh+RqMt6Z8v1zYq3p47hQkvVdZueYhqgAZBIV7PqlUvUvnDdZUDNkThnMC9GL3/weOWlWnpnB91w8gKiU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyiUE9KaYTVchMm0SL6NVp6R9IdGfRCxAlbqz5AvXlFwa2hYLW1
-	pH1+cpBtgOsmdVGJMa2vOWWaySHT9HpaZF7jlFEtnp73uBNIEqw+4l38
-X-Gm-Gg: AfdE7ckDcpEV0n9z18SpV1ZadA64QhM1fkFYPwRok5kyvcdYV5qkAcSosj87sjIcPNv
-	Sl0b18ERgRk8vVfAULAjY+BLyqtds4aPEiEMNZz05mGYa9/OgY4wbTgfIcPxHpJcUe2NzgA9RFF
-	huLDPYBqcNlGkQ/Zl7pYt3pwT/K11s6t2hUR2Whk7MTBijwREN+a/gOYoTmmraS+V5OZmQ5DLo9
-	TgHrJsRNc2fQPAcRzLCaOBJpGlPnmwlCheH6S8uwy0N3y2CVEvtS7xzHgPmIjZRsl4womhzxOIr
-	nIERprgFusHwgw7FaR+IlLWbjaXDIS7cvQJKQX0U65mRRD/5yzPgdgJd8nKfoXAz+BKl16KQPrW
-	WlQcsNht8hv/mcnf4M1cn9dF6/NihDVUANM1wZDoQ9zZVLz0LTfx9RAdfPqqdA+mDpACkmOXzw4
-	mSGFQ=
-X-Received: by 2002:a05:6122:180c:b0:5bd:a810:b08e with SMTP id 71dfb90a1353d-5bda810b657mr579128e0c.4.1782673936489;
-        Sun, 28 Jun 2026 12:12:16 -0700 (PDT)
-Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bd917b6138sm2227258e0c.10.2026.06.28.12.12.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Jun 2026 12:12:16 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1782674056; x=1783278856;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YjPPl2WZyg0oAL3UMriRRxZrSS5zvLZMLEmgTiAO/eA=;
+        b=qYyUJZb8EhMD2t6QVd90bfP64TDrjd3rkTftDLtOddt0O6MTpXZpCMx0YkYbdf4Owg
+         pBo25Vi0QM7DTMCpaH9V9ydF065q7+oSQSEFWfOvcZqMEDGYLzMpfd60tocl3LXacWoh
+         4erQ+2KHdvfUEMRXc6hQ5MKek7b44haO92bAGb70bPn8yi80svpO+lBVUiuO9UuvENpO
+         6NDp/s89psJh+jqxRB+zflRGSdgdtdZiPqllfthZ9X81hS4Nal0lad8wg3tnbRnmo9Nw
+         7lM1aTFUhHPCgspMgd29A+yluMrXYSpIVF1oESeJAee9fRp7W71WBmcq/30EUIJ+UH+W
+         YjqA==
+X-Forwarded-Encrypted: i=1; AHgh+RrX6KsvErtKCFZVI/1WAfM6mECbzI7IHs8ESPiwsgFG6ZgIpytiCOFg+qbR/drjcUVhQePlfQl0gOQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQ9BTuZEP/BS9YG56Y0Skd/GcPphzeChcax2LJyK4duj/kAvaK
+	ol1p51Pep2VV0tp9sOTPXMZEnzEJYQwX7CsbTgi6Q6rrljbHfDwmelji
+X-Gm-Gg: AfdE7cmSrnB+uK2CqTkeocNxwXXHkz1UDaJ0J3XIUsNkh28Q2eWIvuAFMXL2zyUYuzG
+	aWdyR/gy10Djxj8l5C+2DaeXZxE8iSDReimHdd3YCDfoJDHjVQf+/O/0eIBliTp2GIvDtsw2BJS
+	tCzSB9Z9b9PLcSWPhBHPPdIDhfxKPHjhb8XRPvnKo9indTXJvcpVKx4O4hVlVT+q4dlqfTZvpyv
+	wKhoi1H8Sus8Pn9LSIwgFk3LKHkV39/93+TwWRbluJtsSwBkEQlEl4/4iZ+2wB2ZtsQ2MWNzafm
+	WyWdA1pby9Lko+8ZwCaUwELriVZW8oU49wbuAduISbzcUdwvOPu5EnZrcn0yGy/IY7idH0gUJck
+	oz1/vLE59ZAu9jS+5yesWKbvpFwKRlskhidDWvNUqJVMrSXYTU43ekC4MBt9cv0fx1OwS8T+nj5
+	IPzty9d4ckQbjAEK27zkpG9zq3m74/slHuBHYz3YtVGDBR0m2xXPhlqffem4QbhkKt8QbeoR/Ay
+	k28PmAYHkdkrgjjzWFdiJUiQ+knf0a4+bXq4Aw=
+X-Received: by 2002:a17:903:13c6:b0:2c8:1c05:16aa with SMTP id d9443c01a7336-2c81c051932mr95767075ad.19.1782674056502;
+        Sun, 28 Jun 2026 12:14:16 -0700 (PDT)
+Received: from DESKTOP-G3E0OSP.localdomain ([112.172.255.242])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ca0b454815sm1354385ad.2.2026.06.28.12.14.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Jun 2026 12:14:16 -0700 (PDT)
+From: Jinseob Kim <kimjinseob88@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jinseob Kim <kimjinseob88@gmail.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RFC v6 0/5] iio: add Open Sensor Fusion IIO driver
+Date: Mon, 29 Jun 2026 04:13:32 +0900
+Message-ID: <20260628191337.937-1-kimjinseob88@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 28 Jun 2026 14:12:06 -0500
-Message-Id: <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
-To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
- <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>
-Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
-From: "Kurt Borja" <kuurtb@gmail.com>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
- <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
- <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
-In-Reply-To: <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:
-> On 6/28/26 12:36 AM, Kurt Borja wrote:
->> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
->> integrated PGA, internal reference, excitation and burn-out current
->> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
->> 24-bit delta-sigma ADC (ADC2) for background measurements.
->>=20
->> Each can configure it's own voltage reference source, the two excitation
->> current sources (IDAC), plus input and excitation channels rotation for
->> offset and IDAC mismatch cancellation. This lets the device drive and
->> ratiometrically measure RTDs and other resistive sensors.
->>=20
->> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
->> ---
->>  .../devicetree/bindings/iio/adc/ti,ads1262.yaml    | 309 ++++++++++++++=
-+++++++
->>  MAINTAINERS                                        |   6 +
->>  2 files changed, 315 insertions(+)
->>=20
->> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml b=
-/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
->> new file mode 100644
->> index 0000000000000000..2f4e812ae2af135a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1262.yaml
->> @@ -0,0 +1,309 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iio/adc/ti,ads1262.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: TI ADS1262/ADS1263 analog to digital converter
->> +
->> +maintainers:
->> +  - Kurt Borja <kuurtb@gmail.com>
->> +
->> +description: |
->> +  The ADS1262 and ADS1263 are 38.4-kSPS, delta-sigma (=CE=94=CE=A3) ADC=
-s with an
->> +  integrated PGA, reference, and internal fault monitors. The ADS1263 i=
-ntegrates
->> +  an auxiliary, 24-bit, =CE=94=CE=A3 ADC intended for background measur=
-ements.
->> +
->> +  Datasheets:
->> +    - ADS126x: https://www.ti.com/lit/ds/symlink/ads1262.pdf
->> +
->> +properties:
->> +  compatible:
->> +    oneOf:
->> +      - const: ti,ads1262
->> +      - items:
->> +          - const: ti,ads1263
->> +          - const: ti,ads1262
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  '#address-cells':
->> +    const: 1
->> +
->> +  '#size-cells':
->> +    const: 0
->> +
->> +  spi-max-frequency:
->> +    maximum: 8000000
->> +
->> +  spi-cpha: true
->> +
->> +  interrupts:
->> +    description: Data ready (DRDY) interrupt line.
->> +    maxItems: 1
->
-> Technically, there are two pins with the DRDY signal, so we should have
-> two interrupts in order to be able to tell which one is wired up.
+Open Sensor Fusion (OSF) devices expose a UART/serdev host interface
+for a sensor aggregation hub.  This RFC adds a Linux IIO driver that
+parses OSF frames and creates IIO devices at runtime from capability
+reports provided by the device firmware.
 
-Oh you're right. I'll describe both here. I may not add support for it
-though, at least until I complete everything else.
+When the corresponding capabilities are reported, the driver exposes
+accelerometer, gyroscope, magnetometer, and temperature data as IIO
+devices named osf-accel, osf-gyro, osf-magn, and osf-temp.
 
->
->> +
->> +  start-gpios:
->> +    description: Start conversion control.
->> +    maxItems: 1
->> +
->> +  reset-gpios:
->> +    maxItems: 1
->> +
->> +  dvdd-supply:
->> +    description: Digital power supply.
->> +
->> +  avdd-supply:
->> +    description: Analog power supply.
->> +
->> +  refp-supply:
->> +    description: External positive voltage reference.
->> +
->> +  refn-supply:
->> +    description: External negative voltage reference.
->> +
->
-> Which pins are these? I see 4 possible external reference sources,
-> but all go through the AINx pins. So I would expect:
->
-> 	refp1-supply, refn1-supply, refp2-supply, refn2-supply,
-> 	refp3-supply, refn3-supply, refp4-supply, refn4-supply
+This remains RFC while the binding, protocol subset, runtime discovery
+model, and driver-facing ABI are reviewed.
 
-I tried to go for a simpler route, but I agree with this.
+Changes in v6:
+- Reworked the series as a 5-patch standalone RFC.
+- Folded the previous transport and IIO registration split into one
+  final driver patch to avoid Kconfig and Makefile churn.
+- Addressed binding feedback with generic host interface wording,
+  mandatory capability reporting, runtime discovery wording, no
+  Linux-specific binding language, and no fixed regulator provider in
+  the example.
+- Added progressive MAINTAINERS coverage as files are introduced.
+- Removed patch-split wording from Kconfig and introduced Kconfig and
+  Makefile entries in final form.
+- Applied style cleanups including loop-local variables, unused include
+  cleanup, and a probe-local device pointer.
+- Used designated initializers and guard/scoped_guard where useful.
+- Kept the stream parser from discarding unauthenticated frame_len on
+  failed decode.
+- Synchronized IIO buffer pushes with
+  iio_device_try_claim_buffer_mode() and release.
+- Replaced iio_push_to_buffers_with_ts_unaligned() with local zeroed
+  scan storage and iio_push_to_buffers_with_ts().
 
->
-> Also, similar to the chip I am working on, I expect that these pins
-> could be connected to a resistor rather than a voltage source, so
-> could use additional bindings for that.
+Validation summary:
+- git diff --check: pass.
+- checkpatch --strict: pass, 0 errors, 0 warnings, 0 checks.
+- dt_binding_check: pass with dtschema 2026.4.
+- make KBUILD_MODPOST_WARN=1 W=1 M=drivers/iio/opensensorfusion:
+  pass, no compiler warnings.
+- Local stream parser corruption/resync harness: pass.
+- Static IIO scan layout and padding checks: pass.
+- Raspberry Pi hardware/runtime smoke testing is pending for this v6
+  candidate.
 
-Sure!
+Jinseob Kim (5):
+  dt-bindings: iio: add Open Sensor Fusion device
+  Documentation: iio: add Open Sensor Fusion driver overview
+  iio: osf: add protocol decoding
+  iio: osf: add authenticated stream parser
+  iio: osf: add UART IIO driver
 
->
->
->> +  ti,vbias:
->> +    $ref: /schemas/types.yaml#/definitions/flag
->> +    description: Enables the level-shift voltage on the AINCOM pin.
->
-> VBIAS is a voltage source, so I would expect that to be modeled
-> as a regulator provider. (If we do that REFOUT should be included
-> as well.)
+ .../bindings/iio/opensensorfusion,osf.yaml    |  54 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ Documentation/iio/index.rst                   |   1 +
+ Documentation/iio/open-sensor-fusion.rst      |  72 ++++
+ MAINTAINERS                                   |  14 +
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/opensensorfusion/Kconfig          |  16 +
+ drivers/iio/opensensorfusion/Makefile         |   6 +
+ drivers/iio/opensensorfusion/osf_core.c       | 291 +++++++++++++++++
+ drivers/iio/opensensorfusion/osf_core.h       |  70 ++++
+ drivers/iio/opensensorfusion/osf_iio.c        | 308 ++++++++++++++++++
+ drivers/iio/opensensorfusion/osf_iio.h        |  22 ++
+ drivers/iio/opensensorfusion/osf_protocol.c   | 258 +++++++++++++++
+ drivers/iio/opensensorfusion/osf_protocol.h   |  97 ++++++
+ drivers/iio/opensensorfusion/osf_serdev.c     | 114 +++++++
+ drivers/iio/opensensorfusion/osf_stream.c     | 189 +++++++++++
+ drivers/iio/opensensorfusion/osf_stream.h     |  31 ++
+ 18 files changed, 1547 insertions(+)
 
-I didn't think about that, I agree.
 
->
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  '#io-channel-cells':
->> +    minimum: 1
->> +    maximum: 2
->> +
->> +  '#gpio-cells':
->> +    const: 2
->> +
->> +  gpio-controller: true
->> +
->> +patternProperties:
->> +  "^channel@[0-9]+$":
->> +    $ref: /schemas/iio/adc/adc.yaml#
->> +    unevaluatedProperties: false
->> +
->> +    properties:
->> +      reg:
->> +        maxItems: 1
->> +
->
-> If we want to allow single-ended/pseudo-differential inputs, then we shou=
-ld
-> also allow single-channel (positive pin) and common-mode-channel (negativ=
-e
-> pin) properties.
->
-> This will also require additional common-mode-<N>-supply properties to al=
-low
-> for the negative pin connected to something other than GND.
+base-commit: ab5fce87a778cb780a05984a2ca448f2b41aafbf
+-- 
+2.43.0
 
-Ah interesting. Why the N though? wouldn't a single supply connected to
-AINCOM be enough here?
-
->
->> +      diff-channels:
->> +        description: |
->> +          Selects the analog input configuration for this channel. The =
-first
->> +          value is the positive input and the second is the negative in=
-put.
->> +          The following values are available:
->> +          0: AIN0 pin
->> +          1: AIN1 pin
->> +          2: AIN2 pin
->> +          3: AIN3 pin
->> +          4: AIN4 pin
->> +          5: AIN5 pin
->> +          6: AIN6 pin
->> +          7: AIN7 pin
->> +          8: AIN8 pin
->> +          9: AIN9 pin
->> +          10: AINCOM pin
->
->> +          11: Temperature sensor monitor
->> +          12: Analog power supply monitor
->> +          13: Digital power supply monitor
->> +          14: TDAC test signal
->
-> These are all internal signals, so not sure it makes sense to have
-> them in the devicetree. It would make more sense to have fixed
-> channels defined in the driver for these since they are always there.
-
-Similar to the approach you took.
-
->
-> We probably also need a separate property (a bool/flag?) to say that
-> this channel is a TDAC output rather than an analog input. Although
-> that is for testing, so maybe something to omit for now until we
-> actually have an application that uses it (to make sure we get it
-> right)?
-
-Yes, I will add the monitor channel for this too. The users can adjust
-voltage from debugfs. IMO that should be enough.
-
->
->
->> +          15: Float (open connection)
->
-> How could we have a differential input with one or both pins open?
-> Likely this will just be the setting for pins not specified as something
-> else in the devicetree.
-
-I should remove this too. Leaving the pins floating is necessary when
-calibrating. I will add full automatic calibration on probe right after
-this series.
-
-[...]
-
->> +      ti,idac-chopping:
->
-> I would call this ti,excitation-channel-chopping to match the excitation-=
-channel
-> property. Or since this isn't a generic property, call it ti,idac-rotatio=
-n to
-> match the datasheet.
-
-Both are fine by me. I went with chopping based on what you said about
-the term in your series.
-
->
->> +        $ref: /schemas/types.yaml#/definitions/flag
->> +        description:
->> +          Automatically swap the IDAC1 and IDAC2 connections of alterna=
-te
->> +          conversions. The ADC averages the alternate conversions to el=
-iminate
->> +          IDAC mismatch.
->> +
->> +      ti,pga-bypass:
->> +        $ref: /schemas/types.yaml#/definitions/flag
->> +        description: Bypass the Programmable Gain Amplifier (PGA).
->
-> Why would this need to be a DT property? I didn't read this datasheet
-> too much, but in other chips I have seen there are usually rules that
-> PGA has to be bypassed under certain conditions, but not others, so
-> this seems like something for the driver to handle rather than the
-> devicetree.
-
-To be honest, I don't know what would be the application for this. AFAIK
-when the PGA is bypassed the analog inputs are read unbuffered (?) In
-that case shouldn't this belong DT?
-
-[...]
-
---=20
-Thanks,
- ~ Kurt
