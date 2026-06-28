@@ -1,61 +1,63 @@
-Received: from mail-dl1-f54.google.com (mail-dl1-f54.google.com [74.125.82.54])
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDB863AE6FC
-	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 14:58:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CE703AEF43
+	for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 14:58:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782658711; cv=none; b=lV6CT00XWpcfx5lYIrBLnPKNwzOI6T7fTQLTTMx+T/RHbHI9Sxvgl974dQobIsco9i6x3jF9Uw80R5LBtyRXxcDYoIjyBbeBeRCGzlw+WRkDa7iMnqZwXtcI9ZNkAfKtXq0YdzdsUiQ+Q089MIOEnBl+4b106/vWB65IHyg7xUk=
+	t=1782658714; cv=none; b=kvLQ4tEeUOVAsn9I7SikVseFuybLZtVIr/xmbcjIGPPQxuWUK4asl73VXSk7CAAvc9113vAO1iiOxGb2GfMa+6uZjk9MBV+b94HrUISG67S+mK6xi3R1J36413frR39DSTSrlK4ctfK0PHfI0eVvXgQHv653SpYjUMZ3xwMYOJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782658711; c=relaxed/simple;
-	bh=DGI2F5AdCnVZ2nEMaAL2r2ghQD9J5o0phj5AHHYGqdA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=AYAgD/0vnBa4mI/0rCh+N0siW/cvrBNWPa7flv8d4TIZl7nHfWiITC3Uww5Nc0V4V3euOdQNw2h1iizDHeBIbC9ajSJ6E+E9ziOezauI92Fc1Aj32HCF6pdO0mnMYgWaz0fxpkQe/yI3QzTgRsSrZPya6zyxiALGkhU/VSvZlXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eIlRQPnc; arc=none smtp.client-ip=74.125.82.54
+	s=arc-20240116; t=1782658714; c=relaxed/simple;
+	bh=xmwWSaBy4FHvE2lZSfawLpH4uzj+yitUohO7k8IBseA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=r2TVEJQHpq5c7czNs0clmrXjXj8QxMgaowziBlT7BuLPnUfoBVg5L31KNMuZmQHeLU5LfwMrVHk8fmxtNMX+12OmTMsLP2ARlxBnZAhBx0mGL16O6Z0UWKOXOa/P7NVODGGaPnH80704UzX66JxG9atuGBpqZp+f3tXlm+RHyfk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=keeQARtV; arc=none smtp.client-ip=74.125.82.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eIlRQPnc"
-Received: by mail-dl1-f54.google.com with SMTP id a92af1059eb24-13809223fd4so3017573c88.1
-        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 07:58:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="keeQARtV"
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-30cac93dfd7so1046133eec.1
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 07:58:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782658709; x=1783263509; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=s3ClFJKTl3ktD7iBbbLvLy9MML+jSdXhO1GL5Ept/Zs=;
-        b=eIlRQPnco9I9nVWw/KUBMaryj5N24PfsrDs0XP/BZwZls7hACZ6AXILkM7Vd1y5HuW
-         fubcJ8tJo79lh6cMlLOwpIkPCVcugFnbWA+narf5RKcTFDJ1Lyn98A+7M+aBfkNy/S4t
-         6+tpcOC9oaQBomctPTGr3yfyw2lRoy+E2VHtqHKuYzTL7SgFV+6A8lOwzAhgPi71asKd
-         sOvaZE0sSPxwzg2mttf8NauUvpqLR7VPFa/d7JCr+UC+360Pl5ic9bxZvfUwfxV9eJUr
-         kS/MIdzq4jz+mxzIW7bUGGKA2W75Ocm7SzeCbRUMzICdAui+ymsuDTvTfHzN5sqzARBe
-         WYfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782658709; x=1783263509;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1782658712; x=1783263512; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=s3ClFJKTl3ktD7iBbbLvLy9MML+jSdXhO1GL5Ept/Zs=;
-        b=e8rMnb+EruLB6zwx0JWW30UO2PIr2G5GfcH9dGxpuhN1gIA0NQCTMJXPkWVj82DvC4
-         izBObrd/qNelmHdUPGSujJ9Fca1WAlASP7KZSyjB7zjK1zjbc43QRYqGR4CFNQL0aC0C
-         YzpwQJtk1dU5wrCcPMmKaH9yYp0o8MuJz1LXz2LtTNYNrJcnuMzlIp/m3E1yU0ROdwIH
-         02I/GuT2DC6ak5Nv1C5nLfmGL5aX01E2mKPXAc/biXIVoKFQd5bPy9LqvyLZCXteo6us
-         QYsI5CtGpFwC0LDfoorbQd2E6Mf9kBu/kZ56vxEkpGBBH5rdXDBNGKf2PGC0CwBQSMjS
-         oHnA==
-X-Forwarded-Encrypted: i=1; AFNElJ/pLK5Pe/KJdxV+4fbjXBtOp57JDTK4W/ThM0IJlDXJz4i0FdShjD40lb0lAuPTnxlaaOqTWpVzyjU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/kUPR6VO8xKH7DAaJC1bVovKR6IBEVX7cxhkTR540XAJQbpwK
-	cjudF5fl3eGkUsKuBOmLS+h25LrO3ln47TEZUjS81FXMOsngQzqAKHdD
-X-Gm-Gg: AfdE7ckpGjI2CTvF5dRxldzNt/f5g02wiiMykBOAAdIRD9d7f1eNaDS2V2xcsjxQRv8
-	SHhTuasjAQ6MwdbMxW1/xgtZFR/aUi0bPwq6LBWX4mExU+5qjk30Yc3Vu1RwwTVhRig8b3WwAv2
-	IonQg0epF8tTMCJnphUiP9doI9ZQwIxQc7A1Exz2vTeTamBWzX1PepRJCfXAQaORchyuIQNtiNo
-	lT7fYb/UHPS5Yg7kvWqu0YoNML0PGKymnuMpTHDqfbAlJboCoFM4UvhvfSeWE02Pqsepm9k/x/k
-	QwgnAJa3ELEu9vep5eddoxZSxOvoEfs5H36cu0Xyy9Wdfu/mrDhHkO/15NGluArAFS06X67qIua
-	pa+QjHVCVefaqRQ+sAvtyhywUgYtRH70P52aRdDxXEFIQfgobW23wiUbuxN5MIBbar1A9R9dAg0
-	Zl/oEHY8RrlXkoi68NKL2p6wWmgbQFo/q4KE3D/wIAJFUKE+MYA8e9REJeFTa6OqM2xQ==
-X-Received: by 2002:a05:7022:62a6:b0:138:22f:9a2c with SMTP id a92af1059eb24-139db9e5923mr11083548c88.5.1782658708791;
-        Sun, 28 Jun 2026 07:58:28 -0700 (PDT)
+        bh=iBiW+Jb5ofAnhQsaYWPoJcN5SGqMaVDonBUCRupHVH8=;
+        b=keeQARtVmlJd7EUXeW5hTHFVTO9IoL7tuTnEFoKxN2ERMoROuJ0J3BAWra90BjxRQ1
+         1iEKYYhno3AhCi0AW0es/0X11AHSwq5lJf/lddhyoB5iKXDz4d5ex/y36r96ohyVFYjF
+         yMHz8xNsFQtuGdEomdtn3PXTTlsw4YK6DwvqnSbTxlMVe9Ny5dPg1HvELKpFo0vsVqMe
+         6V7y+0y0L1L/SOBmE969r1EQac6X2dVCn3kXVY9O1i13iXf+VBhvymFlVUgdEY1vOmjR
+         ORrgWsDu9o+yLH8gbEhexxHUlSowxSIEr7T7HypTQuzgxGMqQjiJbRzRAJxRPqihbsIL
+         2TIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782658712; x=1783263512;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=iBiW+Jb5ofAnhQsaYWPoJcN5SGqMaVDonBUCRupHVH8=;
+        b=Telsd8qZij2ucXPEwZOtUG75IT9Ti9SJOVelxv8cStOFCIpqzI2tZNSr4PF52Wfuxp
+         JWQU7CwKMZ69Ts64NRX8ttBdIZ4IqJdHjHRnNxM2wMhKECtr9AxnutH2Usptff4k7uHV
+         pqVXBBXgBINgGpQX+n0ToSn1J00ErRz7JADYOBIvo5/ycnMsmRw0wAp7j263H+V+1tLd
+         URHrLKf/4DKR186iDxc2SWXewP2PosjEUqA1ClbWzRfLNaeRDig8gmzhY+RiA2U3yj6c
+         FUrGC61TZssmqyH1WWdb7KhzJWQZdCae4DVvWVy91AyvznXeQOhRiDKgg7AounWpeQ/W
+         LQdA==
+X-Forwarded-Encrypted: i=1; AHgh+RprkGmgYiABS5fxL0J41cq+ZU0BxfhpHstjDp0SCaQiMrVs4ZIhM46GW7w8lIaMYo5tt5nQEOy4DeI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywn44YpNgtj5FDjjT7I5Uqs8yfRs5tH3z4p7j29QgKU7Y0ocvwm
+	b6YoXityJ+Z2lnUX1pseKx5xYuu4gsiEsLTuh9Xn/ojKHsZCGkpz79b5
+X-Gm-Gg: AfdE7cn/v/lK7gszIrlTSP+LqLRyKcu6WeKagg8UeB053ifHuFSI7Ei50l8lS+9wviw
+	BhCPmYXEgbNRvjq3QK6H8N8Ae8cm0o5+W5kaQ1t4v0PShIatdb6QhSdqGbmHhNPyPjb3Mvt73lO
+	cTlGVBYQ1XSW37g05uiKw6/0+ZTosGATX3/72iWBsbfDEji4OtFq15altDp3ALAY+kG0emEfex3
+	9sFB0MBREsZvS6E/eAfxoE9hYmGAyx489GC462fQPRm8R0tAWHzXfuRx+C20aDn5qCsXnwbGpk4
+	dVFwMq09AWwZTqHCHTCu7ohl+co32t7yYA2UaMY4woOQOjo4D2H9ulBqxs9wbpJ8GR2sUepj7vn
+	ghVGMTlVBTLK/JNysxsRWYbNkkAO9KchUEr1JCR0YBNGyvw0a459jfDYKlKfo/0tpgmT7WitS9i
+	bDgzveG7dGF2UuvOhyn4HiCxADDdUd3RLgm3JPppe/ivtXKU+/JJoyhJg87vsJTADHFg==
+X-Received: by 2002:a05:7300:7c21:b0:30c:a1ef:816d with SMTP id 5a478bee46e88-30ca1efab13mr7496851eec.0.1782658712382;
+        Sun, 28 Jun 2026 07:58:32 -0700 (PDT)
 Received: from moksh-Nitro-ANV15-51.. ([45.118.104.214])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c944999adsm31307072eec.24.2026.06.28.07.58.25
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c944999adsm31307072eec.24.2026.06.28.07.58.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2026 07:58:28 -0700 (PDT)
+        Sun, 28 Jun 2026 07:58:31 -0700 (PDT)
 From: Moksh Panicker <mokshpanicker.7@gmail.com>
 To: jic23@kernel.org
 Cc: nuno.sa@analog.com,
@@ -66,10 +68,12 @@ Cc: nuno.sa@analog.com,
 	linux-kernel@vger.kernel.org,
 	skhan@linuxfoundation.org,
 	Moksh Panicker <mokshpanicker.7@gmail.com>
-Subject: [PATCH v2 0/2] iio: adc: ad7779: Remove dead code and redundant error message
-Date: Sun, 28 Jun 2026 14:57:32 +0000
-Message-Id: <20260628145734.77191-1-mokshpanicker.7@gmail.com>
+Subject: [PATCH v2 1/2] iio: adc: ad7779: Remove unused completion field
+Date: Sun, 28 Jun 2026 14:57:33 +0000
+Message-Id: <20260628145734.77191-2-mokshpanicker.7@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260628145734.77191-1-mokshpanicker.7@gmail.com>
+References: <20260628145734.77191-1-mokshpanicker.7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,23 +82,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-These two patches address review feedback from Joshua Crofts on the
-ad7779 driver:
+struct ad7779_state contains a completion field that is initialized
+in ad7779_setup_without_backend() but never waited on or signaled
+anywhere in the driver. Remove the dead code.
 
-1. Remove an unused completion field that was initialized but never 
-waited on or signaled anywhere in the driver.
+Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+---
+ drivers/iio/adc/ad7779.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-2. Remove a redundant dev_err_probe() wrapper around devm_request_irq(), 
-which already calls dev_err_probe() internally.
-
-Moksh Panicker (2):
-  iio: adc: ad7779: Remove unused completion field
-  iio: adc: ad7779: Remove redundant dev_err_probe() after
-    devm_request_irq()
-
- drivers/iio/adc/ad7779.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
+diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
+index 695cc79e78da..c1a99b4c1256 100644
+--- a/drivers/iio/adc/ad7779.c
++++ b/drivers/iio/adc/ad7779.c
+@@ -143,7 +143,6 @@ struct ad7779_state {
+ 	const struct ad7779_chip_info *chip_info;
+ 	struct clk *mclk;
+ 	struct iio_trigger *trig;
+-	struct completion completion;
+ 	unsigned int sampling_freq;
+ 	enum ad7779_filter filter_enabled;
+ 	struct iio_backend *back;
+@@ -852,7 +851,6 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
+ 
+ 	indio_dev->trig = iio_trigger_get(st->trig);
+ 
+-	init_completion(&st->completion);
+ 
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      &iio_pollfunc_store_time,
 -- 
 2.34.1
 
