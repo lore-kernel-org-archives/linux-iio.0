@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71FAE3AB5CA;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9720B3ACA7E;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782655794; cv=none; b=coIQX+k6p8Y5XiHBcxjRMShk94KIKOD5ehJnygHUoCocOiEPDiXomvZenT70dBmCsAFuukSzaUXukll/6/bJkLE57+kXjQXOTrjNS31//aXTHUkK3ke2rbFBGYUAjPlmsky8pHeOMoK/NFweVvFLWS6gJtWEbeOpmgHcWKGPzGI=
+	t=1782655794; cv=none; b=DFHPu2ejeTldWpcyiI9ubezsmR6Z2/L/fABE5UtfQEsT8IAGf4MKokX4OIYD+RjB3n+BuawtyV0kjlk7WTjL/Nvd9ahsiSU8KAwuD0RZfaOmcfF4K+/QU6yjO9xwmBSGkerk4yd12IASf6lzxdsq8aorBIM4M8fWlMq1+Aseit4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782655794; c=relaxed/simple;
-	bh=DP9b3X7hTn4lENMs1fQ7NumoTqXlS3alBnRcv5X59PU=;
+	bh=a5ii237YAQbZhAWbgzsaBxeKq5PZFGzly8bdIQIY/9k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=dWOab10Jgv7rN+up+c4k3kSpPSDL7DQn4IvJHwV6DON/beTGlxQ1n3WWvW3ueeav+u394BCxOUv+wfCZhOV4ZmQWO2O6FPITz4ak1ermPWYsIhC4ksxW+bXSDtdyemLXwtQo3IDqpMCFsmiN9i0gmmWG/x+WKlmdH761AgzeY4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eSryoxyt; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=MqOeXos6s1v4Rs7MzbA8zC530285TKksvV3/sej/jJ6apAjVR6JRUu4rKB+/5xIbEZt49hQIQSG0D4BFB0bt++IpocD+uHChRColGCljL3ik/a0i5qbMp4wqZOVvL2qUZEXa2qEBnkrDoz21ZQmilfIiuZ04C36HIpMjD2mATs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FQdQFHUg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eSryoxyt"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 24107C2BCF6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FQdQFHUg"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3E00BC4AF16;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782655794;
-	bh=DP9b3X7hTn4lENMs1fQ7NumoTqXlS3alBnRcv5X59PU=;
+	bh=a5ii237YAQbZhAWbgzsaBxeKq5PZFGzly8bdIQIY/9k=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=eSryoxytFbE32E3BoB5LgqWSBHakJrvgPBA8GgIAIze9z7bVKpWnSB6kqvOauzxK7
-	 abAmw7Hzbl8LjeJoA98kB/GpY9lTT47zquuDPPItXBLNnHAdpvd7jc4foPrIODLxRb
-	 Kyql9B2yxAm4/30cu/UoxoZclTdYMPYErJzDC+El/6A1i6RfPb6WfXDV6oHf1RgpBF
-	 HCjGXeMqP3GfpfYKEpVdivMXaHLACWzGDJmnI8zdrEKX6weRLw+znvq9CpadWUzgsW
-	 5uXunrpmPc8PoB7YXfIcdhwa7uy6PgA4k+/rhE1JpisQhTM42XHVkZxJmgr13RM9ZE
-	 uXQuo/lQ1MlhQ==
+	b=FQdQFHUgxNxKekj0mGh6PotTJBeTUsULvHVM77h7t1rQcxujvO2XBkwPpbegNRVq1
+	 3bTiCldsBLbZV93+G+iOVMaxRBMUMeVRc7mWRNUUNW/tl1NySjE/yNnBuHLH6u+ysL
+	 JhniaCQr8Qtob4AIwmdDa7coqZ0yOrHzNVZYbyWgDJsULcJGqV+SaIzmlwd6IdCXj8
+	 eGSCtv0my3JdcjXjNrFkQnJpt4Qgxz/gtuUFc4SSn/+rFVXpOZBMBLBZR4/s5ZmyJS
+	 4jMMs+GQObgUt7L3HILMlLpd5inlpv6kd50z6TyhNDhC2uqGaikuTgTveH9NYPXYt9
+	 sLd0iS9beP1zg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0C5C43458;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35739C43602;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 28 Jun 2026 15:08:12 +0100
-Subject: [PATCH v5 05/12] iio: dac: ad5686: add support for missing power
- supplies
+Date: Sun, 28 Jun 2026 15:08:14 +0100
+Subject: [PATCH v5 07/12] iio: dac: ad5686: add ldac gpio
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-ad5686-new-features-v5-5-577caadbf7c0@analog.com>
+Message-Id: <20260628-ad5686-new-features-v5-7-577caadbf7c0@analog.com>
 References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 In-Reply-To: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -55,11 +54,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=2460;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=2164;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=Tr442c1u34XlsfiJuHQO8gjG3hY5veMoFtLrjc67lHs=;
- b=WUCjcdryK6BP4v+i+5TYZ2rFrgnfIeiy/YtXR0mqJMQgepWC9xo5/hXkUZsuN+L2l4M1dfzea
- H9NKyvC49jMDqMjb/Y89DGNTuvAG2e0QmXDXt3IUPoD+fdfQF5bh/xO
+ bh=qIXIbMOm8r3LJQkfBJp1eZbsYSUAGUStilUJvzLUnp0=;
+ b=Xwpwtgo/LRf3N2JGHOD/m1FCieU15KCdwdB33Xv1IewkQqwAAWymgp2nPVeTxuxL72ka64pKk
+ oyX0/XcZDSOCWH/3Dyz6A1wb4CHmLT0Wh/KNYgxUEhLrh/MNR43QfYL
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,66 +68,69 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Get and enable regulators for vdd, vlogic and vref input power pins. Vdd
-is the input power supply, while vlogic powers the digital side. vref is
-replacing vcc, which is being deprecated, but still supported. The value
-of vref_mv is checked so that a device without internal voltage reference
-cannot proceed without an explicit supply. For correct operation, vdd and
-vlogic are required, then devm_regulator_get_enable() is used so the
-driver can still work without them by using the stub/dummy regulators.
-Error report uses dev_err_probe(), which helps debugging an init issue.
-A small delay is added after the regulators are enabled to consider for
-the power-up time (4.5 us).
+If wired LDAC, should be asserted when unused (pin is active-low), which
+allows for synchronous DAC updates. This will be used to update all the
+channels at the same time when adding buffer support.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5686.c | 6 ++++++
+ drivers/iio/dac/ad5686.h | 4 ++++
+ 2 files changed, 10 insertions(+)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 5840fda4b011..e2ebabca6887 100644
+index 8ad8931a3d7f..713fe71ad1e7 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -8,6 +8,8 @@
- #include <linux/array_size.h>
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/delay.h>
-+#include <linux/dev_printk.h>
+@@ -12,6 +12,7 @@
+ #include <linux/dev_printk.h>
  #include <linux/errno.h>
  #include <linux/export.h>
++#include <linux/gpio/consumer.h>
  #include <linux/kstrtox.h>
-@@ -484,12 +486,28 @@ int ad5686_probe(struct device *dev,
- 	st->ops = ops;
- 	st->chip_info = chip_info;
+ #include <linux/module.h>
+ #include <linux/regulator/consumer.h>
+@@ -521,6 +522,11 @@ int ad5686_probe(struct device *dev,
+ 	fsleep(1);
+ 	reset_control_deassert(rstc);
  
--	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
++	st->ldac_gpio = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_HIGH);
++	if (IS_ERR(st->ldac_gpio))
++		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
++				     "Failed to get LDAC GPIO\n");
 +
-+	ret = devm_regulator_get_enable(dev, "vlogic");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable vlogic supply\n");
-+
-+	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-+	if (ret == -ENODEV) /* vcc-supply is deprecated, but supported still */
-+		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
- 	if (ret < 0 && ret != -ENODEV)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to read vref voltage\n");
- 
- 	st->use_internal_vref = ret == -ENODEV;
- 	st->vref_mv = st->use_internal_vref ? st->chip_info->int_vref_mv : ret / 1000;
-+	if (!st->vref_mv)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "invalid or not provided vref voltage\n");
-+
-+	/* 4.5us power-up time: Datasheet Table 4: Timing Characteristics */
-+	fsleep(5);
- 
  	/* Initialize masks to all ones */
  	st->pwr_down_mask = ~0;
+ 	st->pwr_down_mode = ~0;
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index a06fe7d89305..c424720f8f72 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -60,6 +60,8 @@ enum ad5686_regmap_type {
+ 	AD5686_REGMAP,
+ };
+ 
++struct gpio_desc;
++
+ struct ad5686_state;
+ 
+ /**
+@@ -119,6 +121,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+  * @dev:		device instance
+  * @chip_info:		chip model specific constants, available modes etc
+  * @ops:		bus specific operations
++ * @ldac_gpio:		LDAC pin GPIO descriptor
+  * @vref_mv:		actual reference voltage used
+  * @pwr_down_mask:	power down mask
+  * @pwr_down_mode:	current power down mode
+@@ -131,6 +134,7 @@ struct ad5686_state {
+ 	struct device			*dev;
+ 	const struct ad5686_chip_info	*chip_info;
+ 	const struct ad5686_bus_ops	*ops;
++	struct gpio_desc		*ldac_gpio;
+ 	unsigned short			vref_mv;
+ 	unsigned int			pwr_down_mask;
+ 	unsigned int			pwr_down_mode;
 
 -- 
 2.43.0
