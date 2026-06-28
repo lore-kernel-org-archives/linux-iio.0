@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9720B3ACA7E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85393AD50A;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782655794; cv=none; b=DFHPu2ejeTldWpcyiI9ubezsmR6Z2/L/fABE5UtfQEsT8IAGf4MKokX4OIYD+RjB3n+BuawtyV0kjlk7WTjL/Nvd9ahsiSU8KAwuD0RZfaOmcfF4K+/QU6yjO9xwmBSGkerk4yd12IASf6lzxdsq8aorBIM4M8fWlMq1+Aseit4=
+	t=1782655794; cv=none; b=UEBLAicvGj52V6eXrjnpBA8NYR1RvlVhGHZYkO0CsZq9uGnVBEqv0l/2szTm36MLJ3hXodXwEIQipS23QRWWTLwTKS/JhUAPOrTg8WCHkTxnad7ILkRsrB8jbZd0dMRYvR+yYGqtP0n5CQakLsiP39iSKlszRraxvJRsF0imPfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782655794; c=relaxed/simple;
-	bh=a5ii237YAQbZhAWbgzsaBxeKq5PZFGzly8bdIQIY/9k=;
+	bh=vuJrbA1/e73HNBeoWF81JTKUVJu7t5ni07UQGboXAm0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MqOeXos6s1v4Rs7MzbA8zC530285TKksvV3/sej/jJ6apAjVR6JRUu4rKB+/5xIbEZt49hQIQSG0D4BFB0bt++IpocD+uHChRColGCljL3ik/a0i5qbMp4wqZOVvL2qUZEXa2qEBnkrDoz21ZQmilfIiuZ04C36HIpMjD2mATs4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FQdQFHUg; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=VgF2GcAT4mRKTJCMB7FCRkvlQB44HBTh1ZjBtbWqy2Z/B7nyK2MrSEvg0WsBFyl60rkmYkTP55cuHTlRQzWE4sf3B/V5YDqgu8YGyk5h5Y3gMzNoyJw6jCrvCdTDfdwvIh6PSbl91FZKEfrq4N3uM6PeJvhxZ/ejH3fSQdHUYZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b4+WmeIs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FQdQFHUg"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3E00BC4AF16;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b4+WmeIs"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83B4FC4AF09;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1782655794;
-	bh=a5ii237YAQbZhAWbgzsaBxeKq5PZFGzly8bdIQIY/9k=;
+	bh=vuJrbA1/e73HNBeoWF81JTKUVJu7t5ni07UQGboXAm0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=FQdQFHUgxNxKekj0mGh6PotTJBeTUsULvHVM77h7t1rQcxujvO2XBkwPpbegNRVq1
-	 3bTiCldsBLbZV93+G+iOVMaxRBMUMeVRc7mWRNUUNW/tl1NySjE/yNnBuHLH6u+ysL
-	 JhniaCQr8Qtob4AIwmdDa7coqZ0yOrHzNVZYbyWgDJsULcJGqV+SaIzmlwd6IdCXj8
-	 eGSCtv0my3JdcjXjNrFkQnJpt4Qgxz/gtuUFc4SSn/+rFVXpOZBMBLBZR4/s5ZmyJS
-	 4jMMs+GQObgUt7L3HILMlLpd5inlpv6kd50z6TyhNDhC2uqGaikuTgTveH9NYPXYt9
-	 sLd0iS9beP1zg==
+	b=b4+WmeIslh92hLatkpEfzpKuUESiHGbrD7xtIkt8Rb+7Z8os2t+PDXL/Xccnt6Wrs
+	 ynlHJ6uBY9V59+Tlqcmo3gSh8hKiocmKgsh4uvOWDECvxPMG17xEgSQVwjhmBhnLYu
+	 npbxhaagChndWyIgNWl3Bg7SGzPIGW0tMNrasAQGS06d0cnEflcd05l3B2jKmvsJ0a
+	 LNWTdaYBOx99pCOhnCJrALjYgd0gZjrzEq7qsF6kF2kwO5Ard4x3LYH+3HCK7Rai/z
+	 tOaDwr8vP1cj1I+Uxze+3D14vcGZ+kbAdi0hNznW1oOjTJVHTvTdk+GU+PXM4eU6xM
+	 JyB1+tOSdbC0Q==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35739C43602;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E03C43458;
 	Sun, 28 Jun 2026 14:09:54 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 28 Jun 2026 15:08:14 +0100
-Subject: [PATCH v5 07/12] iio: dac: ad5686: add ldac gpio
+Date: Sun, 28 Jun 2026 15:08:18 +0100
+Subject: [PATCH v5 11/12] iio: dac: ad5686: add triggered buffer support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260628-ad5686-new-features-v5-7-577caadbf7c0@analog.com>
+Message-Id: <20260628-ad5686-new-features-v5-11-577caadbf7c0@analog.com>
 References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 In-Reply-To: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -54,11 +54,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=2164;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782655792; l=3808;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=qIXIbMOm8r3LJQkfBJp1eZbsYSUAGUStilUJvzLUnp0=;
- b=Xwpwtgo/LRf3N2JGHOD/m1FCieU15KCdwdB33Xv1IewkQqwAAWymgp2nPVeTxuxL72ka64pKk
- oyX0/XcZDSOCWH/3Dyz6A1wb4CHmLT0Wh/KNYgxUEhLrh/MNR43QfYL
+ bh=8YNBa1t97djETCIHMzXdYYPUMI9elKUl5NqrgUX4kDc=;
+ b=yuaqXx4IzF74dL0b3XTf7JOHQQet3iLdmG/3LWFztOfwF/Yd1WSvSPY5Es7H7eIXIl3HcNtZN
+ YZq81wcpZ9xCsZ5Y7ff1KqIXo2aqR4nuH2tGwzMb6II3ZRVhwXQAHuR
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,69 +68,128 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-If wired LDAC, should be asserted when unused (pin is active-low), which
-allows for synchronous DAC updates. This will be used to update all the
-channels at the same time when adding buffer support.
+Implement trigger handler by leveraging the LDAC gpio to update all DAC
+channels at once when it is available. Also, the multiple channel writes
+can be flushed at once with the sync() operation.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.c | 6 ++++++
- drivers/iio/dac/ad5686.h | 4 ++++
- 2 files changed, 10 insertions(+)
+ drivers/iio/dac/Kconfig  |  2 ++
+ drivers/iio/dac/ad5686.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
 
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 657c68e75542..5f14fcd780e2 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -240,6 +240,8 @@ config LTC2688
+ 
+ config AD5686
+ 	tristate
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 
+ config AD5686_SPI
+ 	tristate "Analog Devices AD5686 and similar multi-channel DACs (SPI)"
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 8ad8931a3d7f..713fe71ad1e7 100644
+index db175e77b0b7..3120e6983d9e 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -12,6 +12,7 @@
- #include <linux/dev_printk.h>
- #include <linux/errno.h>
- #include <linux/export.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/kstrtox.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-@@ -521,6 +522,11 @@ int ad5686_probe(struct device *dev,
- 	fsleep(1);
- 	reset_control_deassert(rstc);
+@@ -21,7 +21,11 @@
+ #include <linux/sysfs.h>
+ #include <linux/wordpart.h>
  
-+	st->ldac_gpio = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->ldac_gpio))
-+		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
-+				     "Failed to get LDAC GPIO\n");
-+
- 	/* Initialize masks to all ones */
- 	st->pwr_down_mask = ~0;
- 	st->pwr_down_mode = ~0;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index a06fe7d89305..c424720f8f72 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -60,6 +60,8 @@ enum ad5686_regmap_type {
- 	AD5686_REGMAP,
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #include "ad5686.h"
+ 
+@@ -243,6 +247,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
+ 		.address = addr,				\
++		.scan_index = chan,				\
+ 		.scan_type = {					\
+ 			.sign = 'u',				\
+ 			.realbits = (bits),			\
+@@ -467,6 +472,60 @@ const struct ad5686_chip_info ad5679r_chip_info = {
  };
+ EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
  
-+struct gpio_desc;
++static void do_ad5686_trigger_handler(struct iio_dev *indio_dev)
++{
++	struct iio_buffer *buffer = indio_dev->buffer;
++	struct ad5686_state *st = iio_priv(indio_dev);
++	u16 val[AD5686_MAX_CHANNELS] = { };
++	unsigned int scan_count, ch, i;
++	bool async_update;
++	u8 cmd;
 +
- struct ad5686_state;
++	if (iio_pop_from_buffer(buffer, val))
++		return;
++
++	guard(mutex)(&st->lock);
++
++	scan_count = bitmap_weight(indio_dev->active_scan_mask,
++				   iio_get_masklength(indio_dev));
++	async_update = st->ldac_gpio && scan_count > 1;
++	if (async_update) {
++		/* use LDAC to update all channels simultaneously */
++		cmd = AD5686_CMD_WRITE_INPUT_N;
++		gpiod_set_value_cansleep(st->ldac_gpio, 0);
++	} else {
++		cmd = AD5686_CMD_WRITE_INPUT_N_UPDATE_N;
++	}
++
++	i = 0;
++	iio_for_each_active_channel(indio_dev, ch) {
++		if (st->ops->write(st, cmd, indio_dev->channels[ch].address, val[i++]))
++			break;
++	}
++
++	/*
++	 * If sync() is available, it is called here regardless of write
++	 * failure to allow bus implementation to reset. In that case, partial
++	 * writes are unlikely as the write operations would just queue up
++	 * the transfers.
++	 */
++	if (st->ops->sync)
++		st->ops->sync(st);
++
++	if (async_update)
++		gpiod_set_value_cansleep(st->ldac_gpio, 1);
++}
++
++static irqreturn_t ad5686_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++
++	do_ad5686_trigger_handler(indio_dev);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
+ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+ 		 const char *name, const struct ad5686_bus_ops *ops,
+@@ -569,6 +628,13 @@ int ad5686_probe(struct device *dev,
+ 		return -EINVAL;
+ 	}
  
- /**
-@@ -119,6 +121,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
-  * @dev:		device instance
-  * @chip_info:		chip model specific constants, available modes etc
-  * @ops:		bus specific operations
-+ * @ldac_gpio:		LDAC pin GPIO descriptor
-  * @vref_mv:		actual reference voltage used
-  * @pwr_down_mask:	power down mask
-  * @pwr_down_mode:	current power down mode
-@@ -131,6 +134,7 @@ struct ad5686_state {
- 	struct device			*dev;
- 	const struct ad5686_chip_info	*chip_info;
- 	const struct ad5686_bus_ops	*ops;
-+	struct gpio_desc		*ldac_gpio;
- 	unsigned short			vref_mv;
- 	unsigned int			pwr_down_mask;
- 	unsigned int			pwr_down_mode;
++	ret = devm_iio_triggered_buffer_setup_ext(dev, indio_dev, NULL,
++						  &ad5686_trigger_handler,
++						  IIO_BUFFER_DIRECTION_OUT,
++						  NULL, NULL);
++	if (ret)
++		return ret;
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_NS_GPL(ad5686_probe, "IIO_AD5686");
 
 -- 
 2.43.0
