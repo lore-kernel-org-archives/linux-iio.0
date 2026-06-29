@@ -1,117 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF2D44A71D;
-	Mon, 29 Jun 2026 16:11:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6A54279FC
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 16:27:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782749506; cv=none; b=c7oS3bsCWPgCaV9nb34Lq84cLJHdI1nzjuPqr9cX1gPASAFfd1UO1lKXII2tNLRXRUsPB1ju/Dy6RoTb8iU15Npf88P3qnmmIvAKZLfv4cWOVBhCKr57kYNY1GtUT0m9erkw49mNhVfi5nwwEy7rf8pfJ7GpmcN5CuZjBcu+0iA=
+	t=1782750460; cv=none; b=QQQ99lSmTQtisIkYfr6FlI40uGCs33RL1kEzZ8K42Fy2dxPZ5WnCF31uw7jCU/82Cc+IGtKHk2J5M8Lyj8ISq0Z3iOCv2AnQfR2RD3RI2C5IuxRWoxuM5/mM+n9Ik6ibrgwJcx93zOXNE2VlvErme89jiFFOtWS28RmRprFxtj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782749506; c=relaxed/simple;
-	bh=k2rBsM5SdkD0PahKlRf1zlIPWlnImleJYr/aShQoNLE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VVBFpl3PadQt1LpONgHc80oxx+nY9N4wy1b8zv7TEdePQFRM4HZNdBkxjjT3ivmAp7MX4aujHqsgkOjBpHLrpaRhAfqlm0bFYvmANNPuX6vxotqp+I6l2cjR0ZZz65Tiy4WSHPDtPvWy31jZhZ2MAHSJ1mU20cPGVNzs2bQTaF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kHNpBNlX; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782750460; c=relaxed/simple;
+	bh=LRBuWO7sXtjtuQCETz0veDvzO9V3r3MdLYVKJFAqd54=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=ku1jUsixWJeeRT7IXHhcRgB+YP1vU4LxtULwImWa9CMVtS7BUGPinwofQVcOlXJeoiJxD5Zc2K4G0xparP50qdTdc2HUyJdG7RbQSQS5G4HdT5CaBUko9OSXnNMHcG6yMk5Pz4ZxBPipuPOOgT2/zhOXZIajeGWrfNW2GcJ7KKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B2RjEyD4; arc=none smtp.client-ip=209.85.221.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kHNpBNlX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782749506; x=1814285506;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k2rBsM5SdkD0PahKlRf1zlIPWlnImleJYr/aShQoNLE=;
-  b=kHNpBNlXhQj4/E7S7YPuj0FpErruG3cu+qzlG7gCBnifniZj8KrOx3+I
-   SmcL3gqqPIfL6ITmeJs6s7wVD1z4nUSxVkVNiw4q3hwFRt9oMzv+h/FmZ
-   4hX1ZWQy1xZE8VtDPK7VPHKy9BmjiinGHXx+ztEi5birAFOEvpPvdWX9c
-   u66lTe2wC4CNh80A3GjXV7J6bEFVekTkoHEAJ3bvpDhBjmrksXgSBt/ol
-   CgHnshbaSYrO5rgk+TSmoBDqMhb5thdLkrp24l3chdnWPYarZ98oxhYAO
-   J+oWKrImVa+qikoy2dyAXZeli22u0zZSV0+nVfJWnQwXYnseDlcZMdkuh
-   Q==;
-X-CSE-ConnectionGUID: xjiP8tYgRBa61Ny7fz2teg==
-X-CSE-MsgGUID: eSgb4OJqTa+C4tb5aybE1g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="94938854"
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="94938854"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 09:11:45 -0700
-X-CSE-ConnectionGUID: DtAxxEOlQGegv7F6X42NZw==
-X-CSE-MsgGUID: UMWxxFmBQFyUk13glEiYNg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="250302466"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 09:11:41 -0700
-Date: Mon, 29 Jun 2026 19:11:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, julianbraha@gmail.com
-Subject: Re: [PATCH v4 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and
- similar ADCs
-Message-ID: <akKZOq6DV5x1FvAc@ashevche-desk.local>
-References: <cover.1782397418.git.marcelo.schmitt@analog.com>
- <0abf862eeb277ae82262d09b11b1446f04c47be7.1782397418.git.marcelo.schmitt@analog.com>
- <9c6e0a74-c9c5-43ee-8eca-ae1667c51c32@baylibre.com>
- <akKHv7j22P6KczXb@debian-BULLSEYE-live-builder-AMD64>
- <3a96a20c-f435-4b98-9e95-26a28bd06e7b@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B2RjEyD4"
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-59ccf81e74bso1184155e0c.3
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 09:27:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782750458; x=1783355258; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hLchI3E0Uu7WQf0kAyF2SZwR4eWIe2krp0NcWRo6lD8=;
+        b=B2RjEyD4TNmLFibeoaiAy+6fjR7M1MssYu790doGpQ+5UZjuZQdaijLLY1YOc35JvM
+         AP4Hhj7dB6Vd4cUHkqRiVFoYPx54LrPKz/5Nv3gDsGhrgf1W815o9qNco3Kiay4yLklt
+         +e+iJFSQN5HdV41QPsq5zpM1f3iu7XSTAN5XwTURNdvNCbQdwO1zam02ZF5S1KAPK15k
+         sIFMpyO1d8s/hWIBzJ5LYzV6I6Q6MAGenHO6PYfLtIZy1zpG2t0kHO2k2H0IkEetkjEw
+         Q6VaQ2VirejOGdmpEI2Rh1O5M8iXchmQw+MDVKAO8BtjS0S9r9DSqhsnTBu/snXtg6YR
+         0bNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782750458; x=1783355258;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hLchI3E0Uu7WQf0kAyF2SZwR4eWIe2krp0NcWRo6lD8=;
+        b=AwdVQUfapYGt+yAf3QNi+Rj7d/9BzWE+B5b9accgX5BM0HRpZn1knnDqdrxFSYx5Hd
+         caEqmJjfm1Adc41Xh1ChxAY1yXKfECvzM87Ed2o3KPO0K6m3yhm5IJaRX+bpls+uM17g
+         TnjDMp4m94+uAq36jVAWTMTcHGjfmC2y+fg4uExr/GajoGlAFYpRRGZSBgrAxKGJHXwZ
+         aYgbt74uej5CwsIJICCOzXpa463aGr1n8g1gIXUr6V3/5KtWHDO+BCf5fP80/0QlCT6w
+         f6HmaXF0DE5MgIZ0QNiaUDaalhxEuFv+udxIFGCfldh++cfUqTgJTjKqIpybtvBOiBBZ
+         Xqzg==
+X-Forwarded-Encrypted: i=1; AHgh+RpGK69bHcwZWF7lMEPErbGcLUSquKhiuqMs9dUTqV89AqLeKDSb3YRJsplGL/lW6fB3QCmGUoAoOZg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxy/f5X/lCkAaWxY9npumWHZ3r2aW4yRSuAdlyWZIdGskpRHpb1
+	2DgPj3KQGfMXh82EOTdr17g3nRNU4cCkml7NiU9s+0Pi+u1xCAKQAYcD
+X-Gm-Gg: AfdE7cm2QGog4s9G2yxxNltS6g2W6DjcjEu9HMQjJ5KlrIxETThMqNV5G59zZT5StiB
+	DHdJrX2WKZILXS8fmeiQ4ZGWlBo87WfxL9p04AoNduFAO5/Y9olAh0Qcea5CfjjdRahNvhLuyN6
+	/tsM4BGH/2NIhcwbheNsWIceVZiWBeZRI+kCK7aMnKdfXUZRj1leGXCe3Au0bBgXSWaILjMVOvJ
+	Re+jG+hdqcUet99pd90VdjyKSacOJwImydd+xUthK28mwJbli8dQiWv7ccyeq3w/H5quhabF/ih
+	vyIkojVbxLPHuDMsb+cD6RzvOEkNBxLG08PFoH3wreI4KL89inmzCMSQ6inKYWAbJgpBHVmy5m1
+	EEuegRrjQlGx6quTS3yq8IqQRisKHvZwO6u/3im/XRJsnSFhTxwwI1kaCFBwI1WiO7Mb40fMlKi
+	91iR4=
+X-Received: by 2002:a05:6122:3117:b0:5bd:9f23:a74b with SMTP id 71dfb90a1353d-5bdbed8d55dmr293272e0c.9.1782750458347;
+        Mon, 29 Jun 2026 09:27:38 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bdb2c1e818sm1119039e0c.5.2026.06.29.09.27.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2026 09:27:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3a96a20c-f435-4b98-9e95-26a28bd06e7b@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 29 Jun 2026 11:27:30 -0500
+Message-Id: <DJLOAISPZLG7.VZYX8B16QU4K@gmail.com>
+Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
+ <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
+ Dooley" <conor+dt@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+ <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
+ <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
+ <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
+ <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
+In-Reply-To: <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
 
-On Mon, Jun 29, 2026 at 10:16:16AM -0500, David Lechner wrote:
-> On 6/29/26 9:57 AM, Marcelo Schmitt wrote:
+On Mon Jun 29, 2026 at 9:21 AM -05, David Lechner wrote:
+> On 6/28/26 2:12 PM, Kurt Borja wrote:
+>> On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:
+>>> On 6/28/26 12:36 AM, Kurt Borja wrote:
+>>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
+>>>> integrated PGA, internal reference, excitation and burn-out current
+>>>> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
+>>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
+>>>>
+>
+> ...
+>
+>>>> +
+>>>> +patternProperties:
+>>>> +  "^channel@[0-9]+$":
+>>>> +    $ref: /schemas/iio/adc/adc.yaml#
+>>>> +    unevaluatedProperties: false
+>>>> +
+>>>> +    properties:
+>>>> +      reg:
+>>>> +        maxItems: 1
+>>>> +
+>>>
+>>> If we want to allow single-ended/pseudo-differential inputs, then we sh=
+ould
+>>> also allow single-channel (positive pin) and common-mode-channel (negat=
+ive
+>>> pin) properties.
+>>>
+>>> This will also require additional common-mode-<N>-supply properties to =
+allow
+>>> for the negative pin connected to something other than GND.
+>>=20
+>> Ah interesting. Why the N though? wouldn't a single supply connected to
+>> AINCOM be enough here?
+>
+> In theory, any AINx could be a common mode input by connecting it to
+> a constant voltage supply.
 
-...
+Technically yes, but there is a pin named AINCOM intended for this
+purpose. Can we do a simplification here? I propose having
 
-> It could use `_offl ? ...` in the macro for that. Not a big deal to me though.
+  common-mode-channel:
+    /* AINCOM pin */
+    const: 10
 
-Personally I am for a full spelling here.
+That way we would only need one common-mode-supply. Would that be okay?
 
-...
-
-> >>> +static int ltc2378_regulator_setup(struct device *dev, struct ltc2378_state *st)
-> >>> +{
-> >>> +	int ret;
-> >>> +
-> >>> +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
-> >>> +	if (ret < 0 && ret != -ENODEV) {
-> >>> +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
-> >>> +	} else if (ret > 0) {
-> >>
-> >> Else is not needed here.
-> > Why not?
-> 
-> The if returns unconditionally, so else is not needed. This is just a general
-> principal.
-
-Unfortunately in this case ENODEV will go further, I don't see full context,
-but it may lead to something unexpected.
-
-Personally I prefer the ladder of
-
-	if (ret == -ENODEV)
-		...
-	else if (ret < 0)
-		...
-	else
-		...
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=20
+Thanks,
+ ~ Kurt
