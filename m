@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEFB314D37;
-	Mon, 29 Jun 2026 23:12:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E9A3590A9;
+	Mon, 29 Jun 2026 23:16:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782774721; cv=none; b=lLjTb/gZrAqe4eIYiOPRaxCqzpMF55iNLB81XF/eVVz8h6S+dhYg2ZZB0G3F3fgJXnV3ABFhzUEW4s1QGu0YFCebH7EQ09j4/F9lYDlb5UZw21Oi5ObAWcTCAWfOVQZ9A+lde1s7mKD76yoyqQ40L9/MBmKrpp+lT3+3aM9DINI=
+	t=1782774980; cv=none; b=VhdSncYCzzEIMHIUazDcwMRIJZBMG9AU0c3XN1I/D2l0C0Awik+wfkWmrNay6xOZdcRr8zr6V2IiL3OW0kDcFotJeqIm5Civ4Mg4o23EMTxefimVtNyqsLxq0EtNTMPsZpUTs/easmr0FeFuDQUHKVBHZWCKxbMHjTcX6XTlI+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782774721; c=relaxed/simple;
-	bh=5eSPS1L8BQmjbMwDIPV3kjJcdPDyqUm0+JGZ8TQxENs=;
+	s=arc-20240116; t=1782774980; c=relaxed/simple;
+	bh=dEIWrsthZfZnNsPgPP66KxlxsV1d/VyZZ5OBUtcCPY4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m3he4n58v6eDR/ayD2T4WClP7skWi+31KaSYv/i+TzuZfq7Y2zetngxckHaxdcOTCyONvjNhZvpr3qXoLlGl4wAic4jBbAe4QcIPWusmEhpOIIsJ0NsnCPOJapjUIbqBDOw5rYqUaLv4OIEKoOzUk/IyLNZTo12kZ+1VnSrfaWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZWvo4US0; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=awEZtg9HqXNE0y7BEJDDewuX1P/oSx98Ojgs1SF2wLpaLeyVblWXNzr2UPFuBinzzXtkMs9+HLb4oZqHFGXdzQkMqTjuGpmKYzWflBOPaJ+BzGEyBlvcX7dcEjg+GccGYi/a7w1dorUfxOlrm6lFQejcLzQ8Y3duC67ZpGyQ0JI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lN7Su+LK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZWvo4US0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723A11F000E9;
-	Mon, 29 Jun 2026 23:11:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lN7Su+LK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56781F000E9;
+	Mon, 29 Jun 2026 23:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782774720;
-	bh=WMvLBwoHlJ8NL9XrKxSe027I0Kj6Px2d9IlDXe9ctYc=;
+	s=k20260515; t=1782774978;
+	bh=PhPgvVGb9kDFBki+zrqy6z3Ddadn7ijrcnOJFx5NwWQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZWvo4US0fagZQG+Wpn5FdH/K84caxgp+Gi4UGjKhs2NYWSLDHlk3bJACpqmmIhozQ
-	 HTrMTp5uB7sHbQS2Tsv11XMCVJ0Z7wm2DyCAnvkbUhDlwPEcuaJMKYEaHItEx5RUYc
-	 kCU52xeMRxnwz9RRx15xD/B3Lzcp1yqLENlsbvzNSLbfRLdrVNjKVZoo3jQN2+y3E3
-	 RwEdpqlhPPxGKSwz39yVqmxiI8i7n8MT4/NkNbPPAGKA0VKdknE/rgSXoFwjD3n5+r
-	 azOJhVcgQYul3nsapk7esJaLmDl5K7lHDhK5FnlUvNovyvRbFFtFrpH2dR0hjRhyn0
-	 mQ1A/aAoK7B+w==
-Date: Tue, 30 Jun 2026 00:11:56 +0100
+	b=lN7Su+LKZOpW5RJfrMR561D9OtESgqjIejp23z3Pg0q6H3Z4QLMBI9NMbT9VyFjlK
+	 N8naL3kNn0XwEKJ2157re69t0dlw5gjIflJ7aW9vZnJ1YVOKEtBwL4VUHPfO3aW9nS
+	 lSMsPcKSZisiqzYZg6A2WQn/PtWlzmq+VlcjKtbbvXCRU145sTeEl6NqrKp1MPp8Rv
+	 ex8mxrL0Pcg8HFjSbKfq+mVERtXc7dDGDuVsxUY+dpPcWIfK/PQh62+bKljFuHsGIc
+	 D3q8QCfXIOHgiwpG41OhmxqKsM5N71bzuiFniJPybRbnEzw3oaKgVeHPzWoavkS2ER
+	 Ya9GbG489/eSw==
+Date: Tue, 30 Jun 2026 00:16:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Moksh Panicker <mokshpanicker.7@gmail.com>, nuno.sa@analog.com,
- Michael.Hennerich@analog.com, dlechner@baylibre.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- skhan@linuxfoundation.org
-Subject: Re: [PATCH v2 0/2] iio: adc: ad7779: Remove dead code and redundant
- error message
-Message-ID: <20260630001156.61ef50d9@jic23-huawei>
-In-Reply-To: <20260628191350.583470a7@systembl0wer>
-References: <20260628145734.77191-1-mokshpanicker.7@gmail.com>
-	<20260628191350.583470a7@systembl0wer>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, kernel test
+ robot <lkp@intel.com>
+Subject: Re: [PATCH] lib: kstrtox: missing parameter description doc fixup
+Message-ID: <20260630001614.42ed1d81@jic23-huawei>
+In-Reply-To: <20260626-b4-parse-integer-doc-fixup-v1-1-25cc495af36f@analog.com>
+References: <20260626-b4-parse-integer-doc-fixup-v1-1-25cc495af36f@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,47 +47,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 28 Jun 2026 19:13:50 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Fri, 26 Jun 2026 10:34:51 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> On Sun, 28 Jun 2026 14:57:32 +0000
-> Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> > These two patches address review feedback from Joshua Crofts on the
-> > ad7779 driver:
-> > 
-> > 1. Remove an unused completion field that was initialized but never 
-> > waited on or signaled anywhere in the driver.
-> > 
-> > 2. Remove a redundant dev_err_probe() wrapper around devm_request_irq(), 
-> > which already calls dev_err_probe() internally.
-> > 
-> > Moksh Panicker (2):
-> >   iio: adc: ad7779: Remove unused completion field
-> >   iio: adc: ad7779: Remove redundant dev_err_probe() after
-> >     devm_request_irq()
-> > 
-> >  drivers/iio/adc/ad7779.c | 5 +----
-> >  1 file changed, 1 insertion(+), 4 deletions(-)
-> >   
+> Add description string for 'init' parameter.
 > 
-> You forgot to pull my Reviewed-by tags, no need to resend:
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202606250230.etPGuolf-lkp@intel.com/
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+> Recent change causing a build warning. This is to be a fixup
+> patch amended to:
 > 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
-Hi Moksh,
-
-Generally slow down a little.  You may well have gotten
-additional review on v1 if you'd waited longer and
-save both a little of your time and that of reviewers.
-
-For even a simple series like this I'd wait a few days,
-or better still 1 week between early versions.  It gets
-more relaxed if the code is already well reviewed and
-we are just dealing with final tweaks.
-
-Thanks,
+Thanks!  Applied as a fixup.
 
 Jonathan
 
+> https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=521b4ae3b5a47cf4ef5826016eecde08e8740bef
+> ---
+>  lib/kstrtox.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+> index 17357c4ae52c..bac1c057e1b0 100644
+> --- a/lib/kstrtox.c
+> +++ b/lib/kstrtox.c
+> @@ -46,6 +46,7 @@ const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
+>   * @base: Radix
+>   * @p: Where to store result
+>   * @max_chars: Maximum amount of characters to convert
+> + * @init: Initial value of the multiply-accumulate result
+>   *
+>   * Convert non-negative integer string representation in explicitly given
+>   * radix to an integer. If overflow occurs, value at @p is set to ULLONG_MAX.
+> 
+> ---
+> base-commit: 7667a80340e99fd45357d0c90ae05813b01bbfef
+> change-id: 20260626-b4-parse-integer-doc-fixup-6b2a5cd77a1b
+> 
+> Best regards,
 
