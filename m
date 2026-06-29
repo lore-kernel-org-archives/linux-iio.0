@@ -1,66 +1,75 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-b7-smtp.messagingengine.com (fhigh-b7-smtp.messagingengine.com [202.12.124.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD0C32DB788
-	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 18:55:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89051862;
+	Mon, 29 Jun 2026 19:06:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782759351; cv=none; b=luFza7ODZXScGUQ7LSmLKaa0OapE20WyD7YSJZgan5dGvxFOYt+m67ZKFhxBQysgsFKznRbswIYgXtfmcv94YLzOmmKeMgkkgmVHZii2GWz3V1w6L/zz5WnVL/1TwqGKyZ+ouMXdWXxbW3B3SpPDJVs2MOFM2g7j6CoaqApyGnI=
+	t=1782760022; cv=none; b=B/z19WE1ztmlfdbpNqNvAm+jYRnoVFpiq+UWWpiNJ+qh+tFtyhj+DoAOI/FLUKHvfy5QlpC9C2tXlaCQmNooBs+l3jwX0Vuj3USRckHQuL5pbACIaOXgkqS1ss6ThaUMa72Ok531490KSYTbcYX/TACAFSfwFkyGgYLzR28xyWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782759351; c=relaxed/simple;
-	bh=/tygSJ+Tz4c71hbnSUm6Y1+0DuA4LX1ppuFQ3tGuM2c=;
+	s=arc-20240116; t=1782760022; c=relaxed/simple;
+	bh=nhU7Djbv6tmVEyUKWvZQh0mf8KqAEoXfLhLl3F4PxNQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cfInBqinGeNmGtPwpOKFD6GQTyvbz1QS2TuOyRCLFweb5NHU9/XE4oIRP9KdfMkwRE9nkLh3KN6yVALVmAeOu/2gOQYk0u1Y/Kp3mVnHKYBm/0hEHMpJjMwOTc+I6WzKVliP4O1xpEKdZnjqQDB8hgHxenVhllbR5VnGFLYyEHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=S6WHVo05; arc=none smtp.client-ip=209.85.210.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 In-Reply-To:Content-Type; b=tJjB3EWv6ZMpwwfTTbNpfNL7qY44MopJtd0JVf8tqCzjRDycC67/szinUuBcYRX5q/UDR3Izb6ILs2hjz70DFEmhMR8Kno05ClduXCExkV2o+z8oHyjcXxQOWVBawXH+qEtabCHrOLdfmh8yRoSsuD+2NIdMigl4sue9/5FW2Sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=vdwaa.nl; spf=pass smtp.mailfrom=vdwaa.nl; dkim=pass (2048-bit key) header.d=vdwaa.nl header.i=@vdwaa.nl header.b=DypeOtQa; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=hxp4aYKf; arc=none smtp.client-ip=202.12.124.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=vdwaa.nl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vdwaa.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="S6WHVo05"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7e9c6ae2a79so1373389a34.3
-        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 11:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782759349; x=1783364149; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ACK0vFthHW+jDVGTIXTjlhgZggTZeawplRcDp+RV9vM=;
-        b=S6WHVo05v2RFcTru6gdeyY7VWJdY2lYOWekq8VBumRvcJXAUICpCAsqAWDYAN60qcD
-         KxLxWDvarwmdSrnugo7AApFhOGuE50ddUEG3Qg7A1HKg7Cr8JSPnisIRBaWgzWhb/sv1
-         u1+E7nuSouy649d+e6QAbZiVA0LdkqxyBe5iyP8aJqE4N1j6dfKyICeBhFcz2Q1oqO/D
-         Y6KdX7ezn75L5ZkO6PUPG2ipqx8oHOa1/cTGcrsY6t9UP1Z8QgnG+SsWEk279l+P0kX+
-         hlsBHpxZj3fvvVMghUQFQPHMEhwv5rScyrPeIgGtC/Z+u6yL3GKwFibdx8yI7qjL2LIb
-         Vseg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782759349; x=1783364149;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ACK0vFthHW+jDVGTIXTjlhgZggTZeawplRcDp+RV9vM=;
-        b=kLpzcuIv/X+GVJPu0Nc1ft2Sa9XuLN/+GJ2Nd+h/im/BHJjOaJyHtJik58uw7YStnJ
-         mwfZgFJgghrKDOkCryO0Eg3GOqg492EUJ+iMLeyReL1hiOJ7Dugnj8wjAOwawr88+6lL
-         kfsifak13hdUMKHwEcEpvZIyp83lgFB9RjobCzGp+UdIGVynIpP+k2Sfwc3fNCDG6XsG
-         RYaEUhht3IS9HeHHpPpWGsqj8T3mJlcfuQhPpXaoSAZS62RDNHh9TH7d75DHXZkcakFw
-         0tfdvu1ovphvc23cZqQqommdg7SgYRj5Di3/UcYnBPQ+jStHQFwlIsvQDwqLQJF1PrUl
-         YneQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9vMYycXpJBnGaEaAu6v6SWGDlvrwajPL/EhWozKr+3tHPbE9dGgMqHwq1MMrsQqL3iU/LGpZosRao=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyb3Ig6qqjUX42O0BRR3QaLBcvraL0e3g0y6piQnMF/7qpPXrVx
-	YMZB9lI0S74S3QB/c1rLorwek1kRqV2uVSms0YqmoHK2fE5kmHydkc+oT60VPiIIttU=
-X-Gm-Gg: AfdE7cno4nZIJg5/291Plnm1RAZdjTpizMusJm39ZXByo+/KtcpW8Z3L96UMDpPPXZc
-	gHMvmN0g09MfGgqw0ExRIbwrh4VcDl1kzBo2MDyd9zoVAFbLGF7Y3kq17+E2pHbq501cqfA7LrW
-	k7w1r+UL2Gp/jR19uB/sqwIxZxxZMrBOErWeMT+JfFB4j0vaZJfbUSsH316+1Z51xPjLxcG69yL
-	qonmt0d9hijylwUXewEpe/vdT/agH7oRK9zBvCtRbuHFf1eeVg5hU7SUIV0haz/AceQmOvVjesC
-	aC+pEAwdI7J5QmV7LCGnEK3PFQeR3odRnCH6rANQEDujDFfnSzIB+qFzIdMbB0vP6gD38jc5Lki
-	ETeK+zhWxfii/dE4ZbUmKl2nRzPWF2AOA9efxYFQ+803DYIOv/ZzYiW0KdK1F4oBSusz33j6d/7
-	MxhNo5JxNpLQy7QR7esug3xxbV6lzgHLiHMG8vWwkVHIe1B49zyMzvsfWTySTYOlg=
-X-Received: by 2002:a05:6830:6d26:b0:7e6:ed97:ce52 with SMTP id 46e09a7af769-7e9ec724d6emr557381a34.20.1782759348858;
-        Mon, 29 Jun 2026 11:55:48 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:3533:aa22:9a69:df1c? ([2600:8803:e7e4:500:3533:aa22:9a69:df1c])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ec2ba18esm461442a34.16.2026.06.29.11.55.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2026 11:55:48 -0700 (PDT)
-Message-ID: <2cdb9cd4-8e6c-4bdf-b14e-2191b104d229@baylibre.com>
-Date: Mon, 29 Jun 2026 13:55:47 -0500
+	dkim=pass (2048-bit key) header.d=vdwaa.nl header.i=@vdwaa.nl header.b="DypeOtQa";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="hxp4aYKf"
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 9EC497A0021;
+	Mon, 29 Jun 2026 15:06:58 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-03.internal (MEProxy); Mon, 29 Jun 2026 15:06:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdwaa.nl; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1782760018;
+	 x=1782846418; bh=I9CcrgL+/WpP2YHpk8trygs1Bqb2qHms0/iSD2RKiTs=; b=
+	DypeOtQaqqIsY/4m+77seCY//lxD7mYGrNtQ8Ghsi71xtQDI7XeGeR6Bh2Zw1BRF
+	St4O5hIDbWxQtGyxO9MFau+WJXVmA7VTyHICx50Lg1lkWCZXTYeptEXCSDMxl7tm
+	n7ndTXgRHDshastBp/LYp9pS+DTOxGKcirjBkI3DeLqviSXrkc2MuIBLUEQG8wjV
+	jZQYF1AfuucU0+93JM0v4cRJi2a8mzc/ocWxf8ZwT4Z5P4aBu+Ns/Yg71RoTkwIv
+	XVPzGnJvn3Yy3oXAin28cV2l4oNH78XjempgatZpCI6qJl6gJ9YAqdqGRUG01zLq
+	qa5OhpW3JVX6O49QQ5S3LQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1782760018; x=
+	1782846418; bh=I9CcrgL+/WpP2YHpk8trygs1Bqb2qHms0/iSD2RKiTs=; b=h
+	xp4aYKf/G9pZn9JD3V6JVB+SxoL/0G9Zk0M+TwVCvUxZYWY98jQqgMXLgkFqLmdl
+	wJJyc2O/f2PEDDt9Ud59KiAFRzHf51zZFg9OoIRq5gqaCQ1BI3rU+FBLXsT1cYqG
+	5ttNxftTPYgaRWEfw7m/aqWnl9RfxJEXGbcUKca4egmnWgGRZhH+9aLA43nfKVZD
+	5SYyNO9wTNhwurtBoXL5m0jl/iPrdg7FLOGadsTfGe17mb0SRsCcA69kWvkbjcg1
+	QzOX7qOvh+doTdja20KqJw8tULmRB64e01xz4DRnwbLccLSHg48K2nu5XZzre3jJ
+	gqxPb6shYo0yEqpff3sMg==
+X-ME-Sender: <xms:UsJCarLoZzK9WTI-PFNNRu-ElGMXsU6arx_ZJ7I16anKYTzwywmBYQ>
+    <xme:UsJCas8NhorXGlJlK5XyegvxuFiWYM8fqfcqW97C3jPXtcNdWIraQAnaBpxHKdXvn
+    oNJUkDrynQOwbddh8v_ODCVQyR34sUgOX_KEmrf7yTZKJSe2gkRyxY>
+X-ME-Received: <xmr:UsJCauIQkVXmlcW7RGYtwUw6UmZ07XPBbKl10O3sznHA-WM0I-R2fsy4LQNTX6L90Oo>
+X-ME-Proxy-Cause: dmFkZTGAfCFNSTpoSyNlJUm5MKWQhotOj1Gws0l0Mfuwrza+kPSCSZO2PG5tIWftryJA76
+    v1meXal0aA/LGJiqMn2Ylar6iSw2TQOVuT0wFyCxdQ6RfvtcJyRzd2vMF9XmV2Sp+LmwtQ
+    TuKAlkQL/IQNKPUG+psV6xTXyj0RGuPeByNkIQkxlu+Aq1Y0wRzzUWTGU1Vq4ATcauelQH
+    cxZwTHYEzKPHMYWHMKpgqTbgUt9kd6Da+x1WMBgzoLXJBKmGA5F+SL2FrsRV/g8stwvSN0
+    oNEpjcmjA/poTsI5aOODjZ1Uxxexh/W8zC6JpMI+vxCevs3BGlWzOT8BbgLK7EtrJacpHh
+    8JEF655Pi/2aucd0gsJpF62K+JNQaJ+UHuBFs5dPGmOY43YSf5Zkqmc8PlQGYWg1YfR30+
+    zDv3aK97gksMKzgStXfntYhkBRL3OEr7/TE85AqE1L0zeGXbpkifVwE0iCPrANuumYBIXA
+    ldv1d7U11NgrzpBGvnqprLCc4EiMKhEOZ/5FKadPYmLGv6n4sdnmzBJfARLHsg8SYbwVnq
+    3OO7mOIlhPv8jHvwSHETMvtbvSqqwRNAo7yUWEWSkD2UzxlSVE/8Od0irAq5Pj9a8Ko0xw
+    w5av4qa98i2VFHFN+uM9/jQwPSWwI//oKk+S33Gb9nyptb3PKsmAyE7uihMw
+X-ME-Proxy: <xmx:UsJCahmK3Z6xg8Gzjo95A85Ly5JuXNRBdNNw4tpnuPpcrK9f1kLRrg>
+    <xmx:UsJCaiNWXTOCcM5eFhen06D3v3qDkwnvhwpAzfRwQY12ZLxbN9esKA>
+    <xmx:UsJCan0Fkpfh9414CMwNZL47KL-fMGp23X0ihAyzAqM3THUd9o_XBw>
+    <xmx:UsJCahk3adL0ankiU5QLSNVvS2qNgP7MBYW-eWKenPSeiuiC8xSSrQ>
+    <xmx:UsJCarGWRTnKajrPwCfvsIxBX-bxjGzVYGYgfTI3Ct4ZzGxNdS5fd6-A>
+Feedback-ID: i2d0446dd:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Jun 2026 15:06:56 -0400 (EDT)
+Message-ID: <1235808b-34bd-4d9b-ba23-158ce3f113d2@vdwaa.nl>
+Date: Mon, 29 Jun 2026 21:06:55 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,90 +77,79 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
- changed in single mode
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
- andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
- devicetree@vger.kernel.org, duje@dujemihanovic.xyz,
- jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
- joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
- linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
- mazziesaccount@gmail.com, mike.looijmans@topic.nl, nuno.sa@analog.com,
- robh@kernel.org, sakari.ailus@linux.intel.com, wens@kernel.org
-References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
- <20260622221550.374235-2-jakubszczudlo40@gmail.com>
- <5e96801b-50dc-4752-8e00-1a80984ed997@baylibre.com>
- <20260629193329.34fab6e3@jic23-huawei>
+Subject: Re: iio: accel: dmard09: in_accel_scale always returns -EINVAL
+To: Mert Seftali <mertsftl@gmail.com>, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <CAA3NoopBN5qXGvcBY3M-oxXzez+up3-mXZF2kqtzDmnZ50T3Vw@mail.gmail.com>
 Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260629193329.34fab6e3@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+From: Jelle van der Waa <jelle@vdwaa.nl>
+Autocrypt: addr=jelle@vdwaa.nl;
+ keydata= xsBNBE6QLAIBCAC3O6LmF+GKvOh7IV00TG+EKAQHAwjESnHGJOW58lKK7eAYn62ZM1uy0+6h
+ yCMu5PD7+ND6U1gcgTTHYwNK8AaJt7yY4FRssgdcJk59uJBwROZtllotClJ893CuB6Wgr68b
+ 07gIRbENYrB8rEoGfpUG//8/ep7sY8PS03jnFb4ll6mPlUE2oQVdYOlXgF4f9qkkIi4SQeE2
+ MTuERaOrDuUNDlroJ7Yfx3J/rL5Qjn578/TKCAxg0pns6VIA/P9spRGmLhT4zP+OxZXeSZme
+ IxcwFdJJXHr4oGaZvqe1yHlMmKR98rrIfPWhkw2Ls/XIZIxf6prT0XyczbzBnC2y1JyNABEB
+ AAHNIkplbGxlIHZhbiBkZXIgV2FhIDxqZWxsZUB2ZHdhYS5ubD7CwHsEEwECACUCGwMGCwkI
+ BwMCBhUIAgkKCwQWAgMBAh4BAheABQJUX8WhAhkBAAoJEMBghjN8UHc+mFwH/jjN+Qob4O36
+ YiieajRwVLGuYdUDt9Z655oQYU8V4qbWf2tjUtqTYXrxLnaY6xQoYouRz9yFbh9dIKZb67ir
+ 7AeVgCOtWVesGxAlGH6EY5JBZcsN0v0ScsivqQAv/Mv+4HK+XM57YlyRagD8tkprYskioWHg
+ OwQfXAO6nlm4BJHWO9bHJUMgiGs7I190IKQG7iLBnJuGjsOFuy5KTLpnv+w7twmz0H+pkUPe
+ jVHfJlJWdN4v1PigpgpjOR6ZepSIggMk7dHsa6GNLUOzi61yYVFe60+EGXhwyJIqSt56a4oR
+ jMUcXaOugGr+JwC8Eq7Pg2+aFk+8fbe0oUzZJucHGnDOwE0ETpAsAgEIAK4Usb7B00WRxCZG
+ HtM973F7V4OhOKv4kZKduxtu71bVUZsTuzn4h+m8guJ51uY/I2icUrN9gJG5aEzRqPuQi2L7
+ KmZUjs3pscZWgUgiT8UZFDR6RuQ4k3CcWobsRCjYZdSblSZ8ccrLJE7xSbwKMXjAh2PEiaQT
+ lS6wQbn6mHv4y3H9QVHs7+jXbmfHCxnVcwLqRmpuegSmezDaL5TlSc102voiXinhrWEZUvAB
+ KDh6VuJ/60Y6zelCXVsEjRaApz90iXY1nifLhkHM8B2wG7Pum3V3X0Y0QTVD+z3EL1iq5mFu
+ epKp//IOeeJN5iwHcRSJGy2s1oOzjRDyPv6v1AUAEQEAAcLAXwQYAQIACQUCTpAsAgIbDAAK
+ CRDAYIYzfFB3PvDuB/0dI13hSYHW27c2Rq8BaGbIhXYYETtPD5B25/P1JJ5OQZkPmVq+vSHw
+ uzUaDZHy3ZcwE+xFXzlkwXGdWos07JUGo74zV3HfeZxVEPv0HB9ACqQVU/JKjLZNj2SfhgzL
+ 4F+O4Zgdsf0YaZG09F5PbMvbhoCZLfAaKWz/4fLEfhrDJLhrphUyPDXosn0UxPkDv0iiixn4
+ V+bEZ5/wd8dRWi58R/iND+gRGsBREm5SpzdhnsarwoX6YdsQ449379enDNUN7jV4C3Gkon2s
+ VwI2ZZbS10cY8rFSAV/CJA2E9daRoz40DI0tgXgLBAVhy7y5HWZJsDZexU0HFKJfkDi7RUPj
+In-Reply-To: <CAA3NoopBN5qXGvcBY3M-oxXzez+up3-mXZF2kqtzDmnZ50T3Vw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 6/29/26 1:33 PM, Jonathan Cameron wrote:
-> On Sat, 27 Jun 2026 17:31:24 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
->> On 6/22/26 5:15 PM, Jakub Szczudlo wrote:
->>> When device is suspended and it is in single mode then changing
->>> datarate doesn't make it actual wait for new measurement, so to
->>> be sure that read after change is correct functions that changes
->>> datarate and gain will wait for new data.
->>>
->>> Fixes: 541880542f2b ("iio: adc: Add TI ADS1100 and ADS1000")
->>> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
->>> ---
->>>  drivers/iio/adc/ti-ads1100.c | 74 ++++++++++++++++++++++++++++++++++--
->>>  1 file changed, 70 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
->>> index 9fe8d54cce83..e3c801381434 100644
->>> --- a/drivers/iio/adc/ti-ads1100.c
->>> +++ b/drivers/iio/adc/ti-ads1100.c
->>> @@ -15,6 +15,7 @@
->>>  #include <linux/module.h>
->>>  #include <linux/init.h>
->>>  #include <linux/i2c.h>
->>> +#include <linux/iopoll.h>
->>>  #include <linux/mutex.h>
->>>  #include <linux/property.h>
->>>  #include <linux/pm_runtime.h>
->>> @@ -43,6 +44,9 @@
->>>  static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
->>>  static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
->>>  
->>> +/* Timeout based on the minimum sample rate of 8 SPS (7.5s) */
->>> +#define ADS1100_MAX_DRDY_TIMEOUT_US	7500000
->>> +
->>>  struct ads1100_data {
->>>  	struct i2c_client *client;
->>>  	struct regulator *reg_vdd;
->>> @@ -123,10 +127,49 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
->>>  	return 0;
->>>  }
->>>  
->>> +static bool ads1100_new_data_not_ready(struct ads1100_data *data)
->>> +{
->>> +	int ret;
->>> +	u8 buffer[3];
->>> +
->>> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));  
->>
->> Do we actually need the cast here? char * is like void * and should not need it.
-> Hi David,
-> 
-> Any more background on this?  The void * implicit cast thing is in the
-> c standard.  I don't think there is anything equivalent for char *
-> 
-> Thanks,
-> 
-> Jonathan
+Hi,
 
-Oops, I must have been mixing that up with special type punning
-rules for char.
+On 17/06/2026 17:53, Mert Seftali wrote:
+> Hi,
+> 
+> I've been digging into IIO to learn my way around it, and the dmard09
+> accelerometer driver caught my eye as I think its scale attribute has
+> been broken since day one, so I wanted to flag it.
+> 
+> The channels advertise scale:
+> 
+>      .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> 
+> which makes the core create in_accel_scale. The trouble is
+> dmard09_read_raw() never handles IIO_CHAN_INFO_SCALE, it only does
+> RAW, and SCALE drops straight into 'default: return -EINVAL'. So
+> reading the scale just errors out:
+> 
+>      $ cat .../iio:deviceX/in_accel_scale
+>      cat: in_accel_scale: Invalid argument
+> 
+> and userspace is left with raw counts it can't turn into m/s^2.
+> 
+> To be clear about how I found this: I don't have the hardware, I traced
+> it through the core (iio_read_channel_info() -> read_raw() with the
+> SCALE mask) rather than seeing it fail on a device. But the path looks
+> unambiguous.
+> 
+> I went looking to fix it properly; add a SCALE case returning the
+> sensitivity, the way dmard06 and dmard10 do, but I couldn't find a
+> DMARD09 datasheet anywhere. Digging through the list archives, it looks
+> like the scale was declared in the original 2016 submission but never
+> implemented, and the driver was written from a vendor source without a
+> datasheet to begin with. So I don't have a real number to use, and I'd
+> rather not make one up.
+Thanks for digging into this, I no longer have the device in question. 
+But the vendor driver can be found on GitHub:
 
-According to [1], char is not compatible with either of signed char
-or unsigned char.
+https://github.com/minstrelsy/mediatek/blob/1f49d8c87b839651bc89afc870277e8e0f2e2d55/custom/common/kernel/accelerometer/dmard09/dmard09.c
 
-[1]: https://en.cppreference.com/c/language/type#Compatible_types
+Greetings,
+
+Jelle van der Waa
