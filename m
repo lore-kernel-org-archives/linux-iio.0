@@ -1,112 +1,95 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DEA037F8A5
-	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 17:07:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30A692F8EAE
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 17:15:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782752833; cv=none; b=HwXgKpxVsYAe08P75vf7sl/72/s7nJXkkrAvdyAW/CT+9MHEgt79qnzJn8ktcoqFTcrggNf8FnalfLBPEDI8rCrCpm/0qo6QxcF8huIPIha6Yk/DKkKzb0gD+Xl8kzydG3IkSt+27B+cuMeAJpUn2P78McrI7LF0RmZiodXBmZg=
+	t=1782753360; cv=none; b=sRnp7wKZh4th3d/DCrXGdq/u+cqYtjuqH+q6ITAZHOlypXMo8ehgj8LCH0Hu0IGjzpEPcZFJDhy+ZGX7wXTeaBaCdXtNIsXKAocqrwJjT/VSJP+eoMSufqIOTWKPTj0ePUklJjI5sMwXfHeCkRwsJuHNQtObzEwaGa9CAdci+mE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782752833; c=relaxed/simple;
-	bh=ZUrSvMg9fi4SRNzeMfBED2xYYv2e++b4UcAYASECwEI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bD2Ii8TPj/6gO9Acp816fgtlQQ09cXKFkpsmdXMl3WgQM4XAigndjW7fiihvkXSiKNNojIjv3QPg7qo/HO3RuSsAt76T00wAIUTuAQ79MzCY7rWyE66idWsTwjrpbbsAhybT9ArCmOY5fqGb1AUMvmZvWMZ4JEjL59gUwhqutB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L2V8FFsC; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782753360; c=relaxed/simple;
+	bh=qraavlxLNgq+9pzNhd1Cd5SBs7Cr4r9e5jQ765jtyaw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ljr1EobLbC+hlO0WSG05iAGRWfklRNzjt4KjLieFf55ns8NweI5tjDe6+F2ivUQFvf5NwA+pP4DJuRMapt6P0onL95gtGCIJzUIamueeG+9Xn8Mu3kI4eIwwlTasCmej3q2+gJTvyvpzCBwnhXrAIB8sIEZGo2llRxGEGC5wKaM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YpBAv9si; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L2V8FFsC"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49395888c7bso29803395e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 10:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782752831; x=1783357631; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U4W0Q1OQWjOJuaRD026ighL8U3gGwLvMZ8/hGDIVmOc=;
-        b=L2V8FFsCIADS2OmnDwssV+IKtaztoS0FKMZ93UhWVCHvaIqXvs4BuGWo7wpxQHcmZU
-         9r0i7U3YvaK9ycdBAntL4V+PZO5z0UOGtr/Va7O9qCVs8KRTEBwXwbtOqdEFxWDzfr3U
-         rcA5t6ypTrwnE8Ry/QYOfLNY8ta27fNDNgMsNctRQWNfcFh2OgVVQluLP+KTP4omZr55
-         YM02dbwuZzGvocPMfYdjsBt6Cz1bKFgifzVOaliw7o9X6oGXkH82eNqp4dHou1FRvyef
-         6lrkKQhHcIaD8nab5q1CxQLXkeLvmrvcMze50B1ackzfcZaqPgaKScSha7m3wsevejV6
-         rDgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782752831; x=1783357631;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=U4W0Q1OQWjOJuaRD026ighL8U3gGwLvMZ8/hGDIVmOc=;
-        b=hodMxMZU6CaGziRJkSc1NbHCEZF9l+YxZeBgmduhHGSstjGkKMeojmp0zVdtiqFCJt
-         Gu5TGZH2JLjPtKh4DlF93fxFZDaYjekZ1S7dLmmVsOb6++IHGnJSgJDAqaf3Q5iJ59sg
-         p7UAH59oqbWp8pair40yBQ4v4iVgagO2zgfxf+MqXNaFvWPP/QbbQuNI5DY0npKDOkKr
-         Bqc8S9DsMIlN2zgV07yFb5k7duXGAlKYRFe/DEx+OVgkLorT4eqX+Tfur/CEm3BpnuxD
-         /2Dyu1IEr6cTkr3vwo4fyn78pa9ZmYElZjiOWGM+GT8E3HUkTMVtaN8kfG1tWWP/h1hE
-         Lcrw==
-X-Forwarded-Encrypted: i=1; AFNElJ81UP3oYVGMCKfuNJkzCJ1677t13/NMQgvldqANERWpFRLDAVc4hmDxiQxlyq/3o8Sruj1tiwh4+/A=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3yEJF/heanJKKcQPNLyGhci0JOtc1eXVoYUjSybbtczOROy6r
-	VnlRharq+WWsfU9GBlSENZ2IUd9a36f+GPe+vG/rgmRFsAQVNBgymsUh
-X-Gm-Gg: AfdE7cnAwCXYDr/UICCLFcH6z/e3mG1E0MXFr46xKuWSCu9xCp0QVQaYUPmpvlIi3k7
-	3WC1P2uR4jfUQ4ImRP9hA0Mq/HSWJ044aleebJW7smjpykGLHTurNXKGggG0c8IAAQTWjBA3UJm
-	kSj2peLb6TF+IK2jOnke5MAAdMkjOM6iVrcGuQdqwyT2EzLOA/273IQGRGXbqpsM/3IcWKTGOls
-	RLv3yItuNyCi6WZabaxQ/JmIAF7uZlIoFaXyPCXzCeNgeISTMWWcGmxF7y7HXU2dTjOeyaSyLz+
-	grqw+lCO2GYPpK6FT9+nnIytL1uQDNIzksr0sWCKYv294DgKDoxr+rT6Q+q28la4pZ20kKCtMrx
-	HOLlrBD+GSdpnGz63DJF2KcBiZypqW6SnAjvVZVkba0iDRpZb8E++lDYLmWHh8w5awU95NmtvRk
-	fJDcmdtrcagLbahb9yn5xBPusURFTA43E+8weiQ7HExg4pSaOmDu2T045y0Zwq+PYDNG0iv/xlm
-	NfjqcmULjhoYS6jqgDMYDQEJ+vsPGvknd/1o2r0wrvzEnrJaib1/KOMLpJT8jOy9hEFuIfpQHji
-	MGV1uQ/dwFc9gqYv
-X-Received: by 2002:a05:600c:a48:b0:490:bad9:de43 with SMTP id 5b1f17b1804b1-493b8148d3bmr9035445e9.0.1782752830650;
-        Mon, 29 Jun 2026 10:07:10 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4926c28673dsm293957105e9.2.2026.06.29.10.07.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2026 10:07:10 -0700 (PDT)
-Date: Mon, 29 Jun 2026 19:07:06 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YpBAv9si"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782753358; x=1814289358;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qraavlxLNgq+9pzNhd1Cd5SBs7Cr4r9e5jQ765jtyaw=;
+  b=YpBAv9si+2kW0krsB+yTPguq2+6eNDyTCSGb4UxKile+9Tx6uAUi07SE
+   NsV17fe8VN2iNQOdl/rViLMibSgAMWXW7SXngFnyYdUowrNQbQCVVg5Bj
+   AJE2pbGvZA72h7w8+S0x2VvX+OatGndHF10hSn7wfFpyyW6c2SizMGSCZ
+   Oa47aQpoI3xnvjjVHj/wP5xYD8s98UV6GvHl6E6bMtrR4DRDsNYl/+rsk
+   fSRBaB6o5Bi/ZLA1/kcIj6so1/ehr9xgSgt57EJeZxDunzYyfhSsIZE1/
+   F9t2Pkit9Sg0QpjJoG/P51QDhVXoYUeL34+nGS0BszGip841QT1VgqUd7
+   Q==;
+X-CSE-ConnectionGUID: /Ms+aVaPR6aGq67lF5VWiw==
+X-CSE-MsgGUID: 3AekEw90Tqu5RQGd1X2nLA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="106246903"
+X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
+   d="scan'208";a="106246903"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 10:15:57 -0700
+X-CSE-ConnectionGUID: V/hKeoJWR3uvAq7+H3M/Lw==
+X-CSE-MsgGUID: LAG6gNcDTM+dBVp2mJmyGw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
+   d="scan'208";a="247555988"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 10:15:55 -0700
+Date: Mon, 29 Jun 2026 20:15:52 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: Erick Henrique <erick.henrique.rodrigues@usp.br>, jic23@kernel.org,
- andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- linux-iio@vger.kernel.org
+	andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	linux-iio@vger.kernel.org
 Subject: Re: [PATCH v5 2/3] iio: dac: m62332: Clean up header includes
-Message-ID: <20260629190706.647c0274@systembl0wer>
-In-Reply-To: <akKfqWoHmEVUmfQ2@ashevche-desk.local>
+Message-ID: <akKoSAM1apknBDkZ@ashevche-desk.local>
 References: <20260628034811.152946-1-erick.henrique.rodrigues@usp.br>
-	<20260628034811.152946-3-erick.henrique.rodrigues@usp.br>
-	<akKfqWoHmEVUmfQ2@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+ <20260628034811.152946-3-erick.henrique.rodrigues@usp.br>
+ <akKfqWoHmEVUmfQ2@ashevche-desk.local>
+ <20260629190706.647c0274@systembl0wer>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260629190706.647c0274@systembl0wer>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 29 Jun 2026 19:39:05 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, Jun 29, 2026 at 07:07:06PM +0200, Joshua Crofts wrote:
+> On Mon, 29 Jun 2026 19:39:05 +0300
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Sun, Jun 28, 2026 at 12:48:10AM -0300, Erick Henrique wrote:
 
-> On Sun, Jun 28, 2026 at 12:48:10AM -0300, Erick Henrique wrote:
-> > Follow the IWYU principle: include specific headers for the symbols
-> > used in this file and drop the unused slab.h. Add array_size.h, bits.h,
-> > mutex.h, pm.h and types.h for symbols that were previously pulled in
-> > only indirectly, and add mod_devicetable.h for the device ID table.
-> > This prepares the driver for the guard(mutex) conversion that follows.  
-> 
-> ...
-> 
-> > +#include <linux/array_size.h>
-> > +#include <linux/bits.h>  
-> 
-> > +#include <linux/device.h>  
-> 
-> And this is for..?
-> 
-> I can assume one wants to convert the driver to use dev_get_drvdata() perhaps?
+...
 
-I also initially thought it's a case of an opaque struct device * pointer,
-but the driver already uses dev_get_platdata().
+> > > +#include <linux/array_size.h>
+> > > +#include <linux/bits.h>  
+> > 
+> > > +#include <linux/device.h>  
+> > 
+> > And this is for..?
+> > 
+> > I can assume one wants to convert the driver to use dev_get_drvdata() perhaps?
+> 
+> I also initially thought it's a case of an opaque struct device * pointer,
+> but the driver already uses dev_get_platdata().
+
+Ah, that explains...
 
 -- 
-Kind regards
+With Best Regards,
+Andy Shevchenko
 
-CJD
+
