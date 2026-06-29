@@ -1,119 +1,129 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2897D1367;
-	Mon, 29 Jun 2026 06:05:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D503655F1
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 06:20:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782713136; cv=none; b=rM3xk1YBe6PuixQUOGDxARgP2QTVDM4wslsRpg4Y2EIbzJShsgXWNQ+k4i5d4BzT3M7PT40RXTVx50wTvZP0la1YaYA3dIViHWICq1ppPbf3EC5Iqr6++gxTWPrs4nwcNDlu5PuXwwhvkKUvWR7xYePijEIbJdZR/b5+A+jtvaM=
+	t=1782714006; cv=none; b=OX5Bnvkldi5gQAMSqG5DgefCAP/YKXYyX+xNkun1j9FYABrKNh5ePTATs87CYd6by9gAp9+zlhgfOChOT9/agdjDJYKAYBLyp6OWEf0mvVB+VB+figjOb/5YewKVpqOUCy92w2RY5TYa1are9DFVEQs5H34d9Zi0fG4b+DZ289E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782713136; c=relaxed/simple;
-	bh=iY967g1ZEXuRDMEeq8Z98MT4WkdJAVc0EMew914JPwE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cy3Y4yaojnCxSK4YvQdM948kEVHHSMRtqNb7RcQnsERQ0RUz9AcmN/MYHxdQdxkU+7c9zxPtTDR8pCgyv0cvzgo/LehpddYDf25LwvRF/6oiedbklxO5SGba3289vitpUNi5uVY1PcKZKwkL94DckiuovplRSMivaScJCgdIOKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P9MxmW6d; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782714006; c=relaxed/simple;
+	bh=+Oewf0zti4ZNl5WDki0vtNhFTQ5zzl+o5w0WuIwmOLI=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=lY9l1IszdWk5sc5YnwkZStTSSrHSsmPqVGD0G/wTeod5IhXDyOMAkFiULHHrDV2zGhgmV97LoYGQcXtqnJcI0IPnUXKvtZ/JEqOMcCClRUVPVnDmEPQVmd978pKrE2p2lJo2G5DbNHQfVFIo98QM4zMM2sQ2mv25AmNAF3H+PY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TPp7bvSU; arc=none smtp.client-ip=209.85.167.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P9MxmW6d"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782713135; x=1814249135;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iY967g1ZEXuRDMEeq8Z98MT4WkdJAVc0EMew914JPwE=;
-  b=P9MxmW6dLV4eJc3E8uf5q7Us5e9C4MmxEncMfuhUrVbhP3xZxBmYYMX1
-   7GYAhmVD/i5lekgpUdQpg1q5sBfqaj9bwqWjHyBBR5tlVasHIWMA/f4Zn
-   1emzCrId0XdooeQ797cfDFCU+KlfEfqvOZ5I5WUDXJ3x3ODebVFGKapyB
-   E/RHdvC6kAgi41HnE+iQ33UmHlYb+FkbEUQNk39poazZtTa3mR6szls0Q
-   SgpR3F2T+JbfYUlBH2gYp3uvx0Ky1WHBM2UbKxPy4m0Z1dt+xmC/GScF4
-   loHdMEv+EX6z46K6ucnTieYfeBo9Qfhmmk4l5A/TVzs2ERLhYRiQain/J
-   g==;
-X-CSE-ConnectionGUID: FcQH+UZpRKGPgIxLfYJRng==
-X-CSE-MsgGUID: 1OlsZtXJTByaSZPtkJFnIA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11831"; a="83533033"
-X-IronPort-AV: E=Sophos;i="6.24,231,1774335600"; 
-   d="scan'208";a="83533033"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2026 23:05:33 -0700
-X-CSE-ConnectionGUID: X2Y08qLLQWiV8H/vMCy++g==
-X-CSE-MsgGUID: r9Evo2xCRPm5B0mtFMWtOw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,231,1774335600"; 
-   d="scan'208";a="252000444"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2026 23:05:30 -0700
-Date: Mon, 29 Jun 2026 09:05:27 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Petar Stepanovic <pstepanovic@axiado.com>
-Cc: David Lechner <dlechner@baylibre.com>, Akhila Kavi <akavi@axiado.com>,
-	Prasad Bolisetty <pbolisetty@axiado.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: add Axiado SARADC driver
-Message-ID: <akILJ0zG-g8rMzts@ashevche-desk.local>
-References: <20260622-axiado-ax3000-ax3005-saradc-v3-0-e57c7c7ae675@axiado.com>
- <20260622-axiado-ax3000-ax3005-saradc-v3-2-e57c7c7ae675@axiado.com>
- <6770a7af-06cc-4240-9b20-c299e7080ab1@baylibre.com>
- <b06005e0-b7bc-4967-ac7b-cb170219f131@axiado.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TPp7bvSU"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5aea4cbeb94so2082817e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 23:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782714003; x=1783318803; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=628d7Vl1HoSb6L6sJz7pqGaATh0j3vfBdU40shBEREE=;
+        b=TPp7bvSUahyN1sOyFZqk3O+ndH3Up+Vae8U0IQcTZ3i7AB60hvSG6Ubl2Dm0DJdvED
+         DxKAIwzx5b/5ZfTqFgYWrLJm9YZ6CbhSLP+4awXaAC4E3PUToSsJSnWXIWZYi6zLHi0C
+         MtV4OcNjWAeAosBu6APygsMi9A+FxYGvdRkeGU7IDUtLs08/5Pd/y3G2HpCOoalt9zYS
+         VQqYYZRAdjjGFfbMTlJ3F1qSviYbkJWauI91gmwsrnShsQZs9AZBEOE8fK7Ag1JRXckm
+         cVuHpSA4PPWIuKIW9GpG0EcnHWaC8P5Lu3ELDKDG8iynbcLF7Ba+JzJTa95BSdvaGTK2
+         R2rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782714003; x=1783318803;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=628d7Vl1HoSb6L6sJz7pqGaATh0j3vfBdU40shBEREE=;
+        b=YVrhCz24shWd7T+jCL32oo1lhI7dyeT0e8HEbUcxQTdpg/QI/0E1kJ4rS1DXwj1KTp
+         pGgyXjxrfwWmczOJ01jmpquzxSV/YIN0fFEU4/vCKcB3ETZssJ0IEtnRkso+UpGxPA8O
+         zcylqd4IvgvQT0cMKo1G5u9F6/i9vV5agdSxgRtBNRbLBCR3lZuqOGsm0IMbCnKRb0VK
+         ZgGBdWwnC/rCMpDlpo4Qa5UCp5L1XMhKva2Z3sOqfk1nTgLVkvvbMsH840fUTO5AP5bS
+         iqKylT4J07b9L898vOmtiSVT5r4oDE8y0EU/NnBip/EAU41eC5tCbRjPF3sH2/Nf0UyA
+         yl3A==
+X-Forwarded-Encrypted: i=1; AHgh+Rr7xsvQSHgjr3rqrpjEcmZ0To1CYxKXMyMGJ2p+XnqpzZUotzRUTyfQloYdMQbvttQ4vMjqruCYlrc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/HgS8KvW6j+rY/T0OeQPK7fVKVVJ+4MldzKdz0eJOkxobqA8H
+	ae8+ZIlSC3G+OVfEqDhupHlir3f/SSAjn5ePOo04g/sOrOjAhz+Fpv9e
+X-Gm-Gg: AfdE7ck0k9bifPL4JSpvDGv1nKE9WHAhudUeu60mwjTFP0f70JajFuoAhjhaASBxlKn
+	/h/31FBXW/k/ZX1PO6Zewf6PMxEmZkiYhbybnBmVKQTQgHQhoNOgOu0i/oaWLhqn/Pj/FSm+hEx
+	mJjC0anU6DhLeSIrPrxAejcJbKwI51p21ihimjlrQKy3gaHfBuBOMkh9dRilzSFls2PlZZAFcqu
+	kohR6OqSlSRxEMP3cfjs8cNgaVq037P48VcwlIjaSgKaKirBhMNZU4xi2CBXm4wj66qf9PI8O2y
+	RTz9CGm7vgO8s0naL71uiVrkfB/26GOU6HjkjB6wh3o9KibsQ7P+hBcvHSiAOqoHaTFRZHo2xTO
+	MMjIKWuCs6VNiiEGrMNNtpsFVkmbFnwejH49AKS6PHsaoyf+no9vJij7QWWoM9nnrxCD4TQYy07
+	RSGxSrATrLNJ5ZdS+WMt8XN+9c2Cl2hi+fTSHK194VLG3QhPLAtcUvdElGNZb5rAjuYpsTFCCHI
+	MZG3z/q
+X-Received: by 2002:a05:6512:8059:b0:5aa:7126:c645 with SMTP id 2adb3069b0e04-5aea1f41122mr2916271e87.2.1782714002091;
+        Sun, 28 Jun 2026 23:20:02 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad69579a76sm5681480e87.51.2026.06.28.23.20.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Jun 2026 23:20:01 -0700 (PDT)
+Message-ID: <806c72a7-8c29-4308-b226-c347bcde7b0d@gmail.com>
+Date: Mon, 29 Jun 2026 09:20:00 +0300
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b06005e0-b7bc-4967-ac7b-cb170219f131@axiado.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC] Maintenance status of SPS30 driver and related Tomasz
+ Duszynski entries
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>,
+ Maxwell Doose <m32285159@gmail.com>, =?UTF-8?Q?Tomasz_Duszy=C5=84ski?=
+ <tduszyns@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>,
+ open list <linux-iio@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>, tduszyns@gmail.com,
+ heikki.haikola@fi.rohmeurope.com, antti.sakkinen@fi.rohmeurope.com
+References: <CAKqfh0GxasvVEMVySviw5vB1QmbNF-RKBjuoMD9ffEtnQjDkJQ@mail.gmail.com>
+ <agAvydze87mMLaVC@ashevche-desk.local> <20260608085754.32def4cd@linuxescape>
+ <20260609140712.2e5d1640@jic23-huawei> <20260609102159.14c68a8e@linuxescape>
+ <20260610103651.00007a64@gmail.com>
+ <a2b1acbb-f8f2-4d6f-9681-986f42feddfa@gmail.com>
+ <09dea87f-d2e2-4bbf-a948-3092a2dae29a@gmail.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+In-Reply-To: <09dea87f-d2e2-4bbf-a948-3092a2dae29a@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 29, 2026 at 04:33:00AM +0200, Petar Stepanovic wrote:
-
-...
-
-> >> +static const struct iio_chan_spec axiado_saradc_iio_channels[] = {
-> >> +     AX_SARADC_CH(0, "adc0"),   AX_SARADC_CH(1, "adc1"),
-> >> +     AX_SARADC_CH(2, "adc2"),   AX_SARADC_CH(3, "adc3"),
-> >> +     AX_SARADC_CH(4, "adc4"),   AX_SARADC_CH(5, "adc5"),
-> >> +     AX_SARADC_CH(6, "adc6"),   AX_SARADC_CH(7, "adc7"),
-> >> +     AX_SARADC_CH(8, "adc8"),   AX_SARADC_CH(9, "adc9"),
-> >> +     AX_SARADC_CH(10, "adc10"), AX_SARADC_CH(11, "adc11"),
-> >> +     AX_SARADC_CH(12, "adc12"), AX_SARADC_CH(13, "adc13"),
-> >> +     AX_SARADC_CH(14, "adc14"), AX_SARADC_CH(15, "adc15"),
-> > Two columns looks a bit odd.
+On 25/06/2026 08:11, Matti Vaittinen wrote:
+> On 10/06/2026 12:46, Matti Vaittinen wrote:
+>> On 10/06/2026 11:36, Joshua Crofts wrote:
+>>> On Tue, 9 Jun 2026 10:21:59 -0500
+>>> Maxwell Doose <m32285159@gmail.com> wrote:
+>>>> Alrighty then. I'll probably take his chemical/ drivers since I've
+>>>> been spending some time in there. Regarding his light/ driver (ROHM
+>>>> BH1750 AMBIENT LIGHT SENSOR DRIVER) I can take it but I want to see if
+>>>> anyone else wants to first.
+>>>>
+>>>
+>>> I believe that there are a few ROHM folk in IIO, perhaps they would take
+>>> interest in maintaining the driver.
+>>>
+>>
+>> Thanks for pinging me. I need to see if we have any of the:BH1710, 
+>> BH1715, BH1721, BH1750 or BH1751 here - and if we don't, then I need 
+>> to ask from the HQ.
 > 
-> I will also reformat the channel table to one entry per line.
-
-I think with a new approach David proposed, 4 per line will be also acceptable.
-
-> >> +};
-
-...
-
-> >> +static void axiado_saradc_disable(void *data)
-> >> +{
-> >> +     struct axiado_saradc *info = data;
-> >> +
-> >> +     writel(AX_SARADC_GLOBAL_CTRL_PD, info->regs + AX_SARADC_GLOBAL_CTRL_REG);
-> > People usual make read and write wrappers or use regmap to avoid having
-> > to write `info->regs + AX_SARADC_GLOBAL_CTRL_REG` so many times.
+> The HQ promised to provide me BH1721 and BH1751 so I am fine maintaining 
+> (S:) this driver.
 > 
-> My understanding is that simple read/write wrappers are not always
-> preferred unless they provide additional value. Would switching the
-> driver to regmap be acceptable here to avoid repeating the base address
-> calculation?
 
-This is the value of transition --> having that register base to be hidden and
-not repeated all the times.
+Oh, I noticed from another mail-chain that Tomasz was found :)
+
+Tomasz, are you still actively maintaining the ROHM ND1750 driver? If 
+yes, then I'm not jumping in. If not, then I'll send a MAINTAINERS patch.
+
+Yours,
+	-- Matti
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-
+~~ When things go utterly wrong vim users can always type :help! ~~
