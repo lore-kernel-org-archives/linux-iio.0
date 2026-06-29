@@ -1,111 +1,168 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6E1F3F0A9C
-	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 14:54:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8EA63EAC90
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 14:56:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782744873; cv=none; b=sLrQ1oE1BXW0HZy+5NJTbFtgX9f9zKPz0LdCJs7EC4cFhBjn4VkelcMcSpga3nPjpBQg5lIRblWrfs+37chg4q2dq/z1aekTRqKAON/JpbEBevC2ivq6vkMKsftyp+HnLOSELOY+nhG/tH8EjtDFHOk8FMQGUYQi3FCIs48Y2i4=
+	t=1782744980; cv=none; b=BFRjKZTJPvtz3GCCwCkOMHl+4bElV7wVBKVuiAdhHyrODpIwDITRlg4LPpZTwwgjAXVSoIOX9tgj1HvQHndT1R2oi3p+twE6eq/2978tf5DWkmNDmVoegd1fBl0IQybJQFHfVaSDhVPGbF+xhTTGeZ1+DEwYt7JKElv8M9MONKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782744873; c=relaxed/simple;
-	bh=v8CIyeLb1wkX+wqVPNxYQnc2a8miRec7mlz6SuvIKW4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XvVyWJpAHvPPE43lTdFZEbhiGTIUu5IHeGfV6NQjNnkKWlVk3kmDMFQ8qXGH/T4luynRU9miOHpo1QXOD9o8qCoHLbkvDryLrPqlZZHa8vVJ/pXUAXy/bk+jwsgjYTbRQqda6OFNERQcL8hZqgTE2IDsL6jQkUgsQ41mw76AJaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Gb6cUZ+M; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782744980; c=relaxed/simple;
+	bh=p0yV+D++iZUs17dmFYRPjhoraGSQ/rneBGiE3X6EIYk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jq4t9KU2uOtE6DQ65W5Q5kiOWu3In0COq3ZMoQ6DvMe4wRxqYiabfi/ZGcf25AFFAhsraHX+NPBMtGGs5TKNsbl35n2WZLh5B5spPYBOhA9TCnRpjG1Ng/yimJpEN2/lO0EsiX17sphUi+UA0uVao9IvjcvkaNEElRqNdJmP4sg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SL7tu+C+; arc=none smtp.client-ip=74.125.82.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Gb6cUZ+M"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-6a0c7c4f55fso2542707eaf.2
-        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 07:54:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SL7tu+C+"
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-13b24ddadedso575773c88.0
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 07:56:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782744869; x=1783349669; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4Z8Fz1fRVkTQIb2KN3JUG08EPIq1mQm84WayplzduZo=;
-        b=Gb6cUZ+M9gtsVEyfnuz8i+HOjiNJOqHJjhwLfazTdEdCh7Hhdp8aLRxgJHHFHXkj06
-         3Cs5wSFyNqGfDDq3/o4Hh1mjIkYN107xhn800h72ZrkQ5JWpfeVVNo3OXGVQYV+TrPqE
-         49TIpK7j2TDEKBk7wtwtjOk2OgSLOdbHop8+jX+pGWWsTscQybbeGEP4DuH/wfxlks4i
-         FMzEMbBsS3mYSzeHOFp0C9dd+4xmBYqAy3L2LNj0Nc8kdbsQdWGGKMywJMUFjjxQ+1tj
-         kq9HEDKdirAUFOOZKjABl2W66HYZBaSJoKiMJdYI4CZEeSv0md+R8G5rQEzcIVjbVpIS
-         j5Kw==
+        d=gmail.com; s=20251104; t=1782744978; x=1783349778; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oDOWZLIN22YVy9Zj5Ay7+Ax+yfWAdEYj817p3w4+nyU=;
+        b=SL7tu+C+jhN5mEcuUqOwx3eQTTSGE4TYAPNydRhf534TusN4ZnH7S/q6dn/dMdzRVh
+         DIuAUmUrbsN1hWtLZZ3/7Zl8UVolVrS5eTCmwUNQt/jAYa1mEIxNnlF58wNBJqflsJXw
+         wM/FWBsk4YamwoE//rGiDo2FULuPuPJv2eREIZr7hecBMJ3fOTwmBC44Bg2kB6Ot+l31
+         JixAvmkSfDGyVVjTdMj9v5UWuybJsoJcQMhhN9ouc/BUf5R0spVi5wGqjfL4lZV6umzv
+         9LqoRwkAb+0AzfrYSLmu+Ss9S5VmfWahKB6gjf7QzCEdhIs6Lzwr1f8FxNN+07FppMcM
+         13bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782744869; x=1783349669;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4Z8Fz1fRVkTQIb2KN3JUG08EPIq1mQm84WayplzduZo=;
-        b=oUSRIDo0wXVWPRkCn/8NytccLJDquAmt5x/EXw6LvtnzkUOmsw/o1k1wVH15gSm6YA
-         IMplPW1yxkKgKMsn6RoDgnFG8auCR5g8yeTHgsNtkSsQSn+2LiebjoIEm6iPyhvD+ZMY
-         okhhcus40FpqH7XPf/tz9V0hqAIIs0pPdbfcND2pwAGLC03vNA2YAF7KO8gdBhH0NtoO
-         UzrQaOzU0m83FMjJEqTauIufYnP4TyukvOMKvCSHAFLtMY7o3aQ3JsK5YfzR3qvTS9ao
-         bvlSWiadyKd5wVa3HeNibl5A6x9Njm0JwQNtUGJ+MC+Wxp0tV/WMzZWqsPAam5o7VrYM
-         SxbQ==
-X-Gm-Message-State: AOJu0YzTXrqrGNJfMeq5ApADIp1dDRbrYhGX7AeqsBZemRxXpeW7bCw6
-	mMNh0iY9z/KhrE7Zpd22GtZ+Eq+O07KwqYUqUlqhtPTfnhRh09fU84gO2nO14/y1s3A=
-X-Gm-Gg: AfdE7cn7MXIm1R/Pte1ZdevdIgWYQVrh0tnnJhEsZrxviW0YOL00XHZf29tJ0vMwIsU
-	PtuKRmCaEAye6u1G2sfY0uDlHJEDpCmKDpo86F9wRVda9bq/BLGLL+7NkkA+yiu4Od/GMpvpb6s
-	za1t7rObHmGGhgZX9KuapJY+vjWr9JmHSQmS8QXbIdk3tLTe0gzWec+5/ItHq8isOBIsyWDzotR
-	j8ki16BE+CMbeVZ8hu5FP6VcRnhKJVzT4bXu0czSieg1Ow95NkKYFwrAF1xG6S4a5ldGSLv3nbz
-	6i6FROTSBX26XRUZjNv7B7v7xZpMZLGyVfdNmIQ8hCEHKVqA0gDrmnS+/9cjS9JR19FJ5WqpFgC
-	l0p6Z5Mri0+q/TriN7hUlcmqsdfpuehd8ybsSNugwCMsCUHHowL63WlESCtJJp0/JaS9hNOGnQA
-	4nobd8GdPUOwMBAISiD5VinW//oZSSxmVRhj0bgXlsljB5UuGEWgvO+hB0NsyQBFI=
-X-Received: by 2002:a05:6820:708d:20b0:69d:f864:d35b with SMTP id 006d021491bc7-6a1890a067dmr11074eaf.23.1782744869202;
-        Mon, 29 Jun 2026 07:54:29 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:3533:aa22:9a69:df1c? ([2600:8803:e7e4:500:3533:aa22:9a69:df1c])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-448db51ef14sm36094fac.0.2026.06.29.07.54.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2026 07:54:28 -0700 (PDT)
-Message-ID: <06ce8972-55f6-4114-a3c5-1d3bd6f45d73@baylibre.com>
-Date: Mon, 29 Jun 2026 09:54:28 -0500
+        d=1e100.net; s=20251104; t=1782744978; x=1783349778;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oDOWZLIN22YVy9Zj5Ay7+Ax+yfWAdEYj817p3w4+nyU=;
+        b=gwwDBLmRlCMtmWGU+UaDDXY401erLWw9I7+nMSWaU03zciowX0vEtwd9O50HE/EHtK
+         9sHiMD4U06JJcLzbDnR1dmBnW7lSbZ6XyZ/ZbU7xNHLZOIZuPvkm5jzcvNlQMJ+cMKkF
+         +13uOIpBBgcXr4Hpa/0dGuCe9D8YFzX9rXJ86YR7nbgsLzb0MARo7+47Z9aidrdYPwdg
+         76vha1/bah75u2/3jxlDsPNq526+k5zgEAAsC+elH0D/0u2StHCL0BVr2INafpc7aUBv
+         4osnfseeGdyq1g4PGur4r+rIYSQrtQcT0owmshSJnu4osF7V5yfxqn4wUUHPlCStkn2F
+         dWgg==
+X-Forwarded-Encrypted: i=1; AHgh+RoQDYhJAPg1xrvq3dURhAf2WGRxey25J75H7rGb73OB6NDPmDpXInvMCUd7C/9cBbfs883tD+GQ3DU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwCo4HaxAyzVKDBWmH6Pws224Iyw8hbytI083pXv3R7PTfkmJ55
+	rfVB3fYAeAqtxyS/k3seflLT/lmyKWTSyhmlfKptyQHJIjwHDZQyzV6VWXRUs5zrclo=
+X-Gm-Gg: AfdE7cnliP/zH/efIw8ldunZh6v6MQXLCrrBmMELXRi1D8HHc5IUExaHMXX5OBJ06P4
+	/aW3svr+xqNYGqw5IILNYGNLCSe8jepjve6J3QfdwO9R7xmSkAB95GAHZKgp0wOrKNpmT6BjNtk
+	Lr5Ye58IvH+BzsNpeuXVKwTACHW7F+2KjMLZ64jRurG8BnbQQhka0qEeMPbULDhV8cxdc5LzlMw
+	aQeCyzf2A7PFDK5aSHDLYE42UkYjmT4M9zqXu+TVIN3P1CdkPbSSdtaCs8xQBotaj+6yJsI9VN+
+	47sgK3ZO3h/7I6Vq7PAQeS3alIXX5jDMqR4rqnw4Yah5Rdam+gtfRzdqfthKbxg0BnBkC+6n9F1
+	yNjeFzgSf4hQzMGQPJDoJ710c1ifg9WRMoqb2P+3YOcq6FaD+boNexoDPqvg/yd7I7/WMhQjQ5k
+	P0gKZlaxS+MoUFg9BYPOF6Vw==
+X-Received: by 2002:a05:7300:7241:b0:30b:9e57:1e6b with SMTP id 5a478bee46e88-30c84dad34amr18734872eec.17.1782744977805;
+        Mon, 29 Jun 2026 07:56:17 -0700 (PDT)
+Received: from localhost ([2804:30c:1618:8400:e838:86ad:21d4:de00])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30c7c52eed6sm44619124eec.9.2026.06.29.07.56.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jun 2026 07:56:16 -0700 (PDT)
+Date: Mon, 29 Jun 2026 11:57:03 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, julianbraha@gmail.com
+Subject: Re: [PATCH v4 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and
+ similar ADCs
+Message-ID: <akKHv7j22P6KczXb@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1782397418.git.marcelo.schmitt@analog.com>
+ <0abf862eeb277ae82262d09b11b1446f04c47be7.1782397418.git.marcelo.schmitt@analog.com>
+ <9c6e0a74-c9c5-43ee-8eca-ae1667c51c32@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/2] iio: adc: add Axiado SARADC driver
-To: Petar Stepanovic <pstepanovic@axiado.com>, Akhila Kavi
- <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Harshit Shah <hshah@axiado.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260622-axiado-ax3000-ax3005-saradc-v3-0-e57c7c7ae675@axiado.com>
- <20260622-axiado-ax3000-ax3005-saradc-v3-2-e57c7c7ae675@axiado.com>
- <6770a7af-06cc-4240-9b20-c299e7080ab1@baylibre.com>
- <b06005e0-b7bc-4967-ac7b-cb170219f131@axiado.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <b06005e0-b7bc-4967-ac7b-cb170219f131@axiado.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9c6e0a74-c9c5-43ee-8eca-ae1667c51c32@baylibre.com>
 
-On 6/28/26 9:33 PM, Petar Stepanovic wrote:
+> > +{										\
+> > +	.type = IIO_VOLTAGE,							\
+> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
+> > +			      BIT(IIO_CHAN_INFO_SCALE) |			\
+> > +			      (_offl ? BIT(IIO_CHAN_INFO_SAMP_FREQ) : 0),	\
+> > +	.info_mask_separate_available = _offl ? BIT(IIO_CHAN_INFO_SAMP_FREQ) : 0,\
+> > +	.scan_index = 0,							\
+> > +	.scan_type = {								\
+> > +		.format = _sign ? IIO_SCAN_FORMAT_SIGNED_INT :			\
+> > +				  IIO_SCAN_FORMAT_UNSIGNED_INT,			\
+> > +		.realbits = _real_bits,						\
+> > +		.storagebits = _storage_bits,					\
+> > +		.shift = (_offl ? 0 : _storage_bits - _real_bits),		\
+> > +		.endianness = _offl ? IIO_CPU : IIO_BE				\
+> > +	},									\
+> > +}
+> > +
+> > +#define LTC2378_BIPOLAR_DIFF_CHANNEL(_real_bits)				\
+> > +	__LTC2378_DIFF_CHANNEL(1, _real_bits, (((_real_bits) > 16) ? 32 : 16), 0)
+> > +
+> > +#define LTC2378_UNIPOLAR_DIFF_CHANNEL(_real_bits)				\
+> > +	__LTC2378_DIFF_CHANNEL(0, _real_bits, (((_real_bits) > 16) ? 32 : 16), 0)
 > 
-> On 6/28/2026 1:07 AM, David Lechner wrote:
+> Why not move the (((_real_bits) > 16) ? 32 : 16) into the __LTC2378_DIFF_CHANNEL()
+> macro to avoid repeating it?
+> 
+Because that would go wrong for LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL() in patch 3.
 
+> > +
+> > +struct ltc2378_chip_info {
+> > +	const char *name;
+> > +	unsigned int internal_ref_uv;
 ...
+> 
+> > +static int ltc2378_regulator_setup(struct device *dev, struct ltc2378_state *st)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
+> > +	if (ret < 0 && ret != -ENODEV) {
+> > +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
+> > +	} else if (ret > 0) {
+> 
+> Else is not needed here.
+Why not? Intendend flow/logic is to get and use refin for devices that have it
+(currently only one chip has). Except for that chip that has 'refin', other
+chips have only 'ref' and no internal reference. Also, the chip that has 'refin'
+doesn't have 'ref' so it uses an internal reference when 'refin' is not found.
+Anyways, the driver can use 'refin' if there is one available, no?
 
->>> +};
->>> +
->>> +static void axiado_saradc_disable(void *data)
->>> +{
->>> +     struct axiado_saradc *info = data;
->>> +
->>> +     writel(AX_SARADC_GLOBAL_CTRL_PD, info->regs + AX_SARADC_GLOBAL_CTRL_REG);
->> People usual make read and write wrappers or use regmap to avoid having
->> to write `info->regs + AX_SARADC_GLOBAL_CTRL_REG` so many times.
+P.S. Will separate regulator logic according to chip type.
+
 > 
-> My understanding is that simple read/write wrappers are not always
-> preferred unless they provide additional value. Would switching the
-> driver to regmap be acceptable here to avoid repeating the base address
-> calculation?
+> > +		st->ref_uV = ret;
+> > +		return 0;
+> > +	}
+> > +
+> > +	if (st->info->internal_ref_uv) {
+> > +		st->ref_uV = st->info->internal_ref_uv;
+> > +		return 0;
+> > +	}
 > 
-Yes, regmap is always nice because it brings a lot of extra features
-for free.
+> I would be tempted to have two separate functions here and only call one depending
+> on the chip. Otherwise, it allows incorrect devicetree.
+
+Hmm, I see. Drat, I was hoping to avoid checking for specific chip parts to
+handle regulators. dtbs_check should error if a chip other than ltc2338 has 'refin'.
+Anyways, I see maintainers will probably prefer the chip specific init flow.
+
+> 
+> > +
+> > +	ret = devm_regulator_get_enable_read_voltage(dev, "ref");
+> > +	if (ret < 0)
+> > +		return dev_err_probe(dev, ret, "failed to read ref regulator\n");
+> > +
+> > +	st->ref_uV = ret;
+> > +
+> > +	return 0;
+> > +}
+> > +
+
+Will adjust according to other comments as well.
+
+Thanks,
+Marcelo
