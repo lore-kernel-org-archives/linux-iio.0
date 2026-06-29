@@ -1,172 +1,136 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E9136D51D;
-	Mon, 29 Jun 2026 15:02:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F433438FF2
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 15:04:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782745362; cv=none; b=dnNwZSm2/KXzlWMlsVfNLSc03NT63pCiZEVq6z10stOwDThFH0F3lWrKWrt61TtsJpSYnNl1wk9NK8gv+FYSIpu7WzemmD+J5Qkd7YyfUwoVwc0B5WC9VcJBGn9kdgG9RKBtSCE3p5YtE/1A37mWHp7IK7IX8tWB8fXUlDbIyxk=
+	t=1782745473; cv=none; b=HeJxG/V8i4pzEik+UjfAfbP6eFy3KTxCixU8bh6aBx/na6EqwU5d+EmlNiQKrJsvmCd8TTOfxgQGW3QO20K8t7OOcdY7yhgUqML0vIvo4REoIcIWbAePfxOXGIyE+SiKUdwPbo5ax5nDRJTj9I49P9Pa4kl4l3M2oeGzYDwHK9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782745362; c=relaxed/simple;
-	bh=X4FpkWQK9k+WZsnvlkXHMQmZXAaREh0Yd1dNNItTpME=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SIcJBx4hjyxK/oFwK4JC3UfOqmLo1caR3F8eO6ruePFDsGBK9zAhd2bGvfTR6Q17f+jc6z7AexAR9Y2uCjodvAm2pegQvwoCUHNXmVt0ksBJXo6YJ/UmBtdez9Z6U+Keo/sVD2cMmE//56vfX0AqjqcWsvCAIjEx5fE7eTcp1v4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JLtjyCQu; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782745473; c=relaxed/simple;
+	bh=mLbyaEAgqepNN61bWeIhuKu91cbHIs1TgT0DiSEwuG8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E3cxpFtXEKZQ6KqKvt403v59qwulFgiUOINB1D/UQzkJDalyNUOJkydfwYNntWUEE+btaRbctv3y4rrdPFNva9eo1eF9UisbkgI1xUKyrNvdmo4eStClyKm7Sjc1PVoydIiSjQsKTvVkmQe6Rk4GZlXYP/aWlYdf36r9oTz+4Hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WTSkdzLW; arc=none smtp.client-ip=209.85.161.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JLtjyCQu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782745360; x=1814281360;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=X4FpkWQK9k+WZsnvlkXHMQmZXAaREh0Yd1dNNItTpME=;
-  b=JLtjyCQuIdi+d81ynKkUUejRxqxfzERCSkH3N8Tgdx1nTW/AmFJ3z43L
-   RVmMGvJMoqNj5sA/v3bYNAy3VBtwCi9+ApZAapSKVXycI1kQkE+4IF1zU
-   7vlLpg7bRgh8b3cmX+IB7M4kP0AMHE0tX9sC1i9Bw5eaJWRdx62JN0/gE
-   zpgzyLEKIqKxJ71oaq1toGfngZiN9XPJ3ZBceqdV4GNHu4Kaoujl63lb7
-   F/S1p6yepYqmgHfzDmvzEmvvGNl1/okYimMywXfO+O33ElzX5dXV7f9go
-   lEb8Bp6oihwcrDAxsEKMBFcvtOxZJPBp2gFPLI2UUHGA/eMzNx0htfdgk
-   g==;
-X-CSE-ConnectionGUID: 3+C43byMTi2LCFP2wiAmGQ==
-X-CSE-MsgGUID: rcX+peX8SdaLBIPfPvOQrw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="82433631"
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="82433631"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 08:02:39 -0700
-X-CSE-ConnectionGUID: HnM/y5VpS1K9K+0xcZSOXw==
-X-CSE-MsgGUID: l5ktsAwuR3KyTDFBDLEkOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="250920748"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 08:02:34 -0700
-Date: Mon, 29 Jun 2026 18:02:31 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
-	conor+dt@kernel.org, devicetree@vger.kernel.org,
-	dlechner@baylibre.com, duje@dujemihanovic.xyz, jic23@kernel.org,
-	jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
-	joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
-	linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
-	mazziesaccount@gmail.com, mike.looijmans@topic.nl,
-	nuno.sa@analog.com, robh@kernel.org, sakari.ailus@linux.intel.com,
-	wens@kernel.org
-Subject: Re: [PATCH v5 1/3] iio: adc: Fix incorrect reading when datarate
- changed in single mode
-Message-ID: <akKJBy3xQYv1xnFe@ashevche-desk.local>
-References: <20260628194341.66752-1-jakubszczudlo40@gmail.com>
- <20260628194341.66752-2-jakubszczudlo40@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WTSkdzLW"
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-6a15ca0d761so1293282eaf.0
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 08:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782745470; x=1783350270; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mKC86SBllWMC5DazOx7jxMwvHWS3vvb7786WkQz0OjY=;
+        b=WTSkdzLWZFj3XvffUCor6PD83mAixGrmyrRS+WHPILF6lvxKDB4/yNU8kWfmrTpVYD
+         o694SCilIQO2xrBhE3ZBbwM+ZQWUotrQGGvUtwbu+0fUHD3HwyTbQOFzBq3x7DibI0y9
+         ESxSjsJyGs7RPFGRk60kNc0jF1Ar6QOlLCYr9Dq+mPpntxmdjgnNLcRy5eDZ2910F/X2
+         8tSuCL43GtR7LgggGvVrweXz55IIV93Vh7FanbIpjtw4g2/p1U3GFSq4ktzNA2Ag9sTd
+         dfbrTAQzfDaUnSbB6bm3t9iv7cja12yj+IOPqEuxsNouQu0kDnAOz/ZRKQDNK+J2uQRl
+         tJyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782745470; x=1783350270;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mKC86SBllWMC5DazOx7jxMwvHWS3vvb7786WkQz0OjY=;
+        b=KUb7kvb8WTs9Rzb+gs+YWTdRsog1Ki3I0FOAbX9TNuRvl5ZhcasNfJoSMHHo7pQTxI
+         FjAYOvBEXbqAcflwQXTaGZ8eMkHuQwvo/sv3IL+zb3C53jqPEUVGWRN1abX2He65RVxI
+         a9h65RWwJ/6Izg2nb5GYnUISwQL4eD/OEg7gvjOI7g+Q2vVjOW5xmQvu0DOuboxSG/Wm
+         tF0Fl2QFVYFX39bwRoFO31HlhjwaJ0iR2BaancRtkplpDEYSQjJspn2U/h8nt++7qcXg
+         jDYajDMQ4kS9Pi6GNIkfH0B6qZdMr9h0P5qeRzE3uGxKHLQR1TalgjhFCaC++GQp7rNC
+         z1kw==
+X-Forwarded-Encrypted: i=1; AFNElJ/jS4PPfQP3N/ApW6WOl3yMP8A/elPFTLo9CCptaF9+3cN0tB/ylsY4eM4BSHbi5fwIIJtWX/G5u/0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzbORE8B1SK8S/vMeu5o7C3qYAv5XU45YX2jAGS1skZFXbbtN2a
+	8mLg0mJTqNVw8Y2XhNQaKfRXuf0806MazetEpMC0WZ5KFFfDowC59jncIl5eB2OV8vA4XZ+qfOI
+	F/PII
+X-Gm-Gg: AfdE7cmYcD9fjWX1yQAwkt0vmCNsbZLkm33VYMk3Z4DNd8fQ1cJuMVDJX4V+APZr6zQ
+	dYZg0BWdrblM+mZOjlHKtqZIv2KxrfsZRLA0IQPTX+R4pMCTYlsl21LLaxQ/8Fz1/sRZF8ySskb
+	7XTJ0L4zu/ntsuSd1wr99DZoQmZO69dVkeX7TlJqu4TBDqll/u3ii6tFV/y55P5PAJmnGC8w3EZ
+	gRu7b+Qwu1XUwNUiV/45OFweM6WiYWBQjVOhzXQl5hdmnAcMr6dxxdPsovAu/cTb1Ii7xFS7fDE
+	gDf1NKfCQnPm3GzW9OWALv62kkBiJVsa5JFCbc7UX6py4wVpsHkPSfYt1BzjcAXn13Sg+eK4x7u
+	MT1VLuJkBoQ1yKsTaEwDt+hmZuRkWQib6kfgk5x8Ugc71rX8eHq2slzY7gQ7diMP6cNUpVWe9dl
+	SptNvD17PQYAiBlZLv+heTlpv8M9/xC4epH2ajq9GFB0WFPQCdykAtmM5m0Fm4hQ/CsWoL7/BxK
+	Q==
+X-Received: by 2002:a05:6820:55d0:20b0:6a1:82f5:b009 with SMTP id 006d021491bc7-6a18910d066mr33242eaf.13.1782745470465;
+        Mon, 29 Jun 2026 08:04:30 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:3533:aa22:9a69:df1c? ([2600:8803:e7e4:500:3533:aa22:9a69:df1c])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-448db92c113sm26526fac.4.2026.06.29.08.04.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2026 08:04:29 -0700 (PDT)
+Message-ID: <2f01a3a0-3698-41e6-8fee-1d2e1629726c@baylibre.com>
+Date: Mon, 29 Jun 2026 10:04:29 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260628194341.66752-2-jakubszczudlo40@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+To: Chi-Wen Weng <cwweng.linux@gmail.com>, jic23@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, cwweng@nuvoton.com
+References: <20260625110638.38438-1-cwweng.linux@gmail.com>
+ <20260625110638.38438-2-cwweng.linux@gmail.com>
+ <40485b4e-6585-42a1-9b84-3019328574c5@baylibre.com>
+ <7e96cc1a-eb60-4eeb-937d-64e83bc35279@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <7e96cc1a-eb60-4eeb-937d-64e83bc35279@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Jun 28, 2026 at 09:43:39PM +0200, Jakub Szczudlo wrote:
-> When device is suspended and it is in single mode then changing
-> datarate doesn't make it actual wait for new measurement, so to
-> be sure that read after change is correct functions that changes
-> datarate and gain will wait for new data.
-
-...
-
-> +static int ads1100_poll_data_ready(struct ads1100_data *data)
-> +{
-> +	int data_rate_hz = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
-
-I would use proper SI units here, id est _Hz.
-
-> +	/* To be sure we wait 5 times more than data rate */
-> +	unsigned long wait_time_us = DIV_ROUND_CLOSEST(USEC_PER_SEC, 5 * data_rate_hz);
-
-Not sure if it's less readable than in case of split assignments. Perhaps I
-would take that.
-
-> +	bool data_ready;
-> +	u8 buffer[3];
-> +	int ret;
-
-	unsigned long wait_time_us;
-	int data_rate_Hz;
-	bool data_ready;
-	u8 buffer[3];
-	int ret;
-
-	data_rate_Hz = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
-
-	/* To be sure we wait 5 times more than data rate */
-	wait_time_us = DIV_ROUND_CLOSEST(USEC_PER_SEC, 5 * data_rate_Hz);
+On 6/29/26 2:11 AM, Chi-Wen Weng wrote:
 
 
-> +	/* To be sure that polled value will have value after config change */
-> +	ret = i2c_master_recv(data->client, buffer, sizeof(buffer));
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
-> +		return ret;
-> +	}
+>> Should there be a dmas property? Datasheet says it supports PDMA transfer.
+> 
+> The hardware does support PDMA, but DMA support is intentionally not
+> included in this initial upstream version. The initial driver will only
+> support interrupt-driven direct raw reads, and the MA35D1 PDMA provider
+> is not upstream yet.
+> 
+> I would prefer to leave dmas/dma-names out of the initial binding and
+> add them later together with DMA support. Please let me know if you
+> would prefer optional DMA properties to be described now.
 
-> +	return readx_poll_timeout(ads1100_new_data_not_ready, data,
-> +				 data_ready, data_ready != 0, wait_time_us,
-> +				 ADS1100_MAX_DRDY_TIMEOUT_US);
+We always want the devicetree to be as complete as possible even
+if the drier doesn't use all of the information.
 
-Split logically
+So for trivial/well-known bindings like dmas, we should be able to
+add it now.
 
-				 data_ready, data_ready != 0,
-				 wait_time_us, ADS1100_MAX_DRDY_TIMEOUT_US);
+> 
+>> I assume 8 is for the internal batter voltage channel? Often, we don't
+>> include fixed internal channels like this in the devicetree since they
+>> are always the same and don't depend on external wiring.
+> 
+> Correct. Channels 0 to 7 are the external ADC input pins, while channel
+> 8 is the internal VBAT input. I will limit the DT child channel nodes to
+> external channels 0 to 7.
+> 
+> If VBAT support is added later, it can be exposed by the driver as a
+> fixed internal channel rather than being described by devicetree.
+> 
+>> adc.yaml already specifies minItems and maxItems, so we don't need to
+>> repeat it.
+> 
+> Since I plan to simplify v2 and drop differential channel support from
+> the initial submission, I will remove diff-channels from the initial
+> binding.
 
-> +}
+Same reasoning as above, we want the binding to be as complete as
+possible, so we should not omit diff-channels since we know what
+the bindings should look like already.
 
-...
-
->  static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
->  {
->  	unsigned int i;
->  	unsigned int size;
-> +	int ret;
->  
->  	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
-
->  	for (i = 0; i < size; i++) {
-
-Hmm... While at it, perhaps
-
-	for (unsigned int i = 0; i < size; i++) {
-
-but it's fine to leave as is.
-
-> -		if (ads1100_data_rate[i] == rate)
-> -			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
-> -						       FIELD_PREP(ADS1100_DR_MASK, i));
-> +		if (i == size)
-> +			return -EINVAL;
-> +
-> +		PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(&data->client->dev, pm);
-> +		ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = ads1100_set_config_bits(data, ADS1100_DR_MASK,
-> +					      FIELD_PREP(ADS1100_DR_MASK, i));
-> +		if (ret)
-> +			return ret;
-> +
-> +		return ads1100_poll_data_ready(data);
->  	}
->  
->  	return -EINVAL;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> 
+> Differential input support can be added later once the fixed hardware
+> pair constraints and signed output handling are implemented in the
+> driver.
+> 
