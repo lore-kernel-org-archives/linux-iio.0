@@ -1,201 +1,732 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010005.outbound.protection.outlook.com [40.93.198.5])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D44C640DFBB;
-	Mon, 29 Jun 2026 13:16:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.5
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782739007; cv=fail; b=XnhgOGwk/OjH4y/EK2qtamzOM6R0SDmlqv1zcyMNr/TgWTZTp4THpPtnbZayAC+oJaTBK6nGRfSTleQLMtyQTZKuoPb/F+sXl4n4nryVe9ZPKmx6pSPGoAlAKk7pRNoFs8T5Sc1TTHQ5kt/uc4pH780GZhDEdjYcGzEN79M6low=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782739007; c=relaxed/simple;
-	bh=f5u1wwQrd9xLFl4okAxlbzKifGZu5vq6E5saEqEgXGw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=UvylXJam7SZkXFvN+Zlp2nnOOvGAJ7+HdG3q9fxGqzvZLHgJaQJqfHwENKMyK/ldsh/MNqq2VHCAfLbXK7CUtSbKgvd4EBgwj4zs4XvwZcO4TXjEG4flHyd8yFNRRJakKZOWbeL8ihp2DGDkeWKsvxCRJW84Dyr2vlHwoQw0xrM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=04KscSrB; arc=fail smtp.client-ip=40.93.198.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A2340D58C;
+	Mon, 29 Jun 2026 13:51:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1782741064; cv=none; b=Bo9DK2bxWy/YyzkRIBGEbgkWZxhRNJde189/x5TuCxTn5iRUYRvhwJ4Skhq4kecA0/dlWz/SuT26ztJStujsGDXoGRNwRBx0zuJZXyWZW7f75N4kP/c7c7LUbIv74aNvB1uFc4vUCF+9V5PVfiLIdWj2vyiumTMvXxzEBs0GaIw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1782741064; c=relaxed/simple;
+	bh=7aDJtASJ9hni+E01NvEcAX0fBC3PAtusqXbVZp3ROjM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cf0XYaNJlEmVFmNZJXYWVQzQxj+LNnIUh0vDtEsKqdBOQolq9aXr76sUX89McbhOm8y9Pt/jJU+HKDud9k+yq9cZ9VxxsQtuvC4LITaM8hX/n+V1KXaNYPZfxQWfnD0vCNHrPszC4HeeP1E1Z2QbUK68Zd9V34CY+QHNn1MG42k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S4r+4lJ/; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="04KscSrB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oShqZlm3GKKMDZAgyXJQvtFQMcDbKVrIA5fQQXG1Y5bDenyRdey8S1VMB+Bzmr4cRWewgcqsuM28TZ/zn/RyQPd6fJoMJGlzEG4vEewOJ/gmjQ1qwdpBfxa5kosBb1i3NlGJBrSGP+zJAQPeH8egPRgrYHmcdgfpToPUdLDjp0yrqc3+cjX69sonrtW2t2TWSYtz++T4C8tb/sygDHn5vmuASgTho0dmKouCu+lNF/MKRhnpgXqbBgF8RBIgQp5qTG6ixJumBqxIuOzVpcTk/MPcZYa7lYdg7Qx8i5KajdIHg4NiVDIYngDUzlWfJBCvz26NocUUGQxLvvrxJ6s2lw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mRHE+pq5OAsDMTJicgTGoI804z8BdXoqvoSxTs+r780=;
- b=L2yLozZT29hhNVL728kqDbJilWhsVJBd3W8NUR2q3pa2ETmD+9KddfcT1sdyqRRo1cWkHP7IGbaXUSCSfquhPJnBmjh5jMMsuXqgULoye7ErydfQCKjdfngUP5Ds95qvIUWhGw0QFdlbeBf2huyXWfyxk8wouUPbW5cDMN4jp9BkrA1EsJoHjC7c4wgs904FpZRgb7C1xpJOC2uq8cXZ17kUaH/Q1RMZKXIxKvKwsaRmxilv9seX3PjlCS2goYYsHs+0Yy6TiF02inuNAzR4TWu5SfTDqQUsJ3opk1rSG4ejs2dMtEnjsUfSBoABaCYJey10tGTz3pBm/6LW/GF6aw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mRHE+pq5OAsDMTJicgTGoI804z8BdXoqvoSxTs+r780=;
- b=04KscSrBHhB4P2Sv2byMvLhG2PMH75524m0cbhfSrWgMo+lvD9rEw7n6le//uSRfHX4o760FL1RLus3UylrUgIec4gcAhZlly4/ua9NwOKvr5EaV2Fy32hsmrJtZjYoFmZSHeF2MYo3hAkCpmqfLFc/pHnHLtqO3uoEA56VOXhw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from LV5PR12MB9779.namprd12.prod.outlook.com (2603:10b6:408:301::14)
- by MW4PR12MB7466.namprd12.prod.outlook.com (2603:10b6:303:212::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.19; Mon, 29 Jun
- 2026 13:16:41 +0000
-Received: from LV5PR12MB9779.namprd12.prod.outlook.com
- ([fe80::8ac8:e862:8ae9:9287]) by LV5PR12MB9779.namprd12.prod.outlook.com
- ([fe80::8ac8:e862:8ae9:9287%3]) with mapi id 15.21.0159.018; Mon, 29 Jun 2026
- 13:16:41 +0000
-Message-ID: <e574f8ec-d869-4823-b9be-83c7c6d3b2c3@amd.com>
-Date: Mon, 29 Jun 2026 15:16:36 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] MAINTAINERS: Add Sai Krishna Potthuri to Xilinx AMS
- driver
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
- Conall O'Griofa <conall.ogriofa@amd.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <20260629114754.203415-1-sai.krishna.potthuri@amd.com>
-Content-Language: en-US
-From: Michal Simek <michal.simek@amd.com>
-Autocrypt: addr=michal.simek@amd.com; keydata=
- xsFNBFFuvDEBEAC9Amu3nk79+J+4xBOuM5XmDmljuukOc6mKB5bBYOa4SrWJZTjeGRf52VMc
- howHe8Y9nSbG92obZMqsdt+d/hmRu3fgwRYiiU97YJjUkCN5paHXyBb+3IdrLNGt8I7C9RMy
- svSoH4WcApYNqvB3rcMtJIna+HUhx8xOk+XCfyKJDnrSuKgx0Svj446qgM5fe7RyFOlGX/wF
- Ae63Hs0RkFo3I/+hLLJP6kwPnOEo3lkvzm3FMMy0D9VxT9e6Y3afe1UTQuhkg8PbABxhowzj
- SEnl0ICoqpBqqROV/w1fOlPrm4WSNlZJunYV4gTEustZf8j9FWncn3QzRhnQOSuzTPFbsbH5
- WVxwDvgHLRTmBuMw1sqvCc7CofjsD1XM9bP3HOBwCxKaTyOxbPJh3D4AdD1u+cF/lj9Fj255
- Es9aATHPvoDQmOzyyRNTQzupN8UtZ+/tB4mhgxWzorpbdItaSXWgdDPDtssJIC+d5+hskys8
- B3jbv86lyM+4jh2URpnL1gqOPwnaf1zm/7sqoN3r64cml94q68jfY4lNTwjA/SnaS1DE9XXa
- XQlkhHgjSLyRjjsMsz+2A4otRLrBbumEUtSMlPfhTi8xUsj9ZfPIUz3fji8vmxZG/Da6jx/c
- a0UQdFFCL4Ay/EMSoGbQouzhC69OQLWNH3rMQbBvrRbiMJbEZwARAQABzSlNaWNoYWwgU2lt
- ZWsgKEFNRCkgPG1pY2hhbC5zaW1la0BhbWQuY29tPsLBlAQTAQgAPgIbAwULCQgHAgYVCgkI
- CwIEFgIDAQIeAQIXgBYhBGc1DJv1zO6bU2Q1ajd8fyH+PR+RBQJn8lwDBQkaRgbLAAoJEDd8
- fyH+PR+RCNAP/iHkKbpP0XXfgfWqf8yyrFHjGPJSknERzxw0glxPztfC3UqeusQ0CPnbI85n
- uQdm5/zRgWr7wi8H2UMqFlfMW8/NH5Da7GOPc26NMTPA2ZG5S2SG2SGZj1Smq8mL4iueePiN
- x1qfWhVm7TfkDHUEmMAYq70sjFcvygyqHUCumpw36CMQSMyrxyEkbYm1NKORlnySAFHy2pOx
- nmXKSaL1yfof3JJLwNwtaBj76GKQILnlYx9QNnt6adCtrZLIhB3HGh4IRJyuiiM0aZi1G8ei
- 2ILx2n2LxUw7X6aAD0sYHtNKUCQMCBGQHzJLDYjEyy0kfYoLXV2P6K+7WYnRP+uV8g77Gl9a
- IuGvxgEUITjMakX3e8RjyZ5jmc5ZAsegfJ669oZJOzQouw/W9Qneb820rhA2CKK8BnmlkHP+
- WB5yDks3gSHE/GlOWqRkVZ05sUjVmq/tZ1JEdOapWQovRQsueDjxXcMjgNo5e8ttCyMo44u1
- pKXRJpR5l7/hBYWeMlcKvLwByep+FOGtKsv0xadMKr1M6wPZXkV83jMKxxRE9HlqWJLLUE1Q
- 0pDvn1EvlpDj9eED73iMBsrHu9cIk8aweTEbQ4bcKRGfGkXrCwle6xRiKSjXCdzWpOglNhjq
- 1g8Ak+G+ZR6r7QarL01BkdE2/WUOLHdGHB1hJxARbP2E3l46zsFNBFFuvDEBEACXqiX5h4IA
- 03fJOwh+82aQWeHVAEDpjDzK5hSSJZDE55KP8br1FZrgrjvQ9Ma7thSu1mbr+ydeIqoO1/iM
- fZA+DDPpvo6kscjep11bNhVa0JpHhwnMfHNTSHDMq9OXL9ZZpku/+OXtapISzIH336p4ZUUB
- 5asad8Ux70g4gmI92eLWBzFFdlyR4g1Vis511Nn481lsDO9LZhKyWelbif7FKKv4p3FRPSbB
- vEgh71V3NDCPlJJoiHiYaS8IN3uasV/S1+cxVbwz2WcUEZCpeHcY2qsQAEqp4GM7PF2G6gtz
- IOBUMk7fjku1mzlx4zP7uj87LGJTOAxQUJ1HHlx3Li+xu2oF9Vv101/fsCmptAAUMo7KiJgP
- Lu8TsP1migoOoSbGUMR0jQpUcKF2L2jaNVS6updvNjbRmFojK2y6A/Bc6WAKhtdv8/e0/Zby
- iVA7/EN5phZ1GugMJxOLHJ1eqw7DQ5CHcSQ5bOx0Yjmhg4PT6pbW3mB1w+ClAnxhAbyMsfBn
- XxvvcjWIPnBVlB2Z0YH/gizMDdM0Sa/HIz+q7JR7XkGL4MYeAM15m6O7hkCJcoFV7LMzkNKk
- OiCZ3E0JYDsMXvmh3S4EVWAG+buA+9beElCmXDcXPI4PinMPqpwmLNcEhPVMQfvAYRqQp2fg
- 1vTEyK58Ms+0a9L1k5MvvbFg9QARAQABwsF8BBgBCAAmAhsMFiEEZzUMm/XM7ptTZDVqN3x/
- If49H5EFAmfyXCkFCRpGBvgACgkQN3x/If49H5GY5xAAoKWHRO/OlI7eMA8VaUgFInmphBAj
- fAgQbW6Zxl9ULaCcNSoJc2D0zYWXftDOJeXyVk5Gb8cMbLA1tIMSM/BgSAnT7As2KfcZDTXQ
- DJSZYWgYKc/YywLgUlpv4slFv5tjmoUvHK9w2DuFLW254pnUuhrdyTEaknEM+qOmPscWOs0R
- dR6mMTN0vBjnLUeYdy0xbaoefjT+tWBybXkVwLDd3d/+mOa9ZiAB7ynuVWu2ow/uGJx0hnRI
- LGfLsiPu47YQrQXu79r7RtVeAYwRh3ul7wx5LABWI6n31oEHxDH+1czVjKsiozRstEaUxuDZ
- jWRHq+AEIq79BTTopj2dnW+sZAsnVpQmc+nod6xR907pzt/HZL0WoWwRVkbg7hqtzKOBoju3
- hftqVr0nx77oBZD6mSJsxM/QuJoaXaTX/a/QiB4Nwrja2jlM0lMUA/bGeM1tQwS7rJLaT3cT
- RBGSlJgyWtR8IQvX3rqHd6QrFi1poQ1/wpLummWO0adWes2U6I3GtD9vxO/cazWrWBDoQ8Da
- otYa9+7v0j0WOBTJaj16LFxdSRq/jZ1y/EIHs3Ysd85mUWXOB8xZ6h+WEMzqAvOt02oWJVbr
- ZLqxG/3ScDXZEUJ6EDJVoLAK50zMk87ece2+4GWGOKfFsiDfh7fnEMXQcykxuowBYUD0tMd2
- mpwx1d8=
-In-Reply-To: <20260629114754.203415-1-sai.krishna.potthuri@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0118.namprd03.prod.outlook.com
- (2603:10b6:a03:333::33) To LV5PR12MB9779.namprd12.prod.outlook.com
- (2603:10b6:408:301::14)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S4r+4lJ/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782741063; x=1814277063;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7aDJtASJ9hni+E01NvEcAX0fBC3PAtusqXbVZp3ROjM=;
+  b=S4r+4lJ/vTz3SbXISNiNOdpJiicBqNq9RfETwylmqcYuzw4jGG2ghQ57
+   Eq47qbkJFhz0I4VHXXBhEDVmVdo4kD1zUFjAAdHbRvkAqN1V/UWnSDRs2
+   ymyDPx5q2wsIHB60S39TvcRIO8XTXkxooWegTYfv3sNoBGform375+gdx
+   vY9OhkmeFuqV/apPzk+wGJtylqYpumgUC1M9fhK0JABefDgBuXZv1tLfE
+   1s0C3m6mbJI1MvCM1CM7RQN6PQXh44LCrqh02hheYSPmrm9YmHVoZG19e
+   OvVwnzU7vapJZjyv9Zvn/x2n2b069OPc8LkExqtXLGO6KkiNL7+RiDWPb
+   g==;
+X-CSE-ConnectionGUID: g9rpF4HjSXOQOXW6euFj5w==
+X-CSE-MsgGUID: iX+qW8qZTruuPCtOYGEEvw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11831"; a="83199281"
+X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
+   d="scan'208";a="83199281"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 06:51:02 -0700
+X-CSE-ConnectionGUID: Mf6KdHoBRkO/cx0M3rbehQ==
+X-CSE-MsgGUID: PBk/+bnSSFOwNeNZz0JqRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
+   d="scan'208";a="290084403"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 06:50:58 -0700
+Date: Mon, 29 Jun 2026 16:50:56 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, u.kleine-koenig@baylibre.com,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: magnetometer: add support for Melexis
+ MLX90393
+Message-ID: <akJ4QCdhIKpfaNDD@ashevche-desk.local>
+References: <20260627005843.7786-1-nikhilgtr@gmail.com>
+ <20260627005843.7786-3-nikhilgtr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV5PR12MB9779:EE_|MW4PR12MB7466:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2617b08d-3a7f-4d5f-6aab-08ded5e0a8d3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|22082099003|18002099003|56012099006|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	IjJgOYWiXcVk7S3s+katBqo8adJ21vvJvfor52xgVk2EMUot+sAKmV59pQnAXfS9rHh+CkgCyr5C5nFPkQIVzrSIUBcjJu+xsiU8DVFT4wZR2db0ORELsTXL22kiZ8+hzG4IDjgSuy7nzOnZ2VQNJ0l75XNddC1wLJY7tmG4/Lc0pG5cugVMoxZxkFruXNqLNOWlMzcNFWk+pzlO1s9hVr7wh2qJ3MC1esH87YgJoXJ164uPsQgeIOLq5qdsmNwNqxCLAFKzlanHhocBbuUEVMrrbL0+uE9MtTSBVQ0i2xujDzbiE3FYSSe2k+oL05f0DjFURbwzCaEXDFHDt8etgmuPoN/19ArZ6StHK3Wo7etlM6e6fRdljR7OiZeIyvDaVpYoRD629NbfTF9H5SHsMvRCph8YY1Il6QlkTmdGK4nCBoMPBz7L8ApcAgRWkJa7O+lQiTkBUDtZu3PImosYz49gWhOuO3OTI2+VVbv8Kj0dVFgdg8FU7DEZP19mnYjZCYJQiLTkotnGQHB0D3Mgh0ZVu4L4WhOzxZM0zwU578JhSwbvhYgNXCP5RUPpdPFKfXtYK8X7c8+eWJhAEFxkLb/zT0buIjLFuWYTyrPUi6gS+FTv3lpdJB4Kve+wC+7JKUpy7U3p/3Ra+dRkOO/Y/PLnKhNpMDtL4u5w0VmQE4c=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV5PR12MB9779.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(22082099003)(18002099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TzQ1Tk0zUnZJSnptV1BMeWdSNHFpSmdSQkltdVZMeTNPc3UveGh1eDJSS1lM?=
- =?utf-8?B?c0VXYXZPSzZOYWF4ejgvT3h3U1lNOTBGMlVjbjBLQzlhb0hDY1R1ejZsalZK?=
- =?utf-8?B?Z09uWFBuNXJXV2tSdlQraU5tYll2N3oyRjNvV25LaUNRZkZaRi9IVVhFNWtH?=
- =?utf-8?B?THd6MTdOaE8zc3dKQkRYb3hkNWVTeDgvc1lJU1FBK0l1NUQ0Qzk3NVZnZTZF?=
- =?utf-8?B?V0xDZ044bzgyTkN0bERtbVdrWHl5UVY0eTVlTWl1bTVYYy9kbnVoNWU0eW9F?=
- =?utf-8?B?dE9FWlk1YmsxMlludTgrT0gxYnVLWGdOV2ZOZWMyRW96THgrRVcxSnE0RmZM?=
- =?utf-8?B?Zk9CVEYvN2ZpZkxuMENEeDRRMFQzeFpBRGtENG5RWUJ3QUlrSzNXYnFtTm9V?=
- =?utf-8?B?bFJ2eWdqMmFiL2x5dldSYldJRC9rZWpXblZaQ3RFNzZJenpOcmVsS2NjbHcv?=
- =?utf-8?B?QUc4ZEd0VmZ2UW9qblVRVGQ1SmtKcUNXMlRGQUFhMDRzeHVQQzE1UkRKYkZ2?=
- =?utf-8?B?YVRCaU1IZ1FVNGdJRGVFZDYvM291Z3EzVmt6aHhOZjJubGRaWEgxS0dtMFFI?=
- =?utf-8?B?ejZJM2RJRllDbU0yblVraHB6MUowRkpWUW1uUVVxS0RJTmUrd3EwZ1ZKQnhY?=
- =?utf-8?B?alcrdUxHNGRneFNqdnZDUzFhd0JtdGhBVForbGJENWI0Q0Yxcit4YnV1b0dL?=
- =?utf-8?B?QkFLZ3hnVXU1NE1uV2FSZmFuV2xDSGc3a3l6RitYZmltWEwycWh4Zmdobmo2?=
- =?utf-8?B?OWk1aUwxQW4zbTlRREJkanhvMXREQWJpYXEyRjZtU1NFWThRSzVYL1VLaUM4?=
- =?utf-8?B?bjFmeWE2UjRFMm1rbFo4THRBR0UwNklpVFpTbU5kWS8xRWg4ZTRsRE5ZcG1S?=
- =?utf-8?B?dXc2clpnUWh1Z2p4WDlpc3VNMDJVNC8xeWhpcndlMlFRc1ljR05LTEZ1Q3N6?=
- =?utf-8?B?angwMGxLK21IVDZTV09GMDducXpLYU9kQjJFR2piZVI3cEZmSEhaSXVxd1Ni?=
- =?utf-8?B?YmorY3ZFM05oenVvK1lzL3gyRTFLZm41MHc1eTNtSEx1YWltb2I0Z1Z5WElE?=
- =?utf-8?B?eGZCY29aNGVLajZqem9pV3pUSzJDNUVRUnk1WXdseDh4Ulg2dzNaampRV29E?=
- =?utf-8?B?cTFVM2hTaGNJVy9vU1dQbFI1QkxDVkZQdVhZNS9RbjVBWUdCcEZ5QU1zcUpz?=
- =?utf-8?B?Y2N5c2lIaG9Ob2E4TnZQMW1NQVhvL1dMTmlabXQrVFExMStDWVhZeG5pTWFs?=
- =?utf-8?B?TnJiWVZYRjBTeDBvcXk4UTFlY080ZHQ4QjZmYTVOMkZwVlI0R3drbEFsWkVi?=
- =?utf-8?B?eTZVQTFlYnZpMnhYY0dYZ2h1WVhhVFVCK1lZZEJJSGQ4eGVSZktjL2ZsMjNl?=
- =?utf-8?B?aEdpMFBMeDBZeko5YmZCd2RGb2lxS2IvdkNWelUzUDV4QUpPYXA4dnJHUDJm?=
- =?utf-8?B?QW5CK0xiTEcvRm1ZOHVDNStpVmVCYnN5cVNOMlpENVR6b2NQV1g1K2M2aXZB?=
- =?utf-8?B?bTRRMERSUTVQL01RRDZNRWw4UmZBQVQ0VHZiODBYZURla0tBU21FVmN5cFZ1?=
- =?utf-8?B?Y3JGcE14b2ZPcGEveld3ZkMrT040QjdUbHlHZmQ5NjN2eWtMZHhNa284RklP?=
- =?utf-8?B?SUtzY3FBMU92eUFxVzZxNENpYU5JZ1VjU1pWTEhwZ2NLQm8wckQydFNCR3BB?=
- =?utf-8?B?bFkwSDFRYVY5RDhTWGs3T1gzR3hISlJoNTBCZ2dIY2ZpcTdVOHY1TW04QmFt?=
- =?utf-8?B?TXdUOHFmRWVURFNiNXZSRjdBQ1B5U04xNW9iWUVkYWJYOUFoQ2xEZDQwclZN?=
- =?utf-8?B?eTJyTFl6LzZ4TlBTZ1dNcTRzZklxbloyRHJlVHB5ZnNydEZaTWt3eUtmeVV0?=
- =?utf-8?B?VHIxQ0twWWE1MjVsSzk4b0Y2OGtCdWcybFhxZ3RnMVFTdlRvSG00R3djMEpP?=
- =?utf-8?B?TGR0T0R4RDdSSWdqL0FrR1M1a1lBZThkb1lKL3FZSWdnYmxaY1lCeE1VZGxu?=
- =?utf-8?B?M1l2TjNBWFF2dnNsdzhOZUFVb2hCT1pZSUpnYndmRm5SUnpXK1luQXV1Qnc3?=
- =?utf-8?B?SjhXcCtSb0FGM1pncVJQbzdUOUQ3dnpqMXI1d2JTTFRaSGp0M2xEdGtDbnZk?=
- =?utf-8?B?SmdLeFZOb2pjc3o4cXFla3ZENzVjT0JlRzB6Z2xRUnF0c1JMRVU0ekFyY2FB?=
- =?utf-8?B?RFFaUWd2SXRXenpaYy9iREt1Wk5NVHRqQU9PZFRRc0trVWdXRnJENFVVSkxt?=
- =?utf-8?B?QVQ1M2VhTmNQcGthR3lLK1hseks5WlRGWmttQkttMjZzNklrSDUzQUlWbnZF?=
- =?utf-8?B?VEJURUVOTDRPbDNiNUtVNy83YUc3UTdIZzIwMVY5ZVpjZVZScFQ3UT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2617b08d-3a7f-4d5f-6aab-08ded5e0a8d3
-X-MS-Exchange-CrossTenant-AuthSource: LV5PR12MB9779.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2026 13:16:41.6593
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h8kL6wlzsfzIdgrDozGAqyoshUsJvmZ4oy09UG6NHD9nR0qji1cQvg3b5uMN87/q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7466
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260627005843.7786-3-nikhilgtr@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-
-
-On 6/29/26 13:47, Sai Krishna Potthuri wrote:
-> Add Sai Krishna Potthuri as a maintainer for the Xilinx AMS
-> driver for continued development and maintenance.
+On Sat, Jun 27, 2026 at 06:28:43AM +0530, Nikhil Gautam wrote:
+> Add Industrial I/O subsystem support for the Melexis
+> MLX90393 3-axis magnetometer and temperature sensor.
 > 
-> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-> ---
->   MAINTAINERS | 1 +
->   1 file changed, 1 insertion(+)
+> The driver currently supports:
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 6b4560681b51..924e004a8a5e 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -29460,6 +29460,7 @@ F:	include/uapi/linux/fsmap.h
->   XILINX AMS DRIVER
->   M:	Salih Erim <salih.erim@amd.com>
->   M:	Conall O'Griofa <conall.ogriofa@amd.com>
-> +M:	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> raw magnetic field measurements
+> raw temperature measurements
+> configurable gain/scale selection
+> configurable oversampling ratio
+> direct mode operation
 
-you should replace Salih because there is no intention to maintain this driver 
-from his side.
+Can you add '-' or '*' in front of each item in the list?
 
-Thanks,
-Michal
+> The MLX90393 supports both I2C and SPI interfaces. This
+> initial implementation adds support for the I2C interface.
+> 
+> The device uses a command-based communication protocol
+> rather than a conventional register-addressed interface.
+> A small transport abstraction layer is therefore used
+> instead of regmap to share the common sensor logic
+> between the current I2C implementation and future SPI
+> support without duplicating code.
+
+The commit message seems wrapped around 56 characters. We have capacity up to
+~72, please use it.
+
+...
+
+> + * Datasheet: https://media.melexis.com/-/media/files/documents/datasheets/mlx90393-datasheet-melexis.pdf
+
+Also add this line as a tag in the commit message (before your SoB).
+
+...
+
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+> +#include <linux/errno.h>
+> +#include <linux/delay.h>
+
++ dev_printk.h // dev_err_probe()
+
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+
+> +#include <linux/types.h>
+> +#include <linux/time64.h>
+
+Please, keep them sorted alphabetically.
+
+> +#include <linux/unaligned.h>
+> +#include <linux/units.h>
+
+
+...
+
+> +struct mlx90393_data {
+> +	/* Protects sensor configuration and measurement operations */
+> +	struct mutex lock;
+> +	struct device *dev;
+
+You need a forward declaration for struct device.
+
+> +	void *bus_context;
+> +	const struct mlx90393_transfer_ops *ops;
+> +	u8 gain_sel;
+> +	u8 hallconf;
+> +
+> +	u8 res_xy;
+> +	u8 res_z;
+> +
+> +	u8 dig_filt;
+> +	u8 osr;
+> +	u8 osr2;
+> +};
+
+...
+
+> +/* Datasheet: Table no.17 */
+> +static const int mlx90393_scale_table[MLX90393_AXIS_MAX][MLX90393_GAIN_MAX]
+> +				      [MLX90393_RES_MAX] = {
+
+Not good indentation. Just make it
+
+static const int mlx90393_scale_table[][MLX90393_GAIN_MAX][MLX90393_RES_MAX] = {
+
+which is precisely a single line.
+
+> +	/* XY axis */
+> +	{
+> +		{ 751, 1502, 3004, 6009},
+> +		{ 601, 1202, 2403, 4840},
+> +		{ 451, 901, 1803, 3605},
+> +		{ 376, 751, 1502, 3004},
+> +		{ 300, 601, 1202, 2403},
+> +		{ 250, 501, 1001, 2003},
+> +		{ 200, 401, 801, 1602},
+> +		{ 150, 300, 601, 1202},
+> +	},
+> +	/* Z axis */
+> +	{
+> +		{ 1210, 2420, 4840, 9680},
+> +		{ 968, 1936, 3872, 7744},
+> +		{ 726, 1452, 2904, 5808},
+> +		{ 605, 1210, 2420, 4840},
+> +		{ 484, 968, 1936, 3872},
+> +		{ 403, 807, 1613, 3227},
+> +		{ 323, 645, 1291, 2581},
+> +		{ 242, 484, 968, 1936},
+> +	}
+
+Keep trailing comma(s) for non-terminator entries.
+
+> +};
+
+...
+
+> +#define MLX90393_CHAN(idx, axis, addr) { \
+> +	.type = IIO_MAGN, \
+> +	.modified = 1, \
+> +	.channel = idx, \
+> +	.address = addr, \
+> +	.channel2 = IIO_MOD_##axis, \
+
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_SCALE), \
+
+It's harder to read, make it either
+
+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+			      BIT(IIO_CHAN_INFO_SCALE), \
+
+or (which is also my preference)
+
+	.info_mask_separate = \
+		BIT(IIO_CHAN_INFO_RAW) |	\
+		BIT(IIO_CHAN_INFO_SCALE), \
+
+Do it for all such cases.
+
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),\
+> +	.info_mask_separate_available = \
+> +		BIT(IIO_CHAN_INFO_SCALE),  \
+> +	.info_mask_shared_by_type_available = \
+> +		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+> +}
+
+...
+
+> + * Datasheet: Table 8, Page no. 12
+
+If Table has a title, also mention it here
+
+		Table 8 "...title of the table..."
+
+in such a case the page reference most likely may be dropped.
+Same comment for all the similar cases.
+
+...
+
+> +static int mlx90393_get_tconv_us(struct mlx90393_data *data)
+
+Can it return negative? What will be the meaning?
+
+> +{
+> +	const int osr = data->osr;
+> +	const int osr2 = data->osr2;
+> +	const int df = data->dig_filt;
+
+> +
+
+No blank line in the definition block.
+
+> +	int tconvm;
+> +	int tconvt;
+> +
+
+Ditto, and why are tconv* signed?
+
+> +	int m = 3; /* X,Y,Z */
+> +
+> +	/*
+> +	 * TCONVM = 67 + 64 * 2^OSR * (2 + 2^DIG_FILT)
+> +	 */
+> +	tconvm = 67 + (64 * BIT(osr) * (2 + BIT(df)));
+> +
+> +	/*
+> +	 * TCONVT = 67 + 192 * 2^OSR2
+> +	 */
+> +	tconvt = 67 + (192 * BIT(osr2));
+> +	/*
+> +	 * Total conversion time:
+> +	 * TSTBY + TACTIVE + m * TCONVM + TCONVT + TCONV_END
+> +	 */
+> +	return 220 + 360 + (m * tconvm) + tconvt + 120;
+> +}
+
+...
+
+> +static int mlx90393_xfer(struct mlx90393_data *data,
+
+> +			 const u8 *tx, int tx_len,
+> +			 u8 *rx, int rx_len)
+
+The last two lines may be joined.
+
+
+> +{
+> +	return data->ops->xfer(data->bus_context, tx, tx_len, rx, rx_len);
+> +}
+
+...
+
+> +static int mlx90393_update_bits(struct mlx90393_data *data, u8 reg,
+> +				u16 mask, u16 val)
+> +{
+> +	u16 reg_val;
+> +	int ret;
+> +
+> +	ret = mlx90393_read_reg(data, reg, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	reg_val &= ~mask;
+> +	reg_val |= (val << __ffs(mask)) & mask;
+
+Isn't it field_prep() reinvention? (Note small letters in the name!)
+
+> +	return mlx90393_write_reg(data, reg, reg_val);
+> +}
+
+...
+
+> +	/* Wait conversion */
+
+	/* Wait for conversion to be done */
+
+("wait for" is an English stanza that in great majority of the cases is used).
+
+> +	fsleep(mlx90393_get_tconv_us(data));
+
+...
+
+> +static int mlx90393_find_scale(struct mlx90393_data *data, bool z_axis,
+> +			       int val, int val2,
+> +			       int *gain)
+> +{
+> +	u8 res;
+> +	enum mlx90393_axis_type axis;
+
+Prefer reversed xmas tree order.
+
+> +	if (z_axis) {
+> +		axis = MLX90393_AXIS_TYPE_Z;
+> +		res = data->res_z;
+> +	} else {
+> +		axis = MLX90393_AXIS_TYPE_XY;
+> +		res = data->res_xy;
+> +	}
+
+> +	if (val != 0)
+> +		return -EINVAL;
+
+This doesn't use res or axis, move it above.
+
+
+> +	for (unsigned int i = 0; i < ARRAY_SIZE(mlx90393_scale_table[0]); i++) {
+
+Use [axis] instead of [0] for the consistency's sake.
+
+> +		if (mlx90393_scale_table[axis][i][res] == val2) {
+> +			*gain = i;
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
+
+> +static int mlx90393_set_scale(struct mlx90393_data *data,
+> +			      const struct iio_chan_spec *chan,
+> +			      int val, int val2)
+> +{
+> +	bool z_axis;
+> +	int gain;
+> +	int ret;
+
+> +	z_axis = chan->channel2 == IIO_MOD_Z;
+
+Can we rather split _find_scale() to two and replace this with
+
+	if (chan->channel2 == IIO_MOD_Z)
+		ret = mlx90393_find_z_scale(data, val, val2, &gain);
+	else
+		ret = mlx90393_find_xy_scale(data, val, val2, &gain);
+
+? I believe it will be less LoC.
+
+> +	ret = mlx90393_find_scale(data, z_axis, val, val2, &gain);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = mlx90393_update_bits(data, MLX90393_REG_CONF1, MLX90393_CONF1_GAIN_SEL,
+> +				   gain);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->gain_sel = gain;
+> +	return 0;
+> +}
+
+...
+
+> +static int mlx90393_find_osr(int val, int *osr)
+> +{
+> +	for (unsigned int i = 0; i < MLX90393_OSR_MAX;  i++) {
+
+One space too many.
+
+> +		if (mlx90393_osr_avail[i] == val) {
+> +			*osr = i;
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
+...
+
+> +static int mlx90393_set_osr(struct mlx90393_data *data, int val)
+> +{
+> +	int osr;
+> +	int ret;
+> +
+> +	ret = mlx90393_find_osr(val, &osr);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (osr == data->osr)
+> +		return 0;
+> +
+> +	ret = mlx90393_update_bits(data, MLX90393_REG_CONF3, MLX90393_CONF3_OSR,
+> +				   osr);
+
+Just make line longer, in this case it will be better to read in my opinion.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->osr = osr;
+> +	return 0;
+> +}
+
+...
+
+> +static int mlx90393_set_temp_osr2(struct mlx90393_data *data, int val)
+> +{
+> +	int ret;
+> +
+> +	if (val < 0 || val >= MLX90393_OSR2_MAX)
+> +		return -EINVAL;
+> +
+> +	if (val == data->osr2)
+> +		return 0;
+> +
+> +	ret = mlx90393_update_bits(data, MLX90393_REG_CONF3, MLX90393_CONF3_OSR2,
+> +				   val);
+
+Ditto.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->osr2 = val;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int mlx90393_write_raw(struct iio_dev *indio_dev,
+> +			      const struct iio_chan_spec *chan,
+> +			      int val, int val2,
+> +			      long mask)
+> +{
+> +	struct mlx90393_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		guard(mutex)(&data->lock);
+> +		return mlx90393_set_scale(data, chan, val, val2);
+> +	}
+
+> +
+
+Be consistent with the style of switch-case. Either add blank lines in all of
+them in all cases, or drop everywhere.
+
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO: {
+> +		guard(mutex)(&data->lock);
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			return mlx90393_set_temp_osr2(data, val);
+> +
+> +		case IIO_MAGN:
+> +			return mlx90393_set_osr(data, val);
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int mlx90393_read_raw(struct iio_dev *indio_dev,
+> +			     const struct iio_chan_spec *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct mlx90393_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW: {
+> +		guard(mutex)(&data->lock);
+> +		ret = mlx90393_read_measurement(data, chan->address, val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+
+> +		}
+
+Misindented.
+
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_MAGN:
+> +			return mlx90393_get_scale(data, chan, val, val2);
+> +
+> +		case IIO_TEMP:
+> +			/*
+> +			 * Datasheet Table 7: Thermal Specification
+> +			 */
+> +			*val = 0;
+> +			*val2 = 22124;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (chan->type != IIO_TEMP)
+> +			return -EINVAL;
+
+> +		/*
+> +		 * Datasheet Table 7: Thermal Specification
+> +		 */
+
+This is a single line comment.
+
+> +
+
+This blank line should be before the comment and not after.
+
+> +		*val = -45114;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			return mlx90393_get_temp_osr2(data, val);
+> +		case IIO_MAGN:
+> +			return mlx90393_get_osr(data, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int mlx90393_read_avail(struct iio_dev *indio_dev,
+> +			       const struct iio_chan_spec *chan,
+> +			       const int **vals,
+> +			       int *type,
+> +			       int *length,
+> +			       long mask)
+> +{
+> +	struct mlx90393_data *data = iio_priv(indio_dev);
+> +	static int scale_avail[MLX90393_GAIN_MAX][MLX90393_AXIS_MAX];
+> +	enum mlx90393_axis_type axis;
+> +	u8 res;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		guard(mutex)(&data->lock);
+> +		axis = chan->channel2 == IIO_MOD_Z;
+> +		res = axis ? data->res_z : data->res_xy;
+
+		res = chan->channel2 == IIO_MOD_Z ? data->res_z : data->res_xy;
+
+This fits a single line, no axis variable is needed.
+
+> +		for (unsigned int i = 0; i < MLX90393_GAIN_MAX; i++) {
+> +			scale_avail[i][0] = 0;
+> +			scale_avail[i][1] =
+> +				mlx90393_scale_table[axis][i][res];
+> +		}
+> +
+> +		*vals = &scale_avail[0][0];
+> +		*type = IIO_VAL_INT_PLUS_NANO;
+> +		*length = MLX90393_GAIN_MAX * MLX90393_AXIS_MAX;
+> +		return IIO_AVAIL_LIST;
+> +	}
+> +
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		if (chan->type == IIO_TEMP) {
+> +			*vals = mlx90393_osr2_avail;
+> +			*type = IIO_VAL_INT;
+> +			*length = MLX90393_OSR2_MAX;
+> +		} else {
+> +			*vals = mlx90393_osr_avail;
+> +			*type = IIO_VAL_INT;
+> +			*length = MLX90393_OSR_MAX;
+> +		}
+> +		return IIO_AVAIL_LIST;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int mlx90393_init(struct mlx90393_data *data)
+> +{
+> +	int ret;
+> +	u16 reg;
+> +
+> +	/* Exit mode */
+> +	ret = mlx90393_write_cmd(data, MLX90393_CMD_EX);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Datasheet section 15.4.1.2 (RT command), Figure 16:
+> +	 * Wait 1 ms after EX command before issuing RT.
+> +	 */
+> +	fsleep(1 * USEC_PER_MSEC);
+> +
+> +	/* Reset device */
+> +	ret = mlx90393_write_cmd(data, MLX90393_CMD_RT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Datasheet section 15.4.1.2 (RT command), Figure 16:
+> +	 * Wait 1.5 ms for the start-up sequence to complete.
+> +	 */
+> +	fsleep(1.5 * USEC_PER_MSEC);
+
+He-he, this is a float number. While it might work, it's better to use integer
+numbers. Yeah, for the sake of consistency the above also better with 1000.
+
+> +
+> +	ret = mlx90393_read_reg(data, MLX90393_REG_CONF1, &reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->gain_sel = FIELD_GET(MLX90393_CONF1_GAIN_SEL, reg);
+> +	data->hallconf = FIELD_GET(MLX90393_CONF1_HALLCONF, reg);
+> +
+> +	ret = mlx90393_read_reg(data, MLX90393_REG_CONF3, &reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->res_xy = FIELD_GET(MLX90393_CONF3_RES_X, reg);
+> +	data->res_z = FIELD_GET(MLX90393_CONF3_RES_Z, reg);
+> +	data->dig_filt = FIELD_GET(MLX90393_CONF3_DIG_FILT, reg);
+> +	data->osr = FIELD_GET(MLX90393_CONF3_OSR, reg);
+> +	data->osr2 = FIELD_GET(MLX90393_CONF3_OSR2, reg);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +#include <linux/array_size.h>
+> +#include <linux/errno.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+
++ types.h // uXX
+
+...
+
+> +	struct i2c_client *client = context;
+> +	int ret;
+> +	struct i2c_msg msgs[2] = {
+
+Keep reversed xmas tree order.
+
+> +		[0] = {
+> +			.addr = client->addr,
+> +			.len = tx_len,
+> +			.buf = (u8 *)tx,
+> +		},
+> +		[1] = {
+> +			.addr = client->addr,
+> +			.flags = I2C_M_RD,
+> +			.len = rx_len,
+> +			.buf = rx,
+> +		},
+> +	};
+
+...
+
+> +	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
+> +	if (ret != ARRAY_SIZE(msgs))
+> +		return ret < 0 ? ret : -EIO;
+> +
+> +	return 0;
+
+Do it in a regular pattern
+
+	if (ret < 0)
+		return ret;
+	if (ret != ARRAY_SIZE(msgs))
+		return -EIO;
+
+> +}
+
+> +static struct i2c_driver mlx90393_i2c_driver = {
+> +	.driver = {
+> +		.name = "mlx90393",
+> +		.of_match_table = mlx90393_of_match,
+> +	},
+> +	.probe = mlx90393_i2c_probe,
+> +	.id_table = mlx90393_id,
+> +};
+
+> +
+
+Redundant blank line.
+
+> +module_i2c_driver(mlx90393_i2c_driver);
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
