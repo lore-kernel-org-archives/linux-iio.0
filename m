@@ -1,66 +1,67 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A422F41930A
-	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 15:16:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6394425CE1
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 15:21:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782746180; cv=none; b=MAQyhaZ7RFewpziFwU/U6p4Cs6Gw0tN1cHNsmimIBtmmKPob8N9ycwg+ZjBsEFEdcaRbRkQSlAVyIsttIPSKoYzvH5Q8pOr9q5a3Z50fTE12L4RE7QAdweGEgqXf7gJtpZpguezDiDUoJdWNA1zisFYn8dc1RxQdjHxpP5WhBsY=
+	t=1782746505; cv=none; b=iExUTtk6/t8dm6P7bWwBmv7HAzfsyH7un5ZUC9WUl5FLWVz1aWJoGA2oMNpD7kseHrgPF0g1awqLC/X5FptEbDBy39Ae2Glnd0aM+bAO5sGK2f15x2J8gJnxKJOKNrlOjK4u0IH8ZH6UQ2Nbw+r+9mDY3WOpT+49/UjG61ya1eQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782746180; c=relaxed/simple;
-	bh=lKy4aCKGQpCX43GhJty4oLzKEwjcCep/eT3eY96uy8M=;
+	s=arc-20240116; t=1782746505; c=relaxed/simple;
+	bh=GqLnvZkmBn/+jdSRiIjOQLiMbdgqd/ohJyb5VcFNH64=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jo+hkc4GJKKC/9cVwtn5Gqm707Xc9QGjHcrXKQ5DCBsfdWQt1JqjiclchZuHAo3jWk6iHZvTs7VP0OqTAhe9GRcmmxc+euw7EDSa56Dyezz2gB6X/iIQGffna5br/Ml9wKnTkp0AcQ1ypVTmVGlMryr81i1hc4h9Dnaqc8ij9uk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=QyNMZEAf; arc=none smtp.client-ip=209.85.210.47
+	 In-Reply-To:Content-Type; b=czRZMFNyXiIKbT/xtYVBRWAGDA4n8jFL4ipzw9ryrrTT/ExUw5g4LwGDYXSBWpuZyhkO2WV2Kme6hwJJvD2BWTL6yRp2kfuK3Rz0zqcXaZpUDkRA2pMVqV2zXdVW7q2rpzqIcihK16dQudYfHXEkaIkrEiSyWyZ7jLEnjyMVevQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=SRryUTWy; arc=none smtp.client-ip=209.85.161.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="QyNMZEAf"
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7e93d1dd156so1316611a34.0
-        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 08:16:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="SRryUTWy"
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-69eb8b6bea8so1649505eaf.3
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 08:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782746178; x=1783350978; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782746503; x=1783351303; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=xm05s8v0mjGkdrpcNxT3cT8GPMUG6WjwWeFiXkf0Aws=;
-        b=QyNMZEAffsobLpv56dFF7GnHk3MVoMLYwbBTSHSUCqyq3+ZsBa4C02Q8fYW0GNVjVi
-         2TlwaDJtu5Bvppioy3WZ6fH9OyuSWM065RVFwAZu4ZBAIGt3XApdBKa+9oo0ufxrT28a
-         Sdo8vvCiBDi7tx/R3P55rJ70ged4gv/HoMSmcdmXHL2rjwbMyqFoPJP1kPEZxamjc+NR
-         aFX8kE/QqDg0QbijretXZfPMd6RuvPDwWgWJ3k5uOJJlvDzIu1bwWGqXg57y4PwM5JyI
-         Yyujsr1fdWuJSfIe7vWY1jVOrW2NC//X7KMZ/np01gto9/609CsZELBeWbE/LWOG+Hmx
-         aydA==
+        bh=RoN6vMVFKf7cav/D/vQQNE2Ex9fB7yojp9INli3pPQ4=;
+        b=SRryUTWyUOERn3+W4f25FkqSBAp+0GXtS2Zd/Xot/JtAesczfApSwHDdR1YDv0VlGr
+         SENJ1C3dBorbPEx15kid/EeVhgvFQYcaEJYv0M2Ufb6ZnjCaV58f+6ExW0aoB3zr9KOj
+         f4/4DpR9/1/EZLg1AVw+lHO7pN00SsuIhx19DdZdHMYzwNnulG4bF7hVg+iJhqaBZV6F
+         s8PCjW6SYFfnCdRhdK2KcEIVmXBw1OKHLaxEDqSTr9/OBYusc2G5wWW2M/q+uNxAfL7W
+         EqIkn0sNvUWjMQkw/pLwUZR+MvTu6AUCkqeecdHrBtXcirwAl9NpN2GXWNtZSHwFU8cz
+         Ok7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782746178; x=1783350978;
+        d=1e100.net; s=20251104; t=1782746503; x=1783351303;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=xm05s8v0mjGkdrpcNxT3cT8GPMUG6WjwWeFiXkf0Aws=;
-        b=WA8rLC/0zzyQj2st5Ps6Xc1vg74vmMvZPomFeFmJanAYYUl2PJIaX758VfOV89P6J1
-         p4DXtodFHL+4J2DpbQDaV/8GlVbwIQsC70N/YVccFmps5khTn2CW6c0fyWMAjWM0WTnP
-         mMEfBU9il0OVYueoqL1DkeeNx0UoIfh7nhnzpWq8p+q6+n8ucTXDdyCsKKaqF1BvxSio
-         AgE+ncuzCPJJVKTa8BJVMwKFT4TwzijF2/xEP3A2vkDMpTLIkTaVVe5VUiLwit/diWQv
-         sZFlUKFiZXrmx5rJbgkEz3TO03umyEsX3+f0K7Dlz+4ZVB5/SqH6wDCWizIn3xI7RUNa
-         6Esg==
-X-Forwarded-Encrypted: i=1; AFNElJ9J4cTTdW7tC9Tph7oqIzn12SuqT22GOxyWSa46pqSFQIWdUjchTyYusIxYhlGrAosmPzdHhrXgLvo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywh9T+UB5bdp0fOv9rjqknF0mG2LSh6XvZ5lYlZPdkqF7YmyZJt
-	63KfUP5fTQyvtoRsPQXuDI2be+mUFmMW0BLI1WfcTd2A3iSMM8fgXoHckqXL6HkBUJM=
-X-Gm-Gg: AfdE7ck4z8Az76wHItRlgtN/Gb1IYegbirayBIRYuzP2heTaYHe9Xh/BRlf4RDw7Yw1
-	ABaAdVcyZ1mmLtF3AvgTFY9jJPpM/OLyoDOIb9sNE/sxwCfRDSdMRA61mtwCXxQRrf8zghh5ybA
-	x+9fBawgXV75mJqXzWmoJXQwMa2g4X2yId+2yLgqKr65nmnMeAJQCSDXyByIPfcZU0Por94LVwj
-	FTv9ZI1IGjzV7QNZGwUswoJ+7RokvleyYcDzvCq16huRjVKxw732l+8KnbctwCFIwamDpv2Otpn
-	FLd4euTGvFt7MCFU5GhdfZgIq26wFSrMyxOhKIwG+sXCgwgzdQ4AuXsZ3eALl4lLa8nep55sKBf
-	DD6BqjWCWWMS0Ic5hNYPT17zFEmfXxgwDrj8N2n9VExbJN34Dot2ZVUaHQJyclD/Qfa53HL+fnO
-	kPdPC5xu2EL3LxVl0Eotvv1nLrsuqe38XO4hTyKPDkE0PJEhyh7Vnz0w1TvRZdxxw=
-X-Received: by 2002:a05:6830:4998:b0:7e6:f083:130e with SMTP id 46e09a7af769-7e99bfef82bmr15251661a34.4.1782746177656;
-        Mon, 29 Jun 2026 08:16:17 -0700 (PDT)
+        bh=RoN6vMVFKf7cav/D/vQQNE2Ex9fB7yojp9INli3pPQ4=;
+        b=IHUZBZSotSvngEhLvzd6kWm4fETj/t0DVBu2mH1fxJd2Tp49qZxlQ7UYammt8QKBdT
+         PffZjEnLG7FqExc3Dw4rJN0G56Q5YAdobb1KEWTFA5C+DBy35vBSmJNQf8vHavD+Ryam
+         lsWy/RThe8bKcWz78VEk9YwzbsK59BzujPRSO9yZ1lbjzJ8tCsXHog493dKx6nPEs/l7
+         9EC3khrIZ5dcSPCU2ujEskR8zajXoHO5KM4OQIsRyECuBB4bS6GPMVbYhGTIbBuHK/Y5
+         E+Mx2FyviHR0TrhzWQ1rgUe54OwPOEDtWIHxeVvNERAxHQzZgRIQN840OQPcKHyINY9w
+         2nvw==
+X-Forwarded-Encrypted: i=1; AFNElJ+H9Fwl7LKU5MrDzK1zgHDx/N6Zhscvs04EqiotLjkblSO8furmLR/UijCl4PLZtC6Aoxd70DOs/IY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwllqBJ0S/A/jSc3rIadHi2sdu3n+QfZW7+y57SyWLoizuPQnuc
+	4/AAwVq9eCflnexVd0JnP/IeEe5Z/XZFam+NOOULC+u0KhCanT2XXty80yZ0mfiRSaI=
+X-Gm-Gg: AfdE7cnH5XQqwDkoHnMaY1r/KSPgzA6sTYKS+kq3CdbmwdGhPxYUDEQ14QwQz/GnTVf
+	cnxSQElLEcVeCK/sMoQb9yBwfA1MBUUQeJgmjUiUkGCKEbea8QHNW9/yIqxd7hijdZ3C01bRO/z
+	6ATi/XsLF+DP46zVlPbmBaTT8BDl0xJ5QKjVBHVxXtezeINy73Akm5krSFQoIa57H8lB0bzYwVJ
+	idAA1v9QnSNEdc3vLhJeAJXxFuis9tQRVJ6/66SZeS+f0muvvSTPDYpfN0vUVays4eKnKsANQNU
+	WsJmUDHp9K0kNAVABKsZdo0/zN0rxx7E/lMgBWSWc8BPQ5mRqRUoxPiBkWF4d034BLZNNn8lz5j
+	3FFmp81YyqsAPmIiYK47SalJYzxUQsby8c/lAsj0j11SsrAk16qD+yeUMXMNB56lnzm51yLBNwk
+	L8zijirN7AAiAhRzNaFRlcidCRRmXHrbVOeHgJQuinhQXrqzG0Zeh/XTjHFRYAb+JOQTJExjXUt
+	A==
+X-Received: by 2002:a05:6820:4de2:b0:6a1:7644:772c with SMTP id 006d021491bc7-6a18939bcb6mr63450eaf.63.1782746502661;
+        Mon, 29 Jun 2026 08:21:42 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:3533:aa22:9a69:df1c? ([2600:8803:e7e4:500:3533:aa22:9a69:df1c])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ec3085dfsm18790a34.22.2026.06.29.08.16.16
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a189173c3bsm53188eaf.1.2026.06.29.08.21.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jun 2026 08:16:16 -0700 (PDT)
-Message-ID: <3a96a20c-f435-4b98-9e95-26a28bd06e7b@baylibre.com>
-Date: Mon, 29 Jun 2026 10:16:16 -0500
+        Mon, 29 Jun 2026 08:21:42 -0700 (PDT)
+Message-ID: <4d81af47-277d-40c5-94d5-8c7d59dbd0c4@baylibre.com>
+Date: Mon, 29 Jun 2026 10:21:41 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,78 +69,72 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and
- similar ADCs
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org,
- nuno.sa@analog.com, Michael.Hennerich@analog.com, andy@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- julianbraha@gmail.com
-References: <cover.1782397418.git.marcelo.schmitt@analog.com>
- <0abf862eeb277ae82262d09b11b1446f04c47be7.1782397418.git.marcelo.schmitt@analog.com>
- <9c6e0a74-c9c5-43ee-8eca-ae1667c51c32@baylibre.com>
- <akKHv7j22P6KczXb@debian-BULLSEYE-live-builder-AMD64>
+Subject: Re: [PATCH v5 0/3] iio: adc: Add support for TI ADS1110 to ti-ads1100
+ driver
+To: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org
+Cc: andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
+ devicetree@vger.kernel.org, duje@dujemihanovic.xyz, jic23@kernel.org,
+ jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
+ joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
+ linux-kernel@vger.kernel.org, marcelo.schmitt@analog.com,
+ mazziesaccount@gmail.com, mike.looijmans@topic.nl, nuno.sa@analog.com,
+ robh@kernel.org, sakari.ailus@linux.intel.com, wens@kernel.org
+References: <20260628194341.66752-1-jakubszczudlo40@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <akKHv7j22P6KczXb@debian-BULLSEYE-live-builder-AMD64>
+In-Reply-To: <20260628194341.66752-1-jakubszczudlo40@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-It helps if you don't trim the "On ... wrote:" part of the reply so that
-we know who wrote what. :-)
-
-
-On 6/29/26 9:57 AM, Marcelo Schmitt wrote:
->>> +{										\
->>> +	.type = IIO_VOLTAGE,							\
->>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
->>> +			      BIT(IIO_CHAN_INFO_SCALE) |			\
->>> +			      (_offl ? BIT(IIO_CHAN_INFO_SAMP_FREQ) : 0),	\
->>> +	.info_mask_separate_available = _offl ? BIT(IIO_CHAN_INFO_SAMP_FREQ) : 0,\
->>> +	.scan_index = 0,							\
->>> +	.scan_type = {								\
->>> +		.format = _sign ? IIO_SCAN_FORMAT_SIGNED_INT :			\
->>> +				  IIO_SCAN_FORMAT_UNSIGNED_INT,			\
->>> +		.realbits = _real_bits,						\
->>> +		.storagebits = _storage_bits,					\
->>> +		.shift = (_offl ? 0 : _storage_bits - _real_bits),		\
->>> +		.endianness = _offl ? IIO_CPU : IIO_BE				\
->>> +	},									\
->>> +}
->>> +
->>> +#define LTC2378_BIPOLAR_DIFF_CHANNEL(_real_bits)				\
->>> +	__LTC2378_DIFF_CHANNEL(1, _real_bits, (((_real_bits) > 16) ? 32 : 16), 0)
->>> +
->>> +#define LTC2378_UNIPOLAR_DIFF_CHANNEL(_real_bits)				\
->>> +	__LTC2378_DIFF_CHANNEL(0, _real_bits, (((_real_bits) > 16) ? 32 : 16), 0)
->>
->> Why not move the (((_real_bits) > 16) ? 32 : 16) into the __LTC2378_DIFF_CHANNEL()
->> macro to avoid repeating it?
->>
-> Because that would go wrong for LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL() in patch 3.
+On 6/28/26 2:43 PM, Jakub Szczudlo wrote:
+> Add support for the TI ADS1110 to the existing ADS1100 ADC IIO driver.
+> The ADS1110 is pin-to-pin compatible with the ADS1100 while providing
+> higher resolution and an internal voltage reference. This patch series
+> extends driver support for ADS1110, updates device tree bindings and
+> Kconfig text, and improves the overall hardware description for the
+> TI ADS1100 family.
 > 
+> Tested on: Raspberry pi 3b+ with 7.0 stable kernel
+> 
+> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+> 
+> ---
+> V4 -> V5:
+> - Correct pm macros to be more generic
+> - fix variables ordering in new functions
+> - delete unnecessary casts
 
-It could use `_offl ? ...` in the macro for that. Not a big deal to me though.
+Either this changelog is incomplete or some of my comments on v4
+were not addressed. (If you disagree with comments, that is fine,
+just reply to them with your reasoning. If you don't reply, then
+we assume you agree with them and expect to see the changes here.)
 
->>> +
->>> +struct ltc2378_chip_info {
->>> +	const char *name;
->>> +	unsigned int internal_ref_uv;
-> ...
->>
->>> +static int ltc2378_regulator_setup(struct device *dev, struct ltc2378_state *st)
->>> +{
->>> +	int ret;
->>> +
->>> +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
->>> +	if (ret < 0 && ret != -ENODEV) {
->>> +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
->>> +	} else if (ret > 0) {
->>
->> Else is not needed here.
-> Why not?
-
-The if returns unconditionally, so else is not needed. This is just a general
-principal.
+> - Link to v4: https://lore.kernel.org/linux-iio/20260622221550.374235-1-jakubszczudlo40@gmail.com/
+> 
+> V3 -> V4:
+> - make fixes patch the first change in the series
+> - correct error handling when short read
+> - use ACQUIRE macros from pm_runtime.h in new functions
+> - Link to v3: https://lore.kernel.org/linux-iio/20260613190957.654798-1-jakubszczudlo40@gmail.com/
+> 
+> V2 -> V3:
+> - clean patch from unreleated changes
+> - divide adding support for ads1110 into separate patch
+> - add missing changelog
+> - Link to v2: https://lore.kernel.org/linux-iio/20260607183542.368184-1-jakubszczudlo40@gmail.com/
+> 
+> V1 -> V2:
+> - go from creating new driver to extending ADS1100 driver to support ADS1110
+> - Link to v1: https://lore.kernel.org/linux-iio/20260527164312.355729-1-jakubszczudlo40@gmail.com/
+> 
+> Jakub Szczudlo (3):
+>   iio: adc: Fix incorrect reading when datarate changed in single mode
+>   dt-bindings: iio: adc: ti,ads1100: add support for ADS1110
+>   iio: adc: Add ti-ads1110 support to ti-ads1100 driver
+> 
+>  .../bindings/iio/adc/ti,ads1100.yaml          |  10 +-
+>  drivers/iio/adc/Kconfig                       |   9 +-
+>  drivers/iio/adc/ti-ads1100.c                  | 145 +++++++++++++++---
+>  3 files changed, 135 insertions(+), 29 deletions(-)
+> 
 
