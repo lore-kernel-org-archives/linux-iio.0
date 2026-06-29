@@ -1,235 +1,244 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B913E169E;
-	Mon, 29 Jun 2026 14:34:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E47F9419312
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 14:38:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782743691; cv=none; b=Hg+pyZ5jkAc3bwqnNk+O48UdYrux6CBSPkkST0w3eGXXPVjXY7ZRSs3Ua36MLfCcK4Wv7ZXTSLqr0slWIjFX7Nfovhg0NZctGNU3gtrTX08QXCv0KADVjsMKaWg9TvlMLWO8JWZdxDZjxKVF7tJe55CVyk+t3QFxWAJCKKp0EmM=
+	t=1782743897; cv=none; b=JRMpS5NIqrBZoaRwvN81ju0Gmnxvo+W/8Bs+TjPXNszpOToAz9Mj8ZobbV7iJiZTJ+SKh+ZDL90GDYrHbz19Jei/zpfwEx7bsWo8HpYCD8IVfsRsf5hCXJ2IiBK2LDURtSUG06wz4/87b5T9pZizTVC2krSqXlFRc0kbJGYLECI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782743691; c=relaxed/simple;
-	bh=BwZOJtCi29xG7YS74nuVxcsDkGYoCMCQK67EJ5IhvRQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N1UAoep3esep2Rpqa9hdEDjf+ZW2j9u5+TRLzEPU7jxVTvIkOHd1iFzjs3ZjF/BrfuDIqwMR0AAHzDFIvJGZ+55a44kFEcKSfHuWiZSKWWVeO6B4exvoTl6bY+UTPuuE/gIGeGeWUXa1iwO4lNLD0TD7nrPl1UYn6OJwXpKCO3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VMfT+ltQ; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782743897; c=relaxed/simple;
+	bh=imD23SG8a/tCSPXtxprxTReSZHlFvtv1LiJFmM4gKKE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sRtS+QRDrUSMWTxlj4szfirkggf53wHb6TOukOxrhNdq1JEF72doxnPVZEzGxI2Z+Akyi65kYLQuDOdhGEDlIcMSoSlifQTDyyJwB6GDAgrXIBuNs89G9zLdKdzAfraMgXSLE8H6pzbbn/+LhIhPOhTHMSnCYnqWj/l3OEQF8cg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=iYKJqDU+; arc=none smtp.client-ip=209.85.160.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VMfT+ltQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782743690; x=1814279690;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BwZOJtCi29xG7YS74nuVxcsDkGYoCMCQK67EJ5IhvRQ=;
-  b=VMfT+ltQekK1/RO7WrrJ/MkI/ZaVXnXXOVGL1Zkq3Fsuf02hQhl8isKS
-   LG7bz3O4/tZtPHXsTf5jVcCXQHv7tmXQziy37VEbf1r8hj9XjajzZ7CnT
-   OwXu0umen1xzTjkBj85b+CSdkmDaOSusIKvO4v/Xk7MPQJ77sD0aPVzc4
-   cy41YPWnY6qNDluYSBMKDUtZLIYAze+c8mQI/YcoTe/48P0J5Q+YAOpYa
-   kWHI5Ii0Zjd3klf8pILEP8kgQH4v4n6XwESAtE0YpkiyWzEwoIVuwO+DI
-   yZC7aMJ1tL8GMValeTXOuFqJjq1aPAA1xmJjQObzi+OwI/AY++h7Ytqyt
-   Q==;
-X-CSE-ConnectionGUID: ikYJnMYTSLSvyTLgQpzRvw==
-X-CSE-MsgGUID: Kh0KdoKkSxaoH2yFtLqZww==
-X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="83483711"
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="83483711"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 07:34:34 -0700
-X-CSE-ConnectionGUID: HJl0MlKUSf+1XUZwfoAVgQ==
-X-CSE-MsgGUID: PLuHj14sS2qlDi4ZuR8RdQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.24,232,1774335600"; 
-   d="scan'208";a="276249136"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.207])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2026 07:34:31 -0700
-Date: Mon, 29 Jun 2026 17:34:29 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Kim Seer Paller <kimseer.paller@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iio: dac: ad3530r: Add support for AD3532R/AD3532
-Message-ID: <akKCdSRn1LzhwD-o@ashevche-desk.local>
-References: <20260629-iio-ad3532r-support-v3-0-f6e4f4abebbe@analog.com>
- <20260629-iio-ad3532r-support-v3-4-f6e4f4abebbe@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="iYKJqDU+"
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-44755d837e8so2257670fac.3
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 07:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782743895; x=1783348695; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8omXPji0y1RQcAHd6aNa0PgUMtAkZ+oZmXD1ea506h8=;
+        b=iYKJqDU+Adhy/FaYBcVOQ0MFtSqh1UWemFqmHCyEuVhshElxz6NpNQ64ah/dNkgqrT
+         utxBwShmsVBAOVBiimuP5iWPlKzN3RdiliX4P/KUdg3nr5qnKiVg/LmRvztlgP1AR0uc
+         C6CSDMNuj5hysQZn2/brdz8IfkRAyoXPZ0/eSNgVn2zC7wgqZ10VLslW/f17lJorrJJd
+         2iMjFZjO1OjTw7WzbypFOL4wvtCgnj/LhqMdnRD1jDCYnzVFrdqj/t3u/YvONneGqcuN
+         1lySpk+NN1G9XWyuKDtk7rpCKTK0+V+sxSrNmW2ygeuVw4IKh9oYtC6JrPsDebjzOIjW
+         YXeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782743895; x=1783348695;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8omXPji0y1RQcAHd6aNa0PgUMtAkZ+oZmXD1ea506h8=;
+        b=L05cPe1nJuvjYPozSf/vNKsX3PraGk9sh86iII67UoOUPWpw9EU+/Gk49Qkj/X4oxf
+         EhKoRWGYUwByurfsrTjsQrFTjsebFmGKocYIof98TwScZqAJEhqlxwJKikuMMHxvgeu9
+         tZ7GwY0SnAqiTBDw+9itUPTe64CAqLhkI2ZEANOj4hSqf9ykdUeWLcUSznuVFcRf3vkM
+         SwIbMwclXZd05hMHP8IOoL/tYzXBYHxsDSYqV7A3DKiqXVvkXgKgDwIIYTRw45jqTemX
+         TJFXSkSlTmpyMZMCnSkk2CMYLsX10AdNLJzRjfJBm7S+0b44s7Op6/iPVEAc/Sx5cakE
+         OqJg==
+X-Forwarded-Encrypted: i=1; AHgh+RrW4BnYkqHFycx3p/QUAzwCqnt5JCe2GKOjkKxVA93kGacefm6thLzMDxBII/ZCdJC2KeEb4gG/u5A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwuR7ou4xLpPibQeVmo9uwzs6E+QXiRR5GiAQlV14as1uuugY1V
+	JlPlYtNHSXtdS59ZC5XOKsH0YZGYREp0ABNSAxMsX34RrGDPtwWPm/Lg6LARphd30ZI=
+X-Gm-Gg: AfdE7cmkTCiYqhcdRGTd7gjpShZMxErEeZjenEEHe80LQ+CRTL7FFsZghPeqnzggWTA
+	dGL0Jnz5obPfgGvviVJ/vRJlAOMFc9DVdFBXC9zbEBiP1v8KwhubcdNujgg6+BsG55wAozNVuLd
+	eViNEeZkv0AB5y+Bu5KZDaPxwaQrGdecuDtULHUGX5wv8J0SekeH8+qc9Q0nu4UyIYudW0C5A2A
+	5WTAfSnx83cEa0W19VVUX3QLo1oj+G2Coj27LP4ZlbeEyCxvzaR2KZic1wX7d3irwZlecK72bUP
+	9Mqm2WidBqdHiejRkj2ANXiG5527W0EVHLFApXcts3yC30JobNsvA9+bPyFbldoRJzaCr0xLu4d
+	Xw4lKnfbPpGDkFZPdae8DSiYjvsK2NBH5kYNrIs225+Oy9h2Gs2Yq41AUCwP/+U9fex9nH5e5rX
+	VC79KjTDahpB0nCLzefOaXwB7MHksK+INolMGtqKzjJdujts9DzrMF5CvVAErdGXY=
+X-Received: by 2002:a05:6870:3b18:b0:448:cf96:25c7 with SMTP id 586e51a60fabf-448cf9642b8mr786761fac.17.1782743894761;
+        Mon, 29 Jun 2026 07:38:14 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:3533:aa22:9a69:df1c? ([2600:8803:e7e4:500:3533:aa22:9a69:df1c])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4472f04236fsm19516743fac.14.2026.06.29.07.38.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2026 07:38:14 -0700 (PDT)
+Message-ID: <dba5ef4d-57e3-4016-842c-dad6990d7207@baylibre.com>
+Date: Mon, 29 Jun 2026 09:38:13 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260629-iio-ad3532r-support-v3-4-f6e4f4abebbe@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/7] iio: adc: Add ti-ads1262 driver
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+ <20260628-ads126x-v2-2-4b1b231325ba@gmail.com>
+ <0d7a5a3b-dc11-472f-a09a-44df887d5147@baylibre.com>
+ <DJKY6WN6KS2R.2ZF2TTJU7LBE3@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <DJKY6WN6KS2R.2ZF2TTJU7LBE3@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 29, 2026 at 04:31:07PM +0800, Kim Seer Paller wrote:
-> The AD3532R/AD3532 is a 16-channel, 16-bit voltage output DAC with a
-> dual-bank register architecture (bank 0 at 0x1000 for channels 0-7,
-> bank 1 at 0x3000 for channels 8-15). It shares similar functionality
-> with AD3530R (channel configuration, LDAC triggering, powerdown control),
-> the main difference being the register address map due to the dual-bank
-> architecture, handled by table-driven helpers.
+On 6/28/26 3:00 PM, Kurt Borja wrote:
+> On Sun Jun 28, 2026 at 12:15 PM -05, David Lechner wrote:
+>> On 6/28/26 12:36 AM, Kurt Borja wrote:
+>>> Add the ti-ads1262 driver with initial support for the primary ADC
+>>> (ADC1). The ADS1263 auxiliary ADC (ADC2) is handled by a separate driver
+>>> and interoperability considerations were taken into account.
+>>>
+
+...
+
+>>> +static int ads1262_read_raw(struct iio_dev *indio_dev,
+>>> +			    struct iio_chan_spec const *chan, int *val,
+>>> +			    int *val2, long mask)
+>>> +{
+>>> +	struct ads1262 *st = iio_priv(indio_dev);
+>>> +	struct ads1262_channel *chan_data = &st->channels[chan->scan_index];
+>>> +	u8 realbits = chan->scan_type.realbits;
+>>> +	__be32 raw;
+>>> +	int ret;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		ret = ads1262_channel_read(st, chan_data, &raw);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +		*val = sign_extend32(be32_to_cpu(raw), realbits - 1);
+>>> +
+>>> +		return IIO_VAL_INT;
+>>> +
+>>> +	case IIO_CHAN_INFO_SCALE: {
+>>> +		guard(mutex)(&st->chan_lock);
+>>> +
+>>> +		ret = ads1262_channel_get_scale(st, chan, val, val2);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +
+>>> +		return IIO_VAL_INT_PLUS_NANO;
+>>> +	}
+>>> +
+>>> +	case IIO_CHAN_INFO_HARDWAREGAIN: {
+>>
+>> There is only one other ADC that uses "hardwaregain". Usually, we just make
+>> scale writeable to control the gain. I don't remember what the rules for
+>> that attribute are. Using it for in_voltage is not documented in the ABI.
 > 
-> Add AD3532R-specific register definitions, channel specs, per-bank
-> register arrays, a dedicated ad3532r_set_dac_powerdown(), and per-chip
-> regmap_config to limit debugfs-exposed register space to each variant's
-> actual address range.
+> I went with hardwaregain because the scale loses too many significant
+> digits at high gain. With the internal reference and gain = 1, the scale
+> is at 0.000001164; then at gain = 32, the scale is at 0.000000036.
+> 
+> In this case I expect users to just calculate the scale themselves based
+> on the hardwaregain. Is this acceptable? If not I'll go with
+> scale_available.
 
-...
+I'm pretty sure there is a series floating around that has proposed
+adding new fixed-point IIO_VAL_* types that could be another solution.
+We'll see what Jonathan says about this too.
 
-> +/* AD3532R/AD3532 has two register banks: bank 0 at 0x10xx, bank 1 at 0x30xx */
 
-Split this to two comments, see below.
+>>> +static int ads1262_regmap_read(void *context, const void *reg_buf,
+>>> +			       size_t reg_size, void *val_buf, size_t val_size)
+>>> +{
+>>> +	struct ads1262 *st = context;
+>>> +	struct spi_transfer xfer = {
+>>> +		.tx_buf = st->tx,
+>>> +		.rx_buf = st->rx,
+>>> +		.len = reg_size + 1 + val_size,
+>>> +	};
+>>> +	int ret;
+>>> +
+>>> +	guard(mutex)(&st->xfer_lock);
+>>
+>> SPI bus and regmap both already have their own locking, so putting a lock
+>> here seems out of place. Instead, the lock should be for higher-level
+>> operations where there are mulitple register access in a single operation.
+> 
+> I agree. I can definitely move this one to a "higher level". But IMO,
+> because this also protects tx and rx buffers, it makes sense to have it
+> here too.
 
-> +#define AD3532R_INTERFACE_CONFIG_A_0		0x1000
-> +#define AD3532R_OUTPUT_OPERATING_MODE_0		0x1020
-> +#define AD3532R_OUTPUT_OPERATING_MODE_1		0x1021
-> +#define AD3532R_OUTPUT_CONTROL_0		0x102A
-> +#define AD3532R_REFERENCE_CONTROL_0		0x103C
-> +#define AD3532R_SW_LDAC_TRIG_0			0x10E5
-> +#define AD3532R_INPUT_CH_0			0x10EB
+It still seems redundant to me to have a lower-level lock if
+we have a higher-level lock that is always going to be held
+anyway. But maybe there is some case where it still makes sense?
 
-+ Blank line and a comment.
 
-> +#define AD3532R_INTERFACE_CONFIG_A_1		0x3000
-> +#define AD3532R_OUTPUT_OPERATING_MODE_2		0x3020
-> +#define AD3532R_OUTPUT_OPERATING_MODE_3		0x3021
-> +#define AD3532R_OUTPUT_CONTROL_1		0x302A
-> +#define AD3532R_REFERENCE_CONTROL_1		0x303C
-> +#define AD3532R_SW_LDAC_TRIG_1			0x30E5
-> +#define AD3532R_INPUT_CH_1			0x30EB
-> +#define AD3532R_MAX_REG_ADDR			0x30F9
+>>> +static int ads1262_parse_firmware(struct ads1262 *st)
+>>> +{
+>>> +	struct device *dev = &st->spi->dev;
+>>> +	struct clk *clk;
+>>> +	u32 reg;
+>>> +	int ret;
+>>> +
+>>> +	/* Set the nominal clock frequency */
+>>> +	clk = devm_clk_get_optional_enabled_with_rate(dev, NULL, 7372800);
+>>
+>> This is quite unusual. Usually an external clock would be a fixed clock
+>> and therefore can't be set.
+> 
+> Really? It can be a crystal of course, but it also can be anything else.
+> Shouldn't I be trying to set the clock frequency in that case?
 
-...
+According to the datasheet, 7.3728 MHz is just the nominal value while
+1 to 8 MHz is allowed. So I would expect the external clock to already
+be providing the chosen design-specific rate and we should be getting
+the rate here, not setting it.
 
-> +static int ad3532r_input_ch_reg(unsigned int channel)
-> +{
+> 
+>>
+>>> +	if (IS_ERR(clk))
+>>> +		return dev_err_probe(dev, PTR_ERR(clk),
+>>> +				     "Failed to get external clock\n");
+>>> +
+>>> +	ret = devm_regulator_get_enable(dev, "dvdd");
+>>> +	if (ret)
+>>> +		return dev_err_probe(dev, ret, "Failed to get dvdd regulator\n");
+>>> +
+>>> +	st->avdd_uV = devm_regulator_get_enable_read_voltage(dev, "avdd");
+>>
+>> We only need the voltage of avdd if it is actually used as a reference, which
+>> is probably quite rare. Not all regulators provide a voltage value.
+> 
+> Then I should just check for ENODEV here.
 
-Maybe
+Except AVDD is a required supply. They way I did it in the driver I am working
+on is first parse all of the channels to see if anything is actually using AVDD
+as a reference and only call devm_regulator_get_enable_read_voltage() in that
+case, otherwise call devm_regulator_get_enable().
 
-	unsigned int bank = channel / 8;
-	unsigned int ch_in_reg = channel % 8;
-
-> +	if (channel < 8)
-> +		return 2 * channel + AD3532R_INPUT_CH_0;
-> +
-> +	return 2 * (channel - 8) + AD3532R_INPUT_CH_1;
-
-	return 2 * ch_in_reg + (bank ? AD3532R_INPUT_CH_1 : AD3532R_INPUT_CH_0);
-
-? This might need the correction in variable names. I tried to deduce them from
-the _dac_powerdown() below. But if you think it makes things more complicated,
-don't refactor.
-
-> +}
-
-...
-
-> +static ssize_t ad3532r_set_dac_powerdown(struct iio_dev *indio_dev,
-> +					 uintptr_t private,
-> +					 const struct iio_chan_spec *chan,
-> +					 const char *buf, size_t len)
-> +{
-> +	struct ad3530r_state *st = iio_priv(indio_dev);
-> +	unsigned int bank, local_ch, reg_in_bank, ch_in_reg;
-> +	unsigned int reg, pdmode, mask, val;
-> +	bool powerdown;
-> +	int ret;
-> +
-> +	ret = kstrtobool(buf, &powerdown);
-> +	if (ret)
-> +		return ret;
-> +
-> +	guard(mutex)(&st->lock);
-
-May chan->channel be modified behind our back here?
-If not, what's the point of protecting the below lines
-(till IO)?
-
-> +	bank = chan->channel / AD3530R_CH_PER_BANK;
-> +	local_ch = chan->channel % AD3530R_CH_PER_BANK;
-> +	reg_in_bank = local_ch / AD3530R_CH_PER_REG;
-> +	ch_in_reg = local_ch % AD3530R_CH_PER_REG;
-> +
-> +	reg = bank ? AD3532R_OUTPUT_OPERATING_MODE_2 :
-> +		     AD3532R_OUTPUT_OPERATING_MODE_0;
-> +	reg += reg_in_bank;
-
-	reg = reg_in_bank + bank ? AD3532R_OUTPUT_OPERATING_MODE_2 :
-				   AD3532R_OUTPUT_OPERATING_MODE_0;
-
-> +	mask = AD3530R_OP_MODE_CHAN_MSK(ch_in_reg);
-
-> +	pdmode = powerdown ? st->chan[chan->channel].powerdown_mode : 0;
-> +	val = field_prep(mask, pdmode);
-> +
-> +	ret = regmap_update_bits(st->regmap, reg, mask, val);
-
-Okay, now it's cleaner and we may make it even clearer:
-
-	if (powerdown) {
-		val = field_prep(mask, st->chan[chan->channel].powerdown_mode);
-// Here is the question, do we even need a field_prep()?
-		ret = regmap_update_bits(st->regmap, reg, mask, val);
-	} else {
-		ret = regmap_clear_bits(st->regmap, reg, mask);
-	}
-
-so pdmode variable is not needed.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->chan[chan->channel].powerdown = powerdown;
-> +
-> +	return len;
-> +}
-
-...
-
-> +static int ad3532r_trigger_sw_ldac_reg(unsigned int channel)
-> +{
-> +	if (channel < 8)
-> +		return AD3532R_SW_LDAC_TRIG_0;
-> +
-> +	return AD3532R_SW_LDAC_TRIG_1;
-> +}
-
-Taking the above, not sure if we benefit from the parametrized macros like
-
-#define AD3532R_SW_LDAC_TRIG(channel)	\
-	(((channel) < 8) ? AD3532R_SW_LDAC_TRIG_0 : AD3532R_SW_LDAC_TRIG_1)
-
-...
-
-> +	st->chip_info = spi_get_device_match_data(spi);
-> +	if (!st->chip_info)
-> +		return -ENODEV;
-
-> -	st->regmap = devm_regmap_init_spi(spi, &ad3530r_regmap_config);
-> +	st->regmap = devm_regmap_init_spi(spi, st->chip_info->regmap_config);
->  	if (IS_ERR(st->regmap))
->  		return dev_err_probe(dev, PTR_ERR(st->regmap),
->  				     "Failed to init regmap");
-
-> -	st->chip_info = spi_get_device_match_data(spi);
-> -	if (!st->chip_info)
-> -		return -ENODEV;
-
-This is simply moved up, make it happen in a separate patch.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> 
+>>
+>>> +	if (st->avdd_uV < 0)
+>>> +		return dev_err_probe(dev, st->avdd_uV, "Failed to get avdd regulator\n");
+>>> +
+>>> +	st->refp_uV = devm_regulator_get_enable_read_voltage(dev, "refp");
+>>> +	if (st->refp_uV < 0 && st->refp_uV != -ENODEV)
+>>> +		return dev_err_probe(dev, st->refp_uV, "Failed to get refp regulator\n");
+>>> +
+>>> +	st->refn_uV = devm_regulator_get_enable_read_voltage(dev, "refn");
+>>> +	if (st->refn_uV < 0 && st->refn_uV != -ENODEV)
+>>> +		return dev_err_probe(dev, st->refn_uV, "Failed to get refn regulator\n");
+>>> +
+>>> +	st->start_gpiod = devm_gpiod_get_optional(dev, "start", GPIOD_OUT_LOW);
+>>> +	if (IS_ERR(st->start_gpiod))
+>>> +		return dev_err_probe(dev, PTR_ERR(st->start_gpiod),
+>>> +				     "Failed to get start GPIO\n");
+>>> +
+>>> +	st->reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+>>> +	if (IS_ERR(st->reset_gpiod))
+>>> +		return dev_err_probe(dev, PTR_ERR(st->reset_gpiod),
+>>> +				     "Failed to get reset GPIO\n");
+>>
+>> This is currently never used.
+> 
+> It has to be de-asserted for the chip to be in an active state though.
+> 
+Usually, if we have hardware reset available, we use it to reset instead
+of writing a register to do the reset.
 
