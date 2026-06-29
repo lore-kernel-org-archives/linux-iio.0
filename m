@@ -1,129 +1,137 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D503655F1
-	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 06:20:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92F133EB06
+	for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 06:47:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782714006; cv=none; b=OX5Bnvkldi5gQAMSqG5DgefCAP/YKXYyX+xNkun1j9FYABrKNh5ePTATs87CYd6by9gAp9+zlhgfOChOT9/agdjDJYKAYBLyp6OWEf0mvVB+VB+figjOb/5YewKVpqOUCy92w2RY5TYa1are9DFVEQs5H34d9Zi0fG4b+DZ289E=
+	t=1782715666; cv=none; b=VA37DLaxCmaqtWFT1XKK92x0Bq6/wZKgkql0ZNnj+W/DggJYtawYQv4Zjsrx5ipoqUac4PR1Vd11ELriLA4j5O4Z1DIPVdnQmxQzvGpBXZ9gIKkCHihMSttpB9v21hjuvVYQEkXm3sWVobv0TaZWN+qfjcjQBYIaji1mhzRzJ14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782714006; c=relaxed/simple;
-	bh=+Oewf0zti4ZNl5WDki0vtNhFTQ5zzl+o5w0WuIwmOLI=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=lY9l1IszdWk5sc5YnwkZStTSSrHSsmPqVGD0G/wTeod5IhXDyOMAkFiULHHrDV2zGhgmV97LoYGQcXtqnJcI0IPnUXKvtZ/JEqOMcCClRUVPVnDmEPQVmd978pKrE2p2lJo2G5DbNHQfVFIo98QM4zMM2sQ2mv25AmNAF3H+PY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TPp7bvSU; arc=none smtp.client-ip=209.85.167.49
+	s=arc-20240116; t=1782715666; c=relaxed/simple;
+	bh=v+qWVRauUjpTMkiJIe9BuToSx5p+cD4V9llEvD9oJl4=;
+	h=Mime-Version:Content-Type:Date:Message-Id:From:To:Cc:Subject:
+	 References:In-Reply-To; b=YokWy4hV0qs3TYwo4rvY1nBgLtzNzN5X5N546ATg7JLR+wwNpEpTveYhmAXWvd44nvJM08t9zhVQV2RnPeNwIPkWSqYMDTVjbCql4EPhmnzWe2rVQWBE1wEdDnn+HMxr+lwb2jzNCOaEPApGFKX49/Euycf+ly0PwLq6b/TB+kY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H1R0e2+t; arc=none smtp.client-ip=209.85.217.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TPp7bvSU"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5aea4cbeb94so2082817e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 23:20:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H1R0e2+t"
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-738bd0b7960so445143137.0
+        for <linux-iio@vger.kernel.org>; Sun, 28 Jun 2026 23:47:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782714003; x=1783318803; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=628d7Vl1HoSb6L6sJz7pqGaATh0j3vfBdU40shBEREE=;
-        b=TPp7bvSUahyN1sOyFZqk3O+ndH3Up+Vae8U0IQcTZ3i7AB60hvSG6Ubl2Dm0DJdvED
-         DxKAIwzx5b/5ZfTqFgYWrLJm9YZ6CbhSLP+4awXaAC4E3PUToSsJSnWXIWZYi6zLHi0C
-         MtV4OcNjWAeAosBu6APygsMi9A+FxYGvdRkeGU7IDUtLs08/5Pd/y3G2HpCOoalt9zYS
-         VQqYYZRAdjjGFfbMTlJ3F1qSviYbkJWauI91gmwsrnShsQZs9AZBEOE8fK7Ag1JRXckm
-         cVuHpSA4PPWIuKIW9GpG0EcnHWaC8P5Lu3ELDKDG8iynbcLF7Ba+JzJTa95BSdvaGTK2
-         R2rg==
+        d=gmail.com; s=20251104; t=1782715664; x=1783320464; darn=vger.kernel.org;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5+oe0ICWRfN20FKF1msz77hWxvDcYi0f/X+trcO5BX8=;
+        b=H1R0e2+tnbR8pO8OI1J7c1IJknieQWaHHRkkeIWgjOPW00ncsQUQZs0e3jpG+plmpV
+         C0m3GHV/JhxGzZ4mnWAN8lYpXxj9koSB3uFg0eJzSPXgR1RwTD4Fwb5dPYywQ71aXq1o
+         GhlUHr8lF5A9CMno1chirc0KcrLBE17f77aEMA0svfxfzJBbeyNClZeYNCU7ZqITXFvw
+         ZJ/kUp23HljTfKw3xI0IuPT+uPSw3DGTg1s+hp7fb6zRVkYU77/lVXit36IiEHmSxU2C
+         kah2052a4gL7gAaLfRpBfAZEldstTzXHgQUkJUm8Iaotlkd3RAwKyk+QEXg0wTR2cfrz
+         i4AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782714003; x=1783318803;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=628d7Vl1HoSb6L6sJz7pqGaATh0j3vfBdU40shBEREE=;
-        b=YVrhCz24shWd7T+jCL32oo1lhI7dyeT0e8HEbUcxQTdpg/QI/0E1kJ4rS1DXwj1KTp
-         pGgyXjxrfwWmczOJ01jmpquzxSV/YIN0fFEU4/vCKcB3ETZssJ0IEtnRkso+UpGxPA8O
-         zcylqd4IvgvQT0cMKo1G5u9F6/i9vV5agdSxgRtBNRbLBCR3lZuqOGsm0IMbCnKRb0VK
-         ZgGBdWwnC/rCMpDlpo4Qa5UCp5L1XMhKva2Z3sOqfk1nTgLVkvvbMsH840fUTO5AP5bS
-         iqKylT4J07b9L898vOmtiSVT5r4oDE8y0EU/NnBip/EAU41eC5tCbRjPF3sH2/Nf0UyA
-         yl3A==
-X-Forwarded-Encrypted: i=1; AHgh+Rr7xsvQSHgjr3rqrpjEcmZ0To1CYxKXMyMGJ2p+XnqpzZUotzRUTyfQloYdMQbvttQ4vMjqruCYlrc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/HgS8KvW6j+rY/T0OeQPK7fVKVVJ+4MldzKdz0eJOkxobqA8H
-	ae8+ZIlSC3G+OVfEqDhupHlir3f/SSAjn5ePOo04g/sOrOjAhz+Fpv9e
-X-Gm-Gg: AfdE7ck0k9bifPL4JSpvDGv1nKE9WHAhudUeu60mwjTFP0f70JajFuoAhjhaASBxlKn
-	/h/31FBXW/k/ZX1PO6Zewf6PMxEmZkiYhbybnBmVKQTQgHQhoNOgOu0i/oaWLhqn/Pj/FSm+hEx
-	mJjC0anU6DhLeSIrPrxAejcJbKwI51p21ihimjlrQKy3gaHfBuBOMkh9dRilzSFls2PlZZAFcqu
-	kohR6OqSlSRxEMP3cfjs8cNgaVq037P48VcwlIjaSgKaKirBhMNZU4xi2CBXm4wj66qf9PI8O2y
-	RTz9CGm7vgO8s0naL71uiVrkfB/26GOU6HjkjB6wh3o9KibsQ7P+hBcvHSiAOqoHaTFRZHo2xTO
-	MMjIKWuCs6VNiiEGrMNNtpsFVkmbFnwejH49AKS6PHsaoyf+no9vJij7QWWoM9nnrxCD4TQYy07
-	RSGxSrATrLNJ5ZdS+WMt8XN+9c2Cl2hi+fTSHK194VLG3QhPLAtcUvdElGNZb5rAjuYpsTFCCHI
-	MZG3z/q
-X-Received: by 2002:a05:6512:8059:b0:5aa:7126:c645 with SMTP id 2adb3069b0e04-5aea1f41122mr2916271e87.2.1782714002091;
-        Sun, 28 Jun 2026 23:20:02 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5ad69579a76sm5681480e87.51.2026.06.28.23.20.00
+        d=1e100.net; s=20251104; t=1782715664; x=1783320464;
+        h=in-reply-to:references:subject:cc:to:from:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5+oe0ICWRfN20FKF1msz77hWxvDcYi0f/X+trcO5BX8=;
+        b=FvP50mXL0rDQ1hY2kH7Dbs4BTFaQ0hM3LLq3JHpPBzem+zGCx7ETf1iFjOj1d+lkqu
+         aWQ2If0HX8NX//CnUP0ZBKh0JUdJ2WoV8GXREziJ/RkOHPNWoVXMPO2VcIci89pmhRVA
+         6qSk2aHwJ9ssvAz6NJjmbCVm55oMoQykLU7Qbrfc1mpv1JRIYxxAhF8tpgccdydJfddk
+         CmcfFxRaZKdN6lW70Pkv46Vb9N9u/MC16A8w5uZnyzNqip9rmr9Ix+YDthEsAHKJVZeQ
+         zkRapWS8GUC417VoVG0tQGRaGUe/m1w7PSfSvTzapPOhcJn7EtoT8p2+3dqcZ9wHv501
+         NVfA==
+X-Forwarded-Encrypted: i=1; AHgh+RrxmOkSwCIH9lzu24XaUjb2gHzEDfyZVeajZOXJ05z8JUi2ngm7hKSQ+i6l55jsXynYHKJ6JGKjXcU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyuEBHYP5NRpk4pkKFB/qzBIeNQQ+qulAK+9ASSGfTdh98y4mga
+	pV17eJ5YU5Ru5HpiEWZEsNopPsZ9banFFDMn28vohvJnMwg9CebKAxLR98HmPg==
+X-Gm-Gg: AfdE7ck476F4ppXC9YR0gJy0NFEtRzbF3ebHvUJhD0DSyQMyVkO7L37zzh4WSPlkyTD
+	ufsveklrGTblubvzIGkXYvFlD2TBfzTDUVqeEcmNhE8GZHJr6T+ySGvc7AJoyp7EtFrba1lGP6J
+	rVXWlakOMC6LGQEiCR7U6+5+9OshyqXWUCBcbZzweliAa2hSnlKwIvw7L+ckHBo/itmryn01hXx
+	VKGAMcp5pVLuRGs/8Toqj0UQwzpC3dtaf99KOD7rm19wakKp37N9zb8dUJ7aOUYHpoEwkM9xGoH
+	9eTr+ziyvUvesOvWL1XdD9yNj85al3Wm4kTG8Bc3psI+yljw1GuNq65rGk90ZhCI8ZIFRQ72/G0
+	pv9TglAKT7jrpdf09HGz8q19Y7yD0N8e3FHnwJtzczt6bREJsJmVJ+zTEnDljBzx9BjLkrSvszK
+	lNMSc=
+X-Received: by 2002:a05:6102:80aa:b0:650:94b2:b209 with SMTP id ada2fe7eead31-73433e36b9amr7521498137.4.1782715663900;
+        Sun, 28 Jun 2026 23:47:43 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-73566da9b45sm5178561137.5.2026.06.28.23.47.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Jun 2026 23:20:01 -0700 (PDT)
-Message-ID: <806c72a7-8c29-4308-b226-c347bcde7b0d@gmail.com>
-Date: Mon, 29 Jun 2026 09:20:00 +0300
+        Sun, 28 Jun 2026 23:47:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] Maintenance status of SPS30 driver and related Tomasz
- Duszynski entries
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>,
- Maxwell Doose <m32285159@gmail.com>, =?UTF-8?Q?Tomasz_Duszy=C5=84ski?=
- <tduszyns@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
- open list <linux-iio@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>, tduszyns@gmail.com,
- heikki.haikola@fi.rohmeurope.com, antti.sakkinen@fi.rohmeurope.com
-References: <CAKqfh0GxasvVEMVySviw5vB1QmbNF-RKBjuoMD9ffEtnQjDkJQ@mail.gmail.com>
- <agAvydze87mMLaVC@ashevche-desk.local> <20260608085754.32def4cd@linuxescape>
- <20260609140712.2e5d1640@jic23-huawei> <20260609102159.14c68a8e@linuxescape>
- <20260610103651.00007a64@gmail.com>
- <a2b1acbb-f8f2-4d6f-9681-986f42feddfa@gmail.com>
- <09dea87f-d2e2-4bbf-a948-3092a2dae29a@gmail.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-In-Reply-To: <09dea87f-d2e2-4bbf-a948-3092a2dae29a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 29 Jun 2026 01:47:35 -0500
+Message-Id: <DJLBYI4V0I6Z.2ZMJOFAZXG10L@gmail.com>
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: "David Lechner" <dlechner@baylibre.com>, "Jonathan Cameron"
+ <jic23@kernel.org>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>
+Cc: "Chris Hall" <c-hall@ti.com>, "Patrick Edwards" <pedwards@ti.com>, "Kurt
+ Borja" <kuurtb@gmail.com>, "Nguyen Minh Tien" <zizuzacker@gmail.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: iio: adc: Add reference-sources
+ property
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+ <20260625-iio-adc-ti-ads122c14-v2-1-ceb9b0b561cb@baylibre.com>
+In-Reply-To: <20260625-iio-adc-ti-ads122c14-v2-1-ceb9b0b561cb@baylibre.com>
 
-On 25/06/2026 08:11, Matti Vaittinen wrote:
-> On 10/06/2026 12:46, Matti Vaittinen wrote:
->> On 10/06/2026 11:36, Joshua Crofts wrote:
->>> On Tue, 9 Jun 2026 10:21:59 -0500
->>> Maxwell Doose <m32285159@gmail.com> wrote:
->>>> Alrighty then. I'll probably take his chemical/ drivers since I've
->>>> been spending some time in there. Regarding his light/ driver (ROHM
->>>> BH1750 AMBIENT LIGHT SENSOR DRIVER) I can take it but I want to see if
->>>> anyone else wants to first.
->>>>
->>>
->>> I believe that there are a few ROHM folk in IIO, perhaps they would take
->>> interest in maintaining the driver.
->>>
->>
->> Thanks for pinging me. I need to see if we have any of the:BH1710, 
->> BH1715, BH1721, BH1750 or BH1751 here - and if we don't, then I need 
->> to ask from the HQ.
-> 
-> The HQ promised to provide me BH1721 and BH1751 so I am fine maintaining 
-> (S:) this driver.
-> 
+On Thu Jun 25, 2026 at 4:55 PM -05, David Lechner wrote:
+> From: Kurt Borja <kuurtb@gmail.com>
+>
+> Some ADCs have configurable voltage reference sources for each channel.
+>
+> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> ---
+> v2 changes (compared to Kurt's RFC v2):
+> * Drop maxItems.
+> * Drop 2nd paragraph of description.
+> * Make reference-sources plural since it is an array.
+> ---
+>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documen=
+tation/devicetree/bindings/iio/adc/adc.yaml
+> index b9bc02b5b07a..12800737d4fb 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> @@ -73,6 +73,14 @@ properties:
+>        device design and can interact with other characteristics such as
+>        settling time.
+> =20
+> +  reference-sources:
+> +    $ref: /schemas/types.yaml#/definitions/string-array
+> +    minItems: 1
 
-Oh, I noticed from another mail-chain that Tomasz was found :)
+Is minItems necessary here? Its causing dt_binding_check to fail:
 
-Tomasz, are you still actively maintaining the ROHM ND1750 driver? If 
-yes, then I'm not jumping in. If not, then I'll send a MAINTAINERS patch.
+	ti,ads1262.example.dtb: adc@0 (ti,ads1263): channel@0:reference-sources: [=
+'ain2', 'ain3', 'ain2-ain3'] is too long
 
-Yours,
-	-- Matti
+I don't really know why, but removing it fixes it and allows various
+array lengths.
 
--- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+> +    description:
+> +      Indicates the voltage reference source or sources for this channel=
+. Some
+> +      ADCs usually allow choosing between internal reference sources or =
+a pair
+> +      of external pins.
+> +
+>  anyOf:
+>    - oneOf:
+>        - required:
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+--=20
+Thanks,
+ ~ Kurt
