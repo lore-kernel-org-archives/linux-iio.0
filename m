@@ -1,47 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CDA314D37;
-	Mon, 29 Jun 2026 23:06:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65D17314D37;
+	Mon, 29 Jun 2026 23:11:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782774389; cv=none; b=NiPL+ljMhStFSp+we1+Bd9MylEaff3gxRlNEtlIDpPZUN3Lf8Z/vo6jkmrSKxLIDHL5oH/SpffnlWo/2K5FnTxJH/pm1gwLmyi22itW30IshBbQyPP0AkP9Za0Jbo/D5dkRpx6QomdP0j6ohHCS4VtC9uWQ61exyCpki0hi31q4=
+	t=1782774715; cv=none; b=mjkrBvsRqCda3FIHtwYkkRdXXYG0o0/32lVPKu5KgKWuSH9Oe3WwB0Orin6t9Z6phoOcTdsJG4qLAovecQ50gWw1nfxM2taQCmnTBpLxhpFspMiPL/H01/loyFudZaB4FHWb7LjAdUxnJvRjfz73CplsZzgG8vLfwiIq5cVZFKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782774389; c=relaxed/simple;
-	bh=I4iUEOybQEsmzXuAAIf1/3WyDgQopgAoddtkkV2U5Uw=;
+	s=arc-20240116; t=1782774715; c=relaxed/simple;
+	bh=ZZ0UGOAeCoILpOiP+u0sGoq7qa/crFZTm/8spg9Zl3E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jLACrje/1JyLNL9qaC7I1dBrPEohJ+am3e0f0t4t136qGDTR+3mbgG3wDZHFcy3Tz1BOX1WDY6jmbucg3QjVmofHS5zvOeR3iE8gmRN0KBrYitPGqpBjZX8f8UGvBcahmCqjOL2A5zspVyx1XhvX82+W8dy09JN2itiIS0hjWgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dsSBnHBz; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=eQS6ArcXrp/tSHoFzI1WkjouaBc5QSMhTZsImdwdccpafAQKb8xqOG9zS8V1vGW0XEV+Q1uwxbobqadfzs4u+0badkHDR9kotdcnIGmk7wZwPmmRHRiU9+qvViDudpyUcTH3NafrfDN+KQn0j+feK5KfmL5ysvAHVfQj46RXIOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dKERiuyM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dsSBnHBz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 116001F000E9;
-	Mon, 29 Jun 2026 23:06:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dKERiuyM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E18CD1F000E9;
+	Mon, 29 Jun 2026 23:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782774387;
-	bh=TmAM2oLhV2akH1urBQaUp/FvEz6ljKoVqlmJvVn6sOU=;
+	s=k20260515; t=1782774714;
+	bh=lkcgK/QOqsOU1PJp0TwzJZhiunJltFZviceJ6zVLyfQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dsSBnHBzXNloL6KjMUL6eLyQLcTK0rAPFE8UTksSeq6UDa+eXAqYu9IuM+gfQo6AC
-	 ygbjD/0cj/RjI4VndzpirYnmoP1uwaqCfp9tAF//I1iwrpXMK8SMKctZ31ukhgzvmq
-	 0f7wJ90/27O7LYHJO+w7Ty3j715vlMp3Je7mG6B60VQXUixfRIPq4n0IJKcOniDPUY
-	 qjuCApnUnKIfQBaYVHfjN0sKUAQY0hCYfhPTUCoCHG2zqNCcd60MycqP5Dq+NZZdsw
-	 AkiYuBufrPKClLHkJ0vRIqQcGQoixudrMheUhqvv9gNv9PcfK77PrQEupSJnIfFJDN
-	 j0WxByEIwDpQg==
-Date: Tue, 30 Jun 2026 00:06:23 +0100
+	b=dKERiuyM4bK3V6u8UN9Q5fpoarFwtXvWZ2eXTNsP8/FMGwLNSJrq3Khc/ULwwP9DM
+	 39PDNstvvFKxUzIEmqugnMf0rgw665Nju3b1lHMMiGLr7Z3bL6Ah+kwJ1o7VdZmu7/
+	 lT8JYctYw7ucCcK+VG8cwmVkp2yD90E4dRCBPEgNoJugIrH0/LWW8GdNUoFFw/SwV6
+	 t4z7mCtcW5tJSvkMBwqM2ZoFgVEuU6lkuK1/XF4D2mntsy40zFPwR63MoCmsvownDp
+	 hhyEiJiUXTSThYsqDOo13EFvyvShs8kxCcWoE33V9e+Pt3etDhLr2f8hLLUy3eQnYV
+	 10QT5LnKs5CvA==
+Date: Tue, 30 Jun 2026 00:11:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jinseob Kim <kimjinseob88@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v6 4/5] iio: osf: add authenticated stream parser
-Message-ID: <20260630000623.0c030d5f@jic23-huawei>
-In-Reply-To: <akJ818gkVzLN7HqU@ashevche-desk.local>
-References: <20260628191337.937-1-kimjinseob88@gmail.com>
-	<20260628191337.937-5-kimjinseob88@gmail.com>
-	<akJ818gkVzLN7HqU@ashevche-desk.local>
+To: Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v2 1/2] iio: adc: ad7779: Remove unused completion field
+Message-ID: <20260630001148.215a204b@jic23-huawei>
+In-Reply-To: <20260628145734.77191-2-mokshpanicker.7@gmail.com>
+References: <20260628145734.77191-1-mokshpanicker.7@gmail.com>
+	<20260628145734.77191-2-mokshpanicker.7@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,76 +47,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 29 Jun 2026 17:10:31 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Sun, 28 Jun 2026 14:57:33 +0000
+Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
 
-> On Mon, Jun 29, 2026 at 04:13:36AM +0900, Jinseob Kim wrote:
-> > Add a UART byte-stream parser for Open Sensor Fusion frames.
-> > 
-> > The parser searches for the OSF0 wire magic, keeps partial frames
-> > buffered, checks header length and payload bounds, and passes complete
-> > candidate frames to the core decoder.
-> > 
-> > Rejected candidate frames drop only the current head byte before
-> > resynchronizing, so a corrupted unauthenticated payload length cannot
-> > make the parser skip later valid frames.  
+> struct ad7779_state contains a completion field that is initialized
+> in ad7779_setup_without_backend() but never waited on or signaled
+> anywhere in the driver. Remove the dead code.
 > 
-> ...
+> Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+> ---
+>  drivers/iio/adc/ad7779.c | 2 --
+>  1 file changed, 2 deletions(-)
 > 
-> > +#define OSF_STREAM_MAGIC_LEN	4
-> > +#define OSF_STREAM_MAX_PAYLOAD_LEN				\
-> > +	(OSF_STREAM_MAX_FRAME_LEN - OSF_FRAME_HEADER_LEN - OSF_FRAME_CRC_LEN)
-> > +
-> > +static const u8 osf_stream_magic[OSF_STREAM_MAGIC_LEN] = {
-> > +	'O', 'S', 'F', '0',
-> > +};  
-> 
-> You have already this in the header (as FourCC), use that.
-> 
-> ...
-> 
-> > +static size_t osf_stream_discard_to_magic(struct osf_stream *stream)
-> > +{
-> > +	size_t old_len = stream->len;
-> > +	size_t match_len;  
-> 
-> > +	size_t i;
-> > +
-> > +	for (i = 0; i < stream->len; i++) {  
-> 
-> 	for (size_t i = 0; i < stream->len; i++) {
-> 
-> > +		match_len = stream->len - i;
-> > +		if (match_len > OSF_STREAM_MAGIC_LEN)
-> > +			match_len = OSF_STREAM_MAGIC_LEN;
-> > +
-> > +		if (osf_stream_magic_match(stream->buf + i, match_len)) {
-> > +			if (i)
-> > +				osf_stream_discard(stream, i);
-> > +			return i;
-> > +		}
-> > +	}
-> > +
-> > +	stream->len = 0;
-> > +	return old_len;
-> > +}  
-> 
-> ...
-> 
-> I stop here, because it's obvious that you neglected and ignored my previous
-> reviews. No explanation given, nothing. This is not how you should interact
-> with the community.
-> 
-> Come again when each of the given comment will be either addressed or argued.
-> 
-Likewise.  Please make sure to address every comment either through
-changes or through reply to the earlier thread.  Perhaps some emails
-have gone astray (it happens!). It can be a good idea to take a quick
-look at lore.kernel.org to make sure you aren't missing any feedback
-on a previous version.
+> diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
+> index 695cc79e78da..c1a99b4c1256 100644
+> --- a/drivers/iio/adc/ad7779.c
+> +++ b/drivers/iio/adc/ad7779.c
+> @@ -143,7 +143,6 @@ struct ad7779_state {
+>  	const struct ad7779_chip_info *chip_info;
+>  	struct clk *mclk;
+>  	struct iio_trigger *trig;
+> -	struct completion completion;
+>  	unsigned int sampling_freq;
+>  	enum ad7779_filter filter_enabled;
+>  	struct iio_backend *back;
+> @@ -852,7 +851,6 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
+>  
+>  	indio_dev->trig = iio_trigger_get(st->trig);
+>  
+> -	init_completion(&st->completion);
+This will leave a pair of blank lines. Delete one of those as well.
 
-Thanks,
+I'd have fed that back to v1 if I'd gotten to it before you send v2.
+(see reply to cover letter about slowing down a little!)
 
 Jonathan
 
+>  
+>  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+>  					      &iio_pollfunc_store_time,
 
