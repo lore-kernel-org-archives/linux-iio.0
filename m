@@ -1,212 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from flow-b5-smtp.messagingengine.com (flow-b5-smtp.messagingengine.com [202.12.124.140])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 692783D6CD4;
-	Mon, 29 Jun 2026 15:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0659E43C05C;
+	Mon, 29 Jun 2026 15:45:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782747555; cv=none; b=gind5c7lH1mf2prq9PgM+LpjuKPjq6kQzn2SAb30Zn/VQJfLhRHXXAnXwxNRSfEcmsparxGx0qOLe2OQINgW1cZMT7A1o5plIGaYvxPnAGCPAAYo9KaPQS7PFnnqvB5tNuzi798Lp6W4eX6fvLbZvOB0kiyqXGPn+Ped+bu6J/Q=
+	t=1782747936; cv=none; b=rQoiH5eZkzWysZgIckctYyK2hU3kqFdzOekA3Tt8PZF8JoMxgHKHOhBaFZr6OnzcvG7NXaNLff2q9Y66dsfSQylqxsAfv3psuQmW58L/nwDdLXRx3u/TR1GcvPjZQPINt/dBvVSGIliysg5eZ+NI+GpN+nF/3xdcYgX4QAaUHYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782747555; c=relaxed/simple;
-	bh=q4sV64oI/UhUUIUg8JJc/X3IP7vCZfe2L6JJj+5+DL8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PUS3myYaWMywsOV5qssZZqBAKP+c1qRR09cHHLpkyYeD7rcLgSG+gxLB3PPf0lBelBQTkfL5w2/hXK6OImeciscWgUloKG/E1R2iZ/0q+SzdNEkqQaOubKHbC4nX4RxftDmLoAmAiEK4WX+KFP/pc2bBV0nIfvcnXcwLiFWC5cA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N+3HfVqX; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782747936; c=relaxed/simple;
+	bh=rjFM2D6jrN878gEPa2yebQ2V6lQ4Ly5z/86sDfy9Ef4=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=igqU4KZYGRzC+JPX1EZnz5H3JgfIDGRtyP5vRY5klE5P+k5LblIx/+KB8bDGTyl35qjn9D6bh2NQnO6zSfY7fZ+KKmUxJB4k5hQZjFfx2GFuERn3T8Ma2MZ0M7SXQvue7HJhUWrnTOnuc///Yto63dz3aSU7jf7/13NDsY9nM34=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=NE6t34RD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=BvW9GpEf; arc=none smtp.client-ip=202.12.124.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N+3HfVqX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B2EF1F000E9;
-	Mon, 29 Jun 2026 15:39:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782747554;
-	bh=XmxJ6c0kqMhhlXGwQar6r/s6+uu4+H6QPJjq1Sx9ksM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=N+3HfVqXvKKhhc0ceXkahK6oMrDZjRkUt2BIdsrQBbEPl7xtotbtunXmIW0HM7XJh
-	 D7io6Mh8w1oaA35+8EHnUpTtta1zh4Ywqmwa5WYXX8Iyn8KTKWhJjSmzYNrfDA42Tr
-	 qmCv2dHmDMqJ+w5jt/OaEZ8LoxdvkngIa5L3Rl5qK/ma652fHeUhqfwMZhAk2bpbuy
-	 FwaWIH8DT5O/OEh3svzE3b22BHkM38ryoWsArEQIQoc0gssUpqgBYq5xwrZIXks1u7
-	 86L3W0hDj/D/wOxgAL33yg+AMLF8tKYFieQPhWlWJOpovxfOiH01tyBgSN7gVsCPbO
-	 oGUm99ZohucMA==
-Date: Mon, 29 Jun 2026 16:39:09 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jinseob Kim <kimjinseob88@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v6 1/5] dt-bindings: iio: add Open Sensor Fusion
- device
-Message-ID: <20260629-gilled-henna-96bde265d7ed@spud>
-References: <20260628191337.937-1-kimjinseob88@gmail.com>
- <20260628191337.937-2-kimjinseob88@gmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="NE6t34RD";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="BvW9GpEf"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailflow.stl.internal (Postfix) with ESMTP id B7CF01300119;
+	Mon, 29 Jun 2026 11:45:33 -0400 (EDT)
+Received: from phl-imap-05 ([10.202.2.95])
+  by phl-compute-04.internal (MEProxy); Mon, 29 Jun 2026 11:45:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1782747933;
+	 x=1782755133; bh=JSWP+oCjDefLm/g9PuV1GqUkziDul2e9yv/ysVQsJLY=; b=
+	NE6t34RDiIItJnjdvpPNLzERZEmy1Uokb4joPY1CUGLVDWSQy6O7lM7YR/JH2Vzz
+	EKjSBDHgy12XKPTe4T6/vFGszy9/X5bhW/dAEDGMtAFHdRGEckNuxhc9bX3PR0VE
+	bfW0MW2BR1AKR58Jk7h1JxjrIx1Kz7REAVnwk0oAlfoj8/mj7rRNlBSR0zA4hhnh
+	nrZ5Ql6KmC6VRVCiJ20YjlxB5Hon27fcsCOduVLOhAndchegK3YeVpKE9Pp1EySs
+	+Hgew3gjNwCsL97JbgGzSZGffJk0l4s3icmD0kqHlku9NQytJJHrK5zKTtqTrlSN
+	nN0K/5MSbp6GsS3AP9v5Xw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1782747933; x=
+	1782755133; bh=JSWP+oCjDefLm/g9PuV1GqUkziDul2e9yv/ysVQsJLY=; b=B
+	vW9GpEfQf5KLp9NtJM6GkHv3I5ZqIvw4Ca2lMiHX8SKqsoxlmypG2EMXAsormSFb
+	oqLT0a0Bl9FJyA6vd4v32gwdXkqPQVCs0Q1Y9jXp5dOSVQI2tfbQcx1ULcycd2no
+	cz4W31l3TBY05Bi2KSWoBV2ZPe6YbfMg4EFP7hw/vkSYA/ePVKRQACV+DCkNrleC
+	7d2U6h7NAcmkprtPUjO4A9XW6JXNK6W9RSqJU2/A289YIaXuaBCd1hJaZ6vsHuTg
+	GNxjVNjZ5DH/aXylHFIrfAuE5N81jk6hj/53mTDmJA3sJAwIS6GzLql0EapV+l/2
+	td6qNY5irlX8jNYf/UttQ==
+X-ME-Sender: <xms:HJNCaoMrkvvQS7N_eQkd2-7GzY3rf6oAfFR9scbcsRER6z01sw7mzQ>
+    <xme:HJNCapwMpwLVp89QaYKeW8Gu_iFO6mtIcDakQdQ1IcDR2awHglttG5XYgUbY-f2KY
+    MUHVhVlQ81X_KxAdYNn48ZwudPAYseWVvBXQ00pUVx7Z5102rCPfbsZ>
+X-ME-Proxy-Cause: dmFkZTGfEuV5uhz9iLc4/VqJewkOwZztE2Q/W2L8MWGpthXJSG6cnqB0ybUTZO/gmTStFr
+    IiMG3oMMwTOd1GN29iTAZh8ELqDq/pvNTu31HqcDhNTnRV5w+qN8TY5zQgqjhrWyTFnLFv
+    a5lC1bd0Nsy33atl2U9pCG8DwHiBT9SAvLqnCXSLgY6ykY2nreWYk0o6gpE7z+zCzbU5QI
+    CLqmPEwYE4mll5+cmq6mEdAN12TaRxj619rRYC2M3spZPblqPgudPkyzWrdvTZpBYK3w/u
+    jqv7Hdzc+TtswHLZ1V6GZ+c/1ZffJJfwsB5JIPB30uvkpQkKQBrSQtzi9AGb8HNFEb2kgE
+    qKkXl9pCm/0B95O8InFrTkKN0fJJdpnCSraeOZvlbYvDYSuDEOsOuD28QLxuf4mNOnHYEc
+    4em35Aufoj/L6MFtoXv8X9guYW3iZk9yMbK8VidKBOe9HIlA6Vy69oYVLWvoeIP/sRtUxM
+    xWA7NaPmd/Kd9MV/ItckFUA5jQ19oB0lqDlABCPUJva5FAJO0rNnJiVDlHuYcKo1028G2L
+    QCmWZB57sVtG9lZURwNtcccEDwqWzXsVO1FCuadUaHZRSO4zh0UrefsDvNNDkSsAklUL8C
+    nDBMgI4yo+tcTzxNjLzthPlRQuu7ftRHxOLDna+Fu5ygZv/F2jkt5rcMUitw
+X-ME-Proxy: <xmx:HJNCaiVR99ITZUIeVHLQIjkAl3W5L7-NY_eXPpexE2ezyiuvPV7Wig>
+    <xmx:HJNCaqDcmel0SZvoqXYoLZayz9Q48weXPGpjP4Y1EEA9-teXfq9kNA>
+    <xmx:HJNCalHWKybZhCSB_h9ep1tLEkKEMci7ODZ3AjJ9oK0yH0tMhtYVDw>
+    <xmx:HJNCamc1hcyXGhjSob0H8QG7OUqPoVNgYLrZzyvRI9sJF6RPK2srWA>
+    <xmx:HZNCahf_1C-xXUG9BEQMuJSIEx8k4QdhQtNpq8TMrV7EM8NaHbepNMFj>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id BA658182007A; Mon, 29 Jun 2026 11:45:32 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7sWE1OgKcjYNrSYZ"
-Content-Disposition: inline
-In-Reply-To: <20260628191337.937-2-kimjinseob88@gmail.com>
+X-ThreadId: A045QOfflcQ7
+Date: Mon, 29 Jun 2026 17:45:12 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>,
+ "Arnd Bergmann" <arnd@kernel.org>
+Cc: "Linus Walleij" <linusw@kernel.org>,
+ "Bartosz Golaszewski" <brgl@kernel.org>,
+ "Marcel Holtmann" <marcel@holtmann.org>,
+ "MyungJoo Ham" <myungjoo.ham@samsung.com>,
+ "Chanwoo Choi" <cw00.choi@samsung.com>,
+ "Geert Uytterhoeven" <geert+renesas@glider.be>,
+ "Andy Shevchenko" <andy@kernel.org>,
+ "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+ "Ulf Hansson" <ulfh@kernel.org>, linux-bluetooth@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ "linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-usb@vger.kernel.org
+Message-Id: <34d4eddf-bfe5-4103-b2c6-143c63ea37f9@app.fastmail.com>
+In-Reply-To: <akKN59lv55CXS3HU@ashevche-desk.local>
+References: <20260629135917.1308621-1-arnd@kernel.org>
+ <akKN59lv55CXS3HU@ashevche-desk.local>
+Subject: Re: [PATCH] [RFC] gpiolib: introduce gpio_name() helper
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
---7sWE1OgKcjYNrSYZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, Jun 29, 2026, at 17:23, Andy Shevchenko wrote:
+> On Mon, Jun 29, 2026 at 03:56:29PM +0200, Arnd Bergmann wrote:
+>> +const char *gpiod_name(const struct gpio_desc *desc)
+>> +{
+>> +	return desc ? desc->name : "(no gpio)";
+>
+> Can we get into here with wrong (error pointer descriptor)? Shouldn't you call
+> one of validate_desc() / VALIDATE_DESC()?
 
-On Mon, Jun 29, 2026 at 04:13:33AM +0900, Jinseob Kim wrote:
-> Add a binding for the generic Open Sensor Fusion host interface.
->=20
-> Open Sensor Fusion devices report capabilities and samples over an OSF
-> protocol stream. Sensor channels are discovered at runtime from
-> capability reports instead of being described individually in Device
-> Tree.
->=20
-> The protocol version is discovered at runtime from the OSF frame header.
-> OSF GREEN is a product identity, and OSF0 is a wire-format magic value,
-> so neither is used as the Linux compatible string.
->=20
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
-> ---
->  .../bindings/iio/opensensorfusion,osf.yaml    | 54 +++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
->  MAINTAINERS                                   |  6 +++
->  3 files changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/opensensorfusio=
-n,osf.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/opensensorfusion,osf.y=
-aml b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> new file mode 100644
-> index 000000000..8016d582f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> @@ -0,0 +1,54 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/opensensorfusion,osf.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Open Sensor Fusion Sensor Aggregation Hub
-> +
-> +maintainers:
-> +  - Jinseob Kim <kimjinseob88@gmail.com>
-> +
-> +description: |
-> +  This binding documents the generic Open Sensor Fusion host interface. =
-Open
-> +  Sensor Fusion is a sensor aggregation hub. The hub exposes an OSF prot=
-ocol
-> +  data stream over its host interface and reports capabilities and sampl=
-es for
-> +  multiple sensor classes. The actual sensor channels are discovered at =
-runtime
-> +  from OSF capability reports instead of describing them in Device Tree.=
- The
-> +  protocol version is discovered at runtime.
-> +
-> +  Public project documentation is available at:
-> +
-> +    https://github.com/opensensorfusion
-> +
-> +  The compatible describes the generic Open Sensor Fusion host interface.
+Since all the callers previously call desc_to_gpio and that does
+not even check desc at all, it would be a preexisting bug if
+any caller passed an error pointer.
 
-> It
-> +  is not an OSF GREEN board identity, and it does not encode the OSF0 wi=
-re
-> +  magic.
+I added the NULL pointer check since many callers had that
+part originally, like
 
-I think this is evident from the previous text, and the first part is a
-bit confusing while the latter half is a bit confusing.
-Just remove this sentence I think.
+      tsdata->wake_gpio ? desc_to_gpio(tsdata->wake_gpio) : -1,
 
-Binding looks fine to me, I'll provide a r-b when you submit a non-RFC
-version.
+> Also not sure if "(no gpio)" is a good choice. "not requested"? "not provided"?
 
-pw-bot: not-applicable
+Any of those seem fine to me, not sure.
 
-Thanks,
-Conor.
+>> +static inline const char *gpiod_name(const struct gpio_desc *desc)
+>> +{
+>> +	WARN_ON(desc);
+>> +	return "(no gpio)";
+>
+> Hmm... This will be a second copy with a slight potential of going apart from
+> the other case. Perhaps a #define? (Yes, yes, I understand that there are pros
+> and cons, in particular readability with define is questionable.)
 
-> OSF0, protocol_major, and protocol_minor are wire-protocol details
-> +  exchanged in OSF frames.
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: opensensorfusion,osf
-> +
-> +  vcc-supply:
-> +    description:
-> +      Regulator supplying power to the Open Sensor Fusion device.
-> +
-> +required:
-> +  - compatible
-> +  - vcc-supply
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    serial {
-> +        sensor {
-> +            compatible =3D "opensensorfusion,osf";
-> +            vcc-supply =3D <&vcc_sensor>;
-> +        };
-> +    };
-> +...
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
-umentation/devicetree/bindings/vendor-prefixes.yaml
-> index 28784d66a..88172d4a4 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -1237,6 +1237,8 @@ patternProperties:
->      description: OpenPandora GmbH
->    "^openrisc,.*":
->      description: OpenRISC.io
-> +  "^opensensorfusion,.*":
-> +    description: Open Sensor Fusion
->    "^openwrt,.*":
->      description: OpenWrt
->    "^option,.*":
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index c2c6d7927..e4df9d8dc 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -20011,6 +20011,12 @@ F:	Documentation/devicetree/
->  F:	arch/*/boot/dts/
->  F:	include/dt-bindings/
-> =20
-> +OPEN SENSOR FUSION
-> +M:	Jinseob Kim <kimjinseob88@gmail.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> +K:	opensensorfusion
-> +
->  OPENCOMPUTE PTP CLOCK DRIVER
->  M:	Vadim Fedorenko <vadim.fedorenko@linux.dev>
->  L:	netdev@vger.kernel.org
-> --=20
-> 2.43.0
->=20
+I was mostly trying to optimize for consistency with the other
+stub functions here. Since it should not actually be used at all
+without gpiolib, returning NULL or an empty string here would
+also work.
 
---7sWE1OgKcjYNrSYZ
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCakKRnQAKCRB4tDGHoIJi
-0jtPAP9UjwGAQHBPikZntHLh47cDCPr+KIN+72yn0oMFnbNUEAEAjMvGeo18zA1o
-e7ThlFUJ0gGdpjOCNYM5aASU2UztAgY=
-=hoHF
------END PGP SIGNATURE-----
-
---7sWE1OgKcjYNrSYZ--
+     Arnd
