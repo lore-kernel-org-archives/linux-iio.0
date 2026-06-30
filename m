@@ -1,66 +1,66 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DA2925B0AD
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 18:38:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2FFF3E0251
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 18:44:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782844713; cv=none; b=WrJuD0hI7miIyhqNkuVRzigpIWrgCJzhOu1lEZ3RZg9R5GO79NKRN17vN3Kd9IJOz/nWvcneiEM4WriXA7Kl5pXYTSgPHZJqn0AU2uKdLX409FnOSQDrg+TI2PJucVu3ZDxxg0Y68oYpHyMtTaftPjhjxyNBL6xQldaK9Dcusqw=
+	t=1782845093; cv=none; b=slAkRJRmfdAgm+IswksyepXJyikLiLeqvcjMJPtEX01NRg+zhDkfowaHrWo5pbZ4SVwla4xai1ysdtMvRHSHRn1+bI0PD/er6TZFNvH5i3LDHig0Nyzd29YSKYTnR7f9EhGnCl7K09R3f9K65BSElQmvvEMMDZ6WA3wE70ELx5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782844713; c=relaxed/simple;
-	bh=cbvkjGExjYUHL2QoSeT/1yJv2i7vXmEZZ/yTfY2vjE8=;
+	s=arc-20240116; t=1782845093; c=relaxed/simple;
+	bh=DhFySjiaQrDImKhkVf9bePYqm2Xs8wcnJaQOplgeQw0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nfJueNyknK8llNIxiP3qn9wJkfqoiP9/+eXvFTShSrAY5a5jhCNHT2aK1K6b6ZFzb+HcvyBZW9X7QLIVO6nE2xhFyvO5nrriK2YbZOl592cmiZ0pfps/h4WXAK820gOHroggdMxvVEVNPkiyMISJcyeU5m0AvboTX+WBOdzUga4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=cqee+qsZ; arc=none smtp.client-ip=209.85.210.53
+	 In-Reply-To:Content-Type; b=qkGv5pZOEHm7tZD0KjijpCoTj8AAiI/gGns5HXBYD2fbU6ObNUrPD2GdIPP+SUwU8wirNaisqTCZ4+r456wO8vZZmAsU5kmnIsftuHHwUhRYoKQg5zVDbAo0s9NtMsUBjvxRchNsBgy8hKxnF9cuTrW6/YsGZrPO59IdkYALV1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=IOGVUiDE; arc=none smtp.client-ip=209.85.161.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="cqee+qsZ"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7e93d1dd156so1921203a34.0
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 11:38:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="IOGVUiDE"
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-6a0e55e82d0so2847527eaf.1
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 11:44:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782844711; x=1783449511; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782845091; x=1783449891; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=9rgrcJFnBRvyDKAXtDJFOwtKqCg4JfQ5wObL2xRUARM=;
-        b=cqee+qsZ0+rQIHuUOdzntuJveTo8DKIL7PBX3IwcLMD+WSaTwDB43sangDZPGTU8xi
-         cWdg/HWGhBafEHtob/hZqNioCkl5dEsObahHDqGOUqh6gcoB8niVeAasyklLbJsMzkDQ
-         zuBC234cxxgFsZE0L/jf5BLRq1BrPOhtjydWAckEpAZhvf9we4Ce2HSjpbxPhRYX/pVk
-         ounRMJCbm9lcLDQi6FH/rxZGvD1dlscdPAR1v1GBKXvnEKkEMA3qWqXRhHMSpqNUbGKB
-         4JU68NxV8Q/ts3tjH2r6ARE/MR28NsWMKVQxkwq73YEKfbRtv8RIZvqA6uk+5lDNAlsO
-         6UMw==
+        bh=bxU8QdXeoChBz6XExHvsJppZI9tmvliW8ipdhE3FPqA=;
+        b=IOGVUiDEkKwmlez/G6s3Z11k4R5o12vxUvnRbc4t9K23s0ql4R4c3z21t52IP0vUIc
+         1vrP98Okut63ZkMzbQqZ+K3k8XSwL3Gz6tK/RKKTN5c0KoHcr2P5fnRBfcEpulce9tEO
+         r/oXC1DNG+42MwU+gku34hUiUtvXCN6jFSO4Cq50EzpZjKdZmebAjZbkwA0r5dJ9crVH
+         qFcVWELnDWa0+wsvWkfF1yKrgjbAwTsRGkYqGI9nQWM9oCPraGlY5yCKYqMoQOK29JoQ
+         430pfSki5mnEklHcOcZ4LMtpAjEK8AMQBMMxd23gubQpz5UN3JNJ3K/LJskTLvHibZXY
+         Hlvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782844711; x=1783449511;
+        d=1e100.net; s=20251104; t=1782845091; x=1783449891;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=9rgrcJFnBRvyDKAXtDJFOwtKqCg4JfQ5wObL2xRUARM=;
-        b=QZIFNlBBEiSWNiuUYtbafdwoSvm6StKiFKGdbzxX4DO25G5kNV2yxiOkyHMr+KrloN
-         vNB/5JFXVjlztD09pxG2/67RXFiXUTyMhVrj9lNokZOo/a0smL1PZHSavo8ZZS/rhxvf
-         huGHLe71iNPn73ZWClmHWSQQPSaKu/T2jNaAU0Vg5YN/HflwuJMeSh70T4ifRCzT2EoL
-         4Ti/PlM1qBzHIH/PyTKdMgKSBuTQcpZN11XwcSWNyxEEeMIKDFkP7tGthayvcpuKAgWL
-         ZHigo8WNNfGQLXLiiovqUdeDVJ5Xcja6/Osdo7z3bIMfMLpj9yhMepkZO0cy+96H5r7W
-         5Q3Q==
-X-Forwarded-Encrypted: i=1; AFNElJ9IHa0aYTZ5o0gZ2u+4mTUFjbYYKxE0lkTB0SD3ZIt3eEb0sP1yFVKsG0cwdTMHboz0VpqSVSbQgaI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+94AD4DNIdWJbtztCSOAcZQ7SoQG16mCvz6FWRhGYPRjSsLLx
-	ZdG0E/mw1iGWtt1Gu/n5OFtd96mgxd/BLedi4UUW5OzPk2ZfgduDQ36wiw6/6/eCx/M=
-X-Gm-Gg: AfdE7ckxRD4dHRtHpWz6ONgItgeChShRrxgo5UWA9dqDE2CELwaOg2zOoYvvA2osQnd
-	vH+bf9AwzCVFjt23jHwDZQvIL5NXI+wrAreNMnTiKlUmIn39mNE0Hff1D9Z5vEKCBSKAe2JnMII
-	ZDSaTVf6gos5u1oWeFoXz8IQcYoeeF3GuzjS2yH7eTX0qth7sbxDqFGySjcxXGxUtROI6M6SB/G
-	uBuQmv+HBF6Z7/RlzdMHODmXt85XXrTNJxmPL2EokdD8Q8wROpGocyUhU4LuN2Pau9Ezkrz0jv7
-	RLYLXHMZ8H/9pKjvLJKDvJ/s7Dc6RZIU8bhMHj3uxA5IpY1U9AUV5BmBbLyiccptltWvmQ8hsNg
-	LahWZSZtA5dThPcZKXNqnxrdSKCqCmoLiElYK1LSsGzGHTUb6V6bI5R+scCxq1CObc1q+mXRxV3
-	yU2lBQoWasGkpFGnY2cuH1phZi5D7ukquC6qHF0aWI304NPkmhz2boN1BU4Sayzhw=
-X-Received: by 2002:a05:6830:7306:b0:7e9:e860:6e7 with SMTP id 46e09a7af769-7e9fc2a622fmr888833a34.30.1782844710983;
-        Tue, 30 Jun 2026 11:38:30 -0700 (PDT)
+        bh=bxU8QdXeoChBz6XExHvsJppZI9tmvliW8ipdhE3FPqA=;
+        b=Iu7BuVoEFQImS/ITPwTosFiCUP7tBy36mtbrqAUkFoOhaVFliItG2tjOU/u63M3WTh
+         ebv+LOuqdhJDh4OoOFdGi0e6v8/odj2Ead3CyKyxV4IqH3TTwHXsUfEZv0I7bhImO9yX
+         mp3LIDuQgKzFuOWfiXYjCX8XgsPnc7Bnf36TzpxoDd/MCSApdPsa+nRpriS0VzRwoUL8
+         t/Z4PNgN5QLn7OxSujNoG7bVAVW4iN4gPc8z0QYbJAYHfwmkPdPIxKy1p4tq2uJRcez2
+         HJCsMlvNx4Uh+4jSDqYeNpwMbvfHO8I7Wf0xA5JImgVkOynTsleQai+Ulqb9rzgkgeRR
+         6Ymw==
+X-Forwarded-Encrypted: i=1; AFNElJ+HJ5Q4XkI+WKzccTlJvgrqEETq1HmZPHPVkod0BfaCNomNrG45/pb1YPlCJNtA/HdO37S9uAbu7to=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwzPjDh7xVS928zaRjkpPd7hhn9sQ4fv+kculkmNUBdi6z9ZYGe
+	YcVZ26fNPxiPshwm8gkpRXEzM8yJLXLQCwOGBRO1Yk3a2pxyp73Fbv4OZPa4wa+Odk8=
+X-Gm-Gg: AfdE7cngBACDZgN2UTn/yTsB7w63y6S20yRy4GCAhwxZ4gt8Hlpc8TzwgyrLVdaYaLA
+	vjvljXtPu3taYk6BCCDjM/2P5RuCbQ7M10OJT59b7j4rNUw6x5HdIyOhiLrhnKcOcA7p1TNdfD1
+	6p+YkxpoCgi1PE2oHWOJL4nPh6oZjy+0mklbAG9JDU6EtnoP37Oi4EgjabQiTFajUqeqG+775HA
+	Knzh54pnkHkd4o1HTadMEh2riyxBpWjz++K0NKbV/KmgOQVgNnieIZ8t+8HSQ5uvxTZmQ39vXvC
+	TVYaAzqjf70vB/4WY/cigb/xczurxvphZ7fWCZCvOgEwo9rpvV1l3Zt7Ubs43F1iof/pI5FcoV/
+	pOBRCMVd5fWj+IAgMw3JxgRuvPBlW+GoezJrQlIG31r6EcUDV2hVOpCgTYF97e04WJ+EM+WJXI+
+	8GsRYE6MIYo9SVaXROKkf4TbzICO7GEvk08teDDoJNTcYBjzNTPyfoFeZI1XktnfQ=
+X-Received: by 2002:a05:6820:1ca3:b0:6a1:50eb:2115 with SMTP id 006d021491bc7-6a18933a0b9mr3319594eaf.57.1782845090644;
+        Tue, 30 Jun 2026 11:44:50 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:e190:78b2:dd4e:ba94? ([2600:8803:e7e4:500:e190:78b2:dd4e:ba94])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ec2e353fsm2942446a34.20.2026.06.30.11.38.30
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-448dbb2302csm2921003fac.7.2026.06.30.11.44.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2026 11:38:30 -0700 (PDT)
-Message-ID: <2a0a9fe9-b3b5-49a0-bf58-5035655fc16d@baylibre.com>
-Date: Tue, 30 Jun 2026 13:38:30 -0500
+        Tue, 30 Jun 2026 11:44:49 -0700 (PDT)
+Message-ID: <d8fbab77-6cb4-435d-aac9-0d72cd4a59bc@baylibre.com>
+Date: Tue, 30 Jun 2026 13:44:49 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,89 +68,54 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
-To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/7] iio: adc: ti-ads1262: Add conversion delay support
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
- <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
- <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
- <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
- <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
- <DJLOAISPZLG7.VZYX8B16QU4K@gmail.com>
- <22e1e1c2-659c-4991-857c-b38d66769c7e@baylibre.com>
- <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
+ <20260628-ads126x-v2-5-4b1b231325ba@gmail.com>
+ <20260630015027.3afdfc3a@jic23-huawei> <DJMK3NCDCHL8.1EHG93D5O7ROZ@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
+In-Reply-To: <DJMK3NCDCHL8.1EHG93D5O7ROZ@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 6/30/26 12:14 PM, Kurt Borja wrote:
-> On Mon Jun 29, 2026 at 11:43 AM -05, David Lechner wrote:
->> On 6/29/26 11:27 AM, Kurt Borja wrote:
->>> On Mon Jun 29, 2026 at 9:21 AM -05, David Lechner wrote:
->>>> On 6/28/26 2:12 PM, Kurt Borja wrote:
->>>>> On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:
->>>>>> On 6/28/26 12:36 AM, Kurt Borja wrote:
->>>>>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
->>>>>>> integrated PGA, internal reference, excitation and burn-out current
->>>>>>> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
->>>>>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
->>>>>>>
->>>>
->>>> ...
->>>>
->>>>>>> +
->>>>>>> +patternProperties:
->>>>>>> +  "^channel@[0-9]+$":
->>>>>>> +    $ref: /schemas/iio/adc/adc.yaml#
->>>>>>> +    unevaluatedProperties: false
->>>>>>> +
->>>>>>> +    properties:
->>>>>>> +      reg:
->>>>>>> +        maxItems: 1
->>>>>>> +
->>>>>>
->>>>>> If we want to allow single-ended/pseudo-differential inputs, then we should
->>>>>> also allow single-channel (positive pin) and common-mode-channel (negative
->>>>>> pin) properties.
->>>>>>
->>>>>> This will also require additional common-mode-<N>-supply properties to allow
->>>>>> for the negative pin connected to something other than GND.
->>>>>
->>>>> Ah interesting. Why the N though? wouldn't a single supply connected to
->>>>> AINCOM be enough here?
->>>>
->>>> In theory, any AINx could be a common mode input by connecting it to
->>>> a constant voltage supply.
->>>
->>> Technically yes, but there is a pin named AINCOM intended for this
->>> purpose. Can we do a simplification here? I propose having
->>>
->>>   common-mode-channel:
->>>     /* AINCOM pin */
->>>     const: 10
->>>
->>> That way we would only need one common-mode-supply. Would that be okay?
->>>
+On 6/30/26 12:23 PM, Kurt Borja wrote:
+> On Mon Jun 29, 2026 at 7:50 PM -05, Jonathan Cameron wrote:
+>> On Sun, 28 Jun 2026 00:36:06 -0500
+>> Kurt Borja <kuurtb@gmail.com> wrote:
 >>
->> Ideally, we shouldn't limit how the chip can be wired up in the devicetree
->> bindings. It doesn't mean that we have to implement everything in the driver
->> though.
+>>> Expose the programmable conversion start delay as a per-channel
+>>> IIO_CHAN_INFO_CONVDELAY attribute.
+>> Coversion delay was always a somewhere weird bit of ABI.
+>> What are the delays relative to in this case?
+>> Is this a device that does simultaneous sampling?  Pictures
+>> suggest otherwise, and convdelay is currently only defined
+>> in that case.  We might be able to extend it but it needs
+>> some thought.
 > 
-> Makes sense.
-> 
-> I just have a doubt: In the ADS112c14 bindings, is there a specific
-> reason why you didn't describe common-mode-<N>-supply?
-> 
+> The chip has a configurable internal conversion delay to allow for
+> external settling effects. See datasheet section 9.4.3 if you'd like a
+> bit more details.
 
-For singled-ended inputs on ADS112c14, there is an internal
-connection to GND, so it isn't possible to have a pseudo-
-differential input like that. I guess technically, it could
-still be possible, but wasn't a typical wiring described in
-the datasheet like it is on ADS1263.
+Since this depends on external components, it sounds like it belongs
+in the devicetree. I have the same feature in the chip I am working
+on and was just looking at this and plan to add it to the ti,ads112c14
+devicetree patch.
+
+This delay only applies to a "new conversion", i.e. when certain config
+registers change, and not every conversion, so isn't like the convdelay
+attribute.
+
+> 
+> But you're right, I should at least also edit the ABI description of
+> this attribute. We can postpone this discussion for a future series.
+> 
+>>
+>> Jonathan
+> 
 
