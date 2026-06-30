@@ -1,121 +1,125 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2FFF3E0251
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 18:44:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB9BB2ECD32;
+	Tue, 30 Jun 2026 22:59:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782845093; cv=none; b=slAkRJRmfdAgm+IswksyepXJyikLiLeqvcjMJPtEX01NRg+zhDkfowaHrWo5pbZ4SVwla4xai1ysdtMvRHSHRn1+bI0PD/er6TZFNvH5i3LDHig0Nyzd29YSKYTnR7f9EhGnCl7K09R3f9K65BSElQmvvEMMDZ6WA3wE70ELx5s=
+	t=1782860381; cv=none; b=UwUN5dO6U2DQsGE/pxV83n5x1USsaBqQYA96VmaScKKIJCIoVCi8Wup/gdQNV+oRHuq5B7LsUmEUt8FWHx9++uzfovnfjeWlfqhFQWSIPTVuX/M1eaMIR6tEaMRzRhkrjLHEBZ7AllETw2NfuoWwaHv2pAHTKVj7B3VXTGnaxDw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782845093; c=relaxed/simple;
-	bh=DhFySjiaQrDImKhkVf9bePYqm2Xs8wcnJaQOplgeQw0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qkGv5pZOEHm7tZD0KjijpCoTj8AAiI/gGns5HXBYD2fbU6ObNUrPD2GdIPP+SUwU8wirNaisqTCZ4+r456wO8vZZmAsU5kmnIsftuHHwUhRYoKQg5zVDbAo0s9NtMsUBjvxRchNsBgy8hKxnF9cuTrW6/YsGZrPO59IdkYALV1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=IOGVUiDE; arc=none smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782860381; c=relaxed/simple;
+	bh=osL3uTJhTm9LSLp2YQOww4VTQarThaS3fqxKF5kmtwQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rbKbuSYL3a7HY4FxRvQv2W2sqkCdrC9jqcNzYYwyYIuhLOOJxHfBXtBl70hWqVDi7S+F0C3XeLsonCgg86eXdVzHyfCZcDtnXoDKydnZjLA+T6Zi6v91jkaH7r7bn+fIVFyyrB0LUguP0Ho9kKLIRDQ3enW6L6HHt/E6xTyCaG0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mm9De9GY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="IOGVUiDE"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-6a0e55e82d0so2847527eaf.1
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 11:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782845091; x=1783449891; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bxU8QdXeoChBz6XExHvsJppZI9tmvliW8ipdhE3FPqA=;
-        b=IOGVUiDEkKwmlez/G6s3Z11k4R5o12vxUvnRbc4t9K23s0ql4R4c3z21t52IP0vUIc
-         1vrP98Okut63ZkMzbQqZ+K3k8XSwL3Gz6tK/RKKTN5c0KoHcr2P5fnRBfcEpulce9tEO
-         r/oXC1DNG+42MwU+gku34hUiUtvXCN6jFSO4Cq50EzpZjKdZmebAjZbkwA0r5dJ9crVH
-         qFcVWELnDWa0+wsvWkfF1yKrgjbAwTsRGkYqGI9nQWM9oCPraGlY5yCKYqMoQOK29JoQ
-         430pfSki5mnEklHcOcZ4LMtpAjEK8AMQBMMxd23gubQpz5UN3JNJ3K/LJskTLvHibZXY
-         Hlvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782845091; x=1783449891;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bxU8QdXeoChBz6XExHvsJppZI9tmvliW8ipdhE3FPqA=;
-        b=Iu7BuVoEFQImS/ITPwTosFiCUP7tBy36mtbrqAUkFoOhaVFliItG2tjOU/u63M3WTh
-         ebv+LOuqdhJDh4OoOFdGi0e6v8/odj2Ead3CyKyxV4IqH3TTwHXsUfEZv0I7bhImO9yX
-         mp3LIDuQgKzFuOWfiXYjCX8XgsPnc7Bnf36TzpxoDd/MCSApdPsa+nRpriS0VzRwoUL8
-         t/Z4PNgN5QLn7OxSujNoG7bVAVW4iN4gPc8z0QYbJAYHfwmkPdPIxKy1p4tq2uJRcez2
-         HJCsMlvNx4Uh+4jSDqYeNpwMbvfHO8I7Wf0xA5JImgVkOynTsleQai+Ulqb9rzgkgeRR
-         6Ymw==
-X-Forwarded-Encrypted: i=1; AFNElJ+HJ5Q4XkI+WKzccTlJvgrqEETq1HmZPHPVkod0BfaCNomNrG45/pb1YPlCJNtA/HdO37S9uAbu7to=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzPjDh7xVS928zaRjkpPd7hhn9sQ4fv+kculkmNUBdi6z9ZYGe
-	YcVZ26fNPxiPshwm8gkpRXEzM8yJLXLQCwOGBRO1Yk3a2pxyp73Fbv4OZPa4wa+Odk8=
-X-Gm-Gg: AfdE7cngBACDZgN2UTn/yTsB7w63y6S20yRy4GCAhwxZ4gt8Hlpc8TzwgyrLVdaYaLA
-	vjvljXtPu3taYk6BCCDjM/2P5RuCbQ7M10OJT59b7j4rNUw6x5HdIyOhiLrhnKcOcA7p1TNdfD1
-	6p+YkxpoCgi1PE2oHWOJL4nPh6oZjy+0mklbAG9JDU6EtnoP37Oi4EgjabQiTFajUqeqG+775HA
-	Knzh54pnkHkd4o1HTadMEh2riyxBpWjz++K0NKbV/KmgOQVgNnieIZ8t+8HSQ5uvxTZmQ39vXvC
-	TVYaAzqjf70vB/4WY/cigb/xczurxvphZ7fWCZCvOgEwo9rpvV1l3Zt7Ubs43F1iof/pI5FcoV/
-	pOBRCMVd5fWj+IAgMw3JxgRuvPBlW+GoezJrQlIG31r6EcUDV2hVOpCgTYF97e04WJ+EM+WJXI+
-	8GsRYE6MIYo9SVaXROKkf4TbzICO7GEvk08teDDoJNTcYBjzNTPyfoFeZI1XktnfQ=
-X-Received: by 2002:a05:6820:1ca3:b0:6a1:50eb:2115 with SMTP id 006d021491bc7-6a18933a0b9mr3319594eaf.57.1782845090644;
-        Tue, 30 Jun 2026 11:44:50 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e190:78b2:dd4e:ba94? ([2600:8803:e7e4:500:e190:78b2:dd4e:ba94])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-448dbb2302csm2921003fac.7.2026.06.30.11.44.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2026 11:44:49 -0700 (PDT)
-Message-ID: <d8fbab77-6cb4-435d-aac9-0d72cd4a59bc@baylibre.com>
-Date: Tue, 30 Jun 2026 13:44:49 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mm9De9GY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA291F00A3A;
+	Tue, 30 Jun 2026 22:59:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782860379;
+	bh=hpGHznkuiVzbCssE8nF1WP+hU9QiCHLL5//s39XABS8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Mm9De9GY9AnlBfnkQ9gv0ORM7La070SlXrEbmoHfUfxOBaaYtLJzUqs9PXOSo5uvx
+	 x8ahgeal3hZOtIlVzn+sGWk2Wd9jC54VlkmDT+j5eym3wm5AyGxRApheO30IDwD0K2
+	 QdandJ9p+VqURQ55EBEevLOY9PD2oxYa3D+5N4hcCkk1dxrxTbWQmt0dW7EiJpPW5G
+	 b46VcVPSt/7ODA+Cf+2Qz5OPJ8C8iyGxJyl1JksTpn0JixooJbhtizar1JMDgq1vyl
+	 uSARJIL8TJdfN7XRf+Dd3m/PbdMBkIu5nYFVZcm4oktRv733+3Li6DDj1RcA9xv49a
+	 VbgZsQ9v79akg==
+Date: Tue, 30 Jun 2026 23:59:35 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] staging: iio: Initialize spi_device_id arrays
+ using member names
+Message-ID: <20260630235935.4cfa827c@jic23-huawei>
+In-Reply-To: <4c743f86ca4072d34d715333589aa540aed895f2.1782833415.git.u.kleine-koenig@baylibre.com>
+References: <cover.1782833415.git.u.kleine-koenig@baylibre.com>
+	<4c743f86ca4072d34d715333589aa540aed895f2.1782833415.git.u.kleine-koenig@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/7] iio: adc: ti-ads1262: Add conversion delay support
-To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
- <20260628-ads126x-v2-5-4b1b231325ba@gmail.com>
- <20260630015027.3afdfc3a@jic23-huawei> <DJMK3NCDCHL8.1EHG93D5O7ROZ@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <DJMK3NCDCHL8.1EHG93D5O7ROZ@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 6/30/26 12:23 PM, Kurt Borja wrote:
-> On Mon Jun 29, 2026 at 7:50 PM -05, Jonathan Cameron wrote:
->> On Sun, 28 Jun 2026 00:36:06 -0500
->> Kurt Borja <kuurtb@gmail.com> wrote:
->>
->>> Expose the programmable conversion start delay as a per-channel
->>> IIO_CHAN_INFO_CONVDELAY attribute.
->> Coversion delay was always a somewhere weird bit of ABI.
->> What are the delays relative to in this case?
->> Is this a device that does simultaneous sampling?  Pictures
->> suggest otherwise, and convdelay is currently only defined
->> in that case.  We might be able to extend it but it needs
->> some thought.
-> 
-> The chip has a configurable internal conversion delay to allow for
-> external settling effects. See datasheet section 9.4.3 if you'd like a
-> bit more details.
+On Tue, 30 Jun 2026 17:35:36 +0200
+Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
+e:
 
-Since this depends on external components, it sounds like it belongs
-in the devicetree. I have the same feature in the chip I am working
-on and was just looking at this and plan to add it to the ti,ads112c14
-devicetree patch.
+> While being less compact, using named initializers allows to more easily
+> see which members of the structs are assigned which value without having
+> to lookup the declaration of the struct. And it's also more robust
+> against changes to the struct definition.
+>=20
+> The mentioned robustness is relevant for a planned change to struct
+> spi_device_id that replaces .driver_data by an anonymous union.
+>=20
+> This patch doesn't modify the compiled arrays, only their representation
+> in source form benefits. The former was confirmed with x86 and arm64
+> builds.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
+aylibre.com>
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> Link: https://patch.msgid.link/cac7a68e6a6adb1b58207640ab045e59eec86f53.1=
+781883685.git.u.kleine-koenig@baylibre.com
+Given I messed up applying this in v1, picked up now.
 
-This delay only applies to a "new conversion", i.e. when certain config
-registers change, and not every conversion, so isn't like the convdelay
-attribute.
+Thanks for catching that miss!
 
-> 
-> But you're right, I should at least also edit the ABI description of
-> this attribute. We can postpone this discussion for a future series.
-> 
->>
->> Jonathan
-> 
+Jonathan
+
+> ---
+>  drivers/staging/iio/adc/ad7816.c       | 6 +++---
+>  drivers/staging/iio/frequency/ad9834.c | 8 ++++----
+>  2 files changed, 7 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/a=
+d7816.c
+> index 0e32a2295990..30644d2d7c54 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -426,9 +426,9 @@ static const struct of_device_id ad7816_of_match[] =
+=3D {
+>  MODULE_DEVICE_TABLE(of, ad7816_of_match);
+> =20
+>  static const struct spi_device_id ad7816_id[] =3D {
+> -	{ "ad7816", ID_AD7816 },
+> -	{ "ad7817", ID_AD7817 },
+> -	{ "ad7818", ID_AD7818 },
+> +	{ .name =3D "ad7816", .driver_data =3D ID_AD7816 },
+> +	{ .name =3D "ad7817", .driver_data =3D ID_AD7817 },
+> +	{ .name =3D "ad7818", .driver_data =3D ID_AD7818 },
+>  	{ }
+>  };
+> =20
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio=
+/frequency/ad9834.c
+> index 4359b358e0e5..f95c5365cd03 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -465,10 +465,10 @@ static int ad9834_probe(struct spi_device *spi)
+>  }
+> =20
+>  static const struct spi_device_id ad9834_id[] =3D {
+> -	{"ad9833", ID_AD9833},
+> -	{"ad9834", ID_AD9834},
+> -	{"ad9837", ID_AD9837},
+> -	{"ad9838", ID_AD9838},
+> +	{ .name =3D "ad9833", .driver_data =3D ID_AD9833 },
+> +	{ .name =3D "ad9834", .driver_data =3D ID_AD9834 },
+> +	{ .name =3D "ad9837", .driver_data =3D ID_AD9837 },
+> +	{ .name =3D "ad9838", .driver_data =3D ID_AD9838 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, ad9834_id);
 
