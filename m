@@ -1,48 +1,48 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FA038C407;
-	Tue, 30 Jun 2026 09:38:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F06DA3D6493;
+	Tue, 30 Jun 2026 09:38:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782812312; cv=none; b=keYmItzJda3ZfYDWVajmnhhEObFG8n7bL/61WA7DKL1h4Q7IH4RxNqQMeGz5GJigFEDynI/ajhc3ThdYGF4jQqT6xvzidq3zmAK8SAQ98PWJKpCbpgVclWCuDWjVd3J0NVx2cRFQdwGsYX49dKgSX8b5thVB/OQ4VcDZNC4Yvqo=
+	t=1782812321; cv=none; b=DKDPbAufRuFX5fUJ2SNz//17Xj0qP2MPTXNY/wGKH2eHOqjQxTP6cPzQ5dKOQL3EkeEFZNru1N3pEWdaNBRC4XvoMuY++4iZFNg91P/t8E1iXV1DH/28/PURaB2wzd9mAW083PtE1R/XiNDhMw2nrb+vgIlrlfvwHMdzNCGmmL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782812312; c=relaxed/simple;
-	bh=+JAI97nnRrQjRgPPWdsBYZeYFHJ400kcB7mRR/guJPY=;
+	s=arc-20240116; t=1782812321; c=relaxed/simple;
+	bh=5xYA55UOhzIXToSE5GZpeE9CT0EHf953ZhVrNg1L6YA=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HUOjNZKXG60fXr3O7s4CPgraDvcTjRyvreLW1wIsYUaVu9iudGUn9kFWPm/uhaBTS66ga6geCcAuhc2U9r0jTfRyr4I+9BeymTOUhnxoXTGVY0uQhDHpS+pb6SgxjFrIxMLa9inULOB+HCCKn6xJ6CRmEEhD1QY9WV+b2S3ZffM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=sP9kVJxJ; arc=none smtp.client-ip=68.232.154.123
+	 MIME-Version:Content-Type; b=MXfsgh2sU3kJmYpaoR32QZoKEk7fNjmapd1awGf2dFRw9MUaiqoLTexY9udRe6CLZRhMlVMMdH/HqEXGZzRQ79dQhutXinHVb1yfP8DUTYlV9DkcMz7ypUyiNcXYrwtGT8iDFVA3I6zwLtF11nceugTzK62jyONMi/6VM6MGUrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=nggM+Frq; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="sP9kVJxJ"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="nggM+Frq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1782812311; x=1814348311;
+  t=1782812319; x=1814348319;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=+JAI97nnRrQjRgPPWdsBYZeYFHJ400kcB7mRR/guJPY=;
-  b=sP9kVJxJ8fcK76W5ZVrWriWoWyrWsdu55jlyd+gV7HlVhWWSPhJxCQzp
-   68v67lhKPzRGRWgx9bJpHlWUgSY2+z/46//eLy691ie6dBGvCPVDeNYVK
-   Lc7p9HzXpLhor5q9gTQn0LpLOHRUhKIqaRnUvbj5oduDiKd4b/E5OpZxu
-   zw28783VOuzZcJgo2MxFbyR/QsbpAdvMV3hXnsM/NLqmS15S3z7wT/4gH
-   bNxlFuB6nnnuDkKxikwmvnQ7UNdcK99SbYxtaRtJhth1ztwyyZoKCYVjR
-   mrRf7gOo88T3Wer6Z5PQkka+8RzyuLWhE5MzmeRi3YX8VDQETUyMbidQr
-   Q==;
-X-CSE-ConnectionGUID: DUuy9YIyS4m07SSKsCxMVQ==
-X-CSE-MsgGUID: FbaOAge8Qref46MdaSyAmg==
+  bh=5xYA55UOhzIXToSE5GZpeE9CT0EHf953ZhVrNg1L6YA=;
+  b=nggM+Frq6VlAtxRv+Fc+sRaOw0dhxN+tXpyJUCarwbUNI5ytrPFHFsFp
+   xGRsLab0A6DgzN81nG2IvLdoUAvoZ6WhMRx5cGymOy/YRs0OFKgvQhRdV
+   Uch1pfCyTLAvzAWWc1HiKTEFzmeEoRddf1wlnDAU8ZLUuKj4snHTAZ9v3
+   inW6NUtlbzgPbu2H/akaUsCGoqaRFdE6yWmCm+yE0uy2Yc43M9RyGy+EJ
+   iQnAxvmU7YUruOrlh4u+wg/7lf7xvK7GNaOP/W/IX20DvO5gRD5tEsb3X
+   oQHvE4tcCBYE/nrPQBPLRvR2tJVckJfZGZu0V40MjE9oxDWFY0QBcmKrn
+   g==;
+X-CSE-ConnectionGUID: SUqO/kxASaKWBXK1VeZsfw==
+X-CSE-MsgGUID: Bg9g48AeTziF9k/8sH2P2A==
 X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
-   d="scan'208";a="59032722"
+   d="scan'208";a="227053760"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 02:38:30 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 02:38:39 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.43; Tue, 30 Jun 2026 02:38:30 -0700
+ 15.2.2562.43; Tue, 30 Jun 2026 02:38:38 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 30 Jun 2026 02:38:21 -0700
+ 15.1.2507.58 via Frontend Transport; Tue, 30 Jun 2026 02:38:30 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -54,9 +54,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<duje@dujemihanovic.xyz>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 12/13] ARM: dts: microchip: sama7d65: add temperature sensor
-Date: Tue, 30 Jun 2026 15:06:02 +0530
-Message-ID: <20260630093603.38663-13-varshini.rajendran@microchip.com>
+Subject: [PATCH v3 13/13] ARM: dts: microchip: sama7d65: add thermal zones node
+Date: Tue, 30 Jun 2026 15:06:03 +0530
+Message-ID: <20260630093603.38663-14-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260630093603.38663-1-varshini.rajendran@microchip.com>
 References: <20260630093603.38663-1-varshini.rajendran@microchip.com>
@@ -69,26 +69,79 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add temperature sensor node.
+Add thermal zones node with its associated trips and cooling-maps.
+It uses CPUFreq as cooling device for temperatures in the interval
+[90, 100) degrees Celsius and describe the temperature of 100 degrees
+Celsius as critical temperature. System will shut down when reaching
+critical temperature.
 
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- arch/arm/boot/dts/microchip/sama7d65.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/microchip/sama7d65.dtsi | 42 +++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
 diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-index c336f863406d..89904397d021 100644
+index 89904397d021..f2140010d337 100644
 --- a/arch/arm/boot/dts/microchip/sama7d65.dtsi
 +++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-@@ -120,6 +120,13 @@ pmu {
- 		interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+@@ -16,6 +16,7 @@
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/mfd/at91-usart.h>
+ #include <dt-bindings/nvmem/microchip,sama7g5-otpc.h>
++#include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+ 	model = "Microchip SAMA7D65 family SoC";
+@@ -38,6 +39,7 @@ cpu0: cpu@0 {
+ 			i-cache-size = <0x8000>;	// L1, 32 KB
+ 			next-level-cache = <&L2>;
+ 			operating-points-v2 = <&cpu_opp_table>;
++			#cooling-cells = <2>; /* min followed by max */
+ 
+ 			L2: l2-cache {
+ 				compatible = "cache";
+@@ -127,6 +129,46 @@ thermal_sensor: thermal-sensor {
+ 		io-channel-names = "sensor-channel";
  	};
  
-+	thermal_sensor: thermal-sensor {
-+		compatible = "generic-adc-thermal";
-+		#thermal-sensor-cells = <0>;
-+		io-channels = <&adc AT91_SAMA7G5_ADC_TEMP_CHANNEL>;
-+		io-channel-names = "sensor-channel";
++	thermal-zones {
++		cpu_thermal: cpu-thermal {
++			polling-delay-passive = <1000>;
++			polling-delay = <5000>;
++			thermal-sensors = <&thermal_sensor>;
++
++			trips {
++				cpu_normal: cpu-alert0 {
++					temperature = <90000>;
++					hysteresis = <0>;
++					type = "passive";
++				};
++
++				cpu_hot: cpu-alert1 {
++					temperature = <95000>;
++					hysteresis = <0>;
++					type = "passive";
++				};
++
++				cpu_critical: cpu-critical {
++					temperature = <100000>;
++					hysteresis = <0>;
++					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&cpu_normal>;
++					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++
++				map1 {
++					trip = <&cpu_hot>;
++					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++				};
++			};
++		};
 +	};
 +
  	soc {
