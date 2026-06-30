@@ -1,67 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75A342D7812;
-	Tue, 30 Jun 2026 11:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F2D3F20E7;
+	Tue, 30 Jun 2026 11:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782819371; cv=none; b=QimsD6kzEkEdIXf2ZTmBUb//akn+qQ8JJcgePiEM71+XC5zliwFMk2QLB0sQr0NrfPTEYr02NTg7BMV7borLPOkgU/Reu8bo0/08F+xSuJnjX4wwEOEc5HqEg+8NAoFGNaM7Hsua3kgedlSgq2dcgztN8z+kq1CFjpPV0fTtxig=
+	t=1782820582; cv=none; b=GetNaTovRAS1elZHpdSiQBGNPgzxK+/5+Gd5EniW+sJ918gXdAYlaORQcoGt1amU+lBTRacfnboEPHGak8rrE2NUd0TOT1N50Dfg+AzVfIg0MjVSkVa2ZkTpDXIV0PGCmD1SpWMw+Nm3GaOfWkQgtg6HPBmAhXMhRQeGwaYrPCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782819371; c=relaxed/simple;
-	bh=AOrSt0ytGcYunDyeVrE2mtXF0JUE9sF29fmLH+8Phdg=;
+	s=arc-20240116; t=1782820582; c=relaxed/simple;
+	bh=akHXz8SqMo1P30MsFdy4bQn/F7nC4aKuZCLZeDpg0Tw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jNSiFWShO73qZlYvjop48rdZrT8UsPXXZfB6nhCdrCyQuxzN3yX6Et6YTLZ5gL/zcVuQhu2mwZtONl0VP6guguCZa5qn5GNC3frV3aoc8p2rTQVUMkC2liwz8cuqGC0ASF8ZnBb2qIWKVbupikwZ2aNpGv7TKaeRUDt+/WHjReo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sn3gmX/C; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hi0xkeab3rXOpbtxBqjvi5d6uikeIR1qj0WrX/2dpc6W8P/qN6BReKpn6U9bSaF0956kno17WRV7Bo00Z7bV0T662bN1spwqsxQQXG9emc6jcyOvxagowTnN1kkW9WNkUoINUMU6IeOyIXP00rpyoXQ2GhLOEonYccM36laPtLk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Az9jMOQi; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sn3gmX/C"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Az9jMOQi"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782819369; x=1814355369;
+  t=1782820581; x=1814356581;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=AOrSt0ytGcYunDyeVrE2mtXF0JUE9sF29fmLH+8Phdg=;
-  b=Sn3gmX/Cc/fiM89DVq/HUSBqYY/Pe4k2OOI71ZkixfT20LXajSWKZn11
-   pvoUKDeJbgJl0ASFJC1xFefBN2Jc4NEuJjXAYkdO7xMAy1AOL9f3ugbDo
-   ZuklgjCSOl8dPnp/j5hDFhBlSjvG3x3WYHs6VMUj1tkalqM9iPr3m7y2a
-   R8W3H9otlLoFL1wAZyyWB1w1JmIBBRNo52LI7KzG2PJ8OOdV5QdZw1Xq/
-   F9uG4SV4HI1L7fjSL+3oBUoFcXwjBAvWNgDDJhS/y8jmU87pEWm2X/RAo
-   PR2dErVkaKgz/rb/68oq1ZPMOdpJIhGpog6vMOlkzhRBHwrUDhUb2ZMz7
-   Q==;
-X-CSE-ConnectionGUID: yN068zpnQMOGjtSoHlayNQ==
-X-CSE-MsgGUID: 28LCPedXTWScdASW1IMySA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="106322016"
+  bh=akHXz8SqMo1P30MsFdy4bQn/F7nC4aKuZCLZeDpg0Tw=;
+  b=Az9jMOQiJ1cFdTr5M0TvPgZv9EDsEUqFRDAL/VNautbCH0HzjzbPjXVu
+   UbXv+EN6Gk/hbMedt+9xREOtWfhv8nNBUZiUcLBqjagnka6jenSzoC5YL
+   6tDSDFrAVyxVW3fk5jSDu0beFmTWdlX8tCDBvbhndLqlAzK0Ou1sN3ow2
+   iQNGFL2P1WtyclCmJ3x53YNJ3HKzNzuriVJ4tV3w6sfgBjpxjAtZ8DDd0
+   6vjn0IAw6xZY/QS6k+Uod/1GnYX6ch12I3TjLeGO/nKXz0+Czok4aM7Pu
+   0VxIh8KhQ8O2j1nRY35czjwOD1Jb9kUltuM6s+Hu8Gwjq58qkkK/fpoEp
+   g==;
+X-CSE-ConnectionGUID: 3b+uT5j4Rx6kCMSAtVnp4g==
+X-CSE-MsgGUID: KRNMb9dTTpm2/QQux1qwAA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="95036721"
 X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
-   d="scan'208";a="106322016"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:36:09 -0700
-X-CSE-ConnectionGUID: 89L1EsSsRTC/WowA+Ca0PQ==
-X-CSE-MsgGUID: Ot9jzLlnQeGvcaeGclJhug==
+   d="scan'208";a="95036721"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:56:21 -0700
+X-CSE-ConnectionGUID: MwUPi+6pS8Cq1G9RVUlGNQ==
+X-CSE-MsgGUID: TuRbyUU5Q/68vrOwhx8OPQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
-   d="scan'208";a="255833692"
+   d="scan'208";a="256166706"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.96])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:36:04 -0700
-Date: Tue, 30 Jun 2026 14:36:01 +0300
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:56:16 -0700
+Date: Tue, 30 Jun 2026 14:56:14 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
-	andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
-	devicetree@vger.kernel.org, dlechner@baylibre.com,
-	duje@dujemihanovic.xyz, jishnu.prakash@oss.qualcomm.com,
-	jorge.marques@analog.com, joshua.crofts1@gmail.com,
-	krzk+dt@kernel.org, linusw@kernel.org, linux-kernel@vger.kernel.org,
-	marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
-	mike.looijmans@topic.nl, nuno.sa@analog.com, robh@kernel.org,
-	sakari.ailus@linux.intel.com, wens@kernel.org
-Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
- changed in single mode
-Message-ID: <akOqIVDibovrbBAK@ashevche-desk.local>
-References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
- <20260622221550.374235-2-jakubszczudlo40@gmail.com>
- <ajpO9zaZbIl3x1uC@ashevche-desk.local>
- <20260629235118.1abc4067@jic23-huawei>
+To: Kim Jinseob <kimjinseob88@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v6 4/5] iio: osf: add authenticated stream parser
+Message-ID: <akOu3mXLvJa06CoO@ashevche-desk.local>
+References: <20260628191337.937-1-kimjinseob88@gmail.com>
+ <20260628191337.937-5-kimjinseob88@gmail.com>
+ <akJ818gkVzLN7HqU@ashevche-desk.local>
+ <20260630000623.0c030d5f@jic23-huawei>
+ <CALMSewJo-tnQL9KRyvABHpAf0-k=yOd1N=JzgK91rk0R0j_CBA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,67 +70,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260629235118.1abc4067@jic23-huawei>
+In-Reply-To: <CALMSewJo-tnQL9KRyvABHpAf0-k=yOd1N=JzgK91rk0R0j_CBA@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jun 29, 2026 at 11:51:18PM +0100, Jonathan Cameron wrote:
+On Tue, Jun 30, 2026 at 02:12:06PM +0900, Kim Jinseob wrote:
+
+And do not top-post!
+
+> Understood. I missed applying the earlier style feedback consistently
+> across this file, and I should have explicitly replied where a previous
+> comment was not addressed.
+> 
+> I will these:
+> - reuse the existing OSF magic definition instead of duplicating a byte array
+>   in the stream parser;
+> - use loop-local variables where the variable is not used outside the loop;
+> - rework the stream error handling so authenticated and unauthenticated
+>   failures are handled deliberately;
+> - either update partial_frames where appropriate or remove the unused
+>   statistic.
+> 
+> I will also check lore for the previous versions and track the earlier review
+> comments before posting another revision, making sure each one is either
+> addressed in code or explicitly answered.
 
 ...
 
-> > >  	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
-> > >  	for (i = 0; i < size; i++) {
-> > > -		if (ads1100_data_rate[i] == rate)
-> > > -			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
-> > > -						       FIELD_PREP(ADS1100_DR_MASK, i));  
-> > 
-> > > +		if (ads1100_data_rate[i] != rate)
-> > > +			continue;  
-> > 
-> > This will look better if you break here and add a check
-> > 
-> > 	if (i == size)
-> > 		return -EINVAL;
-> I just saw the result of this in v5 and wondered why?
-> 
-> i is controlled by the for loops stuff only so i never == size.
-> I'm not sure what intent of this comment was.
-
-Meant to add 'break;' and move the actual check to outside of the loop.
-
-> I am fairly sure what Andy is suggesting is the following..
-> 
->  	for (i = 0; i < size; i++) {
-> 		if (ads1100_data_rate[i] == rate)
-> 			break;
-> 	}
-> 
-> 	if (i == size)
-> 		return -EINVAL;
-
-Yes, that one. Sorry for the language confusion.
-
-> 	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(&data->client->dev, pm);
-> 	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> 	if (ret)
-> 		return ret;
-
-> //note that we 'could' do what some other users of ACQUIRE_ERR()
-> //have allowed
-> 	if ((ret = PM_RUNTIME_ACQUIRE_ERR(&pm)))
-> 		return ret;
-> 
-> I'm open to hear if people think we should allow this or not.
-
-I'm against that. The style is prone for errors and readability issues.
-
-> 	ret = ads1100_set_config_bits(data, ADS1100_DR_MASK,
-> 				      FIELD_PREP(ADS1100_DR_MASK, i));
-> 	if (ret)
-> 		return ret;
-> 
-> 	return ads1100_poll_data_ready(data);
-> }
+> > > Come again when each of the given comment will be either addressed or argued.
+> > >
+> > Likewise.  Please make sure to address every comment either through
+> > changes or through reply to the earlier thread.  Perhaps some emails
+> > have gone astray (it happens!). It can be a good idea to take a quick
+> > look at lore.kernel.org to make sure you aren't missing any feedback
+> > on a previous version.
 
 -- 
 With Best Regards,
