@@ -1,78 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE384418E4;
-	Tue, 30 Jun 2026 15:41:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C1FD46AEFA
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 16:01:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782834095; cv=none; b=ll79/H4sBS1a8j1JHXdw1104UT0Z+JslymxcHl93UtLu5175+nZy9TRw1JndASXQpn2XHvvvVkuK+IVtqgdZykzjlSOMwPMkASBPB5sqKpEcLHgJ3sitp2+L9RLg31iasRB1bx8vG2EklzG7bwOBHYOK8nauVacgAhKnsWiWheE=
+	t=1782835287; cv=none; b=K+OVDNlZf/pXOO5auX3FZVe9P+kmfAe3ew8Tb0pbVUXRFWeFEVeu82C6Q9XVMyQCwWFePs19bJT2HxU9Q2FVeukr9urIeH96fzcbYfaBFbryl82/UQ4zjd64TGIDHwcJf9X+IH2FqCVGMYlQu5ALboYEEV24t9CMI6MODKDbauA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782834095; c=relaxed/simple;
-	bh=aVGRPjuk/iK4RNQVgoxtgzO5uLJkDZS0Aog/yrkx6iE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mQ4jwBl/7+P30nvSLz9DOo90/P3eH4dlvmIAfN5D74+CaeDF26Yi5cE3fRWFyLtUCiAdhh7FdltHU8+QcrKo65WlTFCbknMjJKP9fUOa5fGFeD3pebmhQ2oMFw0PWSpvnsxt+OYQvJGxhG/uPrDr4eQoLbobO16mSSqD1/fnld0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O/MTnmFF; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O/MTnmFF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A90C31F000E9;
-	Tue, 30 Jun 2026 15:41:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782834093;
-	bh=ZSV7fPEAWQ3Pvr7rxMlaVkucoLzZ2elwKVH75MXNu+k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=O/MTnmFFcV6HsHhb+dzTDFi+mEjVInznMKVXf1FqhbJLJhACpbXUZC5VREyhAN1JK
-	 ivnfNOADDBCdsp+Z9E64uXAh4r0oX6vjUBLgl6Uhfd9K0rF5j8BZhwbLYiO+49K9Gl
-	 6LnnzeSBTdGYgbO+mXhK3HRG/nssssTNyDIpdWWihBG6sbBdH1SznjN12x/qp09QZP
-	 zLoZzPZYJ87xb9Oq0i+KVMwbRi+/0zodmVTmgEO381yLwmObD3NVEQhwjSfqBPZvmH
-	 xcb7VYo2CAaXcAwZu2rhESMxgG4wilywfFD5IfUBc9omQ8x5o6dkyjQhTOju1fqX+L
-	 CZjGKi0pHhijA==
-Date: Tue, 30 Jun 2026 10:41:33 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Maxwell Doose <m32285159@gmail.com>
-Cc: linux-iio@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add STS30
- devicetree bindings
-Message-ID: <178283409248.3688066.13200644563494383989.robh@kernel.org>
-References: <20260621004626.66629-1-m32285159@gmail.com>
- <20260621004626.66629-2-m32285159@gmail.com>
+	s=arc-20240116; t=1782835287; c=relaxed/simple;
+	bh=y9uuZkEeJae++MbeR+TNLsbet2X1rPdv40pKLNu47dg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IwDBgMAFGNKe4RBFI2cxy46ZJ8iFMjmQClqNXi11Cx4yjAmEDd90zvZL9j8vG6Uo1Y4dL93Ys0v2wlcxK47etlqC66hXwbO/4GumRgSjBLjzjkj5OhBq0qR/xtGzi6M1xq7n3R3bNI3bCnRlja/u/lqjTUo27hgcmNssYafAqYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-5bdd0779366so37862e0c.1
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 09:01:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782835283; x=1783440083;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vqnNDF5VKQ+E0vRBcJ/LtO+JWbWwBxQUs2IGvWvjH/Q=;
+        b=D3NLmzPaOTx2wQLy63s/kxluLW730ag98y2QhFkPF3V/XHhUlXjIfCtcbQg3tu0TxX
+         w/9X/eX5OR85WmiWsUHqVl4ZSziRtuSjN+Ap1omwmrXEwAkwv0cWNg+Xbm3zchud0CUF
+         UQJAeji2UB634fzcM9dLvKdkDOn5mQEoDN5bKFYCNHiGWDEyLRoBR+yX9PoxrkGCFq1+
+         4pYQsEEeBbFW+9F9L1NpNkfKSyt70C4BlmrW5+tugl0XJU5lEpUZappk2vLIyt2F3tqT
+         n5NWvOYxbKlLJ1rLpq5FCoQduhfctHBzxUq+fj9f5UsJhrIqKJxbMpy1fVteG3/AJTFk
+         gtOQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rp01ZUg8g1IsruNqEdWOBU/msFZo1UMr9sO3DCtSP1a9OYut57FyXk0QsL/lNdi2MVrLHqLCU1TuTg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiIxhGV2PGUhQxrnkDFGB6gd8qLfAvW7jZlWBWdhO7EvzNV6IO
+	0+5rf+3TFAUMo5OvF/+IxcKHDkVHQWyN/ndndI6D0k3edfrhRYZcwb2lyB/7DI8l5cY=
+X-Gm-Gg: AfdE7cn+zjgxq+whOujOYwu5XTJYZO/0qtOXqdAj0HQGudRwtyN1zDN5LgmlbhyuQ/K
+	b2MXqz8QMwzgxQ5cirkTgbkdGxb72JBTGjcObvaMSoH4aPNHbY7z0UkXolV5ERC/hXcCw9uUQhW
+	4qbfG1zW9vWNRjD3PkGoMq576Iymi7AeNtZIVQF8wWexAMe40LP2uslIGaep67AW3LmTqYLzcDJ
+	15oDJMAgTGM2mAPgT3JSsCr8VcC34y8kjfZwQLkTyQ1filG7+vOSUBEtNQ8kaJEo51peFlxt3Sp
+	cpiRO3Vq97Kby9kDJnTBOUuWVEtKY4u1t5BzPRhniw0MZZ2OEuKFn1eWlg9j8ziRpbYjLYFrpLL
+	+jSXGRo+RtWa55TNn4xXjnaf2jYPC6wtiD+ylcgd2vessEx8hOYNQAvhitiB3rluueOlCVYiUMG
+	jLN22T5cGtl1Yk0xj9rEo74xzeczfwnOflnOYrmbebtBPAw78/yQ==
+X-Received: by 2002:a05:6122:134d:b0:5bb:c529:5f2c with SMTP id 71dfb90a1353d-5bdbecf0e2emr1679117e0c.6.1782835281119;
+        Tue, 30 Jun 2026 09:01:21 -0700 (PDT)
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bdc189131bsm1683300e0c.6.2026.06.30.09.01.20
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2026 09:01:21 -0700 (PDT)
+Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-9690c99c917so929884241.2
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 09:01:20 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RoVOvx5PBJOUoBV85sdh9ZJ9sETztRe1lnODZqB0yubznzgv+xvBF+2r8QAB/qn2eZm++RvbTAjJjk=@vger.kernel.org
+X-Received: by 2002:a05:6102:598c:b0:738:9dd5:9b03 with SMTP id
+ ada2fe7eead31-73a38838db6mr1792608137.20.1782835280090; Tue, 30 Jun 2026
+ 09:01:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260621004626.66629-2-m32285159@gmail.com>
+References: <20260629135917.1308621-1-arnd@kernel.org> <CAMuHMdXhsM4JzArRuB=A46N-Ogbn2Fans+PVJVA-hEytFq=DeQ@mail.gmail.com>
+ <ff4d7043-1929-4fa1-ba5e-f28403ad6fcc@app.fastmail.com>
+In-Reply-To: <ff4d7043-1929-4fa1-ba5e-f28403ad6fcc@app.fastmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 30 Jun 2026 18:01:07 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
+X-Gm-Features: AVVi8Cc-rLKbwzFvmIKs2_rpHMNLxVULzvudUQINxHMw-KOr8IArAqRSnLCM1D8
+Message-ID: <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] gpiolib: introduce gpio_name() helper
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+	MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Andy Shevchenko <andy@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Ulf Hansson <ulfh@kernel.org>, 
+	linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>, dri-devel@lists.freedesktop.org, 
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-input@vger.kernel.org, 
+	"linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+Hi Arnd,
 
-On Sat, 20 Jun 2026 19:46:23 -0500, Maxwell Doose wrote:
-> Add the devicetree bindings for the STS30 family of temperature sensors.
-> The STS30 family of sensors includes the STS30, STS31, and STS35.
-> 
-> All devices in the STS30 family share the same commands, timings, etc.
-> The only difference between them is their measurement accuracy and
-> tolerance.
-> 
-> Additionally add MAINTAINERS entry for the driver.
-> 
-> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
-> ---
-> Changes since v1:
-> - Squashed parts of the MAINTAINERS commit into this commit.
-> - Added ALERT pin as an interrupt and in the examples.
-> 
->  .../iio/temperature/sensirion,sts30.yaml      | 55 +++++++++++++++++++
->  MAINTAINERS                                   |  5 ++
->  2 files changed, 60 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/sensirion,sts30.yaml
-> 
+On Mon, 29 Jun 2026 at 19:54, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Mon, Jun 29, 2026, at 17:29, Geert Uytterhoeven wrote:
+> > On Mon, 29 Jun 2026 at 15:59, Arnd Bergmann <arnd@kernel.org> wrote:
+> >> From: Arnd Bergmann <arnd@arndb.de>
+> >>
+> >> Most remaining users of desc_to_gpio() only call it for printing debug
+> >> information.
+> >>
+> >> Replace this with a new gpiod_name() helper that returns the
+> >> gpio_desc->name string after checking the gpio_desc pointer.
+> >>
+> >> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+> >> --- a/drivers/gpio/gpio-aggregator.c
+> >> +++ b/drivers/gpio/gpio-aggregator.c
+> >> @@ -758,8 +758,8 @@ int gpiochip_fwd_desc_add(struct gpiochip_fwd *fwd, struct gpio_desc *desc,
+> >>
+> >>         fwd->descs[offset] = desc;
+> >>
+> >> -       dev_dbg(chip->parent, "%u => gpio %d irq %d\n", offset,
+> >> -               desc_to_gpio(desc), gpiod_to_irq(desc));
+> >> +       dev_dbg(chip->parent, "%u => gpio %s irq %d\n", offset,
+> >> +               gpiod_name(desc), gpiod_to_irq(desc));
+> >>
+> >>         return 0;
+> >>  }
+> >
+> > Before, this printed:
+> >
+> >     gpio-aggregator gpio-aggregator.1: 0 => gpio 589 irq 188
+> >     gpio-aggregator gpio-aggregator.1: 1 => gpio 590 irq 189
+> >
+> > After, this prints:
+> >
+> >     gpio-aggregator gpio-aggregator.1: 0 => gpio (null) irq 188
+> >     gpio-aggregator gpio-aggregator.1: 1 => gpio (null) irq 189
+> >
+> > Same results for instantiation using sysfs or configfs[1], although
+> > the latter does have optional support for specifying the name.
+>
+> I wonder how many of the other instances have the same problem
+> then. Would it be appropriate for gpiochip_fwd_desc_add() to set
+> a name itself to address this one?
 
+I don't think it would be appropriate for the GPIO aggregator to set
+that name.  What we want to print here (for debugging) is the physical
+GPIO that an aggregator's GPIO is mapped to, not some consumer or line
+name (which is not guaranteed to be unique).
+E.g. "<chip-name>.<offset>" would be fine.  As gpiod_name() can only
+return a fixed string or an existing string, it can't return such a
+formatted string, though. And consumers don't have access to chip info?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
