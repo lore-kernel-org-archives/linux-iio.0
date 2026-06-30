@@ -1,100 +1,89 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BE34028E6
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 13:08:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72D141C308
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 13:21:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782824882; cv=none; b=iEepSrFRtPZpwRD/LpnoKBLkxDBkcOTHHMpUYSHgUCHRAJ/7XbyqyiXjxJ3qHR9FSoSV7cZWv/phLj1qh4szULK55CcvaFBvUJgxFwb5xUZ9OfPOQNcJXrLDNOL1RFeR7OWxbacuPJy2ODFEtf6LF0xSZ2jw+ncbATSqp3XXfuU=
+	t=1782825677; cv=none; b=snnPyX0LDglzNtDqDwsDtIAChJKRarUoC1VR8U8lS1UxmTBZb2/A8xGckQ4UZub3rC2nokb43npMSUlHRiVJgULud9vLV+eKu6Q1hZvJMuiSuXqLgA3jaboqZi8PQjoymeCE752ysMa94ZgVe3+qU4l2g1533lMq+pVeHEinq0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782824882; c=relaxed/simple;
-	bh=4wOd2k152jTIOetiUg0ErEuJIr/fWu9qeCXQaQH6IxQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=crLzgpRD6qqAfNRCMP8QduYW6P32kKWpvM9pO1e3YW5U7kVaskvFOpAc2CWOgEW2MsdUPSt9H3n88HhkJ0jUlQK2NQEMYJhsq/Yf6uRcq7q/XGyNtv6hBwU1IQBWcEW3s/13OVasGveCam3jJEVfUmt4XQw6esHz9GLju/2QVJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y+Ysmndn; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782825677; c=relaxed/simple;
+	bh=MVY7OPuBtDDWoGVmZzYJMH+zngqc4Ts/svjtm9TV7xA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=M3WsnJHO3Q0f8DkDNFPdDGU9pJ2qDf7NttDqNZjzyunQ5cyAn5j9ryGabCBpdNwLoV1iuK08esBehprWmwgyORnYdlIUFWbU9tJKz4vlt0v3fzpYVpsoAWbHz+bYNqXIP4H0mQUmlN+NPurDKUli5xiuKSFquLtlrCKzIJUQb1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iOyhgDJM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y+Ysmndn"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493a54b80a5so36631145e9.2
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 06:08:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782824879; x=1783429679; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+O7k0RIXCnKG2vJKuj87RS0STkl6Fhwg5MbkP32JPXo=;
-        b=Y+Ysmndn60r44FoUTTOIfyPhD2N//kUfdRtm891lB654mxY+kRf0rgLWHqEdMh9Gt3
-         QJp0RaCKhwEIK0NdCVUHJ/qmMFUzZyy2894OmV5sD76mznT2xXGedrlgE1pBJkt+kDKc
-         hUz6HYw/B7gL+PMhaHDVT/P6a23jpqL88tYeZR4WBXuaaCVDazM0K7E1nkzTbWfOTcoT
-         e+ODgaXLRE+XCN/S27siegBfNYHti8osKcW4surWWzA4scceS3irH+NsGmabpVFghmTV
-         D9Ne1fecetBohi1LEqXoMxeT4LD1gfWjWZf3PsyJiy8KqqSL+hdL22L7b+/dvEpszrNJ
-         bYfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782824879; x=1783429679;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=+O7k0RIXCnKG2vJKuj87RS0STkl6Fhwg5MbkP32JPXo=;
-        b=O33HTtYqe1Uguh6pUUuqLzvLur6Bdol4KVYE9JmKDnwK6AcuJvXl6w4722od8J2u/a
-         rm+CaTt8mSXPdYrRTzjGwKSz9t5kXSK47IAqrav0l3NUrbJBr2UO6fT/xsK31PJhnOY4
-         ODVQyJYQ4aK/q6w68tTbABQ1A97Z1XDoYQfg/RZpTkbvNq7HPqUI2hSVCcZF4neVPRY1
-         +SDHhwJPQ1GSIhunhB+X9FSr53UAZ2SBBbtiDup/4GEv5Pbj1zc+HLSfoTCAg+rpbCcY
-         p39ZOZxgGL+ULOTzL41f47aILeP5945bKyjCD29jfyxZGu3uVnKFd4rYO76mwEzbCLo7
-         mNPA==
-X-Forwarded-Encrypted: i=1; AFNElJ+1GwyJ3ZSiNM0K4lddnjVj9FTzyW10H10Hblgp5BmqgHcioM935rCO8J4HWARDTBlOUENnYoPDI6w=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4vCx5PVuk07DulSDayAt4C6AUNJerfsn1izUA8B2/WeYAhUN0
-	EhPSQUBVcxS+A/+jPmRg6MZfCGqh+qHhMQnw5XX9dloIa9pnKXJv33E3
-X-Gm-Gg: AfdE7cmRLZmjVi2gnVcE6LelLXIwXdBZuALSJvLPSlssbiNp7Z/ybF93EHX9u7Z8oJu
-	mgSDYx+u95Kc8qk21nzExOoXi5LPref3byTGCGbIhdpSh6OngTN5xZ3xjrdycqtWSt++UxeytgY
-	rEhvjxyVQHs7DwtmZYjAIa6ikYSh63JUkYaH3RNtmDh9utN7i+5dAgUmYOnreI4JCwFyZyiPKkI
-	HHREshJyfCGj3G59i1QPK+Yrp7Ok0Ngg9OCvVuO0g8c8Tv+qvRRDwl65vKFYLDQzwBHcBYz6iDT
-	xnPg7kcVPfSjedPPO0w8Oc5+GjpCZNEJdME/qvmjmmw++xL6XUbVFfyG+9s27s7vUA/kSVV1eYP
-	yS4hWgR98Od46FTNpDEq9lG8w5xbpDPHLMXbNIOvfBYetGY4xi+Nb5so/dO3LD8kfOlEMTF4gk6
-	K8p04jSRXdAlpEIO7qV3IqImHiEH0obUYso6Px8qJvsxBW4kdcRs0KOw3LbyOkH/y9gPIjA6gji
-	Ma0r5HeCasb7VHfxftHHw+UlYy2bXr24BXtDN1ocRhXY/DvC32w+iG1md1e92pult0QK26PZwCc
-	Yls2MbepKIPd6nxEhtIHlEUJXA0ke5nZO6K8Cifs2wK9KBz1qfkh4/M=
-X-Received: by 2002:a05:600c:4e46:b0:493:aaa2:f034 with SMTP id 5b1f17b1804b1-493b82b9302mr50790605e9.26.1782824879199;
-        Tue, 30 Jun 2026 06:07:59 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4756636cf65sm8381241f8f.21.2026.06.30.06.07.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 06:07:58 -0700 (PDT)
-Date: Tue, 30 Jun 2026 15:07:55 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, jic23@kernel.org, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, gregkh@linuxfoundation.org,
- skhan@linuxfoundation.org, linux-iio@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: frequency: ad9832/ad9834: use div64_ul
- instead of do_div
-Message-ID: <20260630150755.0000266f@gmail.com>
-In-Reply-To: <akOwOpTIBFmSvquX@ashevche-desk.local>
-References: <20260630032322.5805-1-raizudeen.kerneldev@gmail.com>
-	<20260630093931.00006eca@gmail.com>
-	<akOwOpTIBFmSvquX@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iOyhgDJM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05B81F00ADB
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 13:21:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782825675;
+	bh=MVY7OPuBtDDWoGVmZzYJMH+zngqc4Ts/svjtm9TV7xA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=iOyhgDJMUazn9ljrXYNdCvg1zL422zS4FttNWGhdvnMmlXUssySEPNAITYjTS8B2c
+	 e0x/xa7PwM3CmCldqJHaNdeKzhqlDPDsYRrj5nlcG+wqJtaKqS7e7SwP+s7aM8GJa6
+	 K+1zmqgPQWyqCDX8mH+vtAtFUP+x4m2BoYG7zXxtS24IhPJXzDTuGDnmuJEW0ZdBGu
+	 BUwj/Xkb7nNS7nMzu7mgTJC1/JUdev7TQmFd2s67DOl7khiQLBgYpHuLEquTNtX3yN
+	 RGpHp7fSnBxYRmv8dvcFmRogh4EqEuZr4t0K5ZI9FTV7LxSYAm0pvyIFQSu9LIzp70
+	 ZkhNVU4yfc6DQ==
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5aeb91c003eso2152785e87.3
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 06:21:15 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RohvFdAA3Fi9j8xqis4wG6FzL2g/p8yhB0FMcsL8jXJx44fn65OFT5nFS/ry6G6goK6dlmzZFiyXl8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxqwLOOtY1C4pfWjutE/Jv81UXJlmT9e/rB45PVIK4qW5//aZSa
+	y1yKiPIFgCN+ZGORMT1bHQdcu9kvhWxNc/apORNACeyp9RSUhYaDIwh9q7hxTkSwJ0PMgU4Fwtq
+	hLa7BRGF9yRdm/u5jAtsHhcYRFxWallM=
+X-Received: by 2002:a05:6512:4019:b0:5ae:b728:df28 with SMTP id
+ 2adb3069b0e04-5aebdbd6442mr872848e87.49.1782825674488; Tue, 30 Jun 2026
+ 06:21:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
+ <20260512033317.1602537-3-eleanor.lin@realtek.com> <agMM9soiqpG-TRSb@ashevche-desk.local>
+ <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com> <ah92oEavMu4QRn8y@ashevche-desk.local>
+ <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
+ <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org> <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+ <ajkP4DHN4JPjr6yb@ashevche-desk.local>
+In-Reply-To: <ajkP4DHN4JPjr6yb@ashevche-desk.local>
+From: Linus Walleij <linusw@kernel.org>
+Date: Tue, 30 Jun 2026 14:21:01 +0100
+X-Gmail-Original-Message-ID: <CAD++jLmHk=efdbz9LgXJiuNzTjM7-K2d3v5TPck_-NJpBp+QkQ@mail.gmail.com>
+X-Gm-Features: AVVi8CeSmNt49CsRH7ooO8TtoFwH2cGZrVPIEEBlGKP4NblkyzQpSIYZPriLS8c
+Message-ID: <CAD++jLmHk=efdbz9LgXJiuNzTjM7-K2d3v5TPck_-NJpBp+QkQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip() accessor
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Michael Walle <mwalle@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+	"robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>, 
+	"conor+dt@kernel.org" <conor+dt@kernel.org>, "afaerber@suse.com" <afaerber@suse.com>, 
+	"wbg@kernel.org" <wbg@kernel.org>, 
+	"mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>, "lars@metafoo.de" <lars@metafoo.de>, 
+	"Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>, 
+	"nuno.sa@analog.com" <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>, 
+	"dlechner@baylibre.com" <dlechner@baylibre.com>, =?UTF-8?B?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>, 
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"linux-realtek-soc@lists.infradead.org" <linux-realtek-soc@lists.infradead.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, =?UTF-8?B?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?= <cy.huang@realtek.com>, 
+	=?UTF-8?B?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?= <stanley_chang@realtek.com>, 
+	=?UTF-8?B?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?= <james.tai@realtek.com>, 
+	=?UTF-8?B?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?= <eleanor.lin@realtek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 30 Jun 2026 15:02:02 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> Since we are getting more "fixes" in the area, perhaps it's a time to add
-> a comment in the code summarizing the mentioned discussion?
-> 
+On Mon, Jun 22, 2026 at 11:35=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 
-Good idea. I'd also mention Coccinelle and its false positive in the comment
-since patches trying to fix this always mention it (my attempt included).
+> So, when we instantiate our own domain in regmap GPIO, we should have tho=
+se
+> callbacks be defined somewhere?
 
--- 
-Kind regards
+Domains are just translators, but if you create an irq chip it should
+ideally have these callbacks.
 
-CJD
+Yours,
+Linus Walleij
