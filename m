@@ -1,46 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB9BB2ECD32;
-	Tue, 30 Jun 2026 22:59:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301E82D321B;
+	Tue, 30 Jun 2026 23:02:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782860381; cv=none; b=UwUN5dO6U2DQsGE/pxV83n5x1USsaBqQYA96VmaScKKIJCIoVCi8Wup/gdQNV+oRHuq5B7LsUmEUt8FWHx9++uzfovnfjeWlfqhFQWSIPTVuX/M1eaMIR6tEaMRzRhkrjLHEBZ7AllETw2NfuoWwaHv2pAHTKVj7B3VXTGnaxDw=
+	t=1782860558; cv=none; b=VOZFdyg5BL9k+qZQGqzyigyeNXQp8ABGfRW8/iBO820DLXXmM7W9YNt0j//1R7DtiyGwKhz5brj205THFJxMe+y79P/CtDlPrTdjyEcY9W4v6Fa4B1s4lfOKLEq09qP8xUAIWsK0G70uhUMiReEQTF/xLuLj6nSwdWfpb/oUfp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782860381; c=relaxed/simple;
-	bh=osL3uTJhTm9LSLp2YQOww4VTQarThaS3fqxKF5kmtwQ=;
+	s=arc-20240116; t=1782860558; c=relaxed/simple;
+	bh=vewYM7+/0Mx8Us2bGa2kf6rEhXQToNX85RqF32+hadE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rbKbuSYL3a7HY4FxRvQv2W2sqkCdrC9jqcNzYYwyYIuhLOOJxHfBXtBl70hWqVDi7S+F0C3XeLsonCgg86eXdVzHyfCZcDtnXoDKydnZjLA+T6Zi6v91jkaH7r7bn+fIVFyyrB0LUguP0Ho9kKLIRDQ3enW6L6HHt/E6xTyCaG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mm9De9GY; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KZp39L+oqBMMBBXt0uubRRDJZWc96ZdbyMRM3wy3IkH2asfl6dJAfTCYMhdWcubPoquZ4p8FsQ7g/+Km1OSTbXLigeBgr1vuEfc9sNeLgUkqQUYxF9Mc0QETxmp7o/JoOV//gYJYobisX/QC97DXOSz7yQGeiCiSSSeNNqXsl5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TVaCETV6; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mm9De9GY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA291F00A3A;
-	Tue, 30 Jun 2026 22:59:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TVaCETV6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13CA11F000E9;
+	Tue, 30 Jun 2026 23:02:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782860379;
-	bh=hpGHznkuiVzbCssE8nF1WP+hU9QiCHLL5//s39XABS8=;
+	s=k20260515; t=1782860556;
+	bh=f9+i9K+DJqIZZjJdZPvridQs30wkr8i5BEOJQqta41U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Mm9De9GY9AnlBfnkQ9gv0ORM7La070SlXrEbmoHfUfxOBaaYtLJzUqs9PXOSo5uvx
-	 x8ahgeal3hZOtIlVzn+sGWk2Wd9jC54VlkmDT+j5eym3wm5AyGxRApheO30IDwD0K2
-	 QdandJ9p+VqURQ55EBEevLOY9PD2oxYa3D+5N4hcCkk1dxrxTbWQmt0dW7EiJpPW5G
-	 b46VcVPSt/7ODA+Cf+2Qz5OPJ8C8iyGxJyl1JksTpn0JixooJbhtizar1JMDgq1vyl
-	 uSARJIL8TJdfN7XRf+Dd3m/PbdMBkIu5nYFVZcm4oktRv733+3Li6DDj1RcA9xv49a
-	 VbgZsQ9v79akg==
-Date: Tue, 30 Jun 2026 23:59:35 +0100
+	b=TVaCETV6ffbqCw9xWkrt0hcm6vxAHkeK4Lt8IXDT4cPK1QugS4qOswT0Oaf37wYNQ
+	 HQPRhmonf6/VezVIh+ZGVQXIWMBs+vDBkQiqPzB6xpaw8fSWlpwwKxFIHxjSo3g7Ph
+	 ygNBT3XE4bCAh1XoOmnHKCyPIQda9Y7irEpOEEO28NT5VvLr7o718o4wBv8CthA2wQ
+	 swJRm7IWuW4rUzI//RKMooHc3qXPB8RWHjzAtB/OyKdzmZzjKVFb5EPoauExaKiwo+
+	 SQJY9tGsQSrGjtBnQuG0UnW6oK2op2TcsU0joRrDLKFCJGnwS5N8PUoTKkSNkhHEnx
+	 0OocB6pW3l6aQ==
+Date: Wed, 1 Jul 2026 00:02:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
  <u.kleine-koenig@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org,
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] staging: iio: Initialize spi_device_id arrays
- using member names
-Message-ID: <20260630235935.4cfa827c@jic23-huawei>
-In-Reply-To: <4c743f86ca4072d34d715333589aa540aed895f2.1782833415.git.u.kleine-koenig@baylibre.com>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: adc: ti-tsc2046: Simplify device handling
+Message-ID: <20260701000231.6b2ca57f@jic23-huawei>
+In-Reply-To: <a3329201c27a1f2439f4b6c1c89cd1949dcab23c.1782833415.git.u.kleine-koenig@baylibre.com>
 References: <cover.1782833415.git.u.kleine-koenig@baylibre.com>
-	<4c743f86ca4072d34d715333589aa540aed895f2.1782833415.git.u.kleine-koenig@baylibre.com>
+	<a3329201c27a1f2439f4b6c1c89cd1949dcab23c.1782833415.git.u.kleine-koenig@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,75 +49,121 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 30 Jun 2026 17:35:36 +0200
+On Tue, 30 Jun 2026 17:35:34 +0200
 Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@baylibre.com> wrot=
 e:
 
-> While being less compact, using named initializers allows to more easily
-> see which members of the structs are assigned which value without having
-> to lookup the declaration of the struct. And it's also more robust
-> against changes to the struct definition.
+> The driver was introduced in 2021 and since then only supports a single
+> chip variant. Simplify the driver by hard-coding the device properties
+> instead of using the id_table's abstraction for a single chip type.
 >=20
-> The mentioned robustness is relevant for a planned change to struct
-> spi_device_id that replaces .driver_data by an anonymous union.
->=20
-> This patch doesn't modify the compiled arrays, only their representation
-> in source form benefits. The former was confirmed with x86 and arm64
-> builds.
+> Also drop the write-only struct member dcfg and the then unused struct
+> definition.
 >=20
 > Signed-off-by: Uwe Kleine-K=C3=B6nig (The Capable Hub) <u.kleine-koenig@b=
 aylibre.com>
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> Link: https://patch.msgid.link/cac7a68e6a6adb1b58207640ab045e59eec86f53.1=
-781883685.git.u.kleine-koenig@baylibre.com
-Given I messed up applying this in v1, picked up now.
+Addresses feedback on v1, so all good,
 
-Thanks for catching that miss!
+Applied to the testing branch of iio.git.
+
+I'll sit on patch 2 for a little while to see if it stirs up discussion!
 
 Jonathan
 
 > ---
->  drivers/staging/iio/adc/ad7816.c       | 6 +++---
->  drivers/staging/iio/frequency/ad9834.c | 8 ++++----
->  2 files changed, 7 insertions(+), 7 deletions(-)
+>  drivers/iio/adc/ti-tsc2046.c | 25 ++++---------------------
+>  1 file changed, 4 insertions(+), 21 deletions(-)
 >=20
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/a=
-d7816.c
-> index 0e32a2295990..30644d2d7c54 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -426,9 +426,9 @@ static const struct of_device_id ad7816_of_match[] =
-=3D {
->  MODULE_DEVICE_TABLE(of, ad7816_of_match);
-> =20
->  static const struct spi_device_id ad7816_id[] =3D {
-> -	{ "ad7816", ID_AD7816 },
-> -	{ "ad7817", ID_AD7817 },
-> -	{ "ad7818", ID_AD7818 },
-> +	{ .name =3D "ad7816", .driver_data =3D ID_AD7816 },
-> +	{ .name =3D "ad7817", .driver_data =3D ID_AD7817 },
-> +	{ .name =3D "ad7818", .driver_data =3D ID_AD7818 },
->  	{ }
+> diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+> index aba4b10a17ac..125f6d7e2d84 100644
+> --- a/drivers/iio/adc/ti-tsc2046.c
+> +++ b/drivers/iio/adc/ti-tsc2046.c
+> @@ -121,11 +121,6 @@ struct tsc2046_adc_group_layout {
+>  	unsigned int skip;
 >  };
 > =20
-> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio=
-/frequency/ad9834.c
-> index 4359b358e0e5..f95c5365cd03 100644
-> --- a/drivers/staging/iio/frequency/ad9834.c
-> +++ b/drivers/staging/iio/frequency/ad9834.c
-> @@ -465,10 +465,10 @@ static int ad9834_probe(struct spi_device *spi)
+> -struct tsc2046_adc_dcfg {
+> -	const struct iio_chan_spec *channels;
+> -	unsigned int num_channels;
+> -};
+> -
+>  struct tsc2046_adc_ch_cfg {
+>  	unsigned int settling_time_us;
+>  	unsigned int oversampling_ratio;
+> @@ -141,7 +136,6 @@ enum tsc2046_state {
+> =20
+>  struct tsc2046_adc_priv {
+>  	struct spi_device *spi;
+> -	const struct tsc2046_adc_dcfg *dcfg;
+>  	bool internal_vref;
+> =20
+>  	struct iio_trigger *trig;
+> @@ -214,11 +208,6 @@ const struct iio_chan_spec name ## _channels[] =3D {=
+ \
+> =20
+>  static DECLARE_TI_TSC2046_8_CHANNELS(tsc2046_adc, 12);
+> =20
+> -static const struct tsc2046_adc_dcfg tsc2046_adc_dcfg_tsc2046e =3D {
+> -	.channels =3D tsc2046_adc_channels,
+> -	.num_channels =3D ARRAY_SIZE(tsc2046_adc_channels),
+> -};
+> -
+>  /*
+>   * Convert time to a number of samples which can be transferred within t=
+his
+>   * time.
+> @@ -739,7 +728,6 @@ static void tsc2046_adc_parse_fwnode(struct tsc2046_a=
+dc_priv *priv)
+> =20
+>  static int tsc2046_adc_probe(struct spi_device *spi)
+>  {
+> -	const struct tsc2046_adc_dcfg *dcfg;
+>  	struct device *dev =3D &spi->dev;
+>  	struct tsc2046_adc_priv *priv;
+>  	struct iio_dev *indio_dev;
+> @@ -752,10 +740,6 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+>  		return -EINVAL;
+>  	}
+> =20
+> -	dcfg =3D spi_get_device_match_data(spi);
+> -	if (!dcfg)
+> -		return -EINVAL;
+> -
+>  	spi->mode &=3D ~SPI_MODE_X_MASK;
+>  	spi->mode |=3D SPI_MODE_0;
+>  	ret =3D spi_setup(spi);
+> @@ -767,14 +751,13 @@ static int tsc2046_adc_probe(struct spi_device *spi)
+>  		return -ENOMEM;
+> =20
+>  	priv =3D iio_priv(indio_dev);
+> -	priv->dcfg =3D dcfg;
+> =20
+>  	priv->spi =3D spi;
+> =20
+>  	indio_dev->name =3D TI_TSC2046_NAME;
+>  	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> -	indio_dev->channels =3D dcfg->channels;
+> -	indio_dev->num_channels =3D dcfg->num_channels;
+> +	indio_dev->channels =3D tsc2046_adc_channels;
+> +	indio_dev->num_channels =3D ARRAY_SIZE(tsc2046_adc_channels);
+>  	indio_dev->info =3D &tsc2046_adc_info;
+> =20
+>  	ret =3D devm_regulator_get_enable_read_voltage(dev, "vref");
+> @@ -829,13 +812,13 @@ static int tsc2046_adc_probe(struct spi_device *spi)
 >  }
 > =20
->  static const struct spi_device_id ad9834_id[] =3D {
-> -	{"ad9833", ID_AD9833},
-> -	{"ad9834", ID_AD9834},
-> -	{"ad9837", ID_AD9837},
-> -	{"ad9838", ID_AD9838},
-> +	{ .name =3D "ad9833", .driver_data =3D ID_AD9833 },
-> +	{ .name =3D "ad9834", .driver_data =3D ID_AD9834 },
-> +	{ .name =3D "ad9837", .driver_data =3D ID_AD9837 },
-> +	{ .name =3D "ad9838", .driver_data =3D ID_AD9838 },
+>  static const struct of_device_id ads7950_of_table[] =3D {
+> -	{ .compatible =3D "ti,tsc2046e-adc", .data =3D &tsc2046_adc_dcfg_tsc204=
+6e },
+> +	{ .compatible =3D "ti,tsc2046e-adc" },
 >  	{ }
 >  };
->  MODULE_DEVICE_TABLE(spi, ad9834_id);
+>  MODULE_DEVICE_TABLE(of, ads7950_of_table);
+> =20
+>  static const struct spi_device_id tsc2046_adc_spi_ids[] =3D {
+> -	{ "tsc2046e-adc", (unsigned long)&tsc2046_adc_dcfg_tsc2046e },
+> +	{ .name =3D "tsc2046e-adc" },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
 
