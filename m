@@ -1,152 +1,139 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F06DA3D6493;
-	Tue, 30 Jun 2026 09:38:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75A342D7812;
+	Tue, 30 Jun 2026 11:36:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782812321; cv=none; b=DKDPbAufRuFX5fUJ2SNz//17Xj0qP2MPTXNY/wGKH2eHOqjQxTP6cPzQ5dKOQL3EkeEFZNru1N3pEWdaNBRC4XvoMuY++4iZFNg91P/t8E1iXV1DH/28/PURaB2wzd9mAW083PtE1R/XiNDhMw2nrb+vgIlrlfvwHMdzNCGmmL8=
+	t=1782819371; cv=none; b=QimsD6kzEkEdIXf2ZTmBUb//akn+qQ8JJcgePiEM71+XC5zliwFMk2QLB0sQr0NrfPTEYr02NTg7BMV7borLPOkgU/Reu8bo0/08F+xSuJnjX4wwEOEc5HqEg+8NAoFGNaM7Hsua3kgedlSgq2dcgztN8z+kq1CFjpPV0fTtxig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782812321; c=relaxed/simple;
-	bh=5xYA55UOhzIXToSE5GZpeE9CT0EHf953ZhVrNg1L6YA=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MXfsgh2sU3kJmYpaoR32QZoKEk7fNjmapd1awGf2dFRw9MUaiqoLTexY9udRe6CLZRhMlVMMdH/HqEXGZzRQ79dQhutXinHVb1yfP8DUTYlV9DkcMz7ypUyiNcXYrwtGT8iDFVA3I6zwLtF11nceugTzK62jyONMi/6VM6MGUrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=nggM+Frq; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1782819371; c=relaxed/simple;
+	bh=AOrSt0ytGcYunDyeVrE2mtXF0JUE9sF29fmLH+8Phdg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jNSiFWShO73qZlYvjop48rdZrT8UsPXXZfB6nhCdrCyQuxzN3yX6Et6YTLZ5gL/zcVuQhu2mwZtONl0VP6guguCZa5qn5GNC3frV3aoc8p2rTQVUMkC2liwz8cuqGC0ASF8ZnBb2qIWKVbupikwZ2aNpGv7TKaeRUDt+/WHjReo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sn3gmX/C; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="nggM+Frq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sn3gmX/C"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1782812319; x=1814348319;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=5xYA55UOhzIXToSE5GZpeE9CT0EHf953ZhVrNg1L6YA=;
-  b=nggM+Frq6VlAtxRv+Fc+sRaOw0dhxN+tXpyJUCarwbUNI5ytrPFHFsFp
-   xGRsLab0A6DgzN81nG2IvLdoUAvoZ6WhMRx5cGymOy/YRs0OFKgvQhRdV
-   Uch1pfCyTLAvzAWWc1HiKTEFzmeEoRddf1wlnDAU8ZLUuKj4snHTAZ9v3
-   inW6NUtlbzgPbu2H/akaUsCGoqaRFdE6yWmCm+yE0uy2Yc43M9RyGy+EJ
-   iQnAxvmU7YUruOrlh4u+wg/7lf7xvK7GNaOP/W/IX20DvO5gRD5tEsb3X
-   oQHvE4tcCBYE/nrPQBPLRvR2tJVckJfZGZu0V40MjE9oxDWFY0QBcmKrn
-   g==;
-X-CSE-ConnectionGUID: SUqO/kxASaKWBXK1VeZsfw==
-X-CSE-MsgGUID: Bg9g48AeTziF9k/8sH2P2A==
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782819369; x=1814355369;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AOrSt0ytGcYunDyeVrE2mtXF0JUE9sF29fmLH+8Phdg=;
+  b=Sn3gmX/Cc/fiM89DVq/HUSBqYY/Pe4k2OOI71ZkixfT20LXajSWKZn11
+   pvoUKDeJbgJl0ASFJC1xFefBN2Jc4NEuJjXAYkdO7xMAy1AOL9f3ugbDo
+   ZuklgjCSOl8dPnp/j5hDFhBlSjvG3x3WYHs6VMUj1tkalqM9iPr3m7y2a
+   R8W3H9otlLoFL1wAZyyWB1w1JmIBBRNo52LI7KzG2PJ8OOdV5QdZw1Xq/
+   F9uG4SV4HI1L7fjSL+3oBUoFcXwjBAvWNgDDJhS/y8jmU87pEWm2X/RAo
+   PR2dErVkaKgz/rb/68oq1ZPMOdpJIhGpog6vMOlkzhRBHwrUDhUb2ZMz7
+   Q==;
+X-CSE-ConnectionGUID: yN068zpnQMOGjtSoHlayNQ==
+X-CSE-MsgGUID: 28LCPedXTWScdASW1IMySA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11832"; a="106322016"
 X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
-   d="scan'208";a="227053760"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 02:38:39 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.43; Tue, 30 Jun 2026 02:38:38 -0700
-Received: from che-ll-i67070.microchip.com (10.10.85.11) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 30 Jun 2026 02:38:30 -0700
-From: Varshini Rajendran <varshini.rajendran@microchip.com>
-To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
-	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
-	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<srini@kernel.org>, <marcelo.schmitt@analog.com>, <jorge.marques@analog.com>,
-	<mazziesaccount@gmail.com>, <Jonathan.Santos@analog.com>,
-	<jishnu.prakash@oss.qualcomm.com>, <antoniu.miclaus@analog.com>,
-	<duje@dujemihanovic.xyz>, <varshini.rajendran@microchip.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 13/13] ARM: dts: microchip: sama7d65: add thermal zones node
-Date: Tue, 30 Jun 2026 15:06:03 +0530
-Message-ID: <20260630093603.38663-14-varshini.rajendran@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260630093603.38663-1-varshini.rajendran@microchip.com>
-References: <20260630093603.38663-1-varshini.rajendran@microchip.com>
+   d="scan'208";a="106322016"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:36:09 -0700
+X-CSE-ConnectionGUID: 89L1EsSsRTC/WowA+Ca0PQ==
+X-CSE-MsgGUID: Ot9jzLlnQeGvcaeGclJhug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
+   d="scan'208";a="255833692"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.96])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 04:36:04 -0700
+Date: Tue, 30 Jun 2026 14:36:01 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
+	andy@kernel.org, antoniu.miclaus@analog.com, conor+dt@kernel.org,
+	devicetree@vger.kernel.org, dlechner@baylibre.com,
+	duje@dujemihanovic.xyz, jishnu.prakash@oss.qualcomm.com,
+	jorge.marques@analog.com, joshua.crofts1@gmail.com,
+	krzk+dt@kernel.org, linusw@kernel.org, linux-kernel@vger.kernel.org,
+	marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
+	mike.looijmans@topic.nl, nuno.sa@analog.com, robh@kernel.org,
+	sakari.ailus@linux.intel.com, wens@kernel.org
+Subject: Re: [PATCH v4 1/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+Message-ID: <akOqIVDibovrbBAK@ashevche-desk.local>
+References: <20260622221550.374235-1-jakubszczudlo40@gmail.com>
+ <20260622221550.374235-2-jakubszczudlo40@gmail.com>
+ <ajpO9zaZbIl3x1uC@ashevche-desk.local>
+ <20260629235118.1abc4067@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260629235118.1abc4067@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add thermal zones node with its associated trips and cooling-maps.
-It uses CPUFreq as cooling device for temperatures in the interval
-[90, 100) degrees Celsius and describe the temperature of 100 degrees
-Celsius as critical temperature. System will shut down when reaching
-critical temperature.
+On Mon, Jun 29, 2026 at 11:51:18PM +0100, Jonathan Cameron wrote:
 
-Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
----
- arch/arm/boot/dts/microchip/sama7d65.dtsi | 42 +++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+...
 
-diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-index 89904397d021..f2140010d337 100644
---- a/arch/arm/boot/dts/microchip/sama7d65.dtsi
-+++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-@@ -16,6 +16,7 @@
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/mfd/at91-usart.h>
- #include <dt-bindings/nvmem/microchip,sama7g5-otpc.h>
-+#include <dt-bindings/thermal/thermal.h>
- 
- / {
- 	model = "Microchip SAMA7D65 family SoC";
-@@ -38,6 +39,7 @@ cpu0: cpu@0 {
- 			i-cache-size = <0x8000>;	// L1, 32 KB
- 			next-level-cache = <&L2>;
- 			operating-points-v2 = <&cpu_opp_table>;
-+			#cooling-cells = <2>; /* min followed by max */
- 
- 			L2: l2-cache {
- 				compatible = "cache";
-@@ -127,6 +129,46 @@ thermal_sensor: thermal-sensor {
- 		io-channel-names = "sensor-channel";
- 	};
- 
-+	thermal-zones {
-+		cpu_thermal: cpu-thermal {
-+			polling-delay-passive = <1000>;
-+			polling-delay = <5000>;
-+			thermal-sensors = <&thermal_sensor>;
-+
-+			trips {
-+				cpu_normal: cpu-alert0 {
-+					temperature = <90000>;
-+					hysteresis = <0>;
-+					type = "passive";
-+				};
-+
-+				cpu_hot: cpu-alert1 {
-+					temperature = <95000>;
-+					hysteresis = <0>;
-+					type = "passive";
-+				};
-+
-+				cpu_critical: cpu-critical {
-+					temperature = <100000>;
-+					hysteresis = <0>;
-+					type = "critical";
-+				};
-+			};
-+
-+			cooling-maps {
-+				map0 {
-+					trip = <&cpu_normal>;
-+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+				};
-+
-+				map1 {
-+					trip = <&cpu_hot>;
-+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-+				};
-+			};
-+		};
-+	};
-+
- 	soc {
- 		compatible = "simple-bus";
- 		ranges;
+> > >  	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
+> > >  	for (i = 0; i < size; i++) {
+> > > -		if (ads1100_data_rate[i] == rate)
+> > > -			return ads1100_set_config_bits(data, ADS1100_DR_MASK,
+> > > -						       FIELD_PREP(ADS1100_DR_MASK, i));  
+> > 
+> > > +		if (ads1100_data_rate[i] != rate)
+> > > +			continue;  
+> > 
+> > This will look better if you break here and add a check
+> > 
+> > 	if (i == size)
+> > 		return -EINVAL;
+> I just saw the result of this in v5 and wondered why?
+> 
+> i is controlled by the for loops stuff only so i never == size.
+> I'm not sure what intent of this comment was.
+
+Meant to add 'break;' and move the actual check to outside of the loop.
+
+> I am fairly sure what Andy is suggesting is the following..
+> 
+>  	for (i = 0; i < size; i++) {
+> 		if (ads1100_data_rate[i] == rate)
+> 			break;
+> 	}
+> 
+> 	if (i == size)
+> 		return -EINVAL;
+
+Yes, that one. Sorry for the language confusion.
+
+> 	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(&data->client->dev, pm);
+> 	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+> 	if (ret)
+> 		return ret;
+
+> //note that we 'could' do what some other users of ACQUIRE_ERR()
+> //have allowed
+> 	if ((ret = PM_RUNTIME_ACQUIRE_ERR(&pm)))
+> 		return ret;
+> 
+> I'm open to hear if people think we should allow this or not.
+
+I'm against that. The style is prone for errors and readability issues.
+
+> 	ret = ads1100_set_config_bits(data, ADS1100_DR_MASK,
+> 				      FIELD_PREP(ADS1100_DR_MASK, i));
+> 	if (ret)
+> 		return ret;
+> 
+> 	return ads1100_poll_data_ready(data);
+> }
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
