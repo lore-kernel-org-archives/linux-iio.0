@@ -1,40 +1,42 @@
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 189783EE1EF;
-	Tue, 30 Jun 2026 09:26:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B5E03FF1A3
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 09:26:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782811607; cv=none; b=gDil5dldpw9EqVXZeBo7AOHgGx2vdNzdAIYpyCjPCuqwkq8rVXGr6DZ2tAZF5is3OS0cTLlvqQe09hVYO6tRGS3Nqu6ZaBzlrc+U+ulo30iDf88K6Taa/4l6ZcBn0fXiQMK422SCnhlWUQdw3aqaGnxV+z7yFAkcRrMEvxRuRzM=
+	t=1782811608; cv=none; b=N0XwCtw3JgS8oW6DhruSBK6BfThVIIeOyoAPAOn+BM7bK4i7wJYasoWDKsIAgG6gJarQFWjLgKN60Fijr0oJIArQ+89g9jsGniwvgCQ2wiZIP9A+au17FVjcb8v6/l7RRDfSuV0Y/X97Sk3yoBybfg5txJ1lMjlA3dDFsYlxhCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782811607; c=relaxed/simple;
-	bh=KaH9M7IaMUOpb0d3hPLjb8IIBCOwbNiO9tG63TmGWs0=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=g+Gb9W2Yf6yUechcF09M9NO9H3CcJUGhC/I0KYCHJZv0hyOzck7YXQ7w3LFQvdyUnMPuJmtpVEvvBlNWa0kueWvckp1HGYbCM48REPwNFpWQzCyYVZRqYhOdTUFfP0YUkyc10LHdHp9tHVTg/k37eptlXHyAUSuuDYfJABEl6Hw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=TFdddBN7; arc=none smtp.client-ip=185.246.85.4
+	s=arc-20240116; t=1782811608; c=relaxed/simple;
+	bh=JHBphShF7jV8KWhQLnrjSOppbpAv9Vu+X6/V9F520k4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=QlyJsGWrPsuSB3ypqjgtWURsbkLlSvgVJKb3cR36kIxnIwuIIxQKk4hcXd6kyaefg0obfp25k81Mc6bPovXfxsP+YdylBkJBlNLDJuHmHSjmhQgIrUWAJkZY4DiUkZyb9H+2AGE2xsZxkrXgIqMmu59kXhxMF421ZRn0JFB1EUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=CcEMGUQ+; arc=none smtp.client-ip=185.171.202.116
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="TFdddBN7"
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="CcEMGUQ+"
 Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 80DA94E40BA1;
-	Tue, 30 Jun 2026 09:26:43 +0000 (UTC)
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 295D0C51474;
+	Tue, 30 Jun 2026 09:26:56 +0000 (UTC)
 Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 43EAD60233;
-	Tue, 30 Jun 2026 09:26:43 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E2AB0106F1D26;
-	Tue, 30 Jun 2026 11:26:38 +0200 (CEST)
+	by smtpout-01.galae.net (Postfix) with ESMTPS id AC39960233;
+	Tue, 30 Jun 2026 09:26:45 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C7B39106F1D14;
+	Tue, 30 Jun 2026 11:26:42 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1782811602; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding; bh=2ba7FwK+sgJytBUpI3BG67Tjxcjxs4k/tnlNATWlYe8=;
-	b=TFdddBN7LJEnldtYCkwA0G3MeBjCubX/5zy8jncW6V+gRbQvFY/qcQ/LobY/Wtdr0wozVy
-	VPZaNNg8PfQYwnjy0FFKxlXcBZG8bjdFduVcnGrk0JhzuwlNs+7b70xk/Y+XzmVjw2Phbt
-	X9ShTEyxqFnWyylQDP15DVf8lenikPWh7jCcxRnPp9jP06tPge4Owa69Eio5YALjHIz+5o
-	pwuL/vtukaDmJdRJPQWTpzIJoBca9gfGmplOy0h3705sxE65H7GJDQaEOwYDwFAGOMNwMg
-	q6x+WdsH5FrJZjw5SArNsJeq9XfQ3FkKO58ZuC8kcCTwnXtzuG93aDLiF1uK3g==
+	t=1782811604; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=o4VwmGHX+O1eNtL/TGDqwiWsVNqp3EO9QAN+rimq5hk=;
+	b=CcEMGUQ+YAKTzQKXxaAV6cI6nIS0dMaBsm3p7cJaq/Qz0rkJ4nKneUB2vYHzbpdd1HPITz
+	gnMclh8Pq/p0vwtdUM9/lUyBm3GRMrmcpI5BFGIR/L+rMAGn5/yhjDBT2IRJR8IYlawm7h
+	QCwmf5CWTwVxsjyXbXwOOo63NoAyLK9OM7iXjnh5NCXsX8Zq3kzy2OzwB4cGew8rYfZwKJ
+	vQVcKNLVL9QXoxJJCynAEb3F7/Mr+ORfj0ejXoAdvkgcgCiNLaM+L9wF89rWwpsImo9zOt
+	3TzIZP6WVw2rX6jndvu0EJsSiLFfD9ZZ2InkkN3STXbaPbhEaX/gM3xP+5A+LQ==
 From: Romain Gantois <romain.gantois@bootlin.com>
-Subject: [PATCH v3 0/2] iio: temperature: tmp117: Support the TMP119 sensor
-Date: Tue, 30 Jun 2026 11:26:33 +0200
-Message-Id: <20260630-tmp119-v3-0-cfdb50e2e99f@bootlin.com>
+Date: Tue, 30 Jun 2026 11:26:34 +0200
+Subject: [PATCH v3 1/2] dt-bindings: iio: ti,tmp117: add binding for the
+ TMP119
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -42,12 +44,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2WN0QrCIBhGX2V4neGvU1tXvUd00dQ1o+lQk2Ls3
- ZsLoujywHfON6FogjUR7asJBZNttN4twDYVUv3ZXQy2emFECRVEEI7TMAI0WAiqKZhaM5BoGY/
- BdPaxho6nN8d7ezUqFbssehuTD8/1KUPZ/UUzYIJZ3XQ170BqoIfW+3Szbqv8gEo2029x9xFpE
- YlinEnNSSN/xXmeX8Nq++LpAAAA
-X-Change-ID: 20260605-tmp119-662d21e4d317
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260630-tmp119-v3-1-cfdb50e2e99f@bootlin.com>
+References: <20260630-tmp119-v3-0-cfdb50e2e99f@bootlin.com>
+In-Reply-To: <20260630-tmp119-v3-0-cfdb50e2e99f@bootlin.com>
 To: Puranjay Mohan <puranjay@kernel.org>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -61,57 +61,52 @@ Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
 X-Mailer: b4 0.15.2
 X-Last-TLS-Session-Version: TLSv1.3
 
-Hello everyone,
+The TMP119 has the same register layout as the TMP117, and a better local
+sensor accuracy. Add a compatible for it.
 
-This is version three of my series which adds support for the TMP119, which
-has an identical programming model to the TMP117, but slightly different
-specs and electrical characteristics.
-
-Best Regards,
-
-Romain
+Use ti,tmp117 as a fallback compatible for ti,tmp119.
 
 Signed-off-by: Romain Gantois <romain.gantois@bootlin.com>
 ---
-Changes in v3:
-- Corrected indentation in device tree bindings
-- Added an explicit inclusion of array_size.h
-- Made sure the correct IIO device name was exposed to userspace
-- Link to v2: https://patch.msgid.link/20260608-tmp119-v2-0-30c3537d5097@bootlin.com
-
-Changes in v2:
-- Used ti,tmp117 as a fallback compatible
-- Made sure the correct IIO device name was exposed to userspace
-- Link to v1: https://patch.msgid.link/20260605-tmp119-v1-0-349f45f17d12@bootlin.com
-
-To: Puranjay Mohan <puranjay@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
----
-Romain Gantois (1):
-      dt-bindings: iio: ti,tmp117: add binding for the TMP119
-
-Wil Stark (1):
-      iio: temperature: tmp117: add TI TMP119 support
-
  .../devicetree/bindings/iio/temperature/ti,tmp117.yaml   | 16 +++++++++++-----
- drivers/iio/temperature/tmp117.c                         | 13 +++++++++++++
- 2 files changed, 24 insertions(+), 5 deletions(-)
----
-base-commit: dc59e4fea9d83f03bad6bddf3fa2e52491777482
-change-id: 20260605-tmp119-662d21e4d317
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-Best regards,
---  
-Romain Gantois <romain.gantois@bootlin.com>
+diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+index fbba5e934861c..7fb3e68207919 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+@@ -7,19 +7,25 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: TI TMP117 - Digital temperature sensor with integrated NV memory
+ 
+ description: |
+-    TI TMP116/117 - Digital temperature sensor with integrated NV memory that
+-    supports I2C interface.
++    TI TMP116/117/119 - Digital temperature sensor with integrated NV memory
++    that supports I2C interface.
+       https://www.ti.com/lit/gpn/tmp116
+       https://www.ti.com/lit/gpn/tmp117
++      https://www.ti.com/lit/gpn/tmp119
+ 
+ maintainers:
+   - Puranjay Mohan <puranjay12@gmail.com>
+ 
+ properties:
+   compatible:
+-    enum:
+-      - ti,tmp116
+-      - ti,tmp117
++    oneOf:
++      - enum:
++          - ti,tmp116
++          - ti,tmp117
++      - items:
++          - enum:
++              - ti,tmp119
++          - const: ti,tmp117
+ 
+   reg:
+     maxItems: 1
+
+-- 
+2.54.0
 
