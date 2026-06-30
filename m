@@ -1,66 +1,66 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65943E1688
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 18:32:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DA2925B0AD
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 18:38:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782844360; cv=none; b=UKxs43+GN1VL1RxAzKl4HjvIV/F1JLMtVdVgrbST1PmlFBuNsQLjmZJSX/WLN0OFHPTozFytTjBR8yHdvLO0ajMZOQQ4r5FD7hqFMoURVx4fWtN/4zUbWfGDnryoDr+TSVehE+mLpUx4IU7xJtrNchS3fnrLzMTmRwdq+zROIHk=
+	t=1782844713; cv=none; b=WrJuD0hI7miIyhqNkuVRzigpIWrgCJzhOu1lEZ3RZg9R5GO79NKRN17vN3Kd9IJOz/nWvcneiEM4WriXA7Kl5pXYTSgPHZJqn0AU2uKdLX409FnOSQDrg+TI2PJucVu3ZDxxg0Y68oYpHyMtTaftPjhjxyNBL6xQldaK9Dcusqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782844360; c=relaxed/simple;
-	bh=kAqvTdLuMioonjY0C2caG7laYTKYm86k4OxJV9+YHoc=;
+	s=arc-20240116; t=1782844713; c=relaxed/simple;
+	bh=cbvkjGExjYUHL2QoSeT/1yJv2i7vXmEZZ/yTfY2vjE8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XABfG8p9yXkEvU9zxNiM8FttmR1P0un37ez3OtpOMZSdypgrqEyXeRRBWWbU3qsfI5r6VimbJ9e2Mqwo/YKAFbh3Apb+vOJBjZjt7QnuqA4jgfICR2cYVrU/BGafKGoWFu/1Aol3YNSxoTToVXJ0MeLlbrz+bXF/Rt7JwqLq7Mc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=DCkKByV+; arc=none smtp.client-ip=209.85.210.50
+	 In-Reply-To:Content-Type; b=nfJueNyknK8llNIxiP3qn9wJkfqoiP9/+eXvFTShSrAY5a5jhCNHT2aK1K6b6ZFzb+HcvyBZW9X7QLIVO6nE2xhFyvO5nrriK2YbZOl592cmiZ0pfps/h4WXAK820gOHroggdMxvVEVNPkiyMISJcyeU5m0AvboTX+WBOdzUga4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=cqee+qsZ; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="DCkKByV+"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7e94b0aeaa1so2388408a34.0
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 11:32:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="cqee+qsZ"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7e93d1dd156so1921203a34.0
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 11:38:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782844356; x=1783449156; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1782844711; x=1783449511; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=s78fpSiarTPyZWyoM0/a10bvvp2HRphUlPqEYFibNnc=;
-        b=DCkKByV+00ukJk2DbiGJy5ZrhS0BoSzjP3TZchFKnBt2if9icv8EKKARw3uGVsYpZ7
-         qeVBKw2tsWoTwqy64YQ3vW0QMAXHFg0d8dvMNB0k53+/s97pSHNBHVV9KucT8mCCYUuW
-         rV1/ngjnFv4kcRb7M1XeZcym5dFJlnQNgNG106dvv9jHhnBmdc4kXF6vYOaU7MiQ9TRm
-         fMYeuiBBkT+FqcHgI8itlRgtrKZAwMHCFXWpFZOZj8kaSu0+Dq0evA/cCguDUA9w4ApW
-         mPmDFduX9RPa3p3SULPzANYfDlQDhCXKNkvoqUEQD0dD+F71Opa27QEuaIEmZViVsLgT
-         E7LA==
+        bh=9rgrcJFnBRvyDKAXtDJFOwtKqCg4JfQ5wObL2xRUARM=;
+        b=cqee+qsZ0+rQIHuUOdzntuJveTo8DKIL7PBX3IwcLMD+WSaTwDB43sangDZPGTU8xi
+         cWdg/HWGhBafEHtob/hZqNioCkl5dEsObahHDqGOUqh6gcoB8niVeAasyklLbJsMzkDQ
+         zuBC234cxxgFsZE0L/jf5BLRq1BrPOhtjydWAckEpAZhvf9we4Ce2HSjpbxPhRYX/pVk
+         ounRMJCbm9lcLDQi6FH/rxZGvD1dlscdPAR1v1GBKXvnEKkEMA3qWqXRhHMSpqNUbGKB
+         4JU68NxV8Q/ts3tjH2r6ARE/MR28NsWMKVQxkwq73YEKfbRtv8RIZvqA6uk+5lDNAlsO
+         6UMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782844356; x=1783449156;
+        d=1e100.net; s=20251104; t=1782844711; x=1783449511;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=s78fpSiarTPyZWyoM0/a10bvvp2HRphUlPqEYFibNnc=;
-        b=D1IGD84qvxBqssKmz+gq6dCMSNX9kO/5692ku6UMxUorKkA5olZeFesPmpNJh+POhf
-         VeJah3U1ZhVRO8HxYufDFFUqglglxFBF3lVdS8HghFRN6gzGgkXg/AHIc7N6OkhmTf5c
-         Bhf3m3T9xTux4gHS/5U3qvSllSAYrD/ZPnSupKnQ8cVN1cxVPXqpghJ0M+jH22KTwi8j
-         Toa77CORcoomLpBZgkd1pMSnFXB851P0j6gxrXiLhDFXMrnEOC77BGCjTamiSnBOqU/u
-         jUSPNA++YRBLgpWPkw9O/K6XepyHXBLPbB2sgIbhgqRm/i345HuEgNjGhXAd0T5ag8Ma
-         TayQ==
-X-Forwarded-Encrypted: i=1; AFNElJ/1f1+cDX4e5dCG8awE2OyPTN4l3A4Eu8G8WeFgF9bTq3X+2O4RFWfMIeaR7DPEz71Ycoo5bz2TjI0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy6rjBYx2NeNKdENEF6eIUzFAVVdk4uI3IKNoZQQv9svibVqBGt
-	CPtpLaAvq2b46r7xZqeSfamjfTu/YKhdOm+DPneUabCGlZu/MKtZomEaSMlq5Ylj7DU=
-X-Gm-Gg: AfdE7clerqNnxcYnE1wprpfdayGw3BnpVKwKJEU7winh2kHvfH6AeDfyIE1y3Xf7/Uq
-	4NLhmIzr/c0wH8Eq4aJsH0lo3niJva/xWftz/x3K8suGFfK52b1fUIdgd6oWCORNphFog0hZLNv
-	RUobxVeTfvVBsEHgOInWx37MfWlLEXonojd1yUyWxDlMj4DtIEbu2WOsIzallhIcivYrGfHO49A
-	c7TGgArjH/ZvA3uMdOOUWCEPZuV5xraNccNPd6bMmfqHhVGF6NLb0gWsc7S0+g4+FlKU6RI1sVs
-	op19SRQjSLarMwPbOnNutLAkIOld6A75tAqUPlzCAukijNrnzLJwF0AEPU2DDMeuIUVjKHQRj4d
-	ZtLoMyTgPLCWOxpcyrT8C1MHrSu3GS0OfxKBIOi+ygqdOy1+Q2oyIZli3kEw/Yqadho6jO9Cze8
-	fRDYTImSzn+P+ynbnssz33PpAuNBP2kVMZpI2A9DdwxFsnivfoOzoUMRp2YFpFnvk=
-X-Received: by 2002:a05:6830:8283:b0:7e9:dd93:b88 with SMTP id 46e09a7af769-7e9fc17bdabmr1009066a34.27.1782844355823;
-        Tue, 30 Jun 2026 11:32:35 -0700 (PDT)
+        bh=9rgrcJFnBRvyDKAXtDJFOwtKqCg4JfQ5wObL2xRUARM=;
+        b=QZIFNlBBEiSWNiuUYtbafdwoSvm6StKiFKGdbzxX4DO25G5kNV2yxiOkyHMr+KrloN
+         vNB/5JFXVjlztD09pxG2/67RXFiXUTyMhVrj9lNokZOo/a0smL1PZHSavo8ZZS/rhxvf
+         huGHLe71iNPn73ZWClmHWSQQPSaKu/T2jNaAU0Vg5YN/HflwuJMeSh70T4ifRCzT2EoL
+         4Ti/PlM1qBzHIH/PyTKdMgKSBuTQcpZN11XwcSWNyxEEeMIKDFkP7tGthayvcpuKAgWL
+         ZHigo8WNNfGQLXLiiovqUdeDVJ5Xcja6/Osdo7z3bIMfMLpj9yhMepkZO0cy+96H5r7W
+         5Q3Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9IHa0aYTZ5o0gZ2u+4mTUFjbYYKxE0lkTB0SD3ZIt3eEb0sP1yFVKsG0cwdTMHboz0VpqSVSbQgaI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+94AD4DNIdWJbtztCSOAcZQ7SoQG16mCvz6FWRhGYPRjSsLLx
+	ZdG0E/mw1iGWtt1Gu/n5OFtd96mgxd/BLedi4UUW5OzPk2ZfgduDQ36wiw6/6/eCx/M=
+X-Gm-Gg: AfdE7ckxRD4dHRtHpWz6ONgItgeChShRrxgo5UWA9dqDE2CELwaOg2zOoYvvA2osQnd
+	vH+bf9AwzCVFjt23jHwDZQvIL5NXI+wrAreNMnTiKlUmIn39mNE0Hff1D9Z5vEKCBSKAe2JnMII
+	ZDSaTVf6gos5u1oWeFoXz8IQcYoeeF3GuzjS2yH7eTX0qth7sbxDqFGySjcxXGxUtROI6M6SB/G
+	uBuQmv+HBF6Z7/RlzdMHODmXt85XXrTNJxmPL2EokdD8Q8wROpGocyUhU4LuN2Pau9Ezkrz0jv7
+	RLYLXHMZ8H/9pKjvLJKDvJ/s7Dc6RZIU8bhMHj3uxA5IpY1U9AUV5BmBbLyiccptltWvmQ8hsNg
+	LahWZSZtA5dThPcZKXNqnxrdSKCqCmoLiElYK1LSsGzGHTUb6V6bI5R+scCxq1CObc1q+mXRxV3
+	yU2lBQoWasGkpFGnY2cuH1phZi5D7ukquC6qHF0aWI304NPkmhz2boN1BU4Sayzhw=
+X-Received: by 2002:a05:6830:7306:b0:7e9:e860:6e7 with SMTP id 46e09a7af769-7e9fc2a622fmr888833a34.30.1782844710983;
+        Tue, 30 Jun 2026 11:38:30 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:e190:78b2:dd4e:ba94? ([2600:8803:e7e4:500:e190:78b2:dd4e:ba94])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ebf87f22sm2946454a34.2.2026.06.30.11.32.35
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ec2e353fsm2942446a34.20.2026.06.30.11.38.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2026 11:32:35 -0700 (PDT)
-Message-ID: <752a33ab-41a1-404d-8413-888cc1a8f446@baylibre.com>
-Date: Tue, 30 Jun 2026 13:32:34 -0500
+        Tue, 30 Jun 2026 11:38:30 -0700 (PDT)
+Message-ID: <2a0a9fe9-b3b5-49a0-bf58-5035655fc16d@baylibre.com>
+Date: Tue, 30 Jun 2026 13:38:30 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,244 +68,89 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: adc: ti-ads1298: add ADS1299 EEG ADC family
- support
-To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, mike.looijmans@topic.nl,
+Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260630140311.1473031-1-shofiqtest@gmail.com>
- <20260630140311.1473031-2-shofiqtest@gmail.com>
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+ <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
+ <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
+ <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
+ <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
+ <DJLOAISPZLG7.VZYX8B16QU4K@gmail.com>
+ <22e1e1c2-659c-4991-857c-b38d66769c7e@baylibre.com>
+ <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260630140311.1473031-2-shofiqtest@gmail.com>
+In-Reply-To: <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-
-Please add a cover letter for multi-patch series.
-
-On 6/30/26 9:03 AM, Md Shofiqul Islam wrote:
-> The ADS1299, ADS1299-4 and ADS1299-6 are 8/4/6-channel, 24-bit
-> biopotential (EEG) ADCs from Texas Instruments.  They share the same
-> SPI interface, command set and register map as the ADS1298 ECG family,
-> making it straightforward to support them in this driver.
+On 6/30/26 12:14 PM, Kurt Borja wrote:
+> On Mon Jun 29, 2026 at 11:43 AM -05, David Lechner wrote:
+>> On 6/29/26 11:27 AM, Kurt Borja wrote:
+>>> On Mon Jun 29, 2026 at 9:21 AM -05, David Lechner wrote:
+>>>> On 6/28/26 2:12 PM, Kurt Borja wrote:
+>>>>> On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:
+>>>>>> On 6/28/26 12:36 AM, Kurt Borja wrote:
+>>>>>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
+>>>>>>> integrated PGA, internal reference, excitation and burn-out current
+>>>>>>> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
+>>>>>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
+>>>>>>>
+>>>>
+>>>> ...
+>>>>
+>>>>>>> +
+>>>>>>> +patternProperties:
+>>>>>>> +  "^channel@[0-9]+$":
+>>>>>>> +    $ref: /schemas/iio/adc/adc.yaml#
+>>>>>>> +    unevaluatedProperties: false
+>>>>>>> +
+>>>>>>> +    properties:
+>>>>>>> +      reg:
+>>>>>>> +        maxItems: 1
+>>>>>>> +
+>>>>>>
+>>>>>> If we want to allow single-ended/pseudo-differential inputs, then we should
+>>>>>> also allow single-channel (positive pin) and common-mode-channel (negative
+>>>>>> pin) properties.
+>>>>>>
+>>>>>> This will also require additional common-mode-<N>-supply properties to allow
+>>>>>> for the negative pin connected to something other than GND.
+>>>>>
+>>>>> Ah interesting. Why the N though? wouldn't a single supply connected to
+>>>>> AINCOM be enough here?
+>>>>
+>>>> In theory, any AINx could be a common mode input by connecting it to
+>>>> a constant voltage supply.
+>>>
+>>> Technically yes, but there is a pin named AINCOM intended for this
+>>> purpose. Can we do a simplification here? I propose having
+>>>
+>>>   common-mode-channel:
+>>>     /* AINCOM pin */
+>>>     const: 10
+>>>
+>>> That way we would only need one common-mode-supply. Would that be okay?
+>>>
+>>
+>> Ideally, we shouldn't limit how the chip can be wired up in the devicetree
+>> bindings. It doesn't mean that we have to implement everything in the driver
+>> though.
 > 
-> Key differences from the ADS1298:
-> - PGA gain range is 1/2/4/6/8/12/24 (vs 6/1/2/3/4/8/12 for ADS1298)
-> - Internal voltage reference is always 2.4V (no 4V option)
-> - Channel count is encoded differently in the ID register: bits [4:3]
->   identify the ADS1299 family (both bits set), bits [1:0] encode the
->   channel count as (bits + 2) * 2
+> Makes sense.
 > 
-> Detect the chip family in ads1298_init() by checking bits [4:3] of
-> the ID register.  Store the result in the is_ads1299 flag and use it
-> to select the correct PGA table in ads1298_get_scale() and to skip
-> the 4V reference option in the CONFIG3 initialisation.
+> I just have a doubt: In the ADS112c14 bindings, is there a specific
+> reason why you didn't describe common-mode-<N>-supply?
 > 
-> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
-> ---
->  drivers/iio/adc/ti-ads1298.c | 88 ++++++++++++++++++++++++++++--------
->  1 file changed, 69 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-> index 579200e06cbd..8c48a72e6c61 100644
-> --- a/drivers/iio/adc/ti-ads1298.c
-> +++ b/drivers/iio/adc/ti-ads1298.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0
-> -/* TI ADS1298 chip family driver
-> +/* TI ADS1298/ADS1299 biopotential ADC driver
->   * Copyright (C) 2023 - 2024 Topic Embedded Products
-> + * Copyright (C) 2026 Md Shofiqul Islam <shofiqtest@gmail.com>
->   */
->  
->  #include <linux/bitfield.h>
-> @@ -43,6 +44,20 @@
->  #define ADS1298_MASK_ID_CHANNELS		GENMASK(2, 0)
->  #define ADS1298_ID_FAMILY_ADS129X		0x90
->  #define ADS1298_ID_FAMILY_ADS129XR		0xd0
-> +/*
-> + * ADS1299 family is identified by bits [4:3] = 0b11.  Bits [7:5] encode
-> + * the silicon revision and vary between production lots, so only bits [4:3]
-> + * are checked for family identification.
-> + */
-> +#define ADS1299_MASK_ID_FAMILY			GENMASK(4, 3)
-> +#define ADS1299_ID_FAMILY_EEG			GENMASK(4, 3)
-> +/*
-> + * ADS1299 channel count is encoded in bits [1:0] of the ID register:
-> + * 00 -> 4 channels (ADS1299-4)
-> + * 01 -> 6 channels (ADS1299-6)
-> + * 10 -> 8 channels (ADS1299)
-> + */
-> +#define ADS1299_MASK_ID_CHANNELS		GENMASK(1, 0)
->  
->  #define ADS1298_REG_CONFIG1	0x01
->  #define ADS1298_MASK_CONFIG1_HR			BIT(7)
-> @@ -101,6 +116,7 @@
->  struct ads1298_private {
->  	const struct ads1298_chip_info *chip_info;
->  	struct spi_device *spi;
-> +	bool is_ads1299;
 
-This is not how we handle chip-specific differences in IIO. Instead we
-should add a new chip info struct and pass that as the data in the
-module device tables.
-
-This new struct should have a flag, e.g. `bool is_fixed_internal_ref` and
-`const u8 *pga_settings` that is a pointer to the appropriate array.
-
->  	struct regulator *reg_avdd;
->  	struct regulator *reg_vref;
->  	struct clk *clk;
-> @@ -276,7 +292,10 @@ static int ads1298_set_samp_freq(struct ads1298_private *priv, int val)
->  				  cfg);
->  }
->  
-> +/* ADS1298 PGA: register bits [6:4] -> gain (000=6, 001=1, 010=2, ...) */
->  static const u8 ads1298_pga_settings[] = { 6, 1, 2, 3, 4, 8, 12 };
-> +/* ADS1299 PGA: register bits [6:4] -> gain (000=1, 001=2, 010=4, ...) */
-> +static const u8 ads1299_pga_settings[] = { 1, 2, 4, 6, 8, 12, 24 };
->  
->  static int ads1298_get_scale(struct ads1298_private *priv,
->  			     int channel, int *val, int *val2)
-> @@ -291,12 +310,15 @@ static int ads1298_get_scale(struct ads1298_private *priv,
->  			return ret;
->  
->  		*val = ret / MILLI; /* Convert to millivolts */
-> +	} else if (priv->is_ads1299) {
-
-So this would change to:
-
-	} else if (priv->info->is_fixed_internal_ref) {
-
-> +		/* ADS1299 internal reference is always 2.4V */
-> +		*val = 2400;
->  	} else {
->  		ret = regmap_read(priv->regmap, ADS1298_REG_CONFIG3, &regval);
->  		if (ret)
->  			return ret;
->  
-> -		/* Reference in millivolts */
-> +		/* ADS1298 reference in millivolts: 2.4V or 4V */
->  		*val = regval & ADS1298_MASK_CONFIG3_VREF_4V ? 4000 : 2400;
->  	}
->  
-> @@ -304,7 +326,8 @@ static int ads1298_get_scale(struct ads1298_private *priv,
->  	if (ret)
->  		return ret;
->  
-> -	gain = ads1298_pga_settings[FIELD_GET(ADS1298_MASK_CH_PGA, regval)];
-> +	gain = (priv->is_ads1299 ? ads1299_pga_settings : ads1298_pga_settings)
-> +		[FIELD_GET(ADS1298_MASK_CH_PGA, regval)];
-
-And this would be:
-
-	gain = priv->info->pga_settings[FIELD_GET(ADS1298_MASK_CH_PGA, regval)];
-
->  	*val /= gain; /* Full scale is VREF / gain */
->  
->  	*val2 = ADS1298_BITS_PER_SAMPLE - 1; /* Signed, hence the -1 */
-> @@ -600,20 +623,39 @@ static int ads1298_init(struct iio_dev *indio_dev)
->  	if (ret)
->  		return ret;
->  
-> -	/* Fill in name and channel count based on what the chip told us */
-> -	indio_dev->num_channels = 4 + 2 * (val & ADS1298_MASK_ID_CHANNELS);
-> -	switch (val & ADS1298_MASK_ID_FAMILY) {
-> -	case ADS1298_ID_FAMILY_ADS129X:
-> -		suffix = "";
-> -		break;
-> -	case ADS1298_ID_FAMILY_ADS129XR:
-> -		suffix = "r";
-> -		break;
-> -	default:
-> -		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", val);
-> +	/*
-> +	 * Detect chip family from the ID register.  The ADS1299 EEG family
-> +	 * is identified by bits [4:3] = 0b11; the ADS1298 ECG family uses
-> +	 * bits [7:3] for family identification.
-> +	 */
-> +	if (FIELD_GET(ADS1299_MASK_ID_FAMILY, val) == ADS1299_ID_FAMILY_EEG) {
-> +		/*
-> +		 * ADS1299 family: channel count from bits [1:0].
-> +		 * 00 -> 4ch, 01 -> 6ch, 10 -> 8ch.
-> +		 */
-> +		priv->is_ads1299 = true;
-> +		indio_dev->num_channels =
-> +			(FIELD_GET(ADS1299_MASK_ID_CHANNELS, val) + 2) * 2;
-
-Number of channels should come from the new chip info based on the compatible
-string as well.
-
-> +		indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads1299%s",
-> +			indio_dev->num_channels == 4 ? "-4" :
-> +			indio_dev->num_channels == 6 ? "-6" : "");
-
-Generally, we put the chip name in the chip info as well.
-
-> +	} else {
-> +		/* ADS1298 family: channel count from bits [2:0], name from family */
-> +		indio_dev->num_channels = 4 + 2 * (val & ADS1298_MASK_ID_CHANNELS);
-> +		switch (val & ADS1298_MASK_ID_FAMILY) {
-> +		case ADS1298_ID_FAMILY_ADS129X:
-> +			suffix = "";
-> +			break;
-> +		case ADS1298_ID_FAMILY_ADS129XR:
-> +			suffix = "r";
-> +			break;
-> +		default:
-> +			return dev_err_probe(dev, -ENODEV,
-> +					     "Unknown ID: 0x%x\n", val);
-> +		}
-> +		indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads129%u%s",
-> +						 indio_dev->num_channels, suffix);
->  	}
-> -	indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads129%u%s",
-> -					 indio_dev->num_channels, suffix);
->  	if (!indio_dev->name)
->  		return -ENOMEM;
->  
-> @@ -621,8 +663,9 @@ static int ads1298_init(struct iio_dev *indio_dev)
->  	if (!priv->reg_vref) {
->  		/* Enable internal reference */
->  		val |= ADS1298_MASK_CONFIG3_PWR_REFBUF;
-> -		/* Use 4V VREF when power supply is at least 4.4V */
-> -		if (regulator_get_voltage(priv->reg_avdd) >= 4400000)
-> +		/* ADS1298 only: use 4V VREF when supply is at least 4.4V */
-> +		if (!priv->is_ads1299 &&
-
-And of course use priv->info->is_fixed_internal_ref here too.
-
-> +		    regulator_get_voltage(priv->reg_avdd) >= 4400000)
->  			val |= ADS1298_MASK_CONFIG3_VREF_4V;
->  	}
->  	return regmap_write(priv->regmap, ADS1298_REG_CONFIG3, val);
-> @@ -739,12 +782,18 @@ static int ads1298_probe(struct spi_device *spi)
->  
->  static const struct spi_device_id ads1298_id[] = {
->  	{ "ads1298" },
-> +	{ "ads1299" },
-> +	{ "ads1299-4" },
-> +	{ "ads1299-6" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ads1298_id);
->  
->  static const struct of_device_id ads1298_of_table[] = {
->  	{ .compatible = "ti,ads1298" },
-> +	{ .compatible = "ti,ads1299" },
-> +	{ .compatible = "ti,ads1299-4" },
-> +	{ .compatible = "ti,ads1299-6" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, ads1298_of_table);
-> @@ -760,5 +809,6 @@ static struct spi_driver ads1298_driver = {
->  module_spi_driver(ads1298_driver);
->  
->  MODULE_AUTHOR("Mike Looijmans <mike.looijmans@topic.nl>");
-> -MODULE_DESCRIPTION("TI ADS1298 ADC");
-> +MODULE_AUTHOR("Md Shofiqul Islam <shofiqtest@gmail.com>");
-> +MODULE_DESCRIPTION("TI ADS1298/ADS1299 biopotential ADC");
->  MODULE_LICENSE("GPL");
+For singled-ended inputs on ADS112c14, there is an internal
+connection to GND, so it isn't possible to have a pseudo-
+differential input like that. I guess technically, it could
+still be possible, but wasn't a typical wiring described in
+the datasheet like it is on ADS1263.
 
