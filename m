@@ -1,48 +1,48 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A081A3839B8;
-	Tue, 30 Jun 2026 09:37:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F278D3B42D1;
+	Tue, 30 Jun 2026 09:38:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782812277; cv=none; b=EXYJFWhS5yVpp1SaDHOEjo48NTRt0VuOwu36MnXd309ie9EDFdWcm6hv3WQ5ZU3eVRfrTXH6566RJJ30VE2gdo7DilWydyarNnskd95NfTK25VBG9p/oTyzR7iPlhFDXKf4WdLytjLhwTbipiWuOmiPgJzPuU50XF/4tA2MGdm0=
+	t=1782812286; cv=none; b=nJwbdrpWfT7FDc7LmmYhgvhKUlhzlYlGaEEy55WjW1vHfiB6ks3gtu/FlMSP1xqel9FJ3AxhRwikEYGywoRDaO7wvR2XarsGhrcCJrSGqpqyt+FvkOCkVwJlyL3+RM+p4khbmaG7Ac912Tx9SP8x1BSraWV5HjdBY6wc3MsWFgE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782812277; c=relaxed/simple;
-	bh=VYa8ctdp7N3lTNfwD0/Ow13u6f6KsP6v25kYxxUXsQU=;
+	s=arc-20240116; t=1782812286; c=relaxed/simple;
+	bh=vyyTTSbuj5h3Q9OgBsXCtnnt+Yw0U/fLWgoQLk2IQLk=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GmQ5/1i5XZNFnxUZTiKK6oAaNVUeQ/D2gxOU4kdnm9M3y4r7UkNavLCxeikK4a0C9cgCT8aqZRa5lyOtUSKjge4lDqSAsK+znvzfBxuu/P8SJqEzoVpvA2OxJMmnhBeFBndvqgJlD2DAbpFyl1yfaND/lMofC6vGIyXw7w0lV5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=pt6OTVoU; arc=none smtp.client-ip=68.232.154.123
+	 MIME-Version:Content-Type; b=NiCeCp//I7Jf5y+NmAv7kMgHfLeFbCORnNO99o2pBnasEa9mhUrR7PeTaRRr0eFdCRZx4IO0uEhLHS1KpedM5xiTJgaQeNo4yOcy9/NwpyfJyyldsFxlvpiWnCIf+todL3V5i8YlqOC4fI/NFsiAUn/hiM0mis7t5zb+ZmddBSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=shgLOXZE; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="pt6OTVoU"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="shgLOXZE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1782812276; x=1814348276;
+  t=1782812284; x=1814348284;
   h=from:to:subject:date:message-id:in-reply-to:references:
    mime-version:content-transfer-encoding;
-  bh=VYa8ctdp7N3lTNfwD0/Ow13u6f6KsP6v25kYxxUXsQU=;
-  b=pt6OTVoUCoboe0wHFnLBM+Iuqv78I5o+DsM+B5faaUWOMBblKYyxCIkW
-   rCMzjGZYmW8HK0KCDqFlreM5hQebMUCCX6+m/+QTrXNyiw0g5F/EsLnwJ
-   NEAUu3aMY6xXVdHRG394KyK7KfSFhluug+fPac3vJAzV0PiuHUBR74f+a
-   Ezer0Xud3kZeJk1dhThKuOouHszsXU8fAVbxNthtESKVTlZvL+vB9/nCC
-   2Je8AM0dqwxOXlbgNKs3x9xsDMN00AaT+xvdJIpM4W6rwBkUEqAvwe8Ke
-   4qnPp5QAWwK1PL5E7p3HzEqRDYcvs7at08AC2lK6TWSn/awsOxjNEXnHs
-   A==;
-X-CSE-ConnectionGUID: r7IxPp4ATMyUQX/fgWZgwQ==
-X-CSE-MsgGUID: mG5scDYFQJCBfGSDZZww/w==
+  bh=vyyTTSbuj5h3Q9OgBsXCtnnt+Yw0U/fLWgoQLk2IQLk=;
+  b=shgLOXZEZxI9ybM/8X/VoOE7dECSoQgkR9PDUXej0SxhpAkIQIkcle1u
+   28rpG1Z7yIC4R0jurzotaRR0LeQHTW/xqUcUE3/9ZcESEixaCpcTSs8rv
+   Ub0FswnEzApJ8wtpQvzovwDrc+WSs5Gbd1dLJqepdzawZgHFeDDXDzCas
+   EjzHbABuLNYjVRctQXLGlIBk9+TfQxM/VK7/z30pyvGIPUhTtHh6QYQFZ
+   UR3ewxULhe73VW6I70IP4cCCWY0ArNNPPdIj8npxf9dfHmB5AiYZGr4ea
+   dzjag7neG9Uk//bR4X7wt5GlrBUAZwIKV2BYcwS0huSP1K8B0p5MaKAmj
+   Q==;
+X-CSE-ConnectionGUID: lmxtWMPfT9qZ8eisWbDhNg==
+X-CSE-MsgGUID: 4ZgRZ3I9Sl2FVcUhaLvleA==
 X-IronPort-AV: E=Sophos;i="6.24,233,1774335600"; 
-   d="scan'208";a="59032695"
+   d="scan'208";a="227053725"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 02:37:55 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2026 02:38:03 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.43; Tue, 30 Jun 2026 02:37:55 -0700
+ 15.2.2562.43; Tue, 30 Jun 2026 02:38:03 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Tue, 30 Jun 2026 02:37:46 -0700
+ 15.1.2507.58 via Frontend Transport; Tue, 30 Jun 2026 02:37:55 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -54,9 +54,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<duje@dujemihanovic.xyz>, <varshini.rajendran@microchip.com>,
 	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 08/13] ARM: dts: microchip: sama7d65: Add ADC node
-Date: Tue, 30 Jun 2026 15:05:58 +0530
-Message-ID: <20260630093603.38663-9-varshini.rajendran@microchip.com>
+Subject: [PATCH v3 09/13] ARM: dts: microchip: sama7d65_curiosity: Enable ADC, DVFS
+Date: Tue, 30 Jun 2026 15:05:59 +0530
+Message-ID: <20260630093603.38663-10-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260630093603.38663-1-varshini.rajendran@microchip.com>
 References: <20260630093603.38663-1-varshini.rajendran@microchip.com>
@@ -69,68 +69,70 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add node for the ADC controller in sama7d65 SoC. Add the vddout25 fixed
-regulator node which provides the 2.5V reference voltage for the ADC.
+Add regulator, pinmux and enable ADC for sama7d65 curiosity. Add
+cpu-supply regulator for DVFS.
 
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- arch/arm/boot/dts/microchip/sama7d65.dtsi | 29 +++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ .../dts/microchip/at91-sama7d65_curiosity.dts | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-index 94d49e20dc79..ba775459a816 100644
---- a/arch/arm/boot/dts/microchip/sama7d65.dtsi
-+++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-@@ -11,6 +11,7 @@
- #include <dt-bindings/clock/at91.h>
- #include <dt-bindings/dma/at91.h>
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/iio/adc/at91-sama5d2_adc.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/mfd/at91-usart.h>
-@@ -95,6 +96,16 @@ slow_xtal: clock-slowxtal {
- 		};
+diff --git a/arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts b/arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+index 927c27260b6c..c2d1e5308170 100644
+--- a/arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
++++ b/arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+@@ -79,6 +79,14 @@ reg_5v: regulator-5v {
  	};
+ };
  
-+	vddout25: fixed-regulator-vddout25 {
-+		compatible = "regulator-fixed";
++&adc {
++	vddana-supply = <&vddout25>;
++	vref-supply = <&vddout25>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc_default &pinctrl_adtrg_default>;
++	status = "okay";
++};
 +
-+		regulator-name = "VDDOUT25";
-+		regulator-min-microvolt = <2500000>;
-+		regulator-max-microvolt = <2500000>;
-+		regulator-boot-on;
-+		status = "disabled";
+ &can1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_can1_default>;
+@@ -97,6 +105,10 @@ &can3 {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&vddcpu>;
++};
++
+ &dma0 {
+ 	status = "okay";
+ };
+@@ -334,6 +346,16 @@ &main_xtal {
+ };
+ 
+ &pioa {
++	pinctrl_adc_default: adc-default {
++		pinmux = <PIN_PC5__GPIO>;
++		bias-disable;
 +	};
 +
- 	ns_sram: sram@100000 {
- 		compatible = "mmio-sram";
- 		reg = <0x100000 0x20000>;
-@@ -296,6 +307,24 @@ can4: can@e0838000 {
- 			status = "disabled";
- 		};
- 
-+		adc: adc@e1000000 {
-+			compatible = "microchip,sama7d65-adc";
-+			reg = <0xe1000000 0x200>;
-+			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_GCK 25>;
-+			assigned-clocks = <&pmc PMC_TYPE_GCK 25>;
-+			assigned-clock-rates = <100000000>;
-+			clock-names = "adc_clk";
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(0)>;
-+			dma-names = "rx";
-+			atmel,min-sample-rate-hz = <200000>;
-+			atmel,max-sample-rate-hz = <20000000>;
-+			atmel,trigger-edge-type = <IRQ_TYPE_EDGE_RISING>;
-+			atmel,startup-time-ms = <4>;
-+			#io-channel-cells = <1>;
-+			status = "disabled";
-+		};
++	pinctrl_adtrg_default: adtrg-default {
++		pinmux = <PIN_PB7__ADTRG>;
++		bias-pull-up;
++	};
 +
- 		dma2: dma-controller@e1200000 {
- 			compatible = "microchip,sama7d65-dma", "microchip,sama7g5-dma";
- 			reg = <0xe1200000 0x1000>;
+ 	pinctrl_can1_default: can1-default {
+ 		pinmux = <PIN_PD10__CANTX1>,
+ 			 <PIN_PD11__CANRX1>;
+@@ -457,3 +479,8 @@ input@0 {
+ &slow_xtal {
+ 	clock-frequency = <32768>;
+ };
++
++&vddout25 {
++	vin-supply = <&vdd_3v3>;
++	status = "okay";
++};
 -- 
 2.34.1
 
