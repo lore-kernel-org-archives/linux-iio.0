@@ -1,126 +1,138 @@
-Received: from mail-dl1-f54.google.com (mail-dl1-f54.google.com [74.125.82.54])
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBB1E331EBA
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 03:23:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B92F93815D6
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 04:21:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782789813; cv=none; b=cFKhFFhEZ2kyAPapwcOltUBM5hY+3tkzppOu6mPC/b8lYYDy8BgK1rIU5vCcKJ2+xjdBKGX9GfnpJGRM9EBMNe+9VddZy9N1tVeSlFMZfhj2ZJo7pigktc3sHokLBvn96DWWEOFhI3r/RfK3eu1riTOBkCR4L/qYT3OkMJo2HE8=
+	t=1782793313; cv=none; b=skBueufNlHZDsfi+gEERagiV3o2GcYUczQzVeNmSbq5B1VrFYs9piHFJo/ndO+/eYjRnujfc8/RlxW2RCgh6zD9RNwCT6Hz6kypkV6KTqPAvLJCurXLnHfesqvOVIok2DV8pmq0T3ez8rE4G8bQ8Vlv/1T60kydB9WEty5RaxbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782789813; c=relaxed/simple;
-	bh=GEWQmwoNCJmCwgrNxAvDHtsa+YfvsbHxx8LGeyKpryU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=myHyR8yevueiOnPA/gLoN/lxGAXp+Xom1CM+Q1xVUP4mDNjTzarL9QsqZdO7pGymjxxJgZ3X2nagQ3GT98UZNnLnZ7T599fzOmc0UO1cxvDjALpeWRg3ynZdpesURprTfYRJLvVsEJkKBExC+OTewnC9L8ZKj32MKm+RQMsln2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OVmNhgxc; arc=none smtp.client-ip=74.125.82.54
+	s=arc-20240116; t=1782793313; c=relaxed/simple;
+	bh=lTFy5RM7kse8CAnreFw3LhsSXH2A6ONRbsuB1B52vAo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bM30oNQTStKVZ+Bs4wZrWn0lIUYSj2m8T85JJv+Xl56w0axpgukzBmMS3CkTsZemh+z6kWemH5fWEhL/OC1knss/ZXlKgmBXAyMJu9SXFMH7xYz/xWNyMUR2kZ6zZFYhYj+FFYn9jJsnfRiXx202lwAwtPeQ42iOIGpOLnmkgcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=q5JC82Vl; arc=none smtp.client-ip=209.85.210.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OVmNhgxc"
-Received: by mail-dl1-f54.google.com with SMTP id a92af1059eb24-137335bc3caso8270345c88.0
-        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 20:23:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q5JC82Vl"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-8478fe07f65so754969b3a.0
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2026 21:21:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782789811; x=1783394611; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=1N2TEaibcJ7GIyHQYkU2Fx6MeyHpeL+NE+JylwXxFFM=;
-        b=OVmNhgxcu7YW3GVPLv3VsnEDcYXAhusuiEE3OBaqVQ3gBMZSKF2qQmYXsz03Qtwqrt
-         mzGO0zfaCRt7K6V8dsJegLHb3j/HPCBrbHoUtjvK8a61XTMiiWvdVfu2v5bbsKwN+bwT
-         RMYi3kLORfyHfUlCTknPixTLZdMp5htS2ZY/OyzuFDNZ0nFd/nKCcrap5jhvP5+i/HVr
-         h6sVlsVvCr1J6ySpF5lw9GuuT2kfyCGDgwxwesfmfc842jlhlxetNGMrRrKw2DVonu4Z
-         Y0HCY6RWo1Khb4eVn20oUtLhjOYGLLT3pR0InvAirPMGTL3De/zKvnm0vywQwLVK7tpX
-         UZ0w==
+        d=gmail.com; s=20251104; t=1782793312; x=1783398112; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lTFy5RM7kse8CAnreFw3LhsSXH2A6ONRbsuB1B52vAo=;
+        b=q5JC82VltzjwKQhzmNMeUv9rd4F0TAMek22DsWyTIXuJdd4L0D5yhSXfXOuhsJY9oJ
+         zyQ+/FJUYeuTIB4kRP/G1FGQnHJF4NvLbGcHxZA8Rn5uGdEyUk1CNCMRcQJESUzcenoa
+         IbOG8QR+QeJhTvq8i8MuX53wi8xW36HS6KxpmaHBrxDkGtC0IiskxWvqJG5poXpsH2tF
+         /VN6k5B5BKmO7ojNVAQ37at0mN02y41Fp4fT3sDw5+hvRQjn52xXIY/Q2V8TBBDbRGPu
+         5BqJ95khlT75rJ9CjYPjmT83oRFs0KVdnji+AN5mowlLld8mSOB/LLkh8KZot9iHvf5B
+         wy9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782789811; x=1783394611;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1N2TEaibcJ7GIyHQYkU2Fx6MeyHpeL+NE+JylwXxFFM=;
-        b=SqCswsAjiyf7BYqpqKklggTXQoJdQLFeerjZBTKLDUcI6JIPDNKufU6hzBkNHgBBll
-         9k8xfa0ndnXsR5UouT6L/kjglc+IXMCc3WOK5O23bs5HmOB5p7MSkqDxSTtAOHXTYKln
-         RLJ4Sdk/wYQY554r5za4PhKxSzD1lha0fwkEjsZVgJ671lC/ayD5E8UHNklISjJkKQCQ
-         HAuM34qlLffEzx58i7d2pC82YbfXMLs/nk54j0MLLE+PIEqyP/n/QZiXlLLsNxpFxYeW
-         GWkLZM5upc9fka7AISjt6W+1J7E+1y8vvbQe+jFCOhm85v1bAv6BJz/D7OOY4b3LoZ1X
-         kB1g==
-X-Forwarded-Encrypted: i=1; AHgh+RpzZxD8FgR6c0yD6D6aw7L9zhm2hjnChzo0M3KLNC6CWV5rfbL/8YPVFUxleLfFbgUvALolPnQBys4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxkf7XhwABuduxEh/GPBy5IMeZL4W6T4iq9C5ror+YjY/qByH1r
-	3zV/dUu4DCdN2rioRR5hSh3VZb7GybxU9umcU+wR1FPnpEiz1xzZnNed
-X-Gm-Gg: AfdE7ckq8f5mfNtU4Smp15MJqeMnT2kxa6eg6V2s2POrLfu1TAVBQmS694Hyi+rr8U/
-	/mKmURwVn9qCq+NwXrHBLbo4IR12SE0KgudK3KZ6WF55kTz0T3yR2yFXRox7wDifjfHQ+lKPCzp
-	ivJBC7VMitgqkAQTGwiT+TFM38w1DrstmNPtioTyGBiuby5gSUQjmgYTtq5NijpT1Eadwf46uV7
-	p/ULD1LKqSl9jx4Utgr1vEiWMxawSbxKISwAI84nl3XPyVR4PV+cicqYIb83QC4yJRheYbuEqQZ
-	erXbf7X8trG1EnaokOSseVGjAnq6tW6RWRg3g7Zz2NarM2Rtb/sTX8o/spdTXp8aw5UYKoe3bPA
-	nJHawkBy+9v2EYH4ga/UUJHpXXqMS7hko11ObmMAazNUovX8B1mO+6uY4meW1aGo2CI6zq9bkeC
-	VI3mfXI4FXTYYkZSA/JBEqNQOwOz+NStxr2yc4ng==
-X-Received: by 2002:a05:7300:a994:b0:30c:ab4f:9ba0 with SMTP id 5a478bee46e88-30ee14a4556mr1290207eec.40.1782789810939;
-        Mon, 29 Jun 2026 20:23:30 -0700 (PDT)
-Received: from raiz ([45.251.35.28])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee2f5ed29sm2992571eec.1.2026.06.29.20.23.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jun 2026 20:23:30 -0700 (PDT)
-From: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>,
-	gregkh@linuxfoundation.org,
-	skhan@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: frequency: ad9832/ad9834: use div64_ul instead of do_div
-Date: Tue, 30 Jun 2026 08:53:22 +0530
-Message-ID: <20260630032322.5805-1-raizudeen.kerneldev@gmail.com>
-X-Mailer: git-send-email 2.53.0
+        d=1e100.net; s=20251104; t=1782793312; x=1783398112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lTFy5RM7kse8CAnreFw3LhsSXH2A6ONRbsuB1B52vAo=;
+        b=Vya9nV276tYNVZHCpCR6obmmtcbcdWIfr4zF+lvx5S0BBrT/fLMc64EyNhud2Ey2NC
+         Sb4CKLgDf1RnIXjnRIkpC8yEuCDKEV8hyw9vjMO329DS5M/HmA4fTbqUSSfAMXWWqawz
+         +PRbEil7jM15Sqt6lTYGqkMP9n3QB82FT9G4f30cJUjWcbegFLoxsJzwhf9oYFot+6AY
+         M4kOzDnCF3OPe5896vmeTDDb40jOHX2wjHmf5XtFxGjLKVyC0tD7Mqurh/clhtc1CuSW
+         I0gdR/V7Whk6+k0z+Tzwn+QQbPMqO5JZYQQnm1pgluhwDv4jQW5W+fw1rea0stmwjJuY
+         Yp4w==
+X-Forwarded-Encrypted: i=1; AHgh+RoJ1K8n5QnCGD+0JGpdt4EjvmjD8ztGwPBUyl3A1z91P5dV2dIFJNDKsnbeiPRXw5FncCq6V8Uu2ho=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwwU+yXXoHXu3S/TraH2CFI23SDGZw06ea4A1ZhdpN1xgle6iyX
+	yU0NRUMTSueGrib3175lhiWtMzWsD10Nt8K7RaMCK2oLpHmpKhzGW+cv
+X-Gm-Gg: AfdE7clyH57vKULimDmquyJsYwh7ZZi/StGoKIueDvEL/Uk67J4BfSS43xpUqbsVvbS
+	7qjaisdRJynA7vcmLD8/feXikIPxrHMqUzhW5ILz5lEPYQq5I16ctqaeINlQ7aytyC8Zx+FSGBn
+	2J+hvfp8jUsT2gE+xQuiqJYx2mUhMaNr0LSinEWSUG3MYk+o4DYKPfWLqLDCXAIqB3u3IQr/GHa
+	mwU2HhbPYCefhnHQw2jrj9tAR94Bug6ju6rbm/54VL3swsZGd1G+Llywsf7R8KzgwxKHDEEfOcp
+	8Jh2b1z4nPRlf0sxBVXxfu7OFqVlluNJe7NhcQ6cspt/smVQP/q2lzodtamLvgPnYupCEffcjon
+	hVVVqg4GOcUITpVoigvggjxyGmJo1dBs/T5MYtl5UQpU6Np4kxbpd7x9jHQkT5MWD8jehvPxZv2
+	ykLHqUpsgzw/2EtgoB8y9+HSjNRh7DjKbQ+qPjljAPxzA2h/O7mxeCPQzS87U+L1+P
+X-Received: by 2002:a05:6a00:b481:b0:845:e97d:447e with SMTP id d2e1a72fcca58-8479f109a34mr1696830b3a.26.1782793311792;
+        Mon, 29 Jun 2026 21:21:51 -0700 (PDT)
+Received: from [172.19.1.42] (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8479ff8c781sm950012b3a.9.2026.06.29.21.21.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Jun 2026 21:21:50 -0700 (PDT)
+Message-ID: <5c788984-1bf7-422d-a808-e05112615966@gmail.com>
+Date: Tue, 30 Jun 2026 12:21:48 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+To: David Lechner <dlechner@baylibre.com>, jic23@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, cwweng@nuvoton.com
+References: <20260625110638.38438-1-cwweng.linux@gmail.com>
+ <20260625110638.38438-2-cwweng.linux@gmail.com>
+ <40485b4e-6585-42a1-9b84-3019328574c5@baylibre.com>
+ <7e96cc1a-eb60-4eeb-937d-64e83bc35279@gmail.com>
+ <2f01a3a0-3698-41e6-8fee-1d2e1629726c@baylibre.com>
+Content-Language: en-US
+From: Chi-Wen Weng <cwweng.linux@gmail.com>
+In-Reply-To: <2f01a3a0-3698-41e6-8fee-1d2e1629726c@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Coccinelle warns that do_div() should not be used when the divisor is an unsigned long, because do_div() expects a 32-bit divisor.
+Hi David,
 
-In this case, the 'mclk' divisor is an 'unsigned long', which can be 64-bit on certain architectures. The correct function to use here is div64_ul().
+Thanks for the clarification.
 
-Because do_div() modifies the dividend in place, while div64_ul() returns the result, the code was updated to directly return the result of div64_ul. This keeps the math exactly the same but fixes the warning and makes the code safer.
+ > We always want the devicetree to be as complete as possible even
+ > if the drier doesn't use all of the information.
+ >
+ > So for trivial/well-known bindings like dmas, we should be able to
+ > add it now.
 
-Signed-off-by: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>
----
- drivers/staging/iio/frequency/ad9832.c | 3 +--
- drivers/staging/iio/frequency/ad9834.c | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+Understood. I will add optional DMA properties in v2.
 
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index b87ea1781b27..91df7ee65bfc 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -115,8 +115,7 @@ static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
- {
- 	unsigned long long freqreg = (u64)fout *
- 				     (u64)((u64)1L << AD9832_FREQ_BITS);
--	do_div(freqreg, mclk);
--	return freqreg;
-+	return div64_ul(freqreg, mclk);
- }
- 
- static int ad9832_write_frequency(struct ad9832_state *st,
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index bdb2580e29bf..70b310488237 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -101,8 +101,7 @@ static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
- {
- 	unsigned long long freqreg = (u64)fout * (u64)BIT(AD9834_FREQ_BITS);
- 
--	do_div(freqreg, mclk);
--	return freqreg;
-+	return div64_ul(freqreg, mclk);
- }
- 
- static int ad9834_write_frequency(struct ad9834_state *st,
--- 
-2.53.0
+The hardware supports PDMA for EADC transfers, so I will describe it in
+the binding even though the initial driver does not use DMA yet.
+
+I plan to add:
+
+   dmas:
+     maxItems: 1
+
+   dma-names:
+     const: rx
+
+These properties will not be required.
+
+ > Same reasoning as above, we want the binding to be as complete as
+ > possible, so we should not omit diff-channels since we know what
+ > the bindings should look like already.
+
+Understood. I will keep diff-channels in the binding.
+
+I will still limit the DT child channel nodes to the external ADC input
+channels 0 to 7, since channel 8 is the fixed internal VBAT input and
+does not describe board wiring.
+
+For differential inputs, I will keep diff-channels in the channel child
+node schema and restrict it to valid external ADC input channels. I will
+also check the hardware-supported differential pair constraints and
+encode them in the schema if the hardware only supports fixed pairs.
+
+For v2, I will update the binding to:
+- allow up to four interrupt entries for ADINT0 to ADINT3,
+- add optional vref-supply,
+- add optional dmas and dma-names,
+- keep diff-channels,
+- limit DT child channel nodes to external channels 0 to 7,
+- keep the internal VBAT channel out of the DT child nodes.
+
+Thanks,
+Chi-Wen
 
