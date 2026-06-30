@@ -1,159 +1,157 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C4153D75C2
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 17:03:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255B93DB97A
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 17:14:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782838987; cv=none; b=oRba5UpI+BcY+WBtAJu6Qn581FiGCBdBpkb90WbjSUMdHPu0EbLJbjtcMLN1N3M+4J00VYQ36rwzROf+1yiYpnxEOgk5p90IsTisryyd0BHYdFdbPLHXN5SD4r2O28a39XUU+gRtXq/OhRzDN/bilLoSCA+VuP04oMC6j/sIR0Y=
+	t=1782839688; cv=none; b=jrGiZJCSZiXYhB7DSkT6acqoDS1NAw42qlD4cSdc1AeGMzSkme4xYy0l3YI1ri2/1BVaJ+p+nUfbUoVhRVJcGjnKKa9pDMPjpo7jT/RQduJuJUpzpOiYJFr79zpMqk076Bq8ZtOYnRC7eKzgubMNfp06bOSub8NGGgbPu+aKFcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782838987; c=relaxed/simple;
-	bh=wFcPxcQLP8FI+3mLIH02StKQAxTWliyQeGTu8bwHZa4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NlzF7grENVW3j3RXzThiqvNMp7WR+eTqyVnt/NCRkefG0u0dkLog0Y+9w4SNDianQzCXR/n0QaMrNYOHqEVoaz9wPnvQ+Kg0sAkqMrhEEnqyFpCZJ/TfhFdStEk+XFrdQ1DEn2wCQvPs9VmB90C5ylxg/A6Rfe6/q6cId5RsQs4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=FoBJ4f1M; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1782839688; c=relaxed/simple;
+	bh=yI4LIb23rfKE/21+3syEgft1Xeo2c0ZRsRWLnRGk4wc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=fqaR4YtqO3ZVIV3Gaoe+L4Kpvy+zi7SMGZkqE35zRdXCgYe4NN3xMDXcbYOODvGEJMFN7g5jD0M87MMSNkxDuve4kKwUr1yRs4eiTJqa5CusYRY+H51XQzne/9qckfYs4OCGjqaBUYXT5Sjc0NKHp4BU5KIRUZSWSbEcXihlXlw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PR2Nh1tf; arc=none smtp.client-ip=209.85.221.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="FoBJ4f1M"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-490b1bbcf3aso24658525e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 10:03:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PR2Nh1tf"
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-59ccf81e6feso1597808e0c.2
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 10:14:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782838984; x=1783443784; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=065FLRDoYNi4tJNRO4o9kX5ArAQ4ACVdhpCQabyC+5Y=;
-        b=FoBJ4f1MSciH9tqQe8ajKu8ZgKsJgeMU826++81YGL3WtbCGwAnwUq4PmF/2hR9eYg
-         L/vwWBPBhHoEqdlN8uAlojIPnydgC/+F1vjfnQjho5qO7UJkB7NP3owWaNUoMDXkVl9J
-         zx+hG7PAMe5OINaA1dEJukKU7o4rDOUG/S++YCTeCQo0/Db9toco37J/DcnxnrdQOCJ5
-         sZKyLYnZGwmC6G3IgOmjgZTaT08BIu9VFJhFCoTtoAGyeSTeuqpj79zsPSogPrLFVNWW
-         QsHsu8UiTYblDb5IGIolZxenL/MiL/Ja0hHTwO2iaMmDNiz9w/f6cccth5NBpCsoznCb
-         x1oA==
+        d=gmail.com; s=20251104; t=1782839686; x=1783444486; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Yj0dzyKkgM+YsTOclkY88VSZr2slrmcvgTQm6yEB8ME=;
+        b=PR2Nh1tf9U45X2QPsNMjst7ZwGhxnGXhjDNwcur0Llo8NsqsykiXkUt9lvx0T23OwK
+         ymp+6ljMMOa/z/OLuagQ49NrKixAp1JPPYYF1KgCLnGuEf84RaywJNM5CuMKxB8QqcIG
+         gUtcYQ5cKwM+1+cP93GVTDGsZs5f59wpf8+Gv3UnlYeJNF2vWqRHedCblxFmhu/4QTWj
+         Y3gxg2WE6mShEjrsGVX2cCSGQ59OED6BH9ZJLvOd3bi5Q8xPYQFfFoW3486lXgL7C58Y
+         owy4CgGeKhvfItdjkCAQJiy229dmrH2g0TT5k/irjgkwHbtX2aKXf+/+tZ29WJ7Wenp/
+         JDng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782838984; x=1783443784;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=065FLRDoYNi4tJNRO4o9kX5ArAQ4ACVdhpCQabyC+5Y=;
-        b=MSp9kivRMOTKPxTUnpYz1MY/XKzbY9nbzW2VWSF+wrjaoWGTq43i7JZizSr4EEZ2Kp
-         IWj4quiJmyqeMXMJBpAVCTTB4EG4G1ryIAzQa1vpF9drw1Y2F5q+6rCWyjWWc8D2RjiV
-         d5dpfDPqnxXPgxsaSHbre1IkUjRAeHGfmv1D2ieqDgYmxDwmhjMObO1/Dl3wzbzfjz0S
-         SeOKNtwD7DmjzGUbPINYfRem1Xwh0Prj4xfySKmVLKZDDemQbhNsgzhxZ9a/WkK3peQS
-         HkSZNEIkzG3+51NDUC2RJS6qq7W3lJJkvxlv3UAUgx9qHCCwdhI54sMRl5/Q7ZofrAOG
-         rNGA==
-X-Forwarded-Encrypted: i=1; AFNElJ+CEVAEewNPqDeVy211AdZ5YIYdydeed0yFxWzohHS2sR3l/YLjveQJZzTSZc1Gd2xxSiObX3+9O1I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzbqgWHtjJ09K29Q6syLXKpw+6POK0KXswuVMQM3laSWYTOzqrT
-	6qyrhJZAULaI0BWJMdxheVSL8UWTG8nkN029c39aYuXa2+ygm3xF0/awx5bEwH3gRKM=
-X-Gm-Gg: AfdE7ck4qBU/8vl4seJ15i7e805AKB/tpnuzZj9HFKlokMiX79L0sHrZ5Q4QHlGoTP0
-	ixyU2WHfh5NHIsbo8HAdyibtHblxo2CyL6l9uDw2WTCZ1ZFw+4fVOEH2+gwbMVZQiPJIzkl+FHl
-	eAJ913w80/O4oUEWKJnwO0e36DvdKsjoNjEIVG3jXb8HYRcsXU6n3a/aOAJ0wAnwHlMO2MA4RFD
-	U/3xUgYjaIG0KTS4iR8hFdaiSqB87lktQOZB6ufQUJtfZ4+/czgcXjhLwHzjq55OZ3YhcOkb4oW
-	17WTOB9feQG775FLR7LEuEf7Q6w3GUD58pR1FLwhv5JwT7I97sTcgRB0iPiovSDGgOWr7XVhfYI
-	/7/J6Csqg0IGE+V9q6+vKiCJSrSVBUwqSIKJyEpIXUf4vv1Oe01Z8bqbZW6NHZVeKqVqb7zQXR2
-	6jHN5ncut9q3iiaSnIECZd4srFMSueldwiPVq6A+gi8hJrzeo2qon3ONrQy3fvGj+1+v4zBc5tY
-	06/KFY8Ds6KjsA=
-X-Received: by 2002:a05:600c:8b05:b0:493:b764:ff98 with SMTP id 5b1f17b1804b1-493b828631fmr71049215e9.11.1782838983777;
-        Tue, 30 Jun 2026 10:03:03 -0700 (PDT)
-Received: from localhost (p200300f65f47db042a9b551def0a6b94.dip0.t-ipconnect.de. [2003:f6:5f47:db04:2a9b:551d:ef0a:6b94])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-493be4c8080sm10175345e9.1.2026.06.30.10.03.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jun 2026 10:03:02 -0700 (PDT)
-Date: Tue, 30 Jun 2026 19:03:01 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Lukas Metz <lukas.metz@gmx.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
-Message-ID: <akP2RSriqaN8qqQT@monoceros>
-References: <20260623-dac8163-work-v1-0-5b508158faa0@gmx.net>
- <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
+        d=1e100.net; s=20251104; t=1782839686; x=1783444486;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Yj0dzyKkgM+YsTOclkY88VSZr2slrmcvgTQm6yEB8ME=;
+        b=k0LDfGoVOo9knulfaMjdpwjSsA0ieInc8pXE07eqOOdL7ZxwjZuXTrk4uy/HzteDxt
+         9GRqsHtwwAqLC4TkpcI0CIck03nyx4B6E4X0chopJw912lV/1MVSfJYA6afueI71R1A+
+         VOQKkShKEOQ+pCS+5/IfFNVe6/nOzuDOzGkDdKSyqpTrj7PWaROlyCecll2TNVLIBrrd
+         OieNd7lnYx+cdaTZ15dq3piWRCfER8PqeUU7FDeZoRotstn40GwQUc8FxdU0ElRDHLYD
+         BAOlDQYcR1IqGJog2aFkfrvTqNYte+gvdC4hH3VDL4DiKkoFJjMqiJNiGX7dCGzzSuEO
+         K/Yw==
+X-Forwarded-Encrypted: i=1; AHgh+RpakCp2YdWKKRRb+0V7OX1i5v/MRRyHjewyH6eOv46iAiz12mahOI7ji7eU7GrZf5on22HOQfzSBC4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9Pj7iP3iWR4OfSlr3GNrKxND1EVIsJ8128pLqyLy3HryHDv/a
+	NTn8ZQ9aq7MVVjdbD/8STauq0gMLe7yl/SXpa47aDHJ8J97yjiq0gUFVU9T8nA==
+X-Gm-Gg: AfdE7clRcHhW9OB6nLC0Rj9EO0Ps+Bv+ttVDK6HgXNoh7omXOIpL2ebyuhJeX6RshBR
+	wcPt6qboct8JAWErrUeiREh9q+ZiDSJdXWnNyl66sqYaL9TKrwOfeejs/SD9Ov3zqGiUTF/5iTk
+	6Kz4jVZ46X76p/HO6647UzPyXm/UfcAPrR0++bHVmKPPjPEoojHcATqvydTsRO24tGnealQUZUb
+	lfUWIjL3GqIHdMeSKY6IA6qXAIMisgF2c1ju5G9cTY7Q0M0uXOg6VJNcOgW7M2pnR0ya4y5bTOZ
+	021t8d4okzorB4epgKjspsiOxPzZxI9NTsJeuMEq+vjRSaRTtpyruroJZT1fatYVJeyw+v+/gmQ
+	Dd8YtGMTBoOEXZOpvfDitQDz8vJwNCTyF/I8m1s2FTkOz9xEkxPzIfn3LttHepbEkBrez8IT6AB
+	rGgIQ=
+X-Received: by 2002:a05:6122:4b11:b0:573:a779:62cf with SMTP id 71dfb90a1353d-5bdbed0ba9dmr1958656e0c.7.1782839686037;
+        Tue, 30 Jun 2026 10:14:46 -0700 (PDT)
+Received: from localhost ([2800:bf0:82:11a2:7ac4:1f2:947b:2b6])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5bdc184957csm1836979e0c.2.2026.06.30.10.14.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Jun 2026 10:14:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pdjo7z7h4wmknyds"
-Content-Disposition: inline
-In-Reply-To: <20260623-dac8163-work-v1-1-5b508158faa0@gmx.net>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 30 Jun 2026 12:14:38 -0500
+Message-Id: <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
+Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
+From: "Kurt Borja" <kuurtb@gmail.com>
+To: "David Lechner" <dlechner@baylibre.com>, "Kurt Borja"
+ <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
+ Dooley" <conor+dt@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+ <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
+ <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
+ <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
+ <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
+ <DJLOAISPZLG7.VZYX8B16QU4K@gmail.com>
+ <22e1e1c2-659c-4991-857c-b38d66769c7e@baylibre.com>
+In-Reply-To: <22e1e1c2-659c-4991-857c-b38d66769c7e@baylibre.com>
 
+On Mon Jun 29, 2026 at 11:43 AM -05, David Lechner wrote:
+> On 6/29/26 11:27 AM, Kurt Borja wrote:
+>> On Mon Jun 29, 2026 at 9:21 AM -05, David Lechner wrote:
+>>> On 6/28/26 2:12 PM, Kurt Borja wrote:
+>>>> On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:
+>>>>> On 6/28/26 12:36 AM, Kurt Borja wrote:
+>>>>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with =
+an
+>>>>>> integrated PGA, internal reference, excitation and burn-out current
+>>>>>> sources for sensor biasing and diagnostics. The ADS1263 adds a secon=
+d,
+>>>>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
+>>>>>>
+>>>
+>>> ...
+>>>
+>>>>>> +
+>>>>>> +patternProperties:
+>>>>>> +  "^channel@[0-9]+$":
+>>>>>> +    $ref: /schemas/iio/adc/adc.yaml#
+>>>>>> +    unevaluatedProperties: false
+>>>>>> +
+>>>>>> +    properties:
+>>>>>> +      reg:
+>>>>>> +        maxItems: 1
+>>>>>> +
+>>>>>
+>>>>> If we want to allow single-ended/pseudo-differential inputs, then we =
+should
+>>>>> also allow single-channel (positive pin) and common-mode-channel (neg=
+ative
+>>>>> pin) properties.
+>>>>>
+>>>>> This will also require additional common-mode-<N>-supply properties t=
+o allow
+>>>>> for the negative pin connected to something other than GND.
+>>>>
+>>>> Ah interesting. Why the N though? wouldn't a single supply connected t=
+o
+>>>> AINCOM be enough here?
+>>>
+>>> In theory, any AINx could be a common mode input by connecting it to
+>>> a constant voltage supply.
+>>=20
+>> Technically yes, but there is a pin named AINCOM intended for this
+>> purpose. Can we do a simplification here? I propose having
+>>=20
+>>   common-mode-channel:
+>>     /* AINCOM pin */
+>>     const: 10
+>>=20
+>> That way we would only need one common-mode-supply. Would that be okay?
+>>=20
+>
+> Ideally, we shouldn't limit how the chip can be wired up in the devicetre=
+e
+> bindings. It doesn't mean that we have to implement everything in the dri=
+ver
+> though.
 
---pdjo7z7h4wmknyds
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH 1/2] iio: dac: dac8163: Add driver for DAC8163
-MIME-Version: 1.0
+Makes sense.
 
-Hello,
+I just have a doubt: In the ADS112c14 bindings, is there a specific
+reason why you didn't describe common-mode-<N>-supply?
 
-On Tue, Jun 23, 2026 at 06:07:27PM +0200, Lukas Metz wrote:
-> +#define DACXX6X_COMPATIBLE(of_compatible, id)        \
-> +	{                                            \
-> +		.compatible = of_compatible,         \
-> +		.data = &dacxx6x_chip_info_table[id] \
-
-Missing , after the value for .data.
-
-> +	}
-> +
-> +static const struct of_device_id dacxx6x_of_match[] = {
-> +	DACXX6X_COMPATIBLE("ti,dac7562", ID_DAC7562),
-> +	DACXX6X_COMPATIBLE("ti,dac7563", ID_DAC7563),
-> +	DACXX6X_COMPATIBLE("ti,dac8162", ID_DAC8162),
-> +	DACXX6X_COMPATIBLE("ti,dac8163", ID_DAC8163),
-> +	DACXX6X_COMPATIBLE("ti,dac8562", ID_DAC8562),
-> +	DACXX6X_COMPATIBLE("ti,dac8563", ID_DAC8563),
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, dacxx6x_of_match);
-> +
-> +static const struct spi_device_id dacxx6x_id_table[] = {
-> +	{ "dac7562", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC7562] },
-> +	{ "dac7563", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC7563] },
-> +	{ "dac8162", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8162] },
-> +	{ "dac8163", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8163] },
-> +	{ "dac8562", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8562] },
-> +	{ "dac8563", (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8563] },
-> +	{}
-> +};
-
-Additional to the missing space pointed out already by others, please
-also use named initializers, i.e.
-
-	static const struct spi_device_id dacxx6x_id_table[] = {
-		{ .name = "dac7562", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC7562] },
-		{ .name = "dac7563", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC7563] },
-		{ .name = "dac8162", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8162] },
-		{ .name = "dac8163", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8163] },
-		{ .name = "dac8562", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8562] },
-		{ .name = "dac8563", .driver_data = (kernel_ulong_t)&dacxx6x_chip_info_table[ID_DAC8563] },
-		{ }
-	};
-
-See
-https://lore.kernel.org/lkml/20260515103150.164887-2-u.kleine-koenig@baylibre.com/
-for a rationale.
-
-Best regards
-Uwe
-
---pdjo7z7h4wmknyds
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpD9sIACgkQj4D7WH0S
-/k7rhAgAj7ImlgrgPsZWeETvfMzKOH4o9IxIZniUJoYukNSn+rqWsYNyyxQA5HbO
-HkpfYskuDV6YkIDEL/5rqz8g41y0kqc8Txxni9tjRfvHRjY5z/CU+32qs7sSVCQ4
-eoTAo1C4qIleNRSiDJpqcRk9DfoLKFDXTJRFVYeIQvWW1Y1KEXLea/3kxda2/gcX
-snPcROQwWZIr7OPy0sR54lqGn/dgCqyh+d6mDATGcngE5KW4FVChyNn10K1rshh+
-Kxx3PWXueDbvBqDAFVoLn1EXhajNrQJ/v6YIs+9h65UwHbHwQlFfzp0AWd7d/oKb
-hgxn4938MwqWPGTf65MnzW26QK2zNA==
-=D1q/
------END PGP SIGNATURE-----
-
---pdjo7z7h4wmknyds--
+--=20
+Thanks,
+ ~ Kurt
