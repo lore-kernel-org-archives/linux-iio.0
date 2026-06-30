@@ -1,48 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AC6E2FD69E;
-	Mon, 29 Jun 2026 23:48:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0261A9B58;
+	Tue, 30 Jun 2026 00:29:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782776883; cv=none; b=tsPTknnYWb4I5uBwmeZULS3EvJc1y75YNpEyOAienic96XVYfpvk8xUopL1PDkO9w/Ald8EscVacQtjbJwIQ6TOW1Iae8LIrW2+g++2il8l160gnjH84ZsJy/n0DQGlzNw4cZEEZSc24h6GMbOwGlKs1IccyQaJspHxYRtuQJx8=
+	t=1782779342; cv=none; b=I0pVBs+TUy56/QIxT+oB6syNp+AsJVEkKt5Tcg4fQPUvs96XNEHa0BM7GjqZtLgZsIry8u5xXCWNRcr5ngNDvvRu/orkg5DYZlUykxD2nodbzQo7h95UkeHVfcp96bDwoLzI/DwpLw4IU7JZkv02f0lg1Fbo2Oz350b2dwUZfA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782776883; c=relaxed/simple;
-	bh=rtm+54lMPyXh2AvhXa6MvRR6q7qgl+tQLL8pQeLwvCk=;
+	s=arc-20240116; t=1782779342; c=relaxed/simple;
+	bh=w0btAhFN+fAdK7JEhwsJheXcRqfQ76pQ3xQfhXV4Bio=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WlKIJuRxJbMYUxD7SK3jRwZ3d6KIdry3obbO5NSTauiTfHzxus6oLjVV5s7J+Xt/fXsFdN+pmJ6N5RF1a90VFsntmMJPIEg+xPGZs/jW7I4+Oi8Am7+WbFmugab6lfdqY6DmoltGBxDipLouMBT4S6/ti8T6AVfnnLh6aXP5zLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WPA4aT4S; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=o2M/Yf9464FqpZUHPaeG+gzDmB0yZ6N+Su6006R4hPHErohSRXaQ+J7CTbtM0jPtbK4erapLrF1WoABNhMrBB1TztkiwsPxgqrxnbgnDSBASpOuQCqfFKqyJUb8YcgteaKJCG4CmPP7355odraLwzWN/lxOjr2Y8vRyDMNqhYXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fo5apw7w; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WPA4aT4S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F5F1F000E9;
-	Mon, 29 Jun 2026 23:48:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fo5apw7w"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F381F000E9;
+	Tue, 30 Jun 2026 00:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782776882;
-	bh=MeMyWXM5ySTIsgDDp+6WL4WsbLV2tdptGm1+i71qusE=;
+	s=k20260515; t=1782779341;
+	bh=Lyce1sEosfKnoswWU3Rbe6M/I72zbpqKVcPFHrJW7/g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WPA4aT4S0YVFxNBN/YVzEiMCX+kopezf6TvzANtw+AvVzaPq+4NZ4OjKtOc5WUp7n
-	 MUGf+gJeKsxLFK8I1G5J6uNMhRFGoDCjW0ZmXuxSSWXHOlxdsUbqugCAZvZk8bRDA6
-	 SY755P1et8m8lexU6Esb7n7pFwz8yCCRQbd/PocWF0rFj8SUcnMz+I5y3+PU/bn81D
-	 IUi9Wlo1akzQw+bs2ROrWl3doDqAWcQ5GCVnu9pFev2402y9ie+9j5qjRKB5ABfILn
-	 Y5zZelV21xGjUl6zn0oHdsC5RrhMdA8yFqhxEWdXXjaUTA7RppHuFNvAjtg26oMjh0
-	 MKeHu0Gr1jgBg==
-Date: Tue, 30 Jun 2026 00:47:56 +0100
+	b=Fo5apw7wi+m12+bc5oIOSnh1bsP+byT4qMntjz+HvupDIwLCjtQrb6Ycg8ffHq9gi
+	 /Okbs8/jm1KrJtLXAbzAAWcFMcE435IkiaEqJ6vbCIR8mX20boAJay2OA9P/VNyRov
+	 +/FEJJ99HXpHDZaS50Pt5IORj1qV/vQCcd11gF23W2DtGanLNfkmgSzeDw9RE2EYUj
+	 Zx50FYi7PvlKP8jD4T5rmv+wBWrjsIqeWWZTchJMWX+28LFM39hsmfxkaOq9wbeXW5
+	 Gm3g5oXTcTEvVQIo8rWyfQuzcdF6QxYHaU9YWczDzt6h0bClopECmRub/vIDQxGy4e
+	 QI8EXJCiXWAWQ==
+Date: Tue, 30 Jun 2026 01:28:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
- linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook
- <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v5 12/12] iio: dac: ad5686: add gain control support
-Message-ID: <20260630004756.5194faed@jic23-huawei>
-In-Reply-To: <20260628-ad5686-new-features-v5-12-577caadbf7c0@analog.com>
-References: <20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com>
-	<20260628-ad5686-new-features-v5-12-577caadbf7c0@analog.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/7] iio: adc: Add ti-ads1262 driver
+Message-ID: <20260630012855.4b47b548@jic23-huawei>
+In-Reply-To: <0d7a5a3b-dc11-472f-a09a-44df887d5147@baylibre.com>
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+	<20260628-ads126x-v2-2-4b1b231325ba@gmail.com>
+	<0d7a5a3b-dc11-472f-a09a-44df887d5147@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,24 +50,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 28 Jun 2026 15:08:19 +0100
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > +static int ads1262_read_raw(struct iio_dev *indio_dev,
+> > +			    struct iio_chan_spec const *chan, int *val,
+> > +			    int *val2, long mask)
+> > +{
+> > +	struct ads1262 *st = iio_priv(indio_dev);
+> > +	struct ads1262_channel *chan_data = &st->channels[chan->scan_index];
+> > +	u8 realbits = chan->scan_type.realbits;
+> > +	__be32 raw;
+> > +	int ret;
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		ret = ads1262_channel_read(st, chan_data, &raw);
+> > +		if (ret)
+> > +			return ret;
+> > +		*val = sign_extend32(be32_to_cpu(raw), realbits - 1);
+> > +
+> > +		return IIO_VAL_INT;
+> > +
+> > +	case IIO_CHAN_INFO_SCALE: {
+> > +		guard(mutex)(&st->chan_lock);
+> > +
+> > +		ret = ads1262_channel_get_scale(st, chan, val, val2);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		return IIO_VAL_INT_PLUS_NANO;
+> > +	}
+> > +
+> > +	case IIO_CHAN_INFO_HARDWAREGAIN: {  
 > 
-> Most of the supported devices rely on a GAIN pin to control a 2x
-> multiplier applied to the output voltage. Other devices, e.g. the
-> single-channel ones, provides a gain control through a bit field in
-> the control register. Some designs might have the GAIN pin hardwired
-> to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
-> being able to set "adi,range-double" if it is hardwired to VDD. The
-> vref_mv field is moved down in the struct ad5686_state, so that the
-> overall size increase is reduced.
+> There is only one other ADC that uses "hardwaregain". Usually, we just make
+> scale writeable to control the gain. I don't remember what the rules for
+> that attribute are. Using it for in_voltage is not documented in the ABI.
+
+Roughly speaking it should only be used when the gain is no affecting
+the thing being measured (so we can't do it with _scale).
+Examples are things like the gain on a time of flight sensor - it
+affects how likely we are to get a measurement, not what the measurement is.
+
+Hmm. The one ADC using is the ina2xx - that's a weird device so it
+would take some digging to try and figure out why that one go through
+review.
+
 > 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-I took another look at patches 8-12 and they look good to me
-(other than the thing Sashiko raised).
-
-Thanks,
-
-Jonathan
+> > +		guard(mutex)(&st->chan_lock);
+> > +
+> > +		*val = ads1262_pga_gain_avail[chan_data->gain];
+> > +
+> > +		return IIO_VAL_INT;
+> > +	}
+> > +
+> > +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> > +		guard(mutex)(&st->chan_lock);
+> > +
+> > +		*val = ads1262_data_rate_avail[chan_data->data_rate][0];
+> > +		*val2 = ads1262_data_rate_avail[chan_data->data_rate][1];
+> > +
+> > +		return IIO_VAL_INT_PLUS_MICRO;
+> > +	}
+> > +
+> > +	default:
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +}
