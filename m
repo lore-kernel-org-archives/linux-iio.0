@@ -1,175 +1,123 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCAE36F437
-	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 15:24:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7849930F80C
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 15:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782833064; cv=none; b=OkEv8JG4+owLqU3fxhvj+ridrMvK1TzwZ4KyIKFJ2deVUykR6pDvTbhepnkQFxLoyrK8iAMtkfrpoTLSNfAUNoTOI23WO0QMHrnVlHdgho7qSEcrh/jyjbIuFu/oUQnLMCPHA+ts8D111xteLB0fTGCehzhs+yTAByregGbOyjs=
+	t=1782833755; cv=none; b=RqfG8hhIXFc1acQ3XFgN7cXADroBqpKrcTryPMCcLtg6bWYTYj7MlTxNeD943J9VsQ7RRH1jgu/oP9zvD0X9Ck2biqQ/CXyhHeJJQAToqttBzFmJLxlzTgJpjLAz5t7zIsliQfBrzMzjkE4RY4B/AG13heTjYX3Z2lN2TyD67pU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782833064; c=relaxed/simple;
-	bh=ilwmPRsLFmPgkqbep4PVet62o0txIgMEH0pTIIfUWFE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R5Gm5kC/J7deuCUFvQ0pAAx61B+n0nifw9/BrCYkw7U02czjkyT/aTHGPxcsiU34gDsFv1EO1T/USsd0o0WCDuUUlGEzZ5FhuODlkzVT2AxvqO5i1nIjqrM1RnIt0e+WfPka4AF7v0NZXLHAwQMm9XldMcE3fFc3bBfnWOLDPDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ld4sIBts; arc=none smtp.client-ip=209.85.210.52
+	s=arc-20240116; t=1782833755; c=relaxed/simple;
+	bh=l9SAqYDh99uRa+5idqLGpztcDnLC9lmCSlUiuvYK5DU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EedaWtsK3UAE6mL4hS8y1/b08HOfsk+jbhgWRnxZGcAjMfD69r4wVxj/1/Ys1Uefb9r1SILzBpHk19A3MslPliP8V2/bmvLX//RqsIO0yC4eTocwDT/uPCUebPqWczt/3U7ihQ2MJ92xGH2Rlp+x+KuLOgMHj4DB4fUxaW0B6hM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ER9nQ6el; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ld4sIBts"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7e6128bd9b3so2374971a34.1
-        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 08:24:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ER9nQ6el"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-493b68b4643so10381995e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 08:35:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1782833060; x=1783437860; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xv8vYlFh+PBuicn2boO4XNNshtTQUIiWhs4Wjc5dQk8=;
-        b=ld4sIBtsp58JIYgeGDjBTnOaDFLR1gNjsWaii2wL3eh7x15PsNcHCO4zvaLE6euAWk
-         rpZkOMGHdr5XXZmckcJkx5wUL6QRLJbG59OFA5dLwhEIqRcIE2GdK4frv4gVrTUb7GaR
-         VI2Lk62jmzmkpXwJ1SaSCIn+XvZVhdyJPCCQq/DgyWRBFw2FwSKpaOz1VExXtJynWxi8
-         xlcCXMKRqQ0ixUCHUXoMwKhUyCkfp/NZKQAN+ypyQgzsebril3+5y4zDXb2VEvbIBvD8
-         1WzKn/+USYj2p57npPdCvmBTVb4geoSTdq7m8cHPiwoYfUEwudd/FqQJvNI0qeVar+eJ
-         2MyQ==
+        d=baylibre.com; s=google; t=1782833752; x=1783438552; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DF9O/32twL/C04Tje39llm96lgQatakM3itV7nl0gYE=;
+        b=ER9nQ6elt3rOr7sMnvZ/lIyhtOBdZUwCvPMFNuSMjczoof2SRG1dPnV4w4fUTQTt0C
+         QnqeZw6b0WX07MQiwyj1nw/tfhrBwsxQvMDVzW1WUJerpVe1KC5sqCZyf1VSDyFPq8Z6
+         WctycZorZYXZfuw+mLo89VVlvjd2bYb4MbVJ6eo/uugsKAB6EDAwm3lx6ka/yzQ7QsNZ
+         Ilfn3kVv6QOQQz3o/HUGh9QOSWZDS9x+9Mm2U6MyiiOABG+UUguP39MM86VSXVouFYKV
+         D9Kcfj0ygLyr3kDOm0Iq/cFs3U1ECnmK8xoLfv5SDyxvXeeQwpWShtxcQb4k4YfB5+Z+
+         QN5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782833060; x=1783437860;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xv8vYlFh+PBuicn2boO4XNNshtTQUIiWhs4Wjc5dQk8=;
-        b=l22Lwo6YcLUz8cDHFEdKMd2qEObn+NSwX4tmpfdnz3UQYEQq3N9D6W71vDEnwAMOFk
-         rrpmg/Et7TZZ2vfsEEPX5GHWIZ0CsIOzYBEGeK0QCF/E592bPO6cCjJUKM/e7/HbYpvG
-         gQZrJhPu5Y5ButrYhO+V/xcdkGE91k+JJr6y8Ziv5OKANxX3SO/UW53D4SDMUE3ApAVk
-         3ysP6WuSzrQ3epPRSGJ7k0H9zd/qPHmVY16xpgF2MEn4BoAYAQB+tnpuuQQBjwGBQW6D
-         O1A0beltmWJi5S2opAa7lQeXmwGwtI9wWbeNX04b7sdLO88C8E/DBddW1RqvrBJUpmHV
-         hAJw==
-X-Forwarded-Encrypted: i=1; AFNElJ9CntFtCYGbuWbehzkoDNMlWCX6DHlEhnLVbbWJTGUNR2+xpJ1dkK/7kysULFuQNYYeY2Um2lxEJAE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxt2Ji4qoxm88f+VYH6cP+oa+xgakjEtuU/Mdpv1dW/57HpltLq
-	F+Vc459k01hy/vkvmIpR1UC818Ty/hAMZWPppo/SlNC0KimJzNoCTmX8PYMZd4xCaGw=
-X-Gm-Gg: AfdE7ck9PuwfpttFsh/NOTSfgcV/sbzFvlvXstWIwuy3hPqPWItVEVEhkWuiWQVYNz6
-	6cVtBYuBsLF2eLXb8jh3EsDAFQLeLbNOeE1mZvmvsjyWfXR550F3Jo+QLO7OAAy8zsGgM7HX1cL
-	S8hjPoIHeuVqzoEHky0L5NqlCxyVIvB6Ft+IQQ4sH/73ED/Vvr8QgoA2KKgArLZy5FFB8Scjo06
-	G7vm62uV5nIy5ZcrCLLpti9wUhEh+MhMLx1pZej+Vm1M6Mwd33FKTmueATRgWE5lp+jqXsHLMyo
-	B8hYkZCyJKyXMDnao52K/oAmSgA0Ynp+mqybeQfBMUQ9KfcBXYq8yU/xMupvchNYpzlVT8RSoKF
-	nJIdBoURYUxghCWzgCxYHYsmx4FUYz9gzwx3UGjZcN/8NwP2j291BPFrrMk/1mMWwpC9+H221nm
-	c+z9HCgoeOl742NLmFrf6BCZrWmmSOMOHSl+9tOtLM3kTnyuWNAf4D35x8beEpt5A=
-X-Received: by 2002:a05:6830:488a:b0:7e6:f482:df36 with SMTP id 46e09a7af769-7e9fbfb81bbmr567069a34.15.1782833060338;
-        Tue, 30 Jun 2026 08:24:20 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e190:78b2:dd4e:ba94? ([2600:8803:e7e4:500:e190:78b2:dd4e:ba94])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7e9ec2ba18esm2689450a34.16.2026.06.30.08.24.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Jun 2026 08:24:19 -0700 (PDT)
-Message-ID: <a64fd56f-6e4b-4e19-9804-ce7a96f14973@baylibre.com>
-Date: Tue, 30 Jun 2026 10:24:19 -0500
+        d=1e100.net; s=20251104; t=1782833752; x=1783438552;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DF9O/32twL/C04Tje39llm96lgQatakM3itV7nl0gYE=;
+        b=cc3zX4lAonEy0dmnifHbqUD0lm5LvR05BfibsvlkR6YYUZ8N/PyHmiu8xWHZnPwykC
+         z/81ZxT7MyAuhQvE4NQl+4pPW2JHI1jMD0uM5OykU60nrLfmJDBJFpfUB6hVpkDojK7W
+         bFAESyzO0QZTKl8VBwQCfa45nNBAQeODNpngsZQrJb8pir+/faulsCcsa9O91gh4KhR0
+         tq/Zi0yBMj8R9HEOWW7AGzRiah9ZwcfIJqZNyNxV+Xzy7kUER2p6I1g+lxzSK5s6y+j0
+         iRMkfWHPNRiRY9/RsOgnNyVj9xTEZn9Vgcc2lKQC7nctffRNY6yulDwGLyezkw+zaO05
+         rmHg==
+X-Forwarded-Encrypted: i=1; AFNElJ8kOcYLOCqS4D2DSotd98HuVRq0zSyvg68md9aJCySfap7KbcDjCYAzMpGdSYXLJwaYZHCCd8bCR6I=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWzu28hiGHORFgruNxvPSracJtZFkLky2FWOJqO/EiZ0e7mjjn
+	jocx9vdayjAda2s1DCvVr2Cm/TtA0bV5ekpldFDZ9PWU3oVy5nihRxpinlRB3xfQDwY=
+X-Gm-Gg: AfdE7cloSTJa0pnc4AKVX+r4Ix+3jpqXcHgciHdkR0st/KJf0KSaV2IbS7LrH3+UJL8
+	Bs6mvTRiYBJOk5xnGcAc1JtzNrR+HGIgBXG4LM68LsgkiNM4B4AIcRHerSYHA+PNGgT4YUrwmVk
+	tw1TrOrqrpKIbT9I3Tz5h81R7j6rM1UKT+YKgkYVJyzfn8o9lxpWI/AUohGQrgPIf0i78mB8cuo
+	qEWqak/H3pMlhU5KSamQqadNQPd28r6zdYBVf0nkWnIJZ7YraNmlGy1jEd3ODAWaN55vRuR4c2v
+	WxWe7axf1ZXB+ypHHsLCmRESOqStDAD7AZUm2hd7+exuyuz46+1wzWOXOtTLb6goL0CPGmeRpSq
+	waEylHYV4QVN5WGOGgWx2hCevM6pAZZlDMrBASNHgGyc6rXo8+RV26jcxkqeGH70RvWnBtOo+M/
+	tUA1beVrzvMKosut8u9QWh+cCTTzOCf2tz/XriSHiVf+TxtZyOSk5oZnBtGZHmnVpddDF6VqF2N
+	VeR
+X-Received: by 2002:a05:600c:6216:b0:493:bc4a:c6b5 with SMTP id 5b1f17b1804b1-493bc4ac7dcmr32220755e9.39.1782833751793;
+        Tue, 30 Jun 2026 08:35:51 -0700 (PDT)
+Received: from localhost (p200300f65f47db042a9b551def0a6b94.dip0.t-ipconnect.de. [2003:f6:5f47:db04:2a9b:551d:ef0a:6b94])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-47563d195a7sm8360563f8f.7.2026.06.30.08.35.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2026 08:35:50 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: kernel@pengutronix.de,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux@analog.com,
+	linux-staging@lists.linux.dev
+Subject: [PATCH v2 0/3] iio: Use named initializers for device_id structures
+Date: Tue, 30 Jun 2026 17:35:33 +0200
+Message-ID: <cover.1782833415.git.u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: ti,ads1298: add ADS1299 EEG
- ADC variants
-To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, mike.looijmans@topic.nl,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260630140311.1473031-1-shofiqtest@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260630140311.1473031-1-shofiqtest@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1369; i=u.kleine-koenig@baylibre.com; h=from:subject:message-id; bh=l9SAqYDh99uRa+5idqLGpztcDnLC9lmCSlUiuvYK5DU=; b=kA0DAAoBj4D7WH0S/k4ByyZiAGpD4kWiNHg8m91o/D7fofJy/CQiuQNUDcGvmceC+UOR3Lvg9 okBMwQAAQoAHRYhBD+BrGk6eh5Zia3+04+A+1h9Ev5OBQJqQ+JFAAoJEI+A+1h9Ev5Oc6wH/jwD 5s8COzfqYhNohwbiX43TalZQTsYnqjC/vuPkNCIXJEx/SKHSR3bAENRyM1Dqw11g/StkODiIuvH kwT7CBkjgLy05N1F9AXSKoS81D0/JIlLjMQh8d0DpQz6+sSz0RQjsZKA0BwEz8/l9hKx+euZ5eB d+nRrb4dDD9t/B0EGs1jFOPL9M4eNkJp1upoqDKeLUYFq2HIVBS74TT3ZAIH/4xs0luFmoFp2F7 skvM+HlqBNI+A+Q7ohJ7WLK2BOPjqWjwntZOmSkSGNzXEVHNxurizIXw/89vqzNwmubus6MZ0so nhKzHQt5WvL9sF08DFoQre+OZiXkVU8hrQ17xyA=
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
-On 6/30/26 9:03 AM, Md Shofiqul Islam wrote:
-> The ADS1299, ADS1299-4, and ADS1299-6 share the same SPI interface
-> and register map as the ADS1298 ECG ADC family but are designed for
-> EEG and biopotential measurement.  Key differences from ADS1298:
-> - PGA gain up to 24x (vs 12x for ADS1298)
-> - Internal reference is always 2.4V (no 4V option)
-> 
-> Add compatible strings and update the vref-supply description to
-> document the ADS1299 reference voltage behaviour.
-> 
-> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
-> ---
->  .../bindings/iio/adc/ti,ads1298.yaml          | 31 ++++++++++++++++---
->  1 file changed, 26 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
-> index 71f9f9b745cb..82c5181126df 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
-> @@ -4,11 +4,16 @@
->  $id: http://devicetree.org/schemas/iio/adc/ti,ads1298.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Texas Instruments' ads1298 medical ADC chips
-> +title: Texas Instruments ADS1298/ADS1299 biopotential ADC chips
->  
->  description: |
-> -  Datasheet at: https://www.ti.com/product/ADS1298
-> -  Bindings for this chip aren't complete.
-> +  ADS1298/ADS1298R: 8-channel, 24-bit ECG ADC.
-> +  Datasheet: https://www.ti.com/product/ADS1298
-> +
-> +  ADS1299/ADS1299-4/ADS1299-6: 8/4/6-channel, 24-bit EEG/biopotential ADC.
-> +  Identical SPI interface and register map to the ADS1298 family, but with
-> +  a higher maximum PGA gain (24x vs 12x) and fixed 2.4V internal reference.
-> +  Datasheet: https://www.ti.com/product/ADS1299
->  
->  maintainers:
->    - Mike Looijmans <mike.looijmans@topic.nl>
-> @@ -17,6 +22,9 @@ properties:
->    compatible:
->      enum:
->        - ti,ads1298
-> +      - ti,ads1299
-> +      - ti,ads1299-4
-> +      - ti,ads1299-6
->  
->    reg:
->      maxItems: 1
-> @@ -33,8 +41,10 @@ properties:
->  
->    vref-supply:
->      description:
-> -      Optional reference voltage. If omitted, internal reference is used,
-> -      which is 2.4V when analog supply is below 4.4V, 4V otherwise.
-> +      Optional reference voltage. If omitted, internal reference is used.
-> +      For ADS1298, the internal reference is 2.4V when analog supply is
-> +      below 4.4V, 4V otherwise. For ADS1299, the internal reference is
-> +      always 2.4V.
+Hello,
 
-Not sure the dt-bindings care about the internal reference. It should
-just be a driver implementation detail.
+v1 of this series can be found at
+https://lore.kernel.org/linux-iio/cover.1781883685.git.u.kleine-koenig@baylibre.com
+.
 
-So I would just trim this down to:
+Jonathan already applied most of the v1 series, so here come only the
+remaining bits with the following changes:
 
-	Optional reference voltage. If omitted, internal reference is used.
+ - Squash the ti-tsc2046 changes together and simplify some more 
+ - Apply the same simplification to the adis16550 driver. Jonathan
+   asked the ADI people if they have a driver extention in the queue to
+   actually make use of the device abstraction that is thrown away here.
+   There was no reply yet, so I thought I'll implement this
+   simplifictions such that it's clear what we're discussing.
 
->  
->    clocks:
->      description: Optional 2.048 MHz external source clock on CLK pin
-> @@ -75,5 +85,16 @@ examples:
->            spi-max-frequency = <20000000>;
->            spi-cpha;
->          };
-> +
-> +        adc@2 {
-> +          reg = <2>;
-> +          compatible = "ti,ads1299";
-> +          label = "ads1299-1-eeg";
-> +          avdd-supply = <&reg_iso_5v_a>;
-> +          interrupt-parent = <&gpio0>;
-> +          interrupts = <79 IRQ_TYPE_EDGE_FALLING>;
-> +          spi-max-frequency = <20000000>;
-> +          spi-cpha;
-> +        };
+Patch 3 was already part of v1 and Jonathan claimed to have applied it,
+but it's not in his testing branch, so I included it here again.
 
-Since the chips are nearly identical, not sure a 2nd example is
-particularly useful.
 
->      };
->  ...
+Uwe Kleine-König (The Capable Hub) (3):
+  iio: adc: ti-tsc2046: Simplify device handling
+  iio: imu: adis16550: Simplify device abstraction
+  staging: iio: Initialize spi_device_id arrays using member names
+
+ drivers/iio/adc/ti-tsc2046.c           | 25 ++------
+ drivers/iio/imu/adis16550.c            | 89 ++++++++------------------
+ drivers/staging/iio/adc/ad7816.c       |  6 +-
+ drivers/staging/iio/frequency/ad9834.c |  8 +--
+ 4 files changed, 37 insertions(+), 91 deletions(-)
+
+
+base-commit: 76b8de6371463f29189d4df52f464c3fd6f3328e
+-- 
+2.47.3
 
