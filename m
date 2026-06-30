@@ -1,296 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37DBA3D902E;
-	Tue, 30 Jun 2026 14:02:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E9522156C
+	for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 14:03:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782828130; cv=none; b=jvhVylfijv/mZVXswaJ40aStwubyGmP4Mt8NgM9oM2/mnQOn1eppXiqXIRMViRjdU12QSBNS1diSYFPCS+Micp5YsMZKb0eKaooYNiT1SHpPiqZqb8gRNuv2Ot8UlR9n+1BNWmolJo3rPCUpOJE1W5E8Qu9p+FRL2MeLfUFEI9I=
+	t=1782828198; cv=none; b=b9h9nPb84bqLH29PJqwBRZZaUys9u0cNjfYIPvcYndx/fw32LvJEzlLKN99//+6GOQ/9qg1m8R8Q/BpR+m05WINA2DQPBmZvgGUB3n9QgeDoCkUMaVr1ZGyD/Yx+iB7wSxLwMaECILzRMo75nxdfDiHbGk+SKNEkuszP+XUEqbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782828130; c=relaxed/simple;
-	bh=9Zd0xLMn0lFqaEDohKACDpMcNvx7eG86dYNQ6Z2YD0U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TTWaEQO5a13T09vivpD6HW0r/oOS73jYKAGuhTJaIpkSAF2U6R1qhLjXo1sNnO+67DZ66KincBc+whjUgNF+l7TNOiFK60prDu3LerzfUaAY3VHVKz95FU9qYx67JMn5Oe6WpArjZ5ZMoKAdmnyT+vgNQVWvuyDuo+dJi351YSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aH/4/O97; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782828198; c=relaxed/simple;
+	bh=te6yQ/vh13KPOT8v7c2CmXqIR0YWG0FCzDunJJ2/n4A=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XtrBsczdrvNeTlh4YK6MXtM2sLzqp5ml01Pw+vlyIpRy2yubclpP8q3J4hwqWZh7t9f9J+KZprSQySPttBQl5lZSt9o8e4qz6i5DoZmzy4wvooEqKpgcU8pio2OtfGiBfYjlIihOSCXw8CTEgogRkc2HgfgBjMu0hKkdvQ8uY1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KZCxBo9g; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aH/4/O97"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C7A1F00A3D;
-	Tue, 30 Jun 2026 14:02:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782828128;
-	bh=AhyO9uo6KidZv/UUPZL+eUnqxxv3KaSfybSbxX2r0Is=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=aH/4/O97ef+PBMmQZEnRmZE2eEcvV23RPiuJkui9GX6CcgNQLLlTWWaMKUotIsBoc
-	 JOoJBnXRRUZ0k4SNX/niZOnQt0ah62ecM9RHqYmDqddmwApS4S9fA2pQEXoOCAujyC
-	 JatJr0/IgXcFMq473CTyA8sD6pCJOQrSSVrqNuoxibXPKYsb7wN1ebUeAsLCZrX/Ks
-	 FDOZCn8p4EtYbjU742DQ4exl4qvWJw8jwmlh1NEDEApn+7mCyXe0N0TJt98Eo4vSCS
-	 as/r81Vr3CCpY4KEyKq5oESaNcxC9qSE8+DkLo43SsI4xdustuLwI/O8chKHD0AF4C
-	 vG2eiiS7I4PVA==
-Date: Tue, 30 Jun 2026 09:02:07 -0500
-From: Rob Herring <robh@kernel.org>
-To: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v6 08/16] dt-bindings: iio: frequency: add ad9910
-Message-ID: <20260630140207.GA2986379-robh@kernel.org>
-References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
- <20260618-ad9910-iio-driver-v6-8-79125ffbe430@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KZCxBo9g"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5aec201b582so51402e87.1
+        for <linux-iio@vger.kernel.org>; Tue, 30 Jun 2026 07:03:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782828195; x=1783432995; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=E5myFV2lUvsbUXFZwzMTNcvCKBKBwVWQwQUk0dFgQmo=;
+        b=KZCxBo9gj5446lUwH5ZYMsOlpTU57x3lMtBQ9LnKCPNbhfSLG+qNM2BBpnh7MllfsT
+         fcDZEpaIxUJhj3fLO3sFWmdPcCQiui5Qxs9B01sl/c4c96c5QnDoebAR0TVMej2aocXN
+         syQ2oi8aYhlIbJMCXnH4x3h84Xwll0SeLmQTS/YVjrxpLjfuSOdU5Fhf7qp+uKcSZoWE
+         MWRBbhkGRzGEczi83ukW7FWC26pIairE0WK8lvN7qJB+hP/bT3MbKfXRlBKkBgZacesO
+         imw9g+HESC8LdDB0bdji4ftuIpAcxPxHQIx9dd/ubAfqSMfLz0P/3O3RHzwQerKReJU3
+         aiJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782828195; x=1783432995;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=E5myFV2lUvsbUXFZwzMTNcvCKBKBwVWQwQUk0dFgQmo=;
+        b=hzo0F2NoYLr6QHeGGXR1msPPvZAepHzIijJI1yhj+rbEKSc0cgZcVa2+5ACUvbjh0p
+         DL/A0bsABkPu+DEydQBqiSEzzxTvGg8Ppg6BAitsz0oFjwNCdnCT1PAScoQEq2LtuzPU
+         KlgfrRn6QxJ6iCSh+4bJpTvdgIs7jm6acGyzI6XLE71eIm2txZpxlfP1CB6lFKv/f+Nx
+         kJe5r1KIzeBvmp0El2SVzGOh4KUzHnP02dl4eVpjMaWipeta67pa01QYkOdC2N+XXTrQ
+         3aCJR8u6p0JBIavdAlzcTLsWcuMr1Vv/rzMyusdXcjbJebXjxe6g3FpiS53mxddtuG/g
+         WozQ==
+X-Gm-Message-State: AOJu0YyiYBQpNn2dbJlwER8QhsGIhC3zVRJfEgdM1v79Ra3me4Ub90gK
+	SqVDhir7jPnCLPlWtqiSIZCPLGCth8ZSuZlEQUOuqf5vEuO5iRfRB/KFh9RPKxu5kcfDlw==
+X-Gm-Gg: AfdE7clH57WseOK8sLZruOvVobdJ8SCN1XI0x6xdW0gYZ3mBFI1GQ4aNkfBIGkZvYX9
+	TQX1jaG7lzOSiTOM6xaZx0DN3+mfglx60wLP+6OkvwlSEXiQaX9naPkrUpMKVHtlXWsoky7kRXX
+	Xr0a0BAuSrzH9MWIGt9tnfZC4vLdCtAyUH+jcaSXIQpxD8K+feOeX6Q8eeiABvI37TCbZOAIQkX
+	UvMu0v4vY4I+3SOTwvJwyQI0fOYN1pJbLAHeC13qhjAS4uxwshR4Uu8rNE4/a/1K4PCogJi3DY6
+	lLhtpbW2FoZDzLPgwQvCefgGcrqjcoibZMnQP5F1XKjkE9dNc8C/LY2tXNWxv5rvbkVh5vlXVbn
+	e+Z1d3rk8QVSIOm2NbBzXBneox07Jm/ksq6zhkVsnY+Hw17LGhcjcEVRI4hjM3DxtlCHCQTjWCn
+	CaqMb6e56fOpkQgjxagC5ROAKavCMJ+Nr3GJEQfdODNLPKQw==
+X-Received: by 2002:a05:6512:3589:b0:5ae:a76b:4bb2 with SMTP id 2adb3069b0e04-5aec10c27aamr163435e87.33.1782828194753;
+        Tue, 30 Jun 2026 07:03:14 -0700 (PDT)
+Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aebe4aa01fsm599564e87.75.2026.06.30.07.03.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Jun 2026 07:03:13 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	mike.looijmans@topic.nl,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Md Shofiqul Islam <shofiqtest@gmail.com>
+Subject: [PATCH 1/2] dt-bindings: iio: adc: ti,ads1298: add ADS1299 EEG ADC variants
+Date: Tue, 30 Jun 2026 17:03:10 +0300
+Message-ID: <20260630140311.1473031-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260618-ad9910-iio-driver-v6-8-79125ffbe430@analog.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 18, 2026 at 02:27:24PM +0100, Rodrigo Alencar wrote:
-> DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
-> configurations for clocks, DAC current, reset and basic GPIO control.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
->  MAINTAINERS                                        |   7 +
->  2 files changed, 196 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-> new file mode 100644
-> index 000000000000..a78fe33ba21f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-> @@ -0,0 +1,189 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD9910 Direct Digital Synthesizer
-> +
-> +maintainers:
-> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +
-> +description:
+The ADS1299, ADS1299-4, and ADS1299-6 share the same SPI interface
+and register map as the ADS1298 ECG ADC family but are designed for
+EEG and biopotential measurement.  Key differences from ADS1298:
+- PGA gain up to 24x (vs 12x for ADS1298)
+- Internal reference is always 2.4V (no 4V option)
 
-You need '>' to preserve paragraphs.
+Add compatible strings and update the vref-supply description to
+document the ADS1299 reference voltage behaviour.
 
-> +  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
-> +  14-bit DAC. It features single tone mode with 8 configurable profiles,
-> +  a digital ramp generator, RAM control, OSK, and a parallel data port for
-> +  high-speed streaming.
-> +
-> +  https://www.analog.com/en/products/ad9910.html
-> +
-> +properties:
-> +  compatible:
-> +    const: adi,ad9910
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 70000000
-> +
-> +  clocks:
-> +    minItems: 1
-> +    items:
-> +      - description: Reference clock (REF_CLK).
-> +      - description: Optional synchronization clock (SYNC_IN).
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    items:
-> +      - const: ref_clk
-> +      - const: sync_in
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +
-> +  clock-output-names:
-> +    minItems: 1
-> +    maxItems: 3
-> +    items:
-> +      enum: [ sync_clk, pdclk, sync_out ]
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 2
-> +    description:
-> +      Requires interrupt-names property with the same number of items. The
-> +      supported interrupts are 'drover' (digital ramp generator limit) and
-> +      'ram_swp_ovr' (end of RAM sweep).
-> +
-> +  interrupt-names:
-> +    minItems: 1
-> +    maxItems: 2
-> +    items:
-> +      enum: [ drover, ram_swp_ovr ]
-> +
-> +  dvdd-io33-supply:
-> +    description: 3.3V Digital I/O supply.
-> +
-> +  avdd33-supply:
-> +    description: 3.3V Analog DAC supply.
-> +
-> +  dvdd18-supply:
-> +    description: 1.8V Digital Core supply.
-> +
-> +  avdd18-supply:
-> +    description: 1.8V Analog Core supply.
-> +
-> +  reset-gpios:
-> +    description:
-> +      GPIOs controlling the Main Device reset.
-> +
-> +  io-reset-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the I/O_RESET pin.
-> +
-> +  powerdown-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the EXT_PWR_DWN pin.
-> +
-> +  update-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO controlling the I/O_UPDATE pin.
-> +
-> +  profile-gpios:
-> +    minItems: 3
-> +    maxItems: 3
-> +    description:
-> +      GPIOs controlling the PROFILE[2:0] pins for profile selection.
-> +
-> +  sync-err-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO used to read SYNC_SMP_ERR pin status.
-> +
-> +  lock-detect-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO used to read PLL_LOCK pin status.
-> +
-> +  adi,pll-enable:
-> +    type: boolean
-> +    description:
-> +      Indicates that a loop filter is connected and the internal PLL is enabled.
-> +      Often used when the reference clock is provided by a crystal or by a
-> +      single-ended on-board oscillator.
-> +
-> +  adi,charge-pump-current-microamp:
-> +    minimum: 212
-> +    maximum: 387
-> +    default: 212
-> +    description:
-> +      PLL charge pump current in microamps. Only applicable when the internal
-> +      PLL is enabled. The value is rounded to the nearest supported step. This
-> +      value depends mostly on the loop filter design.
-> +
-> +  adi,refclk-out-drive-strength:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    enum: [ disabled, low, medium, high ]
-> +    default: disabled
-> +    description:
-> +      Reference clock output (DRV0) drive strength. Only applicable when
-> +      the internal PLL is enabled.
-> +
-> +dependencies:
-> +  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
-> +  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
-> +  lock-detect-gpios: [ 'adi,pll-enable' ]
-> +  interrupts: [ interrupt-names ]
-> +  clocks: [ clock-names ]
+Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
+---
+ .../bindings/iio/adc/ti,ads1298.yaml          | 31 ++++++++++++++++---
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
-As clocks is required below, then 'clock-names' is also always required.
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
+index 71f9f9b745cb..82c5181126df 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1298.yaml
+@@ -4,11 +4,16 @@
+ $id: http://devicetree.org/schemas/iio/adc/ti,ads1298.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Texas Instruments' ads1298 medical ADC chips
++title: Texas Instruments ADS1298/ADS1299 biopotential ADC chips
+ 
+ description: |
+-  Datasheet at: https://www.ti.com/product/ADS1298
+-  Bindings for this chip aren't complete.
++  ADS1298/ADS1298R: 8-channel, 24-bit ECG ADC.
++  Datasheet: https://www.ti.com/product/ADS1298
++
++  ADS1299/ADS1299-4/ADS1299-6: 8/4/6-channel, 24-bit EEG/biopotential ADC.
++  Identical SPI interface and register map to the ADS1298 family, but with
++  a higher maximum PGA gain (24x vs 12x) and fixed 2.4V internal reference.
++  Datasheet: https://www.ti.com/product/ADS1299
+ 
+ maintainers:
+   - Mike Looijmans <mike.looijmans@topic.nl>
+@@ -17,6 +22,9 @@ properties:
+   compatible:
+     enum:
+       - ti,ads1298
++      - ti,ads1299
++      - ti,ads1299-4
++      - ti,ads1299-6
+ 
+   reg:
+     maxItems: 1
+@@ -33,8 +41,10 @@ properties:
+ 
+   vref-supply:
+     description:
+-      Optional reference voltage. If omitted, internal reference is used,
+-      which is 2.4V when analog supply is below 4.4V, 4V otherwise.
++      Optional reference voltage. If omitted, internal reference is used.
++      For ADS1298, the internal reference is 2.4V when analog supply is
++      below 4.4V, 4V otherwise. For ADS1299, the internal reference is
++      always 2.4V.
+ 
+   clocks:
+     description: Optional 2.048 MHz external source clock on CLK pin
+@@ -75,5 +85,16 @@ examples:
+           spi-max-frequency = <20000000>;
+           spi-cpha;
+         };
++
++        adc@2 {
++          reg = <2>;
++          compatible = "ti,ads1299";
++          label = "ads1299-1-eeg";
++          avdd-supply = <&reg_iso_5v_a>;
++          interrupt-parent = <&gpio0>;
++          interrupts = <79 IRQ_TYPE_EDGE_FALLING>;
++          spi-max-frequency = <20000000>;
++          spi-cpha;
++        };
+     };
+ ...
+-- 
+2.51.1
 
-> +  '#clock-cells': [ clock-output-names ]
-
-The h/w sometimes has clock outputs and sometimes doesn't? #clock-cells 
-should always be required IMO.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - dvdd-io33-supply
-> +  - avdd33-supply
-> +  - dvdd18-supply
-> +  - avdd18-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        dds@0 {
-> +            compatible = "adi,ad9910";
-> +            reg = <0>;
-> +            spi-max-frequency = <1000000>;
-> +            clocks = <&ad9910_refclk>;
-> +            clock-names = "ref_clk";
-> +
-> +            dvdd-io33-supply = <&vdd_io33>;
-> +            avdd33-supply = <&vdd_a33>;
-> +            dvdd18-supply = <&vdd_d18>;
-> +            avdd18-supply = <&vdd_a18>;
-> +
-> +            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
-> +            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
-> +            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
-> +            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
-> +            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
-> +                            <&gpio 5 GPIO_ACTIVE_HIGH>,
-> +                            <&gpio 6 GPIO_ACTIVE_HIGH>;
-> +
-> +            adi,pll-enable;
-> +            adi,charge-pump-current-microamp = <387>;
-> +            adi,refclk-out-drive-strength = "disabled";
-> +        };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b051eccafa60..998b06fd97fd 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1645,6 +1645,13 @@ W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
->  F:	drivers/iio/dac/ad9739a.c
->  
-> +ANALOG DEVICES INC AD9910 DRIVER
-> +M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-> +
->  ANALOG DEVICES INC MAX22007 DRIVER
->  M:	Janani Sunil <janani.sunil@analog.com>
->  L:	linux-iio@vger.kernel.org
-> 
-> -- 
-> 2.43.0
-> 
