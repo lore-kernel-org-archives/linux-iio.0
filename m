@@ -1,49 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD62386541;
-	Wed,  1 Jul 2026 18:29:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7614025B08A;
+	Wed,  1 Jul 2026 18:41:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782930578; cv=none; b=GtWiDP77U6xk8wTX3hlDiMd24rbt4mNDCrmLEPlbX82d7nPlkY+/sS47lyj7FV2EvnhCFP9ESc1X7qOMcJS9GLKzDXciL5ipvN0gdsQMq5BW+eNhiQCIvhYJVlzLY6uopxpodAb77ENQaMU0tPRLIxdVpiIqvmjAkogSy7yufUU=
+	t=1782931269; cv=none; b=KH8vF8kElN11pBvRv5E3nNyGlfS9aQw2ANW3FpZ5ygwyUS4PVwJAgIA3EPT1w/CQew9Zs0Kj6zF2QB2zRw/mhtHxmkKo46ciH7BFxDGOIKFx7q9MfSxmtiIvtu3j55GUFV4N3l/D543Oq3k+Bs4pnOjS3OnNtnWeRD6vntzNzHk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782930578; c=relaxed/simple;
-	bh=aenz1atAFGWjDaH1ic6mzES284MkOFNJLr08nNL+wDg=;
+	s=arc-20240116; t=1782931269; c=relaxed/simple;
+	bh=qXJldM6BUh03weti5x2Wx+CwtFDpxI/BSec/nZO2YAQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xs+y7XeGgSj13BFoOXjoMnBpNimo6pm7Aas8zG5j8Q9Ls/Ge64C7ew0Vtfx03X7zdvPH2+WEHLwDI7BtFAgOz1M92WnKI1qEdFzprnd3FE3RYWXLHYyccd7oKS4WvNjdO1DS0enXo2NfXkRQFNjh39d4RlWyClzs4F8y/NSC/3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VYkvCZdu; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=MO1vlPDJb9/6waYb84mvlSJRTt70zFyIoAE0b6IhBup49ewOQcEGeFncHsbhJTsgRAxdlhgeUItESqmd/DXSo6Z/qv0UXQDgrJj/qfcpbzqlOlj9B2T+W6cvpGS5Q4QtvMNBw/Sipt8D7DhqNyWwJ6AJ64jN0eVRJSabUy3d7hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ik2U7ntW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VYkvCZdu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF5FC1F00A3A;
-	Wed,  1 Jul 2026 18:29:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ik2U7ntW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70CCB1F000E9;
+	Wed,  1 Jul 2026 18:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782930576;
-	bh=oouf/dK+KVCQpIL5LxKtT/u/Z+E2ntQeaZfCAiSQ8EI=;
+	s=k20260515; t=1782931268;
+	bh=RtBAYlNvKsaOrj0DVhmIZREtE8lCqKZwKuktgqgnPs8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VYkvCZduhCdySp7hXHzjgXIR7cuZyFtTKEveIl7wuCR8Uisy6nUQ0D+18L8KPP+Bm
-	 zXy9qWlA79l62K19CEV7oach/0mgqjWFY5fsiZvmgWYdgbgXOpp70LjBpYVgrVwLWM
-	 xoFCuzGmJrzEZrLYaA7W1wDnuKGHjOhhNEQsCm2p13YJxXEfjAX6YX0WmJrMJCRcrD
-	 oibjmbB9SkkXkicl9IysYY72s5H06OzlgTjHIN5cNXjm1rYcWw3LlsaGBlNWV80DTi
-	 sryYFJjyD/9wGMdnMIu4I1PwQJpjvPi+mYiU4TZeESzGnV2G19Stgtdz/mpADJuvmh
-	 qYd75WqKxmwHA==
-Date: Wed, 1 Jul 2026 19:29:31 +0100
+	b=ik2U7ntWPPmeip+BSU5qfzGjqrawJ4SmYad/YxAhMlYySU5qVmeurjBl5nwiSeWCu
+	 O4uHwgjLviRKnDibIc9TdSQds1U7FUtlb96/rrgEE4dan5Q9azt5nQ5GGPJxTt7d0E
+	 ppJzHpUslCAIeCjiBN76Qo75mZYSUQH3CowNg4qB1o8n4gaqaQQQ1RzMW7mBGWJ/mF
+	 8o9xUSlNIPjgXktoKXRfzmmQJWMNm5luvrz5f7A1Bv8fM98RLhlbPGD6odO3NZEmJo
+	 6/Z4ONTUHZtEAxpzrjM6PNNX41IQxW0fSw0n+ROulQ0iqlTlkrTDr/LWNON17i0x7s
+	 YlP3r+MjbJXRQ==
+Date: Wed, 1 Jul 2026 19:41:03 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: rva333@protonmail.com, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, Lee Jones <lee@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>,
- Conor Dooley <conor.dooley@microchip.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v4 0/4] AUXADC driver for the MediaTek mt6323 PMIC
-Message-ID: <20260701192931.1be293bd@jic23-huawei>
-In-Reply-To: <3f914030-44e8-4f63-ae72-7fde7d843325@baylibre.com>
-References: <20260623-mt6323-adc-v4-0-299680ad3194@protonmail.com>
-	<3f914030-44e8-4f63-ae72-7fde7d843325@baylibre.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, "Jonathan Corbet" <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>, Janani Sunil
+ <jan.sun97@gmail.com>, <linux-spi@vger.kernel.org>
+Subject: Re: [PATCH v5 2/3] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260701194103.45541cbe@jic23-huawei>
+In-Reply-To: <20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
+References: <20260701-ad5529r-driver-v5-0-ed087900e642@analog.com>
+	<20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,34 +54,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 28 Jun 2026 12:34:20 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Wed, 1 Jul 2026 08:40:40 +0200
+Janani Sunil <janani.sunil@analog.com> wrote:
 
-> On 6/23/26 3:16 AM, Roman Vivchar via B4 Relay wrote:
-> > This series adds support for the 15-bit AUXADC hardware block found on
-> > the MediaTek mt6323 PMIC.
-> > 
-> > The previous version of the series for all AUXADC, EFUSE and thermal
-> > drivers was split after Krzysztof's comment [1].
-> > 
-> > Tested on the MediaTek mt6572 and mt8163 SoCs (Ben), both paired with a
-> > mt6323.
-> > 
-> > [1]: https://lore.kernel.org/linux-mediatek/20260504-mt6323-v1-0-799b58b355ff@protonmail.com/T/#med30fad67a090be35f549231336b2dec295233f6
-> > 
-> > Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
-> > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> > ---  
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
+> buffered voltage output digital-to-analog converter (DAC) with an
+> integrated precision reference.
 > 
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+Putting aside our device address discussions as being handled elsewhere
+one minor thing inline
 
-Applied patch 1 - with some hand editing due to another change
-to that binding, and patch 2 to the testing branch of iio.git
-which I'll push out as togreg once the bots have given it a clean
-bill of health.
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
+> new file mode 100644
+> index 000000000000..97075b1c919d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
 
-I'm assuming 3 will go via mfd and 4 via the soc tree.
+> +properties:
+> +patternProperties:
+> +  "^channel@([0-9a-f]{1,2})$":
+> +    type: object
+> +    description: Child nodes for individual channel configuration
+> +
+> +    properties:
 
-Thanks,
+> +      adi,output-range-microvolt:
+> +        description: |
+> +          Output voltage range for this channel as [min, max] in microvolts.
+> +          If not specified, defaults to 0V to 5V range.
 
-Jonathan
+No way to specify the default as part of the binding rather than a comment?
+I haven't checked but does
+       default: [0 5000000]
+not work?
+> +        oneOf:
+> +          - items:
+> +              - const: 0
+> +              - enum: [5000000, 10000000, 20000000, 40000000]
+> +          - items:
+> +              - const: -5000000
+> +              - const: 5000000
+> +          - items:
+> +              - const: -10000000
+> +              - const: 10000000
+> +          - items:
+> +              - const: -15000000
+> +              - const: 15000000
+> +          - items:
+> +              - const: -20000000
+> +              - const: 20000000
+> +
+> +    required:
+> +      - reg
+> +
+> +    additionalProperties: false
+
+
+
