@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261B643C06F;
-	Wed,  1 Jul 2026 11:04:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2993642DFF6;
+	Wed,  1 Jul 2026 11:07:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782903887; cv=none; b=UByFasq+b2+oJRC3mzxkNHtiHfWPQrSgpxJP1vX5Iz0y+OzN2leV8fzZLXfpvkCwYQskT+HG6hbguLnCn/puYOeQvvNhBYsVxGj1+lljpJhkNujXqPUgaDsvE1zMrkjwNq+qc+A3vs6d5OoLBaTw2+JBJSP1mAXr8yKpO4XbV3c=
+	t=1782904070; cv=none; b=AleJkUBWvLXF38qtmKajfrhGQADOLXu842u4lsMIvSBIU2c7Ynauo4JSpW6rTvpCu6wPJ43QCKUR+mvP/y7kHtRNyEywskGLWbFwcvrQV6WurACxTYJ7VUDkRTV5mZeDhIvcWIofm48guqfEXnS6wCgUJh+Cp+YUjCbg7Tw6UDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782903887; c=relaxed/simple;
-	bh=iNoJHRXlCQkKiqMlZrlzGN5KLrGu8DA2/8z4Ei4QI/k=;
+	s=arc-20240116; t=1782904070; c=relaxed/simple;
+	bh=NJLKXuAy7Y09RSdhb1EYekxiJOEEQTEVUn+u+kA7hG8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bklAYi1QXZ1pffa2gqM46+CpMYRAEmZt59AYEqk5fIwU3XtmecW74tbkDse4qH2jpS7Gq1Eiyakppve2cz3tmKSqJw1wZ5jqUXm8dhrT3/6nuLadVihBnqcOeWCl7NOZm2cKCuBIcIRM/w92kTN5yYJtfbmGHgrV9sxncYJhAYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RgF0apzc; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=mSvzBMFgkK4gWxpzrKJARgy1bSHNPDRAey4o/71Kk4LL5bUDfmarGAj0P1qBCD8/vUEB9XctWyWfIn9gFko9dUBXkF1YOWWcM2euhFNINcgsN756AmQChZCCJ9Ee6deJrqbfjxFYJmsTm31nebz+Hn9+MxxLU/AItKs6MfM2S5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lCBpK/qC; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RgF0apzc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD7721F000E9;
-	Wed,  1 Jul 2026 11:04:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lCBpK/qC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED5681F000E9;
+	Wed,  1 Jul 2026 11:07:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782903883;
-	bh=AnOUujFcKX3gpwz4D3fgVf4ygLddSqv9i61Ak3jx5rY=;
+	s=k20260515; t=1782904068;
+	bh=nQ4PsDHYabC62Okbc3S5UnoU2U7Ydz2PKMaX+5DJstc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RgF0apzc2I8IGgQvXFBNTYGTj/QWPBWdU5Bh6iXatZRH4VqyZx+5vC0kZ0AeRgoD1
-	 HIrJbxmsJ/d8btCgzU1jENoUJdZn347X5FUjLieGAxHA7BBwoOUTNJ2erhM/lYZAj/
-	 kDldJSP0wW47BO3yL563p/nUT8y7CJQ63ssCuMY+0+CCaC823zHDMbWpWpaOWZEAcK
-	 +zeQl9Mg/yc9srbtD6sFr7YUwaA2xThoefpcBJ5uhUIqp8kpBl87731KoZrtnvAtSe
-	 tQJZV2J3BcyWH05lvsRFbo2NceNQcewoAeoFdJispYiHIoZAhcAHednAhBvPWLP7WO
-	 epwBmjZFpULrw==
-Date: Wed, 1 Jul 2026 12:04:37 +0100
+	b=lCBpK/qCLR0Wp8AMFtVO2ZYKGh9TJDJPL16mIuJ2LZBUdPDw0MaNMgtyuiuCaPChT
+	 M+8NfHmujqdqKDN0WuRF13M6FiO7GqG+2tudMLyW41C2O1Oowh+ty83dVJ/bAQuIwY
+	 mIAuBL2zzyd9UZTAelVEZjhAkYYYsDUJXJHi8DubvpitE6aKob3L2hzZTQgSa4HBPp
+	 oGVjBe4yS5HDCYir4Jkfe4jcnGp5FNv7PBAJT9B4amHZffTze/tFBA4QosYBlhSj/3
+	 r40OIoXB0aaove71G2aMs/TB7eE4jEcUP0AdbW9sX7TZ2aCO/Fij19i8EnJeBt09J1
+	 09V/U5cvYPh/Q==
+Date: Wed, 1 Jul 2026 12:07:43 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Janani Sunil <janani.sunil@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -44,11 +44,10 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
 	linux-spi@vger.kernel.org
-Subject: Re: [PATCH v5 1/3] dt-bindings: spi: Add spi,device-addr peripheral
- property
-Message-ID: <20260701-immodest-carrot-611d255656b5@spud>
+Subject: Re: [PATCH v5 2/3] dt-bindings: iio: dac: Add AD5529R
+Message-ID: <20260701-ardently-sloping-2d5ba83b61fb@spud>
 References: <20260701-ad5529r-driver-v5-0-ed087900e642@analog.com>
- <20260701-ad5529r-driver-v5-1-ed087900e642@analog.com>
+ <20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -56,72 +55,79 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="VqqCijwUkRPHXQ13"
+	protocol="application/pgp-signature"; boundary="0M00TNO2mVEAmOIw"
 Content-Disposition: inline
-In-Reply-To: <20260701-ad5529r-driver-v5-1-ed087900e642@analog.com>
+In-Reply-To: <20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
 
---VqqCijwUkRPHXQ13
+--0M00TNO2mVEAmOIw
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 01, 2026 at 08:40:39AM +0200, Janani Sunil wrote:
-> Some SPI devices support sharing a single chip select across multiple
-> physical chips by encoding a device address in the SPI frame itself.
-> Add a generic spi,device-addr property to document this per-peripheral
-> address. This property belongs in channel or sub-device nodes of
-> peripherals that use this addressing scheme.
->=20
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.y=
-aml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> index 880a9f624566..3774e8018355 100644
-> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> @@ -142,6 +142,11 @@ properties:
->      minItems: 2
->      maxItems: 4
-> =20
-> +  spi,device-addr:
+On Wed, Jul 01, 2026 at 08:40:40AM +0200, Janani Sunil wrote:
 
-To match other generic spi properties, s/,/-/.
+> +patternProperties:
+> +  "^channel@([0-9a-f]{1,2})$":
+> +    type: object
+> +    description: Child nodes for individual channel configuration
+> +
+> +    properties:
+> +      reg:
+> +        description: Channel number.
+> +        minimum: 0
+> +        maximum: 63
+> +
+> +      spi,device-addr:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
 
-However, you don't actually use this as a spi peripheral's property in
-your device binding, so you've got your wires crossed here somewhere.
+Same comments apply here about whether this is a channel or a spi
+peripheral level property.
 
-If it's a generic dac channel property (as you use it) it should be in
-dac.yaml (or adc.yaml for the other device that I asked you to add it
-for as proof of being generic), or it is a spi peripheral property and
-needs to go into the dac node itself.
+> +        enum: [0, 1, 2, 3]
+> +        description:
+> +          Device address selected by the ID0 and ID1 pins. Up to four AD5529R
+> +          devices can share a single SPI chip select; each device responds only
+> +          to transfers whose address bits [13:12] match its configured address.
+> +
+> +      adi,output-range-microvolt:
+
+I didn't notice this on the previous versions, but doesn't this
+duplicate the common output-range-microvolt in dac.yaml, which you
+should be including here because these channels are dacs?
 
 pw-bot: changes-requested
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      Device address used when multiple peripherals share a single chip =
-select.
-> +
->    st,spi-midi-ns:
->      deprecated: true
->      description: |
->=20
-> --=20
-> 2.43.0
->=20
+Cheers,
+Conor.
 
---VqqCijwUkRPHXQ13
+> +        description: |
+> +          Output voltage range for this channel as [min, max] in microvolts.
+> +          If not specified, defaults to 0V to 5V range.
+> +        oneOf:
+> +          - items:
+> +              - const: 0
+> +              - enum: [5000000, 10000000, 20000000, 40000000]
+> +          - items:
+> +              - const: -5000000
+> +              - const: 5000000
+> +          - items:
+> +              - const: -10000000
+> +              - const: 10000000
+> +          - items:
+> +              - const: -15000000
+> +              - const: 15000000
+> +          - items:
+> +              - const: -20000000
+> +              - const: 20000000
+
+--0M00TNO2mVEAmOIw
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCakT0RQAKCRB4tDGHoIJi
-0oAXAQCicLyE78yFQYPOZCjJeHOLd/F4aci3owp0A2ld0WboDAD+PNHYrKK5luFd
-0otItNvp4UEA7giSba5VSuOwoQ6lqw4=
-=BtpN
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCakT0/gAKCRB4tDGHoIJi
+0pnQAQD9lhRrxn1NbXQ8zdd56gFpnXVgtHwgo/R9/U8JU6MARgEAuKhd4IqN1Y05
+FDtxSXMlM8NIEpnzxf86fNIaYlXdcgc=
+=Qn0X
 -----END PGP SIGNATURE-----
 
---VqqCijwUkRPHXQ13--
+--0M00TNO2mVEAmOIw--
