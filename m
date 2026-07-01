@@ -1,732 +1,217 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FCB13B101D;
-	Wed,  1 Jul 2026 06:41:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89533B42EB
+	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 07:28:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782888111; cv=none; b=mon0QV3UObIS6uOq2sX1Kpwe2D15EHiHqS9VrGFOZjzOumwXZvAZqXt5NvgCGa7E2gcesc2pzkPBkpOJb/n+99eDRXNsp2JxyGMU0pDzTMI5wXMR7u+OAr1tbp5GQ4HKp877OYTavLjh35FDxxqoOc7kfik9MYscwPA+ksZiPfs=
+	t=1782890909; cv=none; b=F03xK1wy1iCnTB3HsiEvFXodSSe+w34l6PswkgLF+0H6KjR1ljDyqmatAWmg2OWqM629UU0WlEuXI+bCUC6U4Qym0vLJbEoa0MOwi1Eb22kmhI3NYd0Zjg6j+Z9KIOY3FhV42v5cRfmHpFtMUr6cxiWSmubqw+UCoioww7xlDz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782888111; c=relaxed/simple;
-	bh=VxY0yli9HdWytWoWRR574KvM4bbnGhWy9CErIxOEwsQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=taCxGzR/8fXNt7k/5LECvKf71T+mCqIJ3LUppWbM636MvILVVqiFFlW/mTPl45Vck8c5Ewpur83i/gbwxfUfuuM+62tx7ZHrrE3Fl3crAL+3qAulbLlslOuz+nhOdUTAfV0kOLJXbdFWd9RfG0+9ihr8swNIFLAuKB98TxGCcBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xXQ0dBaz; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1782890909; c=relaxed/simple;
+	bh=R9Hsnhb/m1MON+FkaFfjvpmk+2EaxGf1xkcCT4bPBWs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jYYMjOvuC5MoEJZRbAdLGPZOjsAiRFSJx0cJytmpIACgooevL9lBZ2XHNToVQof5yA1ffFQv5r79vvWHzT2tYpL2nQwqiy2m5o2eoV5cXOxYcs3kPT8bgSYA69KDvIl4uZjUl6yic6Bsqkl96qxKbG+0Qr1Q5vtQohg1rcOvrbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c6mmu8KZ; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xXQ0dBaz"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6612vCjf2493977;
-	Wed, 1 Jul 2026 02:41:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=2QT0x
-	RELkImKMU6QBcoRaKyGOxBfqC1O0R1MsmHdxgQ=; b=xXQ0dBazzllcqjs53ddJa
-	orwid5+LVkotFw5Fi2chKCh45+7gm6dCGbYwv27WmzpR7/Rk5hs8WiBGcoM8qj9U
-	ezJFnoJyPP0s468RUhy+s+KllQcjFqEHDz+cn1FauWHXTSqn4l4FeFp+oReQgM8R
-	sRgE+ZP8/Od59S3Z6FaFcUPWdKeyIO2o4b1ksMwydTMN8m0qkq+G6oab7aCkcxEt
-	gmW+TDMVLv4cwJcAiHscYMcZCufOa/q8dvThZIIZ63cviXKjTqAOiPLX/DbVejZ9
-	Ms93RAmNjipnM/HxHbMSDpLGUP76ZsglL/b1LStQBrrdpxmyPupCw2C2OSy7H2wm
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4f3sava1eu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 01 Jul 2026 02:41:21 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6616fJLM061237
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 1 Jul 2026 02:41:19 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 1 Jul
- 2026 02:41:19 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 1 Jul 2026 02:41:19 -0400
-Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.62] (may be forged))
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6616etNB002283;
-	Wed, 1 Jul 2026 02:41:13 -0400
-From: Janani Sunil <janani.sunil@analog.com>
-Date: Wed, 1 Jul 2026 08:40:41 +0200
-Subject: [PATCH v5 3/3] iio: dac: Add AD5529R DAC driver support
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c6mmu8KZ"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493c00f74baso1569565e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 00:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782890906; x=1783495706; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=a8VjUfdfZIvWwH5/Y6PbKw+VndA5OxOoRyB1H70fxh0=;
+        b=c6mmu8KZrk/Xi4C+glwcZ42mxkYIQEkE6+2obbUAaZzWpgibtwpNcAkZiGFb35MsRl
+         jsTMmNy4Oh8im/1fVKWuaIz3iSD1FnJOELqNgUx9Lwvr3urzX9O4u1KE08R87tc44m15
+         FYJSUao5uHiAvAt92mwRbbkD7vHfjjHAVkb3Ttk5dIkXo3w4Wi31UhIKTg50AvEmIivk
+         Bnh1WBBamX71/tMgeWw4VKOKmLpik2ZHCxfca4QmlWr03D7n+7JpDZOJY4wFHuRQRW1Y
+         q9Dg79TRVJQKszpWmKVuZIBDRGSluZD/Y6NV3iK21kiyz2SLa9z2cZCc/STRqU1ZMhZw
+         KoOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782890906; x=1783495706;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=a8VjUfdfZIvWwH5/Y6PbKw+VndA5OxOoRyB1H70fxh0=;
+        b=qDVz8AAt63VvqMDdm9VpKI1ZzHntYmhRYRIzekRsGu2iL7Re7XPM77m1DMNgQn3nov
+         Ckwrl89CSE35BLdi27IvczCP6QWtr0MObiRBz8YDoWGnj7YksoMzZjh+uo0iDnNsrHup
+         TpfzCbwsPtZH7p12FjZOryTRwnlHX9yXyilKuGYi5vvetCXrRDLuvLcR3cwOXThm+SX0
+         9yJsjpTo4qQD9OwJ6Ppp9U9cmCcf1D4SB4qiRZBuw9MYwMCnXE4lHm80vXGoamnnTqLD
+         heq3ufD8R/MPOmxGLXm3rjN3AMV/MjIdzs12WmBcGjtbWHpuJWUTWp3C9/PWNZUO/kVl
+         BtrA==
+X-Gm-Message-State: AOJu0YyJfbQSmLIiKNWHn8LjYj8k6MbZBErd/a2Yc8rRH/9Izpa+ZXOt
+	Gn4VhsZhoDVyFH90Kk83+43L0BpK8w+SLzYWCyhUgx8HS/EJ1ovWWbCb
+X-Gm-Gg: AfdE7cmjxRrCN6xkN1YG3855GQS6aL7cXA9FUO/5/cGgtOiGI1F7fF94Yz1xxk2LvMV
+	pRDXNUo22d3/h5KaNrbkAQtLxJYzkKv/DDJIZue0M7AaLklcIfbUnjkzSt33nwTx8A/oAdKzegG
+	2dQW6Z2nY2Kf/48V4Yx4kO44JgYuk/wMOe5KFR+yvaNrRkoATiyaooVfC2IXacH1c0ht660w9gd
+	ZyJJEiJVytHJENmyHuFW/ganK9nqeM5pPtnUGcVtPlCyXWiqlkU1pWMXhZ0FUrRr8LQo4T2Z1p/
+	Pg6qdaWAqw70xxEJYLH/JzVOuRv81nfbq8fK6ABHGhwnoFQrRq8icZybJr3dHXPdR87+5GYidiA
+	dSrLLCMki97jWIYvWlYQcNbSli4/a1+bufvu54v7HFELMJBpKYwCyHBno4I+eXUaMKSN4ix51wa
+	F2FUa/lgypML+HcwYAlr6gmGbTe3pai2AvHUs+vuqI7f49jcdZ25tPR3KyaHDz1X7uU3dPlMplB
+	/cY+rLTW3Hv3NcjYBgk6utjfdlduJwIiMU70PfnVQ9hZpz9oYxSASivHZNu/9P3uy3Zn09z5br8
+	+9iujIHzT+su+nmninHgPt8WSLkavl5Q2AoXGM1NxTFIGdRH9id//Iw=
+X-Received: by 2002:a05:600c:6792:b0:493:bd71:6084 with SMTP id 5b1f17b1804b1-493c2b96797mr6242155e9.31.1782890905836;
+        Wed, 01 Jul 2026 00:28:25 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4756636cf26sm12805960f8f.19.2026.07.01.00.28.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2026 00:28:25 -0700 (PDT)
+Date: Wed, 1 Jul 2026 09:28:24 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: =?UTF-8?Q?=E0=B8=81=E0=B8=B4=E0=B8=95=E0=B8=95=E0=B8=B4=E0=B8=A8?=
+ =?UTF-8?Q?=E0=B8=B1=E0=B8=81=E0=B8=94=E0=B8=B4=E0=B9=8C_=E0=B8=9A?=
+ =?UTF-8?Q?=E0=B8=B8=E0=B8=8D=E0=B8=A1=E0=B8=B2=E0=B8=9B=E0=B8=B0?=
+ <goorock.goopop@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [BUG] hid-sensor-trigger: poll_value sign unchecked before
+ msleep_interruptible causes ~49.7 day sleep
+Message-ID: <20260701092824.000040e4@gmail.com>
+In-Reply-To: <CAPr6G1qLDrgHvCNsVxj7xHxYUKkAkyo87Hq3Lfyoj3RaZ2v4dg@mail.gmail.com>
+References: <CAPr6G1qLDrgHvCNsVxj7xHxYUKkAkyo87Hq3Lfyoj3RaZ2v4dg@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260701-ad5529r-driver-v5-3-ed087900e642@analog.com>
-References: <20260701-ad5529r-driver-v5-0-ed087900e642@analog.com>
-In-Reply-To: <20260701-ad5529r-driver-v5-0-ed087900e642@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        =?utf-8?q?Nuno_S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jonathan
- Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Mark Brown
-	<broonie@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        Janani Sunil
-	<jan.sun97@gmail.com>, <linux-spi@vger.kernel.org>,
-        Janani Sunil
-	<janani.sunil@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782888055; l=19219;
- i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=VxY0yli9HdWytWoWRR574KvM4bbnGhWy9CErIxOEwsQ=;
- b=bb6okOHIvkLmxyN63qbkki8ml+iRJBLxT4j5QiI3gKsbwf30r0CmNw5cCuQ/zI6O3IARIXtjm
- x+3ziILI5tuB4DbaxOYou41BgTvFHx+K6YbiXQoNpjcZqzFjv5qxfAc
-X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
- pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=avWCzyZV c=1 sm=1 tr=0 ts=6a44b691 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8
- a=VwQbUJbxAAAA:8 a=RYKflIcWaOGVf2NWG3oA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: AJp8wYMea_CjfMLfWZx08BLv9wqXWBFh
-X-Proofpoint-GUID: AJp8wYMea_CjfMLfWZx08BLv9wqXWBFh
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAxMDA2NyBTYWx0ZWRfX3+cbiA5bLzQT
- SxtIvqZrGr5RYuo69nzbQ0pDeOM9q5GH4/CMN8D678L4ZUEwTjxs0RhEcaWx0c/avXSYql6M3VU
- 2zACr83LzHtdCdLbjsacEERcl6DOdU8NgRtr6t3+f3DYqwLkfs6b
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAxMDA2NyBTYWx0ZWRfX73InLIBsCT0R
- VpCN4k/Ci0aCFVcS1kSTNcvBow7w919cuHwbR6miTJAXYt9oAsOh3KNcBrfsRjMzROmT0ire/l6
- pUGgEL8umtl39E6pxw9PURFshfdsKNAOteeD6jdEibwkm3gGaCqYYKOzfsNZwveaapqoKdPZGtD
- e4SCqbWYFJ8Hy9CzgxicAEQiMWChrz/kE5Zj8RxY8bw3fQ/7+5yvACSwQEmvTUAh93RWQ0tWlaq
- E5qBlNeHYbcsvuzOkuq/RNrqxECke3WK7VCZOaXSANurBmk1CfnB/WdSd8Es9HJed+G11NoDn2h
- zQ5AbyVb/yQigGMZVkr/hj2Eq2qT/wo5OOlrIb8k8jHz7UK7GQk7ckNtkGyM0vNb4OQOnoVbPMm
- 7uV1729MSivhJ+RvQzU4s9hV1i7M+z+nhWB7cR9YJQ4knFkXq+UYR/tLLBnKXBGGdmlCmEHj5/b
- Lnv2HDcYXXNB+KS57+A==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
- definitions=2026-07-01_01,2026-06-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 priorityscore=1501 suspectscore=0 spamscore=0 bulkscore=0
- clxscore=1011 lowpriorityscore=0 malwarescore=0 adultscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607010067
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
-from Analog Devices.
+On Wed, 1 Jul 2026 09:40:54 +0700
+=E0=B8=81=E0=B8=B4=E0=B8=95=E0=B8=95=E0=B8=B4=E0=B8=A8=E0=B8=B1=E0=B8=81=E0=
+=B8=94=E0=B8=B4=E0=B9=8C =E0=B8=9A=E0=B8=B8=E0=B8=8D=E0=B8=A1=E0=B8=B2=E0=
+=B8=9B=E0=B8=B0 <goorock.goopop@gmail.com> wrote:
 
-The device communicates over SPI and supports per-channel output range
-configuration. An optional external 4.096V reference can be used in
-place of the internal reference.
+> KERNEL BUG REPORT
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> Component : drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> Subsystem : IIO / HID Sensor
+> Severity  : High (device permanently unusable until service restart)
+> Kernel    : confirmed on 6.17.x; code path present in mainline as of 2025=
+-06
+>=20
+> Summary
+> -------
+> _hid_sensor_power_state() passes the return value of
+> hid_sensor_read_poll_value() directly to msleep_interruptible()
+> without checking for a negative (error) return. When the HID
+> descriptor does not contain a Report Interval feature field the
+> function returns -EINVAL (-22). This value is implicitly converted
+> to unsigned int before being multiplied by 2 and passed to
+> msleep_interruptible(), producing a sleep duration of
+> ~4,294,967,252 ms (~49.7 days). The process enters
+> TASK_INTERRUPTIBLE state and appears permanently hung to the user.
+>=20
+>=20
+> Affected Code
+> -------------
+> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:
+>=20
+>   static int _hid_sensor_power_state(struct hid_sensor_common *st, bool s=
+tate)
+>   {
+>       ...
+>       s32 poll_value =3D 0;
+>       ...
+>       poll_value =3D hid_sensor_read_poll_value(st);   // can return -EIN=
+VAL
+>       ...
+>       if (state && poll_value)                        // BUG: -22
+> passes this check
+>           msleep_interruptible(poll_value * 2);       // -22 * 2 cast
+> to uint =3D ~4.29e9 ms
+>       ...
+>   }
+>=20
+> hid_sensor_read_poll_value() (hid-sensor-attributes.c):
+>=20
+>   s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
+>   {
+>       s32 value =3D 0;
+>       int ret;
+>=20
+>       ret =3D sensor_hub_get_feature(st->hsdev,
+>                                    st->poll.report_id,   // 0xffffffff
+> if not found
+>                                    st->poll.index, sizeof(value), &value);
+>=20
+>       if (ret < 0 || value < 0) {
+>           return -EINVAL;    // returned when Report Interval not in desc=
+riptor
+>       }
+>       ...
+>       return value;
+>   }
+>=20
+>=20
+> Reproduction
+> ------------
+> Hardware : Seeed XIAO nRF52840 Sense (LSM6DS3 IMU) via USB HID
+>            VID:PID 2886:8045
+> OS       : Bazzite (Fedora immutable), kernel 6.17.x
+> Drivers  : hid-sensor-hub, hid-sensor-accel-3d, iio-sensor-proxy
+>=20
+> The device implements a USB HID Sensor (Usage Page 0x20,
+> Accelerometer 3D, usage 0x200073) with Power State (0x200319),
+> Report State (0x200316) feature fields =E2=80=94 sufficient for probe to
+> succeed =E2=80=94 but without Report Interval (0x20030E).
+>=20
+> Steps:
+> 1. Plug the device.
+> 2. Allow iio-sensor-proxy to start and attempt the first read.
+> 3. Observe: iio-sensor-proxy main thread enters D/S state and
+>    never returns. 'cat in_accel_x_raw' also hangs indefinitely.
+> 4. systemctl restart iio-sensor-proxy unblocks all hung processes
+>    (SIGTERM interrupts the interruptible sleep).
+>=20
+> Kernel stack trace (captured via /proc/<pid>/task/*/stack while
+> process was hung =E2=80=94 iio-sensor-proxy PID 1011, kernel 6.17.x):
+>=20
+>   [<0>] msleep_interruptible+0x3b/0x90
+>   [<0>] _hid_sensor_power_state+0x166/0x1e0 [hid_sensor_trigger]
+>   [<0>] __rpm_callback+0x48/0x1f0
+>   [<0>] rpm_callback+0x6d/0x80
+>   [<0>] rpm_resume+0x4af/0x6d0
+>   [<0>] __pm_runtime_resume+0x52/0x90
+>   [<0>] hid_sensor_power_state+0x51/0xe0 [hid_sensor_trigger]
+>   [<0>] accel_3d_read_raw+0xa8/0x210 [hid_sensor_accel_3d]
+>   [<0>] iio_read_channel_info+0xed/0x110 [industrialio]
+>   [<0>] dev_attr_show+0x1f/0x50
+>   [<0>] sysfs_kf_seq_show+0xcc/0x120
+>   [<0>] seq_read_iter+0x128/0x480
+>   [<0>] vfs_read+0x268/0x390
+>   [<0>] ksys_read+0x73/0xf0
+>   [<0>] do_syscall_64+0x7e/0x250
+>   [<0>] entry_SYSCALL_64_after_hwframe+0x76/0x7e
+>=20
+> Note: the process is in TASK_INTERRUPTIBLE (wchan=3Dmsleep_interruptible,
+> STAT=3DS), not TASK_UNINTERRUPTIBLE =E2=80=94 it responds to signals. Thi=
+s is
+> why a service restart (SIGTERM) unblocks it, and why it is easy to
+> mistake for a runtime PM deadlock rather than an unchecked sleep duration.
+>=20
+>=20
+> Proposed Fix
+> ------------
+> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:
+>=20
+>   --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>   +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>   @@ -143,7 +143,7 @@ static int _hid_sensor_power_state(...)
+>           poll_value =3D hid_sensor_read_poll_value(st);
+>        }
+>   -    if (state && poll_value)
+>   +    if (state && poll_value > 0)
+>            msleep_interruptible(poll_value * 2);
+>=20
 
-Signed-off-by: Janani Sunil <janani.sunil@analog.com>
----
- MAINTAINERS               |   1 +
- drivers/iio/dac/Kconfig   |  17 ++
- drivers/iio/dac/Makefile  |   1 +
- drivers/iio/dac/ad5529r.c | 531 ++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 550 insertions(+)
+Yes, this is something that should be fixed. Can you send a patch?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 320e84765ce6..143714e27d51 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1513,6 +1513,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/dac/adi,ad5529r.yaml
-+F:	drivers/iio/dac/ad5529r.c
- 
- ANALOG DEVICES INC AD5706R DRIVER
- M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 657c68e75542..bb1d59889a2a 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -134,6 +134,23 @@ config AD5449
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5449.
- 
-+config AD5529R
-+	tristate "Analog Devices AD5529R High Voltage DAC driver"
-+	depends on SPI_MASTER
-+	select REGMAP_SPI
-+	help
-+	  Say yes here to build support for Analog Devices AD5529R
-+	  16-Channel, 12-Bit/16-Bit, 40V High Voltage Precision Digital to Analog
-+	  Converter.
-+
-+	  The device features multiple output voltage ranges from -20V to +20V,
-+	  built-in 4.096V voltage reference, and digital functions including
-+	  toggle, dither, and ramp modes. Supports both 12-bit and 16-bit
-+	  resolution variants.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5529r.
-+
- config AD5592R_BASE
- 	tristate
- 
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 003431798498..f35e060b3643 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -18,6 +18,7 @@ obj-$(CONFIG_AD5446) += ad5446.o
- obj-$(CONFIG_AD5446_SPI) += ad5446-spi.o
- obj-$(CONFIG_AD5446_I2C) += ad5446-i2c.o
- obj-$(CONFIG_AD5449) += ad5449.o
-+obj-$(CONFIG_AD5529R) += ad5529r.o
- obj-$(CONFIG_AD5592R_BASE) += ad5592r-base.o
- obj-$(CONFIG_AD5592R) += ad5592r.o
- obj-$(CONFIG_AD5593R) += ad5593r.o
-diff --git a/drivers/iio/dac/ad5529r.c b/drivers/iio/dac/ad5529r.c
-new file mode 100644
-index 000000000000..4841bd608482
---- /dev/null
-+++ b/drivers/iio/dac/ad5529r.c
-@@ -0,0 +1,531 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * AD5529R Digital-to-Analog Converter Driver
-+ * 16-Channel, 12/16-Bit, 40V High Voltage Precision DAC
-+ *
-+ * Copyright 2026 Analog Devices Inc.
-+ * Author: Janani Sunil <janani.sunil@analog.com>
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/errno.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
-+#include <linux/spi/spi.h>
-+
-+#define AD5529R_REG_INTERFACE_CONFIG_A		0x00
-+#define   AD5529R_INTERFACE_CONFIG_A_SW_RESET	(BIT(7) | BIT(0))
-+#define   AD5529R_INTERFACE_CONFIG_A_ADDR_ASCENSION	BIT(5)
-+#define   AD5529R_INTERFACE_CONFIG_A_SDO_ENABLE	BIT(4)
-+#define AD5529R_REG_DEVICE_CONFIG		0x02
-+#define AD5529R_REG_CHIP_GRADE			0x06
-+#define AD5529R_REG_SCRATCH_PAD			0x0A
-+#define AD5529R_REG_SPI_REVISION		0x0B
-+#define AD5529R_REG_VENDOR_H			0x0D
-+#define AD5529R_REG_STREAM_MODE			0x0E
-+#define AD5529R_REG_INTERFACE_STATUS_A		0x11
-+#define AD5529R_REG_MULTI_DAC_CH_SEL		0x14
-+#define AD5529R_REG_OUT_RANGE_BASE		0x3C
-+#define AD5529R_REG_OUT_RANGE(ch)		(AD5529R_REG_OUT_RANGE_BASE + (ch) * 2)
-+#define AD5529R_REG_DAC_INPUT_A_BASE		0x148
-+#define AD5529R_REG_DAC_INPUT_A(ch)		(AD5529R_REG_DAC_INPUT_A_BASE + (ch) * 2)
-+#define AD5529R_REG_DAC_DATA_READBACK_BASE	0x16A
-+#define AD5529R_REG_TSENS_ALERT_FLAG		0x18C
-+#define AD5529R_REG_TSENS_SHTD_FLAG		0x18E
-+#define AD5529R_REG_FUNC_BUSY			0x1A0
-+#define AD5529R_REG_REF_SEL			0x1A2
-+#define   AD5529R_REF_SEL_INTERNAL_REF		BIT(0)
-+#define AD5529R_REG_INIT_CRC_ERR_STAT		0x1A4
-+#define AD5529R_REG_MULTI_DAC_HOTPATH_SW_LDAC	0x1A8
-+
-+#define AD5529R_MAX_REGISTER			0x232
-+#define AD5529R_8BIT_REG_MAX			0x13
-+#define AD5529R_SPI_READ_FLAG			0x80
-+
-+struct ad5529r_model_data {
-+	const char *model_name;
-+	unsigned int resolution;
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
-+};
-+
-+#define AD5529R_DAC_CHANNEL(chan, bits) {			\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.output = 1,						\
-+	.channel = (chan),					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-+			      BIT(IIO_CHAN_INFO_SCALE) |	\
-+			      BIT(IIO_CHAN_INFO_OFFSET),	\
-+	.scan_type = {						\
-+		.format = 'u',					\
-+		.realbits = (bits),				\
-+		.storagebits = 16,				\
-+	},							\
-+}
-+
-+static const char * const ad5529r_supply_names[] = {
-+	"vdd",
-+	"avdd",
-+	"hvdd",
-+};
-+
-+static const struct iio_chan_spec ad5529r_channels_16bit[] = {
-+	AD5529R_DAC_CHANNEL(0, 16),
-+	AD5529R_DAC_CHANNEL(1, 16),
-+	AD5529R_DAC_CHANNEL(2, 16),
-+	AD5529R_DAC_CHANNEL(3, 16),
-+	AD5529R_DAC_CHANNEL(4, 16),
-+	AD5529R_DAC_CHANNEL(5, 16),
-+	AD5529R_DAC_CHANNEL(6, 16),
-+	AD5529R_DAC_CHANNEL(7, 16),
-+	AD5529R_DAC_CHANNEL(8, 16),
-+	AD5529R_DAC_CHANNEL(9, 16),
-+	AD5529R_DAC_CHANNEL(10, 16),
-+	AD5529R_DAC_CHANNEL(11, 16),
-+	AD5529R_DAC_CHANNEL(12, 16),
-+	AD5529R_DAC_CHANNEL(13, 16),
-+	AD5529R_DAC_CHANNEL(14, 16),
-+	AD5529R_DAC_CHANNEL(15, 16),
-+};
-+
-+static const struct iio_chan_spec ad5529r_channels_12bit[] = {
-+	AD5529R_DAC_CHANNEL(0, 12),
-+	AD5529R_DAC_CHANNEL(1, 12),
-+	AD5529R_DAC_CHANNEL(2, 12),
-+	AD5529R_DAC_CHANNEL(3, 12),
-+	AD5529R_DAC_CHANNEL(4, 12),
-+	AD5529R_DAC_CHANNEL(5, 12),
-+	AD5529R_DAC_CHANNEL(6, 12),
-+	AD5529R_DAC_CHANNEL(7, 12),
-+	AD5529R_DAC_CHANNEL(8, 12),
-+	AD5529R_DAC_CHANNEL(9, 12),
-+	AD5529R_DAC_CHANNEL(10, 12),
-+	AD5529R_DAC_CHANNEL(11, 12),
-+	AD5529R_DAC_CHANNEL(12, 12),
-+	AD5529R_DAC_CHANNEL(13, 12),
-+	AD5529R_DAC_CHANNEL(14, 12),
-+	AD5529R_DAC_CHANNEL(15, 12),
-+};
-+
-+static const struct ad5529r_model_data ad5529r_16bit_model_data = {
-+	.model_name = "ad5529r-16",
-+	.resolution = 16,
-+	.channels = ad5529r_channels_16bit,
-+	.num_channels = ARRAY_SIZE(ad5529r_channels_16bit),
-+};
-+
-+static const struct ad5529r_model_data ad5529r_12bit_model_data = {
-+	.model_name = "ad5529r-12",
-+	.resolution = 12,
-+	.channels = ad5529r_channels_12bit,
-+	.num_channels = ARRAY_SIZE(ad5529r_channels_12bit),
-+};
-+
-+enum ad5529r_output_range {
-+	AD5529R_RANGE_0V_5V,
-+	AD5529R_RANGE_0V_10V,
-+	AD5529R_RANGE_0V_20V,
-+	AD5529R_RANGE_0V_40V,
-+	AD5529R_RANGE_NEG5V_5V,
-+	AD5529R_RANGE_NEG10V_10V,
-+	AD5529R_RANGE_NEG15V_15V,
-+	AD5529R_RANGE_NEG20V_20V,
-+};
-+
-+static const s32 ad5529r_output_ranges_mV[8][2] = {
-+	[AD5529R_RANGE_0V_5V] = { 0, 5000 },
-+	[AD5529R_RANGE_0V_10V] = { 0, 10000 },
-+	[AD5529R_RANGE_0V_20V] = { 0, 20000 },
-+	[AD5529R_RANGE_0V_40V] = { 0, 40000 },
-+	[AD5529R_RANGE_NEG5V_5V] = { -5000, 5000 },
-+	[AD5529R_RANGE_NEG10V_10V] = { -10000, 10000 },
-+	[AD5529R_RANGE_NEG15V_15V] = { -15000, 15000 },
-+	[AD5529R_RANGE_NEG20V_20V] = { -20000, 20000 },
-+};
-+
-+struct ad5529r_state {
-+	struct spi_device *spi;
-+	const struct ad5529r_model_data *model_data;
-+	struct regmap *regmap_8bit;
-+	struct regmap *regmap_16bit;
-+	enum ad5529r_output_range output_range_idx[16];
-+};
-+
-+static const struct regmap_range ad5529r_8bit_readable_ranges[] = {
-+	regmap_reg_range(AD5529R_REG_INTERFACE_CONFIG_A, AD5529R_REG_CHIP_GRADE),
-+	regmap_reg_range(AD5529R_REG_SCRATCH_PAD, AD5529R_REG_VENDOR_H),
-+	regmap_reg_range(AD5529R_REG_STREAM_MODE, AD5529R_REG_INTERFACE_STATUS_A),
-+};
-+
-+static const struct regmap_range ad5529r_16bit_readable_ranges[] = {
-+	regmap_reg_range(AD5529R_REG_MULTI_DAC_CH_SEL, AD5529R_REG_INIT_CRC_ERR_STAT),
-+	regmap_reg_range(AD5529R_REG_MULTI_DAC_HOTPATH_SW_LDAC, AD5529R_MAX_REGISTER),
-+};
-+
-+static const struct regmap_access_table ad5529r_8bit_readable_table = {
-+	.yes_ranges = ad5529r_8bit_readable_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(ad5529r_8bit_readable_ranges),
-+};
-+
-+static const struct regmap_access_table ad5529r_16bit_readable_table = {
-+	.yes_ranges = ad5529r_16bit_readable_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(ad5529r_16bit_readable_ranges),
-+};
-+
-+static const struct regmap_range ad5529r_8bit_read_only_ranges[] = {
-+	regmap_reg_range(AD5529R_REG_DEVICE_CONFIG, AD5529R_REG_CHIP_GRADE),
-+	regmap_reg_range(AD5529R_REG_SPI_REVISION, AD5529R_REG_VENDOR_H),
-+};
-+
-+static const struct regmap_range ad5529r_16bit_read_only_ranges[] = {
-+	regmap_reg_range(AD5529R_REG_DAC_DATA_READBACK_BASE,
-+			 AD5529R_REG_DAC_DATA_READBACK_BASE + 15 * 2),
-+	regmap_reg_range(AD5529R_REG_TSENS_ALERT_FLAG, AD5529R_REG_TSENS_SHTD_FLAG),
-+	regmap_reg_range(AD5529R_REG_FUNC_BUSY, AD5529R_REG_FUNC_BUSY),
-+	regmap_reg_range(AD5529R_REG_INIT_CRC_ERR_STAT, AD5529R_REG_INIT_CRC_ERR_STAT),
-+};
-+
-+static const struct regmap_access_table ad5529r_8bit_writeable_table = {
-+	.no_ranges = ad5529r_8bit_read_only_ranges,
-+	.n_no_ranges = ARRAY_SIZE(ad5529r_8bit_read_only_ranges),
-+};
-+
-+static const struct regmap_access_table ad5529r_16bit_writeable_table = {
-+	.no_ranges = ad5529r_16bit_read_only_ranges,
-+	.n_no_ranges = ARRAY_SIZE(ad5529r_16bit_read_only_ranges),
-+};
-+
-+static const struct regmap_config ad5529r_regmap_8bit_config = {
-+	.name = "ad5529r-8bit",
-+	.reg_bits = 16,
-+	.val_bits = 8,
-+	.max_register = AD5529R_8BIT_REG_MAX,
-+	.read_flag_mask = AD5529R_SPI_READ_FLAG,
-+	.rd_table = &ad5529r_8bit_readable_table,
-+	.wr_table = &ad5529r_8bit_writeable_table,
-+};
-+
-+static const struct regmap_config ad5529r_regmap_16bit_config = {
-+	.name = "ad5529r-16bit",
-+	.reg_bits = 16,
-+	.val_bits = 16,
-+	.max_register = AD5529R_MAX_REGISTER,
-+	.read_flag_mask = AD5529R_SPI_READ_FLAG,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+	.rd_table = &ad5529r_16bit_readable_table,
-+	.wr_table = &ad5529r_16bit_writeable_table,
-+	.reg_stride = 2,
-+};
-+
-+static struct regmap *ad5529r_get_regmap(struct ad5529r_state *st,
-+					 unsigned int reg)
-+{
-+	if (reg <= AD5529R_8BIT_REG_MAX)
-+		return st->regmap_8bit;
-+
-+	return st->regmap_16bit;
-+}
-+
-+static int ad5529r_reset(struct ad5529r_state *st)
-+{
-+	struct reset_control *rst;
-+	int ret;
-+
-+	rst = devm_reset_control_get_optional_exclusive(&st->spi->dev, NULL);
-+	if (IS_ERR(rst))
-+		return PTR_ERR(rst);
-+
-+	if (rst) {
-+		ret = reset_control_reset(rst);
-+		if (ret)
-+			return ret;
-+	} else {
-+		ret = regmap_write(st->regmap_8bit, AD5529R_REG_INTERFACE_CONFIG_A,
-+				   AD5529R_INTERFACE_CONFIG_A_SW_RESET);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/*
-+	 * Wait 10 ms for digital initialization to complete.
-+	 * Per datasheet, Interface Status A register NOT_READY_ERR bit is
-+	 * set if SPI transactions are attempted before digital initialization
-+	 * completes.
-+	 */
-+	fsleep(10 * USEC_PER_MSEC);
-+
-+	return regmap_write(st->regmap_8bit, AD5529R_REG_INTERFACE_CONFIG_A,
-+			    AD5529R_INTERFACE_CONFIG_A_SDO_ENABLE |
-+			    AD5529R_INTERFACE_CONFIG_A_ADDR_ASCENSION);
-+}
-+
-+static int ad5529r_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct ad5529r_state *st = iio_priv(indio_dev);
-+	unsigned int reg_addr, reg_val_h;
-+	int ret, range_idx, span_mv;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		/*
-+		 * Read from DAC_INPUT_A register rather than DAC_DATA_READBACK.
-+		 * The DAC operates in transparent mode and directly reflects
-+		 * whatever value is written to the INPUT_A register.
-+		 */
-+		reg_addr = AD5529R_REG_DAC_INPUT_A(chan->channel);
-+		ret = regmap_read(st->regmap_16bit, reg_addr, &reg_val_h);
-+		if (ret)
-+			return ret;
-+
-+		*val = reg_val_h;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		range_idx = st->output_range_idx[chan->channel];
-+
-+		span_mv = ad5529r_output_ranges_mV[range_idx][1] -
-+			  ad5529r_output_ranges_mV[range_idx][0];
-+		*val = span_mv;
-+		*val2 = st->model_data->resolution;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_OFFSET:
-+		range_idx = st->output_range_idx[chan->channel];
-+
-+		if (ad5529r_output_ranges_mV[range_idx][0] < 0)
-+			*val = -(1 << (st->model_data->resolution - 1));
-+		else
-+			*val = 0;
-+
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5529r_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct ad5529r_state *st = iio_priv(indio_dev);
-+	unsigned int reg_addr;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (val < 0 || val > GENMASK(st->model_data->resolution - 1, 0))
-+			return -EINVAL;
-+
-+		reg_addr = AD5529R_REG_DAC_INPUT_A(chan->channel);
-+
-+		return regmap_write(st->regmap_16bit, reg_addr, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5529r_find_output_range(const s32 *vals)
-+{
-+	for (unsigned int i = 0; i < ARRAY_SIZE(ad5529r_output_ranges_mV); i++) {
-+		if (vals[0] == ad5529r_output_ranges_mV[i][0] * 1000 &&
-+		    vals[1] == ad5529r_output_ranges_mV[i][1] * 1000)
-+			return i;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad5529r_parse_channel_ranges(struct device *dev,
-+					struct ad5529r_state *st)
-+{
-+	s32 vals[2];
-+	int ret, range_idx;
-+	u32 ch;
-+
-+	device_for_each_child_node_scoped(dev, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &ch);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Missing reg property in channel node\n");
-+
-+		if (ch >= 16)
-+			return dev_err_probe(dev, -EINVAL,
-+					     "Channel %u exceeds maximum supported channel 15\n",
-+					     ch);
-+
-+		if (fwnode_property_present(child, "adi,output-range-microvolt")) {
-+			/*
-+			 * DT stores cells as raw 32-bit values; signed endpoints are
-+			 * encoded by dtc in two's-complement and then interpreted
-+			 * here as s32.
-+			 */
-+			ret = fwnode_property_read_u32_array(child,
-+							     "adi,output-range-microvolt",
-+							     (u32 *)vals, ARRAY_SIZE(vals));
-+			if (ret < 0)
-+				return dev_err_probe(dev, ret,
-+						     "Failed to read range for ch %u\n",
-+						     ch);
-+
-+			range_idx = ad5529r_find_output_range(vals);
-+			if (range_idx < 0)
-+				return dev_err_probe(dev, range_idx,
-+						     "Invalid range [%d %d] for ch %u\n",
-+						     vals[0], vals[1], ch);
-+		} else {
-+			range_idx = AD5529R_RANGE_0V_5V;
-+		}
-+
-+		st->output_range_idx[ch] = range_idx;
-+		ret = regmap_write(st->regmap_16bit,
-+				   AD5529R_REG_OUT_RANGE(ch), range_idx);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to configure range for ch %u\n",
-+					     ch);
-+	}
-+
-+	return 0;
-+}
-+
-+static int ad5529r_reg_access(struct iio_dev *indio_dev,
-+			      unsigned int reg,
-+			      unsigned int writeval,
-+			      unsigned int *readval)
-+{
-+	struct ad5529r_state *st = iio_priv(indio_dev);
-+
-+	if (readval)
-+		return regmap_read(ad5529r_get_regmap(st, reg), reg, readval);
-+
-+	return regmap_write(ad5529r_get_regmap(st, reg), reg, writeval);
-+}
-+
-+static const struct iio_info ad5529r_info = {
-+	.read_raw = ad5529r_read_raw,
-+	.write_raw = ad5529r_write_raw,
-+	.debugfs_reg_access = ad5529r_reg_access,
-+};
-+
-+static int ad5529r_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct iio_dev *indio_dev;
-+	struct ad5529r_state *st;
-+	bool external_vref;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	st->spi = spi;
-+
-+	st->model_data = spi_get_device_match_data(spi);
-+	if (!st->model_data)
-+		return dev_err_probe(dev, -EINVAL, "Failed to identify device variant\n");
-+
-+	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(ad5529r_supply_names),
-+					     ad5529r_supply_names);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to get and enable regulators\n");
-+
-+	ret = devm_regulator_get_enable_optional(dev, "hvss");
-+	if (ret && ret != -ENODEV)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to get and enable hvss regulator\n");
-+
-+	/*
-+	 * The datasheet mentions a 4.096V external reference for correct
-+	 * operation.
-+	 */
-+	ret = devm_regulator_get_enable_optional(dev, "vref");
-+	if (ret == -ENODEV) {
-+		external_vref = false;
-+	} else if (ret) {
-+		return dev_err_probe(dev, ret,
-+				     "Failed to get and enable vref regulator\n");
-+	} else {
-+		external_vref = true;
-+	}
-+
-+	st->regmap_8bit = devm_regmap_init_spi(spi, &ad5529r_regmap_8bit_config);
-+	if (IS_ERR(st->regmap_8bit))
-+		return dev_err_probe(dev, PTR_ERR(st->regmap_8bit),
-+				     "Failed to initialize 8-bit regmap\n");
-+
-+	st->regmap_16bit = devm_regmap_init_spi(spi, &ad5529r_regmap_16bit_config);
-+	if (IS_ERR(st->regmap_16bit))
-+		return dev_err_probe(dev, PTR_ERR(st->regmap_16bit),
-+				     "Failed to initialize 16-bit regmap\n");
-+
-+	ret = ad5529r_reset(st);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to reset device\n");
-+
-+	ret = regmap_assign_bits(st->regmap_16bit, AD5529R_REG_REF_SEL,
-+				 AD5529R_REF_SEL_INTERNAL_REF,
-+				 external_vref ? 0 : AD5529R_REF_SEL_INTERNAL_REF);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to configure reference\n");
-+
-+	ret = ad5529r_parse_channel_ranges(dev, st);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = st->model_data->model_name;
-+	indio_dev->info = &ad5529r_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = st->model_data->channels;
-+	indio_dev->num_channels = st->model_data->num_channels;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id ad5529r_of_match[] = {
-+	{ .compatible = "adi,ad5529r-16", .data = &ad5529r_16bit_model_data },
-+	{ .compatible = "adi,ad5529r-12", .data = &ad5529r_12bit_model_data },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ad5529r_of_match);
-+
-+static const struct spi_device_id ad5529r_id[] = {
-+	{
-+		.name = "ad5529r-16",
-+		.driver_data = (kernel_ulong_t)&ad5529r_16bit_model_data,
-+	},
-+	{
-+		.name = "ad5529r-12",
-+		.driver_data = (kernel_ulong_t)&ad5529r_12bit_model_data,
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ad5529r_id);
-+
-+static struct spi_driver ad5529r_driver = {
-+	.driver = {
-+		.name = "ad5529r",
-+		.of_match_table = ad5529r_of_match,
-+	},
-+	.probe = ad5529r_probe,
-+	.id_table = ad5529r_id,
-+};
-+module_spi_driver(ad5529r_driver);
-+
-+MODULE_AUTHOR("Janani Sunil <janani.sunil@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD5529R 12/16-bit DAC driver");
-+MODULE_LICENSE("GPL");
+--=20
+Kind regards
 
--- 
-2.43.0
-
+CJD
