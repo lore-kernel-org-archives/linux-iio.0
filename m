@@ -1,126 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F053E0251;
-	Wed,  1 Jul 2026 08:44:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFF83B637F;
+	Wed,  1 Jul 2026 08:52:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782895496; cv=none; b=oCrx/CVF+lGsQMx+mm5iKajwavmFHLeHVbPR3Jx0b5jfGFmlc4hYQwkCov0p3gAM6ZVSLOn4cC+jCLyrrLX4xGNsXqUgyI7W0/P5bTm5KF/3aZtT5v45SJb2hiyxuIuc9cEPstJ9GslMPnlq9mo4Q7l6RFngc8MSaf1XOkjHw+I=
+	t=1782895933; cv=none; b=PvgmnEoN+bfW3ji2YhXJBkeuDmjoGldYnRwlExxKpW2266PUzuANaWEUAzBR6xnCOsMoHMXdLUsx1dbESWOWfatyEYj2/+b/7T5FREqpFKq6GR9/f4opOGvwvsvpRhk6xlhBnM5jtpMO63QXdPVE3Jjz1YkCLekTHa+3K88sanQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782895496; c=relaxed/simple;
-	bh=SM1GnM3FZH6KNcTrP19RmJuHes6Nt+u+2Rizwvv6xXU=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=tFB85aA/2Joa5bJQyLUgUPJ8p33b1dRZDlTaV3xjpscgfimL3m7xP0o8DthjQwieMMoCLO5kJTG/+G6Xnkzerem2FPsdP3b359U+XFu02kMXcW2xoJsRysUkUIFOsT1NbQyAz3y8bJ3QWCHAfv/R9D/ETLxeMtQQ33F/ovbhnFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K4q9bOBG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1782895933; c=relaxed/simple;
+	bh=wI+t0SS55P6zBsipXVAE6Fyben0f1zJlLRevi5LlLbA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DXlj20lmRkvl7peFgFG8Ww+NT24YrAv3l00PYBZAnjp4Mcsa9O2k8K8rOuaWVKgzPm4IX5pX7KB5yVA9EJbB3pGT1E7YibSClaPCdrEGayGdwy7VupT4Zx3tEoF6ervBA2tBkyBkaIBcNB/6WsB4g5n3oxCPtEZYX13s042qwUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jAx4UBP9; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K4q9bOBG"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id EA7DA1F00A3A;
-	Wed,  1 Jul 2026 08:44:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782895495;
-	bh=SM1GnM3FZH6KNcTrP19RmJuHes6Nt+u+2Rizwvv6xXU=;
-	h=Date:Subject:Cc:From:To:References:In-Reply-To;
-	b=K4q9bOBG9Kb6RxXPQiTbJLl/vCMKDv8pUVjbrb2R6/Uly5XcmTYkqDGA9tKMFow6E
-	 1h3L3P5YCThmlnVOcIFDDzlnxYVhUtw5kWg/peIEAkhnhymPhC95xcCse7uZH0p0Td
-	 OpwfVJm+/ktVneJcYCCVolHLFsQ68qqW2kl9tHlhAEGLe3P0ll4EUIolWK+hYfjXfy
-	 P4MjOUk5ZY/MdLwDu0cW9SMIo9nLiDNc4Ja97Zsq5we6+VsvBspOVD7UR/cwv81Y15
-	 ArYUAKhgEDNAJPztX6EHCwNpkfQMLgAiL6UYgNhgg1bb2o8g3Ca9/fyPY8nRIEmRWO
-	 dRhQRQk2E6fAw==
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jAx4UBP9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782895932; x=1814431932;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wI+t0SS55P6zBsipXVAE6Fyben0f1zJlLRevi5LlLbA=;
+  b=jAx4UBP9j8uFRewZlwVuRkacHN84ShM4LljZnIP47RzlRsEYy1ubGerg
+   6YwNLUMDA3OGqq9XKyBvPdq5plM4vPCbBvX8ne2rR1di3FSshavbMknw6
+   jSGBkfGib6o2iRleKwsb0qaHw2l8TOQzTO4c+3xkYyGWpNeu62RVYU/Wf
+   GrawiIiJH3SttfTKFaYgccggYc6/13pawNk/KMGkXHg6QtanoN7FfhUnR
+   N/UJA5DeOaCTxeNLNG+ERFmmD5RTDHj4kUFbNvn4jh6USmfC65wLOfZrE
+   uybMgJ9dtD0WIBpYZj2mwcGcHVcbwPm4grHXQSzEnk63EkpSm3LwZ3sBm
+   g==;
+X-CSE-ConnectionGUID: twp07gUkQxCgfSyM4bFM2Q==
+X-CSE-MsgGUID: fkCsOXM3Ql6kKV9gLVrUbQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11833"; a="93979153"
+X-IronPort-AV: E=Sophos;i="6.24,235,1774335600"; 
+   d="scan'208";a="93979153"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 01:52:10 -0700
+X-CSE-ConnectionGUID: 9Y9gcNg6Qfi0vA4IwhNkWg==
+X-CSE-MsgGUID: QLc7dBC7T/+vr9wwTRjizg==
+X-ExtLoop1: 1
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.65])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 01:52:07 -0700
+Date: Wed, 1 Jul 2026 11:52:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Md Shofiqul Islam <shofiqtest@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, mike.looijmans@topic.nl,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ti-ads1298: add ADS1299 EEG ADC family
+ support
+Message-ID: <akTVNZL6Efmi1yCL@ashevche-desk.local>
+References: <20260630140311.1473031-1-shofiqtest@gmail.com>
+ <20260630140311.1473031-2-shofiqtest@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8;
- micalg=pgp-sha384; protocol="application/pgp-signature"
-Date: Wed, 01 Jul 2026 10:44:51 +0200
-Message-Id: <DJN3PDTPJ3L6.24P71OQFB6C98@kernel.org>
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Cc: "Bartosz Golaszewski" <brgl@kernel.org>, "Andy Shevchenko"
- <andriy.shevchenko@intel.com>, "robh@kernel.org" <robh@kernel.org>,
- "krzk+dt@kernel.org" <krzk+dt@kernel.org>, "conor+dt@kernel.org"
- <conor+dt@kernel.org>, "afaerber@suse.com" <afaerber@suse.com>,
- "wbg@kernel.org" <wbg@kernel.org>, "mathieu.dubois-briand@bootlin.com"
- <mathieu.dubois-briand@bootlin.com>, "lars@metafoo.de" <lars@metafoo.de>,
- "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
- "jic23@kernel.org" <jic23@kernel.org>, "nuno.sa@analog.com"
- <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>,
- "dlechner@baylibre.com" <dlechner@baylibre.com>,
- =?utf-8?b?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-realtek-soc@lists.infradead.org"
- <linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, =?utf-8?b?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?=
- <cy.huang@realtek.com>, =?utf-8?b?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?=
- <stanley_chang@realtek.com>, =?utf-8?b?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?=
- <james.tai@realtek.com>, =?utf-8?b?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?=
- <eleanor.lin@realtek.com>
-From: "Michael Walle" <mwalle@kernel.org>
-To: "Linus Walleij" <linusw@kernel.org>
-X-Mailer: aerc 0.20.0
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
- <20260512033317.1602537-3-eleanor.lin@realtek.com>
- <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
- <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
- <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
-In-Reply-To: <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260630140311.1473031-2-shofiqtest@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
---9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+On Tue, Jun 30, 2026 at 05:03:11PM +0300, Md Shofiqul Islam wrote:
+> The ADS1299, ADS1299-4 and ADS1299-6 are 8/4/6-channel, 24-bit
+> biopotential (EEG) ADCs from Texas Instruments.  They share the same
+> SPI interface, command set and register map as the ADS1298 ECG family,
+> making it straightforward to support them in this driver.
+> 
+> Key differences from the ADS1298:
+> - PGA gain range is 1/2/4/6/8/12/24 (vs 6/1/2/3/4/8/12 for ADS1298)
+> - Internal voltage reference is always 2.4V (no 4V option)
+> - Channel count is encoded differently in the ID register: bits [4:3]
+>   identify the ADS1299 family (both bits set), bits [1:0] encode the
+>   channel count as (bits + 2) * 2
+> 
+> Detect the chip family in ads1298_init() by checking bits [4:3] of
+> the ID register.  Store the result in the is_ads1299 flag and use it
+> to select the correct PGA table in ads1298_get_scale() and to skip
+> the 4V reference option in the CONFIG3 initialisation.
 
-On Fri Jun 19, 2026 at 11:08 PM CEST, Linus Walleij wrote:
-> On Mon, Jun 8, 2026 at 4:41=E2=80=AFPM Michael Walle <mwalle@kernel.org> =
-wrote:
->
->> >>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retri=
-eve the
->> >>> gpio_chip instantiated inside gpio-regmap.c to fulfill these require=
-ments in our
->> >>> map() function.
->>
->> Why is gpiochip_irq_reqres() called in the first place? Isn't that
->> only called if the irq handling is set up via gc->irq.chip and not
->> via gpiochip_irqchip_add_domain() like in gpio-regmap?
->
-> Not really, the gpiochip_irq_reqres() is called to mark that a
-> GPIO line is used for IRQ, so the gpiolib cannot turn this
-> GPIO into an output line, gpiod_direction_out() will fail
-> on lines used for IRQ. So it's a failsafe.
->
-> You can live without it of course, but then you don't get
-> this failsafe.
+...
 
-Thanks for the explanation! So did I make a mistake years ago by
-adding the gpiochip_irqchip_add_domain(), see commit 6a45b0e2589f
-("gpiolib: Introduce gpiochip_irqchip_add_domain()")
+> -/* TI ADS1298 chip family driver
+> +/* TI ADS1298/ADS1299 biopotential ADC driver
 
-As Yu-Chun found, gpiochip_irq_reqres() expect the irq chip data
-to be a gpio_chip, which isn't the case (in general) for an
-externally allocated domain, is it?
+Consider updating Kconfig help text as well.
 
--michael
+...
 
---9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8
-Content-Type: application/pgp-signature; name="signature.asc"
+>  struct ads1298_private {
+>  	const struct ads1298_chip_info *chip_info;
+>  	struct spi_device *spi;
+> +	bool is_ads1299;
+>  	struct regulator *reg_avdd;
+>  	struct regulator *reg_vref;
+>  	struct clk *clk;
 
------BEGIN PGP SIGNATURE-----
+When add a new member or create a new data structure always consult with
+`pahole` tool on the layout.
 
-iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCakTThBIcbXdhbGxlQGtl
-cm5lbC5vcmcACgkQEic87j4CH/hRPAGAqo6DNepJTnnCNzb/3GwKnJXqVuz6ob9v
-5QmRvDiF57B2o/TvziZGaN2H5NzwI+VXAX9U4o48VR1vxZAo8Rz2J/Lz3hBMf9Jn
-hz6tFnYqWzJmQPwvHzOfkIbQr8fbtkj9Tlc=
-=Vyla
------END PGP SIGNATURE-----
+>  }
 
---9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8--
+...
+
+> -MODULE_DESCRIPTION("TI ADS1298 ADC");
+> +MODULE_DESCRIPTION("TI ADS1298/ADS1299 biopotential ADC");
+
+
+This doesn't scale, rephrase here and in top comment in the file (and probably
+in the Kconfig title) to make it stretchy. See the history of the last few
+months of IIO subsystem development, you will find examples on how to achieve
+that,
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
