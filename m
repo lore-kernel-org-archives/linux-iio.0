@@ -1,47 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24C7B3AE6E4;
-	Wed,  1 Jul 2026 19:39:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3619D395AD1;
+	Wed,  1 Jul 2026 19:41:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782934778; cv=none; b=C6YiHHzhPKxFHICTZPkUM7FJJ8AKF3+/h7Ifls4QmkjCNWC3ZD7S0wt59DsDK1EBFG3nUCyZFE5Ci08j4/AfojYPuzRmafVJtSo0Wmo1ZLwauzBykKmLL6OhHMQzYZRF1IJdeHMfknflOjchgyMj3+QCgUp6RBks4/yYw5D3QU0=
+	t=1782934901; cv=none; b=nr19cIwdlT9C2EpQEF7481ArOi78q6JOZ6nqml99gPon2ELvpUMTz/WA297l6l4H7lrnizMEhMnOdSUE7xYgrdphHaOOIq1JssN0FjqUtC+uxlZv9gVcMZFqQsiiJLFbjiL8qyfGsPaj+x3kKaqwdDZymnHKN9M+Hebjnc5bkdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782934778; c=relaxed/simple;
-	bh=Ir58o5d3aiQ1D+TysP++ASg5OFXwIwp8eXpHJRU75u8=;
+	s=arc-20240116; t=1782934901; c=relaxed/simple;
+	bh=d1N71pbIkbImNLvv54zKb1DXhjUG9INCnOuDyhLrnO0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=anUcBY231hx1+HVUEK+PTRdmLQgbCOkXBfVmSTZcvS9L0U9HSUaRHGrQbvhfZFpQDZ8Bs69N5B/HGR8Y2J9RGe2usJamNGmk7kDenmrCZOTQHHRgMyz50K375ZXKZPxM+hms6un07ek/cifvZXGfbui8ibvtb9EoLI8LJ/0S2zg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TBFuOb0O; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=tQHTdR0kgsn4ACA1T7wt9m19GTr6Gxe8HoJ4C3zSz1jOlJGfoitfZwtWtQbQXzFjLnb0ruJFKOjx+H0qe1Vp7UNd25LQptsVVqPCled5vOO50rNutRvP7i0CmlpBBopw6wmi4H02iIhlochFwtsHEZ+Ibhtj5opmVuU0omuK7fg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nPxwREcm; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TBFuOb0O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0AD11F000E9;
-	Wed,  1 Jul 2026 19:39:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nPxwREcm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B101F000E9;
+	Wed,  1 Jul 2026 19:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782934776;
-	bh=jy5ObGLgOB0CshRS3p6Ild0t4meQ24n2gU34SJVTSw0=;
+	s=k20260515; t=1782934899;
+	bh=srKQF8aV04rvPRlxEtas9A0IfpAYtTpMmlK2q0eSbQw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TBFuOb0O/94MFU8S5lbwDjpIHvEal+YgKke9mcl7pft9sftg3eeiBwM2LZDOtoXza
-	 H/ib9x1LjF9jrnZydEBtn64NDkAFCcrPfEKEy3OsvAn0jkoVzziNLylBrlUS2UaWzH
-	 iSxrgLQU9EmWd3MYf0OVPjuQ9InhksCz0ekdUxdVxrfVqDpaS98j+2xmTqlSyQrgCK
-	 nRoOEjmliT/z0cDvVBxCvSYdQ3UkmT8iKIz0o5zNaJ329nMGsEdolItd+hgLQ0Rj6U
-	 YA4RyYMtpJKfHMF6r2RdGQxq1zLZMTpSZU6yQJgPLruVdovPQaAF8UXwiCU75DQmSN
-	 yXNfnevqtZM1w==
-Date: Wed, 1 Jul 2026 20:39:32 +0100
+	b=nPxwREcm9E857SJpDoq8gBTIGhu3bfJZJ60eeD4wktiZk9ERc1RPT8IEzBvgh2sFA
+	 PK+GRk0j6GOx4ZptrPqxx0/ne0jkWFCbvsvreusVNg+3b43B1P6uVGKR8ad1Hrz6eC
+	 FTJcv6sIVYBA9jxXLGyrJAqV690hfbCfflkll+8KV+usZZO5g0OpmxIS8C2O4sdtTE
+	 Cs/UC3Q5CxFmWkeT7+osp/FkQynCoe5sTTbhXfn7cSonZcgXF0ZKLrElbOHD5GoRgf
+	 HX4DvWZPA8RAxTpcClfU6IVaOpeM5g/5nlt11/Zm+uGNLkGwi3RIZOv+YLM6CEYsRE
+	 2pg4ctYV2eV2A==
+Date: Wed, 1 Jul 2026 20:41:33 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chris Hall
- <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, Kurt Borja
- <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/8] dt-bindings: iio: adc: Add excitation current
- sources properties
-Message-ID: <20260701203932.20e688db@jic23-huawei>
-In-Reply-To: <20260625-iio-adc-ti-ads122c14-v2-2-ceb9b0b561cb@baylibre.com>
+Cc: Conor Dooley <conor@kernel.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
+ <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien
+ <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/8] dt-bindings: iio: adc: add
+ input-channel-rotation property
+Message-ID: <20260701204133.2b77edab@jic23-huawei>
+In-Reply-To: <4a2c4c42-69fb-4491-ba77-b858623275ec@baylibre.com>
 References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
-	<20260625-iio-adc-ti-ads122c14-v2-2-ceb9b0b561cb@baylibre.com>
+	<20260625-iio-adc-ti-ads122c14-v2-4-ceb9b0b561cb@baylibre.com>
+	<20260626-retinal-thrash-1095940e36ab@spud>
+	<4a2c4c42-69fb-4491-ba77-b858623275ec@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,62 +54,70 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 25 Jun 2026 16:55:04 -0500
+On Fri, 26 Jun 2026 13:27:44 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> From: Kurt Borja <kuurtb@gmail.com>
+> On 6/26/26 11:14 AM, Conor Dooley wrote:
+> > On Thu, Jun 25, 2026 at 04:55:06PM -0500, David Lechner (TI) wrote:  
+> >> Add a generic input-channel-rotation property to adc.yaml. This is a
+> >> feature seen frequently in ADCs that are designed to measure resistive
+> >> loads, such as RTDs and strain gauges. Enabling this can reduce offset
+> >> errors by swapping the positive and negative input channels on every
+> >> other conversion. This can have side-effects in timing and filter
+> >> response, so it is not always desirable to enable this feature in some
+> >> applications. Therefore, it is best to make this a property that can be
+> >> enabled or disabled in the device tree.
+> >>
+> >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> >> ---
+> >> v2 changes:
+> >> * New patch.
+> >> ---
+> >>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 7 +++++++
+> >>  1 file changed, 7 insertions(+)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> >> index 9ec1f447b565..3d52c00922c9 100644
+> >> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> >> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> >> @@ -81,6 +81,13 @@ properties:
+> >>        ADCs usually allow choosing between internal reference sources or a pair
+> >>        of external pins.
+> >>  
+> >> +  input-channel-rotation:  
 > 
-> Some ADCs incorporate current sources that provide excitation current to
-> resistive temperature devices (RTDs), thermistors, diodes and other
-> resistive sensors that require constant current biasing.
+> I got some internal feedback after I sent this patch that "chopping" is the
+> more common terminology for this feature industry-wide, so in the next revision
+> I plan to change it into `input-chopping`.
 > 
-> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
-> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> ---
-> v2 changes (compared to Kurt's RFC v2):
-> * Make units nanoamps instead of microamps to fit known devices.
-> * Drop bit about allowing single value for multiple channels.
-> * Add bit about semantics of the array index.
-> ---
->  Documentation/devicetree/bindings/iio/adc/adc.yaml | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
+> >> +    type: boolean
+> >> +    description:
+> >> +      If set, the positive and negative input channels are allowed to be swapped
+> >> +      on every other conversion to reduce offset errors. This is also referred
+> >> +      to as "chop" in some datasheets.  
+> > 
+> > "allowed to be swapped" means that this property says the feature can be
+> > used, but userspace may have to be the thing that ultimately turns it
+> > on?  
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> index 12800737d4fb..860601ec5334 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> @@ -81,6 +81,26 @@ properties:
->        ADCs usually allow choosing between internal reference sources or a pair
->        of external pins.
->  
-> +  excitation-channels:
+> No, I don't expect a userspace control for it. More like the driver should
+> enable it when possible, but a driver doesn't necessarily have to implement
+> it and everything will still work, just with less accuracy.
 
-How would this apply if a device provided excitation on pins that didn't correspond
-to channels? i.e. some extra ones.  Perhaps such a device that also supports
-configuration (rather than a static set up) would just need a different binding.
-Feels like I'm creating a corner case we may never see :)
+Perhaps we need something in this text to say when it should not be set
+in dt?
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description:
-> +      Excitation current sources provide current to resistive temperature
-> +      devices (RTDs), thermistors, diodes and other resistive sensors that
-> +      require constant current biasing.
-> +
-> +      This array describes the mux configuration of the excitation current
-> +      sources.
-> +
-> +  excitation-current-nanoamp:
-> +    description:
-> +      Excitation current sources provide current to resistive temperature
-> +      devices (RTDs), thermistors, diodes and other resistive sensors that
-> +      require constant current biasing.
-> +
-> +      This array describes the current configuration of the excitation current
-> +      sources. The index in the array corresponds to the same index in the
-> +      excitation-channels array.
-> +
->  anyOf:
->    - oneOf:
->        - required:
+Jonathan
+
+> 
+> >   
+> >> +
+> >>    excitation-channels:
+> >>      $ref: /schemas/types.yaml#/definitions/uint32-array
+> >>      description:
+> >>
+> >> -- 
+> >> 2.43.0
+> >>  
 > 
 
