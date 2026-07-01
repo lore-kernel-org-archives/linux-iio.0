@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58C3023EAAD;
-	Wed,  1 Jul 2026 20:48:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B142C11E4;
+	Wed,  1 Jul 2026 21:02:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782938891; cv=none; b=j8HbB1bVvqc6+Xm3RL9v4NwfOMtQAqnhzq7vEr+HzTRm+E8DUxfk7abiAdv066WTBEe2S1YdtUTY/B3Sq2KFiFV3ZtLUpPFRKBr5jnN0+wZhQssjTkOw6RMN+O95pXgx0XurEfrSKyp6rWPNGCiLC/vyE7DlDq9i4jTAfstXSHE=
+	t=1782939738; cv=none; b=azS3BPb9TUND3oOqOWC4idl9QRetCmgqgo+y3naTZtXskwCQdoQpZNDh3J1ToR1CPzHTrsk4f/nOkpDmCCpJzMAfJZqsgLOxD10PT+Ig2RSYITQexVUB1JT3ULfOvZwmmBq7zX/OqMKSBfFPWHYgJMpsZ2hPRU4Rly/NwFIdnHE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782938891; c=relaxed/simple;
-	bh=fFFASaWIVPTO/G0jYmGXDjKnC/NNmLabRV1MDrHhkaA=;
+	s=arc-20240116; t=1782939738; c=relaxed/simple;
+	bh=bBxKTCuVG/kqzi9PHZORxAaQ6e5TWwycVpaSLpxaraA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t0gitONDbLV2DqStSEoCgU+RzCfdgglZt0zUgAt2c95sNhODgSTlgdOpdwhphGKoZ4vBOk8nb94my27iAp6oqGWASUDKVcgRnbF9YcDRCEk5s3CNz0DZ09GxGcKeMKRtbCVj3YkXSbiMPNjWnw6IlX3AboijRI4Z8Dt+Cxjg+7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bu5NXJW5; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=F9EQLd9/bqOv9KwsKlpCvNEDdjz3EuKw/d+ZaPGWqavYLwf5SFNzMmgS05wCUkaSmlnQ88rsqok55Y3HQlt2WFndubOUFVuQq8Xj4PdCu1+bVUuYfy2cQwFEHXRRRs9woh6jDZeUQB99S/oesz+ufUPIEsK7Ri3TR3Z+iZIYxYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VofUYjdW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bu5NXJW5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 934E31F000E9;
-	Wed,  1 Jul 2026 20:48:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VofUYjdW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C011F000E9;
+	Wed,  1 Jul 2026 21:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782938890;
-	bh=dXe1F0qlkv4rwzIlVkfpLvhn2XwRfGCv0VMVJzEV2Nw=;
+	s=k20260515; t=1782939737;
+	bh=fDYzkfD03QCemnZAongM476f9RM73y8sVoEYcrmB+04=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bu5NXJW5Lj3HsqVWcTkrrA1I0288TQ1yiVDA/CEOQwyJYZ4JP3EwJM+wCBwxXVSMb
-	 dns+vYSJ5v1dVfy1DNEYp5G56LYRGD9wMYqKbfAL9KlCEWsOyb+dQcJhJUABwIvVik
-	 m7+senSlAhdV0FqiCXe+zPDaQelypK+jDmvRZPJBATYGPwQl78wNYNxdkBvfhrY+p7
-	 /Gq8CbTAO1sCgXmMU1cyeQ2ghuxofS7V31QXnNPT/OkO41I36wobtZizqLcAeINXDr
-	 DxilHWEoNVeF9hG2xAD+Qn/pxzR46aD4FbIV1nunkDvStgobF1wtyN6XergkQCYWgg
-	 kishH10Q4sHbQ==
-Date: Wed, 1 Jul 2026 21:48:05 +0100
+	b=VofUYjdWJWrF+6tGCKvfwHMXju9c+U2sGOf5WjZk4Y1Ff8an6PDSNiEOdr4pYJZEq
+	 eV6gIfhT25BWm5G8icoxXZR4tFt/Ub7nfZIUJD//tEm265KGI4a/9bu1DsOAqDw6GA
+	 zhhmnUjl4Wx9gKs0nXuSo4+MK8cRkAat3rfTS84wVXLsBKa+zp8a08CIt/4JXFp0Hw
+	 SAxEVNYiuxJAzk5ZGfbK55kzN0e7PZpFOtvWvMacYCXXONvEeA+SiB2/YsheCFDZF9
+	 EajUUmNHO8b1FCMr2lWFeocN2hNHvHrUS/aE0Gm+15upioDbcK9AXXRzs1AYMGxeI9
+	 YZDK4yFXdxhiw==
+Date: Wed, 1 Jul 2026 22:02:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v4 2/2] iio: imu: inv_icm42600: add buffer hwfifo
- watermark attributes
-Message-ID: <20260701214805.1a810910@jic23-huawei>
-In-Reply-To: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-2-8b4c8bfa96d7@tdk.com>
-References: <20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-0-8b4c8bfa96d7@tdk.com>
-	<20260625-inv-icm42600-add-buffer-hwfifo_attributes-v4-2-8b4c8bfa96d7@tdk.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Chi-Wen Weng <cwweng.linux@gmail.com>, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, nuno.sa@analog.com,
+ andy@kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, cwweng@nuvoton.com
+Subject: Re: [PATCH 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
+Message-ID: <20260701220213.499ed6da@jic23-huawei>
+In-Reply-To: <66ad5723-6589-473a-91da-b13e2ba90aeb@baylibre.com>
+References: <20260625110638.38438-1-cwweng.linux@gmail.com>
+	<20260625110638.38438-3-cwweng.linux@gmail.com>
+	<66ad5723-6589-473a-91da-b13e2ba90aeb@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,14 +50,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 25 Jun 2026 14:24:53 +0200
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
+
+> This field has a new name:
 > 
-> Add hwfifo_watermark/min/max/enabled buffer attributes.
-> Hardware FIFO is always enabled and used.
+> 	chan->scan_type.format = IIO_SCAN_FORMAT_UNSIGNED_INT;
 > 
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Applied.
+> > +	chan->scan_type.realbits = 12;
+> > +	chan->scan_type.storagebits = 16;
+> > +	chan->scan_type.endianness = IIO_CPU;
+> > +
+> > +	if (differential) {
+> > +		chan->differential = 1;
+> > +		chan->channel2 = vinn;
+> > +		snprintf(name, MA35D1_EADC_CHAN_NAME_LEN, "in%d-in%d", vinp,
+> > +			 vinn);
+> > +	} else {
+> > +		snprintf(name, MA35D1_EADC_CHAN_NAME_LEN, "in%d", vinp);
+> > +	}
+> > +
+> > +	chan->datasheet_name = name;  
+> 
+> We usually don't use datasheet_name. It would make more sense to implement
+> labels and get the label from devicetree.
+
+It is used by the consumer interface to find the right channel if we
+are using hardcoded iio_map rather than dt based association.
+
+Given this is a SoC ADC it is possible this will be needed. All depends
+on how tightly coupled other components are.
+
+It can come in as part of a later series adding such a consumer rather
+than now. 
+
+Thanks,
+
+Jonathan
