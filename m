@@ -1,174 +1,188 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B04442EEAD;
-	Wed,  1 Jul 2026 12:09:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A20C33F8D6
+	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 14:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782907748; cv=none; b=PWT8xXx1ixCXWl7KhhV/bUKhxjbFRBZ/cQBqZI0ojTagOc0G/6H3Sq3fwXcOS8pczNT3zaqEGzSdCR/4u8w8mGjlr5OJ63XSuh1oeazNo1FmWNxf/qez+MkzSvOY1KEYI4ldj1rM1ti282I96BMKfE7Z9lNu/gdKjvCKSaCIG4c=
+	t=1782915452; cv=none; b=klXcHvT8qM87j6IBJzfzppBOnu5IPs8orRKwXlcGh1SyZkP0PHubGaFwkzviqUacXl8DLi4aWCy26LZOGdBgj5FaKmfc0YHtnSEkS++yYfzb+kt8ThE3MZI865zU4BY7ar169qWAC8MKtnpyweevNGDT24o7qlv7ApSVIC3wBqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782907748; c=relaxed/simple;
-	bh=08ry/i3F382Lh0S0s/t9xY0zSs5C1Db8yjNFGTPWguY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TmA3seBIXMJGO5nq637fEPQ1ZhB0y7OC+VAH8FN+RPXcSTpZEFSIgTssfP0QG2CD0e5odbZmczdNDew3odXBBUC0XYmk1zReHZuo2lSvKyI4LzL7mQcTR+WVjNQ1+2TaR+XsrW/06fONITS2BaZATuSqAPwEUcZ7F7dc2utNVUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oDZMOmqT; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782915452; c=relaxed/simple;
+	bh=uxpkze4mO0R/ciNnUW9aPg3o8zyZI3JR3YM28nP5gR4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gP7OPnrkek6J+F7goHBw/8SvixY7TcHtPmqEYaQqSkJxNkU0kOCkfeWo+yYG0PoX8sqduwjpMORhekBrRtgSmX7OXbMMSBJ5+cEVemr5itzJwjqx71UDOA+WoQkmlVMeGCFHd3yJ0k2EJr5wokauvybGaJS1+MJfjEz+RrnOmmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=ouCPuBWk; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oDZMOmqT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782907747; x=1814443747;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=08ry/i3F382Lh0S0s/t9xY0zSs5C1Db8yjNFGTPWguY=;
-  b=oDZMOmqTFZTrt9fYwHfWJq8QIq2F6Fn6nGE63kiXTgrkBtEKHwKB1Boe
-   6umJsleD0mJvyFV42jFNSxnBWsXdBex9wbT+iJgVQrYJwhAPKbacEJssd
-   G6SAbuYRiBfeyYQvqFod+A1L3j/6SRqCeNilJ1ITa5S1wcW5DUw89KfcH
-   UwUlsQ2W+GXRSfQc853qTLbs4cPBTrBZe/KgVBST9IXpkWH0QGfq0V5Qc
-   BPZSY/uJi2bIQ3h/+tmMruxo/PG/2giOveW5DoCCUzndTcgeGiC2H0wr0
-   4riGdbBQXUa6JiiRG8Yt9I3hNYpdMDwWwZa0OyeYRPqQlQhygd+YIVM1n
-   g==;
-X-CSE-ConnectionGUID: G13uG0NGSHGCVUKvsTqLhg==
-X-CSE-MsgGUID: /S8p7V7uTIeSUezhksr19Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11833"; a="93994695"
-X-IronPort-AV: E=Sophos;i="6.25,141,1779174000"; 
-   d="scan'208";a="93994695"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 05:09:06 -0700
-X-CSE-ConnectionGUID: zSNBwqYBSpup2dxfqAqjrA==
-X-CSE-MsgGUID: lvaVgl7QSza6Rq5O2mrj3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,141,1779174000"; 
-   d="scan'208";a="249187367"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.65])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 05:09:00 -0700
-Date: Wed, 1 Jul 2026 15:08:57 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Michael Walle <mwalle@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"afaerber@suse.com" <afaerber@suse.com>,
-	"wbg@kernel.org" <wbg@kernel.org>,
-	"mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"andy@kernel.org" <andy@kernel.org>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	=?utf-8?B?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-realtek-soc@lists.infradead.org" <linux-realtek-soc@lists.infradead.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	=?utf-8?B?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?= <cy.huang@realtek.com>,
-	Stanley =?utf-8?B?Q2hhbmdb5piM6IKy5b63XQ==?= <stanley_chang@realtek.com>,
-	James Tai =?utf-8?B?W+aItOW/l+WzsF0=?= <james.tai@realtek.com>,
-	Yu-Chun Lin =?utf-8?B?W+ael+elkOWQm10=?= <eleanor.lin@realtek.com>
-Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
- accessor
-Message-ID: <akUDWZo-hpIhjmW3@ashevche-desk.local>
-References: <agMM9soiqpG-TRSb@ashevche-desk.local>
- <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
- <ah92oEavMu4QRn8y@ashevche-desk.local>
- <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
- <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
- <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
- <DJN3PDTPJ3L6.24P71OQFB6C98@kernel.org>
- <CAHp75VeTp4eYQ4QBoeH2VyVhUivxNn1CaC9jskmeg-1zTAOYLQ@mail.gmail.com>
- <akTyDzdrt949VnWK@ashevche-desk.local>
- <DJN7EN61AJGW.2TV8JLMVRFTJ@kernel.org>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="ouCPuBWk"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493ae59eca6so5377125e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 07:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1782915447; x=1783520247; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZW8+spma2S67V6miLcBHdIf2ZY8X/GF3gl5p74l3kDU=;
+        b=ouCPuBWkX8ZjCYthBoWS9vHidKRwbSa4lLbvm4ERmt0Vis4wVJjpm/VVGc6nv/3pyl
+         eBejsxnbrS+nBxO+G38gA/o0MVSrEBnLIOsxKvjXEJ8bgC8BmWDo4QMayVGo/OvLXMRf
+         Ati+Ao0BkLNV3BC2vkJz6dRlpAwx3CgpBD81akuuKauJUvkZgHPoa0RIDwvn65ZWqBjd
+         3qBiIhT16iaDsKsch4RjfpiBBIpK3+7gEbxEcz3hD71YbV++EityTgbF9UOQL4I7xg+l
+         jkVElLErkzKEddCth+7mUYBw04+aJ3bLGm9/Oo25X1SOkOt5YkZyrHWJmiRrDI8WyD52
+         veDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782915447; x=1783520247;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZW8+spma2S67V6miLcBHdIf2ZY8X/GF3gl5p74l3kDU=;
+        b=XNedtnaneZPONkuZ6Pqk+omBiEoPx2vLG7kieQlQXz51vvbnEuoJ6uQ/07TY2/hGXd
+         vfWSDmJOGfFNqbVT6Lp3K85WZ4+eMjTFQpogMPQTfhtpOYiZaAbepR3XSplRda9zvbCm
+         Ye2RuBUYALAp6wbttjLO1eMQKKU0OPPIem2J8/+9DpntQsdw9xhYe/fbUc7E5qkhg8W9
+         qQsCfhyHPWUgNdfzTc6Y0lHx4rZ08SfECTniUAncpC12OgtWe0GwVnx0+vPZdciZKoa+
+         w/HWae1nhaw2e5j7g7+EdqW9MbYdQ5GWsPVPS/HzOuzYjrRH4YxcSw0FICNDsqdO3Ev3
+         OhSw==
+X-Forwarded-Encrypted: i=1; AFNElJ/hi4kl5B/1ub7UMwmkEvfKdIwwzWQUS0yTdthIeYQD8xlqWYUrYCl4E3XNcot7jNxZcWjU35UppxY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2vwJ8VMaeBsv27QwqfABNgtPIwKevucOJCJpAnqFiK61xnEiz
+	2MpWOMpHgGlFYgB/fbtrNiVLkoM3hZlSxZCdlF0fGcP9xMhL3krKdMDdCgcdkDn24fs=
+X-Gm-Gg: AfdE7cmbM15UaLnlFm+pa+9HNYykYLYge2Gmfj31ycfn1QzBoDHggbH4i4yoXXLyxpL
+	psoJUBBFA+eAEMOODeGQmP7iL3NTmJIjRHzIxhVuSbh7eMmhzsXfymhEBvtK1FwK8WESDR3KS+f
+	pXUFKEE3a9YIWYv1bBoGgF7PCDrai/ifcs4TtuvCgaUOqhTukpfMrjr6K437yAvRFlotZKmsFRN
+	nA57FNA38iY3nkHFtr8aq2scS35OZ5wa74bb6q2/m6mCqh/mY7IdeaSCJ6vdLdtZZI7+rEjSjBC
+	3ly5uTKzpRjrDk7q01SKOHYZX7CujvNuS+zEJ9nRIwwZ+jwhCfF7pW+BpwxOZfPPbc6VyTG1DZr
+	X+YHcNjBc7WFZFWcYl9Eref6EhdufAnqqiebfaqk8FvL+c7EqzjO7H/uW45OVEsJAkgsbZFBd1g
+	XnoulaSJnH1FLhMQrgLnj7yBkmhf7p9mmNE0t/HoCB1IGmNedktGE3
+X-Received: by 2002:a05:600c:524a:b0:493:af0d:484c with SMTP id 5b1f17b1804b1-493c3df2fb5mr12527785e9.34.1782915447358;
+        Wed, 01 Jul 2026 07:17:27 -0700 (PDT)
+Received: from [192.168.0.2] (host93-7-32-195.dimensionesrl.eu. [195.32.7.93])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493be81df2asm152552155e9.12.2026.07.01.07.17.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jul 2026 07:17:26 -0700 (PDT)
+From: Angelo Dureghello <adureghello@baylibre.com>
+X-Google-Original-From: Angelo Dureghello <adureghello@baylibre.org>
+Subject: [PATCH v7 0/2] add mcf54415 DAC driver
+Date: Wed, 01 Jul 2026 16:17:22 +0200
+Message-Id: <20260701-wip-stmark2-dac-v7-0-ff8fdcc8010a@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <DJN7EN61AJGW.2TV8JLMVRFTJ@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XRy07DMBAF0F+pssbI48c4YcV/IBbjFzXQpnJCo
+ Kry7zhh0UJdsRxp7rmW59QMIacwNA+bU5PDlIbU78tg7jaN29L+JbDky9wILpArydlnOrBh3FF
+ +E8yTY4Yjj6rzvlOxKalDDjF9reLT8888fNjX4MaFWTa2aRj7fFwrJ7Hs3dYnwTgLkmKLrVOc4
+ NHS8T3ZHO5dv1u0NapB1qPReQqau6iBfkeXt03y3K65uiZkIbgWiiA6cPJWuxD1KKANnLzUhKb
+ SDv+0QyFao5xEUh1wXyHUBSHhmlCFMAE1WSVA+xqhzwRC5QK6ENagbaVE9NpVCLwk2msCC6Fag
+ +Ct7dD//Yt5nr8Bqq48OogCAAA=
+X-Change-ID: 20260430-wip-stmark2-dac-7060f49dd94f
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Geert Uytterhoeven <geert@linux-m68k.org>, 
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
+ Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-m68k@lists.linux-m68k.org, linux-stm32@st-md-mailman.stormreply.com, 
+ linux-arm-kernel@lists.infradead.org, 
+ Angelo Dureghello <adureghello@baylibre.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.15.2
 
-On Wed, Jul 01, 2026 at 01:38:54PM +0200, Michael Walle wrote:
-> On Wed Jul 1, 2026 at 12:55 PM CEST, Andy Shevchenko wrote:
-> > On Wed, Jul 01, 2026 at 01:01:10PM +0300, Andy Shevchenko wrote:
-> >> On Wed, Jul 1, 2026 at 11:44 AM Michael Walle <mwalle@kernel.org> wrote:
-> >> > On Fri Jun 19, 2026 at 11:08 PM CEST, Linus Walleij wrote:
-> >> > > On Mon, Jun 8, 2026 at 4:41 PM Michael Walle <mwalle@kernel.org> wrote:
-> >> > >
-> >> > >> >>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retrieve the
-> >> > >> >>> gpio_chip instantiated inside gpio-regmap.c to fulfill these requirements in our
-> >> > >> >>> map() function.
-> >> > >>
-> >> > >> Why is gpiochip_irq_reqres() called in the first place? Isn't that
-> >> > >> only called if the irq handling is set up via gc->irq.chip and not
-> >> > >> via gpiochip_irqchip_add_domain() like in gpio-regmap?
-> >> > >
-> >> > > Not really, the gpiochip_irq_reqres() is called to mark that a
-> >> > > GPIO line is used for IRQ, so the gpiolib cannot turn this
-> >> > > GPIO into an output line, gpiod_direction_out() will fail
-> >> > > on lines used for IRQ. So it's a failsafe.
-> >> > >
-> >> > > You can live without it of course, but then you don't get
-> >> > > this failsafe.
-> >> >
-> >> > Thanks for the explanation! So did I make a mistake years ago by
-> >> > adding the gpiochip_irqchip_add_domain(), see commit 6a45b0e2589f
-> >> > ("gpiolib: Introduce gpiochip_irqchip_add_domain()")
-> >> >
-> >> > As Yu-Chun found, gpiochip_irq_reqres() expect the irq chip data
-> >> > to be a gpio_chip, which isn't the case (in general) for an
-> >> > externally allocated domain, is it?
-> >> 
-> >> So the whole issue comes from the fact that the IRQ chip is not marked
-> >> as immutable. For immutable IRQ chips (which all GPIO provides should
-> >> have) there is no such issue to begin with, id est there is no
-> >> gpiochip_irq_reqres() callback assigned (and respective _relres).
-> >
-> > Ah, for immutable chips we put either custom ones or
-> > GPIOCHIP_IRQ_RESOURCE_HELPERS which actually refers to those callbacks.
-> >
-> > So, if the domain is external, it should also provide irq_request_resources
-> > and release callbacks. In the custom case we can wrap gpiochip_reqres_irq()
-> > and gpiochip_relres_irq() respectively.
-> 
-> Exactly. And its seems that this should have been possible with this
-> series, too.
-> 
-> Apart from that, most drivers use regmap-irq with gpio-regmap. For
-> this we'd probably have to add something to regmap-irq because that
-> module owns the irq_chip.
-> 
-> > But we need to have a struct gpio_chip pointer for them. And note, the
-> > IRQ chip data can be anything in that case, so it's not a requirement.
-> 
-> That's what I've meant. Conceptionally, it should be part of
-> gpiochip_irqchip_add_domain()/gpiolib, so a user doesn't have to
-> have that knowledge. But I don't see how this could be achieved.
+This patchset adds a minimalistic DAC driver for the NXP mcf54415/6/7/8
+builtin DACs.
 
-But it can be hidden in gpio-regmap + regmap-irq.
+Currently the driver enables the raw write only. Feature as dma, sync, or
+format are not supoprted for this version.
 
-So, what we need is:
-- patch regmap-irq to be able to customize irq_request_resources and release
-- provide default callbacks in gpio-regmap (and export for external domains)
-- use those callbacks by default when gpio-regmap creates an IRQ chip
+Additional options suppoerted by the DAC module will be added to the driver
+later on, as needed.
 
-The leftovers are the drivers that use gpio-regmap + their own call to
-regmap-irq. I haven't looked into them closely, they usually have custom
-xlate and something else. OTOH, they will be able to customize the resource
-handling as well.
+The same patchset prepares the m68k/coldfire architecture to support
+the driver.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Below some basic tests done on stmark2 mcf54415-based board, voltage check
+on DAC0 and DAC1:
 
+~ # cd /sys/bus/iio/devices/iio:device0/
+/sys/bus/iio/devices/iio:device0 # ls
+name               out_voltage_scale  uevent
+out_voltage_raw    subsystem
+/sys/bus/iio/devices/iio:device0 # cat name
+mcf54415
+/sys/bus/iio/devices/iio:device0 # echo 4095 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 2048 > out_voltage_raw 
+/sys/bus/iio/devices/iio:device0 # echo 4096 > out_voltage_raw 
+sh: write error: Invalid argument
+/sys/bus/iio/devices/iio:device0 # cat out_voltage_raw 
+2048
+/sys/bus/iio/devices/iio:device0 # 
+
+Same behavior for /sys/bus/iio/devices/iio:device1.
+
+Generated a sine wave by shell script, sine shape is good.
+
+is actually in progress:
+
+Note: this patchset depends on mew mcf_read/mcf_write implementation that
+Link: https://lore.kernel.org/linux-m68k/209d0653-6386-4b64-9e15-e358f84453ab@app.fastmail.com/T/#t
+Link: https://lore.kernel.org/linux-m68k/20260506142644.3234270-2-gerg@kernel.org/
+---
+Changes in v7:
+- keeping changelog in each single patch, where any
+- Link to v6: https://patch.msgid.link/20260618-wip-stmark2-dac-v6-0-48761dbb96d7@baylibre.com
+
+Changes in v6:
+- Removed patches 1 to 8, already pushed in m68knommu for-next by
+  Greg Ungerer <gerg@linux-m68k.org>
+- keeping changelog in each single patch, where any
+- Link to v5: https://patch.msgid.link/20260610-wip-stmark2-dac-v5-0-b76b83366d5c@baylibre.com
+
+Changes in v5:
+- keeping changelog in each single patch, where any
+- Link to v4: https://patch.msgid.link/20260531-wip-stmark2-dac-v4-0-7e65ab4215dd@baylibre.com
+
+Changes in v4:
+- keeping changelog in each single patch, where any
+- Link to v3: https://patch.msgid.link/20260522-wip-stmark2-dac-v3-0-16be0ad35a67@baylibre.com
+
+Changes in v3:
+- keeping changelog in each single patch, where any
+- Link to v2: https://patch.msgid.link/20260513-wip-stmark2-dac-v2-0-fcdae50cf51a@baylibre.com
+
+Changes in v2:
+- keeping changelog in each single patch, where any
+- Link to v1: https://patch.msgid.link/20260504-wip-stmark2-dac-v1-0-874c36a4910d@baylibre.com
+
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+To: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+
+---
+Angelo Dureghello (2):
+      iio: dac: add mcf54415 DAC
+      m68k: defconfig: update stmark2 defconfig
+
+ arch/m68k/configs/stmark2_defconfig |   2 +
+ drivers/iio/dac/Kconfig             |  11 +++
+ drivers/iio/dac/Makefile            |   1 +
+ drivers/iio/dac/mcf54415_dac.c      | 180 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 194 insertions(+)
+---
+base-commit: bc5a85a5441632f4bd7acd38620fdcbe4852a44f
+change-id: 20260430-wip-stmark2-dac-7060f49dd94f
+
+Best regards,
+--  
+Angelo Dureghello <adureghello@baylibre.com>
 
