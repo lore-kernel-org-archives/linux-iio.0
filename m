@@ -1,68 +1,68 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DBF74B8DD9
-	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 19:21:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DD76397E64
+	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 19:21:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782933716; cv=none; b=UwP25hfpPKVhUmOuwf0n6ZD8qLjAJbqbSalIecOKzugBUAZKmcevwKQFYpVQAhZCe5beQBGFFgooisq1f9V8z7Ja2oQmfHzmLNYgMBf49JQYy/gYsNFbATYDfZ9uJUbW1slRG65irIDQNjdzth6pjnZQdFvS2qKvxM0F2gScmbw=
+	t=1782933717; cv=none; b=fs810vEA4tM0RwVleSVQFaUJjplWE8pDykw0Rfe6b0SSiowoNC6QSCGBxcorYk4nE/sENoOLX1cY9veOw0Symrjcg0XDrrjGiPmCSKnkLvq/59VLjG+FvOkLlqnEBmyy8JYUhs8iDpcuUQIieW1FmIDhZ3qu7/XGUvRwDvdO0m8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782933716; c=relaxed/simple;
-	bh=0tAhE4IxFx91F3oEYjTm6ajNyfPU/CrBLoLk7eRtFC8=;
+	s=arc-20240116; t=1782933717; c=relaxed/simple;
+	bh=ZrVUK7Zj6N1KP1R23c6/0Wh1JaKWO2Kf2XCkb8zt+wE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hei1ZocLwNqTgvwH3RGy5vHCFVHQ6i6ZRBkWZRbQx205MWl/XkzLykr3tXYvNgK9Fu/LiPSNuPCwJMpGV59t8jUQoKNx4SVQ/lDyvth23rCRO5I8ImpWwDnaSdlIjRfJNUUQEhZXcM3sxveJ9nJx3y+9NR6ApE4kP3tuyfdWGv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k1jebpaD; arc=none smtp.client-ip=209.85.221.51
+	 In-Reply-To:To:Cc; b=sTp3SJnPBisC3oKR1zzCrF0VyMk8ouUHzNkMkQiMSLoE5wWz7bvQhEneXsoHGU3tFF/GROnIR2gJ6RS+61EEKHXBwerniRkHqXmMVkk6sr+Oe9EpLLUyhk8gBOhxrPu5kbsCTws6SdBVzbMm3igv2nnHh+3o38En6/+uIoPFEKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PSvbwzhz; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k1jebpaD"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-47640541585so646336f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 12:21:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PSvbwzhz"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-476d8e647e9so976480f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 12:21:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782933712; x=1783538512; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782933713; x=1783538513; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gm57qUnAiYiyWGREIrTrj6/T+W1rZdq98MsMwMCVRHo=;
-        b=k1jebpaDC8NvnQFWQStK6Zdlv0R72tG4x2NuaiJ4EKTihiMUe3XEpJXSR+YlCXkgDR
-         Lxbzq8o07Xmhnh9UlDA6COvAn2Tr3ySEE5gc70OqOQibG2TWibCb8UZBFYGPlME+QtDV
-         X3YD+iEmmXk0HulBT0+AP69YZ96O9/eq0fHol4tDq7iF1qLjTmXD61DzuDrbMZj2Zk6P
-         wBB/FhRR85fUHSgup+J5S47MQhF1ti6XPyd97DF1ru+HjqPMiM4Fa91Ly+JiAdZ4ubu3
-         uGEMo0/GVVlyMCYWg4ddobGf4Aj6XNmikl2UIZmLsi46fipamcUs1VjVWVO04jr3Tzh3
-         +9+A==
+        bh=LfXtv/qlJgM1lCGYWsyy+YR9eQYYd+6+L4VNCpJsbs8=;
+        b=PSvbwzhzx40+qCg/wa/eCNCqYT5VU+Rh0/xraRwm/3oronlgYatYP7RseGsDU4vKDt
+         a+hkXXsUF1ywqk38guliDfRLiDwdWEOLGXuU77f7fpONl5Oy8Es1bIv5NeEPadBeuSZX
+         t8khTy+lJlgNI21g/LhHyrMEjnGsCRTAwrRRaGilMmBs91UauWDDlFZ4wmDdfjylf5HW
+         XqQEO0hMRU5Qmu7YGxnQzNJT8vDc3tgvqtlmeZ7r2MAqxx5/+JqfxdgUSXa+9Hsd7HOe
+         2ahQlS4c7b178iBrtjjJF48vb64qFnRCwakhXjUjN5nvPiv1M2VU3Tu/jBzNvDcm6qFn
+         11Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782933712; x=1783538512;
+        d=1e100.net; s=20251104; t=1782933713; x=1783538513;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=gm57qUnAiYiyWGREIrTrj6/T+W1rZdq98MsMwMCVRHo=;
-        b=kWIb3wFcOjBquJX5QX0IlaSOZU6hhiEe3PO0AbD0fICGhNjsMt9nzz/oOs1YIedWrz
-         oPdDubVvsQeEteu5bX9M8Xg3WB4/Eb4hxW9zK90YwnzvOVsOYmZXXbuLoGOUk+2HLkn2
-         Xx3qjy6wADWCreX0VtJsOijTq5LvK9mg3oaUi3vt7y02wNBQQ4tVi2OhfwYIe7KiwsU7
-         4E7f/TERheXGEp1b86HpC9gBN0QEgWURJ+FcQl/hpTPmGQmrF3zbnlnVGE9BHtnMFjJH
-         i63m7L/0RZv13aEWRPhk0ioU20U8c3RqPqu1hhdxgoA5OsHryAsJ6jzC2uFNGCsGZ6Gh
-         Ko6g==
-X-Gm-Message-State: AOJu0YzACsFSAuajeZg7ee/OFKQzUX6XDE5fwnNn1C2mfwEy9enq2VL0
-	qsmYL1DLQYrsW6/4o7zinhmWEO3iQZ3f8+0U/WfVULB4Swvwg39IbRWY
-X-Gm-Gg: AfdE7clVMJz0NH5/90xA16m3RgAymrHD/JdQM20APJ0bjCapCmMi+t9sgXLMD2kcmir
-	BbQbWVGzQ9KIUpaqI81IkxghSVGuQHaS28Vq3GlvMN1naWi7j5KpIEh8GaHPPo8jhXgKAepxgXD
-	AKxPLzY6IZVdDMmQaZ9V5H798PsNTUME5YY0AeQ85FIFCACZMO1B6wR0M6+3A1Fxs8iJy4ghMI4
-	nJg1YS9uR3H/GoEZJ7pWohqIQak2s3nqShRRTv03wjmwNmgUKPHJrCW+oS2yVnbRsUZabiSKi9R
-	k7h5gvlylfHZWi64+uIL5+Yid90hDxJH9KnvBq5Og35EHJyrJqZv2YGum4c6VFBHykE+rQbT2jU
-	7y2wAmJuey5Ut/AXLISKFC19QZA5B3n+Kyjkv6uxb3+Tc2shXjghmyNnM1oqfDG2qwQpHuZlLvV
-	3/w6Im+rPxZusgrCK3VTZ8MnqgLm0zgIXjuXVUYjEGtrsrpPqd7pUbzFCGCZ52cjvvDj82/lKsa
-	OsY7c+Wy393I4VFmACvHuQdf4P8hohqOTuAPgM+1LZ+gGM2C282e2Iw1YqjsbhF/24woDjMg7/N
-	Jz7aBsjOM2iQeuUlc5EB4gSy4aEWkZ08j8LI0yca0LWwL4jc6FuT3HA9rDtBvUv5Fw==
-X-Received: by 2002:a05:6000:310a:b0:475:f0f0:9ef9 with SMTP id ffacd0b85a97d-4775956884emr4457814f8f.48.1782933711497;
-        Wed, 01 Jul 2026 12:21:51 -0700 (PDT)
+        bh=LfXtv/qlJgM1lCGYWsyy+YR9eQYYd+6+L4VNCpJsbs8=;
+        b=hxCgkERixDWoJMbEltSyj7sBFkaxCxQ+82FPpUXa9YmpQuJtuZkPHfRrI8oK097NTk
+         ERBtlfI70vLnFaxKXKykVYmyF5y6tp0TJDHKAjYbxWsTi6726mFkdqz3qmJVWJeVg/xE
+         LhrvL+EdiRSVZz+zx/FTvkz8/cjL5fUga0RDg76dBUy+fi+aguaWid/0UYi8vqSn7SlR
+         pi1poePwi/4tvqNC4v3z44dtKpUWL8aj/2w4OJO4yGikvll59BSlfJ74FWVpXDPYH6J5
+         5PVXy33w3wLq6fyIkznAo5vx5jEgXy32CkTn5WDf9qR/1dl518bnH/qhL4+BUcHz/d+O
+         W11A==
+X-Gm-Message-State: AOJu0YzWgNFOU5DJMUj8qER/V+flVsBK97igsoptBjrtUjhqAuws/uZz
+	QSFZaJPnxLyXM+mQmZVpXvmcVhgiolAar8FCX84T+gQV4Wz9k1WHeBej
+X-Gm-Gg: AfdE7cldqD/DgdX0V7l23oj9eLf9AB87RkropESUZTkdVRdlUfyYoUlQgpnsBYwkKXP
+	WnI3QsTD1JmQZ/M+0S1t0ntNaEZjTA78bnNWDESt6DiYWgEJ/y+wBQ83YS+Gg4nMVt4nVfizTak
+	SLUckJ7KsHebtLpsM3VlsBwRD8xBmbZkZEmYwheAy36YT76ovGBqdoUyXGy5QaQr4aH0gEf+VKl
+	gzzVVW+xPFBsWrBUchx7Gu2dIDIEWl/7Nl+71OfRsQdBv04SMVOs8yBdD3kwaKi0xS8h5h9CsYR
+	N7K8nhe0z4CAHrA4oRXIaGIwTV3b2AGpORLH6LFsPdPvk8vY4Qugj+vtxxNrkDSPQECw9w8qgdV
+	KdlUwb5BP9oRyPhAA8d7fy/JzUgXtLGob9wV/KDGhxo8dsod0vLbQo+qRc9JwUQEQjkXZqsCYFn
+	DveqAFCWBd9wpbXmsig6fdwOCyRYF6/KbrKXLYyxZKdK6n+RXHqLc9gFfOW39WorgJnvdPQjeGB
+	MlOmGvDFPYGIsJIrMT3xvzN09fvD05BA0obbutAZdebXM3EobqNrtFST/0y4oAN1p6+ujoWT4dT
+	aTGG9sge1mrim+Exh1srdvbayaZ1cDX9qwi9OJku1+K9hbG4l4H9USs=
+X-Received: by 2002:adf:ea82:0:b0:475:a4ae:e630 with SMTP id ffacd0b85a97d-4775be03177mr3789033f8f.37.1782933713282;
+        Wed, 01 Jul 2026 12:21:53 -0700 (PDT)
 Received: from [192.168.71.52] (cst2-160-240.cust.vodafone.cz. [31.30.160.240])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477dbe617b1sm2081838f8f.16.2026.07.01.12.21.50
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477dbe617b1sm2081838f8f.16.2026.07.01.12.21.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 12:21:51 -0700 (PDT)
+        Wed, 01 Jul 2026 12:21:52 -0700 (PDT)
 From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 01 Jul 2026 21:21:46 +0200
-Subject: [PATCH 1/2] iio: adc: ad4130: add missing `select
- IIO_TRIGGERED_BUFFER` to Kconfig
+Date: Wed, 01 Jul 2026 21:21:47 +0200
+Subject: [PATCH 2/2] iio: adc: ad7779: add missing 'select
+ IIO_TRIGGERED_BUFFER' to Kconfig
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260701-add-adc-kconfig-deps-v1-1-b9708d74f426@gmail.com>
+Message-Id: <20260701-add-adc-kconfig-deps-v1-2-b9708d74f426@gmail.com>
 References: <20260701-add-adc-kconfig-deps-v1-0-b9708d74f426@gmail.com>
 In-Reply-To: <20260701-add-adc-kconfig-deps-v1-0-b9708d74f426@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -84,18 +84,18 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Joshua Crofts <joshua.crofts1@gmail.com>, 
  Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1782933709; l=713;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1782933709; l=746;
  i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=0tAhE4IxFx91F3oEYjTm6ajNyfPU/CrBLoLk7eRtFC8=;
- b=8FAGCHKaTwAmKYj6/hWcONs4fAwKNfg6nzntO8CAVOpaEtsydIChSRpgTPZMFQNAxN2ThlNSY
- qgH5oFyKJqgA0T8wfEmUkuljhQCdGm3nK4T7UvnQpaFde3Kuq2R7jR1
+ bh=ZrVUK7Zj6N1KP1R23c6/0Wh1JaKWO2Kf2XCkb8zt+wE=;
+ b=Ji9u+4oeSNAFqIlJi4djVclgX7CYD/lSiKslgxHIBpV/TPmePB3TOA7Y26HQRA38NC0dJzRTR
+ AihUhHpsaHZDfN6qqYXFe6NsLniKV/iyfv+2XzPAX93SS6vT/R0lC+E
 X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
  pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-The Kconfig entry is missing a `select IIO_TRIGGERED_BUFFER` parameter,
-causing potential build failures.
+The Kconfig entry for the AD7779 is missing a
+'select IIO_TRIGGERED_BUFFER' parameter, causing build failures.
 
-Fixes: ec98c3b50157 ("iio: adc: ad4130: add new supported parts")
+Fixes: c9a3f8c7bfcb ("drivers: iio: adc: add support for ad777x family")
 Cc: stable@vger.kernel.org
 Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
@@ -103,17 +103,17 @@ Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 441e5c660716..b1437e6b02fd 100644
+index b1437e6b02fd..878f8145406f 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -109,6 +109,7 @@ config AD4130
+@@ -454,6 +454,7 @@ config AD7779
  	depends on SPI
- 	depends on GPIOLIB
+ 	select CRC8
  	select IIO_BUFFER
 +	select IIO_TRIGGERED_BUFFER
- 	select IIO_KFIFO_BUF
- 	select REGMAP_SPI
- 	depends on COMMON_CLK
+ 	select IIO_BACKEND
+ 	help
+ 	  Say yes here to build support for Analog Devices AD777X family
 
 -- 
 2.54.0
