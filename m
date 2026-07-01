@@ -1,295 +1,104 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF84047F2C1
-	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 15:13:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 826EF192D8A
+	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 15:21:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782918829; cv=none; b=aFWPja1UUmicUd46hnh68M1kD590VdmIHm0gOD1R4a6PQ1q8EL6EuinA4XhSNTJMDUrl02xvHa9uVIo7IIBN7vo34ERSWYKuJdUGHY22ljN8qVpzxLqNuOrIT9acKmYueIgZJAbqXJeNwp2QkGK/6JvcVaebMqFL2kMFicZtHTo=
+	t=1782919265; cv=none; b=PjG1HwTCjDzY6D0XzvhWzdwoEq/HBawTXxlRn1GnniCinaRGA5JOAaY4DfSke7wAxVpSwg8LEx/UEQOUu/rIBz4R1HCWrd/fpl4vmpFBqSxSVGFk90t+vdbL/fKeNs1Sdlq0n74rD3Vs2fkf+sAfr+OP8Wz9m/tKfq9rLsvVElE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782918829; c=relaxed/simple;
-	bh=Rff2bZQFjZVj010r87RNwMO2EYMnoJ06cDGhDRMaVjo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GeJT5WF5wEKegAv9/93cYUswVs6PZFOX6F0NbmSjkWhsAsOnzDBQ2NtIqXItZl6egwWGWuGJ9INz16xC8YinkmLq9kI3BAMeTU9xmK3NUWeUvSwEZx+RuVH0DhZqkbU9uJ0Ww7aayCA2WO2MNNCJNceaMvpz/qUm/9mdR/MW6ts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ROlxpmB/; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1782919265; c=relaxed/simple;
+	bh=ImeeGYvfBmwwdtRYM3UTpOEo3+31ExYXTG0uuYq6wFY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=a9B6Lz+4ddRhfFaz7ETB04o1ZB5wp74zod0IQ8TrQ3285npfDGPRKscCIui2CPWZMbpVZyQ9LWaAhg8Nrcykwb9lAN40JDT9wGbHOzukooSEn2o+bbvUzAf4lYIuBW3hkCQ6IFD3vdAhEfYeIilBeXFriG+jJwePo5Qdtcd7I88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ORGEph6b; arc=none smtp.client-ip=74.125.82.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ROlxpmB/"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-490cf322ed0so5044825e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 08:13:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ORGEph6b"
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-30c5fcfc947so90923eec.2
+        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 08:21:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782918824; x=1783523624; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Hih0KiOWnFEJdhJRq530df2fzJs3Ws8Ka8yqQHFWY28=;
-        b=ROlxpmB/imliKVCf7coV0xe2CoWxhw2UZ4aYBp6YXe0cq1z+YyQsf6sAj1dfS74F0W
-         616AJo3F71tH1I7gctK4mFuNsDIVRY+ikVyjtaW8TFJxOXPi7ofgspAyyXdZN6O91zvs
-         DSCiBHqiQA+JinPrb3+R9Uv31kp4gx6mIXYjK0jS5Oa4oOpgTsFXQf6z3zYozgLqCM/U
-         UkGFqjdgAZMVyiW9eYsu6nnTxtV2aO8Y79FuwvF78AnTQTVA+yb6F0jno1H9R2c9e/gh
-         uOVhVsw7kgHm5LcZHq5z4cS2BeOTnFvgPSSHzGBaHbKddRQgcHgO8BNiuMfhVhAtx9pE
-         hYSw==
+        d=gmail.com; s=20251104; t=1782919264; x=1783524064; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=OtSFW5CXFXNF1fKrfWvLYf5SjgLc6mHCqOf2ueXia7c=;
+        b=ORGEph6bljDv2lacQbOTYyI9CnjHFxcHnoqnZIBZ8MaS4MbIxgL2ENkAT3ZUGTcgDy
+         2OBgEnBsAW7wr+0Km+HPvv6pm1m2k51N3JXAeNSErarCEoRJJDOQ1rBva99LLozKVA8b
+         RuAqapZOb0VfLjvDBM1wotYHfeaVepDMvdlLXfmNatJPUs/u+9I9oe0WzJoCy04qPvmt
+         xQRw9JvxjHSZc7Gnu66yklWWgZKDWLUr/vN6XdUbUlj8I4YLAIzfD5POgCTo3FxNwgei
+         c6Oygo3fTQbUyJ5d5Mb+Xq2hmu6J5APjh6vVbp3riUFX5eVhwLobUS0UKX6HkqJld6Qf
+         +7Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782918824; x=1783523624;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hih0KiOWnFEJdhJRq530df2fzJs3Ws8Ka8yqQHFWY28=;
-        b=gLpqWjuS+cRbqWk8iv5cLg2Cv14G98JiQxs3kvsBpNDhlhpUBw2HqhxnLonV5Ihar8
-         +Wdp+3DNIbtZGyXDT4i6UtB8GhXxaZ7p9yppayyYg/5jBNpnJKsfwpMJg2XOQsuda3wq
-         R9iRL8As40QW8uhtw0rPnD8XPxGEqhGY+9rrHg+x0ocmBuhYMicDFyfzwl0JIr6vGcoo
-         Ak4kmOdJcc6SrQzE130qZnqyBwwn28gzfukpUmkj+ot0v7i29BNuOLkbS5TqOuzsoBf5
-         nH+z+3jQLjFo0VgQRS/0aD3D0RS+qU57/3+R5cCIFX85hoee7ynC2uy2WXSQsB9c0ot4
-         wfNA==
-X-Forwarded-Encrypted: i=1; AFNElJ9nN4eNU8I8HoMVz4l3MC/REBZuUboVvzQBhUTSBviaUeYtl/2ITW+69fHbNC/OMFMkVudhHCvw3VU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx81fJ5klCxnl60RWIb0pcTXWN0qCgikurZLxHkoKo9JZCRzVjl
-	/yWmvnzKyZX8srvPWsxtvm72/UKDWuuNw8BOI5zhfaQg6PRGZBs4FwTZ
-X-Gm-Gg: AfdE7cmA6dOq3HCgx2AL0x5rjsB45h2FQ3YTXUtexGAiiDCQBdjbbNy2kXjK3yXj3ZW
-	muepeDmK8BEnYVPnzwm3uh7QDp6Jx+nhLvPnPGj9akwu6JQwf6BmYhWVhRd6hwiKQEHINciSpjU
-	bprp9RYJzMsf39yEW307KLQzhMFBzhT7fxHE2hnfp3GZTcJ+9ps+Piz7Y6/bKfL1H70x1vCRmta
-	jXR1RwrYpP74N3Pty3LkwoloDRCDzvFlTC79OMwGDYJEc5k2kK0fHhCaI0fUYSH1VVkl2HvNVcV
-	DZPlb1pJh/f08OJJuki6wehEJY/ctGWG+u4E5f4O9po3XXe+VzDmqa4tRkkdW0FoBY2Kt4ENxJJ
-	rHaBpIrzV8Y6439tRxSgdjKM2hDSn4/apWPC3lVwRLya6kFHxeTiVM8c1g2UzZVc0qWWkW3Sp8J
-	ngADqa
-X-Received: by 2002:a05:600c:6087:b0:492:1eed:3e67 with SMTP id 5b1f17b1804b1-493c2b96d7emr34623915e9.26.1782918823652;
-        Wed, 01 Jul 2026 08:13:43 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493be4da247sm80377005e9.7.2026.07.01.08.13.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 08:13:43 -0700 (PDT)
-Date: Wed, 1 Jul 2026 16:14:47 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>
-Cc: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: imu: adis16550: Simplify device abstraction
-Message-ID: <akUuypU25OtpCFWF@nsa>
-References: <cover.1782833415.git.u.kleine-koenig@baylibre.com>
- <f9c18b3c1ee486341704f917e06b91f7a39119ec.1782833415.git.u.kleine-koenig@baylibre.com>
+        d=1e100.net; s=20251104; t=1782919264; x=1783524064;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=OtSFW5CXFXNF1fKrfWvLYf5SjgLc6mHCqOf2ueXia7c=;
+        b=bz993Mh+h4m68UGTa9t9cupZrPjGxtd8s+HzpsJEDFqGTznvGwTk8i3S37x4TqEeK/
+         hk9bogpVSJRJxgLvrhM6LZ0rWoBxFvn1z5rm2cL3U8mtcNUuJzljXl4NZ4gb2QUzF/0C
+         AWnu27DL6MixtkC9NHol9Cka4vnIkJ86+loVXtnRFoTYbCVAxO7TYZpYvcbk2iuH9j27
+         SxujOI1qjtHo32F3OjVekgYWYlqSRb2oP0ZQAyS/2Nw4UHs7A3I5hEqvQgPNhKZhECbT
+         BLG9aLhOReluZxeV0rE/WTXV0dix0ppqYPZRmA1x9TMlBH7RzEl8IFx/kmAKscKlvoVY
+         nZWg==
+X-Forwarded-Encrypted: i=1; AHgh+Rqe5ygbKcfwdq5snPIsk8i1X5xbXAFTcxXQD6lcWHfBXP+ASf+SXDkdz7Mea7CMx0YnKm2e62lm0so=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwKJM/WB8IIWJuhree6VrK9cjF6qBpeNAErrImFVG0+5O6ldbmf
+	57qeOr/pec2um5ZU6quNx3txMwfK7vsUUgBJdPF8hzDCDoxQGxejKJ6T
+X-Gm-Gg: AfdE7cmp3BldfzfDtZO5TVig6+ij2vCVPC7YZM3laHRu8OKH3T+Tju1Xzbc7idScGSX
+	JndZoKBWIePFp9NBM5QQWvpwyBrgTZbgmW2mGtnxhABNCXuoeYHbNwgrxQjDtTGJslw5+6nlziR
+	415fVpKXF3tTwGeYks4NIfObyurP2d3ID0aGWYiUXYSAlbKaHWSCjn7dh/03J6tyq07tJNHkOFM
+	uOEd8Tj8Qx8305lc2F1cNxXxdpEeSc+9dKiaCX8IjNjpsGeodY/GEtWq7hiaMp8xwVxBbN7NYQy
+	6gf+p3geUaNcyH4b0z7HI50HyA9eaqvmxXE+Qs6kcSPFadmYKWt+yFQ+Mxulqc/YGrX4DUHTf4x
+	uY3//W4jI2i+MXr93SiMd1/ulEi/sx4VpVVtnoXz6tmrBshRJLv8rd3ZdqU6TyjOsqhW+pnrMJD
+	6EPTLPAvlchaKDY/H+Dug5s2AI0Ge4QmnUVmiJMO3frmu+F7qDjkPbpl+ZjSwEr8F/X73+w7he3
+	pO+iSHX+zKDXROfWzbEHUzCgKLMzmaG6EbB6XLibnK7fEujn0ONaqgrJyrA38pcHEBs6z0+1RYb
+	wCNX0e8F9BW3mligZTbJFcBD5bLuLjZxW16w8eTqTJ1d5IAQ
+X-Received: by 2002:a05:7300:748c:b0:304:e327:aef8 with SMTP id 5a478bee46e88-30eff04ccb0mr1264157eec.2.1782919263472;
+        Wed, 01 Jul 2026 08:21:03 -0700 (PDT)
+Received: from midnightair ([2401:4900:1c94:62e8:bc10:77d0:2fda:415d])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30ee327cea7sm24904275eec.31.2026.07.01.08.21.00
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 01 Jul 2026 08:21:03 -0700 (PDT)
+From: Anas Khan <anxkhn28@gmail.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Anas Khan <anxkhn28@gmail.com>
+Subject: [PATCH] iio: imu: adis16480: fix 'temprature' typo in comment
+Date: Wed,  1 Jul 2026 20:50:54 +0530
+Message-ID: <20260701152054.22748-1-anxkhn28@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <f9c18b3c1ee486341704f917e06b91f7a39119ec.1782833415.git.u.kleine-koenig@baylibre.com>
 
-On Tue, Jun 30, 2026 at 05:35:35PM +0200, Uwe Kleine-König (The Capable Hub) wrote:
-> The driver supports a single chip variant only. Simplify the driver by
-> hard-coding the device properties instead of using the id_table's
-> abstraction for a single chip type and a lookup in a table with only one
-> entry.
-> 
-> Signed-off-by: Uwe Kleine-König (The Capable Hub) <u.kleine-koenig@baylibre.com>
-> ---
+Correct the spelling of "temperature" in the comment.
 
-LGTM
+Signed-off-by: Anas Khan <anxkhn28@gmail.com>
+---
+ drivers/iio/imu/adis16480.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 543d5c4bfb11..36f4eec899d0 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -1468,7 +1468,7 @@ static irqreturn_t adis16480_trigger_handler(int irq, void *p)
+ 			 * We need to perform the padding to have the buffer
+ 			 * elements naturally aligned in case there are any
+ 			 * 32-bit storage size channels enabled which are added
+-			 * in the buffer after the temprature data. In case
++			 * in the buffer after the temperature data. In case
+ 			 * there is no data being added after the temperature
+ 			 * data, the padding is harmless.
+ 			 */
+-- 
+2.54.0
 
->  drivers/iio/imu/adis16550.c | 89 +++++++++++--------------------------
->  1 file changed, 26 insertions(+), 63 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/adis16550.c b/drivers/iio/imu/adis16550.c
-> index 75679612052f..fe0034964408 100644
-> --- a/drivers/iio/imu/adis16550.c
-> +++ b/drivers/iio/imu/adis16550.c
-> @@ -89,25 +89,7 @@ struct adis16550_sync {
->  	u16 max_rate;
->  };
->  
-> -struct adis16550_chip_info {
-> -	const struct iio_chan_spec *channels;
-> -	const struct adis16550_sync *sync_mode;
-> -	char *name;
-> -	u32 num_channels;
-> -	u32 gyro_max_val;
-> -	u32 gyro_max_scale;
-> -	u32 accel_max_val;
-> -	u32 accel_max_scale;
-> -	u32 temp_scale;
-> -	u32 deltang_max_val;
-> -	u32 deltvel_max_val;
-> -	u32 int_clk;
-> -	u16 max_dec;
-> -	u16 num_sync;
-> -};
-> -
->  struct adis16550 {
-> -	const struct adis16550_chip_info *info;
->  	struct adis adis;
->  	unsigned long clk_freq_hz;
->  	u32 sync_mode;
-> @@ -450,8 +432,8 @@ static int adis16550_set_freq_hz(struct adis16550 *st, u32 freq_hz)
->  	 * The optimal sample rate for the supported IMUs is between
->  	 * int_clk - 1000 and int_clk + 500.
->  	 */
-> -	u32 max_sample_rate = st->info->int_clk * 1000 + 500000;
-> -	u32 min_sample_rate = st->info->int_clk * 1000 - 1000000;
-> +	u32 max_sample_rate = 4000 * 1000 + 500000;
-> +	u32 min_sample_rate = 4000 * 1000 - 1000000;
->  
->  	if (!freq_hz)
->  		return -EINVAL;
-> @@ -484,7 +466,7 @@ static int adis16550_set_freq_hz(struct adis16550 *st, u32 freq_hz)
->  	if (dec)
->  		dec--;
->  
-> -	dec = min(dec, st->info->max_dec);
-> +	dec = min(dec, 4095);
->  
->  	return __adis_write_reg_16(&st->adis, ADIS16550_REG_DEC_RATE, dec);
->  }
-> @@ -592,30 +574,30 @@ static int adis16550_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_ANGL_VEL:
-> -			*val = st->info->gyro_max_val;
-> -			*val2 = st->info->gyro_max_scale;
-> +			*val = 1;
-> +			*val2 = IIO_RAD_TO_DEGREE(80 << 16);
->  			return IIO_VAL_FRACTIONAL;
->  		case IIO_ACCEL:
-> -			*val = st->info->accel_max_val;
-> -			*val2 = st->info->accel_max_scale;
-> +			*val = 1;
-> +			*val2 = IIO_M_S_2_TO_G(102400000);
->  			return IIO_VAL_FRACTIONAL;
->  		case IIO_TEMP:
-> -			*val = st->info->temp_scale;
-> +			*val = 4;
->  			return IIO_VAL_INT;
->  		case IIO_DELTA_ANGL:
-> -			*val = st->info->deltang_max_val;
-> +			*val = IIO_DEGREE_TO_RAD(720);
->  			*val2 = 31;
->  			return IIO_VAL_FRACTIONAL_LOG2;
->  		case IIO_DELTA_VELOCITY:
-> -			*val = st->info->deltvel_max_val;
-> +			*val = 125;
->  			*val2 = 31;
->  			return IIO_VAL_FRACTIONAL_LOG2;
->  		default:
->  			return -EINVAL;
->  		}
->  	case IIO_CHAN_INFO_OFFSET:
-> -		/* temperature centered at 25°C */
-> -		*val = DIV_ROUND_CLOSEST(25000, st->info->temp_scale);
-> +		/* temperature centered at 25°C divided by temp scale */
-> +		*val = 25000 / 4;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_CALIBBIAS:
->  		ret = adis_read_reg_32(&st->adis,
-> @@ -793,23 +775,6 @@ static const struct adis16550_sync adis16550_sync_modes[] = {
->  	{ ADIS16550_SYNC_MODE_SCALED, 1, 128 },
->  };
->  
-> -static const struct adis16550_chip_info adis16550_chip_info = {
-> -	.num_channels = ARRAY_SIZE(adis16550_channels),
-> -	.channels = adis16550_channels,
-> -	.name = "adis16550",
-> -	.gyro_max_val = 1,
-> -	.gyro_max_scale = IIO_RAD_TO_DEGREE(80 << 16),
-> -	.accel_max_val = 1,
-> -	.accel_max_scale = IIO_M_S_2_TO_G(102400000),
-> -	.temp_scale = 4,
-> -	.deltang_max_val = IIO_DEGREE_TO_RAD(720),
-> -	.deltvel_max_val = 125,
-> -	.int_clk = 4000,
-> -	.max_dec = 4095,
-> -	.sync_mode = adis16550_sync_modes,
-> -	.num_sync = ARRAY_SIZE(adis16550_sync_modes),
-> -};
-> -
->  static u32 adis16550_validate_crc(__be32 *buffer, const u8 n_elem)
->  {
->  	int i;
-> @@ -918,21 +883,21 @@ static int adis16550_config_sync(struct adis16550 *st)
->  	if (IS_ERR(clk))
->  		return PTR_ERR(clk);
->  	if (!clk) {
-> -		st->clk_freq_hz = st->info->int_clk * 1000;
-> +		st->clk_freq_hz = 4000000;
->  		return 0;
->  	}
->  
->  	st->clk_freq_hz = clk_get_rate(clk);
->  
-> -	for (i = 0; i < st->info->num_sync; i++) {
-> -		if (st->clk_freq_hz >= st->info->sync_mode[i].min_rate &&
-> -		    st->clk_freq_hz <= st->info->sync_mode[i].max_rate) {
-> -			sync_mode_data = &st->info->sync_mode[i];
-> +	for (i = 0; i < ARRAY_SIZE(adis16550_sync_modes); i++) {
-> +		if (st->clk_freq_hz >= adis16550_sync_modes[i].min_rate &&
-> +		    st->clk_freq_hz <= adis16550_sync_modes[i].max_rate) {
-> +			sync_mode_data = &adis16550_sync_modes[i];
->  			break;
->  		}
->  	}
->  
-> -	if (i == st->info->num_sync)
-> +	if (i == ARRAY_SIZE(adis16550_sync_modes))
->  		return dev_err_probe(dev, -EINVAL, "Clk rate: %lu not in a valid range",
->  				     st->clk_freq_hz);
->  
-> @@ -943,7 +908,7 @@ static int adis16550_config_sync(struct adis16550 *st)
->  		 * of [3000 4500].
->  		 */
->  
-> -		sync_scale = DIV_ROUND_CLOSEST(st->info->int_clk, st->clk_freq_hz);
-> +		sync_scale = DIV_ROUND_CLOSEST(4000, st->clk_freq_hz);
->  
->  		if (3000 > sync_scale || 4500 < sync_scale)
->  			return dev_err_probe(dev, -EINVAL,
-> @@ -955,7 +920,7 @@ static int adis16550_config_sync(struct adis16550 *st)
->  		if (ret)
->  			return ret;
->  
-> -		st->clk_freq_hz = st->info->int_clk;
-> +		st->clk_freq_hz = 4000;
->  	}
->  
->  	st->clk_freq_hz *= 1000;
-> @@ -1064,13 +1029,11 @@ static int adis16550_probe(struct spi_device *spi)
->  		return -ENOMEM;
->  
->  	st = iio_priv(indio_dev);
-> -	st->info = spi_get_device_match_data(spi);
-> -	if (!st->info)
-> -		return -EINVAL;
-> +
->  	adis = &st->adis;
-> -	indio_dev->name = st->info->name;
-> -	indio_dev->channels = st->info->channels;
-> -	indio_dev->num_channels = st->info->num_channels;
-> +	indio_dev->name = "adis16550";
-> +	indio_dev->channels = adis16550_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(adis16550_channels);
->  	indio_dev->available_scan_masks = adis16550_channel_masks;
->  	indio_dev->info = &adis16550_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -1117,13 +1080,13 @@ static int adis16550_probe(struct spi_device *spi)
->  }
->  
->  static const struct spi_device_id adis16550_id[] = {
-> -	{ "adis16550",  (kernel_ulong_t)&adis16550_chip_info},
-> +	{ .name = "adis16550" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, adis16550_id);
->  
->  static const struct of_device_id adis16550_of_match[] = {
-> -	{ .compatible = "adi,adis16550", .data = &adis16550_chip_info },
-> +	{ .compatible = "adi,adis16550" },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, adis16550_of_match);
-> -- 
-> 2.47.3
-> 
