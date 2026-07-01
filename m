@@ -1,47 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22FE34DB52;
-	Wed,  1 Jul 2026 21:31:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EEF22C11CA;
+	Wed,  1 Jul 2026 21:33:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782941473; cv=none; b=JjfT/gjqjG16DDb98e8Kcf262+2HEvv/YcrpSScoLdLsMhP50FiIpZvtOfLKiykzFeuEGiSmvQ07HEO42jviPsTwqZWCqxOybhKVxSsAoqpSUvKOVy6vlEqKHXWdkqoQaj208VKhvgGN0NoH6uMBj+iCsvBAEf7pAgnzFjLY7rM=
+	t=1782941616; cv=none; b=Kw1a93Xz7MYgWGG6j5oWUiszTXKKmm0Q+25Anx9v/4+GvhK1vQ9GEE+2zmn20sLwa6Yn6NGIfGkYbSu3IozzA9gE+Xk9jhPeDLax1wzkC145Hm0EvGieTBut2HgR1DSEIGURbYoY5Z8G+67NvpUIcvoIPn8Tt9aLDBg4+QEF/Gw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782941473; c=relaxed/simple;
-	bh=BavMPbJC6SPhFucwGcjMaqoDqJIMp/+q1TALMp3G/1I=;
+	s=arc-20240116; t=1782941616; c=relaxed/simple;
+	bh=XXJ46VMM4ojcfZM2EfuKuGPU1NOZD8Fb+uNz64t/kXg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=G2C5aesVVfw1pb0Vka+S34l1z6I8CQzoTkWPwCSVQv4+2pjtxNmyiADCa6QGgMq5ry642ihYN6ZZB6LnWVuRh0Ah5uQTDjCOtncSsXFgck6OyriAcwKNbiuF+dYCWUw6oj9v4Ucjx7NFQdT39bz/XVjDo0CdWQsQtrttzUlR74I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jT/tvibM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=kIUA2Mw+o4GKigUWIi9BeWkqBQoVuFPwvo/+I2bBT5VcV+wGV3NT53Ce0OlzYDjRKJSqhU08xrhhRIgRZbmAw1UDWwSQqHWEiH5HAm1fhhPQ2+2jQn4JGpIYQ/2tkXnO3nvsSxvexNk4IVfTHr2/lu9Snlpy7Y/fa17Y4OZWayk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MP1qASDP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jT/tvibM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4EA01F000E9;
-	Wed,  1 Jul 2026 21:31:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MP1qASDP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C3BE1F000E9;
+	Wed,  1 Jul 2026 21:33:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782941471;
-	bh=jofe61Y2KudCbIyKulWKELRw4tMt3nodxyxcXMP3OOM=;
+	s=k20260515; t=1782941614;
+	bh=YhF2ySsf0NG2TOkuiNLJ1kuY64H1XQSmuEF/4/iReW4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jT/tvibMgCayxBTWzluVaPlDE7+S3HATB+/e+Yw6wh3qenjL4YJbs+02Y9/d045Do
-	 rVFNXXTTFyEUN7Udw+A8C/bICuXml7TBjbo9Z4P7AnRbr62KqXO38a2+Gwq1i2pL4v
-	 NIGKWEryr0c9M9X9jo59JGQW9EwRfvc5sR36rt56bjcr1215ugBlNlOTOi8n0CdNEO
-	 rbBtDLVcO5kugkaqvIQBVDN1ARNVddVloQEdg3Wrnw2f+v5aY3OJni6lAZ3hyg02Pv
-	 e5GOL3n5Dn5k9ApT+Aj49sUgE6edrPZdEXBHsVAbuwvdpGmp4BUPk4CgHCZDFkKMZ0
-	 3OHGLNltZkb7A==
-Date: Wed, 1 Jul 2026 22:31:06 +0100
+	b=MP1qASDPwxKcLmc5AKBiyL8Sw0HwnjRGiMCCe6slgh01Jd8bM7g6XsCunUnJzgLte
+	 g8M0dW3mgTqfjCYoY6Tg+9JV+SoGXMtCwZbIVnbmxR6S7RiNNjZC2Zg+aFnrUAoTzy
+	 hehs7rHeUVYMxOuaDS4JhHQ3qpyKg8Js6AZdmpge5SQddNVl1YtfUsb0/YxXGyrxq9
+	 LubfptD1vZNa6RVVu1YtklZ6v+E+qrvV+AJfaGhBJzgqhTJMLCfYGGSOxppgyBCPEa
+	 NjfOdvFuNTtKhpxG0LZmRsjZl/RuruPvT0DLxrkup5/kHZWeOR9zM++D//KT5ocpo5
+	 rpTMyOXLLzedg==
+Date: Wed, 1 Jul 2026 22:33:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Crt Mori <cmo@melexis.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Pengpeng Hou
- <pengpeng@iscas.ac.cn>, David Lechner <dlechner@baylibre.com>, Nuno Sa
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: temperature: Build mlx90635 with
- CONFIG_MLX90635
-Message-ID: <20260701223106.5ac21c5d@jic23-huawei>
-In-Reply-To: <CAKv63uupUcUGXwXJQL957YtUmP+OZ5makvGROvFuvS8BWF-sPQ@mail.gmail.com>
-References: <20260624081309.77805-1-pengpeng@iscas.ac.cn>
-	<20260625054259.76774-1-pengpeng@iscas.ac.cn>
-	<ajzOA3MGaCqrgCDp@ashevche-desk.local>
-	<CAKv63uupUcUGXwXJQL957YtUmP+OZ5makvGROvFuvS8BWF-sPQ@mail.gmail.com>
+To: Pengpeng Hou <pengpeng@iscas.ac.cn>
+Cc: Remi Buisson <remi.buisson@tdk.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm45600: Use I2C match data
+Message-ID: <20260701223331.6ff4489a@jic23-huawei>
+In-Reply-To: <20260624053823.73969-1-pengpeng@iscas.ac.cn>
+References: <20260624053823.73969-1-pengpeng@iscas.ac.cn>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,39 +47,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 25 Jun 2026 09:54:58 +0200
-Crt Mori <cmo@melexis.com> wrote:
+On Wed, 24 Jun 2026 13:38:23 +0800
+Pengpeng Hou <pengpeng@iscas.ac.cn> wrote:
 
-> Thanks for spotting this Pengpeng Hou; it's strange that nobody
-> noticed until now. I would like to apologize to everyone for this
-> mistake.
+> The I2C driver provides chip_info through both the OF match table and
+> the I2C id table, but probe reads it with device_get_match_data().  That
+> misses id-table driver_data for non-firmware I2C matches and can reject
+> a supported device with -ENODEV.
 > 
-> Acked-by: Crt Mori <cmo@melexis.com>
-Applied to the fixes-togreg branch of iio.git
+> Use i2c_get_match_data() so the id-table chip_info is used when firmware
+> match data is not present.
+> 
+> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+Applied to the testing branch of iio.git.  
 
-Thanks
+Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/imu/inv_icm45600/inv_icm45600_i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> On Thu, 25 Jun 2026 at 08:43, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > On Thu, Jun 25, 2026 at 01:42:59PM +0800, Pengpeng Hou wrote:  
-> > > drivers/iio/temperature/Kconfig has a dedicated MLX90635 option, but
-> > > the Makefile currently builds mlx90635.o under CONFIG_MLX90632.
-> > >
-> > > This means enabling CONFIG_MLX90635 alone does not carry its provider
-> > > object into the build, while enabling CONFIG_MLX90632 unexpectedly also
-> > > builds mlx90635.o.
-> > >
-> > > Gate mlx90635.o on the matching generated Kconfig symbol.  
-> >
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> >  
+> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_i2c.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_i2c.c
+> index 5ebc18121a11..c65e5501eee7 100644
+> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_i2c.c
+> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_i2c.c
+> @@ -23,7 +23,7 @@ static int inv_icm45600_probe(struct i2c_client *client)
+>  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_I2C_BLOCK))
+>  		return -ENODEV;
+>  
+> -	chip_info = device_get_match_data(&client->dev);
+> +	chip_info = i2c_get_match_data(client);
+>  	if (!chip_info)
+>  		return -ENODEV;
+>  
 
