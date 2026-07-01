@@ -1,141 +1,126 @@
-Received: from flow-a3-smtp.messagingengine.com (flow-a3-smtp.messagingengine.com [103.168.172.138])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1FB2126C03;
-	Wed,  1 Jul 2026 08:32:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F053E0251;
+	Wed,  1 Jul 2026 08:44:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782894740; cv=none; b=iSNRVIMYChyKjO/xwzmfRVUnH4lNGGfRIV8689Y6OKHaXKAn/0eGm2itr3SyKAaxmqemW+xsfScIs4WXTDgiQSrA6yCJALRq2Lh/IepQw0YEuELaAFUtGH11eOlf5yEgrOeEWIb3y50XRCth9sy5CDCod5COyiflnQEFZfWyT6U=
+	t=1782895496; cv=none; b=oCrx/CVF+lGsQMx+mm5iKajwavmFHLeHVbPR3Jx0b5jfGFmlc4hYQwkCov0p3gAM6ZVSLOn4cC+jCLyrrLX4xGNsXqUgyI7W0/P5bTm5KF/3aZtT5v45SJb2hiyxuIuc9cEPstJ9GslMPnlq9mo4Q7l6RFngc8MSaf1XOkjHw+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782894740; c=relaxed/simple;
-	bh=ue4wzFqFJKqL2WfmlTkgjVeQXRsUBYlyz2PcQ/gXSIw=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=mf33lmYuMt58EIBsyDzKPmOcx1Te6e+NgDoA713c6rJpD3Ly8bF4NBC4mR8jvP8lzi6kg5c786SjJ/fGiBkXKX/I0c9OXK/GmXRfbomBZfVvfdHAqLO+MmFL36voEHViYiU3E2TxQghfAdZwwsvDxubIrZyl3vXCvib6VcJrrvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=pk4AtDVr; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=aPVd6uLE; arc=none smtp.client-ip=103.168.172.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1782895496; c=relaxed/simple;
+	bh=SM1GnM3FZH6KNcTrP19RmJuHes6Nt+u+2Rizwvv6xXU=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
+	 References:In-Reply-To; b=tFB85aA/2Joa5bJQyLUgUPJ8p33b1dRZDlTaV3xjpscgfimL3m7xP0o8DthjQwieMMoCLO5kJTG/+G6Xnkzerem2FPsdP3b359U+XFu02kMXcW2xoJsRysUkUIFOsT1NbQyAz3y8bJ3QWCHAfv/R9D/ETLxeMtQQ33F/ovbhnFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K4q9bOBG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="pk4AtDVr";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="aPVd6uLE"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailflow.phl.internal (Postfix) with ESMTP id 10A071380095;
-	Wed,  1 Jul 2026 04:32:19 -0400 (EDT)
-Received: from phl-imap-05 ([10.202.2.95])
-  by phl-compute-04.internal (MEProxy); Wed, 01 Jul 2026 04:32:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1782894739;
-	 x=1782901939; bh=VCjnwi8QfYnO+8yzfpol694kVs5T+6OkOnlzLTl6vgw=; b=
-	pk4AtDVr7X0Ga3ZeWprkuDgz4D0ADwYPDjiF6dJpeDjRBJwKFomQfgV1i2cUPfwS
-	YGG7oxHtxzxWOI/oCF1vTenXM/Bxnl+jzvqa2o4Uav3luge6v1KsVb0Z58Ux10SH
-	ihh0bvVj3hWOmrddUlZbKOAN4x35MKqgbBPgbBV3RnkOt941tQlZLmtzA0NS1gVa
-	wZi+BX1NBKmJrTAwiAoLRjtW42OtB7SEAhpJrWi1lBjP1k7jAL8lyCFZnVDg89+r
-	yq3ugkbXbTZjzlXrAoPV90L435jnotEuAcLSM1fiUThBWAv5FA+0Gj5gsyx2KLQ7
-	ZckqFzlkSmSQZ4fn81X3Mw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1782894739; x=
-	1782901939; bh=VCjnwi8QfYnO+8yzfpol694kVs5T+6OkOnlzLTl6vgw=; b=a
-	PVd6uLEv7fU/TFcABcQ+6PpHoMr8BHiJ+7VXlOffrKOqC36QNz/tVpyV3NvzfTod
-	D12qmE6PIf6WHNeISxeR2PjY2027TmvjNXrFxvtY38cmVNKGAlsBHfYZaEPMldtj
-	Lx4aKKaBkPRT88prowJPqxRuZQHVZjBoqJ5QCw0xSe6s44p1rQ086mjOsoX28TPW
-	9xsDJn/pATFSr1374Jh2BlzoBgdD3L6Pec9oMRKCmjzb9eZyHTCmKVWo3RDAktE8
-	tNkami4hj34GWAN2LivncENYiAdNktm7yzF+45KtV6dfaEprjLbvQJRIJu7kUuvb
-	iayg2SwCno/GXgKqzIgsQ==
-X-ME-Sender: <xms:ktBEau0GTKniJ8UB3YIuVYzf3eXVLN7QylKoL2Bg3MvVCc4pVtvVDA>
-    <xme:ktBEar60oidT1BA9rF5zAoFVaPJxONWxBjLfRIadX_dUCe2QqF-rSuhjZX7RPcIt0
-    McilfieaxXTrUq93k9EhmP2DAH4aUXqX6JoopoRear13Gt0vfqWdww>
-X-ME-Proxy-Cause: dmFkZTG0B4Rq0E7HZkR0pnZ163rac2T7w/EKBvk1H137+LZ1DDmAdSv9ox5RZtU3ubf1at
-    u6WZgpkWy1yZ+xPhMEysBiXHkI/FAG+tA+IsC7Ro0iyP9baBdW/Gqq+MlndGYuJGyVzQes
-    sd0BE3aLNH4YSDGlgFLBNAaYaG4sOQZZhfVJ0T/DQs+GdE4ZINEDpFh6AD1t6CMHbDFHDW
-    Dyb4WNYJUZVB9C+3CFefMMbkInAN2w2O60GzAhBejddPbYdKqDE8euqw5cyFrUqYL7HsI0
-    R+mzjjbALXsHGc4CbyBPpSyrrc7KFjZiKMINe5pj5pPVKzR16ORlRpADFkdNJmxEZmU+Hi
-    ynyy/p0s3wJ+5wEoNPryrkVk9wTT8gYX2NL2ziGtuHO0uNldRlrz3biDchZ5dvxLIoQPIf
-    4Ys0zoOwEAUJHKft5OKDDA9H2IMg5sfzB6cDfIpFIN0QNKHe1GarKKRW9xzRvvwFTC0xOM
-    y4BJJZ5HI/iFaCrklCySRsAU30y83NuxwPgF9nAHDnQAYLQGdVKWf6ZBWmjRbJTc4RScn0
-    PuPIT1IbJ8nqZLck0tWGST4XHneH+nQKFfqBV2Q8vd0Qp009muP0neRLplYkqbtscaQsro
-    HqRhq0vRLrdvrrofCQK3xJLqp8yB0cEt3pLS1D0HPb/YWgaYMdL06KmwXiqQ
-X-ME-Proxy: <xmx:ktBEaqLzev-1LnQpM8aDMtsrxpbXI8sZxIxM5-kJ2egQIJ0_s1wuwQ>
-    <xmx:ktBEaituhqNUPSQSy6pSO_Qxs07LiQTb2hOujvou545SdGJ0hWLeNQ>
-    <xmx:ktBEajm5fZl4R56Cjs77mdXM8OA19dWCSOQIvEyWIusUmQRiQ2DdOA>
-    <xmx:ktBEaplfx6UlRi6-9Vko4Drjuya6hEFHgk8ptOVgSj4h5IyVGGcNBQ>
-    <xmx:k9BEalsyhw0QnIjnuvZrS58BD58_C1KJuzD7-U3z5P3C3pb2O69T_it9>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 1786E182007E; Wed,  1 Jul 2026 04:32:18 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K4q9bOBG"
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id EA7DA1F00A3A;
+	Wed,  1 Jul 2026 08:44:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782895495;
+	bh=SM1GnM3FZH6KNcTrP19RmJuHes6Nt+u+2Rizwvv6xXU=;
+	h=Date:Subject:Cc:From:To:References:In-Reply-To;
+	b=K4q9bOBG9Kb6RxXPQiTbJLl/vCMKDv8pUVjbrb2R6/Uly5XcmTYkqDGA9tKMFow6E
+	 1h3L3P5YCThmlnVOcIFDDzlnxYVhUtw5kWg/peIEAkhnhymPhC95xcCse7uZH0p0Td
+	 OpwfVJm+/ktVneJcYCCVolHLFsQ68qqW2kl9tHlhAEGLe3P0ll4EUIolWK+hYfjXfy
+	 P4MjOUk5ZY/MdLwDu0cW9SMIo9nLiDNc4Ja97Zsq5we6+VsvBspOVD7UR/cwv81Y15
+	 ArYUAKhgEDNAJPztX6EHCwNpkfQMLgAiL6UYgNhgg1bb2o8g3Ca9/fyPY8nRIEmRWO
+	 dRhQRQk2E6fAw==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-ThreadId: A045QOfflcQ7
-Date: Wed, 01 Jul 2026 10:31:37 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Geert Uytterhoeven" <geert@linux-m68k.org>
-Cc: "Arnd Bergmann" <arnd@kernel.org>, "Linus Walleij" <linusw@kernel.org>,
- "Bartosz Golaszewski" <brgl@kernel.org>,
- "Marcel Holtmann" <marcel@holtmann.org>,
- "MyungJoo Ham" <myungjoo.ham@samsung.com>,
- "Chanwoo Choi" <cw00.choi@samsung.com>,
- "Geert Uytterhoeven" <geert+renesas@glider.be>,
- "Andy Shevchenko" <andy@kernel.org>,
- "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
- "Ulf Hansson" <ulfh@kernel.org>, linux-bluetooth@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- "linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
- linux-usb@vger.kernel.org
-Message-Id: <72746bd8-8ba3-4369-a2e9-60795f183813@app.fastmail.com>
-In-Reply-To: 
- <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
-References: <20260629135917.1308621-1-arnd@kernel.org>
- <CAMuHMdXhsM4JzArRuB=A46N-Ogbn2Fans+PVJVA-hEytFq=DeQ@mail.gmail.com>
- <ff4d7043-1929-4fa1-ba5e-f28403ad6fcc@app.fastmail.com>
- <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] gpiolib: introduce gpio_name() helper
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+ boundary=9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8;
+ micalg=pgp-sha384; protocol="application/pgp-signature"
+Date: Wed, 01 Jul 2026 10:44:51 +0200
+Message-Id: <DJN3PDTPJ3L6.24P71OQFB6C98@kernel.org>
+Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
+ accessor
+Cc: "Bartosz Golaszewski" <brgl@kernel.org>, "Andy Shevchenko"
+ <andriy.shevchenko@intel.com>, "robh@kernel.org" <robh@kernel.org>,
+ "krzk+dt@kernel.org" <krzk+dt@kernel.org>, "conor+dt@kernel.org"
+ <conor+dt@kernel.org>, "afaerber@suse.com" <afaerber@suse.com>,
+ "wbg@kernel.org" <wbg@kernel.org>, "mathieu.dubois-briand@bootlin.com"
+ <mathieu.dubois-briand@bootlin.com>, "lars@metafoo.de" <lars@metafoo.de>,
+ "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+ "jic23@kernel.org" <jic23@kernel.org>, "nuno.sa@analog.com"
+ <nuno.sa@analog.com>, "andy@kernel.org" <andy@kernel.org>,
+ "dlechner@baylibre.com" <dlechner@baylibre.com>,
+ =?utf-8?b?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-realtek-soc@lists.infradead.org"
+ <linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, =?utf-8?b?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?=
+ <cy.huang@realtek.com>, =?utf-8?b?U3RhbmxleSBDaGFuZ1vmmIzogrLlvrdd?=
+ <stanley_chang@realtek.com>, =?utf-8?b?SmFtZXMgVGFpIFvmiLTlv5fls7Bd?=
+ <james.tai@realtek.com>, =?utf-8?b?WXUtQ2h1biBMaW4gW+ael+elkOWQm10=?=
+ <eleanor.lin@realtek.com>
+From: "Michael Walle" <mwalle@kernel.org>
+To: "Linus Walleij" <linusw@kernel.org>
+X-Mailer: aerc 0.20.0
+References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
+ <20260512033317.1602537-3-eleanor.lin@realtek.com>
+ <agMM9soiqpG-TRSb@ashevche-desk.local>
+ <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
+ <ah92oEavMu4QRn8y@ashevche-desk.local>
+ <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
+ <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
+ <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+In-Reply-To: <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
 
-On Tue, Jun 30, 2026, at 18:01, Geert Uytterhoeven wrote:
-> On Mon, 29 Jun 2026 at 19:54, Arnd Bergmann <arnd@arndb.de> wrote:
->> On Mon, Jun 29, 2026, at 17:29, Geert Uytterhoeven wrote:
+--9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 
->> > Same results for instantiation using sysfs or configfs[1], although
->> > the latter does have optional support for specifying the name.
->>
->> I wonder how many of the other instances have the same problem
->> then. Would it be appropriate for gpiochip_fwd_desc_add() to set
->> a name itself to address this one?
+On Fri Jun 19, 2026 at 11:08 PM CEST, Linus Walleij wrote:
+> On Mon, Jun 8, 2026 at 4:41=E2=80=AFPM Michael Walle <mwalle@kernel.org> =
+wrote:
 >
-> I don't think it would be appropriate for the GPIO aggregator to set
-> that name.  What we want to print here (for debugging) is the physical
-> GPIO that an aggregator's GPIO is mapped to, not some consumer or line
-> name (which is not guaranteed to be unique).
+>> >>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retri=
+eve the
+>> >>> gpio_chip instantiated inside gpio-regmap.c to fulfill these require=
+ments in our
+>> >>> map() function.
+>>
+>> Why is gpiochip_irq_reqres() called in the first place? Isn't that
+>> only called if the irq handling is set up via gc->irq.chip and not
+>> via gpiochip_irqchip_add_domain() like in gpio-regmap?
+>
+> Not really, the gpiochip_irq_reqres() is called to mark that a
+> GPIO line is used for IRQ, so the gpiolib cannot turn this
+> GPIO into an output line, gpiod_direction_out() will fail
+> on lines used for IRQ. So it's a failsafe.
+>
+> You can live without it of course, but then you don't get
+> this failsafe.
 
-Ok.
+Thanks for the explanation! So did I make a mistake years ago by
+adding the gpiochip_irqchip_add_domain(), see commit 6a45b0e2589f
+("gpiolib: Introduce gpiochip_irqchip_add_domain()")
 
-> E.g. "<chip-name>.<offset>" would be fine.  As gpiod_name() can only
-> return a fixed string or an existing string, it can't return such a
-> formatted string, though. And consumers don't have access to chip info?
+As Yu-Chun found, gpiochip_irq_reqres() expect the irq chip data
+to be a gpio_chip, which isn't the case (in general) for an
+externally allocated domain, is it?
 
-The gpiod_hwgpio() function is exported to consumers, so they can
-already print that instead of desc_to_gpio() if the local number
-is sufficient. If we really care about the <chip-name> portion for
-any of the debug prints, we could export another function that
-returns maybe gpiod_to_chip(gpiod)->label or
-dev_name(&gpiod_to_gpio_device(gpiod)->dev), which are both
-constant strings we can print.
+-michael
 
-It looks like we can also replace most of the remaining callers
-of desc_to_gpio() with gpiod_hwgpio().
+--9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8
+Content-Type: application/pgp-signature; name="signature.asc"
 
-       Arnd
+-----BEGIN PGP SIGNATURE-----
+
+iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCakTThBIcbXdhbGxlQGtl
+cm5lbC5vcmcACgkQEic87j4CH/hRPAGAqo6DNepJTnnCNzb/3GwKnJXqVuz6ob9v
+5QmRvDiF57B2o/TvziZGaN2H5NzwI+VXAX9U4o48VR1vxZAo8Rz2J/Lz3hBMf9Jn
+hz6tFnYqWzJmQPwvHzOfkIbQr8fbtkj9Tlc=
+=Vyla
+-----END PGP SIGNATURE-----
+
+--9135228af664d572f1986b21b4fb54103924b9231b5a0e744b356b75f7b8--
