@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CA0C3A4F5E;
-	Wed,  1 Jul 2026 20:32:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE1F349CC2;
+	Wed,  1 Jul 2026 20:42:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782937944; cv=none; b=HACuuYjNWauv8L9RYCecSsjwJnjJRf0mML0ACkc16JNXSwjazdeH54REkQYEBOXh+El04PDoiuRxOMSc/c7/sg1R10n4vmJPVArh9lmAzBK+3ZiRBz5djxDMtiGcV3AGT8Sa6kYbcqKan3zKeirHqrntkk9dmTrz3AzH14Ol2XI=
+	t=1782938571; cv=none; b=GgEKFlTweExKkHRCfQGTrhj2wwzMGp+54KBKhDA7cHm3QW2qBllvH97L7Ul2Gyu3m6SvDhK5472e9WiNKMSgDH8mYCwClaluP+lckY3Uu6TlfDG7OY3l1w04ZBbupLLutvPmonWTHis5fjb202BoiQFZ83pL3kcBYdw+EKYlJ6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782937944; c=relaxed/simple;
-	bh=Qe0ZV2jihiebZfb/7WbIJngX8SPw+w7+YbEQP2MGMZk=;
+	s=arc-20240116; t=1782938571; c=relaxed/simple;
+	bh=urKLDAIiFmKybLLi6yfD2LKhWVS2RzdByI5RSDlIzQE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F+neM6A2zM1GdYRPd8oPikkSX3EmIZ1QxfUKRRJPMYVjNV7q2Iul17XKUEIGXMH1pDRipllLAG2+s62dnUTAriKQNYiMS4oCYmibo4FxJDBg/DWL2igw5v+8+0uirWZ/UuYF2ObNt9XkcrNLojmweapfM/uHHvsQmWfnTc2AsYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jbcmJ35W; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Kjbcj3BU8TECKH5OhQqa/PW/itx1LFJCkZB72DfQaq/MSb3rhXezfaNs46iYKnM8oUqZFoQZWhG6xuJ5NzCQcMZpUv14o2kbtX3mFzSJh+j/PR/3rDvANHcZKLgdNFgr0XkmR4hCAOFzhN0sOzbpZsPSjxAzj1rMrKZBsoX9AZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3UNtXuy; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jbcmJ35W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AFA1F000E9;
-	Wed,  1 Jul 2026 20:32:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3UNtXuy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5AD11F000E9;
+	Wed,  1 Jul 2026 20:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782937942;
-	bh=Tj4tqAPAfPf+kza4c/5xaL2nTdzXujIQ+5IgewEZWaA=;
+	s=k20260515; t=1782938569;
+	bh=y1BvtaSNIJnoBgAy+XG9PF2qiaRpH3VVwPbPhFni4UA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jbcmJ35WqywoWDoWth2ptof5BDChc2l7KO50uXhmT2AX5RlOynJ3Gww2BeRDeK1k2
-	 CHP7mJnu+2u2GmCBjYOqDN3M3qTr12y8n5pK3OYkl6Y4nTqtJGxIRP/PxNlNMQJdhn
-	 U7daKY2aw27a0ACCVVkDCs2BDRfpzOMJgTESB6LD8A6JCRsQ/maqNs7wfoABLC1tR2
-	 QS0ESGQCAZWnjfCmrDbkRq4d2+P2GOqqZC3jt1QJCxSYlE4Qb1FDaJbj/p1txRHWXx
-	 an5Rg7WyA7u90ekKiYiimn4zTfv6iH+k7H179gXc1C/H57R2rFi/sAPKipkK9dI45+
-	 J1OY96VD7qT+g==
-Date: Wed, 1 Jul 2026 21:32:18 +0100
+	b=Q3UNtXuyhh19YJ5CdkMbps5+pZGhxVz58KgyDNYf3gIfZ+MjzyWrXIquW7G0MOwSY
+	 0QRWBusxxDkmYMb9s74F+Q78j6j/N60TLaXEKsChd2WFRgIFoQKqCtzrBQwqiIu1Jn
+	 UlgAiAOq+ONOEIqx0F5Y9ykfzdESSfh9icwpzQbL4V4Hdt1QX+lHQ9aiRfcJS9VrdP
+	 B6TgOF8AO9CakLES5w4nM0VzeSRsX7bZALSvGlJJvwmtW46298sltyeAzEUQ2ZlgfS
+	 6YZ/A8VhCYFTzCI9TQ0f4ZSNFXIasr3sWGWrzF6oW9QUFXFr1NqKJzWYjcp2aRCetM
+	 adcIc9FGirCkg==
+Date: Wed, 1 Jul 2026 21:42:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- nuno.sa@analog.com, Michael.Hennerich@analog.com, andy@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- julianbraha@gmail.com, marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v4 0/4] iio: adc: Add support for LTC2378 and similar
- ADCs
-Message-ID: <20260701213218.6958a62e@jic23-huawei>
-In-Reply-To: <a2fa4d9b-1f09-4226-8f06-371bd11ef919@baylibre.com>
-References: <cover.1782397418.git.marcelo.schmitt@analog.com>
-	<a2fa4d9b-1f09-4226-8f06-371bd11ef919@baylibre.com>
+To: Batu Ada Tutkun <batuadatutkun@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: frequency: ad9834: use guard() for mutex
+ locking
+Message-ID: <20260701214244.11dc26f7@jic23-huawei>
+In-Reply-To: <20260625120456.1267-1-batuadatutkun@gmail.com>
+References: <20260625120456.1267-1-batuadatutkun@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,23 +48,83 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 27 Jun 2026 16:39:32 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Thu, 25 Jun 2026 15:04:55 +0300
+Batu Ada Tutkun <batuadatutkun@gmail.com> wrote:
 
-> On 6/25/26 9:34 AM, Marcelo Schmitt wrote:
-> > This patch series adds support for LTC2378 and similar low noise, low power,
-> > high speed, successive approximation register (SAR) ADCs. These ADCs are similar
-> > among each other, varying mainly on the amount of precision bits, maximum sample
-> > rate, and input configuration (either fully differential or pseudo-differential).
-> >   
-> I had a few minor comments and I suspect Sashiko found a few legitimate
-> things. But this is looking really nice now.
+> Replace manual mutex_lock()/mutex_unlock() pairs with guard(mutex) in
+> ad9834_write() and ad9834_store_wavetype(). The mutex is now released
+> automatically when each function returns, removing the need for
+> explicit unlock calls.
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> 
-> 
+> Signed-off-by: Batu Ada Tutkun <batuadatutkun@gmail.com>
 
-FWIW I took a quick look as well and didn't have anything to add.
-Indeed do check Sashiko though.  I didn't plough through figuring out if
-the comments are valid or not.
-https://sashiko.dev/#/patchset/cover.1782397418.git.marcelo.schmitt%40analog.com
+Whilst we aren't taking this forwards, a few comments inline for future
+reference.
+
+> ---
+>  drivers/staging/iio/frequency/ad9834.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+> index bdb2580e2..f15819eaf 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/err.h>
+>  #include <linux/module.h>
+> +#include <linux/mutex.h>
+
+I'm guessing cleanup.h is missing as well. You should have both
+when guard(mutex) is is in use.
+
+>  #include <asm/div64.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -152,7 +153,7 @@ static ssize_t ad9834_write(struct device *dev,
+>  	if (ret)
+>  		return ret;
+>  
+> -	mutex_lock(&st->lock);
+> +	guard(mutex)(&st->lock);
+>  	switch ((u32)this_attr->address) {
+>  	case AD9834_REG_FREQ0:
+>  	case AD9834_REG_FREQ1:
+> @@ -210,7 +211,6 @@ static ssize_t ad9834_write(struct device *dev,
+>  	default:
+>  		ret = -ENODEV;
+
+The big advantage of using guard() is not removing mutex_unlock() but
+instead that you can use simpler code flow.  Here you should return early.
+
+There are a lot of error returns in this function and it may even
+make sense to return len early if no error.
+
+>  	}
+> -	mutex_unlock(&st->lock);
+>  
+>  	return ret ? ret : len;
+>  }
+> @@ -226,7 +226,7 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+>  	int ret = 0;
+>  	bool is_ad9833_7 = (st->devid == ID_AD9833) || (st->devid == ID_AD9837);
+>  
+> -	mutex_lock(&st->lock);
+> +	guard(mutex)(&st->lock);
+>  
+>  	switch ((u32)this_attr->address) {
+>  	case 0:
+> @@ -269,7 +269,6 @@ static ssize_t ad9834_store_wavetype(struct device *dev,
+>  		st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+>  		ret = spi_sync(st->spi, &st->msg);
+>  	}
+> -	mutex_unlock(&st->lock);
+Similar applies in this function where there are a lot of paths
+that can become early error returns if guard() is used.
+
+Jonathan
+
+>  
+>  	return ret ? ret : len;
+>  }
+
