@@ -1,43 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95ABE1799F
-	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 00:07:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C88B640
+	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 00:09:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782864464; cv=none; b=ohYMUHPdGfcc7QSS+Sguw8rimUXbuOoS5u4TiF30W9XCPtvLs8bGDdniGn7ZtkLPt16EBtBSNaVPWwShbcHPq6dGXOcrF0iOrhjLha6CToHSiHHFpIZsRH3vjCvqsBqAggBZh1fqEIJKeJQOH9668n7yjheJW1jrkL2qmcoQBFA=
+	t=1782864601; cv=none; b=MsYeb/mNa7IRvQFqj6vpUsH79x4t0zDoeKMx6iUXYPUzh9REoXUDL3PF9ekzxP+cH3UgmRt/XcNUwKl2NYFDn6VLOloCPvKEnilQ/ubY8hRPkUBwZfTk6SjNS7NMqgaxOE//GGUBx8TIm+iJ8D9nmtetj0mawemx/twUEUyVXuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782864464; c=relaxed/simple;
-	bh=IwtBocW3LCanteFoT+NNAckMo3cx9wkYyfGxfdygQPU=;
+	s=arc-20240116; t=1782864601; c=relaxed/simple;
+	bh=SEQLmtxMe8RdxfHiK7GNeVAWs6Awb7VnGTOmu6ad7jc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=odndfMvw3+MpJ4XqRI6JZbcO1gvN4OkN7RqkRcVMEAZv03SXAJ+6OMlJpnCmG1gLD7d0/yDtz7DSMAZwNpRJL24hW7FgWr4zqDJ3CEH5/DEjZtvLG3p5f8h8yyk1XtAPTTMBvdmQtBd/UwtFrtJim0RPPMCsPPOGEmQpTY/Y7Bk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k/ybtMNc; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=WPTFz+QPJz7kkyeVrnEvxc9u5PrSeg07fEGeLjl2Dwd/S/qRMcMRPCFaL5iYdWKVbdZ+I8i9vht41Jtzf9CquXCDONwuQ4CECJf2zqdWYv0zPPytafeFiT1LspqJR6pYoJANl7gkEZd14YNTO5N9T9SiU3Z3bTx7gQXj7I/as50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DF7aHuvb; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k/ybtMNc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFA91F00ACF;
-	Wed,  1 Jul 2026 00:07:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DF7aHuvb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C55C1F000E9;
+	Wed,  1 Jul 2026 00:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782864463;
-	bh=BfdkSe3hDv9I94fOthtvd17FrqJP0TjTO3/WTDwHOnI=;
+	s=k20260515; t=1782864599;
+	bh=vBWaQL5935fcZhzh4xsoVZjX2A+kFqey2J9kqFgMaE0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=k/ybtMNck1lSw1tRjYN2DopL0U+Dv/isgAo6hb8pRlL8gEtgEY2S2GWeVt+1wCfwX
-	 B8vv61YFXM/3HG8f6EHoKMFZA5UiNgqJMaafZmVkfKgTE/MLFlHGv//CCfvz+6fUFr
-	 0r2HUa2O+yNtGIILvcFXtkdblcAgS0XggUV3GpSy9a8VGPWCF/dYoZEVaSADdJXD7v
-	 xha5yTIIEjz15q56aPQpj3H5/SzJe2mpawtqR57GqNywge2XoQuZaNEOsIQPgVd8Iy
-	 /9Ewv6SQy1GD7x8T25lRVQQGEPevjr3ypmv4JFaGJpBsNhP+c2L3GSQ9P0/AVYZDC9
-	 SsleUOvlknccQ==
-Date: Wed, 1 Jul 2026 01:07:38 +0100
+	b=DF7aHuvba4r4ERXwQlApWB62cFM0K7jmwhnVJZRuxzYfKr8C12yk+45fkJSFpo7Ua
+	 FC08BYPzrouXfWaqWpkna7HF9A5yQSZ4Vm4IDPhSulj2vrniqJXwyKOHlNeWAA6joC
+	 Ptlb63CbSoQS2R8sZp49fMRfJHOcN/fL7Zcg5Fo7Jy6XFrk4gQUurSO0e+6iPEHxM9
+	 2+YkV3TKBLqDP/Ht8gEztJf/3vhRScJJqoDGheN0zYjkY0PEFON9RhHVkFrNMlO0JO
+	 frk6B0H9bza2/j2j6VXTHgT5jjrrsFGuoZUNFcQwLsUFyNU0qoeROJX1an0HHN6Po0
+	 /MKFGpEu/JjOQ==
+Date: Wed, 1 Jul 2026 01:09:54 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Erick Henrique <erick.henrique.rodrigues@usp.br>, andy@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, joshua.crofts1@gmail.com,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 0/3] iio: dac: m62332: header cleanup and
- guard(mutex)
-Message-ID: <20260701010738.5ccfdecf@jic23-huawei>
-In-Reply-To: <akKqDEjzUV5CIqpF@ashevche-desk.local>
-References: <20260628034811.152946-1-erick.henrique.rodrigues@usp.br>
-	<akKqDEjzUV5CIqpF@ashevche-desk.local>
+To: Erick Henrique <erick.henrique.rodrigues@usp.br>
+Cc: andriy.shevchenko@intel.com, andy@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, joshua.crofts1@gmail.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 0/1] iio: dac: m62332: Fix regulator reference count
+ imbalance
+Message-ID: <20260701010954.68746703@jic23-huawei>
+In-Reply-To: <20260630021309.36636-1-erick.henrique.rodrigues@usp.br>
+References: <20260630021309.36636-1-erick.henrique.rodrigues@usp.br>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,21 +46,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 29 Jun 2026 20:23:24 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 29 Jun 2026 23:13:08 -0300
+Erick Henrique <erick.henrique.rodrigues@usp.br> wrote:
 
-> On Sun, Jun 28, 2026 at 12:48:08AM -0300, Erick Henrique wrote:
-> > This series cleans up the m62332 header includes and converts its locking
-> > to guard(mutex).  
+> m62332_set_value() enables the Vcc regulator on every write of a non-zero
+> value and disables it on every write of zero, without tracking the
+> channel's current state, so a non-zero-to-non-zero change leaks an enable
+> and leaves the reference-counted regulator on. This gates enable/disable
+> on the stored per-channel value so the regulator is enabled exactly while
+> a channel is active.
+Normally I'd push back on cover letters for single patch series, but
+the next bit here is perhaps enough to justify one.  It could have
+gone under the --- in the patch though.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> This is an independent bug fix, based on mainline rather than on the
+> in-flight header-cleanup series for this driver
+> (https://lore.kernel.org/r/20260628034811.152946-1-erick.henrique.rodrigues@usp.br).
+> The two touch the same function and so will conflict; the fix is
+> deliberately based on mainline so it backports cleanly to stable. Happy to
+> reorder behind the cleanup, or rebase either on the other, whichever you
+> prefer.
 > 
+Fixes almost always go first. So the other series will need rebasing
+on top of the v2 of this.
 
-This series is fine but your fix needs to go upstream first.
-https://patchwork.kernel.org/project/linux-iio/patch/20260630021309.36636-2-erick.henrique.rodrigues@usp.br/
-
-Then this will need a rebase for at least patch 3.
-
-Thanks,
+Thanks
 
 Jonathan
+
+> Erick Henrique (1):
+>   iio: dac: m62332: Fix regulator reference count imbalance
+> 
+>  drivers/iio/dac/m62332.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> 
+> base-commit: 19272b37aa4f83ca52bdf9c16d5d81bdd1354494
+
