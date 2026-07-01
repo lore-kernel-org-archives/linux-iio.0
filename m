@@ -1,217 +1,141 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from flow-a3-smtp.messagingengine.com (flow-a3-smtp.messagingengine.com [103.168.172.138])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89533B42EB
-	for <linux-iio@vger.kernel.org>; Wed,  1 Jul 2026 07:28:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1FB2126C03;
+	Wed,  1 Jul 2026 08:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782890909; cv=none; b=F03xK1wy1iCnTB3HsiEvFXodSSe+w34l6PswkgLF+0H6KjR1ljDyqmatAWmg2OWqM629UU0WlEuXI+bCUC6U4Qym0vLJbEoa0MOwi1Eb22kmhI3NYd0Zjg6j+Z9KIOY3FhV42v5cRfmHpFtMUr6cxiWSmubqw+UCoioww7xlDz8=
+	t=1782894740; cv=none; b=iSNRVIMYChyKjO/xwzmfRVUnH4lNGGfRIV8689Y6OKHaXKAn/0eGm2itr3SyKAaxmqemW+xsfScIs4WXTDgiQSrA6yCJALRq2Lh/IepQw0YEuELaAFUtGH11eOlf5yEgrOeEWIb3y50XRCth9sy5CDCod5COyiflnQEFZfWyT6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782890909; c=relaxed/simple;
-	bh=R9Hsnhb/m1MON+FkaFfjvpmk+2EaxGf1xkcCT4bPBWs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jYYMjOvuC5MoEJZRbAdLGPZOjsAiRFSJx0cJytmpIACgooevL9lBZ2XHNToVQof5yA1ffFQv5r79vvWHzT2tYpL2nQwqiy2m5o2eoV5cXOxYcs3kPT8bgSYA69KDvIl4uZjUl6yic6Bsqkl96qxKbG+0Qr1Q5vtQohg1rcOvrbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c6mmu8KZ; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782894740; c=relaxed/simple;
+	bh=ue4wzFqFJKqL2WfmlTkgjVeQXRsUBYlyz2PcQ/gXSIw=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=mf33lmYuMt58EIBsyDzKPmOcx1Te6e+NgDoA713c6rJpD3Ly8bF4NBC4mR8jvP8lzi6kg5c786SjJ/fGiBkXKX/I0c9OXK/GmXRfbomBZfVvfdHAqLO+MmFL36voEHViYiU3E2TxQghfAdZwwsvDxubIrZyl3vXCvib6VcJrrvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=pk4AtDVr; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=aPVd6uLE; arc=none smtp.client-ip=103.168.172.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c6mmu8KZ"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493c00f74baso1569565e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 01 Jul 2026 00:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782890906; x=1783495706; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a8VjUfdfZIvWwH5/Y6PbKw+VndA5OxOoRyB1H70fxh0=;
-        b=c6mmu8KZrk/Xi4C+glwcZ42mxkYIQEkE6+2obbUAaZzWpgibtwpNcAkZiGFb35MsRl
-         jsTMmNy4Oh8im/1fVKWuaIz3iSD1FnJOELqNgUx9Lwvr3urzX9O4u1KE08R87tc44m15
-         FYJSUao5uHiAvAt92mwRbbkD7vHfjjHAVkb3Ttk5dIkXo3w4Wi31UhIKTg50AvEmIivk
-         Bnh1WBBamX71/tMgeWw4VKOKmLpik2ZHCxfca4QmlWr03D7n+7JpDZOJY4wFHuRQRW1Y
-         q9Dg79TRVJQKszpWmKVuZIBDRGSluZD/Y6NV3iK21kiyz2SLa9z2cZCc/STRqU1ZMhZw
-         KoOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782890906; x=1783495706;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=a8VjUfdfZIvWwH5/Y6PbKw+VndA5OxOoRyB1H70fxh0=;
-        b=qDVz8AAt63VvqMDdm9VpKI1ZzHntYmhRYRIzekRsGu2iL7Re7XPM77m1DMNgQn3nov
-         Ckwrl89CSE35BLdi27IvczCP6QWtr0MObiRBz8YDoWGnj7YksoMzZjh+uo0iDnNsrHup
-         TpfzCbwsPtZH7p12FjZOryTRwnlHX9yXyilKuGYi5vvetCXrRDLuvLcR3cwOXThm+SX0
-         9yJsjpTo4qQD9OwJ6Ppp9U9cmCcf1D4SB4qiRZBuw9MYwMCnXE4lHm80vXGoamnnTqLD
-         heq3ufD8R/MPOmxGLXm3rjN3AMV/MjIdzs12WmBcGjtbWHpuJWUTWp3C9/PWNZUO/kVl
-         BtrA==
-X-Gm-Message-State: AOJu0YyJfbQSmLIiKNWHn8LjYj8k6MbZBErd/a2Yc8rRH/9Izpa+ZXOt
-	Gn4VhsZhoDVyFH90Kk83+43L0BpK8w+SLzYWCyhUgx8HS/EJ1ovWWbCb
-X-Gm-Gg: AfdE7cmjxRrCN6xkN1YG3855GQS6aL7cXA9FUO/5/cGgtOiGI1F7fF94Yz1xxk2LvMV
-	pRDXNUo22d3/h5KaNrbkAQtLxJYzkKv/DDJIZue0M7AaLklcIfbUnjkzSt33nwTx8A/oAdKzegG
-	2dQW6Z2nY2Kf/48V4Yx4kO44JgYuk/wMOe5KFR+yvaNrRkoATiyaooVfC2IXacH1c0ht660w9gd
-	ZyJJEiJVytHJENmyHuFW/ganK9nqeM5pPtnUGcVtPlCyXWiqlkU1pWMXhZ0FUrRr8LQo4T2Z1p/
-	Pg6qdaWAqw70xxEJYLH/JzVOuRv81nfbq8fK6ABHGhwnoFQrRq8icZybJr3dHXPdR87+5GYidiA
-	dSrLLCMki97jWIYvWlYQcNbSli4/a1+bufvu54v7HFELMJBpKYwCyHBno4I+eXUaMKSN4ix51wa
-	F2FUa/lgypML+HcwYAlr6gmGbTe3pai2AvHUs+vuqI7f49jcdZ25tPR3KyaHDz1X7uU3dPlMplB
-	/cY+rLTW3Hv3NcjYBgk6utjfdlduJwIiMU70PfnVQ9hZpz9oYxSASivHZNu/9P3uy3Zn09z5br8
-	+9iujIHzT+su+nmninHgPt8WSLkavl5Q2AoXGM1NxTFIGdRH9id//Iw=
-X-Received: by 2002:a05:600c:6792:b0:493:bd71:6084 with SMTP id 5b1f17b1804b1-493c2b96797mr6242155e9.31.1782890905836;
-        Wed, 01 Jul 2026 00:28:25 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4756636cf26sm12805960f8f.19.2026.07.01.00.28.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jul 2026 00:28:25 -0700 (PDT)
-Date: Wed, 1 Jul 2026 09:28:24 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: =?UTF-8?Q?=E0=B8=81=E0=B8=B4=E0=B8=95=E0=B8=95=E0=B8=B4=E0=B8=A8?=
- =?UTF-8?Q?=E0=B8=B1=E0=B8=81=E0=B8=94=E0=B8=B4=E0=B9=8C_=E0=B8=9A?=
- =?UTF-8?Q?=E0=B8=B8=E0=B8=8D=E0=B8=A1=E0=B8=B2=E0=B8=9B=E0=B8=B0?=
- <goorock.goopop@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [BUG] hid-sensor-trigger: poll_value sign unchecked before
- msleep_interruptible causes ~49.7 day sleep
-Message-ID: <20260701092824.000040e4@gmail.com>
-In-Reply-To: <CAPr6G1qLDrgHvCNsVxj7xHxYUKkAkyo87Hq3Lfyoj3RaZ2v4dg@mail.gmail.com>
-References: <CAPr6G1qLDrgHvCNsVxj7xHxYUKkAkyo87Hq3Lfyoj3RaZ2v4dg@mail.gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="pk4AtDVr";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="aPVd6uLE"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailflow.phl.internal (Postfix) with ESMTP id 10A071380095;
+	Wed,  1 Jul 2026 04:32:19 -0400 (EDT)
+Received: from phl-imap-05 ([10.202.2.95])
+  by phl-compute-04.internal (MEProxy); Wed, 01 Jul 2026 04:32:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1782894739;
+	 x=1782901939; bh=VCjnwi8QfYnO+8yzfpol694kVs5T+6OkOnlzLTl6vgw=; b=
+	pk4AtDVr7X0Ga3ZeWprkuDgz4D0ADwYPDjiF6dJpeDjRBJwKFomQfgV1i2cUPfwS
+	YGG7oxHtxzxWOI/oCF1vTenXM/Bxnl+jzvqa2o4Uav3luge6v1KsVb0Z58Ux10SH
+	ihh0bvVj3hWOmrddUlZbKOAN4x35MKqgbBPgbBV3RnkOt941tQlZLmtzA0NS1gVa
+	wZi+BX1NBKmJrTAwiAoLRjtW42OtB7SEAhpJrWi1lBjP1k7jAL8lyCFZnVDg89+r
+	yq3ugkbXbTZjzlXrAoPV90L435jnotEuAcLSM1fiUThBWAv5FA+0Gj5gsyx2KLQ7
+	ZckqFzlkSmSQZ4fn81X3Mw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1782894739; x=
+	1782901939; bh=VCjnwi8QfYnO+8yzfpol694kVs5T+6OkOnlzLTl6vgw=; b=a
+	PVd6uLEv7fU/TFcABcQ+6PpHoMr8BHiJ+7VXlOffrKOqC36QNz/tVpyV3NvzfTod
+	D12qmE6PIf6WHNeISxeR2PjY2027TmvjNXrFxvtY38cmVNKGAlsBHfYZaEPMldtj
+	Lx4aKKaBkPRT88prowJPqxRuZQHVZjBoqJ5QCw0xSe6s44p1rQ086mjOsoX28TPW
+	9xsDJn/pATFSr1374Jh2BlzoBgdD3L6Pec9oMRKCmjzb9eZyHTCmKVWo3RDAktE8
+	tNkami4hj34GWAN2LivncENYiAdNktm7yzF+45KtV6dfaEprjLbvQJRIJu7kUuvb
+	iayg2SwCno/GXgKqzIgsQ==
+X-ME-Sender: <xms:ktBEau0GTKniJ8UB3YIuVYzf3eXVLN7QylKoL2Bg3MvVCc4pVtvVDA>
+    <xme:ktBEar60oidT1BA9rF5zAoFVaPJxONWxBjLfRIadX_dUCe2QqF-rSuhjZX7RPcIt0
+    McilfieaxXTrUq93k9EhmP2DAH4aUXqX6JoopoRear13Gt0vfqWdww>
+X-ME-Proxy-Cause: dmFkZTG0B4Rq0E7HZkR0pnZ163rac2T7w/EKBvk1H137+LZ1DDmAdSv9ox5RZtU3ubf1at
+    u6WZgpkWy1yZ+xPhMEysBiXHkI/FAG+tA+IsC7Ro0iyP9baBdW/Gqq+MlndGYuJGyVzQes
+    sd0BE3aLNH4YSDGlgFLBNAaYaG4sOQZZhfVJ0T/DQs+GdE4ZINEDpFh6AD1t6CMHbDFHDW
+    Dyb4WNYJUZVB9C+3CFefMMbkInAN2w2O60GzAhBejddPbYdKqDE8euqw5cyFrUqYL7HsI0
+    R+mzjjbALXsHGc4CbyBPpSyrrc7KFjZiKMINe5pj5pPVKzR16ORlRpADFkdNJmxEZmU+Hi
+    ynyy/p0s3wJ+5wEoNPryrkVk9wTT8gYX2NL2ziGtuHO0uNldRlrz3biDchZ5dvxLIoQPIf
+    4Ys0zoOwEAUJHKft5OKDDA9H2IMg5sfzB6cDfIpFIN0QNKHe1GarKKRW9xzRvvwFTC0xOM
+    y4BJJZ5HI/iFaCrklCySRsAU30y83NuxwPgF9nAHDnQAYLQGdVKWf6ZBWmjRbJTc4RScn0
+    PuPIT1IbJ8nqZLck0tWGST4XHneH+nQKFfqBV2Q8vd0Qp009muP0neRLplYkqbtscaQsro
+    HqRhq0vRLrdvrrofCQK3xJLqp8yB0cEt3pLS1D0HPb/YWgaYMdL06KmwXiqQ
+X-ME-Proxy: <xmx:ktBEaqLzev-1LnQpM8aDMtsrxpbXI8sZxIxM5-kJ2egQIJ0_s1wuwQ>
+    <xmx:ktBEaituhqNUPSQSy6pSO_Qxs07LiQTb2hOujvou545SdGJ0hWLeNQ>
+    <xmx:ktBEajm5fZl4R56Cjs77mdXM8OA19dWCSOQIvEyWIusUmQRiQ2DdOA>
+    <xmx:ktBEaplfx6UlRi6-9Vko4Drjuya6hEFHgk8ptOVgSj4h5IyVGGcNBQ>
+    <xmx:k9BEalsyhw0QnIjnuvZrS58BD58_C1KJuzD7-U3z5P3C3pb2O69T_it9>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 1786E182007E; Wed,  1 Jul 2026 04:32:18 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-ThreadId: A045QOfflcQ7
+Date: Wed, 01 Jul 2026 10:31:37 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Geert Uytterhoeven" <geert@linux-m68k.org>
+Cc: "Arnd Bergmann" <arnd@kernel.org>, "Linus Walleij" <linusw@kernel.org>,
+ "Bartosz Golaszewski" <brgl@kernel.org>,
+ "Marcel Holtmann" <marcel@holtmann.org>,
+ "MyungJoo Ham" <myungjoo.ham@samsung.com>,
+ "Chanwoo Choi" <cw00.choi@samsung.com>,
+ "Geert Uytterhoeven" <geert+renesas@glider.be>,
+ "Andy Shevchenko" <andy@kernel.org>,
+ "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+ "Ulf Hansson" <ulfh@kernel.org>, linux-bluetooth@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ "linux-mmc @ vger . kernel . org" <linux-mmc@vger.kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-usb@vger.kernel.org
+Message-Id: <72746bd8-8ba3-4369-a2e9-60795f183813@app.fastmail.com>
+In-Reply-To: 
+ <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
+References: <20260629135917.1308621-1-arnd@kernel.org>
+ <CAMuHMdXhsM4JzArRuB=A46N-Ogbn2Fans+PVJVA-hEytFq=DeQ@mail.gmail.com>
+ <ff4d7043-1929-4fa1-ba5e-f28403ad6fcc@app.fastmail.com>
+ <CAMuHMdWhv8i6tkmOJU_ee9LAV7mMcQHe9FXgqTHCjGiEMWvn8Q@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] gpiolib: introduce gpio_name() helper
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Wed, 1 Jul 2026 09:40:54 +0700
-=E0=B8=81=E0=B8=B4=E0=B8=95=E0=B8=95=E0=B8=B4=E0=B8=A8=E0=B8=B1=E0=B8=81=E0=
-=B8=94=E0=B8=B4=E0=B9=8C =E0=B8=9A=E0=B8=B8=E0=B8=8D=E0=B8=A1=E0=B8=B2=E0=
-=B8=9B=E0=B8=B0 <goorock.goopop@gmail.com> wrote:
+On Tue, Jun 30, 2026, at 18:01, Geert Uytterhoeven wrote:
+> On Mon, 29 Jun 2026 at 19:54, Arnd Bergmann <arnd@arndb.de> wrote:
+>> On Mon, Jun 29, 2026, at 17:29, Geert Uytterhoeven wrote:
 
-> KERNEL BUG REPORT
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> Component : drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> Subsystem : IIO / HID Sensor
-> Severity  : High (device permanently unusable until service restart)
-> Kernel    : confirmed on 6.17.x; code path present in mainline as of 2025=
--06
->=20
-> Summary
-> -------
-> _hid_sensor_power_state() passes the return value of
-> hid_sensor_read_poll_value() directly to msleep_interruptible()
-> without checking for a negative (error) return. When the HID
-> descriptor does not contain a Report Interval feature field the
-> function returns -EINVAL (-22). This value is implicitly converted
-> to unsigned int before being multiplied by 2 and passed to
-> msleep_interruptible(), producing a sleep duration of
-> ~4,294,967,252 ms (~49.7 days). The process enters
-> TASK_INTERRUPTIBLE state and appears permanently hung to the user.
->=20
->=20
-> Affected Code
-> -------------
-> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:
->=20
->   static int _hid_sensor_power_state(struct hid_sensor_common *st, bool s=
-tate)
->   {
->       ...
->       s32 poll_value =3D 0;
->       ...
->       poll_value =3D hid_sensor_read_poll_value(st);   // can return -EIN=
-VAL
->       ...
->       if (state && poll_value)                        // BUG: -22
-> passes this check
->           msleep_interruptible(poll_value * 2);       // -22 * 2 cast
-> to uint =3D ~4.29e9 ms
->       ...
->   }
->=20
-> hid_sensor_read_poll_value() (hid-sensor-attributes.c):
->=20
->   s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
->   {
->       s32 value =3D 0;
->       int ret;
->=20
->       ret =3D sensor_hub_get_feature(st->hsdev,
->                                    st->poll.report_id,   // 0xffffffff
-> if not found
->                                    st->poll.index, sizeof(value), &value);
->=20
->       if (ret < 0 || value < 0) {
->           return -EINVAL;    // returned when Report Interval not in desc=
-riptor
->       }
->       ...
->       return value;
->   }
->=20
->=20
-> Reproduction
-> ------------
-> Hardware : Seeed XIAO nRF52840 Sense (LSM6DS3 IMU) via USB HID
->            VID:PID 2886:8045
-> OS       : Bazzite (Fedora immutable), kernel 6.17.x
-> Drivers  : hid-sensor-hub, hid-sensor-accel-3d, iio-sensor-proxy
->=20
-> The device implements a USB HID Sensor (Usage Page 0x20,
-> Accelerometer 3D, usage 0x200073) with Power State (0x200319),
-> Report State (0x200316) feature fields =E2=80=94 sufficient for probe to
-> succeed =E2=80=94 but without Report Interval (0x20030E).
->=20
-> Steps:
-> 1. Plug the device.
-> 2. Allow iio-sensor-proxy to start and attempt the first read.
-> 3. Observe: iio-sensor-proxy main thread enters D/S state and
->    never returns. 'cat in_accel_x_raw' also hangs indefinitely.
-> 4. systemctl restart iio-sensor-proxy unblocks all hung processes
->    (SIGTERM interrupts the interruptible sleep).
->=20
-> Kernel stack trace (captured via /proc/<pid>/task/*/stack while
-> process was hung =E2=80=94 iio-sensor-proxy PID 1011, kernel 6.17.x):
->=20
->   [<0>] msleep_interruptible+0x3b/0x90
->   [<0>] _hid_sensor_power_state+0x166/0x1e0 [hid_sensor_trigger]
->   [<0>] __rpm_callback+0x48/0x1f0
->   [<0>] rpm_callback+0x6d/0x80
->   [<0>] rpm_resume+0x4af/0x6d0
->   [<0>] __pm_runtime_resume+0x52/0x90
->   [<0>] hid_sensor_power_state+0x51/0xe0 [hid_sensor_trigger]
->   [<0>] accel_3d_read_raw+0xa8/0x210 [hid_sensor_accel_3d]
->   [<0>] iio_read_channel_info+0xed/0x110 [industrialio]
->   [<0>] dev_attr_show+0x1f/0x50
->   [<0>] sysfs_kf_seq_show+0xcc/0x120
->   [<0>] seq_read_iter+0x128/0x480
->   [<0>] vfs_read+0x268/0x390
->   [<0>] ksys_read+0x73/0xf0
->   [<0>] do_syscall_64+0x7e/0x250
->   [<0>] entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=20
-> Note: the process is in TASK_INTERRUPTIBLE (wchan=3Dmsleep_interruptible,
-> STAT=3DS), not TASK_UNINTERRUPTIBLE =E2=80=94 it responds to signals. Thi=
-s is
-> why a service restart (SIGTERM) unblocks it, and why it is easy to
-> mistake for a runtime PM deadlock rather than an unchecked sleep duration.
->=20
->=20
-> Proposed Fix
-> ------------
-> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:
->=20
->   --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->   +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->   @@ -143,7 +143,7 @@ static int _hid_sensor_power_state(...)
->           poll_value =3D hid_sensor_read_poll_value(st);
->        }
->   -    if (state && poll_value)
->   +    if (state && poll_value > 0)
->            msleep_interruptible(poll_value * 2);
->=20
+>> > Same results for instantiation using sysfs or configfs[1], although
+>> > the latter does have optional support for specifying the name.
+>>
+>> I wonder how many of the other instances have the same problem
+>> then. Would it be appropriate for gpiochip_fwd_desc_add() to set
+>> a name itself to address this one?
+>
+> I don't think it would be appropriate for the GPIO aggregator to set
+> that name.  What we want to print here (for debugging) is the physical
+> GPIO that an aggregator's GPIO is mapped to, not some consumer or line
+> name (which is not guaranteed to be unique).
 
-Yes, this is something that should be fixed. Can you send a patch?
+Ok.
 
---=20
-Kind regards
+> E.g. "<chip-name>.<offset>" would be fine.  As gpiod_name() can only
+> return a fixed string or an existing string, it can't return such a
+> formatted string, though. And consumers don't have access to chip info?
 
-CJD
+The gpiod_hwgpio() function is exported to consumers, so they can
+already print that instead of desc_to_gpio() if the local number
+is sufficient. If we really care about the <chip-name> portion for
+any of the debug prints, we could export another function that
+returns maybe gpiod_to_chip(gpiod)->label or
+dev_name(&gpiod_to_gpio_device(gpiod)->dev), which are both
+constant strings we can print.
+
+It looks like we can also replace most of the remaining callers
+of desc_to_gpio() with gpiod_hwgpio().
+
+       Arnd
