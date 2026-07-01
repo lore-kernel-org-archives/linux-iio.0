@@ -1,133 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2993642DFF6;
-	Wed,  1 Jul 2026 11:07:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A3047F2F7;
+	Wed,  1 Jul 2026 11:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782904070; cv=none; b=AleJkUBWvLXF38qtmKajfrhGQADOLXu842u4lsMIvSBIU2c7Ynauo4JSpW6rTvpCu6wPJ43QCKUR+mvP/y7kHtRNyEywskGLWbFwcvrQV6WurACxTYJ7VUDkRTV5mZeDhIvcWIofm48guqfEXnS6wCgUJh+Cp+YUjCbg7Tw6UDo=
+	t=1782905923; cv=none; b=Q0vO9IQreBQvfRgcqj4GIxwP/z25YU0KxccUMlNAYfTMeCq/WpJ5EQwEM/qvIh19tCFaAgH2hK7XmNn+3M7OLBANR1T5AX4F0soMlqV0wcd5nPZIosgXeC1gzSCarD1qO6tpfW6vrvbNZiO9tuwj+gB7ePGT0etQ4H9ZrjKD6qI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782904070; c=relaxed/simple;
-	bh=NJLKXuAy7Y09RSdhb1EYekxiJOEEQTEVUn+u+kA7hG8=;
+	s=arc-20240116; t=1782905923; c=relaxed/simple;
+	bh=DpQi5aHD1Rq2oQdH6gtw9i/QhFrOv7rlYgtQDdcfbSU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mSvzBMFgkK4gWxpzrKJARgy1bSHNPDRAey4o/71Kk4LL5bUDfmarGAj0P1qBCD8/vUEB9XctWyWfIn9gFko9dUBXkF1YOWWcM2euhFNINcgsN756AmQChZCCJ9Ee6deJrqbfjxFYJmsTm31nebz+Hn9+MxxLU/AItKs6MfM2S5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lCBpK/qC; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=KdSoIL0bP/mMHUxMAHO1u5uOktJ2BSe+455343FXP0L6kg5jkZ03ecSe1ZVmhZ/92CO3CYPTu5atAFmknDzKYPgqedKkJ3+uRI0WVQw3aGuLRKn0eu81SCpYGJO2fvLBCOmtyTsHOxkIsNbzopvxN9PsseBuF8Xk98wYOPsomo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aGxMsGES; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lCBpK/qC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED5681F000E9;
-	Wed,  1 Jul 2026 11:07:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782904068;
-	bh=nQ4PsDHYabC62Okbc3S5UnoU2U7Ydz2PKMaX+5DJstc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lCBpK/qCLR0Wp8AMFtVO2ZYKGh9TJDJPL16mIuJ2LZBUdPDw0MaNMgtyuiuCaPChT
-	 M+8NfHmujqdqKDN0WuRF13M6FiO7GqG+2tudMLyW41C2O1Oowh+ty83dVJ/bAQuIwY
-	 mIAuBL2zzyd9UZTAelVEZjhAkYYYsDUJXJHi8DubvpitE6aKob3L2hzZTQgSa4HBPp
-	 oGVjBe4yS5HDCYir4Jkfe4jcnGp5FNv7PBAJT9B4amHZffTze/tFBA4QosYBlhSj/3
-	 r40OIoXB0aaove71G2aMs/TB7eE4jEcUP0AdbW9sX7TZ2aCO/Fij19i8EnJeBt09J1
-	 09V/U5cvYPh/Q==
-Date: Wed, 1 Jul 2026 12:07:43 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
-	linux-spi@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] dt-bindings: iio: dac: Add AD5529R
-Message-ID: <20260701-ardently-sloping-2d5ba83b61fb@spud>
-References: <20260701-ad5529r-driver-v5-0-ed087900e642@analog.com>
- <20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aGxMsGES"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1782905920; x=1814441920;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=DpQi5aHD1Rq2oQdH6gtw9i/QhFrOv7rlYgtQDdcfbSU=;
+  b=aGxMsGES/LhpIHmr7dstHzYYNGzm/u7ARkVQ6ErmN5nB4Hbh4rE0MUhH
+   G2Fb9EbuRpG4WLz79v9g9mFCgn5eNQbyH9sMm3ZplCoeXTSK/W0XrWc8G
+   WcmQtxsUIR9FV+/TAkuZEse07oZ9CMPV1mU1Nid/NDI9jrETbS2nFSmRg
+   lw3ZcdhEEuPBUsYuPtE0i+hMYccFUVyKgww9qWnmtKLmJWkRy9+aYQYu7
+   Hgcyu9a+PVvOfDLeD1R1gWY/TAMagd87fF3mmf3PrregcXUDX4Lt4TjdY
+   sn9nmC5kaPEbBPXJg7ct2qBldmxFz+mGs6fEGYnSld3rticnNsGzZods1
+   Q==;
+X-CSE-ConnectionGUID: 03oF66lRTfy/Y8+Fj2523Q==
+X-CSE-MsgGUID: NuqeR+T1SiqgDIeiJ7ZFpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11833"; a="87471921"
+X-IronPort-AV: E=Sophos;i="6.25,141,1779174000"; 
+   d="scan'208";a="87471921"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 04:38:38 -0700
+X-CSE-ConnectionGUID: rTQDfgZ4RGq/h2rchLoSMQ==
+X-CSE-MsgGUID: VAriTwrzQjasz3AnxY77QA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,141,1779174000"; 
+   d="scan'208";a="257446464"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.65])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2026 04:38:32 -0700
+Date: Wed, 1 Jul 2026 14:38:30 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Michael Walle <mwalle@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>,
+	"afaerber@suse.com" <afaerber@suse.com>,
+	"wbg@kernel.org" <wbg@kernel.org>,
+	"mathieu.dubois-briand@bootlin.com" <mathieu.dubois-briand@bootlin.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"nuno.sa@analog.com" <nuno.sa@analog.com>,
+	"andy@kernel.org" <andy@kernel.org>,
+	"dlechner@baylibre.com" <dlechner@baylibre.com>,
+	=?utf-8?B?VFlfQ2hhbmdb5by15a2Q6YC4XQ==?= <tychang@realtek.com>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-realtek-soc@lists.infradead.org" <linux-realtek-soc@lists.infradead.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	=?utf-8?B?Q1lfSHVhbmdb6buD6Ymm5pmPXQ==?= <cy.huang@realtek.com>,
+	Stanley =?utf-8?B?Q2hhbmdb5piM6IKy5b63XQ==?= <stanley_chang@realtek.com>,
+	James Tai =?utf-8?B?W+aItOW/l+WzsF0=?= <james.tai@realtek.com>,
+	Yu-Chun Lin =?utf-8?B?W+ael+elkOWQm10=?= <eleanor.lin@realtek.com>
+Subject: Re: [PATCH v3 2/7] gpio: regmap: add gpio_regmap_get_gpiochip()
+ accessor
+Message-ID: <akT8Niv1ddo-uWmc@ashevche-desk.local>
+References: <20260512033317.1602537-3-eleanor.lin@realtek.com>
+ <agMM9soiqpG-TRSb@ashevche-desk.local>
+ <adff3a2d21a64d3ea3b408d62157ee1e@realtek.com>
+ <ah92oEavMu4QRn8y@ashevche-desk.local>
+ <CAMRc=MdA24z-tB_D8CTw68Di8e4OVQJ1QH4+rDskFzq=xjJ5BQ@mail.gmail.com>
+ <DJ3QVMZ6XLW9.1M9W541O92QWJ@kernel.org>
+ <CAD++jLncD2ZjH3aedOkGNYP3FyZ=i7Pb0OcKKZKuMOPGNjM_nQ@mail.gmail.com>
+ <DJN3PDTPJ3L6.24P71OQFB6C98@kernel.org>
+ <CAHp75VeTp4eYQ4QBoeH2VyVhUivxNn1CaC9jskmeg-1zTAOYLQ@mail.gmail.com>
+ <akTyDzdrt949VnWK@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="0M00TNO2mVEAmOIw"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260701-ad5529r-driver-v5-2-ed087900e642@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <akTyDzdrt949VnWK@ashevche-desk.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
---0M00TNO2mVEAmOIw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Wed, Jul 01, 2026 at 01:55:11PM +0300, Andy Shevchenko wrote:
+> On Wed, Jul 01, 2026 at 01:01:10PM +0300, Andy Shevchenko wrote:
+> > On Wed, Jul 1, 2026 at 11:44 AM Michael Walle <mwalle@kernel.org> wrote:
+> > > On Fri Jun 19, 2026 at 11:08 PM CEST, Linus Walleij wrote:
+> > > > On Mon, Jun 8, 2026 at 4:41 PM Michael Walle <mwalle@kernel.org> wrote:
+> > > >
+> > > >> >>> Without an accessor like gpio_regmap_get_gpiochip(), we cannot retrieve the
+> > > >> >>> gpio_chip instantiated inside gpio-regmap.c to fulfill these requirements in our
+> > > >> >>> map() function.
+> > > >>
+> > > >> Why is gpiochip_irq_reqres() called in the first place? Isn't that
+> > > >> only called if the irq handling is set up via gc->irq.chip and not
+> > > >> via gpiochip_irqchip_add_domain() like in gpio-regmap?
+> > > >
+> > > > Not really, the gpiochip_irq_reqres() is called to mark that a
+> > > > GPIO line is used for IRQ, so the gpiolib cannot turn this
+> > > > GPIO into an output line, gpiod_direction_out() will fail
+> > > > on lines used for IRQ. So it's a failsafe.
+> > > >
+> > > > You can live without it of course, but then you don't get
+> > > > this failsafe.
+> > >
+> > > Thanks for the explanation! So did I make a mistake years ago by
+> > > adding the gpiochip_irqchip_add_domain(), see commit 6a45b0e2589f
+> > > ("gpiolib: Introduce gpiochip_irqchip_add_domain()")
+> > >
+> > > As Yu-Chun found, gpiochip_irq_reqres() expect the irq chip data
+> > > to be a gpio_chip, which isn't the case (in general) for an
+> > > externally allocated domain, is it?
+> > 
+> > So the whole issue comes from the fact that the IRQ chip is not marked
+> > as immutable. For immutable IRQ chips (which all GPIO provides should
+> > have) there is no such issue to begin with, id est there is no
+> > gpiochip_irq_reqres() callback assigned (and respective _relres).
+> 
+> Ah, for immutable chips we put either custom ones or
+> GPIOCHIP_IRQ_RESOURCE_HELPERS which actually refers to those callbacks.
+> 
+> So, if the domain is external, it should also provide irq_request_resources
+> and release callbacks. In the custom case we can wrap gpiochip_reqres_irq()
+> and gpiochip_relres_irq() respectively.
+> 
+> But we need to have a struct gpio_chip pointer for them. And note, the
+> IRQ chip data can be anything in that case, so it's not a requirement.
 
-On Wed, Jul 01, 2026 at 08:40:40AM +0200, Janani Sunil wrote:
+And looking back for implementation in v3 the whole mistake was to use
+GPIOCHIP_IRQ_RESOURCE_HELPERS. It just wanted custom callbacks with
+the IRQ chip data assigned to whatever from which we may then deduce
+struct gpio_chip. It does *not* require to be struct gpio_chip.
+The local driver data structure should keep pointer to struct gpio_regmap.
+That one can be used in the respective .irq_request_resources() and
+.irq_release_resources(). The default ones for gpio-regmap may also
+be provided via a macro, say GPIO_REGMAP_IRQ_RESOURCE_HELPERS.
 
-> +patternProperties:
-> +  "^channel@([0-9a-f]{1,2})$":
-> +    type: object
-> +    description: Child nodes for individual channel configuration
-> +
-> +    properties:
-> +      reg:
-> +        description: Channel number.
-> +        minimum: 0
-> +        maximum: 63
-> +
-> +      spi,device-addr:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
+Hence I don't see the need of having gpio_regmap_get_gpiochip() helper
+and driver can be implemented using gpio-regmap and external IRQ domain.
 
-Same comments apply here about whether this is a channel or a spi
-peripheral level property.
+What did I miss?
 
-> +        enum: [0, 1, 2, 3]
-> +        description:
-> +          Device address selected by the ID0 and ID1 pins. Up to four AD5529R
-> +          devices can share a single SPI chip select; each device responds only
-> +          to transfers whose address bits [13:12] match its configured address.
-> +
-> +      adi,output-range-microvolt:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-I didn't notice this on the previous versions, but doesn't this
-duplicate the common output-range-microvolt in dac.yaml, which you
-should be including here because these channels are dacs?
 
-pw-bot: changes-requested
-
-Cheers,
-Conor.
-
-> +        description: |
-> +          Output voltage range for this channel as [min, max] in microvolts.
-> +          If not specified, defaults to 0V to 5V range.
-> +        oneOf:
-> +          - items:
-> +              - const: 0
-> +              - enum: [5000000, 10000000, 20000000, 40000000]
-> +          - items:
-> +              - const: -5000000
-> +              - const: 5000000
-> +          - items:
-> +              - const: -10000000
-> +              - const: 10000000
-> +          - items:
-> +              - const: -15000000
-> +              - const: 15000000
-> +          - items:
-> +              - const: -20000000
-> +              - const: 20000000
-
---0M00TNO2mVEAmOIw
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCakT0/gAKCRB4tDGHoIJi
-0pnQAQD9lhRrxn1NbXQ8zdd56gFpnXVgtHwgo/R9/U8JU6MARgEAuKhd4IqN1Y05
-FDtxSXMlM8NIEpnzxf86fNIaYlXdcgc=
-=Qn0X
------END PGP SIGNATURE-----
-
---0M00TNO2mVEAmOIw--
