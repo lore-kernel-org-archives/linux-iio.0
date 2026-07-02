@@ -1,110 +1,119 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716E44DC542
-	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 14:18:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4CC130E82D;
+	Thu,  2 Jul 2026 16:12:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783001929; cv=none; b=dXiMeeD5mbDUqcLeJ7R39efG5Q1V8EGHmaoR2EOFDHoPziKHHZgQdIVWHNj6nU45FYAbfq/z4r6tq9Fs/25W0UwGuU5/40Uf6782VTihsne4lRgpaEdz00f+uFFaFZIC3Yv5u0hoHDq1zo6SPBvig915VlabjIXXYEwMclZ6rtY=
+	t=1783008778; cv=none; b=Hm6jXi2bAD8/MjOoRdQ/CGLhqTCSZJHvhQfi0zr2cbjClDcN+Jec3zUeXzlo+iQYjGmp+DLTMw5CUbpjGXhL/zC8GNDfdzM+UO2EB0zNVKB52BpwC5W7C7KXx4DqhDAMca5dSGeqkntaA7DyNcDUGUCZfjYmWiSO//4/Eu0jVV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783001929; c=relaxed/simple;
-	bh=FzlQ4dU8Y7So5+PoKuqx2vCx/5MPgXqpsLfNBx+XtJI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=toN41MHuiP696FDPT97Wl2zlQM/yZorABpts1//m0larCrOpPhhrZsMA3Vclw6LmDk1GnwjJWlQUaw0wl3Bg/4s0PqPuOlsBH2BKZaD1QBVmz4kPw2D1Escu68iqS+wKgMlTnf0RlYBFhD+rxjq9LM3slMiDGFlq6BuYlsgX4XI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=SefeOP/8; arc=none smtp.client-ip=209.85.160.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783008778; c=relaxed/simple;
+	bh=Zh3mLY54aGC7XZ1QXAM+vF14TG/FCYJr3S1ymEdMxb0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FEQ9j+mQuTBETPgtwCpFMtavoTbpbqp5eGTVEQm3bhyKx9upWt3acDk8gDRAfLOfhKYhxuj4hcDrkJwNhBH/2FpDV/y4uMw5VpRA+H8M8rCMAppOiOJ18loMoyd2JwecrDV7Dy3/cGe63dcQuwshbj1PjPaVaQCdWHMxVd1Nc1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iGC65vUG; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="SefeOP/8"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso830197fac.1
-        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 07:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783001923; x=1783606723; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D3aJl8QhQEFbQbyrb9zx0aFaFWiPGxodfC82XFdOcZ0=;
-        b=SefeOP/8wupF+nUFeWKGg9bdzKJHS14dotjJBUP95kU68lu/bstckB3fZElv823DDO
-         bfk7ZgVMZ9Utd2C3DHb6vmt9U3MassvQwQdVz5V+G/VybSCuA+OBHfxbSaCTjEpIj20J
-         uAxWi4q2wXC1yjf+JNEP2CiigBAbGX0O6nZag8IWkOdYFpRqVLUJX1sRmA7qaFpYlxIW
-         Nh2ZbHlm3KeyOhy9T9bthrD4Fm2sojoROpWKq7rx0YYPH0+Nw4MTgQxd07TMN96rw2db
-         849dWaf6hWSay7c+3JtjMVpNdGSLyg0kawt1OH01clcw1KYG6cSoozdh9VoyDlx5gCRj
-         glHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783001923; x=1783606723;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D3aJl8QhQEFbQbyrb9zx0aFaFWiPGxodfC82XFdOcZ0=;
-        b=Wy4J/oUZitS5OEehik0VsNyAgx2vqQaahrnyWaPHcW2q0a3yzQhigg7xOB7oPI3SCZ
-         MMw9YelDVNGQS3h5/4HDdUAaxe09eXxxV4KOGK2bVTj5E4ck4EvY4NoXZhQU2ID7AnM+
-         VPK2ipNNp8K/8jbfJb+JvU8TtTt1Zu+TDP1JXcScrMosad9kgvCD82jFcLlUbvoIz+QK
-         Kilm8VLmltp989r4/TuejzSIyW0lsuZ3XWWcXnt+Ztiur4r1J/fmBSfQA5zlOqD7prA9
-         Mxv9Tc4PvapBactnPEAhLbvsdZCrxQO2b8vhgspRtg/jkH9fgkFnVIxgUCQCzRoIZnc3
-         p9Mg==
-X-Forwarded-Encrypted: i=1; AHgh+RoLkucqZpcirgH9hf//myDi7QLmTBcdUJcyWQDO2vmKlk3ogJdAXXj0X7R7p5a4G96LpiYCgRU6NCo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywq79C15C1fg0t1nZh/fN4ZLCEWWzk7FCt9JWoD+10m2dXCI+yo
-	0JXSpg+TPEbKPQvLkB7mEnZS17WH+j/8lZIsFtp3EVsSjmDIe3SjE/QQFAYetqnJzag=
-X-Gm-Gg: AfdE7clyyFrFVUVRnDz94v239YX9jPMh0MExi8ncdEfdkadeb3FhTkMIfBJFZmq5Iql
-	Av2Zb9E0axLPnAfoWdk50Mz/W3fiQws+JjBbfsB1Cs/962JpH72iIDY61ZBxKIGTS8ROeNoMRub
-	mSqLafD1g8s30GHdYU8iR9rnGhbd2JWOAlF8Ag9CcDeV5H8/Cm6/sc+rceE3xMpNNu78khwXzwV
-	Okem0vRH0lVEdFW5UxV9spB3r7Xv+w0JsIubb22SwdcO2EQ/HBvxXBO6a7m0XzWy2jkEx/W8htg
-	HQoqxVMNJ6OzhY62a+wTeG9h71KuCtGyWUNf9T8t/p4RuuLxBq2tqm+BtUcKphtKvQifU/AAO+d
-	TypC3bY1fY72AWQ3cu2dlcFD5/5d02DXBwa2mp3pXnmYR8F1914kg5Wl9m7TYiy2w6P4rUZly8E
-	s9bfp+jrF7ubwZyfh8FLNCiIMdQaeUCBYjyGVUaWsooVsUZo44yOBx3h+w6XpFhWKibA+LSLzLQ
-	Q==
-X-Received: by 2002:a05:6870:8899:b0:44a:e965:b9dd with SMTP id 586e51a60fabf-44cabcb3840mr3681787fac.42.1783001923076;
-        Thu, 02 Jul 2026 07:18:43 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:6a9f:626e:95c4:2a80? ([2600:8803:e7e4:500:6a9f:626e:95c4:2a80])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cbec92bbbsm3013174fac.10.2026.07.02.07.18.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2026 07:18:42 -0700 (PDT)
-Message-ID: <544fbdef-268d-49cc-ae9e-b18907d9382b@baylibre.com>
-Date: Thu, 2 Jul 2026 09:18:41 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iGC65vUG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4CEC1F000E9;
+	Thu,  2 Jul 2026 16:12:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783008777;
+	bh=jgZ5PGASijShP5pC5l8zHhdOpozcuS9KxV5TuCHWvA4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=iGC65vUGDqogOIGJx6iAzvePK4nQgsbNW6n2puBfcxRlF/iW6l85Ti0n4337btxCs
+	 AAhgmXx0m+4kppoTDcvJUeuFBYvHbveuMHtPWIDt/aLgi/W5g766w4uHI4NCNLbY+Y
+	 o55EovSIK51IrXtGhUckpB+JwHC/yjMiyxVG9I3HanKrV69OXNsstHmewI3Lk7N+9H
+	 pr04fOotyHQtLJ29VRJPP56stS74kaIr7IL2eOM6AeMlWINKJJ75OVokh38/8Auf08
+	 9hDw9O4qyE8W2H15CY0fDS69UReoN+tPNueMI79ooE1XbbQNBgcic36HvhYi35cUzn
+	 8Vdoq7K2fGplg==
+Date: Thu, 2 Jul 2026 17:12:51 +0100
+From: Lee Jones <lee@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Svyatoslav Ryhel <clamor95@gmail.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v5 02/14] mfd: lm3533: Remove driver specific regmap
+ wrappers
+Message-ID: <20260702161251.GA2108533@google.com>
+References: <20260617080031.99156-1-clamor95@gmail.com>
+ <20260617080031.99156-3-clamor95@gmail.com>
+ <ajJ30lHG5lEXri7I@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 8/8] iio: adc: ti-ads112c14: add measurement channel
- support
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
- Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
- <20260625-iio-adc-ti-ads122c14-v2-8-ceb9b0b561cb@baylibre.com>
- <20260701212019.12757df3@jic23-huawei> <akYs-QgyjN-nmjq-@ashevche-desk.local>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <akYs-QgyjN-nmjq-@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ajJ30lHG5lEXri7I@ashevche-desk.local>
 
-On 7/2/26 4:18 AM, Andy Shevchenko wrote:
-> On Wed, Jul 01, 2026 at 09:20:19PM +0100, Jonathan Cameron wrote:
->> On Thu, 25 Jun 2026 16:55:10 -0500
->> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
+On Wed, 17 Jun 2026, Andy Shevchenko wrote:
+
+> On Wed, Jun 17, 2026 at 11:00:19AM +0300, Svyatoslav Ryhel wrote:
+> > Remove driver-specific regmap wrappers in favor of using regmap helpers
+> > directly.
+> 
+> OK, let's go with this variant.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> Some side notes below for the record.
 > 
 > ...
 > 
->>> +	device_for_each_named_child_node_scoped(dev, child, "channel") {
->>> +		struct ads112c14_measurement *measurement = &data->measurements[i];
->>> +		struct iio_chan_spec *spec = &channels[i];
+> >  	struct lm3533_led *led = to_lm3533_led(led_cdev);
+> >  	unsigned enable;
 > 
->>> +		if (!fwnode_device_is_available(child))
->>> +			continue;
+> Oh, besides using the old way of declaring unsigned int, it most likely
+> just needs to be kstrtobool().
 > 
-> Also drop this dup check.
+> >  	u8 reg;
+> > -	u8 mask;
+> > -	u8 val;
+> >  	int ret;
+> >  
+> >  	if (kstrtouint(buf, 0, &enable))
+> >  		return -EINVAL;
+> 
+> We should unshadow error codes (it may return more than -EINVAL).
+
+Right, this masks -ERANGE.
+
+We should fix that.
+
+> >  	reg = lm3533_led_get_lv_reg(led, LM3533_REG_CTRLBANK_BCONF_BASE);
+> > -	mask = LM3533_REG_CTRLBANK_BCONF_ALS_EN_MASK;
+> >  
+> > -	if (enable)
+> > -		val = mask;
+> > -	else
+> > -		val = 0;
+> > -
+> 
+> ...
+> 
+> > -	if (kstrtou8(buf, 0, &val))
+> > +	if (kstrtou32(buf, 0, &val))
+> >  		return -EINVAL;
+> 
+> Like in the previous case we should unshadow error codes.
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
 > 
 
-How is this duplicate? device_for_each_named_child_node_scoped()
-doesn't check this.
+-- 
+Lee Jones
