@@ -1,107 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB99A335BB4;
-	Thu,  2 Jul 2026 16:18:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA25A339844;
+	Thu,  2 Jul 2026 16:18:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783009084; cv=none; b=lfQMZM36wC6z0NNP4OtQwLh/PxDqyeQCUtI+drG0PJ3z90qAcgK9B8jRwv6CXDPHnaYI7JqJUMuaL3R5N0CCMxe4rLczTARWs9fadhro8WlPYB0IJ5U3pyWweHXjIHfgyq4fLtssvhxPLRvtmy6T+gzc5QpICW110oS64YP9bTE=
+	t=1783009115; cv=none; b=jHgxesjydP+TroYSxWTyjhyYNvO46JiDmzELgiBouQMj4KekOJzBfcCzDrfsXZCKs3sTh3y+0gU+60zah0d4g9OXY2dU+igqcGLT9x+OFhYMkDCwjdPzL6PuqKEVHISS7VZhRzRLB9CjTVtJb4A1Y7zznmtLkPF5RWIjEhLgMwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783009084; c=relaxed/simple;
-	bh=pv7PI0tXeCcYFPamSAtzGET4g6+CyDXUeIY+gIwGB88=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Hla8QEXerCPn2S92+4mL2NXYryyHCWfHivtfc+JobXRueKcPPkzKL0TZf3ig8jDoAdTVnFp75HX54ZBZ4E1ztPxmQxf14RpXh3ROQ8RH9RPtPFv+UlWYlBHWZBhS1qtm59ANWdixq3Iaeb4uz9N4OrHLKCZdYM/ZT/3lAtJkEnQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T/GyLuK5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1783009115; c=relaxed/simple;
+	bh=kbMVKXOX8SCr6JbCks28PC928ssdxo4qHNutrvGZHUY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hJDfaqLzjP92B8QvZZ8NYrOPXfLIRfPgkNYM/22n7JcfcljSLCbkRixiFQqgY51lFIyZv3BL79Vx1xWjxNjUMeyzsEluFAftgTziGlhYs3k11AFOKbihmgq1y6Fr4L17RdRGd8+rbvGo829y8KSszh8uyDVSSdRKwYQF3ZBVp3k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Boem+Th2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T/GyLuK5"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B2BFC2BCFD;
-	Thu,  2 Jul 2026 16:18:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1783009084;
-	bh=pv7PI0tXeCcYFPamSAtzGET4g6+CyDXUeIY+gIwGB88=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=T/GyLuK5NAGNa/GCO8Zyu4DG5TkT+xKJme5uLWkt4foQKNaxLUI0jg+l5MHXMvqV3
-	 kDUd5VFQbW156UpwoMtU3fOUz3StD8MYmpSZCV1Tc2CBH4AayfcOBbRiNpAv6uqVyv
-	 t2eHHhVp96naXsWHxOYBHDgJDEk4C6rVZFFXoBhnYpy207KGHawQkEHmFdAljSbq1s
-	 FkFBUT03dJ87hNTxoWItlk8jSbq5/fGQ3jRO4M7xlwwguKj020V+G/OTs1T7I+YZvE
-	 yZXUbtva7nwqEyB4oqADSROQuPxtAL+TqjvFMUfVBoyJ/hkIsuPbt5ozQDPMb5t0iB
-	 2p5UU9ycejPeA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F0CC43602;
-	Thu,  2 Jul 2026 16:18:04 +0000 (UTC)
-From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Thu, 02 Jul 2026 21:48:03 +0530
-Subject: [PATCH v2 6/6] iio: temperature: hid-sensor-temperature: use
- common device for devres
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Boem+Th2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8181F000E9;
+	Thu,  2 Jul 2026 16:18:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783009114;
+	bh=IkM3i77YEX756C+1EiUCu7s5eiNq08LZMZb9R/S6UVM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Boem+Th2L4HdoWEQTaxNWFMH7uToI7We2Tpm4ZgaNjG5LlRIJUY59A8IPMjF7fuhn
+	 FNE0C0yd6ubUt3G98s90QSUZrdIuHvGW7kWfKgYyZgkZiTLdMByC56vhyoJaImJUDe
+	 C1eRQUPxmaUs2CusAXna5pu46Bz0iVlySFCQlG1h5NN86hZRcBUZtBUOZG4Da/m2MY
+	 qvSi4aUyUC2kuecKH3CO+8AlyeI5SbDa26w2X35rhmihRNIxRf+F1PW5kfZVBWewhC
+	 Ej/Xgj74nB1y+sO3gHPQV0yR3w/aEsGvkzN/zsUWAht8t6Qh+ZX5ewdeaZYrWj2TRn
+	 Kh1cP2ydiQvaQ==
+Date: Thu, 2 Jul 2026 17:18:28 +0100
+From: Lee Jones <lee@kernel.org>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>,
+	Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
+	Johan Hovold <johan@kernel.org>, dri-devel@lists.freedesktop.org,
+	linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH v5 00/14] mfd: lm3533: convert to OF bindings, improve
+ support
+Message-ID: <20260702161828.GB2108533@google.com>
+References: <20260617080031.99156-1-clamor95@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260702-15-jun-hid-iio-alignment-v2-6-b87f01f5efbc@gmail.com>
-References: <20260702-15-jun-hid-iio-alignment-v2-0-b87f01f5efbc@gmail.com>
-In-Reply-To: <20260702-15-jun-hid-iio-alignment-v2-0-b87f01f5efbc@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-input@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783009082; l=1531;
- i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=4701Zl6ga9a1z4yj3Yz9gyyh1nnaOn4C8ewcual1JXA=;
- b=jt3v7QdjWsfgAfapZwFm0C9YNA79+MuK2w12LOFbEHrlpVz05FnImDeiSt5LBiqmdG+XpONgq
- fVMLvt/ITxrAXnZwacib1+ey+TtLlS9hway7fYeVnhNzUgud03Pqout
-X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
- pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
-X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
- with auth_id=848
-X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Reply-To: sanjayembeddedse@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260617080031.99156-1-clamor95@gmail.com>
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Wed, 17 Jun 2026, Svyatoslav Ryhel wrote:
 
-kmemdup() is used for memory that is logically tied to the HID
-platform device, even though the driver binds into the IIO framework.
+> Convert LM3533 to OF bindings, add missing VIN supply, add support for
+> setting mapping mode and LED sources based on device tree. 
+> 
+> ---
+> Changes in v2:
+> 
+> schema
+> - maximum led sources for leds set to 4
+> - anyOf > oneOf in ALS
+> - improved ALS descriptions
+> - adjusted example
+> drivers
+> - dropped devm convertion of irq and mfd helpers
+> - all als configuration moved into lm3533_als_setup
+> - added regulator/consumer.h
+> - lm3533_bl_setup set before sysfs_create_group in backlight
+> - added check if LVLED is valid
+> - LM3533_REG_OUTPUT_CONF1 > LM3533_REG_OUTPUT_CONF2 for LVLED4 and LVLED5
 
-Using &indio_dev->dev for devres allocations works functionally, but it
-results in two separate devres ownership trees—one for the HID
-platform device (pdev) and another for the IIO device (indio_dev).
+This set looks good to me now.
 
-The devres framework is intended to have a single, well-defined parent
-device. Since the memory originates from HID sensor probing and is not
-IIO-specific, &pdev->dev is the correct and logical owner.
-
-Switch to using the platform device for devm_kmemdup() so that all
-resources are released deterministically and consistently.
-
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/temperature/hid-sensor-temperature.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-index 18da85e6c60e..6dfb606a53af 100644
---- a/drivers/iio/temperature/hid-sensor-temperature.c
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -213,8 +213,8 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	temp_chans = devm_kmemdup(&indio_dev->dev, temperature_channels,
--				sizeof(temperature_channels), GFP_KERNEL);
-+	temp_chans = devm_kmemdup(&pdev->dev, temperature_channels,
-+				  sizeof(temperature_channels), GFP_KERNEL);
- 	if (!temp_chans)
- 		return -ENOMEM;
- 
+Let me know when you have all of the Acks and I'll merge it via MFD.
 
 -- 
-2.34.1
-
-
+Lee Jones
