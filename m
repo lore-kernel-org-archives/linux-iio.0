@@ -1,46 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38B02386422;
-	Thu,  2 Jul 2026 19:20:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6735670830;
+	Thu,  2 Jul 2026 19:30:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783020008; cv=none; b=sEEJerScVv5QgXUczHVvKj2QnVnrHwX9ZprbSy0CroOq+pNAM7VuKLDjnb08Mz7G7u/LbY3Kp6hylPt2AtIV23x8dAnOjWaHTeoBBRcR/7neLi6cHdNzkim2HfP5lA5ltcQT5fF19XJbiX1cK1AUIDRV4sF/NyG7F4S8T0I5/y0=
+	t=1783020659; cv=none; b=NvGJ26eXMuroP5aOZZJ8VwHKjOmIWrSg19Nh1tMUk4x1oUWOnIL7y8gExNLJmGYcYHPTzwA5OtSNNimVLZe/FXRIiZrK/eXgjHiiASjQ0J+0BDlXHUgF6/rYizeujzqJ0SG6IV0ZG1Q0GX1QG8HDSllWWItE+kWFM9PoCUg2H+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783020008; c=relaxed/simple;
-	bh=dWPFnbmyPkg3JCwJVoTRzevxIvjZ9EcK4ygGhkhxqmI=;
+	s=arc-20240116; t=1783020659; c=relaxed/simple;
+	bh=Dn6UWY3mSDJAHfVAcurT+ZUStGtKjhoccn6GkyrX27k=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ihCT/RFBjgLhPRSl+ZMIeUUf9sVgRjn3ah/AysGA9DmocdyAIB/Q1C/G0wSnHX7SHDHQ4PqTeBnek7fm1NnOIJFzaXCHaWbwydxukLOhl2bMWAUZNMmzhPIzkfe/5gbhbLYsAwQ/PPfCp1DSN2VENYfjkb8Wf5U74myql/xQ5bc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oXGMIhga; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=pQzq4okbR3h/tFjg0NFpRJX+N8NuSlPHX3XWJGCUgFXDXrRE0Ay72fZo5WPnltocBdBWmvuC8RMAUOGGmkS5KZU/nhe6gU4NkGr7c0gnsrRqm/fG9NlzD60IaY2XWpG0FQKvuRCAoUH7UQV+jrZAYA5ghWx4VA7Yu77Qs0jhRb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dmSH7iJ1; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oXGMIhga"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4991F000E9;
-	Thu,  2 Jul 2026 19:20:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dmSH7iJ1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18F91F000E9;
+	Thu,  2 Jul 2026 19:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783020006;
-	bh=gs9qM58OqZN4iUhDYB+L7Nz0T20De08FWpjNMp4Ecr4=;
+	s=k20260515; t=1783020658;
+	bh=I0E6G0wI4aJTTRKSLJz49t69TW7I6ObwdGcPx9DdeTk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oXGMIhgaKZsnBRCKoPQVgaCY3eO7LdzVvLLS3Be02/6qXyd9jBtkDeUHJP5Y4Luda
-	 T17W3qoWJ2RwzOvVNyjWQWVMoc1Qqy2GZ/PsuQCSYgjZVAHYz39ZYNwD61ushI6r49
-	 UnvBBolQMzrDcO+itC9+N2mMBHbysePXFejqYBcw4mjCQ7YP4PPIyZym0T2/h7jGJ5
-	 /0/Oov3Cv1aIdsIyQ6bQFPvRqdFFbHr2A5S4wYAr9jS8jNPfijGY6yTJaCK4S8+nRI
-	 Zecnry2py6rcZ/Nz7fOWKurpe8NtXMlhAGr4ylqBewj4mRQTe1GxEZLubwlWEUEpiO
-	 2UQUu/7v14eDQ==
-Date: Thu, 2 Jul 2026 20:20:02 +0100
+	b=dmSH7iJ1aQcHlqb+K0cs+rKU/0lpBdUZKhrNFMSV2qMeya1XigXENyEsafI+ZB3JE
+	 NCyeTbhCMQtvZ6AbuFv7T4htOOK7ppxMZM6HJOdwtl+ktwicaQWXfs24Zd3rBCHnTr
+	 wRNCV4u7+qze7fQT+TOZcMiYYOVXvS+/mFfgeLZe9I9/NE+vU30zlGTpJ2q/jQSIQy
+	 8huhM8oTtGnDDBfQY2ZbNOE46khQ1uVY9xfn3HMNf0CdXOMnkWQBxDZAw2uYP3c8Uh
+	 qjTqVLm/B4X4Y4T6P7fadQgIyzFabQ6FJLZEfGHSG/SkDrexqP0RnY0S361VEW+fR7
+	 uTjdduKchzlWg==
+Date: Thu, 2 Jul 2026 20:30:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v2 1/3] dt-bindings: iio: adc: Add reference-source
- property
-Message-ID: <20260702202002.79c1be1b@jic23-huawei>
-In-Reply-To: <baeb24dd-214f-4dc8-a300-22b932c4b4ae@baylibre.com>
-References: <20260622-new-channel-props-v2-0-aafd5369f253@gmail.com>
-	<20260622-new-channel-props-v2-1-aafd5369f253@gmail.com>
-	<baeb24dd-214f-4dc8-a300-22b932c4b4ae@baylibre.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
+ <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien
+ <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/8] dt-bindings: iio: adc: add
+ input-channel-rotation property
+Message-ID: <20260702203051.4d9d702d@jic23-huawei>
+In-Reply-To: <20260702-litigator-commuting-5a3a37a7fb40@spud>
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+	<20260625-iio-adc-ti-ads122c14-v2-4-ceb9b0b561cb@baylibre.com>
+	<20260626-retinal-thrash-1095940e36ab@spud>
+	<4a2c4c42-69fb-4491-ba77-b858623275ec@baylibre.com>
+	<20260701204133.2b77edab@jic23-huawei>
+	<20260702-litigator-commuting-5a3a37a7fb40@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,51 +56,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 22 Jun 2026 14:40:10 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Thu, 2 Jul 2026 19:58:32 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-> On 6/22/26 2:30 PM, Kurt Borja wrote:
-> > Some ADCs have configurable voltage reference sources for each channel.
-> > 
-> > Signed-off-by: Kurt Borja <kuurtb@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/adc.yaml | 13 +++++++++++++
-> >  1 file changed, 13 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > index b9bc02b5b07a4c7..fdad6b8276c934c 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > @@ -73,6 +73,19 @@ properties:
-> >        device design and can interact with other characteristics such as
-> >        settling time.
-> >  
-> > +  reference-source:  
-> 
-> Since this is an array, the name should be `reference-sources`.
-> 
-> > +    $ref: /schemas/types.yaml#/definitions/string-array
-> > +    maxItems: 2
-> > +    minItems: 1  
-> 
-> Maybe minItems here is OK, but I don't think we should put maxItems here.
-> This way, it stays more flexible for other use cases.
-
-I'm curious. What other usecases did you have in mind?
-
-> 
-> > +    description:
-> > +      Indicates the voltage reference source or sources for this channel. Some
-> > +      ADCs usually allow choosing between internal reference sources or a pair
-> > +      of external pins.
-> > +
-> > +      If a single value is provided, it represents a single voltage reference
-> > +      source. If two values are provided, the first one corresponds to the
-> > +      positive source and the second to the negative source.
-> > +
-> >  anyOf:
-> >    - oneOf:
-> >        - required:
+> On Wed, Jul 01, 2026 at 08:41:33PM +0100, Jonathan Cameron wrote:
+> > On Fri, 26 Jun 2026 13:27:44 -0500
+> > David Lechner <dlechner@baylibre.com> wrote:
 > >   
+> > > On 6/26/26 11:14 AM, Conor Dooley wrote:  
+> > > > On Thu, Jun 25, 2026 at 04:55:06PM -0500, David Lechner (TI) wrote:    
+> > > >> Add a generic input-channel-rotation property to adc.yaml. This is a
+> > > >> feature seen frequently in ADCs that are designed to measure resistive
+> > > >> loads, such as RTDs and strain gauges. Enabling this can reduce offset
+> > > >> errors by swapping the positive and negative input channels on every
+> > > >> other conversion. This can have side-effects in timing and filter
+> > > >> response, so it is not always desirable to enable this feature in some
+> > > >> applications. Therefore, it is best to make this a property that can be
+> > > >> enabled or disabled in the device tree.
+> > > >>
+> > > >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> > > >> ---
+> > > >> v2 changes:
+> > > >> * New patch.
+> > > >> ---
+> > > >>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 7 +++++++
+> > > >>  1 file changed, 7 insertions(+)
+> > > >>
+> > > >> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> > > >> index 9ec1f447b565..3d52c00922c9 100644
+> > > >> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> > > >> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+> > > >> @@ -81,6 +81,13 @@ properties:
+> > > >>        ADCs usually allow choosing between internal reference sources or a pair
+> > > >>        of external pins.
+> > > >>  
+> > > >> +  input-channel-rotation:    
+> > > 
+> > > I got some internal feedback after I sent this patch that "chopping" is the
+> > > more common terminology for this feature industry-wide, so in the next revision
+> > > I plan to change it into `input-chopping`.
+> > >   
+> > > >> +    type: boolean
+> > > >> +    description:
+> > > >> +      If set, the positive and negative input channels are allowed to be swapped
+> > > >> +      on every other conversion to reduce offset errors. This is also referred
+> > > >> +      to as "chop" in some datasheets.    
+> > > > 
+> > > > "allowed to be swapped" means that this property says the feature can be
+> > > > used, but userspace may have to be the thing that ultimately turns it
+> > > > on?    
+> > > 
+> > > No, I don't expect a userspace control for it. More like the driver should
+> > > enable it when possible, but a driver doesn't necessarily have to implement
+> > > it and everything will still work, just with less accuracy.  
+> > 
+> > Perhaps we need something in this text to say when it should not be set
+> > in dt?  
 > 
+> I think I would like a wording change from "allowed", to something that
+> is akin to "If set, the hardware supports swapping...". Allows sounds
+> too much like something that should be a userspace control.
+
+I'd be inclined to talk a little more specifically.  What hardware?
+It's the not the ADC that matters for this control, but rather whatever
+is wired up to it. Otherwise agreed.  Maybe "If set, the connected
+circuits are suitable for supporting ..." or something along those lines.
+
+Thanks,
+
+Jonathan
+
 
