@@ -1,51 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E85D38D419;
-	Thu,  2 Jul 2026 19:36:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8EB07081A;
+	Thu,  2 Jul 2026 19:54:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783021003; cv=none; b=GtmAocR9E3i4mM6XzpHhjCDmjcphYHcfni9dLAfxEtwDWPrUlCPu9afQnxkOcgfqFxF57P4GFpf+uRU4FaasXYAP7Ae1FKEG+K48gFXnAvUpnMlU/zuObrvdfHoRZneq+a7xVe0f209gLU6JrkVzywjwLSRBZXlfl88cXPZM5eQ=
+	t=1783022060; cv=none; b=far94BGKktW1R7/z5BVKE1Zjvc3LWSzjL2sx5cbmfdjQE988LWgDpYZk8GPvs3g5LvsQAqpQdWxFGp0WTcal1A/icJVj46CeObHxqFICqLViMj7GocZO5eJHkzP+MLIrcd33PktZ6kFWUT2LDQBAuWvjpd8AF76N2PgpTjvvEp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783021003; c=relaxed/simple;
-	bh=ABeWWj2xnmZZj+Mg9cQxltKZf0MRHyck2ayr4+LjYaw=;
+	s=arc-20240116; t=1783022060; c=relaxed/simple;
+	bh=JQfT8Icw5w54ABLKdE1dXOZcXE41G1Sd5gK7yIzdTbw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FmWXGyvM5DeI8CwfEfrrvysufAkGowMaKmIXGDxKsVrHx193eP5MOTIZUp6wvkc5ZemBGs7ImwnVTFsAMKq/A8+urfxCjLtd+0qpY67h1JTCmLRzzYzFyKtOWL2po9WLps4XubnBHwr8D1jM66Mnzg4bTLZ2qCzUMpVgYr3GW4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mmIKQcT+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=uVMhM6OcArDxhyIXUPpH9llQe4ZRFpFWEQwtfkufbkW2/u82aAFrYL3JwRlz5YFcc/+3m+F7v7/fvdAd2lls20ECclp9GTs6Cgl4EbRANmAXVPTUGP5Qs881sw2thc2/mo3+e6AO8AW+93oh5y42VdD0+duRa0kxIjUaa2uxpQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lxSHss0j; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mmIKQcT+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BDCA1F000E9;
-	Thu,  2 Jul 2026 19:36:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lxSHss0j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDC431F000E9;
+	Thu,  2 Jul 2026 19:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783021001;
-	bh=o8llP65FC/hxew5gdmOjT8/8KOwsLN5OKheW7ai4V6g=;
+	s=k20260515; t=1783022059;
+	bh=H5F4SqLSzXJmEFBlCC95grIlZ95ePwaUrWR6lWfF8+0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mmIKQcT+Ui+3WwFO8Uh4JHI0pgftcl38irAMJHqx8hFpH4wwKC/V5XgiBsDSzd1Bw
-	 R16VX6kp4bkP/yuGuEfw3SBesC2oBXIBRZgcsXHhhkizCLR7boe1Qg8HcCXeGe58MA
-	 36wlzCnTWtm78QS6Cre7Fq9gANTJCzsTPDmW+oJFpjQFdja9uozPQUZpF7r897vMMU
-	 7RnN2qhzkcdN0YdrxGAL9W0rDKixxou5nCTa39aoeQYHhvttIlwP7k/CA3o133efDo
-	 nYBqy+zgLhjnRCicrySIL+SKpGxgdJVaLNimmyEYZrAzu/qWKOy/hq3V8fhfrD1u2r
-	 plww3rmspv3MA==
-Date: Thu, 2 Jul 2026 20:36:37 +0100
+	b=lxSHss0jvK733v7BcM65Sx1MTW6AMDnyfsKr8aUmdVyraJinGJwuu9LxqTIuIjTch
+	 53aM7s/8DC4UG2yPyIiEWJgCYHJqcHF/oILB5+udDsK6hEh16L2CXQggyUbf/cfaCX
+	 byO7sJKOq6RcgaMHHAOtbQCIo6f/YbGyMfyhyR7J8QeGco0JoC23f7XDbtWD+IW6aq
+	 75XQn2YmirE3ToiqMt7mmw2PHlwAnyZRIx4Tmsh4UvZjxm6z6XxuPu0bV1svRH61cJ
+	 g1Bvgm6gFRGpIlxQjWlf4PAy9ORUsrayYN7JKByWKmPT9JHA7jPHsbQrBE9QMyJWHK
+	 fcuqAp46QwCew==
+Date: Thu, 2 Jul 2026 20:54:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>, Jiri Kosina
- <jikos@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, David Lechner
+To: Petar Stepanovic <pstepanovic@axiado.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Akhila Kavi
+ <akavi@axiado.com>, Prasad Bolisetty <pbolisetty@axiado.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Archana Patni
- <archana.patni@linux.intel.com>, Song Hongyan <hongyan.song@intel.com>,
- linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, srinivas pandruvada
- <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH v2 0/8] HID: iio: Avoid race between callback setup and
- device exposure
-Message-ID: <20260702203637.47adaae4@jic23-huawei>
-In-Reply-To: <aju8-caYYYR7_47N@ashevche-desk.local>
-References: <20260622-5-june-hid-iio-race-fixes-v2-0-1cfabcd1881e@gmail.com>
-	<ajpgQ8vCHacv_klG@ashevche-desk.local>
-	<7288DEE7-91CD-4823-959B-229AEF1CAD97@gmail.com>
-	<aju8-caYYYR7_47N@ashevche-desk.local>
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Harshit
+ Shah <hshah@axiado.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: adc: add Axiado SARADC driver
+Message-ID: <20260702205412.4cd58a5a@jic23-huawei>
+In-Reply-To: <5e84024c-041b-4e2b-9a91-6c0bb9fb3bb2@axiado.com>
+References: <20260622-axiado-ax3000-ax3005-saradc-v3-0-e57c7c7ae675@axiado.com>
+	<20260622-axiado-ax3000-ax3005-saradc-v3-2-e57c7c7ae675@axiado.com>
+	<20260622115554.000036a9@gmail.com>
+	<5e84024c-041b-4e2b-9a91-6c0bb9fb3bb2@axiado.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,92 +51,65 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 24 Jun 2026 14:18:17 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 23 Jun 2026 10:30:37 +0200
+Petar Stepanovic <pstepanovic@axiado.com> wrote:
 
-> On Wed, Jun 24, 2026 at 07:13:12AM +0530, Sanjay Chitroda wrote:
-> > On 23 June 2026 4:00:27=E2=80=AFpm IST, Andy Shevchenko <andriy.shevche=
-nko@intel.com> wrote: =20
-> > >On Mon, Jun 22, 2026 at 10:59:56AM +0530, Sanjay Chitroda wrote: =20
-> > >>=20
-> > >> This series avoid a race condition in HID IIO drivers related to the
-> > >> ordering between callback registration and device exposure.
-> > >>=20
-> > >> Currently, several HID IIO drivers register the IIO device (making it
-> > >> visible to userspace and other kernel consumers) before all required
-> > >> callbacks and resources are fully initialized, or rely on devm-based
-> > >> cleanup in a way that does not guarantee correct teardown ordering.
-> > >> This creates a window where the device can be accessed while it is =
-=20
-> > >
-> > >There is a difference between "this creates" and "this might create".
-> > >I believe Srinivas and others were asking for the proof. So, what path
-> > >in the code makes this happen or possible to happen?
-> > > =20
-> > iio_device_register() exposes the IIO device to user space, while
-> > sensor_hub_register_callback() registers callbacks for buffered IIO(str=
-eaming
-> > mode).
-> >=20
-> > This might create window where from userspace buffer mode is enabled and
-> > callbacks are not registered which would result into loss of samples un=
-til
-> > callback registration completes, although no explicit failure. In teard=
-own
-> > path which can resulting in stale/no data.
-> >=20
-> > This was discussed in the v1 thread and v2 was posted based on discussi=
-on and
-> > agreement:
-> >  https://lore.kernel.org/all/3FED088A-651B-4E8B-840B-1B92CB4DF6F4@gmail=
-.com/
-> >  =20
-> > >> not fully initialized or is being torn down, potentially leading to
-> > >> sample drop or stale/no data.
-> > >>=20
-> > >> To handle this, the series ensures that:
-> > >>   - All required callbacks and resources are set up before the device
-> > >>     is registered with the IIO core
-> > >>   - Resource cleanup is performed explicitly where ordering matters
-> > >>=20
-> > >> PS: This is prepratory series to convert all HID IIO driver to devm.
-> > >>=20
-> > >> Testing:
-> > >>   - Compiled with W=3D1 for each patch in series
-> > >>=20
-> > >> ---
-> > >> Changes in v2:
-> > >> - Drop fixes tag and rectify commit message with reference to that =
-=20
-> > >
-> > >You also dropped my tag. Why?
-> > > =20
-> > Thank you for the review and tag on v1.
-> >=20
-> > While code changes are intact in v2, the rational and commit message we=
-re
-> > updated substantially. Since commit message is as important as change w=
-hich
-> > will be permanent in history for future reference, I chose to drop the =
-tag to
-> > request a fresh review. =20
->=20
-> Now it's clear, thanks.
-> This version with changed commit messages seems good to me.
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Applied. Thanks,
+> On 6/22/2026 11:55 AM, Joshua Crofts wrote:
+> > CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you recognize the sender and know the content is safe.
+> >
+> >
+> > On Mon, 22 Jun 2026 00:47:28 -0700
+> > Petar Stepanovic <pstepanovic@axiado.com> wrote:
+> >  
+> >> Add support for the SARADC controller found on Axiado AX3000 and
+> >> AX3005 SoCs.
+> >>
+> >> The driver supports single-shot voltage reads through the IIO
+> >> subsystem. The number of available input channels is selected from
+> >> the SoC match data, allowing AX3000 and AX3005 variants to use the
+> >> same driver.
+> >>
+> >> Signed-off-by: Petar Stepanovic <pstepanovic@axiado.com>
+> >> ---
+> >> +     info->clk_rate = clk_get_rate(info->clk);
+> >> +     if (!info->clk_rate)
+> >> +             return dev_err_probe(dev, -EINVAL, "invalid clock rate\n");
+> >> +
+> >> +     ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+> >> +     if (ret < 0)
+> >> +             return dev_err_probe(dev, info->vref_uV,
+> >> +                                  "failed to get vref voltage\n");  
+> > Sashiko raised an issue that I've missed on previous reads - why
+> > are you using info->vref_uV in dev_err_probe()? The info struct
+> > is not zeroed out on initialization, which means that dev_err_probe
+> > will return a different value each time when read_voltage() fails.
+> > It was designed to accept the retval from whatever function we're
+> > checking.  
+> 
+> Thank you for catching this.
+> You are right, |dev_err_probe()| should use the return value from |devm_regulator_get_enable_read_voltage()|, not |info->vref_uV|.
+> I will fix this in the next version by passing |ret| to |dev_err_probe()| and assigning |info->vref_uV| only after the call succeeds.
+> 
+Hi Petar,  Quick process thing.  If you fully agree with some
+feedback, don't send an email to say that. The place for thanks
+etc is the change log of the next version.
 
->=20
-> > I shall highlight the same in change log. I'll make sure to note in fut=
-ure revision. =20
->=20
-> Yes, please.
->=20
-> >  =20
-> > >> - Link to v1: https://patch.msgid.link/20260606-5-june-hid-iio-race-=
-fixes-v1-0-27a848c5758f@gmail.com =20
->=20
+We are all swamped in email and it takes a non trivial amount
+of time to check every reply for discussion that needs to continue.
+
+This is probably the most common thing people who are new to the kernel
+do that I'd rather they didn't :)  I send this email once or twice
+a week at the moment.
+
+Thanks,
+
+Jonathan
+
+> Regards,
+> Petar
+> 
+> 
 
