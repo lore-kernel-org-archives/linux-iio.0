@@ -1,105 +1,160 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D72E3FBB6D
-	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 11:55:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEAF47A0BC;
+	Thu,  2 Jul 2026 12:09:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782993321; cv=none; b=NVR3CNHUkt7Vfr+7/eVuv30w4q/9Fv2cSdLMkA0xoq5bACgH1ZyH/8MrFYnolt04yUGYgtGN7iXP1gW1QwpndXeK78gRQ6Ih20v2+C0JHSHUOXRWZaqj8ySzNtR+wmUkrovpkSqnQcgaYxN9H50PLSzghrHHV27fWiLxd5yyqFY=
+	t=1782994196; cv=none; b=grNnA/IFp0DYHYoDSFJFmYBeUMy3sff8uaWIJ8tLLcSrjx5bLwzgt2+RXiQla/nSgci0BHdnxQaAHjXRPfKZE8z9ut7rcSfmuUGZlpeicCU1D+xDaNwhdZJrdZRBBEvjLdCxI1VH0M1U2sIZreQvmJ+PyCYMdg/LIgvTBvS0H7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782993321; c=relaxed/simple;
-	bh=3UWePbw4rKjLE9jN9ka4BAbk+tU9/kzm9ZJJmB6lbeo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=J5oTBG6MI/hafuWCN4kuduBNWvj3zvOTDl/GRDT73VRlDktvvY9P0WzfmMIzWrjgqc+NuM6EwhuLjHKUO0b7JsfSAWA4n4oGQDXIM+nA2wvV4BgvB0sDP6LfVf/fQfYAEzHkW7264M2DhtAyNz6YblvslyloDL42Isvbiz03fP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ULcROm7p; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782994196; c=relaxed/simple;
+	bh=EmWZV2ehRtvYZ67TamUlmuOjOamHc07GXyD4SH18O/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XePZ/fXFV1zZ2PaRor/rFyLqzINkC2yioSWiBD2yfi8RKPN9xyuxBtXDa786W3+1+MlS4sJ1+lpA96HLKLiDtsPOJ0G3flALQmDtsAKC7I0gqm8KxYbRJxBbN+7xm4v+WM69Dwriqij6jku84Xuft+N61vXxNiXUJtAMdaoDBnI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZA7Nmc8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ULcROm7p"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-493bb510ce4so12816985e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 04:55:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782993319; x=1783598119; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=t0V/WwhcWDu6tebPbs0Nt6qIlHb80wmhn3NHdOSdGwU=;
-        b=ULcROm7p/zMsmFIiUn/Pecf7zLZxyBITk7I+ISXvuVhweGckmqfLSwBDebkpaGzPxS
-         0c0XplhV+AR8lZpor6X2P31uZ0JbVmmJ/JiaWgDdFGoCrzsFAhyDqt9h4h+2KIjvbASB
-         P49j3CqRUMEtbiK59z5/tjRAh/6iVtC3qhBgcSoNT0Sf6ETxY6gVQzO3CmhtkXUelYac
-         gsP4sAcYW1b545RGKtIumLrfu5N2NY7FwW3ZN4K/nGmkKwaPemUgAmcskgohfDaux3u/
-         gIovU653/YxGcAiAdme1vtc0ZYMDJUNur0lJasy1IjucECtlcnAExDly9KzRB9Fa4pUx
-         Go2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782993319; x=1783598119;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=t0V/WwhcWDu6tebPbs0Nt6qIlHb80wmhn3NHdOSdGwU=;
-        b=XF5YrrW9XyiW12grU5QoG1QLoAn1EwJ3HDXUBeXoE/yPRbpscw4n1IrigHKBMw80YF
-         lZ4gLW4ffjgfiszdrsIXAYVgjKgeZHbTAtsfK5NnXn+g87T42hDQ2lBCuoBpX8zQ+yaZ
-         LJSC41LH9zD9UlX9GS0isF2RIkW5IDP/4WVMLdKiJl/a07s2mbwEYdSu6jaqkyPIuuBF
-         ZoRHWzcMpgSKXGlaZS6xDo/dMrUIzf03Gxgsym+kc1Eq3wmqGuCVhocwucu02oI9gIlb
-         mpHYdZl3l63TF/ODlDq+pfIElY3Lndr+ecaQG/0LO2paaEDZjk6QiReXUCaIeStsiC94
-         Ae4g==
-X-Forwarded-Encrypted: i=1; AFNElJ8GuplapUgvKVbjVe6b4gttLAo5Ha9ANcIvWfzUNONn931Wa9PRV8GEwr9Sbh/4fbXkfx4sr++4tpg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzpiU7DqJiI/KA9J1PspHGzp1mnVOxTMKwJTl5v0s+/TXzgvNl2
-	IZuSvWSnrKDggO2G+JCf/VodFRMix5Bqu2JGyfMAsDPURvbjHfjl2/6p
-X-Gm-Gg: AfdE7ckQ1TbarMgdFr/exko76YhmeRlUvDIDG4HDU6iG6mlwiBNmmgnd55QX7C/3IWN
-	CIsor1diO0qGMfGN//F+i6SDFhAbdlqXtQLyf3MYWUJM/I3Xod8O0yhy8jUH4ePnAO7QJGqMZsM
-	KVAOUPqsemzvYRlAV1G/fh3Bsnz16zhyqxN248J1Xo96fF5GM8/zlEaGqGNFrSM5t3hn8BqWBbw
-	Ub5RFxgUPFIufzLakgCPoT5opJ8yRS1X4YjqXY3DfHsw+WoSwS7Ep9iduS7ZRtPKPnN8b+6JQki
-	x6uP1jSD3Jza8vs0yTVXqhlAeYbreq/Rnk/w+boJ2f9DoJdUVZn3oxw1zqcPgVxnHAO2TB3f4Pk
-	cJAKhXq6ZINnRRmp0XwGLmFPAq7cu8vVTYN8GhtmDhainrzJjZDTCXGE+WuUnefW68nZ2kyar3v
-	F4rmlG0kBtqw3Ze9uYMWUKrC2UpHafUrjjSccPySLHUNe+cgMWpPd//AbNwZOBTUcbkDrQHh8l7
-	kZQS8p7
-X-Received: by 2002:a05:600d:6452:20b0:493:bd53:ed00 with SMTP id 5b1f17b1804b1-493c2b38bebmr65763435e9.1.1782993318900;
-        Thu, 02 Jul 2026 04:55:18 -0700 (PDT)
-Received: from [10.128.11.240] (195-23-151-163.net.novis.pt. [195.23.151.163])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493c636c8b9sm45179945e9.10.2026.07.02.04.55.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jul 2026 04:55:18 -0700 (PDT)
-Sender: Julian Braha <julian.braha@gmail.com>
-Message-ID: <575b53a9-dc42-4510-9466-7a55f6eed22f@gmail.com>
-Date: Thu, 2 Jul 2026 12:55:17 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZA7Nmc8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9731F000E9;
+	Thu,  2 Jul 2026 12:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1782994193;
+	bh=Zer7p0Blh7A//tSo3eo/vnBX2xvZTMRC8YzE9BbqskU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lZA7Nmc8ZfMKDu35xCcPLy+AldOJJAtVFQcp+4Gt0r30CAJ+bupfkS3Gexb54iUcS
+	 p64Asn/YDR5WNDW1g9XErKrlRxKLFv+GpHlPhF/13yZo34MbWQ6Ar7ejfCf9zXZHmH
+	 lqOkCaDeIJjK+5HvMHd8mRToe8+fBWBpYk2yfvyTvJ1H/veVqQJCXUg3cA3f0Z9VYZ
+	 5YpzzmabU5+1EdJywt/QNP8PPf7E3bWWbblFsvWm5p1eSR3BIsZeADU39qaTcEZbYl
+	 hmyxRy0i3Z7wA/yb1MtWKf1T/FF1hcsO0FrtrOo4mwuwfEEC+CAcKCE0RD1zMNAaCM
+	 b7S5lb4g3k+qw==
+Date: Thu, 2 Jul 2026 14:09:50 +0200
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Andreas Kempe <andreas.kempe@actia.se>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: imu: st_lsm6dsx: deselect shub page before
+ reading whoami
+Message-ID: <akZVDry41WEl5y4Y@lore-desk>
+References: <20260702104059.1744219-1-andreas.kempe@actia.se>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v6 5/5] iio: osf: add UART IIO driver
-To: Jinseob Kim <kimjinseob88@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260628191337.937-1-kimjinseob88@gmail.com>
- <20260628191337.937-6-kimjinseob88@gmail.com>
-Content-Language: en-US
-From: Julian Braha <julianbraha@gmail.com>
-In-Reply-To: <20260628191337.937-6-kimjinseob88@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tCkRrf7zk0qle7rg"
+Content-Disposition: inline
+In-Reply-To: <20260702104059.1744219-1-andreas.kempe@actia.se>
 
-Hi Jinseob,
 
-On 6/28/26 20:13, Jinseob Kim wrote:
-> +++ b/drivers/iio/opensensorfusion/Kconfig
-> @@ -0,0 +1,16 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
+--tCkRrf7zk0qle7rg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> As part of driver initialization, e.g. st_lsm6dsx_init_shub() selects
+> the shub register page using st_lsm6dsx_set_page(). Selecting the shub
+> register page shadows the regular register space so whoami, among other
+> registers, is no longer accessible.
+>=20
+> In applications where the IMU is permanently powered separately from the
+> processor, there is a window where a reset of the CPU leaves the IMU in
+> the shub register page. Once this occurs, any subsequent probe attempt
+> fails because of the register shadowing.
+>=20
+> Using the ism330dlc, the error typically looks like
+>=20
+>     st_lsm6dsx_i2c 3-006a: unsupported whoami [10]
+>=20
+> with the unknown whoami read from a reserved register in the shub page.
+>=20
+> The reset register is also shadowed by the page select, preventing a
+> reset from recovering the chip.
+>=20
+> Unconditionally clear the shub page before the whoami readout to ensure
+> normal register access and allow the initialization to proceed.
+>=20
+> Place the fix in st_lsm6dsx_check_whoami() before the whoami check
+> because hw->settings, which st_lsm6dsx_set_page() relies on, is first
+> assigned in that function.
+>=20
+> Placing the fix in a more logical place than the whoami check would
+> require a bigger restructuring of the code.
+>=20
+> Signed-off-by: Andreas Kempe <andreas.kempe@actia.se>
+> ---
+>=20
+>  Changes in v2:
+>    - Drop st_lsm6dsx_get_page() and unconditionally clear the shub page.
+>    - Make the code comment clearer.
+>    - Document the placement rationale in the commit message.
+>    - Link to v1: https://lore.kernel.org/linux-iio/20260604132646.1099072=
+-1-andreas.kempe@actia.se/
+>=20
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 21 +++++++++++++++++++-
+>  1 file changed, 20 insertions(+), 1 deletion(-)
+
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+>=20
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/i=
+mu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 630e2cae6f19..f4edcb73ec8c 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -1712,6 +1712,26 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6d=
+sx_hw *hw, int id,
+>  		return -ENODEV;
+>  	}
+> =20
+> +	hw->settings =3D &st_lsm6dsx_sensor_settings[i];
 > +
-> +config OPEN_SENSOR_FUSION
-> +	tristate "Open Sensor Fusion UART IIO driver"
-> +	depends on IIO
+> +	if (hw->settings->shub_settings.page_mux.addr) {
+> +		/*
+> +		 * If the IMU has the shub page selected on init, for example
+> +		 * after a CPU watchdog reset while the page is selected, the
+> +		 * regular register space is shadowed. While the regular
+> +		 * register space is shadowed, the registers needed for
+> +		 * initializing the IMU are not available.
+> +		 *
+> +		 * Unconditionally clear the shub page selection to ensure
+> +		 * normal register access.
+> +		 */
+> +		err =3D st_lsm6dsx_set_page(hw, false);
+> +		if (err < 0) {
+> +			dev_err(hw->dev, "failed to clear shub page\n");
+> +			return err;
+> +		}
+> +	}
+> +
+>  	err =3D regmap_read(hw->regmap, ST_LSM6DSX_REG_WHOAMI_ADDR, &data);
+>  	if (err < 0) {
+>  		dev_err(hw->dev, "failed to read whoami register\n");
+> @@ -1724,7 +1744,6 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6ds=
+x_hw *hw, int id,
+>  	}
+> =20
+>  	*name =3D st_lsm6dsx_sensor_settings[i].id[j].name;
+> -	hw->settings =3D &st_lsm6dsx_sensor_settings[i];
+> =20
+>  	return 0;
+>  }
+> --=20
+> 2.53.0
 
-The 'depends on IIO' here creates a duplicate dependency, since you
-already placed the import for drivers/iio/opensensorfusion/Kconfig
-within the 'if IIO..endif block' in 'drivers/iio/Kconfig'.
+--tCkRrf7zk0qle7rg
+Content-Type: application/pgp-signature; name=signature.asc
 
-- Julian Braha
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCakZVDgAKCRA6cBh0uS2t
+rNzuAQCx6ZOfZtUZCoatNcBhXvB1tGAim8hqvPy5H/wKP/yiAwD/YUxl2mffdRnr
+nzah+Z0cgGRLRly5ZKva1lgG1/UtIgQ=
+=oTUd
+-----END PGP SIGNATURE-----
+
+--tCkRrf7zk0qle7rg--
