@@ -1,111 +1,126 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C72D47AF67
-	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 11:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B9712C21EE
+	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 11:54:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782992830; cv=none; b=kz2ZVc8V+nqNgu+kfBQwDiLVp4WWtGsPH8E441m/4lwsucNXRDJjZJd0z5UrIiGdhxM145TKq6CiS4w7V+LG/N3j9DMydf6GbYSwKbvl8KqbHHNbTZmpTkOth/sj80RUZGSlcxhzLnCsxFYeR+9TAcH774k5Jq9V/Oi9+8M2otI=
+	t=1782993272; cv=none; b=MldxIA/lNpTRFC21QXyUPW0i8fbTKAo23b0Utd20EF34uD2cRSDrOxqGFEXqMnyjJ41rn7rklxXRvajQG2u15VCUrKvTKOzzwQfMXICllHLl41tz4c/D0J3LMS7eMemGEdXeSuEx7UcwHDjp6ohKP1+WMC0xR+Ik/HcP4k0IuVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782992830; c=relaxed/simple;
-	bh=6KwVdXym8m9VmBu/yZDbGr4sR4go0nT/ImlSsY/m7K0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=F/C+YGuCKbE20W4kPxCGQixUMKQ5VL/SlICT5z3PqP266XB84cBeCC7HnsXm0ouRN0OwhzURSOwdKPwd0iqEoITnvhPFZD8olt/jCZS5HYCxTsAPnmk482iomIAWTW4yiW5rRp5K0mvRCkpykoAtnO2u+uzdM5Zp3OrsZ3fOvjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZVDToIpu; arc=none smtp.client-ip=209.85.216.51
+	s=arc-20240116; t=1782993272; c=relaxed/simple;
+	bh=ZB7humf4olh9yUCGVXx9X8ijp+5GuYZk89PF6iqsHwo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fD65tDikLBJ1Di+do2O5xw6ocZFgYfv86GBf2kE+bLpv+wJDhTytML0maLP09aymBEISecumycFqBLmP7Aqrym+VrQLgp2SYnX8/M1XacrjgcPE2bncKAGPerCVJt8MwokXz3riibswNGVKqU/HfxmmPd2MhONO9RSHIKWgUJDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RIwCKJhO; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZVDToIpu"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-37fdee9276fso1816181a91.3
-        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 04:47:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RIwCKJhO"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-470174001a0so1278026f8f.0
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 04:54:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782992829; x=1783597629; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1782993270; x=1783598070; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EJM+v6mJ9RBfgqnA3JaL3CQXECHO5LJ7tpDsIB136Js=;
-        b=ZVDToIpuLzePiJ5Nn9uNMlxzpz5fuAw/gYVBtHOrwx+0JtFYeugV78F3hc4t+nPm5c
-         zOoUvuRhEKDwwRZpg6AxeiSzEvcSjhzPGbqUjgT+q2i1oaf7FZQ1ZG9GZWZylIvLPfjU
-         mCTOBjckXeBgbVSqPoI6kXXlI7uDUVAnK8owzfum37YjcnjZamKkv407vs4L/QIMYXXS
-         bQLMrYKrRziNmud1tglSQKTw9RdEra5ykum01Zc1zBlbUErFFEMnSetPjtF8c396nAJU
-         6WzRt/wnh70S0YYJIRDrsCoymkjiA5tcxPVrL+c/wHS13/f8wYnx/Xf67F7niy11ZsXu
-         oMWQ==
+        bh=86pI1MrB+vm8HFIM8sZBjMOwPSJi0NDQhLHjF8XY2bU=;
+        b=RIwCKJhOS8A62VeSaEPdCCaLESnkDAyQQ0B/WFb3kILO14i/y692grxUWVbDEyT8ho
+         POl6HrNL/58+iZTnoTWsYrxx3uoPAnhLT8DI1VBBD0mF8k59YAW3zg4ilO6yllvwIjp6
+         MF6jRdIdo5RSP7acN4yourW+sY6dcILScDKnr17TAERA+K9123BFDJgFVwWgyESdFMQW
+         PEXJ09eox0wFaYVSfiFRlAS33b37/VuOjAhea09d/GP70VXJM2fEnckQc3hWguHtVMqW
+         H3r+1lltnTeZP2L1aRO8lkFcTXLXE6AW7dRUnsRpaFlEbDGhFa5R1T8W+5hpDqfjvfFs
+         9xAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782992829; x=1783597629;
+        d=1e100.net; s=20251104; t=1782993270; x=1783598070;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=EJM+v6mJ9RBfgqnA3JaL3CQXECHO5LJ7tpDsIB136Js=;
-        b=kLqVRjOdp9MoAZdvaXIF/gYC7XAJTsUpfa2iKWmJH88shi8v2rB/EBmhtQ8bGHwQGP
-         eEUxoVhW3VIH/VIVhZke2iiTa8YPKBTbsQoUOu3VcEUN+dqxlTSU0ZBFwenZVXzHYQP3
-         zD+waioTjMb3Pvi8n+r7H4wczxI2Q3A9BvJ7ugj67EoO4zoLyhlgToO4/clQeOaP5eUN
-         OrWqXufhrIEUg9vNLwIXXY/c3WftFH4an3gGPP/RYslHDAwxFWoiYz/3dcgPbaZXKosi
-         EhGpzyHo+yUBqGohgMG4J8BEbRb3+le3ppjUnVb32dP3kmKgvSSDVPL/aR9P7k8YWNuN
-         WkAQ==
-X-Forwarded-Encrypted: i=1; AHgh+Roz3u2qZgn77TnFLfrrLQ3qswJfA4gtn8zQoT+tQiTYAqrmWbdsh1jZcEyaIQkvTrW3UdqDVNB/lFo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzZKV9r6XZe5/G07niucUrxN4cAsaZOH7Dlt3j4Wh++FthzsZ/V
-	f4IoI6W/12XxgIRna/Jf+7lMhTyOgYkl7y2n8nXgNUuutWynB7AC3Mr3
-X-Gm-Gg: AfdE7cmLRwTK+5/2TQCVojG83VrNXYXe04KrZMBzkjC4DdkBCCG4eV0MJeg0g1gPXFx
-	GGj/RHCpYI7+CLJSXhaiMp7TVyEd9yLvDCuRhON4bcV2TilMoYeLAAM0px33xXimElx0CKaIf8w
-	TWkpAVtWgi0fzTSbJsoGESjBCQbhBxYTdDmaSwZhClZ4TXvWHUzs1J/HT/KrFAkR1iXSM6wue1/
-	ceKoibYB/iRRe0IOQWfsz1t/iIzkgpeduYc8InG0XcMfGegf5Q3t21W8GyEXteRP+1mu3By59PH
-	Czd9NGM2kYlaPXgn/Ca1UTivgt3llQVDI4kIAHK+MDyhXC1IUkzruTfOGQ7esVM6f3IlNfCboPa
-	1d15sneV4faFnEu2l3Fa1AOcUJ9Qi9VoJ9IYrOC6JMeWKHUXmDAc789fCZT8+EQF42vJjSpyrGB
-	9AAsB4dYhkCi5qSl98HbPzazv1sFD/uufYdoSbx1RgELfR6SFOl0aw5v+giakfVQw5j3xk
-X-Received: by 2002:a17:90b:4d05:b0:37f:c2a8:ce45 with SMTP id 98e67ed59e1d1-380ba84ba5bmr4978091a91.4.1782992828439;
-        Thu, 02 Jul 2026 04:47:08 -0700 (PDT)
-Received: from moksh-Nitro-ANV15-51.. ([2401:4900:c12e:fec4:e7a1:6f69:20dc:cd96])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f0bb84405sm12313834eec.17.2026.07.02.04.47.04
+        bh=86pI1MrB+vm8HFIM8sZBjMOwPSJi0NDQhLHjF8XY2bU=;
+        b=jfxspBm50W3/UJ0RG3fX1f2QTsmuL2iTo72AA1L7DMmmyWeQYVHqCulKWLQEIHihRr
+         utoz8oMVDnBj+C9dkIUDqvxdr4tAo05fjZjToEkvqlD/v3sgciQm+IG4up6gNfZrFcrT
+         UuCal4M90kQOmJMLxpABBOqMQz5e5OM1Zt1UGpa2ehOgWylZr6p5CpQ69R/gqo972VUj
+         ipjDeFwlfCtBu8rQoVSz6K/3Yt70NCW+Bgb1RYkRHycO8VcxX8s1X9pQ2v0t0wRsWvKK
+         eHdZDm0PtWEmxtCQZYm4Yk+458yqqSQY/2EtPTzdmGyDWHYvrWXdN0AhsjiZKYOelhdq
+         a9Fg==
+X-Forwarded-Encrypted: i=1; AHgh+RpeDhxLr3SjNvGlFpbuHIr652Hst6v66aztD1t5IgRdAizKjItipBgoBL6gd7PguvQxOyM1IWx74po=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzS1+jKJ+5zuIxaSzS5k6BnvS5yy+1qAod6tCOoLifj+vb5KOvx
+	EoTWiQfCWdeIcEb5Q1eZdZ7Je2AQwttvrdw+y/MgY944X8g2SuyPX3dp8R7Kow==
+X-Gm-Gg: AfdE7cmI+oRtryY5WDk0li3G0Pl7SUJt7sjBOwmzG2HFuZ3uRKlR9tbq2D8JTLOGtve
+	yV21LNUfO9eBPf9U7lrr+AZDAXzFXCZJu5o4d2DnP4pSAO7UFKsap4AlyKfTXuT5oPCRXQzVHlD
+	2H6aX/AmNGPDe1WpJdAUwQNkZLb+RzPtBl37TbvknOM1ct8DM5mAaSBJKDMU9vP27R+FOJO/ULs
+	iLq2f0nyRxnzEuZjII3AwZDha6Hu9mdxKVimGytEH9U7dxPpZWSGozDrjRcCHK+vAmd/gYJu+vJ
+	HF6ZyGwuFe/KLnwgbWJiS7/kdemtUA86L3LsyUGjwvkLMdBJVeN+Y931OxdylxgK2DKG5Js2t5Q
+	rfMoZLMtBcfnxFf5507Lvylq76j6DgoW0+Venx4YDaArn4TuhcgBEggto0KG2zn9dYyE57WQ/JP
+	/GC2SzrgjRGfT4amn99ixjY7iLkW4UXLHGCPlGt9DWKLCdTamHC7VBZiTEqHSp/IPgavkOF5Hpa
+	JpFgpdCl3AX9lyL3gvHU5w2U0IuLirbqVjGjocoWD9SH4Gmaph0j4RmLOtd/1kze6hK7ymALCCH
+	DsO6tg4iRDKYn7BNJF1u3W8VKK4OGuwJE9ui/ODsky3WZfvZVa/sq/Y=
+X-Received: by 2002:a5d:50ce:0:b0:475:f0f0:9ecd with SMTP id ffacd0b85a97d-477b5d37f88mr5680273f8f.56.1782993269663;
+        Thu, 02 Jul 2026 04:54:29 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477dd94cde8sm8963376f8f.22.2026.07.02.04.54.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 04:47:07 -0700 (PDT)
-From: Moksh Panicker <mokshpanicker.7@gmail.com>
-To: jic23@kernel.org
-Cc: nuno.sa@analog.com,
-	Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
-	joshua.crofts1@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	Moksh Panicker <mokshpanicker.7@gmail.com>
-Subject: [PATCH v3 2/2] iio: adc: ad7779: Remove redundant dev_err_probe() after devm_request_irq()
-Date: Thu,  2 Jul 2026 11:46:49 +0000
-Message-Id: <20260702114649.9758-3-mokshpanicker.7@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260702114649.9758-1-mokshpanicker.7@gmail.com>
+        Thu, 02 Jul 2026 04:54:29 -0700 (PDT)
+Date: Thu, 2 Jul 2026 13:54:28 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v3 1/2] iio: adc: ad7779: Remove unused completion field
+Message-ID: <20260702135428.000005dc@gmail.com>
+In-Reply-To: <20260702114649.9758-2-mokshpanicker.7@gmail.com>
 References: <20260702114649.9758-1-mokshpanicker.7@gmail.com>
+	<20260702114649.9758-2-mokshpanicker.7@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-devm_request_irq() already prints an error message on failure via the
-IRQ core, so wrapping its return value in dev_err_probe() results in a
-duplicate error message. Return the error directly instead.
+On Thu,  2 Jul 2026 11:46:48 +0000
+Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
 
-Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
----
- drivers/iio/adc/ad7779.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> struct ad7779_state contains a completion field that is initialized
+> in ad7779_setup_without_backend() but never waited on or signaled
+> anywhere in the driver. Remove the dead code.
+> 
+> Suggested-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+> ---
+>  drivers/iio/adc/ad7779.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
+> index 695cc79e78da..c1a99b4c1256 100644
+> --- a/drivers/iio/adc/ad7779.c
+> +++ b/drivers/iio/adc/ad7779.c
+> @@ -143,7 +143,6 @@ struct ad7779_state {
+>  	const struct ad7779_chip_info *chip_info;
+>  	struct clk *mclk;
+>  	struct iio_trigger *trig;
+> -	struct completion completion;
+>  	unsigned int sampling_freq;
+>  	enum ad7779_filter filter_enabled;
+>  	struct iio_backend *back;
+> @@ -852,7 +851,6 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
+>  
+>  	indio_dev->trig = iio_trigger_get(st->trig);
+>  
+> -	init_completion(&st->completion);
+>  
 
-diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
-index c1a99b4c1256..a5b8bfa99a74 100644
---- a/drivers/iio/adc/ad7779.c
-+++ b/drivers/iio/adc/ad7779.c
-@@ -842,8 +842,7 @@ static int ad7779_setup_without_backend(struct ad7779_state *st, struct iio_dev
- 			       IRQF_NO_THREAD | IRQF_NO_AUTOEN, indio_dev->name,
- 			       st->trig);
- 	if (ret)
--		return dev_err_probe(dev, ret, "request IRQ %d failed\n",
--				     st->spi->irq);
-+		return ret;
- 
- 	ret = devm_iio_trigger_register(dev, st->trig);
- 	if (ret)
+Remove the blank line here as well.
+
+>  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+>  					      &iio_pollfunc_store_time,
+
+
+
 -- 
-2.34.1
+Kind regards
 
+CJD
