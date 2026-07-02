@@ -1,160 +1,138 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CEAF47A0BC;
-	Thu,  2 Jul 2026 12:09:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05C247DD5A
+	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 12:22:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782994196; cv=none; b=grNnA/IFp0DYHYoDSFJFmYBeUMy3sff8uaWIJ8tLLcSrjx5bLwzgt2+RXiQla/nSgci0BHdnxQaAHjXRPfKZE8z9ut7rcSfmuUGZlpeicCU1D+xDaNwhdZJrdZRBBEvjLdCxI1VH0M1U2sIZreQvmJ+PyCYMdg/LIgvTBvS0H7c=
+	t=1782994974; cv=none; b=DTfpjitcBf5dK1c44z160FME7ikPpNEwXlfi0U1KzJKn3emcnC03DMUhUqjNfFan1iDspXHCkaivQiD5R0yulyN5rm9implss3YHc4gyWUcEMHJ9u85Kl3hHBozAcoBcvh+AkhPKsPDW2t/K+cf/YnZO91qCGEpNwKQ2bDgLPgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782994196; c=relaxed/simple;
-	bh=EmWZV2ehRtvYZ67TamUlmuOjOamHc07GXyD4SH18O/U=;
+	s=arc-20240116; t=1782994974; c=relaxed/simple;
+	bh=1x5GAL1DORzWHwvyrqJKkBqOZ5riJZa+Y0KiM8aQ778=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XePZ/fXFV1zZ2PaRor/rFyLqzINkC2yioSWiBD2yfi8RKPN9xyuxBtXDa786W3+1+MlS4sJ1+lpA96HLKLiDtsPOJ0G3flALQmDtsAKC7I0gqm8KxYbRJxBbN+7xm4v+WM69Dwriqij6jku84Xuft+N61vXxNiXUJtAMdaoDBnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZA7Nmc8; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=tVhtTK/UahuWcBJcxCOvZHf9d3mISjdBaSbfPUmke632nsszFkCqtzriv3YkpSYhRqiV5sgYGrJ0wy8109Uvxcr1muNMZJwJpGUVnYF1wkIzmaHhPrvWWpKYW5vofs1x6B2wcLbLspCyssLyIWisPrdDaxFaRS7AwwGwaYx4LJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sS+CJUbK; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZA7Nmc8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9731F000E9;
-	Thu,  2 Jul 2026 12:09:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1782994193;
-	bh=Zer7p0Blh7A//tSo3eo/vnBX2xvZTMRC8YzE9BbqskU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lZA7Nmc8ZfMKDu35xCcPLy+AldOJJAtVFQcp+4Gt0r30CAJ+bupfkS3Gexb54iUcS
-	 p64Asn/YDR5WNDW1g9XErKrlRxKLFv+GpHlPhF/13yZo34MbWQ6Ar7ejfCf9zXZHmH
-	 lqOkCaDeIJjK+5HvMHd8mRToe8+fBWBpYk2yfvyTvJ1H/veVqQJCXUg3cA3f0Z9VYZ
-	 5YpzzmabU5+1EdJywt/QNP8PPf7E3bWWbblFsvWm5p1eSR3BIsZeADU39qaTcEZbYl
-	 hmyxRy0i3Z7wA/yb1MtWKf1T/FF1hcsO0FrtrOo4mwuwfEEC+CAcKCE0RD1zMNAaCM
-	 b7S5lb4g3k+qw==
-Date: Thu, 2 Jul 2026 14:09:50 +0200
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-To: Andreas Kempe <andreas.kempe@actia.se>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: imu: st_lsm6dsx: deselect shub page before
- reading whoami
-Message-ID: <akZVDry41WEl5y4Y@lore-desk>
-References: <20260702104059.1744219-1-andreas.kempe@actia.se>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sS+CJUbK"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493b77b150aso14786545e9.2
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 05:22:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1782994971; x=1783599771; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=jna+clLnXx/9tBJDzzTY3BVQ+u6bUDk2L+uu9/fOCCM=;
+        b=sS+CJUbKP0cRKj0Yt3P/maXTG0DY88JiyonlRuO3xqSY5epPrOprwAV/1WVoWq7n1e
+         OYyQy9lzUb3Wr6ve199rKne0mKBkDBFKCzepEJ1tKFy25Xo1zGLYX6zIkPSYwu+VcFzs
+         SaecZkrC3QH0nYfVRVmArr3+AGfFe9J1gg7QsiAv+AEbSTBOAWoVPlhjuoLUX1vMbkiS
+         0gs2l/Lm1VxnQS7llDTFyaZf6Y0Dcbwb344eXlOAQ3e1rqaYCENapsZspyOhmyS8NF9a
+         2E+myaQhPllGLqYnOp2q2OJg4W5cimb6UQKEUJp/tEcCHwRAH0X65QReMpVh/sw+5UMj
+         n++g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1782994971; x=1783599771;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=jna+clLnXx/9tBJDzzTY3BVQ+u6bUDk2L+uu9/fOCCM=;
+        b=oJzLVhh2AUxXCsJyN6czgOcLe6GmwB1HF1iKPWQ/hHDMSHBn9EnvM6i3wvw7lBL2ro
+         ChKsKlzs/ZoMZb05vby0Gjsg7izLgrCorpLgR/JRPtk4RBken7PqMrG4LZMR4VKJ5h73
+         eby+PzKeDHNX79l1iTaA7ju9R4g0ncUy9cjCuOcx/yE1otuc21pp5dt8QPGkEs5jwIH9
+         AvWKE7BQLtln7ro+cKmts5Z8Lk7yDOLSeDJI5szBXqMXn7ozsPp8MpW7qdKC5JN2bLVT
+         +STqzamhis7oEsB+mYhbuf1YtOLgODpaSgXSI8239AKX1MITWI5TaB5OGzcOUbkvn0Or
+         Irjg==
+X-Forwarded-Encrypted: i=1; AFNElJ9BmpgbgoBuYAl5N8Rbe7TMgIbp/681mvEgTW206hD3ywxnQlbejlFockecm+6JrkIgtZj4DmKImaU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2Eax9SSP14zbRtPQufUiTJeF9QUEZDUwSKUl83CbXhyeE7ZKZ
+	qmuThpcJUDMwqxysvlSkqKyl+L2bEgc2+P0yqsCzaWOkzAirBAJBahjC
+X-Gm-Gg: AfdE7ckRtaNTKqy+nCrsmWA0c3t7KnRyPKLlo8ehQ6oSGIVJSYFHsArNgXvEzmlcWIX
+	PQQHrA0NaajeRfodhxkuwFMe70QTKGWdmTWLRzXj42P2qk3f0A7wt/D/t80Wb6LJooQjjhxFTOU
+	OLgq6cDLRNmbveMn1TwvNzKiiYsWgA8LqrxSPjeLbUzR8IJfGUvZ/MkEju7VpkfrfKaDeRA3LOY
+	iCCoFrIosayiFj7HcsMjFhz7edkISCyTPKJ6jV7L/5YGXVjWUSyd03as7YT0IgWVNi/yr56FdlU
+	uysB8Qvo+z1B65lqzHN2IgkPjSGAEyzZvCk8tJHvk3J9wwdHTFbxfi/hLMiyUzTW56cgErAxSTJ
+	qhckqWUnQ76sSjRUICSLDom/LBIlgNRhCqJAFxtcdGFSPZT6hTT+s/w3zq9TLurMzdjf0Vvf3EW
+	V/LnxtmsCW4UjR79Q=
+X-Received: by 2002:a05:600c:8718:b0:493:c845:bc20 with SMTP id 5b1f17b1804b1-493c845bc60mr13403035e9.4.1782994971119;
+        Thu, 02 Jul 2026 05:22:51 -0700 (PDT)
+Received: from nsa ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493bf11eba5sm86926685e9.0.2026.07.02.05.22.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jul 2026 05:22:50 -0700 (PDT)
+Date: Thu, 2 Jul 2026 13:23:54 +0100
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Anas Khan <anxkhn28@gmail.com>
+Cc: Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Olivier Moysan <olivier.moysan@foss.st.com>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: backend: fix typos in comments
+Message-ID: <akZYSPu2YruEFr3R@nsa>
+References: <20260702101129.62445-1-anxkhn28@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="tCkRrf7zk0qle7rg"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260702104059.1744219-1-andreas.kempe@actia.se>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260702101129.62445-1-anxkhn28@gmail.com>
 
-
---tCkRrf7zk0qle7rg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> As part of driver initialization, e.g. st_lsm6dsx_init_shub() selects
-> the shub register page using st_lsm6dsx_set_page(). Selecting the shub
-> register page shadows the regular register space so whoami, among other
-> registers, is no longer accessible.
->=20
-> In applications where the IMU is permanently powered separately from the
-> processor, there is a window where a reset of the CPU leaves the IMU in
-> the shub register page. Once this occurs, any subsequent probe attempt
-> fails because of the register shadowing.
->=20
-> Using the ism330dlc, the error typically looks like
->=20
->     st_lsm6dsx_i2c 3-006a: unsupported whoami [10]
->=20
-> with the unknown whoami read from a reserved register in the shub page.
->=20
-> The reset register is also shadowed by the page select, preventing a
-> reset from recovering the chip.
->=20
-> Unconditionally clear the shub page before the whoami readout to ensure
-> normal register access and allow the initialization to proceed.
->=20
-> Place the fix in st_lsm6dsx_check_whoami() before the whoami check
-> because hw->settings, which st_lsm6dsx_set_page() relies on, is first
-> assigned in that function.
->=20
-> Placing the fix in a more logical place than the whoami check would
-> require a bigger restructuring of the code.
->=20
-> Signed-off-by: Andreas Kempe <andreas.kempe@actia.se>
+On Thu, Jul 02, 2026 at 03:41:29PM +0530, Anas Khan wrote:
+> Fix several comment typos in industrialio-backend.c: correct "through"
+> in a channel-spec comment, "initiates a process" in the activation
+> comment, and drop a stray apostrophe from "Gets" in two getter
+> kerneldoc comments.
+> 
+> Signed-off-by: Anas Khan <anxkhn28@gmail.com>
 > ---
->=20
->  Changes in v2:
->    - Drop st_lsm6dsx_get_page() and unconditionally clear the shub page.
->    - Make the code comment clearer.
->    - Document the placement rationale in the commit message.
->    - Link to v1: https://lore.kernel.org/linux-iio/20260604132646.1099072=
--1-andreas.kempe@actia.se/
->=20
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 21 +++++++++++++++++++-
->  1 file changed, 20 insertions(+), 1 deletion(-)
 
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 
->=20
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/i=
-mu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 630e2cae6f19..f4edcb73ec8c 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -1712,6 +1712,26 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6d=
-sx_hw *hw, int id,
->  		return -ENODEV;
->  	}
-> =20
-> +	hw->settings =3D &st_lsm6dsx_sensor_settings[i];
-> +
-> +	if (hw->settings->shub_settings.page_mux.addr) {
-> +		/*
-> +		 * If the IMU has the shub page selected on init, for example
-> +		 * after a CPU watchdog reset while the page is selected, the
-> +		 * regular register space is shadowed. While the regular
-> +		 * register space is shadowed, the registers needed for
-> +		 * initializing the IMU are not available.
-> +		 *
-> +		 * Unconditionally clear the shub page selection to ensure
-> +		 * normal register access.
-> +		 */
-> +		err =3D st_lsm6dsx_set_page(hw, false);
-> +		if (err < 0) {
-> +			dev_err(hw->dev, "failed to clear shub page\n");
-> +			return err;
-> +		}
-> +	}
-> +
->  	err =3D regmap_read(hw->regmap, ST_LSM6DSX_REG_WHOAMI_ADDR, &data);
->  	if (err < 0) {
->  		dev_err(hw->dev, "failed to read whoami register\n");
-> @@ -1724,7 +1744,6 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6ds=
-x_hw *hw, int id,
->  	}
-> =20
->  	*name =3D st_lsm6dsx_sensor_settings[i].id[j].name;
-> -	hw->settings =3D &st_lsm6dsx_sensor_settings[i];
-> =20
->  	return 0;
->  }
-> --=20
-> 2.53.0
-
---tCkRrf7zk0qle7rg
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCakZVDgAKCRA6cBh0uS2t
-rNzuAQCx6ZOfZtUZCoatNcBhXvB1tGAim8hqvPy5H/wKP/yiAwD/YUxl2mffdRnr
-nzah+Z0cgGRLRly5ZKva1lgG1/UtIgQ=
-=oTUd
------END PGP SIGNATURE-----
-
---tCkRrf7zk0qle7rg--
+>  drivers/iio/industrialio-backend.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+> index 4763e224ebc6..f7a4be8ec320 100644
+> --- a/drivers/iio/industrialio-backend.c
+> +++ b/drivers/iio/industrialio-backend.c
+> @@ -649,7 +649,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_get, "IIO_BACKEND");
+>   * @len: Buffer length
+>   *
+>   * This helper is intended to be used by backends that extend an IIO channel
+> - * (trough iio_backend_extend_chan_spec()) with extended info. In that case,
+> + * (through iio_backend_extend_chan_spec()) with extended info. In that case,
+>   * backends are not supposed to give their own callbacks (as they would not have
+>   * a way to get the backend from indio_dev). This is the setter.
+>   *
+> @@ -851,7 +851,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_filter_type_set, "IIO_BACKEND");
+>   * @back: Backend device
+>   * @timeout_us: Timeout value in us.
+>   *
+> - * When activated, it initates a proccess that aligns the sample's most
+> + * When activated, it initiates a process that aligns the sample's most
+>   * significant bit (MSB) based solely on the captured data, without
+>   * considering any other external signals.
+>   *
+> @@ -1017,7 +1017,7 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
+>   * @dev: Consumer device for the backend
+>   * @name: Backend name
+>   *
+> - * Get's the backend associated with @dev.
+> + * Gets the backend associated with @dev.
+>   *
+>   * RETURNS:
+>   * A backend pointer, negative error pointer otherwise.
+> @@ -1050,7 +1050,7 @@ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_by_index, "IIO_BACKEND");
+>   * @name: Backend name
+>   * @fwnode: Firmware node of the backend consumer
+>   *
+> - * Get's the backend associated with a firmware node.
+> + * Gets the backend associated with a firmware node.
+>   *
+>   * RETURNS:
+>   * A backend pointer, negative error pointer otherwise.
+> -- 
+> 2.54.0
+> 
