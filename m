@@ -1,129 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6735670830;
-	Thu,  2 Jul 2026 19:30:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43AED390204
+	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 19:35:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783020659; cv=none; b=NvGJ26eXMuroP5aOZZJ8VwHKjOmIWrSg19Nh1tMUk4x1oUWOnIL7y8gExNLJmGYcYHPTzwA5OtSNNimVLZe/FXRIiZrK/eXgjHiiASjQ0J+0BDlXHUgF6/rYizeujzqJ0SG6IV0ZG1Q0GX1QG8HDSllWWItE+kWFM9PoCUg2H+s=
+	t=1783020927; cv=none; b=ldR9MH10ZJtx3lapp2knv8RwcwaamimnmyPrUw+eXrN4v1EaZOjhg8EzKHnxHZOVXsFgnNEKOhvui3B/5mOUYkhIWhqB/GvbBPEGYUqSEQuGfA0whtc8GoYy9z1sP+hbL3eYLj3Xy31mlmk12R9UtQARUCK+kM5c9jVFyubBh6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783020659; c=relaxed/simple;
-	bh=Dn6UWY3mSDJAHfVAcurT+ZUStGtKjhoccn6GkyrX27k=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pQzq4okbR3h/tFjg0NFpRJX+N8NuSlPHX3XWJGCUgFXDXrRE0Ay72fZo5WPnltocBdBWmvuC8RMAUOGGmkS5KZU/nhe6gU4NkGr7c0gnsrRqm/fG9NlzD60IaY2XWpG0FQKvuRCAoUH7UQV+jrZAYA5ghWx4VA7Yu77Qs0jhRb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dmSH7iJ1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783020927; c=relaxed/simple;
+	bh=I/ZM2OkT/dPa1GEft4QF0DUM5VH45Fd00jGx8xU90Tk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UH40ywp+a1kxp84WjtzWzokXHrolq1mg8zloPWX4tpk47AhPIh5LWYKQvmSEYg3A6rbyHYePlgYhF5idn2BJuEcStyHCdue5Z/jQaFDl3u2KYr2vDZv9wFwvbNTCPWudH0JKs0k+EUzsOpBvxauYKfJTalXx0jP8NeDo+SkeJbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=kD2FPudj; arc=none smtp.client-ip=209.85.161.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dmSH7iJ1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18F91F000E9;
-	Thu,  2 Jul 2026 19:30:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783020658;
-	bh=I0E6G0wI4aJTTRKSLJz49t69TW7I6ObwdGcPx9DdeTk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dmSH7iJ1aQcHlqb+K0cs+rKU/0lpBdUZKhrNFMSV2qMeya1XigXENyEsafI+ZB3JE
-	 NCyeTbhCMQtvZ6AbuFv7T4htOOK7ppxMZM6HJOdwtl+ktwicaQWXfs24Zd3rBCHnTr
-	 wRNCV4u7+qze7fQT+TOZcMiYYOVXvS+/mFfgeLZe9I9/NE+vU30zlGTpJ2q/jQSIQy
-	 8huhM8oTtGnDDBfQY2ZbNOE46khQ1uVY9xfn3HMNf0CdXOMnkWQBxDZAw2uYP3c8Uh
-	 qjTqVLm/B4X4Y4T6P7fadQgIyzFabQ6FJLZEfGHSG/SkDrexqP0RnY0S361VEW+fR7
-	 uTjdduKchzlWg==
-Date: Thu, 2 Jul 2026 20:30:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>, Patrick Edwards
- <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien
- <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/8] dt-bindings: iio: adc: add
- input-channel-rotation property
-Message-ID: <20260702203051.4d9d702d@jic23-huawei>
-In-Reply-To: <20260702-litigator-commuting-5a3a37a7fb40@spud>
-References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
-	<20260625-iio-adc-ti-ads122c14-v2-4-ceb9b0b561cb@baylibre.com>
-	<20260626-retinal-thrash-1095940e36ab@spud>
-	<4a2c4c42-69fb-4491-ba77-b858623275ec@baylibre.com>
-	<20260701204133.2b77edab@jic23-huawei>
-	<20260702-litigator-commuting-5a3a37a7fb40@spud>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="kD2FPudj"
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-6a183eb9689so1416619eaf.1
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 12:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1783020921; x=1783625721; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=I0Nc5U/TyB5elCjL6iCrBR8Ha+/073W6VQJdxK5d5a4=;
+        b=kD2FPudjT55QuiJCXrPLRpbZ3HmHvNnvpuqzlsxJ3phuElCTdL+DxrJtVCvayT/4Tw
+         Gjn2d8i6wHNMfX0uvmB10lLdsybBDReVP6fCCavrv2Dn676o9J+KPVc47HcZrswuxqvp
+         teVl/fYWiqpJkCpoCggjrLoN75XYPcKTxNbQCHUXgiJGjM1YFZh679TY2lHc57iSgqiT
+         oaNV9ESfCVvbL5hFPvs2H0IMFT8ORxsuwt0e7SmpVU3llLFcJRdA2XALXDqGHa4UgdrS
+         GpyznobkdZW4HJ825qRyxCvUKuxUzakMKu+0D8vtVIZ/qTWQGfYt+SL+yoSQIWT/y3Ju
+         vsAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783020921; x=1783625721;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=I0Nc5U/TyB5elCjL6iCrBR8Ha+/073W6VQJdxK5d5a4=;
+        b=NHKV5QhZh1uW7ajoRzQEJvp6gswrQgyVLbgSXMEJ5Wbg5G3aBcHibpJSdBdcW7+iFJ
+         4DPJ2qG74YsnfiDWQdEJYS1V/bKC1hH3ysgUMglCFZ7cb11jTHTGyRNgJvNKRPLgZSLn
+         xe8avHj/fSZk7g5Lpj41vMP6FAWNN3ISEg6uTEC9VDU9IgiBCY2D5kjSflyP8J2qHzTq
+         DD8Iv2OmRcR1I5cqknv8Yn3sTx25mNUgCbzTxT98B2xhFJIVrB3iuvB8rN6ZVWVGhwit
+         3CX+8K+dUrM/fAC1Z+y6SjWBA7svpI7i6jZV3uCdUUgWSo6GCmQu8YQytv6nFpKm8ARZ
+         zFlg==
+X-Forwarded-Encrypted: i=1; AFNElJ+Gc1oj+1JYlkDiF7fzdRf06LItUVre1oymB+MzKtsfwzdMP5M8o3EYP6YvQKdrFh9JpYRYVrdae0I=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLfnfbxWwcMCRtWhk9RTTsG9QmW5T4qRjECgDswm/Z2WdUVCnC
+	5SaESygOa+r94MTnze2Gy7h6EkrWjf7cGf5K3hyX/wyPH2TZQ2m2/7dOeo/DMZwFnFo=
+X-Gm-Gg: AfdE7clbRiGHW3conNago5O8Wy1C0BbPSM/eNNpU4cKUUnkfchs+rRTmyJRe3DvcxAF
+	nmx8gWojmoclX4PyFBHvlog3QOChyZrW2djD22wVSdcgWTSnpPh0i2eTfCo/MNl9AXJxPWlm008
+	ieaSzzevy+1Fx7oOzUMbL3DUVgEtWJhGZDqcoUCryld6pPxoMyocaYpTf+iKxY85RAiJWdrfJsd
+	RClVKnJO3fEAObCPERJool9hFs0QYirLwab5NOPoBhPgoIrrWMfPg2RndD5kF07TiIsJWb7hCGb
+	ZWtNgL5uWek7rqY5Ivf89Xe6aCNe0fCYwQbMF3EQY3cMWhiUmgmC17eIJOYVZEqZTRUCefB5j98
+	zvy94xsNjDURksLYavIhfs0KMmsQy6F4RqWrl998O67TJfKWo3IQ2wosAxqq0vFMY4gvcQOvfjp
+	mB7CY/z5OwUyy/B6tqgNkAQ0Q9TpdNz5I4lOBjFxG+zcvuAUtCCp87SHQCD6BRO5LSwP3FgUKRr
+	A==
+X-Received: by 2002:a05:6820:1888:b0:6a1:50ec:4401 with SMTP id 006d021491bc7-6a30d8fbd90mr4195250eaf.62.1783020921061;
+        Thu, 02 Jul 2026 12:35:21 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:6a9f:626e:95c4:2a80? ([2600:8803:e7e4:500:6a9f:626e:95c4:2a80])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cbec93a70sm3938090fac.11.2026.07.02.12.35.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jul 2026 12:35:20 -0700 (PDT)
+Message-ID: <dff9273f-f958-48a0-883b-a52fcc5a6b21@baylibre.com>
+Date: Thu, 2 Jul 2026 14:35:20 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2 1/3] dt-bindings: iio: adc: Add reference-source
+ property
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Kurt Borja <kuurtb@gmail.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260622-new-channel-props-v2-0-aafd5369f253@gmail.com>
+ <20260622-new-channel-props-v2-1-aafd5369f253@gmail.com>
+ <baeb24dd-214f-4dc8-a300-22b932c4b4ae@baylibre.com>
+ <20260702202002.79c1be1b@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260702202002.79c1be1b@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Thu, 2 Jul 2026 19:58:32 +0100
-Conor Dooley <conor@kernel.org> wrote:
-
-> On Wed, Jul 01, 2026 at 08:41:33PM +0100, Jonathan Cameron wrote:
-> > On Fri, 26 Jun 2026 13:27:44 -0500
-> > David Lechner <dlechner@baylibre.com> wrote:
-> >   
-> > > On 6/26/26 11:14 AM, Conor Dooley wrote:  
-> > > > On Thu, Jun 25, 2026 at 04:55:06PM -0500, David Lechner (TI) wrote:    
-> > > >> Add a generic input-channel-rotation property to adc.yaml. This is a
-> > > >> feature seen frequently in ADCs that are designed to measure resistive
-> > > >> loads, such as RTDs and strain gauges. Enabling this can reduce offset
-> > > >> errors by swapping the positive and negative input channels on every
-> > > >> other conversion. This can have side-effects in timing and filter
-> > > >> response, so it is not always desirable to enable this feature in some
-> > > >> applications. Therefore, it is best to make this a property that can be
-> > > >> enabled or disabled in the device tree.
-> > > >>
-> > > >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> > > >> ---
-> > > >> v2 changes:
-> > > >> * New patch.
-> > > >> ---
-> > > >>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 7 +++++++
-> > > >>  1 file changed, 7 insertions(+)
-> > > >>
-> > > >> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > > >> index 9ec1f447b565..3d52c00922c9 100644
-> > > >> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > > >> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > > >> @@ -81,6 +81,13 @@ properties:
-> > > >>        ADCs usually allow choosing between internal reference sources or a pair
-> > > >>        of external pins.
-> > > >>  
-> > > >> +  input-channel-rotation:    
-> > > 
-> > > I got some internal feedback after I sent this patch that "chopping" is the
-> > > more common terminology for this feature industry-wide, so in the next revision
-> > > I plan to change it into `input-chopping`.
-> > >   
-> > > >> +    type: boolean
-> > > >> +    description:
-> > > >> +      If set, the positive and negative input channels are allowed to be swapped
-> > > >> +      on every other conversion to reduce offset errors. This is also referred
-> > > >> +      to as "chop" in some datasheets.    
-> > > > 
-> > > > "allowed to be swapped" means that this property says the feature can be
-> > > > used, but userspace may have to be the thing that ultimately turns it
-> > > > on?    
-> > > 
-> > > No, I don't expect a userspace control for it. More like the driver should
-> > > enable it when possible, but a driver doesn't necessarily have to implement
-> > > it and everything will still work, just with less accuracy.  
-> > 
-> > Perhaps we need something in this text to say when it should not be set
-> > in dt?  
+On 7/2/26 2:20 PM, Jonathan Cameron wrote:
+> On Mon, 22 Jun 2026 14:40:10 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> I think I would like a wording change from "allowed", to something that
-> is akin to "If set, the hardware supports swapping...". Allows sounds
-> too much like something that should be a userspace control.
+>> On 6/22/26 2:30 PM, Kurt Borja wrote:
+>>> Some ADCs have configurable voltage reference sources for each channel.
+>>>
+>>> Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 13 +++++++++++++
+>>>  1 file changed, 13 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>>> index b9bc02b5b07a4c7..fdad6b8276c934c 100644
+>>> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>>> @@ -73,6 +73,19 @@ properties:
+>>>        device design and can interact with other characteristics such as
+>>>        settling time.
+>>>  
+>>> +  reference-source:  
+>>
+>> Since this is an array, the name should be `reference-sources`.
+>>
+>>> +    $ref: /schemas/types.yaml#/definitions/string-array
+>>> +    maxItems: 2
+>>> +    minItems: 1  
+>>
+>> Maybe minItems here is OK, but I don't think we should put maxItems here.
+>> This way, it stays more flexible for other use cases.
+> 
+> I'm curious. What other usecases did you have in mind?
 
-I'd be inclined to talk a little more specifically.  What hardware?
-It's the not the ADC that matters for this control, but rather whatever
-is wired up to it. Otherwise agreed.  Maybe "If set, the connected
-circuits are suitable for supporting ..." or something along those lines.
+I didn't have something specific in mind, but in Kurt's ADS1263 series, we
+actually have a case with 3 values for this property already, ADC1 positive,
+ADC1 negative and ADC2.
 
-Thanks,
-
-Jonathan
-
+> 
+>>
+>>> +    description:
+>>> +      Indicates the voltage reference source or sources for this channel. Some
+>>> +      ADCs usually allow choosing between internal reference sources or a pair
+>>> +      of external pins.
+>>> +
+>>> +      If a single value is provided, it represents a single voltage reference
+>>> +      source. If two values are provided, the first one corresponds to the
+>>> +      positive source and the second to the negative source.
+>>> +
+>>>  anyOf:
+>>>    - oneOf:
+>>>        - required:
+>>>   
+>>
+> 
 
