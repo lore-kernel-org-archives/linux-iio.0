@@ -1,138 +1,110 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05C247DD5A
-	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 12:22:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716E44DC542
+	for <linux-iio@vger.kernel.org>; Thu,  2 Jul 2026 14:18:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782994974; cv=none; b=DTfpjitcBf5dK1c44z160FME7ikPpNEwXlfi0U1KzJKn3emcnC03DMUhUqjNfFan1iDspXHCkaivQiD5R0yulyN5rm9implss3YHc4gyWUcEMHJ9u85Kl3hHBozAcoBcvh+AkhPKsPDW2t/K+cf/YnZO91qCGEpNwKQ2bDgLPgI=
+	t=1783001929; cv=none; b=dXiMeeD5mbDUqcLeJ7R39efG5Q1V8EGHmaoR2EOFDHoPziKHHZgQdIVWHNj6nU45FYAbfq/z4r6tq9Fs/25W0UwGuU5/40Uf6782VTihsne4lRgpaEdz00f+uFFaFZIC3Yv5u0hoHDq1zo6SPBvig915VlabjIXXYEwMclZ6rtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782994974; c=relaxed/simple;
-	bh=1x5GAL1DORzWHwvyrqJKkBqOZ5riJZa+Y0KiM8aQ778=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tVhtTK/UahuWcBJcxCOvZHf9d3mISjdBaSbfPUmke632nsszFkCqtzriv3YkpSYhRqiV5sgYGrJ0wy8109Uvxcr1muNMZJwJpGUVnYF1wkIzmaHhPrvWWpKYW5vofs1x6B2wcLbLspCyssLyIWisPrdDaxFaRS7AwwGwaYx4LJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sS+CJUbK; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783001929; c=relaxed/simple;
+	bh=FzlQ4dU8Y7So5+PoKuqx2vCx/5MPgXqpsLfNBx+XtJI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=toN41MHuiP696FDPT97Wl2zlQM/yZorABpts1//m0larCrOpPhhrZsMA3Vclw6LmDk1GnwjJWlQUaw0wl3Bg/4s0PqPuOlsBH2BKZaD1QBVmz4kPw2D1Escu68iqS+wKgMlTnf0RlYBFhD+rxjq9LM3slMiDGFlq6BuYlsgX4XI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=SefeOP/8; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sS+CJUbK"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493b77b150aso14786545e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 05:22:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="SefeOP/8"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso830197fac.1
+        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 07:18:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782994971; x=1783599771; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=jna+clLnXx/9tBJDzzTY3BVQ+u6bUDk2L+uu9/fOCCM=;
-        b=sS+CJUbKP0cRKj0Yt3P/maXTG0DY88JiyonlRuO3xqSY5epPrOprwAV/1WVoWq7n1e
-         OYyQy9lzUb3Wr6ve199rKne0mKBkDBFKCzepEJ1tKFy25Xo1zGLYX6zIkPSYwu+VcFzs
-         SaecZkrC3QH0nYfVRVmArr3+AGfFe9J1gg7QsiAv+AEbSTBOAWoVPlhjuoLUX1vMbkiS
-         0gs2l/Lm1VxnQS7llDTFyaZf6Y0Dcbwb344eXlOAQ3e1rqaYCENapsZspyOhmyS8NF9a
-         2E+myaQhPllGLqYnOp2q2OJg4W5cimb6UQKEUJp/tEcCHwRAH0X65QReMpVh/sw+5UMj
-         n++g==
+        d=baylibre.com; s=google; t=1783001923; x=1783606723; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D3aJl8QhQEFbQbyrb9zx0aFaFWiPGxodfC82XFdOcZ0=;
+        b=SefeOP/8wupF+nUFeWKGg9bdzKJHS14dotjJBUP95kU68lu/bstckB3fZElv823DDO
+         bfk7ZgVMZ9Utd2C3DHb6vmt9U3MassvQwQdVz5V+G/VybSCuA+OBHfxbSaCTjEpIj20J
+         uAxWi4q2wXC1yjf+JNEP2CiigBAbGX0O6nZag8IWkOdYFpRqVLUJX1sRmA7qaFpYlxIW
+         Nh2ZbHlm3KeyOhy9T9bthrD4Fm2sojoROpWKq7rx0YYPH0+Nw4MTgQxd07TMN96rw2db
+         849dWaf6hWSay7c+3JtjMVpNdGSLyg0kawt1OH01clcw1KYG6cSoozdh9VoyDlx5gCRj
+         glHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782994971; x=1783599771;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=jna+clLnXx/9tBJDzzTY3BVQ+u6bUDk2L+uu9/fOCCM=;
-        b=oJzLVhh2AUxXCsJyN6czgOcLe6GmwB1HF1iKPWQ/hHDMSHBn9EnvM6i3wvw7lBL2ro
-         ChKsKlzs/ZoMZb05vby0Gjsg7izLgrCorpLgR/JRPtk4RBken7PqMrG4LZMR4VKJ5h73
-         eby+PzKeDHNX79l1iTaA7ju9R4g0ncUy9cjCuOcx/yE1otuc21pp5dt8QPGkEs5jwIH9
-         AvWKE7BQLtln7ro+cKmts5Z8Lk7yDOLSeDJI5szBXqMXn7ozsPp8MpW7qdKC5JN2bLVT
-         +STqzamhis7oEsB+mYhbuf1YtOLgODpaSgXSI8239AKX1MITWI5TaB5OGzcOUbkvn0Or
-         Irjg==
-X-Forwarded-Encrypted: i=1; AFNElJ9BmpgbgoBuYAl5N8Rbe7TMgIbp/681mvEgTW206hD3ywxnQlbejlFockecm+6JrkIgtZj4DmKImaU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2Eax9SSP14zbRtPQufUiTJeF9QUEZDUwSKUl83CbXhyeE7ZKZ
-	qmuThpcJUDMwqxysvlSkqKyl+L2bEgc2+P0yqsCzaWOkzAirBAJBahjC
-X-Gm-Gg: AfdE7ckRtaNTKqy+nCrsmWA0c3t7KnRyPKLlo8ehQ6oSGIVJSYFHsArNgXvEzmlcWIX
-	PQQHrA0NaajeRfodhxkuwFMe70QTKGWdmTWLRzXj42P2qk3f0A7wt/D/t80Wb6LJooQjjhxFTOU
-	OLgq6cDLRNmbveMn1TwvNzKiiYsWgA8LqrxSPjeLbUzR8IJfGUvZ/MkEju7VpkfrfKaDeRA3LOY
-	iCCoFrIosayiFj7HcsMjFhz7edkISCyTPKJ6jV7L/5YGXVjWUSyd03as7YT0IgWVNi/yr56FdlU
-	uysB8Qvo+z1B65lqzHN2IgkPjSGAEyzZvCk8tJHvk3J9wwdHTFbxfi/hLMiyUzTW56cgErAxSTJ
-	qhckqWUnQ76sSjRUICSLDom/LBIlgNRhCqJAFxtcdGFSPZT6hTT+s/w3zq9TLurMzdjf0Vvf3EW
-	V/LnxtmsCW4UjR79Q=
-X-Received: by 2002:a05:600c:8718:b0:493:c845:bc20 with SMTP id 5b1f17b1804b1-493c845bc60mr13403035e9.4.1782994971119;
-        Thu, 02 Jul 2026 05:22:51 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493bf11eba5sm86926685e9.0.2026.07.02.05.22.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 05:22:50 -0700 (PDT)
-Date: Thu, 2 Jul 2026 13:23:54 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Anas Khan <anxkhn28@gmail.com>
-Cc: Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix typos in comments
-Message-ID: <akZYSPu2YruEFr3R@nsa>
-References: <20260702101129.62445-1-anxkhn28@gmail.com>
+        d=1e100.net; s=20251104; t=1783001923; x=1783606723;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D3aJl8QhQEFbQbyrb9zx0aFaFWiPGxodfC82XFdOcZ0=;
+        b=Wy4J/oUZitS5OEehik0VsNyAgx2vqQaahrnyWaPHcW2q0a3yzQhigg7xOB7oPI3SCZ
+         MMw9YelDVNGQS3h5/4HDdUAaxe09eXxxV4KOGK2bVTj5E4ck4EvY4NoXZhQU2ID7AnM+
+         VPK2ipNNp8K/8jbfJb+JvU8TtTt1Zu+TDP1JXcScrMosad9kgvCD82jFcLlUbvoIz+QK
+         Kilm8VLmltp989r4/TuejzSIyW0lsuZ3XWWcXnt+Ztiur4r1J/fmBSfQA5zlOqD7prA9
+         Mxv9Tc4PvapBactnPEAhLbvsdZCrxQO2b8vhgspRtg/jkH9fgkFnVIxgUCQCzRoIZnc3
+         p9Mg==
+X-Forwarded-Encrypted: i=1; AHgh+RoLkucqZpcirgH9hf//myDi7QLmTBcdUJcyWQDO2vmKlk3ogJdAXXj0X7R7p5a4G96LpiYCgRU6NCo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywq79C15C1fg0t1nZh/fN4ZLCEWWzk7FCt9JWoD+10m2dXCI+yo
+	0JXSpg+TPEbKPQvLkB7mEnZS17WH+j/8lZIsFtp3EVsSjmDIe3SjE/QQFAYetqnJzag=
+X-Gm-Gg: AfdE7clyyFrFVUVRnDz94v239YX9jPMh0MExi8ncdEfdkadeb3FhTkMIfBJFZmq5Iql
+	Av2Zb9E0axLPnAfoWdk50Mz/W3fiQws+JjBbfsB1Cs/962JpH72iIDY61ZBxKIGTS8ROeNoMRub
+	mSqLafD1g8s30GHdYU8iR9rnGhbd2JWOAlF8Ag9CcDeV5H8/Cm6/sc+rceE3xMpNNu78khwXzwV
+	Okem0vRH0lVEdFW5UxV9spB3r7Xv+w0JsIubb22SwdcO2EQ/HBvxXBO6a7m0XzWy2jkEx/W8htg
+	HQoqxVMNJ6OzhY62a+wTeG9h71KuCtGyWUNf9T8t/p4RuuLxBq2tqm+BtUcKphtKvQifU/AAO+d
+	TypC3bY1fY72AWQ3cu2dlcFD5/5d02DXBwa2mp3pXnmYR8F1914kg5Wl9m7TYiy2w6P4rUZly8E
+	s9bfp+jrF7ubwZyfh8FLNCiIMdQaeUCBYjyGVUaWsooVsUZo44yOBx3h+w6XpFhWKibA+LSLzLQ
+	Q==
+X-Received: by 2002:a05:6870:8899:b0:44a:e965:b9dd with SMTP id 586e51a60fabf-44cabcb3840mr3681787fac.42.1783001923076;
+        Thu, 02 Jul 2026 07:18:43 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:6a9f:626e:95c4:2a80? ([2600:8803:e7e4:500:6a9f:626e:95c4:2a80])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cbec92bbbsm3013174fac.10.2026.07.02.07.18.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jul 2026 07:18:42 -0700 (PDT)
+Message-ID: <544fbdef-268d-49cc-ae9e-b18907d9382b@baylibre.com>
+Date: Thu, 2 Jul 2026 09:18:41 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260702101129.62445-1-anxkhn28@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 8/8] iio: adc: ti-ads112c14: add measurement channel
+ support
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com>
+ <20260625-iio-adc-ti-ads122c14-v2-8-ceb9b0b561cb@baylibre.com>
+ <20260701212019.12757df3@jic23-huawei> <akYs-QgyjN-nmjq-@ashevche-desk.local>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <akYs-QgyjN-nmjq-@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 02, 2026 at 03:41:29PM +0530, Anas Khan wrote:
-> Fix several comment typos in industrialio-backend.c: correct "through"
-> in a channel-spec comment, "initiates a process" in the activation
-> comment, and drop a stray apostrophe from "Gets" in two getter
-> kerneldoc comments.
+On 7/2/26 4:18 AM, Andy Shevchenko wrote:
+> On Wed, Jul 01, 2026 at 09:20:19PM +0100, Jonathan Cameron wrote:
+>> On Thu, 25 Jun 2026 16:55:10 -0500
+>> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 > 
-> Signed-off-by: Anas Khan <anxkhn28@gmail.com>
-> ---
+> ...
+> 
+>>> +	device_for_each_named_child_node_scoped(dev, child, "channel") {
+>>> +		struct ads112c14_measurement *measurement = &data->measurements[i];
+>>> +		struct iio_chan_spec *spec = &channels[i];
+> 
+>>> +		if (!fwnode_device_is_available(child))
+>>> +			continue;
+> 
+> Also drop this dup check.
+> 
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-
->  drivers/iio/industrialio-backend.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-> index 4763e224ebc6..f7a4be8ec320 100644
-> --- a/drivers/iio/industrialio-backend.c
-> +++ b/drivers/iio/industrialio-backend.c
-> @@ -649,7 +649,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_ext_info_get, "IIO_BACKEND");
->   * @len: Buffer length
->   *
->   * This helper is intended to be used by backends that extend an IIO channel
-> - * (trough iio_backend_extend_chan_spec()) with extended info. In that case,
-> + * (through iio_backend_extend_chan_spec()) with extended info. In that case,
->   * backends are not supposed to give their own callbacks (as they would not have
->   * a way to get the backend from indio_dev). This is the setter.
->   *
-> @@ -851,7 +851,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_filter_type_set, "IIO_BACKEND");
->   * @back: Backend device
->   * @timeout_us: Timeout value in us.
->   *
-> - * When activated, it initates a proccess that aligns the sample's most
-> + * When activated, it initiates a process that aligns the sample's most
->   * significant bit (MSB) based solely on the captured data, without
->   * considering any other external signals.
->   *
-> @@ -1017,7 +1017,7 @@ static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, con
->   * @dev: Consumer device for the backend
->   * @name: Backend name
->   *
-> - * Get's the backend associated with @dev.
-> + * Gets the backend associated with @dev.
->   *
->   * RETURNS:
->   * A backend pointer, negative error pointer otherwise.
-> @@ -1050,7 +1050,7 @@ EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_by_index, "IIO_BACKEND");
->   * @name: Backend name
->   * @fwnode: Firmware node of the backend consumer
->   *
-> - * Get's the backend associated with a firmware node.
-> + * Gets the backend associated with a firmware node.
->   *
->   * RETURNS:
->   * A backend pointer, negative error pointer otherwise.
-> -- 
-> 2.54.0
-> 
+How is this duplicate? device_for_each_named_child_node_scoped()
+doesn't check this.
