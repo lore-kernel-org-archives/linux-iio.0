@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CCFE33A715;
-	Thu,  2 Jul 2026 17:27:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B63531F9B5;
+	Thu,  2 Jul 2026 17:29:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783013222; cv=none; b=f42wkMXMMLgi3z52qQBz4GPRifDAMW+jqLiIhxrPgi8wXbGW3q/VhvzLNtqdyihCXU/MBfJQjVcDPBbYEE/gN2Rgmix4t9dfzu3HWVUOzyRxDWV5Lw8rG6aaBumEYO5rAfq1qo6/XePEefF+ceTKi3ICYwRD0ZZgD1lfu9tR2y4=
+	t=1783013359; cv=none; b=GaJYNUS87TtsRyCJCt2p18fbaGrpF7AwgwEnDPmEk5F+A3D75OeILiWjqekCiwLqvTaWJ0+6LGgo/vE5HKNB1I6BsgeiwVIWPboMpOaFN5LfxX4JxU8msUZ6ckQATXKlMiqB0OzO2zvBjOQmDlvADjeSdTGe+3Rh0lYIGzgPhgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783013222; c=relaxed/simple;
-	bh=xM7wXElkc6p1/hPEbmGQXB5nkWB4YMUZAj6IYjm3GXE=;
+	s=arc-20240116; t=1783013359; c=relaxed/simple;
+	bh=2tcY+aGgYPWHtj9yT/LqegciHTB7sLBWM8NMS9o/Ef8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eQtD+kBOdyR2/gduiQmQ3wXlY+cEdfUu0djcZvjdkV/x+UdxKROOeMTsaVrV8RpiW2QKsFhgX+35xpCihMszJtx8p/qXgMSrpxdNk7e0l8bddk/1aSqcqTsDitUTP6NOklZNir4LDNETAzffvQoP/NZjpW7JFkMKg6Jj8bS6M4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FreGYn+F; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lvjn+YUwFFFAPl8J8chNXtWoGJ2HSdRdSmtcgPl6kQmJ99u93CNkjwW+dveISkVl8JejpZPG3iu39xBr+x7qyadIfd8o5AdLeaXkmxV9j46yreSBNgHtzFmDsH3J+yKW5P3gc5xsCq+arKysFagzlXm/qhLOg+tGE291HnIB1fg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZK58KyvP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FreGYn+F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 515D81F000E9;
-	Thu,  2 Jul 2026 17:26:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZK58KyvP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD471F000E9;
+	Thu,  2 Jul 2026 17:29:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783013221;
-	bh=zuQzJwKx7wlris4Q0CuBgvwdsj6DgeV+ONMXBSoLdOQ=;
+	s=k20260515; t=1783013357;
+	bh=ArDFk62S1ooc1s9sBqz0K16vudhtEHnY/wAxtOBbcGI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FreGYn+FNEjGhjEhW4eRENB7MLD2+igN7AM4iMN1zvHJDP3txcK1CSEaseEq2cz/T
-	 NWXKD8+3jWdueRDMjdjBnnRe3TufPru0dSmjxbCsuUJYGGn+3c4l8vTOk7L814OEj9
-	 1SI2AVVnoURDCaug+l21Ea0OMAF38Jv3VANU1ftSwA6nO/26AATxJQyvaNp0RqhQNK
-	 NAlpUlnjKuy45uHjb2o0H+22UH/WgxxU2OcEJnonG+rCAjonmrNImdpUKMN5jGY6lu
-	 XL3W5OUNSnoGnRqqmWTBtKGM/l3dWXY3jZ5E8sKaZ7GEoFxZuafC1K7dVyK20lvO6X
-	 1SiuQAFAHgV/A==
-Date: Thu, 2 Jul 2026 18:26:56 +0100
+	b=ZK58KyvPjgaGrbjjrjB1yPnKIiN6vQKSSPvF/BEn7FvNeUadS8TW6AfT6t7B0ETF6
+	 pL65Ssl9tTXp8KV4gJIhyw+wN91lmP+BqNUaTqTTU0oNU8geli05PLHP7+izQImXUg
+	 rySIz3iGW+LOAUiOv97xlE7QoZenM9/igXWFe//aVxxWKo0ZMo6tEUsNDRZYhqxU+l
+	 6xIi2GMUfQl9Ux4/fe5rURQ4P2PM/+dN+hODj/PHc0bqNcjpy1cN5amhZxxxk50zKa
+	 xHRt0fNtPWgutaVq6FMgvLPZyqxtKFRZ94S4TVp0beocxdyCCBZPOJd6lPEd5X7CbA
+	 r84t6iFVH/vcA==
+Date: Thu, 2 Jul 2026 18:29:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Sanjay Chitroda via B4 Relay
  <devnull+sanjayembeddedse.gmail.com@kernel.org>
@@ -35,12 +35,12 @@ Cc: sanjayembeddedse@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
  Jiri Kosina <jikos@kernel.org>, Srinivas Pandruvada
  <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v2 5/6] iio: position: hid-sensor-custom-intel-hinge:
- use common device for devres
-Message-ID: <20260702182656.1a145d1f@jic23-huawei>
-In-Reply-To: <20260702-15-jun-hid-iio-alignment-v2-5-b87f01f5efbc@gmail.com>
+Subject: Re: [PATCH v2 6/6] iio: temperature: hid-sensor-temperature: use
+ common device for devres
+Message-ID: <20260702182914.3b2d1126@jic23-huawei>
+In-Reply-To: <20260702-15-jun-hid-iio-alignment-v2-6-b87f01f5efbc@gmail.com>
 References: <20260702-15-jun-hid-iio-alignment-v2-0-b87f01f5efbc@gmail.com>
-	<20260702-15-jun-hid-iio-alignment-v2-5-b87f01f5efbc@gmail.com>
+	<20260702-15-jun-hid-iio-alignment-v2-6-b87f01f5efbc@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,7 +51,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 02 Jul 2026 21:48:02 +0530
+On Thu, 02 Jul 2026 21:48:03 +0530
 Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org=
 > wrote:
 
@@ -73,25 +73,26 @@ Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org=
 >=20
 > Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Applied this one.
-
 > ---
->  drivers/iio/position/hid-sensor-custom-intel-hinge.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/temperature/hid-sensor-temperature.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >=20
-> diff --git a/drivers/iio/position/hid-sensor-custom-intel-hinge.c b/drive=
-rs/iio/position/hid-sensor-custom-intel-hinge.c
-> index 1f4a40716c3f..eb6c59f81c3f 100644
-> --- a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-> +++ b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-> @@ -293,7 +293,7 @@ static int hid_hinge_probe(struct platform_device *pd=
-ev)
->  	}
+> diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/i=
+io/temperature/hid-sensor-temperature.c
+> index 18da85e6c60e..6dfb606a53af 100644
+> --- a/drivers/iio/temperature/hid-sensor-temperature.c
+> +++ b/drivers/iio/temperature/hid-sensor-temperature.c
+> @@ -213,8 +213,8 @@ static int hid_temperature_probe(struct platform_devi=
+ce *pdev)
+>  	if (ret)
+>  		return ret;
 > =20
->  	indio_dev->num_channels =3D ARRAY_SIZE(hinge_channels);
-> -	indio_dev->channels =3D devm_kmemdup(&indio_dev->dev, hinge_channels,
-> +	indio_dev->channels =3D devm_kmemdup(&pdev->dev, hinge_channels,
->  					   sizeof(hinge_channels), GFP_KERNEL);
->  	if (!indio_dev->channels)
+> -	temp_chans =3D devm_kmemdup(&indio_dev->dev, temperature_channels,
+> -				sizeof(temperature_channels), GFP_KERNEL);
+> +	temp_chans =3D devm_kmemdup(&pdev->dev, temperature_channels,
+> +				  sizeof(temperature_channels), GFP_KERNEL);
+>  	if (!temp_chans)
 >  		return -ENOMEM;
+> =20
 >=20
 
