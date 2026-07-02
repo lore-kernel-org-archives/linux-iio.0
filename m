@@ -1,106 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 503972C3251;
-	Thu,  2 Jul 2026 09:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 240E94B8DED;
+	Thu,  2 Jul 2026 09:49:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782985501; cv=none; b=qaqoPPZUWb6bT+ECNppQrIlhZEvBHn8pQA8zFJBXfg58M/JcvtFNqsjPUcE7hPeJTRtQZj7AEk0vS+LsStOUWqtkTH9rOat3n+dtQFMpiGTyq64fhtgpD4WFXz+AXIYqxk5NvYxAUlKnFhEDjOCsdFgddpc60ftSNPiphqPviMI=
+	t=1782985766; cv=none; b=fTyJYuMclje87Gtvxw9dmJtcGVM0ig4jE50NfTI+ckTimKMSO3bdeXVyIhtqwz6H2yuDKlgNMO/Od4UJq6t3EozXgOGGX0CQyk7apmTFWbtXCtsYJf0cJhequG9w92V5LKJk5dC0G17WLH+ZF4O2wwc/mGsUT9CICEmOj26W7Nc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782985501; c=relaxed/simple;
-	bh=njX6AqcZxdx+fpRpgPhZLLEkCXUSm6mASPzKGycuge0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MP8ite7UaBGwa+sVPX/AToWTiE2Ow9cHpvNdEJYWIPOd9e2rlj7NKq33hLC6WXcxwQxMD+aTztRIZS1okzHqTVa9WG1VJ2f27+/8GIPIz2dbyw/xbGe3K8eOz6z2KWpOmfqPGoCUebkUrCSixcqa2tp39jIvXTmDl2JEnaDwRTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BEt5YlMC; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1782985766; c=relaxed/simple;
+	bh=isWFYA8ybeHHkdHMBHm+E+pTokRVq6BgCHeyjnO+wJk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HZW3JYD2J7B+w8bEBTAP43gBs31cMeHD7CgCm/q3W2WBFXBk6PTudnXgM04LW9AD8wVztOATGdjqEPMs0bwFsQYO4K24m8LonLd276TBPBMur/zBI+MxqNT/EfsbdVmTs+saSYPlWppZMXUfQL0E0f23xsQGl5Qj3WBttMNB2H4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=geDx/TS8; arc=none smtp.client-ip=220.197.31.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BEt5YlMC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1782985500; x=1814521500;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=njX6AqcZxdx+fpRpgPhZLLEkCXUSm6mASPzKGycuge0=;
-  b=BEt5YlMCexLewo1Bit04XqtY8Dw/DBaaKmqD3s4VnIuAN061cV18V4FU
-   0w5iTGC8HA91imrGTIm0IJYKPPiOndTup7v4n8SRSetliTGjMf6pWiiOl
-   /9OCcdYAdRMoRP+xxKsd1TSB+Zm/iLjFYa6MO3q3o7ainEDJtWhnQtac8
-   RT6Tev4xDmuN/N+SAYW+E1Xauk9+Bsw+sgt1SRO/xvtVd20m23WZjzBKh
-   F2gkEvxRzbdd6v7AXeoJLV9wCla0jwkx3DdSyveSB117Dlw3J3NRweAtf
-   NkJyV41yGhTBdeReNuRy3EjXnzrzrw7u4iIxCy9Nt8HvQFHZNqAtlmItF
-   g==;
-X-CSE-ConnectionGUID: xGr2AZLLTouaQn9kMlM8Kw==
-X-CSE-MsgGUID: yPqO26ZKSv+QBP9MPP82Lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11834"; a="94389867"
-X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="94389867"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2026 02:44:59 -0700
-X-CSE-ConnectionGUID: 4T265IUiRj6kFAXvvMPgrg==
-X-CSE-MsgGUID: URwbqx4MQ7iWzUFg5d38+g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,143,1779174000"; 
-   d="scan'208";a="246462011"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.213])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2026 02:44:56 -0700
-Date: Thu, 2 Jul 2026 12:44:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Vidhu Sarwal <vidhu.linux@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="geDx/TS8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=o+
+	RD2Gl/ANOuiF6JqYBAMlYeaEToZ8LmhvFWSqRBxXM=; b=geDx/TS8JgktnxN9Rv
+	nHk4yGVotltrm2H2i0wMA0kXgyszwLxz1tNjyz/RO8M7ECm/cGilIFJWkX6mWSK0
+	HCXuOdQoIg8kglkG2mMTfN8voE3XtVNXuVYylClhUECvQGoHdYbmaR/KfyAwCgSY
+	JOyS2jYc2kMKWmGseExwiZntw=
+Received: from localhost.localdomain (unknown [])
+	by gzga-smtp-mtada-g1-4 (Coremail) with SMTP id _____wD3D1QJNEZqmQaAHQ--.59490S2;
+	Thu, 02 Jul 2026 17:48:59 +0800 (CST)
+From: Haoxiang Li <haoxiang_li2024@163.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com,
+	bentiss@kernel.org
+Cc: linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: light: al3010: fix incorrect scale for the highest
- gain range
-Message-ID: <akYzFtxKhq5U2kFY@ashevche-desk.local>
-References: <20260702052913.114130-1-vidhu.linux@gmail.com>
+	Haoxiang Li <haoxiang_li2024@163.com>
+Subject: [PATCH v2 0/2] HID: sensor: custom: Fix fields lifetime issues
+Date: Thu,  2 Jul 2026 17:48:54 +0800
+Message-Id: <20260702094856.1105555-1-haoxiang_li2024@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260702052913.114130-1-vidhu.linux@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wD3D1QJNEZqmQaAHQ--.59490S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Gw4kCF13AFy5ury7CrW8Xrb_yoWkKrX_u3
+	yDtF95Kw1DW3WkZa17CFn8J397GrZ7Zw45ZFZYyayftryxXayDGrW8trsIgr17Xa1kJr1U
+	KFZ0va4xZwn7ujkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRuUDJ3UUUUU==
+X-CM-SenderInfo: xkdr5xpdqjszblsqjki6rwjhhfrp/xtbCxgs7qWpGNAuX4QAA36
 
-On Thu, Jul 02, 2026 at 10:59:13AM +0530, Vidhu Sarwal wrote:
-> al3010_scales[] encodes the highest gain range as {0, 1187200}.
-> For IIO_VAL_INT_PLUS_MICRO, the fractional part must be less than
-> 1000000, so the scale 1.1872 should instead be represented as
-> {1, 187200}.
-> 
-> Since write_raw() compares the value from userspace against this
-> table, writing  1.1872 scale never matches the malformed
-> entry and returns -EINVAL. As a result, the highest gain range cannot
-> be selected. Reading the scale in that state also reports the malformed
-> value.   
+Hi,
 
-Trailing spaces in the last line of the above paragraph.
+This series fixes lifetime issues around sensor_inst->fields and the
+sysfs attributes that can access it.
 
-> 
-> Fixes: c36b5195ab70 ("iio: light: add Dyna-Image AL3010 driver")
-> Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
+The first patch fixes the remove path by removing enable_sensor before
+freeing the field attributes. enable_sensor_store() can dereference
+power_state and report_state, which point into sensor_inst->fields.
 
-...
+The second patch fixes the original field sysfs group leak on probe
+failure. It creates the field attributes before exposing enable_sensor,
+then unwinds any field groups that were created before a later
+sysfs_create_group() failure.
 
->  static const int al3010_scales[][2] = {
-> -	{0, 1187200}, {0, 296800}, {0, 74200}, {0, 18600}
-> +	{1, 187200}, {0, 296800}, {0, 74200}, {0, 18600}
+Thanks, Jiri, for the review and for pointing out the UAF concern.
 
-While at it, add a trailing comma.
+Changes in v2:
+- Split the fix into two patches.
+- Fix the pre-existing remove path ordering issue.
+- Create field attributes before exposing enable_sensor.
+- Unwind already-created field sysfs groups on failure.
 
->  };
+Haoxiang Li (2):
+  HID: sensor: custom: Remove enable_sensor before freeing fields
+  HID: sensor: custom: Fix field sysfs group cleanup on failure
 
-Otherwise LGTM, thanks.
+ drivers/hid/hid-sensor-custom.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
+
+base-commit: ef0c9f75a19532d7675384708fc8621e10850104
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
