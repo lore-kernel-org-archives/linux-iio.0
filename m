@@ -1,45 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 991952DEA98;
-	Thu,  2 Jul 2026 17:04:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DCA231F9A2;
+	Thu,  2 Jul 2026 17:05:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783011869; cv=none; b=EzRS4EpOijeXrhV9/skkdUDDSjHUJdrdVu/osRhkcUc+cq+jcoyiNhmrydZqkAjkzOPhwrywwuT3TNK79+J5xXG7lMXY5TtKRQy5Riu66wZPdnuG2aYIvk//4xfsnhFFMADLeJHZsR3ysuSTFrh88TwlYOF8lFNxblNzDStdEnM=
+	t=1783011953; cv=none; b=kBB1kRK6AeYu/SoyfeA5MuI2Ikefx/DVQD9+5zVHcB8PQ7Uf7IKLy06gxi6it5SnPsgW5KsAwpHP0yVIvFvsOMfEMxXg1VvZQUFY0URSWHLlpgGXRFubl/YGeS1ESiS4Oh2Xm2H6C32sKwV7zhxdJignW1sryL2H9SoKZSWQ+aI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783011869; c=relaxed/simple;
-	bh=wLvuCwHI/+Ca6e94koiwfqy+boI6Mz/e8FcCawBf68k=;
+	s=arc-20240116; t=1783011953; c=relaxed/simple;
+	bh=vgEYiPDUAR8MFY8T/V7VkePhk2r4/Zam4XfDFzJai0E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eLTnAumwYkrcxoxCWLikBqLs30eSlx48dTLPM10eKQ4FjwcCRWbvB/VuUNKyKWhoTABzfEslCgs4hhfMFeJyfsxOqLCzRdeYwD0r2/PMRJNjjc74WHODa7vD3Hje4XAp3ogVjWX9pwKz9NlpI/9yTim0p0dFrX03z0SfCUCSbYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k9gWT7OZ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=uVtbilOPrXzHL8Ku4SSWgnn+Vu+/w/LgFLnA1dBwBaWj80kT5KOmeI8FrIgLyzBgvAlRhXd+sBH7zejBfC23hxfUu9VJFZp3hfQa+CapjXmGZBkehHjLJd1HVnSvOwwyt2flZ2K5c0Tujn7wfKjN7tOwNKHEGb4cVNUOzGJxYnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NlbbMCA0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k9gWT7OZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A950D1F000E9;
-	Thu,  2 Jul 2026 17:04:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NlbbMCA0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84E6A1F000E9;
+	Thu,  2 Jul 2026 17:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783011868;
-	bh=vY9S3b4S1WnQkf6KgJudc7lnOMiT4Sz6OqV7AiNt+4A=;
+	s=k20260515; t=1783011951;
+	bh=3F7AKCX0pjnj4U4BTcSrfEj0YWHfY9FVXVpF3mkxY2M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=k9gWT7OZk7IUbN/XSC/POwoMn273n24/0M0uzT2IsrQJkLHpN6ZLEjsm6/GQy9Hf8
-	 3bWp7X9kEzAm8ie/ImhS2voXe7afF+JGz6NqiM367JSI/su0JXgLoPlSoorUgnqBXl
-	 XohF9E8l67qBT1fE1Ns7sC0MsvGHbYtjlsyXEoO/pAKIiY02DT2Rrey5CI00Hsmkat
-	 8V0wQkG0fIgXm+Ej3w0kzWipjBJRK2GqGZu0uO+wdu+58nd7FSzuPKgj04CkiTiuMB
-	 jybMtXmTKfK9tVTDFPpdCAkVhIM2B0YkFT3mzqoQqjQf6WTaLRXG7vRresuDaUQzUF
-	 1dJUDpryqLxZw==
-Date: Thu, 2 Jul 2026 18:04:23 +0100
+	b=NlbbMCA0hgGr/QPVK0aEl9MoqqkEfyj4VKKUKiP7WvzgO27SAGvnsxF4Z3/1JHtvR
+	 +CTfn1ExbRB/7OyMk985NiAJlwaIS+T4NLA338mROmP1EsWMZ5wa/juxbHvN3dO/1R
+	 CP6RpvmbazHNGCWUKvTwK0uTQ6Gmd7k5XJ6L4/DtfjmY83A4Xi1GAF9Wgn0iugNlGe
+	 O/L5LlM2NWHypp+Lr1g+wZ/PKdJLKgM1dC3XhQdC6zRR7j9j7p1/iu2rW2+sf9q3qD
+	 VbkEd1w4KhXl8RYuD0MxQJXHe24L2DG4Pk0YEe/D0C2K89W6bi72q8xutVZryOH830
+	 gb4HqZgSm8Fug==
+Date: Thu, 2 Jul 2026 18:05:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo@kernel.org>
-Cc: Andreas Kempe <andreas.kempe@actia.se>, David Lechner
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: imu: st_lsm6dsx: deselect shub page before
- reading whoami
-Message-ID: <20260702180423.2c9e4c8c@jic23-huawei>
-In-Reply-To: <akZVDry41WEl5y4Y@lore-desk>
-References: <20260702104059.1744219-1-andreas.kempe@actia.se>
-	<akZVDry41WEl5y4Y@lore-desk>
+ Shevchenko <andy@kernel.org>, Jonathan Santos <Jonathan.Santos@analog.com>,
+ Ramona Alexandra Nechita <ramona.nechita@analog.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH 0/2] iio: adc: add missing 'select IIO_TRIGGERED_BUFFER'
+ to Kconfig entries
+Message-ID: <20260702180545.680c5265@jic23-huawei>
+In-Reply-To: <akZFTC6qVzLG5ton@ashevche-desk.local>
+References: <20260701-add-adc-kconfig-deps-v1-0-b9708d74f426@gmail.com>
+	<akZFTC6qVzLG5ton@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,99 +51,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 2 Jul 2026 14:09:50 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Thu, 2 Jul 2026 14:02:36 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> > As part of driver initialization, e.g. st_lsm6dsx_init_shub() selects
-> > the shub register page using st_lsm6dsx_set_page(). Selecting the shub
-> > register page shadows the regular register space so whoami, among other
-> > registers, is no longer accessible.
+> On Wed, Jul 01, 2026 at 09:21:45PM +0200, Joshua Crofts wrote:
+> > The AD4130 and AD7779 entries are missing 'select IIO_TRIGGERED_BUFFER'
+> > entries, causing potential build failures.
 > > 
-> > In applications where the IMU is permanently powered separately from the
-> > processor, there is a window where a reset of the CPU leaves the IMU in
-> > the shub register page. Once this occurs, any subsequent probe attempt
-> > fails because of the register shadowing.
-> > 
-> > Using the ism330dlc, the error typically looks like
-> > 
-> >     st_lsm6dsx_i2c 3-006a: unsupported whoami [10]
-> > 
-> > with the unknown whoami read from a reserved register in the shub page.
-> > 
-> > The reset register is also shadowed by the page select, preventing a
-> > reset from recovering the chip.
-> > 
-> > Unconditionally clear the shub page before the whoami readout to ensure
-> > normal register access and allow the initialization to proceed.
-> > 
-> > Place the fix in st_lsm6dsx_check_whoami() before the whoami check
-> > because hw->settings, which st_lsm6dsx_set_page() relies on, is first
-> > assigned in that function.
-> > 
-> > Placing the fix in a more logical place than the whoami check would
-> > require a bigger restructuring of the code.
-> > 
-> > Signed-off-by: Andreas Kempe <andreas.kempe@actia.se>
-> > ---
-> > 
-> >  Changes in v2:
-> >    - Drop st_lsm6dsx_get_page() and unconditionally clear the shub page.
-> >    - Make the code comment clearer.
-> >    - Document the placement rationale in the commit message.
-> >    - Link to v1: https://lore.kernel.org/linux-iio/20260604132646.1099072-1-andreas.kempe@actia.se/
-> > 
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 21 +++++++++++++++++++-
-> >  1 file changed, 20 insertions(+), 1 deletion(-)  
+> > Steps to reproduce:
+> > 1. Run `make allnoconfig`
+> > 2. Run `make menuconfig` and select any afformentioned driver and
+> >    modules it depends on.
+> > 3. Run `make .` and the build will fail due to missing triggered
+> >    buffer definitions etc.  
 > 
-> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-Given I assume we want to backport this, please send an appropriate
-Fixes tag in response to this email.
+> > I seem to have stumbled upon a lot of drivers which have incomplete
+> > Kconfigs, expect more patch series per sensor type.  
+> 
+> 
+> 
+Applied to the fixes-togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
-
-> > 
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > index 630e2cae6f19..f4edcb73ec8c 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > @@ -1712,6 +1712,26 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6dsx_hw *hw, int id,
-> >  		return -ENODEV;
-> >  	}
-> >  
-> > +	hw->settings = &st_lsm6dsx_sensor_settings[i];
-> > +
-> > +	if (hw->settings->shub_settings.page_mux.addr) {
-> > +		/*
-> > +		 * If the IMU has the shub page selected on init, for example
-> > +		 * after a CPU watchdog reset while the page is selected, the
-> > +		 * regular register space is shadowed. While the regular
-> > +		 * register space is shadowed, the registers needed for
-> > +		 * initializing the IMU are not available.
-> > +		 *
-> > +		 * Unconditionally clear the shub page selection to ensure
-> > +		 * normal register access.
-> > +		 */
-> > +		err = st_lsm6dsx_set_page(hw, false);
-> > +		if (err < 0) {
-> > +			dev_err(hw->dev, "failed to clear shub page\n");
-> > +			return err;
-> > +		}
-> > +	}
-> > +
-> >  	err = regmap_read(hw->regmap, ST_LSM6DSX_REG_WHOAMI_ADDR, &data);
-> >  	if (err < 0) {
-> >  		dev_err(hw->dev, "failed to read whoami register\n");
-> > @@ -1724,7 +1744,6 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6dsx_hw *hw, int id,
-> >  	}
-> >  
-> >  	*name = st_lsm6dsx_sensor_settings[i].id[j].name;
-> > -	hw->settings = &st_lsm6dsx_sensor_settings[i];
-> >  
-> >  	return 0;
-> >  }
-> > -- 
-> > 2.53.0  
 
