@@ -1,56 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4C2936896D;
-	Thu,  2 Jul 2026 21:46:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C5E83A9629;
+	Thu,  2 Jul 2026 21:46:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783028773; cv=none; b=r8dulGlhg74KME5N91mw3R1hl8ma1nOryopSinBsKcT9Ies/Arj3lG6kmWwlxSFlcEydpIpMP8ULTddhQF6LMjumxga3ZTfI9EUGKsRz4CxV2bl5ggdjILne8DcdUxwo3qcvj4IntvsB7NskNpytT/898jEEoEUrihAPjW4VRRs=
+	t=1783028809; cv=none; b=qPGXpeymMaPesF4TLokUyPhMP7aNcwl1uazrXSiAT8D5dsn+BAASHN/091X44GtdH0KqcMjkvNP9qvQBcO+2w88E7r5dX0S+xQZ746pq3XnEFfbZxwipDSMRpIiLSVbJ4l4w/N3f3h/CyRBxxy6zIdVFG/xaOMvpkTOdRlRctBE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783028773; c=relaxed/simple;
-	bh=XY4mGeSXTLg1LuqLQnYeV9th90u2qP5OHNa/KDkdrYo=;
+	s=arc-20240116; t=1783028809; c=relaxed/simple;
+	bh=H/f8iBU4tXsu/hgMDA+4r3N+lZ2XjXekHcf5getiMnM=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SMDKr1OSsy+vUO/vRO6olk8Hp9nR3VABJpD13XZzOITcmpdJzF/IC2eatJnB/SuE5LBOGjtUiwp3+rw3aq0f5fg2UR04zfyoYYw9Nk/caxulju7jam3ECX/vNqwYpLMgQJoIxhxteWkkugGSJ6LaC68HjdH+PlGbxg89HkTMW7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=HKOSfSne; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=K8hIsZEbBHJ+SYllzseigTJcUfow8A2WcCvaOzezgHM2m/xnnT35zvM9a58W2hj1T1LsL0qJcd2+azJvdGJri1Qgctixc4x7zyqBMYzQIWe0gfcB7rgumM4Dbv6+a7JhfqIYXdCht7FOZbfS4fCypgHtX8gsTZ6LKdZ4dzyCKiM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=zzO86Ym7; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="HKOSfSne"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="zzO86Ym7"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 662ItbF33159259;
-	Thu, 2 Jul 2026 17:46:08 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 662ItbF73159259;
+	Thu, 2 Jul 2026 17:46:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Z6D7u
-	v8hrEmVk7y7RjnWCg7TKDg5YvMOcVeRR1lh7kM=; b=HKOSfSneypzsQg6zzrtFx
-	XpW3wuKaFwikSNqIyFEHYF2oYHi1W6mi6p/Y5bD2RRD5UIh8Gk/t4tH5Wx75c5g4
-	lYnb3AN+rhrgQeiKQDfn4MfSzYsGOpQnJVEs///PefdguD+GwhAMPs3fQx8WkmAJ
-	1OevBfILGHD4Z99pzu8PeZI3Uw6YRtzb7u3FojUgBU/wFBr+v2CjavHIECcoIKfH
-	B3zPnBth/0NQNDROOPfGVi53SmSPkeUgEUE/01UeGQvX4j0JbGud4BMfdPAAFUpY
-	s1RSMqc8LXLl6hCR0DRBtiUL4bd/kidH9afEF7Pyh4LrtDhK59sFehd7WKGqJkOh
-	g==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=0yGzL
+	IVMyaokkYPfCEyowbun+sZ7UYxJTuRSx6x8FUo=; b=zzO86Ym7iN53tDVE5Kdf9
+	DFZlTDOpDR/1W3I8K+sVb3oUaIBr3k4XQh19DXAsAXe4gc9jT6CKpJlzNPwbOeVR
+	L3oZV6cT1IBR2Xtl36n4utnL8qSw5tqG4LsRQFVGGST5dMdrNTNlIoL8RhbActuc
+	NNlXFN9aIXb2zPdlBXNOgrsnUb2+Kr9TaDzPpCuk/b/Px56LaHq1tWo0FAnh0CQn
+	w77Wa/VLbSIT+jum3BmBk/aFF595yi7XWlid4UyymUq6nz/Eaoppp11mwIcMj2qC
+	wKhyq92jeETsVHTMRblOFds41g1zCoYokSjLMDdok5OGL78XvUBt6ZYnZICUgKjD
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4f4x7mh577-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4f4x7mh58u-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 02 Jul 2026 17:46:07 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 662Lk6RX051801
+	Thu, 02 Jul 2026 17:46:42 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 662LkeFn051825
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 2 Jul 2026 17:46:06 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 2 Jul 2026 17:46:06 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 2 Jul 2026 17:46:06 -0400
+	Thu, 2 Jul 2026 17:46:40 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 2 Jul
+ 2026 17:46:40 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 2 Jul 2026 17:46:06 -0400
+ Transport; Thu, 2 Jul 2026 17:46:40 -0400
 Received: from work.maxim-ic.internal ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 662LjtYX007751;
-	Thu, 2 Jul 2026 17:45:57 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 662LkRck007762;
+	Thu, 2 Jul 2026 17:46:30 -0400
 From: Marcelo Schmitt <marcelo.schmitt@analog.com>
 To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -58,9 +54,9 @@ CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
         <dlechner@baylibre.com>, <andy@kernel.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <julianbraha@gmail.com>,
         <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v5 3/4] iio: adc: ltc2378: Enable high-speed data capture
-Date: Thu, 2 Jul 2026 18:45:49 -0300
-Message-ID: <e285c16edf2e5483effad96a852a2ae110a27899.1783028033.git.marcelo.schmitt@analog.com>
+Subject: [PATCH v5 4/4] iio: adc: ltc2378: Enable triggered buffer data capture
+Date: Thu, 2 Jul 2026 18:46:20 -0300
+Message-ID: <4d970129f799b6e99a554986c3a10464e06554c1.1783028033.git.marcelo.schmitt@analog.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1783028033.git.marcelo.schmitt@analog.com>
 References: <cover.1783028033.git.marcelo.schmitt@analog.com>
@@ -73,23 +69,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=H7frBeYi c=1 sm=1 tr=0 ts=6a46dc1f cx=c_pps
+X-Authority-Analysis: v=2.4 cv=H7frBeYi c=1 sm=1 tr=0 ts=6a46dc42 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=wEV6jYVccKeZiSyWoyEA:9
-X-Proofpoint-ORIG-GUID: 0fXC1SbCGYdlUUTFaHOkLI4EvSsTK64_
-X-Proofpoint-GUID: 0fXC1SbCGYdlUUTFaHOkLI4EvSsTK64_
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAyMDIyNyBTYWx0ZWRfX8M/AP+BgtBvf
- /27TmUI6B8dSUyxJvAElM5FKaj4KAlzx7uPyyNawmxbNsgcQ0RdqeB761W35w1q8XhlxVl7DWFf
- zJjWvz2ZbLqZxvCgiFb6SxLrIUXLEiegu+qG2QKyJLrVfN7cSV9XC/0NoNH6pjFU1GoFCDu5Xg/
- /7pfJoWwEkQwGoAPgIkusCCqJC81QVnaBSz7UfvoOi9aBHVwkzOHQl8Q4L1XQCBwRRk6J2c+4sb
- CIUunHlUHocJL8Myk9lfnwsE9VdhPw665YSonxK+jYQ9YAYtWnoRq1qN7BqfztpHEerxgqV2QQf
- /wwWSnVz081aKXAP+9ZmThvRK+dz9BMrvWU/Gd/KwH1+bKYU5c8FyFxcnsbOwD0SvDo22D/fyhv
- 5/igqwji6q9QyZ0MkHVsL60kQBNQDkgKvz7AzNqChg1taJ93JQkjw+Saw/kKd7F01Bf/USxY50f
- EPfAFt2BgbUusep5iVQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAyMDIyNyBTYWx0ZWRfX6U/sbJfXZ3Rc
- PFpkfKKV9M1BacXKXV6d8HUci89ZJeXC9pHbTVakCrgKcOXu3D7pZDCka4t3QkjDEfgcyxTLxio
- BtCIIbn28rG8m4ADkV01Np+s+780tPgetq/qe16rphpDl5UIfIAV
+ a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=LKWNKb2UafNwrDgNmc4A:9
+X-Proofpoint-ORIG-GUID: 6cNDGrYWZJkMDbv-9hSvxmQhPJalgJPM
+X-Proofpoint-GUID: 6cNDGrYWZJkMDbv-9hSvxmQhPJalgJPM
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzAyMDIyNyBTYWx0ZWRfX4TJq9geE+906
+ MCpQ95n1qDK+pawVNuhyAoyt443XPw7FKSX6zDn+hYw8ISnEah/EGjWCBvJqFvVuJQvCXe7heFW
+ LB8WlctdI0iBWvBXDmF3gype8+qwt9rXJux2fuyABPHCLAgNmqkCc1yMidL7IxCFai1KLj+HrcF
+ fZMOGQUGYOX7G1UTfzPj98Z1H9LRirVRumomnpYFlGU4FNAGXf605Xke2rI0GmNv6MQ5fYev9yV
+ zdmcHPgsU8d7dNA1yQDiqIWHijxvoqNCAIRWTjl+cTJa0N2mhdF09qnlK1kk3TK90HibnMVcI5E
+ xcRNjTzXg+vfroLS/egHsyitLFD4EWg2E+GC7OuzTeYAVzoSDWvC/CDLlUAWU6mpVVWYXyWc4+g
+ j7QNdtzo/I0XRPKinirSTe8s6DPj3+CmKmpqZ5Lzd4e4IjmkkJgaDq3wLOM63Wj9RGfkP32Lmdw
+ 8XDwJ7Lvd6L8cwHgVzw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzAyMDIyNyBTYWx0ZWRfX2Jnf98fnHi10
+ 2aXenwxuT1O35vRX2bU95Cy1fL/KuQGWQIUWRgdQeGY3q921byR8lOOUNPxNnQsq1wDTAPvukZA
+ 4Aau/814h50j47Tgrxo9LG26COXgrDR3XI42ky0Abew+FAemq9O5
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.125,FMLib:17.12.100.49
  definitions=2026-07-02_03,2026-06-26_01,2025-10-01_01
@@ -99,593 +95,283 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607020227
 
-Make use of SPI transfer offloading to speed up data capture, enabling data
-acquisition at faster sample rates (up to 2 MSPS).
+Enable users to run triggered data captures with LTC2378 and similar ADCs.
 
 Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 ---
 Change log v4 -> v5:
-- Added checks for PWM parameters after both CNV and Offload trigger PWMs
-  have been configured.
-- Return EDOM instead of EIO when failing to achieve a specific PWM configuration.
-- Set single-read transfer bits_per_word so the SPI subsystem re-arranges data
-  to CPU endianness, enabling us to reuse offload_chan specifications for
-  single-shot reads.
-- Replaced open-coded check by in_range().
-- Used conventional loop count decrement pattern instead of count increment.
-- Renamed max_sample_rate_hz -> max_sample_rate_Hz.
-- A few other minor codestyle improvements.
+- Dropped error message on devm_iio_triggered_buffer_setup() fail.
 
- drivers/iio/adc/Kconfig   |   6 +
- drivers/iio/adc/ltc2378.c | 375 +++++++++++++++++++++++++++++++++++++-
- 2 files changed, 378 insertions(+), 3 deletions(-)
+ drivers/iio/adc/Kconfig   |  1 +
+ drivers/iio/adc/ltc2378.c | 75 +++++++++++++++++++++++++++------------
+ 2 files changed, 53 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 07a8a5911a09..8d2fadbf74b1 100644
+index 8d2fadbf74b1..ac162425dc91 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -946,6 +946,12 @@ config LTC2378
- 	depends on SPI
- 	depends on REGULATOR || COMPILE_TEST
- 	depends on GPIOLIB
-+	depends on PWM
-+	select IIO_BUFFER
-+	select IIO_BUFFER_DMA
-+	select IIO_BUFFER_DMAENGINE
-+	select SPI_OFFLOAD
-+	select SPI_OFFLOAD_TRIGGER_PWM
+@@ -950,6 +950,7 @@ config LTC2378
+ 	select IIO_BUFFER
+ 	select IIO_BUFFER_DMA
+ 	select IIO_BUFFER_DMAENGINE
++	select IIO_TRIGGERED_BUFFER
+ 	select SPI_OFFLOAD
+ 	select SPI_OFFLOAD_TRIGGER_PWM
  	help
- 	  Say yes here to build support for Analog Devices LTC2378-20 and
- 	  similar analog to digital converters.
 diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
-index b5cf2e974dac..b25602d91bbe 100644
+index b25602d91bbe..bcaecd484ab3 100644
 --- a/drivers/iio/adc/ltc2378.c
 +++ b/drivers/iio/adc/ltc2378.c
-@@ -12,16 +12,28 @@
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/math64.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/pwm.h>
- #include <linux/spi/spi.h>
-+#include <linux/spi/offload/consumer.h>
-+#include <linux/spi/offload/types.h>
-+#include <linux/time64.h>
- #include <linux/types.h>
- #include <linux/units.h>
+@@ -6,6 +6,7 @@
+  * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+  */
  
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/buffer-dmaengine.h>
++#include <linux/array_size.h>
+ #include <linux/bitops.h>
+ #include <linux/bits.h>
+ #include <linux/cleanup.h>
+@@ -28,6 +29,8 @@
+ #include <linux/iio/buffer-dmaengine.h>
  #include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
  #include <linux/iio/types.h>
  
-+#define LTC2378_TDSDOBUSYL_NS		5
-+#define LTC2378_TBUSYLH_NS		13
-+#define LTC2378_TCNV_HIGH_NS		20
-+
- #define LTC2378_DIFF_CHANNEL(_sign, _real_bits, _storage_bits, _offload)	\
- {										\
- 	.type = IIO_VOLTAGE,							\
-@@ -46,10 +58,19 @@
- #define LTC2378_UNIPOLAR_DIFF_CHANNEL(_real_bits)				\
- 	LTC2378_DIFF_CHANNEL(0, _real_bits, (((_real_bits) > 16) ? 32 : 16), 0)
- 
-+#define LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(_real_bits)			\
-+	LTC2378_DIFF_CHANNEL(1, (_real_bits), 32, 1)
-+
-+#define LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(_real_bits)			\
-+	LTC2378_DIFF_CHANNEL(0, (_real_bits), 32, 1)
-+
+ #define LTC2378_TDSDOBUSYL_NS		5
+@@ -67,7 +70,7 @@
  struct ltc2378_chip_info {
  	const char *name;
  	unsigned int internal_ref_uV;
- 	struct iio_chan_spec chan;
-+	struct iio_chan_spec offload_chan;
-+	unsigned int max_sample_rate_Hz;
-+	unsigned int tconv_ns;
- };
- 
- struct ltc2378_state {
-@@ -58,6 +79,15 @@ struct ltc2378_state {
- 	struct spi_device *spi;
- 	struct spi_transfer xfer;
- 	int ref_uV;
-+	unsigned int cnv_Hz;
-+	struct pwm_waveform cnv_wf;
-+	struct spi_offload *offload;
-+	struct spi_offload_trigger *offload_trigger;
-+	struct spi_message offload_msg;
-+	struct spi_transfer offload_xfer;
-+	struct spi_offload_trigger_config offload_trigger_config;
-+	struct pwm_device *cnv_trigger;
-+	unsigned int sample_freq_range[3];
- 
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
-@@ -78,101 +108,161 @@ static const struct ltc2378_chip_info ltc2338_18_chip_info = {
+-	struct iio_chan_spec chan;
++	struct iio_chan_spec chan[2]; /* 1 physical chan + 1 timestamp chan */
+ 	struct iio_chan_spec offload_chan;
+ 	unsigned int max_sample_rate_Hz;
+ 	unsigned int tconv_ns;
+@@ -107,7 +110,7 @@ struct ltc2378_state {
+ static const struct ltc2378_chip_info ltc2338_18_chip_info = {
  	.name = "ltc2338-18",
  	.internal_ref_uV = 4096000,
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 527,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 527,
+@@ -115,7 +118,7 @@ static const struct ltc2378_chip_info ltc2338_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2364_16_chip_info = {
  	.name = "ltc2364-16",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
-+	.tconv_ns = 3000,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
+ 	.tconv_ns = 3000,
+@@ -123,7 +126,7 @@ static const struct ltc2378_chip_info ltc2364_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2364_18_chip_info = {
  	.name = "ltc2364-18",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
-+	.tconv_ns = 3000,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
+ 	.tconv_ns = 3000,
+@@ -131,7 +134,7 @@ static const struct ltc2378_chip_info ltc2364_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2367_16_chip_info = {
  	.name = "ltc2367-16",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
-+	.tconv_ns = 1500,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
+ 	.tconv_ns = 1500,
+@@ -139,7 +142,7 @@ static const struct ltc2378_chip_info ltc2367_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2367_18_chip_info = {
  	.name = "ltc2367-18",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
-+	.tconv_ns = 1500,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
+ 	.tconv_ns = 1500,
+@@ -147,7 +150,7 @@ static const struct ltc2378_chip_info ltc2367_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2368_16_chip_info = {
  	.name = "ltc2368-16",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 527,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 527,
+@@ -155,7 +158,7 @@ static const struct ltc2378_chip_info ltc2368_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2368_18_chip_info = {
  	.name = "ltc2368-18",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 527,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 527,
+@@ -163,7 +166,7 @@ static const struct ltc2378_chip_info ltc2368_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2369_18_chip_info = {
  	.name = "ltc2369-18",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 1600 * HZ_PER_KHZ,
-+	.tconv_ns = 412,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 1600 * HZ_PER_KHZ,
+ 	.tconv_ns = 412,
+@@ -171,7 +174,7 @@ static const struct ltc2378_chip_info ltc2369_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2370_16_chip_info = {
  	.name = "ltc2370-16",
- 	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 2 * HZ_PER_MHZ,
-+	.tconv_ns = 322,
- };
+-	.chan = LTC2378_UNIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_UNIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_UNIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 2 * HZ_PER_MHZ,
+ 	.tconv_ns = 322,
+@@ -179,7 +182,7 @@ static const struct ltc2378_chip_info ltc2370_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2376_16_chip_info = {
  	.name = "ltc2376-16",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
-+	.tconv_ns = 3000,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
+ 	.tconv_ns = 3000,
+@@ -187,7 +190,7 @@ static const struct ltc2378_chip_info ltc2376_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2376_18_chip_info = {
  	.name = "ltc2376-18",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
-+	.tconv_ns = 3000,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
+ 	.tconv_ns = 3000,
+@@ -195,7 +198,7 @@ static const struct ltc2378_chip_info ltc2376_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2376_20_chip_info = {
  	.name = "ltc2376-20",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
-+	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
-+	.tconv_ns = 3000,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(20), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
+ 	.max_sample_rate_Hz = 250 * HZ_PER_KHZ,
+ 	.tconv_ns = 3000,
+@@ -203,7 +206,7 @@ static const struct ltc2378_chip_info ltc2376_20_chip_info = {
  
  static const struct ltc2378_chip_info ltc2377_16_chip_info = {
  	.name = "ltc2377-16",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
-+	.tconv_ns = 1500,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
+ 	.tconv_ns = 1500,
+@@ -211,7 +214,7 @@ static const struct ltc2378_chip_info ltc2377_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2377_18_chip_info = {
  	.name = "ltc2377-18",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
-+	.tconv_ns = 1500,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
+ 	.tconv_ns = 1500,
+@@ -219,7 +222,7 @@ static const struct ltc2378_chip_info ltc2377_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2377_20_chip_info = {
  	.name = "ltc2377-20",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
-+	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
-+	.tconv_ns = 1500,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(20), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
+ 	.max_sample_rate_Hz = 500 * HZ_PER_KHZ,
+ 	.tconv_ns = 1500,
+@@ -227,7 +230,7 @@ static const struct ltc2378_chip_info ltc2377_20_chip_info = {
  
  static const struct ltc2378_chip_info ltc2378_16_chip_info = {
  	.name = "ltc2378-16",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 527,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 527,
+@@ -235,7 +238,7 @@ static const struct ltc2378_chip_info ltc2378_16_chip_info = {
  
  static const struct ltc2378_chip_info ltc2378_18_chip_info = {
  	.name = "ltc2378-18",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 527,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 527,
+@@ -243,7 +246,7 @@ static const struct ltc2378_chip_info ltc2378_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2378_20_chip_info = {
  	.name = "ltc2378-20",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
-+	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
-+	.tconv_ns = 675,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(20),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(20), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(20),
+ 	.max_sample_rate_Hz = 1 * HZ_PER_MHZ,
+ 	.tconv_ns = 675,
+@@ -251,7 +254,7 @@ static const struct ltc2378_chip_info ltc2378_20_chip_info = {
  
  static const struct ltc2378_chip_info ltc2379_18_chip_info = {
  	.name = "ltc2379-18",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
-+	.max_sample_rate_Hz = 1600 * HZ_PER_KHZ,
-+	.tconv_ns = 412,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(18),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(18), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(18),
+ 	.max_sample_rate_Hz = 1600 * HZ_PER_KHZ,
+ 	.tconv_ns = 412,
+@@ -259,7 +262,7 @@ static const struct ltc2378_chip_info ltc2379_18_chip_info = {
  
  static const struct ltc2378_chip_info ltc2380_16_chip_info = {
  	.name = "ltc2380-16",
- 	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
-+	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
-+	.max_sample_rate_Hz = 2 * HZ_PER_MHZ,
-+	.tconv_ns = 322,
- };
+-	.chan = LTC2378_BIPOLAR_DIFF_CHANNEL(16),
++	.chan = { LTC2378_BIPOLAR_DIFF_CHANNEL(16), IIO_CHAN_SOFT_TIMESTAMP(1) },
+ 	.offload_chan = LTC2378_OFFLOAD_BIPOLAR_DIFF_CHANNEL(16),
+ 	.max_sample_rate_Hz = 2 * HZ_PER_MHZ,
+ 	.tconv_ns = 322,
+@@ -278,6 +281,25 @@ static int ltc2378_convert_and_acquire(struct ltc2378_state *st)
+ 	return ret;
+ }
  
- static int ltc2378_convert_and_acquire(struct ltc2378_state *st)
-@@ -254,7 +344,136 @@ static int ltc2378_read_raw(struct iio_dev *indio_dev,
- 			*val2 = chan->scan_type.realbits;
- 
- 		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = st->cnv_Hz;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
- 
-+static int ltc2378_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length, long mask)
++static irqreturn_t ltc2378_trigger_handler(int irq, void *p)
 +{
-+	struct ltc2378_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = st->sample_freq_range;
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+/*
-+ * SPI offload wiring schema
-+ *
-+ *     +-------------+         +-------------+
-+ *     |         CNV |<-----+--| GPIO        |
-+ *     |             |      +--| PWM0        |
-+ *     |             |         |             |
-+ *     |             |      +--| PWM1        |
-+ *     |             |      |  +-------------+
-+ *     |             |      +->| TRIGGER     |
-+ *     |             |         |             |
-+ *     |     ADC     |         |    SPI      |
-+ *     |             |         | controller  |
-+ *     |             |         |             |
-+ *     |         SDI |<--------| SDO         |
-+ *     |         SDO |-------->| SDI         |
-+ *     |        SCLK |<--------| SCLK        |
-+ *     +-------------+         +-------------+
-+ *
-+ */
-+static int ltc2378_update_conversion_rate(struct ltc2378_state *st, int freq_Hz)
-+{
-+	struct spi_offload_trigger_config *config = &st->offload_trigger_config;
-+	unsigned int min_read_offset, offload_period_ns;
-+	struct pwm_waveform cnv_wf = { };
-+	u64 target = LTC2378_TCNV_HIGH_NS;
-+	unsigned int count;
-+	u64 offload_offset_ns;
-+	int ret;
-+
-+	if (freq_Hz == 0)
-+		return -EINVAL;
-+
-+	if (!in_range(freq_Hz, 1, st->info->max_sample_rate_Hz))
-+		return -ERANGE;
-+
-+	/* Configure CNV PWM waveform */
-+	cnv_wf.period_length_ns = DIV_ROUND_CLOSEST(NSEC_PER_SEC, freq_Hz);
-+
-+	/*
-+	 * Ensure CNV high time meets minimum requirement (20ns). The PWM
-+	 * hardware may round the duty cycle, so iterate until we get at least
-+	 * the minimum required high time (or reach a try count limit).
-+	 */
-+	count = 100;
-+	do {
-+		cnv_wf.duty_length_ns = target;
-+		ret = pwm_round_waveform_might_sleep(st->cnv_trigger, &cnv_wf);
-+		if (ret)
-+			return ret;
-+		target += 10;  /* Increment by PWM duty cycle period */
-+	} while (count-- && cnv_wf.duty_length_ns < LTC2378_TCNV_HIGH_NS);
-+
-+	/* Check the minimum CNV high time is met */
-+	if (cnv_wf.duty_length_ns < LTC2378_TCNV_HIGH_NS)
-+		return -EDOM;
-+
-+	/*
-+	 * Configure SPI offload PWM trigger.
-+	 * The trigger should fire after tBUSYLH + tCONV + tDSDOBUSYL.
-+	 * Minimum time needed: TBUSYLH (13ns) + TCONV (part-specific) + TDSDOBUSYL (5ns)
-+	 *
-+	 * Use the same period as CNV PWM to avoid timing issues.
-+	 * Convert back from period to frequency for the SPI offload API.
-+	 */
-+	offload_period_ns = cnv_wf.period_length_ns;
-+	config->periodic.frequency_hz = DIV_ROUND_UP(HZ_PER_GHZ, offload_period_ns);
-+	min_read_offset = LTC2378_TBUSYLH_NS + st->info->tconv_ns + LTC2378_TDSDOBUSYL_NS;
-+	offload_offset_ns = min_read_offset;
-+	count = 100;
-+	do {
-+		config->periodic.offset_ns = offload_offset_ns;
-+		ret = spi_offload_trigger_validate(st->offload_trigger, config);
-+		if (ret)
-+			return ret;
-+		offload_offset_ns += 10;
-+	} while (count-- && config->periodic.offset_ns < min_read_offset);
-+
-+	/* Check the minimum CNV to SCLK delay is met */
-+	if (config->periodic.offset_ns < min_read_offset)
-+		return -EDOM;
-+
-+	/* Check the PWM periods remain the same */
-+	offload_period_ns = div64_u64(HZ_PER_GHZ, config->periodic.frequency_hz);
-+	if (cnv_wf.period_length_ns != offload_period_ns)
-+		return -EDOM;
-+
-+	st->cnv_wf = cnv_wf;
-+	st->cnv_Hz = DIV_ROUND_CLOSEST_ULL(HZ_PER_GHZ, cnv_wf.period_length_ns);
-+
-+	return 0;
-+}
-+
-+static int ltc2378_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct ltc2378_state *st = iio_priv(indio_dev);
-+
-+	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-+	if (IIO_DEV_ACQUIRE_FAILED(claim))
-+		return -EBUSY;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return ltc2378_update_conversion_rate(st, val);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -264,6 +483,111 @@ static const struct iio_info ltc2378_iio_info = {
- 	.read_raw = &ltc2378_read_raw,
- };
- 
-+static const struct iio_info ltc2378_offload_iio_info = {
-+	.read_raw = &ltc2378_read_raw,
-+	.read_avail = &ltc2378_read_avail,
-+	.write_raw = &ltc2378_write_raw,
-+};
-+
-+static int ltc2378_prepare_offload_message(struct device *dev,
-+					   struct ltc2378_state *st)
-+{
-+	unsigned int resolution = st->info->offload_chan.scan_type.realbits;
-+
-+	st->offload_xfer.bits_per_word = resolution;
-+	st->offload_xfer.len = spi_bpw_to_bytes(resolution);
-+	st->offload_xfer.offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-+
-+	/* Initialize message with offload */
-+	spi_message_init_with_transfers(&st->offload_msg, &st->offload_xfer, 1);
-+	st->offload_msg.offload = st->offload;
-+
-+	return devm_spi_optimize_message(dev, st->spi, &st->offload_msg);
-+}
-+
-+static int ltc2378_offload_buffer_postenable(struct iio_dev *indio_dev)
-+{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
 +	struct ltc2378_state *st = iio_priv(indio_dev);
 +	int ret;
 +
-+	ret = pwm_set_waveform_might_sleep(st->cnv_trigger, &st->cnv_wf, true);
-+	if (ret)
-+		return ret;
++	ret = ltc2378_convert_and_acquire(st);
++	if (ret < 0)
++		goto err_out;
 +
-+	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
-+					 &st->offload_trigger_config);
-+	if (ret)
-+		goto out_pwm_disable;
++	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
++				    pf->timestamp);
 +
-+	return 0;
-+
-+out_pwm_disable:
-+	pwm_disable(st->cnv_trigger);
-+	return ret;
++err_out:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
 +}
 +
-+static int ltc2378_offload_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct ltc2378_state *st = iio_priv(indio_dev);
-+
-+	spi_offload_trigger_disable(st->offload, st->offload_trigger);
-+	pwm_disable(st->cnv_trigger);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops ltc2378_offload_buffer_ops = {
-+	.postenable = &ltc2378_offload_buffer_postenable,
-+	.predisable = &ltc2378_offload_buffer_predisable,
-+};
-+
-+static int ltc2378_spi_offload_setup(struct iio_dev *indio_dev,
-+				     struct ltc2378_state *st)
-+{
-+	struct device *dev = &st->spi->dev;
-+	struct dma_chan *rx_dma;
-+
-+	indio_dev->setup_ops = &ltc2378_offload_buffer_ops;
-+
-+	st->offload_trigger = devm_spi_offload_trigger_get(dev, st->offload,
-+							   SPI_OFFLOAD_TRIGGER_PERIODIC);
-+	if (IS_ERR(st->offload_trigger))
-+		return dev_err_probe(dev, PTR_ERR(st->offload_trigger),
-+				     "failed to get offload trigger\n");
-+
-+	st->offload_trigger_config.type = SPI_OFFLOAD_TRIGGER_PERIODIC;
-+
-+	rx_dma = devm_spi_offload_rx_stream_request_dma_chan(dev, st->offload);
-+	if (IS_ERR(rx_dma))
-+		return dev_err_probe(dev, PTR_ERR(rx_dma), "failed to get offload RX DMA\n");
-+
-+	return devm_iio_dmaengine_buffer_setup_with_handle(dev, indio_dev, rx_dma,
-+							   IIO_BUFFER_DIRECTION_IN);
-+}
-+
-+static int ltc2378_pwm_get(struct ltc2378_state *st)
-+{
-+	struct device *dev = &st->spi->dev;
-+
-+	st->cnv_trigger = devm_pwm_get(dev, NULL);
-+	if (IS_ERR(st->cnv_trigger))
-+		return dev_err_probe(dev, PTR_ERR(st->cnv_trigger),
-+				     "failed to get cnv pwm\n");
-+
-+	/*
-+	 * Disable the PWM connected to CNV in case it was left running by
-+	 * something else.
-+	 */
-+	pwm_disable(st->cnv_trigger);
-+
-+	return 0;
-+}
-+
-+static const struct spi_offload_config ltc2378_offload_config = {
-+	.capability_flags = SPI_OFFLOAD_CAP_TRIGGER |
-+			    SPI_OFFLOAD_CAP_RX_STREAM_DMA,
-+};
-+
- static int ltc2378_refin_setup(struct device *dev, struct ltc2378_state *st)
+ static int ltc2378_channel_single_read(const struct iio_chan_spec *chan,
+ 				       struct ltc2378_state *st, int *val)
  {
- 	int ret;
-@@ -322,7 +646,6 @@ static int ltc2378_probe(struct spi_device *spi)
- 		return ret;
- 
- 	indio_dev->name = st->info->name;
--	indio_dev->info = &ltc2378_iio_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	st->cnv_gpio = devm_gpiod_get(dev, "cnv", GPIOD_OUT_LOW);
-@@ -330,8 +653,53 @@ static int ltc2378_probe(struct spi_device *spi)
- 		return dev_err_probe(dev, PTR_ERR(st->cnv_gpio),
- 				     "failed to get CNV GPIO");
- 
--	indio_dev->channels = &st->info->chan;
--	indio_dev->num_channels = 1;
-+	st->offload = devm_spi_offload_get(dev, spi, &ltc2378_offload_config);
-+	ret = PTR_ERR_OR_ZERO(st->offload);
-+	/* Fall back to low speed usage when no SPI offload is available. */
-+	if (ret == -ENODEV) {
-+		indio_dev->info = &ltc2378_iio_info;
-+		indio_dev->channels = &st->info->chan;
-+		indio_dev->num_channels = 1;
-+	} else if (ret) {
-+		return dev_err_probe(dev, ret, "failed to get offload\n");
-+	} else {
-+		indio_dev->info = &ltc2378_offload_iio_info;
-+		indio_dev->channels = &st->info->offload_chan;
-+		indio_dev->num_channels = 1;
-+		ret = ltc2378_spi_offload_setup(indio_dev, st);
+@@ -658,8 +680,15 @@ static int ltc2378_probe(struct spi_device *spi)
+ 	/* Fall back to low speed usage when no SPI offload is available. */
+ 	if (ret == -ENODEV) {
+ 		indio_dev->info = &ltc2378_iio_info;
+-		indio_dev->channels = &st->info->chan;
+-		indio_dev->num_channels = 1;
++		indio_dev->channels = st->info->chan;
++		indio_dev->num_channels = ARRAY_SIZE(st->info->chan);
++
++		ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++						      iio_pollfunc_store_time,
++						      ltc2378_trigger_handler,
++						      NULL);
 +		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "failed to setup SPI offload\n");
-+
-+		ret = ltc2378_pwm_get(st);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "failed to get PWM\n");
-+
-+		st->sample_freq_range[0] = 1; /* min */
-+		st->sample_freq_range[1] = 1; /* step */
-+		st->sample_freq_range[2] = st->info->max_sample_rate_Hz; /* max */
-+
-+		/*
-+		 * Start with a slower sampling rate so there is some room for
-+		 * adjusting the sample averaging and the sampling frequency
-+		 * without hitting the maximum conversion rate.
-+		 */
-+		ret = ltc2378_update_conversion_rate(st, st->info->max_sample_rate_Hz >> 4);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "failed to set offload samp freq\n");
-+
-+		ret = ltc2378_prepare_offload_message(&spi->dev, st);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "failed to optimize SPI message\n");
-+
-+		/*
-+		 * Set single-read transfer bits_per_word so the SPI subsystem
-+		 * rearanges data to CPU endianness, enabling us to reuse
-+		 * offload_chan specifications for single-shot reads.
-+		 */
-+		st->xfer.bits_per_word = st->info->offload_chan.scan_type.realbits;
-+	}
- 
- 	st->xfer.rx_buf = &st->scan.data;
- 	st->xfer.len = spi_bpw_to_bytes(indio_dev->channels[0].scan_type.realbits);
-@@ -402,3 +770,4 @@ module_spi_driver(ltc2378_driver);
- MODULE_AUTHOR("Marcelo Schmitt <marcelo.schmitt@analog.com>");
- MODULE_DESCRIPTION("Analog Devices LTC2378 ADC series driver");
- MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER");
++			return ret;
+ 	} else if (ret) {
+ 		return dev_err_probe(dev, ret, "failed to get offload\n");
+ 	} else {
 -- 
 2.53.0
 
