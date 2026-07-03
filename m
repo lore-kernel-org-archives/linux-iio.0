@@ -1,141 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F8D3D6487;
-	Fri,  3 Jul 2026 13:30:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C38434FF79
+	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 13:32:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783085415; cv=none; b=QTkUdDPjBbGodputSr6vncnz7VICcaDJZd1ppU0rqc0Eun191igkcKgji8HeRNBW2BCb2Uz0NmUnLaRxzPAfOza7ZXi1YjLJmWibd48Rb9jSCogWM+1UcqbbcYFzGUb+WOIi2+76q+JTvpanmrBSnL0QqBQWxpxkJ98BUBan6nw=
+	t=1783085569; cv=none; b=OCDSlBu7hTZ6qkOhgh8SoCBIy9LQLlfS2jMQjY5xbXmpyCvnBNO1zWud2iWLi6mn7S+klKi065rmA435m8Jq5Ht9nrDVeZMeIQr7VjteKuBM5HlzffV4Hub9jS5o7tgEvR/vJAUBTrs91n1D5EDcXMT0ePe1t6v63uXCVGCnUJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783085415; c=relaxed/simple;
-	bh=5EpHk1wO5d9taJbc9hNQaJkd7OdOQDqBi9ZtuEIdDJw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=drODK2YPa//Kj0R2MhhDBXpJ3bd6yv778AFGVOuwG+QoMT/69gcLnlxmZnhT9QZHlxz12I9QrZAvXOElCJ4WChfU6mKbDN3iexMePNzJGtASYaTaQCX72MgDe9KNg8czlTfsuHI6NGg5+Q22CK+wxHsoEef+llr4hE45eXcrL0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GRHqHM50; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783085569; c=relaxed/simple;
+	bh=mL/o0x8U5l45AtjSAUwiJf3Q6RsGlZhXHk/LiDnIUkQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=a/rzBDeJXu654IlNuSIk7h4ErQCRHbNvIbdKlOWdhVJ9JKvBzQEvwlnOHHgNHusO8H6UtJjM0hb5recO/iTtXWKMsQe57oXsLY4qCbcwjyBPeSupHdjz74MCeKOBq4YvAn/rye4ld675QdMYNH/rm0Qavh0K/tm+YbGjXwA8FFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NS2t+hZS; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GRHqHM50"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783085413; x=1814621413;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5EpHk1wO5d9taJbc9hNQaJkd7OdOQDqBi9ZtuEIdDJw=;
-  b=GRHqHM500RWpuLKMycrbbjCV6/ACwzjuBQ0SKwnBbLSqtcK9pqihvC8W
-   g+QKddNeTHhfMwg7OmY7+Pj5ABvYr62TfLQEgQraMDfuofN2uh1AD45jY
-   EnR9DkAycsH7iaE19FoNPRCw2fZWM2HsrJYwxXc5yIC4CCXhcBxSnjbVS
-   98kQlqvgjxy4Q3lQJ7vx4Sar2TTarVWSfs1RB1oVELCD6RHw3O6/RBrD3
-   5YKA9yIvxwt6sho5aCOwKro5xCmbk5ii+Vb6yQAYlqyDaj65FU9Jnmrro
-   RvNRi5ETVcI06klBv3UYUN5E+MVeWUN2Oz1fmlia5vDWqj0R3TPIRgKK2
-   Q==;
-X-CSE-ConnectionGUID: GiiAKvhqRPmSKhD71umjGA==
-X-CSE-MsgGUID: 8k7FrdLASy+/iKroYwYRFg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11835"; a="82826549"
-X-IronPort-AV: E=Sophos;i="6.25,145,1779174000"; 
-   d="scan'208";a="82826549"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2026 06:30:12 -0700
-X-CSE-ConnectionGUID: pkTZ1QAcSe2NMLmSf+535w==
-X-CSE-MsgGUID: ZDUrG/ahS8iMXcMXGChoyw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,145,1779174000"; 
-   d="scan'208";a="251395013"
-Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.80])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2026 06:30:10 -0700
-Date: Fri, 3 Jul 2026 16:30:08 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NS2t+hZS"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493b6f1b14bso2660865e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 03 Jul 2026 06:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783085567; x=1783690367; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O6o3nvG+bVMICGNeP3rVUt3G2YvmvxJsmSJK/j+DjHg=;
+        b=NS2t+hZSVU2AG0vmWnXlP1NQx9MKb6RmUgLbVesYEntb2eCLsief7RsVOS0sCXmaSZ
+         lmeixPxux+8zp8QfJkiyV2HHulbq1lvy20qozbAO4lUYz3y6LPQud1wtOHU0eRYRa8xS
+         +fPzt1JfyuP4O3zQLMcFSLxXMxwu37p40CzqbSRziKYnXVKh2K6TYBumOZb6GPlRIrnC
+         /KqQOKIqMPiljP8Hb1DvfXkRcO1bi/fCmIt8YLC793cJ1k/evdso+cFVg3/fdgf4u8T6
+         PA/7vQ0Id/Xxx7J3tjjwRUHHZa1EPHP+LgEBnaDstDiOCpMVu5MUGUi+jb7mP1w3IVfA
+         Zg7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783085567; x=1783690367;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=O6o3nvG+bVMICGNeP3rVUt3G2YvmvxJsmSJK/j+DjHg=;
+        b=j7OaYuJ8ikJdVY3e30kMWxryPUTIQgIuX8dOM3ki60yF6+akDD9SrrE7EC+E1e1fFh
+         kmqOccTQe02X3ktT42b00lNt1yCam2OiTYZjF6GialspwRojEuTiabFOyoqhpngFoOCQ
+         7tprpbDa0JWbMVM/oo8kbuhdt1qr4rdjQIBaowvKnLsGwKOihZujz6IzXvO4R8VApP/5
+         gbXZAV+UUW1HkonDXMYV693hQgEhzp4sdViKuafyARYOAfcqkO4WeCx031U2EoKZiqe+
+         k8Km88P/LSkX2kYaMy+o5+EQ+0F7QP1+T5/Bn2WEUPDKgXuoOYClIT9TGQMQXedjfOUR
+         N+Ww==
+X-Forwarded-Encrypted: i=1; AFNElJ//sUuKbKkc+OErrLvezebZJCnJQokzu2qY4qpwDJbskv+NKgbRSF5jW7GJLFtAZ9Ng5cQ8Y1xLq3k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyQlPWJULimcZwuMGIW9p2YurMgZvPxU9bNw7TfzxBzxNGAJXwA
+	oLfC4ca1zeJM7S/S+OE/F6X1WHTTsd2VzJKesGICH8t9xmlDCsVCyFQc
+X-Gm-Gg: AfdE7cnMXPKd+eL+DH4eYNG0AhTOp7gSWNfmogpTIEfvGlqEWX9nMvqoKa2CeSE9LIo
+	7fH/09WmZGr4LmtCaPx2AwK7AJ8JqO0e4ckZSV7crFFpJYz+S2z1qo/Gm93WNzAQGZbe/1UMrB7
+	2NG8MnlzdP+4apO/HJv5XGyfsI6L/BzpGQA0F7gK8w0xiPTdaEbpgH+lxwcJc6NC6TPyvOJM6Jk
+	UEeZqJ3PoutOrpjWtEVaw48p3xdcLHzPGmuNekXlpPBfsgDUveV+IZga7THwPL7RmP+5cSUEh8y
+	CX2welE54YuC1yNvc6DoevExgFyXlGjFinX8D90ZZEIBtA2H7NZ9wunMf+sRX8VyGYzHGHKHD+4
+	5ltd+ygYXKlXqvdC3J3q7NGKjmS8LCoRU7dySeeSjDVWw4EDwghQR46AllP/D46WFJ2pzWuIOD/
+	rJG11v8jzWUVHDCd0GgkUJR3bPc9HIlR+PfsEdHRbXtueAwoVIKdjqWt1coVnoUf9RJ0ScpU4CX
+	SN6xG6cZ37zaR/aK9QZXnsrNJLauOH0uNwJ2OOTNkbAnELenEpRAF1Lxd6FiqSQP64DgBC9cIXV
+	HJuudsujmV4ljngbvuLDxS1MiABWaJQCbmoafqA8Bli7uDpCLBWL+ew=
+X-Received: by 2002:a05:600c:810b:b0:493:b61c:72c3 with SMTP id 5b1f17b1804b1-493c2b99c43mr133479105e9.32.1783085566601;
+        Fri, 03 Jul 2026 06:32:46 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493c63bfba1sm153127035e9.15.2026.07.03.06.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jul 2026 06:32:46 -0700 (PDT)
+Date: Fri, 3 Jul 2026 15:32:45 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Mert Seftali <mertsftl@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jelle van der Waa <jelle@vdwaa.nl>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Jelle van der Waa <jelle@vdwaa.nl>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: accel: dmard09: Implement IIO_CHAN_INFO_SCALE
-Message-ID: <ake5YH7GsGFnkSPm@ashevche-desk.local>
+Message-ID: <20260703153245.00001d9e@gmail.com>
+In-Reply-To: <20260703130750.66549-1-mertseftali@web.de>
 References: <20260703130750.66549-1-mertseftali@web.de>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260703130750.66549-1-mertseftali@web.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 03, 2026 at 03:07:50PM +0200, Mert Seftali wrote:
+On Fri,  3 Jul 2026 15:07:50 +0200
+Mert Seftali <mertsftl@gmail.com> wrote:
+>  struct dmard09_data {
+>  	struct i2c_client *client;
+>  };
+> @@ -79,6 +82,10 @@ static int dmard09_read_raw(struct iio_dev *indio_dev,
+>  		*val = accel;
+>  
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = DMARD09_SCALE_NANO;
 
-> in_accel_scale has returned -EINVAL ever since the driver was added.
+Add a blank line here - same as the previous case.
 
-You mean "Reading the in_accel_scale attribute ends up in returning..." ?
+> +		return IIO_VAL_INT_PLUS_NANO;
+>  	default:
+>  		return -EINVAL;
+>  	}
 
-> The channels advertise scale via info_mask_shared_by_type, so the IIO
-> core exposes in_accel_scale, but dmard09_read_raw() only handles
-> IIO_CHAN_INFO_RAW;
 
-> a SCALE read falls through to 'default: return
-> -EINVAL':
-
-This part is repetition of the first paragraph. Drop one of them.
-
->     $ cat .../iio:deviceX/in_accel_scale
->     cat: in_accel_scale: Invalid argument
-> 
-> leaving userspace with raw counts it cannot convert to m/s^2.
-> 
-> The driver was written from a vendor source [1] without a datasheet, and
-> the scale was declared but never implemented. The vendor source carries
-> the sensitivity: its conversion is
-> 
->     acc = raw * GRAVITY_EARTH_1000 / sensitivity   (then / 1000 -> m/s^2)
-> 
-> with sensitivity = 32 and GRAVITY_EARTH_1000 = 9807 ("about
-> (9.80665)*1000"), i.e. 32 counts correspond to 1 g.
-> 
-> That sensitivity applies to the value this driver already reports as raw.
-> The vendor processes each 16-bit sample as 'data >>= 3; data &= 0x1ff'
-
-Try to write it more human and less programmish. Something like
-
-"...16-bit sample as a signed 9-bit..." In other words, drop those technical
-details, people can check the code by the link.
-
-> plus a sign-extend of bit 8 - a signed 9-bit quantity from register bits
-> [11:3] - and dmard09_read_raw()'s 'accel <<= 4; accel >>= 7' yields the
-
-"...and in dmard09_read_raw() preparation yields the..."
-
-> same value. It is self-consistent: 256 counts / 32 = 8 g full scale,
-> matching the part's +/-8g range.
-> 
-> Implement the scale derived from that sensitivity using standard gravity:
-> 
->     scale = 9.80665 / 32 = 0.3064578125 m/s^2 per LSB
-
-> [1] https://github.com/minstrelsy/mediatek/blob/1f49d8c87b839651bc89afc870277e8e0f2e2d55/custom/common/kernel/accelerometer/dmard09/dmard09.c
-> 
-
-Make this a Link tag
-
-Link: $URL [1]
-
-> Fixes: a4fa6509dda4 ("iio: accel: add support for the Domintech DMARD09 3-axis accelerometer")
-> Signed-off-by: Mert Seftali <mertsftl@gmail.com>
-
-...
-
-> +/* Sensitivity is 32 LSB/g; scale = 9.80665 / 32 m/s^2 per LSB. */
-> +#define DMARD09_SCALE_NANO	306457813
-
-I'm not sure how it's derived. Can we use more of calculations here instead of
-precalculated value?
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards
 
-
+CJD
