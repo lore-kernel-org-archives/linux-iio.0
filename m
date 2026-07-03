@@ -1,48 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE9CB2AE7A;
-	Fri,  3 Jul 2026 00:35:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B61C21A6807
+	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 00:37:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783038907; cv=none; b=Gmr3ecWsTFYhQqHCTlQcDRPPhjqbVPn2v5TpTSwVFxj7VPYD/cCky/joDzsAUrD9AvUrpV+Ql6CWbsmAsK0hmt2kWBUETx/RT6sCvd5t01YvGOmBxCgiE21OPSUN8CL97Mxbw+8LAGjFb1jjo44WWhA7k+gtUpIEJKMGWW9pMtU=
+	t=1783039025; cv=none; b=u7o4OXBHFsJW9UdMW+PveFCPW7V6X7xfo/mTTfuRMMehcnCRpULqV4XoJig/Ejodha2lHWbbXl0cUp40I3fuSCFkGdvGHuyrmiSNl9R5eNhIkXkFOH0mEwZk5fJCVi782iJcypoLKsb0nAVAFOuCGfU3WnKuj9dIgB4UUNqOvKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783038907; c=relaxed/simple;
-	bh=vr37YRdwBiP9/KjLNKRUwKA6k0WG3P4sA1UBAg6v+u0=;
+	s=arc-20240116; t=1783039025; c=relaxed/simple;
+	bh=jvnmu+U4vbOyw0CHbL3xbwAwX0XguuDbmq9TuHjgbm0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dLagZOHVG3tyf5O4k7bAbiXUBh7HcmIOZLQpBnqZQikuy1sjlbuONdXLcVJChSw6UFrYogbu4hCsQNSRVhGI8+NyF2Ti/e7awrpvms8sCT0jP46fyOdq0JcWY69hza0GB3jovAslKcb697jJG6FKzNzSFEOI8TA5Fu99L5cJidY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H4aIvRTU; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=QLky8LX7kZTCCoRZoJaetokhdgcQ5K/gdQKBGns2wnfbqP+0VaTQzq5ZDjn1I9beCo8609TfUtI6dZeujc/Sp+eTxlRQOzzQuMeVaMqFBsqy6mYoKKYYqNqFz0cAI08U9ODGpwwytdBB/cYoE84RZ0IuQ9wirnPOaXV2JwXKGio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DmWyOtEx; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H4aIvRTU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22621F000E9;
-	Fri,  3 Jul 2026 00:35:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DmWyOtEx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F375A1F000E9;
+	Fri,  3 Jul 2026 00:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783038906;
-	bh=+kJ1L7mnsC+1kx38OTy1fsH5IcXwWb+RODD1evJbDwE=;
+	s=k20260515; t=1783039024;
+	bh=Mh4dHMF0l997T0BpuOeXCWxruqxwfLCgyav7ACHSTHE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=H4aIvRTUYeM8cAGYxEZCa4gla4Te36mO1e9OLxXQ3HwBwpgce+zdj5Sp7g0Buuz57
-	 srjjrU+jmHvuN9oTe0miHXAaOZZqmDtk15OCqpY05YRK2HTeH03kMXbeXQXEOuSLVD
-	 Y3m0gbIKUaNpwDXIU1dgd2TXrn2tB8ggMYNclgAZjq/7MItg20wPK8Rh/q65zb1hJR
-	 XIdUsPXAlu6tW7tbrNMCzMfY8YQ64N4G6VH7gMLtAvFjHwgIRUWM6vEEWEWWjZfC0F
-	 jnug/zo1JVJVzz3hw3mo7HFICRwvEz4h8SJsfOMkLrfp/q+igIEtPnoPm2ZBLLKXhX
-	 i+1cEv2RSGuAQ==
-Date: Fri, 3 Jul 2026 01:35:01 +0100
+	b=DmWyOtExiYcjYHW2Q4dD4aisExm33SiO+qeyhkwcSLBt1+1xxPX3uPZJlRdljd2B2
+	 b3Mu+zqq5TUL8wahiAmzTXVqrcthlu9fwkZQj34dL5s1MWHMTG0QEN6BAUw64/PNn5
+	 aUr0AaEV6RjdVTxsdT396lVq32Dn3PqdR5JX87alOFK+JQBs/aVgeo6tvsvBcghqxa
+	 wrII3xhnkZmcNWjSne0HLGW6osa1+dhCxahUdXd+e0UvVmK0th5t8wd4szM8IoV+VC
+	 XnsFXUT+GrjxItcXne22RO/OW1pN791bP1rtZ44d1cuv+rq3rnwpkWdRSxh2tjGJqu
+	 KTznXBkqIl42w==
+Date: Fri, 3 Jul 2026 01:36:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Prashant Rahul <prashantrahul23@gmail.com>, linux-iio@vger.kernel.org,
- Shuah Khan <shuahkhan@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
+To: Prashant Rahul <prashantrahul23@gmail.com>
+Cc: linux-iio@vger.kernel.org, Shuah Khan <shuahkhan@gmail.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Petr Mladek
  <pmladek@suse.com>, Oleg Nesterov <oleg@redhat.com>, Sebastian Andrzej
  Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] iio: adc: ti-adc084s021: use dev_err_probe for
- probe time error
-Message-ID: <20260703013451.75cacf98@jic23-huawei>
-In-Reply-To: <99507afa-6986-44f7-98c1-257c52a5dcd4@baylibre.com>
+ linux-kernel@vger.kernel.or
+Subject: Re: [PATCH 3/5] iio: adc: ti-adc108s102: log buffer setup failure
+ in probe
+Message-ID: <20260703013659.12315007@jic23-huawei>
+In-Reply-To: <20260618231543.413771-4-prashantrahul23@gmail.com>
 References: <20260616130612.73122-1-prashantrahul23@gmail.com>
 	<20260618231543.413771-1-prashantrahul23@gmail.com>
-	<20260618231543.413771-3-prashantrahul23@gmail.com>
-	<99507afa-6986-44f7-98c1-257c52a5dcd4@baylibre.com>
+	<20260618231543.413771-4-prashantrahul23@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,38 +52,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 19 Jun 2026 09:49:19 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Fri, 19 Jun 2026 04:44:36 +0530
+Prashant Rahul <prashantrahul23@gmail.com> wrote:
 
-> On 6/18/26 6:14 PM, Prashant Rahul wrote:
-> > This simplifies error handling and ensures consistent error reporting.
-> > 
-> > Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
-> > ---
-> >  drivers/iio/adc/ti-adc084s021.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
-> > index a100f770fa1c..9c7ee09955ca 100644
-> > --- a/drivers/iio/adc/ti-adc084s021.c
-> > +++ b/drivers/iio/adc/ti-adc084s021.c
-> > @@ -230,8 +230,7 @@ static int adc084s021_probe(struct spi_device *spi)
-> >  					    adc084s021_buffer_trigger_handler,
-> >  					    &adc084s021_buffer_setup_ops);
-> >  	if (ret) {
-> > -		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
-> > -		return ret;
-> > +		return dev_err_probe(&spi->dev, ret, "Failed to setup triggered buffer\n");
-> >  	}  
+> Errors are logged when enabling the regulator or adding the cleanup
+> action fails, but not when buffer setup fails. Log the error returned by
+> the buffer setup path as well.
 > 
+> Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
+I'm not going to add more prints to these. So won't pick up rest of
+the series.
+
+Thanks,
+
+Jonathan
+
+
+> ---
+>  drivers/iio/adc/ti-adc108s102.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Can drop the braces here
-> 
-Dropped whilst applying.  I'm a bit in two minds on whether we should print
-anything on this one given the incredibly low chance of anyone having
-a bug that double registers the buffer - still better as dev_err_probe()
-then dev_err() so applied.
-> >  
-> >  	return devm_iio_device_register(&spi->dev, indio_dev);  
-> 
+> diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+> index 7d615e2bbf39..440afe584f5d 100644
+> --- a/drivers/iio/adc/ti-adc108s102.c
+> +++ b/drivers/iio/adc/ti-adc108s102.c
+> @@ -256,7 +256,7 @@ static int adc108s102_probe(struct spi_device *spi)
+>  					      &adc108s102_trigger_handler,
+>  					      NULL);
+>  	if (ret)
+> -		return ret;
+> +		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
+>  
+>  	ret = devm_iio_device_register(&spi->dev, indio_dev);
+>  	if (ret)
 
