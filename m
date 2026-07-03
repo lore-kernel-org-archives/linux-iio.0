@@ -1,35 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305AB223708;
-	Fri,  3 Jul 2026 01:19:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288701B78F3;
+	Fri,  3 Jul 2026 01:21:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783041545; cv=none; b=ignj+ZHl5uxuePp9UaWzEwpf8Wf496exBOpcm6e7t+QUhDzoxV7344A8mkhxaakV0GzuHuatHmb76dYYLI71KPlR+mC2tWPFxcLeUyweDlrNzaVWQR7Ih/+Tdsr6T3BDelLlvzw3x6eu3NjC8cUUB7sQ/iExzCWN6sfE16GPZdY=
+	t=1783041671; cv=none; b=UUNqvgWbyHH4Z+W6ncp4fzohyycXNPxz/VTlCcK6xfUUzoz5zP96CopAh98Ukj8vWBCF8t//B2HL7ncFDMeSoIBLa3/DbySLTlN7IWunIfAEMhdn1aCV8YK4wYJSWUkrsc8Trn5VONqCtThMjfb10TQCrPFPhlOaa4Qlu29IhOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783041545; c=relaxed/simple;
-	bh=Cbn4viDp8af93+sqts6UdeNMt/J1EolsbRNbG7kByV4=;
+	s=arc-20240116; t=1783041671; c=relaxed/simple;
+	bh=61lpt2EEc8qNF+Y7FP5OwXW+R43dHh5LY0b3cyc0nC0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LA5Plbt5aB3S1x+/JeYqXT/F0rSde4OJw/ixgzMFkp5xkZOq/PNmmQ62FXogMBnM/eIFoYlnbzvCyCe8ran2i3xTfWSKZe9t4W7r0MWhdsLAFeuXq9dYOkSPK/KRmav7x7Slsd0D0mKngZVBPhyykZMhRTKu1H/ta0HUUEtXeBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CifXsRuA; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=OPcGwiiYO2kDgJGfpyY3UI/JDNAAk7QpCYIhCl6GZfl9fdvZmu0hTHpHFl7/gS2Rrjc93sbdxsBcz3I1KhfIyMmxzEwEhacjVhaZ4cayfjLSLqqiTdsbaJy0DpquQInA1NLvcWeMvA9kRRj+DXA+/0CZDORIyhd1NRYgP24jY1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RGKp2wWE; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CifXsRuA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A80D1F00A3A;
-	Fri,  3 Jul 2026 01:19:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RGKp2wWE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6916F1F000E9;
+	Fri,  3 Jul 2026 01:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783041543;
-	bh=QpzqHV5eNfljwM9BNUui3TR7zK9zZb1NHcedXzfay5Y=;
+	s=k20260515; t=1783041669;
+	bh=OkqLMtGim2VaPVghPaQAYErEwHkd6TWt5176otOORr8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CifXsRuAO/0cn/qpw/xUwP8SieFV57WfqjyOzZHHW7kW1SQ/w/aIe3MCLrhg7fF48
-	 GcSNblIK2X5c0Jj57aTsDnomb7HLVY9iL+OB4hYIocm4d0iqp1GGtdrofN0lDJquQP
-	 KOPnonCnoIbTT2CFESrd8WvpHr1tgh+BanMtZPyFBUQu3FyXFTa8xwLKW13Gia3lIi
-	 +JFZHzhIKAlN1AL+IhD5iD3rgy6qaJ4ZB2IstvcNGXXhj1etueyJnsYtubSLzbN2ID
-	 +W+Ghb5ZllYfJxVbGcAlhxmgM1wCrTK0beHOcHpiiOLrrbyCPEFiZE0I13swGNKONP
-	 FuZVM2xK5VVHg==
-Date: Fri, 3 Jul 2026 02:18:57 +0100
+	b=RGKp2wWEAFuPHFB3CKx97VVnGS+SaBABIzrz3lAm3QJBoJQ/O8gkQsiivOU8tSnCM
+	 f0oZQi5sxauQe2Ly9K4rcVjPvBR1GCcAWIg//7Pc3zxK6pTmBWGM44DBEGVdtFqEx2
+	 oD0yObZqWU4I1oGs8M/WD3dkmM1CClvCTE5mhJooTTH21Qx2H59+YSkp5JiCpH5ZbB
+	 P5ZHXDMaNRcaPi59ClVQb5FDWS4H7WCqBsDnWGumX9a3pox+fkNFKtS69S39cd6oKq
+	 zB+A/ZistgCHE8jdR0qulcxtcmaM7Bdw1nIdKNNbovIBSLdyItRgYGFai60ve+3X7N
+	 mqQutEqI1V0VA==
+Date: Fri, 3 Jul 2026 02:21:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
+To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
 Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
@@ -40,11 +39,13 @@ Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
  Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
  R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v6 03/16] iio: ABI: add parent entry for iio channels
-Message-ID: <20260703021857.04fbcfd1@jic23-huawei>
-In-Reply-To: <20260618-ad9910-iio-driver-v6-3-79125ffbe430@analog.com>
+Subject: Re: [PATCH v6 05/16] iio: core: support 64-bit register through
+ debugfs
+Message-ID: <20260703022104.5f452219@jic23-huawei>
+In-Reply-To: <ajQDsZWJQRKKM0dv@nsa>
 References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
-	<20260618-ad9910-iio-driver-v6-3-79125ffbe430@analog.com>
+	<20260618-ad9910-iio-driver-v6-5-79125ffbe430@analog.com>
+	<ajQDsZWJQRKKM0dv@nsa>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,53 +53,98 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 18 Jun 2026 14:27:19 +0100
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+On Thu, 18 Jun 2026 15:45:23 +0100
+Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Add documentation for a read-only sysfs attribute that allows to expose
-> parent-child relationships between IIO channels.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d9c4e3b53f29..e0f11b39511f 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -2154,6 +2154,23 @@ Description:
->  		specific attributes. This is useful for userspace to be able to
->  		better identify an individual channel.
->  
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_parent
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_parent
-> +KernelVersion:	7.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Read-only attribute containing the sysfs name prefix of the parent
-> +		channel for hierarchical channel relationships (e.g. "out_altvoltage0").
-> +		The prefix uniquely identifies the parent channel and can be used by
-> +		userspace to organize channels in tree-like structures that reflects
-> +		the physical or logical relationships between them.
+> On Thu, Jun 18, 2026 at 02:27:21PM +0100, Rodrigo Alencar via B4 Relay wr=
+ote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> >=20
+> > Add debugfs_reg64_access function pointer field into iio_info and modify
+> > file operation callbacks to favor 64-bit variant when it is available.
+> >=20
+> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > ---
+> >  drivers/iio/industrialio-core.c | 33 ++++++++++++++++++++++++---------
+> >  include/linux/iio/iio-opaque.h  |  2 +-
+> >  include/linux/iio/iio.h         |  4 ++++
+> >  3 files changed, 29 insertions(+), 10 deletions(-)
+> >=20
+> > @@ -471,7 +485,8 @@ static void iio_device_register_debugfs(struct iio_=
+dev *indio_dev)
+> >  {
+> >  	struct iio_dev_opaque *iio_dev_opaque;
+> > =20
+> > -	if (indio_dev->info->debugfs_reg_access =3D=3D NULL)
+> > +	if (!indio_dev->info->debugfs_reg_access &&
+> > +	    !indio_dev->info->debugfs_reg64_access)
+> >  		return; =20
+>=20
+> Not really that important but should dev_warn() in case someone gives
+> both callbacks? Can't use both anyways.
+>=20
+> (We now have agentic help reviewing the code so maybe even if someone
+> does it for some reason it won't pass review :))
+>=20
+Definitely marginal. Not sure I'd bother. However the docs
+could say something about the mutual exclusivity.  See below.
 
-Reading this again after a while (sorry for delay) I think this needs a motivating
-example to remind us what this means.
+> - Nuno S=C3=A1
+> > =20
+> >  	if (!iio_debugfs_dentry)
+> > diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opa=
+que.h
+> > index b87841a355f8..98330385e08d 100644
+> > --- a/include/linux/iio/iio-opaque.h
+> > +++ b/include/linux/iio/iio-opaque.h
+> > @@ -73,7 +73,7 @@ struct iio_dev_opaque {
+> >  #if defined(CONFIG_DEBUG_FS)
+> >  	struct dentry			*debugfs_dentry;
+> >  	unsigned int			cached_reg_addr;
+> > -	char				read_buf[20];
+> > +	char				read_buf[24];
+> >  	unsigned int			read_buf_len;
+> >  #endif
+> >  };
+> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> > index 711c00f67371..1c7d12af22da 100644
+> > --- a/include/linux/iio/iio.h
+> > +++ b/include/linux/iio/iio.h
+> > @@ -484,6 +484,7 @@ struct iio_trigger; /* forward declaration */
+> >   * @update_scan_mode:	function to configure device and scan buffer when
+> >   *			channels have changed
+> >   * @debugfs_reg_access:	function to read or write register value of de=
+vice
+> > + * @debugfs_reg64_access: function to read or write 64-bit register va=
+lue of device
 
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/in_phaseY_raw
->  KernelVersion:	4.18
->  Contact:	linux-iio@vger.kernel.org
-> 
+Based on Nuno's observation above, I think this needs to say this and debug=
+fs_reg_access
+are mutually exclusive.
+
+Otherwise LGTM.
+
+> >   * @fwnode_xlate:	fwnode based function pointer to obtain channel spec=
+ifier index.
+> >   * @hwfifo_set_watermark: function pointer to set the current hardware
+> >   *			fifo watermark level; see hwfifo_* entries in
+> > @@ -572,6 +573,9 @@ struct iio_info {
+> >  	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
+> >  				  unsigned int reg, unsigned int writeval,
+> >  				  unsigned int *readval);
+> > +	int (*debugfs_reg64_access)(struct iio_dev *indio_dev,
+> > +				    unsigned int reg, u64 writeval,
+> > +				    u64 *readval);
+> >  	int (*fwnode_xlate)(struct iio_dev *indio_dev,
+> >  			    const struct fwnode_reference_args *iiospec);
+> >  	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned int v=
+al);
+> >=20
+> > --=20
+> > 2.43.0
+> >=20
+> >  =20
 
