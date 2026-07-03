@@ -1,137 +1,143 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D138237D10C
-	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 06:42:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783060981; cv=none; b=thiqRwPVV41IaqdbBFKBaCONmlEVAbPC1Zh3J06QgL+u2iAM5A7GD5kgeBQMGPiOvk+A0X5yBeVYGcz1fbRaOPsh5QeHdhcK+9OeaYOE87Qya11F7XpmBtSQ7DOejjhBToawMuYaQMBU4igzVkjCmljTW0hEzNC3RGF4hFFPAL8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783060981; c=relaxed/simple;
-	bh=Lv/QgXerDHkBYlnEgo+QNgRQf461nSCPNSQ9zeq+4Cg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U5PDYGdEUq6MPb5H3lQrHVQoaCbH67ngUFSXZ89bc5/nC45OWQtU6rU8I1BGoix3cQ5xd4sOuiZr+N18qPGZ/176xHjfxTezm1MMW5/gI1pTbLHHe+4l3crUopVzCqJ3SloU2k2Ds6DwfX+rp76ARvhFhacHSi6X6a38ZB3tq+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D5cG1Fra; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5394B37CD5A
+	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 08:50:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783068630; cv=pass; b=Q0YAtlBYndU3nZ7Mh+IB+TiI0UMBNOka6qCOCT4/Q7n6xSoyK5IGHvfZGeipo0Z1xX3OSZzeQDeniId3Q3ZMVAQsY2FZMLwS2dOypdCsd0PYuj7AZyARxAzXh5mwUQZ32xtET1JgBF+hzEef/Q4Eze7kEpiErh4TPDk8pi/EUnk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783068630; c=relaxed/simple;
+	bh=JIGfUZOnaS68j2TExBUBX6hHqwIcodMVFuEw4DTpCW0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Wu/1pYGn9CCn907fynRGqmKQk6NVCLCuc/DjmGqNcaOexU5PD4tjgpkOjFS3l66PPgelzoSpMxNRf56ebGqTitJCFnYa1AT9J5ycdFSklsTzGIuvWpLscwrQUAU275WaeziSpFD8c0P2W/vYfmNlPVKpLpotPSqaMFVHGkBTHmA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yp35/55s; arc=pass smtp.client-ip=209.85.216.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D5cG1Fra"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-479b7aada85so224345f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 02 Jul 2026 23:42:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yp35/55s"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-37fa06b39b4so293014a91.2
+        for <linux-iio@vger.kernel.org>; Fri, 03 Jul 2026 01:50:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783068628; cv=none;
+        d=google.com; s=arc-20260327;
+        b=UBN/xC0FFPKc3zO6Ly/npxAh3/0zI+NUpFUXO+J5fuy9ifGTnKNhrdoSfWIX1j9qYk
+         CSYMXrYMNZkP+mi7tCBcirYpwKLBECwOyQrKi/arX4IzfyKzOuY9ov3K35GkUzts6KVz
+         urOpLxj0nOekcvJ+55Wp6+QJxj0q1LMNUBhor96Eq5ZKh8I2toMdiOkTr6a1V17i3Zk9
+         +pSEM3B5LnH/LsbYbFEaG/QkUbj4j8rcI3zInm942k+6q4CffYTUuAjUEzW+hrlSRb3Q
+         /ipZPmL52MzvF1RGxdgUf1tUSPZcr3quJFOfzYHFrbY8wZbpmVDAZ5riYr5AdU7zNhfr
+         Q+4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=JIGfUZOnaS68j2TExBUBX6hHqwIcodMVFuEw4DTpCW0=;
+        fh=AZkoEoRqk48yl1XszKtTekTtIUBorXtdTZ7cXgtt0YM=;
+        b=QOfFfNroLqQMOdC4MaE5PJDNIhqVmd2IQNu/FqeUQdME1zojTCZtWCKMIXjQb5vYHi
+         avRKwzbQPSlCzi2tRswZJ2vKwGiO6ItBgOMcVD7oarNPa1jX+HGHkhCV3KmILWZtfRqF
+         875c39uvZJx5tcYj/PhO5WrshDylqLzab5is+YmfE5NLUlr0RuPms2N/g3HEnCFucl2z
+         j/hTJRdp7vPl2Oy4DBnDV7Q0byDIwMtg2jnLLI3bBCqhSb118H2EZ9ceCqhXCULeG9zg
+         6tzEkm5GkSVg+mucacY+0/4AQRL+FgvtQfq7Q3AuOpOBcDvxcK33QJY8raM3w71JZ7xu
+         w2Hw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783060978; x=1783665778; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=v+sqymlOvxvkOi7TZXL6sHTdLLN7fEoTwyaDCo9neQ4=;
-        b=D5cG1FraBR0T7TjrsVIaoo1a2AlkhqEG+LzZzAXlEygAGmdT9t8ZD1E19LS6dqPXLL
-         M1SJql0DIqIlvxVWKbwHrdJWvtOlHrrhAntBxwYZxgroNgZZtakxRPhbwNxmlVFTGZ3u
-         +tQIiYYrZAuRKDEbWV1LZIC3FDNpf0JbFpHVrIQHXNHvT0BXva4CG86IelZpyBSTP1qp
-         yc/A+KAlZTmiVmbxVpH7djQUYBA8lF+sr9FV99GGmVEBEia1BmPrnNpmAj9wBTq591/+
-         wRCQE49+/P25Qyvj1aMbbubpl0TuViOnGjwj/w0636mrPwg53rvlm+Rh4PvGi6HsLQjq
-         tVqw==
+        d=gmail.com; s=20251104; t=1783068628; x=1783673428; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JIGfUZOnaS68j2TExBUBX6hHqwIcodMVFuEw4DTpCW0=;
+        b=Yp35/55s2vBK2gEHGs8sgoI4osunm/jZFHkATgRYASC18u4qN6qcDOA83y0Cdxh+o6
+         662moOywNpzPRSm6IfkxhQGHxJCFKGZuWl7sBT+LyeT8WG3ey8TijM8RdF2Wb9UG7IHf
+         Z+u8B/sfKHEOfDIhY1mm2KEYg7Hd/7HHLOj5jVWz0EzKOSpm8yhwNRd9Xa+5gBtEt+qA
+         J1yriTyygEOyXJgZ2983NY98/f9+OH9YXN6AoD/E2fMB+hnW0yiaFpi2qnP9Axtd6LWw
+         Y19k/WHx59Oz1dyeGCfMHMJSwufeMXvUd+o79pWRAM7jVwsUyEbjAHBnvzl8qk99dTuw
+         Ql8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783060978; x=1783665778;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=v+sqymlOvxvkOi7TZXL6sHTdLLN7fEoTwyaDCo9neQ4=;
-        b=olvjtrOj9wXNSIweLlZIbAeJzjAbsit25qXSat/OYFyv+dyQ+yhrFUeDdxahJXk+pI
-         6A3AjTS1OpVB0ZrUZtvn512pB2ueNPzXg3yq3IzfWSAQTNQXfDbYZSLDIhTMsjitTLlu
-         XFYVVwpfSQhzCOAIlOQcqUeQd+tpOQiYcy5PfoIPqfZPLZx+CE02Ip1KWuo6u2IEMrzJ
-         QlDjoKBuGl3p+633jEzAXZYT3NicBsfEZNzG+4xz+CcXmKfTUTWOvo9S3V0D6qhXvzjS
-         MOWfT3mATlHr7/GIPa9YkkAG9XPV1tjX26+Znmx0BQaMzDdv3JeHr0CjbJSAkQSdL8ty
-         kTeg==
-X-Forwarded-Encrypted: i=1; AHgh+Ro9mUTLYi1/SAg7EQqsReyMOVTUp1WaRIN9e/F18v2EeSHXVRABX4BByaloHmFTD3buonhJNriHcWY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxYIEeH2y8ohWMG3ZpRKG/x3f8+IQqfJfQ8bBzfj9rJ/OGn7lHd
-	tFSwolHKB4pGWh3EVQmGr9KAMtC6VcE+lnnJgR+KnIlNZIHMSVk2r+zJ
-X-Gm-Gg: AfdE7cm8CWxGWdWw7sMWVI8OSltOGbcoKPkqn0LfMK0ixMEo5qs/QMT9oYyVnfchjr7
-	xVNWH+SKIJKnMCVwLaxb/gQZ9W4BV+TG9IkuwLG9FnC/Er+N/yFrUgCnPEbD48dnTzXc1fM10TI
-	LXfnaSsbxqsHtgeKip9KDMZUg1iBUN4saj58aRyqeel2I0y0wtMbBbYN4pOOxno/F/VwPrhnoGI
-	sRYV6qAxlXfmqt8LIZHbYhrpa0YgyK0kbKhfmoLBIGOBJ4UyeJCaNPgA/P1WPme9Qo2MMpsrPk6
-	9zkRi2++3Oz3fSFCCM2gxf1Z6BpRDMIVNcHrjsZLoH3afu69gUx+LZE+XQb5E9W1uTDIs/tUmAp
-	L0ECXLLYXjOwGGsi/0WBQ3jxvZBFf6WR9WNghkRKeIqj/XYX+QrI6tapepgmHel6vYx0Q5epr0p
-	twU6/riouk2yMMeZF1bXBsyy/uKe1TdD4quK0XrY4zvEpf2uaquoeIYi9cWkfN2obE5FWOIrcxt
-	njtsbVB2erLfqtqYUSUfcPENyqeP/fTugoMfNyO58BKrddkohcRzMdpsaQz6mr3mAwC068Uqp7+
-	wISoFjJIsp3DM8kl+pU5sZw/vpFDNTwR+TID8pTrLrjijDYnk8iWCPA=
-X-Received: by 2002:a05:6000:26d1:b0:473:6e8d:7f3 with SMTP id ffacd0b85a97d-477b34b02f8mr12884086f8f.1.1783060978076;
-        Thu, 02 Jul 2026 23:42:58 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-477dd94c829sm15326806f8f.24.2026.07.02.23.42.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jul 2026 23:42:57 -0700 (PDT)
-Date: Fri, 3 Jul 2026 08:42:56 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Maxwell Doose <m32285159@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, "open
- list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, "open
- list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] iio: temperature: Add STS30 temperature sensor
- driver
-Message-ID: <20260703084256.00001f7f@gmail.com>
-In-Reply-To: <20260703003159.44850872@jic23-huawei>
-References: <20260621004626.66629-1-m32285159@gmail.com>
-	<20260621004626.66629-3-m32285159@gmail.com>
-	<20260621203303.0f8c5d08@systembl0wer>
-	<CAKqfh0HUih0q9PEh+5pwwMuBBkm6nsaZP9e2yPjHO3+Yccuvgw@mail.gmail.com>
-	<CAKqfh0G1dcn4MLQ5jxjM8aDHVu=z-NEAR-y=xMjfOiW7M_HF-Q@mail.gmail.com>
-	<20260703003159.44850872@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        d=1e100.net; s=20251104; t=1783068628; x=1783673428;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=JIGfUZOnaS68j2TExBUBX6hHqwIcodMVFuEw4DTpCW0=;
+        b=hK3V7wQKTfOrp7JAtXNXTkQpLO/LIw/nF5ZLNUfQO7ZXd2LsMeioXYFNN2+cKWvfOC
+         CMTsMiDR0Sm9pQuMB1z2NiHA2eGN68YomZfuJ5Xv/hPGLoPXowrMtvFfb3KAVM0+4EmZ
+         1a/7yuT2fHyWZ8dHu3lmKB8Iz9iwviJsXxIJIaQkIv/HfIqKQnYUheDgTsep7WZNUBwI
+         DWrIzR1G2RYXF2DaQtYIU7LIXZ5eMMextElG0p4XZFtF7mkEsiSruepO+vW3b2lejtSI
+         p6LcnxJj7TYKY5KlQaUQ/7tpAeHQiElkP0LaSUHxAf+x2ukNXwlwwK8e7O2HcnEyeCQu
+         6z7w==
+X-Forwarded-Encrypted: i=1; AHgh+RpnJanXGs9O02iGwDYtCVwA3hm/rKsOeJz9DXbsVeEQuqhVrppyu4qaU3REAzOWOiZSIjt08nGPuJg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnoATX122rPEKpeJorkCQMR3AP4WfxTc5lQEePp6zAcmqnpKPk
+	xpdtlGG2+73TW2ZBX/YdJUvdOi1XTM+zErvbnKkgUjUrma5xoN6uKpG1r4wQYoVWViyR3/vm1BN
+	9phhpXtTZqSdDg1G8sVW348Drfp1vAkY=
+X-Gm-Gg: AfdE7cn71X/kdg8O2QzpJOlivcjm+Sf3Xp7Or17mSyXShwng+hpMejKEvV9DxAkdLwu
+	BLT4l4OvsrXAFLU0M5xo1iyRpPmwtWpqfnbVVqK0UMFg+WDE/8b/VF7ps0eXFAsUEbpqcaw7Dxv
+	3UgPAWAQGUKLUPkv5M7Br9Qf4YSYBBpEKVOlAXuAM6e6XhFNZaJzRU8y1dERZznQnWjmd0LGHbt
+	RxjYp50Xoejr0HuzsbUu3tanD8FbPxGag6uvfB2/CRarsLpAxkN+WydTLsQUFLcqwSjjahKZ3SZ
+	rSFUTwknsqTT8LFjaJAOr/FF3N7jlg==
+X-Received: by 2002:a17:90b:4ac7:b0:37f:9ce1:cdb2 with SMTP id
+ 98e67ed59e1d1-380aa212cd2mr10449000a91.32.1783068628598; Fri, 03 Jul 2026
+ 01:50:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20260617080031.99156-1-clamor95@gmail.com> <20260702161828.GB2108533@google.com>
+In-Reply-To: <20260702161828.GB2108533@google.com>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Fri, 3 Jul 2026 11:50:17 +0300
+X-Gm-Features: AVVi8CfxYzwSfzZ6fk5dLYRyOYewH3BnmAC08YjOJmTVCgpVqq5v1ruOm9aDpBE
+Message-ID: <CAPVz0n1Pozgz8DBt5BrYSktVfE=D5E41oy+fMODGpx-L-qQ3YA@mail.gmail.com>
+Subject: Re: [PATCH v5 00/14] mfd: lm3533: convert to OF bindings, improve support
+To: Lee Jones <lee@kernel.org>
+Cc: Daniel Thompson <danielt@kernel.org>, Jingoo Han <jingoohan1@gmail.com>, 
+	Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, Johan Hovold <johan@kernel.org>, 
+	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 3 Jul 2026 00:31:59 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+=D1=87=D1=82, 2 =D0=BB=D0=B8=D0=BF. 2026=E2=80=AF=D1=80. =D0=BE 19:18 Lee J=
+ones <lee@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Wed, 17 Jun 2026, Svyatoslav Ryhel wrote:
+>
+> > Convert LM3533 to OF bindings, add missing VIN supply, add support for
+> > setting mapping mode and LED sources based on device tree.
+> >
+> > ---
+> > Changes in v2:
+> >
+> > schema
+> > - maximum led sources for leds set to 4
+> > - anyOf > oneOf in ALS
+> > - improved ALS descriptions
+> > - adjusted example
+> > drivers
+> > - dropped devm convertion of irq and mfd helpers
+> > - all als configuration moved into lm3533_als_setup
+> > - added regulator/consumer.h
+> > - lm3533_bl_setup set before sysfs_create_group in backlight
+> > - added check if LVLED is valid
+> > - LM3533_REG_OUTPUT_CONF1 > LM3533_REG_OUTPUT_CONF2 for LVLED4 and LVLE=
+D5
+>
+> This set looks good to me now.
+>
+> Let me know when you have all of the Acks and I'll merge it via MFD.
+>
 
-> On Sun, 21 Jun 2026 19:09:11 -0500
-> Maxwell Doose <m32285159@gmail.com> wrote:
->=20
-> > On Sun, Jun 21, 2026 at 7:05=E2=80=AFPM Maxwell Doose <m32285159@gmail.=
-com> wrote: =20
-> > >
-> > > On Sun, Jun 21, 2026 at 1:33=E2=80=AFPM Joshua Crofts <joshua.crofts1=
-@gmail.com> wrote:   =20
-> > > >
-> > > > On Sat, 20 Jun 2026 19:46:24 -0500
-> > > > Maxwell Doose <m32285159@gmail.com> wrote:   =20
-> > > > > +#include <linux/array_size.h>
-> > > > > +#include <linux/bits.h>
-> > > > > +#include <linux/cleanup.h>
-> > > > > +#include <linux/crc8.h>
-> > > > > +#include <linux/delay.h>
-> > > > > +#include <linux/device.h>
-> > > > > +#include <linux/errno.h>
-> > > > > +#include <linux/export.h>
-> > > > > +#include <linux/i2c.h>   =20
-> > > >
-> > > > I am a numpty as I also forgot to mention a missing
-> > > > mod_devicetable.h header.
-> > > >   =20
-> > >
-> > > D'oh, I ought to look at my includes a lot more closely as well.   =20
-> >=20
-> > Forgot to mention, I'll be away for 2 weeks starting tomorrow so it'll
-> > have to wait :( =20
->=20
-> Don't add mod_devicetable.h.  There is a series from Uwe that splits that=
- header
-> up and puts the tables different headers. i2c.h is now enough.
-> (It's causing merge conflicts)
+Hello there!
 
-Cool, one include less to worry about.
+Jonathan and Daniel added their Reviewed-by for IIO and backlight
+subsystems, so I assume that should be all required.
 
---=20
-Kind regards
+Best regards,
+Svyatoslav R.
 
-CJD
+> --
+> Lee Jones
