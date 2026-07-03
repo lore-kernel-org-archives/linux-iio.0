@@ -1,160 +1,258 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BADF933A9FE
-	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 20:52:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106BF283FCE
+	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 21:04:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783111965; cv=none; b=EStGAja/t2Wlt4LuFiJrwenzEmmEorWm+X4jUj62N1YKfjeyGvrVAcB2xmw704zxLLf+DBh3QMJC+WZANhgutUf1i37tpMsvWeoAnOcYIsm6I2He2V4NPfKvH74R9W0hWU61z7CfsHqjTBQj48/riRzrppH6rJVpr9kPM6xbYdA=
+	t=1783112659; cv=none; b=Q2+AlOrZcDRZCvGLYyPrhTfDncmt1NGRvca/jkCj7ktv4OnvWZNU7UV36TCVnkpesWPX3MBEGFf6EJRzHK2T9BpdzDJ1EOySt92+LmbYBQrkCeY5o13ZlHOr/efxDKBusOXLmcjcCCBURLTBln1hxTsbAJ9j37i+hNPD7T5S74k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783111965; c=relaxed/simple;
-	bh=mR6YDrtsNaRCApMFx3+4ev6RinDuN92aAnva8x1L73U=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=q1wSXFhvKxMQ5oBEEYaWu/7aUTiIZYO5E5BoV50CnE1eKzHvXbLJswRoe0rSRFPA+M8cKCXCkAOEMAWOPuoysbpuPm/8Lg98eZhwV2PWjfAhv9DItBVVTcEVhKAXmrezzAAPJBm/NsChyvKxYQoHwQjFKSZmO+FRU9AVCVp08O8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br; spf=pass smtp.mailfrom=usp.br; dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b=hdm7HdnQ; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=usp.br
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usp.br
+	s=arc-20240116; t=1783112659; c=relaxed/simple;
+	bh=MQy31eRIJfry7Mo9HLrWsPnb0wqDDcV/DtFzKv2+j7E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Is+VssoGlNgFKLeTml7k+h40XqeBJIHJipemK6hpN38uCsU20ZEsfhllHTbtk4NDXn+7FPumjKOphtcVw6SNMWOa7uJ2Ibvd5+/34INNEKu29YbT/McZ9Z8k/FGga1MZHGE2kCAujHPMG9qdotF8Cbq9sLCcdT86C3HQcEeYi50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=S2Y1tGNU; arc=none smtp.client-ip=209.85.167.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp.br header.i=@usp.br header.b="hdm7HdnQ"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-3811e59df58so551402a91.1
-        for <linux-iio@vger.kernel.org>; Fri, 03 Jul 2026 13:52:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="S2Y1tGNU"
+Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-4876d5335b2so565498b6e.1
+        for <linux-iio@vger.kernel.org>; Fri, 03 Jul 2026 14:04:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google; t=1783111961; x=1783716761; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eSI4XWKv0pUmnj+beMYCn/ElRECteG3wg51iRAfobiE=;
-        b=hdm7HdnQI2sdWyD5qz0Xgo9r9oIQu7MhJf4p9UspuJvuCczuf8wntpC3Rfsedqvcje
-         i/6ygWLzbisNzHeeTm/7OEnEl48Ewb0V4Sr1tlzcIgPRNTIYPrOiW6umF4pIuUgvxt7t
-         WTUxy9NBX1f8mQWCegmH6p0cV5kQv1tNy8yr1PYGW44zNzBYWp3XxEy7yJ72xwZ6MeAi
-         pqsBJyA/enGYvxBnzaaq4GpbOi0hs1t5GbAjTwmt3kYFixUsNHTGCeagruxUV/stBZCF
-         KWXxAIdHsbA/CXqh6LXN98z64NY96jxXhyPxcka1DumOQX+R53I3VkMIdNjuBN9XqWdy
-         KN9g==
+        d=baylibre.com; s=google; t=1783112656; x=1783717456; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=BLvAnZoezxC+9vK/RWbW1DG6Jw4oqR7pajbloqOy9bs=;
+        b=S2Y1tGNUMnKdnQfMqQZJklgskkJfEM2wmhYmXs4ZwxBYMRlIkvXIV1xCHDufJ8cuOi
+         HX8wuDsSXC8yBHPZD0ou32r/ZMo94c4ftaCOntNPujVPQ68qgkWYPy3ZIkzVpajULx4u
+         jV5qjRNEII2yF+WV3uHDMdr1bYzmlCoRBBqUzNygXa3a922fnd8oDI7wps/Gc0S3BAGX
+         cngpQZggZ2p6cf9rO7oHcY7gI0B0joPA/dihoVqUpz80CGJj/KAgAIOp5BIMSYRD4x5B
+         COgdWPzuatsDJg9O8V1wAhkfUv1X/NVa2TWQupeiBYAk/CRZ0ngqkn0b0SLlpBmLqB71
+         TzuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783111961; x=1783716761;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eSI4XWKv0pUmnj+beMYCn/ElRECteG3wg51iRAfobiE=;
-        b=dUJixJuUEVifPpnrRiFolFjK58k/H6Va9SC2tuX4gvDL1tFz06XOTnRrGLns3BMQIs
-         92FnNd5BiWP1IgfTtYkQKSv+JayJx6B5m0tZDScyc/fkslq8t6x/XEqUdYU0/HvEtbrT
-         Mt56s+GqiUVUrPLMn/O+oHcV4Z2jYU1eBFLWyKz01ukEDkD2k33plNUHtXmNACH8USwg
-         Pjcq7gszughK9dVUqQVetx/qF9CVWHlsrTtICIbMnrnFOAeWl4AMsDOLMisEnMQa69wW
-         6FtTWEOhUXk3aR6SsnclqVJR3wDZycFpzsnQ/R6o8i7qGgOhuMgKZ3UlbewVmqorUH2D
-         u+2A==
-X-Forwarded-Encrypted: i=1; AHgh+RrEY0g1G6th2gmBagAMzItXbwlrjVFkLxFvlXkB8ChPtv5ESnSS31vuu4My7wLnJB6y91eov5WYLdA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyqJ4ByTqvfqDMFTWD+xO3+T/ztrc+eAFWVb8p82T3vjepmfsgj
-	a2tO1KUeglXrluUXIF0y3eUDRTf+NxF05b+gdOBDAQ6sC83vR25Ml71gMBDUFgrh3g3T1HghNjS
-	+fzms4wUBAQ==
-X-Gm-Gg: AfdE7clSBFBEEleCsEb30tkL6llooKA4j3sN99MLYhipGYriMj/VMER9HZcyRq5GCuC
-	KyW2uklBqSa3hEUbBGpzSKm7cA8bFfhMO8I563QX6gCK10R0oGMCZo4h3xhDcJYY2mxa04faMkC
-	5NgmL9v2CHT4WH8dKJHCgOnvieQj0TZLZs8AWMhBwOVATJrAjDP3zpK0JWkZyEDCJalKR/lb4hw
-	DX7Mq3ydu9htZvOhWZSaQLBKFfxuOdlnrGetJzLINPPeFFzFOqU1QKsGGbpC/ZDGpnaxg5BRlDX
-	T/5KJm5+zCGV2aDeQ6ShaX9ZRaz4ikt1NfhCz3cos+9gAzkAPOh17h/LN+ctza4XyY3o4ok1Xg1
-	RSM1abBxt+bBTbcP9/96c47vQT+wa+sWhzLasGJppfRLpROJ6JIoUkOyuYRO2FtiNEp2/ch1w86
-	sqZscRgZt5Bba1YTJbyHqOsGXeLQ==
-X-Received: by 2002:a17:90b:2ec3:b0:372:b4a1:21d8 with SMTP id 98e67ed59e1d1-38280c96dfamr909042a91.13.1783111960975;
-        Fri, 03 Jul 2026 13:52:40 -0700 (PDT)
-Received: from localhost ([2804:1b3:aa80:ec21:60b4:fa78:36e8:4b3])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-30f0b813c4dsm22484803eec.7.2026.07.03.13.52.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jul 2026 13:52:40 -0700 (PDT)
-From: Erick Henrique <erick.henrique.rodrigues@usp.br>
-To: jic23@kernel.org
-Cc: andriy.shevchenko@intel.com,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	joshua.crofts1@gmail.com,
-	sashiko-bot@kernel.org,
-	linux-iio@vger.kernel.org,
-	Erick Henrique <erick.henrique.rodrigues@usp.br>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] iio: dac: m62332: Fix regulator reference count imbalance
-Date: Fri,  3 Jul 2026 17:52:36 -0300
-Message-ID: <20260703205236.201834-1-erick.henrique.rodrigues@usp.br>
-X-Mailer: git-send-email 2.51.0
+        d=1e100.net; s=20251104; t=1783112656; x=1783717456;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=BLvAnZoezxC+9vK/RWbW1DG6Jw4oqR7pajbloqOy9bs=;
+        b=dz6h6YbAIhO5RpmtilSFn5pu5CL1fnn92xvUOTiQJSTW9m1pebKo5I7nCAnaCDJRKJ
+         kH3HP5DyHa/Lq9LM4GMp2g1aVV4/QcYHk8tNvruXY/Z4T9JzoXYzHfRTVpigxkqu9wQe
+         P7djPjZxFpdH8et32D7sB3lyHv5f1Fzq7R7Lt/C6fZxMo3VTq2yLH99FqfHMmjbxiFxD
+         ib/UkYkefswue/gjbzFleWcj1CEPBw2/n/oLdhiw4j6p/tGICXIb8Pw1gb06Tg43JriG
+         38XXifJh+C8E8B7S/nyfyobhBym5LufsT/QyN7j6f6vXE8KM8WjjXmI52pr9pAUCwe0C
+         J1EA==
+X-Forwarded-Encrypted: i=1; AFNElJ8faMRzeJfp1lUk/iywYFwrfKj/0iC5S6k8Irz6jIXlEv2XL5TCJEFwSKcxVoVu5Wv6lsdZIgk5syM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyEK4GrYywqN5HaTT2LXg4HKYq4VZHMbO2iyCm4lxZKpqriABCj
+	WmwfQPgP0peCMoWOEp2G+BkTpvAzTXxIBpoC4YYCttev9R1JvI18T6M3sHs3hNblouc=
+X-Gm-Gg: AfdE7cltgIbTNYIUakcxFMcWZfO7UUWVYucYnWIlB8q/ST4jLye4QRIuKfvaCdgPLsg
+	6CAH7XJjnBwCRmVb5BvVRBJ9Kw8+0JJ4kCu0UwaEg6N7JFi8+B6otzi7v88+BBu8pjv8Bt2h5rs
+	sEPHu33Q8tQk13xgWg3B6rsEYGSPB7agNd+eEA5M/uB/OA+4YUGRKzyRWH2NDC/9rBnKEKZgxY5
+	HS42ugkngWPaFkizGNbkGvPyJStRsKOCZ4d7DnCpZmf6z7tes33vb/S3ZnsImsxE9Ita5yhNTZo
+	3EfiPX/EV29Jf++qSvIizxf36Kz6JOVS+CWJ9z4150CnuSFqFKnnhzLJyjzVu07DXJFw2mdt8wN
+	wwWKbxuivpe+WV7MPQ4IfFSeGEfIqhJon3ctyOmWwp525CO0H+zvUsWAVMnnsr6Ib5iM9gtjWNe
+	y2W4tQre28E4Yist3x+OvAwRXjQuv5XOk5bi1eCxuumukP9+1Q3Wk3wNVPzoIhGXA=
+X-Received: by 2002:a05:6808:1510:b0:496:a36:b5e5 with SMTP id 5614622812f47-499b79f805dmr422098b6e.17.1783112655990;
+        Fri, 03 Jul 2026 14:04:15 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:6af9:a9d7:17b5:2644? ([2600:8803:e7e4:500:6af9:a9d7:17b5:2644])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-497d1af5a51sm4927539b6e.10.2026.07.03.14.04.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jul 2026 14:04:15 -0700 (PDT)
+Message-ID: <d78d5f30-7f32-4998-8dc4-f17c61a5f81b@baylibre.com>
+Date: Fri, 3 Jul 2026 16:04:14 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+To: Stefan Popa <stefan.popa@analog.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
+ <20260703102941.1141341-3-stefan.popa@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260703102941.1141341-3-stefan.popa@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-m62332_set_value() enables the Vcc regulator on every write of a
-non-zero value and disables it on every write of zero, without tracking
-the channel's current state. Because the regulator is reference counted,
-changing a channel directly from one non-zero value to another enables
-it more than once, while a later write of zero disables it only once.
-The reference count never returns to zero and the regulator is left
-enabled indefinitely.
+On 7/3/26 5:29 AM, Stefan Popa wrote:
+> The MAX40080 is a bidirectional current-sense amplifier with an
+> integrated 12-bit ADC and an I2C/SMBus interface. It measures the
+> voltage across an external shunt resistor and the input bus voltage,
+> storing the results in an internal FIFO.
+> 
+> Add a direct-mode IIO driver exposing the current and voltage channels
+> with raw, scale and hardware-gain attributes, a configurable
 
-Only enable the regulator on the transition from zero to non-zero, and
-only disable it on the transition from non-zero to zero, using the
-previously stored channel value to detect the edge. Balance the
-regulator on the I2C error path so the reference count stays consistent
-if the write fails.
+Patch does not implemnt hardware-gain attribute (which is correct,
+so just fix the commit message).
 
-Fixes: b87b0c0f81e8 ("iio: add m62332 DAC driver")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20260418130322.106769-1-erick.henrique.rodrigues%40usp.br
-Cc: stable@vger.kernel.org
-Signed-off-by: Erick Henrique <erick.henrique.rodrigues@usp.br>
----
-v2:
-- Use local enabling/disabling booleans for the edge conditions (Jonathan)
-- Credit Sashiko directly in Reported-by with a Closes: link to its
-  report entry, per Jonathan
-v1: https://lore.kernel.org/r/20260630021309.36636-1-erick.henrique.rodrigues@usp.br
+> oversampling (digital averaging) ratio, and PEC-protected register
+> access. The current scale is derived from the shunt resistor value
+> described in the device tree.
+> 
+> +static int max40080_update_bits(struct max40080_state *st, u8 reg,
+> +				u16 mask, u16 val)
+> +{
+> +	int ret;
+> +	int tmp;
+> +
+> +	guard(mutex)(&st->lock);
 
- drivers/iio/dac/m62332.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+Usually we don't want the lock at this level in case anything needs to
+update more than one register in an atomic operation.
 
-diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-index 3497513854d7..2c13feee8d61 100644
---- a/drivers/iio/dac/m62332.c
-+++ b/drivers/iio/dac/m62332.c
-@@ -32,6 +32,7 @@ static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
- {
- 	struct m62332_data *data = iio_priv(indio_dev);
- 	struct i2c_client *client = data->client;
-+	bool enabling, disabling;
- 	u8 outbuf[2];
- 	int res;
- 
-@@ -43,7 +44,10 @@ static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
- 
- 	mutex_lock(&data->mutex);
- 
--	if (val) {
-+	enabling = val && !data->raw[channel];
-+	disabling = !val && data->raw[channel];
-+
-+	if (enabling) {
- 		res = regulator_enable(data->vcc);
- 		if (res)
- 			goto out;
-@@ -52,14 +56,17 @@ static int m62332_set_value(struct iio_dev *indio_dev, u8 val, int channel)
- 	res = i2c_master_send(client, outbuf, ARRAY_SIZE(outbuf));
- 	if (res >= 0 && res != ARRAY_SIZE(outbuf))
- 		res = -EIO;
--	if (res < 0)
-+	if (res < 0) {
-+		if (enabling)
-+			regulator_disable(data->vcc);
- 		goto out;
-+	}
- 
--	data->raw[channel] = val;
--
--	if (!val)
-+	if (disabling)
- 		regulator_disable(data->vcc);
- 
-+	data->raw[channel] = val;
-+
- 	mutex_unlock(&data->mutex);
- 
- 	return 0;
--- 
-2.51.0
+> +
+> +	tmp = i2c_smbus_read_word_data(st->client, reg);
+> +	if (tmp < 0)
+> +		return tmp;
+> +
+> +	tmp &= ~mask;
+> +	tmp |= val & mask;
+> +
+> +	ret = i2c_smbus_write_word_data(st->client, reg, tmp);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+
+...
+
+> +static int max40080_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val,
+> +			     int *val2,
+> +			     long mask)
+> +{
+> +	struct max40080_state *st = iio_priv(indio_dev);
+> +	unsigned int range;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (chan->type == IIO_CURRENT) {
+> +			ret = max40080_get_current(st, val);
+> +			if (ret)
+> +				return ret;
+> +		} else if (chan->type == IIO_VOLTAGE) {
+> +			ret = max40080_get_voltage(st, val);
+> +			if (ret)
+> +				return ret;
+> +		}
+
+Se usually use switch statement in IIO instead of else if.
+
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type == IIO_CURRENT) {
+> +			/*
+> +			 * The selectable current-sense range is exposed through
+> +			 * scale: each RANGE setting has its own precomputed
+> +			 * mA-per-code value. Userspace picks the range by writing
+> +			 * the matching scale.
+> +			 */
+> +			ret = max40080_get_range(st, &range);
+> +			if (ret)
+> +				return ret;
+> +
+> +			*val = st->current_scale[range][0];
+> +			*val2 = st->current_scale[range][1];
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		}
+> +		/* voltage[mV] = raw * Vref[mV] * buffer_gain / ADC_RES */
+> +		*val = MAX40080_INTER_VREF_MV * MAX40080_V_BUFF_GAIN;
+> +		*val2 = MAX40080_ADC_RES;
+> +		return IIO_VAL_FRACTIONAL;
+> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> +		ret = max40080_get_oversampling_ratio(st, val);
+> +		if (ret)
+> +			return ret;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+
+...
+
+> +static int max40080_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct max40080_state *st;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_WORD_DATA |
+> +				     I2C_FUNC_SMBUS_I2C_BLOCK |
+> +				     I2C_FUNC_SMBUS_QUICK))
+> +		return -EOPNOTSUPP;
+> +
+> +	client->flags |= I2C_CLIENT_PEC;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->client = client;
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+> +				     &st->shunt_resistor_uohm))
+> +		st->shunt_resistor_uohm = 1000000; /* default 1 ohm */
+> +
+> +	if (!st->shunt_resistor_uohm)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "shunt-resistor-micro-ohms must be non-zero\n");
+> +
+> +	max40080_calc_current_scale(st);
+> +
+> +	indio_dev->name = "max40080";
+> +	indio_dev->info = &max40080_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max40080_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max40080_channels);
+> +
+> +	/* No averaging by default; configurable at runtime via sysfs. */
+> +	ret = max40080_init(st, 1);
+
+Why have a paramter if it is always the same value? Can just move
+this comment into the init function and drop the arg.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id max40080_i2c_ids[] = {
+> +	{ "max40080" },
+
+Include `.name = `
+
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, max40080_i2c_ids);
+> +
 
