@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F820241C8C;
-	Fri,  3 Jul 2026 02:13:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC1D34A0C;
+	Fri,  3 Jul 2026 02:57:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783044806; cv=none; b=NmrVyznvTkizmMw0IaJ6g7lTv1f3cF/Uk7poTNwgA4VvnAAckJCrX9gXk2Pm8hKkeHuTQ4pBmCWd8R+E7rGQhmqTs3wS3S5SRnZDzcDga09+8ZX4wQOYW+OoydW7lS3Bq49cr2tYTao7GyZOSwtQlsXlU371hQTFlqxiI6iKrME=
+	t=1783047437; cv=none; b=LgmURw3OB6B1QJ/EFb3cnKvnqt/XQvLFN74PMvZvsUeEwpiwtcuyBNfcH5t4UeKrYwEkEYSrm7memZYCGTHm/1LTNO851bGpkXJPJz9nztaiZEGIjVMOTsjHer9ymmoYTt5ez0harMJhWtXbPAKmvCI34Wrs8Pyd8WuPOjKoEpc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783044806; c=relaxed/simple;
-	bh=D+uSMRZNCAJohaZANJi+fcozrpSGbQCo3IAxm7Bs4jY=;
+	s=arc-20240116; t=1783047437; c=relaxed/simple;
+	bh=7eEtysxGbmymy/jSaQd8axsMqhM8uyWZQuAFE9QMcos=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qi5NncxWc0ZaUGuU72tZMmq6jWX4vcRh4Dt4ELg+WdnGcqtqR0D2/19YtlV3ubvx53aK1xMdKFIdkkUpXbfnoX+057dvBfxtDyT0zRJ10rBIyJj2CWA79KZKjYrWS8rvqGEqKncypZKCWhN5+iDC0aXv3KI+1nSAtGnp2ugf4dE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YbGpht5m; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=GdTOLcTHViUFepB/leNJsW8NKKHc/pl8wR4XcSIEypqRAA1pRYWJycHqwTvpgjZV4rfIqOhgCVjk4q71LhSIpRlXBlXLbJXXHy2+yMRhQppaJ0fdNgSZ2Myde4Ibbh31dp+VH8iCnEMi+5+z6thWO1BD6r5kSOS19SHoKQXS/VI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=leHP0gq8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YbGpht5m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C631F000E9;
-	Fri,  3 Jul 2026 02:13:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="leHP0gq8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20F31F000E9;
+	Fri,  3 Jul 2026 02:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783044804;
-	bh=B8J5N5ATqqb/sQ5E0nqBZmkphsVSEKcvcog9noD71Hs=;
+	s=k20260515; t=1783047436;
+	bh=TZHw31F2l4u3GAfqqOMYW8ORUSErLxJZiA5q7Zc2J0Y=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=YbGpht5mgbRgVduEX9F6SdQ+Wg/iHhHcajnkN6qzJ7bozq9se5YMpiyK1ZBIAJDEn
-	 PeeTpfzS47iuDNb8bOh8Cu4+AaxjEXqPGVMwOcQclk4jloF0TBZoGFwh+mu9P/fMvW
-	 K3j4kBy86nfjzNfpuyIOKvWrICR6BJqFSPM+8+Suf+9N1czW+xoKM6gNkEPWA0l1Zh
-	 ywL6jetBF+xP0X/V3S8Lfm+dRKiaY2uwlzzBBKBR7SUwN97+EiMZFOdPgCOZuniSS+
-	 9oMZUSlgTODNt47l24r0xSfG2VOvOJvq9uoOjniaqK37hZBR3UjY7GfJQINQ16vOeD
-	 snKrc8WyDXUMQ==
-Date: Fri, 3 Jul 2026 03:13:16 +0100
+	b=leHP0gq8EksNBVQO0Ebx1kll9W9+yBrj0+k+Jn58s5nwdEyIJO2zQg8utJnk2wieC
+	 CxhoMHTy/WbJhxtbKmi/ONVQb6seO6VpW0QA1vNuYnq7ylSqDiY4UDeD0vpybEG6em
+	 0WZRmpIwxo434OA5kJizhweGXITLDWao0HCN9WyS/7ZwBN2YC5zYWHq2K4FVKEbAyt
+	 nFCJAaNFATsuRqmCFhteW076Alk/cVHIGy8KfJPV0XfMulRcYZtimpWDYi2KXPkLik
+	 W/134O4dOHKLB8ijJop5VlHgoxplD+pwEGCNs+tz7QofYogblfNWpSemYzgSnmcT0Z
+	 d/H+sYCxkrtSw==
+Date: Fri, 3 Jul 2026 03:57:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
@@ -40,12 +40,12 @@ Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
  Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
  R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v6 09/16] iio: frequency: ad9910: initial driver
- implementation
-Message-ID: <20260703031316.0b4edbcd@jic23-huawei>
-In-Reply-To: <20260618-ad9910-iio-driver-v6-9-79125ffbe430@analog.com>
+Subject: Re: [PATCH v6 10/16] iio: frequency: ad9910: add basic parallel
+ port support
+Message-ID: <20260703035710.08af256a@jic23-huawei>
+In-Reply-To: <20260618-ad9910-iio-driver-v6-10-79125ffbe430@analog.com>
 References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
-	<20260618-ad9910-iio-driver-v6-9-79125ffbe430@analog.com>
+	<20260618-ad9910-iio-driver-v6-10-79125ffbe430@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,67 +56,187 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 18 Jun 2026 14:27:25 +0100
+On Thu, 18 Jun 2026 14:27:26 +0100
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Add the core AD9910 DDS driver infrastructure with single tone mode
-> support. This includes SPI register access, profile management via GPIO
-> pins, PLL/DAC configuration from firmware properties, and single tone
-> frequency/phase/amplitude control through IIO attributes.
+> Add parallel port support with amplitude, phase and frequency channels.
+> Those will be buffered capable channels, but only basic control of offset
+> and scale are implemented at this point. There are separate amplitude
+> and phase control for polar destination, which will provide different scan
+> types. Enabling and disabling of parallel mode will be implemented with
+> buffer setup ops or with update_scan_mode() once IIO backend integration
+> is in place.
 > 
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Hi Rodrigo
 
-Hi Rodrigo, just a couple of things that are really really trivial.
+Just a couple of comments on perhaps pushing the introduction of switch
+statements on chan->address to the earlier patch to improve readability
+of this one. + What looks to be a duplicated range check to me.
 
+Jonathan
+> ---
+>  drivers/iio/frequency/ad9910.c | 187 +++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 178 insertions(+), 9 deletions(-)
+> 
 > diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-> new file mode 100644
-> index 000000000000..95b01295e4a0
-> --- /dev/null
+> index 95b01295e4a0..262702b62738 100644
+> --- a/drivers/iio/frequency/ad9910.c
 > +++ b/drivers/iio/frequency/ad9910.c
+...
+>  
+>  static int ad9910_read_raw(struct iio_dev *indio_dev,
+> @@ -640,11 +702,60 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		}
+>  	case IIO_CHAN_INFO_SCALE:
+> -		tmp64 = (u64)st->data.output_current_uA *
+> -			AD9910_NANO_MILLIAMP_PER_MICROAMP;
+> -		*val = 0;
+> -		*val2 = tmp64 >> 14;
+> -		return IIO_VAL_INT_PLUS_NANO;
+> +		switch (chan->address) {
+> +		case AD9910_CHAN_IDX_PHY:
+> +			tmp64 = (u64)st->data.output_current_uA *
+> +				AD9910_NANO_MILLIAMP_PER_MICROAMP;
 
-> +static int ad9910_parse_fw(struct ad9910_state *st)
-> +{
-> +	static const char * const refclk_out_drv0[] = {
-> +		"disabled", "low", "medium", "high",
-> +	};
-> +	struct device *dev = &st->spi->dev;
-> +	const char *prop;
-> +	u32 tmp;
-> +	int ret;
-> +
-> +	st->data.pll_enabled = device_property_read_bool(dev, "adi,pll-enable");
-> +	if (st->data.pll_enabled) {
-> +		tmp = AD9910_ICP_MIN_uA;
+Similar to below - I think I'd introduce a very minimal switch
+in the earlier patch to reduce churn and make this patch
+a tiny bit simpler.
 
-Perhaps move to an else rather than doing it as set then override? 
-
-
-> +		prop = "adi,charge-pump-current-microamp";
-> +		if (device_property_present(dev, prop)) {
-> +			ret = device_property_read_u32(dev, prop, &tmp);
-> +			if (ret)
-> +				return dev_err_probe(dev, ret, "property read: %s\n", prop);
-> +
-> +			if (tmp < AD9910_ICP_MIN_uA || tmp > AD9910_ICP_MAX_uA)
-> +				return dev_err_probe(dev, -ERANGE,
-> +						     "invalid charge pump current %u\n", tmp);
+> +			*val = 0;
+> +			*val2 = tmp64 >> 14;
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		case AD9910_CHAN_IDX_PARALLEL_PHASE:
+> +			*val = 0;
+> +			*val2 = AD9910_PI_NANORAD >> 15;
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		case AD9910_CHAN_IDX_PARALLEL_FREQ:
+> +			tmp32 = FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
+> +					  st->reg[AD9910_REG_CFR2].val32);
+> +			tmp64 = st->data.sysclk_freq_hz << tmp32;
+> +			tmp64 = ad9910_rational_scale(tmp64, NANO, BIT_ULL(32));
+> +			*val = div_s64_rem(tmp64, NANO, val2);
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
+> +			tmp64 = (u64)st->data.output_current_uA *
+> +				AD9910_NANO_MILLIAMP_PER_MICROAMP;
+> +			*val = 0;
+> +			*val2 = tmp64 >> 8;
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
+> +			*val = 0;
+> +			*val2 = AD9910_PI_NANORAD >> 7;
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		default:
+> +			return -EINVAL;
 > +		}
-> +		st->data.pll_charge_pump_current = tmp;
-> +
-> +		prop = "adi,refclk-out-drive-strength";
-> +		if (device_property_present(dev, prop)) {
-> +			ret = device_property_match_property_string(dev, prop,
-> +								    refclk_out_drv0,
-> +								    ARRAY_SIZE(refclk_out_drv0));
-> +			if (ret < 0)
-> +				return dev_err_probe(dev, ret, "property read: %s\n", prop);
-> +
-> +			st->data.refclk_out_drv = ret;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->address) {
+> +		case AD9910_CHAN_IDX_PARALLEL_FREQ:
+> +			tmp64 = (u64)st->reg[AD9910_REG_FTW].val32 * MICRO;
+> +			tmp64 >>= FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
+> +					    st->reg[AD9910_REG_CFR2].val32);
+> +			*val = div_s64_rem(tmp64, MICRO, val2);
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
+> +			tmp32 = FIELD_GET(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
+> +					  st->reg[AD9910_REG_ASF].val32);
+> +			*val = 0;
+> +			*val2 = MICRO * tmp32 >> 6;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
+> +			tmp32 = FIELD_GET(AD9910_POW_PP_LSB_MSK,
+> +					  st->reg[AD9910_REG_POW].val16);
+> +			*val = 0;
+> +			*val2 = MICRO * tmp32 >> 8;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		default:
+> +			return -EINVAL;
 > +		}
-> +	}
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -737,12 +848,63 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		return ad9910_set_sysclk_freq(st, val, true);
+>  	case IIO_CHAN_INFO_SCALE:
+> -		if (val != 0 || val2 < 0)
+> +		switch (chan->address) {
+> +		case AD9910_CHAN_IDX_PHY:
+
+Perhaps it's worth adding the switch in the earlier patch
+(with just this and default) so that we get a nicer
+diff here?
+
+> +			if (val != 0 || val2 < 0)
+> +				return -EINVAL;
 > +
-> +	return 0;
-> +}
+> +			tmp32 = DIV_U64_ROUND_CLOSEST((u64)val2 << 14,
+> +						      AD9910_NANO_MILLIAMP_PER_MICROAMP);
+> +			return ad9910_set_dac_current(st, tmp32, true);
+> +		case AD9910_CHAN_IDX_PARALLEL_FREQ:
+> +			if (val < 0 || val2 < 0)
+> +				return -EINVAL;
+> +
+> +			tmp64 = ad9910_rational_scale((u64)val * NANO + val2, BIT_ULL(32),
+> +						      (u64)st->data.sysclk_freq_hz * NANO);
+> +			tmp64 = roundup_pow_of_two(max(tmp64, 1ULL));
+> +			tmp32 = min_t(u32, ilog2(tmp64), FIELD_MAX(AD9910_CFR2_FM_GAIN_MSK));
+> +			tmp32 = FIELD_PREP(AD9910_CFR2_FM_GAIN_MSK, tmp32);
+> +			return ad9910_reg32_update(st, AD9910_REG_CFR2,
+> +						   AD9910_CFR2_FM_GAIN_MSK,
+> +						   tmp32, true);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (val < 0 || val2 < 0)
+
+This is the check I mention below as being duplicated (val2 < 0 part)
+
+>  			return -EINVAL;
+>  
+> -		tmp32 = DIV_U64_ROUND_CLOSEST((u64)val2 << 14,
+> -					      AD9910_NANO_MILLIAMP_PER_MICROAMP);
+> -		return ad9910_set_dac_current(st, tmp32, true);
+> +		switch (chan->address) {
+> +		case AD9910_CHAN_IDX_PARALLEL_FREQ:
+> +			tmp64 = (u64)val * MICRO + val2;
+> +			tmp64 <<= FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
+> +					    st->reg[AD9910_REG_CFR2].val32);
+> +			tmp64 = min_t(u64, DIV_U64_ROUND_CLOSEST(tmp64, MICRO),
+> +				      U32_MAX);
+> +			return ad9910_reg32_write(st, AD9910_REG_FTW, tmp64, true);
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
+> +			if (val != 0 || val2 < 0)
+
+Isn't val2 < 0 rejected already above?
+
+> +				return -EINVAL;
+> +			tmp32 = DIV_U64_ROUND_CLOSEST((u64)val2 << 6, MICRO);
+> +			tmp32 = min(tmp32, AD9910_ASF_PP_LSB_MAX);
+> +			tmp32 = FIELD_PREP(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK, tmp32);
+> +			return ad9910_reg32_update(st, AD9910_REG_ASF,
+> +						   AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
+> +						   tmp32, true);
+> +		case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
+> +			if (val != 0 || val2 < 0)
+> +				return -EINVAL;
+> +
+> +			tmp32 = DIV_U64_ROUND_CLOSEST((u64)val2 << 8, MICRO);
+> +			tmp32 = min(tmp32, AD9910_POW_PP_LSB_MAX);
+> +			tmp32 = FIELD_PREP(AD9910_POW_PP_LSB_MSK, tmp32);
+> +			return ad9910_reg16_update(st, AD9910_REG_POW,
+> +						   AD9910_POW_PP_LSB_MSK,
+> +						   tmp32, true);
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	default:
+>  		return -EINVAL;
+>  	}
+
 
