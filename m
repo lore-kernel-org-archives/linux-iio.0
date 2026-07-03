@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E558C1FECCD;
-	Fri,  3 Jul 2026 23:04:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8BBC30DD2A;
+	Fri,  3 Jul 2026 23:09:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783119864; cv=none; b=q4RZGj+krq+qHE55nZ1AprWHNoINWlEPy5ozVRHWkoxNnoBwXaIytOK/gumCGdhRSg53GsiXQesH9z8XW2xcNTErdAQnZnx9bjPto9N+cJl5QOG0GSQmL+4CzgtgsM92vYvYv4ZOTVnSo2NOVcnkv6gv5VC4tnWSxU8iCDTYq8E=
+	t=1783120171; cv=none; b=ja5MK1GeCs4Ru1r0GqfSzAJ2MYMvmcFqw6CuxStPsiQfCMyJ7i7dT9Z3qDwqlj075biwnTtnaV5iuAtbBDBuSv67fMZ8V430nkLx6I6p6S8O5JgCpmaEmCKfiLlW3cmmeEhWiWUey/Pe3JoWT3E2JeWOQKvQQEgy83/VToTvMHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783119864; c=relaxed/simple;
-	bh=zQFfgLnKSkWXpCokLzDdPA40A/RbpP7PXd9xlAuwn7w=;
+	s=arc-20240116; t=1783120171; c=relaxed/simple;
+	bh=qNwXEgxGLEakDXJp7NVqnpLQxQ4SxeM+/K2tBzzYJQU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BDNyoR/Y5+jRDibU67zkV79hvm9YGSh95P809dhxX+C2VvXU5PdsCPTQmXGh4oX1IkaiRw5ITdZgf2J0RVSc7ghzLxJbJWTWHxQ/sfPqDZ0zruuWHLv/SESHa7TKDuaHMD0a/mgraKayF2wdmdd5+yLGNsIE2iVqEryQlb++nmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l8q7ncfS; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Z6s/3hTauYGhtRZmvJtAxO6cQ0Yld/8Ay5VtXOTKvUGYJt2WvjLhEJ3KnmzT3F9325UwijgWrOiUX160IzcdzWzCUn5ZP4PfoTrEGDfOvO+nsS4MulC0ghH1iYF/+6/a413FXo2+xMOigVJqoJ2K7FuOdS+fGVcVFyKZcTUNDfQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VHTxBUSq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l8q7ncfS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F381F000E9;
-	Fri,  3 Jul 2026 23:04:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VHTxBUSq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A012E1F000E9;
+	Fri,  3 Jul 2026 23:09:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783119862;
-	bh=olNz6+nAW+5xnjW18enaUnEgTjoEBQsIDW68RPSTSic=;
+	s=k20260515; t=1783120170;
+	bh=OirdlbAGORQUa48T79uzMhCWSunEUqnyVoOKDad5Wxk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=l8q7ncfS+YM7xgM4BIQ/mXfBmgk6+UdMMWaFNXOyr9KcKz75E6y+jGmmMRsogCuId
-	 4DICAPGNSVY8Xk7Ek8HAduexKZ49xoDwvK3ylW3Po8NEQpZ4sXHlJlp+hJey8VBquf
-	 V5xL7eQUCUTsNq516HYT6zdNWgFoTgb5TmZpdWQioBiASXR/B3q5zcseI7pSY7Hznp
-	 W07SDvyVejTcWQ2Dy9jG7YXGXCbB66FataVx66mpzfdBYN9+OjI2tNdu7oT220ND+S
-	 tJf2/lRHMvtGVUSrX2IvduwvQEFzqhktVmoB3gmHTeRTGGyYjFkFCbT48tpohrLZzt
-	 fDaweZD1ulvzg==
-Date: Sat, 4 Jul 2026 00:04:15 +0100
+	b=VHTxBUSqR9tpNrho2fD4yAcwn4FqjWMlz7Gsmf7ifih94yzZ89LMuf6K4CGhSJYeC
+	 zFoa0LdQKBh7+Xa5VykhfJNrTy21AZkB0BsF/c16pSOK1NNWCpP51r/pS70F8DCYTQ
+	 6Sp2iDDYlXyd2XXPCOQ/dsbx+gtxgjsbVKmf85mgf0UhWaTzWF2cPeYQZsJS1HIzm2
+	 HV0Yb2Gk9MYpukVxlLpLMDzdcr/+/BCk4LE8NKA/J7244OxtwS09IUu8VXHFVa9SYx
+	 z1xnwAyeJ15LTrwgPls4Rjx+sv9vM7sfZLPC+VQVxptY0fWNmmaY49ZTdneDZI7Sk9
+	 u4wreZVVcZIBw==
+Date: Sat, 4 Jul 2026 00:09:26 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Stepan Ionichev <sozdayvek@gmail.com>
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- hcazarim@yahoo.com, linux-iio@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn
- Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org
-Subject: Re: [PATCH v3] iio: adc: qcom-spmi-iadc: balance enable_irq_wake()
- on driver unbind
-Message-ID: <20260704000415.2446940f@jic23-huawei>
-In-Reply-To: <20260529095649.2452-1-sozdayvek@gmail.com>
-References: <20260529095649.2452-1-sozdayvek@gmail.com>
+ joshua.crofts1@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ti-ads1015: use devm helpers to fix probe
+ error paths
+Message-ID: <20260704000926.1614a51f@jic23-huawei>
+In-Reply-To: <20260529183708.17819-1-sozdayvek@gmail.com>
+References: <20260529183708.17819-1-sozdayvek@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,76 +47,128 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 29 May 2026 14:56:48 +0500
+On Fri, 29 May 2026 23:37:08 +0500
 Stepan Ionichev <sozdayvek@gmail.com> wrote:
 
-> iadc_probe() calls enable_irq_wake() after a successful
-> devm_request_irq(), but the driver has no remove callback or
-> matching disable_irq_wake(), so the wake reference count on the
-> IRQ is leaked on module unload or driver unbind.
+> Once ads1015_probe() gets past ads1015_set_conv_mode(CONTINUOUS), two
+> resources leak on its error paths and on driver unbind:
 > 
-> Check the IRQ request error first, then register a devm action
-> that calls disable_irq_wake() so the wake reference is released
-> in the same scope as the enable. While here, drop the inverted
-> "if (!ret) ... else return ret" in favour of the standard
-> "if (ret) return ret;" pattern.
+>   - pm_runtime_enable() is left enabled if iio_device_register() fails;
+>     on subsequent probe/rebind the runtime PM tracking complains about
+>     an unbalanced enable.
+>   - The CONTINUOUS conversion mode written to the chip is never restored
+>     on any error path after that point, so on probe failure the chip is
+>     left running.
 > 
-> Fixes: ce0694841ea6 ("iio: iadc: Qualcomm SPMI PMIC current ADC driver")
+> Convert all three teardown operations of ads1015_remove() to devm so
+> that the error paths and the unbind path share the same unwind in
+> reverse-of-setup order:
+> 
+>   - ads1015_set_conv_mode(SINGLESHOT) becomes a devm action registered
+>     immediately after CONTINUOUS mode is enabled.
+>   - pm_runtime_enable() becomes devm_pm_runtime_enable().
+>   - iio_device_register() becomes devm_iio_device_register(), so the
+>     iio device is unregistered first on unbind.
+> 
+> ads1015_remove() is no longer needed and is dropped.
+> 
 > Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-
-+CC Bjorn and Konrad as we don't seem to have a more specific
-maintainer for this driver.
-
-Seems low risk, but nice to run it past them.
+These are always a bit fiddly so I was hoping to get some more eyes on this
+one.  Ah well, long enough and I think it's fine and sashiko is happy so applied.
 
 Thanks,
 
 Jonathan
 
 > ---
-> v3:
-> - Add Fixes tag (Jonathan)
+> v2:
+> - Full devm conversion: register a devm action for set_conv_mode(SINGLESHOT),
+>   switch to devm_iio_device_register, drop ads1015_remove() entirely.  This
+>   avoids mixing devm with manual unwind (Jonathan) and also fixes the
+>   pre-existing continuous-mode leak on probe failure.
+> - Drop the unrelated dev_err() -> dev_err_probe() conversion from v1 (Joshua).
 > 
-> v2: https://lore.kernel.org/all/20260523134613.4930-1-sozdayvek@gmail.com/
-> v1: https://lore.kernel.org/all/20260520190924.12774-1-sozdayvek@gmail.com/
+> v1: https://lore.kernel.org/all/20260529101011.3030-1-sozdayvek@gmail.com/
 > 
->  drivers/iio/adc/qcom-spmi-iadc.c | 18 +++++++++++++++---
->  1 file changed, 15 insertions(+), 3 deletions(-)
+>  drivers/iio/adc/ti-ads1015.c | 44 +++++++++++++++---------------------
+>  1 file changed, 18 insertions(+), 26 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
-> index b64a8a407168..88f6be2108e7 100644
-> --- a/drivers/iio/adc/qcom-spmi-iadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-iadc.c
-> @@ -481,6 +481,11 @@ static const struct iio_chan_spec iadc_channels[] = {
->  	},
->  };
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> index c7ffe47449e2..d7f4d0d5bcf9 100644
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -930,6 +930,17 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
+>  				  mode << ADS1015_CFG_MOD_SHIFT);
+>  }
 >  
-> +static void iadc_disable_irq_wake(void *data)
+> +static void ads1015_power_down(void *p)
 > +{
-> +	disable_irq_wake((long)data);
+> +	struct ads1015_data *data = p;
+> +	int ret;
+> +
+> +	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
+> +	if (ret)
+> +		dev_warn(regmap_get_device(data->regmap),
+> +			 "Failed to power down (%pe)\n", ERR_PTR(ret));
 > +}
 > +
->  static int iadc_probe(struct platform_device *pdev)
+>  static int ads1015_probe(struct i2c_client *client)
 >  {
->  	struct device_node *node = pdev->dev.of_node;
-> @@ -538,9 +543,16 @@ static int iadc_probe(struct platform_device *pdev)
->  	if (!iadc->poll_eoc) {
->  		ret = devm_request_irq(dev, irq_eoc, iadc_isr, 0,
->  					"spmi-iadc", iadc);
-> -		if (!ret)
-> -			enable_irq_wake(irq_eoc);
-> -		else
-> +		if (ret)
-> +			return ret;
+>  	const struct ads1015_chip_data *chip;
+> @@ -1030,6 +1041,10 @@ static int ads1015_probe(struct i2c_client *client)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = devm_add_action_or_reset(&client->dev, ads1015_power_down, data);
+> +	if (ret)
+> +		return ret;
 > +
-> +		ret = enable_irq_wake(irq_eoc);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = devm_add_action_or_reset(dev, iadc_disable_irq_wake,
-> +					       (void *)(long)irq_eoc);
-> +		if (ret)
->  			return ret;
->  	} else {
->  		ret = devm_device_init_wakeup(iadc->dev);
+>  	data->conv_invalid = true;
+>  
+>  	ret = pm_runtime_set_active(&client->dev);
+> @@ -1037,33 +1052,11 @@ static int ads1015_probe(struct i2c_client *client)
+>  		return ret;
+>  	pm_runtime_set_autosuspend_delay(&client->dev, ADS1015_SLEEP_DELAY_MS);
+>  	pm_runtime_use_autosuspend(&client->dev);
+> -	pm_runtime_enable(&client->dev);
+> -
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "Failed to register IIO device\n");
+> +	ret = devm_pm_runtime_enable(&client->dev);
+> +	if (ret)
+>  		return ret;
+> -	}
+> -
+> -	return 0;
+> -}
+>  
+> -static void ads1015_remove(struct i2c_client *client)
+> -{
+> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> -	struct ads1015_data *data = iio_priv(indio_dev);
+> -	int ret;
+> -
+> -	iio_device_unregister(indio_dev);
+> -
+> -	pm_runtime_disable(&client->dev);
+> -	pm_runtime_set_suspended(&client->dev);
+> -
+> -	/* power down single shot mode */
+> -	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
+> -	if (ret)
+> -		dev_warn(&client->dev, "Failed to power down (%pe)\n",
+> -			 ERR_PTR(ret));
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+>  }
+>  
+>  #ifdef CONFIG_PM
+> @@ -1150,7 +1143,6 @@ static struct i2c_driver ads1015_driver = {
+>  		.pm = &ads1015_pm_ops,
+>  	},
+>  	.probe		= ads1015_probe,
+> -	.remove		= ads1015_remove,
+>  	.id_table	= ads1015_id,
+>  };
+>  
 
