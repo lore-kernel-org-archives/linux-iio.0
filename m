@@ -1,54 +1,64 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1DD2371056;
-	Fri,  3 Jul 2026 11:18:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06B8C3BBFD1;
+	Fri,  3 Jul 2026 11:34:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783077489; cv=none; b=WiSyDXupEUi8mj1+HioP+gslltRlTxdHRAlSaRhqcXr2Ami888Xi6QEesi3Ba2VUiUubtWmCONr+Idr/vkqQYAyDDgnTulj6isclZn6fOVg8b84BCxhekszCFXz/aFy9fcmnUvLte/KDvO/05kGlRTU3nMYOxxW/pLMivxbmlqI=
+	t=1783078495; cv=none; b=n4kx/MdGvoPoEcEq/GTz7bfymCza90GixBI2FSJhU4Vf1K8aPFmB2qTMnFVmb2kvRMOSIy1hRUukxDqkWox51QBhGw7u/rHNyA6BywMAu7ihL9vYLRT2qdfXXwlMz0uyXBJNEiUXCAS3QhaWMojeIu1A0ahptZlxTMJIv7ziq+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783077489; c=relaxed/simple;
-	bh=41uGX8RO/w3jEAgYTE+j+Eb+P9X0qrEzGvvzpOgrjC4=;
+	s=arc-20240116; t=1783078495; c=relaxed/simple;
+	bh=lQLGbBRoCtwqD5i51GyrHKFjFR4I/RTIEw1n6EqfcRs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vDqlRPLmk+lOacb5KDV83KY+HKSf8f+1qx9Qn1v/aDbymg7rydoyWlIQMwj20rdj/nffev3Agq/35B3E5AV1sjtCEq1V2U6nlgnAl6eBKLVljQCiQLmlg85/xCE3RuSrPxeVxeBGVzEuAoXrQ5TyisyJB2NexjK9LN+qNE9s75w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mGfQ5ZjU; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=oBFxf/p4OA0KRudHSjjNHBghWBO0jJOt7Z2/VkSgIdd68V2dvSABrfkGhH9iXToYHYp9V2cJWWz9XEhm7ZXBlwQALtRAgv2BQqmwQv9W4hTEFNyB4Iu0eVGKo1YaB8zYEDT/oJDP7ozPJigQP2Zes3+m4p6RzKvQIRjIf+KncnQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CgYYnX6i; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mGfQ5ZjU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 905191F000E9;
-	Fri,  3 Jul 2026 11:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783077487;
-	bh=jBXujYiah0WFXjqCSb0QoHYjXF1ucesux4IjvTi8SDE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mGfQ5ZjU2R3MTrqtdqmUxN6YkIz2SBGsy2hVkrCTzk17zE3FTrLva12V3atkAwX4a
-	 Og7Zls0uQgPw/vg60f9hI58BqMX3vss8vGYVjyKOysWp0KOpV8qaVHNz3KTw0b+tjj
-	 54+EZkxNRr/0h3IW0TaedL4u9Ye6yGJSaHCR+xycTjhRh5WD85qSZR2ReDISt8b+/0
-	 iZ3cIr/rtvYIdoI8mneUxpf1VcB+hu1d4wkApVf/etVercq9gscaxHSVte8wEgKlps
-	 kvR19qi0f71L9DRCal2xVNBN2L7FeCLMrDlt/iU+1XkNW1XcNDgQYgGlKdtMCKTKZ2
-	 cUuT/MRqDnGzw==
-Received: from johan by xi.lan with local (Exim 4.99.3)
-	(envelope-from <johan@kernel.org>)
-	id 1wfbuH-00000000jKL-17lX;
-	Fri, 03 Jul 2026 13:18:05 +0200
-Date: Fri, 3 Jul 2026 13:18:05 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CgYYnX6i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783078494; x=1814614494;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lQLGbBRoCtwqD5i51GyrHKFjFR4I/RTIEw1n6EqfcRs=;
+  b=CgYYnX6itSmHd4wVx8R8IVm86fLtb8BqUbQw0CWbWQ0GHq9E5XSaVlSQ
+   oaiA32HigAIbGv6FKPMC70iQLvKXV0nzid+CbJWRTU8DMp+3RMzOn9jZj
+   uKBt1fh8hVGRbrUXOUsG0TTqjA9P9LjsVcGQF+EH2XNtsr/8skZaUZqrk
+   i7NA8lSpUzGqqJaOEGhxGlfklRzSDc2Ol74I8LFy5HhtxRf9VMH68oGBp
+   ktg06BkSK9MIQx+E6pJzAL8Nj2mbPuGiTDMYpHpVPOdSJMI77aSTuyeA6
+   KrzJpXlCE4LKtmWkkCL/fPn1UL70FynUpS8Asm6fpxPH/ZqsvC+YRY/dw
+   w==;
+X-CSE-ConnectionGUID: o+9PQ2PtQl244iIFfCdXKA==
+X-CSE-MsgGUID: niH4LElhSGC2QKfSFr7sfA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11835"; a="84022685"
+X-IronPort-AV: E=Sophos;i="6.25,145,1779174000"; 
+   d="scan'208";a="84022685"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2026 04:34:54 -0700
+X-CSE-ConnectionGUID: 1gFmaFHbQlmkipAaKiAoKw==
+X-CSE-MsgGUID: Yo/aq/KsSvi6rPeH0LrBTg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,145,1779174000"; 
+   d="scan'208";a="256986883"
+Received: from carterle-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.80])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2026 04:34:51 -0700
+Date: Fri, 3 Jul 2026 14:34:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>,
-	dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v5 10/14] mfd: lm3533: Set DMA mask
-Message-ID: <akeabcriU7VBZCrp@hovoldconsulting.com>
-References: <20260617080031.99156-1-clamor95@gmail.com>
- <20260617080031.99156-11-clamor95@gmail.com>
+	Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <akeeWMSSTDfyFAqJ@ashevche-desk.local>
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -57,22 +67,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260617080031.99156-11-clamor95@gmail.com>
+In-Reply-To: <20260703102941.1141341-1-stefan.popa@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jun 17, 2026 at 11:00:27AM +0300, Svyatoslav Ryhel wrote:
-> Missing coherent_dma_mask assigning triggers the following warning in
-> dmesg:
+On Fri, Jul 03, 2026 at 01:29:30PM +0300, Stefan Popa wrote:
+> This series adds support for the Maxim MAX40080, a bidirectional
+> current-sense amplifier with an integrated 12-bit ADC and an I2C/SMBus
+> interface. It measures the voltage across an external shunt resistor and
+> the input bus voltage.
 > 
-> [    3.287872] platform lm3533-backlight.0: DMA mask not set
+> The driver operates in direct (INDIO_DIRECT_MODE) mode. Each raw read
+> triggers a single on-demand conversion (SMBus Quick Command) and reads
+> back the matched current/voltage pair, so results are always fresh. It
+> exposes the current and voltage channels with raw and scale attributes,
+> a configurable oversampling (digital averaging) ratio, and PEC-protected
+> register access. The two selectable current-sense ranges are exposed
+> through scale/scale_available (the range is chosen by writing the
+> desired scale); the current scale is derived from the
+> shunt-resistor-micro-ohms device-tree property.
 > 
-> Since this warning might be elevated to an error in the future, set
-> coherent_dma_mask to zero because both the core and cells do not utilize
-> DMA.
+> Continuous FIFO buffering, threshold events and the alert interrupt are
+> intentionally left out of this initial submission and may be added
+> later.
+> 
+> Tested on hardware with four MAX40080 devices on an I2C bus.
 
-IIUC this warning is introduced by the OF conversion and should
-therefore be moved before it as a preparatory patch.
+For a new driver it misses two things:
+- why do we need a brand new driver? (Can we extend existing one to cover
+  this HW?)
+- where to get a datashee? (Link?)
 
-But you need to describe the problem in more detail here as this looks
-fishy.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Johan
+
