@@ -1,47 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B61C21A6807
-	for <linux-iio@vger.kernel.org>; Fri,  3 Jul 2026 00:37:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 792D01A6807;
+	Fri,  3 Jul 2026 00:39:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783039025; cv=none; b=u7o4OXBHFsJW9UdMW+PveFCPW7V6X7xfo/mTTfuRMMehcnCRpULqV4XoJig/Ejodha2lHWbbXl0cUp40I3fuSCFkGdvGHuyrmiSNl9R5eNhIkXkFOH0mEwZk5fJCVi782iJcypoLKsb0nAVAFOuCGfU3WnKuj9dIgB4UUNqOvKk=
+	t=1783039154; cv=none; b=uFtvrajvf1IP0s0X7+Sg2b4f0nzs5iogdz8HXb/ztB1SafH5UeE0t0ZrM5FzM376K4bqZwYgMLTSVP0AULPOU1vujvkZfu89c2uvPQ2GXF5zbBUv2I9baBEO8qQ7+UHaGbJQdnM8tNgzLjYqpVxpoFm1sJQ7XnMnu08ibvpep7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783039025; c=relaxed/simple;
-	bh=jvnmu+U4vbOyw0CHbL3xbwAwX0XguuDbmq9TuHjgbm0=;
+	s=arc-20240116; t=1783039154; c=relaxed/simple;
+	bh=XnyG9aNXGx+VVoy8huNzYy/PQ6PFlcs8I0OV8agwavs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QLky8LX7kZTCCoRZoJaetokhdgcQ5K/gdQKBGns2wnfbqP+0VaTQzq5ZDjn1I9beCo8609TfUtI6dZeujc/Sp+eTxlRQOzzQuMeVaMqFBsqy6mYoKKYYqNqFz0cAI08U9ODGpwwytdBB/cYoE84RZ0IuQ9wirnPOaXV2JwXKGio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DmWyOtEx; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=fAMOEHi/XZ5x85ANkKpqroC0kCLA89f6zi1/9f+m8x+xX5EjcFp2yzcsf0lamPfTXILeOBJDR49mZaghiLoRUqxUYgkfLrygWWqM0c9ZDQ3pKyy/Rp0AoDZ62oXR2EmP7B4L/LmcSdhqpovUeI/oQOv/OjHU5Iq0JIrJmkhxxQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BGfknRQv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DmWyOtEx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F375A1F000E9;
-	Fri,  3 Jul 2026 00:37:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BGfknRQv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971731F000E9;
+	Fri,  3 Jul 2026 00:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783039024;
-	bh=Mh4dHMF0l997T0BpuOeXCWxruqxwfLCgyav7ACHSTHE=;
+	s=k20260515; t=1783039153;
+	bh=jeqIsV18NBIsSoSTbipGvzeOWaFcehtDih+38yxnWP0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DmWyOtExiYcjYHW2Q4dD4aisExm33SiO+qeyhkwcSLBt1+1xxPX3uPZJlRdljd2B2
-	 b3Mu+zqq5TUL8wahiAmzTXVqrcthlu9fwkZQj34dL5s1MWHMTG0QEN6BAUw64/PNn5
-	 aUr0AaEV6RjdVTxsdT396lVq32Dn3PqdR5JX87alOFK+JQBs/aVgeo6tvsvBcghqxa
-	 wrII3xhnkZmcNWjSne0HLGW6osa1+dhCxahUdXd+e0UvVmK0th5t8wd4szM8IoV+VC
-	 XnsFXUT+GrjxItcXne22RO/OW1pN791bP1rtZ44d1cuv+rq3rnwpkWdRSxh2tjGJqu
-	 KTznXBkqIl42w==
-Date: Fri, 3 Jul 2026 01:36:59 +0100
+	b=BGfknRQvp2mCv128GoipyO1zkHhBecFshBXjxsrQsssdr5N/PCQJr6K3SyXj6EXNJ
+	 9rNG/Ij2O6+hTto8Fohrjcf5Pp5IVoAaI3lQgMBjxH2XUn8pHvXKuLi4LFxg3zYf+i
+	 P3IzOY1U9FTMav4tsFFd5a3CVMO9lxBIu/PrtdJN/DVExySkgw3kAzN0WrA8oT/8eo
+	 CE4wI2EvOL5pMj+SDO8/4AaO8Cq/Rp9ZUdDivChSzcHqN7eJnzC53yEXg9dPjUGYTP
+	 sUSTe4qa7N+4jBGliHgUaDcqkr1AlZKTnLJJZreC1n72s3FnDC76/sSDuyKToRDXto
+	 Gv9JEsrSQyILg==
+Date: Fri, 3 Jul 2026 01:39:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Prashant Rahul <prashantrahul23@gmail.com>
-Cc: linux-iio@vger.kernel.org, Shuah Khan <shuahkhan@gmail.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Prashant Rahul <prashantrahul23@gmail.com>, linux-iio@vger.kernel.org,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Petr Mladek
  <pmladek@suse.com>, Oleg Nesterov <oleg@redhat.com>, Sebastian Andrzej
  Siewior <bigeasy@linutronix.de>, John Ogness <john.ogness@linutronix.de>,
- linux-kernel@vger.kernel.or
-Subject: Re: [PATCH 3/5] iio: adc: ti-adc108s102: log buffer setup failure
- in probe
-Message-ID: <20260703013659.12315007@jic23-huawei>
-In-Reply-To: <20260618231543.413771-4-prashantrahul23@gmail.com>
-References: <20260616130612.73122-1-prashantrahul23@gmail.com>
-	<20260618231543.413771-1-prashantrahul23@gmail.com>
-	<20260618231543.413771-4-prashantrahul23@gmail.com>
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup
+ failure in probe
+Message-ID: <20260703013907.57b0f114@jic23-huawei>
+In-Reply-To: <aj01H48IHTyhn4ZR@ashevche-desk.local>
+References: <20260620174708.111470-1-prashantrahul23@gmail.com>
+	<20260620174708.111470-5-prashantrahul23@gmail.com>
+	<20260623203636.69a7429a@jic23-huawei>
+	<DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
+	<aju-_HSz6jNkR_NM@ashevche-desk.local>
+	<20260625120952.471ec21a@jic23-huawei>
+	<aj01H48IHTyhn4ZR@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,37 +56,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 19 Jun 2026 04:44:36 +0530
-Prashant Rahul <prashantrahul23@gmail.com> wrote:
+On Thu, 25 Jun 2026 17:03:11 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Errors are logged when enabling the regulator or adding the cleanup
-> action fails, but not when buffer setup fails. Log the error returned by
-> the buffer setup path as well.
+> On Thu, Jun 25, 2026 at 12:09:52PM +0100, Jonathan Cameron wrote:
+> > On Wed, 24 Jun 2026 14:26:52 +0300
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
+> > > On Wed, Jun 24, 2026 at 03:43:44PM +0530, Prashant Rahul wrote:  
+> > > > On Wed Jun 24, 2026 at 1:06 AM IST, Jonathan Cameron wrote:    
 > 
-> Signed-off-by: Prashant Rahul <prashantrahul23@gmail.com>
-I'm not going to add more prints to these. So won't pick up rest of
-the series.
+> ...
+> 
+> > > > > Why this particular one but not the devm_iio_device_register() below it?
+> > > > > Both pretty much only fail on driver bugs.  Or out of memory for
+> > > > > which dev_err_probe() doesn't print anything anyway (on basis that
+> > > > > is normally pretty noisy).    
+> > > > 
+> > > > My apologies, I wasnt aware that dev_err_probe simply ignores `-ENOMEM`.
+> > > > Looking at drivers/base/core.c:5096, it is pretty evident that it does.
+> > > > 
+> > > > My goal with the patch series was to change dev_err into dev_err_probe,
+> > > > as my understanding of dev_err_probe was that it's a specialization of
+> > > > dev_err for probe contexts.    
+> > > 
+> > > Jonathan, actually the triggered buffer setup might return not -ENOMEM error
+> > > code for the surprise. After all this series does add not a dead code, but
+> > > a quite rare to be used one.
+> > > 
+> > > https://elixir.bootlin.com/linux/v7.1.1/source/drivers/iio/buffer/industrialio-triggered-buffer.c#L57  
+> > 
+> > Agreed and I'm not even sure why that is there (lost to the mists of time
+> > / my failing memory ;)  However I think it's an obvious driver bug case
+> > that should be trivial to see in basic tests so to me it's marginal on
+> > whether a print on these is useful.
+> > 
+> > Maybe given that one is so rare we should just add a print in the core?
+> > I'm not particularly keen on mass patches to print errors from the core
+> > code but this one is perhaps a reasonable trade off vs series like this
+> > one adding prints to drivers for something we don't think realistically
+> > ever happens.  
+> 
+> While the series ends up not adding a dead code, the rareness of the case
+> doesn't justify it, so I am still on the side of _not_ applying this series.
+> 
+> For the core printing, I think for devm_*() or other managed resource APIs
+> it makes a lot of sense (in general). Not sure about plain calls, though.
+> 
+For now I've picked up the two straight conversions to dev_err_probe()
+because I'm keen to (slowly) stop using dev_err() in probe functions
+but lets leave the rest for now at least.  If I get some time (you never
+know) I might throw together an RFC that prints appropriate messages from
+these IIO registration calls so we can have a debate about whether they
+belong in the core or the drivers (or not at all).
 
 Thanks,
 
 Jonathan
 
-
-> ---
->  drivers/iio/adc/ti-adc108s102.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
-> index 7d615e2bbf39..440afe584f5d 100644
-> --- a/drivers/iio/adc/ti-adc108s102.c
-> +++ b/drivers/iio/adc/ti-adc108s102.c
-> @@ -256,7 +256,7 @@ static int adc108s102_probe(struct spi_device *spi)
->  					      &adc108s102_trigger_handler,
->  					      NULL);
->  	if (ret)
-> -		return ret;
-> +		return dev_err_probe(&spi->dev, ret, "iio triggered buffer setup failed\n");
->  
->  	ret = devm_iio_device_register(&spi->dev, indio_dev);
->  	if (ret)
 
