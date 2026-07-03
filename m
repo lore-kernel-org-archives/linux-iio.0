@@ -1,45 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B057430F80C;
-	Fri,  3 Jul 2026 19:05:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85113221DAE;
+	Fri,  3 Jul 2026 19:06:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783105503; cv=none; b=C5+TzyB28w8nNpO3Ok1wpB5pZoAwMBKeiAGZLrryrcOZ5HKi3Xg6V5vF1Fu9NWyBOJc9slrHBVU9mrBibiIlES/By8We8onsrnctZRFBdboHU4r/LwACs0+j6XIv+hcEVTxKbZXNosbzmbubUlYN6yXrWKSOuYbfFSyypup+En0=
+	t=1783105593; cv=none; b=n7HcrGtKPbe8tzE5afiaQF/OGTK159evgF3ltwUMpCrc1NP6uTEogUC+ntJTUcIvRN2qdSMFr//QTfhahngp/270+gjUzXypkoAwQrA3VGqirzwv74cFGLG3zLspXkRvDAVEOIJBLYxYBHZD4FTSjJ6UqUTuxL2JPLU/SQKkKNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783105503; c=relaxed/simple;
-	bh=7twx5GnIruCtOq14gQ9XoLiOuBGIflLtuUYqgxRH6GQ=;
+	s=arc-20240116; t=1783105593; c=relaxed/simple;
+	bh=mv2BsUy3intTqhltCpzBtNEly8AWVzp1JtjsI5biLJ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mB3dZB1flygMwk9GXTQGgg3hiQXmX0Doo583lIkyE/aLluDR1ZR4Zn2Xw0Vj2+TtGSgjD7kj38kmzgq0HW5kibYQoZ6XtZOwKUqGwnaAici0iTN/sTQXRRkeUEX2sXPTlixFBRJq4dn9M6O9ymdNgWdxvh4M5HwFD2HSXjepBIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BGzu9UFH; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=LtfR24CwjNhlD1+JOTtlpWpSenssPOl5B6RhC/HB61+Q/ub2B4IMGPmqrficBLJjQSNBGznSzYuJURE3QJrh9AZCd7LQFKe+xoVxCz/Ay0Zp+sBwhq5eN15a1yDpN0clgNsuxc6SyFg8abm9oJEnYxM1jh7rBLy8dFF/wtIAaXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QKFZw05D; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BGzu9UFH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612411F00A3A;
-	Fri,  3 Jul 2026 19:04:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QKFZw05D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9F51F000E9;
+	Fri,  3 Jul 2026 19:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783105501;
-	bh=tLn50O0ACpxWx0Mjp6z6nIDcdbb6EFg2LUTDS6ZMezE=;
+	s=k20260515; t=1783105592;
+	bh=rZpu58nMxaKiF4oCCytzshVIwNqZ0nNVd2Hczy2vmVA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BGzu9UFH+1Mg2pqTC6hI5Y3anFW890Tt5iPs4W2msLfdLO/+FPUu78Siiv5E7Rd45
-	 LQzWP54jFzSXyQpUDBvXNr7I1zxVTfYwkWMurZeRKjtKvpC6PekhGt87jAzil+cryi
-	 CiJsOcMu/VbNfcYayKw06MvJJ/1d0D+p771gNHVzzLatSIoBvS9h5fenREXQyHItZS
-	 7fuVD8PN0AfhtcN8QKGGHo2AnsAEYntB8stDikPW5DAE9itbb54Vr96IqFcYv6kpQs
-	 aAU/uL4t0Sb3122Yw49n4m8CRTf1jmpTYLF5EUB0MqJqsqU168ELgi19Aux3B/1y0R
-	 uS+mHRYtC1mGg==
-Date: Fri, 3 Jul 2026 20:04:55 +0100
+	b=QKFZw05DPpvOxMA5KYGCj8UskZLBifFwYSq0JPXFufWsUyzV2O5obEGNvgmXwnI1S
+	 dPJG14rOorb6aGyhh/UKnplh0V4pFU8+TbpqudnX+cdtVNqXbrNohAXL6dO5CO4uTG
+	 5G06jt4IPWlraH/VXtLAJUii08BTNrUqziN/CIKzDKyV/FHPkL2BohcnfH6j2y+FIS
+	 4RGeCxBPywRndSDmxHzNJQKXTOlQe0P6RnEVuPPnvCHCXiXYjTMDp5dmK4ptjtEZjc
+	 QMlE2zACVQcM0ls1T1ORjD2QI3SY2x9prX4hgjVI/BAusnPbCRY5qTslyMJDpEtpcY
+	 G8Toa9XDSwYew==
+Date: Fri, 3 Jul 2026 20:06:26 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_icm42600: fix timestamping by limiting
- FIFO reading
-Message-ID: <20260703200455.5fa70e5b@jic23-huawei>
-In-Reply-To: <20260629-inv-icm42600-fix-watermark-fifo-reading-v2-1-967e375db7b3@tdk.com>
-References: <20260629-inv-icm42600-fix-watermark-fifo-reading-v2-1-967e375db7b3@tdk.com>
+To: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Ghennadi Procopciuc
+ <ghennadi.procopciuc@oss.nxp.com>, Daniel Lezcano
+ <daniel.lezcano@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Sashiko <sashiko-bot@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: adc: nxp-sar-adc: Fix the delay calculation
+ in nxp_sar_adc_wait_for()
+Message-ID: <20260703200626.40511970@jic23-huawei>
+In-Reply-To: <a05742a9-9129-4844-87d5-14473648c4ac@oss.qualcomm.com>
+References: <20260519215607.78241-1-andriy.shevchenko@linux.intel.com>
+	<20260522183533.358a1f30@jic23-huawei>
+	<a05742a9-9129-4844-87d5-14473648c4ac@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,121 +49,46 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 29 Jun 2026 21:51:55 +0200
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com=
-@kernel.org> wrote:
+On Tue, 26 May 2026 14:48:44 +0200
+Daniel Lezcano <daniel.lezcano@oss.qualcomm.com> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
->=20
-> Timestamps are made by measuring the chip clock using the watermark
-> interrupts. If we read more than watermark samples as done today, we
-> are reducing the period between interrupts and distort the time
-> measurement. Fix that by reading only watermark samples in the
-> interrupt case.
->=20
-> Fixes: 7f85e42a6c54 ("iio: imu: inv_icm42600: add buffer support in iio d=
-evices")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> ---
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> On 5/22/26 19:35, Jonathan Cameron wrote:
+> > On Tue, 19 May 2026 23:56:06 +0200
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >   
+> >> The original code was using ndelay() twice. In one case the delay
+> >> is calculated as 1/3 of ADC clock and in the other as 80 ADC clocks.
+> >> But according to the comments in all cases it should be a multiplier
+> >> of the ADC clock, and not a fraction of it. Inadvertently
+> >> nxp_sar_adc_wait_for() takes the wrong case and spread it over
+> >> the code make it wrong in all places. Fix this by modifying a helper
+> >> to correctly use the multiplier.
+> >>
+> >> Fixes: 7e5c0f97c66a ("iio: adc: nxp-sar-adc: Avoid division by zero")
+> >> Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
+> >> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> >> Closes: https://sashiko.dev/#/patchset/20260416090122.758990-1-andriy.shevchenko%40linux.intel.com
+> >> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
+> > 
+> > Daniel, could you take a look at this one.
+> > 
+> > Explanation seems fine but original patch was yours so I'd like
+> > some 'aware' eyes on it!  
+> 
+> Sounds like correct but let me loop in Ghenadi as I don't have the 
+> platform anymore to check the change
+> 
+Hi
 
-That's not confusing at all :)
-
-I've applied with the invensense one only - shout if you want something els=
-e.
+This one is still outstanding if anyone has a chance to look at it.
+If not I'll gamble and apply it :)
 
 Thanks,
 
 Jonathan
 
-
-
-> ---
-> Changes in v2:
-> - Delete watermark computation rework, keep only FIFO read fix.
-> - Link to v1: https://patch.msgid.link/20260623-inv-icm42600-fix-watermar=
-k-fifo-reading-v1-1-f3f5694a818a@tdk.com
->=20
-> To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: David Lechner <dlechner@baylibre.com>
-> To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> To: Andy Shevchenko <andy@kernel.org>
-> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 9 +++++----
->  drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h | 1 +
->  2 files changed, 6 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers=
-/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> index 68a395758031..5c3840acf085 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-> @@ -248,6 +248,7 @@ int inv_icm42600_buffer_update_watermark(struct inv_i=
-cm42600_state *st)
-> =20
->  	/* compute watermark value in bytes */
->  	wm_size =3D watermark * packet_size;
-> +	st->fifo.watermark.value =3D watermark;
-> =20
->  	/* changing FIFO watermark requires to turn off watermark interrupt */
->  	ret =3D regmap_update_bits_check(st->map, INV_ICM42600_REG_INT_SOURCE0,
-> @@ -454,11 +455,10 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm426=
-00_state *st,
->  	st->fifo.nb.accel =3D 0;
->  	st->fifo.nb.total =3D 0;
-> =20
-> -	/* compute maximum FIFO read size */
-> +	/* compute maximum FIFO read size (watermark for max =3D 0 interrupt ca=
-se) */
->  	if (max =3D=3D 0)
-> -		max_count =3D sizeof(st->fifo.data);
-> -	else
-> -		max_count =3D max * inv_icm42600_get_packet_size(st->fifo.en);
-> +		max =3D st->fifo.watermark.value;
-> +	max_count =3D max * inv_icm42600_get_packet_size(st->fifo.en);
-> =20
->  	/* read FIFO count value */
->  	raw_fifo_count =3D (__be16 *)st->buffer;
-> @@ -574,6 +574,7 @@ int inv_icm42600_buffer_init(struct inv_icm42600_stat=
-e *st)
-> =20
->  	st->fifo.watermark.eff_gyro =3D 1;
->  	st->fifo.watermark.eff_accel =3D 1;
-> +	st->fifo.watermark.value =3D 1;
-> =20
->  	/*
->  	 * Default FIFO configuration (bits 7 to 5)
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h b/drivers=
-/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-> index ffca4da1e249..88b8b9f780af 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
-> @@ -34,6 +34,7 @@ struct inv_icm42600_fifo {
->  		unsigned int accel;
->  		unsigned int eff_gyro;
->  		unsigned int eff_accel;
-> +		unsigned int value;
->  	} watermark;
->  	size_t count;
->  	struct {
->=20
-> ---
-> base-commit: cc746297b23e89bd5df9f91f3a0ca209e8991763
-> change-id: 20260623-inv-icm42600-fix-watermark-fifo-reading-624caf080754
->=20
-> Best regards,
-> -- =20
-> Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
->=20
->=20
->=20
+> 
 
