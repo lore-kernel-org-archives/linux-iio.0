@@ -1,48 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD9712745E;
-	Sat,  4 Jul 2026 23:02:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C4D9433E7F;
+	Sat,  4 Jul 2026 23:06:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783206174; cv=none; b=pgC5fQJ6Dok4MZkfSeo86OdKwjGRfe3jw/IiKkRiUm7/jAKFj10saTYffQXgaIo7bJm3uj/AEd6H3X0wrlKt5/VGU/S+pjzjBWsT1YYkIdX7DH6bgfV9HxHMZif0Rby4lr5dTuFWhZ1fIjGSMifLoJyNHavxTjOVkxD01AbVBqc=
+	t=1783206385; cv=none; b=A5EXUDry0xhU0+0N3dHr/O/Ky+WxL9wfsYWThVPAulZAtKImN2LN7V2uYJewad4fkYmD+Q+8tTjnIAyjeknfaRKq6SrrU+8NdzFH6hlZorsUGS6RAXJTd1DCWVsYTgxqVVzWNWIgCnMg5U5/V5aVYp7s44kM3YFwG7e8Xx65/aw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783206174; c=relaxed/simple;
-	bh=wXIEMPdC6Er9iIYlanGeGdxwew/cKQhTPjmDWaMWD4A=;
+	s=arc-20240116; t=1783206385; c=relaxed/simple;
+	bh=1q7wOW+/aBFf/iqT4oWppkZOn8TKbcDd0CGeatq746U=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=a7166WBQwfi6wPy+xEWih39jiJmZ0Jf+uibsVn50sXR1hlGjY84GdVzwoHe4B4FNjN37DIEdzjyGaP7z/8QaNsPFy7hAnT4sQHOe61lYoIZem6FnUQa1hDiCwkYcint3Td+vrao/elnLdDDVPBtRFVukARjqLO3jo7o9/Sgw0gk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h67+KYn6; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=lxspgWUZY/wpE0KeY8RufP8ap40/QDEJ2qCgrKWjevFCVDVxxQjBNJo4jwhCJEYmv9m2aBAya5P4Y8T+98SH68RZ5iOu/1JvrHmbCTuqlOhyAzK0+Lf0tnosRcU0VH7bPwh+JVQ76TDEMOFmtd4XMcUnJQ1k9aGqrJ05Sbe3EE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LEAHs6wi; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h67+KYn6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862CD1F000E9;
-	Sat,  4 Jul 2026 23:02:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LEAHs6wi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02EB11F000E9;
+	Sat,  4 Jul 2026 23:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783206173;
-	bh=0768mBwHe2Molg2SRCkHhLeJGImarGUSJmRvZS7FwDE=;
+	s=k20260515; t=1783206384;
+	bh=dtdhWRsvcLD8x9kSSFf/H3/nDxcZaVMQ9mXA2216y9I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=h67+KYn6VCvLEQIo2TqVBhkODGVnZevD8Y2Gb81SE1s9FNRO38RmJzExO0g1OXpTb
-	 tDftCor6/g134FUdez5XpMKCJC23Lo0zquBj0tU1MKSSvFTgWav0+EKZMl9di2kpgo
-	 XygIeQEVMDZAMNVg9HH0gWf9bYpeOYr8lj6zQwd9jUR/vKl3Vf3IQNzKFIMAzxLRUZ
-	 evJhIVKyjjUexaMFQQ4+I3qlCoyXkYuVlBHhbBujS6WCkbppnNG8gSaMJSTAteG1ff
-	 +nZcKBkLxjJCs9au4DIabs4ZrBYup0CZMnmkVMQhrr3wSD2LDIFOVf6Pvzh393kOXr
-	 oyVyUr7NVg1DQ==
-Date: Sun, 5 Jul 2026 00:02:46 +0100
+	b=LEAHs6wi6oCoa1vf49MpAoXxOrv9J7Znd3KsW5jqLn/vx6DQUGsON/UgLoehVC4rJ
+	 c+g0y2+uZIk4L/Lq1ByKqtSmFZZdxX3QqihHpmZIGiPnxz8bK2XupSs3UtV/sr6vV+
+	 E/J1SMxTMht7P4rYVgXvz/vjz4l2EXjBfVAN7YcTOrRmtLBYvp4siteoKGyx8LkNLx
+	 f5mx0ncN4lxajwjt4awLKQ2xenG8I0To0ZI5nLHp6Ce1tJuXb+sy+VrzE4gx6gQNFP
+	 gndvjxvnp3Di+zj9uH2+zpgiyTXNA2Ce661DuTfvO7rfJsvQuOozWPZW20fN34YpRo
+	 HSiSF3PrHtNEA==
+Date: Sun, 5 Jul 2026 00:06:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>,
- jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_icm42600: fix timestamping by limiting
- FIFO reading
-Message-ID: <20260705000246.1d168743@jic23-huawei>
-In-Reply-To: <akjzIfY5xnA6ahM0@ashevche-desk.local>
-References: <20260629-inv-icm42600-fix-watermark-fifo-reading-v2-1-967e375db7b3@tdk.com>
-	<20260703200455.5fa70e5b@jic23-huawei>
-	<akjzIfY5xnA6ahM0@ashevche-desk.local>
+Cc: Vidhu Sarwal <vidhu.linux@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH v2] iio: light: al3010: fix incorrect scale for the
+ highest gain range
+Message-ID: <20260705000616.3aaa1254@jic23-huawei>
+In-Reply-To: <akj49teBHChc17uB@ashevche-desk.local>
+References: <20260702052913.114130-1-vidhu.linux@gmail.com>
+	<20260704115245.11167-1-vidhu.linux@gmail.com>
+	<akj49teBHChc17uB@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,37 +50,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 4 Jul 2026 14:48:49 +0300
+On Sat, 4 Jul 2026 15:13:42 +0300
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Fri, Jul 03, 2026 at 08:04:55PM +0100, Jonathan Cameron wrote:
-> > On Mon, 29 Jun 2026 21:51:55 +0200
-> > Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
-> >   
-> > > From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> > > 
-> > > Timestamps are made by measuring the chip clock using the watermark
-> > > interrupts. If we read more than watermark samples as done today, we
-> > > are reducing the period between interrupts and distort the time
-> > > measurement. Fix that by reading only watermark samples in the
-> > > interrupt case.
-> > > 
-> > > Fixes: 7f85e42a6c54 ("iio: imu: inv_icm42600: add buffer support in iio devices")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> > > ---
-> > > Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>  
+> On Sat, Jul 04, 2026 at 05:22:45PM +0530, Vidhu Sarwal wrote:
+> > al3010_scales[] encodes the highest gain range as {0, 1187200}.
+> > For IIO_VAL_INT_PLUS_MICRO, the fractional part must be less than
+> > 1000000, so the scale 1.1872 should instead be represented as
+> > { 1, 187200 }.
 > > 
-> > That's not confusing at all :)
-> > 
-> > I've applied with the invensense one only - shout if you want something else.  
+> > Since write_raw() compares the value from userspace against this
+> > table, writing the advertised 1.1872 scale never matches the malformed
+> > entry and returns -EINVAL. As a result, the highest gain range cannot
+> > be selected. Reading the scale in that state also reports the malformed
+> > value.  
 > 
-> But the From should be equal to SoB, that's the requirement. So if you also
-> changed the authorship to follow it's fine, otherwise you need to use @tdk one
-> in SoB (and that's what I think was the initial intention).
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
 
+For future reference, please never send a new version in reply to an earlier
+version. It both gets very confusing as threads develop and also puts your
+patches way back in the maintainers inbox, which often slows down getting them
+applied.
 
-Good point.  Flipped to using only the tdk one.
+Applied and marked for stable 
 
-J
+thanks, Jonathan
