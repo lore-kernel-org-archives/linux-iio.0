@@ -1,130 +1,104 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8683280035
-	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 08:34:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DA62DECCC;
+	Sat,  4 Jul 2026 11:48:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783154061; cv=none; b=LiKocsV4ZzMV5qqGveJBX/cIAfqJKWfGu4AJOeVoz7CJBiCRahYsmL+xeCoA3cTyZ4itS0dbDM3COcz/c1U6XNf06BJIBISyorczbzAonsElxb7qAz8+d8K9KA8gpCZlU/kwCTWaziMmBOjRjMjK2Ackty17HVamvpS5+lzNNpU=
+	t=1783165737; cv=none; b=hbaSCIFrhtmzIgp3BgE93Gd12Pj7jfmRbUWUKptPbp8z0CTmhY8DldbxVu+sQFdbZ2ng87DRPuD1z2SR6jZdLYmK77c1YdSNODQZ55DS9XJbV7zLh8gFjuTFRyjDT3G04FcP5fbPOAizk30jyrd59XcWiwCbAjh73N+/jISFac4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783154061; c=relaxed/simple;
-	bh=Jz4ve4QEm9Edc0AwfZOQrOpfbjh7fXdxn+sLXflgJwU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KlNu0JE5viS5NIj+IxA6kFCKFABD1XcDJcm5U5mbYDzPhGbKzlRAm5NRHfvFqoShscZaJz+f30AP2sEyBBsIjIk357FQTKlYY8/TuOWUGhMUXRkLTze1dafD/3mhqgwwqK4WYQWL61vgVbKu0U61p9/k/MqdJxvjskpWp85/d1c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bvaZ43jY; arc=none smtp.client-ip=209.85.216.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783165737; c=relaxed/simple;
+	bh=btzbKisjFex9bTSgjIWLUm3D21TzJ8wWCH0apwsH90c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O9QrZPCJrdZpfWAm0dV3RtTHv3BFOvWs8hma6hIx1O++SNy9fh97/V9q2qqjxC5Qf59JZr//QdigABZOvyjwT+TyK2e/AnaINJsWP9lRa8Edp9EPu+65RtGNW6otJXj1XXqoXO5CroAe49p7gK8g6Hqh2ueLCElnuWH/sWWU1tQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a+3v2TQX; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bvaZ43jY"
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-381b831d535so1100338a91.0
-        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 01:34:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783154060; x=1783758860; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LbHfGXFcxYP9CA0eEthZoKFBg7syUAmY2ajW76MS+sc=;
-        b=bvaZ43jYa77RHjcht+DjHGXA8WBPXuvwFkL6vH2pWQPE6+m0llEmZ+We1Gbc2gd93W
-         qluVKE48EXkwNyFvAQ2sCHIUFSri8hph+C9/TQamddxItO5kfZIpDGXfxBVfsprVb5TB
-         gtB9NCnYKG5DLvSwAtvWQ5dtZSQKb/tBFa9k9NxtAM1kDEyVZKNBmI/4yZId96HqOX9f
-         CI3rqsuuF/nfRJmVkj1Mlo2le84QRWlN4fLhHWMHK5xfySMlmaSqc2c6XtaJUIVFZnJY
-         Iui9n7MmE0iI/g6DVkquJD6T+oqHdOHHWE6qU/vkdTQFMCglEuFIMxr6FTiDiKZnL8ww
-         BWEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783154060; x=1783758860;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LbHfGXFcxYP9CA0eEthZoKFBg7syUAmY2ajW76MS+sc=;
-        b=XJXWwVOwaujzjXsVtDK3QWBwbTB0qnVjb1vDmmKS/0OHMmFWG02FdJiAp4+46BjkrP
-         efRslx4SFdVq+YWcj7VApnRKPCaI37EkdWd/kftpPR99s+CbAS7Nhoupb75eZRIK6BmF
-         xYKuAXhjP4pJuoXZV8IaQ3AnjVBjsXI8AFUdDi3zF+xDQxnh0cpW+iPi8vJaLH/U1K1f
-         5Iyr58C13KVf1DA8KLOCgkeftxpYY/o9MFv48dqZJ/+2ifcJL4+MJBcVO4DzLX2XFYu6
-         GEfgjZunIbTFisVZMSLHP8tak9OcFzTGqOcxJ6iHlqUnKq3623qfa3mfU2zgOLAgKy09
-         cjSg==
-X-Forwarded-Encrypted: i=1; AHgh+RpJiK0hq3UPmXzUZ809zWYCkqdm/i5++OLTcfpM3mRHcGTN51tH6ENMD6tjbG4d6vuLzoxjeGrWQ9E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyW9yZZ7wGY4epXm+3JiqnE6sXKheu+Bn8IfnNfpbs4k6jq6M4i
-	MwvSwDa93CsLOoxpPic4m2noS1/2HuDdVuhZsbBD3jZeWTpUQco7iBMO
-X-Gm-Gg: AfdE7ckK5H/yGhTNoqJXXscjUL7B8zODQnl2UwB60HBLkEUTpLxlhXDvxJF6ftHr4V7
-	DC1Gb/IrCx3pqsDWZpJuW5hNGStCbz4I0T2qS1uyhGYptPYI0VVeNM+QAV2OPzbaAKmlblUtHWx
-	ndT1NOyTso7ERs07JaIG4W471t7PlDDO7USOu413hUC3qlyTXKQMLJOzpFIUjHN/6HnvMb920X1
-	TYoW+tEHnc+SBiB1G2fWrYOfsTfPSdE4AEir5g+RmrfKZ//O6tkydJ/rWq2HaJYuoa/0+3Q9H6s
-	7SOVUAG5mAvIQIOYV+D/lsXgUMYzshhXlLeIuaNSwl4/NHO8sAowzMcepx6LbqTJDbZdAZflolD
-	VUQCz5zrAC+T9yLbCCZ6jiCWvXYKuq4K6sa/7wvdZotO48GtKL+LvRhayCGI2KAW9cEkyTXVQjh
-	XdzGWbLHl8sUcn2bskdKw0tM46FnvFtSHdl2wTw3tqVinW0toqfsxSDkAQ3aDQZg==
-X-Received: by 2002:a17:90b:1d04:b0:381:abcc:c8e9 with SMTP id 98e67ed59e1d1-382803b43b1mr2776756a91.7.1783154059883;
-        Sat, 04 Jul 2026 01:34:19 -0700 (PDT)
-Received: from localhost.localdomain ([2405:acc0:1306:1a77:4d22:a645:ecb4:40eb])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f38ee1333sm11749163eec.24.2026.07.04.01.34.16
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sat, 04 Jul 2026 01:34:19 -0700 (PDT)
-From: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-To: Linus Walleij <linusw@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a+3v2TQX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783165736; x=1814701736;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=btzbKisjFex9bTSgjIWLUm3D21TzJ8wWCH0apwsH90c=;
+  b=a+3v2TQXd05pZpGylRS7YE3XVIwHyr8q4sESjMaUL/6jvtReVO+tWduH
+   rItoCDFG+VDyRRVQZkl5xzmYFL4T3JYSl0VGhS6hYSvnCXD4FOEoVW+YM
+   rNRV4qil4HDPbUfoOwcBzxVf3RF7iqKb7djjMjaN8/rbEC5lVgVwNM13t
+   Ro/b8sK9SuWwW0ap96/qIzwfv8j1z58GX/cy1KqhNnT9bTQ7UZRkAPrKk
+   gmbytNsS8aFRBzaWg9ZP9ghO3gYQnQ5eTWagxW2aMR/kuco5TBBjwu1wj
+   pfLGT6n4epp3SMtBipzpGHmyPQ8VEDwFClB7iJ5QthzaR4oDnSYjgAVwB
+   w==;
+X-CSE-ConnectionGUID: 35TOiuYdSAmPPyManoQO+Q==
+X-CSE-MsgGUID: ElcFGD5XRuGrBszXMs+W9A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11836"; a="106674779"
+X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
+   d="scan'208";a="106674779"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 04:48:55 -0700
+X-CSE-ConnectionGUID: NCBY9eCTSPGK7Z3Va7eIGg==
+X-CSE-MsgGUID: qd1/4NiySvm/0hmN/fcIMA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
+   d="scan'208";a="248844828"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 04:48:52 -0700
+Date: Sat, 4 Jul 2026 14:48:49 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>,
+	jean-baptiste.maneyrol@tdk.com,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: light: gp2ap002: Disable regulators on resume failure
-Date: Sat,  4 Jul 2026 14:19:12 +0545
-Message-ID: <20260704083412.43145-1-acharyalaxman8848@gmail.com>
-X-Mailer: git-send-email 2.51.2
+	Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: imu: inv_icm42600: fix timestamping by limiting
+ FIFO reading
+Message-ID: <akjzIfY5xnA6ahM0@ashevche-desk.local>
+References: <20260629-inv-icm42600-fix-watermark-fifo-reading-v2-1-967e375db7b3@tdk.com>
+ <20260703200455.5fa70e5b@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260703200455.5fa70e5b@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-If enabling VIO fails after VDD has been enabled, runtime resume
-returns without disabling VDD. Likewise, if device reinitialization
-fails, both supplies remain enabled. The runtime PM core keeps the
-device suspended when its resume callback fails, so the supplies must
-be restored to the suspended state.
+On Fri, Jul 03, 2026 at 08:04:55PM +0100, Jonathan Cameron wrote:
+> On Mon, 29 Jun 2026 21:51:55 +0200
+> Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
+> 
+> > From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> > 
+> > Timestamps are made by measuring the chip clock using the watermark
+> > interrupts. If we read more than watermark samples as done today, we
+> > are reducing the period between interrupts and distort the time
+> > measurement. Fix that by reading only watermark samples in the
+> > interrupt case.
+> > 
+> > Fixes: 7f85e42a6c54 ("iio: imu: inv_icm42600: add buffer support in iio devices")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+> > ---
+> > Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> 
+> That's not confusing at all :)
+> 
+> I've applied with the invensense one only - shout if you want something else.
 
-Disable the supplies enabled by the callback before returning an error.
+But the From should be equal to SoB, that's the requirement. So if you also
+changed the authorship to follow it's fine, otherwise you need to use @tdk one
+in SoB (and that's what I think was the initial intention).
 
-Fixes: 97d642e23037 ("iio: light: Add a driver for Sharp GP2AP002x00F")
-Assisted-by: Codex:gpt-5
-Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
----
- drivers/iio/light/gp2ap002.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
-index c83f67f..efef332 100644
---- a/drivers/iio/light/gp2ap002.c
-+++ b/drivers/iio/light/gp2ap002.c
-@@ -669,7 +669,7 @@ static int gp2ap002_runtime_resume(struct device *dev)
- 	ret = regulator_enable(gp2ap002->vio);
- 	if (ret) {
- 		dev_err(dev, "failed to enable VIO regulator in resume path\n");
--		return ret;
-+		goto out_disable_vdd;
- 	}
- 
- 	msleep(20);
-@@ -677,13 +677,19 @@ static int gp2ap002_runtime_resume(struct device *dev)
- 	ret = gp2ap002_init(gp2ap002);
- 	if (ret) {
- 		dev_err(dev, "re-initialization failed\n");
--		return ret;
-+		goto out_disable_vio;
- 	}
- 
- 	/* Re-activate the IRQ */
- 	enable_irq(gp2ap002->irq);
- 
- 	return 0;
-+
-+out_disable_vio:
-+	regulator_disable(gp2ap002->vio);
-+out_disable_vdd:
-+	regulator_disable(gp2ap002->vdd);
-+	return ret;
- }
- 
- static DEFINE_RUNTIME_DEV_PM_OPS(gp2ap002_dev_pm_ops, gp2ap002_runtime_suspend,
 -- 
-2.51.2
+With Best Regards,
+Andy Shevchenko
+
 
