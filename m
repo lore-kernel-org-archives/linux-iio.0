@@ -1,128 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2089A279DC9;
-	Sat,  4 Jul 2026 17:06:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E294D25B099
+	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 17:28:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783184766; cv=none; b=aFxzW5J4WqwZEy34UX5ZSZZ4WX8mj1yZnifwVWVzQri/LfNnYaf3v1BCKhWY3P9pWCBxu1hDgVdjRXsvqaaGCL8/3hhGu1AMHhk8FRcMg/dMz5DcyHIJaJu2TDUZiM4oGk3G8OLc3M/z2d6zhWz0b9dhUiwSsK6qMkZab+B7o2o=
+	t=1783186134; cv=none; b=SDEZFAcATsYD84YGM74r2v/nX2jj79ttrtJI8wFOHkQ5GafV7pvHowQV1ZYLGZFIUktu9+lj84gU4D78Etg/DCq3KK/a+ROxhe5VoHFXGraW0cQeZeqKi/omSURyEesZqN8fGZ7/n0e0HmeONeE875qont0EEHtuuIdIJWgHgO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783184766; c=relaxed/simple;
-	bh=S1rTVlnC+OJLu5zeLuUrwP29zeQmW+jHInRpCh4cSb4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QgaFRQFQb8ii8YOStPfpcaYYzNJNhWslljW6sJa0kWNgRmUsYsHCtQzepndNTA1zYmXw7Gui6hoCOZcPIfn+Swgwe8L7/q9F+xcqrX2gs+Ra+LdYpuX/V8YNh+cjljR66i9WJEEF/QHELFIvsTjtF6IrFuVjGbsxXP7L0LhO4fw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cuCvMFS5; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783186134; c=relaxed/simple;
+	bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
+	 References:In-Reply-To; b=Y0WHNzT2ybaoqyLULMlkXRzN3p4q6Vm4haosfXizisAmit2uKT3hPV4JzjBN8Bhn1D3ppdXxElBexyt+v14O5kyQkiU0N9ai1LCQlhzxi8z0N1t5g8WW2dQrnZ+eKfgFrRPGTXxYZEM9MuFIeXayOwbGoPl7zco49LaKbs2Z5S4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hHqw43Du; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cuCvMFS5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783184765; x=1814720765;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S1rTVlnC+OJLu5zeLuUrwP29zeQmW+jHInRpCh4cSb4=;
-  b=cuCvMFS5WfFNfZLRbWHUpzNFj/ncS5SLlMXGbI5lYip3/0Ie/rfJZrhX
-   GejuVjfOEPJ8uKJcCsD+vH5EfaoycgvgqcJdF84hMMyCnh89l1jOQ9pM5
-   ivFB3IBu5/8bSZ+FI5zOOnBXcAUV+nk2Sn7sYqBldbxexvAd+cF8ETxPE
-   s+Ntb2M04E1FesInReMOzlFRxPZHM58/h0KsAvoVnskh0Zq7RuwVgZdDm
-   zQu4ptEu12xYmU5b264aFHnVnoy9WfffKDvFsFTnL7CuncsYNv0vXLuVP
-   4vA/C5IYXYrVn2xV2mP8k3YeqNcVY/XQQcNXawGyBbVvijnVfPS2iev9W
-   A==;
-X-CSE-ConnectionGUID: OPlXxuM1TFmhMAw2jgRFqQ==
-X-CSE-MsgGUID: h4rAv5fUSJiq94q6MC1Lpg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11837"; a="101431781"
-X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
-   d="scan'208";a="101431781"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 10:06:04 -0700
-X-CSE-ConnectionGUID: tCKMggPtTWSGRKfCPg6hiQ==
-X-CSE-MsgGUID: 3RkDQhuCQa+/xFITm+/ikQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
-   d="scan'208";a="249988383"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.241])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 10:06:01 -0700
-Date: Sat, 4 Jul 2026 20:05:59 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Siratul Islam <siratul.islam@linux.dev>
-Cc: Stefan Popa <stefan.popa@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] iio: adc: add MAX40080 current-sense amplifier
- driver
-Message-ID: <akk9d-Zrx52C674x@ashevche-desk.local>
-References: <20260703102941.1141341-1-stefan.popa@analog.com>
- <20260703102941.1141341-3-stefan.popa@analog.com>
- <9878f042f424bfbd7fab24175298224b58e87779.camel@linux.dev>
- <akj3Ay8mwemRj-9U@ashevche-desk.local>
- <akkwWxCf10rfThMk@fedora>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hHqw43Du"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-382ef647e20so708611a91.1
+        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 10:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783186132; x=1783790932; darn=vger.kernel.org;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
+        b=hHqw43DuewMBv9lljwA3uuuikuFbvJQETb0G2rvRmfcCexZsVtFzEaVldY70RU1NlJ
+         SPPc4Qrxr3C6t6EgvwuH0EgKivFnuWIS7iNsN6KVevVVRIMB79QrpMZCxzwJ+3jkih4i
+         C15PX/00aIsxmh004q8ARWxl5NRJ9sAL6O1osD7UJ7FmZxg3cJOlR/OwDcxAs5JzV6aJ
+         II7rIEuCQHCjMfCRlJiCzlDqZTx3UqjT9vGP7fHI9LvEtnks6Ee5JA+9rq8AE+fb8MDd
+         8Q1/0rQhOOpwomPbWHWK8Ec/Cy7P8HQE77PD86dtIQFhj8hSHnfJ/yiat5K9dtjS5nhn
+         cVaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783186132; x=1783790932;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
+        b=ce1Jb/QSL5M2RICBLHG/n4autGcBeto+c1lxqGTce+j4UxYI3O87rfn1vYBcsjN9Ll
+         VdGd/ZhUYNjHwUYKvTGsU7Vh6QFGUzupVWKil/gDMGp+f75w7/UIVDiETlV4ntbCF4Jh
+         w5MAwZPUns304AW37vEphz3DrIa87xsTRi+KBh+XzXTtFWplJXULQIBqiqtEQWxAUqno
+         YV8PDvqIrJeO9HCPVqQwocqyX6SDacdPtJaCgazdrpKSy4WuvVZxny8ff8qDZDEkp8wt
+         cHdPRAd2LuxktUnHdUNTYRP5+q0v7xP564sSrWPlyIpr7fhq4tAsnmFFGxyXirQu7CVS
+         /whw==
+X-Forwarded-Encrypted: i=1; AHgh+RqvgU+JFZo1siOcY8GgmcbuqlbHXlQLAgo3J3W3SHWHCzmRfdOdqGuJXRVmEqTJZd6Xq6gz2I4L4No=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy66YMPoGe/Y0uPDCGqV12XQ3KcYbTxy1JFBfGyNtC3ATqNwUuz
+	7OWe33A70YesiTIJOK52Ba9EDL7TTCRQ+xdYXX70U0rzwIKm97T21ytP
+X-Gm-Gg: AfdE7clS7ipmIgVyWnweG9w8Q1YkYeYiOcu7TSf9jzTpP/Fa63wziu/GlrX+WwUeKoz
+	zHW4g4s3hfLMq1UlDDDqdlTSK+H/rT9CVc2OFWU1gYXGn4RJma1W7D7R0kbbvhENpKnlxyrZio2
+	UJMlzNiJ10sUoCe9u0n6ywi75qlDrqtCYZtQS3AWjlBM24UG4uMzsHaA60CB7egzEBeQTbLYa8f
+	n+NJO1WuisyehpwlClsM9LY6P5SEOd62sDpe69OHdxK5+2C/iJ39DEBInxlpWmPm3NE8NBSI1oM
+	f0jeTWWfn+VggPlHEPgJugIWVHPrwaTLKhj9OV2/Df6Tf8BnoSo3lyRYh/cw+IIDy99tbzpouvB
+	tQdYG+JxI/PtUEgcZRRxj4/0U1L54bLbRV1a6t30w5jjZgdomcNGro4GddBwC3hLv4i33Gd6qAQ
+	AZhE0qg1WkyS/2pS+yuwOwF+IOXyZBTBLQKadZ2DZeJc+gK7a8yikk7YE9gm3VThJ01C3bO3xj2
+	iFY
+X-Received: by 2002:a17:90b:4c0d:b0:384:d509:7274 with SMTP id 98e67ed59e1d1-384d5098a0dmr628774a91.15.1783186132079;
+        Sat, 04 Jul 2026 10:28:52 -0700 (PDT)
+Received: from localhost ([45.64.226.42])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f1cbfc285sm24823683eec.5.2026.07.04.10.28.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Jul 2026 10:28:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <akkwWxCf10rfThMk@fedora>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 04 Jul 2026 22:58:45 +0530
+Message-Id: <DJPYQ4ZG88L4.2LP2ZAMYER2UF@gmail.com>
+Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup
+ failure in probe
+From: "Prashant Rahul" <prashantrahul23@gmail.com>
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Prashant Rahul"
+ <prashantrahul23@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+ "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
+ <linux-kernel@vger.kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20260620174708.111470-1-prashantrahul23@gmail.com>
+ <20260620174708.111470-5-prashantrahul23@gmail.com>
+ <20260623203636.69a7429a@jic23-huawei>
+ <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
+ <aju-_HSz6jNkR_NM@ashevche-desk.local>
+ <20260625120952.471ec21a@jic23-huawei>
+ <aj01H48IHTyhn4ZR@ashevche-desk.local>
+ <20260703013907.57b0f114@jic23-huawei>
+ <DJPWN45EI416.1GR6QTDHBU6SC@gmail.com>
+ <akk8QD1iQHk1Cvvv@ashevche-desk.local>
+In-Reply-To: <akk8QD1iQHk1Cvvv@ashevche-desk.local>
 
-On Sat, Jul 04, 2026 at 10:32:32PM +0600, Siratul Islam wrote:
-> On 26/07/04 03:05PM, Andy Shevchenko wrote:
-> > On Sat, Jul 04, 2026 at 01:42:39AM +0600, Siratul Islam wrote:
-> > > On Fri, 2026-07-03 at 13:29 +0300, Stefan Popa wrote:
+On Sat Jul 4, 2026 at 10:30 PM IST, Andy Shevchenko wrote:
+> On Sat, Jul 04, 2026 at 09:20:46PM +0530, Prashant Rahul wrote:
+>> On Fri Jul 3, 2026 at 6:09 AM IST, Jonathan Cameron wrote:
+>> > For now I've picked up the two straight conversions to dev_err_probe()
+>> > because I'm keen to (slowly) stop using dev_err() in probe functions.
+>>
+>> I can look for places where dev_err() is used and can be replaced with
+>> dev_err_probe() in other probe functions, then create a new patch
+>> series for it. Without adding new logs or removing any existing ones, of=
+ course.
+>> Shouldn't take a lot of time, what do you think?
+>
+> In some cases it would make an additional churn. Each driver may require
+> a unique set of the cleanups and refactoring patches. Better to do someth=
+ing
+> that you have HW to test on.
 
-...
+Makes sense.
 
-> > > This can fit in 1 line.
-> > > static int max40080_update_bits(struct max40080_state *st, u8 reg, u16 mask, u16 val)
-> > 
-> > Here...
-> Keeping this function single line results in 86 cols, which is just a
-> little more than 80. So I thought splitting here was avoidable. But if
-> you think it's an acceptable split then so be it.
+> I also removed some people from the Cc list. Why did you add them?
 
-Split is a safe choice. No split is a slippery slope depending on some factors.
+I am a little confused here. I only added people to the CC list who were
+already present in the CC list of the original email. Am I missing
+something?
 
-...
-
-> > > > +static int max40080_get_range(struct max40080_state *st, unsigned int *range)
-> > > > +{
-> > > > +	int tmp;
-> > > > +
-> > > > +	tmp = i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG);
-> > > I think tmp can be initialized, since it is only assigned once.
-> > 
-> > I don't get this comment. You mean switching to ret?
-> > 
-> I meant tmp is assigned only once so the indirection here, i.e.
-> declaring and assigning in two steps doesn't buy us anything. Instead,
-> it could be initialized like "int tmp = i2c_smbus_read_word_data()."
-
-Ah, definitely no to this suggestion. It makes code harder to maintain
-and the pattern you proposed is actually discouraged. You can search in
-mail archive and find like ~1-2 year old message from me with the detailed
-explanation why.
-
-> > > > +	if (tmp < 0)
-> > > > +		return tmp;
-> > > > +
-> > > > +	*range = FIELD_GET(MAX40080_RANGE_MSK, tmp);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+regards,
+Prashant Rahul
