@@ -1,53 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0476E2FE0F;
-	Sat,  4 Jul 2026 22:55:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C606222590;
+	Sat,  4 Jul 2026 23:01:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783205757; cv=none; b=OP7/rIxWJ4q6zt1V/9QMLLmYsxUVBv0SNr5b4GzuZSk67FhnqHmY6eTh7ODb1OZLiPACP3p4KzWGU5O5xlg+z92vCUPT8Y6ku2hMBqqnC9EtL14+/cuiWLSwHghbYkm/xTHXR3K+P1HbMp8wAQOeYoxppy5blMBeTXX0ykYeJKM=
+	t=1783206063; cv=none; b=Jlp4n2ncQQKxeKnrksy7Exb+cd0PqsQO1aZKjG5swuqUnMfqH0g0NJnTynA4pow//4O7nx939wr6q+kySzs1tv2akUj6GcGxRpFQ7m7arn1GW+QgsGiQael+rnP6jU3GaBnP47wKw9V57dkLZ5slTO+EZveIHlAuI0RoHBD6nIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783205757; c=relaxed/simple;
-	bh=gMOxAOTiDMcgqglffRhUaolpVhS+TkbZGqcKc3iaPTQ=;
+	s=arc-20240116; t=1783206063; c=relaxed/simple;
+	bh=vYzEf8Zu9Dvsb8tcYVaoNmrQjpKIe57zJXNDazfapWI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oUgBq5xaqaNy8NYfan3BpXntztbQY+UA6x1Ou2RQYKVB2C1MsLXRp9Ts/6S3m4zZrsyA1bUQahED/UPsPdeiJEiZ2ESiMlO8TgW4RSbEy6aL0n3VgXPP2hQ+f6qGmG0vGLRlD/anWWk5zNotVLvk8Voze00dpUT9fzaILDZUNvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mQcTvk/k; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=tcZK0w2tM4VkSen5QHA84/f322pwownqYn27uSX/oTsg/TM1FVWG1h5CYTcR+5+JtJizhhZXYG8G3BOMZMrS7AIrRkXTZcRC6DzHEra8MzWlhh89/6cxMoKpS8t0IbKJP4KH5V9CbycxLRXjNk2mBpIz36rbrbVLuzrauco6EJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mlhj/yof; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mQcTvk/k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D241F000E9;
-	Sat,  4 Jul 2026 22:55:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mlhj/yof"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6546E1F000E9;
+	Sat,  4 Jul 2026 23:00:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783205755;
-	bh=i/2O/N7A6uIJDSLi7zuTvGsSOCZodge8KzeuNgDZtmM=;
+	s=k20260515; t=1783206062;
+	bh=ys2LpTH69hWI5DaIBHxkZWrk31InmexWAuU2959C4uA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mQcTvk/k3YXzrOVW66tSxSsnMrAzbPgxCLwFUCjmSKg1cnnWCUQJcBWu0Ubi2Gnpu
-	 HRWMVm63ZPN4qzLxtmnkXREC4BSgWm9+aZLin2lsGVh/r06BdrwYz8H58arZvXXlER
-	 5SCS/IkjUtnD8YxgW0JyvWn02Zkkc3pojI/JdVIWgoFtCQ91dKNgKGXUcJCtzTZnog
-	 WriDZDd1HtwwjO0eM4XUZd1VWQZNzRKYW6bNFUamaT8VRAcDBz+hnfALy0JTtsv26L
-	 ru1epyX0eS1tfynDMynGYWVSAPGtLho7OcrUZmHvwwCegKRkr/ebd5DQDpX4o0CVcx
-	 5ZV07pWobpdsg==
-Date: Sat, 4 Jul 2026 23:55:46 +0100
+	b=mlhj/yofjvjsFoaC/3jhWSvWj/i02wMW4j0ZDKCiMPhBuaDuGSTtSUt1tPtQ6gToo
+	 Sy0rCEvrWUopumGAphMR0h1XZhx5RfKRif0yDtv3EjaThCJe6M6cP9TEs+TT0NToGF
+	 hP/jwF2ecVHcKlq2i7d38Qwt98E5b3tNS4hjoby7jU92qnpZPPOnjKIgRWDw4DBgfr
+	 OuCUTjIX7R5APzElnG5g+BZCAZ4CM60lmYMf4Z9xQyCJjeYv+dW0KDTIMY1+SWKSJa
+	 hnihftMn+mINfLf+h6zmfgN+wvAuIKQmD/eaNfOKfZhbwibPH/pvJfevFM7Lg4DL31
+	 285N6KAeLwsUQ==
+Date: Sun, 5 Jul 2026 00:00:53 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Rodrigo Alencar via B4
- Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
- rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v6 12/16] iio: frequency: ad9910: add RAM mode support
-Message-ID: <20260704235546.4bd66480@jic23-huawei>
-In-Reply-To: <1493eed5-5bb8-4a2c-8f2d-8b4bc5dde157@baylibre.com>
-References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
-	<20260618-ad9910-iio-driver-v6-12-79125ffbe430@analog.com>
-	<20260703040544.08a8ea5e@jic23-huawei>
-	<ake_YWfvVC9RQ3wu@nsa>
-	<1493eed5-5bb8-4a2c-8f2d-8b4bc5dde157@baylibre.com>
+To: Maxwell Doose <m32285159@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM
+ AND DRIVERS), devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND
+ FLATTENED DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH v2 2/2] iio: temperature: Add STS30 temperature sensor
+ driver
+Message-ID: <20260705000053.6e8fc3f0@jic23-huawei>
+In-Reply-To: <20260704144503.2347331b@linuxescape>
+References: <20260621004626.66629-1-m32285159@gmail.com>
+	<20260621004626.66629-3-m32285159@gmail.com>
+	<20260703010532.4fc0f46b@jic23-huawei>
+	<20260704144503.2347331b@linuxescape>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,205 +50,347 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, 4 Jul 2026 11:50:35 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sat, 4 Jul 2026 14:45:03 -0500
+Maxwell Doose <m32285159@gmail.com> wrote:
 
-> On 7/3/26 9:09 AM, Nuno S=C3=A1 wrote:
-> > On Fri, Jul 03, 2026 at 04:05:44AM +0100, Jonathan Cameron wrote: =20
-> >> On Thu, 18 Jun 2026 14:27:28 +0100
-> >> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kerne=
-l.org> wrote:
-> >> =20
-> >>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> >>>
-> >>> Add RAM control channel, which includes:
-> >>> - RAM data loading via firmware upload interface;
-> >>> - Per-profile configuration and DDS core parameter destination as fir=
-mware
-> >>>   metadata;
-> >>> - Profile switching relying on profile channels;
-> >>> - Sampling frequency control of the active profile;
-> >>> - ram-enable-aware read/write paths that redirect single tone
-> >>>   frequency/phase/amplitude access through reg_profile cache when RAM=
- is
-> >>>   active;
-> >>>
-> >>> When RAM is enabled, the DDS profile parameters (frequency, phase,
-> >>> amplitude) for the single tone mode are sourced from a shadow register
-> >>> cache (reg_profile[]) since the profile registers are repurposed for =
-RAM
-> >>> control.
-> >>>
-> >>> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com> =20
-> >> =20
-> >>> diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/a=
-d9910.c
-> >>> index 3fe97aa887c3..c4e179dda715 100644
-> >>> --- a/drivers/iio/frequency/ad9910.c
-> >>> +++ b/drivers/iio/frequency/ad9910.c =20
-> >> =20
-> >>> +static enum fw_upload_err ad9910_ram_fwu_write(struct fw_upload *fw_=
-upload,
-> >>> +					       const u8 *data, u32 offset,
-> >>> +					       u32 size, u32 *written)
-> >>> +{
-> >>> +	const struct ad9910_ram_fw *fw_data =3D (const struct ad9910_ram_fw=
- *)data;
-> >>> +	struct ad9910_state *st =3D fw_upload->dd_handle;
-> >>> +	int ret, ret2, idx, wcount;
-> >>> +	u64 tmp64, backup;
-> >>> +
-> >>> +	if (offset !=3D 0)
-> >>> +		return FW_UPLOAD_ERR_INVALID_SIZE;
-> >>> +
-> >>> +	guard(mutex)(&st->lock);
-> >>> +
-> >>> +	if (st->ram_fwu_cancel)
-> >>> +		return FW_UPLOAD_ERR_CANCELED;
-> >>> +
-> >>> +	if (AD9910_RAM_ENABLED(st))
-> >>> +		return FW_UPLOAD_ERR_HW_ERROR;
-> >>> +
-> >>> +	for (idx =3D 0; idx < AD9910_NUM_PROFILES; idx++)
-> >>> +		st->reg_profile[idx] =3D get_unaligned_be64(&fw_data->profiles[idx=
-]) |
-> >>> +				       AD9910_PROFILE_RAM_OPEN_MSK;
-> >>> +
-> >>> +	ret =3D ad9910_reg32_update(st, AD9910_REG_CFR1,
-> >>> +				  AD9910_CFR1_RAM_PLAYBACK_DEST_MSK |
-> >>> +				  AD9910_CFR1_INT_PROFILE_CTL_MSK,
-> >>> +				  get_unaligned_be32(&fw_data->cfr1), true);
-> >>> +	if (ret)
-> >>> +		return FW_UPLOAD_ERR_RW_ERROR;
-> >>> +
-> >>> +	wcount =3D get_unaligned_be16(&fw_data->wcount);
-> >>> +	if (!wcount) {
-> >>> +		*written =3D size;
-> >>> +		return FW_UPLOAD_ERR_NONE; /* nothing else to write */
-> >>> +	}
-> >>> +
-> >>> +	ret =3D ad9910_profile_set(st, st->profile);
-> >>> +	if (ret)
-> >>> +		return FW_UPLOAD_ERR_HW_ERROR;
-> >>> +
-> >>> +	/* backup profile register and update it with required address rang=
-e */
-> >>> +	backup =3D st->reg[AD9910_REG_PROFILE(st->profile)].val64;
-> >>> +	tmp64 =3D AD9910_PROFILE_RAM_STEP_RATE_MSK |
-> >>> +		FIELD_PREP(AD9910_PROFILE_RAM_START_ADDR_MSK, 0) |
-> >>> +		FIELD_PREP(AD9910_PROFILE_RAM_END_ADDR_MSK, wcount - 1);
-> >>> +	ret =3D ad9910_reg64_write(st, AD9910_REG_PROFILE(st->profile), tmp=
-64, true);
-> >>> +	if (ret)
-> >>> +		return FW_UPLOAD_ERR_RW_ERROR;
-> >>> +
-> >>> +	memcpy(&st->tx_buf[1], fw_data->words, wcount * AD9910_RAM_WORD_SIZ=
-E);
-> >>> +
-> >>> +	/* write ram data and restore profile register */
-> >>> +	ret =3D ad9910_spi_write(st, AD9910_REG_RAM,
-> >>> +			       wcount * AD9910_RAM_WORD_SIZE, false);
-> >>> +	ret2 =3D ad9910_reg64_write(st, AD9910_REG_PROFILE(st->profile), ba=
-ckup, true);
-> >>> +	if (ret || ret2)
-> >>> +		return FW_UPLOAD_ERR_RW_ERROR;
-> >>> +
-> >>> +	*written =3D size; =20
-> >>
-> >> I'd like a blank line here. Mostly to make that 'good' return more obv=
-ious.
-> >> =20
-> >>> +	return FW_UPLOAD_ERR_NONE;
-> >>> +} =20
-> >> =20
-> >>> =20
-> >>> +static inline void ad9910_debugfs_init(struct ad9910_state *st,
-> >>> +				       struct iio_dev *indio_dev)
-> >>> +{
-> >>> +	struct dentry *d =3D iio_get_debugfs_dentry(indio_dev);
-> >>> +	char buf[64];
-> >>> +
-> >>> +	/*
-> >>> +	 * symlinks are created here so iio userspace tools can refer to th=
-em
-> >>> +	 * as debug attributes. =20
-> >>
-> >> Maybe worth a reference to appropriate ABI doc here (even if it is int=
-roduced
-> >> in a later patch) =20
-> >=20
-> > I'm not so sure about these links. I mean, I definitely agree we should
-> > make it easy for userspace tools like libiio to be able to handle
-> > these kind of attributes but using debugfs is questionable to me. Pretty
-> > much because this is not a debug thing. It is a real setting for the
-> > driver so ideally we would be able to control it (using the existent
-> > tools) without enforcing one to mount debugfs (I know that most of the
-> > times it's always mounted but still feels wrong to tie "real
-> > functionality" to debugfs).=20
-> >=20
-> > Having said the above, some suggestions:
-> >=20
-> > 1. Make the iio_dev the parent so that the attr name is just "ram" and
-> > it will be a subdir /sys/bus/iio/iio:deviceN/ram/.
-> > 2. Propose a new helper for the firmware_loader code so we can get
-> > struct device from struct fw_upload then we can easily create a sysfs
-> > symlink.
-> > 3. Name the attr as dev_name(iio_dev):attr so that it becomes
-> > iio:deviceN:attr_name.
-> >=20
-> > Now that I think about it, 2. does not make much sense when compared to
-> > 1. And If I'm not missing anything both 1. and 3. can be sanely parsable
-> > from userspace (being 3. maybe a bit more reliable). And yes, both requ=
-ire
-> > user space tools (in this case libiio) to support a new type of
-> > attribute (firmware) but that is another problem. =20
->=20
-> I would say that udev should be used to find the firmware device from
-> userspace rather than creating symlinks. And you probably don't even
-> need udev if you already have the `iio-device:<ID>` value. The path
-> is always going to be `/sys/class/firmware/iio-device:<ID>:ram/`. It
-> seems like the same amount of work for usespace to computer the path
-> either way, so might as well keep it simple and leave out the symlink
-> stuff.
->=20
-Seems reasonable.  We can always come back and add stuff later if a
-strong usecases emerges.  Much easier than ripping it out!
+> Hi Jonathan,
+> 
+> On Fri, 3 Jul 2026 01:05:32 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > On Sat, 20 Jun 2026 19:46:24 -0500
+> > Maxwell Doose <m32285159@gmail.com> wrote:
+> >   
+> > > Add a driver for the Sensirion STS30 family of temperature sensor
+> > > drivers over I2C. The STS30 family of sensors includes the STS30, STS31,
+> > > and STS35, all of which are supported by this driver, since they all
+> > > share the same commands, etc. and only differ in accuracy and tolerance.
+> > > 
+> > > The driver currently supports single-shot non-clock stretched readings,
+> > > by using a specified delay based on the repeatability/delay specified
+> > > by the user. The repeatability/delay can be changed at any time through
+> > > sysfs.
+> > > 
+> > > Additionally add Kconfig and Makefile entries for the driver as well as
+> > > a MAINTAINERS entry.
+> > > 
+> > > Signed-off-by: Maxwell Doose <m32285159@gmail.com>    
+> > 
+> > Big question first.  Why IIO? These are fairly basic temperature sensors
+> > which typically means hwmon is more appropriate.  What does it need
+> > that hwmon doesn't provide?
+> >   
+> 
+> The datasheet says that the STS30 supports continuous reads which means
+> that we can read it into a triggered buffer (which hwmon doesn't
+> support) and at some point I'd like to implement that.
+
+Hmm. For a temperature chip that is often more about the monitors running
+continuously than the ability to gather signals fast.  Temperature changes
+tend to be fairly slow when it's a physical sensor - gets less obvious when
+infrared remote sensors are involved.
+
+Even more relevant - there is an existing driver I think.
+See drivers/hwmon/sht3x.c which supports things under the wildcard sts3x as well.
+Check if that covers this part.
+
+Thanks,
 
 Jonathan
 
-> >=20
-> > - Nuno S=C3=A1 =20
-> >> =20
-> >>> +	 */
-> >>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/loading", st->ra=
-m_fwu_name);
-> >>> +	debugfs_create_symlink("ram_loading", d, buf);
-> >>> +
-> >>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/data", st->ram_f=
-wu_name);
-> >>> +	debugfs_create_symlink("ram_data", d, buf);
-> >>> +}
-> >>> +
-> >>>  static int ad9910_probe(struct spi_device *spi)
-> >>>  {
-> >>>  	static const char * const supplies[] =3D {
-> >>> @@ -1561,7 +1876,25 @@ static int ad9910_probe(struct spi_device *spi=
-) =20
-> >> ...
-> >> =20
-> >>> +	ad9910_debugfs_init(st, indio_dev); =20
-> >>
-> >> Blank line preferred before a simple return like this one.
-> >> =20
-> >>> +	return 0;
-> >>>  }
-> >>> =20
-> >>>  static const struct spi_device_id ad9910_id[] =3D {
-> >>> =20
-> >> =20
->=20
->=20
+
+> 
+> Additionally I don't have much experience (or any for that matter) in
+> hwmon.
+> 
+> > A few other things inline.
+> >   
+> > > diff --git a/drivers/iio/temperature/sts30.c b/drivers/iio/temperature/sts30.c
+> > > new file mode 100644
+> > > index 000000000000..dcfe3435ae5a
+> > > --- /dev/null
+> > > +++ b/drivers/iio/temperature/sts30.c    
+> >   
+> > > +
+> > > +/* Size of the temperature measurement data received after a read command */
+> > > +#define STS30_TEMP_MEAS_SIZE 2
+> > > +
+> > > +#define STS30_COMMAND_READ_HIGH_REPEAT 0x2400
+> > > +#define STS30_COMMAND_READ_MED_REPEAT 0x240B
+> > > +#define STS30_COMMAND_READ_LOW_REPEAT 0x2416    
+> > That smells like two fields in one value.
+> >   
+> > > +
+> > > +#define STS30_COMMAND_RESET 0x30A2    
+> >   
+> > > +enum sts30_read_delays {     
+> > 
+> > Name it to indicate unit.
+> >   
+> > > +	STS30_REPEAT_LOW = 4500,
+> > > +	STS30_REPEAT_MED = 6000,
+> > > +	STS30_REPEAT_HIGH = 15000
+> > > +};
+> > > +    
+> >   
+> > > +static int sts30_read(struct sts30_data *data, u16 command, u16 *val)
+> > > +{
+> > > +	u8 buf[STS30_MEAS_SIZE];
+> > > +	u8 tmp[2];    
+> > Might as well make it __be16  then it's aligned.  
+> 
+> Makes sense.
+> 
+> >  
+> > > +	int ret;
+> > > +
+> > > +	put_unaligned_be16(command, tmp);
+> > > +
+> > > +	ret = i2c_master_send(data->client, tmp, sizeof(tmp));
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +	if (ret != sizeof(tmp))
+> > > +		return -EIO;
+> > > +
+> > > +	fsleep(data->delay);
+> > > +
+> > > +	ret = i2c_master_recv(data->client, buf, sizeof(buf));
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +	if (ret != sizeof(buf))
+> > > +		return -EIO;
+> > > +
+> > > +	*val = get_unaligned_be16(buf);
+> > > +
+> > > +	ret = sts30_verify_crc8(data, buf);    
+> > 
+> > return sts30_...
+> >   
+> 
+> D'oh, don't know how I missed this.
+> 
+> >  
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	return 0;
+> > > +}    
+> >   
+> > > +
+> > > +static int sts30_read_raw(struct iio_dev *indio_dev,
+> > > +			  struct iio_chan_spec const *chan, int *val, int *val2,
+> > > +			  long mask)
+> > > +{
+> > > +	struct sts30_data *data = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +	u16 tmp;
+> > > +
+> > > +	guard(mutex)(&data->lock);    
+> > 
+> > I'd move this into appropriate scope as the lock isn't needed for
+> > all the const data cases.
+> >   
+> 
+> Will do.
+> 
+> >  
+> > > +
+> > > +	switch (mask) {
+> > > +	case IIO_CHAN_INFO_RAW:
+> > > +		switch (data->delay) {
+> > > +		case STS30_REPEAT_LOW:
+> > > +			ret = sts30_read(data, STS30_COMMAND_READ_LOW_REPEAT, &tmp);
+> > > +			break;
+> > > +		case STS30_REPEAT_MED:
+> > > +			ret = sts30_read(data, STS30_COMMAND_READ_MED_REPEAT, &tmp);
+> > > +			break;
+> > > +		case STS30_REPEAT_HIGH:
+> > > +			ret = sts30_read(data, STS30_COMMAND_READ_HIGH_REPEAT, &tmp);
+> > > +			break;
+> > > +		default:
+> > > +			dev_warn(&data->client->dev, "Repeatability state corrupted, got: %d\n",
+> > > +				 data->delay);    
+> > 
+> > Any realistic way this can happen?  If not drop the print.
+> >  
+> 
+> Probably not (unless of course a cosmic ray flips a bit or two).
+> 
+> >  
+> > > +			return -EINVAL;
+> > > +		}
+> > > +
+> > > +		if (ret)
+> > > +			return ret;
+> > > +
+> > > +		*val = tmp;
+> > > +		return IIO_VAL_INT;
+> > > +	case IIO_CHAN_INFO_OFFSET:
+> > > +		*val = STS30_TEMP_OFFSET;    
+> > 
+> > These constant cases don't need the lock.  
+> > > +		return IIO_VAL_INT;
+> > > +	case IIO_CHAN_INFO_SCALE:
+> > > +		*val = 175000;
+> > > +		*val2 = 65535;
+> > > +		return IIO_VAL_FRACTIONAL;
+> > > +	case IIO_CHAN_INFO_INT_TIME:
+> > > +		*val = 0;
+> > > +		*val2 = data->delay;    
+> > 
+> > Might need the guard - I haven't checked.
+> >  
+> 
+> I'm tempted to lock that read since it's shared, but I'll take a look
+> into it.
+> 
+> >  
+> > > +		return IIO_VAL_INT_PLUS_MICRO;
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +}
+> > > +
+> > > +static int sts30_write_raw(struct iio_dev *indio_dev,
+> > > +			   struct iio_chan_spec const *chan, int val, int val2,
+> > > +			   long mask)
+> > > +{
+> > > +	struct sts30_data *data = iio_priv(indio_dev);
+> > > +
+> > > +	if (val)
+> > > +		return -EINVAL;    
+> > 
+> > That is going to be IIO_* specific in the switch - so move it into
+> > the case block.
+> >   
+> 
+> Good point.
+> 
+> >  
+> > > +
+> > > +	switch (mask) {
+> > > +	case IIO_CHAN_INFO_INT_TIME: {
+> > > +		guard(mutex)(&data->lock);    
+> > 
+> > Given it is taken in all non error paths, I'd lift the guard() up to outside
+> > the switch.
+> >  
+> 
+> Will do.
+> 
+> >  
+> > > +
+> > > +		switch (val2) {
+> > > +		case STS30_REPEAT_LOW:
+> > > +			data->delay = STS30_REPEAT_LOW;
+> > > +			break;    
+> > 
+> > Given you are done in each of these, return instead of break.
+> >  
+> 
+> D'oh, also don't know how I missed this.
+> 
+> >  
+> > > +		case STS30_REPEAT_MED:
+> > > +			data->delay = STS30_REPEAT_MED;
+> > > +			break;
+> > > +		case STS30_REPEAT_HIGH:
+> > > +			data->delay = STS30_REPEAT_HIGH;
+> > > +			break;
+> > > +		default:
+> > > +			return -EINVAL;
+> > > +		}
+> > > +
+> > > +		return 0;
+> > > +	}
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +}
+> > > +
+> > > +static const struct iio_info sts30_info = {
+> > > +	.read_raw = sts30_read_raw,
+> > > +	.write_raw = sts30_write_raw    
+> > Missing comma.
+> > 
+> > Basic rule of these is you can only skip the comma if doing so doesn't create additional
+> > churn when adding new stuff after it.  Two cases are common.
+> > 1) Nothing can be added there - true of terminators  {} etc.
+> > 2) It's one line anyway so any change will result in that line changing
+> >    and hence no advantage in having the comma.
+> >  
+> 
+> Ah. Will fix.
+> 
+> >  
+> > > +};
+> > > +
+> > > +static const struct iio_chan_spec sts30_channels[] = {
+> > > +	{
+> > > +		.type = IIO_TEMP,
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_OFFSET) |
+> > > +				      BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_INT_TIME)    
+> > 
+> > No obvious gain in going longer than 80 chars here.  Just have one per line.
+> > Also the , is missing
+> >  
+> 
+> Will fix up.
+> 
+> >  
+> > > +	},
+> > > +};
+> > > +
+> > > +static int sts30_probe(struct i2c_client *client)
+> > > +{
+> > > +	struct iio_dev *indio_dev;
+> > > +	struct sts30_data *data;
+> > > +	int ret;
+> > > +
+> > > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> > > +	if (!indio_dev)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	indio_dev->name = client->name;    
+> > 
+> > I'd prefer to see that done via device specific chip_info structures.
+> > IIRC there are some paths in which client->name might not be set appropriately.
+> > For ACPI PRP0001 (the route that uses compatible) it is set to the vendor stripped
+> > name so that is fine, but should we ever add 'proper' ACPI support it will be the
+> > _HID which isn't what we want.
+> > 
+> > Anyhow, normally we avoid thinking about this by getting from the data
+> > rather than the ->name via i2c_get_match_data() and appropriate structures.
+> >   
+> 
+> Alright then, will do.
+> 
+> >  
+> > > +	indio_dev->info = &sts30_info;
+> > > +	indio_dev->channels = sts30_channels;
+> > > +	indio_dev->num_channels = ARRAY_SIZE(sts30_channels);
+> > > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > > +
+> > > +	data = iio_priv(indio_dev);
+> > > +	data->client = client;
+> > > +	data->delay = STS30_REPEAT_HIGH;
+> > > +
+> > > +	ret = devm_mutex_init(&client->dev, &data->lock);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	i2c_set_clientdata(client, indio_dev);    
+> > 
+> > Why? I'm not seeing it being used.
+> >   
+> 
+> Will just get rid of it then.
+> 
+> I'm probably a numpty for submitting this without the hardware :( I'll
+> probably just withhold the v3 until I can get hardware (or at least
+> submit as an RFC).
+> 
 
