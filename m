@@ -1,121 +1,155 @@
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A26A3A1684
-	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 11:53:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261E53A3804;
+	Sat,  4 Jul 2026 12:05:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783166009; cv=none; b=Hnip9m+dxT+Dp2xbdUtEA1+7oTdu3afFUeaya/yrkIHDeCxUaRvgp7IUaVsBfBNHXJGX/Kk2rrnbkksSW6zirIOXE0+HZSeTVMC/A0MklDmHZsIv13KQKhvWwnArQBq4/jrYzIFp12gfRSOgMkMN58WwZfzzBWDomCRhyMK7Uoc=
+	t=1783166733; cv=none; b=nmdo8AMY09mkVD6bxZgWeQTjne6ESf8jLG1oony24h4N881EuNIoSzBHUWc3uoN5KyshFSSQUYyfNtxyjEji816ST02GbtrtqdOLvWUo27V86LL1wG2/7JL7F5L7p6GujdmS0gQPSxnVs4TrSKj2h7V5fBCgAVjUkCQ/CKKh644=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783166009; c=relaxed/simple;
-	bh=ai4jZCdbrJPe7EUiAYRqiOCk3jA6QZQXOwe8vdOoInE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sLlDY3RYH22I3bFLuBd6uWQApyob08D/2kiKFzn6kNgHUVtelKB0iUoSyEtjCfzDfV3mCTqDoe0W4r1z+DLkNzikfY84bbYDFtgyEsxg5lcXqpfjh07JBztpWLms3ZSkSzdl/MpR0hvZrcBYe1TT7AepzpGHSO9X2Rh0gbaDc8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LelzI2l7; arc=none smtp.client-ip=209.85.215.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783166733; c=relaxed/simple;
+	bh=wLn6ZabVHDwroogZEoTKjLmBHpSdjyR1jnoMasvDq1Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iwGZaFmHcY/kKMrI2wsiQ2RSw4Yioka8kG7rUaZscKONHX1Q0ZeKDnbtIq6+qN4PnA8oPKu0/Y95gdu0AUo2TRSgwuNWlNPteLBqd60V0oabfbzbTPnOSESQeLAd4/D1stOC0s1Mxx7aIyEWqju8qAZsY4K+5R6++scI/aLiIy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=INkD0XRo; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LelzI2l7"
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-ca00f126b7eso672714a12.2
-        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 04:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783166008; x=1783770808; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UsxMTdTxaGyKiRcEKAGvLn+sq4FSJrsqhtc2CDzMcoo=;
-        b=LelzI2l7mZDui9oETlWsSJ9zfQHg6c3S3FIhmIWg71HO58PJK1g7cyL6Xs32/SC/Vy
-         yI1EBqWn41YTDrCXmPLZr33Xhwmg29x2pqG9BMSuIJsXOT8sO8M8hTsTBFEdPO8ZzRoS
-         AGUw9yZ9t70ne0k8BCLC9nFdoggkt3qa3gXucAi0SIEZ9h5g+/Y/siFBDOPfs81OE5Nt
-         6it2EC9lgpg8z3rlynYDhULEwIfYvqFf/1PuiG/OOBm6lBqzXLa5P/XEERTy5B8UPqc5
-         B/nppy4rUXLCRyvCA6JyVGOaSsUu1OhRYPIbjYc9L1GnE/UlpSgm7DU/4bYcfpqyWasd
-         7jmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783166008; x=1783770808;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UsxMTdTxaGyKiRcEKAGvLn+sq4FSJrsqhtc2CDzMcoo=;
-        b=SzOZO/NDkPXgtSFwrP3ThkN1XvKP+vz0yXHvGOFs5v3OU+ZZghlZ1FbB4wCvZ7AGDW
-         u1HJCIRqSdEfgFX51Z6nKElzsOf1dAIs0VY8mL0P6fCrrDM1L/9n0nNkyS9gMxRgOM5a
-         fMi7m/b9CgQfPKQt+KME6sr3vaawq2y1nsqLbshRCHRUirsVfb/TSca/tNyqKKyH/nws
-         erYamXE+J8VuehAWhZWAZQssHBL4Jx3jCvxbcqAa9NGNDBMDIfY6AYWPYPyrcp8BYVio
-         HKhFlKvm9xzIJk48cwgB9vReevy6ObEKHRIzG2ECL/2JwwuIp1cIIJumqZRyP+9NfjMJ
-         2jjw==
-X-Forwarded-Encrypted: i=1; AFNElJ9NXtpPIOrDx0fOMSCFvQVKxdcYd8xUbE2a2w2MTJCsMWDo02vE1EdTgysk5qzy0OkL8KQvEfSZPd0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YywimwhQOl18g9ldAFVhFTKrT9k+c3O2iDF2NU622DupYR1gPBH
-	Cxb3ldwwpslGoMcCbRCZPr37tI+mwntxmMbvaD1J+rTQfOQcCkdr3uAu
-X-Gm-Gg: AfdE7ckY+mXx11s7GSg+kqNi7TccoXdDedifmCaxeAoiDgqcDyAozC1Ap3LqgSOCdxR
-	rce7O6fF6NUPRQpuDYLGMV36UGZ1gCyVzmzL2+CI0KOYWLP+K9h4P7aN/vps3Axz2vUM55weY8i
-	Ur1kkhXStNNfLxnEaMDk38pD1OEc3KAgS5itdctyGIjcxkI3XIds+Xg4tkuvVB8iZvLr6q1hKtp
-	/Zj7XsSQGHw8I+p5Qj2WrPFaaBjx9W4UCP3l3qCWjEooSu2XfRpDmhoWwVFLritRcdsuRWW5DME
-	GtOIThyM1i9AYsh5XlSi9EdjOn3qHBMPF9MinmQefNKN4tHkIgYN6P5MQGEDxltgAznQips6H24
-	sdZEsIzjfyussauFZvHuB1abfxWjWJlNlHJOHiTAQxctuH1DIZlJhE2yIycfrmonZVi27hPsNw8
-	oE1TOzO3UfYe5QI08lfy0AVrfzP5jKzbL/bLng6KtMAg==
-X-Received: by 2002:a05:6a21:6e48:b0:3bf:6c04:a816 with SMTP id adf61e73a8af0-3c03e4da45cmr3219460637.55.1783166007775;
-        Sat, 04 Jul 2026 04:53:27 -0700 (PDT)
-Received: from primary ([223.181.23.202])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b3c85bde6sm49580285c88.9.2026.07.04.04.53.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jul 2026 04:53:27 -0700 (PDT)
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev,
-	Vidhu Sarwal <vidhu.linux@gmail.com>
-Subject: [PATCH v2] iio: light: al3010: fix incorrect scale for the highest gain range
-Date: Sat,  4 Jul 2026 17:22:45 +0530
-Message-ID: <20260704115245.11167-1-vidhu.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260702052913.114130-1-vidhu.linux@gmail.com>
-References: <20260702052913.114130-1-vidhu.linux@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="INkD0XRo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783166731; x=1814702731;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wLn6ZabVHDwroogZEoTKjLmBHpSdjyR1jnoMasvDq1Y=;
+  b=INkD0XRo6XoTcv37qKAefpnBs+VkBVPZgyBokJpyKkrzOcDI+UibFxWJ
+   Tln7MEAjyXZU/S98/6jPhOcrCGXk+11b8+yPMb52BV8p52jwp++IR+5hW
+   5+yAVib7R3/Q3KMLbLq8t15PEz3dIpF3TzEKct4Sps9S5/ZzSfhJnwBa3
+   myay87zQmSxh7PI/Z8WzVj6bwdGf7pe8Q9o0oQIo9TboZNPGMPFTyLpbS
+   arXNJPVJktgOeWT1I3GswUvwFTC+Xnifw537D0uQYrvQKRaGZIiZ6UXf+
+   0QNLL3RixmN8g7dKb8+8lsp0frhn76Z0HdQYzfl4CBC9OlR+Np4FCssRz
+   w==;
+X-CSE-ConnectionGUID: ZXqpnBsnR9utAJNAatOFsg==
+X-CSE-MsgGUID: IFnc+6nbTcCF8/arT/wWJw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11836"; a="101299292"
+X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
+   d="scan'208";a="101299292"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 05:05:29 -0700
+X-CSE-ConnectionGUID: BfQDh5eMT+eDx1zUBs0JdA==
+X-CSE-MsgGUID: z37iDkbqT8KkGlh7mQyNaQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
+   d="scan'208";a="256877388"
+Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 05:05:26 -0700
+Date: Sat, 4 Jul 2026 15:05:23 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Siratul Islam <siratul.islam@linux.dev>
+Cc: Stefan Popa <stefan.popa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <akj3Ay8mwemRj-9U@ashevche-desk.local>
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
+ <20260703102941.1141341-3-stefan.popa@analog.com>
+ <9878f042f424bfbd7fab24175298224b58e87779.camel@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9878f042f424bfbd7fab24175298224b58e87779.camel@linux.dev>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-al3010_scales[] encodes the highest gain range as {0, 1187200}.
-For IIO_VAL_INT_PLUS_MICRO, the fractional part must be less than
-1000000, so the scale 1.1872 should instead be represented as
-{ 1, 187200 }.
+On Sat, Jul 04, 2026 at 01:42:39AM +0600, Siratul Islam wrote:
+> On Fri, 2026-07-03 at 13:29 +0300, Stefan Popa wrote:
 
-Since write_raw() compares the value from userspace against this
-table, writing the advertised 1.1872 scale never matches the malformed
-entry and returns -EINVAL. As a result, the highest gain range cannot
-be selected. Reading the scale in that state also reports the malformed
-value.
+...
 
-Fixes: c36b5195ab70 ("iio: light: add Dyna-Image AL3010 driver")
-Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
----
-v2:
-- Remove trailing whitespace in commit message and Add trailing comma after last array element (Andy)
-- Use IIO preferred brace spacing (Jonathan)
+> > +#define MAX40080_REG_CFG		0x00
+> > +#define  MAX40080_MODE_MSK		GENMASK(2, 0)
+> > +#define  MAX40080_PEC_EN_MSK		BIT(5)
+> > +#define  MAX40080_RANGE_MSK		BIT(6)
+> > +#define  MAX40080_FILTER_MSK		GENMASK(14, 12)
+> Should be one space after #define, like the first one.
 
- drivers/iio/light/al3010.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I saw this but left uncommented as sometimes people use this style to
+distinguish bit field definitions from the register offsets. When one space is
+in use it might be not so easy to put the borders. I.o.w. I have no
+strong opinion on this style, but if you think we should be all the same for
+all IIO drivers here, I'm fine.
 
-diff --git a/drivers/iio/light/al3010.c b/drivers/iio/light/al3010.c
-index d603b4a6b8e8..ca1d7fd6defb 100644
---- a/drivers/iio/light/al3010.c
-+++ b/drivers/iio/light/al3010.c
-@@ -42,7 +42,7 @@ enum al3xxxx_range {
- };
- 
- static const int al3010_scales[][2] = {
--	{0, 1187200}, {0, 296800}, {0, 74200}, {0, 18600}
-+	{ 1, 187200 }, { 0, 296800 }, { 0, 74200 }, { 0, 18600 },
- };
- 
- static const struct regmap_config al3010_regmap_config = {
+> > +#define MAX40080_REG_FIFO_CFG		0x0A
+> Here too
+> > +#define  MAX40080_STORE_IV_MSK		GENMASK(1, 0)
+
+...and here...
+
+> > +#define MAX40080_REG_IV			0x10
+> > +/* Current is a 13-bit two's-complement value (magnitude + sign bit). */
+> > +#define  MAX40080_IV_I_MSK		GENMASK(12, 0)
+> > +#define  MAX40080_IV_I_SIGN_BIT		12
+> > +#define  MAX40080_IV_V_MAG_MSK		GENMASK(27, 16)
+> > +#define  MAX40080_IV_VALID_MSK		BIT(31)
+
+...and here.
+
+> > +/* CFG.mode field */
+> > +#define MAX40080_STDBY_MODE		0x00
+> > +#define MAX40080_SINGLE_MODE		0x02	/* one conversion per Quick Command */
+
+...
+
+> This can fit in 1 line.
+> static int max40080_update_bits(struct max40080_state *st, u8 reg, u16 mask, u16 val)
+
+
+Here...
+
+...
+
+> > +	ret = i2c_smbus_read_i2c_block_data(st->client, MAX40080_REG_IV,
+> > +					    sizeof(buf), buf);
+> This also fits in 1 line but it would go 92 cols, so not sure which one is preferred.
+
+...and here the wrap is done on logical border, so I think it's fine and reads
+well.
+
+...
+
+> > +static int max40080_get_range(struct max40080_state *st, unsigned int *range)
+> > +{
+> > +	int tmp;
+> > +
+> > +	tmp = i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG);
+> I think tmp can be initialized, since it is only assigned once.
+
+I don't get this comment. You mean switching to ret?
+
+> > +	if (tmp < 0)
+> > +		return tmp;
+> > +
+> > +	*range = FIELD_GET(MAX40080_RANGE_MSK, tmp);
+> > +
+> > +	return 0;
+> > +}
+
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
