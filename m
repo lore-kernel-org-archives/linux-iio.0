@@ -1,162 +1,143 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D7F372662
-	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 18:53:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AFD2F39C2
+	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 18:58:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783191185; cv=pass; b=QmlLxWtzaDxbH0A3Lq645+R4ZCsOednL434ZdUvFbuRLFJtXeAphEM2CkYSgKigIhILz88nu3+XiRTqj19T6cWMw+7Fmr845GObINIela/p/fLc8JrHAfgG4PAj03tDU5BYDh8b3iuP4E8gp+nT1OZVSCZdSUXbiX54rcQ6XP50=
+	t=1783191482; cv=pass; b=PUAwzyneibx57YsbeqTB3EnAnhWRYF8j4X9eiTJWycxcxgkOHSKZSs1KgDNx2yHTqf1TlZ5td8tzDoA3zed9Dh7wHHHk0xBZxlVVHr7mmYAkNdA4ppRAzJwdfvrI21VHH0gNr1Ei9hxBWaJV79ux60SlNzQieUvCMjUE5MVR0xY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783191185; c=relaxed/simple;
-	bh=GfnlmAFvUSAqS3ZrwBAbcQ1Hx67x/lz6NtI32WD2Khc=;
+	s=arc-20240116; t=1783191482; c=relaxed/simple;
+	bh=LYzIfE4Od8a0eQSAsCdf+roQTXs95nJAd0VoTdYsd/c=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZJ6A2Bwg4vp76acxWT21t5btoFdBWYeYMzhaJWIMl208WStLfS0D1NzMg0xNxMJFApTLxXyOLbdNHtwbt4NR32M/3+6mSf1yLUtR6KBcsZTAUhB9QIVCORYoVtobeHa1tGr8dzwLYSxZUWXNXwTQ5OfgZViSCVRoHtjVpjK7D2E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MBl9N54m; arc=pass smtp.client-ip=209.85.218.42
+	 To:Cc:Content-Type; b=qtWSvHoQPujJxsV+gDPu4QLd7FSia6Ri6xnWF2XiaZ1HU2t69I6nS3nIPEPeNVZWfUBGbU4vhFAAnucLIUEWAMB0sBxGVl8cHPVVkjrLqRP848Rhn5hCVKCEawJhAP47z66aqnWv6Ffm6F0RZcALaZm+wwdzGSKyypbrgasGJyM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YcxZg7ix; arc=pass smtp.client-ip=209.85.218.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MBl9N54m"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c126fe7d0f3so192799066b.0
-        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 11:53:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783191182; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YcxZg7ix"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-c08acccf4a4so189894466b.3
+        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 11:58:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783191479; cv=none;
         d=google.com; s=arc-20260327;
-        b=CkGquA+mdxFSxygnjJ9Duu0umkvAFHqmKavoVbWmpHqJIpNt8ld+8bsw5M8+nQIOMP
-         1b2+hFReuYUtl7sAy45lWpWVuVJbpIKz58kfUfzeI9NLzguKPPHrANLJR6zP3nCRgeW+
-         54bmgBys7IrrpKc5Lhs66FLYb29LGqAwPfap7cr8nyjyzFjQ/BUd/rK9hfCaknPKemfW
-         CZX2VUORfqRNNYwOmZDSdTlQcpGgJ//WCRUru/WYpn2ljE8fUPxS4QNUQi5zfk1lvIUF
-         qqCtI3r0nTGn4IwQK/SaIggKEJaR4nV9lC/aIllKnFbt/zh5BdOulnealcprte9ARJH/
-         RyOw==
+        b=oTFAM6+8wsBZioZPF1bkUKxdFIcpHb76vedKzyd9LkX3QqOjKeCxV8izHrM4Fk2+BQ
+         Tc0XYsCUirOAt5WL2PDU07t6nFoT2o+1ocX7Fy7IDN4d99kWl0QPtzcMGztlnmGBhyJe
+         RzJ8VRuWu9UCkf7rSUERB8g1OUHN0I5O7xPDMAW2z5QpT9VH2/NjGytvEywGRNn6TA5K
+         o2oP1Q6e3YGpK6mnmZ3ktZbqyULz20nbtQEpV/41V64VEFKLqGy4HkAlqIC1uaNhhtUR
+         21VtPC4GccDIuaMuUW67+lrruHlPy+7uhHpLwKgp0UvsFLK5rRWFyOzl87xlhAeNWWhi
+         Rw5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=f+BkGnn82LQN6bHnpZs3JGZAnAhIdCPQEanxeSEyBEM=;
-        fh=3bWm8WDNwTFw6zbWOtNKqjb9Wae0GPz0BgYoMnk9fFI=;
-        b=B1DA5OHdRmQTdzGrcjVbY7dre2M+FPQx1mV//cWC2aK497LtKTKsO0YDBDFJmzKRxH
-         IZo+Oncunh2rhC/8SEMGWYWTFThJH7OTEHE1L9EQKWgH48WqbVcj850UVq6qbhpyH/Up
-         i87B9VN1fDXd/6ZPEuXtQmFlVwYTPqZyoBBepLsUoYvHDcV+nuIr2+kApj27II+MsGKj
-         vzS5k/TkJqr+G/MB8Ei2O5nHE8LXi4lu/FebRZ39jMZJWVjHXBNL6BEB/2ZMxdGkRqW+
-         a1aEuq09HId/f0/GI9imBfqfpBcWjTR5Ompzd3V+VG83eS5ANcVPITETVQx3sZLXfaNg
-         4gpg==;
+        bh=LYzIfE4Od8a0eQSAsCdf+roQTXs95nJAd0VoTdYsd/c=;
+        fh=h+U+1UjJy2SJQ8ZNa1xF6nZxAaZC6dtLWVSX33DfG7A=;
+        b=NTUkT+A/CM/5mPg5IwuQpyQifU/cuGBTx44jNB2tlKwyq8X93MdDWi4scCISh6a8tP
+         AqNSKPbucVQFyFxXkPTSHUg0l4kKs5SGU2M2IOvJ9WDXbDTzjfl3D0NVKJ8CJ6OMgKRK
+         spMKaUaHG6CVDdWOMR7wnTeZwZO5zLR41jpywAbWvOBUpz/2r9+gKG0j+d03NqWE8BZD
+         mcKfv9dLNY8qcZRPATnWOmKbzaC76XTAw9niaEZyjgdRiOiLi4Ku4Bf1O7b5BPexpBty
+         C7H73kw7QNXNAxwEPGsKZAYsr18V/vCFzulwZSu/mEYV7/rR5BCgj9n5VKwkT6+4Wo7e
+         u2SA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783191182; x=1783795982; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1783191479; x=1783796279; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f+BkGnn82LQN6bHnpZs3JGZAnAhIdCPQEanxeSEyBEM=;
-        b=MBl9N54mjc4tJuE+tFBvEd21jYVWHVytcvHI3UUdy0vRjod+8RGxgJSj2mj9Bjf5B2
-         1MzS6BUJIPVKkEIz3RCrv1gsjEmHV+wyyMSvx8ZKbtKRsIEcjFifKHgIpn7GisHN6OIa
-         7LUkwvuvLFCuqgQm46lUxhKnBUoHIJupc5pYcxYXiPIzhO3zyxSP9nEyQKL63Ud6/K3L
-         LLILucDyS0kbVc3Koicepfk87PUcKTnnsdgzuokgj1LH2Fpdv/ERRnKhYMq4gFpBooAp
-         MHISeat7T7+qJg0OxfCrkvMfVBI5wYb0D2Wmjb6XxW+pTLTCMlIAfp65uT2QYkim5lNr
-         lGkQ==
+        bh=LYzIfE4Od8a0eQSAsCdf+roQTXs95nJAd0VoTdYsd/c=;
+        b=YcxZg7ixjFeumUjwzXoRg3xmS/5k6X1OZiYMd2MJw/A83FUOka8iWWtKjky4DVd0fZ
+         C21kNXjaCoXASMA2luoD08uxBwSgEI/JoE/HIec3youtFTgqfG5jyb6ZfQ4KSnGFIpQw
+         Hr0K1UIcXDOOHQVpvm50CLajkwqWPw5wgWcn27jEqQ36O2VPX30Uj1Hr1kpJ4shBSLxf
+         3R/ItnWQZB/oxHcsf6I8e07le4MIu1/ONA2Y6DJ3ELiZPNLrnbd1I33VcAqeAQhzQzX9
+         WsNr63CTY/Qus4WGtM2woBPSyQpK1C55SuayK21+3coq2ziQq0Iy57qMDBrXhcPt5bUA
+         DIHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783191182; x=1783795982;
+        d=1e100.net; s=20251104; t=1783191479; x=1783796279;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=f+BkGnn82LQN6bHnpZs3JGZAnAhIdCPQEanxeSEyBEM=;
-        b=NzXilfpvHLiSRaY962N89buPzpINnaIJ3+7PXu019z/7EOwf2hClA2ast/IvJriCms
-         JnrVuSNz1A1lU5BL80HW5lnviMlBkYAEY1J9+4hPYkaAzBQS780P7GoZ+zLpSdId6rXZ
-         Qh3sByAqrmbA9vH9T9HwyAwzY5VJLV10JNqK0Wnec+MAMjANZJEPZ/f6iX6T6pUXJD7A
-         WnYOTj67D1sGiyVRz1d3NOpQQkZbiLw8Hwe7mEWn9lh/rLvXcjDsBoX/Ip8wK/m9g+iA
-         rApkPBwkZkcQxAlhCwm/Z6vULfk8jAdOznocl15MeKuxCPiVqGhdxoWys1nQlfjkkjXH
-         u/Ng==
-X-Forwarded-Encrypted: i=1; AHgh+Rrc9PYHnwcwN8au/mV4RFy8bRS+QX4aNoJw6WuQfy5McGWz2jgT2D7GJrJYNDsShPksp241KrBZCNE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwB7U4FNFN0rp4jk9PquSSs+pV4qxQD++OjCJTZ+9g5CaGzRYL3
-	n3mkTNTZAbwGQ53QYfz86pSae43Sl2T5PPrNXW+MiXdvGnQ7cGC1PDxZ1q8qLJXYxVERDLdJwXd
-	G2pTcHZNHCk4EkGXeMTPXSJhJK3us3lg=
-X-Gm-Gg: AfdE7ckiFZpm5L4upCWx9xABasll1VT0E5vqVcTjyuxgjfXsgx40EGITJT17de2AD5n
-	J1YMfBJ6JA8A/xIk5wqE7kfIbR+1B4WeLnoWq6mgJ/OYWv35Ms0fEzvj3zDwbaKsg0bSqjz1HVC
-	wX0nOBB+FCNOicjfcntsOe+AkXrAWhYl28UEjymH4F0TUrMr14SufCtQ48uR+xKnKQgO35WgLpD
-	yms82lrQ4EzpqQgSmNshFYCbYd6oONN79juUi8RUe/JgiLC65otB3lYAT6+cOVBjb/MVyUFVqbL
-	6EFcDv0cN9qDiLnAskGmlAKJkUtsnVT/0DeK6+PY15cDLBNNFF/brmeb9tQJuQ4Lu9uBsrJfPXs
-	XtmS8C2sFbEvEw84E1Hpu7hEMlZp4agIf3rHtefnSoyszew6Y1B0Xa+R9+7nTGq7TcNlN
-X-Received: by 2002:a17:907:25c3:b0:c12:45fc:c44 with SMTP id
- a640c23a62f3a-c12e6bff31emr137459066b.62.1783191181998; Sat, 04 Jul 2026
- 11:53:01 -0700 (PDT)
+        bh=LYzIfE4Od8a0eQSAsCdf+roQTXs95nJAd0VoTdYsd/c=;
+        b=an268KMidUZLJybLN5TEO32RxNukk7WbfJT9LrdDh4+jqcJMEm0QEqiPxKzAlPgrEj
+         FV5o1jx1Ip9ypAesHLpyC3rDhAZm6PeXCz63UJedjqPGiyZT5FyQrEWSJXVArlNYWXN2
+         vWiV8Iqj7NicsgOwhN7/mt0L7Md5DUjHbYxyoKo96hcNqIFK1h6hc+j9TSo38BOo3NFW
+         6jWTgefZpMGYs2ttpah5E5SvGlOcCUS6FJRZwY9VGa3Eg8DhCJ7sU8pZciV0h9bz2Yml
+         Cy2Jp5L/tF6Sa/q2TGxfPUOZ5UaVdZCn7DIINkwCbtkt3sGFTL9byFSsxTj5TVVqF95s
+         /4wA==
+X-Forwarded-Encrypted: i=1; AHgh+RpWoRzydwfzZvMZWmYJZ6ALzvI/m+pgsQzuFweJV6tcr3vDyQKna7VoWKbWbZBqrQDv+/Nw88HmQ3w=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzxtr456ma3AyWYXYic/zkvdgNz7MEYA1uq/Z9ui/9Jm6rskuXd
+	wpyA+AT5SUPXUeD7vSv0TmntN1FajsQJwPEf42i3Llga81qtc6NP2G24Vl0lXbWs8dabBnYqTU3
+	o5L0IEEhXFTvyhYgscu7jm8jpq3qRNhY=
+X-Gm-Gg: AfdE7ck9W204vYgsOj2BdDzlWfV/7DHd7WHwA69l7RpWW97Nz1O2xDweEJ1g8jcAUdO
+	OZn4VqJuEAgaPE7kfB9qBi8puuNybwi1wCu5W8TXjcu/2e36HHypvYaPEKd8hf1PeUsco4KqU5F
+	O0GLHT7J0PukG/DyAUqCEzFRXD3gQhig8PpUPgyRwpb/fWnGF2d15ANxBMruPG/9tpTbSSmFouL
+	8Ls097KHjnOTql44C8KjdnBpPt6ezNW0fvJkh/dJKU6pQOdmFgmWWDqRfkKisrGFFeyxkyFXItc
+	csNwlEJNd4PO4E8pswlSU3PLco0PgLs+V6MVnulX2FiVcedSG6e5Tbnhat1j8LjYhAh157i36gf
+	f+koQ08tF9G5agGBD0x1FieFx3hYsLwmtobh2t+Govl6npfei4w1eCec//A==
+X-Received: by 2002:a17:907:944a:b0:c12:8cbe:b8b6 with SMTP id
+ a640c23a62f3a-c12e695d44dmr124122966b.22.1783191479112; Sat, 04 Jul 2026
+ 11:57:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260703102941.1141341-1-stefan.popa@analog.com>
- <20260703102941.1141341-3-stefan.popa@analog.com> <9878f042f424bfbd7fab24175298224b58e87779.camel@linux.dev>
- <akj3Ay8mwemRj-9U@ashevche-desk.local> <akkwWxCf10rfThMk@fedora>
- <akk9d-Zrx52C674x@ashevche-desk.local> <f7aba67831fbee343c105bba4bb531ce6f1c1c50@linux.dev>
-In-Reply-To: <f7aba67831fbee343c105bba4bb531ce6f1c1c50@linux.dev>
+References: <20260620174708.111470-1-prashantrahul23@gmail.com>
+ <20260620174708.111470-5-prashantrahul23@gmail.com> <20260623203636.69a7429a@jic23-huawei>
+ <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com> <aju-_HSz6jNkR_NM@ashevche-desk.local>
+ <20260625120952.471ec21a@jic23-huawei> <aj01H48IHTyhn4ZR@ashevche-desk.local>
+ <20260703013907.57b0f114@jic23-huawei> <DJPWN45EI416.1GR6QTDHBU6SC@gmail.com>
+ <akk8QD1iQHk1Cvvv@ashevche-desk.local> <DJPYQ4ZG88L4.2LP2ZAMYER2UF@gmail.com>
+In-Reply-To: <DJPYQ4ZG88L4.2LP2ZAMYER2UF@gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sat, 4 Jul 2026 21:52:25 +0300
-X-Gm-Features: AVVi8CdyAnuqpwp7HErpmAcpd3YTiWdAQ5q92MiljKmxpMmIe5DU0ndquU9wm84
-Message-ID: <CAHp75Ve_98MSB-RrSWV7J5yH39c6gus4eUBjXondo1=hue9pyg@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] iio: adc: add MAX40080 current-sense amplifier driver
-To: Siratul Islam <siratul.islam@linux.dev>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Stefan Popa <stefan.popa@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+Date: Sat, 4 Jul 2026 21:57:22 +0300
+X-Gm-Features: AVVi8CfZ5qdhHYEvr7Uzg81VPz4nA78A2BIE5AhyUpWeZZGm76HAefpQJYtLYek
+Message-ID: <CAHp75VcV81NJMmhujABVMcS5FYLCcrL-C4ZnHCZsc+wnF_eJxg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup failure
+ in probe
+To: Prashant Rahul <prashantrahul23@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Jonathan Cameron <jic23@kernel.org>, 
+	linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Ciprian Hegbeli <ciprian.hegbeli@analog.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 4, 2026 at 8:30=E2=80=AFPM Siratul Islam <siratul.islam@linux.d=
-ev> wrote:
-> July 4, 2026 at 11:05 PM, "Andy Shevchenko" <andriy.shevchenko@intel.com =
-mailto:andriy.shevchenko@intel.com?to=3D%22Andy%20Shevchenko%22%20%3Candriy=
-.shevchenko%40intel.com%3E > wrote:
-> > On Sat, Jul 04, 2026 at 10:32:32PM +0600, Siratul Islam wrote:
-> > > On 26/07/04 03:05PM, Andy Shevchenko wrote:
-> > >  On Sat, Jul 04, 2026 at 01:42:39AM +0600, Siratul Islam wrote:
-> > >  > On Fri, 2026-07-03 at 13:29 +0300, Stefan Popa wrote:
-
-...
-
-> > > > > +static int max40080_get_range(struct max40080_state *st, unsigne=
-d int *range)
-> > >  > > +{
-> > >  > > + int tmp;
-> > >  > > +
-> > >  > > + tmp =3D i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG)=
-;
-> > >  > I think tmp can be initialized, since it is only assigned once.
-> > >
-> > >  I don't get this comment. You mean switching to ret?
-> > >
-> > >  I meant tmp is assigned only once so the indirection here, i.e.
-> > >  declaring and assigning in two steps doesn't buy us anything. Instea=
-d,
-> > >  it could be initialized like "int tmp =3D i2c_smbus_read_word_data()=
-."
-> > >
-> > Ah, definitely no to this suggestion. It makes code harder to maintain
-> > and the pattern you proposed is actually discouraged. You can search in
-> > mail archive and find like ~1-2 year old message from me with the detai=
-led
-> > explanation why.
+On Sat, Jul 4, 2026 at 8:28=E2=80=AFPM Prashant Rahul <prashantrahul23@gmai=
+l.com> wrote:
+>
+> On Sat Jul 4, 2026 at 10:30 PM IST, Andy Shevchenko wrote:
+> > On Sat, Jul 04, 2026 at 09:20:46PM +0530, Prashant Rahul wrote:
+> >> On Fri Jul 3, 2026 at 6:09 AM IST, Jonathan Cameron wrote:
+> >> > For now I've picked up the two straight conversions to dev_err_probe=
+()
+> >> > because I'm keen to (slowly) stop using dev_err() in probe functions=
+.
+> >>
+> >> I can look for places where dev_err() is used and can be replaced with
+> >> dev_err_probe() in other probe functions, then create a new patch
+> >> series for it. Without adding new logs or removing any existing ones, =
+of course.
+> >> Shouldn't take a lot of time, what do you think?
 > >
-> Thanks! I'll look into it. Learning a lot of stuff. But I'm trying to und=
-erstand where to draw the line though.
-> Like "struct xxx* data =3D iio_priv(indio_dev);" and "s64 ts =3D iio_get_=
-time_ns(indio_dev);" are pretty common.
-> Do these calls make a special case for it?
+> > In some cases it would make an additional churn. Each driver may requir=
+e
+> > a unique set of the cleanups and refactoring patches. Better to do some=
+thing
+> > that you have HW to test on.
+>
+> Makes sense.
+>
+> > I also removed some people from the Cc list. Why did you add them?
+>
+> I am a little confused here. I only added people to the CC list who were
+> already present in the CC list of the original email. Am I missing
+> something?
 
-When the assigned value is coupled with a (validation) check,
-definitely do not assign and define simultaneously. When it's used as
-a counter, it's better to assign it closer to the user (meaning the
-counters that can't be folded into a for-loop). This is the rough rule
-of thumb. Plus use common sense.
+Which original email? You sent the original patch with unrelated
+people in the Cc list. get_maintainer.pl doesn't mention them in
+relation to the patched driver.
 
-> > > > > + if (tmp < 0)
-> > >  > > + return tmp;
-> > >  > > +
-> > >  > > + *range =3D FIELD_GET(MAX40080_RANGE_MSK, tmp);
-> > >  > > +
-> > >  > > + return 0;
-> > >  > > +}
 
 --=20
 With Best Regards,
