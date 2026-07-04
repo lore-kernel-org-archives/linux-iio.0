@@ -1,120 +1,119 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E294D25B099
-	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 17:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6501277029
+	for <linux-iio@vger.kernel.org>; Sat,  4 Jul 2026 17:30:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783186134; cv=none; b=SDEZFAcATsYD84YGM74r2v/nX2jj79ttrtJI8wFOHkQ5GafV7pvHowQV1ZYLGZFIUktu9+lj84gU4D78Etg/DCq3KK/a+ROxhe5VoHFXGraW0cQeZeqKi/omSURyEesZqN8fGZ7/n0e0HmeONeE875qont0EEHtuuIdIJWgHgO0=
+	t=1783186231; cv=none; b=uoWFSCEX58L3QDY34JFjaqkevwpz0JMbWShlpZ7arFS9olDgQIHWdYAWQdhOCga3LTL6Tzgrn4jrP/BG7zuXkEAUeFsm5f5h4iVBAvShw23rHV/2qUb6G/5XW2L0Vy1N76UTKdYWijP0kyrE4OH51xsEcYMco32HBsBEumjGtlw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783186134; c=relaxed/simple;
-	bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=Y0WHNzT2ybaoqyLULMlkXRzN3p4q6Vm4haosfXizisAmit2uKT3hPV4JzjBN8Bhn1D3ppdXxElBexyt+v14O5kyQkiU0N9ai1LCQlhzxi8z0N1t5g8WW2dQrnZ+eKfgFrRPGTXxYZEM9MuFIeXayOwbGoPl7zco49LaKbs2Z5S4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hHqw43Du; arc=none smtp.client-ip=209.85.216.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783186231; c=relaxed/simple;
+	bh=QTFOXL/7uxf5Vhh2+P3ga7eNXu/yhxwvoCw8hBStYkM=;
+	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
+	 In-Reply-To:References; b=eeh39kMUj74a4tidanb8mwhCHi79K7zrVbig91yeH5giV2ouF3O2Q1cbID6lxKfx8ijdvHZ4eahNCrW1A+/kaBN00lilifdkSzKnZSsJLsz05TOagGybz8AijwQj/xj3Kw53qOkBvOgLvdNgBhSMiIpfrA1dy6RCByS8SGC+UVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=TUpm/wbp; arc=none smtp.client-ip=91.218.175.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hHqw43Du"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-382ef647e20so708611a91.1
-        for <linux-iio@vger.kernel.org>; Sat, 04 Jul 2026 10:28:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783186132; x=1783790932; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
-        b=hHqw43DuewMBv9lljwA3uuuikuFbvJQETb0G2rvRmfcCexZsVtFzEaVldY70RU1NlJ
-         SPPc4Qrxr3C6t6EgvwuH0EgKivFnuWIS7iNsN6KVevVVRIMB79QrpMZCxzwJ+3jkih4i
-         C15PX/00aIsxmh004q8ARWxl5NRJ9sAL6O1osD7UJ7FmZxg3cJOlR/OwDcxAs5JzV6aJ
-         II7rIEuCQHCjMfCRlJiCzlDqZTx3UqjT9vGP7fHI9LvEtnks6Ee5JA+9rq8AE+fb8MDd
-         8Q1/0rQhOOpwomPbWHWK8Ec/Cy7P8HQE77PD86dtIQFhj8hSHnfJ/yiat5K9dtjS5nhn
-         cVaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783186132; x=1783790932;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6afIOjOzhFXJRuonmcwNCIu26PRwJhH0WXw0qgT3Qn4=;
-        b=ce1Jb/QSL5M2RICBLHG/n4autGcBeto+c1lxqGTce+j4UxYI3O87rfn1vYBcsjN9Ll
-         VdGd/ZhUYNjHwUYKvTGsU7Vh6QFGUzupVWKil/gDMGp+f75w7/UIVDiETlV4ntbCF4Jh
-         w5MAwZPUns304AW37vEphz3DrIa87xsTRi+KBh+XzXTtFWplJXULQIBqiqtEQWxAUqno
-         YV8PDvqIrJeO9HCPVqQwocqyX6SDacdPtJaCgazdrpKSy4WuvVZxny8ff8qDZDEkp8wt
-         cHdPRAd2LuxktUnHdUNTYRP5+q0v7xP564sSrWPlyIpr7fhq4tAsnmFFGxyXirQu7CVS
-         /whw==
-X-Forwarded-Encrypted: i=1; AHgh+RqvgU+JFZo1siOcY8GgmcbuqlbHXlQLAgo3J3W3SHWHCzmRfdOdqGuJXRVmEqTJZd6Xq6gz2I4L4No=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy66YMPoGe/Y0uPDCGqV12XQ3KcYbTxy1JFBfGyNtC3ATqNwUuz
-	7OWe33A70YesiTIJOK52Ba9EDL7TTCRQ+xdYXX70U0rzwIKm97T21ytP
-X-Gm-Gg: AfdE7clS7ipmIgVyWnweG9w8Q1YkYeYiOcu7TSf9jzTpP/Fa63wziu/GlrX+WwUeKoz
-	zHW4g4s3hfLMq1UlDDDqdlTSK+H/rT9CVc2OFWU1gYXGn4RJma1W7D7R0kbbvhENpKnlxyrZio2
-	UJMlzNiJ10sUoCe9u0n6ywi75qlDrqtCYZtQS3AWjlBM24UG4uMzsHaA60CB7egzEBeQTbLYa8f
-	n+NJO1WuisyehpwlClsM9LY6P5SEOd62sDpe69OHdxK5+2C/iJ39DEBInxlpWmPm3NE8NBSI1oM
-	f0jeTWWfn+VggPlHEPgJugIWVHPrwaTLKhj9OV2/Df6Tf8BnoSo3lyRYh/cw+IIDy99tbzpouvB
-	tQdYG+JxI/PtUEgcZRRxj4/0U1L54bLbRV1a6t30w5jjZgdomcNGro4GddBwC3hLv4i33Gd6qAQ
-	AZhE0qg1WkyS/2pS+yuwOwF+IOXyZBTBLQKadZ2DZeJc+gK7a8yikk7YE9gm3VThJ01C3bO3xj2
-	iFY
-X-Received: by 2002:a17:90b:4c0d:b0:384:d509:7274 with SMTP id 98e67ed59e1d1-384d5098a0dmr628774a91.15.1783186132079;
-        Sat, 04 Jul 2026 10:28:52 -0700 (PDT)
-Received: from localhost ([45.64.226.42])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f1cbfc285sm24823683eec.5.2026.07.04.10.28.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jul 2026 10:28:51 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="TUpm/wbp"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1783186225;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=njzJqdpKKKXqA0+a5qBHy09jk5HzWBDgE2/TwwrdOYA=;
+	b=TUpm/wbpG3Alc1Qo+pQ7NuVKHtgH44+IAwikQGyv0ATrmjWkMJlpyrmKIQ7ZnnRqCpMTl2
+	t/UHXts6aUv/w9hV5O3CjlL398fqHeXz1AiEXctEd1sz9geS7tUs1xJm5pLE5i3o+yDoet
+	oXgd/xFJOAc9EX4MI0FKuwehQr4dhRw=
+Date: Sat, 04 Jul 2026 17:30:23 +0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 04 Jul 2026 22:58:45 +0530
-Message-Id: <DJPYQ4ZG88L4.2LP2ZAMYER2UF@gmail.com>
-Subject: Re: [PATCH v2 4/5] iio: adc: ti-adc161s626: log buffer setup
- failure in probe
-From: "Prashant Rahul" <prashantrahul23@gmail.com>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Prashant Rahul"
- <prashantrahul23@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
- "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-kernel@vger.kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20260620174708.111470-1-prashantrahul23@gmail.com>
- <20260620174708.111470-5-prashantrahul23@gmail.com>
- <20260623203636.69a7429a@jic23-huawei>
- <DJH77MBX1U37.1JJ1Z6UGLF0LT@gmail.com>
- <aju-_HSz6jNkR_NM@ashevche-desk.local>
- <20260625120952.471ec21a@jic23-huawei>
- <aj01H48IHTyhn4ZR@ashevche-desk.local>
- <20260703013907.57b0f114@jic23-huawei>
- <DJPWN45EI416.1GR6QTDHBU6SC@gmail.com>
- <akk8QD1iQHk1Cvvv@ashevche-desk.local>
-In-Reply-To: <akk8QD1iQHk1Cvvv@ashevche-desk.local>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Siratul Islam" <siratul.islam@linux.dev>
+Message-ID: <f7aba67831fbee343c105bba4bb531ce6f1c1c50@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH v1 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
+Cc: "Stefan Popa" <stefan.popa@analog.com>, "Jonathan Cameron"
+ <jic23@kernel.org>, "David Lechner" <dlechner@baylibre.com>,
+ "=?utf-8?B?TnVubyBTw6E=?=" <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Ciprian
+ Hegbeli" <ciprian.hegbeli@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <akk9d-Zrx52C674x@ashevche-desk.local>
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
+ <20260703102941.1141341-3-stefan.popa@analog.com>
+ <9878f042f424bfbd7fab24175298224b58e87779.camel@linux.dev>
+ <akj3Ay8mwemRj-9U@ashevche-desk.local> <akkwWxCf10rfThMk@fedora>
+ <akk9d-Zrx52C674x@ashevche-desk.local>
+X-Migadu-Flow: FLOW_OUT
 
-On Sat Jul 4, 2026 at 10:30 PM IST, Andy Shevchenko wrote:
-> On Sat, Jul 04, 2026 at 09:20:46PM +0530, Prashant Rahul wrote:
->> On Fri Jul 3, 2026 at 6:09 AM IST, Jonathan Cameron wrote:
->> > For now I've picked up the two straight conversions to dev_err_probe()
->> > because I'm keen to (slowly) stop using dev_err() in probe functions.
->>
->> I can look for places where dev_err() is used and can be replaced with
->> dev_err_probe() in other probe functions, then create a new patch
->> series for it. Without adding new logs or removing any existing ones, of=
- course.
->> Shouldn't take a lot of time, what do you think?
+July 4, 2026 at 11:05 PM, "Andy Shevchenko" <andriy.shevchenko@intel.com =
+mailto:andriy.shevchenko@intel.com?to=3D%22Andy%20Shevchenko%22%20%3Candr=
+iy.shevchenko%40intel.com%3E > wrote:
+
+
+>=20
+>=20On Sat, Jul 04, 2026 at 10:32:32PM +0600, Siratul Islam wrote:
+>=20
+>=20>=20
+>=20> On 26/07/04 03:05PM, Andy Shevchenko wrote:
+> >  On Sat, Jul 04, 2026 at 01:42:39AM +0600, Siratul Islam wrote:
+> >  > On Fri, 2026-07-03 at 13:29 +0300, Stefan Popa wrote:
+> >=20
+>=20...
+>=20
+...
+>=20
+> >=20
+>=20> > > +static int max40080_get_range(struct max40080_state *st, unsig=
+ned int *range)
+> >  > > +{
+> >  > > + int tmp;
+> >  > > +
+> >  > > + tmp =3D i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG)=
+;
+> >  > I think tmp can be initialized, since it is only assigned once.
+> >=20=20
+>=20>  I don't get this comment. You mean switching to ret?
+> >=20=20
+>=20>  I meant tmp is assigned only once so the indirection here, i.e.
+> >  declaring and assigning in two steps doesn't buy us anything. Instea=
+d,
+> >  it could be initialized like "int tmp =3D i2c_smbus_read_word_data()=
+."
+> >=20
+>=20Ah, definitely no to this suggestion. It makes code harder to maintai=
+n
+> and the pattern you proposed is actually discouraged. You can search in
+> mail archive and find like ~1-2 year old message from me with the detai=
+led
+> explanation why.
+>=20
+Thanks!=20I'll look into it. Learning a lot of stuff. But I'm trying to u=
+nderstand where to draw the line though.
+Like "struct xxx* data =3D iio_priv(indio_dev);" and "s64 ts =3D iio_get_=
+time_ns(indio_dev);" are pretty common.=20
+Do=20these calls make a special case for it?
+> >=20
+>=20> > > + if (tmp < 0)
+> >  > > + return tmp;
+> >  > > +
+> >  > > + *range =3D FIELD_GET(MAX40080_RANGE_MSK, tmp);
+> >  > > +
+> >  > > + return 0;
+> >  > > +}
+> >=20
+>=20--=20
+>=20With Best Regards,
+> Andy Shevchenko
 >
-> In some cases it would make an additional churn. Each driver may require
-> a unique set of the cleanups and refactoring patches. Better to do someth=
-ing
-> that you have HW to test on.
-
-Makes sense.
-
-> I also removed some people from the Cc list. Why did you add them?
-
-I am a little confused here. I only added people to the CC list who were
-already present in the CC list of the original email. Am I missing
-something?
-
-regards,
-Prashant Rahul
