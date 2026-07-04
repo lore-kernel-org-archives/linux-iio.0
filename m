@@ -1,87 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ECED30C150;
-	Sat,  4 Jul 2026 13:44:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39CDC3EA66;
+	Sat,  4 Jul 2026 15:16:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783172664; cv=none; b=YRbbPR3yHybi7dzUn7efPLDhRMqtHq0pcem/eythE45Lvm4vU/DtZgBNJmGlisXc446Ixn/dDxDXebua/EMOg+XdaC2VqyPOZhAvurXgiY8ieot+XDPjJhobwXerGsvemubF9BRz0vA2Sxi5vh9YazHO8CGPIR+mWf2pZJAtQxQ=
+	t=1783178211; cv=none; b=lS+mpRm86esNp4k8AlJ6yz8lYD9NY/jBEXDh0ogeTvMVHnEc0ZXJE6DL1CcIzX9/AM/pqVTSgSGb33tgmIsa00EdSxFI+GE3GAkaWmQLCNg998VEk9yrYPk2WOslCfp7HVrudG31S5dxG9+HlAsOEvLDLed10YK25VtE5VHemC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783172664; c=relaxed/simple;
-	bh=hGDQxo7Ohn0wGMoQC0mqdaFrCpPTHNlyoyY1jccl3xQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eaImir6QHlTlSQALXnDb66Dlog/IFJfvPQKKul0zsSO3G3T74Wh9mECU0qTs25gaa5hfhE9m7r1fwrpFafb5YolNNVsXjKRhpg1dOg50csUPdKP7onO3BZZbytdhL1dwIS4wOIKwagredK+NfCrnv8nXwCxxbFm0jPcbLz/C5f0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GXgRT9lR; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GXgRT9lR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783172661; x=1814708661;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hGDQxo7Ohn0wGMoQC0mqdaFrCpPTHNlyoyY1jccl3xQ=;
-  b=GXgRT9lRTO5JjtikpuvlPDzxtectbydkPCwsP94r+Qe4WGw7/qQWv/n2
-   q2E+KtazSMbKL5OJaOrDyMiDpw7Ig7iItsRra8k/pvLYhuPF+B7LPFZVP
-   KWVqBuWKiGzuPy9UkVOKLcinQouWwbkx0/OptoZ8wyq/X83i8DWWIXZhb
-   PiC+ztzsL/MNNzMRS8XMtDy+l3aMDkoiCWjW/oM2FJLENU2P35Z0AKUn3
-   lTtfSBYSFGeAPV5wEf+kRBXBK9kRU2XliUzvP0MVTArPtRZQr4qnBkceY
-   AjVTHt2ZSQLCuf43pJN+ZGvs+IYYRT+EOTzG4dTgbICOtpA9cR3lkGBYl
-   Q==;
-X-CSE-ConnectionGUID: 4NslfbSRRySanm/2pprI3Q==
-X-CSE-MsgGUID: FB7JQhwZS4yPpcUi61caVg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11837"; a="83752010"
-X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
-   d="scan'208";a="83752010"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 06:44:20 -0700
-X-CSE-ConnectionGUID: 47qaFs3pR6SXycbVSDPOxA==
-X-CSE-MsgGUID: da56fFzNRUaWZqSImBmxCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,147,1779174000"; 
-   d="scan'208";a="291454507"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2026 06:44:18 -0700
-Date: Sat, 4 Jul 2026 16:44:16 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Pengpeng Hou <pengpeng@iscas.ac.cn>
-Cc: Alex Lanzano <lanzano.alex@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	s=arc-20240116; t=1783178211; c=relaxed/simple;
+	bh=J6OzeCSw7bwMfL74x1G7le6EhOsDNzlXIpwhmRGNC+g=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Srqdkta1FZGoIKZSK1COqARA89chqj18ygtde33LdjzNGKga7mtkT+/dutkpZkKjCfUcYCxozTOEmwFBSWQAamXtjzgXGjDjkHwzToccTpTWpWEijlmgTaTFHp8MNG4XWRXZ87qrY2UFryntK4HiBQLoKGF/QSso1PzfPCZTJ2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost.localdomain (unknown [111.196.245.140])
+	by APP-05 (Coremail) with SMTP id zQCowAC3Gt7TI0lqsmrbFg--.13478S2;
+	Sat, 04 Jul 2026 23:16:35 +0800 (CST)
+From: Pengpeng Hou <pengpeng@iscas.ac.cn>
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bmi270: add missing MODULE_DEVICE_TABLE()
-Message-ID: <akkOMMlfGWzFReHz@ashevche-desk.local>
-References: <20260704124224.4579-1-pengpeng@iscas.ac.cn>
+Subject: [PATCH] iio: adc: max1241: add missing MODULE_DEVICE_TABLE()
+Date: Sat,  4 Jul 2026 23:16:33 +0800
+Message-ID: <20260704151633.38517-1-pengpeng@iscas.ac.cn>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260704124224.4579-1-pengpeng@iscas.ac.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zQCowAC3Gt7TI0lqsmrbFg--.13478S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JFWktrWrZr4UtryUKw4fGrg_yoWDZrg_Cr
+	n7X397WF1xuryFkw43Kr43Zr92ya4xWa1kG34vga4Yva47CryfAaykuFsxX3WDAr1DC3Z8
+	Zr9rWFyrK39FgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUb4kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+	0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+	jxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWxJVW8Jr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
+	AVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
+	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkG
+	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26F4j6r4U
+	JwCI42IY6I8E87Iv6xkF7I0E14v26F4UJVW0obIYCTnIWIevJa73UjIFyTuYvjfUFOzVUU
+	UUU
+X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
 
-On Sat, Jul 04, 2026 at 08:42:24PM +0800, Pengpeng Hou wrote:
-> The driver has an OF match table wired to .of_match_table, but does
-> not export the table with MODULE_DEVICE_TABLE().
-> 
-> Add the missing MODULE_DEVICE_TABLE(of, ...) entry so module alias
-> information is generated for OF based module autoloading.
-> 
-> This is a source-level fix.  It does not claim dynamic hardware
-> reproduction; the evidence is the driver-owned match table, its use by
-> the platform driver, and the missing module alias publication.
+The driver has a match table for the spi bus wired into its driver
+structure, but the table is not exported with MODULE_DEVICE_TABLE().
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Add the missing MODULE_DEVICE_TABLE() entry so module alias information
+is generated for automatic module loading.
 
+This is a source-level fix.  It does not claim dynamic hardware
+reproduction; the evidence is the driver-owned match table, its use by
+the driver registration structure, and the missing module alias
+publication.
+
+Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+---
+ drivers/iio/adc/max1241.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/max1241.c b/drivers/iio/adc/max1241.c
+index d62c1a011659..cab04beae729 100644
+--- a/drivers/iio/adc/max1241.c
++++ b/drivers/iio/adc/max1241.c
+@@ -179,6 +179,7 @@ static const struct spi_device_id max1241_id[] = {
+ 	{ "max1241", max1241 },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(spi, max1241_id);
+ 
+ static const struct of_device_id max1241_dt_ids[] = {
+ 	{ .compatible = "maxim,max1241" },
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
