@@ -1,190 +1,144 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02E7927FD51
-	for <linux-iio@vger.kernel.org>; Sun,  5 Jul 2026 18:17:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783275463; cv=none; b=MWOYzhOcyeOCKbB1RCePZFiypooRpp7eU9tEXbKLf7XnfjNcxK0WuUf56dUrOiWzlhpfu5Nql9jv2Vcr2q6mAvDGt+/ZEnirTR3/3gIxQOS/MfhyF+qAvvlnVkiQS3aVHMEbW0cFVwJ4qaY7Rw78YmIXD6tizkZGiBh4eUYndbs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783275463; c=relaxed/simple;
-	bh=dhI2NSSkHQdnuRHh+TevsjJW+xFqrlGDV2/7Z5uiHks=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=SxXkEotB9+85DO5JTr9nfMIMtABirZ3K8gkqE88BvHnbENlya4sCfFPhoMz8CPS/BXAtYsSGEUScEmt6YEdkVHSAJ8KW/qAZxl3kDTYE5AiZAcNQXZf2g8InGKPBIHclCf4UDZKP5qcx75S9shIEI8yHQqjTNiO5kngMXoSX0Ng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Mc+oq6rW; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C7D1282F22
+	for <linux-iio@vger.kernel.org>; Sun,  5 Jul 2026 19:32:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783279930; cv=pass; b=R6A/+5N/MPKlmF8rRHqW4d06sPl6IZeI/BrKcki7h2VZcvl6zpxNDxn5GXRde7SYfFv8QHCekcfMy2ARJqeg85bWAivTA8JU9pT5H45yCaejEt0Wq76ztp6ruJwI0O6EsozqVoaOD4MMJXQ0yD/ihHCqM3DR0bk+TvsENNH6swY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783279930; c=relaxed/simple;
+	bh=LYZXiJ+Rs83JAuhPNbbWnteX8T0Ox9HzXuJDtiB0HKU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Kj8rlc8d9ThCgLBsqxNrRX+Y5UY4quf+jqucC3gGe866jIyGU0kIRrlkMaXsa1+gJyWiRxbMqa79tX4IJd5syKJJqwOKpqal7b+LFRLlsC2kQtENtvcoi5+S/MRMP5M1pdVhtX7JtnqG9TJ3UbCdHKT92DpE1nswxtVLwWalpHU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ayYxeEHK; arc=pass smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mc+oq6rW"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-3825c406ffeso1302320a91.0
-        for <linux-iio@vger.kernel.org>; Sun, 05 Jul 2026 11:17:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ayYxeEHK"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-475881b9a4bso1940980f8f.3
+        for <linux-iio@vger.kernel.org>; Sun, 05 Jul 2026 12:32:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783279928; cv=none;
+        d=google.com; s=arc-20260327;
+        b=X2jGxOgXBAGi/TlcEc3e/Ua1JokpHeKJN/iD2Dz0hb4Y+GP5V955ap0m7UD3AleqBc
+         qaUl/zfCDZIM0bld6dIBwemjBtfnPDxIAgaXFRBil6EJvJE2x1frZ8ILHl8wUG8fr2xp
+         xopUfazH8xFpcAQdxKgFqCPGQfiMDjoo1j/DuBs3qjQN26EXL4mVnGZuhom0NhficRiT
+         qjX3b8Q/hsjQK0+Sx6TgMq+gZZeQETbt9NAGkvnzyZ/ff5La+lpsP91RtkC2U4zgw8G5
+         eAgNgZQe3ssfsMfgF7kx0JODCJcchwhvowly+EbXrs+buA3NxMZMjphjZwF+FLcsB4yy
+         JCGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=GwT9n22fG/yr71+Qou8NPs/HxovuWX/nw54buxwMf10=;
+        fh=uPds4LPCaIFm6OVVKTpn4IIQlgKgjUBNeaQnIKzCqrk=;
+        b=grzqXSgLRIBTSBE4JD8nSGlHZPNrn+BSDOxaMwGb2kFjmQ8xyTe1eKosPIUJDuhI9V
+         HiI1jiCG6ssx2iqxbhICeDSirfhZ8knHD+ivyu1HtBSduw5OaT5NZtUJhEZUCA08GKlf
+         5/NvxxtoNvvaKd0f0JZdSHA/TSpnyydAJS9WydgzUuBjrmZK98HF/sD1wLeTrSHOoNKO
+         i/ZF3h4BVbL4Hr5boAFJnF4RJb/Y+fQY9nejymO1mRo2zp9NbGg+C0UDfUit5nQId2AZ
+         1IRVjv2G1zGjPjqd8R1i89g3zN1pbo7ddr/Aiqzhz+XaV0z2xAFbQo5HLvOI8TCpHpa2
+         XmMQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783275461; x=1783880261; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=HPuWUz6K1vjqfLd89Qgt+4X64jH/WQepHZOhzBXpFBs=;
-        b=Mc+oq6rWGUenBzFtmvEUJ+cxwDxZAPvves1/eocNtmNJscDuk6o+nMPF1eH0MGyFrP
-         RXkGYbcK7Sc7L4CG0Eu6X93ORKKDklom+QRE4tn2WikivT5U9YDZHMBYxhRUHuPXiTwU
-         FdYYaWZ+MKa0z0k+E4WUef9HKZb4TCu/908sXgnr615cW/7DFjFuTZtr271IfgmKcxA5
-         lMqEIw1UsE1KWG8cQXYjIIhvVDNa45Ly90bk+A51VlkYJvKNIpQDyywNDpX27zVgR59q
-         NTof52fYfmVD+1JZaDWX62fEjFLZyQZ8q51gw06AksHKVJDhWQvkAKfJoU3UUnl8elgC
-         He5w==
+        d=gmail.com; s=20251104; t=1783279928; x=1783884728; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GwT9n22fG/yr71+Qou8NPs/HxovuWX/nw54buxwMf10=;
+        b=ayYxeEHKsNrxkTr08URUn+ovzwCpFOMs0wh79SR+YejBEguKktxXmmnsq3lG6xr3a/
+         FesEHH+JV0KGAM5GSu3m/H4GmN2WEnAatai9cP88H2splr2qlWKT2Vn+RWW+mOqkX/53
+         +3yRMR5aKYFkxfYIsp3fkZh1bWBZMNp3iIqm7ZYJMv66FtMbS3I29D/1nRcq3kbm46xA
+         VO6sYkc3XJHoUKLX5SD+xffn2QqXXGhZnJbKQyAFuRRjrjVetXeSCfnqTd3WOJ1+f6Bp
+         Zu9X5/+T0P3jRHNYyUCSBN3GkFZvTYqPzLYYPvkhFc+Pz/MBnXZPy9YL/bJdezdim7ll
+         q6og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783275461; x=1783880261;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HPuWUz6K1vjqfLd89Qgt+4X64jH/WQepHZOhzBXpFBs=;
-        b=PYHMeYWgRli4hN6JSdjpcBIhvqSnuE91RcNMsTk/sBSDnqxAaiaBjN/oyV/FtIEsW0
-         c8HfOw0CD6IsxkgnIL5D5TbloFp0hjnamtZPUBWNpy0KdH8rqhbwFNigJ7SZjomvE7Mn
-         2Dc/qVUgJZL6e41I2AgLZjCPNQI2KY0uXPd4ofM9j0hDSJuSJnalh0NUpCk6K0zTjE9F
-         2bwqsxOfmgMGBo21OtRc9NPoq6iSn7l6EesYZD0wnc0k8ae9scZLEVO5LuIu3h1c4baq
-         RNvvemOANX+cJ//aGCBWZylHW2IsxLSbJXuzSR1meS6iubzX6Hr0mIXzPwAN1ScGHNwS
-         h6FA==
-X-Forwarded-Encrypted: i=1; AHgh+RoPrqmifDHpS1vdir1U3fHUGYzBY4FWm3NFKgya5w3cuUfjTz9Hq+xYkZicxZKe3NTU4bSoc19JYBE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyqxb6aVktdr9h0yUHrILDx7+f0tCaLSFwQsMPXZubTsGRVWAyH
-	b3PyaUP5MK4LgPHqLa3PF8gJ1bX/2v7hukwgy/g0ulWiU0Fkye6qBzRn
-X-Gm-Gg: AfdE7cnwlkZKroYHKbQLg1B1xfhepD1uqlQVSOwWAQY/RGo/QFGm7sYksx7cq5tGKR5
-	LJ8UQk9z8IbqVkxCKuxspWjofTSKqA/uRZ15iKmgUqY5n4dgc8U/dLtjqPLd3C3S+FZyN3aA2HL
-	4lX5/O1RNgtakusFLuRZdV1qmrHH5kpgf4+h4FmSqQNqg5y8HMMo0PdTN1xrHHTyH67ytDwa+vT
-	umcsYHf6ynYRFKPyhfNUShpK4EUbkQW0jnHYKVRI3oQHVaYkODFueQwHYwBla5pWBLL3I7kldic
-	gN+zoxTqIad285TslOMhbCBTS+BwKFxeXw1YgRZvZzaUJ4CSiCEUME8qgAgwhyZrsIvIRgLd4wc
-	DjbJ83TdEV5VV/pLPXksEQWIejywr+i8XO46GlctEAetBwKcdwDK1O8qEGHKN091z4ECF7npLbk
-	+6livbPMiUQSv1xU7AB3l+IBijUPsa5L3Qe06Q
-X-Received: by 2002:a17:90b:268f:b0:381:1c96:829b with SMTP id 98e67ed59e1d1-382803bb30emr7701477a91.3.1783275461234;
-        Sun, 05 Jul 2026 11:17:41 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:1f3f:c3f5:258d:4c0a:f0e6:bd1a])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30f116065c5sm41239387eec.11.2026.07.05.11.17.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2026 11:17:40 -0700 (PDT)
-Date: Sun, 05 Jul 2026 23:47:36 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
- Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-CC: David Lechner <dlechner@baylibre.com>,
- =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-input@vger.kernel.org, Maxwell Doose <m32285159@gmail.com>
-Subject: Re: [PATCH v2 3/6] iio: hid-sensors: Use implicit NULL pointer checks
-User-Agent: Thunderbird for Android
-In-Reply-To: <20260702182205.388efe24@jic23-huawei>
-References: <20260702-15-jun-hid-iio-alignment-v2-0-b87f01f5efbc@gmail.com> <20260702-15-jun-hid-iio-alignment-v2-3-b87f01f5efbc@gmail.com> <20260702182205.388efe24@jic23-huawei>
-Message-ID: <BF19024B-D73A-4185-A963-516D0574E416@gmail.com>
+        d=1e100.net; s=20251104; t=1783279928; x=1783884728;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GwT9n22fG/yr71+Qou8NPs/HxovuWX/nw54buxwMf10=;
+        b=QdSLb1ikZ3j2Hos0okYFd6zL6hl8+Oa+4sk0/a3If2AaEBw9zsN+3q6JjjuQO1JdTr
+         uzUqxU2QB3DSLkQl3yfrxsPIArb3atvXYd8JVcZ2JlxSQ0EgFufFzVAOYSIRqTVMQJr6
+         ATVXc4nDp09yQ3yE/TRojrUGL7nhXrZaDFQ7XEg82MNTefpoOOOtR3sPcYA8k5AFQ2gm
+         iKZRqb9y/OmJmcstzyPlTRLz826RedMgmkrYTUgSp7OfGOW9UlhBQRed87co3tAr64b1
+         LupgqLkUcDY9O1dnHipeOAAYOZi51X+goMdGqoF2UsG3uNhVdv9ZSWD+vii5nKdoHtHJ
+         0Nvg==
+X-Forwarded-Encrypted: i=1; AHgh+RruHSdvrcj5MbyJ2iU8ANZopCAvvZ/QvXDdv+d9hOiklFKEcY9utVmEKDCNOkhB/zC/k+Xie7oun+8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgQwPVecWvLiB+h+FLowh+DIGPsXuD4tDaaLDrj4b8mUCimMeD
+	sHCfL28X8cwzBYI0C9WFWwQHnpmKxjKW18Y1ZNSJCqa2JAZvbcGwl82TknakoTvj5T2cwPHM9Vm
+	chQoYWhp9VpEvQroITMydOwXl02tQiDQ=
+X-Gm-Gg: AfdE7ck1l1SguYx50Om6OCaEGCcKEP8OLz/dWIWXGyYPSVDW6uorVHGyjOBiUJil80S
+	JYjpYy7VtekqI/dSeDsnl8UB03qyTU1d55w4D1bBWzXYWU890WluofA3rc8/8QRAp36wIL3aWmw
+	27f0llz50P1zyYuMAsWvx+QpqD7amNPBGOCsLGB77m6pYlyZhgHOMoLgM67bjwdrzaQMiLsERGQ
+	+hVlLUSOSiROiIDomIMK7b1fSTSKgv8uNtXi0K0GT0Nso5K5apOthjWCcfosBkwmUQ9aylVIHxH
+	KS8rioAWu3RBUykRQr2OoFrMxdVVTMkQCywzTP5KGtmu08ESpKfQasgKtQV4jgBuYpfIuiKgtyX
+	DwP3KhjJTorWn+q16Iz4kFqwzg+mlbdPPyUUquDRZGwfxjkCDoLVAWaMZFuX/D6fFFGAZi0s1Oh
+	7YgWdtI3a2eCl98yZdj4Fn1P1svX3I64PHj2OjUrndT86Wb7NvL6u4/2levWB/3y8=
+X-Received: by 2002:a05:6000:4203:b0:477:80fa:f447 with SMTP id
+ ffacd0b85a97d-47aadb13c78mr8524276f8f.43.1783279927535; Sun, 05 Jul 2026
+ 12:32:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+References: <20260702-15-jun-hid-iio-alignment-v2-0-b87f01f5efbc@gmail.com>
+ <20260702-15-jun-hid-iio-alignment-v2-3-b87f01f5efbc@gmail.com>
+ <20260702182205.388efe24@jic23-huawei> <BF19024B-D73A-4185-A963-516D0574E416@gmail.com>
+In-Reply-To: <BF19024B-D73A-4185-A963-516D0574E416@gmail.com>
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Sun, 5 Jul 2026 21:31:54 +0200
+X-Gm-Features: AVVi8Cf75_SzN2fEHjfHXicsKvv5otrzKJC7UoPu5AQnM92pGFcWxZlA6a58s_g
+Message-ID: <CALoEA-wkbbvPA02JFCTuCEQrpGKZfu3NeBScTErTT07U7zJZ_g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/6] iio: hid-sensors: Use implicit NULL pointer checks
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, 
+	Maxwell Doose <m32285159@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 2 July 2026 10:52:05=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel=2Eo=
-rg> wrote:
->On Thu, 02 Jul 2026 21:48:00 +0530
->Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse=2Egmail=2Ecom@kern=
-el=2Eorg> wrote:
+On Sun, 5 Jul 2026 at 20:17, Sanjay Chitroda <sanjayembeddedse@gmail.com> w=
+rote:
 >
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->>=20
->> Replace explicit NULL pointer comparisons with implicit checks across
->> HID sensor IIO drivers to follow the preferred kernel coding style=2E
->Is there anything in the kernel wide style guides about this?
 >
->I do prefer this style in IIO but perhaps we should document it
->as local IIO style rather than implying general guidance (unless
->there is some!)
 >
-Hi Jonathan,
-
-I took reference of existing IIO commit message and followed the same=2E
-
-There is no kernel coding guideline for NULL pointer=2E If you think it wo=
-uld be useful, I would be happy to work on documenting the preferred conven=
-tions under "Documentation/driver-api/iio/", for example as a new "coding-s=
-tyle=2Erst" or similar document=2E
-
-Thanks, Sanjay
-
->>=20
->> Convert 'if (indio_dev =3D=3D NULL)' -> 'if (!indio_dev)'=2E
->>=20
->> No functional change=2E
->>=20
->> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->> Reviewed-by: Maxwell Doose <m32285159@gmail=2Ecom>
->> ---
->>  drivers/iio/accel/hid-sensor-accel-3d=2Ec       | 2 +-
->>  drivers/iio/magnetometer/hid-sensor-magn-3d=2Ec | 2 +-
->>  drivers/iio/orientation/hid-sensor-incl-3d=2Ec  | 2 +-
->>  drivers/iio/orientation/hid-sensor-rotation=2Ec | 2 +-
->>  4 files changed, 4 insertions(+), 4 deletions(-)
->>=20
->> diff --git a/drivers/iio/accel/hid-sensor-accel-3d=2Ec b/drivers/iio/ac=
-cel/hid-sensor-accel-3d=2Ec
->> index 9197f3424c0c=2E=2E225f8dd65ab1 100644
->> --- a/drivers/iio/accel/hid-sensor-accel-3d=2Ec
->> +++ b/drivers/iio/accel/hid-sensor-accel-3d=2Ec
->> @@ -325,7 +325,7 @@ static int hid_accel_3d_probe(struct platform_devic=
-e *pdev)
->> =20
->>  	indio_dev =3D devm_iio_device_alloc(&pdev->dev,
->>  					  sizeof(struct accel_3d_state));
->> -	if (indio_dev =3D=3D NULL)
->> +	if (!indio_dev)
->>  		return -ENOMEM;
->> =20
->>  	platform_set_drvdata(pdev, indio_dev);
->> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d=2Ec b/drivers/=
-iio/magnetometer/hid-sensor-magn-3d=2Ec
->> index ad10fa20fae0=2E=2E738bad65d74d 100644
->> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d=2Ec
->> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d=2Ec
->> @@ -463,7 +463,7 @@ static int hid_magn_3d_probe(struct platform_device=
- *pdev)
->> =20
->>  	indio_dev =3D devm_iio_device_alloc(&pdev->dev,
->>  					  sizeof(struct magn_3d_state));
->> -	if (indio_dev =3D=3D NULL)
->> +	if (!indio_dev)
->>  		return -ENOMEM;
->> =20
->>  	platform_set_drvdata(pdev, indio_dev);
->> diff --git a/drivers/iio/orientation/hid-sensor-incl-3d=2Ec b/drivers/i=
-io/orientation/hid-sensor-incl-3d=2Ec
->> index 870c8929491e=2E=2Ec8efb0dab8b6 100644
->> --- a/drivers/iio/orientation/hid-sensor-incl-3d=2Ec
->> +++ b/drivers/iio/orientation/hid-sensor-incl-3d=2Ec
->> @@ -302,7 +302,7 @@ static int hid_incl_3d_probe(struct platform_device=
- *pdev)
->> =20
->>  	indio_dev =3D devm_iio_device_alloc(&pdev->dev,
->>  					  sizeof(struct incl_3d_state));
->> -	if (indio_dev =3D=3D NULL)
->> +	if (!indio_dev)
->>  		return -ENOMEM;
->> =20
->>  	platform_set_drvdata(pdev, indio_dev);
->> diff --git a/drivers/iio/orientation/hid-sensor-rotation=2Ec b/drivers/=
-iio/orientation/hid-sensor-rotation=2Ec
->> index 2dad0453fc67=2E=2E6db253c1635d 100644
->> --- a/drivers/iio/orientation/hid-sensor-rotation=2Ec
->> +++ b/drivers/iio/orientation/hid-sensor-rotation=2Ec
->> @@ -274,7 +274,7 @@ static int hid_dev_rot_probe(struct platform_device=
- *pdev)
->> =20
->>  	indio_dev =3D devm_iio_device_alloc(&pdev->dev,
->>  					  sizeof(struct dev_rot_state));
->> -	if (indio_dev =3D=3D NULL)
->> +	if (!indio_dev)
->>  		return -ENOMEM;
->> =20
->>  	platform_set_drvdata(pdev, indio_dev);
->>=20
+> On 2 July 2026 10:52:05=E2=80=AFpm IST, Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >On Thu, 02 Jul 2026 21:48:00 +0530
+> >Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.=
+org> wrote:
+> >
+> >> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> >>
+> >> Replace explicit NULL pointer comparisons with implicit checks across
+> >> HID sensor IIO drivers to follow the preferred kernel coding style.
+> >Is there anything in the kernel wide style guides about this?
+> >
+> >I do prefer this style in IIO but perhaps we should document it
+> >as local IIO style rather than implying general guidance (unless
+> >there is some!)
+> >
+> Hi Jonathan,
 >
+> I took reference of existing IIO commit message and followed the same.
+>
+> There is no kernel coding guideline for NULL pointer. If you think it wou=
+ld be useful, I would be happy to work on documenting the preferred convent=
+ions under "Documentation/driver-api/iio/", for example as a new "coding-st=
+yle.rst" or similar document.
+
+Not sure whether any coding style kerneldoc mentions this style,
+nevertheless checkpatch prefers (!foo) over (foo =3D=3D NULL),  see the
+COMPARISON_TO_NULL section in the checkpatch kerneldoc.
+
+--=20
+Kind regards
+
+CJD
