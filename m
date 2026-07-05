@@ -1,44 +1,80 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB56B184;
-	Sun,  5 Jul 2026 00:19:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43AA2288B8;
+	Sun,  5 Jul 2026 01:08:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783210798; cv=none; b=XtyfntiA5wHNy6tMSJy/19+V+KeiiXO/pch8CuCKjmNe7sGPvjqOi9JaJSe5s758wuKbyAAPnFgJAHhaml5whsmv5eKIpEqQeritYENCzTfRRMEUIgNcSO2LsU7NP/db0/CAF1F9VBthT0xfqPbQPMdr9CLBPvSeHfJWFRCP/Vk=
+	t=1783213692; cv=none; b=BYEgfV6F9Kq1hjmWKdaW234gDnWqhjhECztYcW/bxlMHSWLhhPN3BWtWpe3iE8DOl0ypWOauf9zyrEOG4IzBWLm0gLZ5x0g091G2Da70ahe2sqjkNpMXt3E3iRBh2bl1egSpprPHd8uTYdH2N6eCmcrR0VcFte32Qj66wLH2N+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783210798; c=relaxed/simple;
-	bh=uJeTkOZ/J+1RFLboJwPzJDq9n+hqap/Lf2KSWJq8uWA=;
+	s=arc-20240116; t=1783213692; c=relaxed/simple;
+	bh=awuH/XulbEDqs59Vh0utt3MvxPA6suHkTxBELRtA09I=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oj6LbbchR44FHJdOo4tI3a7quQKt8wQ/goq16f33TWplbFn4APrUq5Cu274NRpqzg8zkrQi8saY5Nb7Zhh7WCi1PlSsLM1Al3kgUiV1RAjy6quAZOfcT1IlRx+srufAqk6xEh1QZqD8OdIPioBO7dEGUwPHcRFJJecG+o2jeqLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VdwqxIJZ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=tF4uzpFTD985dSIxGFi5YmZ8XEGIf4E8jPtpsQ4opIR5ZlIrfzltVVUfuzrtSfMaaDKP+ScrpF0gYs8Pw2pNVRTCpyrVKmwdc+HvCT+uiJ+cl4gELQjhj3pD+Q2UyzjiXWoBd/bG8hfeJ4Ebc39IVUF0P+kxYI8zwuJLidr41mE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RBkPSMZz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VdwqxIJZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD491F000E9;
-	Sun,  5 Jul 2026 00:19:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RBkPSMZz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F2BF1F000E9;
+	Sun,  5 Jul 2026 01:08:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783210797;
-	bh=rttHgm1iwoKCbWNl1QLE3msskxdHTigyFYUsbfIweBQ=;
+	s=k20260515; t=1783213690;
+	bh=3duzwyHdi6RgshCaFz1ynAPla1JdMO1NFXgABI7Eh3s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VdwqxIJZvLsbT7aO17WFDAx4rWhf+cHavT9fnvJdbmR2HfL+xzYO1YDYHjLAjUZjf
-	 u9URa/Hzupmel9MMqYhYgYQpo4WS4Xt1mUSiYTbKS/5O89yTDJB2S7CoQ6IUOTZ5Ck
-	 6fUx+353Za9mOojF27NiPAxtIBarv0CTRoDFkpo/czu10hHy5IrEOA7mO/0X0NI3ZN
-	 +Nlwdt+fUqlDM9H89SoEdNG3bmNapIOYi5KPaAM3GxZ82HQdysW4yYGTb8TAzaVE0o
-	 gpf+9s+JEUDMeHaBO+TzG6fDFb7k47tUZcNpPynhbWEwocZFPeCXqaqBqaN7CGPPXy
-	 4l5quc0HKpGuw==
-Date: Sun, 5 Jul 2026 01:19:53 +0100
+	b=RBkPSMZz/BRsU6kDJgLsvltCHl/7nmfEQhY9exVykMN2oKxRiBkjx0bffH+fLPUYH
+	 2ck3iltRsWHYzSENjgVtJrOJreGEUuUNSVj3Lw6/17RResfLk3hMjVq8SFBY9BhwDf
+	 sKGEtqWnoWO1tu5pP6nXAc6xmwVh8UNIja+d2sdcRPZaulrROXaGk/79+rxatMNbsr
+	 c2v95I5UOD7pAE9DXeaUhAJJOM+Z8Ue+In01tEjX7ZGwWogIhtIPwhvb1sf0fVcC/Q
+	 IwJtuFvlG/z8wx2ctp0O4Cx1DHR5NHBJURe7Lg72aFRhuLvN9Mldzb+6xKPfPOkOCm
+	 T0vQCQ2/MHtEg==
+Date: Sun, 5 Jul 2026 02:07:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Biren Pandya <birenpandya@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
- <linusw@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: kxsd9: fix runtime PM leaks and
- unchecked returns
-Message-ID: <20260705011953.37c08bf2@jic23-huawei>
-In-Reply-To: <20260703-kxsd9-v3-proper-v1-2-e9f08af25d7e@gmail.com>
-References: <20260703-kxsd9-v3-proper-v1-0-e9f08af25d7e@gmail.com>
-	<20260703-kxsd9-v3-proper-v1-2-e9f08af25d7e@gmail.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Romain Gantois <romain.gantois@bootlin.com>, MyungJoo Ham
+ <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Guenter
+ Roeck <linux@roeck-us.net>, Peter Rosin <peda@axentia.se>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Mariel Tinaco
+ <Mariel.Tinaco@analog.com>, Kevin Tsai <ktsai@capellamicro.com>, Linus
+ Walleij <linus.walleij@linaro.org>, Eugen Hristev
+ <eugen.hristev@linaro.org>, Vinod Koul <vkoul@kernel.org>, Kishon Vijay
+ Abraham I <kishon@kernel.org>, Sebastian Reichel <sre@kernel.org>, Chen-Yu
+ Tsai <wens@csie.org>, Hans de Goede <hansg@kernel.org>, Support Opensource
+ <support.opensource@diasemi.com>, Paul Cercueil <paul@crapouillou.net>,
+ Iskren Chernev <me@iskren.info>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Matheus Castello
+ <matheus@castello.eng.br>, Saravanan Sekar <sravanhome@gmail.com>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Casey Connolly
+ <casey.connolly@linaro.org>, Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+ Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>, Amit
+ Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano
+ <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
+ <lukasz.luba@arm.com>, Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Sylwester
+ Nawrocki <s.nawrocki@samsung.com>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Arnaud Pouliquen
+ <arnaud.pouliquen@foss.st.com>, Maxime Coquelin
+ <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Thomas Petazzoni
+ <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-phy@lists.infradead.org,
+ linux-pm@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+ Sebastian Reichel <sebastian.reichel@collabora.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v2 2/2] iio: inkern: Use namespaced exports
+Message-ID: <20260705020758.011f4f3c@jic23-huawei>
+In-Reply-To: <20260603182052.7d23c067@jic23-huawei>
+References: <20251209-iio-inkern-use-namespaced-exports-v2-0-9799a33c4b7f@bootlin.com>
+	<20251209-iio-inkern-use-namespaced-exports-v2-2-9799a33c4b7f@bootlin.com>
+	<acBr-W2ILu9tnMyd@google.com>
+	<20260603182052.7d23c067@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,173 +85,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 03 Jul 2026 22:53:23 +0530
-Biren Pandya <birenpandya@gmail.com> wrote:
+On Wed, 3 Jun 2026 18:20:52 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> The driver fails to check the return value of pm_runtime_get_sync(),
-> leading to potential silent failures. Additionally, error paths leak the
-> runtime PM usage counter by returning without decrementing it.
+> On Sun, 22 Mar 2026 15:24:21 -0700
+> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
 > 
-> Fix this by transitioning to pm_runtime_resume_and_get():
+> > On Tue, Dec 09, 2025 at 09:25:56AM +0100, Romain Gantois wrote:  
+> > > Use namespaced exports for IIO consumer API functions.
+> > > 
+> > > This will make it easier to manage the IIO export surface. Consumer drivers
+> > > will only be provided access to a specific set of functions, thereby
+> > > restricting usage of internal IIO functions by other parts of the kernel.
+> > > 
+> > > This change cannot be split into several parts without breaking
+> > > bisectability, thus all of the affected drivers are modified at once.
+> > > 
+> > > Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com> # for power-supply
+> > > Acked-by: Guenter Roeck <linux@roeck-us.net>
+> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > Signed-off-by: Romain Gantois <romain.gantois@bootlin.com>    
+> > 
+> > For input:
+> > 
+> > Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> > 
+> > Thanks.
+> >   
 > 
-> - In kxsd9_write_raw() and kxsd9_read_raw(), check the resume status and
->   guarantee pm_runtime_put_autosuspend() is called on all return paths.
->   Simultaneously, refactor the control flow to align with standard IIO
->   idioms (removing the dead -EINVAL initializer in favor of explicit
->   assignments).
-> - In kxsd9_buffer_preenable(), propagate the resume error code.
-> - In kxsd9_common_remove(), only decrement the usage counter on a
->   successful resume, while retaining the unconditional power-down for a
->   best-effort shutdown.
-> 
-> Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
-> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
-> ---
->  drivers/iio/accel/kxsd9.c | 42 ++++++++++++++++++++++--------------------
->  1 file changed, 22 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 27adcdd312014..e9a0790e2eea2 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -139,18 +139,17 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
->  			   int val2,
->  			   long mask)
->  {
-> -	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	int ret;
->  
-> -	pm_runtime_get_sync(st->dev);
-> +	ret = pm_runtime_resume_and_get(st->dev);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	if (mask == IIO_CHAN_INFO_SCALE) {
-> -		/* Check no integer component */
-> -		if (val)
-> -			ret = -EINVAL;
-> -		else
-> -			ret = kxsd9_write_scale(indio_dev, val2);
-> -	}
-> +	if (mask == IIO_CHAN_INFO_SCALE && !val)
-This is a mix of checking for two very different conditions. I'd rather
-they were handled separately as before - that will require you to do
-	if (mask == IIO_CHAN_INFO_SCALE) {
-		if (val)
-			ret = -EINVAL;
-		else
-			ret = kxsd9_write_scale(indio_dev, val2);
-	} else {
-		ret = -EINVAL;
+> For anyone wondering what happened to this... I forgot to apply this at the
+> beginning of the cycle and by the time I remembered we had too much queued up
+> so it would have been messy to do an immutable branch.   Anyhow, I plan to
+> sort this at start of next cycle.
 
-Given how ugly this is we should probably switch this to the ACQUIRE stuff.
-Maybe it would be better to just do that as part of this fix rather
-than as a follow up.  PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and
-PM_RUNTIME_ACQUIRE_ERR()
+Immutable branch created as: iio-inkern-namespace-ib based on v7.2-rc1
+on https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
 
-Then this can all be eaerly returns.
-	if (mask != IIO_CHAN_INFO_SCALE)
-		return -EINVAL;
+I've merged it into the testing branch of iio.git so if anyone else does
+need to merge this to avoid conflicts, perhaps wait a day or two until
+I've pushed it out as togreg for linux-next to pick up.
 
-	if (val)
-		return -EINVAL;
-
-	return kxsd9_write_scale();
-
-
-	}
-> +		ret = kxsd9_write_scale(indio_dev, val2);
-> +	else
-> +		ret = -EINVAL;
->  
->  	pm_runtime_put_autosuspend(st->dev);
->  
-> @@ -161,20 +160,22 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  			  struct iio_chan_spec const *chan,
->  			  int *val, int *val2, long mask)
->  {
-> -	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  	unsigned int regval;
->  	__be16 raw_val;
->  	u16 nval;
-> +	int ret;
->  
-> -	pm_runtime_get_sync(st->dev);
-> +	ret = pm_runtime_resume_and_get(st->dev);
-> +	if (ret < 0)
-> +		return ret;
-
-Similar to above, switching to the ACQUIRE magic will simplify this
-flow a lot as well as dealing with resource leaks.
-
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
->  				       sizeof(raw_val));
->  		if (ret)
-> -			goto error_ret;
-> +			break;
->  		nval = be16_to_cpu(raw_val);
->  		/* Only 12 bits are valid */
->  		nval >>= 4;
-> @@ -191,18 +192,20 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  				  KXSD9_REG_CTRL_C,
->  				  &regval);
->  		if (ret < 0)
-> -			goto error_ret;
-> +			break;
->  		*val = 0;
->  		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
->  		ret = IIO_VAL_INT_PLUS_MICRO;
->  		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
->  	}
->  
-> -error_ret:
->  	pm_runtime_put_autosuspend(st->dev);
->  
->  	return ret;
-> -};
-> +}
->  
->  static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
->  {
-> @@ -240,9 +243,7 @@ static int kxsd9_buffer_preenable(struct iio_dev *indio_dev)
->  {
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  
-> -	pm_runtime_get_sync(st->dev);
-> -
-> -	return 0;
-> +	return pm_runtime_resume_and_get(st->dev);
->  }
->  
->  static int kxsd9_buffer_postdisable(struct iio_dev *indio_dev)
-> @@ -480,8 +481,9 @@ void kxsd9_common_remove(struct device *dev)
->  
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -	pm_runtime_get_sync(dev);
-> -	pm_runtime_put_noidle(dev);
-> +
-> +	if (pm_runtime_resume_and_get(dev) >= 0)
-> +		pm_runtime_put_noidle(dev);
-
-I'd just let it underflow in this case.   Trying to cleanly 
-handle errors in a driver unbind is rarely worth the effort
-and despite what Sashiko thinks, runtime pm underflow isn't
-a real problem - it's just messy and generally indicative
-of something being less than ideal.
+Thanks,
 
 Jonathan
-
->  	pm_runtime_disable(dev);
->  	kxsd9_power_down(st);
->  }
 > 
+> Jonathan
 
