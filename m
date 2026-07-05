@@ -1,46 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C096C3290B8;
-	Sun,  5 Jul 2026 23:37:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EBDA171CD;
+	Sun,  5 Jul 2026 23:41:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783294678; cv=none; b=Phou4EbYIP0OReGFhlPkrsgWETbvV5JHeqwLl5e4ZNyJz8J4ObQf5BMHfUE1ssBE+7VJiUWQ9jjfoBDyg54mq60djHgmrtNt4AVKCt0ol3ncS3O4B7luAwFOFx8Mpph1flhcKQgvT+U67XTj16DKMVNgntsc7VLEoaVu1EYq2s8=
+	t=1783294883; cv=none; b=TTv0q4/QlDXRhxch2RN9iCRtFql1Hxaat9GL4VmuTb4cdWnYkpyppvURzQkmZlEg4glVta0oGO52AiWDfi01s6dV8BfK+okREykWRaE7SmWWN+Fr0x9uHj17lxT9DGx9X0IJR3RL1qvsY96cbStP30UkxCaC/Jnu045r/5AXNNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783294678; c=relaxed/simple;
-	bh=ULLbBZaJSMMLCV0smch9WL/OdSJ3WnKQaW4m9sV+0Cs=;
+	s=arc-20240116; t=1783294883; c=relaxed/simple;
+	bh=j4UHXdIKS1X4jO8pcuQ4Vnfg6JT1EnD/XaqMHlRkFGg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nw1+xBDXsE9h87uZ5adm4A8DhPjnyTdel4b2QmkE8Qm2UX3nqlo8Mwp8WcdVLCflZnN3G2HCX4vnq0KFt4MRkclGlFH9Y6avXi+T7gx5CSh7waz/JbvghZQ0wMG7m0y3q3/Y8mCnXOvZdFshTeYfA8cZoW/sS+LwSGkfVHLixGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VfKBXYtm; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=WhpjuOGO1MuH5T9G01j+t1qQIBQtUuV5cCmNJTzznK1EKfhpgkK87IPBRbqUx8fPJ8nEQrr4hyqrNI1gMl+UbBrwQYNxrncz3G8FRzvVYC8JCTV4Ll0FGqx9nkunS+9U6lH95h94lM6Jw/SYIMvbk4vn4G5mvB+DbjKb+Uc4q/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g/LufPGP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VfKBXYtm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FEE1F000E9;
-	Sun,  5 Jul 2026 23:37:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g/LufPGP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2B01F000E9;
+	Sun,  5 Jul 2026 23:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783294677;
-	bh=w46ZYav/dvFCwu6KFwo2Dav0I+xlrSQs7nfMM5MhdTo=;
+	s=k20260515; t=1783294882;
+	bh=lBr6LGeQEfi/gguF0uhUwTMBWbLqEubQbfsnGeA9+84=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VfKBXYtmsklSpWgNl/bOb4XIzoIynKiZS15SrvfdiG2rOgUb/nB7Dpx3R64MjZRZE
-	 JpIYjvKbp7oF9DQbqthl15qhFq2GMcX6QOFTsChnE89Fcl0/47DKndGdQ8x9tDb+s4
-	 8oTUM6LwpNCX4q/uK5rGkWnJ3DhdlTnLVzymT8ttNfZuWpPZ0vmbSdN0Bj6juHPkv6
-	 rR2RQOZqcNg701MOsN/GrJouuHX+sTiIex/slOTTrdwmF7W5DlzgueBBtJLEUjYRiX
-	 ZjIcF39GE4asX7rkgdTttGYYp6yQtY6kybrevFD2FfeMTHhYywodrY+4NcKxfS1tt9
-	 r6mq0sp5qva5Q==
-Date: Mon, 6 Jul 2026 00:37:52 +0100
+	b=g/LufPGPrUTVjTHlUExUH+F0fz3BmbIVIFO5ClRj7004Zc6X+9uBcZcVoeD8bRuNy
+	 C0irRqSX0mCOxQdIhuKrEeGjqaEzmIWFB3hGQjxSvz/FWEJRb0mZLN/ldUHJV1srSc
+	 5iFL+KzHQBZL8A5J6LcF7bMuplf9fSlUfRsVP+A3kvUJYrbqIQ8dv5kCKwZh73/PSM
+	 byIGWdGNPIy6dwJ91EYr7BqG3NTactYUA+m19U/XzKjPXxgxF4z3cW3diJNefUiEU+
+	 WmpfAWwZsZrtir6FXIRjj5OwHB1pUdUnopxA+3flW6fBlaHZpUobTCR5055n3FX/LG
+	 wHAarbj+OXFwQ==
+Date: Mon, 6 Jul 2026 00:41:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Maxwell Doose" <m32285159@gmail.com>
-Cc: "Krzysztof Kozlowski" <krzysztof.kozlowski@oss.qualcomm.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Michael Hennerich"
- <Michael.Hennerich@analog.com>, "Antoniu Miclaus"
- <antoniu.miclaus@analog.com>, "David Lechner" <dlechner@baylibre.com>,
- "Andy Shevchenko" <andy@kernel.org>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: ade9000: Drop incorrect kerneldoc marker
-Message-ID: <20260706003752.376a2ada@jic23-huawei>
-In-Reply-To: <DJQTTB91CSPU.1LSN2OFIRKGOH@gmail.com>
-References: <20260705172438.119204-3-krzysztof.kozlowski@oss.qualcomm.com>
-	<20260705172438.119204-4-krzysztof.kozlowski@oss.qualcomm.com>
-	<DJQTTB91CSPU.1LSN2OFIRKGOH@gmail.com>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Amit Kucheria
+ <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
+ <kamal.wadhwa@oss.qualcomm.com>, David Collins
+ <david.collins@oss.qualcomm.com>, Anjelique Melendez
+ <anjelique.melendez@oss.qualcomm.com>, Neil Armstrong
+ <neil.armstrong@linaro.org>, Stephan Gerhold <stephan.gerhold@linaro.org>
+Subject: Re: [PATCH v3 2/3] iio: adc: qcom-spmi-adc5-gen3: Remove an
+ unnecessary print
+Message-ID: <20260706004114.5bf9d5ba@jic23-huawei>
+In-Reply-To: <20260705-gen3_adc_tm-v3-2-ac62f387dbce@oss.qualcomm.com>
+References: <20260705-gen3_adc_tm-v3-0-ac62f387dbce@oss.qualcomm.com>
+	<20260705-gen3_adc_tm-v3-2-ac62f387dbce@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,23 +56,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 05 Jul 2026 12:50:28 -0500
-"Maxwell Doose" <m32285159@gmail.com> wrote:
+On Sun, 05 Jul 2026 22:23:34 +0530
+Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
 
-> On Sun Jul 5, 2026 at 12:24 PM CDT
-> Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com> wrote:
+> devm_request_threaded_irq internally prints an error message using
+> dev_err_probe in case of any errors. Remove the error print in the
+> devm_request_threaded_irq failure path as it is not needed.
 > 
-> > Top-level comment is not a kerneldoc, so drop marker to fix W=1 warning:
-> >
-> >   drivers/iio/adc/ade9000.c:2 This comment starts with '/**', but isn't a kernel-doc comment. Refer to Documentation/doc-guide/kernel-doc.rst
-> >
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> > ---
-> >  drivers/iio/adc/ade9000.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >  
+> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+On basis I might not be taking this through IIO.
+Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+
+> ---
+>  drivers/iio/adc/qcom-spmi-adc5-gen3.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> index c1962312afcd..74988040e6e5 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> @@ -793,9 +793,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
+>  					adc->dev_data.base[ADC5_GEN3_VADC_SDAM].irq_name,
+>  					adc);
+>  	if (ret)
+> -		return dev_err_probe(dev, ret,
+> -				     "Failed to request SDAM%d irq\n",
+> -				     ADC5_GEN3_VADC_SDAM);
+> +		return ret;
+>  
+>  	ret = adc5_get_fw_data(adc);
+>  	if (ret)
 > 
 
-Applied.
