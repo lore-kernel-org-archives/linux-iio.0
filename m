@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BDA37A48D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A16C737AA8B;
 	Sun,  5 Jul 2026 11:39:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783251562; cv=none; b=WDVwXdetCZeGITNfkpdJh8ZmWhLWzAZWKArjba5Ie9kCB643CR3qqXSFIOgus1jISYe+ohefZFJxdtG9aOpXkJTO4I1ntPHLe3gr+zBrApdGY5kuUC74U3r5bKgeAXxv4EDU5+hHR4TM8LG0XyoO0ecBqe25xetuAEkKpE2i66s=
+	t=1783251562; cv=none; b=vCXCTf6NvO7MQNQi8UtPZ7MLzBoqz9Sf0Pm+0eugqrN1BH8IrmxgxvNKm0q6PyaDDpRigGO1p8ozuJV2HrSUKfPtJaGC7HLHWdawRveaZCOEbMN78vOq8nYbob7AqssHSLN1kTDRobb1sUyS8XvW9jaBKeYWd5UODOL3NpooowQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783251562; c=relaxed/simple;
-	bh=cjQ9pDdRzexmdnEFVPcOS2uzmihE5Dkf9G7PROHYhfk=;
+	bh=XktOlaasuSm3hYXKmS8amfCoiKQ/2h3DNBwBGo5qc3k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Rx5vjSvsDvKReDI1bjq8e+KpwJNA8blCKjygrXrZ4f/XyYsWCHK9vL433u76m3lTk3ITdwz2VZ50BjBn6G64oal2stZfIIvbICBLOT7aRUpe/T+WBdlhzhw3Aonvbm3nC05zMY/waQW355qyULaekuzk6FdvSHogWDoXbgW6Ztc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Iq5GWOBg; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=KOJmggGPXSQJJHRo6VaRkN4gd/Hofqbi8K/mYqu08isz1hlv6VBxCn+kmJ6/IzxA8ruHW6Kwq7LTwcAESIWruT0Ah1BlMBFK5dIUyr4D0PEDTv/6beRPt7Kf5EN4x5IYKJiw9Iv9IvXnfoBArIUH0wrPiJ/9wMwk39HVWWzC3dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fnq65lMA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Iq5GWOBg"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21E6AC2BCF6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fnq65lMA"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3893EC4AF0B;
 	Sun,  5 Jul 2026 11:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1783251562;
-	bh=cjQ9pDdRzexmdnEFVPcOS2uzmihE5Dkf9G7PROHYhfk=;
+	bh=XktOlaasuSm3hYXKmS8amfCoiKQ/2h3DNBwBGo5qc3k=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Iq5GWOBg3gtt23z7I87LffkatO/VxBHgjN2WWDSteiMnx1EQAXzgeZSRgWKCFRnUe
-	 EP7KLN7P7RvSKVTnSGFy7QBqX4L/C8KF0Wu/gYrzOdVbLS/vlOJEjoOsrRN8X57BmK
-	 fm31WqE9ZA/39tT2SDNQYx+/rLGs106wLanHd7UyJPQOKylhI5k5cyQSH2KWEVq13F
-	 SoYbM+/bD7P2l82dorxFQtbAZvvg86MydDbd0G0MHxpva6brwnWb4EDoFUEFkP68d9
-	 oWvTxabPVkGMdmYJunrKo5UY+sJxWgo3iWZMHvtH2YZrTrSMkuL58PTztEz3MDBwc6
-	 ItzG5+sfO00BQ==
+	b=Fnq65lMAeRYohW7A1vxKvirCoZ8bZkjwDDLFZsbuPNtqse/p1SBpjrkTeO3RDNRT4
+	 9TGISHabcQTnxJHX/lTxxFhL4gjifQ5VoDdX/t4zEU2uTuByiGIG8Ps3ypauVbNK4E
+	 MJQ30s495NqBNfJInrIwP5TfrI8sIljPdZVblT+mGHFUOiogI1mNCTPOsM9+QCEtkN
+	 J7Qf+X4Ebm4Rba8vdbkbEE0xhsNGq5l8Kr4ok/9ZPcehZTOVHWbbvUAuqvgkSbF5ag
+	 uoU5AmKHiVA5G3jfuHn1LTpiAt3CrdVlPWnaHwActkJHYqC8PgWu0mpcfM9Ee2SuIH
+	 HAGqGKIH24jnw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047C2C44500;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2148FC43458;
 	Sun,  5 Jul 2026 11:39:22 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 05 Jul 2026 12:38:57 +0100
-Subject: [PATCH v6 2/6] iio: dac: ad5686: introduce sync operation
+Date: Sun, 05 Jul 2026 12:38:59 +0100
+Subject: [PATCH v6 4/6] iio: dac: ad5686: read_raw/write_raw: use
+ guard(mutex)()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260705-ad5686-new-features-v6-2-269594c7aae5@analog.com>
+Message-Id: <20260705-ad5686-new-features-v6-4-269594c7aae5@analog.com>
 References: <20260705-ad5686-new-features-v6-0-269594c7aae5@analog.com>
 In-Reply-To: <20260705-ad5686-new-features-v6-0-269594c7aae5@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -52,13 +53,15 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Maxwell Doose <m32285159@gmail.com>, 
+ Joshua Crofts <joshua.crofts1@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783251560; l=1436;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783251560; l=2132;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=/vsDuIkCy+O82t+vzKstlQP2RRX82emoYOHg5MWTkC0=;
- b=ElDeMK74i0FPe9/OCbAc+1eDwnstal9uxS4QRnnH2AsN9ph4VSwvyvl8BxHYfxG6rx97Kbfpk
- 3PoPfxS2xLACSb9GfHfJobpaqQqdYueGIzS6TdOJ5ISgDYZ8wZ1gd2P
+ bh=KXdOCM8K80hSnPdNpvlDlxzShY7L4kR4B4GuvME7upg=;
+ b=lLU/CJZYJH0kEUs8Tb6OUvDxDPRfbLVJZXGObuZtG6Av78GNSrB9UGDJYGEFH3sFXMFvH5I+c
+ WZBCEpsXgz7Bd/KBAyd1qdfaVLnAy4A8x441xEv3emEPDu0yDNA2u8V
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,47 +71,74 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add sync() to operation to ad5686_bus_ops, which can be used to flush
-multiple pending data transfers at once. This is going to be used when
-implementing triggered buffer support.
+Use guarded mutex lock to facilitate code review when adding new
+attributes. This will allow for early returns, avoiding error-prone
+locking and unlocking in error paths. This also adds missing include
+linux/cleanup.h. Gain-control support will allow the scale attribute
+to be configurable.
 
+Reviewed-by: Maxwell Doose <m32285159@gmail.com>
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5686.h | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ad5686.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 0d1bbf110926..56d37191ab37 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -67,10 +67,12 @@ struct ad5686_state;
-  * struct ad5686_bus_ops - bus specific read/write operations
-  * @read: read a register value at the given address
-  * @write: write a command, address and value to the device
-+ * @sync: ensure the completion of the write operation (optional)
-  */
- struct ad5686_bus_ops {
- 	int (*read)(struct ad5686_state *st, u8 addr);
- 	int (*write)(struct ad5686_state *st, u8 cmd, u8 addr, u16 val);
-+	int (*sync)(struct ad5686_state *st);
- };
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 75dd7921c67b..db175e77b0b7 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -8,6 +8,7 @@
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/errno.h>
+@@ -177,11 +178,11 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+ 	int ret;
  
- /**
-@@ -159,7 +161,13 @@ int ad5686_probe(struct device *dev,
- 
- static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
++	guard(mutex)(&st->lock);
++
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&st->lock);
+ 		ret = ad5686_read(st, chan->address);
+-		mutex_unlock(&st->lock);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = (ret >> chan->scan_type.shift) &
+@@ -202,23 +203,19 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ 			    long mask)
  {
--	return st->ops->write(st, cmd, addr, val);
-+	int ret;
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+-	int ret;
 +
-+	ret = st->ops->write(st, cmd, addr, val);
-+	if (ret)
-+		return ret;
-+
-+	return st->ops->sync ? st->ops->sync(st) : 0;
++	guard(mutex)(&st->lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&st->lock);
+-		ret = ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
+-				   chan->address, val << chan->scan_type.shift);
+-		mutex_unlock(&st->lock);
+-		break;
++		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
++				    chan->address, val << chan->scan_type.shift);
+ 	default:
+-		ret = -EINVAL;
++		return -EINVAL;
+ 	}
+-
+-	return ret;
  }
  
- static inline int ad5686_read(struct ad5686_state *st, u8 addr)
+ static const struct iio_info ad5686_info = {
 
 -- 
 2.43.0
