@@ -1,449 +1,212 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D410913E41A
-	for <linux-iio@vger.kernel.org>; Sun,  5 Jul 2026 08:53:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69ECD3793AC;
+	Sun,  5 Jul 2026 11:39:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783241619; cv=none; b=ggBNx5veDYeZgUdyk7n18ItlakDAHfyiu0RmWOqBFU30jAlFUVWWlVRk1+qM7RQbTUkaxsiqciC6dPPXVcET2CIE+hyHofJK6Vb4SEAH4+VL46fDW6JohQvAxmO/e6O/jp7ZuWoVeKOdffC/4I1sW9AHdMoKjo1Cr7x1/L+S6vc=
+	t=1783251562; cv=none; b=iS05kWU0VhWt61T/nF8NpcpHDsLutrGibnN2Z3xJ0Smft+EvTIPzjrLGP1ecpz5/uC365wDvNbYnbxUmIP7jjG0isu1dJy6QYcZqi5H4scxAbl3pLKHQ8BvCDd8BOpnSPUez2pWUXdEloLYaB9i7385UVbXPwueuNBrgHHLNX/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783241619; c=relaxed/simple;
-	bh=s6HIcV4HTSFWc5vfRv4FqGcjv3OhDT70bCWryJUAz68=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=oAhKBau6+Liie+L2hJJzkihtKfMHAA1GNzPNxRWS+ZD/D6YLHAdbfO1QCnkzUUGoCRmFGVgJgKVeTEmnxgu1MrzwJKSlhm/8m1v1UwS8TJ1BRPTnOCdbll4HVdM+8bKeZ16lVzmdRoF18A9C/WXHuw/+io7pbN9w06OPzooYIyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SzB0sRU4; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783251562; c=relaxed/simple;
+	bh=N//W61n3xcaHZVwzLBleSs5AIOXEvBnvue6KXId5i2s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XeYE686GpZOqhXMZhvFMfX0QpD/dsglxNthgfRmofxGG4deDvBw2NRDntjDoELa7VK0j31PzQYhJLVvEr7z2JJSzqyhI/GwE3uNTjDR/Q26vy9RFo6m5/ZAjhR+ghLH5cQhYb2KPHjDVZzGdlV/KdTC4J2ZjklxBobAM0hBL+0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Maq3cFHe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SzB0sRU4"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-474303f3c72so1119573f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 05 Jul 2026 01:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783241615; x=1783846415; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ah/zRB/XuriwXpF5NOF9MEJmfk7QHzQ87OYCQjCuCrw=;
-        b=SzB0sRU4HJm9jhG1aNpcz9rnuQ1jQ2HwkXLBEhQXIKuUVaWdOUD0NpCai4Zh62AUkD
-         QahXvXnm48htWodNA97Q82ZMb/YtELutQc2cytI+Og4Cj1PK6vYIWZSmXIk6UDs/k7s6
-         UXB8pgD/ncLkGVb4M2WbtkTvJWZCR+86xoPdPl5AqQ865XMaIpsj/AmFRe+8T/+cU07Q
-         uZeZ3oIfHCvazMtNyYZQpvoX2cPfSRFlgZyQ/X9x17XzqvMKLYnfMyYbCRXf+pYAt3wM
-         t1YAOxzgCcsPUDuAE7aOxG14ldZcUjLuNQD9K/AksyNNcVPuNqoLOjfmZjrQbrwxGh1v
-         zpLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783241615; x=1783846415;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Ah/zRB/XuriwXpF5NOF9MEJmfk7QHzQ87OYCQjCuCrw=;
-        b=cFVnIGrnfJq4lxORq9K5KIFRuNoqn+DTLUEvZHRHlkgOlfRZYnQPr1qryQLA3e+EOH
-         MwAwIgLXyE5YJxedTkj/eaiOE3BqOugPI9Ywc7ViSvbqPec+G7y1T8gc0VojVuQfwcbN
-         VbrmVdCBz90GraYTCY0nBKJj7A5J9Y3593ldDioDzpocq8S58fUcR2gn714cubYRSRhJ
-         495OeSOLqo4VqeMfv9MsMP/mv8oDqnh2EQWao9oOISyrQvayg5+OOOZoQNJ21YO5uNYl
-         fYG7Veqr6z60Til9FoU2iv9YYUjjhKZPrjmUr//on0e580a92MFNYXqOUU6c44JelIa/
-         EkbQ==
-X-Forwarded-Encrypted: i=1; AHgh+Rq0/w8T/PPIRk4dMJ/7orHBBr8byMbSjBVbVl/68WjpIqjJf9NL83//OfTeHdGxV20HrdLYv0e+wnc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/1IKZXbwO7JA/BGp7T361mPhv06YoChlR91hYhGDmIoWTLyGa
-	Dzdvbc8EXmtZCTZHBg7d2wlVfo6Q/zky3NfhWB1FQ/vk/LiI3vIIXcCD
-X-Gm-Gg: AfdE7ckNKH56/AzBqvRVABVXwxjU1UbHuZzF8OUqU1CmRZTnHwYVCg5NrmBwtPIGUlK
-	4z+B1sYIBP6cZsa7X+00nWwKqtbfw9eRvd05J3+bYgA1rxlBHBFpTJOXDdglpLPqWQI/2Pl97Pl
-	jp9oHIEAjkyGGpbwZhnLcZjpk3A3rRhj+RSCECbqfMnjJuDx/4K3ZfnYH3GkgLD25mIWm64sciT
-	yZApso20XvUIC3oG6KG/u6pHPl4av8rNg8J9CaroTwnJiI2DK3uRp26xZC4EnRdUIWEPCpUXNZV
-	Hrt1N5TAFevPgt4UPddhIHOd3kCV0+rqY5mZzPKQCIZ6XeLp38mU9h5JejAkZ/sTv7VBNB6ONhj
-	F8SNcP1vo7G95xtlAwWcKJ/Xer54P+jVO1USpi2KI5bVeGY2ZQOB+q2eyLzNluC/hbmbLGrHNo0
-	ztwGS6+Q==
-X-Received: by 2002:a05:6000:1847:b0:475:e3fe:8ac3 with SMTP id ffacd0b85a97d-47aa92c0701mr7196920f8f.8.1783241614935;
-        Sun, 05 Jul 2026 01:53:34 -0700 (PDT)
-Received: from avermoal ([185.13.176.155])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9e4d780csm14649722f8f.11.2026.07.05.01.53.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jul 2026 01:53:34 -0700 (PDT)
-From: Avermoal <avermoal@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Avermoal <avermoal@gmail.com>
-Subject: [PATCH] dt-bindings: iio: adc: convert Xilinx XADC bindings to YAML
-Date: Sun,  5 Jul 2026 14:53:08 +0600
-Message-ID: <20260705085308.8819-2-avermoal@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Maq3cFHe"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 16BB8C2BCC7;
+	Sun,  5 Jul 2026 11:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1783251562;
+	bh=N//W61n3xcaHZVwzLBleSs5AIOXEvBnvue6KXId5i2s=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=Maq3cFHe/Ad4Ka5Cp7kCjOVMX58XD58KGKCgsDuC75EDOkDFZ7psBjikkiRmKSmqS
+	 PZq3sq1+cF4t5Yge9cxje7WwoU8iufjuv0glkMKTRWUH7pxRDYLOe49WDHjprYu6O4
+	 bQxzVzgKfFyNDqRYolqJc08VjOg90JthO7gufmp4MIgNgqZxRnkGd33iGpHQIMS3X6
+	 8yPi6fkzGiFM4ZmYEJ80WUeSlSXobqEirvfawLI6PCtF5iSNmQo2C96GWiGq+J9kCs
+	 Ql6DZdrOX3/B7fx2DgJDi/LCeq5faCfgr5+XMCIbgrVGyIG/5Jck1Lojg1L8LWikso
+	 BU5UUlsFV0nOg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFDBC43602;
+	Sun,  5 Jul 2026 11:39:21 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Sun, 05 Jul 2026 12:38:56 +0100
+Subject: [PATCH v6 1/6] iio: dac: ad5686: refactor command/data macros
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260705-ad5686-new-features-v6-1-269594c7aae5@analog.com>
+References: <20260705-ad5686-new-features-v6-0-269594c7aae5@analog.com>
+In-Reply-To: <20260705-ad5686-new-features-v6-0-269594c7aae5@analog.com>
+To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783251560; l=4663;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=Pwyu0rw5uPjvDrSRUQEZTTxAb8eLnctJHJjfb2rrhcg=;
+ b=RZgycBLsVH3HOunBnqAw/m0/XfQsEug+9tr4knbYhEozt4MWzwGib4enl/BVIFjOxtc7A+qq+
+ Ty2ff2JSJprBp0YaCg9Fap9wEqocGIh0ruO3EbmBjoMZVa4PxshZxvp
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-Convert the Xilinx XADC binding documentation from .txt to YAML format.
-This conversion is part of the ongoing effort to migrate all DT bindings
-to a machine-verifiable schema.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The new xilinx-xadc.yaml file was created from the original .txt and
-includes all necessary properties, descriptions, and examples. The
-conversion also fixes a minor typo in the 'xlnx,channels' property name.
+Replace usage of bit shifting macros for FIELD_PREP(), which would not
+ignore bit masking when preparing SPI/I2C commands.
 
-Signed-off-by: Avermoal <avermoal@gmail.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../bindings/iio/adc/xilinx-xadc.txt          | 141 -------------
- .../bindings/iio/adc/xilinx-xadc.yaml         | 186 ++++++++++++++++++
- 2 files changed, 186 insertions(+), 141 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-xadc.yaml
+ drivers/iio/dac/ad5686-spi.c | 21 +++++++++++----------
+ drivers/iio/dac/ad5686.h     | 13 ++++++-------
+ drivers/iio/dac/ad5696-i2c.c | 11 ++++++-----
+ 3 files changed, 23 insertions(+), 22 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
-deleted file mode 100644
-index f42e18078376..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
-+++ /dev/null
-@@ -1,141 +0,0 @@
--Xilinx XADC device driver
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index 6b6ef1d7071f..d3b64b4361d5 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <linux/array_size.h>
++#include <linux/bitfield.h>
+ #include <linux/errno.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+@@ -26,21 +27,21 @@ static int ad5686_spi_write(struct ad5686_state *st,
+ 
+ 	switch (st->chip_info->regmap_type) {
+ 	case AD5310_REGMAP:
+-		st->data[0].d16 = cpu_to_be16(AD5310_CMD(cmd) |
+-					      val);
++		st->data[0].d16 = cpu_to_be16(FIELD_PREP(AD5310_CMD_MSK, cmd) |
++					      FIELD_PREP(AD5310_DATA_MSK, val));
+ 		buf = &st->data[0].d8[0];
+ 		tx_len = 2;
+ 		break;
+ 	case AD5683_REGMAP:
+-		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
+-					      AD5683_DATA(val));
++		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++					      FIELD_PREP(AD5683_DATA_MSK, val));
+ 		buf = &st->data[0].d8[1];
+ 		tx_len = 3;
+ 		break;
+ 	case AD5686_REGMAP:
+-		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
+-					      AD5686_ADDR(addr) |
+-					      val);
++		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++					      FIELD_PREP(AD5686_ADDR_MSK, addr) |
++					      FIELD_PREP(AD5686_DATA_MSK, val));
+ 		buf = &st->data[0].d8[1];
+ 		tx_len = 3;
+ 		break;
+@@ -81,9 +82,9 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ 		return -EINVAL;
+ 	}
+ 
+-	st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
+-				      AD5686_ADDR(addr));
+-	st->data[1].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP));
++	st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++				      FIELD_PREP(AD5686_ADDR_MSK, addr));
++	st->data[1].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, AD5686_CMD_NOOP));
+ 
+ 	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
+ 	if (ret < 0)
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index c424720f8f72..0d1bbf110926 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -14,13 +14,6 @@
+ 
+ #include <linux/iio/iio.h>
+ 
+-#define AD5310_CMD(x)				((x) << 12)
 -
--This binding document describes the bindings for the Xilinx 7 Series XADC as well
--as the UltraScale/UltraScale+ System Monitor.
+-#define AD5683_DATA(x)				((x) << 4)
 -
--The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
--The XADC has a DRP interface for communication. Currently two different
--frontends for the DRP interface exist. One that is only available on the ZYNQ
--family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
--on all series 7 platforms and is a softmacro with a AXI interface. This binding
--document describes the bindings for both of them since the bindings are very
--similar.
+-#define AD5686_ADDR(x)				((x) << 16)
+-#define AD5686_CMD(x)				((x) << 20)
 -
--The Xilinx System Monitor is an ADC that is found in the UltraScale and
--UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface for
--communication. Xilinx provides a standard IP core that can be used to access the
--System Monitor through an AXI interface in the FPGA fabric. This IP core is
--called the Xilinx System Management Wizard. This document describes the bindings
--for this IP.
--
--Required properties:
--	- compatible: Should be one of
--		* "xlnx,zynq-xadc-1.00.a": When using the ZYNQ device
--		  configuration interface to interface to the XADC hardmacro.
--		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
--		  interface to the XADC hardmacro.
--		* "xlnx,system-management-wiz-1.3": When using the
--		  Xilinx System Management Wizard fabric IP core to access the
--		  UltraScale and UltraScale+ System Monitor.
--	- reg: Address and length of the register set for the device
--	- interrupts: Interrupt for the XADC control interface.
--	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
--	  when using the axi-xadc or the axi-system-management-wizard this must be
--	  the clock that provides the clock to the AXI bus interface of the core.
--
--Optional properties:
--	- xlnx,external-mux:
--		* "none": No external multiplexer is used, this is the default
--		  if the property is omitted.
--		* "single": External multiplexer mode is used with one
--		   multiplexer.
--		* "dual": External multiplexer mode is used with two
--		  multiplexers for simultaneous sampling.
--	- xlnx,external-mux-channel: Configures which pair of pins is used to
--	  sample data in external mux mode.
--	  Valid values for single external multiplexer mode are:
--		0: VP/VN
--		1: VAUXP[0]/VAUXN[0]
--		2: VAUXP[1]/VAUXN[1]
--		...
--		16: VAUXP[15]/VAUXN[15]
--	  Valid values for dual external multiplexer mode are:
--		1: VAUXP[0]/VAUXN[0] - VAUXP[8]/VAUXN[8]
--		2: VAUXP[1]/VAUXN[1] - VAUXP[9]/VAUXN[9]
--		...
--		8: VAUXP[7]/VAUXN[7] - VAUXP[15]/VAUXN[15]
--
--	  This property needs to be present if the device is configured for
--	  external multiplexer mode (either single or dual). If the device is
--	  not using external multiplexer mode the property is ignored.
--	- xnlx,channels: List of external channels that are connected to the ADC
--	  Required properties:
--		* #address-cells: Should be 1.
--		* #size-cells: Should be 0.
--
--	  The child nodes of this node represent the external channels which are
--	  connected to the ADC. If the property is no present no external
--	  channels will be assumed to be connected.
--
--	  Each child node represents one channel and has the following
--	  properties:
--		Required properties:
--			* reg: Pair of pins the channel is connected to.
--				0: VP/VN
--				1: VAUXP[0]/VAUXN[0]
--				2: VAUXP[1]/VAUXN[1]
--				...
--				16: VAUXP[15]/VAUXN[15]
--			  Note each channel number should only be used at most
--			  once.
--		Optional properties:
--			* xlnx,bipolar: If set the channel is used in bipolar
--			  mode.
--
--
--Examples:
--	xadc@f8007100 {
--		compatible = "xlnx,zynq-xadc-1.00.a";
--		reg = <0xf8007100 0x20>;
--		interrupts = <0 7 4>;
--		interrupt-parent = <&gic>;
--		clocks = <&pcap_clk>;
--
--		xlnx,channels {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			channel@0 {
--				reg = <0>;
--			};
--			channel@1 {
--				reg = <1>;
--			};
--			channel@8 {
--				reg = <8>;
--			};
--		};
--	};
--
--	xadc@43200000 {
--		compatible = "xlnx,axi-xadc-1.00.a";
--		reg = <0x43200000 0x1000>;
--		interrupts = <0 53 4>;
--		interrupt-parent = <&gic>;
--		clocks = <&fpga1_clk>;
--
--		xlnx,channels {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			channel@0 {
--				reg = <0>;
--				xlnx,bipolar;
--			};
--		};
--	};
--
--	adc@80000000 {
--		compatible = "xlnx,system-management-wiz-1.3";
--		reg = <0x80000000 0x1000>;
--		interrupts = <0 81 4>;
--		interrupt-parent = <&gic>;
--		clocks = <&fpga1_clk>;
--
--		xlnx,channels {
--			#address-cells = <1>;
--			#size-cells = <0>;
--			channel@0 {
--				reg = <0>;
--				xlnx,bipolar;
--			};
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.yaml b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.yaml
-new file mode 100644
-index 000000000000..d61635516ce2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.yaml
-@@ -0,0 +1,186 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/xilinx-xadc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Xilinx 7 Series XADC and UltraScale/UltraScale+ System Monitor
-+
-+maintainers:
-+  - Avermoal <avermoal@gmail.com>
-+
-+description: |
-+  The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
-+  The XADC has a DRP interface for communication. Currently two different
-+  frontends for the DRP interface exist. One that is only available on the ZYNQ
-+  family as a hardmacro in the SoC portion of the ZYNQ. The other one is
-+  available on all series 7 platforms and is a softmacro with an AXI interface.
-+  This binding document describes the bindings for both of them since the
-+  bindings are very similar.
-+
-+  The Xilinx System Monitor is an ADC that is found in the UltraScale and
-+  UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface
-+  for communication. Xilinx provides a standard IP core that can be used to
-+  access the System Monitor through an AXI interface in the FPGA fabric.
-+  This IP core is called the Xilinx System Management Wizard. This document
-+  describes the bindings for this IP.
-+
-+properties:
-+  compatible:
-+    description: |
-+      Specifies the interface type and the target device.
-+      - "xlnx,zynq-xadc-1.00.a"
-+      for ZYNQ device configuration interface (hardmacro in SoC)
-+      - "xlnx,axi-xadc-1.00.a"
-+      for AXI pcore softmacro on all Series 7 FPGAs
-+      - "xlnx,system-management-wiz-1.3"
-+      for UltraScale/UltraScale+ System Monitor via AXI
-+    enum:
-+      - xlnx,zynq-xadc-1.00.a
-+      - xlnx,axi-xadc-1.00.a
-+      - xlnx,system-management-wiz-1.3
-+
-+  reg:
-+    description: Address and length of the register set for the device.
-+    maxItems: 1
-+
-+  interrupts:
-+    description: Interrupt for the XADC control interface.
-+    maxItems: 1
-+
-+  clocks:
-+    description: |
-+      When using the ZYNQ this must be the ZYNQ PCAP clock,
-+      when using the axi-xadc or the axi-system-management-wizard this must be
-+      the clock that provides the clock to the AXI bus interface of the core.
-+    maxItems: 1
-+
-+  xlnx,external-mux:
-+    description: |
-+      External multiplexer mode. If omitted, defaults to "none".
-+      - "none" – no external multiplexer (default)
-+      - "single" – one external multiplexer
-+      - "dual" – two external multiplexers for simultaneous sampling
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum: [none, single, dual]
-+    default: none
-+
-+  xlnx,external-mux-channel:
-+    description: |
-+      Configures which pair of pins is used to sample data in external mux mode.
-+      For single mode: 0 (VP/VN) or 1..16 (VAUXP[0..15]/VAUXN[0..15]).
-+      For dual mode: 1..8, where the value n corresponds to the pair
-+      (VAUXP[n-1]/VAUXN[n-1] and VAUXP[n+7]/VAUXN[n+7]).
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    minimum: 0
-+    maximum: 16
-+
-+  xlnx,channels:
-+    description: |
-+      Container for external channels that are connected to the ADC.
-+      If this property is not present, no external channels will be assumed.
-+    type: object
-+    properties:
-+      "#address-cells":
-+        const: 1
-+      "#size-cells":
-+        const: 0
-+    patternProperties:
-+      "^channel@[0-9a-f]+$":
-+        type: object
-+        description: Each child node represents one external channel.
-+        properties:
-+          reg:
-+            description: |
-+              Pair of pins the channel is connected to.
-+              0: VP/VN
-+              1..16: VAUXP[0..15]/VAUXN[0..15]
-+            maxItems: 1
-+          xlnx,bipolar:
-+            description: If present, the channel is used in bipolar mode.
-+            type: boolean
-+        required:
-+          - reg
-+        additionalProperties: false
-+    required:
-+      - "#address-cells"
-+      - "#size-cells"
-+    additionalProperties: false
-+
-+allOf:
-+  - if:
-+      required:
-+        - xlnx,external-mux
-+      properties:
-+        xlnx,external-mux:
-+          enum: [single, dual]
-+    then:
-+      required:
-+        - xlnx,external-mux-channel
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    xadc@f8007100 {
-+        compatible = "xlnx,zynq-xadc-1.00.a";
-+        reg = <0xf8007100 0x20>;
-+        interrupts = <0 7 4>;
-+        interrupt-parent = <&gic>;
-+        clocks = <&pcap_clk>;
-+
-+        xlnx,channels {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+                reg = <0>;
-+            };
-+            channel@1 {
-+                reg = <1>;
-+            };
-+            channel@8 {
-+                reg = <8>;
-+            };
-+        };
-+    };
-+  - |
-+    xadc@43200000 {
-+        compatible = "xlnx,axi-xadc-1.00.a";
-+        reg = <0x43200000 0x1000>;
-+        interrupts = <0 53 4>;
-+        interrupt-parent = <&gic>;
-+        clocks = <&fpga1_clk>;
-+
-+        xlnx,channels {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+                reg = <0>;
-+                xlnx,bipolar;
-+            };
-+        };
-+    };
-+  - |
-+    adc@80000000 {
-+        compatible = "xlnx,system-management-wiz-1.3";
-+        reg = <0x80000000 0x1000>;
-+        interrupts = <0 81 4>;
-+        interrupt-parent = <&gic>;
-+        clocks = <&fpga1_clk>;
-+
-+        xlnx,channels {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+                reg = <0>;
-+                xlnx,bipolar;
-+            };
-+        };
-+    };
-+...
+ #define AD5686_ADDR_DAC(chan)			(0x1 << (chan))
+ #define AD5686_ADDR_ALL_DAC			0xF
+ 
+@@ -38,12 +31,18 @@
+ #define AD5686_CMD_CONTROL_REG			0x4
+ #define AD5686_CMD_READBACK_ENABLE_V2		0x5
+ 
++#define AD5310_CMD_MSK				GENMASK(15, 12)
++#define AD5310_DATA_MSK				GENMASK(11, 0)
+ #define AD5310_REF_BIT_MSK			BIT(8)
+ #define AD5310_PD_MSK				GENMASK(10, 9)
+ 
++#define AD5683_DATA_MSK				GENMASK(19, 4)
+ #define AD5683_REF_BIT_MSK			BIT(12)
+ #define AD5683_PD_MSK				GENMASK(14, 13)
+ 
++#define AD5686_CMD_MSK				GENMASK(23, 20)
++#define AD5686_ADDR_MSK				GENMASK(19, 16)
++#define AD5686_DATA_MSK				GENMASK(15, 0)
+ #define AD5686_REF_BIT_MSK			BIT(0)
+ #define AD5686_PD_MSK				GENMASK(1, 0)
+ 
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index 279309329b64..bd8666a02b47 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -7,6 +7,7 @@
+  * Copyright 2018 Analog Devices Inc.
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/errno.h>
+ #include <linux/i2c.h>
+ #include <linux/mod_devicetable.h>
+@@ -35,9 +36,8 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
+ 	};
+ 	int ret;
+ 
+-	st->data[0].d32 = cpu_to_be32(AD5686_CMD(AD5686_CMD_NOOP) |
+-				      AD5686_ADDR(addr) |
+-				      0x00);
++	st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, AD5686_CMD_NOOP) |
++				      FIELD_PREP(AD5686_ADDR_MSK, addr));
+ 
+ 	ret = i2c_transfer(i2c->adapter, msg, 2);
+ 	if (ret < 0)
+@@ -52,8 +52,9 @@ static int ad5686_i2c_write(struct ad5686_state *st,
+ 	struct i2c_client *i2c = to_i2c_client(st->dev);
+ 	int ret;
+ 
+-	st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) | AD5686_ADDR(addr)
+-				      | val);
++	st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++				      FIELD_PREP(AD5686_ADDR_MSK, addr) |
++				      FIELD_PREP(AD5686_DATA_MSK, val));
+ 
+ 	ret = i2c_master_send(i2c, &st->data[0].d8[1], 3);
+ 	if (ret < 0)
+
 -- 
+2.43.0
 
-Changes in v2:
-- Fix conditional requirement for xlnx,external-mux-channel (add if/required block)
-- Correct reg type in child nodes (use maxItems: 1 instead of items)
-- Make #address-cells and #size-cells required under xlnx,channels
-2.52.0
 
