@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85355433E71;
-	Sun,  5 Jul 2026 15:42:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E65B3546CB;
+	Sun,  5 Jul 2026 15:42:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783266160; cv=none; b=NFRGOyzQZqfNCAa2vC77/EMHqfBmjguaTnf0oEad4/7/HqEP1ocrkwTQr9LmueCUbwpX6jL1bbq4+i+irdfNZ9S8Jw3eNUX+vhQowRzkRqGkDfipDxZ8lwuSf8Lndowzy6OD+o+gWXXrCKFICjR+Z8sJPToaou21LLp3XsXj8YQ=
+	t=1783266179; cv=none; b=tevysTvNlTTookXpJqR1gUDF5FV3Kxmiw/OSh5EnVZ4AiekIeRAMkDYCm0sb5jqa7mhBi/Osa2yzPh281HZS9fI58IiyxTC6JA2mARYsqOZGkQ1K/uqVwMN7ZdZPPTuLsLmaaoN2KHQ/KsWBUWC+rbeXH5h13pvAqqdMMCVzS50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783266160; c=relaxed/simple;
-	bh=NrNDIfAHHXT3S66vsUdWTbxrZiVC/jmBZuzurGDuGp0=;
+	s=arc-20240116; t=1783266179; c=relaxed/simple;
+	bh=U3hV6A85vjXMLRaHTQyJEWP6HtoxhUb0Pc9P0P7CtlE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fGZKKweQMg4/Tqc9CsB4XoPfuFOJ5nYqfVFngZJWckWSCxqeiwytUnQ8nkv3rkoRjgW1NHmntxWkZjVucP2zQkeqHc355Ll0xuCpyFvtLxKXXsK62dcviUqS/yj85m8M82iCMVC5Z+UXPX+GqKmTvPSY+LM3pF2ue6n0wr8ECRE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G9qJAark; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=YTlJBBaAbN47vHaRCOpPLdqANQmqRKN3XY7/8QWYRZ7OoBBgbSm1h8GsXgWve4WXHFNRpS0OapV+Vt3IPlpehTtg4Hno+JYolqQxrW8/s9wTHhcn2zUUSQKhP9NO36p1Z3BNiUt7+ve7Ty0ElSUUyjYjA1cHplNOFzwnfyhIAcM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kR2oV5Oc; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G9qJAark"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E2141F000E9;
-	Sun,  5 Jul 2026 15:42:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kR2oV5Oc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF7E1F00A3D;
+	Sun,  5 Jul 2026 15:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783266159;
-	bh=NrNDIfAHHXT3S66vsUdWTbxrZiVC/jmBZuzurGDuGp0=;
+	s=k20260515; t=1783266177;
+	bh=LjIAdYuXfiWreIqRnseKBgc0+93iXo3vEDudfmu3/nU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=G9qJAark9D7p0hniMStO1bCaQhtn6oXca0FxU0o22okYqO290pXjQYrePZum/IXom
-	 cRmYFeWmvCjUoqsPujCRkTwaSO0vrPxS3DRegqrvG81jU2Bbzz0knh0ggdhxVIi+q4
-	 n7SZjDqa7Kci9i2J0iJoF9cdibEPJLwsOLk8rjgboCaJR5E+MiOuY8klq8gGXP267l
-	 VWko4sbWVF/QNgfKIYSdaMBtbgLZSrrX+ZmBSth/kHWCe6FAKdIUpsLXv25UH/GGfh
-	 St0o49GVMd7Crm5be85RZpjVaaqrNiKvgfC750fkchpNkxufE0CxYp7StUOtS+UOi+
-	 4XxFYQb6wlQvA==
-Message-ID: <d7607a98-f5e1-417f-ad64-d0029c9de662@kernel.org>
-Date: Sun, 5 Jul 2026 17:42:31 +0200
+	b=kR2oV5Ocdr09naVs7nPG2ZVmZm2QF2hils1UThK7wCdpPbjVN11iwb3riUKLxeSEu
+	 aEyPr979zct6MJoiUI1xrxkZ2aWjUJtldJaXQRoLZFB6fbd37Ie8R+ZdP8B9Gg/Od3
+	 Mc+S2eD4Z7AXdLHNJyTMgIsOfNfmRdG7Ouo+k8hNaW6S97n2Mr5FThjRIPlsVgvbSZ
+	 59WZUTnozXZkvB+5L0cY0fDMWEyXuSw83PakEwIiBvcutZW0hcaKLOLJOskJRxqovs
+	 1ZEYjGhQrHahMhgP9CkGuSlB+QGy9oQ7JR7IiDwhOde/MlORWbsB/mphArPhuNxak+
+	 9SN/H9Sr4+H4A==
+Message-ID: <34bd8c26-0f66-4cea-bf5e-8e2d1a457860@kernel.org>
+Date: Sun, 5 Jul 2026 17:42:51 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -44,7 +44,7 @@ Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260705085308.8819-2-avermoal@gmail.com>
+References: <20260705063415.33076-1-avermoal@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,20 +90,17 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260705085308.8819-2-avermoal@gmail.com>
+In-Reply-To: <20260705063415.33076-1-avermoal@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 05/07/2026 10:53, Avermoal wrote:
+On 05/07/2026 08:34, Avermoal wrote:
 > Convert the Xilinx XADC binding documentation from .txt to YAML format.
 > This conversion is part of the ongoing effort to migrate all DT bindings
 > to a machine-verifiable schema.
+> 
 
-Sorry, but what effort exactly? Where is this effort documented? Do you
-have a mentor if this is some sort of mentorship effort?
-
-And if this is ongoing effort then don't duplicate:
-https://lore.kernel.org/all/?q=dfn%3Axilinx-xadc.txt
+Don't duplicate.
 
 Best regards,
 Krzysztof
