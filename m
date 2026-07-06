@@ -1,87 +1,177 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA27348866;
-	Mon,  6 Jul 2026 19:58:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D0193BD22F
+	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 19:58:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783367924; cv=none; b=mWc6dqCQ958pefuvv5KrYSXJ8HBRqYzeKAki/ij1ap2NJPR2f8OTTpa0yDS1UuwpDjLzA1Mky159c9C97yWsarvfvWCt2mlKeASubeG5zbLKrD0+LB1NDZeLEcJTC/jwADHqc8GmhhHElFsDCxp4vw8K0En9on+QxsmhiPDwWVM=
+	t=1783367936; cv=none; b=o2h+rJYdc3v54dJOQeNsPWIVXZt9AZnaNRoeikIPURYGQQK6nUqiLNaIMotjWPd4aEouXL9MVMkfciIcJmMNfr7l5gKJzs6CvbnBhgHQujVNXcdpqC3LYDsC/+QVfmzvoYkAQZgMT/plKvTB1L8kycdumrsrms3S+blJor/gNoo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783367924; c=relaxed/simple;
-	bh=0tpzqMoX9d+zzi/OmTw0TXb34LcQGCJ7K5MlAPpJ5Z4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NAy4USzZVY4QudhsZ0bmJfEY7j4R9g/UKu7HonlKKw5URf/0qSl2GytCvxKj1ZCYbGrVrsmWm53ixrpf1M5jYM+iSVkJoh+1kqZm9is76FIyC+div7n51+EgR15v33vO1XcXt7VNlB3tk2SyqQMmcOJ9ShUfYEMxhZCyIEEXrRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mceQ5Wjn; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783367936; c=relaxed/simple;
+	bh=VQRJctfRoIx43q7B8zg+JoEZ2DSkfCYQEsjoCD9AsiI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WXI6Z2u7qJgsoILrAf3heRvQH74TnCOREPm7jOdD10oxxfWzNC4PKF3liL3Arvkz42S3vTih+H+micx4xa7e/1M9oHhn8niLD0lmgFQsZ26slsLSyaT5RBMXAC7pXNgw9DJj0PiUoIWdXN2h6anr32hw0UFa81H2+pxhRzw+3iU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fLI7VdWx; arc=none smtp.client-ip=209.85.210.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mceQ5Wjn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783367923; x=1814903923;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0tpzqMoX9d+zzi/OmTw0TXb34LcQGCJ7K5MlAPpJ5Z4=;
-  b=mceQ5Wjnuc1GH1gMQWS5lidgXNgNTajkZ0ZU5GTOE7QK2oqVOprS/DsL
-   M/x/5REHLQhwxZrkxDbtiYrrB+e+Bul2esVBoPgp97g5qH8pGBKS/8R4X
-   8bs4EToZKdH1xV7Vdc6a69Ib9vAPGB+ilYEW/s8rovFGx/FtrDiutuwsj
-   cvw48b08gSYXzFsWsjHoO0tP/a+sOep98C8t87YuhkmKI02OcZ6kbve+D
-   w2p22VSVPbkBhi/svj6eA4cAKaXARHg/Klh7wM5F5OqqvxSsR5KJ95n9g
-   de6GBvLWCU8KgVxa6mjjpHqd1HbFId/B998VKjErg7mdI/9LI92ZjFD0I
-   A==;
-X-CSE-ConnectionGUID: DGrfSX6xS/ikPLjNd2QxLQ==
-X-CSE-MsgGUID: j8g2Rh1bSsSxQrcbP3nXtg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11839"; a="87689398"
-X-IronPort-AV: E=Sophos;i="6.25,151,1779174000"; 
-   d="scan'208";a="87689398"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2026 12:58:42 -0700
-X-CSE-ConnectionGUID: L/e9sIpbSP2TKwY3Syh87Q==
-X-CSE-MsgGUID: 8GaJbOXuThOGlKLQTLgzRA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,151,1779174000"; 
-   d="scan'208";a="251124659"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.48])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2026 12:58:39 -0700
-Date: Mon, 6 Jul 2026 22:58:37 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Paul Geurts <paul.geurts@prodrive-technologies.com>, jic23@kernel.org,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, tobias.sperling@softing.com
-Subject: Re: [PATCH v4] iio: ti-ads7138: Disable STATS_EN bit while reading
- conversion results
-Message-ID: <akwI7bzJUZasGbq-@ashevche-desk.local>
-References: <20260706074803.13624-1-paul.geurts@prodrive-technologies.com>
- <867d2cb8-a1f3-49e9-a8a2-04e232f404ab@baylibre.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fLI7VdWx"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7e9f69ee6f4so2996574a34.2
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 12:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1783367933; x=1783972733; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=YlT3WnM+OJST3BZ/4dqDMJmxXkYErU65jgqgDcmWdqE=;
+        b=fLI7VdWxmVioG1DzkOAcOiSBU5UPE0uYjVuDNI3h9Q9XAdYjV09FY0Iwe9T5gmFDOM
+         rpg9MLdvMrkObb7Vbz1Ph/oSP63fNu3kFrFB51YrFEdCeP90+k8O1p4wUqeD0x6fb5z6
+         oNlg583yDuJQNLkRlK6n6XJwqfqnTngCk7CBg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783367933; x=1783972733;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=YlT3WnM+OJST3BZ/4dqDMJmxXkYErU65jgqgDcmWdqE=;
+        b=AAuRflAbcHLOmlG4JjAcyELHFUU2yXhSIrXmXdu6/GTJQNNLwLfz48njq/e6gOlPfV
+         Gd64cZV8MHlEpoQhPcZtE1Zk1uzQ6Rv0L8btKPYI9XUvTQsFy+8Be+1JvzsiH+CWmHd4
+         InnF3TuAdNyjkpj/9wcA11XQx5DvkfE8K7PM1j00cOkZTv4TBPb2DBnFAnk5JnVuW7it
+         7XGbxy67G5E+EJGhhokhFjkjYCPiMP3uJOyRbpwO4mJ0tsr2RaQ04um5gGWfdNyLQuEF
+         RMIbaqhwJAAjfKp4U+e2rEfA7+AfzP45BSvc9VD49Bg1UgcKpWLuM1DfzfIVVrc0cIMS
+         M4rg==
+X-Forwarded-Encrypted: i=1; AFNElJ/oqH3qpMq/LIfNhIAKpQiPwjnmpOapNMPGwDxAbgXL1DrI8m71mvctEtghVTNT6tAX/SYf8K+JODA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyivfECR6gbkOt386fC7+ePJofDjMSbfxJx9ovob5Zc8U2tztXh
+	fa01TVGEdI804pTxZM4zWeF4MvuD0HhMYVAbKJg9T1gY/N/mganmB9UuHwvbBrAZQg==
+X-Gm-Gg: AfdE7cnnjdDiNR7CXS9T4SEqUVmcdqZSGcHUC7Ho4QZ/r9XhGJ72rDw1ToojavcXFmI
+	DZc+cH2w4f9g6dkfV00hshSD+2mJKp9YHcnnE+COvWIbqAFNaa1PpCYBVubBih7I2Q/Lji+VbZC
+	6RAJ2AAOW2g/Suf47t8BnkY8IKT1D+qVaKa8GBL3mmpCMaa1JO7Zk0Jhuy2VSYGmg5hGGuCjB+l
+	g5fA8fseM1sQNlQICFoLPo+3kKrRr8PlINvB3XjyurigChbux6RHWeeEavZxKu8bKatcUyJ9P21
+	LxEGVHhLVukPtQDpr+SfwN7QLGXuaGE04ScT9rSUM1GrkcZkQ3kfb+hYvKLwOoBWhO/EqbHYNZf
+	vPRGU9/U1zl+52RtMIG4Kr/xziPIGhsTzfYxfmY9A08R85IY2TVUSyxzn6yY5dJo8hMwdaT0aU8
+	tXTRw1D7o=
+X-Received: by 2002:a05:6830:4882:b0:7e9:3765:79c2 with SMTP id 46e09a7af769-7ebb22251dfmr1322732a34.12.1783367933546;
+        Mon, 06 Jul 2026 12:58:53 -0700 (PDT)
+Received: from chromium.org ([174.51.25.52])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7eb542d017csm12161834a34.8.2026.07.06.12.58.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2026 12:58:52 -0700 (PDT)
+From: Simon Glass <sjg@chromium.org>
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	Fabio Estevam <festevam@nabladev.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Simon Glass <sjg@chromium.org>,
+	Albert Aribaud <albert.u.boot@aribaud.net>,
+	Andy Shevchenko <andy@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Brian Masney <bmasney@redhat.com>,
+	Chukun Pan <amadeus@jmu.edu.cn>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	FUKAUMI Naoki <naoki@radxa.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jamie Iles <jamie@jamieiles.com>,
+	Jeffy Chen <jeffy.chen@rock-chips.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Michael Opdenacker <michael.opdenacker@rootcommit.com>,
+	Michael Riesch <michael.riesch@collabora.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Ulf Hansson <ulfh@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Yao Zi <ziyao@disroot.org>,
+	huang lin <hl@rock-chips.com>,
+	linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-watchdog@vger.kernel.org
+Subject: [PATCH 00/12] Add support for the Rockchip RV1106 and RV1103
+Date: Mon,  6 Jul 2026 13:57:56 -0600
+Message-ID: <20260706195818.3906949-1-sjg@chromium.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <867d2cb8-a1f3-49e9-a8a2-04e232f404ab@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jul 06, 2026 at 11:30:59AM -0500, David Lechner wrote:
-> On 7/6/26 2:48 AM, Paul Geurts wrote:
+This series adds initial support for the Rockchip RV1106, a Cortex-A7
+SoC aimed at IP cameras, and its RV1103 package variant, together with
+the Luckfox Pico Mini B, a small and widely available RV1103 board.
 
-...
+The series follows the structure of the recently merged RV1103B
+support. The clock driver is ported from the vendor kernel and is the
+work of Elaine Zhang; the pinctrl data also comes from the vendor
+kernel. The clock binding header keeps the vendor clock IDs. As with
+the RV1103B, no resets are exposed yet and the CPU pvtpll is
+initialised but not calibrated.
 
-> IIO style is to have /* on separate line for multi-line comments.
-> 
-> > +	/* Reading the statistics registers reinitializes them. This is unfortunate
-> > +	 * but necessary to prevent data races
-> > +	 */
+The devicetrees cover the devices needed for a basic system: UARTs,
+SD/eMMC, the SPI flash controller, SARADC, watchdog, GPIO and pinctrl.
 
-Also multiline comments should follow English grammar and punctuation, in
-particular the sentences should have a period at the end.
+The series is tested on the Luckfox Pico Mini B: the kernel boots to
+the rootfs wait with a working console on UART2, timers, pinctrl and
+GPIO, and an SD card running at high speed. It builds with W=1 without
+warnings and dt_binding_check and dtbs_check are clean.
+
+
+Simon Glass (12):
+  dt-bindings: clock: rockchip: Add RV1106 CRU support
+  clk: rockchip: Add clock controller for the RV1106
+  dt-bindings: pinctrl: rockchip: Add RV1106 compatible
+  pinctrl: rockchip: Add RV1106 pinctrl support
+  dt-bindings: soc: rockchip: grf: Add RV1106 compatibles
+  dt-bindings: serial: snps-dw-apb-uart: Add RV1106 compatible
+  dt-bindings: mmc: rockchip-dw-mshc: Add RV1106 compatible
+  dt-bindings: watchdog: snps,dw-wdt: Add RV1106 compatible
+  dt-bindings: iio: adc: rockchip-saradc: Add RV1106 compatible
+  ARM: dts: rockchip: Add support for RV1106 and RV1103
+  dt-bindings: arm: rockchip: Add Luckfox Pico Mini B
+  ARM: dts: rockchip: Add Luckfox Pico Mini B
+
+ .../devicetree/bindings/arm/rockchip.yaml     |    5 +
+ .../bindings/clock/rockchip,rv1106-cru.yaml   |   59 +
+ .../bindings/iio/adc/rockchip-saradc.yaml     |    3 +
+ .../bindings/mmc/rockchip-dw-mshc.yaml        |    1 +
+ .../bindings/pinctrl/rockchip,pinctrl.yaml    |    1 +
+ .../bindings/serial/snps-dw-apb-uart.yaml     |    1 +
+ .../devicetree/bindings/soc/rockchip/grf.yaml |   30 +
+ .../bindings/watchdog/snps,dw-wdt.yaml        |    1 +
+ arch/arm/boot/dts/rockchip/Makefile           |    1 +
+ .../rockchip/rv1103-luckfox-pico-mini-b.dts   |   93 ++
+ arch/arm/boot/dts/rockchip/rv1103.dtsi        |   12 +
+ .../arm/boot/dts/rockchip/rv1106-pinctrl.dtsi | 1398 +++++++++++++++++
+ arch/arm/boot/dts/rockchip/rv1106.dtsi        |  299 ++++
+ drivers/clk/rockchip/Kconfig                  |    7 +
+ drivers/clk/rockchip/Makefile                 |    1 +
+ drivers/clk/rockchip/clk-rv1106.c             | 1107 +++++++++++++
+ drivers/pinctrl/pinctrl-rockchip.c            |  208 +++
+ drivers/pinctrl/pinctrl-rockchip.h            |    1 +
+ .../dt-bindings/clock/rockchip,rv1106-cru.h   |  301 ++++
+ 19 files changed, 3529 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rv1106-cru.yaml
+ create mode 100644 arch/arm/boot/dts/rockchip/rv1103-luckfox-pico-mini-b.dts
+ create mode 100644 arch/arm/boot/dts/rockchip/rv1103.dtsi
+ create mode 100644 arch/arm/boot/dts/rockchip/rv1106-pinctrl.dtsi
+ create mode 100644 arch/arm/boot/dts/rockchip/rv1106.dtsi
+ create mode 100644 drivers/clk/rockchip/clk-rv1106.c
+ create mode 100644 include/dt-bindings/clock/rockchip,rv1106-cru.h
+
+---
+base-commit: 8cdeaa50eae8dad34885515f62559ee83e7e8dda
+branch: rv1106a
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
