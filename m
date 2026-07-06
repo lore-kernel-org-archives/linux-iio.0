@@ -1,127 +1,118 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B423431ED81
-	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 20:12:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783368775; cv=pass; b=QA49NTf1sIe59z7Orm8gf3I9cuaniNvbAT4j/Vi/gmExa4ns7WlrZE6bCIcykBunVIaiDpbmRif0fLdZzo0LPF8GJFDyoCOlLOYqQdRiTjue2siueSJDT4uMRL6XqnGSYOh4J/Kpc/NrEO50uWREJvfDGYlKuKJVq6t60KO/fqE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783368775; c=relaxed/simple;
-	bh=7xgTZFRbQasdfUAN/oxI4ukp4B4ZjyvZJl3R0aWNiYU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jHtlrSY4QK4RHMESlL7PBGNKOa4sC1YiZm5Mwu8gpk/U1YF9b4extq8OXEA2pC6Ec4VfsUGSAMGBsbHfp/s4RkEG4hbpsJqm0vc5+Kzpu9VUU+LZLpUJEMiCHIL6fg4vA3/aNqLGGG4RS0xyhag7RPkpchNJdNkOew7qpFmx2lM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AMhXXYpt; arc=pass smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 710183C3C0C
+	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 20:50:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783371048; cv=none; b=aDnlFK8A3nPeNN3Cj2vjbz5NKg1Uam7ItDE68AfCTnUjp57b3dIIXM9eYREY9XDElSKu5Y7bzp8nkYGzLWXU0BuDcrwWp9Hj/nHPn6IBrmlWv6JDbnOz5+eGbH8Y3vs2H/eAgmsL3Rj2H3X+urp2eAe+TM5cMqbMJS4H8xSqp8Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783371048; c=relaxed/simple;
+	bh=JmDGsFaY4py38Lh7Xj2V/bfF3K78aZHKimIXo5XmpSA=;
+	h=Message-ID:Date:Content-Type:MIME-Version:Subject:From:To:Cc:
+	 In-Reply-To:References; b=h+6WW5YBEDHFgpuuMoJzwcTx/ouWZtmbHnyOUxGYm7JuhzlJEmAFyxJBQQPc+R8L7Sy3uEgI0Y8S77vpWGO4ljb5LJhnLmgRRLOMRbMa7oKTevBBpx9vmBPS8LJfO617VclxSMxSfwM/FVRbYZsJSc3v7Oq+ioHZ1jEsAqKxAZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dir4Uu2y; arc=none smtp.client-ip=209.85.208.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AMhXXYpt"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493bab44440so1276855e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 13:12:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783368772; cv=none;
-        d=google.com; s=arc-20260327;
-        b=LImtpykAXyChtUB8kw5sjp61CHKo6t+tbEou0CeyqHcsgnEbc8zgiubHRikjPPNqX9
-         xfghqMLnaW95EzDC2zSRba3ySNW+3L1MWQRXPR8VlRJiTq+ETNcXzC4QOQ4h3v9t+oaa
-         M8ZXdshhBAER00ZFsrKc3lCqL6VxwEKqiav3io+Bj++SWhfRd6t1TD+efx3WlfHpK3rW
-         lQ2WgcDf0//lABjNzFwgg4F9rEfLevRXMWekt2fvSCwAR2FRuqvgNNMgZwBcgX1+ezGI
-         5PYp8Vi6orCELiyPb8TeOnyWoTJj0vsabnYS64PIqUbSWYSpDW9qnQ3i3XZwSYM0ToRN
-         0W5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=aDvYEoqJubUL1xXWscQEQX/r3sKA7/DX7CNPpGcmAVE=;
-        fh=v5rJv9aKEX+WvQ0IsGfHxyl8b8AF0jr8OqrJ7ictzSE=;
-        b=OX4YI0tLuQDacW8Y+Bbc8x4hjm2N068uACaP+jRlgKyEHxIC5Viv99I7b5cpg2ztps
-         jIKNVYHIhsb5L0hVjc5qj3zl1EStmlEvJm38pFVk2GUFBKB2L6Bg9Yfwjjh7EH+tAXMp
-         LYAIa6FIn8IjIf9ZttYLVfrrLgpHuUJy5TnusraJCZ8FC//s8KJOwuYgvBRuecYT8Z49
-         XfB351/PzyT3118OSARW07loCG1bgpKC+tZy2sHp1byFutPmi2+slxOgw7FXAvbPq+qy
-         82MO0eGsJArjTtlA0Q0i/PUShu1F9mLZEQLKXZEUrYLJx9jAkwNX/n8qvUDO/MPMHS7D
-         hSzw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dir4Uu2y"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-39b315585a4so23788731fa.0
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 13:50:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783368772; x=1783973572; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=aDvYEoqJubUL1xXWscQEQX/r3sKA7/DX7CNPpGcmAVE=;
-        b=AMhXXYptrguI6utCR3ay8BNBmG0hvlICM/iHZPB15xiAxX4EXFoFOybgPmKFdsdaN6
-         nwvAT92q7bXqCOAMOijVPaTdgIz8hqR5qvfnLT01qO//ZHUkt1u4szRV1bAHATR+5qu1
-         hX1QWalBYUIMKwz8c47/de/Q91eoqtHJAb0phVvyRpxSzF/tRoM9Zd623HWYwMLcAmNP
-         rbpGnsP5c/LHtBdL9TPMJasI7jj4UinC3P6pOUxbAIBtc0wF6CPVXfFGubmXgeewjv21
-         ISna3t+Jx5MAN9E30M0WUq7RSZx7BWTL7pjtMW/47LO6IamjmSWmPsQk22xwAnLswTuI
-         0Jnw==
+        d=gmail.com; s=20251104; t=1783371045; x=1783975845; darn=vger.kernel.org;
+        h=references:in-reply-to:cc:to:from:subject:content-transfer-encoding
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=JmDGsFaY4py38Lh7Xj2V/bfF3K78aZHKimIXo5XmpSA=;
+        b=dir4Uu2yn7r+Rlpp+uiTeuiXRDUNIeQsZLCDM/fr1xe1wUYeF21porSCoFLMqGEn+V
+         Y+nZLGrg2wSifKay8n4+/3NHTfEQU0Z3+gzquKNhJkUOK8mzWeNWA2YB+nzKX3Rj/tnB
+         BaKPSGlkGkBFi5A1cdvNQn9TLJ+FHaNFsce0X5j6YoCmnqgjZaSx/uBpyOMJy/5zSyS5
+         LA58Grd6Q7iopIm2v0Jqq0WwlOYqHcSIttD+F+dd8cv5bHlXT+ysQti79pXWCowNmdG7
+         44b7S7oRwagGYQWGbGRZh4TMnC0u+4BwajazmB1BbyRrMURQnMdMWaslO9P8ZB7TPTO7
+         HAyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783368772; x=1783973572;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aDvYEoqJubUL1xXWscQEQX/r3sKA7/DX7CNPpGcmAVE=;
-        b=jEUHmMTCRzCV/JfqrCJVgqQfv9jZjajfkytv0FQ6dG0e5ewC45vqJ/5wipW9ZcgXJG
-         P6HIY+o1EOlXiLMdBleeOMZOpiCwBt6+K5ZlYT1uH0AN54aSLQoz5JcIpFfXh4sp04FA
-         28LOluvQQ610Pejk2bvPzhkHMNRdcLYhMHqrrEjfcliaHAVneAVQBOt4UYHhHq4fUXjM
-         ESyIEph5JMml/cDI0vqC9tgMznV/RP3Z9cUq8zTW+5NShRxedLjZu9ZDBub7SK9JhD7N
-         vHPIQM9BmB59kAfFjRo9OhSTkmNOjpaWiyyMaH/qX/uV1R8grkU42uC/hyPAdW4RGpFF
-         fzgA==
-X-Gm-Message-State: AOJu0YxMB7x3+IgwQewrVmD3gyhmESg28EdMsZBkq9Ga26aIrHjJ0u+F
-	C78Mo5o+0hD6I6KUZX7Czuu03uu5NAa73Pq1wIhaXH3ttw5gKkCZThDZgaZ2xifk2oL83v9CEJo
-	41I2rdLHLHD8qhqT/KuA4i6nwkUgzg/5Idu9z
-X-Gm-Gg: AfdE7ckAPvlzt3P2YytwxS7a/WS9au9Kk8ezqfWI0Zk2cVlRCxKOlakT9X8JEX8BUyn
-	T+ZJYgj5DeNnkuYoxYUIP7f/3wroNPi+YUszNyPg8M/YmodfaCHbO8VPfI7p5gNzbigt6+hclTv
-	8+08hxszZZPd3yUfljUw27pzOlnKkggmIy5rp+VqL5vHv/C41Nz22gHpMncIGMqRz1SfcWkIq57
-	3kS+4kvSQmFNueFS3G2gM/1Ygn2ik3UZ4dDu+kEmOkoYrjvfabq0xLbXGaNhn+cYNnUpX0/VgD+
-	GeLbLy0YEAmMfSUiNm2/0QaW6B1u7nSX2nNPmfFCVtefJLxolUIV90JHLuPVoY/I9mGmS/+gMUz
-	AH+lsxjwPk68E89wIFVsJWSTLJTYIufLGaTyb0GHeXbU4Zghzzou1rsMjj5Bg89dJORD6Bg8sdJ
-	lzNnc8ovX1nAxUH1YK9SZIcUC75fkea+uuvulv9rPAu4VLB6LPgQWhtdxBzpA1Ip/pPB5wQ2uf
-X-Received: by 2002:a05:600c:628d:b0:493:c2ac:58f with SMTP id
- 5b1f17b1804b1-493decbf152mr23335925e9.8.1783368771910; Mon, 06 Jul 2026
- 13:12:51 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1783371045; x=1783975845;
+        h=references:in-reply-to:cc:to:from:subject:content-transfer-encoding
+         :mime-version:date:message-id:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JmDGsFaY4py38Lh7Xj2V/bfF3K78aZHKimIXo5XmpSA=;
+        b=djO5mm9C3H/vPrVmrbR/PrLSiJIj5HuruUoYlL2pFa2nxed8wavBWKRLfXh4FXaJV4
+         Twax0shqahNx6GQRaidWLDr6x5pw+pG8ZNJ0wrbktYU3xgn0gPT3QO0bKhdI775uE7Bz
+         EDjButIcPgS3MjMmWKXYTtUb85q9E6qmHzLOU8dpWaocgs/eL2KiG9vQ33i/pvb9xPxL
+         lF73CkR7SbboAqfKUptxQlijHcG/EVosE6GRVrJjlmmmLtiLcTJ5vndTs64aKoP8Cu0V
+         LnsNqLldEUZnhs4XSS5JKxxe3q/WXgXpJrgHVp4xCxM384sxu9xV3Rxu98Aoocz0T4A+
+         gQDA==
+X-Gm-Message-State: AOJu0Yx5+TRUS+qILxs2topSNwKMoFHbP4EOiQRK+euvKFPghgyv4zHa
+	YZvWXdzB/A6ibQ+dEC/0yDkdcZSxZ9ZRvNnfmHDQbI+EVq3SaAZkQF0oqEg0X06JXaE=
+X-Gm-Gg: AfdE7clob2TMhmmOp8/8my9DxUkNsiamKh4Yyj9ROBrcmQ6nI0fkYbJt2q67Re39gxF
+	FPqjpL5cUcT8/zm173HzMsjn8PHJTmbOOWkntXK7EcZWsdGp861u+DM7DN3e3/Np+BLSsiPe9XR
+	QABmjqkzEqBBaS+oILqJBXA4l5gT0B/Hj/NgX2L+Oec/Z3RnI15qgMLY//QM1LAovsWwvSUHht1
+	mofJ1XvIqbjcxNiMqxsICqidDxMhGQtBnTtnnQQiNHE/EYzJSxOdWt9CQozMSPnJr7Uo4xTo4ki
+	UYbaLlo2uEnG1MyLgMnecC/N5VgGplpCZjfuqnQdr9AebvXxvHfLz7Kkt7WdsEnCoLVDEWGFZ3t
+	GRkW+6EZULg3YLgpkZbfTJeyI1nPll7I2A95swQvB95ACxvwhclBLkYPpXSkCv+S5M4qkl9j3I+
+	GeFArRqwwqjlDjNXcyVybb9tjWdkPTz9zTBL6JaeugH4+6SqHSU2zPteI=
+X-Received: by 2002:a05:651c:4005:b0:39b:ddb:8f17 with SMTP id 38308e7fff4ca-39c60035977mr4271151fa.33.1783371044363;
+        Mon, 06 Jul 2026 13:50:44 -0700 (PDT)
+Received: from Shofiq.localdomain (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39c61a1d72esm2722051fa.16.2026.07.06.13.50.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2026 13:50:42 -0700 (PDT)
+Message-ID: <6a4c1522.63d4a161.13ea90.1761@mx.google.com>
+Date: Mon, 06 Jul 2026 13:50:42 -0700 (PDT)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260706173541.4f25ad81@jic23-huawei>
-In-Reply-To: <20260706173541.4f25ad81@jic23-huawei>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Mon, 6 Jul 2026 22:12:40 +0200
-X-Gm-Features: AVVi8CdG5pyZ7NH_3EtTsJycgVKIjOv9i2kQLB8db7a-sdNFm5KzLvJNsPbXzik
-Message-ID: <CALoEA-xH0CLMm+CTcyQDq3GLxJgTVEfyjxPWSXu38KSK5CtdtQ@mail.gmail.com>
-Subject: Re: IIO: Merged in v7.2-rc2 + anyone have comments on whether to ask
- for sashiko emails to the list?
+Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v5 2/3] iio: health: add MAX86150 ECG and PPG biosensor driver
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org, krzk@kernel.org
+In-Reply-To: <20260702044246.68e4dfd7@jic23-huawei>
+References: <20260702044246.68e4dfd7@jic23-huawei>
 
-On Mon, 6 Jul 2026 at 20:19, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> Hi All,
->
-> Note that I've just pushed the testing branch out with v7.2-rc2 merged
-> in.  There were 3 conflicts due to Uwe's work on restructuring the
-> headers for device_id tables.  Note I haven't (yet anyway) updated
-> the 7 additions of mod_devicetable.h that crossed with his patch set
-> as I didn't want to complicate the merge.
->
-> For new work this cycle please base either on v7.2-rc2 or on top of
-> my togreg branch (assuming no problems that will have this merge sometime
-> later this week). This should only make much difference for new drivers,
-> or for any IWYU / header improvement patches.
->
-> On another topic. Personally I'm reasonably impressed with Sashiko's
-> feedback. However it is far from perfect and I'm a little concerned
-> that new folk might not treat it with appropriate caution.
->
-> What do people feel about me asking them to enable sending replies
-> directly to the list?
-
-FWIW, Sashiko has a feature where it can use subsystem-specific prompts.
-Perhaps we could add a prompt that advises on current efforts in IIO,
-i.e. IWYU, cleanup.h stuff etc. For reference, hwmon already uses this:
-https://github.com/sashiko-dev/sashiko/blob/main/third_party/prompts/kernel/subsystem/hwmon.md
-
--- 
-Kind regards
-
-CJD
+T24gV2VkLCAyIEp1bCAyMDI2LCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOgo+IFtQQVRDSCB2NSAy
+LzNdIGlpbzogaGVhbHRoOiBhZGQgTUFYODYxNTAgRUNHIGFuZCBQUEcgYmlvc2Vuc29yIGRyaXZl
+cgoKVGhhbmsgeW91IGZvciB0aGUgdGhvcm91Z2ggcmV2aWV3LiBJIGFwb2xvZ2lzZSBmb3Igc2Vu
+ZGluZyB2NiBiZWZvcmUKYWRkcmVzc2luZyB0aGUgZHJpdmVyIGZlZWRiYWNrIOKAlCB0aGF0IHdh
+cyBhIG1pc3Rha2UuIHY3IChiZWluZyBzZW50IG5vdykKYWRkcmVzc2VzIGFsbCBwb2ludHMgcmFp
+c2VkIGJlbG93OgoKQXJjaGl0ZWN0dXJhbCBjaGFuZ2U6Ci0gU3dpdGNoIGZyb20gZGV2bV9paW9f
+dHJpZ2dlcmVkX2J1ZmZlcl9zZXR1cCgpIHRvCiAgZGV2bV9paW9fa2ZpZm9fYnVmZmVyX3NldHVw
+KCkgd2l0aCBpaW9fYnVmZmVyX3NldHVwX29wcwogIChwb3N0ZW5hYmxlL3ByZWRpc2FibGUpLCBt
+YXRjaGluZyBNQVgzMDEwMCBhbmQgTUFYMzAxMDIuIFRoZSBJSU8KICB0cmlnZ2VyIG9iamVjdCBh
+bmQgdHJpZ2dlcl9vcHMgYXJlIHJlbW92ZWQgZW50aXJlbHkuCgpLY29uZmlnOgotIFJlbW92ZSBz
+cHVyaW91cyAnc2VsZWN0IElJT19UUklHR0VSJyBmcm9tIEFGRTQ0MDMsIEFGRTQ0MDQsIE1BWDMw
+MTAwLAogIE1BWDMwMTAyLiBUaG9zZSB3ZXJlIHdyb25nIOKAlCBJIHdhcyBub3QgdG91Y2hpbmcg
+dGhvc2UgZHJpdmVycy4KLSBNQVg4NjE1MCBub3cgc2VsZWN0cyBJSU9fS0ZJRk9fQlVGLCBub3Qg
+SUlPX1RSSUdHRVIgb3IKICBJSU9fVFJJR0dFUkVEX0JVRkZFUi4KClJlZ2lzdGVyIGZpZWxkIG1h
+Y3JvczoKLSBBbGwgcmVuYW1lZCB0byBpbmNsdWRlIHRoZSBwYXJlbnQgcmVnaXN0ZXIgbmFtZSBh
+bmQgX01BU0sgc3VmZml4LAogIGUuZy4gTUFYODYxNTBfUFBHX0FEQ19SR0UgLT4gTUFYODYxNTBf
+UFBHX0NPTkZJRzFfQURDX1JHRV9NQVNLLgoKQnVmZmVyIGRlY2xhcmF0aW9uOgotIHMzMiBidWZb
+Nl0gLT4gSUlPX0RFQ0xBUkVfQlVGRkVSX1dJVEhfVFMoczMyLCBidWYsIDMpLgotIEFSQ0hfRE1B
+X01JTkFMSUdOIC0+IElJT19ETUFfTUlOQUxJR047IGNvbW1lbnQgYWJvdXQKICBDT05GSUdfRE1B
+X0FQSV9ERUJVRyByZW1vdmVkLgoKRklGTyByZWFkOgotIGdldF91bmFsaWduZWRfYmUyNCgpIHdp
+dGggYSBzaW5nbGUgbWFzayBmb3IgZWFjaCAyNC1iaXQgd29yZCwKICBtYXRjaGluZyBzaTExMzMu
+YyBhbmQgcm0zMTAwLWNvcmUuYy4KCkVycm9yIGhhbmRsaW5nOgotIGlmICghcmV0KSBjaGFpbnMg
+cmVwbGFjZWQgd2l0aCBnb3RvIHRocm91Z2hvdXQgcmVhZF9yYXcgYW5kCiAgYnVmZmVyX3Bvc3Rl
+bmFibGUuCgpyZWdtYXAgaGVscGVyczoKLSByZWdtYXBfdXBkYXRlX2JpdHMoLi4uLCBTSEROLCAw
+KSAtPiByZWdtYXBfY2xlYXJfYml0cygpLgotIHJlZ21hcF91cGRhdGVfYml0cyguLi4sIFNIRE4s
+IFNIRE4pIC0+IHJlZ21hcF9zZXRfYml0cygpLgoKSVJRIGhhbmRsZXI6Ci0gT3ZlcmZsb3c6IGZs
+dXNoIEZJRk8gcG9pbnRlcnMgYW5kIHJldHVybiDigJQgbm8gYXR0ZW1wdCB0byByZWNvbnN0cnVj
+dAogIHRpbWVzdGFtcHMgZnJvbSB1bnJlbGlhYmxlIGRhdGEuCi0gbWVtc2V0IG9mIHB1c2ggYnVm
+ZmVyIHJlbW92ZWQuCi0gaWlvX3B1c2hfdG9fYnVmZmVyc193aXRoX3RpbWVzdGFtcCgpIC0+IGlp
+b19wdXNoX3RvX2J1ZmZlcnNfd2l0aF90cygpLgotIHBmLT50aW1lc3RhbXAgcmVwbGFjZWQgd2l0
+aCBrdGltZV9nZXRfbnMoKSAobm8gdHJpZ2dlciBvYmplY3Qgbm93KS4KCk90aGVyIHN0eWxlIGZp
+eGVzOgotIEFsbCBjb2RlLXNlY3Rpb24gY29tbWVudHMgcmVtb3ZlZCAoLyogVHJpZ2dlciAqLywg
+LyogUHJvYmUgKi8sIGV0Yy4pLgotIEZvcmNlZCB2YXJpYWJsZSBkZWNsYXJhdGlvbiBhbGlnbm1l
+bnQgcmVtb3ZlZC4KLSB1c2xlZXBfcmFuZ2UoMTAwMCwgMjAwMCkgLT4gZnNsZWVwKDEwMDApLgot
+IDEwMDAwMDAwIC0+IDEwICogTlNFQ19QRVJfTVNFQy4KLSBMRURfUEFfREVGQVVMVCAtPiBMRURf
+UEFfNTBNQS4KLSBQYXJ0IElEIG1pc21hdGNoOiBkZXZfd2FybigpIGluc3RlYWQgb2YgcmV0dXJu
+aW5nIC1FTk9ERVYuCi0gSVJRIHRyaWdnZXIgdHlwZSBmYWxsYmFjayAoSVJRRl9UUklHR0VSX0ZB
+TExJTkcpIHJlbW92ZWQuCgpSZWd1bGF0b3JzOgotIHZyZWYgcmVtb3ZlZCBmcm9tIGRyaXZlciBh
+bmQgRFQgYmluZGluZyAobm90IGEgc3VwcGx5IHBlciBkYXRhc2hlZXQpLgotIGRldm1fcmVndWxh
+dG9yX2dldF9lbmFibGVfb3B0aW9uYWwoKSAtPiBkZXZtX3JlZ3VsYXRvcl9nZXRfZW5hYmxlKCku
+CgpTaWduZWQtb2ZmLWJ5OiBNZCBTaG9maXF1bCBJc2xhbSA8c2hvZmlxdGVzdEBnbWFpbC5jb20+
+Cg==
