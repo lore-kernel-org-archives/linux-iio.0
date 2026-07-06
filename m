@@ -1,188 +1,233 @@
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB1C376A08
-	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 14:10:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1464341A77B
+	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 14:23:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783347027; cv=none; b=bmwogcudnPa+g1SLWTtDSsON51d+m77W5hd/AX5pwmT7yvjH3kBS2bk0Xp/GUnJTD/QaYSpirfMljL0ToQnfOnstdMdvKVuGZwZFgSGUJGkyJm2UJwvlzAZfBr7aT32dAYGMl+lJCA51uTw9PQ1HkNshBZWYr4vVOAyVq0i72mE=
+	t=1783347818; cv=none; b=RrDARP4Wa6Y44LeqRhimMMa9anwfQH9igBfZMDe75fSRb8kkvQRV1qemYbfZV1RDTPSpYn3obY9TvycfU7kpcEP3eMsXQrTBL711ZP6Am7MvLiSD1VhSUkSmqjh+7eLOa7hjwTSai6xmlQghUMfb1L5HUJzKbhiwpB2I+/nYIO8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783347027; c=relaxed/simple;
-	bh=YOsYyrc/bitTU9Vwq6vnx2DmxDDwMmLL4M4U3a7xGto=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QEDWpm/nP8zsbtW4ec2q4nofSEaZc+pcDlgXSa3qZDqhKTvPg5fE+bJJ56MutZSfim9Yc790abN5ctSaWiS4sxIO3VEMOYidAnzkMxzGenYvngEmgKj5lvb/VRdiPT1f8y3ENfharGRCmdueoBGxNNbfKdxQLh+o8K2XgTLFrgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=BemTA9d+; arc=none smtp.client-ip=209.85.160.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783347818; c=relaxed/simple;
+	bh=8CbFWVtRpoJ/dg+s1T9+12n3yadu8+YmzUT3cFMlc3Q=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fIkGuq5HeW9sY+bj3OpQ6Isb27Cd6ZIVjFmqDX9Ay/4yulk46nRNPTf9pu/BdHA2xPGEnY4gl4wUxDVig6u28GmeTof78Hq30VjXLeRu1IFzPkiEmw4hYCAuwKy0dFI327BrRM5NT67WVnxSKP+P2h7E8Em4ob6JdecQmGubS04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k/UmHCRC; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="BemTA9d+"
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-43b7e186a0cso1108446fac.0
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 07:10:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k/UmHCRC"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c126b8118afso380484166b.2
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 07:23:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783347024; x=1783951824; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8Q13oMYkW312woQm68JTsMT/EHUSwSrALmbtYHd4pkc=;
-        b=BemTA9d+p0hVaw+VZWUV9RDD8Tmrcy8wb0aKRfBZYWTL+6d+v9nTaMMF/+R1Iorf61
-         vS1c9imyQ34K6uPtXHR9XTuVOSuWwzWd1BxzqQR65Nmn5Z14MWn8d9RMn2iStcZ4WoKO
-         pK0i8QoEQrZGkrdeZ9nLReGOzL52FS3Q8pqAdZiAlASXXy8v/cMApyNrDzW6RC+Tm4KC
-         4JWGl0Ln/0QHxLwfEABPd7e3KtkvviPRTd1pcnPEyT50oGLHoUNr1CBr4wWUFolqQUoq
-         XDoSq8LnY7Kt8sSATQgPi8lcNBFjQhsTlDmLTnMMA1yx3wSX/PTIXgHPZCYOLEwmwPKm
-         XQRw==
+        d=gmail.com; s=20251104; t=1783347815; x=1783952615; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=rb4WFEujjXzehfKuMBJOFD79jYlgZCDeugvdupzI6Yk=;
+        b=k/UmHCRClEBU8ZbQdfNAFR6+tcoJ+NIWLTd5WMlxdR6llbUVdpM75S27bNtkDIVxso
+         qg2EQEt0Y3Ugs3THhOuNG7aHVFpjeTIiWXeiODkbwnax9THfl2feFi4Q+OyTAmJC0FcT
+         CPxVkDiL34P2aes/GnlYFaIsS6ZTL39mFs7576cN8YtBpYQCpRKQSFP1OyRP6zqE0utr
+         fdYEi0r3I3jCQrd0WRY6KDuNfNBTU6H70rqt3F1I2IBM7xcq7pC5rFfEbgm8vykC04Ce
+         SzgjVPcf18nmrEQFxjnjiMByaekqN3IOgNUlRRz4ZGG1bRttp/WVeVcC3wMA2q9hx7QI
+         DL2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783347024; x=1783951824;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8Q13oMYkW312woQm68JTsMT/EHUSwSrALmbtYHd4pkc=;
-        b=cbZ+a5waj9CCeOe8JB3TpU4NSAzO7qu2uC09YUkjHG8RoKj9T3N1EEdGOQrDKnrI8W
-         7pk8LhRdgI407zBoXVMH0F2jyaDlisf/sLcB9uZUmorB+bBQTj8gmQ/sPLsAyWcGyX7T
-         ND9dbc6PTUw6YYN0vIwNoonI5usj7xVcB0+3zAISlqDnWezDoxWI5rTYUw2N7w0CiWvZ
-         4hfL6YjP8acBDH91rSw/L6BtpzA50pl80c5wi8jFFHW/qYFRN3t5zvplsAbIMElMKcTC
-         lLwjBp81XsmzeyCjujwoFrB/US5vYrqKFaOngqA0FtxzAslOv7ahdf6573msK2UMJ8bN
-         dS8w==
-X-Forwarded-Encrypted: i=1; AFNElJ/a6m/++HDPku1S18NOLKEoRW/kCNLFa88YgPUhVOG0GuZeTcTiN+Tjt9YredYsZewMQhe0RilmtbE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxnwKQIGranUJStwazeOcTmlmyAjiqNUA52aqtDjMxg4Xhf0ZQl
-	KyQOh4OrAmJZ4qk2hILY+KSskhf4yaEtG2wieJxCkdNKx7MYo9ocIPmyB3RI57U3Y/k=
-X-Gm-Gg: AfdE7clN2xAazp9JDeSRSXFsdf/3bbjp01fFRWWMbLbSQzBNMZ3oxWD+nuHN7uyR+w0
-	ue+io9+NTBoIrNyKk7zbp5CpHqeuOMkEF1sEfloS0z1PxPtlscROS6kgaTY+UYmMUGdcJ/XQCWW
-	7lghH1SCtC+xYgjm79c9VpCjsMA/lTq/O6+I1hwnmpkTuK/JEXxUYHPO9ukjq8OSTD1mZD2ZBEi
-	6SR/Sc9CgbdU7yqivGqGIGyVXjxlScrjylQWNly8KQlcOoJLovJW2PeNTm/eFW+aITi3lNrjUrr
-	BbWd7XUyETVFQ2x+rX5ale1jyq7frbjXWMud+HV3YCzd6nTVKDqkYT9EZooD34wIg24r8XVINA5
-	kLXk2sfkl+bpJqzXYstvD0n1kXCpWR+UylwLaj5P3ciREVtnIG+dfibIK8bBpk1Q46GBfkdQvTA
-	soBJ7+w9+w/3Xp069jhD5vY5mNDQr205ZOvvcMRu5JvQgf0hlspZWLLTCsRZtOgqc=
-X-Received: by 2002:a05:6871:820a:b0:43b:58a4:cc33 with SMTP id 586e51a60fabf-451065bccf8mr348850fac.22.1783347024487;
-        Mon, 06 Jul 2026 07:10:24 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:a38a:a0af:ed1d:5c77? ([2600:8803:e7e4:500:a38a:a0af:ed1d:5c77])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-44cfb6691d1sm10542741fac.17.2026.07.06.07.10.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jul 2026 07:10:22 -0700 (PDT)
-Message-ID: <2d84950f-c56a-48f5-ab7c-c7b7ccb3b28d@baylibre.com>
-Date: Mon, 6 Jul 2026 09:10:21 -0500
+        d=1e100.net; s=20251104; t=1783347815; x=1783952615;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:date
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=rb4WFEujjXzehfKuMBJOFD79jYlgZCDeugvdupzI6Yk=;
+        b=hPfUwXIbljxkOvgqxuIAGawRmcVjyWeOZUaZc/4n+k5zsb531QWnKQ+57vCDSwuRA/
+         i67iwrxY2wxtQqIlNy2z8b7f2XUdIUNVJ68yZ8y+uuLJwPf6Sxh716Th8ikHywr1R37L
+         ibeadIhQGgYrLWtEbZOPcEA0IQzJwAGSMouZmjYafvFC9Ugy2FijikYSPNbJ8tE9y9My
+         vMx1kOoTPpGcr0+yiK1ejVz/k0g2yv6SrByHTlgA4Iffr21XlsYlvmqF6FlPaOOjSJTv
+         NNEq1tmzWOELNy3+Z8IPEhpCsvm3KDc8YuuG2dDKLWMD2EJa7HJV+E4MzyuVtmfoWrfA
+         KS4A==
+X-Gm-Message-State: AOJu0YyTqXUKoyBjuWCnjDuwf/BhtWVyzBmAbYiLnIaRlWHxhbgso5Q+
+	xtjpZc70ix5Ds1imSAjcOQqze0QlMeOtSc+HNfYRJDVENnR9uEL4sxaR
+X-Gm-Gg: AfdE7cmWGSZtRu3n5yvl/sLyIHWuG5Fap9K1O2OjuDy2E00tRzBhBiE/zS9P3QzoS36
+	lbhVGL9Ufou27kOnsBXQZBV4bUV5fj999rbFZwzXrHSoavu3wKFbyKhQD48FwGVgF5AmW/ChO/A
+	2TJSPVIYLDWzt/+oYzPyFwjhIZ3+Z8JC/pRrteqKQihO/Z/IrqyhPJS1L/wvZ2fGF1G+CvxkFs9
+	9csU94LNl8AidUie8+EeBPfFaGItGuf+fSogi/QVXSwQrVh7qLbc9X3eIeI9/R2l9xm9QJG//c/
+	Tw1tXTpONceULUaExypFZC1o5xNG5XF0YBuoCJzoGIUsBN9hjEFZziUhCGr/pKI0iDT8sF5hNfQ
+	YK5TOJ6rhJp2lYIqUArWbHTvOlwuSuQUOjwX74GifwX0HGHj19Ro8UXBLuCgt4grgLbe2Aio0xO
+	TyDXOoRNHgOUWcWijcioCzulumeVQmWbiI1U0bXEh8TK5MyK9963tFc+Kp5WHTFWvs9GuclHceQ
+	dyHlSa0byu9Hi36
+X-Received: by 2002:a17:906:846b:b0:c12:45fc:c57 with SMTP id a640c23a62f3a-c15a67d8d09mr36734966b.11.1783347815101;
+        Mon, 06 Jul 2026 07:23:35 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-69a19dbedf4sm4229761a12.29.2026.07.06.07.23.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2026 07:23:34 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Mon, 6 Jul 2026 15:23:28 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v6 16/16] docs: iio: add documentation for ad9910 driver
+Message-ID: <p77cvtvjmo7hr6i6jxhfxps3if6fyy5kdwxrwlcnsziixycyen@rf5zfchlxgt6>
+References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
+ <20260618-ad9910-iio-driver-v6-16-79125ffbe430@analog.com>
+ <20260703193059.4deda617@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 12/16] iio: frequency: ad9910: add RAM mode support
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
- <20260618-ad9910-iio-driver-v6-12-79125ffbe430@analog.com>
- <20260703040544.08a8ea5e@jic23-huawei> <ake_YWfvVC9RQ3wu@nsa>
- <1493eed5-5bb8-4a2c-8f2d-8b4bc5dde157@baylibre.com> <akt3i_YxG-jF3IdJ@nsa>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <akt3i_YxG-jF3IdJ@nsa>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260703193059.4deda617@jic23-huawei>
 
-On 7/6/26 4:47 AM, Nuno Sá wrote:
-> On Sat, Jul 04, 2026 at 11:50:35AM -0500, David Lechner wrote:
->> On 7/3/26 9:09 AM, Nuno Sá wrote:
->>> On Fri, Jul 03, 2026 at 04:05:44AM +0100, Jonathan Cameron wrote:
->>>> On Thu, 18 Jun 2026 14:27:28 +0100
->>>> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
->>>>
->>>>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->>>>>
-
-..
-
->>>>> +static inline void ad9910_debugfs_init(struct ad9910_state *st,
->>>>> +				       struct iio_dev *indio_dev)
->>>>> +{
->>>>> +	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
->>>>> +	char buf[64];
->>>>> +
->>>>> +	/*
->>>>> +	 * symlinks are created here so iio userspace tools can refer to them
->>>>> +	 * as debug attributes.
->>>>
->>>> Maybe worth a reference to appropriate ABI doc here (even if it is introduced
->>>> in a later patch)
->>>
->>> I'm not so sure about these links. I mean, I definitely agree we should
->>> make it easy for userspace tools like libiio to be able to handle
->>> these kind of attributes but using debugfs is questionable to me. Pretty
->>> much because this is not a debug thing. It is a real setting for the
->>> driver so ideally we would be able to control it (using the existent
->>> tools) without enforcing one to mount debugfs (I know that most of the
->>> times it's always mounted but still feels wrong to tie "real
->>> functionality" to debugfs). 
->>>
->>> Having said the above, some suggestions:
->>>
->>> 1. Make the iio_dev the parent so that the attr name is just "ram" and
->>> it will be a subdir /sys/bus/iio/iio:deviceN/ram/.
->>> 2. Propose a new helper for the firmware_loader code so we can get
->>> struct device from struct fw_upload then we can easily create a sysfs
->>> symlink.
->>> 3. Name the attr as dev_name(iio_dev):attr so that it becomes
->>> iio:deviceN:attr_name.
->>>
->>> Now that I think about it, 2. does not make much sense when compared to
->>> 1. And If I'm not missing anything both 1. and 3. can be sanely parsable
->>> from userspace (being 3. maybe a bit more reliable). And yes, both require
->>> user space tools (in this case libiio) to support a new type of
->>> attribute (firmware) but that is another problem.
->>
->> I would say that udev should be used to find the firmware device from
->> userspace rather than creating symlinks. And you probably don't even
->> need udev if you already have the `iio-device:<ID>` value. The path
+On 03/07/26 19:30, Jonathan Cameron wrote:
+> On Thu, 18 Jun 2026 14:27:32 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 > 
-> Just one note. If you mean <ID> as the attr name the above will fail for
-> multiple instances of the same device. That's is why a proposed
-> dev_name(iio_dev) which I think it should reliable be iio:deviceN. 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add documentation for the AD9910 DDS IIO driver, which describes channels,
+> > DDS modes, attributes and ABI usage examples.
 
-My <ID> is the same as your N. It looks like I just had a typo of
-an extra : in there.
+...
 
+> > +Digital ramp generator (DRG)
+> > +----------------------------
+> > +
+> > +The DRG produces linear frequency, phase or amplitude sweeps using dedicated
+> > +hardware. The active ramp target (destination) is selected by enabling the
+> > +corresponding typed channel at channel number 130:
+> > +
+> > +- ``out_frequency130`` (label ``drg_frequency``) — ramp targets frequency
+> > +- ``out_phase130`` (label ``drg_phase``) — ramp targets phase
+> > +- ``out_altcurrent130`` (label ``drg_amplitude``) — ramp targets amplitude
+> > +
+> > +Writing ``en=1`` to one of these channels enables the DRG and switches its
+> > +destination. Writing ``en=0`` disables the DRG if the channel is the current
+> > +active destination; writing to an already-inactive destination is a no-op.
+> > +
+> > +Each destination channel also exposes a read-only ``scale`` attribute
+> > +reporting the physical quantity per ramp register LSB, which allows converting
+> > +raw limit codes to physical values.
+> > +
+> > +The two ramp channels ``out_altcurrent131`` (``drg_rising``) and
+> > +``out_altcurrent132`` (``drg_falling``) configure ascending and descending
+> > +ramp parameters independently.
+> > +
+> > +Destination channel attributes
+> > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> > +
+> > +.. flat-table::
+> > +   :header-rows: 1
+> > +
+> > +   * - Attribute
+> > +     - Unit
+> > +     - Description
+> > +
+> > +   * - ``en``
+> > +     - boolean
+> > +     - Enable the DRG with this channel as the active destination. Only one
+> > +       destination can be active at a time.
+> > +
+> > +   * - ``scale``
+> > +     - Hz/LSB, rad/LSB or mA/LSB
+> > +     - Read-only. Physical quantity per raw units. Multiply a ramp
+> > +       rising/falling channel ``raw`` value by this scale to get the physical
+> > +       ramp target.
+> > +
+> > +Ramp channel attributes
+> > +^^^^^^^^^^^^^^^^^^^^^^^
+> > +
+> > +.. flat-table::
+> > +   :header-rows: 1
+> > +
+> > +   * - Attribute
+> > +     - Unit
+> > +     - Description
+> > +
+> > +   * - ``dwell_en``
+> > +     - boolean
+> > +     - Enable dwell at the ramp limit. When disabled, the ramp
+> > +       auto-transitions at this limit without waiting for the DRCTL pin.
+> > +       Disabling both creates a bidirectional continuous ramp (triangular
+> > +       pattern). Other combinations create single-shot ramps at the DRCTL
+> > +       pin transition.
+> > +
+> > +   * - ``raw``
+> > +     - integer (64-bit)
+> > +     - Ramp limit expressed as a raw DRG register code in
+> > +       :math:`[0, 2^{32}-1]`. The physical value is ``raw * scale`` where
+> > +       ``scale`` is read from the active destination channel.
+> > +
+> > +   * - ``sampling_frequency``
+> > +     - Hz
+> > +     - Ramp clock rate. Controlled by an integer divider; the written value
+> > +       is adjusted to the nearest supported rate.
+> > +
+> > +   * - ``raw_roc``
+> > +     - /s
+> > +     - Rate of change. Number of register codes advanced per second, computed
+> > +       from the hardware step size and the current ramp clock. Writing
+> > +       requires ``sampling_frequency`` to be configured first.
+> > +
+> > +Usage examples
+> > +^^^^^^^^^^^^^^
+> > +
+> > +Configure a frequency sweep from 40 MHz to 60 MHz with a rate of change of
+> > +25 GHz/s:
+> > +
+> > +.. code-block:: bash
+> > +
+> > +  # Disable dwell on both limits for a bidirectional continuous ramp
+> > +  echo 0 > /sys/bus/iio/devices/iio\:device0/out_altcurrent131_dwell_en
+> > +  echo 0 > /sys/bus/iio/devices/iio\:device0/out_altcurrent132_dwell_en
+> > +
+> > +  # Set ramp rate at 250 MHz
+> > +  echo 250000000 > /sys/bus/iio/devices/iio\:device0/out_altcurrent131_sampling_frequency
+> > +  echo 250000000 > /sys/bus/iio/devices/iio\:device0/out_altcurrent132_sampling_frequency
+> > +
+> > +  # read the frequency scale to convert physical values to raw units
+> > +  cat /sys/bus/iio/devices/iio\:device0/out_frequency130_scale
+> > +  0.232830643650
+> > +
+> > +  # 40 MHz / 0.232830643650 = 171798692
+> > +  echo 171798692 > /sys/bus/iio/devices/iio\:device0/out_altcurrent131_raw
+> > +  # 60 MHz / 0.232830643650 = 257698038
+> > +  echo 257698038 > /sys/bus/iio/devices/iio\:device0/out_altcurrent132_raw
 > 
-> I guess N might change so anyone hardcoding it might have surprises. But
+> Why is this writing frequencies to altcurrent channels? Shouldn't this be the
+> frequency ones?
 
-That is why I mentioned udev.
+All the attributes for ramp up/down channels would do the same thing in separate
+channel types: sampling_frequency, raw, raw_roc and dwell_en... do we need frequency
+and phase ones? For the DRG, right now I have:
 
-> properly done and we have a sane way to match the above with anything on
-> /sys/class/firmware/iio:deviceN:<attr>/
-> 
->> is always going to be `/sys/class/firmware/iio-device:<ID>:ram/`. It
->> seems like the same amount of work for usespace to computer the path
->> either way, so might as well keep it simple and leave out the symlink
->> stuff.
-> 
-> Yes, at least for libiio, `iio:deviceN` is already what we call the
-> device ID so we can match fw attrs against it and everything after the
-> last ':' is treated as the attr_name. 
-> 
-> We just need to keep in mind that if a second user of this stuff pops
-> up, we should add a new helper to enforce the ABI.
-> 
-> - Nuno Sá
->>
->>>
->>> - Nuno Sá
->>>>
->>>>> +	 */
->>>>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/loading", st->ram_fwu_name);
->>>>> +	debugfs_create_symlink("ram_loading", d, buf);
->>>>> +
->>>>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/data", st->ram_fwu_name);
->>>>> +	debugfs_create_symlink("ram_data", d, buf);
->>>>> +}
->>>>> +
+* out_frequency130: en, scale
+* out_phase130: en, scale
+* out_altcurrent130: en: scale
+	* out_altcurrent131: raw, raw_roc, dwell_en, sampling_frequency
+	* out_altcurrent132: raw, raw_roc, dwell_en, sampling_frequency
+ 
+> > +
+> > +  # 25 GHz/s / 0.232830643650 = 107374182402
+> > +  echo 107374182402 > /sys/bus/iio/devices/iio\:device0/out_altcurrent131_raw_roc
+> > +  echo 107374182402 > /sys/bus/iio/devices/iio\:device0/out_altcurrent132_raw_roc
+> > +
+> > +  # Enable the DRG with frequency as the destination
+> > +  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency130_en
+> > +
+
+...
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
