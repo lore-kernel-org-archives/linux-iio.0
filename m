@@ -1,109 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 540CC371D0A;
-	Mon,  6 Jul 2026 05:45:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 335DF2E7631;
+	Mon,  6 Jul 2026 05:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783316720; cv=none; b=G0LhXpcqU/fJ+W6T9BSkJpHA/awlXeYUw/Xtyw0tm09UlrTgMErL0LwFmhiV8qDTrk9boOFicdm+UMvcFCdJWKirIQ1TNTXrYIXNRWqGwpdrOjbQdQNs7XuHt4EnWpdp3onxr5aB6HG0w1Y9r8Af6XintlWi9sGEuSoxrDaZjYU=
+	t=1783317421; cv=none; b=pv/N2L2HzNaAQyifnQPOjAHuhCRcQgihbF5J7OVYFAcCjWYnGEyakLnPw1quUKE0bGDV01ghw56zyjPCarLf5YIeypQ6CuRRwr/gx/2tvhj4WHOH/ZTtEF4tfTD409f6o4ESMOxf3Hyr2QCQBXaqHIQ6Pb026x1Rs4hU9Cvi2nE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783316720; c=relaxed/simple;
-	bh=lsnmS/u8NCo9XXYFOWuyuTUeIcFEKQZni4hHgmFmNoo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nab8JVFtXtI/EnSGloJX4hPZsQ+rflqIGph6Ps5k+wfUr9G80OR7PBZJiqIBU67T25mUp5yDYy0dGG6i8cxIe7MyLyyUU+YYTIQ3OKAEffkaQVfZCxU6Vu9QrppyTqh5ttzGcks6C4Zq7pRVxYqACshMN1R2Loy4Ku5yvoYL6i8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cCJF9DNz; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783317421; c=relaxed/simple;
+	bh=XiJpeS8TZNVi+5d0RNDhJoZ6BqUf+HK2bK0NMX/hNtQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ax1EY3XK5BhhbXcKYwi3s7Ga2XlZxi6cVAC+EG8V2KbDy0okxkgtR5zTuyLIiFh9FFzzC4ue/yJufAX1Qr5//iSbSudL+FKVQ8OcqUTEgfm5rHdNJq3Dn0KoCQckJRKJdu5eS4m5HAzNCZgmb7lUJYBecEmfYngR0bA+KRlNbS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MPkzDKVp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cCJF9DNz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783316720; x=1814852720;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lsnmS/u8NCo9XXYFOWuyuTUeIcFEKQZni4hHgmFmNoo=;
-  b=cCJF9DNzCHB9baWOK7TPEoA6IolWqWH6bQpuhMfUfhltXNrpnRzYwqA6
-   RCjBYxYSA3XvHQl9BHHF6x13eqMej6tb4YWa5bJQk1v7hDnOQNQXPhn/y
-   WZEb78aXz9ClSYjsbvsZ6+ZFuksA8KBjqrq8KzpzS7Q02XjhbWHbpttOZ
-   GmcSsYqmQ7QkBhMpUjH8dC1T/hVlDK8qZj8Wg1wg6j2CUKygElpnNsvs2
-   zAN8wHy8FtjOw3ZtUSnvqKA5CKSPO78NFrCCo8nRSN0FaUoX6/V+NPP6B
-   eXJulMaZTdCCzPFDEDHFSS3VHuwvVILfzPyPbkAhXa4c2uM4GKc+a55GY
-   w==;
-X-CSE-ConnectionGUID: vZ7jMdbDS/CEW6kqI/P3PQ==
-X-CSE-MsgGUID: 8nGYu6CDT3ua9VnF64jN7Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11838"; a="95318101"
-X-IronPort-AV: E=Sophos;i="6.25,149,1779174000"; 
-   d="scan'208";a="95318101"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2026 22:45:15 -0700
-X-CSE-ConnectionGUID: HRLQl3dDRPuI4zFfbzEdcg==
-X-CSE-MsgGUID: BMVnKobxQBunIaatW5GVjw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,149,1779174000"; 
-   d="scan'208";a="257201279"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.48])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2026 22:45:11 -0700
-Date: Mon, 6 Jul 2026 08:45:08 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
-	David Collins <david.collins@oss.qualcomm.com>,
-	Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Stephan Gerhold <stephan.gerhold@linaro.org>
-Subject: Re: [PATCH v3 0/3] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-Message-ID: <aktA5JZIcbbDP_hs@ashevche-desk.local>
-References: <20260705-gen3_adc_tm-v3-0-ac62f387dbce@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MPkzDKVp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9112D1F000E9;
+	Mon,  6 Jul 2026 05:56:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783317419;
+	bh=SMcr9aZxtwESDtUViXE52gMUWOmtkD5jpNJK77DhaV8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=MPkzDKVpN8sBgDcpB9hunesBHiu6H521lRekOJYQVioG1dHtlROKGJqQbNfwg+yuF
+	 RCuG1ZoBMmwHG9kfs4GALdwPvHeEYcjBVv348dc7ZLsNo9jZvLv3ZUtPE6nW3wlLyc
+	 eRVxH7Njgk1hDBBTX03psE3n+kA8niNzoMjuwsC20V1Wem0lOK5HrWa2s1w1q9y/80
+	 c7C6pt+9S7r5hiWszip/GYOxSl6UGViWlD5jZVs4BiYuf9VCVgdgvAzwbdsqerWU/O
+	 8rwDV6uH1cq+YWnqjY7y1MldUkrOWRcOVFQv2LOUtztTEJbpdBVCHWbAG8IYzET2A8
+	 f/a8G2vT8T/jw==
+Message-ID: <033ae2ef-e260-4e96-9986-ffd0db3e3caa@kernel.org>
+Date: Mon, 6 Jul 2026 07:56:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260705-gen3_adc_tm-v3-0-ac62f387dbce@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: iio: adc: convert Xilinx XADC bindings to
+ YAML
+To: Mikhail Lukianchikov <avermoal@gmail.com>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Michal Simek <michal.simek@amd.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <d7607a98-f5e1-417f-ad64-d0029c9de662@kernel.org>
+ <20260705165620.9818-1-avermoal@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260705165620.9818-1-avermoal@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Jul 05, 2026 at 10:23:32PM +0530, Jishnu Prakash wrote:
-> Support for the main PMIC5 Gen3 ADC driver has been merged now.
+On 05/07/2026 18:56, Mikhail Lukianchikov wrote:
+>>> Convert the Xilinx XADC binding documentation from .txt to YAML format.
+>>> This conversion is part of the ongoing effort to migrate all DT bindings
+>>> to a machine-verifiable schema.
+>>
+>> Sorry, but what effort exactly? Where is this effort documented? Do you
+>> have a mentor if this is some sort of mentorship effort?
+>>
+>> And if this is ongoing effort then don't duplicate:
+>> https://lore.kernel.org/all/?q=dfn%3Axilinx-xadc.txt
 > 
-> In order to complete adding support for the Gen3 ADC_TM auxiliary
-> driver, some more changes are needed in the main driver, mainly to
-> improve its shared interrupt's handling mechanism.
+> Hello Krzyszof,
 > 
-> Patch 1 simplifies the interrupt handling in the main ADC driver
-> by declaring the interrupt as a shared one and dropping the logic
-> used to call the ADC_TM notifier for handling ADC_TM interrupts on
-> the first SDAM whose interrupt is shared.
+> Thank you for feedback.
 > 
-> Patch 2 removes an unneeded print in the main ADC driver.
+> I'm the newbie at Linux kernel developers community,
+> and sorry for my mistakes in sending commits.
 > 
-> Patch 3 adds the auxiliary thermal driver which supports the ADC_TM
-> functionality of ADC5 Gen3.
+> I'll answer your questions.
+> I am not part of any official mentorship program,
+> I just decided to try to contribute to the development of the Linux kernel.
+> Yes, it's a ongoing effort, and to be honest, this effort is the general
+> community initiative to convert all DT bindings from .txt to .yaml. I didn't know that work
+> on this file was already underway.
+Take a look at other commits to learn how the commit msg could be written.
 
-> ---
-> Changes in v3:
-> - Collected Reviewed-by tag from Jonathan on patch 1.
-> - Added new patch to remove an unnecessary print in main ADC driver, as
->   suggested by Andy.
+In any case,
+1. Do not send duplicated versions of patches (you posted same twice).
+2. Check if that binding was converted already.
 
-Add Suggested-by tag
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Krzysztof
