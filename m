@@ -1,61 +1,63 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D15E13EB0FE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50413EB813
 	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 07:47:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783324035; cv=none; b=msReXoX2pbInfWLNTB9skDJ2XEciC/KfnRHeMkit50/qUBYwnS8VuFPu8gXjdpqHdvmvaly7v+kVGnROssMvYYXiZ7iDPN89XMqa4xcM0UfYnYND/5aSE5d6La067sPFf4sZJ+UgOm0WMrkbMRwG/fyeJG3QX0RJnIYFL+hK9KI=
+	t=1783324035; cv=none; b=qtC/X6fUsM5ByYx9yd7/xA7jvP4+gD6/UpHrxYff99Bg1B1jFj9qJItFqRK/qeHmwnA7mAC54d1A3LaenuBIvMNvOGH5tIVhQ88CPXURNlnfxZ18T6sfmL7b6G276y51I0gLi5eQWK3J02Sfj5ItNkf3iOcxf7HIn4SV5u4G8/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783324035; c=relaxed/simple;
-	bh=o2u3tmJ4dbMJ8f3Ubk+i85Rmq4bTjeWeJ9eBvYu7rDE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AnOHcmLpMvpicx+ZrGlFn+8FRgIc/DwUVJ9x+37+wGuYlJIcZ+z9wefxXu6UDuYX0/J5dhjXcptxVZD/CNiA2pEHGpeqbhatKruPg9CXXFrVNSDGWQvGyUfQHHf+lcJLIXPyJ3tvVZ1zhCtnGA649mNx5Aa8BiBEqyZWR4zmLio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jCCfluLQ; arc=none smtp.client-ip=209.85.215.171
+	bh=4Td/3xk/j+D52F+sWpZhilghFQ5RdbJzXaKbrOkDpW0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=BJjCNeRhsKIYy5UA8gzEMEcBRNkDqSG96bSR2Ib5i7J5uqAtMp1FQDAGHzyVJeu372w5vEBIKYPFU9YzydGS92PyZyXb6f9BLmvet533eCKYsMi7wnWPYX/40WZZhcUeSyz6HfV7URGRvT3h3WeEsESe+fFxO61Tmg/YIgIuHXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jkUx0Fvv; arc=none smtp.client-ip=209.85.215.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jCCfluLQ"
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c9ef3e1337fso1944023a12.2
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 00:47:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jkUx0Fvv"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-c9e0b89e228so1317871a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 00:47:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783324023; x=1783928823; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y41AW65ugwoCZQW1jZyzd6ERQyYcwsnWPoHTIi1U8oQ=;
-        b=jCCfluLQdmX0llksDf+kF7gAviMz/ioKP1nuoxwnPNn6AIGbp1Jh9w96SJEvBQEv0O
-         AdDLyznKEv6K3gza5qBOW34XBLDFP2wBn2Gb0oG1PJ69DqSVV0xu7w5j0SoVF776yboz
-         nXgvPpSDL2gDwAYlSUJjISnareEAvjjHmLm1/LGSzVztQIdUjW2kYS8jaPNWTKcOhNQ9
-         bkWGJFprvzWyKP0n4C9CkWH2gB6F+YLlhh9rp/BeunB1Og1nKsfcKOa1DEOAf6Tx2M3N
-         SdyV0I37KLl2cA3BfISI47nPvFMHL5q57xmLsK6RHzfq1daIXO7DxZSvSC/+BsF+QexE
-         hfeg==
+        d=gmail.com; s=20251104; t=1783324024; x=1783928824; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=rW6nwGc5Ym3OH9Bwi0azBGX9TutVu37wXYRT9OWIchA=;
+        b=jkUx0FvvXQrmPIhwzAnD3zOMoVO50hBERBuPtBw2QVXC/nphOJ++9q7WKPcqnkXYS2
+         XiZAfm7o52rhcpqsNydqFrzgC7vEnFqWn8RHguq0MZ+nPFqp91xkR6rlPpnhulrJ6faM
+         jeiukh5gb0oL2UZ2hvfMlL1X0ESk2SR14tnW11VCWbtPh3+x22JqDtsbQNNB8oV+0kmm
+         jX4aM/BPXg8w1xVD6OKEMVtmMQYoL7hERynhWkKjIFAEHmVM0+PaxWnoZIatH53xwEpp
+         12lkdGC8M++SDCWjZsDVRHoRPbhzirOqiv7qgqksjawHMleh7Rg9BbJWNjGpPG8PzaUi
+         t/Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783324023; x=1783928823;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Y41AW65ugwoCZQW1jZyzd6ERQyYcwsnWPoHTIi1U8oQ=;
-        b=hE6TWKJZdGXx+tpNZELAaSPsWScE/v9e24TpfJBqM+ljHzsIxhjBJRnaCFhj9N8Ufd
-         pj9o2IYkBRezl7YI2gzuCtvd5rMn4PLqFjP0Wuqtejm9f75182NdGrCM2EoIJDDRgEOf
-         xmgtz1eAEkQwsW8/ZBRP0JijGfOHFrZePHzbmm3gIWNRb5XMryXjdu7+ayoRTlTxnRZL
-         zV8ohBCx6SW2i5UU7sgpAyxsS7guAnqHZEjZBeYeKZxayNAaZ5GuhIzIoHF6Hqv6sLqo
-         q/GDCCEYcpE7hY3+z34WqkqQ7X7q7z1bHKAVf80Lptet5yfEd/core1V/SWvX/pVE597
-         PVJQ==
-X-Forwarded-Encrypted: i=1; AHgh+RpDoFnJcZywyzvcu++i5m7I0z+oTZE90H70WAanr3ZS88IiRji3x48/GZ6dZN/f3DBT3rF9liOmz+g=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxF2ahFX/3bEfP6TorGNXuIXcWTjFgFwmTs3RDmiZ91MJueAP8e
-	SAQ3UFkA2LxU7c4eKM2p2PmQcHpIFK4+I9ymRJq+NthHd45ifj6PMDc1
-X-Gm-Gg: AfdE7clRy7mRX5cjv9ScdNtZ/x58+IOdAL8lctlyMzIrj4ee/v/XBdOxxfHSC2nEBPe
-	4Z+2jtSqPhcXfvHOmSqXgtKzkbe6qSlJscVwsMtkQcpL+rQqsunXFu6j/9JhliDcrsuCoeBCPiI
-	ZUPXtMxpH13to/l0vbGr3d+rN+c7rEcVMGElBrGdbOO1TrwFtZJBQqyqFA+VyuYNQmlXxU8uuiE
-	3i3dotNbnQUDwbAiNWAnElbm49irLYjDqw1woRMqFktc/yfj2ct/MVBw6/SIkMtDmnT4uZs1zKv
-	ehFOpmInX3Z4Lh917ola+6hTdTr/83N9797wdQQuoBQCXXhpCS85FSbrWLjS7uIZ4DiGjlKRAoJ
-	s38268Tkmq5WbQFmCRqPoJv2EMqgjaXag0VL+rAizg3D2np+KoeIaI8rOd6kxn0pt4c/T+t98m6
-	Qf/oIPoqPTiBa70gFyg7wTIUakgalfep4lys84/R2wfPo=
-X-Received: by 2002:a05:6a20:5499:b0:3bf:a8d7:4f4a with SMTP id adf61e73a8af0-3c03e50ca0bmr9757761637.40.1783324019938;
-        Mon, 06 Jul 2026 00:46:59 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1783324024; x=1783928824;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=rW6nwGc5Ym3OH9Bwi0azBGX9TutVu37wXYRT9OWIchA=;
+        b=VYT9bX20SFKq1y0Gkv3UHltBEwfY2QnSHUXPjp9UU2cBEb2yCkjkv5QOfUfPeoehx1
+         56paKbDWvd6hAA5rhY7kGlG/sAnMFZwH/dEuAzwBfOykApWqrpDi2YpajkbB8OXCZv3B
+         sUfNd663AT6/ovCOYpYH6SBVZl/V6QQNYunkDiCvtJ5BnBRUpLbo3n0lPSOs+zCDrhiB
+         YPjAICbIx1DYNzoJGlkE9wyzN34BnyQQjLQ0rVaDj3CgvvQrRL8+fTfuuUlBxlig8RFy
+         3yXQh6AXtp5gPw+m1/BPSXYPK+uUyZxnJy07rUXBRcamHnSQiXFo8SkKoRlf3WbuoyiG
+         eg9w==
+X-Forwarded-Encrypted: i=1; AHgh+RoJZjzRFOss7iivaVTvQzRyc4Sadks1lTycvylTzf4JgacEqwK7Ik2Oiqr7Pto20WAraK13lRwL/N4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyUii1Yyzyv8JgHDml/pWboPg7B4EcGuNo97K1JXReEbHWSAdt9
+	hpQs0bjKbTQkJscX2TtWg6nu29B1W8fTMQEbjrVQk3nDWzYX9iiCR3le
+X-Gm-Gg: AfdE7cmGbXDjrM/RQHlZ5m4jIQ7pVIXfUubNuxYVBMkcXThMiqwHPvd6GZcRRleMFM1
+	w/qXM5GSQu3EbJeov3nxht9GRwSb54nEEn8qiWVmY+GOVoGoOrbnbgeCqrHQZqE4+3VkiQcYqqe
+	kG7fFFnOsW7C5qJZVsjsNRsC6CpC5IVbURV2yC6pd8hGSKjv8+/yJ48Rgx2QtWiHb/o1/nEWcWW
+	Z0s+3yd7Fhqyzyew83aQZkIsASrDZIY9WzP3SDmpl7MTrl2qob7NcSQVJHrV7c0LyPqzcyvJwxl
+	y8kJ36SRlAr7svZCOpx2nb3TEeE8AWr4VpcXBEgt0x7KxedypIpzUkJ6H/POKjavUpyaVlavKnX
+	o1Tzqy3QyddqVi7/9srg5z1BPCBqi3n5CMZKBozIg/QUg5muSe9BJZCFumGaGSkfGedDn4VVA1e
+	6rSCbtC+EQ05sSli7ZCQtFP8SpX9JUfrAE3HedMlc7u+M=
+X-Received: by 2002:a05:6a21:310c:b0:3bf:6c07:b2f3 with SMTP id adf61e73a8af0-3c03e5af99emr10273298637.54.1783324024002;
+        Mon, 06 Jul 2026 00:47:04 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.223.101])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b3c7ef5b3sm67081836c88.1.2026.07.06.00.46.55
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b3c7ef5b3sm67081836c88.1.2026.07.06.00.47.00
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 06 Jul 2026 00:46:59 -0700 (PDT)
+        Mon, 06 Jul 2026 00:47:03 -0700 (PDT)
 From: Biren Pandya <birenpandya@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -65,12 +67,13 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Linus Walleij <linusw@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Biren Pandya <birenpandya@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v3 1/2] iio: accel: kxsd9: fix Use-After-Free in remove()
-Date: Mon,  6 Jul 2026 13:16:51 +0530
-Message-ID: <20260706074650.96042-3-birenpandya@gmail.com>
+	Biren Pandya <birenpandya@gmail.com>
+Subject: [PATCH v3 2/2] iio: accel: kxsd9: fix runtime PM leaks and unchecked returns
+Date: Mon,  6 Jul 2026 13:16:52 +0530
+Message-ID: <20260706074650.96042-4-birenpandya@gmail.com>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20260706074650.96042-3-birenpandya@gmail.com>
+References: <20260706074650.96042-3-birenpandya@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,40 +82,153 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The kxsd9 driver currently calls iio_triggered_buffer_cleanup() before
-iio_device_unregister() in the remove() function. This order creates a
-race condition where userspace can still access sysfs or ioctl interfaces
-while the triggered buffers are being torn down, potentially leading to
-a use-after-free.
+The kxsd9 driver previously used manual pm_runtime_get_sync() and
+pm_runtime_put_autosuspend() calls in various return paths, which is
+prone to memory leaks if a return path is missed. Specifically, in
+kxsd9_write_raw(), if the user provides a non-zero integer component
+for scale, the function previously returned -EINVAL directly, leaking
+the runtime PM usage counter.
 
-Fix this by swapping the cleanup order. Unregister the IIO device first
-to guarantee that all userspace interfaces are destroyed and no new
-accesses can occur before cleaning up the triggered buffers.
+Switch to using the new scoped-based PM_RUNTIME_ACQUIRE_AUTOSUSPEND()
+and PM_RUNTIME_ACQUIRE_ERR() macros to automatically handle dropping
+the PM usage counter upon return. This simplifies the logic by allowing
+early returns in error paths.
 
-This vulnerability was flagged by the Sashiko automated review system.
+In remove(), use pm_runtime_resume_and_get() with an error check to
+prevent unchecked return issues, and perform a best-effort power down.
 
-Link: https://sashiko.dev/#/patchset/20260621193036.78549-2-birenpandya@gmail.com
-Fixes: 0427a106a98a ("iio: accel: kxsd9: Add triggered buffer handling")
-Cc: stable@vger.kernel.org
+Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
 Signed-off-by: Biren Pandya <birenpandya@gmail.com>
 ---
- drivers/iio/accel/kxsd9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/kxsd9.c | 59 ++++++++++++++++++++-------------------
+ 1 file changed, 30 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 4717d80fc24af..7569201ed3c75 100644
+index 7569201ed3c75..a71b473cbfa03 100644
 --- a/drivers/iio/accel/kxsd9.c
 +++ b/drivers/iio/accel/kxsd9.c
-@@ -477,8 +477,8 @@ void kxsd9_common_remove(struct device *dev)
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+@@ -139,68 +139,65 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
+ 			   int val2,
+ 			   long mask)
+ {
+-	int ret = -EINVAL;
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
++	int ret;
+ 
+-	pm_runtime_get_sync(st->dev);
++	if (mask != IIO_CHAN_INFO_SCALE)
++		return -EINVAL;
+ 
+-	if (mask == IIO_CHAN_INFO_SCALE) {
+-		/* Check no integer component */
+-		if (val)
+-			return -EINVAL;
+-		ret = kxsd9_write_scale(indio_dev, val2);
+-	}
++	if (val)
++		return -EINVAL;
+ 
+-	pm_runtime_put_autosuspend(st->dev);
++	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(st->dev, pm);
++	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
++	if (ret)
++		return ret;
+ 
+-	return ret;
++	return kxsd9_write_scale(indio_dev, val2);
+ }
+ 
+ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+ 			  struct iio_chan_spec const *chan,
+ 			  int *val, int *val2, long mask)
+ {
+-	int ret = -EINVAL;
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
+ 	unsigned int regval;
+ 	__be16 raw_val;
+ 	u16 nval;
++	int ret;
+ 
+-	pm_runtime_get_sync(st->dev);
++	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(st->dev, pm);
++	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
++	if (ret)
++		return ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
+ 				       sizeof(raw_val));
+ 		if (ret)
+-			goto error_ret;
++			return ret;
+ 		nval = be16_to_cpu(raw_val);
+ 		/* Only 12 bits are valid */
+ 		nval >>= 4;
+ 		*val = nval;
+-		ret = IIO_VAL_INT;
+-		break;
++		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		/* This has a bias of -2048 */
+ 		*val = KXSD9_ZERO_G_OFFSET;
+-		ret = IIO_VAL_INT;
+-		break;
++		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = regmap_read(st->map,
+ 				  KXSD9_REG_CTRL_C,
+ 				  &regval);
+ 		if (ret < 0)
+-			goto error_ret;
++			return ret;
+ 		*val = 0;
+ 		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
+-		ret = IIO_VAL_INT_PLUS_MICRO;
+-		break;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	}
+ 
+-error_ret:
+-	pm_runtime_put_autosuspend(st->dev);
+-
+-	return ret;
++	return -EINVAL;
+ };
+ 
+ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
+@@ -239,9 +236,7 @@ static int kxsd9_buffer_preenable(struct iio_dev *indio_dev)
+ {
  	struct kxsd9_state *st = iio_priv(indio_dev);
  
--	iio_triggered_buffer_cleanup(indio_dev);
+-	pm_runtime_get_sync(st->dev);
+-
+-	return 0;
++	return pm_runtime_resume_and_get(st->dev);
+ }
+ 
+ static int kxsd9_buffer_postdisable(struct iio_dev *indio_dev)
+@@ -476,12 +471,18 @@ void kxsd9_common_remove(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
++	int ret;
+ 
  	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+-	pm_runtime_get_sync(dev);
+-	pm_runtime_put_noidle(dev);
++
++	ret = pm_runtime_resume_and_get(dev);
++	if (ret < 0)
++		dev_warn(dev, "Failed to resume device (%d)\n", ret);
++
  	pm_runtime_disable(dev);
++	if (ret >= 0)
++		pm_runtime_put_noidle(dev);
+ 	kxsd9_power_down(st);
+ }
+ EXPORT_SYMBOL_NS(kxsd9_common_remove, "IIO_KXSD9");
 -- 
 2.50.1 (Apple Git-155)
 
