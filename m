@@ -1,62 +1,62 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24265414A03
-	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 11:22:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74FE2414A13
+	for <linux-iio@vger.kernel.org>; Mon,  6 Jul 2026 11:23:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783336982; cv=none; b=CGnsk2I9WAlCUdSDEKniYsr/PISudtalpA/D5O1DupSuDnenQ5LDVI0wgrWfX+G7qHSoCdksvnIhxPavAfzv3F6vd90V4cGWuMbCWHrvrKRlnT1rirCe7Ll1E44A1W03PR+CGbMQVIoxryC6NBTmd4wGCLwmloTZPskLLfjHdlA=
+	t=1783336983; cv=none; b=mD7LPiJJdfUBg1FPGk75AuYverGtMH1xg6Zw3IOvH8C0ssiREDq2ae78GyYqGKOkcYuUcpxmNaQR7MHwXXSI8uiEpTxlK4h86GIUlbjfNsZj49taIErOMWF3D0r97TEmZEYKFBAk2g28h6QAcQiwJ4qkTdpoNNVKttMQKS2n5mo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783336982; c=relaxed/simple;
-	bh=QDRVjB4HZ70FEs/QMPBY9c0fBa2UP+YqZYCpZasSGL0=;
+	s=arc-20240116; t=1783336983; c=relaxed/simple;
+	bh=iOMuK9aVJEuVUQ9b0cEhBJ/dAfR+iCvS89b2JQC8Y1Q=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jiFSYe5A6nJyl+k6zfe6Y1lUkRpiokdeM2w6pnB6oZbaRJfWdEjmm3IS5nF9jzFhi7+7p68X7VZibnqEG3WUmhbaDEvdxRD3sP2ANVmzEFkyakG24eQaBU41VIXhyIwZuPVF7d20gSM9hKH6vBeICF8uN2WgOxTVB1sytuUyhzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V7zaHziD; arc=none smtp.client-ip=209.85.167.51
+	 MIME-Version; b=oO/JOQcfg8AmDCK4lzs7Dh6R/WG4HcgkxVT/72pws2o9YJl3MIiUGRbpApNPQYioX/eenpII9y1hDUVuvMUhs36NC/USBl3r+kBjlTKeZ42SnYNexHZpuoIi6qMAUmVbmk1gfZcH1EIa02r81Ksdv96aXnATkCs2Jl+jRaUMcGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f6rBpw7A; arc=none smtp.client-ip=209.85.167.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V7zaHziD"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aeae350e0aso2730429e87.1
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 04:22:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f6rBpw7A"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aebf162770so2872943e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jul 2026 04:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783336977; x=1783941777; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1783336978; x=1783941778; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Ed9ukgB6xPMCIt8931WcmNMakWcSxdHQ3v+EgGRXQK0=;
-        b=V7zaHziDjuma/lpYVF0UA1gWok9xUiKIHpOg7nJ7/8VmMAucaHD1TdqojJHhXxgzXq
-         pzrDxM1YKrDB5Y18PadmhEx0+xQK/muWxspHzPatL5sOg88Qp0PM1TxpjZJA6atqXwAQ
-         /rx6xYZEav+EtUFRCG8iyvyGNGyAM+ONKWP+AKDUK1Ap8P3VHU5Nn1uY6iVthc1FNuOe
-         CAQKEvdKMSxa7hUDJHEa5RRks+hJP5upq50SDafYlXAnT+90nEEJ68lssVRB4qyAgCPM
-         TbBDVIbOzWUNH7kWa/TZq9rEBB29DWXoQsVs+fucq4pc+sxLuHASZpmtTpaRioFyazTI
-         R7wA==
+        bh=8EZLpAM4NkTG/jPbKI2f6Kpk8sjFPyxK/lycnX5c9HY=;
+        b=f6rBpw7AJ3wqtWOKL1o8fzoAVWv/DXtJ5LulNwYCL1nxJ3xBxNwCR2c+YzlKcF49/h
+         oNlACZIz8b+5pwCRdDbDlNSbrdyzZQBD2jnmHX+Q0F/5FImynWtu212UIVm5M3bb6eqx
+         XV+uHNM7mcQgCh80UK+fWJCwt9836o2M+vVoAOJ3uUvR1/hHVpjEgKmQspeukPFljDoW
+         Cn5VGrqZDBvBuwL2cYdrdLuoUb3I8Ysd9bRpCObRTeGws/ebFFv/v9l7CucP4s0Ib+AN
+         K8CQy4auZCm3OLGMbUX1t+36oaFDfPgUrh0ipG8Gk6/g09/QSWKpZTPO8CdvBNQcktnG
+         zfLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783336977; x=1783941777;
+        d=1e100.net; s=20251104; t=1783336978; x=1783941778;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Ed9ukgB6xPMCIt8931WcmNMakWcSxdHQ3v+EgGRXQK0=;
-        b=lEh417GDwsIz/orcVRGhLqHSnx36KBLa5hwFjsspHXWj+XkUL+fFo7EFEgXuR55xVO
-         DuuxR5QIAKNgpRyEqe+WAyaii+6bpLsSKJHjCaGrqAen4jxWuTkWDhnkGH+YvDSxjm6+
-         AZR6Z4jgUkzDJFLF1WliFBt4nrlcYtLTtbvjv6YSqPBJJkdE6GNtHt3evUgNeGSaKfqs
-         ny4dyvfydmIV1JLGCYw7LXlIEbFBIhNh3yxzDl9BZalD6MuIZflvSwFleCY6fjL34/aQ
-         KRCm5mxG7R5nhiOhhf3k5lcBLNFpFcZRKChUVab9eAviyHAIVa69KrbWeorLzNyruhiu
-         pl6Q==
-X-Gm-Message-State: AOJu0YyYe8hrgcClX/Nw3Y2fSeWNSaOaxeyIMdWgb2N2sbiq8XSvGgne
-	cGFWbzr3Gbq6kKIQXm/IK718K12PBcgu3+8D+LxBU8QUGNlJyFErJJziyDWQDAn38+GU+w==
-X-Gm-Gg: AfdE7ck9AU6dnXAX+6OZH2k54mUAP9zPIsi2ZRGhaaH/dt8af3ahm35vm7v8sI2qlqd
-	ZcsUWoyws3p5YDgK/IWydOTQHR//AgCto13DpNyV/reuAc9SZwmKqugbR26mxHwmRHOS2iz99y6
-	j5pCOpThrGcsB87RW4NCBwEQ/4Mq0dx0Mc2mL4UF089ifeRFAYuX66VHuk1DTXYX+DD25rqHFOR
-	Mdc8bnDmt1Kby3eSYj831dpM5HlWE033yp4T9Z+3nJE0gJHbhuUHHFdGwqZRml6LtpnDMu/3qLO
-	/4WwGLNwf8LTeNJaUNlYUcP1wFLM2BcTPvHCmviPV+XEGjO/kVQWC1V8EHkWKibn1bWoJKCeLDN
-	Fai3ZDn2tzf4ySQpSLUey9CTELLv0w/a9PohTe8p/9fJmjqgYOkJXHk5Gfr6LRnJwHkqG6SOxOE
-	IKcQSll+mYGLTJ6HOTOMYZ5WmBdiudv6kZM+amWptEHoTvKQ==
-X-Received: by 2002:a05:6512:3f1a:b0:5ae:b2cf:8204 with SMTP id 2adb3069b0e04-5aed508fa09mr1703531e87.2.1783336976545;
-        Mon, 06 Jul 2026 04:22:56 -0700 (PDT)
+        bh=8EZLpAM4NkTG/jPbKI2f6Kpk8sjFPyxK/lycnX5c9HY=;
+        b=UnkfM5IYoR1w7u0eS/vsXf2UHupZyUNNeVlTgRM13Fq+TzowvfJxBl4k57UJDdCK8u
+         GsQsu6V6kIRq57nuFhXqp5A6BWcU/wwo3FKnFTDag93jFVOydFmR6mN8FhikDtfcq991
+         vvP5+YNY6+XUrfMOCb1nm9GtY+2xZQzKlmilQtytCYQhlcDB6CdDRFK6rcT28Of+0a9p
+         vESGCaVs6guTOxFv5LD2/F2/LuW+lcCM9AOPQT2V7id2Q6DqxzZjlp5jdMU3BXX/H4YX
+         4whbwgLG0xPb9M8vko4xDS1JGUo0dAa9M1gmcMTJRr4Ql4mznps7a3+9Eeu5mp0AVvE0
+         gf/Q==
+X-Gm-Message-State: AOJu0YxKvrQO2A7TPdklIoNC0QQooJnKE+bg63f/q0Yz0qbj6KGyzEcI
+	I3t9ayxtUJX95T1cGosYI7lmjP6+9IeKy0AvPqzcmKH/tg5pAICc5p0YhZVCTyKCsj1wGg==
+X-Gm-Gg: AfdE7cmI59NfvTAFyGDwrMA9PB7PYtethWoXEWmcV4+fNLs5Y1qBmoFH5tpfoo8JgZ0
+	1Jci0Ap68W/5Ulsmn+GE0WJU5ImhaiFxHUuWB4jxj9z7CroLJkSmUPaou1FSRGFW13ga+oDxaZq
+	K19g6TTB12g4ccOvNyAHo6qV2FGaLWzW5jMhdg4Eark4q/RvEw6GAxfJ7vNq+nfDG85/rtsQw8Z
+	heV/xySwNUmoC9zOPRanuXqrLHyx++cxn4G6K2ilOdHiTFOzqzVyTpEsjHt3tey8bmlOQKZ3/OT
+	UL4tWd3YRDmvD9xjoiilhR4tRTYZvrzfFjCa2F6UAkrJjXi5yktAnVfGOcYjZ6STbYdNJvCJmYl
+	/IcjHM8YZVI/jQXgoSi41MUJGosC4MDPu9nEqXXnI5rl97WZa+0Syk4COkZaKyIJXoPc54LzijF
+	R6mWW7zXc+t8vojy4JR12F5/TxPb6VgMSY5t3T2LC3bXGLBA==
+X-Received: by 2002:a05:6512:131d:b0:5ae:b6b6:3661 with SMTP id 2adb3069b0e04-5aecf4af799mr3342455e87.8.1783336977772;
+        Mon, 06 Jul 2026 04:22:57 -0700 (PDT)
 Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed13c3a22sm2739145e87.72.2026.07.06.04.22.55
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed13c3a22sm2739145e87.72.2026.07.06.04.22.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jul 2026 04:22:56 -0700 (PDT)
+        Mon, 06 Jul 2026 04:22:57 -0700 (PDT)
 From: Md Shofiqul Islam <shofiqtest@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
@@ -64,9 +64,9 @@ Cc: jic23@kernel.org,
 	linux-kernel@vger.kernel.org,
 	krzysztof.kozlowski@linaro.org,
 	Md Shofiqul Islam <shofiqtest@gmail.com>
-Subject: [PATCH v6 1/3] dt-bindings: iio: health: add adi,max86150
-Date: Mon,  6 Jul 2026 14:22:52 +0300
-Message-ID: <20260706112254.1262002-2-shofiqtest@gmail.com>
+Subject: [PATCH v6 3/3] MAINTAINERS: add entry for MAX86150 IIO health driver
+Date: Mon,  6 Jul 2026 14:22:54 +0300
+Message-ID: <20260706112254.1262002-4-shofiqtest@gmail.com>
 X-Mailer: git-send-email 2.51.1
 In-Reply-To: <20260706112254.1262002-1-shofiqtest@gmail.com>
 References: <20260623140730.12574-1-shofiqtest@gmail.com>
@@ -79,95 +79,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add Device Tree binding schema for the Analog Devices MAX86150
-integrated ECG and PPG biosensor.
-
-The device exposes two PPG channels (Red LED and IR LED) and one ECG
-channel over I2C, with a 32-entry hardware FIFO and an active-low
-interrupt.
+Add a maintainer entry for the MAX86150 combined ECG and PPG
+biosensor driver.
 
 Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 ---
- .../bindings/iio/health/adi,max86150.yaml     | 70 +++++++++++++++++++
- 1 file changed, 70 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml b/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
-new file mode 100644
-index 0000000000000..daa15b0e287f0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/health/adi,max86150.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3115538ce8291..361a7c8b99ead 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15863,6 +15863,13 @@ S:	Supported
+ F:	Documentation/devicetree/bindings/power/supply/maxim,max77976.yaml
+ F:	drivers/power/supply/max77976_charger.c
+ 
++MAX86150 ECG AND PPG BIOSENSOR DRIVER
++M:	Md Shofiqul Islam <shofiqtest@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
++F:	drivers/iio/health/max86150.c
 +
-+title: Analog Devices MAX86150 ECG and PPG Biosensor
-+
-+maintainers:
-+  - Md Shofiqul Islam <shofiqtest@gmail.com>
-+
-+description: |
-+  The MAX86150 is an integrated biosensor that combines two
-+  photoplethysmography (PPG) channels (Red LED and IR LED) and one
-+  electrocardiogram (ECG) channel for biopotential recording. Samples
-+  are buffered in a 32-entry hardware FIFO with a configurable
-+  almost-full interrupt.
-+
-+  Datasheet:
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/MAX86150.pdf
-+
-+properties:
-+  compatible:
-+    const: adi,max86150
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+    description:
-+      Interrupt line, asserted when the FIFO almost-full threshold is
-+      reached.
-+
-+  vdd-supply:
-+    description: VDD power supply (1.8 V).
-+
-+  vref-supply:
-+    description: ECG reference voltage supply.
-+
-+  vled-supply:
-+    description: VLED LED anode supply.
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - vref-supply
-+  - vled-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        heart-rate@5e {
-+            compatible = "adi,max86150";
-+            reg = <0x5e>;
-+            interrupt-parent = <&gpio1>;
-+            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-+            vdd-supply = <&vdd_1v8>;
-+            vref-supply = <&vdd_1v8>;
-+            vled-supply = <&vdd_3v3>;
-+        };
-+    };
+ MAXIM MUIC CHARGER DRIVERS FOR EXYNOS BASED BOARDS
+ M:	Krzysztof Kozlowski <krzk@kernel.org>
+ L:	linux-pm@vger.kernel.org
 -- 
 2.51.1
 
