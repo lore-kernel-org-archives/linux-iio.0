@@ -1,52 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB69826F29B;
-	Tue,  7 Jul 2026 02:06:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4476F26F29B;
+	Tue,  7 Jul 2026 02:09:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783389991; cv=none; b=Kx6IL1E2YPi7Uyr2RuUVUwreYj5DpLO5mGSqwNd7AcAePxwq82hUJtlC1VD6RlvFl9rAF/wULKAxVSD3duUzK/vzk0//4WyIOJDP0wH7E2Yam5R4iL3WxhNNH4ZEEHQPZgRCWIEv9PaGorN5evD7fOnBoIPyTwB/kQe8UcemW20=
+	t=1783390154; cv=none; b=H2XV09OTy3TWJf78sZaCSWqIFgF89htZYmPmsZkoGPViHOkVDzxYwk51rjt7Vm1olWADdte3jlEjCHx0f4Lv97P+ESDKP6ldmaSwfMtBVyXrjcXBD0z0KLFVtqdHqC/R4k4WTF7NkGx14pN9Lu5+MEx/RMiq2+KDLClq70+9CVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783389991; c=relaxed/simple;
-	bh=jgCIboKpKrWjdgAPYJ2qr/miITiSJJ3bbQ1dMzORbFE=;
+	s=arc-20240116; t=1783390154; c=relaxed/simple;
+	bh=FVtVAaSuJTY7vHYjip/kdPM2L3aNFrm1fPM3MEPpF3g=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BpdQbi1T+XdVvknwasq/KWWSIQQoUPi5pT8+JvVoyBPEPShjuME6t2ai/VkeVCPvrWK63TPGmUT3DTGOHBv7WhbuMwURIutvdY7AvS5EjCxLGSy+vYo/ESbT2d8kaMT5Cl1Qq0tvAyLl08tXxbwsAF33oXnhB8WW6u3fyc/bpLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fh7XOpQe; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=oS5yss+Zjsjaval64OJgOwFgA50B3E3KqNcv/hc8OMKvSnDq/wYRWHw69f21YaFIL2uZ++2Cip70aka7FY0xD9t8KQIUiLsqCsLA2OyWrbvhKxVKhs0pxTS5IA9+TDyGdNJFWzDFxNuwKHoACDM4yGb5Td7z7WetmeyV774JIf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=COKZ92la; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fh7XOpQe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3570B1F000E9;
-	Tue,  7 Jul 2026 02:06:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="COKZ92la"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261E81F000E9;
+	Tue,  7 Jul 2026 02:09:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783389990;
-	bh=YSR5h25lu4VEH/3bOta2s57UroAhOXxRWmW5kck7FYU=;
+	s=k20260515; t=1783390152;
+	bh=X+GavMHJxo/C0eP06aCFkaFhtwTiuGsoQw2pkGdhRkc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Fh7XOpQerQvBqyz9SfOdy9SxCXHF//wud98gByeQ0Nnb5f337PoDZJW4wFBOBgtTE
-	 aiEASLp/ZLttZqX01tOf5t3tbgwPqnNOa9XuDSgC3uWR2/QLFHwdSuocFGA7RML4og
-	 5M0CB95lGC4xZBZkOLS3S/w/pa4r8rNuAO853fSBHAfzl+ziHajp1jCTrlKYA4ppjY
-	 n6uxYv+Exc3SUFhieNqpZtiF83BjlqxbuayY+UstaE2mcMirZ6UaimIqxB3Mfg1OEi
-	 qJQhoQrEO+a7MHHCkP7jXSZLzY2rJsKpY1kFx/i8ujm3DO1jboB4vakpFQGP/oQxDD
-	 lDS52rbqV3rag==
-Date: Tue, 7 Jul 2026 03:06:25 +0100
+	b=COKZ92laQhl1csIEkPD6FHIBolJNsjd27MEkSM1QUkHmeCLiZzXhiSbxzh+80bodW
+	 Eo9LRa5hhnpXN+NLjvJp085C/ja6Wp0kSwiGNSJNmoRY0VMOuRk0HtTHPWoPRWbzUm
+	 wPYcrpPXbnkCqJcf8CqOEAQDZDMcWc3rQ5UWFuqQRmtv8Rk8ky7xVSrz5KvRasbxHi
+	 UMVdqAoIRjPMxTVHGtxZ0RjWrfxUPIfEr2WQN3lodMRh6jyJykB/lLCHPIfb70YEsK
+	 myxcIfD0CkLgRK/xGp5L/yinB0F6Jm8aVbqq76O0bX9Fu1ja5G/x8EiONakVuWhlPY
+	 LEGrsrv//djCQ==
+Date: Tue, 7 Jul 2026 03:09:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Kurt Borja" <kuurtb@gmail.com>
-Cc: "David Lechner" <dlechner@baylibre.com>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 5/7] iio: adc: ti-ads1262: Add conversion delay
- support
-Message-ID: <20260707030625.7cda6e95@jic23-huawei>
-In-Reply-To: <DJRYEEGVFY2A.2115GKK5BG36M@gmail.com>
-References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
-	<20260628-ads126x-v2-5-4b1b231325ba@gmail.com>
-	<20260630015027.3afdfc3a@jic23-huawei>
-	<DJMK3NCDCHL8.1EHG93D5O7ROZ@gmail.com>
-	<d8fbab77-6cb4-435d-aac9-0d72cd4a59bc@baylibre.com>
-	<20260701012026.29f18bf4@jic23-huawei>
-	<8dd4bb6b-a83d-4584-8893-b56b8aaed973@baylibre.com>
-	<20260706182317.64cb0a4c@jic23-huawei>
-	<DJRYEEGVFY2A.2115GKK5BG36M@gmail.com>
+To: Simon Glass <sjg@chromium.org>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org,
+ devicetree@vger.kernel.org, Fabio Estevam <festevam@nabladev.com>,
+ linux-arm-kernel@lists.infradead.org, Andy Shevchenko <andy@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/12] dt-bindings: iio: adc: rockchip-saradc: Add
+ RV1106 compatible
+Message-ID: <20260707030907.1502dba6@jic23-huawei>
+In-Reply-To: <20260706195818.3906949-10-sjg@chromium.org>
+References: <20260706195818.3906949-1-sjg@chromium.org>
+	<20260706195818.3906949-10-sjg@chromium.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,118 +52,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 06 Jul 2026 20:38:45 -0500
-"Kurt Borja" <kuurtb@gmail.com> wrote:
+On Mon,  6 Jul 2026 13:58:05 -0600
+Simon Glass <sjg@chromium.org> wrote:
 
-> On Mon Jul 6, 2026 at 12:23 PM -05, Jonathan Cameron wrote:
-> > On Mon, 6 Jul 2026 11:19:40 -0500
-> > David Lechner <dlechner@baylibre.com> wrote:
-> >  
-> >> On 6/30/26 7:20 PM, Jonathan Cameron wrote:  
-> >> > On Tue, 30 Jun 2026 13:44:49 -0500
-> >> > David Lechner <dlechner@baylibre.com> wrote:
-> >> >     
-> >> >> On 6/30/26 12:23 PM, Kurt Borja wrote:    
-> >> >>> On Mon Jun 29, 2026 at 7:50 PM -05, Jonathan Cameron wrote:      
-> >> >>>> On Sun, 28 Jun 2026 00:36:06 -0500
-> >> >>>> Kurt Borja <kuurtb@gmail.com> wrote:
-> >> >>>>      
-> >> >>>>> Expose the programmable conversion start delay as a per-channel
-> >> >>>>> IIO_CHAN_INFO_CONVDELAY attribute.      
-> >> >>>> Coversion delay was always a somewhere weird bit of ABI.
-> >> >>>> What are the delays relative to in this case?
-> >> >>>> Is this a device that does simultaneous sampling?  Pictures
-> >> >>>> suggest otherwise, and convdelay is currently only defined
-> >> >>>> in that case.  We might be able to extend it but it needs
-> >> >>>> some thought.      
-> >> >>>
-> >> >>> The chip has a configurable internal conversion delay to allow for
-> >> >>> external settling effects. See datasheet section 9.4.3 if you'd like a
-> >> >>> bit more details.      
-> >> >>
-> >> >> Since this depends on external components, it sounds like it belongs
-> >> >> in the devicetree. I have the same feature in the chip I am working
-> >> >> on and was just looking at this and plan to add it to the ti,ads112c14
-> >> >> devicetree patch.
-> >> >>
-> >> >> This delay only applies to a "new conversion", i.e. when certain config
-> >> >> registers change, and not every conversion, so isn't like the convdelay
-> >> >> attribute.    
-> >> > 
-> >> > See settling-time-us in adc.yaml.  I'd forgotten we had that ;)    
-> >> 
-> >> I got some more feedback on this and this may indeed be something we
-> >> want to tune at runtime after all.
-> >> 
-> >> I'm not really sure where it fits in though. On AD112C14 that I am working
-> >> on, the DELAY register value adds a delay (for settling time) in addition
-> >> to some other intrinsic delays. I'm pretty sure ADS1262 is similar.  
+> Add the compatible for the SARADC of the Rockchip RV1106, which is
+> compatible with the RK3588 variant.
 > 
-> It is! there is a fixed 52 usecs delay after starting conversions.
+> Signed-off-by: Simon Glass <sjg@chromium.org>
+> ---
 > 
-> >> 
-> >> So one question is do we want a usespace control to be the total delay
-> >> or just the additional delay?
-> >>   
-> >
-> > Total I think.
-> >  
-> >> And when the delay takes effect depends on other things. Normally the
-> >> delay only happens before the first sample after any other parameters
-> >> change. If we read the same channel again with the same config, then
-> >> there won't be any added delay. But if input chopping is enabled, then
-> >> this delay happens on every conversion.  
-> >
-> > Hmm. That is awkward.  I guess the best we could do is either to document
-> > it as 'may be skipped if channel setup is unchanged either via explicit
-> > channel or parameter change, or via chopping'.  I kind of think of chopping
-> > as advanced channel sequencing - inX-inY being switched to inY-inX with a scale
-> > *= -1.  
+>  Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> Thinking about it this way, shouldn't there be userspace control for the
-> chopping stuff too? Something like in_voltageY_chop_type, similar to the
-> filter type.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+> index 6769d679c907..c3bb03dc4853 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
+> @@ -24,6 +24,9 @@ properties:
+>        - items:
+>            - const: rockchip,rk3576-saradc
+>            - const: rockchip,rk3588-saradc
+> +      - items:
+> +          - const: rockchip,rv1106-saradc
+> +          - const: rockchip,rk3588-saradc
+>        - items:
+>            - enum:
+>                - rockchip,px30-saradc
 
-Good point.  Until this came up I was thinking that there was no disadvantage
-to chopping if it made sense for what was being measured, but here we can
-see we are trading off acquisition rate.  That might be something we can
-stall for a follow up though as to me turning it off will 'mostly'
-be the wrong thing to do and hence adding control of that a feature.
+Follow the style of this one...  I.e. use an enum and
+then a const given both the rv1106 and rk3576 fallback
+to the rk3588
 
-> 
-> >  
-> >> 
-> >> I'm a bit on the fence of if we should extend the definition of convdelay
-> >> for this or if we should propose a new settling time attribute. I'll have
-> >> to think about it some more.  
-> > Smells different enough that we shouldn't smash the two together.  
-> >> 
-> >> Maybe something like in_voltageY_calibsettlingtime?  
-> >
-> > calib might be reasonable if it was a tweak to a fixed settling time
-> > and like other calib stuff would not necessarily have any scaling.
-> >
-> > If it's the whole thing and in seconds then in_voltageY_settlingtime 
-> > should be enough I think.  
-> 
-> +1 for this. in_voltageY_settlingdelay might work too, as both our
-> datasheets call it "delay".
-> 
-> >
-> > Jonathan
-> >  
-> >>   
-> >> >     
-> >> >>    
-> >> >>>
-> >> >>> But you're right, I should at least also edit the ABI description of
-> >> >>> this attribute. We can postpone this discussion for a future series.
-> >> >>>       
-> >> >>>>
-> >> >>>> Jonathan      
-> >> >>>       
-> >> >>    
-> >> >     
-> >>   
-> 
+Thanks,
+
+Jonathan
+
 
