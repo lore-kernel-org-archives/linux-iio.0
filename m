@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAD2842087A;
-	Tue,  7 Jul 2026 06:21:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B59981A5B9E;
+	Tue,  7 Jul 2026 06:23:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783405298; cv=none; b=kBkF9pmQwFAPjroA+0K17Rjl/ULFdZQih+GtQ/Xlhj/5oQQyTrLmRn6iidlupqMH93kGmkmZtdauiwrlSr2U7cCtWPGqy41wMSNKgtWGAzSjMjyBbrHAqm9d74PqfKTmE+695U4sPnhiEsmtQVj9mb2f4WXvaNvPAf2bD9Rtsvs=
+	t=1783405392; cv=none; b=GDtABBPbxCp2lq/hgdt9BqX34zR83eY3PHOVJT4umB/4jehYIxfuW81mlo445aAkaCkT5hVG5u9qys5Ziyph6EksyzIHOpzsMq8j9sGe/QIh11msEOa8+9GvrgQcrRP8cirlEQtceAkK7jPZqULP4e31NuSXCi1sArnlUFFt6QY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783405298; c=relaxed/simple;
-	bh=bmtmBvLBBHyNCSkZhuuJygsSFCeVgPb5ffhPJ9+qdpg=;
+	s=arc-20240116; t=1783405392; c=relaxed/simple;
+	bh=aNIdEVSD+orciJ5ctoIjnruXWFL9YkMdkbTEfCqrFAI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bFraBj+SW4Te9ah4v9x1/UEtoKTYVh/lsW5ZtwTwd9NlltOs/Yq1W+oP609Am0u9xniSHJ1VTKRqzm0UKyIEJKXFucNheP1FPoTHg2jHex6a+E3zQmwyW4tlxe9AQXgNG1xuQMCAidawKUm7vO0HBVKU8yPYolGKtA75bnZrECE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eYcKsje0; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=O2v0RHBWcCoJgvfpUyvRvYQMFu42aUVCWo4SlUdv04Ht28dpA+EBkmVH7DOQ7Rp+UN+cWacURdR5qm7zT92Gcv2JX+2dEqlcvn6nMOLo46ldZFwhUiZLZhu6QpK4UkEpmREJEOcvJX3oiCtKAyVxfrx/27z1QbsIIZJGy3shvSA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wg/TvJ92; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eYcKsje0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB471F000E9;
-	Tue,  7 Jul 2026 06:21:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wg/TvJ92"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6820F1F000E9;
+	Tue,  7 Jul 2026 06:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783405297;
-	bh=ertU3OhHj8elRfnKWMPsNoTC7122ujWETR64JA9otkc=;
+	s=k20260515; t=1783405391;
+	bh=BXSkolTpvsyv0fwIFqpqrd/UucO8lCMFwxuZUxDFcao=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=eYcKsje0YxFFooyhhbYMKZyWWTKDD8p0I57ODfxghjt5mwfC0SkYiqWVWTjOoDLqk
-	 D9B/ZPi4X9ClIVvyXZYav7dQFukE4Ds8PeTBAD02CErZsswhNK3TmwBGYyEegZ9Yk9
-	 c764dFoKGDTfG1wZ3mhclo9BW7BJF7R2gIklYe80hboZQ+JPV5kfsG/+YkhUv3Crdm
-	 KxptejBVWUO55UauU45r8q/RsQJX9DMdEPcs2fhWduXK9nhxTVBC4OYr3UCfoGWuYz
-	 lB3B1SQuhUxF0OElJgWdUg+oYlAr8St7fgUsv7zNbMuHWHuyr5T+RglJ+P9Y+Fmnbw
-	 2xw9qaYrPdYAQ==
-Message-ID: <63bb8ff8-00ae-4849-af2a-fe2121f366d2@kernel.org>
-Date: Tue, 7 Jul 2026 08:21:32 +0200
+	b=Wg/TvJ92Akuck5tbd0lAxy3dxi7h9Hjd5JWoMbu0NfxpFkBoXUDO93spXbGftnn3r
+	 HI+yXaynTjLW9ePJ7LhhUT3so0Skkur8dQEiLStU4lV5zyM78ayJ+V9+V6i82CYJ9Z
+	 Rc8+opr8EYj4qcXVQ3OUJ1KbGa6K72vHf5HKyKKgl46JdYslpWZavIoHqQwOXJrwlx
+	 jnXBWEKs5JSHXLdKSKH1EPz6wPNTKeq3Rgs6/+3GWU/VcdH+qq++RXYCNW+9rQNBcV
+	 +CwMwYNkqD05kzGKButZ7IhGcXroNrX2wQy2FoE6mViqeuCqLKtKiciio8EHDMV5Os
+	 l5ZMZc+Rfo9OA==
+Message-ID: <ac0733bf-cee2-474f-86a4-8b53b8835395@kernel.org>
+Date: Tue, 7 Jul 2026 08:23:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,12 +35,13 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads1298: add ADS1299 EEG
- ADC variants
+Subject: Re: [PATCH v6 1/3] dt-bindings: iio: health: add adi,max86150
 To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org
-References: <20260706112614.1262241-1-shofiqtest@gmail.com>
- <20260706112614.1262241-2-shofiqtest@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org,
+ krzysztof.kozlowski@linaro.org
+References: <20260623140730.12574-1-shofiqtest@gmail.com>
+ <20260706112254.1262002-1-shofiqtest@gmail.com>
+ <20260706112254.1262002-2-shofiqtest@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -86,21 +87,21 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260706112614.1262241-2-shofiqtest@gmail.com>
+In-Reply-To: <20260706112254.1262002-2-shofiqtest@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 06/07/2026 13:26, Md Shofiqul Islam wrote:
-> The ADS1299, ADS1299-4, and ADS1299-6 share the same SPI interface
-> and register map as the ADS1298 ECG ADC family but are designed for
-> EEG and biopotential measurement.  Key differences from ADS1298:
-> - PGA gain up to 24x (vs 12x for ADS1298)
-> - Internal reference is always 2.4V (no 4V option)
+On 06/07/2026 13:22, Md Shofiqul Islam wrote:
+> Add Device Tree binding schema for the Analog Devices MAX86150
+> integrated ECG and PPG biosensor.
 > 
-> Add compatible strings and update the vref-supply description to
-> document the ADS1299 reference voltage behaviour.
+> The device exposes two PPG channels (Red LED and IR LED) and one ECG
+> channel over I2C, with a 32-entry hardware FIFO and an active-low
+> interrupt.
+> 
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 
-You already received below comment, so please do not expect us to repeat:
+I see more comments got ignored...
 
 Please use scripts/get_maintainers.pl to get a list of necessary people
 and lists to CC. It might happen, that command when run on an older
