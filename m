@@ -1,76 +1,78 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66DB63E5EF7;
-	Tue,  7 Jul 2026 10:18:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A637A3EDAC7
+	for <linux-iio@vger.kernel.org>; Tue,  7 Jul 2026 10:42:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783419524; cv=none; b=CEl+C7f+prhCxPWJS2Loju3ftqz2RXxu5ymyZwYla+dd0DoqPC3HyCq9KZO5a3Oojn6GMF+Iwz4sSnlJ9V3pMUkKnNd8CZHcjzHFeAmU7Cn3vT4ruyNyahG8tBcxic4ObT5iENl8SX6G4Y1XpUBafJ1gk2cueFs/dgaZeQFWnwQ=
+	t=1783420961; cv=none; b=V2mPvHNHZx5a29XcBYzI6FDu1d+O6UpgweEFGlDoWgmJEFjdt2ojs/LauT++f91w14kP4gz2PJSVO3UEnDaP8UdC9rh4oT3axH3e4xgRLidfNg73lH3fXac35mOCW6GMI/niMfQNKStc75C8iYyWWswDY9NJv9ZAK+T69BP3E88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783419524; c=relaxed/simple;
-	bh=rN5cO27Z+Vgzw6e0TYdRDp7g5zASFKfeaDG26p8WB7I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BgMqoqXlB+BKCc1Xs5F7EfvjM0RE+8VvjuBf1QoHkiHaJg8KYoGXetszLAH/ky6GMXczOdPMRAbqPRrQuHxvE7tYhVS7VDSPe29OhEw0Nyhjnf95THMXog6uJK2DeimlQH+YiDx4kkbj0bzRg5YoX1e1G2KWQcF0zoSdCF5raOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=iPCljxGj; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1783420961; c=relaxed/simple;
+	bh=3Iul7A7AzwQnOR9Dpe9SeTKE7tzpz+SWSNxnI5w5KIM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ASxMQPBZaMkkKvldN9Fj8cen+FVsLtIrXqYCTCEJuWZB7AibeM1EokXmE/9xdg9IDUOhNwia9ILDQslF4UmBEksXnIj70T+9PLmsOWbw9UL4AcC6H/vC8RtUz0HTjcBE0EEKvsL7vmqKKd4uCslXYYiNY1epQ1pk1KwNp4BfIJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hzX8+H5H; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="iPCljxGj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1783419520;
-	bh=rN5cO27Z+Vgzw6e0TYdRDp7g5zASFKfeaDG26p8WB7I=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=iPCljxGj6xr8l5keNpOW4QemGUi6PWB0xo88xYTZ12h3vK34x1IS5dJFlQbwxqPHY
-	 cAqkwx8eJkiznVROfnfibARhbjWiltWB9c/K9Ua1JH07587IR6eI++A492gLNfnhMQ
-	 xbUjnEpL4QRsKttcZS3w93wQlRwEjkjqaEStyYuuPis8uzLx9zeKSzxAWwrz5zJf8g
-	 B8QZj8KeCSayiAWJD61F9U9OdK3zn/osIUKmD2798Kkllm6mBx88NPXGswZMu+gYhx
-	 sa6mmhXPiOXKZX+CIUn1B8IaoPbvXbAo8DIhw9Q4lBsOzQqan60a6VvxJHdqLcVrtA
-	 PgW0BW7ITK1jg==
-Received: from IcarusMOD.eternityproject.eu (unknown [100.64.1.21])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id B208317E05D3;
-	Tue, 07 Jul 2026 12:18:39 +0200 (CEST)
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: jic23@kernel.org,
-	sboyd@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hzX8+H5H"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5aeba1a36dfso2637117e87.2
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jul 2026 03:42:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783420958; x=1784025758; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=heb5dabrqT4zaKra2HrW++HGz55cL7RYIU7fGZa8obU=;
+        b=hzX8+H5HBzl8ItZZp4BVaVf79imxaO0Ip3ki9jmENTQG8R5mYzimckg+B8bs45xwyv
+         rBr3K3mbB4hxgyBmrWsnlunoOGLP2PLETs9CKWbjQXeOI00VORH+7LTO/TjtwQob3/MO
+         Rea1QhjvljwazYj1tpGzcpHmdBWx+vE6ihYYs89CdaUqwvc7m3uj9sScMD9ngxAOE4br
+         KirrHmiKzwR4MvxrZ322vp5/Lr9fLrXASKuOEvxZ0FgYFrkVrz+Z/pE85fzk+o1/nr71
+         T6tlJpyaOLu0lOAAyUxI9OqEhZGDpJcvCWj6M2ZpAjpLy4bMd0DSrfPpR9O0vgIpK7KY
+         ePkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783420958; x=1784025758;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=heb5dabrqT4zaKra2HrW++HGz55cL7RYIU7fGZa8obU=;
+        b=feF19bpaFsoVGLXgeL5uuGt/kgJpRgcJ7g7gws4TW3DxYrMLwvhy+X7w8J3EyT9Bue
+         PhB9U7UUD8vNYMRBP0bKzbua81oCF/ufiadpKRw/DPx5jculwaNTcoDI2x6SIODvzut7
+         qH39TKMfc20jzqh/kLJGCiBFGt+tdzYcTE5nmdb2cQDYQvOhtAdNacCH/pcw5OQZWRha
+         ktl3OIINKqtUyYs8IMo0aaFCssmfUxOLQV0NNQ2kBRXDF2NfHdsVEOe62rxiNdFA511w
+         7/+QPJORIgrwaBF4lDFpMOdJPrxbeKEsciB4V2ofmlH5ESI72hFVa/Hg+4sQLZoE1bj+
+         6PuA==
+X-Gm-Message-State: AOJu0YyT2KdYvMCaOsTgZ3eQ0D6Zj80Uvs8LBT03F65PnqRbHdSfFMJY
+	pX4y+gCdgRzMBU/fvcEQsXqbuItwC8kvLiTai4/uUGZ50Oue+bA1XhTPREiWeMvwLpgdqw==
+X-Gm-Gg: AfdE7cl7+xkeynLdjIEjDnXsNE+ERohnWCFtbJ7smY5zHPyHUQon7DBjFoIlfxI9cel
+	4EKxWGklyVM7wi8Ies4/7iZTX3PLojIy3NPaTRga9H81iO349Y3oce7uoPsREG4COdmo9ADzyEN
+	Qay8mH21CoANk5oVMwdZbB8dgfHSc53IhBc291MbjbYDJ1tARUsQaFghXwH+B8qy/pGSdmK9na2
+	89LHlNGSEMZe1fnvDQUEdagCRbMmf1MLChUULJ5YDM3Zs48JhyhknGezaaslL/TSblBdJDP0t00
+	jIoUsg896zvfinHXOPwmzlPSbDBBL5+w8KEgV9G6NTqO5a1BpdPl3ywDqttsupgjqTx1lpyb/zd
+	3OCsMDFIzr4Jeyf9OiaxQdS7XIipdz6+aH6nYtobTb8HBP9mJHgL/3VpguUVQv7sVnQYYoZEH53
+	poqHS09cdHVE2eD74J08en0fWt/OZknC1k9c/+1gghHIYuT7hHcLTeUVlm
+X-Received: by 2002:a05:6512:6308:b0:5b0:312:21ce with SMTP id 2adb3069b0e04-5b007ba9521mr849175e87.45.1783420957244;
+        Tue, 07 Jul 2026 03:42:37 -0700 (PDT)
+Received: from Shofiq.home (87-92-251-137.rev.dnainternet.fi. [87.92.251.137])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed13c8c1asm3533227e87.81.2026.07.07.03.42.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jul 2026 03:42:35 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
 	andy@kernel.org,
-	arnd@arndb.de,
-	gregkh@linuxfoundation.org,
-	srini@kernel.org,
-	vkoul@kernel.org,
-	neil.armstrong@linaro.org,
-	sre@kernel.org,
-	angelogioacchino.delregno@collabora.com,
-	krzk@kernel.org,
-	dmitry.baryshkov@oss.qualcomm.com,
-	quic_wcheng@quicinc.com,
-	melody.olvera@oss.qualcomm.com,
-	quic_nsekar@quicinc.com,
-	ivo.ivanov.ivanov1@gmail.com,
-	abelvesa@kernel.org,
-	luca.weiss@fairphone.com,
-	konrad.dybcio@oss.qualcomm.com,
-	mitltlatltl@gmail.com,
-	krishna.kurapati@oss.qualcomm.com,
-	linux-arm-msm@vger.kernel.org,
-	linux-iio@vger.kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	linux@analog.com,
 	linux-kernel@vger.kernel.org,
-	linux-phy@lists.infradead.org,
-	linux-pm@vger.kernel.org,
-	kernel@collabora.com,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v11 12/12] iio: adc: qcom-spmi-iadc: Remove regmap R/W wrapper functions
-Date: Tue,  7 Jul 2026 12:18:21 +0200
-Message-ID: <20260707101821.173319-13-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260707101821.173319-1-angelogioacchino.delregno@collabora.com>
-References: <20260707101821.173319-1-angelogioacchino.delregno@collabora.com>
+	Md Shofiqul Islam <shofiqtest@gmail.com>
+Subject: [PATCH v8 0/2] iio: health: add MAX86150 ECG and PPG biosensor driver
+Date: Tue,  7 Jul 2026 13:42:32 +0300
+Message-ID: <20260707104234.1957104-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,263 +81,63 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This driver doesn't need to add any register base address to any
-regmap call anymore since it was migrated to register as a SPMI
-subdevice with its own regmap reg_base, which makes the regmap
-API to automatically add such base address internally.
+Changes in v8:
+- Fold MAINTAINERS entry into the driver patch; no separate patch
 
-Since the iadc_{read,write,read_result}() functions now only do
-call regmap_{read,write,bulk_read}() and nothing else, simplify
-the driver by removing them and by calling regmap APIs directly.
+Changes in v7 (Jonathan Cameron's review of v5 driver):
+- Switch from triggered buffer to kfifo buffer (like MAX30100/MAX30102)
+  and remove the IIO trigger framework from this driver entirely
+- Remove spurious 'select IIO_TRIGGER' added to AFE4403, AFE4404,
+  MAX30100, MAX30102 in the Kconfig patch
+- Rename all register field macros to include the parent register name
+  and a _MASK suffix (e.g. MAX86150_PPG_CONFIG1_ADC_RGE_MASK)
+- Use IIO_DMA_MINALIGN instead of ARCH_DMA_MINALIGN
+- Use IIO_DECLARE_BUFFER_WITH_TS() macro for the push buffer
+- Fix regmap_noinc_read() length: use MAX86150_SAMPLE_BYTES (9) not
+  sizeof(fifo_raw) (64) -- the padded size is for DMA alignment only;
+  using it would over-read the FIFO by 7 extra samples per call
+- Use get_unaligned_be24() with a single mask for 24-bit FIFO reads
+- Use regmap_set_bits() / regmap_clear_bits() instead of regmap_update_bits
+- Use iio_push_to_buffers_with_ts() (new name)
+- Use fsleep() instead of usleep_range() after software reset
+- Use 10 * NSEC_PER_MSEC instead of bare 10000000
+- Replace if (!ret) chains with goto-based error handling
+- Remove all code-section comments
+- Remove forced variable declaration alignment
+- Print a warning (not -ENODEV) for unexpected part ID
+- Remove IRQ trigger type fallback; honour DT specification only
+- Remove memset of push buffer before packing
+- Drop overflow timestamp reconstruction; flush FIFO and discard samples
+- Remove struct device *dev field (unused after removing trigger)
+- Rename LED_PA_DEFAULT to LED_PA_50MA to make the value self-describing
+- Remove vref regulator (not a supply pin per the datasheet); keep vdd
+  and vled; change to non-optional devm_regulator_get_enable()
 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
-Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8650-QRD
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iio/adc/qcom-spmi-iadc.c | 89 ++++++++++++--------------------
- 1 file changed, 33 insertions(+), 56 deletions(-)
+Changes in v6 (Jonathan Cameron's review of v5 DT binding):
+- Remove SoC from description; spell out photoplethysmography (PPG)
+  and electrocardiogram (ECG) in full
+- Remove the I2C fast-mode (400 kHz) line
+- Simplify interrupt description to a single sentence
 
-diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
-index 71049cdc2765..aacf570eadca 100644
---- a/drivers/iio/adc/qcom-spmi-iadc.c
-+++ b/drivers/iio/adc/qcom-spmi-iadc.c
-@@ -113,77 +113,59 @@ struct iadc_chip {
- 	struct completion complete;
- };
- 
--static int iadc_read(struct iadc_chip *iadc, u16 offset, u8 *data)
--{
--	unsigned int val;
--	int ret;
--
--	ret = regmap_read(iadc->regmap, offset, &val);
--	if (ret < 0)
--		return ret;
--
--	*data = val;
--	return 0;
--}
--
--static int iadc_write(struct iadc_chip *iadc, u16 offset, u8 data)
--{
--	return regmap_write(iadc->regmap, offset, data);
--}
--
- static int iadc_reset(struct iadc_chip *iadc)
- {
--	u8 data;
-+	u32 data;
- 	int ret;
- 
--	ret = iadc_write(iadc, IADC_SEC_ACCESS, IADC_SEC_ACCESS_DATA);
-+	ret = regmap_write(iadc->regmap, IADC_SEC_ACCESS, IADC_SEC_ACCESS_DATA);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = iadc_read(iadc, IADC_PERH_RESET_CTL3, &data);
-+	ret = regmap_read(iadc->regmap, IADC_PERH_RESET_CTL3, &data);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = iadc_write(iadc, IADC_SEC_ACCESS, IADC_SEC_ACCESS_DATA);
-+	ret = regmap_write(iadc->regmap, IADC_SEC_ACCESS, IADC_SEC_ACCESS_DATA);
- 	if (ret < 0)
- 		return ret;
- 
- 	data |= IADC_FOLLOW_WARM_RB;
- 
--	return iadc_write(iadc, IADC_PERH_RESET_CTL3, data);
-+	return regmap_write(iadc->regmap, IADC_PERH_RESET_CTL3, data);
- }
- 
- static int iadc_set_state(struct iadc_chip *iadc, bool state)
- {
--	return iadc_write(iadc, IADC_EN_CTL1, state ? IADC_EN_CTL1_SET : 0);
-+	return regmap_write(iadc->regmap, IADC_EN_CTL1, state ? IADC_EN_CTL1_SET : 0);
- }
- 
- static void iadc_status_show(struct iadc_chip *iadc)
- {
--	u8 mode, sta1, chan, dig, en, req;
-+	u32 mode, sta1, chan, dig, en, req;
- 	int ret;
- 
--	ret = iadc_read(iadc, IADC_MODE_CTL, &mode);
-+	ret = regmap_read(iadc->regmap, IADC_MODE_CTL, &mode);
- 	if (ret < 0)
- 		return;
- 
--	ret = iadc_read(iadc, IADC_DIG_PARAM, &dig);
-+	ret = regmap_read(iadc->regmap, IADC_DIG_PARAM, &dig);
- 	if (ret < 0)
- 		return;
- 
--	ret = iadc_read(iadc, IADC_CH_SEL_CTL, &chan);
-+	ret = regmap_read(iadc->regmap, IADC_CH_SEL_CTL, &chan);
- 	if (ret < 0)
- 		return;
- 
--	ret = iadc_read(iadc, IADC_CONV_REQ, &req);
-+	ret = regmap_read(iadc->regmap, IADC_CONV_REQ, &req);
- 	if (ret < 0)
- 		return;
- 
--	ret = iadc_read(iadc, IADC_STATUS1, &sta1);
-+	ret = regmap_read(iadc->regmap, IADC_STATUS1, &sta1);
- 	if (ret < 0)
- 		return;
- 
--	ret = iadc_read(iadc, IADC_EN_CTL1, &en);
-+	ret = regmap_read(iadc->regmap, IADC_EN_CTL1, &en);
- 	if (ret < 0)
- 		return;
- 
-@@ -199,34 +181,34 @@ static int iadc_configure(struct iadc_chip *iadc, int channel)
- 
- 	/* Mode selection */
- 	mode = (IADC_OP_MODE_NORMAL << IADC_OP_MODE_SHIFT) | IADC_TRIM_EN;
--	ret = iadc_write(iadc, IADC_MODE_CTL, mode);
-+	ret = regmap_write(iadc->regmap, IADC_MODE_CTL, mode);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* Channel selection */
--	ret = iadc_write(iadc, IADC_CH_SEL_CTL, channel);
-+	ret = regmap_write(iadc->regmap, IADC_CH_SEL_CTL, channel);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* Digital parameter setup */
- 	decim = IADC_DEF_DECIMATION << IADC_DIG_DEC_RATIO_SEL_SHIFT;
--	ret = iadc_write(iadc, IADC_DIG_PARAM, decim);
-+	ret = regmap_write(iadc->regmap, IADC_DIG_PARAM, decim);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* HW settle time delay */
--	ret = iadc_write(iadc, IADC_HW_SETTLE_DELAY, IADC_DEF_HW_SETTLE_TIME);
-+	ret = regmap_write(iadc->regmap, IADC_HW_SETTLE_DELAY, IADC_DEF_HW_SETTLE_TIME);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = iadc_write(iadc, IADC_FAST_AVG_CTL, IADC_DEF_AVG_SAMPLES);
-+	ret = regmap_write(iadc->regmap, IADC_FAST_AVG_CTL, IADC_DEF_AVG_SAMPLES);
- 	if (ret < 0)
- 		return ret;
- 
- 	if (IADC_DEF_AVG_SAMPLES)
--		ret = iadc_write(iadc, IADC_FAST_AVG_EN, IADC_FAST_AVG_EN_SET);
-+		ret = regmap_write(iadc->regmap, IADC_FAST_AVG_EN, IADC_FAST_AVG_EN_SET);
- 	else
--		ret = iadc_write(iadc, IADC_FAST_AVG_EN, 0);
-+		ret = regmap_write(iadc->regmap, IADC_FAST_AVG_EN, 0);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -239,19 +221,19 @@ static int iadc_configure(struct iadc_chip *iadc, int channel)
- 		return ret;
- 
- 	/* Request conversion */
--	return iadc_write(iadc, IADC_CONV_REQ, IADC_CONV_REQ_SET);
-+	return regmap_write(iadc->regmap, IADC_CONV_REQ, IADC_CONV_REQ_SET);
- }
- 
- static int iadc_poll_wait_eoc(struct iadc_chip *iadc, unsigned int interval_us)
- {
- 	unsigned int count, retry;
-+	u32 sta1;
- 	int ret;
--	u8 sta1;
- 
- 	retry = interval_us / IADC_CONV_TIME_MIN_US;
- 
- 	for (count = 0; count < retry; count++) {
--		ret = iadc_read(iadc, IADC_STATUS1, &sta1);
-+		ret = regmap_read(iadc->regmap, IADC_STATUS1, &sta1);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -267,11 +249,6 @@ static int iadc_poll_wait_eoc(struct iadc_chip *iadc, unsigned int interval_us)
- 	return -ETIMEDOUT;
- }
- 
--static int iadc_read_result(struct iadc_chip *iadc, u16 *data)
--{
--	return regmap_bulk_read(iadc->regmap, IADC_DATA, data, 2);
--}
--
- static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
- {
- 	unsigned int wait;
-@@ -296,7 +273,7 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
- 	}
- 
- 	if (!ret)
--		ret = iadc_read_result(iadc, data);
-+		ret = regmap_bulk_read(iadc->regmap, IADC_DATA, data, sizeof(*data));
- exit:
- 	iadc_set_state(iadc, false);
- 	if (ret < 0)
-@@ -392,33 +369,33 @@ static int iadc_update_offset(struct iadc_chip *iadc)
- 
- static int iadc_version_check(struct iadc_chip *iadc)
- {
--	u8 val;
-+	u32 val;
- 	int ret;
- 
--	ret = iadc_read(iadc, IADC_PERPH_TYPE, &val);
-+	ret = regmap_read(iadc->regmap, IADC_PERPH_TYPE, &val);
- 	if (ret < 0)
- 		return ret;
- 
- 	if (val < IADC_PERPH_TYPE_ADC) {
--		dev_err(iadc->dev, "%d is not ADC\n", val);
-+		dev_err(iadc->dev, "%u is not ADC\n", val);
- 		return -EINVAL;
- 	}
- 
--	ret = iadc_read(iadc, IADC_PERPH_SUBTYPE, &val);
-+	ret = regmap_read(iadc->regmap, IADC_PERPH_SUBTYPE, &val);
- 	if (ret < 0)
- 		return ret;
- 
- 	if (val < IADC_PERPH_SUBTYPE_IADC) {
--		dev_err(iadc->dev, "%d is not IADC\n", val);
-+		dev_err(iadc->dev, "%u is not IADC\n", val);
- 		return -EINVAL;
- 	}
- 
--	ret = iadc_read(iadc, IADC_REVISION2, &val);
-+	ret = regmap_read(iadc->regmap, IADC_REVISION2, &val);
- 	if (ret < 0)
- 		return ret;
- 
- 	if (val < IADC_REVISION2_SUPPORTED_IADC) {
--		dev_err(iadc->dev, "revision %d not supported\n", val);
-+		dev_err(iadc->dev, "revision %u not supported\n", val);
- 		return -EINVAL;
- 	}
- 
-@@ -428,7 +405,7 @@ static int iadc_version_check(struct iadc_chip *iadc)
- static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
- {
- 	int ret, sign, int_sense;
--	u8 deviation;
-+	u32 deviation;
- 
- 	ret = of_property_read_u32(node, "qcom,external-resistor-micro-ohms",
- 				   &iadc->rsense[IADC_EXT_RSENSE]);
-@@ -440,7 +417,7 @@ static int iadc_rsense_read(struct iadc_chip *iadc, struct device_node *node)
- 		return -EINVAL;
- 	}
- 
--	ret = iadc_read(iadc, IADC_NOMINAL_RSENSE, &deviation);
-+	ret = regmap_read(iadc->regmap, IADC_NOMINAL_RSENSE, &deviation);
- 	if (ret < 0)
- 		return ret;
- 
+Changes in v5:
+- Rebase on iio/testing
+- Adjust FIFO slot descriptor defines
+- Fix scan_type for ECG (signed 18-bit)
+
+v4 and earlier: initial submission and review iterations
+
+Md Shofiqul Islam (2):
+  dt-bindings: iio: health: add adi,max86150
+  iio: health: add MAX86150 ECG and PPG biosensor driver
+
+ .../bindings/iio/health/adi,max86150.yaml     |  65 +++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/health/Kconfig                    |  18 +
+ drivers/iio/health/Makefile                   |   1 +
+ drivers/iio/health/max86150.c                 | 533 ++++++++++++++++++
+ 5 files changed, 624 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
+ create mode 100644 drivers/iio/health/max86150.c
+
 -- 
-2.54.0
-
+2.51.1
