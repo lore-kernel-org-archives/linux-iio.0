@@ -1,112 +1,109 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 083713F888C
-	for <linux-iio@vger.kernel.org>; Tue,  7 Jul 2026 11:33:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FF63F9A10;
+	Tue,  7 Jul 2026 11:45:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783423993; cv=none; b=ibdRSXkTBQmXCz+e4NOUFkE2ubE9mwFnbQNRG5uTN/Gc0G5ZBja6b0o74ExHSL7kprrJ4iZ/nE2ru2oXs11pNQbzFHyYINcrqctLPth9YX49UCfYzj67BqlP3KzzbNKWe9HQjmXDEOrdQ49KIt7eB+U3R/NRB/s4M8rsEvfm6ow=
+	t=1783424716; cv=none; b=jd9JnHptceLvcck/WBpiOLUej0brncSoHRKOdWiHGZJgkYHVD2gCSHOFh0JddOCKPbw4eA5lz3xQ+o/bOhTfpNMok0Xj0/Thpb5bKnmZ5dawCQISwU+WvvrA8dsARd62BBpDnGDgMgE56KnJRSFfYDKerN5nKy1Uo1LHGPaL9Fk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783423993; c=relaxed/simple;
-	bh=r3ZTDaAnxTCpX1wXbKfP9kdtqD11rv3KNLqJa/YXFME=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lXVxcsL3HnMW2NXiRR0UuAHKlORP7BSro01qR/DIP6inmCCfOCLmfzKR6U2yfmeLmw4ILaXehHdGyQZIv8sCUHqMteMEk9/uw9mpay6nuOINlVsGy4/ogdykGNF3LhcFx4igCI6bMXH/L9g3tc8RkEHHMQiqVPOpKw7f/lGTxI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qKYa2Flv; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783424716; c=relaxed/simple;
+	bh=Rcj7tpE+mh68LXObaJGUV7PrzAyUZ4bWS7hX/v5/gIk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=stTvR+BOX0+gncA2XpRiKiTrdnPiSIPR/R085kKTKGvrJ78x8mlwKYqUjOBVSpQwOD+tFVoP7rzaE09dJpDBi5jkfL8XOMFaK38MeTYWgwAT59O273mKf68eUAXwdD9FjxnehRs4uctl0pfyrueo+9Qm57g6GztBfid2H3lclrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TOgoKv/V; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qKYa2Flv"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-493c59f740cso28965665e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 07 Jul 2026 04:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783423990; x=1784028790; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F/Z8mOZho8ofeFAadcQO4D4nqadR03wrbI+Q8bNSp3k=;
-        b=qKYa2Flv7kRCsrSDr/ZluYQzac+hszr3yl2LwcUBpW9uyjNjh2r4+SEmZuy34RwY1M
-         2T11iU9Jm/pXhHg3GUMeyS9agNU5muC+OagVDpYE7lF6Tic4lSMKHUDeJ7Ety/KOe3fW
-         XMC0HShZ3RXjkU2bl4KbH4O7GspUGXXhsAICfKbjhL9VSQYQv2wDPkrtOP5eHvhXSdwP
-         CJOlmkuaKPm41NQDXmwsX5IA78z3ooiJWzEy/G9XBHg7qZFdTCskVZ6ZuA7VPFNDLAcl
-         1zq3oIdBfp4DpvhaY7WLilhUfcAvKjkjm5dYKS+dFBxIZebqbUq7ZVC2onvVpm1JCKL2
-         ZASQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783423990; x=1784028790;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=F/Z8mOZho8ofeFAadcQO4D4nqadR03wrbI+Q8bNSp3k=;
-        b=bvmTFQrRYpB0L2j63STqGym0Wxc5YhZirRWRptMhM9iVxQhUv57vpAkwf+9wIXJWTl
-         reDTpdjwsY1IONFIkPTMrabMXLz50tabEBrNDCUMSZz8WMJ1oM+p6GdaqZY3m8606QVb
-         /zWElpuQsaDBnC94EmpmOhGjBsdZgJ5G3rYQGXQ1uf6e3nOJ+AUUe44YWxUac844LV/g
-         MSEiXA2e+C6guu+G2rBIRR/kSNCOSc4SnJGylVehogITpVd07M6x7jGzwMk7M+WQHV2Z
-         j9XE5pwBA/+g9kRjXiqDko5s7kUITkXl+DXrbxLEkl8w7gcUYUecWLciXuUWp/tN6o7g
-         I2PA==
-X-Gm-Message-State: AOJu0YzcGvLklWrvhp96HQfZCn/u5rZz8aLI2x5pWSNuDSVNscn1eJ+o
-	8uk0493SGQsj8LKFSpC3MkZwlwGCo3VUcVHx/I6d2lMyF0uuiYkSocuC
-X-Gm-Gg: AfdE7ckx6lEvnnixqc2vmARLDuIoibVBPeqi8mgE/S8zHxd4Pn2vNW0R3F4MMbeVxiL
-	P+EPOeghgLg/T1slaY4boRxg4erobAoaZveUOhDbRwqTGp60+cUN9KVzi0a1IrZdz37qlRKUNdX
-	BmfqVWTr9llL3clTwAHnw9aVhZdbuJaQWxlT7QBwq+7TFewa0NcFDBuDWj8VsJ9QIi6SRNny44D
-	gJ5vMwJG0D3Jo17e/r5lgU9FVtfbND2NpnYGGEweSkdYq774jWlcW1RXFYRBSEPaN5jk1IaI78d
-	Po6uWRXPp80Z+laCcsUU8l3e1tm6HTyAIEO6Tn0kzYI1OA7/La1k6CKwLndoR1vCVr0eyN2stnL
-	BPJap4pEvV2+6nmZa+pg8ouqvqa5jTZINNLI8nwyRlGrn3Qv/eMBMBHStbigodN0z0iKMhVJYl8
-	Jk02cufFv7EhTfZd8tpUvNrDLoMmMYj/+xltowZn7pWo0JPRETwaLiEib5288YeymWciTZS6oBY
-	QXX77ieZWyJqbc78rw3v54RzOEgek/nDEeQs7lMtr3wykS8UK5khC8Kc9+FSWMGKVjWK4icoYEq
-	wWSwSVrLIWbYrML7lsonZhvCdB9GOlgv7U8TURSBJVi5HwlDNfnqs+DuakAri+U59nMkaaBDXZy
-	yNDHTE7AMj+XNngwTLT6IJiA=
-X-Received: by 2002:a05:600c:3f16:b0:492:4e09:9fc1 with SMTP id 5b1f17b1804b1-493df08b92fmr54103775e9.15.1783423990091;
-        Tue, 07 Jul 2026 04:33:10 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0078d49sm53494575e9.0.2026.07.07.04.33.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 04:33:09 -0700 (PDT)
-Date: Tue, 7 Jul 2026 13:33:08 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Md Shofiqul Islam <shofiqtest@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, devicetree@vger.kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- andriy.shevchenko@intel.com, u.kleine-koenig@baylibre.com
-Subject: Re: [PATCH v9 0/2] iio: health: add MAX86150 ECG and PPG biosensor
- driver
-Message-ID: <20260707133308.00003e7a@gmail.com>
-In-Reply-To: <20260707112714.2261727-1-shofiqtest@gmail.com>
-References: <20260707112714.2261727-1-shofiqtest@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TOgoKv/V"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132801F00A3A;
+	Tue,  7 Jul 2026 11:45:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783424714;
+	bh=1mrl1wwjCISCNEpoo1wLxTiv4fJVeg4myWskOh5QdCQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=TOgoKv/Vx4qZdoV//5qONh8l9rmMGBYEn7hyG2izTYxNKJi8OexVr3cVCU84u5rgL
+	 ilX+XNtsO70I6zoMesIQeU/JqbuL2fWOAUBAK0WskvDup7rElWS5Lou2PyM1jzspwN
+	 BozZsHxdyEmdMkw1pdU1JKwUZX96AnwNfHAxPiqbPvfHPExN2Aarw4YLITIl2yTYcw
+	 UWtNl+twccxQXPsLEqMOhr9xxyMHp+yh7+IK5wy6dSCXJJ/mhGzcrXUo+59pkohXZ7
+	 A/dMCZtVCdTnFiyHau47pdtGcjn8mNlU9Hv887ak+4LI9y9fuQX8AGu76hiitMjz5F
+	 8w5e3qAdpSSOQ==
+Message-ID: <d1161919-b6ee-4736-81c8-0297b7900969@kernel.org>
+Date: Tue, 7 Jul 2026 13:45:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 1/2] dt-bindings: iio: health: add adi,max86150
+To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, devicetree@vger.kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, andriy.shevchenko@intel.com,
+ u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com
+References: <20260707112714.2261727-2-shofiqtest@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260707112714.2261727-2-shofiqtest@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Tue,  7 Jul 2026 14:27:12 +0300
-Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
-
-> Add DT bindings and an IIO driver for the Analog Devices MAX86150
-> integrated biosensor, which combines two PPG optical channels (Red/IR
-> LED) and one ECG biopotential channel in a single I2C device.
+On 07/07/2026 13:27, Md Shofiqul Islam wrote:
+> Add Device Tree binding schema for the Analog Devices MAX86150
+> integrated ECG and PPG biosensor.
 > 
-> Md Shofiqul Islam (2):
->   dt-bindings: iio: health: add adi,max86150
->   iio: health: add MAX86150 ECG and PPG biosensor driver
+> The device exposes two PPG channels (Red LED and IR LED) and one ECG
+> channel over I2C, with a 32-entry hardware FIFO and an active-low
+> interrupt.
 > 
->  .../bindings/iio/health/adi,max86150.yaml     |  65 ++
->  MAINTAINERS                                   |   7 +
->  drivers/iio/health/Kconfig                    |  17 +
->  drivers/iio/health/Makefile                   |   1 +
->  drivers/iio/health/max86150.c                 | 564 ++++++++++++++++++
->  5 files changed, 654 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
->  create mode 100644 drivers/iio/health/max86150.c
-> 
+> Signed-off-by: Md Shofiqul Islam <shofiqtest@gmail.com>
 
-Please stop sending new versions so quickly! I know it's tempting
-to quickly send a fix if you know what's wrong, but I was just pulling
-v8 to compile it and suddenly you send v9!
+Please slow down. Now two versions sent within one hour. Before also
+posting multiple times per day.
 
--- 
-Kind regards
+One version per 24h..
 
-CJD
+Best regards,
+Krzysztof
