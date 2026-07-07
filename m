@@ -1,90 +1,226 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAA6141DED1;
-	Tue,  7 Jul 2026 13:18:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F24313E29;
+	Tue,  7 Jul 2026 14:04:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783430292; cv=none; b=CkzTdBUU5WcQD86nq3o7fJXOgkZQMmOOqbH246GiObgweNnuU6UmTpVnWdAigMHgkSCgaYoH32ILyPhcrNm3Z6HuII0HfgGZ0LWTqahK5jMZH0LEwFfERQ5PD1SFXNaVLFY57amIsgXUzepmhuyrz5K4364ulc673OAT995zHTY=
+	t=1783433067; cv=none; b=hJbhNJ4oK48qSNQLEYznvebtVKd+ILBhDLojCt3LELS8iQLgoRSLJPC6MrgdW+zjqwmJ4Ca/0lReWYNCjmib6dUj0SNAyQApKZjadpPY88Xeo/++NaLK8hPpjK3NBtrSDoYQVWxJD+Ac11OSslb1YfbVlju+CTk653Ez+rEQ6fY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783430292; c=relaxed/simple;
-	bh=/ly3zhbN8UvM0mBvHsyaV05d2n7SVnkwc5cqb3pdRB0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R0AIPqx7hnM+m8S/Me8wv8NNBNIcBWNRy4ZPYGA2RYx6NWVk9rS0IaI61HGQZOXSZz/kfY/kPPcFL+SF6hoBbIL6rSEsuX+OJcjpUqw6J/VqM6T7toiP2bTYkrmbx9yPaef/AFAprnDN61Hy5VgWAO/9irbs0jrWnuP2LoTdKPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OGX1nf+9; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783433067; c=relaxed/simple;
+	bh=VVduthgyM0ls5bM2bLDjpqwtpzsb3QYUHtpF9OYaiZs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=NVCf4ro+K43zJYltnE4ziPnGPIs1Nf6yDjjrnpZUkw47o113uXgmAdOQkNwrgHp/pILBvAHjweFNr5dUdjan3lSYLeSVsmmGZPysgjYI1r/sWQskrFmOH2OUQ9V4S7OTZLeVwZ3ACbrc7NU0KzZO7xoU0PW76cf1yWGU9XJPRGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A7bzhUah; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OGX1nf+9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783430290; x=1814966290;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/ly3zhbN8UvM0mBvHsyaV05d2n7SVnkwc5cqb3pdRB0=;
-  b=OGX1nf+9aL0cgms1qB3jjrGS3ZWRw/sKhgzObkJ3px63381TpUwuxqV7
-   TMok6sGGYQ1MxSE8xel7lppU5AMZMYGmzhcoTaZXB/f/6fvTKVKskFho6
-   N9dr9bbIARsJI0Mp0GjMdiFM4PSaCxnxVIr4yCYJSirpdHwZppUlGS/lB
-   b/n6IjzFw1Pquz3sSc+K/y3XhI8o4+IBuhaq1UQ21cDlnBaWtIPAcY1ZU
-   04W5k6Iazb//Ow/LfuSUjTJ9BHpesi+Gr6M3BPxO/p0zvsSNGb0OkIg3Y
-   WMCd7HwqvN8wLZDFdIzkX1iQ46Dcbw0NcFIZnV8YvlhUz9BCPn9DqZCdO
-   Q==;
-X-CSE-ConnectionGUID: aEIe5ST5Qi6vUjkMfTT8Dg==
-X-CSE-MsgGUID: T8PhNBB5RqWgDshvKZifrA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11840"; a="84167302"
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="84167302"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2026 06:18:10 -0700
-X-CSE-ConnectionGUID: WsO3CRuiQMilZkW6KgdYNA==
-X-CSE-MsgGUID: wMffaHyNQPaTlSUC+Mp9gA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="257569504"
-Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.36])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2026 06:18:04 -0700
-Date: Tue, 7 Jul 2026 16:18:01 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: jic23@kernel.org, sboyd@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de,
-	gregkh@linuxfoundation.org, srini@kernel.org, vkoul@kernel.org,
-	neil.armstrong@linaro.org, sre@kernel.org, krzk@kernel.org,
-	dmitry.baryshkov@oss.qualcomm.com, quic_wcheng@quicinc.com,
-	melody.olvera@oss.qualcomm.com, quic_nsekar@quicinc.com,
-	ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org,
-	luca.weiss@fairphone.com, konrad.dybcio@oss.qualcomm.com,
-	mitltlatltl@gmail.com, krishna.kurapati@oss.qualcomm.com,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-	linux-pm@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH v12 00/12] SPMI: Implement sub-devices and migrate drivers
-Message-ID: <akz8iRW2emM7B7n7@ashevche-desk.local>
-References: <20260707111829.180158-1-angelogioacchino.delregno@collabora.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A7bzhUah"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7892EC2BCB8;
+	Tue,  7 Jul 2026 14:04:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1783433067;
+	bh=VVduthgyM0ls5bM2bLDjpqwtpzsb3QYUHtpF9OYaiZs=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=A7bzhUahOPz0laqExxJJloa/dCKpVhwOlo4UqpanIQ8nOw/7uS+dppxMSrvmbAc1x
+	 Y86dfg27VUuFJExZmRlIv5Yoj5H+14x4KyGN1noAr+GExXMwzQlo7wYCiNgXrKmnhI
+	 7S+k6MD/sHVypGN4VBnQ05McKUl2MwP7Ij6sHJChHbV6r2nMaZA78V3q/5LhGji3vF
+	 jG8jql23V7GWpdQdr41fri+no2PBBSi9Q328JdCQrr9esfV6gqLWK9UR3cXc/ZWTLh
+	 79F/Lxn/Obd7tb73GKum8CEpzRXO6WCKJcAMSoNohhJZnScZiNzrhCvqBQHaCRlmPh
+	 Ij54c4oOInw8g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53226C43458;
+	Tue,  7 Jul 2026 14:04:27 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Subject: [PATCH v7 00/17] AD9910 Direct Digital Synthesizer
+Date: Tue, 07 Jul 2026 15:04:21 +0100
+Message-Id: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260707111829.180158-1-angelogioacchino.delregno@collabora.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAGYHTWoC/23Q3WrEIBAF4FdZvK7FGX8Se9X3WHqhcdwV2lhMk
+ S1L3r1mKaQlXh7Bbw7nzhYqiRb2crqzQjUtKc8tDE8nNl3dfCGeQssMBRqBMHIXrAXBU8o8lFS
+ pcOtlQFATaois/fssFNPtYZ7fWr6m5SuX78eJCtvrr4aio1XggkuPRjmnRgfi1c3uPV+ep/zBN
+ q7iTshuoYqNoMFGKz1NEeBAyJ1QMPQI2Qi03soB0CGOB0LthBbdFqoRAY2PAQWRDAdC/yH6LfS
+ 2BWhrp3GUoNyBMDth+luYRgwWUMfoScn/c67r+gNv4RiRAgIAAA==
+X-Change-ID: 20260218-ad9910-iio-driver-9b3d214c251f
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783433065; l=7884;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=VVduthgyM0ls5bM2bLDjpqwtpzsb3QYUHtpF9OYaiZs=;
+ b=8EistSINOpKLMgs2rNuyOXAOeECwKPLhFJOvW3sHtajgED8gDlIvXCRvIt3m3uuXouDGC62Rg
+ xZ/iaM8nFnkCoUqeAEquRqyh6UHE+ysKqZFsL/XLkVd+EKEF/uAfveW
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Tue, Jul 07, 2026 at 01:18:17PM +0200, AngeloGioacchino Del Regno wrote:
-> Changes in v12:
->  - Removed call to of_node_put() for failure as it's being already
->    done in spmi_dev_release(), as pointed out by Sashiko
->  - Fixed usage of the new helper in all users (it's too hot today, sorry)
+This patch series adds support for the Analog Devices AD9910 DDS.
 
-You have send two versions in a row and effectively ignored my comment.
-What is going on? Perhaps you need to slow down, find a cool place and
-start over?
+This is a follow-up of the V3/V4/V5 discussion. For V1, we reached into
+this channel composition agreement where physical channels may have
+sub-channels. That adds the flexibility necessary for this design.
+During V2, some feedback indicated that the ABI is too device-specific,
+so DRG/RAM destination and operating modes are configured through
+alternate paths and profile channels are created. In V3/V4/V5, there was
+further discussion on the ABI and on mode priority debug.
 
+The AD9910 DDS core can be driven through several independent mechanisms:
+single tone profiles, a digital ramp generator, an internal RAM playback
+engine, a parallel data port, and output shift keying. Each of these
+represents a distinct signal path into the DDS accumulator, so the driver
+models them as separate IIO output channels (IIO_ALTCURRENT, IIO_PHASE
+and IIO_FREQUENCY). This per-channel separation allows userspace to
+configure each mode independently through its own set of sysfs attributes,
+and to enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying
+on the hardware's own mode selection architecture.
+
+The AD9910 register map is not suited for the regmap framework: register
+widths vary across the map (16, 32, and 64 bits). The driver instead
+implements direct SPI access helpers with a software register cache, using
+type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
+write,update}) that handle endianness conversion and cache coherency.
+
+Registers are cached for several reasons. The control/function registers
+(CFR1, CFR2) are frequently queried to determine the current operating
+mode (e.g., checking RAM_ENABLE before every profile register access),
+and caching avoids repeated SPI read transactions for what are
+essentially state checks. The cache also enables efficient
+read-modify-write updates on multi-byte registers: the update functions
+merge new field values with the cached register content without issuing
+a SPI read, and skip the write entirely when the value is unchanged.
+Finally, the profile registers serve dual purposes depending on whether
+RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
+in normal operation but are repurposed for RAM playback configuration
+(start/end address, step rate, operating mode) when RAM is enabled. A
+shadow register array (reg_profile[]) preserves the inactive mode's
+settings across transitions, so no state is lost when switching between
+single tone and RAM operation.
+
+RAM data is loaded through firmware upload infrastructure. Userspace
+writes the waveform data as a raw binary buffer (up to 4096 bytes for
+the full 1024x32-bit RAM), and the driver reverses the byte array and
+transfers it to the device in a single SPI transaction. Per-profile
+start/end addresses and playback parameters (operating mode, step rate,
+no-dwell control) are also configured through firmware update, using
+metadata in the header.
+
+Streaming data to the DDS core through the parallel data port at the
+PD_CLK rate is not covered by this series. That functionality would
+be added in a separate patch series, building on top of the IIO backend
+infrastructure to provide a proper buffered data path.
+
+Kind regards,
+
+Rodrigo Alencar
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+Changes in v7:
+- Use seq_buf instead of scnprintf() in __iio_chan_prefix_emit().
+- Add tests for __iio_chan_prefix_emit().
+- #clock-cells as required in the dt-binding.
+- Add drctl as pwm in the dt-binding.
+- Check refclk freq range when pll is disabled.
+- Address other minor feedback (e.g. sashiko's ones) 
+- Link to v6: https://lore.kernel.org/r/20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com
+
+Changes in v6:
+- Introduce IIO_FREQUENCY channel type.
+- Replace altvoltage channels for altcurrent.
+- DRG and Parallel Port destination handled with different channel types.
+- Parent attribute shows channel prefix rather than label.
+- Link to v5: https://lore.kernel.org/r/20260517-ad9910-iio-driver-v5-0-31599c88314a@analog.com
+
+Changes in v5:
+- Drop RFC tag to the patch series.
+- Address sashiko's comments.
+- Add parent-child relationship between iio channels.
+- List vs Table changes in documentation.
+- Add crc and version check to RAM mode firmware update.
+- Link to v4: https://lore.kernel.org/r/20260508-ad9910-iio-driver-v4-0-d26bfd20ee3d@analog.com
+
+Changes in v4:
+- Digital Ramp step exposed as a rate of change.
+- Dwell modes of Digital Ramp are controlled with dwell_en attribute. 
+- Disable of active profile behaves as a software powerdown.
+- Expose debugfs attributes to show mode priority.
+- Add 64-bit debugfs reg access support into iio core.
+- Link to v3: https://lore.kernel.org/r/20260417-ad9910-iio-driver-v3-0-29b93712a228@analog.com
+
+Changes in v3:
+- RAM custom configs (address range, destination, modes) loaded during firmware write.
+- DRG destination defined when attrs are written.
+- DRG modes broken down into enable attrs for ramp up/down channels.
+- Add separate profile channels, switching done through enable attr
+- Link to v2: https://lore.kernel.org/r/20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com
+
+Changes in v2:
+- Device-tree bindings changes.
+- RAM loading to use firmware update interface.
+- Rearrange of channels into a hierarchy.
+- Link to v1: https://lore.kernel.org/r/20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com
+
+---
+Rodrigo Alencar (17):
+      iio: ABI: add attributes for altcurrent channels
+      iio: ABI: scale and offset for frequency/phase channels
+      iio: ABI: add parent entry for iio channels
+      iio: add IIO_FREQUENCY channel type
+      iio: core: support 64-bit register through debugfs
+      iio: core: create local __iio_chan_prefix_emit() for reuse
+      iio: test: add kunit tests for channel prefix naming generation
+      iio: core: add hierarchical channel relationships
+      dt-bindings: iio: frequency: add ad9910
+      iio: frequency: ad9910: initial driver implementation
+      iio: frequency: ad9910: add basic parallel port support
+      iio: frequency: ad9910: add digital ramp generator support
+      iio: frequency: ad9910: add RAM mode support
+      iio: frequency: ad9910: add output shift keying support
+      iio: frequency: ad9910: show channel priority in debugfs
+      iio: ABI: add docs for ad9910 sysfs and debugfs entries
+      docs: iio: add documentation for ad9910 driver
+
+ Documentation/ABI/testing/debugfs-iio-ad9910       |   60 +
+ Documentation/ABI/testing/sysfs-bus-iio            |   46 +
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     |   31 +
+ .../bindings/iio/frequency/adi,ad9910.yaml         |  209 ++
+ Documentation/iio/ad9910.rst                       |  792 +++++++
+ Documentation/iio/index.rst                        |    1 +
+ MAINTAINERS                                        |   19 +
+ drivers/iio/frequency/Kconfig                      |   21 +
+ drivers/iio/frequency/Makefile                     |    1 +
+ drivers/iio/frequency/ad9910.c                     | 2356 ++++++++++++++++++++
+ drivers/iio/industrialio-core.c                    |  247 +-
+ drivers/iio/test/Kconfig                           |   14 +
+ drivers/iio/test/iio-test-channel-prefix.c         |  246 ++
+ include/linux/iio/iio-opaque.h                     |    2 +-
+ include/linux/iio/iio.h                            |   12 +
+ include/uapi/linux/iio/types.h                     |    1 +
+ tools/iio/iio_event_monitor.c                      |    2 +
+ 17 files changed, 3949 insertions(+), 111 deletions(-)
+---
+base-commit: 093239070573637ad2b4cb56abc9c4c7ee109294
+change-id: 20260218-ad9910-iio-driver-9b3d214c251f
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Rodrigo Alencar <rodrigo.alencar@analog.com>
 
 
