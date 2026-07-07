@@ -1,47 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4476F26F29B;
-	Tue,  7 Jul 2026 02:09:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E631A08AF
+	for <linux-iio@vger.kernel.org>; Tue,  7 Jul 2026 02:17:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783390154; cv=none; b=H2XV09OTy3TWJf78sZaCSWqIFgF89htZYmPmsZkoGPViHOkVDzxYwk51rjt7Vm1olWADdte3jlEjCHx0f4Lv97P+ESDKP6ldmaSwfMtBVyXrjcXBD0z0KLFVtqdHqC/R4k4WTF7NkGx14pN9Lu5+MEx/RMiq2+KDLClq70+9CVA=
+	t=1783390656; cv=none; b=GVUU5oXPIuOYxr6s/66s5neaLKb/oBCXPtxJr3mPGpULae0D1X0r70WFcPZ5bJE65HJW/9JCNra5fktiyYlxz/z5noUAB2/KI0v88pdSvddWjFh2g/cy2EkxvytIoxbP0uI74ubgkAxWn4ZeWqaMzHr495O0X5uToDfckxmA/hw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783390154; c=relaxed/simple;
-	bh=FVtVAaSuJTY7vHYjip/kdPM2L3aNFrm1fPM3MEPpF3g=;
+	s=arc-20240116; t=1783390656; c=relaxed/simple;
+	bh=HnzjIPigp5YlbXhzec/OSoyFHt+Et8hPiNo9X50iG+g=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oS5yss+Zjsjaval64OJgOwFgA50B3E3KqNcv/hc8OMKvSnDq/wYRWHw69f21YaFIL2uZ++2Cip70aka7FY0xD9t8KQIUiLsqCsLA2OyWrbvhKxVKhs0pxTS5IA9+TDyGdNJFWzDFxNuwKHoACDM4yGb5Td7z7WetmeyV774JIf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=COKZ92la; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=MA+gK2I0g69+kmCJ8niwxc0AH5CTp+32jOQ3PCkV+oGSnP3ngksdN3ioxsXS5JxUV48lqNK9XB1CR89WteXHzUsB6I68oYw2fS/MFIKbw7b2CVq9JOuOrv58ne6Ki07Tm0EIZaQLNzfiHfGgAe0ryCSbDzG3ByIlXXfrpCOXh+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JkOBg7dR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="COKZ92la"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 261E81F000E9;
-	Tue,  7 Jul 2026 02:09:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JkOBg7dR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9341F000E9;
+	Tue,  7 Jul 2026 02:17:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783390152;
-	bh=X+GavMHJxo/C0eP06aCFkaFhtwTiuGsoQw2pkGdhRkc=;
+	s=k20260515; t=1783390655;
+	bh=yKTJuEYoIPIC/8v3gbbAO4sDYxiRckBQiIajkE5r/+o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=COKZ92laQhl1csIEkPD6FHIBolJNsjd27MEkSM1QUkHmeCLiZzXhiSbxzh+80bodW
-	 Eo9LRa5hhnpXN+NLjvJp085C/ja6Wp0kSwiGNSJNmoRY0VMOuRk0HtTHPWoPRWbzUm
-	 wPYcrpPXbnkCqJcf8CqOEAQDZDMcWc3rQ5UWFuqQRmtv8Rk8ky7xVSrz5KvRasbxHi
-	 UMVdqAoIRjPMxTVHGtxZ0RjWrfxUPIfEr2WQN3lodMRh6jyJykB/lLCHPIfb70YEsK
-	 myxcIfD0CkLgRK/xGp5L/yinB0F6Jm8aVbqq76O0bX9Fu1ja5G/x8EiONakVuWhlPY
-	 LEGrsrv//djCQ==
-Date: Tue, 7 Jul 2026 03:09:07 +0100
+	b=JkOBg7dRWWjjkSNJmlcRPKoZQ7wJjW9L/Vk6YgFbEn7cpKXVSjSJsGhjqOJxyivjf
+	 8jU0q6WpK8pG9rDtP9mPH6H4dmuyE0b7XWhXapP8fkAM2c2yQ89Pq0kWIKg52ghXvf
+	 CoUd0jM8lLLNtAWgeMoKIatr+UoSdWTiqwkW0+sJMt2ziaGjSXrQaDi/O9ICKZWnbR
+	 g0GhZj/ilM7W52PPDGWSRkld8xk2ukk6INUYnZDYm/kYZnoYLVOnsiAPdgrKesMC9R
+	 EcNT7AKNmv+LJsXgyQfWu5tl1tQ7XJgbNwthfMh/Geti4yPnj8uqFbAO7FtFAQ4/pm
+	 YaaRRxt2SdSIg==
+Date: Tue, 7 Jul 2026 03:17:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Simon Glass <sjg@chromium.org>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org, Fabio Estevam <festevam@nabladev.com>,
- linux-arm-kernel@lists.infradead.org, Andy Shevchenko <andy@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Jonas Karlman <jonas@kwiboo.se>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/12] dt-bindings: iio: adc: rockchip-saradc: Add
- RV1106 compatible
-Message-ID: <20260707030907.1502dba6@jic23-huawei>
-In-Reply-To: <20260706195818.3906949-10-sjg@chromium.org>
-References: <20260706195818.3906949-1-sjg@chromium.org>
-	<20260706195818.3906949-10-sjg@chromium.org>
+To: Md Shofiqul Islam <shofiqtest@gmail.com>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v6 0/3] iio: health: add MAX86150 ECG and PPG biosensor
+ driver
+Message-ID: <20260707031731.0193f581@jic23-huawei>
+In-Reply-To: <6a4c2e6c.e49deeb0.d08a9.bbaa@mx.google.com>
+References: <20260706112254.1262002-1-shofiqtest@gmail.com>
+	<20260706185041.0e31ec94@jic23-huawei>
+	<6a4c2e6c.e49deeb0.d08a9.bbaa@mx.google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,39 +47,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon,  6 Jul 2026 13:58:05 -0600
-Simon Glass <sjg@chromium.org> wrote:
+On Mon, 06 Jul 2026 15:38:36 -0700 (PDT)
+Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
 
-> Add the compatible for the SARADC of the Rockchip RV1106, which is
-> compatible with the RK3588 variant.
+> Jonathan,
 > 
-> Signed-off-by: Simon Glass <sjg@chromium.org>
-> ---
+> You are right, and I apologize. I sent v6 before working through your
+> driver review, which wasted your time and the time of the other
+> reviewers. That was a mistake on my part.
 > 
->  Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml | 3 +++
->  1 file changed, 3 insertions(+)
+> v7 is ready and addresses all feedback from your July 2 driver review:
+> the driver has been rewritten to use the kfifo buffer pattern (like
+> MAX30100/MAX30102), the IIO_TRIGGER dependency has been removed,
+> register field macros have been renamed with the correct convention,
+> IIO_DMA_MINALIGN and IIO_DECLARE_BUFFER_WITH_TS are used,
+> regmap_noinc_read length is corrected, and the remaining style points
+> (fsleep, NSEC_PER_MSEC, regmap_set/clear_bits, goto cleanup) are all
+> addressed. The DT binding changes from your v5 review were already in v6.
+
+v7 still has the separate patch for MAINTAINERS which has been called
+out several times already.
+
+
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> index 6769d679c907..c3bb03dc4853 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> @@ -24,6 +24,9 @@ properties:
->        - items:
->            - const: rockchip,rk3576-saradc
->            - const: rockchip,rk3588-saradc
-> +      - items:
-> +          - const: rockchip,rv1106-saradc
-> +          - const: rockchip,rk3588-saradc
->        - items:
->            - enum:
->                - rockchip,px30-saradc
-
-Follow the style of this one...  I.e. use an enum and
-then a const given both the rv1106 and rk3576 fallback
-to the rk3588
-
-Thanks,
-
-Jonathan
-
+> I will send v7 shortly.
+> 
+> Md Shofiqul Islam
+> 
+> 
 
