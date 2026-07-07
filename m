@@ -1,37 +1,33 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E50C2E0938;
-	Tue,  7 Jul 2026 04:07:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAD2842087A;
+	Tue,  7 Jul 2026 06:21:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783397278; cv=none; b=QBLKd7hywBnxKlcizWuyqEVnwtN31q6XgKgWRsMCaOv6tan5s2MNUb3u/YAgCCjKJMNsMXFKdhQ3kYCzIe9TKVkEnBQNWO37t3Wfl7Kc9+xIosIR4WMh+T5Mm9pmp7GevXBJPfhSU8QeQg9OPVGGENWT715U/GfLPfXlT7jDf4M=
+	t=1783405298; cv=none; b=kBkF9pmQwFAPjroA+0K17Rjl/ULFdZQih+GtQ/Xlhj/5oQQyTrLmRn6iidlupqMH93kGmkmZtdauiwrlSr2U7cCtWPGqy41wMSNKgtWGAzSjMjyBbrHAqm9d74PqfKTmE+695U4sPnhiEsmtQVj9mb2f4WXvaNvPAf2bD9Rtsvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783397278; c=relaxed/simple;
-	bh=Mnm+QDM18jaBTnITZ8LhUvY8UH/uLkw8ljECX+Rp3Fc=;
+	s=arc-20240116; t=1783405298; c=relaxed/simple;
+	bh=bmtmBvLBBHyNCSkZhuuJygsSFCeVgPb5ffhPJ9+qdpg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=r+qtIA7yzetLs+VHxjS9o3ZPZTnImeKZTwQLKudZOCSu81L0k/2RAa0c7o2UM7Q5VQ/YBk36+wf0bpwuhI7GD0z6pdZbjCfUzN/txWBPq7stf3Xfw5UVsst9WYtxmey6MErySKo1CCX5HuCE5ikxloR/7GN0x5XSqNRrBo3tWDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ZGmnpZJ1; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	 In-Reply-To:Content-Type; b=bFraBj+SW4Te9ah4v9x1/UEtoKTYVh/lsW5ZtwTwd9NlltOs/Yq1W+oP609Am0u9xniSHJ1VTKRqzm0UKyIEJKXFucNheP1FPoTHg2jHex6a+E3zQmwyW4tlxe9AQXgNG1xuQMCAidawKUm7vO0HBVKU8yPYolGKtA75bnZrECE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eYcKsje0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZGmnpZJ1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=/uUqvGVDn84bGWFIJxMYn8XYjtsG+6tV2VQh01XaWJ0=; b=ZGmnpZJ1BzF6Y29UwYPTMK1EuW
-	jxwxhtVNvdmPPWiqAwdQYPT2QkcadWid073IGOlQ7yWsGs6JEZHuEZ3gGjC+pRbyq54nJ3kcjU1fv
-	89ukb59XWzDqGTFF+SNxL6h1HL70nERuP9Aloy+8IFPvlQNFjQSt7vzThlhvtwISp7Xcqb9KvlgcP
-	Np62EmuDKEJlGhvKzGtFEzwaGdaVpP/v1Ix4hsWLFzJtj6bHnLkWuYrV0nFjMEz4cVQ4jX5+bWZeM
-	iJ9GZFGIVGys7kae+thMNO8+43bIrLZy1bacYEs5X9RRFhbKR0VVbZqQS268PWTDavbO5o7OEiuF1
-	E5X5FLxQ==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
-	id 1wgx68-0000000E3Hm-0Jlr;
-	Tue, 07 Jul 2026 04:07:52 +0000
-Message-ID: <42c9f129-2609-40ab-913c-56ebf9aeda1a@infradead.org>
-Date: Mon, 6 Jul 2026 21:07:51 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eYcKsje0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB471F000E9;
+	Tue,  7 Jul 2026 06:21:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783405297;
+	bh=ertU3OhHj8elRfnKWMPsNoTC7122ujWETR64JA9otkc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=eYcKsje0YxFFooyhhbYMKZyWWTKDD8p0I57ODfxghjt5mwfC0SkYiqWVWTjOoDLqk
+	 D9B/ZPi4X9ClIVvyXZYav7dQFukE4Ds8PeTBAD02CErZsswhNK3TmwBGYyEegZ9Yk9
+	 c764dFoKGDTfG1wZ3mhclo9BW7BJF7R2gIklYe80hboZQ+JPV5kfsG/+YkhUv3Crdm
+	 KxptejBVWUO55UauU45r8q/RsQJX9DMdEPcs2fhWduXK9nhxTVBC4OYr3UCfoGWuYz
+	 lB3B1SQuhUxF0OElJgWdUg+oYlAr8St7fgUsv7zNbMuHWHuyr5T+RglJ+P9Y+Fmnbw
+	 2xw9qaYrPdYAQ==
+Message-ID: <63bb8ff8-00ae-4849-af2a-fe2121f366d2@kernel.org>
+Date: Tue, 7 Jul 2026 08:21:32 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,148 +35,90 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/5] Documentation: iio: add Open Sensor Fusion driver
- overview
-To: Jinseob Kim <kimjinseob88@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260707014525.1015-1-kimjinseob88@gmail.com>
- <20260707014525.1015-3-kimjinseob88@gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ti,ads1298: add ADS1299 EEG
+ ADC variants
+To: Md Shofiqul Islam <shofiqtest@gmail.com>, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org
+References: <20260706112614.1262241-1-shofiqtest@gmail.com>
+ <20260706112614.1262241-2-shofiqtest@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20260707014525.1015-3-kimjinseob88@gmail.com>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20260706112614.1262241-2-shofiqtest@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-
-
-On 7/6/26 6:45 PM, Jinseob Kim wrote:
-> Document the Linux IIO mapping for Open Sensor Fusion devices.
+On 06/07/2026 13:26, Md Shofiqul Islam wrote:
+> The ADS1299, ADS1299-4, and ADS1299-6 share the same SPI interface
+> and register map as the ADS1298 ECG ADC family but are designed for
+> EEG and biopotential measurement.  Key differences from ADS1298:
+> - PGA gain up to 24x (vs 12x for ADS1298)
+> - Internal reference is always 2.4V (no 4V option)
 > 
-> The overview explains that sensor channels are discovered at runtime
-> from mandatory capability reports. It also documents that OSF0 is a
-> wire-format detail and that protocol_major and protocol_minor carry
-> protocol compatibility information.
-> 
-> Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
+> Add compatible strings and update the vref-supply description to
+> document the ADS1299 reference voltage behaviour.
 
+You already received below comment, so please do not expect us to repeat:
 
-Tested-by: Randy Dunlap <rdunlap@infradead.org> # docs build
-Thanks.
+Please use scripts/get_maintainers.pl to get a list of necessary people
+and lists to CC. It might happen, that command when run on an older
+kernel, gives you outdated entries. Therefore please be sure you base
+your patches on recent Linux kernel.
 
-> ---
->  Documentation/iio/index.rst              |  1 +
->  Documentation/iio/open-sensor-fusion.rst | 72 ++++++++++++++++++++++++
->  MAINTAINERS                              |  1 +
->  3 files changed, 74 insertions(+)
->  create mode 100644 Documentation/iio/open-sensor-fusion.rst
-> 
-> diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-> index ba3e609c6..2713ec5e0 100644
-> --- a/Documentation/iio/index.rst
-> +++ b/Documentation/iio/index.rst
-> @@ -38,4 +38,5 @@ Industrial I/O Kernel Drivers
->     adxl345
->     bno055
->     ep93xx_adc
-> +   open-sensor-fusion
->     opt4060
-> diff --git a/Documentation/iio/open-sensor-fusion.rst b/Documentation/iio/open-sensor-fusion.rst
-> new file mode 100644
-> index 000000000..c28886f3b
-> --- /dev/null
-> +++ b/Documentation/iio/open-sensor-fusion.rst
-> @@ -0,0 +1,72 @@
-> +.. SPDX-License-Identifier: GPL-2.0-only
-> +
-> +Open Sensor Fusion
-> +==================
-> +
-> +Open Sensor Fusion is a sensor aggregation hub interface. The Linux IIO driver
-> +receives OSF protocol frames from an attached device and registers matching IIO
-> +devices for the sensor classes supported by the driver. The actual sensor
-> +channels are discovered at runtime from mandatory OSF capability reports.
-> +
-> +This document is a driver-facing overview for the Linux IIO mapping. The full
-> +wire protocol, firmware behavior, and hardware model details belong in the Open
-> +Sensor Fusion project documentation.
-> +
-> +Device Model
-> +------------
-> +
-> +An OSF device sends binary frames from the device to the host. Devices using the
-> +``opensensorfusion,osf`` compatible are expected to provide
-> +``CAPABILITY_REPORT`` messages so the host can discover which sensor streams are
-> +available. Device Tree describes the attached OSF sensor aggregation hub; it does
-> +not enumerate the individual sensors discovered at runtime.
-> +
-> +The currently supported Linux subset exposes:
-> +
-> +* accelerometer samples as ``IIO_ACCEL`` X/Y/Z channels,
-> +* gyroscope samples as ``IIO_ANGL_VEL`` X/Y/Z channels,
-> +* magnetometer samples as ``IIO_MAGN`` X/Y/Z channels, and
-> +* temperature samples as ``IIO_TEMP``.
-> +
-> +Protocol Scope
-> +---------------
-> +
-> +The driver supports OSF protocol major version 0 for the IIO receive path.
-> +The current wire magic is ``OSF0``; that string is a wire-format detail and is
-> +not the Linux driver identity. Device Tree keeps the generic
-> +``opensensorfusion,osf`` compatible rather than naming a product such as OSF
-> +GREEN or a wire magic value.
-> +
-> +Protocol versioning is carried by the ``protocol_major`` and ``protocol_minor``
-> +fields at fixed offsets in the OSF frame header. The driver currently
-> +supports ``protocol_major`` 0. ``protocol_minor`` changes within major version
-> +0 are intended to remain backward-compatible within the fixed header layout.
-> +Incompatible wire-format changes require a new ``protocol_major``. A future
-> +device that cannot expose compatible version discovery through that fixed
-> +header layout would need a different Device Tree compatible.
-> +
-> +The Linux driver handles device-to-host frames for:
-> +
-> +* ``SENSOR_SAMPLE`` buffered and direct-mode sample data,
-> +* ``CAPABILITY_REPORT`` based IIO device registration, and
-> +* ``DEVICE_STATUS`` cache updates.
-> +
-> +Vendor-private message types are ignored. Command transport, calibration
-> +control ABI, fusion output ABI, and runtime capability removal are outside the
-> +Linux IIO receive path.
-> +
-> +Timestamps
-> +----------
-> +
-> +OSF frames include a device-side ``timestamp_us`` field. Buffered IIO samples use
-> +an IIO timestamp captured on the host when samples are pushed to IIO buffers.
-> +The driver does not correlate the device timestamp with the host IIO
-> +clock.
-> +
-> +Compatibility Notes
-> +-------------------
-> +
-> +The project protocol documentation should define the compatibility rules for
-> +reserved fields, optional flags, and trailing extension data. Until those rules
-> +are finalized, the Linux decoder keeps conservative bounds checks around the
-> +currently supported message layouts.
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e4df9d8dc..17c80b55b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -20015,6 +20015,7 @@ OPEN SENSOR FUSION
->  M:	Jinseob Kim <kimjinseob88@gmail.com>
->  S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/opensensorfusion,osf.yaml
-> +F:	Documentation/iio/open-sensor-fusion.rst
->  K:	opensensorfusion
->  
->  OPENCOMPUTE PTP CLOCK DRIVER
+Tools like b4 or scripts/get_maintainer.pl provide you proper list of
+people, so fix your workflow. Tools might also fail if you work on some
+ancient tree (don't, instead use mainline) or work on fork of kernel
+(don't, instead use mainline). Just use b4 and everything should be
+fine, although remember about `b4 prep --auto-to-cc` if you added new
+patches to the patchset.
 
--- 
-~Randy
+You missed at least devicetree list (maybe more), so this won't be
+tested by automated tooling. Performing review on untested code might be
+a waste of time.
+
+Please kindly resend and include all necessary To/Cc entries.
+
+Best regards,
+Krzysztof
