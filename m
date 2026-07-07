@@ -1,195 +1,259 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72193F44DB
-	for <linux-iio@vger.kernel.org>; Tue,  7 Jul 2026 10:52:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20AB33F44D0;
+	Tue,  7 Jul 2026 11:18:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783421543; cv=none; b=kQBHzHDmAjKso8BmZ0OSfPt1YkO711Hc5HmiCjjU1TrRCPe40u6etF47IGV1Ff//hVDchBhJGkyA9LJ9miWuKoKXWTgfkmfW5SdRRQ0FmKyFbZxaX/SGBgqbbq6vHJ3DlTIN1FtfE5a+mfztdEcyMFQa0w4QjKCW1EpwXxdweFw=
+	t=1783423115; cv=none; b=lCz5B7yQP05DUx6c7D0/as1f3sSmdtWKvp+AX/ctYznNcAgRFA3blBcFtDkTVmO62EktqIRA483Bi5zOpSwO8O+zEfDkkeaaeCqvhSNRtkwVfd1DOri7zbwg99W1kSbCyGdUVmFvvAji/dZeS5RLKlodqn+uVTINs/SpVFQC5ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783421543; c=relaxed/simple;
-	bh=U1qvcFxLKrwEquFjkv7uGnL3tOB3rFVzjZa3qamyz38=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K0+vThhlJDfwcpfjgYWBpq/MHkuMb4ZRVr9ofLI5lzHO6wo772KXgiq+qnpTBSr8yEm2OkIG88BxO+3rYzjmmXyvE/AAHrO+dCns1Hb82rbOjuBOPcFHYPvaWfL1wfKueSO1B0xN9anAC3nKW5T8HFe8cETongc/7k6NWQuuYGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D2S6VbhY; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783423115; c=relaxed/simple;
+	bh=0IHx3+JVBn8IQqr6PlENFho7o3CLrDb4cjVOt/1v/LE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LcQ3mnTfFuUSdmSflYntTq1i4X8c5XCALXeqS9g5BwUaLLT2rWUaq8O6WgxdzFqAKNhjr2kPB4JCw4shHrwIHm1BtrmoMMShFRQrkqoiQZRTzZids2I4nyUBrmoFs9xLKTEUyyf+zJWJg2VsQj9dGrQi/fl/vC8DKEgz4xecG6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=K//ZYtum; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D2S6VbhY"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493b966dd74so13774425e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 07 Jul 2026 03:52:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783421540; x=1784026340; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=xD/I4R2QXs7s+95dAxGC6Ggop7ankDcEDMFD0oYB+2Q=;
-        b=D2S6VbhYrlD2hqzn8sgapX710ygbTyX9A2BBWrt76Tx7hhh5DriMr8+490ICdkiCFw
-         kH1zKsmQIKmcCUXiNLk12MG1iOpm14y2fU2IweNe8VJx1t46MIXKdYVC/7gcvGVnWcrW
-         swl5DlcYq5R7HYmzehkMvTwdJ9PKINaP8mK8zVIPJkPZIhZrWop5QdklUSAxH1Sij+Su
-         w+f3muko16oxQMzZ9spFWxlN2kg7mcBLb8tXSfauqoGE0s/5rE5iGNdWedxlUvR7GfAa
-         0BoFpEaTePSRwCvz/IaIg3kiDRaxeFmiwVGv3FP3LnucQs/v3YcwGXDNIhO6N38NkEWh
-         bRWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783421540; x=1784026340;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xD/I4R2QXs7s+95dAxGC6Ggop7ankDcEDMFD0oYB+2Q=;
-        b=O0R9CWW3ghC2kmKbwifviku9yy+fDqXOxXyZawbUwMmIy/WV3SY54OSnCNV2FqsAJt
-         6gIX26MMW6t4nQ8Ltnnn7U9XCOgCWxyMMlVyPeazuG/DGWGF7P3PIZFsLW7fgDOqmVic
-         8HCTnBs5RhrsY/whLc5fZjfpYeKIClDTrpCnsOSZlUwRFdWyChGoWBP/blRCJAV0vWcF
-         /XfG8KEuap9MHfR4RDpZ2BlZDHyGevqHHEyDNKzBhiazeRAmWYsIkSxT1e3yGiz57DBW
-         N8/Wzn3f0mDKX49IU57g02Vk6ezXmLU7DcHMFNbKXsf7wofm1FOZkqGo1uR1Im22Lihh
-         7Zcw==
-X-Forwarded-Encrypted: i=1; AHgh+RoYyYkUQYuvN4b2TYJXYkCRtqJnK1/ZJ12RWgoTeSUdBhRWGjnUJik5qCeQTq448PZwYv86OIEWIXQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxuw3p8/gfr42WZnUPfyZafPK6pmeT32rWa5mBxxsHyOcCUuHR2
-	5/wHQjMI7qGc0tGI60QKFF2GRXzbL1UQVnQ4bSRylUQu0hi3acTFqT3D
-X-Gm-Gg: AfdE7clUxPHoDmvgwZnIwB1iRHfpuVJ52Pa8GmNkCUfgxQXgJ7p5+qsHSt311KeL05Y
-	LCy2nHAw9xaxwiEWsGOFq6Ku/StSkhp00TXjdAJd4j8MuRuWRFb33Gr+4173XGqHO7tNLbZKDNI
-	8F/ae1IRRF2HfWXxs9XvObhO0HLEK+YGLybXGb4/yVJY2tYvKREei6Gl2bAxvNkVmOJm2FI4rlz
-	WcoGYbu/lzEC/bhUToktVihfVZuN7CxObKHu/InjsHbguIPs+oHNOGQqXMB6L6Y3lXIOfkAn2lC
-	ZPgy7f+Nn02PxhfFN/EkvDY0bhXQe7x2eJeRbafhAAL38u2XEYXEDl8uMm7l7SwVlBiD9DhtyOv
-	QXsjE7Kg+OQGwdkKVXy4xzLnrlbcbLdqQxRBgFVEeuc93efersdjDoPgcl90ju58p+hZgGL5Pdu
-	AmZtdf0/O8DKtGSWc=
-X-Received: by 2002:a05:600c:c168:b0:493:d282:8298 with SMTP id 5b1f17b1804b1-493df052084mr54038025e9.16.1783421539970;
-        Tue, 07 Jul 2026 03:52:19 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493df7010aasm40499085e9.0.2026.07.07.03.52.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 03:52:19 -0700 (PDT)
-Date: Tue, 7 Jul 2026 11:53:24 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v6 12/16] iio: frequency: ad9910: add RAM mode support
-Message-ID: <akzaWsIIA-uF_Crs@nsa>
-References: <20260618-ad9910-iio-driver-v6-0-79125ffbe430@analog.com>
- <20260618-ad9910-iio-driver-v6-12-79125ffbe430@analog.com>
- <20260703040544.08a8ea5e@jic23-huawei>
- <ake_YWfvVC9RQ3wu@nsa>
- <1493eed5-5bb8-4a2c-8f2d-8b4bc5dde157@baylibre.com>
- <akt3i_YxG-jF3IdJ@nsa>
- <2d84950f-c56a-48f5-ab7c-c7b7ccb3b28d@baylibre.com>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="K//ZYtum"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1783423112;
+	bh=0IHx3+JVBn8IQqr6PlENFho7o3CLrDb4cjVOt/1v/LE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=K//ZYtumZ+IXrowPCE1uQntAyK+qH08LtXv9aDg8evkyF9aab8S2XxYFLJCC9dVrM
+	 YBjafmq+iyYlaiqS78jlft4To+6visHB1YLFE3n3yZQSjNDwAAfbSOz/ZpydhSh8a9
+	 GkHb/BEhohSBZomdhh0RlnZlVbEYem4rsSCzmxDOOps57dd46m0pATK2xPXQEt91Tn
+	 u7M9ImRuZ9rn9DoeCAUMv5J1k2ks53yWJBrlALjEoHhW126MseBsCxP5Ye5zgfq+M9
+	 mssWHBx/n0N9WZxw2B4/AC880LuGonsE5FKrGzjAJsz7VAWpT/Uuv7TCXswi05pjvb
+	 ON7ZnnY3F7vSg==
+Received: from IcarusMOD.eternityproject.eu (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 4F86217E05E8;
+	Tue, 07 Jul 2026 13:18:31 +0200 (CEST)
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: jic23@kernel.org,
+	sboyd@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	arnd@arndb.de,
+	gregkh@linuxfoundation.org,
+	srini@kernel.org,
+	vkoul@kernel.org,
+	neil.armstrong@linaro.org,
+	sre@kernel.org,
+	angelogioacchino.delregno@collabora.com,
+	krzk@kernel.org,
+	dmitry.baryshkov@oss.qualcomm.com,
+	quic_wcheng@quicinc.com,
+	melody.olvera@oss.qualcomm.com,
+	quic_nsekar@quicinc.com,
+	ivo.ivanov.ivanov1@gmail.com,
+	abelvesa@kernel.org,
+	luca.weiss@fairphone.com,
+	konrad.dybcio@oss.qualcomm.com,
+	mitltlatltl@gmail.com,
+	krishna.kurapati@oss.qualcomm.com,
+	linux-arm-msm@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-phy@lists.infradead.org,
+	linux-pm@vger.kernel.org,
+	kernel@collabora.com
+Subject: [PATCH v12 00/12] SPMI: Implement sub-devices and migrate drivers
+Date: Tue,  7 Jul 2026 13:18:17 +0200
+Message-ID: <20260707111829.180158-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2d84950f-c56a-48f5-ab7c-c7b7ccb3b28d@baylibre.com>
 
-On Mon, Jul 06, 2026 at 09:10:21AM -0500, David Lechner wrote:
-> On 7/6/26 4:47 AM, Nuno Sá wrote:
-> > On Sat, Jul 04, 2026 at 11:50:35AM -0500, David Lechner wrote:
-> >> On 7/3/26 9:09 AM, Nuno Sá wrote:
-> >>> On Fri, Jul 03, 2026 at 04:05:44AM +0100, Jonathan Cameron wrote:
-> >>>> On Thu, 18 Jun 2026 14:27:28 +0100
-> >>>> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> >>>>
-> >>>>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> >>>>>
-> 
-> ..
-> 
-> >>>>> +static inline void ad9910_debugfs_init(struct ad9910_state *st,
-> >>>>> +				       struct iio_dev *indio_dev)
-> >>>>> +{
-> >>>>> +	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
-> >>>>> +	char buf[64];
-> >>>>> +
-> >>>>> +	/*
-> >>>>> +	 * symlinks are created here so iio userspace tools can refer to them
-> >>>>> +	 * as debug attributes.
-> >>>>
-> >>>> Maybe worth a reference to appropriate ABI doc here (even if it is introduced
-> >>>> in a later patch)
-> >>>
-> >>> I'm not so sure about these links. I mean, I definitely agree we should
-> >>> make it easy for userspace tools like libiio to be able to handle
-> >>> these kind of attributes but using debugfs is questionable to me. Pretty
-> >>> much because this is not a debug thing. It is a real setting for the
-> >>> driver so ideally we would be able to control it (using the existent
-> >>> tools) without enforcing one to mount debugfs (I know that most of the
-> >>> times it's always mounted but still feels wrong to tie "real
-> >>> functionality" to debugfs). 
-> >>>
-> >>> Having said the above, some suggestions:
-> >>>
-> >>> 1. Make the iio_dev the parent so that the attr name is just "ram" and
-> >>> it will be a subdir /sys/bus/iio/iio:deviceN/ram/.
-> >>> 2. Propose a new helper for the firmware_loader code so we can get
-> >>> struct device from struct fw_upload then we can easily create a sysfs
-> >>> symlink.
-> >>> 3. Name the attr as dev_name(iio_dev):attr so that it becomes
-> >>> iio:deviceN:attr_name.
-> >>>
-> >>> Now that I think about it, 2. does not make much sense when compared to
-> >>> 1. And If I'm not missing anything both 1. and 3. can be sanely parsable
-> >>> from userspace (being 3. maybe a bit more reliable). And yes, both require
-> >>> user space tools (in this case libiio) to support a new type of
-> >>> attribute (firmware) but that is another problem.
-> >>
-> >> I would say that udev should be used to find the firmware device from
-> >> userspace rather than creating symlinks. And you probably don't even
-> >> need udev if you already have the `iio-device:<ID>` value. The path
-> > 
-> > Just one note. If you mean <ID> as the attr name the above will fail for
-> > multiple instances of the same device. That's is why a proposed
-> > dev_name(iio_dev) which I think it should reliable be iio:deviceN. 
-> 
-> My <ID> is the same as your N. It looks like I just had a typo of
-> an extra : in there.
-> 
-> > 
-> > I guess N might change so anyone hardcoding it might have surprises. But
-> 
-> That is why I mentioned udev.
+Changes in v12:
+ - Removed call to of_node_put() for failure as it's being already
+   done in spmi_dev_release(), as pointed out by Sashiko
+ - Fixed usage of the new helper in all users (it's too hot today, sorry)
 
-I see! I would still advocate for apps to properly do the matching
-between the current device id and the firmware path :)
+Changes in v11:
+ - Use kzalloc_obj() in spmi_subdevice_alloc_and_add()
+ - Introduced new helper to get a parent SPMI device which verifies
+   both if the device has parent and if that parent is effectively
+   a SPMI device type
+ - Removed dev->parent NULL checks in all migration code, as that
+   is now being checked in the new helper instead, reducing the
+   amount of required lines of code to instantiate a SPMI subdevice
+ - Moved of_node reference dropping to dev release callback (Sashiko)
+ - Rebased over next-20260706
 
-But the above is obvious something we can't control.
+Changes in v10:
+ - Add use-after-free fix rebased to before this series, as the v1 of
+   that did not apply cleanly on a tree without this series applied
+ - Replace unsafe to_spmi_device() with spmi_find_device_by_of_node() (Sashiko)
+ - Fix -Wformat warning in dev_set_name call (Sashiko)
 
-- Nuno Sá
+Changes in v9:
+ - Added check for dev->parent where missing (Sashiko)
+ - Changed %d to %u in dev_set_name() call as arg is unsigned (Sashiko)
+ - Propagating error code from devm_regmap_init_spmi_ext() instead of
+   returning -ENODEV in phy-qcom-eusb2-repeater.c (Sashiko)
+ - Rebased over next-20260605 (no conflicts anyway)
 
-> 
-> > properly done and we have a sane way to match the above with anything on
-> > /sys/class/firmware/iio:deviceN:<attr>/
-> > 
-> >> is always going to be `/sys/class/firmware/iio-device:<ID>:ram/`. It
-> >> seems like the same amount of work for usespace to computer the path
-> >> either way, so might as well keep it simple and leave out the symlink
-> >> stuff.
-> > 
-> > Yes, at least for libiio, `iio:deviceN` is already what we call the
-> > device ID so we can match fw attrs against it and everything after the
-> > last ':' is treated as the attr_name. 
-> > 
-> > We just need to keep in mind that if a second user of this stuff pops
-> > up, we should add a new helper to enforce the ABI.
-> > 
-> > - Nuno Sá
-> >>
-> >>>
-> >>> - Nuno Sá
-> >>>>
-> >>>>> +	 */
-> >>>>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/loading", st->ram_fwu_name);
-> >>>>> +	debugfs_create_symlink("ram_loading", d, buf);
-> >>>>> +
-> >>>>> +	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/data", st->ram_fwu_name);
-> >>>>> +	debugfs_create_symlink("ram_data", d, buf);
-> >>>>> +}
-> >>>>> +
+Changes in v8:
+ - Renamed *res to *sub_sdev in devm_spmi_subdevice_remove() (Andy)
+ - Changed kerneldoc wording to "error pointer" for function
+   spmi_subdevice_alloc_and_add() (Andy)
+ - Shuffled around some assignments in spmi_subdevice_alloc_and_add() (Andy)
+ - Used device_property_read_u32() instead of of_property_read_u32()
+   in all of the migrated drivers (Andy)
+ - Changed .max_register field in all of the migrated drivers from
+   0x100 to 0xff (Andy)
+ - Kept `sta1` declaration in reversed xmas tree order in function
+   iadc_poll_wait_eoc() of qcom-spmi-iadc.c (Andy)
+
+Changes in v7:
+ - Added commit to cleanup redundant dev_name() in the pre-existing
+   spmi_device_add() function
+ - Added commit removing unneeded goto and improving spmi_device_add()
+   readability by returning error in error path, and explicitly zero
+   for success at the end.
+
+Changes in v6:
+ - Added commit to convert spmi.c to %pe error format and used
+   %pe error format in spmi_subdevice code as wanted by Uwe Kleine-Konig
+
+Changes in v5:
+ - Changed dev_err to dev_err_probe in qcom-spmi-sdam (and done
+   that even though I disagree - because I wanted this series to
+   *exclusively* introduce the minimum required changes to
+   migrate to the new API, but okay, whatever....!);
+ - Added missing REGMAP dependency in Kconfig for qcom-spmi-sdam,
+   phy-qcom-eusb2-repeater and qcom-coincell to resolve build
+   issues when the already allowed COMPILE_TEST is enabled
+   as pointed out by the test robot's randconfig builds.
+
+Changes in v4:
+ - Added selection of REGMAP_SPMI in Kconfig for qcom-coincell and
+   for phy-qcom-eusb2-repeater to resolve undefined references when
+   compiled with some randconfig
+
+Changes in v3:
+ - Fixed importing "SPMI" namespace in spmi-devres.c
+ - Removed all instances of defensive programming, as pointed out by
+   jic23 and Sebastian
+ - Removed explicit casting as pointed out by jic23
+ - Moved ida_free call to spmi_subdev_release() and simplified error
+   handling in spmi_subdevice_alloc_and_add() as pointed out by jic23
+
+Changes in v2:
+ - Fixed missing `sparent` initialization in phy-qcom-eusb2-repeater
+ - Changed val_bits to 8 in all Qualcomm drivers to ensure
+   compatibility as suggested by Casey
+ - Added struct device pointer in all conversion commits as suggested
+   by Andy
+ - Exported newly introduced functions with a new "SPMI" namespace
+   and imported the same in all converted drivers as suggested by Andy
+ - Added missing error checking for dev_set_name() call in spmi.c
+   as suggested by Andy
+ - Added comma to last entry of regmap_config as suggested by Andy
+
+While adding support for newer MediaTek platforms, featuring complex
+SPMI PMICs, I've seen that those SPMI-connected chips are internally
+divided in various IP blocks, reachable in specific contiguous address
+ranges... more or less like a MMIO, but over a slow SPMI bus instead.
+
+I recalled that Qualcomm had something similar... and upon checking a
+couple of devicetrees, yeah - indeed it's the same over there.
+
+What I've seen then is a common pattern of reading the "reg" property
+from devicetree in a struct member and then either
+ A. Wrapping regmap_{read/write/etc}() calls in a function that adds
+    the register base with "base + ..register", like it's done with
+    writel()/readl() calls; or
+ B. Doing the same as A. but without wrapper functions.
+
+Even though that works just fine, in my opinion it's wrong.
+
+The regmap API is way more complex than MMIO-only readl()/writel()
+functions for multiple reasons (including supporting multiple busses
+like SPMI, of course) - but everyone seemed to forget that regmap
+can manage register base offsets transparently and automatically in
+its API functions by simply adding a `reg_base` to the regmap_config
+structure, which is used for initializing a `struct regmap`.
+
+So, here we go: this series implements the software concept of an SPMI
+Sub-Device (which, well, also reflects how Qualcomm and MediaTek's
+actual hardware is laid out anyway).
+
+               SPMI Controller
+                     |                ______
+                     |               /       Sub-Device 1
+                     V              /
+              SPMI Device (PMIC) ----------- Sub-Device 2
+                                    \
+                                     \______ Sub-Device 3
+
+As per this implementation, an SPMI Sub-Device can be allocated/created
+and added in any driver that implements a... well.. subdevice (!) with
+an SPMI "main" device as its parent: this allows to create and finally
+to correctly configure a regmap that is specific to the sub-device,
+operating on its specific address range and reading, and writing, to
+its registers with the regmap API taking care of adding the base address
+of a sub-device's registers as per regmap API design.
+
+All of the SPMI Sub-Devices are therefore added as children of the SPMI
+Device (usually a PMIC), as communication depends on the PMIC's SPMI bus
+to be available (and the PMIC to be up and running, of course).
+
+Summarizing the dependency chain (which is obvious to whoever knows what
+is going on with Qualcomm and/or MediaTek SPMI PMICs):
+    "SPMI Sub-Device x...N" are children "SPMI Device"
+    "SPMI Device" is a child of "SPMI Controller"
+
+(that was just another way to say the same thing as the graph above anyway).
+
+Along with the new SPMI Sub-Device registration functions, I have also
+performed a conversion of some Qualcomm SPMI drivers and only where the
+actual conversion was trivial.
+
+I haven't included any conversion of more complex Qualcomm SPMI drivers
+because I don't have the required bandwidth to do so (and besides, I think,
+but haven't exactly verified, that some of those require SoCs that I don't
+have for testing anyway).
+
+AngeloGioacchino Del Regno (12):
+  spmi: Fix potential use-after-free by grabbing of_node reference
+  spmi: Remove redundant dev_name() print in spmi_device_add()
+  spmi: Print error status with %pe format
+  spmi: Remove unneeded goto in spmi_device_add() error path
+  spmi: Implement spmi_subdevice_alloc_and_add() and devm variant
+  spmi: Add helper to get a parent SPMI device
+  nvmem: qcom-spmi-sdam: Migrate to devm_spmi_subdevice_alloc_and_add()
+  power: reset: qcom-pon: Migrate to devm_spmi_subdevice_alloc_and_add()
+  phy: qualcomm: eusb2-repeater: Migrate to
+    devm_spmi_subdevice_alloc_and_add()
+  misc: qcom-coincell: Migrate to devm_spmi_subdevice_alloc_and_add()
+  iio: adc: qcom-spmi-iadc: Migrate to
+    devm_spmi_subdevice_alloc_and_add()
+  iio: adc: qcom-spmi-iadc: Remove regmap R/W wrapper functions
+
+ drivers/iio/adc/qcom-spmi-iadc.c              | 116 ++++++++---------
+ drivers/misc/Kconfig                          |   2 +
+ drivers/misc/qcom-coincell.c                  |  45 +++++--
+ drivers/nvmem/Kconfig                         |   1 +
+ drivers/nvmem/qcom-spmi-sdam.c                |  41 ++++--
+ drivers/phy/qualcomm/Kconfig                  |   2 +
+ .../phy/qualcomm/phy-qcom-eusb2-repeater.c    |  52 +++++---
+ drivers/power/reset/qcom-pon.c                |  31 +++--
+ drivers/spmi/spmi-devres.c                    |  24 ++++
+ drivers/spmi/spmi.c                           | 123 ++++++++++++++++--
+ include/linux/spmi.h                          |  17 +++
+ 11 files changed, 327 insertions(+), 127 deletions(-)
+
+-- 
+2.54.0
+
