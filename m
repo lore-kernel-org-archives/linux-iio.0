@@ -1,132 +1,89 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A32FE37C109;
-	Tue,  7 Jul 2026 07:16:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF1013D53C;
+	Tue,  7 Jul 2026 07:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783408582; cv=none; b=vF7TyTAZOAad9rXxG2SDIXGmY+ee7OqjgUzWBx/8OeD2HkV8Spb1tSvGN4sh8uPICwHNdP2iCIhdrXQkPPaJ9QonaS9QeSyhrKEWd6wM6DHBqWDONZNl8zs2ib1K6a76ocbh5J+s1U1BW7ZpC/aM9XOY4PNJbXMErqK4xbuOENo=
+	t=1783410160; cv=none; b=H/eJQ6pLJRfjaez5MB/ClvpHu2cRlhiiV1SklVIrE88xEk1DjD6DbfZHe0HUVElH5lAQe8mPEPhXpKeu6HEPQeHPRFy+cIH5hdVZjLwNlGRUORPGphBDa4JmZVSj1bLc6FtHtc2Yrv5UfhMsoTeS8ezQAttH1VQynz1ka8gfUuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783408582; c=relaxed/simple;
-	bh=tS8xW4ACW7vQCCwps22aNMeLPdTivzNwbzURsLhXz9M=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=RugOMkpEYc+JeX2Sfv9wrB6oUZsU6Gcz9aWKLuxpzlSWt4iHS2D+dr9VKPsVpzPJGT0CZzUuySL71jk/hStRWBMcuWa1z+cSUGX2LxFC95dRp6fOOfTV/lPuRo67c0YrEMyd/D26qtjRvnk4G6yPqIYKqu9fStmt5WjrBYkh8pE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=U2iP0/WD; arc=none smtp.client-ip=220.197.31.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1783410160; c=relaxed/simple;
+	bh=pQwyXCyV2PJT4RikPbiEx3IVEGUY43jh3uk9m+jiWDM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FHxl+SLQs2zDkFaijpXVz5MtmVj8IsImW8XMDO1D0amswFkI9fjRU7NkYRBjGjTEsIugWPRHKn9KOET8fNlc8QPO6mZKclm48Tj+kcu1hKc0xGCZovL145jhChjd43tqS3o0vbQY5hqfQOcJkvrdhQtxKI0DyylGs0Ce0UQvZtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=K8wqov0F; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="U2iP0/WD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=Z2
-	0YYvDoeUgCrjGuuLr/pDFpGrufeVTIJSYak3iZmRc=; b=U2iP0/WDcxpUXdCn/G
-	nl8vYQHIyIbyfDOzepGC7ewqIQVsw/19RjgTM7DIKIk5/RzSmiI6XiSkTmv+DJDH
-	JGGWOWbhMMTmFH1rk/qaxmvJyMOAL1G5/ugoxxPK5smc3rqB9MJyty6jHkwQJCIO
-	p0G/er4lSH9nBDkDSDpOvDRgU=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g0-2 (Coremail) with SMTP id _____wD3n5Cqp0xq6RclIA--.54200S3;
-	Tue, 07 Jul 2026 15:15:56 +0800 (CST)
-From: Haoxiang Li <haoxiang_li2024@163.com>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	bentiss@kernel.org
-Cc: linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Haoxiang Li <haoxiang_li2024@163.com>,
-	Sashiko AI Review <sashiko-bot@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH v3 1/2] HID: sensor: custom: Fix use-after-free in enable_sensor
-Date: Tue,  7 Jul 2026 15:15:44 +0800
-Message-Id: <20260707071545.3087073-2-haoxiang_li2024@163.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20260707071545.3087073-1-haoxiang_li2024@163.com>
-References: <20260707071545.3087073-1-haoxiang_li2024@163.com>
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="K8wqov0F"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
+	bh=pQwyXCyV2PJT4RikPbiEx3IVEGUY43jh3uk9m+jiWDM=; b=K8wqov0FLWnvSZCw8PWY3vST+K
+	Yq8cHvYbn58/ct2vcJKmp1y9CkWhzw6rgoCqmDTWc+cqkFSGrX47X+ezJMe4xtZTUruJyIGS9W0q5
+	i05RRBKHlKCWz+9vus3Fl2HdapYqLWXDC5kOJG0f9r2xoB1aHXcs4397brhlqMIPptd3Z59qLFkWB
+	Vi4hVN7QnfA5xuhijDTGLLGScZNcuLDatSPa2GxITaJAEclHqxOVsr5Xg5xcH2n/aubDsRvfRErsd
+	xWKkAKAvGs/IOSaPIuyXbqjVpuIOd43VNJOGZZnAcq7thzN7sNTtZ02SIv/ARQ/31karQroi7Wf5y
+	AN3nsCfQ==;
+From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+To: Simon Glass <sjg@chromium.org>, Fabio Estevam <festevam@nabladev.com>
+Cc: linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Albert Aribaud <albert.u.boot@aribaud.net>,
+ Andy Shevchenko <andy@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Brian Masney <bmasney@redhat.com>, Chukun Pan <amadeus@jmu.edu.cn>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ FUKAUMI Naoki <naoki@radxa.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Guenter Roeck <linux@roeck-us.net>, Jamie Iles <jamie@jamieiles.com>,
+ Jeffy Chen <jeffy.chen@rock-chips.com>, Jiri Slaby <jirislaby@kernel.org>,
+ Jonas Karlman <jonas@kwiboo.se>, Jonathan Cameron <jic23@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Michael Opdenacker <michael.opdenacker@rootcommit.com>,
+ Michael Riesch <michael.riesch@collabora.com>,
+ Michael Turquette <mturquette@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Stephen Boyd <sboyd@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Yao Zi <ziyao@disroot.org>,
+ huang lin <hl@rock-chips.com>, linux-clk@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH 00/12] Add support for the Rockchip RV1106 and RV1103
+Date: Tue, 07 Jul 2026 09:41:41 +0200
+Message-ID: <7403763.aoefvbuG5b@diego>
+In-Reply-To: <882555c4-e1a3-0a0a-6830-b824b93cf3ac@nabladev.com>
+References:
+ <20260706195818.3906949-1-sjg@chromium.org>
+ <882555c4-e1a3-0a0a-6830-b824b93cf3ac@nabladev.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3n5Cqp0xq6RclIA--.54200S3
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGrW8WFWUtFykZFyDCF47XFb_yoW5Wr1rpF
-	90yFWSgr1UGa47J347AFsrX3W0gr4rWF18WrnrW3s3ZF15Ar97try8Ja40vayYyFWDK3WU
-	Ja1DXas8uFyqgw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pR0Ap5UUUUU=
-X-CM-SenderInfo: xkdr5xpdqjszblsqjki6rwjhhfrp/xtbC7QzCMWpMp6w9sQAA3z
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-enable_sensor_store() can call set_power_report_state(), which
-dereferences sensor_inst->power_state and sensor_inst->report_state.
-These pointers refer to entries in sensor_inst->fields.
+Am Dienstag, 7. Juli 2026, 00:54:44 Mitteleurop=C3=A4ische Sommerzeit schri=
+eb Fabio Estevam:
+> Hi Simon,
+>=20
+> On Monday, July 06, 2026 16:57 -03, Simon Glass <sjg@chromium.org> wrote:
+>=20
+> > The series follows the structure of the recently merged RV1103B
+> > support. The clock driver is ported from the vendor kernel and is the
+>=20
+> When I submitted the initial version of the RV1103B series, I received fe=
+edback to split it into subsystems.=20
+>=20
+> You should do the same here and submit it per subsystem:
+> ARM, clock, pinctrl, serial, mmc, watchdog, and iio.
 
-Create the field attributes before exposing the enable_sensor sysfs
-attribute, so enable_sensor cannot be accessed before the state it
-depends on has been initialized.
+correct ... ARM + clock can stay together, as that is my stuff, but for a
+lot of maintainer it is just way easier to not have to pick apart series' .
+(or even realize they are meant to do something)
 
-On remove, delete enable_sensor before freeing the field attributes,
-so a concurrent sysfs write cannot dereference freed memory through
-power_state or report_state.
 
-Reported-by: Sashiko AI Review <sashiko-bot@kernel.org>
-Link: https://sashiko.dev/#/patchset/20260623021950.1736413-1-haoxiang_li2024@163.com?part=1
-Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Haoxiang Li <haoxiang_li2024@163.com>
----
- drivers/hid/hid-sensor-custom.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
-index afffea894021..6b0da2e0e1c9 100644
---- a/drivers/hid/hid-sensor-custom.c
-+++ b/drivers/hid/hid-sensor-custom.c
-@@ -1005,26 +1005,26 @@ static int hid_sensor_custom_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	ret = sysfs_create_group(&sensor_inst->pdev->dev.kobj,
--				 &enable_sensor_attr_group);
-+	ret = hid_sensor_custom_add_attributes(sensor_inst);
- 	if (ret)
- 		goto err_remove_callback;
- 
--	ret = hid_sensor_custom_add_attributes(sensor_inst);
-+	ret = sysfs_create_group(&sensor_inst->pdev->dev.kobj,
-+				 &enable_sensor_attr_group);
- 	if (ret)
--		goto err_remove_group;
-+		goto err_remove_attributes;
- 
- 	ret = hid_sensor_custom_dev_if_add(sensor_inst);
- 	if (ret)
--		goto err_remove_attributes;
-+		goto err_remove_group;
- 
- 	return 0;
- 
--err_remove_attributes:
--	hid_sensor_custom_remove_attributes(sensor_inst);
- err_remove_group:
- 	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
- 			   &enable_sensor_attr_group);
-+err_remove_attributes:
-+	hid_sensor_custom_remove_attributes(sensor_inst);
- err_remove_callback:
- 	sensor_hub_remove_callback(hsdev, hsdev->usage);
- 
-@@ -1042,9 +1042,10 @@ static void hid_sensor_custom_remove(struct platform_device *pdev)
- 	}
- 
- 	hid_sensor_custom_dev_if_remove(sensor_inst);
--	hid_sensor_custom_remove_attributes(sensor_inst);
-+	/* Remove enable_sensor first as it uses fields via power_state/report_state. */
- 	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
- 			   &enable_sensor_attr_group);
-+	hid_sensor_custom_remove_attributes(sensor_inst);
- 	sensor_hub_remove_callback(hsdev, hsdev->usage);
- }
- 
--- 
-2.25.1
 
