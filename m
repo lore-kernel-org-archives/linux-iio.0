@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B61383310;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD94396B98;
 	Tue,  7 Jul 2026 14:04:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783433068; cv=none; b=PA6HLGjON4htYTtRzNfMS5NFA9hzxdgFOU4vmHAXD2Cvnq1V9geGEpivCSiyO5VEyWwHaWk3LjNC6MLb1ITEkFEPWWOLsYjHggLgbYT1epusXZTp37ci4lNt2Ds1y8+5314+CWn/cODUGng5eiGMLN/Jgq+qsYYWIpq4cLje3HA=
+	t=1783433068; cv=none; b=F9JmGx697WVZSqKEn3mgkFMoD+D1JuOO2ZnQE13vVAm1FA1FME98wDub9MGl8juHt/ivvYv+2JziGwlGTzYOCumF25NOIKLbFCxKx2vJB/qpS7FgM7dQK4Z+RB86yLaPuvYqW2t7TR+keH1F2ypJYIubfWLtbs4B6pQ0B5gLVEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783433068; c=relaxed/simple;
-	bh=5rhn3MVRwTOJfclyOrOiss4MiwWQ1MpG86/rtl+c9ng=;
+	bh=0g0a4oQTywb6pFKTjDfQyRGVrlz5LWlh+N7mqoiez5o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RgBmVaOnuX7qmWD1V1WpgpL7s0oxCtgNkm49Qb9IOmqv6gcfBPTG0Y+PVoPq8BjApCV4UvNSBV5IM7ZboNvyi6mT/XELShdKa0Ig1vLMC5BfJ+7nVFT8XGeaIyA6ZtjzDUMPYSIL/pVpE/7DY4XCZ0RQ54i5xd/R4Pd1yPmfEyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IOu8xc8H; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=WVZtnjry79yvBpRD/DxfMCpvDQT+nvU0vqO+6Hxt8GrvqAvl+JWm88hc3VkTb+WXvVmCSf2G3HvHDkk1Mc4neiOO/RdNv5J62ZZc2NYmDj7vFgeD6Hu5IBYBfPSepiY0lD754kGZgQK062gkNkdfC6K+hGGcLkUcH9zvnY/+GgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BuqvIjEB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IOu8xc8H"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C6854C2BCFC;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BuqvIjEB"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E73AEC4AF48;
 	Tue,  7 Jul 2026 14:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1783433067;
-	bh=5rhn3MVRwTOJfclyOrOiss4MiwWQ1MpG86/rtl+c9ng=;
+	s=k20201202; t=1783433068;
+	bh=0g0a4oQTywb6pFKTjDfQyRGVrlz5LWlh+N7mqoiez5o=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=IOu8xc8H3FM+VlXl1sbKUZY+Sgl2RetuO1l4B/LwIpsrSSQ6W2JV04cImlFwOgTzv
-	 2KVSMwAbe84I0yuQT/IWpGFJ3EzbcYMLx2A/4VxA9rYCe4Fg4f5BPeeRTfBwEUhkc5
-	 Bp8g+TOkyPbMnP2OwcKihb9LhUUydrQpuBlUvVZ3xhEkyahxLIsWfWDclTSDUZisz7
-	 rQaURTkJyqdbGVobsfQQKjEBypK/QJN+vsqhY+1PiHUVaQFvp1gnLtVWFlHVCFsWVC
-	 eLdFGnS+KRPq09MBy4wtToAH1YFZtWhYuD11VNO97sEZQbxLjt/jkLFzl8kqny3yz+
-	 YRC42urmMN2Wg==
+	b=BuqvIjEBOXAPQav5desL7DW12Lpzn7YZ05PSVIh05J9CX98AG6kIVLTRsm3tFQPBK
+	 rPrZrdCfdc8GqrHDfC1dBwG/kODVrvoUUIm3vEz5k7zWBB2NYrKeN+Q8Y5EdfRkymj
+	 K3RzVP94uvSDA5geIZOUlXOqaz4e6zv7Lffu5uQf/33QNC4sxbEGvyBzKoqjF9307L
+	 5DE6stAhwK4HNuzKnwLdYhwXEUYDFiq57CHLU4KdaQA3SyuXCsBWKev0p8tyTs/UD6
+	 b96XWNYzuv9RfPQgsqvphhy5F2qUIZtTNvnQacM0Rs8DIl+ogDD3UDp2hY7cec+LvL
+	 KvApfPv44A0aQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B20A1C43458;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D19C44502;
 	Tue,  7 Jul 2026 14:04:27 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 07 Jul 2026 15:04:27 +0100
-Subject: [PATCH v7 06/17] iio: core: create local __iio_chan_prefix_emit()
- for reuse
+Date: Tue, 07 Jul 2026 15:04:29 +0100
+Subject: [PATCH v7 08/17] iio: core: add hierarchical channel relationships
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260707-ad9910-iio-driver-v7-6-a4ec30f63700@analog.com>
+Message-Id: <20260707-ad9910-iio-driver-v7-8-a4ec30f63700@analog.com>
 References: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
 In-Reply-To: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -57,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783433065; l=7139;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783433065; l=3404;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=ppVdQS1QwgYmd1EMv2G1vRl1X5QpXzXsyy/OvE7pdZY=;
- b=OZ0iTpxvwXkJU86K6/0lk3U8XRS70kBtxVgnQJrAUo2hydioef5U13B44qCoojySQZSet+QI1
- Von43KQrFyfCG+MPwviCYDmLRUreGIf60IfUDVteLDeFbubl8iFe9Es
+ bh=FIoUcGo06SAFyypreQoQ6SpLK6ZouvA9PpUnxHlFbGo=;
+ b=3CN6Op2JybeyQgMbSBtVrEzH4FXkHl90Kt+BAUNiFfocxJSZSdpwnrEDNQwKFT33t/+IDtt7B
+ 88mBKSYNJmHAVy5OhC9yDFrgPRM/gF8teLSDMTdyrxQIfKP0lf+crVJ
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,237 +70,104 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Move logic to create a channel prefix for naming attribute files into a
-separate __iio_chan_prefix_emit() function for reuse. The dev pointer is
-passed to __iio_device_attr_init() so that WARN() replaced by dev_err().
-The new helper is going to be used to expose channel relationships as
-sysfs attributes.
+Add parent-child relationship between iio channels by creating a parent
+pointer field in iio_chan_spec struct and exposing a sysfs attribute that
+returns the parent channel prefix.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 169 ++++++++++++++++------------------------
- 1 file changed, 68 insertions(+), 101 deletions(-)
+ drivers/iio/industrialio-core.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |  5 +++++
+ 2 files changed, 45 insertions(+)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 98fc00343dc5..ecc69adf61de 100644
+index 78a3c27d17a1..36a05fd77d47 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -25,6 +25,7 @@
- #include <linux/poll.h>
- #include <linux/property.h>
- #include <linux/sched.h>
-+#include <linux/seq_buf.h>
- #include <linux/slab.h>
- #include <linux/wait.h>
- 
-@@ -199,6 +200,58 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_CONVDELAY] = "convdelay",
- 	[IIO_CHAN_INFO_POWERFACTOR] = "powerfactor",
- };
-+
-+static ssize_t __iio_chan_prefix_emit(struct device *dev,
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_shared_by shared_by,
-+				      char *buf, size_t len)
-+{
-+	const char *type = iio_chan_type_name_spec[chan->type];
-+	const char *dir = iio_direction[chan->output];
-+	struct seq_buf s;
-+
-+	seq_buf_init(&s, buf, len);
-+
-+	switch (shared_by) {
-+	case IIO_SHARED_BY_ALL:
-+		break;
-+	case IIO_SHARED_BY_DIR:
-+		seq_buf_printf(&s, "%s", dir);
-+		break;
-+	case IIO_SHARED_BY_TYPE:
-+		seq_buf_printf(&s, "%s_%s", dir, type);
-+		if (chan->differential)
-+			seq_buf_printf(&s, "-%s", type);
-+		break;
-+	case IIO_SEPARATE:
-+		if (chan->indexed) {
-+			seq_buf_printf(&s, "%s_%s%d", dir, type, chan->channel);
-+			if (chan->differential)
-+				seq_buf_printf(&s, "-%s%d", type, chan->channel2);
-+		} else {
-+			if (chan->differential) {
-+				dev_err(dev, "Differential channels must be indexed\n");
-+				return -EINVAL;
-+			}
-+			seq_buf_printf(&s, "%s_%s", dir, type);
-+		}
-+
-+		if (chan->modified) {
-+			if (chan->differential) {
-+				dev_err(dev, "Differential channels can not have modifier\n");
-+				return -EINVAL;
-+			}
-+			seq_buf_printf(&s, "_%s", iio_modifier_names[chan->channel2]);
-+		}
-+
-+		if (chan->extend_name)
-+			seq_buf_printf(&s, "_%s", chan->extend_name);
-+		break;
-+	}
-+
-+	return seq_buf_has_overflowed(&s) ? -EOVERFLOW : s.len;
-+}
-+
- /**
-  * iio_device_id() - query the unique ID for the device
-  * @indio_dev:		Device structure whose ID is being queried
-@@ -1088,7 +1141,8 @@ static ssize_t iio_write_channel_info(struct device *dev,
+@@ -848,6 +848,22 @@ static ssize_t iio_read_channel_label(struct device *dev,
+ 					 to_iio_dev_attr(attr)->c, buf);
  }
  
- static
--int __iio_device_attr_init(struct device_attribute *dev_attr,
-+int __iio_device_attr_init(struct device *dev,
-+			   struct device_attribute *dev_attr,
- 			   const char *postfix,
- 			   struct iio_chan_spec const *chan,
- 			   ssize_t (*readfunc)(struct device *dev,
-@@ -1100,106 +1154,22 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 						size_t len),
- 			   enum iio_shared_by shared_by)
- {
--	int ret = 0;
--	char *name = NULL;
--	char *full_postfix;
-+	char prefix[NAME_MAX + 1];
-+	ssize_t ret;
++static ssize_t iio_read_channel_parent(struct device *dev,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	const struct iio_chan_spec *chan = to_iio_dev_attr(attr)->c->parent;
++	ssize_t len;
++
++	len = __iio_chan_prefix_emit(dev, chan, IIO_SEPARATE, buf, PAGE_SIZE);
++	if (len < 0)
++		return len;
++
++	buf[len] = '\n';
++
++	return len + 1;
++}
++
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+@@ -1261,6 +1277,25 @@ static int iio_device_add_channel_label(struct iio_dev *indio_dev,
+ 	return 1;
+ }
  
- 	sysfs_attr_init(&dev_attr->attr);
- 
--	/* Build up postfix of <extend_name>_<modifier>_postfix */
--	if (chan->modified && (shared_by == IIO_SEPARATE)) {
--		if (chan->extend_name)
--			full_postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
--						 iio_modifier_names[chan->channel2],
--						 chan->extend_name,
--						 postfix);
--		else
--			full_postfix = kasprintf(GFP_KERNEL, "%s_%s",
--						 iio_modifier_names[chan->channel2],
--						 postfix);
--	} else {
--		if (chan->extend_name == NULL || shared_by != IIO_SEPARATE)
--			full_postfix = kstrdup(postfix, GFP_KERNEL);
--		else
--			full_postfix = kasprintf(GFP_KERNEL,
--						 "%s_%s",
--						 chan->extend_name,
--						 postfix);
--	}
--	if (full_postfix == NULL)
-+	ret = __iio_chan_prefix_emit(dev, chan, shared_by, prefix, sizeof(prefix));
++static int iio_device_add_channel_parent_attr(struct iio_dev *indio_dev,
++					      struct iio_chan_spec const *chan)
++{
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	int ret;
++
++	if (!chan->parent)
++		return 0;
++
++	ret = __iio_add_chan_devattr("parent", chan,
++				     &iio_read_channel_parent, NULL,
++				     0, IIO_SEPARATE, &indio_dev->dev, NULL,
++				     &iio_dev_opaque->channel_attr_list);
 +	if (ret < 0)
 +		return ret;
 +
-+	if (ret)
-+		dev_attr->attr.name = kasprintf(GFP_KERNEL, "%s_%s", prefix, postfix);
-+	else
-+		dev_attr->attr.name = kstrdup(postfix, GFP_KERNEL);
-+	if (!dev_attr->attr.name)
- 		return -ENOMEM;
++	return 1;
++}
++
+ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+ 					 struct iio_chan_spec const *chan,
+ 					 enum iio_shared_by shared_by,
+@@ -1399,6 +1434,11 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 		return ret;
+ 	attrcount += ret;
  
--	if (chan->differential) { /* Differential can not have modifier */
--		switch (shared_by) {
--		case IIO_SHARED_BY_ALL:
--			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
--			break;
--		case IIO_SHARED_BY_DIR:
--			name = kasprintf(GFP_KERNEL, "%s_%s",
--						iio_direction[chan->output],
--						full_postfix);
--			break;
--		case IIO_SHARED_BY_TYPE:
--			name = kasprintf(GFP_KERNEL, "%s_%s-%s_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    iio_chan_type_name_spec[chan->type],
--					    full_postfix);
--			break;
--		case IIO_SEPARATE:
--			if (!chan->indexed) {
--				WARN(1, "Differential channels must be indexed\n");
--				ret = -EINVAL;
--				goto error_free_full_postfix;
--			}
--			name = kasprintf(GFP_KERNEL,
--					    "%s_%s%d-%s%d_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    chan->channel,
--					    iio_chan_type_name_spec[chan->type],
--					    chan->channel2,
--					    full_postfix);
--			break;
--		}
--	} else { /* Single ended */
--		switch (shared_by) {
--		case IIO_SHARED_BY_ALL:
--			name = kasprintf(GFP_KERNEL, "%s", full_postfix);
--			break;
--		case IIO_SHARED_BY_DIR:
--			name = kasprintf(GFP_KERNEL, "%s_%s",
--						iio_direction[chan->output],
--						full_postfix);
--			break;
--		case IIO_SHARED_BY_TYPE:
--			name = kasprintf(GFP_KERNEL, "%s_%s_%s",
--					    iio_direction[chan->output],
--					    iio_chan_type_name_spec[chan->type],
--					    full_postfix);
--			break;
--
--		case IIO_SEPARATE:
--			if (chan->indexed)
--				name = kasprintf(GFP_KERNEL, "%s_%s%d_%s",
--						    iio_direction[chan->output],
--						    iio_chan_type_name_spec[chan->type],
--						    chan->channel,
--						    full_postfix);
--			else
--				name = kasprintf(GFP_KERNEL, "%s_%s_%s",
--						    iio_direction[chan->output],
--						    iio_chan_type_name_spec[chan->type],
--						    full_postfix);
--			break;
--		}
--	}
--	if (name == NULL) {
--		ret = -ENOMEM;
--		goto error_free_full_postfix;
--	}
--	dev_attr->attr.name = name;
--
- 	if (readfunc) {
- 		dev_attr->attr.mode |= 0444;
- 		dev_attr->show = readfunc;
-@@ -1210,10 +1180,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 		dev_attr->store = writefunc;
- 	}
++	ret = iio_device_add_channel_parent_attr(indio_dev, chan);
++	if (ret < 0)
++		return ret;
++	attrcount += ret;
++
+ 	if (chan->ext_info) {
+ 		unsigned int i = 0;
  
--error_free_full_postfix:
--	kfree(full_postfix);
--
--	return ret;
-+	return 0;
- }
- 
- static void __iio_device_attr_deinit(struct device_attribute *dev_attr)
-@@ -1242,7 +1209,7 @@ int __iio_add_chan_devattr(const char *postfix,
- 	iio_attr = kzalloc_obj(*iio_attr);
- 	if (iio_attr == NULL)
- 		return -ENOMEM;
--	ret = __iio_device_attr_init(&iio_attr->dev_attr,
-+	ret = __iio_device_attr_init(dev, &iio_attr->dev_attr,
- 				     postfix, chan,
- 				     readfunc, writefunc, shared_by);
- 	if (ret)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index cd17703274a6..0f006b8ad555 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -264,6 +264,10 @@ struct iio_scan_type {
+  * @ext_info:		Array of extended info attributes for this channel.
+  *			The array is NULL terminated, the last element should
+  *			have its name field set to NULL.
++ * @parent:		Optional pointer to the parent channel spec for
++ *			hierarchical channel relationships. When set, a read-only
++ *			"parent" sysfs attribute is created containing the
++ *			parent channel's sysfs name prefix (e.g. "in_voltage0").
+  * @extend_name:	Allows labeling of channel attributes with an
+  *			informative name. Note this has no effect codes etc,
+  *			unlike modifiers.
+@@ -309,6 +313,7 @@ struct iio_chan_spec {
+ 	const struct iio_event_spec *event_spec;
+ 	unsigned int		num_event_specs;
+ 	const struct iio_chan_spec_ext_info *ext_info;
++	const struct iio_chan_spec *parent;
+ 	const char		*extend_name;
+ 	const char		*datasheet_name;
+ 	unsigned int		modified:1;
 
 -- 
 2.43.0
