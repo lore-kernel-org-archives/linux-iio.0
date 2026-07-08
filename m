@@ -1,122 +1,103 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D228F3BFE44
-	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 05:34:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC30E3BBFAD
+	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 06:26:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783488865; cv=none; b=DTgaYEc+q6l3x9+yMatWjENAUJ0Pci9DFcTmvBVnyd2c1dTXm6kX3koE5VILRkLSoVgvaoWKsS3XeiyZ9otkFoEsn4loRtUb7pnx5BY0PTWy+AVefZfr5SUGco9Fhp7sZMDeX2gGXUV4ic87pvVPngUZrPqK0W98vosKYrYNNIE=
+	t=1783492003; cv=none; b=rZBhZnRnNJRtaHgO7wV86QDF9w0rCY9L7PgNYrXih0cFO2/jzcgkJBxjLyI0bYdwxJWs0cA/Z6MxvufP2ynDMbBfkKrLPpGZnb9OZUCXFL3WpVospKrLhFtekG3Ghkg55oZbluwBhdIjPAsAw8fiQnb9WKmNx599OQAwwww7/T0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783488865; c=relaxed/simple;
-	bh=iShz7l7ZusIwvENL/lDC2VhyBdjbPgnHRjbbDd86sDg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=J2u1jhZ3k6YQTKnACrxSPUvp4VMSJns4JfsK4G4GDUchhe7m8QAuzEy/BjNos40BqsZyrcAfYO+tFRh8TA06TPRDLBDXH3TqhvhVkg3s+mLVfPd4qivWDZpPOyow/YoMxrcipTXWER2dUdA8+6bi4HUfmbWFdIOxRZggaPaH74Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VW9ZfxdH; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783492003; c=relaxed/simple;
+	bh=pQDkQdwrZ036GE0N7zq7iri7BLGnkQ0Q0hNvDADzpp4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f1Z8oeD6zj4s2l+1ZOb4mUsjkxgVVWGJ4fec650XCxlcufFm55IB9rfB5RQSLFyh2jRh8IhttRg+azWngo7SdcbZjKubKeUa0qOTqSUdLmd3KaoJnTjgGgDZcoDfp9gOv4F4B/qeFRcO+imFUkCTb3T13WKXo/msXWFG7Ffz1nE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DP0zxTYG; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VW9ZfxdH"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-493b27c7451so15296065e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 07 Jul 2026 22:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783488862; x=1784093662; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OuiklN8ThbHWqpkE49ZV3AQdW0KurEfVot6WwYCuWx4=;
-        b=VW9ZfxdH0GaKlMnNK+Um4x20KvajshRvsAmXAsUTqsu/FYJDiDJfmzhAFfJT/+HI4e
-         YvJBHam6wP4TR1QpVxqPmJTB0DkjG0atB2izf7lcQwsUWSI9ElSsiehI2hsw+rCVoRmD
-         lf/OhvfQM6ThYXiQcNSPBPQ5i2tEOTYNpjfE1cWJ+QpWCD/uvSSK59orbldR5kasZhFv
-         RRHaRupdUMcbxESiDVIPUkr5dai3hlRH+UTl5pz6f3vJBCYwuar7m4O5W8unOvdS2WUK
-         y/LOqRxSa+2SjG76fTlLAPXTN08Hm2vuiRs2Q2qlCynD5QSGJ9uijpDnM4RlWBK93Sw8
-         OQlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783488862; x=1784093662;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=OuiklN8ThbHWqpkE49ZV3AQdW0KurEfVot6WwYCuWx4=;
-        b=Vnbji44hxlPAZOR93Bxd8OBxB4lg6IE4fDAkO1OxEPEW3eDIQRs2ULJgbJKL78lxlZ
-         ajrdQ9JHfF5wJRzUHnK+/INaoH/cOlbLbHWe0eWvlvrX+vKq80uw6SU7NOYyKIvNvCZt
-         iC8JE7384+3o8LJ6a+q7Ccd0Y9hHWkgJjDLrObX91yV2rQSldqLKK5Ta0cyadvD6uBsH
-         9Y0yD95wBm42JmMi/+iEvpWWL6qe5wCgDTsqS2ExdObdXvg7RhSXkoUCJ2e3efDItAG8
-         UEq+7r5k1UjxDZSzIQPIUAOklr9D++CliR6np0bUSESK2jSstB4YHufFbkEqoJl57Amy
-         ncjw==
-X-Gm-Message-State: AOJu0Yz5O8C4PZq0sQjnDU4ttV1My4NHbS8Bz9U56zow5Y2X8pM2TZ44
-	9Ors4s3mAGEJchIMtPhhno+74/GdVYf9YTs4Urew3sz6+TGh2iZiu5Aj
-X-Gm-Gg: AfdE7ck/AtpPF9vh7E4Ps08RiDifo9WvBMKc9KHFwzNkCLK7QzeFsSzkE5Qy+DLV/W8
-	0HIcsEtFDlOtDu4sZ4DJT9m5jjlSVGb49BOtE8CeSU/vExYoIPwm695P5sOXpq8t52/Pwb7v6/p
-	2zym4QYaHk2Ar9/pbjkWGsHKJAIfnTXBIGnfe6ZjE85zJoE0euQRUMiSIkCuFftf/WuTsP/Rpw1
-	0eU8JLDYoHHHd1kjGz4IeTNEkA1mTsF3raMF7oM70juTkGn0+0FOtFmNDOGttkz8clK/7phHBdq
-	k0y8N/hNWDarzMh4Ts9HQU/9Ydkk9Sf8tryy1amUWS27EOvTi3PZ1If15BgLesXgOA4Ci73isyJ
-	k6Y4pV8mgFGuTNVtkC6kSMyXJ72nSsMhnggQ0H4mpaH9R9LwrjEa0vm5mQpuAg1WqGa5QnHFa5a
-	R+DjvKT8z2mYDHXwwdpiMrGx+rI4fxt27jomKOAy0rDX1GrebatU71PRqFaWvyy+3t+wR9HuclZ
-	WCNOIFV0C3LzSb/MTuEEKCeCu4K4eb5uDyNNXrNbEygG9Frzc0N+nzR9NZmb8LaB7eH31bFBwpL
-	NezzorpP4PJeW2UPm012BMToIjAArQSq6RupCAEbteVdo6/Pv8oRaw==
-X-Received: by 2002:a05:600c:4692:b0:493:e2c3:af25 with SMTP id 5b1f17b1804b1-493e6393963mr9601615e9.12.1783488862308;
-        Tue, 07 Jul 2026 22:34:22 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e544837dsm35528415e9.0.2026.07.07.22.34.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jul 2026 22:34:21 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Wed, 08 Jul 2026 07:34:14 +0200
-Subject: [PATCH 3/3] iio: adc: max14001: add missing 'select REGMAP' to
- Kconfig
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DP0zxTYG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783492000; x=1815028000;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pQDkQdwrZ036GE0N7zq7iri7BLGnkQ0Q0hNvDADzpp4=;
+  b=DP0zxTYG01QNpMeqZekPc4JX2jQgDV9t904+FLNmqelSz6WE8jiBiteY
+   uAzljlLtwMUDol3MqWMmUUYiAFUlm17SLQ6bUsenNEW0NjgppUs0SzCnZ
+   +jpcDfxlRaoAfS9cTLME/ZY2ZMuBwcK3Gz2+7qFuvkDBoNmAA7fIJ3w7P
+   pxLOZlSNzviN+FNQniOLESWUDiZespyQtZfTANf8FIHuGe6PXKt/3uqvS
+   xMKlnaf+3oPfkI9J+Ped3qshMhQWWuozqBO274Qzlit3LLZsoN2TvHX+E
+   KerYMYbmD29gT4+M3iFRsQ8WW/Fyf2FRR/ZZKu4yXRitGMKHih9E1rgrJ
+   Q==;
+X-CSE-ConnectionGUID: C+FLiqf7TdOJ0e9/pcVcSg==
+X-CSE-MsgGUID: JSU0UqQJQ/a2A/pxAI9Jgw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11840"; a="84119031"
+X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
+   d="scan'208";a="84119031"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2026 23:26:39 -0700
+X-CSE-ConnectionGUID: ZSxxJVx0QOmPzaC9M3Vi2w==
+X-CSE-MsgGUID: 3QCR+hGPRci/obuXTAPvpw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
+   d="scan'208";a="254844470"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2026 23:26:37 -0700
+Date: Wed, 8 Jul 2026 09:26:34 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Caio Groff <caio.groff@usp.br>
+Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	marcelo.schmitt@analog.com, antoniu.miclaus@analog.com,
+	jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
+	linux@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: adxl372: replace manual bitfield ops with
+ FIELD_GET()
+Message-ID: <ak3tmgh9nUn6MkHs@ashevche-desk.local>
+References: <20260708013002.1377142-1-caio.groff@usp.br>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260708-add-missing-regmap-v1-3-6d424322e3d4@gmail.com>
-References: <20260708-add-missing-regmap-v1-0-6d424322e3d4@gmail.com>
-In-Reply-To: <20260708-add-missing-regmap-v1-0-6d424322e3d4@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Stefan Popa <stefan.popa@analog.com>, 
- Julien Stephan <jstephan@baylibre.com>, 
- Ivan Mikhaylov <fr0st61te@gmail.com>, 
- Marcelo Schmitt <marcelo.schmitt1@gmail.com>, 
- Marilene Andrade Garcia <marilene.agarcia@gmail.com>, 
- Kim Seer Paller <kimseer.paller@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>, stable@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783488858; l=790;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=iShz7l7ZusIwvENL/lDC2VhyBdjbPgnHRjbbDd86sDg=;
- b=Z26FGgIIQoNTPLIp4HMivVlYJq+tcpr2gP1WpKQhPaKGdXeyAQNRaW3fEv92YAfvsu6UZTZFC
- w5LvuwnV/kNBynEJmvCwpSeilnh5YFtqF/T1kHkZ9y/B474vfAaWaOZ
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260708013002.1377142-1-caio.groff@usp.br>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The Kconfig entry for the MAX14001 is missing a 'select REGMAP',
-causing build failures.
+On Tue, Jul 07, 2026 at 10:29:27PM -0300, Caio Groff wrote:
 
-Fixes: 59795109fa67 ("iio: adc: max14001: New driver")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
- drivers/iio/adc/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> Replace manual bit shifting and masking with FIELD_GET()
+> macros for clarity and consistency with kernel coding style.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 01e48d6701ee..91a39860c676 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1075,6 +1075,7 @@ config MAX1363
- config MAX14001
- 	tristate "Analog Devices MAX14001/MAX14002 ADC driver"
- 	depends on SPI
-+	select REGMAP
- 	help
- 	  Say yes here to build support for Analog Devices MAX14001/MAX14002
- 	  Configurable, Isolated 10-bit ADCs for Multi-Range Binary Inputs.
+...
+
+> +/* ADXL372_TIME_INACT */
+> +#define ADXL372_TIME_INACT_MASK_H  GENMASK(15, 8)
+> +#define ADXL372_TIME_INACT_MASK_L  GENMASK(7, 0)
+> +
+> +
+
+A single blank line is enough.
+
+...
+
+>  	res = DIV_ROUND_CLOSEST(inact_time_ms, scale_factor);
+> -	reg_val_h = (res >> 8) & 0xFF;
+> -	reg_val_l = res & 0xFF;
+> -
+> +	reg_val_h = FIELD_GET(ADXL372_TIME_INACT_MASK_H, res);
+> +	reg_val_l = FIELD_GET(ADXL372_TIME_INACT_MASK_L, res);
+>  	ret = regmap_write(st->regmap, ADXL372_TIME_INACT_H, reg_val_h);
+>  	if (ret < 0)
+>  		return ret;
+
+The whole driver uses bulk reads and writes, why this can't be modified to
+perform regmap_bulk_write() with the __be16 type?
 
 -- 
-2.54.0
+With Best Regards,
+Andy Shevchenko
+
 
