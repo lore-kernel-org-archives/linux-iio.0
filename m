@@ -1,59 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4748F3AE6E9;
-	Wed,  8 Jul 2026 19:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E057B3EFD07;
+	Wed,  8 Jul 2026 21:11:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783540679; cv=none; b=Meu6JoSbHNzl7OwH9jnOBmJCWSrDVIIXdcY/htcaVKC7LN/H536YrHCQ5BUrP1SXZSbE5pr8mpV2c6IW8sy3IUtm8t93OvTfv1re7vE29knxN9157yPZafHCGSLgNH9fzjrz8jZXOn82ZMMJSso80WFf+L+xmMwpveoisQo6ADA=
+	t=1783545062; cv=none; b=P/tZ7nH/hy4+VXpFDT7Vw0szDOagdEAGhQ87efR6vJggOCY7jJVsnxwI9gUwxZEuT+nAgo535NxN2vbWI+A2W+VaIT/GyRzhTf6d9E5w8KVmZDsl/Hd/pYo6JX1Y9txqyU1e2ngjnd8Ff5Ekkt9bWTIYkxEg1FSJNFidIndEFS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783540679; c=relaxed/simple;
-	bh=HM2D121xC3MIpyco4xPo75p8ZgVxTT2VrWYeZduVT2c=;
+	s=arc-20240116; t=1783545062; c=relaxed/simple;
+	bh=JFWZOyPGpgvPIKoXB9WjWQ8d7pCeLRsaN96svQ8fHNk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aawOC/wkPiHf5Kb3yXfQpX/ZxAlJnkc5c9OtqqFiwwjBlarwhV3Cws5M/Lwmmu9NQsnTnUJujBshr+FMu+4qC1/yOkhbN6ukyeJPvwrXAKKvTtvBRwQOsfKc2RKm/01ayhzXW9SOj0l650dcz1592JTb5w3dBZHhN3EfZjL3sis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nsMkdDd7; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=d/L3lhlFjj35H3hrUoROeFHHtRguwE9IRRCWy3WqPwlF6IHm1Mq/FbdL9C+b/+5751RASj3LSZFkzWKuQOKDD4tRfYVMshXUbVSeZFc/d/Wk3jDQQp/dSjgkxNbc3L/PMWs62sKnV7kqbhHsa7iINTsd4XnBh1DSNIK+NvJLwC8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dekQRjgj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nsMkdDd7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783540679; x=1815076679;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HM2D121xC3MIpyco4xPo75p8ZgVxTT2VrWYeZduVT2c=;
-  b=nsMkdDd75j6h3YlUm6BvyxqrLW1mx3ShPGbBGwGOpOUvF89aH0c/GCQJ
-   rwr9kMcIhPiMavfIl76U6Raqlg+SzpE8j3vf8lbLmdDMHubtDjxyY6QCJ
-   4kJjmjhgWnvHMkOdadS/4he3Tn7xCtEX8/oAdvOvxroFStQ9LndHCgfzd
-   b029wlwzPeR0pSJvV3ffJpuZOzPqwhlnoSE97P8H5qn9w0bVsPT7ceyMt
-   0VUZgjeU6rHi9KcK3hTRWYrbkmbiZOJBOSsBzWAYpUFujuZJyvQNlByXZ
-   evF/H7UG0PZUd+O1lsNZYctzTHojn2Hk543Ribu6vrdtxhatvaDQgBY1k
-   Q==;
-X-CSE-ConnectionGUID: vNOCRf4wS8a0t44x7v30Xg==
-X-CSE-MsgGUID: 6sp7a+GeSe+3NRz2wXp0vA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84073149"
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="84073149"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 12:57:58 -0700
-X-CSE-ConnectionGUID: 896B5yMOQlqrknYlDau6Kg==
-X-CSE-MsgGUID: 6GsgIUbYT8iZ5A302Jw56g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="248017551"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 12:57:55 -0700
-Date: Wed, 8 Jul 2026 22:57:53 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dekQRjgj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEF91F000E9;
+	Wed,  8 Jul 2026 21:10:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783545061;
+	bh=tkJStVQQrBUVTUaskhv5zoU/YZtR/Z//KEgb+Nu4U5Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=dekQRjgjNEfXhlQmyfoUDHiLn7BOa1vrUXPYlOF7nZT0gYD6oWWmhiYaf1OQ34y31
+	 qbk2C0vFSHkKFrQSQrGyMQWPiMLPaKBRt7Q/Cdoyk8W3jGRGBtPQN07cQm6DaL94DJ
+	 liYCCyfJECEuEN9RP9GTZpUqVsh1vA7E2jpW+il+Afq+NyvgBUWpXE49gsa6njMmm5
+	 pIBI2zhomAjp6hSuqoOZ2DwGWQG5OW+HXEZUMS38cM2HFh2pYITcTKOdCkkNECtRbu
+	 XDVCXFhBzOP0+TcbgG3tosHfbUe70o7c/6ZnxShy8QP07T6fDX/4V0IvI5rLU5VoEn
+	 Nmh0+1GaRps4Q==
+Date: Wed, 8 Jul 2026 22:10:56 +0100
+From: Lee Jones <lee@kernel.org>
+To: rva333@protonmail.com
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: opt3001: split opt3001_get_processed() logic
-Message-ID: <ak6rwTyFy25_Ztjo@ashevche-desk.local>
-References: <20260708-opt3001-unwind-cleanup-v1-1-900b2cfddb6a@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org,
+	Ben Grisdale <bengris32@protonmail.ch>
+Subject: Re: [PATCH v4 3/4] mfd: mt6397-core: add mt6323 AUXADC support
+Message-ID: <20260708211056.GB1727174@google.com>
+References: <20260623-mt6323-adc-v4-0-299680ad3194@protonmail.com>
+ <20260623-mt6323-adc-v4-3-299680ad3194@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,30 +53,45 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260708-opt3001-unwind-cleanup-v1-1-900b2cfddb6a@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260623-mt6323-adc-v4-3-299680ad3194@protonmail.com>
 
-On Wed, Jul 08, 2026 at 09:33:20PM +0200, Joshua Crofts wrote:
-> Split the logic inside the opt3001_get_processed() function, as the
-> current flow is hard to read, mixing IRQ and non-IRQ code blocks.
+On Tue, 23 Jun 2026, Roman Vivchar via B4 Relay wrote:
+
+> From: Roman Vivchar <rva333@protonmail.com>
 > 
-> Separate the IRQ code path into its own function, same for the
-> non-IRQ path.
+> The mt6323 PMIC includes an AUXADC. Register the AUXADC in the mt6323
+> devices array to allow the corresponding driver to probe using compatible
+> string.
+> 
+> Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
+> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> ---
+>  drivers/mfd/mt6397-core.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-> +	timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
-> +		   OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
-> +	msleep(timeout);
+Doesn't apply.  Please rebase and resent with my:
 
-It's not used after, so
+Acked-by: Lee Jones <lee@kernel.org>
 
-	if (opt->int_time == OPT3001_INT_TIME_SHORT)
-		msleep(OPT3001_RESULT_READY_SHORT);
-	else
-		msleep(OPT3001_RESULT_READY_LONG);
+> diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
+> index 3e58d0764c7e..013b0857fb54 100644
+> --- a/drivers/mfd/mt6397-core.c
+> +++ b/drivers/mfd/mt6397-core.c
+> @@ -125,6 +125,9 @@ static const struct resource mt6323_pwrc_resources[] = {
+>  
+>  static const struct mfd_cell mt6323_devs[] = {
+>  	{
+> +		.name = "mt6323-auxadc",
+> +		.of_compatible = "mediatek,mt6323-auxadc",
+> +	}, {
+>  		.name = "mt6323-rtc",
+>  		.num_resources = ARRAY_SIZE(mt6323_rtc_resources),
+>  		.resources = mt6323_rtc_resources,
+> 
+> -- 
+> 2.54.0
+> 
+> 
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Lee Jones
