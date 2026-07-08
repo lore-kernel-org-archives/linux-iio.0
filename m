@@ -1,122 +1,312 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from out-185.mta0.migadu.com (out-185.mta0.migadu.com [91.218.175.185])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE27543C7D2;
-	Wed,  8 Jul 2026 14:52:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78A0377003
+	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 15:58:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783522326; cv=none; b=re0bq7vR1O3MEqoR5YBs2tSLoEdJIEdjIA91Z0fkQBNOJifljuvMrASLIMndBa8Y0bhGpMupOk14cM8X6fjhjTO5MpVewx/QhQXryH4wLczcNSsNi++mf4i+30I7BVTyYhAvGHTqaPzGIRzE1pi4Z+YKEobk2Tg3y1dBZpVvbls=
+	t=1783526308; cv=none; b=dyWqOU99AH0zzvwLL48UNf35qA2vVMPbM5nEnzsnNt7MlAvDRUxyg5Q1Dhotitq2YCroB4On+4jHOQ6QGYwCwjg8PEzIYBjb4w/f26m1kNwrrIIycePvretMNsG2U1q37jDy679PDCuhumMkT8sVvTxOvCbOK2SZs48cTkTZX+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783522326; c=relaxed/simple;
-	bh=+RfC/xqi5foyvk7ovWqVRKrPk/rOuEWPd2u/U/fXfac=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r0zLm4pAktMvOT/tMwYFOGPfe8b9TMaGh7Ol1E697iCpwyOsvEp1ds0hXpK82ZOIkCFNp6n3RwuoREcnm2Q2FtZtQs+zPPbSS7tUC17u2e1Pb07R5Z1qH6smsxQ+q76A2xHghdc86kA8l3nL0oGjidaXY7YxVLFOBlAM5RYjzSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TqqYD7qm; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783526308; c=relaxed/simple;
+	bh=NRBHkdHf8U1o3Vm1YFi5bW5NylV874hTQJBEJFXVcUM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Y0OEmQcbEvawHbOjfaSbgV8mVLcYWt1zRA9CHb9EfR2WWipBxKhoSa3Q5BqkCK7AVGal5zI001eVTCKb499O5nkLpQ5TJLOEduyyrxxbR1WDBDb6ZnfT7E5x7o3pEnimbgC6mKWwhJTDA8Ndjq/xx5GeuGx7qyvJM5Wy/SVjN1M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Ukke5BSy; arc=none smtp.client-ip=91.218.175.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TqqYD7qm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783522325; x=1815058325;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=+RfC/xqi5foyvk7ovWqVRKrPk/rOuEWPd2u/U/fXfac=;
-  b=TqqYD7qmAbuerlI/NtDfBEhs5+65G/seNtE2uoMqTTtO8XKe4Big9A2A
-   DZV9nY2MlRrnVs0VBpf3Oac8LBBKu90psFVwDGahXgRL4RG97AwatOJfq
-   c3xVCNHIEn3NvVbcnc+NnmKnxv/QDo3Y0JbexAAEJfq220wWU4ejwi5GP
-   1PilbpvEw1sF1PonW3S5KIuaFe8XBo8M5UyBdZXBsMmcEtUdr/l3BDBFy
-   BuDTfCNlNSGWQil5GIa0tjJBEh+JpvEKEoU1WBo9rbAmw5qlXOW/dLuXO
-   G739TcsxTgWmWbbOv+APj0z+xaHSyM1KeWb/BEv09kZ0MJUBBqnR972gO
-   Q==;
-X-CSE-ConnectionGUID: hrrOEuO4T4WO7fvieciQ+w==
-X-CSE-MsgGUID: qajyCrQqRFGSYSO9Rhx7ig==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="94791446"
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="94791446"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 07:52:00 -0700
-X-CSE-ConnectionGUID: pe2I5EhiQv6m3EpzdylWeQ==
-X-CSE-MsgGUID: 899EseynSvCfbO5YFHPVYA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="292497405"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 07:51:57 -0700
-Date: Wed, 8 Jul 2026 17:51:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Md Shofiqul Islam <shofiqtest@gmail.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	jic23@kernel.org, devicetree@vger.kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org,
-	u.kleine-koenig@baylibre.com
-Subject: Re: [PATCH v9 2/2] iio: health: add MAX86150 ECG and PPG biosensor
- driver
-Message-ID: <ak5kCs3BkB_Trr2f@ashevche-desk.local>
-References: <20260707112714.2261727-3-shofiqtest@gmail.com>
- <20260707140545.0000029a@gmail.com>
- <ak0X8yrg5ujz8r5L@ashevche-desk.local>
- <CAOTCDVth36hE1JqAi3vJ3hKuqhs_yyjV0ZZx5mZotiJYzNDATg@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Ukke5BSy"
+Message-ID: <e84c4e047e104cca9b88dda791997ceecba1204c.camel@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1783526304;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=UcCCOzvDbV98M3F8rlVkTHld5hCbvC21pR1I6zAcNZ8=;
+	b=Ukke5BSykD7WieqMgrsaJSYGpONxqjQmGqH7zvEXmCZVW9q3PuvU1WOt5Ucno+CeZ5zY4e
+	Aw25yA11bvZn77hCrogwHy4IKdY414P/Hhv/1wi/5iiss2rIUTy2xm/PS4QKkMO5T6Y90l
+	G1aueunYlVJTF7R+JhnLs0WeBKZAKq4=
+Subject: Re: [PATCH v2 2/2] iio: dac: dac8163: Add driver for DAC8163
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Siratul Islam <siratul.islam@linux.dev>
+To: Lukas Metz <lukas.metz@gmx.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring	 <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
+ <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, 	devicetree@vger.kernel.org
+Date: Wed, 08 Jul 2026 21:58:13 +0600
+In-Reply-To: <20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
+References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
+	 <20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOTCDVth36hE1JqAi3vJ3hKuqhs_yyjV0ZZx5mZotiJYzNDATg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, Jul 08, 2026 at 03:54:19PM +0300, Md Shofiqul Islam wrote:
-> Hi Andy,
-> 
-> I want to address your concern directly and honestly.
-> 
-> I did use AI tools during this development, primarily to understand
-> kernel conventions and check my code against subsystem patterns. The
-> implementation decisions and the responsibility for what I submitted
-> are mine. I should have disclosed this from the start, and I did not.
-> I apologize for that.
+On Wed, 2026-07-08 at 11:52 +0200, Lukas Metz wrote:
+> The DAC756x, DAC816x, and DAC856x devices are low-power, voltage-output,
+> dual-channel, 12-, 14-, and 16-bit digital-to-analog converters (DACs),
+> respectively. These devices include a 2.5-V, 4-ppm/=C2=B0C internal
+> reference, giving a full-scale output voltage range of 2.5 V or 5 V.
+> =C2=A0
+> =C2=A0	=C2=A0 If compiled as a module, it will be called ti-dac7612.
+> =C2=A0
+> +config TI_DAC8163
+> +	tristate "Texas Instruments 12/14/16-bit 2-channel DAC driver"
+> +	depends on SPI_MASTER
+Missing "select REGMAP_SPI" here.
+> +	help
+> +	=C2=A0 Driver for the Texas Instruments digital-to-analog converter
+> +	=C2=A0 family dacxx6x compatible with the following variants
+> +	=C2=A0 - DAC7562 (2 channels, 12 bits, resets to zero)
+> +	=C2=A0 - DAC7563 (2 channels, 12 bits, resets to mid-scale)
+>=20
+>=20
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * DAC8163 IIO driver (SPI)
+> + * https://www.ti.com/de/lit/gpn/dac8163
+> + */
+> +
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/err.h>
+> +#include <linux/errno.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/mod_devicetable.h>
+I asked you to add this "mod_devicetable.h" header previously. But I notice=
+d some reviews by Uwe=C2=A0
+to use more specific headers.=C2=A0
+In your case these should be=C2=A0
 
-Yes, we have a tag for that Assisted-by.
 
-> Regarding types.h: Your feedback was not ignored. As a new contributor
-> managing feedback from multiple reviewers across nine versions in
-> overlapping threads, I lost track of your comment from v4. When
-> Sashiko flagged HIGH severity issues, I panicked and sent new versions
-> too quickly without properly reading all outstanding comments. That
-> was a mistake in my process and entirely my responsibility.
-> 
-> I am committed to contributing properly to this community. All
-> outstanding comments, including types.h, array_size.h, and err.h, are
-> addressed in v10. I will not send another version until I've read and
-> addressed every open comment from every reviewer.
-> 
-> Thank you for the direct feedback. I understand why you raised it.
+#include <linux/device-id/spi.h>
+#include <linux/device-id/of.h>
 
-Thank you for following the suggestions!
+unless I'm missing something.
 
-P.S. Please, do not top-post.
+> +#include <linux/module.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/stddef.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +#define COMMAND_MASK GENMASK(6, 3)
+> +#define ADDRESS_MASK GENMASK(2, 0)
+> +
+> +#define CMD_SET(x, y) \
+> +	(FIELD_PREP(COMMAND_MASK, (x)) | FIELD_PREP(ADDRESS_MASK, (y)))
+> +
+> +#define CMD_WRITE_INPUT_REG	0x0
+> +#define CMD_UPDATE_DAC		0x1
+> +#define CMD_WRITE_UPDATE_ALL	0x2
+> +#define CMD_WRITE_UPDATE	0x3
+> +#define CMD_POWER_MODE		0x4
+> +#define CMD_SOFT_RST		0x5
+> +#define CMD_LDAC_MODE		0x6
+> +#define CMD_REF			0x7
+> +
+> +#define LDAC_CHANNEL_A_MASK BIT(0)
+> +#define LDAC_CHANNEL_B_MASK BIT(1)
+> +#define VREF_MASK BIT(0)
+Since the MASKs are defined together, align the values.
 
-> On Tue, Jul 7, 2026 at 6:15 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Tue, Jul 07, 2026 at 02:05:45PM +0200, Joshua Crofts wrote:
-> > > On Tue,  7 Jul 2026 14:27:14 +0300
-> > > Md Shofiqul Islam <shofiqtest@gmail.com> wrote:
++#define LDAC_CHANNEL_A_MASK	BIT(0)
++#define LDAC_CHANNEL_B_MASK	BIT(1)
++#define VREF_MASK		BIT(0)
 
+> +
+> +#define DAC8163_INTERNAL_REF_mV 2500
+> +
 ...
+> +
+> +#define DAC8163_MID_SCALE(resolution) \
+> +	(BIT((resolution) - 1) << (16 - (resolution)))
+> +
+> +static const struct dac8163_chip_info dac7562_chip_info =3D {
+> +	.name =3D "dac7562",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 12),
+> +		DAC8163_CHAN(1, 12),
+> +	},
+> +	.default_output_reg =3D 0,
+> +};
+> +
+> +static const struct dac8163_chip_info dac7563_chip_info =3D {
+> +	.name =3D "dac7563",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 12),
+> +		DAC8163_CHAN(1, 12),
+> +	},
+> +	.default_output_reg =3D DAC8163_MID_SCALE(12),
+These resolution values are repeated multiple times. I think they could be =
+defined as something like
+#define DAC8163_RES_12_BIT	12 // 14, 16
 
-> > > You're missing array_size.h, err.h, types.h
-> >
-> > My comment against types.h was ignored. I think that this contribution is
-> > heavily assisted by AI (which has to be mentioned), otherwise I can not
-> > explain such an ignorance and mistakes from a human.
+> +};
+> +
+> +static const struct dac8163_chip_info dac8162_chip_info =3D {
+> +	.name =3D "dac8162",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 14),
+> +		DAC8163_CHAN(1, 14),
+> +	},
+> +	.default_output_reg =3D 0,
+> +};
+> +
+> +static const struct dac8163_chip_info dac8163_chip_info =3D {
+> +	.name =3D "dac8163",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 14),
+> +		DAC8163_CHAN(1, 14),
+> +	},
+> +	.default_output_reg =3D DAC8163_MID_SCALE(14),
+> +};
+> +
+> +static const struct dac8163_chip_info dac8562_chip_info =3D {
+> +	.name =3D "dac8562",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 16),
+> +		DAC8163_CHAN(1, 16),
+> +	},
+> +	.default_output_reg =3D 0,
+> +};
+> +
+> +static const struct dac8163_chip_info dac8563_chip_info =3D {
+> +	.name =3D "dac8563",
+> +	.channels =3D {
+> +		DAC8163_CHAN(0, 16),
+> +		DAC8163_CHAN(1, 16),
+> +	},
+> +	.default_output_reg =3D DAC8163_MID_SCALE(16),
+> +};
+> +
+> +static int dac8163_read_raw(struct iio_dev *indio_dev,
+> +			=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan, int *val,
+> +			=C2=A0=C2=A0=C2=A0 int *val2, long mask)
+Put val on the same line as val2. i.e.,
++static int dac8163_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +{
+>=20
+...
+> +
+> +static const struct iio_info dac8163_iio_info =3D {
+> +	.write_raw =3D dac8163_write_raw,
+> +	.read_raw =3D dac8163_read_raw
+Missing trailing comma here.
+> +};
+> +
+> +static bool dac8163_reg_false(struct device *dev, unsigned int ref)
+> +{
+> +	return false;
+> +}
+> +
+> +static int dac8163_probe(struct spi_device *spi)
+> +{
+>=20
+...
+> +
+> +	const struct reg_default reg_defaults[] =3D {
+> +		{
+> +			.reg =3D CMD_SET(CMD_WRITE_UPDATE, 0),
+> +			.def =3D info->default_output_reg,
+> +		},
+> +		{
+> +			.reg =3D CMD_SET(CMD_WRITE_UPDATE, 1),
+> +			.def =3D info->default_output_reg,
+> +		},
+> +	};
+> +
+> +	const struct regmap_config regmap_config =3D {
+> +		.reg_bits =3D 8,
+> +		.val_bits =3D 16,
+> +
+> +		.max_register =3D CMD_REF << 3,
+> +		.cache_type =3D REGCACHE_MAPLE,
+> +
+> +		.volatile_reg =3D dac8163_reg_false,
+> +
+> +		.reg_defaults =3D reg_defaults,
+> +		.num_reg_defaults =3D ARRAY_SIZE(reg_defaults),
+> +	};
+Why are these defined inside probe? Should be defined outside the function.
+> +
+> +	st->regmap =3D devm_regmap_init_spi(spi, &regmap_config);
+> +	if (IS_ERR(st->regmap))
+> +		return PTR_ERR(st->regmap);
+Use "dev_err_probe"
+return dev_err_probe(dev, PTR_ERR(st->regmap),
+				     "regmap initialization failed\n");
+> +
+> +	// for now we keep the ldac pin asserted permanently so that the output
+> +	// is updated immediately after a write to the channels raw attribute
+> +	ldac_gpio =3D devm_gpiod_get_optional(&spi->dev, "ldac",
+> +
+...
+>=20
+> +
+> +static const struct spi_device_id dac8163_id_table[] =3D {
+> +	{
+> +		.name =3D "dac7562",
+> +		.driver_data =3D (kernel_ulong_t)&dac7562_chip_info
+Missing trailing commas here too, this and the ones below.
+> +	},
+> +	{
+> +		.name =3D "dac7563",
+> +		.driver_data =3D (kernel_ulong_t)&dac7563_chip_info
+> +	},
+> +	{
+> +		.name =3D "dac8162",
+> +		.driver_data =3D (kernel_ulong_t)&dac8162_chip_info
+> +	},
+> +	{
+> +		.name =3D "dac8163",
+> +		.driver_data =3D (kernel_ulong_t)&dac8163_chip_info
+> +	},
+> +	{
+> +		.name =3D "dac8562",
+> +		.driver_data =3D (kernel_ulong_t)&dac8562_chip_info
+> +	},
+> +	{
+> +		.name =3D "dac8563",
+> +		.driver_data =3D (kernel_ulong_t)&dac8563_chip_info
+> +	},
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, dac8163_id_table);
+> +
+> +static struct spi_driver dac8163_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "dac8163",
+> +		.of_match_table =3D dac8163_of_match,
+> +	},
+> +	.probe =3D dac8163_probe,
+> +	.id_table =3D dac8163_id_table,
+> +};
+> +module_spi_driver(dac8163_driver);
+> +
+> +MODULE_AUTHOR("Lukas Metz <lukas.metz@gmx.net>");
+> +MODULE_DESCRIPTION("Texas Instruments 12/14/16-bit 2-channel DAC driver"=
+);
+> +MODULE_LICENSE("GPL");
 
-
+--
+Best regards,
+Sirat
