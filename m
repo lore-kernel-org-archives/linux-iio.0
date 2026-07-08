@@ -1,123 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from out-174.mta0.migadu.com (out-174.mta0.migadu.com [91.218.175.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF3747F2E1;
-	Wed,  8 Jul 2026 17:58:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 337DF3C379F
+	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 19:05:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783533513; cv=none; b=Kxv2aiWVx0UFDDf5s67BukCQvX+hcIERIHOA/fbgtFRptT2CZE4Jxvst3Yecwkoeg31MS0RBjh/j3r6lE1fnudP04ZROHZiUlFM1+fpBBqa/OdvSq/rhMRYlcnNp9DtpnZv9jjN50nUtlyb7TPM/77l1njkdpvwUgcK0bZOw+Ec=
+	t=1783537534; cv=none; b=E/+pRsBzeYmJ0WNkMqJJo2Xi7C0J6SZUIJT6PrVBlkF+4MO7ed1tB8zF9X+1+GYgdohWACyklFXQgTAHuGypidKMDhFs4baVxzxwTt50zXHxZoJvunRgn8uRGKoQmRWqJ9gjQqUgbAU6LSkEOplzCE3GU0xxPlLlwqznF4HeLcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783533513; c=relaxed/simple;
-	bh=vHCvyggaVGP/UrSeuuouhmlV8J6mtVFiyBdN7FWC2DM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=QqxTjVyJPjKr26qdprYqyXG4D2eNDIuYLjB6BVXnQLcqxdlWJvFTNHq/ViKL7mxxi50GpHCqDIF3tKJiDTa03ZYSxy2GeldsxMtZvQxiPsn93OaZsH9B5mpZ6vf8IZP298g4uNhAKUapt/033lO1elUV1L3iJaVXzThbWuTZeRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X2cx492P; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1783537534; c=relaxed/simple;
+	bh=Z8Yz9PKa7uFBWQo8Ur5SwLO33rz2LIemEl2lFmYjXMU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IiVNppzRPvsRPgKRcG8FtCNRcOC5ezVkscqLq09bOZxZbck1K5rEU51ZpRoZXBiUV9fDhLZMAF6AuESIZDQ+1i3R7qcCJf48WrjWHHsRY52/DT4BtKR16Cwdvrkm5/tXavljM/zkx34csPcRXca01K9li4kpPp44pIg7bri6Aq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=tPpm5cJQ; arc=none smtp.client-ip=91.218.175.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X2cx492P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783533513; x=1815069513;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=vHCvyggaVGP/UrSeuuouhmlV8J6mtVFiyBdN7FWC2DM=;
-  b=X2cx492PFMwfUdbZEgmVtisK5Rhr4bCsETicoU99z363RVwBavgDSI2t
-   HBzC2x8U/9ET9oSyVrPh2B0PC4cv3qFOH+k3A8qshlHSD9KCFa+uY9Grg
-   SJywGZt6MnMv7nBgtARwqnX+Sylm/H6fbtDBFoFytFqimLXCxssT5fYgk
-   gZT319xcGpfVFSv2U20jXtDjYSorGM0hWOjcBFtJUuMj0ml2R77OWj9nR
-   2+nfH3LkuQpUj7haa/+Pke72nAdlw0mF1BDioERag3mgfZHZr+vVqLfqX
-   3MaXIj/pZhkILVaWN6QyesfzbzrUT6W10tspF+3/UWYNw67INAOjmeaK7
-   g==;
-X-CSE-ConnectionGUID: 87QMfulwR7ez8bKqbxB2Wg==
-X-CSE-MsgGUID: vWlDeE8lTgOrFlCzJBuXKg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84322819"
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="84322819"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 10:58:32 -0700
-X-CSE-ConnectionGUID: pkLC4B36SJC05LijJsRhWQ==
-X-CSE-MsgGUID: GSasUqeuQ9axFcZZiXeitg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,153,1779174000"; 
-   d="scan'208";a="258223479"
-Received: from gabaabhi-mobl2.amr.corp.intel.com (HELO [10.125.111.97]) ([10.125.111.97])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2026 10:58:31 -0700
-Message-ID: <ec235cb20601651d7073949fdb913c96fb742ead.camel@linux.intel.com>
-Subject: Re: [PATCH v3 2/2] HID: sensor: custom: Fix field sysfs group
- cleanup on failure
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Haoxiang Li <haoxiang_li2024@163.com>, jikos@kernel.org,
- jic23@kernel.org, 	bentiss@kernel.org
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Date: Wed, 08 Jul 2026 10:58:30 -0700
-In-Reply-To: <20260707071545.3087073-3-haoxiang_li2024@163.com>
-References: <20260707071545.3087073-1-haoxiang_li2024@163.com>
-	 <20260707071545.3087073-3-haoxiang_li2024@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="tPpm5cJQ"
+Date: Thu, 9 Jul 2026 01:04:41 +0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1783537521;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=56W/VFUwknXNliD4iRNfvqsZnF1lfz6PNsFALT4S+Ss=;
+	b=tPpm5cJQ9fSbbSzx4HMJOU0eijyxCSlk687BAxtBKlGrFXPNYns4ZlHAAaM/nOK4fEuKRo
+	c98R/OR4MpJM4WJkfyJwE3mGMviZyiMGfh8y0G26rr8obr6xNm5A6ErLBcfKQZENYnRpFO
+	iKKkTjQpU4o35PMm9FAdGhbdLGii0oM=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Siratul Islam <siratul.islam@linux.dev>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lukas Metz <lukas.metz@gmx.net>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: dac: dac8163: Add driver for DAC8163
+Message-ID: <ak6eihbwmVyd6JBu@fedora>
+References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
+ <20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
+ <e84c4e047e104cca9b88dda791997ceecba1204c.camel@linux.dev>
+ <20260708183359.495c4b65@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260708183359.495c4b65@jic23-huawei>
+X-Migadu-Flow: FLOW_OUT
 
-On Tue, 2026-07-07 at 15:15 +0800, Haoxiang Li wrote:
-> hid_sensor_custom_add_attributes() creates one sysfs group for each
-> custom sensor field. If sysfs_create_group() fails after some groups
-> have already been created, the function returns the error without
-> removing the previously created groups.
->=20
-> Add a local unwind path to remove the groups that were already
-> created.
-> With enable_sensor exposed only after the field attributes are ready,
-> this path can free sensor_inst->fields without leaving enable_sensor
-> able to access pointers into that array.
->=20
-> Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor
-> support")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Haoxiang Li <haoxiang_li2024@163.com>
+On 26/07/08 06:33PM, Jonathan Cameron wrote:
+> 
+> > > +
+> > > +#include <linux/array_size.h>
+> > > +#include <linux/bitfield.h>
+> > > +#include <linux/bits.h>
+> > > +#include <linux/err.h>
+> > > +#include <linux/errno.h>
+> > > +#include <linux/gpio/consumer.h>
+> > > +#include <linux/mod_devicetable.h>  
+> > I asked you to add this "mod_devicetable.h" header previously. But I noticed some reviews by Uwe 
+> > to use more specific headers. 
+> > In your case these should be 
+> > 
+> > 
+> > #include <linux/device-id/spi.h>
+> > #include <linux/device-id/of.h>
+> > 
+> Not necessary given they are guaranteed to be include by the bus headers.
+> 
+> Take a look at what Uwe did in his series.  The actual device-id headers
+> are added to very few drivers - mostly the bus ones are enough.
+> 
+> Jonathan
 
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Thanks for the clarification. I should have investigated more instead of
+following half the story.
 
-> ---
-> =C2=A0drivers/hid/hid-sensor-custom.c | 9 ++++++++-
-> =C2=A01 file changed, 8 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
-> sensor-custom.c
-> index 6b0da2e0e1c9..c2b425afd951 100644
-> --- a/drivers/hid/hid-sensor-custom.c
-> +++ b/drivers/hid/hid-sensor-custom.c
-> @@ -609,7 +609,7 @@ static int
-> hid_sensor_custom_add_attributes(struct hid_sensor_custom
-> =C2=A0					 &sensor_inst->fields[i].
-> =C2=A0				=09
-> hid_custom_attribute_group);
-> =C2=A0		if (ret)
-> -			break;
-> +			goto err_remove_groups;
-> =C2=A0
-> =C2=A0		/* For power or report field store indexes */
-> =C2=A0		if (sensor_inst->fields[i].attribute.attrib_id =3D=3D
-> @@ -621,6 +621,13 @@ static int
-> hid_sensor_custom_add_attributes(struct hid_sensor_custom
-> =C2=A0	}
-> =C2=A0
-> =C2=A0	return ret;
-> +
-> +err_remove_groups:
-> +	while (--i >=3D 0)
-> +		sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
-> +				=C2=A0=C2=A0 &sensor_inst-
-> >fields[i].hid_custom_attribute_group);
-> +	kfree(sensor_inst->fields);
-> +	return ret;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static void hid_sensor_custom_remove_attributes(struct
-> hid_sensor_custom *
+--
+Best regards,
+Sirat
