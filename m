@@ -1,123 +1,114 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D57374A17
-	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 14:32:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6EB234A78F
+	for <linux-iio@vger.kernel.org>; Wed,  8 Jul 2026 14:45:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783521150; cv=none; b=A4NYRfAV7j73T8gOhQXYV/7Swf4QC9DgF0ovAb8Z3D6AHs8qDQYg9h9EwHAJ3bJz3GWvw3gwjJVa5rnwNvKWp8EIA6w3Dt6TzKZQL5CkcrDwKk1D2jOmsiNk5Nfj1jb3drRgLqBRTp6+R/s2LrFiH3nMRxyDsdSNInj5b2a5QkA=
+	t=1783521963; cv=none; b=ED822HA6JXb+Q3xvrH+pzelXKYiTzLab+KT8vHIxCpUgPGKcT9cPICxUHcUXQBbqSZIMQ993tnX4rMUUbOIVmKviqFq/oLnsOpn7jbyxft/i4hyvuI6FHnq2igZnmBKEhRRLbYQxkAbIU03BZ4GvPy6R2wOsK5qAqckDiHJauAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783521150; c=relaxed/simple;
-	bh=pQrUttJSAzZqd4+9dPhp4xkow1n/EuQGnd/1zwIBjYc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QKR/utMqtjGuoLjwsqNdsI55WxRo4P5rgYwth7vYeZzLLZBRTGoOp+tIo22UZKg1Q1BmDku9eZJgZ4HOLz7wtKCqoTWqZxk3G+IvF1GQEYBA4wqR06bnvhiECAOOHPkCqQ8BPOfyet4RIbSLvuB9/W5AXPWR4KOs4YW2JzvNdhg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=CUc7ZbFC; arc=none smtp.client-ip=209.85.210.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783521963; c=relaxed/simple;
+	bh=rhIP3xpggh82GZU7CmoSbbhDhRtAE2Yq1Aqs3Z7Bwm0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=iNGZptdocGJKwpGynscCz6JPP83SyFh4CKhSvpYlQ4UwW4m60hD5vzw1746oMR2FUWnjEUUXvoPjeE33PNbaWp2Ik7OxO8mv6Izlv9xINcvgq/U5mbu2ZdZ0fgMoiHq3cHeO9d70gokn1ledemc+FIxnHdvYw5gVKcihiVlHs5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s9lVuUmT; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="CUc7ZbFC"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7eb1dc6bd53so456702a34.2
-        for <linux-iio@vger.kernel.org>; Wed, 08 Jul 2026 07:32:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s9lVuUmT"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493b966dd74so3135125e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 08 Jul 2026 07:45:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783521146; x=1784125946; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=L59QY/LIozXECDQitmWoZ1ce6y53FVzUgHLAEXFNOTA=;
-        b=CUc7ZbFCE9XtyQYOPVu+rLbs1QWKw5kpy72zxRHNdte9zIHUkW3q3uvwx8NSgpIbre
-         ry+lOx70ibV26ojhAYvXYuLTvW8FizuQQQBVmRrUtKMS68CSHzTjqM/6exoctjcbiksA
-         jRfnpfR3xM0X353Ii+MY4i2+fHCBI502TRN+Pxr2YBL150AXGY3Cmskcs2w61l8UtZ1d
-         qrc7W4frnopwt6W+xjrXbREgoO/5aKQTMM347hA/McpWc+U+Bb38cuC8H8GMEd/9mxHU
-         H+wFbqCo/2KaIk4loL1TPKakjiHcZtrQQf4C+TLr2a+tbHLsDrQ5CFR1+Ilkzh7aeenA
-         p18Q==
+        d=gmail.com; s=20251104; t=1783521958; x=1784126758; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pEp1ol1LlGWoTCSbyN12Tvrg/hxt8xJFi5XclnHnmwo=;
+        b=s9lVuUmTwciOqWa1I6yt2CrDPzWoEYlgcbrXZ6Q1oFWpdGj18+2ON9CvLyI5bQfW0U
+         a42VpgZZzwyHxABEfoiX48uJn7XgQvnytE8/odS1QzdD6XcXr4AtHcJWuuNkyN38AxMR
+         QH0xPyktpQPFfgqmQd2JsbEj0444b8eAJ0ncAnNkhlhTJZfTgHWpWKph95T5D0R6cQY3
+         nlMShkb6zp6EGnpBrXb1d5Cgjdhdo7gt303S8OWEhQs7QGySkiUmWXQS5bit4h6otZvk
+         DcluSMEO2Gr+j//xIdzh+ruG0NZOppP6R2Q6ik/fQ+4STG3VUxxI0XrJW+Izwnl+w73J
+         FujQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783521146; x=1784125946;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=L59QY/LIozXECDQitmWoZ1ce6y53FVzUgHLAEXFNOTA=;
-        b=f5rCDzb4mxd7+82fVTOCIIiQiTxoyMVjhJvBDQMKHEilDoyLNtUYWyRC7SfiJCduUk
-         wEV6TRrMV3apELHyw8Jq9VpZKygeZ/QhhL2Urawc0jtOPUdV/HERXF9B4o2t7vCkKcwQ
-         PEiq6E5ejSgsEvmhFHGGqCSDrwIo4jM1AGMT1elDDsdonFWhiEtFNXx+1XWJVjQ+Xwz1
-         xkbf9YHvOk7Rt7Zjx2K/PCU1XZ1IiJZpLljRkCfNikUmdfW0fs9ohpZ8luyj9z/bgYUf
-         XtAz2wEn6zYGYAuqIGvMrrwMcv6V//USbNAUB+Jx3jz0+uoK+YET4kyzeSNrSnatCO10
-         OzWg==
-X-Gm-Message-State: AOJu0YzaMHcntFqhNhkYOyX0t7uC1GoO9IsAFALQYaOcbLV7lXYRewGH
-	vOF6XV1Xy7VF4jq4AuOxdE9WLdE29G9yBP/BU+0JIkl5FkPD5TWx/vFGGRyXW3v7xcQ=
-X-Gm-Gg: AfdE7cnYX8hMevy2nHSd03gCD8vXE72RvvvQo+cNBjGOtOcdiQ4kntE2LS6cmLX1gpo
-	F1vYIzx6JYoR/EU9hcvLJxXZKV3LTYfHdGASIBjR8fOgtVI13JC+81I3T3ir4n4P+/wlkPxnZ7m
-	H3lmsCi6eSDJRIqhRIQd5XDvMWIGOhtJk+n9xauU2Gnu+8VlhO4A1oyw0WYY9DFvxlARBVxB7xY
-	qP0i0LQyVThHERzaEUMMGBIa71vUBVBh7l1X5KmXU0WLJMLf9H1Pq9GYIyPSYvrkBnQgSpHxw6E
-	2liqOZbbJFk2P+8EuJT+EDHUJQeICwEbxdbQXwhQ/l6W2/+mshddzV+Tz4dAaT4li/HJsa5fHPO
-	P9jdFs9fCkJ0VbFctJp+/RrfFtx5TAKrPc+33q5DTmhcwdxwzek3vIDoLQzsjn8E4niERbPS3f8
-	Ekm4877FOSWY1uhuhuhqKFdUafOuYOa0LosRPbL5NamLbDoSJxcPHPdj06mJFBdfI=
-X-Received: by 2002:a05:6830:6f45:b0:7dc:e090:68a with SMTP id 46e09a7af769-7ebcfed3e61mr1718859a34.0.1783521146173;
-        Wed, 08 Jul 2026 07:32:26 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:19a8:8ead:9ca9:cb30? ([2600:8803:e7e4:500:19a8:8ead:9ca9:cb30])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcb2b79c9sm1900838a34.22.2026.07.08.07.32.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jul 2026 07:32:25 -0700 (PDT)
-Message-ID: <6d8c6b4b-89b3-431b-a31a-11de654c2901@baylibre.com>
-Date: Wed, 8 Jul 2026 09:32:24 -0500
+        d=1e100.net; s=20251104; t=1783521958; x=1784126758;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pEp1ol1LlGWoTCSbyN12Tvrg/hxt8xJFi5XclnHnmwo=;
+        b=Qt58C/Av3P8nMiWA/D8ZF+YrMOEQndTSh6XMjdnTN96YMnY8W3RpTdNuqQOBCUhCbg
+         +JGnXSmqGIbJFBM1duNee7DtkPYS1sSMiUF6O+uVvBrKYrEmJdiFkGJ6irJhuGjrzHVY
+         pym/Dl6E4Q0yMVe7Cx60sdVmA06nSA3CoUzVJXSg9n733iuQIUA8DDi2jpJymKlE6vO2
+         yvJDceHuyPKv79vyZXoa7nvFcLIyYllqqbSeyZXwtl3pk3lIlh2pv5apsDaSHibWVkf+
+         YsW721+G7/lSy6WktZFuqrFNiSqVId6KAm3ikzwzge84fHOs8FBC+dxEzKhn40P6llE8
+         5sPA==
+X-Forwarded-Encrypted: i=1; AHgh+Rr8fDzbC8gKOqisna6w9I3r0smDwIv+btEP4RT9xrEa1U5Otpd2TpKZpCtUKWr38EpyC+58ZTY53JY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywdva5+0ZA0bQFg2QPrUireGWDTRSxo1FGRtBtUldgbjnOZJqjo
+	WC7hmq5FgyAE/D/Lar39kh7GgLB7dAVtJtOH1dHZQj73cyJ6ok/VuyQY
+X-Gm-Gg: AfdE7cnch0+M0Yo5Gir2ZrT3BhD5X1Bzh2lSnBdy/CO2Niw3r8OfFtNB0+Aa+eup9ko
+	J4XgZ7NP0kpod1VFwMrI+DeLrFObLZxSkWkGNpxQMWp+CqRw1kNc2NiT0Hd4r5XXu+dkflE+52f
+	iqcwayh2WRJxGooRZ4KcL3zJZHFa0TycIZQ8pLYAiypL89uA3LG7cdAjM5MZn6rONjzm1uPjj7/
+	7EwtTjhuTM4vPnCKeBAFg82lxeuoe9N5BzbAioySyJkny6fV3k4I2UYSuFM0ZPMpPJ9IfHq9JyQ
+	vUHR1VY8k7S4THrniMZuZufFT4gbNJ56gzf1CGVHQxtMTT3imC1drp4P2d67W6rQbtOpUwyG6Jy
+	pd569l04CRL4sbMXA8bq6yLaIF50qJkB+jt7A9HIoOaoHVGmRlAFwVKXq0V5cYJu9b5ZExjlZIM
+	XKlZqdBJe3YwlqgZ176YSbQADvDEpK+Iq3fX8dQI8Q98uwP3yWzFbAHMzB0xSIZI/viV3shXA06
+	ehjD+eSODP3Ix0arpJnK7nHcs9bBg00nhvigRlSZLS7SaDA1BFlc3q5NcxERZ6Bt2wcPopgO3I7
+	POsIlbbEJ0oejfID6F+6AO0Pt1dVHW09cL+77nGXFUO8DsZyEzkSs0WeuygAlF9wVAWtB4dhxPa
+	2WMAeCAkMZMhDFQh7c4NsFWgppLYVSf+JXw==
+X-Received: by 2002:a05:600c:3e86:b0:493:aa0a:45ad with SMTP id 5b1f17b1804b1-493e68316ecmr30972775e9.2.1783521957530;
+        Wed, 08 Jul 2026 07:45:57 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0f294b3sm129329345e9.3.2026.07.08.07.45.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jul 2026 07:45:57 -0700 (PDT)
+Date: Wed, 8 Jul 2026 16:45:55 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Stefan Popa
+ <stefan.popa@analog.com>, Julien Stephan <jstephan@baylibre.com>, Ivan
+ Mikhaylov <fr0st61te@gmail.com>, Marcelo Schmitt
+ <marcelo.schmitt1@gmail.com>, Marilene Andrade Garcia
+ <marilene.agarcia@gmail.com>, Kim Seer Paller <kimseer.paller@analog.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: adc: ad7380: add missing 'select REGMAP' to
+ Kconfig
+Message-ID: <20260708164555.0000602e@gmail.com>
+In-Reply-To: <6d8c6b4b-89b3-431b-a31a-11de654c2901@baylibre.com>
+References: <20260708-add-missing-regmap-v1-0-6d424322e3d4@gmail.com>
+	<20260708-add-missing-regmap-v1-1-6d424322e3d4@gmail.com>
+	<6d8c6b4b-89b3-431b-a31a-11de654c2901@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] iio: adc: ad7380: add missing 'select REGMAP' to
- Kconfig
-To: Joshua Crofts <joshua.crofts1@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Stefan Popa <stefan.popa@analog.com>, Julien Stephan
- <jstephan@baylibre.com>, Ivan Mikhaylov <fr0st61te@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
- Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
- Kim Seer Paller <kimseer.paller@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20260708-add-missing-regmap-v1-0-6d424322e3d4@gmail.com>
- <20260708-add-missing-regmap-v1-1-6d424322e3d4@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260708-add-missing-regmap-v1-1-6d424322e3d4@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 7/8/26 12:34 AM, Joshua Crofts wrote:
-> The Kconfig entry for the AD7380 is missing a 'select REGMAP'
-> parameter, causing build failures.
+On Wed, 8 Jul 2026 09:32:24 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-This one has already been fixed.
-
-https://lore.kernel.org/linux-iio/20260603134955.2f1d5ede@jic23-huawei/
-
-Suggest to use linux-next for development so you get both the fixes-togreg
-branch and the regular togreg branch.
-
+> On 7/8/26 12:34 AM, Joshua Crofts wrote:
+> > The Kconfig entry for the AD7380 is missing a 'select REGMAP'
+> > parameter, causing build failures.  
 > 
-> Fixes: b095217c104b ("iio: adc: ad7380: new driver for AD7380 ADCs")
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
->  drivers/iio/adc/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+> This one has already been fixed.
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index d1b198cb8a80..6d1170bc4c7c 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -330,6 +330,7 @@ config AD7380
->  	tristate "Analog Devices AD7380 ADC driver"
->  	depends on SPI_MASTER
->  	select SPI_OFFLOAD
-> +	select REGMAP
->  	select IIO_BUFFER
->  	select IIO_BUFFER_DMAENGINE
->  	select IIO_TRIGGER
+> https://lore.kernel.org/linux-iio/20260603134955.2f1d5ede@jic23-huawei/
 > 
+> Suggest to use linux-next for development so you get both the fixes-togreg
+> branch and the regular togreg branch.
 
+Ugh, my bad, I only use the testing branch in the IIO tree.
+
+Thanks
+
+-- 
+Kind regards
+
+CJD
