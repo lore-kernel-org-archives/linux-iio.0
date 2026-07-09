@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 122ED40D58A;
-	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 212AA40DFAC;
+	Thu,  9 Jul 2026 10:52:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783594373; cv=none; b=PGrYcbMPgntuTmzUoUwVkNHyucCRxLKOs9zpm2tZgB8aZG2RrT/JMj0Sol3OnDEpcT+hOhtJEhwKqno6xFXG0t3fIwki7qhtMR3k+FZIPzUE/3yMqT61WR5qtdtwQn0KH+jLnHn0J9gpa3FeJwRa19ORxdxUoIlkDzBeYRz+FPs=
+	t=1783594373; cv=none; b=gJfFDMBNWg4TJ7pOyTYNiygKWdeMBgcJZSyUbB1Hw4bM5kj8GHhpbXvbQWzggh7BN2t7AS3hz6o/IYAwegMixcKZkA5LJSisbVC273fpLc4xPN3xgLF0KIjj1QlHGRNzn9j278wQD/LzfVbmU1pqz6CHgCEdVTu+6+9UDuQ2tnw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783594373; c=relaxed/simple;
-	bh=AL+6cjS+Aq23xV5C0GZ6jVglJtlvdb3jharPXO6eVtU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=X/XV67WOrEeA0cP5wBaEHPfqSsTNDljRruscTmhvY6y7RABSUuZb6lL4BhhYbiU9+hev86RpFrAzRiUHxd5Fxj7a0H7YXpGqgKN0cpWyEjSOStwp8QTACeSTqZvSiDX5yiFbAZwVgq1YgZ+n+tTptZzk8sib9uCo+LuZH9egWzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gRwE7eBu; arc=none smtp.client-ip=10.30.226.201
+	bh=W+zLO7+0D4YcJsgd55UMB8D9Ag99lffSIs84hIwj1wk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZTFmh5RYQhe+EOOehvuNxtzZrRNQIHxva/KolZD+7Lu+oY8vy1KHiCJQYH5tp6LAi+sIS7WgBiP8QAJFDI9GwE8bZ8p6/N3S2rYeqMlyrOnAz4BcyIqGLypg+kDaemUYrescf/ct5zUBSqha2PwcI7B9eHZqFeQDH7MVQVklZMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WlX032nU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gRwE7eBu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 38C15C2BCFC;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WlX032nU"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 009ACC2BCB9;
 	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1783594372;
-	bh=AL+6cjS+Aq23xV5C0GZ6jVglJtlvdb3jharPXO6eVtU=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=gRwE7eBu11JWC35IbYbkGu2puijlISPepAScWBPDPHrPAKnweJ3kP1ILYgJlL5hMe
-	 M0lqFUaB3JiYDX3DZJ2+o6Jo+eDlHt4mk8J778GzUIbcSxV3deW6blo0qAls4FgCok
-	 69UslMX3GTGnx2c2ENfprjA7ySPUFl208n98vmNg/x+s65rAPYyYJOws0zMlQ2ayzg
-	 r4/4k27OOK/PJlnmFf1MN9TucmKF0iwtHVQ/565At9cO3FqQ1BGOvsl947w3UpJyNS
-	 MjGYTfmHgSjUY+jDmWXrs/cUDqIycE3CmkZT/jEOTUtcdQNaxzQU1bawEbKO8oHONE
-	 T/+05oC7JDt9w==
+	bh=W+zLO7+0D4YcJsgd55UMB8D9Ag99lffSIs84hIwj1wk=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=WlX032nUWpU6E+/E2hzz0StoTDCWnw2wYjQ9hGGcqoLCQT6RNEWFSjQsJyK2bzo/q
+	 wup/0+sAD7BtOJnba1Lh3D+HfYB1zOuN721YsGy4xkaCgV6icGPqeP5mTpNUSynlZb
+	 hhSlEpDZQ2r7a9WPKOGpTLr1EH6YmahrWQ2coqRz6iFWXXGcO16IdO5Ns6Bm4IlE9y
+	 HDgkeE3uwKdlu01zg/kyNEJ2T9LFZ2nJeuGnF1uiFpOtvfilU1+rGqmp36rvl7ZwTp
+	 MkmAnewVL1JwLuEoFj81ClDXYx6rvcZ5/YDq36cVTa4+mODVo2lPfXO866inCBCpZf
+	 BN//KUjXKnTEA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 282E1C43458;
-	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E212EC43458;
+	Thu,  9 Jul 2026 10:52:51 +0000 (UTC)
 From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Date: Thu, 09 Jul 2026 13:52:50 +0300
-Subject: [PATCH v5 4/4] ARM: dts: mediatek: mt6323: add AUXADC support
+Subject: [PATCH v5 0/4] AUXADC driver for the MediaTek mt6323 PMIC
+Date: Thu, 09 Jul 2026 13:52:46 +0300
+Message-Id: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,12 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260709-mt6323-adc-v5-4-d11b8332a735@protonmail.com>
-References: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
-In-Reply-To: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/23NQW7DIBCF4atErEMEMwZDV71HlQXG44YqNhG4V
+ qrIdy9ONkTJ8knz/XNjmVKgzD52N5ZoCTnEqQy13zF/ctM38dCXzUCAFgoUH2eNgNz1nmNHgyf
+ UvhuAFXBJNITrPfZ1fOz82/2Qn7fCdnEKeY7p7/5tkdvdI6wF1OFFcsG1Id9iq4Qh+rykOMdpd
+ OF88HFkW32B2tsnD8U7Z9EBoLCDfeux8lI/eSxeemi9MkYa1b/1TeULrH1TPFirjXA9Stu8+HV
+ d/wF2cbq/ewEAAA==
+X-Change-ID: 20260525-mt6323-adc-3befce36cbf2
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -55,13 +58,15 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>, 
- Roman Vivchar <rva333@protonmail.com>
+ Roman Vivchar <rva333@protonmail.com>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783594368; l=866;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783594368; l=3957;
  i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
- bh=Gm5yHjWd+okdy+GbK+XrT9mjlxYBCgUC9x8KovsgFk0=;
- b=/csjgwGmhCRCc7gN/lLpul7ac274/mSOrm/l/CZz82mruZpXO0y2ZKDJb684iwDJNKk1nOgwC
- RNTmO/XkKV5Bw5PngIKKXPvRC+zUHJYKWEboC3cBo3z8A9EPW1YO6p4
+ bh=W+zLO7+0D4YcJsgd55UMB8D9Ag99lffSIs84hIwj1wk=;
+ b=vC7qT016llzBOmF+PEhK0ccwAPJrPTSdWmj97noZV+zvssERAiIuogUi8fbDoXTCwlN9Nzw+W
+ wDASqDkMo1JCbvo0sksAKZM81Avhn0FcPJjXmPOBaU91ieF99V0i9wL
 X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
  pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
 X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
@@ -69,35 +74,90 @@ X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
 X-Original-From: Roman Vivchar <rva333@protonmail.com>
 Reply-To: rva333@protonmail.com
 
-From: Roman Vivchar <rva333@protonmail.com>
+This series adds support for the 15-bit AUXADC hardware block found on
+the MediaTek mt6323 PMIC.
 
-Add the devicetree node for the mt6323 AUXADC.
+The previous version of the series for all AUXADC, EFUSE and thermal
+drivers was split after Krzysztof's comment [1].
+
+Tested on the MediaTek mt6572 and mt8163 SoCs (Ben), both paired with a
+mt6323.
+
+[1]: https://lore.kernel.org/linux-mediatek/20260504-mt6323-v1-0-799b58b355ff@protonmail.com/T/#med30fad67a090be35f549231336b2dec295233f6
 
 Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Roman Vivchar <rva333@protonmail.com>
 ---
- arch/arm/boot/dts/mediatek/mt6323.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+Changes in v5:
+- Rebase onto next-20260708
+- Link to v4: https://patch.msgid.link/20260623-mt6323-adc-v4-0-299680ad3194@protonmail.com
 
-diff --git a/arch/arm/boot/dts/mediatek/mt6323.dtsi b/arch/arm/boot/dts/mediatek/mt6323.dtsi
-index c230c865116d..c070f4b0936c 100644
---- a/arch/arm/boot/dts/mediatek/mt6323.dtsi
-+++ b/arch/arm/boot/dts/mediatek/mt6323.dtsi
-@@ -14,6 +14,11 @@ pmic: mt6323 {
- 		interrupt-controller;
- 		#interrupt-cells = <2>;
- 
-+		mt6323_adc: adc {
-+			compatible = "mediatek,mt6323-auxadc";
-+			#io-channel-cells = <1>;
-+		};
-+
- 		mt6323_leds: leds {
- 			compatible = "mediatek,mt6323-led";
- 			#address-cells = <1>;
+Changes in v4:
+- dt-bindings: Drop separate driver mention from the commit message (Conor)
+- AUXADC driver: Break one more time 'regmap_read_poll_timeout' on logical boundaries (Andy)
+- Link to v3: https://patch.msgid.link/20260616-mt6323-adc-v3-0-1c27c588185d@protonmail.com
 
--- 
-2.54.0
+Changes in v3:
+- AUXADC driver:
+    - Add comment for channels table about voltage and channel IDs (Jonathan)
+    - Add comment for mutex in the 'mt6323_auxadc' struct (Jonathan)
+    - Break 'regmap_read_poll_timeout' on logical boundaries (Andy)
+    - Switch to 'guard' from 'scoped_guard' (Andy)
+- Link to v2: https://patch.msgid.link/20260609-mt6323-adc-v2-0-aa93a22309f9@protonmail.com
+
+Changes in v2:
+- AUXADC driver:
+    - Drop channel type from the MTK_PMIC_IIO_CHAN macro (Nuno)
+    - Drop kerneldoc for the mt6323_auxadc struct (Nuno)
+    - Add channel release to save power (Sashiko, Jonathan)
+    - Drop 'reg' variable in the mt6323_auxadc_read (Jonathan)
+    - Sort variables in the mt6323_auxadc_probe (Jonathan)
+- Maintainers:
+    - Drop linux-mediatek list (Andy)
+    - Split between dt-bindings and driver to avoid missing file (Nuno)
+- Link to v1: https://patch.msgid.link/20260602-mt6323-adc-v1-0-68ec737508ee@protonmail.com
+
+Changes after split:
+- dt-bindings: Change 'MT63xx' to 'MT6350 series and similar' (Jonathan)
+- AUXADC driver:
+    - Add missing headers (Andy)
+    - Fix AUXADC_TRIM_CH* values (Andy)
+    - Rename masks to include their register name (Jonathan)
+    - Fix formatting (Andy, Jonathan)
+    - Replace channel address with actual register value (Jonathan), align the table
+    - Replace IIO_TEMP with IIO_VOLTAGE, since the actual output is still mV, not mC
+    - Rename constants to match their registers (Jonathan)
+    - Remove 'if/else if/else' in the mt6323_auxadc_read_raw (Andy)
+    - Add comments for fsleep, ADC range and resolution (Andy, Jonathan)
+    - Remove useless error messages (Andy)
+- Maintainers:
+    - Explicitly include mt6323 in the name (Jonathan)
+    - Squash with AUXADC driver commit (Krzysztof)
+    - Set status back to 'Maintained'
+- Link to a previous series: https://patch.msgid.link/20260512-mt6323-v2-0-3efcba579e88@protonmail.com
+
+---
+Roman Vivchar (4):
+      dt-bindings: iio: adc: mediatek,mt6359-auxadc: add mt6323 PMIC AUXADC
+      iio: adc: mt6323-auxadc: add mt6323 PMIC AUXADC driver
+      mfd: mt6397-core: add mt6323 AUXADC support
+      ARM: dts: mediatek: mt6323: add AUXADC support
+
+ .../bindings/iio/adc/mediatek,mt6359-auxadc.yaml   |   3 +-
+ MAINTAINERS                                        |   7 +
+ arch/arm/boot/dts/mediatek/mt6323.dtsi             |   5 +
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/mt6323-auxadc.c                    | 314 +++++++++++++++++++++
+ drivers/mfd/mt6397-core.c                          |   3 +
+ .../dt-bindings/iio/adc/mediatek,mt6323-auxadc.h   |  24 ++
+ 8 files changed, 367 insertions(+), 1 deletion(-)
+---
+base-commit: b9810cd75b9fb56a3425d391cba3f608502bd474
+change-id: 20260525-mt6323-adc-3befce36cbf2
+
+Best regards,
+--  
+Roman Vivchar <rva333@protonmail.com>
 
 
