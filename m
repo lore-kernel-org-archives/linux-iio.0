@@ -1,68 +1,64 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A0EA40B38F;
-	Thu,  9 Jul 2026 10:10:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F71E3AFD08;
+	Thu,  9 Jul 2026 10:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783591821; cv=none; b=pd5lRw1LnOwpW5ZFo9s8h3N6sSHhSTmqXvmfyZjkqhfrfMfTUxC77FGQjLcZyWE8cY9ZFsGIr7UnxAtfKoZTgVpOj68/J5K7EQgpgET3KpAWFUR3Ib36v+KuvJCvy95nK5IeCoaohFQY5Psl0AQG88bBAER9Vswf2s5tsXtUwc8=
+	t=1783592365; cv=none; b=Blz3a3icZutWcqS5TL4D7ft8QkveQpTlOHcKYvCr7rbVLthSGEt06JTOvLfJttrN9FY6MaULSep3iRJ2xhiE8bfCd7Mid56uCB88wD6oPLpbHihecLbRISFK5ynj1bEvV6rHm2E1BOLHj0C9WChwOepV7epS1yorxMkuPmArlO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783591821; c=relaxed/simple;
-	bh=fRNeER7LnUmcwoquzvpNn39F7hoZUAISetj6EkZZm2Q=;
+	s=arc-20240116; t=1783592365; c=relaxed/simple;
+	bh=C6Zr3JPMN5tTq60ktTOM2vy0OVuEMSsWu+hbALmvEZU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZAglQaMDywneEb1thEshAVduxVhdTQAdza10AKSLHiCwHo//34ycBrSULpSST9TXkIaxsJI25G1amlNVvCSXhbQaTsbXrQ+iKaJjZl3wExj1ioZNlTwnV7EsOw8TczW1fWk7H5eHj+XIfWjv0wqxCY1W7gB2KXQgiQxjz1pheWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F03vhvIw; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=INepMwYrF8Us7aqtZ8n8uLB2l+zBjYg3ZOvUqdBZpvep/jwq5+cPefMFzftzgoq0W9ERHLGIMLxMx5klcvFwXJ9irTWth7mEG1p1q0POMSwENIP/6bmvAv7KSHQ7u9Fxz40TWheEfZxMEr+rmIyHDb1BsepgCqp1wE49Qigb5WE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WICtewaP; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F03vhvIw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8C61F00A3D;
-	Thu,  9 Jul 2026 10:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783591819;
-	bh=oWFW04FqDfkqF6FQ5XuyyPvQ7Y46Kanl78+AV4Ugsl8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=F03vhvIwmj4StkRYQPee7Mpo8rhhvPDYa1ZUqMf2+g/CIeGCVIfCN0xnG5MJNYpgT
-	 G/xk+YiSmjsIpQ2a+ZCD1F7xW6UWIvVaIlA6EZhjtHM2GrgY2ZJp+KTKbZzmfeMY3V
-	 YI9cy3UqYXyMdyhNZ1zM949+ZSyI5yjfsP0DsW4R6T1oCjhBIM50nriVks3E2TiNTH
-	 S9m1h8vO+qxxJ7t4pzTYadBUln5t8vaGIXxmcrGaq5iBn0yQiXfbw6yHSMCKDUSEG8
-	 sAdltXpvBqJuHdUtm+PegrAGj97SvlIeTEKN0AltXJqRF1FwfLCw0B+XrWz/skAojF
-	 Ifn+6OI6uNVwQ==
-Date: Thu, 9 Jul 2026 11:10:12 +0100
-From: Sudeep Holla <sudeep.holla@kernel.org>
-To: Hans de Goede <johannes.goede@oss.qualcomm.com>
-Cc: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-	Sudeep Holla <sudeep.holla@kernel.org>,
-	Cristian Marussi <cristian.marussi@arm.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nsc@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney@redhat.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>, Frank Li <Frank.Li@nxp.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jyoti Bhayana <jbhayana@google.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WICtewaP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783592364; x=1815128364;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=C6Zr3JPMN5tTq60ktTOM2vy0OVuEMSsWu+hbALmvEZU=;
+  b=WICtewaPuv6xrsqD/8iFgRXzbioAcnzSqJfX6l+Hy1zXgb/Z7dT5pD9R
+   Wpdygd679sO2PQjxqTM1glaXxQn2iIrQrEDwdZw8vh7o8FfppsRhwwKW3
+   34WG36XgxTVkGOWuyRfWtuyCmU9ydQwN8DJfKuPZTwahfKJCyTV4d2+m5
+   2W/bkzOm5nketbBDo6j4bgs3QnihPLU4k5XuvAW8XEJT89/i4xCgpKk8m
+   itpDQ7iz+pAUe5ewW10qjJhL6gLuy+czm24NejnzwoF+fuo/XdunRbaGx
+   mh99NlOCj811dmApT5hteQ9HhTvqs/C7N1DCkqAL3+b43mFaqkGx0kke9
+   Q==;
+X-CSE-ConnectionGUID: bdjMnXNsSk6sUXb5bENmzg==
+X-CSE-MsgGUID: hINaXRUATbmwyAfEL8axZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84049145"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84049145"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 03:19:23 -0700
+X-CSE-ConnectionGUID: xdmAXBAHSk+RrTuLQSFiZw==
+X-CSE-MsgGUID: tbqOnLjfTia+tCAFPlXeEw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="277774860"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 03:19:21 -0700
+Date: Thu, 9 Jul 2026 13:19:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Lukas <lukas.metz@gmx.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Ulf Hansson <ulfh@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
-	imx@lists.linux.dev, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] firmware: arm_scmi: Ensure automatic module
- loading
-Message-ID: <20260709-spicy-fiery-squid-6eec1d@sudeepholla>
-References: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
- <8c2a4ae3-95cc-489a-a7a4-90a3ee2597e9@oss.qualcomm.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: dac: dac8163: Add driver for DAC8163
+Message-ID: <ak91pq1suFO2k76v@ashevche-desk.local>
+References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
+ <20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
+ <ak41MZNHFvVzeq6Z@ashevche-desk.local>
+ <ak9x4iKf7yR1rMWN@berta-MS-7693>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,42 +67,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8c2a4ae3-95cc-489a-a7a4-90a3ee2597e9@oss.qualcomm.com>
+In-Reply-To: <ak9x4iKf7yR1rMWN@berta-MS-7693>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 18, 2026 at 10:31:12PM +0200, Hans de Goede wrote:
-> Hi,
-> 
-> On 18-Jun-26 17:56, Bjorn Andersson wrote:
-> > SCMI drivers such as the Arm SCMI CPUfreq driver are allowed to built as
-> > modules, but they are then not automatically loaded. Rework the SCMI
-> > device table alias support to make modpost consume the information from
-> > MODULE_DEVICE_TABLE(scmi, ...) and allow drivers to be loaded based on
-> > this information, if known. Also add a protocol-based alias to also
-> > trigger driver loading when only the SCMI protocol id is known.
+On Thu, Jul 09, 2026 at 12:03:14PM +0200, Lukas wrote:
+> On Wed, Jul 08, 2026 at 02:32:01PM +0300, Andy Shevchenko wrote:
+
+...
+
+> > At the first glance it seems I already commented on the issues in this driver.
+> > Yes, I see that I commented
 > > 
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
+> >   "Leave trailing commas in the non-terminator entries here and there."
+> > 
+> > and in several places in this version it has not been addressed.
+> > Taking into account this I don't want to go through and check what
+> > else is missing, so please go again to v1 and carefully read *all*
+> > the comments and either address them, or explain why it's not done.
 > 
-> So I just gave this a test spin and unfortunately it does not work.
-> 
-> The problem with Fedora's kernel-config / setup is that the
-> request_module() from patch 2/2 runs from the initramfs, but
-> the scmi_cpufreq module is only available in the rootfs.
-> 
-> It does work if I explictly add the scmi_cpufreq module to
-> the initramfs, then it does get autoloaded.
-> 
-> We really need some place to put a uevent sysfs attr which then
-> gets replayed when udev is restarted from the rootfs and then
-> re-reads all the uevent files as part of its coldplug
-> enumeration.
-> 
+> You are right, i forgot to change that in several places. I think i got
+> lost a little bit due to the amount of changes.
 
-I don't have much knowledge on uevent to provide any suggestions/help.
-But isn't this a generic requirement ? I mean you could have modules
-install on the rootfs and not all of them are packed in initramfs ?
-Just wondering if that works for other modules, we can examine how
-do they work and what are we missing ?
+The advice here is to slow down, and be not in a hurry, just take your time
+for what needs to be done.
+
+> I will make sure to carefully check that i didnt miss anything before sending
+> v3.  
+
+> Thanks for taking the time.
+
+You're welcome!
 
 -- 
-Regards,
-Sudeep
+With Best Regards,
+Andy Shevchenko
+
+
