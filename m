@@ -1,212 +1,180 @@
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E70042189F;
-	Thu,  9 Jul 2026 17:22:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4948F283FD4;
+	Thu,  9 Jul 2026 20:49:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783617766; cv=none; b=LdwcKI1WyDCvE/vOvdYL5XUH2sT+f5HGQClukZ1fFBvpH0jZk+WlcuZuuaHeVdyfg8ZHmqK9MfTsp2s6xdFeOtxvSdJnncyKEh0GPsbckPagF1oSgbu4JArwt6Kydy1WMwYFfL9jK4+TmH1frizRamjg5hP4C45fJ2XWygUcqnU=
+	t=1783630175; cv=none; b=E93J3xxXJdaLWTN7ZVc4VyrVBq0qk8ik0ov/5fDvFv/sh+OuPgKPKIKIG5PpMisSzgzfJ06sbK1PVNGaSmsWuPvvKIIxvaQEVMqwqFd8XX7JQKCseFh26ZRsoGGFvXLsaBEu3xFQR97uvNUa58QknHVS/MvYpH8ZZefJAR33rwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783617766; c=relaxed/simple;
-	bh=PoUzza0XpGHJkzRol4/U6IB0G2HaXRU2VJNWN1R1uNs=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=bbLP4BmzcRFoF20+g0JQNqyQGSq5dsssh9fnjoccYr+zFEqf9qK9qeDOUHuPvSXPtELKb1xnReM5/BmAufAl8mzT5pacTDxymOKllD9wW82j+G+HBZ6lt1be+WaDD8l14VYQjndMEyHjdr309k6WiBW4W6VBWclNsFoKzg31bBI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=Yer6LXi1; arc=none smtp.client-ip=211.75.126.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
+	s=arc-20240116; t=1783630175; c=relaxed/simple;
+	bh=3xga7A3kXtcNqzDDYv/uIDEfi064QFEQN2be+835/9g=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TeQncBFtKRjCz30r36o1I+ta38i8/Rnx6FXbyL09R5ZqczAi2JxDCS6XSXloW8rboBfSoNd53VLU+ijTFtymF2kSK9Olyk+MQ84flqgq2V10cu+V/LzGtJxvEqCT4pw1lSqHi4YarkWmcYY5rUD7IFNXZyo3Ch2nqs+FLfMfNhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=XaSTqKAT; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="Yer6LXi1"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 669HL9vO43224228, This message is accepted by code: ctloc85258
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1783617669; bh=PoUzza0XpGHJkzRol4/U6IB0G2HaXRU2VJNWN1R1uNs=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	b=Yer6LXi1XyBFkO1fXVgnqmJyaFzCjdjhmS7+Bv/VtMiuLwDL8CR8YECy7N9mZWpT7
-	 A5n6G2MNLhi6+M77AXUwg2k0Ue7ijM8P2xts24PCQ8ByUmvyAVCJMPd6BH7J7I9JZd
-	 ATYVtcvo47EYdO/4Wfug6SrAgdNNrQkEOHShd/aY8coFLl3LzwdcVdAUOvJp3vgAum
-	 T+Y/cIJPSG7sNzAwqbueNT0W7IbyQRpCRZKX9Wb6SGlh//Tv0cc+jBlPr1jJpdIGbk
-	 SbU0QgZpRFvsjPNlbJj5Yj1QrTqpxS48oa3+QIWxh1ijwQldaeTptB5MyvV+qsBQrP
-	 Vwl8MUmA1r2yQ==
-Received: from mail.realtek.com (rtkexhmbs03.realtek.com.tw[10.21.1.53])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 669HL9vO43224228
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 10 Jul 2026 01:21:09 +0800
-Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
- RTKEXHMBS03.realtek.com.tw (10.21.1.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Fri, 10 Jul 2026 01:21:09 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS05.realtek.com.tw (10.21.1.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Fri, 10 Jul 2026 01:21:09 +0800
-Received: from RTKEXHMBS06.realtek.com.tw ([::1]) by
- RTKEXHMBS06.realtek.com.tw ([fe80::e6fd:5a3f:8946:92c4%10]) with mapi id
- 15.02.2562.017; Fri, 10 Jul 2026 01:21:09 +0800
-From: =?big5?B?WXUtQ2h1biBMaW4gW6pMr6enZ10=?= <eleanor.lin@realtek.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linusw@kernel.org"
-	<linusw@kernel.org>
-CC: "brgl@kernel.org" <brgl@kernel.org>, "robh@kernel.org" <robh@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "conor+dt@kernel.org"
-	<conor+dt@kernel.org>, "afaerber@suse.com" <afaerber@suse.com>,
-	"wbg@kernel.org" <wbg@kernel.org>, "mathieu.dubois-briand@bootlin.com"
-	<mathieu.dubois-briand@bootlin.com>, "mwalle@kernel.org" <mwalle@kernel.org>,
-	"lars@metafoo.de" <lars@metafoo.de>, "Michael.Hennerich@analog.com"
-	<Michael.Hennerich@analog.com>, "nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"andy@kernel.org" <andy@kernel.org>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, =?big5?B?VFlfQ2hhbmdbsWmkbLZoXQ==?=
-	<tychang@realtek.com>, "linux-gpio@vger.kernel.org"
-	<linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-realtek-soc@lists.infradead.org"
-	<linux-realtek-soc@lists.infradead.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, =?big5?B?Q1lfSHVhbmdbtsDgsq7LXQ==?=
-	<cy.huang@realtek.com>, =?big5?B?U3RhbmxleSBDaGFuZ1up96h8vHdd?=
-	<stanley_chang@realtek.com>, =?big5?B?SmFtZXMgVGFpIFvAuafTrnBd?=
-	<james.tai@realtek.com>, Linus Walleij <linus.walleij@linaro.org>
-Subject: RE: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Thread-Topic: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Thread-Index: AQHc4cATPP5CAXxOA0S9aBj6QrzqgrYJ8C6AgFvXxWA=
-Date: Thu, 9 Jul 2026 17:21:09 +0000
-Message-ID: <d301ba0cd45d49d59e6a014188306ec9@realtek.com>
-References: <20260512033317.1602537-1-eleanor.lin@realtek.com>
-	<20260512033317.1602537-4-eleanor.lin@realtek.com>
- <20260512153745.3ec68675@jic23-huawei>
-In-Reply-To: <20260512153745.3ec68675@jic23-huawei>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="XaSTqKAT"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 669JEWaO1847790;
+	Thu, 9 Jul 2026 16:49:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=h+dw3kCW/kleuhP7037TwZKiQBp
+	A/08bWVZBjne8V2Q=; b=XaSTqKATpdNZoMx2Se/+LUzHj/63kdOTAsg57MEe/Pv
+	45LviQ9MLtY3EQT/KalsxzBeSUPIb9du2lMuO0MCufWfO1GfRw/VkeBczEwzJzTn
+	bdqNjm5aeJpHoLwzgp3ALQ50rFluMyvBk7v09aJTWgbOctyi1FG03t99RChQGmvm
+	dEGwtIO90X4yzJyI8YyO3jPBfzK+BelSGDaRUk4aIpbG552AzGhgnGo49BfjsaIr
+	IQslu++eplygeDdDqiggDD6HLuXeouHFx2vJPzHNpwJIqpXKtZfUhgbL+JF/Ezw3
+	UQ8e1fKJh0W5e23qxvDYfaSg311pTCcbU8EBlWSHkiw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fa9qsagjy-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 09 Jul 2026 16:49:22 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 669KnKp3046364
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 9 Jul 2026 16:49:20 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 9 Jul
+ 2026 16:49:19 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 9 Jul 2026 16:49:19 -0400
+Received: from work.maxim-ic.internal ([10.66.6.192])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 669Kn7wn003656;
+	Thu, 9 Jul 2026 16:49:10 -0400
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+        <dlechner@baylibre.com>, <andy@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <julianbraha@gmail.com>,
+        <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v6 0/4] iio: adc: Add support for LTC2378 and similar ADCs
+Date: Thu, 9 Jul 2026 17:49:02 -0300
+Message-ID: <cover.1783629101.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA5MDIwNiBTYWx0ZWRfX12iMe7JvJjLJ
+ +dxkYmOGhOAEspzeza8WBw75uD+cCq6CKgoo6Kvhc6y4tjCDqMce4Tp3a7YxSq8POEjpGDmS5p7
+ e2Lgq0L6uK93RjMrXqmp7ECH+Vbw/KluIyZpg2EYlB706tR6YAbb
+X-Proofpoint-GUID: CDqef9lPiYbQcPAcIpfq8YOj9dGw2r_A
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA5MDIwNiBTYWx0ZWRfXwNaKDcY79JnH
+ 4eSeAI8/GT5HINbERnzQ2/5eseU0chCSnFhbTriQ9AdRXFRAHLpdmtcIf/YteAIwn1JVqZwOgBj
+ 3MBJU+Irgk60YhfTpfmifWpwxAwuRc4YBPfD0VnphCaHLw2EnHeu/mBDPuVmqdajmFm6h0yMQNV
+ 0Gwi6fXBEelV04MX0PwDXK+dAfR79KNTnPB0ctFl6Jj3stGb7gVyJINa1/PmnyBQp2y2HUgVtdD
+ /kc/xmB7eDBByDLHnpk8INXrib+xL2Ha+UXbtSkJY9D6HUJRJ0xrEOgYCWFUY+uKxXwAKT/FztF
+ 04kvjuAISQOdAE2ONJ1wR/UZpfg+/pnv2sCpRPQj3j49OKvIBXWRNkg9BrUsSoxdmkcA10DR1XE
+ nZn4wNkGyTZ9FHNhbzSptEzDIDJYKDUyvE9bTd6sLzC0LAbB5J9D8VhtfYtCYe1f6slFkLmXFf8
+ 6HNksh+BvxbeZI+8adg==
+X-Authority-Analysis: v=2.4 cv=fu7sol4f c=1 sm=1 tr=0 ts=6a500952 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=pGLkceISAAAA:8
+ a=XqN69BuZ7wOcV2cAv7kA:9
+X-Proofpoint-ORIG-GUID: CDqef9lPiYbQcPAcIpfq8YOj9dGw2r_A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-09_04,2026-07-09_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 clxscore=1015 impostorscore=0 suspectscore=0 spamscore=0
+ phishscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607090206
 
-SGkgSm9uYXRoYW4gYW5kIExpbnVzLA0KDQpJdCdzIGJlZW4gYSB3aGlsZSBzaW5jZSB0aGlzIHRo
-cmVhZCwgc29ycnkgZm9yIHRoZSBkZWxheS4NCkkgYWJhbmRvbmVkIHRoZSB2NC92NSBhcHByb2Fj
-aGVzIGFuZCBkZWNpZGVkIHRvIGdvIGJhY2sgdG8gdGhlIHYzIGRlc2lnbiwNCnNvIEkgYW0gcmV0
-dXJuaW5nIGhlcmUgdG8gZml4IHRoZSBwcm9ibGVtcyB5b3UgcG9pbnRlZCBvdXQgYmFjayB0aGVu
-Lg0KDQo+IE9uIFR1ZSwgMTIgTWF5IDIwMjYgMTE6MzM6MTMgKzA4MDANCj4gWXUtQ2h1biBMaW4g
-PGVsZWFub3IubGluQHJlYWx0ZWsuY29tPiB3cm90ZToNCj4gDQo+ID4gRXh0ZW5kIHRoZSByZWdf
-bWFza194bGF0ZSBjYWxsYmFjayB3aXRoIGFuIG9wZXJhdGlvbiB0eXBlIHBhcmFtZXRlcg0KPiA+
-IChncGlvX3JlZ21hcF9vcGVyYXRpb24pIHRvIGFsbG93IGRyaXZlcnMgdG8gcmV0dXJuIGRpZmZl
-cmVudA0KPiA+IHJlZ2lzdGVyL21hc2sgY29tYmluYXRpb25zIGZvciBkaWZmZXJlbnQgR1BJTyBv
-cGVyYXRpb25zLg0KPiA+DQo+ID4gQWxzbyBhZGQgd3JpdGUtZW5hYmxlIG1lY2hhbmlzbSBmb3Ig
-aGFyZHdhcmUgdGhhdCByZXF1aXJlcyBzZXR0aW5nIGENCj4gPiB3cml0ZS1lbmFibGUgYml0IGJl
-Zm9yZSBtb2RpZnlpbmcgR1BJTyBjb250cm9sIHJlZ2lzdGVycy4NCj4gPg0KPiA+IENvbnNlcXVl
-bnRseSwgdXBkYXRlIGFsbCBleGlzdGluZyBkcml2ZXJzIHV0aWxpemluZyB0aGUgZ3Bpby1yZWdt
-YXANCj4gPiBmcmFtZXdvcmsgKGFjcm9zcyBkcml2ZXJzL2dwaW8sIGRyaXZlcnMvaWlvLCBhbmQg
-ZHJpdmVycy9waW5jdHJsKSB0bw0KPiA+IGFjY29tbW9kYXRlIHRoZSBuZXcgcmVnX21hc2tfeGxh
-dGUgZnVuY3Rpb24gc2lnbmF0dXJlLg0KPiANCj4gV2hhdCBpcyB0aGUgcmVhc29uaW5nIGJlaGlu
-ZCBzZXR0aW5nICptYXNrID0gMCBmb3IgdW5zdXBwb3J0ZWQgb3BlcmF0aW9ucz8NCj4gSWYgaXQg
-aXMgYSBzcGVjaWFsIHZhbHVlIHdoeSBub3QganVzdCByZXR1cm4gYW4gZXJyb3IgY29kZSB0byBp
-bmRpY2F0ZSBub3QNCj4gc3VwcG9ydGVkPyAgVGhpcyBzZWVtcyB0byBjb21lIGZyb20gdGhlIGFz
-c3VtcHRpb24gdGhhdCB5b3Ugd2lsbCB3YW50IHRvIHwNCj4gdGhhdCB3aXRoIG1hc2tzIGZvciBh
-bm90aGVyIG9wZXJhdGlvbi4NCj4gDQo+IEknbSBjb21pbmcgaW50byB0aGlzIGxhdGUgYnV0IHRv
-IG1lIHRoZXJlIGxvb2sgdG8gYmUgYSBidW5jaCBvZiB1bmRvY3VtZW50ZWQNCj4gYXNzdW1wdGlv
-bnMuIFdoeSBkbyB0aGUgb3BlcmF0aW9ucyBoYXZlIHRvIHNoYXJlIGEgcmVnaXN0ZXIgZm9yIGV4
-YW1wbGU/DQo+IA0KPiBQZXJoYXBzIGFuIGludGVyZmFjZSB3aGVyZSB5b3UgcHJvdmlkZSBhIHNp
-bmdsZSBvcGVyYXRpb24gZm9yIHdyaXRlX2VuYWJsZQ0KPiBhbmQgd2hhdGV2ZXIgZWxzZSBhbmQg
-aGVuY2UgdCBoZXJlIGlzIG9ubHkgb25lICdyZWcnIHdvdWxkIHdvcmsgYmV0dGVyPw0KPiANCj4g
-Pg0KPiA+IFN1Z2dlc3RlZC1ieTogTGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8u
-b3JnPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFl1LUNodW4gTGluIDxlbGVhbm9yLmxpbkByZWFsdGVr
-LmNvbT4NCj4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3Bpby9ncGlvLXJlZ21hcC5jIGIv
-ZHJpdmVycy9ncGlvL2dwaW8tcmVnbWFwLmMNCj4gPiBpbmRleCBkZWI5ZWViYjU4ZGUuLmM3NmVl
-ZjIwZTQxMiAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2dwaW8vZ3Bpby1yZWdtYXAuYw0KPiA+
-ICsrKyBiL2RyaXZlcnMvZ3Bpby9ncGlvLXJlZ21hcC5jDQoNCiguLi4pDQoNCj4gPg0KPiA+IEBA
-IC0xODUsNyArMjE4LDcgQEAgc3RhdGljIGludCBncGlvX3JlZ21hcF9zZXRfZGlyZWN0aW9uKHN0
-cnVjdA0KPiBncGlvX2NoaXAgKmNoaXAsDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB1bnNpZ25lZCBpbnQgb2Zmc2V0LCBib29sIG91dHB1dCkNCj4gPiB7DQo+ID4gICAg
-ICAgc3RydWN0IGdwaW9fcmVnbWFwICpncGlvID0gZ3Bpb2NoaXBfZ2V0X2RhdGEoY2hpcCk7DQo+
-ID4gLSAgICAgdW5zaWduZWQgaW50IGJhc2UsIHZhbCwgcmVnLCBtYXNrOw0KPiA+ICsgICAgIHVu
-c2lnbmVkIGludCBiYXNlLCB2YWwsIHJlZywgbWFzaywgd3Jlbl9tYXNrOw0KPiA+ICAgICAgIGlu
-dCBpbnZlcnQsIHJldDsNCj4gPg0KPiA+ICAgICAgIGlmIChncGlvLT5yZWdfZGlyX291dF9iYXNl
-KSB7DQo+ID4gQEAgLTE5OCw3ICsyMzEsMTIgQEAgc3RhdGljIGludCBncGlvX3JlZ21hcF9zZXRf
-ZGlyZWN0aW9uKHN0cnVjdA0KPiBncGlvX2NoaXAgKmNoaXAsDQo+ID4gICAgICAgICAgICAgICBy
-ZXR1cm4gLUVOT1RTVVBQOw0KPiA+ICAgICAgIH0NCj4gPg0KPiA+IC0gICAgIHJldCA9IGdwaW8t
-PnJlZ19tYXNrX3hsYXRlKGdwaW8sIGJhc2UsIG9mZnNldCwgJnJlZywgJm1hc2spOw0KPiA+ICsg
-ICAgIHJldCA9IGdwaW8tPnJlZ19tYXNrX3hsYXRlKGdwaW8sIEdQSU9fUkVHTUFQX1NFVF9ESVJf
-T1AsIGJhc2UsDQo+IG9mZnNldCwgJnJlZywgJm1hc2spOw0KPiA+ICsgICAgIGlmIChyZXQpDQo+
-ID4gKyAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiArICAgICByZXQgPSBncGlv
-LT5yZWdfbWFza194bGF0ZShncGlvLCBHUElPX1JFR01BUF9TRVRfRElSX1dSRU5fT1AsDQo+IGJh
-c2UsIG9mZnNldCwgJnJlZywNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAm
-d3Jlbl9tYXNrKTsNCj4gDQo+IFdoYXQgY29uc3RyYWlucyB0aGVzZSB0d28gdG8gcHJvdmlkZSB0
-aGUgc2FtZSB2YWx1ZSBiYWNrIGZvciByZWc/DQo+IFRvIG1lIGl0IHNlZW1zIGxpa2UgdGhlIHdy
-aXRlIGVuYWJsZSBtaWdodCB3ZWxsIGJlIGluIGEgZGlmZmVyZW50IHJlZ2lzdGVyLg0KPiANCj4g
-PiAgICAgICBpZiAocmV0KQ0KPiA+ICAgICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gPg0KPiA+
-IEBAIC0yMDcsNyArMjQ1LDcgQEAgc3RhdGljIGludCBncGlvX3JlZ21hcF9zZXRfZGlyZWN0aW9u
-KHN0cnVjdA0KPiBncGlvX2NoaXAgKmNoaXAsDQo+ID4gICAgICAgZWxzZQ0KPiA+ICAgICAgICAg
-ICAgICAgdmFsID0gb3V0cHV0ID8gbWFzayA6IDA7DQo+ID4NCj4gPiAtICAgICByZXR1cm4gcmVn
-bWFwX3VwZGF0ZV9iaXRzKGdwaW8tPnJlZ21hcCwgcmVnLCBtYXNrLCB2YWwpOw0KPiA+ICsgICAg
-IHJldHVybiByZWdtYXBfdXBkYXRlX2JpdHMoZ3Bpby0+cmVnbWFwLCByZWcsIG1hc2sgfCB3cmVu
-X21hc2ssDQo+ID4gKyB2YWwgfCB3cmVuX21hc2spOw0KPiA+ICB9DQo+ID4NCj4gPiAgc3RhdGlj
-IGludCBncGlvX3JlZ21hcF9kaXJlY3Rpb25faW5wdXQoc3RydWN0IGdwaW9fY2hpcCAqY2hpcCwN
-Cg0KTXkgaW5pdGlhbCBkZXNpZ24gaW5kZWVkIGFzc3VtZWQgdGhhdCB0aGUgV1JFTiBtYXNrIGFu
-ZCBEYXRhIG1hc2sgcmVzaWRlIGluDQp0aGUgc2FtZSByZWdpc3Rlci4NCiANClJlZ2FyZGluZyBX
-UkVOIHN1cHBvcnQsIGVzcGVjaWFsbHkgaWYgV1JFTiBhbmQgRGF0YSB1c2Ugc2VwYXJhdGUgcmVn
-aXN0ZXJzLCBJDQpjYW1lIHVwIHdpdGggdGhyZWUgaWRlYXMuIFdoaWNoIGRpcmVjdGlvbiBkbyB5
-b3UgcHJlZmVyPw0KIA0KQXBwcm9hY2ggMTogUHJvdmlkZSBDdXN0b20gQ2FsbGJhY2tzIGluIGNv
-bmZpZyAoTGV0IGNvbnN1bWVyIGRyaXZlciBoYW5kbGUgaXQpDQpXZSBjYW4gYWRkICcuc2V0JyBh
-bmQgJy5zZXRfZGlyZWN0aW9uJyBmdW5jdGlvbiBwb2ludGVycyBpbg0KJ3N0cnVjdCBncGlvX3Jl
-Z21hcF9jb25maWcnLiBJZiBhIGRyaXZlciByZXF1aXJlcyBXUkVOLCBpdCBjYW4gaW1wbGVtZW50
-IHRoZXNlDQpjYWxsYmFja3MgaXRzZWxmLg0KIA0Kc3RhdGljIHZvaWQgZ3Bpb19yZWdtYXBfc2V0
-KHN0cnVjdCBncGlvX2NoaXAgKmNoaXAsIHVuc2lnbmVkIGludCBvZmZzZXQsIGludCB2YWwpDQp7
-DQogICAgICAgIHN0cnVjdCBncGlvX3JlZ21hcCAqZ3BpbyA9IGdwaW9jaGlwX2dldF9kYXRhKGNo
-aXApOw0KIA0KICAgICAgICAvKiBJZiB0aGUgZHJpdmVyIHByb3ZpZGVzIGEgY3VzdG9tIHNldCAo
-dG8gaGFuZGxlIFdSRU4pLCBkZWxlZ2F0ZSB0byBpdCAqLw0KICAgICAgICBpZiAoZ3Bpby0+c2V0
-KSB7DQogICAgICAgICAgICAgICAgZ3Bpby0+c2V0KGNoaXAsIG9mZnNldCwgdmFsKTsNCiAgICAg
-ICAgICAgICAgICByZXR1cm47DQogICAgICAgIH0NCiAgICAgICAgLyogLi4uIGV4aXN0aW5nIGdl
-bmVyaWMgcmVnbWFwIGxvZ2ljIC4uLiAqLw0KfQ0KDQpQcm9zOiBDbGVhbiBjb3JlLCBubyBuZWVk
-IHRvIHRvdWNoIGV4aXN0aW5nIGRyaXZlcnMnIHhsYXRlIHNpZ25hdHVyZS4gVGhlIGNvbnN1bWVy
-DQpkcml2ZXIgaGFuZGxlcyBpdHMgb3duIGxvY2tpbmcgZm9yIGRpZmZlcmVudCByZWdpc3RlcnMu
-DQpDb25zOiBJdCBmZWVscyBhIGJpdCBzdHJhbmdlIGFuZCBpbmNvbnNpc3RlbnQgdG8gZXhwb3Nl
-IG9ubHkgJy5zZXQnIGFuZA0KJy5zZXRfZGlyZWN0aW9uJyBvdmVycmlkZXMgd2hpbGUga2VlcGlu
-ZyBvdGhlciBvcGVyYXRpb25zIGVudGlyZWx5IGFic3RyYWN0ZWQuDQogDQpBcHByb2FjaCAyOiBI
-YW5kbGUgc2VwYXJhdGUgV1JFTiByZWdpc3RlciBpbiB0aGUgY29yZSAod2l0aCBsb2NraW5nIGNv
-bmNlcm5zKQ0KV2Uga2VlcCB0aGUgJ1hYX1dSRU5fT1AnIGluICd4bGF0ZScuIElmIHNvbWVvbmUg
-bmVlZHMgV1JFTiBhbmQgJ3dyZW5fcmVnICE9IHJlZycsDQp3ZSB3cml0ZSB0byBib3RoLg0KIA0K
-c3RhdGljIGludCBncGlvX3JlZ21hcF9zZXQoc3RydWN0IGdwaW9fY2hpcCAqY2hpcCwgdW5zaWdu
-ZWQgaW50IG9mZnNldCwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGludCB2YWwpDQp7DQog
-ICAgICAgIC8qIHNraXAgKi8NCiAgICAgICAgcmV0ID0gZ3Bpby0+cmVnX21hc2tfeGxhdGUoZ3Bp
-bywgR1BJT19SRUdNQVBfU0VUX1dSRU5fT1AsIGJhc2UsIG9mZnNldCwgJndyZW5fcmVnLA0KICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAmd3Jlbl9tYXNrKTsNCiAgICAgICAgaWYg
-KHJldCA9PSAtRU5PVFNVUFApDQogICAgICAgICAgICAgICAgaGFzX3dyZW4gPSBmYWxzZTsNCiAg
-ICAgICAgZWxzZSBpZiAocmV0KQ0KICAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQogDQogICAg
-ICAgIHJldCA9IGdwaW8tPnJlZ19tYXNrX3hsYXRlKGdwaW8sIEdQSU9fUkVHTUFQX1NFVF9PUCwg
-YmFzZSwgb2Zmc2V0LCAmcmVnLCAmbWFzayk7DQogDQogICAgICAgIGlmIChoYXNfd3JlbiAmJiBy
-ZWcgPT0gd3Jlbl9yZWcpIHsNCiAgICAgICAgICAgICAgICBtYXNrIHw9IHdyZW5fbWFzazsNCiAg
-ICAgICAgICAgICAgICBtYXNrX3ZhbCB8PSB3cmVuX21hc2s7DQogICAgICAgICAgICAgICAgaGFz
-X3dyZW4gPSBmYWxzZTsNCiAgICAgICAgfQ0KIA0KICAgICAgICBpZiAoaGFzX3dyZW4pDQogICAg
-ICAgICAgICAgICAgcmV0ID0gcmVnbWFwX3NldF9iaXRzKGdwaW8tPnJlZ21hcCwgd3Jlbl9yZWcs
-IHdyZW5fbWFzayk7IA0KDQogICAgICAgIC8qIGlnbm9yZSBpbnB1dCB2YWx1ZXMgd2hpY2ggc2hh
-ZG93IHRoZSBvbGQgb3V0cHV0IHZhbHVlICovDQogICAgICAgIGlmIChncGlvLT5yZWdfZGF0X2Jh
-c2UgPT0gZ3Bpby0+cmVnX3NldF9iYXNlKQ0KICAgICAgICAgICAgICAgIHJldCA9IHJlZ21hcF93
-cml0ZV9iaXRzKGdwaW8tPnJlZ21hcCwgcmVnLCBtYXNrLCBtYXNrX3ZhbCk7DQogICAgICAgIGVs
-c2UNCiAgICAgICAgICAgICAgICByZXQgPSByZWdtYXBfdXBkYXRlX2JpdHMoZ3Bpby0+cmVnbWFw
-LCByZWcsIG1hc2ssIG1hc2tfdmFsKTsNCiANCiAgICAgICAgcmV0dXJuIHJldDsNCn0NCiANClBy
-b3M6IEtlZXBzIGFsbCBXUkVOIGxvZ2ljIHVuaWZpZWQgaW5zaWRlIHRoZSBjb3JlIGZyYW1ld29y
-ay4NCkNvbnM6IEludHJvZHVjZXMgYSBsb2NraW5nIGlzc3VlLiB3cml0aW5nIHRvICd3cmVuX3Jl
-ZycgYW5kIHRoZW4gJ3JlZycgcmVxdWlyZXMgYW4NCmV4dGVybmFsIGxvY2sgdG8gYmUgYXRvbWlj
-LCB3aGljaCBzZWVtcyB0byBkZWZlYXQgdGhlIHB1cnBvc2Ugb2YgcmVseWluZyBvbiByZWdtYXAn
-cw0KaW50ZXJuYWwgbG9jay4gDQoNCkFwcHJvYWNoIDM6IEFzc3VtZSBXUkVOIGFuZCBEYXRhIGFs
-d2F5cyBzaGFyZSB0aGUgc2FtZSByZWdpc3Rlcg0KDQpzdGF0aWMgaW50IGdwaW9fcmVnbWFwX3Nl
-dChzdHJ1Y3QgZ3Bpb19jaGlwICpjaGlwLCB1bnNpZ25lZCBpbnQgb2Zmc2V0LCBpbnQgdmFsKQ0K
-ew0KICAgICAgICAvKiAuLi4gKi8NCiAgICAgICAgcmV0ID0gZ3Bpby0+cmVnX21hc2tfeGxhdGUo
-Z3BpbywgR1BJT19SRUdNQVBfU0VUX1dSRU5fT1AsIGJhc2UsIG9mZnNldCwgJnJlZywgJndyZW5f
-bWFzayk7DQogICAgICAgIGlmIChyZXQgPT0gLUVOT1RTVVBQKQ0KICAgICAgICAgICAgICAgIHdy
-ZW5fbWFzayA9IDA7DQogICAgICAgIGVsc2UgaWYgKHJldCkNCiAgICAgICAgICAgICAgICByZXR1
-cm4gcmV0Ow0KIA0KICAgICAgICByZXQgPSBncGlvLT5yZWdfbWFza194bGF0ZShncGlvLCBHUElP
-X1JFR01BUF9TRVRfT1AsIGJhc2UsIG9mZnNldCwgJnJlZywgJm1hc2spOw0KIA0KICAgICAgICBy
-ZXQgPSByZWdtYXBfdXBkYXRlX2JpdHMoZ3Bpby0+cmVnbWFwLCByZWcsIG1hc2sgfCB3cmVuX21h
-c2ssIG1hc2tfdmFsIHwgd3Jlbl9tYXNrKTsNCiAgICAgICAgcmV0dXJuIHJldDsNCn0NCiANClJl
-Z2FyZGluZyB0aGlzIGFwcHJvYWNoLCBJIHdvdWxkIGxpa2UgdG8gYXNrIGZyb20geW91ciBleHBl
-cmllbmNlOiBJcyBpdA0KYWN0dWFsbHkgY29tbW9uIGZvciBoYXJkd2FyZSBkZXNpZ25zIHRvIHBs
-YWNlIFdSRU4gYW5kIERhdGEgYml0cyBpbiBjb21wbGV0ZWx5DQpkaWZmZXJlbnQgcmVnaXN0ZXJz
-IGZvciBHUElPIG9wZXJhdGlvbnM/DQoNCklmIHRoZXkgcHJhY3RpY2FsbHkgYWx3YXlzIHNoYXJl
-IHRoZSBzYW1lIHJlZ2lzdGVyLCB0aGlzIHNpbXBsZXIgYXBwcm9hY2ggbWlnaHQNCnN1ZmZpY2Uu
-DQogDQpCZXN0IFJlZ2FyZHMsDQpZdSBDaHVuIExpbg0K
+This patch series adds support for LTC2378 and similar low noise, low power,
+high speed, successive approximation register (SAR) ADCs. These ADCs are similar
+among each other, varying mainly on the amount of precision bits, maximum sample
+rate, and input configuration (either fully differential or pseudo-differential).
+
+Patch 1 adds device tree documentation for LTC2378.
+
+Patch 2 enables single-shot sample read with a GPIO connected to the LTC2378 CNV pin.
+
+Patch 3 enables high-speed data captures with SPI offloading.
+The setup is similar to AD4030, with a specialized PWM generator being used both
+for SPI offload triggering and conversion start signaling.
+
+Patch 4 enables running buffered data captures without SPI offloading.
+
+Even though these parts are somewhat similar to AD4000, the wiring configuration
+for LTC parts is different as well as the available HDL for high speed sample
+rate mode. Because of that, I propose creating a new device driver for
+supporting LTC2378-like devices.
+
+Specifications can be found at:
+https://www.analog.com/media/en/technical-documentation/data-sheets/233818fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236416fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236418f.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236716fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236718f.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236816f.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236818f.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/236918fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237016fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237616fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237618fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237620fb.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237716fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237718fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237720fb.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237816fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237818fa.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237820fb.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/237918fb.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/238016fb.pdf
+
+Previous submissions:
+  v5: https://lore.kernel.org/linux-iio/cover.1783028033.git.marcelo.schmitt@analog.com/
+  v4: https://lore.kernel.org/linux-iio/cover.1782397418.git.marcelo.schmitt@analog.com/
+  v3: https://lore.kernel.org/linux-iio/cover.1781661028.git.marcelo.schmitt@analog.com/
+  v2: https://lore.kernel.org/linux-iio/cover.1779976379.git.marcelo.schmitt@analog.com/
+  v1: https://lore.kernel.org/linux-iio/cover.1779117444.git.marcelo.schmitt1@gmail.com/
+
+Change log v5 -> v6:
+[DT]
+- Dropped single compatible strings for parts that have a fall back so dt-schema
+  can enforces the fallback compliance.
+[IIO]
+- Added a comment to clarify IIO buffer storagebits and endianness for the
+  offload use case.
+- Added comment to clarify CPU endianness is used when device native BE is not.
+- Protected single sample read procedure with a mutex.
+- Dropped mod_devicetable.h, include device-id/spi.h device-id/of.h instead.
+- Used iwyu to add missing #includes and dropped superfluous ones.
+- Used pahole to minimize memory holes in LTC2378 data structures.
+
+With best regards,
+Marcelo
+
+
+Marcelo Schmitt (4):
+  dt-bindings: iio: adc: Add ltc2378
+  iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs
+  iio: adc: ltc2378: Enable high-speed data capture
+  iio: adc: ltc2378: Enable triggered buffer data capture
+
+ .../bindings/iio/adc/adi,ltc2378.yaml         | 170 ++++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/adc/Kconfig                       |  19 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ltc2378.c                     | 821 ++++++++++++++++++
+ 5 files changed, 1019 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
+ create mode 100644 drivers/iio/adc/ltc2378.c
+
+
+base-commit: 093239070573637ad2b4cb56abc9c4c7ee109294
+-- 
+2.53.0
+
