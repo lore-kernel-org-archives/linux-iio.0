@@ -1,104 +1,233 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12B0A40D597;
-	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02BBB3F12C8;
+	Thu,  9 Jul 2026 11:05:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783594373; cv=none; b=qAhB7wDih+w11kheN2NLCMlgu3TI0aL1ImxqZXwFXHmyOzE9OTKMqr9q8KJHQ0l+8vX49ik2jMyOi+gMIRg+hEB951TKrAej81DKpFvHFWoCTVeCiuLLSP1B02hI0UKwpcl6mBPk5BKVbyGOf5dPJjjCAo4NjVtvoZw1OJivQcU=
+	t=1783595131; cv=none; b=YJf3KhQpJ9e4cxsq58aBeOL/G69ZAz3f0pFGRmKMlEUSxkX/jvSvsT3loaiJ9sS2Q0vY0KtJlG4gb2ha+h3PHdeJxbNrpKebNVRAIrwsJaYoPgG1U2BAI/gb59LRr2Wp+FoUeXsdNSxm3X7w3jF3BbX3qd28m44Ui6DAtELKAIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783594373; c=relaxed/simple;
-	bh=glxJF+CqpBujx/XexjSatsFoqsr1Dy7kD8mY2XgL250=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=q7NhWhI825YTPXmC9BhFi64LG/2EZJDHumFxnoi9eO6dtetDLEIjNmMZcWyPGt6dkz4CN4KlfWn0Fx9aVFGYKZ0SJrljOShxL1OHEvMAsMffYYTnOP2IXD+jsR70GIVvS3vFptdbqAILd4CPKaj5FvvnugH7gdLtvsAphwKprDM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YGp5PE/M; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1783595131; c=relaxed/simple;
+	bh=DYI0s2TFb57lFQ0gvywKehEfd0ZgiLrFZltpj0Nyjsc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J0bIc6fGc7D5oAJPiQepKypSDaJ+gC2QYwXgerLN6I2HcUNhRE1Hv96HPQSj7lBW/iHFMJoRsvssVG26Q7HYsBgC5SosZFu38ru8oDOA7/aovyXWs+GC2C//e9+70uGXe6FrNLHPhZUw0jgU/PC3OO2AXHjjrKHaA725OtaOHUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f3JQneT3; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YGp5PE/M"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A8CEC2BCFA;
-	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1783594372;
-	bh=glxJF+CqpBujx/XexjSatsFoqsr1Dy7kD8mY2XgL250=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=YGp5PE/MEqSqmr7uBWPBh8SEIu555k00+YpVOhUpEGIY34SX+PgfPt/8D1R9pZEOZ
-	 7CfJx7L060PTz59FqKR958isGBJaCUtfGwU8FM5Mfzg81AUqWucoFEDHdEGzLKsRzl
-	 2b9GiHC2pqlRCBsDThCi1x7eonxRhLwhkHyRJ914Y0rGtVsaooIPLKqheMEYP5ZC72
-	 vxrhDlHxjuUQ2TRbCUsxZmNVj238hyuK9tMXiejnbmW3PZgDlVXnMnNGT2wLSPZ2Rb
-	 dfCCwwdOR61/mq9pQ15d7oS/nPK6xkzsNi4Tt/QJ38tLyZTu7ASR6NodaS0ypFIhKR
-	 x4OlG6oaNw5WA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199B0C44506;
-	Thu,  9 Jul 2026 10:52:52 +0000 (UTC)
-From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Date: Thu, 09 Jul 2026 13:52:49 +0300
-Subject: [PATCH v5 3/4] mfd: mt6397-core: add mt6323 AUXADC support
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f3JQneT3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783595130; x=1815131130;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DYI0s2TFb57lFQ0gvywKehEfd0ZgiLrFZltpj0Nyjsc=;
+  b=f3JQneT3+SygSj2JW6vbWl3QHp52PM3+1OHuJUVvzJfpCgOa08JkW2d3
+   NgZ9IXCLO2cih4x5RdOkS4HOsPj0eJwAgNCcQTQK6pOK7zXc4OFvy8g8m
+   vzkokpnkwOarxZ8e0oYwTyjtHYMGllquee7DyUYMyhnx607km1dZbU5vh
+   Fa/IEw93UbhUPR/poi9++MxhQRclw85kQvg3tomMBW1IxBaEjM1s1149D
+   FF2zjXTbj3j2oyuR0fBnLKTKAFcV6qTHmdo5kCIDF/vtHYcv+fc9p0CxU
+   tQFgfkQWuqIOE1Ms2xeR+0VyfdEolAaC4VGnZzOxyHMunOdZ+2csrhAb9
+   Q==;
+X-CSE-ConnectionGUID: 4sn09S+UQFWdH150ruEY9w==
+X-CSE-MsgGUID: JfNi0X31SfKvJy4tlhH39g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84244812"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84244812"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 04:05:29 -0700
+X-CSE-ConnectionGUID: sjFSbMCtQF2jzOd04fxeKQ==
+X-CSE-MsgGUID: joLmG57JQAqn+CVmznUw3g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="256477444"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.235])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2026 04:05:23 -0700
+Date: Thu, 9 Jul 2026 14:05:21 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-doc@vger.kernel.org, jananisunil.dev@gmail.com
+Subject: Re: [PATCH 5/6] gpio: ad7768: Add AD7768 GPIO auxiliary driver
+Message-ID: <ak-AcfH-Igsa_ksV@ashevche-desk.local>
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+ <20260709-ad7768-driver-v1-5-44e1194fd96a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260709-mt6323-adc-v5-3-d11b8332a735@protonmail.com>
-References: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
-In-Reply-To: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Lee Jones <lee@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>, 
- Roman Vivchar <rva333@protonmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783594368; l=955;
- i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
- bh=68AKxGY17xgvLKcWMAEv+kRO5Vv7EjiDlYPerXSrijo=;
- b=QPT+WszEFdc7kGDPIm4EMnqZgcuq4ZTrv/jn3odO58Li6Ril6Na9hDxHLIRMpC5IYDtR8UMLG
- h9/MnOXgmiXD7LaD87s0/idKya1s6Uc0GmksLv1aqSqitW9AmNburDM
-X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
- pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
-X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
- auth_id=777
-X-Original-From: Roman Vivchar <rva333@protonmail.com>
-Reply-To: rva333@protonmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260709-ad7768-driver-v1-5-44e1194fd96a@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Roman Vivchar <rva333@protonmail.com>
+On Thu, Jul 09, 2026 at 10:50:16AM +0200, Janani Sunil wrote:
+> The AD7768/AD7768-4 ADC exposes 5 general-purpose I/O pins that can be
+> independently configured as inputs or outputs. Add an auxiliary bus driver
+> to expose these pins as a GPIO chip, registered by the parent IIO driver.
+> 
+> The driver uses the parent's regmap for register access and delegates
+> runtime power management to the parent device.
 
-The mt6323 PMIC includes an AUXADC. Register the AUXADC in the mt6323
-devices array to allow the corresponding driver to probe using compatible
-string.
+...
 
-Tested-by: Ben Grisdale <bengris32@protonmail.ch> # Amazon Echo Dot (2nd Generation)
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Acked-by: Lee Jones <lee@kernel.org>
-Signed-off-by: Roman Vivchar <rva333@protonmail.com>
----
- drivers/mfd/mt6397-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+> +config GPIO_AD7768
+> +	tristate "Analog Devices AD7768 GPIO support"
+> +	depends on AD7768 && GPIOLIB
 
-diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
-index ea1d039477e3..9ec951996588 100644
---- a/drivers/mfd/mt6397-core.c
-+++ b/drivers/mfd/mt6397-core.c
-@@ -125,6 +125,9 @@ static const struct resource mt6323_pwrc_resources[] = {
- 
- static const struct mfd_cell mt6323_devs[] = {
- 	{
-+		.name = "mt6323-auxadc",
-+		.of_compatible = "mediatek,mt6323-auxadc",
-+	}, {
- 		.name = "mt6323-efuse",
- 		.of_compatible = "mediatek,mt6323-efuse",
- 	}, {
+Make depend on GPIOLIB on a separate line (it helps a lot when grepping for
+the users of GPIOLIB).
+
+> +	help
+> +	  Say yes here to expose the AD7768 utility pins as GPIOs when the
+> +	  device tree node is marked as a GPIO controller.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called gpio-ad7768.
+
+>  config GPIO_LTC4283
+
+Shouldn't Kconfig entry be aligned by order with Makefile ordering?
+
+...
+
+> +#include <linux/auxiliary_bus.h>
+
++ bits.h
+
+> +#include <linux/cleanup.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/gpio/driver.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+
+Please, IWYU! I believe AD knows this very well and again same mistake from AD!
+
+...
+
+> +struct ad7768_gpio_state {
+> +	struct device *parent;
+> +	struct regmap *regmap;
+
+As far as I can see these two are dups. One may be derived from the other.
+Try both and check (with probably bloat-o-meter) which one is better.
+
+> +	struct mutex lock; /* protects regmap accesses */
+
+This is not fully correct comment. This protects GPIO IO which may require more
+than one regmap call in a row.
+
+> +	struct gpio_chip gc;
+> +};
+
+...
+
+> +static int ad7768_gpio_direction_input(struct gpio_chip *chip,
+> +				       unsigned int offset)
+> +{
+> +	struct ad7768_gpio_state *st = gpiochip_get_data(chip);
+> +
+> +	PM_RUNTIME_ACQUIRE_IF_ENABLED_AUTOSUSPEND(st->parent, pm);
+
+> +	int ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
+
+No, declare it usual way.
+
+> +
+
+And drop this blank line.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_update_bits(st->regmap, AD7768_REG_GPIO_CONTROL,
+> +				  BIT(offset), AD7768_GPIO_INPUT);
+> +}
+
+...
+
+So, I briefly looked at the implementation and I don't understand why
+gpio-regmap can't be used. Do you need PM runtime there? It can be
+done for all (if absent).
+
+...
+
+> +static int ad7768_gpio_probe(struct auxiliary_device *adev,
+> +			     const struct auxiliary_device_id *id)
+> +{
+> +	struct device *dev = &adev->dev;
+> +	const char *label = dev_get_platdata(dev);
+> +	struct ad7768_gpio_state *st;
+> +	struct gpio_chip *gc;
+> +	int ret;
+> +
+> +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> +	if (!st)
+> +		return -ENOMEM;
+> +
+> +	st->parent = dev->parent;
+> +	st->regmap = dev_get_regmap(dev->parent, NULL);
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = pm_runtime_resume_and_get(st->parent);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_update_bits(st->regmap, AD7768_REG_GPIO_CONTROL,
+> +				 AD7768_GPIO_UGPIO_ENABLE,
+> +				 AD7768_GPIO_UGPIO_ENABLE);
+> +
+
+> +	pm_runtime_mark_last_busy(st->parent);
+
+For a few releases this is a dup call.
+
+> +	pm_runtime_put_autosuspend(st->parent);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	gc = &st->gc;
+> +	gc->label = label;
+> +	gc->base = -1;
+> +	gc->ngpio = AD7768_NUM_GPIOS;
+> +	gc->parent = dev;
+> +	gc->owner = THIS_MODULE;
+> +	gc->can_sleep = true;
+> +	gc->get_direction = ad7768_gpio_get_direction;
+> +	gc->direction_input = ad7768_gpio_direction_input;
+> +	gc->direction_output = ad7768_gpio_direction_output;
+> +	gc->get = ad7768_gpio_get;
+> +	gc->set = ad7768_gpio_set;
+> +
+> +	return devm_gpiochip_add_data(dev, &st->gc, st);
+> +}
 
 -- 
-2.54.0
+With Best Regards,
+Andy Shevchenko
 
 
