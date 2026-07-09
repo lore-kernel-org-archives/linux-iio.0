@@ -1,317 +1,160 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62251413220
-	for <linux-iio@vger.kernel.org>; Thu,  9 Jul 2026 15:43:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5951D426EB7;
+	Thu,  9 Jul 2026 15:49:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783611812; cv=none; b=BB+j0hQ9Tv5P6jX+O1Hq7qfmlHFSdwfaDKvTepX/gq8czzBM0GO8pY9csLdrqlcf+1H1iYI5fBEg0PNBYQoM5iIH8KVjGq25aQPcYQK+hMI2nwjwwJCLTixvmUgE8Rx+ggXz09n+Kt8K9dVpCPABJQJ7QMH/TeI7uDbDEA6NMU4=
+	t=1783612190; cv=none; b=C1AJZgjU2rVvxAEi7LnGqaFg32gn6kaonzCCICuRSIFJkF2/sgSUIfIzZoWAWJFANF2JEGPNe5vBRJ2kubqHrkbO8pAax7RjZHxhPHhQpv6wT39scPHWNN34BZu2ZVbueMa4zcMeN/Qxs1/Ifa2R1YaAjicb7twObvN0poqGsbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783611812; c=relaxed/simple;
-	bh=46Vxt43agJazPbO88O2vqw7lt9h7u00qTiJXc2dgbv8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ORl8HIep9bTdcR+53NjdHPmc3ipJHb9xk6ZY3Tkk/wxFawCBvSd0vW2qVIpnaCAL8FpAaGFEFnvIZsHNelRrdLGnFXizRCPdRfPgwT9ztVYl35xWN4FVnTFSiOVnrQUg5Fve/2blioAbjnkBbZ6m7GCwxdWIbwetXlgx4b5m2FA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=gEYXdEq9; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783612190; c=relaxed/simple;
+	bh=ZsaKwAUaY+JsR6IrwdSMe3xghd912Wa8gpID9dHYC30=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hl0QsuZ/9ZJ1k2z0DOMOqqx8nDVv+/gS2E1XWinXwdsvMY1I0rXtKQGY+tjVwlyg1hxmp7TXmJP4DFp1ayW/NExdich+++M64liRadHE57AyBu6FH0mugehs0uW94K83tWrZXgoCsNBUcfWhDoImK/btO/IotSbk7lB6pgYQ0YQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=evPqTocH; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="gEYXdEq9"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7e9fc3de7ceso4010a34.1
-        for <linux-iio@vger.kernel.org>; Thu, 09 Jul 2026 08:43:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783611809; x=1784216609; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=K71vA2rRxJHnRmY4YuInHn+JTOnkMM3kjsWFyARkKU4=;
-        b=gEYXdEq9nRZbXdd/wrFq1do5TqiYjXSW94459W5MmhV5Xeyaf/hcrvCvUVGE448PMK
-         TQNNjHq9f7FqqO7N46i7+rAJmwaQmOoza3zqAz6hqFi5qWRpKW0LCGUCMHcrmFcr9Ihw
-         7gIGBpwxuSlCQiffMs5I0nTRgqeKS0Z4ZR7I6Ip/RpA1/JdIznKiV2cUcHhkjAOFDOy7
-         Vxzc7D8/gAlXaCfBsRtO1cI9Y2+3KcdmuMrD54Gj+I/x6H5W2FvLl5eVu+7RQHvVgy6Z
-         ylQGXLubndBym826n7XPXDijePHj7mCAZP+HlKbLfMkKQUjFIjw2C6hgPz4saxTVPMi+
-         up5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783611809; x=1784216609;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=K71vA2rRxJHnRmY4YuInHn+JTOnkMM3kjsWFyARkKU4=;
-        b=ZRnisJRJCzf9MDqfIp2okpmJVrAMS1p6Mltowk1uih49jGwKwMPMiIe1/C454GDW4w
-         06hzjMjxO1aJ1uhaM1BWGJHmwrejNV9hhKc6GEgQ0TuUVHHxrPfN0QTCAVkVXIe56FLK
-         nCmY5oCIM/oAeIoz5QDddd6YHY0ObpKH+kfh/0zVSWOZA41ZcvGCmyAZ+dnrKDInMmyb
-         XF2Z1Mlr0PKm5FcjWxzjl0knG04fo8kgqNYcv3UQwDZOsyfnLdArg0U8rGPjQvq7zbEp
-         T3Obe6SxNEmHVbyMqezaoe9j6xClI3Ebjlp/QwhBRobaNwKZuhrgSpmYCvuiqWji5rmh
-         49Vg==
-X-Forwarded-Encrypted: i=1; AFNElJ+lH0JWdvKxdNQhmHFsRdcg9MIVzhTVLWk4m3jHEPmRzV7K9tgXEnk8mDtPNjNBpRo6VGdaYcEOnlM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw6bWjSXS41muMD3WZBYalQBUQszVN30Xld5GmXbkvt+2gRH6n2
-	Ypho74owL/sz68lyj2LRzqzs+V7NvJRMZoyAwT2XhNmafR2TuWvSuC89xEdRHhN+GbU=
-X-Gm-Gg: AfdE7clZdXOmJUwi9hYnfOTy9/gCD4ziFH1n3QP/FkWykRV8zI19R0WTY0qABHpAKka
-	hF+Z8BIz7a6ZgncFYPTLXhuYsCOnE1dX4RAn44UxJ3jZQ9FvsE+KAe1ZLz9vXmaeowjS2SFpgJ+
-	q2pk+l+an1MjV5dE5y7DrB9APAoMh6Di33xyr77cazSp/QnAMjen+PfAeXk6CH9eJ69OczOBl4M
-	ZFeVg34k0a5n+qC4K33ezJoVacHiJDTFicitEDPnWJ21euKzGLWRelSMCGGYcYg07a4zhBSD/PM
-	dXSVR7M542TrYR3UmHdQL1f1A34VIQRu0n9GB1kJIwdmXXrHjdlYlklWOHZeKs1PWc8rqvUfWbv
-	uMrUs9vkmGNg6bNeO9rfeP6g0IJFSVJsB5+OVQ+vLr3gNcEAVVdXlS50KRtntkv4zkBk2WK7gmh
-	VJVZtMGraPyXo/YbKk+ebBzr7nTEfGCD5de3sYQP2s+yNLkLl2lQg6VQwAEa+tdSM=
-X-Received: by 2002:a05:6830:82bb:b0:7dc:cdea:7d9 with SMTP id 46e09a7af769-7ebcff82b2dmr5550730a34.22.1783611808795;
-        Thu, 09 Jul 2026 08:43:28 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:2a8b:8d9e:f359:9a35? ([2600:8803:e7e4:500:2a8b:8d9e:f359:9a35])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcb3f27besm4343356a34.25.2026.07.09.08.43.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jul 2026 08:43:28 -0700 (PDT)
-Message-ID: <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
-Date: Thu, 9 Jul 2026 10:43:27 -0500
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="evPqTocH"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B76163591;
+	Thu,  9 Jul 2026 08:49:41 -0700 (PDT)
+Received: from pluto (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D82703FC81;
+	Thu,  9 Jul 2026 08:49:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1783612186; bh=ZsaKwAUaY+JsR6IrwdSMe3xghd912Wa8gpID9dHYC30=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=evPqTocHRC03pIflm2SZxRRhVRTiFHKTvKcjolKMB239pCjvuYrLCRhAd4L02W3jy
+	 OFtPohxvaG0XD94c3XJ/Bfko/yektPa6o5yoouYGp8VpZFlOjWdSIMlvetlMiXttOV
+	 mwgBG7Zg+hn0jDotXznT+qvyAZDMTiIfgXQkn4Eo=
+Date: Thu, 9 Jul 2026 16:49:30 +0100
+From: Cristian Marussi <cristian.marussi@arm.com>
+To: Sudeep Holla <sudeep.holla@kernel.org>
+Cc: Hans de Goede <johannes.goede@oss.qualcomm.com>,
+	Brian Masney <bmasney@redhat.com>,
+	Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+	Cristian Marussi <cristian.marussi@arm.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nsc@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	Stephen Boyd <sboyd@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jyoti Bhayana <jbhayana@google.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Ulf Hansson <ulfh@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+	imx@lists.linux.dev, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] firmware: arm_scmi: Ensure automatic module
+ loading
+Message-ID: <ak_DCuTgF5uTI_Lb@pluto>
+References: <20260618-scmi-modalias-v2-0-8c7547c1be21@oss.qualcomm.com>
+ <8c2a4ae3-95cc-489a-a7a4-90a3ee2597e9@oss.qualcomm.com>
+ <20260709-spicy-fiery-squid-6eec1d@sudeepholla>
+ <dae4deba-7e5f-434e-80ae-89033bdeb793@oss.qualcomm.com>
+ <ak-h8oPcL69fCUg2@redhat.com>
+ <f05860be-dd75-49f8-b27a-bff7b554e71b@oss.qualcomm.com>
+ <20260709-exuberant-galago-of-spirit-1c908f@sudeepholla>
+ <5fb236b7-7b99-40fb-b80b-fa7e1dfccd70@oss.qualcomm.com>
+ <20260709-exuberant-narwhal-of-correction-7f4650@sudeepholla>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
-To: Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
- <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260709-exuberant-narwhal-of-correction-7f4650@sudeepholla>
 
-On 7/9/26 3:50 AM, Janani Sunil wrote:
-> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
-> simultaneous sampling ADC
+On Thu, Jul 09, 2026 at 03:37:33PM +0100, Sudeep Holla wrote:
+> On Thu, Jul 09, 2026 at 04:31:00PM +0200, Hans de Goede wrote:
+> > Hi,
+> > 
+> > On 9-Jul-26 16:21, Sudeep Holla wrote:
+> [...]
+> > > 
+> > > I need to recall why we moved from static list of devices to dynamic.
+> > > One reason I can think right now is the vendor protocols and their drivers
+> > > But in general it was an attempt to help multiple drivers bind to different
+> > > scmi_devices that have same protocol ID. E.g. the performance protocol
+> > > can be used by cpufreq and devfreq/performance genpd drivers.
+> > 
+> > Note it is ok to have multiple drivers bind to the same modalias,
+> > depending on the reason why there are multiple drivers either one
+> > should detect that it is not compatible and exit probe() with -ENODEV
+> > or there should be some other mechanism to make sure only one driver
+> > loads.
+> > 
+> > E.g. duplicate USB device-ids happen (they shouldn't but they do) and
+> > then the drivers typically figure out if they are talking to the device
+> > which they were written for, or the other device with the same USB-ids
+> > and then one of the 2 drivers exits with -ENODEV.
+> > 
 > 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad7768.yaml    | 285 +++++++++++++++++++++
->  MAINTAINERS                                        |   7 +
->  2 files changed, 292 insertions(+)
+> Understood. Sorry I tried to explain with examples assuming you may not
+> be aware of the details, but now reading your response, you have better
+> examples.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768.yaml
-> new file mode 100644
-> index 000000000000..b74fe6aef01c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768.yaml
-> @@ -0,0 +1,285 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ad7768.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD7768 and AD7768-4 ADC
-> +
-> +maintainers:
-> +  - Janani Sunil <janani.sunil@analog.com>
-> +
-> +description: |
-> +  The AD7768 is a 8-channel, 24-bit simultaneous sampling ADC with configurable
-> +  power and performance modes. The AD7768-4 is a 4-channel version.
+> > >> I wonder if we can just move a small part of the drivers
+> > >> (some mapping table) into the bus code and then just have this work as it
+> > >> does on regular busses. I hope to be able to make some time to look into
+> > >> this soonish.
+> > >>
+> > > 
+> > > I started with that few years ago and we then moved to this dynamic
+> > > device creation. But I agree if it is deviation from the norms(which I
+> > > wasn't aware of at the time), we can remove it.
+> > 
+> > Looking at the issue this is causing for automatic module loading if we
+> > can get back to the bus enumeration code always creating a device without
+> > waiting for the driver kmod to load then that would be good IMHO.
+> > 
+> 
+> Sure if it fixes the issue for you. Cristian can point out anything I
+> might have missed to consider as he is the one who reworked it and made
+> it dynamic device creation which at the time sounded nice option to
+> solve the issue. We weren't aware that it could cause such issues 🙁.
+> 
 
-Probably worth mentioning that this binding is for SPI mode, not for pin control
-mode.
+The reason for the awkward mechanism of dynamic device creation AFAICR
+was an explicit request by Qualcomm (via its Linaro landing team at
+that time) for the generic vendor module suppport that I was adding to
+be fully self-contained: so that you can write your own protocol and
+add the DT node and that's it, without the need to patch some centrally
+maintained table in the core SCMI stack to add your new vendor protocol.
 
-And that the io-backend is for the data output interface, so consumes the DOUTx,
-DCLK, DRDY. Maybe also START? And SYNC_{IN,OUT}?
+Not saying that it was necesarily a good idea to allow that, but that
+was the origin of this....as far as I can remember....together with the
+fact that the internal interfaces were reworked to be absolutely the
+same for standard protocols and vendor protocols...
 
-> +
-> +  Datasheet at:
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768.pdf
+I thought that the current situation was that auto-loading was working
+for vendor protocols (this autoload issue appeared at first for vendors
+protocols one year ago) then I had made this hacky attempt to make it
+work for standard protocols by forcibly emitting a uevent for all known
+standard protos:
 
-A link to the example HDL project for the io-backend would be helpful too.
-
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad7768
-> +      - adi,ad7768-4
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Master clock (MCLK)
-
-Could also be XTAL{1,2}.
-
-> +
-> +  avdd-supply:
-> +    description: Analog power supply AVDD1 (4.5V to 5.5V)
-> +
-> +  avss-supply:
-> +    description: Analog ground/negative supply AVSS (0V to -2.75V)
-> +
-
-What about AV{DD,SS}{1,2}{A,B} supplies?
-
-> +  dvdd-supply:
-> +    description: Analog power supply AVDD2 (2.0V to 5.5V)
-> +
-> +  iovdd-supply:
-> +    description: Digital I/O power supply (1.8V or 2.25V to 3.6V)
-> +
-> +  vref-supply:
-> +    description: ADC reference voltage supply
-
-There is more that one reference voltage input. so ref1-supply, ref2-supply.
-
-vref is the name of an internal signal, so doesn't make sense here.
-
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +    description: GPIO connected to the active-low RESET pin
-> +
-> +  gpio-controller: true
-> +
-> +  '#gpio-cells':
-> +    const: 2
-> +
-> +  adi,data-lines-number:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 4, 8]
-> +    description:
-> +      Number of data output lines used for serial interface.
-
-This could be made a bit more clear that this is a secondary data
-output interface, not the SPI lines.
-
-> +      AD7768 supports 1, 2, or 8 lines. AD7768-4 supports 1 or 4 lines.
-> +
-> +  adi,common-mode-output:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    enum:
-> +      - avdd-avss-half
-> +      - 1.65V
-> +      - 2.5V
-> +      - 2.14V
-> +    description:
-> +      Common mode voltage output selection.
-
-Why not using standard regulator provider bindings for this?
-
-> +
-> +  adi,vcm-power-down:
-> +    type: boolean
-> +    description: Power down the common mode output buffer
-
-Is the buffer separate from the output? In that case I would expect
-buffer to be in the property name, otherwise this should just be
-part of the enum options above (and the default one at that).
-
-> +
-> +  adi,power-mode:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    enum:
-> +      - low
-> +      - median
-> +      - fast
-> +    description:
-> +      Power mode selection.
-
-Unless there are pins that control this, it seems like it should be
-left up to the driver to decide how to set this.
-
-In this case, it looks like the power mode also influences sample rate
-which is normally something controlled at runtime.
-
-> +
-> +  io-backends:
-> +    maxItems: 1
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^channel@[0-7]$":
-> +    type: object
-> +    description: |
-> +      Represents the external channels which are connected to the device.
-> +      AD7768 supports channels 0-7, AD7768-4 supports channels 0-3.
-> +
-> +    properties:
-> +      reg:
-> +        minimum: 0
-> +        maximum: 7
-> +        description: The channel number
-> +
-> +      adi,ch-mode:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        minimum: 0
-> +        maximum: 1
-> +        description: |
-> +          Channel mode selection. The AD7768 supports two independent
-> +          configuration profiles (Mode A and Mode B) for filter and
-> +          decimation settings. Each channel can be assigned to either mode:
-> +            0 - Channel uses Mode A filter and decimation settings
-> +            1 - Channel uses Mode B filter and decimation settings
-
-This could probably be handled in the driver. E.g. allow per-channel settings
-that just get stored in a data structure. Then when starting a buffered read
-check that all enabled channels have at most 2 different groups of settings.
-Then do all of the required register config at that time.
-
-> +
-> +      adi,prebuf-pos-en:
-> +        type: boolean
-> +        description: Enable positive input precharge buffer
-> +
-> +      adi,prebuf-neg-en:
-> +        type: boolean
-> +        description: Enable negative input precharge buffer
-> +
-> +      adi,refbuf-pos-en:
-> +        type: boolean
-> +        description: Enable positive reference buffer
-> +
-> +      adi,refbuf-neg-en:
-> +        type: boolean
-> +        description: Enable negative reference buffer
-> +
-> +    required:
-> +      - reg
-> +      - adi,ch-mode
-> +
-> +    additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - avdd-supply
-> +  - avss-supply
-> +  - dvdd-supply
-> +  - iovdd-supply
-> +  - vref-supply
-
-> +  - adi,data-lines-number
-
-Suggest making the highest number of lines the default instead
-of making this property required.
+https://lore.kernel.org/arm-scmi/20250203100154.140877-2-cristian.marussi@arm.com/
 
 
-> +  - adi,common-mode-output
+...but that was clearly not the proper way..and all the rework was
+dropped...
 
-Should probably default to disabled, unless it is always used?
-Changing it to a regulator provider makes this not relevant.
-
-> +  - io-backends
-> +
+Thanks,
+Cristian
