@@ -1,156 +1,183 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7053D8133
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 08:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 224E13D79F9;
+	Fri, 10 Jul 2026 08:38:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783672598; cv=none; b=JN3lwiWBbI0uLdAsindGpdyrlX6858+VMqcAFGShw10K15JY7+rq2d7KKQ+P6GgNYWr/4vF++ApnMm7ABJbPn++rv2TZbvDFEoyQEoRtDH8aN7YiwFhW/IB7WS6mmvot86+GLvnnM5Uf/qBpIbGDEvruhbeRPt0GeaDvd2mAZXU=
+	t=1783672733; cv=none; b=Cro1wdNh1c5pUh4XlYhSLfr2jJUqT2j3QPR79EtuB0LnMblfU7+NoorvB+qlawX4s898uRpShxsQTJOXw+QfKlFq7IC4PBu2vg6TdVRZKQ5rVRnCLCuRW0QwSDBo/FXQHQTmrJjxnDuuwtoDFIg7HmhdcX/btGuYmppnWNY69Xw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783672598; c=relaxed/simple;
-	bh=/nKSNbpEdL+T6GQ95kGzOqJewbxvRukWfExTHwG8WQY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kR2DKe2b1XG7PzoJeNrpZldQreAvjrx1gcGjztBcL3eDoFF2aWpMYeRzGYdDTqxjpdSqdNDy6PN8nDUMKaoUQtOlHQ9YGSbOvn9j1G7IjzxLqWzoJ/lzNfS9FWFkt0czfKIjjKpfYdSDf9Q8kVC5uTC34mfb35N4WihlGCApk4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=icFukE1t; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783672733; c=relaxed/simple;
+	bh=dpRfMvlSINQNlSRIRhFvRt1RUWd3BndT1K1wyLx5Lvk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z4tZ4rdi/AEqZQCdWE03QPbTRo9VjNKCpYqBkMlepcy7xucwY4RF6QCq8BBQ3ibDX3pGWql1XGR78quxGWH/iSAp0YO0JFwTvJJnsXFmE1qnkdWcpDPZGx4ZBtu25YMU5MeVj+3j3x3hUK7HhOUSE1YyFmnSHD4GNeuXcM6ZgzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UGTXI5E0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="icFukE1t"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493c19bad03so5349125e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 01:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783672596; x=1784277396; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=pA1HEGDtcWaQ9J5As0L2Cw9LkRzBGT6/pW+NLlqfsl8=;
-        b=icFukE1tGsSnIDjBDOxIlOJ5tL0kOU3LuQQ4l3mTnIKjI9ukDfSDHHy++EDNTb3lqW
-         qm/flp1X8hgRa4r6wI2JzXGgRRTVz2vnrMx6tssRj6UNNJaDZHgOogv+9TiLw59wpa2a
-         C+bAfXMQM2GltMPhzr18DMyi1CJDDfryQBnpDlFzrLuvuTv5GxEGzX2S06jnWmxSbAim
-         9McOd93+hlfTAZ86QnXPZoQ3ojgSbAZxnNHzWvprLFWN7lwmccfes8fBi9pdiYDW/pNz
-         NyndiY8oBSP6jQIsBhjrQqpHxTVqXOcksQcbvahzCagf+OfEdrVM+cSaNbVfVrbVXx4i
-         Pn4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783672596; x=1784277396;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=pA1HEGDtcWaQ9J5As0L2Cw9LkRzBGT6/pW+NLlqfsl8=;
-        b=GB8GrxceG2AmT6IOxrRSHDMLJlaCyaqMENvJhZczPLcFWi9etmG88NVld0Qs6fyl9o
-         LLzxejmyVtsp4KkLtFOAwZ67128c1Fhmzr6/5mGxJ4rp2CB4bHGglbI0wLx0gnudm+4g
-         0nT6YcFbYfaQLHT/C6sZI07mOBa99+S0tQwPlTPv67cTV0zxdeD9LVMHMIS1zsxsuszL
-         zDpnrNSskGE8EL2ioONhZ1CQDQ1nukLS8P/a2gXBvPjSCKoBa1fpgsTr4+dnDtAe10Wk
-         eBbCEqgyQVp/ywrKdA6jX6BMWZAQMkTTBOvzfhh8TE0mM+PFEzyu4CLXWhzWu0Qvfww5
-         4ciA==
-X-Forwarded-Encrypted: i=1; AHgh+Rr62KPS77/5o50IOdsC2XVqzNwnktpvx14uDCpi7OLb5SDI1MB3sBVCuWc2SwTN3h0f4Bjnstlme6o=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz9RK5qheaMaBI685fTt4Np1DcaJ5XD/OJJOL91Z+gd30I6muMD
-	jyBCC3MED1Pl1SJXX87u87Qsm97fJj9zlETAXbuIK3l+w4GI8XRhC9wc
-X-Gm-Gg: AfdE7cnicLjQiqtGXi1E25tWFgeGREwvjWlIIb6K5bfeCU/9p2d1hF48F2iuYogG5++
-	mXOErP50ueqM+RMbRapDgTbDpVWVZyIe0dAkTyayM/VQDQuE1UJLDQDO87Expa6sFR0QyXHDRMD
-	uf1GPOMnyGDM5yFPIY+ZqNoySCekNxurSwoehdF4zGnLnA1TKBWs/UL4VzBToonsk3m7cvWUlQp
-	jTlc5jzh1QUJUJiuUSYCEfRiXYuUMpStjzdWtpIcll45oS/XP4uWOCIsHqO7o/7106pUIpFdIxj
-	mz6xVpHTKsyDQIUq75Mm54hJmHS9xr9vDyvRjdF9F76DEHUpqc1mcFmO/QfvtoZIFfXQvzXL8CB
-	FK6414S9sx/1Cw/BDqv7cd1TKL8q5JOfOHxFbTFZjz45Enp5MMeDqKxK/7z66uZSsiuPCSeuRY3
-	Z3NWHH1mglaCSdaq1ZI7/Jhl9uv5NdpNa2PxTc2VTzXBO6A2pVKntjbvP84HC+L8t078gfCK6fe
-	rNpc2po+MqmHf3BEko=
-X-Received: by 2002:a05:600c:828c:b0:493:e460:1f6 with SMTP id 5b1f17b1804b1-493e65f1b02mr104587255e9.0.1783672595783;
-        Fri, 10 Jul 2026 01:36:35 -0700 (PDT)
-Received: from workstation.speedport.ip (p200300d5070afe7db3148fa84ed2ac78.dip0.t-ipconnect.de. [2003:d5:70a:fe7d:b314:8fa8:4ed2:ac78])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493eb6e8844sm134592985e9.10.2026.07.10.01.36.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 01:36:35 -0700 (PDT)
-From: Mert Seftali <mertsftl@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Jelle van der Waa <jelle@vdwaa.nl>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Mert Seftali <mertsftl@gmail.com>
-Subject: [PATCH v2] iio: accel: dmard09: Implement IIO_CHAN_INFO_SCALE
-Date: Fri, 10 Jul 2026 10:36:23 +0200
-Message-ID: <20260710083623.84243-1-mertsftl@gmail.com>
-X-Mailer: git-send-email 2.55.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UGTXI5E0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98F4D1F000E9;
+	Fri, 10 Jul 2026 08:38:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1783672731;
+	bh=cpvrx4tFOz3jWh0MkNiBbPUfVVjjeSGFY+Zp/pTTVUw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=UGTXI5E0OAwaaQJCF0aPJW3LSQciLWBMT1hlLz4UjY6vUJ3iWTK+g41f4nC6SrddV
+	 gjr6K7JaOo7kYVk+JENRovfqVzPbVpSrnfDQki/0kAwOTjykHBVPshX+PYXd5XKFeI
+	 E0aD+GWzVE1bwI3NYVtApDZq/RKARMYGU1eVOCAoH0fNbm8H8LPOdbDpUec7XYRiwV
+	 9rJAcS1oc/Wmx6mcBCRWRdfiCtnI1N45rrWyL7CGfLOKoz/3x4WijBfiJ34I5Qra5X
+	 67IvjkU9rZBwuaHQSqwM1WiaCt3bg9z7ph/Ni88xR1IAnhFyXorIwAooJBWdW9Y8zG
+	 ycWxnwBPneVPQ==
+Date: Fri, 10 Jul 2026 09:38:42 +0100
+From: Sudeep Holla <sudeep.holla@kernel.org>
+To: Michal Simek <michal.simek@amd.com>
+Cc: Cristian Marussi <cristian.marussi@arm.com>,
+	Sudeep Holla <sudeep.holla@kernel.org>,
+	linux-kernel@vger.kernel.org, monstr@monstr.eu, git@amd.com,
+	vincent.guittot@linaro.org, Souvik.Chakravarty@arm.com,
+	Alex Shi <alexs@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Brian Masney <bmasney@redhat.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Dongliang Mu <dzm91@hust.edu.cn>,
+	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Lukasz Luba <lukasz.luba@arm.com>, Mark Brown <broonie@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Pavel Machek <pavel@kernel.org>, Peng Fan <peng.fan@nxp.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Stephen Boyd <sboyd@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Yanteng Si <si.yanteng@linux.dev>, arm-scmi@vger.kernel.org,
+	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
+	linux-arm-kernel@lists.infradead.org,
+	"open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+	"open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+	"open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+	"open list:ENERGY MODEL" <linux-pm@vger.kernel.org>
+Subject: Re: [RFC PATCH] firmware: scmi: Make SCMI arch independent
+Message-ID: <20260710-macho-pristine-tanuki-b0d3ce@sudeepholla>
+References: <d7f7e8c9589d937b60e43168845ab4fda15037a3.1783603600.git.michal.simek@amd.com>
+ <ak_Eu_eQKalPMwo-@pluto>
+ <77110e77-941d-4173-b2f5-6f3cf4858339@amd.com>
+ <20260710-lemon-pogona-of-wind-b3a003@sudeepholla>
+ <5f5e8341-dbcc-4467-976e-35d007ae148e@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5f5e8341-dbcc-4467-976e-35d007ae148e@amd.com>
 
-Reading the in_accel_scale attribute on the DMARD09 has always returned
--EINVAL: the channels advertise scale via info_mask_shared_by_type so the
-IIO core exposes the attribute, but dmard09_read_raw() only handles
-IIO_CHAN_INFO_RAW, so a SCALE read falls through to 'default: return
--EINVAL':
+On Fri, Jul 10, 2026 at 09:42:09AM +0200, Michal Simek wrote:
+> 
+> 
+> On 7/10/26 09:35, Sudeep Holla wrote:
+> > On Fri, Jul 10, 2026 at 09:03:32AM +0200, Michal Simek wrote:
+> > > 
+> > > 
+> > > On 7/9/26 17:56, Cristian Marussi wrote:
+> > > > On Thu, Jul 09, 2026 at 03:27:00PM +0200, Michal Simek wrote:
+> > > > > On heterogenious systems like AMD/Xilinx FPGA there is a need to talk to
+> > > > > SCMI server from different architectures than ARM that's why remove
+> > > > > ARM/ARM64 Kconfig dependency with also remove ARM from description and
+> > > > > rename folder to reflect it.
+> > > > 
+> > > > While I understand dropping the dependency on ARM (I always wanted to do
+> > > > that and test if it worked at all on some otehr archs with QEMU), I am
+> > > > not sure about the whole renaming party ? why is needed just for
+> > > > cosmetic reasons ? it is at the end an arm originated protocol so I dont
+> > > > see it as a being wrong to be named as such even though used by other
+> > > > archs...I have not really strong opinion on this...
+> > > 
+> > > I have been in CC on U-Boot RPMI patches which got to my attention because
+> > > I don't want to have another interface for MB-V(riscv-) running in
+> > > programmable logic and have another server in the system doing the same
+> > > thing.
+> > > 
+> > 
+> > Ah that's interesting. I wasn't aware of that. I still agree with the move
+> > in principle, but how does that align with these:
+> > 
+> > drivers/clk/clk-rpmi.c
+> > drivers/irqchip/irq-riscv-rpmi-sysmsi.c
+> > include/linux/mailbox/riscv-rpmi-message.h
+> > drivers/mailbox/riscv-sbi-mpxy-mbox.c(Should be fine as it is just transport)
+> 
+> I am having separate discussion on u-boot mailing list about RPMI and it's
+> usage on non riscv architectures because one raised argument was that it is
+> community driver spec compare to SCMI which is owned by ARM. But IMHO only
+> for riscv.
+> 
 
-    $ cat .../iio:deviceX/in_accel_scale
-    cat: in_accel_scale: Invalid argument
+IIRC in LPC 2024, we did discuss opening up SCMI so that RISCV could use it as
+is instead of copying quite a lot from SCMI for RPMI in some closed groups.
 
-leaving userspace with raw counts it cannot convert to m/s^2.
+Here is the summary we got from couple of RISC-V vendors at the time:
+"
+RPMI is comparable to Arm SCMI, but it includes RISC-V-specific services such
+as HART State Management, CPPC, Management Mode, and RAS Agent. The SBI MPXY
+extension enables secure and non-secure system partitions to exchange RPMI
+messages, allows an M-mode RPMI transport to be shared with S-mode, and lets
+hypervisors virtualize RPMI for guests or VMs.
 
-The driver was written from a vendor source [1] without a datasheet, and
-the scale was declared but never implemented. The vendor source carries
-the sensitivity: its conversion is
+RPMI development is already well advanced, with much of the client-driver work
+implemented in OpenSBI. Supervisor software can access selected RPMI services
+through SBI MPXY. A permissively licensed reference implementation, librpmi,
+is also available for platform vendors.
 
-    acc = raw * GRAVITY_EARTH_1000 / sensitivity   (then / 1000 -> m/s^2)
+RPMI was created after evaluating Arm SCMI, mainly to support RISC-V-specific
+requirements.
+"
 
-with sensitivity = 32 and GRAVITY_EARTH_1000 = 9807 ("about
-(9.80665)*1000"), i.e. 32 counts correspond to 1 g.
+I didn't pursue it any further following some of these followup discussions
+post LPC 2024.
 
-That sensitivity applies to the value this driver already reports as raw:
-the vendor reduces each 16-bit sample to a signed 9-bit value, and the
-preparation in dmard09_read_raw() yields the same value. It is
-self-consistent: 256 counts / 32 = 8 g full scale, matching the +/-8g
-range.
+> > 
+> > Now I feel we need some alignment before making $subject move.
+> > 
+> > > Based on that we had discussed about it with Vincent and Souvik (we missed
+> > > you there) about using SCMI on non ARM platform and both of them didn't see
+> > > the concern to be marked as ARM only protocol.
+> > > Truth is that some of protocols have ARM in description, file names, etc but
+> > > some of them not. That's why I think it is good time to sync it up and
+> > > enable
+> > > running this protocol on other SOCs.
+> > > 
+> > > > ... my concern really is ... wont this full scale rename simply generate
+> > > > a lot of un-needed churn for future fixes and/or backporting ?
+> > > I don't think it is going to be a big problem because it is just git mv
+> > > which git is able to gracefully handle.
+> > > 
+> > 
+> > Otherwise it may end up being unnecessary churn though I completely agree
+> > with the git/backporting aspects. Just don't want to churn things up until
+> > we have some plan and further changes/users of this move.
+> 
+> As I wrote above AMD/Xilinx platform with SCMI server where ARM RPU/APUs
+> (with multiple VMs) and Microblaze-V in programmable logic acting as
+> separate agents is going to be the first user. And for being able to run
+> SCMI on Linux running on Microblaze-V I need enable SCMI on non ARM
+> architecture.
+> 
 
-Implement the scale derived from that sensitivity using standard gravity:
+Ah OK, if the plan is to just use SCMI as is and having "ARM/arm" name is
+a blocker, then sure we can get that done. Hope you are aware of and already
+considered some of the RISC-V specifics listed above and ruled out any of
+those as concerns to use SCMI on RISC-V platforms.
 
-    scale = 9.80665 / 32 = 0.3064578125 m/s^2 per LSB
-
-Link: https://github.com/minstrelsy/mediatek/blob/1f49d8c87b839651bc89afc870277e8e0f2e2d55/custom/common/kernel/accelerometer/dmard09/dmard09.c [1]
-Fixes: a4fa6509dda4 ("iio: accel: add support for the Domintech DMARD09 3-axis accelerometer")
-Signed-off-by: Mert Seftali <mertsftl@gmail.com>
----
-Changes in v2:
-- Reword the opening around reading the attribute and merge the duplicated
-  explanation into it.
-- Describe the sample as a signed 9-bit value in plain language instead of
-  the register bit operations (the vendor code is in the link).
-- Turn the vendor-source URL into a Link: tag.
-- Express the scale via the IIO_G_TO_M_S_2() helper instead of a
-  precomputed constant.
-- Add a blank line before the return in the SCALE case.
-
- drivers/iio/accel/dmard09.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
-index fe35a1270786..6f0497ab6133 100644
---- a/drivers/iio/accel/dmard09.c
-+++ b/drivers/iio/accel/dmard09.c
-@@ -8,6 +8,7 @@
- #include <linux/unaligned.h>
- #include <linux/module.h>
- #include <linux/i2c.h>
-+#include <linux/units.h>
- #include <linux/iio/iio.h>
- 
- #define DMARD09_DRV_NAME	"dmard09"
-@@ -79,6 +80,12 @@ static int dmard09_read_raw(struct iio_dev *indio_dev,
- 		*val = accel;
- 
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		/* 1 g / 32 LSB, in m/s^2 */
-+		*val2 = IIO_G_TO_M_S_2(NANO / 32);
-+
-+		return IIO_VAL_INT_PLUS_NANO;
- 	default:
- 		return -EINVAL;
- 	}
 -- 
-2.55.0
-
+Regards,
+Sudeep
