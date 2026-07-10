@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50AF1413D82;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 556E34192EA;
 	Fri, 10 Jul 2026 11:21:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783682460; cv=none; b=df5BTbeqdyxOcaastlq4TZHUGv3wlxIhAakWViHBu+FSq/J3LtG4kcK5TRdVkL0M1IPZkkBGGb8hTMX29cBSQn+SugFGsyT/MesSUns06AyW9LrLJqx5KCKV3kWNBxpCVjTlhIBkBVOPYvZqXAo1c/llhon2081FL3bUl2FH1s4=
+	t=1783682460; cv=none; b=fXWY+zv2oVXTxaSOZbPNE71teoAUS8cbJ+sDPw1t6qj7ZlKpqTJMwVWpb/72cdLUakeYOXVczLcs7J17RF9GSS6SHgtSdo5ofoNWCcZ10Lf3nMqniPC7TRlw6w5RkBULYMjC2GUCmQ531CWgIHvCS2yBwHA3u+pmfQEj7ZlXQfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783682460; c=relaxed/simple;
-	bh=MQaVxbt5MgT9+pSNhtkCULBHkc7gzrmBDoIfbSTlv4A=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=V2qkfuNM0i5/wUf/IxrBN6eWnNT0iZtdm7JjdAx3NDutp8mJveU/g49xQ4cIuAwHcf9qrYOrWriMPPct841fy20hhKJpp7StAvqsspXtm1a3bLyaW2CvvNFYSKAHOx5GNn0f4EeLdyFObvNDaiT9vNhn92iiRHCvuMhySx9qJ/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=upRbWGrk; arc=none smtp.client-ip=10.30.226.201
+	bh=ntHGY55JFXOVuGQaVUZ34CsGt/7YAIh1ZUBbVWP3CsQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=KEvYqcd8KK2NUmpg4Tqsguwg9QXiQotV0B7GrRUT/XToqhO4v/R8fsuoZt2JKD559KnH6btbbWdntKgTUAqyJXTfNlOHRKJVBqtTge7YpgQ/RWmDkau6VP/P/5yh4s1njHbNUjdk6Hlejgpgc71zN2pAsCpa2J8XBWnDKJbAvxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YWaIVFJm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="upRbWGrk"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 45DCFC2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YWaIVFJm"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 78D82C2BD04;
 	Fri, 10 Jul 2026 11:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1783682458;
-	bh=MQaVxbt5MgT9+pSNhtkCULBHkc7gzrmBDoIfbSTlv4A=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=upRbWGrkU8gugoQRWPFnVMJqAcpwKC62oCIpcl4nSj+CDzjDXmfQ5pEGWhBiUMu7y
-	 /vDqsTmKQRcK6Kl8Pgr2vxwU7K5vSrq4lMKb7iCT4hpMvsOhDWdtFVExNzO4ajBtoT
-	 lcYWhuLOl51oer2lBhYf5g1L2W3OYvpGYM9yNxQNN1DAUQWDilA5nfhkxlghX37s53
-	 fXM+VWIS8qaDRbfpcg4pmnuUhrRj9k5gR2oSiHPDSKD21JXl10x1LRcF8nnisNE7JM
-	 d0H9QG2knQ8GLU0U+RbmzyGiyrwmB+ysIZxP+jJ2SgP8jjTmRtAyDEArUrbVFx3Tk7
-	 JbmuzwY2BbPiw==
+	bh=ntHGY55JFXOVuGQaVUZ34CsGt/7YAIh1ZUBbVWP3CsQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=YWaIVFJmtghM4jlNTfd7qG3GUI4aef7xoRbh0+7Y7uRrW2fXefoZNxXYqmiqSg0cF
+	 xGu2zgJNv82tpY9FzevENb13x238gp54D1rYA30KBtxSOay7M9k8W7+KcWIvkEK0kE
+	 DLWo1u/qhgvSuGzWOLUqAra53MAmMHzqOoWVoK4IlJf007OT+eZU65df08/9SJUgxU
+	 RPJZPD+GhKL9PeBaB6Qq3yarnGTnjLmdj4VvLZ0XQXT3QBcVFlZKHuFJRhKoL+4kR0
+	 0e3YEgftlGbUaMC8gqBKgYMJ5ZjTzxd9EvCNLclGhQ0qAmDdaw2VJ/GwGhMFa1sdc9
+	 wz4M5kw04Z2QQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F6EC43458;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6689AC43458;
 	Fri, 10 Jul 2026 11:20:58 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v7 0/7] New features for the AD5686 IIO driver
-Date: Fri, 10 Jul 2026 12:20:44 +0100
-Message-Id: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
+Date: Fri, 10 Jul 2026 12:20:48 +0100
+Subject: [PATCH v7 4/7] iio: dac: ad5686: implement new sync() op for the
+ spi bus
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,12 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAIzVUGoC/33OzU7DMAzA8VeZciYocRs74cR7oB3y4WyRoJ3a0
- YGmvjvpLhS14vi35J99FyMPhUfxcriLgacylr6rQU8HEc++O7EsqbYABahQgfTJoEXZ8U1m9tf
- PgUfJWmNUbUgpOFE3LwPn8vVQ3461z2W89sP348ikl+n/3qSlkug0K21tk4Befeff+9Nz7D/EA
- k6wRtw+AhUhFVposomEaYM0K0TjPtJUJFtwORA7QNgg7QqBZh9pKwLWIXhDKai8QcwasfuIqYg
- hit6nkCmqDYK/CCmzj+DyCTrj2kjes/mDzPP8A2dvYa0QAgAA
-X-Change-ID: 20260602-ad5686-new-features-e116c04bddb9
+Message-Id: <20260710-ad5686-new-features-v7-4-1bcc8c280e4d@analog.com>
+References: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
+In-Reply-To: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
@@ -55,15 +53,13 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, sashiko-bot@kernel.org, 
- Maxwell Doose <m32285159@gmail.com>, 
- Joshua Crofts <joshua.crofts1@gmail.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783682457; l=3180;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783682457; l=9034;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=MQaVxbt5MgT9+pSNhtkCULBHkc7gzrmBDoIfbSTlv4A=;
- b=M7wQwbX8ZcTM5YvpHr44Jl9gLZIaQ2JyRbVNVZRlEvbaiEUYHZFaFHGaBkbTjlq4RcYx7GXdZ
- coZYgf3XtRyBLU9EjUY8SabNID6pGe84//boIFmQCsReHyeDPAyCQQ7
+ bh=97qIi6+LeMKQRfC0Ku/wZdiBRB5IRSJ+Abel0ki2gI4=;
+ b=BHVoXDgE1BLb2xRaUD0aOOj4zUuENpIUOiCkTOvwS3bsDeBYObNOXMMXvQoUhJJuB8enSNHEp
+ vbxcR1fW981AWjmaUWLAtUMleyRExm6JyTA4gFxBJIuhCQ6+Zw3v05T
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,79 +67,288 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This is the second series of three on updating the AD5686 driver.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Initially, a big patch series was sent:
-https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
-
-Then, the first patch series added fixes and cleanups:
-https://lore.kernel.org/linux-iio/20260524-ad5686-fixes-v7-0-b6bf395d08bd@analog.com/
-
-This one is introducing new features:
-- Consume optional reset and correct power supplies;
-- LDAC GPIO handling (active-low, held low when unused);
-- SPI bus sync() implementation for batching multiple transfers;
-- Triggered buffer support, leveraging LDAC and sync() to flush
-  all channel writes atomically;
-- Gain control support through the scale property.
+Use of local SPI bus data to manage a collection of SPI transfers and
+flush them to the SPI platform driver with the sync() operation. This
+allows for faster handling of multiple channel DAC writes, avoiding kernel
+overhead per spi_sync() call, which will be helpful when enabling
+triggered buffer support.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v7:
-- Fix return value check of i2c_transfer().
-- Amend refactoring of command/data macros.
-- Link to v6: https://lore.kernel.org/r/20260705-ad5686-new-features-v6-0-269594c7aae5@analog.com
+ drivers/iio/dac/ad5686-spi.c | 129 ++++++++++++++++++++++++++++++++-----------
+ drivers/iio/dac/ad5686.c     |   4 +-
+ drivers/iio/dac/ad5686.h     |   8 ++-
+ drivers/iio/dac/ad5696-i2c.c |   2 +-
+ 4 files changed, 108 insertions(+), 35 deletions(-)
 
-Changes in v6:
-- Refactor command/data macros in favor of FIELD_PREP()
-- Link to v5: https://lore.kernel.org/r/20260628-ad5686-new-features-v5-0-577caadbf7c0@analog.com
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index d3b64b4361d5..ae74a17ba48e 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -13,59 +13,95 @@
+ #include <linux/errno.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/overflow.h>
+ #include <linux/spi/spi.h>
+ 
+ #include <asm/byteorder.h>
+ 
+ #include "ad5686.h"
+ 
++/**
++ * struct ad5686_spi_data - SPI bus specific data
++ * @msg: SPI message used for transfers
++ * @size: number of transfers currently in the message
++ * @capacity: maximum number of transfers that can be added to the message
++ * @xfers: array of SPI transfers, allocated with the provided capacity
++ */
++struct ad5686_spi_data {
++	struct spi_message msg;
++	unsigned int size;
++	unsigned int capacity;
++	struct spi_transfer xfers[] __counted_by(capacity);
++};
++
+ static int ad5686_spi_write(struct ad5686_state *st,
+ 			    u8 cmd, u8 addr, u16 val)
+ {
+-	struct spi_device *spi = to_spi_device(st->dev);
+-	u8 tx_len, *buf;
++	struct ad5686_spi_data *bus_data = st->bus_data;
++	struct spi_transfer *xfer;
+ 
++	if (bus_data->size >= bus_data->capacity)
++		return -E2BIG;
++
++	if (bus_data->size)
++		bus_data->xfers[bus_data->size - 1].cs_change = 1;
++	else
++		spi_message_init(&bus_data->msg);
++
++	xfer = &bus_data->xfers[bus_data->size];
+ 	switch (st->chip_info->regmap_type) {
+ 	case AD5310_REGMAP:
+-		st->data[0].d16 = cpu_to_be16(FIELD_PREP(AD5310_CMD_MSK, cmd) |
+-					      FIELD_PREP(AD5310_DATA_MSK, val));
+-		buf = &st->data[0].d8[0];
+-		tx_len = 2;
++		st->data[bus_data->size].d16 =
++			cpu_to_be16(FIELD_PREP(AD5310_CMD_MSK, cmd) |
++				    FIELD_PREP(AD5310_DATA_MSK, val));
++		*xfer = (struct spi_transfer) {
++			.tx_buf = &st->data[bus_data->size].d16,
++			.len = sizeof(st->data[bus_data->size].d16),
++		};
+ 		break;
+ 	case AD5683_REGMAP:
+-		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+-					      FIELD_PREP(AD5683_DATA_MSK, val));
+-		buf = &st->data[0].d8[1];
+-		tx_len = 3;
++		st->data[bus_data->size].d32 =
++			cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++				    FIELD_PREP(AD5683_DATA_MSK, val));
++		*xfer = (struct spi_transfer) {
++			.tx_buf = &st->data[bus_data->size].d8[1],
++			.len = sizeof(st->data[bus_data->size].d8) - 1,
++		};
+ 		break;
+ 	case AD5686_REGMAP:
+-		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+-					      FIELD_PREP(AD5686_ADDR_MSK, addr) |
+-					      FIELD_PREP(AD5686_DATA_MSK, val));
+-		buf = &st->data[0].d8[1];
+-		tx_len = 3;
++		st->data[bus_data->size].d32 =
++			cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
++				    FIELD_PREP(AD5686_ADDR_MSK, addr) |
++				    FIELD_PREP(AD5686_DATA_MSK, val));
++		*xfer = (struct spi_transfer) {
++			.tx_buf = &st->data[bus_data->size].d8[1],
++			.len = sizeof(st->data[bus_data->size].d8) - 1,
++		};
+ 		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+ 
+-	return spi_write(spi, buf, tx_len);
++	spi_message_add_tail(xfer, &bus_data->msg);
++	bus_data->size++;
++
++	return 0;
++}
++
++static int ad5686_spi_sync(struct ad5686_state *st)
++{
++	struct spi_device *spi = to_spi_device(st->dev);
++	struct ad5686_spi_data *bus_data = st->bus_data;
++
++	bus_data->size = 0; /* always reset, even on sync failure */
++	return spi_sync(spi, &bus_data->msg);
+ }
+ 
+ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ {
+-	struct spi_transfer t[] = {
+-		{
+-			.tx_buf = &st->data[0].d8[1],
+-			.len = 3,
+-			.cs_change = 1,
+-		}, {
+-			.tx_buf = &st->data[1].d8[1],
+-			.rx_buf = &st->data[2].d8[1],
+-			.len = 3,
+-		},
+-	};
+ 	struct spi_device *spi = to_spi_device(st->dev);
++	struct ad5686_spi_data *bus_data = st->bus_data;
++	struct spi_transfer *xfer = &bus_data->xfers[0];
+ 	u8 cmd = 0;
+ 	int ret;
+ 
+@@ -86,8 +122,21 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ 				      FIELD_PREP(AD5686_ADDR_MSK, addr));
+ 	st->data[1].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, AD5686_CMD_NOOP));
+ 
+-	ret = spi_sync_transfer(spi, t, ARRAY_SIZE(t));
+-	if (ret < 0)
++	xfer[0] = (struct spi_transfer) {
++		.tx_buf = &st->data[0].d8[1],
++		.len = sizeof(st->data[0].d8) - 1,
++		.cs_change = 1,
++	};
++	xfer[1] = (struct spi_transfer) {
++		.tx_buf = &st->data[1].d8[1],
++		.rx_buf = &st->data[2].d8[1],
++		.len = sizeof(st->data[1].d8) - 1,
++	};
++
++	spi_message_init_with_transfers(&bus_data->msg, xfer, 2);
++
++	ret = spi_sync(spi, &bus_data->msg);
++	if (ret)
+ 		return ret;
+ 
+ 	return be32_to_cpu(st->data[2].d32);
+@@ -96,12 +145,30 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
+ static const struct ad5686_bus_ops ad5686_spi_ops = {
+ 	.write = ad5686_spi_write,
+ 	.read = ad5686_spi_read,
++	.sync = ad5686_spi_sync,
+ };
+ 
+ static int ad5686_spi_probe(struct spi_device *spi)
+ {
+-	return ad5686_probe(&spi->dev, spi_get_device_match_data(spi),
+-			    spi->modalias, &ad5686_spi_ops);
++	const struct ad5686_chip_info *info;
++	struct ad5686_spi_data *bus_data;
++	struct device *dev = &spi->dev;
++	unsigned int capacity;
++
++	info = spi_get_device_match_data(spi);
++	if (!info)
++		return -ENODEV;
++
++	/* read operation requires at least 2 transfers */
++	capacity = max(info->num_channels, 2);
++	bus_data = devm_kzalloc(dev, struct_size(bus_data, xfers, capacity),
++				GFP_KERNEL);
++	if (!bus_data)
++		return -ENOMEM;
++
++	bus_data->capacity = capacity;
++
++	return ad5686_probe(dev, info, spi->modalias, &ad5686_spi_ops, bus_data);
+ }
+ 
+ static const struct spi_device_id ad5686_spi_id[] = {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 120dd095dd2e..316f9ccf54d9 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -472,7 +472,8 @@ EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
+ 
+ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+-		 const char *name, const struct ad5686_bus_ops *ops)
++		 const char *name, const struct ad5686_bus_ops *ops,
++		 void *bus_data)
+ {
+ 	struct reset_control *rstc;
+ 	struct ad5686_state *st;
+@@ -487,6 +488,7 @@ int ad5686_probe(struct device *dev,
+ 
+ 	st->dev = dev;
+ 	st->ops = ops;
++	st->bus_data = bus_data;
+ 	st->chip_info = chip_info;
+ 
+ 	rstc = devm_reset_control_get_optional_exclusive(dev, NULL);
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index ae9aeda2d201..2c3d7d5b1d6b 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -25,6 +25,7 @@
+ 
+ #define AD5686_ADDR_DAC(chan)			(0x1 << (chan))
+ #define AD5686_ADDR_ALL_DAC			0xF
++#define AD5686_MAX_CHANNELS			16
+ 
+ #define AD5686_CMD_NOOP				0x0
+ #define AD5686_CMD_WRITE_INPUT_N		0x1
+@@ -132,6 +133,7 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+  * @use_internal_vref:	set to true if the internal reference voltage is used
+  * @lock:		lock to protect access to state fields, which includes
+  *			the data buffer during regmap ops
++ * @bus_data:		bus specific data
+  * @data:		transfer buffers
+  */
+ struct ad5686_state {
+@@ -144,6 +146,7 @@ struct ad5686_state {
+ 	unsigned int			pwr_down_mode;
+ 	bool				use_internal_vref;
+ 	struct mutex			lock;
++	void				*bus_data;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) may require the
+@@ -154,13 +157,14 @@ struct ad5686_state {
+ 		__be32 d32;
+ 		__be16 d16;
+ 		u8 d8[4];
+-	} data[3] __aligned(IIO_DMA_MINALIGN);
++	} data[AD5686_MAX_CHANNELS] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ 
+ int ad5686_probe(struct device *dev,
+ 		 const struct ad5686_chip_info *chip_info,
+-		 const char *name, const struct ad5686_bus_ops *ops);
++		 const char *name, const struct ad5686_bus_ops *ops,
++		 void *bus_data);
+ 
+ static inline int ad5686_write(struct ad5686_state *st, u8 cmd, u8 addr, u16 val)
+ {
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index 73dcd2e6f51b..b122d8d938e4 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -71,7 +71,7 @@ static const struct ad5686_bus_ops ad5686_i2c_ops = {
+ static int ad5686_i2c_probe(struct i2c_client *i2c)
+ {
+ 	return ad5686_probe(&i2c->dev, i2c_get_match_data(i2c),
+-			    i2c->name, &ad5686_i2c_ops);
++			    i2c->name, &ad5686_i2c_ops, NULL);
+ }
+ 
+ static const struct i2c_device_id ad5686_i2c_id[] = {
 
-Changes in v5:
-- Create auxiliary handler for the triggered buffer.
-- Do not allow modification of double_scale in case gain_gpio is not set.
-- Link to v4: https://lore.kernel.org/r/20260623-ad5686-new-features-v4-0-28962a57db0f@analog.com
-
-Changes in v4:
-- Replace anyof+const for enum in dt-bindings. 
-- Address some sashiko's comments.
-- Use guard(mutex)() in trigger handler and other misc changes.
-- Link to v3: https://lore.kernel.org/r/20260616-ad5686-new-features-v3-0-f829fb7e9262@analog.com
-
-Changes in v3:
-- Add range-double property.
-- Acquire reset control after power-up delay.
-- Include cleanup.h and use guard(mutex)() in read_raw().
-- Link to v2: https://lore.kernel.org/r/20260609-ad5686-new-features-v2-0-70b423f5c76d@analog.com
-
-Changes in v2:
-- Get reset control deasserted.
-- Update entire spi_transfer struct rather than individual fields.
-- Replace udelay() for fsleep() in probe().
-- Minor changes addressing further feedback.
-- Link to v1: https://lore.kernel.org/r/20260602-ad5686-new-features-v1-0-691e01883d27@analog.com
-
----
-Rodrigo Alencar (7):
-      iio: dac: ad5696: properly check i2c_transfer() return value
-      iio: dac: ad5686: refactor command/data macros
-      iio: dac: ad5686: introduce sync operation
-      iio: dac: ad5686: implement new sync() op for the spi bus
-      iio: dac: ad5686: read_raw/write_raw: use guard(mutex)()
-      iio: dac: ad5686: add triggered buffer support
-      iio: dac: ad5686: add gain control support
-
- drivers/iio/dac/Kconfig      |   2 +
- drivers/iio/dac/ad5686-spi.c | 136 ++++++++++++++++++++-------
- drivers/iio/dac/ad5686.c     | 215 +++++++++++++++++++++++++++++++++++++++----
- drivers/iio/dac/ad5686.h     |  52 ++++++++---
- drivers/iio/dac/ad5696-i2c.c |  17 ++--
- 5 files changed, 345 insertions(+), 77 deletions(-)
----
-base-commit: 4c0ecdbdc0d87570f74e656e21d56bae1ab6a8f1
-change-id: 20260602-ad5686-new-features-e116c04bddb9
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
