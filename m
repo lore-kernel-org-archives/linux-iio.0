@@ -1,50 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2C8223328;
-	Fri, 10 Jul 2026 02:16:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE80B23392E;
+	Fri, 10 Jul 2026 02:22:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783649817; cv=none; b=CJhleytvv8rp9c2mpsg55ANaMDWbOEDU3fPaK9xbA9PBX8senVcxID7bdUKuyla3k3+BsbGltoVlB0e6DxV1fErSUBGHe2cy5tVW7lEO61Rn8sBUqnoY+PZQcX0GLoxvWnxFcLbFL8RkrFXyhoBWe8WUQE3P/PsHad/SN5TyS+8=
+	t=1783650157; cv=none; b=jSDVe9O61mVxqTWyajQMTOuaDgVoif8KWOqdjJ0uAIDxEV+L0N25zizpMcE3vom6nVkZKdQI+4oZS+7jk6Rl+CrDp1yGY0CszEMhRL7FwoQjMLwjWeh951HTJgNTkLeQjVDqGJ3H/CSrMuC2MeRWkFSyWaKrxTzYu/i6dVdVzZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783649817; c=relaxed/simple;
-	bh=D/dN7LGqtP9647f0RQhBpO302dnD/skTciVXeHx//Uc=;
+	s=arc-20240116; t=1783650157; c=relaxed/simple;
+	bh=45JPMhleAzaeP0ezko4oRJZt2vKNj1QLVn3e8YUqwiM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bMIlMP52FctXDcobf+V5mRfvVsOuhDIyElQgEIMni//rp2zezyjH2ZUkSOSljck30x5gWJ4nQg1pk8XnoMQXLY/Mz/fAs+a6uGr3cQq+baaMVSn+HgRysQVTCn2b2DrX6yoy/WpG7RGoogWAEz1zsc20SRTGZyEd/SQLUlpD/jI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d6O8wvXV; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KrHw9vsmuv+MurrFfn7a9fwDVWWSwyVJfEkksGT60rcY4bp/boQloZ8HKwkZk2j8H9V444TniCBRf+17MOVJ11+JVih7orBGs3o7XJNHEmNEtKJ82C6Ruam43nUNW1pPJHsNM6p/XqwrnK19udTaT92tmlC4npoN3XIvC+1Zhqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O77/S7PQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d6O8wvXV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D3DA1F000E9;
-	Fri, 10 Jul 2026 02:16:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O77/S7PQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F821F000E9;
+	Fri, 10 Jul 2026 02:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783649815;
-	bh=IGrOD0HuFaYY0Hyc+KEXUarnR1BmY8m/LQ1T4cO+tPg=;
+	s=k20260515; t=1783650156;
+	bh=70dgz9TsQ3juJfcvdgXueV2yDRQKwQtzwec3LMLM5rI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=d6O8wvXVU7uKNVVmrYKrHopvGZb29W5jTvjU/HPyWEOPtx3icE6BVSG+S6rGWofdj
-	 qqj2l2Z8KXUHmaOAEZeQbD34Vd76o3npxQSmOBdk4/gyNbn8gJDhqdlxyq33xYodAY
-	 Hhf6IQKcs/964iHDVlNj71ONwyZNfHv/nViRpHftfNCDDuUFBO8bxGZ1hzEmIf+DGv
-	 84NBASMFkZ4yjHhxjOT1UVT47NgL/NxBlFSjgVO/RYdgGdptaFMAP7yq8tTcgDenp3
-	 mNwLZ3Qgr8wLe7BB5hj2fQHTTXZ8AWehSk3lZmT+rzWpth8ds5QFcRa2Fs3vpDb1jZ
-	 DwWEQ0r7yzrYg==
-Date: Fri, 10 Jul 2026 03:16:49 +0100
+	b=O77/S7PQScfF6rCRGHIw4WQfELuc2nMk2ws41YIY/cym5V19WegSnKAjezEeEKoNZ
+	 jL1WXmOxQgXQiZ9sYUvXRBTYB5lVRyFNzxbQyVFQ6F1zBQP3xOuBfXcsDEgjpm6Dae
+	 4bX2xZ4i3a1XNjwMjz8hZgibZuCRbsR0huZ6Fh6Ece77SEh/mQbdugKyOiNx4RMeyS
+	 hCuLQn08mVKxqs21B2eiomF/TGjVXFToS46dV/2CZTdHerMNEAqshei7gdwNGl8Z8p
+	 6Wv/4WZ2hpPuXSPqyFdD7o96JZSe36RDeoGdhbQKg2zsX/Wa7XxPjQGu9KGGVdgFLG
+	 zdck0HfiAyXag==
+Date: Fri, 10 Jul 2026 03:22:32 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier
- Moysan <olivier.moysan@foss.st.com>, Philipp Zabel
- <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, <jananisunil.dev@gmail.com>
-Subject: Re: [PATCH 6/6] Documentation: iio: Add AD7768 Documentation
-Message-ID: <20260710031649.48311368@jic23-huawei>
-In-Reply-To: <20260709-ad7768-driver-v1-6-44e1194fd96a@analog.com>
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
-	<20260709-ad7768-driver-v1-6-44e1194fd96a@analog.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <nuno.sa@analog.com>,
+ <Michael.Hennerich@analog.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <julianbraha@gmail.com>, <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v6 2/4] iio: adc: ltc2378: Add support for LTC2378-20
+ and similar ADCs
+Message-ID: <20260710032232.520fb8a4@jic23-huawei>
+In-Reply-To: <965e5a31bf10cb49b53f7351266eeed55e8f6bd5.1783629101.git.marcelo.schmitt@analog.com>
+References: <cover.1783629101.git.marcelo.schmitt@analog.com>
+	<965e5a31bf10cb49b53f7351266eeed55e8f6bd5.1783629101.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,78 +50,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 9 Jul 2026 10:50:17 +0200
-Janani Sunil <janani.sunil@analog.com> wrote:
+On Thu, 9 Jul 2026 17:49:53 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> Add driver documentation for AD7768
+> Support for LTC2378-20 and similar analog-to-digital converters.
 > 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  Documentation/iio/ad7768.rst | 207 +++++++++++++++++++++++++++++++++++++++++++
->  Documentation/iio/index.rst  |   1 +
->  MAINTAINERS                  |   1 +
->  3 files changed, 209 insertions(+)
-> 
-> diff --git a/Documentation/iio/ad7768.rst b/Documentation/iio/ad7768.rst
-> new file mode 100644
-> index 000000000000..438e33d4f375
-> --- /dev/null
-> +++ b/Documentation/iio/ad7768.rst
-> @@ -0,0 +1,207 @@
-> +.. SPDX-License-Identifier: GPL-2.0-only
-> +
-> +=============
-> +AD7768 driver
-> +=============
-> +
-> +ADC driver for Analog Devices Inc. AD7768 and AD7768-4 devices. The module name
-> +is ``ad7768``.
-> +
-> +Supported devices
-> +=================
-> +
-> +The following chips are supported by this driver:
-> +
-> +* `AD7768 <https://www.analog.com/en/products/ad7768.html>`_ - 8-channel, 24-bit simultaneous sampling ADC
-> +* `AD7768-4 <https://www.analog.com/en/products/ad7768-4.html>`_ - 4-channel, 24-bit simultaneous sampling ADC
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+https://sashiko.dev/#/patchset/cover.1783629101.git.marcelo.schmitt%40analog.com
 
-Too long. Wrap those.  In general keep to 80 chars for docs
-unless you are breaking up some thing greppable like a file name.
+The comment about not holding the local lock long enough looks right to me.
+You should never rely on the internal locks of IIO for modes to serialise.
+Maybe that implementation will change one day (probably not but it's a layering
+mess to rely on that).
+
+I'll take another look at the rest in next few days.
+(other sashiko comments are fine I think)
 
 
-> +
-> +Supported features
-> +==================
-> +
-> +Power modes
-> +-----------
-> +
-> +The AD7768 family supports three configurable power and performance modes:
-> +
-> +* **Low power mode** - Optimized for lowest power consumption
-> +* **Median mode** - Balanced power and performance
-> +* **Fast mode** - Highest performance with maximum sampling rates
-> +
-> +The power mode affects the available sampling frequencies and power consumption.
-> +Set via the ``adi,power-mode`` device tree property.
-
-Control it from the sampling frequency probably as David suggested.
-
-> +
-> +Per-channel calibration
-> +-----------------------
-> +
-> ++---------------------------------------+--------------------------------------------------------------+
-> +| Attribute                             | Description                                                  |
-> ++=======================================+==============================================================+
-> +| ``in_voltage<N>_calibbias``           | Channel offset calibration value                             |
-> ++---------------------------------------+--------------------------------------------------------------+
-> +| ``in_voltage<N>_calibscale``          | Channel gain calibration value                               |
-> ++---------------------------------------+--------------------------------------------------------------+
-> +| ``in_voltage<N>_phase``               | Channel phase calibration value.                             |
-Be consistent on .
-
-Also does this mean the phase offset is a tweak, or do we know the scaling?
-
-> ++---------------------------------------+--------------------------------------------------------------+
-> +
