@@ -1,230 +1,119 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AC7443B480
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 16:00:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FFF36AB4D
+	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 16:54:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783699224; cv=none; b=cU4w252IHYhjI3Y0mbRr62IbTFicX9pLgm/1xYafPR1+LDTTNyzAkyv0P4GrSVDOsJfKqoAoAGoEzpn9PUR+rAOBOL4gTGlynKKLD2Oql0Qz9O3Edn7RkVWAGbZLqdCT/Dwju6G3tIcyIV6ImbnhyX7LJqGKhb5RsLeqBDLq+z0=
+	t=1783702462; cv=none; b=rsXyPLX8zhsPykN7yXiJ9USPDr/wMZQVUdnOMZxYGcd67YzN8fG9fYg1dnF2AoMPiPEsCaMjO7SrWttanZX8SHGreN5X35SVbVwDJYNBjh7WddZw/6/OnWz6wefOCghrpxUolh0ze989fIbx7Zlgs3vBeyBl+nSHp8AkWeNUGvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783699224; c=relaxed/simple;
-	bh=2kx7pUx9tfhx0zv+z3s5tqYIU5nastRIq2hdNkClcbQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=M471LRbwbEkB7Plo6ebFQ0Svn85pgQyAreGxfkn67vpdtvwLG29vA2mxQsYq8hePfKvOD9rBNpTfycfN7fd2THStsLRHg58NljkD3x+EWT5DvNrel1RTI0LA0i48nR1SyHNqJy6f/L/VPVMJiS9aDIhinbHPvMicXFVpyAUpl/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NdUQ00It; arc=none smtp.client-ip=209.85.167.43
+	s=arc-20240116; t=1783702462; c=relaxed/simple;
+	bh=jI/OcbOYVD0sHS6G3h2jYDflQSErX9zgXGnhGKq7Zn0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qSPbcWJ4xTKL3VQRFdCIPtk+oKWMQsyLrZO+zx2F2Juhz2yVwlpBikGYR2DebaePpR0p/grICglXBwR53+TXA7HCMUiHBppF517dbmf3YJvYYhp7jnXHz051xqLDf2QrZclzp8a0DxMHBbMYumUOGg1uCmMbS9wKcMRyalYi9Go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ey3x5DzQ; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NdUQ00It"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5aea16460cdso92547e87.3
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 09:00:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ey3x5DzQ"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-490cf322ed0so8066545e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 09:54:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783699214; x=1784304014; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ck1r2NVwZBaaF90kGpS5I0sjGQcOnMc2dil2XeQuca4=;
-        b=NdUQ00ItTJFLoQvMVM4cKyEK+fN/QABVZxmNwwvr5aHx3TTErJ5rCAxwLILQ1muanx
-         0opF1pbL+tbVAGc/qe/kG/iGRGeVxjb8e+EvnknAl8RmjZ9sLcC1s8AWdwLwiDVIen2D
-         qG99ztVyZTBpex+/vO/pQp4dosYHWDgTvtYpoy1Zzxb6PuMzdOA5Xjtw99k7jAZX4grX
-         cDE040Sr5TREm5nrJruygC/4DrXKTCoj7qyQO0FlHPIYpWdlLhslQB5d3koi2UVplxVF
-         lyhjoOLUY+Rj6qX9VYPjrFCwQ99l5l4uNfd/QTF3XZNh6Ne4+r1kw6KEe7EBc8sHeSuF
-         /RVA==
+        d=gmail.com; s=20251104; t=1783702460; x=1784307260; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=JRW82qDeqWbcTEIWdeHg6T9X6r+SnQDhkFtAVKzYK4Y=;
+        b=ey3x5DzQoMAP/6c27gmQ1wkyDCgtjiqzHZLu0mevQjsJpQrkvPykdwmLY4dvdP7nIl
+         3lPVRsA50KXSIqWWE88kyRSE1HPiRbnRR+HI48IYhNtaUP78DsohZ9HIkSffG7WwRs+/
+         tnffgYrYFfIBS7xPlXZP93EFSE+30Sp9m1QuF/aCGCiGZh/TQzx7RY0ZLnF5NsbCr2sc
+         4ZFPv9AZBWVmYIi1yD1ZY5np61yVTHQtv6Ey7pD7jSqP8WvvDs9hW9nSn9C9k+iuDdq9
+         vt1vNg7CQ7mNv3jXJCmzewlYNu3/m0P3LTQbBep5XRUPsfTgaiMtuMnDHXopwsPc9mFK
+         fPaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783699214; x=1784304014;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ck1r2NVwZBaaF90kGpS5I0sjGQcOnMc2dil2XeQuca4=;
-        b=UPUZGT7PFKilQ2YO75DQEyji8XbUINu6UdiH6SuqPxlDrsgu0u9x/Tu5W7WojvtEkQ
-         7wvPuZdYdc2xi0dojSb+wo9czIzL7PJK2tMTxwfIo9jA3HrYON10ixpJs+KR0anfp/P1
-         /ln7NDF1n0c++zQdCMbgK8lMZjzOw976coQt55R6STl7o5sJ8R1v1xEgz8G6MyIWYbhg
-         ejnDQmUh7juzZqdMORhlkrDFouEyjAY7YG5x/HI8lMconN8dbaZSbQVqtUD7/VdUWSsV
-         xcop3SUoPq0gQiQug3A01ziCcCFoBCGFrbxY+EtXXmrX/4uU3PwzJpoUhSqdYHHHOBI7
-         dX/A==
-X-Forwarded-Encrypted: i=1; AHgh+RoB81PzjRZz7OVQg4l2285L/OQfv41v1MMqaIz/ter5J77DbB8RGL2uh8V8HFN7VmCKW57BPaIRcXI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTWgj9JuuNtSdnzDuUuM9FVC8pnUAxmEkzha3VE94pfUAcrtFV
-	99jyC6S/ZNSIxdHZdU5e9qIUZeZHPcdUqD5QJVo0AjQueOH+K7hwXRXg
-X-Gm-Gg: AfdE7ckJjzV4pCbKp1qqo7yru0c8PkfSgezI5AnBED+06vBiW/uNb7eOC4b9uEXuggF
-	yDj3t1/e6X55ylXqpcuspvgnXVCAYXLsLxMat0uUqPqyAV3SlOAW+JGFULVYbQqBf/2q+uM7lAL
-	fG3Qjwhky7cIlS3chMO/3FMZvjEf5KZsVqkEHaFFoNm+fQQYZsfztM09KNOFVlKqEqeFVIZ7Ayd
-	6bvoZY/7Ef8PZPU0VinSCsZbiirpWj1Co2UyJTHAk0GtQSOtUPKoOU93azMdJRiYt10lMuNE5V6
-	p3A2oZabDZcmERjcysl0v9XJBwHTOe1tBNQRB2MyMe/5R1lVGf5Z2KGcs3jYKfOqEUOHp0pwNre
-	evvJrR9SW8SOF7gstH1L9dnDrUCJwd8HmSGMicEEOi6/idmoXc+cfH9wZpn+UUUWP57nObZ461i
-	0My1pxBIwZsUnuhyUj8TaRa5Z0
-X-Received: by 2002:a05:6512:12cd:b0:5ae:bce5:70f2 with SMTP id 2adb3069b0e04-5b0115af09amr1756207e87.4.1783699213314;
-        Fri, 10 Jul 2026 09:00:13 -0700 (PDT)
-Received: from localhost ([5.250.49.195])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b01ca54fddsm708567e87.33.2026.07.10.09.00.12
+        d=1e100.net; s=20251104; t=1783702460; x=1784307260;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JRW82qDeqWbcTEIWdeHg6T9X6r+SnQDhkFtAVKzYK4Y=;
+        b=IZOgR7lOZEBsiOqZQuaNoDrSm2qJmOCPZvxcqeowvVVRkk5ZAJ7EjfNwO2ZWUIwpCC
+         Dnhu+BZ4eYt0Gk4JrV5jj8TGwjAxg7Du7FU6lxww/AYKtAM47MdemIpCg5AsDI1eFGS6
+         B0yoYbW5I1xXKFHOPctcxRPssenHDpcnbAaM8b4yOaK20N0F6Z064YFmPquARzYMHWvx
+         tN9WECjTBwDTohqTVksSklLF+gcWLYZ0mGNA5uaZZIthull+WLrXof0fi51Rs1MoL3YS
+         mc/Cc3Nv/MDj10fTKp8wYPe78Sx9FWNo5QCMtxIjZfmDl/jqbRtsNnBhay18XHJ9Txa4
+         wNIQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqLssSXsO2cDI9fpH7BuTx/9huEj+Dk8o753bL0r34V28ADZYiV5MZhaVNOnmh+6PEUmCPSfVJJt4s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxqsuAoPJBx4HhW94qb49/wq3z9UVbLB3C+Z+A0in8MDtV1eXB9
+	072F4uf4Rm8VomgGJ9xfaP5+je7YBB5FW/B2EsFHfQt03r7JnSsNE9Ih
+X-Gm-Gg: AfdE7cnNo07pLTgRfjuAar33++hNW2PG3dV2y3fBS7W1lxdZIHG7TXyxLq0tPdVfX+g
+	zGWJtweeKfY0zCO0+tynETdi4l0uDVukcK2KO44anwwlxG1VqS7cKbzlxrS4LdtmhkFeS84sGHu
+	dXEWx8FNeABNtW3Gp8uegrY6vc/Yw9H9P4sVRWRq127zv9VDqkqD1HBHvQqB6lyO+KKGKjgk/Sl
+	GvFnlciPeuJsCGMG1XthrlzTn+lcAUKl3SQL0dmiqNT7gGihXHIAdCmGQnETi+0WsVt6xH2H+dg
+	8zeIqywNJs4p1L3oJ6OvN+KZgp5OR0iA8ckwc6GTnJrzQaafpcXlAU1MvGfgKYNQ27km4Tl1b97
+	e5lrKGCtRGvPbVSMCMJwnV1eFmX+vp3DFEu7PgI97WwZVxSur52+h++Z6HL/1slfjycAKdFjHP5
+	XgSLVLvzaD
+X-Received: by 2002:a05:600c:1d16:b0:493:f73d:cc6d with SMTP id 5b1f17b1804b1-493f73dccd1mr17291625e9.24.1783702459655;
+        Fri, 10 Jul 2026 09:54:19 -0700 (PDT)
+Received: from localhost ([2c0f:3d00:6be:8900:ce5e:9212:ea4b:f30])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493f2e6607fsm54696025e9.1.2026.07.10.09.54.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 09:00:12 -0700 (PDT)
-From: Taha Narimani <tahanarimani3443@gmail.com>
-To: jic23@kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Taha Narimani <tahanarimani3443@gmail.com>
-Subject: [PATCH v3 RFC v3] dt-bindings: iio: adc: add ad7816/7/8 digital temperature sensor / ADC
-Date: Fri, 10 Jul 2026 16:00:00 +0000
-Message-ID: <20260710160001.29856-1-tahanarimani3443@gmail.com>
-X-Mailer: git-send-email 2.53.0
+        Fri, 10 Jul 2026 09:54:18 -0700 (PDT)
+Date: Fri, 10 Jul 2026 19:54:15 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Taha Narimani <tahanarimani3443@gmail.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] staging: iio: adc: ad7816: Use
+ devm_gpiod_get_optional() for busy GPIO
+Message-ID: <alEjtybak6T5sH7I@stanley.mountain>
+References: <20260710160001.29856-1-tahanarimani3443@gmail.com>
+ <20260710160001.29856-2-tahanarimani3443@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260710160001.29856-2-tahanarimani3443@gmail.com>
 
-Document the Analog Devices AD7816, AD7817, and AD7818 digital
-temperature sensor and ADC bindings in YAML format.
+On Fri, Jul 10, 2026 at 04:00:01PM +0000, Taha Narimani wrote:
+>  /*
+>   * struct ad7816_chip_info - chip specific information
+> @@ -48,7 +48,7 @@ struct ad7816_chip_info {
+>  	struct gpio_desc *convert_pin;
+>  	struct gpio_desc *busy_pin;
+>  	u8  oti_data[AD7816_CS_MAX + 1];
+> -	u8  channel_id;	/* 0 always be temperature */
+> +	u8  channel_id; /* 0 always be temperature */
 
-Please note that the driver for this device is currently in drivers/staging.
-This patch is sent as an RFC to clean up and standardize the device tree
-bindings prior to any major driver refactoring.
+What changed here??
 
-While reviewing the AD7816/7/8 datasheet to correctly document the properties,
-it was noted that the current staging driver attempts to request a 'busy' GPIO
-for both AD7816 and AD7817. However, the AD7816 is an 8-pin device and does
-not possess a BUSY pin (only the 16-pin AD7817 has it). Therefore, in this
-binding, busy-gpios is strictly limited to adi,ad7817.
+>  	u8  mode;
+>  };
+>  
+> @@ -84,10 +84,8 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>  		gpiod_set_value(chip->convert_pin, 1);
+>  	}
+>  
+> -if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
+> -		while (gpiod_get_value(chip->busy_pin))
+> -			cpu_relax();
 
-This resolves the checkpatch.pl warnings regarding undocumented DT
-compatible strings.
+This patch doesn't apply.  Not sure what went wrong but maybe it's
+related to this?
 
-Signed-off-by: Taha Narimani <tahanarimani3443@gmail.com>
----
-Changes in v3:
-  - Removed redundant conditional check around gpiod_get_value() as suggested by Andy Shevchenko and Dan Carpenter.
-  - Switched to dev_err_probe() to avoid deferred probe spamming.
-  - Introduced local struct device *dev pointer in probe and kept the GPIO request on a single line for better readability.
-  - Added the missing Fixes tag requested by Jonathan Cameron.
+> -	}
+> +	while (gpiod_get_value(chip->busy_pin))
+> +		cpu_relax();
+>  
+>  	gpiod_set_value(chip->rdwr_pin, 0);
+>  	gpiod_set_value(chip->rdwr_pin, 1);
 
- .../bindings/iio/adc/adi,ad7816.yaml          | 105 ++++++++++++++++++
- 1 file changed, 105 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-new file mode 100644
-index 0000000..48563e4
---- /dev/null
-Changes in v3:
-  - Removed redundant conditional check around gpiod_get_value() as suggested by Andy Shevchenko and Dan Carpenter.
-  - Switched to dev_err_probe() to avoid deferred probe spamming.
-  - Introduced local struct device *dev pointer in probe and kept the GPIO request on a single line for better readability.
-  - Added the missing Fixes tag requested by Jonathan Cameron.
-
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7816.yaml
-@@ -0,0 +1,105 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7816.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD7816/7/8 digital temperature sensor / ADC
-+
-+maintainers:
-+  - Taha Narimani <tahanarimani3443@gmail.com>
-+
-+description: |
-+  Analog Devices AD7816, AD7817, and AD7818 10-Bit general purpose ADC and
-+  temperature sensor. The device communicates via an SPI interface.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad7816
-+      - adi,ad7817
-+      - adi,ad7818
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 12500000
-+
-+  vdd-supply:
-+    description: Main power supply.
-+
-+  vref-supply:
-+    description: |
-+      Optional external reference voltage supply. If not provided, the
-+      internal reference is used. Applicable for AD7816 and AD7817.
-+
-+  rdwr-gpios:
-+    maxItems: 1
-+    description: GPIO connected to the RD/WR pin.
-+
-+  convert-gpios:
-+    maxItems: 1
-+    description: GPIO connected to the CONVST (Convert Start) pin.
-+
-+  busy-gpios:
-+    maxItems: 1
-+    description: GPIO connected to the BUSY pin. Only applicable for AD7817.
-+
-+  interrupts:
-+    maxItems: 1
-+    description: OTI (Over Temperature Indicator) interrupt. Active low.
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - rdwr-gpios
-+  - convert-gpios
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: adi,ad7817
-+    then:
-+      required:
-+        - busy-gpios
-+    else:
-+      properties:
-+        busy-gpios: false
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: adi,ad7818
-+    then:
-+      properties:
-+        vref-supply: false
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "adi,ad7817";
-+            reg = <0>;
-+            spi-max-frequency = <1000000>;
-+            vdd-supply = <&vcc>;
-+            vref-supply = <&vref>;
-+            rdwr-gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
-+            convert-gpios = <&gpio 6 GPIO_ACTIVE_HIGH>;
-+            busy-gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
-+            interrupts = <20 IRQ_TYPE_LEVEL_LOW>;
-+            interrupt-parent = <&gpio>;
-+        };
-+    };
--- 
-2.53.0
+regards,
+dan carpenter
 
