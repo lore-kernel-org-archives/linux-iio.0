@@ -1,47 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7E31096F;
-	Fri, 10 Jul 2026 00:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78D4D495E5;
+	Fri, 10 Jul 2026 00:33:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783641860; cv=none; b=FMauzriOFM9kOAy/zJa6V2nkGMTp2BNz1WmWxrSGALe59mnYH1zlRxx1EONIwJc/o7JeM8+Seepve+bHD53imCInjzkZIWQKekwBlIvMei1ucyiXqGcrD+j3VlqShaYD7qwORle/05gj3E9sEvt/8jY0aiLWOz0srGr6Z17ty9Y=
+	t=1783643610; cv=none; b=nVRKN+cl2DforWo49HTYwkp4A2hJZZdo2bmgcK4ogQXgi0URkhLyhcckiKRqp87sgG2OxREQzopppeQiuaI0hgFStDTstiTSE0q/5vAWeIXOh+VMXCf9tac1R/nxqfsOkyy5MBmRaIbmmnDLK8F+tPZW2WvPWV0o97FSMByta1M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783641860; c=relaxed/simple;
-	bh=6Us6evyqhVWSYqkGzpiAJLVf8D8JpPqm4dHTKkaccgE=;
+	s=arc-20240116; t=1783643610; c=relaxed/simple;
+	bh=VIWaWdmCTNiGUYLagvsCwLwIzAsy1g/SrJ0Hu5DDmwM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kliJvEUCgsCG7Asd5luNZDnyYdY3jXHsh8YR3r800888Zt98QXllO+7YxEBVBG0TTZTgqkVPSkH9HPEXECjQjGkG1H4tMsIoK6pZJY/aVO21tK9bpflO3S78uP/UrjabVEosbwE/G3KLSd3Y/EeyZ2GlPishMUOBqdUtvJDPn2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lVE/hao4; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=IgkQdHbWw5pqx8oDNtU/6rJ/ywE6DRNl70g7D59X7M5hftwRdMPkrYSwwnqPScy4iXoedhv/TLb4+kUM0Y4F6UIKCHl8XWjFjFLkDGgmXKXb31xcpblT1Mul4c+uVC5Y9/tfs1OQVBwcZDvTBPTaff4XhLDwSoDjacfcn0RTKjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lFvBJkWP; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lVE/hao4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7941C1F000E9;
-	Fri, 10 Jul 2026 00:04:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lFvBJkWP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 143D41F000E9;
+	Fri, 10 Jul 2026 00:33:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783641858;
-	bh=9ZewEz0IcUZar/HUtGfdbNhv8GOBVgrsd6pKqFz0T84=;
+	s=k20260515; t=1783643609;
+	bh=qPTn250nmvi6i01OD/7X3vu+1rxTpDsUJQ9pJQgfjxE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lVE/hao4K1jJePLJOsDs71Mm0A6S9gDXYr3cfVfz2pPy0JMXXunghKiYt+ixej/UD
-	 /t4naVyKRNuDdYnZvIHIyHe7JbDfKKq6OE/TESOVY7xaCDNErgj7v9XNNNFgHBfPFy
-	 5LOY/qkmEYzdcua65TCa9/mk1+MGkVuJAzYZoX/HpTKzhgSGJISaYgZycvUgKD3D26
-	 /prbeGgCB3AQA/9UBe0fACcYQWuRW0UOi4b1v3wsqlesRpFyWfBP+zG3G88EXfZgXZ
-	 ZRaWALNmdA8r7Lxu+jiJFo6+I35WSXwq7Qbr/P13Hlh1VMK5rN3qIEURN1xaxMM4Vb
-	 aKhoWPrNxXzyA==
-Date: Fri, 10 Jul 2026 01:04:12 +0100
+	b=lFvBJkWPonlED4WimT5099jDJhXo/2gqq5Zwm+6oSXaA+weoSNcyquj0MyCL/Stiv
+	 qLNnDhjX2pG3ELf4pTyUUIga7j9WD1pNFK6rqxQclM+UYhnFagDSK0iVt80caKT6js
+	 4i/MNqQ4VNO05lR7KE9Lnpg5/4SkTcDrc1rsjnY80OxhXOhboq703QNZabuXHPBX7l
+	 w+FsdY/ejUSHy1ALcDZfS4b+W9Sz3PRQXlG1AH7lcZn/2sJcLc7gcq9F3ZHczrxeu6
+	 VN2BySCV56+C3GcPJ1H8Y3w/QTZHNvXzhSQlsOw0sL9cmkVPj0EVyzu40GxQWsalQT
+	 eBbC2h7rBdtpg==
+Date: Fri, 10 Jul 2026 01:33:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Stefan Popa <stefan.popa@analog.com>, Julien
- Stephan <jstephan@baylibre.com>, Ivan Mikhaylov <fr0st61te@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt1@gmail.com>, Marilene Andrade Garcia
- <marilene.agarcia@gmail.com>, Kim Seer Paller <kimseer.paller@analog.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH 0/3] iio: adc: add missing 'select REGMAP' to Kconfig
-Message-ID: <20260710010412.5692d626@jic23-huawei>
-In-Reply-To: <ak4so4KAztmqaUgk@ashevche-desk.local>
-References: <20260708-add-missing-regmap-v1-0-6d424322e3d4@gmail.com>
-	<ak4so4KAztmqaUgk@ashevche-desk.local>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Janani Sunil <janani.sunil@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier
+ Moysan <olivier.moysan@foss.st.com>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, linux@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
+ jananisunil.dev@gmail.com
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
+Message-ID: <20260710013322.595f8ee4@jic23-huawei>
+In-Reply-To: <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+	<20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
+	<36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,27 +56,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 8 Jul 2026 13:55:31 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-
-> On Wed, Jul 08, 2026 at 07:34:11AM +0200, Joshua Crofts wrote:
-> > This series adds missing `select REGMAP` and `select REGMAP_I2C` to the
-> > AD7380/MAX34408/MAX14001 Kconfig entries. Without these, some builds
-> > may result in a failure.
-> > 
-> > Steps to reproduce build failure:
-> > 1. Run `make allnoconfig`.
-> > 2. Run `make menuconfig` and select I2C/SPI, IIO and any of said drivers.
-> > 3. Run `make .` and make will end with regmap-related errors.  
+> > +  adi,common-mode-output:
+> > +    $ref: /schemas/types.yaml#/definitions/string
+> > +    enum:
+> > +      - avdd-avss-half
+> > +      - 1.65V
+> > +      - 2.5V
+> > +      - 2.14V
+> > +    description:
+> > +      Common mode voltage output selection.  
 > 
-> Taking into account the real build failures as pointed in the replies,
-> the fixes LGTM,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Why not using standard regulator provider bindings for this?
+
+Interesting question.  If that was done there would need to be
+a consumer which means explicit modelling of any analog circuit.
+We do that in a few cases but so far (and yup this is a driver thing
+in a dt-binding) I don't think we have any way to consumer data when
+a backend is involved.
+	
 > 
-Applied patches 2 and 3 to the fixes-togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-
-
+> > +
+> > +  adi,vcm-power-down:
+> > +    type: boolean
+> > +    description: Power down the common mode output buffer  
+> 
+> Is the buffer separate from the output? In that case I would expect
+> buffer to be in the property name, otherwise this should just be
+> part of the enum options above (and the default one at that).
+> 
