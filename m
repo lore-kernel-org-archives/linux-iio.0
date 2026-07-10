@@ -1,146 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0DE441610D;
-	Fri, 10 Jul 2026 11:21:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88728347FC4
+	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 14:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783682461; cv=none; b=Wq2fZXiYfbe6ZWWVySRIO/tFFjXUi8T2zCalIbPyMszB06bl+SFwP93TnkeTVCwQ9FLQtgtWCh/kZCW1gWpMJWCL22zPyAclHHzMGTEpbUuEug+mB2Np1Q2vfinDyImHIlmTrzLBI7gJQfJ3arm1/zOJ+PL5O4I3sZdn4/cT2dM=
+	t=1783693341; cv=none; b=iXmg6QwztzNIdYktLTh59lUK2l93vENyiD2l0PkXa2otaX7AprCAxQyezPqSY3uo0G2ZAfP25djeEdVnucmih55NjcneY4O+Trv7ubgBVGTL9ztza1fyE0a+j7Tkqfz9YwwuyrzwXT/luFkuoKhONV/UMScAApwJB0d+PJ94Eb8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783682461; c=relaxed/simple;
-	bh=bvM61nZlVlm3Dqfqh6pLDa+6KikA7MazMtB8NJEhcEE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Zd1cFsGqMpI4wb34eRBluy9wgXoUqv3FwcSSTPfIvHwYwpa0z3eJXg0AGPvrTs48Ztpnv0sHbkGueF3tcCb93Dsp5LaCN0r9fhwhJQqY9yv+dgRUiFxhCvhVkElZbPVZI6vgvq/aH6nXRs8KSuDQsBC9yQiMK3NwI/rkZqOP6EE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ag3hhozV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1783693341; c=relaxed/simple;
+	bh=6hgT5DK0oOq5/Wsou8lo8FKxq+iZjqEUc+JvtN+p1Ng=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OjHj7awuYc6BEQElqIZvbN85sZsalEytghqqe8+JtRQzkN9o/Q8UgMYZ8d+SWtWuyHQuKj5EM3oRwd4G0rUI34ap73WAOni8qz59EU1GwxA+gK7MOFRIkESQJtA13h19m5ZnvdDx8gwaD4uZGr3OY8wOWiMlZtwY8dRK2pmliuU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=koa+HvEO; arc=none smtp.client-ip=209.85.215.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ag3hhozV"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C60DC4AF10;
-	Fri, 10 Jul 2026 11:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1783682458;
-	bh=bvM61nZlVlm3Dqfqh6pLDa+6KikA7MazMtB8NJEhcEE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Ag3hhozV4S45f8SFv5OZ3AhHGMdAp8t7ZMbwJKVpQZJuP9lEHPGI3pdATItah4SOJ
-	 eUd4DIb1vBhj591DJYvQ1Qp7HtwGK9d+9889IANsJKb2z/mjCS2Canh3dS8Nq0wDDH
-	 GYAlyo9+uKHlaxEGlbPDDZPSCRQOorxK9mxLOHOsbgsgSYtujsvrDsSZi6r3LYook3
-	 gGwb0R9Xf/W0JGi88c0Zc3W5oj7fjY22xOIxKARfGR3dGQavnf5RWSiMwnpIQ2/UYP
-	 8AAfJYCCeJ74LeaUake75adAShIKa+MO2jHUNLgcfM9cw8b9/reD4Kv41hD/CB0ibh
-	 pPe3FcaWhqAZA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79591C44507;
-	Fri, 10 Jul 2026 11:20:58 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 10 Jul 2026 12:20:49 +0100
-Subject: [PATCH v7 5/7] iio: dac: ad5686: read_raw/write_raw: use
- guard(mutex)()
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="koa+HvEO"
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-c9ef3e1337fso648935a12.2
+        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 07:22:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783693340; x=1784298140; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=FoLPitrFKeUob810vvgoU4umxRfKuy0C/dr9NicwKbA=;
+        b=koa+HvEO7lg9XcgkLN2/bl9mT5SeCgfUW5Wm50PElj0/sM7MUMXn80hRtUaLko99WZ
+         mfZQtFGnh7XSERhoNftFrOx6u56h+Z2o1ct913mI2bVIv4TR5XFrqNimv+xCteqnhrd8
+         TyqqJlgx3VVyYclVUidRgrsAt7KoXkwSVrxtUBaTEYIMitTaRz2OUs0kxPJWFfvFQkzK
+         aHmsZPcWOga8y03UvuAvRS1uRg7T3hTAWMzOlFmCntmMEZnNFZT7QAxP+MMxZsBk1Xaw
+         POwfKz2AWsJc8l9lKN5lL2MXrfvPm2RpriW1JcVmSuTdxHkm8a494oaUQJMhOf6Am93s
+         ePlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783693340; x=1784298140;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=FoLPitrFKeUob810vvgoU4umxRfKuy0C/dr9NicwKbA=;
+        b=MtzOCICbxu0/iUmPrTVPHThdVFfEZ9an6eGngtkTmVcIfk/Ynm2OA3T6bPpBtR4nGL
+         fQycUu3BbXWn2s/2hFrxQ+u1U/HcarVSklxopJzV9IMQHq4LRzXNoSSQy+V2ElcbyK1z
+         EU6ZJ546X83Mnp3VNuL5XkIVXvOcyGjr1HJ3hQM5RVjwMVBzWa8i124C2dUCz2CNNADa
+         yEtaYWl6KhMOEDCLE0J1YNo+fLno7eftbxTGiH1c8o58Zrbo0rAzbYt/juch7hxY+p30
+         zv8hoeLNFyOHNZBdn5xIcqAc8Fc0qQ81AZ5reMkGuJywj/obu63XXJOh355GwcNmAoRV
+         gLlA==
+X-Forwarded-Encrypted: i=1; AHgh+Rot3zVNudx1mIZslrNvXXu6yK6tG0D6C+vIaFnlxe8AFbPiW4HFwmhgFOw3VA39z2VJeg7b8kqqC88=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxTBowyebDX3BXvnLMXGfemzi2NYOpQmWGVb9OPRTd1U3AFnHOY
+	H5WzoJllZ9ndARzetBGzGeB+8/ojpdpPi2kODebRlXJyXzZbjPMw3ZyQi1/eMri4
+X-Gm-Gg: AfdE7clZKOjY3oR4kS7m+UmaeAxeOmYbBo820UsYAF57gILEJibTMs5QmSoNF9635Gp
+	3VkT0Zt+SP9LDjV168IkUJQya+AP3bLizNaN4q80jwFammEWGFJ0eM8/rCq6pKL8S/ZJypGTTn4
+	O0x1oZvHw8ynUo+kh+ijWOa/u1mC6WSgYnP5C1dbSLShoyd74elEzytLk1rLRn0Yz4Q6NxuqTmr
+	urCtTT7InRISQDIgF4LSl2eA08APtwTJlABvv+1W+Vng05JJuxO9hysl17OzyXIVfLzMIOCoU55
+	wjifpbvza/9ZqPLc28VF8mhHOJpq8f5e5NEnK0zO+eCh9awHUrc0+SKHtWPwT+CxMaDlT2lUpip
+	JOQitjFwQ0qrsadwAJo6FABP6gPQC020GTDeBKcYU0BOWMzDVUXXFPquWZA25ocu946RN5nTgJr
+	69s6ygWXmzAboTTGnaYuz+bvtykXdwSgcWuNrWeiB4rDTKo+MFZUNQpoY+sVbR1w==
+X-Received: by 2002:a05:6a20:a124:b0:3bf:b089:c55e with SMTP id adf61e73a8af0-3c0bcc23bbfmr14504856637.52.1783693339957;
+        Fri, 10 Jul 2026 07:22:19 -0700 (PDT)
+Received: from localhost.localdomain ([2405:acc0:1306:5177:3103:5737:1752:bd47])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b659d7c8bsm45575083c88.12.2026.07.10.07.22.16
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 10 Jul 2026 07:22:19 -0700 (PDT)
+From: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Yasin Lee <yasin.lee.x@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: proximity: hx9023s: validate firmware size
+Date: Fri, 10 Jul 2026 20:07:12 +0545
+Message-ID: <20260710142212.52225-1-acharyalaxman8848@gmail.com>
+X-Mailer: git-send-email 2.51.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260710-ad5686-new-features-v7-5-1bcc8c280e4d@analog.com>
-References: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
-In-Reply-To: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Maxwell Doose <m32285159@gmail.com>, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1783682457; l=2132;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=4HNzAutLFGeXIbyru6R+loI4tx3NII/f1eSB75Ol0ao=;
- b=XVywTb/qzdZLK070cIpxzqti+5w13j0cJ4eqN8F68hkkTSAnN0NyuoINK7cbHjtXNdybhCxMf
- k0L1DABfT7jAoaBEu62qBNJT/zJTGXT8bBf2SRHRix/gYJpzbPEta3a
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 8bit
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+hx9023s_send_cfg() copies the firmware into a counted flexible array and
+then reads fixed offsets from the copied data before walking register/value
+pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
+make the driver read past the copied buffer during probe-time configuration
+loading.
 
-Use guarded mutex lock to facilitate code review when adding new
-attributes. This will allow for early returns, avoiding error-prone
-locking and unlocking in error paths. This also adds missing include
-linux/cleanup.h. Gain-control support will allow the scale attribute
-to be configurable.
+Reject firmware images that cannot contain the fixed header, reject images
+too large for the u16 fw_size field, and validate that the advertised
+register count fits in the remaining payload.
 
-Reviewed-by: Maxwell Doose <m32285159@gmail.com>
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Move release_firmware() to the callback so the firmware object is released
+on all hx9023s_send_cfg() error paths.
+
+Fixes: e9ed97be4fcc ("iio: proximity: hx9023s: Added firmware file parsing functionality")
+Cc: stable@vger.kernel.org
+Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
 ---
- drivers/iio/dac/ad5686.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+ drivers/iio/proximity/hx9023s.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 316f9ccf54d9..df32f46db81e 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -8,6 +8,7 @@
- #include <linux/array_size.h>
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
- #include <linux/errno.h>
-@@ -177,11 +178,11 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	int ret;
+diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
+index a6ff7cbe9e6..a2f9c077e58 100644
+--- a/drivers/iio/proximity/hx9023s.c
++++ b/drivers/iio/proximity/hx9023s.c
+@@ -18,6 +18,7 @@
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/irqreturn.h>
++#include <linux/limits.h>
+ #include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+@@ -25,6 +26,7 @@
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/slab.h>
+ #include <linux/types.h>
+ #include <linux/units.h>
  
-+	guard(mutex)(&st->lock);
-+
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&st->lock);
- 		ret = ad5686_read(st, chan->address);
--		mutex_unlock(&st->lock);
- 		if (ret < 0)
- 			return ret;
- 		*val = (ret >> chan->scan_type.shift) &
-@@ -202,23 +203,19 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
+@@ -1031,8 +1033,12 @@ static int hx9023s_bin_load(struct hx9023s_data *data, struct hx9023s_bin *bin)
+ 
+ static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data)
  {
- 	struct ad5686_state *st = iio_priv(indio_dev);
--	int ret;
+-	struct hx9023s_bin *bin __free(kfree) =
+-		kzalloc(fw->size + sizeof(*bin), GFP_KERNEL);
++	struct hx9023s_bin *bin __free(kfree) = NULL;
 +
-+	guard(mutex)(&st->lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
--		mutex_lock(&st->lock);
--		ret = ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
--				   chan->address, val << chan->scan_type.shift);
--		mutex_unlock(&st->lock);
--		break;
-+		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
-+				    chan->address, val << chan->scan_type.shift);
- 	default:
--		ret = -EINVAL;
++	if (fw->size < FW_DATA_OFFSET || fw->size > U16_MAX)
 +		return -EINVAL;
- 	}
--
--	return ret;
- }
++
++	bin = kzalloc(sizeof(*bin) + fw->size, GFP_KERNEL);
+ 	if (!bin)
+ 		return -ENOMEM;
  
- static const struct iio_info ad5686_info = {
+@@ -1041,7 +1047,8 @@ static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data
+ 	bin->fw_ver = bin->data[FW_VER_OFFSET];
+ 	bin->reg_count = get_unaligned_le16(bin->data + FW_REG_CNT_OFFSET);
+ 
+-	release_firmware(fw);
++	if (bin->reg_count > (bin->fw_size - FW_DATA_OFFSET) / 2)
++		return -EINVAL;
+ 
+ 	return hx9023s_bin_load(data, bin);
+ }
+@@ -1058,6 +1065,7 @@ static void hx9023s_cfg_update(const struct firmware *fw, void *context)
+ 	}
+ 
+ 	ret = hx9023s_send_cfg(fw, data);
++	release_firmware(fw);
+ 	if (ret) {
+ 		dev_warn(dev, "Firmware update failed: %d\n", ret);
+ 		goto no_fw;
 
+base-commit: 0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
 -- 
-2.43.0
-
+2.51.2
 
