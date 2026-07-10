@@ -1,213 +1,218 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FEAF3955E1
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 20:21:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDD6C407CD1
+	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 22:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783714919; cv=none; b=XRfs+9d4hHqTC7TOsppfj3Lvxk6eXDn5ASJ/97gNhgE9nzuBNz460ye4NQz+O7XfPMu87la167XsO5XMN8QROjNWlaEs2kCnaNy5i9aSW1OZAPhegCKmg2Ac21vRqlspBoN1FQlF+dZdye9WQ0q71zZWGv9nPLSJRMCkP7s7TpI=
+	t=1783723911; cv=none; b=JsDIXQJR08u1lof7AuGHo4tfzmfuYGsLqe5NEl34m0TjfZ0ftME+MjNmSuuhSNJqQwdVsTV/TqK75FTkyHGHww5S0hh2BsIwB//ZLohJ9b1dVo3/ZIFLc0lpTC8JgiJCDpjWdin2NO9VIVWg4Nlyxfi0cTtFC/mosr0BGYFyBY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783714919; c=relaxed/simple;
-	bh=mwmcHxrVR+kz/WQi8iOjtcMfnkGRz+vLnMOAEhzR2Uo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HArtVvuXulx4agkjRpUf+PihEIxKfFZspRtFYjbmHIkM0PY0czdTeq4PNpeanOfyg+1nXWGRCaE41x41uer+1pItE54QI4lNW8k61THZU+HVX4mxiWvt017YefeLLv0iOwLRPA6Bc0oblImL6k+shpwK3JKEhPcb//bF86X+JVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=RRaayQZ5; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=CeNYHzfd; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783723911; c=relaxed/simple;
+	bh=RnEeNLsDjzbIUPZgBVMLV9uT02qwSArfn96hepB2oIU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ql5ecNcWxdmvjNNVtObN7GRlptY583LfbS3QuKZxP9Zx6XbaJ5DDiomDcYX8anJ6i4VsquihT5lOKKhdluRKQ+rnWtHYxZE0Xr0TJJz5ZFO81bWT8oF451m+fmrUGHwTN+UBFZF3odmXg2GmrQMm2R8/zaR+OFGqHG6/8Vr1f0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Pkq8ea4e; arc=none smtp.client-ip=209.85.210.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="RRaayQZ5";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="CeNYHzfd"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66AKDc8q1811764
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 20:21:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	f5MBPQjfTBEuM72l/dKsAgwUJbCHso/oUhnZImxy64I=; b=RRaayQZ5SX846iDI
-	LV0P5ysidPkoDfl8AHncZ6zLIPkh8pIQNfFx5uEucad6t39P5//Q+Gk2+jHRaVbH
-	vPJR716lgEY+dOIiWziGWqwrLNCK8L6hBC6ruKLTSK0AjI1Mv1Q1cuRK+pxqxEFN
-	lWpt+iKZ9gCqiEFVaDNLPWFRBiF49NnLInuaOBZnYsRSaw7O1TA44y3kO3GoXYeX
-	eL+OuWAEjjlYg7eIasHjLOLjoHXSJ/OK+hjSshOCEaBx8nWwMAeGP7mvjeTJ101X
-	Yel0bA/vddguKGpWA2Gf+5yGiFeuWSZLmQwZUDgdlYivwuVxDIXErTQSnXpSr7x1
-	5gRxIg==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fax5faauw-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 20:21:57 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-8486c3411c8so1872377b3a.2
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 13:21:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Pkq8ea4e"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7eb34c17b96so977336a34.2
+        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 15:51:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783714916; x=1784319716; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=f5MBPQjfTBEuM72l/dKsAgwUJbCHso/oUhnZImxy64I=;
-        b=CeNYHzfdzWxuUc4MPdpJOr/C+st3TfiYb+DNvAH4GAWewpJTyeypDAavZqt4bB5fvb
-         HFCNENNJBa1Qh771iSBzRylkFeUyXMraUMUX8CBg/O0Lefwks8Vfn6SQzR45+6sz27XO
-         rZHWpcpxOxtM4h0XHUmxoyFBalMiQta78MdNnu1eDLgMB+Hvzq63yucGKWokMxWLVMJQ
-         irVX3bk5Gj6B64SM+eqc1s3M/4GKV1/DtUp7Dffy+U59mrrejbIBYqIzrNwwaDE6X6+b
-         M7lS0Kasgfg4ihPAabuRTKeY54wyfy7VOToq/blYD/iz8JP05VkRnI+RyqfzQ6NFwuZ+
-         LSwQ==
+        d=baylibre.com; s=google; t=1783723907; x=1784328707; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=yXdpdsUvKArizv655xhgVkdyjwHO++6Kx2TieGSX5WU=;
+        b=Pkq8ea4e0o04NVjukEhK/15l79oAuZsnXu43nBqdZ7HKYY/GUL/OW8ZBuqBRseUTml
+         LDeGZ6czP97kn7XOTK9RsANSlNOCmGg5OFGeNGoLCFD+SRenz6tNeLo9nTk6uxsi6Q3p
+         3qnelV1BzF7YWNnbL3n2EjRyciWAUnmLNOex3TB7E3QMcYc/qVoCy57hrxO5yBdCkVZb
+         fO+RTnj2n8ek+9y4mDdOMuEk3m94uI3jNLXZhXX/ZimgwLFTUA10JkdQlHACo1+UGu7X
+         QM80gZi36bf3u7GtIh49g83VVo2jOmPEILb5uywlV8rISr0OBIyGBmEJv7cFVqMPREZH
+         lvlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783714916; x=1784319716;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=f5MBPQjfTBEuM72l/dKsAgwUJbCHso/oUhnZImxy64I=;
-        b=LMALA5j0kh8+i0n3HT6SmCL5JtZx9Tj3ySD4tVQxjILtaVK3Z6f4Xp0quZpR/qYo4a
-         WOZ5O+bvk4Z96sTGCXg22/Wd212lF5OxicgXp98ozJ5MeV/ecdX6Bz9mn6eJhDt+MGK3
-         fyPIIr6nS9EGFFJe9k/sQQBQ0zTDk9q2lEIxlWhLX9F7ZMrBnsxDeVjsvawnSyMpdAzw
-         F0AY0gfh7pEmTjA0yY7KaAANw6/OfClHqK0rnWswoG1ZzgU/45G3xOYoB573yJz9nGgC
-         orwE2uTbOfPC21eOGLelWaxleg3c38JYj3Sxx7A8U9d8xMoZPT3rt7ky9hmeX5RaM9+1
-         Gv0w==
-X-Forwarded-Encrypted: i=1; AHgh+RroLtNmXUbcka68UHISvKbDifI8709GiwQ5BUyQOxkkFg6cgt4vcNF52L57G3lvJv2q2EBtDQCjX1g=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx9K9gxj19EtmEjS2e2IKUZWoDA4bpFaX30rbfjjNcKzq+Q/1dr
-	uDzTLwJfFvBrUhXN9Df32HIvdb8v/R9un/wmQP6V4HqXksm5ON0co164ld5sTwLgBK+f59GXLmM
-	2wFaau9dfAPmpn7Jb5H9exXhzOFYrcqZMcVX4YlIjPd3ytNiaEEISGxYJGnnpVRQ=
-X-Gm-Gg: AfdE7ckDVs8YrmX7AOaMu+0qwl4mRBRyfMUXE1p7Ebir2yhTJtF9QG6QgekKRWpXO3p
-	VYpLqxTA1s23cv6jLIaQXa5HkgTMdHuSPyjfo9AGHEMZBTs/fqAa74+ys+8Bw0QEfVnBWvYIOSy
-	4le6IeZI6L/93PDTN1wY1w9UTf2oUxKqnW/8tESN/EZb7baUansRA9G9+ALCOYsvPIzBFs08hJk
-	hQmL7empPUaKk3r/rSBvmIpFD8f00yb+ovbwhMfI5DyOThq0uwJ33GKBXvb7+Iqf1CnCYTHsrxQ
-	8E89IR1JaS2KQ4ZfwuDwJnUReAvv/bYqUz5T6AfcqnnudQKWWvPx/Q64G7pA62vSGmOdkF6UOjt
-	bjrt9vqMPkTcqXLwdGCa7LDt5P4LBUNhyYfvI
-X-Received: by 2002:a05:6a21:e083:b0:3bf:7fa5:8922 with SMTP id adf61e73a8af0-3c1100092dfmr545788637.2.1783714916052;
-        Fri, 10 Jul 2026 13:21:56 -0700 (PDT)
-X-Received: by 2002:a05:6a21:e083:b0:3bf:7fa5:8922 with SMTP id adf61e73a8af0-3c1100092dfmr545761637.2.1783714915523;
-        Fri, 10 Jul 2026 13:21:55 -0700 (PDT)
-Received: from localhost ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b658a99afsm41399058c88.0.2026.07.10.13.21.54
+        d=1e100.net; s=20251104; t=1783723907; x=1784328707;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=yXdpdsUvKArizv655xhgVkdyjwHO++6Kx2TieGSX5WU=;
+        b=QyJ9c2xxD42E2S1vUba42MyTdK6KLmXlNmw+cA980+wen/5EPnysht1udoWKaCc6it
+         +PVDpMgeozFbC40hahcb90jx/5GindGGvkfU9voePuyw8tfiOjWAHkS1gRV4wjK8tVL3
+         hTp/PXsjxts+n96lapV9UJ/+HEeMCfLuYIipu3M7R/aNUwGkKUZJSVFUpdsA85q+bKN8
+         a8tHBa0eRyWL1FKsI4uHXdWTZ23D4ItDD6CI5/rbUNRUytTdv3coolCEhBOshYV1wShu
+         7HhtyZwfBh4cBpN/kb9X/5mx5QqtHJjKmLELeEmfYtis0oNVwEy0UheDOpl2okC8dul8
+         9GiA==
+X-Forwarded-Encrypted: i=1; AFNElJ+sZPLRR9QNiyAbmseUpWvRosE4IM4KWGgEdvzwKzTlEDCukGOeBdfZNMq/0BYpUQ5idUiXx2nt8js=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwTosnaPKEW3cSbuIhqE8f8yXf3ol/qnGi7TpXk2YcBZYOpk1L5
+	HqMlsoh8T8/0TgGD2U38DMdvHk55TIGijYcwdmv3/O3LcLry/EIbHEfgS2qQJ2g/IzU=
+X-Gm-Gg: AfdE7cmrBznweDGLNngp5pXpGfR8kPk1JzOQd87OjZgx9uuqLy+1YKVSXHhwuQC310J
+	Pb88TFNXa/ZufJvnO+H6+Q1qDMROxsblibT9CEGdH82VherxxDfEJAFXw2khUSosqOn8x6AUSq8
+	Va/ahZyZDRYXDL+ef6QeQX86MCVDOGvkNK7RIwz1e7lM7HcUjYTQ6mZC7JpNRRw3uVS8hKgcCOo
+	qoRZihNy8dFrFpPtIT5sulEgVzEsyi6OOSAeegWHbnV/5Z1dLYR5yhIoRO98Uxm+5XXFSgc25jL
+	FESyYLv3hbLtg3dHP7M3qe7q4wHgZCPaR1KACW3eN4JXLYeypDFRXyVbI0yM9odidDGsHYJO2Oj
+	sC2voZ/+szgjwoGfjjyNuSkK2f7LWKzp0d6V+mNk/xaD59zHvYGxCUji0JgQ68+VMYa5OQ1a7G7
+	iMxLi/4hKXQlKI29uzD31NjevmmJw=
+X-Received: by 2002:a05:6830:378a:b0:7e9:cf6f:aef8 with SMTP id 46e09a7af769-7ec096241b1mr600426a34.11.1783723906879;
+        Fri, 10 Jul 2026 15:51:46 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:1b03:95c:fbd4:4d00])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcae177c5sm7613512a34.5.2026.07.10.15.51.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2026 13:21:55 -0700 (PDT)
-Date: Fri, 10 Jul 2026 13:21:51 -0700
-From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
- <dlechner@baylibre.com>,
-        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Yasin Lee <yasin.lee.x@gmail.com>,
-        Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: proximity: hx9023s: validate firmware size
-Message-ID: <20260710132151.00000f37@oss.qualcomm.com>
-In-Reply-To: <20260710152842.53659-1-acharyalaxman8848@gmail.com>
-References: <20260710142212.52225-1-acharyalaxman8848@gmail.com>
-	<20260710152842.53659-1-acharyalaxman8848@gmail.com>
-Organization: Qualcomm
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Fri, 10 Jul 2026 15:51:46 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Subject: [PATCH v3 0/8] iio: adc: new ti-ads112c14 driver
+Date: Fri, 10 Jul 2026 17:50:33 -0500
+Message-Id: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=Ab2B2XXG c=1 sm=1 tr=0 ts=6a515465 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
- a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=pGLkceISAAAA:8 a=VwQbUJbxAAAA:8 a=I__WuZVpHmGD6N4htagA:9 a=CjuIK1q_8ugA:10
- a=zc0IvFSfCIW2DFIPzwfm:22
-X-Proofpoint-ORIG-GUID: CxPBYTOv8fKv-FmII6Z0AJZhnUcjbAUC
-X-Proofpoint-GUID: CxPBYTOv8fKv-FmII6Z0AJZhnUcjbAUC
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEwMDIwNCBTYWx0ZWRfX3jeKYtCc4YY8
- uH7tVHr3qXs0MuuAC+INBRzd7AzSQQMLpiwweLyHr52TZnFXnWEn3wyy6ynZM4e589UqGuWDgr4
- LAoFuP0/3YE1F8+MUYhGZe/RhO9cpP8=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEwMDIwNCBTYWx0ZWRfX7N2f/yQQtBzU
- a/sEA5ueF81i6iBCoDwWFeMjIRAnIvH7LT8BN5ew5Dr9Ts/RMH45IGNWmgmaiEve/ep074fAMo9
- jvjJ+q2fOnyA7thk3eKZTaFg8233XH04qXz4XgH2+7SgAAYCbEvnXvzGhOkLts/mVoHvfu74MVK
- 9EEStqZerMaeAJ1i6wUkIpwNzd/BBCQXmgLiPl6MEKJM47FxM25zzNO5W1k0yA9hK1xsmslLLuH
- IQRRMYhoPeXkKBQu5BKkqspuS2nst3bNL73JulpH5XPgb6e81mfweFs/v8jVwrbd5El5XBf8o1I
- kXqEacon+yXIWbknPJa8x0tskEJzJI3wQX40K5YvoRBTwu59xzd0LCw2RHjhn6VZfuD96QrABww
- AfhRzg/5UNOitrUI3Q87HOOwNotlSvQT79QlWOJNpso2ca5VUAHUqA1PuweA4m03VVUgmZC8V1y
- TnFumvVQZKYaoy5sLbg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-10_06,2026-07-10_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 clxscore=1011 malwarescore=0 phishscore=0 bulkscore=0
- suspectscore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607100204
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNyw6CMBBFf4V0bU07vIIr/8O4YNpBxig1LRIJ4
+ d8tsDFGV5M7ufecSQTyTEEckkl4Gjiw62JId4kwbd1dSLKNWYCCQuU6k8xO1tbInuMJGsDEp1V
+ YQVZWaZqRiNOHp4ZfK/Z03nJ44pVMv7CWRsuhd35cvYNeepui0PlvxaClklSgrW1TGgQ8Yj3eG
+ D3tjbuLxTLABwf+cSByDGGFCvNCm2/OPM9vZfyvmhUBAAA=
+X-Change-ID: 20260514-iio-adc-ti-ads122c14-d0b92479334e
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+ Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6234; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=RnEeNLsDjzbIUPZgBVMLV9uT02qwSArfn96hepB2oIU=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqUXdDhLmLQPHSn9FksZkouFlAk48lqYUTuHopQ
+ aEUlBTcljqJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCalF3QwAKCRDCzCAB/wGP
+ wIwhCACXJ/oDn982bPo8L/fU2t4G+yspBCJjRHBhG7GBpiUW7ua+vPjzUioPscTYsnBZW6XuliL
+ pH/L6YU17kx29RDCG+YcoKY3t8t25SlHDHylprreLORqBHSa80zzzXkNdY+9YrKIpv2GkFyjMiq
+ F8C5frFWk7uyDd9p0P6COCHIVg/GLn3gfbncnHY+7LqmTal1zWd6Yi0A1H0koKL9HtkNfdYwC8m
+ RNylGslDdxr70ruZBxOtfLx0R/OS1pwnaO1fTT9ZwkFx8okt374arpQL88otfKMtYkIUAbgwSKs
+ ySQ89F5XMCEULjYaLWko10nMD6KCNfhaAssPjAD1OmPaMpBY
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On Fri, 10 Jul 2026 21:13:42 +0545
-Laxman Acharya Padhya <acharyalaxman8848@gmail.com> wrote:
+This adds support for TI ADS112C14 and ADS122C14 ADC chips.
 
-> hx9023s_send_cfg() copies the firmware into a counted flexible array and
-> then reads fixed offsets from the copied data before walking register/value
-> pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
-> make the driver read past the copied buffer during probe-time configuration
-> loading.
-> 
-> Reject firmware images that cannot contain the fixed header, reject images
-> too large for the u16 fw_size field, and validate that the advertised
-> register count fits in the remaining payload.
-> 
-> Fixes: e9ed97be4fcc ("iio: proximity: hx9023s: Added firmware file parsing functionality")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-A few minor comments.
+The closest thing we've seen to this in the kernel already is ads124s08.
+However, that has a completely different register map and the DT
+bindings are incomplete and the driver is extremely basic. So I've just
+started from scratch here.
 
-Thanks,
+We've also had a similar submission recently for ADS1220 [1]. That chip
+is in a similar situation to ads124s08 in that it has a different
+register map (but the submitted DT bindings are better than the ones for
+ads124s08, even if still a bit incomplete). And literally as I was
+writing the previous sentence, another series [2]  was sent for yet
+another similar family of chips (ADS1262). That one is even more complex
+in the feature set than the ones I am working on.
 
-Jonathan
+[1]: https://lore.kernel.org/linux-iio/20260610151342.44274-1-zizuzacker@gmail.com/
+[2]: https://lore.kernel.org/linux-iio/20260612-ads126x-v1-0-894c788d03ed@gmail.com/
 
-> ---
->  drivers/iio/proximity/hx9023s.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-> index a6ff7cbe9e6..9d91ce681ac 100644
-> --- a/drivers/iio/proximity/hx9023s.c
-> +++ b/drivers/iio/proximity/hx9023s.c
-> @@ -18,6 +18,7 @@
->  #include <linux/i2c.h>
->  #include <linux/interrupt.h>
->  #include <linux/irqreturn.h>
-> +#include <linux/limits.h>
->  #include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
-> @@ -1031,8 +1032,11 @@ static int hx9023s_bin_load(struct hx9023s_data *data, struct hx9023s_bin *bin)
->  
->  static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data)
->  {
-> +	if (fw->size < FW_DATA_OFFSET || fw->size > U16_MAX)
+All of these chips have in common that they are designed for use with
+RTDs and thermocouples and so they look very similar to each other in
+terms of wiring and feature set, even if the register maps are
+different. They are in the gray area where we could either keep them
+separate because they are just different enough, or we could do like
+we've done before with ad_sigma_delta and have a bit of an abstraction
+layer for the register differences and otherwise try to share as much
+code as possible. Normally, I would lean towards keeping them separate,
+but in this case, I'm considering trying to share code because the
+devicetree bindings for the inputs is complex and is going to be mostly
+the same across all of these chips.
 
-Add a comment on why you've picked that upper limit.
+After seeing Kurt's v2 though (that doesn't attempt to share code), it
+seems like the chips are different enough that sharing code might be
+more complicated/messy than I initially thought. So I'm happy to keep
+going that route.
 
-> +		return -EINVAL;
-> +
->  	struct hx9023s_bin *bin __free(kfree) =
-> -		kzalloc(fw->size + sizeof(*bin), GFP_KERNEL);
-> +		kzalloc(sizeof(*bin) + fw->size, GFP_KERNEL);
+This series includes just basic support for reading single measurements
+from the ADC and gain selection via the scale attribute. I plan to
+follow this up with additional series to add support for buffered reads,
+filtering/oversampling configuration, event support, gpio controller
+support and perhaps a few other things that are slipping my mind right
+now.
 
-This doesn't belong in the fix given it is just a reorder. Maybe it makes sense
-but if it does, separate patch with an explanation of why.
+The most interesting part about this (that I alluded to above) is the
+way channels are handled. These are multipling ADCs with differential
+and single-ended inputs. But what sets them apart from other similar
+chips is that since they are designed for use with RTDs, there can also
+be a current output required to excite the RTD and this current output
+might be different for different channels. So the way I conceptualized
+the channels is that the devicetree specifies the conditions needed
+to take a particular measurement rather than being purely a physical
+channel.
 
->  	if (!bin)
->  		return -ENOMEM;
->  
-> @@ -1041,7 +1045,8 @@ static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data
->  	bin->fw_ver = bin->data[FW_VER_OFFSET];
->  	bin->reg_count = get_unaligned_le16(bin->data + FW_REG_CNT_OFFSET);
->  
-> -	release_firmware(fw);
-> +	if (bin->reg_count > (bin->fw_size - FW_DATA_OFFSET) / 2)
-> +		return -EINVAL;
->  
->  	return hx9023s_bin_load(data, bin);
->  }
-> @@ -1058,6 +1063,7 @@ static void hx9023s_cfg_update(const struct firmware *fw, void *context)
->  	}
->  
->  	ret = hx9023s_send_cfg(fw, data);
-> +	release_firmware(fw);
->  	if (ret) {
->  		dev_warn(dev, "Firmware update failed: %d\n", ret);
->  		goto no_fw;
+This makes things more flexible, but does make the driver a bit more
+complex. For example, knowing when the current output needs to be
+enabled or disabled. For now, I have chosen a lazy-enable where they
+are not turned on until the first measurement is taken that requires
+them, but then they stay on until another measurement is taken that
+doesn't require them. This can lead to some oddness with the diagnostic
+channels that may be measuring something that indirectly requires the
+current output (i.e. the external reference voltage when it is connected
+to a resistor rather than a power supply). This means you need to take
+a measurement that requires the current output to be enabled before the
+diagnostic channels will give accurate readings.
+
+I have also pushed a branch to [3] that contains the start of some
+documentation for this driver that can give some more insight into how
+the implementation works. It still needs some work and also documents
+some things that haven't been implemented yet, so I haven't included it
+in this series yet.
+
+[3]: https://github.com/dlech/linux/blob/b4/iio-adc-ti-ads122c14/Documentation/iio/ads112c14.rst
+
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+Changes in v3:
+- Mostly cosmetic changes and a few bug fixes to address review feedback.
+- See individual patches for details of changes.
+- Link to v2: https://patch.msgid.link/20260625-iio-adc-ti-ads122c14-v2-0-ceb9b0b561cb@baylibre.com
+
+Changes in v2:
+- Added patches for adding properties to adc.yaml.
+- Some of these are coming from: https://lore.kernel.org/linux-iio/20260622-new-channel-props-v2-0-aafd5369f253@gmail.com/
+- For now, I have stuck with one channel per single-channel pin or
+  diff-channels pin pair rather than some of the other ideas that were
+  discussed. Handling burn out current enable will be handled in a later
+  series. I'm leaning towards something like the _burnoutraw attribute
+  that Jonathan suggested.
+- See individual patches for details of changes (mostly renaming DT
+  properties, fixing some driver bugs and style issues).
+- Link to v1: https://patch.msgid.link/20260615-iio-adc-ti-ads122c14-v1-0-e6bdadf7cb2b@baylibre.com
+
+---
+David Lechner (TI) (5):
+      dt-bindings: iio: adc: add input-chopping property
+      dt-bindings: iio: adc: add ti,ads122c14
+      iio: adc: add ti-ads112c14 driver
+      iio: adc: ti-ads112c14: implement gain on internal short SYS_MON channel
+      iio: adc: ti-ads112c14: add measurement channel support
+
+Kurt Borja (3):
+      dt-bindings: iio: adc: Add reference-sources property
+      dt-bindings: iio: adc: Add excitation current sources properties
+      dt-bindings: iio: adc: Add burn-out current properties
+
+ Documentation/devicetree/bindings/iio/adc/adc.yaml |   40 +
+ .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  |  207 ++++
+ MAINTAINERS                                        |    7 +
+ drivers/iio/adc/Kconfig                            |   12 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/ti-ads112c14.c                     | 1203 ++++++++++++++++++++
+ 6 files changed, 1470 insertions(+)
+---
+base-commit: 093239070573637ad2b4cb56abc9c4c7ee109294
+change-id: 20260514-iio-adc-ti-ads122c14-d0b92479334e
+
+Best regards,
+--  
+David Lechner (TI) <dlechner@baylibre.com>
 
