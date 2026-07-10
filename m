@@ -1,68 +1,67 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FACC2C234E
-	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 15:21:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30FD82D5C7A
+	for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 15:22:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783696877; cv=none; b=b1O5QEIqUHhxA03FKOfSPdfYevpCLrrgeHjdkLIQDHSGJkQWbZjCXd9Gz41j7Sd73KB2nkTVKqMHmrgYnXJpH05W8Oe8ka+8Bc5lOPgl9SWAkUQljBTh65kiemte7KIOXaHkr/eWkd28vxLn+OXk+/fe4ux3xXEe7X02nQ7OL34=
+	t=1783696965; cv=none; b=hrBFyiHJgsXxBnSIXzj4cbu9LmRn65dLTmYD+NxyKOmd9THzJ+500Aeg/tVt/U5wjldQj0HRx6sNfl/hqjJKMzrvWnJoevdj/4M2RkYiUeyZiS6a3Q8/wt173Osmit641t4+/jLGfY2gl151AYzygapCilbDdWHX0HfPot0Lu6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783696877; c=relaxed/simple;
-	bh=SqJcUT73x7eoB0S5h/3ctXw/oHOCbm6jUb+xoKd9M6I=;
+	s=arc-20240116; t=1783696965; c=relaxed/simple;
+	bh=zEAiE3kPlRXxoM76UgYmzsJQQa17QofmTRzN3CaoHi0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=l8Jqr0GGxhYUxGS3iuBN9T6zRIsFF/kWuI3Tph6S695aobY+/lPWn4uGXz0/6HzOI2r1DVIm6KLuTdhSw3PqRbJ6LC9lwrrDWCPiUo7Sl7qCTd02LeAZz4+RgKxGc9ai8NPVLd5XvohVH7/nHO4lcEdRHallkm9yoz/FYUDBlss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=lJw+CmBZ; arc=none smtp.client-ip=209.85.128.174
+	 In-Reply-To:Content-Type; b=C5wWp3EaLGBcjw8byeOg+9wLjzmdigdas53xNiyLVp7Zzs44KPD18CV1h+BSzJS8+tMsp1+52OyYegwEaJC3FRy/ysKzWiw0+qPPC5UBzcWGj6B4MIRckJWhVFXujVpk9rnbu1ufIp/2vq5TtEJ0Qg/FSooNHVEZcTXwoWFg6gY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=fuDX4wiC; arc=none smtp.client-ip=74.125.224.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="lJw+CmBZ"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-81e771226b0so15656007b3.2
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 08:21:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="fuDX4wiC"
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-664c6304683so1082401d50.2
+        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 08:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783696873; x=1784301673; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1783696962; x=1784301762; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=5W0IIRCYefamj/FFcBfXSVL6e8CmPqSzJFbWhXGilG0=;
-        b=lJw+CmBZ9FEP4GL6shV82q3d99qFztcwUAo2haH90jFQwAq59YWNOUuWuW5h7DlV3Q
-         mvyNRRZevHvyWNX7mfl7fIJ1+SVRZllPyY+yq/rLeFk0xzSiFHodV8jS3t+bUxDNNaHA
-         q9i7pCs0Q0ACKCR684kue7mKQUYkBAk1ydVpuCAuwu7tbuFsCqVCjGt1LAQX52yC6AKq
-         f6D5xdIPitr6Tos9dGYmykfDEGRtp2svX/bIiMKc3BRDpB+6UvJjCpuG9L/C8ubqduQV
-         ZT3DARzw2I2KbBnH9ObLQlshfYQh+oQvc0zVtejG+/5VZ8h9XvbryzMCajVdq0brfuN+
-         5l0Q==
+        bh=+fq+XFsMldhTIedidEpRwBTF62wZYqBTX0O43nDV5nY=;
+        b=fuDX4wiCvJl0OXReHuIkSDOXH13C9wSdo5jc3rUJGhIHNjZC54G8iViCMNtkrIC66+
+         yJhaDgHU5p05Zspaff+9tIEwvxFVlnA1BFBPQLSB5yi/ydXo+haTXWeqgIUaZ7gXlu4J
+         fpEdX7VvPkEciL+0wUrnIn5Q3RLnCn2WFzfmo4icoe7qPivKTzJRtQ+5Z8ZIyC7skTC1
+         NTmMsAi7rkcdK3MkbLEdwJ1+i93sUhDnkujKvpKWt07UI0Yu//NH1340mgOIS4yWDIbC
+         7tW1yZXeI/U+1FFBkyLXWvnPIqGPmS1RK2XaFOuor2jzixEef+KNpKOgf5vBtbW3dS3Y
+         FCvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783696873; x=1784301673;
+        d=1e100.net; s=20251104; t=1783696962; x=1784301762;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=5W0IIRCYefamj/FFcBfXSVL6e8CmPqSzJFbWhXGilG0=;
-        b=l9bGQAtOIBjnvbCEzYyTOGzp5tqY97DWdQu4kRGZrlQ/6nF4ulPr6q9ZL/lu0NlC+W
-         u22w+T9BmmF5KEBvcO0RYZzW3VdnTHvqXriIeNF6dxP5+I/lzRQy5RZM2SOCyoduOnC1
-         gGXtIIC8sMjf60rl1mefOI3llyBxy+pSRndtb091M1l6QMbb+vAgKwvvIT6BQ3ZM2ola
-         ibsT6LE3aJKyGv3qNAv4nQwNFc9k02qtCP8fNlLD0v38AXzmTGxH0qxcHLMAcMvChwoA
-         UBrGtvenSPFmeiB5Zyu9Zy1nhUuGOwGyzHMMuQbcPLrc5TysSmFiw2pA43HqhY/9kBhk
-         IjdA==
-X-Forwarded-Encrypted: i=1; AHgh+RqshZEseREetUxeQSxP4sq+FBliJYM4HxwZXtUNkiV38wOm3lV7Oq2XGuv6ZARZj/0krcfZZyfaCDA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+wibFRW/QHZhSJFyuhi/ugIyO4xoc1r21Yu+VsUY53p6OiB58
-	+UCleGsVwCuYnGNkU55fqOOyr1VPCXIG6ZtuO63ZDYGJNxcrqfmzN/UuqR+bQdVy8Ez6eWEdd/6
-	OROCj
-X-Gm-Gg: AfdE7cklRHQV242sWAEG+I2yRyb2pE3mpbMh9KjOqEKNVUHLApdRw0iL4Uundh70DYo
-	pZwfCHSIJDG1n6wB8gzLV0PsNKmd0iJgtXPZarflq/l8oT4rj7aUxzXhDFMNi7qSf+LNNApmr2A
-	A1gqs4/GEx7YkXWaeefzmg12bsIIiIBgytobB5KiNa+FWyCorT0jTaxd1uMxlZUG9htzLo3i+UO
-	n63Ot0TN2jFcORt/5eUjd0xAKvEY4OS38Wu0hFH6hBuSK1vI3mGXiofWWsx76bwErQhwlrAFSlh
-	xOe2SzsinZwmG4akUXgP01Q7r0QedZeYVbruxT1vG1MxcLkw5GCDkQeN9Dq1z4j3NvJ5bqfC9mp
-	fsnGyHAPQKU5nLcsgTNnKbpuDE8V+Voh+RpyTl6n58dg2ADw8IirhTrqOxLKJP6CEP9opuJKayL
-	82h/ORUcTSTu3EnpPGAKVm9Q2JFQh5brq/3dIlNHc9rFvyQ+47GzRmzEKiZVDm
-X-Received: by 2002:a05:690c:e3f2:b0:81e:79f0:48b8 with SMTP id 00721157ae682-81e79f04e78mr35781247b3.7.1783696873086;
-        Fri, 10 Jul 2026 08:21:13 -0700 (PDT)
+        bh=+fq+XFsMldhTIedidEpRwBTF62wZYqBTX0O43nDV5nY=;
+        b=B47VDfUB3reOfGF4ZvKw7QuAKtdiPtPFH3XUk0jaBSNuhE5HmSK3mVkLJC85IvgXiC
+         FH2aWDCzbvm+GebYuIZ6db+GRL17Jpi14amh2RE2pM4u7Qe6OxU3eztjdzcdWEsQfCat
+         tiNhi1jlVsLk+m4V5EODEQIjtDyFrKb4Zc2HI25g6nHZL230eYk6ybYImYkdCbU/xgZq
+         U80UmFd17bO5t0S/dew3pDZD69VGL7Axu1NXv/LLDxfsEoNmRyrY71pEHRA7XEJPNf7D
+         T+UKk+p+EtrjSnyVSvNNVkaYDgpFwZOdL/uuEVjMThIWOqpFAeAi1KjeDYGEJzPx1eKZ
+         KrGA==
+X-Forwarded-Encrypted: i=1; AHgh+RoW3bJklnnrtU0zhjwGY1J7UHPf+N5NBVaYSw0KYI3vtZhpwJsrZQzJvzpexpljfprbsu/zCzg3c4Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyWpqpfopsnpTnHyH1FsSPI/3GFVm3wsY8qKvlV9dFuvQdhfkSd
+	2Q/xRoZPDPgYMWBV7ZUoQQhMx78kK2cTHBT/Q7CBRzTMe/zGCwOd1vxOJYTGNWeif/M=
+X-Gm-Gg: AfdE7cm2+KuyugeXERPemj4eXtXqUe6+50Hynl731TRD1jBmlRwCaPAa47M43/aCVMp
+	HlgTUVtOu9nr69cpTy4VLKv2ZJbTmi8N+Iujl27YBKAA41rfE037jMobthMgf5DomsyFayMGs/5
+	ZFJIgg3wDkidBg+E9y5rCW2gXvUzKOzuGhhg8xGBFyNbWjTvim1GMWDWu7moePJf91InJ6+Okp0
+	yIoCYPWuUiVXbhmWDzPUdZyDs7RVQRRINmldVMXi5hj/AEJ+38EwC0z77anLaHy20mEmfUuftZX
+	tZ8L5eDN8RnZyXTo4vV/sbdB0UfbblbDnTpPCn7nme6s+HyEdqoaRl3xK2x3sz4rto1cOHo75Mn
+	hDzHLXn+dqfcKNpGHwtHX63i92S2mAn4lgaRPts93qhELwseZtAnQwnw6gAqk70mh9iChrsbtdo
+	r18bFpnVVJwxLdyPEd5oQKwbAVNH56UnsgPNMXdPibiDuq9msCswcbY6/5/hRz
+X-Received: by 2002:a05:690e:c4d:b0:667:bb94:18d9 with SMTP id 956f58d0204a3-667bb94431bmr4012272d50.13.1783696961677;
+        Fri, 10 Jul 2026 08:22:41 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:1b03:95c:fbd4:4d00? ([2600:8803:e7e4:500:1b03:95c:fbd4:4d00])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-81e6be9834dsm48620217b3.9.2026.07.10.08.21.11
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-81e6c212f14sm47997107b3.42.2026.07.10.08.22.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jul 2026 08:21:12 -0700 (PDT)
-Message-ID: <9845b343-8138-4858-93a2-df8e01c7d64f@baylibre.com>
-Date: Fri, 10 Jul 2026 10:21:11 -0500
+        Fri, 10 Jul 2026 08:22:41 -0700 (PDT)
+Message-ID: <f6e95f0e-2e42-41c5-9af4-977a3a945381@baylibre.com>
+Date: Fri, 10 Jul 2026 10:22:39 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,102 +70,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] iio: proximity: hx9023s: validate firmware size
-To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Yasin Lee <yasin.lee.x@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
+To: Joshua Crofts <joshua.crofts1@gmail.com>,
+ Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Yasin Lee <yasin.lee.x@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
 References: <20260710142212.52225-1-acharyalaxman8848@gmail.com>
+ <20260710165400.00005108@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260710142212.52225-1-acharyalaxman8848@gmail.com>
+In-Reply-To: <20260710165400.00005108@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 7/10/26 9:22 AM, Laxman Acharya Padhya wrote:
-> hx9023s_send_cfg() copies the firmware into a counted flexible array and
-> then reads fixed offsets from the copied data before walking register/value
-> pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
-> make the driver read past the copied buffer during probe-time configuration
-> loading.
+On 7/10/26 9:54 AM, Joshua Crofts wrote:
+> On Fri, 10 Jul 2026 20:07:12 +0545
+> Laxman Acharya Padhya <acharyalaxman8848@gmail.com> wrote:
+>> @@ -1058,6 +1065,7 @@ static void hx9023s_cfg_update(const struct firmware *fw, void *context)
+>>  	}
+>>  
+>>  	ret = hx9023s_send_cfg(fw, data);
+>> +	release_firmware(fw);
 > 
-> Reject firmware images that cannot contain the fixed header, reject images
-> too large for the u16 fw_size field, and validate that the advertised
-> register count fits in the remaining payload.
-> 
-> Move release_firmware() to the callback so the firmware object is released
-> on all hx9023s_send_cfg() error paths.
+> Why not move this after the if? Keep the call/retval check coupled.
 
-This could probably be considered a separate fix (and therefore separate
-patch) since it looks like there is an existing code path (return -ENOMEM)
-where it would not be released.
+Because the if branch contains a goto and would therefore skip calling
+release_firmware() in case of error.
 
 > 
-> Fixes: e9ed97be4fcc ("iio: proximity: hx9023s: Added firmware file parsing functionality")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-> ---
->  drivers/iio/proximity/hx9023s.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
+>>  	if (ret) {
+>>  		dev_warn(dev, "Firmware update failed: %d\n", ret);
+>>  		goto no_fw;
+>>
 > 
-> diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-> index a6ff7cbe9e6..a2f9c077e58 100644
-> --- a/drivers/iio/proximity/hx9023s.c
-> +++ b/drivers/iio/proximity/hx9023s.c
-> @@ -18,6 +18,7 @@
->  #include <linux/i2c.h>
->  #include <linux/interrupt.h>
->  #include <linux/irqreturn.h>
-> +#include <linux/limits.h>
->  #include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
-> @@ -25,6 +26,7 @@
->  #include <linux/property.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/slab.h>
->  #include <linux/types.h>
->  #include <linux/units.h>
->  
-> @@ -1031,8 +1033,12 @@ static int hx9023s_bin_load(struct hx9023s_data *data, struct hx9023s_bin *bin)
->  
->  static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data)
->  {
-> -	struct hx9023s_bin *bin __free(kfree) =
-> -		kzalloc(fw->size + sizeof(*bin), GFP_KERNEL);
-> +	struct hx9023s_bin *bin __free(kfree) = NULL;
-
-We don't initialize autocleanup variables to NULL. So leave this as-is
-and just put the size check before it.
-
-> +
-> +	if (fw->size < FW_DATA_OFFSET || fw->size > U16_MAX)
-> +		return -EINVAL;
-> +
-> +	bin = kzalloc(sizeof(*bin) + fw->size, GFP_KERNEL);
->  	if (!bin)
->  		return -ENOMEM;
->  
-> @@ -1041,7 +1047,8 @@ static int hx9023s_send_cfg(const struct firmware *fw, struct hx9023s_data *data
->  	bin->fw_ver = bin->data[FW_VER_OFFSET];
->  	bin->reg_count = get_unaligned_le16(bin->data + FW_REG_CNT_OFFSET);
->  
-> -	release_firmware(fw);
-> +	if (bin->reg_count > (bin->fw_size - FW_DATA_OFFSET) / 2)
-> +		return -EINVAL;
->  
->  	return hx9023s_bin_load(data, bin);
->  }
-> @@ -1058,6 +1065,7 @@ static void hx9023s_cfg_update(const struct firmware *fw, void *context)
->  	}
->  
->  	ret = hx9023s_send_cfg(fw, data);
-> +	release_firmware(fw);
->  	if (ret) {
->  		dev_warn(dev, "Firmware update failed: %d\n", ret);
->  		goto no_fw;
+> Otherwise this looks good. Feel free to add my tag with the v2:
 > 
-> base-commit: 0e35b9b6ec0ffcc5e23cbdec09f5c622ad532b53
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> 
 
