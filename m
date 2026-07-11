@@ -1,44 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE8F130498E;
-	Sat, 11 Jul 2026 23:08:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34D852848AA
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 23:14:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783811309; cv=none; b=kgfEoD3RrLMmPRU8agf2XOTCToZUBeWvAO6myXTLInY0Jw2/Y/Km1afhpW4GanCrJRsHomZgjI2g/aLseyai+pQbKZiue+v80vNIDVshQ0ZJ1fjCjpOlPylBWh10Imp8sVqzdRKep/PqdqpVsI7P5Do0WMWWqETxuuLxSf3zR0c=
+	t=1783811663; cv=none; b=d9vhfFYD8FKuyKXXtWl4gKQswJzCVzj3PwzwT0be9KoBtv+fsb0VjQzXYNagbOwxlZU1tu1kcgyN+3xh2GQFzs6B21K5iSj9vJ1JNT9nhsfvw+G7l1YEg7xyiorlHjdrxU+NqrgWybNSBc/8mdhjmQXpvil68/wH4SupgH5pzLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783811309; c=relaxed/simple;
-	bh=F+v8RHQm+6qNc5mBbT7iF+7CPJB/vkoDU/7nJ96RvNw=;
+	s=arc-20240116; t=1783811663; c=relaxed/simple;
+	bh=EHGw54sKsJWQ1hQzRhATaYr2/DetzRiCOtT0KFSI9Ew=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TtZWs7JfExmH2eTZjlymjVb0+yfElKZ7/OkEtHcnc8qZN2h6HyuWEF4zi5x1GseslLIZGJWk2cIKAOD9/bOCXS6Y8Xuw1Aqo+xdP9EU0fj9tfyC5ZYLak4snaopxyDiV2AfQeK85FeBTRru/ojj/bq3WMSVrcLedkqpfGK+OHHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fPQg1Mcr; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hrp635Am7DoyICtLCJ25nKzYd4eBIdV4pme+theqfwo4c2XPa92PNzew/w0M9eX8yNb64lSr7te9hr2uy0WCQmpZSfJ2e9fdjRVqmTdOquPZje4C5j3/HWC245UMN+c1FObl/cifo2SWUisigW4SfofLIvrbFBVsEgOoL1S9fGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LTo46Dne; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=MJPEufeY; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fPQg1Mcr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47ED71F000E9;
-	Sat, 11 Jul 2026 23:08:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783811307;
-	bh=yBRwMN4Q60Id72FX9KHhaX20Y6VJp57wq0wuqAF/AZ0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=fPQg1McruX7cyxbvcvdQrikx8EFpozOrIKHj6oG1P8TppHm7UCM9izjvzNqcQ/ZLz
-	 /wQnO9JOEnKF2YMZ4vMgqhnubjlH1J32INYDkUgs2AzaNSG7A9BiphVJO+VTTSpphW
-	 tubY46m1nSXCZwP2IRf4W9rEZs3exTIoWJ004SgxHCEUnOdTR1mSH84RoBojKfBooQ
-	 0f7/Vips+tIULffpJmDsLt5kMZyEzY+x3Ipn7dH8sJ2TrfPYK5sQ1RMTrJi0Zf15Hz
-	 2EEIG0OCHsGTfLrh3jMX07OHCqLKCAfMslp+JuY/KPZswRyz+UwLn1SjROSCzqZWIP
-	 it3bIx0vxm5cw==
-Date: Sun, 12 Jul 2026 00:08:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Biren Pandya <birenpandya@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Sakari Ailus
- <sakari.ailus@linux.intel.com>, Linus Walleij <linusw@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: accel: kxsd9: fix runtime PM leaks and
- unchecked returns
-Message-ID: <20260712000823.327e506a@jic23-huawei>
-In-Reply-To: <20260706074650.96042-4-birenpandya@gmail.com>
-References: <20260706074650.96042-3-birenpandya@gmail.com>
-	<20260706074650.96042-4-birenpandya@gmail.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LTo46Dne";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="MJPEufeY"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66BKwslB707232
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 23:14:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	tkOX7/TAel/cmrpxcy/qt8cPl9Sf+yVa1N0EotZKyl0=; b=LTo46Dnekt61/Y5a
+	o3leuBGV7NmtsgXfibCf1/BflZE76bnzxYWpWAj2nCjKYJ+hQOABxTgfCHM7XkOj
+	DQ/DajAm0MqOLe7gXKW7N+u6wNlL8nwT2oUdTTXpBdH6QZs6X1cnRNh0k+i7ZbQ7
+	sgLh/snGQgOJMh3MSDBJxcc7mSR0iFrwDoXsOt6kZddECL/LT8zDgKZHDJb+W4Su
+	9dVDKwLiLirvrFgaY8RL/xPHfYwGlH6OsCdXZSL7+/SubbPUHgXIexJgs8A0/QCH
+	+07g81stQI8b2GmBHtIVWtPk7Oj0Qz9cSUUCAeM+B3AhwzokIrcdG8e08juvPNOQ
+	ysahlQ==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fbebr1qgv-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 23:14:21 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2c8018f11fbso31275745ad.3
+        for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 16:14:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1783811661; x=1784416461; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=tkOX7/TAel/cmrpxcy/qt8cPl9Sf+yVa1N0EotZKyl0=;
+        b=MJPEufeYRht/D0dn2yO9X9dn8kDuhtkIfRaAGt73sG/q3Oml8/0j7dB3iul2eoC5th
+         OUAy/cUAb6Fnp8R5O9j4ZzJ671j5VTWIiihuDsFlxzT9k924acG49WCa1N7NXhRBbdTk
+         FBrHLv2OEz8Afqtz39ifmMNAAQEmayaSWq/TmJPIEEkit2PlbaYSl2e6RB4HMtzvlGqV
+         9BW6njNeH4JECCheIzcziuFrxcs9Ny5ttUyDfYvNf30FrchYywkc5sB+geiBVnF7RMCc
+         R8GNf0TBwWkKDgn8ThnBYiO4MPHjRmAmFS2gakwMHyUIz/SoxW6xTvmB+lSoVqpkCMny
+         dlXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783811661; x=1784416461;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tkOX7/TAel/cmrpxcy/qt8cPl9Sf+yVa1N0EotZKyl0=;
+        b=TINQH7xa2Pgc6aIjDyGSn/J0xOh2aaTEKQtaVZcXb/5LTWjEQ+QX0FwVYepzaZH+ie
+         wWunoXMaQafmF94XcF7XSqxSTOZJtzO6BoEGDbhhvjF2KptJ4WbD26o56cT209Y66tna
+         YdPHJaBFG0cuJZxUSho6MOIyp9oTnJMTIQHxZ8Bw23ZKksC4GD9+PjI+SjFTp8ehCzNl
+         NY+N939QGteLRtQEXN4+MtmqlUdHpFjRCA49bqPxZ0STF3PEvv9poxOy9R2urPbEmnUj
+         jMocNkqfp13tZ2dxPTc4654LCCtgHNEG66AhV4mDgtU5+OE8pijMaLQce1dK9jTCSPxT
+         DPfQ==
+X-Forwarded-Encrypted: i=1; AHgh+RouM5/OSnJHEHsUxRozDdCqAg/bD1mMe+LjWFEpOyew559Jljjs3v4z2A02YuhbJdSNNPy5wx9dirQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzl0R5kSrNp3zWx5w5AAce1qgiFb+vFPjhSrpixzVwERvBLQkyK
+	xQJ+EJ3fqeFsj9n5yoJ3DOHP6CcyMXWRuRZClWegC6fDbseUElBf4qfFTHqS+3UEbdwOKuFMISJ
+	snUsu5xec4CFoZj0UnQWI9WdPctPq9no3/SIhB6DjPEUiWdV8Wc89EFt0czGOuuQ=
+X-Gm-Gg: AfdE7cmUOI+K6QBr5LOqj+p5B6J1IAu/kl+V/F6tBqr6XiL/L0g3YeSERRND8eR8gvJ
+	vt3pJfs8EINUCPhvM9/vU5fZda1A3Nzn7sJGVhi6W4jdVPxh5LyI3PZfBZhjI2n0y3Nj7eyfUmV
+	/pOsXwyMDyv1qeopx6TF/wJrZVncuZhFetEfMebGbA8ZUbw3PJiMKphlTB5UJ4feazVgeDc9vq6
+	zqqN/JzxOey2ziwN74vhSb94RCrFcA2id64qIXSwRt2mkrt4xczqiiPI/XIqcf4PIDam2w8pmWs
+	IXyzWHlZyxx4Flxu3gHVxY0v3dmt5fdpFkCJd+GdCFww2VdIJuqjOYb6wOWJzfVrCcQI8ApUOq/
+	n66rUirV27W/sKEUOqJnLT4OHQ9Q=
+X-Received: by 2002:a17:902:fc85:b0:2cc:8267:31b5 with SMTP id d9443c01a7336-2ce9ec12126mr39887335ad.19.1783811660706;
+        Sat, 11 Jul 2026 16:14:20 -0700 (PDT)
+X-Received: by 2002:a17:902:fc85:b0:2cc:8267:31b5 with SMTP id d9443c01a7336-2ce9ec12126mr39887095ad.19.1783811660224;
+        Sat, 11 Jul 2026 16:14:20 -0700 (PDT)
+Received: from jic23-huawei ([50.35.46.84])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9bdb86bsm78488355ad.11.2026.07.11.16.14.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jul 2026 16:14:19 -0700 (PDT)
+Date: Sun, 12 Jul 2026 00:14:14 +0100
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+        Paul Geurts
+ <paul.geurts@prodrive-technologies.com>,
+        nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tobias.sperling@softing.com
+Subject: Re: [PATCH v4] iio: ti-ads7138: Disable STATS_EN bit while reading
+ conversion results
+Message-ID: <20260712001414.70a87eec@jic23-huawei>
+In-Reply-To: <akwI7bzJUZasGbq-@ashevche-desk.local>
+References: <20260706074803.13624-1-paul.geurts@prodrive-technologies.com>
+	<867d2cb8-a1f3-49e9-a8a2-04e232f404ab@baylibre.com>
+	<akwI7bzJUZasGbq-@ashevche-desk.local>
+Organization: Qualcomm
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,262 +104,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzExMDIzNyBTYWx0ZWRfX/ahqtieX7kRN
+ NVEaWXrGCcIjYrldjIZFKj9nM6zYWIwl26Enyn2VnON8wFb2Qu9a6U9UUSTBq9LWLCfY+GRAfRb
+ U3Gc+FDLlk9yDP4TK1KLWlpnJRkbHu4=
+X-Authority-Analysis: v=2.4 cv=OK8XGyaB c=1 sm=1 tr=0 ts=6a52ce4d cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
+ a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
+ a=QyXUC8HyAAAA:8 a=GSyO0BWpQcPk6rojcgkA:9 a=CjuIK1q_8ugA:10
+ a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-GUID: 1QgJsIczBqTBJQoBmrmTcqJa_YRLzWpV
+X-Proofpoint-ORIG-GUID: 1QgJsIczBqTBJQoBmrmTcqJa_YRLzWpV
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzExMDIzNyBTYWx0ZWRfX9BPZeWtdj4Hr
+ 2rs2Jh4M4GqLONCEDyMnFoFmQZR/kICJPCGEczBnsdxKUExk6O4l0gBL64pJkFNG8FjhIeEQFmZ
+ Q7+IdM2+UZPsDmlSVFhe3mFezFX6jyEflJt0MXPqwQW2VbkKC91gZnnfXiKHV1oXWvnN6A2aqhi
+ 1Ki963o9k2FRukD1JpCB7qwvIJindIacVcgbTexcJgpx5ZcD1ck7sPtTuUmZuHychu+iFXtAgeh
+ uWua7Q3IZTCqiftvVx1Don+Faw0i7MOn6HoCLE780ldStFCqxqST/SRIqoK0qM9mRmiHCddrMEM
+ KQ4iIQgNhcQTudKmHGjZiBWQcII5eObIQNqSZqytGciXIs7cAK19234pYrGP34BUluA7IApvUyV
+ Ys4cSLiIS5r+2KTGsD7ftvm9yS8x+wLG1KouAE228+lGyWn/QS9Yf2YVliKdmZKA6we6ZuLmJSn
+ w2CMJObcn2OKmxe53UQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-11_06,2026-07-10_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 phishscore=0 spamscore=0 adultscore=0
+ clxscore=1015 impostorscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607110237
 
-On Mon,  6 Jul 2026 13:16:52 +0530
-Biren Pandya <birenpandya@gmail.com> wrote:
+On Mon, 6 Jul 2026 22:58:37 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The kxsd9 driver previously used manual pm_runtime_get_sync() and
-> pm_runtime_put_autosuspend() calls in various return paths, which is
-> prone to memory leaks if a return path is missed. Specifically, in
-> kxsd9_write_raw(), if the user provides a non-zero integer component
-> for scale, the function previously returned -EINVAL directly, leaking
-> the runtime PM usage counter.
-
-This has become too complex. For the fix, can we just close that one
-problem case.  Then follow up with the refactors and hardening after?
-
-The minimal fix is probably the code move you have to check that
-the request is valid before doing anything with runtime pm.
-
+> On Mon, Jul 06, 2026 at 11:30:59AM -0500, David Lechner wrote:
+> > On 7/6/26 2:48 AM, Paul Geurts wrote:  
 > 
-> Switch to using the new scoped-based PM_RUNTIME_ACQUIRE_AUTOSUSPEND()
-> and PM_RUNTIME_ACQUIRE_ERR() macros to automatically handle dropping
-> the PM usage counter upon return. This simplifies the logic by allowing
-> early returns in error paths.
+> ...
 > 
-> In remove(), use pm_runtime_resume_and_get() with an error check to
-> prevent unchecked return issues, and perform a best-effort power down.
+> > IIO style is to have /* on separate line for multi-line comments.
+> >   
+> > > +	/* Reading the statistics registers reinitializes them. This is unfortunate
+> > > +	 * but necessary to prevent data races
+> > > +	 */  
 > 
-> Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
-> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
-> ---
->  drivers/iio/accel/kxsd9.c | 59 ++++++++++++++++++++-------------------
->  1 file changed, 30 insertions(+), 29 deletions(-)
+> Also multiline comments should follow English grammar and punctuation, in
+> particular the sentences should have a period at the end.
 > 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 7569201ed3c75..a71b473cbfa03 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -139,68 +139,65 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
->  			   int val2,
->  			   long mask)
->  {
-> -	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	int ret;
->  
-> -	pm_runtime_get_sync(st->dev);
-> +	if (mask != IIO_CHAN_INFO_SCALE)
-> +		return -EINVAL;
->  
-> -	if (mask == IIO_CHAN_INFO_SCALE) {
-> -		/* Check no integer component */
-> -		if (val)
-> -			return -EINVAL;
-> -		ret = kxsd9_write_scale(indio_dev, val2);
-> -	}
-> +	if (val)
-> +		return -EINVAL;
->  
-> -	pm_runtime_put_autosuspend(st->dev);
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(st->dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
->  
-> -	return ret;
-> +	return kxsd9_write_scale(indio_dev, val2);
-Yikes this driver has 'aged'.  This call has a nasty
-goto err_ret in one path that just returns the error, yet
-does direct retuns in the other.
 
-Anyhow, the reason I mention that is an alternative
-to this would be to move the runtime pm into
-kxsd9_write_scale()  That would be part of a more signficant
-cleanup but if you are interested it... Lets just take that function:
+Tweaked all the stuff mentioned and a few other bits in commit message.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-> static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
-> {
-> 	int ret, i;
-> 	struct kxsd9_state *st = iio_priv(indio_dev);
-> 	bool foundit = false;
+Thanks,
 
-After changes below can also do a bit of reordering to make this
-reverse xmas tree.
-
-> 
-> 	for (i = 0; i < 4; i++)
-Replace the 4 with ARRAY_SIZE(kxsd9_micro_scales) ou
-and 
-	for (unsigned int i = 0; i < ARRAY_SIZE(kxsd9_micro_scales), i++)
-
-> 		if (micro == kxsd9_micro_scales[i]) {
-> 			foundit = true;
-Drop foundit as pointless. Instead...
-> 			break;
-> 		}
-> 	if (!foundit)
-	if (i == ARRAY_SIZE(kxsd9_micro_scales))
-		return -EINVAL;
-
-> 		return -EINVAL;
-> 
-> 	ret = regmap_update_bits(st->map,
-> 				 KXSD9_REG_CTRL_C,
-> 				 KXSD9_CTRL_C_FS_MASK,
-> 				 i);
-rewrap that.
-> 	if (ret < 0)
-> 		goto error_ret;
-	if (ret)
-
-As regmap always returns <= 0 
-
-		return ret; 
-
-> 
-> 	/* Cached scale when the sensor is powered down */
-
-Not sure this is terribly helpful as comments go, so maybe drop it.
-
-> 	st->scale = i;
-> 
-> error_ret:
-> 	return ret;
-
-return 0;
-
-> }
-
-I don't have time now to do a full driver review (too many patches
-waiting) but in general this looks like it could do with some
-'modernization'.   I feel justified in being particularly rude
-about this one as a much younger me wrote it :)
-
->  }
->  
->  static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  			  struct iio_chan_spec const *chan,
->  			  int *val, int *val2, long mask)
->  {
-> -	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  	unsigned int regval;
->  	__be16 raw_val;
->  	u16 nval;
-> +	int ret;
->  
-> -	pm_runtime_get_sync(st->dev);
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(st->dev, pm);
-> +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
->  				       sizeof(raw_val));
->  		if (ret)
-> -			goto error_ret;
-> +			return ret;
->  		nval = be16_to_cpu(raw_val);
->  		/* Only 12 bits are valid */
->  		nval >>= 4;
->  		*val = nval;
-> -		ret = IIO_VAL_INT;
-> -		break;
-> +		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_OFFSET:
->  		/* This has a bias of -2048 */
->  		*val = KXSD9_ZERO_G_OFFSET;
-> -		ret = IIO_VAL_INT;
-> -		break;
-> +		return IIO_VAL_INT;
-
-Hmm. Turning the power on to output a known constant is a bit
-ugly and a side effect of the original goto pattern.  Let us
-drag the PM_RUNTIME_ACQUIRE... into the cases that need it.
-Make sure to use {} to define scope for case blocks where you
-are doing this.
-
->  	case IIO_CHAN_INFO_SCALE:
->  		ret = regmap_read(st->map,
->  				  KXSD9_REG_CTRL_C,
->  				  &regval);
->  		if (ret < 0)
-> -			goto error_ret;
-> +			return ret;
->  		*val = 0;
->  		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
-> -		ret = IIO_VAL_INT_PLUS_MICRO;
-> -		break;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-
-	default:
-		reutrn -EINVAL;
-and get rid of the block below.   The reason for this style is to
-make it obvious it is intentional that the switch statement only
-covers a subset.
-
->  	}
->  
-> -error_ret:
-> -	pm_runtime_put_autosuspend(st->dev);
-> -
-> -	return ret;
-> +	return -EINVAL;
->  };
->  
->  static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
-> @@ -239,9 +236,7 @@ static int kxsd9_buffer_preenable(struct iio_dev *indio_dev)
->  {
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  
-> -	pm_runtime_get_sync(st->dev);
-> -
-> -	return 0;
-> +	return pm_runtime_resume_and_get(st->dev);
->  }
->  
->  static int kxsd9_buffer_postdisable(struct iio_dev *indio_dev)
-> @@ -476,12 +471,18 @@ void kxsd9_common_remove(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	int ret;
->  
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -	pm_runtime_get_sync(dev);
-> -	pm_runtime_put_noidle(dev);
-> +
-> +	ret = pm_runtime_resume_and_get(dev);
-> +	if (ret < 0)
-> +		dev_warn(dev, "Failed to resume device (%d)\n", ret);
-> +
->  	pm_runtime_disable(dev);
-> +	if (ret >= 0)
-> +		pm_runtime_put_noidle(dev);
-Andy's point is valid about the reorder.  I don't think it is
-a bug, but I'm fairly sure it is unnecessary as nothing else is
-going to mess with the reference count in this window.
-
-I'm also not sure I care about an underflow if we are in the
-weird corners of runtime pm failing on remove.
-Note that it doesn't actually fail if you drop it too far (despite
-what sashiko thinks).  Runtime pm counters are always >= 0.
-Implementation is:
-static inline void pm_runtime_put_noidle(struct device *dev)
-{
-	atomic_add_unless(&dev->power.usage_count, -1, 0);
-}
-
-Whilst I prefer to keep balance, that protection is there to
-simplify this sort of tear down triggered underflow so let us
-use it here.
-
-
->  	kxsd9_power_down(st);
->  }
->  EXPORT_SYMBOL_NS(kxsd9_common_remove, "IIO_KXSD9");
+Jonathan
 
