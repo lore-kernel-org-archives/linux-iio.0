@@ -1,162 +1,366 @@
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB4B72D94BA
-	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 02:43:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.217.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783737822; cv=pass; b=QT9U0NOgZDCzQuj2bPzHuARBytYX/H43Chry/FYEZvW/yM24gKExud6ravT/Jzyg4MxKvyv/rf5cA9LTmT9cW6K3+myRONwfJ5Jpou/S/OegubLanxyaWsgCSwrXKsg9CO+d1g0LoWqWXqwBtiCOkxoM1lo1RovUWOlEhaI8FgQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783737822; c=relaxed/simple;
-	bh=cm0y3nfEv5KYZMQ9lE3vuSEaIaX/bYl6zqZ1nzt+X/o=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=OezsMIzwufoYIiDE9fLQ5RaaWlwsQeolxZ+hMJT0rw1Mj1vUcE4VrGM4aeV6Ko82AGKQGKJSNmoTnberzyKR+hW8CUPM8CWJkid/cLo5GxrKnL8aVzysMcHLTv5nwtE4ZULB2SoA3KGHyvWrrwKgYn+7iWOCwjd5U5LTiDSHxto=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p4uL/GEA; arc=pass smtp.client-ip=209.85.217.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FC782DC321
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 06:14:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783750500; cv=none; b=BodUhZLwa6Hl/BRkLmCJXGUAAalianZUcYEW/mM1+zHeQgkm8yJzUJqr0hkuRFcGLvyosDVgvzfMdIEGaRUxBfr/9fKhxfjO5wfQeuDmu+rbqSOPzlMeVt2/w9qq3ncE5kxjBmWKKFaKb4NTAAgs5AKVWQWxPDLF2f/RtoFJW/I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783750500; c=relaxed/simple;
+	bh=Dt2McddnuMrKbEBasU+CodMhNZI4YbUKvzbXXcjZPq8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=PqeLi8v7hqbuJYTE9n8pXeaX+d5NxdbqGXA1UffrL0vusA4agE7mvoJ2Gbs/j5QZUonI2Rb4Ddxujpry+5/j5Q4OTyjZ0297uPJpBzP/Wwd/AsCTmhYarzNbLf4sXL4WC/sLXkEb+3K+oDMNMXlKo3VI6CmneVEvNa8UUwxhSXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a4pCblNp; arc=none smtp.client-ip=209.85.128.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p4uL/GEA"
-Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-738bd0b7960so1160827137.0
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 19:43:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783737818; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Fob4Bm+c1H6FLcPkIhY/3iWaKxqx+NTLZ9Fv1phHMv29WKLXswesV0J0aroj8eqXuF
-         FmjPcctHzYprMf4Aa02c9ArRbQh6PlQnYnkRuHFa+x8EufHmk/h3kN2JF+llPxby+fpd
-         V7oNnXBLc3UfLLczXXYJuy4NcYCUdXwQIcpW9i+2tYTQ3VP4lteutH6qWeieQlXkSp2R
-         1myI6rgWLhMaAz4o3gmIQakos6FBGi+fFRgcivaFV0uVulBth1jaQ0t+Fb9lxuD+wLhn
-         UKlnHouK2aP7aaBwL778BmrNgHG9AIj+SpgaBgxglvLKQJ+qvhSHKmAVrksm2d97H7gd
-         V3ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=WZiBVoIHxmqoz1H+3Q12ZE9AXVZ5TYhLyqj1A3OwnYM=;
-        fh=wLrnDnAxJ6WXwS7tuoDnUPGzK0qdoSEK2v772FlW6+w=;
-        b=GgC2VAuqKwI7/ckMjWXiD/ZdTtd20yjpOO7X6LIn03zSycc8MK81yGG2qDJYaFPMDm
-         0epfhKPYoriu68YjOjN+PzhbfApzYvLKGjn63YvTRvSg0GPLFqTQwMicUpBVRQMRjsz2
-         9KbNVqpGqWUBvLf0GpUjxekK0M2o83dkccrwrvIOu+/4ry7uYuxJWptSoH5XomMCcyFJ
-         FJjkR9OVlk14xJhg+022/i1hz4xuF2PErg4g5nxNgCHtx4zhmj1pUNX8frsIe1w/kSlU
-         K2ZhagXlAnAlPrQ/VUCc9h3gGqQOIPbCGQ9p2cTfL4Nb4yQ1utrpemuE1yaAGTTSuhEj
-         m2dg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a4pCblNp"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493b7612475so13268725e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2026 23:14:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783737818; x=1784342618; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=WZiBVoIHxmqoz1H+3Q12ZE9AXVZ5TYhLyqj1A3OwnYM=;
-        b=p4uL/GEAJis80JMop3JN7/BtxocA27vCqhFhxXkAUoWPyZD45boNZlVLOo3mHEFCZG
-         3Q7rVUvy6s9mc3Xkib9/x9AgAQlOGgfug0NSLdo2duD+/902pVbSjlh/oq6wPCp5IAcH
-         ffzrSM8LI9PP3cRo4z4cq9uK1M0UyNmvDQ8YnvqJoIzo3+bXS4JRapP4OlcAuI98VOVs
-         UW7DlQxJxCKuhBj5482riobsRkXsVs23/iDgfIWir9FH3L+pPFi5pX6PLcgXVzaAJcNx
-         1gA9cwXtsw7To9Q6WvBOfl1nioNg7tghR7eH2GtI2GWzdZ7ap9oV8Lwim91Z2ynSzM3B
-         SEGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783737818; x=1784342618;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20251104; t=1783750497; x=1784355297; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=WZiBVoIHxmqoz1H+3Q12ZE9AXVZ5TYhLyqj1A3OwnYM=;
-        b=P3jiHw5j6tCG/Q0UBRJFzSSzvEALvS0Tmlq3kRdTXPZQ5l+cDVxOuTIKV/efKG/S3a
-         kj9s8AoY2kL1DVYTku7hmDGpvBCR+uUW39VSGaIesAvrdvE1UFBAo6iT+seJoUevnc2d
-         nvHQW94kvxK+wUwhEyxVLpS5aW5qC1qcZgvTjQoi2rFqZXG/lCtlV2FzOezjjwDkguKD
-         KTTUDm5StW6WozgUUn4+DufBCae2026JNYEwSiNl9vrYnpjX4r20eQUTvGmBQzZO+mdP
-         5HZe2cTDd0jL1tFjH7su8Yetn9wIwBYVZXV7YfzM/pO+ZKXRv1FTEunk3DE+BM5g2GnW
-         IDGg==
-X-Forwarded-Encrypted: i=1; AHgh+RrnY8+Qs5+YkfIA1C8Lbca4epywQqetkFUWkq5GT1zOzBI6r4+fsvF3mJ0iTlokgs+R+EvWTT8vshg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxGpf1xvwlj4Jh4+2XkRWUVCBGoy6BnhrvNBj8fL8GtFd/OeWfe
-	imC1Uc1lyDY3eQnAEMVcA8g7vmdJcA+m57f+/lagYc1es5c8WmxaUgeMr4+5EkAk9jsbZkBssjd
-	mzl36QbEpM0zj5PfgEC23nE7+vmsfPb8=
-X-Gm-Gg: AfdE7clN3G9R4/0DdTX3OaTUab2Ik9qWyANfMTKzoJYtxzjjzcR+rKJ0kQBblEhAMRY
-	pE0Cg1xq+gkeSJE+rvTL5EgqqUpDHbSHS3QbMKQlexFnligSTizMY9wuq+vXdinuR840cvHa2F6
-	qcH+Z7Oj9XISjaCjN0iYqFiq32btD+h7RMhDZ/AhKgIaC+72NJISsMTWsUIeDLvCLu7hFigAp2Q
-	2uzU/RvwVDWyoVjUy8DALfC6/msIZyIntMQV6MwMQtOkmGqSohf1g2N56/NaKRE/BmK68N/vD7d
-	cOM8RQEcLCsIOKrSG9S4GFg1b3nmcA34FlvLYGxGiiTM6nUc2yZEFjDKgCkpkrT3cM1SeehK5cl
-	SwvTZl4oNfdXy
-X-Received: by 2002:a67:f7d1:0:b0:744:d1a6:b11d with SMTP id
- ada2fe7eead31-74533b84339mr908051137.3.1783737818123; Fri, 10 Jul 2026
- 19:43:38 -0700 (PDT)
+        bh=WyQMHFX4gASHzVhLS9z0EW0RqD5Wshc7uaJzjeKpyBM=;
+        b=a4pCblNpQk3Bcy6d0nnUiosGLwqN/ST0CJJOfdzf/1UmqJioj09JXfZnYfDEVjdz9e
+         y/QAynbvy5c0fTXf97GEWw78vLoJMfVvNeCCUSKk/6QSyJVvY9vBinqa+bLocX5ttX9f
+         +K3D/6LJg4CAoP1blmbw4toEeVAZdr+d5P3qlPJPu0cIyqHMjxTK36UQtdgL9YS607cH
+         MKl8Y4kzU2dB/IAVIk1d73mJRwHtuG/+1QwGuTxY+U0o6TWD+Ws4YAovg/Je9AwX2CU8
+         ckL2V3XK7vQXPIxGU0SVSkIjWqpb+YRv8J65npdk9cWwbscW/TpC7HiRv1UElRTjXPoJ
+         6EGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783750497; x=1784355297;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=WyQMHFX4gASHzVhLS9z0EW0RqD5Wshc7uaJzjeKpyBM=;
+        b=AcNoc1uOLUttIUoKc1WkSq4/G82IX0HssQ+9iXss/N+hsBdFbULUTUjb0zmA38eT3V
+         DXSfXj8KBirSSALMDpgsHRsnJ9O4moB2puHrDxEjkDxOaXc+fjK9A1nlV9hQlOvLiMez
+         aXJpNx+mBOFqWv9/T5L+ZSZsI3DTfkKItKXRgjc6vRIvyqHtiLUWMZPLnm6MAom9Aziv
+         +LUHoBqyV68zeD+DyW5MaLLeJwvq/3AlNOeOQN88PzValI/cfI0qlakifz2Tk0sJ0rIl
+         NNobxvcYjc8/Bb6Nu4uXcqk2JYttXSFjJcIFraRbZaPnlg1Ds1U99YBcM+8PFjJO2SSJ
+         u/uw==
+X-Gm-Message-State: AOJu0YzAI1bT2lwaR6wnIA5XM2TJG8flqaSFjeO00qag7GsF8IiSD4TW
+	CWIIpCXP/PJ/vAyHIHrUkhPqYVKNurQ4xN4cBzyeHyRpRQP/ELWWh472
+X-Gm-Gg: AfdE7cl2/HWde3SG5RREs4R1C9VErV3BLh0yaP/AwSEVtdLvPFlRao78WGlKJvM4W/X
+	puwi2dpMq8RMSXEuiH+Uz48so+tDR8jZQoABMGzivjOzMM23fNnBuDq8HxPvDYo7yq0Cak/rTRX
+	JOTSYd+x0LHXLNdvl5MzZL1Y1ycTpV/ATXIP+AEVUfT6FEoS9Mv4kv1awl4cDseeP0iwkNUNj5i
+	tGaM/ZzbhS7n1l1TiHWdG8p7wBXn5CNPbUkwhwmWHNeqmQl36i5bTCdgfIqM53Pf4qg6C428yYD
+	MwywmaZ8r1RZrDd8LxEZ/TYXK2osYj5u4y5fs/Ym6zVP97LMjx26iSgovATKmveT6RUIwM3t5jZ
+	bO5DWQ+/RUTaXIaQWJuug7qy8b+8Jq5tNvJQIhHt0Lnt9ji/uwTvgKWv7tYP8/H6Oib+qKWsyaP
+	RRwH+S3Z38JU180Y3t0hscnaxu88QpADDMRNTGW1K+JGHc5zLR6SmppeqbwutNoMkZoMOWVbcDr
+	2L0yyco4wOpexJQD37UmgkM6IVEPVGOpVSSkm8utyUeWGYrMv2QtmGVzSd6V8eTmRCNG2tHYQp3
+	zpcKncFpK/nGp4S5VNUuVG/1PB7943vO4Ywsbq/o5PNfyFKYIG0U+itrJJv2DAgW
+X-Received: by 2002:a05:600c:190f:b0:493:adcb:d368 with SMTP id 5b1f17b1804b1-493f87e9aa1mr15683975e9.9.1783750497363;
+        Fri, 10 Jul 2026 23:14:57 -0700 (PDT)
+Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493f49755f9sm101453365e9.8.2026.07.10.23.14.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jul 2026 23:14:57 -0700 (PDT)
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+Date: Sat, 11 Jul 2026 08:14:54 +0200
+Subject: [PATCH v2] iio: light: opt3001: split opt3001_get_processed()
+ logic
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-Date: Sat, 11 Jul 2026 08:28:27 +0545
-X-Gm-Features: AUfX_mxDeHe86_YdwArqEXxpUTiTOxiWdaz-UlADypKSrt-vRHpBc2kW_hLs9sY
-Message-ID: <CAMyXUJkncpA3Q-BStPsbXfViNbxzJ6ZrQCt0RoGxtVXV-R_DOg@mail.gmail.com>
-Subject: [PATCH v2] iio: proximity: hx9023s: validate firmware size
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org, Joshua Crofts <joshua.crofts1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260711-opt3001-unwind-cleanup-v2-1-47f617e00c65@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNQQ6CMBBFr2Jmbc20hCquvIdhUdoBJoGWtIAaw
+ t2tXMDle8l/f4NEkSnB/bRBpJUTB59BnU9ge+M7Euwyg0Kl8Yo3Eaa5QJRi8S/2TtiBjF8mURk
+ iR4UudVlCHk+RWn4f4Weduec0h/g5flb5s3+TqxRSVIiNsq1zjTaPbjQ8XGwYod73/QsD3G7pv
+ AAAAA==
+X-Change-ID: 20260708-opt3001-unwind-cleanup-9aeede365655
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joshua Crofts <joshua.crofts1@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1783750496; l=8030;
+ i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
+ bh=Dt2McddnuMrKbEBasU+CodMhNZI4YbUKvzbXXcjZPq8=;
+ b=pV9DvZ5YJA/xSr+SjahlOWCeYCyjjLk4QWMtFVHPMWcNgiSPSa31vHWNKz0zA0Ckog/34X66O
+ R/UidHj2sORB8X59TvKUVZN7NkNNFsNJA2MGyJoqmtpLYrs3InjMyX7
+X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
+ pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-hx9023s_send_cfg() copies the firmware into a counted flexible array and
-then reads fixed offsets from the copied data before walking register/value
-pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
-make the driver read past the copied buffer during probe-time configuration
-loading.
+Split the logic inside the opt3001_get_processed() function, as the
+current flow is hard to read, mixing IRQ and non-IRQ code blocks.
 
-Reject firmware images that cannot contain the fixed header, reject images
-too large for the u16 fw_size field, and validate that the advertised
-register count fits in the remaining payload.
+Separate the IRQ code path into its own function, same for the
+non-IRQ path.
 
-Fixes: e9ed97be4fcc ("iio: proximity: hx9023s: Added firmware file
-parsing functionality")
-Cc: stable@vger.kernel.org
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
-
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
 ---
-v2:
-- Explain the U16_MAX limit in a code comment.
-- Keep the existing kzalloc() expression unchanged.
+This patch fixes the absolutely horrible code flow in the
+opt3001_get_processed() function, where the original implementation
+used checks whether IRQ mode is enabled to execute blocks of code,
+making the function hard to read. Ideas on how to improve the functions
+are more than welcome.
 
+Originally suggested by Jonathan Cameron.
 ---
- drivers/iio/proximity/hx9023s.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Changes in v2:
+- Remove ternary operator and add if/else
+- Remove timeout variable
+- Link to v1: https://lore.kernel.org/r/20260708-opt3001-unwind-cleanup-v1-1-900b2cfddb6a@gmail.com
+---
+ drivers/iio/light/opt3001.c | 197 ++++++++++++++++++++++++++------------------
+ 1 file changed, 118 insertions(+), 79 deletions(-)
 
-diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-index a6ff7cbe9e65..685053b84b34 100644
---- a/drivers/iio/proximity/hx9023s.c
-+++ b/drivers/iio/proximity/hx9023s.c
-@@ -18,6 +18,7 @@
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/irqreturn.h>
-+#include <linux/limits.h>
- #include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-@@ -1031,6 +1032,10 @@ static int hx9023s_bin_load(struct hx9023s_data
-*data, struct hx9023s_bin *bin)
-
- static int hx9023s_send_cfg(const struct firmware *fw, struct
-hx9023s_data *data)
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index 2bce6cd5f4e4..d1a2426cd355 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -316,36 +316,33 @@ static const struct iio_chan_spec opt3002_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(1),
+ };
+ 
+-static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
++static int opt3001_get_processed_irq(struct opt3001 *opt, int *val, int *val2)
  {
-+ /* fw_size is u16 in struct hx9023s_bin, so reject truncation. */
-+ if (fw->size < FW_DATA_OFFSET || fw->size > U16_MAX)
-+ return -EINVAL;
+ 	struct i2c_client *client = opt->client;
+ 	struct device *dev = &client->dev;
+-	int ret;
+ 	u16 mantissa;
+-	u16 reg;
+ 	u8 exponent;
+ 	u16 value;
+-	long timeout;
++	u16 reg;
++	int ret;
+ 
+-	if (opt->use_irq) {
+-		/*
+-		 * Enable the end-of-conversion interrupt mechanism. Note that
+-		 * doing so will overwrite the low-level limit value however we
+-		 * will restore this value later on.
+-		 */
+-		ret = i2c_smbus_write_word_swapped(client,
+-						   OPT3001_LOW_LIMIT,
+-						   OPT3001_LOW_LIMIT_EOC_ENABLE);
+-		if (ret < 0) {
+-			dev_err(dev, "failed to write register %02x\n",
+-				OPT3001_LOW_LIMIT);
+-			return ret;
+-		}
+-
+-		/* Allow IRQ to access the device despite lock being set */
+-		opt->ok_to_ignore_lock = true;
++	/*
++	 * Enable the end-of-conversion interrupt mechanism. Note that
++	 * doing so will overwrite the low-level limit value however we
++	 * will restore this value later on.
++	 */
++	ret = i2c_smbus_write_word_swapped(client,
++					   OPT3001_LOW_LIMIT,
++					   OPT3001_LOW_LIMIT_EOC_ENABLE);
++	if (ret < 0) {
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_LOW_LIMIT);
++		return ret;
+ 	}
+ 
++	/* Allow IRQ to access the device despite lock being set */
++	opt->ok_to_ignore_lock = true;
 +
-  struct hx9023s_bin *bin __free(kfree) =
-  kzalloc(fw->size + sizeof(*bin), GFP_KERNEL);
-  if (!bin)
-@@ -1041,7 +1046,8 @@ static int hx9023s_send_cfg(const struct
-firmware *fw, struct hx9023s_data *data
-  bin->fw_ver = bin->data[FW_VER_OFFSET];
-  bin->reg_count = get_unaligned_le16(bin->data + FW_REG_CNT_OFFSET);
-
-- release_firmware(fw);
-+ if (bin->reg_count > (bin->fw_size - FW_DATA_OFFSET) / 2)
-+ return -EINVAL;
-
-  return hx9023s_bin_load(data, bin);
+ 	/* Reset data-ready indicator flag */
+ 	opt->result_ready = false;
+ 
+@@ -367,70 +364,33 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 		goto err;
+ 	}
+ 
+-	if (opt->use_irq) {
+-		/* Wait for the IRQ to indicate the conversion is complete */
+-		ret = wait_event_timeout(opt->result_ready_queue,
+-					 opt->result_ready,
+-					 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
+-		if (ret == 0) {
+-			ret = -ETIMEDOUT;
+-			goto err;
+-		}
+-	} else {
+-		/* Sleep for result ready time */
+-		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
+-			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
+-		msleep(timeout);
+-
+-		/* Check result ready flag */
+-		ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+-		if (ret < 0) {
+-			dev_err(dev, "failed to read register %02x\n",
+-				OPT3001_CONFIGURATION);
+-			goto err;
+-		}
+-
+-		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
+-			ret = -ETIMEDOUT;
+-			goto err;
+-		}
+-
+-		/* Obtain value */
+-		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+-		if (ret < 0) {
+-			dev_err(dev, "failed to read register %02x\n",
+-				OPT3001_RESULT);
+-			goto err;
+-		}
+-		opt->result = ret;
+-		opt->result_ready = true;
+-	}
++	ret = wait_event_timeout(opt->result_ready_queue,
++				 opt->result_ready,
++				 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
++	if (ret == 0)
++		ret = -ETIMEDOUT;
+ 
+ err:
+-	if (opt->use_irq)
+-		/* Disallow IRQ to access the device while lock is active */
+-		opt->ok_to_ignore_lock = false;
++	opt->ok_to_ignore_lock = false;
+ 
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (opt->use_irq) {
+-		/*
+-		 * Disable the end-of-conversion interrupt mechanism by
+-		 * restoring the low-level limit value (clearing
+-		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
+-		 * those enable bits would affect the actual limit value due to
+-		 * bit-overlap and therefore can't be done.
+-		 */
+-		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+-		ret = i2c_smbus_write_word_swapped(client,
+-						   OPT3001_LOW_LIMIT,
+-						   value);
+-		if (ret < 0) {
+-			dev_err(dev, "failed to write register %02x\n",
+-				OPT3001_LOW_LIMIT);
+-			return ret;
+-		}
++	/*
++	 * Disable the end-of-conversion interrupt mechanism by
++	 * restoring the low-level limit value (clearing
++	 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
++	 * those enable bits would affect the actual limit value due to
++	 * bit-overlap and therefore can't be done.
++	 */
++	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
++	ret = i2c_smbus_write_word_swapped(client,
++					   OPT3001_LOW_LIMIT,
++					   value);
++	if (ret < 0) {
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_LOW_LIMIT);
++		return ret;
+ 	}
+ 
+ 	exponent = OPT3001_REG_EXPONENT(opt->result);
+@@ -441,6 +401,85 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+ 	return IIO_VAL_INT_PLUS_MICRO;
  }
-@@ -1058,6 +1064,7 @@ static void hx9023s_cfg_update(const struct
-firmware *fw, void *context)
-  }
+ 
++static int opt3001_get_processed_noirq(struct opt3001 *opt, int *val, int *val2)
++{
++	struct i2c_client *client = opt->client;
++	struct device *dev = &client->dev;
++	u16 mantissa;
++	u8 exponent;
++	int ret;
++	u16 reg;
++
++	/* Reset data-ready indicator flag */
++	opt->result_ready = false;
++
++	/* Configure for single-conversion mode and start a new conversion */
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
++	if (ret < 0) {
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
++		goto err;
++	}
++
++	reg = ret;
++	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
++
++	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
++	if (ret < 0) {
++		dev_err(dev, "failed to write register %02x\n",
++			OPT3001_CONFIGURATION);
++		goto err;
++	}
++
++	if (opt->int_time == OPT3001_INT_TIME_SHORT)
++		msleep(OPT3001_RESULT_READY_SHORT);
++	else
++		msleep(OPT3001_RESULT_READY_LONG);
++
++	/* Check result ready flag */
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
++	if (ret < 0) {
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_CONFIGURATION);
++		goto err;
++	}
++
++	if (!(ret & OPT3001_CONFIGURATION_CRF)) {
++		ret = -ETIMEDOUT;
++		goto err;
++	}
++
++	/* Obtain value */
++	ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
++	if (ret < 0) {
++		dev_err(dev, "failed to read register %02x\n",
++			OPT3001_RESULT);
++		goto err;
++	}
++
++	opt->result = ret;
++	opt->result_ready = true;
++
++err:
++	if (ret < 0)
++		return ret;
++
++	exponent = OPT3001_REG_EXPONENT(opt->result);
++	mantissa = OPT3001_REG_MANTISSA(opt->result);
++
++	opt3001_to_iio_ret(opt, exponent, mantissa, val, val2);
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
++{
++	if (opt->use_irq)
++		return opt3001_get_processed_irq(opt, val, val2);
++
++	return opt3001_get_processed_noirq(opt, val, val2);
++}
++
+ static int opt3001_get_int_time(struct opt3001 *opt, int *val, int *val2)
+ {
+ 	*val = 0;
 
-  ret = hx9023s_send_cfg(fw, data);
-+ release_firmware(fw);
-  if (ret) {
-  dev_warn(dev, "Firmware update failed: %d\n", ret);
-  goto no_fw;
+---
+base-commit: fef4337eb2888c758c7058e1723903204f012a26
+change-id: 20260708-opt3001-unwind-cleanup-9aeede365655
+
+Best regards,
+-- 
+Kind regards
+
+CJD
+
