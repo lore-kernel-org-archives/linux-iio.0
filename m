@@ -1,147 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A95F31FBEBC;
-	Sat, 11 Jul 2026 09:11:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E220E353A62;
+	Sat, 11 Jul 2026 10:05:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783761080; cv=none; b=g6Ld6u4z3iSlP3bGGMFIu1ShjD8Gr5X7ArE1d+aAItGO6JL/vAnqFl7q4vqTGAwZoUtrg3WrAn0YiWBSHpI20UE0SlMNMHHuzGZmMUeReEVmGB8WDXdkdIZRUzIfukDJs1jGoT3dRJUXXwKl9ntyggUj39ZzdbCzDSyEmDnwd3k=
+	t=1783764330; cv=none; b=t8Nn7aITDUgZ7zg+P01bIbBRWwevgJIAw8TzwQ3UJ5VYIZlw7x+Loki9rkmv9AQCtBreR5fDaiQa7dwNVrHVbItAHAVLfq1B3/OlkU+70CdKu3nHYC1GXDthEcTzqYdVVcfRuXy7b7vE4Q0F2UL9QWGBHvL9vAg7mDNeqtcnQ3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783761080; c=relaxed/simple;
-	bh=DLU0VljP47k1ayhxXZUHOSl0sZpL+INYQwxLX+uBxYs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uTBLOuHFE1lguy29ttIon70gP9lqX3vT/AyrLOCy6ME0g5huGcj5fsMFraZQMJhad2Px2TrITONgJxTtVW6hC1M8YOnDepMq/le0hVna2eulowycHcr+Pf8XdiGXhOu22hXO26v6u7aTAbmKSwJvaAdDpOMHl8Y7ur657q/X1vA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hEGA/ILX; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783764330; c=relaxed/simple;
+	bh=XeqtZDBObbe74VEoiaORdWOe6v5UrT29UxzIDvBmrtk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Message-ID:Date:
+	 Content-Type:MIME-Version; b=XKiIdkfXd1npdhK7WZ5QB9tXpLOJBkC1icsu9NyWYSneZ8TTmyc2NnnVHQKxuiLYFACI7f3jJyy+A1nbezkupdfNE4JsX0fgDFDveAk+N6JY7nDhuQ6zIZJcrJiXrCKE5bE4Gctdgi21dy+MtBPHUgsUrKVtCQWSAYvpjG49dQI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WayvsVos; arc=none smtp.client-ip=95.215.58.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hEGA/ILX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783761079; x=1815297079;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DLU0VljP47k1ayhxXZUHOSl0sZpL+INYQwxLX+uBxYs=;
-  b=hEGA/ILXzxjAsF72t51u7wFkVrIPiaMhAngUP6jGWdaMRdsDzoTK/Hqx
-   fbr7CYmQdPof0iu8LNCNtlsG8Z3sVxzIvhWRzrUy2KtkHHeDgcTojpnYX
-   gmSL9EcoJb0WRiL/bbcEfXNV+mfNqDvvRMXbvbN8jokrJDWGiUcnsgzU4
-   MAmzejYK7+gCi8MpuxbJTSgNKCxCAkcYAIYGEKUxcsDPM8ed+klXv8NSd
-   W2rV/Zp8QO4aFx9bUbKf/8x80Flf4qJvrc1PJ6f5/wI7takgQoXFY6DcV
-   maoUitD3+n0ziRI7PV9u68KtQdOnYmodUg0R1gTbKxacvL/8z4zR6G7/q
-   A==;
-X-CSE-ConnectionGUID: NNSeK3B9Tj6dFDXmFouMrw==
-X-CSE-MsgGUID: KuLmrzzvQjiq+CzMClR8GQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="95598331"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="95598331"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 02:11:19 -0700
-X-CSE-ConnectionGUID: g5XBNJjqSgiA2CzRl3/8rQ==
-X-CSE-MsgGUID: REk/VTNnRI6DyUO+2f4WYA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="253357246"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.254])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 02:11:14 -0700
-Date: Sat, 11 Jul 2026 12:11:12 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
-	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 7/8] iio: adc: ti-ads112c14: implement gain on
- internal short SYS_MON channel
-Message-ID: <alIIsFyoxYLKKmab@ashevche-desk.local>
-References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
- <20260710-iio-adc-ti-ads122c14-v3-7-746d52cbf1d0@baylibre.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WayvsVos"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1783764316;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iOE/Q2XSh0FcWlIlJBT2IIO2PedQr0Ik4Q0k8uUwmUs=;
+	b=WayvsVosuY+Wv6qUD6Sc38b+E2zKMg4bLcm1+pWbFSx6HQSU0L/i50kNe6NknkWU7A+cBV
+	puUVjfw6ad9X7tCAZBLsovKjoyuYhiWvJxEVIsYZxf/WKeGxhZfWV7e8naZUBePkR3FOLM
+	Q89Ex9A25fERNAUU1fwUyxxRkDJnwrQ=
+From: Igor Korotin <igor.korotin@linux.dev>
+To: jic23@kernel.org, lars@metafoo.de
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-i2c@vger.kernel.org, andi.shyti@kernel.org,
+ wsa+renesas@sang-engineering.com, ojeda@kernel.org, dakr@kernel.org,
+ branstj@gmail.com, Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Subject: Re: [RFC PATCH v4 1/3] i2c: rust: implement SMBus read abstraction
+ via kernel::io::Io for I2cClient
+In-Reply-To: <20260707151542.91997-2-muchamadcoirulanwar@gmail.com>
+References: <20260707151542.91997-1-muchamadcoirulanwar@gmail.com>
+ <20260707151542.91997-2-muchamadcoirulanwar@gmail.com>
+Message-ID: <178376430529.16552.7043868463863908196@linux.dev>
+Date: Sat, 11 Jul 2026 11:05:05 +0100
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260710-iio-adc-ti-ads122c14-v3-7-746d52cbf1d0@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-Migadu-Flow: FLOW_OUT
 
-On Fri, Jul 10, 2026 at 05:50:40PM -0500, David Lechner (TI) wrote:
-> Implement support for the programmable gain amplifier on the internal
-> short SYS_MON channel. This channel is used for calibration, so it is
-> useful to be able to set the PGA to the same gain as the external
-> channels. The gain setting is implemented via the `_scale` attribute.
-> 
-> In the future, we may want to support different reference voltages for
-> this channel, so the scale_available table is populated during probe
-> rather than being a static table.
+Thanks for reworking this to use `Io` as agreed -- the direction is right.
+But I think the fix is incomplete, and it points at something I'd like
+Danilo's take on.
 
-...
+try_read8()/try_read16() are overridden here with real errno handling,
+bypassing IoCapable::io_read entirely -- necessary, since io_read's
+signature (-> T, not Result<T>) can't carry a negative errno from
+i2c_smbus_read_byte_data.
 
-> +/*
-> + * Available gains as tenths (e.g. value 5 == 0.5 gain). Indexes correspond to
-> + * ADS112C14_GAIN_CFG_GAIN values.
-> + */
-> +static const u32 ads112c14_pga_gains_x10[] = {
-> +	5, 10, 20, 40, 50, 80, 100, 160,
-> +	200, 320, 500, 640, 1000, 1280, 2000, 2560,
+But that override only covers two of Io's entry points. The generic
+try_read<T, L>, try_write<T, L>, try_update<T, L, F>, and try_write_reg
+all still route straight through IoCapable::io_read/io_write and aren't
+overridden here. Concretely:
 
-Since the line lengths are quite different, I would add tail comments with
-indices.
+- client.try_read::<u8, _>(offset) (as opposed to try_read8()) silently
+  casts a negative errno to a garbage u8 on failure -- the exact bug
+  try_read8() exists to avoid, reachable through a different, still-public
+  method on the same type.
+- try_write8()/try_write16() aren't overridden at all, so any write
+  through them (or the generic try_write) discards the real SMBus return
+  value and reports Ok(()) even when the transaction failed on the bus
+  (NACK, arbitration loss, timeout).
+- try_update() combines both problems in a single read-modify-write.
 
-	5, 10, 20, 40, 50, 80, 100, 160,		/* 0 -  7 */
-	200, 320, 500, 640, 1000, 1280, 2000, 2560,	/* 8 - 15 */
+This driver only calls try_read8()/try_read16(), so AS5600 itself isn't
+affected in practice. But the abstraction being introduced here would be
+unsound the moment any write-capable consumer reaches for it -- and I
+don't think patching try_write8/try_update one at a time is the right
+fix, since it just leaves the same trap for whichever method nobody's
+gotten around to overriding yet.
 
-(or in hexadecimal, depending on the datasheet).
+Danilo -- since using Io for I2C was originally your suggestion, I'd like
+your read on this before we go further: IoCapable::io_read/io_write are
+infallible by signature, which holds for MMIO/PCI-config (bounds-checked
+implies success) but doesn't hold for a bus transaction -- I2C can
+genuinely fail per-transfer regardless of address validity. Given that,
+is Io/IoCapable the right abstraction for I2cClient to implement at all,
+or does I2C need its own fallible-native interface rather than overriding
+pieces of this one?
 
-> +};
-
-...
-
->  static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
->  					     const struct iio_chan_spec *chan)
->  {
-> +	u32 gain_val;
->  	int ret;
->  
-> -	/* TODO: GAIN is useful for shorted PGA inputs. */
-> -	/* All SYS_MON channels use GAIN of 1 to keep it simple. */
-> +	/*
-> +	 * All SYS_MON channels use GAIN of 1 to keep it simple. Other than
-> +	 * the internal short channel, where it is useful in practice.
-> +	 */
-> +	gain_val = chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT ?
-> +		   data->sys_mon_chan_short_gain_val : 1;
-
-Hmm... What about
-
-	if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT)
-		gain_val = FIELD_PREP(ADS112C14_GAIN_CFG_GAIN, data->sys_mon_chan_short_gain_val);
-	else
-		gain_val = FIELD_PREP_CONST(ADS112C14_GAIN_CFG_GAIN, 1);
-
->  	ret = regmap_update_bits(data->regmap, ADS112C14_REG_GAIN_CFG,
->  				 ADS112C14_GAIN_CFG_SYS_MON |
->  				 ADS112C14_GAIN_CFG_GAIN,
->  				 FIELD_PREP(ADS112C14_GAIN_CFG_SYS_MON, chan->address) |
-> -				 FIELD_PREP(ADS112C14_GAIN_CFG_GAIN, 1));
-> +				 FIELD_PREP(ADS112C14_GAIN_CFG_GAIN, gain_val));
-
-				 gain_val);
-
-On the second thought this might require to have a separate mon_val to make
-this consistent. Up to you.
-
->  	if (ret)
->  		return ret;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Cheers
+Igor
