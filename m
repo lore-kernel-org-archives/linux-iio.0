@@ -1,248 +1,366 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1F12D8376;
-	Sat, 11 Jul 2026 13:00:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBBDA25DB1A
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 14:33:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783774836; cv=none; b=HNi8Z9z9a5e6GFmFW4JAX30Cth2owJ1+9JMlwVHczCEUKHCXOSNTxHNfMPwBDqI/IuaQrL2zoaHr5BTNsKRsbko9+P5iicYlyZpVgpY+OwQPpuzR1IoqCO2DpvrxguLzX1IFuEkYbWUM15GBWPdp2baZQYSDZ1Tq3P8kShDLWAc=
+	t=1783780408; cv=none; b=kkdQwdr3YRvOgGkhfqyzpToaZeaQmQPvj3sNe5U9t+Psq0eSVSlX0iiz5r+qZaPfPGYFZXw6scK/zsZI2HUMFT/ji9B1VhonhBYuPvxnVQ5a5MGSo4CFh8l9ZQY2aewAmf7ndkUfUqb68Z+AoSfAXG92j+jJb4rPLH8u3JqEPns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783774836; c=relaxed/simple;
-	bh=oqWg7UABC2GpV74e/SzQ4pYEpntQ+E/jiLoCkyEhzas=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q+m5t5y/D+eTNt/MNlhiM8hKhmcL1eGOAzQFEA+3iS3+nPYOafC4UAeVt60fwrKygO+lxr/pv2MU3jUpgzQ7Bq7VN0kjn/z2qYV+hgmffp6+dfwHkn5f7N2cyQl6CNmlPr035yZAnndofrkLkCW/AC1uorBe8BnoTCC0r+Qmln4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b4gsKIJn; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1783780408; c=relaxed/simple;
+	bh=qVipgHOBpx41dSC7v0weGrXYha/INIFVRx2IXh4riwo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lMilcWoXtJdDRawEThRQ7TGfl9wSs9GMXQeEdH6gGY68AGBTUsIDzAr9NzRXhtoLFM+F2cU+uyykDYijpDDEHyLpczROV/lrGYoM2iE2q5GZZmqupMfc9WicFmmkGRIbDvORyA2sPUdAh1OIkY/0+nmMp+GzOA/JSA9R7wshM7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TMiii6zf; arc=none smtp.client-ip=209.85.167.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b4gsKIJn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1783774834; x=1815310834;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oqWg7UABC2GpV74e/SzQ4pYEpntQ+E/jiLoCkyEhzas=;
-  b=b4gsKIJnfCX8myoar/w/Md+rkqsdGYRo4vXMPffXgEm394fVpOH5ylzT
-   p2DzqUNx+YxSEWD6oHoLfth3XK5lBKqUNzlB6Jnp1IJG1SFbtgdg+bD0D
-   wj9bnj84lKUIh6raCtGmjR/EHZGNsQlFzQZDKb1sNlHfwYSM/p8MMBNpY
-   s2ShxITtIL//6nbwszZgul2W68s7LVuzgedkziQ/yaqSEL/tlrP+qv1xy
-   EFizUOkhfsWtP/Y9MvDe0Cc7HfJ9rpzza/Z+398CbO/QJbKyvj9CSZ5Kk
-   Ojyzw8/BEBcjT0a0LeJ/I2mlQLt7V7h42pfGw8htUWcs2MI2h8eQvcyb8
-   g==;
-X-CSE-ConnectionGUID: 3BfO6jyKQaurNKecnJjFWg==
-X-CSE-MsgGUID: WzVaG2SSQ6i+dXdkWgHUXA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="101879009"
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="101879009"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 06:00:33 -0700
-X-CSE-ConnectionGUID: W6vyTWFpTCyUzW3UkR0L9A==
-X-CSE-MsgGUID: EyDTz2rPSfuZD2o/DuC8AQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
-   d="scan'208";a="257067270"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.254])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 06:00:29 -0700
-Date: Sat, 11 Jul 2026 16:00:27 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "David Lechner (TI)" <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
-	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 8/8] iio: adc: ti-ads112c14: add measurement channel
- support
-Message-ID: <alI-a6nkGvXp6sDo@ashevche-desk.local>
-References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
- <20260710-iio-adc-ti-ads122c14-v3-8-746d52cbf1d0@baylibre.com>
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TMiii6zf"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-4955cd5da3dso742143b6e.2
+        for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 07:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1783780404; x=1784385204; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7ANE1fxQe57OuRECeLcRe8WkdUSBILcKueuA4U5TIdQ=;
+        b=TMiii6zfyMd/Q/Xlx1V8s3tImnIxjgDpVCjybVZAa8A8hKfBlQVb6uK4Dhtb1GImpg
+         KZvqb/S6OuqIpbU6SWzr17Hl8ndYrtz8Jl13UPcyUAl+DUpB0f8fvPOy1fCBD4d/A2N+
+         95OOurZbTgJ3e5nL2Nu9CGVAXg4jHkh4uZAgBv+dvqPYoofvxZM0izGxk8pelzvO/0Rn
+         6S/EES9dBJrNCOMfT+Hs8ZNimU+5EmZKTpDgcV5hE5iuyfyEye6FTshVEqkGWZpIyCiV
+         g1AqbSiT0MS/rGdCNaknQ2ll5vdDFA8S3uRUo7x6bsEbI/BxSBMMz9Wz79DNV8Nkvg6x
+         lg5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783780404; x=1784385204;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7ANE1fxQe57OuRECeLcRe8WkdUSBILcKueuA4U5TIdQ=;
+        b=FwNYURsM7pjKaHvMlPxLM2SuzSY6+Myr1ws39rw+nQxVE1hZCDLbN8xieCUL1i+9pz
+         8aY2Jmo7k/GNzcj93e0clmdzeV31LRiUUEVGS5vOsRJ7OVYb74OHJBWk7cr4AeZlCYHe
+         QYfIVtg6L926gGOTxWFYnkQncgZyj1BbwWp2Ew+Gz5T6yG318711Q7igG5YeLSkC2u7e
+         nYsdbiS+j9yLV+zKiR+RkV26TguaQRSitJsXrI9teB3FpfydhNxflwGn1TnFP1TH/74S
+         6zfJ0LhXitVVnhiSQOfvCaN2TfWmU+LOUuqGY0+Uh/gjub+JZC6cUcZgEhg+c+qkqKrA
+         NWMA==
+X-Gm-Message-State: AOJu0Yyz0WU7Ab24faCoC1nv71SYLtDDofkBxvhm+10qKkqPp+AO2wti
+	EHcQQVF2GsFVHs6JNgocB9XMK5yeWIGXmShjYW0i43ZTWXGCuU9bpgap0cSfY7n1AZYlzGoQqS+
+	KfNea
+X-Gm-Gg: AfdE7ckZ3FXYUt2GRQW9NHB3gCtzfXgjnayzCa0hE+ZCjwiYopP0Ezq1q1ZeUDXcByt
+	fkZH2yPtGCrdbEnRD3lsHdPamcTB5FpSOhBjPXHHlnApooztnbVNftRlqi4X7LZJlQdAYNY7Hnf
+	eiGQb6Nl7bcA7k/Yfb2+m2nhny/BzyYRidqA/eVaqYI8Glf5H5NtEEW93mV4zi2YvJ8zMmM4C7H
+	3JGxQfm9+karh44eemsmC6nFvcwbPKq/YRjxFJRQRahVK7iHdC9WUtSQcSzVO+AvpThStcIMR94
+	fGr9uy99HuuixM1fYPVcM5Ld7ruVf0BH+249gAGxjBrl+wAklPAYF3afL/fVR8HT3hGaUNkZfHF
+	BuhZDgsNply9v7G3N1UMQdCA0IKhQXJx70L94XrcZxZyHrvABAnALK8vFLT4vbCvcrjyQuaIcBf
+	HqU9rqNV46B0T9DR6Ezrn9ldDCoIyKJOJoMyQuI4IdBg0+n3JVCYcenr2qVCYRS8o=
+X-Received: by 2002:a05:6808:10d3:b0:496:10b0:20f0 with SMTP id 5614622812f47-4a42affec11mr2289056b6e.42.1783780404461;
+        Sat, 11 Jul 2026 07:33:24 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:a950:74e5:81f2:8c89? ([2600:8803:e7e4:500:a950:74e5:81f2:8c89])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a42ae81f1esm1924545b6e.11.2026.07.11.07.33.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Jul 2026 07:33:22 -0700 (PDT)
+Message-ID: <ef17bf0d-4837-4cd6-85d9-b5417d3740f8@baylibre.com>
+Date: Sat, 11 Jul 2026 09:33:22 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260710-iio-adc-ti-ads122c14-v3-8-746d52cbf1d0@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: light: opt3001: split opt3001_get_processed()
+ logic
+To: Joshua Crofts <joshua.crofts1@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260711-opt3001-unwind-cleanup-v2-1-47f617e00c65@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260711-opt3001-unwind-cleanup-v2-1-47f617e00c65@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jul 10, 2026 at 05:50:41PM -0500, David Lechner (TI) wrote:
-> Add support for parsing devicetree properties for measurement channels
-> and doing direct reads on these.
+On 7/11/26 1:14 AM, Joshua Crofts wrote:
+> Split the logic inside the opt3001_get_processed() function, as the
+> current flow is hard to read, mixing IRQ and non-IRQ code blocks.
 > 
-> There are quite a lot of conditions that have to be met for each
-> measurement to be made, so quite a bit of state and algorithms are
-> required to handle it.
+> Separate the IRQ code path into its own function, same for the
+> non-IRQ path.
 > 
-> Channels are created dynamically since the number of possibilities is
-> unreasonably large.
-
-...
-
-> +struct ads112c14_measurement {
-> +	const char *label;
-> +	u32 vref_source;
-> +	u8 iunit;
-> +	u8 idac1_mag;
-> +	u8 idac2_mag;
-> +	u8 idac1_mux;
-> +	u8 idac2_mux;
-
-I would group this slightly differently:
-
-	u8 idac1_mag;
-	u8 idac2_mag;
-	u8 idac1_mux;
-	u8 idac2_mux;
-	u8 iunit;
-
-I haven't seen the code, but names suggest that most likely one would read
-*[12] together or close enough, and less probably mixed with 'iunit' reads.
-Current layout might lead to interesting code generation complications on
-the unaligned-intolerable architectures.
-
-> +	u8 iadc_count;
-> +	u8 gain_val;
-> +	u8 burnout;
-> +	bool global_chop;
-> +	bool bipolar;
-
-> +	s64 scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)];
-
-Also this can be moved upper, but I think it won't save any bytes in this
-layout.
-
-> +};
-
-...
-
->  struct ads112c14_data {
->  	const struct ads112c14_chip_info *chip_info;
->  	struct regmap *regmap;
-> +	u32 avdd_uV;
-> +	u32 ext_ref_uV;
-
-> +	bool refp_is_avdd;
-> +	bool refn_is_gnd;
-
-Here is a definite gain in memory if booleans combined with u8 below
-
-> +	u32 ext_ref_ohms;
-> +	struct ads112c14_measurement *measurements;
-> +	u32 num_measurements;
-
-Something like
-
-	struct ads112c14_measurement *measurements;
-	u32 num_measurements;
-	u32 avdd_uV;
-	u32 ext_ref_uV;
-	u32 ext_ref_ohms;
-	bool refp_is_avdd;
-	bool refn_is_gnd;
-
-? (Don't forget to run `pahole`.)
-
->  	u8 sys_mon_chan_short_gain_val;
->  	s64 sys_mon_chan_short_scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)];
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
+> This patch fixes the absolutely horrible code flow in the
+> opt3001_get_processed() function, where the original implementation
+> used checks whether IRQ mode is enabled to execute blocks of code,
+> making the function hard to read. Ideas on how to improve the functions
+> are more than welcome.
+> 
+> Originally suggested by Jonathan Cameron.
+> ---
+> Changes in v2:
+> - Remove ternary operator and add if/else
+> - Remove timeout variable
+> - Link to v1: https://lore.kernel.org/r/20260708-opt3001-unwind-cleanup-v1-1-900b2cfddb6a@gmail.com
+> ---
+>  drivers/iio/light/opt3001.c | 197 ++++++++++++++++++++++++++------------------
+>  1 file changed, 118 insertions(+), 79 deletions(-)
+> 
+> diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+> index 2bce6cd5f4e4..d1a2426cd355 100644
+> --- a/drivers/iio/light/opt3001.c
+> +++ b/drivers/iio/light/opt3001.c
+> @@ -316,36 +316,33 @@ static const struct iio_chan_spec opt3002_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(1),
 >  };
+>  
+> -static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+> +static int opt3001_get_processed_irq(struct opt3001 *opt, int *val, int *val2)
+>  {
+>  	struct i2c_client *client = opt->client;
+>  	struct device *dev = &client->dev;
+> -	int ret;
+>  	u16 mantissa;
+> -	u16 reg;
+>  	u8 exponent;
+>  	u16 value;
+> -	long timeout;
+> +	u16 reg;
+> +	int ret;
+>  
+> -	if (opt->use_irq) {
+> -		/*
+> -		 * Enable the end-of-conversion interrupt mechanism. Note that
+> -		 * doing so will overwrite the low-level limit value however we
+> -		 * will restore this value later on.
+> -		 */
+> -		ret = i2c_smbus_write_word_swapped(client,
+> -						   OPT3001_LOW_LIMIT,
+> -						   OPT3001_LOW_LIMIT_EOC_ENABLE);
+> -		if (ret < 0) {
+> -			dev_err(dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -			return ret;
+> -		}
+> -
+> -		/* Allow IRQ to access the device despite lock being set */
+> -		opt->ok_to_ignore_lock = true;
+> +	/*
+> +	 * Enable the end-of-conversion interrupt mechanism. Note that
+> +	 * doing so will overwrite the low-level limit value however we
+> +	 * will restore this value later on.
+> +	 */
+> +	ret = i2c_smbus_write_word_swapped(client,
+> +					   OPT3001_LOW_LIMIT,
+> +					   OPT3001_LOW_LIMIT_EOC_ENABLE);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to write register %02x\n",
+> +			OPT3001_LOW_LIMIT);
+> +		return ret;
+>  	}
+>  
+> +	/* Allow IRQ to access the device despite lock being set */
+> +	opt->ok_to_ignore_lock = true;
+> +
+>  	/* Reset data-ready indicator flag */
+>  	opt->result_ready = false;
+>  
+> @@ -367,70 +364,33 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+>  		goto err;
+>  	}
+>  
+> -	if (opt->use_irq) {
+> -		/* Wait for the IRQ to indicate the conversion is complete */
+> -		ret = wait_event_timeout(opt->result_ready_queue,
+> -					 opt->result_ready,
+> -					 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
+> -		if (ret == 0) {
+> -			ret = -ETIMEDOUT;
+> -			goto err;
+> -		}
+> -	} else {
+> -		/* Sleep for result ready time */
+> -		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
+> -			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
+> -		msleep(timeout);
+> -
+> -		/* Check result ready flag */
+> -		ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+> -		if (ret < 0) {
+> -			dev_err(dev, "failed to read register %02x\n",
+> -				OPT3001_CONFIGURATION);
+> -			goto err;
+> -		}
+> -
+> -		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
+> -			ret = -ETIMEDOUT;
+> -			goto err;
+> -		}
+> -
+> -		/* Obtain value */
+> -		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+> -		if (ret < 0) {
+> -			dev_err(dev, "failed to read register %02x\n",
+> -				OPT3001_RESULT);
+> -			goto err;
+> -		}
+> -		opt->result = ret;
+> -		opt->result_ready = true;
+> -	}
+> +	ret = wait_event_timeout(opt->result_ready_queue,
+> +				 opt->result_ready,
+> +				 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
+> +	if (ret == 0)
+> +		ret = -ETIMEDOUT;
+>  
+>  err:
+> -	if (opt->use_irq)
+> -		/* Disallow IRQ to access the device while lock is active */
+> -		opt->ok_to_ignore_lock = false;
+> +	opt->ok_to_ignore_lock = false;
+>  
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (opt->use_irq) {
+> -		/*
+> -		 * Disable the end-of-conversion interrupt mechanism by
+> -		 * restoring the low-level limit value (clearing
+> -		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
+> -		 * those enable bits would affect the actual limit value due to
+> -		 * bit-overlap and therefore can't be done.
+> -		 */
+> -		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> -		ret = i2c_smbus_write_word_swapped(client,
+> -						   OPT3001_LOW_LIMIT,
+> -						   value);
+> -		if (ret < 0) {
+> -			dev_err(dev, "failed to write register %02x\n",
+> -				OPT3001_LOW_LIMIT);
+> -			return ret;
+> -		}
+> +	/*
+> +	 * Disable the end-of-conversion interrupt mechanism by
+> +	 * restoring the low-level limit value (clearing
+> +	 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
+> +	 * those enable bits would affect the actual limit value due to
+> +	 * bit-overlap and therefore can't be done.
+> +	 */
+> +	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
+> +	ret = i2c_smbus_write_word_swapped(client,
+> +					   OPT3001_LOW_LIMIT,
+> +					   value);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to write register %02x\n",
+> +			OPT3001_LOW_LIMIT);
+> +		return ret;
+>  	}
+>  
+>  	exponent = OPT3001_REG_EXPONENT(opt->result);
+> @@ -441,6 +401,85 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+>  	return IIO_VAL_INT_PLUS_MICRO;
+>  }
+>  
+> +static int opt3001_get_processed_noirq(struct opt3001 *opt, int *val, int *val2)
+> +{
+> +	struct i2c_client *client = opt->client;
+> +	struct device *dev = &client->dev;
+> +	u16 mantissa;
+> +	u8 exponent;
+> +	int ret;
+> +	u16 reg;
+> +
 
-...
 
-> +	return regmap_update_bits(data->regmap, ADS112C14_REG_REFERENCE_CFG,
-> +				  ADS112C14_REFERENCE_CFG_REFP_BUF_EN |
-> +				  ADS112C14_REFERENCE_CFG_REFN_BUF_EN |
-> +				  ADS112C14_REFERENCE_CFG_REF_VAL |
-> +				  ADS112C14_REFERENCE_CFG_REF_SEL,
-> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFP_BUF_EN,
-> +					     refp_buf_en) |
-> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFN_BUF_EN,
-> +					     refn_buf_en) |
-> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_VAL,
-> +					     ref_val) |
-> +				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_SEL,
-> +					     ref_sel));
+> +	/* Reset data-ready indicator flag */
+> +	opt->result_ready = false;
+> +
+> +	/* Configure for single-conversion mode and start a new conversion */
+> +	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read register %02x\n",
+> +			OPT3001_CONFIGURATION);
+> +		goto err;
+> +	}
+> +
+> +	reg = ret;
+> +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
+> +
+> +	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to write register %02x\n",
+> +			OPT3001_CONFIGURATION);
+> +		goto err;
+> +	}
+> +
 
-Personally I would go over 80 here.
+This chunk of code is now repeated in both functions, so could be
+moved to a new common function.
 
-				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFP_BUF_EN, refp_buf_en) |
-				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFN_BUF_EN, refn_buf_en) |
-				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_VAL, ref_val) |
-				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_SEL, ref_sel));
+> +	if (opt->int_time == OPT3001_INT_TIME_SHORT)
+> +		msleep(OPT3001_RESULT_READY_SHORT);
+> +	else
+> +		msleep(OPT3001_RESULT_READY_LONG);
+> +
+> +	/* Check result ready flag */
+> +	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read register %02x\n",
+> +			OPT3001_CONFIGURATION);
+> +		goto err;
+> +	}
+> +
+> +	if (!(ret & OPT3001_CONFIGURATION_CRF)) {
+> +		ret = -ETIMEDOUT;
+> +		goto err;
+> +	}
+> +
+> +	/* Obtain value */
+> +	ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to read register %02x\n",
+> +			OPT3001_RESULT);
+> +		goto err;
+> +	}
+> +
+> +	opt->result = ret;
+> +	opt->result_ready = true;
+> +
+> +err:
+> +	if (ret < 0)
+> +		return ret;
 
-All are less than 100.
+
+> +
+> +	exponent = OPT3001_REG_EXPONENT(opt->result);
+> +	mantissa = OPT3001_REG_MANTISSA(opt->result);
+> +
+> +	opt3001_to_iio_ret(opt, exponent, mantissa, val, val2);
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+
+This part is repeated in both functions, so can be moved to the
+common function below.
 
 > +}
-
-...
-
-> +	/* measurement channels */
-> +	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
-> +		struct ads112c14_measurement *measurement;
 > +
-> +		measurement = &data->measurements[chan->scan_index];
-
+> +static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
+> +{
+> +	if (opt->use_irq)
+> +		return opt3001_get_processed_irq(opt, val, val2);
 > +
-
-I would drop this blank line. It's naturally looking to have them coupled.
-
-> +		if (!measurement->label)
-> +			return -EINVAL;
+> +	return opt3001_get_processed_noirq(opt, val, val2);
+> +}
 > +
-> +		return sysfs_emit(label, "%s\n", measurement->label);
-> +	}
-
-...
-
-> +			if (pair[0] <= 100000 && (measurement->iadc_count == 1 || pair[1] <= 100000)) {
-
-100 * (NANO / MICRO)
-
-in the similar way how you done elsewhere in the code.
-
-> +				/*
-> +				 * If both values are 100uA or less, then we can
-> +				 * use IUNIT = 1uA for better precision.
-> +				 */
-> +				ret = ads112c14_populate_idac_mag(pair[0],
-> +								  &measurement->idac1_mag);
-> +				if (ret)
-> +					return ret;
-> +
-> +				if (measurement->iadc_count > 1) {
-> +					ret = ads112c14_populate_idac_mag(pair[1],
-> +									  &measurement->idac2_mag);
-> +					if (ret)
-> +						return ret;
-> +				}
-> +			} else {
-> +				/*
-> +				 * Otherwise, IUINT is 10uA (flag set) and so
-> +				 * IxMAG is 1/10 of the actual current.
-> +				 */
-> +				measurement->iunit = 1;
-> +
-> +				ret = ads112c14_populate_idac_mag(pair[0] / 10,
-> +								  &measurement->idac1_mag);
-> +				if (ret)
-> +					return ret;
-> +
-> +				if (measurement->iadc_count > 1) {
-> +					ret = ads112c14_populate_idac_mag(pair[1] / 10,
-> +									  &measurement->idac2_mag);
-> +					if (ret)
-> +						return ret;
-> +				}
-> +			}
-> +		}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>  static int opt3001_get_int_time(struct opt3001 *opt, int *val, int *val2)
+>  {
+>  	*val = 0;
+> 
+> ---
+> base-commit: fef4337eb2888c758c7058e1723903204f012a26
+> change-id: 20260708-opt3001-unwind-cleanup-9aeede365655
+> 
+> Best regards,
 
