@@ -1,119 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C533F33D4EC;
-	Sat, 11 Jul 2026 07:48:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A53835DA41;
+	Sat, 11 Jul 2026 08:29:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783756113; cv=none; b=DQhbq7knaQOxNJv3t5PFi0AqKX5/+G4dubP+tkYHaUvgr4ILKSOWhY+h+f2o60RPUwX6M7GxfIH1lD3P7iLi+s+hY8CF8+9WTlbYOEfYcCWbm2OnG5zDzRd3xUMT6eIhi/BackOMv0NwBl86WtFs9avx06GjzjLNzi26QGreo6U=
+	t=1783758554; cv=none; b=rdMW6YLh/Kr47b+ZioJQx12XFKcj0M0zZimtMcnnA2sz9ATCaEmgrh5RYGOUhnZYh+lKz6pWBgbJkRcyLYan/ybplShutmETy5vtDmkvRWa6+HVthW/IF/kcJO+CDgJrJa/8AUnFmSl2xxkiyvT/21ogYxFAl9rU0HpItaLFqTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783756113; c=relaxed/simple;
-	bh=IYdQMaqcnnoJ75EyfdoQ4WH9Eb0DNk0kCM71DTPt5H4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EfysFFGmAXrjRjL1J8a/ayuWb92ihoeXeMISUef37b/dLVpxyx0kO9baQgDzj2YrSzeYB3m/Po9Tflcb5t5RrJyS4w2afMvzIiEPFx2MFFUkjGV/UE1Z0dNJl88wJ+KPKamBl2RZRtF3A3BNdDy0n0LoGLTZFDMuw6NqSGRa0Hs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jyNvTsfx; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783758554; c=relaxed/simple;
+	bh=qwi8ENWVue2neaa+SLCAgjNjmmvsDGp7Px1l+6GIJB4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FEhbUVfyx2LcaIVx2OsmtBAlH+kzCa/k2sU2zVgqDIePH8gl7p13Qk3FGlR6RQ513I+/lRsVHjvWrEugNcyyB0bXzJ+gNaoAs0Yvcl753IhhK4/17zGhEVAhS2gKpjSFxejMEVX9c1M3eMfn7gaKrsgSHT7AND2muTn9Apxmj0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k0OnL2z1; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jyNvTsfx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D31931F000E9;
-	Sat, 11 Jul 2026 07:48:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783756112;
-	bh=laZI02k4jDeRIB+kfeKQ2G8J5CDGper5m/E0YtOKMTA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=jyNvTsfxQXoIhOSno61Z9hZYMkYJdgCvBoTr++UC065+bNF+6PLgMFbXxVWiPzvjv
-	 PStuP6Y/ELWSX2pMNfYBWIR/RlNtJedJP/rtjwCo96FmHsTWPSf8oQ7M4ye1cYs5Aw
-	 fqkMSb0E3PQhrehvYzDLbaVAZ2dfHTlwTE1MIb5x9k+/ms1+DiDwhvUtqcLhLCa22A
-	 GY9vvTDk8CiHg/U2FnroDXH6WtEZTR6+xjczQ7c6LnXKfd/FJ+qKAl6KKyIJyLB10F
-	 uy8A5NRaI8XDEOrWS1mmY5hyJuNzFPk0foWgRP/zrA3118Jpeo33aC2ALeQjNZTqEH
-	 n1Mh+AGfIbHTQ==
-Message-ID: <ac0a4a86-e560-41ac-b4bd-f104fb72a2ce@kernel.org>
-Date: Sat, 11 Jul 2026 09:48:26 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k0OnL2z1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783758552; x=1815294552;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qwi8ENWVue2neaa+SLCAgjNjmmvsDGp7Px1l+6GIJB4=;
+  b=k0OnL2z1flRZPCiRPJFVdH0wo98FS78Dy+wE5dTQuSvt3fjUwzVx3Q7H
+   MsSx+hdoaVTj6axSjS+/kv8UZRK9wubuKPIVef+GeXES2fBt7xUaPTJxt
+   eWwT7x5GZL+7xqIbwGxDaMN8XJ1eKBWg2dVcolIF3dU8uy+r+D2sHdGow
+   DRGVmftVeoH8ObwiRGOmM4uVYtX31FMYjTy0Eqa69EnJfiLQjEyTG+RBX
+   tjQ/vbQ8ZsJRUSvm1am/oUu0o8jVkfCazsqq7JA1aFI3k4LbfWqMje33F
+   1EDgOOPGb2WGPXB5g6pcj2VHSWAQL/8RFZXxxoK2cjpkqn7nnGBmzsx1W
+   w==;
+X-CSE-ConnectionGUID: vhMUzrqZR2eVBUUDD9GOog==
+X-CSE-MsgGUID: 0v2waxymTIK/y3oEnuqgTQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84496078"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84496078"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 01:29:11 -0700
+X-CSE-ConnectionGUID: qieRQk9ORe23Ft1Gezs5Ng==
+X-CSE-MsgGUID: vuZuD2PqS5OurEz0zdwiMg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="250674179"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.254])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2026 01:29:09 -0700
+Date: Sat, 11 Jul 2026 11:29:06 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Joshua Crofts <joshua.crofts1@gmail.com>
+Subject: Re: [PATCH v2] iio: proximity: hx9023s: validate firmware size
+Message-ID: <alH-0gZNqUcGgGcr@ashevche-desk.local>
+References: <CAMyXUJkncpA3Q-BStPsbXfViNbxzJ6ZrQCt0RoGxtVXV-R_DOg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 RFC v3] dt-bindings: iio: adc: add ad7816/7/8 digital
- temperature sensor / ADC
-To: Taha Narimani <tahanarimani3443@gmail.com>, jic23@kernel.org,
- lars@metafoo.de, Michael.Hennerich@analog.com, gregkh@linuxfoundation.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20260710160001.29856-1-tahanarimani3443@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260710160001.29856-1-tahanarimani3443@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMyXUJkncpA3Q-BStPsbXfViNbxzJ6ZrQCt0RoGxtVXV-R_DOg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 10/07/2026 18:00, Taha Narimani wrote:
-> Document the Analog Devices AD7816, AD7817, and AD7818 digital
-> temperature sensor and ADC bindings in YAML format.
+On Sat, Jul 11, 2026 at 08:28:27AM +0545, Laxman Acharya Padhya wrote:
+> hx9023s_send_cfg() copies the firmware into a counted flexible array and
+> then reads fixed offsets from the copied data before walking register/value
+> pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
+> make the driver read past the copied buffer during probe-time configuration
+> loading.
 > 
-> Please note that the driver for this device is currently in drivers/staging.
+> Reject firmware images that cannot contain the fixed header, reject images
+> too large for the u16 fw_size field, and validate that the advertised
+> register count fits in the remaining payload.
 
-So you should not send it.
+You send the same mail twice without any word saying why. On top of that both
+times we got the mangled patch. Please, slow down and check first your email
+and other configurations, send to yourself (perhaps different email address)
+to check how the result will look like.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> This patch is sent as an RFC to clean up and standardize the device tree
-> bindings prior to any major driver refactoring.
-> 
-> While reviewing the AD7816/7/8 datasheet to correctly document the properties,
-> it was noted that the current staging driver attempts to request a 'busy' GPIO
-> for both AD7816 and AD7817. However, the AD7816 is an 8-pin device and does
-> not possess a BUSY pin (only the 16-pin AD7817 has it). Therefore, in this
-> binding, busy-gpios is strictly limited to adi,ad7817.
-> 
-> This resolves the checkpatch.pl warnings regarding undocumented DT
-> compatible strings.
-
-That's not necessary.
-
-Best regards,
-Krzysztof
