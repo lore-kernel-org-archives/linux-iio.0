@@ -1,105 +1,149 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0E7213A244
-	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 15:49:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E782F8EBF
+	for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 18:44:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783784948; cv=none; b=ivH0eZzqUzyy+SkZdCark/NGaQn1PFIWPaBNgP6cnEHAEAPnjpKLF9/TismQTn1uAGD+MblwVm9LUVCs//V1XZwjHiX/atTsbYMn1NupgmzUJf2Tl7LU8b78/w6YVFN5G+n0v7Qi/69rH4SVJEYvXpBl0CCXT31Sh6I65B3tLvk=
+	t=1783795472; cv=none; b=GsXcyJPMy4qKRHHGFGgBi39Q6gu6WMyhVxItRTs9/xucuGFyovWGxRyCNDV0JKxpL/oAXiaPTFFh121PKcHCWylWulgOGr4kbnQBM783mFu3aKfYxN0ja3GUc978s1Dt7pVn9rgQhduUSqchJrspB0pidW1Ngk1RtEstruLXpSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783784948; c=relaxed/simple;
-	bh=cNxVYmciaGx0HxZhzCE6dp9hIUsKTjqHkSJazoMby5I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PX8xCBgiax0Z3dqzhA6ehPi2PV4RcI7X5JCoBqwjmax2+cHRlNl3TOydnFcYTAQVLNS8Gljtj/qJiUhoLgNzWT3BUOOpsqlSi0cvQ1FD5AfJyfNMX7f7TfFn3I6GZW+jWUz+Aau1HiLEwaOhJ6aZV/Tnwwk+RP/VPX6tZTrUjfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=PV1kHeUZ; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783795472; c=relaxed/simple;
+	bh=lle7Rmg8FyTcC/Q7qALF1mUEHp6zQifQpVs5AdeIRxs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Y5E9svl3X0OwdPIICP5VmEWOkqBinutvPf/py0VPXE6MxOK3h2Qmh7PZhLmHmL3MsyGv9IeE71Ni6h7dFSj1B8X32PzhMB64rCCzNxqy2zUCr91RiqLg84w6UiHPeKKAY7nymKF7D4gBgcb8HHNJ7QmpCnptGh8Tzh0tu2cj+7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QZD5Bcv5; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="PV1kHeUZ"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7e9ed64d490so855696a34.3
-        for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 08:49:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QZD5Bcv5"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-471eeac43bfso1910312f8f.3
+        for <linux-iio@vger.kernel.org>; Sat, 11 Jul 2026 11:44:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783784945; x=1784389745; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qBNOQnmDXwx/WMHGnaOrdiEo9LQa60JbMecTtADGoTo=;
-        b=PV1kHeUZCweRq5mgDup4P++nr8R8A/ao+OgSrW8uJ8qyvrpCa0G2FALhS+ViqjI0qA
-         F47YktZ1+Bv0UsczXggpfVY0ZAWxkRQWUbM9VbAeFKSFGhWLZXSebNhB8wnsOy4XD3rY
-         9Dzogte8lJ5S6Hu96jin0+ZnLX3K/YEm/d70YOqeR7gy5OGscN0UMjd2lfc1vBwH2v1C
-         moLlqQklHCGroUUEwaT/TDg0HwOZF42lLvMqUqc0nNlVa5ai9bUchxa0RPMUf1dbeOGt
-         YFebizaCHFkeK6PjlyERxNBc3gFC6tCsuHsrBN7QqaDRtAtxvpxCMclneB2vJp1KvyU5
-         jS8Q==
+        d=gmail.com; s=20251104; t=1783795468; x=1784400268; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VV1uOthI82FI9Ppe5ViOKmESWKdCAT2lJ4bCDUnYmLI=;
+        b=QZD5Bcv5VfWFa5KI3BNtp8BmC/MZ4hmCcpstj56OC1fRs3O0e2RVlTAZ0PM6AAviLg
+         exXzY7OKayaF/IqiaSv5j28UTJSS8JHRdkBD+JdDwXxADZKasx2bd3jQdqy2vRYg2gGG
+         F7FEWFefSZVKEtb9f0y1z0tjrGQOMHQvKIglVX3NFPCTtGh52ShZUoIqHJ6yANkqNIE8
+         Qpd7uiK8rkc9m89SNXTEFh7SZTcTkk4ZSg+boBw6Fe01PerhRsW9QEy4qSSNRBeHZ5iy
+         ViOK35IFbRM7OfxqSA7K/+f2GTL/ZFxot2HGkEthh0wSMi+2X55Fh/rTt4asYywcffuf
+         kq9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783784945; x=1784389745;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20251104; t=1783795468; x=1784400268;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=qBNOQnmDXwx/WMHGnaOrdiEo9LQa60JbMecTtADGoTo=;
-        b=DWPppU/6M3PRv5gR7SWAqH6LcYyGEfmXzV6QSwVcSBaNynHXC+Vlt+UPDtLqPzhHJW
-         ERUeTvK4ynaevtMpIvO84OdclS/JTPfCVxV40jmn66NCxW3+WmUBsb7PZvbuKgdM/78Z
-         +fGHZsFMogBiFfN8K7Z7hnHj6RlDNcNPKEnuM8K69ikIzMv09akqZNGpSalwZovI7+3R
-         lnaubqhmype0ANFu/S25k4sQ8HjeipbrC72qr17aE3ZssCCtdhtd37WxYoG3uo4QrWjl
-         boBX3Vb+oDuYCdwQEuIIeCOJhQx1Z7CyLEnzQRl/cK6Gub4/J8+qIZZKUI8bjBDev3un
-         dX6Q==
-X-Forwarded-Encrypted: i=1; AFNElJ+AVOsOkAGReOqc9wy3O+pGTW9mgFn78Yh6/qWe9u/HK8Nv1hYoeb0QZM2bWIdZdydTC1tZSUMc1Lc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzcT8h4zmvGlJKz5RlR/574Md6mWwYJJuDRG2A4nIO3sAN3SE5J
-	zULWJV3es7bynSmOsqi2Xjf+EH5X77m74t1/0dW+/keROTdRJBXeIxByW+13XGwS7I8=
-X-Gm-Gg: AfdE7ckav8X4zzJA8v8scEYIKWJAkHQLxQ2EPdyEAmnK/wlbleJFNTVjUWqPe9h5q7d
-	SS9zLfwbmo1l6b1CKkkkDVvb6llEKn3P3Jm/HQKKOjGkcHPgwS2QjRChX7cqROEpg4KCACFcj2W
-	Y9nQgOB7Mi8nSMREIjZGeSyn7zz2efHeXNQzDByrppIbk4BK42xC01zN4dGgtIqMKC5MPTrX85x
-	Xvm7L65nRBBocCUZoXKTKDv2oCTjFbiR1CDgnMJPGZm4oS65dHd1HIU79tmG9V2A29P5BUmxLjx
-	L3aEdj1kMj3YZDNXEbrdZMSpTVRVgWv4WxEAZ7eHC5IEh16J8O/6inak7vOzfo9KOSQnsPmXO2q
-	1/LZYr6/jcazfaCj/FbP/Fn5ptF5SIiufUWjoNubp/xIrgzgo9JANgtLfQH7U1HVPbIwaAgCPpM
-	VAGmZgGC8WnT/pI0x7l5GNNpGp3jtfwrgtWL03dBsBjWuIifAHRG35W+JlKZGzt38=
-X-Received: by 2002:a05:6830:3e03:b0:7e6:c819:22e9 with SMTP id 46e09a7af769-7ec097acbe7mr1938308a34.17.1783784944833;
-        Sat, 11 Jul 2026 08:49:04 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:a950:74e5:81f2:8c89? ([2600:8803:e7e4:500:a950:74e5:81f2:8c89])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcab8efc3sm8657965a34.0.2026.07.11.08.49.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Jul 2026 08:49:03 -0700 (PDT)
-Message-ID: <d0d6e0f6-2b6b-427b-96be-84acd49bbac7@baylibre.com>
-Date: Sat, 11 Jul 2026 10:49:02 -0500
+        bh=VV1uOthI82FI9Ppe5ViOKmESWKdCAT2lJ4bCDUnYmLI=;
+        b=o83kDyi6StuZZ8G5lZ6/j2Rr10G+zu0BALTLmpPOrvywEqZhpi742UVOUOSgKw/XPn
+         eq0IYoFlXfvrPxKUE6IQtOCBMSRGtqjtua4PqlnsbHesZ1tUWpyYJSRb9V6TI4pQAPwL
+         1WCFaec6NMo9fkcifgk6wfCbutq4vUa67bBuCVwNGk7ZbsMO7rgshY8IGur7PxPr7kKE
+         CHGtfNiljcO0bTfEBASSk3bq/jtR0jxvjmuLQ6CS4i0vQPBc0p0GyLZnaH6loJEgVbdy
+         Ep63IqiXVS4gJTLW+V+R0Fq5qSsoaBdqZWT4ccJSg9r0xJLuJf1yX48IXRBd9N089wKy
+         MELg==
+X-Gm-Message-State: AOJu0Yz83NLV2XAFq9o04mkTqrhAlfiCqANE04PUS/CoJm9DRSt3BwMV
+	7K2oiM3HLXzsM777NnhRuGYsrPE1nsIiOaluwZcDXm79NBAugrqjYPT4U9uthY04
+X-Gm-Gg: AfdE7ckZj9RD/m39VkuGwWV2Jkcj+iWoy9fYN8nDmUrzu+OPgbMPrjdeQfROhn51Soo
+	oB5QXrxZZDgxdoQc2h/EjdBTdLnYtxnNHOm1Tk8Q4okdMZoOvIIaSe9ghpo0psGBAK+IX8hpb2U
+	H0WyA89IE3gsuLquj+nWGOyohUV5kc8Fulss08lVs7H4mxzwF96ZFjR38o2ewvcBWxXH1Mow5vO
+	PZHiJ5rxrEIfMVSIWBJeNYlCSfS1dznduA+CjB5d/UWBx+t1HEvAy0spda1niVyoj2iTJJHxYNI
+	dQwCnpzLe/RP4/WUYiGCaGmCdDLUArULVD8XVSWSoLleWBxAiDkuqMFtffkZttaQwMSAHqUv8Ee
+	hG1iOhImYXZ1yQQMPi1deBsLoEHCe2ra2SdDMkXXGKbGcOqF6j0xzL1ecXpSgVNnhKopvUwrW+T
+	WoMRyYhWcIdbJXC3s0yU9EmUrEM69ESlwOn/LJEwE7r+BI738=
+X-Received: by 2002:a05:6000:2510:b0:475:f0c2:75ac with SMTP id ffacd0b85a97d-47f2dd0fca7mr3711208f8f.61.1783795467710;
+        Sat, 11 Jul 2026 11:44:27 -0700 (PDT)
+Received: from MSI-LINUX.kielce.vectranet.pl ([2a02:2a40:27ec:2900:e6c9:27be:161c:632d])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9e4d780csm70825745f8f.11.2026.07.11.11.44.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jul 2026 11:44:27 -0700 (PDT)
+From: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: andy@kernel.org,
+	antoniu.miclaus@analog.com,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	dlechner@baylibre.com,
+	duje@dujemihanovic.xyz,
+	jic23@kernel.org,
+	jishnu.prakash@oss.qualcomm.com,
+	jorge.marques@analog.com,
+	joshua.crofts1@gmail.com,
+	krzk+dt@kernel.org,
+	linusw@kernel.org,
+	jakubszczudlo40@gmail.com,
+	marcelo.schmitt@analog.com,
+	mazziesaccount@gmail.com,
+	mike.looijmans@topic.nl,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	sakari.ailus@linux.intel.com,
+	wens@kernel.org
+Subject: [PATCH v6 0/3 ] iio: adc: Add support for TI ADS1110 to  ti-ads1100 driver
+Date: Sat, 11 Jul 2026 20:44:11 +0200
+Message-ID: <20260711184414.1013686-1-jakubszczudlo40@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 0/4] iio: adc: Add support for LTC2378 and similar ADCs
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- julianbraha@gmail.com, marcelo.schmitt1@gmail.com
-References: <cover.1783629101.git.marcelo.schmitt@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <cover.1783629101.git.marcelo.schmitt@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 7/9/26 3:49 PM, Marcelo Schmitt wrote:
-> This patch series adds support for LTC2378 and similar low noise, low power,
-> high speed, successive approximation register (SAR) ADCs. These ADCs are similar
-> among each other, varying mainly on the amount of precision bits, maximum sample
-> rate, and input configuration (either fully differential or pseudo-differential).
-> 
-> Patch 1 adds device tree documentation for LTC2378.
-> 
-> Patch 2 enables single-shot sample read with a GPIO connected to the LTC2378 CNV pin.
-> 
-> Patch 3 enables high-speed data captures with SPI offloading.
-> The setup is similar to AD4030, with a specialized PWM generator being used both
-> for SPI offload triggering and conversion start signaling.
-> 
-> Patch 4 enables running buffered data captures without SPI offloading.
-> 
-Nice to have this split into reasonable-sized patches. Makes it easier/faster
-to review.
+Add support for the TI ADS1110 to the existing ADS1100 ADC IIO driver.
+The ADS1110 is pin-to-pin compatible with the ADS1100 while providing
+higher resolution and an internal voltage reference. This patch series
+extends driver support for ADS1110, updates device tree bindings and
+Kconfig text, and improves the overall hardware description for the
+TI ADS1100 family.
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+Tested on: Raspberry pi 3b+ with 7.0 stable kernel
+
+Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+
+---
+V5 -> V6:
+- correct for loop so it will be more readible and return error when iterator matches array size
+- fix SI unit letter size
+- correct using available_data_rate_hz array when using ads1110
+- bring cast to char* back
+- Link to v5: https://lore.kernel.org/linux-iio/20260628194341.66752-1-jakubszczudlo40@gmail.com/
+
+V4 -> V5:
+- Correct pm macros to be more generic
+- fix variables ordering in new functions
+- delete unnecessary casts
+- add unit to variable names
+- change array name so it will sound as array not variable
+- correct get_vref_milivolts so it will check if not negative value returned
+- delete unnecessary short read check in i2c receive
+- Link to v4: https://lore.kernel.org/linux-iio/20260622221550.374235-1-jakubszczudlo40@gmail.com/
+
+V3 -> V4:
+- make fixes patch the first change in the series
+- correct error handling when short read
+- use ACQUIRE macros from pm_runtime.h in new functions
+- Link to v3: https://lore.kernel.org/linux-iio/20260613190957.654798-1-jakubszczudlo40@gmail.com/
+
+V2 -> V3:
+- clean patch from unreleated changes
+- divide adding support for ads1110 into separate patch
+- add missing changelog
+- Link to v2: https://lore.kernel.org/linux-iio/20260607183542.368184-1-jakubszczudlo40@gmail.com/
+
+V1 -> V2:
+- go from creating new driver to extending ADS1100 driver to support ADS1110
+- Link to v1: https://lore.kernel.org/linux-iio/20260527164312.355729-1-jakubszczudlo40@gmail.com/
+
+Jakub Szczudlo (3):
+  iio: adc: Fix incorrect reading when datarate changed in single mode
+  dt-bindings: iio: adc: ti,ads1100: add support for ADS1110
+  iio: adc: Add ti-ads1110 support to ti-ads1100 driver
+
+ .../bindings/iio/adc/ti,ads1100.yaml          |  10 +-
+ drivers/iio/adc/Kconfig                       |   9 +-
+ drivers/iio/adc/ti-ads1100.c                  | 147 +++++++++++++++---
+ 3 files changed, 137 insertions(+), 29 deletions(-)
+
+-- 
+2.47.3
 
