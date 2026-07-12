@@ -1,110 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail-106101.protonmail.ch (mail-106101.protonmail.ch [79.135.106.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1618722D7B9;
-	Sun, 12 Jul 2026 14:27:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32379305E10
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 14:56:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783866431; cv=none; b=MRHgDuuZCvN1qOUzXVrbed0KC1Zi+WFViUvnS/ncqE5VYGAP5AyS0HKNcnCw25oO2ZZzZvPqpNZu6sZcc1aRtOKv1BtSv/aD9LnoqwujpvqKHuyyPBq2Ez2LHp0SBWBUHfjvvlXxqBMNDb0226AWEX+v/L+UTGBnWe1WT7wR/J8=
+	t=1783868220; cv=none; b=ZZ7rbK/O6A2eobNUOAGU5AmSo92ZTvQIiP32USfe5qmvOvCtZmKJWyZJQCsNovfStL/Pt/FTMt/IXXbUyEg5P+ZBadhuSzdkzzi7kuAbtsxnhrqiFMg5lQORP7X1S1UpNREcXcILeTh1p6PTJwruUUCo3J1OEevFYIwNAL+RFGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783866431; c=relaxed/simple;
-	bh=fGCVD2fRX5DByIsQjUn3IuwPOBVulJRbW+OEnGKOixY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oEOrp5n3L+ahBGlPcHjijjwkJGSQcNseVudZVsZXiHth5GQ4gx+lU0qC/qGlwJzU78H5zaU3cGbukN8JajzigpHlNrKS82HuuIPB1F8s8nzBxfLertFzn/3lVcPSVMn3e2V25yJ2l2OZ87j/3lO2iITPICuMWuNstPMwQXYscHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=PY4zP43v; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783868220; c=relaxed/simple;
+	bh=TGRPC72Gvys5AV75OPDCquGwy09jz+tfo00bqh+xHas=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=peKIGVB5/VM/UP9SI5otJ8FRhTQfIvBqHrfok9TUCkKOTYCEP4ElBLW2q+OjvgRLXQV0Tqr2joyB7x3Cekw8GUDr96I9dujW/iXEqHv/Oiw57uYQnnYM0C76aU+gmq4uD6Eeg5Tj4kr6dOshQbbOGA7LA9EJsJOFsUg8//BTCxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=BaO2ShkU; arc=none smtp.client-ip=79.135.106.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PY4zP43v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378281F000E9;
-	Sun, 12 Jul 2026 14:27:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1783866429;
-	bh=3NAz3dHzXcZmkGlx+4kD/u7CF+TFx1/WRrl93R3R1QQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PY4zP43vdgb56WoThBIgD8tyjm7/+j59UMx6waeHMIR30pta6xVqxj3A17movP7pg
-	 e1o8ktlntWpUlPzSUi5pdMvN3O/WIFC3i4YLLrHc6xkKAx8nIJ0E/SV9KwV6eL+YeN
-	 kAqGoO/Aruk4pMWrfR73/vgOvjaXsrotIVh8JwBM=
-Date: Sun, 12 Jul 2026 16:25:50 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Dylan Liu <pxyforeverlove1314@gmail.com>
-Cc: Dylan Liu <dylanliu050903@protonmail.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Signed-off-by: Dylan Liu <dylanliu050903@protonmail.com>
-Message-ID: <2026071227-unspoiled-blatancy-0809@gregkh>
-References: <20260712141928.559844-1-dylanliu050903@protonmail.com>
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="BaO2ShkU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1783868205; x=1784127405;
+	bh=Kph/ldNz0ZH173y/id/SbO43lTRApBugzr5x8gMpR6A=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=BaO2ShkUUlsX1FD8VKoubM1QSXne1UHGT9oTOGd+GiMrH3nyjzGvssKDri4sr/7uX
+	 N851metfyHOuts6uCDwxXajyC/f1qrh9JK/k1P8F1rQmAOO7FqT7/vPbGPf20wjtvE
+	 LW15F+jz8Ki5wmwj5eaR5CCNBFgHlboDCr/PEn7aVjq3F0KIAsegRxVkUv1IVgbA1R
+	 pyPUUyJgxXK90KjyTQq6sMoBn4vV6SOJV7BSPCju+1Nht0amTAhAPPlfGtkfrtT+P9
+	 jiDD6Q+UOCTnhE1C8DipYIO9I/9c8K9oWvRazxPvj7JbsICfYb24tGVG3XUPoOKzVQ
+	 DZGfFFd/Rre0g==
+Date: Sun, 12 Jul 2026 14:56:40 +0000
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: dylanliu050903 <dylanliu050903@protonmail.com>
+Cc: Dylan Liu <pxyforeverlove1314@gmail.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: =?utf-8?Q?=E5=9B=9E=E5=A4=8D=EF=BC=9A_Re:_[PATCH]_Signed-off-by:_Dylan_Liu_<dylanliu050903@protonmail.com>?=
+Message-ID: <QNymfg8xEp8CU0BQxNJDcXKxDRN_xohHqySr8jzeakn2iJwHaezt4D2ks87ODGRh9227yPZ6dVpvcAa5OghRpS0htIaCUhCS7viUtr9aPgw=@protonmail.com>
+In-Reply-To: <2026071227-unspoiled-blatancy-0809@gregkh>
+References: <20260712141928.559844-1-dylanliu050903@protonmail.com> <2026071227-unspoiled-blatancy-0809@gregkh>
+Feedback-ID: 149338405:user:proton
+X-Pm-Message-ID: 9097688b3fbbb16a4f1d4312c2850e7fe8ad9fd3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260712141928.559844-1-dylanliu050903@protonmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jul 12, 2026 at 10:19:20PM +0800, Dylan Liu wrote:
-> staging: iio: adt7316: Fix CamelCase naming for sysfs attributes
-> 
-> Fix multiple checkpatch.pl warnings complaining about CamelCase
-> variable and function names.
-> 
-> In order to comply with standard Linux coding style and IIO ABI
-> conventions, convert all uppercase abbreviations (AIN, DAC, Vref)
-> in the adt7316 driver to lowercase snake_case.
-> 
-> Note that this patch changes the sysfs ABI for this driver, as
-> the device attributes exposed to userspace are now lowercase
-> (e.g., from 'AIN_internal_Vref' to 'ain_internal_vref'). This is
-> necessary to bring the staging driver in line with the official
-> IIO ABI.
-> 
-> Signed-off-by: Dylan Liu <dylanliu050903@protonmail.com>
-> ---
->  drivers/staging/iio/addac/adt7316.c | 228 ++++++++++++++--------------
->  1 file changed, 114 insertions(+), 114 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index 59fb3bd26bc1..845d79591128 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -663,7 +663,7 @@ static IIO_DEVICE_ATTR(da_high_resolution, 0644,
->  		adt7316_store_da_high_resolution,
->  		0);
->  
-> -static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
-> +static ssize_t adt7316_show_ain_internal_vref(struct device *dev,
->  					      struct device_attribute *attr,
->  					      char *buf)
->  {
-> @@ -677,7 +677,7 @@ static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
->  		!!(chip->config3 & ADT7516_AIN_IN_VREF));
->  }
->  
-> -static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
-> +static ssize_t adt7316_store_ain_internal_vref(struct device *dev,
->  					       struct device_attribute *attr,
->  					       const char *buf,
->  					       size_t len)
-> @@ -704,12 +704,12 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
->  	return len;
->  }
->  
-> -static IIO_DEVICE_ATTR(AIN_internal_Vref, 0644,
-> -		adt7316_show_AIN_internal_Vref,
-> -		adt7316_store_AIN_internal_Vref,
-> +static IIO_DEVICE_ATTR(ain_internal_vref, 0644,
-> +		adt7316_show_ain_internal_vref,
-> +		adt7316_store_ain_internal_vref,
->  		0);
 
-You just changed the user/kernel api, right?  Are you sure this is ok to
-do?
 
-thanks,
 
-greg k-h
+
+=E4=BD=BF=E7=94=A8 Proton Mail =E5=AE=89=E5=85=A8=E9=82=AE=E7=AE=B1=
+=E5=8F=91=E9=80=81=E3=80=82
+
+2026=E5=B9=B47=E6=9C=8812=E6=97=A5 =E6=98=9F=E6=9C=9F=E6=97=A5 =E4=B8=8B=
+=E5=8D=88 10:27=EF=BC=8CGreg Kroah-Hartman <gregkh@linuxfoundation.org> =
+=E6=9D=A5=E4=BF=A1=EF=BC=9A
+> You just changed the user/kernel api, right?  Are you sure this is ok to
+> do?
+>=20
+> thanks,
+>=20
+> greg k-h
+>=20
+Hi Greg,
+
+I apologize for the oversight; being new to this, I am still learning the r=
+opes and appreciate your patience.
+
+You are absolutely right. I acknowledge that changing the sysfs names direc=
+tly impacts userspace and violates the "never break userspace" rule. I will=
+ take a step back and adopt a more conservative approach: I plan to keep th=
+e original attribute names as they are to ensure backward compatibility whi=
+le introducing the new snake_case names as aliases.
+
+Would this be an acceptable way to move forward, or would you prefer I hand=
+le this cleanup in a different way?
+
+Thanks,
+Dylan Liu
