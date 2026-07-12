@@ -1,124 +1,145 @@
-Received: from mail-4325.protonmail.ch (mail-4325.protonmail.ch [185.70.43.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FD8415687D
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 15:42:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17782342CB2
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 16:07:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783870930; cv=none; b=YqkVf4uI6rgopNO1Z22A1F93lgvCx2+/Zeq9XL9pjNGZxOrShl/87TRPIE2ixaszL6tHDZskFcrZMfjJEsi4BGPPAXpEGUSFDPPftRPrFbipb5Rm9IeDKHcyQbuOIUTBdVFzofiN9PQtxJgs4VjNvfWHUitGvc0/0AiMVkjMews=
+	t=1783872466; cv=none; b=rfbVZqzG200YkkOOicvT1iJ3v5/zZw6lAIX5K5DSV82EZKeIgoxBuqv9FbHa1hiIPl0aQef6YuyaIpMB6K7xpiJIwcP7GGsBr37Dw8omQxLCiBFeQ2JNYdKGbAMq6FaWvQfoO9CL3To1gez2/9T3wfB/4h2hG4v6BXqhEEBoGW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783870930; c=relaxed/simple;
-	bh=2AwsVikTQ0Fq3A7BIdDmeEoEXcaWURKy6RZfPuYsct0=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FixUQYOUdOMCYcSEnyWtGULFzlKQTTZcrKwXpS9hUuHYijx/BiRNtynWNDKmC3971D/Gv8uM1T4Fnf4oHUoYm5sHCx3ahXH0mPO4rLaxWnsadco+ahUIhd9vhdasOYkEAyS56xbVblV+jWwOXTo4UtIQuO3Iq78/mxlt1EYr06c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=UvdWbuCm; arc=none smtp.client-ip=185.70.43.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	s=arc-20240116; t=1783872466; c=relaxed/simple;
+	bh=/Lvsg/ZJR/lfpgoUMIiOWitMqmPb9MoVhYs6ClRrfg4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jufNjZYR9Ql82O033BBmhmp0pu7ErULs7cBxUKi8T0Ply7VbyzzBaEDX/xnS3FBoR7zJjOfDZ6fIHmid33rcpR2quyOpFTy77glaLuT/rrFfaQgjxSAH2xQarxNIeV9/WyHRVupWaQrQ1xo+BK8G+MfhVyaCvetKjysDx4UymqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=bS5NqABn; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="UvdWbuCm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1783870919; x=1784130119;
-	bh=GPwVPgndiL3vQUrrsmdWXJtrIcm/zZTFErr9I8RY0RI=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=UvdWbuCmVeEHFwU4A4erWTpuRJDpfITGXQkhUhzSqe6bjiyzXvZIAG8XgNCfg47AD
-	 ShLpdZI4ivvnXbgMdrwJ6UCAJpso7Tqfq/DS3NaYnO5N4N8MokFC7amRAXnfW5/MFI
-	 /4GqjaHXh4WkVgeuj94YX6I4d5x1svxr94Ncddut5xWlmlZ3zwDN3FaFFmp7SvMQc+
-	 +TiuQExFloU9Iw1VIUJvO8aSQ2YFuyLn+OT+1DziNQ0aWsEBRByayrItLysX+lh+4N
-	 VU5BlKFLLdaHQ4JOxrrfL3637MnVi363oFhoaw9Pu9Vi1VySOE8YYClTY3OnF0L7/o
-	 Zw0HnN2s6VU5w==
-Date: Sun, 12 Jul 2026 15:41:54 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-From: dylanliu050903 <dylanliu050903@protonmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dylan Liu <pxyforeverlove1314@gmail.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: =?utf-8?Q?=E5=9B=9E=E5=A4=8D=EF=BC=9A_Re:_=E5=9B=9E=E5=A4=8D=EF=BC=9A_Re:_[PATCH]_Signed-off-by:_Dylan_Liu_<dylanliu050903@protonmail.com>?=
-Message-ID: <BKV7Mhbq1o3O_ErHy0kJsAxQU0wPO9BA6L-6CKJlZ9DsyAlGxNQzVfSIokpg-0V4bh0dp7KoAsq34iyjPsGOVDfFX3YSI7d0MozL381XqkA=@protonmail.com>
-In-Reply-To: <alOtR-zUc71PORuA@ashevche-desk.local>
-References: <20260712141928.559844-1-dylanliu050903@protonmail.com> <2026071227-unspoiled-blatancy-0809@gregkh> <QNymfg8xEp8CU0BQxNJDcXKxDRN_xohHqySr8jzeakn2iJwHaezt4D2ks87ODGRh9227yPZ6dVpvcAa5OghRpS0htIaCUhCS7viUtr9aPgw=@protonmail.com> <alOtR-zUc71PORuA@ashevche-desk.local>
-Feedback-ID: 149338405:user:proton
-X-Pm-Message-ID: f20212404021f2aa838224ea10c5b0efa6e9500c
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="bS5NqABn"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso1151965fac.1
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 09:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1783872463; x=1784477263; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=uVpYadVTuJ7Oa9ZoTB5rgj6lqcEBWKLs7QhoK6MvLlk=;
+        b=bS5NqABnb3IrzzCXGNzFQUFOq3VQgzYZKi+bhB+usfs5AjjguDll7xUPIPvq64mD+Y
+         VZCN/PjROGVKPdWskoa3068iA253zDh6Da6mCDh1pmmOmmySOw6I/CaQJSJplgpIjCen
+         xmIBp3/rG2TOu1xICOgMeFMyFYM/DvtqqkvMlVdqKvZdlxNNpI5C61GK/EblxEzFp6Ju
+         RyzT4/IhGjkMraU9Y+u0RF6oYavekZxC9fxJJPcDFi+pL2pxXpDnrL3dQyR+ktGLQaKM
+         uAds6MENRCW2CHoKYKDEt4MGjsE5YTeZnfPU0dGZZ4W3Tp3KXR2oep2ud39/+RsWx+1j
+         qK3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783872463; x=1784477263;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=uVpYadVTuJ7Oa9ZoTB5rgj6lqcEBWKLs7QhoK6MvLlk=;
+        b=GdPdHl7b4Ksn4+C8LLr3scS0Xzt7vM9LoiGKAp2PHVWdIS1dRuwvRYsxHD6wgfrtcc
+         TJnWB6+5CBgdcRtd2aEu6kZke/3POlt9bOBzyWpCgCZOCZSjL7bgnodUYShI8Rubjmw/
+         UdocVSP33zciuAj9bgdYyoNRQROX817C0ykhqxxtzeU1HxCqVKiOxKqPBslioYEKyr2M
+         9oSuqNo4lIsrtdg/LbRhOMO2/fW144P2CB5qh6ikJGdddGT8MArNThha173eh2q+XiKq
+         Ju3diLRBqJw6/jEkXuKXOz4uo3bG8Oq0QVocp+/SeSVu0Fz14CUxCshPLt9IuZkaQz/y
+         1Sug==
+X-Forwarded-Encrypted: i=1; AFNElJ8Y7w0A/Koz5OA9mQf8iO4eF7tfr57gJPk0ZH9YnS1n/892t3H3Q6WsQWA1TcmfdeXYKgFf5gaD+Do=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwL/nkflcBDvmgQWgeQQ2PmddofkhHBLbbuMupio0EM21Ya+ZUb
+	JiA+giCVXjIR/Q1YH42nmkA4q/ysHDg+Q5c3fvUzwSae2Jflo7WOakNSqV+a2MzZwfo=
+X-Gm-Gg: AfdE7cm5MhQdDxIXvXsx4kPsh8sDw+5Sxkt23FX4pdaghKeXvOwyXJnXuNc9HtWv+s8
+	VYITv/VpN99Hmp4BDQGwTcnUIGRaNJgSBD6kp4zA5lXYDErX0j5WvI+YEZAL7+0jiaAX7XMJhbq
+	i4oJ04a1g7955uBrQkfzLpEVjq+/C7btykv0kFFwM2KkWSWY8v1zS41Ubi6wKXkVz8twvSD4izT
+	J1QU1Fo9VnZm7+uLD6T6CvdIV/Df4xgxRfsjBgtKsA2U/UhMjVRm1joTPUMnR/22w+9zq2ATmAj
+	YOD5wrPKzBxikN08PfT4bXPR3ams88LwiF97lnpLTgxHsF1AinhlBVMF/4aSXVCo7EM9kyf75gn
+	irLkFGCjxwlvArlhTSUAuOdsQveq+YZTdH1cNtOX5nrwnwAOF45csLy4xTJbIm434lhR3n7z9ED
+	ODEdwzMRfUsMi0gEpVAsLXb16E1qxtGzXKrDwCrjoBPmHrxhx7+hSrrvAS+euAj4A=
+X-Received: by 2002:a05:6870:e187:b0:449:a0db:5917 with SMTP id 586e51a60fabf-451f1445225mr2893250fac.41.1783872462881;
+        Sun, 12 Jul 2026 09:07:42 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:3af7:75b0:bf02:8cf8? ([2600:8803:e7e4:500:3af7:75b0:bf02:8cf8])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-455c73a335esm321788fac.12.2026.07.12.09.07.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jul 2026 09:07:41 -0700 (PDT)
+Message-ID: <4b548db9-323c-4754-8e91-26ce94669600@baylibre.com>
+Date: Sun, 12 Jul 2026 11:07:40 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org, jananisunil.dev@gmail.com
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+ <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
+ <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+ <20260710013322.595f8ee4@jic23-huawei>
+ <a96caaaf-5cac-4bc0-9e74-e48b6fe0afc1@baylibre.com>
+ <20260712023918.119fbecd@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260712023918.119fbecd@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 7/11/26 8:39 PM, Jonathan Cameron wrote:
+> On Sat, 11 Jul 2026 09:40:32 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+> 
+>> On 7/9/26 7:33 PM, Jonathan Cameron wrote:
+>>>>> +  adi,common-mode-output:
+>>>>> +    $ref: /schemas/types.yaml#/definitions/string
+>>>>> +    enum:
+>>>>> +      - avdd-avss-half
+>>>>> +      - 1.65V
+>>>>> +      - 2.5V
+>>>>> +      - 2.14V
+>>>>> +    description:
+>>>>> +      Common mode voltage output selection.    
+>>>>
+>>>> Why not using standard regulator provider bindings for this?  
+>>>
+>>> Interesting question.  If that was done there would need to be
+>>> a consumer which means explicit modelling of any analog circuit.
+>>> We do that in a few cases but so far (and yup this is a driver thing
+>>> in a dt-binding) I don't think we have any way to consumer data when
+>>> a backend is involved.  
+>>
+>> There is also the regulator-always-on property, so strictly speaking,
+>> a consumer is not required.
+> 
+> Makes some sense I guess.
+> 
+> How would the voltage be controlled?  Set min and max to same value?
 
+yes
 
+> 
+> J
+>>
+>>> 	  
+>>>>  
+>>>>> +
+>>>>> +  adi,vcm-power-down:
+>>>>> +    type: boolean
+>>>>> +    description: Power down the common mode output buffer    
+>>>>
+>>>> Is the buffer separate from the output? In that case I would expect
+>>>> buffer to be in the property name, otherwise this should just be
+>>>> part of the enum options above (and the default one at that).
+>>>>  
+>>
+> 
 
-
-=E4=BD=BF=E7=94=A8 Proton Mail =E5=AE=89=E5=85=A8=E9=82=AE=E7=AE=B1=
-=E5=8F=91=E9=80=81=E3=80=82
-
-2026=E5=B9=B47=E6=9C=8812=E6=97=A5 =E6=98=9F=E6=9C=9F=E6=97=A5 =E4=B8=8B=
-=E5=8D=88 11:05=EF=BC=8CAndy Shevchenko <andriy.shevchenko@intel.com> =
-=E6=9D=A5=E4=BF=A1=EF=BC=9A
-
-> On Sun, Jul 12, 2026 at 02:56:40PM +0000, dylanliu050903 wrote:
-> > =E4=BD=BF=E7=94=A8 Proton Mail =E5=AE=89=E5=85=A8=E9=82=AE=E7=AE=B1=
-=E5=8F=91=E9=80=81=E3=80=82
-> > 2026=E5=B9=B47=E6=9C=8812=E6=97=A5 =E6=98=9F=E6=9C=9F=E6=97=A5 =
-=E4=B8=8B=E5=8D=88 10:27=EF=BC=8CGreg Kroah-Hartman <gregkh@linuxfoundation=
-.org> =E6=9D=A5=E4=BF=A1=EF=BC=9A
-> > > You just changed the user/kernel api, right?  Are you sure this is ok=
- to
-> > > do?
-> >
-> > I apologize for the oversight; being new to this, I am still learning t=
-he
-> > ropes and appreciate your patience.
-> >
-> > You are absolutely right. I acknowledge that changing the sysfs names
-> > directly impacts userspace and violates the "never break userspace" rul=
-e. I
-> > will take a step back and adopt a more conservative approach: I plan to=
- keep
-> > the original attribute names as they are to ensure backward compatibili=
-ty
-> > while introducing the new snake_case names as aliases.
-> >
-> > Would this be an acceptable way to move forward, or would you prefer I =
-handle
-> > this cleanup in a different way?
->=20
-> You also should stop sending HTML mails.
->=20
-> The driver is in staging and most likely more work is needed. As for this=
- ABI
-> change, it's possible but it needs to be aligned with IIO maintainers and
-> reviewers first to understand why the original driver has it and what wil=
-l be
-> needed to fulfil the same / similar if driver becomes part of IIO.
->=20
-> --
-> With Best Regards,
-> Andy Shevchenko
->=20
->=20
-Hi Andy,
-
-First, I apologize for the HTML email earlier. I have fixed my email client=
- settings.I was using the ProtonMail web client instead of `git send-email`=
-, which unexpectedly defaulted to HTML.
-
-Regarding the ABI change: I made a classic beginner mistake. I changed it p=
-urely because the `checkpatch.pl` script threw a warning suggesting it shou=
-ld be in snake_case. I blindly followed the script's advice without realizi=
-ng that I was modifying a user/kernel ABI.=20
-
-I now understand that ABI stability (and aligning with IIO maintainers for =
-any necessary staging transitions) absolutely takes precedence over resolvi=
-ng style warnings.
-
-Please drop this patch. I will be much more careful with checkpatch warning=
-s involving exposed interfaces in the future.I will also dive deeper into t=
-he codebase to ensure my future commits provide real value.
-
-Thank you for your time and the guidance!
-
-Best regards,
-Dylan Liu
