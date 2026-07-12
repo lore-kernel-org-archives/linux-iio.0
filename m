@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 075EB1DFDE;
-	Sun, 12 Jul 2026 00:47:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0484D1DFDE;
+	Sun, 12 Jul 2026 00:49:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783817261; cv=none; b=a4dmt4Kl7OoRZjAgW396HmoIQ+2Yij+u288aSSQGSLr2U9vXP0+FEp/W+TbTX00Y2kBU9kE0yN4KgAxu/yXjmi3MmLMvqloH5aC/AIuErGE5gyf4qOFUsyUbsU2QHwTVLHqce2NkoAc13hHQmjDHtdRA/8f3UOhrZgvgoW6bwQ4=
+	t=1783817346; cv=none; b=Z2QywbfeT8FOfyNjsK5jFbfSEAVO7Sh5ogcbx25Y5eQ4+8ec/+sNBUJUCh+/iqFRMgzym3kU2waBcxFfddTxO4RufHe2S8FF1kSPMhfzg/MzKd1IbuDQDRouWlTBTQ0dI1CDFNObo01JR863wuBRHeQHfRvONJVF6eca2noZYpg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783817261; c=relaxed/simple;
-	bh=NzgAZqa18Mtc2zVkrLNw5rsGMTDu2PxkWqGPNO6lMdU=;
+	s=arc-20240116; t=1783817346; c=relaxed/simple;
+	bh=TiOyYuX03fqpPySQKFUrrski21o6Q/RV2EwtHx5iRmw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=flBVJHR+qyRnovBQ/yFaQfafYP6+En2ZopH8wyuBi/kUUpmVltGa8TECbqYERWwS8NXUnaW81rae6khg8UibCn2Z4nNHeMmkrFocdqjY6JH+JizumWDe5FHYFhSE65zZNyofDvmRKsOE7V/+/12coKKtBvjR6jJGg75HsdrA8nc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TogIj2xe; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=eE+4tFVBORClgyjEb1tdGYiCzD1JKWyAzNL+8oVG3DKfy1zot6C4BWyjwB7BmO30gjEFrXbawQkfSJm6dnEf6N5j/mJyMLGm35D74iPM/9hmvOxTqziHrZrOJ1Kt5igym1gB3tl5ZiyCa4iH0iTwtp68V7MEnF0+VGg/oKEVvHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eg/7RKf5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TogIj2xe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6694E1F000E9;
-	Sun, 12 Jul 2026 00:47:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eg/7RKf5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C361F000E9;
+	Sun, 12 Jul 2026 00:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783817259;
-	bh=ZAGV71bqNugqKn5T9IVR4eMOuq6ywDna2wbJxOCqXxs=;
+	s=k20260515; t=1783817344;
+	bh=qvPucw9EqbB0Lc7KuclkR0/HWm6CyInfES1SdaO1r2k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TogIj2xeLtlcmLEPeI/CPABh9t6U10KpuUq4I8Ugmny19FkPiZi7t1jSRGPrK6KDs
-	 +WAqAP9XjoLx+AgaMiscNbJNVQsRy4gb7sF1UxHWzRUVYELSIrZQZwES0wjTGlX6Aj
-	 kjUf+2aZxQmvKkXfj9DACNcLUqsp9uObuY5M1RZ3vjoMBMQKBL/+iWd4ymOPd/MY5X
-	 T+wJ+wE7QLn7FrtlRopz1QvvQq8kkdK2/N/0dPDVwBjc30IAEQqChzjDW0aoVnQv0E
-	 RAvPoJ9BvGFSvxBHzdQ4ZipjtIOW53mRjG6/FqUcsEj1wLLJw+AfJds/c8ZnkzBW44
-	 FD02DqMM3dQJA==
-Date: Sun, 12 Jul 2026 01:47:33 +0100
+	b=eg/7RKf5VysjynOh3iGN4EOe6m9sNeQnzSbKHZQFQE8nE4tVePP3ulzQHpzDEoRn5
+	 GYLiOjbsd+5+qS/jL5EyYlSbHvvhoNwIZipUXEIlBEhx6kz3InvkBZQ+FALZIsD9rG
+	 d4g9PPKmO7HXJV6+hQVuHA9qsz3Zl0MyoAZgUm0Ln25QAJnyjCxE/4gQrNZnse2D/h
+	 +j9fRJSRclAr3Qay7Ee0mqkAYWcdc/S7GWxg7JnPcdpJdb7FlxBF5lHoTg+dXsikJg
+	 DdusM2Y4+BJeXcHNcZF+UnAili8LKlwixpyPyqyQQ3e+pAVrJ3LRguiWBISAiD48nb
+	 Pd4m+c9MSDRig==
+Date: Sun, 12 Jul 2026 01:48:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: sanjayembeddedse@gmail.com, Jiri Kosina <jikos@kernel.org>, Srinivas
- Pandruvada <srinivas.pandruvada@linux.intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Maxwell Doose
- <m32285159@gmail.com>
-Subject: Re: [PATCH v3 0/2] HID: iio: warning clean up and prefer kernel
- coding style
-Message-ID: <20260712014733.3f5ed10a@jic23-huawei>
-In-Reply-To: <akwbOnnEuQ4wA-OE@ashevche-desk.local>
-References: <20260707-15-jun-hid-iio-alignment-v3-0-8791574ad0fe@gmail.com>
-	<akwbOnnEuQ4wA-OE@ashevche-desk.local>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ad4080: configure backend data size
+Message-ID: <20260712014859.1e92ee70@jic23-huawei>
+In-Reply-To: <3caf5748-0da2-4f11-a0ff-d3dd5fdf339f@baylibre.com>
+References: <20260623090717.3296-1-antoniu.miclaus@analog.com>
+	<20260623090717.3296-3-antoniu.miclaus@analog.com>
+	<3caf5748-0da2-4f11-a0ff-d3dd5fdf339f@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,31 +48,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 7 Jul 2026 00:16:42 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, 23 Jun 2026 18:07:39 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Tue, Jul 07, 2026 at 12:29:42AM +0530, Sanjay Chitroda via B4 Relay wrote:
+> On 6/23/26 4:07 AM, Antoniu Miclaus wrote:
+> > The AXI backend needs to know the ADC word width in order to pack the
+> > sample data correctly on the bus. During channel setup, program the
+> > backend packet format via iio_backend_data_size_set() using the channel
+> > resolution, so the data is transferred according to the device's
+> > realbits.
+> >   
 > 
-> > This series updates HID sensor IIO drivers to address checkpatch
-> > warnings, improves readability and compliance with kernel coding style.
-> > 
-> > The changes are:
-> >   - replacing explicit NULL comparisons with implicit pointer checks;
-> >   - adjusting indentation and alignment;
-> >   - reformatting multi-line function declarations for improved
-> >     readability and consistency.
-> > 
-> > While updating alignment and line wrapping, function parameters are
-> > grouped more logically and common callback signatures are formatted
-> > consistently across HID sensor IIO drivers.
-> > 
-> > Testing:
-> >   - Compiled with W=1 for each patch in the series  
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Given the set of fixes working their way upstream for HID, it
-might be a little while before I apply this one.
+> Do we need a Fixes: tag?
+Antoniu?
+
+I'm holding this one for a tag or a reason why not.
+
+Thanks,
 
 Jonathan
+
+> 
+> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> > ---
+> >  drivers/iio/adc/ad4080.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
+> > index 8d2953341b15..8feb0c7f7fcb 100644
+> > --- a/drivers/iio/adc/ad4080.c
+> > +++ b/drivers/iio/adc/ad4080.c
+> > @@ -698,6 +698,11 @@ static int ad4080_setup_channel(struct ad4080_state *st, unsigned int ch)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > +	ret = iio_backend_data_size_set(st->back[ch],
+> > +					st->info->channels[0].scan_type.realbits);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	if (!st->lvds_cnv_en)
+> >  		return 0;
+> >    
+> 
 
