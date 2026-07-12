@@ -1,153 +1,134 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4449145B27
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 08:17:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783844250; cv=pass; b=JzMdVTyEEH2pAFW8nf4j5FOgHnOwBObL7AczyL1bG7BUqSa3p6zgXX1oKv5iVgLL/m/K9n2ytH+vEl+8hz3XMt8l/dLSqtw2MkSSKJbSEczuaFQWChzkC0aTvbDsmp1t4CtZl4EuF/xyZBA6J4jEIwwImHIVZfPGz1w9pLY89Jk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783844250; c=relaxed/simple;
-	bh=QcgPczOmIZhpoU7K5cfpBikVx1RlXpjjVlgbZztf7X8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SIm/2x2YUFnCE2/GRn/iiZfRdHG5yK0WOyKVjYCjlNDMOe0WDFSIHildx6tpVSEt5dAgodyzObiXh9kqAlqGxy2WZsy3jYVk3GPZRIhnmZ7usiquS7x4vy4WVVNvZ9AoDB9u/4lHKN0RJnjau+/oQdZX54oj1aVVXC2qGvNIutY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ggFNlPF6; arc=pass smtp.client-ip=209.85.128.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B6E2F0C48
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 08:31:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783845080; cv=none; b=QeKTZHE9HxIhdfdPGzeaFYbDjmEsLEvR6gl+n/k69nBijbF+5RJDC1SKzelNr8pxKoUFAaA8vI2WDkCmmfu6knIk5Mq+seSTnNWfmRgvuJ20OEBc7hfYnFosDxPELnR5h4F9Wi1NPO8jEqnEUDuupHtbBNR7mNaPVSNvBDn1wxg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783845080; c=relaxed/simple;
+	bh=qZZDoRccRriO9uv7+G0TDUWo85TZUmIAExHMsIW0gvQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TYuls6mKZAZ36mJ0/Tq7pD/oEkEgC2YklpaHGx9io21K4Fehv/fBx0RSsXPy2Na12iXFk+Tg+UF9Jz5DltUspYCx/I3wyGDQJ3XNqGUgdxni3/pnPdU62/MwGWkYe+2H02A/RNZgHfmm5ccZHD4gLUep+oLhpu7ghezHDSyUqNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LqpFkF3p; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ggFNlPF6"
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-81e8e83ff89so12752887b3.0
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 01:17:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783844248; cv=none;
-        d=google.com; s=arc-20260327;
-        b=pliA6k9DeTueg8/DfF937WAX5cIiZ7s60OsXe7vIMg+nIDypXXXwx/ufH8y028QcFR
-         GviP/tp2RV80tY+4pfwUWJPW8rr8i4n7x9mZ2We7shM6OJJ2xa7UP/MexWkuIcBCyJU1
-         LL+sHnlA5eF9opCGIXrvAnVmvvKY7eV3bbL75yhJeBCAbQqbsZsbWHmGxzBJ9r5K+/uP
-         hzl+Ce/UCRkf1vezKHhiItem6KxcdO6Kp2xwq0qX9dgaHSJ6KPdeAfdWrzbY7LmwFiL7
-         BiO+2oMwIjdFG2KguGcrP4H0ytA0f1K/54hepNjlfYxQ2/uIlU5XdWTRso/lTq29kDaQ
-         Vngw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=XBeJuKeSd8OONAL9IImiegKRcrM3/07ehHgrbhteJ08=;
-        fh=Bhgti2KgTjtXJi0/NaMzZJx+QSUe397odzn7QbVGNv8=;
-        b=W3pUrzFSuVc+FWKlRyc3LeoU9R4TqcT+9GPzDH7TnMUN1wAJDuWMHLtyV7L93MR1mW
-         JSlYL8V+q2woOS+Tgkup9bl/VhS26OmVzAyV53U5Ja7dgqlnyxzR5AGx2WS0voV3kUct
-         INizuC8avQ0Du97NVQFBehHA1tGzIfdcr2jX0lyISGng7xfxn8KUP2FcJ7+lxMDpyK/R
-         0XVcdp7JoDr4ErzjyAIAEvVwIKWpOJgEuGQP4Y/+X8+b7WtsusujQv+lZF1w7Yya0Cru
-         Wu/l2AFIMPu9j7wsptu8TIy5t9on6BN5Y6CGc705vIaVqe6Vf2nsV4ooYmUUsMBiW7p0
-         TJTQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LqpFkF3p"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2caea3f742bso24499625ad.0
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 01:31:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783844248; x=1784449048; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=XBeJuKeSd8OONAL9IImiegKRcrM3/07ehHgrbhteJ08=;
-        b=ggFNlPF6cp6vEAr/kXtjlFWYziYIJDtwJ/8Z8boY56e/Zj2qOQdL5scWSZZPqr1W2W
-         YD7tHnXOvlgn4JtGLsQHP2+czWdQmK8PROb8M07vdh0sXGEb/0SurcYHWB3PCl1lSWN+
-         JqD1NqQVfGiabCGeq73eMzLb3a3G4hHXaxlGTjmoVgT/sHqHohRcfaYwkUUbMle0rJl6
-         0nZm15XsGqGxH1sS2E5tV6YKzQaZ3UturivyPKGCKXuddLUTIcnUvc+Wunf5ylbxL0E4
-         QXhd8qFERgXHpZ5pwyTvM2Nbwh3E6c4jZjdiEZ8dJGfHqAtiV4i/3BrEL2TFlr1QnCVM
-         cnMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783844248; x=1784449048;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1783845077; x=1784449877; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=XBeJuKeSd8OONAL9IImiegKRcrM3/07ehHgrbhteJ08=;
-        b=LV+IE4qfcfCKB1FZ0n1Ew2tB2/Phcc/zz4O/cgRH2VVbJOffFw3sxJamG9+W/vI+RR
-         oXvyKxG4LCcCYnf/YuOGJI8nWWGtirgz7NgAaykvR3nHs3FmoqeRMS1p4XsjTfG7jM8d
-         BKfb+oP8qq5zc/eEBqR3n0bt6f5JWZbehg3Rq2E/Wn9goGmdfGVr0duzAYz9j2n2OFOM
-         7X/w2zn6OpyUeQsWu5YxAZ9rm62JMrJivNx04eOIaYDpmexN+8WkOm+Ywr4c9+qs1cVw
-         QPOeywU6kQIjWQ4bzfXjfpJcSidm4+FDrSaXjLxT9yWdcCoq3LAL1nPCCAu/9WynAaOc
-         bllw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp/JnndH9MZ0rrh2pj00cmrZK9nnXAXr++jwIB6jsDJt2e+aE7B9GTUmJjiG8f3EPYeSCKwHLM37YA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz4BB32ek/28krBqiNzHDyozrFUo3008AHJzG+15p0jHQH8bVcO
-	dLq6TJzd3roVal1GuEVSnuEkxdlY9CtPxc7DBUYv757DRnuofmYe4P0Vi+WTfgZy57cUW6mAA/0
-	UzIRBDtlHQsuaas8ZJB4QqyK8F2q9Dpw=
-X-Gm-Gg: AfdE7clZjfq+bMQt7Eq1kVVodVwBE1NEvmM2YSHLg0/sZdKLbxpQn4y0yND29cuLeoy
-	3Nnuyu2kaGquR8v4n9QS0c1Ymj5VT4LmyZWiI4KtjtuvOuQeM4F3lHtFT0ikuQEiZqXLM6L6yZq
-	CmvlQKydO2s7bgsq9yCuYIFpWOvelH9thXNV/tDJ5eu7mjferKqEHIbRUkVI6IH3NIKaLl+GRZU
-	vkXyCmw7+kI+gvSNA3/KLx5ycEADlBuFlF0/bnS5NtdJL+DrLLt1PpSf9AZ9vOD8lyrG4CK0g==
-X-Received: by 2002:a05:690c:e08:b0:80c:80f1:71d2 with SMTP id
- 00721157ae682-81e9013e52fmr35436147b3.42.1783844247670; Sun, 12 Jul 2026
- 01:17:27 -0700 (PDT)
+        bh=qwVPE/TFDEf5PRXk0sV1x1p53OMgZZvm6Y22zC3WyOg=;
+        b=LqpFkF3pExO/2x5sP0tVFVuqoApHQEeARbW2B8W9auWXMHQy7CytKG7wVvSqBvOcUU
+         aDX7VGJpha0+lqdIoQNDLNh3Pw//tKVz2evwPLVZmp8icA0D0ZQSL9b73kNmy/2nrswl
+         paG3wKdA1Q/lvbT2bwqHGw2fRsIiK5HYJabpzWpipLFOp6pyhT2Us2Sfr9XuftjrEHOB
+         XUv655SL+EfNC9zpKVwJVt+/PQJJRYl7OERhorCIz/5nAyXxP+7wd1KaiCiFwZcv1Hns
+         zjy9QFfV1Siv9uup7PVjqPEiZQAm4tbMWFmK8EN2KW0qa4WueDqF6J4eWy7A2VSduIW8
+         UHeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783845077; x=1784449877;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=qwVPE/TFDEf5PRXk0sV1x1p53OMgZZvm6Y22zC3WyOg=;
+        b=NrRHxx1+JgVhrceGFfA4bqU85SvkuYzIz+J80fUyoj7vhfbxN82Tla2WUid70zY9sM
+         KYrBpxWg8aJvsZWWEwkD1biSbqJJ7HfvdZQgtYf8AxYNpV1Aai70H60FBKX/dDDW7wa5
+         IHsDRb6P/oHookQq73jKNkcvOQOz/zpHL9RScgUSs89+OWQK4GaKM+yItJi8EHiFVPLY
+         OnIf8h9Nhmzw6YiJTzjA7M+B7ClsAuGcf7f/OHhG0oO+8bVjNGz0F8O/Ah92fEuq22zD
+         y3Ujaj+HLnPblCq5M2WieWwmBI+Dhx4bfkODsRxFSDnWXMCFfwaVoNcIv0sCaB5pUlvw
+         Le3Q==
+X-Forwarded-Encrypted: i=1; AHgh+RrKKOpFLyBnT+jbEEIJx6cCLP2+04rIgX5XLUF+f91IB2Eqd/QV4wLOeEbgewFXMBM4NNyWFB2vJgM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxNsvafu0clPCbCvjLhmC15Ts+eW2D8VP+mJ+FQhAm/EHp9lUJ5
+	U8NL6lDTFOjgg8uGW3HHsUAWz2eE+XNhyoGCeoU3iG60kN3WTNPROro1
+X-Gm-Gg: AfdE7cl0rjwLwbHWWx2wKyLNMfUCEC/32qZw7Jp4UvsTwFEIxQaErht3A8V4KOynaGg
+	ldPuke5izHjJ4ll8P8+0ifeSdhZkGL3Vqb2w3j4s1l89aa5ibO6Hba2ezEuo0YA0tQnjhRKEVdK
+	0cZ7dwSwHdaW5kJfp4x2YLXqpL/DuODreneEGyGn+qrAjujResjBgxVxkRQAb7gR2koQbF3nYyW
+	EEheaLorD9ytRy47sNJwqOROIE81CY2gJ0I1hw+jCLN23Z4OHm79lbqhCngWgYmyD1vpwAAv0l+
+	hdC6HF13885yoH1FEGkBeCaQGMEpFCOw5tNt8xHU3E7pXc5OYPPVcnyHIPBYVfyROHe6WIcz9v6
+	aTnb7Q7Uzr4UdxJkH/Y4pky1tEJLhAbp2dZRJPMNvhg4UwqWDNCxjaChYfIed522fLfGDO2Rb2z
+	oW8rSd9IlU6JcJycCmGhCv+w/xQ6mHrp78EeFmLglsyOY=
+X-Received: by 2002:a05:6a20:12cf:b0:3bf:6c08:fb9d with SMTP id adf61e73a8af0-3c110b4561amr5540581637.49.1783845076933;
+        Sun, 12 Jul 2026 01:31:16 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.223.101])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b659d8da9sm100968646c88.14.2026.07.12.01.31.13
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 12 Jul 2026 01:31:16 -0700 (PDT)
+From: Biren Pandya <birenpandya@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	Biren Pandya <birenpandya@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v4] iio: accel: kxsd9: fix runtime PM leak in write_raw
+Date: Sun, 12 Jul 2026 14:01:06 +0530
+Message-ID: <20260712083106.97429-2-birenpandya@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260706074650.96042-3-birenpandya@gmail.com> <20260706074650.96042-4-birenpandya@gmail.com>
- <20260712000823.327e506a@jic23-huawei>
-In-Reply-To: <20260712000823.327e506a@jic23-huawei>
-From: biren pandya <birenpandya@gmail.com>
-Date: Sun, 12 Jul 2026 13:47:16 +0530
-X-Gm-Features: AUfX_mxoGr7c89SnkvfiNiCzOUMFjKaQsHNrF3XaSifRn7BQl2XlO6U0FGG90nA
-Message-ID: <CAAeMi9+2QBXKx6Rp5da9LN5NypeH9vUEn524917Ax6Drvuw_Tg@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: accel: kxsd9: fix runtime PM leaks and
- unchecked returns
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Sakari Ailus <sakari.ailus@linux.intel.com>, 
-	Linus Walleij <linusw@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Sun, Jul 12, 2026 at 4:38=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Mon,  6 Jul 2026 13:16:52 +0530
-> Biren Pandya <birenpandya@gmail.com> wrote:
->
-> > The kxsd9 driver previously used manual pm_runtime_get_sync() and
-> > pm_runtime_put_autosuspend() calls in various return paths, which is
-> > prone to memory leaks if a return path is missed. Specifically, in
-> > kxsd9_write_raw(), if the user provides a non-zero integer component
-> > for scale, the function previously returned -EINVAL directly, leaking
-> > the runtime PM usage counter.
->
-> This has become too complex. For the fix, can we just close that one
-> problem case.  Then follow up with the refactors and hardening after?
->
-> The minimal fix is probably the code move you have to check that
-> the request is valid before doing anything with runtime pm.
+The kxsd9 driver previously used manual pm_runtime_get_sync() and
+pm_runtime_put_autosuspend() calls around the entire kxsd9_write_raw()
+function. If the user provides a non-zero integer component for scale,
+the function returned -EINVAL directly, leaking the runtime PM usage
+counter.
 
-Thanks Jonathan, Andy =E2=80=94 agreed on all of it.
+Move the mask and value validation checks before pm_runtime_get_sync()
+to ensure the early -EINVAL returns do not leak the usage counter.
 
-I've just sent out v4 as a fresh thread. It contains just the minimal
-leak fix: moving the mask/val validation ahead of
-pm_runtime_get_sync() in write_raw()
-so the -EINVAL paths stop leaking the usage counter. Nothing else is
-in that patch.
+Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
+Cc: stable@vger.kernel.org
+Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+---
+Changes since the reviewed version:
+- Reduced to the minimal write_raw() leak fix. Dropped the remove()
+  rework (no underflow is possible — pm_runtime_put_noidle() floors at 0)
+  and deferred the PM-macro conversion and style cleanup to a follow-up
+  series, per Jonathan Cameron and Andy Shevchenko.
+ drivers/iio/accel/kxsd9.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-> I don't have time now to do a full driver review (too many patches
-> waiting) but in general this looks like it could do with some
-> 'modernization'.   I feel justified in being particularly rude
-> about this one as a much younger me wrote it :)
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index 4717d80fc24af..1af04cb4bf86a 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -139,18 +139,18 @@ static int kxsd9_write_raw(struct iio_dev *indio_dev,
+ 			   int val2,
+ 			   long mask)
+ {
+-	int ret = -EINVAL;
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
++	int ret;
+ 
+-	pm_runtime_get_sync(st->dev);
++	if (mask != IIO_CHAN_INFO_SCALE)
++		return -EINVAL;
+ 
+-	if (mask == IIO_CHAN_INFO_SCALE) {
+-		/* Check no integer component */
+-		if (val)
+-			return -EINVAL;
+-		ret = kxsd9_write_scale(indio_dev, val2);
+-	}
++	/* Check no integer component */
++	if (val)
++		return -EINVAL;
+ 
++	pm_runtime_get_sync(st->dev);
++	ret = kxsd9_write_scale(indio_dev, val2);
+ 	pm_runtime_put_autosuspend(st->dev);
+ 
+ 	return ret;
+-- 
+2.50.1 (Apple Git-155)
 
-The macro conversion, the per-case PM scoping in read_raw(), and the
-write_scale() cleanup (ARRAY_SIZE, drop foundit, return 0,
-reverse-xmas-tree) I will send as a separate follow-up series once the
-fix is in, so it doesn't hold up the bug.
-
-> Andy's point is valid about the reorder.  I don't think it is
-> a bug, but I'm fairly sure it is unnecessary as nothing else is
-> going to mess with the reference count in this window.
->
-> I'm also not sure I care about an underflow if we are in the
-> weird corners of runtime pm failing on remove.
-> Note that it doesn't actually fail if you drop it too far (despite
-> what sashiko thinks).  Runtime pm counters are always >=3D 0.
-
-I've dropped the remove() rework entirely from v4 =E2=80=94 you're both rig=
-ht
-that put_noidle() floors at 0 natively,
-so the reorder is unnecessary and the underflow concern wasn't real.
-Still learning exactly where the line sits between "fix" and "cleanup"
-for stable.
-Thanks for the patience and the detailed checklist for the upcoming
-modernization series!
