@@ -1,67 +1,67 @@
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17782342CB2
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 16:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5B93624BC
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 16:30:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783872466; cv=none; b=rfbVZqzG200YkkOOicvT1iJ3v5/zZw6lAIX5K5DSV82EZKeIgoxBuqv9FbHa1hiIPl0aQef6YuyaIpMB6K7xpiJIwcP7GGsBr37Dw8omQxLCiBFeQ2JNYdKGbAMq6FaWvQfoO9CL3To1gez2/9T3wfB/4h2hG4v6BXqhEEBoGW0=
+	t=1783873839; cv=none; b=CNWO1elo5OcdxYPCAhmcQJBa8QCWfrfhPk7YjoY4YkdAoheTC/xhUlTGGi3mkHUZea/wjFjrq84dSZOin88Nj9Rj7i7noulphIPbw8CsAn+ncBTPeC7P7Rj5wekyq59bHxEG4v9sHbBNzUwOYOneRbdSLtLA7euRj3P5Ce6Fn90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783872466; c=relaxed/simple;
-	bh=/Lvsg/ZJR/lfpgoUMIiOWitMqmPb9MoVhYs6ClRrfg4=;
+	s=arc-20240116; t=1783873839; c=relaxed/simple;
+	bh=19uKDmkw4YGdHcf2I8C7kHZXoTPiCf831Ui6RmZ3XS4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jufNjZYR9Ql82O033BBmhmp0pu7ErULs7cBxUKi8T0Ply7VbyzzBaEDX/xnS3FBoR7zJjOfDZ6fIHmid33rcpR2quyOpFTy77glaLuT/rrFfaQgjxSAH2xQarxNIeV9/WyHRVupWaQrQ1xo+BK8G+MfhVyaCvetKjysDx4UymqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=bS5NqABn; arc=none smtp.client-ip=209.85.160.44
+	 In-Reply-To:Content-Type; b=ljf60xUuhjT7TuFc79gJ6spkutG6H5wYUTAENRNVdTmCmLVZtcb2b/48to7bBwgFF0guIDEda813DDzk2IxDuX+W+67pQmxjc3aXtu0sQJGp1tmPltdauEpku4ow4Duim3w2/eCmsHRYPA3DpQ08A1EVaK83gb9kphdtrq6ANJY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TZYPmkbU; arc=none smtp.client-ip=209.85.210.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="bS5NqABn"
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4472500e25fso1151965fac.1
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 09:07:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TZYPmkbU"
+Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7e9eaf04bfaso882930a34.1
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 09:30:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783872463; x=1784477263; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1783873836; x=1784478636; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=uVpYadVTuJ7Oa9ZoTB5rgj6lqcEBWKLs7QhoK6MvLlk=;
-        b=bS5NqABnb3IrzzCXGNzFQUFOq3VQgzYZKi+bhB+usfs5AjjguDll7xUPIPvq64mD+Y
-         VZCN/PjROGVKPdWskoa3068iA253zDh6Da6mCDh1pmmOmmySOw6I/CaQJSJplgpIjCen
-         xmIBp3/rG2TOu1xICOgMeFMyFYM/DvtqqkvMlVdqKvZdlxNNpI5C61GK/EblxEzFp6Ju
-         RyzT4/IhGjkMraU9Y+u0RF6oYavekZxC9fxJJPcDFi+pL2pxXpDnrL3dQyR+ktGLQaKM
-         uAds6MENRCW2CHoKYKDEt4MGjsE5YTeZnfPU0dGZZ4W3Tp3KXR2oep2ud39/+RsWx+1j
-         qK3g==
+        bh=q5PY6MHPXgN1sMkki5f6TEVs8WC88f6zKUB5nh4DP3Y=;
+        b=TZYPmkbUT+sIwiRP8HpTQdeZIJ3jilzE0UBnOCLrY5ZLanWjxzcYMX49GwJbQ6NFUP
+         +2p/9ANRiBtslPsda2sxo3BD2jH7GuOPlXZ3Mpubi83110wcxxyULMlA9ypmPUAzUskd
+         D1OT8Docc/dyZKOWG9oOIT65lpqTKdI3jyACGFvkghHAg75VJNLd5H7XVTJ459mubORU
+         Fuwym3XBvGULn2yNiXr75jtZGoixQ/wawPsHrDQ/hX5OnWmI8i1Fy+uR/C92SjE9oQWz
+         b+PV9wSij0F09ud8V4Qsk+Ayt2/v9mIBAi8gkJ8KmiPOabSIH/iZjNQvAsnnndkvx0zI
+         wkOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783872463; x=1784477263;
+        d=1e100.net; s=20251104; t=1783873836; x=1784478636;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=uVpYadVTuJ7Oa9ZoTB5rgj6lqcEBWKLs7QhoK6MvLlk=;
-        b=GdPdHl7b4Ksn4+C8LLr3scS0Xzt7vM9LoiGKAp2PHVWdIS1dRuwvRYsxHD6wgfrtcc
-         TJnWB6+5CBgdcRtd2aEu6kZke/3POlt9bOBzyWpCgCZOCZSjL7bgnodUYShI8Rubjmw/
-         UdocVSP33zciuAj9bgdYyoNRQROX817C0ykhqxxtzeU1HxCqVKiOxKqPBslioYEKyr2M
-         9oSuqNo4lIsrtdg/LbRhOMO2/fW144P2CB5qh6ikJGdddGT8MArNThha173eh2q+XiKq
-         Ju3diLRBqJw6/jEkXuKXOz4uo3bG8Oq0QVocp+/SeSVu0Fz14CUxCshPLt9IuZkaQz/y
-         1Sug==
-X-Forwarded-Encrypted: i=1; AFNElJ8Y7w0A/Koz5OA9mQf8iO4eF7tfr57gJPk0ZH9YnS1n/892t3H3Q6WsQWA1TcmfdeXYKgFf5gaD+Do=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwL/nkflcBDvmgQWgeQQ2PmddofkhHBLbbuMupio0EM21Ya+ZUb
-	JiA+giCVXjIR/Q1YH42nmkA4q/ysHDg+Q5c3fvUzwSae2Jflo7WOakNSqV+a2MzZwfo=
-X-Gm-Gg: AfdE7cm5MhQdDxIXvXsx4kPsh8sDw+5Sxkt23FX4pdaghKeXvOwyXJnXuNc9HtWv+s8
-	VYITv/VpN99Hmp4BDQGwTcnUIGRaNJgSBD6kp4zA5lXYDErX0j5WvI+YEZAL7+0jiaAX7XMJhbq
-	i4oJ04a1g7955uBrQkfzLpEVjq+/C7btykv0kFFwM2KkWSWY8v1zS41Ubi6wKXkVz8twvSD4izT
-	J1QU1Fo9VnZm7+uLD6T6CvdIV/Df4xgxRfsjBgtKsA2U/UhMjVRm1joTPUMnR/22w+9zq2ATmAj
-	YOD5wrPKzBxikN08PfT4bXPR3ams88LwiF97lnpLTgxHsF1AinhlBVMF/4aSXVCo7EM9kyf75gn
-	irLkFGCjxwlvArlhTSUAuOdsQveq+YZTdH1cNtOX5nrwnwAOF45csLy4xTJbIm434lhR3n7z9ED
-	ODEdwzMRfUsMi0gEpVAsLXb16E1qxtGzXKrDwCrjoBPmHrxhx7+hSrrvAS+euAj4A=
-X-Received: by 2002:a05:6870:e187:b0:449:a0db:5917 with SMTP id 586e51a60fabf-451f1445225mr2893250fac.41.1783872462881;
-        Sun, 12 Jul 2026 09:07:42 -0700 (PDT)
+        bh=q5PY6MHPXgN1sMkki5f6TEVs8WC88f6zKUB5nh4DP3Y=;
+        b=m8JcXDQbl+BJh8mHqAEk0k1D5m2u+umGVKH47dS8AR3+7W4Xv0uwVJIl2n3U4iTrWx
+         9Z0iQ5CItJQHZLyAkpwssSXf6E0HdOXJ4eYu+XAzXA32aTRnD0DIK8284m/4Jt9JK2Xg
+         vXga+RifXyL9XNQ0R0vIHRX3iP/iOx78yvYakz0BAJKryifLImgu94NU7KFDFibc0f67
+         V/kS9SV6VMof4izMhFunMv2h7MEcFKd47ByhQ0N63KdWIZUY7ftrIe51VvyUCkfNp/br
+         rrHFX0XY7QVyECi8vBxqXzfssJ1vOMrQJx///dDMVFF0tJmHENmBRu1+0yPCPUviGWC5
+         if0Q==
+X-Forwarded-Encrypted: i=1; AFNElJ/K8Q/5R8KjcEP++5fbyfsYq6VJodAqqpYOXE5MqiS/A3dJOGVC27/u+QYEoFMYq9TyZ9jY0c2hblk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxZu+HNZZVk1Dx0T402s/mxhmGYIBUWYE7OLk30GzuMbSYImp4c
+	qOdynEJSSCPyX/VC+BxSg3PcHlllqLhSN6JAkrDkG0Xr5XKK7FXmXyTpv9F6fSs4eqs=
+X-Gm-Gg: AfdE7cm+Y80d6ONhYs/ut6CgmviUfqwh+d4kBqBew5W0jxmeKurs9LCAfMYUvgFhOnZ
+	Aqsge5FLc13j1i3l8YsqFcnPurMGPkL0xT5L6dg7WPq3jQPi22MuQtpoeEhGoJqicYQCwP2H2Qz
+	iHEOJ7qgSNKv+Ia4d0+32RLWvdT0mA4a1jzIZN8YaRAxTadfofBEa2M05q9SAMsu999Nk5D8ErY
+	fEhtSCzC+cUZ3VScC5ZnXRhg8lal9yAJxJcg6HcZ5t3i9yin9et6kdGhEfMK60+S9Tow0pp97YN
+	qK2KQ+nR/+aJ9k7b71OIp8kBE8lF/pSgEWCGUEeVqrzWLmbM+qIQwsDR/RRZkHswN5kaSkHzAZf
+	sXjquFvKY0tb48hdNNTnN/HaPs31VyLzpE0P0aXsbPBkMy62DX+MefB88NoSQ3z43zkl/wy6SUW
+	jlxW32L0FSdHzxkB6lbIpre2BDS/XI1k+JhVGTkRS6wvUAYYsm87zZz2wT14LOfkk=
+X-Received: by 2002:a05:6830:2b12:b0:7e9:ec31:bd5a with SMTP id 46e09a7af769-7ec09857d5cmr4086727a34.28.1783873835727;
+        Sun, 12 Jul 2026 09:30:35 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:3af7:75b0:bf02:8cf8? ([2600:8803:e7e4:500:3af7:75b0:bf02:8cf8])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-455c73a335esm321788fac.12.2026.07.12.09.07.40
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcb262f50sm10964840a34.15.2026.07.12.09.30.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Jul 2026 09:07:41 -0700 (PDT)
-Message-ID: <4b548db9-323c-4754-8e91-26ce94669600@baylibre.com>
-Date: Sun, 12 Jul 2026 11:07:40 -0500
+        Sun, 12 Jul 2026 09:30:35 -0700 (PDT)
+Message-ID: <566ead65-4da1-492d-b556-25526cc63647@baylibre.com>
+Date: Sun, 12 Jul 2026 11:30:34 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,77 +69,81 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, linux@analog.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org, jananisunil.dev@gmail.com
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
- <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
- <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
- <20260710013322.595f8ee4@jic23-huawei>
- <a96caaaf-5cac-4bc0-9e74-e48b6fe0afc1@baylibre.com>
- <20260712023918.119fbecd@jic23-huawei>
+Subject: Re: [PATCH v3 6/8] iio: adc: add ti-ads112c14 driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
+ <20260710-iio-adc-ti-ads122c14-v3-6-746d52cbf1d0@baylibre.com>
+ <alNhom1_o1hZgEnz@ashevche-desk.local>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260712023918.119fbecd@jic23-huawei>
+In-Reply-To: <alNhom1_o1hZgEnz@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 7/11/26 8:39 PM, Jonathan Cameron wrote:
-> On Sat, 11 Jul 2026 09:40:32 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
->> On 7/9/26 7:33 PM, Jonathan Cameron wrote:
->>>>> +  adi,common-mode-output:
->>>>> +    $ref: /schemas/types.yaml#/definitions/string
->>>>> +    enum:
->>>>> +      - avdd-avss-half
->>>>> +      - 1.65V
->>>>> +      - 2.5V
->>>>> +      - 2.14V
->>>>> +    description:
->>>>> +      Common mode voltage output selection.    
->>>>
->>>> Why not using standard regulator provider bindings for this?  
->>>
->>> Interesting question.  If that was done there would need to be
->>> a consumer which means explicit modelling of any analog circuit.
->>> We do that in a few cases but so far (and yup this is a driver thing
->>> in a dt-binding) I don't think we have any way to consumer data when
->>> a backend is involved.  
+On 7/12/26 4:42 AM, Andy Shevchenko wrote:
+> On Fri, Jul 10, 2026 at 05:50:39PM -0500, David Lechner (TI) wrote:
+>> Add a new driver for the TI ADS112C14/ADS122C14 ADC chips.
 >>
->> There is also the regulator-always-on property, so strictly speaking,
->> a consumer is not required.
+>> This first step is adding a very basic driver that only supports power
+>> on/reset and reading the system monitor channels.
+>>
+>> ADS112C14_SYS_MON_CHANNEL_SHORT is the last channel rather than being in
+>> logical order by address to keep the voltage channels together and in
+>> case we find we need to add variants of this channel with different
+>> voltage reference later.
 > 
-> Makes some sense I guess.
+> ...
 > 
-> How would the voltage be controlled?  Set min and max to same value?
+>> +static int ads112c14_probe(struct i2c_client *client)
+>> +{
+>> +	struct device *dev = &client->dev;
+>> +	const struct ads112c14_chip_info *info;
+>> +	struct iio_dev *indio_dev;
+>> +	struct ads112c14_data *data;
+>> +	u32 reg_val;
+>> +	int ret;
+>> +
+>> +	info = i2c_get_match_data(client);
+>> +	if (!info)
+>> +		return dev_err_probe(dev, -EINVAL, "missing match data\n");
+> 
+> I think -ENODEV suits better here.
 
-yes
+Sure. I went with EINVAL because I thought it was more common, but we
+have about the same number of both ENODEV and EINVAL at this point.
+
+I also saw one ENOSYS, which we really should not be using. And one
+ENODATA which actually makes sense too.
 
 > 
-> J
->>
->>> 	  
->>>>  
->>>>> +
->>>>> +  adi,vcm-power-down:
->>>>> +    type: boolean
->>>>> +    description: Power down the common mode output buffer    
->>>>
->>>> Is the buffer separate from the output? In that case I would expect
->>>> buffer to be in the property name, otherwise this should just be
->>>> part of the enum options above (and the default one at that).
->>>>  
->>
+>> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	data = iio_priv(indio_dev);
+>> +	data->chip_info = info;
+>> +
+>> +	ret = devm_regulator_get_enable(dev, "dvdd");
+>> +	if (ret)
+>> +		return dev_err_probe(dev, ret, "failed to get dvdd regulator\n");
+>> +
+>> +	ret = devm_regulator_get_enable(dev, "avdd");
+>> +	if (ret)
+>> +		return dev_err_probe(dev, ret, "failed to get avdd regulator\n");
+>> +
+>> +	data->regmap = devm_regmap_init_i2c(client, &ads112c14_regmap_config);
+>> +	if (IS_ERR(data->regmap))
+>> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
+>> +				     "failed to init regmap\n");
 > 
+> Do we have a guarantee that device is powered on here?
+
+I guess you mean did I miss a 10 ms power up delay?
 
