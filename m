@@ -1,134 +1,102 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A17342515
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 16:38:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0FB3546EC
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 16:42:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783874311; cv=none; b=CsUxBXujzjQmyhl5oJI1DyXCdgGR0HazfQgDCbVWADkcfiTSkeSpCl5oHobgmCR0Kr8khhzwK3w2VOItmyms1H6jWfS4pxNqE+D2zkAoqn3fxA1QdxVvRbpgUjTNypGCD3GwHBx2hyif7G/MuTfeCmWdD2umXJCPuowttBjtXkU=
+	t=1783874549; cv=none; b=XNHeVK747wgqYFI7AQxZl7OIBRw2zZ5UOSJD5M7FPSM+dOHksbWCVV6cRLqquV1t1YX0GFZ2u0CDjvv7fbZqq7hNnea9oNi8T7FaU40j3wcI028AlYAFRxF1hWWqi9Dt52mwabmMlpNEyZ+5CLRyZ9FzK53VmFfUlRByTQtd5rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783874311; c=relaxed/simple;
-	bh=WgpVXf8J119QoGJHXRfX5ufe5hIxEJOs0qPmFfcdhPs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fCOVjkQ/lHtyoZHqUWWRsnq9/33O7I8X3q6x3jE3X05oiu0Sg9arVxf6BQgtqsfRn1jA5/epZ6ndakZGlcTTHZ/ROHZ3mNk3zx2NSSRkQWfY9MuGssdP0wwJTjvmyJy1HN7HWaItA2/z2YJq7kVANqWGzq4zF1s/IwbzrKncnoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K1VG+rcQ; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1783874549; c=relaxed/simple;
+	bh=Vrn2cvHY0Z8lIXDHCB8nMlk5vQkUeOEd+5RMCPPeEsA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AHXyluNArDqQNhpQsIbNNwdxjKAhjXqsFErbKkNgqT7ki/8RMQRF2pY0aFbSz9IQeLHyg9R2Kf0rMuxL02CikG+ltXfOPwX98799CNY3XSLNFYHodYhyGn0OCLRcwOxFEIY/CSlt3G0Banzm4/5nSBYskuwjl1IIVxWbxPFjceg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P9XUgqZa; arc=none smtp.client-ip=209.85.167.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K1VG+rcQ"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4938d5f86f3so17818795e9.1
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 09:38:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P9XUgqZa"
+Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-48751bd4abeso966488b6e.0
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 09:42:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783874308; x=1784479108; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=oBeqD+zoXhOUQV1xacnEku0uxvNUMotgOTqmmTw8mQQ=;
-        b=K1VG+rcQ38wNJFOMXNezIxl0ioUheUbNzcgI/y37rOZTT97VnDT5NQXpKByPAkTD0S
-         DADqLFhpI3Nj9jFSP5V6AUyYmZmX2Pv//GiManGFGV68mpGIF4eKKec58UdInRvEermq
-         cdNYAhZkvGhjAwj5rEoQFhtehHxv9UCXQ5vsVCgQCL9/VbNAy0OBnFSIfyk7eie25dVx
-         /VkdXvnXt2hci6g+tptIzMjHfy2Vn6nZrbqWIpQ10IIx47K/RkhEfm4Tmw3Upjo2uLbl
-         olMk0jwhCUdB17GMiUeQTFbi7sOrucwuuV8hrjr114GlTAJqICS3HypRgFckbUHT22mX
-         +tyw==
+        d=gmail.com; s=20251104; t=1783874547; x=1784479347; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=bjbe2W2B2sOCg4eolTyHO9+I2nNjjhOXYuNovM6oF4s=;
+        b=P9XUgqZa4zwho6EPpXMV5jXzK5aQbP0L3ZdLcpVFE5vBWFXb5Jz4rZwrZkBEIOm48U
+         tIRE31jA0ESpfs9NDdeIo0dGw+soyGSHAtCEi8abMOjrYn6cBoy0MyvCu8wa8dYDf/cL
+         MUTck+sjnJkF+PJzi1L+2pN0a3mKs45md+BO7vQb25uarOo8SeZ/n8bZ5R+UIiv7dl63
+         X2lD1EHtx6H5bQ/aVbeqXthwEnBVgg4oTYRH+pNJtSxNJRHWocyyQ0RozgPLQGnaztGU
+         1HX+VcA0bdYitQGY7U2Wciszww97DBJMLBFdzH409ZOGk/Xd23oOrIyI0d70RFgmRIoS
+         KXnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783874308; x=1784479108;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oBeqD+zoXhOUQV1xacnEku0uxvNUMotgOTqmmTw8mQQ=;
-        b=TNYhjvKfH/cWMN+wwntgjDVHfOgr9g2Rvs9eHbAVqwmQrwUbTQ1udMpiyNpj0Fd4vd
-         Z0blv17fUunO87V088mrvnLslUKlZBG/YXvyqnG5/LQdUAH5jaES7ULHhNnFxtpRFoE9
-         Cp0fkrUfUftwllE+ktD/sxM5mA/L+h1vNq29S4HRZCsdrKl09b8zlDVA0lmK9YaEFrzf
-         m4f870nxvviR0bjPs9qjmT2cz28o4bQzR7XKOZFySb/0vCzng5gIq7+39pOZpDSnwCb4
-         5R6/IZST/VF18Szb1jKn6FzgINmA1Z2ZXUZqkvTx9KMWQvSL33ex9U6XjEvbHnqQrtAf
-         eyjA==
-X-Forwarded-Encrypted: i=1; AHgh+RqyCRRi+9CJLWQ9fpNBS26ueYSn2UGG6pCqfMERIBQVD1mt+Q/xNRDHeqhORJYin5k0yt/kZ/xe2VI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrcllXBJXO9PQHxP3zL2JoEqKNr4HwIgnKTpyQuuSkDkRvmc7Q
-	96DGeEfUotICcKTF8tfYwiopJ+xVBNmsCZ51e6HsSAZ5I/c60hTrWSG+
-X-Gm-Gg: AfdE7ckBLbuiupjOzCXqtm06taXEg9+4N4pMjBMRH0pdoYAz91sZsqhQ8TCjVKwpmHG
-	DwFB69Wton5piIn56lBU7LXtVLRW9Uy9xhDY/Bf4oE5rz3qXB+Po3K7xWrsgN4iQYrsd7SINJse
-	VkCNstEW5PcU7nQEuDq6i9+mmlXjxUxAs53yQW4hVILQt2AubsYZvydQ2O5aRmq7xW42iwO05WH
-	+w5kvmYuTsJkduZ5IVsklnN0IEMn87ZSk/FOJWX/um8iCVyS3yYI0c9nPYVgkVUknki//0WUs2g
-	6ki8EOsr/bGWQsbntTMhGPZLwudauFUcHjYFX8jWidgq9XIroYXoKreQECShL1E0BoBVMuA2lUD
-	R/xcjmXydZJy186KSl0G1F2APfAxiqXhokpocemXSHzFXLYZpbajc++wKKc6ExKRquNdb0FCs+1
-	p61sTHPT/RoZrOJAqCZOzIHOgGJLwgbQ1irWuquhlO7ooEuIWKsZvmhZ1b9jod0Ym6eiGL/tNwS
-	skD3MzI0Y28FOD6Vx9fZ2WIPLl+GS9jz5yOLTMBRpN6pzOo0p9sAZT/1yENk/YvAII9S5leADrp
-	3VNMfmm7RqlT7+fqAGDQTAkfl0DLuIKWzG8SdRj0DkH1WeWFBw==
-X-Received: by 2002:a05:600c:1391:b0:493:d117:18a8 with SMTP id 5b1f17b1804b1-493f88bd849mr68661845e9.9.1783874308011;
-        Sun, 12 Jul 2026 09:38:28 -0700 (PDT)
-Received: from systembl0wer ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493f2a2e499sm227660225e9.0.2026.07.12.09.38.27
+        d=1e100.net; s=20251104; t=1783874547; x=1784479347;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=bjbe2W2B2sOCg4eolTyHO9+I2nNjjhOXYuNovM6oF4s=;
+        b=SDQiN62h5DifcqYxKfwE94ceeC1iTFN/7oylaNTmsPy5G1YNQF/Ny2qTXAXhzh4fgL
+         TXZlymE3MAz5lJAQ2ctTdeLb1IQ8TNaRSsMTWBbknB/uclk9MpHSgI9vSM9rW/PEHufJ
+         JofSPrTIRxmpOT+bSzbxxrjvwIHVkKlW5Ts31zadfgr0zCAIWr6TUVBPYvTcuVNEHBEV
+         jj0C5aHU7OUu+GevQqvgp5Uya1se7XQTqVcinLTEqQgC+DLbqIBhkksxRyeAzYltOnal
+         GBn/1sug+Dw/FpOz1sZh3ihl8TrDm9NhN59Fq/XFQogNq1zVWCnwCcjTcvQr9xGDfuui
+         2SIw==
+X-Forwarded-Encrypted: i=1; AFNElJ+y3lFz6JN9yLOmoYm+c0AP8rgq+ywzesqqJAmQ1WdrsqZD0ZLaHCjb38g5+Z9ZnPLdT0IjFnSDJ74=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8r45uh1pHlIxbBe6rnJLdDgvuq1PH4zys233Rcc2wH8CZpqw7
+	dm2+KDWe/cKufeUD1W9GLd1Lig1sC6V9DW/lBroNm27vL6yAtedt+jpj
+X-Gm-Gg: AfdE7cncZYoo/PkPyv/WNog+duDDjwdPTm900R5vE4kpIE77p6GcCIxfciNXVZLetWQ
+	avP2KCIJpBBJmpja2Q24uoVUsEBB39BZJSi+TwrGTC3C3ameCi8UEeS+Ypstfnku3U4TlgdkoTe
+	3uuBzrLGAjYR7O0PCB5tNczmMgP9GOvzHJtpVBtjQbKHRJBud/tIwYJROgBGsCVjDjjLMLi093m
+	VWdsx6C0KgITYacmj2KCjraH2ROIDz7xBlutFmsnesKo36tTN7vPL9xEqbNKOSZ0Hgd6FXzPlMH
+	NAug6nIoxWwHaHlPbjImun+chspdq+I/1u5poHuMhSDn9G9bHWjZk52ziyY5LqDaonMWSP925qf
+	lFZBOb7RbJdPX2yPFciVICY4XV5HXJ2JQfpPaEWH0OZ27nyW/vlm9HVwYBZsFqP0lclZHDjtPO7
+	J0sSjcZ3xu0L2nmceminH3Lniv3WuUFL8QExdp7VA8hXCkDfg=
+X-Received: by 2002:a05:6808:1b99:b0:492:b433:a3ea with SMTP id 5614622812f47-4a42ac195e8mr4386280b6e.6.1783874547330;
+        Sun, 12 Jul 2026 09:42:27 -0700 (PDT)
+Received: from linuxescape.lan (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a1afbf92b1sm9767922b6e.10.2026.07.12.09.42.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 09:38:27 -0700 (PDT)
-Date: Sun, 12 Jul 2026 18:38:25 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: light: opt3001: split opt3001_get_processed()
- logic
-Message-ID: <20260712183825.1f3dcf30@systembl0wer>
-In-Reply-To: <alOdn0m3fbznqqDm@ashevche-desk.local>
-References: <20260712-opt3001-unwind-cleanup-v3-1-5fa336876b08@gmail.com>
-	<alOdn0m3fbznqqDm@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+        Sun, 12 Jul 2026 09:42:26 -0700 (PDT)
+From: Maxwell Doose <m32285159@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Tomasz Duszynski <tduszyns@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iio: chemical: scd30: remove kernel.h header
+Date: Sun, 12 Jul 2026 11:42:25 -0500
+Message-ID: <20260712164225.358852-1-m32285159@gmail.com>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sun, 12 Jul 2026 16:58:55 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > +	ret = wait_event_timeout(opt->result_ready_queue,
-> > +				 opt->result_ready,
-> > +				 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
-> > +	if (ret == 0)
-> > +		ret = -ETIMEDOUT;  
-> 
-> ret is int and for holding an error code, with the above ret is rewritten
-> with positive number and might lead to subtle issues. The recommended way
-> to handle is
-> 
-> 	if (wait_event_timeout(opt->result_ready_queue, opt->result_ready,
-> 			       msecs_to_jiffies(OPT3001_RESULT_READY_LONG)))
-> 		ret = 0;
-> 	else
-> 		ret = -ETIMEDOUT;
-> 
-> or something like that.
+kernel.h is no longer recommended for usage because it can cause longer
+build times and pull in transient dependencies. In addition, it's not
+being used by the SCD30 driver. Remove it.
 
-Sure, I can do that.
+Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+---
+ drivers/iio/chemical/scd30_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-...
-
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "failed to write register %02x\n",
-> > +			OPT3001_LOW_LIMIT);
-> > +		return ret;
-> >  	}
-> >  
-> > +	return 0;  
-> 
-> Also can be simply
-> 
-> 	return ret;
-> 
-> in both branches.
-
-Yeah, I agonized over this since I did the change you describe in a
-different patchset, and I was advised to do it the way as I did in
-this patch so that it's more readable (i.e. we know which path is
-the successful one). I'm really indifferent to either change and it
-doesn't cut that many lines.
-
+diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+index f85cdd8bd84f..40bbf26a667b 100644
+--- a/drivers/iio/chemical/scd30_core.c
++++ b/drivers/iio/chemical/scd30_core.c
+@@ -23,7 +23,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/irqreturn.h>
+ #include <linux/jiffies.h>
+-#include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/regulator/consumer.h>
 -- 
-Kind regards
+2.54.0
 
-CJD
