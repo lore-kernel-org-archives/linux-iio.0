@@ -1,181 +1,131 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E85429ACCD
-	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 18:18:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.175
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783880308; cv=pass; b=H4T54c+h7gpS4/r0zWMif2hBfS3TYWxSnjHdLmp8J45o0JIMrDKA25DhMhwGebwngVRb9/UXZ5GlY0d0S2pJjrQ333e3CsJKIZJqaPE6bhNP11hzDSePdlrY4Cw/NZpAou5e/atbSdlcKzg4jHk/oGuUmy0ySVkZcb5/NM2lveY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783880308; c=relaxed/simple;
-	bh=91+lE/PvB9B2UGZxGIis6HRoNFRehg8WShZjO83ddZ4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=I6bYW42YAE+U/Bf67TYLB6+uOkgmnYJGyjX4Ayxk8xV2RzKoLv4cF3iAWRuJrjIYrNiVMs5p4N3NR2XKICVo8wqN2ThO6BXNVxH13IbEvKsqzJRAXj5hdyeTeQLYsggKQ+eQw8pz12pwc+XaKSdu90dcQRr2CeoSEGBFRp4Fgos=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P7MFkZ71; arc=pass smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E77361A6806
+	for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 18:47:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783882049; cv=none; b=LR5uZsaWeWWqVIkAlA2D5IbMRfaYHXZ3/iVAENbtHC37YxhAmQtDXT6g8Pz+dBgTI085nkaPYMyFq14sVa13QrkXbdZRro9Knp8TcaydgLQ9Ie9atvzWNQUTIRRYIm/cpdWmPTICZBfhbUdEp2kt5Fx6j+XwaHXOj+/pGdmpZFE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783882049; c=relaxed/simple;
+	bh=fQP/YBsySFNtQfxMRYZ4qvY0/T/PIl+HWLBK2pjiP6g=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:In-Reply-To:Subject:
+	 From:To:References; b=gVMoLvR2XiN3vi/L20mJYxKn0mw1qtmRuueYbyGak7rA6iEYniJt3iU8ks4GaoaWTWxX9WwNJCUKbftKWvqAyHwvmyb4adVQi2F1MwMi0LkKbttburch5Y64QPOUoHTnqpRKntxq/c5vNZxPCKk9U5VWzWxpiwDYZlIJQzZ+ZLo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kBqmijTC; arc=none smtp.client-ip=209.85.161.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P7MFkZ71"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2cc6dd436c6so28880865ad.2
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 11:18:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783880306; cv=none;
-        d=google.com; s=arc-20260327;
-        b=LKzZjsrrFiKgNWxMoQoOkn4PcuDzyLMDg4BbkJva+KmiV7kbZbvwngskKUIMvkxC/Q
-         9VmLYRaiL4Rc5RTsYbBH/am8y9QDudGwDZ+pqENxlB1Q354hsg9IV/X5du6Sz8hB4oEM
-         XBh2lBlyfiwJ51GQDbB8LjM1qBwmkr9gGtwlhzwPy27I857lrwD2RUxqhRtAJoYkqxN/
-         JfXXMnQhGjD+9RZe5jRjU2KE29QbijzCUxn3HNjMjHnYvKL2AC/KvATQKvMX50JmLrPp
-         nq0p06Q0nZrh+LTTtRdxfa4mYqlUu9Rn1oCCfzC+gaB2NfxEHQcF87iwzzEZUM7ug0p0
-         Mmgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=8HaB870+24Cf6zUZiVILKcFMSQLuP/PfnGLlMLKw6fw=;
-        fh=n4tTtE8LeJQ0x4DEs5rWT2h/JLN4EDOLFlO0TjvOBGw=;
-        b=XabLM2LLROpCOCh1jGfaSum1S5j8xj/WHRfWD0JMjNoGOAmTsbEIcMzesfdTpP0KQF
-         lG4heen3Yu9YaHudbmMm8ApO7rHKbeCFvdHoMweLON0oytU0/+892tmhNu98xDY7MNj9
-         ti4xSk6qP+yNGI00UioWcKoPqAyz0oSyM/varqd8us0U8RvbRhrRtDhV//v0cA6B6bIF
-         GHHtdc7k8cmS7Oje8xQT8POjuzKmzzKi3CIm080oWC+NfjjXZHWreeEpKaxhiS1nkE0+
-         nh+JQ0M5FjApxhG7ZlQ4bt2vIphxlDefG86FaTPsDGl6agcnvGQPhTkcT/pmoVTKzWmE
-         GUlw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kBqmijTC"
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-6a183eb9689so1478697eaf.1
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 11:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783880306; x=1784485106; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=8HaB870+24Cf6zUZiVILKcFMSQLuP/PfnGLlMLKw6fw=;
-        b=P7MFkZ713MbLYgCar4wCRzS9WV4MldzKztgeN5o/W/d6MCvV4V4w96JluSedO7ZmIp
-         rH7Lv0FDHrmEEsDJeb6DQkeJLmo2dj7JLdEQsOjfyMlNCzAXX6qB6SNhmw46+Lkc0uKh
-         MHF8wK2WzH0V4GkJ3Wj2//ZDUBJQkrcgqA6Mqe/RJjvHT/OJxUdljY7HXBzjweWAl6x6
-         obyeNrYFV2ZRQfsBCWuhyNRoLy8rdVSIZ8yIUg0DjF1AZOl+EakK+QKDMMlJ0BWFU//Z
-         zQYKxsLa0bctfGSNRXohyumsaUuBtqmfjCCU9JesCpZteV19a8nubStm5BME2DfWcSEL
-         w+bw==
+        d=gmail.com; s=20251104; t=1783882047; x=1784486847; darn=vger.kernel.org;
+        h=references:to:from:subject:in-reply-to:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=BEJHMADCZwvGkL9UEpqXcgTpiI9QPLRh5JL2OavKJI8=;
+        b=kBqmijTCChnLKQqGg3+9wJ11Wrt99WZGR+Alb0xjdfG49/4PNKN+NP1fEB0HfAUUV6
+         jGdT4wlQJkKQyBc1xP2LZtoLF8Y2nxA4Xf5XpWJtnDpGlSBTH+JU77qwOLNn73O95zES
+         /jI68CTkEuH8OkYS6+zyFRM+NhWTkumPupQxqjl4RIvkxXzjEQQtECMGDh15rN59mOL/
+         34/QWagbMCFJ23ABd0Q+2ZmkI69AvB29lfixbuM4mabeLaa0YvNETzCi/z7oC+ld5ga+
+         Ib/ab/LnoLLjfkdPRamITrkfwQNfe64nx860SCSAnTLQgU2VYcpSi/2SwAX+BiTzGz25
+         MWDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783880306; x=1784485106;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20251104; t=1783882047; x=1784486847;
+        h=references:to:from:subject:in-reply-to:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8HaB870+24Cf6zUZiVILKcFMSQLuP/PfnGLlMLKw6fw=;
-        b=DDg+ljrP3KvlEibUyymYBGsN/ny/GeFWSSzu7OdQY3GgcwziQP5wmLScDsCP6CdVM5
-         YReUkF3AkrQpHYKRvNrXNAk0+Y+8NmW+xPu27Fk5j0VIwuJrb4QWh1H6bh7L73KxDu7s
-         UkEEz9vhI+e3iRZ3ST76UXDrjSk2S8JRxd1aTgGWvSITBWYgVQn7qmLvOeWjyvm1rWT8
-         LRCtBm8tZwiOpQh+666Ow0W5mSvnYb9iHzPBxJCsK5EP8RznqspKnPJF4z+ehl/Kib2c
-         RANp3x2W9fklqEXrbkPy+dXOcpdsgWQajNe1lr1189UO5yj9P5a/PzPIH9e5LIoCnFbb
-         A/eA==
-X-Forwarded-Encrypted: i=1; AHgh+RokaqIiRdKb1TmAtu22XL1wOv/It4q6y4kOUt6MZ03xRTR6E7NxRqvTSCeVRiSgcWgRBij8ORDBiYA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjT9shTEJlTOWMDFe+pQKuhQtJoiZvabTzbJCSpo6HHhSm3Af1
-	5JAr7GosXp9YBtU/ic3HJMyatJpSWUi2nxqF8dlTL04M7BmCwFQuAueHpEWR0gtZpZ1CzSSnV/J
-	OE4M5Y1IwXwB8DCrfrVfc5upLDuPaIGM=
-X-Gm-Gg: AfdE7clouup+qL9d4IYwc20taQMUwbjJVu7qNfvBWrpgQ1sia/OAGaWRt60YqIyxUs0
-	D9USMV1uhVZktkk2cSjIBaIPfx7DGnumBe5rMaSDWTWJAMvYGGjWrX7jNuVE+xL/h8HBoKMUMoK
-	uc22DmwJVwuUnV4isUPMt7UaHFgqyK/Dkt3LJrQQHdQWavw09XZnnE/JXRD2VBFSMaA5WO/b0e3
-	dc0nJvH+NEHURlzoEr0krLUSHclipFa1iNfKZKYeOS52jbILL9lHXcHEcxXi7ZcJrBXjoKTPBHN
-	2qOFqK+Aw6A1UEwC3bor6HG/+FKp2Nw=
-X-Received: by 2002:a05:6a21:4d8f:b0:3c0:9c1a:894f with SMTP id
- adf61e73a8af0-3c110b33403mr6952066637.71.1783880306527; Sun, 12 Jul 2026
- 11:18:26 -0700 (PDT)
+        bh=BEJHMADCZwvGkL9UEpqXcgTpiI9QPLRh5JL2OavKJI8=;
+        b=nY0el/SoTFwH34/6zbm4biKyZzi08YVYO8xprEZ9jO7eAqgZmS/c1CO9FaF/sV8ps8
+         MpAykw+5fcYu1A9WUsB8vWk7IYuxAgs1HeqbGB9n9jbTPgmhDd6vxp6w2RnkteFuainj
+         wqjALuScTbBI2TyuXwXwHiA+0l+tAif5jD7xS/Ry5vcdH+kZv/guWbZzxYVGpyBpRGR2
+         RcJvV2lCneQWf9ssCgX2srP/DNjzzGqCIDMWPy0U+4y/gwwCpmfxVeDGV6jUBeOT6On0
+         Li4vAVOIuHS6AmtqBJr/8RBW14+Z6MhTScnjTDjILgR5DiBgeMCLjp/TwHhDhVKd57tk
+         RAiQ==
+X-Forwarded-Encrypted: i=1; AFNElJ/MDXCZSPVPDGcCyfDMysI0KJ/2uHA4KsSG5f6GMomftXXcdJMTiePtYSo4q4l7mLOOwpSrafJxanc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzeuF9Qm2jDHCf+jkmsfG8QIW9QbVW1vvk90m5A3/6SYxtbwQd5
+	QzgZkjdzqE9GnsqnjV3PN42emQIFk2LImgdPcgj5GVJuqMy7NRKVEdGImPya9Gw2dJQ=
+X-Gm-Gg: AfdE7cnrnzMAwfN+oqRHgaSbdtPk964lQj7YhA2v89wbwgNWvN8huEb4Id7pETmqayT
+	5M3oU43ouePqkvz27P5U4OIKnj7JOSsM9XigCtnzXHKOm9d9lLnhqXCv6wfKutNw9/FcYmrcPTd
+	UDbrgJQ5UGEtskvDg678p6Fe5A24bTbFg9V4IR0Xo2TSRyPKTRqftVgAkZShhSJJw9vRQcEGKk+
+	OygkwH9Y85SfuU0cIIYnKftrbhZEjeqR0LyroIY8BE/XlyKCYNNZLTjlgNBmLJm4QSp+Oy873nH
+	bQcKodi6AUrcZiHeSU3SqRa5N5qP6Ge0BHRL6MUqgAyLhtpahg2X5sGehEEto22ASIyXzQcovOq
+	LZr70a0zXpCPdu871ns+iOhLzhQ9UpyMDJbzxWSulhTYA3ZbHP320sulzaR8I5JNjtu2UszbEOY
+	9L1LUlf9jz5DmIV3eDMxYgifD7XoXifrO+3daPrko=
+X-Received: by 2002:a05:6820:f0a:b0:6a3:ce2:3312 with SMTP id 006d021491bc7-6a39a66e3fcmr4088799eaf.21.1783882046770;
+        Sun, 12 Jul 2026 11:47:26 -0700 (PDT)
+Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-451916f31d4sm11432098fac.16.2026.07.12.11.47.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jul 2026 11:47:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <CAKqfh0GxasvVEMVySviw5vB1QmbNF-RKBjuoMD9ffEtnQjDkJQ@mail.gmail.com>
- <agAvydze87mMLaVC@ashevche-desk.local> <20260608085754.32def4cd@linuxescape>
- <20260609140712.2e5d1640@jic23-huawei> <20260609102159.14c68a8e@linuxescape>
- <20260610103651.00007a64@gmail.com> <a2b1acbb-f8f2-4d6f-9681-986f42feddfa@gmail.com>
- <09dea87f-d2e2-4bbf-a948-3092a2dae29a@gmail.com> <806c72a7-8c29-4308-b226-c347bcde7b0d@gmail.com>
- <CAObtm8z5CGvNrPHk6fw+ibsQkqsMzK3CQBpmQFNCUj3jFzartw@mail.gmail.com>
-In-Reply-To: <CAObtm8z5CGvNrPHk6fw+ibsQkqsMzK3CQBpmQFNCUj3jFzartw@mail.gmail.com>
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-Date: Sun, 12 Jul 2026 21:18:14 +0300
-X-Gm-Features: AVVi8CfGkFSjpVAlOjqO4TPNW_vpW2mZtxEUmXohvrsCQlkb3lnCndBf0YN9BNc
-Message-ID: <CANhJrGMZEve5ktQyL43Y_TegbE6uCUK-VVnJdF36AVB-Ob66aw@mail.gmail.com>
-Subject: Re: [RFC] Maintenance status of SPS30 driver and related Tomasz
- Duszynski entries
-To: =?UTF-8?Q?Tomasz_Duszy=C5=84ski?= <tduszyns@gmail.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Maxwell Doose <m32285159@gmail.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	open list <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, 
-	heikki.haikola@fi.rohmeurope.com, antti.sakkinen@fi.rohmeurope.com
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 12 Jul 2026 13:47:24 -0500
+Message-Id: <DJWTEQ1M40J2.2UGCYOWS66B57@gmail.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Tomasz Duszynski"
+ <tduszyns@gmail.com>, "David Lechner" <dlechner@baylibre.com>,
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, "open list:IIO SUBSYSTEM AND DRIVERS"
+ <linux-iio@vger.kernel.org>, "open list" <linux-kernel@vger.kernel.org>
+In-Reply-To: <20260712185237.6a60e112@systembl0wer>
+Subject: Re: [PATCH] iio: chemical: scd30: remove kernel.h header
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: "Joshua Crofts" <joshua.crofts1@gmail.com>, "Maxwell Doose"
+ <m32285159@gmail.com>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260712164225.358852-1-m32285159@gmail.com>
+ <20260712185237.6a60e112@systembl0wer>
 
-Hi Tomasz,
+On Sun Jul 12, 2026 at 11:52 AM CDT
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-I re-ordered some of the messaging below so I stay on track what has
-been discussed. Let's keep the (necessary) old context on top.
+> On Sun, 12 Jul 2026 11:42:25 -0500
+> Maxwell Doose <m32285159@gmail.com> wrote:
+>
+>> kernel.h is no longer recommended for usage because it can cause longer
+>> build times and pull in transient dependencies. In addition, it's not
+>> being used by the SCD30 driver. Remove it.
+>>=20
+>> Signed-off-by: Maxwell Doose <m32285159@gmail.com>
+>> ---
+>>  drivers/iio/chemical/scd30_core.c | 1 -
+>>  1 file changed, 1 deletion(-)
+>>=20
+>> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/sc=
+d30_core.c
+>> index f85cdd8bd84f..40bbf26a667b 100644
+>> --- a/drivers/iio/chemical/scd30_core.c
+>> +++ b/drivers/iio/chemical/scd30_core.c
+>> @@ -23,7 +23,6 @@
+>>  #include <linux/interrupt.h>
+>>  #include <linux/irqreturn.h>
+>>  #include <linux/jiffies.h>
+>> -#include <linux/kernel.h>
+>>  #include <linux/module.h>
+>>  #include <linux/mutex.h>
+>>  #include <linux/regulator/consumer.h>
+>
+> Since you're doing IWYU stuff, you should also remove errno.h and
+> add err.h instead, as the code uses IS_ERR() etc. and err.h includes
+> errno.h
+>
 
-pe 10.7.2026 klo 18.07 Tomasz Duszy=C5=84ski (tduszyns@gmail.com) kirjoitti=
-:
-> On Mon, Jun 29, 2026 at 8:20=E2=80=AFAM Matti Vaittinen
-> <mazziesaccount@gmail.com> wrote:
-> >
-> > On 25/06/2026 08:11, Matti Vaittinen wrote:
-> > > On 10/06/2026 12:46, Matti Vaittinen wrote:
-> > >> On 10/06/2026 11:36, Joshua Crofts wrote:
-> > >>> On Tue, 9 Jun 2026 10:21:59 -0500
-> > >>> Maxwell Doose <m32285159@gmail.com> wrote:
-> > >>>> Alrighty then. I'll probably take his chemical/ drivers since I've
-> > >>>> been spending some time in there. Regarding his light/ driver (ROH=
-M
-> > >>>> BH1750 AMBIENT LIGHT SENSOR DRIVER) I can take it but I want to se=
-e if
-> > >>>> anyone else wants to first.
-> > >>>>
-> > >>>
-> > >>> I believe that there are a few ROHM folk in IIO, perhaps they would=
- take
-> > >>> interest in maintaining the driver.
-> > >>>
-> > >>
-> > >> Thanks for pinging me. I need to see if we have any of the:BH1710,
-> > >> BH1715, BH1721, BH1750 or BH1751 here - and if we don't, then I need
-> > >> to ask from the HQ.
-> > >
-> > > The HQ promised to provide me BH1721 and BH1751 so I am fine maintain=
-ing
-> > > (S:) this driver.
-> > >
-> >
-> > Oh, I noticed from another mail-chain that Tomasz was found :)
-> >
-> > Tomasz, are you still actively maintaining the ROHM ND1750 driver? If
-> > yes, then I'm not jumping in. If not, then I'll send a MAINTAINERS patc=
-h.
-> >
+I tried to set up iwyu-tool to no avail, but I can send a v2 with that.
 
-> just add yourself as a co-maintainer. What changes are you planning preci=
-sely?
+> Also consider grouping the iio headers and asm headers separately.
+> (separate patch though). The include list looks overwhelming!
 
-I have no planned changes. As far as I understand, I was pinged as it
-seemed this driver was orphaned. I suppose I was pinged because I am
-working for the ROHM and maintaining a few drivers for ROHM ICs.
-
-ROHM likes to have it's ICs working, so HQ promised to send me couple
-of sensors supported by this driver and won't kill me if I
-occasionally spend some of my work-time with this driver. My
-maintenance would mean responding to people. Reviewing, occasional
-bug-hunting/fixes (if problems are reported) and some very limited
-testing. The usual driver maintainer stuff aiming to keep contributors
-and users happy. This is what I expect a maintainer to do.
-
-I have no particular interest towards this specific driver so if you
-are here to stay active and handle all the above - then I definitely
-have no interest in being listed in MAINTAINERS for this driver.
-
-Yours,
-  -- Matti
+Indeed it is but we try our best. Good thing is the more we remove
+unneeded headers the better it gets.
 
 --=20
+best regards,
+max
 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
-
-~~ When things go utterly wrong vim users can always type :help! ~~
-
-Discuss - Estimate - Plan - Report and finally accomplish this:
-void do_work(int time) __attribute__ ((const));
