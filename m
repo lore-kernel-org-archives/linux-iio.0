@@ -1,153 +1,186 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DC333DED5;
-	Mon, 13 Jul 2026 16:29:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B7243C065
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 16:44:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783960195; cv=none; b=RPmHF6CcSIDU0hWFkjnq8dUUCRGa8BW5cDO77fcww261MGDHj6kBJ2j4q6I+00bT2AzyK9Be4oOZQGQH7KX5OLEPm0Sj2zykplJXqlMVKgBTK8pLsED8nl+CcQbP4WJmrP0gauD9J2tQFXkDslhiyAtNrfBk+M2FObZeFCE9Jlo=
+	t=1783961078; cv=none; b=SYW1SYAVR4pWv3b7692K415TqEPDcBGfyZ7qV5LR4ZIEEn0j83HzR6rMW2Hg8Nl0utssEX84BkuxbozXly72KHRzWCogTa9f40wdwp92ihsF5mcvX1pzPkqzIEb9tWt95+LIr0lTAwLmn1RTIn0rTPI7gOCX2YMAEt2KFHv+n30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783960195; c=relaxed/simple;
-	bh=/5NamrAGapwYvtSdpujNLyMcYke9gZ1D7Z/dKA4rnw4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IeDZj9iXnkioia3oXW0YpygEngFWLf/R6EfGkyMHi/Fw05zIKn796NiInW2gfPoBGeEMuKk7/DY1lNH518b45ER3kwnZnj9q6SCXC/9kvYhz4ygndZH++q0Fuf8pdyfc99qbZWNYBIhbrdQpFz1+22g21FAQ1YJnsSKcDQHqPdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KtNwsJv3; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1783961078; c=relaxed/simple;
+	bh=nNTqNq7xMs/jXDzPl/ePNEIhBvhz9TuNxBRMnOKKpbs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZmMDYe7xNc7r4sPPdCcNrEcNcUdn6FzpCn6oj+n47gHEm6n/Jy7L6O6MmLrEEmEWgd82Kuetvg232kFdJKfugD9AkVmhYaqTyymt49qyHSaXIZo/bGnSgJGdUeByTM9sw8k+yXApuq6vMdjmiGPzCSQWSRQhQVlYib5H44rFIoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dlwg+Fqw; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KtNwsJv3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C769F1F000E9;
-	Mon, 13 Jul 2026 16:29:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783960193;
-	bh=bXbO/chk6y7FyoCU9nLg7OxlB75XzaKFkDdMqIuXb7c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=KtNwsJv3ie3pT4KyKms0cEwKHNBYUHfkEarGkYu0YRytdJUwlhGn3AvBX/BYSQPA+
-	 kQnNFH62O4uPVOs0ZiVWE7//D8HIl2ADoYZ8Mefz7TBEmTuktoQoRbYRj6sqYpKUFn
-	 yTf5MNxd2uakwKDOZI9llTx/FpvoRP4vKqsVeE1eRusUAwzccw5x5hgd/os7iAEAH5
-	 ZJKcAdZIEauIllIxN3DfL4/tAz+kXu9aUXaU+Iik/d7g2j0gza0NqNhGRkZyx7pB4i
-	 9rSk8f9V0HJ37g9Y+he+w/9a5bfR4bovwaJlH7KQ7L8NVsAwx0DKOJEI6VK3cjXIj7
-	 Ubbjuy32PMslg==
-Date: Mon, 13 Jul 2026 17:29:48 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
-	Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] dt-bindings: iio: adc: add input-chopping property
-Message-ID: <20260713-confused-petticoat-35ca17051b08@spud>
-References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
- <20260710-iio-adc-ti-ads122c14-v3-4-746d52cbf1d0@baylibre.com>
- <20260713023443.1a7a9acb@jic23-huawei>
- <1700ed07-47b5-4831-87c5-a6115928baab@baylibre.com>
- <20260713082400.000024f1@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dlwg+Fqw"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493c733f15aso31932325e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 09:44:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783961075; x=1784565875; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RjYd7MVan8krnGSSqxV4jQoaD7g5/4a0TcjKtRhjtfw=;
+        b=dlwg+FqwRh8SusCqwS5NGG9ZMqUONQ4E8LG72Ld/UwR73FTMPLsHYAD8GlQ327ZSwx
+         Gc2so+x1H/m62G4Mleryiaw2Kwo44o87e9PCTMkdDgd7BNL1d99q08OJAVr57gQUmtEp
+         R0xU72+kGS++sXve1n6fblxlEyOzdbAibCkFL05xIBk/JFETPEa4YXe7wfYjsGvDwgG/
+         zSTuJSVQralsKAUjxF4JXOx200H/0e1NNnbTdAfv2A6HJMie37IWpwQHOxpYL/nrNZwl
+         2XVHpBx3TIDmqODu3eu0tcKBm3BjgOFfQhIg3bssIa/b8UiqKga1tJ9HZqt7KQD5oKGf
+         MsCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783961075; x=1784565875;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RjYd7MVan8krnGSSqxV4jQoaD7g5/4a0TcjKtRhjtfw=;
+        b=ftaEtGAilkExt2bJhZuYakOeEnf6nOdHNR7P9fdV1xNT7ZbVDCtLuU1nWu9WkpWFz0
+         9qINi7aZNGAy/61wr8JeTBTwwCdmDcEnlg6C6+7jrA6y1wGCI6fBeXrRL7e3WYNoR4d5
+         VIXIEOWZiNGKuo8OnyO63vPM9hEUj/uzS0tDdh0E7WDiuj/bUUv5OW5s6TKw7tzcuHYG
+         whjCBGwliArW7oYmYX6HICf3pDieAC88NbGWCzpjdDgU/kpvjbs4H0BrZDYiLK5IsITD
+         9COOO7eZT4AkkuDLLGnebfywKtmwK+hPaVQmhKAq9r88/yK4vqGHmPOASQBRf9x37i02
+         Ir9w==
+X-Forwarded-Encrypted: i=1; AHgh+Rr23CXO+ogK5DfKM3L6dI+6o62/AXhxLz52TdTtHOKG8H8kli0V6zYv9aJ876qJB0v2c6t9IOqZN4k=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfADQtfotvjU/r7O2r/O/1T95ptZrau7A54OxAgP2os6ffi20J
+	Wrqdvb2abhMmHuy/w8q1Jyzr7/BUwV3eLztAUJzdhba9Yrx9beQIQ2n/
+X-Gm-Gg: AfdE7cldUUh0rYl35xMTGsR6csJtg0DSbwZIUB3trbsSg4fqKZ/shO0zjynKQuxARUq
+	0/uDEvYUt2KF/zOvD5CnVhWxnyRGuJsN+St6ioNJs9giiCH54ziOjKthE1rrpKDWln/p7vd7YGv
+	VRiCj7mHCTl9q7rbwaBAaNmDz796Bx/XzctB7VtuAPvfjKx+Ovj4sIz2jk+4K7zNrhr2OBIH0Hq
+	N5yuF2VahJIqnBTPyR6HArzglz/nq8ufuOEhvDalB9agSIwLtBMIhYG2nas0qAwNJKpopzOn4bW
+	FLjT6TfqcSwOPqT7tMzgzudseKKHxRAZDUOPqvQ1tJG3kEbS12O1DUjnBACb0zrbP5553HLn3PW
+	Ryl00W4Z71GQFxEkQTplbNb8X/Ns0rUr0QsxgJUyJsI5VQAQ/5qG2gc4uTUmNsCfJAIOxXtQwhI
+	aXs6dzCXMfVIFpKP8MvMLxxaTkUUisl2i8ZOH9z+KgDTHKiA/9nv21fgXb9cp6DSx3G347lHNkV
+	MVit0zLGYmT+5Hh
+X-Received: by 2002:a05:600c:b99:b0:493:aaa2:f034 with SMTP id 5b1f17b1804b1-493f882ae23mr104948055e9.26.1783961075315;
+        Mon, 13 Jul 2026 09:44:35 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49508727f7dsm8128065e9.4.2026.07.13.09.44.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 09:44:34 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Mon, 13 Jul 2026 17:44:28 +0100
+To: David Lechner <dlechner@baylibre.com>, 
+	Michael Auchter <michael.auchter@ni.com>, linux@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v7 4/7] iio: dac: ad5686: implement new sync() op for the
+ spi bus
+Message-ID: <satyxehagxb4zdqfmni7b57ipwyk6bmu5opkfquz2ie7ohne2s@jbobjkgdp2pk>
+References: <20260710-ad5686-new-features-v7-0-1bcc8c280e4d@analog.com>
+ <20260710-ad5686-new-features-v7-4-1bcc8c280e4d@analog.com>
+ <931fe63d-d200-4b79-9e17-fa48c8de7f29@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Bb60V4uQEnIBlLxY"
-Content-Disposition: inline
-In-Reply-To: <20260713082400.000024f1@oss.qualcomm.com>
-
---Bb60V4uQEnIBlLxY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <931fe63d-d200-4b79-9e17-fa48c8de7f29@baylibre.com>
 
-On Mon, Jul 13, 2026 at 08:24:00AM -0700, Jonathan Cameron wrote:
-> On Mon, 13 Jul 2026 09:55:53 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
->=20
-> > On 7/12/26 8:34 PM, Jonathan Cameron wrote:
-> > > On Fri, 10 Jul 2026 17:50:37 -0500
-> > > "David Lechner (TI)" <dlechner@baylibre.com> wrote:
-> > >  =20
-> > >> Add a generic input-chopping property to adc.yaml. This is a feature
-> > >> seen frequently in ADCs that are designed to measure resistive loads,
-> > >> such as RTDs and strain gauges. Enabling this can reduce offset erro=
-rs
-> > >> by swapping the positive and negative input channels on every other
-> > >> conversion. This can have side-effects in timing and filter response=
-, so
-> > >> it is not always desirable to enable this feature in some applicatio=
-ns.
-> > >> Therefore, it is best to make this a property that can be enabled or
-> > >> disabled in the device tree.
-> > >>
-> > >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> > >> ---
-> > >> v3 changes:
-> > >> * Renamed property to input-chopping to reflect more common terminol=
-ogy.
-> > >> * Removed "allowed" from the description.
-> > >> * Extended description to explain when it should not be used.
-> > >>
-> > >> v2 changes:
-> > >> * New patch.
-> > >> ---
-> > >>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 8 ++++++++
-> > >>  1 file changed, 8 insertions(+)
-> > >>
-> > >> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Do=
-cumentation/devicetree/bindings/iio/adc/adc.yaml
-> > >> index 308857f11220..c408feebd46d 100644
-> > >> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > >> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > >> @@ -80,6 +80,14 @@ properties:
-> > >>        ADCs usually allow choosing between internal reference source=
-s or a pair
-> > >>        of external pins.
-> > >> =20
-> > >> +  input-chopping:
-> > >> +    type: boolean
-> > >> +    description:
-> > >> +      If set, the positive and negative input channels are swapped =
-on every
-> > >> +      other conversion to reduce offset error. This generally comes=
- at the
-> > >> +      expense of added settling time between conversions, so should=
- be omitted
-> > >> +      on systems with high-frequency signals or high data rate requ=
-irements. =20
-> > >=20
-> > > I'm lazy so I didn't check back, but in my mental model of this, the =
-DT is simply
-> > > saying that the analog circuitry is suitable for doing chopping.  Dri=
-ver decision
-> > > on whether to do it.  Perhaps we can reword it for that? =20
-> >=20
-> > Heh, that was the "allowed" part that I removed.
+On 11/07/26 10:07, David Lechner wrote:
+> On 7/10/26 6:20 AM, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Use of local SPI bus data to manage a collection of SPI transfers and
+> > flush them to the SPI platform driver with the sync() operation. This
+> > allows for faster handling of multiple channel DAC writes, avoiding kernel
+> > overhead per spi_sync() call, which will be helpful when enabling
+> > triggered buffer support.
 
-To be clear, what I was looking for before was a wording that made it
-clear that this property meant the hardware supported it. "Allowed" made
-it sound like a software policy thing rather than a hardware capability.
+...
 
-> >=20
-> > I think this is really more of a design decision between the tradeoff
-> > of less noise vs. data rate. By setting this property, we are saying
-> > we should favor less noise. So I think it is more about the expected
-> > signal than the circuitry.
-> >=20
-> > So not sure that I would add anything here.
-> Fair enough.  Given the driver can always ignore what is in DT I guess it
-> is fine as is.
+> >  static int ad5686_spi_write(struct ad5686_state *st,
+> >  			    u8 cmd, u8 addr, u16 val)
+> >  {
+> > -	struct spi_device *spi = to_spi_device(st->dev);
+> > -	u8 tx_len, *buf;
+> > +	struct ad5686_spi_data *bus_data = st->bus_data;
+> > +	struct spi_transfer *xfer;
+> >  
+> 
+> This could use some comments similar to the explanation in the
+> commit message that this function is just queuing writes to
+> be sent over the bus when sync() is called.
+> 
+> > +	if (bus_data->size >= bus_data->capacity)
+> > +		return -E2BIG;
+> > +
+> > +	if (bus_data->size)
+> > +		bus_data->xfers[bus_data->size - 1].cs_change = 1;
+> > +	else
+> > +		spi_message_init(&bus_data->msg);
+> > +
+> > +	xfer = &bus_data->xfers[bus_data->size];
+> 
+> Why not a local variable for st->data[bus_data->size] too so we don't
+> have to write it so many times?
 
---Bb60V4uQEnIBlLxY
-Content-Type: application/pgp-signature; name=signature.asc
+The union is anonymous.. is it fine to use:
 
------BEGIN PGP SIGNATURE-----
+	typeof(st->data[0]) *buf;
+	...
+	buf = &st->data[bus_data->size];
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCalUSfAAKCRB4tDGHoIJi
-0k4nAQDA4jvFTfm0KR2DHxewJACm6YsMIS+WsBDiGfiICegXSwD/WdL5ALguyS+L
-xYl2akKY1G63OIedLVnhDUynPsw4Igs=
-=XCX5
------END PGP SIGNATURE-----
+> 
+> >  	switch (st->chip_info->regmap_type) {
+> >  	case AD5310_REGMAP:
+> > -		st->data[0].d16 = cpu_to_be16(FIELD_PREP(AD5310_CMD_MSK, cmd) |
+> > -					      FIELD_PREP(AD5310_DATA_MSK, val));
+> > -		buf = &st->data[0].d8[0];
+> > -		tx_len = 2;
+> > +		st->data[bus_data->size].d16 =
+> > +			cpu_to_be16(FIELD_PREP(AD5310_CMD_MSK, cmd) |
+> > +				    FIELD_PREP(AD5310_DATA_MSK, val));
+> > +		*xfer = (struct spi_transfer) {
+> > +			.tx_buf = &st->data[bus_data->size].d16,
+> > +			.len = sizeof(st->data[bus_data->size].d16),
+> > +		};
+> >  		break;
+> >  	case AD5683_REGMAP:
+> > -		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+> > -					      FIELD_PREP(AD5683_DATA_MSK, val));
+> > -		buf = &st->data[0].d8[1];
+> > -		tx_len = 3;
+> > +		st->data[bus_data->size].d32 =
+> > +			cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+> > +				    FIELD_PREP(AD5683_DATA_MSK, val));
+> > +		*xfer = (struct spi_transfer) {
+> > +			.tx_buf = &st->data[bus_data->size].d8[1],
+> > +			.len = sizeof(st->data[bus_data->size].d8) - 1,
+> > +		};
+> >  		break;
+> >  	case AD5686_REGMAP:
+> > -		st->data[0].d32 = cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+> > -					      FIELD_PREP(AD5686_ADDR_MSK, addr) |
+> > -					      FIELD_PREP(AD5686_DATA_MSK, val));
+> > -		buf = &st->data[0].d8[1];
+> > -		tx_len = 3;
+> > +		st->data[bus_data->size].d32 =
+> > +			cpu_to_be32(FIELD_PREP(AD5686_CMD_MSK, cmd) |
+> > +				    FIELD_PREP(AD5686_ADDR_MSK, addr) |
+> > +				    FIELD_PREP(AD5686_DATA_MSK, val));
+> > +		*xfer = (struct spi_transfer) {
+> > +			.tx_buf = &st->data[bus_data->size].d8[1],
+> > +			.len = sizeof(st->data[bus_data->size].d8) - 1,
+> > +		};
+> >  		break;
+> >  	default:
+> >  		return -EINVAL;
+> >  	}
 
---Bb60V4uQEnIBlLxY--
+...
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
