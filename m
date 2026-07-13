@@ -1,67 +1,67 @@
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76EEA29BD9A
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 03:31:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A9972BCF46
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 03:33:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783913512; cv=none; b=RIPPu4WdMA+bKz0JssL+AXQe6gRgDaycPABys6+nRndTMyrCz4JskmRyJsDSHNCpVlRh38Kt9EbaOQkmE53lcCanYYPhF9H4njLyAbIA/e3a85OlJSPG+cPC+GLy/hnNMNMlJuivdnV5iXoQGXO09yu2ey2WbRD0B8CteNigYcs=
+	t=1783913616; cv=none; b=pKtcuavcjGOE5kHYLhdl4kPJ6LtBJiktJ4VJHl0mdfNf7fLXiGwk4tcdlcLtVVZjdc1Hd+hJgUaADhgFFIZptyF0ruuJwZLW/U3Uz9He2c+w5xULyQny/xd3uIwH/rDx1gZbpuA4+7Zo2+Pge0EdIEXqTtKVzkYCeacdreaCC4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783913512; c=relaxed/simple;
-	bh=WBtQWQRQLZ3+dIWQtnefpQVzOJC+bEiYRJCJsgDBq0c=;
+	s=arc-20240116; t=1783913616; c=relaxed/simple;
+	bh=FO0sdiv2KgDK6VD113Oh3Pv7byNpquq6SyZpulPnUn8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VblQDWx9L5HS3hCNA8dwLcgD6PHj5r0L0jzAwAlT3PhuIAVdQwRGf61cocha+fGu2tNtmOckwaj0NG2ho8vET1TPbBGpiZS4AqlUIwz8/heXSr6Q1dhX0H8UqlIKvu1gpzjIfgqZQaZApt48qb/Iv3068MaMPSQpLfU0pLXmf3I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KzAhMKP3; arc=none smtp.client-ip=209.85.216.52
+	 In-Reply-To:Content-Type; b=kz6woFodxcYFtStvsxw145Xh9qw5iMAVrwruUXQolibs3GEgi2MdoU8tP1PhCDrgstY/J4A3QqjckbmZp/c46slC1+AZLK6jgUBze/KkukdQ1E4vVhQSuSKminTXUipiJUx0yjJvLyEnQiEdOcR1Zg11suDsTqPj8NzaorVlU4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gy55SqiR; arc=none smtp.client-ip=209.85.216.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KzAhMKP3"
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-38dcbade417so1044693a91.1
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 20:31:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gy55SqiR"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-381b831d535so3119732a91.0
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 20:33:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783913510; x=1784518310; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1783913614; x=1784518414; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=MsiouPU8c+6FKj/CX+Yj36YD+qsjrWhaM84VxnsY3Pg=;
-        b=KzAhMKP3X+WHbUxfK84fG0Xj3fFQWHidqyOJ1V2NA3rPCsApwiqHDcOf7P+3AbbW56
-         rHYIy6AH4j3qgqw1MJuMH1ZcMp+fMI9DnmZ4uNaB+c98K3D1lnVxnIxm6Z4nmp2fI6yZ
-         TEasneTLWW3BNAX/WN2UAiKJks1s1I9h72A+solJz66/QRMCpJ7h3skxQ3K9pjZ8Kpx1
-         wB3YjLMVZWghl2/gc6iu/+rq4VZFAtkU6373PAADmRp6DvdzRiyGQQ7eQOxsVbf/LJcE
-         PHGHuBMyCX21auyfuwgYpiTmUx1G2mcgJ2v6PKzApZyr8asKvYrpigRTAmeFm9B7e3yn
-         Kq7g==
+        bh=dRzPveD+KOFZtYU49xSentCNs/Jbn07eF6RCpZrdRsA=;
+        b=Gy55SqiR56R+kIrdQzjroFecKjVViZV5i/UH70oGD/7G3KUGZVdd5WABm7GEANWOnc
+         M/5fK5KE+LK6oRzrYJG6xElZcf3MVcrJqVF/mQ9j+UzDAHDwb3tehI3lEljmKuLaVHDQ
+         UdWD+sksfv8AtjPq99zsIs5n2h8MeBhKMzAZiCiJvaGq6Fup2igJ1M+dDnn5V53szCbg
+         71popAVimDEx5aAk/rR+EX/hdq6rks6/LDx2QJvGL1E8og3wE7JDFBegX9AVcyMVVASR
+         Hrpb1m5ReQ+PIY+6DIEiLdIQikqjPFEbSIA018NcRaRbYleZU0L6mJfu1CKV9pSrhAaj
+         prSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783913510; x=1784518310;
+        d=1e100.net; s=20251104; t=1783913614; x=1784518414;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=MsiouPU8c+6FKj/CX+Yj36YD+qsjrWhaM84VxnsY3Pg=;
-        b=HSnv0hpfFKdET4UTzOL2EidQWeecyVsNwfgYDO/n+Z6OsKQlKL5dU0pKHsHyiEj8Os
-         MdXynUkFA9aLzgItgIJvT/p0dRSy1lxAZx8B5hOdHFbMI2DX/N0xvhYQOCjOs8sGWPTa
-         m2NLf7no7C7I5Qfe9oHZwaomkLBL+hN5NUNjjsZXI02ygi/Dfh8kF5NoPtpHSYh7minE
-         s+4pl5GFRQUJ0QXtlcclYbBDKiGWjpHO7zB34e0k4cjMVHN706TA55S+wEd19E38JCee
-         RoDW9oK6pFowqrHAFcjJBCYNqHQKo/yVkwpmZK7SgHG3ggNaTreUnnY83ix2iaMAY89O
-         hkjQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqwZzpyV4CmR2ORUnu10ew3WCZL56xbGF8E6vrJzEkSXP6dreDvKJt5BJpJrNFEDU8u/UWLIyTy6gI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzqwwvGCWLo2jHCQnCX67tHAZyf9prR5S8uWcANyYaQ27upRfXH
-	5eT/sdKH3TQqiUUjBmZxmy51RlaUHcw6ab2ZFJYzYSRUxuH4L4VKe3s=
-X-Gm-Gg: AfdE7ck96LqNTiG51UdNDNqkH230bxM6baPZIQdcPKWYlzjCcKswV2QCdqXBW9eLb2M
-	RseieLC2yWr/PWRDX+yjwWIKpB/B5BlCJH9uXy63jecAa3ipdPjfuq5Z36b6OIMcr7DrD3b/8bX
-	exbf5RQYskTjEZpUDev6VwRh1nD323hJ/au0LhxAZis6dIja8ayn2pLmDMB8IfGVeIDXnfO74cO
-	5ojM5ZJ4TkN2w4ccH1KQezBcR1MjtMsz0+Iz1EfcJ3KPG0XZR2w7oc7KAmgdvsznu0a6D8HBoOo
-	Fq5OmQ90b9mHPgn7zX8E+7Wb7qzQghc4Nh43qgPIsT+iDQrqqjJTdKNr09wQvS6UwFXHJxmvwqy
-	/7GjMzHoyFTgGALD1U8Ok/PVuFjo6FyZ+yIt3DnxGF1VYyZdGq+6xi6pKV/BGIgLD0WmvVZfnHb
-	rOzLAZV+geFv+zuD8SlFbJqPdPa81yb14Q9TI0XPW7CS9gqn9D9jhivd7ZXgCBumxhF5hs
-X-Received: by 2002:a05:6a21:4ccb:b0:3bf:a8d7:4f4a with SMTP id adf61e73a8af0-3c110be0abemr7441911637.40.1783913509688;
-        Sun, 12 Jul 2026 20:31:49 -0700 (PDT)
+        bh=dRzPveD+KOFZtYU49xSentCNs/Jbn07eF6RCpZrdRsA=;
+        b=b9HAknfYRjtkpHCwjdH1xYurhs+AetoJL6nXWjbBLpZRAhEsGxkmJHVFotcM2oGw1r
+         GZFB2r90m22YdeFXNpjbTWrRWRSCVnUiXK3W9myPF0b68ilWhj6PCKJcEDeZ7g2WZLiL
+         6rJOTc35AChJKTUsJMvKqW6rBEW8S+cAShzfUS8e5K4dtvXV6FtKQz0LS9+MT9eULUlf
+         Ii5E+KRM6220OIwpjwYnQkDsBYNUziLADWyjioLuyxh5mW8Cca4Xb89GS8vSv5WjrhrI
+         d0nSPTCWVvobt7BINDxrc4/x6Jm6nEpzKogkQfOVXn+M82y6eMhBsXa7IIQHiJXgM/yJ
+         qVcQ==
+X-Forwarded-Encrypted: i=1; AHgh+Ro8wwugYsEFDUxrZmyNkACWq3KwZZhHSz8zpDQ9Gd8+yoKx3UbNdHb2S+iHNv8TTk/VPbJD95TxvWU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKXNz/c/C9Wix/sHirvEKQzwsDK8NuXxH0MaYxh1oNWitdel/N
+	BGQoEF4LcfrqojfVe4Kgny1zDnO1oQvtPEmyhjhHB+BwyRxB8jOG2TE=
+X-Gm-Gg: AfdE7clvl/GR709kL+zs60u5fxXQB2LlYqCrRT3WaKFDturIPv6WJ1PQloQVfRLzC8Y
+	ieFwtyjpHT4wZXIy2IGfld14dFP+OaYCirTiSeheoulG7MCpbUz/fMxj2ay0ggUQFQSceu1Hg9G
+	n7/BnGsyt8/VbxZm+1GpaSEjjlUceEo7ckEgVEoWm65yw9zivpW0WPVsFE0tcfQdoWBtEn5gBhO
+	O34ocQzQjfuUp7/HMAAdgtC2W8WVqfPKlJMvJHVe7xoWs7dkuF4O3/3K70VhJR/Gmjr62czzev9
+	QFHn1+bUSsXKFVw34sr+Gf0Ge05YDBFXt3+VYibCWBr0M8/izUOR0qHfp7nAMvYwvGvaYfl7exo
+	vZylM8dbr3XgQxUlPS2HEy34gW6NXwsBtpT7BAa6kqzUN3eGIUJdpEWampJrht45mHHlD1I/MB2
+	4un7jk+VQWXQ2simjbfSbeZBdQE0q+xQbEmX9hiogjNFLLhx+TEY+ajG/Y6Q==
+X-Received: by 2002:a17:90b:5443:b0:37f:9ce1:cda6 with SMTP id 98e67ed59e1d1-38dc7735b02mr7759350a91.28.1783913614343;
+        Sun, 12 Jul 2026 20:33:34 -0700 (PDT)
 Received: from [192.168.1.45] ([101.0.63.154])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13b987fc629sm14016195c88.0.2026.07.12.20.31.46
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm75086924eec.1.2026.07.12.20.33.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Jul 2026 20:31:49 -0700 (PDT)
-Message-ID: <f83d5a61-8735-417f-8fb1-fd14b7c1ee28@gmail.com>
-Date: Mon, 13 Jul 2026 09:01:44 +0530
+        Sun, 12 Jul 2026 20:33:33 -0700 (PDT)
+Message-ID: <6d7e489d-5438-4a76-829f-45796f1a4117@gmail.com>
+Date: Mon, 13 Jul 2026 09:03:29 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,49 +69,78 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/4] iio: light: opt4001: Fix incompatible pointer type
- passed to div_u64_rem()
+Subject: Re: [PATCH v1 1/4] iio: light: opt4001: Fix read-modify-write of
+ wrong register in power down
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260712202451.20822-1-nikhilgtr@gmail.com>
- <20260712202451.20822-3-nikhilgtr@gmail.com>
- <20260713014319.7033a06b@jic23-huawei>
+ <20260712202451.20822-2-nikhilgtr@gmail.com>
+ <20260713014214.74a12af9@jic23-huawei>
 Content-Language: en-US
 From: Nikhil Gautam <nikhilgtr@gmail.com>
-In-Reply-To: <20260713014319.7033a06b@jic23-huawei>
+In-Reply-To: <20260713014214.74a12af9@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 
 
-On 13-07-2026 06:13 am, Jonathan Cameron wrote:
-> On Mon, 13 Jul 2026 01:54:49 +0530
+On 13-07-2026 06:12 am, Jonathan Cameron wrote:
+> On Mon, 13 Jul 2026 01:54:48 +0530
 > Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 >
->> div_u64_rem() takes a u32 * for the remainder but is passed val2,
->> which is an int *. Use a local u32 for the remainder and assign the
->> result to *val2.
-> State what affect (if any) that has.
-There is no functional impact, int and u32 have the same size and
-representation on all supported architectures, and the remainder is
-always smaller than the divisor (10000000) so it fits in the positive
-range of int.  I will state this in the commit message and add the tag 
-in v2.
->> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
-> Fix looks good, just add the tag for v2.
-Sure, will add Fixes tags to every patch.
->> ---
->>   drivers/iio/light/opt4001.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
-...
->>   	return IIO_VAL_INT_PLUS_NANO;
->>   }
+>> opt4001_power_down() intends to clear the operating mode bits in the
+>> CTRL register but reads OPT4001_DEVICE_ID instead of OPT4001_CTRL.
+>> The device ID value with the mode bits masked out is then written to
+>> CTRL, corrupting the conversion time and fault count configuration.
 >>
->> L
-Thanks for the quick review.
+>> Read the CTRL register instead so only the operating mode bits are
+>> cleared and the rest of the configuration is preserved.
+>>
+>> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> Fixes tag please (you asked in the cover letter and yes it is appropriate
+> even though these go all the way back).
+>
+> Looks correct but I think we can take this opportunity to simplify
+> the code whilst fixing the issue.
+Sure, will add Fixes tags.
+>> ---
+>>   drivers/iio/light/opt4001.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
+>> index ba4eb82d9bc2..f2cf496cc243 100644
+>> --- a/drivers/iio/light/opt4001.c
+>> +++ b/drivers/iio/light/opt4001.c
+>> @@ -228,7 +228,7 @@ static int opt4001_power_down(struct opt4001_chip *chip)
+>>   	int ret;
+>>   	unsigned int reg;
+>>   
+>> -	ret = regmap_read(chip->regmap, OPT4001_DEVICE_ID, &reg);
+>> +	ret = regmap_read(chip->regmap, OPT4001_CTRL, &reg);
+> Let us jump directly to a regmap_clear_bits()
+>
+> It will fix this issue and generally improve the code readabilty.
+>
+> Given this is only called in one place and the code will be nearly a one liner
+> after that change, lets also just  move it directly into opt3001_chip_power_off_action().
+>
+> I my opinion all that is just about fine in a single fix patch, rather than a
+> separate fix + code cleanup to follow, but if you would rather split it up into
+> fix first then refactor I don't mind.  I may well decide to mere this whole series
+> for the next merge window anyway just to ensure it all makes it reasonably quickly
+> (at expensive of the fixes making it in a little faster and possibly delaying any
+> cleanup).
+>
+> Thanks,
+>
+> Jonathan
+>
+Agreed, that is much cleaner. I will move the regmap_clear_bits() call
+directly into the devm action and drop opt4001_power_down() as a single
+fix patch in v2, with the Fixes tag added.
 
-Regards,
+Thanks,
 Nikhil
