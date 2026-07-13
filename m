@@ -1,41 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F9813B5B3;
-	Mon, 13 Jul 2026 01:12:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6870F1F94F;
+	Mon, 13 Jul 2026 01:20:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783905138; cv=none; b=qMEtuuEJNrWGt6sD6XCKHgDlxlSxovKsibAGBMSUd7VYsuT2+8lt112gMvvMCesaoAYXu7KwBojlbfhoeZVJruGsk92SVydL6hKSHRkkK1KrrKETtthEuF9UAzuEgg3Q2qddnv0t1gBgstjGU20JwPz+H2sAc6SAkgpLSZ9L3Wc=
+	t=1783905650; cv=none; b=XGORsFC3Ril7WQm6FX116QJ1PGVw5GXm9any+MJdqmkzUTMbstUy42ADA7ozhNXGuXl6MloTOXiUN7EUqHmRTO1NgFT7SbtJiQMg/ePnD/4r8xaTTrzt4xL1E36sZ/DwmDWnnc/aSGSr2xdzsqVHGEaPbSkRA8ORULPFAWDncWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783905138; c=relaxed/simple;
-	bh=u9SDqKvrlnMY82JDbnD9khiGodRQTChxzUQJ3PoM+/I=;
+	s=arc-20240116; t=1783905650; c=relaxed/simple;
+	bh=K4ir6G1+80tfqwkLar7tmNQZtEzAmLUzDp6yv0rC8xE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hQbgzg0W9ZLIk/5L+jtOGjRGwo+iXkxFVfq/B0S3YXCvHEzXnEbTKVSSaWXIi4tbyUywPPqJEIqkAfmrzh5CqxuyFEqD+YM7O86JnfQjcpDXr3lYwpju8LIsevXssi5viho86wUYsEMR9VZiE73eyFSXM6SqwWKiKgSXiQOETsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NMbc6yya; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=KBKRemWrCKVg78rd1Cz5BV0OPxsV8/7ruIUHHAmlgFXbE7kCDfa77gILt9/NaOyoztO0IAtmBM9x51VjqThKquUlxmT8OxocfbtqY50YEt5sL24/Gfzu9uKYz/OyHZFVY1Ot6GF63pzZXMAWvP2ZfFP9IFf5lWhjltaYo0TmrpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3zJ7PjW; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMbc6yya"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97BD31F000E9;
-	Mon, 13 Jul 2026 01:12:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3zJ7PjW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A24951F000E9;
+	Mon, 13 Jul 2026 01:20:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783905136;
-	bh=SjHSeeF7vUQ5X6MLMCggjMuDp75OzmSjcIL2grGv3oQ=;
+	s=k20260515; t=1783905647;
+	bh=IU6safCA8FSLkmbMZdZg7KZsDUF4K4bd1XSLGrGQGTs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NMbc6yya+P/o+sY3VXKgwU7y12k+tXVixWH5VjF5lwJHAUd70JiTOzqhdi/FbpOxw
-	 AX5vgwrhunfCaRV3lw2WZfnzpEqCrFRP6Y/YNwtXR9zRXDTvluUTfxKfD1c6VOl4iG
-	 9thpADgtULzLbrkcIPf/EiiAz53ph4d3qBa1KdrNAcfmkxJqbc1zkjm+nDeM3UdOsq
-	 E+SqHKw4XtMeGCysQIT+TfTy2Yorie4YUsY2Qg+0WQ6oB8WOpSDWMgXUImLb5KSUQ/
-	 SxVXWqQ8UOoy0uPapdWhxnsSfC5XGuz78FX5khWZJ1g8VE/dY0RPXgT4iLB+VHbvu0
-	 wvHW/zGBsescw==
-Date: Mon, 13 Jul 2026 02:12:11 +0100
+	b=Q3zJ7PjWsAMOsfpNtWWcTJmAWwDgeY7bYk3OK8bw2qkSqznbiuPJYDsENKQtClszK
+	 f7v/anRYQHVF6quAORtCtxJfvSrOC3WyKPude+fc/lJW6XbMLsRkbV0w05ggjfoB3E
+	 3cP10ixyns60EnvC/3FWnSwuOn6DMLAZi/HJVHD3siaku/L7HXikvD+htBu/OUkXrl
+	 ++Kxk0syH/cLjBLebbnkRiAQ4yzNKOoA1knVRVEdPk72UwRjyoD4LtyKzsi2FSiVTK
+	 WETBOEAogLUZpfQ9w1SEA80a3YzXUOlIK6tIdNhm+zB5F7gbZSA2u/JkwUmtzwSgbn
+	 CkFyXwy+5VhRg==
+Date: Mon, 13 Jul 2026 02:20:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Biren Pandya <birenpandya@gmail.com>
-Cc: linux-iio@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v4] iio: accel: kxsd9: fix runtime PM leak in write_raw
-Message-ID: <20260713021211.1fb3e5b8@jic23-huawei>
-In-Reply-To: <20260712083106.97429-2-birenpandya@gmail.com>
-References: <20260712083106.97429-2-birenpandya@gmail.com>
+To: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
+ conor+dt@kernel.org, devicetree@vger.kernel.org, dlechner@baylibre.com,
+ duje@dujemihanovic.xyz, jishnu.prakash@oss.qualcomm.com,
+ jorge.marques@analog.com, joshua.crofts1@gmail.com, krzk+dt@kernel.org,
+ linusw@kernel.org, marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
+ mike.looijmans@topic.nl, nuno.sa@analog.com, robh@kernel.org,
+ sakari.ailus@linux.intel.com, wens@kernel.org
+Subject: Re: [PATCH v6 1/3] iio: adc: Fix incorrect reading when datarate
+ changed in single mode
+Message-ID: <20260713022040.146555b6@jic23-huawei>
+In-Reply-To: <20260711184414.1013686-2-jakubszczudlo40@gmail.com>
+References: <20260711184414.1013686-1-jakubszczudlo40@gmail.com>
+	<20260711184414.1013686-2-jakubszczudlo40@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -43,93 +49,101 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, 12 Jul 2026 14:01:06 +0530
-Biren Pandya <birenpandya@gmail.com> wrote:
+On Sat, 11 Jul 2026 20:44:12 +0200
+Jakub Szczudlo <jakubszczudlo40@gmail.com> wrote:
 
-> The kxsd9 driver previously used manual pm_runtime_get_sync() and
-> pm_runtime_put_autosuspend() calls around the entire kxsd9_write_raw()
-> function. If the user provides a non-zero integer component for scale,
-> the function returned -EINVAL directly, leaking the runtime PM usage
-> counter.
->=20
-> Move the mask and value validation checks before pm_runtime_get_sync()
-> to ensure the early -EINVAL returns do not leak the usage counter.
->=20
-> Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+> When device is suspended and it is in single mode then changing
+> datarate doesn't make it actual wait for new measurement, so to
+> be sure that read after change is correct functions that changes
+> datarate and gain will wait for new data.
+> 
+> Fixes: 541880542f2b ("iio: adc: Add TI ADS1100 and ADS1000")
+> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
 > ---
-> Changes since the reviewed version:
-> - Reduced to the minimal write_raw() leak fix. Dropped the remove()
->   rework (no underflow is possible =E2=80=94 pm_runtime_put_noidle() floo=
-rs at 0)
-Ah. I think I wasn't clear on what I was thinking for minimal fix.
-
-The floor thing is something we should only use when we know there is basic=
-ally
-only a single user or we don't mind giving garbage to others (so in teardow=
-n flows).
-
-Here a few things are different from that.
-
-A single user:
-- We need the power on, no point in continuing to access device.
-- Carrying on may result in an error, or maybe garbage data.  Either way
-  the real source of the error is hidden.
-(I had another one about underflow but as you use get_sync that one didn't
- actually apply)
-
-See below...
->   and deferred the PM-macro conversion and style cleanup to a follow-up
->   series, per Jonathan Cameron and Andy Shevchenko.
->  drivers/iio/accel/kxsd9.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 4717d80fc24af..1af04cb4bf86a 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -139,18 +139,18 @@ static int kxsd9_write_raw(struct iio_dev *indio_de=
-v,
->  			   int val2,
->  			   long mask)
->  {
-> -	int ret =3D -EINVAL;
->  	struct kxsd9_state *st =3D iio_priv(indio_dev);
+>  drivers/iio/adc/ti-ads1100.c | 67 +++++++++++++++++++++++++++++++++---
+>  1 file changed, 63 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
+> index 9fe8d54cce83..6ad80d42d390 100644
+> --- a/drivers/iio/adc/ti-ads1100.c
+> +++ b/drivers/iio/adc/ti-ads1100.c
+> @@ -15,10 +15,12 @@
+>  #include <linux/module.h>
+>  #include <linux/init.h>
+>  #include <linux/i2c.h>
+> +#include <linux/iopoll.h>
+>  #include <linux/mutex.h>
+>  #include <linux/property.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/time.h>
+>  #include <linux/units.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -43,6 +45,9 @@
+>  static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
+>  static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
+>  
+> +/* Timeout based on the minimum sample rate of 8 SPS (7500ms) */
+> +#define ADS1100_MAX_DRDY_TIMEOUT_US	(7500 * USEC_PER_MSEC)
+> +
+>  struct ads1100_data {
+>  	struct i2c_client *client;
+>  	struct regulator *reg_vdd;
+> @@ -123,10 +128,46 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
+>  	return 0;
+>  }
+>  
+> +static bool ads1100_new_data_not_ready(struct ads1100_data *data)
+> +{
+> +	u8 buffer[3];
 > +	int ret;
-> =20
-> -	pm_runtime_get_sync(st->dev);
-> +	if (mask !=3D IIO_CHAN_INFO_SCALE)
-> +		return -EINVAL;
-> =20
-> -	if (mask =3D=3D IIO_CHAN_INFO_SCALE) {
-> -		/* Check no integer component */
-> -		if (val)
-> -			return -EINVAL;
-> -		ret =3D kxsd9_write_scale(indio_dev, val2);
-> -	}
-> +	/* Check no integer component */
-> +	if (val)
-> +		return -EINVAL;
-> =20
-> +	pm_runtime_get_sync(st->dev);
+> +
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
 
-With above in mind, I'd fix this as:
+In theory this can return short (generally reflects a misbehaving device).
 
-	ret =3D pm_runtime_resume_and_get(st->dev);
-	if (ret < 0)
-		return ret;
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return true;
+> +	}
 
-	ret =3D kxsd9_..
-  	pm_runtime_put_autosuspend(st->dev);
+	if (ret < sizeof(buffer))
+		return -EIO;
 
-	return ret;
+> +
+> +	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
+> +}
+> +
+> +static int ads1100_poll_data_ready(struct ads1100_data *data)
+> +{
+> +	int data_rate_Hz = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
+> +	/* To be sure we wait 5 times more than data rate */
+> +	unsigned long wait_time_us = DIV_ROUND_CLOSEST(USEC_PER_SEC, 5 * data_rate_Hz);
+> +	bool data_ready;
+> +	u8 buffer[3];
+> +	int ret;
+> +
+> +	/* To be sure that polled value will have value after config change */
+> +	ret = i2c_master_recv(data->client, (char *)&buffer, sizeof(buffer));
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "I2C read fail: %d\n", ret);
+> +		return ret;
+> +	}
+	if (ret < sizeof(buffer))
+		reutrn -EIO;
+> +
+> +	return readx_poll_timeout(ads1100_new_data_not_ready, data,
+> +				 data_ready, data_ready != 0,
 
-> +	ret =3D kxsd9_write_scale(indio_dev, val2);
->  	pm_runtime_put_autosuspend(st->dev);
-> =20
->  	return ret;
+Kind of related to David's question: sashiko doesn't like this.
+https://sashiko.dev/#/patchset/20260711184414.1013686-1-jakubszczudlo40%40gmail.com
+I think I agree with it.  Generally need to check for errors in the polling
+routing as well and return those if seen (in data_ready I think at the end?)
+
+> +				 wait_time_us, ADS1100_MAX_DRDY_TIMEOUT_US);
+> +}
 
