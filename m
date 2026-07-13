@@ -1,54 +1,56 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41BE63B95E4;
-	Mon, 13 Jul 2026 08:41:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7243A7590;
+	Mon, 13 Jul 2026 08:41:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783932098; cv=none; b=E5vZMmt0cpuf9Hse/KSv7JwrWkj6H2q936KLpUlPPiedsLx+1WJUomzRYdFW1bMAKyTVBTkUWhQ1LHV7bBsYTmZV3agqToPTAPSTdaX4+p3bgbiPJsL+xXA/PWqgxnKtsIGpz5oNoEWzd+kA/Ak7eYE6D5f/FAjPgAkmFLm1sNo=
+	t=1783932098; cv=none; b=qnVAl+zNsVmtgr7YV8p93DNEyeEEtPiQQzyFXZzZx9e+ySJPhOIZb0s/V6nttSXZjZUPlW6r7O30K7GX/JshwywsEOCub8kz7GG3DgNs8owpT1huHuqURjralIz9lbc6DmD8Au07dWMmwzrk8BuBhi9yxcdpHhWvMaCED0RPt40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1783932098; c=relaxed/simple;
-	bh=NlNXMybj897usjZOjrpf/osq+l1Zhcty/Bh12KChu1E=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bBEda20MDoMNUtchKRNCyxhd5b3J7vGo0ePFlmCTrL5hugJxtkiebKy/zTzUI4l2mi/6PP9lZy9+ymBrnDxTj6MiuZR7v+79SN11IXXKnU0M8wLxpSGVsDkxV0KdorjG7EASFUwiXd0qaau5yi1E/gfV8JfWsAOl/Dv6qKQpOms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Kw1a6UgQ; arc=none smtp.client-ip=148.163.135.77
+	bh=vs8K6L61IRabs5X7uHpT9wQObgpdVW1lD4Ii1ASKGTQ=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LV/7V0BzJ+USIeKBxbJMzSimhiwyZFSn1Mmxnf8PMKdARTkaT35f2E4eODurkFufjuthq8rdeaSJ98xY6LYjMtLStw2JKynkdNjVKSPvA+sX63j+9EUzyzhRbahUkhnRjUdW4CNTu5iQbhdo8rRTwF8JKa9k19hzXVdrT81FfIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=MhRq6eDa; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Kw1a6UgQ"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66D6Rp4F2787756;
-	Mon, 13 Jul 2026 04:41:32 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="MhRq6eDa"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66D6RWtq2931615;
+	Mon, 13 Jul 2026 04:41:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=S8T/mb1k9Eess/dndXW0+XoVO9p
-	1//Kk1lWiq7QAS9s=; b=Kw1a6UgQv4z4xBYO2kjBvUVqaYQh2SjS5lsoyGzoBVO
-	IExia3hxPjLMvjoEKGsx6YwRkuyWnCML2GgvxoWotvTSyHtKXrC8JUlZp53gwRdx
-	0/qWUx7KdrQ9rpOsmYFWUFBfWKOITMKKmzWFI+A09e7Kxf4RhwB+VN397qk8jNeT
-	o9bQ3SySPvZp+D5la/Yxqi44g4AeJ+hD4H51d8gypMEXADCEXSJNSUqKHAuwW4RX
-	MYb+NHAhujThkwIb5/hjm6kTji1ThWMLjNEtBfLU3QbKtWw2MQIYmRtzuNk4r/7I
-	GEpxKc6+Mynb6rdY8GbHYqSTni7JIG80e3tS/rRZ+5w==
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=glQ8T
+	nLd7mQsHbz7D1YPUVMbfryinkbP63+ewvYeScc=; b=MhRq6eDaIUxNkC9lZ8obO
+	Ym6WSmRdI+19yI815JE6wRmRIURfm6KRQikZqC6rGrAsKIY3SbxDfMe7sBw2qnMj
+	c7r/iwPY4VhROInMh6KdV1UM3DDa6KE9eA9N4ivnga8GCpIcEw9DQ/67rO6CvnU7
+	knJkodtrnymebvEpgxXKQiWd7gIqsIeEwaKU7rEUJMIQG8TGw1h7byPiKeeZQJU6
+	ZKrha49zKggozSy9VzTYxxAl/UsguogIQug5zK3Vrhvaar+407UGsvYDaxinld/C
+	z5D12SocHsdgzAVIv3lo2PdBg5Mpu81B8gB1Ed9llrVGdUZG8XRHtgB1ejruNrUj
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fbjr15gqt-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fbg2c5txs-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Mon, 13 Jul 2026 04:41:31 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66D8fUwA047358
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66D8fUiC047355
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
 	Mon, 13 Jul 2026 04:41:30 -0400
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.2.1748.37; Mon, 13 Jul 2026 04:41:30 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.2.1748.37; Mon, 13 Jul 2026 04:41:30 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
  Transport; Mon, 13 Jul 2026 04:41:30 -0400
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.192])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66D8fIA9015758;
-	Mon, 13 Jul 2026 04:41:20 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66D8fIAA015758;
+	Mon, 13 Jul 2026 04:41:24 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Michael Hennerich
@@ -57,10 +59,12 @@ To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         David Lechner <dlechner@baylibre.com>, <linux@analog.com>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 0/2] iio: adc: ad4080: add backend data size configuration
-Date: Mon, 13 Jul 2026 11:40:41 +0300
-Message-ID: <20260713084043.10856-1-antoniu.miclaus@analog.com>
+Subject: [PATCH v2 1/2] iio: adc: adi-axi-adc: add data size support for AD408X backend
+Date: Mon, 13 Jul 2026 11:40:42 +0300
+Message-ID: <20260713084043.10856-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260713084043.10856-1-antoniu.miclaus@analog.com>
+References: <20260713084043.10856-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,61 +74,101 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEzMDA5MCBTYWx0ZWRfX+CCcYWHqok2p
- 3RDVczwievqKZJ968ss6SGD2/VXL+PIbVFmUyqqkYl570WHVcE4sFVtrfozLc0EsbF+xHJEf+mL
- H+xVO/q5PAQrfn82gx96JiHCIGUoIs8PAu3wEyfxRyvuzAbhB7vh
-X-Authority-Analysis: v=2.4 cv=Ovp/DS/t c=1 sm=1 tr=0 ts=6a54a4bb cx=c_pps
+X-Authority-Analysis: v=2.4 cv=eLYjSnp1 c=1 sm=1 tr=0 ts=6a54a4bb cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=wI1k2SEZAAAA:8 a=Mtvq1wGsQdfWT3MW8gAA:9
- a=qcg49hLlgF0N60+LroqrWnV/Vu4=:19 a=6HWbV-4b7c7AdzY24d_u:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEzMDA5MCBTYWx0ZWRfXxvPC7z4FUmCa
- gtC7VIQ2tplqmr+eHtvgC2dUGcDLGSolXtMlAIcNihbDcGtlWhkUBPWgdX1bUKtwfw7DKArS5dj
- +OevAF1yMc12Xxgs26gWFBIbqZ5HC9QVZ2O6vQ0L6Cp9ZxssIqwE91/bKLr/scJMk+qQZ46+Vvm
- hCJlPLB32giSYqxAVWyAEIfvifcv5W1TpmnxMOvhqvTuuZYfNFFUKAPpU8ryUt/va/tPEqKeQWi
- yt7SAO2ywMZ/wekF8nTupPStSEHOM3yJaDnrJ6HC3qQuikZiHyhhuG/yAJ5hlCet0+NXlVQxb2y
- H19uEQ/NQklwm570EdSRFb8+MHEWdbg6Ghi/rY6hWCMkalmer7lGZprsI8Cng99/oo6sOkbcXTA
- xdkN//fitQe3zZ4Km4Bun/ZyGQs4526TyRrAiviwcfvHXNGYtgAWSEIt7eDvW8H+WTe8FrMpn6+
- YWL7oV2jWBbId+j0RPA==
-X-Proofpoint-ORIG-GUID: K84qH0Cd8mFu_uVyUzBP9uhxzAfT2mKO
-X-Proofpoint-GUID: K84qH0Cd8mFu_uVyUzBP9uhxzAfT2mKO
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=jyUTmoUkxtoYOXpmdiwA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEzMDA5MCBTYWx0ZWRfX/ZgSDWmLKEUE
+ ete7+j5G8FRQDgSwwe/qbSnqRVV2tfhOLl5oalF1v0CPnSmB6Ql8C58Dfjop6lVTO9HJXF3UVDV
+ ZRs0dCFYupgAlCfofjmufAVulAzBfqcpVtw1PFTDc5X6c/Voqlq+
+X-Proofpoint-GUID: 51bMXLgHx5V7XKYAIE6qKXaNaHyWFB_2
+X-Proofpoint-ORIG-GUID: 51bMXLgHx5V7XKYAIE6qKXaNaHyWFB_2
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEzMDA5MCBTYWx0ZWRfX9CdTrbv5YAsl
+ U/HXzzkUSg6zWUXVju9a0q254lLHiUOoMNiyHzi3S+Z+HYOA5AQOe/qkBDRfKgAuaeUnesBcbPT
+ rsbDtEZGIL9WtAjrTgD68gxJ/JlCxog6XoCaiQGxuBdARZAIBuPt+YCW/sLMiNxe2As0EjZOFXM
+ EYG4TE1HuIyq9qd9ow30qyyVJjnbR9NSCV/u6S/ocg+39BYWZXutpDRTFznh1aNCaYx5/rEdgAe
+ YcPD+ugW+mPERVFhEDU9B7cq/sS1d8Tr61pcpyFVArAivWN30NlRLWfb5GGgiwzCubCxrvQiq/E
+ gqZ9mZwi9RG7MziWoVIQBOSi5k8c64qROQl5LAJN8hY2sShrQ7Pz2tHQ6s5Ayw6/3Rs2ccLuRGv
+ IPvyKEbHfrC5LKMwZylRicXUZZb3qQfj19n11JvAwFGSLIKy02aa19M2PG8PzT7O7ySuOrCWu1y
+ bJinDCHhSKfE4zjIDdQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-13_02,2026-07-10_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501
- adultscore=0 bulkscore=0 clxscore=1015 suspectscore=0 impostorscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607130090
+ lowpriorityscore=0 impostorscore=0 suspectscore=0 phishscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607130090
 
-The AD408X AXI core can pack sample data on the bus using different word
-widths (20-bit, 16-bit and 14-bit), selected through the packet format
-field of the CNTRL_3 register. Until now this was left at its default,
-which only matched the AD4080 20-bit resolution.
+The AD408X AXI core can pack the sample data on the bus using different
+word widths. Expose this through the data_size_set backend operation so
+that frontends can program the packet format field (bits 3:2 of the
+CNTRL_3 register) according to the ADC resolution: 20-bit, 16-bit and
+14-bit map to packet format values 0, 1 and 2 respectively.
 
-This series exposes the packet format through a new data_size_set backend
-operation and has the ad4080 driver program it during channel setup based
-on the channel resolution, so the bus packing always matches the device
-realbits.
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+changes in v2:
+ - No changes.
 
-Patch 1 adds the data_size_set operation to the adi-axi-adc backend.
-Patch 2 calls iio_backend_data_size_set() from the ad4080 channel setup.
-
-Link: https://analogdevicesinc.github.io/hdl/library/axi_ad408x/index.html
-
-Changes since v1:
- - Patch 2: expand the commit message to describe which parts were
-   affected by the wrong packet format, and added a Fixes tag.
-
-Antoniu Miclaus (2):
-  iio: adc: adi-axi-adc: add data size support for AD408X backend
-  iio: adc: ad4080: configure backend data size
-
- drivers/iio/adc/ad4080.c      |  5 +++++
  drivers/iio/adc/adi-axi-adc.c | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 35 insertions(+)
+ 1 file changed, 30 insertions(+)
 
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index ced0a2321ecf..aac6f4a0705e 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -54,6 +54,10 @@
+ #define   AXI_AD485X_PACKET_FORMAT_24BIT	0x1
+ #define   AXI_AD485X_PACKET_FORMAT_32BIT	0x2
+ #define   AXI_AD408X_CNTRL_3_FILTER_EN_MSK	BIT(0)
++#define   AXI_AD408X_CNTRL_3_PACKET_FORMAT_MSK	GENMASK(3, 2)
++#define   AXI_AD408X_PACKET_FORMAT_20BIT	0x0
++#define   AXI_AD408X_PACKET_FORMAT_16BIT	0x1
++#define   AXI_AD408X_PACKET_FORMAT_14BIT	0x2
+ 
+ #define ADI_AXI_ADC_REG_SYNC_STATUS		0x0068
+ #define   ADI_AXI_ADC_SYNC_STATUS_ADC_SYNC_MSK	BIT(0)
+@@ -437,6 +441,31 @@ static int axi_adc_ad408x_filter_type_set(struct iio_backend *back,
+ 				 AXI_AD408X_CNTRL_3_FILTER_EN_MSK);
+ }
+ 
++static int axi_adc_ad408x_data_size_set(struct iio_backend *back,
++					unsigned int size)
++{
++	struct adi_axi_adc_state *st = iio_backend_get_priv(back);
++	unsigned int val;
++
++	switch (size) {
++	case 20:
++		val = AXI_AD408X_PACKET_FORMAT_20BIT;
++		break;
++	case 16:
++		val = AXI_AD408X_PACKET_FORMAT_16BIT;
++		break;
++	case 14:
++		val = AXI_AD408X_PACKET_FORMAT_14BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return regmap_update_bits(st->regmap, ADI_AXI_ADC_REG_CNTRL_3,
++				  AXI_AD408X_CNTRL_3_PACKET_FORMAT_MSK,
++				  FIELD_PREP(AXI_AD408X_CNTRL_3_PACKET_FORMAT_MSK, val));
++}
++
+ static int axi_adc_ad408x_interface_data_align(struct iio_backend *back,
+ 					       u32 timeout_us)
+ {
+@@ -660,6 +689,7 @@ static const struct iio_backend_ops adi_ad408x_ops = {
+ 	.free_buffer = axi_adc_free_buffer,
+ 	.data_sample_trigger = axi_adc_data_sample_trigger,
+ 	.filter_type_set = axi_adc_ad408x_filter_type_set,
++	.data_size_set = axi_adc_ad408x_data_size_set,
+ 	.interface_data_align = axi_adc_ad408x_interface_data_align,
+ 	.num_lanes_set = axi_adc_num_lanes_set,
+ 	.debugfs_reg_access = iio_backend_debugfs_ptr(axi_adc_reg_access),
 -- 
 2.43.0
 
