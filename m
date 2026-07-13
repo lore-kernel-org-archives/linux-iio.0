@@ -1,120 +1,108 @@
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3A038237F
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 22:01:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B06535AC03
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 22:17:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783980077; cv=none; b=GYakmgZo8DsVZzmc10pDURBVAda/aaOxw0prEaH3XcpBRwKAfr5Ocg7stuBY3ktFvQTjUUdDxCSwBqfNW40MNo9HuZNkR7ef0y597Q+JRoZ100YWQU/rVRrl/F8GeP1coOIotn5/NikvM1W60fz7CnlYbvyzdY2KAOSF0ulMzBU=
+	t=1783981080; cv=none; b=kGojWgZ5vEarUMZxg1jYKXNDBG0qKYaccF/b+6QS5CeWTGwOYbv8cvyjHUXtfBNJlcmJK3+PAkvn8xCBo3gZ/O9hhH0C5W5Woc+P1+gSwNZdBI8V6EPRoKy0FUiJRG4+pS4j12j1ScmuK0sx78KrmRa4VDuDN/hk02h434wSNXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783980077; c=relaxed/simple;
-	bh=gZAVNAenNNe8ShNpW+y1uL8RlMk/a2pYRFQS9VthVm8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aWKw60iXg/On/P0rDRt6qeJYO1UkJpqWzoJZJb2/7LwCRyGm6I5MT3Bm9V7+MQYATBubMFOZFDIF08xYuA4frK/GD4DsRTSAt6ej+gcMEayMAPE2eVG28cgztuo22nCYF0OesQGfeP1ivjqD1X8m2c9A0A+pJNhjO+t6F6Zpi/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YvU6kJGY; arc=none smtp.client-ip=209.85.160.43
+	s=arc-20240116; t=1783981080; c=relaxed/simple;
+	bh=vuv+AiyEsiMkD63IvVbYfhBxvDOLcErhyf+JfKIMK/Y=;
+	h=Mime-Version:Content-Type:Date:Message-Id:In-Reply-To:Subject:
+	 From:To; b=U3HpIppeGbRYrfXFFfuHGd1swdmsCz3NN0ZdVA/WP68rqnqv4NoK1TbcntQ/CR7atdrEcW6fs6WzJZnZkLprSrRE0KhC0reLMaknGMFsGUpTzQSGpaA0dxpvHQZQoqfwHbKskY0WYZVH6mmzaeuBLWVDAiZ3jtuYJZ6gXOrB4bI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ns1WWug3; arc=none smtp.client-ip=209.85.210.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YvU6kJGY"
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-44cd237446cso215851fac.1
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:01:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ns1WWug3"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7eb64085c45so2259920a34.2
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783980075; x=1784584875; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=a0mdfiM3qjdIeg57ItkPiqiLUsLGffK5s/s59dcT3jw=;
-        b=YvU6kJGY0u+SquAgYoo1dyWh/jXFGCy175kOAxHA+2a6Ctg4lqFPH0XUMSyGnkNi0h
-         jjrVBStyhfVC5anUaIcfJRi53o0ZlkoZscFuchkI01mQHgci2O5xxSMiYdYU/FSTLFs2
-         0qLSo4smY+QFwzSGIBBWY+2SLzKWjFr5gQWr2wR2br5pXd9oaoP9jq0acLLKvpoK4c+V
-         Cy5pdx4Mb2gGgZioPr+nSbh9M0Uwy3IjXQXKCsUh/R474tm69g1BkBbrbzPzVHZfwnXi
-         NBTLsPz+9e+XzXuCF+pHqmU5F6IfaoDDBVJfy9Rxmm5qCPZGv6g+OXNupK3qO5vtkemJ
-         SgWw==
+        d=gmail.com; s=20251104; t=1783981078; x=1784585878; darn=vger.kernel.org;
+        h=to:from:subject:in-reply-to:message-id:date:content-type
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=vuv+AiyEsiMkD63IvVbYfhBxvDOLcErhyf+JfKIMK/Y=;
+        b=ns1WWug3n7rKjVaKK2mOHt8Nqu8WGpPaapdYGw9hkP0XroyHMrXrAwNVD17f3H1mUO
+         sTkOH9VU5dXAGTVAxj2Tmu/PN4X2yri2k9fxaLsDGuJi4YBcDLktamKqQH2k0/3HPX6W
+         KUKv08xXQh47QzlbffaBOSkLMUH87EU32U8h0ZUbQBnrZdM+GGfftxIOOdtEF18dXxKz
+         kxeEfMPP+XcurZ1y4sDpJ35IPi/Fs2jxxAZsjM856pjtcYftsAG6vITpE5QT5pQ6uy3+
+         1LGG7+i7wjCQ10FoyD+xEYmkb93XfJbCuCcCoADKvUpdMcN2yxoyAooWhK/JegUVN5gj
+         r0vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783980075; x=1784584875;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=a0mdfiM3qjdIeg57ItkPiqiLUsLGffK5s/s59dcT3jw=;
-        b=jOl4ORpd/Howm4N4Amdng67sfW2vP8uDLqepNKYhuSkeoU3soUOa024/TcpJRF13ex
-         yJlz0TjKIA790ec9sjV4lBlOpTbpiC2oRYeWsdKD9Xx9RfD9UnC6bhbR88jzV2IxreLx
-         ABq2/FGklKbz34bvAewvrk1JDRQl6sag4rfukuZht+au/ZSiuOW9tubr7xcXNRakwAHQ
-         GBooPhCNC05arUKHbhLIyHCFphg1RUCRCi6JCgiLHH2q4zyqYHe/PmgvjaGuPqlyhCKn
-         +BtaMNASgGPCn7UCYqifRXXrUDp0D0stsC7+kEMvTwKTaSERFQtXR4D8yss2M11L2AFE
-         /QRA==
-X-Gm-Message-State: AOJu0Yzlc+gekCYFVxY7sHDDEbyi0KzfC0PVdywzXQouBLDhlSb/jm1j
-	eQ+NFYu/TuIoYmK06XBorKoFdqfa55BTpndG1QBihIHfYFAc0L5q9xlubs4qkg==
-X-Gm-Gg: AfdE7cmopD0f2u8egQt8uReL2tUuijyx3A5HWBxFtYQKtjMaHYlkkDX9r8e3c25sXUb
-	hByuwCRC0/fkFoc1jXGh+k0Tzor+59o8mQQOWwOHsflSI35IEgyAy3vCTNj/0Tbu/rqY3e7pH/C
-	+8UPOyKZk7pPFH3XXgGDFmMTxFA36BKi3tdrXRGl97s7VWgOyEoY6NnXLYu7+93JQHLis7zU3do
-	c8M3kvZGm0OON5Kq7vtM0Em08wdsHPbIcIQDtrq7jG+1Qb1B9ny8b4NA4K3eE2NuizbBZC2y2Y2
-	7qa5m2pF3QGe+sC2gVbevVk1Y0W/iCZuHp/Te5jA2kQylq3dHADGU2RmgVLgVbCYcjTG2r3V838
-	KlJoVTff1Z/fN96VSGxNTcUGcHKFOmSw4oq2LViPS8BUhQIGJ53aE5cCaUxiObwzv+Nf2W+DmUB
-	1ri7bq8MbfiBISsEQY8ioz+w==
-X-Received: by 2002:a05:6808:d52:b0:495:eb85:fc31 with SMTP id 5614622812f47-4a42ababf2dmr7011314b6e.1.1783980075443;
-        Mon, 13 Jul 2026 15:01:15 -0700 (PDT)
-Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a1acc82f3csm12939785b6e.3.2026.07.13.15.01.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 15:01:14 -0700 (PDT)
-From: Chris Morgan <macroalpha82@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: andy@kernel.org,
-	nuno.sa@analog.com,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	heiko@sntech.de,
-	conor+dt@kernel.org,
-	krzk+dt@kernel.org,
-	robh@kernel.org,
-	andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH v16 10/10] arm64: dts: rockchip: Add icm42607p IMU for RG-DS
-Date: Mon, 13 Jul 2026 16:58:40 -0500
-Message-ID: <20260713215842.69097-11-macroalpha82@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260713215842.69097-1-macroalpha82@gmail.com>
-References: <20260713215842.69097-1-macroalpha82@gmail.com>
+        d=1e100.net; s=20251104; t=1783981078; x=1784585878;
+        h=to:from:subject:in-reply-to:message-id:date:content-type
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=vuv+AiyEsiMkD63IvVbYfhBxvDOLcErhyf+JfKIMK/Y=;
+        b=hnZJkWD+TK7IAZ45PZu4T5SZbIS3GpJpBPCVWbgamdswGF4jNoh9p9tZRk57u7ZaN5
+         TyrvzpZOHlhmF6gUqpxeE+H0VrYexdtZUE8tFXUvf1VBNbplN6SHL5HBDgSdjUmEzdLk
+         6WAHWi0kyP/dsQGIIwbnA7+hS9vfT8dZkxIWwRSBlmWeCIoLNUKs2JpWKyWmG4fr3hAL
+         uIzw9nC95xW9XCh/aHDqv4q2GvIB9b5ZvaHJ+gx1MyDMnTZu3+9Qf1GUa5aJNu2e4yRh
+         /Sde9Y9Xdw6Vi9yRV0fyU2oxGBc65OmbD+4cYNxXe4jh1uZbaM3heMixzahwYdTPLLNU
+         PTlA==
+X-Gm-Message-State: AOJu0YwNiqHOdaS7tbK/8ZlnbkmeQ03qKmTgYjXviT/yMIPedwIB4GFl
+	tOdTsN2voh6RWJw7cKrmHYyA3RnbAb0AR2wEJZt1LXW7rN0FRDuPxTkhVBffooVz
+X-Gm-Gg: AfdE7clWTGb3L6SffXbdewSFU0MAtx0UxIAzDLS5kOwbcZHInrv8yUco7Z+YCQNW6Bc
+	qZf5dAJQW3juSnrXtlLI6RnStC8hnjcly+NYg7RZnTEvN+tcH5RemG4hOq6jSyxnW/trIa4bsTO
+	5hdAFXq6HIeY3ZwCPubGNYdXHo2zdyZphVdhSCA0VlpKMJ/WSgb4hKATsWWKt4p3TXM9N5lHaLw
+	p16SGTp6kzNK3Z1JKZkpV+6kMiuvjMFheIgkSits5Cm/Iyqbp+EEtY2bePZBMCwYoCnkNsSXFsQ
+	OuaiM6+IJmsXS2oa5JiNXJeW9K+Z5vL816n5xAZVb0ExY1v+2yyBb9Ux/+RogRZqXW98kSsfzsX
+	rtlbAspa25EMF68QMPaWl6PZSdPMimJWE4dMHajnwvV6ZIRBsXOMFqcrLPwfbC+qSUTaH5PHVSY
+	+w7iQneHiTmLtbarKRnIl5swSn5F8FwHSSvspwLWc=
+X-Received: by 2002:a05:6830:6afb:b0:7d7:fb03:f6ba with SMTP id 46e09a7af769-7ec097bece9mr6250825a34.21.1783981078114;
+        Mon, 13 Jul 2026 15:17:58 -0700 (PDT)
+Received: from localhost (23-88-128-2.fttp.usinternet.com. [23.88.128.2])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ebcae1dce3sm13857882a34.3.2026.07.13.15.17.52
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jul 2026 15:17:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+ boundary=6d0b1dbaa066a243e25c6e5fa40fecf80e36dcb25c969aee810202f11b03;
+ micalg=pgp-sha384; protocol="application/pgp-signature"
+Date: Mon, 13 Jul 2026 17:17:52 -0500
+Message-Id: <DJXSIEPZMVE8.224APDLC54M00@gmail.com>
+In-Reply-To: 
+Subject: Email Transition
+From: "Maxwell Doose" <m32285159@gmail.com>
+To: <linux-iio@vger.kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
 
-From: Chris Morgan <macromorgan@hotmail.com>
+--6d0b1dbaa066a243e25c6e5fa40fecf80e36dcb25c969aee810202f11b03
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 
-Add the Invensense ICM42607P IMU for the Anbernic RG-DS. Mount-matrix
-was tested with iio-sensor-proxy and reports correct orientation.
+Hi all,
 
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+Just to make sure you all know, I will be changing my email from:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts b/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-index 8d906ab02c5f..b770bfd5268d 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-anbernic-rg-ds.dts
-@@ -871,7 +871,13 @@ aw87391_pa_r: audio-codec@5b {
- 		sound-name-prefix = "Right Amp";
- 	};
- 
--	/* invensense,icm42607p at 0x68 */
-+	icm42607p: imu@68 {
-+		compatible = "invensense,icm42607p";
-+		reg = <0x68>;
-+		mount-matrix = "-1", "0", "0",
-+			       "0", "1", "0",
-+			       "0", "0", "-1";
-+	};
- };
- 
- &i2c3 {
--- 
-2.43.0
+<m32285159@gmail.com> to <maxwell@maxwelld.cc>
 
+The old email will likely remain active but anything new involving me
+should start going to maxwell@maxwelld.cc by the end of the upcoming 7.3
+merge window. I will also be sending out mailmap and MAINTAINERS updates.
+
+--=20
+best regards,
+max
+
+--6d0b1dbaa066a243e25c6e5fa40fecf80e36dcb25c969aee810202f11b03
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTMrEGfAFxnfnRQ/UIQghIb0dl/iQUCalVkEQAKCRAQghIb0dl/
+if6XAX9azxZRoNE2hbXrXOTQiGN0x7ECeuiS4cmIFsYFbs9H5WBWpkepF6UuYcN3
+AfqF+ycBf2GWtKeSZ/Xh/U3LjSXHvPNdRbOZm44AfT78I8y9X/B78ErORmD/x5yK
+TVsN1sIO2Q==
+=HDAR
+-----END PGP SIGNATURE-----
+
+--6d0b1dbaa066a243e25c6e5fa40fecf80e36dcb25c969aee810202f11b03--
