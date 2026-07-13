@@ -1,219 +1,398 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF428375ADE
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:24:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B70D31E823;
+	Mon, 13 Jul 2026 16:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783956242; cv=none; b=DkBib3fdyUBvZa0z2T3YgQ5omxFtB4QicOY3IDkxJNvSSYTOgtJTxfmvFXmFfGO/ydtq5WCn4AxTG1InNCbo4N44rMF2sZ89GOVvPqkc3330LkQDK9Ek4GdbjcpvIX0zfvwTi0lxkq4sMhkgYGerlZbqH6veG5kCY1rzGBDG/ww=
+	t=1783958662; cv=none; b=NUAfJIr2VSzE3GBWTeiuVZAKtXUm3mm4LWcpvAA0frfL2vLg8UOOfWkjbS8DQeb2taBacgMJTJEUxTuGBZOqb5DS8fOgMT80MCYZdhk00QYlWFAHDwNEIwKGrkbWyUlHTb1sBWLn/mhHvzRJAc3TGThf3hf0g30fV0zmBnGYMDc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783956242; c=relaxed/simple;
-	bh=Nig0z9be/bACiHxkv/zcR0n3Fa0ArflEoEv6FUY0xWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lMfasAmaLubBAwihr4WWSWQAkb4hxqa+LroyJirdXjLr2PwQfmgvQfy7xq5mMmxY1YfQwq8V9+ATQOZ/uTj+WNXWRs02LGeAGE/k4g9TigwZyRbG+sTQOA0iFUv1/mV2ayoVgX2GCwokAsnUeF1qwI/h2RGbF+ojFs1LL5DQgV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=L1/GfUJ+; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Bour28/A; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1783958662; c=relaxed/simple;
+	bh=AQ6kRwFWlLHQFJShZ44mfxM8160cGsODfIThMj0Os3M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qvjKydPqlA4qsW6mUJS/M0ouKaSXAElwsehfe8g3sfHbfFqajF/h55TbjmgqZHPN8aV9q3p/MTbtrv8QH2GeqY6u1NWYsR/IfNXM0tJSSR2BcbRIIdVuHBoCng0K5BY5mSxt7IvXjLp/OLkdBiTt1OpPgWnlkdmov0A2alBrpGY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lzw+3Muu; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="L1/GfUJ+";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Bour28/A"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66DF8Kt11860768
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:23:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	hybZBC9zxwIZTXM83Re9UAcSKe/d52J9cAF6ZF3C0mg=; b=L1/GfUJ+vLRiJZbB
-	hzsdl0qm/cfPmPDd6SALgDD2sIBDyV8vewwkIaStNdGqsdBN7znjt0HdABZHNijY
-	HjMgervJmXDqsLj2pLJJUoqbI52Qtm+zXTFbY6fb6o7G6GMuM+SPYs3oMN2Ne9D5
-	18yGrp41+/EW+2/bpykhdqlzNllXZ65WKdB3O4oHB9RgRjQooI7q96dl0Xdk4dcs
-	tdAATaId9XJ4TidCkt11l3/6gqhUtV6eTAD7Q9i8FdQ37fLho/aHwi1Eg/uZeozi
-	rjJ2k8ZpO1nslyq52aT/ZtpiWrFR71FKaVAGOOrL+dL7Xq4+DMOd0pjexKL7mJyi
-	L2A6jw==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fcuj01xvk-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:23:59 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2c7f385887bso79992485ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 08:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1783956239; x=1784561039; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=hybZBC9zxwIZTXM83Re9UAcSKe/d52J9cAF6ZF3C0mg=;
-        b=Bour28/Aj53l+d4K3UAROguRfb/ETh1UszlmX9Hk80DrKuetjkbjFtCrWV0T5BAsli
-         mGBsgGIY/bwLP9BgM7Gy6YNwGWTUfrrtA68JHahK/YXoD35sc7fQBO1TxvfnbhbB26YE
-         7Ns11IgxsEK3xINCePUU9XjrhX5xIZIxfFwrGct24xHYJrBn162/z+5p9Ubw4FoUBgRF
-         jS+hM9Qm6sPlFdbRmqi63v22Uc8OsbkLU143t6cEILH80tr6MsSbwOv7IpPpztPJKCQL
-         zLlb8Wh62HECRXvm1Nc+oBoK084dI2MI0AdPkawKfXyNH8VmT+EWnzEOZyfIx1Ia9VGY
-         Birg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783956239; x=1784561039;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hybZBC9zxwIZTXM83Re9UAcSKe/d52J9cAF6ZF3C0mg=;
-        b=JR4B/THgXO52PF8TvWk/n5n9jb9xgWFxTlDaLYsonzGq5nnBK0SbahIEOQ9So2UYLv
-         lXSCMtmzIpO/uBWCQxZyhRFn2I0L1zrQ6ZkDxu4qJ9MWwEikxH8GdKZFIbPFwIHi09rB
-         moKOIYrFqPNRk8mSqoMm2rON9VwcRMzy08owQMu/TqEepYx7QLxYKqGzIL0T13zTu/Vz
-         rhKVW1qPx+vLmlL22cTZppY1DatHQHpn/cKtpQWTmc+WqwVUUUwjVHoOx9kSKNiG7esk
-         hlyNESZDfFB15YQZkNuQpn4VAZNFlXYAuzEc92AS9MIoedYBanSZetWLnvyCNqlmcCxj
-         2Bfw==
-X-Forwarded-Encrypted: i=1; AHgh+Ros4FBxnrWRJoyZrTPLbwJ1knAE8ykZDLI6rf33TDr57faGj5oRGxSerKsXbXSzAcg1pJGr9GzHoa4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzujN5UeYdcSDbjre6HjHIq+QGRZKJeSwY3xkZh+vU7CmIVMBKF
-	zVn5NezACQ20eaKNktjMWZrs+g8RBYDEn5iHbUP2Hw55x+1aAfd3yWE39bI995S8Mxb4hT8av+6
-	+bp/kvAwHnp7CFWCdP5zwVISUtj8X0opkA8HE8cAcHu30X2M/xlUSXbDBwT+opvk=
-X-Gm-Gg: AfdE7cmeICOfIfZlkpQBoOArOp8sBUZFTl1ZLLnet4UMujfDJFDY8qWJH8Z5L1Ip9qR
-	jiNsI2dix4OAuZNBszbgrMjqJkmW0MKeM4sIVBnXI/dNEc8FMoWYsnbXfb8iUfpCdpvYlLQ54hJ
-	eY4jhxBby3A4BYLmG/sfwMUXr21JqP2+yB6ZbwTyp9acGP1z0qsW/FBA/yMjy95syzZR8Jk8+u7
-	InU0UcUkpFoyMMTycXtlrdNjuwb1fLEv4vk6bgqnJjiaJgCKpbVXAH/l2lIaNOmA4EzqDj4JZXg
-	+s3u+jzD0oD/M77JJwmaFizDGZ8oB14pJ/AUD98k3HJHx6ujQTko/SSPsAD0slO+BwtDbz5mC1z
-	AzKHNNCh21BANoPgHYauukgfXHUc1r479pGRh
-X-Received: by 2002:a17:903:2f08:b0:2ce:e75f:b713 with SMTP id d9443c01a7336-2cee75fbe28mr3254845ad.23.1783956238478;
-        Mon, 13 Jul 2026 08:23:58 -0700 (PDT)
-X-Received: by 2002:a17:903:2f08:b0:2ce:e75f:b713 with SMTP id d9443c01a7336-2cee75fbe28mr3254495ad.23.1783956237827;
-        Mon, 13 Jul 2026 08:23:57 -0700 (PDT)
-Received: from localhost ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9d1edb0sm100605175ad.53.2026.07.13.08.23.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 08:23:57 -0700 (PDT)
-Date: Mon, 13 Jul 2026 08:24:00 -0700
-From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
-        Patrick Edwards
- <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
-        Nguyen Minh Tien
- <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] dt-bindings: iio: adc: add input-chopping
- property
-Message-ID: <20260713082400.000024f1@oss.qualcomm.com>
-In-Reply-To: <1700ed07-47b5-4831-87c5-a6115928baab@baylibre.com>
-References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
-	<20260710-iio-adc-ti-ads122c14-v3-4-746d52cbf1d0@baylibre.com>
-	<20260713023443.1a7a9acb@jic23-huawei>
-	<1700ed07-47b5-4831-87c5-a6115928baab@baylibre.com>
-Organization: Qualcomm
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lzw+3Muu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1783958661; x=1815494661;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AQ6kRwFWlLHQFJShZ44mfxM8160cGsODfIThMj0Os3M=;
+  b=lzw+3Muu8N8uHaQJfPDEHG9VZAs7ppeGSsybeOBevwuEfP/CaIaYUI5H
+   hO58QUDnfVBdt6aqaIrYkmxvClvwrYYNTob0VrmCoFR/wOnLA2UmU41mV
+   7Q+VjgqFVLJXpFF5djfoZGZy/E8e/IyabKQYOUhwIDXPlGSPmmJEtXvXx
+   EpfuteITIm7zuvt9RcR2kkWRcSz2ItcQV9yb46ugk8N5/L5c0TpD4c1wH
+   Buc+w5mvtMBINC6STmmrdXpsREdpz+lKZV7mxWw7Bu2JqYNBH7qbyZpYC
+   fUh/iQFTojqkuUvB7UO27MAIOiXI44nI9RvAECk+JvdVQ17AYICThLDtK
+   A==;
+X-CSE-ConnectionGUID: gN1C5y9nSRmTTblKmF+0Jw==
+X-CSE-MsgGUID: gS3fNHt8Qhy59deuBkVxuQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11841"; a="84687829"
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="84687829"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 09:04:20 -0700
+X-CSE-ConnectionGUID: /42MMHaGReOvsuxIOuImdA==
+X-CSE-MsgGUID: HgAmR3frT2KuXpcNrd1pCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,154,1779174000"; 
+   d="scan'208";a="259444898"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.88])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2026 09:04:16 -0700
+Date: Mon, 13 Jul 2026 19:04:14 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Siratul Islam <siratul.islam@linux.dev>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <alUMfpXGVa9CYxlT@ashevche-desk.local>
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
+ <20260713120226.90303-1-stefan.popa@analog.com>
+ <20260713120226.90303-3-stefan.popa@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzEzMDE2MCBTYWx0ZWRfXz5yNs2/nKfln
- sSLR3F30Je5vVcuTMAGuSEKNM7pjXd51sBFOHJwKKxUl7xzKlux5vGD+V6c7zuM51dXjn2Pjwnf
- xTrM6Q/OqrTVFb2GbMB8i7345cwtnbU=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzEzMDE2MCBTYWx0ZWRfXwV7+jjYE/J9d
- pXI8w6fTlH3Naf0Jur28kez/DmVdjvBwR8qa3RM7AtJArIkJk2481eF3LEpdPWhkrvMXvEgPmWp
- Jpl3ddh03stidfTG+IraG0LvLGQzoXwJRc+AwYMAmB2UyRqhfb0MYc6CNKluSZ8yZCzVTAdlsYC
- MVzVlpTaeFsBkV9tnx7tzAn5CbrN2LVpy3MEFDUVhM4VG631/m1qxaOQza9g7EMz21JWCWMSF+f
- KGGS9Nq/qATNN7C23+D3FWIY7YlAyTyWXmSCCuoar7qa9rXyz0kUS9iPtEcs4+eCaf9KidSNBQT
- mJ3V9SUP6ibW4O83D8H+Z8EojJHVBwElImzK4kVHsVTBx6kS5VXV+LMPo05JLp2eo20S008zp4C
- w890c81TZWmCmF0AMQD2dRp5Ks18ZvAmIu/Yt5QbyLNK/mz+0WwR94ptaAfTinoIJQ6eD+8LV3i
- aGUKitx0HY56Sd7mKow==
-X-Proofpoint-ORIG-GUID: GVDOdeMEpn9pWJkXR45J5zFeM-sM41_f
-X-Authority-Analysis: v=2.4 cv=DbcnbPtW c=1 sm=1 tr=0 ts=6a55030f cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
- a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=IpJZQVW2AAAA:8 a=ALuaPTNhsiHwyfqByDAA:9 a=CjuIK1q_8ugA:10
- a=1OuFwYUASf3TG4hYMiVC:22 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-GUID: GVDOdeMEpn9pWJkXR45J5zFeM-sM41_f
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-13_04,2026-07-10_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 impostorscore=0 malwarescore=0 priorityscore=1501
- phishscore=0 suspectscore=0 bulkscore=0 adultscore=0 spamscore=0
- clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607130160
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260713120226.90303-3-stefan.popa@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 13 Jul 2026 09:55:53 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, Jul 13, 2026 at 03:02:26PM +0300, Stefan Popa wrote:
+> The MAX40080 is a bidirectional current-sense amplifier with an
+> integrated 12-bit ADC and an I2C/SMBus interface. It measures the
+> voltage across an external shunt resistor and the input bus voltage,
+> storing the results in an internal FIFO.
+> 
+> No existing IIO driver covers this device or a register-compatible part.
+> The closest relatives target different silicon with incompatible register
+> maps and feature sets: max9611 is a unidirectional high-side sensor with a
+> die-temperature channel and MUX-selected gain and no FIFO/PEC, while
+> max34408 is an 8-bit multi-channel current monitor. The MAX40080 has a
+> device-specific register map with bidirectional 13-bit current, a 64-entry
+> FIFO, PEC, a single-measurement mode triggered by an SMBus Quick Command,
+> and two selectable input ranges, so it warrants its own driver.
+> 
+> Add a direct-mode IIO driver exposing the current and voltage channels
+> with raw and scale attributes, a configurable oversampling (digital
+> averaging) ratio, and PEC-protected register access. The two selectable
+> current-sense ranges are exposed through scale/scale_available; the
+> current scale is derived from the shunt-resistor-micro-ohms device-tree
+> property.
 
-> On 7/12/26 8:34 PM, Jonathan Cameron wrote:
-> > On Fri, 10 Jul 2026 17:50:37 -0500
-> > "David Lechner (TI)" <dlechner@baylibre.com> wrote:
-> >   
-> >> Add a generic input-chopping property to adc.yaml. This is a feature
-> >> seen frequently in ADCs that are designed to measure resistive loads,
-> >> such as RTDs and strain gauges. Enabling this can reduce offset errors
-> >> by swapping the positive and negative input channels on every other
-> >> conversion. This can have side-effects in timing and filter response, so
-> >> it is not always desirable to enable this feature in some applications.
-> >> Therefore, it is best to make this a property that can be enabled or
-> >> disabled in the device tree.
-> >>
-> >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> >> ---
-> >> v3 changes:
-> >> * Renamed property to input-chopping to reflect more common terminology.
-> >> * Removed "allowed" from the description.
-> >> * Extended description to explain when it should not be used.
-> >>
-> >> v2 changes:
-> >> * New patch.
-> >> ---
-> >>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 8 ++++++++
-> >>  1 file changed, 8 insertions(+)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> >> index 308857f11220..c408feebd46d 100644
-> >> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> >> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
-> >> @@ -80,6 +80,14 @@ properties:
-> >>        ADCs usually allow choosing between internal reference sources or a pair
-> >>        of external pins.
-> >>  
-> >> +  input-chopping:
-> >> +    type: boolean
-> >> +    description:
-> >> +      If set, the positive and negative input channels are swapped on every
-> >> +      other conversion to reduce offset error. This generally comes at the
-> >> +      expense of added settling time between conversions, so should be omitted
-> >> +      on systems with high-frequency signals or high data rate requirements.  
-> > 
-> > I'm lazy so I didn't check back, but in my mental model of this, the DT is simply
-> > saying that the analog circuitry is suitable for doing chopping.  Driver decision
-> > on whether to do it.  Perhaps we can reword it for that?  
-> 
-> Heh, that was the "allowed" part that I removed.
-> 
-> I think this is really more of a design decision between the tradeoff
-> of less noise vs. data rate. By setting this property, we are saying
-> we should favor less noise. So I think it is more about the expected
-> signal than the circuitry.
-> 
-> So not sure that I would add anything here.
-Fair enough.  Given the driver can always ignore what is in DT I guess it
-is fine as is.
+...
 
-Thanks,
+> +#include <linux/bitops.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/math64.h>
 
-Jonathan
+> +#include <linux/mod_devicetable.h>
 
-> 
-> 
-> >> +
-> >>    excitation-channels:
-> >>      $ref: /schemas/types.yaml#/definitions/uint32-array
-> >>      description:
-> >>  
-> >   
-> 
-> 
+Should be not used since Uwe's rework of this header.
+
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/property.h>
+> +#include <linux/time.h>
+> +#include <linux/types.h>
+> +#include <linux/unaligned.h>
+> +#include <linux/units.h>
+
+...
+
+> +/* CFG.range field values */
+> +#define MAX40080_CFG_RANGE_50mV		0
+> +#define MAX40080_CFG_RANGE_10mV		1
+> +
+> +/* FIFO_CFG.store_iv field values */
+> +#define MAX40080_FIFO_CFG_STORE_I_V	0x02
+> +
+> +#define MAX40080_ADC_RES		4096
+> +#define MAX40080_INTER_VREF_MV		1250
+
+Let's also use _mV here.
+
+> +#define MAX40080_V_BUFF_GAIN		30
+> +#define MAX40080_CSA_50MV_GAIN		25
+> +#define MAX40080_CSA_10MV_GAIN		125
+
+And here.
+
+...
+
+> +#define MAX40080_NUM_RANGES	ARRAY_SIZE(max40080_csa_gain)
+
+I think I commented on this already. This hides the information, I think
+the better way is to avoid using this macro.
+
+...
+
+> +static int max40080_read_iv(struct max40080_state *st, u32 *iv)
+> +{
+> +	int ret, io_ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = max40080_trigger_measurement(st);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/*
+> +	 * Wait for the conversion to complete by polling the FIFO valid bit
+> +	 * (or bail out on an I2C error). Polling the device's own status makes
+> +	 * this independent of the actual conversion time, which varies with the
+> +	 * oversampling ratio and the bus speed. The timeout is only a safety
+> +	 * ceiling: the worst case is the maximum 128x averaging on both the
+> +	 * current and voltage channels at the slowest 15 ksps base rate plus the
+> +	 * inter-channel switching time, i.e. roughly 20 ms; 50 ms leaves ample
+> +	 * margin.
+> +	 */
+> +	ret = read_poll_timeout(max40080_read_iv_once, io_ret,
+> +				io_ret || (*iv & MAX40080_IV_VALID_MSK),
+> +				1 * USEC_PER_MSEC, 50 * USEC_PER_MSEC,
+> +				false, st, iv);
+> +	if (ret)
+> +		return ret;
+
+Even in case of error the value in iv will be updated. Is it deliberately?
+
+> +	return io_ret;
+> +}
+
+...
+
+> +static int max40080_get_oversampling_ratio(struct max40080_state *st, int *val)
+> +{
+> +	int tmp;
+> +	u8 filter;
+
+Keep reversed xmas tree order.
+
+> +	tmp = i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG);
+> +	if (tmp < 0)
+> +		return tmp;
+> +
+> +	filter = FIELD_GET(MAX40080_CFG_FILTER_MSK, tmp);
+> +	*val = max40080_oversampling_avail[filter];
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int max40080_set_oversampling_ratio(struct max40080_state *st, int val)
+> +{
+> +	int ret, filter = max40080_oversampling_to_filter(val);
+
+This style is discouraged. First of all, it's a mix of semantically different
+variables. Second, the assignment of the variable that is going to be validated
+might lead to subtle issues in the future.
+
+> +	if (filter < 0)
+> +		return filter;
+
+So, Do just
+
+	int filter;
+	int ret;
+
+	filter = max40080_oversampling_to_filter(val);
+	if (filter < 0)
+		return filter;
+
+> +	ret = max40080_update_bits(st, MAX40080_REG_CFG, MAX40080_CFG_FILTER_MSK,
+> +				   FIELD_PREP(MAX40080_CFG_FILTER_MSK, filter));
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->oversampling_ratio = val;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int max40080_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+
+> +			     int *val,
+> +			     int *val2,
+
+At least these two may be on a single line.
+
+> +			     long mask)
+
+...
+
+> +static int max40080_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int val, int val2, long mask)
+
+You see, like here.
+
+...
+
+> +		*vals = (int *)st->current_scale;
+
+Why not const int?
+
+> +		*length = MAX40080_NUM_RANGES * 2;
+> +		*type = IIO_VAL_INT_PLUS_NANO;
+
+...
+
+> +static int max40080_init(struct max40080_state *st)
+> +{
+> +	u16 fifo_cfg, cfg;
+> +	int ret, filter;
+
+Here is better, but see above.
+
+> +	filter = max40080_oversampling_to_filter(st->oversampling_ratio);
+> +	if (filter < 0)
+> +		return filter;
+> +
+> +	/*
+> +	 * Put the device in standby before (re)configuring the FIFO: the FIFO
+> +	 * configuration register can only be written while the device is not
+> +	 * converting.
+> +	 */
+> +	cfg = FIELD_PREP(MAX40080_CFG_MODE_MSK, MAX40080_CFG_MODE_STDBY) |
+> +	      FIELD_PREP(MAX40080_CFG_PEC_EN_MSK, 1);
+> +	ret = i2c_smbus_write_word_data(st->client, MAX40080_REG_CFG, cfg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Store a matched current+voltage pair per conversion. */
+> +	fifo_cfg = FIELD_PREP(MAX40080_FIFO_CFG_STORE_IV_MSK, MAX40080_FIFO_CFG_STORE_I_V);
+> +	ret = i2c_smbus_write_word_data(st->client, MAX40080_REG_FIFO_CFG,
+> +					fifo_cfg);
+
+Previous line is long enough to justify this one to be also a single line.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Use single-measurement mode: the device stays idle and converts once
+> +	 * per SMBus Quick Command (see max40080_trigger_measurement()), so each
+> +	 * read returns a fresh sample rather than a queued FIFO entry.
+> +	 */
+> +	cfg = FIELD_PREP(MAX40080_CFG_MODE_MSK, MAX40080_CFG_MODE_SINGLE) |
+> +	      FIELD_PREP(MAX40080_CFG_PEC_EN_MSK, 1) |
+> +	      FIELD_PREP(MAX40080_CFG_RANGE_MSK, st->range) |
+> +	      FIELD_PREP(MAX40080_CFG_FILTER_MSK, filter);
+
+> +	ret = i2c_smbus_write_word_data(st->client, MAX40080_REG_CFG, cfg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+
+Just
+
+	return i2c_smbus_write_word_data(st->client, MAX40080_REG_CFG, cfg);
+
+?
+
+> +}
+
+...
+
+> +static int max40080_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct max40080_state *st;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	/*
+> +	 * The device powers up with PEC enabled (CFG POR = 0x0060) and rejects
+> +	 * unprotected transactions, so PEC support is mandatory, along with word
+> +	 * access, the I2C block read used for the current/voltage pair, and the
+> +	 * Quick Command used to trigger a conversion.
+> +	 */
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_WORD_DATA |
+> +				     I2C_FUNC_SMBUS_I2C_BLOCK |
+> +				     I2C_FUNC_SMBUS_QUICK |
+> +				     I2C_FUNC_SMBUS_PEC))
+> +		return -EOPNOTSUPP;
+> +
+> +	client->flags |= I2C_CLIENT_PEC;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->client = client;
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+
+> +	st->shunt_resistor_uohm = 1 * MICRO;
+> +	device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+> +				 &st->shunt_resistor_uohm);
+> +	if (!st->shunt_resistor_uohm)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "shunt-resistor-micro-ohms must be non-zero\n");
+
+We now establish better approach for optional values
+
+	const char *propname;
+
+	propname = "shunt-resistor-micro-ohms";
+	if (device_property_present(dev, propname)) {
+		ret = device_property_read_u32(dev, propname, &st->shunt_resistor_uohm);
+		if (ret)
+			return dev_err_probe(dev, ret, "can't read %s\n", propname);
+		if (!st->shunt_resistor_uohm)
+			return dev_err_probe(dev, -EINVAL, "%s must be non-zero\n", propname);
+	} else {
+		st->shunt_resistor_uohm = 1 * MICRO;
+	}
+
+> +	max40080_calc_current_scale(st);
+> +
+> +	/* Defaults: 50 mV range (index 0), no averaging. */
+> +	st->range = 0;
+> +	st->oversampling_ratio = 1;
+> +
+> +	indio_dev->name = "max40080";
+> +	indio_dev->info = &max40080_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max40080_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max40080_channels);
+> +
+> +	ret = max40080_init(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
