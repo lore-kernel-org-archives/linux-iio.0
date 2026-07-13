@@ -1,41 +1,67 @@
-Received: from galaxy.gendns.com (galaxy.gendns.com [66.235.175.158])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com [209.85.217.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0782F1FC3;
-	Mon, 13 Jul 2026 14:45:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.235.175.158
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 760D033AD85
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 14:55:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783953917; cv=none; b=BNKUzqvaOKxujMRh8zsbC3/iCkQDy/Gvuoy8BOtc3Cy23uk5d1PCx6fu1Xjf4WxOGdFRGxiLZ+EkHgYeBfislf+zyWSgEHUNtqZPVsfB4OQB3Mig83PoHi+PV9CnnXuHCgIXmq2U98vpGXlAd99DEzpRo3fwzSHqcnEA9ziY4oc=
+	t=1783954559; cv=none; b=A69gnueQ56ybv9SoZp9vx2dgV2cvkBBddENab7xveZ2BCAYpc58/z9pUfo4KolpFv0kn5hHwQuXSlo01dUS3TXvUBoSbWaW6xt6xSKkQGmWNDbdFyN21ThXsC2QdSepDPbPFpfW4FMpZROaIEV2zxq8nzDRbb7pAG9KGpkYlvKM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783953917; c=relaxed/simple;
-	bh=jpyz5hAbwlvRRPo64MfFZ81i18i8D734nmZ6CUH9lvM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=RDk6ooPKTnW8IqUzKY94n0LbDIA1afgOqWDkHDwzBt49IYGxEmukETazgVAeyYbO+Ljr0KgAaHKsMAU5qzk54SC+g9/gscpf6hEapV+nPZqgQj1nxbdAXNllOA5WN57WnDU3+k6QJ8/9xv7iea2Yl5V3cfq+i+TItR23ZhEAG6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=kPRts+KY; arc=none smtp.client-ip=66.235.175.158
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
+	s=arc-20240116; t=1783954559; c=relaxed/simple;
+	bh=YELl1y3J0mGPUhcgSqbaaf3tbHR8Imjyjm4zvt2BTb4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JBshlFtfNeGSuESpMZokuqXiFfaoc+bfVUULAMd/ng0Pq9YPSCmB/KncUrWn5kzdOGP//9NkSSliF2JUUV3Me1VELYZPdkm8P/o6ISMSgPK85Fg5NbPXVtHmd6CT7fRtv+oE7vW7iAHLycBdHYqsjO4ZsgzUn4ZEzzm6Mmp16q4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=d7xaOHiW; arc=none smtp.client-ip=209.85.217.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="kPRts+KY"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=INl0jiwqDhGPDETixMKefTqug/oQonC2CS+nvIV3PMw=; b=kPRts+KYZ26uj+aJUVDbW7uRza
-	+0I25symShHRG3ruTSswL+FzNtvluFi5NQsWI1E8OXGFttK+9GxIdozY4NeQTVAsP1WxAwYayp9ob
-	Hg6Mdizci/iITZz4u3rn6aRLLdLz9DhiSSH6S67qzrL/D6fTfeTVAgGINn2kP9Ll2gEygQnrsymaF
-	ugdGgnph3xdTbOD6X/0pbpoY+1ls3AyZetYdg/vG32hKD7/jDETDQTy/ChVnKH8lmjlxFn0Rc8PSr
-	QOKCcnuEmoz0/XR9H+qKMDWFxEu70o3qIZyJeAlbNpKJ8wIgmDX52z6IjL3f+BUKV+cWj5PwUrc/Q
-	BDA/zUPA==;
-Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:52858 helo=[192.168.1.142])
-	by galaxy.gendns.com with essmtpa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
-	(Exim 4.99.4)
-	(envelope-from <david@lechnology.com>)
-	id 1wjHVy-00000009aEK-0hNn;
-	Mon, 13 Jul 2026 10:20:09 -0400
-Message-ID: <1e330026-cd09-48d5-9478-4cff59f521e0@lechnology.com>
-Date: Mon, 13 Jul 2026 09:20:07 -0500
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="d7xaOHiW"
+Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-73b7c3791dbso1658736137.1
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 07:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1783954555; x=1784559355; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=h85/e4FosMhyyW2A5K8lpjg8Eb2pk4okTuj+ceX0Hik=;
+        b=d7xaOHiWL+u0VKSs6dQuhCTLOVtoFhc7fWD4NjASNttxn5U4PqN8/OZGAASBEe/QAo
+         njNFmWhLxo/r21AbflFt5C62U8DnMuTKzUsVmlFV6dh+KgFkJRyprfxzJU/v6XF9Ll81
+         7UeY1puwsXXnvYTo+lz4DI/R4THEbb+HwkEPYIxpzUZdn8NdjFgQJmPwCvZRFoOYg5pI
+         791GccvKbodjbpnCDJ35PFjW4nJYD882PjaD8XD0HoMoZ1YAQvuOJWru/UMJS9UEvVZV
+         IN8LiMdXUFXrT6VPSLmqJZcy7aT3/e6RAkqSWYXi8xJ6AxJWHbXS3y+PT1E+NvzgYSQz
+         /isw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783954555; x=1784559355;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=h85/e4FosMhyyW2A5K8lpjg8Eb2pk4okTuj+ceX0Hik=;
+        b=ZAaRgPu+agBfwEWpWbHfXeJyiAeYUBxKqnkOxQ2pDXzdVLbvAhLwJ/DOAttTAjiQuu
+         gjn8lHuenb3nX5du99CES6ixtPAhEEGmOFDKEsNpM92HH1puc4/7Mgo4zKC9MNUHci1y
+         YMy3XYpL1T0ZV02v2pdw0uvr1l7uJXFx47Yib6vKAyuBTZw7TWTmvRUXJ+hOUwW21gCz
+         jzQK8ZaTTt/+EIMlINEmg/Ob2sGWPFnVgLWmlyCfxzLx56/HYQSdzK8TWCWXyrG9sHj/
+         RfCEt0ELYngmMhf3ZFNc/0DTg/1ziyavWESSIWUwFFHWvRi1MEsNE/6SCio5CqQXDBWF
+         NpYA==
+X-Forwarded-Encrypted: i=1; AHgh+Rosv2e+J6siVNh017+Trxe2eOFNNEfeLSUg1Ooiqz0JWAKdJ8kpiQFSaABQ1xt6Hm+c7Kdx6iR2TM8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzg6aZsjC7koM00qMdezvfP31+qzd9HhylZ2tb962Tb+eC0GaDu
+	zjaogExctxsCPah4AGE0F7won6B8KGCHLblHF+mow4xeFQm+5Tp9e2ng8FjrFZMAYhE=
+X-Gm-Gg: AfdE7cmu9E7pvIXzwx/cUZAFhCqhvplPnopIx3Nkwwmv1Pzf0GCv8bRNiH0Jp1T8dwM
+	kQjGtTvgFxl2j4qWrBY89946calO2y6xmoRYbUXrAlMl80yUO0TmUNy3/L27bIpGTnxL5X3LM9Q
+	6cRnEuHU9TPPMV7FrKWMuosXFpVoeXD19amkFHk8wjzBpYC99VbtbKv6xtFkBwGneY/1OQFK5N6
+	MZs95m5QhNpcliWHfzkhSCAgS5MM6DZ5iyh/W+j03xN/5MBSR5iTJEnzdlgn7SlYiVh3Umua/cA
+	cBbwhDB9HGEFTOFCFaUIaVY1mjkqRtTZ+mTj0L944AhtIFMGtpoaOtMDaUTIeeW447pcw+cI1j7
+	TxyP0Scmn8ISilXiWNye0ptZ1VMj/fYV4LhRrggr8zAti8ImAREfW728R48v5SUpnE2yO6sfeYF
+	ihbrO75IaN+ziDLE7CeH9EVxb2QDGVB7+RHqbxHHMU70y8WXvbyr6QMAkI5IK42Hs=
+X-Received: by 2002:a05:6102:f12:b0:729:1a8d:b2d9 with SMTP id ada2fe7eead31-74533e17d5amr5917697137.22.1783954555481;
+        Mon, 13 Jul 2026 07:55:55 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:610b:e45c:5e0c:e14b? ([2600:8803:e7e4:500:610b:e45c:5e0c:e14b])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-96ed25847e5sm7785373241.2.2026.07.13.07.55.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jul 2026 07:55:55 -0700 (PDT)
+Message-ID: <1700ed07-47b5-4831-87c5-a6115928baab@baylibre.com>
+Date: Mon, 13 Jul 2026 09:55:53 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -43,87 +69,84 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] counter: Remove redundant dev_err()/dev_err_probe()
-To: Pan Chuang <panchuang@vivo.com>,
- Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
- William Breathitt Gray <wbg@kernel.org>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Vignesh Raghavendra <vigneshr@ti.com>, Julien Panis <jpanis@baylibre.com>,
- "open list:COUNTER SUBSYSTEM" <linux-iio@vger.kernel.org>,
- "moderated list:ARM/STM32 ARCHITECTURE"
- <linux-stm32@st-md-mailman.stormreply.com>,
- "moderated list:ARM/STM32 ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:TI ENHANCED CAPTURE (eCAP) DRIVER" <linux-omap@vger.kernel.org>
-References: <20260713131005.306069-1-panchuang@vivo.com>
+Subject: Re: [PATCH v3 4/8] dt-bindings: iio: adc: add input-chopping property
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260710-iio-adc-ti-ads122c14-v3-0-746d52cbf1d0@baylibre.com>
+ <20260710-iio-adc-ti-ads122c14-v3-4-746d52cbf1d0@baylibre.com>
+ <20260713023443.1a7a9acb@jic23-huawei>
 Content-Language: en-US
-From: David Lechner <david@lechnology.com>
-Autocrypt: addr=david@lechnology.com; keydata=
- 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
-In-Reply-To: <20260713131005.306069-1-panchuang@vivo.com>
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260713023443.1a7a9acb@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - galaxy.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: galaxy.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: galaxy.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 
-On 7/13/26 8:10 AM, Pan Chuang wrote:
-> Since commit 55b48e23f5c4 ("genirq/devres: Add error handling in
-> devm_request_*_irq()"), devm_request_irq() and devm_request_threaded_irq()
-> automatically log detailed error messages on failure. Remove the
-> now-redundant driver-specific dev_err() and dev_err_probe() calls.
+On 7/12/26 8:34 PM, Jonathan Cameron wrote:
+> On Fri, 10 Jul 2026 17:50:37 -0500
+> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 > 
-> Signed-off-by: Pan Chuang <panchuang@vivo.com>
-> ---
-Seems OK, but probably be should be split into one patch per driver.
+>> Add a generic input-chopping property to adc.yaml. This is a feature
+>> seen frequently in ADCs that are designed to measure resistive loads,
+>> such as RTDs and strain gauges. Enabling this can reduce offset errors
+>> by swapping the positive and negative input channels on every other
+>> conversion. This can have side-effects in timing and filter response, so
+>> it is not always desirable to enable this feature in some applications.
+>> Therefore, it is best to make this a property that can be enabled or
+>> disabled in the device tree.
+>>
+>> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+>> ---
+>> v3 changes:
+>> * Renamed property to input-chopping to reflect more common terminology.
+>> * Removed "allowed" from the description.
+>> * Extended description to explain when it should not be used.
+>>
+>> v2 changes:
+>> * New patch.
+>> ---
+>>  Documentation/devicetree/bindings/iio/adc/adc.yaml | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> index 308857f11220..c408feebd46d 100644
+>> --- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> +++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+>> @@ -80,6 +80,14 @@ properties:
+>>        ADCs usually allow choosing between internal reference sources or a pair
+>>        of external pins.
+>>  
+>> +  input-chopping:
+>> +    type: boolean
+>> +    description:
+>> +      If set, the positive and negative input channels are swapped on every
+>> +      other conversion to reduce offset error. This generally comes at the
+>> +      expense of added settling time between conversions, so should be omitted
+>> +      on systems with high-frequency signals or high data rate requirements.
+> 
+> I'm lazy so I didn't check back, but in my mental model of this, the DT is simply
+> saying that the analog circuitry is suitable for doing chopping.  Driver decision
+> on whether to do it.  Perhaps we can reword it for that?
+
+Heh, that was the "allowed" part that I removed.
+
+I think this is really more of a design decision between the tradeoff
+of less noise vs. data rate. By setting this property, we are saying
+we should favor less noise. So I think it is more about the expected
+signal than the circuitry.
+
+So not sure that I would add anything here.
+
+
+>> +
+>>    excitation-channels:
+>>      $ref: /schemas/types.yaml#/definitions/uint32-array
+>>      description:
+>>
+> 
+
