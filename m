@@ -1,62 +1,62 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F3D237CD2E
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 22:01:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72468383338
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 22:01:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783980068; cv=none; b=MU/UhDFsOBbnZwOregCGsUNcSQR2NDP0mJg8WOEzh85iEEhkiyQjdSjTMA3aW9E/uuQDOKSKe0800kAAj9MNpNvj99NNHUucM7BWm5ta0K5k07iKBICbVPu6xRPjAhPWefx5pb1bbr7fnwM+Cbdvhbfb9jngO2V5cc8L+YgP9R8=
+	t=1783980069; cv=none; b=gxwyCFEPd2rXPxo3pZmkxbbT4SurzZu14GEQPJX4eUxKpKiJgfVyIr4rrVQ38ZO3MyA9AwsKZewMYAf/a+nwEBjmz2Aly8rgrudl6y0DwNHBbmRRDEqTaFqoPs8QLP0oOMdpUyCcWGLKnJygqGEbRXSMFOx5MGNuqhS9IsS4byE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783980068; c=relaxed/simple;
-	bh=44wlK79p2iFBlaDNEJYYoVrsZ4V64y2DhfrkrngDWyE=;
+	s=arc-20240116; t=1783980069; c=relaxed/simple;
+	bh=A88hQpU4gvevyn/wMC8LlE1D/v2qPQHhtPxMc3pde1k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TfnSMiuxM+WLyAbjPSpht/EE5ScLr3J70EPHKiuj2wXlurpwJpgBFjRZ/UunZeD1y39SmkI1blyyEeqbn5s8B4+2eYtbf0qwP9PL+XkNkWSnanHRqNt/VhLPfimKgZof+q+WFx9h0ciHC5tR3uF6rIVI50WqYf71sBxglMorVXA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VIYXWdSO; arc=none smtp.client-ip=209.85.167.173
+	 MIME-Version; b=cWb0uggfvaQ82Zwn/raxN0MzIpbxTWQRrklK+u6ZQkgX00ADiGR6Gtvb6O1Lw1wMka5ZJ40Ojm0VNxoMjyJXrLk9vj+iYC/+YOlVZ5fH4kUGRFCRu1QL977dXfpSaL9nOdUoJdFT47Ff+u7a/g5BzKFTFZ0LQE+xbsKGZKL9cts=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JrwoFjLA; arc=none smtp.client-ip=209.85.210.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VIYXWdSO"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-497d3e4460aso400494b6e.1
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:01:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JrwoFjLA"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7e9ef94c0e2so172076a34.3
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 15:01:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783980066; x=1784584866; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1783980067; x=1784584867; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=KaUmQ9JpbnpkUCaTH5UXy4GKoNzMoHaVL3LWpQbAxts=;
-        b=VIYXWdSOr1lqb01DpmTIciJSang1LexoD9oWWAQRYpviKVRF4Ke7XPwmxQDucVVoNG
-         ozAJYJm62Dv3/gDtPnLG+n2FMooz65IucLweocg4iQOPs4OEF5HMHkFKsv98KdDKjwIh
-         sMhlxGCL1WxSTp1HkFlplL9kGbq2tBJfdhANCJR2/5mIPyxpVQGRHbbstIY/8fYp53Wq
-         YE7VsPe9gDP/+5FNdUumKp4dtCHwk/BvTjL/88E4Rf5bwQlGaejgnvFGuF92ckugVfIZ
-         V06sJgopW0hrXP8YdviQcJqHmpP+BZNOnvMEB9RzHejFDXiGNZ8Bm4EYELlt2Hay4DBE
-         idig==
+        bh=U3MCSu0Vj44YX15WVLsrx07UD0x7rviAz6FLqVYGZxQ=;
+        b=JrwoFjLAZYbIxGGuNqw2DaYhQpkH720ITFTfJOR1vnHDz77HdCh5CJ6fecbd7T8Ke2
+         +X7ER9hc2kpTzU9FP4FGQgN+q9a6MlSNpbcB0thIYFCbHANtzz0/sM+WMNOX5bwr45Tb
+         1BhEpp8zAYiHI2i6wPQhQG/WkjgM/fil6AOx3d/Ju0tJPV4IqmcOoMWzCRxZop+W7d0K
+         QT9soB0us4K8xEU351NRbZSM1QF51aCpZnPTw87tO3Mp3Y2W9N7NCtSoy3eN+bDp3Ibd
+         U7NZsHaMw/hWp+44ilV4wuQOeIirrluIViZlMf0N4DcJhHRFGLoa2hkmAl4XkWWsO4yf
+         wZRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783980066; x=1784584866;
+        d=1e100.net; s=20251104; t=1783980067; x=1784584867;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KaUmQ9JpbnpkUCaTH5UXy4GKoNzMoHaVL3LWpQbAxts=;
-        b=hP8+AF4a3v3VnLn4FskrGKTm1PZ9JSqV9G+4K6OYfCI/MFYpmlfLeteiLDGoC9O0N+
-         259SzYlTqQcskJv9INLOhIaIRnJ/ZtPd1rkZZa6v7UKRIcU67A9xSIARZzvOG9zXtD45
-         to1RWVrrkfwBlNWFHoTtip/r9pybO8B9Qu4JlSUkgy3PMJpJTaHLAXq/oxj7bIvJc8o8
-         mnncmC8Ndzm7zSSilhqplHgjN1kV+ZaeIcHR0qs0Q86ac4UUbFWKEvPcZVkwGJ5FiGJb
-         Xn5GFKAvD2T3YOLt601PMLN4iGsuehGdfr6C6tU02gWBwW4oIBTyIx6BkrzQva4FmlLe
-         jVbA==
-X-Gm-Message-State: AOJu0YyY+DD1iSJMgUVClsWl4U7TbcEjya1A+8c1U9Cr8iHVmqTYrzsF
-	lktoheFVgRx7DMQ3OaGjtrFIH6X10O2FhOS2gorIPCD6/ypIJBXWSP4ctNDQAg==
-X-Gm-Gg: AfdE7ckeEk5X28/+L0qWnEyG7v+HoQEwN00Q8n1Dbs5TnaQod7YD8iEsSoKxFOQu4wc
-	a56Huu9h4EQUH+jfY0bmOhsZI7SGC3a6lJKgrV1pww+oS5qvLRJOZD0Y7Ga3jPpcy2kZU/Xb3LB
-	v2KOKAn988JWGg6omEe0Mu7DEtYEBbhrnYjkN3Tu7qlJmYSYG2ebXiAPJVYtLtn+hD1fR1Ati2+
-	8M2IaTVUXUfxASFa6NntGpxMM9BZXea4+Hj9wXiTk3jo62Ch05Nas9oruJxdLKD3S91Rqy8hORl
-	dwT0FtitHx1JTDkW0tt/j3g3nRK/4p+2zTGHR/SPAnmUDfKrrEN/9iBTiSMOj4O8fqKObS0O3au
-	xQEfO6d0mEDK5PJXCPmu4wVMXBVtH++Ih70oZySIRW1Zd5pr6oWIAtYy+83khk5WD+HZMmyIFql
-	L+RRSwEMs03tI=
-X-Received: by 2002:a05:6808:bc2:b0:497:cfda:3c0f with SMTP id 5614622812f47-4a40f048b13mr10541643b6e.29.1783980066006;
+        bh=U3MCSu0Vj44YX15WVLsrx07UD0x7rviAz6FLqVYGZxQ=;
+        b=Tbkiz0m7VeAUHeaW9nO3Apw+HZFykthlFRhZ59DbtPHZzJE+OdsvNu/SBNo4CKEpaP
+         3UI5V4PvRjJoBV+QKFwj1U5IvyY6NQqM2N+2J/VbB7O2WRk4qWMYty1Oa3kqA7vxIGeT
+         3EgmF5NrLf7f6x9l3xEZHHa29Y3HgUd4vRcZ7+qZ2mjWymx3glVogG4gO5cqc3hNKq4U
+         PijwUHLSQ0J+00/ZLcFFdcNGrm51lO4QpnNxIJB3XvRKGCpx+e5CCQLhOES7MaCKnZHU
+         TuDdWxa+8EPxA94XirMTYJV7Zk0mdPkUHt8uESy9sIAfpDvaPCKFLwLDrmRIilCG9ihP
+         5x6A==
+X-Gm-Message-State: AOJu0Yy/JV0rDKY+bG67+7hoTB7RjZxnpiJ4t2UaDZlfCgr+1W3aZFiw
+	9zTFQGPR+sjJJpqGNg7arWjNJFbtO0C4sppqf3z7AsaCjTASvM3yIClfrPbuuQ==
+X-Gm-Gg: AfdE7cncuMj6L7oVwNN03ctoIYXlBV/t1+JH+YrnYDJZlQwpXT5mr+/GAOnN8H4vY0R
+	zx5yBJ1q2+7NhG6euaSFblSci2L375FT34wJLLNcAaMEtKZFXKntK+9GY+EwFo90ESCurWFANGq
+	SvHeUDSgBpkt6227UZr27P9M6Rsx0DVNg2QR52YgPPS1LoXO0ppKezPYEJBhtmpIwWaw2tGAAR/
+	jXQO16Pq6exmpG+GKFXINlpBv+VOD5Yy2V7uG4QaZd9gnI3O11CFfCHB2PE324sKQyF4vMlIPNC
+	EQCYy7i6wa3Ld5O08ityK2+WmfNxQOC4We+xh4203SwGTExCNhPQjW+VpS6xPC87Ug4mUjSYL9c
+	I26jJwOQkROg6CI68D1mqY7CJC51SF37UUnamzZmPIynUZrXsoTZL4SAMbZo2bF1S9kgNchk0s+
+	Fj+C6nxh3vlVZuHVXB1HAANg==
+X-Received: by 2002:a05:6808:2507:b0:496:dfe1:e8ce with SMTP id 5614622812f47-4a42af91aeemr7105476b6e.22.1783980066993;
         Mon, 13 Jul 2026 15:01:06 -0700 (PDT)
 Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a1acc82f3csm12939785b6e.3.2026.07.13.15.01.04
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a1acc82f3csm12939785b6e.3.2026.07.13.15.01.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 15:01:05 -0700 (PDT)
+        Mon, 13 Jul 2026 15:01:06 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: andy@kernel.org,
@@ -71,11 +71,10 @@ Cc: andy@kernel.org,
 	krzk+dt@kernel.org,
 	robh@kernel.org,
 	andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: [PATCH v16 01/10] dt-bindings: iio: imu: icm42600: Add mount-matrix
-Date: Mon, 13 Jul 2026 16:58:31 -0500
-Message-ID: <20260713215842.69097-2-macroalpha82@gmail.com>
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH v16 02/10] dt-bindings: iio: imu: icm42600: Remove interrupts from required
+Date: Mon, 13 Jul 2026 16:58:32 -0500
+Message-ID: <20260713215842.69097-3-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260713215842.69097-1-macroalpha82@gmail.com>
 References: <20260713215842.69097-1-macroalpha82@gmail.com>
@@ -89,28 +88,27 @@ Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-Add mount-matrix attribute to schema. This attribute has been supported
-since the first revision of this driver, but was not documented.
+Interrupts are almost never required for IIO devices per upstream
+maintainers. Remove interrupt as a required parameter for the
+devicetree binding.
 
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 ---
- .../devicetree/bindings/iio/imu/invensense,icm42600.yaml        | 2 ++
- 1 file changed, 2 insertions(+)
+ .../devicetree/bindings/iio/imu/invensense,icm42600.yaml         | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-index 119e28a833fd..9b2af104f186 100644
+index 9b2af104f186..f6f97ea03038 100644
 --- a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
 +++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
-@@ -53,6 +53,8 @@ properties:
-   drive-open-drain:
-     type: boolean
+@@ -67,7 +67,6 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts
  
-+  mount-matrix: true
-+
-   vdd-supply:
-     description: Regulator that provides power to the sensor
- 
+ allOf:
+   - $ref: /schemas/spi/spi-peripheral-props.yaml#
 -- 
 2.43.0
 
