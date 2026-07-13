@@ -1,66 +1,41 @@
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galaxy.gendns.com (galaxy.gendns.com [66.235.175.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC9392D97B9
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 14:12:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0782F1FC3;
+	Mon, 13 Jul 2026 14:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.235.175.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783951950; cv=none; b=S6jpwWIH5njCi/pj4HyCYEpH4ajcdzItxya8Z6Rj04gDp95glchpS+nLKBn6w5+Kdn/F17qj9ThyP0aHjpUTPv1qOviOvj7YSwMQtK90FOMGgup+/tYYYDt9tqP0b9e4KGnQuRhZs1uPoItyyhM4ddqtcA8KzmoMZL5v2eZ+WVU=
+	t=1783953917; cv=none; b=BNKUzqvaOKxujMRh8zsbC3/iCkQDy/Gvuoy8BOtc3Cy23uk5d1PCx6fu1Xjf4WxOGdFRGxiLZ+EkHgYeBfislf+zyWSgEHUNtqZPVsfB4OQB3Mig83PoHi+PV9CnnXuHCgIXmq2U98vpGXlAd99DEzpRo3fwzSHqcnEA9ziY4oc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783951950; c=relaxed/simple;
-	bh=2b7fv8aufK/PjWj6/63cjc8IXdamL9WFwe43EH+MRe8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NTwz7MoiC8tfgGXDpk62tWAX3ETyFjk0tsaWruGMdl/9VQAh3sBeepCLIgmqFzFP3TP4NBuYOrjufBN+u3zuzC+Sp2FRbxfgwCCdigKwV0Df9xCbyu6yCgL0ffg4It9M2kqzxsOXZOoiRre8mzpGBqsfVzO4PcQDjopc4JmqeE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WGjWov8M; arc=none smtp.client-ip=209.85.160.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1783953917; c=relaxed/simple;
+	bh=jpyz5hAbwlvRRPo64MfFZ81i18i8D734nmZ6CUH9lvM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=RDk6ooPKTnW8IqUzKY94n0LbDIA1afgOqWDkHDwzBt49IYGxEmukETazgVAeyYbO+Ljr0KgAaHKsMAU5qzk54SC+g9/gscpf6hEapV+nPZqgQj1nxbdAXNllOA5WN57WnDU3+k6QJ8/9xv7iea2Yl5V3cfq+i+TItR23ZhEAG6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=kPRts+KY; arc=none smtp.client-ip=66.235.175.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WGjWov8M"
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-44ae264a785so1845646fac.3
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 07:12:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1783951948; x=1784556748; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=W3ffx1ARFvGTVEwrbNuoxCUBdpz3Gg80806XEMXu1NQ=;
-        b=WGjWov8MxergdieubyhsFgp+T9AKHKSanbLOPKjmcil7Q3lkOdumUyHenjHuM54hRJ
-         iBwmi+YGwq9QJwhRBA3YOWZjN7uq7Kn0i5GCjLGg8bM7rbJEZARmVcFFu7RVB3ZC+fVq
-         RtwLpnlxy28JIurwGsmC921uTucKo+ZqmcyBmoxJAZ9tPUyIMsst0tAEtrufEYmv4CWo
-         y9t+ouRGd/1pSEph+kFRqOziK+efcjYWBIwOsROyEkfwIc1UzBbqhjRkLs2+BfQJVMCW
-         uod9mn5KE76qbnX1pYJ9jWjTmtvwsm8lnY6x5F3eLYXjBhbdIOtqLxnDc3qcPfi9IDpe
-         xAkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783951948; x=1784556748;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=W3ffx1ARFvGTVEwrbNuoxCUBdpz3Gg80806XEMXu1NQ=;
-        b=H/NPAXJVg35QmY9tTUzOtyzW+QeH7wNf0rDR12c/f5mvgw+CZux1XYtr048IECXtNS
-         4hGQxSY7+DtotEuYhJEFNyXaMxWGn1x9AMTdh1My+wRtBKcoLoRl0LiDOs1Mi/sxXFDo
-         TE5wVEvvazd/FrWL4TTIAuwQNNfBw+v3XrBkaIP/mqEXCKySFW+KIMP2847OEZfnGvBq
-         MM3H8em/0MXx/MDjUoXtG2fdN3lT1fXuFgTtgg84qNPAkMDXNHAFQ2ldIW4HKbUd7FUe
-         Eo8guxp9bTmjw5jKQ+NlyczZQ9OCglXTJp3CAEaS8SxDpvL5kMuxc6PHfFng3MBCV8ep
-         WJWw==
-X-Gm-Message-State: AOJu0YwlKk5Ye7s5i6Q/GI6PFY1XhwsaXg5S4uq/LfNwTs0eN6YArLsV
-	URrAz1dVJ2WAo4LpjkPwoSuCZpoMesfdLMRkWAZEbx8TlJ4IMgDezbrgznU7LsRbI3Q=
-X-Gm-Gg: AfdE7ckN/hwTlc1u7FNlEEyuY3Rmf4Y1eG0IIThpsmNMb3tJxsVVAaxHMKzdgllW5Dm
-	M6piH4Y5Z/NWAESbhOjidGILAy4ke0hokuxl7XxlrjGnYB9v3FsVL7Ejf1jPSzJZS7Wmt1BjzsQ
-	GQ2UJ3h6GTGLrBrxdj358eX/21oIOXKXYAs8TR3Fo9rj/dDY3hAQFKX1pk+IG726KzwFw4i5Iif
-	Elu73RbR1O7RjJsxSTm4aF6cP5IPldV0d58bcKGa1rC8JkQkrK1kcIZNZxELrb6eMdiv3tU3+uH
-	4WufMNYJYODHhgGxaMVDGSiJUhbbFW3ipstW4JIqTo4U7yb5Tm/pQbilyVEydwdBjkswQta8eiS
-	nXHO/wkO67dI7EoM+6WKIvB1m6D4bjrJ33zXj18EvjLjRpbSxIkh0EbWbx3PTBwvvwHeeNb8+3T
-	UUwoDUEefcGrBEwpdfJkZEFyJDS/t1TyCy55ueYa+3YwXG6A0EcmjSkI8gd1kOWas=
-X-Received: by 2002:a05:6808:23c9:b0:495:f104:d898 with SMTP id 5614622812f47-4a42af2764fmr6846857b6e.32.1783951947703;
-        Mon, 13 Jul 2026 07:12:27 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:610b:e45c:5e0c:e14b? ([2600:8803:e7e4:500:610b:e45c:5e0c:e14b])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a1acc83099sm12046117b6e.2.2026.07.13.07.12.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2026 07:12:27 -0700 (PDT)
-Message-ID: <587c6cb2-0f43-471d-9711-5be91600b603@baylibre.com>
-Date: Mon, 13 Jul 2026 09:12:26 -0500
+	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="kPRts+KY"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=INl0jiwqDhGPDETixMKefTqug/oQonC2CS+nvIV3PMw=; b=kPRts+KYZ26uj+aJUVDbW7uRza
+	+0I25symShHRG3ruTSswL+FzNtvluFi5NQsWI1E8OXGFttK+9GxIdozY4NeQTVAsP1WxAwYayp9ob
+	Hg6Mdizci/iITZz4u3rn6aRLLdLz9DhiSSH6S67qzrL/D6fTfeTVAgGINn2kP9Ll2gEygQnrsymaF
+	ugdGgnph3xdTbOD6X/0pbpoY+1ls3AyZetYdg/vG32hKD7/jDETDQTy/ChVnKH8lmjlxFn0Rc8PSr
+	QOKCcnuEmoz0/XR9H+qKMDWFxEu70o3qIZyJeAlbNpKJ8wIgmDX52z6IjL3f+BUKV+cWj5PwUrc/Q
+	BDA/zUPA==;
+Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:52858 helo=[192.168.1.142])
+	by galaxy.gendns.com with essmtpa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
+	(Exim 4.99.4)
+	(envelope-from <david@lechnology.com>)
+	id 1wjHVy-00000009aEK-0hNn;
+	Mon, 13 Jul 2026 10:20:09 -0400
+Message-ID: <1e330026-cd09-48d5-9478-4cff59f521e0@lechnology.com>
+Date: Mon, 13 Jul 2026 09:20:07 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,38 +43,87 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/3] iio: adc: Fix incorrect reading when datarate
- changed in single mode
-To: Jonathan Cameron <jic23@kernel.org>,
- Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, antoniu.miclaus@analog.com,
- conor+dt@kernel.org, devicetree@vger.kernel.org, duje@dujemihanovic.xyz,
- jishnu.prakash@oss.qualcomm.com, jorge.marques@analog.com,
- joshua.crofts1@gmail.com, krzk+dt@kernel.org, linusw@kernel.org,
- marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
- mike.looijmans@topic.nl, nuno.sa@analog.com, robh@kernel.org,
- sakari.ailus@linux.intel.com, wens@kernel.org
-References: <20260711184414.1013686-1-jakubszczudlo40@gmail.com>
- <20260711184414.1013686-2-jakubszczudlo40@gmail.com>
- <20260713022040.146555b6@jic23-huawei>
+Subject: Re: [PATCH] counter: Remove redundant dev_err()/dev_err_probe()
+To: Pan Chuang <panchuang@vivo.com>,
+ Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+ William Breathitt Gray <wbg@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Vignesh Raghavendra <vigneshr@ti.com>, Julien Panis <jpanis@baylibre.com>,
+ "open list:COUNTER SUBSYSTEM" <linux-iio@vger.kernel.org>,
+ "moderated list:ARM/STM32 ARCHITECTURE"
+ <linux-stm32@st-md-mailman.stormreply.com>,
+ "moderated list:ARM/STM32 ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:TI ENHANCED CAPTURE (eCAP) DRIVER" <linux-omap@vger.kernel.org>
+References: <20260713131005.306069-1-panchuang@vivo.com>
 Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260713022040.146555b6@jic23-huawei>
+From: David Lechner <david@lechnology.com>
+Autocrypt: addr=david@lechnology.com; keydata=
+ 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
+In-Reply-To: <20260713131005.306069-1-panchuang@vivo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - galaxy.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: galaxy.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: galaxy.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On 7/12/26 8:20 PM, Jonathan Cameron wrote:
-> On Sat, 11 Jul 2026 20:44:12 +0200
-> Jakub Szczudlo <jakubszczudlo40@gmail.com> wrote:
+On 7/13/26 8:10 AM, Pan Chuang wrote:
+> Since commit 55b48e23f5c4 ("genirq/devres: Add error handling in
+> devm_request_*_irq()"), devm_request_irq() and devm_request_threaded_irq()
+> automatically log detailed error messages on failure. Remove the
+> now-redundant driver-specific dev_err() and dev_err_probe() calls.
 > 
->> When device is suspended and it is in single mode then changing
->> datarate doesn't make it actual wait for new measurement, so to
->> be sure that read after change is correct functions that changes
->> datarate and gain will wait for new data.
->>
->> Fixes: 541880542f2b ("iio: adc: Add TI ADS1100 and ADS1000")
->> Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
->> ---
-Just noticed that the subject line is missing ti-ads1100:.
-
-iio: adc: ti-ads1100: Fix incorrect reading when datarate changed in single mode
+> Signed-off-by: Pan Chuang <panchuang@vivo.com>
+> ---
+Seems OK, but probably be should be split into one patch per driver.
