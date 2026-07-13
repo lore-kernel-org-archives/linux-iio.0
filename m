@@ -1,262 +1,135 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 244A43EAC80
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 12:06:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A72BD19E968
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 12:16:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783944411; cv=none; b=O8IraQGWQBvBgG6p78B2BhvC6rKH2FE+KAUvP0ukilbbk4QviF/x+MupLI1F4K6XgTY9qEO8umZAQHXTyqINZSUnlqeGqx950vH47fTUUJdB1ZfGW6kJtP+v/OEp29peDCvAqeA17nAxmAyfzX0dSoeuFSGEEgAnV9ZhNWhRcck=
+	t=1783945007; cv=none; b=WNvqhi4FAP5do/e52a8vTMyA+NA5O9QnBU+THC7jweWebisJn3edOeEL9yUE2l1APcSSfLAr8sOoj/VKMpEpfKsFN0OGW+k1d1J1H8x9T/t+6kA1JXinTQm5ECyhM3JjJ+Jzy7IIXCz7VHsI4cZkHce3YgqFENu5/gGLip7RmRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783944411; c=relaxed/simple;
-	bh=ANd2Bx0+9L7pMxZpVmv6dUN/nLNpoY0lPSoklF2AQ8s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PMMLpXhk8kplehsOtKGWQD8t/WJ9tSpIjF00ienzw6kehN/VVZB747rEFhyJ6LfmEQLDyD5iIhEdUkswi9eSoB6XTwEz5n5BpPUwG7wDB3dMm87fFr0yszJhKXiNlSLrGuLzyw/AWkLKKdQsgJkyR9mn6MqbmkZ6YrGPnviXqNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hSn4nbhb; arc=none smtp.client-ip=209.85.214.176
+	s=arc-20240116; t=1783945007; c=relaxed/simple;
+	bh=9DwY0EWtvrVt1E3O4Huj4v9hsG6tbLqt3e/DEGmfUW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gIcESkw/ALNC2fl1weMQ/kdmGekPJXFZZRN3ZhTeVPTX48zTkGx5Nx7QR/IsFRUJPEE3WIfABcsVWiUxNqIO6ImggwQb7n0aezOP8jfqJ7IAKUr8MxdG/OF4KK665CjOvfzS05T4OH5G6NXj86gSoUpBjVZ+92ysA+WrdFIwDDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D7IJIvnj; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hSn4nbhb"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2cca0c5799eso30578005ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 05:06:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D7IJIvnj"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-493f75f7172so18796765e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 05:16:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783944409; x=1784549209; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oiBB2AvjwEgMU9ZBqIUAymdVhyVC0dkURlNDosko2JY=;
-        b=hSn4nbhb381bh4UouhkYV8Ba6UMJsHGqCo8FKANQ53AV683bfxiGeUjZYKddhv/Lqi
-         rrmNNEwbrKAMZ88VNANlO2l+urZhTjm8dum+lrlpNbNAcGweyMT223PV3idAqdXooX4s
-         RdpHlEzzLyOxH/oRJLM2Zl7pfnDlu1fDbvCVByLl1hVwhrkneYspDDSucVJg/xa5ZO2v
-         HBesGQDmobmXHG0Z6NvhXtUG5yOSFJj2s01bgDtaV+JJEMETd7gvQCcKrTeXJpN7cZiY
-         X9iSNR8DHVSrc8Lelj5lQoHVUJFcoXhXfDVe1p6l4JmpaANxwIUFqTJQ5hOGq0o67Y2p
-         Y4Jw==
+        d=gmail.com; s=20251104; t=1783945004; x=1784549804; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=iqqJJ9FyIGtHtJDiES6lZUsG9C5zMY/mppk79Od2qqo=;
+        b=D7IJIvnjyy1cahE85bOdMunnOlUq5dtD8Z83kJZ1seWHbjBzHSYcUWSPC4mEzRyqA/
+         +ADYlZwGZibQWZ5w3njQPnbe8DAwuxP7GmABb8nE7qP0ejmQDzSw+Q+DTypU7o+fvIKM
+         /86d+WlSqwlQWDcq59IDr0hqKAlT0mP/NP8yKb1huUJa2Fze75umcHuGOW/IF9oU40t9
+         YPyWYRskMBAc/471DOwDUZ0wILcdGgZr6A9vteq5pC9I8SXOwW0FyXIv+hfthA+lRq5/
+         Hya/GP5sKFmGBha9E450nuw6OSLbmTX+dl41u5WdnDb5GSmirbzxIE1fiQG5UzzYbJEE
+         uzLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783944409; x=1784549209;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=oiBB2AvjwEgMU9ZBqIUAymdVhyVC0dkURlNDosko2JY=;
-        b=H86TKN7Rbg2/nWFREILKMNwAKCdouNC28KDjoxB4mthpJqacpLFx17ho0KXBh0/h9k
-         CdMGCJ0VX0vBM3EKN2i9jGQolr7FwWbG9tgqD1nKfCyyvmE5tnYydzymfO7iX9pFVAfO
-         053Zz1LaUYGoWDrfdYkvlj9bCfabwh+YGVj4ZUEqX8qceSsIdPT/fAe6hlqkFMsyHGvT
-         tRoXdb9vBIwaiAz/zga1OWV1lQ1SnAyW8/sV+7vApQwXfhOG397/zfPQzaGENeq9hkQ5
-         nnxLUWb09svl4u68qEeIqo4TIafFsxx2u25LH7jcr0yQCKhnJ3aUWmrufNQESvPR4S3+
-         3VjQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqsQsWN1nDNpacLywJpvoXZoRflW2624CaIGwEmRbCjctP2kBqtScD/J/4N3U7u/oQqw7cODh0fr7I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzj2PnHp1NLRpx05UJ8kVgAiegsj0w8b/OWjl0DqATwto0VOIuL
-	rpL8Xu/a07j0Ph8g140YbwfxOqs2DE8HxR1FY12hrVteOcqtJEAdWISK
-X-Gm-Gg: AfdE7ckEoRoCvLCyrjrP1SrfI2oHN0wTq+UjrN/ldkOq6EGqAwqUFHptD+eLz1qfeyi
-	kx5iAGcsVw102iChgQ3I2kjkK03pZNEaV5qV+Jcunuq83EwTapWBbDcXtVK9tIIFxesourtEQXS
-	1O/ZbRIl0HXyMtsi2tHveC2hnkslQSzlW45EG4psFxyNJa0q+l4Ed9RSL+TOdoKNxC39vf/i++m
-	ybSpfbCLeYaxJEShx+W+cch7r5Q2E2dEeKgWpqh4YU6xG8yrUVc6sq5OTwUeb/TR1cDE8GH3z/P
-	jMYlezcnXnt1Aw9KnyQNAy883L3i2JnzuZ1JV1qo7iTU3VT6NMlekQMlq6FnPL+dkYPHgkVl3uH
-	hae/+bUtZt6rWQM3Zo1ud6KMcoS2hPVDIi1xowjUSafwe7h9127mNHpwAo6aNsEhbV5xEgY12rN
-	CuAAmRd/37CYaYX+oH3v1OQfxrHSCu4izKCfMtUih75eRSt1fGDsYfNn4Y/Jo95o8c
-X-Received: by 2002:a17:902:ea03:b0:2c0:e2ea:6b0c with SMTP id d9443c01a7336-2ce9ed181f6mr82457095ad.21.1783944409251;
-        Mon, 13 Jul 2026 05:06:49 -0700 (PDT)
-Received: from [172.19.1.42] (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9d1e1aesm99687915ad.39.2026.07.13.05.06.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jul 2026 05:06:46 -0700 (PDT)
-Message-ID: <cd0aa9c5-6e24-4b8b-92d1-630cf47b066b@gmail.com>
-Date: Mon, 13 Jul 2026 20:06:42 +0800
+        d=1e100.net; s=20251104; t=1783945004; x=1784549804;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=iqqJJ9FyIGtHtJDiES6lZUsG9C5zMY/mppk79Od2qqo=;
+        b=KMPC9yy03vUmfx+v0nMQiSFMJ/CvoLyMfaaKscPL8DrsHrhE/ouch2aZIXeCL0eLQ3
+         Qenrk4vbHvQVJG5sSOfWUY/5AhfzZX28P/ScYlMQgGEboDs4tprcO/52sXatMbpjYFIj
+         ziiSnR3kQ55fYoaWmYr7xe1k2QHfMU+tMl8J3+GDm+lTPurPZqIeyl3Gf7PeAXS56OFW
+         qcnXJ3jIQH1+kikzD/usE48XsYO0yAG4xtRrLMi8inNIOFlS65d54AJoQCIPcWkRF4N3
+         hybQp5k7Oh9swEtupC+Dlk80b8RNOysC8tLtBMVE0hjYriwXmt/0Coz7DkFNKVpExsJk
+         yJiA==
+X-Forwarded-Encrypted: i=1; AHgh+RrIKbEAZWRhSIYTJKsTAazs4zBeB0+0RYMIUe/ZGOfshzBLehX6imjKNaO4YqOIfJsldcSal7mafCs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwEf6JXQaxVrO2iOaoNl96Unoefb8v7FmKTo+8O4T5QvLmalLwI
+	ymbn4FLZzM+bNBOc6M7X4HETqP/0fSZplLrD8RHyQq/Ejm6ZLmMiJ4Sx
+X-Gm-Gg: AfdE7cl39d7bB2dXHj34v2wkWD/kJssv+MZm9p+zTuaRyF8BhHKFXAjgUwg/sdWQQYw
+	Xlr+EPD20CW1vrWtoPEv5uD7gRjFb6kQcBru3R5AV4AxcyxcCobNHGFkXiIH5kbMxCJj9YfR62O
+	fFCYQGT+04BCWaNrpYT7g6tleJCj66vEYDMEsgOiVEGIz4osIXAkFU6nm9WH2y41jC8M1n00q97
+	RMrF9uMjL0bh7Co5Mmvb83knxI+EAfongkmrQFvfDWZ/8V2E2UnWZ6vBDdeu4a8sQ7LORxWFtL/
+	JtTa2VteKNbM6PRCRTnnwnqZEw2OzUlkUVSbRcgwI2ockpBxhprzc71pEPIAJFGegyfk6t5y3L8
+	dv7C0MjQQ4izmc7rWD/mqiN78gRToieR+2ZGE59R5zftCO7dwEJIqXKSd6KsF0abGw2mDS7+eWc
+	aMg15Cjx42l/VSVNOXN01wWjnR09EZLua9Bc8FbKIumrDma9+emPjLlkSn4rNYVX64pRjaHzPP7
+	jSXGmyeyfHP0aY6EA7U6SpFPDi5gUE43qU9YOWB0Y1CBIoHBwm1RG8J/2jn2tOTJHbwsmj9dhnM
+	b6cw5Qzek8h5H3puUY1Hm0iRiyPa5akasW61QfelVPDxODvyuShtqH0x8Gz7kqVaDOD/wL34tXz
+	+ANnGF5fW+Z/B2ylpuOc8J7I=
+X-Received: by 2002:a05:600c:4746:b0:493:e034:a3b5 with SMTP id 5b1f17b1804b1-493f8818cb0mr99609145e9.24.1783945004024;
+        Mon, 13 Jul 2026 05:16:44 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493eb73b161sm323603485e9.9.2026.07.13.05.16.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jul 2026 05:16:43 -0700 (PDT)
+Date: Mon, 13 Jul 2026 14:16:41 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Andy
+ Shevchenko <andriy.shevchenko@linux.intel.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Siratul Islam <siratul.islam@linux.dev>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>, Ciprian
+ Hegbeli <ciprian.hegbeli@analog.com>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <20260713141641.0000027d@gmail.com>
+In-Reply-To: <20260713120226.90303-1-stefan.popa@analog.com>
+References: <20260703102941.1141341-1-stefan.popa@analog.com>
+	<20260713120226.90303-1-stefan.popa@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, cwweng@nuvoton.com
-References: <20260713081127.115197-1-cwweng.linux@gmail.com>
- <20260713081127.115197-3-cwweng.linux@gmail.com>
- <alTJPExu9b3lRtx_@ashevche-desk.local>
-Content-Language: en-US
-From: Chi-Wen Weng <cwweng.linux@gmail.com>
-In-Reply-To: <alTJPExu9b3lRtx_@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Andy,
+On Mon, 13 Jul 2026 15:02:24 +0300
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-Thank you for the detailed review.
+> This series adds support for the Maxim MAX40080, a bidirectional
+> current-sense amplifier with an integrated 12-bit ADC and an I2C/SMBus
+> interface. It measures the voltage across an external shunt resistor and
+> the input bus voltage.
+> 
+> Why a new driver (Andy): No existing IIO driver covers this device or a
+> register-compatible part. The closest relatives (max9611, max34408) target
+> different silicon with incompatible register maps. The MAX40080 has a
+> unique combination of bidirectional 13-bit current, 64-entry FIFO, mandatory
+> PEC, single-measurement mode triggered by SMBus Quick Command, and two
+> selectable input ranges. See the driver commit message for the full
+> rationale.
+> 
+> The datasheet link is in the binding YAML description.
+> 
+> The driver operates in direct (INDIO_DIRECT_MODE) mode. Each raw read
+> triggers a single on-demand conversion (SMBus Quick Command) and reads
+> back the matched current/voltage pair, so results are always fresh. It
+> exposes the current and voltage channels with raw and scale attributes,
+> a configurable oversampling (digital averaging) ratio, and PEC-protected
+> register access. The two selectable current-sense ranges are exposed
+> through scale/scale_available (the range is chosen by writing the
+> desired scale); the current scale is derived from the
+> shunt-resistor-micro-ohms device-tree property.
+> 
+> Continuous FIFO buffering, threshold events and the alert interrupt are
+> intentionally left out of this initial submission and may be added
+> later.
+> 
+> Tested on hardware with four MAX40080 devices on an I2C bus.
+> 
+> Changes in v2:
 
- > bitmap.h implies bitops.h...
- >
- >> +#include <linux/bitops.h>
- >
- > ...so you may drop this one.
+Please don't send a new version as a reply to the previous version, it
+breaks people's workflow and tooling! (tools like b4 may get confused
+by this).
 
-Will do. I will drop linux/bitops.h. I will also drop
-linux/mod_devicetable.h since platform_device.h is enough here.
+-- 
+Kind regards
 
- > Please, make all register offsets fixed width, exempli gratia
- >
- > define MA35D1_EADC_STATUS2        0x0f8
-
-Will fix all register offsets to use fixed-width hex values.
-
- >> +#define MA35D1_EADC_INTSRC0_SPLIEN(n)    BIT(n)
- >
- > Useless? Can't BIT() be used directly?
-
-The field selects which sample module raises ADINT0. This initial driver
-only uses sample module 0, so I will replace this helper with a fixed
-named bit for SPLIEN0.
-
- >> +#define MA35D1_EADC_INTERNAL_VREF_MV    1600
- >
- > _mV (yes, as per SI).
-
-Will rename the macro and field to use _mV.
-
- >> +#define MA35D1_EADC_REF_STABLE_US    1000
- >
- > (1 * USEC_PER_MSEC) ?
- > If go this way, include time.h for the multiplier definition.
-
-Will change this to use USEC_PER_MSEC and include linux/time.h.
-
- >> +static const struct regmap_config ma35d1_adc_regmap_config = {
- >> +    .reg_bits = 32,
- >> +    .val_bits = 32,
- >> +    .reg_stride = 4,
- >> +    .max_register = MA35D1_EADC_REFADJCTL,
- >
- > No cache?
-
-No register cache is intended for this MMIO ADC block. I will make that
-explicit by setting .cache_type = REGCACHE_NONE.
-
- >> +static bool ma35d1_adc_valid_diff_pair(unsigned int vinp, unsigned 
-int vinn)
- >
- > Wondering if this is just
- >
- >    return (vinp >= 0 && vinp < 4 && (vinn == vinp + 4));
-
-Yes, the valid differential pairs are 0-4, 1-5, 2-6 and 3-7. Since vinp
-is unsigned, I will simplify this to:
-
-     return vinp < 4 && vinn == vinp + 4;
-
- >> +static int ma35d1_adc_set_bits(...)
- >> +static int ma35d1_adc_clear_bits(...)
- >
- > What's the point in these wrappers?
-
-There is no strong reason to keep them. I will remove the wrappers and
-use regmap_set_bits() / regmap_clear_bits() directly.
-
- >> +static int ma35d1_adc_setup_reference(struct ma35d1_adc *adc)
- >
- > Add a short comment with reference to a datasheet table/section/et 
-cetera.
-
-Will add a short comment describing the REFADJCTL/PDREF and VREFSEL
-settings according to the MA35D1 EADC reference control description.
-
- > With
- >
- >    static regmap *map = adc->regmap;
- >
- > this becomes ...
-
-Will use a local regmap pointer in functions that access several
-registers. That should make the code shorter and easier to read.
-
- >> +    ret = regmap_update_bits(adc->regmap, MA35D1_EADC_CTL,
- >> +                 MA35D1_EADC_CTL_DIFFEN |
- >> +                 MA35D1_EADC_CTL_DMOF, ctl);
- >
- > regmap_assign_bits()
-
-Will use regmap_assign_bits() for the differential mode bits.
-
- >> +static int ma35d1_adc_update_scan_mode(...)
- >
- > This is interesting check...
-
-I will rework this to explicitly accept exactly one IIO_VOLTAGE scan
-channel. This avoids depending on the last bit found in the scan mask.
-
- >> +    guard(mutex)(&adc->lock);
- >> +    if (adc->suspended || !adc->scan_chan)
- >> +        goto done;
- >
- > This is usually leads to a mess in the compiler...
-
-Will fix this by removing the goto from the trigger handler and using a
-scoped_guard() block instead.
-
- >> +    chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- >> +                     BIT(IIO_CHAN_INFO_SCALE);
- >
- > Broken indentation...
-
-Will fix the indentation.
-
- >> +static struct iio_chan_spec
- >> +ma35d1_adc_timestamp_channel(unsigned int scan_index)
- >
- > Useless wrapper. Just put _SOFT_TIMESTAMP() in place.
-
-Will remove the helper and assign the timestamp channel directly using a
-compound literal.
-
- >> +    if (!num_channels)
- >> +        return dev_err_probe(dev, -ENODATA,
- >> +                     "no ADC channels configured\n");
- >
- > I would return -ENOENT...
-
-Will change this to -ENOENT.
-
- >> +    channels = devm_kcalloc(dev, num_channels + 1, 
-sizeof(*channels), GFP_KERNEL);
- >
- > size_add() ?
-
-Will use size_add(num_channels, 1).
-
- >> +        differential = false;
- >> +        vinn = 0;
- >
- > Make it an 'else' branch.
-
-Will do.
-
- >> +    adc->vref = devm_regulator_get_optional(dev, "vref");
- >
- > It can be unnested:
-
-Will unnest the optional regulator handling in v3.
-
- >> +    adc->vref_mv = ret / 1000;
- >
- > (MICRO / MILLI)
- >
- > instead of plain 1000.
-
-Will fix this as well. The regulator API returns the voltage in
-microvolts, while the driver stores the reference in millivolts for
-IIO scale reporting. I will rename the field to vref_mV and use:
-
-     adc->vref_mV = ret / (MICRO / MILLI);
-
-with linux/units.h included, instead of using the plain 1000 constant.
-
-Thanks again for the review. I will address these comments in the next
-revision.
-
-Best regards,
-Chi-Wen
-
+CJD
