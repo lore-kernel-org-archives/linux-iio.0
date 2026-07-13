@@ -1,45 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE91E1EF39E;
-	Mon, 13 Jul 2026 01:05:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F9813B5B3;
+	Mon, 13 Jul 2026 01:12:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783904705; cv=none; b=V3WMCTb6mKGNxzTKKgB0En1p+V1AOm+ivz9bdR7vxRuSCwKvQIWjBsAOeIh9K6ScMutt26CLNSWC5nuCHQll4D1dQq/mIMB29L1LAsaEA6lXcOh3DgLAuRlbvf/yiF01qdpQrpSFzUCZUIOPw+SauKDdoqVeGCuVBrVGiegYw10=
+	t=1783905138; cv=none; b=qMEtuuEJNrWGt6sD6XCKHgDlxlSxovKsibAGBMSUd7VYsuT2+8lt112gMvvMCesaoAYXu7KwBojlbfhoeZVJruGsk92SVydL6hKSHRkkK1KrrKETtthEuF9UAzuEgg3Q2qddnv0t1gBgstjGU20JwPz+H2sAc6SAkgpLSZ9L3Wc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783904705; c=relaxed/simple;
-	bh=WgukX1UPnsQgJpG2qB3spwiGdfRW+FIjEvBZUvyME8Q=;
+	s=arc-20240116; t=1783905138; c=relaxed/simple;
+	bh=u9SDqKvrlnMY82JDbnD9khiGodRQTChxzUQJ3PoM+/I=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IxVtQ4ZXlSqVYRrDaKy2b69AZ0LY5nZZsn7uJCE9Sky+hZc7ufvcTV9/tHWvymGfOZjpgiTU/0ObB8Lf7fUO5NuLMljPTYOw+ZF36qFuXXd3HGvGQG8KSOwO6xszTuwqhcDlqFqKIOe8D3/wZG4RVzI3Tf13Ixe/G/DDJX2L8tM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oU2c+llw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=hQbgzg0W9ZLIk/5L+jtOGjRGwo+iXkxFVfq/B0S3YXCvHEzXnEbTKVSSaWXIi4tbyUywPPqJEIqkAfmrzh5CqxuyFEqD+YM7O86JnfQjcpDXr3lYwpju8LIsevXssi5viho86wUYsEMR9VZiE73eyFSXM6SqwWKiKgSXiQOETsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NMbc6yya; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oU2c+llw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B5E1F000E9;
-	Mon, 13 Jul 2026 01:05:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMbc6yya"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97BD31F000E9;
+	Mon, 13 Jul 2026 01:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1783904704;
-	bh=5zg1qxigCsPbFFCR7I5H4EX71Kv1wpD7/t+I30aOc4Y=;
+	s=k20260515; t=1783905136;
+	bh=SjHSeeF7vUQ5X6MLMCggjMuDp75OzmSjcIL2grGv3oQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=oU2c+llwFoADCu7l6wEP0Js4wzWYuSmjm6/Hj9UJ0IlcF3fEldwNwXV/KQPWh2IF6
-	 VNH3865HFCz24LC86nO/zrpdTp0sU8o6Klxg1er+dVqHEUZxIPhSlixEfGFoSdK7MY
-	 SXEscNk6RQTJUd6s+13BpI7gvqLZLeIvbGBuNHmH1bzL51KdkPHpPylGCIkaG/9VHY
-	 Om66bSbVZeB7NeyIkPCjG77ZVDNW0PzQoNS3GhoBR9AtTXvy8Ao0uCRmtaEPhuJ+z8
-	 MHON4ZRf6yzUHpyRnY23Wv2+rtMcz01meQAmnP6HyeMXR7KMTYiq6JQeUXYqZ2zVBg
-	 /B9mjsJiwE+7Q==
-Date: Mon, 13 Jul 2026 02:04:57 +0100
+	b=NMbc6yya+P/o+sY3VXKgwU7y12k+tXVixWH5VjF5lwJHAUd70JiTOzqhdi/FbpOxw
+	 AX5vgwrhunfCaRV3lw2WZfnzpEqCrFRP6Y/YNwtXR9zRXDTvluUTfxKfD1c6VOl4iG
+	 9thpADgtULzLbrkcIPf/EiiAz53ph4d3qBa1KdrNAcfmkxJqbc1zkjm+nDeM3UdOsq
+	 E+SqHKw4XtMeGCysQIT+TfTy2Yorie4YUsY2Qg+0WQ6oB8WOpSDWMgXUImLb5KSUQ/
+	 SxVXWqQ8UOoy0uPapdWhxnsSfC5XGuz78FX5khWZJ1g8VE/dY0RPXgT4iLB+VHbvu0
+	 wvHW/zGBsescw==
+Date: Mon, 13 Jul 2026 02:12:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: light: opt3001: split opt3001_get_processed()
- logic
-Message-ID: <20260713020457.242e3f40@jic23-huawei>
-In-Reply-To: <20260712183825.1f3dcf30@systembl0wer>
-References: <20260712-opt3001-unwind-cleanup-v3-1-5fa336876b08@gmail.com>
-	<alOdn0m3fbznqqDm@ashevche-desk.local>
-	<20260712183825.1f3dcf30@systembl0wer>
+To: Biren Pandya <birenpandya@gmail.com>
+Cc: linux-iio@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v4] iio: accel: kxsd9: fix runtime PM leak in write_raw
+Message-ID: <20260713021211.1fb3e5b8@jic23-huawei>
+In-Reply-To: <20260712083106.97429-2-birenpandya@gmail.com>
+References: <20260712083106.97429-2-birenpandya@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,37 +43,93 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> > > +	if (ret < 0) {
-> > > +		dev_err(dev, "failed to write register %02x\n",
-> > > +			OPT3001_LOW_LIMIT);
-> > > +		return ret;
-> > >  	}
-> > >  
-> > > +	return 0;    
-> > 
-> > Also can be simply
-> > 
-> > 	return ret;
-> > 
-> > in both branches.  
-> 
-> Yeah, I agonized over this since I did the change you describe in a
-> different patchset, and I was advised to do it the way as I did in
-> this patch so that it's more readable (i.e. we know which path is
-> the successful one). I'm really indifferent to either change and it
-> doesn't cut that many lines.
-> 
+On Sun, 12 Jul 2026 14:01:06 +0530
+Biren Pandya <birenpandya@gmail.com> wrote:
 
-This one is a case that tends to split reviewers.  I don't personally
-care much either way because as you say the code saving is minor (but
-good) vs it is a tiny bit fiddlier to read.
+> The kxsd9 driver previously used manual pm_runtime_get_sync() and
+> pm_runtime_put_autosuspend() calls around the entire kxsd9_write_raw()
+> function. If the user provides a non-zero integer component for scale,
+> the function returned -EINVAL directly, leaking the runtime PM usage
+> counter.
+>=20
+> Move the mask and value validation checks before pm_runtime_get_sync()
+> to ensure the early -EINVAL returns do not leak the usage counter.
+>=20
+> Fixes: 9a9a369d6178 ("iio: accel: kxsd9: Deploy system and runtime PM")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+> ---
+> Changes since the reviewed version:
+> - Reduced to the minimal write_raw() leak fix. Dropped the remove()
+>   rework (no underflow is possible =E2=80=94 pm_runtime_put_noidle() floo=
+rs at 0)
+Ah. I think I wasn't clear on what I was thinking for minimal fix.
 
-So far as I'm concerned either is fine.  Andy asked though so go
-with that :)
+The floor thing is something we should only use when we know there is basic=
+ally
+only a single user or we don't mind giving garbage to others (so in teardow=
+n flows).
 
-J
+Here a few things are different from that.
+
+A single user:
+- We need the power on, no point in continuing to access device.
+- Carrying on may result in an error, or maybe garbage data.  Either way
+  the real source of the error is hidden.
+(I had another one about underflow but as you use get_sync that one didn't
+ actually apply)
+
+See below...
+>   and deferred the PM-macro conversion and style cleanup to a follow-up
+>   series, per Jonathan Cameron and Andy Shevchenko.
+>  drivers/iio/accel/kxsd9.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index 4717d80fc24af..1af04cb4bf86a 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -139,18 +139,18 @@ static int kxsd9_write_raw(struct iio_dev *indio_de=
+v,
+>  			   int val2,
+>  			   long mask)
+>  {
+> -	int ret =3D -EINVAL;
+>  	struct kxsd9_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> =20
+> -	pm_runtime_get_sync(st->dev);
+> +	if (mask !=3D IIO_CHAN_INFO_SCALE)
+> +		return -EINVAL;
+> =20
+> -	if (mask =3D=3D IIO_CHAN_INFO_SCALE) {
+> -		/* Check no integer component */
+> -		if (val)
+> -			return -EINVAL;
+> -		ret =3D kxsd9_write_scale(indio_dev, val2);
+> -	}
+> +	/* Check no integer component */
+> +	if (val)
+> +		return -EINVAL;
+> =20
+> +	pm_runtime_get_sync(st->dev);
+
+With above in mind, I'd fix this as:
+
+	ret =3D pm_runtime_resume_and_get(st->dev);
+	if (ret < 0)
+		return ret;
+
+	ret =3D kxsd9_..
+  	pm_runtime_put_autosuspend(st->dev);
+
+	return ret;
+
+> +	ret =3D kxsd9_write_scale(indio_dev, val2);
+>  	pm_runtime_put_autosuspend(st->dev);
+> =20
+>  	return ret;
 
