@@ -1,144 +1,162 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB21637E317
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 03:57:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783915081; cv=none; b=ls1261gptK6iZ69TYjd1L1ZM+N829WTPQQdpOS7WluhkOpzOdruaXddJeBgAKm2gx7zZ5zpoBlACJDmPyYavovRpYfI5XXbaSo/Bbowonk6X2JGDsZLaQbpQzB50ByRdgxMrVhv4aAVdztrU+UQGekATjRDVXehR2vi/ceL1f4g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783915081; c=relaxed/simple;
-	bh=3AV+ps6EwvWuPnkmEuMQHEqXd01rXxUa8mWVFvh7hyE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=W/d9Uc5gJlIYWHOKvbLEVX5Ms3C0Mbpmjsz9x5U1Nbv2YSZ0yqTA5q/6hFlrZXtyjINh2TZfwde6O6aF1giQEB3Lo/9dA+aU3PqWyZ821QosrGZAu1BX+IbjmGK7dmgeKsucjJom8IsemWiJ/lEZLB23mQ9Np/8agdDLc4aJNAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AeQSIt8L; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD5B1340A6F
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 04:46:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.217.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783918004; cv=pass; b=d65Fis3BolwOixUMgiCT/HUyGi5gqTTM5tidhbsefAYJoXSXv9HJAit1y0sn91/KnUGEeQI5Enuj1o2c9ihc4+ez5qU/jYPlcq0HVW4Vta1bad+DYUiITJE7J+G8rAdgNGZh6fXAMCFyJ02rnuXsy+oMW6/wHrmgRnul9B9GE3g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783918004; c=relaxed/simple;
+	bh=fvnrMic/Wc1PqTxLDwgJWHRDgytppByxvectU/n/IUw=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=P0qsP32SVOmUWvN5Z3qnR4pR7qcEyhrKzqKryaN0PqoDV/fOFEPRffVlhYdM6AwAUCfbPiwpuXcLDMyncwJ65m22iCx+3XpsAQbu8C5MTYM0DiLgALYnoNnfWzjNJn8847ezO5Q7Kr+XepmgzHUbqm9hlJ5UDZmCUdlNZTxLk8Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VKWawFVM; arc=pass smtp.client-ip=209.85.217.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AeQSIt8L"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-38d489b6b71so2467287a91.0
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 20:57:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VKWawFVM"
+Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-745659c70ccso85155137.2
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 21:46:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1783918002; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Kft5TlpjaxUokOWtr0SIXyRK5Og4tJ5fdezVkARca6SXPaRY3L/YyTn3qvJz5NQSfI
+         zfYpq9UTcDTTczT+h6I6rTgqLf78+hX++itcmHgKrHvWu90L8dBFYiXM2slRDzintJWl
+         HwMBWShzsvYuYf9l2TM+Sgn8PD7fdlAzo7KlPHq2nWmCZmz+NmKuzFWHPTecaCN5s2VV
+         6XqC5+/VNLwV45I7yyvefonqLPREvUMsS38s/s1AmuNX+MbBM8jWaSqP/kHofT+ARJXP
+         RPTIQpNt01v1Ulqm9HGmh1dtmEtSi4iDUeCVZSx96C3rl5Q7TQsaxl7n4ntYY8L18wse
+         raWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=tIvuNpwtX62wjAACnY5xLsw8rSHDkSGnso4sTTSlICc=;
+        fh=5reePXkwxjzwWOp/7Kai845vGTehBO4kXwBwwpEnhi4=;
+        b=k5XTrHLg1iV+IyPhOIAC0WNL/Qm61j93m82a3GsVuSrDia+D9exlSbFYmKIJ0hd2sq
+         mYbfq1LTbzeBTpJ03Z21O2ULATi/xG6TINoaEWQVnBWhtIytLm02jqXS8Af8hSqvsj7U
+         y3ESw31zvpKre0VnkpHRNppRDVFIeBjuqQqcmCw7MFgXMkTVHBM37Pi2uu/8yhWkXAyt
+         EczRl+4zzFolrsTPvqRS3Db1GW2uX13+SUdiI2CMDXnpnvxdlK573zbolsH22mHq8k6k
+         4q/E7/yL9ppnfBUyFuwvcSEIvAq7nazk9R0QPQEyDome6mUD8FNy/HwEzuRfI60+UAHx
+         rqSg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783915079; x=1784519879; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=CEhF1/knVdM88rzwDUG3Vwh5GZfToHHXGSRevQ99B4E=;
-        b=AeQSIt8LNm54Loac9AiIWOgDjKnYzud/QK62CiXRhDDGjEKbNK0FqMO3iX1v49738Z
-         X/a8d11+7HCERHRxgUI7EL+aMpeTORPPCMYKYjWZjhwLGfkmRXstGaCn+1JbvFjIWqGC
-         IZBy43x/05odic4Rf4s4fVo1msrhKEKpKnqW0XWzPA8drxB9f5ZboBLmqPW6qjSl4SII
-         r4Y8t+ZZEReMTAsxfrJo6J2bwt+XCbsUvKBwTXTHBKRS1380iOx7M4Po7izhLBwOs6Ua
-         JRL7pLvKTr5IagWzkbqW0nT3clojS++pJTSOBDVWnGxzJwK2IEfJC0sLbkBZ/taX1fgc
-         u6Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783915079; x=1784519879;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=gmail.com; s=20251104; t=1783918002; x=1784522802; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CEhF1/knVdM88rzwDUG3Vwh5GZfToHHXGSRevQ99B4E=;
-        b=MA4h5i3ws1wc2/NIhoKBfeLbmR4Bwk8k9VlGqwgvT0cc91Pxv0TYgrszLI5AFTSg0z
-         9vcDb27oX6v04dn/xPK077AcOHgAa7d0+IH+iRH2DXaTzkVOPnQhAkNCPgXGS6zYB6GE
-         +9Opo//ExrRrCWC93GCfwsZxNddg5AWWK95w9NISpGuMIlvfw9cAJwsnQmjFagUOfX4j
-         ABHIqDzIRtpQ+vkUXnB47UnrnVYa/7HfUxONoxewSBDphlwaQUncVwRbMpWK4a7jR7yr
-         GM6n1k7nClYJ2z9LR49KqNDfNIHqewXxMmADmptOG551Y94cpOQ9Bqk/IR5dcZdaRs7Z
-         NocQ==
-X-Forwarded-Encrypted: i=1; AHgh+Ro2OsG5q1zWzEeKbIuCuPToZhPQeTGD+BUWbbq17jApYsXdRGnkLX4SBlFV+/VsBw469RcwmyiGOBE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwkKieGOc9jJFeULKsRkLNQWJV4OfokQQdS20dpR0eqCxfFpwhY
-	QsiIldWPfB+tDsB4lF2ZFaYdaqYvObvOgASZ7kmjfJ7ox41VFZlqCPU=
-X-Gm-Gg: AfdE7cn2VReh71/LnJCmnKe9KMJH0UFs96m/rmvPoIUyoJXPnvBBHuWNh9SuVuo3kET
-	xVkiq3EFzcWjvK3vHqH7zNeIKTzwVKb/sOwM9lzcvG89bBuH2wvaX0At7X5w2LtBE3BMKaJNbkC
-	nshdn3Bj2MZC0927o3giIfAKZd4UG+3e79D1E8eNSN7UAvWVcTfkkjU6Tgpy+HXrpXvL0GJqEUq
-	mgMqkzfggBdRZPv9KGeGlSozs9oG0YElZDfT/vLgOj3vXoPnLvJgpFtWhLH83dSwQIUEPj1R29h
-	izvYJ8/vU5ro2raxfUJiaz7QEVEo0smWPvWOEKKVJZLkyPLJiIh7UfGGnDTuIZedNI6jdCsGesj
-	IVvNd7bZybFC8ETfPpyHQg1cOaAwo9LI8eymjLFfYZTayLg+w6lxhzCHzs3uPD5DvdpJo5d+j9D
-	jL/nCxAUjR62dExcNmg8SC7JVei8ePhCaGAJqk0JBBg7n+HqUhmD/dWFseLtMua2s=
-X-Received: by 2002:a17:90b:3bd0:b0:37f:9cdf:f0ac with SMTP id 98e67ed59e1d1-38dc77f1987mr7274394a91.27.1783915079198;
-        Sun, 12 Jul 2026 20:57:59 -0700 (PDT)
-Received: from localhost.localdomain ([101.0.63.154])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f5975sm60862704eec.4.2026.07.12.20.57.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 20:57:58 -0700 (PDT)
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v2 4/4] iio: light: opt4001: Fix power down clearing bits of the wrong register
-Date: Mon, 13 Jul 2026 09:27:36 +0530
-Message-Id: <20260713035736.11346-5-nikhilgtr@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260713035736.11346-1-nikhilgtr@gmail.com>
-References: <20260713035736.11346-1-nikhilgtr@gmail.com>
+        bh=tIvuNpwtX62wjAACnY5xLsw8rSHDkSGnso4sTTSlICc=;
+        b=VKWawFVM5BIeOP3qLxypfVpetO2xJCBjiyZOScJ3m9zueCZYvL/HzWQC4khGdhLrS3
+         yFgY33Jx57nSaWF+0HHM5Ek9iVXbw95lyKPPpqRWzG+uejQBC8oRuPdPXo1ydet+rTci
+         JxicKhagF8E11EOFeT+7FB43gJy2YwiNpuu7kjpL21hBC4kU6PRixnwofRNqe08+4RfO
+         m7t2VzK/Btn5bWDlKB7B5wlMx/gLPwKrS5LboH0zUCLvaJOS1ZU9IXH5cgAjllyue0nG
+         jb8O1QkEiyTF4mmSpAHjzSMKwYyY6QlA8Oh2atcv9q/WUeOnKKcaFNgvwncFDanWw3eJ
+         Wmfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783918002; x=1784522802;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=tIvuNpwtX62wjAACnY5xLsw8rSHDkSGnso4sTTSlICc=;
+        b=k8s5LEEKzCEAsbjTxNjO3ex0/PbTLaF83Cjx1qBjmYTiGWRw1HuOzcxZZuzIP70tF4
+         Ps7tonHEYfOVBw7q3sHA2Vbh666eIk+tSi1EGfO8yancQoFBG9YrihEHC3eqs551N80K
+         XEJx0oMOIw+XCe8u18aZZWOjlMmfxbSOuwh25KO/jhfmFo9JZYW11k/iUhJbmVg5CD2j
+         PMpPFd8CSS3nUJriUO7TJD9p3ScTfFmbzYRFE9M6N1k//W3nd10VOZfjwx+1jfT8habF
+         ROGOWxY8snntctzg5+IV5t6i3mK/ESfig5xfEd/g5q4YaQWysWlpOFBB0C9+oA8y6Gik
+         g1hA==
+X-Forwarded-Encrypted: i=1; AHgh+RowxBEe/ji4WwsYF2W5stXxSL6gkWk6LAaJ10IkonDucEUjag3YJNtCGQNsMC74pO67q7IavH6eRtU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzJqQxzZe0lnKjHTHxokzGcRkuWOCCVhAe/VXHwbZKI3pH/LL50
+	/SFF8Qz/223ZD6PxXIy98HRxAhEnERBNR1CLg7V1zeWUnFsBR2FDrfbkBzl0wS5WDCEYVcNGbDz
+	MyJLNmoOM7SjSkK55yU9WSnBO/pvejbk=
+X-Gm-Gg: AfdE7cnsj5+QotTD+xKLWlpqs2rcac7lkkXOU1t8ngiDiwSMF5orSgbQ+eMZikEybxl
+	yL99KppzEV0vewAcWhTxyMDrfJSu4bQ0yqDzYbvKCJTu54+ORa9ylR2B/ce+6yYMMq0D4mTeV3m
+	8EO1Y8lKW8b1Hfu+VA33tDnAMhmEarztPlPxoxVgmSxfiWic41Mp5I7+umTtHIqabOE3KIAeDpL
+	9N1Oh9M9XnpmLavpNcmd3qBGTZaFf3USgXFmZIRtRNRmBgfg4mlslQohaoHuBJu3hMchgKH5e7G
+	a1BgRvx3s8NJtxoILJp2UuVI3ffZOyo+AGgSCg/Dj+9L1twVx+/K22Y9R5lQmsYw/IL+heCkqlz
+	S1DEx9NbJu/8=
+X-Received: by 2002:a05:6102:3ca3:b0:737:80f0:7887 with SMTP id
+ ada2fe7eead31-74533bbbd15mr4116564137.8.1783918001726; Sun, 12 Jul 2026
+ 21:46:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
+Date: Mon, 13 Jul 2026 10:31:30 +0545
+X-Gm-Features: AUfX_mwwEselmh9IRE3VEYEs8ZRe2pmlXbwSM1DlLxUaasQrg06o4Yn065i_PUU
+Message-ID: <CAMyXUJnsV1GD0VmK_n25hqr_=A5Z=u_gCXV=oACgKuP3dSgwnQ@mail.gmail.com>
+Subject: [PATCH v3] iio: proximity: hx9023s: validate firmware size
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-opt4001_power_down() intends to clear the operating mode bits in the
-CTRL register but reads OPT4001_DEVICE_ID instead of OPT4001_CTRL, so
-the value written back to CTRL contains device ID bits rather than the
-current configuration.
+hx9023s_send_cfg() copies the firmware into a counted flexible array and
+then reads fixed offsets from the copied data before walking register/value
+pairs starting at FW_DATA_OFFSET. A truncated firmware image can therefore
+make the driver read past the copied buffer during probe-time configuration
+loading.
 
-Fix and simplify this by using regmap_clear_bits() on the CTRL register
-directly in the devm action, and drop opt4001_power_down() which has no
-other users.
+Reject firmware images that cannot contain the fixed header, reject images
+too large for the u16 fw_size field, and validate that the advertised
+register count fits in the remaining payload.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Fixes: 9a9608418292 ("iio: light: Add support for TI OPT4001 light sensor")
-Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+Fixes: e9ed97be4fcc ("iio: proximity: hx9023s: Added firmware file
+parsing functionality")
+Cc: stable@vger.kernel.org
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Laxman Acharya Padhya <acharyalaxman8848@gmail.com>
 ---
- drivers/iio/light/opt4001.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+v3:
+- Resend once in plain-text format after the duplicate v2 messages.
+- Keep each commit trailer on one complete line.
+---
+ drivers/iio/proximity/hx9023s.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
-index 9f877c5798b9..b7e9d361c2e3 100644
---- a/drivers/iio/light/opt4001.c
-+++ b/drivers/iio/light/opt4001.c
-@@ -223,33 +223,14 @@ static int opt4001_set_conf(struct opt4001_chip *chip)
- 	return ret;
- }
- 
--static int opt4001_power_down(struct opt4001_chip *chip)
--{
--	struct device *dev = &chip->client->dev;
--	int ret;
--	unsigned int reg;
--
--	ret = regmap_read(chip->regmap, OPT4001_DEVICE_ID, &reg);
--	if (ret) {
--		dev_err(dev, "Failed to read configuration\n");
--		return ret;
--	}
--
--	/* MODE_OFF is 0x0 so just set bits to 0 */
--	reg &= ~OPT4001_CTRL_OPER_MODE_MASK;
--
--	ret = regmap_write(chip->regmap, OPT4001_CTRL, reg);
--	if (ret)
--		dev_err(dev, "Failed to set configuration to power down\n");
--
--	return ret;
--}
--
- static void opt4001_chip_off_action(void *data)
+diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
+index a6ff7cbe9e65..685053b84b34 100644
+--- a/drivers/iio/proximity/hx9023s.c
++++ b/drivers/iio/proximity/hx9023s.c
+@@ -18,6 +18,7 @@
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/irqreturn.h>
++#include <linux/limits.h>
+ #include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+@@ -1031,6 +1032,10 @@ static int hx9023s_bin_load(struct hx9023s_data
+*data, struct hx9023s_bin *bin)
+
+ static int hx9023s_send_cfg(const struct firmware *fw, struct
+hx9023s_data *data)
  {
- 	struct opt4001_chip *chip = data;
-+	int ret;
- 
--	opt4001_power_down(chip);
-+	ret = regmap_clear_bits(chip->regmap, OPT4001_CTRL, OPT4001_CTRL_OPER_MODE_MASK);
-+	if (ret)
-+		dev_err(&chip->client->dev, "Failed to power down\n");
- }
- 
- static const struct iio_chan_spec opt4001_channels[] = {
--- 
-2.39.5
++ /* fw_size is u16 in struct hx9023s_bin, so reject truncation. */
++ if (fw->size < FW_DATA_OFFSET || fw->size > U16_MAX)
++ return -EINVAL;
++
+  struct hx9023s_bin *bin __free(kfree) =
+   kzalloc(fw->size + sizeof(*bin), GFP_KERNEL);
+  if (!bin)
+@@ -1041,7 +1046,8 @@ static int hx9023s_send_cfg(const struct
+firmware *fw, struct hx9023s_data *data
+  bin->fw_ver = bin->data[FW_VER_OFFSET];
+  bin->reg_count = get_unaligned_le16(bin->data + FW_REG_CNT_OFFSET);
 
+- release_firmware(fw);
++ if (bin->reg_count > (bin->fw_size - FW_DATA_OFFSET) / 2)
++ return -EINVAL;
+
+  return hx9023s_bin_load(data, bin);
+ }
+@@ -1058,6 +1064,7 @@ static void hx9023s_cfg_update(const struct
+firmware *fw, void *context)
+  }
+
+  ret = hx9023s_send_cfg(fw, data);
++ release_firmware(fw);
+  if (ret) {
+   dev_warn(dev, "Firmware update failed: %d\n", ret);
+   goto no_fw;
+-- 
+2.51.2
