@@ -1,61 +1,63 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1D39285CB9
-	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 03:57:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BBC8271A9A
+	for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 03:57:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783915065; cv=none; b=Soj0z71Yws0B9C/xn8kpHtmWbroJQDCEhl8Wn7dUMNL2zJtE5iosSNF4/Lp0uDWuDwk3ox9b5AiDFugR2cdi2kTixiakJVUCIzv2HSVV8E3pI3hLrZpdzmvkd68LlMUx804Q+4cLQo06qDIBCHlWaR5b/jtSqvv++CLpcBwcEY8=
+	t=1783915069; cv=none; b=kbWoeFRsd3AghCVabMHqSw9gb1O5865Yl821XPnLLfltFG4FCIr7KZAjdzZH3TOHfuNc9+AAzhY1LJ1vtTNQP+gItwnLfG49/RDCauGRu9I2P5NC+iJfixX9oqR+dMa+/gNmG27JbwVaPeSzCbFltPAld9+H2leDStZEgYFJzvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783915065; c=relaxed/simple;
-	bh=dDoA6AH7eaCvDR+PPCikry8mWrSod2j07+j3hpgGt4E=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Jhx1L8aRmLFw31ls+CrhRa/Q15kuE9wxc+f8p2diyf+3gDEzMv9X8RMtu3ra8i/mJ8p8H1TDoRC3xh8DBMnOfRw+p3EqsRf58NGim0iuO0hDeQW3y1KAdpwJVWPvdekC/NzodHAhRzhKSm/LPwKYjZCGGv34mJYBMauscyVStfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TBJrYPRZ; arc=none smtp.client-ip=209.85.215.178
+	s=arc-20240116; t=1783915069; c=relaxed/simple;
+	bh=WcD/SwZ51u5D7/QlDApFgv7wv7BrDF1ptkN3NyTZTK4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Wu3bRFmRGpwceR78FGBuPt+LpWcpmG9HbnH9DQCAsBd7SIfJENG6EyT1eE+Dhks4kWUGZOLqoX9hYpYqc8EzWh7d2A+FbjBvJgmwkJr3w48W2quh4aao4j6u4c6WlybLuX//R6fwPhlgD2f68gF7We8IC3aZPWGoZnhJH8Rb1Ow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z98qlz8U; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TBJrYPRZ"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-ca913a601fbso1845194a12.3
-        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 20:57:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z98qlz8U"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c998fd549a8so1688757a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 12 Jul 2026 20:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783915064; x=1784519864; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Rat269dSHB6S4X7EbEcwUyliidjahM1q8N/e9ebFA1M=;
-        b=TBJrYPRZcTf0X7RcGKNrT8Rc6Yg4wHF0QUzOT8eZu24wvV6DJhwWAFVID1yAnBTgGF
-         vB0pzIcrWmuHOI2lql7JsLRqkxNnDv6+/88KaVBwn0YGsRjvloiAgGJTN8JieTgR+MiA
-         pCGT3+hZtVEkAdk6CThWpO5+aOpzGjnp+8u8hcaKeNwq8Xldyyp4n1g4pbgNDBTZTkop
-         pm7di9hP6OZHvp+oYLgOlYsIKm7qR2FK/9ehNMRzWCRp5Y9HlZTjDVh/kFai/QurM0L3
-         ocU7+swg5Mf0qScRa+TZUutldtuAmaVMB5awnAEXlP7mm2+bUAcEzXpG3I2tCJrHchwB
-         3jCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783915064; x=1784519864;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1783915068; x=1784519868; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Rat269dSHB6S4X7EbEcwUyliidjahM1q8N/e9ebFA1M=;
-        b=rRBOG9v4r+crdndY0iPioZKSeFwCdjprTQCLpVUp+XTTDj4vcl1qTmzdcA7+BCJanS
-         d+Fs1lsXrxDjQkROqh0frx1JhCVVpuavdEe8HhgiR4oxRmh16Vs1lgXsxDMuwIqfqAm1
-         0pNqtYZQD1vTHCMBuSNmC2Bme3NnRq2BltAS/h/Tg7pKubaUkJ31off7i6BjMiWvFgX1
-         ZgNkkHnd4GyL80r4DqxN+ytWdL/WnZX7mJj8l99RrwWv5vs0ZzJpM5r3QlRmFT+aNBI7
-         JEcL93bPdpthbuCdz5Ihk1Xf1uAE7iuUXtZ+UqPvs7uLGD0bAD4WGA/QgsEVh0W5tttr
-         Emvg==
-X-Forwarded-Encrypted: i=1; AHgh+Rq/g6JT8uYs5uRttQt5gUpt9vjf+kdMZJbOsoOzldUpor50OwG48fnk2a3K+NbGBKUButlmWOEP7/g=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywcws9rkZhTNxa/73+a7xB0sWWhNrL0kyWeEN8+Won1aMK52iI2
-	W1hitt0KSGbCb3Jz92fCIkOhN9ecMfXVE3qlqTcz14H1ddzNBNGcZhA=
-X-Gm-Gg: AfdE7ckTCjPKXfiDwRRiPOGWAbeSVeEeMViedS7cA3lij2TUioBlK8aj8iUUVRJ4Y7D
-	qF6NO7UGFHY10/0+Moi8/6fYbTmA6NNqS03B6yMdsumGI+zwdBMzatPqhoNvSJH4ycStr6y8FuU
-	5cMF27PSTCY5hzYUY5hzPyxXazEuH4zXPDNo0Nefq07A30RHgNtALt/tCoUKqQaR9rg+upzfxLy
-	wySEIobU+daKwgwmm6/BtHAKpCIhf4xIRVnKhd3rdJU73u8ARpXoenoBxdsWf17Mgh268BphmCQ
-	w+0IWifBcpFkcEY5uWm7yJULLOdWCZmj/8XaAgC3ziPbh3E2uce4oSoSexhtjrjmHF/0ixhYXOd
-	5vXZHvDn1fhDRrO43VrZ7QvqOWAxA9BEtPNXAe+pR95ZzfelovkgnuVWfZC+HBJbdnV2tPTbajz
-	YV/97qfYtPE0CnTKAe2PPdZ08HJNaHGvW+98YyfSYIJArdSmfBYL/9
-X-Received: by 2002:a05:6a21:a43:b0:3b4:b216:2b26 with SMTP id adf61e73a8af0-3c1107612e3mr8703202637.5.1783915064008;
-        Sun, 12 Jul 2026 20:57:44 -0700 (PDT)
+        bh=wxIbOIh/93KyJON4/kBivEyvzBtFQfz4AT0SG4ihafY=;
+        b=Z98qlz8UmWwZApTJ2fQ8I/YU03u/g+VOfY09HQbOluyyQI1fDcNDxj8Z+9P6qscZrq
+         oWSFKJluYqHyWRnPohxdFOsl2BuQzPa+T5tuOWHhCYFlM4BLxxWXJf1cdSs2elDfmQAR
+         40yjfE75x+67m3YDMZMnbIEd1W9fV4+5cuNrBH7FaWD1nSTdqeLodPNBoxYmZeKu27Jo
+         i0keOAcgICFjtTnQ7XthTWsB4D9skb3QjWDLVLod2IQZrmvBFuTUXoEyAcypKkX1A3a4
+         0yGjtt5P24skCycCTBKoPtcxPzU3I4LT3P0Ubkj2KHXS6h52rH6T9/HwUiY/FU3J7ym6
+         FOoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783915068; x=1784519868;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=wxIbOIh/93KyJON4/kBivEyvzBtFQfz4AT0SG4ihafY=;
+        b=ZSTQb56Hpe/EI7MhvrqgBMiOtU/YVE9lkCckl/JvsOvZJ+gOR/RP0YFz1BPTmQXOPC
+         +IYjZwFR5k+Y/3VVX+co9hxrAQ2KfLDR9pwmnHAl3gmAJbsERw82h3/BvSDzXWDyDMY0
+         yxAsrKiSqxQZXop9KAzvgaqqfN5HlLcOK/6OGj1Oz6PV5rMWzL1am2a1RVTxYVHntJEg
+         4GKG1jx8fc73soMr8iOxJwlLv7AMNTT00DWrfd9t25MZr2SrUsV0Dr+fh+hW7pSpwZse
+         6xGtNFgFEq9LIpUYMrRnZJPiS70x8Pas7+rOMWUGRw8NYzLFnBIrJ6qKZ/ty2ZqCJEU+
+         NvWA==
+X-Forwarded-Encrypted: i=1; AHgh+Ros+UDcYLHjpC/xbZJu562a3cGykxeM/B849FmbW4KflbDmFJR/AaE1oh8H4M2eP8aPK267P80/Axc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz0/M4OGtzUwgbfdyo0vJcijGsNobkMrnbuADkqZPBde3Ah0o2g
+	nHN1YrrSE24MJ4jIuJpKtCOea9lMgIhRE7swZszGLhKiP8bkZchfNqQ=
+X-Gm-Gg: AfdE7ckt6avAJc/c8xqXUhIUMghKR5pHRmU6m/bMWh9S1EbdkCyMD3wu//FBTc/FOYa
+	lkpVe+XGWF226Z7lvXdmcovTYaqaBp0UiuKCCcwpalavtKZLYbkaNmvizdDhTl3tpY6AJbnkF5u
+	XPv3YYupgkI+CkWuy+8FDEgNuwslR9hk5TqEkGWDQoka4qREdMIVkdBc5MZ7QbEmbwi0avcrL7U
+	DraZ5GgFTPmPqz8Fw5IDwjdhksDsOLmI6U+Kmc7ODZ4OvQWRWpuMaFmwVj41yaFASWRl70b14WG
+	AFGLk+C6SJqLmBgXVAB96S8Bgb39Xk25tJPbd220JXzU5vyQxpozm0n+O0cuGsXouwxjlgiPlPv
+	nzYWnY9P36OdecCTPJvjtG/7mPlXuheUopDzHi34xORfpn0Y6CbJfFquMRP82akP4pX8JgBkWX7
+	N2y6ewd7iQEHgii3T6TvN9xal7un/z/HQDq7gEaBY/5pMpVlDJxkLi
+X-Received: by 2002:a05:6a21:6817:b0:3bf:ab02:439e with SMTP id adf61e73a8af0-3c11028952amr8112912637.27.1783915067796;
+        Sun, 12 Jul 2026 20:57:47 -0700 (PDT)
 Received: from localhost.localdomain ([101.0.63.154])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f5975sm60862704eec.4.2026.07.12.20.57.40
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f5975sm60862704eec.4.2026.07.12.20.57.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 20:57:43 -0700 (PDT)
+        Sun, 12 Jul 2026 20:57:47 -0700 (PDT)
 From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -65,10 +67,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v2 0/4] iio: light: opt4001: Fixes from code review
-Date: Mon, 13 Jul 2026 09:27:32 +0530
-Message-Id: <20260713035736.11346-1-nikhilgtr@gmail.com>
+Subject: [PATCH v2 1/4] iio: light: opt4001: Fix reversed GENMASK() arguments in fault count mask
+Date: Mon, 13 Jul 2026 09:27:33 +0530
+Message-Id: <20260713035736.11346-2-nikhilgtr@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260713035736.11346-1-nikhilgtr@gmail.com>
+References: <20260713035736.11346-1-nikhilgtr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,51 +81,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+GENMASK(h, l) requires h >= l, but OPT4001_CTRL_FAULT_COUNT is defined
+as GENMASK(0, 1). The define is currently unused so there is no
+functional impact, but fix it before anyone builds on it, and add the
+_MASK suffix for consistency with the neighbouring definitions.
 
-This series fixes a number of issues found while reviewing the opt4001
-driver. All of them date back to the initial submission of the driver
-in commit 9a9608418292 ("iio: light: Add support for TI OPT4001 light
-sensor").
+Fixes: 9a9608418292 ("iio: light: Add support for TI OPT4001 light sensor")
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/light/opt4001.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch 1 fixes the power down path, which read the device ID register
-instead of the control register in a read-modify-write, corrupting the
-CTRL configuration on the way to power down.
-
-Patch 2 fixes an incompatible pointer type passed as the remainder
-argument to div_u64_rem(). No functional impact.
-
-Patch 3 makes opt4001_write_raw() reject integration time writes with
-a non-zero integer (seconds) part, which were previously accepted
-silently based on the microseconds part alone.
-
-Patch 4 fixes reversed GENMASK() arguments in the (currently unused)
-fault count mask definition and adds the _MASK suffix for consistency.
-
-Changes in v2:
-- Add Fixes: tags to all patches
-- Patch 1: use regmap_clear_bits() directly in the opt4001_chip_off_action
-  and drop opt4001_power_down() (Jonathan)
-- Patch 2: document that there is no functional impact (Jonathan)
-- Patch 3: add blank line after the early return (Jonathan)
-- Patch 4: fix whitespace alignment of the new define
-
-Regards,
-Nikhil
-
-Nikhil Gautam (4):
-  iio: light: opt4001: Fix reversed GENMASK() arguments in fault count
-    mask
-  iio: light: opt4001: Reject integration times with a non-zero seconds
-    part
-  iio: light: opt4001: Fix incompatible pointer type passed to
-    div_u64_rem()
-  iio: light: opt4001: Fix power down clearing bits of the wrong
-    register
-
- drivers/iio/light/opt4001.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
+index ba4eb82d9bc2..0a2d2273355f 100644
+--- a/drivers/iio/light/opt4001.c
++++ b/drivers/iio/light/opt4001.c
+@@ -39,7 +39,7 @@
+ #define OPT4001_CTRL_OPER_MODE_MASK      GENMASK(5, 4)
+ #define OPT4001_CTRL_LATCH_MASK          GENMASK(3, 3)
+ #define OPT4001_CTRL_INT_POL_MASK        GENMASK(2, 2)
+-#define OPT4001_CTRL_FAULT_COUNT         GENMASK(0, 1)
++#define OPT4001_CTRL_FAULT_COUNT_MASK	  GENMASK(1, 0)
+ 
+ /* OPT4001 constants */
+ #define OPT4001_DEVICE_ID_VAL            0x121
 -- 
 2.39.5
 
