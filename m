@@ -1,160 +1,142 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazolkn19011031.outbound.protection.outlook.com [52.103.43.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDABC466B75
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686EF46AEE8;
+	Tue, 14 Jul 2026 13:32:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.31
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784035882; cv=pass; b=AijG5kIJN9dySCgksRznkvplewtVbadJ+sanNrvBZO8dEl7fGgoQXgl0MjnhBHxEdMAf19R1sitFuWq8UA0YcxoButq2v5Xd08wzZRL0hqnIejszp/v+T/+a5hjN+vIyEVPR6ur1vi1ce20GoChvhphP4iTdJn2Y8cpsc/qZ4Fw=
+	t=1784035969; cv=fail; b=l0nbCPZfhHxXfIwAY7UzRauwVBo3T6Gt51YWbUQyxJlpTKkNRvHRl8ckTiIxK8geOAR5lQDpgvg+7LYs+pDKb5kutBvS+DwB3zCQ9t+RdHh/9fhUDZICyv4jKBENV9UUZQjRXCcF2S9486kIS0Ti8RPSY8jTepplBk40UsrCjSI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784035882; c=relaxed/simple;
-	bh=6DZv1K0DlUi+ti2Ixfzbo+SkZOzrPzgNcj+8JfhDZTE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Mwft9WiudHh+nBLEqdI/dJ4dLySqJfYnUV9MnMPLF5XZu+moWy3CRAGvJs5rz+Vc+9ZB5abdN/ERUt6VGVHFqTm2ePQVqGmA1PVp7ZdNHMAEfg3ZBHgHYwch6KYtY5LMazEiTfQGmKGOSmaTnfYOGaQW84PzTFbACAQ10Bo0Loc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=adtRORoK; arc=pass smtp.client-ip=209.85.216.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784035969; c=relaxed/simple;
+	bh=sNZp3IT2KTpjF7qVb7n4WCzreOHTr3W2UzucyBj7myE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YCG/v3vEqUz1ltjr4UjdsR9PF036TTlcH9TbeZoDK2WG4VLkOLW5lj0M2zOa+GGR7nF88cLoEWy5owpYslpju1HlTQUHDT/ch9Alpmvu6PhFQK/gMXARS02BAkb+aDqInAZGYYXsqK1+3DpK3q3EbUNlqxCw4cVPCv8GB9Fd4tw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=VKmXSEia; arc=fail smtp.client-ip=52.103.43.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="adtRORoK"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-38175907a56so760491a91.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:31:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784035880; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lM9cHkULPYBgvK2XbZY9PREQFdBZDLgEeMLW1DU3fLcXYxltxG8x7inyuTPJACdObA
-         0iAVwVSuOJ1XtF2oSXrP4Rb4uB73XSuUVpNy4G/sSYbRINj74PJI0UL2KzjAuIAGDzou
-         kWF7XuxUbTa4lohoj/xUwFO7K31zehGAic8S8K6OB2aNoVLX1kDRiY06J6u4/wgYGF2h
-         qpFRrc1m4O3c8gRYvnXsOcig7p6oUJLX6wf4c97IMC1SN4Dph/SvNF3/0LKBJrRL8olu
-         dlaNqKtLexl5YHR19KBrO6IN8rVnSf5oFjTujERl11I/YmbzQI7kO4UMl8knHzVYbYId
-         nhLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
-        fh=b47WcTJA8mpUGDX2p9UilF3WSQDtg9fhXx2879xUFZU=;
-        b=RN0xnrrupBesNgMBKYgWyvEOJQMj5uf23k5mCpJ2qIEkUKqMTm2vJktsHNQp6yPSfv
-         YehiwxHG2o/QmFpPIfI7GO5IV7lvlITTM1O9YRwc+BaHiVQDi838is50E8RPJxoVgmys
-         WyuiNh9EtTujLmFTSO9L4pWTIzAdwiwI+rKhSE/BfI7vG+Tom318Ryt2bzkfzMF246Pc
-         73ecuXp202YD3FKUcVfTJrq8Vdf+mtFcSPsuzkt6oOAk3bTk2tf+ouQZpSuPoGXPN+W3
-         2apXjvV3TFZcS3NchoDSkLsCtT19lAbScoOk/ZIaqH0q9RqUZMyY4C4fo3v5eWSahrJU
-         3w+w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784035880; x=1784640680; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
-        b=adtRORoK6ykURV4MpPqfrnTXyFhgyraH2fPjJ0S7zI+Kwx7knp9zoE890+UYb+j00y
-         bFiN9z5SSPD8qzVBXDWlV5SlrMQbkjEPvlDpqIz1kmHac6uHt49DQ93YNWJQfdi5EQHk
-         475uVtuqDXE2WWrNE7/ik48QuATe0RyrQUbWMxyxEj9KdpndUMc9EO3fPKh/seREI0ql
-         //DrLBaWIMGG0cjP3+D5fNXmM/AIXH05XyLQawLfUa820ELjaK2iJiPlBqzjJ35GHXmI
-         D9sKHXvALthnn958hN4yPWlnY+H2pBMvmeGysDo4boFy80Y/Zwozmr8Tvp6DryTrOpwS
-         AT/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784035880; x=1784640680;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
-        b=lJFpQ4FQjT2UtAfryrDstcQcLo8gVo1e4HmA7+FXF8tUIJCOKchTdFP3rDuTpYkV5o
-         f4ONHhbmlnC5M7nOerkXe8skEupNbI55LFnFtaLIvc+Qla3F73fcTqsNy4KZXKGUVBgH
-         OcARMuLuPzgjsg0SF9WnIKLCwBpxHieLveGAcUfLz+V580ZzkZzloBqzPRSsm8FM/Biy
-         iZ/hFMu8AeNecdpaviRqLjllvXCLocgzcux/5L58bNitQYW8vtWkeIhpPUtD+oicIfQS
-         wPszxAr+HPSO1FhUMW2s+gSg6ZpuzoQllBlf01IjljSwlQ/w6q35fbQR+gTDedLiLBvT
-         NI2A==
-X-Forwarded-Encrypted: i=1; AHgh+Rp2dCahMn2DpfFNuwac9ZVGRw99I1m1Ioe5irnLC1jfo4MXacx8I13K3byjgXy9dd+tk/e5RV4pbyk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzoSYZXpl0/HhxLA0ErtG9ImXgsdqcQEdgEA5FcZkIVbc7+NNVT
-	tndJWhePzjArjF5Q+xxD40NRk/IEHZQL2QdK+Hoz0+7KT272uvOyAx7XDWsSeS0qDADXkskLxL0
-	IYH1RY8nd8aJXZaRiQoELizYq88o513w=
-X-Gm-Gg: AfdE7cnEZh/nRHeg2NJR/QaO0VLjMqfFJ3RCNOTWQajB+8zVF/Kfp8SIoDmbFpCxLPh
-	ard5+DNFSeA/INfkXSJFaeaVMVyAIZokmuPNlJAvYqCpczj3nQ0k4F4rzqoXdbpAa+dZZphOCp1
-	OVZsPs6abu5DTf5iSMYz1HjNuUwHPSbUsJVcldtuvOwBRpk8D3Ar57I/oQfOkeRr/NRoz+OmODJ
-	5ODiI0cT6Q9uPLpHGRwfIh6DfuYehIwlixVdHJdMPDGRy2p6AfLK8z3cZb4UdjpaPAQIHB5FWtl
-	jTu2Q+mT09e69GrcTdhXOs5YbWd5S5CMbqqHWZlt
-X-Received: by 2002:a17:90b:5607:b0:37f:e5b1:ec4b with SMTP id
- 98e67ed59e1d1-38d13c60530mr18215292a91.5.1784035880304; Tue, 14 Jul 2026
- 06:31:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="VKmXSEia"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=glxM0QJb19mUbd1dcvTbXpCbwt2XYbQzEep8oW7hDN7/iyvPhqbH17rcbHeKi1uJd1rsmtc2Piff0zcR9jKQznRUSxWVaid/sgu1ObtbfQmpHQDFAZk8fdHUt5pH4ka9ALN4jMyWyMjesP0v7qW8e3+EwJuTKlyK78/nyfCqyOgxC8fpgF1YTELqy/GVhsXvVhqEybMRLFMYMt1t2JBRr1zAbXlMs3kDbtkWJXBUG4/CHyKNg5aaooa4JoTYPt/n7t5j1fZB1ae4qG9Tf3Nhro7X5KJCXoN8amHi6kM4kJG2adCL6PLt0+ON7Bjxmx6HgasazMxIxZjBXd8ESb9O3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SAMeD3jPdFrCrLKlJjySJ651+cgbDQ2WM35dRK0Ka3M=;
+ b=BYscnLNlbRSjZ0pNAUgf4R6Eg+K0qD0TNz0s40CZpd0mhy17i0B+pznY/4h8TmaiHrBHUABxYSYDrM6nMvNsBda+C0I5OieAWRfFHsU+SwgUoCe0U5wdxpGx/VwGraT+aE612wgKBBMrKSJ+3TueLneAmsSm7ptpfKbZOXvZ+4qCAC5dWnsAaclzwvn/Y8M7mdWR6skjY9FA6gfQXKg1kg/gMzEXhGWC2iX+MFbm1qUS5lAD0jh5aiI70hD06+mTxqWfBspt50we1C72JJ+ruC2nZew6+YcJhBLRod51Mh3ks8L22bUvhgq7CCDN7AAroGWRn67/BxkGXg6W7YUPAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SAMeD3jPdFrCrLKlJjySJ651+cgbDQ2WM35dRK0Ka3M=;
+ b=VKmXSEiaO2MS8iGwSmh25gGw6eDI0cWhbTyv18uLjoJww+EpTeIDLOgKV6YBVn8ERIHSMkAa5EsBRNm4oqBi1LFHel3pSGuo9M8E2Ao/47riYo1mpjHXkm4mROZeNjc6+PaBovc0xUHw5Nu8ClZNecjRjlRFyOUt5TzTjmOj/lpQZKkDa8kByIZRkrtV70Y0FlnqcCW6C4G+6hLQNlJG8PDlGa+ZExvLlDNpnEZ0k49ItGuoNBKCAo2UU4v1aH7WNUjhZEfUk4mN6YJjceMI+lrnS4zpihwWuUU+o5SEAV9Psj6+dMRVo5qlrpIB3YrkbEiZjo+sZe7fpSJXkm3geg==
+Received: from OSZPR01MB8235.jpnprd01.prod.outlook.com (2603:1096:604:1a6::10)
+ by TYCPR01MB9876.jpnprd01.prod.outlook.com (2603:1096:400:208::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.9; Tue, 14 Jul
+ 2026 13:32:46 +0000
+Received: from OSZPR01MB8235.jpnprd01.prod.outlook.com
+ ([fe80::91ec:1d9c:731c:db2f]) by OSZPR01MB8235.jpnprd01.prod.outlook.com
+ ([fe80::91ec:1d9c:731c:db2f%6]) with mapi id 15.21.0223.008; Tue, 14 Jul 2026
+ 13:32:46 +0000
+From: OrangeBlack0765@outlook.com
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	OrangeBlack0765 <OrangeBlack0765@outlook.com>
+Subject: Re: [PATCH] iio: light: tsl2583: migrate to sysfs_emit()
+Date: Tue, 14 Jul 2026 21:32:26 +0800
+Message-ID:
+ <OSZPR01MB8235ED658413011861ED9173AFF92@OSZPR01MB8235.jpnprd01.prod.outlook.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <alX5FkSyqo6taYl9@ashevche-desk.local>
+References: <alX5FkSyqo6taYl9@ashevche-desk.local>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TPYP295CA0056.TWNP295.PROD.OUTLOOK.COM (2603:1096:7d0:8::7)
+ To OSZPR01MB8235.jpnprd01.prod.outlook.com (2603:1096:604:1a6::10)
+X-Microsoft-Original-Message-ID:
+ <20260714133226.10045-1-OrangeBlack0765@outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260617080031.99156-1-clamor95@gmail.com> <20260617080031.99156-6-clamor95@gmail.com>
- <akeHC-OA8tqM941f@hovoldconsulting.com>
-In-Reply-To: <akeHC-OA8tqM941f@hovoldconsulting.com>
-From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Tue, 14 Jul 2026 16:31:08 +0300
-X-Gm-Features: AUfX_mxzYxEuGLMctIZqZIdW8wmxIrFK1WcO0C4FctuVUcu9qYtJIaIs5OSxe4o
-Message-ID: <CAPVz0n2DPia=nfvd3W-rHy91OvZNO6jdSczT7kyvH-G138KJyg@mail.gmail.com>
-Subject: Re: [PATCH v5 05/14] iio: light: lm3533-als: Remove redundant pdata helpers
-To: Johan Hovold <johan@kernel.org>
-Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
-	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org, 
-	linux-leds@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: OSZPR01MB8235:EE_|TYCPR01MB9876:EE_
+X-MS-Office365-Filtering-Correlation-Id: 295482e6-0bc8-454c-f40f-08dee1ac629d
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|8060799015|19110799012|24021099003|23021999003|25031999004|25010399006|5072599009|15080799012|8022599003|3412199025|440099028|1710799026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?4hOw1v/qmgLHnCrZBXkeqNvnnHokG71IRBZJroKRBpTr3TdC/wAKKXUE3QYS?=
+ =?us-ascii?Q?Yv0YrDpyQ1c5iJoRAA0I5gZy0pg7/N4buw9W3/od75yTrXkjp1eyvR6WSmhP?=
+ =?us-ascii?Q?D1jtcxRFhUdeiML3od7le0g/8sKj4GrXPN1N9bQALKixyW2TzBuubaFai13u?=
+ =?us-ascii?Q?0MJGU3tbJ0Zc2BHpCPLu8bmvASDDzcJr8kY5q9mKwkLwU+9x/2joHMz6PCXO?=
+ =?us-ascii?Q?DUgDckwWVwTCF5LVHOn00/FTl0KKRfCPaOowAYjeUA2dBfOUcea7x3PXA/W/?=
+ =?us-ascii?Q?PrYuDcFKtDMxJMKtWsg6IcIPsLXN2guIYZa4gjNsF5zOyIkEx3wnuHPa/5Cy?=
+ =?us-ascii?Q?bD9s2WHa0T3DLfZoyfafmfhVathsykQzkNIxCEqfOwgRgN9PdXpVGYJFCaU5?=
+ =?us-ascii?Q?o4hDGHMXcVTNfinnrCRUC7atd5gYmGVsUAivu7UDolGTwvAyb0j9cp+4v9Ub?=
+ =?us-ascii?Q?2uYvzZVzpLQt7ekMd7L4n5duqefvkX8xSQc0w8yXQ1lPXFrOArQeZUo4jIP2?=
+ =?us-ascii?Q?SzqqbMhBMOyNVXjQDQ0zaaxRg73CKJLxTtzftQfNaXiJ5l9q9vDt6X3aglus?=
+ =?us-ascii?Q?FSC1reDcH87YO7FCm4fz22BZuYERPvu+tIgdqkgQU7/nduzcnj6cX7aWghx7?=
+ =?us-ascii?Q?HuitdCczSKtz7fV982tOYUIvP/mKh5GJd4BN0CUjb7BJgCIinWPuAhsf6tkE?=
+ =?us-ascii?Q?5prN4mexx/ztKFVQ7WxKTeVAVmBMDCZqsF1njNfbL+6HZtdxg5chYBJjJpB3?=
+ =?us-ascii?Q?1FPz4eRT+EmF5Q1oeXlBfzVvrZekZWamts+o6lcwRZPvHUEEU/FnI6UFfvBd?=
+ =?us-ascii?Q?ASF2jyjv51QvQJZA9LBRFXYJRJtinfz2qQmQkA5K0AiQTAXr9WY/Ml72jhT7?=
+ =?us-ascii?Q?Prrv2m36rplBD4083o+DRhWifEjK3GGkXNxOrg9GiH6n+yC3FMlXOlgG/oXD?=
+ =?us-ascii?Q?cJAeXEuaJs9IQAI26VYiLQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WDfaXzNctBQJYpp23qU5M00JKyv0CsVO+yNl3Any8QSnc8+1wl4gMwgA9WDU?=
+ =?us-ascii?Q?YqF3ESEg3l460RA6twQ00DtMT8LqdK2hhBgf52vMd/ASAoaKG9nFicLXllel?=
+ =?us-ascii?Q?cDTZ7BV2XaNXny+bOUjpfleF8QVmBqiyPlA6B4cK/3heUsQdm7JHClki8n0d?=
+ =?us-ascii?Q?CchPAkLhesDG1qrkhoTIeTe2kXgjM2/wzXW14U5WRnx5XsEXx5uDIUDcusrm?=
+ =?us-ascii?Q?sdKsbWQ/R4sG1m2N8+9EXJVlrmtwLxB58bUviTYv9xwZc13fMBLc7h4M8zKC?=
+ =?us-ascii?Q?0TBQNsZaZfzqTGIBCpXJnuYzqK6yO8iICZOAHqYiR+BGMpRIYL57UQQWMXXY?=
+ =?us-ascii?Q?aoWL34cYeyv2z5mPbMmSOwhFBK8fB2JrcTTIVwiCyHxYtlpGvPyURV15UAZC?=
+ =?us-ascii?Q?3W3qndGIt3Ub6iEyyHm3ginIxHTIOTJf9AQUBdFU16uFR+hrsXpqe24dz2jc?=
+ =?us-ascii?Q?oQ5JcWE3hUWKBlFTILQmRzlwHFfQgb2lWVXf36hHVnICYirNLaMAmdlxJNZQ?=
+ =?us-ascii?Q?SywLTRfuSLkTWKRbJc3n+Cs/mPte7WMy38t6a87NV78mnLMuJ+4baTDI8Rn0?=
+ =?us-ascii?Q?SMRF+TEQGRhzO0VhDkIVpVr/BCjf4X6RDQFBOII9etpRuIec0xa3yDxn0S9T?=
+ =?us-ascii?Q?HsC7w/Pn3BAh1O8U6pQqncwnM+Wr7KelXMUc1pdqzoON+NGdyGUYpDCT2Qyc?=
+ =?us-ascii?Q?+fnx7Jcen5pctBfQzyj76TGwGukjUZ3FMwEbkHUHweRFmfsy6LEjig62PA99?=
+ =?us-ascii?Q?Q1ssatxuyZhuNUmBzpy8a/j/2etEkXvwSQBSBbOkDqey+Ou8j5AoeWX6NNuh?=
+ =?us-ascii?Q?x5FonWcn8OsPZ1YICQYpexdRK5Ev+mK3wQYtDqsm4mso7gewuNJcf+zdc9Jc?=
+ =?us-ascii?Q?We65oY9gWKuHDKqYMVTI8RYfNaLnfFsOPnJGXQ9RKA+BcEH6agLchjII57tl?=
+ =?us-ascii?Q?QFdptMCzq0F1ZNU+67cPYGaBLV2qMFCsGWnAb6LtD89GRb9m9HMEdx3ZsSvI?=
+ =?us-ascii?Q?q3XAQDHJkhER3pT7vJc6vn/lB+ZNgA9PaRQerxwGvtIP97A1Q+/zNAgRXomT?=
+ =?us-ascii?Q?JKmUdAtfjtQqeW1RxO5r/uXqiFWQJ5Q+EpcAGkquL5YoFgWiwf2PfwmLGVgc?=
+ =?us-ascii?Q?Y5Ln9cPocmAeM43M7vDOdKJtGR0L/022kthGZ/oyrLgR1yU+48b4CB461Dos?=
+ =?us-ascii?Q?GWdbvjOuMbH4Xa5hOlPDvKSgRVqzmeecNsgB6Zx8S6OecdsYeQvWWcBEvbHr?=
+ =?us-ascii?Q?9jN0Rc03KKEUyc4jl47tC7YEc1ziSIB26+0LVdbX0+hhzSf3nGpWU0X6gPZG?=
+ =?us-ascii?Q?74+HyIT3yJ4wZylTrWMy5dKcoBceFyIc8cEY72zNLvG4BIcd9+EVck6msFIX?=
+ =?us-ascii?Q?P6Kh6BtRWB7AGMZnFM0maFkDvTufxzfM0RYcNtbkSMvVgpDGm2Aj3NitZeUp?=
+ =?us-ascii?Q?5BJ1nH8pm3oeLcDmxNpo5hH/NVoyaU2GfEuQtFp5sDWm0yqLxSOkfw=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 295482e6-0bc8-454c-f40f-08dee1ac629d
+X-MS-Exchange-CrossTenant-AuthSource: OSZPR01MB8235.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2026 13:32:45.9108
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9876
 
-=D0=BF=D1=82, 3 =D0=BB=D0=B8=D0=BF. 2026=E2=80=AF=D1=80. =D0=BE 12:55 Johan=
- Hovold <johan@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
->
-> On Wed, Jun 17, 2026 at 11:00:22AM +0300, Svyatoslav Ryhel wrote:
-> > The lm3533_als_set_input_mode() and lm3533_als_set_resistor() functions
-> > are used only in lm3533_als_setup(). Incorporate their code into
-> > lm3533_als_setup() directly to simplify driver readability.
->
-> That's a debatable claim.
->
+From: OrangeBlack0765 <OrangeBlack0765@outlook.com>
 
-Adding helpers to wrap custom regmap wrappers seems redundant twice.
+On Tue, Jul 14, 2026 at 11:53:42AM +0300, Andy Shevchenko wrote:
+> >  	for (i = 0; i < ARRAY_SIZE(chip->als_settings.als_device_lux); i++) {
+> > -		offset += sprintf(buf + offset, "%u,%u,%u,",
+> > +		offset += sysfs_emit_at(buf, offset, "%u,%u,%u,",
+> >  				  chip->als_settings.als_device_lux[i].ratio,
+> >  				  chip->als_settings.als_device_lux[i].ch0,
+> >  				  chip->als_settings.als_device_lux[i].ch1);
+> 
+> Now the indentation becomes broken.
 
-> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-> > ---
-> >  drivers/iio/light/lm3533-als.c | 56 ++++++++++------------------------
-> >  1 file changed, 16 insertions(+), 40 deletions(-)
-> >
-> > diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-=
-als.c
-> > index a9af8e2b965f..69bac1b202f1 100644
-> > --- a/drivers/iio/light/lm3533-als.c
-> > +++ b/drivers/iio/light/lm3533-als.c
->
-> > -static int lm3533_als_setup(struct lm3533_als *als,
-> > -                         const struct lm3533_als_platform_data *pdata)
-> > -{
-> > -     int ret;
-> > -
-> > -     ret =3D lm3533_als_set_input_mode(als, pdata->pwm_mode);
-> > +                        pdata->r_select);
-> >       if (ret)
-> > -             return ret;
-> > -
-> > -     /* ALS input is always high impedance in PWM-mode. */
-> > -     if (!pdata->pwm_mode) {
-> > -             ret =3D lm3533_als_set_resistor(als, pdata->r_select);
-> > -             if (ret)
-> > -                     return ret;
-> > -     }
-> > +             return dev_err_probe(dev, ret, "failed to set resistor\n"=
-);
-> >       return 0;
-> >  }
->
-> There's nothing hard to read about the above. To the contrary the logic
-> is more obvious this way.
->
-> You also remove the high-impedance comment for no good reason.
->
-
-Removing one level of indentations without obscuring readability is
-always a good idea.
-
-> Johan
+Thanks for catching this. I will fix the indentation and send v2 shortly.
