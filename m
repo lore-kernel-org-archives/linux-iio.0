@@ -1,117 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156DB181334;
-	Tue, 14 Jul 2026 11:31:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D8E379C40
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:31:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784028702; cv=none; b=NdyCYvzwRg+w7gmrlAWrK7UW/KPGMfB3zhdhrKu0InMZnS1gilljdKUVbXCIbzYwHItccmRFbb0UgQ9xqeB+de5lBvA7TumUovcjoOHRXXRSirEhCYwlbdks/OhfKisiVyNe4rlHXix7tLpCr7/03WWFuWMDzKLtYfQB3D80HRQ=
+	t=1784028705; cv=none; b=TaP7sgF/MfGYZrfInT3YSPgclQBxJAFe5+6xYwi8dAvoPbeDPpA+/bH71baZnr/asFCB19X7KElmn6RKGPiPaciHeK99W9Q4dhj6r4WBY6uLpybN3P9gwG/e5EGKFioA8pP6fweR7BGjrx+yw8WHGjYzEmlNyIfsbaiMV8TWnxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784028702; c=relaxed/simple;
-	bh=jcai0qjyo1b88jCQI1Se9jX27hbIxqqY8Uk5KZ+wrZg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lYk98sASwOz3GeFeo6vV3x3xJ6sLi00ODgXSKAU9ejt37obG991sinL/W+D8rPM2ngdoCleyn+O/l/kHFYDt5/sWokhDwwsZ9sfkCozov4iCE7eps0s3SBeMkMJiK3PsEMmENQP/9iZOMR4alMtFfkU23nrP7jNmHwcu/q3Y4wE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lCt0WCbA; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784028705; c=relaxed/simple;
+	bh=PcZYP0s/LLbxYZ1l/StzN0wsFguTXZWmYdbg1dHBg1g=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=acyb3a0JXJCQ4kfXKz05wlsucZrP0l2Vgqj4quSrcMlPPV1UxyoTCrs2Opw4kzVL/RlHeEOavs2771pZI86OecO2d+T/0a8QhFpnlrVEAKGoFxNDm5O7226IBk7WJx2HyM28095/0YSBzN6lZJ8qHnv+AcJjWyIup9Ed8FuwVlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j9n4om7T; arc=none smtp.client-ip=209.85.215.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lCt0WCbA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784028701; x=1815564701;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jcai0qjyo1b88jCQI1Se9jX27hbIxqqY8Uk5KZ+wrZg=;
-  b=lCt0WCbA18hKnAdoXyiKAhEcD7XpmGNfRd4ztpVgLGajNzsnVEWTGvH4
-   hBW8Idq+7E28XozXaPxNCN8I37MGNetNlwnMIL88HquS1Wedp8HQ7cuH/
-   ToTpltPvAFYCTXTFFhPEfQsa2Ztx9Hj6iQtOQdG8+xC1SRbS4RI10MWNt
-   /Xu/bdm3Z03RhTJt1JK0/SJpqQgyHZFlGhT9qCYFbRmPoFtXUHxT/2bEm
-   6UwkX8hkqTLttL6+mnYvJADIxSooVBnlVpzczI1S7QRGl3f30yBf1ygDi
-   6+qnCM9Dq6BTSG/Z/6EIYysG+/J4spRGpHUQ5ZnZecJvab5mvxOTwbyTc
-   Q==;
-X-CSE-ConnectionGUID: sqkoaSmWSMyOkzkjKDHx0Q==
-X-CSE-MsgGUID: OcMLykF0QV+t9LQDV4rQBA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="107440500"
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="107440500"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:31:40 -0700
-X-CSE-ConnectionGUID: 7pJYioDUQyKfbeqL+3ROag==
-X-CSE-MsgGUID: 5HfEpHDXSleqBZxbte/6yA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="254083358"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:31:36 -0700
-Date: Tue, 14 Jul 2026 14:31:33 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Janani Sunil <jananisunil.dev@gmail.com>
-Cc: Janani Sunil <janani.sunil@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH 5/6] gpio: ad7768: Add AD7768 GPIO auxiliary driver
-Message-ID: <alYeFXzm56mvfdzi@ashevche-desk.local>
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
- <20260709-ad7768-driver-v1-5-44e1194fd96a@analog.com>
- <ak-AcfH-Igsa_ksV@ashevche-desk.local>
- <1e353a66-3543-4a6f-91b6-d5e8524d9754@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j9n4om7T"
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-c99eaa1f020so738922a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:31:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784028703; x=1784633503; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=WmXULsheCa3K8LRrfmjt/jRlfBRLh2F63wTT6/Iom50=;
+        b=j9n4om7TARJln/MsILhP2HOYSN1xv1voQ6RKymcfzyHhl0ku/oSIe75KHlE0Yx5WsF
+         Oo4+PiE39bYlE0sKPNQxwybCNM3oZeUYNu3ID7V4LhGl5TaID5EpcCvgWMX/TgOLfjPr
+         se7zLWZXZw4A/7mnYSbmZXGgyl1mUpObBIu8liF91VZUUWqAI8wSDmkMz5ucdKkwLPu/
+         SGyo7popsWXyLYB9dWZS4qC/35K2oNoVk8z4fiZDM2TUgkraZe/bnyFd8blVOzjSPDx9
+         fXf3l4AsjDAE5/pFzSW7B0cwQUuYM7LMFgiGOjrkX9cs7AhYPeokfvpJggxx8cfpt4HO
+         XeRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784028703; x=1784633503;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=WmXULsheCa3K8LRrfmjt/jRlfBRLh2F63wTT6/Iom50=;
+        b=PCRe672cgC/GoWO4WshGFBPdFU6Mly1Fdz93eUpoiTX49SCSYr+DD5CZ8uxkW9+/ri
+         IRBi8tCfN5i0Jy+8Qs1j5Vu++ElRQFQsbAnffLPE6+6HRRD5CoNll1Fe0RGzYYLvkGfM
+         BsSYKHCzx0ONy5+V9kHohXu5BG9nRzDsm0ri/SzsayZik3qY6FyXZxZJbsleL0LZ/dsL
+         gW2FN92FYcU5rLmgwBaAAuOV7qwtLdyWs6+Mi8ZXoTti78xcGUt9YlfoMl4yqJ9YW/3J
+         qNlSoEL3ZmX1mlSa9RgfzRrkzaKipS+M9xaeyto5q4rDf3K0ptRBS7brZR32Kth+7JOI
+         OnOw==
+X-Forwarded-Encrypted: i=1; AHgh+Roy+tPOcYGOQq6E5KQg20sloJtJFff/62tWoQnneADMDuZOpaKzbKmY7IBjCKti4lyyxHOBlYzf4W8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVCzdx5N1IUuBjs0vx2jGP5srUwT5YN4xg2mhXRWteEKoPkWWp
+	HrwG7k2AhniFF1Uu/mOZIXuFfic+pluA3abUFe1adhqPrjmgPaSg068=
+X-Gm-Gg: AfdE7cn+dFT4+/27Dns5d/JubC24f92JPGekeU1hYz3BWQgsQnzDd/pVWCR2mcoSrZt
+	puLApaqLaTspzVYmH9hthOSXWGphEG3edZg/wOljJx0elWOlc8afjIwslp3efdYNfPvKgVV+YA0
+	d9svt+pCYr9xcDJmaa38Q0Nse367xmKQF1NgwvSG1U4R/IxY8ltXGfepXlw82vFOPdZ9KqAcqPy
+	Mc07ZbwtaatdoD10Opa24EItjOkz0a6CpPn2c7jqs4dKZSotbOJM4iilA8/veIw0B1J5GINMYve
+	+G38XIKvNMXLLR08SvYU0loTwcQ6UwFxCclP5VOIWcq9KAUz9z2ooxBDMIS9M0CcYrswiv+hGQJ
+	q+rTNmn6KLo4iwls0pbHd1Dp6lIiAyaQhK196Neuq1aVTQpyPq3IbcmUCxy0hT+eR+BLx8JkiLC
+	csKzCczWXDADw0FXpRaMEpAVpYpKeB+b+sZmc4Ct2cj934PlgbPKlZ
+X-Received: by 2002:a05:6a21:3995:b0:3bf:6c08:2840 with SMTP id adf61e73a8af0-3c11077478fmr14168126637.47.1784028702844;
+        Tue, 14 Jul 2026 04:31:42 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.63.168])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm95357368eec.1.2026.07.14.04.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2026 04:31:42 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v3 0/4] iio: light: opt4001: Fixes from code review
+Date: Tue, 14 Jul 2026 17:01:30 +0530
+Message-Id: <20260714113134.3445-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e353a66-3543-4a6f-91b6-d5e8524d9754@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 14, 2026 at 01:03:40PM +0200, Janani Sunil wrote:
-> On 7/9/26 13:05, Andy Shevchenko wrote:
-> > On Thu, Jul 09, 2026 at 10:50:16AM +0200, Janani Sunil wrote:
+Hi,
 
-...
+This series fixes a number of issues found while reviewing the opt4001
+driver. All of them date back to the initial submission of the driver
+in commit 9a9608418292 ("iio: light: Add support for TI OPT4001 light
+sensor").
 
-> > So, I briefly looked at the implementation and I don't understand why
-> > gpio-regmap can't be used. Do you need PM runtime there? It can be
-> > done for all (if absent).
+Patch 1 fixes the power down path, which read the device ID register
+instead of the control register in a read-modify-write, corrupting the
+CTRL configuration on the way to power down.
 
-> gpio-regmap does not naturally model the AD7768's direction dependent
-> readback behavior.
+Patch 2 fixes an incompatible pointer type passed as the remainder
+argument to div_u64_rem(). No functional impact.
 
-> On this device, GPIO Write data (0x0F) holds the latched output values and
-> the GPIO Read Data (0x10) reads the logic input level only when the pins are
-> configured as inputs. Using the generic gpio-regmap would always read 0x10
-> including output GPIOs.
+Patch 3 makes opt4001_write_raw() reject integration time writes with
+a non-zero integer (seconds) part, which were previously accepted
+silently based on the microseconds part alone.
 
-Will it? Even if you mark the corresponding registers volatile?
-So, the problem is that it always tries to read input state even
-for the output pins? I think this should be either configurable
-(a flag in the respective gpio regmap config) or be clever to know
-that the pin is in output and simply return what was latched.
+Patch 4 fixes reversed GENMASK() arguments in the (currently unused)
+fault count mask definition and adds the _MASK suffix for consistency.
 
-> The custom implementation preserves the device specific behavior.
+Changes in v3:
+- Patch 4: replaced tabs by spaces as suggested by Andy
 
-At bare minimum the summary of this should be mentioned in
-the cover letter / comment block.
+Changes in v2:
+- Add Fixes: tags to all patches
+- Patch 1: use regmap_clear_bits() directly in the opt4001_chip_off_action
+  and drop opt4001_power_down() (Jonathan)
+- Patch 2: document that there is no functional impact (Jonathan)
+- Patch 3: add blank line after the early return (Jonathan)
+- Patch 4: fix whitespace alignment of the new define
+
+Regards,
+Nikhil
+
+Nikhil Gautam (4):
+  iio: light: opt4001: Fix power down clearing bits of the wrong
+    register
+  iio: light: opt4001: Fix incompatible pointer type passed to
+    div_u64_rem()
+  iio: light: opt4001: Reject integration times with a non-zero seconds
+    part
+  iio: light: opt4001: Fix reversed GENMASK() arguments in fault count
+    mask
+
+ drivers/iio/light/opt4001.c | 37 +++++++++++--------------------------
+ 1 file changed, 11 insertions(+), 26 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.5
 
