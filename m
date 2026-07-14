@@ -1,79 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48ED832B121;
-	Tue, 14 Jul 2026 09:08:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA4943F871E;
+	Tue, 14 Jul 2026 09:18:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784020086; cv=none; b=Sh4azHuiCiN67c2OkeqnBjkblnhXUdJBO26gQ1PgP9YpmwHCcGtVpGb3GWBHYQGWa7lr2ICBGVv4sp8BZ1awu60p+Rt+ZKrcfV9QkvHa+tcSdP1DQ8LgjXbxGwMGpZXH/tqpblEfqS6FPa29DMgk8ui8JQJQKka4dbagSX3iX9c=
+	t=1784020738; cv=none; b=NTfl2dPQcHtFqBIqmx91Uk658DRwR/PASRlgk7ii4bUGon1hRoqgglhV1Mv832+N9mkLUlBhAskATKDg+yiFj6C5kA/VUL+JjIEQHFG+nCWg1keE3vB0Kah9CoC/+5g4jVbvl0i/xuDbtlxsps/dQ9LiwoUBZzaR9hWWAmmeDNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784020086; c=relaxed/simple;
-	bh=IUso+Mzyx145mh9MGQHIdzUB9jky338Jq95gmO43E7E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gP1RDb1SFFKhnxqFl+HjDLJRGeZNdAIWvTlXe1Kd99ntzgozOtVpKUSpE7qWkeUQBhWj8a3PYXKXr4AY9zhonHNPh6VR4mCzpYV16u57HAVqZQYkKsF7Gw0DJcoFj8/D00zE1TslhqX4Fl89oFpT3/SM1ebP7GnDYGAoFSdBMpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YESodvwP; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YESodvwP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784020085; x=1815556085;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IUso+Mzyx145mh9MGQHIdzUB9jky338Jq95gmO43E7E=;
-  b=YESodvwPTlgAvUSyblD2yrDEBqvoU/KBckqIm+q8f+Ds3rPQ/C6alsm9
-   DDqn32nM0+oddPjm5RPWadNmt20t13Gml5Yiuvh9I18wiOnOfQGuDU85k
-   N0D8eudkqEGTdtYkZjOyGULnfupBHqxmSP7378k69Q7iWJfnd1PmtQIyx
-   MNmJq0E39g7nPVf0fzge10V7skILEUsOD7hSKqlVkhjLJ81XOGZVEvqnV
-   i2Hd0f1guV8OhtC4Yv4wVPYjjhXn1ABMCXWuOYfeM/eT4s/T164NgYTcq
-   vlkNa/JzBEw7JvM2VwM3zbfggScyGQ7LNRjH18TOERWtQv9Weo5J8B8ab
-   Q==;
-X-CSE-ConnectionGUID: 9fHKKdjfRkCfJiFARzhYDw==
-X-CSE-MsgGUID: x5oWJT7iSLyvan36QDQ28A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="95238758"
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="95238758"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 02:08:04 -0700
-X-CSE-ConnectionGUID: R2XPs1HOR7izm3F3+HyUdQ==
-X-CSE-MsgGUID: qfRCoEQeSEOl5/SQjICRtw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="252421225"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 02:08:00 -0700
-Date: Tue, 14 Jul 2026 12:07:58 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Linkai Gong <gonglinkai@kylinos.cn>
-Cc: nuno.sa@analog.com, jic23@kernel.org, olivier.moysan@foss.st.com,
-	dlechner@baylibre.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: backend: fix typos in kernel-doc for
- iio_backend_interface_data_align()
-Message-ID: <alX8brPnXIueYPOP@ashevche-desk.local>
-References: <20260714085019.3109889-1-gonglinkai@kylinos.cn>
+	s=arc-20240116; t=1784020738; c=relaxed/simple;
+	bh=Zi6N8bIuff3paVGAjvofcG6eQ/Z/gHBbiE/CAef321M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CTyJmP7g+h1+5gfu95bKPU/WfKrSozns7ShyJ4VlNo9dIQBhVJqdkb/oaXd9qxNhL7mS6EcfAK7Uu6vVA1kQFibc2fvNdFTl2Lra+p5DbxUVVOcI5PJS+eEMDUW3GjqldtAOm7lODt0DpLqhmECJ3PcxVxpKw54qtJqQdnL3MAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 068c91687f6511f1aa26b74ffac11d73-20260714
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:55e18a86-ee78-4dd7-8ecd-6bbc48107d77,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:e7bac3a,CLOUDID:b3d406fb4e48f1e4d0889e71ceb5159a,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:102|865|898,TC:nil,Content:0|15|50,EDM:-
+	3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,A
+	V:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 068c91687f6511f1aa26b74ffac11d73-20260714
+X-User: pengcan@kylinos.cn
+Received: from lenovo [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <pengcan@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 1318479589; Tue, 14 Jul 2026 17:18:50 +0800
+From: Can Peng <pengcan@kylinos.cn>
+To: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	andy@kernel.org
+Cc: linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Can Peng <pengcan@kylinos.cn>
+Subject: [PATCH] iio: dac: ad5446: fix OF module device table
+Date: Tue, 14 Jul 2026 17:18:45 +0800
+Message-ID: <20260714091846.136278-1-pengcan@kylinos.cn>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260714085019.3109889-1-gonglinkai@kylinos.cn>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 14, 2026 at 04:50:19PM +0800, Linkai Gong wrote:
-> Fix two spelling mistakes in the kernel-doc comment:
-> "initates"->"initiates" and "proccess"->"process".
+The ad5446 I2C driver exports its OF match table with
+MODULE_DEVICE_TABLE(OF, ...).
 
-Is it the only a single spelling mistake in the whole IIO core?
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+The device table type is used by modpost when generating module aliases,
+and scripts/mod/file2alias.c matches the lowercase "of" type.  Using
+"OF" prevents the OF table from being recognized, so no OF module alias is
+generated for the I2C driver.
 
+Use the lowercase "of" type so OF-based module autoloading works.
+
+Fixes: 876d94024087 ("iio: dac: ad5446: Separate I2C/SPI into different drivers")
+Signed-off-by: Can Peng <pengcan@kylinos.cn>
+---
+ drivers/iio/dac/ad5446-i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/ad5446-i2c.c b/drivers/iio/dac/ad5446-i2c.c
+index 9797fc3e57a9..286695e240c3 100644
+--- a/drivers/iio/dac/ad5446-i2c.c
++++ b/drivers/iio/dac/ad5446-i2c.c
+@@ -83,7 +83,7 @@ static const struct of_device_id ad5446_i2c_of_ids[] = {
+ 	{ .compatible = "adi,ad5622", .data = &ad5622_chip_info },
+ 	{ }
+ };
+-MODULE_DEVICE_TABLE(OF, ad5446_i2c_of_ids);
++MODULE_DEVICE_TABLE(of, ad5446_i2c_of_ids);
+ 
+ static struct i2c_driver ad5446_i2c_driver = {
+ 	.driver = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
