@@ -1,61 +1,63 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D8E379C40
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:31:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A762181334
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:31:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784028705; cv=none; b=TaP7sgF/MfGYZrfInT3YSPgclQBxJAFe5+6xYwi8dAvoPbeDPpA+/bH71baZnr/asFCB19X7KElmn6RKGPiPaciHeK99W9Q4dhj6r4WBY6uLpybN3P9gwG/e5EGKFioA8pP6fweR7BGjrx+yw8WHGjYzEmlNyIfsbaiMV8TWnxU=
+	t=1784028708; cv=none; b=AR9VDyIORf474ll9QY/KphQA/GmF1AggmqpLA0HqLKykjcnkUSJaeARQmWSF9kgDTLfKN14Pa6M0xCc+TYiDMR6lZEyAmnlexbL1FEk4Hna0npkn7OlVJKjj+Mhia32gefRPmXedZ3ZvhBxW7qQ6psPada+AtmSOTCqeifP9LOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784028705; c=relaxed/simple;
-	bh=PcZYP0s/LLbxYZ1l/StzN0wsFguTXZWmYdbg1dHBg1g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=acyb3a0JXJCQ4kfXKz05wlsucZrP0l2Vgqj4quSrcMlPPV1UxyoTCrs2Opw4kzVL/RlHeEOavs2771pZI86OecO2d+T/0a8QhFpnlrVEAKGoFxNDm5O7226IBk7WJx2HyM28095/0YSBzN6lZJ8qHnv+AcJjWyIup9Ed8FuwVlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j9n4om7T; arc=none smtp.client-ip=209.85.215.178
+	s=arc-20240116; t=1784028708; c=relaxed/simple;
+	bh=xxgwCeT3dSPUCMHW5OXfv9VTnN/cr+L941sj/wmgWQk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Obl5ul80egvnt2i+T3ekk6DR5CEyX5UxBev2+jdXJ/lp5IanLo1XNl9FzdWBI7/MIWR24fHYtKnEGIIzEKNFN91UTXkPx+dsVxu/8yxXYU66VrzH7FHdXq3lGnuuP/5hb6AYEwlbutLIN+/O+olcWmyrQjuKZx1Jh2KJ5Dn8+7A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m4TK0FZX; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j9n4om7T"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-c99eaa1f020so738922a12.2
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:31:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m4TK0FZX"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-84536ecfc5bso613013b3a.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:31:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784028703; x=1784633503; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=WmXULsheCa3K8LRrfmjt/jRlfBRLh2F63wTT6/Iom50=;
-        b=j9n4om7TARJln/MsILhP2HOYSN1xv1voQ6RKymcfzyHhl0ku/oSIe75KHlE0Yx5WsF
-         Oo4+PiE39bYlE0sKPNQxwybCNM3oZeUYNu3ID7V4LhGl5TaID5EpcCvgWMX/TgOLfjPr
-         se7zLWZXZw4A/7mnYSbmZXGgyl1mUpObBIu8liF91VZUUWqAI8wSDmkMz5ucdKkwLPu/
-         SGyo7popsWXyLYB9dWZS4qC/35K2oNoVk8z4fiZDM2TUgkraZe/bnyFd8blVOzjSPDx9
-         fXf3l4AsjDAE5/pFzSW7B0cwQUuYM7LMFgiGOjrkX9cs7AhYPeokfvpJggxx8cfpt4HO
-         XeRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784028703; x=1784633503;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1784028707; x=1784633507; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=WmXULsheCa3K8LRrfmjt/jRlfBRLh2F63wTT6/Iom50=;
-        b=PCRe672cgC/GoWO4WshGFBPdFU6Mly1Fdz93eUpoiTX49SCSYr+DD5CZ8uxkW9+/ri
-         IRBi8tCfN5i0Jy+8Qs1j5Vu++ElRQFQsbAnffLPE6+6HRRD5CoNll1Fe0RGzYYLvkGfM
-         BsSYKHCzx0ONy5+V9kHohXu5BG9nRzDsm0ri/SzsayZik3qY6FyXZxZJbsleL0LZ/dsL
-         gW2FN92FYcU5rLmgwBaAAuOV7qwtLdyWs6+Mi8ZXoTti78xcGUt9YlfoMl4yqJ9YW/3J
-         qNlSoEL3ZmX1mlSa9RgfzRrkzaKipS+M9xaeyto5q4rDf3K0ptRBS7brZR32Kth+7JOI
-         OnOw==
-X-Forwarded-Encrypted: i=1; AHgh+Roy+tPOcYGOQq6E5KQg20sloJtJFff/62tWoQnneADMDuZOpaKzbKmY7IBjCKti4lyyxHOBlYzf4W8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzVCzdx5N1IUuBjs0vx2jGP5srUwT5YN4xg2mhXRWteEKoPkWWp
-	HrwG7k2AhniFF1Uu/mOZIXuFfic+pluA3abUFe1adhqPrjmgPaSg068=
-X-Gm-Gg: AfdE7cn+dFT4+/27Dns5d/JubC24f92JPGekeU1hYz3BWQgsQnzDd/pVWCR2mcoSrZt
-	puLApaqLaTspzVYmH9hthOSXWGphEG3edZg/wOljJx0elWOlc8afjIwslp3efdYNfPvKgVV+YA0
-	d9svt+pCYr9xcDJmaa38Q0Nse367xmKQF1NgwvSG1U4R/IxY8ltXGfepXlw82vFOPdZ9KqAcqPy
-	Mc07ZbwtaatdoD10Opa24EItjOkz0a6CpPn2c7jqs4dKZSotbOJM4iilA8/veIw0B1J5GINMYve
-	+G38XIKvNMXLLR08SvYU0loTwcQ6UwFxCclP5VOIWcq9KAUz9z2ooxBDMIS9M0CcYrswiv+hGQJ
-	q+rTNmn6KLo4iwls0pbHd1Dp6lIiAyaQhK196Neuq1aVTQpyPq3IbcmUCxy0hT+eR+BLx8JkiLC
-	csKzCczWXDADw0FXpRaMEpAVpYpKeB+b+sZmc4Ct2cj934PlgbPKlZ
-X-Received: by 2002:a05:6a21:3995:b0:3bf:6c08:2840 with SMTP id adf61e73a8af0-3c11077478fmr14168126637.47.1784028702844;
-        Tue, 14 Jul 2026 04:31:42 -0700 (PDT)
+        bh=UQkjz4SLBwT2GueIM4+tWAz99xBrKedDThFl6sdTxH8=;
+        b=m4TK0FZXFw/7luCgZ+72YHNV/0IX92yLgt0D4aQovBZZVQf5Gor/pMZNr5DW15eez2
+         dmeE6NS4xytwHIuPdsAcTdVgeN/sKb3jMLiItFY8qRrDcm7HmpED80kgf+a13/ongl0v
+         70kt6Ya5Bm+9DpIBFezGuJKqNcvn/NeYgtxPv5ODkm3QWyDTtb/QR+t7mZCveAFdS11a
+         ZCr50+PL1ODZEcftzF1ousR5MCcAcOMtGZXz2yzNtTb8i+fErwRn9tBS72kJo1BT1yYd
+         bnzXzg7mQpJ6MfwkNFOtho0sy65KKuUPxRjKWMm2PrTR0D5Rl55f9EbRSz7TowevjM8C
+         pzdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784028707; x=1784633507;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=UQkjz4SLBwT2GueIM4+tWAz99xBrKedDThFl6sdTxH8=;
+        b=r7SWSiMy6DWMt8ATBUXV8O2j0Zp1Vrj4A5bhgRIvJrI5y3Rdg9GzCRm9VFcTGzTl2F
+         X15KQqfLDaCcEcRowDwNkDH0f6jPH4J7ckyRuP/zrjgofQARIztJiUvgAehERXAUvLh6
+         N7ra3qaDC2fdBwpiRZo/pU9Y2Ve/SFcMPULZDq0uEywmzknnbXIStgBnVr2ipXV0nory
+         812wmlw6gREIKHFfi1pZxSrqfmP8xR1+te6DB6nCJiRfp/Oh29AcijTMZkPNpQrjUlP9
+         FSHPERWMKpuVLHU1mteLScVHY0Mq8JlxWLCDoJlCeeQaadNY1898dnJtEW4pbdfSfg+6
+         ZRYw==
+X-Forwarded-Encrypted: i=1; AHgh+RpUWpV0j6zw2+YSPACPz7I8KmUSISrKqprlv6tgQv/ZpKKyGf9nYZGMGecv4L8RdBl1UdKI/U/WDwM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxsjhGXwvmQ+yJlIXNtAjHNdyqiK7KUhVbvenlzD5lLwdmO4CJ
+	Lf4k20wF1S/VHcrhVk1wvAiNgSZlBROjEfwfBYhcgqKC0NjcvZsmLfCNdq2QICw=
+X-Gm-Gg: AfdE7cmjyX42mVDZH0DbfC5oLo0Yzakqy5Iy9iHfOu1hgmIF1hbegghJd5OdJFjRrnx
+	/dZNfV+7JXzOO5tAEBvgftia7euEAT/AsRprt1SYScmkSOJORPAYxSIlOpn+P8B5inRni+4CqKH
+	+46IAc9VP5oadayzLozZC161MCYBHFnNONCfEgpCQ9436IKgKIwkswLGmI/8nRBtZ+tDmS50Kxs
+	Ih+vHdyRtX+hAeAxr8Ni/9Vh4PoX08cmx96aGQbj3NubPgadZiifXYx+Ji3R9KJKnFwLrxr3F2U
+	H8xXcbSMCF6MpyE4rqHL0oODy9b6Hvdw5iEkFS2eIMvwYkzev4Ipk7rT5HkSc1yDIo8zhoEaAUY
+	IM1DQ8k019R3R00oaeEpa6Boe3vr6hsk03/sSJhMtQUXotwGBec0r9H+l08xlW5IE/lFkIK3a6G
+	m2pXAR3PQBEfzSugU4RpoGeA9A2+ecyykduQq212rYJM89iI1E0NTA
+X-Received: by 2002:a05:6a20:7283:b0:3b4:6f7e:d0f9 with SMTP id adf61e73a8af0-3c1100308f2mr13749870637.3.1784028706648;
+        Tue, 14 Jul 2026 04:31:46 -0700 (PDT)
 Received: from localhost.localdomain ([101.0.63.168])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm95357368eec.1.2026.07.14.04.31.39
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm95357368eec.1.2026.07.14.04.31.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 04:31:42 -0700 (PDT)
+        Tue, 14 Jul 2026 04:31:46 -0700 (PDT)
 From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -65,10 +67,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v3 0/4] iio: light: opt4001: Fixes from code review
-Date: Tue, 14 Jul 2026 17:01:30 +0530
-Message-Id: <20260714113134.3445-1-nikhilgtr@gmail.com>
+Subject: [PATCH v3 1/4] iio: light: opt4001: Fix power down clearing bits of the wrong register
+Date: Tue, 14 Jul 2026 17:01:31 +0530
+Message-Id: <20260714113134.3445-2-nikhilgtr@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260714113134.3445-1-nikhilgtr@gmail.com>
+References: <20260714113134.3445-1-nikhilgtr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,54 +81,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+opt4001_power_down() intends to clear the operating mode bits in the
+CTRL register but reads OPT4001_DEVICE_ID instead of OPT4001_CTRL, so
+the value written back to CTRL contains device ID bits rather than the
+current configuration.
 
-This series fixes a number of issues found while reviewing the opt4001
-driver. All of them date back to the initial submission of the driver
-in commit 9a9608418292 ("iio: light: Add support for TI OPT4001 light
-sensor").
+Fix and simplify this by using regmap_clear_bits() on the CTRL register
+directly in the devm action, and drop opt4001_power_down() which has no
+other users.
 
-Patch 1 fixes the power down path, which read the device ID register
-instead of the control register in a read-modify-write, corrupting the
-CTRL configuration on the way to power down.
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Fixes: 9a9608418292 ("iio: light: Add support for TI OPT4001 light sensor")
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/light/opt4001.c | 27 ++++-----------------------
+ 1 file changed, 4 insertions(+), 23 deletions(-)
 
-Patch 2 fixes an incompatible pointer type passed as the remainder
-argument to div_u64_rem(). No functional impact.
-
-Patch 3 makes opt4001_write_raw() reject integration time writes with
-a non-zero integer (seconds) part, which were previously accepted
-silently based on the microseconds part alone.
-
-Patch 4 fixes reversed GENMASK() arguments in the (currently unused)
-fault count mask definition and adds the _MASK suffix for consistency.
-
-Changes in v3:
-- Patch 4: replaced tabs by spaces as suggested by Andy
-
-Changes in v2:
-- Add Fixes: tags to all patches
-- Patch 1: use regmap_clear_bits() directly in the opt4001_chip_off_action
-  and drop opt4001_power_down() (Jonathan)
-- Patch 2: document that there is no functional impact (Jonathan)
-- Patch 3: add blank line after the early return (Jonathan)
-- Patch 4: fix whitespace alignment of the new define
-
-Regards,
-Nikhil
-
-Nikhil Gautam (4):
-  iio: light: opt4001: Fix power down clearing bits of the wrong
-    register
-  iio: light: opt4001: Fix incompatible pointer type passed to
-    div_u64_rem()
-  iio: light: opt4001: Reject integration times with a non-zero seconds
-    part
-  iio: light: opt4001: Fix reversed GENMASK() arguments in fault count
-    mask
-
- drivers/iio/light/opt4001.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
+index ba4eb82d9bc2..66563000d081 100644
+--- a/drivers/iio/light/opt4001.c
++++ b/drivers/iio/light/opt4001.c
+@@ -222,33 +222,14 @@ static int opt4001_set_conf(struct opt4001_chip *chip)
+ 	return ret;
+ }
+ 
+-static int opt4001_power_down(struct opt4001_chip *chip)
+-{
+-	struct device *dev = &chip->client->dev;
+-	int ret;
+-	unsigned int reg;
+-
+-	ret = regmap_read(chip->regmap, OPT4001_DEVICE_ID, &reg);
+-	if (ret) {
+-		dev_err(dev, "Failed to read configuration\n");
+-		return ret;
+-	}
+-
+-	/* MODE_OFF is 0x0 so just set bits to 0 */
+-	reg &= ~OPT4001_CTRL_OPER_MODE_MASK;
+-
+-	ret = regmap_write(chip->regmap, OPT4001_CTRL, reg);
+-	if (ret)
+-		dev_err(dev, "Failed to set configuration to power down\n");
+-
+-	return ret;
+-}
+-
+ static void opt4001_chip_off_action(void *data)
+ {
+ 	struct opt4001_chip *chip = data;
++	int ret;
+ 
+-	opt4001_power_down(chip);
++	ret = regmap_clear_bits(chip->regmap, OPT4001_CTRL, OPT4001_CTRL_OPER_MODE_MASK);
++	if (ret)
++		dev_err(&chip->client->dev, "Failed to power down\n");
+ }
+ 
+ static const struct iio_chan_spec opt4001_channels[] = {
 -- 
 2.39.5
 
