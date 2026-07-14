@@ -1,67 +1,68 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA39243551D
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 23:22:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 955C4433E80
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 23:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784071369; cv=none; b=GOMoZKq7yckK3CAN6qYQECI/UJY4C30nzFzZB3iw0WlEGm6rPrb1kU0lzzY4bk8qPTO9yXbb70/fvzDVe9Aa0UEILNa3Kpmr2UEclN+ooT6ouSjpv0BLsWkNfsik/5P5OnBuY+K9W8eXzl7IdvxbOpwvV6kzWy6DYEGQEKpemvw=
+	t=1784071370; cv=none; b=cn5ZMlgzQsoaSpcPkukxu4WRwQSBPXIJ74VeDG4Gc+YJAfDuMoVHwR2FhXKufAP9UkrLA7Fq59aO/akfsA/6k4qop5Eh7cYvWezgUirws6APn2AM3AAnZs2yNc9Arqy+q3uP9goZqbzvErmnYNYGLN7XvMwWntUFDvrvyAuGOtU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784071369; c=relaxed/simple;
-	bh=DvAzEskRo1aaWEFsO8jB+h+KLZgJN9K2o31c8vb8nVY=;
+	s=arc-20240116; t=1784071370; c=relaxed/simple;
+	bh=G65Ti4QAMGB3NTJ8s0MkoDBtHTtbBSTfAKdXE3aAfz0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EgPt/4UTKPFBG2ha3++fS/eLpWOaHQ7VcA3qEM93Cc6pPazX0G2cclbr5bdfpEHadVAgYyW05Qux1wGxDUwxY4Au9B/Mi+xcHpfIvnHI79QrWcCGpFWFkV/Sz4DEKqR0kxghqM024H8ZE2TwBk8zGwmv1oE2jYD/7IZH+tuNPu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=FTGRmxLC; arc=none smtp.client-ip=209.85.161.42
+	 In-Reply-To:To:Cc; b=oBpd9DdUGbL/jWHUSasBZDvDOS73XU3vvJETpsYgX3YfDge6LGqFLugM1gJo2zfb0lK4EIFgqmz6jMuMSUsxHQ2Ht1Htj5+Pce1qvNse64FlpL21wyPiJzhxQbIeaEDMzsabEgRWU/zXTzX+16Xtij4bAK1VyM7nvUqrQAs5rwQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=CI4KCFTr; arc=none smtp.client-ip=209.85.167.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="FTGRmxLC"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-6a38d83a480so46601eaf.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:22:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="CI4KCFTr"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-4960fb63c75so953045b6e.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:22:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784071360; x=1784676160; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1784071365; x=1784676165; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=xxnQYwYgvTa5VUQkg3ZK1mdH+XYHmPu09MGH1oXASzg=;
-        b=FTGRmxLCKONb0ynn7FICt7ieyapngalRSMOA0yyxpw/OuSsDQ47uWvTd6WRzdAyjGU
-         TMmWXJXX4BcQulLvDwrE/cCv/6mUyw1qV4DXWCLE+l91o8zidIybGHyP8CwXoMrKoWh6
-         lg0AfNdjR/5YwmTRaxxB8lpUww6dHmWz6tikZWepu61t9OgTrGTCWIzBzKnkVA2JepAo
-         r+c2wvCf7ec9sN7Tbe2g9588cGAf/ubfVGbt86/YWOv9UqpPbXcEsiY9Nlno+x+mI4l5
-         I36SiIEzTqp9a+voJg2LV8yAECa5cT2xSEQ/5CxBn42aASbxVKII4gxmLNUcQvgi1vdC
-         Stqw==
+        bh=7ss+hmrk11EmJyPlPd6A3156r9SwPO30C/Pjs1VHs3Q=;
+        b=CI4KCFTrAvxBhY0ZzLT3VS0qq9p7Z0GnMBCjT6kemyQS8VUGLvDBjZoQEROb7ZJpWP
+         2V0mQ3plEFNRF51VbLiuDh6N1rgJ+RylsGXuCeDT+AVrj85gB/t42S7G3bPkB3NkvKHV
+         Rlc2blod4RLGFUj2eGqfvvds1uQTATiD+V7oswy+9wVgX205VXBMCH/NcokSJLMNlyP9
+         5SgbhaBcqW6JktvlDlPhXevA2sRdmEhVWPw+3rfh6SVbSgXSDyh3HDu8SEMmBaZG32q5
+         eXI3PXVse/fdHAQ8VPvh3KipECbhVNxAZIZtsH29boFVy5ONNlcKvVX0YuYN3G8T/NUz
+         mz7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784071360; x=1784676160;
+        d=1e100.net; s=20251104; t=1784071365; x=1784676165;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xxnQYwYgvTa5VUQkg3ZK1mdH+XYHmPu09MGH1oXASzg=;
-        b=n1Su9Qg6gyj+6mb+XglvK9Ne3bo+j62dJ30FSYByyPZJsT1FoyprUMJK+BFe4qv9Jh
-         ipv6EtmjboJMKYn1Fyhwc8lAlgTLL+8z/Z1BG+LuxEnWD76BvY0pQe7MH1OON4uUyqfQ
-         kEhgJJpNzqXu2jxkrii1zWcPoR7Ed/VHE6IbmRzawv1Z2+VXczDtq3bBja1Ch6qWOnpo
-         gjwvciunWGPh5j0oYHSZFMF2QvMn3Btw6gwcUDW/aLZIyRMaF57Tkwqe9Y5qQcV6QVkN
-         YN+FIb9nIubDUyy06y4fUYbsGLdx9K+bihA9lwe/K9J2ED1NLyqJokTIz53t36O2Scl9
-         hmwQ==
-X-Forwarded-Encrypted: i=1; AFNElJ83D+d5CtkBo1T2j5d2QcXI32M0nE+bLA7d1eRfZlNlxFuoefC23vWfLR0iOTfugPTuZ5RvxdUZSTc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxu3+EBTjMOWIAW8S5bMXe35C7ZsVx4iOMuKT2YFXPwsHESguRQ
-	r4aUZs7sXrojhkNVb2q3eHxbB0+eWTbnGNtPrA1q0vbjhNoQf8TZj6HdgrwE0vdRm0U=
-X-Gm-Gg: AfdE7cnlH9ybC8BA0w+BF8ZxQga1kScoeMRT/9Akr3aIdqa1ftGbh7ct7h98B4tuC34
-	ALCfE+04ywCtdJaca/YyI/Lu+ZCcNKVM9lgKkSaDXwgN+A2AgvYWRUL3CoBnnT5Bb01FhfPdxMW
-	95DZQAqHanHk/8bW7JFB9NsDgWmgOOH2hF6p8psr4JuZuiDFHD1UH/I8N6wePuJQ4mTqUZH3+Sq
-	jpbGoL8BfPnJUsSUFe3Q4ronbVllK85N3N7GyYB3kJ96HPTnIoujLrptkqhKOxrFBTlVqdiWR99
-	MjDeP+WnKJKxmpDfMGvJgrXp6tMangCH2b6y198E3PfRat4mYALExScKxIYWuNM7srWjeeLfvA8
-	UTlL5RBr3Zjiun0FG7HJHXWmK6SQuhJOwn6tm3xl98CZRiU6VoEWQS/AY//FaAIHkzM0czcIzmU
-	lgK5qz9IS22mpof3qy/w==
-X-Received: by 2002:a05:6820:1523:b0:6a3:7d24:7b8e with SMTP id 006d021491bc7-6a39be98f17mr6727379eaf.26.1784071359711;
-        Tue, 14 Jul 2026 16:22:39 -0700 (PDT)
+        bh=7ss+hmrk11EmJyPlPd6A3156r9SwPO30C/Pjs1VHs3Q=;
+        b=M9f86N4eBMTyybA+1FKxqVDVWfTYVdQI+kbhSR5MfYIdioNadXoEL1IevWgeV1GI6C
+         X5MhZxejYM/OtdEpPeQp7F3J/iVVTlJ0RhmjAl165v7Pdd0H/0PXllPJ/ucdCDYCP7Sn
+         JautiihRVuyN0C2uBjOdjsvYWCIbu2zNIdHyvlnlkxol2t5Kjnq8KpCMu23+y/VsG+1l
+         0xqyqr8jFe9Hsd54tndBuuVS+NzBkM5aZcBsWPQqqWWvFNCVOL3B3SjQqeWFlxf2dxPW
+         lB5LqVIv5SpDqUxOSsLfCkK35wcRBS7QltWSYCV7ozWF+YeD9pOfixAruJZJcZ5SharH
+         Xbtw==
+X-Forwarded-Encrypted: i=1; AFNElJ+yE9OBUCzgPZc5Yij/mSYknCU2wSMQhZC8M4/ZDRKFtt3bUJ2kxpMp0ZGDWM2pTaw0n6wazX/HHoc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxwdDrQ8HQ/0L9mKHiAWRAbfXs/wgPzRk6lNz4XCatjCQSKxrN/
+	FhxywwJu6RM0BQ7XGCHNrvA5OzLG5CcsMEfr5Yy2G3O8H88hVxw15A2+238TsYEmqGc=
+X-Gm-Gg: AfdE7cmnomtIEuXV5OPbqltmerlwen/gU4C8QSMbaSJrGeQwZCEFHLknKHrKAM9yaJO
+	2nsLadK4knlywM9Hg3Xz3aLOqEziTymIa//D905bd+XKQIzJr3F1zMnzYC3OgmsXK8A2x4H2i4K
+	GaYceUnjyBJwa5RdEdGHDfkoFhtpAJFEzxl1aQnFWZBgGXj796qnG/UjKf1UXUzXS0SQSHitbvI
+	n8vntEB60eOxApszOYJ3qcEYZSwvuZ1+nCznE0esLU7MDF2x28VtoAWmLI2jA0wiInc53OG3FSa
+	9dKL8bxk6Jueey20qr4tkKRoH5wRX0SaOh5GC2JEfWy3OWg3sC6iz3fn2BJFDlHoWxLNoMqPlK+
+	ClHoJeG0ZLFAEpAwEjGBEx/DWa7prZV2ps57nXww1LL1TzEnguzptwECRAhEXG84p+EJpG2Eem3
+	LtrKyaFRcBtkFVq5tEwg==
+X-Received: by 2002:a05:6820:4dc4:b0:6a1:50eb:2118 with SMTP id 006d021491bc7-6a39a71fd1amr8702786eaf.60.1784071365226;
+        Tue, 14 Jul 2026 16:22:45 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:280e:69fd:7612:d5a9])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a39af0e953sm7561978eaf.3.2026.07.14.16.22.37
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6a39af0e953sm7561978eaf.3.2026.07.14.16.22.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 16:22:39 -0700 (PDT)
+        Tue, 14 Jul 2026 16:22:44 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Tue, 14 Jul 2026 18:21:27 -0500
-Subject: [PATCH v4 5/8] dt-bindings: iio: adc: add ti,ads122c14
+Date: Tue, 14 Jul 2026 18:21:30 -0500
+Subject: [PATCH v4 8/8] iio: adc: ti-ads112c14: add measurement channel
+ support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,8 +70,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260714-iio-adc-ti-ads122c14-v4-5-25f8e3084485@baylibre.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260714-iio-adc-ti-ads122c14-v4-8-25f8e3084485@baylibre.com>
 References: <20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485@baylibre.com>
 In-Reply-To: <20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -81,306 +82,711 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
  Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>, 
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8142; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=DvAzEskRo1aaWEFsO8jB+h+KLZgJN9K2o31c8vb8nVY=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqVsSXGmO/U5APL7Ozla3yhc1sehpA7CK0qiDuv
- xYsCq/bYMmJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCalbElwAKCRDCzCAB/wGP
- wLzDB/9b8aaiepGdXU3qE+lvEXPfXdcSDNxVb3DgYzl46oFrgYKoA5k097841RT2epE7opNK8Sd
- 5d/bpdp+gN62C4dNGNOIjn7Z4NyETV9AIbfkmbYKJ9R+tnHOTMbSKjoVq4CSL4/MWz/fDFvBfgU
- 58MgZDtEoPGvU92PNkE0sHBwyTrqF5Hdebv3iDgP2qEQbMCQ5aNBOjCMDfG86L7pFHIcpM/iSHT
- UIjVx6r+MPvm4QdtZEoRVHNJi1SExQeEpr4Lvu+aCUQC5BME/xv9qgaNGcy5gKI/RImAZ1XsYxY
- kRLmlCap9tsHlGz8dfcffcLs8kSvHZH+6yyEkx511OxyBM5E
+X-Developer-Signature: v=1; a=openpgp-sha256; l=23271;
+ i=dlechner@baylibre.com; h=from:subject:message-id;
+ bh=G65Ti4QAMGB3NTJ8s0MkoDBtHTtbBSTfAKdXE3aAfz0=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqVsSsGOpLLRkyL75EhoXfjapWiV5aRmiN2f92+
+ oxY32wJ2KGJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCalbErAAKCRDCzCAB/wGP
+ wP5KB/9UoD7QNB5aVzupQFrxf3chnOYV3jbbfPQCa+whoueQ3i+ahFG1kJc53A1/qwaehl+00cF
+ xBZ2YS0IfYgaRTqvcM8ry+fG/FLdnGMBAO6i74PxOFUQySeZP1EunkdKgQ+gtdGP1L6wuu4cPQh
+ eR2CW58K1epbz1EDlGM0/7Tcr9iO4pgv2MIHNeLPEexSL2aBmAicFFpou1ZgccdQvqZYWaMuYkP
+ MquNrfPGCvIHfvHSMuPpS3/IjreaNB8g0ruMtjSPxXJlhVmqMTB0Ey4T612JOH6v1A46Y0X4d5Y
+ 16xca+evu8jvk0wDv92iymvQiPgXqSvvp1oYnttQDFTosVgC
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Add new bindings for ti,ads122c14 and similar devices.
+Add support for parsing devicetree properties for measurement channels
+and doing direct reads on these.
 
-This is an ADC that is primarily intended for use with resistive sensors
-(RTD, thermocouple, Wheatstone bridge, etc.). There are a few unusual
-properties because of this. In particular, the reference voltage source
-and current output requirements can be different for each measurement,
-so these are included in the channel bindings.
+There are quite a lot of conditions that have to be met for each
+measurement to be made, so quite a bit of state and algorithms are
+required to handle it.
 
-The REFP/REFN reference voltage is usually just connected to a resistor
-that is being driven by the ADC's current outputs, so there is special
-property for this case rather than requiring a regulator to be defined
-to represent that.
+Channels are created dynamically since the number of possibilities is
+unreasonably large.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
 v4 changes:
-* Generalize temperature sensors to resistive sensors in commit message
-  and bindings description.
-* Remove leftover paragraph from v1 in commit message.
-* Added if to make clocks and drdy interrupts mutually exclusive.
+* Removed burnout code (saving for later).
+* Use regmap_assign_bits() for bipolar.
+* Use mutex to protect scale state.
 
 v3 changes:
-* Fixed channel@ pattern.
-* Adapted to input-chopping property rename.
-* Made sure to use items: on array properties.
-* Added reg to required list.
-* Fixed missing space in example comment.
+* Checked error when getting "label" property.
+* Removed call of fwnode_device_is_available().
+* Used IIO_VAL_DECIMAL64_PICO for scale.
+* Added switch in ads112c14_read_avail() to reduce future diff.
 
 v2 changes:
-* Added ti, vendor prefix when appropriate.
-* Others are now standardized properties from adc.yaml.
-* Moved top-level unevaluatedProperties.
-* Fixed some issues with the channel@ matching and reg property.
-* Dropped description on bipolar property.
-* Renamed current-chopping to input-channel-rotation.
-* Drop header file and use string enum instead for reference-sources.
-* Added burn-out-current-nanoamp property.
-* Drop allOf: and just use oneOf: directly.
-* Fix inconsistent indentation in the examples.
+* Adapted for changes in DT bindings.
+* Fixed bug in IDAC current register value calculation.
+* Fix uninitialized variable bug.
+* Fix bug in data->num_measurements calculation.
+* Use IIO_RESISTANCE instead of IIO_VOLTAGE when external reference is
+  used and it is a resistor rather than a voltage source.
+* Fix bug with negative input mux selection on single-ended measurements.
+* Fixed return checks of devm_regulator_get_enable_read_voltage().
 ---
- .../devicetree/bindings/iio/adc/ti,ads112c14.yaml  | 217 +++++++++++++++++++++
- MAINTAINERS                                        |   6 +
- 2 files changed, 223 insertions(+)
+ drivers/iio/adc/ti-ads112c14.c | 504 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 493 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-new file mode 100644
-index 000000000000..b11359c9955e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
-@@ -0,0 +1,217 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads112c14.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments' ADS112C14 and similar ADC chips
-+
-+description: |
-+  Supports the following Texas Instruments' ADC chips:
-+  - ADS112C14 (16-bit)
-+  - ADS122C14 (24-bit)
-+
-+  https://www.ti.com/lit/ds/symlink/ads122c14.pdf
-+
-+  These chips are primarily designed for use with resistive sensors such as
-+  RTDs, thermocouples, Wheatstone bridges, etc. The channel bindings reflect
-+  this in that each channel represents the conditions required to make a
-+  measurement rather than strictly just the physical input channels.
-+
-+maintainers:
-+  - David Lechner <dlechner@baylibre.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,ads112c14
-+      - ti,ads122c14
-+
-+  reg:
-+    items:
-+      - minimum: 0x40
-+        maximum: 0x47
-+
-+  clocks:
-+    maxItems: 1
-+    description: Optional external clock connected to GPIO3 pin.
-+
-+  avdd-supply: true
-+  dvdd-supply: true
-+
-+  refp-supply: true
-+  refn-supply: true
-+
-+  ti,refp-refn-resistor-ohms:
-+    description:
-+      The resistance of the external resistor between REFP and REFN when using
-+      resistor bridge driven by current outputs for RTD measurements.
-+
-+  interrupts:
-+    minItems: 1
-+    items:
-+      - description: /FAULT interrupt (GPIO2 pin)
-+      - description: /DRDY interrupt (GPIO3 pin)
-+
-+  interrupt-names:
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      enum: [fault, drdy]
-+
-+  gpio-controller: true
-+  '#gpio-cells':
-+    const: 2
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+patternProperties:
-+  ^channel@[0-9a-f]$:
-+    $ref: adc.yaml
-+
-+    unevaluatedProperties: false
-+
-+    properties:
-+      reg:
-+        items:
-+          - maximum: 15 # arbitrary limit, channel@ can be any combination of AIN0-AIN7
-+
-+      single-channel:
-+        maximum: 7
-+
-+      diff-channels:
-+        items:
-+          maximum: 7
-+
-+      bipolar: true
-+
-+      input-chopping: true
-+
-+      excitation-channels:
-+        maxItems: 2
-+        items:
-+          maximum: 7
-+
-+      excitation-current-nanoamp:
-+        maxItems: 2
-+        items:
-+          enum: [1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000,
-+                 90000, 100000, 200000, 300000, 400000, 500000, 600000, 700000,
-+                 800000, 900000, 1000000]
-+
-+      burn-out-current-nanoamp:
-+        items:
-+          - enum: [200, 1000, 10000]
-+
-+      reference-sources:
-+        items:
-+          - enum: [internal-2.5v, internal-1.25v, external, avdd]
-+            default: internal-2.5v
-+
-+    dependencies:
-+      excitation-channels: [ excitation-current-nanoamp ]
-+      excitation-current-nanoamp: [ excitation-channels ]
-+
-+    oneOf:
-+      - required: [ single-channel ]
-+      - required: [ diff-channels ]
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+  - dvdd-supply
-+
-+dependencies:
-+  refn-supply: [ refp-supply ]
-+
-+oneOf:
-+  - required: [ refp-supply ]
-+  - required: [ "ti,refp-refn-resistor-ohms" ]
-+  - properties:
-+      refp-supply: false
-+      refn-supply: false
-+      ti,refp-refn-resistor-ohms: false
-+
-+# /DRDY out and CLK in use the same AIN7/GPIO3 pin.
-+if:
-+  properties:
-+    interrupt-names:
-+      contains:
-+        const: drdy
-+then:
-+  properties:
-+    clocks: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@40 {
-+            compatible = "ti,ads112c14";
-+            reg = <0x40>;
-+
-+            avdd-supply = <&avdd>;
-+            dvdd-supply = <&dvdd>;
-+
-+            /* 3-Wire RTD: Two IDACs, One Measurement (AIN1-AIN2) */
-+
-+            ti,refp-refn-resistor-ohms = <500>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                diff-channels = <1>, <2>;
-+                input-chopping;
-+                excitation-channels = <0>, <3>;
-+                excitation-current-nanoamp = <500000>, <500000>;
-+                reference-sources = "external";
-+                label = "rtd";
-+            };
-+        };
-+    };
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@40 {
-+            compatible = "ti,ads112c14";
-+            reg = <0x40>;
-+
-+            avdd-supply = <&avdd>;
-+            dvdd-supply = <&dvdd>;
-+
-+            /* Resistive Bridge Measurement With a Thermistor for Temperature Compensation */
-+
-+            refp-supply = <&avdd>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                diff-channels = <6>, <7>;
-+                bipolar;
-+                reference-sources = "external";
-+                label = "bridge";
-+            };
-+
-+            channel@1 {
-+                reg = <1>;
-+                diff-channels = <1>, <2>;
-+                reference-sources = "internal-2.5v";
-+                label = "thermistor";
-+            };
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b1ec46c5919..3e114e0c9c5f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -26958,6 +26958,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/adc/ti,ads1119.yaml
- F:	drivers/iio/adc/ti-ads1119.c
+diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
+index 17bb6472a39b..fef3a9c37ced 100644
+--- a/drivers/iio/adc/ti-ads112c14.c
++++ b/drivers/iio/adc/ti-ads112c14.c
+@@ -12,9 +12,11 @@
+ #include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/dev_printk.h>
++#include <linux/device/devres.h>
+ #include <linux/i2c.h>
+ #include <linux/iio/iio.h>
+ #include <linux/math64.h>
++#include <linux/minmax.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/property.h>
+@@ -77,6 +79,7 @@
+ #define ADS112C14_REG_MUX_CFG				0x07
+ #define   ADS112C14_MUX_CFG_AINP			GENMASK(7, 4)
+ #define   ADS112C14_MUX_CFG_AINN			GENMASK(3, 0)
++#define     ADS112C14_MUX_CFG_AIN_GND			  8
  
-+TI ADS112C14 ADC DRIVER
-+M:	David Lechner <dlechner@baylibre.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/ti,ads112c14.yaml
+ #define ADS112C14_REG_GAIN_CFG				0x08
+ #define   ADS112C14_GAIN_CFG_SPARE			BIT(7)
+@@ -130,6 +133,20 @@
+ #define ADS112C14_INT_REF0_mV				1250
+ #define ADS112C14_INT_REF1_mV				2500
+ 
++enum {
++	ADS112C14_VREF_SOURCE_INTERNAL_2_5V,
++	ADS112C14_VREF_SOURCE_INTERNAL_1_25V,
++	ADS112C14_VREF_SOURCE_EXTERNAL,
++	ADS112C14_VREF_SOURCE_AVDD,
++};
 +
- TI ADS1018 ADC DRIVER
- M:	Kurt Borja <kuurtb@gmail.com>
- L:	linux-iio@vger.kernel.org
++static const char * const ads112c14_vref_source_names[] = {
++	[ADS112C14_VREF_SOURCE_INTERNAL_2_5V] = "internal-2.5v",
++	[ADS112C14_VREF_SOURCE_INTERNAL_1_25V] = "internal-1.25v",
++	[ADS112C14_VREF_SOURCE_EXTERNAL] = "external",
++	[ADS112C14_VREF_SOURCE_AVDD] = "avdd",
++};
++
+ /*
+  * Available gains as tenths (e.g. value 5 == 0.5 gain). Indexes correspond to
+  * ADS112C14_GAIN_CFG_GAIN values.
+@@ -204,11 +221,33 @@ static const struct iio_chan_spec ads112c14_sys_mon_channels[] = {
+ 	},
+ };
+ 
++struct ads112c14_measurement {
++	const char *label;
++	u32 vref_source;
++	u8 iunit;
++	u8 idac1_mag;
++	u8 idac2_mag;
++	u8 idac1_mux;
++	u8 idac2_mux;
++	u8 iadc_count;
++	u8 gain_val;
++	bool global_chop;
++	bool bipolar;
++	int scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
++};
++
+ struct ads112c14_data {
+ 	const struct ads112c14_chip_info *chip_info;
+ 	struct regmap *regmap;
+ 	/* Synchronizes access to register value fields. */
+ 	struct mutex lock;
++	u32 avdd_uV;
++	u32 ext_ref_uV;
++	bool refp_is_avdd;
++	bool refn_is_gnd;
++	u32 ext_ref_ohms;
++	struct ads112c14_measurement *measurements;
++	u32 num_measurements;
+ 	u8 sys_mon_chan_short_gain_val;
+ 	int sys_mon_chan_short_scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
+ };
+@@ -263,12 +302,112 @@ static const struct regmap_config ads112c14_regmap_config = {
+ 	.cache_type = REGCACHE_MAPLE,
+ };
+ 
++static int ads112c14_prepare_measurement_channel(struct ads112c14_data *data,
++						 const struct iio_chan_spec *chan)
++{
++	struct ads112c14_measurement *measurement = &data->measurements[chan->scan_index];
++	u32 refp_buf_en, refn_buf_en, ref_val, ref_sel;
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, ADS112C14_REG_MUX_CFG,
++				 ADS112C14_MUX_CFG_AINP | ADS112C14_MUX_CFG_AINN,
++				 FIELD_PREP(ADS112C14_MUX_CFG_AINP, chan->channel) |
++				 FIELD_PREP(ADS112C14_MUX_CFG_AINN, chan->channel2));
++	if (ret)
++		return ret;
++
++	ret = regmap_assign_bits(data->regmap, ADS112C14_REG_DIGITAL_CFG,
++				 ADS112C14_DIGITAL_CFG_CODING,
++				 !measurement->bipolar);
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(data->regmap, ADS112C14_REG_GAIN_CFG,
++				 ADS112C14_GAIN_CFG_SYS_MON |
++				 ADS112C14_GAIN_CFG_GAIN,
++				 FIELD_PREP(ADS112C14_GAIN_CFG_SYS_MON, 0) |
++				 FIELD_PREP(ADS112C14_GAIN_CFG_GAIN,
++					    measurement->gain_val));
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(data->regmap, ADS112C14_REG_IDAC_MAG_CFG,
++				 ADS112C14_IDAC_MAG_CFG_I2MAG |
++				 ADS112C14_IDAC_MAG_CFG_I1MAG,
++				 FIELD_PREP(ADS112C14_IDAC_MAG_CFG_I2MAG,
++					    measurement->idac2_mag) |
++				 FIELD_PREP(ADS112C14_IDAC_MAG_CFG_I1MAG,
++					    measurement->idac1_mag));
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(data->regmap, ADS112C14_REG_IDAC_MUX_CFG,
++				 ADS112C14_IDAC_MUX_CFG_IUNIT |
++				 ADS112C14_IDAC_MUX_CFG_I2MUX |
++				 ADS112C14_IDAC_MUX_CFG_I1MUX,
++				 FIELD_PREP(ADS112C14_IDAC_MUX_CFG_IUNIT,
++					    measurement->iunit) |
++				 FIELD_PREP(ADS112C14_IDAC_MUX_CFG_I2MUX,
++					    measurement->idac2_mux) |
++				 FIELD_PREP(ADS112C14_IDAC_MUX_CFG_I1MUX,
++					    measurement->idac1_mux));
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(data->regmap, ADS112C14_REG_DATA_RATE_CFG,
++				 ADS112C14_DATA_RATE_CFG_GC_EN,
++				 FIELD_PREP(ADS112C14_DATA_RATE_CFG_GC_EN,
++					    measurement->global_chop));
++	if (ret)
++		return ret;
++
++	refp_buf_en = !data->refp_is_avdd &&
++		      measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL;
++	refn_buf_en = !data->refn_is_gnd &&
++		      measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL;
++
++	ref_val = measurement->vref_source == ADS112C14_VREF_SOURCE_INTERNAL_2_5V ?
++		ADS112C14_REFERENCE_CFG_REF_VAL_2_5V :
++		ADS112C14_REFERENCE_CFG_REF_VAL_1_25V;
++
++	switch (measurement->vref_source) {
++	case ADS112C14_VREF_SOURCE_AVDD:
++		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_AVDD;
++		break;
++	case ADS112C14_VREF_SOURCE_EXTERNAL:
++		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_EXTERNAL;
++		break;
++	default:
++		ref_sel = ADS112C14_REFERENCE_CFG_REF_SEL_INTERNAL;
++		break;
++	}
++
++	return regmap_update_bits(data->regmap, ADS112C14_REG_REFERENCE_CFG,
++				  ADS112C14_REFERENCE_CFG_REFP_BUF_EN |
++				  ADS112C14_REFERENCE_CFG_REFN_BUF_EN |
++				  ADS112C14_REFERENCE_CFG_REF_VAL |
++				  ADS112C14_REFERENCE_CFG_REF_SEL,
++				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFP_BUF_EN,
++					     refp_buf_en) |
++				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REFN_BUF_EN,
++					     refn_buf_en) |
++				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_VAL,
++					     ref_val) |
++				  FIELD_PREP(ADS112C14_REFERENCE_CFG_REF_SEL,
++					     ref_sel));
++}
++
+ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
+ 					     const struct iio_chan_spec *chan)
+ {
+ 	u32 gain_val;
+ 	int ret;
+ 
++	/*
++	 * NB: IDAC registers are left as-is in case they are generating current
++	 * needed for the external reference measurement.
++	 */
++
+ 	/*
+ 	 * All SYS_MON channels use GAIN of 1 to keep it simple. Other than
+ 	 * the internal short channel, where it is useful in practice.
+@@ -326,8 +465,9 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 	guard(mutex)(&data->lock);
+ 
+ 	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
+-		/* Not implemented yet. */
+-		return -EINVAL;
++		ret = ads112c14_prepare_measurement_channel(data, chan);
++		if (ret)
++			return ret;
+ 	} else {
+ 		ret = ads112c14_prepare_sys_mon_channel(data, chan);
+ 		if (ret)
+@@ -356,6 +496,7 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 			      int *val, int *val2, long mask)
+ {
+ 	struct ads112c14_data *data = iio_priv(indio_dev);
++	struct ads112c14_measurement *measurement = NULL;
+ 	const int *scale_avail;
+ 	u32 vref_uV, fsr_bits;
+ 
+@@ -363,8 +504,8 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 	vref_uV = ADS112C14_INT_REF1_mV * (MICRO / MILLI);
+ 
+ 	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
+-		/* Not implemented yet. */
+-		return -EINVAL;
++		measurement = &data->measurements[chan->scan_index];
++		fsr_bits = data->chip_info->resolution_bits - measurement->bipolar;
+ 	} else {
+ 		/* All SYS_MON channels are using signed coding. */
+ 		fsr_bits = data->chip_info->resolution_bits - 1;
+@@ -394,7 +535,8 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		}
+ 
+-		*val = sign_extend32(*val, fsr_bits);
++		if (!measurement || measurement->bipolar)
++			*val = sign_extend32(*val, fsr_bits);
+ 
+ 		return IIO_VAL_INT;
+ 	}
+@@ -406,6 +548,16 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_FRACTIONAL_LOG2;
+ 		}
+ 
++		if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
++			guard(mutex)(&data->lock);
++
++			scale_avail = measurement->scale_available[measurement->gain_val];
++			*val = scale_avail[0];
++			*val2 = scale_avail[1];
++
++			return IIO_VAL_DECIMAL64_PICO;
++		}
++
+ 		if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT) {
+ 			u8 idx;
+ 
+@@ -459,6 +611,18 @@ static int ads112c14_read_avail(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
++		if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
++			struct ads112c14_measurement *measurement;
++
++			guard(mutex)(&data->lock);
++
++			measurement = &data->measurements[chan->scan_index];
++			*vals = (const int *)measurement->scale_available;
++			*length = 2 * ARRAY_SIZE(measurement->scale_available);
++			*type = IIO_VAL_DECIMAL64_PICO;
++			return IIO_AVAIL_LIST;
++		}
++
+ 		if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT) {
+ 			guard(mutex)(&data->lock);
+ 
+@@ -486,7 +650,13 @@ static int ads112c14_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE: {
+ 		guard(mutex)(&data->lock);
+ 
+-		if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT) {
++		if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
++			struct ads112c14_measurement *measurement;
++
++			measurement = &data->measurements[chan->scan_index];
++			scale_avail = measurement->scale_available;
++			gain_val = &measurement->gain_val;
++		} else if (chan->channel == ADS112C14_SYS_MON_CHANNEL_SHORT) {
+ 			scale_avail = data->sys_mon_chan_short_scale_available;
+ 			gain_val = &data->sys_mon_chan_short_gain_val;
+ 		} else {
+@@ -523,8 +693,20 @@ static int ads112c14_write_raw_get_fmt(struct iio_dev *indio_dev,
+ static int ads112c14_read_label(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan, char *label)
+ {
++	struct ads112c14_data *data = iio_priv(indio_dev);
+ 	const char *label_source;
+ 
++	/* measurement channels */
++	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
++		struct ads112c14_measurement *measurement;
++
++		measurement = &data->measurements[chan->scan_index];
++		if (!measurement->label)
++			return -EINVAL;
++
++		return sysfs_emit(label, "%s\n", measurement->label);
++	}
++
+ 	/* System monitor channels. */
+ 	switch (chan->channel) {
+ 	case ADS112C14_SYS_MON_CHANNEL_TEMP:
+@@ -557,6 +739,215 @@ static const struct iio_info ads112c14_info = {
+ 	.read_label = ads112c14_read_label,
+ };
+ 
++static int ads112c14_populate_idac_mag(u32 current_nA, u8 *idac_mag)
++{
++	u32 current_uA = current_nA / (NANO / MICRO);
++
++	/* Convert microamps to IMAG bits */
++	if (current_uA == 1)
++		*idac_mag = 1;
++	else if (in_range(current_uA, 10, 100) && current_uA % 10 == 0)
++		*idac_mag = current_uA / 10 + 1;
++	else
++		return dev_err_probe(NULL, -EINVAL,
++				     "invalid excitation-current-nanoamp value\n");
++
++	return 0;
++}
++
++static int ads112c14_parse_channels(struct iio_dev *indio_dev,
++				    bool *need_avdd_ref, bool *need_ext_ref)
++{
++	struct ads112c14_data *data = iio_priv(indio_dev);
++	struct device *dev = indio_dev->dev.parent;
++	struct iio_chan_spec *channels;
++	u32 num_child_nodes, i, pair[2];
++	int ret;
++
++	*need_avdd_ref = false;
++	*need_ext_ref = false;
++
++	num_child_nodes = device_get_named_child_node_count(dev, "channel");
++
++	data->measurements = devm_kcalloc(dev, num_child_nodes,
++					  sizeof(*data->measurements), GFP_KERNEL);
++	if (!data->measurements)
++		return -ENOMEM;
++
++	channels = devm_kcalloc(dev, num_child_nodes +
++				ARRAY_SIZE(ads112c14_sys_mon_channels),
++				sizeof(*channels), GFP_KERNEL);
++	if (!channels)
++		return -ENOMEM;
++
++	i = 0;
++	device_for_each_named_child_node_scoped(dev, child, "channel") {
++		struct ads112c14_measurement *measurement = &data->measurements[i];
++		struct iio_chan_spec *spec = &channels[i];
++
++		spec->indexed = 1;
++		spec->scan_index = i;
++		measurement->gain_val = 1;
++
++		if (fwnode_property_present(child, "label")) {
++			ret = fwnode_property_read_string(child, "label", &measurement->label);
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "failed to read label property\n");
++		}
++
++		if (fwnode_property_present(child, "single-channel")) {
++			ret = fwnode_property_read_u32(child, "single-channel",
++						       &pair[0]);
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "failed to read single-channel property\n");
++
++			if (pair[0] >= 8)
++				return dev_err_probe(dev, -EINVAL,
++						     "single-channel value must be between 0 and 7\n");
++
++			spec->channel = pair[0];
++			/*
++			 * NB: channel2 is unused by iio core code in this case.
++			 * Let's us avoid special case for negative input mux
++			 * for single-ended channels when taking measurements.
++			 */
++			spec->channel2 = ADS112C14_MUX_CFG_AIN_GND;
++		} else if (fwnode_property_present(child, "diff-channels")) {
++			ret = fwnode_property_read_u32_array(child, "diff-channels",
++							     pair, ARRAY_SIZE(pair));
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "failed to read diff-channels property\n");
++
++			if (pair[0] >= 8 || pair[1] >= 8)
++				return dev_err_probe(dev, -EINVAL,
++						     "diff-channels values must be between 0 and 7\n");
++
++			spec->differential = 1;
++			spec->channel = pair[0];
++			spec->channel2 = pair[1];
++		} else {
++			return dev_err_probe(dev, -EINVAL,
++					     "channel node missing channel type property\n");
++		}
++
++		if (fwnode_property_present(child, "excitation-channels")) {
++			ret = fwnode_property_count_u32(child, "excitation-channels");
++			if (ret < 0)
++				return dev_err_probe(dev, ret,
++						     "failed to read excitation-channels property\n");
++
++			if (ret < 1 || ret > 2)
++				return dev_err_probe(dev, -EINVAL,
++						     "excitation-channels property must have 1 or 2 values\n");
++
++			measurement->iadc_count = ret;
++			pair[1] = 0;
++
++			ret = fwnode_property_read_u32_array(child, "excitation-channels",
++							     pair, measurement->iadc_count);
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "failed to read excitation-channels property\n");
++
++			if (pair[0] >= 8 || pair[1] >= 8)
++				return dev_err_probe(dev, -EINVAL,
++						     "excitation-channels values must be between 0 and 7\n");
++
++			measurement->idac1_mux = pair[0];
++			measurement->idac2_mux = measurement->iadc_count > 1 ? pair[1] : 0;
++
++			ret = fwnode_property_read_u32_array(child, "excitation-current-nanoamp",
++							     pair, measurement->iadc_count);
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "failed to read excitation-current-nanoamp property\n");
++
++			if (pair[0] <= 100 * (NANO / MICRO) &&
++			    (measurement->iadc_count == 1 || pair[1] <= 100 * (NANO / MICRO))) {
++				/*
++				 * If both values are 100µA or less, then we can
++				 * use IUNIT = 1µA for better precision.
++				 */
++				ret = ads112c14_populate_idac_mag(pair[0],
++								  &measurement->idac1_mag);
++				if (ret)
++					return ret;
++
++				if (measurement->iadc_count > 1) {
++					ret = ads112c14_populate_idac_mag(pair[1],
++									  &measurement->idac2_mag);
++					if (ret)
++						return ret;
++				}
++			} else {
++				/*
++				 * Otherwise, IUINT is 10µA (flag set) and so
++				 * IxMAG is 1/10 of the actual current.
++				 */
++				measurement->iunit = 1;
++
++				ret = ads112c14_populate_idac_mag(pair[0] / 10,
++								  &measurement->idac1_mag);
++				if (ret)
++					return ret;
++
++				if (measurement->iadc_count > 1) {
++					ret = ads112c14_populate_idac_mag(pair[1] / 10,
++									  &measurement->idac2_mag);
++					if (ret)
++						return ret;
++				}
++			}
++		}
++
++		measurement->bipolar = fwnode_property_read_bool(child, "bipolar");
++		measurement->global_chop = fwnode_property_read_bool(child,
++								     "input-chopping");
++
++		if (fwnode_property_present(child, "reference-sources")) {
++			ret = fwnode_property_match_property_string(child,
++				"reference-sources", ads112c14_vref_source_names,
++				ARRAY_SIZE(ads112c14_vref_source_names));
++			if (ret < 0)
++				return dev_err_probe(dev, ret,
++						     "invalid reference-sources value\n");
++
++			measurement->vref_source = ret;
++		}
++
++		if (measurement->vref_source == ADS112C14_VREF_SOURCE_AVDD)
++			*need_avdd_ref = true;
++		if (measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL)
++			*need_ext_ref = true;
++
++		spec->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE);
++		spec->info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE);
++
++		/*
++		 * If reference source is resistor rather than voltage supply,
++		 * then the measurement is effectively a resistance measurement.
++		 */
++		spec->type = (measurement->vref_source == ADS112C14_VREF_SOURCE_EXTERNAL &&
++			      data->ext_ref_ohms) ? IIO_RESISTANCE : IIO_VOLTAGE;
++
++		if (spec->type == IIO_RESISTANCE)
++			spec->differential = 0;
++
++		i++;
++	}
++
++	data->num_measurements = i;
++	memcpy(channels + i, ads112c14_sys_mon_channels, sizeof(ads112c14_sys_mon_channels));
++
++	indio_dev->channels = channels;
++	indio_dev->num_channels = i + ARRAY_SIZE(ads112c14_sys_mon_channels);
++
++	return 0;
++}
++
+ static void ads112c14_populate_scale_available(int (*scale_avail)[2],
+ 					       u32 full_scale, u32 fsr_bits)
+ {
+@@ -576,6 +967,33 @@ static void ads112c14_populate_tables(struct ads112c14_data *data)
+ {
+ 	u32 full_scale, fsr_bits;
+ 
++	for (u32 i = 0; i < data->num_measurements; i++) {
++		struct ads112c14_measurement *measurement = &data->measurements[i];
++
++		switch (measurement->vref_source) {
++		case ADS112C14_VREF_SOURCE_EXTERNAL:
++			if (data->ext_ref_ohms)
++				full_scale = data->ext_ref_ohms;
++			else
++				full_scale = data->ext_ref_uV / (MICRO / MILLI);
++			break;
++		case ADS112C14_VREF_SOURCE_AVDD:
++			full_scale = data->avdd_uV / (MICRO / MILLI);
++			break;
++		case ADS112C14_VREF_SOURCE_INTERNAL_1_25V:
++			full_scale = ADS112C14_INT_REF0_mV;
++			break;
++		default:
++			full_scale = ADS112C14_INT_REF1_mV;
++			break;
++		}
++
++		fsr_bits = data->chip_info->resolution_bits - measurement->bipolar;
++
++		ads112c14_populate_scale_available(measurement->scale_available,
++						   full_scale, fsr_bits);
++	}
++
+ 	/* For now, assuming all sys_mon channels are using 2.5V reference. */
+ 	full_scale = ADS112C14_INT_REF1_mV;
+ 	fsr_bits = data->chip_info->resolution_bits - 1;
+@@ -590,6 +1008,9 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	const struct ads112c14_chip_info *info;
+ 	struct iio_dev *indio_dev;
+ 	struct ads112c14_data *data;
++	bool need_avdd_ref, need_ext_ref;
++	u32 refp_uV = 0;
++	u32 refn_uV = 0;
+ 	u32 reg_val;
+ 	int ret;
+ 
+@@ -608,13 +1029,76 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	if (device_property_present(dev, "ti,refp-refn-resistor-ohms")) {
++		ret = device_property_read_u32(dev, "ti,refp-refn-resistor-ohms",
++					       &data->ext_ref_ohms);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "failed to read ti,refp-refn-resistor-ohms property\n");
++	}
++
++	ret = ads112c14_parse_channels(indio_dev, &need_avdd_ref, &need_ext_ref);
++	if (ret)
++		return ret;
++
+ 	ret = devm_regulator_get_enable(dev, "dvdd");
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "failed to get dvdd regulator\n");
+ 
+-	ret = devm_regulator_get_enable(dev, "avdd");
+-	if (ret)
+-		return dev_err_probe(dev, ret, "failed to get avdd regulator\n");
++	if (need_avdd_ref) {
++		ret = devm_regulator_get_enable_read_voltage(dev, "avdd");
++		if (ret < 0)
++			return dev_err_probe(dev, ret, "failed to get avdd voltage\n");
++
++		data->avdd_uV = ret;
++	} else {
++		ret = devm_regulator_get_enable(dev, "avdd");
++		if (ret)
++			return dev_err_probe(dev, ret, "failed to get avdd regulator\n");
++	}
++
++	if (device_property_present(dev, "refp-supply")) {
++		ret = devm_regulator_get_enable_read_voltage(dev, "refp");
++		if (ret < 0)
++			return dev_err_probe(dev, ret, "failed to get refp voltage\n");
++
++		refp_uV = ret;
++
++		struct fwnode_handle *refp_fwnode __free(fwnode_handle) =
++			fwnode_find_reference(dev->fwnode, "refp-supply", 0);
++		if (IS_ERR(refp_fwnode))
++			return dev_err_probe(dev, PTR_ERR(refp_fwnode),
++					     "failed to get refp fwnode\n");
++
++		struct fwnode_handle *avdd_fwnode __free(fwnode_handle) =
++			fwnode_find_reference(dev->fwnode, "avdd-supply", 0);
++		if (IS_ERR(avdd_fwnode))
++			return dev_err_probe(dev, PTR_ERR(avdd_fwnode),
++					     "failed to get avdd fwnode\n");
++
++		/* REFP buffer should not be enabled when connected to AVDD */
++		data->refp_is_avdd = refp_fwnode == avdd_fwnode;
++	}
++
++	if (device_property_present(dev, "refn-supply")) {
++		ret = devm_regulator_get_enable_read_voltage(dev, "refn");
++		if (ret < 0)
++			return dev_err_probe(dev, ret, "failed to get refn voltage\n");
++
++		refn_uV = ret;
++	} else {
++		data->refn_is_gnd = true;
++	}
++
++	data->ext_ref_uV = refp_uV - refn_uV;
++
++	if (data->ext_ref_uV && data->ext_ref_ohms)
++		return dev_err_probe(dev, -EINVAL,
++				     "ti,refp-refn-resistor-ohms property should not be present when refp-supply or refn-supply is present\n");
++
++	if (need_ext_ref && !data->ext_ref_uV && !data->ext_ref_ohms)
++		return dev_err_probe(dev, -EINVAL,
++				     "external reference measurements require either refp-supply or ti,refp-refn-resistor-ohms property\n");
+ 
+ 	/* It takes some time for the internal reference to stabilize. */
+ 	fsleep(10 * USEC_PER_MSEC);
+@@ -676,8 +1160,6 @@ static int ads112c14_probe(struct i2c_client *client)
+ 
+ 	indio_dev->name = info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = ads112c14_sys_mon_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(ads112c14_sys_mon_channels);
+ 	indio_dev->info = &ads112c14_info;
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
 
 -- 
 2.43.0
