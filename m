@@ -1,98 +1,120 @@
-Received: from h6.fbrelay.privateemail.com (h6.fbrelay.privateemail.com [162.0.218.229])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B33D74156CE;
-	Tue, 14 Jul 2026 20:33:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.0.218.229
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A23409298
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 21:21:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784061235; cv=none; b=TKZONqs8VtaKCygo02EZjTDiQfY+nOE/sKtRDSvYjAviv0k+MlVy3PCCFhWttDF4sQwlEmXK3UD7wvhgUjp+mGbaTrBUTC39M2PKO2EjbOm6PQpO5qxz1Lne0mnoRqeW0gw7VRx+RgNtrI2Bepg4mXMyvsXVC+InA6nVOqI0Mkw=
+	t=1784064084; cv=none; b=jRP7L3eIhvJZgKa2wBmQv5uvgnCCzVRPuHGI0dbEFNqK95rNViXCVam0+8fvy1M1luYclXBq39ftAjaUWZ+/e1VmasHqNaLYtuf+uHX1Y1KAGpGWbCiHlUcrPzlNpa9B4w+tXX6siczQC+NCBGiXW0ICEPdot+Tgh6Ir9KkyeRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784061235; c=relaxed/simple;
-	bh=vpOSmILnVlOjzQDd3adunMrb8V2vgwHdO/qrml9HiL0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N5eCvs1kh3UAO204G1ezrFtdKX3b7HvIz2nqX9Do7+8clglSdLAbIjZ0m8ERpFE/rpGTU1tajjs6JdTF4iMfqybPjusmGpCz/2NqMFSazadI9lB3U5iHXkMK+JOLNEjeVW0HH/xjj5nJq8A75uDXjGrcWEqqzZRVBL1Dl/HGpgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=162.0.218.229
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from MTA-11-3.privateemail.com (mta-11.privateemail.com [198.54.118.200])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by h5.fbrelay.privateemail.com (Postfix) with ESMTPSA id 4h09rS2CCxz2xj7;
-	Tue, 14 Jul 2026 20:29:12 +0000 (UTC)
-Received: from mail.privateemail.com (K8S-PROD-WORKER-13 [87.215.145.39])
-	by mta-11.privateemail.com (Postfix) with ESMTPA id 4h09r06kgKz3hhTD;
-	Tue, 14 Jul 2026 16:28:48 -0400 (EDT)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Siratul Islam <siratul.islam@linux.dev>,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] iio: magnetometer: add support for QST QMC6308
-Date: Tue, 14 Jul 2026 22:28:40 +0200
-Message-ID: <20260714202842.340293-1-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
+	s=arc-20240116; t=1784064084; c=relaxed/simple;
+	bh=yw2HrJD4EnW28VQxXIvfJ2mgB36yVB4/eQhPGNDBomA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qNcVvqiAEhV4+SMWa9svxi+4y01kvYRutoqk32pPaPI7oc48dYPlHuYQtOHEZuzasSiKdvERp339E6qPWhKaaad93Srbmd6o6iKbwVBeYxLqLy32WxK+3Z0HBBDDBiMg5lk6JhGuESjEf880+yaPJbNMpR9WgauwWv18tNb9JPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OYPZHltL; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OYPZHltL"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-493b1710405so25348655e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 14:21:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1784064081; x=1784668881; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=yw2HrJD4EnW28VQxXIvfJ2mgB36yVB4/eQhPGNDBomA=;
+        b=OYPZHltLQVtLFcdQw3TxavhtSXHbPnQFzOcAGs1ZXVZR/QrLA5k/afyWXFFzq7ZqAx
+         5xTSPjRIAnweLr/Dcaa7vBuV5Ih4zEs9jdJ01UV5spR0wHeW07umhfIOJulwnu+yhn1s
+         brL1XByi/FMhtSVYXSFnIHhd1rO5Qc85f3R1RPE2kOfzpKUVJA4cRDI6nMle7tjKiHl2
+         w7S1AKi60lXMKqfiIIas5FtP+qRvY1kxMs5noQ7HFvDa4WL+M3U90bMwQYjBzXZBusEW
+         N+hrwCQCAKoyOLQ7WIsv/NJUgrKw9LVbhC5iWuC9j7b6NaIz1dS922r5msLMQjGdbIy8
+         NtcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784064081; x=1784668881;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yw2HrJD4EnW28VQxXIvfJ2mgB36yVB4/eQhPGNDBomA=;
+        b=mgWkw+NrJuHOxwYZ+Hj+yMdndQmVIsU7/5XlWZdGbH0use7HTNpEhxSDkLQmvzNwe/
+         xeTsIIXN9SriM3g2RWxethoDhvnH5yLTjO0LE2IqZv43eaGOjNX/HHoz1hOonlNCZ0VS
+         0RDzoWG88gPOphziMS8r882EbZDgEVk0gnQkvaW8mttRXnT98k5HsusoqOGYGRL9beQV
+         BlbK7p8KvpaHoNfEfLFNahVzDkk3vns6nk3Cdi+LvpQxCGEOZJ79LgbjR324zSAikBA7
+         mkCq3k7B4qXoy60OcxSGA1e3p8z8nEt2XNIH5o5+OL8lCgae6tKAlnh81Nzp6AKbTVMA
+         A0AA==
+X-Forwarded-Encrypted: i=1; AHgh+RoJf7thC/ZTpJ9ZPo2dMrxV+dElwDMsd6n5jvqmRFEPALKcWtL3WULvWB2QKC1IuhBlZFKRi2AaZ6E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx1caVXYzSemMvVp4NeZHG/U2xslzzzNYy6sjdFnCjq5+75zO8V
+	axj4b1p4MwYLfZr8HPT1uPSvvzZ5orCF0+EUpqxS4Jxk8EXHekxjcnZUSiGFET0AhQQ=
+X-Gm-Gg: AfdE7cn/RUPaZWiTu3GMjka4AKivwFcGJZgSrY5nP2RZdcgs1dsXUwRazy14+V4TDp4
+	c7tU965T+DYVhwY4FLBWQxape1SoQK6wgYxt/UhVJJXa3FBZiRqM/OEsqzZtIGwYij4TNpZH4W4
+	JSv6YSnbCONTd9OCUHbJ+pE0VO34inPBJiNJ5QD5bg+DDLklPDRfVRVmxywCSBGYs+qy04tAMpD
+	KB9Bz6SrvmP17gBKJOm3k3O4FntE7BsfrG53X6HFdbyr7DslLuo4LrAe2WxD8miD6ScJ35x+igH
+	WNsFvEjlczIWRFE9UaQlcgsjx0aEFrDKLTkLSMhKV3+VC+D1hyTQXg9V7CwbcXXfuQmrHmHCFu3
+	+s2BTTpi/8Ptv4mhg9ewn4tScZR4QgHEhf9G1Z/tlVvJHi5hl8C13zTjlYNGX3jewn+qzCu4pk0
+	jhI9e0K78VMeuvEl+Wyg==
+X-Received: by 2002:a05:600c:c04b:10b0:495:21e7:fd53 with SMTP id 5b1f17b1804b1-49521e7fd96mr44313885e9.18.1784064080765;
+        Tue, 14 Jul 2026 14:21:20 -0700 (PDT)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4953c6fe0c6sm4273135e9.1.2026.07.14.14.21.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2026 14:21:19 -0700 (PDT)
+Date: Tue, 14 Jul 2026 23:21:18 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Siratul Islam <siratul.islam@linux.dev>, Luca Weiss <luca.weiss@fairphone.com>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: magnetometer: add support for QST QMC6308
+Message-ID: <alansZsKEH3nX_UN@monoceros>
+References: <20260714202842.340293-1-jorijnvdgraaf@catcrafts.net>
+ <20260714202842.340293-3-jorijnvdgraaf@catcrafts.net>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4h09rS2CCxz2xj7
-
-This adds a driver and DT binding for the QST QMC6308, a 3-axis AMR
-magnetometer found e.g. in the Fairphone 6. The series is based on
-iio/togreg.
-
-The chip is a sibling of the recently added QMC5883L but is not
-register compatible with it (different chip ID register and value,
-data output at 0x01..0x06, and the range field lives in control
-register 2), so this is a separate driver; its structure intentionally
-follows qmc5883l.c. The QMC6308's 4-pin WLCSP has no DRDY/interrupt
-pin at all, so there is nothing to hang a trigger off; reads are
-polled from the chip's periodic measurement mode (its one-shot mode
-has no specified conversion time to bound a wait on), with runtime PM
-dropping the chip into its 2-3 uA suspend mode between uses. A
-software-triggered buffer mode could be added later without breaking
-the ABI.
-
-Tested on a Fairphone 6, where the sensor sits on a bit-banged
-i2c-gpio bus, using a byte-identical backport on that device's
-7.1-based kernel; on this base the driver is build- and modpost-
-verified (arm64 defconfig, W=1 clean). Testing covered the chip ID
-probe, raw reads, every ODR (10/50/100/200 Hz), oversampling ratio
-(8/4/2/1) and scale setting (the same ambient field reads consistently
-across all four ranges), the mount matrix validated against Earth's
-field by pointing the device at the cardinal directions, and runtime
-PM verified at the bus level (the mode register reads back as suspend
-after the autosuspend delay, wakes on read, and accepts configuration
-writes while suspended). The FP6 board DTS will be submitted
-separately through the qcom tree once this lands.
-
-Jorijn van der Graaf (2):
-  dt-bindings: iio: magnetometer: add QST QMC6308
-  iio: magnetometer: add support for QST QMC6308
-
- .../iio/magnetometer/qstcorp,qmc6308.yaml     |  48 ++
- MAINTAINERS                                   |   7 +
- drivers/iio/magnetometer/Kconfig              |  11 +
- drivers/iio/magnetometer/Makefile             |   1 +
- drivers/iio/magnetometer/qmc6308.c            | 590 ++++++++++++++++++
- 5 files changed, 657 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/qstcorp,qmc6308.yaml
- create mode 100644 drivers/iio/magnetometer/qmc6308.c
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="fwne57h3b6pk7whs"
+Content-Disposition: inline
+In-Reply-To: <20260714202842.340293-3-jorijnvdgraaf@catcrafts.net>
 
 
-base-commit: 2e2f2de7532cbbc2269de8be20ec709606c6e79b
--- 
-2.55.0
+--fwne57h3b6pk7whs
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [PATCH 2/2] iio: magnetometer: add support for QST QMC6308
+MIME-Version: 1.0
 
+Hello,
+
+On Tue, Jul 14, 2026 at 10:28:42PM +0200, Jorijn van der Graaf wrote:
+> +#include <linux/i2c.h>
+> +#include <linux/mod_devicetable.h>
+
+Please drop the include of <linux/mod_devicetable.h>. You need
+i2c_device_id and of_device_id, both are provided by <linux/i2c.h>.
+
+Best regards
+Uwe
+
+--fwne57h3b6pk7whs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpWqEoACgkQj4D7WH0S
+/k49YAf/R118nhj7SqTdriZ9maLRuzr3XBenh2ENuYEmtwi2qAFOwOA66GQrg4Zo
+2amincOgpKDOD/DybNYT7tahUZGx+FtHIum22ptdG+bK97qeja8L0F1ekrTMvMUw
+OpQ0JZ4M0B/dmRB8digv6bjvmAN0sUVkNpbqyQ9GeD58FRVI9wxkb74cZrtYmy43
+ni15dJzrO1f8ZZ0QDPAxGAcZafmOCC41ktIbKNH1sTvg+xFnauIGBiA4q7MiKcL9
+w54Io/K61EweIwCM12jALoz8Wi+HLr1E54QYa1B3lBH+C/MJ8LABJyYJ612c6WDS
+l2OhVGxAf0Roe2r0koBRwmoM2KVHJA==
+=8BGo
+-----END PGP SIGNATURE-----
+
+--fwne57h3b6pk7whs--
