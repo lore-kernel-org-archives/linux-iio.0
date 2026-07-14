@@ -1,370 +1,128 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1323644A4
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 15:36:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784043419; cv=none; b=MLcS6j6YYwMq2hKiBZrJTg+raBTR6M2O/olnCYVqB7LGiXixMwR5KWchq05uRa/MR33QjeIZHJXax3Oc6eJ1wvnedzTMEOyuPR+fLiGZNGKGB/SKwedTD93UPmtQMJJ/oNVc1Tjkbr2A65T/IHauJE250v1OnSQua82fEvR/AJw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784043419; c=relaxed/simple;
-	bh=FUKRz5QZbEpD2ppSUUSJKph2gxfJRcgreInDDRklvQw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=auP9VGOSXXHI/U6OFv/96iYC4nDw6d6wC3k0vF1PMNYbhpadu6abZdaVXdscsijmRsLIhHKEuwO68G2/IXuCq49evCVKGqfjM20CjkS5NykqcccV5geoJmicBGsVlAGMW34X0ggB1MIalPwVRkFNG3ek6Xv68GZRQ2OPca9IS8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F93kF1UL; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94BA34A33FD
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:08:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.180
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784045296; cv=pass; b=lzA5vFqGPTmRPqBzzOje2YwpiA0YR8hOMK3rhKbx/USJbZJAgaBdtrAL0nkV+bkb3kkzehbQhZ7SUWFekksT7JD6NXvwzJgoupy8DrO8Hq52NkGasjdXcF6dx+zkXEzxvf6fh0zhFM0Ww78nWg6hj8EgXCBfU4h5DAj6zgEy9JQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784045296; c=relaxed/simple;
+	bh=ZbFdtg5sjBl+H2D0nTxkcOm/iY35+wEQQikqVUFjc8c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kYeV31N0tsydR1uU2GxRiWKBBvKG0CIzPkgTCbfBZsJ5SW7riLKt4koFKcisX1wr91M7IrcaVsCSQIkht1EsT150nRSBIQdv3sdWUxIsDX3+wnu3Dtys1tQPpFXR5vNqBSkFyKhGLzUkvm9nXZS+ln1uvY18xG2xhsVCjBOGrO4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mDLATQ6w; arc=pass smtp.client-ip=209.85.208.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F93kF1UL"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-493c7902f47so40074075e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 08:36:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mDLATQ6w"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-39c94d4fdb9so18140451fa.1
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 09:08:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784045293; cv=none;
+        d=google.com; s=arc-20260327;
+        b=pY8vhDNx7Ln6oc7fY4ziiFda0Rg918CGEf+JIqV0M057upy0wwkcl0tdIlqZcBgscI
+         LRAsdLsD0eroEQArQmsvJiPnrpxssdXPKgcY1gHH/7DcClc1cJGviS3oD9WJdNHVWGvq
+         6O17v6o8v9mreUb46OFAL0SjiHSNcPj4k/Lq0qPVmDxIF9f8bLOwmbnYvDTr1lr80K3i
+         JCb/CBO/nbDHSI7cbarxrnm1JPGj34KAiOAgbZcDoC1GTO7vkJ6z1eca/cwtUKQvmrKw
+         puOWxzoorvQpnSqcoAOh3duccHyTSLH6z80mI/7pZmfrO24f1faEB+2rzM6zgeR/doeZ
+         MTeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=ZbFdtg5sjBl+H2D0nTxkcOm/iY35+wEQQikqVUFjc8c=;
+        fh=T0XlqNh0yEju8XCi4guVUpETBzWTA+S0XsOC6MlcHMw=;
+        b=RgXsBLDzWqTL9HW8XFXKiBB1Hezlzao2oeBExIigOEV4BHcUP0kK1PDaC+swRZw/G3
+         vNUz/gS2SpbeoxH8JLW9O4Z1dhte1OSP8B87ahuXaHQICc0dxS4sXltgb2AH4r5oQBOS
+         zfs0TJUstWaeeELD6aWsQFHGy6C+l6to0X7kp8qEmYKbAZyv+97pBnvdr8BZeeAvrK9s
+         LRNjoaLFLj05pyeu+oKqq043h8Z+5kyuDAS0z3hLlL2E9q6Fqo56bjg2dcdgHzKuqnXB
+         ErbMcbzblo4XdAF0Wj0/qxO/GU8AADcoEhSGNq/dFVfPXf6gZBF3qaospZ7FPJqV5qkV
+         VAuQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784043415; x=1784648215; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=yFqzpW0R11/PPWKTn87rkaqLDktCu2fOc1hLjHnrcEc=;
-        b=F93kF1ULnWBzz6LEBp3Y6NJ4vRPY+ApI5P9zC6IUlAKW7h1VYiO/UJ68cWqp3QBH8c
-         45R7hC7UyZtD1x3Rf8AX224zNCn/So1iiLi32M0BuIpXbSTE8UjhRB77Xy2dj18XiSdk
-         CUUPSkuOvjwRd1loCSi4hGRMB0Qbpa6K2peW2reFsgAsy9CC6V4OfWYtXmQuRcyDeKgY
-         yRqOjcKKgzNVAg4eudXsRGfWhuVsmjzsBIIpOYf9SvUfHlB6oEJBLjGPVb1Nz1hL7wKT
-         9GmU7sKz/DxGinWzB0WSBHvz3mvcorHx3G+NRGYyB6IBzvcG+BwvIsd7/mBTzkylONni
-         fPjw==
+        d=gmail.com; s=20251104; t=1784045293; x=1784650093; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZbFdtg5sjBl+H2D0nTxkcOm/iY35+wEQQikqVUFjc8c=;
+        b=mDLATQ6w0u58SlPK85ojsN+O1HgYo8r+l7kAnXA451dg0g7KHC5uiPD1NSJnWTZulH
+         Mzm7+1EUxstOb4vddW5yDNz/D/hJ4MkQno2z3hQZyTwuI2/g2If6gEGXsX4cgVgBdoPy
+         t3qSxDbLmkR+Qp9wK/Tq23QeMXR4/SB2Urcdz0lp1NM9pd94N1Y1n+w+7xdopVjo64Ku
+         /fHbxLP3xlUUhrQuJay9mtrJQo2vnN2X8x8U/DBaT+Lb2MrARs5WXZBad3P1cTsZMBHi
+         c1ot4fdt1DO/Yl2zh0k7LIRJrOzREr3qd/vdJCagltz/lC+bSSI9ROgyPQNaDaY+F/Bt
+         xt2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784043415; x=1784648215;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=yFqzpW0R11/PPWKTn87rkaqLDktCu2fOc1hLjHnrcEc=;
-        b=YI0tLUg2STuMHjJAiZ40EZOVDrFQ+kt9xvOFEED7DOzd8RUB5ecmtH+xt5g0XZUq5y
-         JJI/GVpCCB9wDotmn23oPnbMUrj855tUoTMEf3paQmU55iS58wNiLd2kfFIevsCoVrs4
-         ONIMMGZJlX858ZVTw1PI0RRNEbBx55lN0M+Ao8AFg5gKFjfpXDeAX0bmh+1zyuaxOmTy
-         hagzWhHFml03yRI0c0jEMSyuZKZXyzYA9nIOJvSFvRBMAVMfxlY0eUtULFPrIYk0XIQi
-         S31XOIU+mW8kigR6LMRWs9Bg5sUTOSSqDf3dnRg264JFju5Lox3U3uP3KOmrtiYQDZk7
-         +sOg==
-X-Gm-Message-State: AOJu0Ywxwv9PUcm8FiVITe7yATZSk/oIczJm49mDunfLBvw4jdW8Wtzf
-	5qQFqbjTQ9wuDIVuI/yxH27ioiGzSqLld+YW0a0mbHp6zu5jvHnPHKX2
-X-Gm-Gg: AfdE7clzxaaqhybP6G/KF1qMe1A2l0DhuEutM63LeKvYJfA5eVfdDSg0mBI2KEZNmB9
-	nKDDsz+USIi1ujyutqs1F/cVi1JFbg+PB29RH5Qq2y+XE4vJJ4e3VQ2U/Kiu0NNDhi6lUb1pLI0
-	xXvEEjcsRJAZDJdD8q0wa7OWUC2UalswKy1exHfmftguYU3cCj6AY+Cq0ZhtqY4lNF9lVc7qEFF
-	UvEjQza9PjfGoJRuj5PAu5LAR1A/3GDGwetNMe4SkA9wUbKvfHsAWZl7w0uF+53f7oYNg+Kd7uV
-	dd0EVRhJhHYeIm709tynIOhbvq/jX9JbxFoTppXs/Wc0i/52LHqnIHj/ROwbzSg4q8vij7x22Sh
-	DIkg6Aydun36f2Q770W/yZQdxGKV4rFpynMeJNLCLPjdqH4XJibbf+9C5nmoYUjVXp3lCO/5nl+
-	U24N4kEnpU1cpdG2lVfhGlD1mE1aixbU/IXGAnWaM4ZQxJbdE5928H5saDKSkBFJC0u4/LmgEqf
-	sx52r0m0RBXSnEoCa6pOp1QdmuktxyuiYcWvVObddlx9MA2Ae5Cq8HyzoexPyTqcIlCCI3efPgq
-	9I4CoO4FDsjmxPHfYcSUYr7Lp3BSddmiV7AG0H09koGkIK36EgBIKg==
-X-Received: by 2002:a05:600c:3143:b0:493:b87c:c87d with SMTP id 5b1f17b1804b1-493f87e9f43mr142113605e9.11.1784043415131;
-        Tue, 14 Jul 2026 08:36:55 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464b7e22sm8964103f8f.25.2026.07.14.08.36.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 08:36:54 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 14 Jul 2026 17:36:48 +0200
-Subject: [PATCH v4] iio: light: opt3001: split opt3001_get_processed()
- logic
+        d=1e100.net; s=20251104; t=1784045293; x=1784650093;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=ZbFdtg5sjBl+H2D0nTxkcOm/iY35+wEQQikqVUFjc8c=;
+        b=hgWEDBSGxmkKKOzkuk5KPm6c7grONi6KH3GjbhPzJOMbQj0dUFwYp5xAnt4VVvS9R6
+         IJGq/ltnzXOxiyUE4hDmW7eWD8YVX8Ul+P8wTX3OAD6jjAuDRPZeq/ph9VB4a3ya4Vq1
+         P6RSM6tpcmM5jKTuqnpQ+XQ33aLS9Gt2kkYXpUDCTvtsgBHbyH9bE8WcTC9f9Pn0Arnu
+         O2zh94EIqT2CHdWLQ9jzya+sjdJsaRDazzGQfuNEqvN7CvGFV07+PJxIRyzgoT24gAVZ
+         XnWInZKknrzQjG5LjvCioY0Anos4IjS0F1Ll5ZqqglAqMurbO0nxRYqQC43DEkaJ4THE
+         3/lA==
+X-Forwarded-Encrypted: i=1; AHgh+Rot2HzHB45Mxn0rmLi0VX989D4674M9fadwgXQ5LSjPb2Ip8Mqh2eVjg7HroEtLLmrkpbe2kx7Mtkg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKDgE/PhQKvHh7cD6BbYG4+V8/pxA+ndgcL9tnAXTyjxwPSYwa
+	sAYIG7plfsJY6hlUkAhGPVE5wT/Ymo4CMfngbIEd9s10nDCYAkjKRYp8kcwAaojlk6Qvn+/KZVo
+	Q95exc6zV5QhwOgx3+HxYPY7YM+YMhrk=
+X-Gm-Gg: AfdE7cn63/Y9WwuHQiWRdkskIEl1xdsgw2os29cVZ+PDVgR/e5c16bdrmWNmCp2wuZt
+	CuhFBHgOK6Z2t2iwkcjqt3Z/bjK7kZt7c4E5ldSeX+hxZ+NEvb8t20+nTaPccexhf5O7SU50U1m
+	ERfIGxeAF2GTOlmTi0lLGtX82chCj0l8ZAddNrOZlOWSE+uaquc7ufo4pua9F2ax8OuZ6ckesIR
+	F69d06pJKrRYOCaePfpxiiHFVhnBtgV2IJC0PdLX0hYutMVOVg/W4H5rNfzdLMzj9DL9w7bdX0A
+	7iMFm48bMED3nyPAmosH36GdqY3Abbs=
+X-Received: by 2002:a2e:bc88:0:b0:38e:8357:c5ae with SMTP id
+ 38308e7fff4ca-39caa138bedmr31683491fa.9.1784045292310; Tue, 14 Jul 2026
+ 09:08:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260714-opt3001-unwind-cleanup-v4-1-7ebea805bfac@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XNTQqDMBCG4atI1k2ZJCZqV71H6SImowY0in9tE
- e/e6EoK0uX7wTyzkAF7hwO5RQvpcXaDa32I+BIRU2lfInU2NOHAFSSQ0rYbBQCjk385b6mpUfu
- po5lGtCiUVFKScNz1WLj3Dj+eoSs3jG3/2f/MbFv/kjOjjGYAOTeFtbnS97LRrr6atiEbOfMDw
- 9gpwwMTJ4ViCQIYJX8ZcWT4KSMCIwsthEoTlUN6ZNZ1/QLeyVTNSgEAAA==
-X-Change-ID: 20260708-opt3001-unwind-cleanup-9aeede365655
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784043414; l=8125;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=FUKRz5QZbEpD2ppSUUSJKph2gxfJRcgreInDDRklvQw=;
- b=6OEgFUke56iApxZ/GuMw0cqpKQm7j56FLGSu04VgsrpBCnV31v3TbAoFDOqztDkfL7c8biahf
- wU5Y76GFsIKBG9pzIoyCVJnRpeRBNohzxZM09jLJDVTUNlsKVc4oAY/
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
+References: <20260707151542.91997-1-muchamadcoirulanwar@gmail.com>
+ <20260707151542.91997-2-muchamadcoirulanwar@gmail.com> <178376430529.16552.7043868463863908196@linux.dev>
+In-Reply-To: <178376430529.16552.7043868463863908196@linux.dev>
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Date: Tue, 14 Jul 2026 23:08:00 +0700
+X-Gm-Features: AUfX_mxjHjnxb21MnCrWbzQJiYZvtYk867vc7GSuACQWoJdxFFCJgHfV8pHaNcc
+Message-ID: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 1/3] i2c: rust: implement SMBus read abstraction
+ via kernel::io::Io for I2cClient
+To: Igor Korotin <igor.korotin@linux.dev>, dakr@kernel.org
+Cc: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	andi.shyti@kernel.org, wsa+renesas@sang-engineering.com, ojeda@kernel.org, 
+	branstj@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 
-Split the logic inside the opt3001_get_processed() function, as the
-current flow is hard to read, mixing IRQ and non-IRQ code blocks.
+On Sat, 11 Jul 2026 at 17:05, Igor Korotin <igor.korotin@linux.dev> wrote:
 
-Separate the IRQ code path into its own function, same for the
-non-IRQ path.
+> This driver only calls try_read8()/try_read16(), so AS5600 itself isn't
+> affected in practice. But the abstraction being introduced here would be
+> unsound the moment any write-capable consumer reaches for it -- and I
+> don't think patching try_write8/try_update one at a time is the right
+> fix, since it just leaves the same trap for whichever method nobody's
+> gotten around to overriding yet.
+>
+> Danilo -- since using Io for I2C was originally your suggestion, I'd like
+> your read on this before we go further: IoCapable::io_read/io_write are
+> infallible by signature, which holds for MMIO/PCI-config (bounds-checked
+> implies success) but doesn't hold for a bus transaction -- I2C can
+> genuinely fail per-transfer regardless of address validity. Given that,
+> is Io/IoCapable the right abstraction for I2cClient to implement at all,
+> or does I2C need its own fallible-native interface rather than overriding
+> pieces of this one?
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
----
-This patch fixes the absolutely horrible code flow in the
-opt3001_get_processed() function, where the original implementation
-used checks whether IRQ mode is enabled to execute blocks of code,
-making the function hard to read. Ideas on how to improve the functions
-are more than welcome.
 
-Originally suggested by Jonathan Cameron.
----
-Changes in v4:
-- Simplify error checks and end of functions (Andy)
-- Refactor timeout check (Andy)
-- Link to v3: https://lore.kernel.org/r/20260712-opt3001-unwind-cleanup-v3-1-5fa336876b08@gmail.com
+Agreed. I will rework on top of Danilo's FallibleIoCapable approach
+in v5. I checked rust-next and neither FallibleIoCapable nor
+io_projection v6 has landed yet.
 
-Changes in v3:
-- Move duplicated code blocks to common functions (David)
-- Change wrapping of comments and function call (Jonathan)
-- Link to v2: https://lore.kernel.org/r/20260711-opt3001-unwind-cleanup-v2-1-47f617e00c65@gmail.com
+Danilo, should I wait for io_projection to land first before rebasing,
+or should I carry FallibleIoCapable as a preparatory patch in my series?
 
-Changes in v2:
-- Remove ternary operator and add if/else (Andy)
-- Remove timeout variable (Andy)
-- Link to v1: https://lore.kernel.org/r/20260708-opt3001-unwind-cleanup-v1-1-900b2cfddb6a@gmail.com
----
- drivers/iio/light/opt3001.c | 192 ++++++++++++++++++++++++--------------------
- 1 file changed, 106 insertions(+), 86 deletions(-)
+Thanks for the detailed review.
 
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 434ef7e034fe..12cfb0e58870 100644
---- a/drivers/iio/light/opt3001.c
-+++ b/drivers/iio/light/opt3001.c
-@@ -315,35 +315,12 @@ static const struct iio_chan_spec opt3002_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(1),
- };
- 
--static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
-+static int opt3001_start_conversion(struct opt3001 *opt)
- {
- 	struct i2c_client *client = opt->client;
- 	struct device *dev = &client->dev;
--	int ret;
--	u16 mantissa;
- 	u16 reg;
--	u8 exponent;
--	u16 value;
--	long timeout;
--
--	if (opt->use_irq) {
--		/*
--		 * Enable the end-of-conversion interrupt mechanism. Note that
--		 * doing so will overwrite the low-level limit value however we
--		 * will restore this value later on.
--		 */
--		ret = i2c_smbus_write_word_swapped(client,
--						   OPT3001_LOW_LIMIT,
--						   OPT3001_LOW_LIMIT_EOC_ENABLE);
--		if (ret < 0) {
--			dev_err(dev, "failed to write register %02x\n",
--				OPT3001_LOW_LIMIT);
--			return ret;
--		}
--
--		/* Allow IRQ to access the device despite lock being set */
--		opt->ok_to_ignore_lock = true;
--	}
-+	int ret;
- 
- 	/* Reset data-ready indicator flag */
- 	opt->result_ready = false;
-@@ -353,85 +330,128 @@ static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
- 	if (ret < 0) {
- 		dev_err(dev, "failed to read register %02x\n",
- 			OPT3001_CONFIGURATION);
--		goto err;
-+		return ret;
- 	}
- 
- 	reg = ret;
- 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
- 
- 	ret = i2c_smbus_write_word_swapped(client, OPT3001_CONFIGURATION, reg);
--	if (ret < 0) {
-+	if (ret < 0)
- 		dev_err(dev, "failed to write register %02x\n",
- 			OPT3001_CONFIGURATION);
-+
-+	return ret;
-+}
-+
-+static int opt3001_get_processed_irq(struct opt3001 *opt)
-+{
-+	struct i2c_client *client = opt->client;
-+	struct device *dev = &client->dev;
-+	u16 value;
-+	int ret;
-+
-+	/*
-+	 * Enable the end-of-conversion interrupt mechanism. Note that doing so
-+	 * will overwrite the low-level limit value however we will restore this
-+	 * value later on.
-+	 */
-+	ret = i2c_smbus_write_word_swapped(client,
-+					   OPT3001_LOW_LIMIT,
-+					   OPT3001_LOW_LIMIT_EOC_ENABLE);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to write register %02x\n",
-+			OPT3001_LOW_LIMIT);
-+		return ret;
-+	}
-+
-+	/* Allow IRQ to access the device despite lock being set */
-+	opt->ok_to_ignore_lock = true;
-+
-+	ret = opt3001_start_conversion(opt);
-+	if (ret)
- 		goto err;
--	}
- 
--	if (opt->use_irq) {
--		/* Wait for the IRQ to indicate the conversion is complete */
--		ret = wait_event_timeout(opt->result_ready_queue,
--					 opt->result_ready,
--					 msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
--		if (ret == 0) {
--			ret = -ETIMEDOUT;
--			goto err;
--		}
--	} else {
--		/* Sleep for result ready time */
--		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
--			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
--		msleep(timeout);
--
--		/* Check result ready flag */
--		ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
--		if (ret < 0) {
--			dev_err(dev, "failed to read register %02x\n",
--				OPT3001_CONFIGURATION);
--			goto err;
--		}
--
--		if (!(ret & OPT3001_CONFIGURATION_CRF)) {
--			ret = -ETIMEDOUT;
--			goto err;
--		}
--
--		/* Obtain value */
--		ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
--		if (ret < 0) {
--			dev_err(dev, "failed to read register %02x\n",
--				OPT3001_RESULT);
--			goto err;
--		}
--		opt->result = ret;
--		opt->result_ready = true;
--	}
-+	if (wait_event_timeout(opt->result_ready_queue, opt->result_ready,
-+			       msecs_to_jiffies(OPT3001_RESULT_READY_LONG)))
-+		ret = 0;
-+	else
-+		ret = -ETIMEDOUT;
- 
- err:
--	if (opt->use_irq)
--		/* Disallow IRQ to access the device while lock is active */
--		opt->ok_to_ignore_lock = false;
-+	opt->ok_to_ignore_lock = false;
- 
- 	if (ret < 0)
- 		return ret;
- 
--	if (opt->use_irq) {
--		/*
--		 * Disable the end-of-conversion interrupt mechanism by
--		 * restoring the low-level limit value (clearing
--		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
--		 * those enable bits would affect the actual limit value due to
--		 * bit-overlap and therefore can't be done.
--		 */
--		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
--		ret = i2c_smbus_write_word_swapped(client,
--						   OPT3001_LOW_LIMIT,
--						   value);
--		if (ret < 0) {
--			dev_err(dev, "failed to write register %02x\n",
--				OPT3001_LOW_LIMIT);
--			return ret;
--		}
-+	/*
-+	 * Disable the end-of-conversion interrupt mechanism by restoring the
-+	 * low-level limit value (clearing OPT3001_LOW_LIMIT_EOC_ENABLE). Note
-+	 * that selectively clearing those enable bits would affect the actual
-+	 * limit value due to bit-overlap and therefore can't be done.
-+	 */
-+	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
-+	ret = i2c_smbus_write_word_swapped(client, OPT3001_LOW_LIMIT, value);
-+	if (ret < 0)
-+		dev_err(dev, "failed to write register %02x\n",
-+			OPT3001_LOW_LIMIT);
-+
-+	return ret;
-+}
-+
-+static int opt3001_get_processed_noirq(struct opt3001 *opt)
-+{
-+	struct i2c_client *client = opt->client;
-+	struct device *dev = &client->dev;
-+	int ret;
-+
-+	ret = opt3001_start_conversion(opt);
-+	if (ret)
-+		return ret;
-+
-+	if (opt->int_time == OPT3001_INT_TIME_SHORT)
-+		msleep(OPT3001_RESULT_READY_SHORT);
-+	else
-+		msleep(OPT3001_RESULT_READY_LONG);
-+
-+	/* Check result ready flag */
-+	ret = i2c_smbus_read_word_swapped(client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read register %02x\n",
-+			OPT3001_CONFIGURATION);
-+		return ret;
- 	}
- 
-+	if (!(ret & OPT3001_CONFIGURATION_CRF))
-+		return -ETIMEDOUT;
-+
-+	/* Obtain value */
-+	ret = i2c_smbus_read_word_swapped(client, OPT3001_RESULT);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to read register %02x\n",
-+			OPT3001_RESULT);
-+		return ret;
-+	}
-+
-+	opt->result = ret;
-+	opt->result_ready = true;
-+
-+	return 0;
-+}
-+
-+static int opt3001_get_processed(struct opt3001 *opt, int *val, int *val2)
-+{
-+	u16 mantissa;
-+	u8 exponent;
-+	int ret;
-+
-+	if (opt->use_irq)
-+		ret = opt3001_get_processed_irq(opt);
-+	else
-+		ret = opt3001_get_processed_noirq(opt);
-+	if (ret)
-+		return ret;
-+
- 	exponent = OPT3001_REG_EXPONENT(opt->result);
- 	mantissa = OPT3001_REG_MANTISSA(opt->result);
- 
-
----
-base-commit: 2e2f2de7532cbbc2269de8be20ec709606c6e79b
-change-id: 20260708-opt3001-unwind-cleanup-9aeede365655
-
-Best regards,
--- 
-Kind regards,
-Joshua Crofts
-
+Coirul
