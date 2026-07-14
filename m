@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 360EF3876D7;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427F1389114;
 	Tue, 14 Jul 2026 11:02:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784026974; cv=none; b=HX8aJeaBhxdAQHgQA1oKl8fVPDylJd8UkEqUkDCvOqUAhxMgTvnJ/V2ycN4RlClpz/okMcT4SMN0tYCxZF3tBUwwdnBhxNwt44npUQ3w+Vfl6tDPSkDpzWdpUx+XO/BJNMl5bQ1j0lNt0wfmL7PCeVhVqVvG31jpu3GnM8Lb1xA=
+	t=1784026974; cv=none; b=bA6crbO4CTj0r6U+hu+dEJGz4HyvT85rPCTEqDq3GLGBesL7xHjU9XzI+NvkzM51dZ0mP6mj83Mvr1tX+1E9hwfayL9KiV1kIHkBUZajVvSFVDlrbnhS+6kCX+t+wQGFiIL0gXSi7RaJVrtIRT2hCvQ9OSmwH0gAib8ChBZtgKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784026974; c=relaxed/simple;
-	bh=kqbLfRqrQe70WtV9A1wHM2UX90jMCw35sdfgI1Op+Ww=;
+	bh=218M8FrPiWDgACs8EXS/X/X/8uBrgu04ceut2d4D8rw=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IOFZk+L+ZoSBg+VTz26aZeNaGV8kE0HOqEhNrtxRAc7yz4HYec3Q2u8wViUodVXDgez0rSSsRpMK5xcs+wdFmtCvbmgkN/h4pafGY4Ld5I0ITob+z64ybz2ygj6sC5fSkNaYOT7diwbQITVORGAdDNFDxWaG4ok/TEm9WacCTfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AO9QRmsj; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=bznZKh3/wYIwF40t2o5T0zqVaz93Eg7vM/6tVbTEq2Yw17a9VvymP3tBeJUknWx+kIT9HLpjX6B0pj/BI20UmC0Su+lmxmEq3jLMdHrC3Ne5bX5wuFdTDvaiq/ApNzPjVkqXhbBl0t3u+7FLZSXkKhq1bvwu08+eCHAMoZNw1ZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G6c3/mLV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AO9QRmsj"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0CB06C4AF11;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G6c3/mLV"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A639C2BCFD;
 	Tue, 14 Jul 2026 11:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784026973;
-	bh=kqbLfRqrQe70WtV9A1wHM2UX90jMCw35sdfgI1Op+Ww=;
+	bh=218M8FrPiWDgACs8EXS/X/X/8uBrgu04ceut2d4D8rw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=AO9QRmsjVCwM3esv6sjPyGPOi5SGfh9GHr4dorkpYuDH+6Mb4Yc64QK6ZgZ92c2Nn
-	 +uzOe5k+jY2dQuX4S9HXhQyQoKuXcWqpTc3VHvPIpyVfY60vhrVEP1I8t6zyno5q+i
-	 B0+x7dKw27CqcAUxLgMQpOlG8GRRYBDFodp13XcHpO16EEKQ6VhVnOql5+V68ielTW
-	 vEFZ86NtN+UpEPPk+llQnTWIcDqUSPJ1WiLyi5YVVMKWPqcbqH1ivMKvihyVGnFl1t
-	 ChB3rwaCltvYW+xRxkGbbe2LHoPNs3L3k4o6cj0/qSjTFVggycDax0CRU9EbanTvq5
-	 A6C7p2tGK/INA==
+	b=G6c3/mLVvZhKQ+CoS31C7rvrgYAiRC9PAkT31tr+od2RdTlAkj6WawMn2pRNPYowW
+	 PaYU+gTyOYLk/LUcomAfJD/wRJz5OMeROWvAgsawCoLhAwdzWs9U+gv0J01jl04UCU
+	 oXyLeTg4z+C7OD6yRbu5Q5mIkKQqvfeV6tkx7gLBbYeGvqMspEw0Yc6wiXrOMCsHWt
+	 1wRzrA4y6zv80VRBSVXzmX5tmY1UyjTbqawdjEThyxQQrOf5BGvpeMSnNJQ4eASxph
+	 71pDc4bwookgxS1j7oJpcukHJPE6AkRND8cEsOP/r04z27B5DQqlXyIl+Sqn8CjHZn
+	 FYl6eK2JGWZ8g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7C2C44507;
-	Tue, 14 Jul 2026 11:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88324C4450A;
+	Tue, 14 Jul 2026 11:02:53 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 14 Jul 2026 12:02:47 +0100
-Subject: [PATCH v8 07/17] iio: test: add kunit tests for channel prefix
- naming generation
+Date: Tue, 14 Jul 2026 12:02:56 +0100
+Subject: [PATCH v8 16/17] iio: ABI: add docs for ad9910 sysfs and debugfs
+ entries
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260714-ad9910-iio-driver-v8-7-36939c3c07d2@analog.com>
+Message-Id: <20260714-ad9910-iio-driver-v8-16-36939c3c07d2@analog.com>
 References: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
 In-Reply-To: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -57,11 +57,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784026971; l=11782;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784026971; l=4220;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=cLsar4g6ywEsFfBe5Wt3Znzrh2jrG/2Jj2nW3Bwx/Rs=;
- b=pPGs4QuH28V1qiWC1C9rvBJyWe9S1IEDDX1ybZjrov+7GGsfEReEOZhoY6vNgo6MRYp7NHeN3
- SiqHXjl2YIsA+JoAbcLL11z6xYXCVed11d3I7YLj9yZcWr/DBfngE0Q
+ bh=GuhwolTQpd8DFn9kJcnMvrj2DfAjx99cqypPcX1I4W8=;
+ b=eowpbGlqGpJvQZAyjCD4Yn1yeicDaxc6UKd7Q6RHUnmwFgOKoV20qEeAjp7nQG8p5e/xzyT8u
+ +3rbN84CDWnCKpi8ODUKfvxHHc97MWjoy59zGEdkq//SUbd9mXo+htc
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,399 +71,97 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add a KUnit test suite covering __iio_chan_prefix_emit(), the helper
-that builds IIO sysfs attribute name prefixes from an iio_chan_spec.
-The suite groups cases by the enum iio_shared_by mode it exercises:
-
-  - IIO_SHARED_BY_ALL: produces an empty prefix.
-  - IIO_SHARED_BY_DIR: emits direction only ("in" / "out").
-  - IIO_SHARED_BY_TYPE: emits "<dir>_<type>" and the differential
-    "<dir>_<type>-<type>" variant.
-  - IIO_SEPARATE: covers the full matrix of indexed, differential,
-    modified, output and extend_name combinations, plus the two
-    documented error paths (differential without indexed, differential
-    with modifier).
-
-A final case exercises the seq_buf overflow path by passing an
-undersized buffer and expects -EOVERFLOW.
-
-Because __iio_chan_prefix_emit() is static, the test translation unit
-is pulled into industrialio-core.c.
-
-Also, an entry is created under MAINTAINERS dedicated to tests for IIO
-core helpers.
+Add custom ABI documentation files for the DDS AD9910 with sysfs and
+debugfs entries. The sysfs ones control parameters from the Digital Ramp
+Generator and OSK engine. The debugfs attributes are read-only and
+evalutate into source channel labels for each DDS core parameter.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- MAINTAINERS                                |   7 +
- drivers/iio/industrialio-core.c            |   4 +
- drivers/iio/test/Kconfig                   |  14 ++
- drivers/iio/test/iio-test-channel-prefix.c | 299 +++++++++++++++++++++++++++++
- 4 files changed, 324 insertions(+)
+ Documentation/ABI/testing/debugfs-iio-ad9910       | 23 ++++++++++++++++
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     | 31 ++++++++++++++++++++++
+ MAINTAINERS                                        |  2 ++
+ 3 files changed, 56 insertions(+)
 
+diff --git a/Documentation/ABI/testing/debugfs-iio-ad9910 b/Documentation/ABI/testing/debugfs-iio-ad9910
+new file mode 100644
+index 000000000000..7083a20d5a40
+--- /dev/null
++++ b/Documentation/ABI/testing/debugfs-iio-ad9910
+@@ -0,0 +1,23 @@
++What:		/sys/kernel/debug/iio/iio:deviceX/frequency_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output frequency.
++
++What:		/sys/kernel/debug/iio/iio:deviceX/phase_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output phase.
++
++What:		/sys/kernel/debug/iio/iio:deviceX/amplitude_source
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only. Reports the channel label that is read from the
++		<dir>_<type>[Y]_label attribute, which corresponds to the on-chip
++		signal generator that is currently driving the output amplitude.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+new file mode 100644
+index 000000000000..4e25f538af4a
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+@@ -0,0 +1,31 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_dwell_en
++What:		/sys/bus/iio/devices/iio:deviceX/out_frequencyY_dwell_en
++What:		/sys/bus/iio/devices/iio:deviceX/out_phaseY_dwell_en
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the sweep behavior at the configured limit. It enables dwell mode at a
++		sweep limit when set to 1, i.e., after the sweep is complete the output
++		value stays at the limit. Otherwise (setting this value to 0), the sweep
++		may stop or restart from the initial position, or even continue by
++		reversing the sweep direction.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc
++What:		/sys/bus/iio/devices/iio:deviceX/out_frequencyY_raw_roc
++What:		/sys/bus/iio/devices/iio:deviceX/out_phaseY_raw_roc
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		For a channel that produces parametric sweeps, this attribute controls
++		the rate of change of the parameter in raw units per second (slope).
++		This value may be influenced by the channel sampling_frequency attribute
++		if available. Multiplying this value by the scale attribute of the
++		channel yields the rate of change in physical units per second.
++
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw_roc_available
++KernelVersion:	7.3
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists the available roc values for the channel. Values are
++		space-separated in ascending order.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b1ec46c5919..ffeee7c1ffa8 100644
+index f741b799d383..b923e5b25ddc 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -12634,6 +12634,13 @@ F:	include/dt-bindings/iio/
- F:	include/linux/iio/
- F:	tools/iio/
- 
-+IIO CORE KUNIT TESTS
-+M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	drivers/iio/test/iio-test-channel-prefix.c
-+F:	drivers/iio/test/iio-test-format.c
-+
- IIO UNIT CONVERTER
- M:	Peter Rosin <peda@lysator.liu.se>
+@@ -1683,6 +1683,8 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
  L:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index b365922d8481..3909255212f5 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -2230,6 +2230,10 @@ EXPORT_SYMBOL_GPL(iio_device_get_current_mode);
- subsys_initcall(iio_init);
- module_exit(iio_exit);
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/debugfs-iio-ad9910
++F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	drivers/iio/frequency/ad9910.c
  
-+#if IS_ENABLED(CONFIG_IIO_CHANNEL_PREFIX_KUNIT_TEST)
-+#include "test/iio-test-channel-prefix.c"
-+#endif
-+
- MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
- MODULE_DESCRIPTION("Industrial I/O core");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
-index 4fc17dd0dcd7..7d2c29cc583b 100644
---- a/drivers/iio/test/Kconfig
-+++ b/drivers/iio/test/Kconfig
-@@ -4,6 +4,20 @@
- #
- 
- # Keep in alphabetical order
-+config IIO_CHANNEL_PREFIX_KUNIT_TEST
-+	tristate "Test IIO channel prefix" if !KUNIT_ALL_TESTS
-+	depends on KUNIT && IIO
-+	default KUNIT_ALL_TESTS
-+	help
-+	  Build unit tests for __iio_chan_prefix_emit(), the helper that
-+	  builds IIO sysfs attribute name prefixes from an iio_chan_spec.
-+	  The tests are compiled into the IIO core module.
-+
-+	  For more information on KUnit and unit tests in general, please refer
-+	  to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
-+
- config IIO_GTS_KUNIT_TEST
- 	tristate "Test IIO gain-time-scale helpers" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-diff --git a/drivers/iio/test/iio-test-channel-prefix.c b/drivers/iio/test/iio-test-channel-prefix.c
-new file mode 100644
-index 000000000000..4326d9bc466d
---- /dev/null
-+++ b/drivers/iio/test/iio-test-channel-prefix.c
-@@ -0,0 +1,299 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Unit tests for IIO channel prefix generation.
-+ */
-+
-+#include <kunit/test.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/limits.h>
-+#include <linux/string.h>
-+
-+#define PREFIX_BUF_SIZE		(NAME_MAX + 1)
-+
-+#define EXPECT_PREFIX(_test, _buf, _ret, _expected) do {			\
-+		struct kunit *__test = (_test);					\
-+		const char *__expected = (_expected);				\
-+										\
-+		KUNIT_EXPECT_EQ(__test, (_ret), (ssize_t)strlen(__expected));	\
-+		KUNIT_EXPECT_STREQ(__test, (_buf), __expected);			\
-+	} while (0)
-+
-+static char *iio_test_prefix_alloc(struct kunit *test)
-+{
-+	char *buf = kunit_kzalloc(test, PREFIX_BUF_SIZE, GFP_KERNEL);
-+
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+	return buf;
-+}
-+
-+static void iio_test_prefix_shared_by_all(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+	};
-+	const struct iio_chan_spec chan_noisy = {
-+		.type = IIO_ACCEL,
-+		.output = 1,
-+		.indexed = 1,
-+		.modified = 1,
-+		.channel = 7,
-+		.channel2 = IIO_MOD_Z,
-+		.extend_name = "supply",
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SHARED_BY_ALL,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "");
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_noisy, IIO_SHARED_BY_ALL,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "");
-+}
-+
-+static void iio_test_prefix_shared_by_dir(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan_in = {
-+		.type = IIO_VOLTAGE,
-+		.output = 0,
-+	};
-+	const struct iio_chan_spec chan_out = {
-+		.type = IIO_VOLTAGE,
-+		.output = 1,
-+	};
-+	const struct iio_chan_spec chan_in_noisy = {
-+		.type = IIO_ACCEL,
-+		.indexed = 1,
-+		.modified = 1,
-+		.channel = 5,
-+		.channel2 = IIO_MOD_Y,
-+		.extend_name = "supply",
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_in, IIO_SHARED_BY_DIR,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in");
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_out, IIO_SHARED_BY_DIR,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "out");
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_in_noisy, IIO_SHARED_BY_DIR,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in");
-+}
-+
-+static void iio_test_prefix_shared_by_type(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+	};
-+	const struct iio_chan_spec chan_diff = {
-+		.type = IIO_VOLTAGE,
-+		.differential = 1,
-+	};
-+	const struct iio_chan_spec chan_noisy = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.modified = 1,
-+		.channel = 4,
-+		.channel2 = IIO_MOD_X,
-+		.extend_name = "supply",
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SHARED_BY_TYPE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage");
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_diff, IIO_SHARED_BY_TYPE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage-voltage");
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan_noisy, IIO_SHARED_BY_TYPE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage");
-+}
-+
-+static void iio_test_prefix_separate_simple(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_TEMP,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_temp");
-+}
-+
-+static void iio_test_prefix_separate_indexed(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 3,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage3");
-+}
-+
-+static void iio_test_prefix_separate_indexed_diff(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.differential = 1,
-+		.channel = 0,
-+		.channel2 = 1,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage0-voltage1");
-+}
-+
-+static void iio_test_prefix_separate_modified(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_ACCEL,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_accel_x");
-+}
-+
-+static void iio_test_prefix_separate_indexed_modified(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_ACCEL,
-+		.indexed = 1,
-+		.modified = 1,
-+		.channel = 2,
-+		.channel2 = IIO_MOD_Y,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_accel2_y");
-+}
-+
-+static void iio_test_prefix_separate_extend_name(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 2,
-+		.extend_name = "supply",
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "in_voltage2_supply");
-+}
-+
-+static void iio_test_prefix_output_separate(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.output = 1,
-+		.indexed = 1,
-+		.channel = 0,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	EXPECT_PREFIX(test, buf, ret, "out_voltage0");
-+}
-+
-+static void iio_test_prefix_diff_unindexed_fails(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.differential = 1,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
-+}
-+
-+static void iio_test_prefix_diff_modified_fails(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.differential = 1,
-+		.modified = 1,
-+		.channel = 0,
-+		.channel2 = 1,
-+	};
-+	char *buf = iio_test_prefix_alloc(test);
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SEPARATE,
-+				     buf, PREFIX_BUF_SIZE);
-+	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
-+}
-+
-+static void iio_test_prefix_overflow(struct kunit *test)
-+{
-+	const struct iio_chan_spec chan = {
-+		.type = IIO_VOLTAGE,
-+	};
-+	char small[4];
-+	ssize_t ret;
-+
-+	ret = __iio_chan_prefix_emit(NULL, &chan, IIO_SHARED_BY_TYPE,
-+				     small, sizeof(small));
-+	KUNIT_EXPECT_EQ(test, ret, -EOVERFLOW);
-+}
-+
-+static struct kunit_case iio_chan_prefix_test_cases[] = {
-+	KUNIT_CASE(iio_test_prefix_shared_by_all),
-+	KUNIT_CASE(iio_test_prefix_shared_by_dir),
-+	KUNIT_CASE(iio_test_prefix_shared_by_type),
-+	KUNIT_CASE(iio_test_prefix_separate_simple),
-+	KUNIT_CASE(iio_test_prefix_separate_indexed),
-+	KUNIT_CASE(iio_test_prefix_separate_indexed_diff),
-+	KUNIT_CASE(iio_test_prefix_separate_modified),
-+	KUNIT_CASE(iio_test_prefix_separate_indexed_modified),
-+	KUNIT_CASE(iio_test_prefix_separate_extend_name),
-+	KUNIT_CASE(iio_test_prefix_output_separate),
-+	KUNIT_CASE(iio_test_prefix_diff_unindexed_fails),
-+	KUNIT_CASE(iio_test_prefix_diff_modified_fails),
-+	KUNIT_CASE(iio_test_prefix_overflow),
-+	{ }
-+};
-+
-+static struct kunit_suite iio_channel_prefix_test_suite = {
-+	.name = "iio-channel-prefix",
-+	.test_cases = iio_chan_prefix_test_cases,
-+};
-+
-+kunit_test_suite(iio_channel_prefix_test_suite);
 
 -- 
 2.43.0
