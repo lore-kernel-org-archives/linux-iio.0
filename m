@@ -1,152 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A9136A02F;
-	Tue, 14 Jul 2026 11:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BC837DAAE;
+	Tue, 14 Jul 2026 11:02:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784026853; cv=none; b=lC+zPiTlyLRyvaGptHPnukczN1DMVzNZPcJtCRaTkqDm3dorOnqpVqDRhGBtAJUDo9QU5RHWMFOZ4x1zUGgdy9fLK+h9fjmqLdEswP+OKGw+ICswk1WGcklwt8gcNG+8iVs06Qj1Du3d9An2ahnRq2S1ovYcMFvHgTWKnzHicL0=
+	t=1784026973; cv=none; b=K+KiRH69+1KlblA0tt2vV7j6mHAY5VNSk7/hcxxMUrzgKzPDVsZwRPUnogfRzR26msrDszfzk65qUuvj4sxwC4A4DdkJfdyYhTz+U6c9w33bTfjdtVfdW0rSMBsn+GZWh7JqaN8bNsJwVcxG+hNetPZTbvSOXITSmaF9khkAdpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784026853; c=relaxed/simple;
-	bh=Yw3UByh9lza4l+oROGbFdHgEwE9MVd7gDa2MvYy2QbA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ngpBSD4MWK4GX1mVvWeTw//Pfaq89/rPMOnNh0AF5ixIFWxp9mwoTuqNIFA+O1BD3RbrCEnN6wpImflZal3K4fJjJU4d8+joPJ2wOevblWaVjZPPZI53FF0bP5n6rDHyGeEMOKFYrmIlqicNnlbEGNKgCjkbHHFoVhJSEWpOZ9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ez8SHUmT; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784026973; c=relaxed/simple;
+	bh=UtKYoW5FDSxLKqqbjmW8abMzfHP00hnJo7tRGqvTRQI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=GF/+elbYqpwpWMm2YUCP9aBAsdwmXwTdSDJ33CqMLiwVYaAE8jPL4Ts+3MFOqVbP/NOt08FJhGvAFNUwuuwUMI9VHXp3YXYm57TKc00Y/TR/MXAD0lfDau4cEAr5rM94rQzUEKkTuXmu9CGJsseK0EZuqlc2i2kar/KDYzoREbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TuRNftWH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ez8SHUmT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784026851; x=1815562851;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Yw3UByh9lza4l+oROGbFdHgEwE9MVd7gDa2MvYy2QbA=;
-  b=ez8SHUmTul4uUk0qItjnm2d7h8HVxCZc6LGEbXmGbGi/sycpAi3S4lZN
-   sLnsIorkuh2n9QPUN+jByYLEyWbltk2TNqDZ0zSH0t/mUjbChosokbES+
-   tM39mSOIaFojF6EyKkZvkR1iAhEstlN6MKyUxFqGrrd92e5lTOLY+Xmz4
-   6D/sgYFaGhJRIND293O1rOBZXUIdoWltQoZ1vofjSXyJ/79B5S8JusuWO
-   pVf0LSNUWGfzTbtokZVskoV7XE4Qj8sOntH4CdZW46MT0HO3iZgyTS2mt
-   ENP4hX9J04Gm98m8y/62wRfK3zrGr3sHRNosvOja6/rq40oeD9Zgpkv2S
-   A==;
-X-CSE-ConnectionGUID: +VMD1IJTRzC9965f2E7GIg==
-X-CSE-MsgGUID: FAVNDz4zSFieUbdXrBegdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="102198195"
-X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
-   d="scan'208";a="102198195"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:00:50 -0700
-X-CSE-ConnectionGUID: OCETTmGHRDaDqfO9C4ls2w==
-X-CSE-MsgGUID: tdAzxbYhTeyhJs6x74p/zQ==
-X-ExtLoop1: 1
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:00:47 -0700
-Date: Tue, 14 Jul 2026 14:00:45 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH v16 05/10] iio: imu: inv_icm42607: Add SPI For icm42607
-Message-ID: <alYW3YEbjnCqrY2k@ashevche-desk.local>
-References: <20260713215842.69097-1-macroalpha82@gmail.com>
- <20260713215842.69097-6-macroalpha82@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TuRNftWH"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A4FF0C2BCB9;
+	Tue, 14 Jul 2026 11:02:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1784026972;
+	bh=UtKYoW5FDSxLKqqbjmW8abMzfHP00hnJo7tRGqvTRQI=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=TuRNftWHE2o0JZ2c+05yPnk7NsE8A4AOEjFOg8Ds/6PdHqXu7/P2W3c6MlkCp7Yx0
+	 /c+qxc1tZbRLpUcXaAJ1DLRpTWTHIpdhAz4ZPFZCjG6BtjBWZAMzaZSP1oCcQEiV53
+	 bmgA5vhNFZoUgSshqFWmEqqoEZ/w4xODsEtOLAZxqXMA6O/eEf8l7fEVVswAA0HB5v
+	 JkmOCCdBAHGsnm0EwxsJWaP5w2V9nbkJ/14vXaljAeUpN4uSkJxthiwvgB9ZVLS9Cy
+	 yYcJ8050UvAPxHW28X6g1V0gGUY4P74TC4+7xirY3jxFZSl3dTb4GfETYnGQSiMa/X
+	 T4AqWxzXl2B7w==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 804A2C44501;
+	Tue, 14 Jul 2026 11:02:52 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Tue, 14 Jul 2026 12:02:41 +0100
+Subject: [PATCH v8 01/17] iio: ABI: add attributes for altcurrent channels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260713215842.69097-6-macroalpha82@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260714-ad9910-iio-driver-v8-1-36939c3c07d2@analog.com>
+References: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
+In-Reply-To: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784026971; l=3268;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=ZMU9cnovPYUzplaaXs4eCd0C1BPEa1nJaR4itGOwIM8=;
+ b=gJbb8BTSXDrN4L0kp6TPjco2CLWdGSBDoFVnknic2nfr0sN6my7Hifp9cl8VM+cCXkG7bELew
+ ubpkoOCSVDeDfVtBO6s3EU/xZXxm3ZbKltzPBIEZFPLVraLMxz4fXFN
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Mon, Jul 13, 2026 at 04:58:35PM -0500, Chris Morgan wrote:
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-> Add SPI driver support for InvenSense ICM-42607 devices.
+Add attributes applicable to altcurrent channels, e.g., frequency, phase,
+scale, raw, label and powerdown. Those are going to be used by a DDS
+device to be introduced shortly.
 
-A few nit-picks below, otherwise
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-...
-
-> +static int inv_icm42607_spi_bus_setup(struct inv_icm42607_state *st)
-> +{
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	/* Only support 4-wire mode for now. */
-> +	ret = regmap_set_bits(st->map, INV_ICM42607_REG_DEVICE_CONFIG,
-> +				      INV_ICM42607_DEVICE_CONFIG_SPI_AP_4WIRE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_clear_bits(st->map, INV_ICM42607_REG_INTF_CONFIG1,
-> +				INV_ICM42607_INTF_CONFIG1_I3C_DDR_EN |
-> +				INV_ICM42607_INTF_CONFIG1_I3C_SDR_EN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_DRIVE_CONFIG3_SPI_MASK,
-> +			 INV_ICM42607_SLEW_RATE_2NS);
-> +	ret = regmap_update_bits(st->map, INV_ICM42607_REG_DRIVE_CONFIG3,
-> +				 INV_ICM42607_DRIVE_CONFIG3_SPI_MASK, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = FIELD_PREP(INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK,
-> +			 INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_I2C_DIS);
-
-+ blank line?
-(Not sure, this is an interesting case and I have no strong opinion on
- either style.)
-
-> +	return regmap_update_bits(st->map, INV_ICM42607_REG_INTF_CONFIG0,
-
-> +				  INV_ICM42607_INTF_CONFIG0_UI_SIFS_CFG_MASK,
-> +				  val);
-
-This can be a single (a bit longer) line.
-
-> +}
-
-...
-
-> +static int inv_icm42607_probe(struct spi_device *spi)
-> +{
-> +	const struct inv_icm42607_hw *hw;
-> +	struct device *dev = &spi->dev;
-> +	struct regmap *regmap;
-> +
-> +	hw = spi_get_device_match_data(spi);
-> +	if (!hw)
-> +		return dev_err_probe(dev, -ENODEV, "Failed to get SPI data\n");
-> +
-> +	if (spi->mode & SPI_3WIRE)
-> +		return dev_err_probe(dev, -ENODEV, "SPI 3-wire mode not supported\n");
-
-Hmm... I would distinguish these two by the error code, perhaps -ENODATA for no
-match data?
-
-> +	regmap = devm_regmap_init_spi(spi, &inv_icm42607_regmap_config);
-> +	if (IS_ERR(regmap))
-> +		return dev_err_probe(dev, PTR_ERR(regmap),
-> +				     "Failed to register spi regmap\n");
-
-> +	return inv_icm42607_core_probe(regmap, hw,
-> +				       inv_icm42607_spi_bus_setup);
-
-This is perfectly a single line.
-
-> +}
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5cc2e82c4997..90047189c3eb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -478,6 +478,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_current_q_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+@@ -799,6 +801,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_powerdown
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -809,6 +813,7 @@ Description:
+ 		together.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_frequency
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -835,8 +840,10 @@ Description:
+ 		all the other channels, since it involves changing the VCO
+ 		fundamental output frequency.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_i_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_q_phase
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_i_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_q_phase
+@@ -1736,6 +1743,8 @@ Description:
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw
+ KernelVersion:	3.17
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -2126,7 +2135,9 @@ Description:
+ 
+ 		Raw counter device counters direction for channel Y.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_label
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_label
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_label
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_label
+ KernelVersion:	5.8
+ Contact:	linux-iio@vger.kernel.org
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.43.0
 
 
