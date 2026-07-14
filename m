@@ -1,112 +1,93 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCCD9360EF2
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:21:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.179
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784046063; cv=pass; b=peXXynNjqa+/d/YirFL8ZeQMnENBQawabkjMa5oKaOXYWJKrTccmfMz/4mCvKL0rrZ/xNXgi3V3TL7lbMRq9io/txK/5yIgCStcitH/oWnbuT+H4P1MdufrEIHl3DndgqATY7jZiqzxgIqQDE9CjBq9+XKTO+CiQp+kjMKNXhlY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784046063; c=relaxed/simple;
-	bh=w/hWVgWMBEAi4baxYBKguUNUSjowVNXqcyrAzFXEtd8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mGyOg/FtNF6JHOzzHo5uCkIO8WGF853YsoMCfFtnaTsulMVfDbuk3CV7BEiXoFiwI4aSzIiV3ivKo0gjlZzFjCWagpbDk8xRq07RNHZHddc23iAzPAKb6lJO+Pjf32NoNpxnCwut2OERTwv6f5/px5dpPlu6SrnKUxXIL05namU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o88uYxWm; arc=pass smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF00447DD49;
+	Tue, 14 Jul 2026 16:49:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784047752; cv=none; b=ZJdw9YWRgAvko+LAM0uYWzoxOFBKaJ3lxL7ec+fOUd9v3kTn0/cN/uDEJ8XtYxwPVg0GojRT7cbi0EjflXV7eD80DLsH7tQsP230z9UopAQYipm5tFBDLcCj80Ub7cpYaibg/vYDswgWVBZ2f3h1MPuKbQR2c2L1KnESier42sM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784047752; c=relaxed/simple;
+	bh=+LKbcbSEuIWXwsvBUzqjvqiQNouSRRLre4U1q/maT2U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a6RCaCPen0m2EQk1EJduDjy3nBMLaVo12kS2wGFvdtjxf0VyWlDPOiG3Mxq7H9SJ+xvbLA0T15Fngs5UrUk7O43ByvTWN+P+fo8brYKiIvgoUOb/gyTtwInH3dN76rpAxhIiDRqQEN5N0YkP/ODeCRT8pMxW0pYOE+eL7cLToHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fJAq7gOS; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o88uYxWm"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-39c7fd21b63so32073701fa.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 09:21:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784046060; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Tt+S3n2nFIFzuQvtvX8SziuLanPslMKycNWdSzSK0uRamngGTnVA7wQr2OoSI5xjZf
-         8JsNzqgmvejzLd46G/XMp/tawkWURoU92yTbI2Evw7T451kldee5KSBUW2BUmIEr7Wct
-         w7qrLj9qGZ4QqfsdV38aP9YQCFeUf7yncqFMTJDufz5CdZ6JLaOPY0BL2IMjHbWvDTvH
-         3fUn55/QgI98/orbh8CMdmU4WLAB6GJrW625xz6ySSOth6YERuh7wU9CJ8aQj5o0ZIci
-         QisyGy7cWQpGS+roTrUJPENZXypYk5c7Xx4x9ywlSuD+xpNzDB3jSn1y/PID8qWcPGzA
-         rd6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=w/hWVgWMBEAi4baxYBKguUNUSjowVNXqcyrAzFXEtd8=;
-        fh=aid8IK5nDjVZfQ0XgSZkr+unEPs2zJvLPD+0WIqFvlw=;
-        b=JgeI8GjQpkBwDJJ8RDb+thkhsB6sKGXMzyJFj1jsbtIDmP4amjWXpzIipmAWTfZZoO
-         EaCqD+Lu6ZAPIW/cztCw30hTV2dsMcALSUzXvuJySmYPiEytmmQIx+CMisa1GQHyeeRm
-         n+OrMt79giUkwMgb0I7rz0VgzyimHFxLfaBr1SZ9pb+K+Q4/g/3Ib0lfa/Whsagp5Rr7
-         ++0UiIrVwUbJGisUoy6odOYWVMguVUHY7PUl37wnYTT/r0P1jZXSLxtIN5LyDtnp8LNs
-         syucWk5pYpenTuO66cnsq/tD/XCu1mczl/NxXj5Yx3uYeokqa0zimuZ9J7SAXLijd4NR
-         t+lg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784046060; x=1784650860; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=w/hWVgWMBEAi4baxYBKguUNUSjowVNXqcyrAzFXEtd8=;
-        b=o88uYxWmrfOlrLoUAui5B1keRvLo2aRYCLAqClorVJDOjWJ0+60sz9JdyhgwoGiaBv
-         4AVJC9ZR7CjU9S4SaqLYhX0+ramX/orn5b3PPwvxe38m2GOQOnNlTCxDnAoNZMX7wJRc
-         DcsX6POpWAH3n6NxS2xS2T+3fjv4j4OOfbnqxS/JgDxoOQfQbix3ritMvzghfrTR2M3k
-         jR94NGB1prk8cZ4fYECOq6zaxMGAprVlqXeYw/AeoGhEW8tn8nY3N+PKCwD7MpnPIFfP
-         h0CBoH0hE0YuXAUtZxnoFHNXoL9uUYbFrSds/QLHIptnvhHxf025hO/MV+JymmXVLYYM
-         X7dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784046060; x=1784650860;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=w/hWVgWMBEAi4baxYBKguUNUSjowVNXqcyrAzFXEtd8=;
-        b=o+QZaiAaH8nFUks1yo6BZj3gvb3ceQYjTq9PpCSURtbWKtucc7OJpNWJxL768mzeOP
-         y+CM/bHXF4+gpU/lYOI9hQ+MlLbxi0i8uGSvdaQ4uHNG/TbVPZ9iRNtbORVj4XjuRMLK
-         vFDc8SGGVGnBXGfPDiOEp9oeOs+vRriXCJEcTL0UyL+S+v4R7TzZGnnk6l+oaOKZG2f3
-         KtIFiWmNicgfM57LNei74BAjxA1IpHMp+wONIAGdhppY2A29wKvs6j5LYBzNCWZjq69L
-         FtrDgQXNAJIdpb7pOYSUvuRzUIp5UFfgEW9SG7DFrwldLgHSChnim7kzqzmES0d4+/hz
-         lBJg==
-X-Forwarded-Encrypted: i=1; AHgh+RrgGkKXhD9J8tsN/ww9iIqIFrYhA2GBe7GQGCKUOPpwYGOAM5mpQFzLF2RcUsEfHyfVrHc4QGqgDU0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwhJ1C2qaihmEE6b2naqrVtcgQ89fVLjTGsVi3be28qZAhISWWx
-	3LTr3Ikb8roDTV4NgTfGlpWHcfmdJdAnp7f7JEq4C6s1S9wL9LOYDfnOjlpgGxEhCQtwoihyl2a
-	m8Y9OUN/BePnW5DdtognmXqGG117u4/Y=
-X-Gm-Gg: AfdE7cnjW8z7VW8gSKFjXX24rohpyBNLBK+FHyZk05A73xe6sVz7oIKmVIDJkuUm7R8
-	UXk0ljcWyB73JZG8/v75Gx/lUX9a+KbIPSKEZOLgp1GSxpu2mTJcszbmfR/57PG/a8RCOEKfWik
-	8+xA0yYx8UgKXLK2NtKcGUttjiRMoCXl/WdVBUSB9Al0psxfZsVDsT8iZEyL1RfAQUdHUKVV2Of
-	lKzPEsm1AG7x23aNH1PeHbUcyD3b94CrNhJCZMNCMt+2+4M0arwBzcUk9l1TQXNFUWmZNBEo+SX
-	qWG7R6O1zG7TW7L2CknbFOaWpNrrm6P+r1PG0A9wZg==
-X-Received: by 2002:a05:651c:150f:b0:39c:92b8:dd9d with SMTP id
- 38308e7fff4ca-39daa839b20mr9821661fa.26.1784046059486; Tue, 14 Jul 2026
- 09:20:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fJAq7gOS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA721F000E9;
+	Tue, 14 Jul 2026 16:49:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784047751;
+	bh=72v/IFJJ9WilRJ+faKTcY0phhK/k/tq113OmFbUCo7M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=fJAq7gOSlHZU328jqwSVouJiLTPHiF0SltxyVgNhhZWdkorHsT15XHUabHEfj4O5V
+	 tORU8MZCEmTOSc1WNzR0advbpl5n2NsPxqBlbroJ4bQu4aS8PnN8O0Yn8Vu8ii0wvv
+	 QFbyFuTXz6pA+UBvfjun7488x9Fo85X37hbIUIwW9YabPMkjwjfTscry1faBLNw+j7
+	 KW2Sy0edNvgQooKa710AZ/HIwKlGq/T4dsXinBuurlesgaVWskdONgIA7bUOHNe5GS
+	 /WI6R2+NJfI2LTOg0WMNMiMrfxGLQ6Qy2wEJO2pUghjhvy6Nn6OLYazxLQWwoJi1Ey
+	 2pE7BZ4xSkNIg==
+Date: Tue, 14 Jul 2026 17:49:07 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Lukas <lukas.metz@gmx.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: dac: Add DAC8163
+Message-ID: <20260714-unweave-pointed-ef9c6c02a053@spud>
+References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
+ <20260708-dac8163-work-v2-1-3acd1bf20182@gmx.net>
+ <20260708-spotty-spectacle-f270b4c66d18@spud>
+ <alZPZuAQfiROz8kf@berta-MS-7693>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260707151542.91997-1-muchamadcoirulanwar@gmail.com>
- <20260707151542.91997-3-muchamadcoirulanwar@gmail.com> <DJVQDP9J54K1.AANCLIJC23YF@kernel.org>
-In-Reply-To: <DJVQDP9J54K1.AANCLIJC23YF@kernel.org>
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Tue, 14 Jul 2026 23:20:48 +0700
-X-Gm-Features: AUfX_mxf_FzQxVLfuQI_7jeEOA2orrtEW894cnhKCVOqUxe_TyKMO-fvHYnHX4s
-Message-ID: <CAO26r3QDbT07dTsMfMB8Y6H+qBzh-PQxgcTTVKqJ7C9yv-emsQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 2/3] rust: add minimal IIO subsystem abstractions
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: jic23@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	andi.shyti@kernel.org, wsa+renesas@sang-engineering.com, ojeda@kernel.org, 
-	igor.korotin@linux.dev, branstj@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="0feAM5YEw7Se1lwn"
+Content-Disposition: inline
+In-Reply-To: <alZPZuAQfiROz8kf@berta-MS-7693>
 
-On Sat, 11 Jul 2026 at 19:12, Danilo Krummrich <dakr@kernel.org> wrote:
->
-> On Tue Jul 7, 2026 at 5:15 PM CEST, Muchamad Coirul Anwar wrote:
-> > Add safe Rust wrappers for the Linux IIO (Industrial I/O) subsystem:
->
-> Does IIO's iio_device_unregister() synchronize against in-flight IOCTLs?
+--0feAM5YEw7Se1lwn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-From what I traced, yes. iio_device_unregister goes through
-cdev_device_del, device_del, sysfs_remove_dir, and ends up in
-kernfs_drain which waits for active sysfs readers to finish.
-Please correct me if I'm missing something here.
+On Tue, Jul 14, 2026 at 05:01:58PM +0200, Lukas wrote:
+> On Wed, Jul 08, 2026 at 05:37:44PM +0100, Conor Dooley wrote:
+> > > +  clr-gpios:
+> > > +    description:
+> > > +      The device registers are reset when this pin is asserted. The =
+output is
+> > > +      set to zero (xxx2 devices) or mid-scale (xxx3 devices).
+> > > +    maxItems: 1
+> > > +
+> >=20
+> > Sounds like this should be reset-gpios?
+> >=20
+>=20
+> Thanks for pointing this out. The description is actually wrong. The
+> datasheet says: "On activation of CLR, zero scale (DACxx62) or=20
+> mid-scale (DACxx63) is loaded to all input and DAC registers".
+> That means other registers are unaffected. I will update the description
+> but the clr-gpios is correct in this case i guess?
 
-Thanks
-Coirul
+Sounds about right.
+
+--0feAM5YEw7Se1lwn
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCalZogAAKCRB4tDGHoIJi
+0v07AQCwPLzKcG9LMeBGOoFfz7wkfBkhQnzbXhPbZh5vui2MgQD/UpfA5DI+axsK
+CMynLtGrzgtXKZd+Kri3UMir5tJOegs=
+=5c2G
+-----END PGP SIGNATURE-----
+
+--0feAM5YEw7Se1lwn--
