@@ -1,107 +1,150 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8971B2BD5A8
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 856C73F1AA8
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 08:17:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784011975; cv=none; b=UEmnVVjqYxXhwj35QU/h68QN+dA8KKxyIyB3wByUOLvcFnho7s5yETEY7JlLuX1X5BvUqbfi7N0P4OHoSFx6dF0XyEdWtVt0Y35WAq0GDolPjb/T/QMKZfdrHIXdxSy1IwkqqM8TO4LxMaYvfLKNxDo55QTwj5L7OT1kdnqwA3M=
+	t=1784017039; cv=none; b=cJAu6kNmCOF7831AY4MEiN9E9AqPF9foaS3UtJzYQ8EWNG5zzQLUB2TGvxMyfzDjEt5M4+hY1yzQRNeIWncDIUpCZHbgmpHvyr2fyg48nRic3uFhxaXxCZGAi+JPiXC/AgX3gy7SVvioBny5st3ht3tSpMobjE0S2JQ6YNooBgE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784011975; c=relaxed/simple;
-	bh=YmHJEuBe3u96/M5TfzcpQLzrd/hwj8LqW44BvHTehMc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=vB2MXnuxYu1h3P5Yr4TugRV2yCMU5STF/8bjYGwI4WEI6EQI2tNmP1Xv1/8DXOaaoYarUubm/B7Vrls1nhafk7qlom4RP/YYrX0XU1+NEdbfkG0qOg9LJrV9TfKb9W98qhe5Z+CyiuGGU5vKeHK2vPTIPnayep+ONn1GHVkGA38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ho17A5xw; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1784017039; c=relaxed/simple;
+	bh=2jerD9lp0NqmFadJflPzVzFJZXVG6Vk0wzFQvxAJI1I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hD0DdQzNg5A7jZbFwFgt9T18WNbXA6g63/DJdd8C+XGrTTqktG+uV3iO7NBB+yOm4lPT7Njwo4ZJNIQgvPOJkiH2S7X+P/eThKrDMb6gqxDhRuvzYR1T2dwGnigjhJE0j6TRbNsBZoshU+FZRw5Uua+KPd82DVE6+ogtWlBUP1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DR6MD1YZ; arc=none smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ho17A5xw"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-493bb510ce4so27773555e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2026 23:52:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DR6MD1YZ"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6974a6e54dbso924791a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 01:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784011972; x=1784616772; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=0hxd2lhkwloh6ADyskPxgB6Nys7+6GpYXhDY1KSinr8=;
-        b=Ho17A5xwBerL7RKQqe34ch6HvUHAemWCq6p+iIhOZGh7r8fNG4CGOgFR3HAVz/zgxW
-         YG7Bb4wr8QRaLMy86WadsgH3+ZzAtFcvdzTTlyWXlESjsra52A8ows1/vuJvE3xWEace
-         innNH9FOpSEWwVr83PL9T8F88UbeBXfhYGfW3LreeGKcgNX4j1czCg8snjOTqkMYjujv
-         6+b0dzEBG+ahqrWBywWbA3O1O1LevcdHR6nAlYAUrbS5vWsyzCtyppfZhyfN+6A5XCpm
-         nep51l5QAv4UPwAcZ8aVMyCrViQKarm5VTgfdTYvQZpFsJNdmK8yzGtVK5r9gAVk1+FY
-         NL5A==
+        d=gmail.com; s=20251104; t=1784017030; x=1784621830; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=d3Jk1bl127PhKyfuEwshrZ5NXnlXbFwCFha2daTO4m0=;
+        b=DR6MD1YZdoWG8DBaywLt0KxG4YNXtHqPmjv16NnXLkKmHitC6DHJawdUvGEM9chVmA
+         F041h4q7EwwZzVy3yp7tutxGUxfpKUxLEkybX0BiUOtI+fxUuvYk+0RWbytUH3RQE5nx
+         9tTVnM5kStOLH7VyQcsAH1ulBBGEXfHyHpA2ub9zZsUaMdGB+oLoNdBB3AYqZuJ07LZ8
+         p3fzujkAGHPWYreiiUeJxRFVuTpWniMK1qn5bMCx0N4is1WU6aQjb7SBYC9QN3+l84oW
+         a8qwjEa8TplNA9qkMfbcytlN/vCLCbA+qdpRUwDz54+kGwXsIipJTfNmNww9o6gWJMiv
+         5IHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784011972; x=1784616772;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0hxd2lhkwloh6ADyskPxgB6Nys7+6GpYXhDY1KSinr8=;
-        b=XnK65MAhyBNbZQr+hHSWwdKaLU3Vg9WJYL1a6dBcNmH3ORQYXhUlP2tSnTmZlb7HEn
-         f95lENgRWAaZcCXbs4DhrBjIoZLTfJa+sMvi12V7MANuTxu6smTJp+AYVm0qeE5cJg0L
-         ZKQbAx3/k8oJShrFl4JtRyJrRru0rAkgzJ9Ox+EbpDyTcXFaUwM1fcNWkOSrYQl8FEAp
-         zYWd1d5gHxk/WOAY5XKGF3cVlWwVs/IrdydN8/9gFNacLGYHhh35NI9sEz0bMEa76cHs
-         XV7roExr5ZzTygX62iX9hUgwE+xsBr7BYTtobyeByzPZ9qs1oc5pEfrqw+PXBrUn6t2w
-         3fPg==
-X-Forwarded-Encrypted: i=1; AHgh+RpPZOcCrkIYAvGYgexCcXaN9X4JiSg7xVJqroDDiWTkXCqSxHy1apCDSz40C7+BsuBiNnZMSjB7ZHE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwO3yutK4j2f97ZECOlL04MN9F9w3TLZXAHgr+YXk8empWYcYFu
-	LdxhgLh3IUOvw0v9UQcOA/s9aLXD34okSJ1EUi5Knaz+ik67QxZa0RCr
-X-Gm-Gg: AfdE7ckK5nukNukVwUI1V7aJqUGrGMoovNS+bfoSaITYOTHWlWLQyxo063mCRdxscRF
-	iN0Vnv4oy26I0LsyXwNA7KXO+bzm7sAmmhKbxiJkXvvv6a9KcL3ngB3f16oXceiC+cH0ZFLbEPn
-	8/APTQ/OKngI1j/I6/4b0JxvopVIo/x7RBIzIrjWJ8HObCONJCOVquw5XM+x7umxLrwQUrs9dEQ
-	tMVLeA2LxVAaoW2aWIqauK3WnJWb0CMUbXwEakAtEFlbMXGsgTCa/UYEvJx2gFk6SUBCw4tTagU
-	2B47mGmywVONjsLrhGu9ruZMTmIWVMtcDwkRAC3cNOrQnSy7ZjZSN7P9h10SW1h7f0ph0lqTaCX
-	7YVjTYBZQ+JU/wkSCQcS4wfKd2Yv5qOnuWZV/JPpkwSn2yoTiOdsx3uiCHHPyA7Q/8KG8gITAy+
-	M+daUXHgHTYC7X7xJtieEObWOGV55KaQjw9+EIBNI+DxtxwlbTCX3fogz3Tsc19ukuJ5h/W9L/Z
-	pUKdKIdXvFUZ2T+LQq1IbrLKjQVQyAtqW+PFu/tJN30Jjc1vxk38UHU4lVFEVQ8YLomEu/qus6n
-	Ltitu9eqtxzRYUeg8tgDTVVrBELnoexeENOVa7Bxh7OBjjK+3tun3sN2QCoi4J0/XCaiv58kSMD
-	mzJLNfqTpicS7+Ci+DERq0r4=
-X-Received: by 2002:a05:600c:4c12:b0:493:ae5d:8c40 with SMTP id 5b1f17b1804b1-495389c6b18mr7119025e9.27.1784011971725;
-        Mon, 13 Jul 2026 23:52:51 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f4634debesm6185587f8f.8.2026.07.13.23.52.51
+        d=1e100.net; s=20251104; t=1784017030; x=1784621830;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=d3Jk1bl127PhKyfuEwshrZ5NXnlXbFwCFha2daTO4m0=;
+        b=guFDXKOoBbh7hBiSzj5x4CPRETaSC5/vcPsG70QAaHirPsGcCCvBuusqL5wu/aDu32
+         aNv6K6qIXz7gd+OSyFwBuCn+oIVnfjxDNIaQbXMvT1Bv360ij3r+oopBfsgmP4VPv1hw
+         0d1oCQ1SLKBj9hf3kEua0Hrk7Lbx+oGy9pL6plOtr5mN3vpnshsy+1dV5axEVqDQoKK1
+         mAJK82Yc+5boWvsCfFXna4lB9CtFR5W0GKM02Mr7eDtfLBpPUaxenBOayz8pVJdx40G/
+         OLjRxbbYbGujOY5AxKW5Ce2mKYD/F/T0zlzcq0qaY0tFrdzo+fuXICuZTY1eRvgiteFk
+         VaEw==
+X-Forwarded-Encrypted: i=1; AHgh+Rr+z0jPAI1+VIPyuCK9BPK53Wwe6FCROeVhrL6CcpKgulMc0Y8gBet0waWvyJS/qeh56yvundHoJew=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZHJQQPJSac2L6Fqat7qTQzXLAJlQ6nt+xJyG0hRsdi391mcZB
+	EYqiiKtxGzQbL/rWjtjZeM5HPSksOK01F1aKO8EC/7ogGvu6kxgnr+F3
+X-Gm-Gg: AfdE7cnQQdAeXoY/K/RDnMNJ65obXSJRtMfvCacOeYlSG8dvT0Ir5oHqspCTkkYn5Nh
+	HmxHVlsfsAcsmWpAugG9kAiSoFgRI7txYK/4wlk/5+C7xkGcgcF9wjTD3z1ENFTQVowC4GdF7tg
+	KP45FGFIB1tpE18YCYM0TYXFMYiOxX56X36Xrq8Nx9DmNHgvXaBcQOPa720Wd/C0wm29icxoSqz
+	Qr6icVT9uf7wBxGBIkticSAjBYk32ZbypRuZvTlsa24d8hADr4ssFLbsbYOzKcEWE/aZDCogE7c
+	QFVaeJH6r1ELEWejpUOEPva7LmISC21gAV7oH9ZfeQGPH+4xGAN5xwyIiP5nXdcoGmXgX2SmuY1
+	mX8B2eIO527y+Y/DmA1LnjocEwAgk7SDwiwhc8cRHXnqIpA5zwS1Hx1AQ8kZvq0XfloVy5pvC+D
+	cXaYyKohqAg43rm4F62/JmOfVpy0DIMGxm7ZmnH8gk5KkxnA==
+X-Received: by 2002:a17:907:a4a:b0:c12:b227:614b with SMTP id a640c23a62f3a-c161ea6a243mr573738866b.27.1784017029849;
+        Tue, 14 Jul 2026 01:17:09 -0700 (PDT)
+Received: from DE-PF5B95TD.embedded.cmblu.dev ([87.129.199.250])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c15e353d2f8sm723085166b.34.2026.07.14.01.17.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jul 2026 23:52:51 -0700 (PDT)
-Date: Tue, 14 Jul 2026 08:52:50 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: OrangeBlack0765@outlook.com
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: tsl2583: migrate to sysfs_emit() and
- sysfs_emit_at()
-Message-ID: <20260714085250.00006e9b@gmail.com>
-In-Reply-To: <OS3PR01MB82448EEC71E6AD3236F39E3FAFFA2@OS3PR01MB8244.jpnprd01.prod.outlook.com>
-References: <OS3PR01MB82448EEC71E6AD3236F39E3FAFFA2@OS3PR01MB8244.jpnprd01.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+        Tue, 14 Jul 2026 01:17:09 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+To: William Breathitt Gray <wbg@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/3] counter: add GPIO-based counter driver
+Date: Tue, 14 Jul 2026 10:17:06 +0200
+Message-ID: <20260714081709.17846-1-wafgo01@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 14 Jul 2026 01:08:33 +0800
-OrangeBlack0765@outlook.com wrote:
+This series adds a counter subsystem driver that does quadrature
+encoder position tracking with plain GPIO pins and edge interrupts.
+Compared to interrupt-cnt.c (pulse-only) it provides full A/B/Index
+decoding and exposes the counter sysfs ABI.  Target hardware is
+low- to medium-speed rotary encoders on SoCs without a free eQEP /
+FTM / etc.  Benchmark rig: github.com/wafgo/qenc-bench.
 
-> From: Chengrui Liu <OrangeBlack0765@outlook.com>
-> 
-> Replace sprintf() with sysfs_emit() for single-value sysfs show
-> functions, and use sysfs_emit_at() for lux_table_show() which
-> concatenates multiple values. This ensures buffer safety and
-> follows the modern kernel sysfs API.
-> 
-> Signed-off-by: Chengrui Liu <OrangeBlack0765@outlook.com>
-> ---
+v7 addresses Williams review comments on v6 [1]. Main change is the
+reworked index GPIO handling, rest is smaller stuff.
 
-LGTM.
+Tested in quadrature x4 mode (both directions) on a AM642 board with
+a real encoder on GPIOs.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+== Changes in v7 ==
 
+Driver:
+  - check the enabled state in the ISRs before reading the GPIOs.
+    This also moves the reads under the spinlock, so concurrent A/B
+    ISRs cant evaluate the state out of order anymore.
+  - dropped the spinlock from the simple single-field read callbacks
+  - smaller cleanups from the review (b_irq_users increment split
+    from the zero check, current_state variable gone, ternary in
+    index_pulse, GPIO_COUNTER_NUM_COUNTS_MAX rename,
+    GPIO_COUNTER_MAX_INDEX removed)
+  - index GPIOs now live per Count (idx_gpio/idx_irq/has_index in
+    gpio_counter_count_priv), the n_idx based arrays are gone
+  - enable_write: dont resample prev_a/prev_b when Count 2 gets
+    enabled, that would corrupt the quadrature state of an already
+    running Count 1. Also sync the direction from the current B level
+    on enable in pulse-direction mode, otherwise the counter steps in
+    the wrong direction until the next B edge if B moved while
+    disabled (both reported by the Sashiko review on v6).
+
+Regarding the IRQ enable ordering question from the review: I kept
+setting cp->enabled = true before enable_irq(). The prev sampling and
+the enabled flag are done atomic under the lock, so the first edge
+after enable_irq() sees consistent state. With the other order there
+is a window where an edge fires and gets droped.
+
+Binding:
+  - index-gpios (array, position selects the Count) is replaced by
+    two seperate properties index1-gpios and index2-gpios, matching
+    the signal-a-gpios/signal-b-gpios naming. So Count 2 can have an
+    index line without a dummy entry for Count 1.
+  - dropped Conors Ack [2] because of the binding change, a fresh
+    one would be appreciated
+
+The 2D synapse array preparation for a future pulse-direction mode
+on Count 2 is not part of this revision, that was flagged as
+follow-up material.
+
+[1] https://lore.kernel.org/all/20260707104501.977372-1-wbg@kernel.org/
+[2] https://lore.kernel.org/all/20260629-trekker-estranged-754e9bfada16@spud/
+
+Wadim Mueller (3):
+  dt-bindings: counter: add gpio-counter binding
+  counter: add GPIO-based counter driver
+  MAINTAINERS: add entry for GPIO counter driver
+
+ .../bindings/counter/gpio-counter.yaml        |   60 +
+ MAINTAINERS                                   |    7 +
+ drivers/counter/Kconfig                       |   17 +
+ drivers/counter/Makefile                      |    1 +
+ drivers/counter/gpio-counter.c                | 1011 +++++++++++++++++
+ 5 files changed, 1096 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/counter/gpio-counter.yaml
+ create mode 100644 drivers/counter/gpio-counter.c
+
+base-commit: 3cd8b194bf3428dfa53120fee47e827a7c495815
 -- 
-Kind regards
+2.43.0
 
-CJD
