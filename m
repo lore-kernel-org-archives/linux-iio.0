@@ -1,63 +1,63 @@
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13AB035C1BD
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:31:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFFEF364927
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:31:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784028715; cv=none; b=EwA+PYBBOd9rHA5RuyHgRJrwxLBDylkuyQHsshjHjGYVgavSdksqc+xn3pOSYwNN3tcWQbpYGzWO01gZQPKrEvVFYVE81Fyi7f9TBwdZ5b12z0f6zKPtjLPlI3uCa3SxF/1znwBi31eqGTkYM67borFLxYQxvhZfSnK3sjvZY2g=
+	t=1784028716; cv=none; b=et+L7arBZM22O/U1RLq3mDUxkNxhwgdNN69G13whMkkklJRsWLStngEyhz8kZFmp6WagNOtNprtrQMVP5Eo/20OtYfUFKBlf8j4JEQ+UrBs5qkcvteFM5n7KukJuk3CG51erHbKRlBZrFR0uiHHabgsSYVBPnK2e4eHZ26ytab0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784028715; c=relaxed/simple;
-	bh=biO2VDvvuMrg2uvDOeIUh5S1pDVpoUHuMMBFpMiL5jU=;
+	s=arc-20240116; t=1784028716; c=relaxed/simple;
+	bh=KPEtP/l2rpCPUPVRlPtwP57praEDezWS+qamOeiLmy4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=GLGd6jm53WMULWG5HH6ClRvH+gjLWmNqe925SSRw7ojO5R337DkNVZcyc46KW9lhVjgwBNJ+7k1X1l4P2GZhfhs/MZAXMQ2eWzOuluoVyS0gnf73Mo2GxBGAJQhrTL8i2yT+J0xCwMwhDXjMQLWEmY384oQraCes9XPcnTd7kQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fltIsD98; arc=none smtp.client-ip=209.85.215.179
+	 MIME-Version; b=qxpsLc6d+kDYnicaEr0D3OzCkU3NuxQGX6SLjhSHFJq+ix9yHGAST5XttqQJYqy6F1FgJGC+vrZKw4Ekxf2Oqy3FbFYXWzz9cf6YLFcY/d9eQCoJAh/9ReFN/IIMGjGOomao/GWoACGuxNtL51ztMIdc/l/N221rLhdaDGOgnwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f6GoyT10; arc=none smtp.client-ip=209.85.216.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fltIsD98"
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-c9fe3c9bd5fso689515a12.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:31:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f6GoyT10"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-383adaa461fso620808a91.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:31:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784028710; x=1784633510; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784028714; x=1784633514; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Y0H1G5WZdR9SN2z823rVvQJ9X5UKno+8iIWeLBusZtg=;
-        b=fltIsD98C6WwW35+fnMCah7EQCrx1Xn/JkgE20wqUNZTSaAARsguva9Ro5U0bElYMn
-         H3auFQS+1JtrnUB9MLco8PsHNiR+m6OQSbl8zK4inpXg+GT1mjgDw+VglG8p569so6s2
-         7UEnxlzbs5x6KIInaNSNG3W2RBqedIeXn+5us7wme12mSUGuqVIDPysy6+fgGXi0E1d8
-         xT59dm4/r6qmh/9oWHbjxFMPeJgkARTiY4bDDNdGb9kiwANgBLyfQoMzc0ZUsnViBw6F
-         QOs4KE+IYPXnQKvhEWtFy5MPqGhYUspU0btETSdtnUs8c0zm1R4Y35zOFp2hVME3f9cC
-         94OQ==
+        bh=jrKroNG+WUkTMMJq+n2qekfNMAfDT5ieJ4xOEkhDX/M=;
+        b=f6GoyT10QqNY9kD0Umpap57LxORyLhUnpAaU7eMLcPyM9f0FMDVk6jznIumVchjUJ6
+         DTjJw0MkDmnhPYYXrqAy76f/ADk0SuOm0k0Nxsxa7Y91iSXzjNla/KUgOvu8GdN1KqX9
+         m5zcJtGhYCq+/zUGMdmEWawFYioUnRGxTCEdOJka6WxZ3ffg1FSB73hqcrdVltUng6vI
+         0nhsbGqOm2SSksoUx+XkQWG1Qp30pdjIbeNCEAxup6mOMZ+Gx0yELCiZtrpc/jara8dv
+         AQBiXGCUdkuSL7Ai/tT3W0QofHs535cMf1xUnpMFX+NGQQyvHJK694L978vowo3TryS2
+         LMww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784028710; x=1784633510;
+        d=1e100.net; s=20251104; t=1784028714; x=1784633514;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Y0H1G5WZdR9SN2z823rVvQJ9X5UKno+8iIWeLBusZtg=;
-        b=Wo2JWBt8UswJo/iSLDyO1135GsS73MymwO7stHIjKGMQIiy3QaMdBPNkqMuBwe2hvs
-         3rnwBNHc9Sfq6f1DrW6q2Rx4+sDNSWJf7Kqo+kLU3gQs9dOj7QJ+90MEFPVfi6CKMgHz
-         VHkmMPz0uI/GyNDST9EyYsXa/L2f9bM165bA5/m1ODMYhXcJYvLzO/V7oLTmvHpB7RSa
-         HljS4koTfQI9fQHfSaJuwcAP87+/mzAG67FEsIbCrUcXD7lBmmzooZdOG+lZfrl9QG+G
-         WaODeZuFYYQj70NedWT5AZHvXEUXlbwVekHgT9HTZR+Q9JePF2jEzMQ7QwfWXQBgBUDE
-         kr6g==
-X-Forwarded-Encrypted: i=1; AHgh+RoCgNCcOoYKQIZvxrjM51Qcs4lpjhNI3uRaQt5S5qUznwSV3bK7bk/WGnlJntjjMlTG+ttoH3b205A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxXOgylWUVvGgVK7I83YWsz5nPrCComYAaUs2vrjZYYlvcfPKEU
-	pYY9w9Tim1A7/dModG2g3YtJq0nHKzoe0vdfKVQ05XH9lM5Ow7zMvzB4ED4IOmM=
-X-Gm-Gg: AfdE7clE04gHYT/ewK/+n3+34y4YswuR2rSwR6Q2XtPSFALpN8KJCFR+XSHhKAFs0oA
-	NeV3AKCJalE3+hKpBeScWYDjRxs1HUMBMaNqD40gJ3k7OIUMsMX0M124gLRTXtr8YD+mq3LkPt5
-	vptt4HHLVgRPFR/jtU87YaD7wfG0mBZoWxQc5tdr1Okx5eZy//bmYqG2tIG523osiWiFNwKJbb0
-	DqawZt91OH7pbInN8RZc6rGqv+Vad+5VvweoeYdUeq+1ADb9IWrIZTapgRkNbCocbEbijC9F9If
-	nJz5rwZTPSAT91itmtdrfdSfcv4cPe/DJEaxp96GnQoaEruUp/0vgYF6QPvm3vNjMYFzZ8N9zhE
-	RClQ0lpTO8E1yw/9FJXed6F1bJ7gDRcuv+wmb3al10lvt+5z1XpnNMTZo8Qb7Dv4fxdMu5k3tmt
-	QcKMSawQM4FphUpxSORXHVWBynF79opKF84bM4j8NEXl1kwde6n/39
-X-Received: by 2002:a05:6300:2189:b0:3bf:8a0e:dd99 with SMTP id adf61e73a8af0-3c0f0990bcfmr19424002637.17.1784028710394;
-        Tue, 14 Jul 2026 04:31:50 -0700 (PDT)
+        bh=jrKroNG+WUkTMMJq+n2qekfNMAfDT5ieJ4xOEkhDX/M=;
+        b=BB3BZGMaLGxJjXhPDY7Gxx02Jo3O2jjx3hzgrk3ROZUdarULg48vCanAaWCXJZ/zFi
+         43ttpg6pNTX9SMqgy8WmNbv1KZycnBFiYyx6xaSh/HOvbWFQ1IIFj+OK4x0WEbKxUJCo
+         SRLE+vCvGXseha/jP8D8IEuOHF0LB7wC2q4cj8CwGPDYmCRit0IO5V3Yl/uYqGbYiaRQ
+         WdrUxcrs2h93wubrc6KGUgB6WnT4pxIp7PZMK9DKK+sga4MPc1mIxIwVQUvIHdkiHdKJ
+         xAQnjbN9/cDEc/WUk7d7oR5r8oYD0/nz3XxvmYgeLuHDUOB4NRKj1BD3VJJOhW3wbhsu
+         nCIQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpeLgvqnyxtqhnwD/ktvJhm/slVEzJXKZYVy6UYpTDdnGoidVP9MlqSiaFmf0VYTLJg/EK7pvconBg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxOhDb4LvzJPzuKuafdWF8MW9gtrkESVApSyIX48pTPD3WooVfv
+	5MQcEuZcNYSJChrPfnnjlzu3iRUAHirFQBnW0qub07a7W1GVhe7Zd9A=
+X-Gm-Gg: AfdE7cmbYH/KQV4LHM3v8wUSRvJErgqPBPbErTztNtW8T8qZUlvKq2bvkKvpXP/535e
+	jFQg//aBAlmJbgZP78qmiQXFcdHqxDWq4f/vUrblUZutMOwoGQE3jHPmyoNhPN6o8H/IIEf5UlE
+	1NZPqNxYgne8U/N2/H19BAISndwcxsH4MimRYFPMcAAznT2M8+0cFZ5e0Hrlb3AOkgtxDK2/Db1
+	TUNUlSiJiuuzr5KqyFkLytZa7LC2mtvkjcVkMTvvYci0v4MzZbH1Pdc5uSoxP10aSxZ4+FSX6Rj
+	as1CRmDAhGSEtyrncia6a9SQRui22BXe/zy91288rqsNoGKaf/HhrH1n/P8neSYkZ5LIpz3ubDT
+	aFKmGlWcQUrGeimYaXuG18OmdU1OwV9Grj/AowV1O1D0NSsKLd28gBrVBF3vY2D4fFey2QqbkQQ
+	8SBxgHT9sCaPkOzgwaXyk/0f0J39BgOLq+BZItt23JKRkvPxFkRgD9mgL4YXAW62A=
+X-Received: by 2002:a17:90a:d886:b0:366:10f1:3d91 with SMTP id 98e67ed59e1d1-38dc782c6b0mr11083125a91.1.1784028714130;
+        Tue, 14 Jul 2026 04:31:54 -0700 (PDT)
 Received: from localhost.localdomain ([101.0.63.168])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm95357368eec.1.2026.07.14.04.31.47
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-311747f72a6sm95357368eec.1.2026.07.14.04.31.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 04:31:49 -0700 (PDT)
+        Tue, 14 Jul 2026 04:31:53 -0700 (PDT)
 From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -67,9 +67,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v3 2/4] iio: light: opt4001: Fix incompatible pointer type passed to div_u64_rem()
-Date: Tue, 14 Jul 2026 17:01:32 +0530
-Message-Id: <20260714113134.3445-3-nikhilgtr@gmail.com>
+Subject: [PATCH v3 3/4] iio: light: opt4001: Reject integration times with a non-zero seconds part
+Date: Tue, 14 Jul 2026 17:01:33 +0530
+Message-Id: <20260714113134.3445-4-nikhilgtr@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260714113134.3445-1-nikhilgtr@gmail.com>
 References: <20260714113134.3445-1-nikhilgtr@gmail.com>
@@ -81,42 +81,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-div_u64_rem() takes a u32 * for the remainder but is passed val2, which
-is an int *. There is no functional impact as int and u32 have the same
-size and representation on all supported architectures and the remainder
-is always smaller than the divisor, so it fits in the positive range of
-int. Fix the type mismatch by using a local u32 for the remainder and
-assigning the result to *val2.
+opt4001_write_raw() only looks at val2 when setting the integration
+time, so a write such as 1.000600 is silently accepted as 600 us.
+Return -EINVAL if val is non-zero.
 
 Fixes: 9a9608418292 ("iio: light: Add support for TI OPT4001 light sensor")
 Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
 ---
- drivers/iio/light/opt4001.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/light/opt4001.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
-index 66563000d081..a0f174888384 100644
+index a0f174888384..bb4be6384e4c 100644
 --- a/drivers/iio/light/opt4001.c
 +++ b/drivers/iio/light/opt4001.c
-@@ -173,6 +173,7 @@ static int opt4001_read_lux_value(struct iio_dev *indio_dev,
- 	u8 crc;
- 	u8 calc_crc;
- 	u64 lux_raw;
-+	u32 rem;
- 	int ret;
+@@ -269,6 +269,9 @@ static int opt4001_write_raw(struct iio_dev *indio_dev,
  
- 	ret = regmap_read(chip->regmap, OPT4001_LIGHT1_MSB, &light1);
-@@ -199,8 +200,8 @@ static int opt4001_read_lux_value(struct iio_dev *indio_dev,
- 
- 	lux_raw = lux_raw << exp;
- 	lux_raw = lux_raw * chip->chip_info->mul;
--	*val = div_u64_rem(lux_raw, chip->chip_info->div, val2);
--	*val2 = *val2 * 100;
-+	*val = div_u64_rem(lux_raw, chip->chip_info->div, &rem);
-+	*val2 = rem * 100;
- 
- 	return IIO_VAL_INT_PLUS_NANO;
- }
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_INT_TIME:
++		if (val)
++			return -EINVAL;
++
+ 		int_time = opt4001_als_time_to_index(val2);
+ 		if (int_time < 0)
+ 			return int_time;
 -- 
 2.39.5
 
