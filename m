@@ -1,79 +1,94 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E23673DA5C3;
-	Tue, 14 Jul 2026 08:50:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A120351C1F;
+	Tue, 14 Jul 2026 08:53:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784019034; cv=none; b=l4OimqMdJVOzJ0EwC4e6SeqrLZKqXL5DkjOh1NX94QuP4xNCkHlxEZY58kyko+iVOq1Anz43d1WQ2OUu4tMu3+TCcoD8sXECZBsM6UEIEIcLOX35H/osdLMaHo/MokV4PnjlZaf8hrZYLOgn2skrupO0Q8Q9yuGZs40Vcs+TMHE=
+	t=1784019229; cv=none; b=D3s1Eo1LSazF5pLtN++DZ3IWrCgitdRdHUvvPvCui9qAcR6eiXReHS3GSZVOiuzohw1gaaJWHGMb0mPQ0plJ6jJ2M32WmbvriSGClR3IR/xJX+OnxcZKzqEhQpValfwuc6jNpGv0vp/HawaMcakBxp45mxSTm5zgoesPEpaYW7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784019034; c=relaxed/simple;
-	bh=sUWSCKA62yOPR/TNh9L8EOAEo9GsQjFG8fjYQkO8kxU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=l1ATeTzDjnzS0oRJNSp4/fgRxgHq4KGpi3ekhrp/W++xjK9EXpn4aanBxCp2mflRTgFvJ449Yo7wKardBciS5ENwHrRar0Kt5k1pLpSkq+wb1r1hOnty8A3eAPF2RqXUdSesYguaGssl8IDGDXlMX69X1hi5adj1aGNaT4tDssA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 0df7f8f67f6111f1aa26b74ffac11d73-20260714
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.12,REQID:296d752c-dbb1-445c-849f-b461fe26e3a9,IP:0,U
-	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:25
-X-CID-META: VersionHash:e7bac3a,CLOUDID:16ca95fbab60b1cb772e4df97726a883,BulkI
-	D:nil,BulkQuantity:0,Recheck:0,SF:102|850|865|898,TC:nil,Content:0|15|50,E
-	DM:5,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:
-	0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 0df7f8f67f6111f1aa26b74ffac11d73-20260714
-X-User: gonglinkai@kylinos.cn
-Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
-	(envelope-from <gonglinkai@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 2127962445; Tue, 14 Jul 2026 16:50:24 +0800
-From: Linkai Gong <gonglinkai@kylinos.cn>
-To: nuno.sa@analog.com,
-	jic23@kernel.org
-Cc: olivier.moysan@foss.st.com,
-	dlechner@baylibre.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Linkai Gong <gonglinkai@kylinos.cn>
-Subject: [PATCH] iio: backend: fix typos in kernel-doc for iio_backend_interface_data_align()
-Date: Tue, 14 Jul 2026 16:50:19 +0800
-Message-Id: <20260714085019.3109889-1-gonglinkai@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1784019229; c=relaxed/simple;
+	bh=wvnGjhIKaWQrbbIAWubtSW8msoHJpHu9UeimnkbFuDY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i5yOdq2Ql38hhmS+N8MiqoSGs9cr5cBlZSiPgjWVJ+jnQCTikiWikw5ypfxa8Pklf0/JM6LyQ2Md/8abx+qhvhRvUiS5bK6hculWgknNXPi/9hcyB5UaFrOI3KrCqu4oUbf5HSrvXfPpO1v5GCG3CQ6NIpKt28PGvlZx57Nkcpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ou/tnuJu; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ou/tnuJu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784019228; x=1815555228;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wvnGjhIKaWQrbbIAWubtSW8msoHJpHu9UeimnkbFuDY=;
+  b=Ou/tnuJuDlvvpVYJjDRlotXIpq5F6nQmvNiQr+wS31zyXBh07PjhBhzQ
+   FcNwGRYcWXkcv+3FjXRWJgdc9lrLH3xA1GY9bqkwkfq56iCq+k/Wq+gQ1
+   1T0Y6kZNQtBLWp6UufEkpCp0W5wkKBEm0GSekVshidE5hW9oS2+t2naYJ
+   LlTTlzBKTPG3bXhEtPC8jceLW5uJoIOK6xvenrcOCBNaB+rN3L/PhSBTX
+   YWVetG1vtgi7kYSJ6qJLrWXbWa4MUAPrhazyxNDonIijNRH+GjfM2Yp7D
+   JrEodArevv2+KnrGt/9ePEpeObxYynDolnf+xfgmnhJxzXXqPh3F5X6fo
+   w==;
+X-CSE-ConnectionGUID: 2oMwmIuGQzOa/03htIjZ8Q==
+X-CSE-MsgGUID: 3Hn0mjGkTCuwHVlnbyVFRQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="84601224"
+X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
+   d="scan'208";a="84601224"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 01:53:47 -0700
+X-CSE-ConnectionGUID: I5osEyNoQZyOwOcymRuI5Q==
+X-CSE-MsgGUID: ll9MHauuRuimTqTkkQ3yZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
+   d="scan'208";a="251388090"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 01:53:45 -0700
+Date: Tue, 14 Jul 2026 11:53:42 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: OrangeBlack0765@outlook.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: tsl2583: migrate to sysfs_emit() and
+ sysfs_emit_at()
+Message-ID: <alX5FkSyqo6taYl9@ashevche-desk.local>
+References: <OS3PR01MB82448EEC71E6AD3236F39E3FAFFA2@OS3PR01MB8244.jpnprd01.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OS3PR01MB82448EEC71E6AD3236F39E3FAFFA2@OS3PR01MB8244.jpnprd01.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Fix two spelling mistakes in the kernel-doc comment:
-"initates"->"initiates" and "proccess"->"process".
+On Tue, Jul 14, 2026 at 01:08:33AM +0800, OrangeBlack0765@outlook.com wrote:
 
-Signed-off-by: Linkai Gong <gonglinkai@kylinos.cn>
----
- drivers/iio/industrialio-backend.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Replace sprintf() with sysfs_emit() for single-value sysfs show
+> functions, and use sysfs_emit_at() for lux_table_show() which
+> concatenates multiple values. This ensures buffer safety and
+> follows the modern kernel sysfs API.
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index 4763e224ebc6..d19400057108 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -851,7 +851,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_filter_type_set, "IIO_BACKEND");
-  * @back: Backend device
-  * @timeout_us: Timeout value in us.
-  *
-- * When activated, it initates a proccess that aligns the sample's most
-+ * When activated, it initiates a process that aligns the sample's most
-  * significant bit (MSB) based solely on the captured data, without
-  * considering any other external signals.
-  *
+...
+
+>  	for (i = 0; i < ARRAY_SIZE(chip->als_settings.als_device_lux); i++) {
+> -		offset += sprintf(buf + offset, "%u,%u,%u,",
+> +		offset += sysfs_emit_at(buf, offset, "%u,%u,%u,",
+>  				  chip->als_settings.als_device_lux[i].ratio,
+>  				  chip->als_settings.als_device_lux[i].ch0,
+>  				  chip->als_settings.als_device_lux[i].ch1);
+
+Now the indentation becomes broken.
+
+>  	}
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
