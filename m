@@ -1,65 +1,65 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8A8444717
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 14:18:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EA5137BE8D
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 14:33:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784038711; cv=none; b=BMlGrIYF6zW5sUgFr+DrN46a4vjdYIrcwsP6sQFZjmQAzx6I9eWEUw68gUZtYrl4nxHRmIPmFtGuZyKXG4twHBqQiUn8j+0l+uswGqbWJDTlQku0NLmP1cwCkoAAfreOM6q35VAU2Sf3bXtY5Y+9O2Qi72zhte/vGJiMrcsOv60=
+	t=1784039601; cv=none; b=hx4KrBjhGzi6UlrOhTrGk1imdIdfHAsGcKz/ObUAmpE6Rlx3/P8UUZK3WnOay2B2O6ki7c81FP7yaROr0RmnLHpmFqRmgqDqd/+Cfm3sJLXXbV5WHvaGFessO4uVdD33uVcDzNKYZQeVUaGK79MXuwCOHTPeCvPJcpoI4s16MvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784038711; c=relaxed/simple;
-	bh=0DKG2To6jCVPnZRJ2L+oO8w7P5y+YqwjWTPKkHTL7CU=;
+	s=arc-20240116; t=1784039601; c=relaxed/simple;
+	bh=SUP1kQE5p1aa+G20qYy1Hucdars0a6q884T9xd3sclY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GUgukAG7aTsyXlvhEafAG+6gABuHLkaRtf71lgIgE8O3R4gJOlucxXHyFWqMDaby2LFZV5NdGvl2OhNZR6Lil4T6/mCGlfLZPuMcgSQxgcKbqvkETrPm5gYl1dB4yf2NbM00eZGXgC3zbb/QjBCTKBXAN9ph23bYaLbDRo3Nd4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rCNYjfqJ; arc=none smtp.client-ip=209.85.218.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=N922wBNvTkIV2A9lUtGlr1JLy/Hced/ou2FNyjvgIqVR5pPBxmWOB+ZOaTztNF9Qnxhc51JRwZFU6tCDk8y4X1R7bh3Ad42V6Cz5o8Z+0y9EHI9GhY80N5kEZq9WLucTuQKM9zTG5dlYo/rp0jEr33EI3JdPhqJJNQ0+1gqf+WY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E9xwor7f; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rCNYjfqJ"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c1671ec8692so28021566b.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 07:18:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E9xwor7f"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-475417f010dso2058676f8f.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 07:33:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784038708; x=1784643508; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784039596; x=1784644396; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lZB9rfFkhOTFphdLGR6TyG9TjcpFUip/IJVahTcTdLg=;
-        b=rCNYjfqJEzBdbv652WV30QWwA2LgBr0pVAD1wzBiaswK7omi9pocA3wJjjcecykjC2
-         IHB2Xtqi6vIH5UoMxzAmV1VQs/VWLMsqCpJ/Eh2u3f/1eIIGIFfbOkKu22BvY57YbhPY
-         KL3EWDh4ZOl1Rosam/maNvWAUmYChjWAY84LonhCeltJ5qigSq+nqu0jKseqCI3TFmTo
-         x6Dlhm80cUzqpq2pIwqI/o70c/oEQWawZQVH/6eBOPWjJFCwEb/s6H/+HdjHSfgr9HK5
-         M338OIPwzRhuwWmGNhSzhDzVjs5s5JG2OCDAOf82nzPJd4ikbw4YKjWKEUlMh4hMyNwz
-         iQ7A==
+        bh=BCR2ojKh9CG9hna9RsCPgdIHB0rwbpF+LXlEWMO+i64=;
+        b=E9xwor7fHrqQo54tObeJ34KzvDtNJnxqqFeEU1Mf5tYNN9LFWa6dS53TlkFb1I1AxI
+         xAbTYx773b0pYJvOCgh0yrAijuHmzVygJkefC4Ik/Cd5et49KCPEYRYbCM2Klf0WrU5F
+         xSn3E2I9jJCFUmwzDwuWa1IAhdBUDV+snGZlVsvNIPlBKNpVu/FSHf8v0JkvlxlG83n5
+         5my4Lti/Ajw11pNzNCVEjoy/yUhf4ASxCuguoQWUyEEvkZc/UJFSd36YPFZXkJYnSjmv
+         KdbQPkQlUubJ+lXCnfTZBK3nG8l+KHB/UToE+jocwtN/yXKrb0Avu5nEpJLtItdWa4Yf
+         TAiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784038708; x=1784643508;
+        d=1e100.net; s=20251104; t=1784039596; x=1784644396;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=lZB9rfFkhOTFphdLGR6TyG9TjcpFUip/IJVahTcTdLg=;
-        b=ZiX2exXG0lzxp1h+PClZEziIpw0227taBtToJj03v/s9jFKkLqZVB0s6xSDwnpBhNS
-         gXds2lvMDoN+URCci+mUFBK8ZlXD76bYwmEsb9bZ2iLvjRekXWPhXT/LALLw9X+eOus8
-         nr6j51Q5hk5cmF6CswfmPflwt4Nim8ZUxuBtzypzn42//DWwFq7DXOc7nXWZpfYJH2wM
-         7UnBbKl3O9JY7OduXsUyLV7kywSP+62+EnmAju2fVVGDUB7LR2svCp+ZtBYtp0MqE7o8
-         6+W8turZakOo13hqb/FOYZFDTnCOooGYumLmmryaKujqR8raxzvOa7jPgnKS8gXzOhq/
-         x0UQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoHggr2265yiyZtAiVK8NvlkvfpPha9o3m3RAlVTOGfqz9MjFFVPgiSJVr3tcOs6zZF+HT08pg9fzk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyr0heg2LNg34FjelOdzx6TnrGZZwcWdd19mj9cGd/NofI3HI/a
-	bnVFGtQJf/NOVGWc3IuARTHmsdfCTJjW1BOWw37t96w7xeXqLrgHt5zk
-X-Gm-Gg: AfdE7ckqkT3diVoD08pEbLVVP7tA6H8QypRDlzByJI+yA7WydN5MATh+D/88zZoOu8s
-	LsOVcFSPN+s8tDaF6VRRKlNrBZw7EzLGJeNqHS95Nl467uL4imEOeRaT5NbpCVTktekzwbhxZd6
-	Ici/SVjp5l46Pc0Ccpp6tvGQusE400lk3/T/Gx7NtTSJjkkQSoy/FGm0WmT5d80aGoqopikgvKN
-	XRxTicWfHluFkGxL+uiwKk9nmmyKOp7ZBRCqUVV9LzbfUmgezMynjUS6v3lmwvYlS8vBptufN3p
-	xie5BDL7euVDw+/8P2V6OSrdlJEtoW5AmHdD8x6adeC24CZnGpJtsfsYOnSpOI6g/m/pcztnGWT
-	47TuDgeaNamAYCqgHpHmFjWYgirqRPVfPXjWFWtc2gbn/Df4HTGnv8HmiLat/L9BDhrVanXUkqb
-	mBXCTXdS7nR4QlMuWFtERGHo2R2Uc=
-X-Received: by 2002:a17:907:d58c:b0:c15:c290:ca8c with SMTP id a640c23a62f3a-c161f58f09amr573359466b.39.1784038708083;
-        Tue, 14 Jul 2026 07:18:28 -0700 (PDT)
+        bh=BCR2ojKh9CG9hna9RsCPgdIHB0rwbpF+LXlEWMO+i64=;
+        b=IMki1k5sSFn4dUjlBClP69YPfvsjMdIHL34LsXP2p7JGmVcm7+aGtckBIVmaMExd10
+         haRY8N5YBkPuSpltyh/29drjLjUkHwEwPwbudcdUQd90JAFF6DtAvH2y3aqmWWS9iEcT
+         rzCF5vV+rChYMZGPPKGQ9JL8mG7WA4xTDR+OUUaU0Qt3K+AVQPHOJiIcAwaX/lp8BzIw
+         h/ttdzGGjnxgxsBzw7lOMslGc7nqOLq7v+18ZnTFu+86+1wJ24bVkhyQ0Dn2YJmp7HFC
+         MWYqCEveJTsOFhZZ7bLXfSvkFfZ4opL5MiFSPoIv7x/5QCWZ3VKtl92fU/PhBIKPJzTj
+         Qn2A==
+X-Forwarded-Encrypted: i=1; AHgh+RpdFnk5DRdGlU6BXurbB6D1mE74vzvOz7jXVkFVHhE4Q+YEEzolv+UqrKmvuZFDeWp2skyxDYjj5pI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywl/k0Q9XNjHu7naci3TZBhkQ9qjd6qGJ6bTKAMZSKrp8vNan8F
+	0nuFH4QwpnNRl9Za7TfvH5/LVEBzViDUKSFNcDoW7FhJnRjUaHLUI4XT
+X-Gm-Gg: AfdE7cmPM2+iN2SJ8OvD5etFwbYDIk+5DTey8J0BlFuoyc5/I5xp+fFPVYE361qHgOl
+	QWLqfFRrIiqGx6X72RyVgvGQb6/F9eTedk7U7aoCL9BlQ0XVnRjhmXcu0BriLdIU5P1xAGvvlyN
+	jJfJGsxfkJQrqoqfCHPRTUFSVAVCtDMnprta2zC0O8Pu0NriGwjKaE+8QM0UYZDef5LSVA3JCwD
+	m6wRt2jZVZOUa1QvVQAZsj8G1WfN97n0x0coh640F6Gprcv3Ny+CDJZy5wuedoaqI6GTH6NbQy+
+	PLjchXSipaNPcE+9TmW2mtnu4pkk970XEFoH6r/4o3NYjWMfb2p17zk/U4YXwFYm5CLMmIGoF0M
+	Xb2ghC1Td2derqPk5UUxMn42h10II5t/8xhcjR/j4VGohnU7u6UN5tO9BOT8bSU3lUHQu7DPYKL
+	b/KBU7vgccJJIyXz6Uh4QfshU4Zi4=
+X-Received: by 2002:a5d:64c7:0:b0:466:6d18:ae93 with SMTP id ffacd0b85a97d-47f2dcb7453mr15499691f8f.21.1784039595520;
+        Tue, 14 Jul 2026 07:33:15 -0700 (PDT)
 Received: from NSA-L02.ad.analog.com ([137.71.226.102])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c15deea5cf6sm853090966b.16.2026.07.14.07.18.25
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464c7c96sm8599276f8f.33.2026.07.14.07.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 07:18:27 -0700 (PDT)
-Date: Tue, 14 Jul 2026 16:18:24 +0200
+        Tue, 14 Jul 2026 07:33:15 -0700 (PDT)
+Date: Tue, 14 Jul 2026 16:33:11 +0200
 From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Janani Sunil <janani.sunil@analog.com>, 
@@ -72,10 +72,11 @@ Cc: Janani Sunil <janani.sunil@analog.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org, jananisunil.dev@gmail.com
 Subject: Re: [PATCH 3/6] iio: adc: adi-axi-adc: Add support for CRC
-Message-ID: <ucrlt75xiwbv3rrc4gvgdop24u54eizhuqzf2av2qsa6ceymdp@kfkuiwuvakhl>
+Message-ID: <4mtugzv3q72yizfw62b2ijjrwi7r2hro2fbjljeziuotyhuod3@6waqlwzufruh>
 References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
  <20260709-ad7768-driver-v1-3-44e1194fd96a@analog.com>
  <20260710014617.323acf6e@jic23-huawei>
+ <ucrlt75xiwbv3rrc4gvgdop24u54eizhuqzf2av2qsa6ceymdp@kfkuiwuvakhl>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,38 +86,43 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260710014617.323acf6e@jic23-huawei>
+In-Reply-To: <ucrlt75xiwbv3rrc4gvgdop24u54eizhuqzf2av2qsa6ceymdp@kfkuiwuvakhl>
 
-On Fri, Jul 10, 2026 at 01:46:17AM +0100, Jonathan Cameron wrote:
-> On Thu, 9 Jul 2026 10:50:14 +0200
-> Janani Sunil <janani.sunil@analog.com> wrote:
-> 
-> > Add support for enabling and disabling Cyclic Redundancy Check (CRC)
-> > processing in the AXI ADC backend. CRC provides data integrity verification
-> > for high-speed ADC data streams, ensuring reliable data transfer between
-> > the ADC frontend and backend processing systems.
+On Tue, Jul 14, 2026 at 04:18:24PM +0200, Nuno Sá wrote:
+> On Fri, Jul 10, 2026 at 01:46:17AM +0100, Jonathan Cameron wrote:
+> > On Thu, 9 Jul 2026 10:50:14 +0200
+> > Janani Sunil <janani.sunil@analog.com> wrote:
 > > 
-> > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> The 'other things' I found bit from Sashiko is interesting. Far as I can
-> tell it is right and [devm_]mutex_init() is missing for lock
-> in struct adi_axi_adc_state().  
+> > > Add support for enabling and disabling Cyclic Redundancy Check (CRC)
+> > > processing in the AXI ADC backend. CRC provides data integrity verification
+> > > for high-speed ADC data streams, ensuring reliable data transfer between
+> > > the ADC frontend and backend processing systems.
+> > > 
+> > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > The 'other things' I found bit from Sashiko is interesting. Far as I can
+> > tell it is right and [devm_]mutex_init() is missing for lock
+> > in struct adi_axi_adc_state().  
+> > 
 > 
-
-Ouch! Yes, I was also wondering about the lock comment.
-
-> Nuno, looks like it was from:
-> 7ecb8ee5c93b ("iio: adc: adi-axi-adc: support digital interface calibration")
+> Ouch! Yes, I was also wondering about the lock comment.
 > 
-> Which indeed adds the lock with a mutex_init()
+> > Nuno, looks like it was from:
+> > 7ecb8ee5c93b ("iio: adc: adi-axi-adc: support digital interface calibration")
+> > 
+> > Which indeed adds the lock with a mutex_init()
+> 
+> You mean without :)?
+> 
+> I'll send a patch fixing it!
 
-You mean without :)?
-
-I'll send a patch fixing it!
+Actually, to make it easier, Janani will include the fix in v2.
 
 - Nuno Sá
-> 
-> Jonathan
-> 
-> >  static const struct iio_backend_info adi_axi_adc_generic = {
+
+> - Nuno Sá
 > > 
-> 
+> > Jonathan
+> > 
+> > >  static const struct iio_backend_info adi_axi_adc_generic = {
+> > > 
+> > 
