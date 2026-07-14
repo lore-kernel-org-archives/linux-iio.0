@@ -1,312 +1,210 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675AB46AF0F
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:14:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784034886; cv=none; b=bAnxh9cHYsNJyUS/G0g4bux3IacfQCPiiU0/iAGrC5PS2kAGfOY5DF50UpLKbeEWlkUjnP02VnmKnDg6GZpMw8qwqfDD9mF9dYwvN+d4OMD7vd+qYD8+0LpXSl7hIHrf0DgcFPKy/glN1YOcqsrYxh6YTTiFjtQCXyhn1VSWtCA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784034886; c=relaxed/simple;
-	bh=3zLr5wC29AQBJyM1LTNCrLPJ/9RCUeECH8DF5+2Hswk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fHVa5Mrnuqn8/veFZDLo1IebV3o6yKx+fHSuqYgL3J7hF2lRLugBPoPfZj5R0y31XHA1ty9l+ueu3Ws4vf4sBAQpduqhDpGWRPqnAnii6rQbgIOKAmW7AuCKYYyEVN4bkwdiqdEIAwl/by5io3X/8xHM7+kbeFTp/KYaRs0sA4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FXOvue1c; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81B5119CCF5
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:16:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=205.220.168.131
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784034983; cv=pass; b=Z+KT5Q7SnDmQndbxlNTevs3DlcOt90GANsCRuN8QfNiZZtKsma6wK5yRcbgShoyQqcsRP0Z1Bh/gHDNCcRiR33/g0ohaSikH92w1NQBDgJiTqgAzs5Ud+vvFtrTlDHj/8OPMis78TCegJ+FfeJsoof+u0EEkjzOFOhAR2NMITmw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784034983; c=relaxed/simple;
+	bh=Jd5DJDKksYD7YmBkR0dFjXMUrqs3kGnAsls6yHowXHA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=g5E+NepYULisSrXdEOmN9DQ5dzhiR/BdO8O1ZOiIegladsO7xeN7r5FbpBqw/hFQSt5HqzJIkV/QxoFUnzFT5+bO7uZKNcK9pWJDD9vA5abSHi7jwS3UygyToyXSeF6XUZoB4V0wltT/AKoJOogxiRd6Qx3IR8Vne0HkR0n/4LE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jeDP1noV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cioL0yS+; arc=pass smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FXOvue1c"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-92e7632b193so99734185a.2
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:14:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jeDP1noV";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cioL0yS+"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66EBmolr473949
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:16:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Jd5DJDKksYD7YmBkR0dFjXMUrqs3kGnAsls6yHowXHA=; b=jeDP1noVY97TJJm4
+	cIhajSXeAsAmHOxUZ5w+rrnFsmDqOKfN4qv1NciKwvl0a9vv59ESqt6/YuJgOXKd
+	2U4f3xsKnro776B5eQXUkzzonn9zUj4EjUY0CcmNrVrEgX1hsU92QRCgcXc88Zk4
+	AtF76m99A0GiWR0qvmuA/OQHihEj2e1+CtLRE0wEH12PxEsaH+fBoJe1xohiHUcX
+	R229DzrrEXb5VIR1CijlNq+5VjsfmV0mgJza7rCEwLCI9oqIAHjuyOO3YurOejU1
+	OXk05tjGT7idOG9xzgxgye2BrDtcmOkjjdNsDeOVdRx43SKY0RtvrJ1yvDvre5qj
+	UD2uKw==
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fdmjq0cd1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:16:20 +0000 (GMT)
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-904ee4473a8so47973876d6.2
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:16:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784034980; cv=none;
+        d=google.com; s=arc-20260327;
+        b=gs1hdvWwL+dF2Ta/eVo322eBoPvq4UIOzHcdKRDIRVOBIr56vbFpiePPxyhcHsJEHS
+         aJZ3nOd2LOhDXbu+OwZHYL0gB3GA9DTVO0pKxDMB2v+KIsyl3ow8gmkADKT08LYhuBev
+         PQdB9jQ20FRDLIeV1K0QFo4KIvThU9pMJVvWzKbL9ZSGbD1DBzaNO3O4jQNdy57xEis1
+         nJr4Je0crVOyGlzYlMhZHufXg8lJLV8mmX5uMlz/BCa1RSEHsO429JW6nlUBHbn00UA3
+         rgujsgK41NhHHs53hXdUp+RWVQd+ZliIi6ebzGu5XRCGmtLqpDYmLnRqVPBgdCB3IjGO
+         2tgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Jd5DJDKksYD7YmBkR0dFjXMUrqs3kGnAsls6yHowXHA=;
+        fh=9/DgOAV2Erm7XwOi4pfea/vTQijSAgfCX6Vl7v3KQBE=;
+        b=atebzM+nTzhrdZ3R4XVRymCnMNHRmPX/FGr4drxAuFUv9W6rKoJGVf7kSgIhex2U95
+         G6q12TrafIy3OxsBOz15seDT2EMjRkjjsxElPmYQ2pj5eYddBygQauHQhr49gmZRLG2U
+         1NHVi1KiVnsNks2ZbOQ98W4ExaVdu/8uNS78gZiVsqk1/ecuKDVRx0SeGVm0gNJG/OCe
+         y/I4arwwxb9Y55Vn981QXD3fan27xEYkveObBCaPHW164hjpLvSOE03EyXRzgvyA0uaD
+         uBKwr4wgHhoQGf2J1UxkETC2JDWI2ZiDPauFz+rbgJQvfH7mWNN9D4w/m/mIgOr5o7ZF
+         DQxQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784034878; x=1784639678; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=4sdtcAcnvXtBkdPDuwsN8gXcGpdW7yo4L5WrP92J294=;
-        b=FXOvue1cLWut9tP02Otc9Zn3JKnb5EWxfVAMspxU3s00Kq0yYBLoij+KhUppdi02mM
-         kAtd4LAEUFMArEPXVaZt0UCc5IeGtYpg6nbmEzIj3sEjsg1EmNhoyGSdVaJF/rRouaXq
-         Sr1UaK+vMRrQPYyDrLGlIGI22x0qTiGvBezV2RxDgVNIcOuBaS3Calc3YqN2cvl1qxin
-         U8aioO5a77CflROx2suIqd/2mSA74AIAcMyzKdUDorsn9QY8P4qPyL0ndXhHgHNUjIeH
-         w2DpXMb7ZVCGwdPrC5HZNRndZNT9IsBgEORcfLpRf9IcZ7gvXBQO1FvqOYgzcHYdS7dj
-         6v4Q==
+        d=oss.qualcomm.com; s=google; t=1784034980; x=1784639780; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Jd5DJDKksYD7YmBkR0dFjXMUrqs3kGnAsls6yHowXHA=;
+        b=cioL0yS+m7iQ+Un4y9KPRfCvUwbZxC0xQRu+SZmRcgaQHlaMpOuyJETcrk+xsCydJS
+         rx/JXZ0vlPSJ46zxZ/moLbkLzEFFO0TXJ979XZx4o6mPym2i9kzroOI5kygxFEe6Bi5R
+         LgVxo61fu3nXasj+kizAbtRICOyjFgRCjtp6XrZ7uzeP0UIS813j7bgUxON3fRhe9zGY
+         e7doqxvCPS1+FdTC+4IGTzIMO34POO2/rH3keQo332wYpg9bskUCjm7FIcDtJLzWa07O
+         /D1x4xq5YKRCc7P8jD/k0p8unDHZTD20lZwtiaqEydbmFKT/XzVNkmPqitS0BB28LQTQ
+         x6OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784034878; x=1784639678;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4sdtcAcnvXtBkdPDuwsN8gXcGpdW7yo4L5WrP92J294=;
-        b=PxlvzSnT9whgqglVSVJjssWCHHAMI7xphyN4IBrJeomrBGBaOaruwhB15xyyTAU8nj
-         Jk517ciWY0zTI34GdkAaarQem0mAw7c+qZsGVU0JOcj1VaF2RZO7Uvhh6A7VwxZqSSau
-         fQVue/6prdhxJkbwOmcLfCHwGj9XwSFX7nBoC8nSabdN8NA4WxIamgjQRo1MVHHKhy0i
-         bGJYqqPPionZjbi9YsIey0dzC9tziy/LDZZNmsn/VtosQt2kmvMcED0h6VIr8J3BcmnU
-         lxYvb86tZmq7EwwX+iL0JvSX9YJEnuQNSvDULAfINMgtnfqcNd/UxUYNHa90f8xhazDh
-         pmrg==
-X-Forwarded-Encrypted: i=1; AHgh+RotiTTBLLj1uLX6u5V80KBPyoN+SMcN5k3NoyCjczMdR7mzXtY0hOhXMTFQq2ogtemAMOGmAp3kXcM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMb1t/FLBBnI7+HryFJQrEQ+2PAN3ryETn2UoNBAR4dkjhSam2
-	/fSlwtc5zu++Z/eM7fTGGuUP52IBkbNUK2fOZnridgSm/QbV0Hqk5TJ7
-X-Gm-Gg: AfdE7clzFxGdkhLglNQf3teggmOyccM16hORJdrxm3DGG3FMnqOdJWietc7OJVHxdpa
-	YsUCk8Yip7x+5UAtOlbpi9fk+z+ivR17eIbbPQ9XJRlbAy/Wf/xAKYevZX2zwqDUZ3Gehq0bKe3
-	VISbd/Jc5QElDX/iE86bRw9NxZleVDRggONw8ZIOUYySYdnfx6w7WX2uWUd/gm3lNWl62UnLuIb
-	vna5aWp2Y7dYWzesqY8R45ymvmdUJiBHXMdRQOSXNAOTD+qmhpSfGO1pG/M/LUfgBUjwO9FJLVi
-	CMQGiL6mitY5ymVB0oaOceqlV8662UnvFoO59Dj72kO1M4Fb5whnUHoGt4DnyzO1u7oaEtPGNb0
-	nPZJXrnsKX0ESniOiZ3UtkpXEQg52cqRaDnzdELBKb94FlTgGxc58QpH+FXjMTc6OlMQSjAcTHZ
-	fOP/Nrq+9mTmk/Rvebm9qKpSN2EeVQY0bi2r0tIjyA+uiX517k1yp2aA==
-X-Received: by 2002:a05:620a:8398:b0:92b:4474:76b with SMTP id af79cd13be357-92ef2c1fa8bmr1220305185a.45.1784034877981;
-        Tue, 14 Jul 2026 06:14:37 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.223.101])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-92ee5bcb074sm1464651785a.21.2026.07.14.06.14.33
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 14 Jul 2026 06:14:37 -0700 (PDT)
-From: Biren Pandya <birenpandya@gmail.com>
-To: linusw@kernel.org,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Biren Pandya <birenpandya@gmail.com>
-Subject: [PATCH v3] iio: gyro: mpu3050: Fix runtime PM leak and refactor trigger state
-Date: Tue, 14 Jul 2026 18:44:27 +0530
-Message-ID: <20260714131426.4257-2-birenpandya@gmail.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260615214504.38979-1-birenpandya@gmail.com>
-References: <20260615214504.38979-1-birenpandya@gmail.com>
+        d=1e100.net; s=20251104; t=1784034980; x=1784639780;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Jd5DJDKksYD7YmBkR0dFjXMUrqs3kGnAsls6yHowXHA=;
+        b=L66u9N5HJN4YeFnKKnLxKwJHh9cCRh/FA/wZqBucPY4AevtvF2Z1TKTR7YA7Oz4pLc
+         7FE+NgwbrBmkjS+zyov67X6iO9GtH9OV9xT2tDe3F6Kj/KtRt56TiJqSegL5Eh0jqqu+
+         PEhDVC2RsMQh+owflIojLk2mqXsF1j8TTD+fdKSY7jjuahHh6HYERQMbdzbvIZQ0MolJ
+         ykZkp2DnDQZ1/6nd6we0YfMqz4LZjBogsZmsK8puy2fE4dUc/W2f3jFhw4AhD/3GHWrJ
+         h8kaMwavQyi2zVlSlBwZV+QcOkVkVpOp3ZQGHa62iFh3bmd06gDl/J92OpewAt4AbU+T
+         O04w==
+X-Forwarded-Encrypted: i=1; AHgh+RqguwYvOyG5mG3YAMCnrP15s01eNjHvL8A5Z08c7NMag3t36u+mCgSN3s3iBRPO4dNW4Gx/fESybFI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3GFZiODBlB7wANecLa5aZPIOLHvVUHCvOzoXELHh75PYxvx7z
+	WmPNvKW5qhTP0zrxlXtQfALAFYYN4T2YXT79IrlVy/hKEA9DhuToawhhyHrhAgNVlSHb7AbCqlR
+	ZW+9P7w5re4tVxYB5TNh7jvApToYfeR+FOkrqCxTd6OvBxIPtbzHwG1aBQuXvgYII1CAvpo/2jg
+	Y74TwzKhYaJhtJhjA9Kq0FjvTonVSgPnKGiTwHmA==
+X-Gm-Gg: AfdE7cl9TDCbgDMlhnUjvCjbfHREbJph09OB0xV5mAciufKVYtRJEp6Mh1YvLe6DaDm
+	KeTgzW+j+cR/RESZ9pkSnViE2Zp04u03o0z/gtcCWQm/MUr0hXfRMEK9kInUW2cbm9P10yafxQA
+	aM14DsZF2iqGziBG9Ym9eqwCatsbUU4x/ypiptnUfHDaWds+R1m+88vfaI+s11ee7O0kBV
+X-Received: by 2002:a05:6214:2689:b0:8f2:67bb:a37d with SMTP id 6a1803df08f44-90747d19fb5mr45880646d6.57.1784034979515;
+        Tue, 14 Jul 2026 06:16:19 -0700 (PDT)
+X-Received: by 2002:a05:6214:2689:b0:8f2:67bb:a37d with SMTP id
+ 6a1803df08f44-90747d19fb5mr45879656d6.57.1784034978901; Tue, 14 Jul 2026
+ 06:16:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <d7f7e8c9589d937b60e43168845ab4fda15037a3.1783603600.git.michal.simek@amd.com>
+ <ak_Eu_eQKalPMwo-@pluto>
+In-Reply-To: <ak_Eu_eQKalPMwo-@pluto>
+From: Ulf Hansson <ulf.hansson@oss.qualcomm.com>
+Date: Tue, 14 Jul 2026 15:16:07 +0200
+X-Gm-Features: AUfX_mxKzpq6RPl9OYBnCrjfKgjOcnNPKcB_AjUZghzaf78uP1r8iO8ekjIwd1s
+Message-ID: <CAPx+jO9KMcxnmt-wT5jaApj9p7s11B6eSG6K08Jt9J=-vXxjhA@mail.gmail.com>
+Subject: Re: [RFC PATCH] firmware: scmi: Make SCMI arch independent
+To: Cristian Marussi <cristian.marussi@arm.com>
+Cc: Michal Simek <michal.simek@amd.com>, linux-kernel@vger.kernel.org,
+        monstr@monstr.eu, git@amd.com, vincent.guittot@linaro.org,
+        Souvik.Chakravarty@arm.com, Alex Shi <alexs@kernel.org>,
+        Andy Shevchenko <andy@kernel.org>,
+        Bartosz Golaszewski <brgl@kernel.org>,
+        Brian Masney <bmasney@redhat.com>,
+        David Lechner <dlechner@baylibre.com>,
+        Dongliang Mu <dzm91@hust.edu.cn>, Fabio Estevam <festevam@gmail.com>,
+        Frank Li <Frank.Li@nxp.com>, Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Len Brown <lenb@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+        Linus Walleij <linusw@kernel.org>, Lukasz Luba <lukasz.luba@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Pavel Machek <pavel@kernel.org>, Peng Fan <peng.fan@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sudeep Holla <sudeep.holla@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Yanteng Si <si.yanteng@linux.dev>, arm-scmi@vger.kernel.org,
+        "open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
+        linux-arm-kernel@lists.infradead.org,
+        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "open list:ENERGY MODEL" <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Authority-Analysis: v=2.4 cv=LqmiDHdc c=1 sm=1 tr=0 ts=6a5636a4 cx=c_pps
+ a=7E5Bxpl4vBhpaufnMqZlrw==:117 a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=yOCtJkima9RkubShWh1s:22 a=7CQSdrXTAAAA:8 a=K75D1l0-MnsISjLg7T4A:9
+ a=QEXdDO2ut3YA:10 a=pJ04lnu7RYOZP9TFuWaZ:22 a=a-qgeE7W1pNrGK8U0ZQC:22
+X-Proofpoint-GUID: BWZQAdFB4A_tL1qVDIzq_bS577tfZ8F7
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE0MDEzOCBTYWx0ZWRfXxYGCFmj2dGye
+ 0mPWBzXrjWCuiuAnBW/VvOB8G2XcSN7KujSw8vUCAChc41kS9edyUT4aUtABAUqc58FDZoY65ad
+ te8JRoCp0uPYlzGT7yXERLiI3JjL9+MH+yadM0dCGZy/pkDZgU4kyaJrWGQimJR8YFioA+nnsDK
+ Qcg6OhwPytFYFnM+ywM1oY/csNOPOjDmUp6o0zt5DqJ1iwSSiNUzykH+Y+bmKiSUYdGIGvqpAK8
+ kMg/nRXkrl56mH7noeaTgjxc4RY5D1RJhI47/ym8bZ/RKJ+dVdAmxAmYLV+51/3mmb8g36dyHD7
+ 1xFh3VtbkAwNDcL1yCvikY+dZC6N8XrYgBJ9yPUStbwUK6L3eDUHqnVJA4X8crlFTyI4+zD8gW6
+ 0Z3BOE/V2IXGj9LxaNatAoZMbNhe0qVV3qAknDXzbs526Xl5mhTh0llftK/tD24+J3HKDbusqj8
+ 9aqmJHVDnQzUB/UeegQ==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE0MDEzOCBTYWx0ZWRfX0+/Hs8tHOV1Q
+ lGj5OwjZpBvbv+6QjmgQSWfZK2zGMPBT+5dA7BvgrMXkIZbEffC2O/M5+coVumbKXv39T+sH6fp
+ Qk++NdIF+rF/yZXppDT8Tj1YGERU4fw=
+X-Proofpoint-ORIG-GUID: BWZQAdFB4A_tL1qVDIzq_bS577tfZ8F7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-14_03,2026-07-10_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0 spamscore=0
+ bulkscore=0 clxscore=1011 adultscore=0 impostorscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607140138
 
-mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when the
-trigger is enabled, but several error paths in the enable branch return
-directly without dropping the usage counter again. pm_runtime_get_sync()
-increments the usage counter, so every failed enable leaks a runtime PM
-reference and the device can no longer autosuspend. The driver state flag
-hw_irq_trigger is also left set after a failed enable.
+On Thu, Jul 9, 2026 at 5:56=E2=80=AFPM Cristian Marussi
+<cristian.marussi@arm.com> wrote:
+>
+> On Thu, Jul 09, 2026 at 03:27:00PM +0200, Michal Simek wrote:
+> > On heterogenious systems like AMD/Xilinx FPGA there is a need to talk t=
+o
+> > SCMI server from different architectures than ARM that's why remove
+> > ARM/ARM64 Kconfig dependency with also remove ARM from description and
+> > rename folder to reflect it.
+>
+> While I understand dropping the dependency on ARM (I always wanted to do
+> that and test if it worked at all on some otehr archs with QEMU), I am
+> not sure about the whole renaming party ? why is needed just for
+> cosmetic reasons ? it is at the end an arm originated protocol so I dont
+> see it as a being wrong to be named as such even though used by other
+> archs...I have not really strong opinion on this...
 
-To fix the error unwind clearly and avoid an asymmetric goto block inside a
-monolithic function, this patch breaks the trigger state handler into two
-distinct helpers: mpu3050_drdy_trigger_enable() and
-mpu3050_drdy_trigger_disable(). The enable helper correctly implements the
-error unwind path to drop the PM reference and clear the flag.
+This is certainly not my call to make, but I have to admit that I
+fully agree with the above.
 
-Additionally, pm_runtime_get_sync() is replaced with
-pm_runtime_resume_and_get() for robust error checking.
+Usually we don't rename files that indicate a legacy platform name,
+just because a new company/platform wants to make use of it.
 
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Signed-off-by: Biren Pandya <birenpandya@gmail.com>
----
+>
+> ... my concern really is ... wont this full scale rename simply generate
+> a lot of un-needed churn for future fixes and/or backporting ?
 
-Changes in v3:
-- Fixed kernel-doc warning for mpu3050_drdy_trigger_set_state().
-- Fixed the Fixes tag title to exactly match the target commit.
-- Link to v2: https://lore.kernel.org/all/20260615214504.38979-1-birenpandya@gmail.com/
- drivers/iio/gyro/mpu3050-core.c | 166 ++++++++++++++++++--------------
- 1 file changed, 92 insertions(+), 74 deletions(-)
+We have some git magic to overcome most of these problems, but it's
+not always straightforward, I think.
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index d84e04e4b4314..9de126c3b4350 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -945,102 +945,120 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
--/**
-- * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-- * @trig: trigger instance
-- * @enable: true if trigger should be enabled, false to disable
-- */
--static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
--					  bool enable)
-+static int mpu3050_drdy_trigger_disable(struct iio_trigger *trig)
- {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
- 	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
- 	unsigned int val;
- 	int ret;
- 
--	/* Disabling trigger: disable interrupt and return */
--	if (!enable) {
--		/* Disable all interrupts */
--		ret = regmap_write(mpu3050->map,
--				   MPU3050_INT_CFG,
--				   0);
--		if (ret)
--			dev_err(mpu3050->dev, "error disabling IRQ\n");
-+	/* Disable all interrupts */
-+	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, 0);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error disabling IRQ\n");
- 
--		/* Clear IRQ flag */
--		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
--		if (ret)
--			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-+	/* Clear IRQ flag */
-+	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error clearing IRQ status\n");
- 
--		/* Disable all things in the FIFO and reset it */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
--		if (ret)
--			dev_err(mpu3050->dev, "error disabling FIFO\n");
-+	/* Disable all things in the FIFO and reset it */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error disabling FIFO\n");
- 
--		ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
--				   MPU3050_USR_CTRL_FIFO_RST);
--		if (ret)
--			dev_err(mpu3050->dev, "error resetting FIFO\n");
-+	ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
-+			   MPU3050_USR_CTRL_FIFO_RST);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error resetting FIFO\n");
- 
--		pm_runtime_put_autosuspend(mpu3050->dev);
--		mpu3050->hw_irq_trigger = false;
-+	pm_runtime_put_autosuspend(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = false;
- 
--		return 0;
--	} else {
--		/* Else we're enabling the trigger from this point */
--		pm_runtime_get_sync(mpu3050->dev);
--		mpu3050->hw_irq_trigger = true;
-+	return 0;
-+}
- 
--		/* Disable all things in the FIFO */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
--		if (ret)
--			return ret;
-+static int mpu3050_drdy_trigger_enable(struct iio_trigger *trig)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
-+	unsigned int val;
-+	int ret;
- 
--		/* Reset and enable the FIFO */
--		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
--				      MPU3050_USR_CTRL_FIFO_EN |
--				      MPU3050_USR_CTRL_FIFO_RST);
--		if (ret)
--			return ret;
-+	ret = pm_runtime_resume_and_get(mpu3050->dev);
-+	if (ret)
-+		return ret;
- 
--		mpu3050->pending_fifo_footer = false;
-+	mpu3050->hw_irq_trigger = true;
- 
--		/* Turn on the FIFO for temp+X+Y+Z */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
--				   MPU3050_FIFO_EN_TEMP_OUT |
--				   MPU3050_FIFO_EN_GYRO_XOUT |
--				   MPU3050_FIFO_EN_GYRO_YOUT |
--				   MPU3050_FIFO_EN_GYRO_ZOUT |
--				   MPU3050_FIFO_EN_FOOTER);
--		if (ret)
--			return ret;
-+	/* Disable all things in the FIFO */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-+	if (ret)
-+		goto err_put_autosuspend;
- 
--		/* Configure the sample engine */
--		ret = mpu3050_start_sampling(mpu3050);
--		if (ret)
--			return ret;
-+	/* Reset and enable the FIFO */
-+	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
-+			      MPU3050_USR_CTRL_FIFO_EN |
-+			      MPU3050_USR_CTRL_FIFO_RST);
-+	if (ret)
-+		goto err_put_autosuspend;
- 
--		/* Clear IRQ flag */
--		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
--		if (ret)
--			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-+	mpu3050->pending_fifo_footer = false;
- 
--		/* Give us interrupts whenever there is new data ready */
--		val = MPU3050_INT_RAW_RDY_EN;
-+	/* Turn on the FIFO for temp+X+Y+Z */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
-+			   MPU3050_FIFO_EN_TEMP_OUT |
-+			   MPU3050_FIFO_EN_GYRO_XOUT |
-+			   MPU3050_FIFO_EN_GYRO_YOUT |
-+			   MPU3050_FIFO_EN_GYRO_ZOUT |
-+			   MPU3050_FIFO_EN_FOOTER);
-+	if (ret)
-+		goto err_put_autosuspend;
- 
--		if (mpu3050->irq_actl)
--			val |= MPU3050_INT_ACTL;
--		if (mpu3050->irq_latch)
--			val |= MPU3050_INT_LATCH_EN;
--		if (mpu3050->irq_opendrain)
--			val |= MPU3050_INT_OPEN;
-+	/* Configure the sample engine */
-+	ret = mpu3050_start_sampling(mpu3050);
-+	if (ret)
-+		goto err_put_autosuspend;
- 
--		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
--		if (ret)
--			return ret;
--	}
-+	/* Clear IRQ flag */
-+	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error clearing IRQ status\n");
-+
-+	/* Give us interrupts whenever there is new data ready */
-+	val = MPU3050_INT_RAW_RDY_EN;
-+
-+	if (mpu3050->irq_actl)
-+		val |= MPU3050_INT_ACTL;
-+	if (mpu3050->irq_latch)
-+		val |= MPU3050_INT_LATCH_EN;
-+	if (mpu3050->irq_opendrain)
-+		val |= MPU3050_INT_OPEN;
-+
-+	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
-+	if (ret)
-+		goto err_put_autosuspend;
- 
- 	return 0;
-+
-+err_put_autosuspend:
-+	pm_runtime_put_autosuspend(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = false;
-+	return ret;
-+}
-+
-+/**
-+ * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-+ * @trig: trigger instance
-+ * @enable: true if trigger should be enabled, false to disable
-+ */
-+static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
-+					  bool enable)
-+{
-+	if (enable)
-+		return mpu3050_drdy_trigger_enable(trig);
-+	else
-+		return mpu3050_drdy_trigger_disable(trig);
- }
- 
- static const struct iio_trigger_ops mpu3050_trigger_ops = {
--- 
-2.50.1 (Apple Git-155)
+>
+> Thanks,
+> Cristian
 
+Kind regards
+Uffe
