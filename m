@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10ECE3815E8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BC11381E86;
 	Tue, 14 Jul 2026 11:02:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784026974; cv=none; b=slWm8hO+uqrX/AjpBsBXLPvFUjS5WZLnIoj5H2wlvtWvI1i5yJSfA5fGek6KZFTUC/Qn2ygdJFz0slZ3mMGb17536iIQbxrBwT947ocu9LwdfXzW8IQWMEtbx2iN8M3LPsyMoP3iV5fJhFS2vl+2NSYGswGNe3hqAHtgBM3yxDk=
+	t=1784026974; cv=none; b=i63n5yOXDZiAcp7eJ+AI+Sfwclins805fJ9G/7yXUR70ODn+V/WDrL42hjEz53NVdGmGbKRLhMODTAO4ihCZHXrzxGygxiJDpuowBuOX+tFhcPoUCOkvPf2Mj4DKqwYyb6Wpr6P42v6fUyYs6MJR4+jKKzdab8EWvW1T17wSAaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784026974; c=relaxed/simple;
-	bh=8MhduG14jsXaL5k4h11ocWyrck/47G7XvTTKiN8VDTM=;
+	bh=c1JdUD8PchaBo1bs7Ioiz8H7o58rPjkNesf4pl2eSXs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IMbZcid8uSj0I3TCS3iLWbeotw0J3r7SXqyF6ASwRnkcRILkRnx245SOwzOyOtKZ/7a/WxemXhFZdgs1d0hZs8bHbuo/I2C/IaihXZrAvnbtmHvsKCNWWskdZGNiO8eGrfbBRvOEtSxQcg/BT49XnGIMPP2s/+q08TCW3RZjyDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jog3ZZRb; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=OeXuLxyKgBeByh0bD4h1IUvdYcJn6hbvCFTToothtY0BKKjK4Kq84iRf8oUGCJy2RwewRdIn7pED16lRw2ZP0eh1K3Pyc0cggzXOstecf+J1oNUr+tdQEH/uY2HjXhAdlSFY1EUQUnT0RjRCx3Sw2Nge/D1TZmNjvh++HVAOWA4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BKJ7Ho6j; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jog3ZZRb"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E522FC2BD05;
-	Tue, 14 Jul 2026 11:02:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BKJ7Ho6j"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2DF8DC4AF52;
+	Tue, 14 Jul 2026 11:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784026973;
-	bh=8MhduG14jsXaL5k4h11ocWyrck/47G7XvTTKiN8VDTM=;
+	bh=c1JdUD8PchaBo1bs7Ioiz8H7o58rPjkNesf4pl2eSXs=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=Jog3ZZRbZuUfdxFSbv8h1DGU2iGwdwAhFpaLXK2/XCcwMnJWG2VtduhOMKhlJQlg9
-	 pV6dOy5rYQNJlcSb/Jn57B4IqHjZ9PI3ikH5TJk6xh69nR+DFkZsf4Th2CEhEUfeI4
-	 ZX7eJBPE5tpIugb1zHiLzpU78masGDBksdrkehcIqQwjjp6bMXAjJGl5Wy8koYycI2
-	 dHSA5VFpxLC3PDnq8uezsGx8X2cIcu9XAdvg8pSm6y5nU7N9DAzNPvkhubaP0rIXRO
-	 kJecauMN3LDBvQRWeuEAyzuvbJQlblkc+opQb2Ru3hYTuCIpar8NAn7/NaECBI+JGq
-	 zaeOF2UCcQClg==
+	b=BKJ7Ho6jzAjpeoL/GsN0V7TCOhMLkYb9OOdMpCjXsik11B2aX19urwpSDytWAR9JL
+	 7aclhPkLmUCMyUp5PB2DUcJpTwWnhhXvmYzRp+niURQhlFhVS3QqnZ1noEfXR8HUCJ
+	 gC+au1wrdgFCFsf7k05LVoIcDJ4Aoi9zsBQLD24iwe54QudfF9Pjn5iojkCDYVQ2IZ
+	 G6NHHw5j8+cdeTJCFHqknl2gMu416ksmsbIMB3kLiT3OT9AhIvTkfwp9prnBSZVCx8
+	 igEPqaRBJOOIpTgEhU5x06FXCRkDGz434wOz4lF/SwOJv4yMvWtfPJaEqnhNU6JAor
+	 L7gH7kVdbf7FQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D90C43458;
-	Tue, 14 Jul 2026 11:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172C5C44509;
+	Tue, 14 Jul 2026 11:02:53 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 14 Jul 2026 12:02:45 +0100
-Subject: [PATCH v8 05/17] iio: core: support 64-bit register through
- debugfs
+Date: Tue, 14 Jul 2026 12:02:49 +0100
+Subject: [PATCH v8 09/17] dt-bindings: iio: frequency: add ad9910
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260714-ad9910-iio-driver-v8-5-36939c3c07d2@analog.com>
+Message-Id: <20260714-ad9910-iio-driver-v8-9-36939c3c07d2@analog.com>
 References: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
 In-Reply-To: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -55,13 +54,14 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784026971; l=5286;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784026971; l=7035;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=rhtJXuF4mkm1WH5HBYUmnTDdQ7mLzj7pscCY6q7WDzI=;
- b=YAxE9pn6u6bhZrcLTw8MHFRH3h+kwoKvhGQSG6whC7jj0LiaeZourqWryPgsnfXbUCR41x+C+
- C8cqka5RpmGBuPsOo1i+1mN7EYxDmZFhL6AO+rJ10VYfv12Z9NcnQXd
+ bh=XNIjlGZaPxI2Wi7H1IltvCAZo5/CDJaXWkRhFfShqrg=;
+ b=5VPjkaSOxGx2GISohGLmiC2LLxMYPjs8s0/v9WYtXsmW0tJGoPZFHWq8K3lVN0mGsZflGcl5p
+ 9QpdI3Y6SHsAdltA8nglUQR96DHe+sh5iWkiq+NKsU50OjHRHQJ8oGt
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -71,141 +71,249 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add debugfs_reg64_access function pointer field into iio_info and modify
-file operation callbacks to favor 64-bit variant when it is available.
+DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+configurations for clocks, PLL configs, reset and basic GPIO control.
 
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 33 ++++++++++++++++++++++++---------
- include/linux/iio/iio-opaque.h  |  2 +-
- include/linux/iio/iio.h         |  7 +++++++
- 3 files changed, 32 insertions(+), 10 deletions(-)
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 209 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 216 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index a45277bc5d99..98fc00343dc5 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -388,6 +388,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
- 	struct iio_dev *indio_dev = file->private_data;
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	unsigned int val = 0;
-+	u64 val64 = 0;
- 	int ret;
- 
- 	if (*ppos > 0)
-@@ -395,9 +396,17 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
- 					       iio_dev_opaque->read_buf,
- 					       iio_dev_opaque->read_buf_len);
- 
--	ret = indio_dev->info->debugfs_reg_access(indio_dev,
--						  iio_dev_opaque->cached_reg_addr,
--						  0, &val);
-+	if (indio_dev->info->debugfs_reg64_access) {
-+		ret = indio_dev->info->debugfs_reg64_access(indio_dev,
-+							    iio_dev_opaque->cached_reg_addr,
-+							    0, &val64);
-+	} else {
-+		ret = indio_dev->info->debugfs_reg_access(indio_dev,
-+							  iio_dev_opaque->cached_reg_addr,
-+							  0, &val);
-+		val64 = val;
-+	}
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+new file mode 100644
+index 000000000000..4eebbd388b27
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -0,0 +1,209 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	if (ret) {
- 		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
- 		return ret;
-@@ -405,7 +414,7 @@ static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
++title: Analog Devices AD9910 Direct Digital Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description: >
++  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
++  14-bit DAC. It features single tone mode with 8 configurable profiles,
++  a digital ramp generator, RAM control, OSK, and a parallel data port for
++  high-speed streaming.
++
++  https://www.analog.com/en/products/ad9910.html
++
++properties:
++  compatible:
++    const: adi,ad9910
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 70000000
++
++  clocks:
++    minItems: 1
++    items:
++      - description: Reference clock (REF_CLK).
++      - description: Optional synchronization clock (SYNC_IN).
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: ref_clk
++      - const: sync_in
++
++  '#clock-cells':
++    const: 1
++
++  clock-output-names:
++    items:
++      - const: sync_clk
++      - const: pdclk
++      - const: sync_out
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++    description:
++      Requires interrupt-names property with the same number of items. The
++      supported interrupts are 'drover' (digital ramp generator limit) and
++      'ram_swp_ovr' (end of RAM sweep).
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum: [ drover, ram_swp_ovr ]
++
++  dvdd-io33-supply:
++    description: 3.3V Digital I/O supply.
++
++  avdd33-supply:
++    description: 3.3V Analog DAC supply.
++
++  dvdd18-supply:
++    description: 1.8V Digital Core supply.
++
++  avdd18-supply:
++    description: 1.8V Analog Core supply.
++
++  reset-gpios:
++    maxItems: 1
++    description:
++      GPIOs controlling the Main Device reset.
++
++  io-reset-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_RESET pin.
++
++  powerdown-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the EXT_PWR_DWN pin.
++
++  update-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_UPDATE pin.
++
++  profile-gpios:
++    minItems: 3
++    maxItems: 3
++    description:
++      GPIOs controlling the PROFILE[2:0] pins for profile selection.
++
++  sync-err-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read SYNC_SMP_ERR pin status.
++
++  lock-detect-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read PLL_LOCK pin status.
++
++  pwms:
++    maxItems: 1
++    description:
++      PWM used to drive the DRCTL pin, which controls the digital ramp
++      generator slope direction.
++
++  pwm-names:
++    items:
++      - const: drctl
++
++  adi,pll-enable:
++    type: boolean
++    description:
++      Enables the internal PLL. Applicable when external loop filter components
++      are connected to the PLL_LOOP_FILTER pin and low reference clock
++      frequencies are used, often provided by a crystal or by a single-ended
++      on-board oscillator.
++
++  adi,charge-pump-current-microamp:
++    minimum: 212
++    maximum: 387
++    default: 212
++    description:
++      PLL charge pump current in microamps. Only applicable when the internal
++      PLL is enabled. The value is rounded to the nearest supported step. This
++      value depends mostly on the loop filter design.
++
++  adi,refclk-out-drive-strength:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ disabled, low, medium, high ]
++    default: disabled
++    description:
++      Reference clock output (DRV0) drive strength. Only applicable when
++      the internal PLL is enabled.
++
++dependencies:
++  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
++  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
++  lock-detect-gpios: [ 'adi,pll-enable' ]
++  interrupts: [ interrupt-names ]
++  pwms: [ pwm-names ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - '#clock-cells'
++  - dvdd-io33-supply
++  - avdd33-supply
++  - dvdd18-supply
++  - avdd18-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++
++            #clock-cells = <1>;
++            clock-output-names = "sync_clk", "pdclk", "sync_out";
++
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
++
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
++                            <&gpio 5 GPIO_ACTIVE_HIGH>,
++                            <&gpio 6 GPIO_ACTIVE_HIGH>;
++
++            pwms = <&pwm 0 1000000 0>;
++            pwm-names = "drctl";
++
++            adi,pll-enable;
++            adi,charge-pump-current-microamp = <387>;
++            adi,refclk-out-drive-strength = "disabled";
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ffeee7c1ffa8..2bafb6c32b3c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1678,6 +1678,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+ F:	drivers/iio/dac/ad9739a.c
  
- 	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
- 						sizeof(iio_dev_opaque->read_buf),
--						"0x%X\n", val);
-+						"0x%llX\n", val64);
- 
- 	return simple_read_from_buffer(userbuf, count, ppos,
- 				       iio_dev_opaque->read_buf,
-@@ -417,8 +426,9 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- {
- 	struct iio_dev *indio_dev = file->private_data;
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
--	unsigned int reg, val;
-+	unsigned int reg;
- 	char buf[80];
-+	u64 val64;
- 	int ret;
- 
- 	if (*ppos != 0 || count >= sizeof(buf))
-@@ -431,7 +441,7 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- 
- 	buf[ret] = '\0';
- 
--	ret = sscanf(buf, "%i %i", &reg, &val);
-+	ret = sscanf(buf, "%i %lli", &reg, &val64);
- 
- 	switch (ret) {
- 	case 1:
-@@ -439,8 +449,12 @@ static ssize_t iio_debugfs_write_reg(struct file *file,
- 		break;
- 	case 2:
- 		iio_dev_opaque->cached_reg_addr = reg;
--		ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
--							  val, NULL);
-+		if (indio_dev->info->debugfs_reg64_access)
-+			ret = indio_dev->info->debugfs_reg64_access(indio_dev, reg,
-+								    val64, NULL);
-+		else
-+			ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
-+								  val64, NULL);
- 		if (ret) {
- 			dev_err(indio_dev->dev.parent, "%s: write failed\n",
- 				__func__);
-@@ -471,7 +485,8 @@ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque;
- 
--	if (indio_dev->info->debugfs_reg_access == NULL)
-+	if (!indio_dev->info->debugfs_reg_access &&
-+	    !indio_dev->info->debugfs_reg64_access)
- 		return;
- 
- 	if (!iio_debugfs_dentry)
-diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
-index b87841a355f8..98330385e08d 100644
---- a/include/linux/iio/iio-opaque.h
-+++ b/include/linux/iio/iio-opaque.h
-@@ -73,7 +73,7 @@ struct iio_dev_opaque {
- #if defined(CONFIG_DEBUG_FS)
- 	struct dentry			*debugfs_dentry;
- 	unsigned int			cached_reg_addr;
--	char				read_buf[20];
-+	char				read_buf[24];
- 	unsigned int			read_buf_len;
- #endif
- };
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 711c00f67371..cd17703274a6 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -484,6 +484,10 @@ struct iio_trigger; /* forward declaration */
-  * @update_scan_mode:	function to configure device and scan buffer when
-  *			channels have changed
-  * @debugfs_reg_access:	function to read or write register value of device
-+ * @debugfs_reg64_access: function to read or write 64-bit register value of
-+ *			device. debugfs_reg_access() and debugfs_reg64_access()
-+ *			are mutually exclusive, but the 64-bit variant has
-+ *			precedence in case both are implemented.
-  * @fwnode_xlate:	fwnode based function pointer to obtain channel specifier index.
-  * @hwfifo_set_watermark: function pointer to set the current hardware
-  *			fifo watermark level; see hwfifo_* entries in
-@@ -572,6 +576,9 @@ struct iio_info {
- 	int (*debugfs_reg_access)(struct iio_dev *indio_dev,
- 				  unsigned int reg, unsigned int writeval,
- 				  unsigned int *readval);
-+	int (*debugfs_reg64_access)(struct iio_dev *indio_dev,
-+				    unsigned int reg, u64 writeval,
-+				    u64 *readval);
- 	int (*fwnode_xlate)(struct iio_dev *indio_dev,
- 			    const struct fwnode_reference_args *iiospec);
- 	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned int val);
++ANALOG DEVICES INC AD9910 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
++
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
