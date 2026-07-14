@@ -1,74 +1,74 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A45A94D90CC
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:52:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D30D44E3781
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:59:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784047922; cv=none; b=JVt3N1xewpopI0NsiqoV2P2ZRUjjlUyeEExC2HG8Xv//qnJFHxYhbYFMTVjCZAXc35YSC2rzlVzIqryb0RZu3XgCNeTHFNj7WllZY+gqRgLiILKxzT1L6PBb6k55RTNenw4ltVLb+cE39y8w5DjXATaDLNDYPq7oyqOzh4KAmZM=
+	t=1784048368; cv=none; b=gQ3VXA6k7QWSjUKPEEJXsJnFP+wF0NmiPo6A1jYF1ksnuMpKaFL0qX+jMGuQTVn2RxQNlFOx91rmlMHUftumeQCJ8A1IaXKGK9BuxTsV47/1CToZDkrgDgArjEaphxXf1Xa5YAeOEFuaWBQSOz85log9mj5swDRQpYOOypsT2U4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784047922; c=relaxed/simple;
-	bh=1KmXBvv9ogEWCQG2EGNt09pxwnGjngtT7NexAegcjhA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=V/L1VS3DT4BdPW3czwlB+PRdtlgR9MF4ZUSsaM8zIlYXGvxCaK6cXUQzS0OI7+jYTbr5SXIKgTH8isWyiOOmFgnV48DWKkJmXLqdEztRMzYjN+hn5d66OM356kaPO3mdhWpBr82F7G5qA9UxnfzdDdsOBKLas3mM0FtkuU+w1Ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zw2r0JAH; arc=none smtp.client-ip=209.85.128.53
+	s=arc-20240116; t=1784048368; c=relaxed/simple;
+	bh=xG9Kwn5y5gCw9fBzRJfdS4XROO2aFj5m8mD+l2ArHdI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=huGUB2t+EZVkkQvEzdNsD2MzPwf1LXmExnlm94FFDIZO7gMoL+kj8NjK3NDsTS3Yp6140wte3kM4r07SpPWsH7SYVP/ySm9Z4ezh0u2EOV8Xnkmszu+QKRan7uqOLOGfXo786fqgNyj4iGjkd75pxyCXc14K7/FFLn3Nuhp4WJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KwY9Gky1; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zw2r0JAH"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-493e497643fso6099595e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 09:52:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KwY9Gky1"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-471eeac43bfso4496247f8f.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 09:59:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784047919; x=1784652719; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784048365; x=1784653165; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:message-id:date
          :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ESKjOB3jL6pY0WANcfW6zVin9Ft9lNw7GuOHaqZcFD0=;
-        b=Zw2r0JAHXGzu2zZ7y8HThEUA0CtlEWs13J4wTyizD3LUhC/mpcSPINFBBH37wlTOKo
-         dQJFp4tVs1Klxi1zgtScYCaA1TOtpZSiiSx09URhh1t0FU8x2NM9yZ33+Z+L34behDrO
-         NxzKOcpV/PPS8oGg8ZuUeEAdDa9AAt4RJ32/LftDY3gfaOnOlfb95amULRPLH+4kAinb
-         epjMHACeX6slpHBpbHbCOOV07j7/z7sXcMEHmlGI0WLtUfCHp/oLssRfIz4SxfCx+XEW
-         8hu8CmgaWjDkVkKmdqLKC2R/et1+i9OqO7HH8yr9BJp4LSk8i8x0fCZ4LLxFiwNlsv7Q
-         1wbg==
+        bh=0UrX+2PReJBw6XIph6Tw/hL8PSQO9wuRuPP9B9P45GQ=;
+        b=KwY9Gky12AVvGx4Q9fve3xARwxMr6oah3KLujBA1u3aia+hvRJ50SVDfpO4xk0ssQr
+         LAFriu/R2zGy2qmNwvQlBxYy5+DhNRdwlfj6ODfsdUcFniHod/aCCJYTjUzZQKgdaUO0
+         hYD9D8d7+TeeTm+hNJNP6+82+cv6WkZdbMNHONg4s4etPDQUErqgGTYWEvHrDPH3uS4r
+         i4S0YHWYiwav0qCP9XochcGNpYgQytmdsOeYQ+GxiRVTJotBnsPOzpjESoH13Uv2ZHEs
+         wVMGcAVc4i6uSmulYE1Cg7WanRdgF0nT/WeoLuXQufExSnzJFfQ7ef8LjQLdgF6jwF0H
+         q5wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784047919; x=1784652719;
+        d=1e100.net; s=20251104; t=1784048365; x=1784653165;
         h=content-transfer-encoding:content-type:mime-version:message-id:date
          :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ESKjOB3jL6pY0WANcfW6zVin9Ft9lNw7GuOHaqZcFD0=;
-        b=NWt48nBlgqUvbXDcNM0taPIuN9ttSzbm2s8Q+mRCAa8oqS0tl+WTYmL5fW9XsFQQpC
-         +XUwQbdKSZwUYIaJehT21T8XH253MKIpqFKNIR3SR0EFnQTCTnZ+AoMiWo5tabqX2FH8
-         w0MBtYcA8v9TNuuUs+YlQdIbKE0FqQoh/u2g/V++DG69oaF7SERcdU9Oue0Zdx9Nsy0x
-         Wz/A471iz6aUccztpY8pWGCTq43f6qnLeX8NlvE9AgQdOPe5TGNGO+QPRcdZZP+jXv8e
-         12h+KXar6IvZu0OVv0jDsle34e37b8AJIadSVD+EzVmlD8vFbkB6sKxUia15byD/IC69
-         jrqg==
-X-Forwarded-Encrypted: i=1; AHgh+RqEQmt4FYRkewWCLN05Egc3efrMRa2K6iXyolJ7FX0NUkkt2xnnsqFsGuvQ1KeHZIXqhPU1n3NwC3A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUU3JW9L+xlg3hVk9woEjcC+ZYjV8as08TW4UzqML5C5e4mnko
-	SIkRpwoQtHpIcph55xuTy/OSc7A+MwvP9KcQxR3P6V9FBjAkiRQWxMzK
-X-Gm-Gg: AfdE7ckhHJ3VWUMPJpYYjovH1ahMxL3v2RbY4f1UuyfXnC0dV9J7dTXnhCw3R2qw3xT
-	Kqf+UQ9XRQjCuW87wn+s0R7JkL3eC3XdIJxxaJv3LmFuAm+4CROCsylh/BZe1LJW6HLmsz5ZFUe
-	HDd6a6xo6d7pnSF+fjjt2V6ChkantmmSVFW8uYW9PweEW2YsRiZnR+fz1UPc1IByiSkvso4O1/G
-	2sHtLw8RpqpRjQVS2r0FQ25CKvpmfTv3yrmVRH/gmtwhhYUy08y4Noe1bKMdaLNWKOSXblveM/7
-	lWsff0mw7Jm6HIujd+13Uy8X1DPdbY/vp7VgANQ4xyU+5l7mOA7H5tgula10Zdfgp4AZDJPvJOq
-	rku6VuZGxU2xeCFPoMgA/kphaHFaQ3ZSiEFttQc7LCwMxDZW620sa12u2E8JnyjdpoYA0XMCyYG
-	SUUg4AXRkvu0uYZ0GTF/Ri8A==
-X-Received: by 2002:a05:600c:3acf:b0:493:f176:dc69 with SMTP id 5b1f17b1804b1-493f884f5f2mr140030335e9.37.1784047918898;
-        Tue, 14 Jul 2026 09:51:58 -0700 (PDT)
+        bh=0UrX+2PReJBw6XIph6Tw/hL8PSQO9wuRuPP9B9P45GQ=;
+        b=g5iBxNN60oP//L9ZosjXASne9w61gh/ENxMVkhOvfikNh4X8zoM6zRYtn6Q9JKTqYl
+         M5d9phBH0lPqfEfCi+k5zmmn1C50l6zS0kGVB4vqYZgOWU59FLmuxSg3aQPiiI41lw8a
+         6CYlVT7ZV0F8AnuGMvNV+95vlVKV6Wkl2+1U29swiZ7tRfBo6GMxSaTFgZo+tFPIewml
+         y7ycVqs98vPT0zKkmncdrYMoehYQpBin0vlNAEj9+eIlaMlew5JUGGMUkcKOvf1F9swo
+         lKGg0WLKX/Qy49EvQtxnOcDBPyy967+Ht9GxeJo1H0P37MxlVvswElCkj0lGyN3OJZKq
+         uYXA==
+X-Forwarded-Encrypted: i=1; AHgh+RqUlysjKSXiPJogAQbv546qyfH/KQ5zsJVgJkjJCzxzD5vpppoqIojorj0wNtc6vvue6fYgBTkZs8w=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx+MxQQv9KGRC3DlbzLGjb624LOTunFT2og/8swgbUiaMORxljK
+	lzuwPjKCXSrT/L0Y04AG1EN12ZxCZedxK17M5e0bmgln6oOcXDYTe/nM
+X-Gm-Gg: AfdE7cmDs2UPOrGD5dtL0tE4OCYsLSGU5/Uf62btRfR6eTx5kNWsNeK8nZ+qrG87RX6
+	BFBb6zM29JLpZ4pv2P3XfmJy5wOUHyYtHaD3uIz6yisoIpCupBZMFRbu92JbPSEiZumGGK4BL5X
+	XzqGp1VZkIje9DoLP1vookH54tSWtp/3mcuPChHj2/49tcmM9Q9edYYqR/snylUH7tchgWVet2P
+	aVTKqlgsP3WtL4abohkWMOnrMnCIDr9Rj9lopGS8I6ourM/+6gXFYe/ZnE/KEfpJAC+YlB+EVWI
+	Ul5ir+SO1Oygpgg35Yjgfbp2Fsm/Cd90vCV2+YM9s8eERgFPTMQD4DM8t/1pUDIuCNm8/T12nIu
+	C/448U4fGvGvaLmPqNG21GE7pSDsDJky4cNuPoLvtOYncLtbRd2uwj3llSYww3rbq6yqNVnJtLx
+	ej8aw16FxioyJxyJB5XDNang==
+X-Received: by 2002:a05:6000:2481:b0:475:c946:36c5 with SMTP id ffacd0b85a97d-47f2dca7f13mr16783953f8f.9.1784048364994;
+        Tue, 14 Jul 2026 09:59:24 -0700 (PDT)
 Received: from localhost ([5.83.201.220])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49508725c0bsm87574585e9.2.2026.07.14.09.51.57
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f4635aa34sm8858744f8f.15.2026.07.14.09.59.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 09:51:58 -0700 (PDT)
+        Tue, 14 Jul 2026 09:59:24 -0700 (PDT)
 From: Colin Ian King <colin.i.king@gmail.com>
-To: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje@dujemihanovic.xyz>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
+	Erikas Bitovtas <xerikasxx@gmail.com>,
 	linux-iio@vger.kernel.org
 Cc: kernel-janitors@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH][next] iio: adc: make read-only const array config static
-Date: Tue, 14 Jul 2026 17:50:12 +0100
-Message-ID: <20260714165012.184651-1-colin.i.king@gmail.com>
+Subject: [PATCH][next] iio: light: vcnl4000: make read-only const array regulator_names static
+Date: Tue, 14 Jul 2026 17:57:39 +0100
+Message-ID: <20260714165740.186119-1-colin.i.king@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -79,27 +79,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-Don't populate the read-only const array config on the stack at run
-time, instead make it static.
+Don't populate the read-only const array regulator_names on the stack
+at run time, instead make it static const char * const
 
 Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/iio/adc/88pm886-gpadc.c | 2 +-
+ drivers/iio/light/vcnl4000.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/88pm886-gpadc.c b/drivers/iio/adc/88pm886-gpadc.c
-index ff9bc5f06c18..938ba43c2c35 100644
---- a/drivers/iio/adc/88pm886-gpadc.c
-+++ b/drivers/iio/adc/88pm886-gpadc.c
-@@ -279,7 +279,7 @@ static int pm886_gpadc_read_raw(struct iio_dev *iio, struct iio_chan_spec const
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 128ae3f94074..b8ac156ad5c9 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -1922,7 +1922,7 @@ static void vcnl4000_cleanup(void *data)
  
- static int pm886_gpadc_hw_enable(struct regmap *map)
+ static int vcnl4000_probe(struct i2c_client *client)
  {
--	const u8 config[] = {
-+	static const u8 config[] = {
- 		PM886_GPADC_CONFIG1_EN_ALL,
- 		PM886_GPADC_CONFIG2_EN_ALL,
- 		PM886_GPADC_GND_DET2_EN,
+-	const char * const regulator_names[] = { "vdd", "vio", "vled" };
++	static const char * const regulator_names[] = { "vdd", "vio", "vled" };
+ 	struct device *dev = &client->dev;
+ 	struct vcnl4000_data *data;
+ 	struct iio_dev *indio_dev;
 -- 
 2.53.0
 
