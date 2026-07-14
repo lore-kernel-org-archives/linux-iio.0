@@ -1,77 +1,50 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEBFC3FAE15
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 08:17:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E23673DA5C3;
+	Tue, 14 Jul 2026 08:50:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784017045; cv=none; b=EguaJEwU1nU2ieCqJSefvxkqFmIoMy2melGv4Y7/jmOutbF/2sFD8ML2J/1EgvpUEpuVIpHg58xDZYi7NisryQ5fG/WgaNAuY6OugUQe9qQHAJ57xld5o42lfLCSlRpXO3Z31RESI38nAEb+7gbkLBkjXOtuscKxdFnoLmu/Fqw=
+	t=1784019034; cv=none; b=l4OimqMdJVOzJ0EwC4e6SeqrLZKqXL5DkjOh1NX94QuP4xNCkHlxEZY58kyko+iVOq1Anz43d1WQ2OUu4tMu3+TCcoD8sXECZBsM6UEIEIcLOX35H/osdLMaHo/MokV4PnjlZaf8hrZYLOgn2skrupO0Q8Q9yuGZs40Vcs+TMHE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784017045; c=relaxed/simple;
-	bh=xEEGwX2WirNbeBAzB5AL0aELp4pmQKWtE6Dq3wSUlo0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FQtYqvoa/tHPIpRH3ydDK3Zx7CRu0oFgMmsevD/i05lcF67vBYcL5J9VTJ570xzD5Xl3kH5gTycwE/nFt7TIC11WG0KpT2+Z1qYbZyY2HtpKjoVlscGNC6KQQOcHCoz2xrqcMxqsjX8BgQescWo+ja1HHPL/AT7VoJLWuQdIoLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N4SIuYA1; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N4SIuYA1"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c1614804757so398653266b.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 01:17:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784017031; x=1784621831; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=CoQnMOKpiJRr1uZ4EPacW9ACutARLVYGOVPpLwGEQDc=;
-        b=N4SIuYA1YpE+X4zPakS58ufaufjsMyKuKHkF0PzSROVKnTh0UWN3POFbKuusvr38Zx
-         xnXfb1JzX+PHLjWy/dT8/VxeEQkwrPqubXlkr5EXFVbi4qF3VLMMSi5Fw0u5qIjpg/tD
-         7ywUjcxKcLJrXaS786DpipEDrdYWlCuPAbVD6+TRR2XV5u8QZCrue7m5w9KlBbyz8L00
-         Uremnl/3UGhEsK2a6QwdxQucu/tVUASNfoAsgwykO7FDuqtLpvYLr2eXIaRX7rmZqKoy
-         TOEkVcZz0E4xaturFGmYW493ntFpOYl5sURYUQMTLXC0PSzk8Zye+HaKELHQEkU1V/Q/
-         yfZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784017031; x=1784621831;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CoQnMOKpiJRr1uZ4EPacW9ACutARLVYGOVPpLwGEQDc=;
-        b=CuOT5KYvegpwmYI5dlMFZR0ysDCQkdWAqrFm4oiNA+Hlgh0RPmoOQkh1fe0jz9sTGa
-         r0ejF1nKFHrRoyjXEQuq/9TAtUoIYZStYEDN5FeY0r/11Osl4mWxAgvrxHA6uJ1PLXJx
-         4yIadCdJ0xz+xo4O1pVWjsNuhsDPPmzdcNZJsBdVIIBbmMG2z3ExMxEUzfVq2+7Vjgmg
-         SeoV0aF6Coj9+xM7VUEKTiXqYkg1h22pKDG5dG9wiH/Uh2T2H9/4e4W3lAFrYuwzJhWc
-         zwOQfX3IW2acNEZ/f+hwdj82jIoG5LFOJ4VZZB7ir0iWK/ld36qBBWgOm7O1t0n0ubEY
-         XvJw==
-X-Forwarded-Encrypted: i=1; AHgh+RrrQ5kk9NBiyZbU/lXpIwPCiRWXEL+g4uWW/eREY+zIxyVtiV/kwQrrx4qbc7SsjmJ2lCef5a70q9A=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzy4L9LZ0MC4bfNzzLKfzVg5cGaBwXxBteajlWu4AVdzJDYlHtZ
-	hfDVCo0qEcYk4Kv9jdNyHRRxspuefJ4a4Tw2YESlO/j5Y+h54EH2QcCl
-X-Gm-Gg: AfdE7ckejabydshYv402+boyI9c3VBk17lYn7Y5MumSNstLUasI5L6pR7MdlJuKVoj4
-	UUxUfbGLWdxp4EH3XVs2dXB70d+cgMBJNLKPdB1y94debiRnxR4PCaKcUt+6hzJu4LA9gejYoyL
-	ss3n+NRQQAWXYGVFnLdeyjH8IHRgFML5y5suxJg/hL2nLBb1aRkQakBsbzuN2/SdERarKz/JvKy
-	fmvA+GOrCzIpt9AgcjPvJyivOSv8h8cKxtSKtkxd0XmDTeWr96tN4ltyZeNN53pOwFUM+Rbo3U5
-	C1PFNczwEvEkbK2OYOWhzvnppAU8FlqOfAaffmtWVR/EsMWH7lZ7YaNRGm/YWlZnQsacDlbCzJ3
-	eTb9jLe+/qiMg8NLfW+9CZmiIYQrllE2WzvpzBiivW3iivuV7W94Rp0OSZSBawE0oNe1ccWu5/7
-	1zhohym2ljIz3uPj/49AML4Uii/f+0fdZDR+I=
-X-Received: by 2002:a17:906:7304:b0:c16:12b6:243c with SMTP id a640c23a62f3a-c161e973a85mr554612966b.14.1784017030626;
-        Tue, 14 Jul 2026 01:17:10 -0700 (PDT)
-Received: from DE-PF5B95TD.embedded.cmblu.dev ([87.129.199.250])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c15e353d2f8sm723085166b.34.2026.07.14.01.17.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 01:17:10 -0700 (PDT)
-From: Wadim Mueller <wafgo01@gmail.com>
-To: William Breathitt Gray <wbg@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
+	s=arc-20240116; t=1784019034; c=relaxed/simple;
+	bh=sUWSCKA62yOPR/TNh9L8EOAEo9GsQjFG8fjYQkO8kxU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=l1ATeTzDjnzS0oRJNSp4/fgRxgHq4KGpi3ekhrp/W++xjK9EXpn4aanBxCp2mflRTgFvJ449Yo7wKardBciS5ENwHrRar0Kt5k1pLpSkq+wb1r1hOnty8A3eAPF2RqXUdSesYguaGssl8IDGDXlMX69X1hi5adj1aGNaT4tDssA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: 0df7f8f67f6111f1aa26b74ffac11d73-20260714
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:296d752c-dbb1-445c-849f-b461fe26e3a9,IP:0,U
+	RL:0,TC:0,Content:0,EDM:25,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:25
+X-CID-META: VersionHash:e7bac3a,CLOUDID:16ca95fbab60b1cb772e4df97726a883,BulkI
+	D:nil,BulkQuantity:0,Recheck:0,SF:102|850|865|898,TC:nil,Content:0|15|50,E
+	DM:5,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:
+	0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 0df7f8f67f6111f1aa26b74ffac11d73-20260714
+X-User: gonglinkai@kylinos.cn
+Received: from localhost.localdomain [(10.44.16.150)] by mailgw.kylinos.cn
+	(envelope-from <gonglinkai@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 2127962445; Tue, 14 Jul 2026 16:50:24 +0800
+From: Linkai Gong <gonglinkai@kylinos.cn>
+To: nuno.sa@analog.com,
+	jic23@kernel.org
+Cc: olivier.moysan@foss.st.com,
+	dlechner@baylibre.com,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v7 1/3] dt-bindings: counter: add gpio-counter binding
-Date: Tue, 14 Jul 2026 10:17:07 +0200
-Message-ID: <20260714081709.17846-2-wafgo01@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260714081709.17846-1-wafgo01@gmail.com>
-References: <20260714081709.17846-1-wafgo01@gmail.com>
+	linux-kernel@vger.kernel.org,
+	Linkai Gong <gonglinkai@kylinos.cn>
+Subject: [PATCH] iio: backend: fix typos in kernel-doc for iio_backend_interface_data_align()
+Date: Tue, 14 Jul 2026 16:50:19 +0800
+Message-Id: <20260714085019.3109889-1-gonglinkai@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,88 +53,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a binding for a generic GPIO-based counter. Two GPIOs (signal-a,
-signal-b) drive two Counts; optional index GPIOs load a preset. The
-counter function (quadrature, pulse-direction, increase/decrease) is
-selected at runtime via the counter sysfs interface.
+Fix two spelling mistakes in the kernel-doc comment:
+"initates"->"initiates" and "proccess"->"process".
 
-Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+Signed-off-by: Linkai Gong <gonglinkai@kylinos.cn>
 ---
-v7:
-  - index-gpios split into seperate index1-gpios/index2-gpios, so
-    Count 2 can have an index line without a dummy entry for Count 1
-  - dropped Conors Ack since the binding changed
----
- .../bindings/counter/gpio-counter.yaml        | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/counter/gpio-counter.yaml
+ drivers/iio/industrialio-backend.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/counter/gpio-counter.yaml b/Documentation/devicetree/bindings/counter/gpio-counter.yaml
-new file mode 100644
-index 000000000000..782cb177ed0b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/gpio-counter.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/counter/gpio-counter.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: GPIO-based Counter
-+
-+maintainers:
-+  - Wadim Mueller <wafgo01@gmail.com>
-+
-+description: |
-+  GPIO-based software counter with two Counts:
-+    * Count 1: A + B. Quadrature X1/X2/X4, pulse-direction, inc/dec.
-+    * Count 2: B. Inc / dec.
-+  The function is selected at runtime via the counter sysfs ABI. Each
-+  Count has an optional Index (Z) that loads its preset on rising edge.
-+
-+properties:
-+  compatible:
-+    const: gpio-counter
-+
-+  signal-a-gpios:
-+    maxItems: 1
-+    description: Signal A (phase A; pulse input in pulse-direction/inc/dec).
-+
-+  signal-b-gpios:
-+    maxItems: 1
-+    description:
-+      Signal B (phase B; direction in pulse-direction; pulse input for
-+      Count 2).
-+
-+  index1-gpios:
-+    maxItems: 1
-+    description: Optional Index (Z) input for Count 1.
-+
-+  index2-gpios:
-+    maxItems: 1
-+    description: Optional Index (Z) input for Count 2.
-+
-+required:
-+  - compatible
-+  - signal-a-gpios
-+  - signal-b-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    counter {
-+        compatible = "gpio-counter";
-+        signal-a-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
-+        signal-b-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
-+        index1-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
-+        index2-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-+    };
-+
-+...
+diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
+index 4763e224ebc6..d19400057108 100644
+--- a/drivers/iio/industrialio-backend.c
++++ b/drivers/iio/industrialio-backend.c
+@@ -851,7 +851,7 @@ EXPORT_SYMBOL_NS_GPL(iio_backend_filter_type_set, "IIO_BACKEND");
+  * @back: Backend device
+  * @timeout_us: Timeout value in us.
+  *
+- * When activated, it initates a proccess that aligns the sample's most
++ * When activated, it initiates a process that aligns the sample's most
+  * significant bit (MSB) based solely on the captured data, without
+  * considering any other external signals.
+  *
 -- 
-2.43.0
+2.25.1
 
