@@ -1,93 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF00447DD49;
-	Tue, 14 Jul 2026 16:49:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A45A94D90CC
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 16:52:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784047752; cv=none; b=ZJdw9YWRgAvko+LAM0uYWzoxOFBKaJ3lxL7ec+fOUd9v3kTn0/cN/uDEJ8XtYxwPVg0GojRT7cbi0EjflXV7eD80DLsH7tQsP230z9UopAQYipm5tFBDLcCj80Ub7cpYaibg/vYDswgWVBZ2f3h1MPuKbQR2c2L1KnESier42sM=
+	t=1784047922; cv=none; b=JVt3N1xewpopI0NsiqoV2P2ZRUjjlUyeEExC2HG8Xv//qnJFHxYhbYFMTVjCZAXc35YSC2rzlVzIqryb0RZu3XgCNeTHFNj7WllZY+gqRgLiILKxzT1L6PBb6k55RTNenw4ltVLb+cE39y8w5DjXATaDLNDYPq7oyqOzh4KAmZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784047752; c=relaxed/simple;
-	bh=+LKbcbSEuIWXwsvBUzqjvqiQNouSRRLre4U1q/maT2U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a6RCaCPen0m2EQk1EJduDjy3nBMLaVo12kS2wGFvdtjxf0VyWlDPOiG3Mxq7H9SJ+xvbLA0T15Fngs5UrUk7O43ByvTWN+P+fo8brYKiIvgoUOb/gyTtwInH3dN76rpAxhIiDRqQEN5N0YkP/ODeCRT8pMxW0pYOE+eL7cLToHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fJAq7gOS; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784047922; c=relaxed/simple;
+	bh=1KmXBvv9ogEWCQG2EGNt09pxwnGjngtT7NexAegcjhA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=V/L1VS3DT4BdPW3czwlB+PRdtlgR9MF4ZUSsaM8zIlYXGvxCaK6cXUQzS0OI7+jYTbr5SXIKgTH8isWyiOOmFgnV48DWKkJmXLqdEztRMzYjN+hn5d66OM356kaPO3mdhWpBr82F7G5qA9UxnfzdDdsOBKLas3mM0FtkuU+w1Ik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zw2r0JAH; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fJAq7gOS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA721F000E9;
-	Tue, 14 Jul 2026 16:49:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784047751;
-	bh=72v/IFJJ9WilRJ+faKTcY0phhK/k/tq113OmFbUCo7M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=fJAq7gOSlHZU328jqwSVouJiLTPHiF0SltxyVgNhhZWdkorHsT15XHUabHEfj4O5V
-	 tORU8MZCEmTOSc1WNzR0advbpl5n2NsPxqBlbroJ4bQu4aS8PnN8O0Yn8Vu8ii0wvv
-	 QFbyFuTXz6pA+UBvfjun7488x9Fo85X37hbIUIwW9YabPMkjwjfTscry1faBLNw+j7
-	 KW2Sy0edNvgQooKa710AZ/HIwKlGq/T4dsXinBuurlesgaVWskdONgIA7bUOHNe5GS
-	 /WI6R2+NJfI2LTOg0WMNMiMrfxGLQ6Qy2wEJO2pUghjhvy6Nn6OLYazxLQWwoJi1Ey
-	 2pE7BZ4xSkNIg==
-Date: Tue, 14 Jul 2026 17:49:07 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Lukas <lukas.metz@gmx.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zw2r0JAH"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-493e497643fso6099595e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 09:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784047919; x=1784652719; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ESKjOB3jL6pY0WANcfW6zVin9Ft9lNw7GuOHaqZcFD0=;
+        b=Zw2r0JAHXGzu2zZ7y8HThEUA0CtlEWs13J4wTyizD3LUhC/mpcSPINFBBH37wlTOKo
+         dQJFp4tVs1Klxi1zgtScYCaA1TOtpZSiiSx09URhh1t0FU8x2NM9yZ33+Z+L34behDrO
+         NxzKOcpV/PPS8oGg8ZuUeEAdDa9AAt4RJ32/LftDY3gfaOnOlfb95amULRPLH+4kAinb
+         epjMHACeX6slpHBpbHbCOOV07j7/z7sXcMEHmlGI0WLtUfCHp/oLssRfIz4SxfCx+XEW
+         8hu8CmgaWjDkVkKmdqLKC2R/et1+i9OqO7HH8yr9BJp4LSk8i8x0fCZ4LLxFiwNlsv7Q
+         1wbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784047919; x=1784652719;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ESKjOB3jL6pY0WANcfW6zVin9Ft9lNw7GuOHaqZcFD0=;
+        b=NWt48nBlgqUvbXDcNM0taPIuN9ttSzbm2s8Q+mRCAa8oqS0tl+WTYmL5fW9XsFQQpC
+         +XUwQbdKSZwUYIaJehT21T8XH253MKIpqFKNIR3SR0EFnQTCTnZ+AoMiWo5tabqX2FH8
+         w0MBtYcA8v9TNuuUs+YlQdIbKE0FqQoh/u2g/V++DG69oaF7SERcdU9Oue0Zdx9Nsy0x
+         Wz/A471iz6aUccztpY8pWGCTq43f6qnLeX8NlvE9AgQdOPe5TGNGO+QPRcdZZP+jXv8e
+         12h+KXar6IvZu0OVv0jDsle34e37b8AJIadSVD+EzVmlD8vFbkB6sKxUia15byD/IC69
+         jrqg==
+X-Forwarded-Encrypted: i=1; AHgh+RqEQmt4FYRkewWCLN05Egc3efrMRa2K6iXyolJ7FX0NUkkt2xnnsqFsGuvQ1KeHZIXqhPU1n3NwC3A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzUU3JW9L+xlg3hVk9woEjcC+ZYjV8as08TW4UzqML5C5e4mnko
+	SIkRpwoQtHpIcph55xuTy/OSc7A+MwvP9KcQxR3P6V9FBjAkiRQWxMzK
+X-Gm-Gg: AfdE7ckhHJ3VWUMPJpYYjovH1ahMxL3v2RbY4f1UuyfXnC0dV9J7dTXnhCw3R2qw3xT
+	Kqf+UQ9XRQjCuW87wn+s0R7JkL3eC3XdIJxxaJv3LmFuAm+4CROCsylh/BZe1LJW6HLmsz5ZFUe
+	HDd6a6xo6d7pnSF+fjjt2V6ChkantmmSVFW8uYW9PweEW2YsRiZnR+fz1UPc1IByiSkvso4O1/G
+	2sHtLw8RpqpRjQVS2r0FQ25CKvpmfTv3yrmVRH/gmtwhhYUy08y4Noe1bKMdaLNWKOSXblveM/7
+	lWsff0mw7Jm6HIujd+13Uy8X1DPdbY/vp7VgANQ4xyU+5l7mOA7H5tgula10Zdfgp4AZDJPvJOq
+	rku6VuZGxU2xeCFPoMgA/kphaHFaQ3ZSiEFttQc7LCwMxDZW620sa12u2E8JnyjdpoYA0XMCyYG
+	SUUg4AXRkvu0uYZ0GTF/Ri8A==
+X-Received: by 2002:a05:600c:3acf:b0:493:f176:dc69 with SMTP id 5b1f17b1804b1-493f884f5f2mr140030335e9.37.1784047918898;
+        Tue, 14 Jul 2026 09:51:58 -0700 (PDT)
+Received: from localhost ([5.83.201.220])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49508725c0bsm87574585e9.2.2026.07.14.09.51.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jul 2026 09:51:58 -0700 (PDT)
+From: Colin Ian King <colin.i.king@gmail.com>
+To: =?UTF-8?q?Duje=20Mihanovi=C4=87?= <duje@dujemihanovic.xyz>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: dac: Add DAC8163
-Message-ID: <20260714-unweave-pointed-ef9c6c02a053@spud>
-References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
- <20260708-dac8163-work-v2-1-3acd1bf20182@gmx.net>
- <20260708-spotty-spectacle-f270b4c66d18@spud>
- <alZPZuAQfiROz8kf@berta-MS-7693>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iio: adc: make read-only const array config static
+Date: Tue, 14 Jul 2026 17:50:12 +0100
+Message-ID: <20260714165012.184651-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="0feAM5YEw7Se1lwn"
-Content-Disposition: inline
-In-Reply-To: <alZPZuAQfiROz8kf@berta-MS-7693>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---0feAM5YEw7Se1lwn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Don't populate the read-only const array config on the stack at run
+time, instead make it static.
 
-On Tue, Jul 14, 2026 at 05:01:58PM +0200, Lukas wrote:
-> On Wed, Jul 08, 2026 at 05:37:44PM +0100, Conor Dooley wrote:
-> > > +  clr-gpios:
-> > > +    description:
-> > > +      The device registers are reset when this pin is asserted. The =
-output is
-> > > +      set to zero (xxx2 devices) or mid-scale (xxx3 devices).
-> > > +    maxItems: 1
-> > > +
-> >=20
-> > Sounds like this should be reset-gpios?
-> >=20
->=20
-> Thanks for pointing this out. The description is actually wrong. The
-> datasheet says: "On activation of CLR, zero scale (DACxx62) or=20
-> mid-scale (DACxx63) is loaded to all input and DAC registers".
-> That means other registers are unaffected. I will update the description
-> but the clr-gpios is correct in this case i guess?
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/iio/adc/88pm886-gpadc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Sounds about right.
+diff --git a/drivers/iio/adc/88pm886-gpadc.c b/drivers/iio/adc/88pm886-gpadc.c
+index ff9bc5f06c18..938ba43c2c35 100644
+--- a/drivers/iio/adc/88pm886-gpadc.c
++++ b/drivers/iio/adc/88pm886-gpadc.c
+@@ -279,7 +279,7 @@ static int pm886_gpadc_read_raw(struct iio_dev *iio, struct iio_chan_spec const
+ 
+ static int pm886_gpadc_hw_enable(struct regmap *map)
+ {
+-	const u8 config[] = {
++	static const u8 config[] = {
+ 		PM886_GPADC_CONFIG1_EN_ALL,
+ 		PM886_GPADC_CONFIG2_EN_ALL,
+ 		PM886_GPADC_GND_DET2_EN,
+-- 
+2.53.0
 
---0feAM5YEw7Se1lwn
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCalZogAAKCRB4tDGHoIJi
-0v07AQCwPLzKcG9LMeBGOoFfz7wkfBkhQnzbXhPbZh5vui2MgQD/UpfA5DI+axsK
-CMynLtGrzgtXKZd+Kri3UMir5tJOegs=
-=5c2G
------END PGP SIGNATURE-----
-
---0feAM5YEw7Se1lwn--
