@@ -1,96 +1,95 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EF92381B07
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:28:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDABC466B75
+	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 13:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784035723; cv=pass; b=Kg3cK7tPBTOB1bUR/nJbeF76gR7MbZnzAOsqWeNYcDyo9aCEduVsP1+688yp0ujQwVCNBv98dTN1MctWKTZo2AltyscKijHqzpQO1KJkQvHBuAqlKyYwdIfzUS8ULIsGPbxt4nqlXvP1i8+VKbpU3nVqrGsfTvhve7ZYLDAqWrA=
+	t=1784035882; cv=pass; b=AijG5kIJN9dySCgksRznkvplewtVbadJ+sanNrvBZO8dEl7fGgoQXgl0MjnhBHxEdMAf19R1sitFuWq8UA0YcxoButq2v5Xd08wzZRL0hqnIejszp/v+T/+a5hjN+vIyEVPR6ur1vi1ce20GoChvhphP4iTdJn2Y8cpsc/qZ4Fw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784035723; c=relaxed/simple;
-	bh=ue6jFvPPvjqPgIpHsXNu6T7RM+b3RNh8Y6zW7p+85hQ=;
+	s=arc-20240116; t=1784035882; c=relaxed/simple;
+	bh=6DZv1K0DlUi+ti2Ixfzbo+SkZOzrPzgNcj+8JfhDZTE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QJxGrYEeAhUhYLAZ5YTfvyWO+iyOttk/TWgpr56M54fMo5jTyKrwF7YGF5wdNxyyaQNSWwiuJZJh3CAapI6Z7Ej9xhM5aL+ZZKzAn9bdfPku25EvpIC4JnFIfgofwLeqkSTZ/D5B9qksJwn/6P+7htFhXSvKwa+6d/0/Kgc9Sy4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HAMoLggN; arc=pass smtp.client-ip=209.85.214.174
+	 To:Cc:Content-Type; b=Mwft9WiudHh+nBLEqdI/dJ4dLySqJfYnUV9MnMPLF5XZu+moWy3CRAGvJs5rz+Vc+9ZB5abdN/ERUt6VGVHFqTm2ePQVqGmA1PVp7ZdNHMAEfg3ZBHgHYwch6KYtY5LMazEiTfQGmKGOSmaTnfYOGaQW84PzTFbACAQ10Bo0Loc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=adtRORoK; arc=pass smtp.client-ip=209.85.216.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HAMoLggN"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cc73e322dbso50019805ad.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:28:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784035717; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="adtRORoK"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-38175907a56so760491a91.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 06:31:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784035880; cv=none;
         d=google.com; s=arc-20260327;
-        b=IwoByb2CUYqznqaQYVPjyrBBZk2McCTHXV5YarTf90F6C2HqeXpprQbEGg+aw54qMq
-         Vy6zMIjg+TOX/hUVrJa21fieVcIRNBnS6yjcXpW22udfX/IW4YMfcV6CUcgv89CE22CP
-         WUCIIs8c33hzt/AN+HC+tF9akeMxRvfwTMhP7sV2ZamnWEe1bFK1QirAd+M6I3OYa1Qg
-         9hFPNqKWNm4YEb6Q6/01bQijMdt2RLxBmdUx530uyMD/lkfarB7/GXjIWB6IHCyOW1De
-         dzUcrGUs6migfNza3eYsqBACcgFoyZ4ChGpmuOcC9rmwZ3wE2NeLnPIuHefQ9W4ZWXOB
-         JHLQ==
+        b=lM9cHkULPYBgvK2XbZY9PREQFdBZDLgEeMLW1DU3fLcXYxltxG8x7inyuTPJACdObA
+         0iAVwVSuOJ1XtF2oSXrP4Rb4uB73XSuUVpNy4G/sSYbRINj74PJI0UL2KzjAuIAGDzou
+         kWF7XuxUbTa4lohoj/xUwFO7K31zehGAic8S8K6OB2aNoVLX1kDRiY06J6u4/wgYGF2h
+         qpFRrc1m4O3c8gRYvnXsOcig7p6oUJLX6wf4c97IMC1SN4Dph/SvNF3/0LKBJrRL8olu
+         dlaNqKtLexl5YHR19KBrO6IN8rVnSf5oFjTujERl11I/YmbzQI7kO4UMl8knHzVYbYId
+         nhLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ue6jFvPPvjqPgIpHsXNu6T7RM+b3RNh8Y6zW7p+85hQ=;
-        fh=COtUybJ0bRpofvnpUPa1ohA3ldbf11/ldB74JMYPJPc=;
-        b=iwfMJlv6Nm9IX9UcVs0TLwiGHx19QXFmQSd6fzplHRlIzRnWnHLakH/tqVuMxpTI7K
-         6Mp/cR8wscG3cQF/7NE0ESQXVmMjH4yOWFl3ROuST+36rfdc/wJlGlpHl6xu9hMMgQ7P
-         vftWy/IRvFCx7ByL35CjA0OunXkKwddj5OG/gYzpKdTekswVTSKyEJl+tySABoGJGM7J
-         nk78zQs9nscD/jJqJtqeVG6hcgsrLy6DlM1gtCNYCWeeXIxnCi6zxpkf11E+rs99biYg
-         R+6PT7XydZ6ykN4ByE7hBJ5VcDdMpCW7yn5T+OoPjfPdfhrR0fTgO+ic6bf118oD8I2x
-         XatQ==;
+        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
+        fh=b47WcTJA8mpUGDX2p9UilF3WSQDtg9fhXx2879xUFZU=;
+        b=RN0xnrrupBesNgMBKYgWyvEOJQMj5uf23k5mCpJ2qIEkUKqMTm2vJktsHNQp6yPSfv
+         YehiwxHG2o/QmFpPIfI7GO5IV7lvlITTM1O9YRwc+BaHiVQDi838is50E8RPJxoVgmys
+         WyuiNh9EtTujLmFTSO9L4pWTIzAdwiwI+rKhSE/BfI7vG+Tom318Ryt2bzkfzMF246Pc
+         73ecuXp202YD3FKUcVfTJrq8Vdf+mtFcSPsuzkt6oOAk3bTk2tf+ouQZpSuPoGXPN+W3
+         2apXjvV3TFZcS3NchoDSkLsCtT19lAbScoOk/ZIaqH0q9RqUZMyY4C4fo3v5eWSahrJU
+         3w+w==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784035717; x=1784640517; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784035880; x=1784640680; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ue6jFvPPvjqPgIpHsXNu6T7RM+b3RNh8Y6zW7p+85hQ=;
-        b=HAMoLggNikNfjMaUSjRVs0LKsdZLYv3PPjXr/y1n/bgfeuEWuMbtBEeSeu3Mo4dpnb
-         xBWJuI9zz+8g/MpuGUW6WoFposV5HBQV4iEtgMSAkhvsuNGWlsSPZJ+Fq4weUHTdF1ht
-         XldyK/rSwsiVV3E4u9TlNCjlt3Ou2fkoLA8RZMEXYqBzcpAXQghG1Qs88zaAroZ2yqX1
-         KfYl0+I7ARIkLrHU0obMlW/vLijtNhknmn+ZjZif4tfwcvWHHaYWf5/HzYpfEvh+Ad63
-         +uKJ5fbN33gdlEzUd3aolfkrLr4UALNV4xPZv1zsgyrd7pe6vjxEn/lPRxc7yPMrnTkh
-         cEsg==
+        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
+        b=adtRORoK6ykURV4MpPqfrnTXyFhgyraH2fPjJ0S7zI+Kwx7knp9zoE890+UYb+j00y
+         bFiN9z5SSPD8qzVBXDWlV5SlrMQbkjEPvlDpqIz1kmHac6uHt49DQ93YNWJQfdi5EQHk
+         475uVtuqDXE2WWrNE7/ik48QuATe0RyrQUbWMxyxEj9KdpndUMc9EO3fPKh/seREI0ql
+         //DrLBaWIMGG0cjP3+D5fNXmM/AIXH05XyLQawLfUa820ELjaK2iJiPlBqzjJ35GHXmI
+         D9sKHXvALthnn958hN4yPWlnY+H2pBMvmeGysDo4boFy80Y/Zwozmr8Tvp6DryTrOpwS
+         AT/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784035717; x=1784640517;
+        d=1e100.net; s=20251104; t=1784035880; x=1784640680;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ue6jFvPPvjqPgIpHsXNu6T7RM+b3RNh8Y6zW7p+85hQ=;
-        b=cvbNs+unhSWY1mZ8xTQEs2EVBz/CQ2tvkaPH7CwPeaa9+tafbD33Q51BcRFfw/tSsK
-         FoRPwxAHUImKp27vQZrzOedL6IYI7UzbcSrxVrKR5c6yWi0SDRRLNQZ9Ibi/c6ohpU8F
-         c5pRqp5GX+QvDNG3X8192YCuC9TpVtDPAzjORfFkpjHraIX6msca+YRKEK61t4uDdbJw
-         bGC3EHo7x6NP/k7Rjk6IU3ZYjRl1QHOGDMPoe4QEm86MXyExBb2TjwVeyrnnPmi3wmNf
-         pt95zxP3OXIbkU7VNSWjwnEv15xbRs8T4g9kPEssdbYMKPOAoypoRpGUIt1jXJTBxRR/
-         4VDw==
-X-Forwarded-Encrypted: i=1; AHgh+RrJ4wvsLqjkHnZjv8CdVof+uxDun9AtGVehP1j6hPe7IluDqFHpNIR+bIaog3tzWDHO1vRwiU7m+Ro=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzO3hYEbyryOLH28G3bjWxPXkBmcio6rdIIlV/ecNsfg1OSLGAF
-	wFBbBJ2STjwoW4GaJ2iBjKKhLpeq7LSESYmCIDI6FF5kaAMDri57kfg0fYK+uJIdEGIaizWWPs1
-	HOlH0Qlw+1Na7blgHkNgcqFcnvZMVv7c=
-X-Gm-Gg: AfdE7cmB8PU/q27V/n9xahwNZf8i3BfoCjJ6wt6BSBzcgjZicaT9nrTjWL/yAOVo5yh
-	GFjJwMk4qxv7TEp7cWNrr2Bawh5BQY+v3VfEkVR4HztIkl/bzS4P9U5R4xPR0gXc9ODP7xyjOHS
-	nXFc+BvEzci8WlgVRv4w0ZQuwFVgTQ9dqIigmXsiCKg2AZEOXQJ+djlnej6GjDmtZGfDQeI6MHb
-	pobkyo2bB1ywQL7hmuz/SmKeENPomveA6CNF6T7Ht6fZwPNjxaWmHwqMipjIC0RZeEiCFF2WwkH
-	qGb8deoV5YHrivEZvCSc8kTtBZ29tg==
-X-Received: by 2002:a05:6a21:7486:b0:3b4:b6d7:a992 with SMTP id
- adf61e73a8af0-3c11062f70cmr15032381637.8.1784035717203; Tue, 14 Jul 2026
- 06:28:37 -0700 (PDT)
+        bh=kLfW8NpBLmGd5rRr/q7P+WdrGpDQQoBNPKO5OnQCHQk=;
+        b=lJFpQ4FQjT2UtAfryrDstcQcLo8gVo1e4HmA7+FXF8tUIJCOKchTdFP3rDuTpYkV5o
+         f4ONHhbmlnC5M7nOerkXe8skEupNbI55LFnFtaLIvc+Qla3F73fcTqsNy4KZXKGUVBgH
+         OcARMuLuPzgjsg0SF9WnIKLCwBpxHieLveGAcUfLz+V580ZzkZzloBqzPRSsm8FM/Biy
+         iZ/hFMu8AeNecdpaviRqLjllvXCLocgzcux/5L58bNitQYW8vtWkeIhpPUtD+oicIfQS
+         wPszxAr+HPSO1FhUMW2s+gSg6ZpuzoQllBlf01IjljSwlQ/w6q35fbQR+gTDedLiLBvT
+         NI2A==
+X-Forwarded-Encrypted: i=1; AHgh+Rp2dCahMn2DpfFNuwac9ZVGRw99I1m1Ioe5irnLC1jfo4MXacx8I13K3byjgXy9dd+tk/e5RV4pbyk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoSYZXpl0/HhxLA0ErtG9ImXgsdqcQEdgEA5FcZkIVbc7+NNVT
+	tndJWhePzjArjF5Q+xxD40NRk/IEHZQL2QdK+Hoz0+7KT272uvOyAx7XDWsSeS0qDADXkskLxL0
+	IYH1RY8nd8aJXZaRiQoELizYq88o513w=
+X-Gm-Gg: AfdE7cnEZh/nRHeg2NJR/QaO0VLjMqfFJ3RCNOTWQajB+8zVF/Kfp8SIoDmbFpCxLPh
+	ard5+DNFSeA/INfkXSJFaeaVMVyAIZokmuPNlJAvYqCpczj3nQ0k4F4rzqoXdbpAa+dZZphOCp1
+	OVZsPs6abu5DTf5iSMYz1HjNuUwHPSbUsJVcldtuvOwBRpk8D3Ar57I/oQfOkeRr/NRoz+OmODJ
+	5ODiI0cT6Q9uPLpHGRwfIh6DfuYehIwlixVdHJdMPDGRy2p6AfLK8z3cZb4UdjpaPAQIHB5FWtl
+	jTu2Q+mT09e69GrcTdhXOs5YbWd5S5CMbqqHWZlt
+X-Received: by 2002:a17:90b:5607:b0:37f:e5b1:ec4b with SMTP id
+ 98e67ed59e1d1-38d13c60530mr18215292a91.5.1784035880304; Tue, 14 Jul 2026
+ 06:31:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260617080031.99156-1-clamor95@gmail.com> <20260617080031.99156-5-clamor95@gmail.com>
- <akeF_VrijPbebz3I@hovoldconsulting.com>
-In-Reply-To: <akeF_VrijPbebz3I@hovoldconsulting.com>
+References: <20260617080031.99156-1-clamor95@gmail.com> <20260617080031.99156-6-clamor95@gmail.com>
+ <akeHC-OA8tqM941f@hovoldconsulting.com>
+In-Reply-To: <akeHC-OA8tqM941f@hovoldconsulting.com>
 From: Svyatoslav Ryhel <clamor95@gmail.com>
-Date: Tue, 14 Jul 2026 16:28:24 +0300
-X-Gm-Features: AUfX_mzREZozvqJIpCZw-bv1kiFlmVezGQdepbPdfuQMwUIt-LOogON_yq372Iw
-Message-ID: <CAPVz0n1+wrq+g3p3UTc3hzHcsz8k02=QsvmseBD45d+SoSFsBw@mail.gmail.com>
-Subject: Re: [PATCH v5 04/14] mfd: lm3533: Pass only regmap and light sensor
- presence to child devices
+Date: Tue, 14 Jul 2026 16:31:08 +0300
+X-Gm-Features: AUfX_mxzYxEuGLMctIZqZIdW8wmxIrFK1WcO0C4FctuVUcu9qYtJIaIs5OSxe4o
+Message-ID: <CAPVz0n2DPia=nfvd3W-rHy91OvZNO6jdSczT7kyvH-G138KJyg@mail.gmail.com>
+Subject: Re: [PATCH v5 05/14] iio: light: lm3533-als: Remove redundant pdata helpers
 To: Johan Hovold <johan@kernel.org>
 Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>, 
 	Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -104,17 +103,58 @@ Cc: Lee Jones <lee@kernel.org>, Daniel Thompson <danielt@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-=D0=BF=D1=82, 3 =D0=BB=D0=B8=D0=BF. 2026=E2=80=AF=D1=80. =D0=BE 12:50 Johan=
+=D0=BF=D1=82, 3 =D0=BB=D0=B8=D0=BF. 2026=E2=80=AF=D1=80. =D0=BE 12:55 Johan=
  Hovold <johan@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
 >
-> On Wed, Jun 17, 2026 at 11:00:21AM +0300, Svyatoslav Ryhel wrote:
-> > Instead of passing the entire lm3533 core data structure, only pass the
-> > regmap and the light sensor presence flag to child devices.
+> On Wed, Jun 17, 2026 at 11:00:22AM +0300, Svyatoslav Ryhel wrote:
+> > The lm3533_als_set_input_mode() and lm3533_als_set_resistor() functions
+> > are used only in lm3533_als_setup(). Incorporate their code into
+> > lm3533_als_setup() directly to simplify driver readability.
 >
-> Again, why?
+> That's a debatable claim.
 >
 
-Because none of the child cells needs entire parents private
-structure, regmap is all that is used.
+Adding helpers to wrap custom regmap wrappers seems redundant twice.
+
+> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> > ---
+> >  drivers/iio/light/lm3533-als.c | 56 ++++++++++------------------------
+> >  1 file changed, 16 insertions(+), 40 deletions(-)
+> >
+> > diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-=
+als.c
+> > index a9af8e2b965f..69bac1b202f1 100644
+> > --- a/drivers/iio/light/lm3533-als.c
+> > +++ b/drivers/iio/light/lm3533-als.c
+>
+> > -static int lm3533_als_setup(struct lm3533_als *als,
+> > -                         const struct lm3533_als_platform_data *pdata)
+> > -{
+> > -     int ret;
+> > -
+> > -     ret =3D lm3533_als_set_input_mode(als, pdata->pwm_mode);
+> > +                        pdata->r_select);
+> >       if (ret)
+> > -             return ret;
+> > -
+> > -     /* ALS input is always high impedance in PWM-mode. */
+> > -     if (!pdata->pwm_mode) {
+> > -             ret =3D lm3533_als_set_resistor(als, pdata->r_select);
+> > -             if (ret)
+> > -                     return ret;
+> > -     }
+> > +             return dev_err_probe(dev, ret, "failed to set resistor\n"=
+);
+> >       return 0;
+> >  }
+>
+> There's nothing hard to read about the above. To the contrary the logic
+> is more obvious this way.
+>
+> You also remove the high-impedance comment for no good reason.
+>
+
+Removing one level of indentations without obscuring readability is
+always a good idea.
 
 > Johan
