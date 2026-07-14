@@ -1,102 +1,175 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C225367F48
-	for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 11:35:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE8D35BDC7;
+	Tue, 14 Jul 2026 11:46:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784028958; cv=none; b=bHkowqZUz1Q2v5phBFE1YGqFgxwq1Qwp6BKJkC1/KO2JjjjasIKhV4fyqQXtMWlwRD99hVPla9dHmyy65+N6q6xBXGtPkUmspovs+/EuSEnf6bQgPd8thctXRky8UNzUOpL/DNU3VyRLyP4tRb76qadYrgbEg2EueJiB3FlLAek=
+	t=1784029602; cv=none; b=lRwmfQNRqXmXYWuh8oGkJpwSvZXIqAH+jkcIVF4II8KhmobCoUsHXCwVjyDXIuRjAjg9NUrDYmLO9uKgMmScRI/W+Cgf+oF/d/M2obbnss2XPLjPvR39w4v6VMbOXD586HgJzaiQlTV88wlFWuKPKoZz1R1Q6jKCBy323SciZvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784028958; c=relaxed/simple;
-	bh=EKNSfL6K7twYkb1f/nM59iEaEppV2KkoUdglhRK+kIY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JkWSHqXFxnmpljdMbv7yZKVDuPmwqJ9r5GnRpNDnxtjE9SftrGRB2ncnQXwa49zWlyv0wR5lbI+s0px3860J3kTH4do+yiC03xb505F9gTFBabvAVQdX1ixBon7q7koKs4rikC15/6o+jyn5Bt0cKoFgvMx+y5fpti6cZnDkHbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q6ZE55iz; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784029602; c=relaxed/simple;
+	bh=SuvH0R0BK+/0Ae0Mp+igWDU48vvsC5mEiQoQxHn1sBM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iCkGaYWApOPFxydJpFe4nKv0aGPPllMioLPgT//6UpmAQFM0+5g7HHmzvsYY92e1A/agzqHPUuQOKtsUhjfeyO7mjP9O72F55GLH15+a4bg5Y1Wi2Yt2yrSGTAQxmhUcFb8IuGcaI17biH9u+TOfu/MghZjbOq8+43XB30Dv5Dg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A4MAnEao; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q6ZE55iz"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2cc97653887so47533795ad.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 04:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784028957; x=1784633757; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=EKNSfL6K7twYkb1f/nM59iEaEppV2KkoUdglhRK+kIY=;
-        b=Q6ZE55izrPy2MQT3MQRw2P0PvQCyDMDExBZyj+RR0pT8eTQ/TazsfWPh93/YtjGFup
-         bX0ECywG/GVwhD0eOX0GH6wNWQetTgsGR4QEcA+s63u0NKFclhJY3OoJYxXxgbGwK29Y
-         1o/GwqSjJTYCLNrAc09vfoEz103EQCTdmOc+LwwSpeg7OEMgEY33Y/JbRmXHcXXaEGOC
-         suKVVcRP1eFxniqAxLGHPp8V30a8FA7XjlhmIXvB0CiratT7FpTtiLsjqHzNl+yNlO2J
-         +lae9aXXpNZGfGuxppDPq4uw2FiK7fRIXdNAAbokCgDapA6E2x75Jcsuru2ohd/GVUGE
-         nU5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784028957; x=1784633757;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=EKNSfL6K7twYkb1f/nM59iEaEppV2KkoUdglhRK+kIY=;
-        b=FZzn1EjdL3fBTAtEUSf0jWh8jHzmgKoJGWJwACRECqNFxmhU1D29pBBrW1RcWNjnk5
-         MY4qP6XwPJ01OL8M9bcgcR5+GpUNIBAAvCowuy78TfFBtu8pEvDNLHn7V5fpLCZcjOBv
-         5wfbE8bO1awdye+kJPb38c++wAMpxHzc4HyqF4vOeeWh+C/jCD8PcfR0VIYDU0rqfXcY
-         V/GcUh7i3XLWIEIAx3xLZsmTtZ56UsglTx5KXFgs/AhzfA/8MPXVr1ftt/Y4tnvKHaBa
-         p57wpWdz2OB+viycPNFJepqFLpgUc8heuYwBYJ0J+bZMVKx2S1d4mdcIkwpR/P1lWXxt
-         a9Rg==
-X-Forwarded-Encrypted: i=1; AHgh+RpiCM8o12byuCDFBLqbEUxACPLK41RBlF9u/TJ3WF2uNcE1Xdg/nTq4BRD6enhRbcelr1hmxRDb6nk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy7vnYIbZmurIk797P4g43hNHrFmzX1s+4GqMPE/vxesGjbyPDw
-	qDkUwiWKLyCCFHpoZf5R5kYkJAZGMJSgze2sVwmcGqlFQPEQo63qRbg=
-X-Gm-Gg: AfdE7cmfmWEjF3boMRKzTAiY56j87cRvhLdfhNldU1hggcQbKv+oujYezB6cFKq57Lt
-	SsC85XvpSXUQWa3BYnINC3mCdfShWoAzPz97SlLjNSJl0h4UGzWVxY3w/ObNHGx+ab1rUulxPKY
-	6oSJaIer1N30qIoD1gnoEkLcuLxv1q4NbwqiGp0aRE66BuQ6tpq94CbVCdkHzA4IspMDHlv6/sy
-	EwfswaXIF7RHKt8Jxyz82YGDx1PF8LNj/eiZZ7eNPKtCw09NP0jyzLVD6dWySAs8rlKsP5+3XsM
-	9ExE+ppghmUI1+EidTf1uSoaJXT92ORyIazpPn/IzeAc17tg3tgxXtFDmBV14PDVmJHhCVmaaGP
-	z2IXg9/0VkKnSzg6zaof/8N3g2UeJ4/+fSlXIOJy3Fcg87fmbUGQ2PZjkuI3LGTfGZzS+LES554
-	YS0i1pVLMriTBPCqYrNdOY/3zOJXYpIMnKUcYHPyVhVpEHiLuL+maG/bG60A==
-X-Received: by 2002:a17:903:19ec:b0:2be:3850:297e with SMTP id d9443c01a7336-2ce9f052d20mr125833275ad.31.1784028956863;
-        Tue, 14 Jul 2026 04:35:56 -0700 (PDT)
-Received: from [192.168.1.45] ([101.0.63.168])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ccc9d5bde9sm115071665ad.79.2026.07.14.04.35.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jul 2026 04:35:54 -0700 (PDT)
-Message-ID: <dbf0ea30-0fec-4c0a-a9d8-bb782b642121@gmail.com>
-Date: Tue, 14 Jul 2026 17:05:51 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A4MAnEao"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784029601; x=1815565601;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SuvH0R0BK+/0Ae0Mp+igWDU48vvsC5mEiQoQxHn1sBM=;
+  b=A4MAnEaojvoOKCrFwEaEU2VSDmLGPSwpk3way50gXMEpjtYfYBwJq/Db
+   wC96cIw7nydxtbbwFmuvUKLaXeNLyOdXRBDX3wCKDPMTqsjMq/+CD30QZ
+   0YG1znZdKYlvcCHWpDiGlPwkraFqiaVqmE/u8m22jEJ9b5OoqvSa3CEwO
+   nD7eSeYWFf8x4iatRLvUm5RiIA3wFVQc8Vx4eIlKkgMkKGXn8+AJgFPC1
+   tnY8PIyk9rFrq5eX1Qu9KfnDG9DAmgTTQm3e8hcWPcJPeBUYZgX8pHAvy
+   ebQrqPProBY+xW0D24hKM5jkCiujRwF6DCAyhXEVUEZcVaGftlhwPisYn
+   A==;
+X-CSE-ConnectionGUID: 60E0xN9bTt2qse3fXPtQQg==
+X-CSE-MsgGUID: HaUt82+DS/SGOVUmE4u9ag==
+X-IronPort-AV: E=McAfee;i="6800,10657,11846"; a="88470446"
+X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
+   d="scan'208";a="88470446"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:46:40 -0700
+X-CSE-ConnectionGUID: RWzRhk1qTOWgY9v/MBMjwA==
+X-CSE-MsgGUID: PFof6ymER0SXkV4IgFNRHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,163,1779174000"; 
+   d="scan'208";a="257801627"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 04:46:36 -0700
+Date: Tue, 14 Jul 2026 14:46:33 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-hardening@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v8 06/17] iio: core: create local
+ __iio_chan_prefix_emit() for reuse
+Message-ID: <alYhmR7y7xlMqLJ1@ashevche-desk.local>
+References: <20260714-ad9910-iio-driver-v8-0-36939c3c07d2@analog.com>
+ <20260714-ad9910-iio-driver-v8-6-36939c3c07d2@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/4] iio: light: opt4001: Fix reversed GENMASK()
- arguments in fault count mask
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260713035736.11346-1-nikhilgtr@gmail.com>
- <20260713035736.11346-2-nikhilgtr@gmail.com>
- <alUNIpZWdSV1Q3tk@ashevche-desk.local>
-Content-Language: en-US
-From: Nikhil Gautam <nikhilgtr@gmail.com>
-In-Reply-To: <alUNIpZWdSV1Q3tk@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260714-ad9910-iio-driver-v8-6-36939c3c07d2@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Tue, Jul 14, 2026 at 12:02:46PM +0100, Rodrigo Alencar via B4 Relay wrote:
+
+> Move logic to create a channel prefix for naming attribute files into a
+> separate __iio_chan_prefix_emit() function for reuse. The dev pointer is
+> passed to __iio_device_attr_init() so that dev_err() replaces WARN().
+> The new helper is going to be used to expose channel relationships as
+> sysfs attributes.
+
+...
+
+> +static ssize_t __iio_chan_prefix_emit(struct device *dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_shared_by shared_by,
+> +				      char *buf, size_t len)
+> +{
+> +	const char *type = iio_chan_type_name_spec[chan->type];
+> +	const char *dir = iio_direction[chan->output];
+> +	struct seq_buf s;
+> +
+> +	seq_buf_init(&s, buf, len);
+> +
+> +	switch (shared_by) {
+> +	case IIO_SHARED_BY_ALL:
+> +		break;
+> +	case IIO_SHARED_BY_DIR:
+> +		seq_buf_printf(&s, "%s", dir);
+> +		break;
+> +	case IIO_SHARED_BY_TYPE:
+> +		seq_buf_printf(&s, "%s_%s", dir, type);
+> +		if (chan->differential)
+> +			seq_buf_printf(&s, "-%s", type);
+> +		break;
+> +	case IIO_SEPARATE:
+
+> +		seq_buf_printf(&s, "%s_%s", dir, type);
+> +		if (chan->indexed) {
+> +			seq_buf_printf(&s, "%d", chan->channel);
+> +			if (chan->differential)
+> +				seq_buf_printf(&s, "-%s%d", type, chan->channel2);
+> +		} else if (chan->differential) {
+> +			dev_err(dev, "Differential channels must be indexed\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (chan->modified) {
+> +			if (chan->differential) {
+> +				dev_err(dev, "Differential channels can not have modifier\n");
+> +				return -EINVAL;
+> +			}
+> +			seq_buf_printf(&s, "_%s", iio_modifier_names[chan->channel2]);
+> +		}
+> +
+> +		if (chan->extend_name)
+> +			seq_buf_printf(&s, "_%s", chan->extend_name);
+> +		break;
+
+Can we actually do the validation first without dirtying the output?
+
+		/* Validate differential channel settings */
+		if (chan->differential) {
+			if (!chan->indexed) {
+				dev_err(dev, "Differential channels must be indexed\n");
+				return -EINVAL;
+			}
+			if (chan->modified) {
+				dev_err(dev, "Differential channels can not have modifier\n");
+				return -EINVAL;
+			}
+		}
+
+		seq_buf_printf(&s, "%s_%s", dir, type);
+
+		if (chan->indexed) {
+			seq_buf_printf(&s, "%d", chan->channel);
+
+		if (chan->differential)
+			seq_buf_printf(&s, "-%s%d", type, chan->channel2);
+
+		if (chan->modified)
+			seq_buf_printf(&s, "_%s", iio_modifier_names[chan->channel2]);
+
+		if (chan->extend_name)
+			seq_buf_printf(&s, "_%s", chan->extend_name);
+		break;
 
 
+> +	}
+> +
+> +	return seq_buf_has_overflowed(&s) ? -EOVERFLOW : s.len;
+> +}
 
-On 13-07-2026 09:36 pm, Andy Shevchenko wrote:
-> On Mon, Jul 13, 2026 at 09:27:33AM +0530, Nikhil Gautam wrote:
->> GENMASK(h, l) requires h >= l, but OPT4001_CTRL_FAULT_COUNT is defined
->> as GENMASK(0, 1). The define is currently unused so there is no
->> functional impact, but fix it before anyone builds on it, and add the
->> _MASK suffix for consistency with the neighbouring definitions.
-> Cam you check my comments on previous version? This one seems has the same
-> issues.
-Yes, updated v3 by replacing tabs by spaces
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Thanks,
-Nikhil
+
