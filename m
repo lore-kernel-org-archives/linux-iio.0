@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4845370D57;
-	Wed, 15 Jul 2026 04:38:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A46F41F192E;
+	Wed, 15 Jul 2026 04:52:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784090337; cv=none; b=gtiBqQoRpae4wMoikx2frQ5SnPpcNomHnmHtlsQtjnKj3r7krClcXDQnT6w7q6l4H8WPI+zt7Qflra6RMymNyNmDwvyBqP1w7nu+Bo3OApdXYO1mqdCTSsrUjI9mouwyq/uo6f7Fb2F9phaPTxiFl96/Ll20ESvN+/ObF7s6I28=
+	t=1784091129; cv=none; b=TXD/gELqjopqH12xrlR8dJihzp3PgEuX2oDdCS6chQPfgAP0z7gtnRugiS3KzaKJ8ETzNoUQsSvGx1mIYpmpi3ArYTsMJCW53odkaMUBgnmehkfnVm0DaIeKB13W9MN7TauKPj+5i/OdipfibB13yb4Dl+wh3gp8ONRMyjxdl84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784090337; c=relaxed/simple;
-	bh=h8IbSIcLP5X47jfPztfWTs2Y6Y9zENDUrF87wsA1gNc=;
+	s=arc-20240116; t=1784091129; c=relaxed/simple;
+	bh=W0NYPyLDPRRNC2wuHIFu574ittPAqy8Mh4E5aCtGUHM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e9FLgCm64YMo2+od33wmGmeucEfol4UJf/2SyzpfPUrVCZMOCgu/Za23sNcQ3TjOzDLRYwrNOBN2OVAijnOj8ir9VzcCeV4qReqZ+UlEiuNpArIiP3548D23w+mw9n1OFkVUbai2/ToNo2bVWkzdCHGz8tsGx5rOJtciL3ON6Do=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nOybcqVj; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=stoEf1LsbqjXukyRkwl1fu9NHjL8vxF1VZMSZQqizW6rUQaXjHcPtvRMOBeH2tbmLUyoNOKTqb6JQQtkekIYJjgk/z3VgIAwmOEMjC3wDMeQRbJA2ztVcnOXugFtkb0bK8kDZLwDJMFZpQdhFO6E4r12kK4XRhaGSzgifke2OJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mgJthT5d; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nOybcqVj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFCE1F000E9;
-	Wed, 15 Jul 2026 04:38:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mgJthT5d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D338A1F000E9;
+	Wed, 15 Jul 2026 04:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784090336;
-	bh=mDZdsrOm6gOS7L7EyGRNVOB4Kf9aVVZQe0R7TsWYFQA=;
+	s=k20260515; t=1784091128;
+	bh=5CpJoZVDYUfmDJdlIDiJjy9V7OixQnwOG9BhD1egO6c=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=nOybcqVjIjz76UoJrRQdb28y3nYbGtAe/h4EBvUPQzcWIvSQad6grjf0P0eCXZS1D
-	 zyXnoh5Q7GQcBbZu9Jxt5orF1RkNJCuf1/JGzLXhsgcLHwXNkOx155p9IbjIt57puD
-	 N6JVQX9nWfF781X1HXOYSMdtK3Gm/TF/WjB/rDlaHFruyb3/Gpot32SatFx6KjeAkr
-	 Cnbg9WFSu+dzM8UwpeLTJYFZceVc9Kgaoq7lbleYeXmqvoj4AF3D5OeHdYQLyMsabw
-	 jCwkNKBUI56Hq7QfhZSyZRhmLH4WUiOtPl9+4R1cfwEk9Ueijwfgsdki46BTb0vQiJ
-	 ch3eMVJRmz+HQ==
-Message-ID: <a509d034-de90-4e46-bd7e-75f61002d6ba@kernel.org>
-Date: Wed, 15 Jul 2026 06:38:51 +0200
+	b=mgJthT5dTKzmguXGCfl0MbxZoHOv8AY+CqXdq4fdDo+lnSBZLaJqXjvFS71OPGz9h
+	 tQ+WJkuHrloErXv3ezjV+61b4dT2VwwMVCBjm6WCLlgHyRzMON1721mgGqlJWyRSV0
+	 4lIR1Te1lP0SHti0KVpo0eHJ3NJzYgT3A/2AAFd5a2S13+YuydStOvEpAwqvegvTx4
+	 yIV+XBuJlcRqreDnlXoh66qYkg/HR2ylwMIiiYBhtNFHAvH3o+oWueOSCPkTU1EUcw
+	 OrIRwhUeHhD82jMNvsCBKjMtq1tPnYGbWP17ElL+CEFGTiYd9QeKsfq0NqRaayN0Qx
+	 zg63GXHKyYavQ==
+Message-ID: <c7e9d38d-0edb-4e58-a649-862c262681af@kernel.org>
+Date: Wed, 15 Jul 2026 06:52:01 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,15 +35,17 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] dt-bindings: iio: chemical: sensirion,scd30: update
- email entry
-To: Maxwell Doose <maxwell@maxwelld.cc>, Tomasz Duszynski
- <tduszyns@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?J051bm8gU8OhJw==?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20260713223046.20779-1-maxwell@maxwelld.cc>
- <20260713223046.20779-4-maxwell@maxwelld.cc>
+Subject: Re: [PATCH v2] dt-bindings: iio: adc: rockchip-saradc: Add RV1106
+ compatible
+To: Simon Glass <sjg@chromium.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>,
+ linux-rockchip@lists.infradead.org, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Jonas Karlman <jonas@kwiboo.se>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -89,20 +91,23 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260713223046.20779-4-maxwell@maxwelld.cc>
+In-Reply-To: <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 14/07/2026 00:30, Maxwell Doose wrote:
-> Update listed maintainer entry as I am transitioning to a new email.
+On 14/07/2026 21:16, Simon Glass wrote:
+> Add the compatible for the SARADC of the Rockchip RV1106, which is
+> compatible with the RK3588 variant.
 > 
-> Signed-off-by: Maxwell Doose <maxwell@maxwelld.cc>
+> Signed-off-by: Simon Glass <sjg@chromium.org>
 > ---
->  .../devicetree/bindings/iio/chemical/sensirion,scd30.yaml       | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> Changes in v2:
+> - Fold the compatible into an enum together with rk3576-saradc, since
+>   both fall back to rk3588-saradc
+> 
 
-Since this is one file, as well squash it. Don't overcomplicate simple
-postings especially that old email is valid.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
