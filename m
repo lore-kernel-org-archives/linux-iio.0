@@ -1,102 +1,110 @@
-Received: from mail-43170.protonmail.ch (mail-43170.protonmail.ch [185.70.43.170])
+Received: from mail-43172.protonmail.ch (mail-43172.protonmail.ch [185.70.43.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C31B3644C5
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 12:25:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B1A4611C4
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 12:27:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784118327; cv=none; b=KtRYbGt+veONgrozMjq48s5Z8E+PFENILM5ujJh0cl7aSr4cKlIgdLVJuX4Rhoy60Db4ryO4Uqm2U5uURk6INiM298CCx8/EYWghgLxNu4Su15wZznxxMo2ZGGRAAo1gDnAw14BaxA5BP10aUa9HA5rhdBUO7osLaaF5qDBsC0s=
+	t=1784118468; cv=none; b=KI8rmu/pwHSDQO4Zz9ETszzCh4/dYbUWuuz6EFS6ensFVCJteZKDlxAdpKts8tbNBBK20r1nlpg9JBhNVvaQxHPh9iJia5W/Qo4zVlWKW61EUl69iegL1UB09uiyLWgcXJ6uN//OpiT9nsSrLftIXFQtPCsSi7L5yZsP554pyAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784118327; c=relaxed/simple;
-	bh=/1JCIT7JbkusWM8jBca7pwdiuxeWCU2zSoxU4rAoFeo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Bgyy5OIlBq6l0vInr9wPeaVvRNfB/n1XuvhRmg8NUfXD10BEOh3p46yc07IhfCgHuHNxIBWEjNB/8mRhU3tLjYeQsLEKaz3IIdXGZwcKZmYEeArA81jmdYHd6lSc6Ub2caiKHKCaohHmrzPAAjgt607gskKnHmwCtCgRTlk/U4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=BaxY1uPV; arc=none smtp.client-ip=185.70.43.170
+	s=arc-20240116; t=1784118468; c=relaxed/simple;
+	bh=HSkBV62gTnfQk0fzdYs33w4+DFEeZcx/yMG6CthYx3U=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=eKfR74NTgM5AZyp92XfbFP3/WuP+naHqdMN/0Nss28tTKNx36Ypf+f3fNDsf/ojGa2RIY/aBkNExnS/PB484uiAvWVUEIbMooYNPCx9xYo0YaH9xhsMV0vR9S8iACqG1y+Yx1IbeSkWZnyRYkUCNbf2rWayY+RDvrkAPE+U7rag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=ZAbEby1d; arc=none smtp.client-ip=185.70.43.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="BaxY1uPV"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="ZAbEby1d"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1784118323; x=1784377523;
-	bh=N9BgjdLpyBUrjx79keV+lQLR9W0VyIb22/dfHemNCn4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=BaxY1uPVG4B3O//Vmhq4WJUS31jbCGjiB2xowPAPE8jTdUjEDA2rjDXW+NvRE7zt1
-	 Jyg3BEry7xdLQxJGKBK7GLIzInjAY8MkSILHptselIGKh3Hja5dEbxCcxUkNRPTVCs
-	 WYFybGpQSZUE3JcDZoI3Y9F4VGe4/+t3v9iDXZkJ6G8n/Q1TZKw19fclTqMx2WND25
-	 efUasinx5bz03X64v+A2pPXgcUIPTRohmgeLy5uoNpRZOVeIG23mYsudzncYa5yIhC
-	 2I1S2Amt+hFmiXmqfotQ/ve9E3A6MaPjqPP1HfZvrNjQU2cte/w28rEVpremTis4/k
-	 UKKOQudykbIaA==
-X-Pm-Submission-Id: 4h0b3h1GxDz2ScqH
+	s=protonmail3; t=1784118463; x=1784377663;
+	bh=WsODtZ3bCIubFnV6uDHT0L1koWPcqlW0YbQBATmuADc=;
+	h=From:Subject:Date:Message-Id:To:Cc:From:To:Cc:Date:Subject:
+	 Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=ZAbEby1dO0+Tp09rAjvd3TLdb2UFbHZKkGyuItimQ/YN0zTgFqKVTpm2QQIp03GBZ
+	 wAkN1rilRvX8Fe0eS+m9yIPMEWoROlkuYBBnb9z9DX9afPw1m8Oq8g2IAHJnOhynDe
+	 vEp243Y0dKt552POw9hTmg7w/+dFUIxbDPFEfH1icl3iIDNXD5NymzD+prdhfhDowR
+	 UTetUvBCDKUK7N2yqCr4d7jDPZn+qb4a+jwJNA3WYmti/Ip4Cs+emyIj8Cer8z9B28
+	 L3OY6H7OpOFCVx+2HjpQqM7vT5rKPwQmZWPz+WjrbH9SBhHf+T8sCpyBq6SKLDuBF3
+	 dVs5wRNXuPzmg==
+X-Pm-Submission-Id: 4h0b6P1hN3z2ScmJ
 From: Esben Haabendal <esben@geanix.com>
-To: "Joshua Crofts" <joshua.crofts1@gmail.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "David Lechner"
- <dlechner@baylibre.com>,  Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
-  "Andy Shevchenko"
- <andy@kernel.org>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Nikita Travkin" <nikita@trvn.ru>,  "Maslov Dmitry"
- <maslovdmitry@seeed.cc>,  <linux-iio@vger.kernel.org>,
-  <devicetree@vger.kernel.org>,  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: light: ltr501: Add ltr329 driver support
-In-Reply-To: <20260715110046.00001aa8@gmail.com> (Joshua Crofts's message of
-	"Wed, 15 Jul 2026 11:00:46 +0200")
-References: <20260715-liteon-ltr329-v1-0-31f027051594@geanix.com>
-	<20260715-liteon-ltr329-v1-3-31f027051594@geanix.com>
-	<4cMgwAFPJkUt759lA15Qqqxi3-vUgf5w6GlGkVubDu_IElhPOsDlIBsxCMlbSiQzapJVNQKOzYN7kip6WIuP_Q==@protonmail.internalid>
-	<20260715110046.00001aa8@gmail.com>
-Date: Wed, 15 Jul 2026 14:25:19 +0200
-Message-ID: <877bmwo2xc.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+Subject: [PATCH v2 0/4] iio: light: ltr501: Add ltr329 support
+Date: Wed, 15 Jul 2026 14:27:22 +0200
+Message-Id: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/12Nyw6CMBBFf4XM2ppOeYkr/8OwgDrAGGxNWxsM4
+ d8FjBuXJzn33Bk8OSYP52QGR5E9W7OCOiSgh8b0JPi2MiipClkiipEDWSPG4FJViSalFlWG2ak
+ oYN08HXU87b1r/WX/au+kwxbZjIF9sO69H0bcvF87/2tHFFKk2ElVyhzzKrv01Biejto+oF6W5
+ QPMzcx4vQAAAA==
+X-Change-ID: 20260711-liteon-ltr329-a3eb12414866
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>, 
+ Maslov Dmitry <maslovdmitry@seeed.cc>
+Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784118460; l=1761;
+ i=esben@geanix.com; s=20240523; h=from:subject:message-id;
+ bh=HSkBV62gTnfQk0fzdYs33w4+DFEeZcx/yMG6CthYx3U=;
+ b=qT/b3G6l5O1nqhcpqQZMCzeEi8mKyaA9V/8H5wBZTtvh6RxrcaUzZQ6R5JxrrDcws8YGmOR4i
+ X5Xo/oJX941C3TU2QpgMSyA0VEEZoX5diwBsQXmjKnY1v1eDST05v8k
+X-Developer-Key: i=esben@geanix.com; a=ed25519;
+ pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-"Joshua Crofts" <joshua.crofts1@gmail.com> writes:
+The LiteON LTR-329ALS-01 chip is similar to the LTR-303ALS-01, except for
+interrupt support and related registers, which LTR-329ALS-01 does not have.
 
-> On Wed, 15 Jul 2026 10:23:50 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
->> @@ -1257,6 +1269,18 @@ static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
->>  		.channels = ltr301_channels,
->>  		.no_channels = ARRAY_SIZE(ltr301_channels),
->>  	},
->> +	[ltr329] = {
->> +		.partid = 0x0A,
->> +		.als_gain = ltr559_als_gain_tbl,
->> +		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
->
-> While you're at it, add `#include <linux/array_size.h>`
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+---
+Changes in v2:
+- Fixed error handling when irq is defined for a chip that does not support
+  irq, powering the chip down again.
+- Added simlar fix to error handling of devm_request_threaded_irq() error
+  handling, powering the chip down again on failure.
+- Added explicit #include <linux/array_size.h>.
+- Link to v1: https://patch.msgid.link/20260715-liteon-ltr329-v1-0-31f027051594@geanix.com
 
-Will do.
+To: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+To: Nuno Sá <nuno.sa@analog.com>
+To: Andy Shevchenko <andy@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Nikita Travkin <nikita@trvn.ru>
+To: Maslov Dmitry <maslovdmitry@seeed.cc>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: linux-iio@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
->> +		.als_mode_active = BIT(0),
->> +		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
->> +		.als_gain_shift = 2,
->> +		.info = &ltr301_info_no_irq,
->> +		.info_no_irq = &ltr301_info_no_irq,
->> +		.channels = ltr301_channels,
->> +		.no_channels = ARRAY_SIZE(ltr301_channels),
->> +	},
->>  };
->>
->>  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
->> @@ -1531,6 +1555,11 @@ static int ltr501_probe(struct i2c_client *client)
->>  		return ret;
->>
->>  	if (client->irq > 0) {
->> +		if (!ltr501_has_irq_support(data->chip_info)) {
->> +			dev_err(&client->dev, "chip does not support irq\n");
->> +			return -EINVAL;
->
-> Shouldn't this jump to the powerdown_on_error label instead of returning?
+---
+Esben Haabendal (4):
+      dt-bindings: iio: light: ltr501: Add missing ltr303 compatible
+      dt-bindings: iio: light: ltr501: Add ltr329 compatible
+      iio: light: ltr501: Add ltr329 driver support
+      iio: light: ltr501: Power down chip if request irq fails
 
-Yes.
+ .../bindings/iio/light/liteon,ltr501.yaml          |  2 ++
+ drivers/iio/light/ltr501.c                         | 35 +++++++++++++++++++++-
+ 2 files changed, 36 insertions(+), 1 deletion(-)
+---
+base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+change-id: 20260711-liteon-ltr329-a3eb12414866
 
-And I will add a similar change for the devm_request_threaded_irq()
-error handling where I think we should do that as well.
+Best regards,
+--  
+Esben Haabendal <esben@geanix.com>
 
-/Esben
