@@ -1,77 +1,83 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3101240EB9B
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:17:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A8DE435A8A
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:29:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784121459; cv=none; b=J5r9l08HUBIeAyujft/Vl5bWbCQDwaPF4NRo5fImSsOv8m3y/CuGEr2nW1vbj/yEdI75/8JjyW5vHSvpbW41cnT/pXEuvG+g8bp6mrIbFFEn3bFdGT5qiROvBmn3RndCLr48MPGwnqJmLr/IR3h4PGUdXi9L5dJWCJCptqHRj4A=
+	t=1784122181; cv=none; b=hl6mIGV79k3fVnDsJFyA6m8K3FzJxdZY5vXIhEM+B/Lf6K6zar2wg9VoygyxRbeFxa1rvA3jt+n2FTaIg3+3SyJDiDaIkf3WrjYPlk3qhWnNFPNBmB5HC1z7WdRjxH2lRSOoCQ0JDpYa86mX6NhDPmKYm6d0xCHhCmZsPGv+Vqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784121459; c=relaxed/simple;
-	bh=hczmU3OL6PdzlrhJ6JYmVp+Ey7Z/u0pzhUV+KKUELJI=;
+	s=arc-20240116; t=1784122181; c=relaxed/simple;
+	bh=zRo/gK16oMS7vWD/0v0ZdzYrGb0S0hZPcGmBlokvCc4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DBSU3zTQye8G//+mfDV2Bdvapon3D3yPLsum8wzgYAsqIiLdBhlAz2dI7GbvLltTIS7XlKlls833JmoBE1XcFqk5wiKFfkDxddK2dvfij7K/63J1uIEbp8rkJw7ilNnACeJbiCga/pp9jUwDj34BIMocWA3QQOXK6CwWfWADTPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GwRoDbTB; arc=none smtp.client-ip=209.85.208.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=pXy5oqREK3vYEXWGab5p8RWCZ1tCcfZXYth7z/xmBQs4Jv8VhHz9MnPn6CiIGmmOhHBDgbK2NZvX+s6iYlZ/OvhI1CCMjFz+DuZVlJtCdEKfCexDXf4daZ1rIYP0lyho1We7eUXXIBQBceW4RZKMgpWTa07gz+2BpGt4mFMYDEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hPR1zZy4; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GwRoDbTB"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-699fbcd23ccso7643589a12.1
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:17:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hPR1zZy4"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493b27c7451so8442325e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:29:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784121456; x=1784726256; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784122176; x=1784726976; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=s/DVvBORihuEn3FvjRkaTr51gxlhFGeurA6G2bDkKM8=;
-        b=GwRoDbTB6UsVhukuaC+PhMkfOyGT9UbrL+EX7NOYNOHmiCUlLgi1coDKZHN+SJdm4o
-         Feofq4hNEce6JJvO91hxL5nwV/PLhgmX6qFDRI2mb/aBC5GjwqJxxDGwiD33i2Sk+1+T
-         RVVQWOT/j4nE1NVeyukiD7SMb8mGpGwym5Ve6z9iNoRm6g9FibJjlczVltfMKvWtVLZ4
-         eg/J4oXJSZ4PbytoN2A/Ii2xIUP9RoB9RvYBkAwZkqW74U8J95lubyg5eDOg/MyNntB+
-         l2PUdElFrR29fAs4s/ZPsGfxGt4iYoLYLfLNr+UJLLW3oMNOwpEt4BU7uh9KvoXaX12j
-         ENRw==
+        bh=fC/uQJ/wM6LfyAr0O1pyfwfICQNJXf2TkvnQK+M76HI=;
+        b=hPR1zZy4M3LuHP21XWihI6AeAL8VIXcmNwNUtnN4SUCZjQncROFRPqgAzQvhlEoYeQ
+         lP9tlVKpieD9v9jHgPk8VuthTpRQvi5qMu1PdT689AOe4zbBdog/hcs/uQRaAnhnuzeb
+         JUW5pxBz3pabKUBzx/fdiAFrY+RVOJsL2XfBugyy92sFye9UvotJXkUHFL4UQ0J1fzkd
+         nUjJQVY52tDwbCQiKo43QMWPch0IxZp75S9PgxnbHV+M/qY55UQ9OJMnVYZzANry0fIX
+         o3wLCNF5QULucWjeTj63b6tCYbqx9FC0PUMJhVAwqBJJuNrnK3Hfl1rFxdHtNLcughx2
+         oM1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784121456; x=1784726256;
+        d=1e100.net; s=20251104; t=1784122176; x=1784726976;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=s/DVvBORihuEn3FvjRkaTr51gxlhFGeurA6G2bDkKM8=;
-        b=qR5hnXuP2jSS6dCndheO0NO7+ZYX3brJMqZqgq0JOp4w24eV4HKWsfh60RoDL23wtu
-         62+bP0faFB/wLPVKQgGzamZJhWdNUkrv7BQoHcZ4qbOEKy5l5bJb/UqWs7dbB0oP851w
-         I+Cfi6mhMhZ1jdTNWmcAO+8JRrUJaMYdO3y7DBbEnTPAlue+dy6Dx3yMSuURa51OG72G
-         r3WW6ftJTZnsFbkbwXytrrQfqYl2dFX6jfVKVnJQRuIOY5jvEilJ6dybS7uRK3E740IT
-         hdSn2zWQSt94c1LqcvkItyjFPoxF5gkThSIYuCawDpSzVaR+GgsmZEUH0VkdsORlWIwe
-         CVMg==
-X-Forwarded-Encrypted: i=1; AHgh+RoDdtYOz6osQWGr3lRenjhmI3YMq/9zHEeIShA86g3sjypeN3M+RSiz8Zi3sL5bzlcHmpLsc3bsrEg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxfk6wnJ+xGeKZGX05WSSCiBAeIR4dmPuRqeoz8PRZE6RyybpOc
-	Z9bQBhgPjLJz9xdQUJpwFOPyG02LfRacQRex0JqgvPxZexmA2ucgxr6C
-X-Gm-Gg: AfdE7cn88P89hXJYwXkW3GLeWf/eyzEx3ILNye/ImPYjzUJi5unMl8uCxBY7MgUhVrq
-	C1VTfbGZegeYylZosNPZjlukrwicsg1TCvY7TJt22k95f+d4q2IYV+c+pf1MNYtT8JErGhmaoJ2
-	BpJ/TSc6kGfRVQSRekiJUndaSMxXf3miit4AzqMoP2+9Cr3jY7OAD3QX/JE9AJlhb8iqaGM6XBS
-	uzDoNexzqojyDveZGoRxtt+5Xc1LFtFaEkrKw0uczQKHej+7IC3b8P5vJFE/kgmHUlTFPbD85/t
-	KwSfOO8osNlUCfm33nKTOmhm68RL93F7dddjt7zt9/KYLSZcr3IgsYWV0RwlsvYlhssNT1GGBpb
-	i9cBARHY7FZIOeA32VWWjqIEmNkO9B/YJb4of42fHzIvoxiaExx6x+NCslsEPtmPXXvrUCdOb2e
-	FiJEfrueYgW5EYeeWwdZ+wJp2XY7I=
-X-Received: by 2002:a17:907:97cd:b0:c12:6bcc:a3d6 with SMTP id a640c23a62f3a-c167948992cmr182925466b.54.1784121456284;
-        Wed, 15 Jul 2026 06:17:36 -0700 (PDT)
+        bh=fC/uQJ/wM6LfyAr0O1pyfwfICQNJXf2TkvnQK+M76HI=;
+        b=in3qxXlidmd6zffNVmWQQoLnjDNK4IKrapw5lxoXEJnYDIoY9uV/agZCvjrgpweOVI
+         1FW8FrM/xavVWMg5gFwcNtDvjpnAhrN4IQy+Nj5pRjaCX850TRoXrrEm3DMyc8a6klLd
+         bZI738KaA0OFFYxDo4z+a30YuXo8wUmd4OBVkLZnWdbNLO0SbBvoSfm3hXelZhhp2V2c
+         YuqPGtjGDJVkeF50EssaKwPTLwkdXMb9g2YxSAsEYJe94YvNKORQpAIP0CPASSHMqadA
+         bpe0OaQArPJzoDtCyZRkzujhpqOjOXfnX9x8fg1Mo8U7kaqetK995HF1rqkxBthROe13
+         xFEA==
+X-Forwarded-Encrypted: i=1; AHgh+RrH/JeVdfNNgN6ENib/tuN/yPypw/JjCMuAttv32uBWnfnvaBO+O9m5OaPnm3N6oIyTsjFnmA3+CLA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzxaEwl/xDYm2Cr15+/tNUxiOgnzlql8DkINNGmT5TWNrZTN1+H
+	EjyLJYABrw3yXZ8VF6SGWC01acIwvAEKTqFOAsq8zEPFDJj3Qqb96fKT
+X-Gm-Gg: AfdE7cmlMoPdGUWtHgw+8+rVW5VuJvVf8neIAfp2FSZAjBWJei/nTx0sXyAdr51MfmZ
+	sEZvoXg0JJ2eKFcdZpaVVyr87Z6XBt5wC0JMhXbt9CXGVSQU7cdK8dZlunLskqC779MdXaWfVjk
+	/Guw7UT6TZ5U+71G9RghRpzqoePIrEH12uCDoi9DycrLrU91ayNz7dErohLoW4Hne5v495Zfmxb
+	EXA9A5nZfDu7BEKGGAJtdMyxYaDBXlgWL6DWJOyL74E50n0IVYyZQ0l1ZJbDyU/pojSAcOMKFp7
+	tUtr1YdLXXZeGm6Ltnu+nEbO00nGNKF3BqaehS2HisZIhqoktf6yQ+Pq2j6zIVp0dfz6J+/Dzl9
+	wkdju612tDs9lJN+gebBRC2Dt8lUeg7iSGOUzELpAnxCKfTWnZ2WBvjHScH7ID7ZJu9Xk0/tdiY
+	pLkT8XjXXOkSM93p7+AB3WD+lJsgU=
+X-Received: by 2002:a05:600c:4e16:b0:492:714d:8c4 with SMTP id 5b1f17b1804b1-49400818cd7mr135805335e9.11.1784122176062;
+        Wed, 15 Jul 2026 06:29:36 -0700 (PDT)
 Received: from NSA-L02.ad.analog.com ([137.71.226.102])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1687317c58sm22652366b.36.2026.07.15.06.17.34
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-495087366c0sm274958745e9.7.2026.07.15.06.29.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 06:17:36 -0700 (PDT)
-Date: Wed, 15 Jul 2026 15:17:33 +0200
+        Wed, 15 Jul 2026 06:29:35 -0700 (PDT)
+Date: Wed, 15 Jul 2026 15:29:32 +0200
 From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Esben Haabendal <esben@geanix.com>, 
+To: Mark Brown <broonie@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
 	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Nikita Travkin <nikita@trvn.ru>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] iio: light: ltr501: Add ltr329 support
-Message-ID: <4bn5dd27ie653f5324pluaoamua4bxdbmxm47rif4yumxxl5un@anbjqozl6ovj>
-References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
- <20260715145546.00005bc8@gmail.com>
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Marius Cristea <marius.cristea@microchip.com>, 
+	Marcus Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
+Subject: Re: [PATCH v6 1/5] spi: dt-bindings: Add spi-device-addr peripheral
+ property
+Message-ID: <lpbqk3wv6emhdtxhnczrgufzzxprcfpfgenfepnmzhzfj3b3ci@rdphuko7ikti>
+References: <20260715-ad5529r-driver-v6-0-cfdf8b9f5ee3@analog.com>
+ <20260715-ad5529r-driver-v6-1-cfdf8b9f5ee3@analog.com>
+ <1c4af9b1-9937-4cbb-b57f-52ac575b8b89@sirena.org.uk>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,35 +87,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260715145546.00005bc8@gmail.com>
+In-Reply-To: <1c4af9b1-9937-4cbb-b57f-52ac575b8b89@sirena.org.uk>
 
-On Wed, Jul 15, 2026 at 02:55:46PM +0200, Joshua Crofts wrote:
-> On Wed, 15 Jul 2026 14:27:22 +0200
-> Esben Haabendal <esben@geanix.com> wrote:
+On Wed, Jul 15, 2026 at 02:09:19PM +0100, Mark Brown wrote:
+> On Wed, Jul 15, 2026 at 01:41:04PM +0200, Janani Sunil wrote:
+> > Some SPI devices support sharing a single chip select across multiple
+> > physical chips by encoding a device address in the SPI frame itself.
+> > Add the generic spi-device-addr property for describing these hardware
+> > addresses. The property is placed on the SPI peripheral node and may
+> > contain multiple addresses.
 > 
-> > The LiteON LTR-329ALS-01 chip is similar to the LTR-303ALS-01, except for
-> > interrupt support and related registers, which LTR-329ALS-01 does not have.
-> > 
-> > Signed-off-by: Esben Haabendal <esben@geanix.com>
-> > ---
-> > Changes in v2:
-> > - Fixed error handling when irq is defined for a chip that does not support
-> >   irq, powering the chip down again.
-> > - Added simlar fix to error handling of devm_request_threaded_irq() error
-> >   handling, powering the chip down again on failure.
-> > - Added explicit #include <linux/array_size.h>.
-> > - Link to v1: https://patch.msgid.link/20260715-liteon-ltr329-v1-0-31f027051594@geanix.com
-> > 
-> 
-> Quick process thing, please wait at least 24 hours before sending
-> a new version - let it sit on the mailing list so other reviewers
-> can send feedback! Larger series should wait a couple of days.
+> This really isn't a generic SPI thing, if nothing else you need *far*
+> more information in there about how exactly this would be put onto the
+> bus.  If it belongs anywhere outside of the specific device's binding it
+> feels like it might be regmap.
 
-Yeah, as a nice rule of thumb at least a couple of days.
+Just for some context,
+
+For the analog chip, it can share the same CS line with another 3
+identical chips. It has two pins that depending on how they are set act
+as the device address (so only one replies to a given transfer -
+naturally the peripheral driver needs to setup the correct transfer
+and that depends on these pins setup and hence dt property). 
+
+This property reflects that. Apparently some microchip chips are doing something
+very similar so Conor proposed a generic property given that we would have at
+least 3 users of it.
 
 - Nuno Sá
-> 
-> -- 
-> Kind regards
-> 
-> CJD
+
