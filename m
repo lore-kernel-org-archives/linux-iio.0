@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51B6B25B0AC;
-	Wed, 15 Jul 2026 04:38:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4845370D57;
+	Wed, 15 Jul 2026 04:38:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784090292; cv=none; b=iscDoxR/oEyEL8oIvi87w2IyaR1kfN/gQPqBz/eVPq4AqDOj6m98zzJ+9i4xH7dz6cKbcRf32VL/FeuEgWaFLbKQOAK6BwW0M5n0AUyw+JHnYVa9NvUOrHU3tMeLrPAH+uHJa7lbKrHwX3NMt5YUoJX29GCa+VJK9R8PnMlbsN0=
+	t=1784090337; cv=none; b=gtiBqQoRpae4wMoikx2frQ5SnPpcNomHnmHtlsQtjnKj3r7krClcXDQnT6w7q6l4H8WPI+zt7Qflra6RMymNyNmDwvyBqP1w7nu+Bo3OApdXYO1mqdCTSsrUjI9mouwyq/uo6f7Fb2F9phaPTxiFl96/Ll20ESvN+/ObF7s6I28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784090292; c=relaxed/simple;
-	bh=D8+o7jkWekm8BlP8zitkZxYwEdcguUcyyG18xLsoD5s=;
+	s=arc-20240116; t=1784090337; c=relaxed/simple;
+	bh=h8IbSIcLP5X47jfPztfWTs2Y6Y9zENDUrF87wsA1gNc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u6LdVDQDltzcmj5h3R/p4EE6dAOzTjdnVh7wjrNH8FP1UmpTizl98hHctV1aDjk/gIftfpdTWiNh835r1/HIQmn1noX18tBYUD06CqRKSYsmGs3uH71JqP8if22KYpWwxifhCNOXbG2O41dXh0iEzzz+tJjwt5hPVBKVuXOyAG4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dspqt1y7; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=e9FLgCm64YMo2+od33wmGmeucEfol4UJf/2SyzpfPUrVCZMOCgu/Za23sNcQ3TjOzDLRYwrNOBN2OVAijnOj8ir9VzcCeV4qReqZ+UlEiuNpArIiP3548D23w+mw9n1OFkVUbai2/ToNo2bVWkzdCHGz8tsGx5rOJtciL3ON6Do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nOybcqVj; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dspqt1y7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F431F000E9;
-	Wed, 15 Jul 2026 04:38:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nOybcqVj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFCE1F000E9;
+	Wed, 15 Jul 2026 04:38:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784090290;
-	bh=ffiplsXLlWlDL+suSTqNANLdoYpMcEgRg+7rXTq6p0c=;
+	s=k20260515; t=1784090336;
+	bh=mDZdsrOm6gOS7L7EyGRNVOB4Kf9aVVZQe0R7TsWYFQA=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Dspqt1y7RTYH5Jmm0FSTgi9QXLNBoK7NKMJ4hQuJFmOYgxMDDKobkqXrpgY+kO/Cw
-	 /rICTkXfv8t7mRPORGQr/CjCe4aPRWUnP3if1wAIJIF0DLX6nIj1vNQaun1hV7hdh6
-	 GlOPOQVDI+YXhZB/Kt2309VbAGWqEN+P2YvkPgXb/njGWs3PGx7Zuav09QXAlfqTmd
-	 pW1Los5x7/C7hjfsRB05VPCzJT81BF9a3hS5gF/e1Jm/4uAzBNii1gj+73cKHYJWeq
-	 3asVjfOLdr5rNxkVuNKILVYUaDOgwKIQH6v/woWyY0SUzPH1tX3MJlQAhh9E+syaVi
-	 OrsnB23r//EKQ==
-Message-ID: <241c10fd-79fc-4cea-82cd-f1f3544dbb73@kernel.org>
-Date: Wed, 15 Jul 2026 06:38:04 +0200
+	b=nOybcqVjIjz76UoJrRQdb28y3nYbGtAe/h4EBvUPQzcWIvSQad6grjf0P0eCXZS1D
+	 zyXnoh5Q7GQcBbZu9Jxt5orF1RkNJCuf1/JGzLXhsgcLHwXNkOx155p9IbjIt57puD
+	 N6JVQX9nWfF781X1HXOYSMdtK3Gm/TF/WjB/rDlaHFruyb3/Gpot32SatFx6KjeAkr
+	 Cnbg9WFSu+dzM8UwpeLTJYFZceVc9Kgaoq7lbleYeXmqvoj4AF3D5OeHdYQLyMsabw
+	 jCwkNKBUI56Hq7QfhZSyZRhmLH4WUiOtPl9+4R1cfwEk9Ueijwfgsdki46BTb0vQiJ
+	 ch3eMVJRmz+HQ==
+Message-ID: <a509d034-de90-4e46-bd7e-75f61002d6ba@kernel.org>
+Date: Wed, 15 Jul 2026 06:38:51 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,14 +35,15 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] MAINTAINERS: update email for Maxwell Doose
+Subject: Re: [PATCH 3/3] dt-bindings: iio: chemical: sensirion,scd30: update
+ email entry
 To: Maxwell Doose <maxwell@maxwelld.cc>, Tomasz Duszynski
  <tduszyns@gmail.com>, Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?J051bm8gU8OhJw==?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 References: <20260713223046.20779-1-maxwell@maxwelld.cc>
- <20260713223046.20779-3-maxwell@maxwelld.cc>
+ <20260713223046.20779-4-maxwell@maxwelld.cc>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -88,17 +89,20 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260713223046.20779-3-maxwell@maxwelld.cc>
+In-Reply-To: <20260713223046.20779-4-maxwell@maxwelld.cc>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 14/07/2026 00:30, Maxwell Doose wrote:
-> Update MAINTAINERS entry as I am transitioning to a new email.
+> Update listed maintainer entry as I am transitioning to a new email.
 > 
 > Signed-off-by: Maxwell Doose <maxwell@maxwelld.cc>
+> ---
+>  .../devicetree/bindings/iio/chemical/sensirion,scd30.yaml       | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-That's one patch with mailmap.
+Since this is one file, as well squash it. Don't overcomplicate simple
+postings especially that old email is valid.
 
 Best regards,
 Krzysztof
