@@ -1,36 +1,37 @@
-Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8171247278B
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 12:27:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39DDF448CEE
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 12:27:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784118475; cv=none; b=oIUr71sWoAsE9j7YcbR6kMvcP0G2TsmMFRWaaRacgxiasWt5l0Y6V1VmIHB3dIcoXZId9XrSDtiu2E028ZRP+p65/tt7yHYkPj/OxYR85teRsCCfBfcGPqMUEBQ6kW54JGqvzIBMkPEnTzvPo1d80MnRXuu7HfTdbbgfc1VKt5A=
+	t=1784118476; cv=none; b=Fm5xzcgmUk2MfxrvTYPF/oLnEsfQxKZsO3AXcbKk3YYGaaxaZZEOD0htMzZOcF7MpTf0cNBs28pVgBvr5mjj64CvgK98ucL1RWRDvvB246ZAc7TORpw62ONPgqC3CoiSLfT+GCBQb46+cvHi61kHAAxsLgpv9LWL+Tcq9CtfpRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784118475; c=relaxed/simple;
-	bh=I2dTWPh9xBkWUYpYwY6PQ5wKCWiaOxS0O3qMw30nS0E=;
+	s=arc-20240116; t=1784118476; c=relaxed/simple;
+	bh=dm9nW2iDC7Blmz0joKHenTSW6fNAAaYJo3/DVFapXIM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=gDN40zH21G6LmhRDt4k8GTMHzmX7EYO6n20ILFurYaKCQ9sHMq23SM58XDBE1KcHXTDzPBqagTnSkHx1ZZwMun1lEv/svGzcGkhmvDzP34v1e5khB/h7XEDCy3OfKm7kaAQtC5sWtGVoaXBZdgitCe26c7qou+sAfhTIHumpK/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=VvBPt6QS; arc=none smtp.client-ip=79.135.106.113
+	 In-Reply-To:To:Cc; b=Akh0AH3Z1TYl9rUPTldZLKGMNgAvKO8iagbIEXsXiikxwsMbooPSFGipYLVJKdcEgyYSac3h0BDO+lztMBx9mKGLCMUW0VxMjZWQtKEP1DsmRWV1TuvI7FFIufsL6nvtkgPShhhVukonhWx7DhDxb+aWQMqVRjw+SNBKMbWpE1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=eWjIJNJ4; arc=none smtp.client-ip=79.135.106.111
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="VvBPt6QS"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="eWjIJNJ4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1784118468; x=1784377668;
-	bh=sXxGmRC61CGzQK8oDsrX4kPLE28/Z0F2WvjySiARWJQ=;
+	s=protonmail3; t=1784118469; x=1784377669;
+	bh=4txtrKsUBGLy0L51a+7SG+rC6dcravOeIwVdezpahkc=;
 	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
 	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=VvBPt6QS5m/DYfX+yhUXdOH3Zn+cG2zQl0alwDGO5S2lEN1n/xdTo7VickL136RgG
-	 aqYhLt4KXbQG330lg3cX50+lDDLWA0ODRnUBZct+wqI7wIiwnwGqHuF47l/AXgAl4K
-	 Qxzpxe64akm7Ol/XfztSQNeXZsYjMsNQr0uIsprkMKFBBnum9d3JhCb4yD+/dPgD6j
-	 BbdMjBN8NPTPijg+NEjZCQRCZpkoNcxX3Jo/thdSwnUvihPHl4K4Vrzmm/RpeupCAr
-	 l5D0hJ05eSeqwpaKPSPK+q4ErW47oM44kDWibvpE7qixayJ7Ld9/3sWUqIWSeq+VlM
-	 FYn8v5gR11SiA==
-X-Pm-Submission-Id: 4h0b6V3NCLz2ScN7
+	b=eWjIJNJ4p+ARsZSDSHgfm40F5QxSLm6tJ0+ImSUc3HKeC9TCwFSgEMYgW1815akil
+	 KML0ia1Ob0JHtwxJg311BQ3+4UD67amiE4OxTysmaYhweLs5Q0I7AzsF4vjp4oTlCN
+	 1QyiatlJQm+QEuRtM2OKWyrbUcd/rw0QeUmwksTHYyznMEcmf4O5Hf2NO4aGPSY5qH
+	 tOseTPqteCeaOHee+eAMg2gaPNobxGysM8OZ0C78Irb+aUbDNoOtPOSsXD+BRNY4Qh
+	 PTiOURVjMHmDX7iL7We932SWXqo9Y9P8MmZHw2JoRGnMJwNWonRyG5+s8nCUwy0q5Q
+	 M0H1Hq2WoxlPg==
+X-Pm-Submission-Id: 4h0b6X0DNxz1DFDy
 From: Esben Haabendal <esben@geanix.com>
-Date: Wed, 15 Jul 2026 14:27:25 +0200
-Subject: [PATCH v2 3/4] iio: light: ltr501: Add ltr329 driver support
+Date: Wed, 15 Jul 2026 14:27:26 +0200
+Subject: [PATCH v2 4/4] iio: light: ltr501: Power down chip if request irq
+ fails
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260715-liteon-ltr329-v2-3-d18af55edab5@geanix.com>
+Message-Id: <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
 References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
 In-Reply-To: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -53,123 +54,35 @@ Cc: Esben Haabendal <esben@geanix.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784118460; l=3444;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784118460; l=718;
  i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=I2dTWPh9xBkWUYpYwY6PQ5wKCWiaOxS0O3qMw30nS0E=;
- b=BCCJqpXvaamY19jLEczP5QzkIkrFCDB/vobC7M7Tl2QBkoZsXmnRK+i3nD+m9xYsm6BLegKAY
- SggG+sss7UlD4S8LSbAnx/O1xFD/DJkXDP7VdqoYSTS6noHD0FQpIup
+ bh=dm9nW2iDC7Blmz0joKHenTSW6fNAAaYJo3/DVFapXIM=;
+ b=T/VRQqT4oI8j04k00nlKb0rWxgksPtiTaFn4spKAZbU2YUgcxIfXMB5Ua2gu/qqy40cDwvXQQ
+ lSiho35B4YQBzkpgzC1KdKdp0J58q4C4bEZII/l311sY1X9gUVR8Ngs
 X-Developer-Key: i=esben@geanix.com; a=ed25519;
  pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-This adds support for the LTR-329ALS-01 chip, which is similar to
-LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
-have.
+In case request irq failed, we were leaving the chip powered instead of
+powering it down again.
 
 Signed-off-by: Esben Haabendal <esben@geanix.com>
 ---
- drivers/iio/light/ltr501.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/iio/light/ltr501.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 7d045be78c6d..379e57ac5f5b 100644
+index 379e57ac5f5b..9d4de798e5ab 100644
 --- a/drivers/iio/light/ltr501.c
 +++ b/drivers/iio/light/ltr501.c
-@@ -15,6 +15,7 @@
- #include <linux/delay.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/array_size.h> // for ARRAY_SIZE
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/events.h>
-@@ -94,6 +95,7 @@ enum {
- 	ltr559,
- 	ltr301,
- 	ltr303,
-+	ltr329,
- };
- 
- struct ltr501_gain {
-@@ -178,6 +180,11 @@ static const struct ltr501_samp_table ltr501_ps_samp_table[] = {
- 			{500000, 2000000}
- };
- 
-+static bool ltr501_has_irq_support(const struct ltr501_chip_info *chip_info)
-+{
-+	return chip_info->info != chip_info->info_no_irq;
-+}
-+
- static int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
- 					   int len, int val, int val2)
- {
-@@ -428,6 +435,9 @@ static int ltr501_read_intr_prst(const struct ltr501_data *data,
- {
- 	int ret, samp_period, prst;
- 
-+	if (!ltr501_has_irq_support(data->chip_info))
-+		return 0;
-+
- 	switch (type) {
- 	case IIO_INTENSITY:
- 		ret = regmap_field_read(data->reg_als_prst, &prst);
-@@ -466,6 +476,9 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
- 	int ret, samp_period, new_val;
- 	unsigned long period;
- 
-+	if (!ltr501_has_irq_support(data->chip_info))
-+		return 0;
-+
- 	if (val < 0 || val2 < 0)
- 		return -EINVAL;
- 
-@@ -1257,6 +1270,18 @@ static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
- 		.channels = ltr301_channels,
- 		.no_channels = ARRAY_SIZE(ltr301_channels),
- 	},
-+	[ltr329] = {
-+		.partid = 0x0A,
-+		.als_gain = ltr559_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-+		.als_mode_active = BIT(0),
-+		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-+		.als_gain_shift = 2,
-+		.info = &ltr301_info_no_irq,
-+		.info_no_irq = &ltr301_info_no_irq,
-+		.channels = ltr301_channels,
-+		.no_channels = ARRAY_SIZE(ltr301_channels),
-+	},
- };
- 
- static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
-@@ -1531,6 +1556,12 @@ static int ltr501_probe(struct i2c_client *client)
- 		return ret;
- 
- 	if (client->irq > 0) {
-+		if (!ltr501_has_irq_support(data->chip_info)) {
-+			dev_err(&client->dev, "chip does not support irq\n");
-+			ret = -EINVAL;
+@@ -1571,7 +1571,7 @@ static int ltr501_probe(struct i2c_client *client)
+ 		if (ret) {
+ 			dev_err(&client->dev, "request irq (%d) failed\n",
+ 				client->irq);
+-			return ret;
 +			goto powerdown_on_error;
-+		}
-+
- 		ret = devm_request_threaded_irq(&client->dev, client->irq,
- 						NULL, ltr501_interrupt_handler,
- 						IRQF_TRIGGER_FALLING |
-@@ -1604,6 +1635,7 @@ static const struct i2c_device_id ltr501_id[] = {
- 	{ .name = "ltr559", .driver_data = ltr559 },
- 	{ .name = "ltr301", .driver_data = ltr301 },
- 	{ .name = "ltr303", .driver_data = ltr303 },
-+	{ .name = "ltr329", .driver_data = ltr329 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltr501_id);
-@@ -1613,6 +1645,7 @@ static const struct of_device_id ltr501_of_match[] = {
- 	{ .compatible = "liteon,ltr559", },
- 	{ .compatible = "liteon,ltr301", },
- 	{ .compatible = "liteon,ltr303", },
-+	{ .compatible = "liteon,ltr329", },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ltr501_of_match);
+ 		}
+ 	} else {
+ 		indio_dev->info = data->chip_info->info_no_irq;
 
 -- 
 2.55.0
