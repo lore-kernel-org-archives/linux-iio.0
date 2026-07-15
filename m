@@ -1,192 +1,125 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A2E93126C0;
-	Wed, 15 Jul 2026 06:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53FA9314D13;
+	Wed, 15 Jul 2026 06:42:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784097471; cv=none; b=WKuEmDAebCBlYfeb7jB+IwPgYQtmS/b1qJxb8OCKx28pqPgjzLSD5aK6CC1o4ls3s/kOpw/uS25HcI7a1Lg4+mVVZj93vv25zOHLleDVbznzUhAHVcobZiUsZc4Ul5p7x+ZV00L0sFHHlkHqJUnA/XZ5RMzW9243ySq3yqNnLqg=
+	t=1784097765; cv=none; b=rKNebUpx4nAz9zpT85iYQNUTmQ1DfYQtmo+d7rSVx0IFSCq88BJ0Z8vCpXywftpw4SI0BYzw9xZytjkQK8C8nlb6LBHmvubrYy/Wfekg8SSfvsYBYGU1IGph2rIUsdo4UUkigG/JMOl7LH+LXdiYFIDHtZL59v2uNW0E2WZs8mI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784097471; c=relaxed/simple;
-	bh=7Jz1WSVvmcGjcHIebzhgIdhD2yC4aJIQbDO7bOIHw0Q=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sjRGxR1BqTWLshsFkzuVHTUPeNgVSqJj/N1anGmFFC5DJnJ/KC4aqtjdlBAjhEca4CHxdKq2qIh1oivWDmwOMyxHesexnVu3biiTntpe537ZmJilYpsJ8fxGZxxUNd6XtQSXPPAJ1l0wxfqIQfH+8YvnR77t55IiJZROU9OPmQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=O7gTd4GT; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1784097765; c=relaxed/simple;
+	bh=PH8yYsZVplyMRBBIC+qn//UkncjaepSOmNKRXjE1aRY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fa+/oxl07rFsPX+bXcNlsS5J3VSAEUFYTFYAFnRfdoILA81CrCehFvzfZxc9L0eCgONVP5fE5oKiB6KXZMZaO7gEJhWQ6rkvolsiAaHR3xehz8Va2TaFNEp0eFtCDbRrAT08SyKXZVAAh5+YDjJUaDgEI7pXROCCORHHqbIOHsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NofJ0n4a; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="O7gTd4GT"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66F3lbgA4138946;
-	Wed, 15 Jul 2026 02:37:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=EdSbU
-	fDPBrpALTdmYpMmGgXwPqT6wVa0ZepCwCR5Vtc=; b=O7gTd4GTietCm04BqtxgC
-	EGt/y47ChlVtFHO9PldVZRIycGWqC2v0IbwhaOSBW3IG6IhgFmmT2k2Z46KWCxRp
-	6nEWZjN7HY3xfIEForoJFpJyNTRGqt1dKJXsBXYl4JiWwNvApDtrj4Bj0VjVJdbd
-	KW2NdUr4ME0JWn/5sIHkKQDp1ImnAJmUTtX1CRu2oVBcWeZsW2EM+asw0pJ0sGLy
-	P/qO28Y34mcZjAK2GQr47OiY3/NNdWb4QmYatStSalTqJcl8azkEKT7Uuy2yI/sz
-	XoIVJMcc+FAWPT6LPqkcjsfBKWfhET6Qa6lLTJ4tJ/OHNnXsedmMptX6E7a5nXZM
-	w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fdtfba9be-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 15 Jul 2026 02:37:33 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66F6bWmP032711
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 15 Jul 2026 02:37:32 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 15 Jul
- 2026 02:37:31 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 15 Jul 2026 02:37:31 -0400
-Received: from HYB-JRXo5UEs61B.ad.analog.com ([10.66.6.193])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66F6b9Ab001579;
-	Wed, 15 Jul 2026 02:37:24 -0400
-From: Stefan Popa <stefan.popa@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>,
-        Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>,
-        David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Siratul
- Islam <siratul.islam@linux.dev>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@baylibre.com>,
-        Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Stefan Popa
-	<stefan.popa@analog.com>
-Subject: [PATCH v3 1/2] dt-bindings: iio: adc: add maxim,max40080
-Date: Wed, 15 Jul 2026 09:36:16 +0300
-Message-ID: <20260715063652.368501-2-stefan.popa@analog.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260715063652.368501-1-stefan.popa@analog.com>
-References: <20260715063652.368501-1-stefan.popa@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NofJ0n4a"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784097764; x=1815633764;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PH8yYsZVplyMRBBIC+qn//UkncjaepSOmNKRXjE1aRY=;
+  b=NofJ0n4avQh2wIQJP68Lxx8/8mTzS/Fq2g4chgHkT5/ixQ7nHhiSOK+9
+   +ek32n+H9OXWaX+xj/4agSfpiCKTuX4Bd6LkwZO5jHQsgTBKZBX+gc86B
+   RjT00nPo/zzonH/E7h9y7C2SqGQv8c5JmZ2xCToeUET9qEH37VsEfUbE8
+   xvFPBHrygMSZ3zqXXQixTval9JRK4GDSbyMcXWCaP1v2RivPjNBl16Y++
+   gd4WydoiuM625arhOgAvWNhJc8HIkTiznK/9yyUfHIZrl8PLvlBELaT5v
+   ANAJN9VxnXRVTSd47vfsOGQbyDZJAtsh7LBFB0LVhgDtK+Pmd+lH3RoKA
+   Q==;
+X-CSE-ConnectionGUID: EbZlKU4pQI+koVqmoEwtaQ==
+X-CSE-MsgGUID: kKo5tp5dSi+sqxlPTH+Ilw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84507089"
+X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
+   d="scan'208";a="84507089"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:42:43 -0700
+X-CSE-ConnectionGUID: oelYCXWDT42KFq3zb/CCkg==
+X-CSE-MsgGUID: fVbtJBQwR+qraZxkYkAv+Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
+   d="scan'208";a="280517716"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.44])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:42:38 -0700
+Date: Wed, 15 Jul 2026 09:42:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
+	jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org,
+	marcelo.schmitt@analog.com, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, mike.looijmans@topic.nl,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	jorge.marques@analog.com, antoniu.miclaus@analog.com,
+	mazziesaccount@gmail.com, jishnu.prakash@oss.qualcomm.com,
+	duje@dujemihanovic.xyz, wens@kernel.org,
+	sakari.ailus@linux.intel.com, linusw@kernel.org
+Subject: Re: [PATCH v7 3/3] iio: adc: ti-ads1100: Add ti-ads1110 support to
+ ti-ads1100 driver
+Message-ID: <alcr28F603bH6TBM@ashevche-desk.local>
+References: <20260714195528.597753-1-jakubszczudlo40@gmail.com>
+ <20260714195528.597753-4-jakubszczudlo40@gmail.com>
+ <741bb99e-e9bf-40ef-9eeb-b736e31b980c@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE1MDA2MSBTYWx0ZWRfX5tMJedpE8V98
- 95G/cXKEpIWumpeh71DayWtegmUKnM1VFqd85IKf5Evx6FG1Q9ncsobwrp25fWJ1RFAQmzMQVSi
- 1lgc/UoGF0B0SKId8m12u4/iWyH/2E323jT0OBaMjglAOCYC+5BUoqcC4rolz/GEPgwk+vJVWi9
- by3SRY61SpFfpYiBO2eP+Np8PMV2G5NmklVM4txHn1K9atHU3B9SY9SPR+FibnTwykeUC0+91zp
- CAmBqttq97h2paz9CAEzlVXTSyUTK0ZxA4TT2pQNOzyjm/e9hmpy2GMZHoWgISo/OVt7Z+5FO1l
- EGBDpJ/xfqzDNpkI0wUuDrUPDT76feeBLTWcVsLBqalaAn3iC9kpeJsRjqDdvb+oe3zvoF1W0vX
- Eqa51pbunM0GrAm2qyiholZIzZ0RDZhduj1lGj4GFrD7t2JjKcyPizXO/Kne+LXnM7WDRdhnlmF
- xobT69nqueIaP2Tb2qg==
-X-Proofpoint-GUID: QauNygdhSh1H2wNVxzTkVZNU0UjlEJiM
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE1MDA2MSBTYWx0ZWRfX6x7WXDXgcOcZ
- 3gA4756GKJ8I7LwG9hq0YBRnbChJ7V+2ctuwDIIpMMrBxOQwbp4PyT4YPu5XaHAB7krQcPaTkQ5
- UitiLWh9Exm1k8TIkUDuA2cdw9ymFPHxIF7l+gV3mkhNzsy6eVK1
-X-Proofpoint-ORIG-GUID: QauNygdhSh1H2wNVxzTkVZNU0UjlEJiM
-X-Authority-Analysis: v=2.4 cv=Y+HIdBeN c=1 sm=1 tr=0 ts=6a572aad cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8
- a=edEkJmESHCq-kgOIXrUA:9 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-15_02,2026-07-14_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 lowpriorityscore=0 spamscore=0 impostorscore=0
- suspectscore=0 clxscore=1015 phishscore=0 adultscore=0 malwarescore=0
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607150061
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <741bb99e-e9bf-40ef-9eeb-b736e31b980c@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add device tree bindings for the Maxim MAX40080 bidirectional
-current-sense amplifier with a 12-bit ADC and an I2C/SMBus interface.
+On Tue, Jul 14, 2026 at 03:18:04PM -0500, David Lechner wrote:
+> On 7/14/26 2:55 PM, Jakub Szczudlo wrote:
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
- .../bindings/iio/adc/maxim,max40080.yaml      | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+...
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
-new file mode 100644
-index 0000000000000..3b367071b5d3f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/maxim,max40080.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX40080 bidirectional current-sense amplifier
-+
-+maintainers:
-+  - Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-+  - Stefan Popa <stefan.popa@analog.com>
-+
-+description: |
-+  The MAX40080 is a high-precision, bidirectional current-sense amplifier with
-+  an integrated 12-bit ADC and an I2C/SMBus interface. It measures the voltage
-+  across an external shunt resistor and the input bus voltage, and stores the
-+  results in an internal FIFO.
-+
-+  Datasheet:
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/MAX40080.pdf
-+
-+properties:
-+  compatible:
-+    const: maxim,max40080
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Power supply for the device.
-+
-+  interrupts:
-+    maxItems: 1
-+    description: ALERT output for overcurrent/undervoltage threshold events.
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+  shunt-resistor-micro-ohms:
-+    description:
-+      Value of the current-sense shunt resistor connected between the IN+ and
-+      IN- inputs. Used to scale the reported current.
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@20 {
-+            compatible = "maxim,max40080";
-+            reg = <0x20>;
-+            vdd-supply = <&vdd_3v3>;
-+            #io-channel-cells = <1>;
-+            shunt-resistor-micro-ohms = <100000>;
-+        };
-+    };
+> >  #define ADS1100_SLEEP_DELAY_MS	2000
+> > +#define ADS1110_INTERNAL_REF_mV 2048
+> 
+> Maybe the diff is messing with the tabs, but I hope the
+> numbers are vertically aligned.
+
+They are. Remove the quoting in your MUA and you will see that.
+
+...
+
+> > static int ads1100_read_raw(struct iio_dev *indio_dev,
+> >  			    int *val2, long mask)
+> >  {
+> >  	int ret;
+> > +	int data_rate_index;
+> >  	struct ads1100_data *data = iio_priv(indio_dev);
+
+Likewise in the rest of the (new) code, try to follow it the reversed xmas tree
+order
+
+	int ret;
+	struct ads1100_data *data = iio_priv(indio_dev);
+	int data_rate_index;
+
+...
+
+> > +	data->ads_config = i2c_get_match_data(client);
+> > +	if (!data->ads_config)
+> > +		return dev_err_probe(dev, -EINVAL,
+> 
+> Andy has been pushing to use ENODEV for these. Current situation
+> is about equal numbers of EINVAL and ENODEV in existing drivers.
+> Would be good to pick one and stick with it for new code.
+
+Maybe -ENODATA as you suggested? Sounds perhaps better?
+I saw the code where this kind of call and followed by it both use -ENODEV,
+and after thinking of your suggestion I now tend towards -ENODATA.
+
+> > +				     "Can't get device data from firmware\n");
+
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
