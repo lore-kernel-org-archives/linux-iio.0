@@ -1,61 +1,63 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3E3343C04C
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 10:10:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2004B43C7DF
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 10:10:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784110256; cv=none; b=JtFNzxLZTTlO62qLmawx45GzlArn3tb+n/JB2SyXIKMrnj9jN6YJt0PBtpDo861rsIWIgm+ZhIdWRELu9Vbu0FGBbNttcMiyJOTvN3yr+e77q5e9DfGfB8tnjphTaoE+DGYwsIR9KuUa/9NocJHZrNqJz6QV5WkayWN3sdAEkcM=
+	t=1784110264; cv=none; b=AUbqZMkk7nPlzNjPWvUV4jROplS73+y7ULlipdffRlQfzBFXM9ZxKbuuePxI0bPsywOaA1DJeKFRhRbcU8Q0Qo8kI6R2IpyWK5dNY0723YINH0FSuzU4rWnYcKanGkHHnhZ19c0IyFZs+wSHFrherJZl/IgEPK9/ayrZQmwNPck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784110256; c=relaxed/simple;
-	bh=JfYz53bJftYARTtQYbhdqLN88JZ2JOJLHjD7XhU/M28=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=krHuNqe4kYrlKidP1wCYcJDYeuu6US4cBh6N9xTVX3Tp0ZRK9Z2BDMopl0m8pUyIoTmkwy3U+7We7oqPguAys0JMmiCsLveFKhJ8CePHhMijV+BSULeEJeyTrfqLE5Y4gfYYWehUXmahp2Bt9d3yix1JW5zHhlvw9bsLQr7oZok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gsgTIL4z; arc=none smtp.client-ip=209.85.216.47
+	s=arc-20240116; t=1784110264; c=relaxed/simple;
+	bh=DO4pUTloSCmd0KOmrWJsUS2U9gK6DNRCgmxLFrZRTyY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dY1TPm6PKFoAQFB0g+HD2eHPHBEQpB9WrJt/jFLUqjLfx2LPOaDSBK+cIRJBHlKbOLdSd1OvaBzwWMp6oBoCOCnwI3lNclugPxItkzQUQgb9m7p1qynRDPtZ/LQ3cif/QVaxP7G1I16vwQCPRrMC8+2YCqyP1l+yTdgsumefQag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FVTXlJC1; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gsgTIL4z"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-38e041ea211so2601080a91.0
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 03:10:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FVTXlJC1"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-38de840f2f0so2126508a91.0
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 03:10:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784110254; x=1784715054; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=qXsDMJk4sPduicJj2EHttKleB6YVypYjBplsn4iN7vc=;
-        b=gsgTIL4zwpApVfT6HCU0JKqVU+0QY8d0qYYGeA200W+gN5NfyuMbVYbjufWuo9RSZ3
-         tvP4CmCzTTsNb/GPxtOaeN+58CyR67kaic9bNgmg08SQnAGD9QYp5ykCfdCj1+MbIhC6
-         zKO3T9NA8XjWelrKKgYIfQa6CP+BGFRl756o/E3fZoOFvP+NnoXce4QZtgKN+WQLPDOk
-         bmpuksMkd1r5abRUNs1K+zN8NTRrYiMFxB7syV4VR9Zf9qOysrRiyg/Yy0tUEIWnEl7i
-         zu8PZyjKEb+32vvku+L6YlPSi1ovc7J92vXGb1qn1qUrNNLdfd0xR+CIYTRPq2UnnyrN
-         29/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784110254; x=1784715054;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1784110259; x=1784715059; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=qXsDMJk4sPduicJj2EHttKleB6YVypYjBplsn4iN7vc=;
-        b=VMn7hgE/8q0dj7lJlYPMJ419B41Qqbs61k0B9acvXGFZ+t7PvYZ4aMcLtUtGqFR7Hc
-         0m0caMhnRVB4ke/RdI5Va8wdmh8fH+/bk62vtZdJkes4+D7czQps3aoQqSNrAhZeDzhk
-         yve7CeFbOd04pcOiig+drT3ZU+r7lvVfMzXEk6OYqL4SZazqodmGsMO/VdvkFTUB0k+l
-         m+lqnqxEGQ2v0yTne9ZkQIDTHzcxlTmRdrL9sy+x8JwpU1qfG9XbbtZI//P0BMhzcwxf
-         Ts0kiRxNclp/a359KJ78LTsQy5h2kEhH6N7FmdTRks2yNit2oSia85MihSxOGHmi3kK/
-         HDzw==
-X-Forwarded-Encrypted: i=1; AHgh+Rq6L9SWp/m0w3X5oz5wxVSqyjEZm9SbrhDADxFKxw9gHZtdM05s0ZQHZo7WATXJvb62qDe2YGnARxM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxLmagx4fTJJgW+Lb++/F76J3aJNsqH7qjnwBKcnc56kLz1+J/3
-	GzD1PsRInmryJPhraXjIgUv97th6CAD3f+SaMy5TdPUTN4PWCbQbqWRK
-X-Gm-Gg: AfdE7ckJIwjaFt9LzRqXCsp/GGrk9cwtkGY/QwjHbaQjNqniHNomS6+u7y7ocDjr1Mw
-	a69FPshT14GyqWu5YwLrHNbHyNqv82aCw0SA5LNcTKMXwZjhBo+qIRszxGNKY/tvXoJCYkqfKFk
-	vIDMaxDeRonwJ2en3iEzF0fAh/o7kVlsjw+kLOP8YUGcDRp1oo/0fgK+cT0/3OppYRpVQ2qhuyh
-	QngzmzNNU2GnY6akhjkJnQluSVfe9aM5A39WWUG8hM9hvS9lMxLNfK8drQKjLWj1cyxbevqET3Y
-	i5X/JBC9QAAAty2uQNC08vw9qFLG4eKg7Bx2b7CslkLmag4ozPnqhn41rax8GsFnmB9jeRqYy8m
-	tIgkdpU9hJstK7fyNxkaNN+EzK7cHQrCfA56qrk81MVnavuoQ9HXKOfT7INKkTR6cgGjoYXo6Fq
-	eez/sW9ZMFHjXGOSAuj166t8mYUJqbxNRPdjoVcYTU
-X-Received: by 2002:a17:90b:2544:b0:38e:408:9d7d with SMTP id 98e67ed59e1d1-38e1af44e01mr6101942a91.36.1784110253968;
-        Wed, 15 Jul 2026 03:10:53 -0700 (PDT)
+        bh=VNXyVM0mnowONm4346tNECsZGvG1q+nnKtqJNufizQw=;
+        b=FVTXlJC117BcjWQdJBRHKPXSTi5H9rrFFEDofRSu3aMPyn0emuR1LG5I/lFnfq6y8A
+         hom1aVRIV9N057hMQNkvFW7ukOgJ11LzU/6vWPN/A80ddE+zFzLUoTFBgb3I4Gw8rQxj
+         Q0ZOm7TJUkyZIczLXfP9r5l5fKbe+h5mxVYfMoof9o6bGbjy+fpq9PU2ASlN00YI/bas
+         dGLKdIQGmv6tNInT8NIt4yocE3PtXhhF7wjD+kR9Q9u13Ov08WzfY0MeIvwICMHJias+
+         bfEGpm0itCMBazmuxtN5l2FY5NCGF/QAcCPvEP++NzBWBzIlG2MeB1m4WDqjNb6UiCrY
+         JSGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784110259; x=1784715059;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VNXyVM0mnowONm4346tNECsZGvG1q+nnKtqJNufizQw=;
+        b=KXj1YdfolTpDAYZIcVB6u3vWJ33WA4rPE0JCaKuA0rVCRMn9PVHeAFUIVfzF8WnoKt
+         arurO/RbR7QQ34Ypf0ybNkZpqfSQWI5UMGDO33ytHqJmMbOAJ4pzCE/dPEgjUq95qPnz
+         Cba/PeTOVq2Fe/IXVCJ5pr90RakTJdcYpr532Ciu+D0tF9ITFM5nnAFvDLak2FlyVeZ9
+         4k8mdP0y/VOkLv1a66NbF4iEnYA4CwwBd4O7PqI4NXwVqvrpIsI0nA1hZrwFdYhO/GTV
+         qh2sKAECD1ETgiaPIFdp8Ckq7P4lTLiQ/nR1WtedMtdrIj/K2P1ETh/LVdcCCR7nOPKW
+         aHOw==
+X-Forwarded-Encrypted: i=1; AHgh+RouaRQgvsTKVAKsV9l7WTi9+Z5hMzinF6O7sl3HdculykJwi+jELoNMlDqDh2O8r3jllXN2PhJP40Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwU/73uV45VMDzJo4EY7k3BRgfvqHACMU3CudUj76Pim2QV2OFM
+	G0Y3EjHTZLTfNNP/WAWmYH87qTbe+Z7sSu+WRCiuObOeg5X17ZxC5geW
+X-Gm-Gg: AfdE7ck+l2Q5V8A6x8Murd1yzd23upJBrWpGiG06ozKi9ey8K1iFstI9KgpDytSPgeY
+	C8CNOm2O1tpbhXrhhv6ODnTCpzVJrhUsRrELSx1rpzq7V+s+O+rLeigwsePo08imLFDIfyJUxr3
+	+T3RP/JtBb1GRuEBc8wp9ERtbKZchSlzCkNeyENEJ4uJGBlekyXUGcXD1cG8Y/iAnK7vlApWPRY
+	AUQFi1Z66GzFdXg1GLK1D5IpCCOGo4AyeqS/hajMnX7IdQ1ixLZ1wS7yIbpFQzp/fH+spqpYQAX
+	N9E42WHkvKAxGHOL4v6mIeqZdlAg83PkQUv3VsCetSEchn/a1IPQjHUoU3C8qqTE9HXacggmUOg
+	w1QmOd87CgvpHvtVzsqcXs7qlpY9QG9j28PgWPDnTBDooRrBKYarXnHRxPb5OoyVUBwyc8L3yAg
+	ocJbgxLlYGhmD/uUUxVchDN++k0USwR0gx72xTAha5
+X-Received: by 2002:a17:90b:2b43:b0:380:21b7:e727 with SMTP id 98e67ed59e1d1-38dc7a494a6mr16685376a91.14.1784110259262;
+        Wed, 15 Jul 2026 03:10:59 -0700 (PDT)
 Received: from primary ([223.181.23.34])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3119c2a7bb5sm62079757eec.25.2026.07.15.03.10.50
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3119c2a7bb5sm62079757eec.25.2026.07.15.03.10.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 03:10:53 -0700 (PDT)
+        Wed, 15 Jul 2026 03:10:58 -0700 (PDT)
 From: Vidhu Sarwal <vidhu.linux@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -67,10 +69,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	skhan@linuxfoundation.org,
 	linux-kernel-mentees@lists.linux.dev,
 	Vidhu Sarwal <vidhu.linux@gmail.com>
-Subject: [PATCH 0/3] iio: light: opt4060: Fix integration time, pointer type and error message
-Date: Wed, 15 Jul 2026 06:45:41 +0530
-Message-ID: <20260715011544.281148-1-vidhu.linux@gmail.com>
+Subject: [PATCH 1/3] iio: light: opt4060: Reject integration times with a non-zero seconds part
+Date: Wed, 15 Jul 2026 06:45:42 +0530
+Message-ID: <20260715011544.281148-2-vidhu.linux@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260715011544.281148-1-vidhu.linux@gmail.com>
+References: <20260715011544.281148-1-vidhu.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,40 +83,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series fixes three issues in the opt4060 driver, all of which have
-been present since the driver was introduced.
+When setting the integration time, opt4060_write_raw() only uses
+val2 and ignores val. As a result, a write such as 1.000600 is
+accepted and programmed as 600 us, silently discarding the whole
+seconds part.
 
-Patch 1 rejects integration time writes with a non-zero seconds part.
-Previously, opt4060_write_raw() only considered the microseconds
-component, so values such as 1.000600 were accepted and programmed as
-600 us.
+Since all supported integration times are less than one second, any
+non-zero val represents an invalid input. Reject such values instead
+of silently accepting them.
 
-Patch 2 fixes a pointer type mismatch in the call to
-div_u64_rem(). This is a type cleanliness fix and does not change
-runtime behaviour.
+Fixes: 0c6db4506ad0 ("iio: light: Add support for TI OPT4060 color sensor")
+Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
+---
+ drivers/iio/light/opt4060.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Patch 3 corrects a error in an error message that reported the
-wrong threshold register when a register read failed.
-
-The first 2 patches are similar to recently submitted patches on
-it's sister driver OPT4001 [1]. 
-
-Patch 3 is specific to opt4060.
-
-[1]: https://lore.kernel.org/all/20260714113134.3445-1-nikhilgtr@gmail.com/
-
-Vidhu Sarwal (3):
-  iio: light: opt4060: Reject integration times with a non-zero seconds
-    part
-  iio: light: opt4060: Fix pointer type passed to div_u64_rem()
-  iio: light: opt4060: Fix incorrect register name in threshold read
-    error message
-
- drivers/iio/light/opt4060.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-
-base-commit: a13c140cc289c0b7b3770bce5b3ad42ab35074aa
+diff --git a/drivers/iio/light/opt4060.c b/drivers/iio/light/opt4060.c
+index c391ad3271c6..cf6f69e5be35 100644
+--- a/drivers/iio/light/opt4060.c
++++ b/drivers/iio/light/opt4060.c
+@@ -632,6 +632,9 @@ static int opt4060_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_INT_TIME:
++		if (val)
++			return -EINVAL;
++
+ 		int_time = opt4060_als_time_to_index(val2);
+ 		if (int_time < 0)
+ 			return int_time;
 -- 
 2.53.0
 
