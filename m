@@ -1,104 +1,93 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B45F3F4112
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 12:59:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A93040EB9C
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:01:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784120391; cv=none; b=K2G5EbHrcNsV4mCDPU/ZKTFftXy6qnnTxNYpDW28NZaiK8S4jfGdnzEA2Gl6nof8e6FQTwgWyrcpjWXlaA4/JyFf4Uti5xaL3a0l4mDx6SJp4DkLnzP3z5hNxHpuOY5qiZ33wRAqS/XpbJLicjUZUFzhoW8p3bY7H5aIv20oVn0=
+	t=1784120499; cv=none; b=nWMEhO/0qJdKJ/SrOgx9rigrbykTU+VfpaktLXjXkRwBDEx3bIf8qsIgPkLnDCffdop7JIK+k+ZPgazPlSGymxnDN0wvi6mZwqHNq0ihomYY4Go5pMPW3MGZgzYCRwE93h8db6iLvC7fMyc3DNwhCdrnwh2V/WF8tt9asEU68zs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784120391; c=relaxed/simple;
-	bh=nVcKHyPKz/W/FvJITsfshyPhXDm4WJXd509Pb5vj2ug=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=My5OWipRxX3ojf+YiBglq+Pd+6I7rxRMTtGjrlZiyS0aOuVbq9XFPX+OMNeYTGJQyPMCFDCJHVH8+6fXsVjsFLEP6JqRtyWKRP7/+V6vPckf2MTqAHZ4PxVRRnxHhQQWBswl5He/k+WvenLBUQqNqh2K7n4MleIoMITZnLwstBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UHzw17oB; arc=none smtp.client-ip=209.85.128.47
+	s=arc-20240116; t=1784120499; c=relaxed/simple;
+	bh=A9IxaC2jYjvoAPuB3MFJhOdcY+PYA3Vpj/llsUFAVM4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TLW+OLiPsayX6mVvE2dIzuivsUN57ciN8uco55+ygXnd4530oTGD+8ivkFwx+XIMuhUDel+CHm74fdDASwpgQQuXZ+UhQcfoQZZDI/OzJIDV353/LxOmCMlF9TENFHuMCb4nrUeXVk8Zn9YHkt17/q7VmCPDJs/sTsy4s22UFD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ScxZ9Xyu; arc=none smtp.client-ip=209.85.218.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UHzw17oB"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-493b7612475so41111855e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 05:59:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ScxZ9Xyu"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c12614b81c9so1003572666b.3
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:01:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784120387; x=1784725187; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=wXmSB/fZgpo1wJ9NHr1MARO2u1xBe0vIjZpMWVhRSx8=;
-        b=UHzw17oBf+ApTp76TDefHfJ7TITrucW7MPXpUKVWDiXxtDURbhx0nj+umZKd+fZJE+
-         AdKHr8ZaVkvwkfmr8IuKHtFDaNYP0gS5G9U/pEFwOKspMWavpnhvP9BDhL+lz0fw2KMP
-         z9qxY89xyZAh4QY56A1Um/brXtBM6K7LA8R+BdAINXQzlrR3y3XORRou6BapS0F1HRjO
-         5p3kSA59uBylieexkJGbIMs6ldC6Z7TcWzzxTZrrCzYK+W+Xia/R0HO4CM9yx4Bd+hy2
-         1DbAbkM9rDBOk4KjNQt3f1dpszBfZVptDwg9Zxw5nj3DqYdwKxVZcWmjFDHd7GKJKMUs
-         /M1w==
+        d=gmail.com; s=20251104; t=1784120496; x=1784725296; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=JGJiBe2GnXkVQ7WvIgk+rUjAfNgMujlbFP2wwqEbWZQ=;
+        b=ScxZ9XyueW6CfHq1BUATqrpPa65NehqpX208mL1vEWCvHbXSF2M4QD5vCCifRqXYir
+         4KXrBTG53T0GUt65qCj5uJTE9Mc+oYSbNmDbj67xTpxQqOH4rJ5BD0SUNPyJVsf+i2SW
+         YiGWjNcB8PJRm/YZ4395XeiDA+r7yhPOmQdfxZnoHBZbv91tJhizxwObFDJqz1DFL41k
+         J4I1/3n1Fkhu9qBoKBlRy+/3tar2to6xTvxD05GV8kI85fs3fSnbcFDVoKY2p22rCS6D
+         c+arBZiw668F1tlYgUX7vCrDLUWZFBBfrN/7eqtvHWECq+QJFLgT1AlLt04Pdsx+foBf
+         2zHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784120387; x=1784725187;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wXmSB/fZgpo1wJ9NHr1MARO2u1xBe0vIjZpMWVhRSx8=;
-        b=rGFlbZROQUqivJ1HuVdDY7e3J6wCWSyqntt4Wbs2mxQVrmJMTZ6WoWUScw95LNqux+
-         E3jSOvthjuamp1qV13D2fYkb8796crHOM7XKP7JqJ5rbI9q5vg0KVl5lnZlvUJqRtdAf
-         CnGvtqKKM0KVe4gk9IX7B4GJ/ANGMlfol0VxXn6xlarAYM8BFQbKfFmwsN9uxKupWdH+
-         lex6IMTOA66wQ9scNCy6m5mAoJPvWdI5vZwsSmT1vFtNuAoDciBL/DHKGADkXG9JAXfR
-         I94gy6vlvbwE7FDyKD0swdwYpdbFus6rqzI9B6+bRmXWIGMLM7KNet3YLwvsI47YexE1
-         k0BA==
-X-Forwarded-Encrypted: i=1; AHgh+Rr9j4sKywg8X5hJj4EsM+QBfta29tg0H97FPXMLmyr0RmQELHQpnfBfm4BvA/hQvMPUu9p7F7KL9SU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywk2H7BBCBcEc3rYl3KyZs7CCg63+E/zltWfj8/N2PbTEZ6k1dX
-	7H/PPPFLERvqWlKwET20INEIP0YebB8r9IVH+8Rci5ZPdnrIcuxa7Q8yz1WQkw==
-X-Gm-Gg: AfdE7cmDd9s0EhpqNuAeCu2+1jR409vzSyk2Cp/Blw+2vYFnnsztvSvnIfWtrFB3vUP
-	AiczYkyToqtfps+wohaU5pVLkLZrfkUQwY1NLbGrRHW/GaqY9PiDDSUlWI6G6O7iPHb8KMGECun
-	v+NsRTR+NCXWvNxgoZHDzMkQsBSUNtWe7IPrK/kmdkaA2x2nFbKqOX7HtWgZeQKZTRvfhIPukyV
-	9FujmHupn2uJCtd+CRv9Ih1yUmy0a7YORopYS18wB/jkb/gjj1AgGdA7/2PH8AGRLTNekMwbtal
-	5hXnnbmCaQZVTpQEjIaI2phaSILEMYWLMh85bC8PHeO7DomlqfJxAGarnpKuwgRzP+j8saqniXs
-	+AY9forN/VaJ/+6dT2VUr8gP6NEJOeoTXPu/JT4cUxBn73MkA2AwevXoAVPQh4NEtzcHWli4MCB
-	0xH4Aw6xD/z6XlHMqQWlTkkr3FKAg3IOw6KmbmgyEzl4LgzmunnTf8StMl7BHY69eMp6j5VAO3n
-	keNnkV94ql3catg1v6IbXnKSUtvwxpXQ+Y7xiadhfVfsEqQ9RavxDezYuS1/A0S5/4zP4SEWlvU
-	m3gyzUV4iy5Gmk2lJf6bOrqriye4jwXXGBIlQGtFmBORYYkgkHDImDI6nWlmPo/wXNXNzfidqtt
-	V3BfpRAu9GVhBWCVQhA5x9/o=
-X-Received: by 2002:a05:600c:34c9:b0:492:3e44:214b with SMTP id 5b1f17b1804b1-4953905c59emr70009845e9.13.1784120386545;
-        Wed, 15 Jul 2026 05:59:46 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4950a2f951asm157537975e9.14.2026.07.15.05.59.46
+        d=1e100.net; s=20251104; t=1784120496; x=1784725296;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=JGJiBe2GnXkVQ7WvIgk+rUjAfNgMujlbFP2wwqEbWZQ=;
+        b=YBzC6iom+MYKMHvAUmrtJUiOPtjZsIy2NrtU1Y7MD4m+gmyKV/Cm0xXJMORPTOsW7R
+         YTk0sou6kiX4GAu8s2rOm08wnPKTgraqUPpLTYNdoJzHqHxSRG8GAyUfmslEcHGw8xhp
+         j7Ili5HfEK+5ZvZKAL81Wn7q12PhzloR2PEhfJoTBPIxndZS35QhfrOr5TOJuClyzhUK
+         BenkYv9xPFYjB2NIhzrPWssm+o5b3pNTBir4Ox7TO1LzT2/sQeWBU9gYx1WjffOOvVrW
+         q/13zkLC9oyFmTbFGC1bOhF2sBbpJ/hpN08S9ZpiWc2ZqPmBA91TyB4+Ze9Aya4jBGNr
+         uFWA==
+X-Forwarded-Encrypted: i=1; AHgh+RoKqNv+mNIKqcavkb2QxBuOEbfCx9X9+5eJonWfJnFA00F9tmmlBjRnLtgtqMZtWc+In+caCpLZ/s4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynskyKtnE5ypiZsSluPMen/7t9sz3+2y7d/V2E3Js1ZgjcqLqr
+	Sr8bqL6ZS5NjzhDMLI1Cqek9G7tXxQwTRK+Rp3OCC7B4dvAx76w4ikTO
+X-Gm-Gg: AfdE7cnw6xfxO4uAA+5dUT5fhJTCLvEEWj8BSO///tWyOvGAJikfmGuRQu/5noC4XkH
+	dKHh8KlmDbLQob7ou7JqS7MFs7CWiiPXkDSv3DF6ZE3YbFtmjjJdVmZYoQH0BZnk6Wm9+c5HtNv
+	5qODxestG5hKl5rztXy29xfz5NFD84wXlCh/yM3mEzJtYgAGiGk7laH8zxHuEiwwUNX5iI9Q/ZS
+	TY5C2z27aw7RJvCz6joEmtZau9Tccin8J068+PhLnF1XDkHMtvDOsKBmiIKueEp6SVSJshnEmnx
+	GFaZb0dqizp4Ze9QMNU0izy96nkTxG8EbXF+DOmwvEyj7e4y7K5bnAHCJ9ET+8N7HAw5/CYlIVo
+	yRZaarrUadeF1R37ynouDqsTLcS8VwcICb+/Mi66HbkRI8r8hW3N8Ch7exEg/n0Kzr8yiKhvu/i
+	gDnz6ip36PqgVa95RdcZhn6zBP3Ag=
+X-Received: by 2002:a17:906:2856:b0:c15:e04e:aed4 with SMTP id a640c23a62f3a-c16792bf2a1mr141096566b.42.1784120496310;
+        Wed, 15 Jul 2026 06:01:36 -0700 (PDT)
+Received: from NSA-L02.ad.analog.com ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c16871962cesm22072566b.25.2026.07.15.06.01.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 05:59:46 -0700 (PDT)
-Date: Wed, 15 Jul 2026 14:59:44 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
+        Wed, 15 Jul 2026 06:01:35 -0700 (PDT)
+Date: Wed, 15 Jul 2026 15:01:32 +0200
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
 To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Nikita
- Travkin <nikita@trvn.ru>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Nikita Travkin <nikita@trvn.ru>, Maslov Dmitry <maslovdmitry@seeed.cc>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 4/4] iio: light: ltr501: Power down chip if request
  irq fails
-Message-ID: <20260715145944.00001de5@gmail.com>
-In-Reply-To: <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
+Message-ID: <7yhbsguvuodmgpmhb6dgnuxfede4x6x3ducrifymcmqlb5vl4u@rgrjqovq2ife>
 References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
-	<20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+ <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
 
-On Wed, 15 Jul 2026 14:27:26 +0200
-Esben Haabendal <esben@geanix.com> wrote:
-
+On Wed, Jul 15, 2026 at 02:27:26PM +0200, Esben Haabendal wrote:
 > In case request irq failed, we were leaving the chip powered instead of
-
-devm_request_threaded_irq(), please mention functions and structs by their
-full name to prevent ambiguity.
-
 > powering it down again.
-
-+ a very short explanation of what you did, 1 sentence
-
+> 
 > Signed-off-by: Esben Haabendal <esben@geanix.com>
 > ---
 >  drivers/iio/light/ltr501.c | 2 +-
@@ -112,18 +101,18 @@ full name to prevent ambiguity.
 >  		if (ret) {
 >  			dev_err(&client->dev, "request irq (%d) failed\n",
 >  				client->irq);
-
-While you're at it, you can remove the dev_err() call as devm_request_threaded_irq
-already calls dev_err_probe on failure, creating duplicate messages.
-
 > -			return ret;
 > +			goto powerdown_on_error;
+
+This looks like a fix so we should have a Fixes: tag. And being it a fix
+it should be the first patch in the series (can come after bindings
+though). Reason is for backports.
+
+- Nuno Sá
 >  		}
 >  	} else {
 >  		indio_dev->info = data->chip_info->info_no_irq;
 > 
-
--- 
-Kind regards
-
-CJD
+> -- 
+> 2.55.0
+> 
