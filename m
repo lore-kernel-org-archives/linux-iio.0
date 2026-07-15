@@ -1,118 +1,114 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A93040EB9C
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:01:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46B6D42047E
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:01:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784120499; cv=none; b=nWMEhO/0qJdKJ/SrOgx9rigrbykTU+VfpaktLXjXkRwBDEx3bIf8qsIgPkLnDCffdop7JIK+k+ZPgazPlSGymxnDN0wvi6mZwqHNq0ihomYY4Go5pMPW3MGZgzYCRwE93h8db6iLvC7fMyc3DNwhCdrnwh2V/WF8tt9asEU68zs=
+	t=1784120514; cv=none; b=usXBADzCTThNtnJucRWhM8B3zmGzLv5knSZI/DEs8AaYc1o8JyVCA8WHJLcTPdSfGJl7j1Vw1/8dltXUBQjrY0Gfe9GANeAxq5SD0QFJrRxTwH4hAb9X90rtYJOw79ohJbcK+V3DeR8nUxDhgFjzW4st37BMf8wW0ShA7p6yrGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784120499; c=relaxed/simple;
-	bh=A9IxaC2jYjvoAPuB3MFJhOdcY+PYA3Vpj/llsUFAVM4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TLW+OLiPsayX6mVvE2dIzuivsUN57ciN8uco55+ygXnd4530oTGD+8ivkFwx+XIMuhUDel+CHm74fdDASwpgQQuXZ+UhQcfoQZZDI/OzJIDV353/LxOmCMlF9TENFHuMCb4nrUeXVk8Zn9YHkt17/q7VmCPDJs/sTsy4s22UFD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ScxZ9Xyu; arc=none smtp.client-ip=209.85.218.46
+	s=arc-20240116; t=1784120514; c=relaxed/simple;
+	bh=eQ2gKYc9XnJfTD+PUNBgiWdqiXRs7D5irdfEB56YBN8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EpxvNx4yl+ZL7ckxSvZf0JVlCaUIFZGjvzZ7Iy4z30mj9cWxVzcSKieCYRM2qvprngjvjYov9Bn3QRxj/b70MvII+lX8Dq7JxWYpVH+A5oSASkf6H/pVDYcDqYxT+WNtBF6lvdDYjxSmtrXqokiSlFuJC82Fwr0S7qjMO5Mubog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LxkY+4W4; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ScxZ9Xyu"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c12614b81c9so1003572666b.3
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:01:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LxkY+4W4"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-47c6e9a694bso2982211f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:01:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784120496; x=1784725296; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JGJiBe2GnXkVQ7WvIgk+rUjAfNgMujlbFP2wwqEbWZQ=;
-        b=ScxZ9XyueW6CfHq1BUATqrpPa65NehqpX208mL1vEWCvHbXSF2M4QD5vCCifRqXYir
-         4KXrBTG53T0GUt65qCj5uJTE9Mc+oYSbNmDbj67xTpxQqOH4rJ5BD0SUNPyJVsf+i2SW
-         YiGWjNcB8PJRm/YZ4395XeiDA+r7yhPOmQdfxZnoHBZbv91tJhizxwObFDJqz1DFL41k
-         J4I1/3n1Fkhu9qBoKBlRy+/3tar2to6xTvxD05GV8kI85fs3fSnbcFDVoKY2p22rCS6D
-         c+arBZiw668F1tlYgUX7vCrDLUWZFBBfrN/7eqtvHWECq+QJFLgT1AlLt04Pdsx+foBf
-         2zHA==
+        d=gmail.com; s=20251104; t=1784120511; x=1784725311; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=cP01oA1jkrZKwxr5XPjzYghqVKBxOj1lEgy0fuomJtY=;
+        b=LxkY+4W4zR0lOH/X1hnsj5Ph7Z5Bg0Cx17K4TZC98Pe81O2hvchn7vU34Xz79APavO
+         V53TCKkLg0E6kVzkkuxb0s+bv3Bj/IZXY0IEsUslNftB5LrpqSJmV9Ot627VEvgbO7dk
+         CM3myTSPlr3qMrTIOn7n7JikEpIzcnIQOC9ps+5BCEz2cAi5G0y6glu1buCsU4CDKKyX
+         61D2mLF9OZOBf+QoJGiDWJv1O0zEtYtlDQ+wM13EhreOdXsEGQLWM2B14nuyJwICasCQ
+         TZMDAiGmRa/CF9hGFcilGHFPApDXhmatrdJd7/ZRBy8b/iN7zi35kXhhQoKLuz9s9S83
+         +Z2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784120496; x=1784725296;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=JGJiBe2GnXkVQ7WvIgk+rUjAfNgMujlbFP2wwqEbWZQ=;
-        b=YBzC6iom+MYKMHvAUmrtJUiOPtjZsIy2NrtU1Y7MD4m+gmyKV/Cm0xXJMORPTOsW7R
-         YTk0sou6kiX4GAu8s2rOm08wnPKTgraqUPpLTYNdoJzHqHxSRG8GAyUfmslEcHGw8xhp
-         j7Ili5HfEK+5ZvZKAL81Wn7q12PhzloR2PEhfJoTBPIxndZS35QhfrOr5TOJuClyzhUK
-         BenkYv9xPFYjB2NIhzrPWssm+o5b3pNTBir4Ox7TO1LzT2/sQeWBU9gYx1WjffOOvVrW
-         q/13zkLC9oyFmTbFGC1bOhF2sBbpJ/hpN08S9ZpiWc2ZqPmBA91TyB4+Ze9Aya4jBGNr
-         uFWA==
-X-Forwarded-Encrypted: i=1; AHgh+RoKqNv+mNIKqcavkb2QxBuOEbfCx9X9+5eJonWfJnFA00F9tmmlBjRnLtgtqMZtWc+In+caCpLZ/s4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YynskyKtnE5ypiZsSluPMen/7t9sz3+2y7d/V2E3Js1ZgjcqLqr
-	Sr8bqL6ZS5NjzhDMLI1Cqek9G7tXxQwTRK+Rp3OCC7B4dvAx76w4ikTO
-X-Gm-Gg: AfdE7cnw6xfxO4uAA+5dUT5fhJTCLvEEWj8BSO///tWyOvGAJikfmGuRQu/5noC4XkH
-	dKHh8KlmDbLQob7ou7JqS7MFs7CWiiPXkDSv3DF6ZE3YbFtmjjJdVmZYoQH0BZnk6Wm9+c5HtNv
-	5qODxestG5hKl5rztXy29xfz5NFD84wXlCh/yM3mEzJtYgAGiGk7laH8zxHuEiwwUNX5iI9Q/ZS
-	TY5C2z27aw7RJvCz6joEmtZau9Tccin8J068+PhLnF1XDkHMtvDOsKBmiIKueEp6SVSJshnEmnx
-	GFaZb0dqizp4Ze9QMNU0izy96nkTxG8EbXF+DOmwvEyj7e4y7K5bnAHCJ9ET+8N7HAw5/CYlIVo
-	yRZaarrUadeF1R37ynouDqsTLcS8VwcICb+/Mi66HbkRI8r8hW3N8Ch7exEg/n0Kzr8yiKhvu/i
-	gDnz6ip36PqgVa95RdcZhn6zBP3Ag=
-X-Received: by 2002:a17:906:2856:b0:c15:e04e:aed4 with SMTP id a640c23a62f3a-c16792bf2a1mr141096566b.42.1784120496310;
-        Wed, 15 Jul 2026 06:01:36 -0700 (PDT)
-Received: from NSA-L02.ad.analog.com ([137.71.226.102])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c16871962cesm22072566b.25.2026.07.15.06.01.34
+        d=1e100.net; s=20251104; t=1784120511; x=1784725311;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=cP01oA1jkrZKwxr5XPjzYghqVKBxOj1lEgy0fuomJtY=;
+        b=VuXdGaUDJXXuYt/O87oyx7IrH/fOoDkOPVdKCgXoIYlFbEtlXEu8qClJEVPHoGYJ52
+         GzjjoDkdLjwvTUAGBbsxI971RqVEMuTDVwpNfK7u3Oq+5XN8QLu6KgYwkYyCHBlumYis
+         /HQzeRnrdtvFnon392KceAcbCXJjbsMhi20kmoAWsGnwOhbPW2WRgtGdfQSEwqPJQsnv
+         aes7VJxUEpaptcDk0ApdBGWfhwylqkpkvwBbTGvWqudECBHr+mWV+ML2hlgL2DYTc6bq
+         z/YGgpCeQogQY4SaLM5oHqi9kH0ByNBPXyI6b2cDeGjz//qDVP4M8fz2efhgNdIQblgp
+         g00g==
+X-Forwarded-Encrypted: i=1; AHgh+Ro+bMUbbtGTKmpHYKwItZx0+QhPzUwrxcQIIOe9PI93usG685vmokWHAGwHJzli+nEatK2gYE/Wx+4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoRPYqwnkFBvepm+d5RmOUnpQr6E/9CITabTdrjWNFSoQod07L
+	W9DGdGts+lfMkv7fbLBjUT65JZTHOm3zLLkAx0iVAnaTwrkLWYB8QPyu
+X-Gm-Gg: AfdE7cn1V1JGyKEcLssNDUXvxIOMO7ER7N3bykumArL+k3GCZd+bD89Dvl+7I7MLG5u
+	o4CcazzFnHkwfPc+BK2Se1rt/RFbqywKpJMV4kcvvtCuUDDVNFpY83H916rMCJ0kokou0Vk1omT
+	DDo6cd3AI7fwgYI2s19pNDi61PPZY97rYjgXO/+9v4tkqAjfU08xi9n7tkGXc9rrSru+JXhLZTX
+	56ayWqoqs7JGOgHF09OtR7Ec3rB+I2XTSjf830nkOJJhvz4fA9G8JpWoLwRAduEMK3j5Rhm4Zv+
+	5ATLvXi6MJ/uSnyJgRTJEmGZ8Z0EVJ6erUs57Q7sMU2u/4RNzb6QuYFGLuV/sJTWtdIgv+OU/qz
+	enXNS/Z7fUr5rw1nsOnWg3t7UEsJTEbRzr7xkQxdGYMntEgAwFzx0sRoJ/tBybqMubOBEZpJvDU
+	EZ3aKSlgrX9WBXDV3dcVgTnEAQtM9rzTBlouHpHDRNt8Os+ORTriosxiGO/IlZRHNkikCbcCDlz
+	iBX5Wu7PrX0dmonnQL5idzZBLzDDw9l4o0whcuiJw1zjVsZnmKuOlOkJ9s5ePeX4OrxA84PFv8v
+	C0wU4qoIRbl1Rt6PGG3c5h2Hiwc2s3mHujx/9EUA8zKc95p7Xy/nkD27d+YQdrRgM4cjnEeuXYN
+	D5hVDpxfFyZSvbL2QbzocC5g=
+X-Received: by 2002:a05:6000:2c0a:b0:47f:4893:d180 with SMTP id ffacd0b85a97d-47f4fcbfd0dmr2975258f8f.21.1784120510933;
+        Wed, 15 Jul 2026 06:01:50 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464c9cc3sm16825947f8f.35.2026.07.15.06.01.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 06:01:35 -0700 (PDT)
-Date: Wed, 15 Jul 2026 15:01:32 +0200
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+        Wed, 15 Jul 2026 06:01:50 -0700 (PDT)
+Date: Wed, 15 Jul 2026 15:01:48 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Nikita Travkin <nikita@trvn.ru>, Maslov Dmitry <maslovdmitry@seeed.cc>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: light: ltr501: Power down chip if request
- irq fails
-Message-ID: <7yhbsguvuodmgpmhb6dgnuxfede4x6x3ducrifymcmqlb5vl4u@rgrjqovq2ife>
-References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
- <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
+Cc: "Jonathan Cameron" <jic23@kernel.org>, "Lars-Peter Clausen"
+ <lars@metafoo.de>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Martin
+ Kepplinger" <martink@posteo.de>, "Sean Nyekjaer" <sean@geanix.com>, "David
+ Lechner" <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Martin
+ Kepplinger" <martin.kepplinger@theobroma-systems.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: accel: mma8452: Allow open drain interrupt pin
+ configuration
+Message-ID: <20260715150148.000045ad@gmail.com>
+In-Reply-To: <87bjc8o32z.fsf@geanix.com>
+References: <20260715-mma8452-open-drain-v1-0-b1dd2a440c60@geanix.com>
+	<20260715-mma8452-open-drain-v1-2-b1dd2a440c60@geanix.com>
+	<PLKuTyVcES-o-CEsU7WA3Ir7-phI9WLM9PJ5UErJeahWgus8heVF4GPky0SC-EpaHLv54lZya37ivhub3W9kNQ==@protonmail.internalid>
+	<20260715104542.0000433d@gmail.com>
+	<87pl0oo5iq.fsf@geanix.com>
+	<0RfJ6kNIpjdTDIh2uWC-FK3HRObOpQWqSWRm6hTgOFq6_wdHDyRfpatKMsvApvfFc0r-ye6piEWG888mBhp3yw==@protonmail.internalid>
+	<20260715134053.000012d4@gmail.com>
+	<87bjc8o32z.fsf@geanix.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260715-liteon-ltr329-v2-4-d18af55edab5@geanix.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jul 15, 2026 at 02:27:26PM +0200, Esben Haabendal wrote:
-> In case request irq failed, we were leaving the chip powered instead of
-> powering it down again.
-> 
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> ---
->  drivers/iio/light/ltr501.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index 379e57ac5f5b..9d4de798e5ab 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -1571,7 +1571,7 @@ static int ltr501_probe(struct i2c_client *client)
->  		if (ret) {
->  			dev_err(&client->dev, "request irq (%d) failed\n",
->  				client->irq);
-> -			return ret;
-> +			goto powerdown_on_error;
+On Wed, 15 Jul 2026 14:21:56 +0200
+Esben Haabendal <esben@geanix.com> wrote:
 
-This looks like a fix so we should have a Fixes: tag. And being it a fix
-it should be the first patch in the series (can come after bindings
-though). Reason is for backports.
+> > I'm not sure if this was intentional or not in the original implementation.  
+> 
+> Ah okay. I assumed it was intentional, hinting at the hierarchy of the
+> defines.
+> Should I flatten that, or is it okay to leave it as it is?
+> For what it is worth, I like the current format :)
 
-- Nuno Sá
->  		}
->  	} else {
->  		indio_dev->info = data->chip_info->info_no_irq;
-> 
-> -- 
-> 2.55.0
-> 
+Up to you of course, nobody can force you to do anything :P
+
+-- 
+Kind regards
+
+CJD
