@@ -1,99 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B925830C17B;
-	Wed, 15 Jul 2026 06:46:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C95921CC71;
+	Wed, 15 Jul 2026 06:51:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784098009; cv=none; b=caD+V0i4iT+PgmczIQV5C8c5JB7CHl5PtKYf69MB0Ffmiufv5zyyVEMRUE+lKQ2Ms6BIRL19ezl8gF5zCFPSOVSCq4hSoySH+fC/yLWf8yftvxY1zkS1JThkYLn4igsPTDrTj0k8lY9HK0voAxM5+DBAf4+fQ9fDyHESRyDv0t8=
+	t=1784098274; cv=none; b=cXeLWs06FibLKxuHyRdnWM6lJ4MIlzfP7+GNX7UBltzgEln/QI03FL+VVgWWCcJM4w2SyEdrRq8ZB1kWq/ZUDmOqCJ9aFkPFyMAzjrT1gnjhRnM7VP6gH8TRuMCRAOVVJzeG6UU8QvkbcPgfIlB7nFh4nPcJtwza83bfFugMmr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784098009; c=relaxed/simple;
-	bh=xTb1P18qTS4x2GH0IW0oXDegvzQvgVfn8qsozOtrSPg=;
+	s=arc-20240116; t=1784098274; c=relaxed/simple;
+	bh=jm3Fp1OxVfLWQNXEgcghvnmtKSa9n+UQn9qCVN6+yc8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JSf/eZ+qKHsKbNBcSPbsvRlHLysNhN0IGcOxvWq89+vf5vlprhQqvmvzwyJzjfHasnRC3A4ry6W8mK8uNKIT8O2aPcTXGuwDhoT6mifmKCvXOwyYac5KUhEthCmLBMfVCCmIlRXqeo/jlcPT+ryXDrq5aP6mwGZrnQXpi4xPRuA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ka8zdmea; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=gzntDo8s1n/32HG14C18pLhWL7Tvi0pHPJhJTUD3Or4wyOSFRh477aL8rX+IQffnLwRQ92XSdnju1C6R+XZUHY/H8HD03EqlADBBSze3v4vtFdmFKkq4xYS/042dI5gn7Jt2+uLZe+XrjP8O4RDvhOxF+8CqZJUzPNQmEORkJA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KPchxVhL; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ka8zdmea"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KPchxVhL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784098007; x=1815634007;
+  t=1784098273; x=1815634273;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xTb1P18qTS4x2GH0IW0oXDegvzQvgVfn8qsozOtrSPg=;
-  b=ka8zdmea8IFggr9YLdjJfE7GGJ+kYBCAIfu2BDACoZNhNgo98LFJ/BxI
-   i/5sQanYMUJgVXoxAdshnZilH24wSwMAj4tPRaTLvq+6Z8MNQgqif2e7Q
-   BJulZMdX458xX/CcC4pLV2gkaA2sI4/OmrO4akY9pkftjG58nnvKv14sp
-   HnPzhiesZsmR3jYDY+ZOwx8XFIZp9sSSqNIJrTHXCL25fRkUdGqyNaS7C
-   odhi63g55OHIALpbBC8wBv+3fSL3juh/s0uvFv16rwPm8sAyveR3DfluJ
-   ESnF4xnlaxWpfEvd5z3jZVD/g8OuOkSAGEZmu18me2GAU5w0MVgQ7yTjL
-   g==;
-X-CSE-ConnectionGUID: zk7s8upoSviI3Wmb1Hg2gg==
-X-CSE-MsgGUID: eh/fN7dmQDqrDTJzXNXlUA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="110273546"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=jm3Fp1OxVfLWQNXEgcghvnmtKSa9n+UQn9qCVN6+yc8=;
+  b=KPchxVhL7K0/2dJv8Yo9BOOR5vh/VRh1K5EtZ7tIstmXnK/+N+FXZbxq
+   08tiVQyiO4f/iujCRgg27/ziKdSrjWXQgdvlf6i+2dtdhOFPRblqEV2Da
+   ZgvUzmZxTGbaAsqqIm9KdCPB7ymi028XA4WWQs7oiSPiXgLXU5DbJ41ln
+   T9GWzYMPKbUWPuQkXmxk/2VmJ50WU32mSLNpnj9jLFd1uYydzexGFRNnL
+   CyN9reAiq4WpxurjQn1GcnaOLlKmtm2y3vn5y96a5vje6XlSb4WfeOjJE
+   XN83We+Zy00qnYNtjDL064mrqPfTB90khBt2mSU9tm6+My7l8eiFbkq1W
+   Q==;
+X-CSE-ConnectionGUID: /lp2AuI7RKyZrhh5PXIEXg==
+X-CSE-MsgGUID: LWnpeLBHQPyFcGJEdqNZCg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84843826"
 X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="110273546"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:46:45 -0700
-X-CSE-ConnectionGUID: 2Ffx0br5Tr64//QD3nI7jA==
-X-CSE-MsgGUID: t4cR1dOeSZ2SCw4ZFSktfQ==
+   d="scan'208";a="84843826"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:51:12 -0700
+X-CSE-ConnectionGUID: FgmvN1u7Romd21DsaFUtUw==
+X-CSE-MsgGUID: GMTfaPmVQuaB2s3PLm5nMQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="260380591"
+   d="scan'208";a="286155256"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.44])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:46:41 -0700
-Date: Wed, 15 Jul 2026 09:46:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org,
-	marcelo.schmitt@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, mike.looijmans@topic.nl,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jorge.marques@analog.com, antoniu.miclaus@analog.com,
-	mazziesaccount@gmail.com, jishnu.prakash@oss.qualcomm.com,
-	duje@dujemihanovic.xyz, wens@kernel.org,
-	sakari.ailus@linux.intel.com, linusw@kernel.org
-Subject: Re: [PATCH v7 0/3] iio: adc: ti-ads1100: Add support for TI ADS1110
- to ti-ads1100 driver
-Message-ID: <alcszm5-9alInIo0@ashevche-desk.local>
-References: <20260714195528.597753-1-jakubszczudlo40@gmail.com>
- <66b7b01f-0e79-4387-9b68-92858ccc1fe7@baylibre.com>
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:51:08 -0700
+Date: Wed, 15 Jul 2026 09:51:06 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Siratul Islam <siratul.islam@linux.dev>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <alct2kGoQAC8pNMd@ashevche-desk.local>
+References: <20260715063652.368501-1-stefan.popa@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <66b7b01f-0e79-4387-9b68-92858ccc1fe7@baylibre.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260715063652.368501-1-stefan.popa@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jul 14, 2026 at 03:20:18PM -0500, David Lechner wrote:
-> On 7/14/26 2:55 PM, Jakub Szczudlo wrote:
-> > Add support for the TI ADS1110 to the existing ADS1100 ADC IIO driver.
-> > The ADS1110 is pin-to-pin compatible with the ADS1100 while providing
-> > higher resolution and an internal voltage reference. This patch series
-> > extends driver support for ADS1110, updates device tree bindings and
-> > Kconfig text, and improves the overall hardware description for the
-> > TI ADS1100 family.
-> > 
-> > Tested on: Raspberry pi 3b+ with 7.0 stable kernel
+On Wed, Jul 15, 2026 at 09:36:15AM +0300, Stefan Popa wrote:
+> This series adds support for the Maxim MAX40080, a bidirectional
+> current-sense amplifier with an integrated 12-bit ADC and an I2C/SMBus
+> interface. It measures the voltage across an external shunt resistor and
+> the input bus voltage.
 > 
-> Hopefully this applies on the iio/testing branch? A lot could have changed
-> since 7.0.
-
-> > ---
-> I made some suggestions for cosmetic improvements, but good enough for
+> The driver operates in direct (INDIO_DIRECT_MODE) mode. Each raw read
+> triggers a single on-demand conversion (SMBus Quick Command) and reads
+> back the matched current/voltage pair, so results are always fresh. It
+> exposes the current and voltage channels with raw and scale attributes,
+> a configurable oversampling (digital averaging) ratio, and PEC-protected
+> register access. The two selectable current-sense ranges are exposed
+> through scale/scale_available; the current scale is derived from the
+> shunt-resistor-micro-ohms device-tree property.
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Tested on hardware with four MAX40080 devices on an I2C bus.
+> 
+> Regarding Andy's question about *iv being updated even on error in
+> read_poll_timeout: yes, this is intentional. The poll loop must update
+> *iv on each iteration to check the valid bit. On timeout (conversion
+> never completes), *iv contains the last-read value with the valid bit
+> still clear, but the caller always checks the return value first —
+> "if (ret) return ret;" prevents any use of the stale data.
 
-+1 here, but I think the chip_info naming and actually -ENODATA are good to be
-in from day 1. Assuming that is going to be addressed in v8,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+My point also is that we can do it only once. And since the above a comment is
+a must. See more in the comment I'm going to give against individual piece of
+code.
 
 -- 
 With Best Regards,
