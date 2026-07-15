@@ -1,151 +1,190 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3AC7313283;
-	Wed, 15 Jul 2026 06:32:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD95326CE2C;
+	Wed, 15 Jul 2026 06:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784097146; cv=none; b=hmMuCUkR420EtdjvR0wCGThlG+haGCQVaF+QBHS8IKoXqjc7nJAAa2dt7FJ9oxFaFvqRyAqJScjqyZiE1sUFeOvlbfGFa2fnAgvGTNmenPHUt4wwiD+jH9ruL9nD5VkLnQHRQkTsEyVoYotmA2uA3B4FWvrd9XZkOnpziJAIS0I=
+	t=1784097467; cv=none; b=XwtJdEIWzva/Jo0F9KSYJ9Whgf/L0kxOAtEGc6ROF3I75HdQ4T/WplWxUhczV6FK4zTzDx3sVy3yjPUqjfBQ8Aii5R9jwHOGYZiXDqck1Jrfkg8eMty0YrDgvSJgToilNIbeMCNAcWGmrvTcSpst9WxZx/awjgaWl35VsEB/pm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784097146; c=relaxed/simple;
-	bh=RgFSZ4GcQNxSGk/4lQiMQnPxmHi1gAvKmjEWlI5TUMQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lynxQIEOGTtCroC/NLEeIJfX9UkGQ57sfPKj+4wUlMgyjCbPNkaXFwQMFpRlyp1Jrcki+U8pPKJoBnLAH9nQIY6oJj1Lz5TVZJ2jxMzrSFXyd6XIsUCCxRgax+gq4b2TuF+0CbyTlm/zwlzqOiXXNKeEAe2++hnkzky4Gaf+jWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q2TbwCJN; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784097467; c=relaxed/simple;
+	bh=b9Vda+Z7LQQ362AAMSMY+Qu/HWQ+WpugFJm1Q7IkhQo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=pb9WNpkNP6bBG+n4dRUYviKDsmgK5pfyV6wrYQt4KaMA+VWXrfNTZz9wFT/+68CzCgIg3NEHM1qQWPXBC1nQRpNfQo9kfM+E7yOATNs1Qau0G1H4o65oL18dK2UwMXn9ZguHhkHBKvYTr0Xl7GbTjnMfDPg6IS5KWzmep6F7Tq8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=RMfrVuge; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q2TbwCJN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784097145; x=1815633145;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RgFSZ4GcQNxSGk/4lQiMQnPxmHi1gAvKmjEWlI5TUMQ=;
-  b=Q2TbwCJNmrZaYb5Qd80ZDc5UTaurU4mwkq6Hr4uRF5QPJjMH3HPmqKD6
-   PkA6QyAg+tfpSNxNU/YH8Y7qRUKG8+I8vSRlzHnLpbAXuSxbicotmPbFF
-   GhdDu0MtcTlWMH9wB4aevZf7F0AGV42vKz36ZxbibDz1mVnnAWHq0FRWV
-   If7ua3SEV21gdOqIKOqBdA53Q8GZ0HaejxsJqSFaiQXjJon3ne554HiDp
-   adiX5LK5SzXSXgNsd2/LS34f2pmVL9mksMsaqtmMjorF2RJDiUatAZqDA
-   gZDPtaTHePRD+YmxK1AycJ0aW4jcZqqkhgqNhW5adMNHLLr9CBa3vTQxy
-   w==;
-X-CSE-ConnectionGUID: +LQO0EBGTcyfoHYW7ufkIw==
-X-CSE-MsgGUID: 09u5F7t1QVynrWvNSIzYhQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84842206"
-X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="84842206"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:32:22 -0700
-X-CSE-ConnectionGUID: 0DPTEpseSdSJFiU6iNrQpg==
-X-CSE-MsgGUID: fImbR2beQzyJHFlgMfVyjQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="254332119"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.44])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2026 23:32:18 -0700
-Date: Wed, 15 Jul 2026 09:32:15 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v7 07/17] iio: test: add kunit tests for channel prefix
- naming generation
-Message-ID: <alcpb-7GVSfk6jFB@ashevche-desk.local>
-References: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
- <20260707-ad9910-iio-driver-v7-7-a4ec30f63700@analog.com>
- <20260712020928.2c8d1667@jic23-huawei>
- <egyms7ulkxsgu4pvfkoruelec3sf6ca4bndcuqkvxljrdluqwu@edlqne7oy3xs>
- <20260714180812.000070c4@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="RMfrVuge"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66F3kmQE3801729;
+	Wed, 15 Jul 2026 02:37:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=rDpAjD1cnY2Sm8mOSaoI/EwlKKd
+	KDM5M8s6mPnmxOkU=; b=RMfrVugeCw9YvJrqgbo/7mnybtEE1iW35BkS+F4JHvu
+	dkRzgV9W8i8oFRfGUsWxiWQq6XhD9mqR+gODAQqHnLKvaJjPp72qdg0aFw/9Tmn4
+	DGyXxVkIQS/GrswuSr8cYtIr7UfNeGFWcnZiJrXzqky5DQicVDDU4aCcg9pDNYBa
+	sjnKAM9YDiSBBYxWQQnobH221crjeZDSe2YYANsFDSAVg6maDP6SqhrzV9MrVEnV
+	tc/uEgS90KZMJ6D76MD0WJrOZZx4yeNw9X8LbqcQuTZgMlqOfUGbEJB1TVK90L7o
+	oPysAlNpYRhP88G0bkfOBbbwAKZkCE+jvai1/s52VXg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4fe0bx10n8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 15 Jul 2026 02:37:27 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66F6bQlA032705
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 15 Jul 2026 02:37:26 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 15 Jul 2026 02:37:26 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 15 Jul 2026 02:37:26 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 15 Jul 2026 02:37:26 -0400
+Received: from HYB-JRXo5UEs61B.ad.analog.com ([10.66.6.193])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66F6b9Aa001579;
+	Wed, 15 Jul 2026 02:37:12 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>,
+        Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>,
+        David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+        Rob Herring <robh@kernel.org>,
+        "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Siratul
+ Islam" <siratul.islam@linux.dev>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@baylibre.com>,
+        Ciprian Hegbeli <ciprian.hegbeli@analog.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Stefan Popa
+	<stefan.popa@analog.com>
+Subject: [PATCH v3 0/2] iio: adc: add MAX40080 current-sense amplifier driver
+Date: Wed, 15 Jul 2026 09:36:15 +0300
+Message-ID: <20260715063652.368501-1-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260714180812.000070c4@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=JqbBas4C c=1 sm=1 tr=0 ts=6a572aa7 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=LTKegqPRdhSjGXiXv1MA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: EMPn7fAb7tVG9iGq3ooRIb9H6gKtkvt_
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE1MDA2MSBTYWx0ZWRfX3lFUZbJ9qIbQ
+ XZzdr88eHj7oFEjrVJv9kH+2On2efD1NhvkBDcP5l+ATCosleum6FAoUoFU4lYt1E8vpor4LyYb
+ tzDP2opXQeLFcyl19yxUMqTR7/LLBp4DDwEgAY79jpli+0OrbFDR
+X-Proofpoint-ORIG-GUID: EMPn7fAb7tVG9iGq3ooRIb9H6gKtkvt_
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE1MDA2MSBTYWx0ZWRfXyKwUD2XJ7h7r
+ SqO8V7OBhcWs7whRB8yzWlIy1glgpSyubKtA13pv16qELKV3yj5QPupHC6Pv4EzIAjbp0l97Vjw
+ /Uiy62k9ZZxspy413faNJWpgXatRS9GO9xqHU1Si97xCK4Al7L5m7De4H0FXcy3l8htiz3mMtJx
+ RIQAt1tu/K6Z2za3XgQOvO00iaLzW+3cs0Y5y4+FAAD9ZbdcXlTogwIIHmbd/b2CIl3OZpY8gCt
+ TjFBVRnp+f5PszlCWQaxVN1qgFjC475NxC81TSFE1Z59uY8PvYaB7+vBbwq7xaKSwIjntD/nRCc
+ km6ZaAlecwU4m1oeijRHNf8CMvhZ3Y/p1Xqmbvy6+nKVz1cRGAN/G96KiinlFrZfSD53NJPViu9
+ wPq+PLhc2e8lFXXcKVmzUESgIX/FJfpxq98MdzFSIiZe9SbHwZhUElzQlvCsA+IrgPHsVh6v8bR
+ fxSMroNLvFvjpN6XoXg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-15_02,2026-07-14_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 impostorscore=0 spamscore=0
+ adultscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607150061
 
-On Tue, Jul 14, 2026 at 06:08:12PM -0700, Jonathan Cameron wrote:
-> On Mon, 13 Jul 2026 10:52:56 +0100
-> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
-> > On 12/07/26 02:09, Jonathan Cameron wrote:
-> > > On Tue, 07 Jul 2026 15:04:28 +0100
-> > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+This series adds support for the Maxim MAX40080, a bidirectional
+current-sense amplifier with an integrated 12-bit ADC and an I2C/SMBus
+interface. It measures the voltage across an external shunt resistor and
+the input bus voltage.
 
-...
+The driver operates in direct (INDIO_DIRECT_MODE) mode. Each raw read
+triggers a single on-demand conversion (SMBus Quick Command) and reads
+back the matched current/voltage pair, so results are always fresh. It
+exposes the current and voltage channels with raw and scale attributes,
+a configurable oversampling (digital averaging) ratio, and PEC-protected
+register access. The two selectable current-sense ranges are exposed
+through scale/scale_available; the current scale is derived from the
+shunt-resistor-micro-ohms device-tree property.
 
-> > > > Because __iio_chan_prefix_emit() is static, the test translation unit
-> > > > is pulled into industrialio-core.c.  
+Tested on hardware with four MAX40080 devices on an I2C bus.
 
-KUnit also has static/non-static automation via a macro (defined in the
-kunit/visibility.h) and I see that's used in the below example.
+Regarding Andy's question about *iv being updated even on error in
+read_poll_timeout: yes, this is intentional. The poll loop must update
+*iv on each iteration to check the valid bit. On timeout (conversion
+never completes), *iv contains the last-read value with the valid bit
+still clear, but the caller always checks the return value first —
+"if (ret) return ret;" prevents any use of the stale data.
 
-> > > Isn't there some magic route cases like this that makes it non static
-> > > only when self tests are enabled? 
-> > > Claude tells me to look at include/kunit/visibility.h  
-> > 
-> > There is, Although I think that using
-> > 
-> > 	#if IS_ENABLED(CONFIG_IIO_CHANNEL_PREFIX_KUNIT_TEST)
-> > 		#include "test/iio-test-channel-prefix.c"
-> > 	#endif
-> > 
-> > was more straight forward, less invasive and easier to change than..
+Changes in v3:
+  - Remove mod_devicetable.h include (Andy, Uwe's rework)
+  - Use lowercase _mV suffix for unit defines: MAX40080_INTER_VREF_mV,
+    MAX40080_CSA_50mV_GAIN, MAX40080_CSA_10mV_GAIN (Andy)
+  - Remove MAX40080_NUM_RANGES macro, use ARRAY_SIZE() directly (Andy)
+  - Fix reversed xmas tree ordering in get_oversampling_ratio() (Andy)
+  - Split semantically different variable declarations in
+    set_oversampling_ratio() and max40080_init() (Andy)
+  - Join *val, *val2, long mask on same line in read_raw signature (Andy)
+  - Use const int * cast in read_avail (Andy)
+  - Join FIFO_CFG write onto single line in max40080_init() (Andy)
+  - Return i2c_smbus_write_word_data() directly at end of
+    max40080_init() (Andy)
+  - Use device_property_present() pattern for optional shunt-resistor
+    property (Andy)
+  - Make vdd-supply required in DT bindings (Conor)
+  - Restore i2c_set_clientdata() needed for PM resume (Sashiko)
+  - Add bounds check in get_oversampling_ratio() for hardware register
+    values outside expected range (Sashiko)
 
-Maybe, but thanks to this thread, I fixed other modules that use their own
-approach to use the standard KUnit infra for this (as below).
+Changes in v2:
+  - Add vdd-supply and interrupts properties to the binding (David)
+  - Add types.h and time.h includes (Andy)
+  - Use USEC_PER_MSEC for poll timeout readability (Andy)
+  - Use 1 * MICRO for default shunt resistor (Andy)
+  - Rename field macros to include register name, e.g. MAX40080_CFG_MODE_MSK
+    (Jonathan, David)
+  - Add indexed defines for RANGE field values and use in gain array
+    (Jonathan)
+  - Use array lookup in get_oversampling_ratio instead of formula (Andy)
+  - Use switch statement for chan->type in read_raw (David)
+  - Simplify update_bits: one-liner RMW, return write directly (Andy)
+  - Add local client variable in trigger_measurement (Andy)
+  - Add braces to for loops and use C99 loop variables (Siratul, Andy)
+  - Flip if/else in reg_access, separate declaration from assignment (Andy)
+  - Add .name= in i2c_device_id (David, Siratul)
+  - Reorder declarations to reverse christmas tree (Siratul)
+  - Return directly from oversampling case in write_raw (Andy)
+  - Add blank lines before return in read_avail (Siratul)
+  - Add Co-developed-by tag for Ciprian (Andy)
+  - Use Link: tag for datasheet URL in commit message
 
-> > 	/* In "drivers/iio/industrialio-core.c" */
-> > 
-> > 	#include <kunit/visibility.h>
-> > 	...
-> > 	VISIBLE_IF_KUNIT ssize_t __iio_chan_prefix_emit(...)
-> > 	{
-> > 	...
-> > 	}
-> > 	EXPORT_SYMBOL_IF_KUNIT(__iio_chan_prefix_emit);
-> > 
-> > 	/* In "iio_core.h" */
-> > 
-> > 	#if IS_ENABLED(CONFIG_KUNIT)
-> > 		ssize_t __iio_chan_prefix_emit(...);
-> > 	#endif
-> > 
-> > 	/* In "drivers/iio/test/iio-test-channel-prefix.c" */
-> > 
-> > 	#include <kunit/visibility.h>
-> > 	#include <iio_core.h>
-> > 	...
-> > 	MODULE_IMPORT_NS("EXPORTED_FOR_KUNIT_TESTING");
-> > 	...
-> > 	// Use __iio_chan_prefix_emit() in tests
-> 
-> I'd rather this wasn't built into the core module.  So prefer you jump
-> though those hoops.
+Stefan Popa (2):
+  dt-bindings: iio: adc: add maxim,max40080
+  iio: adc: add MAX40080 current-sense amplifier driver
 
-Hmm... The above (while being verbose) is the standard way of how we export
-symbols for KUnit tests. Do you have a better alternative that everyone can
-use? (Not only IIO subsystem.)
+ .../bindings/iio/adc/maxim,max40080.yaml      |  64 ++
+ MAINTAINERS                                   |   9 +
+ drivers/iio/adc/Kconfig                       |  11 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/max40080.c                    | 630 ++++++++++++++++++
+ 5 files changed, 715 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+ create mode 100644 drivers/iio/adc/max40080.c
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+--
+2.53.0
 
