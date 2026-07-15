@@ -1,68 +1,68 @@
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27C621E8342
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70CF023ED60
 	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 00:20:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784074805; cv=none; b=UpP7etJWCSwwiJO0yhBQf9E8U35ULVfYG/YBcYyKhQ0uWw5cY96BdZ1EclI+TQbLhlY7sRY34ZgIdGPZlQ/NzVu0/m1G7d+QKFv8D2aEEX6qe5Wa6Ums2vffcpWMbGsDZl4ULSU1HjyEup3AXchl2pBDLPud/DS2/4Ey6PrpyJU=
+	t=1784074807; cv=none; b=kb/cqSYtiOJKbSr6WeX1l0xnvzsufm1YVACQmpR9GVfi7bIxgiUlcF80Dnu+UjXmBFa0pv0NIrNyJ5VsOkSOjlTLreU8KOUDR4rT+06cZuZexVAAgogHL12busUWNV60ebstPKh3mDoCElfqI/+3iSeuqyjcDrcuxOeuXE+sii4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784074805; c=relaxed/simple;
-	bh=HFTM3kcFI3bgzN5pSwcDunfYHR7FvwBroXaFieoNilQ=;
+	s=arc-20240116; t=1784074807; c=relaxed/simple;
+	bh=F7uehXGTkndv6ihXbLs2vu47tYBk+ugQD/7Z1ipiJs0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MUcViLldybjdfVPIKDK8Bw0AYg0CqKo+TuTGZjwIw/slQwZO1A0VJ4lUSy2Sl6oHnkywlySSW4nuXh5tFC11RBYj4W4QmRtc9+CXBTAdrmLDH2XjuDcpXNz1mSJ7T29QsnEiFl/dTd46AjLnpQo+UL/d5eDaLKg1GptMjQ7xNgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=DTlEv/Ds; arc=none smtp.client-ip=209.85.160.41
+	 In-Reply-To:To:Cc; b=t4ekcNAhiG2YruUcvD36yF13Mj8xBuw1i+gfjdzsEXY/ua4ZsodGJ27RqR5tEy2Tzk8mcj4DSwj2TZB9t47zckS1xJ6W0Lqa/4sfyXyCBnzo7R1W9aADY5aJhG4SZ+8FH1tUwULHlVaVYBsqx/OQ8zW/GGO+gXLl0OLRHFcyunA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=TFjWDCTI; arc=none smtp.client-ip=209.85.160.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="DTlEv/Ds"
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-44cedfaab6bso2098273fac.3
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 17:20:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="TFjWDCTI"
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-43bfe209e45so1247214fac.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2026 17:20:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784074803; x=1784679603; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1784074804; x=1784679604; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=JBQ6GE5MoRSLlPltdoc6w/vidWV64cNB5l6S7LWSYEI=;
-        b=DTlEv/DsMucFwVA651q2uUIlEf3AWzfJvK6UsSP/vE34ekSqAAS7GhqOlzUsv39eSO
-         VW595V3FkeIfVikEgEe2gZqSq0nanMRJqyFhUfx8YfNCKReYbnEA0T/Gr0q+aQE40ak+
-         zWWrhSWGXwtAvleD/j6aHhw2Wy9z4Iwwf8iSbY91Qj2GtrRKEpzBDk8JeCVdi0W3AI2Q
-         PD6KXfuRl8lG/Nye+OLen7kbYwGpbJbe1ttfIxpSfVuSLQP0Q0fH8x2u2WHpNhwbxfFr
-         XX2edC41VX5p02pyzGsBLyYKNxcDXyxTNcey5rAoE5wWP8VIWi1KWb9Fp6yfMr+JIOFg
-         lEiQ==
+        bh=LWRbxdASCdWKyZ3TvrDr8088Qpx03IBe8BQQlo35n/Y=;
+        b=TFjWDCTIRRjswslP1wTxuKQoOSEtyje98T9tSrcRohj+1569THDI5p0OoueooHrYVO
+         +s6ygE+FV3lOBjE6hwzaycgXvRIp8M5p6cigNqD8UyJnaoLuQB2V2SuL5+ZDJQLTOc6X
+         RgGDJ4RQt6o6DD6xq/mIwVhbEyT2gkMqtu9PxRsOY6+O2SQc5hwCVVMjdh6LWdCRaOgr
+         /qzFuw4OI8M5PWFSPyMcCkTKVZdbbAgptNsI3Ju7ocXkjBLp4l9UlbuednRP5qIqWC/O
+         fVgDjU3Sa+y4Fdw3e/FH/AFcjpvnl7uavw8/2k5iGwc4j07CvlSrDLZm/pGRnEdGAv2G
+         /vwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784074803; x=1784679603;
+        d=1e100.net; s=20251104; t=1784074804; x=1784679604;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JBQ6GE5MoRSLlPltdoc6w/vidWV64cNB5l6S7LWSYEI=;
-        b=MlK2N+daLRwDuqVaq09OSyuJatNcygg4VCq5WVCclSlGkyC04XUSlyw2qmW+bphbNI
-         ZPXkJehAxBOrspDgLLavbGsL/chWWY7FeCJ2e+5ECjH/IpiDEwDG1X2WEXcD8+lST7SS
-         mIZ3lTSDTkSn53pNtJJjTgR5ez03Rv/5woZycyaIRGD6VEFDuWl+svjkxY9XWEfMk7Py
-         HQcqMYAqxpXlMDA8yKgm8izunzGbtHDc7VCAHDJWj5t863P+WbBIAgJk1FKme2ko3XDt
-         eltn35hgPn3v0ns5Nf2Cj7GQGR2QOsOzUCj9uh6OhL23KgC5Kwn0eh4gnQC2r21WBrTF
-         6SGg==
-X-Forwarded-Encrypted: i=1; AHgh+RoIwJszji4nN1TDQtdA8mLdQu4kGnBxrqH7ihkyknJBHm3HzN/GyoVcboIu6UnNFLM9KdYpa9oQEEE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzAVjw6DzHh8HlAma5GrrDwCNEVgt+kW3IZajQ6KtDWO722kFFq
-	jECt98FDJi2jdBzKhmDbNptCRmXT1R9Ct5Cg6bo+3Q81nrTr3HZdVHXDXqHmz/WZWEox502lbin
-	mfDXI
-X-Gm-Gg: AfdE7cmBJv8+7JfPkSP89sVV+Z2xipECez7UDVM22mEu/m9LRNKiTnUWE+lRroSKepE
-	gG0PiKDcZGf7Ubha7gwAFVP675MCX1byOoi6if4QhICuGrQ4iTgogqCuJ1oSsJWPrpRliU9X12F
-	VbWEBOKrK+3kgO1eeVFy/zzOBKX8mnyV1v0L6HTGcc79lCpL1Tavc+TvN6huR3z1kB4+LmgM3i2
-	/ZtcAAoiAKQZyi5KnYcloSEXrT6p6J+1wPuiCHhK7NqTlUsmVIjsCEG4wZ5kTjbXCO0VWFV6hHj
-	BJj2iksml5MQvW4nDKT3Ic/PKhA3ZAZhYGoHXzJL3oJefq5120h7yV1d/VSEF9OSFJJYHsf/6kv
-	BlF/vmkl3g8qN+Ex9dW9iR126IU+AkmBKlukyUD89XRYnqB6un1JJTD86xKM5Wa/fGZHn4fpFGJ
-	NQAhnzy8PHXwjA54xb7w==
-X-Received: by 2002:a05:6870:2885:b0:455:d4ba:1dc6 with SMTP id 586e51a60fabf-4562b21f1ecmr585764fac.5.1784074802941;
-        Tue, 14 Jul 2026 17:20:02 -0700 (PDT)
+        bh=LWRbxdASCdWKyZ3TvrDr8088Qpx03IBe8BQQlo35n/Y=;
+        b=VPBtx/01VcsLfg3rCEa0xN79IphuUQMDMQKUruEFGWRs4uFMZAZnT4bxEmrxOjhvdS
+         4I0vLddM15g7EBFUk76GFUWlRcKr+Tjxi/nO3Vug6IgXTdyJAAW97EOVH0cuf4ihQu46
+         UcSnhiQlFMgAOO//jXRJNu/7mXqSlW0v5WjhBPMQMNIIw0FZBSiAZFi4wwVxG5gx0IEO
+         Wtspa6XCTG+bRBi5V68uIid3P9ynKznbVLeupDxo1GcjFlCLdIoXWgKrBppy13SoyuAg
+         6+XpAiBh7r2ob3uEdRxA82IGhHGxKKEWZp5THGVjko5TJA1E9eE6y3ZWJS7goVsX0EUf
+         ED8g==
+X-Forwarded-Encrypted: i=1; AHgh+RqNfy2Di0ZzP8EFICP+sFO06eEsz/Q41qhbiG74kQFWJ6d9jZK8mBxw/8XTbuQctVfpqnbaAR8779o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzYqRKl59hfF7odDvIfvVkowqTxeoHsX8VNfW2xzRjOp8BrYRxG
+	JDNIGv2i48LkJwYy3A7IIDXHvJzIeiGTkA+8Xt+z5MQTgNE/SNTOrDnV1tUbPl7JSjvGhzOug/V
+	OaO3S
+X-Gm-Gg: AfdE7clkwAg3EuY9m0eZPPh/uVL1U5XHABHQnZm/E79G5gV+rq1BOLaEYXsDDWEUj7t
+	WdPurs4M46kFd12P3/ETvw7vauMwK5xBtyNdMaLGVfBnaKHWSSBUpRcnnZtSXrH1I13nUgTyIvd
+	6oQUYayJx8vM4hUD7t+pqkj0VTE04d9miSI7dHCj1PKnNiSiruEK05xGrS7DGYDTl2M1dKbFUwi
+	Uvp3FsgfbqeDanVt6D9Wf99fIYREc5CiRdROTKnizMUZJMaju4WcW8t4wzMxkApAlE9dMaEATKC
+	fBDM7owFA5hiefcrV4FqjKbFqsM6tsX3PgUQ70MTbdCID4y9gVJ0VVqd2WO3gzziMKg9t3OYW05
+	R4PnE32oFYrOTi6S0fuleElUPHGiYTeBGonqkumJiq6LuZvi/b3TAPGGVadeK0G8p+d+kyArOwr
+	qkDUK54uRzNRSd7EqU1Q==
+X-Received: by 2002:a05:6871:5225:b0:448:558c:d8c7 with SMTP id 586e51a60fabf-451f1485119mr8363700fac.37.1784074803907;
+        Tue, 14 Jul 2026 17:20:03 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:280e:69fd:7612:d5a9])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-455b767413dsm8047305fac.3.2026.07.14.17.20.02
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-455b767413dsm8047305fac.3.2026.07.14.17.20.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jul 2026 17:20:02 -0700 (PDT)
+        Tue, 14 Jul 2026 17:20:03 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Tue, 14 Jul 2026 19:19:31 -0500
-Subject: [PATCH 2/3] iio: adc: ti-ads112c14: add support for I2C CRC8
+Date: Tue, 14 Jul 2026 19:19:32 -0500
+Subject: [PATCH 3/3] iio: adc: ti-ads112c14: add support for buffered read
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,7 +71,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-2-fe6e1c971288@baylibre.com>
+Message-Id: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-3-fe6e1c971288@baylibre.com>
 References: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com>
 In-Reply-To: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -82,254 +82,225 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  "David Lechner (TI)" <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7615; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=HFTM3kcFI3bgzN5pSwcDunfYHR7FvwBroXaFieoNilQ=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqVtIje8YQ+6c9D8EmeEsx1FWFFibWdlqTR145m
- UNDb0slsMWJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCalbSIwAKCRDCzCAB/wGP
- wDkdB/9B+9BPJSWFcjpnZ8CL1WwNsx+NPMLDzKecvcCGHah8jZtUmIZNJG1rWqCIzX83z1dKotf
- b+eXiWcS+6+3Kda6gLSqM0a7M7gaNKECRjG0CD7FjfQzEtDBon3DOTfbslSYd5fDLxho+pRQS8b
- eJ0mctfvhhzIUsRtZVk78Liu04fF7jPdQThTWjNoJzmj+tawDScRH2CwhrgTZkqOsAbfOf3DQM4
- 06g3zvdWncpJCx3GxVKkzw4S9O8VkOC6pNkYc82viPhL0Xs430LoYET76yfjovjSWB0sgkD66XE
- HYn3dCJTlfUFIP1tQ4CV7sj7VVApXpJUNOVE6SmOTpzDnSNC
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6896; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=F7uehXGTkndv6ihXbLs2vu47tYBk+ugQD/7Z1ipiJs0=;
+ b=kA0DAAoBwswgAf8Bj8AByyZiAGpW0imiz67irHdK0psKZ4mSTPPqIKVR70UqBtdT9ux7Dra3v
+ IkBMwQAAQoAHRYhBOwY2Z5iDoPWnNhomMLMIAH/AY/ABQJqVtIpAAoJEMLMIAH/AY/A2B8H/A5S
+ zBbw9OmQ5Cj0zMPXbS8O1YY4w+iTh6wgE6aQGAxMskmlVGSWxTu54YhFYQa/mVfLW/KZs+rBfeP
+ v0X7tl4piUo0d6pT/x8STRdU0aYH6saY2Sa7A+9Tv1e9rdZ8eqpbRcZfO/mQbqJz+DoKCzj7aA4
+ v945IJi1IO2iF42fOYIIhQjNCSJjmbmcZ2h2Vz6Gj9XkLDyPL+D1mBL/kvqimhOjCJC4lN+Nle4
+ fcgNTGvGEU7LOYDjAnTOWkZwAB91AXeRcSq2FdlkLw4ORjtXsLKeb4Z4GkrQ6SbE6WjtF4L1tQr
+ knYoAQU3aij/zexKugevSUPIPCnAgem09zG9/1A=
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Add support for I2C CRC8 to the TI ADS112C14 ADC driver. This verifies
-data integrity of all I2C transactions with the device.
+Add support for buffered reads using a triggered buffer.
 
-For now, it is always enabled, but it could be made optional in the
-future if needed (e.g. for higher-speed data acquisition).
+The device has a continuous conversion mode, but that can only be used
+with one channel at a time since there is nothing like a sequencer to
+support that in hardware. Instead, we use single-shot reads like we do
+for direct reads to be able to read multiple channels.
+
+Support for continuous conversion mode could be added in the future if
+needed via a 2nd buffer.
 
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
- drivers/iio/adc/Kconfig        |   1 -
- drivers/iio/adc/ti-ads112c14.c | 145 +++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 140 insertions(+), 6 deletions(-)
+ drivers/iio/adc/ti-ads112c14.c | 103 +++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 99 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 642c42b1fae7..4ed6f01386bf 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1802,7 +1802,6 @@ config TI_ADS112C14
- 	tristate "Texas Instruments ADS112C14/ADS122C14"
- 	depends on I2C
- 	select REGMAP
--	select REGMAP_I2C
- 	help
- 	  If you say yes here you get support for Texas Instruments ADS112C14,
- 	  ADS122C14 ADC chips.
 diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-index 28824c81908e..99ccacd6d56f 100644
+index 99ccacd6d56f..1404ca31324b 100644
 --- a/drivers/iio/adc/ti-ads112c14.c
 +++ b/drivers/iio/adc/ti-ads112c14.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/bitfield.h>
- #include <linux/cleanup.h>
-+#include <linux/crc8.h>
- #include <linux/delay.h>
+@@ -15,7 +15,10 @@
  #include <linux/dev_printk.h>
  #include <linux/device/devres.h>
-@@ -156,6 +157,9 @@ static const u32 ads112c14_pga_gains_x10[] = {
- 	200, 320, 500, 640, 1000, 1280, 2000, 2560,	/* 8 - 15 */
+ #include <linux/i2c.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ #include <linux/math64.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -29,6 +32,9 @@
+ #include <linux/unaligned.h>
+ #include <linux/units.h>
+ 
++/* Arbitrary limit since channels are dynamic. */
++#define ADS112C14_MAX_MEASUREMENT_CHANNELS 16
++
+ /* Datasheet t_d(RST) - time to wait after reset before next I2C use. */
+ #define ADS112C14_DELAY_RESET_US 500
+ 
+@@ -255,6 +261,8 @@ struct ads112c14_data {
+ 	u32 num_measurements;
+ 	u8 sys_mon_chan_short_gain_val;
+ 	int sys_mon_chan_short_scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
++	IIO_DECLARE_BUFFER_WITH_TS(__be32, scan, ADS112C14_MAX_MEASUREMENT_CHANNELS +
++						 ARRAY_SIZE(ads112c14_sys_mon_channels));
  };
  
-+#define ADS112C14_I2C_CRC8_POLYNOMIAL 0x07
-+DECLARE_CRC8_TABLE(ads112c14_crc8_table);
-+
- struct ads112c14_chip_info {
- 	const char *name;
- 	u8 device_id;
-@@ -241,6 +245,7 @@ struct ads112c14_data {
- 	struct regmap *regmap;
- 	/* Synchronizes access to register value fields. */
- 	struct mutex lock;
-+	bool i2c_crc_enabled;
- 	u32 avdd_uV;
- 	u32 ext_ref_uV;
- 	bool refp_is_avdd;
-@@ -289,6 +294,120 @@ static const struct reg_default ads112c14_reg_defaults[] = {
- 	{ ADS112C14_REG_IDAC_MUX_CFG, FIELD_PREP_CONST(ADS112C14_IDAC_MUX_CFG_I2MUX, 1) },
- };
+ static bool ads112c14_writeable_reg(struct device *dev, unsigned int reg)
+@@ -575,7 +583,7 @@ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
  
-+/**
-+ * ads112c14_i2c_read_bytes() - Read bytes from the device over I2C
-+ * @client: I2C client for the device
-+ * @cmd: Command to send to the device before reading
-+ * @buf: Buffer to store the read bytes
-+ * @len: Number of bytes to read
-+ * @use_crc: Whether to use CRC8 for data integrity check
-+ *
-+ * If I2C_CRC is enabled, @use_crc may be set to true to perform a CRC8 check
-+ * on the received data.
-+ */
-+static int ads112c14_i2c_read_bytes(struct i2c_client *client, u8 cmd,
-+				    u8 *buf, u8 len, bool use_crc)
-+{
-+	u8 rx_buf[4]; /* Up to 3 data bytes + 1 CRC byte. */
-+	u8 rx_len;
-+	int ret;
+ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 				       const struct iio_chan_spec *chan,
+-				       u8 *buf)
++				       u8 *buf, bool for_scan)
+ {
+ 	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
+ 	u32 reg_val;
+@@ -605,6 +613,22 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * When doing buffered read, we don't check the CRC, but rather pass it
++	 * along with the raw data.
++	 */
++	if (for_scan) {
++		u8 len = BITS_TO_BYTES(data->chip_info->resolution_bits) +
++			 (data->i2c_crc_enabled ? 1 : 0);
 +
-+	rx_len = len + (use_crc ? 1 : 0);
++		ret = i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
++						    len, buf);
++		if (ret < 0)
++			return ret;
 +
-+	if (rx_len > sizeof(rx_buf))
-+		return -EINVAL;
-+
-+	ret = i2c_smbus_read_i2c_block_data(client, cmd, rx_len, rx_buf);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (use_crc) {
-+		u8 crc = crc8(ads112c14_crc8_table, rx_buf, len, CRC8_INIT_VALUE);
-+
-+		if (crc != rx_buf[len])
-+			return -EBADMSG;
++		return 0;
 +	}
 +
-+	memcpy(buf, rx_buf, len);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ads112c14_regmap_bus_read() - Read a register from the device
-+ * @context: Pointer to the device context
-+ * @reg_buf: Register address to read
-+ * @reg_size: Size of the register address (should be 1)
-+ * @val_buf: Buffer to store the read value
-+ * @val_size: Size of the value to read
-+ *
-+ * Custom regmap read function that also does CRC check when enabled.
-+ */
-+static int ads112c14_regmap_bus_read(void *context, const void *reg_buf,
-+				     size_t reg_size, void *val_buf,
-+				     size_t val_size)
-+{
-+	struct ads112c14_data *data = context;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	struct i2c_client *client = to_i2c_client(dev);
-+	const u8 *cmd = reg_buf;
-+
-+	if (reg_size != 1)
-+		return -EINVAL;
-+
-+	return ads112c14_i2c_read_bytes(client, cmd[0], val_buf, val_size,
-+					data->i2c_crc_enabled);
-+}
-+
-+/**
-+ * ads112c14_regmap_bus_write() - Write a register to the device
-+ * @context: Pointer to the device context
-+ * @data_buf: Buffer containing the register address and value to write
-+ * @count: Number of bytes to write
-+ *
-+ * Custom regmap write function that also does readback with CRC check of
-+ * nonvolatile registers when CRC is enabled.
-+ */
-+static int ads112c14_regmap_bus_write(void *context, const void *data_buf,
-+				      size_t count)
-+{
-+	struct ads112c14_data *data = context;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	struct i2c_client *client = to_i2c_client(dev);
-+	const u8 *tx = data_buf;
-+	u8 reg, readback;
-+	int ret;
-+
-+	if (count != 2)
-+		return -EINVAL;
-+
-+	ret = i2c_smbus_write_byte_data(client, tx[0], tx[1]);
-+	if (ret)
-+		return ret;
-+
-+	reg = tx[0] & ~ADS112C14_CMD_WREG;
-+
-+	if (!data->i2c_crc_enabled || ads112c14_volatile_reg(dev, reg))
-+		return 0;
-+
-+	ret = ads112c14_i2c_read_bytes(client, reg | ADS112C14_CMD_RREG,
-+				       &readback, sizeof(readback), true);
-+	if (ret)
-+		return ret;
-+
-+	if (readback != tx[1])
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+static const struct regmap_bus ads112c14_regmap_bus = {
-+	.read = ads112c14_regmap_bus_read,
-+	.write = ads112c14_regmap_bus_write,
-+	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
-+	.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+};
-+
- static const struct regmap_config ads112c14_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-@@ -486,9 +605,9 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
- 	if (ret)
- 		return ret;
+ 	return ads112c14_i2c_read_bytes(client, ADS112C14_CMD_RDATA, buf,
+ 					BITS_TO_BYTES(data->chip_info->resolution_bits),
+ 					data->i2c_crc_enabled);
+@@ -639,7 +663,7 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 		if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 			return -EBUSY;
  
--	return i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
--					     BITS_TO_BYTES(data->chip_info->resolution_bits),
--					     buf);
-+	return ads112c14_i2c_read_bytes(client, ADS112C14_CMD_RDATA, buf,
-+					BITS_TO_BYTES(data->chip_info->resolution_bits),
-+					data->i2c_crc_enabled);
+-		ret = ads112c14_single_conversion(data, chan, buf);
++		ret = ads112c14_single_conversion(data, chan, buf, false);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -765,6 +789,10 @@ static int ads112c14_write_raw(struct iio_dev *indio_dev,
+ 	const int (*scale_avail)[2];
+ 	u8 *gain_val;
+ 
++	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++	if (IIO_DEV_ACQUIRE_FAILED(claim))
++		return -EBUSY;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE: {
+ 		guard(mutex)(&data->lock);
+@@ -863,6 +891,37 @@ static int ads112c14_read_label(struct iio_dev *indio_dev,
+ 	return sysfs_emit(label, "%s\n", label_source);
  }
  
- static int ads112c14_read_raw(struct iio_dev *indio_dev,
-@@ -1117,7 +1236,8 @@ static int ads112c14_probe(struct i2c_client *client)
- 	/* It takes some time for the internal reference to stabilize. */
- 	fsleep(10 * USEC_PER_MSEC);
++static irqreturn_t ads112c14_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ads112c14_data *data = iio_priv(indio_dev);
++	u32 offset = 0;
++	u32 i;
++	int ret;
++
++	iio_for_each_active_channel(indio_dev, i) {
++		const struct iio_chan_spec *chan = &indio_dev->channels[i];
++
++		ret = ads112c14_single_conversion(data, chan,
++						  (u8 *)&data->scan[offset++],
++						  true);
++		if (ret) {
++			dev_err_once(indio_dev->dev.parent,
++				     "failed to read channel %d: %pe; additional errors will be suppressed\n",
++				     chan->channel, ERR_PTR(ret));
++			goto out;
++		}
++	}
++
++	iio_push_to_buffers_with_ts(indio_dev, data->scan,
++				    sizeof(data->scan), pf->timestamp);
++out:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ static const struct iio_info ads112c14_info = {
+ 	.read_raw = ads112c14_read_raw,
+ 	.read_avail = ads112c14_read_avail,
+@@ -908,7 +967,7 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
+ 		return -ENOMEM;
  
--	data->regmap = devm_regmap_init_i2c(client, &ads112c14_regmap_config);
-+	data->regmap = devm_regmap_init(dev, &ads112c14_regmap_bus, data,
-+					&ads112c14_regmap_config);
- 	if (IS_ERR(data->regmap))
- 		return dev_err_probe(dev, PTR_ERR(data->regmap),
- 				     "failed to init regmap\n");
-@@ -1154,6 +1274,14 @@ static int ads112c14_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
+ 	channels = devm_kcalloc(dev, num_child_nodes +
+-				ARRAY_SIZE(ads112c14_sys_mon_channels),
++				ARRAY_SIZE(ads112c14_sys_mon_channels) + 1,
+ 				sizeof(*channels), GFP_KERNEL);
+ 	if (!channels)
+ 		return -ENOMEM;
+@@ -1069,14 +1128,44 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
+ 		if (spec->type == IIO_RESISTANCE)
+ 			spec->differential = 0;
  
-+	ret = regmap_update_bits(data->regmap, ADS112C14_REG_DIGITAL_CFG,
-+				 ADS112C14_DIGITAL_CFG_I2C_CRC_EN,
-+				 ADS112C14_DIGITAL_CFG_I2C_CRC_EN);
++		spec->scan_type = (struct iio_scan_type){
++			.format = measurement->bipolar ?
++				  IIO_SCAN_FORMAT_SIGNED_INT :
++				  IIO_SCAN_FORMAT_UNSIGNED_INT,
++			.realbits = data->chip_info->resolution_bits,
++			.storagebits = 32,
++			.shift = 32 - data->chip_info->resolution_bits,
++			.endianness = IIO_BE,
++		};
++
+ 		i++;
+ 	}
+ 
+ 	data->num_measurements = i;
++	if (data->num_measurements >= ADS112C14_MAX_MEASUREMENT_CHANNELS)
++		return dev_err_probe(dev, -EINVAL,
++				     "too many measurement channels defined\n");
++
+ 	memcpy(channels + i, ads112c14_sys_mon_channels, sizeof(ads112c14_sys_mon_channels));
+ 
++	for (u32 j = 0; j < ARRAY_SIZE(ads112c14_sys_mon_channels); j++) {
++		struct iio_chan_spec *spec = &channels[i + j];
++
++		spec->scan_index = i + j;
++		spec->scan_type = (struct iio_scan_type){
++			.format = IIO_SCAN_FORMAT_SIGNED_INT,
++			.realbits = data->chip_info->resolution_bits,
++			.storagebits = 32,
++			.shift = 32 - data->chip_info->resolution_bits,
++			.endianness = IIO_BE,
++		};
++	}
++
+ 	indio_dev->channels = channels;
+-	indio_dev->num_channels = i + ARRAY_SIZE(ads112c14_sys_mon_channels);
++	indio_dev->num_channels = i + ARRAY_SIZE(ads112c14_sys_mon_channels) + 1;
++
++	i = indio_dev->num_channels - 1;
++	channels[i] = IIO_CHAN_SOFT_TIMESTAMP(i);
+ 
+ 	return 0;
+ }
+@@ -1304,6 +1393,12 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &ads112c14_info;
+ 
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      iio_pollfunc_store_time,
++					      ads112c14_trigger_handler, NULL);
 +	if (ret)
 +		return ret;
 +
-+	data->i2c_crc_enabled = true;
-+
- 	ret = regmap_read(data->regmap, ADS112C14_REG_DEVICE_ID, &reg_val);
- 	if (ret)
- 		return ret;
-@@ -1205,6 +1333,13 @@ static const struct i2c_device_id ads112c14_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, ads112c14_id);
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
  
-+static int ads112c14_i2c_add_driver(struct i2c_driver *driver)
-+{
-+	crc8_populate_msb(ads112c14_crc8_table, ADS112C14_I2C_CRC8_POLYNOMIAL);
-+
-+	return i2c_add_driver(driver);
-+}
-+
- static struct i2c_driver ads112c14_driver = {
- 	.driver = {
- 		.name = "ads112c14",
-@@ -1213,7 +1348,7 @@ static struct i2c_driver ads112c14_driver = {
- 	.probe = ads112c14_probe,
- 	.id_table = ads112c14_id,
- };
--module_i2c_driver(ads112c14_driver);
-+module_driver(ads112c14_driver, ads112c14_i2c_add_driver, i2c_del_driver);
- 
- MODULE_AUTHOR("David Lechner (TI) <dlechner@baylibre.com>");
- MODULE_DESCRIPTION("TI ADS112C14 I2C ADC driver");
 
 -- 
 2.43.0
