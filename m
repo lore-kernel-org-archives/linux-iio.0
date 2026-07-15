@@ -1,156 +1,66 @@
-Received: from luna.linkmauve.fr (82-65-109-163.subs.proxad.net [82.65.109.163])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF53400986;
-	Wed, 15 Jul 2026 19:09:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2DAC3B840B;
+	Wed, 15 Jul 2026 19:21:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784142571; cv=none; b=IJKQW8qM7CaXgjoRk42GqvRv236rtAXD9NoMaBY7Y3Zvy6gg1xhXd5M5qlB/3wUQfABRKZsyF+BCcP4gPMhLPYPOvOKqhJ9yU+uEesaEuUCsCw1rBNLiY80NYdn/XKhADFwgrkYZJrSORXHIg0FIt+hxTle+yFWhZW38+b4SS5c=
+	t=1784143297; cv=none; b=poBP2sOG7p0V7JR8++GHrMtt10AbHC6mwIT/VZRQzp3jCDJ8BNkmTOIXDkUsQVU95k1sBzfkO0STPfM7uZyHtoLG5KGwEoz9Zayol5YMblSIpyl4GySmzQtZ9dVBgi+cRrFfj6dbw+AZ6D8hUttYnnf91WHzAQXCcgY3GXIbDJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784142571; c=relaxed/simple;
-	bh=66x5PoM5bVTx1CXpsNEXknXuxFVHsPvPsPCs90jO+30=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q+m+///HOEzU1q8J6ukbq1RQ0lV9HeZ8w05dm0C2BWewMdYGjo0dlBgU9t+CwVLL2p24Gfigf6Yqc08aP04COa6uf/iYy6+y1bzh6AFoj0SYoYkJo6TNJ79CkEzRhmnmGLvqXYii5rlhcVT1ahaoTIdje0hXFKHHkXch0HpeQIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
-Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id 7F6AFF40D2D; Wed, 15 Jul 2026 21:09:06 +0200 (CEST)
-Date: Wed, 15 Jul 2026 21:09:06 +0200
-From: Link Mauve <linkmauve@linkmauve.fr>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Link Mauve <linkmauve@linkmauve.fr>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Tianshu Qiu <tian.shu.qiu@intel.com>,
-	Bingbu Cao <bingbu.cao@intel.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Aaro Koskinen <aaro.koskinen@iki.fi>,
-	Andreas Kemnade <andreas@kemnade.info>,
-	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	Lee Jones <lee@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	"Vaibhaav Ram T.L" <vaibhaavram.tl@microchip.com>,
-	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	=?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Praveen Teja Kundanala <praveen.teja.kundanala@amd.com>,
-	Kalyani Akula <kalyani.akula@amd.com>,
-	Michal Simek <michal.simek@amd.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Joshua Kinard <linux@kumba.dev>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Chen-Yu Tsai <wens@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Johan Hovold <johan@kernel.org>,
-	Ronald Claveau <linux-kernel-dev@aliel.fr>,
-	Salah Triki <salah.triki@gmail.com>, Yury Norov <ynorov@nvidia.com>,
-	David Carlier <devnexen@gmail.com>,
-	Achim Gratz <Achim.Gratz@stromeko.de>,
-	Alexander Sverdlin <alexander.sverdlin@siemens.com>,
-	Patrick Wicki <patrick.wicki@siemens.com>,
-	Markus Heidelberg <m.heidelberg@cab.de>,
-	Markus Perkins <markus@notsyncing.net>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Abd-Alrhman Masalkhi <abd.masalkhi@gmail.com>,
-	Chen Ni <nichen@iscas.ac.cn>, Kees Cook <kees@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-omap@vger.kernel.org, mfd@lists.linux.dev,
-	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com, linux-rtc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev, rust-for-linux@vger.kernel.org
-Subject: Re: [PATCH 0/8] nvmem: make reg_write() take a const void *
-Message-ID: <alfa0i2wLGZkhl5Z@luna>
-References: <20260715175229.24672-1-linkmauve@linkmauve.fr>
- <alfZNQGcX0Z68eto@ashevche-desk.local>
+	s=arc-20240116; t=1784143297; c=relaxed/simple;
+	bh=GRvBsyOxjoM7JpMGphXVWqRw3nmtRnJk0afh/8PqTyE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Afjc9sJf0vncgHE7LYCjrPdYwc/qMyOVGcMyf/ZA95POv1xOcG4lnrGqRSRMe70y7ngQpfj+fglumAyEvJ58Ffofso5MIdrrgxoKgdXJu4f5SOhK95FKDb5xrS3No9glyNeHl8kAhh6pcmHEumk5NqXSclYVn0TPUElVE9iH55Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=R3tAvy2Z; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="R3tAvy2Z"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
+	bh=GRvBsyOxjoM7JpMGphXVWqRw3nmtRnJk0afh/8PqTyE=; b=R3tAvy2Zn6mL2TjWKqMx87QUY8
+	W3uAEocfkN9IncKeWxVb1X5xtGBhECmRmknAmm2aaXXnvzmICIDGQLo+FBtnB0sfWqkDIhCiTw2lk
+	i19Ee3OnmHPgOreZkMCcgvB6Gfq0Bld7FniZ4W0adpUT0NFuPg0vk2SKEHvTvD+izXtVKJ4dpizU+
+	f5pMu9pcOkgJq5h9hhrydpOhx/0Cl19MR1XL8yYNTbFkn00TX7DaTcnm8pDIMzah2XbTsRj8dr4rw
+	lf6x4j8DaoPpOnlKmLqy/FdKiMr2RplpduZ8dJaty51uRIsBOcqbyXk11FZE/jJFUWtwOkf1/7Cx8
+	B7NU7cmA==;
+From: Heiko Stuebner <heiko@sntech.de>
+To: Jonathan Cameron <jic23@kernel.org>, Simon Glass <sjg@chromium.org>
+Cc: Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ Conor Dooley <conor+dt@kernel.org>, linux-rockchip@lists.infradead.org,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ Simon Glass <sjg@chromium.org>, Jonas Karlman <jonas@kwiboo.se>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject:
+ Re: [PATCH v2] dt-bindings: iio: adc: rockchip-saradc: Add RV1106 compatible
+Date: Wed, 15 Jul 2026 21:21:17 +0200
+Message-ID: <5684233.Sb9uPGUboI@phil>
+In-Reply-To:
+ <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
+References:
+ <20260714131631.v2.1.0b846080833e4b836793c43fc26d1c6d817cf9b4@changeid>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alfZNQGcX0Z68eto@ashevche-desk.local>
-Jabber-ID: linkmauve@linkmauve.fr
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Wed, Jul 15, 2026 at 10:02:13PM +0300, Andy Shevchenko wrote:
-> On Wed, Jul 15, 2026 at 07:52:16PM +0200, Link Mauve wrote:
-> > This callback used to take a mutable void * for no reason, which causes
-> > the compiler to be unaware that the val buffer should never be modified
-> > by the callback.
-> > 
-> > This was found while drafting the nvmem-provider Rust abstraction.
-> > 
-> > I’ve split this series based on the subsystem each patch affects, but I
-> > think it should go through the nvmem tree in one go after gathering the
-> > acks from the other subsystem maintainers.
-> 
-> It's an option. The other option (and often we go this way) is to introduce
-> a new name, convert users, convert the name back.
+Am Dienstag, 14. Juli 2026, 21:16:32 Mitteleurop=C3=A4ische Sommerzeit schr=
+ieb Simon Glass:
+> Add the compatible for the SARADC of the Rockchip RV1106, which is
+> compatible with the RK3588 variant.
+>=20
+> Signed-off-by: Simon Glass <sjg@chromium.org>
 
-Thanks for the hint, I’ll go for this route for v2 then.
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-> 
-> See, for example, how GPIO subsystem changed a proto of .set() callback.
 
-I will, thanks.
 
-> 
-> > I’ve been told previously to not include too many maintainers in Cc, but
-> > I don’t know which ones to remove from the get_maintainers.pl output, so
-> > I’ve still included everyone, sorry about that.
-> 
-> With this, rather standard, way you will fulfill the above requirement
-> automatically. Also you won't need treewide change to bother everybody
-> with this. And also increase the chances to go in (maybe in a few releases
-> span).
 
-I originally thought given how few users of this API there are in the
-kernel, it would be simpler to fix them all in one go, but that might be
-a better option then.
-
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-
--- 
-Link Mauve
