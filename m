@@ -1,158 +1,162 @@
-Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F129372662;
-	Wed, 15 Jul 2026 14:25:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE8E378D71
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 14:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784125535; cv=none; b=f9iUHvQeOmDAKyCo9gqY03mZ1ffKnLklHHdmcmWuOTJMCcjKoLbrKCHS+RE/lPskQJcf/e56c5ZPv4pYBRPkmH14wQNiixCYvg/VJqVNoUKDUM9EmATIpYmi3xJ0LYwcm75CWQFzgQNYvduZBwyP/JK3WUGzRuiJRQWHLrCRnK0=
+	t=1784125565; cv=none; b=p+YP/67QHF8WFK2qTT9wadtccPIQBSKCIztrPfSqcHjTO4pfhw3shU9N3odEQ3RWA3FtV5730tTxpqNA/T9fUwVqkdidIa4KgF6LfPW13ZJH5kPJF15omVXPPteu8jtYNIUALdGukRUrJvYByOVCf2S4Mpf+aR8+ADqb7NY0/WM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784125535; c=relaxed/simple;
-	bh=GeDIbgRlS6fUdbHKGckyqDNBmPLZ9jcqValoYs8kUdA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KOceQv3PGa4Uc9GaAm/AZm2GRTTD6ZjNmkXthMNALCyPBOYkYvZzxXn5HOMQV6tKQooCVyn6pDbFDglKOCUJoyCpYTRU8Qe4VYPVyktTsBKdL1Tb9wqor3Vy/Axkl9GmObS5xI+vhx2UWr5+mro4y6STPlQf7yzOdSZPplZfOWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=ljbkJQYP; arc=none smtp.client-ip=79.135.106.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1784125565; c=relaxed/simple;
+	bh=KDg6y/VRh0fzXIGdR9844R5VIP6RvFEHoi8boxQALD4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O2iIySP/sxOu9PIacRsGG+Y7/33rfJEUbUvMTWx4tzwR6J0IGiWQx1UtPriClyU2xkPeK6Jgc3Vpw+s5NwAwPvk62vQ/NawEg1ZTeYeyaDGZqgis0knkq3PBVL6PXh/bjK7quHAsvR5HNmW+bkubZsDTVjwpORx3waQMnAVgx0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lT+pZg9Q; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="ljbkJQYP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1784125527; x=1784384727;
-	bh=fmOsYysRo/2GaRHkitPrIZI9ffCTiu0UYR2lmYlNZUo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=ljbkJQYP+exDy5BAHGvDzdBoIG/IlFxEvX8A7cHCTMSkGvgz+kX5K2+dBbuCvfWpa
-	 zmGNZoW3p7RiroHBbBl+OIgcsgj/jf1vWcpp3jua0Fz4Mek7ALl04sJaGBGNVp75NT
-	 CXV5jRXqU6nW7MU/nU7DHkxFmMVsVPQBCjGt7/bCBWSRDjI9Wg+HIFUAcURCpJKdT3
-	 Tlbcm25RF7WGPq7yNoumsOT2PoB1UvadacdG5eXhr7wu1YEH/2tR7+JKwUwrtmVOaw
-	 rGQiY9MBVkvSutkSGyIAgx02+Xe0Yqp3TN6NXgxqOEirTs37rz3p//i1NEo92qROuM
-	 /j34YGKBISrvA==
-X-Pm-Submission-Id: 4h0dk9633pz2ScmM
-From: Esben Haabendal <esben@geanix.com>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
- <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Martin Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer"
- <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
- =?utf-8?Q?S=C3=A1?=
- <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
- Kepplinger" <martin.kepplinger@theobroma-systems.com>,
-  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: accel: mma8452: Allow open drain interrupt pin
- configuration
-In-Reply-To: <aleQVYrK9YBoLqGl@ashevche-desk.local> (Andy Shevchenko's message
-	of "Wed, 15 Jul 2026 16:51:17 +0300")
-References: <20260715-mma8452-open-drain-v1-0-b1dd2a440c60@geanix.com>
-	<20260715-mma8452-open-drain-v1-2-b1dd2a440c60@geanix.com>
-	<cA7m1VgJxkr39GAxpnMPw9PVIKX2TR8Ju4Q0m6L2SxS_jJNITfZ6AA5LOeMIK0jGFXaUptY1_vPhDd_imWw5FQ==@protonmail.internalid>
-	<aldH3vtk_eKh6oCC@ashevche-desk.local> <87ldbco582.fsf@geanix.com>
-	<Tu8Mavh-mfl8Vv75Oab3vrghtEbTXiYPZ4qhj6RZv8xe5nWKP4lG1KSuJXEQfyKeio7zv9myLbmifMjFTl8juA==@protonmail.internalid>
-	<aleQVYrK9YBoLqGl@ashevche-desk.local>
-Date: Wed, 15 Jul 2026 16:25:20 +0200
-Message-ID: <874ii0misv.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lT+pZg9Q"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-69e28b554ceso374026a12.0
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 07:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784125562; x=1784730362; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=DfRoD+O3mIvLnBy5agZdWlJiUBWYTenY0lfFk8hTVeY=;
+        b=lT+pZg9Q5FcEnsWFGmhiUTGsngqtfmFmn+fOt9Ac6BsJVy81e486CxPEIb1o6rCqj9
+         ubAMyJy7M5IFnmc5Sk4fXUO+MMZytra/9+or1NiK9WmH/uJ4oWXI7hdExh2b4JQXKoBm
+         gEEDlcAPSgACH0HMW5UZC3nNXqH1Eiz6aT9AIWq2Ufg11l+BEXB6bk726bwAeYawQcA4
+         dDTt+dNYFRBtq68wkfJ0zohPY0cj/QAKEOlUowE5/jFQgE0jwpn6zgPpVPOe/PN/EOhk
+         VOaGc/XTAezvtTkePQTZCZkCFfqz0Y9P7EaUtvVeOWzyDdR7Oc2WQbxckZuZxZx86uPu
+         bpZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784125562; x=1784730362;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=DfRoD+O3mIvLnBy5agZdWlJiUBWYTenY0lfFk8hTVeY=;
+        b=EgHOOEdhw3SnzEXLeaU7f2gLWyje15dSQ0UaDbKehuIsYPkpCs7foO8Hjqmn8SaZty
+         WrU8qBFkZtyNfyqOUX3jZ1I5RStVUZCE+eyR1yGrPNEpsT0dCetKg5sxdTQ/rXjZF234
+         tkS5oNPJWIMg6+/MMd05VVhHnj1wtRF7lJjUmTRdy2swQ0wjFRjAaFKNQbYGdyDHyE1o
+         ftPB1W4j5GqTgZbGGY2uzNmzuqs5kyIefILApci3e0DX7E2OSsoroKiX4mRbuzjB7ZSN
+         VqiAITQ/aI8oFrNcfmv1pBLC5zMj0VFEcVB3UI4ZXAot0tI6wam1uzHKialDQAHvfix2
+         zxdA==
+X-Forwarded-Encrypted: i=1; AHgh+RoZoFJUPGz+JINHet+Tx4FTM3WcZylZWPJYicNQUGOdKef08HtqnEQO/PGFTaf93XA+P6LrRbu3+64=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxEe63W+CUVJohXgAZaqKOX/GtuhK+hzt8FI4JDayrFC8Tsru9y
+	hk3Hq8xt77ZRcthwOv3llMDlihMRgQKg48SlKyox0FBWhmgolpVH6C+Z
+X-Gm-Gg: AfdE7ckzsBP1/tQLgm4LWZaEj22L60KikeStIGvSsZSi5Wgu6FNlnwMxw6Wph6mrLNS
+	rmphfHej+HTUpAEt9CQsH1gw31hluHzCi/Jy0D3QyE62hKwjQsJfvy03mZaM1SnRNtSJfZf4fr/
+	3fOVRM/HjCf8rNDOa2orI1AVl5RMranOr/+B0b8ARVFxJd20l+Qrhot/eDZQ3tjb9aGPy9KE6cp
+	sZfQeKLNQgeHkFZ37Rnjv9FRDZwRZy0wduBdofFCTHRHkHLDpooE8hKSGjuZiu3bRDyFf89n/H9
+	E1/QN2uTCculbCXclsOR9OBjtmNyzz177IRmhfqRYUzUvhdD7vMqo12mG6vURVtXpDq0TQmbeZn
+	k5ZeKIazEOK3HdAHMvjR9tJHVQRBQ+5f59Yi3ItI+3G/T9Jr11zczo9OHLbi2v4Guq5Sctgsnp3
+	SelmndogzaUjlxBbMlE8KWSLmUwwc=
+X-Received: by 2002:a17:906:f5a1:b0:c16:12ff:dc8b with SMTP id a640c23a62f3a-c161f3b58ecmr970705666b.54.1784125561706;
+        Wed, 15 Jul 2026 07:26:01 -0700 (PDT)
+Received: from NSA-L02.ad.analog.com ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1687317c58sm39978566b.36.2026.07.15.07.26.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2026 07:26:01 -0700 (PDT)
+Date: Wed, 15 Jul 2026 16:25:58 +0200
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Nikita Travkin <nikita@trvn.ru>, Maslov Dmitry <maslovdmitry@seeed.cc>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iio: light: ltr501: Add ltr329 driver support
+Message-ID: <lax5ggtixwejynztwul5brnkciq4gq5scbd4cuoyev2w3hgcti@dflf7hnw4rgq>
+References: <20260715-liteon-ltr329-v2-0-d18af55edab5@geanix.com>
+ <20260715-liteon-ltr329-v2-3-d18af55edab5@geanix.com>
+ <Q-ueoELrVUGcnBAEpAJE8z7yejEFFfSQBfk5ZeoZgVu4Cf1NwcMQRiRH-cvknalrNQBzoSJDMCG7w56-0MrHVw==@protonmail.internalid>
+ <6vro5bil5b5j72rigujnm5zj4ot56rtwgs4fvn6xydybxpi4rz@vrc6p6bbkl3m>
+ <87ldbcmkr5.fsf@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87ldbcmkr5.fsf@geanix.com>
 
-"Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
+On Wed, Jul 15, 2026 at 03:43:10PM +0200, Esben Haabendal wrote:
+> Nuno Sá <noname.nuno@gmail.com> writes:
+> 
+> > On Wed, Jul 15, 2026 at 02:27:25PM +0200, Esben Haabendal wrote:
+> >> This adds support for the LTR-329ALS-01 chip, which is similar to
+> >> LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
+> >> have.
+> >>
+> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> >> ---
+> >
+> > Hi, I have a small not below. Kind of personal preference though. But
+> > what Joshua mentioned should be addressed. With that:
+> >
+> > Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+> >
+> >>  drivers/iio/light/ltr501.c | 33 +++++++++++++++++++++++++++++++++
+> >>  1 file changed, 33 insertions(+)
+> >>
+> >> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> >> index 7d045be78c6d..379e57ac5f5b 100644
+> >> --- a/drivers/iio/light/ltr501.c
+> >> +++ b/drivers/iio/light/ltr501.c
+> >> @@ -15,6 +15,7 @@
+> >>  #include <linux/delay.h>
+> >>  #include <linux/regmap.h>
+> >>  #include <linux/regulator/consumer.h>
+> >> +#include <linux/array_size.h> // for ARRAY_SIZE
+> >>
+> >
+> > ...
+> >
+> >>
+> >> +	if (!ltr501_has_irq_support(data->chip_info))
+> >> +		return 0;
+> >> +
+> >>  	if (val < 0 || val2 < 0)
+> >>  		return -EINVAL;
+> >>
+> >> @@ -1257,6 +1270,18 @@ static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+> >>  		.channels = ltr301_channels,
+> >>  		.no_channels = ARRAY_SIZE(ltr301_channels),
+> >>  	},
+> >> +	[ltr329] = {
+> >> +		.partid = 0x0A,
+> >> +		.als_gain = ltr559_als_gain_tbl,
+> >> +		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> >> +		.als_mode_active = BIT(0),
+> >> +		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+> >> +		.als_gain_shift = 2,
+> >> +		.info = &ltr301_info_no_irq,
+> >> +		.info_no_irq = &ltr301_info_no_irq,
+> >> +		.channels = ltr301_channels,
+> >> +		.no_channels = ARRAY_SIZE(ltr301_channels),
+> >
+> > Instead of playing the above game with info vs info_no_irq, an explicit
+> > has_no_irq would probably be better. I mean conceptually if the pointers
+> > are the same, it could also mean that both are with IRQ support. With
+> > it, I think it would be safe to leave the .info pointer as NULL as it
+> > would be always overwritten.
+> >
+> > Having said the above, so strong feelings about it so up to you :)
+> 
+> Calling it has_irq would avoid double negation. But we would then have
+> to set it to true in most of the entries (all except ltr329 for now).
 
-> On Wed, Jul 15, 2026 at 01:35:41PM +0200, Esben Haabendal wrote:
->> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
->> > On Wed, Jul 15, 2026 at 10:07:39AM +0200, Esben Haabendal wrote:
->
-> ...
->
->> >>  	if (client->irq) {
->> >>  		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
->> >> -					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
->> >> +					   IRQF_TRIGGER_LOW | IRQF_ONESHOT |
->> >> +					   data->open_drain ? IRQF_SHARED : 0,
->> >>  					   client->name, indio_dev);
->> >
->> > Why do we care?
->>
->> Care about what exactly?
->
-> About exclusivity of the interrupt.
+Yeps, that´s is why I proposed has_no_* :)
 
-Ok.
+- Nuno Sá
 
->> We need to add IRQF_SHARED flag in order to allow shared interrupt, and
->> we should not add it when using (the default) push-pull mode.
->
-> Why not? How would it make any difference from SW perspective?
-
-Not adding the IRQF_SHARED flag prevents use with shared interrupts. I
-think we are on the same page on that.
-
-Unconditional adding IRQF_SHARED flag would allow configurations where
-other devices share interrupt line with mma8452 compatible chip
-configured with push-pull, resulting in broken or unpredictable results.
-I don't see why we should not care about that.
-
-> Yes, I understand the HW case.
->
->> > The (hidden) problem this will have in the future is that the IRQ core
->> > will splat a warning in case that other shared IRQs might be
->> > configured with different flags. Putting that flag conditionally makes
->> > it a mine field for the users. Instead just unconditionally add that
->> > flag and we will get reports as soon as there will be a user that
->> > shares the same interrupt pin with some other devices which drivers do
->> > not use the same settings.
->>
->> If we add the IRQF_SHARED flag unconditionally, it will be set also when
->> push-pull mode is enabled. I don't see how the kernel will be able to
->> notice that that is not going to work. If you have another device that
->> uses IRQF_TRIGGER_LOW|IRF_ONESHOT|IRQF_SHARED, it will not work with the
->> MMA8452 device when configured as push-pull.
->
-> Right, and why do we care (again)?
-
-Why we care that the system as a whole (SW on top of HW) will not work?
-
-If we don't care about that, why do we even have this IRQF_SHARED flag?
-The only purpose of that is to tell the kernel that this particular
-device / interrupt will work with shared interrupt or not.
-
-Isn't that exactly what I do with this change? Nothing more, nothing less.
-
-> It's pure DT/FW/HW issue, not an SW issue.
-> Otherwise it will become a carefully placed mine for the poor user who will
-> use these flags and try to share an interrupt with the mma8452 device which
-> has no set property and uses push-pull mode.
-
-I don't get how you see it like that. Adding IRQF_SHARED unconditionally
-would create exactly the mine field you are talking about. Poor users
-can specify a system configuration (DT) that tries to use a shared
-interrupt line, but configures the mma8452 compatible chip in push-pull.
-The poor user will not only be poor, but also unhappy.
-
-By applying the IRQF_SHARED dynamically, the kernel will be able to fail
-in a controlled manner instead, making it much less painful to create a
-working system configuration (DT)
-
-Going back to your poor user story above, if the poor user tries to
-share the interrupt pin with the mma8452 device, it will get an error
-(just as it is with the kernel today). The device does not support
-shared interrupts. Reading the DT bindings documentation, the user
-should be able to find the drive-open-drain property, and add that to
-the device-tree to make things work. Maybe even consider if that is
-compatible with the hardware being used.
-
-If IRQF_SHARED was set unconditionally, the user would not get an error,
-but most likely would get a system where no irq's were raised for the
-other chips. I sincerely believe that debugging this is much more
-painful than reading device-tree bindings.
-
-> Did I miss anything?
-
-I don't know. Maybe I am missing the obvious here.
-
-/Esben
+> 
+> I will give it a spin.
+> 
+> /Esben
