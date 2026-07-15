@@ -1,43 +1,44 @@
 Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E58E420484
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 16:08:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E622C15BB
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 16:08:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.137.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784131696; cv=none; b=BZgGBjeicZjI/Vv+g2t4r1gqD+Y4mSmFJF3ramhAm/oZzSq4ggX9xGS296Xz/xuDG20m48JKhqG5fRx1wUMNc1SduG291ycGKpaheXn6F+yr7hyPFtd9l3uYpejJHEG77lmq66qyUKE6f1AcqGNHv8jdglW887doj2mVhWBsO2Y=
+	t=1784131700; cv=none; b=PLvY4iJdRkUzAdzB5LhUxAzsziKHeiNw4HTpOX0dRWjSnAgsYx73C0Z9zYTnjV291p3Kc4yBd8gfBGWTpGeZVqufE4og8dU5gTh+dwAq8EuwcUJ8sS2xVW8u68gtObgRGVPetKatW88D0Eh73W/UckY/mKB8R82GbMLJbpx81xM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784131696; c=relaxed/simple;
-	bh=4zOhqkRw2Xk7EzOqspTl31yqrk/l6B7zgTamE4F2gjo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PAmYgk/4qxvF+SRzyUkBduqWqLL6Q3rfIX6+PgxP7n3Felbk2ADk8xVyL8Ed7AonXgMVoi9kOXOX5IsSJQ+XH1SSdMEYHAVHimuVskZ6NpORo8nDEEoVcJkjmdMci6etrDCLP6jpx6pFsXohG7IPYdFp4EOZyoSmy4IvNXY8A18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=metafoo.de; spf=pass smtp.mailfrom=metafoo.de; dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b=Dm7Q2PY4; arc=none smtp.client-ip=78.46.137.84
+	s=arc-20240116; t=1784131700; c=relaxed/simple;
+	bh=b9FBsxNqG7mMqFGh30EgIZD/E8QyqGoZ32+Gwk3tiK8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dQJAEsCg1CnVFXpkjedbHz+eXaxnG6wBRrM8z8vTjyiVy1/UnZ+7s5bFphNKRG+JhJm2OU3bn9VigauPfO/Fo7vBYB3/xHS44Lf+vYk7k2dGZAKULXYpKxMDCSpftxoCeCTm20Q32DiI7tkQdn4v/ctT9YwNaLJMReZIYOgO6+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=metafoo.de; spf=pass smtp.mailfrom=metafoo.de; dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b=Mhn3lqRA; arc=none smtp.client-ip=78.46.137.84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=metafoo.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=metafoo.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="Dm7Q2PY4"
+	dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="Mhn3lqRA"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-	s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:
-	Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References;
-	bh=96H//xyxuCFmaGZRsor+5jhX8NjKgpFWehEvfDnboFg=; b=Dm7Q2PY47NV8SgsuZPIkwi+3fU
-	I9QYR1toeST46B08f12K42XE6C79/KyTi0GIy3oEnnkjBL0Msnh5JMIaMT3GSgMf80dWmqyGS4dgi
-	1gwWjUz/crUjFV5EbxtllstFZr8NFS+Qcin3FghRgwvXYK09PLA5ZwO3pGezlcEuMfeZYUfCXdp4D
-	X/3cc7CzSY2PRXPMrz7wi06aXOgas0ksE+jBh+KTdNXs7gH+PaF8pxuYPp7+fKtBY5BiMDgBIIV2b
-	ryl/mKu1mnaFikoVkuO/H6MQClf3rPvwg2robZzuzAH5In+L3BivztzjBzRmrW1bSjMrGlEGvD5q6
-	YyTFp/cQ==;
+	s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
+	In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=6tJpVckYpHfdzXVdA52mZwOtcKu9CjVTLSu3u2sGXbM=; b=Mhn3lqRAiKbRa/1TxuZgWAwsEn
+	Df5SwGakjUyUt06FWDUIKg6DfPrgwh078XxWmmxnKIs0eENherhhdK3CrRwekjDzYiy/VK/QcLCtj
+	1zmgwiY6+dNxGqKhywSlD1bWvJkWAbeH4agvCGiqHi3waSjBj1LHorUCNBzQHzCb0bjx49nDIluMh
+	xmUTDr0rQMGeIgAQrSntQHYInwcJEYVMG14EjCZXW/y7rD6mqxyCl9iLYCavPCwviCCFJwstuVBXE
+	PvE8CaZ+gA6wLbrwKx/zzMsYiezdW1XFnEjEmXKi5Uw0KlPLEBzpsc9hFFCYwQFhU5Nz0EbVKJAJv
+	UwYYZ0fQ==;
 Received: from sslproxy06.your-server.de ([78.46.172.3])
 	by www381.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.96.2)
 	(envelope-from <lars@metafoo.de>)
-	id 1wk1lv-0001Q8-2B;
-	Wed, 15 Jul 2026 17:43:43 +0200
+	id 1wk1lx-0001Ql-1B;
+	Wed, 15 Jul 2026 17:43:45 +0200
 Received: from localhost ([127.0.0.1])
 	by sslproxy06.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <lars@metafoo.de>)
-	id 1wk1lu-000DNF-1w;
-	Wed, 15 Jul 2026 17:43:43 +0200
+	id 1wk1lw-000DNF-15;
+	Wed, 15 Jul 2026 17:43:45 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org
@@ -46,10 +47,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Paul Cercueil <paul@crapouillou.net>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/3] iio: buffer: Fix potential use-after-free in anonymous buffer release
-Date: Wed, 15 Jul 2026 08:42:43 -0700
-Message-ID: <20260715154245.3814378-1-lars@metafoo.de>
+Subject: [PATCH 2/3] iio: buffer: Tie IIO dma fence lock lifetime to the fence
+Date: Wed, 15 Jul 2026 08:42:44 -0700
+Message-ID: <20260715154245.3814378-2-lars@metafoo.de>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260715154245.3814378-1-lars@metafoo.de>
+References: <20260715154245.3814378-1-lars@metafoo.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -59,61 +62,76 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: Clear (ClamAV 1.4.3/28061/Wed Jul 15 08:25:10 2026)
 
-An anonymous buffer handle holds a reference to the underlying IIO device.
-The reference is dropped in the buffer handle's release function. If the
-device has been removed, either through unbind or hot-unplug, the buffer
-handle might hold the last reference.
+The `iio_dma_fence` implementation currently uses a lock embedded in the
+`iio_dmabuf_priv`. But the `iio_dma_fence` can outlive the
+`iio_dmabuf_priv`, which can cause a use-after-free.
 
-The release function takes the mutex for the buffer using a guard, which
-means the unlock happens after all the code in the function, including
-`iio_device_put()`. If the anonymous buffer holds the last reference this
-might free both the IIO device and the buffer, which contains the mutex,
-leading to use-after-free when the mutex is unlocked.
+Tie the lifetime of the lock to the lifetime of the fence by embedding them
+in the same struct.
 
-Fix this by using a scoped guard just around the buffer dmabuf list access,
-making sure the mutex is unlocked before releasing the IIO device.
+We can't just hold a reference to the `iio_dmabuf_priv` from the
+`iio_dma_fence` since `iio_buffer_dmabuf_release()` might sleep and the
+fence release callback is not allowed to sleep.
 
-Version 10 of the patch that introduced this issue used this exact scheme
-of first unlocking and then dropping the reference [1]. During review it
-was suggested to use a guard instead, and version 11 made that change [2].
-
-[1] https://lore.kernel.org/linux-iio/20240605110845.86740-4-paul@crapouillou.net
-[2] https://lore.kernel.org/linux-iio/20240618100302.72886-4-paul@crapouillou.net
+Note that the `dma_fence` framework now has an internal lock that gets used
+when the passing `NULL` for `lock` in `dma_fence_init()`, but in order to
+allow this patch to be backportable use an external lock.
 
 Reported-by: codex:gpt-5.6
 Fixes: 3e26d9f08fbe ("iio: core: Add new DMABUF interface infrastructure")
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-buffer.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/iio/industrialio-buffer.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 531fc4ccc15de..04b3916f89e2d 100644
+index 04b3916f89e2d..31c06bffdce8a 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -1619,12 +1619,16 @@ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
+@@ -47,9 +47,6 @@ struct iio_dmabuf_priv {
  
- 	wake_up(&buffer->pollq);
+ 	u64 context;
  
--	guard(mutex)(&buffer->dmabufs_mutex);
+-	/* Spinlock used for locking the dma_fence */
+-	spinlock_t lock;
 -
--	/* Close all attached DMABUFs */
--	list_for_each_entry_safe(priv, tmp, &buffer->dmabufs, entry) {
--		list_del_init(&priv->entry);
--		iio_buffer_dmabuf_put(priv->attach);
-+	/*
-+	 * The mutex must be unlocked before iio_device_put(), which might drop the
-+	 * last reference and free the buffer.
-+	 */
-+	scoped_guard(mutex, &buffer->dmabufs_mutex) {
-+		/* Close all attached DMABUFs */
-+		list_for_each_entry_safe(priv, tmp, &buffer->dmabufs, entry) {
-+			list_del_init(&priv->entry);
-+			iio_buffer_dmabuf_put(priv->attach);
-+		}
+ 	struct dma_buf_attachment *attach;
+ 	struct sg_table *sgt;
+ 	enum dma_data_direction dir;
+@@ -58,6 +55,7 @@ struct iio_dmabuf_priv {
+ 
+ struct iio_dma_fence {
+ 	struct dma_fence base;
++	spinlock_t lock; /* protects base */
+ 	struct iio_dmabuf_priv *priv;
+ 	struct work_struct work;
+ };
+@@ -1706,7 +1704,6 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	spin_lock_init(&priv->lock);
+ 	priv->context = dma_fence_context_alloc(1);
+ 
+ 	dmabuf = dma_buf_get(fd);
+@@ -1896,6 +1893,8 @@ static int iio_buffer_enqueue_dmabuf(struct iio_dev_buffer_pair *ib,
+ 		goto err_attachment_put;
  	}
  
- 	kfree(ib);
++	spin_lock_init(&fence->lock);
++
+ 	fence->priv = priv;
+ 
+ 	seqno = atomic_add_return(1, &priv->seqno);
+@@ -1906,7 +1905,7 @@ static int iio_buffer_enqueue_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	 * the dma_fence.
+ 	 */
+ 	dma_fence_init(&fence->base, &iio_buffer_dma_fence_ops,
+-		       &priv->lock, priv->context, seqno);
++		       &fence->lock, priv->context, seqno);
+ 
+ 	ret = iio_dma_resv_lock(dmabuf, nonblock);
+ 	if (ret)
 -- 
 2.47.3
 
