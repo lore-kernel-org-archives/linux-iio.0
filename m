@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFE63AFB0C
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 16:12:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0334E3AEF4B
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 16:17:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784131944; cv=none; b=jJLEBa0MAtY7voWvN0NtjRNPK30WIbcqdQvv3EGOiiY0YJ9hv1mIz20IeJgSB2GFlJi5v/C0qZDJlNytaRhxbDtamsM99G4M6AzGIHTDdlwev4f1YfUhCNDe7F4Twcf2hprj6zhNQ6DnzusEm/UjLsCSWIZkb9+pB5V07pgNkbo=
+	t=1784132277; cv=none; b=jkXI21NV919EMZzDk/jjpHqYPFfJSYhTY9k5q8/IgxuKEsPUbN7KpabgH+AYRKnMkZA99DUXWae1AjPSbhNy5OLST4ule29Dnigkd/5OOI1nSJMJGO7/X8xzgEXY44B7TIGcCaLFFg4FrDlYwpAuAh3uakrgE4jjT8K626DsPFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784131944; c=relaxed/simple;
-	bh=EpItVigGWbTXwqULVqC7MglXdxCjSpSg4HtfBVQEyVU=;
+	s=arc-20240116; t=1784132277; c=relaxed/simple;
+	bh=2GVFBhWdGXmF6xLRYo78EB0AVKJhYr7hYu/84slwB7Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KwQHu+wvsINAJaVv9LkYwIzS8grTsyE2q6q6Stkz/egcErV7KwTLMxKBdpV0deLgUmdLnLdYIHJwEfjp0goCbNLN64mDKxq96HIrLMFg/PwhlONu8TwFEzXNYofP/DyrihkxEmJ97k7QjYPeViysgCrPo6AD7blcR8j6ObnCD4M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ATQx+6o2; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=jFpppGifs6gyntXPHwSoz1u7GbPrUyzHqp+1/bh42xFuk7OPhO5V1eq+Qpj1+7C1xnyzQE77GWk5oz1P7U4Nwr7TOm3oZlIF3W4IUeUgvjqAQ64XEwNt7r6BISqXm3+WG5avTx3N8SFT0rdFlDgW/nmgxhgKlDqiqrDjXXSE+II=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WfA2umyY; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ATQx+6o2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WfA2umyY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784131939; x=1815667939;
+  t=1784132274; x=1815668274;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=EpItVigGWbTXwqULVqC7MglXdxCjSpSg4HtfBVQEyVU=;
-  b=ATQx+6o2yxEYIP4iFlTm9dYWmyuakik6xBE1wov6cnj8WWBMFiwc0JBl
-   qtgJM3KxyomjlIDnT+MpY6qKXWVmwSvz5AthCGqJKSSKRcXZ+H3OYvnHx
-   VhxaoeWY2taKWWuO0lm6um/ID+fsW/yc26Lei+F2r+lcX6RRVR1b3lr2U
-   w9F4NuBh6PMmOM05IDmrtqeEPeu38BgsZPMN0jN1Nn8eoGn2zAUL1gwsh
-   8+xrGIRULe9foRpDIGxxG3m1GLY/xca4fq9PPl/mGbOpDYGvnhfWIt1H+
-   Zh1jKIz5xLCIPRrPmDQ7wlD18JfD/ZgK/2yzsCx8Qy2geDjHnA0vkyfwI
-   A==;
-X-CSE-ConnectionGUID: L6zslsiaTEaI+HCoC/nFZg==
-X-CSE-MsgGUID: g0dWDbwrTC2KexCiEBETLg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="84630016"
+  bh=2GVFBhWdGXmF6xLRYo78EB0AVKJhYr7hYu/84slwB7Y=;
+  b=WfA2umyYXkxEjXPhpcOKuiP01Z2sGXeSFSiSym6hEmnDSDDZx/X+DvJ2
+   hdcSOKuhpaQKYQjnuQ2GgdVrdZ/J8E9G1ODmQApbw0gVkxLW+qUwrlrvK
+   qPs+sbiZs56V9uPECxP1kz6SfSsckUFHcfwH42d14S3eJ8inxh8mfeYnj
+   ToZHMIVGhirHgKPDTV9rYYD7ZsLwrTHWqsYwGfiarJ/sIVENMxB2xKiMn
+   aB1ax32VXFUXow2jZONLLKMpRseOwinLGwrDJpCTPH8aCmopnqbluv08r
+   BxbybH4ICtSUgcg1UtXn8JI/+6eDgLIzBiNdwirumuVSl3RV6izg2fwoZ
+   g==;
+X-CSE-ConnectionGUID: 3MSwIliISlegvGo4ZxGZXg==
+X-CSE-MsgGUID: Xw9KJIPVRuej3ELCuehapA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11847"; a="88679190"
 X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="84630016"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 09:12:13 -0700
-X-CSE-ConnectionGUID: mei0xxPGSgCfQPG24BLB8w==
-X-CSE-MsgGUID: BuOHL7bkSLaUWbQjrb8G9g==
+   d="scan'208";a="88679190"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 09:17:52 -0700
+X-CSE-ConnectionGUID: gLjcdzkATNujKcX8STms6Q==
+X-CSE-MsgGUID: hTCVmTLCQEy675cqgBrjJw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,165,1779174000"; 
-   d="scan'208";a="252827716"
+   d="scan'208";a="251814088"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.129])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 09:12:11 -0700
-Date: Wed, 15 Jul 2026 19:12:08 +0300
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2026 09:17:50 -0700
+Date: Wed, 15 Jul 2026 19:17:47 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
@@ -51,10 +51,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 1/3] iio: buffer: Fix potential use-after-free in
- anonymous buffer release
-Message-ID: <alexWK2znbB7AQ8M@ashevche-desk.local>
+Subject: Re: [PATCH 3/3] iio: buffer: Make IIO DMA fence release RCU-safe
+Message-ID: <aleyq2J6tVWYA6pC@ashevche-desk.local>
 References: <20260715154245.3814378-1-lars@metafoo.de>
+ <20260715154245.3814378-3-lars@metafoo.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,42 +63,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260715154245.3814378-1-lars@metafoo.de>
+In-Reply-To: <20260715154245.3814378-3-lars@metafoo.de>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jul 15, 2026 at 08:42:43AM -0700, Lars-Peter Clausen wrote:
-> An anonymous buffer handle holds a reference to the underlying IIO device.
-> The reference is dropped in the buffer handle's release function. If the
-> device has been removed, either through unbind or hot-unplug, the buffer
-> handle might hold the last reference.
+On Wed, Jul 15, 2026 at 08:42:45AM -0700, Lars-Peter Clausen wrote:
+> The `dma_fence` documentation states that if a custom release
+> implementation is provided, the `dma_fence` object must be freed in an
+> RCU-safe way. The current `iio_dma_fence` implementation uses `kfree()`,
+> which might result in a use-after-free.
 > 
-> The release function takes the mutex for the buffer using a guard, which
-> means the unlock happens after all the code in the function, including
-> `iio_device_put()`. If the anonymous buffer holds the last reference this
-> might free both the IIO device and the buffer, which contains the mutex,
-> leading to use-after-free when the mutex is unlocked.
+> Remove the custom `release` implementation. This makes the DMA fence core
+> fall back to `dma_fence_free()`, which calls `kfree_rcu()` on the fence.
+> This requires that the fence be the first member of `struct iio_dma_fence`.
 > 
-> Fix this by using a scoped guard just around the buffer dmabuf list access,
-> making sure the mutex is unlocked before releasing the IIO device.
-> 
-> Version 10 of the patch that introduced this issue used this exact scheme
-> of first unlocking and then dropping the reference [1]. During review it
-> was suggested to use a guard instead, and version 11 made that change [2].
+> Using the default release method for extended DMA fence structures is a
+> common pattern.
 
-> [1] https://lore.kernel.org/linux-iio/20240605110845.86740-4-paul@crapouillou.net
-> [2] https://lore.kernel.org/linux-iio/20240618100302.72886-4-paul@crapouillou.net
+...
 
-Make them Link tags?
+> +	/*
+> +	 * Must remain the first member so the default release callback can pass
+> +	 * the fence directly to dma_fence_free().
+> +	 */
+>  	struct dma_fence base;
 
-Link: ... [1]
-Link: ... [2]
+TBH, I don't like this trick. container_of() is there for a reason. Even if
+it's the first member in the structure. Can we simply switch to RCU version?
+Would it require big changes?
 
-> Reported-by: codex:gpt-5.6
-> Fixes: 3e26d9f08fbe ("iio: core: Add new DMABUF interface infrastructure")
+> -static void iio_buffer_dma_fence_release(struct dma_fence *fence)
+> -{
+> -	struct iio_dma_fence *iio_fence =
+> -		container_of(fence, struct iio_dma_fence, base);
+> -
+> -	kfree(iio_fence);
 
-The case and fix makes sense to me.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+So, we can't use dma_fence_free() here, because without above guarantee it will
+get a wrong address. Maybe (maybe!) as a quick fix this is fine, but in long
+term can we also have a refactoring patch that drops above comment at the end?
+
+> -}
 
 -- 
 With Best Regards,
