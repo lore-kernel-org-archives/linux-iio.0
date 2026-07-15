@@ -1,21 +1,21 @@
 Received: from luna.linkmauve.fr (82-65-109-163.subs.proxad.net [82.65.109.163])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B89D44ADD9D;
-	Wed, 15 Jul 2026 17:53:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2628041A542;
+	Wed, 15 Jul 2026 18:02:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784137987; cv=none; b=tQ6Z9xDeEZBagRTMvWDbOBeZjOyqRQ7kAWnpVNp9VhaquFnyBgcJT48dnmETb+XbpZ6KXqlOPV+Nbrj2xUKj/qGS9Z+/40/9JH7SP1r9rkje/xiFIawD6CspOVnX8pwyTlr+2o+iwbYYl7tH+MDK3LtQsuNsE5SA+iGRVvSqVwc=
+	t=1784138588; cv=none; b=RGyDkZoW9Oh90wbg5BXVlM+7XCSWe23YrdXySqpHUudJbAeZcYkRiRplE48/cN+ROlSoD1sjjVzxI8JHV0tGu9rjtdZZPONYYMmhoAnuou8KRQNlilXrrvLUkQzmu62TPjqb/8At83j2p77TWxBtULH0OEbPw3wijLX/CMnFg3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784137987; c=relaxed/simple;
-	bh=/KIAOxfi5qPCF7yk1qXbs6TZ1oDnkuWk8273p3ANjNU=;
+	s=arc-20240116; t=1784138588; c=relaxed/simple;
+	bh=7FuVrxLlVZ79zrxiJeyoTlMtEeJsoZeEAs4xb+NIL9I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oSJVbwdWFC4byF61RWgXITOpv8Zi632JJ0eZe8XHS/4ZLW/9qv1z9W6FVO3uRkwpjM6zO0Wfi7GS8r81A6Pt+SsqKZQpb9osGNhKx3Ldv18McWa8dtFvfdCpnNo8SU8Wj3mvfnlfxuwdcgie/QinRQotrGdg+3DmHn9x3tqJoAY=
+	 MIME-Version; b=NOg1P6yKfXasaTwwTrHmA0tTMbL7Rcta/KGS/GM7Z6BP9sXGmBr9UG9dm4elzuBnFPHegReABK76BCtfz/+nP6DZ/OtZ55z7JNhFim5ikaXRoffLPihqv8yVIC7+gPH5Uvw+NzcQQCW8h6G5Fadi+2GiKQuWJWSPRsq3vroDlcU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
 Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id 6F87FF402E8; Wed, 15 Jul 2026 19:52:55 +0200 (CEST)
+	id 989A4F40ABC; Wed, 15 Jul 2026 19:52:35 +0200 (CEST)
 From: Link Mauve <linkmauve@linkmauve.fr>
 To: Srinivas Kandagatla <srini@kernel.org>
 Cc: Link Mauve <linkmauve@linkmauve.fr>,
@@ -105,9 +105,9 @@ Cc: Link Mauve <linkmauve@linkmauve.fr>,
 	linux-rtc@vger.kernel.org,
 	linux-sunxi@lists.linux.dev,
 	rust-for-linux@vger.kernel.org
-Subject: [PATCH 8/8] media: ov2740: remove NULL reg_write callback
-Date: Wed, 15 Jul 2026 19:52:24 +0200
-Message-ID: <20260715175229.24672-9-linkmauve@linkmauve.fr>
+Subject: [PATCH 1/8] nvmem: core: make reg_write() take a const void *
+Date: Wed, 15 Jul 2026 19:52:17 +0200
+Message-ID: <20260715175229.24672-2-linkmauve@linkmauve.fr>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20260715175229.24672-1-linkmauve@linkmauve.fr>
 References: <20260715175229.24672-1-linkmauve@linkmauve.fr>
@@ -119,29 +119,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This field is already initialized to NULL, so there is no reason to
-write it again.
-
-This prevents it from appearing while grepping for reg_write in the
-future.
+This callback used to take a mutable void * for no reason, this was
+found while drafting the Rust abstraction.
 
 Signed-off-by: Link Mauve <linkmauve@linkmauve.fr>
 ---
- drivers/media/i2c/ov2740.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/nvmem/core.c           | 2 +-
+ include/linux/nvmem-provider.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/i2c/ov2740.c b/drivers/media/i2c/ov2740.c
-index fb590dfadda1..799eca4023da 100644
---- a/drivers/media/i2c/ov2740.c
-+++ b/drivers/media/i2c/ov2740.c
-@@ -1271,7 +1271,6 @@ static int ov2740_register_nvmem(struct i2c_client *client,
- 	nvmem_config.compat = true;
- 	nvmem_config.base_dev = dev;
- 	nvmem_config.reg_read = ov2740_nvmem_read;
--	nvmem_config.reg_write = NULL;
- 	nvmem_config.priv = nvm;
- 	nvmem_config.stride = 1;
- 	nvmem_config.word_size = 1;
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index e871181751f3..202607013054 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -62,7 +62,7 @@ static int __nvmem_reg_read(struct nvmem_device *nvmem, unsigned int offset,
+ }
+ 
+ static int __nvmem_reg_write(struct nvmem_device *nvmem, unsigned int offset,
+-			     void *val, size_t bytes)
++			     const void *val, size_t bytes)
+ {
+ 	int ret;
+ 
+diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+index f3b13da78aac..e62285836cbb 100644
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -19,7 +19,7 @@ struct nvmem_device;
+ typedef int (*nvmem_reg_read_t)(void *priv, unsigned int offset,
+ 				void *val, size_t bytes);
+ typedef int (*nvmem_reg_write_t)(void *priv, unsigned int offset,
+-				 void *val, size_t bytes);
++				 const void *val, size_t bytes);
+ /* used for vendor specific post processing of cell data */
+ typedef int (*nvmem_cell_post_process_t)(void *priv, const char *id, int index,
+ 					 unsigned int offset, void *buf,
 -- 
 2.55.0
 
