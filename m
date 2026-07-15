@@ -1,111 +1,167 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB54C3C2B80
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 08:11:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 670EE9460;
+	Wed, 15 Jul 2026 08:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784103083; cv=none; b=crv0XIRxX4YHtQisGmc878F25u7PSWUx8U4AXn2hg9nXOPREjFFB+Ohn2WUdNuLMMm4tqcMQiLNBmYyxnoJGoZ4+WkGoSzBq/CE6VZZ9fM9XDs2r4JmFf41Wo3prXELbpPxjM/obiiMO/NtGPV6a7LS/QdRCoyDbRyXlcDZPz8k=
+	t=1784103840; cv=none; b=ny+Q8yhkymW7nOM67XEBknEYQ5ba+hAP7zdGymgVhJOlMwuxpGtMNCdv+bVFfi9SkgXY4wriRzzl0UOZ6ZINhQBcavn/65ZTw7lYAttB8mxpJqB0UXuQeh2sa8M+Q7ssksObEbt9qSWq5HDkTPcgXN+UOXapGZybwsgBHorfVSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784103083; c=relaxed/simple;
-	bh=v1VKY3EffdDvVnOSKjraOPTXXHHgByCtxpkOMDUhsmM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KRKbXgxrRPsijA5gHc2ffBCStwF/2mLzUxMjxSP4eXr90TiSKuvwi3dOSblIDZjKV/BnsZFnOeNE1z/Nbs7hX6YrbIjRQggwyE7DgqdevmKdtHE9DchCmICsZX5nOUWAT9bpCOCV4xv9gIVsI/ZEwZMjlqXh9Dr2nDk24CIOaRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jiz8S7qU; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784103840; c=relaxed/simple;
+	bh=VZ/rT6r/lbKkXhS2ooZqBH0gKlX7C3aAwmM1S4fC78s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=haFsE1d/hj24EMwGZVJxMYVnjjcPF+LTE0e1tDN+pLgU92+5+Gp+KKjWc86Aw4C4MtgrUm7N83tJaO2WJzHEhw1O63UMvBa2s5IvbtWlZ7Vzd4XXe/f74AMT6jM7fbrx//7ovAXa1hqWWorEW8zcQEh97YvDpYNkb10U8l3nD84=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=WZmI6P0v; arc=none smtp.client-ip=79.135.106.111
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jiz8S7qU"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493b1710405so27593115e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 01:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784103080; x=1784707880; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=g5vj+GIH7jbJ8BHVZT5sX3ucem46R0CpdI8IPEs9c7Q=;
-        b=jiz8S7qUrtO4AJrSWoparVpATMjzM4DWHa4QuE4EjzD+6mGaZNX19u4ZfdZDlgj+Bb
-         07wfMxZZOwaITAuk6On2tw07/ya8Su2H/pemNJ/xz4jZo02Uo01cYeD1/TqVlPZKMpf3
-         oIO7mCQzbk82Ba60WtN1RIy/JMUSQT0ROYuruu3JHURphnDyv32f950dG82UUuYRyWTR
-         HHOeC9/BxiR6OgwvMTTUF4Fkm0iORymaAhenuB9Ef7bQqDMshMo4ZSsoYwbmx8qX14/3
-         D/b2I71D9pqaFNlujQYvDX1I3fcalXwQvpOehNoXNqh4nk8i5dsDJCInvyRFldbpZJ8I
-         U1GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784103080; x=1784707880;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=g5vj+GIH7jbJ8BHVZT5sX3ucem46R0CpdI8IPEs9c7Q=;
-        b=qLtxL7WKIx/BS8AKxuqcrJJ4xRtlbo5L36RCMLByY9Rdi1OPboQjbTylzJe4A4asbl
-         WKyq31OZxXFErGDlUSwkWcxbnx/fxEJ1DWlAvP8tigzWNjqnHJ5b3JRkv9tfAVIulHxI
-         mbjIuG0kHqUYxmcuCnbXeMAFWLU4HfF62+uJTOzevC55akQAJgtXEttVtsRQzy1DMY0W
-         cV12pHU5YGlalkigYMSr5/syJmR8hhksFD1QNpBHzXllXzf8GCNYI6+PTaDTVtPMMP3d
-         t/RCFqVl2/Rrx62jUxUlC4b/uKkZOf4Blm8xP2U8ICBIAQ3HCF39vcraOAM0f0blu90t
-         ML4A==
-X-Forwarded-Encrypted: i=1; AHgh+RpQ228xpjCeEXZl/3qsO1E8U/Uy3t/Sdvw2RYAedJ35uTHUCew5pjM/L/QjiLP65V+2kQgL2IOcWco=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxdmOSRFU+Jg+mDZ5t/PcjRb/1GQDIE1DDSkUFVVcOBnzbbPdVg
-	uuNMVIZKaHDJlSLMn45XxwLxH36T2UmJaKEy/XONRtVQEUo5z4C/6kaM0jTCTQ==
-X-Gm-Gg: AfdE7cn5K+vR32bVsOwVg3SVLVGp02l8fqltz1/6nI3cDJ6654+6FjMqxA+fuBHAjbN
-	45jVAO+TTgow5O9xDW9+CYirYPi3rXfBjn11Rgtz+RRkUdtP/PbuoRpR2fXb2FzYViMQdEqQH/Y
-	M6uJrHapfu2g+ympcQJubJ3Ut9eZ8VdQOZARIvu4aK4GRsw8pirc986XG7AsiZa4FGPjyLQD8fU
-	z6bJsDzkpBAukYBvHqhy1BckukcK1eWcOpbm1Gi3WmBcsmPcQmxQzP2OOaw7U/dSbYfUH7BXhxx
-	zLFPEtF0dz5XlA4LbxkwDpFIeRFWxRck9Owkq+m8NUA100mTC38riCpMugFgs2MBWrYeWP+uGIY
-	Yc2G/Rmh1XZ5sV2UY1eP5Ez9d1aThc2AVDntn0sBdXxRvq4KMxAWGaqFXgOCypRTatKjCN1KWtR
-	XTFPImzoupDYYGwZKuLQf44WfDNwO7a1gSo3gCrH63RriZP9Izi60asIQP2M6VFs4w4+RZqwwzo
-	DbqFRYgbwCaTWpfoO1GW85mTBszNl0xbIPtZtnpdw5IfVBdNcu2Dk6xq9fKomnTjyv0hti21fe/
-	ckj/nL8N1Rg237Ea0sfAxAOiEnMHlTSUUi80tGfF33dcMwocP/ZMmXVXJDFctCYv7JLhuIbH+ks
-	rpZ9a+1hG/ivuDTyPY7e42xY=
-X-Received: by 2002:a05:600c:8119:b0:493:f744:e7d5 with SMTP id 5b1f17b1804b1-49518324f47mr71637325e9.38.1784103079789;
-        Wed, 15 Jul 2026 01:11:19 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4953c704bfasm37195675e9.2.2026.07.15.01.11.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 01:11:19 -0700 (PDT)
-Date: Wed, 15 Jul 2026 10:11:19 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Can Peng <pengcan@kylinos.cn>
-Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
- dlechner@baylibre.com, andy@kernel.org, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: ad5446: fix OF module device table
-Message-ID: <20260715101119.00001b6f@gmail.com>
-In-Reply-To: <20260714091846.136278-1-pengcan@kylinos.cn>
-References: <20260714091846.136278-1-pengcan@kylinos.cn>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="WZmI6P0v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail3; t=1784103836; x=1784363036;
+	bh=Tfqh/xGkyiil1OQKiZ8iknxMpLG97l2M1+3idrkjWAo=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=WZmI6P0vTbFD+85YSBygIQUCeuE8VxP4nKao5AXvUNWRvUuVgxLvm25YETT4PldvL
+	 WZ33SGJMuJTONmNv4KNP/idkJCpJVp8pWPG/6fECEc6RqWXkf6vUbK/qhcrrt0Gp74
+	 l4b5KJpJ1lwm2nzMMTqseCp9mBrn1j5mcWMBB9EXhLhhk2CkImd2dhCxN2VGlCadp8
+	 SGfb4Wo5rBuiYs2Hie6/mxapnwc00a5pIsqLj/4Gd3X3SleyIZHMxGX6ypD0BhB2mz
+	 yJvJMxeB0x0cqcTqoeXo/u09Q5MCU+UkaiVBb7Rw1Hrt1qlBNaZOBoea4Gt0lVJChl
+	 wyL2aXOWILI0w==
+X-Pm-Submission-Id: 4h0Tj62y2Hz2Sd33
+From: Esben Haabendal <esben@geanix.com>
+Date: Wed, 15 Jul 2026 10:23:50 +0200
+Subject: [PATCH 3/3] iio: light: ltr501: Add ltr329 driver support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260715-liteon-ltr329-v1-3-31f027051594@geanix.com>
+References: <20260715-liteon-ltr329-v1-0-31f027051594@geanix.com>
+In-Reply-To: <20260715-liteon-ltr329-v1-0-31f027051594@geanix.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>, 
+ Maslov Dmitry <maslovdmitry@seeed.cc>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Esben Haabendal <esben@geanix.com>, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784103828; l=3185;
+ i=esben@geanix.com; s=20240523; h=from:subject:message-id;
+ bh=VZ/rT6r/lbKkXhS2ooZqBH0gKlX7C3aAwmM1S4fC78s=;
+ b=rHXq3SFZW0uf49XCE2q9x19rpExrMzDpKiNJQPzk1g8q2GRBD+EPU2Vq0eIkC/OyBOF5E4pMv
+ ggQjTpbWAAPCSyvlsgxf9PrbAejrcf4NoCefJQkzZvthJ2lXG8/6eaN
+X-Developer-Key: i=esben@geanix.com; a=ed25519;
+ pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
 
-On Tue, 14 Jul 2026 17:18:45 +0800
-Can Peng <pengcan@kylinos.cn> wrote:
+This adds support for the LTR-329ALS-01 chip, which is similar to
+LTR-303ALS-01, except for interrupt, which LTR-329ALS-01 chip does not
+have.
 
-> The ad5446 I2C driver exports its OF match table with
-> MODULE_DEVICE_TABLE(OF, ...).
-> 
-> The device table type is used by modpost when generating module aliases,
-> and scripts/mod/file2alias.c matches the lowercase "of" type.  Using
-> "OF" prevents the OF table from being recognized, so no OF module alias is
-> generated for the I2C driver.
-> 
-> Use the lowercase "of" type so OF-based module autoloading works.
-> 
-> Fixes: 876d94024087 ("iio: dac: ad5446: Separate I2C/SPI into different drivers")
-> Signed-off-by: Can Peng <pengcan@kylinos.cn>
-> ---
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+---
+ drivers/iio/light/ltr501.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-This needs a Cc: stable tag, perhaps Jonathan can add it when applying.
-
-FWIW,
-
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 7d045be78c6d..815b67a10837 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -94,6 +94,7 @@ enum {
+ 	ltr559,
+ 	ltr301,
+ 	ltr303,
++	ltr329,
+ };
+ 
+ struct ltr501_gain {
+@@ -178,6 +179,11 @@ static const struct ltr501_samp_table ltr501_ps_samp_table[] = {
+ 			{500000, 2000000}
+ };
+ 
++static bool ltr501_has_irq_support(const struct ltr501_chip_info *chip_info)
++{
++	return chip_info->info != chip_info->info_no_irq;
++}
++
+ static int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
+ 					   int len, int val, int val2)
+ {
+@@ -428,6 +434,9 @@ static int ltr501_read_intr_prst(const struct ltr501_data *data,
+ {
+ 	int ret, samp_period, prst;
+ 
++	if (!ltr501_has_irq_support(data->chip_info))
++		return 0;
++
+ 	switch (type) {
+ 	case IIO_INTENSITY:
+ 		ret = regmap_field_read(data->reg_als_prst, &prst);
+@@ -466,6 +475,9 @@ static int ltr501_write_intr_prst(struct ltr501_data *data,
+ 	int ret, samp_period, new_val;
+ 	unsigned long period;
+ 
++	if (!ltr501_has_irq_support(data->chip_info))
++		return 0;
++
+ 	if (val < 0 || val2 < 0)
+ 		return -EINVAL;
+ 
+@@ -1257,6 +1269,18 @@ static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+ 		.channels = ltr301_channels,
+ 		.no_channels = ARRAY_SIZE(ltr301_channels),
+ 	},
++	[ltr329] = {
++		.partid = 0x0A,
++		.als_gain = ltr559_als_gain_tbl,
++		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
++		.als_mode_active = BIT(0),
++		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
++		.als_gain_shift = 2,
++		.info = &ltr301_info_no_irq,
++		.info_no_irq = &ltr301_info_no_irq,
++		.channels = ltr301_channels,
++		.no_channels = ARRAY_SIZE(ltr301_channels),
++	},
+ };
+ 
+ static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
+@@ -1531,6 +1555,11 @@ static int ltr501_probe(struct i2c_client *client)
+ 		return ret;
+ 
+ 	if (client->irq > 0) {
++		if (!ltr501_has_irq_support(data->chip_info)) {
++			dev_err(&client->dev, "chip does not support irq\n");
++			return -EINVAL;
++		}
++
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						NULL, ltr501_interrupt_handler,
+ 						IRQF_TRIGGER_FALLING |
+@@ -1604,6 +1633,7 @@ static const struct i2c_device_id ltr501_id[] = {
+ 	{ .name = "ltr559", .driver_data = ltr559 },
+ 	{ .name = "ltr301", .driver_data = ltr301 },
+ 	{ .name = "ltr303", .driver_data = ltr303 },
++	{ .name = "ltr329", .driver_data = ltr329 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, ltr501_id);
+@@ -1613,6 +1643,7 @@ static const struct of_device_id ltr501_of_match[] = {
+ 	{ .compatible = "liteon,ltr559", },
+ 	{ .compatible = "liteon,ltr301", },
+ 	{ .compatible = "liteon,ltr303", },
++	{ .compatible = "liteon,ltr329", },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ltr501_of_match);
 
 -- 
-Kind regards
+2.55.0
 
-CJD
