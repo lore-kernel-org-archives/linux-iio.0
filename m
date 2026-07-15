@@ -1,117 +1,308 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C642E738B;
-	Wed, 15 Jul 2026 13:37:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B34A2931FC
+	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 13:41:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784122641; cv=none; b=Cg7N1ZTV3CQ/uRpLDiTNvijtMBg1HR14cFt2oMIsuwMu9lLHNZsVaaj5v9AGnYJW9wGugdxGEDXZKIjWDDwEwrEsUUTU4d4pvf7yHt4pSLpPfHVlAU8D17v9fcp/l8UtwCpdtmRf1gyTgttfv9KqibU0QW65wgwA1Oq7hKjKM9k=
+	t=1784122914; cv=none; b=rpZhCok9Zss4T0GGUGpeKaiTDM/XgUbisaDt4FK4RqYpqS9NIxQ3g02yEqogYG8k0qvADKT08wrXM6ZAwVyBiD5QjDfo8UgHRUxt3gUeqBaPK/hQQcWg517lG6JCUwHUPltH5PH42JuMHc13htos5UyhqYkxvoZjBfv3s2wkEZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784122641; c=relaxed/simple;
-	bh=mQ1Ppv43Nzvd2le0EqHNXpfZ2H1Jp1liw05iUUeGFFU=;
+	s=arc-20240116; t=1784122914; c=relaxed/simple;
+	bh=NWsisj395JP+1z4yufoJVTcURp+jN+QB/hFD5KExXIo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RvvmJU6VTL4t5xcYCJlOJwxjTu5RcefA7RaEoX1GRLkeuLpbCHVGd/1NW8otys4xwzP1m7DMqJaMlOTyM+6U7ywqNibq0G7/EJ9CHk8dvCA2rMxyBUK+jQHehqyLoH3GUtSxmtVRGCXAHUbxsM60CwboXm6NHGn21E7Lm8+w0e8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PCNA61NH; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=fCrU13cvxddV71wNf69BkvPyxoe3EbXvfgX9hwljjfLjTi3i7Pkcen3+dP6w6sSnM5zi50ZmJaLUd0OYd/f1/ayDiEW1Y8T4kbyObDkDnYDdjSWbU5b+zLOgKB8R7n8/8Mww+FfMR16pjGxM11ZB89A4hPOrCCJQThUGGDp8TZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EzbxXzFT; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PCNA61NH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CBD31F00A3A;
-	Wed, 15 Jul 2026 13:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784122640;
-	bh=1571AMYBa+aqh2HI10aYEFZYKtWO6cbTBh89pLpcSrk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PCNA61NHD0tHFvoCIykV9CDzLHPkx4ObtaPsEWeSAdXhMjyx7weEXB3OQvk5tr157
-	 blIc09rNUNmKUHbgwKwUUGATVMkbfaLmyzAN2tvJjQNeikYhKv+YQNNpWI5FaoUckX
-	 ZOiCveZSqVhdEM+PW2PkqwFSWHYtcGiP6PlNAUPyR4brdV9Kk0H2qYXHfAIENhDjt1
-	 IoO5gy5Fbkg6s5wrEIQg9QzzBMW2AtNjOOBjHmSRotWLB+Sl/aEnlHk1+gAW9rDvmL
-	 5j0MCyvtMapnAZpeVEDr9tir6xMgEayp9HMW1wez9uldhcJtp7DBJkQ8klYFzZAsic
-	 24rkeGa7H3NfA==
-Date: Wed, 15 Jul 2026 14:37:12 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Janani Sunil <janani.sunil@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
-	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-Subject: Re: [PATCH v6 1/5] spi: dt-bindings: Add spi-device-addr peripheral
- property
-Message-ID: <157154d1-3995-454b-9e08-1527f1c5d409@sirena.org.uk>
-References: <20260715-ad5529r-driver-v6-0-cfdf8b9f5ee3@analog.com>
- <20260715-ad5529r-driver-v6-1-cfdf8b9f5ee3@analog.com>
- <1c4af9b1-9937-4cbb-b57f-52ac575b8b89@sirena.org.uk>
- <lpbqk3wv6emhdtxhnczrgufzzxprcfpfgenfepnmzhzfj3b3ci@rdphuko7ikti>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EzbxXzFT"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5b015532f7bso6061966e87.0
+        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 06:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784122911; x=1784727711; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=v3DE9hVd+ZvJ983AY+/WnUOAa2+5necEnKwML6c0SnM=;
+        b=EzbxXzFTtO9AoCYDmClew70hsa52iVe/+HLY0eZRSJf1tsl4c7r0HFgjIWrZPZMSpP
+         OWIcgHSl/s3zL9YB2ZByGuk/avv2sd23qk7Msl24UOoLG0LNLmhmPMJArqQc9Ap3nX9P
+         yW7EAz1XZPeBnzcZff0Vu3hSEji7Mnz1Xlc6nDmRlhw/XnFzKSmVhi9DUPKmxO+3ooiK
+         Tylxabkl4sMyH4YDPtgY5PeQEalejwpKPjtzgRP4lnLhHlVGMrhkdus6h9WLAjaRPAHC
+         oD9tAbIUyRcCb5r5i9Kb5Qc+NoKaYuM+Dzf9xXuEj8c5EqAxRJWEMlAF1X54sGfbq92T
+         /7YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784122911; x=1784727711;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=v3DE9hVd+ZvJ983AY+/WnUOAa2+5necEnKwML6c0SnM=;
+        b=Gh+5o5oIPG6KGkl0MLL+T9SpF5OEp8XhVG9o10UpVoSbI+32f05WyKIRveG/XnXvrq
+         f/yFLpkI22d3od49Ju/uO0gFysns//BPTirPxCUaFdTNtlW0LAA8f+p/DFh3F/JKY4f9
+         TsFCayzj6z/I30DTekSns/YhrvPZ3/g5EgSJWtC9Wc9XRCFX21+qBxOfSWlEhdGs+bwz
+         MVofh85pne4+ZmV6o705tdMH2RDiJKFpl1E0Gi5BfygK2hL17XIiek+3w3wvmrJldEvH
+         lkMEipHKvFjSBTXX1cWNZWT2g6Iv8I+xHoxPoTDEStPvGTYhYN/ycAwkvFSkQzfWK6uk
+         Wk/w==
+X-Forwarded-Encrypted: i=1; AHgh+RqvqCf8BTR+P362T6NPAH/sDhEgiAIapx0x2YZhEz3s9mmVGFfLqxusudqe7/HxxsZZoTLptm3sUDw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw/GoR/Ady2lIqEaowa3TH557satW76XKTdcixJtsFhibbCQREw
+	keGQeXs4nAW/4AY/c23Aqu6ujr/Xfh0DyP+a//QoWTOwwUbBNkKdXZLr
+X-Gm-Gg: AfdE7ckrARZEDjlRPmc/QIgvo47YyXtveMHUddRHavNPy8ThV/8n6zVZbQIXR6TAHNM
+	JpEndNoRcYzubS89xQy/ADjWi+mlh+Dy3me55Fk2mNbNcSb3t3y0kGDYiZPIuUnJiYLI4IQjnGq
+	yPkQp+pvejf5Q04EmbmMLvF5mk19rMXo0I2TFwRi2GeqGcAAx4JUBnEwpkUnVYSkNDTm9epoe7y
+	Ubq/4e/Ag71KX541I2KbdC7IYzbb3kXiAH3kf6HFurIAnVVXJW1sDTVwNI+ZpeNWplEWYSoCVxO
+	4SaIhKAVif4aqce1TcCD8LOlNySezERBs57HnGdcQq2PcQYikVjxB9GvlpPecSYEQ5AAlsqI9CA
+	XbnaEduH4W3lVso8p8dfeHkTMOVKNo8jG7F2hgh9qb1WZ8KklxDCGiMPk7Oejqm/pcaWFLURCRC
+	KQnhLYG82yC6H8s3Xa4pgiQrR6gEo=
+X-Received: by 2002:ac2:5689:0:b0:5ae:b486:2ef5 with SMTP id 2adb3069b0e04-5b15d7c4ad3mr682247e87.65.1784122909353;
+        Wed, 15 Jul 2026 06:41:49 -0700 (PDT)
+Received: from NSA-L02.ad.analog.com ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b023b5931bsm3489996e87.42.2026.07.15.06.41.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jul 2026 06:41:49 -0700 (PDT)
+Date: Wed, 15 Jul 2026 15:41:45 +0200
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Stefan Popa <stefan.popa@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	Nuno Sa <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Siratul Islam <siratul.islam@linux.dev>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
+	Ciprian Hegbeli <ciprian.hegbeli@analog.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: adc: add MAX40080 current-sense amplifier
+ driver
+Message-ID: <4r6grtnbddwtaflsak37y4hlofgiudksd3orxamry6eyhnueky@mg75uai5aeu2>
+References: <20260715063652.368501-1-stefan.popa@analog.com>
+ <20260715063652.368501-3-stefan.popa@analog.com>
+ <aldGAbF4AN8X5CRY@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="EWFsD0OyCJy7C58E"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <lpbqk3wv6emhdtxhnczrgufzzxprcfpfgenfepnmzhzfj3b3ci@rdphuko7ikti>
-X-Cookie: "Speed is subsittute fo accurancy."
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aldGAbF4AN8X5CRY@ashevche-desk.local>
 
+On Wed, Jul 15, 2026 at 11:34:09AM +0300, Andy Shevchenko wrote:
+> On Wed, Jul 15, 2026 at 09:36:17AM +0300, Stefan Popa wrote:
+> > The MAX40080 is a bidirectional current-sense amplifier with an
+> > integrated 12-bit ADC and an I2C/SMBus interface. It measures the
+> > voltage across an external shunt resistor and the input bus voltage,
+> > storing the results in an internal FIFO.
+> > 
+> > No existing IIO driver covers this device or a register-compatible part.
+> > The closest relatives target different silicon with incompatible register
+> > maps and feature sets: max9611 is a unidirectional high-side sensor with a
+> > die-temperature channel and MUX-selected gain and no FIFO/PEC, while
+> > max34408 is an 8-bit multi-channel current monitor. The MAX40080 has a
+> > device-specific register map with bidirectional 13-bit current, a 64-entry
+> > FIFO, PEC, a single-measurement mode triggered by an SMBus Quick Command,
+> > and two selectable input ranges, so it warrants its own driver.
+> > 
+> > Add a direct-mode IIO driver exposing the current and voltage channels
+> > with raw and scale attributes, a configurable oversampling (digital
+> > averaging) ratio, and PEC-protected register access. The two selectable
+> > current-sense ranges are exposed through scale/scale_available; the
+> > current scale is derived from the shunt-resistor-micro-ohms device-tree
+> > property.
+> 
+> ...
+> 
+> > Link: https://www.analog.com/media/en/technical-documentation/data-sheets/MAX40080.pdf
+> > 
+> 
+> No blank line here, in a tag block. Also you can use Datasheet: tag
+> (but it's up to you).
+> 
+> > Co-developed-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
+> > Signed-off-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
+> > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> > ---
+> 
+> ...
+> 
+> > +MAXIM MAX40080 CURRENT SENSE AMPLIFIER DRIVER
+> > +M:	Ciprian Hegbeli <ciprian.hegbeli@analog.com>
+> > +M:	Stefan Popa <stefan.popa@analog.com>
+> > +L:	linux-iio@vger.kernel.org
+> > +S:	Supported
+> > +W:	https://ez.analog.com/linux-software-drivers
+> > +F:	Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+> > +F:	drivers/iio/adc/max40080.c
+> 
+> David usually asks this to be split between patches to avoid "orphaned" files
+> from the MAINTAINERS perspective.
 
---EWFsD0OyCJy7C58E
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think checkpatch also complains if you do it like the above.
 
-On Wed, Jul 15, 2026 at 03:29:32PM +0200, Nuno S=E1 wrote:
-> On Wed, Jul 15, 2026 at 02:09:19PM +0100, Mark Brown wrote:
+- Nuno Sá
 
-> > This really isn't a generic SPI thing, if nothing else you need *far*
-> > more information in there about how exactly this would be put onto the
-> > bus.  If it belongs anywhere outside of the specific device's binding it
-> > feels like it might be regmap.
-
-> Just for some context,
-
-> For the analog chip, it can share the same CS line with another 3
-> identical chips. It has two pins that depending on how they are set act
-> as the device address (so only one replies to a given transfer -
-> naturally the peripheral driver needs to setup the correct transfer
-> and that depends on these pins setup and hence dt property).=20
-
-> This property reflects that. Apparently some microchip chips are doing so=
-mething
-> very similar so Conor proposed a generic property given that we would hav=
-e at
-> least 3 users of it.
-
-You still need to work out how the ID appears in the byte stream that
-gets sent to/from the device, that's way more information than just a
-number and not something the byte stream SPI offers is going to cope
-well with.
-
---EWFsD0OyCJy7C58E
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmpXjQgACgkQJNaLcl1U
-h9C1IAf/TpU+6+pdtt/gB6xbCDRW71qXK0+xCE1MWXM3qXIxP0etZhigDidgTGx5
-kfYD/W0RzhdheLuSn6InN1fliX5N8fYFYoVhlbdD+IJF+WcyBiFtUT+nvTuvX58C
-YAMgdyfhrV3hWIj4RNfKq5z6jL/x+7DkP+T08wBpxOnSJi8XC6cil7N9RV6Llwpa
-maXLGgeYUOzoVgfSxO5c6RQQ2C0o6RPJVuCDg0WudkrZva4McGmu1/qTRw7dHd3g
-NDL15BU5AACAMy4MxzlgaIMIbssMhnCVHoD2ZzinZjuivQME/7t4ecyZIwhrvOno
-ZVYN+IBSwfdyssj8rwLdoeG5bI4w9Q==
-=0xYZ
------END PGP SIGNATURE-----
-
---EWFsD0OyCJy7C58E--
+> 
+> ...
+> 
+> > +/* Current is a 13-bit two's-complement value (magnitude + sign bit). */
+> 
+> Please, choose a single style for _one-line_ comments, id est
+> period in all or no period, capital first letter in all or small letter.
+> 
+> > +#define MAX40080_CFG_MODE_SINGLE	0x02	/* one conversion per Quick Command */
+> > +
+> > +/* CFG.range field values */
+> 
+> (Three comments on one page of code and three different styles.)
+> 
+> ...
+> 
+> > +	u32 shunt_resistor_uohm;
+> 
+> I think this also would be good as uOhm.
+> 
+> https://web.archive.org/web/20250629194735/http://poynton.ca/notes/units/
+> mentions this:
+> 
+> "... except that its initial letter is capitalized if the unit is named after a person."
+> 
+> ...
+> 
+> > +static int max40080_trigger_measurement(struct max40080_state *st)
+> > +{
+> > +	struct i2c_client *client = st->client;
+> 
+> > +	return i2c_smbus_xfer(client->adapter, client->addr,
+> > +			      client->flags, I2C_SMBUS_WRITE, 0,
+> > +			      I2C_SMBUS_QUICK, NULL);
+> 
+> Perhaps even
+> 
+> 	return i2c_smbus_xfer(client->adapter, client->addr, client->flags,
+> 			      I2C_SMBUS_WRITE, 0, I2C_SMBUS_QUICK, NULL);
+> 
+> > +}
+> 
+> ...
+> 
+> > +static int max40080_read_iv(struct max40080_state *st, u32 *iv)
+> > +{
+> > +	int ret, io_ret;
+> > +
+> > +	guard(mutex)(&st->lock);
+> > +
+> > +	ret = max40080_trigger_measurement(st);
+> > +	if (ret < 0)
+> > +		return ret;
+> 
+> What I meant is this
+> 
+> 	u32 tmp = *iv;
+> 
+> 
+> > +	/*
+> > +	 * Wait for the conversion to complete by polling the FIFO valid bit
+> > +	 * (or bail out on an I2C error). Polling the device's own status makes
+> > +	 * this independent of the actual conversion time, which varies with the
+> > +	 * oversampling ratio and the bus speed. The timeout is only a safety
+> > +	 * ceiling: the worst case is the maximum 128x averaging on both the
+> > +	 * current and voltage channels at the slowest 15 ksps base rate plus the
+> > +	 * inter-channel switching time, i.e. roughly 20 ms; 50 ms leaves ample
+> > +	 * margin.
+> > +	 */
+> > +	ret = read_poll_timeout(max40080_read_iv_once, io_ret,
+> > +				io_ret || (*iv & MAX40080_IV_VALID_MSK),
+> > +				1 * USEC_PER_MSEC, 50 * USEC_PER_MSEC,
+> > +				false, st, iv);
+> 
+> 	ret = read_poll_timeout(max40080_read_iv_once, io_ret,
+> 				io_ret || (tmp & MAX40080_IV_VALID_MSK),
+> 				1 * USEC_PER_MSEC, 50 * USEC_PER_MSEC,
+> 				false, st, &tmp);
+> 
+> 	/* ...the comment why we need to update iv even in error case... */
+> 	*iv = tmp;
+> 
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return io_ret;
+> > +}
+> 
+> ...
+> 
+> > +static void max40080_calc_current_scale(struct max40080_state *st)
+> > +{
+> > +	unsigned int i;
+> > +	u32 rem;
+> > +	u64 tmp;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(max40080_csa_gain); i++) {
+> 
+> 	for (unsigned int i = 0; i < ARRAY_SIZE(max40080_csa_gain); i++) {
+> 
+> > +		tmp = (u64)MAX40080_INTER_VREF_mV * NANO * MICRO;
+> 
+> I would even make another temporary for the numerator and denominator.
+> 
+> 		u64 numerator, denominator;
+> 
+> 		numerator = (u64)MAX40080_INTER_VREF_mV * NANO * MICRO;
+> 		denominator = (u64)MAX40080_ADC_RES * max40080_csa_gain[i];
+> 
+> // Also possible to use a trick "1ULL * " instead of castings.
+> 
+> 		numerator = 1ULL * MAX40080_INTER_VREF_mV * NANO * MICRO;
+> 		denominator = 1ULL * MAX40080_ADC_RES * max40080_csa_gain[i];
+> 
+> > +		tmp = div64_u64(tmp, (u64)MAX40080_ADC_RES * max40080_csa_gain[i] *
+> > +				st->shunt_resistor_uohm);
+> 
+> 		tmp = div64_u64(numerator, denominator * st->shunt_resistor_uOhm);
+> 
+> > +		st->current_scale[i][0] = div_u64_rem(tmp, NANO, &rem);
+> > +		st->current_scale[i][1] = rem;
+> > +	}
+> > +}
+> 
+> ...
+> 
+> > +static int max40080_oversampling_to_filter(int val)
+> > +{
+> > +	for (int i = 0; i < ARRAY_SIZE(max40080_oversampling_avail); i++) {
+> 
+> unsigned int ?
+> 
+> > +		if (max40080_oversampling_avail[i] == val)
+> > +			return i;
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> 
+> ...
+> 
+> > +	if (device_property_present(dev, "shunt-resistor-micro-ohms")) {
+> > +		ret = device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+> > +					       &st->shunt_resistor_uohm);
+> > +		if (ret)
+> > +			return dev_err_probe(dev, ret,
+> > +					     "can't read shunt-resistor-micro-ohms\n");
+> > +		if (!st->shunt_resistor_uohm)
+> > +			return dev_err_probe(dev, -EINVAL,
+> > +					     "shunt-resistor-micro-ohms must be non-zero\n");
+> 
+> You can reduce data footprint by string literal deduplication. That's why in my example I used
+> 
+> 	const char *propname;
+> 
+> and respective assignment. Currently you have three copies of the property
+> name: two in different error messages and one as a parameter to property APIs.
+> 
+> > +	} else {
+> > +		st->shunt_resistor_uohm = 1 * MICRO;
+> > +	}
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
