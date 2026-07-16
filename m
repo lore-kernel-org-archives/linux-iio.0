@@ -1,65 +1,62 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8313230DEB8
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 00:57:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99B9030C360
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 00:57:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784163475; cv=none; b=aZ2Ng/q0ujWtKw/0HOkXOlidkJ3gVzKcVi0PwU9ksGMRsfNKZPjkW8eBVVaNnpWH8REIinrfyayiVnezVe99BUh3UIHKxkh+7+UuH2LPqsO6rE+5Cqv1qmK5wkISINkzQBtGUdX5ElYrwWIig1ZIoTX9aUPBCBs2Kr/DZJl4rbY=
+	t=1784163477; cv=none; b=bZ9XpVtiAeRacG/zVb0wkzDmolBUbNr47+IeXAHh2boeThb2rpseqq5TvxW/IF59nMIrr9nuMbLjYbge0PZE7iRY6EdZjxDFqAJl48FHFNz/z6QQNRpUKJrYIPTwd1jYeE80b3Ne/l/w1vDx+rZiAjtm9VdIfk+btwFCChf3nmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784163475; c=relaxed/simple;
-	bh=979Zv+tm3Q8hsTJnMAPZPjJ4nuW9DLoHd5JvPqmFuHA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=p6QJjsUShSW1Wrqc/AYVBEUgC7RiZeEjy8MO3H0RZxig1bGQ/YHs1As4O2GlkmVVy/kH2Cx1UxO/3O3o+cXM7OATrH279x2KhopWUzrakM7alOdu6l4RvMWyCV8vdaD/eg17JI+/ACPqBXDdYQSe28a9jTZvd/finAz9mJ/05KE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=j7dxsRFU; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1784163477; c=relaxed/simple;
+	bh=8knMdhht013hDVovR2rDKq/pWJeyPrqiv14PyP7GwxM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=h3n+kRnsKOm6kC9p/ZaqAzM/zzxwEG3FvKYvaApfwa5XvKagj4tlXBewKJdv+oV7baBpuu1YGky2CxQsqEo4UglIcd/fvVpn7JZGp4lLJh+FJiObeR+XAJl9w8a8CMIq1cOlQjPVRteRL4rFPT6p1of9h7KJmRdnxmEzBr/NfTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ARuwv8B1; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="j7dxsRFU"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66G0YOos1126408;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ARuwv8B1"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66G0XZ551005040;
 	Thu, 16 Jul 2026 00:57:47 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=Ij2khx1qVQW
-	vy6YkycBKCjhcI4IUlvsAyJiOhdohfKA=; b=j7dxsRFUXTG6akxZOuXFagUopGk
-	kMEDbXltJXUnZaBtaUvJ6d9ct/keL4yqj7eNID76Yf8GuVAtUFkb2iyiNFvjwyOP
-	8RT9Iza9fFUadflP3ZOdAAnqBoADdtYnoTAqNLu8oIS/R9uMvbkfFP7c23v/ajtu
-	wCg4pHuezLHq1JXqD+xrTGppny8Z0Hoh8keFQUQWz3f7JuPQg30A18CqHeKIqeHu
-	vTXa3lfv2xeHbIE+O+p72UqqPSjikuaXQzqe83Cw5XzpRSK63UmFsWLOakPslUk5
-	ZrzKqAts1BJSg7uu0CyPWPqX3SGD4qZAWzwFzE+FSs3pWg8etpJ4kP9k6jA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fe7q639j4-1
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=P1n9F0BxjfmNs3w05AdwgDrUfIDjMbnQ8cI
+	GWG5fig4=; b=ARuwv8B1WLhuhsu2DAeG6xfgZXpSFJEwB4ZeFxCa/ZFAPncY6JO
+	S473umZF+dt3GKWlkKvCbjDSgtk6GN9r7q59d8vBfaf2oHcGVua22LMvhqrQOSLI
+	iF3jBwp0y2mjJ8cngZC1whW1WZFTnxN6ia2V5gmzVCQSvbqJPSO/TsLaW6BFbrZt
+	XESX81wv75OEkn0HIds5JJG0Sk7KEZia62GOfEpFT3sXKQAJTPe8ubK7oiaZ4qzo
+	M/nsj3CGPVOJ4HfX1DiZ2mgjivyVS1TiR3xAcw58yoP7I8UH2sfLYLzCm3VAUKnQ
+	pBQ3ko7M8wNGa9YFftusun+tvjERAPDx0rQ==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fecny9ybb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Jul 2026 00:57:47 +0000 (GMT)
-Received: from pps.filterd (NALASPPMTA03.qualcomm.com [127.0.0.1])
-	by NALASPPMTA03.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 66G0q6Wi012253;
+	Thu, 16 Jul 2026 00:57:46 +0000 (GMT)
+Received: from pps.filterd (NALASPPMTA02.qualcomm.com [127.0.0.1])
+	by NALASPPMTA02.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 66G0vku7024328;
 	Thu, 16 Jul 2026 00:57:46 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by NALASPPMTA03.qualcomm.com (PPS) with ESMTPS id 4fdywfk3er-1
+	by NALASPPMTA02.qualcomm.com (PPS) with ESMTPS id 4fekujghv0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Thu, 16 Jul 2026 00:57:46 +0000 (GMT)
-Received: from NALASPPMTA03.qualcomm.com (NALASPPMTA03.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 66G0vk1X018853;
-	Thu, 16 Jul 2026 00:57:46 GMT
+Received: from NALASPPMTA02.qualcomm.com (NALASPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 66G0vj1r024307;
+	Thu, 16 Jul 2026 00:57:45 GMT
 Received: from hu-devc-lv-u24-a.qualcomm.com (hu-jcameron-lv.qualcomm.com [10.81.84.69])
-	by NALASPPMTA03.qualcomm.com (PPS) with ESMTPS id 66G0vk4e018849
+	by NALASPPMTA02.qualcomm.com (PPS) with ESMTPS id 66G0vjCo024303
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 16 Jul 2026 00:57:46 +0000 (GMT)
+	Thu, 16 Jul 2026 00:57:45 +0000 (GMT)
 Received: by hu-devc-lv-u24-a.qualcomm.com (Postfix, from userid 4846927)
-	id 074FA23122; Wed, 15 Jul 2026 17:57:46 -0700 (PDT)
+	id C0C0F22173; Wed, 15 Jul 2026 17:57:45 -0700 (PDT)
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 To: linux-iio@vger.kernel.org
 Cc: David Lechner <dlechner@baylibre.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Andy Shevchenko <andy@kernel.org>,
         Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 12/22] iio: dac: max517: Remove redundant i2c_master_send() length check
-Date: Wed, 15 Jul 2026 17:57:27 -0700
-Message-ID: <20260716005737.254577-13-jonathan.cameron@oss.qualcomm.com>
+Subject: [RESEND PATCH 00/22] IIO: Clean out superfluous I2C checks for single transfers
+Date: Wed, 15 Jul 2026 17:57:15 -0700
+Message-ID: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
-References: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,60 +66,108 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QCInternal: smtphost
 X-QCInternal: smtphost
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDAwNiBTYWx0ZWRfX+aTznkL2YnXp
- jrhpYI/yxyusApNG8X54XDJo8u0XOFmqGFLVZmdBSbf6gIqA6b96vCfgNC+wXAE6szVJCTj2nzH
- wqXEyFRRP+FkT3leiHShBqLCFfAzsFQ=
-X-Proofpoint-ORIG-GUID: 3lE0QNYFDrvXQY-8NH6z7qmgstO1qph3
-X-Proofpoint-GUID: 3lE0QNYFDrvXQY-8NH6z7qmgstO1qph3
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDAwNiBTYWx0ZWRfX/BSe/GrlNl+O
- uymWXg1QBM3o4OBNJ0/LRxLXyjLRuivVkH8SaM24LbYq5dXRbEda457lpyjbIABstBJaHOVA3Re
- Um2B8sNWQUOKhBDBKyeGFy/+2Pre4Nc2X3JNYDhSkqviMIMFRlR8ngQ+LuraptPAs56a+FmXlw9
- OxmygK+J4Ap53KXLg3WUZ7xp/f4SpxcPOnbpikMxitZox+Q+TI2KOT2e8MJpKwUKXAm4hcc4y6P
- CmceB+MrARSUdr+yun7Xmx4tN3zx3S8JB0rlh0BYHSLwEQqHpGvhoxMgkU+7/YONXAgCSlWwmsj
- +PtOs+LQhXr3HdFBRrPx68ckVk1Y6RT3AAvXS/ix6hRGM8PBFEIkYvULU4fuQEqg1RnKTDE0Op3
- A6elKUv7xoV1RzRK3W0GyLJQAVft7Uw80J6bC06XuvC5+biTFJML8e4rKrjP3BsT1wBCajHht3X
- rqNV/CJjHLsYW+v6LUw==
-X-Authority-Analysis: v=2.4 cv=BajoFLt2 c=1 sm=1 tr=0 ts=6a582c8b cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDAwNSBTYWx0ZWRfXycJERCSZZFp2
+ 75ZcnUwlxr1OAOZvBKcn9mF9sjAbYWw9i/lSh4D49ZkmGB50Ay6MKbVb2e6T2VqyfZtz42uu7dg
+ cpQuDCIRyODc/qTK6zAaVxdB1e1VYwA=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDAwNSBTYWx0ZWRfX6cofP5Em2/Ux
+ wBMwaPcTPSjrN8AOdNvN6IXAq9Q8d03z10XbjebBn4kLytp4IUP2R6DIL1tIrs4UuyS+7mZHj7F
+ TZIsdUkZJeATgt3Uv4bKt18fFqIMHN6E300870doZiSBjdJ2vs1mJHdlMfyWrz86Fg0Q69azvyA
+ JS3BD7x/uEWNH4Y3gZpqwRnill++3tVNY0FOzVBUNehZSRbnDs/562eRKa/VWkkm2r+v7oJ3oEU
+ T1PI3YyjTA9NBGOnOAYBynBWKF+lkgoo5XDVkMJhuIMOLhFiBMXnR81gVRg4QR4n82T66V4pJIE
+ YcFE/hdWWaImRgYRgBVTlUmRjeqMZJ8IU6xSKz51bA2/ZarsW7cFtpUJlm3fwZ5lU/zVrSEV1fG
+ qFB6TZxH2vlsVCaT6tUmCwzB0+OQVK3sl95GhDd0pqecRh0XEUa+l0yax3dBYra/awz90GFFgTk
+ xkSuLYcAep+f3oI9BMA==
+X-Proofpoint-ORIG-GUID: -n7LBxApvK2OIOAQvY87oJk5Fx4Anfuy
+X-Authority-Analysis: v=2.4 cv=Lt2iDHdc c=1 sm=1 tr=0 ts=6a582c8b cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
  a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=ZpdpYltYx_vBUK5n70dp:22 a=EUspDBNiAAAA:8 a=r0dgtAz1XB34ppFZNlAA:9
+ a=yx91gb_oNiZeI1HMLzn7:22 a=8QjTjfFf38wHmLEJvXoA:9
+X-Proofpoint-GUID: -n7LBxApvK2OIOAQvY87oJk5Fx4Anfuy
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-16_01,2026-07-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 phishscore=0 malwarescore=0 clxscore=1015 bulkscore=0
- impostorscore=0 adultscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607160006
+ phishscore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
+ malwarescore=0 adultscore=0 spamscore=0 suspectscore=0 clxscore=1015
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607160005
 
-i2c_master_send() returns either a negative errno or exactly the count
-passed in, so the length check after the 'ret < 0' test can never be
-true. Drop the dead branch.
+Resend to include linux-iio. Sorry to all who get it twice.
 
-Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Assisted-by: Claude:claude-opus-4-8
----
- drivers/iio/dac/max517.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+This came up in a recent review and I realised I have been giving incorrect
+review feedback for years. Both i2_master_send() and i2c_master_recv() plus
+the dma safe variants only ever return either an error or the full buffer
+size.  Short accesses do not occur.
 
-diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-index d2ddc72e0e50..e0d1a26c4f73 100644
---- a/drivers/iio/dac/max517.c
-+++ b/drivers/iio/dac/max517.c
-@@ -55,10 +55,8 @@ static int max517_set_value(struct iio_dev *indio_dev,
- 	res = i2c_master_send(client, outbuf, 2);
- 	if (res < 0)
- 		return res;
--	else if (res != 2)
--		return -EIO;
--	else
--		return 0;
-+
-+	return 0;
- }
- 
- static int max517_read_raw(struct iio_dev *indio_dev,
+This series (also my first upstream series prepared by poking claude)
+removes the redundant checks from all IIO drivers.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (22):
+  iio: adc: ltc2471: Remove redundant i2c_master_recv() length check
+  iio: adc: ti-ads7138: Remove redundant i2c_master_send() length checks
+  iio: adc: versal-sysmon: Remove redundant i2c_master_{send,recv}()
+    length checks
+  iio: chemical: scd30: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: chemical: scd4x: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: chemical: sgp30: Remove redundant i2c_master_recv() length check
+  iio: chemical: sgp40: Remove redundant i2c_master_recv() length check
+  iio: chemical: sps30: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: dac: ad5446: Remove redundant i2c_master_send() length check
+  iio: dac: ad5696: Remove redundant i2c_master_send() length check
+  iio: dac: m62332: Remove redundant i2c_master_send() length check
+  iio: dac: max517: Remove redundant i2c_master_send() length check
+  iio: dac: max5821: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: dac: mcp4725: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: dac: mcp4728: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: light: lv0104cs: Remove redundant i2c_master_{send,recv}() length
+    checks
+  iio: potentiometer: ad5110: Remove redundant i2c_master_{send,recv}()
+    length checks
+  iio: pressure: abp2030pa: Remove redundant i2c_master_{send,recv}()
+    length checks
+  iio: pressure: adp810: Remove redundant i2c_master_{send,recv}()
+    length checks
+  iio: pressure: icp10100: Remove redundant i2c_master_send() length
+    check
+  iio: pressure: mprls0025pa: Remove redundant i2c_master_{send,recv}()
+    length checks
+  iio: pressure: sdp500: Remove redundant i2c_master_recv() length check
+
+ drivers/iio/adc/ltc2471.c              |  2 --
+ drivers/iio/adc/ti-ads7138.c           |  4 ----
+ drivers/iio/adc/versal-sysmon-i2c.c    |  6 ------
+ drivers/iio/chemical/scd30_i2c.c       |  4 ----
+ drivers/iio/chemical/scd4x.c           |  8 --------
+ drivers/iio/chemical/sgp30.c           |  2 --
+ drivers/iio/chemical/sgp40.c           |  4 ----
+ drivers/iio/chemical/sps30_i2c.c       |  4 ----
+ drivers/iio/dac/ad5446-i2c.c           |  2 --
+ drivers/iio/dac/ad5696-i2c.c           |  2 +-
+ drivers/iio/dac/m62332.c               |  2 --
+ drivers/iio/dac/max517.c               |  6 ++----
+ drivers/iio/dac/max5821.c              | 14 ++------------
+ drivers/iio/dac/mcp4725.c              | 22 ++++++----------------
+ drivers/iio/dac/mcp4728.c              | 13 +------------
+ drivers/iio/light/lv0104cs.c           |  4 ----
+ drivers/iio/potentiometer/ad5110.c     | 18 +++---------------
+ drivers/iio/pressure/abp2030pa_i2c.c   |  4 ----
+ drivers/iio/pressure/adp810.c          |  4 ----
+ drivers/iio/pressure/icp10100.c        |  2 --
+ drivers/iio/pressure/mprls0025pa_i2c.c |  4 ----
+ drivers/iio/pressure/sdp500.c          |  4 ----
+ 22 files changed, 15 insertions(+), 120 deletions(-)
+
 -- 
 2.43.0
 
