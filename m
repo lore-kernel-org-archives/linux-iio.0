@@ -1,225 +1,112 @@
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E559439CD01;
-	Thu, 16 Jul 2026 07:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.69.201.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2025331E851
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 07:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784186140; cv=none; b=Q+QOd5Lxy34qYVJWgJdK5op3tgfipCC4n763q9tXzorBWDWLZvnSNp/+37XF5MphzH+J4w2DRdRk0rjgPcuc47Ryt9AVg9C0xWY5llZaDctcS9eYy1mMB9mFkdugMMAKlqFQ4SpivAZN15KXtfJ5wfTRHc71iOHPXqbd77ktyIg=
+	t=1784187920; cv=none; b=rfTl9XbxgsW5toqNTcqRCIbiJ3UtV2G/6jzB5k4wndNASXUdAXuNjxPbYLnDwONtQrLZoy7RrPBZdTZw9ihl3DmumdhnA8PY+Hvv/IoPaHVT93GXxVDmzo5FuEjMV6XunI0fzCHqQxywfE3YHcdx4Dfl8fsxa0KLYf1Vi+sp4x8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784186140; c=relaxed/simple;
-	bh=WG82U4sThSimZ8pJp8bKDS4TEGZ6pt0UEc6gUospZ7w=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=G4xtxooYEJx/wPUFZo22UhVObMgciEKP/AYZBX2piDsMkrnXGhmo16VHDhVo00DB7jeHKYTXbc/4feKhbuVV4GY7G2pAdXLvO496I69xirW5aWwRqtIy+y+e8ukAp6YNWel2g7kOS4Dq+ykfPf2n+cxd+1ne1/3LbNMslqxdjEs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=walle.cc; arc=none smtp.client-ip=159.69.201.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=walle.cc
-Received: from localhost (unknown [IPv6:2a02:810b:4320:1000:4685:ff:fe12:5967])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.3ffe.de (Postfix) with ESMTPSA id 0BBAC282;
-	Thu, 16 Jul 2026 09:15:30 +0200 (CEST)
+	s=arc-20240116; t=1784187920; c=relaxed/simple;
+	bh=Sg58Yc7uD6ai3S7WWbNmhT4gg8JlC9ALJ9h0k0OJBNw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hO7IGb4GWpfEpRAn5dfFnA3ch2r7UEsgrYYyprXNqoR2Q90FwFJpDXCZ1AW0EmDNf6TdqQofvf3V0vaeeP2ZAjjJ5GUGGGEvUf7FhaXYvciYlxzMQQPcv6nC7wVLhuKUhmJJxXtORJBavx/krzvqxkJ2MmnsBOQLTGZJCrBhIfg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CDFmrstr; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CDFmrstr"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-475881b9a4bso2703073f8f.3
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 00:45:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784187917; x=1784792717; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=fLR7VfJUE9Ja4z8wtpGAktnLppqJBBUvRPlg8yvEoag=;
+        b=CDFmrstrgR4RtcQojbPtGQZXpUv9K2XI0xQjVEpwboqsHIk4FjhLytjkvziUwJTPSS
+         1Dr0ey02qnzHR4ynMW+pCoY7BrRPuYmv5LgvS2z8OYt5awXXMskKwyV0oDeudvV2N+Q2
+         UG4fiIx16wOCQyaGiSN8OJ+zMDrUE6uDskmBgxFOu97MuJIg8FIOsI9DUXQe2QBsixHh
+         0y448t9wpzsDTOcL8IHkz2RJhsdWMkeqg0Dw9G6bG6mgnx+oyUUJdaM36DPKYHakXWMN
+         bf7uORU6OZYdZJi0ixdTOymkfEq1HWq0LBSaZhnEaHl7z3uZjtqE1TLke7nFzH9REhGh
+         x7SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784187917; x=1784792717;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=fLR7VfJUE9Ja4z8wtpGAktnLppqJBBUvRPlg8yvEoag=;
+        b=ixAww5BTv6t6m3yAH1pybYKnPPNCeoCVz9hOz6fmX1MuLI37uKG2dKDskWFlGBnfKL
+         ToTxPZpdmsQ+3Swz16c9ieqLdqwBW4cAYjqJ0zpxSCcJBDLJ5yIspmjPb0CQ/iiBkQ92
+         r8epBHzORU4crc0w9giWn5bfVCArjsU73uEzJ6na99a6eyiLDPcK0GHJhfbGmuAo2UGr
+         PZH3lxFRXmojaXNC/fROoyMX4KzJj50j49C5yO0FIlEfwa76hfZ2sFgf3ck7JQCh9+oe
+         b8HBaefYz1BGcn7VqOSkFCIFhsrQxXAKOts13OVPgABYLNwhKwoOdeyqqz6lso4Ec1BR
+         zsRg==
+X-Gm-Message-State: AOJu0YyFO0Yo5q9igxSjrVLqxBfRDawVkYQRH5sNM+M/ywOzNDjHsdRJ
+	6Crvts9Q1n7XaarJNJl1WBmF7QpWkbitONVFPiLbvluVVF+Qt3F2i68Y
+X-Gm-Gg: AfdE7cnOZydGpD1h1sorIamZoucD8IuuB/uJq8QFXU3cEXL4q9UnLxSoZeRW8p4Ns6i
+	AEvq4gd1Kn6AWkj/iAJfTyb+hm+yKzi8ibFRYRg9ypKr4Tbv+/XC1Uod+wYVbYILi1gqwJQxZwc
+	0DX/z4eTUfsFes9mgxofx/rj80Ev+j4JL2cEHLgwF/H+YrHJVc0pJPgIwAXMcG4LejKoh65Y3fa
+	mtX3SZABQxrJ6RTNzviRe2y/7gNzp5EMGfMoKB30qfSQP5Toz8DlUbwv2Vat+nOtVLxsnfe7ZiJ
+	UN7eO7hWUuW2Vw4hsHupxfJEMXHJKQRfBEYw18/zM+Dqxsk6muwxn/4oZE+4zR3mIYJHFMdrOZC
+	LcNVYEraPvXb7tLu1iwqVdgjlkMXfWxRyoaToW3Gyp+WHh5RudWtw0fmH0QwzSlNIE6ERJOSupv
+	TEGExMZPuu6LslwIMLDSTsPzkrh0OmnTOn0vI1YpHcheMPCU2YwaUrA+x14tLMj4r+m9mkhEjSB
+	lc8AO0BKFl1DuxWGgFIzvjcwMiAaPuZb1w2WcbPiVa5jsDSg5F9tdexbKOe1fOiQK6FwLphnzVT
+	F2VnQvmDEy7fTkgDf7z8pSN5XzTXo9SCXivW6x5sX8/fZs9vmCHTxqYxWK85sWh+/tYUM8ONgLJ
+	wY58pH5TIbQnA
+X-Received: by 2002:a05:6000:2612:b0:46e:1815:6a83 with SMTP id ffacd0b85a97d-47f2dd1f23fmr27865366f8f.29.1784187917235;
+        Thu, 16 Jul 2026 00:45:17 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f464c1f84sm22778028f8f.29.2026.07.16.00.45.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2026 00:45:17 -0700 (PDT)
+Date: Thu, 16 Jul 2026 09:45:14 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH 12/22] iio: dac: max517: Remove redundant
+ i2c_master_send() length check
+Message-ID: <20260716094514.00001eaa@gmail.com>
+In-Reply-To: <20260716005737.254577-13-jonathan.cameron@oss.qualcomm.com>
+References: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
+	<20260716005737.254577-13-jonathan.cameron@oss.qualcomm.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 16 Jul 2026 09:15:29 +0200
-Message-Id: <DJZT74OCHTA2.3LLOKE9Y2SBXO@kernel.org>
-Subject: Re: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Cc: <Michael.Hennerich@analog.com>, <afaerber@suse.com>, <andy@kernel.org>,
- <brgl@kernel.org>, <conor+dt@kernel.org>, <cy.huang@realtek.com>,
- <devicetree@vger.kernel.org>, <dlechner@baylibre.com>,
- <james.tai@realtek.com>, <jic23@kernel.org>, <krzk+dt@kernel.org>,
- <lars@metafoo.de>, <linus.walleij@linaro.org>, <linusw@kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-realtek-soc@lists.infradead.org>,
- <mathieu.dubois-briand@bootlin.com>, <nuno.sa@analog.com>,
- <robh@kernel.org>, <stanley_chang@realtek.com>, <tychang@realtek.com>,
- <wbg@kernel.org>
-From: "Michael Walle" <mwalle@kernel.org>
-To: "Yu-Chun Lin" <eleanor.lin@realtek.com>
-X-Mailer: aerc 0.20.0
-References: <d301ba0cd45d49d59e6a014188306ec9@realtek.com>
- <20260716062614.1507243-1-eleanor.lin@realtek.com>
-In-Reply-To: <20260716062614.1507243-1-eleanor.lin@realtek.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi,
+On Wed, 15 Jul 2026 17:57:27 -0700
+Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> wrote:
 
-On Thu Jul 16, 2026 at 8:26 AM CEST, Yu-Chun Lin wrote:
->>> > @@ -185,7 +218,7 @@ static int gpio_regmap_set_direction(struct
->>> gpio_chip *chip,
->>> >                                    unsigned int offset, bool output)
->>> > {
->>> >       struct gpio_regmap *gpio =3D gpiochip_get_data(chip);
->>> > -     unsigned int base, val, reg, mask;
->>> > +     unsigned int base, val, reg, mask, wren_mask;
->>> >       int invert, ret;
->>> >
->>> >       if (gpio->reg_dir_out_base) {
->>> > @@ -198,7 +231,12 @@ static int gpio_regmap_set_direction(struct
->>> gpio_chip *chip,
->>> >               return -ENOTSUPP;
->>> >       }
->>> >
->>> > -     ret =3D gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask);
->>> > +     ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_OP, base=
-,
->>> offset, &reg, &mask);
->>> > +     if (ret)
->>> > +             return ret;
->>> > +
->>> > +     ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_WREN_OP,
->>> base, offset, &reg,
->>> > +                                &wren_mask);
->>>=20
->>> What constrains these two to provide the same value back for reg?
->>> To me it seems like the write enable might well be in a different regis=
-ter.
->>>=20
->>> >       if (ret)
->>> >               return ret;
->>> >
->>> > @@ -207,7 +245,7 @@ static int gpio_regmap_set_direction(struct
->>> gpio_chip *chip,
->>> >       else
->>> >               val =3D output ? mask : 0;
->>> >
->>> > -     return regmap_update_bits(gpio->regmap, reg, mask, val);
->>> > +     return regmap_update_bits(gpio->regmap, reg, mask | wren_mask,
->>> > + val | wren_mask);
->>> >  }
->>> >
->>> >  static int gpio_regmap_direction_input(struct gpio_chip *chip,
->>
->> My initial design indeed assumed that the WREN mask and Data mask reside=
- in
->> the same register.
->> =20
->> Regarding WREN support, especially if WREN and Data use separate registe=
-rs, I
->> came up with three ideas. Which direction do you prefer?
->> =20
->> Approach 1: Provide Custom Callbacks in config (Let consumer driver hand=
-le it)
->> We can add '.set' and '.set_direction' function pointers in
->> 'struct gpio_regmap_config'. If a driver requires WREN, it can implement=
- these
->> callbacks itself.
->>=20
->> static void gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,=
- int val)
->> {
->>         struct gpio_regmap *gpio =3D gpiochip_get_data(chip);
->> =20
->>         /* If the driver provides a custom set (to handle WREN), delegat=
-e to it */
->>         if (gpio->set) {
->>                 gpio->set(chip, offset, val);
->>                 return;
->>         }
->>         /* ... existing generic regmap logic ... */
->> }
->>
->> Pros: Clean core, no need to touch existing drivers' xlate signature. Th=
-e consumer
->> driver handles its own locking for different registers.
->> Cons: It feels a bit strange and inconsistent to expose only '.set' and
->> '.set_direction' overrides while keeping other operations entirely abstr=
-acted.
->> =20
->> Approach 2: Handle separate WREN register in the core (with locking conc=
-erns)
->> We keep the 'XX_WREN_OP' in 'xlate'. If someone needs WREN and 'wren_reg=
- !=3D reg',
->> we write to both.
->> =20
->> static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,
->>                            int val)
->> {
->>         /* skip */
->>         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, base=
-, offset, &wren_reg,
->>                                    &wren_mask);
->>         if (ret =3D=3D -ENOTSUPP)
->>                 has_wren =3D false;
->>         else if (ret)
->>                 return ret;
->>=20
->>        ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_OP, base, offs=
-et, &reg, &mask);
->>=20
->>        if (has_wren && reg =3D=3D wren_reg) {
->>                mask |=3D wren_mask;
->>                mask_val |=3D wren_mask;
->>                has_wren =3D false;
->>        }
->>=20
->>        if (has_wren)
->>                ret =3D regmap_set_bits(gpio->regmap, wren_reg, wren_mask=
-);=20
->>=20
->>         /* ignore input values which shadow the old output value */
->>         if (gpio->reg_dat_base =3D=3D gpio->reg_set_base)
->>                 ret =3D regmap_write_bits(gpio->regmap, reg, mask, mask_=
-val);
->>         else
->>                 ret =3D regmap_update_bits(gpio->regmap, reg, mask, mask=
-_val);
->> =20
->>         return ret;
->> }
->> =20
->> Pros: Keeps all WREN logic unified inside the core framework.
->> Cons: Introduces a locking issue. writing to 'wren_reg' and then 'reg' r=
-equires an
->> external lock to be atomic, which seems to defeat the purpose of relying=
- on regmap's
->> internal lock.=20
->>=20
->> Approach 3: Assume WREN and Data always share the same register
->>=20
->> static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset, =
-int val)
->> {
->>         /* ... */
->>         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, base=
-, offset, &reg, &wren_mask);
->>         if (ret =3D=3D -ENOTSUPP)
->>                 wren_mask =3D 0;
->>         else if (ret)
->>                 return ret;
->> =20
->>         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_OP, base, off=
-set, &reg, &mask);
->> =20
->>         ret =3D regmap_update_bits(gpio->regmap, reg, mask | wren_mask, =
-mask_val | wren_mask);
->>         return ret;
->> }
->> =20
->> Regarding this approach, I would like to ask from your experience: Is it
->> actually common for hardware designs to place WREN and Data bits in comp=
-letely
->> different registers for GPIO operations?
+> i2c_master_send() returns either a negative errno or exactly the count
+> passed in, so the length check after the 'ret < 0' test can never be
+> true. Drop the dead branch.
+> 
+> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> Assisted-by: Claude:claude-opus-4-8
+> ---
+>  drivers/iio/dac/max517.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+> index d2ddc72e0e50..e0d1a26c4f73 100644
+> --- a/drivers/iio/dac/max517.c
+> +++ b/drivers/iio/dac/max517.c
+> @@ -55,10 +55,8 @@ static int max517_set_value(struct iio_dev *indio_dev,
+>  	res = i2c_master_send(client, outbuf, 2);
 
-I'd say that such a write enable bit by itself is pretty uncommon
-for a gpio controller, regardless if it's in the same register or in
-a different one.
+Someone should also remove all the hard-coded sizes, they appear in multiple
+drivers you're touching.
 
->> If they practically always share the same register, this simpler approac=
-h might
->> suffice.
+-- 
+Kind regards
 
-It seems, that your hardware has it in one register. Why do you need
-a separate mask anyway? Why can't the xlate callback just set the
-bit in addition to the gpio bit? It looks like in the end you're
-doing a "mask |  wren_mask" anyway. What am I missing here?
-
--michael
+CJD
