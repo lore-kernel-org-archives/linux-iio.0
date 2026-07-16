@@ -1,129 +1,110 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56E5543F4D5
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 17:36:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8106D37D126;
+	Thu, 16 Jul 2026 17:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784223376; cv=none; b=nWbbIdvbZtQUpM/bxVCIvUnTRRbCJSvW1sBJnYQH7vJkapUkCzRUvcmhgbJDSMn3UtodUyn78rrYJZouyeFdlpKW92D8CHDaJY9CI575QnRXjhHB1ZZ4pewQmVN8LZIWx8GHbZQlkzJpMG7g+R+TRyBU3uXq9TIcOlXcl8myFG0=
+	t=1784223521; cv=none; b=DCanI/yYNAutLTFGQekQTgjdFFyAK3gkc0nauQXMBQ7El+Yj80S5y9blcWtaFfFGUSrL54Xoza+hunhNEr26DX6Wz2K1NB/M6z1kUR5TDbXLs3SAFm8Zrns7eyWWqoZlYihbrBzzNbOwlQzLK9xBB+7kczIs2rwthG1U4yVB0fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784223376; c=relaxed/simple;
-	bh=Bdre9fdJwVMzBFV9LYo7Or82eJ6WPi/GEPDr8PMl6aQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gN9xTlGNR454CRyzCHcLEkKvHBLje5el+4KfPW2bRDvRpgOcWghkMzB2VnQcgT2uznelzbXnOEdUN+aNBg1K5OrIRGyX1k1OjUl+8QzuTteuO3RgjescKBhLh6fJDb99qkj8NLr+fvvywN1WQJhzpVaGj+us31pB3KvnU4vWbxI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S10hIIL/; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784223521; c=relaxed/simple;
+	bh=Lo1GMdgP8Iw9bEhz/4IiBQGtCI/8kK+Sz30Q1yfoxPI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Mm/vzp4Bds6FzmfSByFzPr01dSlndbcgDKIONU1NMNPxDyNZ9di5DSj1A0Ktw50vnvx8Z4HHeGtb1UKliHJ9mM2kM5VQXwos/WI7QgapCH3P5GY170DRO/qDohHac+5ipbWpjq3jJ8Pycpq0WxS5CNdVPXMQj/x1v8ycHbAOGGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LTUGQ1Lt; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S10hIIL/"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-493c19bad03so58057125e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 10:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784223373; x=1784828173; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jyKLv13yjCnmWhHAYzJFN1nNRxdkFskQEtHHi51g50w=;
-        b=S10hIIL/vkDLS7qPZ9sK3C/HDQg5DR4hhA7k3PYV5A19sSgqdFCX5rAnC8TqKoE43G
-         ZuPijzVIaPQf1zKU4+Jn6kdc/71KvmLTjTf4DwrVRB13S53wFGuk09AXPrfV8d44rNHC
-         OpsqG9PmaWPs2cUJhMtvWPy5tVz34vPunxO4jAHM3fxQTtX6b2hjzRcHvIqboCERCQqx
-         PN1ev/NVP9amSGbLJ/z8TPyRxEemRNQHQsUteZN4be4iIw2y0pCNbMhlM/fQilrpknGE
-         6wYJEW1oLjsX0iJk6Agmgkx/rEXdnHXDnDEW/D/BdcoD6NV1jACV1b/FhSu0xqD2aCMG
-         LE8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784223373; x=1784828173;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jyKLv13yjCnmWhHAYzJFN1nNRxdkFskQEtHHi51g50w=;
-        b=bk1yJvcWXflipBPldS6uTILAHkhXy1r2DnN2HhLG26wj6NbLfHZEQyCru8pmqVxXaW
-         eUFiWXA+lOTUyo/REQjMY45G9StqBfQwhjSZ8xzuhODggpefIouXCDQ8ip3afo3cYdQF
-         XtXIfvqt3yq+iHIWIhqBPv65P+gUZWqjMKVBHV1MmgxOOcuLdiyt6cNsF1qeVdGoh9iS
-         hzQtxnAoPKY9h0+EHJokfufsr4ZDiEv+zONOEYeGkindX9bL+okEypgX9v/Np0tTDpzi
-         f504/erEeWLbRAXxr0dQh/GfW7LdYPP7MXbbKYTeuPDHFjFDWtKE5/zGmNMIz6ADqOZk
-         VX8A==
-X-Forwarded-Encrypted: i=1; AHgh+Rpn5uiPPmY0jH2D1SzJocHJYMU5bNMAweMOyyu7RyhOxq4bf+u4mvwi1tueiF7WeDFSAcqiq/B+R80=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yye/OY4Po7sTWoEqRmDtq2xXVAOMpFtiGosBKuHUspu/plUfULe
-	eMblfFRQSdgkhh1rkQ1AUi06AWQoVHIN23IJ26S/U01nVs8Vq8/uSkEpGmvtcDJ4m1A=
-X-Gm-Gg: AfdE7cnbRmVHztEwXxbS8Bu6wGGjb/bQX45XEtGR9tTDmaBE1U9/wCBhtKD473YxYFC
-	cNuxBDBKhUPAs1IIGY3syQ+TpbIMlowIQmPDfdSFfAR0U86s6sJYl5+qwfKWc2J2LxJKjqmF/1f
-	NWKg+kfoWR6Xgdsygo2XFCtLj+OrGOFW7q10bN+g3lUGPOSIaqaD0Fu2DL5wkK1NNsFF2Sd3PVp
-	x0Two+ckWtu95aAeRieLYN4MQJex2r9nYQqOcQlKgdnenLHIqAfljjAwSZud1trXnaNiwpHnKK1
-	8ofJCYOT49pJzNn9QhBOct55ev0D8A/VHVkJ42fcXcu96Alz7bop28ZgYZDAtHunop+8OKU5tXV
-	vqVntmteLob9Te09k9IYVa+VSlJKBGSOX3ql6ipZ6JXwsqyz2LvVqlVhT3uC9CttktoYLyJBbHf
-	IdOdQZQ5Az7BrY1RIOOxPERsIvOMcUQkz17OeScSRpGNMyyGsiUuCmB2+Fgt0ZEE+sEic=
-X-Received: by 2002:a05:600c:4fd3:b0:495:4593:bcb5 with SMTP id 5b1f17b1804b1-4954593bd26mr23894345e9.34.1784223373498;
-        Thu, 16 Jul 2026 10:36:13 -0700 (PDT)
-Received: from izzolab.play.pl (77-236-3-190.static.play.pl. [77.236.3.190])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4954812f0d0sm7983005e9.12.2026.07.16.10.36.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2026 10:36:13 -0700 (PDT)
-From: =?UTF-8?q?Pawe=C5=82=20Wi=C5=9Bniewski?= <pawel.wis.me@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	ak@it-klinger.de,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 3/3] iio: proximity: srf04: Add Cytron HC-SR04 support
-Date: Thu, 16 Jul 2026 19:35:56 +0200
-Message-ID: <3fedc827a2581d61bef9ea639ed77cf90e80047a.1784221074.git.pawel.wis.me@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <cover.1784221074.git.pawel.wis.me@gmail.com>
-References: <cover.1784221074.git.pawel.wis.me@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LTUGQ1Lt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784223520; x=1815759520;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Lo1GMdgP8Iw9bEhz/4IiBQGtCI/8kK+Sz30Q1yfoxPI=;
+  b=LTUGQ1Lt/V3g1+Z0FPjkU+Ab9xrq6ppHr92YrjyDEM/Jt7oFvPA8UjYQ
+   wB6glRdpRfT68QRsUGCqovzgl9Pvgur4k9Z8bXghBxTkB2cSvDr1YH3xv
+   /xhiiTFwhyYcgd7+gDtwHEgE9irt0Vs1XiChRJk2OV/fY9CzqhoZ86khb
+   FWFUesAiop3LgKH0zR1hH1cQshCwsiNqc5iUiy+RHMPnQ/bFb/fJF0z4O
+   PaF2coTDsDFa30l910/EnzmNk0HQA63wvEAQQmqZtShkO/0cV+JctYfWo
+   FoaPHdj3JPaajwKROf+RYrJsHJHCzHNhCAvbDUhwKPpqYfBlbZm0FDKNe
+   Q==;
+X-CSE-ConnectionGUID: r0eQN4+HS0qkJFZSm6+OfQ==
+X-CSE-MsgGUID: Q83w2rFoTIak6sKBi0ZHvw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11848"; a="85089908"
+X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
+   d="scan'208";a="85089908"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2026 10:38:39 -0700
+X-CSE-ConnectionGUID: 0BHBbRtuSFiYWh64bVM+0A==
+X-CSE-MsgGUID: D2D7vP5QRemFKvMATJ5/nQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
+   d="scan'208";a="279832977"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.26])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2026 10:38:36 -0700
+Date: Thu, 16 Jul 2026 20:38:34 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: =?utf-8?B?Vm9qdMSbY2ggS3LDoXRrw70=?= <vo.kratky@seznam.cz>
+Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, andy@kernel.org, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: resolver: ad2s1200: use dev_err_probe()
+Message-ID: <alkXGkOv2h9jTQ-5@ashevche-desk.local>
+References: <20260716123100.100394-1-vo.kratky@seznam.cz>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260716123100.100394-1-vo.kratky@seznam.cz>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Tested on a Raspberry Pi 3 Model B+ running
-6.18.34+rpt-rpi-v8. The sensor was instantiated using only the
-cytron,hc-sr04 compatible, with trigger connected to GPIO17 and echo
-connected to GPIO27 through a 5 V to 3.3 V resistor divider. The
-driver bound to the device, registered an IIO device, and returned
-changing distance readings through in_distance_raw.
+On Thu, Jul 16, 2026 at 02:31:00PM +0200, Vojtěch Krátký wrote:
+> Use dev_err_probe() instead of dev_err() to simplify the error path
+> and cleanly handle deferred probing.
 
-Assisted-by: ChatGPT:GPT-5.6 Thinking
-Signed-off-by: Paweł Wiśniewski <pawel.wis.me@gmail.com>
----
- drivers/iio/proximity/Kconfig | 1 +
- drivers/iio/proximity/srf04.c | 1 +
- 2 files changed, 2 insertions(+)
+...
 
-diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-index bb77fad2a1b3..89e9d57ceba6 100644
---- a/drivers/iio/proximity/Kconfig
-+++ b/drivers/iio/proximity/Kconfig
-@@ -139,6 +139,7 @@ config SRF04
- 	  ranger sensor. This driver can be used to measure the distance
- 	  of objects. It is using two GPIOs.
- 	  Actually Supported types are:
-+	  - Cytron HC-SR04
- 	  - Devantech SRF04
- 	  - Maxbotix mb1000
- 	  - Maxbotix mb1010
-diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
-index 7be50bdebfcb..f5ee7d6572b5 100644
---- a/drivers/iio/proximity/srf04.c
-+++ b/drivers/iio/proximity/srf04.c
-@@ -231,6 +231,7 @@ static const struct iio_chan_spec srf04_chan_spec[] = {
- };
- 
- static const struct of_device_id of_srf04_match[] = {
-+	{ .compatible = "cytron,hc-sr04", .data = &srf04_cfg },
- 	{ .compatible = "devantech,srf04", .data = &srf04_cfg },
- 	{ .compatible = "maxbotix,mb1000", .data = &mb_lv_cfg },
- 	{ .compatible = "maxbotix,mb1010", .data = &mb_lv_cfg },
+>  	st->sample = devm_gpiod_get(&spi->dev, "adi,sample", GPIOD_OUT_LOW);
+>  	if (IS_ERR(st->sample)) {
+> -		dev_err(&spi->dev, "Failed to claim SAMPLE gpio: err=%ld\n",
+> -			PTR_ERR(st->sample));
+> -		return PTR_ERR(st->sample);
+> +		return dev_err_probe(&spi->dev, PTR_ERR(st->sample),
+> +				"Failed to claim SAMPLE gpio\n");
+>  	}
+
+As Markus said, you can drop {}. On top of that you can introduce
+
+	struct device *dev = &spi->dev;
+
+at the top of the function and make this all shorter.
+
+	if (IS_ERR(st->sample))
+		return dev_err_probe(dev, PTR_ERR(st->sample),
+				     "Failed to claim SAMPLE gpio\n");
+
+...
+
+>  	st->rdvel = devm_gpiod_get(&spi->dev, "adi,rdvel", GPIOD_OUT_LOW);
+>  	if (IS_ERR(st->rdvel)) {
+> -		dev_err(&spi->dev, "Failed to claim RDVEL gpio: err=%ld\n",
+> -			PTR_ERR(st->rdvel));
+> -		return PTR_ERR(st->rdvel);
+> +		return dev_err_probe(&spi->dev, PTR_ERR(st->rdvel),
+> +				"Failed to claim RDVEL gpio\n");
+>  	}
+
+Ditto.
+
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
