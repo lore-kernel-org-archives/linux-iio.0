@@ -1,234 +1,131 @@
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67A37332EC5;
-	Thu, 16 Jul 2026 09:08:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.69.201.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BDF73C1992
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 09:22:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784192941; cv=none; b=kAmqyPZl5eEKV0yKtpv5gqiqZARpUKVa9KLssNhvhg4NJtapEMgXtmS1CHb0FjJZ8lM1xpjJ+K/L2X7PR7zULpobBcZk055GHyTwN7vj3pmidoQeL+0gQmOnZKoVKOQRajEINyqdf2JtslgSWSTS4r57+Xy0uavjHEqVKwZAL6U=
+	t=1784193747; cv=none; b=FW88ALbH101B9iN1Vr/Cn34lEqzhsezvyXT4Q/AqucBpPCgvkHvQlhtB+yD6E1XFxIVVKofW9siiEdpRI7MIVcKI2MeQHBoFo0IqkHOzKoh1nCQOvXa/X7BKC7YVy/OgmfQOplljZg5EgAgIzHQqMVjePrv7NsMnvRdhIVEYLPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784192941; c=relaxed/simple;
-	bh=8gpf2u0nVssbIpYXbfiW7CRX7d6ODFtMXkv44gvc46U=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=QTvi/4tQkISuw0wb59gtALp6h9qIqIGATVMVHiTXcWtW/WSeGaju9fyK6EAdUWDkL7wX9sTCEInOoLoihutBiTuudi9Nmlzi/aFJl572t4a7bTnHRUPtiv3QH3tokD3YBhH0J9vRXOc7apeQR7RAm6y/do5kTKSNVVTgFpAf4Io=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=walle.cc; arc=none smtp.client-ip=159.69.201.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=walle.cc
-Received: from localhost (unknown [IPv6:2a02:810b:4320:1000:4685:ff:fe12:5967])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.3ffe.de (Postfix) with ESMTPSA id B2247179;
-	Thu, 16 Jul 2026 11:08:55 +0200 (CEST)
+	s=arc-20240116; t=1784193747; c=relaxed/simple;
+	bh=rzqO5CDfV2tieACWMMf/aFToKmo74knunxI4lMWi1/o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nb6O7Ei3zXZOL18IhLizAQytSEdJ2wuTTiaKiPjeBkARqlcGlEcbVl/UMdy4yRkQkJ/xbPj2/xJmOILSpN358bJfIX+PpXyCWYNqXuXSw0IG4KpRqLZqCGGpln1tKEonj5zIdU5OGeulT5i23O5j6sp2vCt/Viwg2c74GRodwRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HmZjswKe; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HmZjswKe"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c15d5468673so347186866b.0
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 02:22:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784193744; x=1784798544; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=n6wOUdncDgzNL344qtaFFDOsPjqPXofjtfmeNQYdoHU=;
+        b=HmZjswKel4QxxpyT6Y3sPgOGh1D/6kZTad6T6JU8PGTInB/XrDvTh4ZOnQVfEp9Uaf
+         3qkxmg38RojIuAc9BxJSxVU2j+KO7i84AnhI81KqsCKcjrTFj7sT9w5ruJYmBgfnxisP
+         NKeQgIFxKtxVFNiCmb56oYwweDavQjEy9TsKFVkJLuRPaRi6tck8T/+/3+ni92bDrMbb
+         0lF8Xd1JU7TzM7z3nDgJn3zmTH7hL+aoayq2RRxQXq3MVzgbfugmyXeZFO0FxCM2ymnA
+         KzfsDSTgIlU8Bqat2AARMlcB9IwW3NxviGijjY59iQyk1qIFqDqUpVIoGGO1oeWOIy6s
+         EWdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784193744; x=1784798544;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=n6wOUdncDgzNL344qtaFFDOsPjqPXofjtfmeNQYdoHU=;
+        b=FtoiCnAblPI67zH2MR1pwu3y58LCpzCkzofWsopB9kaEUFXpKyK79IiSfr0Y+VOBXM
+         MUWiTFobNhYo+vUkA/Wl83OMruUJ7NO/Mew6dIHkeV9Dg63mOP536hqqDxfSBecieZSS
+         lKD3SJCndIG42buQFzbJnKMm9GiGWv/54hcSPGCV1YptIpIUaC5VjKghOyH+VpKlQwWm
+         SzruvkSJr0JFAg9awcWMui/e2rnikaHjWFkzb0BxAfsGWOWCPzSm8LzA4z1R+gFi/FYz
+         YSTRS8Jk3n+3tL9eGDnMCbG6QLlKsPWAyr+PjvhOTZHNgTCgh/DVu4MBxMtvmzgM/JSm
+         DmYQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoA/nHZDh7FohVH1b3sSbLyJnuM42mbI8H74MKUWS8R82w/eRxGxgGL/e3jrFLP+xoDbKIsYCGXxa8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZhYAVs6vKkobYJP1Q1NcInYHUeWEZ60DiaVdbIab4zCAuT4ZK
+	gAuHr2Nx+6bsKRjDlCvuH99ACL4eTUro9XhFOy3nKRQc8PZbxG+panH9
+X-Gm-Gg: AfdE7ckhVeUNekVkZBUzDZ56FVizdJ+rhMYSAgB63VCuyIKPK/vXl77fLPE/nWof08O
+	bW1Qa/g0rU0w/tE6k980dTtYJetepWLGi84NsdkRluIYRglARimOZPBNVJtcrfn2RCMcPbSnoW8
+	sOx082w/BD/gQamt+zs6nE3uUJ6cpSPSKyXo1+eENEC9cggscv5jWQFM8boVVS3PBd+NtxVa/s9
+	ht0rmx59AJyCzP6xF1V/97xCcxwO+P0wZ8sfp+vA1x+UhnSBEVWB+N+3bXKvhoSo8FnFFY76r5J
+	65b11pHEVfHDDXkyZf24Wxy3AB7hx2dv27AbemRkMMQp17A+TRjdaeK/r+55zVmaFuK6U625anW
+	gfDhBXUndT+CXMDj35eZMRkc39cI+s1gCGI1jF8FOiewZTUXpGQi5kdIHKInO63iTm3UzoZ5UWu
+	ymXN8kp9T2YAh7fRL8
+X-Received: by 2002:a17:907:3e1a:b0:c16:358d:df3 with SMTP id a640c23a62f3a-c16358d0fecmr1012405766b.63.1784193743476;
+        Thu, 16 Jul 2026 02:22:23 -0700 (PDT)
+Received: from NSA-L02.ad.analog.com ([137.71.226.102])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-69e12ccd067sm2385553a12.21.2026.07.16.02.22.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2026 02:22:23 -0700 (PDT)
+Date: Thu, 16 Jul 2026 11:22:19 +0200
+From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
+To: Mark Brown <broonie@kernel.org>
+Cc: Janani Sunil <janani.sunil@analog.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Marius Cristea <marius.cristea@microchip.com>, 
+	Marcus Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
+Subject: Re: [PATCH v6 1/5] spi: dt-bindings: Add spi-device-addr peripheral
+ property
+Message-ID: <jsximyohkijphqrtgat6cjtcvtirjsdtbgn3lb6npw6yhgmcth@tq64dotfowss>
+References: <20260715-ad5529r-driver-v6-0-cfdf8b9f5ee3@analog.com>
+ <20260715-ad5529r-driver-v6-1-cfdf8b9f5ee3@analog.com>
+ <1c4af9b1-9937-4cbb-b57f-52ac575b8b89@sirena.org.uk>
+ <lpbqk3wv6emhdtxhnczrgufzzxprcfpfgenfepnmzhzfj3b3ci@rdphuko7ikti>
+ <157154d1-3995-454b-9e08-1527f1c5d409@sirena.org.uk>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 16 Jul 2026 11:08:55 +0200
-Message-Id: <DJZVLZ4LLD9E.3MPLYYXT1VQ9R@kernel.org>
-Subject: Re: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Cc: <Michael.Hennerich@analog.com>, <afaerber@suse.com>, <andy@kernel.org>,
- <brgl@kernel.org>, <conor+dt@kernel.org>, <cy.huang@realtek.com>,
- <devicetree@vger.kernel.org>, <dlechner@baylibre.com>,
- <james.tai@realtek.com>, <jic23@kernel.org>, <krzk+dt@kernel.org>,
- <lars@metafoo.de>, <linus.walleij@linaro.org>, <linusw@kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-realtek-soc@lists.infradead.org>,
- <mathieu.dubois-briand@bootlin.com>, <nuno.sa@analog.com>,
- <robh@kernel.org>, <stanley_chang@realtek.com>, <tychang@realtek.com>,
- <wbg@kernel.org>
-From: "Michael Walle" <mwalle@kernel.org>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>, "Yu-Chun Lin"
- <eleanor.lin@realtek.com>
-X-Mailer: aerc 0.20.0
-References: <d301ba0cd45d49d59e6a014188306ec9@realtek.com>
- <20260716062614.1507243-1-eleanor.lin@realtek.com>
- <aliV4u6_xzx9D9Aq@ashevche-desk.local>
-In-Reply-To: <aliV4u6_xzx9D9Aq@ashevche-desk.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <157154d1-3995-454b-9e08-1527f1c5d409@sirena.org.uk>
 
-On Thu Jul 16, 2026 at 10:27 AM CEST, Andy Shevchenko wrote:
-> On Thu, Jul 16, 2026 at 02:26:14PM +0800, Yu-Chun Lin wrote:
->
-> ...
->
->> >> > -     ret =3D gpio->reg_mask_xlate(gpio, base, offset, &reg, &mask)=
-;
->> >> > +     ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_OP, ba=
-se,
->> >> offset, &reg, &mask);
->> >> > +     if (ret)
->> >> > +             return ret;
->> >> > +
->> >> > +     ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_DIR_WREN_O=
-P,
->> >> base, offset, &reg,
->> >> > +                                &wren_mask);
->> >>=20
->> >> What constrains these two to provide the same value back for reg?
->> >> To me it seems like the write enable might well be in a different reg=
-ister.
->> >>=20
->> >> >       if (ret)
->> >> >               return ret;
->
-> ...
->
->> >> > -     return regmap_update_bits(gpio->regmap, reg, mask, val);
->> >> > +     return regmap_update_bits(gpio->regmap, reg, mask | wren_mask=
-,
->> >> > + val | wren_mask);
->> >> >  }
->> >> >
->> >> >  static int gpio_regmap_direction_input(struct gpio_chip *chip,
->> >
->> > My initial design indeed assumed that the WREN mask and Data mask resi=
-de in
->> > the same register.
->> > =20
->> > Regarding WREN support, especially if WREN and Data use separate regis=
-ters, I
->> > came up with three ideas. Which direction do you prefer?
->> > =20
->> > Approach 1: Provide Custom Callbacks in config (Let consumer driver ha=
-ndle it)
->> > We can add '.set' and '.set_direction' function pointers in
->> > 'struct gpio_regmap_config'. If a driver requires WREN, it can impleme=
-nt these
->> > callbacks itself.
->> >=20
->> > static void gpio_regmap_set(struct gpio_chip *chip, unsigned int offse=
-t, int val)
->> > {
->> >         struct gpio_regmap *gpio =3D gpiochip_get_data(chip);
->> > =20
->> >         /* If the driver provides a custom set (to handle WREN), deleg=
-ate to it */
->> >         if (gpio->set) {
->> >                 gpio->set(chip, offset, val);
->> >                 return;
->> >         }
->> >         /* ... existing generic regmap logic ... */
->> > }
->> >
->> > Pros: Clean core, no need to touch existing drivers' xlate signature. =
-The consumer
->> > driver handles its own locking for different registers.
->> > Cons: It feels a bit strange and inconsistent to expose only '.set' an=
-d
->> > '.set_direction' overrides while keeping other operations entirely abs=
-tracted.
->> > =20
->> > Approach 2: Handle separate WREN register in the core (with locking co=
-ncerns)
->> > We keep the 'XX_WREN_OP' in 'xlate'. If someone needs WREN and 'wren_r=
-eg !=3D reg',
->> > we write to both.
->> > =20
->> > static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset=
-,
->> >                            int val)
->> > {
->> >         /* skip */
->> >         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, ba=
-se, offset, &wren_reg,
->> >                                    &wren_mask);
->> >         if (ret =3D=3D -ENOTSUPP)
->> >                 has_wren =3D false;
->> >         else if (ret)
->> >                 return ret;
->> >=20
->> >        ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_OP, base, of=
-fset, &reg, &mask);
->> >=20
->> >        if (has_wren && reg =3D=3D wren_reg) {
->> >                mask |=3D wren_mask;
->> >                mask_val |=3D wren_mask;
->> >                has_wren =3D false;
->> >        }
->> >=20
->> >        if (has_wren)
->> >                ret =3D regmap_set_bits(gpio->regmap, wren_reg, wren_ma=
-sk);=20
->> >=20
->> >         /* ignore input values which shadow the old output value */
->> >         if (gpio->reg_dat_base =3D=3D gpio->reg_set_base)
->> >                 ret =3D regmap_write_bits(gpio->regmap, reg, mask, mas=
-k_val);
->> >         else
->> >                 ret =3D regmap_update_bits(gpio->regmap, reg, mask, ma=
-sk_val);
->> > =20
->> >         return ret;
->> > }
->> > =20
->> > Pros: Keeps all WREN logic unified inside the core framework.
->> > Cons: Introduces a locking issue. writing to 'wren_reg' and then 'reg'=
- requires an
->> > external lock to be atomic, which seems to defeat the purpose of relyi=
-ng on regmap's
->> > internal lock.=20
->> >=20
->> > Approach 3: Assume WREN and Data always share the same register
->> >=20
->> > static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset=
-, int val)
->> > {
->> >         /* ... */
->> >         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_WREN_OP, ba=
-se, offset, &reg, &wren_mask);
->> >         if (ret =3D=3D -ENOTSUPP)
->> >                 wren_mask =3D 0;
->> >         else if (ret)
->> >                 return ret;
->> > =20
->> >         ret =3D gpio->reg_mask_xlate(gpio, GPIO_REGMAP_SET_OP, base, o=
-ffset, &reg, &mask);
->> > =20
->> >         ret =3D regmap_update_bits(gpio->regmap, reg, mask | wren_mask=
-, mask_val | wren_mask);
->> >         return ret;
->> > }
->> > =20
->> > Regarding this approach, I would like to ask from your experience: Is =
-it
->> > actually common for hardware designs to place WREN and Data bits in co=
-mpletely
->> > different registers for GPIO operations?
->> >=20
->> > If they practically always share the same register, this simpler appro=
-ach might
->> > suffice.
->>=20
->> If there are no further concerns, I will proceed with the third approach=
- and
->> send out v6.
->
-> From the above list I tend to the approach 2, but this might require to h=
-ave
-> GPIO regmap level of locking. I'm a bit lost in the context, though. I as=
-sume
-> we need a fresh start, id est issue a v6 with approach 2 or 3 in place an=
-d
-> summarize the choices in the cover letter, so we can understand what has =
-been
-> considered.
+On Wed, Jul 15, 2026 at 02:37:12PM +0100, Mark Brown wrote:
+> On Wed, Jul 15, 2026 at 03:29:32PM +0200, Nuno Sá wrote:
+> > On Wed, Jul 15, 2026 at 02:09:19PM +0100, Mark Brown wrote:
+> 
+> > > This really isn't a generic SPI thing, if nothing else you need *far*
+> > > more information in there about how exactly this would be put onto the
+> > > bus.  If it belongs anywhere outside of the specific device's binding it
+> > > feels like it might be regmap.
+> 
+> > Just for some context,
+> 
+> > For the analog chip, it can share the same CS line with another 3
+> > identical chips. It has two pins that depending on how they are set act
+> > as the device address (so only one replies to a given transfer -
+> > naturally the peripheral driver needs to setup the correct transfer
+> > and that depends on these pins setup and hence dt property). 
+> 
+> > This property reflects that. Apparently some microchip chips are doing something
+> > very similar so Conor proposed a generic property given that we would have at
+> > least 3 users of it.
+> 
+> You still need to work out how the ID appears in the byte stream that
+> gets sent to/from the device, that's way more information than just a
+> number and not something the byte stream SPI offers is going to cope
+> well with.
 
-I don't really like approach 3. You'd need to check if the regs of
-both xlate calls are the same. With the sample code above, you
-silently drop the first xlate'd reg.
+Not sure if I'm following you. Those ID pins just become something you
+need to set on the spi_xfer. Or in Janani case, she's using regmap
+reg_base in order to set the right thing depending on the address. I
+would image this is always something that peripherals need to address in
+terms of how the message/stream needs to be set. So my understanding is
+that this should be pretty much transparent for the spi core.
 
-And honestly, it really seems like a one-off. What controllers, are
-there that need a write enable bit. The real problem seems to be
-the assumption that we operate on just one bit. IOW we either set
-mask or don't set mask in gpio_regmap_set().
+But I might be just focused on this usecase and missing the big picture.
 
-For a more generic solution, we should be able to control the
-written value. We could add another .value_xlate().
+Thx!
+- Nuno Sá
 
--michael
