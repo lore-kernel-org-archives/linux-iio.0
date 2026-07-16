@@ -1,100 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from out-171.mta0.migadu.com (out-171.mta0.migadu.com [91.218.175.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 269F73A48E6;
-	Thu, 16 Jul 2026 18:42:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C1FF433BD6
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 19:07:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784227337; cv=none; b=DrJ5oHsKcry+qL/s4VHrfR2dgCu/Mjl91d+1syIGpX1lqH+gXY+a+eE1YZ/8sFFWwgDQI3ziVgXIW6rp2i4mnYR9akDy4le/l4/RrosjNsidIPy+XTwJDDderCwGfIn2DDqAtPhYRtTNYEJIGe1XwAoEtHlqI2RL7jib8m2EiL0=
+	t=1784228828; cv=none; b=pY2nszUFu9uQ7aYBMaz6P0nG7//NqbugvpX6DYq8sy5Jp0ADmCfQPTBI+ZUhPhWyBEEBDRQGXngm5ipNlu65YxFEAiIVUbxs6PEdmcLpJTKJtBH14Fa4JrbIQKha+an7IN7cu8sf93rZ7b+NHrjXJDus8Y/JIDYVZ4LlLmOtHCo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784227337; c=relaxed/simple;
-	bh=+ND4h5RXK6bV1IObtBmOFgCVGZ+P6XcGLdHVq8NJt4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vq4Ia05h2an5m0fFdiBsYGAWRRwZklLNn+17f+TR9x9Ompakl++BREz3JOOPOwoxcjhlBgL/NerLz/K+cArKZgl6O4lZyunxBrM9HCFdIgoGSF//pexms4Q1BNxHZx15cd9qRC0oPNe/c4WFlLo5NW1gO1gtYD2FetUWO1YaM80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BW5/HR4S; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784228828; c=relaxed/simple;
+	bh=J/h3jdBkHWaNRKTl1b5vRRph+T08oZfr2Pk80suUSeA=;
+	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
+	 In-Reply-To:References; b=DB24ekBqrlnfohzu60mY5+R+0IxM8CQOOihlEgdgfbX7HOvhzNzrNeR2409zqF7chrJv3VJPXxzOQ/M+Na5O70QhUQjb2gPkOahLV+hMWJ/CcFGJ9eIvcu6avlnNDjzxljDG1DFhy156z2BY2C5IaXIg51tDmZXDNfd1HHTQRXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=FsQFgx3V; arc=none smtp.client-ip=91.218.175.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BW5/HR4S"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784227336; x=1815763336;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+ND4h5RXK6bV1IObtBmOFgCVGZ+P6XcGLdHVq8NJt4U=;
-  b=BW5/HR4SMC3zbGLfoHPTqDtv9gia6rgreppjRllofhdYeQ2297THMHNJ
-   fDNttbZA3LWD+01SnvoGp+oqh3JioBQ2gGV72U6bNHDf0ZqxWgl2FQwNy
-   F85tmlGDnXp8q3VZ5VtTmafRXjaZ7SiXciuztjnisbQhobwfshZKlOrZ9
-   DhkXpHSJoVgXJC5t8toydNYySWEA5jMrRixkqd7YF5/SXl8JKtzDkY84k
-   kYKAh68N4H7vhAZvK6G3VwcXk7/ZV7V1rqCMxTf2ih+peCVZBZvVDPEht
-   ywpCI55qBq8wH1XpHNmuUCaIuTWEMzolKKBLF1gtGquExfIIESoK2QhJu
-   g==;
-X-CSE-ConnectionGUID: cBo9xEM0QomQkjd7/2IBTQ==
-X-CSE-MsgGUID: EnluN+sjQ1KD2tkM9uaAwg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11848"; a="96266162"
-X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
-   d="scan'208";a="96266162"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2026 11:42:16 -0700
-X-CSE-ConnectionGUID: 7JwlDBH9QnawpT2Phb0qsg==
-X-CSE-MsgGUID: izCDovysRXqbZFBxGO8jyA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,167,1779174000"; 
-   d="scan'208";a="258565482"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.26])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2026 11:42:12 -0700
-Date: Thu, 16 Jul 2026 21:42:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	sashiko-bot@kernel.org
-Subject: Re: [PATCH v8 2/8] iio: dac: ad5686: missing NULL check on match data
-Message-ID: <alkmAcDvSXr_COc_@ashevche-desk.local>
-References: <20260716-ad5686-new-features-v8-0-ebb0051af5e5@analog.com>
- <20260716-ad5686-new-features-v8-2-ebb0051af5e5@analog.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="FsQFgx3V"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260716-ad5686-new-features-v8-2-ebb0051af5e5@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1784228814;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=L3OiHw5mrVrJeY/RVtkYFzvs08Kl+7ie7z7ZLxL3i8U=;
+	b=FsQFgx3VBpgG4JURiDx7McIRoKoQUT9w8XY985IjwmbIKiBJDYplJ6/W08oApTzHopw3xu
+	lxMOTpNWah35uiM89c7GQZAEiyitvR85sAS9jCS3/BSh93220ms1q9aqYOcLU5sxKuw7+r
+	u0lLeT+KNxggkthiOabJNpdFxkmzkwc=
+Date: Thu, 16 Jul 2026 19:06:51 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Siratul Islam" <siratul.islam@linux.dev>
+Message-ID: <ea6f4eaeb0535d607d77920515e9cb1739266624@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH 2/2] iio: magnetometer: add support for QST QMC6308
+To: "Jorijn van der Graaf" <jorijnvdgraaf@catcrafts.net>, "Jonathan Cameron"
+ <jic23@kernel.org>
+Cc: "Jorijn van der Graaf" <jorijnvdgraaf@catcrafts.net>, "David Lechner"
+ <dlechner@baylibre.com>, "=?utf-8?B?TnVubyBTw6E=?=" <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Luca Weiss" <luca.weiss@fairphone.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+In-Reply-To: <20260716141837.83326-1-jorijnvdgraaf@catcrafts.net>
+References: <20260714202842.340293-1-jorijnvdgraaf@catcrafts.net>
+ <20260714202842.340293-3-jorijnvdgraaf@catcrafts.net>
+ <d7fffbeacc77c3135564f902c41f19a219ddce75.camel@linux.dev>
+ <20260716141837.83326-1-jorijnvdgraaf@catcrafts.net>
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Jul 16, 2026 at 01:14:18PM +0100, Rodrigo Alencar via B4 Relay wrote:
-
-> Verify that chip_info pointer is not NULL. If a user binds the driver
-> using driver_override via sysfs with a device name not present in the
-> id_table or of_match_table, match data will be NULL.
+July 16, 2026 at 8:18 PM, "Jorijn van der Graaf" wrote:
 
 ...
+> > +#define QMC6308_AUTOSUSPEND_DELAY_MS 500
+> >  You can call it QMC6308_SLEEP_DELAY_MS to align with other values.
+> >=20
+>=20I'd prefer to keep AUTOSUSPEND here: it names the mechanism the value
+> feeds (pm_runtime_set_autosuspend_delay()) and matches yamaha-yas530
+> and ak8974 in this directory.
+>
+I can find atleast 10 drivers in IIO that uses *_SLEEP_DELAY_MS postfix
+for autosuspend delay value. So it's not a strong reason not to use it.
+>=20
+...
+>=20>=20
+>=20> Why not use a switch here instead of depending on 'i'. In it's
+> >  current form, we would need to keep going back to check what the
+> >  scales, odr, osr arrays look like.
+> >  I would suggest following the same pattern as the QMC5883L driver.
+> >=20
+>=20>  The arrays could also be flattened like this if you follow the
+> >  above suggestion.
+> >  +static const int qmc6308_odr_avail[] =3D { 10, 50, 100, 200 };
+> >=20
+>=20The arrays are designated-initializer tables indexed by the register
+> field code, and the same tables back read_raw(), write_raw() and
+> read_avail() - so the value <-> field-code mapping lives in one place
+> and the accepted writes stay in lockstep with the advertised
+> _available values. Switches would duplicate that mapping per
+> direction, and the flattened form only works once the tables stop
+> being indexed by field code. I'd prefer to keep the tables, but if
+> Jonathan wants the qmc5883l shape for consistency across the two
+> drivers I'm fine changing it.
+>=20
+I=20know what the code is doing here. But I'm emphasizing readability. Yo=
+u
+are using 'i' with double responsibility. You already have #define
+values that you are only ever using as array indecies. Using a switch
+here combining with the #define(s) would be more readable and explicit.=
+=20
 
->  	struct iio_dev *indio_dev;
->  	int ret, i;
+But=20it is more about preferences and following existing conventions
+(i.e., the sibling driver). Jonathan, Andy, or David may have more idea
+about the "preferred" way to do this.
+>=20
+...
+>=20
+> Thanks,
+> Jorijn
+>
 
-
-Move an assignment here as well.
-
-	chip_info = ...
-
-> +	if (!chip_info)
-> +		return -ENODEV;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--
+Best regards,
+Sirat
