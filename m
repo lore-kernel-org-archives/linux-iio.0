@@ -1,235 +1,103 @@
-Received: from mail-08.mail-europe.com (mail-08.mail-europe.com [57.129.93.249])
+Received: from mxd.seznam.cz (mxd.seznam.cz [77.75.76.210])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448A5377A81;
-	Thu, 16 Jul 2026 16:51:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.129.93.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94D11437846;
+	Thu, 16 Jul 2026 17:03:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.75.76.210
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784220714; cv=none; b=g0jEsUbP7seYs35CeR5Nwhtwc4evV3ikZ3O6guBsL6aoVXcoJ6Z02dyWtNTVHw5daBo80mq8X+1qhQZ1ED20H4mjubPzB+cQq5XGdPLjADnInZlERVlhcnIJ/Rhc1k+ImdxHXNAM6p/gAtTbFCt85vX0XpaLqnrUfJ1EsyffIfs=
+	t=1784221414; cv=none; b=grO0aaq+xkH08tGxJ/AOuUiy8V3jWoiecj88Gg+8NYRgPKB468jLrYQSzYhtgZWi3ptWoiN+sH4RuxXq1MpU8Ys097z/JSK621OLdaV7UkL9pe1x2YOwIFZRv6i4ZbZ+s/IyZtFWnUrcCtiNRXHhDIuG5GSBByWWDg+cKXjTs18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784220714; c=relaxed/simple;
-	bh=++4fSZ1b0TlFbEN6k2dLgetUrAGI7Nl1H5eauj/9Sow=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=G37DmHC8WircChC/Mhr6YeIvCyJHq/5HMXNYdaBrO8TdGXKUUKQV2iPjOJ5R/sz83pr6cOHmq3cxCJcepstef/Rcc6HX+07nt7YTZKoBm3UwJkj9cuqPU1+vWtv9sqyc511IfgUfmAVfZHxjgnuWMdc5qp3kPqmjd9Qw79xeS8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=xyFoVDBH; arc=none smtp.client-ip=57.129.93.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1784221414; c=relaxed/simple;
+	bh=H+hYir4Fn8uM+EM3gHtA9a1XSSatPBdTipsV1h9wi00=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=doDBAE69FKg4lqs5Uwgf44Ibj2KalgrW4bO32xyUTfecNZVTntLU9UGYK9jo2ID+lq28GUzn5dvSMW7KKH46ZwvTshJdCvJ2Cd3xuUWje+tNgUvzDN9X6W6DKxsUM9twMd5N3XLaxSAdiJ85mwovl1V9Cx9LNYWpkWP/gSEYYYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz; spf=pass smtp.mailfrom=seznam.cz; dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b=jhDmHLam; arc=none smtp.client-ip=77.75.76.210
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seznam.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seznam.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="xyFoVDBH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1784220699; x=1784479899;
-	bh=qrb8hC/Y3Qak286c4lrbAZTCd38DaMdKc9tpip4M5II=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=xyFoVDBHNJjyrxn4RzxLEp59uo97V2wc5fzOFStV2tu0n9jlO5rabRzlYlk78KVvT
-	 7jtRWKcvywAfZ0xkPbXWEMyWqYla5mDv4obQEAi0bADP90alGovaudJPnYeyLrA9fo
-	 +Xdv0VfnYGRMOzZ6GM8630wE/HJfIHx1+D6oIjfkJFFKNOpefNb2gsElbi1FOvQRL1
-	 EsLLqpIY/c9RgifYaZmxFliC2HF+CpzXqTefU4FoPG2bbs4AZsW9m0X8X8XoCBMVQ+
-	 7VLo2FiLttwE6/jZjQ5ZuwL46udaSsAy52MtpNeTD/+HfCbNrAXczOc6uXrxui42Rl
-	 SvZdf2/SeV/Mw==
-Date: Thu, 16 Jul 2026 16:51:34 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-From: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Martin Kepplinger <martink@posteo.de>, Sean Nyekjaer <sean@geanix.com>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Martin Kepplinger <martin.kepplinger@theobroma-systems.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: mma8452: Allow open drain interrupt pin configuration
-Message-ID: <J2apVLUJhrI3AOweGpouqGGB0XhxbcqLiWasDpOdm4d2YGgNv8PuE-udUGJZcH0z-V9yyqbjIwMKDdtuam0mp6ya5F6GHUzf6OjRCo0GdaA=@geanix.com>
-In-Reply-To: <alefh86sqW-XvLHl@ashevche-desk.local>
-References: <20260715-mma8452-open-drain-v1-0-b1dd2a440c60@geanix.com> <20260715-mma8452-open-drain-v1-2-b1dd2a440c60@geanix.com> <cA7m1VgJxkr39GAxpnMPw9PVIKX2TR8Ju4Q0m6L2SxS_jJNITfZ6AA5LOeMIK0jGFXaUptY1_vPhDd_imWw5FQ==@protonmail.internalid> <aldH3vtk_eKh6oCC@ashevche-desk.local> <87ldbco582.fsf@geanix.com> <Tu8Mavh-mfl8Vv75Oab3vrghtEbTXiYPZ4qhj6RZv8xe5nWKP4lG1KSuJXEQfyKeio7zv9myLbmifMjFTl8juA==@protonmail.internalid> <aleQVYrK9YBoLqGl@ashevche-desk.local> <874ii0misv.fsf@geanix.com> <alefh86sqW-XvLHl@ashevche-desk.local>
-Feedback-ID: 133791852:user:proton
-X-Pm-Message-ID: ecf190f24607daa5641d0f141b74fa32cb0368f8
+	dkim=pass (2048-bit key) header.d=seznam.cz header.i=@seznam.cz header.b="jhDmHLam"
+Received: from email.seznam.cz
+	by smtpc-mxd-7457b5647d-hg8d7
+	(smtpc-mxd-7457b5647d-hg8d7 [2a02:598:96:8a00::1200:712])
+	id 1654b945ae3b94ca14aa23d9;
+	Thu, 16 Jul 2026 19:03:18 +0200 (CEST)
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=szn1;
+	t=1784221398; bh=hlBo0qzIENm3R3I+HjXcD+AnLA22wdk7T6o7fJ6knps=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	b=jhDmHLamaxrPpnMAAJSobexlGDd4L7J75I662yDQkGM32gzGDgzdvK+TJk3XcAwhI
+	 Gw/+SxK5luRLsHUiqI+wxp3rReQQRmBDqP/UmNvc2fqCbLi15gLCNqvylwnOanUSBw
+	 keeV1pJOeWt6apWhdxyFJw8z8LNt7hKCY87z59sbS3DEhfr5SSoMov96trq1clHsHh
+	 U0yzVDg3vo9K4X14KjWGiMe903u2ATauhiXBmFwPBQDOEwOThxes+zPBgcVRV2WBIv
+	 Sjm6HsHEZmjeFrKLjqVaNqs2emahYWU/MHD6+ZTZZccGm3kQLYLrYHW5yuUBoD4ljg
+	 4M+I8ACzgh/4Q==
+Received: from archlinux.localdomain ([88.146.244.229])
+	by smtpd-relay-ccf8b45b7-pj4jn (szn-email-smtpd/2.0.77) with ESMTPA
+	id 157504a2-064c-4d27-b512-d97e57a98bb3;
+	Thu, 16 Jul 2026 19:03:10 +0200
+From: =?UTF-8?q?Vojt=C4=9Bch=20Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
+To: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	andy@kernel.org,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	vo.kratky@seznam.cz
+Subject: [PATCH v2] iio: resolver: ad2s1200: use dev_err_probe()
+Date: Thu, 16 Jul 2026 19:03:06 +0200
+Message-ID: <20260716170306.166804-1-vo.kratky@seznam.cz>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wednesday, 15 July 2026 at 16:56, Andy Shevchenko <andriy.shevchenko@int=
-el.com> wrote:
+Use dev_err_probe() instead of dev_err() to simplify the error path
+and cleanly handle deferred probing.
 
-> On Wed, Jul 15, 2026 at 04:25:20PM +0200, Esben Haabendal wrote:
-> > "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> > > On Wed, Jul 15, 2026 at 01:35:41PM +0200, Esben Haabendal wrote:
-> > >> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> > >> > On Wed, Jul 15, 2026 at 10:07:39AM +0200, Esben Haabendal wrote:
->=20
-> ...
->=20
-> > >> >>  =09if (client->irq) {
-> > >> >>  =09=09ret =3D request_threaded_irq(client->irq, NULL, mma8452_in=
-terrupt,
-> > >> >> -=09=09=09=09=09   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-> > >> >> +=09=09=09=09=09   IRQF_TRIGGER_LOW | IRQF_ONESHOT |
-> > >> >> +=09=09=09=09=09   data->open_drain ? IRQF_SHARED : 0,
-> > >> >>  =09=09=09=09=09   client->name, indio_dev);
-> > >> >
-> > >> > Why do we care?
-> > >>
-> > >> Care about what exactly?
-> > >
-> > > About exclusivity of the interrupt.
-> >
-> > Ok.
-> >
-> > >> We need to add IRQF_SHARED flag in order to allow shared interrupt, =
-and
-> > >> we should not add it when using (the default) push-pull mode.
-> > >
-> > > Why not? How would it make any difference from SW perspective?
-> >
-> > Not adding the IRQF_SHARED flag prevents use with shared interrupts. I
-> > think we are on the same page on that.
-> >
-> > Unconditional adding IRQF_SHARED flag would allow configurations where
-> > other devices share interrupt line with mma8452 compatible chip
-> > configured with push-pull, resulting in broken or unpredictable results=
-.
-> > I don't see why we should not care about that.
->=20
-> But it's not their problem! If it's this device that prevents this
-> configuration, it should have a check. With this code it just hides
-> and changing a DT property will lead to kernel warning.
+Signed-off-by: Vojtěch Krátký <vo.kratky@seznam.cz>
+---
+Changes in v2:
+  - Removed curly brackets
+  - aligned the error message with the parenthesis
 
-The chip such does not prevent the configuration, and does not prevent
-sharing the interrupt. The irq pin in the device can be configured in eithe=
-r
-push-pull mode or open-drain mode.
-In order to allow sharing interrupt line with other chips, the chip
-must be configured with irq pin in open-drain mode, which is what the
-drive-open-drain device-tree property I am adding in this series enables
-developers to do.
-If/when you add this property to the device-tree, the irq pin will be
-in open-drain mode, and the IRQF_SHARED flag can (and should IMHO) be set
-as the interrupt line can be shared.
-If/when the drive-open-drain property is not set (existing device-trees
-and current only supported behavior), the chip cannot support sharing the
-interrupt line, and adding the IRQF_SHARED flag would be a bug, as the
-chip irq pin requires an exclusive interrupt input.
+ drivers/iio/resolver/ad2s1200.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-Maybe the confusion is caused by the fact that the drive-open-drain
-does not describe how the irq pin IS behaving, but rather how it SHOULD
-behave, and possibly required because of the HW designed having tied the
-irq pin to an irq input together with other irq sources.
+diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
+index 55bcbbd4021a..2390822f8546 100644
+--- a/drivers/iio/resolver/ad2s1200.c
++++ b/drivers/iio/resolver/ad2s1200.c
+@@ -143,18 +143,14 @@ static int ad2s1200_probe(struct spi_device *spi)
+ 	st->sdev = spi;
+ 
+ 	st->sample = devm_gpiod_get(&spi->dev, "adi,sample", GPIOD_OUT_LOW);
+-	if (IS_ERR(st->sample)) {
+-		dev_err(&spi->dev, "Failed to claim SAMPLE gpio: err=%ld\n",
+-			PTR_ERR(st->sample));
+-		return PTR_ERR(st->sample);
+-	}
++	if (IS_ERR(st->sample))
++		return dev_err_probe(&spi->dev, PTR_ERR(st->sample),
++				     "Failed to claim SAMPLE gpio\n");
+ 
+ 	st->rdvel = devm_gpiod_get(&spi->dev, "adi,rdvel", GPIOD_OUT_LOW);
+-	if (IS_ERR(st->rdvel)) {
+-		dev_err(&spi->dev, "Failed to claim RDVEL gpio: err=%ld\n",
+-			PTR_ERR(st->rdvel));
+-		return PTR_ERR(st->rdvel);
+-	}
++	if (IS_ERR(st->rdvel))
++		return dev_err_probe(&spi->dev, PTR_ERR(st->rdvel),
++				     "Failed to claim RDVEL gpio\n");
+ 
+ 	indio_dev->info = &ad2s1200_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-- 
+2.55.0
 
-> > > Yes, I understand the HW case.
-> > >
-> > >> > The (hidden) problem this will have in the future is that the IRQ =
-core
-> > >> > will splat a warning in case that other shared IRQs might be
-> > >> > configured with different flags. Putting that flag conditionally m=
-akes
-> > >> > it a mine field for the users. Instead just unconditionally add th=
-at
-> > >> > flag and we will get reports as soon as there will be a user that
-> > >> > shares the same interrupt pin with some other devices which driver=
-s do
-> > >> > not use the same settings.
-> > >>
-> > >> If we add the IRQF_SHARED flag unconditionally, it will be set also =
-when
-> > >> push-pull mode is enabled. I don't see how the kernel will be able t=
-o
-> > >> notice that that is not going to work. If you have another device th=
-at
-> > >> uses IRQF_TRIGGER_LOW|IRF_ONESHOT|IRQF_SHARED, it will not work with=
- the
-> > >> MMA8452 device when configured as push-pull.
-> > >
-> > > Right, and why do we care (again)?
-> >
-> > Why we care that the system as a whole (SW on top of HW) will not work?
-> >
-> > If we don't care about that, why do we even have this IRQF_SHARED flag?
-> > The only purpose of that is to tell the kernel that this particular
-> > device / interrupt will work with shared interrupt or not.
-> >
-> > Isn't that exactly what I do with this change? Nothing more, nothing le=
-ss.
-> >
-> > > It's pure DT/FW/HW issue, not an SW issue.
-> > > Otherwise it will become a carefully placed mine for the poor user wh=
-o will
-> > > use these flags and try to share an interrupt with the mma8452 device=
- which
-> > > has no set property and uses push-pull mode.
-> >
-> > I don't get how you see it like that. Adding IRQF_SHARED unconditionall=
-y
-> > would create exactly the mine field you are talking about. Poor users
-> > can specify a system configuration (DT) that tries to use a shared
-> > interrupt line, but configures the mma8452 compatible chip in push-pull=
-.
-> > The poor user will not only be poor, but also unhappy.
->=20
-> > By applying the IRQF_SHARED dynamically, the kernel will be able to fai=
-l
-> > in a controlled manner instead, making it much less painful to create a
-> > working system configuration (DT)
->=20
-> And my point that we need to make less painful runtime experience.
-
-Yes. We agree on that.
-
-But I do believe that my patch is that painful runtime experience.
-
-Adding IRQF_SHARED flag when irq pin is configured in push-pull mode
-will be painful. I know, that was my initial approach. Does really not
-work, and can lead to wasting time on debugging the HW.
-=20
-> > Going back to your poor user story above, if the poor user tries to
-> > share the interrupt pin with the mma8452 device, it will get an error
-> > (just as it is with the kernel today). The device does not support
-> > shared interrupts. Reading the DT bindings documentation, the user
-> > should be able to find the drive-open-drain property, and add that to
-> > the device-tree to make things work. Maybe even consider if that is
-> > compatible with the hardware being used.
-> >
-> > If IRQF_SHARED was set unconditionally, the user would not get an error=
-,
-> > but most likely would get a system where no irq's were raised for the
-> > other chips. I sincerely believe that debugging this is much more
-> > painful than reading device-tree bindings.
-> >
-> > > Did I miss anything?
-> >
-> > I don't know. Maybe I am missing the obvious here.
->=20
-> I consider the case when shared interrupt is enabled on both devices, but
-> second one (driver) missed the same IRQ flags. This becomes a warning in
-> IRQ core.
-
-Missed which IRQ flags?
-
-> Shared interrupts it's also a contract with all stakeholders on keeping
-> the same flags for all devices.
-
-Of-course.
-
-And adding IRQF_SHARED is a contract that says that the interrupt can be
-shared. I can only see that it would be a bug to add that flag in cases
-where we know that the interrupt really cannot be shared.
-
-As for the IRQF_TRIGGER_LOW flag being set, I think that looks correct
-as long as we do not support switching to active high irq polarity.
-
-But on that topic, the chip actually supports selecting between active
-low and high irq polarity. Should we implement something along the lines
-of what is done in smi330_setup_irq() in iio/imu/smi330/smi330_core.c?
-And thereby allow using the device with active high irq?
-
-> ...
->=20
-> After looking into genirq code I don't see other way how to handle this.
-> It looks like we need to address the TRIGGER_LOW first, in other words
-> we need drop that flag when IRQF_SHARED is set, and leave it to users
-> to setup IRQ trigger properly on all sides.
-
-Why do we need to drop the IRQF_TRIGGER_LOW flag because IRQF_SHARED is
-set?
-
-Users as in those specifying the system device-tree?
-
-/Esben
