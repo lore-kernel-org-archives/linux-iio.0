@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20D1741E6CB;
-	Thu, 16 Jul 2026 12:14:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E45D41F34D;
+	Thu, 16 Jul 2026 12:14:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784204076; cv=none; b=qTysP1g3w2ry7wO4bf2RWGjP0B/cgGhUVgS0r/KI8LGhLFAOqqtjue2H7C4pF1QnJ0ca6F4WnLLjJD9G36ooe3ZGcZJMBYvGU1UHQYxRoJR8qVVbvFMy3Q7hQKoN/l/DkubqByjBACHfPe5SMBwgBfDlSwURS1UObZfirVoDrdc=
+	t=1784204077; cv=none; b=r3Cgke+nWxKzW0czUCiH+az/7iqCIpb/ds3Kn7Iqgvr6Wdv8OGzn2KL4AHU6DLbwXeiI0PUXm9tejLjjbwBsDelh/saYVtTwtR+gmwgN0AMR49HZS2QoFrxY6hZem/m8qSwXPY8LB+Vymffg/BZI0YjY036LTByNyMUO4pri6f8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784204076; c=relaxed/simple;
-	bh=O7Zf7muyltV+fxEMustl2nDV2Z0DoJbnq+Mz2OI8upE=;
+	s=arc-20240116; t=1784204077; c=relaxed/simple;
+	bh=Qz9UlFdEzuxdMlJNNHxxDycOx0ePO3W3rh7QrTnae+Q=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iRMpvwfA8pUNLCi+ujV0F84J9C3mmYY0/2Sfgy/5YKSJXMQ4cDVEIrqrDSFff0IEF2Xlzy/LtZCMx9OTaoahBNy3QWBLToaJY2x+STaq1yVI+ILpsLup0bdH98pJCvzljYLnUPA/rmmGw/SwnAdHj2cSnzSXsSQ0iplO2QeuHGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AfYmuXkZ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=mb0dvtHjDGsp9BA4DmfkFlqykM0rdjMjfC/Ap0QiBV5WA6omuXSfawdMLzS57hOAZlOmYo9UqsqR7RLWQnf8VcroRzvDrQW/Q0UYflgIVjmRJOLiUPgzNboILk2lZYZ930XYvIxG1B5FPLodvounKzYIJER1r9If2FwEaXbjH0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gCTji2oG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AfYmuXkZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 20E42C2BCC7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gCTji2oG"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 82DDCC2BCFD;
 	Thu, 16 Jul 2026 12:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784204075;
-	bh=O7Zf7muyltV+fxEMustl2nDV2Z0DoJbnq+Mz2OI8upE=;
+	bh=Qz9UlFdEzuxdMlJNNHxxDycOx0ePO3W3rh7QrTnae+Q=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=AfYmuXkZvWFv4rkP7WisttAGL3ZIaTHICitwS/nSZInIcW0uXbuU8bEZ501Df10Kw
-	 OaJJV81us7q1I62ONOQP2lrYTJCFcJLIS0VZFLIpLPvBhSVBqbJbg+9TiSkQcZCehv
-	 RnUmaqpXpwKTCIrZ8DO2ot58/o1n4lAKK4gzG1lLBwkEtIJXKMv77El6pPe9aqafVW
-	 MtFx8K842VsVCJt5SmIpwyWJqYpYAIUMa8oteCSxH2quWn8oyfyD75qlHV7+Cg+Jun
-	 e2PTcVO121J7vz0aENS/m9A4EvE5D7zcKt4X6k5J5wbWP/Xmxu8ry4PZ7xEzcrpBYI
-	 EEDKob9a46a4Q==
+	b=gCTji2oGdqOb7u31UZhIDGrwpvmtH5lLEp1FezTXnumn9+TligiwljbWD4deY3vdl
+	 wBToei/C4yDjZX7IkNZx12WizI0MRWmm4e8Xvkcoj6S8+U4UX9091Gwsi7Memo0D4x
+	 +b4I7iZAvgmTLooE63HOYF42gBlPY33D49/r8Gc7j5Z/IVD0SvqRFl08wvdzokEakc
+	 gkMnhgnz3+mB29SAillwJOE4Gz++SUbJpiSZKHRhMdG6kqKZqqhgKM8EKa+Wctg76K
+	 iV9c7dWMmh0kj4iAouNzJFq6trxSpEtVDzVet4MeJmQ4QS27hi5ACUXLu6XJCvXWtQ
+	 2+vp7kh/q2p5A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 016E5C44514;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6F4C44514;
 	Thu, 16 Jul 2026 12:14:35 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 16 Jul 2026 13:14:17 +0100
-Subject: [PATCH v8 1/8] iio: dac: ad5696: properly check i2c_transfer()
- return value
+Date: Thu, 16 Jul 2026 13:14:24 +0100
+Subject: [PATCH v8 8/8] iio: dac: ad5686: add gain control support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260716-ad5686-new-features-v8-1-ebb0051af5e5@analog.com>
+Message-Id: <20260716-ad5686-new-features-v8-8-ebb0051af5e5@analog.com>
 References: <20260716-ad5686-new-features-v8-0-ebb0051af5e5@analog.com>
 In-Reply-To: <20260716-ad5686-new-features-v8-0-ebb0051af5e5@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
@@ -53,13 +52,13 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
  Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, sashiko-bot@kernel.org
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784204073; l=1345;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784204073; l=9071;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=zz4hraoKydFSu7wueaAjuCXnID835nhFEfDyJb8Sb44=;
- b=mf+Fpuq1Pv6bh1V4wapfF+uIPBfBRB/SMEqk/ViOdzmyvHgNeyNmCD2fiaWwoAlfrx6USFd7g
- HoJFYbL1gpTATpXifl8lMehrE76sKNBUqtK69XouehkFwatfS/HrgJH
+ bh=yKZXx5pc8Q21qx6lDB4wD1in0hWmk9buYEgQa+BPUDw=;
+ b=mlbygQNBqXZ1UROx+Yvlb43ZRGaAvTlfo3HrItrKqR1GYfyCpAC+lDTTJZjFCUx6hzBNuzSdQ
+ Gt7yVfq1rW2DyzrIuob+wP6UV4ykb8A3lFrVYobvWXR7mkctTVJpld3
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,44 +68,264 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Verify that the expected number of i2c messages were transferred when
-ad5686_i2c_read() is called. This issue exists since the support for I2C
-devices was first introduced.
+Most of the supported devices rely on a GAIN pin to control a 2x
+multiplier applied to the output voltage. Other devices, e.g. the
+single-channel ones, provides a gain control through a bit field in
+the control register. Some designs might have the GAIN pin hardwired
+to VDD/VLOGIC or GND, which would have no "gain-gpios" device property,
+being able to set "adi,range-double" if it is hardwired to VDD. The
+vref_mv field is moved down in the struct ad5686_state, so that the
+overall size increase is reduced.
 
-Fixes: 4177381b4401 ("iio:dac:ad5686: Add AD5671R/75R/94/94R/95R/96/96R support")
-Reported-by: sashiko-bot@kernel.org
-Closes: https://lore.kernel.org/all/20260705114746.1485F1F000E9@smtp.kernel.org/
 Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/dac/ad5696-i2c.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ad5686.c | 120 +++++++++++++++++++++++++++++++++++++++++++++--
+ drivers/iio/dac/ad5686.h |  12 ++++-
+ 2 files changed, 125 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index 279309329b64..551b200bfe14 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -7,6 +7,7 @@
-  * Copyright 2018 Analog Devices Inc.
-  */
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index 99a9bd2ea714..2f90a4f11911 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -15,10 +15,13 @@
+ #include <linux/export.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/kstrtox.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
++#include <linux/property.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+ #include <linux/sysfs.h>
++#include <linux/units.h>
+ #include <linux/wordpart.h>
  
-+#include <linux/array_size.h>
- #include <linux/errno.h>
- #include <linux/i2c.h>
- #include <linux/mod_devicetable.h>
-@@ -39,9 +40,11 @@ static int ad5686_i2c_read(struct ad5686_state *st, u8 addr)
- 				      AD5686_ADDR(addr) |
- 				      0x00);
+ #include <linux/iio/buffer.h>
+@@ -41,7 +44,8 @@ static int ad5310_control_sync(struct ad5686_state *st)
  
--	ret = i2c_transfer(i2c->adapter, msg, 2);
-+	ret = i2c_transfer(i2c->adapter, msg, ARRAY_SIZE(msg));
- 	if (ret < 0)
- 		return ret;
-+	if (ret != ARRAY_SIZE(msg))
-+		return -EIO;
- 
- 	return be16_to_cpu(st->data[0].d16);
+ 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
+ 			    FIELD_PREP(AD5310_DATA_PD_MSK, pd_val & AD5686_PD_MSK) |
+-			    FIELD_PREP(AD5310_DATA_REF_MSK, st->use_internal_vref ? 0 : 1));
++			    FIELD_PREP(AD5310_DATA_REF_MSK, st->use_internal_vref ? 0 : 1) |
++			    FIELD_PREP(AD5310_DATA_GAIN_MSK, st->double_scale ? 1 : 0));
  }
+ 
+ static int ad5683_control_sync(struct ad5686_state *st)
+@@ -50,7 +54,8 @@ static int ad5683_control_sync(struct ad5686_state *st)
+ 
+ 	return ad5686_write(st, AD5686_CMD_CONTROL_REG, 0,
+ 			    FIELD_PREP(AD5683_DATA_PD_MSK, pd_val & AD5686_PD_MSK) |
+-			    FIELD_PREP(AD5683_DATA_REF_MSK, st->use_internal_vref ? 0 : 1));
++			    FIELD_PREP(AD5683_DATA_REF_MSK, st->use_internal_vref ? 0 : 1) |
++			    FIELD_PREP(AD5683_DATA_GAIN_MSK, st->double_scale ? 1 : 0));
+ }
+ 
+ static inline unsigned int ad5686_pd_mask_shift(const struct iio_chan_spec *chan)
+@@ -193,9 +198,14 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+ 			GENMASK(chan->scan_type.realbits - 1, 0);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = st->vref_mv;
+-		*val2 = chan->scan_type.realbits;
+-		return IIO_VAL_FRACTIONAL_LOG2;
++		if (st->double_scale) {
++			*val = st->scale_avail[2];
++			*val2 = st->scale_avail[3];
++		} else {
++			*val = st->scale_avail[0];
++			*val2 = st->scale_avail[1];
++		}
++		return IIO_VAL_INT_PLUS_NANO;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -207,6 +217,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ 			    long mask)
+ {
+ 	struct ad5686_state *st = iio_priv(indio_dev);
++	bool double_scale;
++	int ret;
+ 
+ 	guard(mutex)(&st->lock);
+ 
+@@ -217,6 +229,82 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ 
+ 		return ad5686_write(st, AD5686_CMD_WRITE_INPUT_N_UPDATE_N,
+ 				    chan->address, val << chan->scan_type.shift);
++	case IIO_CHAN_INFO_SCALE:
++		if (val == st->scale_avail[0] && val2 == st->scale_avail[1])
++			double_scale = false;
++		else if (val == st->scale_avail[2] && val2 == st->scale_avail[3])
++			double_scale = true;
++		else
++			return -EINVAL;
++
++		if (st->double_scale == double_scale)
++			return 0; /* no change */
++
++		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio)
++			return -EINVAL; /* GAIN pin is board-strapped */
++
++		st->double_scale = double_scale;
++		switch (st->chip_info->regmap_type) {
++		case AD5310_REGMAP:
++			ret = ad5310_control_sync(st);
++			break;
++		case AD5683_REGMAP:
++			ret = ad5683_control_sync(st);
++			break;
++		case AD5686_REGMAP:
++			ret = gpiod_set_value_cansleep(st->gain_gpio,
++						       st->double_scale ? 1 : 0);
++			break;
++		default:
++			ret = -EINVAL;
++		}
++		if (ret)
++			st->double_scale = !double_scale; /* revert on failure */
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad5686_write_raw_get_fmt(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		return IIO_VAL_INT_PLUS_NANO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad5686_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long mask)
++{
++	struct ad5686_state *st = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*type = IIO_VAL_INT_PLUS_NANO;
++
++		if (st->chip_info->regmap_type == AD5686_REGMAP && !st->gain_gpio) {
++			/*
++			 * GAIN pin is board-strapped, so only the current
++			 * scale is available.
++			 */
++			*vals = st->double_scale ? &st->scale_avail[2] :
++						   &st->scale_avail[0];
++			*length = 2;
++			return IIO_AVAIL_LIST;
++		}
++
++		*vals = st->scale_avail;
++		*length = ARRAY_SIZE(st->scale_avail);
++		return IIO_AVAIL_LIST;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -225,6 +313,8 @@ static int ad5686_write_raw(struct iio_dev *indio_dev,
+ static const struct iio_info ad5686_info = {
+ 	.read_raw = ad5686_read_raw,
+ 	.write_raw = ad5686_write_raw,
++	.write_raw_get_fmt = ad5686_write_raw_get_fmt,
++	.read_avail = ad5686_read_avail,
+ };
+ 
+ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+@@ -246,6 +336,7 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+ 		.channel = chan,				\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
++		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),\
+ 		.address = addr,				\
+ 		.scan_index = chan,				\
+ 		.scan_type = {					\
+@@ -472,6 +563,15 @@ const struct ad5686_chip_info ad5679r_chip_info = {
+ };
+ EXPORT_SYMBOL_NS_GPL(ad5679r_chip_info, "IIO_AD5686");
+ 
++static void ad5686_init_scale_avail(struct ad5686_state *st)
++{
++	int realbits = st->chip_info->channels[0].scan_type.realbits;
++	s64 tmp = 2ULL * st->vref_mv * NANO >> realbits;
++
++	st->scale_avail[2] = div_s64_rem(tmp, NANO, &st->scale_avail[3]);
++	st->scale_avail[0] = div_s64_rem(tmp >> 1, NANO, &st->scale_avail[1]);
++}
++
+ static void do_ad5686_trigger_handler(struct iio_dev *indio_dev)
+ {
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+@@ -587,6 +687,16 @@ int ad5686_probe(struct device *dev,
+ 		return dev_err_probe(dev, PTR_ERR(st->ldac_gpio),
+ 				     "Failed to get LDAC GPIO\n");
+ 
++	st->double_scale = device_property_read_bool(dev, "adi,range-double");
++	st->gain_gpio = devm_gpiod_get_optional(dev, "gain",
++						st->double_scale ? GPIOD_OUT_HIGH :
++								   GPIOD_OUT_LOW);
++	if (IS_ERR(st->gain_gpio))
++		return dev_err_probe(dev, PTR_ERR(st->gain_gpio),
++				     "Failed to get GAIN GPIO\n");
++
++	ad5686_init_scale_avail(st);
++
+ 	/* Initialize masks to all ones */
+ 	st->pwr_down_mask = ~0;
+ 	st->pwr_down_mode = ~0;
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index 2c3d7d5b1d6b..c1222ef83a4f 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -41,9 +41,11 @@
+ #define AD5686_CMD_CONTROL_REG			0x4
+ #define AD5686_CMD_READBACK_ENABLE_V2		0x5
+ 
++#define AD5310_DATA_GAIN_MSK			BIT(7)
+ #define AD5310_DATA_REF_MSK			BIT(8)
+ #define AD5310_DATA_PD_MSK			GENMASK(10, 9)
+ 
++#define AD5683_DATA_GAIN_MSK			BIT(11) /* DB15 */
+ #define AD5683_DATA_REF_MSK			BIT(12) /* DB16 */
+ #define AD5683_DATA_PD_MSK			GENMASK(14, 13) /* DB18:DB17 */
+ 
+@@ -127,9 +129,12 @@ extern const struct ad5686_chip_info ad5679r_chip_info;
+  * @chip_info:		chip model specific constants, available modes etc
+  * @ops:		bus specific operations
+  * @ldac_gpio:		LDAC pin GPIO descriptor
+- * @vref_mv:		actual reference voltage used
++ * @gain_gpio:		GAIN pin GPIO descriptor
+  * @pwr_down_mask:	power down mask
+  * @pwr_down_mode:	current power down mode
++ * @scale_avail:	pre-calculated available scale values
++ * @vref_mv:		actual reference voltage used
++ * @double_scale:	flag to indicate the gain multiplier is applied
+  * @use_internal_vref:	set to true if the internal reference voltage is used
+  * @lock:		lock to protect access to state fields, which includes
+  *			the data buffer during regmap ops
+@@ -141,9 +146,12 @@ struct ad5686_state {
+ 	const struct ad5686_chip_info	*chip_info;
+ 	const struct ad5686_bus_ops	*ops;
+ 	struct gpio_desc		*ldac_gpio;
+-	unsigned short			vref_mv;
++	struct gpio_desc		*gain_gpio;
+ 	unsigned int			pwr_down_mask;
+ 	unsigned int			pwr_down_mode;
++	int				scale_avail[4];
++	unsigned short			vref_mv;
++	bool				double_scale;
+ 	bool				use_internal_vref;
+ 	struct mutex			lock;
+ 	void				*bus_data;
 
 -- 
 2.43.0
