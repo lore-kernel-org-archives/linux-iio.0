@@ -1,140 +1,132 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342AF3BCD34
-	for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 22:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACAC02E5B2D
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 00:57:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784154150; cv=none; b=HtNrf4mUxuSbdsuKeeBwglsnGyMTCTqe2DNR6gk1Jl180ZWMda2zN89KsDFES/eZEorAnPa/XvPvQXIdzPVq4WYYQMda7dWafK/pFNaGtOpDbAwDlZadOsdAH9Vc1V6swVHQCW8+CkteqPrA6Hxz/8xHpXcrUg1WjTfHvGOqmy8=
+	t=1784163471; cv=none; b=RxFYeb6iYZV9r0QAapZTiN5DPXUlB4D6Mm9ptMkQ9ocb2nJvnBhS1ua4gC9C50aFnr2PCRNRAmLCuEJ6MEZseQHr+5U2WFRcLC+sPvhPLcS3/5nvVTpCbsSe88UCCeBb0tGKw2uvQKG4nt+UbIaFvFHEOCo3QN/92XToVoh4gYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784154150; c=relaxed/simple;
-	bh=eGItwZhXhjcCNzydKc7M4IOfg6/7bc3EJbzam0oesV0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AKaoeA/cMZ/QcaBRK+0Fhe/IDZdmcN02EnqcEb52y+idEj1X7BmBDFKH9dizhGmBpl9niADbAWIJPF3sDJCTYe4L339wEo+QaLJ1oovs/OMwgDKmJ7GPJXwrTWZ/PiJgNR9KnUm2w93pGI7l6B87i5vfQ1R6OH3DLkY9u6XNCjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=eqTEQ29N; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1784163471; c=relaxed/simple;
+	bh=/o3rKrSl0aVxk9Y4KskXkiell9de+DiLDolv9zTkYwg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Bq5N6/mX69oKQSkoQtYWaOoJK8xSfiv6CQaTYlC0dnJwCo6ueFRRas0PA2/CdGc3Y1xgiZFTfYesH9WULsMm4x+Mue28sTPYrZxa3BBNXo1m3Ewm8quqlr0T49vCynQzi++R/5Vzmpph8+9Y9RMi7/kAqk02ghAQHtzmXiUEXHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=GUWSMZ4m; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="eqTEQ29N"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-493bf73ec2aso40498015e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2026 15:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784154147; x=1784758947; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=eGItwZhXhjcCNzydKc7M4IOfg6/7bc3EJbzam0oesV0=;
-        b=eqTEQ29N1NF52BAPZ+DLQLG5hsZXPjuOb0wfMKF+jdxQ6VNb3Unu/Q6mTNoxui9M06
-         M2urGLHhoJbVZ5fbkUMJtHEeYZqhBYcbNpigtyq7S6IcgmK1XICl9JnQVOOENvsasVaQ
-         jrmoaYtASVJsaw25WKzG96LmzoFedYYTovj+4A+QWW7hqT7ZgU/sgKrdDxk1JrvvcJxa
-         zCIAXuUIt9IYgCguLXXJJYV9/uqNdTTfCjdKdaXf1kFjINftyiMaTsTb/hxyHMf8OSsw
-         UBA3EKnpr5Y0rCFuLL38xBN2C8odMWzxs54kpMEzXAi0rgoeOYI0j5cGvu3nrjbY/fu9
-         vD+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784154147; x=1784758947;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=eGItwZhXhjcCNzydKc7M4IOfg6/7bc3EJbzam0oesV0=;
-        b=met3wqdTJWrL7oYflzcoVGhcb0MhKMBVoaSmI70BtrMK8B4HS+qvvlekLNWkZpeH85
-         W6xTSHrcFaFvaxKRQsi8jvSW6qsnxNQWtGtCewBr3DHCZEmiJqwLxWmNSFEvofTKH+lf
-         60mt+X2VFiXgJb4LAOj4QGyurfWKFKxmeWbBFZyXy52OQCVWUByMKWA1Y/Uj0+JeTrw6
-         EPNxLvf0y7bcY7SM2lYWZQlkN6wpgb0CWp9uU+px/PtjxMwzZ+oSMnIyXynGgQizB5+U
-         Ofb9/FCIgNOLLYXHtN8+ijv1x+HXHrBjdpxxbZu6SJIMaKgy7vxP9UsH1d9LjpLmy7tn
-         TKjQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrAjFZ6X6rbGLIU63pxpQTt0CKeA7dN3F/0lNZ4qW5qeAkLrAaHvD9mg52LQAW6D801F3S+0kRXToY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzkd92nDuqkkwThkddO4oqehNBSTy3bGmrNafVc41Lr2AJRScrL
-	sNuRTSeLnSVbFOlDd3rfLdRkSTpOUhBZqbJ8hbVQEmNfQPPq8aLEYXizfd+noC+J8LE=
-X-Gm-Gg: AfdE7cnpS/UaWO7PEUgW6fc9/FSZUMT7KbevNIJpoPOEBjBVONzyTBafnNc+nHN5zzy
-	vg7ZJU5nlRHJ99DP8jAZKL0jUVgm3vX9my0r35rnXSW6YAfS0dYT2ExOLvlQ+Sjt9n8enRG2N2/
-	Uswfx+7BTWO4mqu2sgXcbyAt7Bh1Hsl+tw8a5AD2z+D5aHne8f5IbbTfN/QtWsRejM7zOJXOPlW
-	1dO/hUSbDGhOcmK/c621iUJLXn7hWpogzUrbvej6ARERyBk/ylqHY2VsOPHwieGhShfA5oOR/GB
-	h031g2slGQ2+4mDArV/zBYrbAzlKC8uLEfoWH4Zu1YNhVDzsEztQp0h5ldlw3dC2bJOfWaK8rXW
-	4UW6Vtg4/WWNCofBrtTe5WNaX+LgmCcwTeC0gdqzsDVnhunFlC6QNPuUwJ9vtT+SyPIZBYKYDeF
-	0dbphXy74=
-X-Received: by 2002:a05:600c:58d6:b0:493:f262:b8 with SMTP id 5b1f17b1804b1-4953c147474mr41635105e9.1.1784154146840;
-        Wed, 15 Jul 2026 15:22:26 -0700 (PDT)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4953c59b810sm88924315e9.0.2026.07.15.15.22.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2026 15:22:26 -0700 (PDT)
-Date: Thu, 16 Jul 2026 00:22:24 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Janani Sunil <janani.sunil@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, 
-	Marius Cristea <marius.cristea@microchip.com>, Marcus Folkesson <marcus.folkesson@gmail.com>, 
-	Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>, 
-	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-Subject: Re: [PATCH v6 5/5] iio: dac: Add AD5529R DAC driver support
-Message-ID: <algHt_w841FltSnL@monoceros>
-References: <20260715-ad5529r-driver-v6-0-cfdf8b9f5ee3@analog.com>
- <20260715-ad5529r-driver-v6-5-cfdf8b9f5ee3@analog.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="GUWSMZ4m"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66G0XVNW2241512;
+	Thu, 16 Jul 2026 00:57:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=qcppdkim1; bh=U7IPQWtEZ+G
+	OWUGBJ00wCSR9fhCwxzFQF5Tz+5qJ/X0=; b=GUWSMZ4mH32vCntuUpae7QL8Bk3
+	MdRPVeLWl4f47hng2UQEAJLH29GLoeAuwZfkSgihpUZzAOD7b42zO9yIbzpfynHA
+	m0h0vkhuMG0k4JyXxolu3AaTs+zdn/GLJCeo6xNC9sbcOcMUW/XDICEPw203oS+M
+	GrCax8Cb7FJrxc6lt+HzwDQI/teBkzHjZqmqMOABUpLG2kWjsNL1i6mu4PBdt+Kg
+	gQQSFu+ZmTXf2BHutIJL4B+1Cn9c3rkRq64UzQ+Anwt2ibQEIyDmI3J8aPqsZD0M
+	M429a5xQnz94DSdN+AtIk1L8yrluuUxsu+GRJXG87yy3Bk/G/BKo9XTjddw==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fe68wusmb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Jul 2026 00:57:47 +0000 (GMT)
+Received: from pps.filterd (NALASPPMTA05.qualcomm.com [127.0.0.1])
+	by NALASPPMTA05.qualcomm.com (8.18.1.7/8.18.1.7) with ESMTP id 66G0q76B023540;
+	Thu, 16 Jul 2026 00:57:46 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 4fdygh38nu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Jul 2026 00:57:46 +0000 (GMT)
+Received: from NALASPPMTA05.qualcomm.com (NALASPPMTA05.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.1.12) with ESMTP id 66G0vkXg029787;
+	Thu, 16 Jul 2026 00:57:46 GMT
+Received: from hu-devc-lv-u24-a.qualcomm.com (hu-jcameron-lv.qualcomm.com [10.81.84.69])
+	by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 66G0vkmo029772
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 16 Jul 2026 00:57:46 +0000 (GMT)
+Received: by hu-devc-lv-u24-a.qualcomm.com (Postfix, from userid 4846927)
+	id 28BC02313D; Wed, 15 Jul 2026 17:57:46 -0700 (PDT)
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: [PATCH 19/22] iio: pressure: adp810: Remove redundant i2c_master_{send,recv}() length checks
+Date: Wed, 15 Jul 2026 17:57:34 -0700
+Message-ID: <20260716005737.254577-20-jonathan.cameron@oss.qualcomm.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
+References: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="z552sxv3apml2j3g"
-Content-Disposition: inline
-In-Reply-To: <20260715-ad5529r-driver-v6-5-cfdf8b9f5ee3@analog.com>
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-ORIG-GUID: T1up7MCgRNxfq2HbdB4DqrqEkFve8oTU
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDAwNSBTYWx0ZWRfX9g8jARjWO1IX
+ AR8GxSJUqHyBqyhyW+Dq09RNr6TiuKbe8P8v/Xnbbv96j64D9lyCI3/wTXyJ1EvPQiEQLuQhsun
+ KGBcduoAj2BhZw8iyrm+xceANgsHTsVkHtxINU+2NEGw+qVzW7j+krjogtfqBPMGsdITP1dDCVC
+ EgQ/YAhLtCf1wAoAzlPCfpMeFnBRRkNGDcHg7Udzp7DxTHS6o3a1mAPjkVsT9ZPCh+kupDX9Qnr
+ Zo/Cv/pC+xzlVxHBstrxJqdIVAgE+zLesnnVdIcT3SMAoL4FpyEjJPNQyZkAZZQt3wXOsd6kSHM
+ XRCcv/9rdxV9AY0uVekrxoHtH2BhAvQOih/dnt4yGzCnfZf7QLszBs2QM+golglbRWh4pmAWCHd
+ 4sjo+JaVdeRUOaggiNqBERGf4uKxUx9yNGKQ+YCe9fvLXIrnK7QPEBwPsLwMx5YmvxajF+k9HBD
+ iBidPIOJIZzo2LPT44w==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDAwNSBTYWx0ZWRfX6YYdG1YPoHbh
+ a8D0/Eoejj7cv2M/PbZmCn5JiCTrbwNfFm4sY7XASsHMFbA/rog7gXXtfDu2NxXbmNTelWdqYNQ
+ KMQlDNsx0rVQaH+BqG1WkwpszCPS29Y=
+X-Authority-Analysis: v=2.4 cv=LbgMLDfi c=1 sm=1 tr=0 ts=6a582c8b cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=eoimf2acIAo5FJnRuUoq:22 a=EUspDBNiAAAA:8 a=WT4h1V7r81csubEQFhoA:9
+X-Proofpoint-GUID: T1up7MCgRNxfq2HbdB4DqrqEkFve8oTU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-16_01,2026-07-15_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 impostorscore=0 suspectscore=0 adultscore=0 clxscore=1015
+ phishscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607160005
 
+i2c_master_send() and i2c_master_recv() return either a negative errno
+or exactly the count passed in, so a length check after the 'ret < 0'
+test can never be true. Drop the dead branches.
 
---z552sxv3apml2j3g
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v6 5/5] iio: dac: Add AD5529R DAC driver support
-MIME-Version: 1.0
+Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Assisted-by: Claude:claude-opus-4-8
+---
+ drivers/iio/pressure/adp810.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-Hello,
+diff --git a/drivers/iio/pressure/adp810.c b/drivers/iio/pressure/adp810.c
+index 82aa433548d2..6c740a9383e5 100644
+--- a/drivers/iio/pressure/adp810.c
++++ b/drivers/iio/pressure/adp810.c
+@@ -64,8 +64,6 @@ static int adp810_measure(struct adp810_data *data, struct adp810_read_buf *buf)
+ 		dev_err(dev, "Error sending trigger command\n");
+ 		return ret;
+ 	}
+-	if (ret != sizeof(trig_cmd))
+-		return -EIO;
+ 
+ 	/*
+ 	 * Wait for the sensor to acquire data. As per datasheet section 5.3.1,
+@@ -81,8 +79,6 @@ static int adp810_measure(struct adp810_data *data, struct adp810_read_buf *buf)
+ 		dev_err(dev, "Error reading from sensor\n");
+ 		return ret;
+ 	}
+-	if (ret != sizeof(*buf))
+-		return -EIO;
+ 
+ 	/* CRC checks */
+ 	crc8_populate_msb(crc_table, ADP810_CRC8_POLYNOMIAL);
+-- 
+2.43.0
 
-On Wed, Jul 15, 2026 at 01:41:08PM +0200, Janani Sunil wrote:
-> +#include <linux/array_size.h>
-> +#include <linux/bits.h>
-> +#include <linux/delay.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/err.h>
-> +#include <linux/errno.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/reset.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/types.h>
-> +#include <linux/units.h>
-
-Please don't add new usages of <linux/mod_devicetable.h>, both
-of_device_id and spi_device_id are provided by <linux/spi/spi.h>, so the
-#include for <linux/mod_devicetable.h> can just be dropped.
-
-Best regards
-Uwe
-
---z552sxv3apml2j3g
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpYCB4ACgkQj4D7WH0S
-/k61Bwf/XWRg8XAN3lHoIJhsnA8+g3296Hm+E93+U777lyf9jyFKLx7iYqDKHWA9
-kU2LMnREIemDelxgrlmVQ04lxzLBNI4KzBLvD3fyJHVaq/vL+TMQSTyfV1kb+g4t
-w0HZrHT+ETT7mkD8rUtLLXsOyg2cBqauEU+s4Zte8QWbZliDqQ+dVrn+/yugVccG
-F8Cv0+sAEkOhY+7Rp6BJTfsMJWgw8FnCDBWL7tB7OPsiUc0WIrKMq4x6Hpo/x1Jt
-FH3wCIlAxKaE3x1GqiGec5q3WKFej3wvlwRiBZf+yKkobCQkFE8Wc79+SWFm6kDg
-R06LdtSuCgAuTVHAXqMvde5Pysc4zw==
-=f3f3
------END PGP SIGNATURE-----
-
---z552sxv3apml2j3g--
