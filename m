@@ -1,76 +1,94 @@
-Received: from h7.fbrelay.privateemail.com (h7.fbrelay.privateemail.com [162.0.218.230])
+Received: from out-179.mta0.migadu.com (out-179.mta0.migadu.com [91.218.175.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B5E42BE98;
-	Thu, 16 Jul 2026 14:28:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.0.218.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7C38430CEE
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 14:46:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784212104; cv=none; b=SQ6kFuO0z0r+f9b5OEYPmOT6QG1iBng1N0AFQQuxvWWxi8TSoQWg0m1TEQwT+HlcObqqiqXX9zIKDABdmPnzCv485AoI65Mkk73dBeouelBatwq9zsAT0FkkFLcMFz02l7NP9ho/3qaPeEwl4hNT8o/Pw9RNdIs7vdAEbY9tYq0=
+	t=1784213184; cv=none; b=XJoNfqxtOPpoufMxjdfanbkvvAM5aHwGhOQA6K2eo9tW85OfX0GnsIPUyIOoiR7D1GphgSPvRPUF7GJY+r9v2xOjbr0U14BPWK3lpAZEImq8Mn93c3j6ZjTPvmdIh4BB7u0Xc1I1o526j+SfZ289D0MYfRX+JO26UV8wF20RNAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784212104; c=relaxed/simple;
-	bh=AC34adnZx+5SmfNkaJJaduNEJlCDO1QPKf8CUFQmsWs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=t5JmLfl9eEm6ArCcOmXgMhe7SVhn+BcRFnnhK+RfNp3aanG8IO+yESL4V8Fry6UMoSUWucvKt+EVMWXxh3I/y26IqGxg3bt1XGjFlMnByMUVkpNh3M2oWdHR7Lk7tNhVn2NJM90oEyCfm9SAepPQEdiIcCxd1cednovKxuLtO08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=162.0.218.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from MTA-08-4.privateemail.com (mta-08.privateemail.com [198.54.118.215])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by h7.fbrelay.privateemail.com (Postfix) with ESMTPSA id 4h1FWj6gG5z2xBp;
-	Thu, 16 Jul 2026 10:18:25 -0400 (EDT)
-Received: from mail.privateemail.com (K8S-PROD-WORKER-07 [87.215.145.39])
-	by mta-08.privateemail.com (Postfix) with ESMTPA id 4h1FWH2RPtz3hhTP;
-	Thu, 16 Jul 2026 10:18:03 -0400 (EDT)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Siratul Islam <siratul.islam@linux.dev>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: magnetometer: add QST QMC6308
-Date: Thu, 16 Jul 2026 16:18:00 +0200
-Message-ID: <20260716141800.82761-1-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <989a9b6a2024415ce29c1aef162c6a4d341dfa45@linux.dev>
-References: <20260714202842.340293-1-jorijnvdgraaf@catcrafts.net> <20260714202842.340293-2-jorijnvdgraaf@catcrafts.net> <03e59d2907ffccc2cecd94ab44d19359f2474733.camel@linux.dev> <20260715204616.46517-1-jorijnvdgraaf@catcrafts.net> <989a9b6a2024415ce29c1aef162c6a4d341dfa45@linux.dev>
+	s=arc-20240116; t=1784213184; c=relaxed/simple;
+	bh=v86wSwgrMuQBTbiZAMKuncJJPs8XClCe0ciN2/0afT0=;
+	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
+	 In-Reply-To:References; b=PwB+tQY1S7tgzxithj7WjS0c8HA3lK7mSo6ZKqFAxVvCrMjxoeMKsIqJRmd5JC83t6Yl5i7NM91QZkiSR4RO4+gNjgsKbzRRao0adpjEa0FNbLlQ3XbRkMIAEyG8ZFGKdT1bJTgIM9M44/zDVG1m4jgnjk8HjTBtxlCByNVtsFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Ty9yFpxR; arc=none smtp.client-ip=91.218.175.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Ty9yFpxR"
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1784213165;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=v86wSwgrMuQBTbiZAMKuncJJPs8XClCe0ciN2/0afT0=;
+	b=Ty9yFpxRlmRz+GRI/PEkfJd9i/EtFOj7UBzAzq71sI91KDGgOAELqpEo879a4DPl+m6NYL
+	y+ZtGtQdWFnUXs2o673jRy+fVdip8WF6cTD0NtK52Fv5BrYWEDNse5KK6xuclELGWmJxmU
+	NNNpdIAR42t3RbgSFKz+t7g9f7diTvQ=
+Date: Thu, 16 Jul 2026 14:45:57 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: "Siratul Islam" <siratul.islam@linux.dev>
+Message-ID: <bfe7d761f94fdd343a6ba5dfbfeccb724f74a87f@linux.dev>
+TLS-Required: No
+Subject: Re: [PATCH 2/2] iio: magnetometer: add support for QST QMC6308
+To: "Jorijn van der Graaf" <jorijnvdgraaf@catcrafts.net>, "Jonathan Cameron"
+ <jic23@kernel.org>
+Cc: "Jorijn van der Graaf" <jorijnvdgraaf@catcrafts.net>, "David Lechner"
+ <dlechner@baylibre.com>, "=?utf-8?B?TnVubyBTw6E=?=" <nuno.sa@analog.com>,
+ "Andy Shevchenko" <andy@kernel.org>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
+ <conor+dt@kernel.org>, "Luca Weiss" <luca.weiss@fairphone.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+In-Reply-To: <20260716141837.83326-1-jorijnvdgraaf@catcrafts.net>
+References: <20260714202842.340293-1-jorijnvdgraaf@catcrafts.net>
+ <20260714202842.340293-3-jorijnvdgraaf@catcrafts.net>
+ <d7fffbeacc77c3135564f902c41f19a219ddce75.camel@linux.dev>
+ <20260716141837.83326-1-jorijnvdgraaf@catcrafts.net>
+X-Migadu-Flow: FLOW_OUT
 
-Hi Sirat,
+July 16, 2026 at 8:18 PM, "Jorijn van der Graaf" <jorijnvdgraaf@catcrafts=
+.net mailto:jorijnvdgraaf@catcrafts.net?to=3D%22Jorijn%20van%20der%20Graa=
+f%22%20%3Cjorijnvdgraaf%40catcrafts.net%3E > wrote:
 
-On Wed, 2026-07-15 at 22:16 +0000, Siratul Islam wrote:
-> > I'd lean towards keeping the separate file.
-> Wait for more feedback before deciding, since you have a few days
-> before you send v2. DT maintainers usually prefer reusing the same
-> file where possible.
 
-Right, my previous email wasn't meant to lock in a decision,
-just my preference. If the DT maintainers want it merged in v2
-I'll happily do that.
+>=20
+>=20Hi Sirat,
+...
+>=20
+>=20>=20
+>=20> Use reverse x-mas tree order.
+> >=20
+>=20The natural initializer order is fixed by the dependencies here (map
+> comes from data, dev from map), so reverse xmas tree would need the
+> assignments split from the declarations; I'd rather keep them
+> together.
+Yep. Of course. That was a dumb suggestion. Should rely less on my patter=
+n=20
+recognition.=20Though, you are only using "*map" it twice in that functio=
+n, so I'm not sure
+if extracting it into a variable is worth it. Specially considering it ma=
+kes the declarations
+look ugly.
 
-> Register compatibility is driver specific. Bindings are only for
-> describing hardware. So if there are reasons to use separate
-> bindings, this isn't one of them. A fallback-compatible
-> relationship isn't needed, as we are already using an enum to list
-> which different sensors the binding supports.
-
-Fair point on both counts; I'll drop that sentence. The lack of
-property overlap is the part that matters here.
-
-Thanks,
-Jorijn
+That said, I have opinions about your other replies, but I'm a bit busy n=
+ow so
+I'll get back to them later.
+>=20
+...
+>=20
+> Thanks,
+> Jorijn
+>
+--
+Best regards,
+Sirat
