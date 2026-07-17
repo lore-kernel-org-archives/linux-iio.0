@@ -1,66 +1,61 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9570F3A7F60;
-	Fri, 17 Jul 2026 12:39:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B16EB309DDB;
+	Fri, 17 Jul 2026 12:39:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784291981; cv=none; b=n83jJbTrjwtvPYuwMRkX38tP42bqX7Kh4BCV/aBiht5oraSByIiRa67B0L4gE4oyPvMfFCLMn2R32V9b4kyidxnEqyOjVVEqtnNYYfgj7g9TebjWo2s/xEknuIDVy3ZyjhOKEOoi387lP5VFkSpS496BY6JFi6igweaCfeGgFWI=
+	t=1784291990; cv=none; b=KaB2/aZeFgvYStvjMdr53RQN+oW09rtKPuEiIJEca7PbSMSHINKtqjAx+6KsZ65lu8lSX0/dS/4fqegRYHORDYkHdZOUsMHbK4qFqwm4cUBRSxVO6/aprGEbHxqKI2mnKkdEYaUuskHEcuDK3QKCjivyvUQ6BSKUc/THET5Of24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784291981; c=relaxed/simple;
-	bh=v4Xq8/UTYcUle2mfvW9sOI1QkOMJ9lvX5mrQ/9tFfak=;
+	s=arc-20240116; t=1784291990; c=relaxed/simple;
+	bh=lv+zKXn6nF/jFwWO1szVvShR7WcEuNTjhuTAo7RN65E=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RNDi6dM0esDzNAWDbKCzjC9fYLRhxrJuvKUuQtfW0EqgvV+AicQEJ/KH6obZm82z8GbU1XzhnbcBIxB14vhcbjFO7NM7QGbciCidzW6fx0qwbCSr3mi1nDyldGVcSxwXjLQ7dqYz/nLAv98eYgQzZ7ERHg57p7FhwR7OodALijw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Jnkf03F3; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=o+vKw8SYGwIqm2cYi1ZMDHsQKpcpLszCH1oExP+W16VliRGb3qN4zdqPmEget1zX1l1Lf51qTAjSi20dkUxI6zbhsSLZjcjZ9rXO6rnFYbbTJmW5sn0IfcpAMunwIKEmk282Umjl38FeToJtEsuRyGPvLXdtEqfrOaRkJUGOfIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=jg9iTrzd; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Jnkf03F3"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66HCOAVV2194291;
-	Fri, 17 Jul 2026 08:39:26 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="jg9iTrzd"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66HCOIYM2293944;
+	Fri, 17 Jul 2026 08:39:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=SPOLy
-	k94n3Xh+eZq5uyMDl0yoPrnKPFGksU5aL1KT0g=; b=Jnkf03F3uGMl9dnk3DQxR
-	SaS07xxyUm+MPbjRSSXTVSBB0mg03dv93IJjqpwrdSAUaU53u6xuC+1lec+dd+MU
-	kjGAMLZzOWeznVvzwaBdizJpNbjYkvpxVJTlyNeyPzOtVPHcp14PQy3YR+cmMy8R
-	nr+Ps6Fdh4rA1tRzXq3l/8I7Zu8DWrM4RbxeleHPjTn3nlPt16MjEdhVeDlbRrGL
-	wUlZrHF3DVJMJC5P+Niekg1/LSmGVlv3vGWoKhAk4+toG+agM2CpQybakO77O1WH
-	4ntdTTh7jORHxaN1vucncT5du7vtRr8eosV7j/j/j5Bt0akA9jzwndYVLI7yk5qc
-	w==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=LKiKW
+	mv/HHx8B+Ia6O/yNpX0QdvMgEodIJOldKl67EU=; b=jg9iTrzdnxbL/4oYDbXrM
+	5hX9sB5kCzB1EOWFTPvyWT/hZn0bvPuLyFd7+j3mbyJ91y6buZ7kN2O/U5GmI6oD
+	YiJ8PZOddZOpjPGWHtiamjD0YwBX+eGjtrL+vFIsGHffXEvZyB1yMTig/bmNR4YC
+	zP79zFE1D3w84lPYMsq8Fs32/GYFbfhXzhOzqQWuijr+Cvk2xjbvk+PXic8lt6+O
+	Qk0D8QvNQk9h6e5y8w8/pyOE1K55robYvL1zRsJpR3M1R0oQCRp6FopT+ZkfcCxU
+	WuR5YKnyYxrZtIPsGo427xqbRGCEUldkFqLHX8FQXj6Cs3VcLrWkDd8O/3Mldam/
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ffbpg1yxx-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fe85x23aw-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 17 Jul 2026 08:39:26 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66HCdP0j041799
+	Fri, 17 Jul 2026 08:39:23 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66HCdMtt041796
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 17 Jul 2026 08:39:25 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 17 Jul 2026 08:39:25 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 17 Jul 2026 08:39:24 -0400
+	Fri, 17 Jul 2026 08:39:22 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 17 Jul
+ 2026 08:39:22 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 17 Jul 2026 08:39:24 -0400
+ Transport; Fri, 17 Jul 2026 08:39:22 -0400
 Received: from HYB-JRXo5UEs61B.ad.analog.com ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66HCd3wB014702;
-	Fri, 17 Jul 2026 08:39:20 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66HCd3wA014702;
+	Fri, 17 Jul 2026 08:39:17 -0400
 From: Stefan Popa <stefan.popa@analog.com>
 To: <linux-iio@vger.kernel.org>
 CC: <jic23@kernel.org>, <andriy.shevchenko@linux.intel.com>,
         <nuno.sa@analog.com>, <devicetree@vger.kernel.org>,
         Stefan Popa
-	<stefan.popa@analog.com>,
-        Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-Subject: [PATCH v4 2/2] iio: adc: add MAX40080 current-sense amplifier driver
-Date: Fri, 17 Jul 2026 15:38:49 +0300
-Message-ID: <20260717123852.1140893-3-stefan.popa@analog.com>
+	<stefan.popa@analog.com>
+Subject: [PATCH v4 1/2] dt-bindings: iio: adc: add maxim,max40080
+Date: Fri, 17 Jul 2026 15:38:48 +0300
+Message-ID: <20260717123852.1140893-2-stefan.popa@analog.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260717123852.1140893-1-stefan.popa@analog.com>
 References: <20260717123852.1140893-1-stefan.popa@analog.com>
@@ -70,758 +65,136 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=YqE/gYYX c=1 sm=1 tr=0 ts=6a5a227e cx=c_pps
+X-Authority-Analysis: v=2.4 cv=aLnAb79m c=1 sm=1 tr=0 ts=6a5a227b cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
- a=VwQbUJbxAAAA:8 a=P-IC7800AAAA:8 a=Cm7CSvHRJpdBb-x4K-8A:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=d3PnA9EDa4IxuAV0gXij:22
-X-Proofpoint-GUID: aRtad0RTr4PKfMg_7mHH1tyThewOzYRA
-X-Proofpoint-ORIG-GUID: aRtad0RTr4PKfMg_7mHH1tyThewOzYRA
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfX8WJ7505p04OM
- v7pMwviyKMeoF5hh0KXPNZJ4vN44ltAwJz/lGg02nm2RCMY8tcDggyWALu4f/Vkfex8IVkPVhVQ
- m0yI0zZl68NnUAaYUkLeQDADaZLchEGw1N3xSHmE2BFo/VkAZNHi
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfX8RKoOKbYwmBq
- bsmhgu/ppyyAeQrfN86WCyEHcGEoWiHlFwlI8biGrfhh54Od8rhBlo0uX6zvUxznnuG/0R0Q7xk
- ANd5KHvJy6SJaHJhJ/VXfNySdK16tavzBy7E05FG2oxrHgdnoa37XV0hx4NEOwWwP//iS9dctWL
- whhIyvDeLbBkErOyPNo4poZ7jDA/8DE9vQrEP2lp5RXz9b6nWj1fCBJECHcGt+tbcIi0q26R7DV
- VyOCcrjFFyv4DK61ZYDrlhEd70TknRUZVWlJmNP3WVvu+6lOiOb3X60bDP5eau40Of8O7LyeAa2
- jAFxp4dzqoK45jmX765H8gHPJq7oCNNo07uIi9BhEEGdCN3Ii7j6ci4cl4dyKS5Tk9AjBPh1ZPI
- l6OIS+03KeikSMnNNG3u5m8ZOCVkqctsQM7rfxsaWsOCdELn/UbfnE3xTXlzo65OpFQwLfEiYfp
- OjJ0OY4su6eh0j11FmQ==
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
+ a=P-IC7800AAAA:8 a=Svqhk2N__qMwEp2CcvoA:9 a=sptkURWiP4Gy88Gu7hUp:22
+ a=d3PnA9EDa4IxuAV0gXij:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfX4kA0ksafiJrO
+ cXTIaHrsFJVQcGxpzYKTcv06oEQFk4/pgODhYHzOFRjkCYHetOIx3Up8TmskEIhxWutli6PWSRh
+ zvGsFPdDn8BQMKFX7ro5qeu2qzkWj3nIfxR+yvz7wkLThkVoAt4YUIwtZoVtFCMMGo9ON7PtGOV
+ w1QlG0+dw2lwM6Ec9O2pfZEJJ0b7dGV2u8I2NazeCxbQgUYwYYS/zm29lwQig+m9KwGDL5WllSL
+ nIFyi7vdURTITwE+PkI+shgMaN9I2fCK+E7t1JM9uHf09KA7Be+CX4LrlaEYW2uUxT/I+pUnrt2
+ Ni7ZQ3in79wTxEGWPv2kdG+U7ojiEYFeTydfE2INNkwL8/Yi4+yv7WV9oP69b0Dr7Ukr+kyr/K0
+ eNbP8eu72MU4m1vPWqgRtmOwPU1FudYcYe/JDsRvBtBjLKg1Q5L3WJrG8jNe2MNojZ2o1ravp54
+ uI4LkcrTNVRCdwGJIyw==
+X-Proofpoint-GUID: bO-vlsSzEMwWfo0-yI-xCk87rM3tH3-x
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfX8PoM37M9ywI0
+ wZB1CjCBvrk8RNT5/YRdAvp1Gs1IuirqOBtDRp1RnyyYAjxRE0qxYn92dSkX/Jpie3cN2xUXcKJ
+ uOriK9z81urb7vZfB7DYLquGbVIzkVdrtAgXyzAbyK3jvxDBbZkh
+X-Proofpoint-ORIG-GUID: bO-vlsSzEMwWfo0-yI-xCk87rM3tH3-x
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-17_03,2026-07-17_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0 priorityscore=1501
- impostorscore=0 adultscore=0 clxscore=1015 suspectscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 suspectscore=0 spamscore=0 impostorscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 malwarescore=0 phishscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170128
 
-The MAX40080 is a bidirectional current-sense amplifier with an
-integrated 12-bit ADC and an I2C/SMBus interface. It measures the
-voltage across an external shunt resistor and the input bus voltage,
-storing the results in an internal FIFO.
+Add device tree bindings for the Maxim MAX40080 bidirectional
+current-sense amplifier with a 12-bit ADC and an I2C/SMBus interface.
 
-No existing IIO driver covers this device or a register-compatible part.
-The closest relatives target different silicon with incompatible register
-maps and feature sets: max9611 is a unidirectional high-side sensor with a
-die-temperature channel and MUX-selected gain and no FIFO/PEC, while
-max34408 is an 8-bit multi-channel current monitor. The MAX40080 has a
-device-specific register map with bidirectional 13-bit current, a 64-entry
-FIFO, PEC, a single-measurement mode triggered by an SMBus Quick Command,
-and two selectable input ranges, so it warrants its own driver.
-
-Add a direct-mode IIO driver exposing the current and voltage channels
-with raw and scale attributes, a configurable oversampling (digital
-averaging) ratio, and PEC-protected register access. The two selectable
-current-sense ranges are exposed through scale/scale_available; the
-current scale is derived from the shunt-resistor-micro-ohms device-tree
-property.
-
-Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/MAX40080.pdf
-Co-developed-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-Signed-off-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
 Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- MAINTAINERS                |   1 +
- drivers/iio/adc/Kconfig    |  11 +
- drivers/iio/adc/Makefile   |   1 +
- drivers/iio/adc/max40080.c | 636 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 649 insertions(+)
- create mode 100644 drivers/iio/adc/max40080.c
+ .../bindings/iio/adc/maxim,max40080.yaml      | 64 +++++++++++++++++++
+ MAINTAINERS                                   |  8 +++
+ 2 files changed, 72 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+new file mode 100644
+index 0000000000000..3b367071b5d3f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/maxim,max40080.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX40080 bidirectional current-sense amplifier
++
++maintainers:
++  - Ciprian Hegbeli <ciprian.hegbeli@analog.com>
++  - Stefan Popa <stefan.popa@analog.com>
++
++description: |
++  The MAX40080 is a high-precision, bidirectional current-sense amplifier with
++  an integrated 12-bit ADC and an I2C/SMBus interface. It measures the voltage
++  across an external shunt resistor and the input bus voltage, and stores the
++  results in an internal FIFO.
++
++  Datasheet:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/MAX40080.pdf
++
++properties:
++  compatible:
++    const: maxim,max40080
++
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: Power supply for the device.
++
++  interrupts:
++    maxItems: 1
++    description: ALERT output for overcurrent/undervoltage threshold events.
++
++  "#io-channel-cells":
++    const: 1
++
++  shunt-resistor-micro-ohms:
++    description:
++      Value of the current-sense shunt resistor connected between the IN+ and
++      IN- inputs. Used to scale the reported current.
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@20 {
++            compatible = "maxim,max40080";
++            reg = <0x20>;
++            vdd-supply = <&vdd_3v3>;
++            #io-channel-cells = <1>;
++            shunt-resistor-micro-ohms = <100000>;
++        };
++    };
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 9aa1bc9a65ac5..f50c1e00e12bb 100644
+index e087673237636..9aa1bc9a65ac5 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -15520,6 +15520,7 @@ L:	linux-iio@vger.kernel.org
+@@ -15513,6 +15513,14 @@ L:	linux-iio@vger.kernel.org
  S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
-+F:	drivers/iio/adc/max40080.c
+ F:	drivers/iio/temperature/max30208.c
  
++MAXIM MAX40080 CURRENT SENSE AMPLIFIER DRIVER
++M:	Ciprian Hegbeli <ciprian.hegbeli@analog.com>
++M:	Stefan Popa <stefan.popa@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
++
  MAXIM MAX7360 KEYPAD LED MFD DRIVER
  M:	Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 58da8255525e4..b651c57bbc3f5 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1041,6 +1041,17 @@ config MAX34408
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called max34408.
- 
-+config MAX40080
-+	tristate "Analog Devices MAX40080 Current Sense Amplifier"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Analog Devices MAX40080
-+	  bidirectional current-sense amplifier with a 12-bit ADC and an I2C
-+	  interface.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called max40080.
-+
- config MAX77541_ADC
- 	tristate "Analog Devices MAX77541 ADC driver"
- 	depends on MFD_MAX77541
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 7cc8f9a12f763..e1953353c68a4 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -91,6 +91,7 @@ obj-$(CONFIG_MAX1241) += max1241.o
- obj-$(CONFIG_MAX1363) += max1363.o
- obj-$(CONFIG_MAX14001) += max14001.o
- obj-$(CONFIG_MAX34408) += max34408.o
-+obj-$(CONFIG_MAX40080) += max40080.o
- obj-$(CONFIG_MAX77541_ADC) += max77541-adc.o
- obj-$(CONFIG_MAX9611) += max9611.o
- obj-$(CONFIG_MCP320X) += mcp320x.o
-diff --git a/drivers/iio/adc/max40080.c b/drivers/iio/adc/max40080.c
-new file mode 100644
-index 0000000000000..9ffb4e9a009c1
---- /dev/null
-+++ b/drivers/iio/adc/max40080.c
-@@ -0,0 +1,636 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * MAX40080 Digital Current-Sense Amplifier driver
-+ *
-+ * Copyright 2026 Analog Devices, Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/cleanup.h>
-+#include <linux/i2c.h>
-+#include <linux/iopoll.h>
-+#include <linux/math64.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/property.h>
-+#include <linux/time.h>
-+#include <linux/types.h>
-+#include <linux/unaligned.h>
-+#include <linux/units.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#define MAX40080_REG_CFG		0x00
-+#define MAX40080_CFG_MODE_MSK		GENMASK(2, 0)
-+#define MAX40080_CFG_PEC_EN_MSK		BIT(5)
-+#define MAX40080_CFG_RANGE_MSK		BIT(6)
-+#define MAX40080_CFG_FILTER_MSK		GENMASK(14, 12)
-+
-+#define MAX40080_REG_FIFO_CFG		0x0A
-+#define MAX40080_FIFO_CFG_STORE_IV_MSK	GENMASK(1, 0)
-+
-+#define MAX40080_REG_IV			0x10
-+/* Current is a 13-bit two's-complement value (magnitude + sign bit). */
-+#define MAX40080_IV_I_MSK		GENMASK(12, 0)
-+#define MAX40080_IV_I_SIGN_BIT		12
-+#define MAX40080_IV_V_MAG_MSK		GENMASK(27, 16)
-+#define MAX40080_IV_VALID_MSK		BIT(31)
-+
-+/* CFG.mode field values. */
-+#define MAX40080_CFG_MODE_STDBY		0x00
-+#define MAX40080_CFG_MODE_SINGLE	0x02	/* One conversion per Quick Command. */
-+
-+/* CFG.range field values. */
-+#define MAX40080_CFG_RANGE_50mV		0
-+#define MAX40080_CFG_RANGE_10mV		1
-+
-+/* FIFO_CFG.store_iv field values. */
-+#define MAX40080_FIFO_CFG_STORE_I_V	0x02
-+
-+#define MAX40080_ADC_RES		4096
-+#define MAX40080_INTER_VREF_mV		1250
-+#define MAX40080_V_BUFF_GAIN		30
-+#define MAX40080_CSA_50mV_GAIN		25
-+#define MAX40080_CSA_10mV_GAIN		125
-+
-+/*
-+ * The RANGE field (CFG bit 6) selects one of two current-sense full-scale
-+ * ranges: +/-50 mV (gain 25 V/V) or +/-10 mV (gain 125 V/V).
-+ */
-+static const int max40080_csa_gain[] = {
-+	[MAX40080_CFG_RANGE_50mV] = MAX40080_CSA_50mV_GAIN,
-+	[MAX40080_CFG_RANGE_10mV] = MAX40080_CSA_10mV_GAIN,
-+};
-+
-+struct max40080_state {
-+	struct i2c_client *client;
-+	/* Serializes read-modify-write access to the CFG register. */
-+	struct mutex lock;
-+	u32 shunt_resistor_uOhm;
-+	/*
-+	 * Cached configuration, also used to restore the device on resume after
-+	 * a suspend that may have cut its power: the selected RANGE index and
-+	 * the oversampling ratio.
-+	 */
-+	unsigned int range;
-+	int oversampling_ratio;
-+	/*
-+	 * Precomputed current scale (mA per code) for each RANGE setting, as
-+	 * {integer, nano} pairs for IIO_VAL_INT_PLUS_NANO. The range is
-+	 * selected by writing the corresponding scale.
-+	 */
-+	int current_scale[ARRAY_SIZE(max40080_csa_gain)][2];
-+	/* DMA-safe buffer for i2c_smbus_read_i2c_block_data(). */
-+	u8 buf[4] ____cacheline_aligned;
-+};
-+
-+static const int max40080_oversampling_avail[] = { 1, 8, 16, 32, 64, 128 };
-+
-+static int __max40080_update_bits(struct max40080_state *st, u8 reg,
-+				  u16 mask, u16 val)
-+{
-+	int tmp;
-+
-+	tmp = i2c_smbus_read_word_data(st->client, reg);
-+	if (tmp < 0)
-+		return tmp;
-+
-+	tmp = (tmp & ~mask) | (val & mask);
-+
-+	return i2c_smbus_write_word_data(st->client, reg, tmp);
-+}
-+
-+/*
-+ * A single measurement holds the matched current/voltage pair in one 32-bit
-+ * word (MAX40080_REG_IV). Reading all four bytes in one transaction returns
-+ * both from the same conversion; reading the separate current (0x0C) and
-+ * voltage (0x0E) registers would decorrelate the two channels.
-+ *
-+ * Unlike the word accesses used elsewhere, this is a plain I2C block read: the
-+ * SMBus layer does not append or verify a PEC byte for it even when PEC is
-+ * otherwise enabled for the device, so this transfer is not PEC protected.
-+ */
-+static int max40080_read_iv_once(struct max40080_state *st, u32 *iv)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_read_i2c_block_data(st->client, MAX40080_REG_IV,
-+					    sizeof(st->buf), st->buf);
-+	if (ret < 0)
-+		return ret;
-+	if (ret != sizeof(st->buf))
-+		return -EIO;
-+
-+	*iv = get_unaligned_le32(st->buf);
-+
-+	return 0;
-+}
-+
-+static int max40080_read_iv(struct max40080_state *st, u32 *iv)
-+{
-+	struct i2c_client *client = st->client;
-+	int ret, io_ret;
-+	u32 tmp;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/*
-+	 * In single-measurement mode the device sits idle until it receives an
-+	 * SMBus Quick Command, then performs exactly one current and one voltage
-+	 * conversion and returns to idle. Triggering on demand this way (rather
-+	 * than running the FIFO continuously in active mode) means each read
-+	 * returns a fresh, coherent current/voltage pair instead of the oldest
-+	 * queued FIFO entry.
-+	 */
-+	ret = i2c_smbus_xfer(client->adapter, client->addr, client->flags,
-+			     I2C_SMBUS_WRITE, 0, I2C_SMBUS_QUICK, NULL);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Wait for the conversion to complete by polling the FIFO valid bit
-+	 * (or bail out on an I2C error). Polling the device's own status makes
-+	 * this independent of the actual conversion time, which varies with the
-+	 * oversampling ratio and the bus speed. The timeout is only a safety
-+	 * ceiling: the worst case is the maximum 128x averaging on both the
-+	 * current and voltage channels at the slowest 15 ksps base rate plus the
-+	 * inter-channel switching time, i.e. roughly 20 ms; 50 ms leaves ample
-+	 * margin.
-+	 */
-+	ret = read_poll_timeout(max40080_read_iv_once, io_ret,
-+				io_ret || (tmp & MAX40080_IV_VALID_MSK),
-+				1 * USEC_PER_MSEC, 50 * USEC_PER_MSEC,
-+				false, st, &tmp);
-+	/*
-+	 * Update *iv even on timeout — the caller checks ret first, but the
-+	 * last-read value (with valid bit still clear) can be useful for debug.
-+	 */
-+	*iv = tmp;
-+	if (ret)
-+		return ret;
-+
-+	return io_ret;
-+}
-+
-+static int max40080_get_current(struct max40080_state *st, int *val)
-+{
-+	u32 iv;
-+	int ret;
-+
-+	ret = max40080_read_iv(st, &iv);
-+	if (ret)
-+		return ret;
-+
-+	*val = sign_extend32(FIELD_GET(MAX40080_IV_I_MSK, iv),
-+			     MAX40080_IV_I_SIGN_BIT);
-+
-+	return 0;
-+}
-+
-+static int max40080_get_voltage(struct max40080_state *st, int *val)
-+{
-+	u32 iv;
-+	int ret;
-+
-+	ret = max40080_read_iv(st, &iv);
-+	if (ret)
-+		return ret;
-+
-+	*val = FIELD_GET(MAX40080_IV_V_MAG_MSK, iv);
-+
-+	return 0;
-+}
-+
-+static int max40080_set_range(struct max40080_state *st, unsigned int range)
-+{
-+	int ret;
-+
-+	guard(mutex)(&st->lock);
-+
-+	ret = __max40080_update_bits(st, MAX40080_REG_CFG, MAX40080_CFG_RANGE_MSK,
-+				     FIELD_PREP(MAX40080_CFG_RANGE_MSK, range));
-+	if (ret)
-+		return ret;
-+
-+	st->range = range;
-+
-+	return 0;
-+}
-+
-+/*
-+ * Precompute the current scale (mA per code) for each RANGE setting as
-+ * {integer, nano} pairs. The shunt drop for a full-scale code is
-+ *   Vref[mV] / (ADC_RES * gain)
-+ * and current = Vshunt / Rshunt, so with Rshunt in micro-ohms the scale in
-+ * mA/code is
-+ *   Vref[mV] * NANO * MICRO / (ADC_RES * gain * Rshunt[uOhm])
-+ * expressed as an integer part plus a nano fractional part.
-+ */
-+static void max40080_calc_current_scale(struct max40080_state *st)
-+{
-+	for (unsigned int i = 0; i < ARRAY_SIZE(max40080_csa_gain); i++) {
-+		u64 numerator = 1ULL * MAX40080_INTER_VREF_mV * NANO * MICRO;
-+		u64 denominator = 1ULL * MAX40080_ADC_RES * max40080_csa_gain[i] *
-+				  st->shunt_resistor_uOhm;
-+		u64 tmp;
-+		u32 rem;
-+
-+		tmp = div64_u64(numerator, denominator);
-+		st->current_scale[i][0] = div_u64_rem(tmp, NANO, &rem);
-+		st->current_scale[i][1] = rem;
-+	}
-+}
-+
-+/*
-+ * The FILTER field selects digital averaging of N consecutive conversions
-+ * (no averaging, 8, 16, 32, 64 or 128), which maps directly to the IIO
-+ * oversampling ratio. Averaging reduces the effective output data rate by the
-+ * same factor; the conversion rate itself is set by the separate ADC_RATE
-+ * field.
-+ */
-+static int max40080_get_oversampling_ratio(struct max40080_state *st, int *val)
-+{
-+	u8 filter;
-+	int tmp;
-+
-+	tmp = i2c_smbus_read_word_data(st->client, MAX40080_REG_CFG);
-+	if (tmp < 0)
-+		return tmp;
-+
-+	filter = FIELD_GET(MAX40080_CFG_FILTER_MSK, tmp);
-+	if (filter >= ARRAY_SIZE(max40080_oversampling_avail))
-+		return -EIO;
-+
-+	*val = max40080_oversampling_avail[filter];
-+
-+	return 0;
-+}
-+
-+/*
-+ * max40080_oversampling_avail[] is ordered so that its index is the FILTER
-+ * field value (index 0 = no averaging, index 1 = 8x, ...). Return that index
-+ * for an exact match, or -EINVAL for a value that is not on the list.
-+ */
-+static int max40080_oversampling_to_filter(int val)
-+{
-+	for (unsigned int i = 0; i < ARRAY_SIZE(max40080_oversampling_avail); i++) {
-+		if (max40080_oversampling_avail[i] == val)
-+			return i;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int max40080_set_oversampling_ratio(struct max40080_state *st, int val)
-+{
-+	int filter;
-+	int ret;
-+
-+	filter = max40080_oversampling_to_filter(val);
-+	if (filter < 0)
-+		return filter;
-+
-+	guard(mutex)(&st->lock);
-+
-+	ret = __max40080_update_bits(st, MAX40080_REG_CFG, MAX40080_CFG_FILTER_MSK,
-+				     FIELD_PREP(MAX40080_CFG_FILTER_MSK, filter));
-+	if (ret)
-+		return ret;
-+
-+	st->oversampling_ratio = val;
-+
-+	return 0;
-+}
-+
-+static int max40080_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct max40080_state *st = iio_priv(indio_dev);
-+	unsigned int range;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_CURRENT:
-+			ret = max40080_get_current(st, val);
-+			if (ret)
-+				return ret;
-+			return IIO_VAL_INT;
-+		case IIO_VOLTAGE:
-+			ret = max40080_get_voltage(st, val);
-+			if (ret)
-+				return ret;
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_SCALE:
-+		/*
-+		 * The selectable current-sense range is exposed through
-+		 * scale: each RANGE setting has its own precomputed
-+		 * mA-per-code value. Userspace picks the range by writing
-+		 * the matching scale.
-+		 */
-+		switch (chan->type) {
-+		case IIO_CURRENT:
-+			range = st->range;
-+			*val = st->current_scale[range][0];
-+			*val2 = st->current_scale[range][1];
-+			return IIO_VAL_INT_PLUS_NANO;
-+		case IIO_VOLTAGE:
-+			/* voltage[mV] = raw * Vref[mV] * buffer_gain / ADC_RES */
-+			*val = MAX40080_INTER_VREF_mV * MAX40080_V_BUFF_GAIN;
-+			*val2 = MAX40080_ADC_RES;
-+			return IIO_VAL_FRACTIONAL;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		ret = max40080_get_oversampling_ratio(st, val);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int max40080_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct max40080_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Only the current channel has a selectable range/scale. */
-+		if (chan->type != IIO_CURRENT)
-+			return -EINVAL;
-+
-+		for (unsigned int i = 0; i < ARRAY_SIZE(max40080_csa_gain); i++) {
-+			if (val == st->current_scale[i][0] &&
-+			    val2 == st->current_scale[i][1])
-+				return max40080_set_range(st, i);
-+		}
-+
-+		return -EINVAL;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		return max40080_set_oversampling_ratio(st, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int max40080_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan,
-+				      long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return IIO_VAL_INT;
-+	}
-+}
-+
-+static int max40080_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long info)
-+{
-+	struct max40080_state *st = iio_priv(indio_dev);
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type != IIO_CURRENT)
-+			return -EINVAL;
-+
-+		*vals = (const int *)st->current_scale;
-+		*length = ARRAY_SIZE(max40080_csa_gain) * 2;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		*vals = max40080_oversampling_avail;
-+		*length = ARRAY_SIZE(max40080_oversampling_avail);
-+		*type = IIO_VAL_INT;
-+
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int max40080_reg_access(struct iio_dev *indio_dev,
-+			       unsigned int reg,
-+			       unsigned int write_val,
-+			       unsigned int *read_val)
-+{
-+	struct max40080_state *st = iio_priv(indio_dev);
-+	int val;
-+
-+	if (!read_val)
-+		return i2c_smbus_write_word_data(st->client, reg, write_val);
-+
-+	val = i2c_smbus_read_word_data(st->client, reg);
-+	if (val < 0)
-+		return val;
-+
-+	*read_val = val;
-+
-+	return 0;
-+}
-+
-+static const struct iio_info max40080_info = {
-+	.read_raw = max40080_read_raw,
-+	.write_raw = max40080_write_raw,
-+	.write_raw_get_fmt = max40080_write_raw_get_fmt,
-+	.read_avail = max40080_read_avail,
-+	.debugfs_reg_access = &max40080_reg_access,
-+};
-+
-+static const struct iio_chan_spec max40080_channels[] = {
-+	{
-+		.type = IIO_CURRENT,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
-+		.info_mask_shared_by_all_available =
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
-+	},
-+	{
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
-+		.info_mask_shared_by_all_available =
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
-+	},
-+};
-+
-+/*
-+ * Configure (or, after a suspend that cut power, restore) the device from the
-+ * cached state. The device powers up in standby with PEC enabled (CFG POR =
-+ * 0x0060), so PEC is kept enabled throughout.
-+ */
-+static int max40080_init(struct max40080_state *st)
-+{
-+	u16 fifo_cfg, cfg;
-+	int filter;
-+	int ret;
-+
-+	filter = max40080_oversampling_to_filter(st->oversampling_ratio);
-+	if (filter < 0)
-+		return filter;
-+
-+	/*
-+	 * Put the device in standby before (re)configuring the FIFO: the FIFO
-+	 * configuration register can only be written while the device is not
-+	 * converting.
-+	 */
-+	cfg = FIELD_PREP(MAX40080_CFG_MODE_MSK, MAX40080_CFG_MODE_STDBY) |
-+	      FIELD_PREP(MAX40080_CFG_PEC_EN_MSK, 1);
-+	ret = i2c_smbus_write_word_data(st->client, MAX40080_REG_CFG, cfg);
-+	if (ret)
-+		return ret;
-+
-+	/* Store a matched current+voltage pair per conversion. */
-+	fifo_cfg = FIELD_PREP(MAX40080_FIFO_CFG_STORE_IV_MSK, MAX40080_FIFO_CFG_STORE_I_V);
-+	ret = i2c_smbus_write_word_data(st->client, MAX40080_REG_FIFO_CFG, fifo_cfg);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Use single-measurement mode: the device stays idle and converts once
-+	 * per SMBus Quick Command (see max40080_trigger_measurement()), so each
-+	 * read returns a fresh sample rather than a queued FIFO entry.
-+	 */
-+	cfg = FIELD_PREP(MAX40080_CFG_MODE_MSK, MAX40080_CFG_MODE_SINGLE) |
-+	      FIELD_PREP(MAX40080_CFG_PEC_EN_MSK, 1) |
-+	      FIELD_PREP(MAX40080_CFG_RANGE_MSK, st->range) |
-+	      FIELD_PREP(MAX40080_CFG_FILTER_MSK, filter);
-+
-+	return i2c_smbus_write_word_data(st->client, MAX40080_REG_CFG, cfg);
-+}
-+
-+static int max40080_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct max40080_state *st;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	/*
-+	 * The device powers up with PEC enabled (CFG POR = 0x0060) and rejects
-+	 * unprotected transactions, so PEC support is mandatory, along with word
-+	 * access, the I2C block read used for the current/voltage pair, and the
-+	 * Quick Command used to trigger a conversion.
-+	 */
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_WORD_DATA |
-+				     I2C_FUNC_SMBUS_I2C_BLOCK |
-+				     I2C_FUNC_SMBUS_QUICK |
-+				     I2C_FUNC_SMBUS_PEC))
-+		return -EOPNOTSUPP;
-+
-+	client->flags |= I2C_CLIENT_PEC;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	st = iio_priv(indio_dev);
-+	st->client = client;
-+
-+	ret = devm_mutex_init(dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
-+	{
-+		const char *propname = "shunt-resistor-micro-ohms";
-+
-+		if (device_property_present(dev, propname)) {
-+			ret = device_property_read_u32(dev, propname,
-+						       &st->shunt_resistor_uOhm);
-+			if (ret)
-+				return dev_err_probe(dev, ret,
-+						     "can't read %s\n", propname);
-+			if (!st->shunt_resistor_uOhm)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "%s must be non-zero\n", propname);
-+		} else {
-+			st->shunt_resistor_uOhm = 1 * MICRO;
-+		}
-+	}
-+
-+	max40080_calc_current_scale(st);
-+
-+	/* Defaults: 50 mV range (index 0), no averaging. */
-+	st->range = 0;
-+	st->oversampling_ratio = 1;
-+
-+	indio_dev->name = "max40080";
-+	indio_dev->info = &max40080_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = max40080_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max40080_channels);
-+
-+	ret = max40080_init(st);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int max40080_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct max40080_state *st = iio_priv(indio_dev);
-+
-+	/*
-+	 * A suspend may have cut power to the device, resetting it to its
-+	 * power-on defaults. Reprogram it from the cached configuration.
-+	 */
-+	return max40080_init(st);
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(max40080_pm_ops, NULL, max40080_resume);
-+
-+static const struct i2c_device_id max40080_i2c_ids[] = {
-+	{ .name = "max40080" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max40080_i2c_ids);
-+
-+static const struct of_device_id max40080_of_match[] = {
-+	{ .compatible = "maxim,max40080" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max40080_of_match);
-+
-+static struct i2c_driver max40080_driver = {
-+	.driver = {
-+		.name = "max40080",
-+		.of_match_table = max40080_of_match,
-+		.pm = pm_sleep_ptr(&max40080_pm_ops),
-+	},
-+	.probe = max40080_probe,
-+	.id_table = max40080_i2c_ids,
-+};
-+module_i2c_driver(max40080_driver);
-+
-+MODULE_AUTHOR("Ciprian Hegbeli <ciprian.hegbeli@analog.com>");
-+MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices MAX40080 current-sense amplifier driver");
-+MODULE_LICENSE("GPL");
+ S:	Maintained
 -- 
 2.53.0
 
