@@ -1,61 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 335CD1EB9E3;
-	Fri, 17 Jul 2026 18:02:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F1F37C0E2;
+	Fri, 17 Jul 2026 18:06:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784311324; cv=none; b=BQdWnAA3HduYJQ2v1B82kh631BWd+PmMkp1IuF2sn8GqDd8dDvKc2TEKMpjGLNkdn0FGCZud8hROjb76iQPKkKB8TZEONQs34ZDxfwW8mw33RMYMbjX1DRLFbZDjB9sbB0SHqYYQwps7RWjFIM0ps6EJDv9OSV0oTTw7agM20XU=
+	t=1784311614; cv=none; b=OsAu8Q0iMZ2Jy9h51VwIMnu168pSdm2aLC0+CldIk47zwq1rR/KBXrbZaEp9raFB11AhWiPMRSu+lzy9lBNQsVfBVY50jHojNQoneRgCJIfs9CIv3v5T8APEC5+/ElvkiJaeAAZNkEEpgYpaIr+LPJax4gzQSZVHxyWokbNzL5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784311324; c=relaxed/simple;
-	bh=T3Z+XXAhjrQIVQAtr6wUBqHX1ky/OSvZZdyJtdbvC6o=;
+	s=arc-20240116; t=1784311614; c=relaxed/simple;
+	bh=O7PToZh3LjUqPL2wfCeTk8L4N6xG4rUmZcCNL/H5ieo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pou41F2TmwUoMlVpExcU0FoL1FyfeFW/5ciiT/h/lZuE0FV6A5q9CCx9VMOC66814tBAkrFjFf/YVdAuAdl+1TCbV7q3bzlCrVT7JbIW7JuFjofdlKK3AQvyy2ecF39Oe6c1Zui5er99tLmglS5YkiLIH9P/YH2S7u8CS1a4F8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jCA32G96; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=cJaSqAxbk7bL2rw38wnzUhlEK5raxnHXCadYwgxU7tkjLi3NXcP/ZX2XW/15st5mFUxWpS2Z/VnsnFQ1+Bpxma8x5M/vltTXVuJKKuWjFvg6v1hQmIxsOt9ypbmCiLL7dgTuI/LPbEgnG/bewzcRz6Uf3TUetmAiQ3JOqHYYC+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=icV4Cvh/; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jCA32G96"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="icV4Cvh/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784311324; x=1815847324;
+  t=1784311612; x=1815847612;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=T3Z+XXAhjrQIVQAtr6wUBqHX1ky/OSvZZdyJtdbvC6o=;
-  b=jCA32G9677ChePHfq6RK4PZvMOlzhAt9OCxi2LX3A9j76FvQeBiea8Qw
-   exNbx5BVS+zpqeYbN8WaLUonjcDQvmKKpB3b3q1oft+As3AzTM9lAXjEZ
-   lPfqH9bHYfCZD9xR04gB3Vefo9f6LwEyxleURM1YQhFQdiVGocB3P+hll
-   hlo19MximS+r9DJLb/dLiqNwabm7Rp+gDW1F/AIKix0dyFvGuhMhmOJii
-   dvtsGcv5JuIjp7Z6rjKNFMxf8+l/23lPfz+QZDada0siXJWfWMINizOAs
-   zxndq/MgXX5qrCE6SrssSDxV9MBKJoS5c1Ijf6NWa7+1u/JwkarCAkXFt
+  bh=O7PToZh3LjUqPL2wfCeTk8L4N6xG4rUmZcCNL/H5ieo=;
+  b=icV4Cvh/AcDmDVESgU1Xkd0V0X7rGfjjl0Atw7WdrEbbzqTozEBwoyMs
+   PvN4hwozUY8kAurmK3T1aHO86YeARCyptyrqF152blJ+ChwapeIexFAB+
+   fZ2oAGunJeTQ7hURAlxIoIE6hmm09ndKFqOVnCd+kz6cR3mOJUVp5BAhk
+   kvPkJdAV3gyE7k9nXx2vQ0V/DthvXIkPJnXXJOFC1zZtujsKWXc5SSTeG
+   oWWib2aMC8XsWGT+ORHQkJZsclcS94iG2FUmDy+aWoEcTCgLYNeFBULhH
+   hKnpX6Jxcw0DWuZv024XttYqMxyXGKec/BmgYFYJ3YBui5uGrGTWzdMZS
    Q==;
-X-CSE-ConnectionGUID: oZ8e4zmpTiuJLg3QdQSaIQ==
-X-CSE-MsgGUID: GM+uhbDjS9Sg5+bYhFV+5A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="102412044"
+X-CSE-ConnectionGUID: UfOXlOU5Sr+Hh5ed1HS0gg==
+X-CSE-MsgGUID: BjNU3GHLTKGFKq+ccGelrA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="85080680"
 X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="102412044"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 11:02:03 -0700
-X-CSE-ConnectionGUID: zf9dsAbLRb2SAI7w64zOTg==
-X-CSE-MsgGUID: HOAi7NkgSGmLN6QM/VywsQ==
+   d="scan'208";a="85080680"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 11:06:52 -0700
+X-CSE-ConnectionGUID: xp3jWjeGR4SwlFcvQEKVKw==
+X-CSE-MsgGUID: VLfFiNmGRP+eTYtlLtQzfA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="253436167"
+   d="scan'208";a="257481560"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.143])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 11:02:00 -0700
-Date: Fri, 17 Jul 2026 21:01:58 +0300
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 11:06:49 -0700
+Date: Fri, 17 Jul 2026 21:06:46 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Biren Pandya <birenpandya@gmail.com>
-Cc: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+To: jean-baptiste.maneyrol@tdk.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: gyro: mpu3050: fix runtime PM leak when enabling
- trigger fails
-Message-ID: <alpuFgv7fYwqis_j@ashevche-desk.local>
-References: <20260614071549.81920-3-birenpandya@gmail.com>
- <20260717175021.70834-2-birenpandya@gmail.com>
+Subject: Re: [PATCH 1/2] iio: invensense: better timestamp alignment when
+ using watermark
+Message-ID: <alpvNm6GHF6y_-oR@ashevche-desk.local>
+References: <20260717-iio-common-inv-sensors-timestamp-rework-v1-0-d1afee2805cd@tdk.com>
+ <20260717-iio-common-inv-sensors-timestamp-rework-v1-1-d1afee2805cd@tdk.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,32 +64,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260717175021.70834-2-birenpandya@gmail.com>
+In-Reply-To: <20260717-iio-common-inv-sensors-timestamp-rework-v1-1-d1afee2805cd@tdk.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jul 17, 2026 at 11:20:22PM +0530, Biren Pandya wrote:
-> mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when the
-> trigger is enabled, but several error paths in the enable branch return
-> directly without dropping the usage counter again. pm_runtime_get_sync()
-> increments the usage counter, so every failed enable leaks a runtime PM
-> reference and the device can no longer autosuspend. The driver state flag
-> hw_irq_trigger is also left set after a failed enable.
+On Fri, Jul 17, 2026 at 02:39:40PM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
+
+> Current interrupt timestamp alignment only change the next coming
+> timestamp. For watermark where we have a batch of samples per
+> interrupt, it doesn't manage to align timestamp since modification
+> is limited because of jitter.
 > 
-> Jump to a common error label that drops the reference and clears
-> hw_irq_trigger, mirroring the disable path. The success path deliberately
-> keeps the reference, as the device must stay resumed while the trigger is
-> active.
+> Implement a better version that instead modify the period to align
+> to interrupt timestamp. Period is now computed by align timestamp
+> if interrupt interval is valid, or we use the computed estimation.
 
 ...
 
-> -/**
-> +/*
->   * mpu3050_read_mem() - read MPU-3050 internal memory
->   * @mpu3050: device to read from
->   * @bank: target bank
+> -/* compute jitter, min and max following jitter in per mille */
+> -#define INV_SENSORS_TIMESTAMP_JITTER(_val, _jitter)		\
+> -	(div_s64((_val) * (_jitter), 1000))
+> +/* compute min and max following jitter in per mille */
+>  #define INV_SENSORS_TIMESTAMP_MIN(_val, _jitter)		\
+>  	(((_val) * (1000 - (_jitter))) / 1000)
 
-Stray and actually wrong change. Please, use more brains and less AI.
+Side note: Just noticed "per mille" for which we now have a constant defined
+in units.h :-)
+
+...
+
+> -static void inv_align_timestamp_it(struct inv_sensors_timestamp *ts)
+> +static uint32_t inv_align_timestamp_it(struct inv_sensors_timestamp *ts,
+
+Please, use kernel types. u32 here. I think we used to have such a discussion
+a year or couple of years ago and become to an agreement that at some point
+the types should be changed in the driver before accepting any new changes
+to it.
+
+> +				       unsigned int sample_nb)
+
+...
+
+>  	/* if interrupt interval is valid, sync with interrupt timestamp */
+> -	if (valid)
+
+Leave this line as is, just add assignment and 'else' branch.
+
+> -		inv_align_timestamp_it(ts);
+> +	ts->period = valid ? inv_align_timestamp_it(ts, sample_nb) :
+> +			     ts->mult * ts->chip_period.val;
+>  }
 
 -- 
 With Best Regards,
