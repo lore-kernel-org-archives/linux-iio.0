@@ -1,351 +1,195 @@
-Received: from mail-106111.protonmail.ch (mail-106111.protonmail.ch [79.135.106.111])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41AC63F7AB2
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 12:03:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86C911E9B3D;
+	Fri, 17 Jul 2026 12:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784289787; cv=none; b=QnLnIXX5rbVQ+bHSHf7KLAvDEGKJGCKNvphvnVl1pudnGIUbcx4Udk3z25MoB+DVcDw9ecLJ59db9r8C1QM3crkU+GAoH2zn7xJWvjMVL8CDi9y/AwfwJ0cu0hhCSoThF7brQXBt9iKMWchyjRCPYcOZFCkJxdLT9/pgwReY+uM=
+	t=1784291976; cv=none; b=mRRiEApF7BSuxohFfdq75yczQtWE4iMiYdEBYeei7Cu/+18xAlrkmmKUffjPdFlzXIMyDd4z5LAhMO1wQxbxAxkonziXbm9ARRWiyw1wiFJplPhHZOBAID29DeA6PaseBpGKhs2PZOrqrX6sQzaCyZFNkGTZUren8Ugy8Rfz7Hc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784289787; c=relaxed/simple;
-	bh=nqR4r9pKpDKHO5BZtzZ5YuzN+u9b56QZSOcI+nVdzuw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=QiNBjExbVYiVbdLzoOngLoth2luY3HMcwCCMGO9qz044kVtEAiBpZFnM5fxN/pPC/lEJwFt8iS7+UHtI9sAuSRPNupex/2n4aGRVkmT4wwlL2eacjmEHFlGviL4jcAwcACl4emT8UfJfb8/vgeMbPdiQulubOS9p2URF4a7g3dw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=E25F3SCK; arc=none smtp.client-ip=79.135.106.111
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1784291976; c=relaxed/simple;
+	bh=ZNkZgFdUqasQFA5EClkKxZAdZhILG84xfprJkI45vOM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=geFDSOR5WDQU8mevTahPLHLvCtoYanB2gCsbjRXEJ2I7TZTnBKdMD6xeMp6u8ncNR+vE+0NRDZ+aEVMw3DlLou0+z65V4J//eqB9EccVqMgjFQAL7Wu4Vr/7T9O4wsGhjDrxNZvWHtGa+Zexqetq1WQkNCKc8dDoxCYAcE/MQEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Wed+LQ+S; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="E25F3SCK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail3; t=1784289774; x=1784548974;
-	bh=I6m3yaEF5ELVd0mQbxCMpVLD/FGyD/SZefnd+stECQM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=E25F3SCK/QrVkAKZ+PVTgiEr5ABjBlGrgr/qxrAOVGQ2z63rW26jacjth7DpENVRG
-	 rjm3QDBNoByCz6QBJWaI5EbEo/CjwJ65JRojcMulWdhLPjxY2jM9t/62h2rK+sT2SY
-	 eXDrYOZS0yF2IrnqQEa6zIYJOveF6B1RzxbwTh5zTdAkVrDJN9y1uE9jeA3kRjmaMU
-	 boX6H5TcRBukfOWnYJYkTz3tPsqVRQOql8oJGtUYN7CVCSWEmoU3G/PYYQvQdvDXEV
-	 n2uLF9e+z74z+WLmMN1VaAhCzdOFYYwat+/M7sxZu1lOK47RmZJYEGINEFs4FJ3J1x
-	 y+kbT3ikdaLLQ==
-X-Pm-Submission-Id: 4h1pSq68Cfz2Scn8
-From: Esben Haabendal <esben@geanix.com>
-To: "Andy Shevchenko" <andriy.shevchenko@intel.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>,  "Lars-Peter Clausen"
- <lars@metafoo.de>,  "Rob Herring" <robh@kernel.org>,  "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,  "Conor Dooley" <conor+dt@kernel.org>,
-  "Martin Kepplinger" <martink@posteo.de>,  "Sean Nyekjaer"
- <sean@geanix.com>,  "David Lechner" <dlechner@baylibre.com>,  Nuno
- =?utf-8?Q?S=C3=A1?=
- <nuno.sa@analog.com>,  "Andy Shevchenko" <andy@kernel.org>,  "Martin
- Kepplinger" <martin.kepplinger@theobroma-systems.com>,
-  <linux-iio@vger.kernel.org>,  <devicetree@vger.kernel.org>,
-  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: accel: mma8452: Allow open drain interrupt pin
- configuration
-In-Reply-To: <alkgZTnHyvEasMCk@ashevche-desk.local> (Andy Shevchenko's message
-	of "Thu, 16 Jul 2026 21:18:13 +0300")
-References: <20260715-mma8452-open-drain-v1-0-b1dd2a440c60@geanix.com>
-	<20260715-mma8452-open-drain-v1-2-b1dd2a440c60@geanix.com>
-	<cA7m1VgJxkr39GAxpnMPw9PVIKX2TR8Ju4Q0m6L2SxS_jJNITfZ6AA5LOeMIK0jGFXaUptY1_vPhDd_imWw5FQ==@protonmail.internalid>
-	<aldH3vtk_eKh6oCC@ashevche-desk.local> <87ldbco582.fsf@geanix.com>
-	<Tu8Mavh-mfl8Vv75Oab3vrghtEbTXiYPZ4qhj6RZv8xe5nWKP4lG1KSuJXEQfyKeio7zv9myLbmifMjFTl8juA==@protonmail.internalid>
-	<aleQVYrK9YBoLqGl@ashevche-desk.local> <874ii0misv.fsf@geanix.com>
-	<alefh86sqW-XvLHl@ashevche-desk.local>
-	<J2apVLUJhrI3AOweGpouqGGB0XhxbcqLiWasDpOdm4d2YGgNv8PuE-udUGJZcH0z-V9yyqbjIwMKDdtuam0mp6ya5F6GHUzf6OjRCo0GdaA=@geanix.com>
-	<nnp75d8J8In8paKGfojb_WdiRMfnz84lOlzz_LBKVsxDzR3fG7Y5Mn91q6P4BF2LetfZS7da2SeqGhpiLUOE-A==@protonmail.internalid>
-	<alkgZTnHyvEasMCk@ashevche-desk.local>
-Date: Fri, 17 Jul 2026 14:02:50 +0200
-Message-ID: <877bmtsu1h.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Wed+LQ+S"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66HCOKFc2294002;
+	Fri, 17 Jul 2026 08:39:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=3yH1Hicn5e8f9VnF0tum/3q6Fa1
+	MPv7+CqknBB8yV3w=; b=Wed+LQ+Snjel+UZnie1wIwr+rZidpNbs+9HVw5M38ex
+	UOFqYtzqDaGBmRr3OuZKJ7sQzDstpkM2D/B7NS64FGpE3Se9XrT6+x34SVW2/aX9
+	1GsEfjwEO6Ayq3uUIuLMxSDe4+v6lKH55W1ns3ovUlgVweA6WdtWcVhgLZWXxotD
+	SrPoJztipiVSm5IskgTEAhJeHbmrhyOdw6iAKxSKanYYpxhzeDeZpymC6Zw1fWbS
+	xtOot3PkACmm//rLEfnJNu7iMuOZjVMYBYFscEMC0Vbo2dawBpANQLhYdML8/wcu
+	Pt1fKvaHzqiDgNEnXarSndcbmLdauyLbO68V3M15iGQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fe85x23av-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Jul 2026 08:39:21 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66HCdKcU041793
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 17 Jul 2026 08:39:20 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 17 Jul 2026 08:39:20 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 17 Jul 2026 08:39:19 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 17 Jul 2026 08:39:19 -0400
+Received: from HYB-JRXo5UEs61B.ad.analog.com ([10.66.6.191])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66HCd3w9014702;
+	Fri, 17 Jul 2026 08:39:10 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <jic23@kernel.org>, <andriy.shevchenko@linux.intel.com>,
+        <nuno.sa@analog.com>, <devicetree@vger.kernel.org>,
+        Stefan Popa
+	<stefan.popa@analog.com>
+Subject: [PATCH v4 0/2] iio: adc: add MAX40080 current-sense amplifier driver
+Date: Fri, 17 Jul 2026 15:38:47 +0300
+Message-ID: <20260717123852.1140893-1-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=aLnAb79m c=1 sm=1 tr=0 ts=6a5a2279 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=J2VQ2ZjlLbM5hFLylHkA:9 a=O8hF6Hzn-FEA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfX7wwQ0az/ksTT
+ o7b4N0mJ6oi3KDR2DQ2XOIlTg9J15HIP5zDAPqyQBp6rFPntz+kBC04SdkOIYjMCPkGmVvwKVxu
+ 0AmTTMO8Z4NaO0//3S6aA/8zbsmkAli85INFCsU7//QO3cdzLOcvbgcZeMYxD7dprjURPpTXeV3
+ v3ziz/6ueUYVaPODLGdNQKm6gCxqGA7khwyTQBeBXZkPVfiEHR6slUgftcEzCLYfPOh0SSx7scu
+ 8jZV/LLAd24f79lk4oaxNRVIbfBzyqL2hT6vtyy/QpHhrygWFDCFP9eAyafR2blzgf2J9yMDdGt
+ fVUns1jKxmRgQi3MVwSq9SyzIgtEGAqMkE85nMzRB2vROMjAm08lGv4i/7Zhc2a8LJDi20cGW+C
+ VmoiaPy/j6mQ/Ahj9GsmG9j8x1NROUHEkvIsRBELIbWrZ/L8mehLEy0+7Bj5onujTLBTmtQevTO
+ zgzMvYiB5/tXNV+WASA==
+X-Proofpoint-GUID: ZNxtPORKXYbiuE-1SoA1U0KignbrwXwi
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDEyOCBTYWx0ZWRfXzZLqZBorp9I6
+ ZKiha7uNvPeKLc+V2SGL50hHLvvtEoAUhPTJ/ndhULIxuKNQ1zCo5zpB4uD2Qg335lZvjQXFH7T
+ mgfgS90gEtjqeyNN6bCo0e5FCdSG496c/aU6c7yAPI7CBnYlfyqg
+X-Proofpoint-ORIG-GUID: ZNxtPORKXYbiuE-1SoA1U0KignbrwXwi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-17_03,2026-07-17_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 lowpriorityscore=0 suspectscore=0 spamscore=0 impostorscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 malwarescore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170128
 
-"Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
+This series adds support for the Maxim MAX40080, a bidirectional
+current-sense amplifier with an integrated 12-bit ADC and an I2C/SMBus
+interface. It measures the voltage across an external shunt resistor and
+the input bus voltage.
 
-> On Thu, Jul 16, 2026 at 04:51:34PM +0000, Esben Haabendal wrote:
->> On Wednesday, 15 July 2026 at 16:56, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->> > On Wed, Jul 15, 2026 at 04:25:20PM +0200, Esben Haabendal wrote:
->> > > "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
->> > > > On Wed, Jul 15, 2026 at 01:35:41PM +0200, Esben Haabendal wrote:
->> > > >> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
->> > > >> > On Wed, Jul 15, 2026 at 10:07:39AM +0200, Esben Haabendal wrote:
->
-> ...
->
->> > > >> >>  	if (client->irq) {
->> > > >> >>  		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
->> > > >> >> -					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
->> > > >> >> +					   IRQF_TRIGGER_LOW | IRQF_ONESHOT |
->> > > >> >> +					   data->open_drain ? IRQF_SHARED : 0,
->> > > >> >>  					   client->name, indio_dev);
->> > > >> >
->> > > >> > Why do we care?
->> > > >>
->> > > >> Care about what exactly?
->> > > >
->> > > > About exclusivity of the interrupt.
->> > >
->> > > Ok.
->> > >
->> > > >> We need to add IRQF_SHARED flag in order to allow shared interrupt, and
->> > > >> we should not add it when using (the default) push-pull mode.
->> > > >
->> > > > Why not? How would it make any difference from SW perspective?
->> > >
->> > > Not adding the IRQF_SHARED flag prevents use with shared interrupts. I
->> > > think we are on the same page on that.
->> > >
->> > > Unconditional adding IRQF_SHARED flag would allow configurations where
->> > > other devices share interrupt line with mma8452 compatible chip
->> > > configured with push-pull, resulting in broken or unpredictable results.
->> > > I don't see why we should not care about that.
->> >
->> > But it's not their problem! If it's this device that prevents this
->> > configuration, it should have a check. With this code it just hides
->> > and changing a DT property will lead to kernel warning.
->>
->> The chip such does not prevent the configuration, and does not prevent
->> sharing the interrupt. The irq pin in the device can be configured in either
->> push-pull mode or open-drain mode.
->> In order to allow sharing interrupt line with other chips, the chip
->> must be configured with irq pin in open-drain mode, which is what the
->> drive-open-drain device-tree property I am adding in this series enables
->> developers to do.
->> If/when you add this property to the device-tree, the irq pin will be
->> in open-drain mode, and the IRQF_SHARED flag can (and should IMHO) be set
->> as the interrupt line can be shared.
->> If/when the drive-open-drain property is not set (existing device-trees
->> and current only supported behavior), the chip cannot support sharing the
->> interrupt line, and adding the IRQF_SHARED flag would be a bug, as the
->> chip irq pin requires an exclusive interrupt input.
->>
->> Maybe the confusion is caused by the fact that the drive-open-drain
->> does not describe how the irq pin IS behaving, but rather how it SHOULD
->> behave, and possibly required because of the HW designed having tied the
->> irq pin to an irq input together with other irq sources.
->
-> Why do we care of push-pull then? Can't we always make it open-drain?
+The driver operates in direct (INDIO_DIRECT_MODE) mode. Each raw read
+triggers a single on-demand conversion (SMBus Quick Command) and reads
+back the matched current/voltage pair, so results are always fresh. It
+exposes the current and voltage channels with raw and scale attributes,
+a configurable oversampling (digital averaging) ratio, and PEC-protected
+register access. The two selectable current-sense ranges are exposed
+through scale/scale_available; the current scale is derived from the
+shunt-resistor-micro-ohms device-tree property.
 
-No. Open-drain requires an external pull-up resistor. If there are no
-external pull-up resistor, open-drain will not work, and interrupt
-sharing is not possible.
+Tested on hardware with four MAX40080 devices on an I2C bus.
 
->> > > > Yes, I understand the HW case.
->> > > >
->> > > >> > The (hidden) problem this will have in the future is that the IRQ core
->> > > >> > will splat a warning in case that other shared IRQs might be
->> > > >> > configured with different flags. Putting that flag conditionally makes
->> > > >> > it a mine field for the users. Instead just unconditionally add that
->> > > >> > flag and we will get reports as soon as there will be a user that
->> > > >> > shares the same interrupt pin with some other devices which drivers do
->> > > >> > not use the same settings.
->> > > >>
->> > > >> If we add the IRQF_SHARED flag unconditionally, it will be set also when
->> > > >> push-pull mode is enabled. I don't see how the kernel will be able to
->> > > >> notice that that is not going to work. If you have another device that
->> > > >> uses IRQF_TRIGGER_LOW|IRF_ONESHOT|IRQF_SHARED, it will not work with the
->> > > >> MMA8452 device when configured as push-pull.
->> > > >
->> > > > Right, and why do we care (again)?
->> > >
->> > > Why we care that the system as a whole (SW on top of HW) will not work?
->> > >
->> > > If we don't care about that, why do we even have this IRQF_SHARED flag?
->> > > The only purpose of that is to tell the kernel that this particular
->> > > device / interrupt will work with shared interrupt or not.
->> > >
->> > > Isn't that exactly what I do with this change? Nothing more, nothing less.
->> > >
->> > > > It's pure DT/FW/HW issue, not an SW issue.
->> > > > Otherwise it will become a carefully placed mine for the poor user who will
->> > > > use these flags and try to share an interrupt with the mma8452 device which
->> > > > has no set property and uses push-pull mode.
->> > >
->> > > I don't get how you see it like that. Adding IRQF_SHARED unconditionally
->> > > would create exactly the mine field you are talking about. Poor users
->> > > can specify a system configuration (DT) that tries to use a shared
->> > > interrupt line, but configures the mma8452 compatible chip in push-pull.
->> > > The poor user will not only be poor, but also unhappy.
->> >
->> > > By applying the IRQF_SHARED dynamically, the kernel will be able to fail
->> > > in a controlled manner instead, making it much less painful to create a
->> > > working system configuration (DT)
->> >
->> > And my point that we need to make less painful runtime experience.
->>
->> Yes. We agree on that.
->>
->> But I do believe that my patch is that painful runtime experience.
->>
->> Adding IRQF_SHARED flag when irq pin is configured in push-pull mode
->> will be painful. I know, that was my initial approach. Does really not
->> work, and can lead to wasting time on debugging the HW.
->>
->> > > Going back to your poor user story above, if the poor user tries to
->> > > share the interrupt pin with the mma8452 device, it will get an error
->> > > (just as it is with the kernel today). The device does not support
->> > > shared interrupts. Reading the DT bindings documentation, the user
->> > > should be able to find the drive-open-drain property, and add that to
->> > > the device-tree to make things work. Maybe even consider if that is
->> > > compatible with the hardware being used.
->> > >
->> > > If IRQF_SHARED was set unconditionally, the user would not get an error,
->> > > but most likely would get a system where no irq's were raised for the
->> > > other chips. I sincerely believe that debugging this is much more
->> > > painful than reading device-tree bindings.
->> > >
->> > > > Did I miss anything?
->> > >
->> > > I don't know. Maybe I am missing the obvious here.
->> >
->> > I consider the case when shared interrupt is enabled on both devices, but
->> > second one (driver) missed the same IRQ flags. This becomes a warning in
->> > IRQ core.
->>
->> Missed which IRQ flags?
->
-> _LOW, for instance.
+Regarding regmap: it does not support SMBus PEC or Quick Command, both of
+which are required by this device. The mlx90614 driver uses the same raw
+i2c_smbus approach for similar reasons.
 
-All devices sharing an interrupt really do need to agree on these
-flags. Do you known any drivers that does not specify the trigger type
-when requesting an irq?.
-You cannot share an interrupt line if not all devices have the
-same trigger mode. So if one device on a shared interrupt has _LOW, all
-the other devices need to have that. Not just the flags, but the actual
-triggering mode of the device. Some chips might support more than one
-mode, others only one specific mode.
+Changes in v4:
+  - Split MAINTAINERS between patches: binding file in patch 1, driver
+    file in patch 2 (Andy, Nuno, checkpatch)
+  - Use Datasheet: tag instead of Link: for datasheet URL (Andy)
+  - Remove blank line before Co-developed-by tag (Andy)
+  - Consistent comment style: capital first letter + period (Andy)
+  - Rename shunt_resistor_uohm to shunt_resistor_uOhm for SI convention (Andy)
+  - Inline trigger_measurement() into read_iv(), removing the helper (Nuno)
+  - Add DMA-safe buffer to struct with ____cacheline_aligned (Nuno)
+  - Rework read_iv: use local tmp variable, add comment explaining why
+    *iv is updated even on timeout (Andy)
+  - Refactor calc_current_scale: C99 loop variable, named numerator/denominator
+    variables with 1ULL * promotion trick (Andy)
+  - Use unsigned int for loop variable in oversampling_to_filter (Andy)
+  - Add propname variable to deduplicate "shunt-resistor-micro-ohms" string (Andy)
+  - Fix locking: rename to __max40080_update_bits (unlocked helper), hold
+    lock through cache update in set_range/set_oversampling_ratio (Nuno, Sashiko)
+  - Fix torn-read in read_raw: use local copy of st->range (Nuno)
+  - Return inline instead of breaks in read_raw switch cases (Nuno)
+  - Remove lock from resume function (Nuno)
 
->> > Shared interrupts it's also a contract with all stakeholders on keeping
->> > the same flags for all devices.
->>
->> Of-course.
->>
->> And adding IRQF_SHARED is a contract that says that the interrupt can be
->> shared. I can only see that it would be a bug to add that flag in cases
->> where we know that the interrupt really cannot be shared.
->>
->> As for the IRQF_TRIGGER_LOW flag being set, I think that looks correct
->> as long as we do not support switching to active high irq polarity.
->
-> No, it's not. It overrides whatever platform wants to have.
+Changes in v3:
+  - Remove mod_devicetable.h include (Andy, Uwe's rework)
+  - Use lowercase _mV suffix for unit defines: MAX40080_INTER_VREF_mV,
+    MAX40080_CSA_50mV_GAIN, MAX40080_CSA_10mV_GAIN (Andy)
+  - Remove MAX40080_NUM_RANGES macro, use ARRAY_SIZE() directly (Andy)
+  - Fix reversed xmas tree ordering in get_oversampling_ratio() (Andy)
+  - Split semantically different variable declarations in
+    set_oversampling_ratio() and max40080_init() (Andy)
+  - Join *val, *val2, long mask on same line in read_raw signature (Andy)
+  - Use const int * cast in read_avail (Andy)
+  - Join FIFO_CFG write onto single line in max40080_init() (Andy)
+  - Return i2c_smbus_write_word_data() directly at end of
+    max40080_init() (Andy)
+  - Use device_property_present() pattern for optional shunt-resistor
+    property (Andy)
+  - Make vdd-supply required in DT bindings (Conor)
+  - Restore i2c_set_clientdata() needed for PM resume (Sashiko)
+  - Add bounds check in get_oversampling_ratio() for hardware register
+    values outside expected range (Sashiko)
 
-The trigger type is not just a platform thing. It describes how the
-device behaves. Device that only support one triggering mode must set
-the flag that describes that. Devices that can be configured for
-different triggering modes can implement that, and should then configure
-the device for the chosen mode and set the flags accordingly.
+Changes in v2:
+  - Add vdd-supply and interrupts properties to the binding (David)
+  - Add types.h and time.h includes (Andy)
+  - Use USEC_PER_MSEC for poll timeout readability (Andy)
+  - Use 1 * MICRO for default shunt resistor (Andy)
+  - Rename field macros to include register name, e.g. MAX40080_CFG_MODE_MSK
+    (Jonathan, David)
+  - Add indexed defines for RANGE field values and use in gain array
+    (Jonathan)
+  - Use array lookup in get_oversampling_ratio instead of formula (Andy)
+  - Use switch statement for chan->type in read_raw (David)
+  - Simplify update_bits: one-liner RMW, return write directly (Andy)
+  - Add local client variable in trigger_measurement (Andy)
+  - Add braces to for loops and use C99 loop variables (Siratul, Andy)
+  - Flip if/else in reg_access, separate declaration from assignment (Andy)
+  - Add .name= in i2c_device_id (David, Siratul)
+  - Reorder declarations to reverse christmas tree (Siratul)
+  - Return directly from oversampling case in write_raw (Andy)
+  - Add blank lines before return in read_avail (Siratul)
+  - Add Co-developed-by tag for Ciprian (Andy)
+  - Use Link: tag for datasheet URL in commit message
 
-> It prevents PCB level designs from anything else.
+Stefan Popa (2):
+  dt-bindings: iio: adc: add maxim,max40080
+  iio: adc: add MAX40080 current-sense amplifier driver
 
-Yes. In this case, the current driver does not support designs that
-requires the mma8452 compatible chip to be configured for active high
-irq trigger. We could and probably should address that.
+ .../bindings/iio/adc/maxim,max40080.yaml      |  64 ++
+ MAINTAINERS                                   |   9 +
+ drivers/iio/adc/Kconfig                       |  11 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/max40080.c                    | 636 ++++++++++++++++++
+ 5 files changed, 721 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max40080.yaml
+ create mode 100644 drivers/iio/adc/max40080.c
 
-But that is a different issue than what I am doing here. And I don't
-have hardware readily available where this can be tested, so I would
-prefer to let somebody else do that.
+--
+2.53.0
 
-I am adding support for designs that require the mma8452 compatible chip
-to be configured for open-drain, while staying backwards compatible and
-allowing support for designs without external pull-up.
-
-In all cases, the driver should register the interrupt handle with the
-IRQF_TRIGGER_* flag that matches what the chip is configured for.
-I believe leaving it out is invalid.
-
->> But on that topic, the chip actually supports selecting between active
->> low and high irq polarity. Should we implement something along the lines
->> of what is done in smi330_setup_irq() in iio/imu/smi330/smi330_core.c?
->> And thereby allow using the device with active high irq?
->
-> ...
->
->> > After looking into genirq code I don't see other way how to handle this.
->> > It looks like we need to address the TRIGGER_LOW first, in other words
->> > we need drop that flag when IRQF_SHARED is set, and leave it to users
->> > to setup IRQ trigger properly on all sides.
->>
->> Why do we need to drop the IRQF_TRIGGER_LOW flag because IRQF_SHARED is
->> set?
->>
->> Users as in those specifying the system device-tree?
->
-> No, because like I said, the SHARED is a *contract*, it's not just a setting.
-
-Absolutely. That is the key here.
-
-IQRF_SHARED is a contract, where the driver promises to return IRQ_NONE
-if the interrupt is not for that device. This is already implemented
-by mma8452_interrupt().
-
-> And that contract includes the similarities on the IRQ flags. One may not
-> have two devices with different trigger level, it's a common sense,
-> right?
-
-Right.
-
-And that is exactly why we have to specify the IRQF_TRIGGER_* flag that
-the irq output is configured for. The driver will not switch to the
-desired trigger level based on what other devices on the same interrupt
-uses. You have to configure/specify the trigger mode and leve and set
-the IRQF_TRIGGER_* flag accordingly.
-
-> So, SHARED must exclude anything that comes from the platform description or
-> IRQ chip controller (limitations).
-
-Now you got me confused again. The IRQF_TRIGGER_LOW flag given to
-request_threaded_irq() is not coming from platform description or IRQ
-chip controller. It describes the trigger mode that the chip is
-excercising in the current implementation.
-
-The kernel would not know how to configure the IRQ chip controller, and
-in case of shared interrupts, would not be able to check that the
-devices sharing the interrupt is configured correctly.
-
-> So, without addressing that, it makes a little sense to add SHARED.
-
-Not true.
-
-Let me take my system here. I have multiple chips / irq sources
-connected to the same interrupt input on the CPU. They are all using
-level low triggering (which hardware and system engineers have ofcourse
-been observant enough to ensure).
-
-Without my change, the mma8452 driver does not support configuring the
-chip to use open-drain, so it will be pulling the interrupt line high,
-interrupting irq for all interrupt sources.
-
-With my change, I can now configure the device to use open-drain,
-register the interrupt, and everything works nicely.
-
-And the change is backwards compatible, as you have to specify
-drive-open-drain to switch from PP to OD.
-
-How does that not make sense?
-
-> I would accept this patch without adding SHARED, perhaps.
-
-Without IRQF_SHARED, I cannot use it with the hardware I have which are
-sharing the interrupt.
-
-> But still question why we can't use the OD instead of PP for the pin
-> to begin with?
-
-Because HW needs to be designed for OD. It is perfectly valid to design
-hardware that relies on the default mode of mma8452 and compatible chips
-to use PP. Switching to OD will not work for such systems without
-external pull-up.
-
-> Do we have real HW that uses IRQ input without a pull-up?
-
-I certainly have had such designs many times in the past.
-
-Why should we implement the driver so that we cannot support such valid
-HW designs?
-
-/Esben
