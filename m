@@ -1,454 +1,167 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00B5A379C24;
-	Fri, 17 Jul 2026 17:47:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8DE379C22
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 17:50:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784310452; cv=none; b=DRIEvf3RZw67u0nOapGMwUYCB8SWLmNMfAD+vHwdWE259dvss6/GP3bdejn4hbnN3Bn5lWN+Kz90dXIfBcAp/BnlTl3RFNth4oRVC2/4UpRBp2NLCrKLd93I8aJlPTjkwPhsZy8jXV3jVFiJRprxdC8wjhIC2T/yxz1MeY5g1QA=
+	t=1784310631; cv=none; b=SETx7vw0CawNan/uq3sWHxmQJPNZh57JWhrc14QzvyndINSAEooON8N46f6/en2dvLY/ex5ISg36VzKU4/Ig6Er9bUcnKX5jWG9Tu0HOpycjFxdVJMWM43xWlRs2qJjvthNwuki8EzrxixtWosgcGk/872zVklmmAhrN8lNrUEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784310452; c=relaxed/simple;
-	bh=hN4RFYiYtxowNTNm0CLS/EGzCUqL7dBN3XqmilfcsRs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Nl11AYn8UoI3zWLUsren9krHGXFRqGEw3H0p6Ee3+k56kEIHLtsOAnst9jPpy895KY8c51KQsLZilcRUMCs5TsGyHUm24W6hmfmX+1C3QYgdJB8zlFHpDxgreF7+GsWatb9QRlZaQOUvftn4xPh1wUePwIGtkzkHHjmNQvhOoUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fG6d3JXm; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784310631; c=relaxed/simple;
+	bh=NNEIZKXo9Gk0gdXnGdTbnSnR3Wi7bJIrBopUTtp6W74=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=NiuWkMFDJ+VT2r8YWswhYBJ5MvdE35zT4+b0psva9HlTB80zJI2c0Sonunq1v65kGPKNKFw8PF51qldlR02IifppjGCBut6hNn9GgAWeRNlntfqEyxnwRYuowruqba3V+ukWAqL0tKzyI/V4bxEoHiAfP8bpzIGC7aqFCmUqrpo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MPUKznDm; arc=none smtp.client-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fG6d3JXm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784310450; x=1815846450;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hN4RFYiYtxowNTNm0CLS/EGzCUqL7dBN3XqmilfcsRs=;
-  b=fG6d3JXmlUg+5FVNlgtWoatUjyCotoUb7MfjOeMiZyb123FF2CZSKclA
-   S584oKOFRS998NqiBMWxL1OO+fzYIRA46B1V5l8MH3StG3Jyo2qBb5mFt
-   0IGagZ/ZX7AI+uoEP0JMKJKWQ/OMnV53w2hAg6LxIAIpd0W9YTUUVupYR
-   HV+cUF+Q+jgv8mdJD8+mdtfPkYrOMBOz51KKHYDhP4D5LEiQgXBah+VNJ
-   HXFTU84o/5tgcbtvuFQCAL/X3WmwYVdUa0bRSK9uMBvw0vZ2AMUIS9nQ5
-   bvHliK4YHBnvIq2qK2MnjjosjVUh0Kw1IiKZp82/JNxZzXVTNh0eF7lWE
-   A==;
-X-CSE-ConnectionGUID: k656BFZ4T3efHPB7+b5sWA==
-X-CSE-MsgGUID: SkS4fPTjTc+iysD22MS45A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="107776959"
-X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="107776959"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 10:47:29 -0700
-X-CSE-ConnectionGUID: tft6q2NJTACSKYBw+Wjmcg==
-X-CSE-MsgGUID: kDfsSN1+TFq28czbUcOMQQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,169,1779174000"; 
-   d="scan'208";a="280134360"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.143])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 10:47:25 -0700
-Date: Fri, 17 Jul 2026 20:47:23 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>,
-	Sean Nyekjaer <sean@geanix.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MPUKznDm"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c9c26a5fb98so1392790a12.0
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 10:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784310630; x=1784915430; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=P50P6HDMmVOibCPLHmatcmF4wTn2RT68qvoNI7ZMC3A=;
+        b=MPUKznDmRm4c40aiTtlrMLogvB/PfljLACHol1g1e9o8yt5YhcmzfW+VUDXjSEsKf4
+         xFFycl1iXdAijloWFGkCn79DjU6oKTYWS8yHwWWCagXJtH3800yfB1cWuuXIN+Sj9gX2
+         EgcCaSXqHDdb1P7E5oDuQWyQ4mR0gJu3GOZyrrBXa0f9+Vuoi5xPbDdgRyj0nrUrRJMP
+         k5U/+L7iTpGFfhy87fawddkUHpuuWCJ7zDfMA2NerwL88SOdvWr4Dj79g8TjkzX1c41T
+         lQRde+1NvNefOFA1Xdo+R/ml8ZfsO16TVRsW0ISgu3DLOu06q5X/werstTqc9ppbNab3
+         Ii/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784310630; x=1784915430;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=P50P6HDMmVOibCPLHmatcmF4wTn2RT68qvoNI7ZMC3A=;
+        b=EI0TtwKCZfaMzbEOyryBxmdyzNzSykJ1MDMITN56uCYUDFtAf5AqLy8AFbjOOO6ikK
+         ro3CGRamLFiP5a6aNnyKscgdS0yV204lw1eWAPV5qKFi1xcXaY5xewLp3bed8uV6dQ/M
+         TpwKChCdmnVyQjH38LBe6fGVSNB7zoHtR6aeXJbKbUFeKce9twPhkPrAls1wrZ5xAARa
+         RnnuT91ip0RPb3xHRhqlX0hn/fFRXBdFllrNmSUe86MZjpqmOHDGG+gX7dzViY2n/DOb
+         QovsFCd0Ha3UrIrhDp7fGUquG2vFlvrwc4WjLxApi3pym81bRFF4/mygBOwc3pTgufrU
+         LImQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rq78IR1u+b9fzryjaN53ekHJ0mgs8/yOCtoaKYcC0WOdyesrROqTCWjmp7gMiSGym5FvuuhQTypE34=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzAf9Xl57iTxDBYUo9qoYsuhopkBuN2iU1hKJ6YwyfJKO2AH+Rp
+	sOqLgkbBDfX7yJfO+HSyVos33MTuY28mthIEZQIGcT3rb4TdC8KifQBZFhuMMxV4
+X-Gm-Gg: AfdE7cmCuUjlANz761Oh3tiet76s9Z/ZpZdBrUblqmJhmClOb+m13EakN1UOMYY+BgY
+	aTwMT5S6vSG0+lLJFj3qbDUyvqifWlzdExiBkPXn5pDfJerXPR9hqT8i0eaxy3Pfj9a/2lHEiQ9
+	AKepLzh0Ew9ixBEs/s4yUEqyijEIcOFQINI4JUezI9q54v/NZA7WepBdMLzq98xLjNK/MIH7Jjk
+	SF4OqvAoZLHbVwN0/4OMeUkDOHT2qy5xA+mGL1mQjNEXKPg5TTRc45+libpFtnKH9/JsZPHb8gO
+	YbUIxmpwfQ5cjCWX1WExYnnsCRVk1Aew/Q6b/P9CVNK7BPZMDXSu0dWIh7zirtrIoYd2mMJUNvr
+	amewIGqWHsxFFpPQ3i9Bj8Ls0xcH/CNt5iRxDhg40h2upFqR9/3oEDMc0lW+FPmtFixeZJDZtQk
+	WQyHywwVgfpmhZ8NNam76ellQ5YOydFkmt
+X-Received: by 2002:a05:6a20:7484:b0:3b3:3506:cf3f with SMTP id adf61e73a8af0-3c38d8cf13dmr8712801637.1.1784310630009;
+        Fri, 17 Jul 2026 10:50:30 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.223.101])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13ce2cd764fsm7634392c88.12.2026.07.17.10.50.26
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 17 Jul 2026 10:50:29 -0700 (PDT)
+From: Biren Pandya <birenpandya@gmail.com>
+To: Linus Walleij <linusw@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: mma8452: Allow open drain interrupt pin
- configuration
-Message-ID: <alpqq3zhSS_iYGJq@ashevche-desk.local>
-References: <aldH3vtk_eKh6oCC@ashevche-desk.local>
- <87ldbco582.fsf@geanix.com>
- <Tu8Mavh-mfl8Vv75Oab3vrghtEbTXiYPZ4qhj6RZv8xe5nWKP4lG1KSuJXEQfyKeio7zv9myLbmifMjFTl8juA==@protonmail.internalid>
- <aleQVYrK9YBoLqGl@ashevche-desk.local>
- <874ii0misv.fsf@geanix.com>
- <alefh86sqW-XvLHl@ashevche-desk.local>
- <J2apVLUJhrI3AOweGpouqGGB0XhxbcqLiWasDpOdm4d2YGgNv8PuE-udUGJZcH0z-V9yyqbjIwMKDdtuam0mp6ya5F6GHUzf6OjRCo0GdaA=@geanix.com>
- <nnp75d8J8In8paKGfojb_WdiRMfnz84lOlzz_LBKVsxDzR3fG7Y5Mn91q6P4BF2LetfZS7da2SeqGhpiLUOE-A==@protonmail.internalid>
- <alkgZTnHyvEasMCk@ashevche-desk.local>
- <877bmtsu1h.fsf@geanix.com>
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Biren Pandya <birenpandya@gmail.com>
+Subject: [PATCH v3] iio: gyro: mpu3050: fix runtime PM leak when enabling trigger fails
+Date: Fri, 17 Jul 2026 23:20:22 +0530
+Message-ID: <20260717175021.70834-2-birenpandya@gmail.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20260614071549.81920-3-birenpandya@gmail.com>
+References: <20260614071549.81920-3-birenpandya@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877bmtsu1h.fsf@geanix.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jul 17, 2026 at 02:02:50PM +0200, Esben Haabendal wrote:
-> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> > On Thu, Jul 16, 2026 at 04:51:34PM +0000, Esben Haabendal wrote:
-> >> On Wednesday, 15 July 2026 at 16:56, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >> > On Wed, Jul 15, 2026 at 04:25:20PM +0200, Esben Haabendal wrote:
-> >> > > "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> >> > > > On Wed, Jul 15, 2026 at 01:35:41PM +0200, Esben Haabendal wrote:
-> >> > > >> "Andy Shevchenko" <andriy.shevchenko@intel.com> writes:
-> >> > > >> > On Wed, Jul 15, 2026 at 10:07:39AM +0200, Esben Haabendal wrote:
+mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when the
+trigger is enabled, but several error paths in the enable branch return
+directly without dropping the usage counter again. pm_runtime_get_sync()
+increments the usage counter, so every failed enable leaks a runtime PM
+reference and the device can no longer autosuspend. The driver state flag
+hw_irq_trigger is also left set after a failed enable.
 
-...
+Jump to a common error label that drops the reference and clears
+hw_irq_trigger, mirroring the disable path. The success path deliberately
+keeps the reference, as the device must stay resumed while the trigger is
+active.
 
-> >> > > >> >>  	if (client->irq) {
-> >> > > >> >>  		ret = request_threaded_irq(client->irq, NULL, mma8452_interrupt,
-> >> > > >> >> -					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-> >> > > >> >> +					   IRQF_TRIGGER_LOW | IRQF_ONESHOT |
-> >> > > >> >> +					   data->open_drain ? IRQF_SHARED : 0,
-> >> > > >> >>  					   client->name, indio_dev);
-> >> > > >> >
-> >> > > >> > Why do we care?
-> >> > > >>
-> >> > > >> Care about what exactly?
-> >> > > >
-> >> > > > About exclusivity of the interrupt.
-> >> > >
-> >> > > Ok.
-> >> > >
-> >> > > >> We need to add IRQF_SHARED flag in order to allow shared interrupt, and
-> >> > > >> we should not add it when using (the default) push-pull mode.
-> >> > > >
-> >> > > > Why not? How would it make any difference from SW perspective?
-> >> > >
-> >> > > Not adding the IRQF_SHARED flag prevents use with shared interrupts. I
-> >> > > think we are on the same page on that.
-> >> > >
-> >> > > Unconditional adding IRQF_SHARED flag would allow configurations where
-> >> > > other devices share interrupt line with mma8452 compatible chip
-> >> > > configured with push-pull, resulting in broken or unpredictable results.
-> >> > > I don't see why we should not care about that.
-> >> >
-> >> > But it's not their problem! If it's this device that prevents this
-> >> > configuration, it should have a check. With this code it just hides
-> >> > and changing a DT property will lead to kernel warning.
-> >>
-> >> The chip such does not prevent the configuration, and does not prevent
-> >> sharing the interrupt. The irq pin in the device can be configured in either
-> >> push-pull mode or open-drain mode.
-> >> In order to allow sharing interrupt line with other chips, the chip
-> >> must be configured with irq pin in open-drain mode, which is what the
-> >> drive-open-drain device-tree property I am adding in this series enables
-> >> developers to do.
-> >> If/when you add this property to the device-tree, the irq pin will be
-> >> in open-drain mode, and the IRQF_SHARED flag can (and should IMHO) be set
-> >> as the interrupt line can be shared.
-> >> If/when the drive-open-drain property is not set (existing device-trees
-> >> and current only supported behavior), the chip cannot support sharing the
-> >> interrupt line, and adding the IRQF_SHARED flag would be a bug, as the
-> >> chip irq pin requires an exclusive interrupt input.
-> >>
-> >> Maybe the confusion is caused by the fact that the drive-open-drain
-> >> does not describe how the irq pin IS behaving, but rather how it SHOULD
-> >> behave, and possibly required because of the HW designed having tied the
-> >> irq pin to an irq input together with other irq sources.
-> >
-> > Why do we care of push-pull then? Can't we always make it open-drain?
-> 
-> No. Open-drain requires an external pull-up resistor. If there are no
-> external pull-up resistor, open-drain will not work, and interrupt
-> sharing is not possible.
+Signed-off-by: Biren Pandya <birenpandya@gmail.com>
+Assisted-by: Claude:claude-opus-4-8 coccinelle
+---
+ drivers/iio/gyro/mpu3050-core.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Right. My question was basically to understand if we have the HW (platforms to
-which this sensor is attached) that relies on this pin to be PP (in current
-configuration)?
-
-> >> > > > Yes, I understand the HW case.
-> >> > > >
-> >> > > >> > The (hidden) problem this will have in the future is that the IRQ core
-> >> > > >> > will splat a warning in case that other shared IRQs might be
-> >> > > >> > configured with different flags. Putting that flag conditionally makes
-> >> > > >> > it a mine field for the users. Instead just unconditionally add that
-> >> > > >> > flag and we will get reports as soon as there will be a user that
-> >> > > >> > shares the same interrupt pin with some other devices which drivers do
-> >> > > >> > not use the same settings.
-> >> > > >>
-> >> > > >> If we add the IRQF_SHARED flag unconditionally, it will be set also when
-> >> > > >> push-pull mode is enabled. I don't see how the kernel will be able to
-> >> > > >> notice that that is not going to work. If you have another device that
-> >> > > >> uses IRQF_TRIGGER_LOW|IRF_ONESHOT|IRQF_SHARED, it will not work with the
-> >> > > >> MMA8452 device when configured as push-pull.
-> >> > > >
-> >> > > > Right, and why do we care (again)?
-> >> > >
-> >> > > Why we care that the system as a whole (SW on top of HW) will not work?
-> >> > >
-> >> > > If we don't care about that, why do we even have this IRQF_SHARED flag?
-> >> > > The only purpose of that is to tell the kernel that this particular
-> >> > > device / interrupt will work with shared interrupt or not.
-> >> > >
-> >> > > Isn't that exactly what I do with this change? Nothing more, nothing less.
-> >> > >
-> >> > > > It's pure DT/FW/HW issue, not an SW issue.
-> >> > > > Otherwise it will become a carefully placed mine for the poor user who will
-> >> > > > use these flags and try to share an interrupt with the mma8452 device which
-> >> > > > has no set property and uses push-pull mode.
-> >> > >
-> >> > > I don't get how you see it like that. Adding IRQF_SHARED unconditionally
-> >> > > would create exactly the mine field you are talking about. Poor users
-> >> > > can specify a system configuration (DT) that tries to use a shared
-> >> > > interrupt line, but configures the mma8452 compatible chip in push-pull.
-> >> > > The poor user will not only be poor, but also unhappy.
-> >> >
-> >> > > By applying the IRQF_SHARED dynamically, the kernel will be able to fail
-> >> > > in a controlled manner instead, making it much less painful to create a
-> >> > > working system configuration (DT)
-> >> >
-> >> > And my point that we need to make less painful runtime experience.
-> >>
-> >> Yes. We agree on that.
-> >>
-> >> But I do believe that my patch is that painful runtime experience.
-> >>
-> >> Adding IRQF_SHARED flag when irq pin is configured in push-pull mode
-> >> will be painful. I know, that was my initial approach. Does really not
-> >> work, and can lead to wasting time on debugging the HW.
-> >>
-> >> > > Going back to your poor user story above, if the poor user tries to
-> >> > > share the interrupt pin with the mma8452 device, it will get an error
-> >> > > (just as it is with the kernel today). The device does not support
-> >> > > shared interrupts. Reading the DT bindings documentation, the user
-> >> > > should be able to find the drive-open-drain property, and add that to
-> >> > > the device-tree to make things work. Maybe even consider if that is
-> >> > > compatible with the hardware being used.
-> >> > >
-> >> > > If IRQF_SHARED was set unconditionally, the user would not get an error,
-> >> > > but most likely would get a system where no irq's were raised for the
-> >> > > other chips. I sincerely believe that debugging this is much more
-> >> > > painful than reading device-tree bindings.
-> >> > >
-> >> > > > Did I miss anything?
-> >> > >
-> >> > > I don't know. Maybe I am missing the obvious here.
-> >> >
-> >> > I consider the case when shared interrupt is enabled on both devices, but
-> >> > second one (driver) missed the same IRQ flags. This becomes a warning in
-> >> > IRQ core.
-> >>
-> >> Missed which IRQ flags?
-> >
-> > _LOW, for instance.
-> 
-> All devices sharing an interrupt really do need to agree on these
-> flags. Do you known any drivers that does not specify the trigger type
-> when requesting an irq?.
-
-Huh?! Majority of the device drivers! And that's how it should have been from
-day 1, that's why I call this a pre-existing bug in this driver which we may
-not address :-(. But we may address it when use SHARED interrupts.
-
-> You cannot share an interrupt line if not all devices have the
-> same trigger mode. So if one device on a shared interrupt has _LOW, all
-> the other devices need to have that. Not just the flags, but the actual
-> triggering mode of the device. Some chips might support more than one
-> mode, others only one specific mode.
-
-Yes.
-
-> >> > Shared interrupts it's also a contract with all stakeholders on keeping
-> >> > the same flags for all devices.
-> >>
-> >> Of-course.
-> >>
-> >> And adding IRQF_SHARED is a contract that says that the interrupt can be
-> >> shared. I can only see that it would be a bug to add that flag in cases
-> >> where we know that the interrupt really cannot be shared.
-> >>
-> >> As for the IRQF_TRIGGER_LOW flag being set, I think that looks correct
-> >> as long as we do not support switching to active high irq polarity.
-> >
-> > No, it's not. It overrides whatever platform wants to have.
-> 
-> The trigger type is not just a platform thing. It describes how the
-> device behaves.
-
-No, it describes how this certain device is connected to the certain platform.
-It's a combination of what device is capable of and how platform design makes
-use of it.
-
-> Device that only support one triggering mode must set
-> the flag that describes that. Devices that can be configured for
-> different triggering modes can implement that, and should then configure
-> the device for the chosen mode and set the flags accordingly.
-
-Yes, but not in the device drivers!
-
-> > It prevents PCB level designs from anything else.
-> 
-> Yes. In this case, the current driver does not support designs that
-> requires the mma8452 compatible chip to be configured for active high
-> irq trigger. We could and probably should address that.
-
-Exactly!
-
-> But that is a different issue than what I am doing here. And I don't
-> have hardware readily available where this can be tested, so I would
-> prefer to let somebody else do that.
-
-No objection on the specific issue, but...
-
-> I am adding support for designs that require the mma8452 compatible chip
-> to be configured for open-drain, while staying backwards compatible and
-> allowing support for designs without external pull-up.
-
-...the shared case *is* different. And I do not want the disaster (a bug)
-to spread.
-
-> In all cases, the driver should register the interrupt handle with the
-> IRQF_TRIGGER_* flag that matches what the chip is configured for.
-> I believe leaving it out is invalid.
-
-Again, this chip is not a single party in the equation. Nobody prevents
-to put a NOT gate on PCB to support this device and say other that wants
-inverted polarity while sharing the same interrupt line.
-
-> >> But on that topic, the chip actually supports selecting between active
-> >> low and high irq polarity. Should we implement something along the lines
-> >> of what is done in smi330_setup_irq() in iio/imu/smi330/smi330_core.c?
-> >> And thereby allow using the device with active high irq?
-
-...
-
-> >> > After looking into genirq code I don't see other way how to handle this.
-> >> > It looks like we need to address the TRIGGER_LOW first, in other words
-> >> > we need drop that flag when IRQF_SHARED is set, and leave it to users
-> >> > to setup IRQ trigger properly on all sides.
-> >>
-> >> Why do we need to drop the IRQF_TRIGGER_LOW flag because IRQF_SHARED is
-> >> set?
-> >>
-> >> Users as in those specifying the system device-tree?
-> >
-> > No, because like I said, the SHARED is a *contract*, it's not just a setting.
-> 
-> Absolutely. That is the key here.
-> 
-> IQRF_SHARED is a contract, where the driver promises to return IRQ_NONE
-> if the interrupt is not for that device. This is already implemented
-> by mma8452_interrupt().
-> 
-> > And that contract includes the similarities on the IRQ flags. One may not
-> > have two devices with different trigger level, it's a common sense,
-> > right?
-> 
-> Right.
-> 
-> And that is exactly why we have to specify the IRQF_TRIGGER_* flag that
-> the irq output is configured for.
-
-No, definitely the opposite. We may *not* specify this flag in the driver,
-we have to rely on the _platform_ configuration. PCB level.
-
-> The driver will not switch to the
-> desired trigger level based on what other devices on the same interrupt
-> uses. You have to configure/specify the trigger mode and leve and set
-> the IRQF_TRIGGER_* flag accordingly.
-
-Yes, but not in the driver!
-
-> > So, SHARED must exclude anything that comes from the platform description or
-> > IRQ chip controller (limitations).
-> 
-> Now you got me confused again. The IRQF_TRIGGER_LOW flag given to
-> request_threaded_irq() is not coming from platform description or IRQ
-> chip controller. It describes the trigger mode that the chip is
-> excercising in the current implementation.
-
-And this is wrong. It's not device driver business to define this. More
-accurate it's not only of the device in question and how it works.
-
-> The kernel would not know how to configure the IRQ chip controller, and
-> in case of shared interrupts, would not be able to check that the
-> devices sharing the interrupt is configured correctly.
-
-Huh?! The kernel is responsible to program IRQ chip and the respective
-device drivers in accordance with the platform design (and protocol to
-supply it to the OS is called DT or ACPI or ...).
-
-There are several limitations for this:
-- IRQ chip that might not support certain trigger configurations
-- device that can only take subset of trigger configurations
-- in shared line case all of the devices need to agree on that
-  on a _platform_ level
-
-> > So, without addressing that, it makes a little sense to add SHARED.
-> 
-> Not true.
-
-True. Obviously we have a disagreement here and I tried hard to explain
-my point above.
-
-> Let me take my system here. I have multiple chips / irq sources
-> connected to the same interrupt input on the CPU. They are all using
-> level low triggering (which hardware and system engineers have ofcourse
-> been observant enough to ensure).
-
-And if not? Isn't it possible to make them share an interrupt line?
-Of course it's very much possible, but in the platform description
-the both devices will need to have the same one, so for the second
-one it will be a bit of a lie (due to an external NOT gate or a latch
-or any other PCB level tricks).
-
-> Without my change, the mma8452 driver does not support configuring the
-> chip to use open-drain, so it will be pulling the interrupt line high,
-> interrupting irq for all interrupt sources.
-
-I even don't consider this, this is obvious. And you are correct here.
-
-> With my change, I can now configure the device to use open-drain,
-> register the interrupt, and everything works nicely.
-
-Nope, it depends on the other stakeholders.
-
-> And the change is backwards compatible, as you have to specify
-> drive-open-drain to switch from PP to OD.
-> 
-> How does that not make sense?
-
-Please, read again what I wrote.
-
-> > I would accept this patch without adding SHARED, perhaps.
-> 
-> Without IRQF_SHARED, I cannot use it with the hardware I have which are
-> sharing the interrupt.
-
-True, but with _LOW it makes a little sense to use SHARED.
-
-> > But still question why we can't use the OD instead of PP for the pin
-> > to begin with?
-> 
-> Because HW needs to be designed for OD. It is perfectly valid to design
-> hardware that relies on the default mode of mma8452 and compatible chips
-> to use PP. Switching to OD will not work for such systems without
-> external pull-up.
-> 
-> > Do we have real HW that uses IRQ input without a pull-up?
-> 
-> I certainly have had such designs many times in the past.
-
-Okay.
-
-> Why should we implement the driver so that we cannot support such valid
-> HW designs?
-
-This is exactly my question as your patch limits this to _LOW.
-And this is a big issue with it.
-
-...
-
-P.S.
-I'm on vacation, but I disagree on the approach taken in this patch.
-I leave it to you and Jonathan and others to settle down.
-
-Here is my formal NAK (to this form of the patch, as I said, w/o shared
-support it might be okay to go).
-
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index d84e04e4b4314..1f23e700a0dae 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -761,7 +761,7 @@ static const struct iio_info mpu3050_info = {
+ 	.attrs = &mpu3050_attribute_group,
+ };
+ 
+-/**
++/*
+  * mpu3050_read_mem() - read MPU-3050 internal memory
+  * @mpu3050: device to read from
+  * @bank: target bank
+@@ -994,14 +994,14 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 		/* Disable all things in the FIFO */
+ 		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+ 		if (ret)
+-			return ret;
++			goto err_power_down;
+ 
+ 		/* Reset and enable the FIFO */
+ 		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+ 				      MPU3050_USR_CTRL_FIFO_EN |
+ 				      MPU3050_USR_CTRL_FIFO_RST);
+ 		if (ret)
+-			return ret;
++			goto err_power_down;
+ 
+ 		mpu3050->pending_fifo_footer = false;
+ 
+@@ -1013,12 +1013,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 				   MPU3050_FIFO_EN_GYRO_ZOUT |
+ 				   MPU3050_FIFO_EN_FOOTER);
+ 		if (ret)
+-			return ret;
++			goto err_power_down;
+ 
+ 		/* Configure the sample engine */
+ 		ret = mpu3050_start_sampling(mpu3050);
+ 		if (ret)
+-			return ret;
++			goto err_power_down;
+ 
+ 		/* Clear IRQ flag */
+ 		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+@@ -1037,10 +1037,16 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ 		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+ 		if (ret)
+-			return ret;
++			goto err_power_down;
+ 	}
+ 
+ 	return 0;
++
++err_power_down:
++	pm_runtime_put_autosuspend(mpu3050->dev);
++	mpu3050->hw_irq_trigger = false;
++
++	return ret;
+ }
+ 
+ static const struct iio_trigger_ops mpu3050_trigger_ops = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.50.1 (Apple Git-155)
 
