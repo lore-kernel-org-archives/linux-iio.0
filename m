@@ -1,121 +1,97 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 197F51A0728
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6ABF233949
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:42:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784248068; cv=none; b=KgqikkAN4ZejnTWotf5K6swylZt66cbvINtHM7ifphhc5TYQZj7CUnAqk78QJTfW+71Wd5Mv6U1y97L8u/8AGe1gdt3LhYbd1co0AIzCYJEzT3VZUW8iM6GIvl3VB/Dcogw4z8ER/Q9COEn0/RhUOD36BQp6ViwAHqMf7VhbVXU=
+	t=1784248965; cv=none; b=Z4Y9M1GyHjTERhH3zt2TdNcFcZqqGgP+lAlnYgEMnwUGvJrA593qlkRuv2UV8eMtOYTJGItBIN4FlsSEBNdk/26Fo8aWugmDBETmesUK9IR1r3klw8j2Y30Wi6VYPrwcIUW0HlRqhzh7bIo0GVU7AMzQn1AL1QXgN1VwZ179hMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784248068; c=relaxed/simple;
-	bh=WuxboMC8gwuYa9IvYfTHmmVyytT8FQoSrk7u1Q1bNM8=;
+	s=arc-20240116; t=1784248965; c=relaxed/simple;
+	bh=2aNinRq0flGK0hiP5tHhjAD5hq2MPb8W7LKQHQqMIDY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tHutuZHSYNTi7x7YM+BovJb979iCrq5UUdgGc1OPT+MO6WE4iJQO3Xh+Scm7PLNedDUMnrc6KNtvtGdyXVCaH6em3VxfmhoEbsq1V/3JLkS3j3r7il8fhYM7BdNHNmEH9PIRNMoeh3bmmg0EXO5HmWGKjGM/zh/UYmqhZivucwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=amcTjttH; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=J5N12laW; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=VVlF6SF5NTpiLXVa/A/sbgdjwE3CMVqEYdDXguXqygXb9UGkzEJDTivVfi8xCXW0wtZSViFtnfIWq8qZ/h6TbyZiArA0WFr9HAPoxh6Z335cmlEqByaFgxOZTRvEB7exZ5VYc//0b0PReUn3N13nC4vhDBBaqtzFsiFSAac684s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=FvjrwzUg; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=PLXpwJHn; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="amcTjttH";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="J5N12laW"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66GNJS4J120565
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:45 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="FvjrwzUg";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="PLXpwJHn"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66GNIZuX010476
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:42:42 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=; b=amcTjttHrWtguKC5
-	n++lHJEs5cWDSbrwXvydXhhqunjR7ll8/C0DW8kN9C+hSMohgftQUZLG6krSoG2q
-	AJaR4wmVw3hM2uJI7ByZYhtiKDm5bQUMjaJkqH3cS21J95WK6WmCRyd9ExGRW6L7
-	v7ZZ4Y/fdnneG7aPBMTFocabwVSjpLBtqbNeehXf9C7Ew8yX5ev2PXS1PkPWDS6Q
-	m7KgVk3VEuAjSIw9fmtKPQdCtx4+GpYw35ECCXAvPyYfvFWwOVQBeOn7Gybpgoe4
-	ogzAXGzGIzJzBd9v90ay8F8xZt6aghIG/HTOoddLcJ9sN4W7yNDRoO+6EhZV4WzU
-	JZvh+g==
+	UxLGBdpnrkDciajFDWMSeC+2EXjtdsW4rIt9aI9uoSw=; b=FvjrwzUg7HydXT5X
+	1J8taClGEMIWh+r5KEZz/IBpSeJqAzsXeKbsnM8r7oKK9+ww8xwAK6KVv23buqET
+	P/JvYbuOA7rb4vGbEztsmsuCj/G2K5Q86avt6uJ+uW2jtMrQ5ZmwROwnldW4jdEB
+	9v97UNNCT8tcHiSoZSh+bqHQufjIdrmsU8uT2P8nsrPwb0L7JOsT9ZudfBl1LgV3
+	v2wOqHT3vYb0kWmj5VGaWK1AaQe6zc/IB6Hi3i9Z3Z4Qa6zTkY7nNavQ0uHsf2Y6
+	tiq/WmUngXQed0uMlQAAFRzRmq1tLfJAzfYhPkg/p6KiR9El2a1WuLEgHO6Ro62A
+	YW45vw==
 Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feu10bxw0-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feuex3wx2-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:45 +0000 (GMT)
-Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-c88aab7c1fcso17071535a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 17:27:45 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:42:42 +0000 (GMT)
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-ca8aee88725so10780466a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 17:42:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784248065; x=1784852865; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1784248961; x=1784853761; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:organization
          :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to:content-type;
-        bh=CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=;
-        b=J5N12laWJ4tlObv15JycFnYxrI3ljqf+5xWw8JwbTnjpAoQtQgS0KBhIIo7uKjALmQ
-         wXLDr6jGpwQqOXMOJwTaOBecd4c8VkkEuQANqm2tVM54oBJExXPLfK2x1pVLK6tTG5DX
-         KCTfhpdZh09tnt9fi9+7OtgX0a060KUWjIpGU6B4UzS0f03LoouEun3NhcQ/G8BX/pLk
-         MWgLoZiMRf1KCBNhzEZFVPRqXUuPtZmGobPMEP/sph0YjpqQjNmAiM0G3Fa35qZiE2V2
-         Eg4csrNvrLniC5E4Ixj3Pu8jOK3el3iL5dbbTPX/kmDZCQ4AcDMOFqbhIDwqRWpC50KT
-         hsVg==
+        bh=UxLGBdpnrkDciajFDWMSeC+2EXjtdsW4rIt9aI9uoSw=;
+        b=PLXpwJHn4iAabpmHTQR1BoXaZbh1JmZtbsz/onlJm7Fv+IwfGXFLr8NgzCixlqicI5
+         bWkUTr0Hq4kxjWpCT7I2JnTUU4MDVeWFjWvFfA1Es8C3eLrmvqU10+rNQj/HB/umBLbI
+         Pwr5oeouopnXh/XLPP3epFCBtMNq+7tKtTqkDyhGOS/fAcdLCSmzsyE+DOpZ0cKTQldd
+         t5mGL27daw3kViq7M56K6fts1m2d2zG+UkH4sWtwVwnAsskGOynaA0O0F6UXjtzJ6UVf
+         2AbdMzVXrVezTFff2zAt7Mj5r1zWRY/xi816W1d6GawvPVjOXAsJP1MF5vA4HLXrhN53
+         O9Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784248065; x=1784852865;
+        d=1e100.net; s=20251104; t=1784248961; x=1784853761;
         h=content-transfer-encoding:content-type:mime-version:organization
          :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=;
-        b=mx0PZjccXz0ajdJ5egWTuFamKLRYqJ/qnDSYHAZkXAiHjwHsMgtPKGzvBNwbBbjJEc
-         L/1lMQmOGaeP7k3WzdqYJHhKuBw2SdyPevcHHGLRbGH1X6nEO0UenV6NiMaCk8ZYVkEg
-         rT4FQLgsVjMJRC2ZgMq5wdduX/DuOScNz/qrt0EKWiliDm+OqwxjRS5Q5+8g2qfFMcft
-         2lFrEc0nPrrLZbXbyFfsVBjXz+yWlnWtHThVzpuqgIa1vYxdAQMvu2uvLsgsPnYQMRQF
-         aN53b2haACeUd22lAX5872veGmkdFKM0Ia7Tf6Eqiymq8NzMKlh2YrXtkBISDW7MeOI6
-         mw/w==
-X-Forwarded-Encrypted: i=1; AHgh+RrKkgkTsSUTsOy2NOulgHOWE1j+OjRCToSnVGutaM0bHDStlwl18D7yWK0m3HfBpsrw5CjB2xuilOU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxlMIYV8X87faP7syRW2Tp1KHqICr7Ep2aFLGPmt3MCgnH9eNBi
-	uRwNYmx2HfpoC2c8CyySLroZ9MWJxt2HHYcEWukPEE3fLx33tvsK3KXH3gJ00suBH4rpvdxRAbL
-	H2DtMj8BS32rHug6jmGudCxDCXHOOLwTy8j/TVnRqyZRx3RggtqcGYG2bIn3NcX4=
-X-Gm-Gg: AfdE7cn9C3TY18b2p8fdQKtKgaClIkJ5ijsBatl6e3T7xQyls17APPlvaqzbK6BEzwn
-	Ep2QMN7T5OUzrRasa9EOVKpyElIv4uqOrtDc9adZ9/MzX0YjP8xH45FnaNDLboNrWy6NEvvNb11
-	TB16cG6ALhF2MF7CZxTt38RrvpSlpeOBUjNUkOb7S81AReUsulDpQ8LGQF0HPXat8qcqz1ZxJTI
-	Fw7pzQMZF0eNwvr7N4e5dJPdxNormyJh7THCEl8llRXNHtPTV/Ji3Q1ZB9OLvsTctdEbBbv+32o
-	FEVobnJ8K+5klClpOUcm9y0hfBZR7X1nKl2bQ/SA8J3LEwKXv+NteqRVIsTG3QaSZRwI0IPHYT2
-	Isj5e8inLCJEQexTrEEkvke6Rlg==
-X-Received: by 2002:a05:6a21:a8b:b0:3c0:9c18:d5a3 with SMTP id adf61e73a8af0-3c3ad97361bmr219831637.64.1784248064698;
-        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
-X-Received: by 2002:a05:6a21:a8b:b0:3c0:9c18:d5a3 with SMTP id adf61e73a8af0-3c3ad97361bmr219804637.64.1784248064246;
-        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
+        bh=UxLGBdpnrkDciajFDWMSeC+2EXjtdsW4rIt9aI9uoSw=;
+        b=jALDn/6irE28CGePZ23Ez+glWzQ/bOLYMT+r2OEtPtDCm78DMiVeCcImh1qOdZhanZ
+         2MUz8liv/xwdDdS5oOyWPveBbfIT+eSa06OJQdEhN3h1phgz8TspZ74k6addybVFy6Qa
+         ukdU8ebNboB2nFMTlrBGfij1qMpXiqbsTdOGAxGnkvKSrX+2NRxXeR7wmzzpmqfBE6UM
+         IoP9K17ET/SVW+Nn+v/lHwZzI+lRWdIALXwL1lSWRVRX8J3/hN6FZ+N7fzuOIZ0+oz6O
+         uQ9HYEG204dVQbyx0Dcn2o3FA6oZIX9EqitCP95o3bnYHN6bu/JaEH2hJ7p/w4LJ5ocE
+         hh3g==
+X-Forwarded-Encrypted: i=1; AHgh+RrqzGyCc1NL5x9uG078rXpQG0FEYBVMOexRfFMmNvy+PNL3oU6rBzumoZ3pJn/8PM5A7GdiAkO7JJs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw7l59FwZ3jw4G9DdltCWJfkCGQLbs6s87wTDow11igc5hdzgse
+	Vk+bf76UGH2484Q9iEkaTTlN1nF2P8N9n/30ao/zQcr5SeHasu+wwtd7A+TeIA1h6xOR1x0qyxX
+	7aNczkvFHBxuUJUiVWmwwhV5iNKCyiXR3HZJaAgQA9+CLLLIHEhRiK4OfRBJcVmg=
+X-Gm-Gg: AfdE7cmiWSPHRkohGbDgEMwLMVDIWiweMtuvIeKZMhk/txvYW1uY5k/jMlQ/QC/7QWI
+	XRwgZNrXT9Jl9x24nH5dk0e8U/HOm7zm4w6G4YVMcuRj4A5yLG/QQMOhvDvIn3byXTO81RcoC86
+	eGp/03xnKHa0CqsiKA43xPych0y+Y9Qh4F6d035aAn8/Z+f+J0ClAvJdYWD6xV0yjcHjdf253Gg
+	47Wxco+Dd4EXU2rMoqc5/l6vX5miec+TjHjkyRan3MUiPjwF76Jg+4giHxrHcmq/hGEV1xSirUV
+	In0GPgZvOls0idqres8LRZtuwj6jy/zeExT2zPuVqBOikfJr5FSS8dZTzSbNrunqzvnrn9AYlvI
+	el+JLM2yTl/L2z+SV1uROXrL5oA==
+X-Received: by 2002:a05:6a21:6b83:b0:3c3:8222:b8c9 with SMTP id adf61e73a8af0-3c3ada39a49mr273668637.67.1784248961190;
+        Thu, 16 Jul 2026 17:42:41 -0700 (PDT)
+X-Received: by 2002:a05:6a21:6b83:b0:3c3:8222:b8c9 with SMTP id adf61e73a8af0-3c3ada39a49mr273634637.67.1784248960701;
+        Thu, 16 Jul 2026 17:42:40 -0700 (PDT)
 Received: from localhost ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20c158sm523718eec.29.2026.07.16.17.27.42
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13cd432f1cesm22812830c88.11.2026.07.16.17.42.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
-Date: Thu, 16 Jul 2026 17:27:40 -0700
+        Thu, 16 Jul 2026 17:42:40 -0700 (PDT)
+Date: Thu, 16 Jul 2026 17:42:37 -0700
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
-        Jonathan Cameron
- <jic23@kernel.org>,
-        Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>,
-        Michael Hennerich
- <Michael.Hennerich@analog.com>,
-        David Lechner <dlechner@baylibre.com>,
-        Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Philipp
- Zabel <p.zabel@pengutronix.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
-        "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v7 07/17] iio: test: add kunit tests for channel prefix
- naming generation
-Message-ID: <20260716172740.00002b37@oss.qualcomm.com>
-In-Reply-To: <alcpb-7GVSfk6jFB@ashevche-desk.local>
-References: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
-	<20260707-ad9910-iio-driver-v7-7-a4ec30f63700@analog.com>
-	<20260712020928.2c8d1667@jic23-huawei>
-	<egyms7ulkxsgu4pvfkoruelec3sf6ca4bndcuqkvxljrdluqwu@edlqne7oy3xs>
-	<20260714180812.000070c4@oss.qualcomm.com>
-	<alcpb-7GVSfk6jFB@ashevche-desk.local>
+To: Chi-Wen Weng <cwweng.linux@gmail.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+        dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cwweng@nuvoton.com
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+Message-ID: <20260716174237.00004b79@oss.qualcomm.com>
+In-Reply-To: <20260713081127.115197-2-cwweng.linux@gmail.com>
+References: <20260713081127.115197-1-cwweng.linux@gmail.com>
+	<20260713081127.115197-2-cwweng.linux@gmail.com>
 Organization: Qualcomm
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
@@ -126,103 +102,157 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: LCqZOMFeZUHRFaZw7Xn4s0ACACNAFk0f
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDAwMiBTYWx0ZWRfXxh++vHSnk0Jd
- oeX1Afm46YOtTk1Hfl/UegDgianHbEzs57UYOagiVicEtR7sEBBcGj5vpNPne0or3mW16Huy24C
- nUocukPhSk7PEmXYgnkrOppirKavW6LVhrhuMVtIuhrRhTcQdnBGgXuUZxQHJVZa7ss8ppmU3fL
- ViZMR+oy+RlpVvAXZSXV3AyZxFkLLGa/k2NSScFdVxYURrBffaBFIiSq7CLsNjeGSXOmBUkW28Y
- I/P2uwvvgu12vb0BO4vf6IKEwif5B2GiGvxuokTQstaICcPPZA+a+dnZvc9FApzRcIaEMxN59GY
- eF9kcs3Uk1E2Dxb6u7icC4v1pAteaylKbWmZw1PpENEdwh0QF+/YmRunXecDfL48ufTyIjxdcO+
- ZdJQfWmMuEB5eTNeMWMNMYjW/Ag1kX+8UQdyvJCzM46j/t/fRi86nKsaHqr1E27JPzDsKLGOefp
- qNoFrKVFh3P7T1P9qgQ==
-X-Proofpoint-GUID: LCqZOMFeZUHRFaZw7Xn4s0ACACNAFk0f
-X-Authority-Analysis: v=2.4 cv=BPODalQG c=1 sm=1 tr=0 ts=6a597701 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=JeeMa0KV c=1 sm=1 tr=0 ts=6a597a82 cx=c_pps
  a=rz3CxIlbcmazkYymdCej/Q==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
  a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=QyXUC8HyAAAA:8 a=pGLkceISAAAA:8 a=VwQbUJbxAAAA:8 a=xcsdVRPUYcZtn2NnLoAA:9
- a=CjuIK1q_8ugA:10 a=bFCP_H2QrGi7Okbo017w:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDAwMiBTYWx0ZWRfX1CO0vrhMHuM0
- 2OX9F+0bRS1vvbmw6zPN7MN7xgwq0AzoUzmPQfNCkXvWnDKFZj9tlyC3caOQ9S+6fiXmrKyGlII
- +BUBk386WxNo58pbOyIhQe7rc4QdKeo=
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
+ a=pGLkceISAAAA:8 a=BxgfbMJPAAAA:8 a=O1BfqjI78t3fJ8cDaMMA:9 a=CjuIK1q_8ugA:10
+ a=bFCP_H2QrGi7Okbo017w:22 a=-j4ASRGczZqhCHD74e4j:22
+X-Proofpoint-ORIG-GUID: 4IZkQm4YvduCZZ1SQyfGlwXanxaYyu49
+X-Proofpoint-GUID: 4IZkQm4YvduCZZ1SQyfGlwXanxaYyu49
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDAwMyBTYWx0ZWRfX81GZgIe1iMFz
+ +0PS2qdTDt1XhSqTIEYtZJl/XzSkA+3VW9q609qLYKFs/JX1e/1ux7s/iUiTdHian2lmhVbsg6u
+ A8LZXesnEGtS4nl6CaMMaBJHPf3YQ7I=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDAwMyBTYWx0ZWRfX9J/k4rdG/Zm/
+ loFBtdrB33cjeLlcCkmzAImn4Bo8hNQzi1SFuUnadxO8yO7pED57ZkagcHyTLDJ0mg2qUVkhhx4
+ eEbXwLV4GPz9xxi1GTKP3/OP00Fzn3HEyNwKPeghY3SBIvJp2LzQ1zJZIHIK3CA4yWceGcXEW5i
+ ZM14E4t46B4Yj2+xnvbhw6GervcfiAByRlfCIjCq2OBWc9XI7DhPfHzqu9Vj5v5ajt8w/tHkIaD
+ 136A4Ki33f7WzOmxdWnW+00He0hyYfj6tPGeCI1+got+rVgQpWFK8N0ZegM39Sc4UgwcGOdpyic
+ CeWZg256hh58fJetEEeXrKb2fbhfMPiXsRJ9kjje2ecJjCxsrUj/Kwd2Y9Xhh0D0KlB2uOa0brZ
+ FfnqxNFjTbadNJ5CGmtj/kkb+fHyAC/SblqWk5GWr3ZKMCCs74qwzD3wZBlCu/f9QCC4+AojqkE
+ pM8+jYif0hlL7FhTeXA==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-16_08,2026-07-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
- priorityscore=1501 phishscore=0 bulkscore=0 spamscore=0 impostorscore=0
+ spamscore=0 adultscore=0 clxscore=1015 suspectscore=0 lowpriorityscore=0
+ priorityscore=1501 impostorscore=0 phishscore=0 malwarescore=0 bulkscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170002
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170003
 
-On Wed, 15 Jul 2026 09:32:15 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 13 Jul 2026 16:11:26 +0800
+Chi-Wen Weng <cwweng.linux@gmail.com> wrote:
 
-> On Tue, Jul 14, 2026 at 06:08:12PM -0700, Jonathan Cameron wrote:
-> > On Mon, 13 Jul 2026 10:52:56 +0100
-> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:  
-> > > On 12/07/26 02:09, Jonathan Cameron wrote:  
-> > > > On Tue, 07 Jul 2026 15:04:28 +0100
-> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:  
+> From: Chi-Wen Weng <cwweng@nuvoton.com>
 > 
-> ...
+> Add devicetree binding for the Enhanced ADC controller found on
+> Nuvoton MA35D1 SoCs.
 > 
-> > > > > Because __iio_chan_prefix_emit() is static, the test translation unit
-> > > > > is pulled into industrialio-core.c.    
+> The controller has one register region, up to four end-of-conversion
+> interrupts, one functional clock, and an optional reset line. The
+> binding also describes the optional external reference supply and the
+> optional DMA request supported by the hardware.
 > 
-> KUnit also has static/non-static automation via a macro (defined in the
-> kunit/visibility.h) and I see that's used in the below example.
+> ADC input pins are described using standard channel child nodes. The
+> external ADC input channels are 0 to 7. Differential inputs are described
+> with diff-channels and are limited to the fixed hardware pairs.
 > 
-> > > > Isn't there some magic route cases like this that makes it non static
-> > > > only when self tests are enabled? 
-> > > > Claude tells me to look at include/kunit/visibility.h    
-> > > 
-> > > There is, Although I think that using
-> > > 
-> > > 	#if IS_ENABLED(CONFIG_IIO_CHANNEL_PREFIX_KUNIT_TEST)
-> > > 		#include "test/iio-test-channel-prefix.c"
-> > > 	#endif
-> > > 
-> > > was more straight forward, less invasive and easier to change than..  
-> 
-> Maybe, but thanks to this thread, I fixed other modules that use their own
-> approach to use the standard KUnit infra for this (as below).
-> 
-> > > 	/* In "drivers/iio/industrialio-core.c" */
-> > > 
-> > > 	#include <kunit/visibility.h>
-> > > 	...
-> > > 	VISIBLE_IF_KUNIT ssize_t __iio_chan_prefix_emit(...)
-> > > 	{
-> > > 	...
-> > > 	}
-> > > 	EXPORT_SYMBOL_IF_KUNIT(__iio_chan_prefix_emit);
-> > > 
-> > > 	/* In "iio_core.h" */
-> > > 
-> > > 	#if IS_ENABLED(CONFIG_KUNIT)
-> > > 		ssize_t __iio_chan_prefix_emit(...);
-> > > 	#endif
-> > > 
-> > > 	/* In "drivers/iio/test/iio-test-channel-prefix.c" */
-> > > 
-> > > 	#include <kunit/visibility.h>
-> > > 	#include <iio_core.h>
-> > > 	...
-> > > 	MODULE_IMPORT_NS("EXPORTED_FOR_KUNIT_TESTING");
-> > > 	...
-> > > 	// Use __iio_chan_prefix_emit() in tests  
-> > 
-> > I'd rather this wasn't built into the core module.  So prefer you jump
-> > though those hoops.  
-> 
-> Hmm... The above (while being verbose) is the standard way of how we export
-> symbols for KUnit tests. Do you have a better alternative that everyone can
-> use? (Not only IIO subsystem.)
+> Signed-off-by: Chi-Wen Weng <cwweng@nuvoton.com>
 
-Ah. I put that comment in an unhelpful place. I meant the include above not this bit.
-Absolutely fine with the exports being there.
+Hi, A few comments below,
 
-Jonathan
-
+> ---
+>  .../bindings/iio/adc/nuvoton,ma35d1-eadc.yaml | 163 ++++++++++++++++++
+>  1 file changed, 163 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+> new file mode 100644
+> index 000000000000..1be5470643d1
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+...
 
+> +  interrupts:
+> +    minItems: 1
+> +    maxItems: 4
+> +    items:
+> +      - description: ADINT0 end-of-conversion interrupt
+> +      - description: ADINT1 end-of-conversion interrupt
+> +      - description: ADINT2 end-of-conversion interrupt
+> +      - description: ADINT3 end-of-conversion interrupt
+Not sure this doc helps. What are these interrupts for?
+The driver only uses one of them so why are there 4?
+
+May well need interrupt-names to allow gaps in the list to
+work but hard to tell without more information.
+
+
+> +
+> +patternProperties:
+> +  '^channel@[0-7]$':
+> +    type: object
+> +    $ref: adc.yaml
+> +    unevaluatedProperties: false
+> +
+> +    properties:
+> +      reg:
+> +        maximum: 7
+> +
+> +      diff-channels: true
+Do you need that explicitly. I think adc.yaml already brings that in.
+
+> +
+> +    allOf:
+> +      - if:
+> +          properties:
+> +            reg:
+> +              const: 0
+> +        then:
+> +          properties:
+> +            diff-channels:
+> +              items:
+> +                - const: 0
+> +                - const: 4
+> +      - if:
+> +          properties:
+> +            reg:
+> +              const: 1
+> +        then:
+> +          properties:
+> +            diff-channels:
+> +              items:
+> +                - const: 1
+> +                - const: 5
+> +      - if:
+> +          properties:
+> +            reg:
+> +              const: 2
+> +        then:
+> +          properties:
+> +            diff-channels:
+> +              items:
+> +                - const: 2
+> +                - const: 6
+> +      - if:
+> +          properties:
+> +            reg:
+> +              const: 3
+> +        then:
+> +          properties:
+> +            diff-channels:
+
+For these take a look at the description of diff-channels.
+It states that where the pairs are hard wired you can just use reg
+and not specify diff-channels.  Seems to apply here and will greatly
+simplify this binding.
+
+> +              items:
+> +                - const: 3
+> +                - const: 7
+> +      - if:
+> +          properties:
+> +            reg:
+> +              enum: [4, 5, 6, 7]
+
+What are these channels?  There is a reference to one
+internally wired one so what are the other 3?
+
+
+> +        then:
+> +          not:
+> +            required:
+> +              - diff-channels
+> +
+> +    required:
+> +      - reg
