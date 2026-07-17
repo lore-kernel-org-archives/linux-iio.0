@@ -1,123 +1,126 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867CE309EF9
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 09:03:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9846F3C061C
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 09:31:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784278996; cv=none; b=mBTOHnzM2pb2pjIdghDE4jOUob65BEpkz/teWLmSla2frqBFa2RQjbfbSYKTUPK6fZK83WLUzefc3wqNb14zk7pp3Lowz6gUYQPjnXXajyH7esnfppCHEgzgsU7tO18RDaefjin0jVGA/fh+kZG20qqL3YXfljyEl2s7Zz5L5AM=
+	t=1784280692; cv=none; b=OwLfLLg3w9uhyY3bstugqoGuhk/9EDtSqzeOc9w3c6kNW27BdNBoKPYtSA5Zjbo6yARdpCcRQ6eHVEZiWyxhx2anr18q5dDAQbYTit0IOHN+h0/L30a1AW1179wdnlCvaHpdmHRXAeWLPhF07TwEJWcbLEjpM/t2yFGmSPWnfjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784278996; c=relaxed/simple;
-	bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
+	s=arc-20240116; t=1784280692; c=relaxed/simple;
+	bh=DznFh8UZjIxtgi2+bc5sL16x3pqRgUE1ixJxMc0YOjI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EZYtbH/DbCJcD9nUZlELio8m1h3s6N0l2Zcgvqu/k7yHlGu3EK6IUyjQ6g7G+Gd8spZ2LZCpQ7ViGfBRUKDeoQLM8ADjvF9lecQrfYml7Zm4bUm6Mnvw0r3V1i9WwiRN8NbiuHexEStz7PPqM7VoIJgVx+SVAXEkzqN+p19Qs7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WOb786Ov; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=eLbUwHqLVAO/v0qylioAPQDnFmmeabtt88A8rdBfeISGytJgaBnkEe/vuD88vGF/FfA4JUhZ9fI+PPE72xonAIHzP2bbCU9z0ZWiJ+mKfMXD2HfBjhvo73VGQL5mvhc7uUTOeZ35orNv+OzjTk7ku8eCamg2jDD2qcpmnurmsHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OpWD+6uN; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WOb786Ov"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493bfe9f886so41953155e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 02:03:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OpWD+6uN"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-c15e03c2763so314928566b.0
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 02:31:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784278994; x=1784883794; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784280689; x=1784885489; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
-        b=WOb786OvzsfQN/n21RIzt2pT27L/IFLWc6zo5CCZ1u0wU+5C1DjHdAazpctkqj4f83
-         wsZrrX7fTzUV8QMOu+u/13PIyxezdfGzrhVsc2pIjZ/f5Wc7GmZnCvRwoEQf05lRKmCr
-         9ivkWLHmtTrMAf204ovHOMCMoqpaa9PTc3cwGHl6SG74LdYbwRskt8QLlla+xugK403n
-         W446gR+C2AKdbWBsVexpcK9TqHQfVLOOIEp0V4Gi818KQoCHDEQO/JuPKhZQw4igulFN
-         PGLDLwPcos6FMa52ICGEY9+xD3BHzoWB0XgDHtaEmBKvilJJaFJOAG11G0uvv8e+uHTZ
-         DLag==
+        bh=Hlfo1dR9NIn3Lqj3BjXyQaSgs7H1G2kacEIIBWr8j0A=;
+        b=OpWD+6uNbfxyfyVgg4SLWj2pKlKDDnt+63QcuNQB3EqwfGxCe1z7r21CCOG3E5+HOo
+         qRjPZMRWSScffMFVkCvLfQk81QlntS4VBSezvU7SuVE1oFeZv237MqPA0qaF3DPv2tCw
+         MOfEX4xsYDqLRWImnILtoiUJGou48Zr6J7AF/agopVXGJct9/UKGSWEnBxczhp0euduL
+         WnnjIkoZpO4oG4VOuEA9jRrpETsLt656ed4qU24pVh4TE/VC3NcZa8ot5RV48aHpqOYL
+         995FrVIzB/Z/Hiww+Xh2BHjiAHmlFe3ZWas+8Xf+Ug/PyXcL1eBXO/UCABfPnhogL7Mr
+         Txsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784278994; x=1784883794;
+        d=1e100.net; s=20251104; t=1784280689; x=1784885489;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
-        b=pYUtH/V9ozMWc/nxDgxSigoP4DuDcoByTokR2VkPz6VSToJ39wqNlMp7SfqiGIDSQs
-         24WqyKescOlxHOvJLdQVXRlYo7W5kzp5kjnrCp41X2yIA7/Ay/Fk3yltwIlUGzg24ipv
-         ggfIJXr5yoR5ZJLt+Oubit1OPhecC6Dy2eZ4RVz3fCE033XAuk2qWTUJcqJ0NTUmNPvc
-         VD1I+13xbmITsJvc65j8VvVE5ivQdJIbY2nygrQfXIjBN20egtmu1kqCzcDN3kLpcW/V
-         jdAtn/KFCKzl4nStk7m/T5rC7dFXHq265afi93VfORzzRrKm38mHfH0wUWuB5Cc6JEm8
-         UJIA==
-X-Gm-Message-State: AOJu0YzXhqJc8fHESl/RIKO8Ez/lkcX/G4WrchHjwkBuqGTZmVXMJenp
-	5WoJowcxCfxQSDDw7Sc52yYZQvZOJib3VZK0HuDs9hrtYRlAFT8OcVSB+LigIu6giug=
-X-Gm-Gg: AfdE7cnckXYJbU8qXwbMUKO+e0mkaElGmn5ev0AdZTxVg+4u/oN/yD3A/JMKhIHnc7k
-	AjTlqN3XyFYueQ+dgEr5VWPkygke4K/gACKTp/2xoQg5bvnj4p25z1xmy3oKEDtM658q8oa9DaF
-	PJMEdFh2wDX1XfWQWUlZBjp/PpD5aVz0sXspX9hM6uPSCMCzL5MwEpaX/F3QZcljzApeLwZrkgd
-	xjZ7WZVEFEs24oaz1xxeHR2mEm+cMOqxrp1UXOUj633159MRf5+D7FjdpmgFFZQZnfpHzBEeqxY
-	Si4VvlN+H6PCe2enyUgFuVYQIiMwtLoXYYGTaruUMu4wTkRGqBpljFbFNSN6M8HIxF5BzICoUPg
-	9Uzd595qX6qKtAtY23EsBqyWu5PeJI2VRha6LZGspiVH4RIJw4uwzxCU10vtc55kK6tDw7ssUyf
-	bJDL1Xl3fXSSavigy6djuxlg4Q93qpofhxkuIBkiDW0HmdFY27kbzgGq1mrGy+GvGwZMHAFrNIg
-	fH/
-X-Received: by 2002:a7b:c416:0:b0:493:bc92:ef45 with SMTP id 5b1f17b1804b1-4954a50c54dmr12670645e9.24.1784278993613;
-        Fri, 17 Jul 2026 02:03:13 -0700 (PDT)
-Received: from localhost (p200300f65f47db047d2d8b161e35ab77.dip0.t-ipconnect.de. [2003:f6:5f47:db04:7d2d:8b16:1e35:ab77])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4954a2e850dsm35096125e9.9.2026.07.17.02.03.12
+        bh=Hlfo1dR9NIn3Lqj3BjXyQaSgs7H1G2kacEIIBWr8j0A=;
+        b=AQDsuHRTmIzaClGVQ6Sk9khfKUxe+sO/KinJdFPwZwtlDvNDCr9YQHf+mK0nCS96Wn
+         zab26pUochCGNoNDFINQEFRsxYaTiWhpNX7rkwob5StaIZ5pRChUKx/gQpdfXHkEpqhN
+         9OH/igYSu8Jz+BmR+1wuU7Frxo1u2P0OTMFMnBu0YiXTqiN2wP8BnWrkF2N9ADR2jYqR
+         /dStXLrFidDQs4hHBf6XRRDbosRzoYAuYAEofglCqjWgRkDbnhZIzgluhHFkqwZH3p5/
+         R4dAxKndcUAysyx7r7a9UqZR4I6Lep8oAppzSn4xnQ8YOd9w3Z0PaEhfQ3pYTyfPMemi
+         gEMg==
+X-Forwarded-Encrypted: i=1; AHgh+RrM3UtFMtRe2f9KFKSjcJXlIkEH11HnoA2YOO2VE53jfS8/jI48f3I8O8ZFvHlZN0Zik5A6e6I8s8s=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw/wSqYL9rajHEN09L2CZS4k0mYfTf8KDlDq0OluNUSF10S+Dvf
+	6i7COs6r0+LGXOG14KRCHBktLTs6uf2XSyfXqNJ6bMFSe5BmJy36lWFE
+X-Gm-Gg: AfdE7ckDkqmJUrbdRdF6TZb1N9YUIl1lhXWsaiZjE0gwA6QsSbPXuG6CgES9uSBE013
+	h2OxdkmnWRaAQNOlnY+cMb5s7887VGzztsuLwguVxUPTFHduTBuKUpNozIu0v39NgKHUwVTINj3
+	2yNsrO4xA3Pnyp6yWFjhEjDkDj3xCPsKgcFznDstvAapzZMoQeJ/+AqJaplB4R9/16GC8THgvEf
+	V/tLgCzr+TpZT9fv4ME/jCNxOWW8PHqPUH6DOAL3BKVyjRKpEZ/YWNmBbcGkQAEe5+AcDCJOKtr
+	zuu8QPxONtpnzmXxijqBr2X0xA62hBB8PFPrWZ9sWR7Sic01fEewWP8bqdVtMIHnr/aW2wwcTZq
+	ZBxNE54tB0fGdgOONIlTJvoupYNCamRnKSq4h1ZdIAPbKbNckT9lvppQ+xTZGST2VXKf/YULWQ+
+	sQMiYzl6MAdUMxK60nRUsanYI+1pKbN67XUR0zKGlHSFF/UztUAXMailuWXFeiUbI+oon8ZnsDw
+	Ukh6kT4+Q==
+X-Received: by 2002:a17:907:e902:b0:c16:b01c:ac0f with SMTP id a640c23a62f3a-c16b4002ca0mr82893966b.5.1784280688498;
+        Fri, 17 Jul 2026 02:31:28 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c170591172esm48042166b.15.2026.07.17.02.31.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 02:03:12 -0700 (PDT)
-Date: Fri, 17 Jul 2026 11:03:12 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com, 
-	dlechner@baylibre.com, jic23@kernel.org, jean-baptiste.maneyrol@tdk.com, 
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org, 
-	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com, 
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V17 4/9] iio: imu: inv_icm42607: Add SPI For icm42607
-Message-ID: <alnvV0OwqMtRVmF5@monoceros>
-References: <20260716182637.24310-1-macroalpha82@gmail.com>
- <20260716182637.24310-5-macroalpha82@gmail.com>
+        Fri, 17 Jul 2026 02:31:27 -0700 (PDT)
+Date: Fri, 17 Jul 2026 10:31:26 +0100
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-hardening@vger.kernel.org, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, sashiko-bot@kernel.org
+Subject: Re: [PATCH v8 2/8] iio: dac: ad5686: missing NULL check on match data
+Message-ID: <gy2dn5emz7sreavy6kioz27f3sx2ip6zhkgzs2uz4qzecpkrbe@zgsortof6aqn>
+References: <20260716-ad5686-new-features-v8-0-ebb0051af5e5@analog.com>
+ <20260716-ad5686-new-features-v8-2-ebb0051af5e5@analog.com>
+ <alkmAcDvSXr_COc_@ashevche-desk.local>
+ <ondynh4kmchzugk2l24klamrcaje3qxnhgiks7gnc46wwwvo35@hysk2zaimb2e>
+ <alnknz55FbyyqqlL@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="e324wvcflz4pjyjc"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260716182637.24310-5-macroalpha82@gmail.com>
+In-Reply-To: <alnknz55FbyyqqlL@ashevche-desk.local>
 
+On 17/07/26 11:15, Andy Shevchenko wrote:
+> On Fri, Jul 17, 2026 at 07:51:35AM +0100, Rodrigo Alencar wrote:
+> > On 16/07/26 21:42, Andy Shevchenko wrote:
+> > > On Thu, Jul 16, 2026 at 01:14:18PM +0100, Rodrigo Alencar via B4 Relay wrote:
+> 
+> ...
+> 
+> > > >  	struct iio_dev *indio_dev;
+> > > >  	int ret, i;
+> > > 
+> > > Move an assignment here as well.
+> > > 
+> > > 	chip_info = ...
+> > 
+> > assignment? this is an input param validation
+> 
+> Can we make sure we always get a correct one to begin with?
+> With that an assignment and check can be coupled together.
+> Also consider use -ENODATA as it's most likely comes from
+> driver_data.
 
---e324wvcflz4pjyjc
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH V17 4/9] iio: imu: inv_icm42607: Add SPI For icm42607
-MIME-Version: 1.0
+I suppose you are suggesting to move the check to the bus code with:
 
-Hello Chris,
+	info = i2c_get_match_data(i2c);
+	if (!info)
+		return -ENODATA;
 
-On Thu, Jul 16, 2026 at 01:26:31PM -0500, Chris Morgan wrote:
-> +#include <linux/mod_devicetable.h>
-> [...]
-> +#include <linux/spi/spi.h>
+rather than here in the core/common code.
+ 
+> > > > +	if (!chip_info)
+> > > > +		return -ENODEV;
 
-Please don't add an include for <linux/mod_devicetable.h>, I'm working
-on removing that header. The two device-id structures you need
-(of_device_id and spi_device_id) are already provided by
-<linux/spi/spi.h>, so you can just remove the include line for
-<linux/mod_devicetable.h>.
+-- 
+Kind regards,
 
-Best regards
-Uwe
-
---e324wvcflz4pjyjc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpZ780ACgkQj4D7WH0S
-/k4xZAgAtfjTKvZT7A4NQhBqkvJ3Oh/IEog67mulCKGQg4I14S3TLgflro4SP/yy
-Ok9NOw1Vn3j3SaeaMFYTK5mkJ8Pl3zl8WKMkZwRK0VDFFNM+3RH0T4UdYMzkGGw7
-XC0daPY9wUVkAZnnrtimlUmStbsWWa11jGq1yDHeRSypF3U6dBhyEcOFdaC7pnlD
-9h5M0F43a/c9H6lRUVWguiN2egwEtvJtzQzQmW+r1+5I4zUanpbR5xP6gGhYcnPz
-HF9zOCNiqJV0BiUdzTFh1cFZyHdMTktzpDmWvPm3kmGSetsOtzLp6y2rEXxx6r1w
-X8sGDrKRln9uoLX3A9H0jCz8WLXAoQ==
-=wy4O
------END PGP SIGNATURE-----
-
---e324wvcflz4pjyjc--
+Rodrigo Alencar
