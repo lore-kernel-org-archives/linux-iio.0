@@ -1,98 +1,121 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA5FE335066
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 23:20:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 197F51A0728
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784244060; cv=none; b=QJSbjriLabdYu4DRVGlnUTLP0Vo92lmIZU9m2abHH5PX2MPhJMEhcRFUqVdSsTDF8vw8Lkpb8DAxxPNOLalZ+JR3DyVWUSwWRcov0t4E0qT4xKxhWOUvoJQ+ykumpRwh223X5nIKSbQjH7jiWHVCTVhWsboKiOTu3K+Ub+E3CJw=
+	t=1784248068; cv=none; b=KgqikkAN4ZejnTWotf5K6swylZt66cbvINtHM7ifphhc5TYQZj7CUnAqk78QJTfW+71Wd5Mv6U1y97L8u/8AGe1gdt3LhYbd1co0AIzCYJEzT3VZUW8iM6GIvl3VB/Dcogw4z8ER/Q9COEn0/RhUOD36BQp6ViwAHqMf7VhbVXU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784244060; c=relaxed/simple;
-	bh=ftw9Kxua3A5FXfCupMJdIbXNcwnLfkeF28nadC29jw4=;
+	s=arc-20240116; t=1784248068; c=relaxed/simple;
+	bh=WuxboMC8gwuYa9IvYfTHmmVyytT8FQoSrk7u1Q1bNM8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SEr2K+nc8NPMaWLK9XixckU6B/cQeZ2m4EsqFWDQYfAD83IQZpLO36ePKbSDitMtP+NW02aAwbQxcVp0LTF/jwjH+CaCt5RbYvaQq4Yfn8OrnyEvfNUmOZD6wiWLztQoIWXTgSWZjUuz4DJtlbCTF/u123OdWtYJGWL0+tBV4qk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=W4HXOGNW; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=bIOVUIaS; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=tHutuZHSYNTi7x7YM+BovJb979iCrq5UUdgGc1OPT+MO6WE4iJQO3Xh+Scm7PLNedDUMnrc6KNtvtGdyXVCaH6em3VxfmhoEbsq1V/3JLkS3j3r7il8fhYM7BdNHNmEH9PIRNMoeh3bmmg0EXO5HmWGKjGM/zh/UYmqhZivucwI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=amcTjttH; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=J5N12laW; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="W4HXOGNW";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="bIOVUIaS"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66GNINZd4024512
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 23:20:58 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="amcTjttH";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="J5N12laW"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66GNJS4J120565
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:45 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	3hkNEDV7VaPjmHO2+DLTkRD6nf1Orhub6TsamTsGDoQ=; b=W4HXOGNW7sITPJKo
-	YvYV2xVhaDS3D0QwgNDa1nLZr4dT1f2rQ1W822wzQf24JFfEchPMGpcjiK+gP47N
-	uTxvM9trVbbiuQtck1ZKeH92OITqjgQDyYGC7Hx+Sh4KBNJSAiYSvSLly4cS5k9V
-	PymNb8yphPTO6id21E7LLKKmcdPvP9RgW9JUk4ww9Unm81XYo6UlYl5aeXV8Kt9s
-	sXpudQEraIFbooMznZOGXtvkg5LfZMU4vgi5O6k5Vd75hXD55uHbfXmbf/ctUsYk
-	rh2AtQ7pNgu+hqlKf+axtgOXf728J2CGdmZZsgZ2qjRmn03zqs49jLQTmzt6KSYO
-	W6lb8A==
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ff3u8h65j-1
+	CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=; b=amcTjttHrWtguKC5
+	n++lHJEs5cWDSbrwXvydXhhqunjR7ll8/C0DW8kN9C+hSMohgftQUZLG6krSoG2q
+	AJaR4wmVw3hM2uJI7ByZYhtiKDm5bQUMjaJkqH3cS21J95WK6WmCRyd9ExGRW6L7
+	v7ZZ4Y/fdnneG7aPBMTFocabwVSjpLBtqbNeehXf9C7Ew8yX5ev2PXS1PkPWDS6Q
+	m7KgVk3VEuAjSIw9fmtKPQdCtx4+GpYw35ECCXAvPyYfvFWwOVQBeOn7Gybpgoe4
+	ogzAXGzGIzJzBd9v90ay8F8xZt6aghIG/HTOoddLcJ9sN4W7yNDRoO+6EhZV4WzU
+	JZvh+g==
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4feu10bxw0-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 23:20:57 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c8952346bb9so6158436a12.2
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 16:20:57 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:27:45 +0000 (GMT)
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-c88aab7c1fcso17071535a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 17:27:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784244057; x=1784848857; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1784248065; x=1784852865; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:organization
          :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to:content-type;
-        bh=3hkNEDV7VaPjmHO2+DLTkRD6nf1Orhub6TsamTsGDoQ=;
-        b=bIOVUIaShEfoOygNSQbjW+VYpFcw5nPOqSATg2HdrqUidkfZW0bQsfWTYVbCAhW9LS
-         Fr/iVcwyLnAg0qdvKYbpyt+0XAPnNSiQwOQrDBV9gbsBMbuIUgDYpbzLF1JDkN48QxXL
-         LxM1qOpM58IXYZeR5jGwKXPM0GULNk//JYYSz4v4lX5gtJtIeXP98bw9amD5WxFogl8T
-         PbSq2/Q7oQLvF8QhOZqhe54o/BFddmqTsRNbUv3x/4WkL1/mw9MGH5PwE0CKMKXmUSiB
-         bOFVUDVbo3N168pBHI8R39Ojj/PY++QoTDOJXxS0/4fREmCSI0jSfaCenAQLGX8i+kxL
-         PsTA==
+        bh=CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=;
+        b=J5N12laWJ4tlObv15JycFnYxrI3ljqf+5xWw8JwbTnjpAoQtQgS0KBhIIo7uKjALmQ
+         wXLDr6jGpwQqOXMOJwTaOBecd4c8VkkEuQANqm2tVM54oBJExXPLfK2x1pVLK6tTG5DX
+         KCTfhpdZh09tnt9fi9+7OtgX0a060KUWjIpGU6B4UzS0f03LoouEun3NhcQ/G8BX/pLk
+         MWgLoZiMRf1KCBNhzEZFVPRqXUuPtZmGobPMEP/sph0YjpqQjNmAiM0G3Fa35qZiE2V2
+         Eg4csrNvrLniC5E4Ixj3Pu8jOK3el3iL5dbbTPX/kmDZCQ4AcDMOFqbhIDwqRWpC50KT
+         hsVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784244057; x=1784848857;
+        d=1e100.net; s=20251104; t=1784248065; x=1784852865;
         h=content-transfer-encoding:content-type:mime-version:organization
          :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=3hkNEDV7VaPjmHO2+DLTkRD6nf1Orhub6TsamTsGDoQ=;
-        b=Y+EbNAftOAoTqxlNoipBruyJoj1R3DiftSxwLS6aBZ+PhKuRHxV+CzXNy4UT15EwwC
-         zOO8+SRHWv56Rztrl4EBKoPGqli7B3MHvFu71VbcQNfBYbl4O0d6Cced1600ip5q0dFB
-         kKQYE6F5FUXMKHc3JdtLwMHLOepDurK6+lZu7H3339H/A0q2NrlH+Fq5auN2EnhFP3/7
-         5peFpWFqWZAuiTBvoXS0E3jLwWy4XCyhZkh3ZgkKWLkEGa6rK+YVbKb6ZvGwB8K/W37W
-         xNlKtbh/j1XS4/0tKbV5eaXraPH5t+iPErUSRz285v44SFi7Jze8jqRxzFR3zDawIIMx
-         XZig==
-X-Gm-Message-State: AOJu0YzeoMVi7Uw1aq1c6O/1I1QiS5x4FZ5Ck3gMRfvzwpkyYzmqGkJ1
-	folJj++W1oxqvx5ZOv5MF0+3+ME0sGjDdBj/KB9QyEuN/ATU26e6SVmaMnWTLuVkAvd1rf3Wb0x
-	qFi/hGNPlpBqku5jBhkHwPRuGjo0PTuq5zinomYozTppWvWSHHjaJSXQXnZKSiExbmuH4NxE=
-X-Gm-Gg: AfdE7cn/pljsCWV8gm6v3/lSO29D2u0H6KCDHYzzUPCYwvTIRa1d7aZzvNO+zqVutR+
-	gYKg3YNPkHnVq5DTUd6fha5vKSL0mCSLxIhAONLF+idFfS4Jbyqnu8UdoxdpMnlBGs465MVQl4v
-	4aJOpyTJ5SFhuFqbVts7f1NiDJZ6f5WeA/J91wNYeUDH7F8ZstE9AQ0dwFh2AfujnEyLNrgaQQW
-	11JXGTtB9VUw/ytg1HFE3G4DpFuLc3b0VtsKiKvnr0+onB/aRZihdXHo5z1G82OTYHXZZuppluY
-	2lI1nLzpvFnIXKljH6178BOE/6F+HnMSqUA9aJ9Rnrc7s4NMV5Kt1p+0XtjgJfNH/nvKym2iksz
-	3s3ub9ts1WMst01qhHlXMHCd/0A==
-X-Received: by 2002:a05:6a21:48f:b0:3b3:1c7b:ff7 with SMTP id adf61e73a8af0-3c3ad9691cdmr22487637.46.1784244057220;
-        Thu, 16 Jul 2026 16:20:57 -0700 (PDT)
-X-Received: by 2002:a05:6a21:48f:b0:3b3:1c7b:ff7 with SMTP id adf61e73a8af0-3c3ad9691cdmr22458637.46.1784244056740;
-        Thu, 16 Jul 2026 16:20:56 -0700 (PDT)
+        bh=CXMtlO1SDpulkCJC4RwfiN8jyZ4jMbi7pNzjkUsjMVw=;
+        b=mx0PZjccXz0ajdJ5egWTuFamKLRYqJ/qnDSYHAZkXAiHjwHsMgtPKGzvBNwbBbjJEc
+         L/1lMQmOGaeP7k3WzdqYJHhKuBw2SdyPevcHHGLRbGH1X6nEO0UenV6NiMaCk8ZYVkEg
+         rT4FQLgsVjMJRC2ZgMq5wdduX/DuOScNz/qrt0EKWiliDm+OqwxjRS5Q5+8g2qfFMcft
+         2lFrEc0nPrrLZbXbyFfsVBjXz+yWlnWtHThVzpuqgIa1vYxdAQMvu2uvLsgsPnYQMRQF
+         aN53b2haACeUd22lAX5872veGmkdFKM0Ia7Tf6Eqiymq8NzMKlh2YrXtkBISDW7MeOI6
+         mw/w==
+X-Forwarded-Encrypted: i=1; AHgh+RrKkgkTsSUTsOy2NOulgHOWE1j+OjRCToSnVGutaM0bHDStlwl18D7yWK0m3HfBpsrw5CjB2xuilOU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxlMIYV8X87faP7syRW2Tp1KHqICr7Ep2aFLGPmt3MCgnH9eNBi
+	uRwNYmx2HfpoC2c8CyySLroZ9MWJxt2HHYcEWukPEE3fLx33tvsK3KXH3gJ00suBH4rpvdxRAbL
+	H2DtMj8BS32rHug6jmGudCxDCXHOOLwTy8j/TVnRqyZRx3RggtqcGYG2bIn3NcX4=
+X-Gm-Gg: AfdE7cn9C3TY18b2p8fdQKtKgaClIkJ5ijsBatl6e3T7xQyls17APPlvaqzbK6BEzwn
+	Ep2QMN7T5OUzrRasa9EOVKpyElIv4uqOrtDc9adZ9/MzX0YjP8xH45FnaNDLboNrWy6NEvvNb11
+	TB16cG6ALhF2MF7CZxTt38RrvpSlpeOBUjNUkOb7S81AReUsulDpQ8LGQF0HPXat8qcqz1ZxJTI
+	Fw7pzQMZF0eNwvr7N4e5dJPdxNormyJh7THCEl8llRXNHtPTV/Ji3Q1ZB9OLvsTctdEbBbv+32o
+	FEVobnJ8K+5klClpOUcm9y0hfBZR7X1nKl2bQ/SA8J3LEwKXv+NteqRVIsTG3QaSZRwI0IPHYT2
+	Isj5e8inLCJEQexTrEEkvke6Rlg==
+X-Received: by 2002:a05:6a21:a8b:b0:3c0:9c18:d5a3 with SMTP id adf61e73a8af0-3c3ad97361bmr219831637.64.1784248064698;
+        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
+X-Received: by 2002:a05:6a21:a8b:b0:3c0:9c18:d5a3 with SMTP id adf61e73a8af0-3c3ad97361bmr219804637.64.1784248064246;
+        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
 Received: from localhost ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13cd428b2d3sm12873962c88.5.2026.07.16.16.20.55
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20c158sm523718eec.29.2026.07.16.17.27.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2026 16:20:56 -0700 (PDT)
-Date: Thu, 16 Jul 2026 16:20:53 -0700
+        Thu, 16 Jul 2026 17:27:44 -0700 (PDT)
+Date: Thu, 16 Jul 2026 17:27:40 -0700
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-        Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
- <andy@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
-        linux-i2c@vger.kernel.org
-Subject: Re: [RESEND PATCH 00/22] IIO: Clean out superfluous I2C checks for
- single transfers
-Message-ID: <20260716162053.00006f99@oss.qualcomm.com>
-In-Reply-To: <5e9b7479-ed16-48aa-bd4f-26abc09e690e@metafoo.de>
-References: <20260716005737.254577-1-jonathan.cameron@oss.qualcomm.com>
-	<5e9b7479-ed16-48aa-bd4f-26abc09e690e@metafoo.de>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
+        Jonathan Cameron
+ <jic23@kernel.org>,
+        Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-hardening@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>,
+        Michael Hennerich
+ <Michael.Hennerich@analog.com>,
+        David Lechner <dlechner@baylibre.com>,
+        Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Philipp
+ Zabel <p.zabel@pengutronix.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah
+ Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>,
+        "Gustavo A.
+ R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v7 07/17] iio: test: add kunit tests for channel prefix
+ naming generation
+Message-ID: <20260716172740.00002b37@oss.qualcomm.com>
+In-Reply-To: <alcpb-7GVSfk6jFB@ashevche-desk.local>
+References: <20260707-ad9910-iio-driver-v7-0-a4ec30f63700@analog.com>
+	<20260707-ad9910-iio-driver-v7-7-a4ec30f63700@analog.com>
+	<20260712020928.2c8d1667@jic23-huawei>
+	<egyms7ulkxsgu4pvfkoruelec3sf6ca4bndcuqkvxljrdluqwu@edlqne7oy3xs>
+	<20260714180812.000070c4@oss.qualcomm.com>
+	<alcpb-7GVSfk6jFB@ashevche-desk.local>
 Organization: Qualcomm
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 Precedence: bulk
@@ -103,164 +126,103 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: b2h8OamVSMCOFj3rQdCfKLZVZmc5bRdp
-X-Proofpoint-ORIG-GUID: b2h8OamVSMCOFj3rQdCfKLZVZmc5bRdp
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE2MDIzNiBTYWx0ZWRfX/OOyw2ihprDh
- Afvw0YVxpWFMRBQ8cmxihgpKp/jBT8KJPsSGxJu6arpcBO32xT/UQzmZfVM7Rlulat8cr4jvLIn
- mbeWvw/Euu4URSfUVZgzP/gy7v8whNU=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE2MDIzNiBTYWx0ZWRfXx/aE1HLUUwV0
- G/YjbiplLH+nNVilxFj5+u6Ox32aB3/CVS7NqP6xyG2aWBooP+/WISnKI3LGUY3eRkCe7+Ifz3i
- QgcRnPv+khWwqH6uFLYNqPn6kI8CsktVH1yMXeDy1tK2qH/YyCa0Jqj4/xinhWbwUVkqVVMKr9q
- RhLYNoZbSB+oSdHJIn0VISJoNtgTw9hCNSzEgHXcNbWOZe8Y8nF3CgEhTbF2pV86Mhiq9T9WblW
- e7/tx0Nivw2GuG9UkumZ3v1R/n7tnfzvozXrqkEKjstttG6ylnHyNyrFJpzRNzjgX4AUGdVGT75
- zKSPt+OlzGG0RfGbfu52H1NU1VsK76/iAPUz/oEWNYPbVOZiSy9nKA0oIZEmIwiAYbCByWcI550
- GTV3NPrbVAX3q1Rn1TJIf1kK43oi6NVya9jcRWz8tIiOMjka8X7lVdD9OWjj7ZUZqY8HkF7mWyS
- 4wBSZLZIhnYJ5lNQonw==
-X-Authority-Analysis: v=2.4 cv=TL11jVla c=1 sm=1 tr=0 ts=6a596759 cx=c_pps
- a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
+X-Proofpoint-ORIG-GUID: LCqZOMFeZUHRFaZw7Xn4s0ACACNAFk0f
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE3MDAwMiBTYWx0ZWRfXxh++vHSnk0Jd
+ oeX1Afm46YOtTk1Hfl/UegDgianHbEzs57UYOagiVicEtR7sEBBcGj5vpNPne0or3mW16Huy24C
+ nUocukPhSk7PEmXYgnkrOppirKavW6LVhrhuMVtIuhrRhTcQdnBGgXuUZxQHJVZa7ss8ppmU3fL
+ ViZMR+oy+RlpVvAXZSXV3AyZxFkLLGa/k2NSScFdVxYURrBffaBFIiSq7CLsNjeGSXOmBUkW28Y
+ I/P2uwvvgu12vb0BO4vf6IKEwif5B2GiGvxuokTQstaICcPPZA+a+dnZvc9FApzRcIaEMxN59GY
+ eF9kcs3Uk1E2Dxb6u7icC4v1pAteaylKbWmZw1PpENEdwh0QF+/YmRunXecDfL48ufTyIjxdcO+
+ ZdJQfWmMuEB5eTNeMWMNMYjW/Ag1kX+8UQdyvJCzM46j/t/fRi86nKsaHqr1E27JPzDsKLGOefp
+ qNoFrKVFh3P7T1P9qgQ==
+X-Proofpoint-GUID: LCqZOMFeZUHRFaZw7Xn4s0ACACNAFk0f
+X-Authority-Analysis: v=2.4 cv=BPODalQG c=1 sm=1 tr=0 ts=6a597701 cx=c_pps
+ a=rz3CxIlbcmazkYymdCej/Q==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
  a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=P-IC7800AAAA:8 a=EMjElgS10NdP6WehDt0A:9 a=CjuIK1q_8ugA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22 a=d3PnA9EDa4IxuAV0gXij:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
+ a=QyXUC8HyAAAA:8 a=pGLkceISAAAA:8 a=VwQbUJbxAAAA:8 a=xcsdVRPUYcZtn2NnLoAA:9
+ a=CjuIK1q_8ugA:10 a=bFCP_H2QrGi7Okbo017w:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE3MDAwMiBTYWx0ZWRfX1CO0vrhMHuM0
+ 2OX9F+0bRS1vvbmw6zPN7MN7xgwq0AzoUzmPQfNCkXvWnDKFZj9tlyC3caOQ9S+6fiXmrKyGlII
+ +BUBk386WxNo58pbOyIhQe7rc4QdKeo=
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-16_08,2026-07-15_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 clxscore=1015 lowpriorityscore=0
- spamscore=0 bulkscore=0 malwarescore=0 suspectscore=0 adultscore=0
- phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607160236
+ clxscore=1015 suspectscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
+ priorityscore=1501 phishscore=0 bulkscore=0 spamscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607170002
 
-On Thu, 16 Jul 2026 07:55:32 -0700
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+On Wed, 15 Jul 2026 09:32:15 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 7/15/26 5:57 PM, Jonathan Cameron wrote:
-> > Resend to include linux-iio. Sorry to all who get it twice.
-> >
-> > This came up in a recent review and I realised I have been giving incorrect
-> > review feedback for years. Both i2_master_send() and i2c_master_recv() plus
-> > the dma safe variants only ever return either an error or the full buffer
-> > size.  Short accesses do not occur.  
-> There is actually one interesting corner case. If 
-> i2c_transfer_buffer_flags() returns 0 i2c_master_{send,recv}() will also 
-> return 0, in which case the updated drivers will now read uninitialized 
-> memory. Maybe i2c_master_{send,recv}() needs to be updated to translate 
-> that to -EIO.
+> On Tue, Jul 14, 2026 at 06:08:12PM -0700, Jonathan Cameron wrote:
+> > On Mon, 13 Jul 2026 10:52:56 +0100
+> > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:  
+> > > On 12/07/26 02:09, Jonathan Cameron wrote:  
+> > > > On Tue, 07 Jul 2026 15:04:28 +0100
+> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:  
+> 
+> ...
+> 
+> > > > > Because __iio_chan_prefix_emit() is static, the test translation unit
+> > > > > is pulled into industrialio-core.c.    
+> 
+> KUnit also has static/non-static automation via a macro (defined in the
+> kunit/visibility.h) and I see that's used in the below example.
+> 
+> > > > Isn't there some magic route cases like this that makes it non static
+> > > > only when self tests are enabled? 
+> > > > Claude tells me to look at include/kunit/visibility.h    
+> > > 
+> > > There is, Although I think that using
+> > > 
+> > > 	#if IS_ENABLED(CONFIG_IIO_CHANNEL_PREFIX_KUNIT_TEST)
+> > > 		#include "test/iio-test-channel-prefix.c"
+> > > 	#endif
+> > > 
+> > > was more straight forward, less invasive and easier to change than..  
+> 
+> Maybe, but thanks to this thread, I fixed other modules that use their own
+> approach to use the standard KUnit infra for this (as below).
+> 
+> > > 	/* In "drivers/iio/industrialio-core.c" */
+> > > 
+> > > 	#include <kunit/visibility.h>
+> > > 	...
+> > > 	VISIBLE_IF_KUNIT ssize_t __iio_chan_prefix_emit(...)
+> > > 	{
+> > > 	...
+> > > 	}
+> > > 	EXPORT_SYMBOL_IF_KUNIT(__iio_chan_prefix_emit);
+> > > 
+> > > 	/* In "iio_core.h" */
+> > > 
+> > > 	#if IS_ENABLED(CONFIG_KUNIT)
+> > > 		ssize_t __iio_chan_prefix_emit(...);
+> > > 	#endif
+> > > 
+> > > 	/* In "drivers/iio/test/iio-test-channel-prefix.c" */
+> > > 
+> > > 	#include <kunit/visibility.h>
+> > > 	#include <iio_core.h>
+> > > 	...
+> > > 	MODULE_IMPORT_NS("EXPORTED_FOR_KUNIT_TESTING");
+> > > 	...
+> > > 	// Use __iio_chan_prefix_emit() in tests  
+> > 
+> > I'd rather this wasn't built into the core module.  So prefer you jump
+> > though those hoops.  
+> 
+> Hmm... The above (while being verbose) is the standard way of how we export
+> symbols for KUnit tests. Do you have a better alternative that everyone can
+> use? (Not only IIO subsystem.)
 
-That's indeed curious (and I'd missed it entirely!).
-
-So ends up being either the master_xfer_atomic() or master_xfer() callbacks
-returning 0.  master_xfer_atomic() is novel, it's a union with xfer_atomic()
-and no one ever sets it via that union element but given the types are the same
-all calls will actually be to xfer_atomic().
-
-Could remove that complexity whilst here but there a bunch of related callbacks
-(e.g. master_xfer() in union with xfer() where drivers are still using the old
-naming and I'm not sure I want to chase that through various subsystem trees
-right now (though for fun - and maybe profit) I had claude work out a series.
-Was fun watching it write a semantic patch and spend a while debugging it.
-Glad it has as much trouble with coccinelle scripts as the rest of us.
-There are still a few hundred instances and I haven't touched all the callbacks,
-just this pair.
-
-Anyhow, back to the question of whether they do return 0.  Yup they do :(
-
-https://elixir.bootlin.com/linux/v7.1.3/source/drivers/i2c/busses/i2c-cadence.c#L1153
-
-So any defense against that case would require hardening further up the stack.
-
-+CC Andi and the i2c list.  Would anyone mind a patch to do something like:
-
- static inline int i2c_master_recv(const struct i2c_client *client,
-                                  char *buf, int count)
- {
--       return i2c_transfer_buffer_flags(client, buf, count, I2C_M_RD);
-+       int ret;
-+
-+       ret = i2c_transfer_buffer_flags(client, buf, count, I2C_M_RD);
-+       if (ret == 0)
-+               return -EIO;
-+
-+       return ret;
- };
-
-Just to avoid the need for special case checks on ever call from every driver
-so that they return ret if negative or else have to check for non 0 return
-value and return -EIO or similar.   Maybe somewhere out there is someone using
-that 0 to mean something magic, but I doubt it.
+Ah. I put that comment in an unhelpful place. I meant the include above not this bit.
+Absolutely fine with the exports being there.
 
 Jonathan
 
-`
-> >
-> > This series (also my first upstream series prepared by poking claude)
-> > removes the redundant checks from all IIO drivers.
-> >
-> > Thanks,
-> >
-> > Jonathan
-> >
-> > Jonathan Cameron (22):
-> >    iio: adc: ltc2471: Remove redundant i2c_master_recv() length check
-> >    iio: adc: ti-ads7138: Remove redundant i2c_master_send() length checks
-> >    iio: adc: versal-sysmon: Remove redundant i2c_master_{send,recv}()
-> >      length checks
-> >    iio: chemical: scd30: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: chemical: scd4x: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: chemical: sgp30: Remove redundant i2c_master_recv() length check
-> >    iio: chemical: sgp40: Remove redundant i2c_master_recv() length check
-> >    iio: chemical: sps30: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: dac: ad5446: Remove redundant i2c_master_send() length check
-> >    iio: dac: ad5696: Remove redundant i2c_master_send() length check
-> >    iio: dac: m62332: Remove redundant i2c_master_send() length check
-> >    iio: dac: max517: Remove redundant i2c_master_send() length check
-> >    iio: dac: max5821: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: dac: mcp4725: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: dac: mcp4728: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: light: lv0104cs: Remove redundant i2c_master_{send,recv}() length
-> >      checks
-> >    iio: potentiometer: ad5110: Remove redundant i2c_master_{send,recv}()
-> >      length checks
-> >    iio: pressure: abp2030pa: Remove redundant i2c_master_{send,recv}()
-> >      length checks
-> >    iio: pressure: adp810: Remove redundant i2c_master_{send,recv}()
-> >      length checks
-> >    iio: pressure: icp10100: Remove redundant i2c_master_send() length
-> >      check
-> >    iio: pressure: mprls0025pa: Remove redundant i2c_master_{send,recv}()
-> >      length checks
-> >    iio: pressure: sdp500: Remove redundant i2c_master_recv() length check
-> >
-> >   drivers/iio/adc/ltc2471.c              |  2 --
-> >   drivers/iio/adc/ti-ads7138.c           |  4 ----
-> >   drivers/iio/adc/versal-sysmon-i2c.c    |  6 ------
-> >   drivers/iio/chemical/scd30_i2c.c       |  4 ----
-> >   drivers/iio/chemical/scd4x.c           |  8 --------
-> >   drivers/iio/chemical/sgp30.c           |  2 --
-> >   drivers/iio/chemical/sgp40.c           |  4 ----
-> >   drivers/iio/chemical/sps30_i2c.c       |  4 ----
-> >   drivers/iio/dac/ad5446-i2c.c           |  2 --
-> >   drivers/iio/dac/ad5696-i2c.c           |  2 +-
-> >   drivers/iio/dac/m62332.c               |  2 --
-> >   drivers/iio/dac/max517.c               |  6 ++----
-> >   drivers/iio/dac/max5821.c              | 14 ++------------
-> >   drivers/iio/dac/mcp4725.c              | 22 ++++++----------------
-> >   drivers/iio/dac/mcp4728.c              | 13 +------------
-> >   drivers/iio/light/lv0104cs.c           |  4 ----
-> >   drivers/iio/potentiometer/ad5110.c     | 18 +++---------------
-> >   drivers/iio/pressure/abp2030pa_i2c.c   |  4 ----
-> >   drivers/iio/pressure/adp810.c          |  4 ----
-> >   drivers/iio/pressure/icp10100.c        |  2 --
-> >   drivers/iio/pressure/mprls0025pa_i2c.c |  4 ----
-> >   drivers/iio/pressure/sdp500.c          |  4 ----
-> >   22 files changed, 15 insertions(+), 120 deletions(-)
-> >  
 > 
 
