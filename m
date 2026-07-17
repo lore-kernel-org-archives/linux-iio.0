@@ -1,90 +1,80 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93AF63806C0
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 18:51:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB9EF363C61
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 20:11:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784314269; cv=none; b=MaXe3h1mSLH2Mu4GIsFK6qYrMlFus6ZJJBuLfBktN3dT95By7R3RCFvoVJ6hbE8BujDfQQ0r3IkSLGMfC+geyligDsRcAGNk8kAevgh/BehyJTJFlFq8aCPuRXli6Q/Tboxx2qDQUfSr5DNymRhyuiLBAvRGXLBaE0btUlQsf2Y=
+	t=1784319104; cv=none; b=JqqvogyY911pdihDnQEotYXbcZ8r45saulsYzB6pZEyuIRvpFNaZtm1NKZmUGnKa5Pz1GXiXxc5peHC5cSfdjKy0B40U7nuBiM0M6p1jexeZi7jS/ipflzc86obkl9bVdQg0Ee+Yo9LF4SJJ83BzkBhHgzt07QSZjkMBYSnGnms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784314269; c=relaxed/simple;
-	bh=fxVLOlAEEZbasRlArOnsqOxmKKwvvuCbKQBI3wtqDEE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZK8IJ+Sj/QHXzvCUm2Qvfprnkhm6ccu63uKsZgiSnNalZ9xtT2CZvZtF9ZPtK1QWi5Y6AX6k7LK1FYMD1/QJXHs1EuNeQvVMRuoHO+K+QUZ5WZx7MztyGkdV7Kg0c4WT5jxqEx0wCoBDv0SRjoAPe9Ospdw5h0xZuFSdgbjZ3bo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qlPXlQfc; arc=none smtp.client-ip=209.85.208.171
+	s=arc-20240116; t=1784319104; c=relaxed/simple;
+	bh=rOYOgDHUoaT5zBpQ43IbV/4o/f1K6F9EjiiDV2lKH6Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XqjihC/2lg7gWcuvKDaxxNtFUolEZ0gbSA3FYEo6uyk85plT70WF23QE1Rla5ZshVQZEC6qNViqyg3/61LhVS3SYOhF2qNFgs32EkJ6iP/odz148e+De6cwkTNF96JeMmO8hFi+r+cPk9V1Kjt9rvdFUyLhLqsLH68JMOJ/wYRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=URxEQcGu; arc=none smtp.client-ip=209.85.167.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qlPXlQfc"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-39c8dbf4ef0so73565041fa.2
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 11:51:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="URxEQcGu"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5aebd52488cso8618902e87.2
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 13:11:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784314265; x=1784919065; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Wbe43CsBKlhwl8/JrNzWyfSM3Jsa2BsdWg38CIyjaB0=;
-        b=qlPXlQfccrnL2jrsX+qfgkXSi1JbplodHaqm3rc4kwNyzrmGehXUyXS1OsgB6qWx02
-         RFz8qim9hN/8uasatfsT4IX3tc3zc1swxPrQ5WstVBEL0GH22wZq3TtyatdEUJYkTh7B
-         FJqDUE5lzdGV0pV4dl/+dK7QLzITRStmLGhIj1RRR8Q/z7ak8QzGq4CFF5Wegjyn93r9
-         LYRf5LgPNqEO7UQYkSA+c9l8Ai1XEbOMog5ofFsstPJapuKKeQDGlDsSWO+gcziYPDNE
-         ySGTDKrPKDp92nHrU6GCaQkJnJWEEP+J6EKGdaTMRKzsWblWNR8Lgof9r9N/BPVB/NiV
-         YqeA==
+        d=gmail.com; s=20251104; t=1784319101; x=1784923901; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xjvzhg1EX0MdL+V8itOgqIATlwzr6rOfeYLeZEPBbMo=;
+        b=URxEQcGu3sAFhDH1lLCZXBt+ZNjsoBJiq4R+0oZo104BglVqVcF0suNt9HZUcx9Gfq
+         VTAsF8OCLEIkt57dGqq4L1Hs5Uwul5ZZDbA/El0IIjQJzfjS2Glqj3YIq1Y1cMOnGrbz
+         3lModR5gZUj017u1dmppM10H/DKJn4BNu8QFh0FPUrcw5JQiujPd4UGqmF782fScsd7c
+         +3KOEKftyggzkJDBcZ5brObtfIh9fPJ0IZ8EMQFbuBHN2+JaWRTqP5uI8MXWFeHID+Ek
+         /Jqn2lqtw5sVnoHL1H8r7tXzdc380M0Cm8tAVZEpJhnU2JEBt5c5glr5pgG1eTaDtc7K
+         mX8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784314265; x=1784919065;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Wbe43CsBKlhwl8/JrNzWyfSM3Jsa2BsdWg38CIyjaB0=;
-        b=IN+Lt+1fl/lSdZaVW079YBVZvUoqpTcRjbC4tghAeHA/nrZuEY5A1SD+n2TYpie21p
-         SoYlKrnYkcOJTCmGSYGf4ynCQ/l7bQIvaJJnKGSFu67lDTay0MyzxLH5f8jCzf/FGgsj
-         KOLaq+mZTPR9IJ+BAfx2zT3Kd2RIpBrxrmuYtHAV4+TKTdhzZSGkOph4goenyPA35vFC
-         qt8w+2u908GgH5/1x69hb60TjYNZQF4mdNdZv9wtFv6fpbQ5CHYEHY+VXUUXaGTulle8
-         oEELaQxYlC0sH3jBTJ3Mxv4TXSDJD0WQB8D/FQ5p5BWIOdU1M4Ht2+5xaLQ2PhvwEwEm
-         lJGw==
-X-Gm-Message-State: AOJu0YyOXx8O+e8Y61fWKpYzEBRv0qlVNurMO4dh0wsHU77Aj5cAYP8t
-	xYDVLiPXbrP/Mesu3IFONLR8qmotpVO82x7+u4akjk5IFhaUzYOypkI0bYodOxzw
-X-Gm-Gg: AfdE7clp0UBsW2lkYfSdJjn7LDUZWGVQ2j7B0NZd6LdpMmH15WlAvYC4REkM2RjQ118
-	LbXyrPMEcUdI+iiN2bceOGcWdep96PGPj24mnpSsbnS+qdr/hsNtgMjp2D+R2MfGCmPKAa0EDFp
-	p6yRyofrF6DrXnSe7Woae7KHaQ6Eoac/6dwtdmBFoU8eW1L4+kDqQFgmh10+vyFGbGstOpSxA1w
-	MUCmZGDmqegIpsZ1m9wtlGUeHsquqrXuxqB3iOOfT7yElK9WR16fBN5Fk+17femrRJpehKUmNMm
-	IOYM98V9wyR1WRy18bks7+aVZ2Ae5YWfoKn9HqNj/oopzPSb465jrImSV/LI3eZzeWs/z7j0NJa
-	FZMCNo+y/SoE3DJUHZafGnJ+dyNv7fb716/Ok668idv4Xv6g3m3PtqXl9LT4+nIgYM+ys91lbnp
-	ZhN/jjWALdMXqvD+PFvqzyU+NPOea4XFPoofV3
-X-Received: by 2002:a2e:be83:0:b0:39c:9955:9e0c with SMTP id 38308e7fff4ca-39eb274e2bfmr9366311fa.6.1784314265496;
-        Fri, 17 Jul 2026 11:51:05 -0700 (PDT)
-Received: from MSI-LINUX.kielce.vectranet.pl ([2a02:2a40:27ec:2900:9d0c:8f55:3d10:318d])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-39eb4fd4ba2sm3431721fa.24.2026.07.17.11.51.00
+        d=1e100.net; s=20251104; t=1784319101; x=1784923901;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=xjvzhg1EX0MdL+V8itOgqIATlwzr6rOfeYLeZEPBbMo=;
+        b=pYC0jdxkeCtspihRD0EqIob9pg80GF/Ztm4QQo/G3OBWpPrO5cE4HJ92xFqKRrx0jf
+         79j4oQ/4llZPkBc9p1LucXh92l/FixUdc3gb2mrnSstiUx20Uvsmn/lVrS+OyTwSeNQk
+         H6XMadtr3jVKbZZg7bQ9oN4/q9fDseofddjKyfkwJAv691+j6KXl8wWZYlVqeiGtqKSa
+         8n0VJ7Wtwo3yVxMQtE9C/IaTEm4xcMkdbc3GktM/Z9zwwoBhFfhU7FjqbJKrNsPL9WpY
+         KZRWztJoS1R/Kz6hiLA6couk/jAM4wwaRijO2LILyJQq0bP8Y0gEiKnbH60fIwCk0K2z
+         bj2g==
+X-Gm-Message-State: AOJu0Yw+LoijnYh66j9LtIzt/RDmfKhQoxUlch32HFPkN0MYBG8fu/z6
+	n3ZZFCwuQzdO31Pe0NwrMssZdfHf1tlyJY4PpJlS6gkalYIiQQcwHp25ZzwlnoSr1v6sQA==
+X-Gm-Gg: AfdE7cmrQgwge0wMsfm71GY/EfrxF5NNLnDVpPFPsiEkKrGEhaYIStpM2KeVH4w+YG5
+	HSDfVpQST8sTlc0H5oEhx45dCRCQvqUMfRcaXYIQC40imROLQpBZ4YMDUS3A8GwmKs6ak9QaDzA
+	L0HIYrpoL7Jq7PAPkvq0/1z+pL1xiB/YKomQsMLO1jbgoVdOJK/L/gDY5qIAJud9y7nRgk543cS
+	Jl6do5zGcBHK2WfVVpfoqFjzRbn8Q5Xryp9x17erLbw/3iCyazy6ePWYsD5hcMZylxPLimo3Oir
+	H73GPA6ZAmlJv46uxJPZ5gy5GMLG5u/10D9FovdzMl/XGPiHEOHAQrTNa2ekp/c0sSbAT0R0CFH
+	ydnR6qElqtqxDtPwhZXRvzC6iDbEveMnBspMCw/+dy13/+kUrzyaB/4iHei1l2xY910gBR4RAmK
+	eOYPeYmJ3DdoxwtjQGvW9HQ7wVQy8Y4Y4=
+X-Received: by 2002:a05:6512:a345:b0:5b1:589b:3579 with SMTP id 2adb3069b0e04-5b28f861edcmr734076e87.4.1784319100428;
+        Fri, 17 Jul 2026 13:11:40 -0700 (PDT)
+Received: from Shofiq.home (87-92-108-63.bb.dnainternet.fi. [87.92.108.63])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b291da7bafsm571257e87.33.2026.07.17.13.11.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 11:51:03 -0700 (PDT)
-From: Jakub Szczudlo <jakubszczudlo40@gmail.com>
+        Fri, 17 Jul 2026 13:11:39 -0700 (PDT)
+From: Md Shofiqul Islam <shofiqtest@gmail.com>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	marcelo.schmitt@analog.com,
+Cc: Md Shofiqul Islam <shofiqtest@gmail.com>,
+	jic23@kernel.org,
+	devicetree@vger.kernel.org,
 	robh@kernel.org,
 	krzk+dt@kernel.org,
 	conor+dt@kernel.org,
-	mike.looijmans@topic.nl,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	jorge.marques@analog.com,
-	antoniu.miclaus@analog.com,
-	mazziesaccount@gmail.com,
-	jishnu.prakash@oss.qualcomm.com,
-	duje@dujemihanovic.xyz,
-	wens@kernel.org,
-	sakari.ailus@linux.intel.com,
-	linusw@kernel.org,
-	Jakub Szczudlo <jakubszczudlo40@gmail.com>
-Subject: [PATCH v8 3/3] iio: adc: ti-ads1100: Add ti-ads1110 support to  ti-ads1100 driver
-Date: Fri, 17 Jul 2026 20:50:33 +0200
-Message-ID: <20260717185033.246580-4-jakubszczudlo40@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260717185033.246580-1-jakubszczudlo40@gmail.com>
-References: <20260717185033.246580-1-jakubszczudlo40@gmail.com>
+	andriy.shevchenko@intel.com,
+	u.kleine-koenig@baylibre.com,
+	joshua.crofts1@gmail.com,
+	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	linux@analog.com,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v10 0/2] iio: health: add MAX86150 ECG and PPG biosensor driver
+Date: Fri, 17 Jul 2026 23:11:35 +0300
+Message-ID: <20260717201138.1078019-1-shofiqtest@gmail.com>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -93,256 +83,129 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add ADS1110 support that have faster datarate than ADS1100, it also uses
-internal voltage reference of 2.048V for measurement.
+Sorry for the long gap since v9. Between then and now the driver's
+buffer implementation was rewritten from the kfifo-based design onto
+the standard IIO hardware-trigger and triggered-buffer framework, and
+I read through every open comment from every reviewer before sending
+this rather than sending again too quickly.
 
-Signed-off-by: Jakub Szczudlo <jakubszczudlo40@gmail.com>
----
- drivers/iio/adc/Kconfig      |  9 ++--
- drivers/iio/adc/ti-ads1100.c | 93 ++++++++++++++++++++++++++----------
- 2 files changed, 74 insertions(+), 28 deletions(-)
+I used AI assistance (Claude, Sonnet 5) while working through this, for
+understanding kernel conventions and cross-checking against subsystem
+patterns; that's disclosed via Assisted-by: Claude:claude-sonnet-5 tags
+on both patches per Documentation/process/coding-assistants.rst, and
+the design decisions and responsibility for what's here are mine.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 3755a81c1efd..49a9ac3bf43d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1768,11 +1768,14 @@ config TI_ADS1018
-          called ti-ads1018.
- 
- config TI_ADS1100
--	tristate "Texas Instruments ADS1100 and ADS1000 ADC"
-+	tristate "Texas Instruments ADS1100 and similar single channel I2C ADC"
- 	depends on I2C
- 	help
--	  If you say yes here you get support for Texas Instruments ADS1100 and
--	  ADS1000 ADC chips.
-+	  If you say yes here you get support for TI single channel I2C Analog
-+	  Devices.
-+	  * ADS1000 12-Bit, 128 SPS Analog-to-Digital Converter
-+	  * ADS1100 16-Bit, 128 SPS Analog-to-Digital Converter
-+	  * ADS1110 16-Bit, 240 SPS Analog-to-Digital Converter
- 
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-ads1100.
-diff --git a/drivers/iio/adc/ti-ads1100.c b/drivers/iio/adc/ti-ads1100.c
-index 363f790ca5d5..19533667e6cd 100644
---- a/drivers/iio/adc/ti-ads1100.c
-+++ b/drivers/iio/adc/ti-ads1100.c
-@@ -5,7 +5,7 @@
-  * Copyright (c) 2023, Topic Embedded Products
-  *
-  * Datasheet: https://www.ti.com/lit/gpn/ads1100
-- * IIO driver for ADS1100 and ADS1000 ADC 16-bit I2C
-+ * IIO driver for ADS1100 and similar single channel ADC 16-bit I2C
-  */
- 
- #include <linux/bitfield.h>
-@@ -41,20 +41,44 @@
- #define	ADS1100_SINGLESHOT	ADS1100_CFG_SC
- 
- #define ADS1100_SLEEP_DELAY_MS	2000
-+#define ADS1110_INTERNAL_REF_mV 2048
- 
- static const int ads1100_data_rate[] = { 128, 32, 16, 8 };
-+static const int ads1110_data_rate[] = { 240, 60, 30, 15 };
- static const int ads1100_data_rate_bits[] = { 12, 14, 15, 16 };
- 
- /* Timeout based on the minimum sample rate of 8 SPS (7500ms) */
- #define ADS1100_MAX_DRDY_TIMEOUT_US	(7500 * USEC_PER_MSEC)
- 
-+struct ads1100_config {
-+	const char *name;
-+	const int *available_data_rate_hz;
-+	const int data_rate_count;
-+	bool has_internal_vref_only;
-+};
-+
-+static const struct ads1100_config ads1100_config = {
-+	.name = "ads1100",
-+	.available_data_rate_hz = ads1100_data_rate,
-+	.data_rate_count = ARRAY_SIZE(ads1100_data_rate),
-+	.has_internal_vref_only = false,
-+};
-+
-+static const struct ads1100_config ads1110_config = {
-+	.name = "ads1110",
-+	.available_data_rate_hz = ads1110_data_rate,
-+	.data_rate_count = ARRAY_SIZE(ads1110_data_rate),
-+	.has_internal_vref_only = true,
-+};
-+
- struct ads1100_data {
- 	struct i2c_client *client;
- 	struct regulator *reg_vdd;
- 	struct mutex lock;
- 	int scale_avail[2 * 4]; /* 4 gain settings */
-+	const struct ads1100_config *chip_info;
- 	u8 config;
--	bool supports_data_rate; /* Only the ADS1100 can select the rate */
-+	bool supports_data_rate;
- };
- 
- static const struct iio_chan_spec ads1100_channel = {
-@@ -90,6 +114,20 @@ static int ads1100_set_config_bits(struct ads1100_data *data, u8 mask, u8 value)
- 	return 0;
- };
- 
-+static int ads1100_get_vref_millivolts(struct ads1100_data *data)
-+{
-+	int voltage_uV;
-+
-+	if (data->chip_info->has_internal_vref_only)
-+		return ADS1110_INTERNAL_REF_mV;
-+
-+	voltage_uV = regulator_get_voltage(data->reg_vdd);
-+	if (voltage_uV < 0)
-+		return voltage_uV;
-+
-+	return voltage_uV / (MICRO / MILLI);
-+}
-+
- static int ads1100_data_bits(struct ads1100_data *data)
- {
- 	return ads1100_data_rate_bits[FIELD_GET(ADS1100_DR_MASK, data->config)];
-@@ -139,14 +177,16 @@ static int ads1100_new_data_is_ready(struct ads1100_data *data)
- 		return ret;
- 	}
- 
--	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]) ? 0 : 1;
-+	return FIELD_GET(ADS1100_CFG_ST_BSY, buffer[2]);
- }
- 
- static int ads1100_poll_data_ready(struct ads1100_data *data)
- {
--	int data_rate_Hz = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK, data->config)];
-+	int data_rate_index = FIELD_GET(ADS1100_DR_MASK, data->config);
-+	int data_rate_Hz = data->chip_info->available_data_rate_hz[data_rate_index];
- 	/* To be sure we wait 5 times more than data rate */
--	unsigned long wait_time_us = DIV_ROUND_CLOSEST(USEC_PER_SEC, 2 * data_rate_Hz);
-+	unsigned long period_us = DIV_ROUND_CLOSEST(USEC_PER_SEC, data_rate_Hz);
-+	unsigned long wait_time_us = 5UL * period_us;
- 	int data_ready;
- 	u8 buffer[3];
- 	int ret;
-@@ -159,7 +199,7 @@ static int ads1100_poll_data_ready(struct ads1100_data *data)
- 	}
- 
- 	ret = readx_poll_timeout(ads1100_new_data_is_ready, data,
--				 data_ready, data_ready != 0,
-+				 data_ready, data_ready == 0,
- 				 wait_time_us, ADS1100_MAX_DRDY_TIMEOUT_US);
- 	if (data_ready < 0)
- 		return data_ready;
-@@ -185,7 +225,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
- 	if (ret)
- 		return ret;
- 
--	microvolts = regulator_get_voltage(data->reg_vdd);
-+	microvolts = ads1100_get_vref_millivolts(data) * (MICRO / MILLI);
- 	/*
- 	 * val2 is in 'micro' units, n = val2 / 1000000
- 	 * result must be millivolts, d = microvolts / 1000
-@@ -208,9 +248,9 @@ static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
- 	unsigned int size;
- 	int ret;
- 
--	size = data->supports_data_rate ? ARRAY_SIZE(ads1100_data_rate) : 1;
-+	size = data->supports_data_rate ? data->chip_info->data_rate_count : 1;
- 	for (i = 0; i < size; i++) {
--		if (ads1100_data_rate[i] == rate)
-+		if (data->chip_info->available_data_rate_hz[i] == rate)
- 			break;
- 	}
- 
-@@ -230,14 +270,9 @@ static int ads1100_set_data_rate(struct ads1100_data *data, int chan, int rate)
- 	return ads1100_poll_data_ready(data);
- }
- 
--static int ads1100_get_vdd_millivolts(struct ads1100_data *data)
--{
--	return regulator_get_voltage(data->reg_vdd) / (MICRO / MILLI);
--}
--
- static void ads1100_calc_scale_avail(struct ads1100_data *data)
- {
--	int millivolts = ads1100_get_vdd_millivolts(data);
-+	int millivolts = ads1100_get_vref_millivolts(data);
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(data->scale_avail) / 2; i++) {
-@@ -259,9 +294,9 @@ static int ads1100_read_avail(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		*type = IIO_VAL_INT;
--		*vals = ads1100_data_rate;
-+		*vals = data->chip_info->available_data_rate_hz;
- 		if (data->supports_data_rate)
--			*length = ARRAY_SIZE(ads1100_data_rate);
-+			*length = data->chip_info->data_rate_count;
- 		else
- 			*length = 1;
- 		return IIO_AVAIL_LIST;
-@@ -281,6 +316,7 @@ static int ads1100_read_raw(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	struct ads1100_data *data = iio_priv(indio_dev);
-+	int data_rate_index;
- 
- 	guard(mutex)(&data->lock);
- 	switch (mask) {
-@@ -296,12 +332,12 @@ static int ads1100_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		/* full-scale is the supply voltage in millivolts */
--		*val = ads1100_get_vdd_millivolts(data);
-+		*val = ads1100_get_vref_millivolts(data);
- 		*val2 = 15 + FIELD_GET(ADS1100_PGA_MASK, data->config);
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		*val = ads1100_data_rate[FIELD_GET(ADS1100_DR_MASK,
--						   data->config)];
-+		data_rate_index = FIELD_GET(ADS1100_DR_MASK, data->config);
-+		*val = data->chip_info->available_data_rate_hz[data_rate_index];
- 		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
-@@ -381,7 +417,12 @@ static int ads1100_probe(struct i2c_client *client)
- 	data->client = client;
- 	mutex_init(&data->lock);
- 
--	indio_dev->name = "ads1100";
-+	data->chip_info = i2c_get_match_data(client);
-+	if (!data->chip_info)
-+		return dev_err_probe(dev, -ENODATA,
-+				     "Can't get device data from firmware\n");
-+
-+	indio_dev->name = data->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = &ads1100_channel;
- 	indio_dev->num_channels = 1;
-@@ -463,16 +504,18 @@ static DEFINE_RUNTIME_DEV_PM_OPS(ads1100_pm_ops,
- 				 NULL);
- 
- static const struct i2c_device_id ads1100_id[] = {
--	{ .name = "ads1100" },
--	{ .name = "ads1000" },
-+	{ .name = "ads1000", .driver_data = (kernel_ulong_t)&ads1100_config },
-+	{ .name = "ads1100", .driver_data = (kernel_ulong_t)&ads1100_config },
-+	{ .name = "ads1110", .driver_data = (kernel_ulong_t)&ads1110_config },
- 	{ }
- };
- 
- MODULE_DEVICE_TABLE(i2c, ads1100_id);
- 
- static const struct of_device_id ads1100_of_match[] = {
--	{.compatible = "ti,ads1100" },
--	{.compatible = "ti,ads1000" },
-+	{ .compatible = "ti,ads1000", .data = &ads1100_config },
-+	{ .compatible = "ti,ads1100", .data = &ads1100_config },
-+	{ .compatible = "ti,ads1110", .data = &ads1110_config },
- 	{ }
- };
- 
--- 
-2.47.3
+Both patches now build and link cleanly (make M=drivers/iio/health),
+checkpatch.pl reports 0 errors/0 warnings, and pahole confirms the
+driver's private struct is 56 bytes/1 cacheline with only the expected
+padding for timestamp alignment.
 
+Testing: booted a kernel with this driver under virtme-ng/QEMU against
+an i2c-stub device. Confirmed: probe correctly aborts with -ENODEV on
+a part-ID mismatch (stub registers default to 0) and correctly binds
+once the stub's PART_ID register is preset to 0x1E; the resulting
+IIO device exposes the expected in_intensity_red_raw/in_intensity_ir_raw/
+in_voltage_raw channels; direct reads on those channels time out
+cleanly through the IIO_DEV_ACQUIRE_DIRECT_MODE()/regmap_read_poll_timeout()
+path (i2c-stub never asserts PPG_RDY, so a ~25ms ETIMEDOUT is expected,
+not a hang or crash); and module removal runs devm cleanup correctly
+(SYS_CTRL read back with SHDN set after unbind, clean rmmod).
+
+Not tested: i2c-stub has no interrupt line, so the actual
+interrupt-driven path (max86150_trigger_enable(), the threaded
+max86150_trigger_handler() FIFO drain, and buffer enable/disable) was
+not exercised. That's the part of this series with the most new logic
+and I don't have real hardware on hand to test it against; flagging
+this explicitly rather than implying full coverage.
+
+Changes since v9:
+- Rewrote the buffer implementation around devm_iio_trigger_alloc() +
+  devm_iio_triggered_buffer_setup() instead of the kfifo buffer and
+  manual postenable/predisable pair. The hard-irq handler now only
+  reads and clears INT_STATUS1 before calling iio_trigger_poll();
+  the threaded trigger handler does the FIFO drain. This relies on
+  the trigger core's own attach/detach synchronization instead of an
+  explicit iio_buffer_enabled() guard or synchronize_irq(), which the
+  old design needed to avoid a NULL active_scan_mask race on teardown
+  (Sashiko, both HIGH severity findings)
+- Clear the stale A_FULL status bit before arming INT_ENABLE1, and
+  clear stale PPG_RDY before polling in the direct-read path; both
+  prevent a previously-latched flag from firing against garbage state
+  (Sashiko HIGH; Joshua)
+- Use iio_get_time_ns(indio_dev) instead of ktime_get_ns() so
+  timestamps respect the configured IIO clock source (Sashiko MEDIUM)
+- Zero the scan buffer before each push so disabled channels don't
+  leak stale data (Sashiko LOW)
+- Added array_size.h, err.h, types.h; added a blank line before the
+  iio/ include group (Andy Shevchenko, Joshua)
+- Dropped the free-standing FIFO_A_FULL_VAL/PPG_SR_100HZ/ADC_RGE_16384
+  single-value defines; inlined the FIFO threshold at its point of use
+  with an explanatory comment, and listed the full set of PPG_SR
+  (naming the single-/double-pulse variants) and PPG_ADC_RGE register
+  values instead of just the one in use (Jonathan Cameron)
+- Removed the unneeded __aligned(IIO_DMA_MINALIGN) on the plain I2C
+  FIFO read buffer -- that alignment is for the IIO DMA buffer path,
+  not a bounce-buffer requirement I2C opts into (Jonathan Cameron)
+- Switched read_raw() to IIO_DEV_ACQUIRE_DIRECT_MODE()/
+  IIO_DEV_ACQUIRE_FAILED(), with the read logic pulled into a
+  max86150_do_read_raw() helper (Jonathan Cameron)
+- Dropped irq_get_trigger_type(): the device has no register to
+  reconfigure interrupt polarity or type, so IRQF_ONESHOT alone is
+  sufficient (Jonathan Cameron)
+- Checked max86150_powerdown()'s regmap calls and log failures with
+  dev_warn(); fixed it to use regmap_set_bits() instead of a plain
+  regmap_write() for the shutdown bit so it no longer clobbers the
+  rest of SYS_CTRL (Joshua)
+- Added blank lines between each regmap write + error-check block for
+  readability (Joshua)
+- Declared the FIFO-drain loop variable at point of use (Joshua)
+- Added a datasheet-referenced comment and blank line around the
+  SYS_RESET self-clear delay (Joshua)
+- Moved the sample_period_ns assignment next to the PPG_CONFIG1 write
+  it's derived from, instead of sitting among unrelated LED_PA writes
+  (Jonathan Cameron)
+- Trimmed the redundant "get/" from regulator failure messages, since
+  devm_regulator_get_enable() is a single combined call (Joshua)
+- Fixed the MAINTAINERS entry to sort alphabetically among the other
+  MAX-prefixed entries (Sashiko LOW)
+- Removed the Kconfig paragraph describing the driver's channels
+  instead of the hardware (Joshua)
+- Added the avdd-supply and vref-supply properties and renamed
+  vled-supply to leds-supply, to cover all four independent supply
+  rails in the datasheet power tree (found while re-verifying the
+  binding against the driver)
+- Fixed the DT binding example's interrupt flag from
+  IRQ_TYPE_EDGE_FALLING to IRQ_TYPE_LEVEL_LOW to match the driver's
+  actual level-triggered interrupt handling
+- Fixed .validate_trigger in iio_info to iio_validate_own_trigger();
+  the previous iio_trigger_validate_own_device() has its arguments in
+  the opposite order and belongs on iio_trigger_ops.validate_device,
+  where it's used correctly. Caught by actually building the module,
+  not just reading the diff.
+- Threaded this series properly with git send-email --thread this
+  time (Andy Shevchenko, Krzysztof Kozlowski)
+- Added Nuno Sá, Michael Hennerich and David Lechner to Cc, per
+  scripts/get_maintainer.pl -- this is an Analog Devices part and I'd
+  missed CCing ADI's own IIO maintainers on every version so far
+- Part-ID mismatch now aborts probe with dev_err_probe(dev, -ENODEV,
+  ...) instead of logging and continuing. This goes beyond the
+  dev_info() vs dev_warn() log-level question raised in review: a
+  mismatched part ID means we're either talking to the wrong device or
+  something on the bus is wrong, and running chip_init() writes
+  against an unverified chip seemed like the riskier default (Joshua)
+
+Md Shofiqul Islam (2):
+  dt-bindings: iio: health: add adi,max86150
+  iio: health: add MAX86150 ECG and PPG biosensor driver
+
+ .../bindings/iio/health/adi,max86150.yaml     |  78 ++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/health/Kconfig                    |  13 +
+ drivers/iio/health/Makefile                   |   1 +
+ drivers/iio/health/max86150.c                 | 691 ++++++++++++++++++
+ 5 files changed, 790 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/health/adi,max86150.yaml
+ create mode 100644 drivers/iio/health/max86150.c
+
+--
+2.51.1
