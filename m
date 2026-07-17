@@ -1,155 +1,168 @@
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 571E52F6591;
-	Fri, 17 Jul 2026 15:40:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FFC53FA5FE
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 16:34:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784302825; cv=none; b=gLNYY+jXgOr17bows6h5463AfVcmdDgGeaOCQzSCwkox7kpKG8N+XRHkDYCGQ5hQTXF5euVoX4tT5a4VTiBKfAggwVDHTO4d+7jEPiXu/oPayBc31JbjTTFN6KsPW6JufURG8j0YjL+UZdYUGTL5VxUn0LPJTVqQ0VKac6us3t0=
+	t=1784306060; cv=none; b=kGyihEDSv4gosk0/H6i/BqCPEmoHfatdkjTpK73YdYe+qrdA2yNc2stgyGs8n8EklfqLJ3Q88iMTLpmLjKAI6EdevlVyVP0G8IXFElDUUTp3N/rB5V+veBAo2UIl6w6AqLu23o+MAHSD8dFFw6Zc3SOORRlSurCkPOI0KW8pJrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784302825; c=relaxed/simple;
-	bh=Xq+wp583z5Dgaf7ED96floun2T/tzYN8/kIia0bn+j4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=qin6igDW6IE6buGzBVnXj013pSKpqB79rMnwugi31fs9qevRifrLKoL7efEpQwCPh8jJTKNmEGGDQAJR7jR2a5u8QfafRU8pPjDRmcdp3owFbhHaT4xVH2kdQNhV4BQ/H6HiZjpUSh5TnQ7P04DiZvFYVJJNJuNZkDCcestBapk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=tChzxZZu; arc=none smtp.client-ip=211.75.126.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
+	s=arc-20240116; t=1784306060; c=relaxed/simple;
+	bh=6wnDDJQBQfpjll1dAST5KuLlqAlQD+gfIzZDEDQKs6o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MGmlppWNkVMOZ+pecLQ323HLti+ihq1IPONINT7KpI71xDMapQYY4NubAboAnYP8QF8/Vutc/zqAIQFm4FXAPfghHTYEsY+zwNvaYIzzEeGc3Q/BXsrj7/krYI0C/S/6f/oQ3Si6mqxTnn/zWyP4DhIDKww/b1Zg2OCC/Ak4JHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LetJwMu4; arc=none smtp.client-ip=209.85.128.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="tChzxZZu"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66HFcZTm9227495, This message is accepted by code: ctloc85258
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1784302715; bh=Xq+wp583z5Dgaf7ED96floun2T/tzYN8/kIia0bn+j4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	b=tChzxZZuw/EEvSWU2UNDR8ArudcgTBXIesf41mAHOesM0n1+yI3Z3RfWaw8XLTM4r
-	 7yI8RMjFFRTWGrZa3ieXtkYpyWAsEoJ7xukiSUcay+Lqqel3kGVqHKKv0k2TCnb9XY
-	 bJXxUI6DN7ztZUQ1DhyEiBc2Ef47KzJXgzYTe+qH73TQdcQwawiZNEl0ivQZ498k99
-	 P8DCnS0QuShQ/nmpZalpLcoz2Pm23R7zDuhTlzZg9F4EPjwjhN/3ImEbCim9rUkYb+
-	 ik494Uq0VRMeUbInseldfLQEnxXdvWtfBEk6syAxGgHBAlCNYVyf5ZBsggmrvf50yw
-	 H5FxENZVPZz8Q==
-Received: from mail.realtek.com (rtkexhmbs03.realtek.com.tw[10.21.1.53])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66HFcZTm9227495
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 17 Jul 2026 23:38:35 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS03.realtek.com.tw (10.21.1.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Fri, 17 Jul 2026 23:38:36 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS06.realtek.com.tw (10.21.1.56) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Fri, 17 Jul 2026 23:38:35 +0800
-Received: from RTKEXHMBS06.realtek.com.tw ([::1]) by
- RTKEXHMBS06.realtek.com.tw ([fe80::e6fd:5a3f:8946:92c4%10]) with mapi id
- 15.02.2562.017; Fri, 17 Jul 2026 23:38:35 +0800
-From: =?big5?B?WXUtQ2h1biBMaW4gW6pMr6enZ10=?= <eleanor.lin@realtek.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, Michael Walle
-	<mwalle@kernel.org>
-CC: "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-	"afaerber@suse.com" <afaerber@suse.com>, "andy@kernel.org" <andy@kernel.org>,
-	"brgl@kernel.org" <brgl@kernel.org>, "conor+dt@kernel.org"
-	<conor+dt@kernel.org>, =?big5?B?Q1lfSHVhbmdbtsDgsq7LXQ==?=
-	<cy.huang@realtek.com>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "dlechner@baylibre.com"
-	<dlechner@baylibre.com>, =?big5?B?SmFtZXMgVGFpIFvAuafTrnBd?=
-	<james.tai@realtek.com>, "jic23@kernel.org" <jic23@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "lars@metafoo.de"
-	<lars@metafoo.de>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-	"linusw@kernel.org" <linusw@kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org"
-	<linux-gpio@vger.kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-realtek-soc@lists.infradead.org"
-	<linux-realtek-soc@lists.infradead.org>, "mathieu.dubois-briand@bootlin.com"
-	<mathieu.dubois-briand@bootlin.com>, "nuno.sa@analog.com"
-	<nuno.sa@analog.com>, "robh@kernel.org" <robh@kernel.org>,
-	=?big5?B?U3RhbmxleSBDaGFuZ1up96h8vHdd?= <stanley_chang@realtek.com>,
-	=?big5?B?VFlfQ2hhbmdbsWmkbLZoXQ==?= <tychang@realtek.com>, "wbg@kernel.org"
-	<wbg@kernel.org>
-Subject: RE: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Thread-Topic: [PATCH v3 3/7] gpio: regmap: Add gpio_regmap_operation and
- write-enable support
-Thread-Index: AQHc4cATPP5CAXxOA0S9aBj6QrzqgrYJ8C6AgFvXxWCACcZxAIAAIc4AgAALpoCAAAi9AIAAFRKAgAB1ogCAAW1TgA==
-Date: Fri, 17 Jul 2026 15:38:35 +0000
-Message-ID: <82f3f73764ac4553a8e2743bbebd90e8@realtek.com>
-References: <d301ba0cd45d49d59e6a014188306ec9@realtek.com>
- <20260716062614.1507243-1-eleanor.lin@realtek.com>
- <aliV4u6_xzx9D9Aq@ashevche-desk.local>
- <DJZVLZ4LLD9E.3MPLYYXT1VQ9R@kernel.org>
- <alim_HGTD5RCupav@ashevche-desk.local>
- <DJZXVOGZ3ZTH.20P8NY7DON0X7@kernel.org>
- <alkbVkB5KNNR7ffN@ashevche-desk.local>
-In-Reply-To: <alkbVkB5KNNR7ffN@ashevche-desk.local>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LetJwMu4"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-80e2cfe6918so39090297b3.0
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 09:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784306056; x=1784910856; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SN6iKB84XjlCdyQZDXiTIhq7M2trG088S3ZqcAJw8RI=;
+        b=LetJwMu4heHGTkO9n0+tizadoIYlVjFv8exTgBmshyKjC07HVJ+polcD/CB531vB2A
+         KWF9iCfpo0/qOS+NFk4aDL6Hr9cV1i5TDHPHZ1dpproD6FbcWopBaAqXMfxIuQ2UPQ9S
+         T2+7oHMdeoiLCnjw+eJB+Va7Gw0ov2wCCC1S8/iUbT+ODf55IV2dLyQvdMUbWuu3UAK2
+         3xStBpkSevm2TAnyg8ASRtOkmNQJDovCS+lRpn5V8VWVuZCJFDTDMvh1P6hL/f8m2Qoj
+         8SknQvy23JyEa/VR+y5jpxqY4kv7V0WP6Vfb1utu6puMaWfjDwFmlSML+REx3o5KilRJ
+         tzkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784306056; x=1784910856;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=SN6iKB84XjlCdyQZDXiTIhq7M2trG088S3ZqcAJw8RI=;
+        b=kUkzH2W3oQqhADCSb3yfowOJQKvUxia4b8ObwHxPEQoP+O2b4wssSFsCNkPZ4us7PZ
+         jaZEH2Nsd5nGjChg6r2RjFzy85K5IBIeBmRWVsA6X3zXv1SH9lzCOsp4qpG0C/0mN3rG
+         bhSUgsvtPu6BrCut5BWl0CgZy085QWDngUVm0BrMbwdQHTtMTT/BmXpzVvMQbQBjTbx/
+         aaCY4yhE9HSkbgC+/WKY/fMd93BoaFVUfJD63FqBRrIFpxf9qN8TW6fZBWuSdF01/6YW
+         j12TCx9Nj+Aeu74rLIV0Ws4pZBmPmm30wZhU2o3VhGj3MJcpA7u7lBMlc/b2YhvRIa/h
+         7/dA==
+X-Forwarded-Encrypted: i=1; AHgh+RoIZQvHnD5xLO1NIBgRxrtnS6lc1jtrF2pnpWJ+l/mZa5X1mu0KPE9wwWlBjTokyNewiB9oWgCboDc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyVaYAixrVzvU3TB2OtjuboRusi+twsVmQ4Klw3u9xFj6+qZ0CT
+	6jRy5AJ3pMxp5OQfRKfYe2zuQ3/K76sU+pU6+gnZlSEMZdnhu8WqaBsq
+X-Gm-Gg: AfdE7cnCA8LH0SV0yz4vUy9pMlPIZIOfktMDWkY+tTSea0Lw7IQupPIWodUoiWXUaKr
+	NyELPhccOCkog5MhlVUv0kvL0AZkCkkknwpu7WC+zHwQ7M5uFm0i2Bq4tUs/iziHLAf98VcTn9c
+	6sED0sHSRmz2WznRz6Tzy+I8xUA3JFsdd4CylH62hPoZwHLeyeQBUsAqF/HeUJnkWergpbE0QsJ
+	S+TyeTtJW0kayPcz3e+6fdmpM0aeDMJWwNeUXlxd3xCDBZ0PcbDslgvbGnP7019UPYY6x2h7Cwx
+	CbftvDXVoH4PZf1UI4UUcXioZJkw7q7ohJ8QbAMSC7XWX2agNAAF6yzdu4YxDK7bV0UXH8AkCkz
+	FxBxhQKJNZlbae0zrVxdgH0hOS3/djyB1l6FN9kxbJM8l4pdMVVx0tEWm1VBPZRVry+JYxvL+R3
+	sRXtKV/YRL5bA=
+X-Received: by 2002:a05:690c:6107:b0:81e:bbcd:f5c3 with SMTP id 00721157ae682-81ef25e16eamr11174017b3.36.1784306056131;
+        Fri, 17 Jul 2026 09:34:16 -0700 (PDT)
+Received: from localhost ([2804:30c:1f09:b400:47f8:7933:2105:dd41])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-81efe45416fsm53397b3.6.2026.07.17.09.34.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2026 09:34:14 -0700 (PDT)
+Date: Fri, 17 Jul 2026 13:35:14 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: sashiko-reviews@lists.linux.dev
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, robh@kernel.org,
+	conor+dt@kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v7 3/4] iio: adc: ltc2378: Enable high-speed data capture
+Message-ID: <alpZwoau3QVPtBsP@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1784235595.git.marcelo.schmitt@analog.com>
+ <564b975c2c62d28ee6733f86bd5632c41a7c80e4.1784235595.git.marcelo.schmitt@analog.com>
+ <20260716212451.923951F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260716212451.923951F000E9@smtp.kernel.org>
 
-SGksDQoNCj4gDQo+IE9uIFRodSwgSnVsIDE2LCAyMDI2IGF0IDEyOjU1OjM3UE0gKzAyMDAsIE1p
-Y2hhZWwgV2FsbGUgd3JvdGU6DQo+ID4gT24gVGh1IEp1bCAxNiwgMjAyNiBhdCAxMTo0MCBBTSBD
-RVNULCBBbmR5IFNoZXZjaGVua28gd3JvdGU6DQo+ID4gPiBPbiBUaHUsIEp1bCAxNiwgMjAyNiBh
-dCAxMTowODo1NUFNICswMjAwLCBNaWNoYWVsIFdhbGxlIHdyb3RlOg0KPiA+ID4+IE9uIFRodSBK
-dWwgMTYsIDIwMjYgYXQgMTA6MjcgQU0gQ0VTVCwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOg0KPiA+
-ID4+ID4gT24gVGh1LCBKdWwgMTYsIDIwMjYgYXQgMDI6MjY6MTRQTSArMDgwMCwgWXUtQ2h1biBM
-aW4gd3JvdGU6DQo+IA0KPiAuLi4NCj4gDQo+ID4gPj4gPiBGcm9tIHRoZSBhYm92ZSBsaXN0IEkg
-dGVuZCB0byB0aGUgYXBwcm9hY2ggMiwgYnV0IHRoaXMgbWlnaHQNCj4gPiA+PiA+IHJlcXVpcmUg
-dG8gaGF2ZSBHUElPIHJlZ21hcCBsZXZlbCBvZiBsb2NraW5nLiBJJ20gYSBiaXQgbG9zdCBpbg0K
-PiA+ID4+ID4gdGhlIGNvbnRleHQsIHRob3VnaC4gSSBhc3N1bWUgd2UgbmVlZCBhIGZyZXNoIHN0
-YXJ0LCBpZCBlc3QgaXNzdWUNCj4gPiA+PiA+IGEgdjYgd2l0aCBhcHByb2FjaCAyIG9yIDMgaW4g
-cGxhY2UgYW5kIHN1bW1hcml6ZSB0aGUgY2hvaWNlcyBpbg0KPiA+ID4+ID4gdGhlIGNvdmVyIGxl
-dHRlciwgc28gd2UgY2FuIHVuZGVyc3RhbmQgd2hhdCBoYXMgYmVlbiBjb25zaWRlcmVkLg0KPiA+
-ID4+DQo+ID4gPj4gSSBkb24ndCByZWFsbHkgbGlrZSBhcHByb2FjaCAzLiBZb3UnZCBuZWVkIHRv
-IGNoZWNrIGlmIHRoZSByZWdzIG9mDQo+ID4gPj4gYm90aCB4bGF0ZSBjYWxscyBhcmUgdGhlIHNh
-bWUuIFdpdGggdGhlIHNhbXBsZSBjb2RlIGFib3ZlLCB5b3UNCj4gPiA+PiBzaWxlbnRseSBkcm9w
-IHRoZSBmaXJzdCB4bGF0ZSdkIHJlZy4NCj4gPiA+DQo+ID4gPiBJZiBJIHJhbmsgdGhlIHByb3Bv
-c2FscywgdGhlIHdvcnN0IGlzICMxLCB0aGUgYmVzdCBpcyAjMi4NCj4gPiA+DQo+ID4gPj4gQW5k
-IGhvbmVzdGx5LCBpdCByZWFsbHkgc2VlbXMgbGlrZSBhIG9uZS1vZmYuIFdoYXQgY29udHJvbGxl
-cnMsIGFyZQ0KPiA+ID4+IHRoZXJlIHRoYXQgbmVlZCBhIHdyaXRlIGVuYWJsZSBiaXQuIFRoZSBy
-ZWFsIHByb2JsZW0gc2VlbXMgdG8gYmUNCj4gPiA+PiB0aGUgYXNzdW1wdGlvbiB0aGF0IHdlIG9w
-ZXJhdGUgb24ganVzdCBvbmUgYml0LiBJT1cgd2UgZWl0aGVyIHNldA0KPiA+ID4+IG1hc2sgb3Ig
-ZG9uJ3Qgc2V0IG1hc2sgaW4gZ3Bpb19yZWdtYXBfc2V0KCkuDQo+ID4gPg0KPiA+ID4gWWVzLCB3
-ZSBzaG91bGQgS0lTUy4NCj4gPg0KPiA+IEJ1dCBJTUhPICMyIGFuZCAjMyBhcmUgbm90IEtJU1Mu
-IEFwcHJvYWNoIDIgaXMganVzdCBhIHdheSBvZiBhZGRpbmcNCj4gPiBzb21lIGtpbmQgb2YgcHJl
-IG9wIHRvIGEgZ3BpbyBzZXQuIEp1c3QgdHlpbmcgaXQgdG8gYSB3cml0ZSBlbmFibGUNCj4gPiBm
-ZWF0dXJlLiBUaGF0IGtpbmRhIGJvdGhlcnMgbWUuIEl0IG1pZ2h0IGFsc28gYmUgdXNlZnVsIGZv
-ciBvdGhlcg0KPiA+IHRoaW5ncywgdG9vLiBTbyBkb24ndCB0aWUgaXQgdG8ganVzdCB3cml0ZSBl
-bmFibGUuIEFuZCB3aG8gaXMgZG9pbmcgYQ0KPiA+IHdyaXRlIGRpc2FibGUgaWYgaXQncyBub3Qg
-c2VsZiBjbGVhcmluZyBmb3IgZXhhbXBsZS4gUHJvYmFibHkgU29tZQ0KPiA+IGtpbmQgb2YgcG9z
-dCBvcCA6KQ0KPiA+DQo+ID4gQXBwcm9hY2ggMyBpcyBhIHdheSB0byBjaGFuZ2UgdGhlIHZhbHVl
-IG9mIHRoZSB3cml0dGVuIHZhbHVlIC0gaW4gYQ0KPiA+IHJlc3RyaWN0ZWQgd2F5LCBhcyBpcyBp
-cyBqdXN0IGRvaW5nIGEgT1Igd2l0aCBib3RoIHZhbHVlcy4NCj4gPg0KPiA+IEFsc28gYXBwcm9h
-Y2ggMiBtaWdodCBub3QgZXZlbiB3b3JrIGlmIHRoZSBoYXJkd2FyZSByZXF1aXJlcyB0aGUgd3Jp
-dGUNCj4gPiBlbmFibGUgYml0IHNldCBpbiB0aGUgKnNhbWUqIHdyaXRlIGFzIHRoZSBncGlvIHNl
-dCBiaXQuIFRodXMsIHdlIG1pZ2h0DQo+ID4gbmVlZCBib3RoIGFueXdheSBpbiB0aGUgZnV0dXJl
-Lg0KPiA+DQo+ID4gPj4gRm9yIGEgbW9yZSBnZW5lcmljIHNvbHV0aW9uLCB3ZSBzaG91bGQgYmUg
-YWJsZSB0byBjb250cm9sIHRoZQ0KPiA+ID4+IHdyaXR0ZW4gdmFsdWUuIFdlIGNvdWxkIGFkZCBh
-bm90aGVyIC52YWx1ZV94bGF0ZSgpLg0KPiA+ID4NCj4gPiA+IE1heWJlIG5vdCBub3c/DQo+ID4N
-Cj4gPiBCdXQgaWYgbm90IG5vdywgdGhlbiB3aGVuPyBJIHdvdWxkbid0IGFkZCB0aGUgd3JpdGUg
-ZW5hYmxlIGZlYXR1cmUgYW5kDQo+ID4gbGF0ZXIgYSBtb3JlIGdlbmVyaWMgc29sdXRpb24gd2hp
-Y2ggYWxzbyBjb3ZlcnMgdGhlIHdyaXRlIGVuYWJsZQ0KPiA+IGZlYXR1cmUuDQo+IA0KPiBUYWtp
-bmcgaW50byBhY2NvdW50IGhvdyBpdCdzIGRvbmUgaW4gSFcsIEkgdGhpbmsgdGhlIHdob2xlIGFw
-cHJvYWNoIGNhbiBiZQ0KPiBmb2xkZWQgdG8ganVzdCBhIGJvb2xlYW4gZmxhZyAgKG9yIGEgc2lt
-cGx5IGJpdCBzaGlmdCkgaW4gdGhlIGNvbmZpZy4NCj4gV291bGRuJ3QgaXQgd29yaz8NCj4gDQoN
-ClRvIHJlc3BlY3QgTWljaGFlbCdzIHBlcnNwZWN0aXZlIG9uIGtlZXBpbmcgV1JFTi1zcGVjaWZp
-YyBjb2RlIG91dCBvZiB0aGUNCmZyYW1ld29yaywgSSB0aGluayBhZGRpbmcgYSB2YWx1ZV94bGF0
-ZSBjYWxsYmFjayBpbiB0aGUgY29uZmlnIGlzIGEgY2xlYW5lcg0KYXBwcm9hY2guIEl0IGFsbG93
-cyB1cyB0byB3cmFwIHRoaXMgaGFyZHdhcmUgcXVpcmsgd2l0aGluIHRoZSBjYWxsYmFjayBhbmQg
-bGV0DQp0aGUgY29uc3VtZXIgZHJpdmVyIGhhbmRsZSBpdCBlbnRpcmVseS4NCg0KVG8gZW5zdXJl
-IGl0IGlzIHRydWx5IGdlbmVyaWMsIEkgd2lsbCBub3QgaW50cm9kdWNlIGFueSBXUkVOLXNwZWNp
-ZmljIG9wZXJhdGlvbg0KZmxhZ3MuIEluc3RlYWQsIHZhbHVlX3hsYXRlIHdpbGwgcmV1c2UgdGhl
-IGdwaW9fcmVnbWFwX29wZXJhdGlvbiBlbnVtDQooZS5nLiwgR1BJT19SRUdNQVBfT1BfU0VULCBH
-UElPX1JFR01BUF9PUF9TRVRfRElSKS4NCg0KQmVzdCBSZWdhcmRzLA0KWXUtQ2h1bg0KDQo+ID4g
-PiBBcyBwZXIgSVBzLCBTeW5vcHN5cyBJUHMgKG5vdCBleGFjdGx5IEdQSU8pIGxpa2VzIHRvIGhh
-dmUgdGhhdCBraW5kDQo+ID4gPiBvZiAicHJvdGVjdGlvbiIuIFNvLCBmcm9tIEhXIHBlcnNwZWN0
-aXZlIGl0J3Mga2luZGEgcGF0dGVybiwgYW5kIGl0DQo+ID4gPiBtaWdodCBiZSBwb3NzaWJsZSB0
-byBzZWUgbW9yZSBJUHMgKGluY2x1ZGluZyBHUElPKSB0aGF0IGZvbGxvdyBpdCBpbg0KPiA+ID4g
-c29tZSBjYXNlcy4NCj4gDQo+IC0tDQo+IFdpdGggQmVzdCBSZWdhcmRzLA0KPiBBbmR5IFNoZXZj
-aGVua28NCj4gDQoNCg==
+On 07/16, sashiko-bot@kernel.org wrote:
+> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> - [High] Integer divide-by-zero leading to kernel panic in `ltc2378_update_conversion_rate` when a sampling frequency of 1 Hz is requested and the PWM driver rounds the period length above 1 second.
+> --
+> 
+> --- Patch [3]: [PATCH v7 3/4] iio: adc: ltc2378: Enable high-speed data capture ---
+> commit ef54f2c79f2cac1649922032814adc7fcc5f9684
+> Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> Subject: iio: adc: ltc2378: Enable high-speed data capture
+> 
+> This commit enables high-speed data capture for the ltc2378 ADC driver by
+> utilizing SPI transfer offloading. It allows data acquisition at faster sample
+> rates up to 2 MSPS.
+> 
+> > diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
+> > index 5600c820c7f45..7d29f021cb7b4 100644
+> > --- a/drivers/iio/adc/ltc2378.c
+> > +++ b/drivers/iio/adc/ltc2378.c
+> 
+> [ ... ]
+> 
+> > +	/*
+> > +	 * Configure SPI offload PWM trigger.
+> > +	 * The trigger should fire after tBUSYLH + tCONV + tDSDOBUSYL.
+> > +	 * Minimum time needed: TBUSYLH (13ns) + TCONV (part-specific) + TDSDOBUSYL (5ns)
+> > +	 *
+> > +	 * Use the same period as CNV PWM to avoid timing issues.
+> > +	 * Convert back from period to frequency for the SPI offload API.
+> > +	 */
+> > +	offload_period_ns = cnv_wf.period_length_ns;
+> > +	config.periodic.frequency_hz = div_u64(HZ_PER_GHZ, offload_period_ns);
+> > +	min_read_offset = LTC2378_TBUSYLH_NS + st->info->tconv_ns + LTC2378_TDSDOBUSYL_NS;
+> > +	offload_offset_ns = min_read_offset;
+> > +	count = 100;
+> > +	do {
+> > +		config.periodic.offset_ns = offload_offset_ns;
+> > +		ret = spi_offload_trigger_validate(st->offload_trigger, &config);
+> > +		if (ret)
+> > +			return ret;
+> > +		offload_offset_ns += 10;
+> > +	} while (count-- && config.periodic.offset_ns < min_read_offset);
+> > +
+> > +	/* Check the minimum CNV to SCLK delay is met */
+> > +	if (config.periodic.offset_ns < min_read_offset)
+> > +		return -EDOM;
+> > +
+> > +	/* Check the PWM periods remain the same */
+> > +	offload_period_ns = div64_u64(HZ_PER_GHZ, config.periodic.frequency_hz);
+> 
+> [Severity: High]
+> Could this result in a kernel panic due to an integer division by zero?
+> 
+> If a user writes 1 to the IIO in_voltage_sampling_frequency sysfs attribute,
+> ltc2378_update_conversion_rate() is called with freq_Hz = 1, and the initial
+> requested PWM period is calculated as 1,000,000,000 ns.
+> 
+> If the underlying hardware PWM driver rounds the period slightly upwards
+> (e.g., to 1,000,000,001 ns) during pwm_round_waveform_might_sleep() due to
+> clock granularity, offload_period_ns will exceed HZ_PER_GHZ.
+> 
+> This causes config.periodic.frequency_hz = div_u64(HZ_PER_GHZ, offload_period_ns)
+> to evaluate to 0.
+> 
+> When div64_u64(HZ_PER_GHZ, config.periodic.frequency_hz) is subsequently called,
+> it divides by zero.
+
+If we have cnv_wf.period_length_ns == NSEC_PER_SEC + 1 after the offset_ns loop
+and config.periodic.frequency_hz == 0 as suggested, then spi_offload_trigger_validate()
+will fail the frequency_hz check and ltc2378_update_conversion_rate() errors
+out with -EINVAL before reaching div64_u64(HZ_PER_GHZ, config.periodic.frequency_hz).
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/spi/spi-offload-trigger-pwm.c?h=v7.2-rc3#n48
+
+> 
+> > +	if (cnv_wf.period_length_ns != offload_period_ns)
+> > +		return -EDOM;
+> > +
+> > +	st->offload_trigger_config = config;
+> > +	st->cnv_wf = cnv_wf;
+> > +	st->cnv_Hz = DIV_ROUND_CLOSEST_ULL(HZ_PER_GHZ, cnv_wf.period_length_ns);
+> > +
+> > +	return 0;
+> > +}
+> 
+> -- 
+> Sashiko AI review · https://sashiko.dev/#/patchset/cover.1784235595.git.marcelo.schmitt@analog.com?part=3
