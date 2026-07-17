@@ -1,78 +1,76 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBDFD2DAFCB
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 09:01:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867CE309EF9
+	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 09:03:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784278868; cv=none; b=MktQrWD8eR7zMK15wDUkqyTZC+UAI6M6b5ONq3B38YFWR8jdNz1emP0g/GwMEb+3obzD97q+kW09XlulwbFoH9MJSbjKZUJnWm9oe+0+Ci6N9nPfsChOT1AltVSAY3m4xw2uP5nz08sh4ZRMx/YCHYGkkiS/TBg/ozxRH81PXCs=
+	t=1784278996; cv=none; b=mBTOHnzM2pb2pjIdghDE4jOUob65BEpkz/teWLmSla2frqBFa2RQjbfbSYKTUPK6fZK83WLUzefc3wqNb14zk7pp3Lowz6gUYQPjnXXajyH7esnfppCHEgzgsU7tO18RDaefjin0jVGA/fh+kZG20qqL3YXfljyEl2s7Zz5L5AM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784278868; c=relaxed/simple;
-	bh=hBKE11kFXeBhrQ6CVyj82fNMOPBdKff1X/FeyW5jrXs=;
+	s=arc-20240116; t=1784278996; c=relaxed/simple;
+	bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HrkeNKuD5VRvFhGpxrnJQ/c+joP6e/uzjTZobKHfGJzukCQok8WXtrsfv94U78nC4v35HzXxihe5T5JyseYxRWfbC3KcA7tM/qDCuCsmn6UxnaV8gxsKDkjtI3KsNQwsh0RcVvQN5Ygjrus1phF7gH5j10abMi6a4muP5xtW2u4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=AoB1YgN3; arc=none smtp.client-ip=209.85.221.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=EZYtbH/DbCJcD9nUZlELio8m1h3s6N0l2Zcgvqu/k7yHlGu3EK6IUyjQ6g7G+Gd8spZ2LZCpQ7ViGfBRUKDeoQLM8ADjvF9lecQrfYml7Zm4bUm6Mnvw0r3V1i9WwiRN8NbiuHexEStz7PPqM7VoIJgVx+SVAXEkzqN+p19Qs7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WOb786Ov; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="AoB1YgN3"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-47dec32798aso7740945f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 02:01:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WOb786Ov"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-493bfe9f886so41953155e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 02:03:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784278865; x=1784883665; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1784278994; x=1784883794; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=hBKE11kFXeBhrQ6CVyj82fNMOPBdKff1X/FeyW5jrXs=;
-        b=AoB1YgN3BoUoVupd5wccOo9HnOLjnPV+PbI1W4PYzWhhtE9ADq+1A6qHN30dXjLDwj
-         aSLhtx3ICMiT3rx1vAWdnlZUCBIoUMF3TSPqRJX6UCFslaZ1vnuPsJxd5q+n7truZ/h3
-         LNC0JO9n0bQj08x6ZKRqMo1uthZvrj7ufqiOicISdMop1s05Wh3wYDoF3mrDzoM3Waiv
-         b6t0jE4Nk2hHcaNg350akvLg1i/KmNRuFWqdzAwlMiPB2xQU3+AcCCE++K5E0MMvHDhk
-         GIIHIxKDtUx4RWojeRbGphjgV5yU3Fo9MU16HPvJq2opfaejOtP7jutvllgYWSe4DzoT
-         GJAg==
+        bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
+        b=WOb786OvzsfQN/n21RIzt2pT27L/IFLWc6zo5CCZ1u0wU+5C1DjHdAazpctkqj4f83
+         wsZrrX7fTzUV8QMOu+u/13PIyxezdfGzrhVsc2pIjZ/f5Wc7GmZnCvRwoEQf05lRKmCr
+         9ivkWLHmtTrMAf204ovHOMCMoqpaa9PTc3cwGHl6SG74LdYbwRskt8QLlla+xugK403n
+         W446gR+C2AKdbWBsVexpcK9TqHQfVLOOIEp0V4Gi818KQoCHDEQO/JuPKhZQw4igulFN
+         PGLDLwPcos6FMa52ICGEY9+xD3BHzoWB0XgDHtaEmBKvilJJaFJOAG11G0uvv8e+uHTZ
+         DLag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784278865; x=1784883665;
+        d=1e100.net; s=20251104; t=1784278994; x=1784883794;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=hBKE11kFXeBhrQ6CVyj82fNMOPBdKff1X/FeyW5jrXs=;
-        b=hiPNuQTrXPfWgEYEEzIewJSbJ52OrdPRowjOoGuIvldhp1Uvi0m3u8vflyw5wWvz5C
-         6KywDJHyRMUSYgcP+Y4ghUm/xOcfT+luKHwqSsoDZIqYVzQCb7tOUF91qU4iBTLXcqS1
-         YdnOOWEORSO8zfrdJqDkks/pEj0OYrd05n8UsPzs6va+jSeg3htjowOGm0WniaglmJlD
-         FUCIcWBusYsQGJBEw7I9pPhL+xl5UkRP0Sxxj3XSeHFl/+RZP/4H3Y/V2bRrqTruXl2W
-         19UhkgHQ3K9EqVFGvbj4G/hDZLc/RMzbHtXzfdwN1vJ1IBIYmHkeCStgm/0y7wfyQ/Xl
-         p9lg==
-X-Forwarded-Encrypted: i=1; AHgh+Rodbmre78I8DZWN7MAu9esP2bqCvKzgt2AhAJcR0FF8KSEsvp9hqF3xL4smTWqll1CKXx997N6K5Cc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzzvvnO+DRJO2nuh42uyERU7eYM/X9dGWAZ2RxNuP5dNfciC1ac
-	Ov6CpFaXDcDMab4ERGbAlu8irK7X9J+mMMYqKurw7FyFX2AVMZBN8yX4HK3j9WD3ees=
-X-Gm-Gg: AfdE7cnfBXEyY85fEDUpYhjBn4DE5n0KtvFLylX+jQnO5iA4+h9CqOMDOCBLHAztEqi
-	jf/GMtf+cFPHcBk6HtiVZKtSZZFBV4EtdMj5yypCPtjlrQbF5JJtcdVOK5xNll6DQXTb6JPbcXf
-	pPflT7/LUa3b7kjGxUDAj89cTV3P/vt+/6as0mjxLVZn2STKHZbeR5RUgYLG3tlQLpNu404n4og
-	B3jKYVGI+jhkJuf9pIEYNQTIm+yCd9aLKZMX4YBK27tkWAXGJmTi1CCgn9C3Vt8cFIBxq4qJvmp
-	bH8yoT5G7ScjWLHthy5eVaqlMuOC4Vmm+cMIwERD8OgceoIhZBu5wPCIEnOWW5XpRaSD7o+hCHP
-	hdrUGtxLSwecDGPubfSqcbwrYar/o5vmPWtkPIyRYu3awmksJQIeooM7swCN3oQyGw4B72q68Ac
-	CbcOVR4Mq4Suli1Gedq65DTBFlMycKEXNFv/tlrVts+9byJEZMYwfMow3AD7AU8uj9og==
-X-Received: by 2002:a05:600c:4fc9:b0:493:ad1b:b38d with SMTP id 5b1f17b1804b1-4954a512d82mr20084655e9.37.1784278864712;
-        Fri, 17 Jul 2026 02:01:04 -0700 (PDT)
+        bh=devex1NxxbO5Ce8hDzE0PrM0NXXbvrKcL0k+gmPGkkk=;
+        b=pYUtH/V9ozMWc/nxDgxSigoP4DuDcoByTokR2VkPz6VSToJ39wqNlMp7SfqiGIDSQs
+         24WqyKescOlxHOvJLdQVXRlYo7W5kzp5kjnrCp41X2yIA7/Ay/Fk3yltwIlUGzg24ipv
+         ggfIJXr5yoR5ZJLt+Oubit1OPhecC6Dy2eZ4RVz3fCE033XAuk2qWTUJcqJ0NTUmNPvc
+         VD1I+13xbmITsJvc65j8VvVE5ivQdJIbY2nygrQfXIjBN20egtmu1kqCzcDN3kLpcW/V
+         jdAtn/KFCKzl4nStk7m/T5rC7dFXHq265afi93VfORzzRrKm38mHfH0wUWuB5Cc6JEm8
+         UJIA==
+X-Gm-Message-State: AOJu0YzXhqJc8fHESl/RIKO8Ez/lkcX/G4WrchHjwkBuqGTZmVXMJenp
+	5WoJowcxCfxQSDDw7Sc52yYZQvZOJib3VZK0HuDs9hrtYRlAFT8OcVSB+LigIu6giug=
+X-Gm-Gg: AfdE7cnckXYJbU8qXwbMUKO+e0mkaElGmn5ev0AdZTxVg+4u/oN/yD3A/JMKhIHnc7k
+	AjTlqN3XyFYueQ+dgEr5VWPkygke4K/gACKTp/2xoQg5bvnj4p25z1xmy3oKEDtM658q8oa9DaF
+	PJMEdFh2wDX1XfWQWUlZBjp/PpD5aVz0sXspX9hM6uPSCMCzL5MwEpaX/F3QZcljzApeLwZrkgd
+	xjZ7WZVEFEs24oaz1xxeHR2mEm+cMOqxrp1UXOUj633159MRf5+D7FjdpmgFFZQZnfpHzBEeqxY
+	Si4VvlN+H6PCe2enyUgFuVYQIiMwtLoXYYGTaruUMu4wTkRGqBpljFbFNSN6M8HIxF5BzICoUPg
+	9Uzd595qX6qKtAtY23EsBqyWu5PeJI2VRha6LZGspiVH4RIJw4uwzxCU10vtc55kK6tDw7ssUyf
+	bJDL1Xl3fXSSavigy6djuxlg4Q93qpofhxkuIBkiDW0HmdFY27kbzgGq1mrGy+GvGwZMHAFrNIg
+	fH/
+X-Received: by 2002:a7b:c416:0:b0:493:bc92:ef45 with SMTP id 5b1f17b1804b1-4954a50c54dmr12670645e9.24.1784278993613;
+        Fri, 17 Jul 2026 02:03:13 -0700 (PDT)
 Received: from localhost (p200300f65f47db047d2d8b161e35ab77.dip0.t-ipconnect.de. [2003:f6:5f47:db04:7d2d:8b16:1e35:ab77])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49549a3e56fsm33414285e9.5.2026.07.17.02.01.03
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4954a2e850dsm35096125e9.9.2026.07.17.02.03.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 02:01:03 -0700 (PDT)
-Date: Fri, 17 Jul 2026 11:01:02 +0200
+        Fri, 17 Jul 2026 02:03:12 -0700 (PDT)
+Date: Fri, 17 Jul 2026 11:03:12 +0200
 From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Kim Seer Paller <kimseer.paller@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux@analog.com, 
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: dac: ad5710r: Add driver for AD5710R and AD5711R
-Message-ID: <alnu5e8PX3ZjpYht@monoceros>
-References: <20260716-iio-ad5710r-upstream-v1-0-e848a4bb701f@analog.com>
- <20260716-iio-ad5710r-upstream-v1-3-e848a4bb701f@analog.com>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com, 
+	dlechner@baylibre.com, jic23@kernel.org, jean-baptiste.maneyrol@tdk.com, 
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org, 
+	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com, 
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V17 4/9] iio: imu: inv_icm42607: Add SPI For icm42607
+Message-ID: <alnvV0OwqMtRVmF5@monoceros>
+References: <20260716182637.24310-1-macroalpha82@gmail.com>
+ <20260716182637.24310-5-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,44 +78,46 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vydgxj5snaasavru"
+	protocol="application/pgp-signature"; boundary="e324wvcflz4pjyjc"
 Content-Disposition: inline
-In-Reply-To: <20260716-iio-ad5710r-upstream-v1-3-e848a4bb701f@analog.com>
+In-Reply-To: <20260716182637.24310-5-macroalpha82@gmail.com>
 
 
---vydgxj5snaasavru
+--e324wvcflz4pjyjc
 Content-Type: text/plain; protected-headers=v1; charset=us-ascii
 Content-Disposition: inline
-Subject: Re: [PATCH 3/3] iio: dac: ad5710r: Add driver for AD5710R and AD5711R
+Subject: Re: [PATCH V17 4/9] iio: imu: inv_icm42607: Add SPI For icm42607
 MIME-Version: 1.0
 
-Hello,
+Hello Chris,
 
-On Thu, Jul 16, 2026 at 03:59:27PM +0800, Kim Seer Paller wrote:
+On Thu, Jul 16, 2026 at 01:26:31PM -0500, Chris Morgan wrote:
 > +#include <linux/mod_devicetable.h>
 > [...]
 > +#include <linux/spi/spi.h>
 
-Please don't add <linux/mod_devicetable.h> to the list of includes. I'm
-working on getting rid of that and all the *_device_id you need are
-already provided by <linux/spi/spi.h>.
+Please don't add an include for <linux/mod_devicetable.h>, I'm working
+on removing that header. The two device-id structures you need
+(of_device_id and spi_device_id) are already provided by
+<linux/spi/spi.h>, so you can just remove the include line for
+<linux/mod_devicetable.h>.
 
 Best regards
 Uwe
 
---vydgxj5snaasavru
+--e324wvcflz4pjyjc
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpZ70wACgkQj4D7WH0S
-/k5fHAf/aE3czFNEtV4VL+mdJc3P4dipMfRLlAYu+8AU9xQagCuj0+kceTV2yYjs
-phvQS78SLQ8d3eSdPnhv/IskyAKUQW6OekIE4V+47n+2wmFH5zacXD8ZnKVot7CW
-dVGNsMz+TZTp5glinIu9QfNaZ1lFuevCPmN7IiBtZ7CogL42KQLWRdVtKIW3iTUi
-A2nr1d/eB/zrAMrHZn81mJMUSy7lNg7m+nSXPqvOCynaPubEUFnLUc4NVXmztfbx
-/R8IibP5PssuH8fGYiM8wFZ4kb8VVklRjby3Jfepy/C/BRkdI1sVU7kppQNcletn
-bxU/qpCVhSGBiSK5FG6p8oPr3wZsgA==
-=E433
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmpZ780ACgkQj4D7WH0S
+/k4xZAgAtfjTKvZT7A4NQhBqkvJ3Oh/IEog67mulCKGQg4I14S3TLgflro4SP/yy
+Ok9NOw1Vn3j3SaeaMFYTK5mkJ8Pl3zl8WKMkZwRK0VDFFNM+3RH0T4UdYMzkGGw7
+XC0daPY9wUVkAZnnrtimlUmStbsWWa11jGq1yDHeRSypF3U6dBhyEcOFdaC7pnlD
+9h5M0F43a/c9H6lRUVWguiN2egwEtvJtzQzQmW+r1+5I4zUanpbR5xP6gGhYcnPz
+HF9zOCNiqJV0BiUdzTFh1cFZyHdMTktzpDmWvPm3kmGSetsOtzLp6y2rEXxx6r1w
+X8sGDrKRln9uoLX3A9H0jCz8WLXAoQ==
+=wy4O
 -----END PGP SIGNATURE-----
 
---vydgxj5snaasavru--
+--e324wvcflz4pjyjc--
