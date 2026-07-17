@@ -1,67 +1,26 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m155116.qiye.163.com (mail-m155116.qiye.163.com [101.71.155.116])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21D4323EA9B
-	for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 00:59:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2301898FB;
+	Fri, 17 Jul 2026 02:43:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784249952; cv=none; b=RU3Bzkgj9/CyQjyLLkgPJv3/+6pzPmIUHXg5FsW5weFxQ0QqRZPX/nRn3UydVL3MjodH8m+tYVzP/HBGZc0DWnnVOEeq6UKS1NtwhECy7bDhD5y1mtg/lGKryjGt+xIWzBJefx+qcntq1u2aBkuj+AIAJyp3RqPCthqpbo3qXFY=
+	t=1784256214; cv=none; b=bqVQK2UmdzxeLdi7gE3wxGLMqs5TdV6JxEF4HV60Wr4PfCy6CNS+QGAktxJSz1OUd0ecPrycuQwMpcy1jX/JGxKp0BfzeX/ij1mJGerdqA0/y4WUebvF/R1dHUccLVXSiI5uk9Dn34K6P5zZA53Nk6yWI9iM+4/yJ627DkdqBWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784249952; c=relaxed/simple;
-	bh=wOMUXoxvykC4/rWvGhc8fYAEJsaFuo0l6LI0NYyXnn8=;
+	s=arc-20240116; t=1784256214; c=relaxed/simple;
+	bh=mgbTsIvSpUkt8yfPB9/LCotfwQcKSFgw9CN0tbcjYbE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kcmZ7Ib8aBz0V/JRRd0bsBKjLfYPMWlfhSL3zi3AR4d9M4dIzUmoZJ0AvPE/ulBaYZ0qRYPvvj5CEwiWz9Q7SY/eXG1ruDG4ydb8iGu8WYkxJyFZmmXFRynSRvMGHJcE7qr+LFanOT9YXPFU4DzgzQmMgTz6nO3cl2P7d53IA18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Omyb8VtS; arc=none smtp.client-ip=209.85.216.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 In-Reply-To:Content-Type; b=PCCnyB3VeRTZL3aSB2pUSR3DHn+j89RzFm13vlq2Gy8b7q5e5LV7FxtV8lcPbFESctX6TAdZFtC1gQOyDQZRVGOLAepAuog2r4YY3nMMQUgL8lRD+rIooSIRDvJMbb0mHj+C20d2A7Gkcn2aAwIykuIbe8q1t1901/YstTw9nLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=XgfBY9Ty; arc=none smtp.client-ip=101.71.155.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Omyb8VtS"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-383b4a3755fso3827434a91.3
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2026 17:59:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784249950; x=1784854750; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wOMUXoxvykC4/rWvGhc8fYAEJsaFuo0l6LI0NYyXnn8=;
-        b=Omyb8VtStTBvzvltIMRUt7BGujcurkImwEf+/8tOCN4BQC/Fn/CCFTAwV1wzj332tY
-         YKIfnbAKebFtvzpQYkeu301DkG/xiF7uRtYo/carlZXq/+hu6c916CkeIv4Z0aXQyjNk
-         IXjoq5HRBsix7A6sUAA2rWnkuikkWzhav16VfaR2SdM8Iky6AM4c5jX0bPyv4QhU6Zl+
-         vEC5yH+x1S9xnsrfwriKRVIzgdvfhuPLzhwxm5ScnEJ+OsczC5Um6H3Vb2LatqsiIwWi
-         5qUWqA0QGaX/HnmTrzBJ+nVQOyPF0q67Oyt5gGgfxD2A8Bqim3Qdalbbf8H/EXtu8UIQ
-         V42g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784249950; x=1784854750;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=wOMUXoxvykC4/rWvGhc8fYAEJsaFuo0l6LI0NYyXnn8=;
-        b=b4Z5vsi85+9arF2avO22G2iHhC70A6Wc5Ie+v7Bmt5sQH7jVCrEgtTaxxHyqtiV40B
-         XJE64ZHHmcY/7C4ECVrj/KX0yGNySDlN6wZxmMUS44Hy4OgGGv29waKlWNpJaimEXCNs
-         jr6Z/a7BoXOj0J1lEyYpA2PODC8omvel3J2LWHBwZewT3kKA4qHBKkoYpUx24dRUbNWq
-         h+ifXlpASBvqkQGSqX9l8hG/NItPcJSaY5hRsVZEacxHsCUzB9AQuKAbmkyU2TK7PShh
-         RzhnHa+BDaMlvzh68EeywebrCLJkQNmfdgRSCM2YPwcWAmeFGflUla1DfmisphTMesue
-         JKVg==
-X-Forwarded-Encrypted: i=1; AHgh+RouBhJv6/YMhofByZHYNwbDEab6iQI4iuNOHiNIIfe3LQIPTIWR89F4elSkgA7zm6zr0jj6Dm6BlL8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxyAvz0+or4KYoE0DVszTw4JmIbKeb+GWLfB7SQ/sbhvBSm3ul/
-	A9aR555wMvAMbjbSSAeFioGBqt3/QYqeTzLNmusV2yoqZcYtplx/UFWA
-X-Gm-Gg: AfdE7clprjBpzKR0m2ER5gbcDhfIm3hSpHhFdaJzZeBi+M9nHmSjv6TeZc475Own226
-	HJTO4upNpe9wyDo6Fbxwm78TXYDH91NV0zCPNhRUjL6rABuanpFYMROKNzxq40CgWthqYA6DHiU
-	w36nFeYjkDI2Q/kVctLagRWHnjkzg10IxuUT2XSGAy7If4/Qs/8qkMOMzu6LwcrdHEr5Ezrw6E2
-	vf9Or2I5GHIw1YM9WL0GYeSWNpZFAql2zNmrQK4kLYaVkzbB057sn2nLmFIstqQE9yb7lOSwiZs
-	zNa1uKx5eWpllGSkKUS6/goyepnffTLap0W3qAotASVYAWH43/zsuxaVbTSCef88CfEoemAQCRR
-	mQxj3zlAAo4y1G0PvGgbrkQcVk2WaiNMU985o4/ylqQFotIGECDsHyAYYhS12vN0jYqBfPVX4kt
-	B45TXc9w/qz4LL0pGCkPagxZ4LeKTBDTIiaZnlY10IpM2Hf279sJ4Xkw==
-X-Received: by 2002:a17:90b:4d09:b0:38e:2fa0:491b with SMTP id 98e67ed59e1d1-38e4b594eb3mr346658a91.31.1784249950264;
-        Thu, 16 Jul 2026 17:59:10 -0700 (PDT)
-Received: from [172.19.1.42] (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e4aff1545sm151892a91.5.2026.07.16.17.59.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jul 2026 17:59:09 -0700 (PDT)
-Message-ID: <8d757505-ea93-4dd4-a374-79f143f6f949@gmail.com>
-Date: Fri, 17 Jul 2026 08:59:05 +0800
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="XgfBY9Ty"
+Received: from [172.16.12.74] (unknown [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 46859c9bd;
+	Fri, 17 Jul 2026 10:38:08 +0800 (GMT+08:00)
+Message-ID: <cb0d7306-ee3a-4df8-aed4-e7e5b4e2cc16@rock-chips.com>
+Date: Fri, 17 Jul 2026 10:38:08 +0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,82 +28,289 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, cwweng@nuvoton.com
-References: <20260713081127.115197-1-cwweng.linux@gmail.com>
- <20260713081127.115197-2-cwweng.linux@gmail.com>
- <20260716174237.00004b79@oss.qualcomm.com>
+Subject: Re: [PATCH v5 3/6] pwm: Add rockchip PWMv4 driver
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, William Breathitt Gray <wbg@kernel.org>,
+ kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
+ Alexey Charkov <alchark@gmail.com>, linux-rockchip@lists.infradead.org,
+ linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <20260420-rk3576-pwm-v5-0-ae7cfbbe5427@collabora.com>
+ <20260420-rk3576-pwm-v5-3-ae7cfbbe5427@collabora.com>
+ <alDK7JahbqYpwQmZ@monoceros>
 Content-Language: en-US
-From: Chi-Wen Weng <cwweng.linux@gmail.com>
-In-Reply-To: <20260716174237.00004b79@oss.qualcomm.com>
+From: Damon Ding <damon.ding@rock-chips.com>
+In-Reply-To: <alDK7JahbqYpwQmZ@monoceros>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a9f6df03d4603a8kunmde6ff62349f89
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlDHxpDVktOQ01PQ0lJGBpNGlYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSU
+	9PT0hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=XgfBY9TygDAgGW+TnQhdKri9XOCiteJldFJIFc92VlZOH4m4c8Hrv1MuWydsFFtdFO+0ihNUUH4V/uzVZrx3GNcsycjs/F7cIEOxM1QmBpvQSJKfgAWTtKZbKDUy4bb2SLkMb27wtSpy+GBP0okIG6SC13XlC9URiLwuQDHxgW4=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=4+trae873noI6M/KTwB+mA2F5xNHhg6Nh9ODu1W4DXc=;
+	h=date:mime-version:subject:message-id:from;
 
-Hi Jonathan,
+Hi Uwe,
 
-Thank you for the review.
+On 7/10/2026 7:02 PM, Uwe Kleine-König wrote:
+> Hello Nicolas,
+> 
+> On Mon, Apr 20, 2026 at 03:52:40PM +0200, Nicolas Frattaroli wrote:
+>> [...]
+>> +/**
+>> + * rockchip_pwm_v4_round_single - convert a PWM parameter to hardware
+>> + * @rate: clock rate of the PWM clock, as per clk_get_rate
+>> + *        Assumed to be <= 1GHz for overflow considerations
+>> + * @in_val: parameter in nanoseconds to convert
+>> + *
+>> + * Returns the rounded value, saturating at U32_MAX if too large
+>> + */
+>> +static u32 rockchip_pwm_v4_round_single(unsigned long rate, u64 in_val)
+> 
+> very picky: if you name this function rockchip_pwm_v4_ns_to_ticks it
+> becomes clearer what the purpose is.
+> 
+>> +{
+>> +	u64 tmp;
+>> +
+>> +	tmp = mul_u64_u64_div_u64(rate, in_val, NSEC_PER_SEC);
+>> +	if (tmp > U32_MAX)
+>> +		tmp = U32_MAX;
+>> +
+>> +	return tmp;
+>> +}
+>> +
+>> +/**
+>> + * rockchip_pwm_v4_round_params - convert PWM parameters to hardware
+>> + * @rate: PWM clock rate to do the calculations at
+>> + * @wf: pointer to the generic &struct pwm_waveform input parameters
+>> + * @wfhw: pointer to the hardware-specific &struct rockchip_pwm_v4_wf output
+>> + *        parameters that the results will be stored in
+>> + *
+>> + * Convert nanosecond-based duty/period/offset parameters to the PWM hardware's
+>> + * native rounded representation in number of cycles at clock rate @rate. Should
+>> + * any of the input parameters be out of range for the hardware, the
+>> + * corresponding output parameter is the maximum permissible value for said
+>> + * parameter with considerations to the others.
+>> + */
+>> +static void rockchip_pwm_v4_round_params(unsigned long rate,
+>> +					 const struct pwm_waveform *wf,
+>> +					 struct rockchip_pwm_v4_wf *wfhw)
+>> +{
+>> +	wfhw->period = rockchip_pwm_v4_round_single(rate, wf->period_length_ns);
+>> +
+>> +	wfhw->duty = rockchip_pwm_v4_round_single(rate, wf->duty_length_ns);
+>> +
+>> +	/* As per TRM, PWM_OFFSET: "The value ranges from 0 to (period-duty)" */
+> 
+> Have you tried what happens if you break this rule? That seems like a
+> very arbitrary restriction that might just originate from the
+> documentation author.
+> 
 
- > Not sure this doc helps. What are these interrupts for?
- > The driver only uses one of them so why are there 4?
- >
- > May well need interrupt-names to allow gaps in the list to
- > work but hard to tell without more information.
+According to the IC design, any offset value larger than (period - duty) 
+will be clamped to (period - duty) by the hardware internally. Given 
+this hardware limitation, the validation check Nicolas introduced does 
+serve a practical purpose.
 
-The hardware has four EADC interrupt outputs, ADINT0 to ADINT3. The
-conversion-complete source for each interrupt can be selected through
-the EADC interrupt source registers.
+>> +	wfhw->offset = rockchip_pwm_v4_round_single(rate, wf->duty_offset_ns);
+>> +	if (!wfhw->period) /* Don't underflow when pwm disabled */
+>> +		wfhw->offset = 0;
+>> +	else if (wfhw->offset > wfhw->period - wfhw->duty)
+>> +		wfhw->offset = wfhw->period - wfhw->duty;
+> 
+> You don't enforce wfhw->period >= wfhw->duty, which however seems like a
+> reasonable restriction. When knowing that you can drop the explicit
+> check for !wfhw->period and just keep the else-if branch.
+> 
+>> +}
+>> [...]
+>> +static int rockchip_pwm_v4_write_wf(struct pwm_chip *chip, struct pwm_device *pwm,
+>> +				    const void *_wfhw)
+>> +{
+>> +	struct rockchip_pwm_v4 *pc = to_rockchip_pwm_v4(chip);
+>> +	const struct rockchip_pwm_v4_wf *wfhw = _wfhw;
+>> +	bool was_enabled;
+>> +	int ret;
+>> +
+>> +	ret = mfpwm_acquire(pc->pwmf);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	was_enabled = rockchip_pwm_v4_is_enabled(mfpwm_reg_read(pc->pwmf->base,
+>> +								PWMV4_REG_ENABLE));
+>> +
+>> +	/*
+>> +	 * "But Nicolas", you ask with valid concerns, "why would you enable the
+>> +	 * PWM before setting all the parameter registers?"
+>> +	 *
+>> +	 * Excellent question, Mr. Reader M. Strawman! The RK3576 TRM Part 1
+>> +	 * Section 34.6.3 specifies that this is the intended order of writes.
+>> +	 * Doing the PWM_EN and PWM_CLK_EN writes after the params but before
+>> +	 * the CTRL_UPDATE_EN, or even after the CTRL_UPDATE_EN, results in
+>> +	 * erratic behaviour where repeated turning on and off of the PWM may
+>> +	 * not turn it off under all circumstances. This is also why we don't
+>> +	 * use relaxed writes; it's not worth the footgun.
+> 
+> I wonder if it's worth however to delay setting PWMV4_CTRL_UPDATE_EN
+> until after the clkrate is handled to (maybe) prevent glitches?
 
-However, this initial driver only uses sample module 0 and routes its
-end-of-conversion event to ADINT0. So the binding does not need to
-describe the unused interrupt outputs at this stage.
+I agree with your point. For the PWM enable sequence, we should enable 
+the PWM dclk before any register operations. Conversely, when disabling 
+PWM, it's better to carry out dclk disabling only after all register 
+accesses are fully completed.
 
-I will simplify this in v3 and document only one interrupt entry for
-ADINT0. If support for the other ADINT lines is added later, the binding
-can be extended with interrupt-names at that point.
-
-I will also drop the redundant maxItems from the interrupts property, as
-reported by Rob's bot.
-
- > Do you need that explicitly. I think adc.yaml already brings that in.
-
-No, it is not needed. I will drop the explicit diff-channels property
-from the binding.
-
- > For these take a look at the description of diff-channels.
- > It states that where the pairs are hard wired you can just use reg
- > and not specify diff-channels.  Seems to apply here and will greatly
- > simplify this binding.
-
-Yes, the differential pairs are fixed in hardware. The valid pairs are
-0-4, 1-5, 2-6 and 3-7.
-
-I will rework the channel binding to avoid diff-channels for these fixed
-pairs. For fixed differential channels, reg will identify the hardware
-pair. For single-ended inputs, I will use single-channel so that the
-single-ended input number is explicit and not confused with a fixed
-differential pair index.
-
-That should remove the large allOf block and make the binding much
-simpler.
-
- > What are these channels?  There is a reference to one
- > internally wired one so what are the other 3?
-
-Channels 4 to 7 are external ADC input pins. They can be used as
-single-ended inputs, and in differential mode they are the fixed negative
-inputs for channels 0 to 3.
-
-The internally wired channel is channel 8, which is the VBAT input. This
-binding only describes the external ADC input pins, so I will clarify the
-description to avoid confusion.
-
-Thanks again. I will address these issues in the next revision.
+> 
+>> +	 */
+>> +	if (wfhw->rate)
+>> +		mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
+>> +				FIELD_PREP_WM16(PWMV4_EN_BOTH_MASK,
+>> +						PWMV4_EN_BOTH_MASK));
+>> +	else
+>> +		mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
+>> +				FIELD_PREP_WM16(PWMV4_EN_BOTH_MASK, 0));
+>> +
+>> +	mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_PERIOD, wfhw->period);
+>> +	mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_DUTY, wfhw->duty);
+>> +	mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_OFFSET, wfhw->offset);
+>> +
+>> +	mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_CTRL, PWMV4_CTRL_CONT_FLAGS);
+>> +
+>> +	/* Commit new configuration to hardware output. */
+>> +	mfpwm_reg_write(pc->pwmf->base, PWMV4_REG_ENABLE,
+>> +			PWMV4_CTRL_UPDATE_EN);
+>> +
+>> +	if (wfhw->rate) {
+>> +		if (!was_enabled) {
+>> +			dev_dbg(&chip->dev, "Enabling PWM output\n");
+>> +			ret = clk_enable(pc->pwmf->core);
+>> +			if (ret)
+>> +				goto err_mfpwm_release;
+>> +			ret = clk_set_rate_exclusive(pc->pwmf->core, wfhw->rate);
+>> +			if (ret) {
+>> +				clk_disable(pc->pwmf->core);
+>> +				goto err_mfpwm_release;
+>> +			}
+>> +
+>> +			/*
+>> +			 * Output should be on now, acquire device to guarantee
+>> +			 * exclusion with other device functions while it's on.
+>> +			 *
+>> +			 * It's highly unlikely that this fails, as mfpwm has
+>> +			 * already been acquired before, and this is just a
+>> +			 * usage counter increase. Not worth the added
+>> +			 * complexity of clearing the PWMV4_REG_ENABLE again,
+>> +			 * especially considering the CTRL_UPDATE_EN behaviour.
+>> +			 */
+>> +			ret = mfpwm_acquire(pc->pwmf);
+>> +			if (ret) {
+>> +				clk_rate_exclusive_put(pc->pwmf->core);
+>> +				clk_disable(pc->pwmf->core);
+>> +				goto err_mfpwm_release;
+>> +			}
+>> +		}
+> 
+> Can it happen that we have
+> 
+> 	wfhw->rate && was_enabled && wfhw->rate != clk_get_rate()
+> 
+> ?
+> 
+>> +	} else if (was_enabled) {
+>> +		dev_dbg(&chip->dev, "Disabling PWM output\n");
+>> +		clk_rate_exclusive_put(pc->pwmf->core);
+>> +		clk_disable(pc->pwmf->core);
+>> +		/* Output is off now, extra release to balance extra acquire */
+>> +		mfpwm_release(pc->pwmf);
+>> +	}
+>> +
+>> +err_mfpwm_release:
+>> +	mfpwm_release(pc->pwmf);
+>> +
+>> +	return ret;
+>> +}
+>> [...]
+>> +static int rockchip_pwm_v4_probe(struct platform_device *pdev)
+>> +{
+>> +	struct rockchip_mfpwm_func *pwmf = dev_get_platdata(&pdev->dev);
+>> +	struct rockchip_pwm_v4 *pc;
+>> +	struct pwm_chip *chip;
+>> +	struct device *dev = &pdev->dev;
+>> +	int ret;
+>> +
+>> +	/*
+>> +	 * For referencing the PWM in the DT to work, we need the parent MFD
+>> +	 * device's OF node.
+>> +	 */
+>> +	dev->of_node_reused = true;
+>> +	device_set_node(dev, of_fwnode_handle(dev->parent->of_node));
+>> +
+>> +	chip = devm_pwmchip_alloc(dev, 1, sizeof(*pc));
+>> +	if (IS_ERR(chip))
+>> +		return PTR_ERR(chip);
+>> +
+>> +	pc = to_rockchip_pwm_v4(chip);
+>> +	pc->pwmf = pwmf;
+>> +
+>> +	ret = mfpwm_acquire(pwmf);
+>> +	if (ret)
+>> +		return dev_err_probe(dev, ret, "Couldn't acquire mfpwm in probe\n");
+>> +
+>> +	if (!rockchip_pwm_v4_on_and_continuous(pc))
+>> +		mfpwm_release(pwmf);
+>> +	else {
+>> +		dev_dbg(dev, "PWM was already on at probe time\n");
+>> +		ret = clk_enable(pwmf->core);
+>> +		if (ret) {
+>> +			dev_err_probe(dev, ret, "Enabling pwm clock failed\n");
+>> +			goto err_mfpwm_release;
+>> +		}
+>> +		ret = clk_rate_exclusive_get(pc->pwmf->core);
+>> +		if (ret) {
+>> +			dev_err_probe(dev, ret, "Protecting pwm clock failed\n");
+>> +			goto err_clk_disable;
+>> +		}
+>> +	}
+>> +
+>> +	platform_set_drvdata(pdev, chip);
+> 
+> This is unused.
+> 
+>> +
+>> +	chip->ops = &rockchip_pwm_v4_ops;
+>> +
+>> +	ret = devm_pwmchip_add(dev, chip);
+>> +	if (ret) {
+>> +		dev_err_probe(dev, ret, "Failed to add PWM chip\n");
+>> +		if (rockchip_pwm_v4_on_and_continuous(pc))
+>> +			goto err_rate_put;
+>> +
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err_rate_put:
+>> +	clk_rate_exclusive_put(pwmf->core);
+>> +err_clk_disable:
+>> +	clk_disable(pwmf->core);
+>> +err_mfpwm_release:
+>> +	mfpwm_release(pwmf);
+>> +
+>> +	return ret;
+>> +}
+> 
+> Best regards
+> Uwe
 
 Best regards,
-Chi-Wen
+Damon
 
