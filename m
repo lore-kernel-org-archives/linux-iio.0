@@ -1,135 +1,158 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F9C343F0BA
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 18:22:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91E841E7C2E
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 18:47:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784398961; cv=none; b=heGYDtUYJ9TYbDBOH/CTdqkzmh8qzslITbsVelGGe5qrA/U4lDri03somSEq4RxP0mWHXY1ROaBr3Cpc6NfA77KJ7S2PESdU04WMBEgl0r//Nc5qGRkS5jB8G/j6RpWU3H4+VvZTwaSOLDeK3msXZZtT21nJru02hN1imJC3Uqs=
+	t=1784400452; cv=none; b=rHqEwDJPgB1KrK+LXwiHytbFuxADSRa67XZO0oF6XBJUmR8znYZKj6WErm5yYeF6HSieKn0xOHWy8KwerlNxzOBuY32Q701usujG8NO7fNWUSIzG60MBO/QeznYpzsVMpYRby9yK1/Gpjrckm1wpxUh/Zfgj1b1+rYZgL4iuXRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784398961; c=relaxed/simple;
-	bh=DpaRWWvw+/hqvqndl4HHuSnjXnhT3nNCk7VMW1Lyq/o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ui8Y8JUSQs2VM2Tr9A0kbsw/atQzAgYfNlb8tK6zc7cuu1Ld8L25sD8oCFbLRHEyp1+thKhP/YvuELi/jMbLua+SCmuvsLgK3kTdwsKsmDz6JUd3Cqfklks6Kfe2IBP/R3/KpiSOWVEKSOAMl5pl+fE1oekaTKmRx5U1pPDYPsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BnZ08Btb; arc=none smtp.client-ip=209.85.216.54
+	s=arc-20240116; t=1784400452; c=relaxed/simple;
+	bh=5brdqZ/1wXfjtic17d235LNB+dpZfhc5OvtCZzsQ5RU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CEc8NTPLirmyml0hYD4CaqczIfi400iZf2sKAjPlGptrP5jbLyPr0o9wSh5WnWm1x5l0AVFeJllAcyZ4TFjSpp+lbmbzSNQY/ERIeSL1NLkUfeJXBdzRcMSG9X4NMA4DtFWiLrD9LWZ9KV5vJ6VYee+QcqOAkhd9lIfqsQYX1YA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=POG7pQ8v; arc=none smtp.client-ip=74.125.224.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BnZ08Btb"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-38deea72eebso6703386a91.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 11:22:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="POG7pQ8v"
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-668432d50b0so943540d50.1
+        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 11:47:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784398958; x=1785003758; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=HMRcZrVGhhrJa7FEoJlY6NcwZQjRAoHLAJRWFeVvzqY=;
-        b=BnZ08BtbaU1KKQDSzNqJFpdyyReQdnpccvnU2dmzURuwh8mLR69Iy6LuCuVsgQ2VlT
-         mTzaswdihqAI9TDtr9pcXH3fwENJ11W+4vNd4xF0cPlNbuSDe0AmLScRNlv4tGSygLKX
-         AgA9urDXyJx9CL2Ud6pJHXvZhyRH0+v0iqLQYIH/oXhZ+KU5JJgQA21Im0NYTgUprB5g
-         8hV4/QobQSvXzWpkrKmwsOC4TrtUg3hEitpc+4c+8zJfIehFdPybV88i3ZzCviktNKk9
-         cX+rZTNPfs9Uuejd5UJwhnvgiyfDSwHHZ7e9NhpPF+JkXKiNVP4IYWSEibcUviqO6Ma7
-         SgpQ==
+        d=gmail.com; s=20251104; t=1784400449; x=1785005249; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=fQTOmrHG5pvHqSModWaQQhiPltxOaTHtUmOHNGx1d18=;
+        b=POG7pQ8v3KB/6vyUYyUYCxySdycEoBZzCBU2w0EMwOKUa5lE4Ewy46/ksux2jM4CzA
+         aycdIaP/DMPLOH1lFGbB375owKzFI2cVYRI9r8QmaaDGo2AYAlKmUrznKcbpdQCtXRPO
+         grwIO3fdv926fDBdLX/HIAkmogvd7RLEyIZhfE52ud1AtAg5iVcr0fD+nK26HEs1syAp
+         AoRf/nJE56qG/4c1wyWroCrimPBStMPS4h+VRbVZkbrhdCMDCUS8N51RNvpG3WTIK4kp
+         Kqp6IC5psFKHnN4P5QJgvTUYTFnKLlOGHQY8F3oB/ORd+l0KRlye1dsWDO6GWNOPWa9z
+         jO8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784398958; x=1785003758;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HMRcZrVGhhrJa7FEoJlY6NcwZQjRAoHLAJRWFeVvzqY=;
-        b=rxFom7fHzHbGrlANg9ppX7T51RKCt7clckpaltZKmf+Z/CEfBhAYp23SXT5/j+oNsa
-         zBItsNckjenfVxer1eyXwHe5TE6FrA4bQYJ4IG6/t9OG0cqAKSbN9MAC/NlHNDUWuMuA
-         CyNq1E7OeFqvbfXSbGFeSpBWXmVxcWX9D18llwXUc59jltWmVco2CrBwb9LipqHwYC0p
-         lzJXJvQytIePKORQ725xoesEakBz/gnVuGfvQ4D5VfiI1uGOGxf34ptwEmz5L0MD3iaH
-         uE4W+5h4sVp6Sc0DPFEHEuRdEN+b6ikvIeIGpeOaH8yI1BzgWGxVBCuvuYWz08RMT2kM
-         G0bg==
-X-Forwarded-Encrypted: i=1; AHgh+Rrq52veXkH2+ovBz50U74xT2tyhm1o5GPDROZ8rn9ZyzrEJI9u163oXvk7ROXznzaT9AXXxF83vvqA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YznFXWQ4lkTklUOsGC2Y0iWXKA1TjvEK7YU5kpq5i6zWFoWBnbq
-	qu9afx46Hw1L6gZHkyCkHazd5TIzxIigKTSyq8A3lQDU+u5kJfLBeshs
-X-Gm-Gg: AfdE7cm5lHkkn6Dm0mSNth+VV+uMlQlVPJaDHf440qOM4kWh1+PuW32eaI9i2M5gJxT
-	FIJMSeXT9fE643eS3Q2rTJkcMoJqTtxGPdlZlRRzfy20M78DjwekFiHHRBCPbL5ZSdPpEW9tUd3
-	mw42mGucUW814pNyGNeMSiUCrdshki9c2dqiyxi+srWEFc6aMqBdXGsZzJq2T7u+5F7NfFd+t7f
-	EPOyUgjEPwtDPfxpohw5w38+/61VLGd0melQwRwMYa4uHZDliSb4lMhxnN4J/DRLrzoYvC7cHCw
-	cqxXCFW0AlPIjODYbyejYlyuEz9mAjx/T0mw77SVzHoxKBxpyYcjlWPFvM2XxQ9qgecqcZ7fu7X
-	zGTCFqG4MkNfzgNGzOVMBP8YFCuacyHExJbVwoXFCqkQfjXE6mcBuqhlprIueQbIx2hJG+oJHq/
-	7RNw==
-X-Received: by 2002:a17:90b:590f:b0:380:105f:8ffd with SMTP id 98e67ed59e1d1-38e4b46c8a6mr8590078a91.16.1784398958325;
-        Sat, 18 Jul 2026 11:22:38 -0700 (PDT)
-Received: from kdev.. ([108.180.130.139])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e4aff383dsm3129270a91.8.2026.07.18.11.22.36
+        d=1e100.net; s=20251104; t=1784400449; x=1785005249;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=fQTOmrHG5pvHqSModWaQQhiPltxOaTHtUmOHNGx1d18=;
+        b=KLFmlrs7VVObcvSkw4I2YnBJyaBjDOzC3B3pNcyG3qw2JL3UPOwdnu357PgxFk7Q8E
+         H3JtNOvwMdGvfnkKQwdL0HuAZ2e3oUMi+TyHTpclZ47m5XnSPvowzqOaHiKZ6MUsCeV9
+         qJ/uWaLZjNfIZE8ckDJc5QnumPj8/prtNTf4SAWv9lGUwR2+nOR5ANCm1FPXQI7XO/Y4
+         5SKtVWVNphxAp+ZNXmKg83fDpp/z2x9TYMUxoQkZMnYkPhSAn23uHOmCfWmJglUJHC3h
+         5d3uEwzTiJHgsPOYMT1K2AnVi2JErA0VbSecgfygH3zm7szyhqxmcFyOLQp6YOCGc0pO
+         l/Vw==
+X-Forwarded-Encrypted: i=1; AHgh+RqEzUwGXjyFvvOHDu0dHvRbQzOXniys9mK5d7yEkZ9NGkaxUDDFpJCa39TAAnc5qgx+N3WD79rev/I=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwJH6b3H9EeGeGLJLMyj19bR2a5zkKKOtsJH3/swh0h7ytiPXFR
+	8Itd41A6sybATOe7p++Xf/+MpU2srjAtjKPZJ0DCpSiekNp2ehKRpU3c
+X-Gm-Gg: AfdE7cnJ4F0yhiedBUYK25VtnopqGOeqM7s0kNyiegA/QZzH4h4d1mkokTX4/QX36Jb
+	zsP4jCEtcTsJyV0qWv4jSWKg9ZYmSxo2Mq4qR5QmxH9bEmtNF5A/nHpFSAOWiCss7YCR4/M0sac
+	l68v0jSc79pmbA6lxHEFgNF97TVTmz42mqwMw2DbvUMQbBYDtQ1W2Jo5VRZjFXho1mjTx+8nD8x
+	5Pz/8a0hqA8tdEtoCYmxzPmE9+YKy6XA0H3jXLFxxbOknurWkgsAhsKicG5LAwVNEAwJ2DsKIq9
+	CTthwu5SjM8zhBaSkNCmOFLuHZ+t7T5x2QAk+bgEPgH0PhBNdCfE75VUyG4qXQeJv7ZY/0RHnzk
+	LRzFHSpgfeWp9tyHMSsyzX6xgp32rzB+xwB1Wj29zz6UXlxVIPiKEdAJNr4/Ydl+BF8cwhxmb4/
+	541rtPGcHu3Q==
+X-Received: by 2002:a05:690c:9a8f:b0:7ff:19d6:74ee with SMTP id 00721157ae682-81ef28589d4mr26330087b3.33.1784400449216;
+        Sat, 18 Jul 2026 11:47:29 -0700 (PDT)
+Received: from localhost ([2804:30c:90d:6100:8a69:5cf5:f1f8:a1e1])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-81ef4279508sm33890157b3.26.2026.07.18.11.47.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2026 11:22:37 -0700 (PDT)
-From: Babanpreet Singh <bbnpreetsingh@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Angelo Dureghello <adureghello@baylibre.com>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Babanpreet Singh <bbnpreetsingh@gmail.com>
-Subject: [PATCH v3] iio: dac: ad3552r-hs: fix scnprintf() buffer bound in data source show
-Date: Sat, 18 Jul 2026 18:22:36 +0000
-Message-ID: <20260718182236.7-1-bbnpreetsingh@gmail.com>
-X-Mailer: git-send-email 2.47.3
+        Sat, 18 Jul 2026 11:47:28 -0700 (PDT)
+Date: Sat, 18 Jul 2026 15:48:29 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Cc: sashiko-reviews@lists.linux.dev,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>, conor+dt@kernel.org,
+	devicetree@vger.kernel.org, robh@kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v7 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and
+ similar ADCs
+Message-ID: <alvKfTS8Kj1MF3db@debian-BULLSEYE-live-builder-AMD64>
+References: <cover.1784235595.git.marcelo.schmitt@analog.com>
+ <5108c89986ae8723139419058db1b2f2e74daff6.1784235595.git.marcelo.schmitt@analog.com>
+ <20260716212838.95B3F1F000E9@smtp.kernel.org>
+ <alpab2gBs4nPDU5g@debian-BULLSEYE-live-builder-AMD64>
+ <20260718024628.3e2872ca@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260718024628.3e2872ca@jic23-huawei>
 
-ad3552r_hs_show_data_source_avail() formats the available data source
-names into a 128-byte stack buffer, but bounds each scnprintf() with
-PAGE_SIZE instead of the buffer size, so the bound does not protect
-the destination at all.
+TL;DR: Will switch to voltageY-voltageZ ABI.
 
-This cannot overflow today - dbgfs_attr_source[] has two entries,
-"normal" and "ramp-16bit", 18 bytes formatted - but the bound stops
-protecting the stack the day the table grows. Use sizeof(buf) so the
-bound matches the destination.
+On 07/18, Jonathan Cameron wrote:
+> On Fri, 17 Jul 2026 13:38:07 -0300
+> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+> 
+> > On 07/16, sashiko-bot@kernel.org wrote:
+> > > Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
+> > > - [Medium] The `LTC2378_DIFF_CHANNEL` macro defines an IIO channel that is intended to be differential but lacks the `.differential = 1`, `.indexed = 1`, `.channel = 0`, and `.channel2 = 1` attributes.
+> > > --
+> > > 
+> > > --- Patch [2]: [PATCH v7 2/4] iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs ---
+> > > commit 5710d5f25b45906977e2522567c1964b1d3219f8
+> > > Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > 
+> > > iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs
+> > > 
+> > > This commit adds a new driver for the Analog Devices LTC2378-20 and
+> > > similar analog-to-digital converters.
+> > >   
+> > > > diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
+> > > > new file mode 100644
+> > > > index 0000000000000..5600c820c7f45
+> > > > --- /dev/null
+> > > > +++ b/drivers/iio/adc/ltc2378.c
+> > > > @@ -0,0 +1,416 @@  
+> > > [ ... ]  
+> > > > +#define LTC2378_DIFF_CHANNEL(_sign, _real_bits, _storage_bits)			\
+> > > > +{										\
+> > > > +	.type = IIO_VOLTAGE,							\
+> > > > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
+> > > > +			      BIT(IIO_CHAN_INFO_SCALE),				\
+> > > > +	.scan_index = 0,							\  
+> > > 
+> > > [Severity: Medium]
+> > > Does this macro need to set .differential = 1, .indexed = 1, .channel = 0,
+> > > and .channel2 = 1? The name suggests these are differential channels, but
+> > > without these attributes, the IIO ABI will expose them as single-ended
+> > > (e.g., in_voltage_raw instead of in_voltage0-voltage1_raw).  
+> > 
+> > For parts with multiple inputs and configurable differential channels (e.g.
+> > AD4130-8, MCP3561/2/4R, NAFE13388 [1, 2, 3]), the voltageY-voltageZ ABI helps
+> > clarifying what physical inputs make up a channel. For differential only parts,
+> > the ABI seems to be flexible by only requiring a 'consistent labeling' (either
+> > voltageY or voltageY-voltageZ IIUC). Will set the channel with the differential
+> > ABI if maintainers believe that's the best way to have it. Might slightly tweak
+> > the channel macros to keep .differential = 0 for pseudo-differential chips
+> > (e.g.LTC2369-18).
+> 
+> Whilst I get your point on differential only cases not really requiring the
+> specification of two inputs, I think that does provide a simple indication
+> to users that they are differential channel.
+Agree. The first ADCs I've worked with were single-ended so having to provide
+the negative input when working with differential ones was something noticeable
+to me. Though, one applications engineer once called me out for the
+voltageY-voltageZ naming arguing that a differential channel provided only one
+input to his application and thus it should be labeled only 'voltageY' or even
+just 'voltage'. Despite understanding that argument, I share the opinion 
+that an indication of differential channel is helpful. Anyways, besides the
+possibility for application to display channel names differently in user space,
+I see we now have .read_label so the whole discussion seems pointless.
 
-Found by smatch:
+> 
+> I would prefer that we make them 'look' like differential channels so make up
+> a suitable number for the negative side.
 
-  drivers/iio/dac/ad3552r-hs.c:593 ad3552r_hs_show_data_source_avail()
-  error: scnprintf() 'buf[len]' too small (128 vs 4096)
+Would it make sense to adjust the ABI doc to encourage the dual numbering for
+differential channels? So I don't fall the temptation of single index in the
+future :)
 
-Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
-Assisted-by: Claude:claude-sonnet-5
-Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
----
-v3:
- - Return to the v1 fix: bound scnprintf() with sizeof(buf) instead
-   of switching to sysfs_emit_at(). As Andy noticed in the v2 review,
-   this is a custom debugfs read handler formatting a kernel buffer
-   for simple_read_from_buffer(), not a sysfs show callback, so
-   sysfs_emit_at() does not apply here:
-   https://lore.kernel.org/r/als6lRi-H4DM7ra6@ashevche-desk.local
- - Dropped Suggested-by and restored the v1 title; the diff is
-   identical to v1.
-
-v2: https://lore.kernel.org/r/20260718044244.7-1-bbnpreetsingh@gmail.com
-v1: https://lore.kernel.org/r/20260717040024.7-1-bbnpreetsingh@gmail.com
-
- drivers/iio/dac/ad3552r-hs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
-index 02a124ac4855..f865843aa439 100644
---- a/drivers/iio/dac/ad3552r-hs.c
-+++ b/drivers/iio/dac/ad3552r-hs.c
-@@ -590,7 +590,7 @@ static ssize_t ad3552r_hs_show_data_source_avail(struct file *f,
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++) {
--		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ",
-+		len += scnprintf(buf + len, sizeof(buf) - len, "%s ",
- 				 dbgfs_attr_source[i]);
- 	}
- 	buf[len - 1] = '\n';
-
-base-commit: fce2dfa773ced15f27dd27cd0b482a7473cdcf2a
--- 
-2.43.0
-
+Thanks,
+Marcelo
