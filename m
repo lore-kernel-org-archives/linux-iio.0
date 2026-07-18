@@ -1,61 +1,63 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77E112F6904
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 07:50:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF91E29B8CF
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 07:50:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784361034; cv=none; b=P7fpvNWfaq2t7w4Dl5qjEo4/8+GlBBqsYrnDGkJfqLeIWEoxsbxcJL2DD6gBqMAhaoGNse7aN+rqaRQ6Zf+/3d8oake6KqxVlmSB3HZ6O7M31nAtlVNlx+0P521B7/WZxK3UzYYuullhuW1VJbnlGuQmHEjEKdLUcTVEJ11bqFs=
+	t=1784361039; cv=none; b=V4yINlVpAoMUTdflQZ1Gzug5OsPxtm7fo0g8oGFfH/dYL0fGxt7yStTMJx8FyuQc7f+9XCb0HfL7cEB5KVoZgIWHNxXzNtEUilgzNSznlYPWX+194Sdda1YDgJmyYwM19FvReMd7kAIZpniLxcZoBJc1Yyc3fjwIyPyaPGvr/hI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784361034; c=relaxed/simple;
-	bh=G+l4s1pogVohaIX+XYOiBzl9VrEUwOrDVgtO9182bfg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=qgGDlK7mX2SGtM5WDmBb6JxCYoNH7I15d8b/buTwiBvG/08HBkZbXbF589SiQyAaUteIZUlWVh/PpNsnDyCAQoS6rHXa5mXoa7FPLYKDJsgQ6BHjkqZseXrmyJnXZWIh8gTn+itXvvHBJSmOHSlQhDdFaBVHr0oMAgpvANzt/Pc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LOVISh9i; arc=none smtp.client-ip=209.85.215.169
+	s=arc-20240116; t=1784361039; c=relaxed/simple;
+	bh=1awWxnMm4rgNRolCKrFaDT05Xek0Jwqhh14crlxuQRY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Tt3f960fIcFeQ4MFRIQPk6ocA4aFtN8SK3xoMVq7jNgd1NB8oprGj6jNbi9yesvw9y4ie4EktQP8stVYjeeonSe3mp1Q8057VY7MYv3kp6etot4t6MohT13oiPqm7Gvernfiup/9n71TkuUQMzmgev5qs99UCtznze+6JIQguP4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=npbmC64S; arc=none smtp.client-ip=209.85.215.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LOVISh9i"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-ca88130e09aso5533144a12.3
-        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 00:50:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="npbmC64S"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-c9cf07d2df6so5454978a12.2
+        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 00:50:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784361033; x=1784965833; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YXpzVCJeTEdmM8R8kfDejMRWHI3lDmE6Numc0cR/WHw=;
-        b=LOVISh9iXnzcQhH72pgFxIy1F0NVltjz0koyr9CF1Wbq3mhnCUX9idhzeAjJiuhBaS
-         IFHnI9utayA887i6P5uetaF49aNGX/MPg6djfbWuLJHIsT5/yEqNa5T+O2Q0b9PJKBpN
-         jbSyqPt2fuYSZ0mpa9BBdVPQ1ob0EF9NyF4NPkvdFiUIsG+VlGC32z69JKEHVwUAE8nv
-         vTeIj9c2CXVdv5B/ji67EJ2fgwtoVCE3DMF7/wUS830wHrvsgwrwIMG7CfSfCp9ln3tB
-         HiXNpxs1jrp7ZDvVgK/6BxBkCc6OT6AjX7Jmv20/go9UVbUUr3URck3QBLS5uN4AaN6i
-         hBXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784361033; x=1784965833;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1784361037; x=1784965837; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YXpzVCJeTEdmM8R8kfDejMRWHI3lDmE6Numc0cR/WHw=;
-        b=QDtagvJ73DIhaMurqof11VQQo46wuQlrvNCu4/b10b4VeW+XvD5djBMIMWBFza6HRl
-         LYQ7PWfESXG9GXmHXXGZTa4dyPfXZBiLQWmIugubWmdTTT276KKsQ4LkRxeBxK1/w88j
-         qFaq7xTn4pLRLEIkxOGm90eS4nfdQtn0ocvE14phRzJqddXlFYr5v1P0QUEYkm6R6fL4
-         LIjMP//IhwzWsFvItWVkLK/K3Nom5LlPDVHXtJncsQtg8TBzGHtqEvbQoA86Dv+bCnlX
-         m6oBRIrr3Qr8j22wEOYm7tUcSZGOo9GzhqDPkNfWwiqCdHjySTKwuOFYBFmUR6jGdIIo
-         Tp1A==
-X-Forwarded-Encrypted: i=1; AHgh+RrZ8SgyFp3i2ZB6Tmdoosxy2YdwU+XPcsBwJ323mthsm5X+31n6UoWsfFwVANXd+xEafFanN/2IJFY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxi0VNBAjblnxVahw7kYKDxSpMxcbNyWz9ULhLDNZ3CumsJ6OhL
-	K2X7FJbvM5ptAP6GljEmntvOn65DFe8/pgGPA0c05V5JNTrDtcbgGfAu
-X-Gm-Gg: AfdE7clC7ClLUmv8yvANcVeYaCbh3OnpFtmXnuo3L9BSyj8SeKlPlWzB7GIavLVmoXU
-	tGCGgPY42Xxl7EvykqG6TCQArJIeBFe2Cn9S1jCihY5dTb4zM1e3kr/mzQxiLC/WYvTqtZ9U90k
-	v2DP8x+MU14et8C2yw87HgrESZRSH5VI/g06ga9HE3G6rU436Mx7qNLy8qsu/WvMVAtysK4PaRa
-	sHuDVtiJb+n21H5HNfcG5aExwDRZmUXj5h8CkB7vDSC+ZAKNGWNv56gNc55D0wxHVsoZXeA0Jva
-	r9S50LO43SlQvDHVTrRLY89/RP2skgcmDtUai9y8Z1LPHHEPicXGD1f3rU4PVAbSkhgdMufOK4o
-	6wti9RbCrv3T/RTeL9dsg90BUBCTfKkkR61nau1R74L6iLzeeORkM7GwUqX9DmjHvej/v69dRiE
-	ATj4x/C2h5MF/OVm3OxbqR7QPJ3epcMDDYxH5YK4x6BmTzmNVidc+Z
-X-Received: by 2002:a05:6a21:6816:b0:3bd:3800:7538 with SMTP id adf61e73a8af0-3c3ad777edemr6673890637.33.1784361032793;
-        Sat, 18 Jul 2026 00:50:32 -0700 (PDT)
+        bh=HB2l2gAUnqKDqPPuaqqN/p88qcc0rf+a8Bqxr4vlSRI=;
+        b=npbmC64STKJ4DaT1b7n2EvTdRfadz4goGT2QZsQQuXUby7nsKAc8BjyqIprVaruuvN
+         Evmu12v2JzfXxkP8SIBIz1qr1PcjBdzAfNnMXd8wWRpku86Ve2Wp8T4wCTprcCtP29JC
+         5oPyFpYA1VPz99DCb/+x9SSOYF6yBFsxznRimGdIk9Z7VvrpyqUQcjXpTwdFQ8t3hYxm
+         N4vDVpkgBHuRtqZdv2ppWpcnt+fG3u3iGD0z+PVBopCcoA0Krh/tvaxcFKRBNQ2RxPZ5
+         ahLSzGtF8eeGrc5gm9tJIPOY76P6F6d/MvWjvCOVrQCCm3deGBBWM3qmsVg6N9LRq5Ez
+         sSeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784361037; x=1784965837;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=HB2l2gAUnqKDqPPuaqqN/p88qcc0rf+a8Bqxr4vlSRI=;
+        b=ZVBm5p8d02mBUGiQjQUBvtZgjtHCHUU9uWQJrOfcRuQUJOD5/46aJa4aXmdd3foVaQ
+         DEhdgqRMEfYZm2UguaESDdnvUIO+7nxZs8oIjR+SCA8+wR71+eeMZGwz+YpYo0rU+Hph
+         dPAczPu8tV9J7oFSTVuv2zhRxCp/FBUNVPIaiKRFFTKSJruoZDF/OHhbPT8ZglmB63vW
+         D0IXfUzorBPIGf2M53nMgRgF+lZi5lW/RTYGYK0o2v8JJdf/8jQYWmdNIB9k2tdmi92U
+         dBjk7KNImDQt84dGFuULZmrLr1q0CThiHD6ukwiGQczZNvHCuazZoXZmKrAkZr2LIy+3
+         0ZHg==
+X-Forwarded-Encrypted: i=1; AHgh+Rq/CDs9ZeGnsa+PcQURCuqJ2YfnP29WvwtPUtaLWTuEBXNZcCeJ3lczlbeoYjQFe6iOisRTurBoWHk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxgPkngSZAu5p4+OpCxEOH4NvoG/YxoM6Mf5zBVvOJinTOXTpKZ
+	qAay3pXLONV3G5tagczMpICGankuocpQDY0qmxkk/EjWuxQDzpgRjw5e
+X-Gm-Gg: AfdE7clbdlu7R02t3MUUZjTzpFn+i6a4FBw+2ws1KFhtGjL3V1Ajk3vTRZRdGyYuPrm
+	DJ9NHRmPRdUUSuPYW/th4IpmOo6eyWsEnof5LkrPBn9DBtm30+AqhNeI5JaEvz60r9EWJsddrsd
+	crz1gpephCOLyf/7KlUiDBTtg3T07pFbXY44DaOUjvPqW1mTNlPYrDsEH19cWfvOacQAYhTrTGg
+	Sugm1vDDM+9SzDc3F1fu4ecviCv54EVzlHAyo3LCXjARmJS+i1YUuVxpvd+xCEwTuZZGL9FYZdY
+	ZRx6sa4Z0g1662jiTy76WN95p+FU7KQz+TBJWadMBdTkUdTAgSJ7Wo7aAX2hJ6Bn3E4a567pvay
+	fj+/O89/Sf6UsW/96r3fQqLsd/7CE/a2XoE3PrsQhIvcjEP2lwUefn+EUvZJ4dYI9hdGwXBq1Ib
+	QnG+qy5IlE1llBjVtiDLw1dx+1IN3b8A922jLKySKoT/GKu1bj1PmS
+X-Received: by 2002:a05:6a21:4a97:b0:3c3:96dd:9ecc with SMTP id adf61e73a8af0-3c3ad93dd33mr5919063637.57.1784361037377;
+        Sat, 18 Jul 2026 00:50:37 -0700 (PDT)
 Received: from debian.ari ([152.56.157.145])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20bf96sm14354220eec.28.2026.07.18.00.50.28
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20bf96sm14354220eec.28.2026.07.18.00.50.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2026 00:50:32 -0700 (PDT)
+        Sat, 18 Jul 2026 00:50:36 -0700 (PDT)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -65,10 +67,12 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH 0/3] iio: adc: ti-ads1015: modernize resource management
-Date: Sat, 18 Jul 2026 13:20:13 +0530
-Message-Id: <20260718075016.27750-1-architanant5@gmail.com>
+Subject: [PATCH 1/3] iio: adc: ti-ads1015: sort headers alphabetically
+Date: Sat, 18 Jul 2026 13:20:14 +0530
+Message-Id: <20260718075016.27750-2-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260718075016.27750-1-architanant5@gmail.com>
+References: <20260718075016.27750-1-architanant5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,27 +81,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series modernizes the ti-ads1015 by transitioning it
-to a fully devm_ architecture.
+Reorder include headers alphabetically to comply with the preferred
+coding style and improve maintainability.
 
-y moving resource allocation, device registration, and runtime power
-management to the devm_ infrastructure, the teardown sequence is now
-guaranteed to execute safely in the reverse order of initialization.
-This allows for the complete removal of the ads1015_remove() function,
-eliminating boilerplate code and reducing the risk of future resource
-leaks.
+No functional changes.
 
-Additionally, a minor housekeeping patch is included to ensure the
-header includes remain alphabetically sorted.
+Signed-off-by: Archit Anant <architanant5@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-Archit Anant (3):
-  iio: adc: ti-ads1015: sort headers alphabetically
-  iio: adc: ti-ads1015: use local device pointer in probe
-  iio: adc: ti-ads1015: convert to fully managed resources
-
- drivers/iio/adc/ti-ads1015.c | 89 +++++++++++++++++-------------------
- 1 file changed, 42 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 8a272af69f7d..d95efb870bde 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -11,24 +11,24 @@
+  *	* 0x4B - ADDR connected to SCL
+  */
+ 
+-#include <linux/module.h>
+ #include <linux/cleanup.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
+ #include <linux/init.h>
+ #include <linux/irq.h>
+-#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/pm_runtime.h>
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+-#include <linux/pm_runtime.h>
+-#include <linux/mutex.h>
+-#include <linux/delay.h>
+ 
++#include <linux/iio/buffer.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+-#include <linux/iio/types.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+-#include <linux/iio/buffer.h>
+-#include <linux/iio/triggered_buffer.h>
+ #include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/types.h>
+ 
+ #define ADS1015_DRV_NAME "ads1015"
+ 
 -- 
 2.39.5
 
