@@ -1,96 +1,103 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8249E2931C6
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 21:55:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A2FF1D6DB5
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 22:00:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784411740; cv=none; b=r49Ii9hr6pSA03Vj2ywPdFgD0luR4WaqHOl/K5ZsZfA6sGePc7sTrjxRLrshdye3pnR+b4JuyXInCu9FKShOEM66FmeP530HpIlCgKgmV46ifw+6F9w4KBNZQwnIdrlISiNpoaueQCCeSbFNlTdv1sn/IJFEzjbTZFRVOP5+QR4=
+	t=1784412059; cv=none; b=pgH+DD9iTgO5DZP0p3oZORjvJ6uRuMcKkgpSiy086mtsUAXQdMZU7/v5bOqG7s7bR9SBSEX9FnJCskdSYV+v/eG/zx9/QWNpBPxOTb9HCnP5z03Z7j8wApGZsavm+3/TLvnAkwclaDzcofkq0Ky84UtnHlLleXSCTS4E0U3VR0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784411740; c=relaxed/simple;
-	bh=7d4SD29H4eCm2+c+O28KnjY1ObN+/d9GJbsZkR3a8YE=;
+	s=arc-20240116; t=1784412059; c=relaxed/simple;
+	bh=ghYlqvLKt0/cMTVKqnu8zwIKwlK0pqI+GKZep1Vvynk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pvWbjgMq49/niRK51+7Fr9U4KrYxySGv/Ohn+deiZB1bryeqc+teWpeIbzG0NQXI4h9WaqmX1WYjF60LT/oo6oXOLqnMR/WRvZBb9M6gTf1Iir1igPPFuUzrR/Tl1sx2sYQKJWAShD9y6jzMONfvgp5RN4i+Mh22YJVw0GO/a1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HKKXIDJ/; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=c09ZDnW7; arc=none smtp.client-ip=205.220.180.131
+	 MIME-Version:Content-Type; b=D1KMyn/sEhbQtfIs1joRHDqFXU8ZW2dQ27z6y0MJ0LA9hmfnVENSpNxro+PfROGxLozt+oYamSghO3Skj66JhiwaKRUZfTTwjTmosnS0wo+UEsQHfknhLECg60yB+GqlAq2JKyzMNQq3eiSMtW7PCEQVuXZcz/7U8gKJhY5CWbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=REAVnpkM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=TPjuT2nz; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HKKXIDJ/";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="c09ZDnW7"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66IJqIhN1519841
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 21:55:37 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="REAVnpkM";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="TPjuT2nz"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66IJtJ7k1672964
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 22:00:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ASHWcBJN/1ikBOiz3cdVY+T9vPEaHVJ/+JaXYaW0mgU=; b=HKKXIDJ/bkTaw1yM
-	KASYOGh0YRG2eg7qJMzLT8zUIkNBObT2MHEgq/djypfnro/KSGCg08FYXEZxDyUP
-	kqewM/S4/vXw+6fCzQgwpKx3JzgiRFqPDRQD9lwdST0RiRVFNKYKO1lF0asOCOOT
-	XrfpQr88JEv0t+tl7Cd2ROuNV+I7uiQxgpYjMrUNkdC5ENAb8CL4RXclC7tDB2NU
-	VQ3EyCqK8B2IK5uhM7xn84IErKkv2JhL1lnaHdEdHEKQYtTvHMlmtyxph5eBithf
-	oGu4lzu0WUWWAjrgvo5ly0NrTFc0YgHdCVaibE0Wx0uMOj6fCHPGTKPxBouB9919
-	81Y84A==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2bnhkk6-1
+	Miz8KGebrcURqqzxwczxNO7UgR0aqbaEZxfBca1IrQw=; b=REAVnpkMis9qKOoQ
+	Gjsg3K/o2M+DcLAkQNK2M9MPuds+uaJSjVTVguT35oRyu+fno46B/wavhqArWifG
+	SyaziYAj+/noPOtUL+yEFZ8xIJKYRYZUl271IuRLHJgi8g+Qg+ydOjXZPRxrgqXQ
+	JdATzhyxivmaASMRX59fQpoVBVNTYlAZtIUjXE/DwFqkJG13ov/i0MIGGZnDeYkz
+	mAtThmPEVQMpubPv72LbqdCKiomm1AMjsnSSpeYmNcYOfvndpybO/LomC/L+nb1+
+	Vdsk5WHoMi6T3GZNKFi9hlugV7J5+ssubL1zr48lP4ic1tGFU6jabD2tI4owVTSp
+	lbeF6g==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2af1m98-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 21:55:37 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-84857446424so17087313b3a.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 14:55:37 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 22:00:56 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-cb48f41343aso1681141a12.1
+        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 15:00:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784411736; x=1785016536; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1784412056; x=1785016856; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ASHWcBJN/1ikBOiz3cdVY+T9vPEaHVJ/+JaXYaW0mgU=;
-        b=c09ZDnW7baTaj7L7BuAb2/vm58+t7hHSuNumOh9m+Hydwq3miPWVlZSdkM/nirzALX
-         XrNVQl3TN3jQ441cjThpYnb7UoxyKla/xHJTDBQQfMSB3eHJncomYTSgLCZlwjoBwBrT
-         j9QKhLtA2FyjtrwvuwMGqAZcg7Tesm5xXZ0AKw9n4S0ckHJ64rnVisbSBNlLp6kyBK3w
-         zGx+6IxBWiD9/UB2H/jAapg4I57zyiC+XxrJ5YpWmE8hEz59ME96PGkQB9bBSZyxss5A
-         wgkMKWc3yQvQccg9pZszcP4M4zuKGzWXrWe4UJUdkM+NpkezmxZV6hfdc+hVpYLTLSuG
-         /7QQ==
+        bh=Miz8KGebrcURqqzxwczxNO7UgR0aqbaEZxfBca1IrQw=;
+        b=TPjuT2nzVNWfr/c/yn4vJhhhS9SCUSbc2UTOIfHatbF6mmh09iAujJU5cIM4HJthnQ
+         SxOevXFTAWFSVB5zSCWKiXf8a0EuHTVTFHEEXuTfIK7jjWklAN6l1QmONV7epDgkGO/x
+         NOfWUKVypHlC3VKkS/Nilw8QRjYVVGur+MXHyuS5BbF7YLyv7ItGsPQWcX1s663FrMAK
+         jQZcGsSUN37W+3WXAn83Lj+8TrhItw/ghVg6OS2PtHAtIfiewowZynvhmpl6QTx33CBy
+         t6it3puR7eIsOQDQ8Px0b9RrrPIUmm9cjWsQmpJ1d/dadkiqVwIUQKGw6QJy1Hclx3UR
+         Sutw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784411736; x=1785016536;
+        d=1e100.net; s=20251104; t=1784412056; x=1785016856;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ASHWcBJN/1ikBOiz3cdVY+T9vPEaHVJ/+JaXYaW0mgU=;
-        b=Nh6rFQjw69cAwv2U58GHJEqniu9EkhTIcm7zv8MXkZGemLa2k6GFPUTVGAYNPXHx0j
-         wwdbZp6OcQqZg64sNHdB3VOQCM9TtchEM3wg6rQTjXqWSj3V+/RGcOTWO7uNSWU8JQZr
-         tImszcP8yDEp01s6ce7F+D8WG6nDMTM0jDoeUl2vqd4zjgM8mGDF6/FJXUTElqZw20yn
-         aOa3N/IT5FzRqr2XjSZygokFPlbkbeAh1GOCRiDqR3uQ09G25bIFXX0dFwMKk4SnbCzv
-         zo1tjcvkXcbTXQUvWAWv8JAHyaa2mKjsZ4xRPasxbTFBD3IzAnZszlC6xH3Jtc4ud2IK
-         3tGw==
-X-Forwarded-Encrypted: i=1; AHgh+RpO5eB4A+3dnp8ktW+WQP4nXsDc0zTwO/fwwbyKkngCUO3xgn1pd8KuZrX5xJffTUMjlamduX4yoVM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YycJgJUX8L+UP9cXfKpVHCKZlB06xdtTH7EWm0HuPVyzRXePLty
-	26oVhajrqCKnUWuHWJuxgAg02hM+GdZm1mHzU55DFStLmM7ojIEbanw/3yR8RSUYIae041HNGEc
-	D+NI5+dth9rOiH8F8MR5Muj+fkXCpHBEZAPXQnsgbgoA274RosKHRQ/2SdglTqWI=
-X-Gm-Gg: AfdE7cnHDF52UyWMHSDwDQZUuzb3alpyQrOfcifpKL5+mB+5DpEHMANMdGJgicKz/nL
-	/hU3gtumDdyjvofv50LzNTqFFh4Rnn6OrALFS0QHfoLlnIoVJn7Uk12NN929vxhEoeqKhcfdf8K
-	wtMcX0TKl4+OEDOBr1GaRp7bPtoxCGTOfr9L8gZZZ1xprqwkxwM7bZB4+CUjVDgZaxVvVcMVtal
-	RXgcS6PyNn3WmcJNn/MlY/BI4gigLQZSP2PgRcaQHD+drIYyZJN9sYPOKurW/W3zSaimyrpDg6x
-	dX2nAzsZraKQ5XE5polSTXmH7sjAYQy0/8BM3bzihdVrFQlthvNd4s3uJgReHm3o7gWCp8bnus/
-	EIgwdplmyePrrZRly
-X-Received: by 2002:a05:6a00:aa0b:b0:842:2a81:4c63 with SMTP id d2e1a72fcca58-84c292ac538mr8112258b3a.25.1784411736006;
-        Sat, 18 Jul 2026 14:55:36 -0700 (PDT)
-X-Received: by 2002:a05:6a00:aa0b:b0:842:2a81:4c63 with SMTP id d2e1a72fcca58-84c292ac538mr8112235b3a.25.1784411735542;
-        Sat, 18 Jul 2026 14:55:35 -0700 (PDT)
+        bh=Miz8KGebrcURqqzxwczxNO7UgR0aqbaEZxfBca1IrQw=;
+        b=HcFryPGH8s5M9F8JN7zjbmuPBWDZrMsS7JM1ZKPzm4o6A+RA0a0N2xD9/pVpmEypsw
+         zIs8FGlHcl0b5BCWb+4R8abaKfQB3sY02976xmXn6+ORqpNXXlSYriJc70DrJMqWHK6F
+         QVpSAE45GrF6PYACucg+l/yQWnGkGaKG3p707h6n+IT0C78DIl9jkSxDI/EgqaPSDgKl
+         BPFlPiDS+sKdof2D2Benovzb8HqJ5tDltHSb4LhsjM8xu4LClb+yMeeGgVbPPvNPN2qi
+         dcV/M+GL2xkpK8b0M9js/3C49cfIxvewEk+kPKbSTJdvuDt8ci8nX+NxdjxAcxlhg1Mo
+         8PXw==
+X-Forwarded-Encrypted: i=1; AHgh+Rp+ZS8Nv8FMg34WQqRFgOAu1uLL9By9TPykEIgHdJ14G7z2hRHdfUoAutOjzbJC2/+9re4FgkhAAk8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8XdfehEnJ4llOeNEh6ef5Bt+xaMXnbEySY25X9tTGf5BXruDt
+	6hmJhv7hcnnGPY3MZHOdiS7IOb+qRITYRONKjb9wP0SLdnlGe4tJkR2UwcSsRQU0k0C1P8X7dct
+	AJ2Ft3BDAxV0RSw5nMHsySZhB9CezxUqqvpfAcYUOR74RsYD2iP8hqD62AAt43Ys=
+X-Gm-Gg: AfdE7clrdlGLVduR5hV2nyJL68g3o3P65AKuthe1tgYEOLQlK6mLsy9Z2yGqdf2mZZ+
+	8P2n/TjeZ4cYVtdIrbVqRw15wUPevnbP5qiM6jDiOp732zFOluRJRRpExTa9Y25kOPyIdZ3khxY
+	kjosGMDphp5iAHePJaM4dmxgR9HOwekqrqrLvObAI91EvDt9ooUNFz7C2Lc9IXKTNF5ZRikbAVx
+	A73eKOWFzU32EISGxeoixvUuPaneWltGyOkyWXcaTvJsiIJ3nYmRJf1HX8q4mGWNJlV1qhmvEX+
+	BtSRk1tXByxnyVanmrkr0GYVZzI9schXhpo9imqrkaGy9sp8+i0kovxH5YXJcZPFtqxFggCgCjy
+	RLmVHK/+mBUFbvGtG
+X-Received: by 2002:a05:6a20:a11b:b0:3b5:530d:d96d with SMTP id adf61e73a8af0-3c3acc978dcmr8272371637.12.1784412055824;
+        Sat, 18 Jul 2026 15:00:55 -0700 (PDT)
+X-Received: by 2002:a05:6a20:a11b:b0:3b5:530d:d96d with SMTP id adf61e73a8af0-3c3acc978dcmr8272322637.12.1784412055316;
+        Sat, 18 Jul 2026 15:00:55 -0700 (PDT)
 Received: from jic23-huawei ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-84c2f1601d6sm3060523b3a.50.2026.07.18.14.55.33
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cb517aad770sm2391073a12.2.2026.07.18.15.00.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2026 14:55:34 -0700 (PDT)
-Date: Sat, 18 Jul 2026 22:55:30 +0100
+        Sat, 18 Jul 2026 15:00:54 -0700 (PDT)
+Date: Sat, 18 Jul 2026 23:00:50 +0100
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: dlechner@baylibre.com, andy@kernel.org, nuno.sa@analog.com,
-        u.kleine-koenig@baylibre.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: ti-ads1015: convert to fully managed
- resources
-Message-ID: <20260718225515.7e49a458@jic23-huawei>
-In-Reply-To: <20260718075016.27750-4-architanant5@gmail.com>
-References: <20260718075016.27750-1-architanant5@gmail.com>
-	<20260718075016.27750-4-architanant5@gmail.com>
+To: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Michael Hennerich
+ <Michael.Hennerich@analog.com>,
+        David Lechner <dlechner@baylibre.com>,
+        Andy
+ Shevchenko <andy@kernel.org>,
+        Andy Shevchenko
+ <andriy.shevchenko@intel.com>,
+        Angelo Dureghello
+ <adureghello@baylibre.com>, linux@analog.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: dac: ad3552r-hs: fix scnprintf() buffer bound
+ in data source show
+Message-ID: <20260718230050.2c64d9fa@jic23-huawei>
+In-Reply-To: <20260718182236.7-1-bbnpreetsingh@gmail.com>
+References: <20260718182236.7-1-bbnpreetsingh@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -100,181 +107,91 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: LaNQwrFrDZR1lYPLhwvPI4IFCtLxtCPG
-X-Proofpoint-ORIG-GUID: LaNQwrFrDZR1lYPLhwvPI4IFCtLxtCPG
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE4MDIzMCBTYWx0ZWRfXy1eiWqsT5rBZ
- gmLHXxLE6aD1hOFDtfFrtM4Vmw0a4MDvC9f5zf5fEURzUgiiSt5wxBFIQSgtAEOpvLt6TDJvPrd
- S4HiAvA9z6F0Hc4t5PwQjgOE/HVctypYKLJHloXiuBg2paPxs9YJeITI2HJJzSxIIzBU2gcGH2O
- JeuYl5iKtRtANw8ddfo9gR+DQn1pSS++yeXHdYt0t3TB+qjOaUDBpDXj6AMukaFcas0QX1YFgYO
- 5j2BNSnly7X1efNW8hfDnQppdr0v6nE6y+L16TqAwVnw+FfTHSZFtS0EqwMe+ro85ZxAYOCR+A/
- x66sOE3iE44oG3QVe9DSdr/N26WxY39Rr5zWS0paCvNSZUgT94g536/sF9v/0K8e86y0m8uxK9f
- NhkR0SBwjMs8vNpsHiLy170/r56xyc3GUueq/G+6jeKLjKAhlkpWoN2Y32BG2wwhkQQO1ks2qMF
- /OM1scF9fAS3cPq0LaA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE4MDIzMCBTYWx0ZWRfXw4zQfOEOgEqJ
- 2nXyFh1TJ5PLlotK/9mQs+iChQxaCrgRWYwXIbJf4LTMMZ4B52Z69jTlSrkJWdLJ24CmspC+sSm
- E3Yhm2PJbOT0gI5kkcO2rEn9FFNTCR4=
-X-Authority-Analysis: v=2.4 cv=YsQ/gYYX c=1 sm=1 tr=0 ts=6a5bf659 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE4MDIzMSBTYWx0ZWRfX2dZfpQBJa2wY
+ o026iKEqKsxkCfmrsrJC1WLNa1koNPL4jRs6vWLYh9crI9U94cjS29jN933CXiDUkpuszU5Z+pq
+ CWcYLMm8rz61/GxuuTNP5n7jsKMo1Bc=
+X-Proofpoint-GUID: HZDncIQRmD7ekO-2qobDhKV0ZaMhRWOG
+X-Proofpoint-ORIG-GUID: HZDncIQRmD7ekO-2qobDhKV0ZaMhRWOG
+X-Authority-Analysis: v=2.4 cv=a+sAM0SF c=1 sm=1 tr=0 ts=6a5bf798 cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
  a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
- a=c92rfblmAAAA:8 a=pGLkceISAAAA:8 a=0kWMRCPL9c4H5K_DkQwA:9 a=CjuIK1q_8ugA:10
- a=zc0IvFSfCIW2DFIPzwfm:22 a=GvGzcOZaWPEFPQC_NcjD:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=VwQbUJbxAAAA:8 a=pGLkceISAAAA:8 a=d46Ztn4Rf3i8j93KB0cA:9 a=CjuIK1q_8ugA:10
+ a=3WC7DwWrALyhR5TkjVHa:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE4MDIzMSBTYWx0ZWRfXw/v6C4d0uWX7
+ G+J/U3dYiNlamcaM+eE8NroA0ufqN5mjZ/gGc5bYc/NIk73QvsE1vaJX+HVqznZT3Ani+EF7YEX
+ KC0WgoS9ToYNfpUJrg7a6CLq7dI6UQp0q76ycmldqVBxXt/Cqijl8Hi5SR+dalan+PKqga9LhCA
+ a5bSZCwOF0b0/41scgUvkARZ/GLR32nOsVBYs4MAHo1yKEG4+oItBfM3B/Y+5Y+yBPQKGzKRH18
+ tiqVY2l3exTJfl/e2tF/RLMS1eE0BGX0tXtSj16DFs2AU/gGeksMa7PvYXfh7hTTIi8FvdheMYu
+ hM9fKAloj3DGzxSYDkPkUCOK36J/Iq8y8geUjj07gX604nGfOyPn/XmkWcKEIaruAVTbXyNPwUa
+ J3Sw+oyqth4mVugthSLOANgGuFlE9CH045zPINVvCOXA/ftOObQtkIuepnnB97S6tra9hd831ex
+ 4Iom/S77IVmAJfCYCqQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-18_06,2026-07-17_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 phishscore=0 adultscore=0
- lowpriorityscore=0 suspectscore=0 clxscore=1015 spamscore=0 malwarescore=0
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607180230
+ suspectscore=0 clxscore=1015 impostorscore=0 malwarescore=0 spamscore=0
+ phishscore=0 priorityscore=1501 lowpriorityscore=0 adultscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607180231
 
-On Sat, 18 Jul 2026 13:20:16 +0530
-Archit Anant <architanant5@gmail.com> wrote:
+On Sat, 18 Jul 2026 18:22:36 +0000
+Babanpreet Singh <bbnpreetsingh@gmail.com> wrote:
 
-> Refactor the driver to use devm_ allocations and power
-> management, allowing for the complete removal of the
-> ads1015_remove()
+> ad3552r_hs_show_data_source_avail() formats the available data source
+> names into a 128-byte stack buffer, but bounds each scnprintf() with
+> PAGE_SIZE instead of the buffer size, so the bound does not protect
+> the destination at all.
 > 
-> Key changes:
-> - Use devm_add_action_or_reset() to ensure the ADC is safely powered
-> down upon driver removal.
-> - Move to devm_pm_runtime_set_active_enabled() to manage the runtime
-> PM lifecycle.
-> - Update the PM operations to use DEFINE_RUNTIME_DEV_PM_OPS and
-> pm_ptr() for modern compiler saftey.
-> - Convert iio_device_register() and mutex_init() to their devm_
-> variants.
-> - Remove the thus obsolete ads1015_remove() function.
+> This cannot overflow today - dbgfs_attr_source[] has two entries,
+> "normal" and "ramp-16bit", 18 bytes formatted - but the bound stops
+> protecting the stack the day the table grows. Use sizeof(buf) so the
+> bound matches the destination.
+> 
+> Found by smatch:
+> 
+>   drivers/iio/dac/ad3552r-hs.c:593 ad3552r_hs_show_data_source_avail()
+>   error: scnprintf() 'buf[len]' too small (128 vs 4096)
+> 
+> Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
+> Assisted-by: Claude:claude-sonnet-5
+> Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-See below. I'm fairly sure this is also fixing a bug.  Ideally you'd
-fix that first at the start of the series then refactor it later.
+Thanks,
 
 Jonathan
 
-> 
-> Signed-off-by: Archit Anant <architanant5@gmail.com>
 > ---
->  drivers/iio/adc/ti-ads1015.c | 58 ++++++++++++++++--------------------
->  1 file changed, 26 insertions(+), 32 deletions(-)
+> v3:
+>  - Return to the v1 fix: bound scnprintf() with sizeof(buf) instead
+>    of switching to sysfs_emit_at(). As Andy noticed in the v2 review,
+>    this is a custom debugfs read handler formatting a kernel buffer
+>    for simple_read_from_buffer(), not a sysfs show callback, so
+>    sysfs_emit_at() does not apply here:
+>    https://lore.kernel.org/r/als6lRi-H4DM7ra6@ashevche-desk.local
+>  - Dropped Suggested-by and restored the v1 title; the diff is
+>    identical to v1.
 > 
-> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index 0232a4ca2d77..57e5fa593b31 100644
-> --- a/drivers/iio/adc/ti-ads1015.c
-> +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -930,6 +930,14 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
->  				  mode << ADS1015_CFG_MOD_SHIFT);
->  }
+> v2: https://lore.kernel.org/r/20260718044244.7-1-bbnpreetsingh@gmail.com
+> v1: https://lore.kernel.org/r/20260717040024.7-1-bbnpreetsingh@gmail.com
+> 
+>  drivers/iio/dac/ad3552r-hs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
+> index 02a124ac4855..f865843aa439 100644
+> --- a/drivers/iio/dac/ad3552r-hs.c
+> +++ b/drivers/iio/dac/ad3552r-hs.c
+> @@ -590,7 +590,7 @@ static ssize_t ad3552r_hs_show_data_source_avail(struct file *f,
+>  	int i;
 >  
-> +static void ads1015_power_off(void *data)
-> +{
-> +	struct ads1015_data *st = data;
-> +
-> +	/* power down single shot mode */
-> +	ads1015_set_conv_mode(st, ADS1015_SINGLESHOT);
-> +}
-> +
->  static int ads1015_probe(struct i2c_client *client)
->  {
->  	const struct ads1015_chip_data *chip;
-> @@ -950,7 +958,9 @@ static int ads1015_probe(struct i2c_client *client)
->  	data = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
->  
-> -	mutex_init(&data->lock);
-> +	ret = devm_mutex_init(dev, &data->lock);
-> +	if (ret)
-> +		return ret;
->  
->  	indio_dev->name = ADS1015_DRV_NAME;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -1033,38 +1043,23 @@ static int ads1015_probe(struct i2c_client *client)
->  
->  	data->conv_invalid = true;
->  
-> -	ret = pm_runtime_set_active(dev);
-> +	ret = devm_add_action_or_reset(dev, ads1015_power_off, data);
->  	if (ret)
->  		return ret;
-> -	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
-> -	pm_runtime_use_autosuspend(dev);
-> -	pm_runtime_enable(dev);
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "Failed to register IIO device\n");
-> +	ret = devm_pm_runtime_set_active_enabled(dev);
-> +	if (ret)
->  		return ret;
-
-Worth noting this was a bug as noting turned off the runtime
-pm if we got an error in iio_device_register().  That is fixed
-by this patch I think.
-
-> -	}
->  
-> -	return 0;
-> -}
-> -
-> -static void ads1015_remove(struct i2c_client *client)
-> -{
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -	struct ads1015_data *data = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	iio_device_unregister(indio_dev);
-> -
-> -	pm_runtime_disable(&client->dev);
-> -	pm_runtime_set_suspended(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(dev);
->  
-> -	/* power down single shot mode */
-> -	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-> +	ret = devm_iio_device_register(dev, indio_dev);
->  	if (ret)
-> -		dev_warn(&client->dev, "Failed to power down (%pe)\n",
-> -			 ERR_PTR(ret));
-> +		return dev_err_probe(dev, ret,
-> +				     "Failed to register IIO device\n");
-> +
-> +	return 0;
->  }
->  
->  #ifdef CONFIG_PM
-> @@ -1090,10 +1085,10 @@ static int ads1015_runtime_resume(struct device *dev)
->  }
->  #endif
->  
-> -static const struct dev_pm_ops ads1015_pm_ops = {
-> -	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
-> -			   ads1015_runtime_resume, NULL)
-> -};
-> +static DEFINE_RUNTIME_DEV_PM_OPS(ads1015_pm_ops,
-
-Sashiko points this out.  Switching to this and leaving the CONFIG_PM
-ifdef above is a bug.
-https://sashiko.dev/#/patchset/20260718075016.27750-1-architanant5%40gmail.com
-
-I didn't chase through whether you can also safely remove the other
-one further up in the code.
-
-> +				  ads1015_runtime_suspend,
-> +				  ads1015_runtime_resume,
-> +				  NULL);
->  
->  static const struct ads1015_chip_data ads1015_data = {
->  	.channels	= ads1015_channels,
-> @@ -1148,10 +1143,9 @@ static struct i2c_driver ads1015_driver = {
->  	.driver = {
->  		.name = ADS1015_DRV_NAME,
->  		.of_match_table = ads1015_of_match,
-> -		.pm = &ads1015_pm_ops,
-> +		.pm = pm_ptr(&ads1015_pm_ops),
->  	},
->  	.probe		= ads1015_probe,
-> -	.remove		= ads1015_remove,
->  	.id_table	= ads1015_id,
->  };
->  
+>  	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++) {
+> -		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ",
+> +		len += scnprintf(buf + len, sizeof(buf) - len, "%s ",
+>  				 dbgfs_attr_source[i]);
+>  	}
+>  	buf[len - 1] = '\n';
+> 
+> base-commit: fce2dfa773ced15f27dd27cd0b482a7473cdcf2a
 
