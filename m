@@ -1,116 +1,110 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97CBE3033E9;
-	Sat, 18 Jul 2026 06:19:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6153E3168E1;
+	Sat, 18 Jul 2026 06:28:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784355589; cv=none; b=L1w+uHH+H9QPqeP5h+lJPk7mOb2gX2Ysnz08f2LjXSXjbuVY2GgVY0L7vdaLU58l4rICa3k+I7kqBV6/X6qYN83ij1XrQHJ5Wdn8vSwoiGelBhnQrUGFoNLhGopkAjWVetGtvjZrlvR3/Ps/C8DGLhK9lwublhjGgbvR6RQwpTY=
+	t=1784356116; cv=none; b=MOOpiTs3DU+u6V0nx6GXKEeAufOfDIo9s4SxpSUKH+raGRMLwHJ2gLum1S3euGavH9ujkeI2lITKSec8HOBKe5RASHfShv5Bex2N1xUf7jPpoOEQAtSW35UXqIMGERY0ZPh5s4Xdv5aCOv7ErXlIZO88l0debYMc5mgTmNGQgxk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784355589; c=relaxed/simple;
-	bh=FoGCFCvwyGZW9MzyAyxb5vILM2PseAQAD2D6SMY43oo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ck0zHST/I8ruNYWF22EfiF9YGGb0YYA8ulZJeS39HngF2eoX30jVQHe0pIUvj/gHnce8K4sST12jPCa2Dc8MtqPxoLLqhcqSH14NpOP9sdMsJZLN6egJPQGqTuA3ICybwNuv/UxSJ3CS4dO7ZHiurMSum0pvnDtOisdNRoYGIn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: a54440ae827011f1aa26b74ffac11d73-20260718
-X-CTIC-Tags:
-	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
-	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
-	HR_SJ_DIGIT_LEN, HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM
-	HR_SJ_PHRASE, HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT
-	HR_TO_NO_NAME, IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_TRUSTED
-	SA_EXISTED, SN_TRUSTED, SN_EXISTED, SPF_NOPASS, DKIM_NOPASS
-	DMARC_NOPASS, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO
-	GTI_C_BU, AMN_GOOD, ABX_MISS_RDNS
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.12,REQID:aa229de1-5b93-4bf7-a093-92fe2663594a,IP:15,
-	URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:15
-X-CID-INFO: VERSION:1.3.12,REQID:aa229de1-5b93-4bf7-a093-92fe2663594a,IP:15,UR
-	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-	elease,TS:15
-X-CID-META: VersionHash:e7bac3a,CLOUDID:2e8df5f657f352ce2f4664dca231ff15,BulkI
-	D:26071814193738HHCTBC,BulkQuantity:0,Recheck:0,SF:10|38|66|78|102|127|136
-	|865|898,TC:nil,Content:0|15|50,EDM:-3,IP:-2,URL:0,File:nil,RT:nil,Bulk:ni
-	l,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE
-	:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: a54440ae827011f1aa26b74ffac11d73-20260718
-X-User: pengcan@kylinos.cn
-Received: from lenovo [(116.128.244.171)] by mailgw.kylinos.cn
-	(envelope-from <pengcan@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 970417700; Sat, 18 Jul 2026 14:19:34 +0800
-From: Can Peng <pengcan@kylinos.cn>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	rajat.khandelwal@linux.intel.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Can Peng <pengcan@kylinos.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: pressure: mpl115: Fix runtime PM cleanup on probe failure
-Date: Sat, 18 Jul 2026 14:19:09 +0800
-Message-ID: <20260718061909.428476-1-pengcan@kylinos.cn>
-X-Mailer: git-send-email 2.53.0
+	s=arc-20240116; t=1784356116; c=relaxed/simple;
+	bh=72O7p43mayACSsHgnRrmS3L0fM+EZV3vx0nMEFksMl0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KHIsxmfRoir+yQVr2e5XUE50/OTBxK36m9ZtZwfA6KW9nDGRXRA20GRv4MS8+84PKjlIcIIzkkaWcvQD0MzORmL3cCO+Kg5GKrjGIyvnIHvVSSvIh8SgwK1QOBC5TPK0IYmdE6RHRCOQve33Dwdj8WwwAKa/MUy7B4hFzOTKC4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RXlRwlgW; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RXlRwlgW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784356114; x=1815892114;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=72O7p43mayACSsHgnRrmS3L0fM+EZV3vx0nMEFksMl0=;
+  b=RXlRwlgWqGULlMHD1wuEOr3wrmL3HuXBpdJ0q0dyxL/UNlnYHusBBIda
+   gPVPxy07txckXavgfTQNkuX2h+K4OMs/XmA201Gr7IPasY4uVyFEBcTqF
+   NlewbVUFGweTIvYN5KzDURWYpNBGYlz+zqCVqs47qh+F4k/48mfaIOToP
+   5I+OjLThokLCzhDbt7g0tiza8DJAjxZiiTOm1rrnwfX1jVKpVY/B09KlH
+   QEjEY70rZNiGG7yr4Mx6H6VpGQ2wUzZmAVpXdTUN80/hf/sbF5aD25AI/
+   Gnx7YnjjAjW9t7GHXtcP5SrKJBMyOOh8YjwiT69phSaglGke70iCbh5xr
+   g==;
+X-CSE-ConnectionGUID: yuMnOHVsTUeBHNXB7KZRhw==
+X-CSE-MsgGUID: YrNnn07kSgWZJq4Xb+s8zA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="72554972"
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="72554972"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 23:28:33 -0700
+X-CSE-ConnectionGUID: C8vRVAvmQ/m3ruZDQ6nAIQ==
+X-CSE-MsgGUID: usai9vZWRq66dsqjjRzcpg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="280248491"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.22])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 23:28:30 -0700
+Date: Sat, 18 Jul 2026 09:28:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Maxwell Doose <maxwell@maxwelld.cc>
+Cc: Pan Chuang <panchuang@vivo.com>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Gustavo Silva <gustavograzs@gmail.com>,
+	Maxwell Doose <m32285159@gmail.com>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Siratul Islam <email@sirat.me>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/13] iio: chemical: Remove redundant
+ dev_err()/dev_err_probe()
+Message-ID: <alsdDLZmctNCeu61@ashevche-desk.local>
+References: <20260717094408.509583-1-panchuang@vivo.com>
+ <20260717094408.509583-4-panchuang@vivo.com>
+ <DK16R0RUSGG9.2LHH6CNKD0IAV@maxwelld.cc>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DK16R0RUSGG9.2LHH6CNKD0IAV@maxwelld.cc>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-mpl115_probe() enables runtime PM when a shutdown GPIO is present and
-then returns the result of devm_iio_device_register(). If registration
-fails, runtime PM remains enabled and autosuspend remains selected.
+On Fri, Jul 17, 2026 at 05:05:22PM -0500, Maxwell Doose wrote:
+> On Fri Jul 17, 2026 at 4:42 AM CDT
+> Pan Chuang <panchuang@vivo.com> wrote:
 
-The same unmanaged runtime PM state is also left behind on driver
-unbind, as the IIO device registration is managed but the runtime PM
-setup is not.
+...
 
-Use devm_pm_runtime_enable() so runtime PM is disabled automatically
-on probe failure and driver unbind. Also unwind the initial
-pm_runtime_get_noresume() reference if setting up runtime PM fails
-before the matching put.
+> > @@ -686,7 +686,7 @@ static int scd30_setup_trigger(struct iio_dev *indio_dev)
+> >  					IRQF_NO_AUTOEN,
+> >  					indio_dev->name, indio_dev);
+> >  	if (ret)
+> > -		return dev_err_probe(dev, ret, "failed to request irq\n");
+> > +		return ret;
+> >  
+> >  	return 0;
+> >  }
+> 
+> Please split per driver and resubmit and feel free to add
+> 
+> Reviewed-by: Maxwell Doose <maxwell@maxwelld.cc>
+> 
+> once you do that.
 
-Fixes: 0c3a333524a3 ("iio: pressure: mpl115: Implementing low power mode by shutdown gpio")
-Cc: stable@vger.kernel.org
-Signed-off-by: Can Peng <pengcan@kylinos.cn>
----
- drivers/iio/pressure/mpl115.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+This is trivial enough, so this sub-treewide approach is okay. When you want to
+give a tag for certain piece of such a change, use comment style
 
-diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
-index 16e112b796ba..9e77b76bd1fa 100644
---- a/drivers/iio/pressure/mpl115.c
-+++ b/drivers/iio/pressure/mpl115.c
-@@ -204,8 +204,17 @@ int mpl115_probe(struct device *dev, const char *name,
- 	if (data->shutdown) {
- 		/* Enable runtime PM */
- 		pm_runtime_get_noresume(dev);
--		pm_runtime_set_active(dev);
--		pm_runtime_enable(dev);
-+		ret = pm_runtime_set_active(dev);
-+		if (ret) {
-+			pm_runtime_put_noidle(dev);
-+			return ret;
-+		}
-+
-+		ret = devm_pm_runtime_enable(dev);
-+		if (ret) {
-+			pm_runtime_put_noidle(dev);
-+			return ret;
-+		}
- 
- 		/*
- 		 * As the device takes 3 ms to come up with a fresh
+Reviewed-... # for sdc30
+
+
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
