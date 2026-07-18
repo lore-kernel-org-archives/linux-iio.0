@@ -1,173 +1,111 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A40E2080C1
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 01:51:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A369726A0D5
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 02:56:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784339518; cv=none; b=I+wGu7aTnVnuRy9HouxsiCOHRx1IJzCyTi+jmeKyreFqYYXW9mQwZGEjq5AwlFXmtXDpoil0P+utegIssFXcJyvnKje55DzQUugRHAONEEG/vlbxuLbBLruJmriuMyCdPsYKIuFwRK8Kp/tcaPm0bj6Ffv6tTsqmvD/N9qUD49g=
+	t=1784343373; cv=none; b=D20QLfOzm96yXd0Qtpox9mDzhhPMsqVSfeWQMYm8dOph4d8YgHeW568YtZQmXFnavbK07DQt58nGPkOveaH2+ij1ihQoga4+uAXV5rwqCa9PZnFKkS28BxhxfrU1ZrJuZ6kIW1OjGFNYx8KubjqbyBP90up49pMzauNAnbiAIbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784339518; c=relaxed/simple;
-	bh=uktmRHgaHId2Z3bEN8aBE0IcMStiNYNfmwhY+mzHKeo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=maEpuC9F3itR2qBND4+uzM/3+Ang7Eyt+Xd1p4d2yliChp8XfGgoMi0049QG83U/Tn8F4D9H3bSznpTkJf3WJeFnlWUdGV85T7VM6Vw3+qt2TtOTOc7iVMd4zX9enL/lOA2FgPsI/muyzwE9lHUtzQ3IFzdFimSRWFDlwPluZNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Jnb+ttwr; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=BTnA1Ihy; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1784343373; c=relaxed/simple;
+	bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hhdVMS4ZQKHvAew8xrMldLKPIPI4LXxr5TRxTRk1HyAg7uFpmVgx98gKiM4IcfzvhyHCNz5S+G76p/OhZhgugDolJZ6qJZ4iZzanyaY/hmM7EyKpwM8UG6LqZhbhsJa8CjC5YpO6rb/LEzdA75RiwAv7KzUhfm1Av6ahW1Wa+6s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gRUORo/I; arc=none smtp.client-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Jnb+ttwr";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="BTnA1Ihy"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66HNELin3312511
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 01:51:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Gju1xgVLjNEMVzQtIE3O1WK5Xxgr/j2HRmtju0PVRAw=; b=Jnb+ttwr0jhyQepF
-	1aY+6NDraVxHWPo4ouu6yuZju56xL5DYWE+S1ktRFfQtt2s31HcI/U2gYlM+R+Zo
-	dZpP76YpxlDlybZEwPKwufwN/0rF29/O6ep5+aHlD4qSY/tUzFMno3Eb74CGDXbj
-	YF9io3XqDxmcbBG2BON+mjBu3A0yLrTJ7fZpfyz2HTPRo4R4iy0qbTztpsciGrm3
-	71UT90oayi3ock8q6O/JbjjINzTIDQDSCPk+qHqWcQ2lMRafluZH700/o3MMD3/N
-	+JX+9iaMrz1wN/dNP5hc16at6vb8Sj5gzw5DVTOsTXCAYx1QHlv5W328GoWj1aZe
-	JvxpbA==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ffhpfkatv-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 01:51:55 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2cea6a46766so117909475ad.0
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 18:51:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gRUORo/I"
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-38dcbade417so6530680a91.1
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 19:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784339514; x=1784944314; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Gju1xgVLjNEMVzQtIE3O1WK5Xxgr/j2HRmtju0PVRAw=;
-        b=BTnA1Ihy7v0q0ueOiRiKyncnTxzCtAbu88gtB6uCUfQbbzJyMh+ZG+hgdoXsDY8mzV
-         n8KL7RkKIs42bCQJthqObUPM2lv6RTlf7bHno2yQoW5Aa5CYrbIrGJ9KnVPHbys8tEUI
-         Z4DuZiVBtGwBu/mNmt/BWwG09UWsAG0Pl1H1B2+d5tM0zMdfaYY0GzB6aptUKh0IKDmR
-         dzM8Doxrx6B3vtfd1O37L4LtShLKuZ/IDB1vAK2QysER3RFX/PVU38gvxT0LiTwHFaD9
-         CoVxDNMWycyrTZVFKSm8GELrfy/XymmagzNXWGO5EAd4qrBmXIU8OjtYDUFFO5TcvczB
-         /Tnw==
+        d=gmail.com; s=20251104; t=1784343372; x=1784948172; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
+        b=gRUORo/IbBigBFUGQdoqEVlRczbN56jVL8cQEpXlo9iOEyL43u8Loex91l2l9tyybI
+         Jf0Bl+/8p3y+zhtlC3kV9bl7YZXb4D9cwxHL9oZEwBSCsSGzWyQ64Lu0uBH+R/d7n2fc
+         lEmT6NYMBgBl/YyX2mGO/myV1rDvgm/xf1hWrV7dlA4Zw0+96upfcs4f8ibciY+W0wj5
+         7GlQHCaGyo7Ym5xGdHud7n0gro720WvUcWWbeqoFxwhRfFytxSPMS1VJ3kZgIXfuigxh
+         pqLIRukNls9E64VpkMESbjJyktLk7H6230/2no7hjYFeaHG38aWBAIWB0SXIF71/G9bA
+         gx/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784339514; x=1784944314;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Gju1xgVLjNEMVzQtIE3O1WK5Xxgr/j2HRmtju0PVRAw=;
-        b=qOmMoxhTQhdKENpVDBQ3akBoLObnsC+ctuSoKYZv1MfRoojsadcdfqpMN0dwBlqc04
-         G0uXZK3ubk7CtH2UM5XPH1apg6GmoGp7yCEqpd2PImTMXp0dkT1vL4+DjwaewL+Wt+kC
-         Zyg/bIhMwzC/vttQb+fr2k7A/YMFus3bRfYx+VlML872ZeT39vwkA1XLLsKFxG/r1wdA
-         Xhs0D7+jk9S4wmXHnTTMhiF0fG2x2e4ncXgfwUukBU/Bvo53jugxK2gNggBqnmX08dWA
-         DXY8yGq77+zy/QsxRZJKYzePrVdt0p2N/mDi3TD0ep/yGzRcb19C1vnqHdn/dTaCWqr9
-         Njng==
-X-Gm-Message-State: AOJu0YyuJ/IOFzyrnLfWEXIzan2UT+XVTD5VuemE/6sWJyYFJn9cuazg
-	Xs+9wRA2wKSDYQR/s3+1ehnA5m9YXJGC993JDvU6s7BzQCO8dzjYlzHoloGafWVsadtrD4+jkWM
-	ZZ1+tj/180CrN9vlA/J5xCNKtgEhD4cmoyIMp7pfeullm3uCfQDq7knL34V9LHHo=
-X-Gm-Gg: AfdE7cnfLDGdnJMDLh7gnVj/ZKYJJVADq7OjEXLkyZwer0KHRC+lK+4M2nlO3jjli60
-	IZgZzpXGJuvjRKD0v9Lrl+jXDYxDHkzGfYPG2cA9Sg+UhnQqhi8X07J3sN2ds2Nxc9SPZVDeHLW
-	xlQAv/2jLSMx0AhBpa17TWWRaeWNteGYlqMyZ5VcOpO9dS1cI+lKNtNjSEn998gO7hLHedVDv2L
-	J64VmdiuM81gXeMLr5jhbgVdhn5UrNN5/AXkx2uyscwRJhWu5GQq93AaeHrkFAMhLm3bESQjzWP
-	sXDqgL6vnpx9NH0Vdql9RoJBJavabEBXC7lS1vwIKkHLWPf5ZCSQ0GeLtVvrJIcRbAKou5npKk8
-	0KKlv5MMl8eNpj4W6
-X-Received: by 2002:a17:902:f78c:b0:2cb:3f5b:6663 with SMTP id d9443c01a7336-2cf348bee75mr57045945ad.11.1784339514220;
-        Fri, 17 Jul 2026 18:51:54 -0700 (PDT)
-X-Received: by 2002:a17:902:f78c:b0:2cb:3f5b:6663 with SMTP id d9443c01a7336-2cf348bee75mr57045745ad.11.1784339513767;
-        Fri, 17 Jul 2026 18:51:53 -0700 (PDT)
-Received: from jic23-huawei ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf3471eb94sm20636455ad.62.2026.07.17.18.51.52
+        d=1e100.net; s=20251104; t=1784343372; x=1784948172;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
+        b=gwKxmH8E2xHg3DZtkTLd0H0D9bww2jz1TInQnUHjPWGSRLCY6G+/RsDQK4/CCgpwZw
+         yNyu9OOjQ7LCoLJmX43xll4GDPIfbekZ9WPIH0H6GR4SkZKhmi75q6taAAtuWml52Qne
+         cBC4IigwX38tVoKZtGgYg2djbashhOAF+DyqwsoWVAoh4IEKXlnfVumW0fMXx5Aol6C7
+         kb80R2hEhVJRn6fbbIHg/g+pCtRakmHxdx8rgWmR40BpHLmyt1dcCOi0WT6lX8zTvyOq
+         +rqocyX9/08mquLUN7cvNwGZm12bMgzq+rXDhn5uVYu9x66E9auzDj0lgaS/dZSP2Lwc
+         4r3w==
+X-Forwarded-Encrypted: i=1; AHgh+RroTW19hx4sfBlJJOcJYnSX/GxUpumQASddVz0oS68FzBe3U8um9kmO9ZWjF2qlhMPh+ZEOHZPfPeU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8RRNimYDT3SsV4ODjZf5EyC5ScwoCMK8ASLQMsm1cvpJzZ/bB
+	GQ960QwgpNhSO0oyf34SS/UHtL/S3VmTbtxIfT/DThK19JXGgljWAP6pC7vU9gHR
+X-Gm-Gg: AfdE7clxyaKQ9oq8fXnHVjuSrntuW2VjhjqrWWUNmd7V624i+NLQXGKMCiV+1pFzJxq
+	7CLc39FyyBnQidzv0l5HBWoFOduVPhqmF3+cime6HVTKPA9QPWspEwQF9+opUII/M5u7qFgdm2E
+	kAPYd0NSt9w9w8T8OlIIglpuSl6dSi3Q6jDKYicxeYX7vhTKNcaMS2AsNCu++EZCoZxRAgIeB3Y
+	H7OfgIaNSVkCRipag3K9ChD64QexCcoziaCumXjGNWDsSrE2up0mZDAyGRsAJbqa6awVroK4z3S
+	03+wODPRC/4lVaskH7JmXASfW05AiBTboaRKRApsvejAJwaxT2qfsnY7VDPB4GrgI5rh8To0G3m
+	0YpK6nG5TSh37d7zfiCANxL7IOkoLNlVNUh3yXRKDlEZiJg6fT/0xDTtYjlEkK71r7jRo2rQbrr
+	WLx5lF0vNidGzQZDJg0XIGCQoAYGCZt5PYHIdXhpnskdQo2O0Kti0UhUw7O7zLAzS/T5Pss2zer
+	fpTQGGbumoNSujF7FX+5PSwq/nZkPmyJwGDMDbL7AR9ftTBYH+3pGT3ICprqOYrPv128g03v14k
+	LzvsFGxLbX/YeOFqPe0uauxuyjETt38BhFM79t0s2pLDlcQszZ6cOrwqN2TTNSXDaLU=
+X-Received: by 2002:a17:90b:35ce:b0:37c:6910:5758 with SMTP id 98e67ed59e1d1-38e4b4200edmr5059155a91.1.1784343371893;
+        Fri, 17 Jul 2026 19:56:11 -0700 (PDT)
+Received: from ip-172-31-21-198.us-west-2.compute.internal (ec2-54-213-160-35.us-west-2.compute.amazonaws.com. [54.213.160.35])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e656e5686sm32029a91.14.2026.07.17.19.56.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 18:51:53 -0700 (PDT)
-Date: Sat, 18 Jul 2026 02:51:49 +0100
-From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <nuno.sa@analog.com>,
-        <Michael.Hennerich@analog.com>, <dlechner@baylibre.com>,
-        <andy@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <julianbraha@gmail.com>,
-        <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v7 2/4] iio: adc: ltc2378: Add support for LTC2378-20
- and similar ADCs
-Message-ID: <20260718025138.091beddd@jic23-huawei>
-In-Reply-To: <5108c89986ae8723139419058db1b2f2e74daff6.1784235595.git.marcelo.schmitt@analog.com>
-References: <cover.1784235595.git.marcelo.schmitt@analog.com>
-	<5108c89986ae8723139419058db1b2f2e74daff6.1784235595.git.marcelo.schmitt@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+        Fri, 17 Jul 2026 19:56:11 -0700 (PDT)
+From: Bruce Robertson <brucer42@gmail.com>
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>,
+	Igor Korotin <igor.korotin@linux.dev>,
+	Danilo Krummrich <dakr@kernel.org>
+Cc: jic23@kernel.org,
+	lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	andi.shyti@kernel.org,
+	wsa+renesas@sang-engineering.com,
+	ojeda@kernel.org,
+	branstj@gmail.com
+Subject: Re: [RFC PATCH v4 1/3] i2c: rust: implement SMBus read abstraction via kernel::io::Io for I2cClient
+Date: Sat, 18 Jul 2026 02:48:38 +0000
+Message-ID: <20260718024838.1623-1-brucer42@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
+References: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE4MDAxNSBTYWx0ZWRfX6hpeqdNEMt+p
- c0YBdJGmjQgOMdlofvAQhytbBmneAfIHytPbKiYPazbfiD3BbZDu5t1o6SsMnpSVfsqqFhK5K6z
- DKcJZqaNYkyGDcJTbyvgyK8Us5W4Kxu4TwsbDOBVBLAd8PmNpKi1ypumEUEMcquPsXvQcYIuY2X
- xWwWnsVc9TAaQ7sXZ7xyKUFw5xtDKwr8BbpSX/Xzei0dDcVbsNvswfEbxBWHrP2PQiwFwK6aFdA
- Dtc3YtJ4Cnq5tT6Z7qvJHOshoelmh3AFBc3fuG+Yh/Jr0MFX3fkNfG24/URudMaEmzIS0ddF0Y3
- 4Dg+4Qxa7R1QNs295yfp9S8ec9idvpaLJNli3C+4BFvAVubjxVbRprE4Hae82AgrNmoNhuU/vJt
- ot4diLdOXrBIZteoG2ImDkC4s5ItokArVhQXmzfyfWf9w39AV/xnmTOjvwvYPTrK8C6b3rtuURr
- gQUdKjadhjDSj0n5AjQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE4MDAxNSBTYWx0ZWRfX/ugYYga9rczW
- GlC0slV8jncIXHVRe3A16SRVGPyhPS21nzIbfKYmsxFyi3BJSFavHnP5K2Dh8kNZ+jjLLxU8QzY
- Z5hZ6dHL+vNIC7QoZjxamnUin71j4w0=
-X-Authority-Analysis: v=2.4 cv=YeWNIQRf c=1 sm=1 tr=0 ts=6a5adc3b cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
- a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=gAnH3GRIAAAA:8 a=IpJZQVW2AAAA:8 a=U5XZBdOWIMhTiLln3IoA:9 a=CjuIK1q_8ugA:10
- a=GvdueXVYPmCkWapjIL-Q:22 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-GUID: EYSYTpb0hXVwPZrpivbJCDPlvtPL_ucB
-X-Proofpoint-ORIG-GUID: EYSYTpb0hXVwPZrpivbJCDPlvtPL_ucB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-17_07,2026-07-17_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 bulkscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
- spamscore=0 lowpriorityscore=0 adultscore=0 phishscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607180015
+Content-Transfer-Encoding: 8bit
 
-On Thu, 16 Jul 2026 18:09:36 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Tue, Jul 14, 2026 at 23:08:00 +0700, Muchamad Coirul Anwar wrote:
+> Agreed. I will rework on top of Danilo's FallibleIoCapable approach
+> in v5.
 
-> Support for LTC2378-20 and similar analog-to-digital converters.
-> 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-One entirely trivial comment.
+For the write side of that rework: I recently posted an RFC with a
+Rust port of the SMB347 charger driver [1], which Igor pointed at this
+series (thanks). I'm dropping my standalone SMBus helpers in favor of
+your Io-based approach.
 
-Jonathan
+The SMB347 driver may be a useful early consumer for v5: unlike the
+AS5600 it writes -- a config-unlock write plus read-modify-write
+updates of charge-control register fields -- so it would exercise the
+io_try_write/try_update paths that Igor noted are otherwise easy to
+leave silently infallible. NACK and arbitration loss on a charger
+config write are exactly the failures you don't want reported as
+Ok(()).
 
-> diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
-> new file mode 100644
-> index 000000000000..5600c820c7f4
-> --- /dev/null
-> +++ b/drivers/iio/adc/ltc2378.c
+Happy to rebase it onto v5 when it's out and report back.
 
-> +static int ltc2378_refin_setup(struct device *dev, struct ltc2378_state *st)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * The internal reference buffer amplifies both the internal reference
-> +	 * and REFIN by a factor of 2.
-> +	 */
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "refin");
-> +	if (ret == -ENODEV) { /* refin is optional */
-> +		st->ref_uV = st->info->internal_ref_uV * 2;
-> +		return 0;
-> +	} else if (ret < 0) {
+Bruce
 
-	if (ret < 0)
-
-> +		return dev_err_probe(dev, ret, "failed to read refin regulator\n");
-> +	}
-> +
-> +	st->ref_uV = ret * 2;
-> +
-> +	return 0;
-> +}
-
+[1] https://lore.kernel.org/all/20260708214738.25008-1-brucer42@gmail.com/
