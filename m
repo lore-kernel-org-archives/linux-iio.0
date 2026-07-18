@@ -1,91 +1,98 @@
-Received: from out-187.mta1.migadu.com (out-187.mta1.migadu.com [95.215.58.187])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C995386C1C
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 08:37:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26290384224;
+	Sat, 18 Jul 2026 08:37:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784363826; cv=none; b=ixazqa99+LVCo/tmmDI58GOIeDhUYSFwK2n5YFgroOI+j+GSxJUK+QcscM/CzQqAsxm2r4y+qfwETjTu3VreCxpcAmGOPZFpIjzywaEPxj+YBbO+rdGrpmzgucSfObYDT+V2lgTHUNSMKnkW3O75HT6zpN53+eStAW1hgvlSquU=
+	t=1784363835; cv=none; b=ee34OlW65muvJcuaPYrj+qQHNLfOYcObJzHokNFGdN1Vu7cF1g/dfeStpPe2RRXdDcP/TmlJ41G1UJ1zvUL12h1cuHWeopmlkSekZuUX0n3H/OcPJPL+4qjoFiJ2ZcwzlGcYEtMPowR98ccCWYt9/CatOmDo4K8LUh9PpSJSCAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784363826; c=relaxed/simple;
-	bh=F7N+y3gCNAmJZfNUR6yLudPtRwbf81nGC8KlaAu9p9E=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JulSpwuOySNG0rZoZyno+a1hnfSLLwJeohEpiIkxy6wtQfO7bpWstmfeoJp1fXBCawEu+L9Kx2Iwtc7IVVYjskheL+FwX7SUM4Q1ipDdss8G98lSu0+2sxCLQTptETiMPACqn+br2Q1lcwbuZFECa4+WAkAxuHx27WuSdm+S/Jw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=pu1wGEEK; arc=none smtp.client-ip=95.215.58.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1784363835; c=relaxed/simple;
+	bh=43zB5VFPlSn/y1C9jvfLsmz92uzL5OePbGmA/k+iq64=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d2JLj9Wtc2wccOpPASM9V8DD+2AehLoUsmr0TOiM0quYt3TURFWCsicgLmR5pRV0KdQ3Rcln77Ym7abQu4Q/rvJVJIxBWuK7HvX50EPxaahFEmd5XselorfnunsPUc484lw2w6FGNZ5EyGinIOdfSYRTGel4ale6hNVNuM7U1IE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fa6USujN; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="pu1wGEEK"
-Message-ID: <cb8eb38462312fa6c09ccea6fdc9c20d7cf11831.camel@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1784363811;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=F7N+y3gCNAmJZfNUR6yLudPtRwbf81nGC8KlaAu9p9E=;
-	b=pu1wGEEKSSQ1eLvgAZcYWANfkrIgWwV2PMb9AqNHHI6AKps/0uMlLG61iAOaq6wmbxTjTl
-	OyxePNx03h3URQRJn9aMRA2TW7y/Vf+shnjwDVeYRnmws76TXNRDhzEXx1p+h4GDcYBjBd
-	sH4qehZIhtJVLXi6wiZWTW4+MrlumP4=
-Subject: Re: [PATCH v10 0/2] iio: health: add MAX86150 ECG and PPG biosensor
- driver
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Siratul Islam <siratul.islam@linux.dev>
-To: Md Shofiqul Islam <shofiqtest@gmail.com>
-Cc: jic23@kernel.org, devicetree@vger.kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, andriy.shevchenko@intel.com, 
-	u.kleine-koenig@baylibre.com, joshua.crofts1@gmail.com, nuno.sa@analog.com,
- 	Michael.Hennerich@analog.com, dlechner@baylibre.com, linux@analog.com, 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fa6USujN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784363832; x=1815899832;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=43zB5VFPlSn/y1C9jvfLsmz92uzL5OePbGmA/k+iq64=;
+  b=Fa6USujNidivJdv90xL0QnZ9Z/Mz3hN6XS/6w5ixupHxbpM1RuW+vbED
+   jqi2m+sUh8wG9fS912RfoYzUCAq5BZw+KscKQ1GFfTuoPyrtIWTJhCBeX
+   7KqrL4oOgRWN4pVK2QAZrbQ7uOgzKOkbHusy41FeOf64co3U+LV8r54iS
+   M6QkoOK6rRcb8fJpH0V6lHZpuZIJtuB99iqmuIDOwvC90ptN4uxvqRf+Y
+   OVfv9b6SWBUIa6E/sZ1lrujSp5nQGRZllb62XCCnPrTOf4xsVKDbq+NUi
+   tb6pAI5vJZ8jd+dosjAjcwEBnn1BCp+dRp8zeVNxFzz6YIffNl7lYvy/0
+   A==;
+X-CSE-ConnectionGUID: un0CNXgWSqO/5md7uWccYA==
+X-CSE-MsgGUID: YlHSDcytQiax0BY8j4YZLw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="95376621"
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="95376621"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2026 01:37:11 -0700
+X-CSE-ConnectionGUID: uOvpHmk2T36ltz8Gf+d8jQ==
+X-CSE-MsgGUID: qmxCo5tGTdmE68ErivmUwA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="260790331"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.22])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2026 01:37:09 -0700
+Date: Sat, 18 Jul 2026 11:37:06 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Archit Anant <architanant5@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
+	nuno.sa@analog.com, u.kleine-koenig@baylibre.com,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Sat, 18 Jul 2026 14:36:02 +0600
-In-Reply-To: <20260717201138.1078019-1-shofiqtest@gmail.com>
-References: <20260717201138.1078019-1-shofiqtest@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 2/3] iio: adc: ti-ads1015: use local device pointer in
+ probe
+Message-ID: <als7MldPd1WjCmDZ@ashevche-desk.local>
+References: <20260718075016.27750-1-architanant5@gmail.com>
+ <20260718075016.27750-3-architanant5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260718075016.27750-3-architanant5@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 2026-07-17 at 23:11 +0300, Md Shofiqul Islam wrote:
-> Sorry for the long gap since v9. Between then and now the driver's
-> buffer implementation was rewritten from the kfifo-based design onto
-> the standard IIO hardware-trigger and triggered-buffer framework, and
-> I read through every open comment from every reviewer before sending
-> this rather than sending again too quickly.
->=20
+On Sat, Jul 18, 2026 at 01:20:15PM +0530, Archit Anant wrote:
+> Introduce a local device pointer 'dev' in ads1015_probe to
+> avoid accessing &client->dev repeatedly.
+
 ...
->=20
-> Changes since v9:
-> - Rewrote the buffer implementation around devm_iio_trigger_alloc() +
-> =C2=A0 devm_iio_triggered_buffer_setup() instead of the kfifo buffer and
-> =C2=A0 manual postenable/predisable pair. The hard-irq handler now only
-> =C2=A0 reads and clears INT_STATUS1 before calling iio_trigger_poll();
-> =C2=A0 the threaded trigger handler does the FIFO drain. This relies on
-> =C2=A0 the trigger core's own attach/detach synchronization instead of an
-> =C2=A0 explicit iio_buffer_enabled() guard or synchronize_irq(), which th=
-e
-> =C2=A0 old design needed to avoid a NULL active_scan_mask race on teardow=
-n
-> =C2=A0 (Sashiko, both HIGH severity findings)
->=20
+
+> static int ads1015_probe(struct i2c_client *client)
+
+>  	struct ads1015_data *data;
+>  	int ret;
+>  	int i;
+> +	struct device *dev = &client->dev;
+
+Preserve reversed xmas tree order.
+
 ...
->=20
-> --
-> 2.51.1
 
-Not sure if it was said already, but please include change log from older v=
-ersions too.=C2=A0
-You could keep the description short, and include Links to each version as =
-well. It is=C2=A0
-difficult to hunt them down one by one from lore.
+>  	chip = i2c_get_match_data(client);
+>  	if (!chip)
+> -		return dev_err_probe(&client->dev, -EINVAL, "Unknown chip\n");
+> +		return dev_err_probe(dev, -EINVAL, "Unknown chip\n");
 
-Also, don't send "To" a list. send your patches to Maintainers and=C2=A0
-Cc Reviewers and lists.
+Side note: At some point we probably want to unify the error code for missing
+driver data to be -ENODATA.
 
---
-Best regards,
-Sirat
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
