@@ -1,84 +1,77 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A369726A0D5
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 02:56:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2DB155C97
+	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 04:42:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784343373; cv=none; b=D20QLfOzm96yXd0Qtpox9mDzhhPMsqVSfeWQMYm8dOph4d8YgHeW568YtZQmXFnavbK07DQt58nGPkOveaH2+ij1ihQoga4+uAXV5rwqCa9PZnFKkS28BxhxfrU1ZrJuZ6kIW1OjGFNYx8KubjqbyBP90up49pMzauNAnbiAIbg=
+	t=1784349767; cv=none; b=c2+wbZhMWgkGWUIektUZpyXoTTR1TQT0Eb9ZpcHOIiGF8yxW45C3KZ883EgJ2iJ/DP1y0HKl7EPyq+FVk03Wd+H1RSOEC4qnBD1YMWPbclrw2ELZDPahaguDmB+PuHvhEzkv6qSuuF7bBdZiIePJdxI5ss9rVeFv4Npxi1g9/bs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784343373; c=relaxed/simple;
-	bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hhdVMS4ZQKHvAew8xrMldLKPIPI4LXxr5TRxTRk1HyAg7uFpmVgx98gKiM4IcfzvhyHCNz5S+G76p/OhZhgugDolJZ6qJZ4iZzanyaY/hmM7EyKpwM8UG6LqZhbhsJa8CjC5YpO6rb/LEzdA75RiwAv7KzUhfm1Av6ahW1Wa+6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gRUORo/I; arc=none smtp.client-ip=209.85.216.42
+	s=arc-20240116; t=1784349767; c=relaxed/simple;
+	bh=cKYqxL3jzR8vFba6Cp693tIu/kqmUejaU+VCmSdFwrY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SjcsjbXZ/sq+ehu5tQ/oSMIZLDy/lwTATb7LK5KUkhS3nov0N2OiO+Ee61CWsvsjpNVLtYqZ2SXrELMoziA9dXT2XFnS2O52l5peojLEPMx1Pe/44gSgH69B6sFnXBzuEu9p0691Ys1p7TSw+ADvMdF1Q3ahLGjzeM0uYqeEui0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b3J/lRDX; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gRUORo/I"
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-38dcbade417so6530680a91.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 19:56:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b3J/lRDX"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cc7ef7ec27so95999005ad.1
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 21:42:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784343372; x=1784948172; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
-        b=gRUORo/IbBigBFUGQdoqEVlRczbN56jVL8cQEpXlo9iOEyL43u8Loex91l2l9tyybI
-         Jf0Bl+/8p3y+zhtlC3kV9bl7YZXb4D9cwxHL9oZEwBSCsSGzWyQ64Lu0uBH+R/d7n2fc
-         lEmT6NYMBgBl/YyX2mGO/myV1rDvgm/xf1hWrV7dlA4Zw0+96upfcs4f8ibciY+W0wj5
-         7GlQHCaGyo7Ym5xGdHud7n0gro720WvUcWWbeqoFxwhRfFytxSPMS1VJ3kZgIXfuigxh
-         pqLIRukNls9E64VpkMESbjJyktLk7H6230/2no7hjYFeaHG38aWBAIWB0SXIF71/G9bA
-         gx/w==
+        d=gmail.com; s=20251104; t=1784349765; x=1784954565; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7yaLxWejf29cL56OietuZ2+Mlao1Prg9ji1ZVxHMa+U=;
+        b=b3J/lRDXKcBcnX+kHMRTXCd28y6WXl0E3qPmra82ik3wDUS4yxahcv1spmvgItiEE7
+         k23hPb81FzWonk0vU3khVtpLYCldBNYmV3LSIiRzhNJ9WkI2PKZkXvLfbkzvdYpXdVAS
+         PYH62Gr8TocMglqeql3fzeCcIFmckhsw24jH/P+LwlfSABakmf5K4J7O41jyJ/csQ6i5
+         xIf27D0Tj4gRXWtUMyUIT18/yJS+cO+R7f1gYW3fMKxnbQc8tVzAyv8jGTctonZuL9+5
+         SUrdfGv2cBZwBBgdpADJsqkWNbJGfYA/7O+jGU1Qq+b3VXUyADYJQA6duo4tzlliavLF
+         JOlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784343372; x=1784948172;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7DQdCU2WxK0zeazmg16+9zA+RDtrPnDFr+uw9OeSzrM=;
-        b=gwKxmH8E2xHg3DZtkTLd0H0D9bww2jz1TInQnUHjPWGSRLCY6G+/RsDQK4/CCgpwZw
-         yNyu9OOjQ7LCoLJmX43xll4GDPIfbekZ9WPIH0H6GR4SkZKhmi75q6taAAtuWml52Qne
-         cBC4IigwX38tVoKZtGgYg2djbashhOAF+DyqwsoWVAoh4IEKXlnfVumW0fMXx5Aol6C7
-         kb80R2hEhVJRn6fbbIHg/g+pCtRakmHxdx8rgWmR40BpHLmyt1dcCOi0WT6lX8zTvyOq
-         +rqocyX9/08mquLUN7cvNwGZm12bMgzq+rXDhn5uVYu9x66E9auzDj0lgaS/dZSP2Lwc
-         4r3w==
-X-Forwarded-Encrypted: i=1; AHgh+RroTW19hx4sfBlJJOcJYnSX/GxUpumQASddVz0oS68FzBe3U8um9kmO9ZWjF2qlhMPh+ZEOHZPfPeU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw8RRNimYDT3SsV4ODjZf5EyC5ScwoCMK8ASLQMsm1cvpJzZ/bB
-	GQ960QwgpNhSO0oyf34SS/UHtL/S3VmTbtxIfT/DThK19JXGgljWAP6pC7vU9gHR
-X-Gm-Gg: AfdE7clxyaKQ9oq8fXnHVjuSrntuW2VjhjqrWWUNmd7V624i+NLQXGKMCiV+1pFzJxq
-	7CLc39FyyBnQidzv0l5HBWoFOduVPhqmF3+cime6HVTKPA9QPWspEwQF9+opUII/M5u7qFgdm2E
-	kAPYd0NSt9w9w8T8OlIIglpuSl6dSi3Q6jDKYicxeYX7vhTKNcaMS2AsNCu++EZCoZxRAgIeB3Y
-	H7OfgIaNSVkCRipag3K9ChD64QexCcoziaCumXjGNWDsSrE2up0mZDAyGRsAJbqa6awVroK4z3S
-	03+wODPRC/4lVaskH7JmXASfW05AiBTboaRKRApsvejAJwaxT2qfsnY7VDPB4GrgI5rh8To0G3m
-	0YpK6nG5TSh37d7zfiCANxL7IOkoLNlVNUh3yXRKDlEZiJg6fT/0xDTtYjlEkK71r7jRo2rQbrr
-	WLx5lF0vNidGzQZDJg0XIGCQoAYGCZt5PYHIdXhpnskdQo2O0Kti0UhUw7O7zLAzS/T5Pss2zer
-	fpTQGGbumoNSujF7FX+5PSwq/nZkPmyJwGDMDbL7AR9ftTBYH+3pGT3ICprqOYrPv128g03v14k
-	LzvsFGxLbX/YeOFqPe0uauxuyjETt38BhFM79t0s2pLDlcQszZ6cOrwqN2TTNSXDaLU=
-X-Received: by 2002:a17:90b:35ce:b0:37c:6910:5758 with SMTP id 98e67ed59e1d1-38e4b4200edmr5059155a91.1.1784343371893;
-        Fri, 17 Jul 2026 19:56:11 -0700 (PDT)
-Received: from ip-172-31-21-198.us-west-2.compute.internal (ec2-54-213-160-35.us-west-2.compute.amazonaws.com. [54.213.160.35])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e656e5686sm32029a91.14.2026.07.17.19.56.10
+        d=1e100.net; s=20251104; t=1784349765; x=1784954565;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7yaLxWejf29cL56OietuZ2+Mlao1Prg9ji1ZVxHMa+U=;
+        b=aQSfDmDWXC2im6rdpXXYI+tdm4b5LafHKuMfgdTM9g5frEEpZStx1j84crsIv50UIi
+         6mL3jpzTZZC6OYflNd9OauhRFBEeK1GanY3vUdxeD53cRXXeksNkGjMzUcwyoWl7JSzF
+         VEXDSBJVwipyh3m2/0Sj31qrATSbYZY/sIUaHSKjaiq41nV3DEsA3Rdl+vqCynKLl82p
+         Bo6bVLvwY/0ecmdXz2OT5KqWWQTq9m0yvYHD6CNobkXjlD3uJAqjFVDhMirnH02vnabZ
+         mVa8MCB+b0TygaPAUDFj3/ryHowBRGoj5KExjy2Cd/WWTlFmWRKoLj6Q4NA5JST3Jrwz
+         AMEA==
+X-Forwarded-Encrypted: i=1; AHgh+RpTAsw8Jlw+JMxNpjkyi4FpZiogxpMpY8rcVUV3zhSw6ucX3+lHtLg/4LgwqCO8zdT1ylongbIGHzU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/2l3NnQrGyvPlXQ/Z8jusjSliLxGcrMZQHR3goEgghFcDIstI
+	i7Abx5SSuEsGqyQgM+wyk8oz7JRDz59VQeZbzUJluxi5qbvjzXlacE7n
+X-Gm-Gg: AfdE7cnTF+GesgCqPj0njLsd8JNw7ZiRJ7Hhd8LUrtTUEvCUZy5/8pCeWhH4aKJaCaq
+	jnDUaBVzzILMktu8mdSShP19soM5DsIyiGWC9YBgziQG8H3vl03UEr7soMiAMqNqgy422PWjf08
+	RubtuOV7nZill3BLZiaEhYlVf9odUf8QHdTJ45I3+UBW9ER+H74J/sQxx8YMkxpLa6BZxeadFHT
+	3ODsmsTAdycng8p0jfqZkwHd6p1MEW2P2uZXaZNW05hyWGvjTPDwmCQeHPDV18wrdtEEhzMJr/t
+	hiw/PpQEI72OiYtV1377sy2dSQpPQ8mf6NvtjemHXNpmEiQKFNnNfUX5F9Lc/WLWmuPQUT7x29y
+	msTLu6H6k9BRl16faVZ4VVtWKkZQTbmBICwyj1fHyCTTR7SWYVjHBjeRpZXnVMtf8BK++a9X9dW
+	k7bA==
+X-Received: by 2002:a17:903:b08:b0:2c6:90ec:f601 with SMTP id d9443c01a7336-2cf34835859mr63305995ad.8.1784349765450;
+        Fri, 17 Jul 2026 21:42:45 -0700 (PDT)
+Received: from kdev.. ([108.180.130.139])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf344bd3aesm21644465ad.26.2026.07.17.21.42.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 19:56:11 -0700 (PDT)
-From: Bruce Robertson <brucer42@gmail.com>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>,
-	Igor Korotin <igor.korotin@linux.dev>,
-	Danilo Krummrich <dakr@kernel.org>
-Cc: jic23@kernel.org,
-	lars@metafoo.de,
+        Fri, 17 Jul 2026 21:42:44 -0700 (PDT)
+From: Babanpreet Singh <bbnpreetsingh@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Angelo Dureghello <adureghello@baylibre.com>,
+	linux@analog.com,
 	linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	andi.shyti@kernel.org,
-	wsa+renesas@sang-engineering.com,
-	ojeda@kernel.org,
-	branstj@gmail.com
-Subject: Re: [RFC PATCH v4 1/3] i2c: rust: implement SMBus read abstraction via kernel::io::Io for I2cClient
-Date: Sat, 18 Jul 2026 02:48:38 +0000
-Message-ID: <20260718024838.1623-1-brucer42@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
-References: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
+	Babanpreet Singh <bbnpreetsingh@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v2] iio: dac: ad3552r-hs: use sysfs_emit_at() in data source avail show
+Date: Sat, 18 Jul 2026 04:42:44 +0000
+Message-ID: <20260718044244.7-1-bbnpreetsingh@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,25 +80,93 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 14, 2026 at 23:08:00 +0700, Muchamad Coirul Anwar wrote:
-> Agreed. I will rework on top of Danilo's FallibleIoCapable approach
-> in v5.
+ad3552r_hs_show_data_source_avail() formats the available data source
+names into a 128-byte stack buffer, but bounds each scnprintf() with
+PAGE_SIZE instead of the buffer size, so the bound does not protect
+the destination at all.
 
-For the write side of that rework: I recently posted an RFC with a
-Rust port of the SMB347 charger driver [1], which Igor pointed at this
-series (thanks). I'm dropping my standalone SMBus helpers in favor of
-your Io-based approach.
+This cannot overflow today - dbgfs_attr_source[] has two entries,
+"normal" and "ramp-16bit", 18 bytes formatted - but the bound stops
+protecting the stack the day the table grows.
 
-The SMB347 driver may be a useful early consumer for v5: unlike the
-AS5600 it writes -- a config-unlock write plus read-modify-write
-updates of charge-control register fields -- so it would exercise the
-io_try_write/try_update paths that Igor noted are otherwise easy to
-leave silently infallible. NACK and arbitration loss on a charger
-config write are exactly the failures you don't want reported as
-Ok(()).
+Found by smatch:
 
-Happy to rebase it onto v5 when it's out and report back.
+  drivers/iio/dac/ad3552r-hs.c:593 ad3552r_hs_show_data_source_avail()
+  error: scnprintf() 'buf[len]' too small (128 vs 4096)
 
-Bruce
+Instead of shrinking the scnprintf() bound to the buffer size, switch
+to sysfs_emit_at(), which enforces the PAGE_SIZE bound internally and
+is the preferred helper for formatting attribute-style output; the IIO
+core formats its own avail lists the same way in iio_format_list().
+sysfs_emit_at() refuses buffers that are not page-aligned, so replace
+the stack buffer with a kzalloc()'d page - power-of-two kmalloc()
+allocations are naturally aligned, see
+Documentation/core-api/memory-allocation.rst.
 
-[1] https://lore.kernel.org/all/20260708214738.25008-1-brucer42@gmail.com/
+Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Assisted-by: claude-sonnet-5
+Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
+---
+v2:
+ - Switch to sysfs_emit_at() with a kzalloc()'d page instead of
+   bounding scnprintf() with sizeof(buf), as suggested by Andy
+   Shevchenko. sysfs_emit_at() requires a page-aligned buffer, so
+   the 128-byte stack buffer cannot stay; add the cleanup.h, slab.h
+   and sysfs.h includes the new code needs.
+ - Retitled; v1 was "iio: dac: ad3552r-hs: fix scnprintf() buffer
+   bound in data source show".
+
+v1: https://lore.kernel.org/r/20260717040024.7-1-bbnpreetsingh@gmail.com
+
+ drivers/iio/dac/ad3552r-hs.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
+index 02a124ac4855..c561fed2ef1a 100644
+--- a/drivers/iio/dac/ad3552r-hs.c
++++ b/drivers/iio/dac/ad3552r-hs.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+@@ -14,6 +15,8 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
++#include <linux/slab.h>
++#include <linux/sysfs.h>
+ #include <linux/units.h>
+ 
+ #include "ad3552r.h"
+@@ -585,14 +588,15 @@ static ssize_t ad3552r_hs_show_data_source_avail(struct file *f,
+ 						 char __user *userbuf,
+ 						 size_t count, loff_t *ppos)
+ {
+-	ssize_t len = 0;
+-	char buf[128];
++	char *buf __free(kfree) = kzalloc(PAGE_SIZE, GFP_KERNEL);
++	int len = 0;
+ 	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++) {
+-		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ",
+-				 dbgfs_attr_source[i]);
+-	}
++	if (!buf)
++		return -ENOMEM;
++
++	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++)
++		len += sysfs_emit_at(buf, len, "%s ", dbgfs_attr_source[i]);
+ 	buf[len - 1] = '\n';
+ 
+ 	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
+
+base-commit: fce2dfa773ced15f27dd27cd0b482a7473cdcf2a
+-- 
+2.43.0
+
