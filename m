@@ -1,77 +1,64 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2DB155C97
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 04:42:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97CBE3033E9;
+	Sat, 18 Jul 2026 06:19:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784349767; cv=none; b=c2+wbZhMWgkGWUIektUZpyXoTTR1TQT0Eb9ZpcHOIiGF8yxW45C3KZ883EgJ2iJ/DP1y0HKl7EPyq+FVk03Wd+H1RSOEC4qnBD1YMWPbclrw2ELZDPahaguDmB+PuHvhEzkv6qSuuF7bBdZiIePJdxI5ss9rVeFv4Npxi1g9/bs=
+	t=1784355589; cv=none; b=L1w+uHH+H9QPqeP5h+lJPk7mOb2gX2Ysnz08f2LjXSXjbuVY2GgVY0L7vdaLU58l4rICa3k+I7kqBV6/X6qYN83ij1XrQHJ5Wdn8vSwoiGelBhnQrUGFoNLhGopkAjWVetGtvjZrlvR3/Ps/C8DGLhK9lwublhjGgbvR6RQwpTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784349767; c=relaxed/simple;
-	bh=cKYqxL3jzR8vFba6Cp693tIu/kqmUejaU+VCmSdFwrY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SjcsjbXZ/sq+ehu5tQ/oSMIZLDy/lwTATb7LK5KUkhS3nov0N2OiO+Ee61CWsvsjpNVLtYqZ2SXrELMoziA9dXT2XFnS2O52l5peojLEPMx1Pe/44gSgH69B6sFnXBzuEu9p0691Ys1p7TSw+ADvMdF1Q3ahLGjzeM0uYqeEui0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b3J/lRDX; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b3J/lRDX"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2cc7ef7ec27so95999005ad.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2026 21:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784349765; x=1784954565; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7yaLxWejf29cL56OietuZ2+Mlao1Prg9ji1ZVxHMa+U=;
-        b=b3J/lRDXKcBcnX+kHMRTXCd28y6WXl0E3qPmra82ik3wDUS4yxahcv1spmvgItiEE7
-         k23hPb81FzWonk0vU3khVtpLYCldBNYmV3LSIiRzhNJ9WkI2PKZkXvLfbkzvdYpXdVAS
-         PYH62Gr8TocMglqeql3fzeCcIFmckhsw24jH/P+LwlfSABakmf5K4J7O41jyJ/csQ6i5
-         xIf27D0Tj4gRXWtUMyUIT18/yJS+cO+R7f1gYW3fMKxnbQc8tVzAyv8jGTctonZuL9+5
-         SUrdfGv2cBZwBBgdpADJsqkWNbJGfYA/7O+jGU1Qq+b3VXUyADYJQA6duo4tzlliavLF
-         JOlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784349765; x=1784954565;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7yaLxWejf29cL56OietuZ2+Mlao1Prg9ji1ZVxHMa+U=;
-        b=aQSfDmDWXC2im6rdpXXYI+tdm4b5LafHKuMfgdTM9g5frEEpZStx1j84crsIv50UIi
-         6mL3jpzTZZC6OYflNd9OauhRFBEeK1GanY3vUdxeD53cRXXeksNkGjMzUcwyoWl7JSzF
-         VEXDSBJVwipyh3m2/0Sj31qrATSbYZY/sIUaHSKjaiq41nV3DEsA3Rdl+vqCynKLl82p
-         Bo6bVLvwY/0ecmdXz2OT5KqWWQTq9m0yvYHD6CNobkXjlD3uJAqjFVDhMirnH02vnabZ
-         mVa8MCB+b0TygaPAUDFj3/ryHowBRGoj5KExjy2Cd/WWTlFmWRKoLj6Q4NA5JST3Jrwz
-         AMEA==
-X-Forwarded-Encrypted: i=1; AHgh+RpTAsw8Jlw+JMxNpjkyi4FpZiogxpMpY8rcVUV3zhSw6ucX3+lHtLg/4LgwqCO8zdT1ylongbIGHzU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/2l3NnQrGyvPlXQ/Z8jusjSliLxGcrMZQHR3goEgghFcDIstI
-	i7Abx5SSuEsGqyQgM+wyk8oz7JRDz59VQeZbzUJluxi5qbvjzXlacE7n
-X-Gm-Gg: AfdE7cnTF+GesgCqPj0njLsd8JNw7ZiRJ7Hhd8LUrtTUEvCUZy5/8pCeWhH4aKJaCaq
-	jnDUaBVzzILMktu8mdSShP19soM5DsIyiGWC9YBgziQG8H3vl03UEr7soMiAMqNqgy422PWjf08
-	RubtuOV7nZill3BLZiaEhYlVf9odUf8QHdTJ45I3+UBW9ER+H74J/sQxx8YMkxpLa6BZxeadFHT
-	3ODsmsTAdycng8p0jfqZkwHd6p1MEW2P2uZXaZNW05hyWGvjTPDwmCQeHPDV18wrdtEEhzMJr/t
-	hiw/PpQEI72OiYtV1377sy2dSQpPQ8mf6NvtjemHXNpmEiQKFNnNfUX5F9Lc/WLWmuPQUT7x29y
-	msTLu6H6k9BRl16faVZ4VVtWKkZQTbmBICwyj1fHyCTTR7SWYVjHBjeRpZXnVMtf8BK++a9X9dW
-	k7bA==
-X-Received: by 2002:a17:903:b08:b0:2c6:90ec:f601 with SMTP id d9443c01a7336-2cf34835859mr63305995ad.8.1784349765450;
-        Fri, 17 Jul 2026 21:42:45 -0700 (PDT)
-Received: from kdev.. ([108.180.130.139])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf344bd3aesm21644465ad.26.2026.07.17.21.42.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2026 21:42:44 -0700 (PDT)
-From: Babanpreet Singh <bbnpreetsingh@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Angelo Dureghello <adureghello@baylibre.com>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
+	s=arc-20240116; t=1784355589; c=relaxed/simple;
+	bh=FoGCFCvwyGZW9MzyAyxb5vILM2PseAQAD2D6SMY43oo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ck0zHST/I8ruNYWF22EfiF9YGGb0YYA8ulZJeS39HngF2eoX30jVQHe0pIUvj/gHnce8K4sST12jPCa2Dc8MtqPxoLLqhcqSH14NpOP9sdMsJZLN6egJPQGqTuA3ICybwNuv/UxSJ3CS4dO7ZHiurMSum0pvnDtOisdNRoYGIn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
+X-UUID: a54440ae827011f1aa26b74ffac11d73-20260718
+X-CTIC-Tags:
+	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
+	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
+	HR_SJ_DIGIT_LEN, HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM
+	HR_SJ_PHRASE, HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT
+	HR_TO_NO_NAME, IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_TRUSTED
+	SA_EXISTED, SN_TRUSTED, SN_EXISTED, SPF_NOPASS, DKIM_NOPASS
+	DMARC_NOPASS, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS, GTI_RG_INFO
+	GTI_C_BU, AMN_GOOD, ABX_MISS_RDNS
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.12,REQID:aa229de1-5b93-4bf7-a093-92fe2663594a,IP:15,
+	URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:15
+X-CID-INFO: VERSION:1.3.12,REQID:aa229de1-5b93-4bf7-a093-92fe2663594a,IP:15,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:15
+X-CID-META: VersionHash:e7bac3a,CLOUDID:2e8df5f657f352ce2f4664dca231ff15,BulkI
+	D:26071814193738HHCTBC,BulkQuantity:0,Recheck:0,SF:10|38|66|78|102|127|136
+	|865|898,TC:nil,Content:0|15|50,EDM:-3,IP:-2,URL:0,File:nil,RT:nil,Bulk:ni
+	l,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE
+	:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: a54440ae827011f1aa26b74ffac11d73-20260718
+X-User: pengcan@kylinos.cn
+Received: from lenovo [(116.128.244.171)] by mailgw.kylinos.cn
+	(envelope-from <pengcan@kylinos.cn>)
+	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
+	with ESMTP id 970417700; Sat, 18 Jul 2026 14:19:34 +0800
+From: Can Peng <pengcan@kylinos.cn>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	rajat.khandelwal@linux.intel.com
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Babanpreet Singh <bbnpreetsingh@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v2] iio: dac: ad3552r-hs: use sysfs_emit_at() in data source avail show
-Date: Sat, 18 Jul 2026 04:42:44 +0000
-Message-ID: <20260718044244.7-1-bbnpreetsingh@gmail.com>
-X-Mailer: git-send-email 2.47.3
+	Can Peng <pengcan@kylinos.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: pressure: mpl115: Fix runtime PM cleanup on probe failure
+Date: Sat, 18 Jul 2026 14:19:09 +0800
+Message-ID: <20260718061909.428476-1-pengcan@kylinos.cn>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,93 +67,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ad3552r_hs_show_data_source_avail() formats the available data source
-names into a 128-byte stack buffer, but bounds each scnprintf() with
-PAGE_SIZE instead of the buffer size, so the bound does not protect
-the destination at all.
+mpl115_probe() enables runtime PM when a shutdown GPIO is present and
+then returns the result of devm_iio_device_register(). If registration
+fails, runtime PM remains enabled and autosuspend remains selected.
 
-This cannot overflow today - dbgfs_attr_source[] has two entries,
-"normal" and "ramp-16bit", 18 bytes formatted - but the bound stops
-protecting the stack the day the table grows.
+The same unmanaged runtime PM state is also left behind on driver
+unbind, as the IIO device registration is managed but the runtime PM
+setup is not.
 
-Found by smatch:
+Use devm_pm_runtime_enable() so runtime PM is disabled automatically
+on probe failure and driver unbind. Also unwind the initial
+pm_runtime_get_noresume() reference if setting up runtime PM fails
+before the matching put.
 
-  drivers/iio/dac/ad3552r-hs.c:593 ad3552r_hs_show_data_source_avail()
-  error: scnprintf() 'buf[len]' too small (128 vs 4096)
-
-Instead of shrinking the scnprintf() bound to the buffer size, switch
-to sysfs_emit_at(), which enforces the PAGE_SIZE bound internally and
-is the preferred helper for formatting attribute-style output; the IIO
-core formats its own avail lists the same way in iio_format_list().
-sysfs_emit_at() refuses buffers that are not page-aligned, so replace
-the stack buffer with a kzalloc()'d page - power-of-two kmalloc()
-allocations are naturally aligned, see
-Documentation/core-api/memory-allocation.rst.
-
-Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Assisted-by: claude-sonnet-5
-Signed-off-by: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Fixes: 0c3a333524a3 ("iio: pressure: mpl115: Implementing low power mode by shutdown gpio")
+Cc: stable@vger.kernel.org
+Signed-off-by: Can Peng <pengcan@kylinos.cn>
 ---
-v2:
- - Switch to sysfs_emit_at() with a kzalloc()'d page instead of
-   bounding scnprintf() with sizeof(buf), as suggested by Andy
-   Shevchenko. sysfs_emit_at() requires a page-aligned buffer, so
-   the 128-byte stack buffer cannot stay; add the cleanup.h, slab.h
-   and sysfs.h includes the new code needs.
- - Retitled; v1 was "iio: dac: ad3552r-hs: fix scnprintf() buffer
-   bound in data source show".
+ drivers/iio/pressure/mpl115.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-v1: https://lore.kernel.org/r/20260717040024.7-1-bbnpreetsingh@gmail.com
-
- drivers/iio/dac/ad3552r-hs.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/dac/ad3552r-hs.c b/drivers/iio/dac/ad3552r-hs.c
-index 02a124ac4855..c561fed2ef1a 100644
---- a/drivers/iio/dac/ad3552r-hs.c
-+++ b/drivers/iio/dac/ad3552r-hs.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
-@@ -14,6 +15,8 @@
- #include <linux/iio/buffer.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
- #include <linux/units.h>
- 
- #include "ad3552r.h"
-@@ -585,14 +588,15 @@ static ssize_t ad3552r_hs_show_data_source_avail(struct file *f,
- 						 char __user *userbuf,
- 						 size_t count, loff_t *ppos)
- {
--	ssize_t len = 0;
--	char buf[128];
-+	char *buf __free(kfree) = kzalloc(PAGE_SIZE, GFP_KERNEL);
-+	int len = 0;
- 	int i;
- 
--	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++) {
--		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ",
--				 dbgfs_attr_source[i]);
--	}
-+	if (!buf)
-+		return -ENOMEM;
+diff --git a/drivers/iio/pressure/mpl115.c b/drivers/iio/pressure/mpl115.c
+index 16e112b796ba..9e77b76bd1fa 100644
+--- a/drivers/iio/pressure/mpl115.c
++++ b/drivers/iio/pressure/mpl115.c
+@@ -204,8 +204,17 @@ int mpl115_probe(struct device *dev, const char *name,
+ 	if (data->shutdown) {
+ 		/* Enable runtime PM */
+ 		pm_runtime_get_noresume(dev);
+-		pm_runtime_set_active(dev);
+-		pm_runtime_enable(dev);
++		ret = pm_runtime_set_active(dev);
++		if (ret) {
++			pm_runtime_put_noidle(dev);
++			return ret;
++		}
 +
-+	for (i = 0; i < ARRAY_SIZE(dbgfs_attr_source); i++)
-+		len += sysfs_emit_at(buf, len, "%s ", dbgfs_attr_source[i]);
- 	buf[len - 1] = '\n';
++		ret = devm_pm_runtime_enable(dev);
++		if (ret) {
++			pm_runtime_put_noidle(dev);
++			return ret;
++		}
  
- 	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
-
-base-commit: fce2dfa773ced15f27dd27cd0b482a7473cdcf2a
+ 		/*
+ 		 * As the device takes 3 ms to come up with a fresh
 -- 
-2.43.0
+2.53.0
 
