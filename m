@@ -1,212 +1,111 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBDB7303C8A
-	for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 07:50:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF04231619C;
+	Sat, 18 Jul 2026 08:34:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784361048; cv=none; b=H7Cu5n8PcU0MdXc2xgNBbm0p+8oxmLJ3PZrh9fbzYo1I/z+fIwN/tqp6KK4c67ja0MSMby3g8spFOP3Zpe7JUsb2/XJLEri9C9gKx63H2SdWQxOOuYj1DLBWirQ1dKvB5ADbSlLdBcCUB6fDVMOiPzdaGBRo9chH8j101ay/yeI=
+	t=1784363677; cv=none; b=LzMVsOM9+PNuzYdfoojybw/Qc7y2tk4zKoIFsmwUUc1YWNNu3SYcRWG34I7krj8SaiLnMQGt0IcW2TdBY0YQrTTPZ9VW6ZjDyjaIsRKujcw3b7FYue9xL4SUkFoM6LZ3HAom6BzitmZI4vaeC0KRUa8pjaH3339P0TiYWJiW9zE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784361048; c=relaxed/simple;
-	bh=axGdFwDRPmHC80+igOjmSxNrGka73suNE+Z56JHacSg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=DWP7gs+9B1R2su6ykMeX0qBLxt4dtGxl2KmR3hFKP7pFwuZQoIudNnlArTwrQbEAuiSZQ0ImGVEUyC3PKXODB63PKpwQXRBq5rd9GyvqwPG7JCg+r8VUasP5ihRJ9lm+ij3bLRWeKFKuvWM69Ck1KUGhvgXQcKxlCKK2AqQ8anE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fKPf32Is; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784363677; c=relaxed/simple;
+	bh=+t9hJ3SeVwth3bb5l/7BziN9IqcC3EuPIi9wluL5ng8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OR+SbywsjIFgMm0oXgb5ylTaqbzfzQME2EYHQl9yQCcqH5W+RWXJi7oVtRoDsHM5yjEeYxAQAo0ffq9G/lkrO3JRJWRtL0pUtaNBYt64gYjcNThT15wUCSrZCjSG7czd+xRgsYsLjiXWbxVu3ATTWfoAXZwBD+jTOqMp83q3El8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cr3N5OGX; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fKPf32Is"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c9e0b89e228so3289353a12.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Jul 2026 00:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784361046; x=1784965846; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ZYQz/KYXwf3OLcsAA66MTPAZaZSTmxzDqnf6BrqdGD8=;
-        b=fKPf32IsYhkP0RiFuRI/+PfoRbFfKnJDzi5t8GNgqeI0UP0PnIYd7qvxHb9iv6YKhe
-         E/BwTjpmjlDg29oY+CJ1JciwGTLB93kaNkQC8d19ZmK8hI7J+nfQ1DqPrD4LsTdS1zoe
-         2cSYUKvXxIdzPvzQmpywj98Ao6wgypm+NPLiJosdJV16T5CTMT2Ynzd/j5NLeAgoBgri
-         6E6YqaAt69JHBf2HWv/o9xhGUuDhP5fKf42uqF/LEXeJl5KcbmBVNLYfLlaz8TIfzQP/
-         P7mKrf4pr3bhMMjmleFa3coSrzWyzSpg90eBapLOlU5/IEwA+L7rZ4RJ9Ceeu9tdVkbh
-         Fw9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784361046; x=1784965846;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ZYQz/KYXwf3OLcsAA66MTPAZaZSTmxzDqnf6BrqdGD8=;
-        b=J2AmKg1GWcQjiaYt2+Qv66yH5TlRL4rcECrYQGKjpUgi4HClpxID162T0++ZtzcS0l
-         tNlUE2EhJ1lq7NesO9yfaFpGkK6W8m+EdTJSfVBBIRdMZxEEbBiIUJQbxYrzvPPki9y2
-         EEPuvg6nb/xE6l3hbod9btJj8eH77M1IvaInPtLqc5ojLtxzJ3zt+kod2nMiGSfd+iO4
-         H20s4vMmFmgZRUiCDoM2UTDrYtxfDrtLUywLUYolMryFX1LfqqPlWQeLfuJ2ra9vgwwf
-         gSmk+MVyakzxtpJ1mXg1HnlCdlT/fSFosiY58t1nNFmKCqweR3oCHoYIt+Z3r6iI95uX
-         lIbQ==
-X-Forwarded-Encrypted: i=1; AHgh+RqG6PEXy6CIFiMDsv49stKTotDlWOVEQyWrsOu1QwxKSALaCJ85Xmq0PHTpYwRYtBl0nLWKPL79jdw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyYaleXhxZY132TCkx2Gz8YZHGDo0DtxSo8fBXcMWoJuV++P4ZU
-	5jxwPx+VaVWZfhtketnwaN21Q89jqRdSolCXueSAlM2P9I9fQzoa/Zf5
-X-Gm-Gg: AfdE7ckDcvTMfuSMcV2vIYRZ8mC5pja6b0f1yvOSn+0MRIwXHbRxEx/NsWRIqYd3HVG
-	RwcJR3MvIsMLr2t0aztoreFJ9ODyK/fWf0+esekMy8hxM5kwAcoEHVJGMRmoIW/BDIh6MuIFeq/
-	1rcV60tEE3qZE/gGqXnEZMWAA3vp2WfgeXcFXeCvSu+lpoGzM3ojuNuwOrGcAH3NAtm1VMSkarm
-	Iv43+3QPX+HuR2s6udKAMk2TkcAfTezrIDZB6FUL9MGHLu1Jn1U3tPFXNp1FtAkqu36ykWbpKPt
-	6rh3S/YJcqPzFOJbf8XxD9Bjp96lQ1Ka/AsslVckdempHFbDVyjg+dv2HcWFAAx++ufV/fszkIX
-	TUxdERHCUBK6L9wX3fm0mQx2xv15ad01ViB77QT2bw9JXW0T2AsSHafYO3sQN2SAapPq2KfcdVF
-	0u8BNyu9WBsYBR/FqW1psRHPK7PS4LrgfBH+yT2Yrzf5wCZj62pNav
-X-Received: by 2002:a05:6a21:6b17:b0:3c3:7f8f:88cc with SMTP id adf61e73a8af0-3c3ad963e78mr5739675637.46.1784361046046;
-        Sat, 18 Jul 2026 00:50:46 -0700 (PDT)
-Received: from debian.ari ([152.56.157.145])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3142a20bf96sm14354220eec.28.2026.07.18.00.50.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jul 2026 00:50:45 -0700 (PDT)
-From: Archit Anant <architanant5@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	nuno.sa@analog.com,
-	u.kleine-koenig@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH 3/3] iio: adc: ti-ads1015: convert to fully managed resources
-Date: Sat, 18 Jul 2026 13:20:16 +0530
-Message-Id: <20260718075016.27750-4-architanant5@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260718075016.27750-1-architanant5@gmail.com>
-References: <20260718075016.27750-1-architanant5@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cr3N5OGX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784363675; x=1815899675;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+t9hJ3SeVwth3bb5l/7BziN9IqcC3EuPIi9wluL5ng8=;
+  b=Cr3N5OGXnTdUjkb/9MF8DWQtto/C/FBQwsLAix80YxtcXjiciUrCVni6
+   CUXUNZRXIPaqKM9XC8PRvV5owNRzBm3ijNxwwVmh8N6Tqg5mQF1Tbv4qB
+   rix/wP97TuDJeTZzvl/eLr7J3MpwQHRjqrA4hojW5UHpA9DBykAmQ4TN7
+   4y/KNFjCKEBAU48wq4wivEuc3EyGRWs4gfh7lIgd5/NkKUx3zfHLzySTG
+   dp2xkQ1fLMBYufcB3XfyyCf37usnytr+Zzf0i9n3GPc2bwjaOwgcoG+Pd
+   L7tHdg1ViNYd+ixFnqg4M6Y22mHExSU/xDsxoW/ec/nw3MtKfSZcSDJTn
+   g==;
+X-CSE-ConnectionGUID: bPJwY9STQ8+m6eVC0Ke1lQ==
+X-CSE-MsgGUID: o5di74MnRRC0uG+L3T26mA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11849"; a="107808149"
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="107808149"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2026 01:34:34 -0700
+X-CSE-ConnectionGUID: +8yTo9QNTcqZvoeRXjeuuA==
+X-CSE-MsgGUID: DqDvPBIRQ4e1bI7H34xusQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,170,1779174000"; 
+   d="scan'208";a="256421262"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.22])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2026 01:34:32 -0700
+Date: Sat, 18 Jul 2026 11:34:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Babanpreet Singh <bbnpreetsingh@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Angelo Dureghello <adureghello@baylibre.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: ad3552r-hs: use sysfs_emit_at() in data
+ source avail show
+Message-ID: <als6lRi-H4DM7ra6@ashevche-desk.local>
+References: <20260718044244.7-1-bbnpreetsingh@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260718044244.7-1-bbnpreetsingh@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Refactor the driver to use devm_ allocations and power
-management, allowing for the complete removal of the
-ads1015_remove()
+On Sat, Jul 18, 2026 at 04:42:44AM +0000, Babanpreet Singh wrote:
+> ad3552r_hs_show_data_source_avail() formats the available data source
+> names into a 128-byte stack buffer, but bounds each scnprintf() with
+> PAGE_SIZE instead of the buffer size, so the bound does not protect
+> the destination at all.
+> 
+> This cannot overflow today - dbgfs_attr_source[] has two entries,
+> "normal" and "ramp-16bit", 18 bytes formatted - but the bound stops
+> protecting the stack the day the table grows.
+> 
+> Found by smatch:
+> 
+>   drivers/iio/dac/ad3552r-hs.c:593 ad3552r_hs_show_data_source_avail()
+>   error: scnprintf() 'buf[len]' too small (128 vs 4096)
 
-Key changes:
-- Use devm_add_action_or_reset() to ensure the ADC is safely powered
-down upon driver removal.
-- Move to devm_pm_runtime_set_active_enabled() to manage the runtime
-PM lifecycle.
-- Update the PM operations to use DEFINE_RUNTIME_DEV_PM_OPS and
-pm_ptr() for modern compiler saftey.
-- Convert iio_device_register() and mutex_init() to their devm_
-variants.
-- Remove the thus obsolete ads1015_remove() function.
+> Fixes: b1c5d68ea66e ("iio: dac: ad3552r-hs: add support for internal ramp")
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Signed-off-by: Archit Anant <architanant5@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 58 ++++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 32 deletions(-)
+This whole thing is not what I suggested, I only had an idea of using
+sysfs_emit_at(). BUT...
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 0232a4ca2d77..57e5fa593b31 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -930,6 +930,14 @@ static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
- 				  mode << ADS1015_CFG_MOD_SHIFT);
- }
- 
-+static void ads1015_power_off(void *data)
-+{
-+	struct ads1015_data *st = data;
-+
-+	/* power down single shot mode */
-+	ads1015_set_conv_mode(st, ADS1015_SINGLESHOT);
-+}
-+
- static int ads1015_probe(struct i2c_client *client)
- {
- 	const struct ads1015_chip_data *chip;
-@@ -950,7 +958,9 @@ static int ads1015_probe(struct i2c_client *client)
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 
--	mutex_init(&data->lock);
-+	ret = devm_mutex_init(dev, &data->lock);
-+	if (ret)
-+		return ret;
- 
- 	indio_dev->name = ADS1015_DRV_NAME;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -1033,38 +1043,23 @@ static int ads1015_probe(struct i2c_client *client)
- 
- 	data->conv_invalid = true;
- 
--	ret = pm_runtime_set_active(dev);
-+	ret = devm_add_action_or_reset(dev, ads1015_power_off, data);
- 	if (ret)
- 		return ret;
--	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
--	pm_runtime_use_autosuspend(dev);
--	pm_runtime_enable(dev);
- 
--	ret = iio_device_register(indio_dev);
--	if (ret < 0) {
--		dev_err(dev, "Failed to register IIO device\n");
-+	ret = devm_pm_runtime_set_active_enabled(dev);
-+	if (ret)
- 		return ret;
--	}
- 
--	return 0;
--}
--
--static void ads1015_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct ads1015_data *data = iio_priv(indio_dev);
--	int ret;
--
--	iio_device_unregister(indio_dev);
--
--	pm_runtime_disable(&client->dev);
--	pm_runtime_set_suspended(&client->dev);
-+	pm_runtime_set_autosuspend_delay(dev, ADS1015_SLEEP_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
- 
--	/* power down single shot mode */
--	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-+	ret = devm_iio_device_register(dev, indio_dev);
- 	if (ret)
--		dev_warn(&client->dev, "Failed to power down (%pe)\n",
--			 ERR_PTR(ret));
-+		return dev_err_probe(dev, ret,
-+				     "Failed to register IIO device\n");
-+
-+	return 0;
- }
- 
- #ifdef CONFIG_PM
-@@ -1090,10 +1085,10 @@ static int ads1015_runtime_resume(struct device *dev)
- }
- #endif
- 
--static const struct dev_pm_ops ads1015_pm_ops = {
--	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
--			   ads1015_runtime_resume, NULL)
--};
-+static DEFINE_RUNTIME_DEV_PM_OPS(ads1015_pm_ops,
-+				  ads1015_runtime_suspend,
-+				  ads1015_runtime_resume,
-+				  NULL);
- 
- static const struct ads1015_chip_data ads1015_data = {
- 	.channels	= ads1015_channels,
-@@ -1148,10 +1143,9 @@ static struct i2c_driver ads1015_driver = {
- 	.driver = {
- 		.name = ADS1015_DRV_NAME,
- 		.of_match_table = ads1015_of_match,
--		.pm = &ads1015_pm_ops,
-+		.pm = pm_ptr(&ads1015_pm_ops),
- 	},
- 	.probe		= ads1015_probe,
--	.remove		= ads1015_remove,
- 	.id_table	= ads1015_id,
- };
- 
+...
+
+> static ssize_t ad3552r_hs_show_data_source_avail(struct file *f,
+>  						 char __user *userbuf,
+
+...I haven't paid attention that this is not sysfs attribute handling
+in the default way, this is customized one and the passed buffer is
+in user space.
+
+>  						 size_t count, loff_t *ppos)
+
+Hence the correct fix is just replace PAGE_SIZE with sizeof(buf) as it was
+I suppose in v1. Sorry for my mistake.
+
 -- 
-2.39.5
+With Best Regards,
+Andy Shevchenko
+
 
