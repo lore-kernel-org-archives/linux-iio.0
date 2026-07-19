@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD6137F00B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CCD637CD48;
 	Sun, 19 Jul 2026 09:52:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784454723; cv=none; b=BLMq5ftq8Djm5ZoQCt3f3XPmXezE5XWqArdiWvj4/4c0zQsI6/U5OR8XpGJg+mE/UPbkVksthEn6wjIjrL4Ew7fR2QpPOQjGKhkc9UcWnFVzAXQOrLcJViA2k2Cc6wudmavsdBJtAC/uvN2/7TlqZCzLAbhs/bC+M1eirnZKTFg=
+	t=1784454723; cv=none; b=lRMBYG958aHCLckA26h67VyXAioGzTme4BjJBOACd23kJGBtF43fyScXz20GQl2qfQ8ld4KsyQXhKwI9NQS+U3E5oi7WAzA5ZewxRRM1FJPwbTCfppQAhqjNvwr2oW3ievUiJFBqp9TlMYf/XtgjZGnIJKvmc8uhSV6yxl7EeC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784454723; c=relaxed/simple;
-	bh=s6BQ0/nz+/RqPwvgtlb6ILSJzkf4z/B6nvGzCDiBFJ4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=exFROHY/A1Xk2K+i9kNBP9rv8A9C/K15wtcbGFOi8E2X/5hRtKPUCxzmqa38Lq6TRtiwL6tIrANPZZcYiMztiNfHHE7jznCkPOgTcRbSQxX7/rBGJpMzOr1YJlywdU6CQwoHW18Z+sQ1jc6/6lb1bqkALIKu36q9sO18AdYW8W4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NMF1MFUC; arc=none smtp.client-ip=10.30.226.201
+	bh=Z5zLwOZ0zA27cy4m0/x/oxRV97NFDeXGwKmtvD9NbsM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=dyHlBKyPGKNkQaRR8NPVm/2Yt0JofFjYIhP59aOaCtdXeJ6qThiTEjQwo1VaaU9Il9HVHxcvUxUeRXq54gfaRodvMFom8V4YFeTNyXmU0rP87tHDvuOkfAJS5prGyR2skdpCz3u08iMxr/9y5GKQzL8rnp0A2avBBmdDgIXjjJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UVRxYzw9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMF1MFUC"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E5E4FC19425;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UVRxYzw9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EFA9AC2BCC9;
 	Sun, 19 Jul 2026 09:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784454723;
-	bh=s6BQ0/nz+/RqPwvgtlb6ILSJzkf4z/B6nvGzCDiBFJ4=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=NMF1MFUCiq2FT0Q1YHE9NNJPtObxXvcEo4DcFxxHk97AQ/5vOSTZzSF5iy7oCTcbA
-	 MhyKPwQJs8G8BFQGmYyPnEmaiU35DfrbzH3QcRQlzMMFsCqWe22llNr/hADWgQipOe
-	 oc0CD5jNpdSDGrF66EJS4wkbmBIYKqhs5A6G34oZmn/i7NDdweAcU4N0EVlJwTUOiw
-	 B42+WMSgYRCvfVRjY+bL82EjgtBGT4hO3Hk5V+YhMWaRG6DtxQMhWET/OUD1nQXddw
-	 afiRKdQ66NqAD7e7s9FQe54nn9h9RszypbqICJNoAKbYFdR+dWnHwrppe8t+qYYdwK
-	 CxSath9IyjlUA==
+	bh=Z5zLwOZ0zA27cy4m0/x/oxRV97NFDeXGwKmtvD9NbsM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=UVRxYzw9T6ZyfFw0a9hU3Gf3DE+8Nn/Vf07+nn4K6wpnRY+pZEvibOYT6MHzo/0Bc
+	 RIRQywrSaG3xzigOIg1bNPSg1KE7RtkauiMCwzOMZI/guDTYx1+lXFswkIvHqdqQ/N
+	 j7Ji2FhPfRxrZo1IqCOND5jCWr5Yvi4E6zzzluiv/lf8bqrHcJQRqsldAqdl7Pu5PR
+	 Mlq0M6pJMFe7582eqy3588NCut4djhpn5s/JcDBhy4X4FbvS2h/ZiX4Rc1gQcNYT9e
+	 k/qpyv2zgLX36DWFiFl6j03Sr8BNWw4X1eFHGfqHNsTXNZlKMjQaW+gXJbt+dDmKjc
+	 koUrC1pxz0t5g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C253FC44520;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1ECBC4450A;
 	Sun, 19 Jul 2026 09:52:02 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH 0/4] iio: dac: ad5686: extend device support
-Date: Sun, 19 Jul 2026 10:51:56 +0100
-Message-Id: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
+Date: Sun, 19 Jul 2026 10:51:57 +0100
+Subject: [PATCH 1/4] dt-bindings: iio: dac: ad5696: extend device support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIADyeXGoC/x3MQQqDMBBG4avIrB3ICI1NryIuxPmts4khURHEu
- zd0+S3eu6kgGwp9mpsyTiu2xQppG5rXKX7BptXUuc67XgJP+vJvz7h2RGXFyeVIacs7w6mqSFg
- kzFT7lLHY9X8P4/P8AI72HwNrAAAA
-X-Change-ID: 20260719-ad5686-extend-dev-support-e0ddd119f19c
+Message-Id: <20260719-ad5686-extend-dev-support-v1-1-841ec75cf5d8@analog.com>
+References: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
+In-Reply-To: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
 To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
@@ -55,11 +54,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Rodrigo Alencar <rodrigo.alencar@analog.com>, 
  Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784454721; l=1666;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784454721; l=1452;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=s6BQ0/nz+/RqPwvgtlb6ILSJzkf4z/B6nvGzCDiBFJ4=;
- b=S5UNlQQ/G/3S5Vv4Uu/22GIBawbGPyRA12LoTgENJ23VLi3F6tza9gWAGvPkPBm5j2G9hLEVU
- pT9apzWKEMAAHauJ5WQ6rclWu87ClVranJfnw7ZOs+TJbgeIWJlx+A8
+ bh=C17Ef8/aBMvZgOB/6VhtM6LaRYek9umi2SylTJmyiAE=;
+ b=IeZpLLd9yhIC5rXRxr+bxAsCcJ9DRMaOHgB/nXc40ICt4x1IrouFwCLw/HtbIeCeiFvUDQOGC
+ fnMsusMb/EyCYqf8zcMRYyrUah2W4WUgg2eBygNGV1wTCe2OAUTbTWk
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,43 +66,56 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This is the third series of three on updating the AD5686 driver.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Initially, a big patch series was sent:
-https://lore.kernel.org/r/20260422-ad5313r-iio-support-v1-0-ed7dca001d1b@analog.com
+Support for AD5316R, AD5673R, AD5675, AD5677R and AD5697R missing from the
+device-tree bindings documentation. These devices have different bit
+resolutions or different number of channels so no fallback compatibles
+are used.
 
-Then, the first patch series added fixes and cleanups:
-https://lore.kernel.org/all/20260524-ad5686-fixes-v7-0-b6bf395d08bd@analog.com/
-
-The second series introduced new features:
-https://lore.kernel.org/all/20260716-ad5686-new-features-v8-0-ebb0051af5e5@analog.com/
-
-This series adds support for:
-- SPI: AD5313R, AD5317R, AD5674, AD5679, AD5687, AD5687R, AD5689, AD5689R;
-- I2C: AD5316R, AD5675, AD5697R
-
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Rodrigo Alencar (4):
-      dt-bindings: iio: dac: ad5696: extend device support
-      dt-bindings: iio: dac: ad5686: extend device support
-      iio: dac: ad5686: extend device support with new parts
-      iio: dac: ad5686: update device list and file header comments
+ Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml    | 14 ++++-
- .../devicetree/bindings/iio/dac/adi,ad5696.yaml    |  6 +++
- drivers/iio/dac/Kconfig                            | 31 +++++++++---
- drivers/iio/dac/ad5686-spi.c                       | 23 +++++++--
- drivers/iio/dac/ad5686.c                           | 59 +++++++++++++++++++++-
- drivers/iio/dac/ad5686.h                           |  7 +++
- drivers/iio/dac/ad5696-i2c.c                       | 14 +++--
- 7 files changed, 135 insertions(+), 19 deletions(-)
----
-base-commit: 1258e8ca13866b1a60895abf0ab8a4dd77bf4bfd
-change-id: 20260719-ad5686-extend-dev-support-e0ddd119f19c
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+index e10f8596f9d3..835fa21c474e 100644
+--- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+@@ -16,10 +16,14 @@ properties:
+   compatible:
+     enum:
+       - adi,ad5311r
++      - adi,ad5316r
+       - adi,ad5337r
+       - adi,ad5338r
+       - adi,ad5671r
++      - adi,ad5673r
++      - adi,ad5675
+       - adi,ad5675r
++      - adi,ad5677r
+       - adi,ad5691r
+       - adi,ad5692r
+       - adi,ad5693
+@@ -29,6 +33,7 @@ properties:
+       - adi,ad5695r
+       - adi,ad5696
+       - adi,ad5696r
++      - adi,ad5697r
+ 
+   reg:
+     maxItems: 1
+@@ -84,6 +89,7 @@ allOf:
+         compatible:
+           contains:
+             enum:
++              - adi,ad5675
+               - adi,ad5693
+               - adi,ad5694
+               - adi,ad5696
 
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
