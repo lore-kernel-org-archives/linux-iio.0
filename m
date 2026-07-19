@@ -1,169 +1,120 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034C71624C0
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 12:16:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACA43A5E96
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 15:40:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784463376; cv=pass; b=I3Mu58InZm4QoG96YQrB5ya+vCGIX950Gf1UkmQ6+LKVKe3lGCLbcF7gSsLLph5N1WS8zG7yRlVenTxMsFAek9yphYsek4rrTFd4mgLjEkI4XSEzDhpYJWFnveJj8OxfxSloqw+eus7WMxGkZymV9H7ADpNo9IhXZJFCk//KT/s=
+	t=1784475638; cv=pass; b=aORwVLzhGP9KVU600fLlRyrQM/AHbjeJWaEKfmUf9xHgVLRvhw1N1fewDonErgIc5JDmnRxeIweQMPXkno7n4kSqFTduJc1tUcZ19XeIfAhwePwEQ2NsAf4x84Uzwo8Spy01l6kW/TqOFXIymWA6HIA2tEZe0fHOo+V42+Flj5s=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784463376; c=relaxed/simple;
-	bh=7k1ompG3OU00AioG3cVhRo2AcAAVm/R4Z0VlwYZ8v38=;
+	s=arc-20240116; t=1784475638; c=relaxed/simple;
+	bh=XSVB6QgVpwhv+8CMMPqTc3N/fcdzOVInqR+4/LGh9jE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KS97cczQTMALbDy7ed/R0uGkDtGu25kfJTcwHIklc0GYVMfTSV75lS7CfmLR3+lWg6WVMdjYNJdgnPwJk2vAs5wCmutAxmuXF4Ul7y2pDG7aMI7cPk8WPONX53pG+YUcM7Nwk0yZBxTYIu9J1hSG/fh91hN+ODkgioLvhKoGnZA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U6WrBuf+; arc=pass smtp.client-ip=209.85.160.178
+	 To:Cc:Content-Type; b=jY25POOss62NAQNkiSUwv+IbTwvOBjpGS3b0CWRCsAvwDdXaiU/KgCuUFvfIB5c7GyCBX9QERLJ20YAeL9deTwqj+RDb884YvXdy83r4DRcpdHQyDAdaNu723nbjAtsErM6KPwY9/ieDmvibxVykGAm3M71k18MeK1/PtZTWc2g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LsT9XESN; arc=pass smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U6WrBuf+"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-51c2cce930cso57513321cf.0
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 05:16:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784463374; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LsT9XESN"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-39c8e65e3f5so81536401fa.0
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 08:40:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784475635; cv=none;
         d=google.com; s=arc-20260327;
-        b=DwNSE3F1/TUee5u/qJqMm+cSm4i+W/ZVPrr/zTFugDEHEi3eu/8lqdlCGgJhz988NS
-         DDDeU7XieUbUpNR9FBTc9uTsyjwraKn6wQ13kTbwLssxXKBksW7/FHl1cLvVe4lAxrMt
-         1XDLD/AEnShAK3/80/KS1mzVurDKlmaUQCp+ppUxJwAgzy7d0z+p3xyPYgDVxQEuebr9
-         UW132Dg4DCRBh+s+8CdS5oJUcqLmuTAsLXja2QB0SGUrkXCpwOgUiz2Vb4JRTvUbGLJk
-         QSI3+UUiG+NGxwFloXFCY5bsjUuKpK4uN/tkuik0n8YVwgoMHuZuVmb/QfGkQpmUZIGo
-         vkRQ==
+        b=s3iOm7ozmUbcf28M0pQ7vQ5Dyu/w8jdkFYe1kZKWpS7khTrAMlK51qxllVmWMqhWal
+         48dx4JRMQ3MuiTZ7XDWvZbc1+w0odMokJh3SFN0mOGRlBeXeYhHTcRv9uFCeecK2B83R
+         i70zAXRUfkLfjjfIbt9sCT6f9at+vxzZRe945l218u7nWqr5vN2B4H06cFHB34HlDyRD
+         tk952YeSklmab+IFID70V+LHmPjhwWESeuUSTWexNTQVlniFKj/CWSESvTg7NuorBMtW
+         0Zixan6unNfnOlMiKDJxTHf4k+t0qu8tYJRPvOs0x4m1EWqiXXStT6HF6fjIvoFb4J8x
+         BVig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
-        fh=WldqJ5elk6LDaSapTxVW+5g+Kkvji1Jxzv2cn/cksW0=;
-        b=sHwmPHkn0xq4PKbYMinuuDGsZMS9gmH2gPPUOhyMG1aBhthouiUu5CcN4En1PhfgMV
-         fb7f0gn0kXAD7r9DVixB9LKk1EiudzC4xye9D6a9Gqwl8PdKTY9WQ1ziWEPYVAKuAjKf
-         G955Jk1wRnw1As0/QgnP7tQb6YZjmH62efyqVTTJHpJ2w/XzoPyFjgyfhC0Juc3nSf12
-         JRen0AB2k6N5gPbrc99mKS/nkUnO4WhJwtLGo4idEkOPho8KRlulYoJrBK4SsnDyzvx1
-         D0vQ3ibJgMSKgamXcvNqwoZln3q3zC9IfYM8/gvjiXpRYZN2N/KgHPQzJPoHED6YXmQE
-         oR2Q==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=XSVB6QgVpwhv+8CMMPqTc3N/fcdzOVInqR+4/LGh9jE=;
+        fh=fhwD7+S1ehMZTpFTY18g2Ag7wc1hlBm0uOXhQtiC8yg=;
+        b=TMsLzIakrkSVQYzsq7KTYqZtDYyUxHX/0+UvSioAW1nKlJCIINK8T+1WPlpyOQ2JqL
+         0MgP38vzkfyKQddEWd3EKyZKU6yVCnDQsW1epRUbe/g6ibuH9JrvV09V5YEQv/JJfdn7
+         KwpSOp8sBuj7c8maus1hrJ/oLDYwgosx8W3GbfnUd5qtgbIjzxj4NzZidJReRQrEYp9R
+         o6e3gxzGuslJDeShN1pF8VwSHrFlMoffM3neyp/VExqf5XukYDNOAkhcDXkSgHuw00aW
+         eNLRDJ3flaF15j4qX0OGD0loPsmdY2L3i+tlbCWSc6V8AMmbtO8p/s+qVEJeqBypXMVc
+         MXYA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784463374; x=1785068174; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
-        b=U6WrBuf+9z7yrutMtr+QOuySIQOx2pKgfxP5graAPr97T3S07X8NRaEMuDu4+f5F4U
-         9t0vDfV7DnERrFnMtgfij5itkxWc6lWnfKMyayQFrg0kNLYrSvIYEOR7ej66P8s3jO4u
-         TMBCoKv4roXvZ4Zyp88qs1WCJuXDOduo0hMZZ73Zmea3uyaTvSi8EvJoTTvqRRJssqzf
-         +zctM0MM9tbfq0XbCcB6GrlqU+ivOnPwGNg5gJg0kWyAEd0p+6LPMG7EApN8Y9fRTge0
-         VoDiW5IukyNMO7ormjajO+bh/wu46rp5HDZl7RIJwmX6tcMlD/xW92gKOYNTJgyGrrtU
-         nqfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784463374; x=1785068174;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1784475635; x=1785080435; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
-        b=DGy03uP2brH/67iBLJWR6kgKBwkLvSyBgH2EuYHddNpSTgGr/Poou6oGVoEnsEsEck
-         OVcBhAY6VHmfn/20XzVliw+INLkUgm6zS/RfRpaaU4Co3Dagg5zKawp8u+/jn6c3khee
-         5muOahD/focXRihYiykY/UFB6mUSIPvbkER6vC/DnMfGcl7vlF36NQB7dTSyUiiU8cEt
-         vv6BzhdqWu7uifqz/Ve6+2d8BH6nUQ0oruvaGzphgMEAu+Xo1t3a4ZDJ371Hs0OBbzWn
-         GmmsyXACZ8Yp3R4WhgweB+iFborqxbS1ThSsEtC8dGXe1JOMMx5tEDtCJnNtlxJPoQQX
-         A2/g==
-X-Forwarded-Encrypted: i=1; AHgh+RqZYpCWT2fMIXjWfyxzECvz1FaHv8gKvukhLAp7y1lYN38kG8vfhelsYBXsNEgCXM/FPAVleWUTNS4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwEglCqu1Knos+WFsponWDltfB12hBtTlizmvqyziFA/epQfQXl
-	MCQLvWrkwVmtGrcIAg4TLgJhkd/oez2zEPDn+cG+Lu7lmPeyeaTr3lmtsqhACQzYD01pygDmEDX
-	Du/kbIJ+l6fUOyCaIktsAkeeOuHyIQSg=
-X-Gm-Gg: AfdE7cm5wctCa89k1/btOUvldw0BG/yYEkzjkbemI67iywa2OmPaz51sF7/59kcp1gL
-	xevhlnE1KHILua9/5NsSwhcCJLVF2oGvmjLpZ11N7v7pw0a8nVrW+lCzr3RhCpcpaPU+AR9jSnI
-	niLFTAtuMgghNOqIiQLkQDBxdmlrCvk0jGdgTLF1PWSTYzjbZggk8jNLQmFcEZM8NFRqnf7vB8P
-	HT+tgSwX5n8Ppy5y9t5xD1aE0irrUisTfQjefjwlPIBKQyxCZQTTgF9kQOmzNqJuMYwTqF34yeL
-	d6BEBJU4dY1X1Au16mc=
-X-Received: by 2002:a05:622a:22a2:b0:51c:7b12:1211 with SMTP id
- d75a77b69052e-52140344f93mr93303961cf.79.1784463373833; Sun, 19 Jul 2026
- 05:16:13 -0700 (PDT)
+        bh=XSVB6QgVpwhv+8CMMPqTc3N/fcdzOVInqR+4/LGh9jE=;
+        b=LsT9XESNq0BkgYUzoLK+k/WOKnu320oHbaZf/g6rfQsW3VRCXqT0Fz+KnEQ/mNeE7v
+         AXOm2MhlRbEeU7rnYO9c5G48TybmglySa+QR8dwQP/L/NG1woQMnmOiXeAfyCIVe6+8h
+         V4CB6qUcT/ACPvlvQouxWwZl68EIy0bR201+rxFP8ieO9VWozXuqYm/nbhL93TgF7YKz
+         SgsYHjW0PBvvjw1IinK1y+kVVxtT/769BJhYf6YbXNHGNT30HYEO753OxQ1zqhTda8ZA
+         c16BzyHrZrGnbOZCoNz9EaFA/mzP+FM9DDXh6KFswGQPifv7yyG24OsvxA0IU2c7ft+H
+         WXYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784475635; x=1785080435;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=XSVB6QgVpwhv+8CMMPqTc3N/fcdzOVInqR+4/LGh9jE=;
+        b=aNuUCngYsGgI0zdsWmWA4/FTY6ESUOFuZhJwjYYEF9M+V9bj/NENLyIkUpk/A1kW4/
+         JfFUaFP47+r4kFqdiGeBiMkHpENFJPEHcnRTYydqQ8K2ogDRVFwP53wzIPZZEhPOHOEx
+         IhoytkU969K7FL/LgzLpWx4kI+7ZBVg1CFuf0GuaKUIpP87PhLUDlpPVu8rtYcVb+2tV
+         crrCNKEjCdgCAEUC7aO8w+ZUEAN/v4E+zkdXXmXC218jd1bSWRgjH8KJDoz5A3QtXy10
+         0w3tkNOUOxDkfQItI466ZwgFudcUPRUc5pWgYe1bL1xfB2ZpQA8OvHQSEuP+QJE8wfHk
+         B4DQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpTZXjWAMjvM+dMZj7fO54XzlKQMJ1KWqdrPnkT8/IfaudfzcgEdlHwlLI6Q4hnm+qO8+OSvPpLCnI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyE2QCeI71x8o86iMQX/vvkcpnTFdrTZeZquhBChOUUqqDvxQBv
+	sU1Au1LjvgbIZrVlQFpPCeVysuvTiFe6lJHiYvkM4AeYqZPcLtLt/0tFQFMCG9VTQPv3SBxj1Sp
+	//U4TnkiaKpj6jvbHy4ZxaxioXhJWN5M=
+X-Gm-Gg: AfdE7cmDLfZTVb5gyU6I7C2nvr2p8aT7y76jRORgOXOqt2/eVJJiy3B962GSpHJNko3
+	hXSnsuBhHB08Ij3ohHyMuHUKZs3aH/7VqiYInZvdnBWJcvrdBOdEZnfqpVEH1tchzhtrIrBEVGf
+	/2Ubbuf2v87aCqHploCiZWKNHB5PBNNO1jHvNbBpnIAJpin7gOT/ZpcFOmuYPvYzY4Pw17wrQNl
+	Meo/q+ea29+dH5TGrHtAVb290UB9syXT7k/J4La9CwrDt+6XD22aCjh1k/iE59ll/wU1fc/sH0f
+	IItoEg23ob4SaRB2OduMBeeCesJnXsI=
+X-Received: by 2002:a05:651c:23c8:10b0:39b:bc9:90ac with SMTP id
+ 38308e7fff4ca-39eb28bca4fmr14571191fa.30.1784475634687; Sun, 19 Jul 2026
+ 08:40:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260719000752.75936-1-zoone.rupert@gmail.com> <alyTjkq2bCuTE3OO@ashevche-desk.local>
-In-Reply-To: <alyTjkq2bCuTE3OO@ashevche-desk.local>
-From: Rupert Zoone <zoone.rupert@gmail.com>
-Date: Sun, 19 Jul 2026 15:16:02 +0300
-X-Gm-Features: AUfX_mzSykWwwbvhk-HtZVX9fE65Bl6c47yBUyOuOxGzhzAqaReG3QAU0-ag74g
-Message-ID: <CABpb+S4sg=HtYRAKOBcx+rH+1LnNbxqvfsxRuW=_kShGc4d6Og@mail.gmail.com>
-Subject: Re: [PATCH] iio: pressure: dps310: fix NULL pointer dereference on
- ACPI probe
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>, 
-	Jonathan Cameron <jic23@kernel.org>
+References: <CAO26r3Ttyfqhs3_jWDFym7FpswqFW4-UA8p1pQBcuWzDGGzstg@mail.gmail.com>
+ <20260718024838.1623-1-brucer42@gmail.com>
+In-Reply-To: <20260718024838.1623-1-brucer42@gmail.com>
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Date: Sun, 19 Jul 2026 22:40:21 +0700
+X-Gm-Features: AUfX_my2BHAuHKNdQwXk2gMXJotqDpUVBbqWmJkHc40EsH9QN8iS6jWKjJzD0qo
+Message-ID: <CAO26r3T1YV_9if9XbooMv0VDzLba0CEgpSf6Nx+_rd2D7_oJ5Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 1/3] i2c: rust: implement SMBus read abstraction
+ via kernel::io::Io for I2cClient
+To: Bruce Robertson <brucer42@gmail.com>
+Cc: Igor Korotin <igor.korotin@linux.dev>, Danilo Krummrich <dakr@kernel.org>, jic23@kernel.org, 
+	lars@metafoo.de, linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, andi.shyti@kernel.org, 
+	wsa+renesas@sang-engineering.com, ojeda@kernel.org, branstj@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-  On Sun, Jul 19, 2026 at 12:06 PM +0300, Andy Shevchenko wrote:
-  > As a quick fix this patch is okay, the proper one is to go with chip_in=
-fo
-  > structure in the driver_data. where the name will be defined.
+On Sat, 18 Jul 2026 at 09:56, Bruce Robertson <brucer42@gmail.com> wrote:
+> For the write side of that rework: I recently posted an RFC with a
+> Rust port of the SMB347 charger driver [1], which Igor pointed at this
+> series (thanks). I'm dropping my standalone SMBus helpers in favor of
+> your Io-based approach.
+>
+> The SMB347 driver may be a useful early consumer for v5: unlike the
+> AS5600 it writes -- a config-unlock write plus read-modify-write
+> updates of charge-control register fields -- so it would exercise the
+> io_try_write/try_update paths that Igor noted are otherwise easy to
+> leave silently infallible. NACK and arbitration loss on a charger
+> config write are exactly the failures you don't want reported as
+> Ok(()).
+>
+> Happy to rebase it onto v5 when it's out and report back.
 
-  Thanks for the review. I'd like to keep this one as the minimal fix so it
-  backports cleanly (it's Cc: stable). The chip_info/driver_data rework is =
-a
-  good idea, but I'll do it as follow-up on top rather than fold it into th=
-e
-  stable fix.
+Thanks Bruce. Good to know the SMB347 port can benefit from this too.
+The extra write-side coverage would really help, since the AS5600 only
+reads. I will CC you on v5.
 
-  > On top of that mutex_init() should be devm_mutex_init(), which is a fix=
-,
-  > and some cleanups:
-  > - unused i2c_set_clientdata(); may be dropped
-  > - C99 initialisers in ACPI ID table
-  > - IWYU principle for the header inclusions
-  > - some unneeded GENMASK()s due to use of sign_extend32()
-  > - perhaps converting to use get_unaligned_xx() where it makes sense
-  > - use time multipliers in _read_poll_timeout()
-  > - use fsleep() and time multipliers instead of usleep_range()
-  > - get rid of min_t(); perhaps replace with clamp() or min()
-  > - use SI multipliers from units.h
-
-  Agreed on all of these, including the devm_mutex_init() change. I'll send
-  them as a separate cleanup series once this fix and the triggered-buffer
-  patch are in, so each change stays easy to review on its own.
-
-  Thanks,
-  Rupesh
-
-On Sun, Jul 19, 2026 at 12:06=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Sun, Jul 19, 2026 at 03:07:52AM +0300, Rupesh Majhi wrote:
-> > When the device is enumerated through its ACPI HID (IFX3100),
-> > i2c_client_get_device_id() returns NULL: the ACPI-derived client name
-> > does not match the driver's i2c_device_id table. dps310_probe() then
-> > dereferences that NULL pointer in "iio->name =3D id->name" and crashes =
-the
-> > kernel during probe.
-> >
-> > The IIO device name is always "dps310", so set it directly and drop the
-> > now-unused device-id lookup.
->
-> ...
->
-> As a quick fix this patch is okay, the proper one is to go with chip_info
-> structure in the driver_data. where the name will be defined.
->
-> On top of that mutex_init() should be devm_mutex_init(), which is a fix,
-> and some cleanups:
-> - unused i2c_set_clientdata(); may be dropped
-> - C99 initialisers in ACPI ID table
-> - IWYU principle for the header inclusions
-> - some unneeded GENMASK()s due to use of sign_extend32()
-> - perhaps converting to use get_unaligned_xx() where it makes sense
-> - use time multipliers in _read_poll_timeout()
-> - use fsleep() and time multipliers instead of usleep_range()
-> - get rid of min_t(); perhaps replace with clamp() or min()
-> - use SI multipliers from units.h
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+Coirul
