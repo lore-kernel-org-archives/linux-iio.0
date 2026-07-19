@@ -1,85 +1,85 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B11728C2BF
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:08:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CAAB363081
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:18:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784502494; cv=none; b=MGocc7WDBRftKpxRYHcoWY6nsmKPNn50+cFc/0N5iB4WDDVgoFo6nOHEF6MHYMUeyYMD/Nx83Vy1Ub1YMyi/IN/nAIP/dujyAYptRtUgPbX3WgNavxtHTP40AHB1Cp7frKAjG+roxPLWy8C6mFHW8LDtlEOaxpikRd1furp5QVI=
+	t=1784503109; cv=none; b=CqQX/UNZ1HUBhCZvYES3mwdeSiOFAL/CB4zs1nR+ETMZ1kJ/pA+HWAGPYRdpWDlhla5hood8dzTE5BRunqnBiwjLIRb2+N5hNpwfPnsPqjTMAx1kBUtjyut/TkG/kK5R2F99zyEazrNlOBmD6D5JWY1I8NYNR7kinus0IaoCGps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784502494; c=relaxed/simple;
-	bh=TBzIujEI5cVMShYnP0cIJc6bOwUwC0Ol7KBsn9W1f24=;
+	s=arc-20240116; t=1784503109; c=relaxed/simple;
+	bh=jlZxa9vZboy0BksuXXTUMp6z/9XDE8IsRqB0EXK49kY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=crMp9kf6GGFs5b0EQ63fbj6N8J+1PesoF1rTxdtHfwsVIEhunr+qO/amz2M9eGkOtgtHQdA9fQ6eX/eNfiOo9jzzbmez6ty1aVksZ5s63u/CfYuEagB5JhZQCEHKInbSFJGyqSEGsZdXV1dB4gMDyMb+yqI24ATl7QlFZpCnHyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=peIEerk4; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=AJkY0tXF; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=IOc0uTs1A+yLQWj7stgwBJY8grv0pjPW0GkagllKxGripzFkxwujWKOStc8qKNLJGQ9E62/qFkT9VODjTcIZISprO8Jyjgw+IUiRk7FTek1cND0ooZnMvX/PaTSDtV2jmpMbNdhKRPyi7nwjnM0CXmJ3QBFsoeSvKfiCCHg3J9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KgolratY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=P7tKP5RO; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="peIEerk4";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="AJkY0tXF"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66JKQgwo220214
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:08:12 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KgolratY";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="P7tKP5RO"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66JKQqIx422141
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:18:27 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7lEhViJTqWmDXZiB6V/knCwrtAyVIbdBJvhBeySb/5g=; b=peIEerk4WEn8qK3F
-	XBqoZdd1yBOPB8SvJGhZ5P7ktzpkXO0WAPkxg07SVi6aOIQW1w9Ek/w7cIvUtSvZ
-	s73BdK2LMVgAm8hcodE82mrDGLnxhyAX46BX097dizwQ9Gfk1rJwlT+BGNmp1jNE
-	j6SRNk1wtGO7ozM/qF/J+6y2FhRFEPI8J6rCrK2V0fY/WAa/Cjk+XhfOm9VwZn1r
-	ntlPaHGd+ARl22vu1ds9JCEUX6Ud4vJytJ0DWBTDO7cSJesB+zGaWwzFjfcdyIS8
-	WYBQR+9jnwCLS5MKz9yRjNWKy24cBI/T3LswT4Hg7VKoJQolCGw/QQHiVnIMTqoq
-	aXKVXw==
+	QgeRlMIF4PNYTV0QauQI/hB2VqHL/8Zkn/RtkXBaTMg=; b=KgolratYUAK77z96
+	n5xkG1LD+sx9M/Zvq/tQ/vBSEdK7DouV3O5Qdx9p/TcYcbCL3XkOkjXhX2Zi5bdk
+	sBtTC/EqpBPF52YXaGfGxV/fRFDWeZsVltexUcszFKATp1HGJ7Hrhgo/glXU+pwh
+	eChgy41J/GwxawyCXyHUaMREE5TDx70XxPMwDrWH7g66qg3GxrCwi6gLOP6QLNrq
+	D1A2KkqcdOhZ5np75TokYY1gM+p0x2qWP8agpIxwoR4PJoa9i0PzeEFXnyPGf2Od
+	F7dSpujuPsiRUHL5s/WeOhpzpy5JwGfolXYx2o9TNb3Iq40OkSPwjGb4w+24bWCT
+	m98Zkg==
 Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2bvun32-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2dc3p9d-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:08:12 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-8484ba00601so7567862b3a.1
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 16:08:12 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 23:18:27 +0000 (GMT)
+Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-84a651759a2so11576101b3a.3
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 16:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784502491; x=1785107291; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1784503106; x=1785107906; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=7lEhViJTqWmDXZiB6V/knCwrtAyVIbdBJvhBeySb/5g=;
-        b=AJkY0tXF1faZCmBgf511Sp//rN+XlAyNbw+elIukOl/EqxWRBYFWT94ZSx9D/LJzDe
-         0keugqVIWDhpX3JUbQjtmHfPANTUycgFmRISAeGVRb3nen4ZM3IIE1xmO16bFIPA3eWy
-         m//iZip45oSueAuJshwRAEPtUOq+YIH+1BJG1WCtEGJJbqL7Qc0bxFeZh2y1EGEBSZWj
-         q9ZuzRmjZglkuKKnFA/IolkqYJjIn4L9gOU/str9ddLNW1f0QdrZIjDvB4diAhCS3+hj
-         660AlmPQD0jlIs+7hESl6Cowe+GM4ECi58nD7aQxvEp7nUlXwCBU0ttd4xMChZ0wGSr7
-         CMsg==
+        bh=QgeRlMIF4PNYTV0QauQI/hB2VqHL/8Zkn/RtkXBaTMg=;
+        b=P7tKP5ROBzVk0lcdHTo9OjK/yAF0IppABWuGLLw7uDvBctUqHVzfRcwaxiwFYq8zlU
+         YMg6L4ER/5dDQ7O5ZYFGshOCvpO81/7D54O5RrjN66jBpUqTsfpx8Qk9GD/qqi5n8Deg
+         B/yoYIxu8sfYPgyN3+7EHxbaSeFNQHBD/5DR15GNGNdL2AlOaaRogE/y8Ku21Kp87NHG
+         h338hOjXKmT8qiC+dshqMG6dhjIh8LgB6p8sxoyP3jts72CgtjsP2JHsVqariLFS2WVK
+         tJG9gEessXopenAFjcy01hbCxDue3Con2lvjHprxNpnN0OUTOaMnMu+ozzlUbORxNT9z
+         AGtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784502491; x=1785107291;
+        d=1e100.net; s=20251104; t=1784503106; x=1785107906;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7lEhViJTqWmDXZiB6V/knCwrtAyVIbdBJvhBeySb/5g=;
-        b=T3g131CHwsJTx1kBQPAxhojh0Ynztz0Va39cKaTg0ZOqI8y3ELuj+xDw/8LzxR9sJ6
-         DJNTPVVh7isl7DhHPx69qkVpYcpgKzOvlpr9FlONRrvRAX/qB0c78Djg1xi7CtUGbcGC
-         yc2lMB5GzGrmiFCGz+2R4KJD7ZIeO+jWjOCNgEPmTzLV5WZ2aPyqyEGyOTIMPCyn1vyj
-         CCjfUvz8a5z8KtqS0igs+/OtNXzQVTyVfBEusfFczfGE39u1n1fhMHSfX+ax+6FWgO6T
-         NIk4OBMj0ePxnYWtDc97gJLF15IVFIloxgWwpQbgHhnQ+2/jm2Zc1oUyfbvXLndDjq1k
-         KcMA==
-X-Forwarded-Encrypted: i=1; AHgh+RqEDpK/qCtlH70umAWF/YXNGzmo1Nv1sPaSTD58VEV1BGh7svA1+l+fy8fIoM/YaRvfK5fjp51SYxs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YykWxA6l3Fc74I28rYEueCcCNikNMUTlhrJyp8mRjtdrjxK/QcW
-	k39YcYEbAhwXbbTJMplQkCI1K2JrHqaFecNGNYtYvz/fKGGTBqWKQFJniCfE5CCH9QO0PdyU/zg
-	3GLCTrxFB3ofXBCxSBSAqjnN9GzIEHlgMPOvQFq1tPe58Vc5MjqsLTpcNLhNKyGU=
-X-Gm-Gg: AfdE7ckpS1PhbX2IZk1EFnxwsnziWlT2vtWmQdZwweyptwz3H3XHX72o5PiiHQgxw4Q
-	tQbxxo7NHwdNAPOMad7tVrgYqHxJmofDwdjlpgU+k1qK0T1BKsAeaCBHdltxls2AcHtuda5KwMo
-	706NqCRkZbADVt0jS7HsDczSVecwTkmFkbN2oAedIMatVdwtDVi7M3+9uwPkB5n1kdBssxeXS4G
-	SWcS/mISC7Qjdq9WqeQfyInFVHRQGs+42s3ZqNkUqM9rYFYUjo+tHRkqcXCqWf42lXdsivT/9Uj
-	VK2v4kbP5KFN53UjMG8hgEmBcRhM0awoEOTdKVpO4DxEVm0LyS7xESYpVwvAv5R29BEuBmeSlpc
-	uANwjcb1+am6jhM6F
-X-Received: by 2002:a05:6a00:1826:b0:848:7997:cb23 with SMTP id d2e1a72fcca58-84c2945cda5mr11120746b3a.43.1784502491389;
-        Sun, 19 Jul 2026 16:08:11 -0700 (PDT)
-X-Received: by 2002:a05:6a00:1826:b0:848:7997:cb23 with SMTP id d2e1a72fcca58-84c2945cda5mr11120723b3a.43.1784502490890;
-        Sun, 19 Jul 2026 16:08:10 -0700 (PDT)
+        bh=QgeRlMIF4PNYTV0QauQI/hB2VqHL/8Zkn/RtkXBaTMg=;
+        b=WRNi9TQPFY/eC7d9a4hHunK4vq+Su+b8Eaagln9MLn7xGRhP9tiXzxFzIfmYk3byk7
+         ZiFBpBy6G3FsArfNVThXuThM7YBhSX8Bbwr3RySDSFUnIfgm3IwMJQwSxY9G9v7DYuzG
+         3AYyf+NEVMySydhNR0L0qL/OVhevC3YdIXe3O1xSs1ORNQiF+vo6M0OMREfUFraPQzND
+         JLsqQ8Ke7t0pSMdUR1j39abeQhGbQ5wiUvGpAgmDXFnL4Qg5V1e1tgv2aPc3Tiflqe4v
+         yJG+pLk2gHhz9bQLnPhBaAmhnDCTtcChOUnSEF9LquIsLr1899eRx1wmWFenKGX8peJa
+         lyZQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrSjJJ0reyaI8lU01Ot4f1Rm7lkoIfNUvBipzZCu3aobU6d9IIf1KhePvLt7enTz5F9YL3VK7xugTs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYZ4cL+8/hcg3VG9nV3uFu+TizEaMWRbz8/I4M3fcBuAI1NIge
+	+GgTUeBJl7iEDJK1OOUs6mw0nWnNGptLWVRnBrq+6k8E/3pm9titp8Ep4x9MJRstqlukaRHCoMp
+	Ru8B0tQzkDnRaDacg8tZTnBtfiXV4Rl9/y4ff2QI4WIx4adoQhvkieebHM+l0654=
+X-Gm-Gg: AfdE7ckQJ0Hf3ClpiXPWKb4ZCSXaphkLOZoNDKWx1m0Iraol6+YIsSUUJRecR7aEXID
+	Uc0YmksEhp6wWdEUIb5etWNlTUH4cQy+okWimSX9qMr0LecZeHjfyx8nB+EcOMfxu3T/iHC5nk+
+	VWOg/Y070DwkJFZ5h2Ez2L7BApgiXII3QxHgoNZsM+mIOmjRLjqCOwliiPCj3Y3sICReSvdjGvB
+	L/e6B8WOnNCw3B9Vdf3b2a5BU6IIWI/sa+lcb1Gg1md8PqIls+dVLxah+G4JzwVHJKZ+F3urFNs
+	d/Ym+XsXP3C7v6tSjmyZ0KJ2Ybd8psRNW68dWvMn1d0+xX3ys55DqbXHr2whaYdBjxm6JPXPw6I
+	Knjcr1RyNHDJ8/ScV
+X-Received: by 2002:a05:6a00:228b:b0:848:4424:2b8e with SMTP id d2e1a72fcca58-84c29272e4amr12634555b3a.3.1784503106317;
+        Sun, 19 Jul 2026 16:18:26 -0700 (PDT)
+X-Received: by 2002:a05:6a00:228b:b0:848:4424:2b8e with SMTP id d2e1a72fcca58-84c29272e4amr12634541b3a.3.1784503105842;
+        Sun, 19 Jul 2026 16:18:25 -0700 (PDT)
 Received: from jic23-huawei ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cb519aeb6c2sm3616207a12.21.2026.07.19.16.08.08
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cb519ae8684sm3634095a12.17.2026.07.19.16.18.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jul 2026 16:08:10 -0700 (PDT)
-Date: Mon, 20 Jul 2026 00:08:05 +0100
+        Sun, 19 Jul 2026 16:18:25 -0700 (PDT)
+Date: Mon, 20 Jul 2026 00:18:20 +0100
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 To: "David Lechner (TI)" <dlechner@baylibre.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
@@ -93,11 +93,12 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
  <kuurtb@gmail.com>,
         Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 6/8] iio: adc: add ti-ads112c14 driver
-Message-ID: <20260720000805.41022604@jic23-huawei>
-In-Reply-To: <20260714-iio-adc-ti-ads122c14-v4-6-25f8e3084485@baylibre.com>
+Subject: Re: [PATCH v4 8/8] iio: adc: ti-ads112c14: add measurement channel
+ support
+Message-ID: <20260720001808.63d576af@jic23-huawei>
+In-Reply-To: <20260714-iio-adc-ti-ads122c14-v4-8-25f8e3084485@baylibre.com>
 References: <20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485@baylibre.com>
-	<20260714-iio-adc-ti-ads122c14-v4-6-25f8e3084485@baylibre.com>
+	<20260714-iio-adc-ti-ads122c14-v4-8-25f8e3084485@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -107,120 +108,62 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: nVI1hVibe7IrPIhjk7tIxZQL8f2JnUFK
-X-Authority-Analysis: v=2.4 cv=EcH4hvmC c=1 sm=1 tr=0 ts=6a5d58dc cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE5MDI2MSBTYWx0ZWRfXwBzW+Zk+Xzon
+ zYqfByQ9vE50icatKBtApAZILXND1Q3QKgtJQOb+9TG0kTuiULdHpovszezD2FCqG0XbC0PZ93l
+ +wwQLobmTG6XvEnyauBiCrHvfUUjCqI=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE5MDI2MSBTYWx0ZWRfX1R4OvjwnkS+N
+ 6oDsoRGnrBKZ96sgQmp9dztPKbrDJGFE7x6Xub/nwYdIPEpPWDOyRGb7zYqzuC4fGrYruq7iMqo
+ PBQ5DQKY9oiOgleUt2HE+ZHPkBbKoczaCz9kod49xFFOl7RCYGyBccUqHEgKZFIMS4UPDbxfnnb
+ awkr1kccmajpMEKArBi97xJFXal/11eC0L7LIyCRT6uZQi9W1rOll2Q5YYn4NxW2L7Pxpc72lY8
+ vJoIBk1oX2q/v2o0Mo4ws5avWlbt0IhK8FhA/o7XZwlzBSyel8Kub0MSOnnClNkr3+o/ORKoSVS
+ ECO+zB74ERHCVCGE0NGX9Zjg2KZiJvA0ejQh5lDsz7xV+yBf2JBXI6s6sMhyuy4x3F7LP9Jh6UX
+ VTZDi0+sgmz9fZuzPs7snFv95Qx7EQJ4YIxDH6wim1BCBWIgZdAiCer9wQmck1oaOEfCHQwSqYQ
+ b5ewEu5gQVZeaYsC2og==
+X-Proofpoint-ORIG-GUID: Tp3lc04pp69k9l7Rrt4IdYXfw6b0_hrk
+X-Proofpoint-GUID: Tp3lc04pp69k9l7Rrt4IdYXfw6b0_hrk
+X-Authority-Analysis: v=2.4 cv=FOQrAeos c=1 sm=1 tr=0 ts=6a5d5b43 cx=c_pps
  a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
  a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
- a=IpJZQVW2AAAA:8 a=FPNj1WgbcA2tj7y3evEA:9 a=CjuIK1q_8ugA:10
- a=IoOABgeZipijB_acs4fv:22 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE5MDI1OSBTYWx0ZWRfX4PrPnZyDi/gD
- Bk3Gx5JFTtFbJ5OGJeRvPkUbpZ16gSTjViqBzeRfXud3msdu3WK4xODqGU+qUqk9l1pOAs+Ob2D
- 63Kj+V5PMXuZF8EImBcOsdklYheGWbDZ34yp5je/ZL5ZMai/pFKa4kdhp/msUgmPZcxmFLdnT0U
- yxRCDC9sb7SeGknPIMe9rHcFTb8GFabHdI7t0tP8kKLCjI9OE/0zYb+Wkyj0kn5ZLUD82/yqTOZ
- IUVpfBTazMNDMmZbPORd/qzhH1GGuM2AAPwGBqSBZGJe9ObJlzsKn7zHLan2pzKvRrs+otz6r1l
- +DHsyrBazKc3X1Cs1A9N3/2KmKIi4C2mfjzvOBfFhYLXhle2Y28lqra6ZpQv1gIrenilzu9MPb4
- DVrAim0MX3TBrgdJf3eR8CUYzoElIo425bC0QCTUNZAPvqri6Xi5+kSykoQDWNf5AgtTqvsaqEB
- NhauGok/FAnoNj3VKlg==
-X-Proofpoint-ORIG-GUID: nVI1hVibe7IrPIhjk7tIxZQL8f2JnUFK
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE5MDI1OSBTYWx0ZWRfXzAXpyCQzhdbZ
- uXXvNtIjfx+aje6boOFxEuyhQAgy6oS91yHd7SiIqBOaXwtR+jqM6Fi8Fex7eaV5SrYz3+zxgui
- 3q6+h6MKk+XpBK1KQkqE+My5/IBdTD0=
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
+ a=c92rfblmAAAA:8 a=IpJZQVW2AAAA:8 a=KzLlk2TKFSg7Zc6CKOQA:9 a=CjuIK1q_8ugA:10
+ a=ZXulRonScM0A:10 a=IoOABgeZipijB_acs4fv:22 a=GvGzcOZaWPEFPQC_NcjD:22
+ a=IawgGOuG5U0WyFbmm1f5:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-19_07,2026-07-17_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
- phishscore=0 adultscore=0 malwarescore=0 priorityscore=1501 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607190259
+ impostorscore=0 suspectscore=0 adultscore=0 bulkscore=0 spamscore=0
+ malwarescore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
+ clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607190261
 
-On Tue, 14 Jul 2026 18:21:28 -0500
+On Tue, 14 Jul 2026 18:21:30 -0500
 "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 
-> Add a new driver for the TI ADS112C14/ADS122C14 ADC chips.
+> Add support for parsing devicetree properties for measurement channels
+> and doing direct reads on these.
 > 
-> This first step is adding a very basic driver that only supports power
-> on/reset and reading the system monitor channels.
+> There are quite a lot of conditions that have to be met for each
+> measurement to be made, so quite a bit of state and algorithms are
+> required to handle it.
 > 
-> ADS112C14_SYS_MON_CHANNEL_SHORT is the last channel rather than being in
-> logical order by address to keep the voltage channels together and in
-> case we find we need to add variants of this channel with different
-> voltage reference later.
+> Channels are created dynamically since the number of possibilities is
+> unreasonably large.
 > 
 > Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-I think sashiko is sending us on a wild goose chase on this one.
 
-"When ads112c14_single_conversion() calls i2c_smbus_read_i2c_block_data(), it
-returns the number of bytes read upon success. A short read (e.g. 1 or 2 bytes)
-would return a positive value, bypassing the (ret < 0) error check in
-ads112c14_read_raw()."
+Huh. Sashiko had a field day on this one.  Other than the earlier
+mentioned 'maybe' case of the i2c_smbus stuff returning short, I'm not
+seeing any of the ones I looked at being true. I particular enjoyed the
+hold statement that something didn't fit in a 3 bit field.  True, but
+the field is 4 bits and there it does fit.
 
-An i2c_smbus_read_i2c_block_data() response doesn't contain a length
-unlike i2c_smbus_read_block_data() which does. 
+https://sashiko.dev/#/patchset/20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485%40baylibre.com
 
-Maybe there is a controller driver out there that messes with block[0]
-rather than returning an error on failure to do the read part of
-the sequence. I checked a few and didn't find one.
+To me this all looks good.
 
-It might make sense to make it clear this doesn't happen by
-adding checks in the i2c core.  One to consider after the other
-ones on my list!
-
-However, one small related comment inline about keeping postive
-return values meaning success as local as possible in the code!
+Thanks
 
 Jonathan
 
-
-
-
-> diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-> new file mode 100644
-> index 000000000000..a69c595ab518
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads112c14.c
-
-...
-
-> +
-> +static int ads112c14_single_conversion(struct ads112c14_data *data,
-> +				       const struct iio_chan_spec *chan,
-> +				       u8 *buf)
-> +{
-> +	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
-> +	u32 reg_val;
-> +	int ret;
-> +
-> +	if (chan->channel < ADS112C14_SYS_MON_CHANNEL_BASE) {
-> +		/* Not implemented yet. */
-> +		return -EINVAL;
-> +	} else {
-> +		ret = ads112c14_prepare_sys_mon_channel(data, chan);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ret = regmap_write(data->regmap, ADS112C14_REG_CONVERSION_CTRL,
-> +			   ADS112C14_CONVERSION_CTRL_START);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read_poll_timeout(data->regmap,
-> +				       ADS112C14_REG_STATUS_MSB, reg_val,
-> +				       FIELD_GET(ADS112C14_STATUS_MSB_DRDY, reg_val),
-> +				       1 * USEC_PER_MSEC, 100 * USEC_PER_MSEC);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
-> +					     BITS_TO_BYTES(data->chip_info->resolution_bits),
-> +					     buf);
-With all that stuff above about this not returning short, I'd still be tempted to do
-an if (ret < 0) return ret; return 0; sequence in here so we don't propogate
-confusing positive returns beyond where we can see their source.
-
-Having done that make the outer check if (ret) 
-
-
-> +}
