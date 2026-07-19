@@ -1,187 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84AC337FF67;
-	Sun, 19 Jul 2026 09:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784454723; cv=none; b=MAr92XiwwK38isu8JLvFtHLQ33/ubs6oe+OerSkkTr9faLiTFYFABbNUdT1tcFkIpGsN3CJon310chgUyNAjNoaY0kzYQjjM/jGjll1aOXjG3vrFGy69b0NyxaFPTVCpQNLvP7cigUEqOTEFAnk2qQwBzdG0hRzEHQFdK4/pjQw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784454723; c=relaxed/simple;
-	bh=lXScJa8OJQoqeBtvvym2KfAmG9yf8mt7R7cSNm1O8tA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qF/94Pc6UHa2oS0n9KXp5QXfjzLuMhxzU8uk3CmtWAXESjyx2W7FQRNzD7IeoLQSse1z7+Tw1fYD3ZcIxOQaiwSUIduMs8Ymc1ANTXmrYiMkO82Anbh3XSPNIpMegUV796jmJ16z9IwISEzv12AJwJtkrZrLUY/HxnBeJT5i9CI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TMU+9CdY; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034C71624C0
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 12:16:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.178
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784463376; cv=pass; b=I3Mu58InZm4QoG96YQrB5ya+vCGIX950Gf1UkmQ6+LKVKe3lGCLbcF7gSsLLph5N1WS8zG7yRlVenTxMsFAek9yphYsek4rrTFd4mgLjEkI4XSEzDhpYJWFnveJj8OxfxSloqw+eus7WMxGkZymV9H7ADpNo9IhXZJFCk//KT/s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784463376; c=relaxed/simple;
+	bh=7k1ompG3OU00AioG3cVhRo2AcAAVm/R4Z0VlwYZ8v38=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KS97cczQTMALbDy7ed/R0uGkDtGu25kfJTcwHIklc0GYVMfTSV75lS7CfmLR3+lWg6WVMdjYNJdgnPwJk2vAs5wCmutAxmuXF4Ul7y2pDG7aMI7cPk8WPONX53pG+YUcM7Nwk0yZBxTYIu9J1hSG/fh91hN+ODkgioLvhKoGnZA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U6WrBuf+; arc=pass smtp.client-ip=209.85.160.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TMU+9CdY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 25298C2BCFD;
-	Sun, 19 Jul 2026 09:52:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1784454723;
-	bh=lXScJa8OJQoqeBtvvym2KfAmG9yf8mt7R7cSNm1O8tA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=TMU+9CdYYYExaz5T2OB1l7BT8qNgKNxtoJA/QZbAhiW+zYBUW0nXWx7OC3bht+jSP
-	 rhXc6Hcv5vgaJengA0YK50IQTY6TivJCZVbFIi4JRbK85JiQ+OOPTEvR7OFu3oREpS
-	 vUbt3s9Li1hnaDfR9Oip3mBExHiVFbxEPLyAzoUNLoObXekVzlTH73JG0oqamiERXY
-	 iKtMSVqZTWenoB6bE4FpDWIehoN9V1uL3nWIjp6S+hXTAcFMKRVZ+9A+hN978nePOR
-	 qFttbymaNBwyvk7gHiCozM5B9d+4f2sm30gqBDqzEdw1vuoWnZWInrqEWi8TXvZ49E
-	 jNMMPYXk3sTAQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 071F7C44523;
-	Sun, 19 Jul 2026 09:52:03 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Sun, 19 Jul 2026 10:52:00 +0100
-Subject: [PATCH 4/4] iio: dac: ad5686: update device list and file header
- comments
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U6WrBuf+"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-51c2cce930cso57513321cf.0
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 05:16:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784463374; cv=none;
+        d=google.com; s=arc-20260327;
+        b=DwNSE3F1/TUee5u/qJqMm+cSm4i+W/ZVPrr/zTFugDEHEi3eu/8lqdlCGgJhz988NS
+         DDDeU7XieUbUpNR9FBTc9uTsyjwraKn6wQ13kTbwLssxXKBksW7/FHl1cLvVe4lAxrMt
+         1XDLD/AEnShAK3/80/KS1mzVurDKlmaUQCp+ppUxJwAgzy7d0z+p3xyPYgDVxQEuebr9
+         UW132Dg4DCRBh+s+8CdS5oJUcqLmuTAsLXja2QB0SGUrkXCpwOgUiz2Vb4JRTvUbGLJk
+         QSI3+UUiG+NGxwFloXFCY5bsjUuKpK4uN/tkuik0n8YVwgoMHuZuVmb/QfGkQpmUZIGo
+         vkRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
+        fh=WldqJ5elk6LDaSapTxVW+5g+Kkvji1Jxzv2cn/cksW0=;
+        b=sHwmPHkn0xq4PKbYMinuuDGsZMS9gmH2gPPUOhyMG1aBhthouiUu5CcN4En1PhfgMV
+         fb7f0gn0kXAD7r9DVixB9LKk1EiudzC4xye9D6a9Gqwl8PdKTY9WQ1ziWEPYVAKuAjKf
+         G955Jk1wRnw1As0/QgnP7tQb6YZjmH62efyqVTTJHpJ2w/XzoPyFjgyfhC0Juc3nSf12
+         JRen0AB2k6N5gPbrc99mKS/nkUnO4WhJwtLGo4idEkOPho8KRlulYoJrBK4SsnDyzvx1
+         D0vQ3ibJgMSKgamXcvNqwoZln3q3zC9IfYM8/gvjiXpRYZN2N/KgHPQzJPoHED6YXmQE
+         oR2Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784463374; x=1785068174; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
+        b=U6WrBuf+9z7yrutMtr+QOuySIQOx2pKgfxP5graAPr97T3S07X8NRaEMuDu4+f5F4U
+         9t0vDfV7DnERrFnMtgfij5itkxWc6lWnfKMyayQFrg0kNLYrSvIYEOR7ej66P8s3jO4u
+         TMBCoKv4roXvZ4Zyp88qs1WCJuXDOduo0hMZZ73Zmea3uyaTvSi8EvJoTTvqRRJssqzf
+         +zctM0MM9tbfq0XbCcB6GrlqU+ivOnPwGNg5gJg0kWyAEd0p+6LPMG7EApN8Y9fRTge0
+         VoDiW5IukyNMO7ormjajO+bh/wu46rp5HDZl7RIJwmX6tcMlD/xW92gKOYNTJgyGrrtU
+         nqfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784463374; x=1785068174;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=U0fzMhiju8K2JgRkrOvtst8zgzDyvx9Ag1u6YBLmwqk=;
+        b=DGy03uP2brH/67iBLJWR6kgKBwkLvSyBgH2EuYHddNpSTgGr/Poou6oGVoEnsEsEck
+         OVcBhAY6VHmfn/20XzVliw+INLkUgm6zS/RfRpaaU4Co3Dagg5zKawp8u+/jn6c3khee
+         5muOahD/focXRihYiykY/UFB6mUSIPvbkER6vC/DnMfGcl7vlF36NQB7dTSyUiiU8cEt
+         vv6BzhdqWu7uifqz/Ve6+2d8BH6nUQ0oruvaGzphgMEAu+Xo1t3a4ZDJ371Hs0OBbzWn
+         GmmsyXACZ8Yp3R4WhgweB+iFborqxbS1ThSsEtC8dGXe1JOMMx5tEDtCJnNtlxJPoQQX
+         A2/g==
+X-Forwarded-Encrypted: i=1; AHgh+RqZYpCWT2fMIXjWfyxzECvz1FaHv8gKvukhLAp7y1lYN38kG8vfhelsYBXsNEgCXM/FPAVleWUTNS4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwEglCqu1Knos+WFsponWDltfB12hBtTlizmvqyziFA/epQfQXl
+	MCQLvWrkwVmtGrcIAg4TLgJhkd/oez2zEPDn+cG+Lu7lmPeyeaTr3lmtsqhACQzYD01pygDmEDX
+	Du/kbIJ+l6fUOyCaIktsAkeeOuHyIQSg=
+X-Gm-Gg: AfdE7cm5wctCa89k1/btOUvldw0BG/yYEkzjkbemI67iywa2OmPaz51sF7/59kcp1gL
+	xevhlnE1KHILua9/5NsSwhcCJLVF2oGvmjLpZ11N7v7pw0a8nVrW+lCzr3RhCpcpaPU+AR9jSnI
+	niLFTAtuMgghNOqIiQLkQDBxdmlrCvk0jGdgTLF1PWSTYzjbZggk8jNLQmFcEZM8NFRqnf7vB8P
+	HT+tgSwX5n8Ppy5y9t5xD1aE0irrUisTfQjefjwlPIBKQyxCZQTTgF9kQOmzNqJuMYwTqF34yeL
+	d6BEBJU4dY1X1Au16mc=
+X-Received: by 2002:a05:622a:22a2:b0:51c:7b12:1211 with SMTP id
+ d75a77b69052e-52140344f93mr93303961cf.79.1784463373833; Sun, 19 Jul 2026
+ 05:16:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260719-ad5686-extend-dev-support-v1-4-841ec75cf5d8@analog.com>
-References: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
-In-Reply-To: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784454721; l=4144;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=g87LSQvSH5zO99f8r0mYhWdXFrEI0PIUf10Rds43rLE=;
- b=3kkX5U/Dmb4CYXRm3XMM/lysS2S6upGe2fOml1gdgoaPuEPnI9rOYVatEmXbFniPNsZR/nlbD
- TROlJfiNL6vCKJVrN+vMGP0sDKCxRh/g+SRttCu7epfqFstzxaMTFVs
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+References: <20260719000752.75936-1-zoone.rupert@gmail.com> <alyTjkq2bCuTE3OO@ashevche-desk.local>
+In-Reply-To: <alyTjkq2bCuTE3OO@ashevche-desk.local>
+From: Rupert Zoone <zoone.rupert@gmail.com>
+Date: Sun, 19 Jul 2026 15:16:02 +0300
+X-Gm-Features: AUfX_mzSykWwwbvhk-HtZVX9fE65Bl6c47yBUyOuOxGzhzAqaReG3QAU0-ag74g
+Message-ID: <CABpb+S4sg=HtYRAKOBcx+rH+1LnNbxqvfsxRuW=_kShGc4d6Og@mail.gmail.com>
+Subject: Re: [PATCH] iio: pressure: dps310: fix NULL pointer dereference on
+ ACPI probe
+To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>, 
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+  On Sun, Jul 19, 2026 at 12:06 PM +0300, Andy Shevchenko wrote:
+  > As a quick fix this patch is okay, the proper one is to go with chip_in=
+fo
+  > structure in the driver_data. where the name will be defined.
 
-Update device list entries in Kconfig and remove device description from
-file headers. One can rely on the ID table(s) to check for supported
-devices. Adjust comment header accordingly and update Copyright notice in
-comment file headers with the current year.
+  Thanks for the review. I'd like to keep this one as the minimal fix so it
+  backports cleanly (it's Cc: stable). The chip_info/driver_data rework is =
+a
+  good idea, but I'll do it as follow-up on top rather than fold it into th=
+e
+  stable fix.
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/Kconfig      | 31 ++++++++++++++++++++++++-------
- drivers/iio/dac/ad5686-spi.c |  7 ++-----
- drivers/iio/dac/ad5686.c     |  4 ++--
- drivers/iio/dac/ad5696-i2c.c |  6 ++----
- 4 files changed, 30 insertions(+), 18 deletions(-)
+  > On top of that mutex_init() should be devm_mutex_init(), which is a fix=
+,
+  > and some cleanups:
+  > - unused i2c_set_clientdata(); may be dropped
+  > - C99 initialisers in ACPI ID table
+  > - IWYU principle for the header inclusions
+  > - some unneeded GENMASK()s due to use of sign_extend32()
+  > - perhaps converting to use get_unaligned_xx() where it makes sense
+  > - use time multipliers in _read_poll_timeout()
+  > - use fsleep() and time multipliers instead of usleep_range()
+  > - get rid of min_t(); perhaps replace with clamp() or min()
+  > - use SI multipliers from units.h
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index d6d560c09e25..ba2065241af3 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -251,9 +251,18 @@ config AD5686_SPI
- 	depends on SPI
- 	select AD5686
- 	help
--	  Say yes here to build support for Analog Devices AD5672R, AD5674R,
--	  AD5676, AD5676R, AD5679R, AD5684, AD5684R, AD5684R, AD5685R, AD5686,
--	  AD5686R Voltage Output Digital to Analog Converter.
-+	  Say yes here to build support for Analog Devices Voltage Output
-+	  Digital to Analog Converters:
-+	  - Single-channel:
-+	    AD5310R, AD5681R, AD5682R, AD5683R, AD5683R
-+	  - Dual-channel:
-+	    AD5313R, AD5687, AD5687R, AD5689, AD5689R
-+	  - Quad-channel:
-+	    AD5317R, AD5684, AD5684R, AD5685R, AD5686, AD5686R
-+	  - 8-channel:
-+	    AD5672R, AD5676, AD5676R
-+	  - 16-channel:
-+	    AD5674, AD5674R, AD5679, AD5679R
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5686.
-@@ -263,10 +272,18 @@ config AD5696_I2C
- 	depends on I2C
- 	select AD5686
- 	help
--	  Say yes here to build support for Analog Devices AD5311R, AD5337,
--	  AD5338R, AD5671R, AD5673R, AD5675R, AD5677R, AD5691R, AD5692R, AD5693,
--	  AD5693R, AD5694, AD5694R, AD5695R, AD5696, and AD5696R Digital to
--	  Analog converters.
-+	  Say yes here to build support for Analog Devices Voltage Output
-+	  Digital to Analog Converters:
-+	  - Single-channel:
-+	    AD5311R, AD5691R, AD5692R, AD5693, AD5693R
-+	  - Dual-channel:
-+	    AD5338R, AD5697R
-+	  - Quad-channel:
-+	    AD5316R, AD5694, AD5694R, AD5695R, AD5696, AD5696R
-+	  - 8-channel:
-+	    AD5671R, AD5675, AD5675R
-+	  - 16-channel:
-+	    AD5673R, AD5677R
- 
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ad5696.
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 003541edb742..b4531b49cb22 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -1,11 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
-- * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
-- * AD5684R, AD5685R, AD5686, AD5686R
-- * Digital to analog converters driver
-+ * SPI driver for AD5686 and similar Digital to Analog Converters
-  *
-- * Copyright 2018 Analog Devices Inc.
-+ * Copyright 2018-2026 Analog Devices Inc.
-  */
- 
- #include <linux/array_size.h>
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 090707d76d6e..fc0bccfb0a03 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -1,8 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * AD5686R, AD5685R, AD5684R Digital to analog converters  driver
-+ * Core driver for AD5686 and similar Digital to Analog Converters
-  *
-- * Copyright 2011 Analog Devices Inc.
-+ * Copyright 2011-2026 Analog Devices Inc.
-  */
- 
- #include <linux/array_size.h>
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index 7254bb976388..19605274e787 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -1,10 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * AD5338R, AD5671R, AD5673R, AD5675R, AD5677R, AD5691R, AD5692R, AD5693,
-- * AD5693R, AD5694, AD5694R, AD5695R, AD5696, AD5696R
-- * Digital to analog converters driver
-+ * I2C driver for AD5696 and similar Digital to Analog Converters
-  *
-- * Copyright 2018 Analog Devices Inc.
-+ * Copyright 2018-2026 Analog Devices Inc.
-  */
- 
- #include <linux/bitfield.h>
+  Agreed on all of these, including the devm_mutex_init() change. I'll send
+  them as a separate cleanup series once this fix and the triggered-buffer
+  patch are in, so each change stays easy to review on its own.
 
--- 
-2.43.0
+  Thanks,
+  Rupesh
 
-
+On Sun, Jul 19, 2026 at 12:06=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Sun, Jul 19, 2026 at 03:07:52AM +0300, Rupesh Majhi wrote:
+> > When the device is enumerated through its ACPI HID (IFX3100),
+> > i2c_client_get_device_id() returns NULL: the ACPI-derived client name
+> > does not match the driver's i2c_device_id table. dps310_probe() then
+> > dereferences that NULL pointer in "iio->name =3D id->name" and crashes =
+the
+> > kernel during probe.
+> >
+> > The IIO device name is always "dps310", so set it directly and drop the
+> > now-unused device-id lookup.
+>
+> ...
+>
+> As a quick fix this patch is okay, the proper one is to go with chip_info
+> structure in the driver_data. where the name will be defined.
+>
+> On top of that mutex_init() should be devm_mutex_init(), which is a fix,
+> and some cleanups:
+> - unused i2c_set_clientdata(); may be dropped
+> - C99 initialisers in ACPI ID table
+> - IWYU principle for the header inclusions
+> - some unneeded GENMASK()s due to use of sign_extend32()
+> - perhaps converting to use get_unaligned_xx() where it makes sense
+> - use time multipliers in _read_poll_timeout()
+> - use fsleep() and time multipliers instead of usleep_range()
+> - get rid of min_t(); perhaps replace with clamp() or min()
+> - use SI multipliers from units.h
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
