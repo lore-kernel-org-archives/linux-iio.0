@@ -1,103 +1,107 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2619417BB21
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21A3F30F7EB
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:18:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784495693; cv=none; b=nnehzJQ0H3PwG9Gt7/bZt60nDktzoeH1xATlR7WJFynHBeoF7MzDpUfPc7K/gynKDALYtk/Oi95kYUmMOM17jnO2nQWeQbooOZyuEInEtuWSO5hHfVc8SoffArONcdrRJzQHAE47UNKoFVjZmSO8B/4LWXldJ52FDAZ3UNku2EE=
+	t=1784495930; cv=none; b=CpxmDEI3cAdtkA4YWAkd+mSz001RyitkH73jOtMNoLjqd5/ve4BrUGV2SzsRSf/rpf4wiCk/sE8ggzWwxRscyvsd76N2lmpS1L6M4eFiczqIUtzGLpo+AazhgigcdHADTiQ5INKuYpmfnDbrm3gLSYTqstvwGm1QFEl7yMeBKPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784495693; c=relaxed/simple;
-	bh=U9HvmCvpRC0PdwshPiDg79v4iyuivDBJ/X8yCQTdP7w=;
+	s=arc-20240116; t=1784495930; c=relaxed/simple;
+	bh=5XGjAEIPAFFHs8X4OPua/UqRJ496ky3R/V16qbOzb8Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=K4giP/f7vaHIYTtMaxaxQWKNmPU0v+/URY6qa9V5tZXzn1PPEkAyoQRtfXBGWhPohwLlUkLXqwHOm4hulzx4GMLroP+tCbTJU/JI0VG05uHopCT5VfoxzZ00OCRUpcw4zsSoxwKgQm757D2j9MJenBvPykkhbFbyb8R1WIeBjxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Qjv0Wcr9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=f+t/qPuM; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=IBKmHzFsrJsBRqgs/mvO2gNb5m8+nGZsLPER0Ftp0X2j8rGctQEf5NhtC4zY/mFJHwur92ipF0bPJq4nGxib2xTIwduZAWBWORSr3bnDeI5it4JCx49LWbKEXl6KXtvOvGlefWKdz5/9Y+tLcd0kgWpnHIPkfDe8BAQ+M94BuPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HMRWaoG7; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=L8pU2KQC; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Qjv0Wcr9";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="f+t/qPuM"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66JKQpVf1488164
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:14:51 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HMRWaoG7";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="L8pU2KQC"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66JKRFKF236911
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:18:48 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	XZzuuSEDGCp+fKgbeKtpBXb0/PZytFwOg+5d3PdkXUY=; b=Qjv0Wcr9e/ofF0/G
-	5/mXsAOTZmv5MlHp/tWlEgPtErd/wIxyaOC8+pIkToOQ0ebrbpqmpDLORbR/ZGCx
-	QMTt7NUps9DF/K7hPajZIRIfPTAo0EHwhviU4IsJXhqQgA7WngmwlSKoIxM2UlK4
-	grqyGc/gPhfNgEOtQIoOsN0a1GkGj5pxGesUxczj+vB5B/AQzG02OPjpKDMwg+d3
-	c0W9UMvVlNzXDKesFpqV8b26kx1wPPIq/GHtUQjJiH2dQlFPbWYhayFl6XshjViA
-	PNZRAwrwHQqJ6FB080c/Xzc7D+Q3yFbIlnXVSONLrPt6Xl/S2Eifi9cfVOy7yAo7
-	o5plbA==
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2aauf7h-1
+	/rBC+CxZn4GlCYjW5P8YRIplF0bbqZaToAlF2Gujn0k=; b=HMRWaoG75gWYc4MS
+	A4DJOPBUZ3i384SUWFyujWv8UEvjsauVj7NpqitS161qTz9VQSG9iXMe64aXfUI2
+	YU9ZcLnJI3qABjhYd86dw3ZQlwXaCjQdz6XvRGZRNOW1x1id05wcyzDUYwuEP/MC
+	YLJ3RpyA/ejb/MywQJWVN44iP/IwUzD3CaRiY2S24D50DipRbrIfaqGFbaJk0SzY
+	l4FvpuQc+c7RNABKAAdgWnKFiwf1lZjzlkD8DQzIlwnaa5/stA/dM3SCJLPZ/7+e
+	HBqyfgwnjHTyy6cf9vPvLOTV4uiZlROLWDgdkMHO6uJVhc+91sHgy3axTb6akGUR
+	qoicOQ==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fg2chker2-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:14:51 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c85798977dcso11133954a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 14:14:51 -0700 (PDT)
+	for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 21:18:47 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-38e4758ab46so3617693a91.0
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jul 2026 14:18:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1784495691; x=1785100491; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1784495927; x=1785100727; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=XZzuuSEDGCp+fKgbeKtpBXb0/PZytFwOg+5d3PdkXUY=;
-        b=f+t/qPuMFNCHuXvOE+7Jt940nfKpJvLvoYQ5fL7arNZbPwZ5dg4bHvDftu/rQyoZHJ
-         adypZkLMYj4XvaW4ffSRP7IWwS3SJ0gq9B0GBOrCug3FnzpLPzCJfUdPfWGeiAchVev/
-         m82rEkKAjuZbOeSjusL6PHYvkpBDmW6cKNyD+o2Zdu7Bgk/AheaAQf8d8YhxQXfygieV
-         ZXB5K2wIDYk09aVzGU7sGBVfXDWmNbfPv2NEtxBlDByNNILoel/IBSoZI9fyhJUT8m7a
-         /coGNddDnGamGA0PjWo5xCpYDZyvgCg/8+n+no/+qdJrkUDUortSprd3mFg/+SaO9CAj
-         IDMA==
+        bh=/rBC+CxZn4GlCYjW5P8YRIplF0bbqZaToAlF2Gujn0k=;
+        b=L8pU2KQCF/iWdAUTY42Z5hEzcOQmQ438sKmSGmnOFH3gCCphNogEv6R/s1fqekAuUA
+         5anoxnVFm9iyZHtt2hKZb3fAG2wkkaKG2NJZrFa1XZ8JVyQVLyBlG41cPYb6TOer05Em
+         SbHwVjGZ4HSiprHvKKNSGCX74xQOZyWapfOzCNQP76GQ1z0CvaNhxfMpaw3bS8MmCIZZ
+         xkrpWx5xfQr8jtRADCesLvFmKsxL8MxYEVw0ueH4B+Rg3BUe9Bldx51J6SyaVYVj/vjO
+         /wlkpS16rSY6SRbP9ilx24iIn3kIAFnX3R/mkzBxFBNSNhsoUKa2elSFBDgKHF8QhNXA
+         n4ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784495691; x=1785100491;
+        d=1e100.net; s=20251104; t=1784495927; x=1785100727;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=XZzuuSEDGCp+fKgbeKtpBXb0/PZytFwOg+5d3PdkXUY=;
-        b=kRMov4WIBnRCimuH900Uqsyl7sAt7bQf7ECjfX+96IJeoAsYP7D+vD2/aGCORxcoQ1
-         xdwsMfQerLcNCYSqfY8WHe84WtybUA4m89xH4j+kz/SFpAPpDRShBivR37eE49C2Wxb7
-         20k0lY4vbQWNcOy6QWt8freOg1LEieAI77kPqn+1CrgLg+jidePXqlhjqDO/A7o0pNG5
-         u6l7wuOGt8db/vId0URm0x2wJNdjEjAKdYM0W4ZCJfzjTeT1R/1tDPxh3gQXF8FEqzfu
-         0WFpYJidYpYS+9zNlRBBljnElBvi1efI0Fk1uIc5W9NCTpSyAMoKkLIrXIAWQc2HmIQ9
-         bGPA==
-X-Forwarded-Encrypted: i=1; AHgh+RphqgtvyD3z8y4KjXB8qWubLFsBsB3ug2i0Tk/k14cNtICqIMTPHkX59M8CSwoKHsPMMHBFTdz75bw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwV3ue71PyJN/0X9tMUsjJXR53R7EB6d7bVMhmFJBW1faBgG+by
-	fRnZUsxLkCmzsPK6hB0UDrb152qLh8QS5eluSjI8SyeizPlJjEvPKbRUXa+Yw7YEny1rFZxD3yu
-	ZYLo6TPc1yYfzB7JWjhum+1udvPQCQHOi1wM2j0Dxx07adSEDjOwaYhGZ/vriiv0=
-X-Gm-Gg: AfdE7ckiDGk7u8ZhUkLB8FyJlw8lwxTQ6qVyYfQ2toPEFevF2oOu34uqjKEBRxuJAbz
-	3NdZoGfgA007F6Q3YlVdKjax3XV53bIfIMQmSuAW+KLqatnKQ1O5QAYEtk7zyHDvl+dZz9xrf2i
-	k+Y8JsvNC7dAQMSQOcoaPQN5yVJNooYiCOhFiTh2gqcgPHkrg8Cm/a/FjP7rFMLBPtG7ndvtqfl
-	sO7X07bvxo5Ranij9u8OeFCVuJR48XSCIpv2FSXcuovFrit/g02Ikd/juiRsYl2njRyeJ6+aYBS
-	G28tS+T7NbKmHCqFG4XZhvCX2tkCxEe7he7yI9BPpYc3+683Lil8VMSRgQY3uZ/IMEpVZtpldfw
-	FfNXz2n3f8pvihXQ8
-X-Received: by 2002:a05:6a21:7a45:b0:3bf:6fb1:ce0d with SMTP id adf61e73a8af0-3c3ad66b702mr14057732637.21.1784495690672;
-        Sun, 19 Jul 2026 14:14:50 -0700 (PDT)
-X-Received: by 2002:a05:6a21:7a45:b0:3bf:6fb1:ce0d with SMTP id adf61e73a8af0-3c3ad66b702mr14057709637.21.1784495690247;
-        Sun, 19 Jul 2026 14:14:50 -0700 (PDT)
+        bh=/rBC+CxZn4GlCYjW5P8YRIplF0bbqZaToAlF2Gujn0k=;
+        b=RAPDKzqGlRutCfKv+dXNgX5sxlX3mRB+2DjWsTlbRcLKRLEqJLiAKg5SD+pCfARwek
+         1VzVRaL3PexgfGnkW2xo8aVxy5Q7poiAa7eUDI2GbhaQr+7K5GCu1WaAM6+cADDMGdvE
+         PtYzQn063trNXV/IUW1SEuHzo1dqmDMCK+aH8EX4QDhVNHXEd+hIuCb16Lk7uXx2Btmv
+         zSxZePgZYRRz/FGuSf2qfWmV5LTdinlSTTHLkRMV1XaP5aXtwh+FcAVhm5BHP/Dto7Hp
+         cHuqwzULTvIqBym6IcbiyDvQjA7cm8MzWXkxlvUNW+rkmaQyThDu2fsCmaeaMlsa8dQi
+         vDSQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rpjw3tZD9+rxeiy4QInLW+rUn3hd0FOp7x2xaTnEw9BM62/kI1stn9GKpzEab6FNepleE82mwlg+dA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXcIXsiVDZRf8rsrpmEREu7Cy+NQ+HBw+u0lsL5xQ3RD1qLeSK
+	lhoKDvzZAYMoSXxwNglue5sbsboGuO/cHfHjkLk6VMwMANpQV53AWvhprq1D0LWBVMPERLuatso
+	1q6MC/r1OgyuEYuP5DA0p3LNva2ICKkHODdSONaXH2wUeQi3RJPQfnHid47dYP58=
+X-Gm-Gg: AfdE7cl8iG75j+8QlYqKY0M9Y8uk8Stqtrn2MdNxaYvSTAKInBR4h3zRqQQJLs4FEzy
+	jlWy6PMhaEFkDOa6TAD+XEUFVev6aLQV0zrLSbU5smCimYpUWquXjcki0JQIgExEUIAx1yk7T6f
+	mbp1mPnr97DG1o+ef2a2NDnCK5G8HuQr5sseM2gO3RaC9pqZHwcbKS4DQ8tOU9LLrXfzFWUKY15
+	DibX9sa0gyMUpmUA746iNcmASiRprLgMaE5Y7fymcum4Nf4VpuiqabkA/8h/WyFYxJ8Rr/ldTnL
+	Pj8gfsmbjbTfgJC0kvrtKb5wOi+SiADRdva+U5LZm2zdGHd/ndsXIQ8tvJEyx8J075+1VZWdr2B
+	e13adsO4MIZErhRnx
+X-Received: by 2002:a17:90b:3886:b0:36b:944b:fd81 with SMTP id 98e67ed59e1d1-38e4b3d27c3mr12329712a91.4.1784495926863;
+        Sun, 19 Jul 2026 14:18:46 -0700 (PDT)
+X-Received: by 2002:a17:90b:3886:b0:36b:944b:fd81 with SMTP id 98e67ed59e1d1-38e4b3d27c3mr12329678a91.4.1784495926161;
+        Sun, 19 Jul 2026 14:18:46 -0700 (PDT)
 Received: from jic23-huawei ([50.35.46.84])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cb51a2c1b0dsm3440525a12.30.2026.07.19.14.14.48
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e39deab2dsm6553192a91.1.2026.07.19.14.18.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jul 2026 14:14:49 -0700 (PDT)
-Date: Sun, 19 Jul 2026 22:14:46 +0100
+        Sun, 19 Jul 2026 14:18:45 -0700 (PDT)
+Date: Sun, 19 Jul 2026 22:18:40 +0100
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Rupert Zoone <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Kai-Heng Feng
- <kai.heng.feng@canonical.com>,
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, Michael Auchter <michael.auchter@ni.com>,
+        linux@analog.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Hennerich
+ <Michael.Hennerich@analog.com>,
         David Lechner <dlechner@baylibre.com>,
-        Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Eddie James <eajames@linux.ibm.com>
-Subject: Re: [PATCH] iio: pressure: dps310: fix NULL pointer dereference on
- ACPI probe
-Message-ID: <20260719221343.2a797351@jic23-huawei>
-In-Reply-To: <CABpb+S4sg=HtYRAKOBcx+rH+1LnNbxqvfsxRuW=_kShGc4d6Og@mail.gmail.com>
-References: <20260719000752.75936-1-zoone.rupert@gmail.com>
-	<alyTjkq2bCuTE3OO@ashevche-desk.local>
-	<CABpb+S4sg=HtYRAKOBcx+rH+1LnNbxqvfsxRuW=_kShGc4d6Og@mail.gmail.com>
+        Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Conor
+ Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH 1/4] dt-bindings: iio: dac: ad5696: extend device
+ support
+Message-ID: <20260719221840.625525a3@jic23-huawei>
+In-Reply-To: <20260719-ad5686-extend-dev-support-v1-1-841ec75cf5d8@analog.com>
+References: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
+	<20260719-ad5686-extend-dev-support-v1-1-841ec75cf5d8@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -105,121 +109,93 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-GUID: GiUA6SBbXyHCnG7bvFVAAEo0imnr958d
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE5MDIzNyBTYWx0ZWRfXxgO6IDNqhyf2
- G4ijUbgN2VKhQyYGfqFbaMIQYkJIEcTicwsESNCDqeUkF3luH6FIdThAwpEEZc2assX7e6EUVwb
- dCXaFVAGSO3lFD9zBti/49VZYTRKyT8=
-X-Authority-Analysis: v=2.4 cv=b9aCJNGx c=1 sm=1 tr=0 ts=6a5d3e4b cx=c_pps
- a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
- a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=pGLkceISAAAA:8 a=QyXUC8HyAAAA:8 a=Qx8pq7cJZwYMmCun04IA:9 a=QEXdDO2ut3YA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22
-X-Proofpoint-ORIG-GUID: GiUA6SBbXyHCnG7bvFVAAEo0imnr958d
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE5MDIzNyBTYWx0ZWRfXzJf0GsoJuqLo
- mzMwYE5VnOkY+LlXUz/EJW0d9BtxYZmMhYK9Zem65+hlGky4DWcRxDyN5dNPEo3ACQw/y0XE3mm
- YO50hQbCvwMkno6LKP7nFQVuknETpMFa9UW/eN0bmrrAbuL7ofNXBAkmHQPmuXF2msuEdPvHSJd
- H9rf73zxHQjcBTuaigbp57T+d8UkK4quPikeKGDiUwjPQHyb025oWABI1JJqCpxqdrKCymT3Igk
- drcsGUOz3qQ+tYUpWnRcy1PPUqJ3CNwHgyZNCa26V7AvkM45DtCAZbiMWRbiaj+hcdrSrMKdAC2
- AERfuGTJEvC3no6ojijpqnrLTeRH+1JI7aDeRP3njXchfnXcbZWuE6hUS2Q15hxBBcEP7WnyIYw
- Df6aWmzoMM+eCLXUptH4MHhwifKb02U+zQ4cwrdjKu7oPANi3xErUS/UtWIVkm9RvRDVto8mPOu
- Qi3Z3xYckQKryWFBXfA==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzE5MDIzOCBTYWx0ZWRfX14VazuMDjulN
+ 5v6DNhDBN6MVl3po8I39RQW/tQH9FImDQq1Os88NSBjgVRThDXlVjq07pZUL+e5Q1I8Y741jKU4
+ MBl+u/9dI0B4YRv2t262VdS+LbkuR64=
+X-Proofpoint-GUID: bdakFwZabxgB7rkiqPGXeM2n1Gf8XzWP
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzE5MDIzOCBTYWx0ZWRfX24ZFiJbbxjGt
+ WFge2EXdy1nrNswLPFl05xJkC+B1HGCxhcGuMIi/9a1zzaiUpEmXpSNwDEw2bDQbkfDP89KpYD+
+ kHv8XAX+G6mrAdDGXIMjJT59t0PBzWviFZ2hBdAxtiQE3LrI9d/9kmEkihwQa0qTfCgi7K42Blx
+ O2h/kgb51q5yb8LSHYcHthWZ230TM9GzRLYLQl067t4d9U/ah7SqyvNRDLfCy4ODml6Y9DORSU8
+ 23aSB38zujKIlVdObNmAz8BjkAuIIdGMdfXGYL06JpkbiL7LVlw8b1SwowObRMnWmTMgfvLeVAY
+ XjXW8ia4CPHI5xd0xLGQ7rLuDfsekpAdmEyyiwt39sbGmykqpGVPs5dhsC0WcNLGwe3PLwmzRk5
+ G/SOZVfkR++u7tqQ6M3HEsIehMFntKMPaREqFjL+f87xeS1gD2Zax4+6nEGchIJ1E6cGxn2XdAi
+ KdiLvQLRozDp8QG0m4g==
+X-Authority-Analysis: v=2.4 cv=T5K8ifKQ c=1 sm=1 tr=0 ts=6a5d3f37 cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
+ a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=XYAwZIGsAAAA:8 a=HLCVoeTYkPwaNVPRpFcA:9
+ a=CjuIK1q_8ugA:10 a=rl5im9kqc5Lf4LNbBjHf:22 a=E8ToXWR_bxluHZ7gmE-Z:22
+X-Proofpoint-ORIG-GUID: bdakFwZabxgB7rkiqPGXeM2n1Gf8XzWP
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-19_07,2026-07-17_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 suspectscore=0 phishscore=0 priorityscore=1501
- lowpriorityscore=0 clxscore=1015 adultscore=0 malwarescore=0 bulkscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607190237
+ phishscore=0 malwarescore=0 impostorscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607190238
 
-On Sun, 19 Jul 2026 15:16:02 +0300
-Rupert Zoone <zoone.rupert@gmail.com> wrote:
+On Sun, 19 Jul 2026 10:51:57 +0100
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
->   On Sun, Jul 19, 2026 at 12:06 PM +0300, Andy Shevchenko wrote:
->   > As a quick fix this patch is okay, the proper one is to go with chip_=
-info
->   > structure in the driver_data. where the name will be defined. =20
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> Support for AD5316R, AD5673R, AD5675, AD5677R and AD5697R missing from the
 
-For this particular driver I'd not do that as it only supports one device.
-Can leave bringing a chip_info structure in until someone sends support for
-a second one.
+I'd drop the 'missing' given I think until this series they weren't used.
 
->=20
->   Thanks for the review. I'd like to keep this one as the minimal fix so =
-it
->   backports cleanly (it's Cc: stable). The chip_info/driver_data rework i=
-s a
->   good idea, but I'll do it as follow-up on top rather than fold it into =
-the
->   stable fix.
->=20
->   > On top of that mutex_init() should be devm_mutex_init(), which is a f=
-ix,
->   > and some cleanups:
->   > - unused i2c_set_clientdata(); may be dropped
->   > - C99 initialisers in ACPI ID table
->   > - IWYU principle for the header inclusions
->   > - some unneeded GENMASK()s due to use of sign_extend32()
->   > - perhaps converting to use get_unaligned_xx() where it makes sense
->   > - use time multipliers in _read_poll_timeout()
->   > - use fsleep() and time multipliers instead of usleep_range()
->   > - get rid of min_t(); perhaps replace with clamp() or min()
->   > - use SI multipliers from units.h =20
->=20
->   Agreed on all of these, including the devm_mutex_init() change. I'll se=
-nd
->   them as a separate cleanup series once this fix and the triggered-buffer
->   patch are in, so each change stays easy to review on its own.
-Excellent.  I've applied this one to the fixes-togreg branch of iio.git
+If nothing else comes up I'll just make that change whilst applying.
 
-Thanks,
 
-Jonathan
-
->=20
->   Thanks,
->   Rupesh
->=20
-> On Sun, Jul 19, 2026 at 12:06=E2=80=AFPM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > On Sun, Jul 19, 2026 at 03:07:52AM +0300, Rupesh Majhi wrote: =20
-> > > When the device is enumerated through its ACPI HID (IFX3100),
-> > > i2c_client_get_device_id() returns NULL: the ACPI-derived client name
-> > > does not match the driver's i2c_device_id table. dps310_probe() then
-> > > dereferences that NULL pointer in "iio->name =3D id->name" and crashe=
-s the
-> > > kernel during probe.
-> > >
-> > > The IIO device name is always "dps310", so set it directly and drop t=
-he
-> > > now-unused device-id lookup. =20
-> >
-> > ...
-> >
-> > As a quick fix this patch is okay, the proper one is to go with chip_in=
-fo
-> > structure in the driver_data. where the name will be defined.
-> >
-> > On top of that mutex_init() should be devm_mutex_init(), which is a fix,
-> > and some cleanups:
-> > - unused i2c_set_clientdata(); may be dropped
-> > - C99 initialisers in ACPI ID table
-> > - IWYU principle for the header inclusions
-> > - some unneeded GENMASK()s due to use of sign_extend32()
-> > - perhaps converting to use get_unaligned_xx() where it makes sense
-> > - use time multipliers in _read_poll_timeout()
-> > - use fsleep() and time multipliers instead of usleep_range()
-> > - get rid of min_t(); perhaps replace with clamp() or min()
-> > - use SI multipliers from units.h
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> > =20
+> device-tree bindings documentation. These devices have different bit
+> resolutions or different number of channels so no fallback compatibles
+> are used.
+> 
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+>  Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> index e10f8596f9d3..835fa21c474e 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
+> @@ -16,10 +16,14 @@ properties:
+>    compatible:
+>      enum:
+>        - adi,ad5311r
+> +      - adi,ad5316r
+>        - adi,ad5337r
+>        - adi,ad5338r
+>        - adi,ad5671r
+> +      - adi,ad5673r
+> +      - adi,ad5675
+>        - adi,ad5675r
+> +      - adi,ad5677r
+>        - adi,ad5691r
+>        - adi,ad5692r
+>        - adi,ad5693
+> @@ -29,6 +33,7 @@ properties:
+>        - adi,ad5695r
+>        - adi,ad5696
+>        - adi,ad5696r
+> +      - adi,ad5697r
+>  
+>    reg:
+>      maxItems: 1
+> @@ -84,6 +89,7 @@ allOf:
+>          compatible:
+>            contains:
+>              enum:
+> +              - adi,ad5675
+>                - adi,ad5693
+>                - adi,ad5694
+>                - adi,ad5696
+> 
 
