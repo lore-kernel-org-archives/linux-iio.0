@@ -1,119 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D6DF47DD40;
-	Mon, 20 Jul 2026 19:35:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19992C236B
+	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 19:39:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784576122; cv=none; b=uPgRacMbo4rSu9D4RdYnfHHd9I9wnm824L89ErvI1HHGr+9A4RU1bJlHT2kjPTNigb5qsgLgbCW5SKiEn2QVPRrLdC13B8ZrTyp4yqBV3rsZUHgwyJYpAOFJCoZd05ubv/FNC+xYMbreYTT3nhIBrk4UW+AuAnRvJvnfXWd3Xr0=
+	t=1784576361; cv=none; b=dceTOk8ruiXGb3ASufLxJXzAHZH6C6b6Q6AbvEeH6UCeE5ZKlle7nHWTYq20B1JTWd5RcNEnvh5IDWqoRcvUXA9153XjN6hCp/OvfTfgozgsoiyeQir9odHBQwrQUCbBWmxj0I/d3maOx6mn5JbWXPL4oqPFw/CYdKiI7JD6+Vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784576122; c=relaxed/simple;
-	bh=5NLVdoLJdU/hCpGfjZnuWbVoyyc0VwafE53K3sxQk4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ehUjMCR6UeV9X44G4ArKVU5QK8aXjUXjKJ0uBchNHc6FPTpFmWYh0lbFRkkifcPsRg3/qU2dMRiUdKSSNnro0UaCfuW9iJUxRlhllZDuMbfDl5nBXfrnqS2J9ABudNX6lLEesozARVEJeotCCj7lscteAO+wYAnKRFTm/EZ/aS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ClPYcbAf; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1784576361; c=relaxed/simple;
+	bh=qDc3AlSScBw3OQOXz0BZRSMN8wZ1Twz3mKkNI11JtN8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Vs+9I3XHD0bDvkmfg0a6uA39J8Y4VokAbUjZauTOTosN3c2fAFaRcNAigWhMHzlYOeH9rN3T+b6ukPH2fEH3nSunmBjSkx4+M6NfhAgkU/dUqhAcueFVYxOlKBRe2asw5oNCCZAT36I/ZOf0phl+gmz8LojcH4FOUt2aD5e90po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j/qBXhL0; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ClPYcbAf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784576119; x=1816112119;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=5NLVdoLJdU/hCpGfjZnuWbVoyyc0VwafE53K3sxQk4U=;
-  b=ClPYcbAfgBwSmzIeCHd6xyJ0IEYTp5THito1i81OoZibLyZunbWTxIMC
-   GOJ+cLhBPhw8+QimhmFJNFqReyjcugN0PBf9YUNEb6XA6Ei9CnhkJ6zbs
-   Bl6v/70dyjOX2cY90N3yardXR10Hfh6zWt02zvPsRCHPOnjwRCxOv3ZaN
-   qULPMYiT9tUMricBfsIG+xzAp85Jg5VqrY4npIA0mvSftlb4Oq2JlDSZ6
-   cgYnmoUt9OJlihwHzM3XXGZJ12F+HhFL643QHtaFye+yzYkuia/iV3JKl
-   Y6BbsudxG6reaNC8hObS2eJKpEb5nZcGncaFvDevNLBi/gBPu/nFprHEY
-   w==;
-X-CSE-ConnectionGUID: Ms8hxswKRJeoZ86X6ZIYQA==
-X-CSE-MsgGUID: VpD5KgzXR2eyp8cV/Peq6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11852"; a="95530549"
-X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
-   d="scan'208";a="95530549"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:35:16 -0700
-X-CSE-ConnectionGUID: dzOYpiqZRoumUj/qJD8M9w==
-X-CSE-MsgGUID: cKRoHGRVQXCWGZW417LvjQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
-   d="scan'208";a="258183519"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.175])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:35:14 -0700
-Date: Mon, 20 Jul 2026 22:35:11 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j/qBXhL0"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-381c51fde6bso10711881a91.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 12:39:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784576359; x=1785181159; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EcyVfxcq2geJ8Bf2wMsig3NqHmAOQY3C0n//w3EpO5A=;
+        b=j/qBXhL0DOOK9jr3Ckr6JYBoMLzQfw3fji7T1MriJIV1KiaLwu3Aq2qTQ7PgaNXpg+
+         fVUOOxkw3XZlWKNj5f1ADl/8pTLHg62mRUrkvgJs69KX606Lp4d/rLnyukeKH5FYsi3P
+         kW3DMjoueGncr4DselEc/wAFu3wk7bUzRfYtCbriYTz5N1vzlxkpjcp8vhqaPRanrOPT
+         l+izTY6dTh8FP0izLRLeiabgO50gR5nUoz8d4th4ke2iQIaP1dsKlEqP3KYltxkdVJTY
+         BLvyPZsOAPZNcNlwVDhXIAnD+YMaTWdqrsaR5Ry/5T7JlO4WyiDO9JhmF047AjxnbflX
+         dHoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784576359; x=1785181159;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EcyVfxcq2geJ8Bf2wMsig3NqHmAOQY3C0n//w3EpO5A=;
+        b=r8k4aHZH8oNNRJFWaCG7aWb8Lz+FMjWO9I19Y28+FGEKGRRE91qU7eIA0C/CEhKCpg
+         GxGoO2SzbgC8l9Cuv5qYTPX5JkBald+m5TJK3vEKu5oJXZR3N2p+tYsX0l/Vqy/bEY8O
+         x4pgxi/uqoXOsCC0AmXrt9+0FhbyYsHr1tg6pqLkrbuwgfU1KvVFCki2PLcqvbrw3wDo
+         mUgfjysDj8Oavhfa/fQNiud/vHZSlRTNVLliX5iBu3mPNx1y8nqHdBJBYeg1qsdYHVSS
+         0QfGDNtzfuArz6dURFCGvGPWyjgAezTUynZ8oJgxxgbL6jw+lbSwzlx7eFe/o2pQDdrP
+         +V+A==
+X-Forwarded-Encrypted: i=1; AHgh+Rr6jwe8wCwhYA89uB8JAJyxCaIfFjhroE/JsssvbfTQ7oPNosFAiRzik7Nnc1+SYuntCeb7oEl5CY4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyregEZC9nXn98ARiVE3dbDhQivzRHqpfvdXuIv4AcUGGuQQipo
+	J0/ihd70ae1bhH6gUaNYWo/r7uWmRzFa6COWhrrtM3BVOsAVzcHuAMY=
+X-Gm-Gg: AR+sD11kiORB+m7mBL67/F2OvCHxKxf/6+rCcU9f5gBeEoD4BR5lElAuXoWlfC1Gnpq
+	ADx89qJXcMr+vqnOcrrW8arj5CoT2VBLSduPaX6WKwmK+TzDqkA2TN7Cr15iknXCL4ITwth9fHO
+	hHH/2771XZuNwoKXsaHr7vacq+PKGoeUmFGtXtFiUwEnMbns7zIcMDz3UhYCHHTwXBRbSSTVsp4
+	o17qwIIU3xKjBwUlBppOW0OznScDATggUweOv82RLdcs9dRrCEo+fHh1TJJ7SgXPjzy5dH1WWWZ
+	cSZK54iNKWR0lAQRm2/G4l7y1CwWXjq9shAYmnAz43JhTExy0P7cbn5+r/zRzhbMVj10iJ2J+Pn
+	VFOdzkpEcGi9QRNXIFgTFXgM5FdXzrmlED2fG7s9yS49BPjwVUFUeYdNLQPnY1ev4Q4sNedTDHM
+	4vhOMFtFh+CCawiU2f3Jty5lnHh/vVFNTWy90iYAG5
+X-Received: by 2002:a17:90b:1844:b0:37f:9ce1:cdb2 with SMTP id 98e67ed59e1d1-38e4b55aeebmr16485807a91.32.1784576359189;
+        Mon, 20 Jul 2026 12:39:19 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.63.64])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13ce29ffb13sm33935340c88.6.2026.07.20.12.39.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2026 12:39:18 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/10] iio: gyro: hid-sensor-gyro-3d: use local struct
- device
-Message-ID: <al54b953O6JXcbU6@ashevche-desk.local>
-References: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
- <20260720-hid-iio-local-struct-device-v1-2-74496fee6327@gmail.com>
- <al4MeTgAWWkJsb1T@ashevche-desk.local>
- <1E009860-0A0F-4F8D-8017-CE5739F22144@gmail.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v1 0/3] iio: light: gp2ap002: runtime PM and error path fixes
+Date: Tue, 21 Jul 2026 01:09:08 +0530
+Message-Id: <20260720193911.74919-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1E009860-0A0F-4F8D-8017-CE5739F22144@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jul 20, 2026 at 10:20:28PM +0530, Sanjay Chitroda wrote:
-> On 20 July 2026 5:24:33 pm IST, Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >On Mon, Jul 20, 2026 at 03:10:14PM +0530, Sanjay Chitroda via B4 Relay wrote:
+Hi,
 
-...
+This series fixes three issues in the gp2ap002 driver, all present
+since the driver was introduced.
 
-> >> -		dev_err(&pdev->dev, "failed to setup common attributes\n");
-> >> +		dev_err(dev, "failed to setup common attributes\n");
-> >>  		return ret;
-> >
-> >Nope, First one (to eliminate a lot of churn) should be to convert this and
-> >similar to use
-> >
-> >		return dev_err_probe(...);
-> 
-> Thank you for your input.
-> 
-> I'm planning to have a incremental series: first introduce a local "dev"
-> pointer, then convert the resource management to "devm_*", and finally
-> replace the remaining error reporting with "dev_err_probe()".
-> 
-> This keeps each series focused and avoids introducing intermediate patterns such as:
-> 
->    ret = dev_err_probe(dev, ret, ...);
->    goto error;
-> 
-> Once the cleanup paths are removed, those sites naturally become:
-> 
->    return dev_err_probe(dev, ret, ...);
-> 
-> Does this approach sound reasonable?
+Patch 1 fixes an unbalanced runtime PM reference count reachable from
+userspace by writing the event enable attribute twice with the same
+value, as the IIO core does not deduplicate such writes.
 
+Patch 2 fixes the runtime suspend error path leaving the IRQ disable
+depth unbalanced, permanently disabling proximity events after a
+failed suspend.
 
-No. First you should drop the dead code for sure (see above).
-Second, try to convert to dev_err_probe() as many drivers as you can without an
-intermediate change. If the driver requires an intermediate thing like the above
-it means it requires bigger refactoring. So, you should not have intermediate
-churn. With your current approach there are drivers that will have it, and for
-them you need to have different strategy (see my proposal in the above lines).
+Patch 3 fixes regulator enable leaks in the runtime resume error
+paths, which matters as the supplies may be shared with other
+devices.
+
+Regards,
+Nikhil Gautam
+
+Nikhil Gautam (3):
+  iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event
+    writes
+  iio: light: gp2ap002: re-enable irq if runtime suspend fails
+  iio: light: gp2ap002: Fix regulator leaks in runtime resume error path
+
+ drivers/iio/light/gp2ap002.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.5
 
