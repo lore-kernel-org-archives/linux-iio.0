@@ -1,63 +1,63 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C79BF442FDC
-	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 19:39:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72049446BE0
+	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 19:39:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784576365; cv=none; b=YtHmFHwuvOksnMzebeHOgZ0hZEzPpFtHJReHEG0qh6KPaXhLVPBKFll9vCBKmM3MUhXCeUOIDzN1YZ91DKYcx5F4bsgUxe3FoaRPybYXvP6b0dYekJ1Mxe9cWiYrwn7yc+iULngYjqPATRaXcDlwqEn2yLddda2hu/E9jXkx3xk=
+	t=1784576368; cv=none; b=KR21AQFdeIPs7J6kXlLdf6R/Hi6ns8OfLp5thTWUBuegtuanvs4oPvFPTu5Wp0uBGdMKmNrBpgkkCTy/r6eyEeHALDzF7agvRM1MsJJ/Nd3j1B2njF9q+pad1bUuD2zE9zCYvifkW26aAXcuHE9kzXMhVRbkz59CTt9NJNSjjdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784576365; c=relaxed/simple;
-	bh=jzT/6FpjIwHOnd/Ocwox01XayWSBEHvjkvcK93wVLdA=;
+	s=arc-20240116; t=1784576368; c=relaxed/simple;
+	bh=BIgF/MBWBkH+YrQaMxoT9KyYaoF+iLuNvKx4PL9FFaQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=g/gs16WWL7sy1CW/B3uH+PvlTod1FAgv1BILSu+f0PCdUXq2Q/PYDs7nUMyYEeB1c4/CCOC8JTbig/0Is/MkFHOWMx9qbhxKsk/38QH0AgZYdfN1H/IVocy2NC6J0kOCHf7POUPrNef1sckeC7Kl2LYM8ZuhUKLDt/3c6LFwd5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hIzJh9Ux; arc=none smtp.client-ip=209.85.215.170
+	 MIME-Version; b=f6albZM7LA3eH7ehDH5ozokMgo4jwSq61QwBYBqG80667KmEtEo23voRkJhh30CX90bdJWta3AjPv5lrdQW9cAZhy24ZUndSwJ1nEINZbTfBB4nVBxmAEn1lhZITyXKKq0HW7LldcYyduyETv37D9xuBvo7xsmOrUdRwOy/ABCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jhgh+rt3; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hIzJh9Ux"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c9fe3c9bd5fso2673851a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 12:39:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jhgh+rt3"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-ca97d139d8dso4290955a12.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 12:39:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784576363; x=1785181163; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784576367; x=1785181167; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=qTUe4BSLEWJRqj/YoC7td2ZN8zxIRbPJjN8t5iaBH1w=;
-        b=hIzJh9Uxa4OWq7imQ8VRoylaZGjwzo2HlGtmVMYL2SiDOw6hyTPgqJhGZjiXBmeXi7
-         wzVl8lCA9vShK41DLuUK3JBaNBVQxjn/btEKtK+dSphc9MNcD5pM1TGkZ8GsS49S5Vrm
-         +DkDesb6xhs2xdGMBtBN8UPBX87H+oW6+/BzZUBJk+t6cp92zcqZRGdsEdjGKPlApl81
-         a2So04xtGoSV0HrGtpWDN0uNiIWqzgfNn7tvL3NbRxT3ujWrYJ02BGwjh+hN1TkINYqe
-         SFOXTvssiE8I/JnT2mBPtThl/+IaJ7kNwwa5dXQ0SXHmGWp3knfnDMNmwUMsHIQw8Bvu
-         hbFw==
+        bh=G26pkiVGOQfvjhUhovAmEpMH2UgTqMGfpTU7jPDu8MQ=;
+        b=Jhgh+rt3fxUkm4lKjwsoGfrDI/6qQ/27QJgL7mU6LLOFoiwOWzx4YQviwwlmV9hCQz
+         m787Eg9X7GgCi6DlPYNNicHaBZnp3aXuqXguURISm8t2xnqSuyCIVOCmUDiHqsW2W02r
+         bIi2ac93bj4l6xEAmcoZyZi5Z2ugZ7W/V7+UjyaST8Qqyc09cQXnDCeCFf+Nb9nHGwJ8
+         F3HFM3jwd5wtdA1GDmr1oqF59C4tsUN2iuBuU59A0D/ASjuBecTZM+2bx14g+h+PC3Vu
+         5SqUcaAkEJTxTYBlpQlWBFkTQ32N1JBaVJppht6aC6tpNa2C8qyYUuc4U8nAfFEod0Co
+         4Sfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784576363; x=1785181163;
+        d=1e100.net; s=20251104; t=1784576367; x=1785181167;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=qTUe4BSLEWJRqj/YoC7td2ZN8zxIRbPJjN8t5iaBH1w=;
-        b=f8LXKiHZS0uuaK4ej9+przmRx775RUOiAbgtlWtBQaHF0AhSh/w82wZO09FweZfC7Y
-         3y1mVo0BeLfR4HeGeFVi7//4TqAJJzrVQdmcX3Kn+ZPhgm6nu8GefCuw8+W+U2X6GHDP
-         YxOK2GNbXwvPghqmzPYDTgu5RBGb91dC+CbtK4bzWj789+6MsMLc3hctn7NBCufOwWox
-         r3E7su9VWUCoqO3eUrEmfXSXoGgRYez9+sbMRMtXmXC3U5lzrVYNav2XewzZqZ1BnYzu
-         iaQido54dB6eLgH09xjL6EtLzkabulinzZk0wf67PwjVSiDVDE73WkgJ9IyAPttc0wp/
-         FYcA==
-X-Forwarded-Encrypted: i=1; AHgh+RpHDxkRJQ4c3Mom1Zr7jZfObNj/zDXKCTvOevinMGd6tqRsb2VFFs8dZM31nHh1i9obTaRH7InozQQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwRG8zw/n55yg2W3I8FxEjkyaH49o6Fqp3Myoc/4m1/UFkjUR36
-	a8V2/eBjUcxoCG1nxM9xL7NQp2rS53NMTsIAH5Z1R8J4HnLuPG3d49c=
-X-Gm-Gg: AfdE7cmNuDdNHDSohGiGKHYcHBpKqAjSL0fYSv+7GDftwrgFXNkncNYdMfKfOFJ+CFS
-	LqBDcf1s7Ix2aJ64xOnTteYLeCq6ioEoIm6zBV5CezM5oVCfWVmmCEDKnbrraLVWK8wl4Eio29P
-	Rg8TPn8zLh3hasyeMGNASBwNoeH+G5WRXpmwmweL7vjLT9skitJfjW1xWLLvEXXqMdvW1+R/EvL
-	SC67V9onph1hGvhNwZEkGEt/joeB20cnsLhU2LjiGtfSyx1qjLRKUoq7gpJgztxdeJEGS7sypzX
-	/c1eGr7bqm1IFDH+VrcaMiBtbfJRwnW1N9vr6tpCyYyl5WFSbRmajDMcB9HC9pIFX7XWUNLl7qG
-	IvIukzw9Y+4kqQfKuvDwydYEo8WKFUhFtKfHJM8lbZu6EYV1keFYpFZaT2v0iU3wz1L7WapTkv1
-	WnxYhQCjsSOMSZ21qUSsOg+vwHlOvhHRXZBsIg6RgU
-X-Received: by 2002:a05:6a20:da08:b0:3bf:b7e8:68ab with SMTP id adf61e73a8af0-3c38d8c9c03mr21850768637.2.1784576362961;
-        Mon, 20 Jul 2026 12:39:22 -0700 (PDT)
+        bh=G26pkiVGOQfvjhUhovAmEpMH2UgTqMGfpTU7jPDu8MQ=;
+        b=qV7/EOhWg+XnGSL68kv0WVdyE8mfancbP1UULc6G0Rwmb3ak6rG26Zg3XuOSfVWuFq
+         nL5M7L/FmvuTPEWlHjdThSg9IeT9ggl8Qzk1n5eXYxkrJl/7WV6w2so26Zi1JxuMh9f6
+         N0CMM4Dh27Pr6jDmgUwi57RwDC/FTUVSpN+rWA7dsS9IR9KxtlHA2KMSblasCg35jSi9
+         5ldq7NYy/ymQ+ZHuiAOKm7xtQD/LZ50B/3Vcst/oNrtc2ZbuSee1PgQEINl53/PDPGsX
+         GhE4CEetuv/j5eVFnrTrSDjrPuok0zYyUGns43PweHHrcXnrxwxYnGkcBbjR26nFwW3Y
+         yWTA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp1/NUeONt30KPbeSPOlvgBOPUY3Z8psrXnPSk9jwqH6oMIveVHeNDzJv23NoaVgv5hxP1Tj6xkOFQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx3vQYI+EojktDlA442AhBdK5RMpNf/eEjpERMykQUmraxb2UrB
+	L5TrhY+4x7zz8teF+Qy3fseFWzdNqxqHFWK61pnRZgJuVJZPMFW9sWM=
+X-Gm-Gg: AfdE7cm3lCBkpDVsaQI/5CjG/6URvc9QYclrjrP7s2Ix1UomKmw180O8Ppf7AUFdwv2
+	GNhTurwAP+Gv9/9g/0ZfGjzHmIWaZEU4yvFNDzeacrgjD58HhFWY7+7VoJXTe/9hsdGolQhhA+b
+	4u6YKWZcJn8wgMaNJqR8u04JXhZWu6eP1Geq5XFxeq+m9CJ4xlvbl4ncB0KU5ci0HbzbkrI2X9U
+	nqkZ5qUV8omGHw8HNk4D9H7ODvDfLi4jBOAdoVvWy/PGS/4jsMhDTUVMRZv6ptFg/OTRs/ozZOA
+	wPkUeRz8hXVAijUzhvOHo+PgXAhLfsmz7Lg408gp9jGxrS/0ptANHe7CNV25NcKPTDnTEl/Fo1/
+	gK6oziEWjzfSPdqaKYaGgObD/pUPoT/1pgfrOQ3wsxFCEA3PgnhvXD2cgrKPBfSUDdSxiBIVGMI
+	cEVjiXEIFtsOKF2PQLWN6gTatMgDQALT5wXnyRzCTH
+X-Received: by 2002:a05:6300:95:b0:3bf:e2f1:1b08 with SMTP id adf61e73a8af0-3c3ad9717d4mr16450850637.40.1784576366686;
+        Mon, 20 Jul 2026 12:39:26 -0700 (PDT)
 Received: from localhost.localdomain ([101.0.63.64])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13ce29ffb13sm33935340c88.6.2026.07.20.12.39.19
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13ce29ffb13sm33935340c88.6.2026.07.20.12.39.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2026 12:39:22 -0700 (PDT)
+        Mon, 20 Jul 2026 12:39:26 -0700 (PDT)
 From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Linus Walleij <linus.walleij@linaro.org>,
@@ -67,9 +67,9 @@ Cc: Linus Walleij <linus.walleij@linaro.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v1 1/3] iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event writes
-Date: Tue, 21 Jul 2026 01:09:09 +0530
-Message-Id: <20260720193911.74919-2-nikhilgtr@gmail.com>
+Subject: [PATCH v1 2/3] iio: light: gp2ap002: re-enable irq if runtime suspend fails
+Date: Tue, 21 Jul 2026 01:09:10 +0530
+Message-Id: <20260720193911.74919-3-nikhilgtr@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260720193911.74919-1-nikhilgtr@gmail.com>
 References: <20260720193911.74919-1-nikhilgtr@gmail.com>
@@ -81,60 +81,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The IIO core does not filter duplicate writes to the event enable
-attribute, so writing the same value twice invokes
-write_event_config() twice. Enabling twice leaks a runtime PM
-reference, preventing the device from ever suspending again;
-disabling twice underflows the usage count and triggers a
-"Runtime PM usage count underflow" warning.
+gp2ap002_runtime_suspend() disables the irq before writing OPMOD. If
+the write fails, the callback returns an error with the irq still
+disabled while the PM core marks the device active again.
 
-Bail out early when the requested state matches the current state.
-While at it, switch to pm_runtime_resume_and_get() so a failed
-resume is propagated to userspace instead of silently marking the
-event enabled.
+re-enable the irq before returning the error so the irq state matches
+the active state the PM core restores.
 
 Fixes: 97d642e23037c ("iio: light: Add a driver for Sharp GP2AP002x00F")
 
 Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
 ---
- drivers/iio/light/gp2ap002.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/iio/light/gp2ap002.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
-index 42859e5b1089..ea971fec0b56 100644
+index ea971fec0b56..96dab4d1d8ac 100644
 --- a/drivers/iio/light/gp2ap002.c
 +++ b/drivers/iio/light/gp2ap002.c
-@@ -343,6 +343,10 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
- 				       bool state)
- {
- 	struct gp2ap002 *gp2ap002 = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (state == gp2ap002->enabled)
-+		return 0;
- 
- 	if (state) {
- 		/*
-@@ -350,14 +354,16 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
- 		 * already) and reintialize the sensor by using runtime_pm
- 		 * callbacks.
- 		 */
--		pm_runtime_get_sync(gp2ap002->dev);
--		gp2ap002->enabled = true;
-+
-+		ret = pm_runtime_resume_and_get(gp2ap002->dev);
-+		if (ret)
-+			return ret;
- 	} else {
- 		pm_runtime_mark_last_busy(gp2ap002->dev);
- 		pm_runtime_put_autosuspend(gp2ap002->dev);
--		gp2ap002->enabled = false;
+@@ -650,6 +650,7 @@ static int gp2ap002_runtime_suspend(struct device *dev)
+ 	/* Disable chip and IRQ, everything off */
+ 	ret = regmap_write(gp2ap002->map, GP2AP002_OPMOD, 0x00);
+ 	if (ret) {
++		enable_irq(gp2ap002->irq);
+ 		dev_err(gp2ap002->dev, "error setting up operation mode\n");
+ 		return ret;
  	}
- 
-+	gp2ap002->enabled = state;
- 	return 0;
- }
- 
 -- 
 2.39.5
 
