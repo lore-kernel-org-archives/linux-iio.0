@@ -1,208 +1,137 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B5D3F164D
-	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 11:07:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549113F1ADF;
+	Mon, 20 Jul 2026 11:08:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784545634; cv=none; b=P4Hq4ECfrwfNq5LTADa2uda175MzaV6Y4hBFD/K9pfpQTDsXfaM0tjuux0TnWCzp3xuQfo/trC2TLwnap0FBplyR+jSyQAS795tK/9E/00coZ/5XF8E2xTLd3ErTDmuB37ObTQgEk/FdSj3P0mb8Gc5CIjEO56HnjOBHlVpaUUc=
+	t=1784545722; cv=none; b=YHomvfS959AyPyY3EsP1nnS2G74/Q2p9ByrLvyiIlxJbwre3OBaaysTM55gDesoBDoLaGyxKqU4JCfc6rC/xGmc2Pe/1eKhSAYMGzbk7nL+QzGzeVLT8vrtxxcXeBuSpJU7k53sdjX8R1iFHiukz7RM5iU4B+QcDVtRgjeYcGy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784545634; c=relaxed/simple;
-	bh=WWAuBpJuM1odnG65HUT646N/thKeCcHH8xjoUDAj8b4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A0MI+Fwt14mOm9YzLPepth5X5RUz8prZ965YXE1mSG3O1z5Rlt4NSXXwaV74z0eLm0FuXkCgDrI18RS4KiiurGHF6c8oFpyYbdVGHWYje6nyIcNeOZ3bP4RzwvewY/4bSSfy8GaZ/yGtsUuAGM/EQ2IA+5VmSeMWeTSBtX0qwb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZCbhVijI; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784545722; c=relaxed/simple;
+	bh=vrqaP6fj5vmKB+3e0Gw8kXl2gFxCwhcPrcNjPvkrmho=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=nFcUuutxUQdU9wlsrIV7rRkjQmPKQB/f3MTwFYJ1cuob0ibqPVD2RAOw4RoTQGum3gEWswpION+ag62bdMM56dmEwzG3Is1ONQFCnXO32JPd2JJx/v18SDsevxisJTttMsjkYpiycF2X/UK5+Rw49lg/UDpqRR3wwiK2cjCFg4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=h5+fums+; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZCbhVijI"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-4728c12ba97so4946002f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 04:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784545631; x=1785150431; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/zgIrLwdkZiGqMFiiLYoRASN/eMBGS8ykh70vVqSw+I=;
-        b=ZCbhVijIqPdnXWMEbgRzyuwyK9KXSl5zkQb0/xvr4KtcQrC6ja4oMTKdRe68HAWEuT
-         OEBLAcaDETwGm255bOqmaBjlVBtuxWrLJIM0sXff4y+awWf0aDVJihX1fHk5etPbEBuy
-         3z8N5qFk51hLjlYVhd4rnnGI5WYvUQoE3rgEVOaI6V/8tQ8Nm2+erNz14Ugx/Gd88CiN
-         C+Up42QS8DYveWQkJyL7FYDo3xVI4ix10yqmO4qBPLbR4ITdJy5Wbk+zZFmqa4i95dHZ
-         eD5Pji9tcFXrP2zMN9rxIGqQLXXoY8oDD5WB4ISb11uvWUW9ayFYvIBlxxvGfnUvhZeZ
-         mTPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784545631; x=1785150431;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=/zgIrLwdkZiGqMFiiLYoRASN/eMBGS8ykh70vVqSw+I=;
-        b=cw1a/xo+dMR846tJ9gE3R/e/zuj4uGaG1CqiNpzAAkw7asXkxGn4prtBnv/bxVQY0O
-         JOoQb/eP+ytHY7el5IMqRf1ZNkAbZw7JdUsN3YKpz9aTb/Fhj9nipz2hRNGt7lGjVVYE
-         4we+Pe2VsxPD7UU6dJJ/SkrkQ1VDtCFLwZUL42NqvaqNy+bu3PAJeBm5+JcPmdLj+KPE
-         AdC81HV/YN5mJKEyr4cEDcaLiEa1W9okAQx+9UTBEnrIOMmpWw/Q9VOgN/mvPPWQlBIZ
-         /IGMl4720Vx6pPKEJtSK9be4EuhuXo2tAM7CAghT6L1MjOmK5uHsVyVJEbCeQtP6LlSl
-         zL8g==
-X-Forwarded-Encrypted: i=1; AHgh+RpRJVqSQ7si9179YOuexwJf2Ay3HrerZ8uQ4kA50MkJq/dxS/FMvZxWtkEh63SK0eBVSQd2k1/hkwU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwLlfZ5JqC8zJEVWKc7uIN6ZOa+4YwJMJT4lvxwuNvutbXAsKPW
-	yv8wGVG99HvpUa90NI3p6n8Q+YqdT9adkXY1kDtetXXB2bs+0/2KnGjE
-X-Gm-Gg: AR+sD13qrKiXie2klo1EhQN6DX6ggL79UOFHvoJhL66E206ZnXl1vSROaMzeDIblHMa
-	GZPRWPQJft6Hp3AlXyOMKD27OgR2RLMXK16Iq/wuXFNX02hGzS/JkqbWKycXyqOOZhntVZUGikm
-	gRbevR1bGp+ZvDqP4uwL5fQqvmMF2xszeT1HodUegxcY6q2g7UABbcovXPaM6BKvHJH+xSdXaPL
-	UV5M83yDa0ZEgP1ENttc3wm/epYpToIN5OXbYFt1D7FbyiWXmyRrzWg272F5rLGSiA+1VsCvunw
-	DDzkdvdjcTqxu7Pr5UzrERhpiFDCwoCQ44MwiLaeyhCRErIW20pbhJ7OFDVD1taZInOheRvxeho
-	YzX4LCnEXU6FFt2xmmZQ7ECaA7N4i4EVmcufCPz2CZYF8cCtJ7Seve2LITSvDJF1t7QNqDiwC5m
-	+leIRw
-X-Received: by 2002:a05:6000:298f:10b0:47f:6609:c60a with SMTP id ffacd0b85a97d-47f6609c66bmr10493764f8f.35.1784545630478;
-        Mon, 20 Jul 2026 04:07:10 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f63e49acesm28009004f8f.6.2026.07.20.04.07.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jul 2026 04:07:10 -0700 (PDT)
-Date: Mon, 20 Jul 2026 12:08:16 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, David Lechner <dlechner@baylibre.com>, 
-	Nuno Sa <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Siratul Islam <siratul.islam@linux.dev>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, 
-	Ciprian Hegbeli <ciprian.hegbeli@analog.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: add MAX40080 current-sense amplifier
- driver
-Message-ID: <al3-oTXgPQ0eQLF4@nsa>
-References: <20260715063652.368501-1-stefan.popa@analog.com>
- <20260715063652.368501-3-stefan.popa@analog.com>
- <gnkthebcxlpbwvbo774hap4mphqro4gxho4zemj6p3ixa2qp7g@ncb5o7tw5wf3>
- <20260718004145.079c5262@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="h5+fums+"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66KAx9pN1485542;
+	Mon, 20 Jul 2026 07:08:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=FhOuaz6VkoaSNa+bmwnStalmSCJ
+	u+QOLYx3oX4MSYgs=; b=h5+fums+UOk7vrHC7YNdc6MCUwzlcPTULIfoGf564sa
+	qejYkPli/318gll+FZIrZEr4KjRVgyjgsL6ny0j0FfcLQdS1m+8W8Nj8HUD+2Zad
+	INJ/ykn+TNwjAlu6IIY4sFGCLD/ZttamXOaoksqwGnRXMB0VLSZ2P4JD0D8qqP15
+	lk7eCEq7o9+CgYz3rJcKdoYyyL8rBbNgDmLh7+UkJ/GICSyDap1gZCACXh8J70ll
+	5CQUZyfQbnSAPJiS2aS4dkRy0tw6KUQXO7afU6PE7PmxMXDUrKLZbr/7/CYpWttO
+	F8vDmlOd4Q3SHjsUovtA3/A8XXHmExIy2Ko3GJ3TBaQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4fgqte42t8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 20 Jul 2026 07:08:35 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66KB8Y0f062891
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 20 Jul 2026 07:08:34 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 20 Jul
+ 2026 07:08:33 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 20 Jul 2026 07:08:33 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.186])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66KB8HRH024360;
+	Mon, 20 Jul 2026 07:08:20 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Shuah
+ Khan <skhan@linuxfoundation.org>,
+        Marcelo Schmitt
+	<marcelo.schmitt@analog.com>,
+        Radu Sabau <radu.sabau@analog.com>,
+        Jorge
+ Marques <jorge.marques@analog.com>,
+        Matti Vaittinen
+	<mazziesaccount@gmail.com>,
+        Jonathan Santos <Jonathan.Santos@analog.com>,
+        Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+        <linux-iio@vger.kernel.org>, <linux@analog.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH 0/4] iio: adc: ade9000: add support for ADE9078
+Date: Mon, 20 Jul 2026 14:07:43 +0300
+Message-ID: <20260720110754.7674-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260718004145.079c5262@jic23-huawei>
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIwMDEyNCBTYWx0ZWRfX2fSejIDziPB0
+ ebi+I74+FGLhYOeoO/yfQI8cxoAuYRk4RIdWNVjzcO2gfGpjtH+EsIRnQANXsiYaTLtSrdHLTWW
+ xvl+mjEm6HIi5nEIUb5kFr3jKKd3U4vgz7vAR1XNHzQtabrBIV7YDQsXuHo+Q/v9TjMjiGWoeil
+ awteBzdPVlZ9+ASK8U48UilVgJ3C5F/4CBEbirrNUd49lW1eCofLRbXjnwOLSSlfP2kzArzFN7J
+ nCwTZnhQpCrOQ1Zvr8BRlprLFgrZE7Dgcv/f7KuOcwm0Uhpd8LtTxuUSB53qIXePoJiMxi22ZOd
+ ZyBRORe1jU4J5foyIzL5TAXcx+1EJb+5AIxyz23trXZ21DFySuiNEEH9wCbHyV6A6V0N8fo+Hj1
+ GoX7sdDabr2c75Imf4mgDvsQhfNaEtbiBJGIDKJYYpVeGfnyU2AcmoraTYDEhDXeqRlIkt9GpLA
+ 65MX40bxKVdJOCEJixg==
+X-Proofpoint-GUID: FilM7l3nCfvgjeSAft0pa1Fd8n74HXIf
+X-Authority-Analysis: v=2.4 cv=Ed/4hvmC c=1 sm=1 tr=0 ts=6a5e01b3 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=N--XFCr6TIEc_64PeIT2:22 a=zsVk_H6PqY_VlGaDqAMA:9
+X-Proofpoint-ORIG-GUID: FilM7l3nCfvgjeSAft0pa1Fd8n74HXIf
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIwMDEyNCBTYWx0ZWRfXzPZ8qWsOyiT3
+ bml/edlQVKheJ/bxnyj8uxPvT73QH+sx64345m7F0BCNGMvl0nBPMhPh5u+BddqMK1JTcjC32vf
+ 8uSNBDovRB+usnIaXCGoTw5JrKn9kpQvcMNHiHC3VQkAK0qheW9/
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-20_02,2026-07-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
+ phishscore=0 clxscore=1011 spamscore=0 bulkscore=0 suspectscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
+ definitions=main-2607200124
 
-On Sat, Jul 18, 2026 at 12:41:57AM +0100, Jonathan Cameron wrote:
-> On Wed, 15 Jul 2026 16:23:11 +0200
-> Nuno Sá <noname.nuno@gmail.com> wrote:
-> 
-> > Hi Stefan,
-> > 
-> > Some comments from me
-> > 
-> > On Wed, Jul 15, 2026 at 09:36:17AM +0300, Stefan Popa wrote:
-> > > The MAX40080 is a bidirectional current-sense amplifier with an
-> > > integrated 12-bit ADC and an I2C/SMBus interface. It measures the
-> > > voltage across an external shunt resistor and the input bus voltage,
-> > > storing the results in an internal FIFO.
-> > > 
-> > > No existing IIO driver covers this device or a register-compatible part.
-> > > The closest relatives target different silicon with incompatible register
-> > > maps and feature sets: max9611 is a unidirectional high-side sensor with a
-> > > die-temperature channel and MUX-selected gain and no FIFO/PEC, while
-> > > max34408 is an 8-bit multi-channel current monitor. The MAX40080 has a
-> > > device-specific register map with bidirectional 13-bit current, a 64-entry
-> > > FIFO, PEC, a single-measurement mode triggered by an SMBus Quick Command,
-> > > and two selectable input ranges, so it warrants its own driver.
-> > > 
-> > > Add a direct-mode IIO driver exposing the current and voltage channels
-> > > with raw and scale attributes, a configurable oversampling (digital
-> > > averaging) ratio, and PEC-protected register access. The two selectable
-> > > current-sense ranges are exposed through scale/scale_available; the
-> > > current scale is derived from the shunt-resistor-micro-ohms device-tree
-> > > property.
-> > > 
-> > > Link: https://www.analog.com/media/en/technical-documentation/data-sheets/MAX40080.pdf
-> > > 
-> > > Co-developed-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-> > > Signed-off-by: Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-> > > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> 
-> A couple of follow ups even though v4 is on list.  
-> 
-> That should indicate clearly why you should slow down and let people
-> get to earlier versions.
-> 
-> Jonathan
-> 
-> > > diff --git a/drivers/iio/adc/max40080.c b/drivers/iio/adc/max40080.c
-> > > new file mode 100644
-> > > index 0000000000000..a0c1144cfda7c
-> > > --- /dev/null
-> > > +++ b/drivers/iio/adc/max40080.c
-> > > @@ -0,0 +1,630 @@
-> > > +// SPDX-License-Identifier: GPL-2.0+
-> > > +/*
-> > > + * MAX40080 Digital Current-Sense Amplifier driver
-> > > + *
-> > > + * Copyright 2026 Analog Devices, Inc.
-> > > + */
-> > > +
-> > > +#include <linux/bitfield.h>
-> > > +#include <linux/bitops.h>
-> > > +#include <linux/cleanup.h>
-> > > +#include <linux/i2c.h>
-> > > +#include <linux/iopoll.h>
-> > > +#include <linux/math64.h>
-> > > +#include <linux/module.h>  
-> > 
-> > Typically I would say you're missing mod_devicetable.h but now we have:
-> > 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/include/linux/device-id
-> > 
-> > You might need to base your series on linux-next though.
-> 
-> I merged rc2 into the IIO togreg (and so testing as well) branches to resolve
-> merge conflicts with that series.  Upshot is just don't bother
-> including mod_devicetable.h in any new code.  Also don't worry
-> about including any of the linux/device-id headers unless you don't
-> get them via i2c.h, spi.h etc
-> 
-> > 
-> > > +#include <linux/mutex.h>
-> > > +#include <linux/pm.h>
-> > > +#include <linux/property.h>
-> > > +#include <linux/time.h>
-> > > +static int max40080_read_iv_once(struct max40080_state *st, u32 *iv)
-> > > +{
-> > > +	u8 buf[4];
-> > > +	int ret;
-> > > +
-> > > +	ret = i2c_smbus_read_i2c_block_data(st->client, MAX40080_REG_IV,
-> > > +					    sizeof(buf), buf);  
-> > 
-> > It's not clear to me that i2c will use safe buffer all the time (from a
-> > quick look). So I would say to make this DMA safe the usual way we do in
-> > IIO.
-> 
-> I2c always bounces unless you use specific dmasafe functions to indicate
-> that your particular buffer is DMA safe.
+The ADE9078 is a polyphase energy metering device from the same family as
+the ADE9000 and is register compatible with it. The main differences
+relevant to the driver are the absence of the on-chip dip/swell detection,
+a lower maximum SPI clock (10 MHz), and slightly different full-scale ADC
+codes.
 
-To me it was not clear because of:
+This series adds support for the ADE9078 to the existing ade9000 driver.
+It first refactors the driver to move the part-specific values (device
+name, channel table, and full-scale codes) into a chip_info structure
+retrieved via device match data, then adds the new device tree compatible
+and the ADE9078 support itself, and finally updates the documentation.
 
-https://elixir.bootlin.com/linux/v7.2-rc3/source/drivers/i2c/i2c-core-smbus.c#L604
+Antoniu Miclaus (4):
+  iio: adc: ade9000: introduce chip_info structure
+  dt-bindings: iio: adc: adi,ade9000: add adi,ade9078 compatible
+  iio: adc: ade9000: add support for ADE9078
+  docs: iio: ade9000: document ADE9078 support
 
-In the above case it looks like the buffer is just passed to the
-controller and it won't fallback for the emaluted case where
-i2c_smbus_try_get_dmabuf() seems to be always called.
+ .../bindings/iio/adc/adi,ade9000.yaml         |  30 ++-
+ Documentation/iio/ade9000.rst                 |  28 +--
+ drivers/iio/adc/Kconfig                       |  14 +-
+ drivers/iio/adc/ade9000.c                     | 178 ++++++++++++------
+ 4 files changed, 169 insertions(+), 81 deletions(-)
 
-Having said the above and looking (briefly)  at the .smbus_xfer_atomic() users, not
-sure it will be such an issue.
+-- 
+2.43.0
 
-- Nuno Sá
-> 
-> > 
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +	if (ret != sizeof(buf))
-> > > +		return -EIO;
-> > > +
-> > > +	*iv = get_unaligned_le32(buf);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +  
