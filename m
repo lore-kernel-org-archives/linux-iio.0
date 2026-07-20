@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56E5E3D6CCA;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 330B93D666A;
 	Mon, 20 Jul 2026 09:40:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784540426; cv=none; b=Wcehz0Z52cnt3wXdg9h438GNH5eZMBFIzX39C6i2lLn3tiC8Uec+6jF/LGjRh5XD6v4Y09pw4a/xIhupT7s/XOW5f6npyV6/S9/Hkkzet57fMGwstFXopEg3DDnVMdqvWDR2F3fWZZ6SVN/693JX3VvMNpTIMUF91dnkxVQ62XY=
+	t=1784540426; cv=none; b=duEr3kB2T0SMgrcTpUtJWmBE3LelImRkmJVSiCoXkeuKIGqVo5CPyKp2DiWPkuOzbG193+r/aIE6MOUW2zZfSAu/Wunu1mSJpMPKnlBTRyyvAdG+FLVqCX8KnES+l5uAI4i4znJVc4PtPDv+ELn/NHyXuuA7h7cglnaC5niUgmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784540426; c=relaxed/simple;
-	bh=DWsr9PTPwYYSUNvHLOJuCWKBPTXPLLa+QAvB/+nc7I4=;
+	bh=scSMD9yfVL5TOLx3EN/arGlReo9ABOVwOR2n8mT04ok=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DaSMSBMHlR6IKOQxKZg1KRn9Si7hRJ9voQ7I1MPoXVtkuDYugTkEB4EbY81B5MaWkgfKW03iWhcVZ+21XmYbXcdQh4jGjrEQXnAE8WTGM2tRarE/S1RQ+wMk71TyArP9zwjqDK2MBMjeBv923mjMLGI5RfxvpvFhrlc+wAFyDg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cRuGjJjx; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=SQg+VKrlDVjBcfuIl5tc4maP3/7dUjJ4/34FGoQMPv7UNa03DEYSNSUKy7DdMSDC+5rFH8iXLsAR4Hyl2xjKUacrtw6WP1PFQ0M4seKQYwnZYTCqED2df5igKtd/ZzFk1vOMjRan2j6hJv2Pp/8+77DoL6oJdjjlZDypnsnE+xg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uOtvdwSO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cRuGjJjx"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 389F6C2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uOtvdwSO"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 09E32C2BD05;
 	Mon, 20 Jul 2026 09:40:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784540426;
-	bh=DWsr9PTPwYYSUNvHLOJuCWKBPTXPLLa+QAvB/+nc7I4=;
+	bh=scSMD9yfVL5TOLx3EN/arGlReo9ABOVwOR2n8mT04ok=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=cRuGjJjxA4JZxz0MGRso1bY/PKFbj0EUSFF9IzmgWBigdpd/LGY2KPq4E8Zf3v7w9
-	 UVeDev9kjsjbbZGSnAbhK7oTQY1RUOULynZa00twUMWMXdFZq48IEZRjqP36Q3Vzfm
-	 4l+QJu8kQg3M7YfeiHLp+O8lb0Kg/BX9NY+HRtD5cBHcRVg77QvAzqCpTnvIp7YED8
-	 O9qiPEYb8h64j8e8Te3V8uzoXQ1ABSZLB/iYk7T9cBeMZx3OAWmBUuUnit8IzYfd9D
-	 7C7rWGBbH2anfsHw4tEOegVX+jAW6DFnMuyj22nIFs9mELvbcyjKv5Zp2VAwJ4Yxca
-	 oYUITcBX0Crxg==
+	b=uOtvdwSOHm0kReQqJh8JHTlNzxoZm1t2RGC+HBgQIPrgYuROt1uf/v/daFrhDORD4
+	 NNhrc6wqbVIjTTmmeEcDdfjf6AXViyqs1RI1dxY31xB4dfK99PfhgHC16gUj0y/0aw
+	 0fBcEZ7c46/OfuUHBBzMGnWT7Ji/JnnS4HG7Yghs2Lhb/EP16Y5KJSx71z17hrJj3a
+	 DW9NcGN8QttS9q8Lg2V2qS5HVZRqmywqOeEuKmJL4dPy+t4lZkBs+NOK38Uwo5jl9h
+	 Pig0jag9xYRI8Ld8zhlw5CPASVBosQN9NRFPUClDWnQ7fUOq2I0fjpB2rPAKbRlg8k
+	 fVQTVpnEzC4zQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CEFC44527;
-	Mon, 20 Jul 2026 09:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF10C44529;
+	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Mon, 20 Jul 2026 15:10:22 +0530
-Subject: [PATCH 10/10] iio: pressure: hid-sensor-press: use local struct
- device
+Date: Mon, 20 Jul 2026 15:10:20 +0530
+Subject: [PATCH 08/10] iio: orientation: hid-sensor-rotation: use local
+ struct device
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260720-hid-iio-local-struct-device-v1-10-74496fee6327@gmail.com>
+Message-Id: <20260720-hid-iio-local-struct-device-v1-8-74496fee6327@gmail.com>
 References: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
 In-Reply-To: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
@@ -52,11 +52,11 @@ To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=3124;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=3414;
  i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=KprakpDFPiwIPtA12YpCnWpXHOfCF0716+NW98RCOhE=;
- b=mbh6hvgT9+rdmxJAM7i6ZzhwW0uWhPEsY2qlpJRuZk5H5A2g9/mwOrgF4jjVli0KhtGFMDejv
- rnm20xClbDSCLTLM6gNtNHecByJDjUsgamb2JohWEbDuU2CfRcaUwOU
+ bh=5/qXdvEQ0B9F64BZkAHHH7V+NgRa7Impnj2qIRjxP4Q=;
+ b=cVVzT3tBshdolEVrxo3qxVbdqjBCh5wsAh1ITk3Yt7815M8Bv8dRw7uLu0FYRk3ZAMY3VWFSA
+ +oh0B+u0ixjAipgf5doQIEgPHdLDwkmG1/KU35ZkA5iBuHEVvesE9bJ
 X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
  pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
 X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
@@ -71,70 +71,82 @@ This avoids repeated &pdev->dev usage and improves readability.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/pressure/hid-sensor-press.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/iio/orientation/hid-sensor-rotation.c | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-index e688b0776547..fee170aa4379 100644
---- a/drivers/iio/pressure/hid-sensor-press.c
-+++ b/drivers/iio/pressure/hid-sensor-press.c
-@@ -230,13 +230,14 @@ static int press_parse_report(struct platform_device *pdev,
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+index 9e13a0ecd584..50a684efeb45 100644
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -238,6 +238,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
+ 				u32 usage_id,
+ 				struct dev_rot_state *st)
+ {
++	struct device *dev = &pdev->dev;
+ 	int ret;
+ 
+ 	ret = sensor_hub_input_get_attribute_info(hsdev,
+@@ -248,11 +249,8 @@ static int dev_rot_parse_report(struct platform_device *pdev,
+ 	if (ret)
+ 		return ret;
+ 
+-	dev_dbg(&pdev->dev, "dev_rot %x:%x\n", st->quaternion.index,
+-		st->quaternion.report_id);
+-
+-	dev_dbg(&pdev->dev, "dev_rot: attrib size %d\n",
+-				st->quaternion.size);
++	dev_dbg(dev, "dev_rot %x:%x\n", st->quaternion.index, st->quaternion.report_id);
++	dev_dbg(dev, "dev_rot: attrib size %d\n", st->quaternion.size);
+ 
+ 	st->scale_precision = hid_sensor_format_scale(
+ 				hsdev->usage,
+@@ -265,14 +263,14 @@ static int dev_rot_parse_report(struct platform_device *pdev,
  /* Function to initialize the processing for usage id */
- static int hid_press_probe(struct platform_device *pdev)
+ static int hid_dev_rot_probe(struct platform_device *pdev)
  {
 -	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
 +	struct device *dev = &pdev->dev;
 +	struct hid_sensor_hub_device *hsdev = dev_get_platdata(dev);
- 	int ret = 0;
- 	static const char *name = "press";
+ 	int ret;
+ 	char *name;
  	struct iio_dev *indio_dev;
- 	struct press_state *press_state;
+ 	struct dev_rot_state *rot_state;
  
--	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct press_state));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(struct press_state));
+-	indio_dev = devm_iio_device_alloc(&pdev->dev,
+-					  sizeof(struct dev_rot_state));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(struct dev_rot_state));
  	if (!indio_dev)
  		return -ENOMEM;
- 	platform_set_drvdata(pdev, indio_dev);
-@@ -251,14 +252,14 @@ static int hid_press_probe(struct platform_device *pdev)
- 					press_sensitivity_addresses,
- 					ARRAY_SIZE(press_sensitivity_addresses));
+ 
+@@ -302,13 +300,13 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 						 rotation_sensitivity_addresses,
+ 						 ARRAY_SIZE(rotation_sensitivity_addresses));
  	if (ret) {
 -		dev_err(&pdev->dev, "failed to setup common attributes\n");
 +		dev_err(dev, "failed to setup common attributes\n");
  		return ret;
  	}
  
--	indio_dev->channels = devm_kmemdup(&pdev->dev, press_channels,
-+	indio_dev->channels = devm_kmemdup(dev, press_channels,
- 					   sizeof(press_channels), GFP_KERNEL);
- 	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+		dev_err(dev, "failed to duplicate channels\n");
- 		return -ENOMEM;
- 	}
- 
-@@ -266,7 +267,7 @@ static int hid_press_probe(struct platform_device *pdev)
- 				 (struct iio_chan_spec *)indio_dev->channels,
- 				 HID_USAGE_SENSOR_PRESSURE, press_state);
+ 	ret = dev_rot_parse_report(pdev, hsdev, hsdev->usage, rot_state);
  	if (ret) {
 -		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		dev_err(dev, "failed to setup attributes\n");
  		return ret;
  	}
  
-@@ -281,7 +282,7 @@ static int hid_press_probe(struct platform_device *pdev)
+@@ -323,7 +321,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
  	ret = hid_sensor_setup_trigger(indio_dev, name,
- 				       &press_state->common_attributes);
+ 				       &rot_state->common_attributes);
  	if (ret) {
 -		dev_err(&pdev->dev, "trigger setup failed\n");
 +		dev_err(dev, "trigger setup failed\n");
  		return ret;
  	}
  
-@@ -291,13 +292,13 @@ static int hid_press_probe(struct platform_device *pdev)
- 	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_PRESSURE,
- 					   &press_state->callbacks);
- 	if (ret < 0) {
+@@ -333,13 +331,13 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
+ 					   &rot_state->callbacks);
+ 	if (ret) {
 -		dev_err(&pdev->dev, "callback reg failed\n");
 +		dev_err(dev, "callback reg failed\n");
  		goto error_remove_trigger;
