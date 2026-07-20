@@ -1,66 +1,68 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957C734751B
-	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 14:00:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6DB842EED9
+	for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 14:43:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784556033; cv=none; b=g7X4kDtvpT1tn6oviDazOugwfDKb2u3TiAXeuhbsYf8T8yfY0YGgnAvHsBDx2RDlrWBTHOlDb6TyVGAMkagMX65rsxl7FEcoHHuXr8TRhyRmTTR3EX5urj8SCxSRWFDd5G9MsHFgi2iDFWFxfbN5GRRhQ+YyDB1VcYkXsAC8YbE=
+	t=1784558612; cv=none; b=bCfwq0SFX1UDFbr1z85R8SGs6nOBLHb+CF78kmGIMlIUwRaw7NaKe4wzeBRQ/q/DIkj0VeMLUsKBa80DYv+/1d/ElOxiSiEpUslLs4rKBlkrmME0IMMW6P12zTPKXfgRRE7yXo1aYXjWJN5f9uNKLgsGOBElP86hoJtjQ/rsn0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784556033; c=relaxed/simple;
-	bh=ibO8HrzFGnu/FbI+Jv85vcjMmuwSEhYP9jqINubWEak=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=l1pWsRotKFZZYzLzMtK07uNBYjpRaXOkucU99jUtYXbjxWo9JnXYktvJCZecEp33jXRCcHx33qVKbnTbqg32p/9WWkmz924fmO6vKaDpjgKEOSqip3iKi044QGbL5sg9p1/f4hv7Gt8WP54Z1C+qvGa9FirqQXGXZenI69NBTGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NN4xQ3Ez; arc=none smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1784558612; c=relaxed/simple;
+	bh=z4xNGYkf4fETdRDY/WXmkgQmHnFeScnUkN9aeJpb0+8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JkzZZ7XK4tJOm+qJQgnY0YSnBobY1VYvXpgoVeaZv3tG6ho3bVEfW4qgxKqeTPSWZOB8Uap3j9+Tb4YNQdiQYxD1fxjDONf4l3wnroA73sb6s3JcxbfyycomWEgZgWMs1qjCfElO8DxhPb6uF/PzvKh4sp7A7P92cV2TUXrRh4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ylz9mDKR; arc=none smtp.client-ip=209.85.215.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NN4xQ3Ez"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c166f1bbeaeso976824566b.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 07:00:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ylz9mDKR"
+Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-c96bfabc8d4so4053410a12.3
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 07:43:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784556030; x=1785160830; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:subject:from:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7XWyfB00Rok/PjZ5UHAUkTiQrGyYkPnkRtIuDzoxupg=;
-        b=NN4xQ3EzJUcEDIBjZYig4zs/xtggJJFuRxCFip4KzMpyhYCtOwL+BbH7hYqM5mKTHE
-         s7yLQzp6MzAWSL5bKPu2137t+KeLT6kwBKqMLlo+TWRpk/L7zCrrkILwJAGeZrSza1gV
-         wBelRJ9HhOaNnE6kxWgMpumc/gvwynV1VIWj7qjoJPzrohfP7/56hL/uJsiTIbkJedHo
-         ELJ4l11ffh4SVZgTfXm1Ni+0g4pKSfWMENy3drnty1eJeYgGi1aAfzHo4+i1/bg+oH8r
-         lqoxXb7Z2tFmH8BgUGjEY3lQ1k+1lZLBTX9vqzxroyjwsrVi0XOtmTP4hQ2HvKuVTW8i
-         ulhA==
+        d=gmail.com; s=20251104; t=1784558609; x=1785163409; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YRPQsRwj+n1ng0H+WDG2QV9LkRG40/jMmpAbf3NOmNY=;
+        b=Ylz9mDKRMe6O4vjS+eQwOXJiakIAaEobGKbnFVNCh0Wek9nIDGMhVCXE0joTv1/Sgh
+         txhsTjkpV2mveGVg5L57b7HM6BUD6LsYgvckzclc1Hlmh3hY8/fv+rR5YqUNnS6F2juW
+         Nu0U4rggrOgtrxaiX8c31rkeT2cCIozh764BKKipQaNlFOdgPl/p+7mEOfbGAjSW+W2V
+         6cMoXsz4vh+ZaAbN+ZFyra1VqkImhvfjbyvJZAfm32cLpiauPZEjvWp2JCCz+cFalAVR
+         7vFBqZ7jKAlbUiFbf3LTLgdSHfGLvQuoPyFKnRdl190kQBr8DIDWb9ktMwguCnCGOvPB
+         tTNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784556030; x=1785160830;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :references:cc:to:subject:from:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7XWyfB00Rok/PjZ5UHAUkTiQrGyYkPnkRtIuDzoxupg=;
-        b=IDsPe/AAg/3jz0On/Hu7xNefGDnKsxyfSl/0ROBfXZoYeev5trJopVXVn9BtyFC/07
-         mgz1WethkcZTZ8zn8oJPdW7+Jzp2WzTgyd19tp3mpFjyr5196BY0hsmWN7h50wjGubRN
-         9nqwcWzdAMkWRDJzD7pocy76XS8ahvrecf8cZZ0oHEncYYclJNBWMIQVWxktb36SIKya
-         rYOyig5Zqfzmd+J1p8hBgklxr4YBaG+xxdmQgSec9hNXFXIdmPKKDtxA39YXett7mapd
-         oAv88QGCL/3BHDAj0F9jBugOk07L0Sblzb/ieSb4tva2WfyrTBeePBaF+t98W00DWZF2
-         kGjg==
-X-Forwarded-Encrypted: i=1; AHgh+Rp1zpZ9Mpw20hMxZ97LMVSEYGy6Eo6H3zrjyYlkWcAtvqJahsvslzct9gU6lLvqXBXon3vni1205bc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzGWLwU9KMaRNOS0N2ijB8F3pIxOEhhndZc5dgvVNtWLmN3s2ai
-	4OFZP7CV052hwAYjpwlaM2N/UQjirl6hvTJMpABP/PzuqJbWaQstcoH+
-X-Gm-Gg: AfdE7ckETfkwK5z9c3pOOmCVrN/kPR1bCGqy+XCxxk9wWgvoVwtnC2xiyCxXGXFMmr0
-	F+eHgaDlhjGPTFeBzckrLiDrUW5/IWIw8jHJpJN/QRzOcGYHhcNCLjXfD3C4aZ6rRc65FphOqJx
-	qAyuPwk/vtQXvwh0GOWn3124iAWJSArvd4U51/j3AM5r4RDWwSfcKn7gE4nY/kZ/BIlQNOEwM/Y
-	b2+FEyYcRDVVGlkz3dfpxk2BENZJPS2GakYxkmjbEiAx440SeEgILggefWrtUv4uXzoCQRVm6WR
-	Y7rPZgIBNhO8SkWvE2i/aIUdO0ILZJpt/MjCOTtK04W6+rLuW/sWG1RZbGsdCFO7j8f8enrB2FP
-	vfamV2iYdhar8pXP85jwI+w6sRZRxtaRegfrBWMRcYlxzfNW7rTAatCkv+J12HiE6RRXEYs+nHS
-	IPoC6T6gDyJZZO92TheKaMC40d/GG4d8hKCChWqToQiF6vKm5BEpdro99nE7U8LHXd2sIs570=
-X-Received: by 2002:a17:907:3e98:b0:c12:4cb8:a826 with SMTP id a640c23a62f3a-c16b457b1abmr614064366b.6.1784556029502;
-        Mon, 20 Jul 2026 07:00:29 -0700 (PDT)
-Received: from [172.24.138.145] (dynamic-176-002-111-253.176.2.pool.telefonica.de. [176.2.111.253])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c17009ae00asm464388366b.7.2026.07.20.07.00.27
+        d=1e100.net; s=20251104; t=1784558609; x=1785163409;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=YRPQsRwj+n1ng0H+WDG2QV9LkRG40/jMmpAbf3NOmNY=;
+        b=PdeWKswqJ/Cy59uoIE4txEEw+mk3uDT6IvLHj70olfgWv73a+KlRXZQnbntAca04o5
+         5jkZOZTVOvJp9oKZ1jZ6/XYkaZv5Tji8KluTt7QhYP9HMSUfOsCfVPOc/PKbVsMJLDm5
+         MjHZCmNf37WSgbYE8ERh0kIAbm9HZEneT5XnUnIV+6+JRVK+Q9D8FUXFhBRdMa2UK4Ag
+         Oifr+ibMgvGkcA8BzDOzxpgWV93gBCFUczCFMZYMUXzIQi9+kS11BDz/gUGcqbH0xQ19
+         nwdFCkxTXqbn1Uo24HdXB+9u9gZ17S95VkWgxVPntG3o5d2Mta5GyMkmr1nrXIFChs3Y
+         DfLA==
+X-Forwarded-Encrypted: i=1; AHgh+RpDPsu4FO+PgFBzgX/vidauoxHgY0YuQEmLFj26m+aM6zvohN7wgpTaqsvLrkNVXQHMwGW/H4gNdHk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzgZfBnqBUrBTZPaX9S7bdiLmA5oLEd4hLtu+pYrGRBn/jwbHAI
+	BXBsOCESTHZpJm7VP269Mji744ji5JdLE4H0YDUmtNoZvrIOMgP4hDhz
+X-Gm-Gg: AfdE7cnIdzUbcMCrxYo6mxJudB2wykG0Gp0igR5fcD/XCyKGVUIaXCSUweE5KSEHEp5
+	hjBPhjuFVCA9cJI9hm6zhqd8w9rhh3LcnELuEbZjr5O9k7yEXh/EXTpm5iEiwn9jXC0SpDPPxDH
+	i3Rd7hWuwaEMVUckNB0asVFf05P36CNUyytrocelrO7uC9AenBq77HeGUbL7YoI/gHU1nrYO+j8
+	ax6DCAM7mRNpH8byqAVNEEOynwHLeqnUB8OKPjb1y7QBcghpMVrXF1YWLSNify4iMK41X80vZp5
+	o52gnwQPOLxgQeSd0m5V8SJUafsZEH2FQSiWJd5mogiFWyaMVpSfwVd9Ma4pDrggtoPwAtjob11
+	wHEPqa4rBJ7mxFZWkP72hoIP+5BmJWpF86uG3C25opNO/fTdVesWuW1oRMj/WAsocXPRFgJ/eK/
+	WmnMNq1npiWvP1+OKMICcpCminMcqLQ6eCGuKZBgahxRik/S5bJ3w=
+X-Received: by 2002:a05:6a21:3981:b0:3c0:adec:b3bd with SMTP id adf61e73a8af0-3c3ad9646afmr16051848637.49.1784558608970;
+        Mon, 20 Jul 2026 07:43:28 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-31429f9bb62sm35894013eec.2.2026.07.20.07.43.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jul 2026 07:00:28 -0700 (PDT)
-Message-ID: <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
-Date: Mon, 20 Jul 2026 16:00:26 +0200
+        Mon, 20 Jul 2026 07:43:28 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <612e3496-2917-4d4c-8794-69c3b5b27c5c@roeck-us.net>
+Date: Mon, 20 Jul 2026 07:43:25 -0700
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,76 +70,114 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Janani Sunil <jananisunil.dev@gmail.com>
-Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
-To: David Lechner <dlechner@baylibre.com>,
- Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-doc@vger.kernel.org
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
- <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
- <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+Subject: Re: [RFC PATCH] firmware: scmi: Make SCMI arch independent
+To: Ulf Hansson <ulf.hansson@oss.qualcomm.com>,
+ Cristian Marussi <cristian.marussi@arm.com>
+Cc: Michal Simek <michal.simek@amd.com>, linux-kernel@vger.kernel.org,
+ monstr@monstr.eu, git@amd.com, vincent.guittot@linaro.org,
+ Souvik.Chakravarty@arm.com, Alex Shi <alexs@kernel.org>,
+ Andy Shevchenko <andy@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Brian Masney <bmasney@redhat.com>, David Lechner <dlechner@baylibre.com>,
+ Dongliang Mu <dzm91@hust.edu.cn>, Fabio Estevam <festevam@gmail.com>,
+ Frank Li <Frank.Li@nxp.com>, Jonathan Cameron <jic23@kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>,
+ Lukasz Luba <lukasz.luba@arm.com>, Mark Brown <broonie@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Pavel Machek <pavel@kernel.org>,
+ Peng Fan <peng.fan@nxp.com>, Pengutronix Kernel Team
+ <kernel@pengutronix.de>, Philipp Zabel <p.zabel@pengutronix.de>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Sascha Hauer <s.hauer@pengutronix.de>, Shuah Khan
+ <skhan@linuxfoundation.org>, Stephen Boyd <sboyd@kernel.org>,
+ Sudeep Holla <sudeep.holla@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>, Yanteng Si <si.yanteng@linux.dev>,
+ arm-scmi@vger.kernel.org,
+ "open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
+ linux-arm-kernel@lists.infradead.org,
+ "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+ "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ "open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ "open list:ENERGY MODEL" <linux-pm@vger.kernel.org>
+References: <d7f7e8c9589d937b60e43168845ab4fda15037a3.1783603600.git.michal.simek@amd.com>
+ <ak_Eu_eQKalPMwo-@pluto>
+ <CAPx+jO9KMcxnmt-wT5jaApj9p7s11B6eSG6K08Jt9J=-vXxjhA@mail.gmail.com>
 Content-Language: en-US
-In-Reply-To: <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <CAPx+jO9KMcxnmt-wT5jaApj9p7s11B6eSG6K08Jt9J=-vXxjhA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-
-On 7/9/26 17:43, David Lechner wrote:
-> On 7/9/26 3:50 AM, Janani Sunil wrote:
->> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
->> simultaneous sampling ADC
+On 7/14/26 06:16, Ulf Hansson wrote:
+> On Thu, Jul 9, 2026 at 5:56 PM Cristian Marussi
+> <cristian.marussi@arm.com> wrote:
 >>
->> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
->> ---
->>   
+>> On Thu, Jul 09, 2026 at 03:27:00PM +0200, Michal Simek wrote:
+>>> On heterogenious systems like AMD/Xilinx FPGA there is a need to talk to
+>>> SCMI server from different architectures than ARM that's why remove
+>>> ARM/ARM64 Kconfig dependency with also remove ARM from description and
+>>> rename folder to reflect it.
 >>
->> +
->> +  adi,power-mode:
->> +    $ref: /schemas/types.yaml#/definitions/string
->> +    enum:
->> +      - low
->> +      - median
->> +      - fast
->> +    description:
->> +      Power mode selection.
-> Unless there are pins that control this, it seems like it should be
-> left up to the driver to decide how to set this.
->
-> In this case, it looks like the power mode also influences sample rate
-> which is normally something controlled at runtime.
+>> While I understand dropping the dependency on ARM (I always wanted to do
+>> that and test if it worked at all on some otehr archs with QEMU), I am
+>> not sure about the whole renaming party ? why is needed just for
+>> cosmetic reasons ? it is at the end an arm originated protocol so I dont
+>> see it as a being wrong to be named as such even though used by other
+>> archs...I have not really strong opinion on this...
+> 
+> This is certainly not my call to make, but I have to admit that I
+> fully agree with the above.
+> 
+> Usually we don't rename files that indicate a legacy platform name,
+> just because a new company/platform wants to make use of it.
+> 
 
-Hi David,
+I agree.
 
-The reason we'd like to retain power mode control is that certain ODRs 
-are supported across all three power modes (low/median/fast), and the 
-RMS noise and power consumption differ significantly between them at the 
-same ODR.
-
-The higher the power mode, the better the noise performance, but power 
-consumption nearly doubles for every ~3 dB improvement in dynamic range. 
-Silently selecting one power mode in the driver would remove a 
-meaningful hardware tradeoff from the user.
-
-We'd like to propose the following instead:
-- Remove adi,power-mode from the DT as suggested.
-- Expose power mode as a per-device sysfs attribute.
-- in_voltage<N>_sampling_frequency_available dynamically reflects only 
-the ODRs valid for the currently selected power mode.
-
-This keeps the DT clean while still giving the user explicit control 
-over the noise versus power trade off. Would this approach be acceptable?
-
-Thanks,
-Jan
-
+Guenter
 
