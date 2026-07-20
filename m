@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E76163D45CB;
-	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F063D6662;
+	Mon, 20 Jul 2026 09:40:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784540426; cv=none; b=U3O2XnrMmRoFZw0GOHVGOOEVDGwkRfi7jthGzy17d8TeFXOmi62UgaLWEd2QQ0+UplIW+DriVSY/5xWqSwhBUYtd7iHhiKw/rw10BRsN2VWqSLVeeQOVqf5gOIQLRfFvXKtx7hVlXg/VRt563DFYgtq2DrQVN6zAOqmuZYesDbM=
+	t=1784540426; cv=none; b=qL4Ju63F01eyyB2C/q9krSFugQ3uVcqJsllHqskIYyQf0ToPwDfsblzOS8firE/4Om31QYBWWKnTmMW9YpMr75VdFD9q4rfi3Qe7cW/FfyW0k9me+v+Xj+22X/eT/AX8TK6b+fA6zcT+/ZEN9mcb6X/nSqECT46IcADP8nurapU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784540426; c=relaxed/simple;
-	bh=f/RNp5qcwybkfeN/HanUf56pHEeRgjyLnoKetz64Vhc=;
+	bh=NCOfztZyq77uNFx8wStBag95ysryTVtpTDs/tH+si8E=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=oCK8ZpvO9XuhbKjDOhhhy3NVWG1YApdMA6BHox9mJjK9SzFCFIDD1KrT1Mdr37I1HXFXNR1vEuSUq8dXReFw8YIqe2g+5kNb0ARkWNRr6xJmqn7S6BqvF8r/9Z5TZytc/0iQYm7joTFHwm+UaHkqwvB5hVUmFNZpr8Pl9P0DiyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fSQ3PxQN; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=DktgxqEWF+PGzUw9uyzW9oZnSjXgSyPc7Qhm+R3U15s9wzzPMLqTAHKvawSaGfiCeo5CWPodUO1FKu9OwHyttQcVw5gdz24Yo3/NituAmHLkM4xRkkQwf5EgbmDtBXaTOWtoGEaCiTh0ZZEFQjYIkSZFjM7l9Acc746FjgGUQYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GLpZxfA3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fSQ3PxQN"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4E37C2BCFD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GLpZxfA3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C8390C32781;
 	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784540425;
-	bh=f/RNp5qcwybkfeN/HanUf56pHEeRgjyLnoKetz64Vhc=;
+	bh=NCOfztZyq77uNFx8wStBag95ysryTVtpTDs/tH+si8E=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=fSQ3PxQNOP4nP9kkYE+JgZVWKqa3j0x6XzqvTcXyalWZ1RFgbQRTgjGEFdV+JInea
-	 fI8toILJxnLuHBTaMzySOnbmF1XGcgfN/ol3YAmXwUcSvDO03ml4Y7/lzGBb5YwtU5
-	 zrVB7DVcCB3Do7G03F+THvWu20rbyBRxZrBjEIVLOcqCCdtK2wwAuPxXMl5JcSY6il
-	 LNXFGzCWmIKF7dgF+vQzLZanfo6VhtkU3JUgFtmaKcM0EsbDAvHLaZsvSOgOoj9Rvh
-	 xTECvThXaXR+OONbLHLTyWOMb26U/9h6/+9Dmwe4bmjXbosgrD90vIYdAdPDRzm11W
-	 ZnSFhvptY9t7g==
+	b=GLpZxfA3N3KoQH5siDoBugS72xxXVME6mg/9BkS2SbCDESEwlYMCNPIQgLcbtEnL0
+	 /Yc9T8xtRtNBK0G9uiGaFcQ9fPYBhq6rvKufN9ZIExuM2eJ/sXU6rWrIfFuYJzHhHU
+	 n0Slgj7grudoH0cIxqxC55TwBBlai5FNJgmYyFoh/ZUFU379pQa5HAK1BcI141WjJH
+	 eu70gbwaUBgPAv2XVwU2zio/Cp8Qkk7czi/ktiV75YX3dw0vF+F/bpZ8bRUwciUD8e
+	 mkXVOw2znxNhgwq7ER01R4Ko5CC56shAHd7iQdEUg0I40GLRujVNwBKFKBaEG0rzOf
+	 crC5lMD3kJd0g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C328C44528;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EE6C44515;
 	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Mon, 20 Jul 2026 15:10:15 +0530
-Subject: [PATCH 03/10] iio: accel: hid-sensor-accel-3d: use local struct
- device
+Date: Mon, 20 Jul 2026 15:10:17 +0530
+Subject: [PATCH 05/10] iio: light: hid-sensor-prox: use local struct device
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260720-hid-iio-local-struct-device-v1-3-74496fee6327@gmail.com>
+Message-Id: <20260720-hid-iio-local-struct-device-v1-5-74496fee6327@gmail.com>
 References: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
 In-Reply-To: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
@@ -52,11 +51,11 @@ To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=3184;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=2605;
  i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=CHrL5pLuWoANqRnTUQhBxvjRxrsqGaR+mjcFFDbcdqU=;
- b=jvPykdZK1FZL5BRq/q/lUtRSM7gO1wAB8CWI2GuTQYgmVnGABIc0qmpbT/Zod8t+3/eDeIOxv
- TstVMjJkp46C+vNCunsNzJt0K/Y7cHTZ8MprvLUPE48EpKBd4bmLbfZ
+ bh=7IEUJ7GehDEbevcdEbVmc72XuPyYDVyBe9W1Pn/2AZo=;
+ b=eMfxO4F4HaKBiIyMvMz1CG87O8xv8otT0Q3/62nTcgy+LhSBaMi+dEjmc9z+AfzoXQoQEgXqR
+ 4KqV0GuNPb+AfYhiFg9TujzlVCoa4SWT3vl3SAs5ZNRhVnZijtAObdG
 X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
  pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
 X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
@@ -71,72 +70,58 @@ This avoids repeated &pdev->dev usage and improves readability.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iio/light/hid-sensor-prox.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index eb521125f4eb..5467ecc86b58 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -314,7 +314,8 @@ static int accel_3d_parse_report(struct platform_device *pdev,
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index 63fd3eff171c..e7fe40726385 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -260,13 +260,14 @@ static int prox_parse_report(struct platform_device *pdev,
  /* Function to initialize the processing for usage id */
- static int hid_accel_3d_probe(struct platform_device *pdev)
+ static int hid_prox_probe(struct platform_device *pdev)
  {
 -	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
 +	struct device *dev = &pdev->dev;
 +	struct hid_sensor_hub_device *hsdev = dev_get_platdata(dev);
  	int ret = 0;
- 	const char *name;
+ 	static const char *name = "prox";
  	struct iio_dev *indio_dev;
-@@ -322,8 +323,7 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 	const struct iio_chan_spec *channel_spec;
- 	int channel_size;
+ 	struct prox_state *prox_state;
  
--	indio_dev = devm_iio_device_alloc(&pdev->dev,
--					  sizeof(struct accel_3d_state));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(struct accel_3d_state));
+-	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct prox_state));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(struct prox_state));
  	if (!indio_dev)
  		return -ENOMEM;
- 
-@@ -350,21 +350,21 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 						 accel_3d_sensitivity_addresses,
- 						 ARRAY_SIZE(accel_3d_sensitivity_addresses));
+ 	platform_set_drvdata(pdev, indio_dev);
+@@ -280,13 +281,13 @@ static int hid_prox_probe(struct platform_device *pdev)
+ 					prox_sensitivity_addresses,
+ 					ARRAY_SIZE(prox_sensitivity_addresses));
  	if (ret) {
 -		dev_err(&pdev->dev, "failed to setup common attributes\n");
 +		dev_err(dev, "failed to setup common attributes\n");
  		return ret;
  	}
--	indio_dev->channels = devm_kmemdup(&pdev->dev, channel_spec,
--					   channel_size, GFP_KERNEL);
  
-+	indio_dev->channels = devm_kmemdup(dev, channel_spec, channel_size, GFP_KERNEL);
- 	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+		dev_err(dev, "failed to duplicate channels\n");
- 		return -ENOMEM;
- 	}
-+
- 	ret = accel_3d_parse_report(pdev, hsdev,
- 				    (struct iio_chan_spec *)indio_dev->channels,
- 				    hsdev->usage, accel_state);
+ 	ret = prox_parse_report(pdev, hsdev, prox_state);
  	if (ret) {
 -		dev_err(&pdev->dev, "failed to setup attributes\n");
 +		dev_err(dev, "failed to setup attributes\n");
  		return ret;
  	}
  
-@@ -377,7 +377,7 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+@@ -302,7 +303,7 @@ static int hid_prox_probe(struct platform_device *pdev)
  	ret = hid_sensor_setup_trigger(indio_dev, name,
- 				       &accel_state->common_attributes);
- 	if (ret < 0) {
+ 				       &prox_state->common_attributes);
+ 	if (ret) {
 -		dev_err(&pdev->dev, "trigger setup failed\n");
 +		dev_err(dev, "trigger setup failed\n");
  		return ret;
  	}
  
-@@ -387,13 +387,13 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+@@ -312,13 +313,13 @@ static int hid_prox_probe(struct platform_device *pdev)
  	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
- 					   &accel_state->callbacks);
+ 					   &prox_state->callbacks);
  	if (ret < 0) {
 -		dev_err(&pdev->dev, "callback reg failed\n");
 +		dev_err(dev, "callback reg failed\n");
