@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E59803AE198;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E757D3D45C3;
 	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784540426; cv=none; b=RJqww3NM6DqzUIS9pwb5GRATiem5OfxAPqe8NpDU4nAvaX8TRvm3tSZ+7KjtMtY3OBAl52hsvoqmDpgEGoCHJC3cfYJaH6qvwH0iFFR9dL9hnY/5a7ZjEY1YIpx4INUAmKCLpBwA2k/Lv4rzmbRyTHISofIpfsCoBE0qYdDB/SU=
+	t=1784540426; cv=none; b=q9rtc566U389lMQFpMuSksL0aPpGFeFpf3Z1ACm2hLRTquvzuTEZ4DihuLAFNg6OaCevC3bi8MCGnqdwYvSfYddyrUtzZiNHvYk1jC6gf2A3bTvhjNsE9jR0Wwfxfa7A+5oz19CN4Vqal3W3y3BmNSnseMLGuW3MQG2Tze/6Lz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784540426; c=relaxed/simple;
-	bh=4kUvBf5if1nv9lCc3XUy9wkiVtwtLor6LCOjrtnhe6A=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YRqYx1Kp+/ZxgzBgr6J051bQ4uMLmBTQtCaydRzD6Dom5InwGar2RwDXyy/65a/JEBfkKQJFo7j9s6KSRewTazezz6DyRPtK48f4XB6AMBNgEp6PZHIgfZw+6hPh2lQqiwfQuo2HbLUSIHW+yLhhnML5GlCwSJB/34mhYDK10ik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fU2tuYzQ; arc=none smtp.client-ip=10.30.226.201
+	bh=zaBr0PDxlFDjbKhNg4TNqfr5zCslyQt2+TdQ+qr5rqc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=gUWNaY9UG5eI+3wfYghZIj/M6HI6ihcWQTaofCsEJW+eI8NBhUax+0zlGKH2sh9bq47N/x83URILK7jf4W4KDVteTaxUeqDOjWUgy+Sfo/uLS1ITA9OQwtLWXh9kntjiBPtZVR0EGmQYGuUx4eBPUp/lQlcEOwzpz0ZzSmeVDOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UaAxnxVQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fU2tuYzQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 795D6C2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UaAxnxVQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B3B6FC2BCFB;
 	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784540425;
-	bh=4kUvBf5if1nv9lCc3XUy9wkiVtwtLor6LCOjrtnhe6A=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=fU2tuYzQesRoEYwZY90nswPpIwdrN5ol7g6thMvlvzmVZhdQhIJCAqSVqGJIfdQCr
-	 jDaxzszcHzIORdjKx6l65V78zcKbQ/60K1rjkTWQL6KOh1IdgU2NLd1zGT56AHXvIY
-	 mjrL4S2N95Bw3EkxpCbxkTy+GgrsOD9xtt81TQ6pJcHbE9ow6HWxlbvFZ8Lk9Kpg7y
-	 c3PpFpMrn2xR0mSO+9kcEhZaRU1m8Q43uAhjFu1eQ49s3KS9otQsOHBI0JLMdy3MnX
-	 YvhrrvSxbOxzrPdI5GBYYLo5VdTpvsVrsoZ63NitXu4rXZfL+CE8iAd5RQwDu0bFz2
-	 2IP48Cllg4YzQ==
+	bh=zaBr0PDxlFDjbKhNg4TNqfr5zCslyQt2+TdQ+qr5rqc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=UaAxnxVQ9asaSfmBmA6zjsMt6AY7KSLl4zXKURa6nxL+T39pBZ7OUynlGB6LV5u7W
+	 nPh/H8x8rAphgrZN8iNTQIHlmgLbKOiDFzYekywixIxAiA6PLVBO5PY957SI3rej8s
+	 LW64jXk0Ff1w42XxHgxMIuK/u9dyidZ4F0qXHaW/C4swi8SnWZmF+8cFUIuYrCnVjB
+	 CmHcJVKfbeY+LnQsbhayY8cmUmmWpbkkVWyEJqOrbfcdYZ9yS/syjV8TvukhS+WUni
+	 KbUVdv8mYh1FfeCK475Vxl4wT8wTbjLhTChztVrIkz5yfU28Z3qO8dEZaBhO3awrg3
+	 Tc4CMWqA5ofvA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5477FC44521;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D628C44525;
 	Mon, 20 Jul 2026 09:40:25 +0000 (UTC)
 From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Subject: [PATCH 00/10] HID: iio: use local struct device
-Date: Mon, 20 Jul 2026 15:10:12 +0530
-Message-Id: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
+Date: Mon, 20 Jul 2026 15:10:16 +0530
+Subject: [PATCH 04/10] iio: light: hid-sensor-als: use local struct device
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAPzsXWoC/yXMQQqDMBBA0avIrDsQIzWlV5Eu4mSsU8RIJoog3
- t20Xb7F/wcoJ2GFZ3VA4k1U4lxQ3yqg0c9vRgnFYI1tjbMGRwkoEnGK5CfUnFbKGEpJjHVo/GC
- da+8PD+WwJB5k/92719+69h+m/F3CeV53QnWnfwAAAA==
-X-Change-ID: 20260720-hid-iio-local-struct-device-1d3af277658a
+Message-Id: <20260720-hid-iio-local-struct-device-v1-4-74496fee6327@gmail.com>
+References: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
+In-Reply-To: <20260720-hid-iio-local-struct-device-v1-0-74496fee6327@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
  David Lechner <dlechner@baylibre.com>, 
@@ -52,11 +51,11 @@ To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=1897;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784540423; l=2688;
  i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=4kUvBf5if1nv9lCc3XUy9wkiVtwtLor6LCOjrtnhe6A=;
- b=uI65hJeL5pfBPSyjC0Ga+0XuXNfEHKdMLNm+96nFUUs6pvYwp6QxFycRINUWrLYkJOTvY4yqC
- RkuOxHpLJJ6B/0ZWYzxDDki3gTYIopSCzH1kK6ow0JRv5+V1Z31FYuH
+ bh=F+9XUfQNCvbfNIZ2ifuF+mpRN7/StD6NN5AhbF5V6Y8=;
+ b=Y+oYtiAJLpfMR6CVD19JRUm0qQnntcGFjkjixGjdZlhJsIWR58mOnAbfnVXlfLRkMEGkrfRa1
+ U+LUfTprABvBrXvlxJgt5Y1Ao20GAjzSB+4H0gC0QOmO7TlQ00NSfd9
 X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
  pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
 X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
@@ -64,46 +63,82 @@ X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
 X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Reply-To: sanjayembeddedse@gmail.com
 
-Hi all,
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
 Introduce a local struct device pointer derived from &pdev->dev.
 This avoids repeated &pdev->dev usage and improves readability.
 
-Prepratory series to convert all HID IIO driver to devm.
-
-Testing:
-  - Compiled with W=1 for each patch in series
-
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
-Sanjay Chitroda (10):
-      iio: humidity: hid-sensor-humidity: use local struct device
-      iio: gyro: hid-sensor-gyro-3d: use local struct device
-      iio: accel: hid-sensor-accel-3d: use local struct device
-      iio: light: hid-sensor-als: use local struct device
-      iio: light: hid-sensor-prox: use local struct device
-      iio: magnetometer: hid-sensor-magn-3d: use local struct device
-      iio: orientation: hid-sensor-incl-3d: use local struct device
-      iio: orientation: hid-sensor-rotation: use local struct device
-      iio: position: hid-sensor-custom-intel-hinge: use local struct device
-      iio: pressure: hid-sensor-press: use local struct device
+ drivers/iio/light/hid-sensor-als.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
- drivers/iio/accel/hid-sensor-accel-3d.c            | 22 +++++------
- drivers/iio/gyro/hid-sensor-gyro-3d.c              | 19 +++++-----
- drivers/iio/humidity/hid-sensor-humidity.c         |  7 ++--
- drivers/iio/light/hid-sensor-als.c                 | 15 ++++----
- drivers/iio/light/hid-sensor-prox.c                | 15 ++++----
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 43 ++++++++++------------
- drivers/iio/orientation/hid-sensor-incl-3d.c       | 20 +++++-----
- drivers/iio/orientation/hid-sensor-rotation.c      | 24 ++++++------
- .../iio/position/hid-sensor-custom-intel-hinge.c   | 17 +++++----
- drivers/iio/pressure/hid-sensor-press.c            | 19 +++++-----
- 10 files changed, 100 insertions(+), 101 deletions(-)
----
-base-commit: 36c12dbda81c284d72f3c64689461647497b643b
-change-id: 20260720-hid-iio-local-struct-device-1d3af277658a
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 6fb6ace26834..44088f9dff81 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -346,13 +346,14 @@ static int als_parse_report(struct platform_device *pdev,
+ /* Function to initialize the processing for usage id */
+ static int hid_als_probe(struct platform_device *pdev)
+ {
+-	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
++	struct device *dev = &pdev->dev;
++	struct hid_sensor_hub_device *hsdev = dev_get_platdata(dev);
+ 	int ret = 0;
+ 	static const char *name = "als";
+ 	struct iio_dev *indio_dev;
+ 	struct als_state *als_state;
+ 
+-	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct als_state));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(struct als_state));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 	platform_set_drvdata(pdev, indio_dev);
+@@ -367,7 +368,7 @@ static int hid_als_probe(struct platform_device *pdev)
+ 					als_sensitivity_addresses,
+ 					ARRAY_SIZE(als_sensitivity_addresses));
+ 	if (ret) {
+-		dev_err(&pdev->dev, "failed to setup common attributes\n");
++		dev_err(dev, "failed to setup common attributes\n");
+ 		return ret;
+ 	}
+ 
+@@ -375,7 +376,7 @@ static int hid_als_probe(struct platform_device *pdev)
+ 			       hsdev->usage,
+ 			       als_state);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "failed to setup attributes\n");
++		dev_err(dev, "failed to setup attributes\n");
+ 		return ret;
+ 	}
+ 
+@@ -397,7 +398,7 @@ static int hid_als_probe(struct platform_device *pdev)
+ 	ret = hid_sensor_setup_trigger(indio_dev, name,
+ 				       &als_state->common_attributes);
+ 	if (ret < 0) {
+-		dev_err(&pdev->dev, "trigger setup failed\n");
++		dev_err(dev, "trigger setup failed\n");
+ 		return ret;
+ 	}
+ 
+@@ -406,13 +407,13 @@ static int hid_als_probe(struct platform_device *pdev)
+ 	als_state->callbacks.pdev = pdev;
+ 	ret = sensor_hub_register_callback(hsdev, hsdev->usage, &als_state->callbacks);
+ 	if (ret < 0) {
+-		dev_err(&pdev->dev, "callback reg failed\n");
++		dev_err(dev, "callback reg failed\n");
+ 		goto error_remove_trigger;
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "device register failed\n");
++		dev_err(dev, "device register failed\n");
+ 		goto error_remove_callback;
+ 	}
+ 
 
-Best regards,
---  
-Sanjay Chitroda <sanjayembeddedse@gmail.com>
+-- 
+2.34.1
 
 
