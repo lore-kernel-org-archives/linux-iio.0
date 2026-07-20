@@ -1,178 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912403D75AD;
-	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14FB83F12D6;
+	Mon, 20 Jul 2026 11:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784543938; cv=none; b=E9gSqDYI2t41F/po0Zjm6Ng977Zg+jEvkbdhHCcYLlvg1Uaea51NfVWCDQfYoCyWfKBL9lE5NpEZdgeq8BrdyD1Y//73mpaYjV3KEaq19OAspKycanma4PTRx/PVOd6TjcgdvLsCbdapoR3H+kDWkakhn7u+fqSYYh26Zlu4Q+Q=
+	t=1784545518; cv=none; b=e5EkQ41sOFzzeQKTuZTIttTFoEK5cWvTb6DnANzSU3YJBLc3JIV6653vY+6OQAG94NIEEp1BhMU23fWnGzz8IhlzxOfHX/lWgIBmlzuCYWMQJ3z/deZ+pvjMUgbbwwa6wdHDJfcQYG7EvJtZQhVBATuWz1f8fVqixxQNoUtUutI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784543938; c=relaxed/simple;
-	bh=jX3mT5ogBRPc8ytC7Ugls8/3fSIOYLzRplELLtwtuQU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NKTQzyVFqISEqibyd5d13zdmacmIqEQomVkASEoK2HO3Ckp31FVYjM9a2pt0KFJWEQfakOiLutFgaR/QPahoSdCX8IF0lkrIpEvCBFyGaZC4sKEk8OeUkQroHG5sJYQ9+VwFMcx2GxR1F4V9cNdbDuExc8lqz6WEVY3aEeuF3Ao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJhC3sCY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1784545518; c=relaxed/simple;
+	bh=cgrVbqvHirhm8/ft9p1L7cLcou2SKIvhDcqiCnRwQmo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=punmFMMeBHxQkPwzXOpK7eXZBNWam2GpBTlxpy3PVyA2HUONTsmyVIC+DoRXeENoVjyO/M7lXnxpsixrW13XDdQW7UYXL+SFQpaha9iH6lPsEQQW8ulOSPVaVVWy1hNmc4m0yk/kdHszyoO1DHbY0MDEC6j4n94jGLDY2x42kCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TbQhZmNX; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJhC3sCY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 52045C4AF09;
-	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1784543938;
-	bh=jX3mT5ogBRPc8ytC7Ugls8/3fSIOYLzRplELLtwtuQU=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=XJhC3sCYzmOwmXEUzB28FTHHOOorHJjUI06Udk7N3ydw0VteKFkqRJO547oMhJOma
-	 VZZLehDLJq9ZspQQZqPce3ANXyG7uq91ozfSYuu+o8e5YCcHg5Ek8g509yR82HXwi5
-	 R1s2K/JYoNuMsnWPLlQU/MgGGmUXYKbBunKk4jeqaVGfoczMyta3oi1PmniynXAMnr
-	 7PNkJROMlLyO2OERqM863TQMvuZwZSPZZHLAjbMU/QMGnivWLRS3J/Cul/FnfqlhIe
-	 OFUw8kjX+rhh/r63oDtmoC3Sze88++ln5uDOflNg5KxeUN5MddKC2yXNQioq3E2ekU
-	 KsyELzlKF61FQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396E2C44527;
-	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Mon, 20 Jul 2026 12:38:33 +0200
-Subject: [PATCH v2 2/3] iio: inv_sensors: better timestamp alignment when
- using watermark
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TbQhZmNX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784545514; x=1816081514;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cgrVbqvHirhm8/ft9p1L7cLcou2SKIvhDcqiCnRwQmo=;
+  b=TbQhZmNXGDXG+x1MU/a/q0WQHGGiMkzyvVPB1eMw77COylZi4l5U1J3H
+   nIRyiXtIU5egjnG+FJ5DVKpwWyRwBvIzXomQtQkUkpgUj/GjAG07T71jg
+   jv8fX85x5V05GmleSHOVj+HX39FRUVdm24LJT4J4PJDAxHv6hyOBsaM/U
+   B4xs5XhQMlwU4eFL2X8kQptSr3o/DMhdm3vTes+fPtIi2ice59juiU3rU
+   vIwgtd/nO+WEsnWpHj9X99p/MrD4ndtHUUh4SJpW/vLoqK76ZwT4AKXhs
+   pTA+AlXMv1D15OzK2eRyCHBxdkvFUADtJDAt9EblpTikIUJmHKCNQlB5e
+   w==;
+X-CSE-ConnectionGUID: alarHK8ZQKuVwJmkgWw3fg==
+X-CSE-MsgGUID: stUzc/8hToa9fNY0A2WWJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11851"; a="84106768"
+X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
+   d="scan'208";a="84106768"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 04:05:09 -0700
+X-CSE-ConnectionGUID: b65oAi9yQSiq7NfKO+hA7Q==
+X-CSE-MsgGUID: BER5zIsIRdezir+MK+zDWw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,174,1779174000"; 
+   d="scan'208";a="254815588"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO kekkonen.fi.intel.com) ([10.245.244.94])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 04:05:01 -0700
+Received: from kekkonen.localdomain (localhost [IPv6:::1])
+	by kekkonen.fi.intel.com (Postfix) with SMTP id D5319121C2B;
+	Mon, 20 Jul 2026 14:05:03 +0300 (EEST)
+Date: Mon, 20 Jul 2026 14:05:03 +0300
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
+To: johannes.goede@oss.qualcomm.com
+Cc: Link Mauve <linkmauve@linkmauve.fr>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Tianshu Qiu <tian.shu.qiu@intel.com>,
+	Bingbu Cao <bingbu.cao@intel.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Aaro Koskinen <aaro.koskinen@iki.fi>,
+	Andreas Kemnade <andreas@kemnade.info>,
+	Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>,
+	Lee Jones <lee@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	"Vaibhaav Ram T.L" <vaibhaavram.tl@microchip.com>,
+	Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+	Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	=?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Praveen Teja Kundanala <praveen.teja.kundanala@amd.com>,
+	Kalyani Akula <kalyani.akula@amd.com>,
+	Michal Simek <michal.simek@amd.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Joshua Kinard <linux@kumba.dev>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?iso-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Johan Hovold <johan@kernel.org>,
+	Ronald Claveau <linux-kernel-dev@aliel.fr>,
+	Salah Triki <salah.triki@gmail.com>, Yury Norov <ynorov@nvidia.com>,
+	David Carlier <devnexen@gmail.com>,
+	Achim Gratz <Achim.Gratz@stromeko.de>,
+	Alexander Sverdlin <alexander.sverdlin@siemens.com>,
+	Patrick Wicki <patrick.wicki@siemens.com>,
+	Markus Heidelberg <m.heidelberg@cab.de>,
+	Markus Perkins <markus@notsyncing.net>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Abd-Alrhman Masalkhi <abd.masalkhi@gmail.com>,
+	Chen Ni <nichen@iscas.ac.cn>, Kees Cook <kees@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-omap@vger.kernel.org, mfd@lists.linux.dev,
+	linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com, linux-rtc@vger.kernel.org,
+	linux-sunxi@lists.linux.dev, rust-for-linux@vger.kernel.org
+Subject: Re: [PATCH 8/8] media: ov2740: remove NULL reg_write callback
+Message-ID: <al4A3wmBCrCy_HDs@kekkonen.localdomain>
+References: <20260715175229.24672-1-linkmauve@linkmauve.fr>
+ <20260715175229.24672-9-linkmauve@linkmauve.fr>
+ <al3sxMUgeK49dwNs@kekkonen.localdomain>
+ <8d86ca46-d329-4e65-a7bf-2b79fccddf05@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260720-iio-common-inv-sensors-timestamp-rework-v2-2-aec31446809c@tdk.com>
-References: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
-In-Reply-To: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784543936; l=4065;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=5Y3d1x9lJj9xiAU5X4QM0jQxvh5zbPbgxHv2JS+TVXc=;
- b=HUoSLqp/O1HoKzpVGswc35/6WB9q8Ym55ZYuzOu48jcf6aM2SUx1QlPsedljAV5USwMcVlU5E
- pbMZgv3+h5SDYEBtTxGVLxr/+UU1kNorwUJNkJc06kcsC8YPumCFTEJ
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d86ca46-d329-4e65-a7bf-2b79fccddf05@oss.qualcomm.com>
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Hi Hans,
 
-Current interrupt timestamp alignment only changes the final timestamp.
-When the watermark is in use, we have a batch of samples for each
-interrupt. The current code doesn't manage to align the timestamp
-because the jitter is too high.
+On Mon, Jul 20, 2026 at 12:34:10PM +0200, johannes.goede@oss.qualcomm.com wrote:
+> Hi Sakari,
+> 
+> On 20-Jul-26 11:39, Sakari Ailus wrote:
+> > Hi,
+> > 
+> > On Wed, Jul 15, 2026 at 07:52:24PM +0200, Link Mauve wrote:
+> >> This field is already initialized to NULL, so there is no reason to
+> >> write it again.
+> >>
+> >> This prevents it from appearing while grepping for reg_write in the
+> >> future.
+> >>
+> >> Signed-off-by: Link Mauve <linkmauve@linkmauve.fr>
+> > 
+> > I believe we need a real name here.
+> 
+> We don't need a real name / official name here, just a "known identity",
+> IOW not "anonoymous1234" since Link has clearly is using Link Mauve as
+> their internet identity (given they went through the trouble of
+> registering it as a domain) I believe the S-o-b here is fine as is.
+> 
+> See: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d4563201f33a022fc0353033d9dfeb1606a88330
+> where the "real name" policy was weakened to "known identity".
 
-Instead modify the estimated inter interrupt period and use that to
-adjust the timestamp alignment over the batch in a linear fashion.
-
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
----
- .../iio/common/inv_sensors/inv_sensors_timestamp.c | 51 ++++++++--------------
- 1 file changed, 19 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-index ecfd54ffe7e9..2aaaa8df6d03 100644
---- a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-+++ b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-@@ -10,9 +10,7 @@
- 
- #include <linux/iio/common/inv_sensors_timestamp.h>
- 
--/* compute jitter, min and max following jitter in per mille */
--#define INV_SENSORS_TIMESTAMP_JITTER(_val, _jitter)		\
--	(div_s64((_val) * (_jitter), 1000))
-+/* compute min and max following jitter in per mille */
- #define INV_SENSORS_TIMESTAMP_MIN(_val, _jitter)		\
- 	(((_val) * (1000 - (_jitter))) / 1000)
- #define INV_SENSORS_TIMESTAMP_MAX(_val, _jitter)		\
-@@ -102,34 +100,22 @@ static bool inv_update_chip_period(struct inv_sensors_timestamp *ts,
- 	/* update chip internal period estimation */
- 	new_chip_period = period / ts->mult;
- 	inv_update_acc(&ts->chip_period, new_chip_period);
--	ts->period = ts->mult * ts->chip_period.val;
- 
- 	return true;
- }
- 
--static void inv_align_timestamp_it(struct inv_sensors_timestamp *ts)
-+static u32 inv_align_timestamp_it(struct inv_sensors_timestamp *ts,
-+				  unsigned int sample_nb)
- {
- 	const s64 period_min = (s64)ts->min_period * ts->mult;
- 	const s64 period_max = (s64)ts->max_period * ts->mult;
--	s64 add_max, sub_max;
--	s64 delta, jitter;
--	s64 adjust;
--
--	/* delta time between last sample and last interrupt */
--	delta = ts->it.lo - ts->timestamp;
--
--	/* adjust timestamp while respecting jitter */
--	add_max = period_max - (s64)ts->period;
--	sub_max = period_min - (s64)ts->period;
--	jitter = INV_SENSORS_TIMESTAMP_JITTER((s64)ts->period, ts->chip.jitter);
--	if (delta > jitter)
--		adjust = add_max;
--	else if (delta < -jitter)
--		adjust = sub_max;
--	else
--		adjust = 0;
-+	s64 new_period;
-+
-+	/* compute new period aligning last timestamp with interrupt timestamp */
-+	new_period = div_s64(ts->it.up - ts->timestamp, sample_nb);
- 
--	ts->timestamp += adjust;
-+	/* ensure that period never overflows the jitter */
-+	return clamp(new_period, period_min, period_max);
- }
- 
- void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
-@@ -143,6 +129,13 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
- 	if (sample_nb == 0)
- 		return;
- 
-+	/* no previous data, compute theoretical value from interrupt */
-+	if (ts->timestamp == 0) {
-+		/* elapsed time: sensor period * sensor samples number */
-+		interval = (s64)ts->period * (s64)sample_nb;
-+		ts->timestamp = timestamp - interval;
-+	}
-+
- 	/* update interrupt timestamp and compute chip and sensor periods */
- 	it = &ts->it;
- 	it->lo = it->up;
-@@ -154,17 +147,11 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
- 		valid = inv_update_chip_period(ts, period);
- 	}
- 
--	/* no previous data, compute theoretical value from interrupt */
--	if (ts->timestamp == 0) {
--		/* elapsed time: sensor period * sensor samples number */
--		interval = (s64)ts->period * (s64)sample_nb;
--		ts->timestamp = it->up - interval;
--		return;
--	}
--
- 	/* if interrupt interval is valid, sync with interrupt timestamp */
- 	if (valid)
--		inv_align_timestamp_it(ts);
-+		ts->period = inv_align_timestamp_it(ts, sample_nb);
-+	else
-+		ts->period = ts->mult * ts->chip_period.val;
- }
- EXPORT_SYMBOL_NS_GPL(inv_sensors_timestamp_interrupt, "IIO_INV_SENSORS_TIMESTAMP");
- 
+Ack, thanks for pointing that out!
 
 -- 
-2.54.0
+Regards,
 
-
+Sakari Ailus
