@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912FF3D7A15;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912403D75AD;
 	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784543938; cv=none; b=jDOmVgnmpC24T7PTEBeINsO77j/lgaYFjccknTTd9qBaMHbjNkuoyR+3hLTnOpswZWJmMbvn6hvok1C9+4AsBrUyqJowMOKBvRHkZ9HM8f4k2gxsdrgK0nyyo+dtNSGWyJsoIMAgsbXUleV+7QchdtvxXueSDXrgRaUhQyQKLNI=
+	t=1784543938; cv=none; b=E9gSqDYI2t41F/po0Zjm6Ng977Zg+jEvkbdhHCcYLlvg1Uaea51NfVWCDQfYoCyWfKBL9lE5NpEZdgeq8BrdyD1Y//73mpaYjV3KEaq19OAspKycanma4PTRx/PVOd6TjcgdvLsCbdapoR3H+kDWkakhn7u+fqSYYh26Zlu4Q+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784543938; c=relaxed/simple;
-	bh=tkxgU4aAbLqEyR/VxCM3e2NBV1wEpOg7XgcWPywgfQM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=JVEpY9zGhNjQURaQzTbo1gf6eYF7C3UxAVA+ZeomP5uJejAk4eso6QIOrdaBkUxwKSGhd7JbR48NYOhentPlyQIJNkxOKGftytcNOT6Oqwq6mU09CsUDDDmeV11zHCuDIuweE2bNtUS8EoGcql+GG9Tp8uuV1o9vYHY3oMH7wus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LBbAhc7U; arc=none smtp.client-ip=10.30.226.201
+	bh=jX3mT5ogBRPc8ytC7Ugls8/3fSIOYLzRplELLtwtuQU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=NKTQzyVFqISEqibyd5d13zdmacmIqEQomVkASEoK2HO3Ckp31FVYjM9a2pt0KFJWEQfakOiLutFgaR/QPahoSdCX8IF0lkrIpEvCBFyGaZC4sKEk8OeUkQroHG5sJYQ9+VwFMcx2GxR1F4V9cNdbDuExc8lqz6WEVY3aEeuF3Ao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJhC3sCY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LBbAhc7U"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 30494C2BCB8;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJhC3sCY"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 52045C4AF09;
 	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1784543938;
-	bh=tkxgU4aAbLqEyR/VxCM3e2NBV1wEpOg7XgcWPywgfQM=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=LBbAhc7Ulv+/RocFkeuC3Dq/B4mDbYtFForaP7yVfmj7VRTWBWD6hKTdbPxIr1o/O
-	 7qcumic3xncn0qyEXS6wnyEqeL96LhaPODqXf3xooRE2KudwSYy72n9d28Susz6/Zt
-	 c4aKpL5/cMhaCWW/qE92vlWKJRHeJVnTprvJgm4tboOzBomhgER13VTqRLFShtgaAW
-	 eSXR/JWtPkfRivtQrOjJHz5t6P3rNDWZ5nRAuBwNHdphep8KUhdn/DwgiHCkCfXZ7u
-	 KGLdHNH4vKwPkP6pe8GhY2uHI2S1k6IgTnPQwo/fjABv+yWN9MJMAVoCcv0wSR+f0m
-	 BuiSqZndGRo3Q==
+	bh=jX3mT5ogBRPc8ytC7Ugls8/3fSIOYLzRplELLtwtuQU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=XJhC3sCYzmOwmXEUzB28FTHHOOorHJjUI06Udk7N3ydw0VteKFkqRJO547oMhJOma
+	 VZZLehDLJq9ZspQQZqPce3ANXyG7uq91ozfSYuu+o8e5YCcHg5Ek8g509yR82HXwi5
+	 R1s2K/JYoNuMsnWPLlQU/MgGGmUXYKbBunKk4jeqaVGfoczMyta3oi1PmniynXAMnr
+	 7PNkJROMlLyO2OERqM863TQMvuZwZSPZZHLAjbMU/QMGnivWLRS3J/Cul/FnfqlhIe
+	 OFUw8kjX+rhh/r63oDtmoC3Sze88++ln5uDOflNg5KxeUN5MddKC2yXNQioq3E2ekU
+	 KsyELzlKF61FQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C81CC44529;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396E2C44527;
 	Mon, 20 Jul 2026 10:38:58 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Subject: [PATCH v2 0/3] iio: common: improve InvenSense sample timestamping
-Date: Mon, 20 Jul 2026 12:38:31 +0200
-Message-Id: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
+Date: Mon, 20 Jul 2026 12:38:33 +0200
+Subject: [PATCH v2 2/3] iio: inv_sensors: better timestamp alignment when
+ using watermark
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,12 +40,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAKf6XWoC/42OwQ7CIBBEf6Xh7BporBpP/ofpAWGxawM0LFZN0
- 3+X1nj3+JKZeTMJxkTI4lRNIuFITDEUqDeVMJ0ONwSyhUUt6708qAaIIpjofQxAYQTGwDExZPL
- IWfsBEj5j6kEbp7TUWkq3E2VtSOjotZou7Zf5cb2jycv8kuiIc0zv9cqoltzPevjbOiqQYJV2i
- PVRNsaes+23pSnaeZ4/2OIZa+4AAAA=
-X-Change-ID: 20260715-iio-common-inv-sensors-timestamp-rework-acf1a0aa00f4
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260720-iio-common-inv-sensors-timestamp-rework-v2-2-aec31446809c@tdk.com>
+References: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
+In-Reply-To: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -52,11 +51,11 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784543936; l=1928;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784543936; l=4065;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=tkxgU4aAbLqEyR/VxCM3e2NBV1wEpOg7XgcWPywgfQM=;
- b=GNHbJW3B9c7N862rAx0+sWsS4qrg2L614qtItRg8irO4tZtktI2kDK6Ipe/3o1lUvqMZ2+ozi
- PhM6rcNbIDRBhdCQLgETP6GaRePlH3CJ6cm1vx3UxcjNtrV7ACN2H2M
+ bh=5Y3d1x9lJj9xiAU5X4QM0jQxvh5zbPbgxHv2JS+TVXc=;
+ b=HUoSLqp/O1HoKzpVGswc35/6WB9q8Ym55ZYuzOu48jcf6aM2SUx1QlPsedljAV5USwMcVlU5E
+ pbMZgv3+h5SDYEBtTxGVLxr/+UU1kNorwUJNkJc06kcsC8YPumCFTEJ
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -64,50 +63,116 @@ X-Endpoint-Received: by B4 Relay for
 X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Reply-To: jean-baptiste.maneyrol@tdk.com
 
-This series improves the InvenSense timestamping mechanism for 2 cases:
-when using watermark and for high frequency sampling.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Data arriving by batch because of FIFO watermark will now be all aligned
-correctly with the interrupt timestamp and the chip period measurement
-will use a minimal period of 20ms to ensure that system latency is
-not preventing measurement when using high frequency sampling.
+Current interrupt timestamp alignment only changes the final timestamp.
+When the watermark is in use, we have a batch of samples for each
+interrupt. The current code doesn't manage to align the timestamp
+because the jitter is too high.
 
-This was tested using inv_icm42600 driver when using maximum FIFO
-watermark and when using 1kHz sampling frequency.
+Instead modify the estimated inter interrupt period and use that to
+adjust the timestamp alignment over the batch in a linear fashion.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
-Changes in v2:
-- Add a 1st patch to convert to kernel types.
-- Rework following review suggestions.
-- Following Sashiko fix delta_counter usage and handle case of
-  timestamp overflowing last interrupt by using s64 type for new_period.
-- Reword commit message for better timestamp alignement using Jonathan
-  proposition.
-- Link to v1: https://patch.msgid.link/20260717-iio-common-inv-sensors-timestamp-rework-v1-0-d1afee2805cd@tdk.com
+ .../iio/common/inv_sensors/inv_sensors_timestamp.c | 51 ++++++++--------------
+ 1 file changed, 19 insertions(+), 32 deletions(-)
 
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+diff --git a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
+index ecfd54ffe7e9..2aaaa8df6d03 100644
+--- a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
++++ b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
+@@ -10,9 +10,7 @@
+ 
+ #include <linux/iio/common/inv_sensors_timestamp.h>
+ 
+-/* compute jitter, min and max following jitter in per mille */
+-#define INV_SENSORS_TIMESTAMP_JITTER(_val, _jitter)		\
+-	(div_s64((_val) * (_jitter), 1000))
++/* compute min and max following jitter in per mille */
+ #define INV_SENSORS_TIMESTAMP_MIN(_val, _jitter)		\
+ 	(((_val) * (1000 - (_jitter))) / 1000)
+ #define INV_SENSORS_TIMESTAMP_MAX(_val, _jitter)		\
+@@ -102,34 +100,22 @@ static bool inv_update_chip_period(struct inv_sensors_timestamp *ts,
+ 	/* update chip internal period estimation */
+ 	new_chip_period = period / ts->mult;
+ 	inv_update_acc(&ts->chip_period, new_chip_period);
+-	ts->period = ts->mult * ts->chip_period.val;
+ 
+ 	return true;
+ }
+ 
+-static void inv_align_timestamp_it(struct inv_sensors_timestamp *ts)
++static u32 inv_align_timestamp_it(struct inv_sensors_timestamp *ts,
++				  unsigned int sample_nb)
+ {
+ 	const s64 period_min = (s64)ts->min_period * ts->mult;
+ 	const s64 period_max = (s64)ts->max_period * ts->mult;
+-	s64 add_max, sub_max;
+-	s64 delta, jitter;
+-	s64 adjust;
+-
+-	/* delta time between last sample and last interrupt */
+-	delta = ts->it.lo - ts->timestamp;
+-
+-	/* adjust timestamp while respecting jitter */
+-	add_max = period_max - (s64)ts->period;
+-	sub_max = period_min - (s64)ts->period;
+-	jitter = INV_SENSORS_TIMESTAMP_JITTER((s64)ts->period, ts->chip.jitter);
+-	if (delta > jitter)
+-		adjust = add_max;
+-	else if (delta < -jitter)
+-		adjust = sub_max;
+-	else
+-		adjust = 0;
++	s64 new_period;
++
++	/* compute new period aligning last timestamp with interrupt timestamp */
++	new_period = div_s64(ts->it.up - ts->timestamp, sample_nb);
+ 
+-	ts->timestamp += adjust;
++	/* ensure that period never overflows the jitter */
++	return clamp(new_period, period_min, period_max);
+ }
+ 
+ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
+@@ -143,6 +129,13 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
+ 	if (sample_nb == 0)
+ 		return;
+ 
++	/* no previous data, compute theoretical value from interrupt */
++	if (ts->timestamp == 0) {
++		/* elapsed time: sensor period * sensor samples number */
++		interval = (s64)ts->period * (s64)sample_nb;
++		ts->timestamp = timestamp - interval;
++	}
++
+ 	/* update interrupt timestamp and compute chip and sensor periods */
+ 	it = &ts->it;
+ 	it->lo = it->up;
+@@ -154,17 +147,11 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
+ 		valid = inv_update_chip_period(ts, period);
+ 	}
+ 
+-	/* no previous data, compute theoretical value from interrupt */
+-	if (ts->timestamp == 0) {
+-		/* elapsed time: sensor period * sensor samples number */
+-		interval = (s64)ts->period * (s64)sample_nb;
+-		ts->timestamp = it->up - interval;
+-		return;
+-	}
+-
+ 	/* if interrupt interval is valid, sync with interrupt timestamp */
+ 	if (valid)
+-		inv_align_timestamp_it(ts);
++		ts->period = inv_align_timestamp_it(ts, sample_nb);
++	else
++		ts->period = ts->mult * ts->chip_period.val;
+ }
+ EXPORT_SYMBOL_NS_GPL(inv_sensors_timestamp_interrupt, "IIO_INV_SENSORS_TIMESTAMP");
+ 
 
----
-Jean-Baptiste Maneyrol (3):
-      iio: inv_sensors: convert to kernel types
-      iio: inv_sensors: better timestamp alignment when using watermark
-      iio: inv_sensors: improve period measurement by using a longer delay
-
- .../iio/common/inv_sensors/inv_sensors_timestamp.c | 109 +++++++++++----------
- include/linux/iio/common/inv_sensors_timestamp.h   |  40 ++++----
- 2 files changed, 81 insertions(+), 68 deletions(-)
----
-base-commit: aa58ecc73466d0cb8c418de98e2225490bf600e3
-change-id: 20260715-iio-common-inv-sensors-timestamp-rework-acf1a0aa00f4
-
-Best regards,
---  
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+-- 
+2.54.0
 
 
