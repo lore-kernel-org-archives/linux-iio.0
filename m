@@ -1,161 +1,128 @@
-Received: from MTA-11-3.privateemail.com (mta-11-3.privateemail.com [198.54.122.105])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59FCE44604A;
-	Mon, 20 Jul 2026 17:35:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.122.105
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505E531B82B;
+	Mon, 20 Jul 2026 19:31:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784568917; cv=none; b=f27ANYHkvBGZx8HxM5aAGfFyjUlAHFrowSf66JlHkL8g5RkF193ubFgH4D18Pj0soBvuUqGGpX8zP6KmKu/34LAKT98AAQm7jwY2J52L90rRW2cvA+LGWhSNvAiY5JcEToEMdWdS1OxJVk4Jgxf3X+1MfirKNmXjX27zJBzQ2zs=
+	t=1784575905; cv=none; b=PmTlFmJ/bO8oJDC/5KDTT9XzIarQBto8ec/lRSvXefVmnW9NFomYVOPPBOgz6ptRCZZlHHKTA7dfxxLA8WnZ0gXvZMDpTckeYoqyQDS/DuueEAbhQUauVlnECyF0ZnMIhJmEiLqIOx1aksGJwgAki6odxWsBQDXBTUyXC64rDDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784568917; c=relaxed/simple;
-	bh=IDOfjrWr7wHUUcBLcdqYMDC9KuN+4eO4gd+r/IghaGw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WBTfA4sTlf/xPoaGfhzQRtCfnOHTGvPcCvEDOpkVhT8mh/+n9jEVeB8WlJLJwUUTh/YSnwvpxO7kg5oXPFl0aVReml6i3c42pksx8c0ax4dDLsc9oS8cybjbyKc9j1pOcVNfH0RFpn//qi+d4hIgYq74YL1vzSdFNkvTLHfI9QY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.122.105
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from mail.privateemail.com (K8S-PROD-WORKER-10 [87.215.145.39])
-	by mta-11.privateemail.com (Postfix) with ESMTPA id 4h3nhY32dLz3hhTG;
-	Mon, 20 Jul 2026 13:34:52 -0400 (EDT)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+	s=arc-20240116; t=1784575905; c=relaxed/simple;
+	bh=u85aqKoeel3ff4NU6yrD2gdF+o2QAGRfB5QLOcHUWm8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VE9kXCVWr5AglDg9wCkMXBMT5fKSOtc5Je+L6PfNfEy1fNEvpecVucDRIFMAZttDT2ulUoCQd41u4s4NoO946NVITzjUki7XC3cC4okvgSqojIw9jdmyzPEW5K5MdBoTr20QCgwqgDYPOxxbL7rzrymedPwWHonqFAxBwYeDpNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BmE0HtGy; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BmE0HtGy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784575904; x=1816111904;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=u85aqKoeel3ff4NU6yrD2gdF+o2QAGRfB5QLOcHUWm8=;
+  b=BmE0HtGy9tY8Ks54StxwvTCBj8MC/qYclTM8xgH/TKmJuf1STTk8t+Fq
+   HImzDd3P50+IrPy3MyFWWZJtl2dufqNIXuekQ8hSHHtzDl9e4MlgRI8z8
+   afvLiXj0+dezTxiNMZoJdJEfs/xfiOfT1AE4GDWvX7piNX9qXEip3aQqQ
+   hqjhdbUWe2CitQ0ZT8TonnqOSnFmS2p3L8fLwMaKUc4N860ig4EEx+OOX
+   Re/QcV73JGvZtxCODVACtiuTAIwkOP9Z5wDIJiUB/qyRR3Wk4F3GC3KLP
+   LBQgYjnF/KGDnU4CKS9k/oQSOuIPoLqdm1P0ZRjECu7SKAuZW23+dOxd2
+   g==;
+X-CSE-ConnectionGUID: n7O5XvCdT1uPz7i5mc9BZw==
+X-CSE-MsgGUID: zjwlLCqpQ0Cygs+NxbL5zQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11852"; a="87704509"
+X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
+   d="scan'208";a="87704509"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:31:44 -0700
+X-CSE-ConnectionGUID: 6BNVnjflTkqK/em697xGow==
+X-CSE-MsgGUID: V1Sf21+uQuKm7DxRtmND3w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,175,1779174000"; 
+   d="scan'208";a="282029492"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.175])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2026 12:31:41 -0700
+Date: Mon, 20 Jul 2026 22:31:39 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iio: imu: inv_icm42600: add support for icm42630
-Date: Mon, 20 Jul 2026 19:34:11 +0200
-Message-ID: <20260720173411.82979-3-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260720173411.82979-1-jorijnvdgraaf@catcrafts.net>
-References: <20260720173411.82979-1-jorijnvdgraaf@catcrafts.net>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] iio: inv_sensors: better timestamp alignment when
+ using watermark
+Message-ID: <al53m6cQ641ZPvYp@ashevche-desk.local>
+References: <20260720-iio-common-inv-sensors-timestamp-rework-v2-0-aec31446809c@tdk.com>
+ <20260720-iio-common-inv-sensors-timestamp-rework-v2-2-aec31446809c@tdk.com>
+ <al4HkNK8kxxqUY0V@ashevche-desk.local>
+ <BE1P281MB14263FC8209148C6147866A2CEC32@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BE1P281MB14263FC8209148C6147866A2CEC32@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family,
-found e.g. in the Fairphone 6. It is register-compatible with its
-siblings (the existing driver works on it unmodified) and reports
-WHOAMI value 0x0C.
+On Mon, Jul 20, 2026 at 03:07:05PM +0000, Jean-Baptiste Maneyrol wrote:
+> >________________________________________
+> >From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> >Sent: Monday, July 20, 2026 13:33
+> >On Mon, Jul 20, 2026 at 12:38:33PM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
 
-The part appears to be a mobile SKU and has no public datasheet: the
-identity comes from the Fairphone 6 platform documentation and
-schematics naming the part, and the WHOAMI value was read from the
-hardware, whose bank 0 register defaults match the ICM-42600 family
-layout.
+...
 
-Add the chip id, WHOAMI value and I2C/SPI match entries, using the
-family default configuration like the ICM-42631.
+> >>  void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
+> >
+> >>       if (sample_nb == 0)
+> >>               return;
+> >>
+> >> +     /* no previous data, compute theoretical value from interrupt */
+> >> +     if (ts->timestamp == 0) {
+> >> +             /* elapsed time: sensor period * sensor samples number */
+> >> +             interval = (s64)ts->period * (s64)sample_nb;
+> >
+> >The both variables are unsigned. Why do we cast them to the signed type?
+> >
+> Hello Andy,
+> 
+> the idea here is to have a (timestamp - interval) doing the difference on
+> variables of the same type, s64. I tried to avoid difference between signed
+> and unsigned values that can be problematic.
+> 
+> Interval is s64 for this reason, and that's why I cast the 2 u32 values to
+> s64 (which should not be a problem).
+> 
+> Is that OK like this or do you prefer I change to u64 (with implicit
+> conversion to s64 when assigning to interval)?
 
-Tested on the Fairphone 6 via a backport of this change to the
-device's 7.1-based kernel (only the id-table style adjusted to that
-base), on a bit-banged SPI bus with INT1 wired to the SoC: probe,
-accelerometer, gyroscope and temperature raw reads, all full-scale
-ranges, multiple sampling frequencies, and watermark-paced FIFO reads
-through the INT1 interrupt.
+It was just a question. If you think it's better as is, I'm fine.
 
-Assisted-by: Claude:claude-fable-5
-Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600.h      | 2 ++
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 5 +++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c  | 4 ++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c  | 4 ++++
- 4 files changed, 15 insertions(+)
+> >> +             ts->timestamp = timestamp - interval;
+> >> +     }
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index b55d993f0264..349de5458581 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -28,6 +28,7 @@ enum inv_icm42600_chip {
- 	INV_CHIP_ICM42622,
- 	INV_CHIP_ICM42688,
- 	INV_CHIP_ICM42631,
-+	INV_CHIP_ICM42630,
- 	INV_CHIP_NB,
- };
- 
-@@ -386,6 +387,7 @@ struct inv_icm42600_sensor_state {
- #define INV_ICM42600_WHOAMI_ICM42622			0x46
- #define INV_ICM42600_WHOAMI_ICM42688			0x47
- #define INV_ICM42600_WHOAMI_ICM42631			0x5C
-+#define INV_ICM42600_WHOAMI_ICM42630			0x0C
- 
- /* User bank 1 (MSB 0x10) */
- #define INV_ICM42600_REG_SENSOR_CONFIG0			0x1003
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index dc97d8a274e3..9a31ca3615b3 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -177,6 +177,11 @@ static const struct inv_icm42600_hw inv_icm42600_hw[INV_CHIP_NB] = {
- 		.name = "icm42631",
- 		.conf = &inv_icm42600_default_conf,
- 	},
-+	[INV_CHIP_ICM42630] = {
-+		.whoami = INV_ICM42600_WHOAMI_ICM42630,
-+		.name = "icm42630",
-+		.conf = &inv_icm42600_default_conf,
-+	},
- };
- 
- const struct iio_mount_matrix *
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-index 28552d2db91d..c413904c8680 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-@@ -81,6 +81,7 @@ static const struct i2c_device_id inv_icm42600_id[] = {
- 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
- 	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
- 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
-+	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, inv_icm42600_id);
-@@ -107,6 +108,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
- 	}, {
- 		.compatible = "invensense,icm42631",
- 		.data = (void *)INV_CHIP_ICM42631,
-+	}, {
-+		.compatible = "invensense,icm42630",
-+		.data = (void *)INV_CHIP_ICM42630,
- 	},
- 	{ }
- };
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-index faf743bc6444..a1d12ce3bf87 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-@@ -78,6 +78,7 @@ static const struct spi_device_id inv_icm42600_id[] = {
- 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
- 	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
- 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
-+	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, inv_icm42600_id);
-@@ -104,6 +105,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
- 	}, {
- 		.compatible = "invensense,icm42631",
- 		.data = (void *)INV_CHIP_ICM42631,
-+	}, {
-+		.compatible = "invensense,icm42630",
-+		.data = (void *)INV_CHIP_ICM42630,
- 	},
- 	{ }
- };
+...
+
+> >> -     /* no previous data, compute theoretical value from interrupt */
+> >> -     if (ts->timestamp == 0) {
+> >> -             /* elapsed time: sensor period * sensor samples number */
+> >> -             interval = (s64)ts->period * (s64)sample_nb;
+> >
+> >Yeah, I see this is the original code, but consider revisiting.
+> >
+> >> -             ts->timestamp = it->up - interval;
+> >> -             return;
+> >> -     }
+
 -- 
-2.55.0
+With Best Regards,
+Andy Shevchenko
+
 
