@@ -1,125 +1,119 @@
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD27A48C8CD;
-	Tue, 21 Jul 2026 12:11:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7F433D509
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 13:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784635867; cv=none; b=QttrPlnG+/pl0ovElmrhtCAqgC5TqBZhdHZLT8oi2SIXcsrss6Kikuf5Pq4PtbP1D2CVNtrFm9ty/57CCzO0D9hP3SIygXrDOzdU3VpkN/j6TdKjlctykOaBH5VHCdtJk+vAcMf2XYean/1Yqd4X3GBXpbQdLsn6GjDtjwI3AtM=
+	t=1784639256; cv=none; b=Ocy3DyKuw61U9cqthKMvgPk+FuPUocsb2UBP9JWu5m0krpn27D12HTgzOMePXUW1D3OshlqygT5gJUZBnNIz4qnt3EML3yF9q4u3/9KTuAHSbg/U+YqyURC0me7OGtOPRlU7kwtkgV1vtCOL1aw8HBrcKoizYa1ixeeIDFTwPII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784635867; c=relaxed/simple;
-	bh=6nRxoOSO7kE6J1Szs5DUMQaP6ijmlj4uOIpV9+F/H+w=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=J+qmsK+jHeDjKdb52VIud8a1jypjHV5OLEIcGA1uQsl5q21Tm7zem1vBsoHXxU3/yce4r1pdzLKpNrGn2HE2FxJOoAsdgJaAobITYiRvoRjweqXO9XqUFM0GhmWvDgYg7CzwU5rEQeo+gdqdHdPQPEAvL5eyQ34pHH58DscHfAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=Z7sk6eMp; arc=none smtp.client-ip=211.75.126.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
+	s=arc-20240116; t=1784639256; c=relaxed/simple;
+	bh=3x3lP7j380kE9CvaSYhuk+2zEHK1fZOBVU1/W0OHSZI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SLuTjk6pBrF8Edcihs+4Aev2Lr4on/UxYoW+zBloiV/VtSbNVCAe6XGt1JZGbehI2uQaaI8yQaOuFF+AdTs+pZ45HrbDMgLPXqXQ/Q4ZcVxa4eyss3pRuB7+e8rDRZS4zQNJCTmDfrjIXPNNaWLDvdNi8Y27ICT3IMJNfeFrH60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h175J60H; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="Z7sk6eMp"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66LCAfukE3141895, This message is accepted by code: ctloc85258
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1784635841; bh=6nRxoOSO7kE6J1Szs5DUMQaP6ijmlj4uOIpV9+F/H+w=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	b=Z7sk6eMp5Q2fgkNS7pQKfNtNb9r0YoHS3/rFMv7o6X4mai5Dq6G+HlPv3+4zdkruc
-	 ZyzfE5RUoRBssl64A3SlR547WkjeFlu7ma7YTRCl3lPhH8Ud8wmyzGwerWJ5P4Eb6a
-	 2L6t5oAnLPYGU2OHO6T2UQtWAQ+QJRQ5B8VgNP28jUpw0vp8isE71/pcVEWUtLcTmq
-	 b19sCbPAS1AGHcXf0ZElrEZQj6Ie7GBOI8ySdd6/SUwOt/TRaLgVJCt1gE6eN8OZYF
-	 QNKCxV742lZx2DJOY0JxJ+uGcp6PTVgNW07ZqaU0MhVkz2+X7dXgbuRJpl+2eLCXr3
-	 0qKjuhthmOsoA==
-Received: from mail.realtek.com (rtkexhmbs02.realtek.com.tw[172.21.6.41])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66LCAfukE3141895
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 21 Jul 2026 20:10:41 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS02.realtek.com.tw (172.21.6.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 21 Jul 2026 20:10:41 +0800
-Received: from RTKEXHMBS06.realtek.com.tw ([::1]) by
- RTKEXHMBS06.realtek.com.tw ([fe80::e6fd:5a3f:8946:92c4%10]) with mapi id
- 15.02.2562.017; Tue, 21 Jul 2026 20:10:41 +0800
-From: =?big5?B?WXUtQ2h1biBMaW4gW6pMr6enZ10=?= <eleanor.lin@realtek.com>
-To: Michael Walle <mwalle@kernel.org>, "linusw@kernel.org"
-	<linusw@kernel.org>, "andriy.shevchenko@intel.com"
-	<andriy.shevchenko@intel.com>, "brgl@kernel.org" <brgl@kernel.org>,
-	=?big5?B?VFlfQ2hhbmdbsWmkbLZoXQ==?= <tychang@realtek.com>, "wbg@kernel.org"
-	<wbg@kernel.org>, "mathieu.dubois-briand@bootlin.com"
-	<mathieu.dubois-briand@bootlin.com>, "nuno.sa@analog.com"
-	<nuno.sa@analog.com>, "Michael.Hennerich@analog.com"
-	<Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
-	"andy@kernel.org" <andy@kernel.org>, "u.kleine-koenig@baylibre.com"
-	<u.kleine-koenig@baylibre.com>, "dakr@kernel.org" <dakr@kernel.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>, "o-takashi@sakamocchi.jp"
-	<o-takashi@sakamocchi.jp>
-CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux@analog.com"
-	<linux@analog.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	=?big5?B?Q1lfSHVhbmdbtsDgsq7LXQ==?= <cy.huang@realtek.com>,
-	=?big5?B?SmFtZXMgVGFpIFvAuafTrnBd?= <james.tai@realtek.com>
-Subject: RE: [PATCH v6 6/8] gpio: regmap: Add set_config callback
-Thread-Topic: [PATCH v6 6/8] gpio: regmap: Add set_config callback
-Thread-Index: AQHdGN5IJQDSpRIowU2BMchTrbLbjLZ3C9GAgAC+36D//4KmAIAAlKNQ
-Date: Tue, 21 Jul 2026 12:10:41 +0000
-Message-ID: <d03008716deb40c7baeda976452b346b@realtek.com>
-References: <20260721065802.689530-1-eleanor.lin@realtek.com>
- <20260721065802.689530-7-eleanor.lin@realtek.com>
- <DK42I02A80FJ.1TX1U341LOAXG@kernel.org>
- <520080c564ef4a039b67d2a820e7a646@realtek.com>
- <DK47HK67DGGW.37OGI53JJAVUL@kernel.org>
-In-Reply-To: <DK47HK67DGGW.37OGI53JJAVUL@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h175J60H"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-38dd55ad76cso3995817a91.1
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 06:07:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784639254; x=1785244054; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=8kuHno4FgLnOovX3FCD/y2WILch1zVn2CLj5cIw9pdk=;
+        b=h175J60HmLwPBb2GrqVBrqVthyoEIWzfHFsU490pIExvEk9sS0nu3fEQ2ZjfHwRoKC
+         s530oZ+7ltWPirDaJJiEQvTaHi2h/ywgXcEtYLru1tpj8zZlBHzGpaVA/mc1C4EuPkKo
+         KyQMEWjPnDw6jCuZDFq/itbT+HB8XLK05gHMre6QfbaoImBTk+T/LPC1osgQvi3fp3JZ
+         kPF4HyuKpo/PJjej5tZ3o3HA6pmrpP5964IXt0cIEt4v0qBkySicyjN1lK8DVLpl0Mu+
+         AMg5sxjXrnEQXJNCK+rfFm9fewaO1zMQbXkV9ZoATuAhKiUmlXJm0S56epOm8WPCWsau
+         1QkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784639254; x=1785244054;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=8kuHno4FgLnOovX3FCD/y2WILch1zVn2CLj5cIw9pdk=;
+        b=NnQlVSS5l9vA74vkxl1TLPMkO4Wx7EfvW9D1eDWXi/e5riynEww7/kgXqRuLIKUZ93
+         UjDP96B5r/IeaqtSBhEuA2EarSgEp3rhPwhCijaAeJQ2Daqq3SmHtxPHE54x45LYP3JD
+         UmzzEGxjJWktttQAWfiEOVb71gKEoRPBtNqwUjVxg8rhFmhkHkp1sbXqK3f5O2EPioeH
+         xpvHUzL3IAW52uPwBta+v794BiuW3/eiGuKDK0TWKBF7B9I6RNI1Y719A3jxWMnMLh4Y
+         6MwfDgugWjFNLojxUpowTxCb9b3OvZ/P6feoB9v1hn3R41ZG4LgPU1fhH3UhCeJOTPds
+         zK4w==
+X-Forwarded-Encrypted: i=1; AHgh+RqL9fBFaJcRgssEOiIHSSX6MlnQ+F8rUIgKOsnzoUPH6hw9ooZ8W250u0+jmT7fFiWFHdCFK0lJDL0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwgjUiKiVqPRYOOJ5bM8QxbLxR63QdWUWkr2WxmqqFrfllNx7ht
+	DXqvNXEFiTI610TIYlAb78E6PP8cRZhsNmNmMRDpplIuqWbLGn1LlHU=
+X-Gm-Gg: AR+sD13aBqApMCoGy2mdV5viqqbJqoYM15RnZDvcO71Bi1dzRLpF7fS/ijZ2cvvqxsI
+	KYBJTJyBvEFHylIpd1TbLJXx475x69LI3cWYtpm0caVB5CffKzXBIyGYklnOnOGQxm3Zb7ug2CG
+	5MU9w6UgUBOYfhEe7/wBK75DOyN7vli5kTDZtiTiaGHBo2hoJoloyEk7sOeb7kg1wSqCmVI7cre
+	0Jk+BocHijmgO4BvQMwoSDQ0r0Py9tUl4k7C6vr2zTyv2/vdvmGrV1Hf4XvUNaTCXLHRsnlxYve
+	PcmC7M0rNNNdYdjtTNomzBf+ocsAh9hzyqz9L1nzIdP0X9OpxDLnJwFbgN5/Ceo1G03TOOJWfQj
+	046C9jhkwOuovrewjtRncm6BwwvEeUE6VPh7fBFnlRmJA/ZhY8vt0vJi0hXeR17n/F0DFqithKN
+	kmUxH9/NnoLcGnSolTFNN4EahP3Lf5x9Q+LGLG3+LltZwwwk0=
+X-Received: by 2002:a17:90b:5644:b0:387:d5bd:622e with SMTP id 98e67ed59e1d1-38e4b6828cdmr14956327a91.17.1784639254313;
+        Tue, 21 Jul 2026 06:07:34 -0700 (PDT)
+Received: from [192.168.1.45] ([101.0.62.129])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38e923741fbsm1521109a91.13.2026.07.21.06.07.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jul 2026 06:07:33 -0700 (PDT)
+Message-ID: <8db678fd-ba0c-4e1c-a401-205b40f07c4a@gmail.com>
+Date: Tue, 21 Jul 2026 18:37:29 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/3] iio: light: gp2ap002: Fix unbalanced runtime PM on
+ repeated event writes
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260720193911.74919-1-nikhilgtr@gmail.com>
+ <20260720193911.74919-2-nikhilgtr@gmail.com>
+ <al57yj3AQoHpef6I@ashevche-desk.local>
+Content-Language: en-US
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+In-Reply-To: <al57yj3AQoHpef6I@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Pj4gT24gVHVlIEp1bCAyMSwgMjAyNiBhdCAxMjo0NiBQTSBDRVNULCBZdS1DaHVuIExpbiBbqkyv
-p6dnXSB3cm90ZToNCj4+IEhpIE1pY2hhZWwsDQo+Pg0KPj4+T24gVHVlIEp1bCAyMSwgMjAyNiBh
-dCA4OjU4IEFNIENFU1QsIFl1LUNodW4gTGluIHdyb3RlOg0KPj4NCj4+ICguLi4pDQo+Pg0KPj4+
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9ncGlvL3JlZ21hcC5oIA0KPj4+PiBiL2luY2x1
-ZGUvbGludXgvZ3Bpby9yZWdtYXAuaCBpbmRleCA0NWEzMGY1MDA0M2YuLjIzNDYwOTk1YzFkMSAN
-Cj4+Pj4gMTAwNjQ0DQo+Pj4+IC0tLSBhL2luY2x1ZGUvbGludXgvZ3Bpby9yZWdtYXAuaA0KPj4+
-PiArKysgYi9pbmNsdWRlL2xpbnV4L2dwaW8vcmVnbWFwLmgNCj4+Pj4gQEAgLTg5LDYgKzg5LDkg
-QEAgZW51bSBncGlvX3JlZ21hcF9vcGVyYXRpb24gew0KPj4+PiAgICoJCQltYXNrIGJlZm9yZSB3
-cml0aW5nLiBUaGlzIGFsbG93cyBkcml2ZXItc3BlY2lmaWMgbG9naWMNCj4+Pj4gICAqCQkJdG8g
-YXBwZW5kIGFkZGl0aW9uYWwgYml0cyAobGlrZSB3cml0ZS1lbmFibGUgbWFza3MpDQo+Pj4+ICAg
-KgkJCWR5bmFtaWNhbGx5IGJhc2VkIG9uIHRoZSBjdXJyZW50IG9wZXJhdGlvbi4NCj4+Pj4gKyAq
-IEBzZXRfY29uZmlnOgkJKE9wdGlvbmFsKSBDYWxsYmFjayBmb3Igc2V0dGluZyBHUElPIGNvbmZp
-Z3VyYXRpb24gc3VjaA0KPj4+PiArICoJCQlhcyBkZWJvdW5jZSwgZHJpdmUgc3RyZW5ndGgsIG9y
-IG90aGVyIGhhcmR3YXJlIHNwZWNpZmljDQo+Pj4+ICsgKgkJCXNldHRpbmdzLg0KPj4+PiAgICog
-QGRydmRhdGE6CQkoT3B0aW9uYWwpIFBvaW50ZXIgdG8gZHJpdmVyIHNwZWNpZmljIGRhdGEgd2hp
-Y2ggaXMNCj4+Pj4gICAqCQkJbm90IHVzZWQgYnkgZ3Bpby1yZW1hcCBidXQgaXMgcHJvdmlkZWQg
-ImFzIGlzIiB0byB0aGUNCj4+Pj4gICAqCQkJZHJpdmVyIGNhbGxiYWNrKHMpLg0KPj4+PiBAQCAt
-MTUwLDYgKzE1Myw4IEBAIHN0cnVjdCBncGlvX3JlZ21hcF9jb25maWcgew0KPj4+PiAgCQkJICAg
-dW5zaWduZWQgaW50IGJhc2UsIHVuc2lnbmVkIGludCBvZmZzZXQsIHVuc2lnbmVkIGludCByZWcs
-DQo+Pj4+ICAJCQkgICB1bnNpZ25lZCBpbnQgKm1hc2ssIHVuc2lnbmVkIGludCAqdmFsKTsNCj4+
-Pj4gIA0KPj4+PiArCWludCAoKnNldF9jb25maWcpKHN0cnVjdCBncGlvX2NoaXAgKmdjLCB1bnNp
-Z25lZCBpbnQgb2Zmc2V0LCANCj4+Pj4gK3Vuc2lnbmVkIGxvbmcgY29uZmlnKTsNCj4+Pj4gKw0K
-Pj4+DQo+Pj4gRG8gd2UgbmVlZCBhbiBhZGRpdGlvbmFsIHN0cnVjdCBncGlvX3JlZ21hcCBwb2lu
-dGVyIGFzIGEgZmlyc3QgDQo+Pj4gYXJndW1lbnQ/IEhvdyBkb2VzIHRoZSBkcml2ZXIgZmV0Y2gg
-dGhlIGF0dGFjaGVkIG9wYXF1ZSBkYXRhIHBvaW50ZXI/IA0KPj4+IEkgc2VlIHRoYXQgeW91ciBk
-cml2ZXIgaXMgZG9pbmcNCj4+Pg0KPj4+IHN0cnVjdCBydGQxNjI1X2dwaW8gKmRhdGEgPSBncGlv
-Y2hpcF9nZXRfZGF0YShjaGlwKQ0KPj4+DQo+Pj4gQnV0IGl0IGlzIHRoZSBncGlvLXJlZ21hcCBj
-b3JlIHdoaWNoIHdpbGwgYXR0YWNoIGl0J3Mgb3duIGRhdGEgcG9pbnRlciB0byBncGlvX2NoaXAs
-IG5vPw0KPj4+DQo+Pj4gLW1pY2hhZWwNCj4+DQo+PiBZb3UgYXJlIHJpZ2h0LiBJIG1pc3Rha2Vu
-bHkgdXNlZCBncGlvY2hpcF9nZXRfZGF0YSgpIGhlcmUuDQo+Pg0KPj4gTXkgY3VycmVudCBwbGFu
-IHRvIGZpeCB0aGlzIGlzOg0KPj4gVGhlIHNldF9jb25maWcgY2FsbGJhY2sgaW4gJ3N0cnVjdCBn
-cGlvX3JlZ21hcF9jb25maWcnIGFuZCAnc3RydWN0IGdwaW9fcmVnbWFwJw0KPj4gc2hvdWxkIHRh
-a2UgJ3N0cnVjdCBncGlvX3JlZ21hcCAqJyBhcyB0aGUgZmlyc3QgYXJndW1lbnQgKHJlcGxhY2lu
-ZyANCj4+ICdzdHJ1Y3QgZ3Bpb19jaGlwIConKSwgYW5kIHRoZSBkcml2ZXIgc2hvdWxkIHVzZSAn
-Z3Bpb19yZWdtYXBfZ2V0X2RydmRhdGEoKScNCj4+IHRvIHJldHJpZXZlIGl0cyBvd24gZGF0YSBw
-b2ludGVyLg0KPiANCj4gWW91IGFsc28gcHJvYmFibHkgbmVlZCB0aGUgc3RydWN0IGdwaW9fY2hp
-cCwgdG8gbWF5YmUgY2FsbCBpbnRvIHRoZSBncGlvIGNvcmUsIG5vPw0KPiANCj4gSWYgc28sIHdo
-YXQgYWJvdXQNCj4gDQo+IGludCAoKnNldF9jb25maWcpKHN0cnVjdCBncGlvX3JlZ21hcCAqZ3Bp
-bywgc3RydWN0IGdwaW9fY2hpcCAqZ2MsDQo+ICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGlu
-dCBvZmZzZXQsIHVuc2lnbmVkIGxvbmcgY29uZmlnKQ0KPg0KDQpBZ3JlZWQuIEkgd2lsbCB0YWtl
-IHRoaXMgZGVzaWduLg0KDQpCZXN0IFJlZ2FyZHMsDQpZdS1DaHVuDQoNCj4+IEknbGwgYWRkIGEg
-d3JhcHBlciBpbiBncGlvLXJlZ21hcC5jIHRoYXQgYnJpZGdlcyBncGlvX2NoaXAgdG8gDQo+PiBn
-cGlvX3JlZ21hcCBhbmQgaGFuZGxlcyB0aGUgZmFsbGJhY2sgdG8gZ3Bpb2NoaXBfZ2VuZXJpY19j
-b25maWcoKS4NCj4NCj4gWWVzLg0KPg0KPiAtbWljaGFlbA0K
+
+
+On 21-07-2026 01:19 am, Andy Shevchenko wrote:
+> On Tue, Jul 21, 2026 at 01:09:09AM +0530, Nikhil Gautam wrote:
+>> The IIO core does not filter duplicate writes to the event enable
+>> attribute, so writing the same value twice invokes
+>> write_event_config() twice. Enabling twice leaks a runtime PM
+>> reference, preventing the device from ever suspending again;
+>> disabling twice underflows the usage count and triggers a
+>> "Runtime PM usage count underflow" warning.
+>>
+>> Bail out early when the requested state matches the current state.
+>> While at it, switch to pm_runtime_resume_and_get() so a failed
+>> resume is propagated to userspace instead of silently marking the
+>> event enabled.
+>> Fixes: 97d642e23037c ("iio: light: Add a driver for Sharp GP2AP002x00F")
+>>
+>> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+> No blank lines in the tag block.
+ACK, Will update in v2
+> ...
+>
+>>   	} else {
+>>   		pm_runtime_mark_last_busy(gp2ap002->dev);
+> At some point consider dropping this dup call.
+
+ACK, Will update in v2
+>>   		pm_runtime_put_autosuspend(gp2ap002->dev);
+>> -		gp2ap002->enabled = false;
+>>   	}
+
