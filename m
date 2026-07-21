@@ -1,84 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C8837A825;
-	Tue, 21 Jul 2026 07:24:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE1A435A94
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 08:03:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784618671; cv=none; b=MsYTmX6IrgLbfSmYLuUxEQrAjsAGu0TbE0839MN2cAzYKSMm907LX3H6IncDE+H807fMBR4e9Igbj3bMMyxMxu7V4H2Arx2AfMvz6HdDAbPEXtqOpwCWz5owPP+T1W2p+h7zSrnp7BSQFORMHYXSKqZ25Ar2q8oeuV/EmAtnQ68=
+	t=1784621011; cv=none; b=ACvvn4KpKr01w+M/ZUOfi88FlGxj8lUxbr/OWpphhZWZr1uSgM3iiBBx5lsdjZSfEcFLgW4MK0LCHPqGZvuAFlgPzjSO4C4cwnbTluqE70yZX2j7VKIQ4OwCXwbiTMPf3z1CbVHS/1uM7KQYCqf+WSOizBRDqUPKsgsaBQIjnR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784618671; c=relaxed/simple;
-	bh=6IsxahOCY4cuSPTOpRI2XYECOylwU+cYPFvwRWaA7i8=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=rFp1TNMZB6l2jtyergvr6V3bixhQBSb6JiTZoDQke8SLYYFTWqT/QCXQC18Czu2Pt+/glUMGFzY3bReeNGg56KZgF5HdO3jGh0OmvTVExeQZCcweRB73/2HOgiRoFmsOkK8dNwv7oBMW8RxyuWyNiKS/Lx1D91HjY8Px4cu+apI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J7Mzmtqc; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784621011; c=relaxed/simple;
+	bh=0Cbw2gXFjpOIEPOY/4kVuvN9KhzVSRPu/bEgNQbmbnU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ui+uT77PNF3avq8zfPkKNB9hltsm2fuif6BiuAGEz80dLGwItDVuJNGUszrkhNbHWKPa8oXyNW59kl0OLd7aEehn7AHAT1kRAyqF4a8w0TgTNUaGOulc3PQgIc+wgVVt3e2TmbWErEsaEJs+SUmGmDTjuPNzTBsB/J/Et8maTbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JgLCOL/n; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J7Mzmtqc"
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 668931F000E9;
-	Tue, 21 Jul 2026 07:24:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784618669;
-	bh=6IsxahOCY4cuSPTOpRI2XYECOylwU+cYPFvwRWaA7i8=;
-	h=Date:Subject:Cc:From:To:References:In-Reply-To;
-	b=J7Mzmtqclveyv1gtvVWxxheZ7j1xXvdPPV0JyqOY6HK9DGWGJ3uOy8k+iFxpCWcYp
-	 Yw/QxeYe/auFWvhgnSieSRFpopMt5Q5NLgIvcdwOgQa1B+d4WpYIZP+ODYMCCy0RAj
-	 o1j1ci63LOv4GugTqhL+B5iLaDO6nP7rKVrlIYCp6n3w0QnmMLOSUl70CxaJ7HDOif
-	 oAETbjWyULiypJBvAGF/w+p4txbGmfE9sZJrn7yYN92Lof9dBmfiZOIlvPHF7aVzRh
-	 KvQf8kKvpm/HTKzCsR0/WoR1wYGC/SOe2EY5z68nnkgpbq5ViVFT8Hv+MhWnJWC/aG
-	 Xk/ZeaL6pSt1w==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JgLCOL/n"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-47f73b1ee02so352269f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 01:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784621008; x=1785225808; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FQW9nOmQRNCmAQpN47AcJCe9kdEEIZC5I+8m11r1HjA=;
+        b=JgLCOL/nXI26OSR7/+twJ6V9h3yG7vvwqbLYx3My9qGzF51G+2RJAmJ8pVT3vDgB8T
+         jqiiLMPPiWcC/CyMpV7I3ES9+7OaG7b7KdHYBeoz9KI7/mHQyXthek5bHzjRFbAzzujV
+         dg9WXtd7D5pSh1rRFHycGozTs24CC2C/CxqcDMxVdzzBD530SNXZqsMF4axEf6XRaTp4
+         nNHwJEz+TeaclqflbaDM0YWyS0QGydkH/CH3uCwN2oeqQ9K/uf/A+VShlJJ0zouwQtHQ
+         SutVVUA/4wWzlnbvXl9PcI1Lo5IUXVgxGb13yyIUAIx5Iys6fEyBeFyW9zhAAEGS1aA2
+         zdyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784621008; x=1785225808;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=FQW9nOmQRNCmAQpN47AcJCe9kdEEIZC5I+8m11r1HjA=;
+        b=HDbAd6WtNIM4x5Iubsk2QpbHCgVO+XSIma36C7q3hkfux0K2qinnZIhsjeEqUClNd5
+         XMG4iGyPj+a6akW6b6KYM6Ei7ztGtY/VJmTAr3xnYZ7VIwlhtoZVHioBNmuYhzaafKNg
+         zHDFgrPQFNZLtjAffWNEmcZrs6Fj6itJ+9Z9VGndl0NrfrVAkteiw7fSmwBLGustA+B2
+         MLovs3+wLcXkr2Jz+3X6UYUsCbt4HKLDauPjrNntfl/VAerjuBHAfczz8q8RO4jE+nyN
+         DFIupEXPSXGCiPpl+7U6CWc0pc7KRLx1+igOuWXbyc09OmP9x+a2iqYHya1pGjvH+Hci
+         HlQw==
+X-Forwarded-Encrypted: i=1; AHgh+RpPkxZSUm749jd1j0lf4yhl49uH1fc1/jWdqa37bEdpFT2DOpegNCj8HOKyfPnlstBIwKyJh8bav7E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZcRntsk+8steIFeebjUqfIWFYPjLbfoSwnHK8Swsqs3iPv2nk
+	vppNRElRZ1/sF/V5asj//Y3ImxYiR/gQ4IGccz5btAETlFbisr9EVvZH
+X-Gm-Gg: AR+sD13JSfBMXB6VKoB/8PlOvWiWj9+IwPLBrF2RmBziXwiciyoiQJKwjMTPxuHM7pd
+	BhCdIR51r79yLGbhUhuA+OJtFFjzTNxywYyxFXFPJUZrxyHLSAnX8jlE3F2c1TaTphs3l7bM3WQ
+	IWA3JasNGhTxlDvkNziNXFT7RSTAVO5P4jzbA9EDJrJ2j8h/Y4vzosh6c6ELnEOvghhGn2FPoX6
+	KWRpJvV1enXO+Q51fIcNRv4iF9UqZKV19oGG6tWOc30JxTep7M1DIjSjEULXy9ED9wvWbY8q+A9
+	+i889391pJdKtP5Gh0eSXj+qv82XNZlIBUK25dQH4J6IdTKSx0q2nqp9HyFs92NgurmDght0va7
+	NhAYsccIFCVeGcTu4j2kyIkmgpUq9PcxZZw5xWcEk2sp//IgBLVifB9WZbLYkklVWOMr+b8/jLG
+	JMLsnvu8/S319nnqSMl9x/XM9qAfScavyATnIEpIR0S7v1pFNTbDkQ/Xm4rObQ6vyW3ahmImVby
+	EthswOFTn46zrRPSE8=
+X-Received: by 2002:adf:e195:0:b0:475:a4ae:e630 with SMTP id ffacd0b85a97d-47f623364bfmr20547113f8f.37.1784621008290;
+        Tue, 21 Jul 2026 01:03:28 -0700 (PDT)
+Received: from [172.24.138.145] (ipservice-092-208-246-161.092.208.pools.vodafone-ip.de. [92.208.246.161])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f63eeece9sm35822439f8f.37.2026.07.21.01.03.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jul 2026 01:03:27 -0700 (PDT)
+Message-ID: <d159cae0-b11e-49e9-a546-023ed61b900e@gmail.com>
+Date: Tue, 21 Jul 2026 10:03:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=523b1aceac9c46e15ef98eb5dcde81ce48d45219a39c4b07e4edd6864e3a;
- micalg=pgp-sha384; protocol="application/pgp-signature"
-Date: Tue, 21 Jul 2026 09:24:26 +0200
-Message-Id: <DK42IP829U4Z.UJK92LWTXG5@kernel.org>
-Subject: Re: [PATCH v6 7/8] gpio: regmap: Add IRQ enable/disable helpers
-Cc: <dlechner@baylibre.com>, <linux-kernel@vger.kernel.org>,
- <linux-gpio@vger.kernel.org>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
- <james.tai@realtek.com>, "Andy Shevchenko"
- <andriy.shevchenko@linux.intel.com>
-From: "Michael Walle" <mwalle@kernel.org>
-To: "Yu-Chun Lin" <eleanor.lin@realtek.com>, <linusw@kernel.org>,
- <andriy.shevchenko@intel.com>, <brgl@kernel.org>, <tychang@realtek.com>,
- <wbg@kernel.org>, <mathieu.dubois-briand@bootlin.com>,
- <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
- <andy@kernel.org>, <u.kleine-koenig@baylibre.com>, <dakr@kernel.org>,
- <bhelgaas@google.com>, <o-takashi@sakamocchi.jp>
-X-Mailer: aerc 0.20.0
-References: <20260721065802.689530-1-eleanor.lin@realtek.com>
- <20260721065802.689530-8-eleanor.lin@realtek.com>
-In-Reply-To: <20260721065802.689530-8-eleanor.lin@realtek.com>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
+To: David Lechner <dlechner@baylibre.com>,
+ Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+ <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
+ <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+ <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
+ <e791f4f9-63dd-40f5-aec4-5b540bcee5ff@baylibre.com>
+Content-Language: en-US
+From: Janani Sunil <jananisunil.dev@gmail.com>
+In-Reply-To: <e791f4f9-63dd-40f5-aec4-5b540bcee5ff@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
---523b1aceac9c46e15ef98eb5dcde81ce48d45219a39c4b07e4edd6864e3a
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
 
-On Tue Jul 21, 2026 at 8:58 AM CEST, Yu-Chun Lin wrote:
-> Add gpio_regmap_enable_irq() and gpio_regmap_disable_irq(). Since struct
-> gpio_regmap is opaque, drivers cannot access the embedded gpio_chip direc=
-tly.
+On 7/21/26 03:39, David Lechner wrote:
+> On 7/20/26 9:00 AM, Janani Sunil wrote:
+>> On 7/9/26 17:43, David Lechner wrote:
+>>> On 7/9/26 3:50 AM, Janani Sunil wrote:
+>>>> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+>>>> simultaneous sampling ADC
+>>>>
+>>>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+>>>> ---
+>>>>   
+>>>> +
+>>>> +  adi,power-mode:
+>>>> +    $ref: /schemas/types.yaml#/definitions/string
+>>>> +    enum:
+>>>> +      - low
+>>>> +      - median
+>>>> +      - fast
+>>>> +    description:
+>>>> +      Power mode selection.
+>>> Unless there are pins that control this, it seems like it should be
+>>> left up to the driver to decide how to set this.
+>>>
+>>> In this case, it looks like the power mode also influences sample rate
+>>> which is normally something controlled at runtime.
+> Looking at this again, there is also an MCLK divider that influences
+> sample rate, so sampling_frequency to power mode is not straight-forward
+> anyway.
 >
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+>> Hi David,
+>>
+>> The reason we'd like to retain power mode control is that certain ODRs are supported across all three power modes (low/median/fast), and the RMS noise and power consumption differ significantly between them at the same ODR.
+>>
+>> The higher the power mode, the better the noise performance, but power consumption nearly doubles for every ~3 dB improvement in dynamic range. Silently selecting one power mode in the driver would remove a meaningful hardware tradeoff from the user.
+>>
+>> We'd like to propose the following instead:
+>> - Remove adi,power-mode from the DT as suggested.
+>> - Expose power mode as a per-device sysfs attribute.
+>> - in_voltage<N>_sampling_frequency_available dynamically reflects only the ODRs valid for the currently selected power mode.
+>>
+>> This keeps the DT clean while still giving the user explicit control over the noise versus power trade off. Would this approach be acceptable?
+>>
+>> Thanks,
+>> Jan
+>>
+>>
+> Jonathan usually pushes back against userspace power controls. We do have
+> this for accelerometers, but not ADCs currently.
+>
+> If we can't think of anything better, maybe we could use this. It only
+> has low_noise and low_power options though, so the driver would still
+> need to chose the best power mode of the 3 based on the other requested
+> parameters. E.g. always make all sampling_frequency available  and just
+> pick the highest power or lowest power mode that can provide that rate
+> based on the power_mode attribute.
+>
+> I wanted to suggest maybe adding some kind of noise attribute instead,
+> but I'm not sure how we could do that in a way using SI units since the
+> value would depend on so many things (at least V_REF voltage, filter type,
+> temperature and even the physical input).
 
-Reviewed-by: Michael Walle <mwalle@kernel.org>
+We considered the low_power/balanced/low_noise approach, but the customers typically use the datasheet alongside the driver and the datasheet explicitly uses the terms "low power", "median" and "fast" for the three modes. Abstracting them with different names in the sysfs attribute would create a confusion- the users would have to mentally translate between the two naming conventions.
+The noise attribute would not actually configure anything on a register level- it would purely be informational. Furthermore, noise performance is not solely determined by the power mode. There are other parameters (eg. filter mode) that has a significant impact. A power_mode attribute directly configures the hardware register and has a deterministic effect on the device.
 
---523b1aceac9c46e15ef98eb5dcde81ce48d45219a39c4b07e4edd6864e3a
-Content-Type: application/pgp-signature; name="signature.asc"
+Jonathan, could we keep the power_mode as an attribute in this case?
 
------BEGIN PGP SIGNATURE-----
-
-iKgEABMJADAWIQTIVZIcOo5wfU/AngkSJzzuPgIf+AUCal8eqhIcbXdhbGxlQGtl
-cm5lbC5vcmcACgkQEic87j4CH/j7XgGA5OJi1hr0+Eja1cXeGSY4GHtcpfJ4/aOh
-3qiOW6uwy5cRNV1VhV6oqr+eiheacJHQAYDhPSW7tu4ArzVrRfbZkm6T5kIGS/z5
-7SkEQjz/ckYBKqx0+PUiWSRCtvEZxxBwn48=
-=EVYC
------END PGP SIGNATURE-----
-
---523b1aceac9c46e15ef98eb5dcde81ce48d45219a39c4b07e4edd6864e3a--
