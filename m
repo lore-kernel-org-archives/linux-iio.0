@@ -1,47 +1,46 @@
 Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2C442A17E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D0D9429020;
 	Tue, 21 Jul 2026 06:58:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784617116; cv=none; b=VWIBZZq8UfSEMJBKvPO7c43emUxIiisA8cBiosSKsRqVrsXZN71zY2lh4yXeEvZJZbIoTyAF94Hm45hDFB7HPZgnhyzfepKXJV1LqQPAjIJ+J97OiCNYbKCmu8VYPzBTiDnCJzZPHpaT+VN0aMQ+e3bom+4FzKe7dMUAunfoSvc=
+	t=1784617116; cv=none; b=j1OKRmDv/aeJkjUB7/a54ZBY03kXwm3/rUME6ppV81XHMmDuXV63U/cOFRKwj65gMFqSb4FVibAXtop+0rs9OvEMGSK6UofGWzBIkY/hDVE1L6N+mq8Mdh+519LWjRe8yHoqUovpMAh0giYapuLkI74z8IpXafxrwL6IxeQIwEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1784617116; c=relaxed/simple;
-	bh=rA8a6r/yhAKBcah1k3fbfgq08wg/I4nEhbo24pEnEJk=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RZhyB5hx2u+KGdi+EdTV7VNVFmGjK+G16Eu3brG4FWLVYs3/5P8AggZ3VyumowTeroM8TsbZyKDQaoWv0CZwwgH+6NIRb99k1G9k9+F4eQEqG7fvC/lO3oRbdA/bmmaetZIYncJOMIJnXBA5Fuuj+LCh9CZe4J6KtaWCpC0vRio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=SNz9i7Ae; arc=none smtp.client-ip=211.75.126.72
+	bh=iGULKZ3vc0/BZb6Tgsq2caKjKRRwiXqObCdhwUQjTxM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TkTyK9JM98jDYkuDhxEh8pEszEuCVOCK0n9h0elszHDIl/E2u6Nr/M3NM16T2TT7BPLlc5ijbbxMefHaCYXpyEvtxcVwUHrYd6gA7cHX5kJJyfRg/v1cnBWIe6jFzzeD7uYpGfsOcRbD3ZAJ3gW5cFafHImhhQ0bKX7glL95ajI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=SrmZhfkE; arc=none smtp.client-ip=211.75.126.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="SNz9i7Ae"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66L6w6v253014056, This message is accepted by code: ctloc85258
+	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="SrmZhfkE"
+X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66L6w4kW53014039, This message is accepted by code: ctloc85258
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1784617086; bh=tErcWa7vawdhi8WJ5LaFGHq3z1tLEYUJnYrQNLu8spw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type;
-	b=SNz9i7AemElws6opKXAStX+L2qBRH0uw0tTjA9g+gNOhqmnBzVZx0j0TQYuWOkWlx
-	 It/CQ420KiwaEybfuCqf98Bre/h7F9z9JB1+0CCTIkwhAbfSVm0AJyWTS+NP1cLpra
-	 bmYrZoTZ6UONQyuJf/Naidg1jzvUvMAHq6nV6JhvLgAERbcXasMQZbwT/CPE78fHEu
-	 ki6H1fYBB2vpG/RPot2U2WPbwSMdrnY3P9UoVng0c7QTsmxMDdSsS7SDBZRKjB/0y7
-	 9qlb52jYBQOEUA94JPEXq/6vGhrmf0z0Ej5G2BNG5xV97FJgP21+VC4h1NIDZFRV9c
-	 FlvAUAHHyerAA==
-Received: from mail.realtek.com (rtkexhmbs04.realtek.com.tw[10.21.1.54])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66L6w6v253014056
+	t=1784617084; bh=tE64jyiK83bGPmbhJBEGc+s/Xm9RfigyxWCVyakSsvY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type;
+	b=SrmZhfkEcTHKEP4UuQMwSD0aXfDK3cmodkCMkLmHd261xHhrdq/5M5gdd/e9wYZ3Z
+	 8VXt1HxU64NRpTERysWcqgUlCiP3oW9Xr0OvXvG3qDwZRYaViQVsWX2/gXGnz2j/r5
+	 OrIgGOXqafjGn/aDSfCNQjPm3mj2q2+TfeaXcw0H+tU/MJtp4hgQO2n2q/bNpqWV26
+	 RdwjrvSKl4/AOsmkEdtZxRu4m6q3nGtW0eJxDO48k6+hmwPJRvyC50N6pC09CFUhYa
+	 0kBTtOgWjAYkcZAXl9xC/5Iwfcgu5OfcegXkp33BkZzLmTZ4BLc7SjqC5vJkcBBYYS
+	 t2ZxnOJEhSFqg==
+Received: from mail.realtek.com (rtkexhmbs03.realtek.com.tw[10.21.1.53])
+	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66L6w4kW53014039
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 21 Jul 2026 14:58:06 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS04.realtek.com.tw (10.21.1.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 21 Jul 2026 14:58:07 +0800
+	Tue, 21 Jul 2026 14:58:04 +0800
 Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
- RTKEXHMBS06.realtek.com.tw (10.21.1.56) with Microsoft SMTP Server
+ RTKEXHMBS03.realtek.com.tw (10.21.1.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Tue, 21 Jul 2026 14:58:06 +0800
+ 15.2.2562.17; Tue, 21 Jul 2026 14:58:03 +0800
+Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
+ RTKEXHMBS05.realtek.com.tw (10.21.1.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Tue, 21 Jul 2026 14:58:02 +0800
 Received: from cn1dhc-k02 (172.21.252.101) by RTKEXHMBS05.realtek.com.tw
  (10.21.1.55) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
- Transport; Tue, 21 Jul 2026 14:58:06 +0800
+ Transport; Tue, 21 Jul 2026 14:58:02 +0800
 From: Yu-Chun Lin <eleanor.lin@realtek.com>
 To: <linusw@kernel.org>, <andriy.shevchenko@intel.com>, <mwalle@kernel.org>,
 	<brgl@kernel.org>, <tychang@realtek.com>, <wbg@kernel.org>,
@@ -53,12 +52,10 @@ CC: <eleanor.lin@realtek.com>, <dlechner@baylibre.com>,
 	<linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
 	<linux@analog.com>, <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
 	<james.tai@realtek.com>
-Subject: [PATCH v6 6/8] gpio: regmap: Add set_config callback
-Date: Tue, 21 Jul 2026 14:58:00 +0800
-Message-ID: <20260721065802.689530-7-eleanor.lin@realtek.com>
+Subject: [PATCH v6 0/8]  gpio: realtek: Add support for Realtek DHC RTD1625
+Date: Tue, 21 Jul 2026 14:57:54 +0800
+Message-ID: <20260721065802.689530-1-eleanor.lin@realtek.com>
 X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260721065802.689530-1-eleanor.lin@realtek.com>
-References: <20260721065802.689530-1-eleanor.lin@realtek.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,55 +65,88 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Add a new set_config callback to struct gpio_regmap_config to allow drivers
-to implement hardware-specific configuration such as debounce settings,
-or other platform-specific GPIO properties.
+For better review flow, this series includes Andy Shevchenko's
+gpio-regmap fix patches [1] as a prerequisite. The first patch
+reverts the previously applied patch from Bartosz Golaszewski.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+This series then adds GPIO support for the Realtek DHC RTD1625 SoC.
+
+Unlike the existing driver (gpio-rtd.c) which uses shared bank
+registers, the RTD1625 features a per-pin register architecture where
+each GPIO line is managed by its own dedicated 32-bit control register.
+This distinct hardware design requires a new, separate driver.
+
+Link: https://lore.kernel.org/lkml/20260702130903.1790633-1-andriy.shevchenko@linux.intel.com/ [1]
 ---
 Changes in v6:
-- None.
----
- drivers/gpio/gpio-regmap.c  | 1 +
- include/linux/gpio/regmap.h | 5 +++++
- 2 files changed, 6 insertions(+)
+- The dt-binding patch has already been applied by Bartosz and remains
+unchanged. The DTS patch has been applied separately.
 
-diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-index aecc35f610dd..b856326ff01c 100644
---- a/drivers/gpio/gpio-regmap.c
-+++ b/drivers/gpio/gpio-regmap.c
-@@ -454,6 +454,7 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
- 		gpio->reg_mask_xlate = gpio_regmap_simple_xlate;
- 
- 	gpio->value_xlate = config->value_xlate;
-+	chip->set_config = config->set_config;
- 
- 	ret = gpiochip_add_data(chip, gpio);
- 	if (ret < 0)
-diff --git a/include/linux/gpio/regmap.h b/include/linux/gpio/regmap.h
-index 45a30f50043f..23460995c1d1 100644
---- a/include/linux/gpio/regmap.h
-+++ b/include/linux/gpio/regmap.h
-@@ -89,6 +89,9 @@ enum gpio_regmap_operation {
-  *			mask before writing. This allows driver-specific logic
-  *			to append additional bits (like write-enable masks)
-  *			dynamically based on the current operation.
-+ * @set_config:		(Optional) Callback for setting GPIO configuration such
-+ *			as debounce, drive strength, or other hardware specific
-+ *			settings.
-  * @drvdata:		(Optional) Pointer to driver specific data which is
-  *			not used by gpio-remap but is provided "as is" to the
-  *			driver callback(s).
-@@ -150,6 +153,8 @@ struct gpio_regmap_config {
- 			   unsigned int base, unsigned int offset, unsigned int reg,
- 			   unsigned int *mask, unsigned int *val);
- 
-+	int (*set_config)(struct gpio_chip *gc, unsigned int offset, unsigned long config);
-+
- 	void *drvdata;
- };
- 
+Patch 2 & 3:
+- Move gpio_regmap_irq_reqres() and gpio_regmap_irq_relres() implementation
+  from patch 2 to patch 3 for better split.
+
+Patch 3:
+- Add '_maybe_unused' to prevent build fail when CONFIG_REGMAP_IRQ is not
+enabled.
+
+Patch 5:
+- Remove removed the hardcoded write-enable workarounds.
+- Retain the necessary prototype updates in every driver using custom
+reg_mask_xlate
+- Add value_xlate to dynamically adjust the register mask and value right
+before the actual register write operation.
+
+Patch 8:
+- Add 'select REGMAP_MMIO' into Kconfig.
+- Replace GPIOCHIP_IRQ_RESOURCE_HELPERS with explicit irq_request_resources
+and irq_release_resources callbacks using gpio_regmap_reqres_irq() and
+gpio_regmap_relres_irq() introduced by Andy's patches.
+- Replace the '*mask = 0' hack with 'return -ENOTSUPP'.
+- Move variable operations out of scoped_guard().
+- Add 'struct lock_class_key' to irq_domain map for proper lockdep annotation.
+- Remove redundant 'ret' variable.
+- Make regmap disable_locking depend on CONFIG_DEBUG_GPIO to avoid
+dropping debugfs support unconditionally.
+- Replace irq_domain_add_linear() with irq_domain_create_linear() using
+dev_fwnode(dev), and manage lifetime with devm_add_action_or_reset().
+
+v5: https://lore.kernel.org/lkml/20260702090115.2564318-1-eleanor.lin@realtek.com/
+v4: https://lore.kernel.org/lkml/20260622092335.1166876-1-eleanor.lin@realtek.com/
+v3: https://lore.kernel.org/lkml/20260512033317.1602537-1-eleanor.lin@realtek.com/
+v2: https://lore.kernel.org/lkml/20260408025243.1155482-1-eleanor.lin@realtek.com/
+v1: https://lore.kernel.org/lkml/20260331113835.3510341-1-eleanor.lin@realtek.com/
+
+Andy Shevchenko (3):
+  gpio: regmap: Provide default IRQ resource request and release
+    callbacks
+  gpio: regmap: Apply default resource callbacks for regmap IRQ chip
+  gpio: regmap: Order kernel-doc descriptions with the actual appearance
+
+Tzuyi Chang (1):
+  gpio: realtek: Add driver for Realtek DHC RTD1625 SoC
+
+Yu-Chun Lin (4):
+  Revert "gpio: realtek: Add driver for Realtek DHC RTD1625 SoC"
+  gpio: regmap: Add gpio_regmap_operation and value_xlate support
+  gpio: regmap: Add set_config callback
+  gpio: regmap: Add IRQ enable/disable helpers
+
+ drivers/gpio/Kconfig                  |   2 +
+ drivers/gpio/gpio-104-idi-48.c        |   7 +-
+ drivers/gpio/gpio-i8255.c             |   4 +-
+ drivers/gpio/gpio-idio-16.c           |   6 +-
+ drivers/gpio/gpio-max7360.c           |   8 +-
+ drivers/gpio/gpio-pcie-idio-24.c      |   6 +-
+ drivers/gpio/gpio-regmap.c            | 101 ++++++-
+ drivers/gpio/gpio-rtd1625.c           | 382 +++++++++++++++-----------
+ drivers/iio/adc/ad7173.c              |   8 +-
+ drivers/iio/addac/stx104.c            |   6 +-
+ drivers/pinctrl/bcm/pinctrl-bcm63xx.c |   1 +
+ drivers/pinctrl/pinctrl-tps6594.c     |   1 +
+ include/linux/gpio/regmap.h           |  75 ++++-
+ 13 files changed, 401 insertions(+), 206 deletions(-)
+
 -- 
 2.43.0
 
