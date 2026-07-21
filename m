@@ -1,41 +1,68 @@
-Received: from galaxy.gendns.com (galaxy.gendns.com [66.235.175.158])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B3F4302E7;
-	Mon, 20 Jul 2026 22:13:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.235.175.158
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 636CC3EFD22
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 01:39:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784585634; cv=none; b=mWajGT0AuggTjdTw/efGs8u+Q7aLHvz7pFPqj2WhbDeAz169NE/9zJ1hlVBHth4CgUUSxzUxwzLG+nXbOa7xJyKD3hAtjHT+sn5bQ4ZsIQ1o6vyInXx7ijYzJi1hWgQeqpxRpx2zvQ5J45Q8nGmafgTM5DMtzaJgCt8BHnkWpzs=
+	t=1784597975; cv=none; b=IWSTvHkpYuUa5QQxjn/8eod3HGje3RvsG9ozn0iPmH6sVl1a90SCZ+vjVWxlyBjSbZIUMf2fIvhom/Vth+9uFIn4Fm/KShdUAReIDDBwbqWnC7chOFL4KsYn9AVVXQmBT0MLEYJrDLwV7cAJ6ZVbRKb3AZ+if6g8fSEzN0jluN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784585634; c=relaxed/simple;
-	bh=/hAC+KHYNNTVIRVrwiaIdjJ2ps2CLVP+6NsFYYpPKTQ=;
+	s=arc-20240116; t=1784597975; c=relaxed/simple;
+	bh=hPnnSWEXjlKB3FA+RvOH82WyYdS/53hCpV5pLhgGvPo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=doiE12LZB806nMNk6a8RDwoOioFo5p2NfNvKScQqoIIYERwdd0G9rHyRsr4MTZCxB8IDJZNmFmA5s01bR25F4R//WZ7LyETitBSUZxwLYIx+KrQgRAHDTXb4IdIgslfgx3c4Se40Pntr75eY3q5yfxhuDQSZ/UWIAezhE3F3bY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com; spf=pass smtp.mailfrom=lechnology.com; dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b=Zrma1MzE; arc=none smtp.client-ip=66.235.175.158
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
+	 In-Reply-To:Content-Type; b=RJFsBuxj/cVYADfCjN1feNH+Uyc5GKIQOlmYFVCtN8u54uWFpDF8S61Pyh/S83fkD2NcMXV9T84ya7Js/JmqA+/ahZq+/ppv60Ae7tfCGa6O2kzfSkU6mStVldX2CRjNj2eVPt5vish7WlDIfWcq8gmRq1khL7kHjIqJDMg/VW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=IADpnpBr; arc=none smtp.client-ip=209.85.167.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="Zrma1MzE"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=z9o4g2n65rv3y3NXyhDznN8Rtp0OpBfVkmUynq+5TQ8=; b=Zrma1MzEbUweX9UX32aEqbYo9D
-	DgDCJm/FZS6YIihBBOREsY0J6NyEuCbYqnvDIRDLLrDRHHu3hmzh75YWa/tBLSHENb+4vy5mLIqUm
-	HZx36nD1esJrvvW5yYDbMgOAKZweyivreu4ktec4C3DxO+95cm4VOWyUytLDJlXomPzMRV3ttDN1b
-	xjGlz0OgtdD/ZYXfFTCD17u3oGe/hQ4ceqsnl/+eWPLzmCrxzq/x9TK38Di4lhPP7e5JYp4h426Ej
-	8DvzzYEbX9EYwRlseS1j2fKNZn6Ydm6w0R9GnytUgFSYghg2wLXmS5MTr2gh4/lvPIvL39Az6uJQX
-	dncRjlmw==;
-Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:44330 helo=[192.168.1.142])
-	by galaxy.gendns.com with essmtpa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
-	(Exim 4.99.4)
-	(envelope-from <david@lechnology.com>)
-	id 1wlwFF-0000000F7bU-1LOO;
-	Mon, 20 Jul 2026 18:13:51 -0400
-Message-ID: <3da60ab0-82a0-44dc-ae49-15f8a986834a@lechnology.com>
-Date: Mon, 20 Jul 2026 17:13:51 -0500
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="IADpnpBr"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-4a451915d8aso5085576b6e.2
+        for <linux-iio@vger.kernel.org>; Mon, 20 Jul 2026 18:39:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1784597972; x=1785202772; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=81HdYIHWL+Qkrx66ggqaBZ1N7F6EaLfANnJd23r1MXw=;
+        b=IADpnpBrfqUMGBwCuPGl3tLJ980Aib1DOcraPa/bIzlHFaN24DGigO5ryccxwBOQQC
+         CeaPChM2qsxCyYB36vCMBjNvfM9/VnawV/DII9UGnzkLnueVjTYKKc2MzHr4SkRCIv6u
+         ZR0LswrfbRP4mCnaAjjG8YW8b0on7h0chC4qqRAJ5zbhyAQ/Ah6JlUcraSauJ6evWuT6
+         5YKh+4vJwMxiNnFkf/9zZnwRCTwhyMFa2DbPoHzvw9jcmfq1kVjRxI4SXwYmb3xvMFBH
+         BRbzbN7T5KjYmfhXDlxfUQ/LsvY01zpmZaQBR/7yXBh1pqzgtPXG85unP1cKZto61s+c
+         os/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784597972; x=1785202772;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=81HdYIHWL+Qkrx66ggqaBZ1N7F6EaLfANnJd23r1MXw=;
+        b=OTv3WOtVeEtdSsmUzlk8PRALA/sw+F59j2VfkbHPigdFzbrYur40xbxDoS4xTNeFLp
+         Yr0bhNbeYd69rJUzBDohPeEU2BSbKNJrFQlwXoHYkdeeOUI1Gbq6eHhS8dTpMb87yNJz
+         wdUOhtTlEHvuX8ll7hbf6JUhBGae0jH0kfwJb9U8DxWNYfZt6Sgsrn2lgmjN2MEkl2G1
+         g7+3djYUXuxW9ZT+w4ATh8B+5WVFczzv9+3sj08CoHSYcvUam5tPFF7IhJjn4eS7D3RR
+         /cWxplyZcN7lORr7oWmOTUCcWNtyqdwbBfC7UewXeoQd3BfdOf7BnV8dkMbYgCOaxBkW
+         1SWw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpavq/45iZe9vCokPiID0VFoAKZBRgEIey9ZuNhmN0GO8BlbUjvseeMMwfv9LdVfBlju5mV0lgwcOY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxbQrmX7tijtApiMHzRI/2JaEe79iMya+1+QmXfdVd7WwxDQokK
+	waJ4MdvK1d2QMPrdp9O3GUt1pPuj38um4qSKXWj8Lsx85/VVZ435mzhadaRJpb4TOhFNfCsre1r
+	CVty9
+X-Gm-Gg: AfdE7cmEHH0ToWM86tgdwHmQcxHI9WGQCIbVmSZEXpAN3KJAGSzOQtEFb177l3X3jKW
+	YLZq8f0mPfKNYtSyM0pB8nUBcJPvfypVvXeKh2XAue5Q1IAB7hcrCCledST0jI3U3eSqwxc4IGH
+	UsiAPUnlsRzBxIOfxvoa8qQqOLGx6uqhSphUe3uJZb/3ONjZbyV47EC12j6SuH/TNyDMicZZLts
+	x8RL/Fy5xN/Tcf2MOGE4BsizPaaSFlapRo+fpl5u9GWqthwVewWJyFDM7THnuRGM5zxCkDAlqTV
+	gy07v/a6cwDd2Q12UB3NJYTgAZ72vO9B57JhhoHTe+2+pbRlPSP9KNGt0t1QXwJlyUOXeOn37XD
+	KnqOJBp3DmpvvXBkY55rp03yDb9gWpmR62kUpRkTJGmiga0oHRTTmr/NkOxjsPLHh2pQR+4haMh
+	jVlkp18UOR1qaEQ2vLLa7yHNYW+IgwKYrUnUsjeKDFrdzSTLrM0ZT+
+X-Received: by 2002:a05:6808:3209:b0:4a4:a05:dc1 with SMTP id 5614622812f47-4a4d051d9d7mr10860219b6e.22.1784597972241;
+        Mon, 20 Jul 2026 18:39:32 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:8ce6:b98e:1126:f7f0? ([2600:8803:e7e4:500:8ce6:b98e:1126:f7f0])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4a4d3a57b04sm8639931b6e.3.2026.07.20.18.39.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2026 18:39:30 -0700 (PDT)
+Message-ID: <e791f4f9-63dd-40f5-aec4-5b540bcee5ff@baylibre.com>
+Date: Mon, 20 Jul 2026 20:39:28 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -43,81 +70,89 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] counter: ti-eqep: Remove redundant dev_err_probe()
-To: Pan Chuang <panchuang@vivo.com>, William Breathitt Gray <wbg@kernel.org>,
- "open list:TI ENHANCED QUADRATURE ENCODER PULSE (eQEP) DRIVER"
- <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>
-References: <20260715135030.326290-1-panchuang@vivo.com>
- <20260715135030.326290-4-panchuang@vivo.com>
+Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
+To: Janani Sunil <jananisunil.dev@gmail.com>,
+ Janani Sunil <janani.sunil@analog.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-doc@vger.kernel.org
+References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
+ <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
+ <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
+ <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
 Content-Language: en-US
-From: David Lechner <david@lechnology.com>
-Autocrypt: addr=david@lechnology.com; keydata=
- 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
-In-Reply-To: <20260715135030.326290-4-panchuang@vivo.com>
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - galaxy.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: galaxy.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: galaxy.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Transfer-Encoding: 8bit
 
-On 7/15/26 8:50 AM, Pan Chuang wrote:
-> devm_request_threaded_irq() automatically logs detailed error messages
-> on failure. Remove the now-redundant driver-specific dev_err_probe()
-> call.
+On 7/20/26 9:00 AM, Janani Sunil wrote:
 > 
-> Signed-off-by: Pan Chuang <panchuang@vivo.com>
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> ---
+> On 7/9/26 17:43, David Lechner wrote:
+>> On 7/9/26 3:50 AM, Janani Sunil wrote:
+>>> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8 channel)
+>>> simultaneous sampling ADC
+>>>
+>>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+>>> ---
+>>>  
+>>> +
+>>> +  adi,power-mode:
+>>> +    $ref: /schemas/types.yaml#/definitions/string
+>>> +    enum:
+>>> +      - low
+>>> +      - median
+>>> +      - fast
+>>> +    description:
+>>> +      Power mode selection.
+>> Unless there are pins that control this, it seems like it should be
+>> left up to the driver to decide how to set this.
+>>
+>> In this case, it looks like the power mode also influences sample rate
+>> which is normally something controlled at runtime.
 
-Reviewed-by: David Lechner <david@lechnology.com>
+Looking at this again, there is also an MCLK divider that influences
+sample rate, so sampling_frequency to power mode is not straight-forward
+anyway.
 
+> 
+> Hi David,
+> 
+> The reason we'd like to retain power mode control is that certain ODRs are supported across all three power modes (low/median/fast), and the RMS noise and power consumption differ significantly between them at the same ODR.
+> 
+> The higher the power mode, the better the noise performance, but power consumption nearly doubles for every ~3 dB improvement in dynamic range. Silently selecting one power mode in the driver would remove a meaningful hardware tradeoff from the user.
+> 
+> We'd like to propose the following instead:
+> - Remove adi,power-mode from the DT as suggested.
+> - Expose power mode as a per-device sysfs attribute.
+> - in_voltage<N>_sampling_frequency_available dynamically reflects only the ODRs valid for the currently selected power mode.
+> 
+> This keeps the DT clean while still giving the user explicit control over the noise versus power trade off. Would this approach be acceptable?
+> 
+> Thanks,
+> Jan
+> 
+> 
+
+Jonathan usually pushes back against userspace power controls. We do have
+this for accelerometers, but not ADCs currently.
+
+If we can't think of anything better, maybe we could use this. It only
+has low_noise and low_power options though, so the driver would still
+need to chose the best power mode of the 3 based on the other requested
+parameters. E.g. always make all sampling_frequency available  and just
+pick the highest power or lowest power mode that can provide that rate
+based on the power_mode attribute.
+
+I wanted to suggest maybe adding some kind of noise attribute instead,
+but I'm not sure how we could do that in a way using SI units since the
+value would depend on so many things (at least V_REF voltage, filter type,
+temperature and even the physical input).
