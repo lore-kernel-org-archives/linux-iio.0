@@ -1,120 +1,124 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-170.mta0.migadu.com (out-170.mta0.migadu.com [91.218.175.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ADC1378828
-	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 14:28:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1124400E1A
+	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 15:03:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784644117; cv=none; b=ISDlhC9SDy8ljiCL0SS/CQYzYahHxZJFIVtMuPq8b499qX885Vj5cqzP76tDa53rRixlwebYJ68Ubf+dc/i4Yh7eOql1kDvoKoDTvVkrJjN3+5itqORaWSyx2tWAFW5p29WCC+QwBTt2IEZ/UHevPeeRwvWqCYUhzDnnYTzzp80=
+	t=1784646237; cv=none; b=R/bU5JclCPyhBGOR70bDGqww5fHXsuuO6uCOu7vqvtI14BGOXIIjmL4SclxlhXX0aURWHLzQ0VZ8f11/kB0fW8DdUFMkggLNw+f8Xzh18DED2ID6rQxftJjA00Ikel7zQjp+WmdPHpuu4qecP2J6K9TYqSo3SC/GztzOQnCOZYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784644117; c=relaxed/simple;
-	bh=tReKhaGtE4+QoatPKLKAhhW3zT81i5diu1/12wCr4D8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=FJQHq7L7gsJME9jjGgdZ7sjd3lUWWoqcAz+vnZnB07KpADIr4Co5CfoPgBv4OkLj19bcW4XuTRrLVJFOyA0ZODwZXt6khyH8nB8RQUIAOpimgD4IwlFtNZoOYPbbaWsu/oDe3kQ9d9L16lkQtrt85FWAw1RT472OkLXya8ruNVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W1Hx4vWo; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784646237; c=relaxed/simple;
+	bh=Zaila6GKu+De9A/9ewWdgxmvgJz7oI6zqspBju5Prv8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MzY9jOnDzLO5qAoWr3Wtm7gNwUFYKWZE5MlRkvZsgNVch0xBY1n0OWVko+8E1e7LYqw5oBMaAmPj0P0RgdSo0U4ajo9sy5yYmOqjqA1+AuALfzXlilMA5lIHsTdFgjy8vJgl5uMElDc0hOGnZP2GIR7jy2vcey/m4TGIdT+tae8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=POFnV4FD; arc=none smtp.client-ip=91.218.175.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W1Hx4vWo"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-47f7444576cso1765592f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 07:28:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784644114; x=1785248914; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=udKt9H/K1sVDd3wiWbRrjXOunKdQcZQZJAIWHYJxEpw=;
-        b=W1Hx4vWostUPMkKZMvv0bkYKGRJG572ah2NI7QNm0jUNiqRhAMTlclwqqwepfPV7g2
-         2gnG/1tjjiEPr7KABVnIELmVKFwy8aFgRaADVFsvW7WRwOxGWm0yqLnamcozFUPfAUcx
-         n2yvkYVh4Cs3MbCMZYyjESODWG2Su25N7IPkA7g+ieiDPstBeJPDpOrhBL3uWq68XLta
-         xMjvbpn+88njW1IvvAPZdPqGvJLTeiaFmnKb7ATBbjyRHXSReOJxj2wLoCwNEqYHMtYB
-         g5oYL4/Ho8vlOnB5OnCc7wcdoIIQuS80Y4izDErRyLdoS0hx2GkPBLyT5WLTF9M6/tLj
-         sXtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784644114; x=1785248914;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=udKt9H/K1sVDd3wiWbRrjXOunKdQcZQZJAIWHYJxEpw=;
-        b=etWi19wXghkCcYHsdpuN0dG9ndsAgcXhHPXZJGr1V0WA/NSrncy99AQCJE/lqtamaK
-         yACsOrOqCPRQodkdrH62RQkvjTrnlrA0SRFSluZw8yXhnMWCruyiSpK2pgzqR3BMpQEC
-         FwgzuaEzaNmoE5pTXV2JgcjkUQjoUxVJoj+VuSgd8yR+LQ2/Ua2iCqi+4FbJqhncYyMr
-         hxPxdlOg9Q92d4szFj7x/Q/IX8T9WRhWFklIugUPe7IKlth1NcxPQs9vReoWVlZS82VU
-         pgGycGDwuaOg6IpmlIyUQ4d2QjLYkLnu+f7CSVNpHv/0ObEZxvCk5RNb5IEmKC+VudQo
-         ENKw==
-X-Gm-Message-State: AOJu0Yxwl9k0n3EdRklSjnJLij0Z9SzaLWAswRWc0+dq5e5y0nqZ5Xhi
-	AOyt8XQVDuDDmFC1XZhwLTy5S+kjxRU6Dn8va4AViDaycasrpBJ9NX1Taj44Ggs2
-X-Gm-Gg: AR+sD11IrdBBltt2HNVNsF8ng7riCENIufch2bGxhvvPKVwpbe16PoTK2u8HOvJYqkp
-	0VNNT6G2XgO9Yxd+b6nYhNluVMP0ZHdpxalqsvHTVEERcFIrUM8xCmEm1xcHIy+dj61qLEl7e3B
-	hJ+UMKY0N5oSoSOhpq+qPon4BtjUSpO65Z0rVEcD96CGhmrcje/jo29U/J0iut9psD8ACOJy7FK
-	TdK0uqWf2oXyezZMyfVkwnVGCIBSo0sUXwIgF6bKXCFZXiOszQdCnGu6obgvThJnj7js2OhQldW
-	aqRnFyFnL/O0QNSMM4OB0EAYzjJE1EHff1YpkOi8eXFw6luB2tiB3Lno0xusd/DiBuBVMePRWF4
-	qW2XYAwbmvTp9GTGbVnJowabVP1Ocln+reZRqqHutzxwRBS06JxqDe/6vfW+sU8C3umQrzF0rZb
-	IgpTXTeiBs9haG3j8JBGWEBVGtSV9hyNBOB/gDxPswEVdcQmVFjry/DvdzoOt/QRmOHNhwJY6cK
-	w7OVrFDNRRY3SmrowNaE9cjl8TosCqV/jfTCVAPoXbDEkIedKj7gka/SmQk8CQVAVsibdlz7H9w
-	+ButusaGmP5wY/B6/4LU1gPqhG7FetyHr8PrsadihJs=
-X-Received: by 2002:a05:6000:619:b0:464:8d68:618a with SMTP id ffacd0b85a97d-47f62328339mr21322953f8f.32.1784644114328;
-        Tue, 21 Jul 2026 07:28:34 -0700 (PDT)
-Received: from [192.168.1.187] ([2a02:8308:4092:11f0::f9f])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f63ec7f55sm35003310f8f.18.2026.07.21.07.28.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2026 07:28:33 -0700 (PDT)
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Tue, 21 Jul 2026 16:28:19 +0200
-Subject: [PATCH] MAINTAINERS: add mailing list to veml3328 entry
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="POFnV4FD"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1784646228;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=tglCPgE4AKwdd0u8qEHvDa2UM6WGCVb/lrWKzOgfo3M=;
+	b=POFnV4FDPEPtr/kg6uy1BnsEyK+xzndnLaI2b7tQoOxfw76tpKvrKEPNXH825sPJOnpOvS
+	keutNYLxdRiJiPdSmXZto9XAXrfzWT3KtroMJ8VhN2xHzH5tvvhqzc6w3Bm8QBSJxiiVgT
+	QCCKlpGVEeCFZyo9JvuPzhKyLgO4aN8=
+From: Siratul Islam <siratul.islam@linux.dev>
+To: Song Qiang <songqiang1304521@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH] iio: update email for Siratul Islam
+Date: Tue, 21 Jul 2026 21:03:08 +0600
+Message-ID: <20260721150314.24545-1-siratul.islam@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260721-veml3328-maitainers-v1-1-8166db77c79c@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MSwqAIBRA0a3IGyf4yX5biQZWr3qQFhoRSHtPG
- p7BvQkiBsIIHUsQ8KZIh8+QBYNps35FTnM2KKEqUSvJb3S71qrhztJlyWOIfDRGlyjrqTQt5PI
- MuNDzX/vhfT8S5TV0ZQAAAA==
-X-Change-ID: 20260721-veml3328-maitainers-b5534e17c459
-To: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784644113; l=730;
- i=joshua.crofts1@gmail.com; s=20260530; h=from:subject:message-id;
- bh=tReKhaGtE4+QoatPKLKAhhW3zT81i5diu1/12wCr4D8=;
- b=VshKbRJJYuus7GtP5AShuAaduqlTeZbrPlNKzgqwpfkPLeDaN+OZnnQC70Z8kGP9OEF7+oXFk
- erZA3z0z7NTDXkVhQi9U2mjiagJa7UP3/kN3dYX+ZeqpbR3LZKhuGCd
-X-Developer-Key: i=joshua.crofts1@gmail.com; a=ed25519;
- pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-Add the IIO mailing list to VEML3328 entry in MAINTAINERS, as it is
-standard to do so.
+Change personal email to the Linux specific one,
+to have a single and focused point of interaction.
 
-Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Signed-off-by: Siratul Islam <siratul.islam@linux.dev>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ .mailmap                                                      | 1 +
+ .../devicetree/bindings/iio/proximity/st,vl53l0x.yaml         | 2 +-
+ MAINTAINERS                                                   | 2 +-
+ drivers/iio/proximity/vl53l1x-i2c.c                           | 4 ++--
+ 4 files changed, 5 insertions(+), 4 deletions(-)
 
+diff --git a/.mailmap b/.mailmap
+index 501d858cb432..a337ff5b852e 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -817,6 +817,7 @@ Simon Wunderlich <sw@simonwunderlich.de> <simon.wunderlich@s2003.tu-chemnitz.de>
+ Simon Wunderlich <sw@simonwunderlich.de> <simon.wunderlich@saxnet.de>
+ Simon Wunderlich <sw@simonwunderlich.de> <simon@open-mesh.com>
+ Simon Wunderlich <sw@simonwunderlich.de> <siwu@hrz.tu-chemnitz.de>
++Siratul Islam <siratul.islam@linux.dev> <email@sirat.me>
+ SJ Park <sj@kernel.org>
+ Sricharan Ramabadhran <quic_srichara@quicinc.com> <sricharan@codeaurora.org>
+ Srinivas Kandagatla <srini@kernel.org> <srinivas.kandagatla@st.com>
+diff --git a/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml b/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
+index f7f8be1e379d..d23dc59505cc 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
++++ b/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
+@@ -8,7 +8,7 @@ title: ST VL53L0X/VL53L1X ToF ranging sensor
+ 
+ maintainers:
+   - Song Qiang <songqiang1304521@gmail.com>
+-  - Siratul Islam <email@sirat.me>
++  - Siratul Islam <siratul.islam@linux.dev>
+ 
+ properties:
+   compatible:
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b1ec46c5919..013f6fe6324e 100644
+index 1ab8736850ea..712505519c39 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -28777,6 +28777,7 @@ F:	drivers/iio/light/veml3235.c
+@@ -25682,7 +25682,7 @@ F:	Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
+ F:	drivers/iio/proximity/vl53l0x-i2c.c
  
- VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
- M:	Joshua Crofts <joshua.crofts1@gmail.com>
-+L:	linux-iio@vger.kernel.org
+ ST VL53L1X ToF RANGER(I2C) IIO DRIVER
+-M:	Siratul Islam <email@sirat.me>
++M:	Siratul Islam <siratul.islam@linux.dev>
+ L:	linux-iio@vger.kernel.org
  S:	Maintained
- F:	drivers/iio/light/veml3328.c
+ F:	Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
+diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
+index dc4ffbc95d1f..aef5f26d1e1c 100644
+--- a/drivers/iio/proximity/vl53l1x-i2c.c
++++ b/drivers/iio/proximity/vl53l1x-i2c.c
+@@ -2,7 +2,7 @@
+ /*
+  * Support for ST VL53L1X FlightSense ToF Ranging Sensor on a i2c bus.
+  *
+- * Copyright (C) 2026 Siratul Islam <email@sirat.me>
++ * Copyright (C) 2026 Siratul Islam <siratul.islam@linux.dev>
+  *
+  * Datasheet available at
+  * <https://www.st.com/resource/en/datasheet/vl53l1x.pdf>
+@@ -750,6 +750,6 @@ static struct i2c_driver vl53l1x_driver = {
+ };
+ module_i2c_driver(vl53l1x_driver);
  
-
----
-base-commit: 036d96ceec6d966339aea34d034420991e24cfac
-change-id: 20260721-veml3328-maitainers-b5534e17c459
-
-Best regards,
+-MODULE_AUTHOR("Siratul Islam <email@sirat.me>");
++MODULE_AUTHOR("Siratul Islam <siratul.islam@linux.dev>");
+ MODULE_DESCRIPTION("ST VL53L1X ToF ranging sensor driver");
+ MODULE_LICENSE("Dual BSD/GPL");
 -- 
-Kind regards,
-Joshua Crofts
+2.55.0
 
