@@ -1,170 +1,169 @@
-Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D727435A96
-	for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2026 20:20:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D69C3B892B;
+	Tue, 21 Jul 2026 20:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784665211; cv=none; b=TL4U9cnWQDU9D/CarsvNWaCPnzP3C6sD9MTvH5denh/tUIYpNA1eZzojYc75Kjz7Jm/U0aiXjNb9LgpfUs04x6Voh6tGbJyPyx4hlp/ebq2sx7PKZxVKISVHcckM/Fa185XNSb3Lg35Trd/OBIRKOyRrF7WtiDtmCQZx8uH7sLs=
+	t=1784666889; cv=none; b=At3X80wWjliksu0/P28XS6Rob9iRHwgHWTYNDRlysexI+4DBl0C/W0WXVubAbl5taYOsqrvY/91MgmE0RTUIxj3Qe7hzsmJTl7f8uczCcoWGfvk7GTP3Jp0aKuAnR2riI0tqcRAobTJw6FH/FaJqn52iLxfddZ1Zd6wOImGewCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784665211; c=relaxed/simple;
-	bh=0UKEACgwyHBvgbMD7gx6HxfUBabYa/Ihyo8um7fvXmY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=J7BJBAYT5NbzOuGatfrgAiAc1rKo42EokInE+g3+fzi1d69BrgqjrSKhNYw083eKFHfCGyUeTYghSJBIpA/zUF6ysSCKBg0esoKXIBAevWV7No+nMHu+wyNmiOHswjwn8BpFoNNq6fO5TxdEtpUsR8T7EucdiW3lvoptj3UV1sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=KhEiVBcs; arc=none smtp.client-ip=95.215.58.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1784666889; c=relaxed/simple;
+	bh=F44MWsyJNrtq5d1LRpRdtiPK0VARkH9Hdld3SG35hkA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PtCwzvBmZb7aoQFr+1AnHVywQi21sHGda4tnC2uQXzzRdHAeQIx4NDtF9pQGv7nWkmc0zvVJuCtmkgwHy77RaXWkyGRKjpX0o5v0ibDSpIpHmrSSChuPnZipS+22WYdYTl2/k9wUtxmfbjPPDSbKGcjOnSVfH7PYjd9lUFsG2Kw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AgmfS5Uc; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="KhEiVBcs"
-Message-ID: <e2f4b1c8df3f1d4193cff00e72e2bfc4affa05d1.camel@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1784665195;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FBsuJ6UrRwHad2SsezxmhLhJu14qAsvGKExsVUEhLEI=;
-	b=KhEiVBcsox6Ok2KIJzbrsiieHfy6uLAf369LOeAVze5zRE2q6V0m2Dvas1FIQ7Tlqv4W21
-	IqFlkg7HFXJuzSpQ6ivDzein+R2EwKk//iezbmSqI9J82PZaV7k50bQl5HiUXPRRPb9Ni6
-	J7fh8jEUd8mxJ91eqXDgAVyB5Ha/qIk=
-Subject: Re: [PATCH v2 2/2] iio: magnetometer: add support for QST QMC6308
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Siratul Islam <siratul.islam@linux.dev>
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jonathan Cameron
-	 <jic23@kernel.org>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, David Lechner
-	 <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, 
- Andy Shevchenko
-	 <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
-	 <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?=
-	 <u.kleine-koenig@baylibre.com>, Luca Weiss <luca.weiss@fairphone.com>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Wed, 22 Jul 2026 02:19:37 +0600
-In-Reply-To: <20260721134843.7484-3-jorijnvdgraaf@catcrafts.net>
-References: <20260721134843.7484-1-jorijnvdgraaf@catcrafts.net>
-	 <20260721134843.7484-3-jorijnvdgraaf@catcrafts.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AgmfS5Uc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1784666885; x=1816202885;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=F44MWsyJNrtq5d1LRpRdtiPK0VARkH9Hdld3SG35hkA=;
+  b=AgmfS5UcLOfR5+MKkDmBP2Wrx9tBuMHXE/gMZyaF+DXMxhAvtWVaYyL7
+   zPxwUN+dIElFVa+dSzSqx5AWagIAbeNKdLIGna6/GD7lo9ho/1czIDSaE
+   R7NlJlIYUxcyWsl7lBFWhsKSHPZpuF3GP4kQOGRTl7seBbZ6uJHTZXbtI
+   w6ogLWD+i48XAsCXhR8K7BP8b6t3I/DlXHOVwz1lh5NPEzsk3qOukrkOq
+   l2+Uuu3161CPXTAyHwtMH16DaBLt8Us8m07CnRnb4K+w6xeFdSf2m3XJZ
+   CI6Se0i5NxTkWjX6cOXYYefAVCzF7X/+j6phV9wroQ+L2aH+7HL9955CW
+   w==;
+X-CSE-ConnectionGUID: y4jqncDPR7Kxqk4CPzie4w==
+X-CSE-MsgGUID: I+O1/GYFQDObEYOC/7PTpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11853"; a="110831500"
+X-IronPort-AV: E=Sophos;i="6.25,177,1779174000"; 
+   d="scan'208";a="110831500"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2026 13:48:03 -0700
+X-CSE-ConnectionGUID: Jdzn6qTvTtmhxF01INy0lg==
+X-CSE-MsgGUID: hw9Qu8yWTd2PyjhNxnlugw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.25,177,1779174000"; 
+   d="scan'208";a="282390557"
+Received: from ncintean-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.67])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2026 13:48:01 -0700
+Date: Tue, 21 Jul 2026 23:47:58 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: dac: mcp47a1: add support for new device
+Message-ID: <al_a_pbITuYMg0KH@ashevche-desk.local>
+References: <20260721-mcp47a1-add-support-v1-0-da045a2567e3@gmail.com>
+ <20260721-mcp47a1-add-support-v1-2-da045a2567e3@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260721-mcp47a1-add-support-v1-2-da045a2567e3@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2026-07-21 at 15:48 +0200, Jorijn van der Graaf wrote:
-> The QST QMC6308 is a 3-axis anisotropic magnetoresistive (AMR)
-> magnetometer on I2C, found e.g. in the Fairphone 6. Its register map
-> is not compatible with the QMC5883L's, so add a separate driver rather
-> than extending the QMC5883L driver.
->=20
+On Tue, Jul 21, 2026 at 08:24:39PM +0200, Joshua Crofts wrote:
+> The Microchip MCP47A1 is a 6-bit volatile Digital-to-Analog converted
+> which communicates via I2C.
+
 ...
-> - Switch the license to GPL-2.0-only: the dual license had been
-> =C2=A0 carried over from qmc5883l.c, which this driver is modeled on,
-> =C2=A0 without a reason of our own (Jonathan).
-I wrote the QMC5883L driver. My reason to use dual-license was I wanted=C2=
-=A0
-people to be able to port the driver to Non-GPL OSes like Zephyr, NuttX, BS=
-Ds (specially RTOSes,=C2=A0
-none of them are GPL, and these sensors are widely used with MCUs)=C2=A0wit=
-h least friction.
-There are stuff that can't be ported (like regmap etc.) but the rest of it =
-could.
-Also, I read the "Linux Device Drivers 3" book where the samples use Dual B=
-SD/GPL.
->=20
+
+> +#include <linux/array_size.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+
+
+> +struct mcp47a1_data {
+> +	struct regmap *regmap;
+> +	int vref_mv;
+
+_mV
+
 ...
+
+> +static const struct regmap_config mcp47a1_regmap_config = {
+> +	.name = "mcp47a1",
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = MCP47A1_CMD_CODE,
+> +};
+
+No cache?
+
+...
+
+> +static int mcp47a1_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct mcp47a1_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int reg_val;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+
+> +	i2c_set_clientdata(client, indio_dev);
+
+Is it used?
+
+> +	data->regmap = devm_regmap_init_i2c(client, &mcp47a1_regmap_config);
+> +	if (IS_ERR(data->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
+> +				     "Failed to initialize regmap\n");
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
+> +
+> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+> +	if (ret < 0)
+> +		return dev_err_probe(dev, ret, "Failed to read vref\n");
+> +
+> +	data->vref_mv = ret / MILLI;
+
+(MICRO / MILLI)
+
 > +	/*
-> +	 * Reading the status register clears DRDY, which is why the poll
-> +	 * and the data read stay under one mutex hold. A runtime resume
-> +	 * clears DRDY too, so a sample converted before the last suspend
-> +	 * is never returned here.
-> +	 *
-> +	 * The timeout is 50ms of headroom over the slowest ODR (10Hz).
+> +	 * This is a volatile DAC which doesn't have an ID register, instead
+> +	 * the value register is set to 0x20 every Power-on-Reset (table 4-1).
+> +	 * Any other read value at startup could indicate that the device is
+> +	 * damaged etc.
 > +	 */
-> +	ret =3D regmap_read_poll_timeout(data->regmap, QMC6308_REG_STATUS,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 status,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (status & QMC6308_STATUS_DRDY),
-You can split by logic. i.e., put "status, (status & QMC6308_STATUS_DRDY)" =
-on the same line.
-
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2 * USEC_PER_MSEC,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 150 * USEC_PER_MSEC);
+> +	ret = regmap_read(data->regmap, MCP47A1_CMD_CODE, &reg_val);
 > +	if (ret)
-> +		return ret;
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to read register on startup\n");
 > +
->=20
-...
+> +	if (reg_val != 0x20)
+> +		dev_info(dev, "Read value 0x%02x at startup\n", reg_val);
 > +
-> +static int qmc6308_write_raw(struct iio_dev *indio_dev,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0 int val, int val2, long mask)
-> +{
->=20
-...
-> +		if (ret)
-> +			dev_warn(regmap_get_device(data->regmap),
-> +				 "Failed to discard stale sample (%d)\n",
-> +				 ret);
-Move "ret" to the line above.
-> +
-> +		return 0;
-> +	}
-> +
-...
-> +static int qmc6308_probe(struct i2c_client *client)
-> +{
-...
-> +
-> +	ret =3D devm_add_action_or_reset(dev, qmc6308_power_down_action, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pm_runtime_use_autosuspend(dev);
-> +	pm_runtime_set_autosuspend_delay(dev, QMC6308_AUTOSUSPEND_DELAY_MS);
-Add a space here.
-> +	ret =3D devm_pm_runtime_enable(dev);
-> +	if (ret)
-> +		return ret;
+> +	indio_dev->name = "mcp47a1";
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &mcp47a1_info;
+> +	indio_dev->channels = mcp47a1_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mcp47a1_channels);
 > +
 > +	return devm_iio_device_register(dev, indio_dev);
 > +}
-> +
-> +static int qmc6308_runtime_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct qmc6308_data *data =3D iio_priv(indio_dev);
-> +	unsigned int status;
-> +	int ret;
-> +
-> +	ret =3D qmc6308_set_mode(data, QMC6308_MODE_NORMAL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * DRDY may still be set for a sample converted before the last
-> +	 * suspend; reading the status register clears it so the next
-> +	 * measurement waits for fresh data.
-> +	 */
-> +	ret =3D regmap_read(data->regmap, QMC6308_REG_STATUS, &status);
-> +	if (ret) {
-> +		/* Best effort to leave the chip in a consistent state */
-> +		qmc6308_set_mode(data, QMC6308_MODE_SUSPEND);
-> +	}
-It's single line so the brackets { } are not needed.
-> +
-> +	return ret;
-> +}
-> +
-...
-> +
-> +MODULE_DESCRIPTION("QST QMC6308 3-Axis Magnetic Sensor driver");
-> +MODULE_AUTHOR("Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>");
-> +MODULE_LICENSE("GPL");
 
---
-Best regards,
-Sirat
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
