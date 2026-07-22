@@ -1,61 +1,63 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8ADF41D134
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 16:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CA4439F6D
+	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 16:23:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784737379; cv=none; b=PCUp/pcJdl2qxKY0Zr+gviSdiaKWy7V6wLSaLMkQMuVIiPcCirRB45bRVuCoXRMQVlQ+W8MW+c+atSfW/fTcJdjk3+6J3hOjk7V0kwyh4+QBG28xcF9/X05K4/H81y5+Zl1vzVN6EWE0N7oQQ38SJ3yMMoR3Ibiag8YZpeqRaYY=
+	t=1784737384; cv=none; b=KiLaKIXG9fJrSKz60TiyYe6MMnybnP7z38QTwh/aKVWrS5gZMBku8PsRNhm4THSucR0JQrujXz2bbQtdcmnjoOrTWLtglVtRlbxRSzODfYR648KJH6IvXCJamK4pln8/nCMTNiU33lnYY3GShunSp0JrrUcgjCBlCa3TpsEjUh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784737379; c=relaxed/simple;
-	bh=Bh80QIUsMcjVvqkk/S1K+dBLA6lgW2V3OlqH4ilfOAo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kXaXZ0+xEQFtUTQWGLrB1+7UiUm/eLm5yP1kjGzlRdi1ufW3E+x7t9WHM2fuWd++gkhg4U49B7KK4hMT1zD9GcMcanEFayogPbEHCYbivUhSS0sJrxr4wSMLr7dXZtRQ+gS59aXMI3l2Aw+7t6iLot05++66ejwp+xB5yFof0Lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WKsvUJ5n; arc=none smtp.client-ip=209.85.214.174
+	s=arc-20240116; t=1784737384; c=relaxed/simple;
+	bh=b1zwzYrehw2xMiWnP3qCyD8im9SRTQveIPIOMZLKT+Y=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=WcTl9JtzmCLCBH2rJ67WCxMURcnf74or8GneNyJLz9BjX7K8JNYeccyhXF0vXDH6KS+0nwz8tZQ5QW/02fUu72QLWi7ZAqWxHvACX5OOf5evLl8/FzMlpxmfTIzFljyMp+0cRUasG30XEkcaGHPkKBUM3x1E9mMxlMBbz2c4AEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EPD0YiEM; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WKsvUJ5n"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cc73e322dbso151539175ad.1
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 09:22:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EPD0YiEM"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ceb096e675so132079435ad.0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 09:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784737377; x=1785342177; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=1waP2JIJ8dP/NAS64B6HZCiGC7Uix8ac6PtUU+oMDLc=;
-        b=WKsvUJ5nowu+FcpRwx5ABZI+McnW3CTegw64ieacoMSvdUVMrCeIqzd1K1lqTfqwtU
-         fXwI0Nvt73eZJhKruu/pNv4lWbFOYBM1is75PYm9FpT2OofFGxaNc8kevdVHDpka2Eok
-         I4MwGOG31+pRrsfGHnz9PI6x033XeLast9vwCSjl/Inyv8I6dAqV/+BSq5HzM2MVHV71
-         Xm2voHUYLEKtEBx31cebyshHWcN0qsrkE4sBfSCUIytckeKJA8Gpbx9xEj0ZQ0F70rrQ
-         q8Oxk8h5aT7FVXNJ3qoloDmEQvhuR1qZuvEamK/ttBsbyUPKelEfzSK0XN/DO9hCrHyV
-         sgyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784737377; x=1785342177;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1784737382; x=1785342182; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=1waP2JIJ8dP/NAS64B6HZCiGC7Uix8ac6PtUU+oMDLc=;
-        b=nINOkqrrtdD7sT5ZUp+nqlrm97Vm5hPHQn/QZLFof7Bv06FIPpssSdU4E97nwAwj98
-         pVb82XGPFF4/K/KQ0L04DmnfBYOwwP1CbIgpIZY/uxVECiHRSP9e/eRgizzjcjmTHUzr
-         xkp8ERy8xpcmsMt8a1LnL7BUxXBj+qgsadW9z+3iNMnwPhZq2Y7ceS4icxdsR3DTPrYj
-         sEVWR5EwqnoAHKjGm5mHBVVA4IRNE6iJ28MM6G5zqKR4DW/gqwZbxNnXBhDOz+Tzy/Dj
-         d7N6+h/BKUzHbX+tOR0ty8a9vjb2pdAWGVMRd4Vsug37PvV9AgUJp8EHIJPt4ABVGXER
-         PiSQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoBxRSFyHhwVhtZ3KRisjRqIQk1EANMT+bAK9iFXY7OyqHcFu6m3/6kpArFTIWnPjnmHUXuT/RNt6o=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3etamvsymXeofpAk6xGgDV/FqAcFQAPM98WoqIgNCNgnZDlYi
-	BqetAfAUZVy05VicwZMEEclgvxClcbOIDXDgVV41qkq4WDPSvzjE840=
-X-Gm-Gg: AR+sD13Fbrg5jrqYguhpODqelCCfoxkU7s1kHj7NdIHu8NFy85bQAvx4vM6UaLDfHqa
-	obyhF4A8JEMmAkokYQEvFWATPm4l4x4bOaOdjuFDJpUvJ81CAA4x9mK0+XSjcarXgikadp17hAc
-	QJc1Dbde2JtpuheVsXLpGFkg58WQFB/HuHSMfoORvC8rqw8ANDBoCnTvJejBu/lmb63JszC2//P
-	tyTf719cEEAKV0hjvbwy/J/Le5KzCt7HeAiv6tr69XvvakFk9+8zcu5lTQ0+eyZE6VAUX69G+93
-	XIoyV2yQkL5qSf3biTa3iLWaT7zXMjX/HlTAGHLye+q3r7d0rrg6fGxC07Uwc59QdCvy0nFV3AO
-	R7UNmcqa6BZ6Gj3cOfqa5cVGHnNNWsz5+6M0fG27mkz7/a/H/BHt43oQ1slwsmnBNvW+uL9DZ8f
-	LkD/YaoinX/wp2WvPUhiiTb8BMGcS0xrv/RPJdonFm38qN2/pAlVAh
-X-Received: by 2002:a05:6a20:ae2f:b0:3c3:66c5:68cc with SMTP id adf61e73a8af0-3c3ad7aa9famr25980729637.21.1784737377060;
-        Wed, 22 Jul 2026 09:22:57 -0700 (PDT)
+        bh=jUyRifTnAdWj9oo8ReezTF2SEzJ7h//arZ1iHXc2iOE=;
+        b=EPD0YiEMo2RVUVO6QZYs3rC/cxuYbI80TXdGaWKx3JliJ9cCOpd6J/LBpt0mf/KM4a
+         7WeNu3KMdMha5zB3jf2jkTfhgukvoNcHumxF2HZ4aEMaZ24WxtlAb1SgyOiSNTj4WuEn
+         v8ej1sY1U8c0yRLLF7rGpnWRMX2kDA4xSAo8+7Ga13ZyAt4EypZeSdW1JaXKjtfP+FrH
+         sTfscTN5Ebpu4ckXEPtevUigLaTLqfdU2N3L17l40X7attFqoLEpwy0iVU2Qpk/RV75V
+         WRdFSRy7tdhlG6v/GmT/I4k5sSDxPVnjDUhdjymFLs/XcVcO3gUWk/6bZw9ut19fkHTJ
+         JpqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784737382; x=1785342182;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=jUyRifTnAdWj9oo8ReezTF2SEzJ7h//arZ1iHXc2iOE=;
+        b=ScXDfB/ZElHxkgIP+ImdbkgnBZ21AuJJcyM21mwEBCfFDsvfLxoE0vl4Ja4B+xdyDO
+         +hPkbw4N/Q8Izo15bXdf5blL0CRdlU9x4cUGtDoSJB7F1jBNAUO8oZKZm8jZu5Ez70qx
+         +bnX0T17j6Uhl+F2eOo7V+KkF+bagczeuuWWCtKai5a1XYrePMKjpqMCIeoYCjc1WWzW
+         cTG6TcJVs35yTxRqz0ZJMcxIvLgVI3HXGR91VLbx7Y7n7mK4p373NhzUOFt2nuQt2nNy
+         1+Mk4B+MJ9kMIYpCn+P5ihNJlCmOeO9d1coDhJbo7bTsv9HlAM9C/iWPpqBIUMtDzVJw
+         E+dQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqD967HoGhT9il7FZwB09UA1sF3i/YOQsBndfC86zhyMRBcOVL0hlV5Van1wvBlPtmEqayn8ASODwU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzM3Rfyu+Cnro1rtoEwl6XM+K17O0I2HopG3TOjU0SWOVRqaSND
+	hx/QCPNWVl/yLBizWZouG38E3+y+FMJ3xdobb72BIoCV7roaRVS2Kf0=
+X-Gm-Gg: AR+sD10tw0jW1CiFrUii2MnlstUnGz4ENtehFuQNLOUCDS55OS7hhzCajN0BWdeFH++
+	GZxj6S1NRQEXayrlpv9ptXt80yL11m7UE751lBtpPtE9upRV2fo9dgRJyhbVHOM9+Bn9tm4HFZu
+	OnWqCZFhWRWcjujjMirTMjaJ7k0xNHU6Qb9+O4YY++eNl51joJV+NpWvneWCaCkHzMxjTsQAgp4
+	8yn8ZJ+byEp4B3ZKwLV674dold1CTdfSMT17XPruA0OkL9JYQalgvNdpjD1TYW7j05aDfzjvJfo
+	5sCEscnynAuYRwa5t6eY2Q9rBUJGmbXFh1DJ4MLzevmY6ihSn6Fav+uBsWgi3WVaZ/kPuYFJmLE
+	DjPJ7zIW04yYq2ni1ka0Bnt+gDxs0aDhruOUhar7h/xv6P9WTjw+G56GMI+boQaU7/zULE+rUOQ
+	Bcy7VPaqGthBn0hLeo7oiEYcSmRM6pv688tCsYd7VyeHpOWaUGkOcr
+X-Received: by 2002:a17:902:e944:b0:2cc:f7c6:8320 with SMTP id d9443c01a7336-2cf34a28988mr236046735ad.46.1784737381719;
+        Wed, 22 Jul 2026 09:23:01 -0700 (PDT)
 Received: from localhost.localdomain ([101.0.62.129])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3147dc1e3d9sm9260471eec.5.2026.07.22.09.22.53
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3147dc1e3d9sm9260471eec.5.2026.07.22.09.22.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 09:22:56 -0700 (PDT)
+        Wed, 22 Jul 2026 09:23:01 -0700 (PDT)
 From: Nikhil Gautam <nikhilgtr@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Linus Walleij <linus.walleij@linaro.org>,
@@ -65,10 +67,12 @@ Cc: Linus Walleij <linus.walleij@linaro.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: [PATCH v2 0/3] iio: light: gp2ap002: runtime PM and error path fixes
-Date: Wed, 22 Jul 2026 21:52:44 +0530
-Message-Id: <20260722162247.8229-1-nikhilgtr@gmail.com>
+Subject: [PATCH v2 1/3] iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event writes
+Date: Wed, 22 Jul 2026 21:52:45 +0530
+Message-Id: <20260722162247.8229-2-nikhilgtr@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260722162247.8229-1-nikhilgtr@gmail.com>
+References: <20260722162247.8229-1-nikhilgtr@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,41 +81,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+The IIO core does not filter duplicate writes to the event enable
+attribute, so writing the same value twice invokes
+write_event_config() twice. Enabling twice leaks a runtime PM
+reference, preventing the device from ever suspending again;
+disabling twice underflows the usage count and triggers a
+"Runtime PM usage count underflow" warning.
 
-This series fixes three issues in the gp2ap002 driver, all present
-since the driver was introduced.
+Bail out early when the requested state matches the current state.
+While at it, switch to pm_runtime_resume_and_get() so a failed
+resume is propagated to userspace instead of silently marking the
+event enabled.
 
-Patch 1 fixes an unbalanced runtime PM reference count reachable from
-userspace by writing the event enable attribute twice with the same
-value, as the IIO core does not deduplicate such writes.
+Fixes: 97d642e23037c ("iio: light: Add a driver for Sharp GP2AP002x00F")
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/light/gp2ap002.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-Patch 2 fixes the runtime suspend error path leaving the IRQ disable
-depth unbalanced, permanently disabling proximity events after a
-failed suspend.
-
-Patch 3 fixes regulator enable leaks in the runtime resume error
-paths, which matters as the supplies may be shared with other
-devices.
-
-Regards,
-Nikhil Gautam
-
-Changes in v2:
-- Removed new lines between Tags as per Andy's comment
-- Removed dup call pm_runtime_mark_last_busy() in
-  gp2ap002_write_event_config() as already handled in
-  pm_runtime_put_autosuspend() as per Andy's comment
-
-Nikhil Gautam (3):
-  iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event
-    writes
-  iio: light: gp2ap002: re-enable irq if runtime suspend fails
-  iio: light: gp2ap002: Fix regulator leaks in runtime resume error path
-
- drivers/iio/light/gp2ap002.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
+index 42859e5b1089..966459994995 100644
+--- a/drivers/iio/light/gp2ap002.c
++++ b/drivers/iio/light/gp2ap002.c
+@@ -343,6 +343,10 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
+ 				       bool state)
+ {
+ 	struct gp2ap002 *gp2ap002 = iio_priv(indio_dev);
++	int ret;
++
++	if (state == gp2ap002->enabled)
++		return 0;
+ 
+ 	if (state) {
+ 		/*
+@@ -350,14 +354,15 @@ static int gp2ap002_write_event_config(struct iio_dev *indio_dev,
+ 		 * already) and reintialize the sensor by using runtime_pm
+ 		 * callbacks.
+ 		 */
+-		pm_runtime_get_sync(gp2ap002->dev);
+-		gp2ap002->enabled = true;
++
++		ret = pm_runtime_resume_and_get(gp2ap002->dev);
++		if (ret)
++			return ret;
+ 	} else {
+-		pm_runtime_mark_last_busy(gp2ap002->dev);
+ 		pm_runtime_put_autosuspend(gp2ap002->dev);
+-		gp2ap002->enabled = false;
+ 	}
+ 
++	gp2ap002->enabled = state;
+ 	return 0;
+ }
+ 
 -- 
 2.39.5
 
