@@ -1,348 +1,156 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B48B3D6CC9
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 15:42:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2045F4746B1;
+	Wed, 22 Jul 2026 15:50:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784734947; cv=none; b=qhJDVjHxDno9Y0BTlA47BCFFpgwJEaQ6XuxdMqlXYwoG4UymufHezWYsrleNwi/Dl3lpvZ98vS1KeWzwjvZjmm9nIdek5X77sJUxhSTznNDYxTvftuhiRAfkZjb5gnoojd/Jb8hjS+C5mxSuKM/uT6d2rbniTLs5qbImzHR/sFo=
+	t=1784735458; cv=none; b=n9Un8JpFhVyV4aC/kq3JymW+FWSTv2jWWlIlTkrKSGg8FRA9dfi6vNCrXeXqYsJGXi7UkqM/FJoB5ZP1tXRJHRLgH4EuNgw//HWMf+3cJunrk5/hu6U4XjlwmfbCr2DE0d7FvPT9jviUSsxpvAUnhkCh/r9/Iwzxtn0Em9apDqQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784734947; c=relaxed/simple;
-	bh=sWS18I4mPx7UWFygxdiuXKSr3o7EAlxahdSjgMRR904=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mclzw43+NEo+YpZIjDRLQIkK58HqeOFo5LHl1IZG7ThoVsoLR81LLd8yHQrOwiXp8eZrJIKkZI/Fz4bB5reG3sLRKADOR8V86Pn2Rw8LgO3LgzYDJGSPVNsB+fSW8RTC4cjsE7pbnRAedplkNLBUB2hxfHKa2ze+erQKrY44XyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FNwrsG47; arc=none smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784735458; c=relaxed/simple;
+	bh=c2p5L1q6zxv7wWh9EpdRkFyHFnzsFh472s+WmtKCZhw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=LLebX7Fhd5bR8NkTrm3kgZq4dThLVzJIOK6iald0Km2zGmN5F5E3N7lgsOWmybtmfMPrqBh1zACFUJR35F1xpTisqmbnlzkzc813jIN9C7uXSe+4D0hdNEsCU9lGGG1rE6VSY2Liau1Q/mFF+Jms1+HJE5FqkeUkxityddba+cw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tvn3pqSK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FNwrsG47"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7eb68bdf53aso5136243a34.3
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 08:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784734941; x=1785339741; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Wl9o3TvwIe6azyl0fzewV3G3JV6iqHTXJnL2mLZsxjM=;
-        b=FNwrsG47CNr4MvgEax22m2lBWDSdN6eylj6qOAUiYpGG6YDE7jungRlVAeudkIPC+A
-         T8blOxpP29bxPgJl2J8LNQRUrGZ56iOrTuyinlDrzvL5RO3R5wjDzEj7Q89WZfZNJVCK
-         3j2lRcRd21yqbmMQXtTSoJCyo/nE98s3tNfqz2vPY+pLKZZPhAaCmQxv1TsiskFpywNV
-         yrrqU4zuG/xbRz0PJC8UsmTCVFcdXVtFwPqnDRb7f9XumMChWoXzfRsGU1vlTKNX3KYr
-         YMOB0WNkrQdSqldBo6DRyi7fw+Ue/6AYfpeqG1nCRRIPKLiXoU+tQSfkelEDIJf+POF9
-         sfUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784734941; x=1785339741;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Wl9o3TvwIe6azyl0fzewV3G3JV6iqHTXJnL2mLZsxjM=;
-        b=HgIRBGmwAH22KT81kpQsx8kluqXM6bEju+V3WbM9mc/RWFNg9moAyZXa1XxAykfmDX
-         uTLQ4YFvx1T+i8V+50MQ8QMno97107Z1U3EkPucL9DIytrjw8+b6jJEWYHPO/B7ubeO7
-         80FKFj6p+TZCzhv5uA9e9gE5m/JNWoAp2HzXvmcSri2qhkbEI3QA+ZAxCtQiYyHIB+9o
-         A1AJIGSXVsC8mccfOqML91XChrnRlW+7wnEwEB47gHAknlkxMsK3Ej0rjjfnlbKSvS3Z
-         ieH8Je7GDn6O9C3AEsg1NeUV2v/Gp88cYWk258wFkJNzOBqXl5OuMzOvmjQ2Cekj7qqV
-         OWdw==
-X-Gm-Message-State: AOJu0YwguQjK1ppdnpYoZSMJhjIHvYgGiuSVZZgyP/Xn0WsiIOeBY46w
-	hxdhbK1UYgAllPI5/aVwIebqeyPVx9LZ8CySj3axocYOK4764Ur7jaLWrSeSqg==
-X-Gm-Gg: AR+sD13TpohpNI+Flp6KZKBofulqtUF5sYpOJbhDZi6vUTPuq9HDltb00ovONYLfyt3
-	mTxXVI0JDMZl9nYLLo0K6G9l6sQl2xw/tqJxbY1BJ3aESnndiRDxCVx/tS1i85lpZY0f4qWEOS6
-	MyczDzeeKp6QbvaVU8t/41TJ2ugf0WcxTpzkVlvVdxOEseHZfQ1INqW6NwGveBZwALG41skyEvm
-	imxhQR5ZZ5MjGVujYpftF1RMjNVBKBigyt5ZVnG7qQbSnUSvRnmhtWNaT3/hMjTASuS/kesARd5
-	+1CIOemrI9ctx6mg/IWi6+wR4afSKTJDIsZngUDRZawDv4Qym45peM1+LbviLPXgVwVfOX85AAF
-	buwI9+0BfB97rtPpP5uKBjyA71jDD7dWhttR+BIXYJrTyKKXvpgf1/As5YLV+gMSHY+9RgBa1fI
-	pG
-X-Received: by 2002:a05:6820:1844:b0:6a3:98e9:c979 with SMTP id 006d021491bc7-6a5366a2cb0mr12382690eaf.14.1784734941082;
-        Wed, 22 Jul 2026 08:42:21 -0700 (PDT)
-Received: from localhost.localdomain ([2600:1700:fb0:1bc0::54])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6aac3a494d4sm1300804eaf.3.2026.07.22.08.42.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 08:42:20 -0700 (PDT)
-From: Chris Morgan <macroalpha82@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: andy@kernel.org,
-	nuno.sa@analog.com,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	heiko@sntech.de,
-	conor+dt@kernel.org,
-	krzk+dt@kernel.org,
-	robh@kernel.org,
-	andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V19 8/9] iio: imu: inv_icm42607: Add Temp Support in icm42607
-Date: Wed, 22 Jul 2026 10:39:39 -0500
-Message-ID: <20260722153942.144387-9-macroalpha82@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260722153942.144387-1-macroalpha82@gmail.com>
-References: <20260722153942.144387-1-macroalpha82@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tvn3pqSK"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BAE89C2BCFC;
+	Wed, 22 Jul 2026 15:50:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1784735457;
+	bh=c2p5L1q6zxv7wWh9EpdRkFyHFnzsFh472s+WmtKCZhw=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=tvn3pqSKsFHfok9BwBydRARoJ1m04vciW0OyO6b0h7ckcA9Xm1aH5IGh8Z8HmLnQM
+	 B31TAP/xN7RdQEXO8OwYG4nX4DM1WzxupMKDhLfOzFXqfLc9cjJFmfesi116aBAW4D
+	 TMrCwSaTnyEhziLauGlXxCXHxI8UL8tdppAbopOPYpUf7yQT3m7mrTx1sSgsSHyAne
+	 Q76x8SsxvZGK1JU+KxoqbrWegp7xgqb8b9fnfnu+nMe50vSRfrLxJHHYg/Im3IV5+e
+	 Kk7KFgHIL6YVxnTkebD1ZlUqKrv0e/0SWxILq0m44yALY4Vr6T8Ay2fTir6VZvU0wC
+	 PoIF5EsYOPv0Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963CEC44536;
+	Wed, 22 Jul 2026 15:50:57 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Wed, 22 Jul 2026 16:50:10 +0100
+Subject: [PATCH v9 01/17] iio: ABI: add attributes for altcurrent channels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260722-ad9910-iio-driver-v9-1-459d1df5ac56@analog.com>
+References: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
+In-Reply-To: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+ linux-hardening@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Johan Hovold <johan@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784735456; l=3588;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=NMyQtwKnhP7ghLAaLd8Vv8Yqv0bWLLVXShCmZ6SK4qg=;
+ b=jPE8V/mOW+rnINhBGXR8IHAvefsCXxeDvnqDh09fTspG4Od13kNyaJoKFtwFkGmUg8VIAHUUK
+ FZ/kycpkdxFB1R80n7cHDkDMfV0PIpEvufvs11lh/g+7kn/fFMryqqe
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-From: Chris Morgan <macromorgan@hotmail.com>
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add functions for reading temperature sensor data.
+Add attributes applicable to altcurrent channels, e.g., frequency, phase,
+scale, raw, label and powerdown. Those are going to be used by a DDS
+device to be introduced shortly.
 
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/imu/inv_icm42607/Makefile         |  1 +
- .../iio/imu/inv_icm42607/inv_icm42607_accel.c |  8 ++
- .../iio/imu/inv_icm42607/inv_icm42607_gyro.c  |  8 ++
- .../iio/imu/inv_icm42607/inv_icm42607_temp.c  | 98 +++++++++++++++++++
- .../iio/imu/inv_icm42607/inv_icm42607_temp.h  | 38 +++++++
- 5 files changed, 153 insertions(+)
- create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
- create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
+ Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/iio/imu/inv_icm42607/Makefile b/drivers/iio/imu/inv_icm42607/Makefile
-index 8e73385c8f4b..7b907e019601 100644
---- a/drivers/iio/imu/inv_icm42607/Makefile
-+++ b/drivers/iio/imu/inv_icm42607/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_INV_ICM42607) += inv-icm42607.o
- inv-icm42607-y += inv_icm42607_core.o
- inv-icm42607-y += inv_icm42607_gyro.o
- inv-icm42607-y += inv_icm42607_accel.o
-+inv-icm42607-y += inv_icm42607_temp.o
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5cc2e82c4997..3e75ce1c97c6 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -478,6 +478,10 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_current_q_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrent_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+@@ -799,6 +803,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltage_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltage_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_powerdown
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrent_powerdown
+ KernelVersion:	2.6.38
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -809,6 +815,7 @@ Description:
+ 		together.
  
- obj-$(CONFIG_INV_ICM42607_I2C) += inv-icm42607-i2c.o
- inv-icm42607-i2c-y += inv_icm42607_i2c.o
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-index f563c7708420..0b3f035c2da0 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-@@ -15,6 +15,7 @@
- #include <linux/types.h>
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_frequency
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -835,8 +842,10 @@ Description:
+ 		all the other channels, since it involves changing the VCO
+ 		fundamental output frequency.
  
- #include "inv_icm42607.h"
-+#include "inv_icm42607_temp.h"
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_i_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_q_phase
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_i_phase
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_q_phase
+@@ -850,6 +859,7 @@ Description:
+ 		channel.
  
- #define INV_ICM42607_ACCEL_CHAN(_modifier, _index, _ext_info)			\
- {										\
-@@ -40,6 +41,7 @@ enum inv_icm42607_accel_scan {
- 	INV_ICM42607_ACCEL_SCAN_X,
- 	INV_ICM42607_ACCEL_SCAN_Y,
- 	INV_ICM42607_ACCEL_SCAN_Z,
-+	INV_ICM42607_ACCEL_SCAN_TEMP,
- };
+ What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_raw
+ Date:		May 2012
+ KernelVersion:	3.5
+ Contact:	Johan Hovold <jhovold@gmail.com>
+@@ -1736,6 +1746,7 @@ Description:
  
- static const struct iio_chan_spec_ext_info inv_icm42607_accel_ext_infos[] = {
-@@ -54,6 +56,7 @@ static const struct iio_chan_spec inv_icm42607_accel_channels[] = {
- 				inv_icm42607_accel_ext_infos),
- 	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42607_ACCEL_SCAN_Z,
- 				inv_icm42607_accel_ext_infos),
-+	INV_ICM42607_TEMP_CHAN(INV_ICM42607_ACCEL_SCAN_TEMP),
- };
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_raw
+ KernelVersion:	3.17
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -2126,7 +2137,9 @@ Description:
  
- static const int inv_icm42607_accel_scale_nano[][2] = {
-@@ -187,6 +190,11 @@ static int inv_icm42607_accel_read_raw(struct iio_dev *indio_dev,
- 	switch (chan->type) {
- 	case IIO_ACCEL:
- 		break;
-+	case IIO_TEMP:
-+		if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-+			return inv_icm42607_temp_read_raw(indio_dev, chan,
-+							  val, val2, mask);
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
-index b68d4d6f5c3f..5b4683c2dd1e 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
-@@ -15,6 +15,7 @@
- #include <linux/types.h>
+ 		Raw counter device counters direction for channel Y.
  
- #include "inv_icm42607.h"
-+#include "inv_icm42607_temp.h"
- 
- #define INV_ICM42607_GYRO_CHAN(_modifier, _index, _ext_info)			\
- {										\
-@@ -40,6 +41,7 @@ enum inv_icm42607_gyro_scan {
- 	INV_ICM42607_GYRO_SCAN_X,
- 	INV_ICM42607_GYRO_SCAN_Y,
- 	INV_ICM42607_GYRO_SCAN_Z,
-+	INV_ICM42607_GYRO_SCAN_TEMP,
- };
- 
- static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
-@@ -54,6 +56,7 @@ static const struct iio_chan_spec inv_icm42607_gyro_channels[] = {
- 			       inv_icm42607_gyro_ext_infos),
- 	INV_ICM42607_GYRO_CHAN(IIO_MOD_Z, INV_ICM42607_GYRO_SCAN_Z,
- 			       inv_icm42607_gyro_ext_infos),
-+	INV_ICM42607_TEMP_CHAN(INV_ICM42607_GYRO_SCAN_TEMP),
- };
- 
- static const int inv_icm42607_gyro_scale_nano[][2] = {
-@@ -184,6 +187,11 @@ static int inv_icm42607_gyro_read_raw(struct iio_dev *indio_dev,
- 	switch (chan->type) {
- 	case IIO_ANGL_VEL:
- 		break;
-+	case IIO_TEMP:
-+		if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-+			return inv_icm42607_temp_read_raw(indio_dev, chan,
-+							  val, val2, mask);
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
-new file mode 100644
-index 000000000000..8681ef2b49e2
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
-@@ -0,0 +1,98 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2026 InvenSense, Inc.
-+ */
-+
-+#include <linux/cleanup.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+#include <linux/types.h>
-+#include <linux/unaligned.h>
-+
-+#include "inv_icm42607.h"
-+#include "inv_icm42607_temp.h"
-+
-+static int inv_icm42607_temp_read(struct inv_icm42607_state *st, s16 *temp)
-+{
-+	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
-+	struct device *dev = regmap_get_device(st->map);
-+	int ret, gyro_mode, accel_mode;
-+	unsigned int val;
-+	u8 raw[2];
-+
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&st->lock);
-+
-+	/*
-+	 * Check if both the gyro and accel are off and if so, enable one
-+	 * of them. The temp sensor cannot be read if both the gyro and
-+	 * accel sensor are off. Prefer to enable the accel over the gyro
-+	 * as the datasheet says the gyro uses 5x more power and it has
-+	 * a minimum run time of 45ms.
-+	 */
-+	ret = regmap_read(st->map, INV_ICM42607_REG_PWR_MGMT0, &val);
-+	if (ret)
-+		return ret;
-+
-+	accel_mode = FIELD_GET(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, val);
-+	gyro_mode = FIELD_GET(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, val);
-+	if (!gyro_mode && !accel_mode) {
-+		/* enable accel sensor */
-+		conf.mode = INV_ICM42607_SENSOR_MODE_LOW_NOISE;
-+		ret = inv_icm42607_set_sensor_conf(st, &conf, IIO_ACCEL);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = regmap_bulk_read(st->map, INV_ICM42607_REG_TEMP_DATA1,
-+			       raw, sizeof(raw));
-+	if (ret)
-+		return ret;
-+
-+	*temp = get_unaligned_be16(raw);
-+	if (*temp == INV_ICM42607_DATA_INVALID)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	s16 temp;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = inv_icm42607_temp_read(st, &temp);
-+		if (ret)
-+			return ret;
-+		*val = temp;
-+		return IIO_VAL_INT;
-+	/*
-+	 * T°C = (temp / 128) + 25
-+	 * Tm°C = 1000 * ((temp * 100 / 12800) + 25)
-+	 * scale: 100000 / 12800 ~= 7.8125
-+	 * offset: 3200
-+	 */
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 7;
-+		*val2 = 812500000;
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = 3200;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
-new file mode 100644
-index 000000000000..18499b4d0b94
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
-@@ -0,0 +1,38 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Copyright (C) 2026 InvenSense, Inc.
-+ */
-+
-+#ifndef INV_ICM42607_TEMP_H_
-+#define INV_ICM42607_TEMP_H_
-+
-+#include <linux/bitops.h>
-+
-+struct iio_dev;
-+struct iio_chan_spec;
-+
-+#define INV_ICM42607_TEMP_CHAN(_index)				\
-+{								\
-+	.type = IIO_TEMP,					\
-+	.info_mask_separate =					\
-+		BIT(IIO_CHAN_INFO_RAW) |			\
-+		BIT(IIO_CHAN_INFO_OFFSET) |			\
-+		BIT(IIO_CHAN_INFO_SCALE),			\
-+	.info_mask_shared_by_all =				\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-+	.info_mask_shared_by_all_available =			\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-+	.scan_index = _index,					\
-+	.scan_type = {						\
-+		.sign = 's',					\
-+		.realbits = 16,					\
-+		.storagebits = 16,				\
-+		.endianness = IIO_BE,				\
-+	},							\
-+}
-+
-+int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int *val, int *val2, long mask);
-+
-+#endif
++What:		/sys/bus/iio/devices/iio:deviceX/in_altcurrentY_label
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_label
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_label
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_label
+ KernelVersion:	5.8
+ Contact:	linux-iio@vger.kernel.org
+
 -- 
 2.43.0
+
 
