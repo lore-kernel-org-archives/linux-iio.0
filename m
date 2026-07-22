@@ -1,60 +1,59 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85A9F47604D;
-	Wed, 22 Jul 2026 07:55:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB359473C89;
+	Wed, 22 Jul 2026 07:55:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784706913; cv=none; b=qxbwhXk3ZIpdLoRNt4I079OcsukcfWL/VIZ/TmOiroDXQUn0btOx2akH6mzELablrUTGgbeyuPOmcguit8T+oh3UB0c+nMp6YEPFdH4/MX126D78gQqz7cq3dicOwKRSPPJbMXj6f6AQiL6LKBumtpn75OC6M/nG9+KEXqPnrCY=
+	t=1784706918; cv=none; b=h3rGWToD3sy1Vdv9VzjjVm5YfjO+VNBquouRIHXHnhRkgZ/qNjuljfx3I7EIpnbG5YNXOai0/efcx53WXlWxfzrvKIN1Gp6CYPeyYSLbjB40FA9OhkS1SqK6fo+MbHWERU4DDZ5Va6WUKLCv8i975OcTkMGpqxFUobpY2YE5DVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784706913; c=relaxed/simple;
-	bh=01OwEU7iwh9LmrTcefYLO8Fgd2mi3ddsAkqa/8h6yXk=;
+	s=arc-20240116; t=1784706918; c=relaxed/simple;
+	bh=LVCg6ZEYQJvO6Rbz0tpTVChpr/UYOzduuJ6ncVq3GLQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=BUmXXz4QbgIctyh0asWBn0Orf8+AggY3zzP6iKTtf3rhDuqiXJvhzX8+18S5urcuK0kjpp/F9cXJLBZmcKos6kDn2WV7F3VKC4l/+au4A/xwNBydbRlmimi1JxAJkCV3obhY4hV4DWjyj3SiRAy1mYtOK1hlCdsaI7VwHcko2Zk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=cIXzB+Lb; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=qSkClVIthzBSz1CGM6DJjfrjTQBG5Ci8Hdp2juCeaRlDIy6OEyA/Rt8TuxO3Z0mqFDSL678TqZDglVsLYeGO542/z1Jgb9ND8YdHRFuP0s3l+VQL5fF+VLq8C1gjpkbmokGKsuiTITWPc6IeRKvY2yfqVytwQwbmpHDYWGA023E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=g7RGdHyB; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="cIXzB+Lb"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="g7RGdHyB"
 Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66M54nGi2558624;
-	Wed, 22 Jul 2026 03:54:53 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66M54eZd2558557;
+	Wed, 22 Jul 2026 03:54:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=lFk6e
-	fd68CS71oU5nCcZyYWFou3T3/WGMnl3Y/Ihi9k=; b=cIXzB+Lbyp9RrFGVrp+no
-	Q+BJm/wRc/PO4gkIboSTHW6YO9arEkr7NxmxqloIne2KXn4/tvDNDwlBIuaWNQ5F
-	mzE2LmMIHMn7K+yf5+sqXR9gQNudvbHdb05eU+18QpEQ0CH/H6Q8p1OdEoCwuVVs
-	PbDseX3BU29ocJk4FHrmowoByyvI8p3fcpg3coEntuSvKHW0Wfejj7RhXwoEFCrP
-	/pV6WvJasL/ojd0exnF3Sy5r3G0bWsZZLokKRqyLzEz5oUCBDgEPjgzwEKVsXILi
-	jUF2SdAeUYMoI6T0MVRvq/C7xv+3uns77P9+MbHyXS1T1OB2bVU6xOhwsuDu5ye8
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=TNPaT
+	qBwEakDqLkAXc5BVi6J3bHl9A+ArvnJz6DsXfQ=; b=g7RGdHyBaUhiwTqg6IFbL
+	ZboGyZidAG7XVO/spCnQYsItq87H7oMV7N6AI5YcPNMfHo/OOKNh9yM+ZU4ShsTI
+	HZRW+fK0cc52SM0D8GFR080jUTqUHtZXzV/Ry+rp42yN612ZAZwehPX0u0WJF9Hw
+	KuIdbdJaVlhZaT5TUo9SeZ/ZEDw9EevoMSGOfK1CmR8EYTTvgfnr8NxEXF8lHrWt
+	7zTR5UvmhKK7twkrYqC3TdVznr1+uRVOWWGEu1nyDhaDnTK70WrTo/dEFg92+n/k
+	6naXu9886cC4O2cLVxX5n4bv4EIibtepz5HIdf+hydCr/VVpTO7BsLFsGIUCDUx7
 	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fjnd9h11r-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fjnd9h11v-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 22 Jul 2026 03:54:52 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66M7spaJ060603
+	Wed, 22 Jul 2026 03:54:56 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66M7stjv060609
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 22 Jul 2026 03:54:51 -0400
+	Wed, 22 Jul 2026 03:54:55 -0400
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 22 Jul 2026 03:54:51 -0400
+ 15.2.1748.37; Wed, 22 Jul 2026 03:54:55 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 22 Jul 2026 03:54:51 -0400
+ 15.2.1748.37; Wed, 22 Jul 2026 03:54:55 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 22 Jul 2026 03:54:51 -0400
+ Transport; Wed, 22 Jul 2026 03:54:54 -0400
 Received: from HYB-e1y2fvUQ3cx.ad.analog.com ([10.32.223.174])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66M7sK4n006639;
-	Wed, 22 Jul 2026 03:54:41 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66M7sK4o006639;
+	Wed, 22 Jul 2026 03:54:45 -0400
 From: Janani Sunil <janani.sunil@analog.com>
-Date: Wed, 22 Jul 2026 09:54:14 +0200
-Subject: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
+Date: Wed, 22 Jul 2026 09:54:15 +0200
+Subject: [PATCH v7 3/7] iio: adc: mcp3564: Add support for spi-device-addr
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,7 +62,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+Message-ID: <20260722-ad5529r-driver-v7-3-7781cd74ad75@analog.com>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
 In-Reply-To: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
@@ -97,32 +96,32 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<nedo80@gmail.com>,
         Janani Sunil <janani.sunil@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784706860; l=1717;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784706860; l=1134;
  i=janani.sunil@analog.com; s=20260507; h=from:subject:message-id;
- bh=01OwEU7iwh9LmrTcefYLO8Fgd2mi3ddsAkqa/8h6yXk=;
- b=glCZ9pBHhs4yOtsZYeKItkGr3ganFgrtAiOMDnPtNb7u7RFVV73udyzJzhI2Nd6vNyvx5kGCW
- XkDCEgiXc3/B0imE1Oi/Dh5XQ6Nl0EES6PDC4qeeDC6SX1lXkpOqaXG
+ bh=LVCg6ZEYQJvO6Rbz0tpTVChpr/UYOzduuJ6ncVq3GLQ=;
+ b=fMtc64ribz1V4wmvqLlliTt85SvmzOx/nigrm+kDoVDscqEQP77TJHiikCLfOcq3R3FZ47IEZ
+ 5tBT0OKnlx1Dwse61+4radGhr1eYYe3E7X/yYTwqt4rgD89Bzyx3ClD
 X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
  pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: dcYVGKS4TuuymdTLFWdfvRSqBMDdx2_M
-X-Proofpoint-GUID: dcYVGKS4TuuymdTLFWdfvRSqBMDdx2_M
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIyMDA3MiBTYWx0ZWRfX/OPfSnIx0tQs
- DABFej3Rb6Wug3eHr1YEziojbTYAUi/qlc1vjyLzRUyCA1kvClN5DkQNMNetc1Uaal8unQxBQwG
- vQy714sAs8nnHMdLvrigS1JBW8QGDWGT+T0Xnscb4tBarKJx6jIrReHLoQA+MB0Uro1NPQPuC0e
- GwU0CTCzYniukMybwPfNaqCmXli+FFsLiNMDf1D93J7W/yz6zS3mCYK2nsVo59cpTnxdJQ0BjXO
- 4AIF32RwNZ9L+wF0W131ONw76MGiDl9dRk4AXDK+jZpIGatQIUWgi91lyQhDYqExqxIrkketulk
- 2jSWxCMcoU7WNCvAG1EFnPVRQh5Sfo/YkjH2h03uLwEcSingydenELSoOi2u9vg0I2PiJ3eD6g6
- sDu2aLohWCbQbb/wj3V0/Uy2PvVzctMRrb6BAHcp4MrWWrJ4B54tv+woRQi+so3piByIDkisyru
- 7ognhQ9dVqZ0o94tIXw==
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIyMDA3MiBTYWx0ZWRfX40oeSpNOUVmO
- 401TWvn9lIURhSn4wWiHNiaIbLithABc/flJemGid6WBZgYUsseDnG9+zLHS5NdeRZVPQ2urIX+
- G1tYybwqC+v3UgRXaMU6RxEOw6vJu4lgk3FHC4z4fMnmkH/MayVb
-X-Authority-Analysis: v=2.4 cv=BYHoFLt2 c=1 sm=1 tr=0 ts=6a60774c cx=c_pps
+X-Proofpoint-ORIG-GUID: JYfO1lrbmN2LjzVd_dP5WHFRbPyvNeBn
+X-Proofpoint-GUID: JYfO1lrbmN2LjzVd_dP5WHFRbPyvNeBn
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIyMDA3MiBTYWx0ZWRfXy6tEyAgv1jfx
+ QsIfVS9S5S0RAL1Om4/tipvwG4t8AoyCADSLixrxozCBdJl19gKdt9hPQH2tPLsNwjVzcCTgNor
+ bWGCrB2wGDyXk5YG5l82g/qXiDDpTcYRKFL5O81T4bd/pEfipIV/cgmfxKkgl+BvEtYkZsUQ8BW
+ vUKEkaXozxLwx9qfylfgn+84Cb5rjZL69XoMSkOLK5kdhBItMOVEooUOqlDgAzKgIHnWAR3wz76
+ iLYTm70S5Hupkx+BwfxKez7yVk8qN3bjEiOs6Q/J3u1fRA2XMD3Zj3Hg4vIhZjXaWhCv0E8bVlR
+ KTRmIpb2Lqio+21ji/bkjR2aUYOgdprW5ZhQ+v7a3nKTmVfg2VSFxilYQPj8BTKOJg3bEZZT4mq
+ mHANz9AZPo5YIXTzyLvlxeNM59876GMskz457cvUGHZ9rwxoL1yCOQc3kbYLFgRUjNvlXD5+/J3
+ jvfYgdxoNR0dkAnT1mw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIyMDA3MiBTYWx0ZWRfX+aZSWZWtMyq4
+ TZUVUBgco6RVULc00gY/njRc+dSkvvIW1EN6GOZefO4Nea4wtSL7UvHVCLRrbpdc5B5JnUhuoWq
+ YKesX4VeQQB9dUvD1vY+7zcOggVG7DcrEUijsHKrHGl8R8hNdZTD
+X-Authority-Analysis: v=2.4 cv=BYHoFLt2 c=1 sm=1 tr=0 ts=6a607750 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22
  a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8
- a=x4a6AN7Hyicx1yu3BJYA:9 a=QEXdDO2ut3YA:10
+ a=YFkBFquRG6JSY03WmVMA:9 a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-07-22_02,2026-07-21_01,2025-10-01_01
@@ -132,56 +131,32 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607220072
 
-Add the generic spi-device-addr property to the binding and deprecate
-the existing vendor specific microchip,hw-device-address property.
+Read the generic spi-device-addr property when determining the hardware
+device address. Fall back to the deprecated microchip,hw-device-address
+property to preserve compatibility with existing device trees.
+
+The device address remains 1 when neither property is present.
 
 Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 ---
- .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/adc/mcp3564.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-index 675319276197..de1ea289e7f5 100644
---- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-@@ -80,6 +80,7 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     minimum: 0
-     maximum: 3
-+    deprecated: true
-     description:
-       The address is set on a per-device basis by fuses in the factory,
-       configured on request. If not requested, the fuses are set for 0x1.
-@@ -91,6 +92,12 @@ properties:
-       clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
-       which is first one on the wire).
+diff --git a/drivers/iio/adc/mcp3564.c b/drivers/iio/adc/mcp3564.c
+index 36675563829e..71deb05e878e 100644
+--- a/drivers/iio/adc/mcp3564.c
++++ b/drivers/iio/adc/mcp3564.c
+@@ -1122,7 +1122,9 @@ static int mcp3564_config(struct iio_dev *indio_dev, bool *use_internal_vref_att
+ 	 * addresses are available when multiple devices are present on the same
+ 	 * SPI bus with only one Chip Select line for all devices.
+ 	 */
+-	device_property_read_u32(dev, "microchip,hw-device-address", &tmp);
++	ret = device_property_read_u32(dev, "spi-device-addr", &tmp);
++	if (ret)
++		device_property_read_u32(dev, "microchip,hw-device-address", &tmp);
  
-+  spi-device-addr:
-+    maxItems: 1
-+    items:
-+      enum: [0, 1, 2, 3]
-+    default: [1]
-+
-   "#io-channel-cells":
-     const: 1
- 
-@@ -123,7 +130,6 @@ dependencies:
- required:
-   - compatible
-   - reg
--  - microchip,hw-device-address
-   - spi-max-frequency
- 
- allOf:
-@@ -159,7 +165,7 @@ examples:
-             spi-cpha;
-             spi-cpol;
-             spi-max-frequency = <10000000>;
--            microchip,hw-device-address = <1>;
-+            spi-device-addr = <1>;
- 
-             #address-cells = <1>;
-             #size-cells = <0>;
+ 	if (tmp > 3) {
+ 		dev_err_probe(dev, tmp,
 
 -- 
 2.43.0
