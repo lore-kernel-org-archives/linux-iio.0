@@ -1,173 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 093803EFFDB;
-	Wed, 22 Jul 2026 17:44:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C7713B3899
+	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 19:39:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784742294; cv=none; b=EsULT36tJFjthGCgOFhotTtQ7609RF+mHupAfHrC8gXieRqssjmdpc5TUd/ixH4QhL+L9EtBQlDaUxoVPABEty8ST7f70rg1dJKUaYyCQZA0cCyfbPqPhmvv2S8W5feXVd8HfNz47KLY/HgJ9PQx+O1SjabssqRKCszv0x4bOOQ=
+	t=1784749180; cv=none; b=s/Q5sZG8LeUVyzQIKwmv/mGRTmVlJo4tW3N2PGFoX+qjs8ECdzEDA7cOWneJKug698PyRvDWZe5wbTZ+QHQiFHPi8a8e7ozdbZ3auh+vU8v9jEnEhFSep3i/dH2CCVFptuuP2v4UpjPwGaap3VrUPtJ3szLE7JD+yHrNerKaNnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784742294; c=relaxed/simple;
-	bh=M9Do34EfW8/a/M4Ra0TGiyzwulvAgZe7AlUhFYxbx+4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XeMD6lC9lPWIvOXRKYM+hxL0yeq6mUCH5BsP2jTOar0ZIkk/vlPOlZBlKjfs22Y7MUMISCNhaUqCg52xHUnS3ry5qwEJaybtIa2zvzjsB3mbWkRP7Sh62gSyZAgru8KQeaCRseOZsKBcwmRPP4zFeRqdbVuSbuglz0uSH0AbJCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VtEAPQJU; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784749180; c=relaxed/simple;
+	bh=XPNZh5Xwi4uWv1AMYrkob8yNIlR+8Um03AjzUYZVkS4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=g2gdm5oBP4lNd9WbQJqebsznBRNDYw3FWhiXJVe+nuVl8wSToRRC82uK1h/Jb2kzzSeBueg4WnzulObENqDBHfvdkLfeHCfRTHeP8mii35xNm2QaAhp6KoXIozBEQS//ECRBw6Xz916JlYuSWLDAvXFolQrFjIqDaoQ46G0HJE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZTEpLz+E; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VtEAPQJU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CE9B1F000E9;
-	Wed, 22 Jul 2026 17:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784742292;
-	bh=zo5RV9glOFJC3cST6CXl/oS8IzFV9x5o/1OkdUAbBp8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=VtEAPQJUfU10L0vgXCaw4zUHYdyMDUAmjadpudj4J/O3oTonFAQyGrDgorfHJRVJe
-	 Yg1g4VZb6XAvV0l4wFln2L7qLR9pf4O9JZROUCCsrXgbgM3QaSQFuraXqub85aE8uG
-	 y7o/+lPvGF7X/oG55zzUoyTeAeiuLyAw4+8136KUvNLStjXdaJR9cUnqQzfJKMA4vu
-	 h5dz7dL+V6pCNMqmPTHEBGzGuWxIwaa3ePBbwIXCxqk1vfv6+/251Oe9ekM1BezAQG
-	 TussopeOmztVdiFQ7uOhveTL20j1f89iEeJG20b9cJ0M3ymwjkV20UrBdJoS7Mjp4V
-	 N/DKNSA1PnCmQ==
-Date: Wed, 22 Jul 2026 12:44:50 -0500
-From: Rob Herring <robh@kernel.org>
-To: Kim Seer Paller <kimseer.paller@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: iio: dac: add adi,ad5710r.yaml
-Message-ID: <20260722174450.GA1261594-robh@kernel.org>
-References: <20260716-iio-ad5710r-upstream-v1-0-e848a4bb701f@analog.com>
- <20260716-iio-ad5710r-upstream-v1-2-e848a4bb701f@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZTEpLz+E"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-47ddf7b09e5so8932026f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 12:39:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784749177; x=1785353977; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=3/pATTsYUQb3NxIiOQb/wmyPkTDqGg6SXe95ZoxSscA=;
+        b=ZTEpLz+EmUaaAPzFwiVT2dY3o/9RfiDyvJDztZQ4e0i923hozwWHLRNh1hGMMfxQDc
+         A7Hadu8xCvJJ24hds49i57feul2MI/duSabT5x9LMHAGucphdEVGV1iNKjkeSbA1sDCv
+         readiSSPWXQ/cZnBb+RcBfS6G1h5+ZMEl3d1XKzZIn9Nj6GD/HWF38CRg2MVWqfqvad6
+         jMYx58ZY8HvUSoVo2hi8oypVcmEAQakJ1ae0Bmic771JdjfxyGQUfVsfU5+CNVcuuAYp
+         54VTahVCcLNKTgTaoK1e1Q0TwVAR5wxh9YhapOZhp6mQPQc/TiCPtTodUI39d20qxwDI
+         GB7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784749177; x=1785353977;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=3/pATTsYUQb3NxIiOQb/wmyPkTDqGg6SXe95ZoxSscA=;
+        b=V9lDyYILP8OHGI0abGi09gI9t3Z8B6oi+9WWw4qhhQo8pcXOk8DBgqcLZdp3Bb61EF
+         3OEHCgaSGPlObP6dBd9EM+2Zfu+HQ8bxKkeOelIfAiKvLBfYMS191Dyzq0z8E0qiYwlU
+         asu3kMZ0qJUSXzF8V6K+SfVeIHk5ovCdRzMlHA2kYvWiBCq00ulXgt5SINQtCRBm2LBa
+         Vk7YTxbkjz6dcTr6AfkkKMiz71xfyZGRM9oZgLk6z4te1bSOLcNLZFj0YnyTwLMfWuGW
+         c5WPtjYxA2GqtwjtDk//szQHnV+aEkfCS7tJx9zdvDRPM0ZQXs82kCmCWL4cfbCyO5kc
+         6KCQ==
+X-Gm-Message-State: AOJu0Yz+iwk0pdBKC5mcivCBFS2BOseRCWLWgyEPmGqrmtxie7kjv1dP
+	PWILJ68jOEEQf/uIe8fhlqIyiA6xVXH73H3tICQBvMp7aR3LONo9FOdh
+X-Gm-Gg: AR+sD107hIwdgQ3f2tVrRxQBDsRK4/RTslctFjUon4AfrwaF7jZWXiO1K+kUBS4qUcn
+	ZNkVEMgDjiJL0njfbsdVVsYlzPyTkFpX6vLFSerQsuBh7P/wHChsEXSSpGOfo1+dxvvGTZibIRt
+	63Au/3oRICW46dEkEFUYDxKlsyAElShoW560JV20+BmNpJQJMrJ4ZPtavAyKT7r70zTGpicG0WT
+	FonhWWd9bclXWcn6AKB9LyG+QUUToX0hmnYQb41N7tXednENUjZRaSSTemozizf/oD6PiY6VjV6
+	AClreiEmoiJY73CcTcv7FYBhtLYF3XpbOrZPtfbidL3wQek1rzhjs+MSRrHRfStuTDbzELPIS11
+	/aciWryMfYGrb8pbtWV30qY3nUrcOAdWv5my7bkwXlKjPmpSGVPfVKhY6o75kBxF1k7O+44mDxA
+	dHBUQv1btz3jb54F//aorpsBGSYdzZTslpRFsuurqXzqNr5JVU1accQTED/8XXxy8kNdI=
+X-Received: by 2002:a05:6000:1849:b0:47f:6d57:5a9d with SMTP id ffacd0b85a97d-47f8dc9d728mr202566f8f.47.1784749177126;
+        Wed, 22 Jul 2026 12:39:37 -0700 (PDT)
+Received: from [127.0.1.1] (2a01cb0007c599000ca1676dde693a1e.ipv6.abo.wanadoo.fr. [2a01:cb00:7c5:9900:ca1:676d:de69:3a1e])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85bd77a9sm8416243f8f.14.2026.07.22.12.39.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jul 2026 12:39:36 -0700 (PDT)
+From: Amin GATTOUT <amin.gattout@gmail.com>
+Date: Wed, 22 Jul 2026 21:39:32 +0200
+Subject: [PATCH] iio: adc: at91_adc: use const char * for DT string
+ property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260716-iio-ad5710r-upstream-v1-2-e848a4bb701f@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260722-master-v1-1-ab0591897e4b@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAHMcYWoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDcyMj3dzE4pLUIl0jY0NzyxTzZAODZBMloOKCotS0zAqwQdGxtbUA6rU
+ 4h1gAAAA=
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Nicolas Ferre <nicolas.ferre@microchip.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, Amin GATTOUT <amin.gattout@gmail.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784749176; l=1257;
+ i=amin.gattout@gmail.com; h=from:subject:message-id;
+ bh=XPNZh5Xwi4uWv1AMYrkob8yNIlR+8Um03AjzUYZVkS4=;
+ b=duOiTGUULrhHnUItYRTOCMeN5TIN+RIYU4M66Ic3AEffJWCMmbKYv8Toonmt22z6r7aR05FiC
+ 1YqzrJz8s/gA6vAVaoVVpntIsLwsgvOXakeeuMsQAqnZ8iPX6Fb99c9
+X-Developer-Key: i=amin.gattout@gmail.com; a=ed25519;
+ pk=C9HM6Jf5d9dPl9fnP9pM/nhMwm+c280ldqYZ0ESu3a8=
 
-On Thu, Jul 16, 2026 at 03:59:26PM +0800, Kim Seer Paller wrote:
-> Add device tree bindings for the Analog Devices AD5710R/AD5711R
-> 8-channel 12-/16-bit Configurable IDAC/VDAC.
-> 
-> Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
-> ---
->  .../devicetree/bindings/iio/dac/adi,ad5710r.yaml   | 143 +++++++++++++++++++++
->  MAINTAINERS                                        |   7 +
->  2 files changed, 150 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml
-> new file mode 100644
-> index 000000000000..17c1bf009242
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5710r.yaml
-> @@ -0,0 +1,143 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/dac/adi,ad5710r.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD5710R/AD5711R 8-channel 12-/16-bit Configurable IDAC/VDAC
-> +
-> +maintainers:
-> +  - Kim Seer Paller <kimseer.paller@analog.com>
-> +
-> +description: |
-> +  The AD5710R (16-bit) and AD5711R (12-bit) are 8-channel, low-power,
-> +  configurable current/voltage output digital-to-analog converters (DACs) with
-> +  an on-chip 2.5V, 3ppm/°C reference. Each channel can be independently
-> +  configured as a voltage output (0V to VREF or 0V to 2xVREF) or a current
-> +  output (0mA to 50mA). These devices operate from a single 2.7V to 5.5V
-> +  supply and are guaranteed monotonic by design.
+Declare the local variable as const char * and remove the unnecessary cast
+when passing it to of_property_read_string().
 
-blank line
+Signed-off-by: Amin GATTOUT <amin.gattout@gmail.com>
+---
+ drivers/iio/adc/at91_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> +  Datasheet can be found here:
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5711r-ad5710r.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad5710r
-> +      - adi,ad5711r
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 20000000
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  vdd-supply:
-> +    description: Power Supply Input.
-> +
-> +  iovdd-supply:
-> +    description: Digital Power Supply Input.
-> +
-> +  io-channels:
-> +    description:
-> +      ADC channel used to monitor internal die temperature, output voltages, and
-> +      current of a selected channel via the MUXOUT pin.
-> +    maxItems: 1
-> +
-> +  ref-supply:
-> +    description:
-> +      Reference Input/Output. The voltage at the REF pin sets the full-scale
-> +      range of all channels. If not provided the internal reference is used and
-> +      also provided on the VREF pin.
-> +
-> +  reset-gpios:
-> +    description:
-> +      Active low signal that is falling edge sensitive. When it is deasserted,
-> +      the digital core initialization is performed and all DAC registers except
-> +      the Interface Configuration A register are reset to their default values.
-> +    maxItems: 1
-> +
-> +  ldac-gpios:
-> +    description:
-> +      LDAC pin to be used as a hardware trigger to update the DAC channels. If
-> +      not present, the DAC channels are updated by Software LDAC.
-> +    maxItems: 1
-> +
-> +  adi,range-double:
-> +    description:
-> +      Configure the output range for all channels. If the property is present,
-> +      the output will range from 0V to 2Vref. If the property is not present,
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index f610ad729bf3..0ac74ad92fca 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -988,7 +988,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	struct iio_dev *idev;
+ 	struct at91_adc_state *st;
+ 	u32 reg, prop;
+-	char *s;
++	const char *s;
+ 
+ 	idev = devm_iio_device_alloc(&pdev->dev, sizeof(struct at91_adc_state));
+ 	if (!idev)
+@@ -1023,7 +1023,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 
+ 	st->res = st->caps->high_res_bits;
+ 	if (st->caps->low_res_bits &&
+-	    !of_property_read_string(node, "atmel,adc-use-res", (const char **)&s)
++	    !of_property_read_string(node, "atmel,adc-use-res", &s)
+ 	    && !strcmp(s, "lowres"))
+ 		st->res = st->caps->low_res_bits;
+ 
 
-2*Vref
+---
+base-commit: 248951ddc14de84de3910f9b13f51491a8cd91df
+change-id: 20260722-master-23179d7c00c4
 
-> +      the output will range from 0V to Vref.
-> +    type: boolean
-> +
-> +patternProperties:
-> +  "^channel@[0-7]$":
-> +    $ref: /schemas/iio/dac/dac.yaml#
-> +    type: object
-> +    description:
-> +      Represents the external channels which are connected to the DAC.
-> +
-> +    properties:
-> +      reg:
-> +        description: Channel number
-> +        items:
-> +          minimum: 0
-> +          maximum: 7
+Best regards,
+-- 
+Amin GATTOUT <amin.gattout@gmail.com>
 
-How many reg entries? If only 1 then you can just omit 'items'. If more 
-than 1, you need to define what each entry is.
-
-Rob
