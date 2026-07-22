@@ -1,171 +1,117 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 710FD4749F0
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 16:03:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8ADF41D134
+	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 16:22:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784736226; cv=none; b=STIKYktqGmbJyv7F36VJ8LVJAzT4z8F1cRidhJ/9eUEgkS4feNtSC/Ej0WcMEUkyNs9swbDJSc34iEzv5uDgPwGoebd2XI/IsPgLNVkI1WHhVRJUa0PLuRD8wijMtSjsTfbx3KXQfn9pVcQXMeKO82xepYYI3iDDEgfREJygaVE=
+	t=1784737379; cv=none; b=PCUp/pcJdl2qxKY0Zr+gviSdiaKWy7V6wLSaLMkQMuVIiPcCirRB45bRVuCoXRMQVlQ+W8MW+c+atSfW/fTcJdjk3+6J3hOjk7V0kwyh4+QBG28xcF9/X05K4/H81y5+Zl1vzVN6EWE0N7oQQ38SJ3yMMoR3Ibiag8YZpeqRaYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784736226; c=relaxed/simple;
-	bh=1otvit2ICqX01VZfuWeoTPRah7RXDLpRfiXbAwprmwA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O9ZKv5x8F4pbZyoZMOfIt2VjXM9ToU63rPNlaNNak31aopHE+vqIBNNk463upY1zgVW2REWrYn0IW8Rf/2FPfeU2cNOnFpNFjHu+OOLCRhz4frw7DYdew9ilefkVk8XBQ27UAjQkfcz5iZTADSl3Nxr7qSR44eHoI6/Zccy0HmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LJZ7PWLi; arc=none smtp.client-ip=209.85.214.169
+	s=arc-20240116; t=1784737379; c=relaxed/simple;
+	bh=Bh80QIUsMcjVvqkk/S1K+dBLA6lgW2V3OlqH4ilfOAo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kXaXZ0+xEQFtUTQWGLrB1+7UiUm/eLm5yP1kjGzlRdi1ufW3E+x7t9WHM2fuWd++gkhg4U49B7KK4hMT1zD9GcMcanEFayogPbEHCYbivUhSS0sJrxr4wSMLr7dXZtRQ+gS59aXMI3l2Aw+7t6iLot05++66ejwp+xB5yFof0Lk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WKsvUJ5n; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LJZ7PWLi"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2cca0c5799eso106580045ad.0
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 09:03:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WKsvUJ5n"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cc73e322dbso151539175ad.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 09:22:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784736224; x=1785341024; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+nkpUqQJix6KKXMhqyzdYJniOtozme3lGhsWfFwbkPQ=;
-        b=LJZ7PWLi29v0vI/XkIqoXIQOZ13tjJtF7EqCFKuRPxNWKLM95eH+EPR5qs/TzD0i3S
-         UU+lcq6QBYoqoRHC417NKxjan18qgpweE55hMowUbVJ+f95vTE8zDHNDsz8akzVkG+bT
-         ajGZDdy/7gUehd+0lWlvg6efVmxwC8bZGbWM9IOfB38yf4crljZ4SPuBHLRoMt+GVY+z
-         WVITc9JHM12X0z1bqz7xlzAaMDDq94sxv534nJbo/D5aoOWdl3Fq0A31XsWylUDtb4Cs
-         Xe5t19Jc0QgTjYc+5RJ5KBmNxeeLFXPSMsFY0lAdRQ3WS/7IEj0VLwmWtatV15+yL7GA
-         BiUw==
+        d=gmail.com; s=20251104; t=1784737377; x=1785342177; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=1waP2JIJ8dP/NAS64B6HZCiGC7Uix8ac6PtUU+oMDLc=;
+        b=WKsvUJ5nowu+FcpRwx5ABZI+McnW3CTegw64ieacoMSvdUVMrCeIqzd1K1lqTfqwtU
+         fXwI0Nvt73eZJhKruu/pNv4lWbFOYBM1is75PYm9FpT2OofFGxaNc8kevdVHDpka2Eok
+         I4MwGOG31+pRrsfGHnz9PI6x033XeLast9vwCSjl/Inyv8I6dAqV/+BSq5HzM2MVHV71
+         Xm2voHUYLEKtEBx31cebyshHWcN0qsrkE4sBfSCUIytckeKJA8Gpbx9xEj0ZQ0F70rrQ
+         q8Oxk8h5aT7FVXNJ3qoloDmEQvhuR1qZuvEamK/ttBsbyUPKelEfzSK0XN/DO9hCrHyV
+         sgyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784736224; x=1785341024;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+nkpUqQJix6KKXMhqyzdYJniOtozme3lGhsWfFwbkPQ=;
-        b=cMLNdt/LJjKOVlspCdpdorN/I0/7ONvWGDQhVw7JTlk6pwz/3XEmH99J0zjza1vski
-         PF4flsxHaCpTHqMUE8bfXF1jJa8JzG18aiRWGATpB6FX7jDu/yAkkU2kqSMFd3+/9DsZ
-         HwRLz+iVeAiG8H18eEJmd9++/1MkCtlOkbx27fStoMctGaCtRcwL5hQ7CHr5WmFSaT7Y
-         n3fims4+fQFe9U5wIMEGCcAy/BjZS/A38ml2F7jQb0oS6tCMgz4wV68VMI6EOw4zdERO
-         a3+XKGXseklg6bFTs9kRKe+Atx7OqhDZZrIxQRmucwqmvgdLg+NXNaTdT7D3ovtP44oH
-         gKaQ==
-X-Forwarded-Encrypted: i=1; AHgh+RoDmGq4cfGL33HLsORctw1UDr0ExAPp8HlRstfQO5kI8xHBO+IvI8NzovzrbWjsadc5hGtpDiGzwhk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxo0LtNu0RhV3sRUNtx+rpDegLzMgcR0wvwEcCBUppHxf3A0iqA
-	+3vcjzPu2aA7g2f8xKFXorT6NKZs6Z+zEI2buLTInvO9A2ApZXV5A2xJ
-X-Gm-Gg: AR+sD12WXqbOXWw6uc1j0s4MFBGHQ+K5meWvYE80mBChsRFw1uJQn5+nHS3cSKrxXsN
-	yX7ylxfbzUmqYJQAVzqhaoAw39h8VHjSyjZmKNl2YIlWvJTVpAGi43S9Z/DNBo5ZF6XNJWR6mSi
-	nx0ABGSWVC64a1QasEzaxdbsKrVXyVWnwhDxaVx0yhVzCtI3+G5V5Tb7e1eFAOQKtnD9PQ//LKj
-	toeYtCbAEQQfizMu0Rmd4nxr7S41spUjoeiWwFv2/9ZQBhmzPYZ0PzYOp9jw82BRA8Yy/CJutUV
-	+pTxG2nb+q6uG0/VUvG1+a6gkmUzQKy5popSGKu9HIgTYkqDCRC/6siHn3LOhnw1SOic9xgl8XC
-	p6t82DcpDY5a7+9z5doi/jyqCli6uTiScKEnGWin0eepu0PqIzDHvYtQ3CdI2JcMoYYi2gue3kT
-	qMKDKNW8jmbf7yn6Aftb9G9g==
-X-Received: by 2002:a17:90b:568e:b0:38e:673:5d18 with SMTP id 98e67ed59e1d1-38e4b56a0c2mr21959475a91.36.1784736223565;
-        Wed, 22 Jul 2026 09:03:43 -0700 (PDT)
-Received: from kernel ([103.219.206.61])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-13d130ce035sm7548395c88.13.2026.07.22.09.03.37
+        d=1e100.net; s=20251104; t=1784737377; x=1785342177;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=1waP2JIJ8dP/NAS64B6HZCiGC7Uix8ac6PtUU+oMDLc=;
+        b=nINOkqrrtdD7sT5ZUp+nqlrm97Vm5hPHQn/QZLFof7Bv06FIPpssSdU4E97nwAwj98
+         pVb82XGPFF4/K/KQ0L04DmnfBYOwwP1CbIgpIZY/uxVECiHRSP9e/eRgizzjcjmTHUzr
+         xkp8ERy8xpcmsMt8a1LnL7BUxXBj+qgsadW9z+3iNMnwPhZq2Y7ceS4icxdsR3DTPrYj
+         sEVWR5EwqnoAHKjGm5mHBVVA4IRNE6iJ28MM6G5zqKR4DW/gqwZbxNnXBhDOz+Tzy/Dj
+         d7N6+h/BKUzHbX+tOR0ty8a9vjb2pdAWGVMRd4Vsug37PvV9AgUJp8EHIJPt4ABVGXER
+         PiSQ==
+X-Forwarded-Encrypted: i=1; AHgh+RoBxRSFyHhwVhtZ3KRisjRqIQk1EANMT+bAK9iFXY7OyqHcFu6m3/6kpArFTIWnPjnmHUXuT/RNt6o=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3etamvsymXeofpAk6xGgDV/FqAcFQAPM98WoqIgNCNgnZDlYi
+	BqetAfAUZVy05VicwZMEEclgvxClcbOIDXDgVV41qkq4WDPSvzjE840=
+X-Gm-Gg: AR+sD13Fbrg5jrqYguhpODqelCCfoxkU7s1kHj7NdIHu8NFy85bQAvx4vM6UaLDfHqa
+	obyhF4A8JEMmAkokYQEvFWATPm4l4x4bOaOdjuFDJpUvJ81CAA4x9mK0+XSjcarXgikadp17hAc
+	QJc1Dbde2JtpuheVsXLpGFkg58WQFB/HuHSMfoORvC8rqw8ANDBoCnTvJejBu/lmb63JszC2//P
+	tyTf719cEEAKV0hjvbwy/J/Le5KzCt7HeAiv6tr69XvvakFk9+8zcu5lTQ0+eyZE6VAUX69G+93
+	XIoyV2yQkL5qSf3biTa3iLWaT7zXMjX/HlTAGHLye+q3r7d0rrg6fGxC07Uwc59QdCvy0nFV3AO
+	R7UNmcqa6BZ6Gj3cOfqa5cVGHnNNWsz5+6M0fG27mkz7/a/H/BHt43oQ1slwsmnBNvW+uL9DZ8f
+	LkD/YaoinX/wp2WvPUhiiTb8BMGcS0xrv/RPJdonFm38qN2/pAlVAh
+X-Received: by 2002:a05:6a20:ae2f:b0:3c3:66c5:68cc with SMTP id adf61e73a8af0-3c3ad7aa9famr25980729637.21.1784737377060;
+        Wed, 22 Jul 2026 09:22:57 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.62.129])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3147dc1e3d9sm9260471eec.5.2026.07.22.09.22.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 09:03:42 -0700 (PDT)
-Date: Wed, 22 Jul 2026 21:33:33 +0530
-From: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
-	nuno.sa@analog.com, gregkh@linuxfoundation.org,
-	skhan@linuxfoundation.org, me@brighamcampbell.com,
-	jkoolstra@xs4all.nl, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v2] staging: iio: frequency: ad9832/ad9834: add comment
- explaining do_div usage
-Message-ID: <amDp1VPSMF0P6r8T@kernel>
-References: <20260630032322.5805-1-raizudeen.kerneldev@gmail.com>
- <20260722082227.18768-1-raizudeen.kerneldev@gmail.com>
- <20260722104617.000050fa@gmail.com>
+        Wed, 22 Jul 2026 09:22:56 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v2 0/3] iio: light: gp2ap002: runtime PM and error path fixes
+Date: Wed, 22 Jul 2026 21:52:44 +0530
+Message-Id: <20260722162247.8229-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260722104617.000050fa@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 22, 2026 at 10:46:17AM +0200, Joshua Crofts wrote:
-> On Wed, 22 Jul 2026 13:52:27 +0530
-> Mohamad Raizudeen <raizudeen.kerneldev@gmail.com> wrote:
-> > Previous attempts to change do_div() to div64_ul() were rejected because
-> > mclk will always fit within 32 bits for this hardware, making do_div()
-> > safe to use.
-> > 
-> > However, Coccinelle continues to flag this as a false positive. To
-> > prevent future developers from submitting unnecessary fixes, add a
-> > comment explaining why do_div() is intentionally kept.
-> > 
-> > Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Signed-off-by: Mohamad Raizudeen <raizudeen.kerneldev@gmail.com>
-> > ---
-> 
-> Please don't send a new version as a reply to the previous version,
-> as it can break tooling such as b4 for patch review.
-> 
-> As for the comment, I think it's good, however I'm not sure whether
-> this should be split into two patches, given that this is a small
-> change. Andy, what do you think?
-> 
-> > diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> > index 60c33e10c46f..6d046e9121e2 100644
-> > --- a/drivers/staging/iio/frequency/ad9832.c
-> > +++ b/drivers/staging/iio/frequency/ad9832.c
-> > @@ -118,6 +118,13 @@ static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
-> >  {
-> >  	u64 freqreg = (u64)fout << AD9832_FREQ_BITS;
-> >  
-> > +       /*
-> > +	* mclk is an unsigned long, which triggers a Coccinelle false positive
-> > +	* warning about using do_div() for 64-by-32 division. However, mclk
-> > +	* for this hardware will always fit within 32 bits, so do_div() is
-> > +	* safe to use here.
-> > +	*/
-> > +
-> 
-> Unnecessary blank line here, you want to couple the comment with the
-> line that it's describing.
-> 
-> >  	do_div(freqreg, mclk);
-> >  	return freqreg;
-> >  }
-> > diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-> > index 33dfd723923c..8722f3a01cde 100644
-> > --- a/drivers/staging/iio/frequency/ad9834.c
-> > +++ b/drivers/staging/iio/frequency/ad9834.c
-> > @@ -103,6 +103,13 @@ static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
-> >  {
-> >  	unsigned long long freqreg = (u64)fout * (u64)BIT(AD9834_FREQ_BITS);
-> >  
-> > +       /*
-> > +	* mclk is an unsigned long, which triggers a Coccinelle false positive
-> > +	* warning about using do_div() for 64-by-32 division. However, mclk
-> > +	* for this hardware will always fit within 32 bits, so do_div() is
-> > +	* safe to use here.
-> > +	*/
-> > +
-> 
-> Ditto.
-> 
-> >  	do_div(freqreg, mclk);
-> >  	return freqreg;
-> >  }
-> 
-> 
-> 
-> -- 
-> Kind regards,
-> Joshua Crofts
+Hi,
 
-Hi Joshua,
-Thanks you for reviewing the patch and for the clarifications.
+This series fixes three issues in the gp2ap002 driver, all present
+since the driver was introduced.
 
-I understood and will make sure v3 is sent as a new and separate email
-thread without in-reply-to header so i doesn't break b4.
+Patch 1 fixes an unbalanced runtime PM reference count reachable from
+userspace by writing the event enable attribute twice with the same
+value, as the IIO core does not deduplicate such writes.
 
-Sure, I will remove the unnecessary blank line.
+Patch 2 fixes the runtime suspend error path leaving the IRQ disable
+depth unbalanced, permanently disabling proximity events after a
+failed suspend.
 
-I will hold off sending v3 until I hear from Andy regarding whether this should be split
-into two patches or kept as one.
+Patch 3 fixes regulator enable leaks in the runtime resume error
+paths, which matters as the supplies may be shared with other
+devices.
 
-Thanks & regards,
-Mohamad Raizudeen
+Regards,
+Nikhil Gautam
+
+Changes in v2:
+- Removed new lines between Tags as per Andy's comment
+- Removed dup call pm_runtime_mark_last_busy() in
+  gp2ap002_write_event_config() as already handled in
+  pm_runtime_put_autosuspend() as per Andy's comment
+
+Nikhil Gautam (3):
+  iio: light: gp2ap002: Fix unbalanced runtime PM on repeated event
+    writes
+  iio: light: gp2ap002: re-enable irq if runtime suspend fails
+  iio: light: gp2ap002: Fix regulator leaks in runtime resume error path
+
+ drivers/iio/light/gp2ap002.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+-- 
+2.39.5
+
