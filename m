@@ -1,55 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272633F3266
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:11:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69AC23F3289
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:11:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784841091; cv=none; b=ZU29UMB2gRgFwFCr5rMqSB/AnyCVCX8csl3lMpNoIFOpVsxuQs4BNeaiiBC18Uh0qUC+436LuTjWepRpJUrVcedS43I9Nx5K1QwDtx8wxKupvqT5DNu3vZNLFRCKpzYiBQCmPLpHr8Kc8exJxJxBvegl7J038XAOQoCwxcUfSpQ=
+	t=1784841123; cv=none; b=LoQBvHtI+yJ7q2MoUa7jhmNM3xcINxLf/kRLXde41o7mQHZAkzQUoml3lXg2bqiNa890Ome6O7bKYqYm4PdxHm+nxLMALDS/wKDwusSLtfeHjrr3eglnwz8erEPwvjyykAq/7B5lo1wD6JzHNWUBHLd3/u7qr6ORsIYn5HPabeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784841091; c=relaxed/simple;
-	bh=0qDCzzA1wQNK8P5kdVDMplCnxc1foDITb3JHlh1WxqU=;
+	s=arc-20240116; t=1784841123; c=relaxed/simple;
+	bh=QkjxQqaqKFPCRgz3gYm9WQ7javlrCg8NwBlF5T2Nfow=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NMU3I2SAlhJhhWRgGn8br3c5hp/DvCm6JVxfomba/WYiUq9I0He/pxOv7kb92YG6OeCSe/KQChBpuY4l8Ow4SnAwhOk7JddVAgbVEYI3/NHAVfc7thmJrZeoxmUe6ZlfpS5yZiAlWI6BYMF/frCPbHCdWQGrzWtS4lGqWCLqZUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M0/NPxRs; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=O667WHRY7qgylxuVejYLEHFshFdIcd8lHkx4nbEfaskh06iyx9290h8viX+jZHeHf1dYOBGNKR90vRqNe6lR4v6Mzw2z6Ar//brtzQLN+EP4ekZjZUoex5kREK//4FjhtNDUI/GLDHg2LL9uIAYERel8qXKYmU7Yj8oB5LLu4TU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GH0FIzpo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M0/NPxRs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C38D1F00AC4
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:11:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GH0FIzpo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0DDB1F01563
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:11:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784841088;
-	bh=0qDCzzA1wQNK8P5kdVDMplCnxc1foDITb3JHlh1WxqU=;
+	s=k20260515; t=1784841117;
+	bh=QkjxQqaqKFPCRgz3gYm9WQ7javlrCg8NwBlF5T2Nfow=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=M0/NPxRs463kWZuH0AettA/bWtVEcTBilAb6x55A9Ct/5CODgKJDYB+cIHO16J2OW
-	 ApBW9CERIPb9S2LCZqhj11iTauHHt8b4GaFe+qWAZAgkvK+DGuexI6HXqdgjdfx45D
-	 xnK3wxH4Ld0BSVUrsOxysd6olGuQrDj0tHDIY4SwvJSmh5IPMaIofbx1NnIJuxnvxL
-	 /IfVkW09qQQBleOM+tO+ft61tkRObstOqXZBTjTuZPUUS3l7vYQ5DhzQi/cmYVIfMO
-	 6psVBkxJ8iV9kujJQg9DI5ZIK8y1n2098Wd1O7LjV4bQFCdyF7Zh9M2LDhfTkGwi2t
-	 rF1hROya4XQhA==
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5aeba09900bso808065e87.2
-        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 14:11:28 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RpadwWGoPDrxGm7KuR2NPPsd/mLobU2NqgalPPNds5a3GenF7JDKJQ6VqBSuxEEmceLljhjDIEdmM4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1Je8leG6Qdq/709nBlDVMXwRmHJEqK1iZOR2sq8MP2TNIxN4M
-	gt9BxAhBLui10zx2ts3RsQlHCOrCpw/cVD7OVa+Dnhcp2eRVooiFpGcaD8+S28KC0XOz3wIUVVa
-	/k0n/i5kuisbfFms4ThWSZ4o6GV4dGPA=
-X-Received: by 2002:ac2:4891:0:b0:5ae:afec:8afb with SMTP id
- 2adb3069b0e04-5b2b2f707fdmr654385e87.48.1784841087191; Thu, 23 Jul 2026
- 14:11:27 -0700 (PDT)
+	b=GH0FIzpon0wyHFz1+ab2i3gSVs4VF9UWnaaSWuHz9AHR5M6H1zh87fgmIjB/4WDHO
+	 aEjivS/g/OWqbB58gnQi4KADEUo8sF/UK4CJyz/cbfQWJ779FBxMVVTFehxrnBF+Ny
+	 8F/8jiTrwMQVBl6m+Qvj7LCY8qWKi9F/Cdu8sLCKfkFvkV39ypkw6J91pe4vMGa4hK
+	 mpTUDkajgIGxpy2hcqYp8JGfX+nkO+KP8EXEul0cbxj8La6TS/xhC+WBJEh7G3Lrbh
+	 5tF6jp6ZmT7YpbMrEeTKuIEJ16hDGUrUoitaEpEtvsmacaAsA+W5h525WY0/S+LX6R
+	 0xRmviqKNbHSA==
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-39c9bb9d2fbso9552151fa.2
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 14:11:57 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RqY6jaDmADtQaKjcodtAvFN7+TUDbl95boRou1Y7YRWZNx3CCoCkwZxLVOsOpDHMrfyStWA4aCWrpg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzeVEWoH5F75xQvAd/BEbrtkMEgSNIt/Pv802nJt3AhZ1JSrPlK
+	w9HryKh9Izi/2C9gm+KepfyLmTQVnmXYET/Nq2b9afsoddZP0Ct1kJwRXtuBxJTrYW9vDJwbsfq
+	cWyEU87gPBk67rsDC53lhn1DiyUBBhpI=
+X-Received: by 2002:a05:6512:3e23:b0:5ae:c201:c3d7 with SMTP id
+ 2adb3069b0e04-5b2b2e49942mr952489e87.8.1784841116593; Thu, 23 Jul 2026
+ 14:11:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260723034237.2501507-1-eleanor.lin@realtek.com> <20260723034237.2501507-4-eleanor.lin@realtek.com>
-In-Reply-To: <20260723034237.2501507-4-eleanor.lin@realtek.com>
+References: <20260723034237.2501507-1-eleanor.lin@realtek.com> <20260723034237.2501507-5-eleanor.lin@realtek.com>
+In-Reply-To: <20260723034237.2501507-5-eleanor.lin@realtek.com>
 From: Linus Walleij <linusw@kernel.org>
-Date: Thu, 23 Jul 2026 23:11:14 +0200
-X-Gmail-Original-Message-ID: <CAD++jL=zgDkvQzmSmQK-sx00mAz8TFuH0UYOUzaDQ2hQX2+-dw@mail.gmail.com>
-X-Gm-Features: AUfX_mxBmXE-SNHwf75ziYaRd14dzUzw26xbtPTL2smbxj_zM52DC8EJIFw2I4k
-Message-ID: <CAD++jL=zgDkvQzmSmQK-sx00mAz8TFuH0UYOUzaDQ2hQX2+-dw@mail.gmail.com>
-Subject: Re: [PATCH v7 3/9] gpio: regmap: Apply default resource callbacks for
- regmap IRQ chip
+Date: Thu, 23 Jul 2026 23:11:44 +0200
+X-Gmail-Original-Message-ID: <CAD++jLmoFb81mhK3oavqGn4Voefbk3tzyafL8t646XfoTMvArg@mail.gmail.com>
+X-Gm-Features: AUfX_mxay0kTe58qvEju40HZKzbygsY4bjFlPypSM3QbSK8RJ7IXv_SciOTFz9Y
+Message-ID: <CAD++jLmoFb81mhK3oavqGn4Voefbk3tzyafL8t646XfoTMvArg@mail.gmail.com>
+Subject: Re: [PATCH v7 4/9] gpio: regmap: Order kernel-doc descriptions with
+ the actual appearance
 To: Yu-Chun Lin <eleanor.lin@realtek.com>
 Cc: andriy.shevchenko@intel.com, mwalle@kernel.org, brgl@kernel.org, 
 	tychang@realtek.com, wbg@kernel.org, mathieu.dubois-briand@bootlin.com, 
@@ -67,10 +67,7 @@ m> wrote:
 
 > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 >
-> When GPIO regmap creates an IRQ chip on behalf of the user, it also
-> takes an ownership of the respective callbacks and driver data.
-> With that being done, apply default resource callbacks that keep
-> tracking the IRQ requests and releases.
+> Order kernel-doc descriptions with the actual appearance.
 >
 > Reviewed-by: Michael Walle <mwalle@kernel.org>
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
