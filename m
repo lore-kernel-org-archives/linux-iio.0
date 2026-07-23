@@ -1,110 +1,109 @@
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
+Received: from out-174.mta1.migadu.com (out-174.mta1.migadu.com [95.215.58.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217D12F39C2;
-	Thu, 23 Jul 2026 16:22:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A5F319860
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 16:24:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784823781; cv=none; b=UwwTR+73KivihJABv0oZNSd8FPhSOSheITcm4hRFAdk0fI2+AVoRNcZpNOxhosvLPdvIoH/k1ik2B4Z/tmwS6HPOyFRMHrWNe1J69/9RVeUKmTOeKOUQMnrh7hElRWjs+R2vSchmNag3c73p8HHl5sK6vH3p3jIQFCZDrwHvR60=
+	t=1784823857; cv=none; b=QgwH4JDUNMoI+gE9+plADyTFVi1mhT7EkDFuQzGnS/l387175ZU5/EjeRzak+uOhUai0+ESjNVgjDhi4AEHyoG+TCK6LpCbHFw3CUi+xmVqKLa+19OQoc8XijIaUTqV5Okqu2BG8YRjV9/rFUfgpIaeHePBDrOlL7rLY3xKcLpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784823781; c=relaxed/simple;
-	bh=Z5ri1e7p0GBMcGQRKmcWT/Ohx1/Nc4ixnJm6BsQJtYo=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
-	 References:In-Reply-To; b=sZnc2shhToDGT6nq/ZO3NGCdBTZgVfGk2OalzxP4p+zLBWyLfN4d4ZGXEDzlTUQA7t8qulUQk0PRWspXSIbZOge2yxJAdOyx48RhnKjxtb/39VYK/V5a+ZTrWVWKvkamcT2cyCubiSJBNYZprr1WJx+dXZdl82GcncDEJ8+wXCw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=BT+JG3zK; arc=none smtp.client-ip=185.246.84.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1784823857; c=relaxed/simple;
+	bh=aRbNtr5GOOj+1XW4RbJIFRChUMitfCzYkn4XuG7fiN8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=AplLRdWGSdyFKrXq2oDt+DnbEOFMW2K2bqHAilGRv8BS71zZ5wMJ1C7wFaOywxwVCCQuXsMj/O66ohlMajb9zoag/TXmO2XYskrhpso9UDsqU5FvoeerqQvzpiqgyi+9ilFanlux2YPgJDRyNVjLIB9PUj7whGICvEvfchXIUDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=INLcYNEp; arc=none smtp.client-ip=95.215.58.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="BT+JG3zK"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id 7F4131A118D;
-	Thu, 23 Jul 2026 16:22:54 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 4FB0D6038D;
-	Thu, 23 Jul 2026 16:22:54 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 162FC11C111F8;
-	Thu, 23 Jul 2026 18:22:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1784823773; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=P9FjUcSgxHdEsXMburt0XM1gJPAJd7G58Z7kpvKR4BA=;
-	b=BT+JG3zKFc9b2QG4EFyMoTUIsGOTnYiKwfSWNhqsITpOPdBro9YvKAUZPqptOifCf2IOKV
-	rczJfSkuIbN9v2oB6s/ROmZHMWzKXQPOY3ld9saf0SNKVllzkp1ZZjdvN6a7qlM8V0+j1E
-	ZCd67EY2vLwamdsqCxxR+icVDdULNu5iX/2IhpBTQVaDDbi7ExCAyA1RSB/bR/8CgIEq5B
-	3fqQKol1rl4z0cfvRwoSh7TlJ30VesZ8EtrAoThhRuCbRC3iJTTvl3YComTRguzwE4EXmh
-	x/97kBvpa8VoWrLvAryDpetdUpc4HB+VgiDpxVmv81J3gzFqhx53HUCNZrbVwg==
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="INLcYNEp"
+Message-ID: <a79b2fd8d08d4594bbb472b005534d7c91d86e49.camel@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1784823836;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=aRbNtr5GOOj+1XW4RbJIFRChUMitfCzYkn4XuG7fiN8=;
+	b=INLcYNEpHB13hBX6kVFBjCQSLteRPRKhLYt98qDAKO4tkMkerXHrM92yYAig+nTSvpv160
+	L5uQkNKrWobfYAkZJnhIGuwpBA5HQSCe4oBWM2dIBnAldhsqjYtw1D1KFnVhcIl4W0HsKi
+	sPT5e/ge7U0JKKQbbtYCDRpRM+FpX5k=
+Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: add maxim,max40080
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Siratul Islam <siratul.islam@linux.dev>
+To: Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org
+Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, jic23@kernel.org, andy@kernel.org, 
+	nuno.sa@analog.com, linux@roeck-us.net, robh@kernel.org,
+ krzk+dt@kernel.org, 	conor+dt@kernel.org, dlechner@baylibre.com,
+ ciprian.hegbeli@analog.com, 	u.kleine-koenig@baylibre.com
+Date: Thu, 23 Jul 2026 22:23:39 +0600
+In-Reply-To: <20260723065036.2683075-2-stefan.popa@analog.com>
+References: <20260723065036.2683075-1-stefan.popa@analog.com>
+	 <20260723065036.2683075-2-stefan.popa@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 23 Jul 2026 18:22:47 +0200
-Message-Id: <DK637ZCIRBUN.2YESFM7RFP8PM@bootlin.com>
-Subject: Re: [PATCH v7 9/9] gpio: realtek: Add driver for Realtek DHC
- RTD1625 SoC
-Cc: <dlechner@baylibre.com>, <linux-kernel@vger.kernel.org>,
- <linux-gpio@vger.kernel.org>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
- <james.tai@realtek.com>
-From: "Mathieu Dubois-Briand" <mathieu.dubois-briand@bootlin.com>
-To: "Yu-Chun Lin" <eleanor.lin@realtek.com>, <linusw@kernel.org>,
- <andriy.shevchenko@intel.com>, <mwalle@kernel.org>, <brgl@kernel.org>,
- <tychang@realtek.com>, <wbg@kernel.org>, <nuno.sa@analog.com>,
- <Michael.Hennerich@analog.com>, <jic23@kernel.org>, <andy@kernel.org>,
- <u.kleine-koenig@baylibre.com>, <dakr@kernel.org>, <bhelgaas@google.com>,
- <o-takashi@sakamocchi.jp>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260723034237.2501507-1-eleanor.lin@realtek.com>
- <20260723034237.2501507-10-eleanor.lin@realtek.com>
-In-Reply-To: <20260723034237.2501507-10-eleanor.lin@realtek.com>
-X-Last-TLS-Session-Version: TLSv1.3
+MIME-Version: 1.0
+X-Migadu-Flow: FLOW_OUT
 
-On Thu Jul 23, 2026 at 5:42 AM CEST, Yu-Chun Lin wrote:
-
-Hi,
-
-> From: Tzuyi Chang <tychang@realtek.com>
-> +static void rtd1625_gpio_irq_handle(struct irq_desc *desc)
-> +{
-> +	unsigned int (*get_reg_offset)(struct rtd1625_gpio *gpio, unsigned int =
-offset);
-> +	struct rtd1625_gpio *data =3D irq_desc_get_handler_data(desc);
-> +	struct irq_chip *chip =3D irq_desc_get_chip(desc);
-> +	unsigned int irq =3D irq_desc_get_irq(desc);
-> +	struct irq_domain *domain =3D data->domain;
-> +	unsigned int reg_offset, i, j, val;
-> +	irq_hw_number_t hwirq;
-> +	unsigned long status;
-> +	u32 irq_type;
+On Thu, 2026-07-23 at 09:50 +0300, Stefan Popa wrote:
+> Add device tree bindings for the Maxim MAX40080 bidirectional
+> current-sense amplifier with a 12-bit ADC and an I2C/SMBus interface.
+>=20
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+>=20
+...
 > +
-> +	if (irq =3D=3D data->irqs[RTD1625_IRQ_ASSERT])
-> +		get_reg_offset =3D &rtd1625_gpio_gpa_offset;
-> +	else if (irq =3D=3D data->irqs[RTD1625_IRQ_DEASSERT])
-> +		get_reg_offset =3D &rtd1625_gpio_gpda_offset;
-> +	else if (irq =3D=3D data->irqs[RTD1625_IRQ_LEVEL])
-> +		get_reg_offset =3D &rtd1625_gpio_level_offset;
-> +	else
-> +		return;
+> +title: Maxim MAX40080 bidirectional current-sense amplifier
 > +
-> +	chained_irq_enter(chip, desc);
+> +maintainers:
+> +=C2=A0 - Ciprian Hegbeli <ciprian.hegbeli@analog.com>
+> +=C2=A0 - Stefan Popa <stefan.popa@analog.com>
 > +
-> +	for (i =3D 0; i < data->info->num_gpios; i +=3D 32) {
-> +		reg_offset =3D get_reg_offset(data, i);
-> +		regmap_read(data->regmap, reg_offset, &val);
+> +description: |
+> +=C2=A0 The MAX40080 is a high-precision, bidirectional current-sense amp=
+lifier with
+> +=C2=A0 an integrated 12-bit ADC and an I2C/SMBus interface. It measures =
+the voltage
+> +=C2=A0 across an external shunt resistor and the input bus voltage, and =
+stores the
+> +=C2=A0 results in an internal FIFO.
 > +
-> +		status =3D val;
+> +=C2=A0 Datasheet:
+> +=C2=A0=C2=A0=C2=A0 https://www.analog.com/en/products/max40080.html
+This URL links to a product page rather than a datasheet as the tag suggest=
+s.
+Would be difficult to fetch using CLI tools.
+Were you supposed to use something like
+"https://www.analog.com/media/en/technical-documentation/data-sheets/MAX400=
+80.pdf"?
 
-Can the regmap_read() fail here? We are not checking its return, so
-maybe status will contain garbage?
+> +
+>=20
+...
+> +examples:
+> +=C2=A0 - |
+> +=C2=A0=C2=A0=C2=A0 i2c {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #address-cells =3D <1>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #size-cells =3D <0>;
+> +
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 adc@20 {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compa=
+tible =3D "maxim,max40080";
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 reg =
+=3D <0x20>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #io-c=
+hannel-cells =3D <1>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 shunt=
+-resistor-micro-ohms =3D <100000>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
+> +=C2=A0=C2=A0=C2=A0 };
 
-Thanks,
-Mathieu
-
---=20
-Mathieu Dubois-Briand, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
+--
+Best regards,
+Sirat
