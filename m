@@ -1,148 +1,146 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD233B83E8;
-	Thu, 23 Jul 2026 19:53:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 146B73D9DD8
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:02:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784836438; cv=none; b=H1gn9KiDXDS9pM5grr033oADy62K/mUoACQhgwUlgYs8ykm7lXcQLnm4tsb2k8zJcF2PLTbyKA6KPGEc17m4otic1gQnKysj4m82KkLHXLqjUArbzk9iMRj/4Dvvh7yy65waFGvE/EPz7fLNdzaWghvM/APAorktS5H/Ky9BKqA=
+	t=1784840536; cv=none; b=jRoYTyZtiZ31crHvvO6dZnIAaYIqZU1xMlxk/Eg98/z8/EdyHEg1PgFK6/n3kAxp65Jm8fjYFwLM2LBJXxiQG2PEsBYr8qzqohTg7SCxIB0ODu9TgAxCNUF0mEbsKdRMu9uVJWhMk1xxrOwU0K3+t9NG9jjxxWDW3HCykJuu+rg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784836438; c=relaxed/simple;
-	bh=xV74dqSO6y09UvkWdLgQqWpAE0g0hXZqw6+MJYpmQD8=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oAz1hXqRZtSuGfs3oZizXkRo6sJmDNU7trHP3nH2+uxo6dsU7E1zr0zmoRynfLieqIi3MkTLTwfG7pA4D5lMeJiPSYELikBOEyOKOCaoMJ2ntHrSXht/OB8SQtfKriyUWvfWhznvkU7LAqfdZOLC0ggjyQPItQiu0LSCf2GBhHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=wcsWMMm9; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1784840536; c=relaxed/simple;
+	bh=oSYYRF992xkNBj38UQH7xncuI48YTdNanxBrkb/gvBM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mOoQXZD2WrIF34B2JBgP+mxwipNIYx1p8Ciu4FXsfwDTnDIVZ+hZVunkhiPgjfD7st5elWa2SOqdn57JnTnwnD8R7tB6FXWZKkb9x6rFz2xUW89w7ImGH0Aoo9wLe6JuQMkGqHdiwiVM2R1BAR4u8SSWvAhl9i07+k/VvIHndU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CGWAHvfN; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="wcsWMMm9"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66NImI0q2703474;
-	Thu, 23 Jul 2026 15:53:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=/r/sI
-	t3CGJT9LVAFlwseZkP+dIpiZQwViwYClAgcccY=; b=wcsWMMm9bw380aEclEYXs
-	LGnXCKifh1SflGY9F6ZMufEHhB9ANm4QbHCdwjt1V002smsQpfnXHl9aqq4LZPkK
-	IxELmHX9jkPfpw22NgHtHLDytcuLgAetq2cbniQ0oo/6nz9gZVadhg4K0DeSI8Jq
-	3/DvNUR8YOMJEs9EyvKHbDoMC36fNieI1DYuI/B+/nmZsUt42yB/wMo80B5mdj+P
-	bIVE2MUyBXtFfEYuhA9DVGtIAIxf2N8c36eZtXzuRQvgVr7xFNVaPP+VCJR9/Ddb
-	j0H210/COktUyP8KGvhQV4fVNZ2hg3Jz12e+s2OqkWube13sfWNOnysQa0cD3uAu
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4fjgp0su29-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 23 Jul 2026 15:53:53 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 66NJrpsx049576
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 23 Jul 2026 15:53:52 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 23 Jul 2026 15:53:51 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Thu, 23 Jul 2026 15:53:51 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 23 Jul 2026 15:53:51 -0400
-Received: from work.maxim-ic.internal ([10.66.6.192])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 66NJreO8030737;
-	Thu, 23 Jul 2026 15:53:43 -0400
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
-        <dlechner@baylibre.com>, <andy@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <julianbraha@gmail.com>,
-        <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v8 5/5] iio: ABI: Encourage differential voltage ABI usage
-Date: Thu, 23 Jul 2026 16:53:35 -0300
-Message-ID: <9f47e67f188a910c3e025255dcd1354ef2dc026a.1784835663.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1784835663.git.marcelo.schmitt@analog.com>
-References: <cover.1784835663.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CGWAHvfN"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-47f59f25ec4so503862f8f.2
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 14:02:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784840531; x=1785445331; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WrydZRpK44o17ihkahW3T+469O/DVylnzq9QG5iYeEE=;
+        b=CGWAHvfNld7XhK4Z2WrpC57jFnQqYhEPB/Tyx3MmyVTifFCT1LN2OtUui8+xq76uFq
+         +i2i0v1PBTPCKYCYjD9Igpy4KamP1SaHFrArp5k34sBlKlaL8DT2ZToulyOXDF2UOekb
+         e5PSYxmVFulVHtG6JA81FYxt8/mm9v51xI37w7E//UnVWuWxrRAZLmSCFNOVL9Q/KgUc
+         Uir+R8BLscjov5pyVMCvhHO6BWzSNpv5697yj44ipbjMsr5P1PKbl481xg9muKawuLo8
+         y+rxT6YkXuI5MCVZ1HjWTd8bWIBs4lisvy9leKUsKKGCkKSMacZTWSKaUkaxKWMaNEWt
+         V7HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784840531; x=1785445331;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WrydZRpK44o17ihkahW3T+469O/DVylnzq9QG5iYeEE=;
+        b=rwg/0F4HakXRRm8EkFVsRdI7JhWTwJSigwKBeyH4iaPo6EOswddT9+XZty4/wT2rYN
+         ZTcGOMYLccgkOaFb+cU4saQAE2byCXVkXJvTi8/f33oKAFPra5LhczZ3XAJOx53M9I+E
+         pQJkVTRJH3LazfEf0MElfnOBaJjJ38LEz4GB122m3NvHQAspYYelLhTqxtCVnqhHrf0H
+         eAqIjdHSpx4elbr7vLC1IdKnv0gEdR0Qzax1mlbn8SY2lgk8VZhRzOi/swAXqOZk/fnb
+         9sVGGQAqDhlkkr8//FpxA3LSGOmppnHj3ENFQYlIkjX9D9Kc+2JzZAiVu1DqwwhdEKjV
+         QEfg==
+X-Forwarded-Encrypted: i=1; AHgh+RrsbmXkGbW5oBYOiWd5aBAKLqqTSLrxLcSUptlSszE4esuzj2aeA9OVeO9vpQ8EBZ8oDCT/zL8NMfk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YypKk9QfTqvhjzW8y1H0ophXW01m9sDeliy5KuH9I9aLMrYGIzO
+	ReQps3p/YUHcT6LHDx4DcvR3lBHYlwHTsY7PbdgTyLAq+OJjXWB6MU/R
+X-Gm-Gg: AR+sD10xp3QIhMzsIz4essRCYeZxqBtZ4SlYmi3hU0esY2iPhqkRlImGMKmxeISXF/W
+	kwfemIzYSd+YxE46lwV2yNd81/0O/Z0y3I1hpnsZR4tD+q6+BAanEHIo/IAvntjQGk5k03c6/w2
+	Msq7QHXhDVxMacikRAl7pa6bxigFztlGpGxos16Am5DsHw5aRBADGDMpjP8lgvSOp7P43R4E1Fx
+	dcShlVqp0pSALDb+M+43rommaVFyPAE+UOGj2Xn8d9s4Szth4eMWHfEyNPoCqL3cIVKCl2u26yF
+	FwF8KYvuEu5EoBKVpGHIYmWXnxLayaszGiXb1Lr3dmoNttqmTU8vjYuHiriv5MiK1wT1NaUbaXH
+	ZMr+CZxoqRLSu+9XpB6tGQhzMuT0UvBLI4AH8JMYC3gO7D3MkaDXgEUb1hqmfeaVhG6WkLT0R4j
+	UrClsBCE2weO48haIuRlprW9XdviQ4N4keeDqeHqok/+rI0DoslyF2l56CgbuioqmQH5aYY246F
+	Tarkz64AvFhCbB6/E4cY3iZsx/MOKJPY9BzyJ9cYBHTqE3ETDW7nT+vMu/N1xlJ02y431s80Exl
+	3kIf1LvunehHM8ddCp+tYivMSkfoqvbV0kpVfhVncE9FxAlnXCkoZ8BpflX6Vw8kFjDUk+4bb5t
+	a9+0uhLLcaIo=
+X-Received: by 2002:a05:6000:29d1:b0:47f:91eb:342 with SMTP id ffacd0b85a97d-47f91eb0469mr3353431f8f.13.1784840530953;
+        Thu, 23 Jul 2026 14:02:10 -0700 (PDT)
+Received: from systembl0wer (ip-86-49-244-181.bb.vodafone.cz. [86.49.244.181])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85c7880dsm19445591f8f.37.2026.07.23.14.02.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jul 2026 14:02:10 -0700 (PDT)
+Date: Thu, 23 Jul 2026 23:02:09 +0200
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iio: dac: add support for Microchip MCP48FEB02
+Message-ID: <20260723230209.05c9f482@systembl0wer>
+In-Reply-To: <20260723-mcp47feb02_refactor-v1-3-ee59e63672bc@microchip.com>
+References: <20260723-mcp47feb02_refactor-v1-0-ee59e63672bc@microchip.com>
+	<20260723-mcp47feb02_refactor-v1-3-ee59e63672bc@microchip.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIzMDE5MyBTYWx0ZWRfX0DiA0/2uVZhZ
- rcmnXche3PF4FLR100KvYX5ob38Yj+RcdhE9xVTKTp4W5icIL1qQouql1MjTsB98PGa/aROaIDn
- exlsyOrOZCIFLiQP8al31DIIlVeZk/Xa1YXB+b3s1II7ocL6alRU
-X-Proofpoint-GUID: n8DqUgbiDn-1gwohYNvDGfKUdFsuZEnb
-X-Proofpoint-ORIG-GUID: n8DqUgbiDn-1gwohYNvDGfKUdFsuZEnb
-X-Authority-Analysis: v=2.4 cv=cPXQdFeN c=1 sm=1 tr=0 ts=6a627151 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=iGya_9aoYPPjgpMbcYQA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIzMDE5MyBTYWx0ZWRfX0sWZnA+tnUPF
- gfe91rSw8Bluu9n9gaTh1aXe0Bb6OL23yJxVv1IL5nCt9mi/F5qqNCwxd0AXo4o1cG+vxc6MVhC
- oydFoUQ43GIWnr+yOEor1+wzSJrEf+v7drzXPqrgktrkPqEK8FnNSN17MlmpM1Pw5nGguEm7Wq0
- TT7K/GmSi/HBFI6SgJ5Hg89TfqUX+3ZaJqbcsQQc3gl0wCXZeXIfO25x9DFlaOpOxJNMqVueJqy
- FA95iEuM5a/PL8L2sV8tBiSgaqOEZGajCxcjbx5q98r2dxH7wae+PL5qs1eJEPrkKPNdpXA9ISW
- YzNOE/a9ThgyjnLuTJcX31MBwMLyvloXQrS/+oFppR01e1E0N0UXb2siuQF/iva5mdOpBALhzdV
- eWxmGd7QLxTOvh6mfQba8ktwnH4H/+K1vBPKxUX+p/bCKA6AoawaVL98x6wS124V36P3TFUX2Xx
- fBfwIM20kiHhOyQypbQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-23_06,2026-07-22_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 phishscore=0 spamscore=0 bulkscore=0 malwarescore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 adultscore=0
- lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2606150000
- definitions=main-2607230193
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-So far, parts that could only do differential voltage measurements were
-only required to have a consistent labeling of their channels by complying
-either to voltageY or to voltageY-voltageZ ABI. Over time, code maintainers
-came to the conclusion that the voltageY-voltageZ ABI is better suited for
-differential-only chips as it provides a simple indication to users that
-the channels measure the difference of two inputs.
+On Thu, 23 Jul 2026 16:43:12 +0300
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-Adjust the ABI documentation to recommend using the voltageY-voltageZ ABI
-for chips that do only differential voltage measurements.
+> This is the iio driver for Microchip MCP48FxBy1/2/4/8 series of
+> buffered voltage output Digital-to-Analog Converters with nonvolatile or
+> volatile memory and an SPI Interface.
+> 
+> The families support up to 8 output channels.
+> 
+> The devices can be 8-bit, 10-bit and 12-bit.
+> 
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
 
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
----
-New patch in v8.
+...
 
-The updated ABI doc might not have gotten very clear, so I'm completely fine
-with any modifications to this patch. Also, since the documentation update is
-minimal, doesn't add any new ABI, and might be picked up through Jonathan's
-tree, I'm not CCing the documentaion mailing list.
+> +#include <linux/device.h>
 
- Documentation/ABI/testing/sysfs-bus-iio | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+No need to include device.h, as struct device * is an opaque
+pointer.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 5cc2e82c4997..7446e07b9ab2 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -162,10 +162,11 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Raw (unscaled) differential voltage measurement equivalent to
- 		channel Y - channel Z where these channel numbers apply to the
--		physically equivalent inputs when non differential readings are
--		separately available. In differential only parts, then all that
--		is required is a consistent labeling.  Units after application
--		of scale and offset are millivolts.
-+		physically equivalent inputs when non-differential readings are
-+		separately available. Even though differential-only parts had
-+		been merely required to have consistent channel labeling, this
-+		ABI is preferred over the non-differential one for those chips.
-+		Units after application of scale and offset are millivolts.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_rms_raw
- KernelVersion:	6.18
+Instead, add dev_printk.h as you're using dev_err_probe().
+
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+
+Don't include mod_devicetable.h, this header has recently been
+added to spi.h, thanks to the effort of Uwe Kleine-Konig.
+
+> +#include <linux/pm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/spi/spi.h>
+> +
+> +#include "mcp47feb02.h"
+> +
+
+...
+
+> +
+> +static int mcp47feb02_spi_probe(struct spi_device *spi)
+> +{
+> +	const struct mcp47feb02_features *chip_features;
+> +	struct device *dev = &spi->dev;
+> +	struct regmap *regmap;
+> +
+> +	chip_features = spi_get_device_match_data(spi);
+> +	if (!chip_features)
+> +		return -EINVAL;
+
+What about returning dev_err_probe() and -ENODEV instead of -EINVAL?
+It's about 50-50 in the kernel but -ENODEV seems more suitable as an
+error code if spi_get_device_match_data() fails.
+
 -- 
-2.53.0
-
+Kind regards,
+Joshua Crofts
