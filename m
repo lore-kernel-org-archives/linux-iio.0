@@ -1,103 +1,158 @@
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118A7417D8F
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 22:52:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E67F43546C0;
+	Thu, 23 Jul 2026 03:43:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784760767; cv=none; b=RCfJSDPDKqb9m55T79IZ1iPuAXvdzwULJ1vRiQbPgsyJGbvui0Jps+VB9B4TkLygVn9Gd6iVMNToq8bTDZ5viEUJhEHuZOCS/gjUkuPIk2RHITqkj3zWAB7L4MH3OHwnQL/XR84bE3A9SaE/+qIqmm7jSQbbW+PWz0moGXTXwro=
+	t=1784778193; cv=none; b=tN2WH8sQnWjTv5ckoTh1evuHEV3qPjtPk3Yb8S3vJV8cIi/5/1dFNV/uxwiC6gIrRnVMx05GODqulvLTxew7gtqBCoLz3BeZEW7Jv1IICkFxWz+U7Pvx9dcacvM6Mj/nO6GxMAKA9WBEt8PEKbL0wDU9GvY3qhvQTNeUhjXApm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784760767; c=relaxed/simple;
-	bh=Fy/aGwXLDw9xZkyKNZiQ1nsDvfbCsCKYle8WjcLBdVA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jy1sra6q595Jjkhz+5xQkEfheLyNZjRKV/TCnOdB0ZC9ol0vuQd6iAgYVf6DmKYHmeO6ZGp5q+tEE7+CKLhBbycAv/frXNvfi0MxrNqfMq/nTypiVew7gUo9h7qjjoA4FmNkZJ/TkdGNr+gxuy77hMjr5PkEfTya0vrd9H8b80E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=IWhNpelp; arc=none smtp.client-ip=209.85.161.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1784778193; c=relaxed/simple;
+	bh=ralsew4SE6BU05qKQRCZfQ0YQBoR9l/lf8YHo5n7YFA=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CoO9sIxVYdAMAcANtKqTQ+cATMkHv6mKrvRomrbkzYeFYmFNP76+WbU5o9DMu4HRfuV3xmG8Bx9EHrNYN4IMvjOm9sJkQvGvfvi43xcsjEx4/z+IbkmdW5xUyfTR1u9TuxKXpv28h+J7zxBW6TuHQWnYuE8P2L0jJG13OGy19QU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=Skt1GfjF; arc=none smtp.client-ip=211.75.126.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="IWhNpelp"
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-6a375ba035eso18689eaf.3
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 15:52:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784760764; x=1785365564; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=SfqXKlSpbGunI+sY0fUkSRcHc1fv3ntgGeQCi/Ybvso=;
-        b=IWhNpelpWTLFWLlPvx4yhGj94mKOY73YWVSoVRBGmlGbSot5Qi0oLfQE3UhpCuZ4Js
-         TjbylLwCnSVS86ien4AfPK7cY3T/pF/5l8pwgNoA1uoCZ9a5Rr5Imk+KN25Sq5hZozar
-         19UZo3Ds9ulCo/xdESsTLqfGig7o8UYvaSd+DECS8T5ONPRqikYHY22u1OAPjI8maics
-         cgZvIPXRLad/7cyvnTOkc/BG5QVCyzghEBOeTVk0V1XLOYcoj7n2jAMtNCCmljtPRsHe
-         n6uZ4bC+Zt4LIf+hqwqmrDUCDm+aPOSJAmhOf+dlc4i/k1cxxfbWx1SiB3QEEwJ+dkWs
-         RNGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784760764; x=1785365564;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=SfqXKlSpbGunI+sY0fUkSRcHc1fv3ntgGeQCi/Ybvso=;
-        b=X3W15WABEdcBxrqH/1DX8kx0b8t9OCMFUBl44mnwG9cfZdvnYfCPbje9WW1Q2C6d+/
-         OFtYFcdopMSiM2vwajRUDoDqlCylj2tf1Zax90w0GlMcIyCk/q3u+pgrZS/dKpt2MR7z
-         8B6vxnw/Hyy+YGYo1pXkAVwd1DQRfxV/wa3DNjmfyNQFpSgGJzyfEW+UuCgSMA4M7NrD
-         6hZWnZlfCdQCo4QIk68RJ/xpoCWIAgnkJ5StRm6ZUdDptKGAsFImzWRNJ6qkKD2x9BQA
-         gC7IluML28qm6cOsY89QycuM/8gXka8IRpaAWAFrmT5jQ8ayKTubkQzTrWFfSu9Fo8cm
-         +Qyw==
-X-Forwarded-Encrypted: i=1; AHgh+RoFMYOr9p8Hw3kX3EudCxA3u2wuesynRDrCE7EnlbIzoPanIu1ffza/ePumpxsxOYAyKdMpC2bxedU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy80nKzAZTdSwAQDytb11Yys8FlreZAB4ldW8fTRH9rPjf3RnIW
-	jS+5sxrJRS2diIadAardyi4YgQ+mCTTJpOf03VKaecQQArFI1WLW3q+B1YOyOaoI03I=
-X-Gm-Gg: AR+sD12OkbB8pjQI/Rbu4Gl5I7RAhpnvnUAOmW+eR/1vTVj6jvzBNQ9+fQtuiIpuojC
-	ZupKN0M9hjn4ahQB4AVg3grd03gOdMENeJfi5v1ITkh/v0/lB/0QOBbzQ6ECvIPFmpaAtYBkZdA
-	UyfCz0QCjRM3u9PlFaiCt5PajRHvAqJp92zWbKPttdXD69oqA5HH9Wgfsqjv5efN11ADtng/fS/
-	YZBElwCHfr1z6Mw2BmqpkpHnGZiS2koIbI7M5Pg/bkIIiAOs3+f6ueM3cDdb004YDI6T5Pwn4VL
-	hbAvOHkw4JbAOXe1o9raqwDjoaEwDyGbRK3ivHc1aWKSHgy5DWqn2tn31cLX9XWeHBLwZrt0KiB
-	MZeOmEDQJn7h7bXFSdt0GiJsMkCTqjmFcLIH4cdTyrS+6nf2Lnnb6zcdq8/Hp1eBjtFAbk9NKtc
-	IHR/PbeA1k/Z+fPoCD/oJj6F5uzhM890xGQ8UQJMceny9IHeeOGA==
-X-Received: by 2002:a05:6820:2008:b0:6a3:97c6:f813 with SMTP id 006d021491bc7-6aad4149d4dmr197548eaf.47.1784760763903;
-        Wed, 22 Jul 2026 15:52:43 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:50f7:57d3:643:9739? ([2600:8803:e7e4:500:50f7:57d3:643:9739])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6aa76230b8csm2354061eaf.1.2026.07.22.15.52.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jul 2026 15:52:42 -0700 (PDT)
-Message-ID: <c8bd955b-1d1f-40e1-bede-82e5e9a7bde8@baylibre.com>
-Date: Wed, 22 Jul 2026 17:52:41 -0500
+	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="Skt1GfjF"
+X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66N3gb0N3179457, This message is accepted by code: ctloc85258
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
+	t=1784778158; bh=xNunaMgWB2S+YDoubksZRc57aBU05ZLT9WdN+nxaBhM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type;
+	b=Skt1GfjFSAVh90zEK0/ORh0vmyoinQqvSfwDnRyRu0a48zUEkeKDB98Jw8Za2Eq8C
+	 3e14XSz6knXu6vL5BUEoq9plqdpKZluzKukOr/f27rgLepPYoKST33dMkeSN5sqgZr
+	 6BXE1GFXREwF9R7xlka+zuRMleeazkGcQkRvumRV1wIjrbq3/s1iPpwJ5xzM8aWclg
+	 ZcYVNOpXo61bmi9eXIOvQ95il2DMtMhokx3qCo9zUlM/ZDc7YwdxENZKwnrhyV9bcz
+	 uuVF09EJbxm5igvq/lA9izcAJkfZCNnpCIGrRSM+vyqseRSFKY3tgYuJM3BBLpURN9
+	 sDJ/kOqJygANg==
+Received: from mail.realtek.com (rtkexhmbs02.realtek.com.tw[172.21.6.41])
+	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66N3gb0N3179457
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 23 Jul 2026 11:42:37 +0800
+Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
+ RTKEXHMBS02.realtek.com.tw (172.21.6.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 23 Jul 2026 11:42:38 +0800
+Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
+ RTKEXHMBS06.realtek.com.tw (10.21.1.56) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 23 Jul 2026 11:42:38 +0800
+Received: from cn1dhc-k02 (172.21.252.101) by RTKEXHMBS06.realtek.com.tw
+ (10.21.1.56) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
+ Transport; Thu, 23 Jul 2026 11:42:37 +0800
+From: Yu-Chun Lin <eleanor.lin@realtek.com>
+To: <linusw@kernel.org>, <andriy.shevchenko@intel.com>, <mwalle@kernel.org>,
+	<brgl@kernel.org>, <tychang@realtek.com>, <wbg@kernel.org>,
+	<mathieu.dubois-briand@bootlin.com>, <nuno.sa@analog.com>,
+	<Michael.Hennerich@analog.com>, <jic23@kernel.org>, <andy@kernel.org>,
+	<u.kleine-koenig@baylibre.com>, <dakr@kernel.org>, <bhelgaas@google.com>,
+	<o-takashi@sakamocchi.jp>
+CC: <eleanor.lin@realtek.com>, <dlechner@baylibre.com>,
+	<linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux@analog.com>, <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
+	<james.tai@realtek.com>
+Subject: [PATCH v7 0/9] gpio: realtek: Add support for Realtek DHC RTD1625
+Date: Thu, 23 Jul 2026 11:42:17 +0800
+Message-ID: <20260723034237.2501507-1-eleanor.lin@realtek.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] iio: adc: ti-ads112c14: add debugfs register access
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Chris Hall <c-hall@ti.com>,
- Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
- Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com>
- <20260714-iio-adc-ti-ads112c14-buffered-read-v1-1-fe6e1c971288@baylibre.com>
- <20260720012446.27f0411b@jic23-huawei>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260720012446.27f0411b@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 7/19/26 7:24 PM, Jonathan Cameron wrote:
-> On Tue, 14 Jul 2026 19:19:30 -0500
-> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
-> 
->> Add debugfs register access to the ads112c14 driver. This is a complex
->> chip and being able to poke registers is useful for debugging and
->> diagnostic/calibration purposes.
->>
->> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> Given this one is trivial, applied.
+For better review flow, this series includes Andy Shevchenko's
+gpio-regmap fix patches [1] as a prerequisite. The first patch
+reverts the previously applied patch from Bartosz Golaszewski.
 
-Did this get dropped or just not pushed out yet?
+This series then adds GPIO support for the Realtek DHC RTD1625 SoC.
 
-> 
-> Jonathan
-> 
+Unlike the existing driver (gpio-rtd.c) which uses shared bank
+registers, the RTD1625 features a per-pin register architecture where
+each GPIO line is managed by its own dedicated 32-bit control register.
+This distinct hardware design requires a new, separate driver.
+
+Link: https://lore.kernel.org/lkml/20260702130903.1790633-1-andriy.shevchenko@linux.intel.com/ [1]
+---
+Changes in v7:
+Patch 1:
+- Add Acked-by tag from Andy.
+
+Patch 2:
+- Add Reviewed-by tag from Michael.
+
+Patch 3:
+- Add Reviewed-by tag from Michael.
+
+Patch 4:
+- Add Reviewed-by tag from Michael.
+- Fix indentation by replacing spaces with a tab.
+
+Patch 5 & 6:
+- Create patch 6 and move value_xlate changes into patch 6.
+- Add background context to kernel-doc comment for
+'enum gpio_regmap_operation'.
+
+Patch 7:
+- Drop the reviewed by tag from Andy due to the signature changes.
+- Add 'struct gpio_regmap' as the first parameter to the set_config callback.
+- Add wrapper to bridge gpio_chip to gpio_regmap.
+
+Patch 8:
+- Add Reviewed-by tags from Michael and Andy.
+
+Patch 9:
+- Replace break with return 0 in functions that only consist of a switch-case
+statement.
+- Add a comment for 'platform_get_irq_optional()'.
+- Update rtd1625_gpio_set_config() to align with the newly revised set_config
+signature.
+- Replace 'irq_domain_create_linear()' and 'devm_add_action_or_reset' with
+'devm_irq_domain_instantiate()'.
+
+v6: https://lore.kernel.org/lkml/20260721065802.689530-1-eleanor.lin@realtek.com/
+v5: https://lore.kernel.org/lkml/20260702090115.2564318-1-eleanor.lin@realtek.com/
+v4: https://lore.kernel.org/lkml/20260622092335.1166876-1-eleanor.lin@realtek.com/
+v3: https://lore.kernel.org/lkml/20260512033317.1602537-1-eleanor.lin@realtek.com/
+v2: https://lore.kernel.org/lkml/20260408025243.1155482-1-eleanor.lin@realtek.com/
+v1: https://lore.kernel.org/lkml/20260331113835.3510341-1-eleanor.lin@realtek.com/
+
+Andy Shevchenko (3):
+  gpio: regmap: Provide default IRQ resource request and release
+    callbacks
+  gpio: regmap: Apply default resource callbacks for regmap IRQ chip
+  gpio: regmap: Order kernel-doc descriptions with the actual appearance
+
+Tzuyi Chang (1):
+  gpio: realtek: Add driver for Realtek DHC RTD1625 SoC
+
+Yu-Chun Lin (5):
+  Revert "gpio: realtek: Add driver for Realtek DHC RTD1625 SoC"
+  gpio: regmap: Add gpio_regmap_operation to extend reg_mask_xlate
+    callback
+  gpio: regmap: Add value_xlate callback
+  gpio: regmap: Add set_config callback
+  gpio: regmap: Add IRQ enable/disable helpers
+
+ drivers/gpio/Kconfig                  |   2 +
+ drivers/gpio/gpio-104-idi-48.c        |   7 +-
+ drivers/gpio/gpio-i8255.c             |   4 +-
+ drivers/gpio/gpio-idio-16.c           |   6 +-
+ drivers/gpio/gpio-max7360.c           |   8 +-
+ drivers/gpio/gpio-pcie-idio-24.c      |   6 +-
+ drivers/gpio/gpio-regmap.c            | 116 +++++++-
+ drivers/gpio/gpio-rtd1625.c           | 389 +++++++++++++++-----------
+ drivers/iio/adc/ad7173.c              |   8 +-
+ drivers/iio/addac/stx104.c            |   6 +-
+ drivers/pinctrl/bcm/pinctrl-bcm63xx.c |   1 +
+ drivers/pinctrl/pinctrl-tps6594.c     |   1 +
+ include/linux/gpio/regmap.h           |  80 +++++-
+ 13 files changed, 422 insertions(+), 212 deletions(-)
+
+-- 
+2.43.0
+
