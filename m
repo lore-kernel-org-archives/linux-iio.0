@@ -1,47 +1,43 @@
 Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 036F335B63B;
-	Thu, 23 Jul 2026 03:43:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24DEA34DB41;
+	Thu, 23 Jul 2026 03:43:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784778195; cv=none; b=ThgC/3CYpx4jPdugXYbxIPoaiKGT1v0ql2VqAa8nej+QV6U352amHxXDN0PYoaVCC46k9gQnf4VF3sgtURbOllENTMWoEs3adyqAJCfihVNXPvvw27sN07MOV82+Hx1mVc6q72rm6z69762APN/IREPaHaFozSUfEHfqg4xmgE0=
+	t=1784778201; cv=none; b=PncDlCxigq4v9dapTU7D0Z5nrKHt1VbMV1+3tqyH/sblx3vzOZr+zjCT0uPzwd/Nzq7ug2lHMq66zZSNauU1ATpeVvQO2gjxkNbpWuBEDMj7tBCOpdBoIkpkOyUjTOxGPVrRaYsIPJ2XEyqZ4m7ilFwSiF2gzYFYxIykzXPILlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784778195; c=relaxed/simple;
-	bh=ezQ+OkFt8NOqw2F6vKTeW2i9rDl4WSLpjRU1W5fmnvM=;
+	s=arc-20240116; t=1784778201; c=relaxed/simple;
+	bh=7kqs3DMf/R6InNgEjhgwWNhfAWfAjGCag8CXa1NrSNg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lznhKjMS4AkYTMnFM6EvbWKfWCGaRzB3m4y6ep2hoVO3JJEbCgralC/pR8UskWLbe827MGWGaun9WX0tvt0ubcz3FuCugtmfBAQ6vpn0SMkXAXlefhzu9nyhZhJ4YCcOVPwOVu7yo+BmfZHiLLfUFPcFJffG57Ko0S5cG4C01tg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=HZj3kZA6; arc=none smtp.client-ip=211.75.126.72
+	 MIME-Version:Content-Type; b=V5xOP0mmFCpW/RpuQN7jEpXZ6ATf3R9PiHbKMJ8seWU9W+ku1IuddqtJd7bZQWI+HLc6lN6pL+1ac3P8xZhc7nvHZxDrRjKLR/f08CEn6SVxf5AjMGA0bi+L41EqAlmHfSmb+e7d2H5mRo7Fv8Z3afokC9BGCjI1kqKqDQhgjnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=Szt98KMB; arc=none smtp.client-ip=211.75.126.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="HZj3kZA6"
-X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66N3giWK3179480, This message is accepted by code: ctloc85258
+	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="Szt98KMB"
+X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66N3gw0K3179525, This message is accepted by code: ctloc85258
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
-	t=1784778164; bh=l/qI6YwLPGByY44DwoS0pQF/mf2RQN5HFWtejzWxJTI=;
+	t=1784778178; bh=DLw0m+6lyX9ieILDuLH9M9GJ5YumVTZVgjbviF3a/d4=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type;
-	b=HZj3kZA69t0T4zgU6q1bughlr3PaWor5OR4EVsv9+Ihg0hWoPhY6OAUVHPNdPEbIM
-	 5u4xqHQmMLMr0+TgDk82m3auaOZ7XZe1sCv+fdKS7ykd6dYDpfxTgyEY34QhZYUUoJ
-	 QtjqFdQLEl+9JRfm2gjdhhiYVL11pRXr/XepDRR0QyeBCctCWhxJSR+xdUYz/mjuj/
-	 m6kY6svzd5v2+Ih0djX1t3G7QqJzBmBZC0o3JQchc+gFU9EZYmg8s2lAaiWtMpcE9a
-	 zZ3H6o3VLdcRhxPe1CgNhxcg7dERLosb0OxsdX/+SD6QHVKvDGjuOElHkRmYNg8ouR
-	 z7CkI68JG+vhQ==
-Received: from mail.realtek.com (rtkexhmbs04.realtek.com.tw[10.21.1.54])
-	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66N3giWK3179480
+	b=Szt98KMBygl0pyY1c1cUROu3wopdDgVC9rYLeKjhWDjw1Y07mD/xnhkOB631xgv0D
+	 ZUuIER1o28X+/ljlqVNV/SiMn1LRief24JjtGs2tSD4L9sYdPbGwCbB1eoOqXkMmPz
+	 ViNDL1MgHMZ7NWLLQSqwTqxxNOlNjcIMranZ1AL/UDa/lLkn8JDZ7cXoOy6U7wKjt8
+	 Pe5m4Jjoe+acWm+XJl6/cpnoxMbynzGuf9Tem7Nsr3osKo+stQsZjrymUyiTTMLjgX
+	 Oj3s/bkD36P64RreNKATugG8AAcVkKEneyIpDDwj3sZ9q3YLFIpmoEwkAteRfKrJ0m
+	 Fp2ockELqTcKQ==
+Received: from mail.realtek.com (rtkexhmbs03.realtek.com.tw[10.21.1.53])
+	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66N3gw0K3179525
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 23 Jul 2026 11:42:44 +0800
+	Thu, 23 Jul 2026 11:42:58 +0800
 Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS04.realtek.com.tw (10.21.1.54) with Microsoft SMTP Server
+ RTKEXHMBS03.realtek.com.tw (10.21.1.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Thu, 23 Jul 2026 11:42:45 +0800
-Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
- RTKEXHMBS06.realtek.com.tw (10.21.1.56) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Thu, 23 Jul 2026 11:42:39 +0800
+ 15.2.2562.17; Thu, 23 Jul 2026 11:42:58 +0800
 Received: from cn1dhc-k02 (172.21.252.101) by RTKEXHMBS06.realtek.com.tw
  (10.21.1.56) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
- Transport; Thu, 23 Jul 2026 11:42:39 +0800
+ Transport; Thu, 23 Jul 2026 11:42:58 +0800
 From: Yu-Chun Lin <eleanor.lin@realtek.com>
 To: <linusw@kernel.org>, <andriy.shevchenko@intel.com>, <mwalle@kernel.org>,
 	<brgl@kernel.org>, <tychang@realtek.com>, <wbg@kernel.org>,
@@ -52,10 +48,10 @@ To: <linusw@kernel.org>, <andriy.shevchenko@intel.com>, <mwalle@kernel.org>,
 CC: <eleanor.lin@realtek.com>, <dlechner@baylibre.com>,
 	<linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
 	<linux@analog.com>, <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
-	<james.tai@realtek.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v7 3/9] gpio: regmap: Apply default resource callbacks for regmap IRQ chip
-Date: Thu, 23 Jul 2026 11:42:20 +0800
-Message-ID: <20260723034237.2501507-4-eleanor.lin@realtek.com>
+	<james.tai@realtek.com>
+Subject: [PATCH v7 6/9] gpio: regmap: Add value_xlate callback
+Date: Thu, 23 Jul 2026 11:42:23 +0800
+Message-ID: <20260723034237.2501507-7-eleanor.lin@realtek.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260723034237.2501507-1-eleanor.lin@realtek.com>
 References: <20260723034237.2501507-1-eleanor.lin@realtek.com>
@@ -68,95 +64,125 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Introduce a new optional 'value_xlate' callback. This routine allows drivers
+to translate or modify the register value and mask immediately before a write
+operation. It is particularly useful for hardware that requires additional
+control bits, such as a write-enable bit, to be appended to the data
+dynamically.
 
-When GPIO regmap creates an IRQ chip on behalf of the user, it also
-takes an ownership of the respective callbacks and driver data.
-With that being done, apply default resource callbacks that keep
-tracking the IRQ requests and releases.
-
-Reviewed-by: Michael Walle <mwalle@kernel.org>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Suggested-by: Michael Walle <mwalle@kernel.org>
 Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
 ---
 Changes in v7:
-- Add Reviewed-by tag from Michael.
+- New patch
 ---
- drivers/gpio/gpio-max7360.c |  7 ++++---
- drivers/gpio/gpio-regmap.c  | 14 ++++++++++++++
- 2 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/gpio/gpio-regmap.c  | 31 ++++++++++++++++++++++++++++++-
+ include/linux/gpio/regmap.h |  8 ++++++++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-max7360.c b/drivers/gpio/gpio-max7360.c
-index d12cf1dc8d57..07eda49f375b 100644
---- a/drivers/gpio/gpio-max7360.c
-+++ b/drivers/gpio/gpio-max7360.c
-@@ -127,7 +127,7 @@ static int max7360_handle_mask_sync(const int index,
- 				    const unsigned int mask_buf,
- 				    void *const irq_drv_data)
- {
--	struct regmap *regmap = irq_drv_data;
-+	struct regmap *regmap = gpio_regmap_get_drvdata(irq_drv_data);
- 	int ret;
- 
- 	for (unsigned int i = 0; i < MAX7360_MAX_GPIO; i++) {
-@@ -170,7 +170,6 @@ static int max7360_gpio_probe(struct platform_device *pdev)
- 
- 			/* Create custom IRQ configuration. */
- 			irq_chip = devm_kzalloc(dev, sizeof(*irq_chip), GFP_KERNEL);
--			gpio_config.regmap_irq_chip = irq_chip;
- 			if (!irq_chip)
- 				return -ENOMEM;
- 
-@@ -181,7 +180,9 @@ static int max7360_gpio_probe(struct platform_device *pdev)
- 			irq_chip->num_irqs = MAX7360_MAX_GPIO;
- 			irq_chip->irqs = max7360_regmap_irqs;
- 			irq_chip->handle_mask_sync = max7360_handle_mask_sync;
--			irq_chip->irq_drv_data = regmap;
-+
-+			gpio_config.regmap_irq_chip = irq_chip;
-+			gpio_config.drvdata = regmap;
- 
- 			for (unsigned int i = 0; i < MAX7360_MAX_GPIO; i++) {
- 				ret = regmap_write_bits(regmap, MAX7360_REG_PWMCFG(i),
 diff --git a/drivers/gpio/gpio-regmap.c b/drivers/gpio/gpio-regmap.c
-index 535bd9deaa71..658b892b624c 100644
+index 1cc9c03ade99..8f58b272b870 100644
 --- a/drivers/gpio/gpio-regmap.c
 +++ b/drivers/gpio/gpio-regmap.c
-@@ -6,6 +6,7 @@
-  */
+@@ -45,6 +45,12 @@ struct gpio_regmap {
+ 			      unsigned int base, unsigned int offset,
+ 			      unsigned int *reg, unsigned int *mask);
  
- #include <linux/bits.h>
-+#include <linux/compiler_attributes.h>
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/io.h>
-@@ -288,6 +289,16 @@ void gpio_regmap_relres_irq(struct gpio_regmap *gpio, unsigned int offset)
- }
- EXPORT_SYMBOL_GPL(gpio_regmap_relres_irq);
++	int (*value_xlate)(struct gpio_regmap *gpio,
++			   enum gpio_regmap_operation op,
++			   unsigned int base, unsigned int offset,
++			   unsigned int reg, unsigned int *mask,
++			   unsigned int *val);
++
+ 	void *driver_data;
+ };
  
-+static int __maybe_unused gpio_regmap_irq_reqres(void *irq_drv_data, irq_hw_number_t hwirq)
-+{
-+	return gpio_regmap_reqres_irq(irq_drv_data, hwirq);
-+}
+@@ -125,6 +131,13 @@ static int gpio_regmap_set(struct gpio_chip *chip, unsigned int offset,
+ 	else
+ 		mask_val = 0;
+ 
++	if (gpio->value_xlate) {
++		ret = gpio->value_xlate(gpio, GPIO_REGMAP_SET_OP, base, offset,
++					reg, &mask, &mask_val);
++		if (ret)
++			return ret;
++	}
 +
-+static void __maybe_unused gpio_regmap_irq_relres(void *irq_drv_data, irq_hw_number_t hwirq)
-+{
-+	gpio_regmap_relres_irq(irq_drv_data, hwirq);
-+}
-+
- void *gpio_regmap_get_drvdata(struct gpio_regmap *gpio)
+ 	/* ignore input values which shadow the old output value */
+ 	if (gpio->reg_dat_base == gpio->reg_set_base)
+ 		ret = regmap_write_bits(gpio->regmap, reg, mask, mask_val);
+@@ -138,7 +151,7 @@ static int gpio_regmap_set_with_clear(struct gpio_chip *chip,
+ 				      unsigned int offset, int val)
  {
- 	return gpio->driver_data;
-@@ -409,6 +420,9 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
- #ifdef CONFIG_REGMAP_IRQ
- 	if (config->regmap_irq_chip) {
- 		gpio->regmap_irq_line = config->regmap_irq_line;
-+		config->regmap_irq_chip->irq_reqres = gpio_regmap_irq_reqres;
-+		config->regmap_irq_chip->irq_relres = gpio_regmap_irq_relres;
-+		config->regmap_irq_chip->irq_drv_data = gpio;
- 		ret = regmap_add_irq_chip_fwnode(dev_fwnode(config->parent), config->regmap,
- 						 config->regmap_irq_line, config->regmap_irq_flags,
- 						 0, config->regmap_irq_chip, &gpio->irq_chip_data);
+ 	struct gpio_regmap *gpio = gpiochip_get_data(chip);
+-	unsigned int base, reg, mask;
++	unsigned int base, reg, mask, value = 0;
+ 	int ret;
+ 
+ 	if (val)
+@@ -150,6 +163,13 @@ static int gpio_regmap_set_with_clear(struct gpio_chip *chip,
+ 	if (ret)
+ 		return ret;
+ 
++	if (gpio->value_xlate) {
++		ret = gpio->value_xlate(gpio, GPIO_REGMAP_SET_OP, base, offset,
++					reg, &mask, &value);
++		if (ret)
++			return ret;
++	}
++
+ 	return regmap_write(gpio->regmap, reg, mask);
+ }
+ 
+@@ -259,6 +279,13 @@ static int gpio_regmap_set_direction(struct gpio_chip *chip,
+ 	else
+ 		val = output ? mask : 0;
+ 
++	if (gpio->value_xlate) {
++		ret = gpio->value_xlate(gpio, GPIO_REGMAP_SET_DIR_OP, base, offset,
++					reg, &mask, &val);
++		if (ret)
++			return ret;
++	}
++
+ 	return regmap_update_bits(gpio->regmap, reg, mask, val);
+ }
+ 
+@@ -426,6 +453,8 @@ struct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config
+ 	if (!gpio->reg_mask_xlate)
+ 		gpio->reg_mask_xlate = gpio_regmap_simple_xlate;
+ 
++	gpio->value_xlate = config->value_xlate;
++
+ 	ret = gpiochip_add_data(chip, gpio);
+ 	if (ret < 0)
+ 		goto err_free_bitmap_output;
+diff --git a/include/linux/gpio/regmap.h b/include/linux/gpio/regmap.h
+index ececc287d519..b77d6371cd9c 100644
+--- a/include/linux/gpio/regmap.h
++++ b/include/linux/gpio/regmap.h
+@@ -89,6 +89,10 @@ enum gpio_regmap_operation {
+  *			is used.
+  * @init_valid_mask:	(Optional) Routine to initialize @valid_mask, to be used
+  *			if not all GPIOs are valid.
++ * @value_xlate:	(Optional) Routine to translate the register value and
++ *			mask before writing. This allows driver-specific logic
++ *			to append additional bits (like write-enable masks)
++ *			dynamically based on the current operation.
+  * @drvdata:		(Optional) Pointer to driver specific data which is
+  *			not used by gpio-remap but is provided "as is" to the
+  *			driver callback(s).
+@@ -146,6 +150,10 @@ struct gpio_regmap_config {
+ 			       unsigned long *valid_mask,
+ 			       unsigned int ngpios);
+ 
++	int (*value_xlate)(struct gpio_regmap *gpio, enum gpio_regmap_operation,
++			   unsigned int base, unsigned int offset, unsigned int reg,
++			   unsigned int *mask, unsigned int *val);
++
+ 	void *drvdata;
+ };
+ 
 -- 
 2.43.0
 
