@@ -1,237 +1,155 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08DE83F075E
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 08:14:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDEE2385D8E;
+	Thu, 23 Jul 2026 11:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=211.75.126.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784794445; cv=none; b=kTwabyck/TeyzP185LYu8BQfu41M26ZqQG8f6JvRluAK53k1fza0SrbhhStTN+0hNNvYx+LxAMqGEyd0PhSTh4yjVL7iyS+QHM2N8Aq9HYMUADHsSJSzFJS4WzPvgIlA/SyCnRK1ON2sT9DY0K7Xg3qeMo9WH0cdT1QQzJ1wgQ8=
+	t=1784805293; cv=none; b=BudwT9v2RwTZaO0C0nIIiGeK9n1rkKE5ZuBUtYE1jUHI1GHI1sl7Eo/JFV3qbqmJPcb/dGTvk8luXM8uyE5Zv2LzvvSrhwtepR0lPoWyyvEf2rvKRfKSisO6DwwwojxB/yJAq1QM0njW33vNx/x/e8VU4TM/HUGwPFM/JxcDg3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784794445; c=relaxed/simple;
-	bh=ISLsYJiL/67AfFmjcKz7YdESqyE7QAUlfd/yb4LqNzI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S1XMHGMpVorlQDXTNh/1k4z9jW9BfYp0vJ2F4J8LXM5ZPMYBzuCX2ogZzF3qCeGvLCo9JYgvZ51bocDcPdkCOn1m1nwoM6PwxJx08gD840+nCqt3YY+5mTtIRSF2AFClUxEEMkP8bnZoul384y+CnEHVFn+NxGXm4EdydNDXK44=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QAogqfv5; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784805293; c=relaxed/simple;
+	bh=9h8Skd8/2Q3N5w8ZVEl1fL1qWuE8S9lhdl85i7N96bY=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=j60VgzCQ5jw1O+Cj3eEKg567ov7W3TlOogA/Cnsdy76T6zQmqEDST8/4yq8szQYwDX+o2Movs2yf8a14MRmutQAsjBxbK8/ziEHAQfYAooJxoMy6XHhGP297A2RXUUQuvXr+3aPmRwoMH7KyqEbw1Cl31+GpOPszV1VNDyCAPx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com; spf=pass smtp.mailfrom=realtek.com; dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b=YDn6DfpU; arc=none smtp.client-ip=211.75.126.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=realtek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=realtek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QAogqfv5"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-47df43bfb07so66244f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 01:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784794441; x=1785399241; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Pn6G1rW8AyYA5lkxWJxsOAx4+gkV20aFWEjqPOavvWg=;
-        b=QAogqfv5QCL6qnClmfF1+j7/7weBhZPgXeCxV0+XnNTKKwp6czdN5L4iyG8FEqXAob
-         lAYG6ZV/8Q0FhrkIkY/PVxTACnSrbsAZ8a5ywlEeK66UiNXikNJXxmZyWQ1zk+G2r0zz
-         XeLUAnTR6PbvK4lA/mJrvT1WbU+j0GSJfagxfrXe+b8UVHWRkpMPIVFgjnIcdKhZlCpO
-         N4+AOsr+gmbWxENQ41gWIBJYSrBh5hCugH3A2s4zJXf/z418fkPpzNVxSuI5avePQbrb
-         +GWT+uaz8U8UX/hUurc4q+EJCpHiH1HD5XrfSiqz7py8sgPMA5kfByJUGRYFjOBS6wXb
-         tPXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784794441; x=1785399241;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Pn6G1rW8AyYA5lkxWJxsOAx4+gkV20aFWEjqPOavvWg=;
-        b=LQhDs7RfQpVMPKba+0QR63aCYfN5ZR7UdFpPNMPdJRupa0YcJWDzByLGJSIXmcBFaC
-         JmL13oRmlnkXiN2/TvnVk7x0g65YaI5Egt/fZRC8j9P2dFNBPgOsukW7b0TPThbUQJoW
-         Yrccu8h54X01Dy08ir7qPedT1FeMbTy2FjVJsiV3sWLdzNYjL9jQeT5O7pS2imV67ohn
-         Z82utFIeqvC3WGuh0ksnh6vmbr5Vs5x2Es8jg7bvyfJcGgpvb1nfdUAfPPN9nHaZSme2
-         NFNXKo3Lazs/mke156g2VtAtu5g8f/TTCRi4ZxJ7vRLUOgPIltnMXpZEC4I4wuPQxpzV
-         l1gw==
-X-Forwarded-Encrypted: i=1; AHgh+Rpliwc9YNOcPD2ZfzAKIR73t/pNsreN3BJLQCHBtu7VPu7FrkdcsH1Fri/gMFJ3qJ3tUk/usxrbz44=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzd3O4jCWJXJxZGSQMTWt38FPkjrFgBBnjRpqiJHNLaCQUsHzd5
-	X270UtYpas2Fr+yzQWk3V1mKolNcqrfPABqxs1CPl/Q2Lb4mvJ25K4bh
-X-Gm-Gg: AR+sD11TWwLFQ/Kd/Lm5Xqq1w+FDhJkcq2sIzG4mzqDRADD2dPIwu3n7ryWr4EXBkRo
-	5XmYAxfQgg6yUY54RVSn0UPeDA/UlVqxEhzp3t+rJ4E/C5N27R2LLvxhwHHut1jO9h6URguwhJq
-	hUP0UwonGOPXl0YlVZTuP2tBNidpoVFbWsFxQfNh6ux0HV24tMSgBLQ01J3YcF5vqym31uAPTSk
-	zkYezrNoUd5DXBClM3hb4m6DNM+BhQk99wFcTAD7QqELZQGJ2krurpglqNUZRmGyXw7OkPabVSq
-	Iqk5GAfbYwZnysx7ZADTnPdyFe+wYwUa8hb4MzX1TwsBPnqSoGkPhm62JHGUlN39Z+5rfN3H267
-	2aWEjoqIL2Cnr6rsjF+5mOFp0WPjzaNzbiG77MLPY/Pa5f9t9xbVzARNltKelFk8n1lBNUQ==
-X-Received: by 2002:a05:6000:25c3:b0:475:f0f0:9ef7 with SMTP id ffacd0b85a97d-47f8d76ee04mr2371195f8f.60.1784794440915;
-        Thu, 23 Jul 2026 01:14:00 -0700 (PDT)
-Received: from nsa ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85c63bd3sm12591725f8f.27.2026.07.23.01.13.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2026 01:14:00 -0700 (PDT)
-Date: Thu, 23 Jul 2026 09:15:08 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Janani Sunil <jananisunil.dev@gmail.com>, 
-	David Lechner <dlechner@baylibre.com>, Janani Sunil <janani.sunil@analog.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, linux@analog.com, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 1/6] dt-bindings: iio: adc: Add AD7768
-Message-ID: <amHLZK46lxqSZIC8@nsa>
-References: <20260709-ad7768-driver-v1-0-44e1194fd96a@analog.com>
- <20260709-ad7768-driver-v1-1-44e1194fd96a@analog.com>
- <36df7c4f-82ea-4ed5-a4f9-3a29c75dc99a@baylibre.com>
- <9dd16bb5-7a30-4024-88a7-4a4bf47c35e8@gmail.com>
- <e791f4f9-63dd-40f5-aec4-5b540bcee5ff@baylibre.com>
- <d159cae0-b11e-49e9-a546-023ed61b900e@gmail.com>
- <20260722025853.6ca3961d@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=realtek.com header.i=@realtek.com header.b="YDn6DfpU"
+X-SpamFilter-By: ArmorX SpamTrap 5.80 with qID 66NBEFwqC414001, This message is accepted by code: ctloc85258
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=realtek.com; s=dkim;
+	t=1784805256; bh=9h8Skd8/2Q3N5w8ZVEl1fL1qWuE8S9lhdl85i7N96bY=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:MIME-Version;
+	b=YDn6DfpU6+Jk2Ety7HYLl2lhPBP0DVxsFdyW16JO4HT52elJsRQSc2ZxIwggW10Hc
+	 iYNILMNcpxmJ+DcbQ812/7WJfT2P5osU3Nw7hMiSeHC69lyhdtRmlunBfspaP/WGiv
+	 8lzYvwpMH/xkssEHqThFyzOUwnGoSC08/NE1njUA9qauvMpTSNrUIITeTpOlleLt+Q
+	 bhAgzSeTsbMaEbhDGXvbUTnlYNiMbLQhOuMu/trH3a7RAHarnNZ0EdMdY030zUcqZE
+	 ARjsVPMuQEvmHY34E+SqK1dHRGaTu9NppmE+NW/zEOQgQtyqnBY8umnG7vzJMLgGKJ
+	 DI7UO7wT2xxSg==
+Received: from mail.realtek.com (rtkexhmbs04.realtek.com.tw[10.21.1.54])
+	by rtits2.realtek.com.tw (8.15.2/3.29/5.94) with ESMTPS id 66NBEFwqC414001
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 23 Jul 2026 19:14:16 +0800
+Received: from RTKEXHMBS05.realtek.com.tw (10.21.1.55) by
+ RTKEXHMBS04.realtek.com.tw (10.21.1.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 23 Jul 2026 19:14:16 +0800
+Received: from RTKEXHMBS06.realtek.com.tw (10.21.1.56) by
+ RTKEXHMBS05.realtek.com.tw (10.21.1.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.17; Thu, 23 Jul 2026 19:14:14 +0800
+Received: from RTKEXHMBS06.realtek.com.tw ([::1]) by
+ RTKEXHMBS06.realtek.com.tw ([fe80::e6fd:5a3f:8946:92c4%10]) with mapi id
+ 15.02.2562.017; Thu, 23 Jul 2026 19:14:14 +0800
+From: =?big5?B?WXUtQ2h1biBMaW4gW6pMr6enZ10=?= <eleanor.lin@realtek.com>
+To: Michael Walle <mwalle@kernel.org>, "linusw@kernel.org"
+	<linusw@kernel.org>, "andriy.shevchenko@intel.com"
+	<andriy.shevchenko@intel.com>, "brgl@kernel.org" <brgl@kernel.org>,
+	=?big5?B?VFlfQ2hhbmdbsWmkbLZoXQ==?= <tychang@realtek.com>, "wbg@kernel.org"
+	<wbg@kernel.org>, "mathieu.dubois-briand@bootlin.com"
+	<mathieu.dubois-briand@bootlin.com>, "nuno.sa@analog.com"
+	<nuno.sa@analog.com>, "Michael.Hennerich@analog.com"
+	<Michael.Hennerich@analog.com>, "jic23@kernel.org" <jic23@kernel.org>,
+	"andy@kernel.org" <andy@kernel.org>, "u.kleine-koenig@baylibre.com"
+	<u.kleine-koenig@baylibre.com>, "dakr@kernel.org" <dakr@kernel.org>,
+	"bhelgaas@google.com" <bhelgaas@google.com>, "o-takashi@sakamocchi.jp"
+	<o-takashi@sakamocchi.jp>
+CC: "dlechner@baylibre.com" <dlechner@baylibre.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux@analog.com"
+	<linux@analog.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	=?big5?B?Q1lfSHVhbmdbtsDgsq7LXQ==?= <cy.huang@realtek.com>,
+	=?big5?B?SmFtZXMgVGFpIFvAuafTrnBd?= <james.tai@realtek.com>
+Subject: RE: [PATCH v7 5/9] gpio: regmap: Add gpio_regmap_operation to extend
+ reg_mask_xlate callback
+Thread-Topic: [PATCH v7 5/9] gpio: regmap: Add gpio_regmap_operation to extend
+ reg_mask_xlate callback
+Thread-Index: AQHdGlVbAgYGyBxDqk+qdE3R2tmcA7Z6JLWAgADOVPA=
+Date: Thu, 23 Jul 2026 11:14:14 +0000
+Message-ID: <f4b79d5510b64ad3bc2d716a51d21cfe@realtek.com>
+References: <20260723034237.2501507-1-eleanor.lin@realtek.com>
+ <20260723034237.2501507-6-eleanor.lin@realtek.com>
+ <DK5R2VCAK468.2GAEC7VG8OJBZ@kernel.org>
+In-Reply-To: <DK5R2VCAK468.2GAEC7VG8OJBZ@kernel.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260722025853.6ca3961d@jic23-huawei>
 
-On Wed, Jul 22, 2026 at 02:58:53AM +0100, Jonathan Cameron wrote:
-> On Tue, 21 Jul 2026 10:03:26 +0200
-> Janani Sunil <jananisunil.dev@gmail.com> wrote:
-> 
-> > On 7/21/26 03:39, David Lechner wrote:
-> > > On 7/20/26 9:00 AM, Janani Sunil wrote:  
-> > >> On 7/9/26 17:43, David Lechner wrote:  
-> > >>> On 7/9/26 3:50 AM, Janani Sunil wrote:  
-> > >>>> Devicetree Bindings for AD7768-4 (4 channel) and AD7768 (8
-> > >>>> channel) simultaneous sampling ADC
-> > >>>>
-> > >>>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> > >>>> ---
-> > >>>>   
-> > >>>> +
-> > >>>> +  adi,power-mode:
-> > >>>> +    $ref: /schemas/types.yaml#/definitions/string
-> > >>>> +    enum:
-> > >>>> +      - low
-> > >>>> +      - median
-> > >>>> +      - fast
-> > >>>> +    description:
-> > >>>> +      Power mode selection.  
-> > >>> Unless there are pins that control this, it seems like it should
-> > >>> be left up to the driver to decide how to set this.
-> > >>>
-> > >>> In this case, it looks like the power mode also influences sample
-> > >>> rate which is normally something controlled at runtime.  
-> > > Looking at this again, there is also an MCLK divider that influences
-> > > sample rate, so sampling_frequency to power mode is not
-> > > straight-forward anyway.
-> > >  
-> > >> Hi David,
-> > >>
-> > >> The reason we'd like to retain power mode control is that certain
-> > >> ODRs are supported across all three power modes (low/median/fast),
-> > >> and the RMS noise and power consumption differ significantly
-> > >> between them at the same ODR.
-> > >>
-> > >> The higher the power mode, the better the noise performance, but
-> > >> power consumption nearly doubles for every ~3 dB improvement in
-> > >> dynamic range. Silently selecting one power mode in the driver
-> > >> would remove a meaningful hardware tradeoff from the user.
-> > >>
-> > >> We'd like to propose the following instead:
-> > >> - Remove adi,power-mode from the DT as suggested.
-> > >> - Expose power mode as a per-device sysfs attribute.
-> > >> - in_voltage<N>_sampling_frequency_available dynamically reflects
-> > >> only the ODRs valid for the currently selected power mode.
-> > >>
-> > >> This keeps the DT clean while still giving the user explicit
-> > >> control over the noise versus power trade off. Would this approach
-> > >> be acceptable?
-> > >>
-> > >> Thanks,
-> > >> Jan
-> > >>
-> > >>  
-> > > Jonathan usually pushes back against userspace power controls. We
-> > > do have this for accelerometers, but not ADCs currently.
-> > >
-> > > If we can't think of anything better, maybe we could use this. It
-> > > only has low_noise and low_power options though, so the driver
-> > > would still need to chose the best power mode of the 3 based on the
-> > > other requested parameters. E.g. always make all sampling_frequency
-> > > available  and just pick the highest power or lowest power mode
-> > > that can provide that rate based on the power_mode attribute.
-> > >
-> > > I wanted to suggest maybe adding some kind of noise attribute
-> > > instead, but I'm not sure how we could do that in a way using SI
-> > > units since the value would depend on so many things (at least
-> > > V_REF voltage, filter type, temperature and even the physical
-> > > input).  
-> > 
-> > We considered the low_power/balanced/low_noise approach, but the
-> > customers typically use the datasheet alongside the driver and the
-> > datasheet explicitly uses the terms "low power", "median" and "fast"
-> > for the three modes. Abstracting them with different names in the
-> > sysfs attribute would create a confusion- the users would have to
-> > mentally translate between the two naming conventions. The noise
-> > attribute would not actually configure anything on a register level-
-> > it would purely be informational. Furthermore, noise performance is
-> > not solely determined by the power mode. There are other parameters
-> > (eg. filter mode) that has a significant impact. A power_mode
-> > attribute directly configures the hardware register and has a
-> > deterministic effect on the device.
-> > 
-> > Jonathan, could we keep the power_mode as an attribute in this case?
-> 
-> My really strong resistance to 'mode' type controls is they are
-> meaningless to general purpose software.  It has no idea how to
-> set them correctly. The purpose of IIO is to provide general abstractions
-> and power modes are never that.
-> 
-
-Unfortunately lot's of apps engineers for these parts just like to
-control it all and don't care about generic interfaces (given typically
-these the devices are the only ones they care). So we also have some pain
-trying to explain all of the advantages :).
-
-> Hence we put a lot of effort into mapping them to controls or measures
-> that have precise meaning.
-> 
-> I can't remember how I got talked into allowing the accelerometer
-> ones either :(  It was way back in 2013 and we have only one user.
-> I should shift that ABI doc to a driver specific one so as not tempt
-> more users.
-> 
-> To give a firmer opinion I guess I'll go read the datasheet at somepoint
-> but it's not a small one so that may take a little while.  I do see
-> that there is a recommendation for each power setting to only cover
-> one range of f_mod.  Maybe that gives us a route to a control that
-> it at least numerically meaningful (For those who know what effect
-> the modulator frequency has in a sigma delta modulator! Which
-> doesn't include me ;()
-> 
-> Any chance we can kick this into the future and get a useful base
-> driver ready for upstream?  It is a lot easier to have these discussions
-> when they are the only topic related to a thread.  One path to move
-> on would be to decide to default (only option for now) to the
-> best noise option.  Later we can add controls that result in that
-> initial default changing,
-
-Yeah, those were my internal 2 cents. Not sure if this is exactly what
-you're proposing but what also came to my mind was to have a RMS lookup
-table (same as in DS) and for the overlapping frequencies, just go with
-the one with better RMS figure. My assumptions is that most users will
-prefer that. If not else better comes, we can have a driver argument to
-override the prefered mode (same way we do for some ADIS IMU devices).
-And yes, I know module arguments are not very encouraged...
-
-Or given this also looks like a system level decision (I don't think this
-is something one wants to change at runtime) maybe DT (acting as an override)
-would not be off the table.
-
-- Nuno Sá
-
-> 
-> Jonathan
-> 
-> 
-> 
-> > 
-> 
+SGkgTWljaGFlbCwNCg0KPg0KPj4gQEAgLTcxLDcgKzczLDcgQEAgc3RhdGljIGludCBncGlvX3Jl
+Z21hcF9zaW1wbGVfeGxhdGUoc3RydWN0IA0KPj4gZ3Bpb19yZWdtYXAgKmdwaW8sICBzdGF0aWMg
+aW50IGdwaW9fcmVnbWFwX2dldChzdHJ1Y3QgZ3Bpb19jaGlwICpjaGlwLCANCj4+IHVuc2lnbmVk
+IGludCBvZmZzZXQpICB7DQo+PiAgCXN0cnVjdCBncGlvX3JlZ21hcCAqZ3BpbyA9IGdwaW9jaGlw
+X2dldF9kYXRhKGNoaXApOw0KPj4gLQl1bnNpZ25lZCBpbnQgYmFzZSwgdmFsLCByZWcsIG1hc2s7
+DQo+PiArCXVuc2lnbmVkIGludCBiYXNlLCB2YWwsIHJlZywgbWFzaywgZGlyX21hc2s7DQo+PiAg
+CWludCByZXQ7DQo+PiAgDQo+PiAgCS8qIHdlIG1pZ2h0IG5vdCBoYXZlIGFuIG91dHB1dCByZWdp
+c3RlciBpZiB3ZSBhcmUgaW5wdXQgb25seSAqLyBAQCANCj4+IC04MCw3ICs4MiwxOCBAQCBzdGF0
+aWMgaW50IGdwaW9fcmVnbWFwX2dldChzdHJ1Y3QgZ3Bpb19jaGlwICpjaGlwLCB1bnNpZ25lZCBp
+bnQgb2Zmc2V0KQ0KPj4gIAllbHNlDQo+PiAgCQliYXNlID0gZ3Bpb19yZWdtYXBfYWRkcihncGlv
+LT5yZWdfc2V0X2Jhc2UpOw0KPj4gIA0KPj4gLQlyZXQgPSBncGlvLT5yZWdfbWFza194bGF0ZShn
+cGlvLCBiYXNlLCBvZmZzZXQsICZyZWcsICZtYXNrKTsNCj4+ICsJcmV0ID0gZ3Bpby0+cmVnX21h
+c2tfeGxhdGUoZ3BpbywgR1BJT19SRUdNQVBfR0VUX09QLCBiYXNlLCBvZmZzZXQsICZyZWcsICZk
+aXJfbWFzayk7DQo+PiArCWlmIChyZXQpDQo+PiArCQlyZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKwly
+ZXQgPSByZWdtYXBfcmVhZChncGlvLT5yZWdtYXAsIHJlZywgJnZhbCk7DQo+PiArCWlmIChyZXQp
+DQo+PiArCQlyZXR1cm4gcmV0Ow0KPj4gKw0KPj4gKwlpZiAodmFsICYgZGlyX21hc2spDQo+PiAr
+CQlyZXQgPSBncGlvLT5yZWdfbWFza194bGF0ZShncGlvLCBHUElPX1JFR01BUF9PVVQsIGJhc2Us
+IG9mZnNldCwgJnJlZywgJm1hc2spOw0KPj4gKwllbHNlDQo+PiArCQlyZXQgPSBncGlvLT5yZWdf
+bWFza194bGF0ZShncGlvLCBHUElPX1JFR01BUF9JTiwgYmFzZSwgb2Zmc2V0LCANCj4+ICsmcmVn
+LCAmbWFzayk7DQo+DQo+IFdoYXQncyBnb2luZyBvbiBoZXJlPyBMb29rcyBsaWtlIEkndmUgbWlz
+c2VkIHRoaXMgaW4gdGhlIHByZXZpb3VzDQo+IHBhdGNoZXMuIEFsbCB0aGUgb3RoZXIgZHJpdmVy
+cyB3ZSBhcmUgbm93IHJlYWRpbmcgdGhlIHZhbHVlIHR3aWNlLg0KPiBJbiB0aGUgcmVnbWFwX3Jl
+YWQoKSBhYm92ZSBhbmQgdGhlIG9uZSB0aGF0IGZvbGxvd3MganVzdCBhZnRlciB0aGlzDQo+IGh1
+bmsuDQo+IA0KPiBIYXMgdGhlIGdwaW8gY29udHJvbGxlciB0d28gZGlmZmVyZW50IGJpdHMsIG9u
+ZSBmb3Igb3V0cHV0IGFuZCBvbmUNCj4gZm9yIGlucHV0PyBBcmUgeW91IHN1cmUsIHRoZSBpbnB1
+dCBiaXQgZG9lc24ndCByZWZsZWN0IHRoZSBvdXRwdXQNCj4gYml0IGlmIGl0J3MgY29uZmlndXJl
+ZCBhcyBhbiBvdXRwdXQ/DQo+IA0KPiBJTUhPIHRoaXMgc2hvdWxkbid0IGJlIHBhcnQgb2YgdGhl
+IGNvcmUuIHJ0ZDE2MjVfcmVnX21hc2tfeGxhdGUoKQ0KPiBzaG91bGQgZWl0aGVyIHJldHVybiBS
+VEQxNjI1X0dQSU9fSU4gb3IgUlREMTYyNV9HUElPX09VVCBkZXBlbmRpbmcNCj4gb24gdGhlIG1v
+ZGUsIGlmIHRoYXQncyBuZWVkZWQgYXQgYWxsLiBJJ2QgZ3Vlc3MgUlREMTYyNV9HUElPX0lODQo+
+IHdpbGwganVzdCB3b3JrIGZpbmUgYW5kIHdpbGwgYWN0dWFsbHkgZmV0Y2ggdGhlIGFjdHVhbCBs
+aW5lIHN0YXRlLg0KPg0KPiAtbWljaGFlbA0KPg0KDQpSZWdhcmRpbmcgdGhlIGhhcmR3YXJlLCB0
+aGlzIGNvbnRyb2xsZXIgaW5kZWVkIGhhcyBkZWRpY2F0ZWQgYW5kIHNlcGFyYXRlDQpiaXRzIGZv
+ciBJTiwgT1VULCBhbmQgRElSLiBJZiBjb25maWd1cmVkIGFzIGFuIG91dHB1dCwgcmVhZGluZyB0
+aGUgSU4gYml0DQpkb2VzIG5vdCByZWZsZWN0IHRoZSBhY3R1YWwgc3RhdGUsIHNvIHdlIG11c3Qg
+Y2hlY2sgdGhlIERJUiBiaXQgZmlyc3QgdG8NCmtub3cgd2hpY2ggYml0IHRvIHJlYWQuDQoNCkFz
+IHlvdSBwb2ludGVkIG91dCwgbXkgaW1wbGVtZW50YXRpb24gd291bGQgY2F1c2Ugb3RoZXIgZHJp
+dmVycyB0byByZWFkDQp0d2ljZS4gVGhlcmVmb3JlLCBJIHdpbGwga2VlcCBHUElPX1JFR01BUF9H
+RVRfT1AsIGRyb3AgR1BJT19SRUdNQVBfSU4gYW5kDQpHUElPX1JFR01BUF9PVVQsIGFuZCBtb3Zl
+IHRoZSByZWdpc3RlciByZWFkaW5nIGxvZ2ljIGludG8gbXkgY3VzdG9tDQpyZWdfbWFza194bGF0
+ZSgpLg0KDQpCZXN0IFJlZ2FyZHMsDQpZdS1DaHVuDQoNCj4+DQo+PiA+ICAJaWYgKHJldCkNCj4+
+ID4gIAkJcmV0dXJuIHJldDsNCj4+DQo+Li4uDQo+DQo+PiAgDQo+PiArLyoqDQo+PiArICogZW51
+bSBncGlvX3JlZ21hcF9vcGVyYXRpb24gLSBPcGVyYXRpb24gdHlwZSBmb3IgcmVnX21hc2tfeGxh
+dGUgDQo+PiArY2FsbGJhY2sNCj4+ICsgKg0KPj4gKyAqIFRyYWRpdGlvbmFsbHksIHRoZSBvcGVy
+YXRpb24gdHlwZSB3YXMgaW5mZXJyZWQgZnJvbSB0aGUgYmFzZSByZWdpc3Rlci4NCj4+ICsgKiBI
+b3dldmVyLCB0aGF0IGFwcHJvYWNoIGRvZXMgbm90IGFsd2F5cyB3b3JrIKFYIGZvciBleGFtcGxl
+LCB3aGVuIA0KPj4gK2FsbCBjb250cm9sDQo+PiArICogYml0cyBvZiBhIHNpbmdsZSBHUElPIHJl
+c2lkZSBpbiB0aGUgc2FtZSByZWdpc3Rlci4gVGhpcyBlbnVtIA0KPj4gK2FsbG93cyB0aGUNCj4+
+ICsgKiByZWdfbWFza194bGF0ZSBjYWxsYmFjayB0byBleHBsaWNpdGx5IGRpc3Rpbmd1aXNoIGJl
+dHdlZW4gb3BlcmF0aW9uIHR5cGVzLg0KPj4gKyAqIFRoZSB1c2VyIGlzIGZyZWUgdG8gY2hvb3Nl
+IHdoaWNoIG1ldGhvZCB0byB1c2UuDQo+PiArICoNCj4+ICsgKiBWYWx1ZSBvcGVyYXRpb25zOg0K
+Pj4gKyAqIEBHUElPX1JFR01BUF9HRVRfT1A6IE1hc2sgZm9yIHJlYWRpbmcgZGlyZWN0aW9uIHRv
+IGRldGVjdCBpZiBHUElPIGlzIGlucHV0IG9yDQo+PiArICoJCQlvdXRwdXQuIFVzZWQgaW4gZ3Bp
+b19yZWdtYXBfZ2V0KCkgdG8gZGV0ZXJtaW5lIHRoZSBHUElPDQo+PiArICoJCQlkaXJlY3Rpb24u
+DQo+DQo+IFRoaXMgaXMgYWxzbyBub3QgdmVyeSBpbnR1aXRpdmUuIEknZCBleHBlY3QgdGhlcmUg
+aXMgb25seSBvbmUNCj4gb3BlcmF0aW9uIGZvciB0aGUgZ3Bpb19yZWdtYXBfZ2V0IGFuZCB0aGF0
+IGlzIGV4YWN0bHkgdGhpcyBvbmUuDQo+DQo+PiArICogQEdQSU9fUkVHTUFQX0lOOiBNYXNrIGZv
+ciByZWFkaW5nIGlucHV0IHZhbHVlLiBVc2VkIHdoZW4gR1BJTyBpcyBjb25maWd1cmVkIGFzDQo+
+PiArICoJCQlpbnB1dC4NCj4+ICsgKiBAR1BJT19SRUdNQVBfT1VUOiBNYXNrIGZvciByZWFkaW5n
+IG91dHB1dCB2YWx1ZS4gVXNlZCB3aGVuIEdQSU8gaXMgY29uZmlndXJlZCBhcw0KPj4gKyAqCQkJ
+b3V0cHV0Lg0KPj4gKyAqDQo+PiArICogT3V0cHV0IG9wZXJhdGlvbnM6DQo+PiArICogQEdQSU9f
+UkVHTUFQX1NFVF9PUDogTWFzayBmb3Igc2V0dGluZyBHUElPIG91dHB1dCB2YWx1ZS4NCj4+ICsg
+Kg0KPj4gKyAqIERpcmVjdGlvbiBvcGVyYXRpb25zOg0KPj4gKyAqIEBHUElPX1JFR01BUF9HRVRf
+RElSX09QOiBNYXNrIGZvciByZWFkaW5nIEdQSU8gZGlyZWN0aW9uIChpbnB1dC9vdXRwdXQpLg0K
+Pj4gKyAqIEBHUElPX1JFR01BUF9TRVRfRElSX09QOiBNYXNrIGZvciBzZXR0aW5nIEdQSU8gZGly
+ZWN0aW9uIChpbnB1dC9vdXRwdXQpLg0KPj4gKyAqLw0KPj4gK2VudW0gZ3Bpb19yZWdtYXBfb3Bl
+cmF0aW9uIHsNCj4+ICsJR1BJT19SRUdNQVBfR0VUX09QLA0KPj4gKwlHUElPX1JFR01BUF9TRVRf
+T1AsDQo+PiArCUdQSU9fUkVHTUFQX0dFVF9ESVJfT1AsDQo+PiArCUdQSU9fUkVHTUFQX1NFVF9E
+SVJfT1AsDQo+PiArCUdQSU9fUkVHTUFQX0lOLA0KPj4gKwlHUElPX1JFR01BUF9PVVQsDQo+PiAr
+fTsNCg==
