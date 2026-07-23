@@ -1,79 +1,79 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A52A03E49E8
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:53:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B7B3E2752
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 21:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784843598; cv=none; b=FXOmb9ju59D4L46BHjY0nVK7dfaqL4d1mN5eE98WmlgqGS4k58hhUgXVczMSxZyLkaZiLUXzaOC7GHlm2AokLdSGFn0frzBEiwlngEufF5qsUtdyrgQmVRcsLDkLe8kQ5bVEl5a+yJqaOx41b0bWkE9RghdPAHB6KmvG0WtyAps=
+	t=1784843748; cv=none; b=CaMpvWKNSM8ou8QT2qRsar5LwsfZ6P8pWOQ7QCntdae9JzBgb2S2CHrlIa8bb5nNcryP8SX4BGPGGFZDvcgo3tT0ZryXBXNAV8s74V+kArB5kW5cKJDCIez1/zBW3z6aqg7fPTLtXRLLz86kr/xbBmHp3rvWUNUzqFQCpMeVpR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784843598; c=relaxed/simple;
-	bh=CE6QbJ0Y4Qn43kigjIDwEp1Wnu9JSb5eRbdolqTw3oU=;
+	s=arc-20240116; t=1784843748; c=relaxed/simple;
+	bh=VPg6rAtVJsb91gbWoQSIflkk23XesfyA3CglwAbx3B4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Zwt0PzH/ID1ZFutrkQJfnjE7PjP3LqIwzyZuZORNNWprPCM5Wf9zuhgcRjIfzn+0g7/+gMAiSGGe7KnktzxgYiKFWLBrgpnAyc1olFDNQJX+mJrjb5RzW2v6PTSs3cUunS9OWoxx/Q6lt0U6p5f8+bJBG9ABNQ5XTNIfB32EIYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SYQ7QG4d; arc=none smtp.client-ip=209.85.128.43
+	 MIME-Version:Content-Type; b=e6dN6omIp0Ui0AGdhdsj1ySg44wFjKIoWXuokEpVylgMoJ/qNDqLllUlXCmF4PJXvKM90JkmtiMMeqaVFTKlMK5LFw03todlaVilVuxUKCx5QixJ91aK1fEBy5vB58vuT3kSet79x614PPdnYxu5OPiNCi4kd6LmruMfy741ck8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YHEt1YuY; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SYQ7QG4d"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4955484387cso8789275e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 14:53:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YHEt1YuY"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4954afac04bso11058715e9.0
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 14:55:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784843594; x=1785448394; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784843745; x=1785448545; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=XR6TYjEYPo/3LPYXPQ83VOvH1XRnBdy8p/CW2F6Qy3s=;
-        b=SYQ7QG4d7lB8DSKFhXSQzW0RW09mQSWKNgmrWq877dcvkVtpXouZaWQVzedTtJu27+
-         KLbvOsPcl1X/jqg0rDcFwya86nB5/YCz74FoKQHvZW8WUhUNJ1eLvsGjZNMn4+Cu+0s0
-         cyvvqLBijYYctwnTEVub7H5aaD6aNDxOPpbomV/zMIpVgo8gFSqovhckMYYz+2R8TItf
-         BNFrC8nO9G+S7i3Z62PrUSTkpXkYyHT5Ove1JnsvhlUtrmJtCyao1OEcp+kUbVRDsCxM
-         0+vCJCZiz3TgmO/D/pQc4pU2y4Wn9Kn2d62+KvXI9Alzoq/9NmY7NDzZLpiE0cZyMIFd
-         dB+w==
+        bh=GI+1TZTSHVUv7hNRHiRGiiEfjlN56a7Ttsg18X440BQ=;
+        b=YHEt1YuYrbHBqhSRPz64ICfiUZgzKoa2nwRQp4ecYDd+x7Yt1P+sN8z6AsF8oet304
+         S8v7h4f9txxb6eLN0tE97JyEHiLT7CeBhrM3W6YaT1OcCMeky0K9lAlGMMESr9/gsYJ6
+         F0eoyla32I4ChwQTZXKQ4TKD7o9P4ux5w+ooIZnFRYiFlpVzNG8QqeL0ISdGqCG4/oU9
+         AUfRRQAYFnbLQdGKuLPlGtLNcWObE4y9GKUmSSeXZn+n/Vk6Kc/DsAaNkJKWsecj4Uqc
+         g81vS7aTcRJRpKQTbIhDaJCE1NOtb5qlU3KUz+FN9zC8KT73wosoABHM6944aBxQ8zrp
+         Wnng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784843594; x=1785448394;
+        d=1e100.net; s=20251104; t=1784843745; x=1785448545;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=XR6TYjEYPo/3LPYXPQ83VOvH1XRnBdy8p/CW2F6Qy3s=;
-        b=nk5wQFA4I4gGB4rOx8jdxZZammS9NpSQJP4lp9MjyVHnP6bJAdAe9wS49vQ2egurF9
-         0yadcqM+cmWXaj91dX/DuBS2xKyMBwn51Okqh2B6fMFqeHhsm/7sC39U6X2nCawdvU9q
-         rpc6azwuxjN1auJDky30IAgO3/vp8aL9MuZzRc8YrkjNEKvfrSwFWVuvap5qP070BQr+
-         BXJQidUl8lc9ZLMWjoIHOkWSlZvGztQSQjaZuon58EHpFVuKIq5IR1mc2T1+klN3zKTw
-         P/qhl8ByTv87UU+IHACAMbqx6c4gP54rkzow8a/2uNHuZgDG6RrDBit7DR03AQbcq6ir
-         7Acw==
-X-Forwarded-Encrypted: i=1; AHgh+RoVb6aOJOfKE1o717pLSYUJ9twCWqOOaRTQDyxRL82m+uHybJ+hzBfbfhC3SS/EjNsVkdShscQCjyM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy+YqhMZshoqGWJX5QmhNBOtt56HDgWUnDB64nLKwRQtmKi7USV
-	WGTh7WDgkoi7E/nRYUk5EoRxkm3YKAphMwc2ahWntWB62pcGkCTSWVW8
-X-Gm-Gg: AR+sD10xjYDb0YeTI6ZhbLEIW8MDkJsL6oSSKZCWIeaQqsvQ+FbR7qXWvRKFnphwRnt
-	oHOHadhH8Hg8yBZLJ29bMjiFjzG/M/X8rYfNaPkwDSCnuy4rFT2OPKc0pg8KsQxCfbMUxaUD8IT
-	ZyORuwytQAyZ3g2daDZyUX+CgFf7tBBeHh1u7EZ0YNSKkjhNkeWKYH+FSsuuTomNo25AOvHy+QH
-	IcSd77jGX8t1XZCVJkLUazwORNvQXPdz5N02lbMVx8El+2d3qvHkH9Jvy7OjlgqPq3RACLWUb41
-	DB2KhwF3CB/gk5NNJ/yHBbMnBwukVncsIPaFBUK6jJlBfARyz2C2cY1l4/f//iw+ZW5JxjEdIZm
-	cMmbHZjqD/hKfesXV3h+C0GFmd6Us+dGJ9ZHqE/rLf7gNQegG9+oAsPYCXpDClSTD1+mlswb/pc
-	y5xw5PrlDOCrkCIciQTIiDoyVzBc9yxTW2tbNHNRrCoMagTDiUI/nBJNO5Blv+mHvgNj9cx7fWe
-	xl/w5WK7ML83MKm1tEkgTnA5QmFJ+wLF6QE8GPNeznARmeJIARWoM49L4x4r3lotrM8y+63R6W4
-	Bk4bqqllvGZEE4nOp1RNzmtUmXHBpzU93Q8eWV52NBdYdWia74hijrI3UHiqmheVOLfi/qMOJAd
-	y3RBTkDFGsjU=
-X-Received: by 2002:adf:e18f:0:b0:47f:5b52:5579 with SMTP id ffacd0b85a97d-47f8da7f56bmr5423874f8f.18.1784843593827;
-        Thu, 23 Jul 2026 14:53:13 -0700 (PDT)
+        bh=GI+1TZTSHVUv7hNRHiRGiiEfjlN56a7Ttsg18X440BQ=;
+        b=IeD3eP9DKT/n7yqJ5XyyBdpGi+71+O/8qtGr7fdH/kNUwot5r+VcOMMgEciZAHfIPZ
+         BSBnc37CC4NYB55CJahZWr7EpOf3xL5pCumoIMS7ad9euMnj4QNu0wa9NoUWn2Qbo1rh
+         w+bXoHf8t4A4CQ5zfnO2c0il30WrDCEtsDcbjQW1D6i8nF2ofJBhHttucv79KI2hnejt
+         /LClAH5K+KF1rZIJHnJFrWLIpaS4yaGyPUrnLIo6J+gTsnudtIyTfimq19S2Mm8di7DO
+         1mj6ZjDaVwdt+ePJZUxvy3uqNnOZVasv0Yi95gIuFpNVG8dAqlWlyauFymsPcyk76tyZ
+         1fGQ==
+X-Forwarded-Encrypted: i=1; AHgh+RqoqESJV1ZdpiFhn974AvW2yQI2BHyFnpH3eoZKDxHDXfuK+C1tGsX1wnqY/e2Gi+yU+IUO6dmxTqE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzDlTlLAmrA1PJI2g6kbtoN507A32PNUk2yug/9IXKfx77iI0o2
+	Og/k4X/oKmKJX1KWmX8pUzCmGvuEn2Ha2RXctsOSRj6siGcN5H9+0yLM
+X-Gm-Gg: AR+sD10M2NHF0Ub3kMQBPsiNdDx2zY6u5y5mz4EYEGA+4yXAQ/DyuRZ6oQdFND2zUgq
+	zzLlz+jgILO+vI9XEAp0iVdKRRw2G10huyJUj8pFbcm2GI8D0rjZTQfzyYx8WgGBrmQjN3ZaVr4
+	t57RUvf3abWeJKRq0yW402EvwM+GjdO4Od4TVN+z+WGfRrGCRUro69KKlYyKCASgQnwgfRKA+of
+	G+bl7KyIC8j+tpLh2ITgmjAVnPegopKe6OqOe+N7s/Po8M3A3PuDPkK2hyuNwqHk6KI7RdIJcfV
+	q539yeUlPbv3lrVQIBzPJTeSBrKt/YTXLXRfBIlxyagLR0mzFQc5YHJvkGENYNXEsTq/+62ysOE
+	RywGHrGp3Gecr1FIRx0sVLwHF19iuRva3qKcMb20tbLxLwI12nxY4g+9yaszsSW9zUGClY5SmXm
+	xHCQmObx16YJvdrbM99etV9sYDk4RkrjR75IoX0lp9aJAEi+9d717TGr5ySRIEe4XBDk6Mnw6cT
+	nX8ozz9Bc2FzAuCiyE9ovSfi9ptMZPKrAdZfsJVgqt1HW9yQhCL1LF6BKeTUQ7ljxOR5o/b+fkj
+	yfDdF8bvgHk7f3YOreESZEnYmwg3oWvqeK03c9PnMkJLQN5gV1slVCOYGuCYTLmEltn90gqE9QR
+	PEP+Jtr6tQ5Y=
+X-Received: by 2002:a05:600c:5718:b0:495:4e89:3f30 with SMTP id 5b1f17b1804b1-49573cd069bmr40619145e9.15.1784843744599;
+        Thu, 23 Jul 2026 14:55:44 -0700 (PDT)
 Received: from systembl0wer (ip-86-49-244-181.bb.vodafone.cz. [86.49.244.181])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f85b9a6d7sm20311407f8f.2.2026.07.23.14.53.13
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4957bfac3casm10195525e9.0.2026.07.23.14.55.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2026 14:53:13 -0700 (PDT)
-Date: Thu, 23 Jul 2026 23:53:12 +0200
+        Thu, 23 Jul 2026 14:55:44 -0700 (PDT)
+Date: Thu, 23 Jul 2026 23:55:42 +0200
 From: Joshua Crofts <joshua.crofts1@gmail.com>
 To: Adi Nata <adinata.softwareengineer@gmail.com>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, mazziesaccount@gmail.com, email@sirat.me,
- u.kleine-koenig@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH] iio: chemical: cleanup codestyle warning
-Message-ID: <20260723235312.432a895c@systembl0wer>
-In-Reply-To: <20260723235139.02fdab3f@systembl0wer>
-References: <20260723161040.20318-1-adinata.softwareengineer@gmail.com>
-	<20260723235139.02fdab3f@systembl0wer>
+ andy@kernel.org, u.kleine-koenig@baylibre.com, email@sirat.me,
+ krzysztof.kozlowski@oss.qualcomm.com, mazziesaccount@gmail.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kernel-mentees@lists.linux.dev
+Subject: Re: [PATCH] [PATCH] iio: chemical: sgp30: cleanup codestyle warning
+Message-ID: <20260723235542.152a6a25@systembl0wer>
+In-Reply-To: <20260723161851.21722-1-adinata.softwareengineer@gmail.com>
+References: <20260723161851.21722-1-adinata.softwareengineer@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -84,30 +84,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 23 Jul 2026 23:51:39 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Fri, 24 Jul 2026 00:18:49 +0800
+Adi Nata <adinata.softwareengineer@gmail.com> wrote:
 
-> On Fri, 24 Jul 2026 00:10:38 +0800
-> Adi Nata <adinata.softwareengineer@gmail.com> wrote:
+> Reported by checkpatch:
+> FILE: drivers/iio/chemical/sgp30.c
+> WARNING: Prefer __packed over __attribute__((__packed__))
+> +} __attribute__((__packed__));
 > 
-> > Reported by checkpatch:
-> > FILE: drivers/iio/chemical/ccs811.c
-> > 
-> > WARNING: Prefer __packed over __attribute__((__packed__))
-> > +} __attribute__((__packed__));  
-> 
-> Perhaps a nit, but I'd change the commit title to "prefer __packed"
-> and the commit message to something like:
-> 
-> "Change instance of __attribute__((__packed__)) to __packed per
-> checkpatch.pl warning.
-> 
-> Other than that:
-> 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
+> ---
 
-Additionally, you're missing the driver name in the subject/commit
-message, it should be something like "iio: chemical: ccs811: prefer __packed"
+Same issues as with your previous patch. Additionally, the
+subject contains two [PATCH] tags, perhaps you've used git
+format-patch or git send-email incorrectly?
+
+After fixing:
+
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
 -- 
 Kind regards,
 Joshua Crofts
