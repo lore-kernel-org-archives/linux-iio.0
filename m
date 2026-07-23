@@ -1,65 +1,65 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADBD13A5448
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 05:45:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37CCC3B3C11
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 05:46:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784785505; cv=none; b=s2FeueA5ixBAEDY+wpDzPrJOxNggL/q63kneJpxExIo17f5OHopAhQEcxGDGannRu9qq5QQEYYSTm+PqxsWEjGCzNGwkaRynlb6Bq1tNUaQDMCNk+rQB8T40S+j74XXEAj1aR/F2T8J5OuXq2zFR/gvb8nzl9plHpIrbnh3w0ks=
+	t=1784785616; cv=none; b=FtrV89F6JoYsuon/W4G/W6CY+HVX9PRbZofj+v7vBsUKezfP0EfxLlI5hxVSbvLKBWwl5P7hO8GM4vSfFGWsa1R5Zqul0RuqGcsD9SvF6ehLnuvhg6psen/gmBh4U50JDLSApqtjKdOg7Gr2qPzIAAlPq2WQyCrrtCx7MaFHfo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784785505; c=relaxed/simple;
-	bh=/v6lBhg1oIN3yUphI0k8bShUlANofncArNDCE53+BIw=;
+	s=arc-20240116; t=1784785616; c=relaxed/simple;
+	bh=79L6IXq0vTYjMqT4xw3+/hBfBny+QPWhqEAYp7hGdIw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bbdPn0nwlKX9YfpXm6ugzK59lw7OVr8/X1KZFXqUlM+5tBzGvjzhSYUdByh/QCdBUMGAgH7ao1/mTwB1E8PI3FmX0A3czgSQ+TdBAJd3JZn0d2Qwv/Dk4Osu2eYEbWn5FCmWoMgenTHWPquFzFqSCLijW4UVqeq85J6h0RByfks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ji3o5xLu; arc=none smtp.client-ip=209.85.208.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=NFeY8WigHUOuT28QPmjfdxF2FcFUGu1UH/oota3nwRJFgJzOTHhTj0rdsCLG7bw5EBAIY+kCa25mQYR3ZbfFUl/H5jMEf14eRq5lVoq2JBGxLLx5YGXJ1ujb5Z7AAImVbgi0rm14Fo3YgMRP5JVLo2kw6j8HdA3QIVGpYAk3lEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LSHAGu93; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ji3o5xLu"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-69a50b818c8so330017a12.2
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 22:45:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LSHAGu93"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-698a9f11776so412234a12.1
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2026 22:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784785499; x=1785390299; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1784785612; x=1785390412; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/v6lBhg1oIN3yUphI0k8bShUlANofncArNDCE53+BIw=;
-        b=Ji3o5xLun1yY+TY89Ep0SPDMxR8AopZ4mgGV0G4XE+oOXAQse62UmsgfhxgxQH4hq7
-         qpTc6se0JWpBvewBdb7FEeD0DQsspl6SAtLdrZhygt3gXCJ+Iosme1eSV99/+yXZHcci
-         1+6phrKr86MSgP+1PlQmiScVYESaLcKrJp1bVAnX7zGl9+sc87OOKjEZH9hWXrNy4qOF
-         n+tajP7SvnT1I821IaBMwAVqGPucRHhwCwWLwdbC2wnioiIRcWBC8Rad0fuU8hiddKAI
-         VxiDfjEZzGdZTd86jHaynGrEH96Iu31yfqPfduTWfA6Mpp0fRUN+BDYwuw8oiDgoo2vy
-         fxcg==
+        bh=79L6IXq0vTYjMqT4xw3+/hBfBny+QPWhqEAYp7hGdIw=;
+        b=LSHAGu93/WVo/DXg2Em6Z6aBev79mGrKrww1yJ1wyCLMiu1Jm2iVo/3jPYz6qQipET
+         rRbtx+iCVBMePVH3dtEwXLT6JyiaofMKzUIpEuFt9Rl4aqTWGCli8uGRAUSRgSDoUSdM
+         r5HtU4iK2aXXQEdBzCwhxCpmSyFfVKd1dx0FKaeydu1/8hAHjfoROAQuxRgWUuQpuADu
+         ZBc6vV4FF+u33Ubijeu3zeRGpyct9P9jVyhKvFUYoi/dK++NpCVXcAiS1/9Z7mFcS4gY
+         1Vep1OKb3dkrtpnmaZxn7dhP6NkSiMXb9FCfl++fpxJeo9tWYQgzQSan2jmrfZjvta/S
+         gq/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784785499; x=1785390299;
+        d=1e100.net; s=20251104; t=1784785612; x=1785390412;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/v6lBhg1oIN3yUphI0k8bShUlANofncArNDCE53+BIw=;
-        b=RsrK2+jmlrE9uKpXx5ioWLxBQeq/G5HeZSkzJHTl8BGIT+GqXodsYgEjIitPnEbcxW
-         dUKj8Pa8rWiMDYPWMcS+Na+DrjH1UVwNuuV4z5r+nMuJtRMFusDk+Jeowy4aru/xb91p
-         y4jQzLPjCzk9RR5VUpa9Qv91Y9T4eaLP5+ztNWyagV9lLKugfy7JG219/4fKeW2iA8Ni
-         Iy/34wi/Wr5lhyFQOYLSYKveImvgoonWD1xw831vCJ4BNJUEbX0qUipujqJCyf/TN4WO
-         fTlWwWJbY1bJebHGUuzZVPPo82dsVaPfAl3gHUWyN8tk60svFpxYy74L1kV4fT3xeHuo
-         Clpg==
-X-Forwarded-Encrypted: i=1; AHgh+RonfPgCvnuV23BjoOYZC+eEFy2azanNw1ftGNULSY1i0xow4sPaoJe8kqPSABp79W7nxDPPIQlF+Vs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzL8FzqWCaMzAV33FU1Vti7IRPuCyFky2NQRkTPFme4mE/p1r9v
-	VS18HtCgpyxmrfoOzhIuERipz0o1qkCNX/Q66ailOeR3e8X5k6Sm2tqF
-X-Gm-Gg: AR+sD13c/L/gULYCJ92rvbCKe30K5AZofozpYp5GrtWJVImbdnPW6FwDXv15hDpUaA3
-	KSKnOEUM88e8sguHuf7wg55AjqH88qJ/K4YuG/SPitASBD34FI2E8qpveFaTnVCMjlmbDeQxHBl
-	YdWhB0cuZGeBNixDvRIoVV7gaALonwU2PiRoNU2mr6dGfl4bgZpeKefKIgbBeJZkw23fPCh7bEr
-	qdV33NxaofDzraI4mcf2IqPWgkPNK85Fae92ECeYGMUqzGfHAzM4Ywt/C6e/KC6RV+twL+DjSI0
-	ZG1W4LlO47wwdzYseUbNbsKHfpKnE9Fk9YsXNDKXxxJ24JiEYk9VsWtT+4xoFaq5PtdVUhQ0Qbr
-	nzRBfZo7VIYApmMqpoY4WAVS5GoLE51ukftXjUP4qRUtAuAMm4nC8IBSYSyJXmgaAD+DabgOosN
-	8/KTYNPyEGoshi0KTYWKeHGmu9u2xrIuhBIq/I6Dk=
-X-Received: by 2002:a17:907:3e06:b0:c19:6d4a:4261 with SMTP id a640c23a62f3a-c1c50c9aa33mr70460666b.63.1784785498617;
-        Wed, 22 Jul 2026 22:44:58 -0700 (PDT)
+        bh=79L6IXq0vTYjMqT4xw3+/hBfBny+QPWhqEAYp7hGdIw=;
+        b=BPDFT8fSVjehhivNYkDcGhVKZtdaQoYHjon1s1HWhw1DEyupSlADqkOGCElqYDNNdq
+         RAD6xx2UpNjF8mY0p28qPf2rnEe+U1Bvoi6MoeOajxPI42obTdhmHjeNGmFy1FyzBD+7
+         o9G8fTczan7ZdikgM0O1vqAho6HFpZFvGJppZcf43ep6dW63+5td0VC2C9e9+uHRneKF
+         ctSLJmANvgbXV0WfH8woEpTf6zQbUfoaVIaaVHsKQvroISxhl4KcdLo4zqpSf1nFT6rx
+         iQLYlhkKB86iZvB5VTDH1u5uHnuv9dIjxGsUIOV5irSRuknC61bPu/FMXLBpO9Hhh5Qp
+         RkTg==
+X-Forwarded-Encrypted: i=1; AHgh+Rp2ekV2As6o/1oTNrcFrg1uvLD2fURXLnwbDnJnAyUi6dLDbEITzqKEdwxYObIaOFDuub+cpValIRs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYyTt/lC4E3idYBGpiYqACzYz3/l2urY23Dt3H/Lk2MJaQkzUY
+	PuWHEBTGFXcZM7u4W9a1G65HTIraQ4eY9UB7lCcJqqDh/Gom7UktwOPD
+X-Gm-Gg: AR+sD10r+UUr6eWbV+9qmbdOxQ5hqGg1Nz+3azTaTugLc6dikUFXZo+RK2qfeqhnxUm
+	vhv3jk4Oua+YKZ6EHdF9c02rR6oE6GJLqAj6eQBGjc0xgVO4Y9JFCLwXy2calBjGWfghcc2hpPj
+	ixb9E5XwuuJ/ljwDLkbJ0TWu5y3SA0IPD/cT9zhLjEt2NZKgaaMihPtVdjK6+W+4gqcO6eBILzS
+	DpeDH/ePkrNWiPuk19gHwdTlveD8ZTt3MThSzxoi5Jqw6jdft94o+IZyobSKYkxK8rfJydYlEjI
+	QHDjgK781E03wHtAXaTyYrKLsgjM1j62Qq1wFgnzm5xikgcJQpDI7F0g3EmXZFhil9EPAQ6m3/W
+	TVz31Y4FIYsFX8LdZ1EMT9Udqh3zeDpwLpHXy5sho9m2PWBdmOz7GMlLkRrWdeOP/YG3GQnXawe
+	pBGcrf/tB4tfgQREYW2x6rPBm521mM7EyVawAOvonJypC3duhfZA==
+X-Received: by 2002:a17:907:3c95:b0:c12:6dbf:4a80 with SMTP id a640c23a62f3a-c1c50b371famr67532966b.63.1784785612184;
+        Wed, 22 Jul 2026 22:46:52 -0700 (PDT)
 Received: from gmail.com (83-233-6-197.cust.bredband2.com. [83.233.6.197])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1c32ac8c3esm189241366b.23.2026.07.22.22.44.53
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c1c32acb462sm189632866b.25.2026.07.22.22.46.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jul 2026 22:44:56 -0700 (PDT)
-Date: Thu, 23 Jul 2026 07:44:52 +0200
+        Wed, 22 Jul 2026 22:46:50 -0700 (PDT)
+Date: Thu, 23 Jul 2026 07:46:48 +0200
 From: Marcus Folkesson <marcus.folkesson@gmail.com>
 To: Janani Sunil <janani.sunil@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -79,10 +79,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
 	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-Subject: Re: [PATCH v7 5/7] iio: adc: mcp3911: Add support for spi-device-addr
-Message-ID: <amGqVEUujfo7errO@gmail.com>
+Subject: Re: [PATCH v7 4/7] dt-bindings: iio: adc: microchip,mcp3911: Add
+ spi-device-addr
+Message-ID: <amGqyP7O6Aam12ss@gmail.com>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-5-7781cd74ad75@analog.com>
+ <20260722-ad5529r-driver-v7-4-7781cd74ad75@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -90,46 +91,42 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="MtfhSntS9TW1Vu1E"
+	protocol="application/pgp-signature"; boundary="UwOsK4L2pA/cHaH4"
 Content-Disposition: inline
-In-Reply-To: <20260722-ad5529r-driver-v7-5-7781cd74ad75@analog.com>
+In-Reply-To: <20260722-ad5529r-driver-v7-4-7781cd74ad75@analog.com>
 
 
---MtfhSntS9TW1Vu1E
+--UwOsK4L2pA/cHaH4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 22, 2026 at 09:54:17AM +0200, Janani Sunil wrote:
-> Read the generic spi-device-addr property when determining the hardware
-> device address. Fall back to the deprecated microchip,device-addr
-> property and then to the historical device-addr property to preserve
-> compatibility with existing devicetrees.
->=20
-> The device address remains 0 when none of the properties are present.
+On Wed, Jul 22, 2026 at 09:54:16AM +0200, Janani Sunil wrote:
+> Add the generic spi-device-addr property to the binding and deprecate
+> the existing vendor specific microchip,device-addr property
 >=20
 > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 
 Reviewed-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 
---MtfhSntS9TW1Vu1E
+--UwOsK4L2pA/cHaH4
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmphqk4ACgkQiIBOb1ld
-UjLb6BAAsp7UZzSbFXMXGJBLOP8h0fXtzzfybl4Icf9WnS1tdMe9GfD0PknCvRRB
-0CSbaxYBOVTFks+BWKYX0VgR+2hQ8bEl6UyHHOn4SQE/nunRyxMufzh9UZ2VAANf
-iCg5geMkIYBgXNhW+LRgeVW03LyIPMUVdlrS3M5ef1297/e3BMgI6J7DJ4ppQ0V+
-ZB67bGDEnyDlCHcSkO4PR2Qppbhr5ZLMdWnBBveHaIUa44jSDYD5Df5+6jMnLwE7
-Y9qTbcxzzXrrxucd3GI8h05metm+adbUgSsTDMjprd5kxt4JzEnBhmPJPLMWBjRN
-QqcbbtS7y+AXQHGcVCytNHbgD3Hw6fQD23yaYtz/H8pNAF7sTpux8BgYsz0BaMcl
-yDZhsSFJPoAtJcol85vSc5TNPJby7Humys6289Q2B8qbi82uXK12rH7D/XNbpHqt
-D5W0XE1hKlN3BPKPF6AmPLO62wpdmKRmDavjERt8YA4tWhdZkZ8cosvKhKIEXeIw
-VZ2YEsr4LQJRSgWGLtbmUbg97vUyBMZ6/LeZUDova0Zt1IbmEI2FAOnHXbtqb+Lu
-aosMxoA2doxH7nE7zPWcqQAc00gTQj8FzHXPdsKiIMn/017AqFVyIfquxCNHAWcw
-MsAbqJWelsA2qe2ygt6uJnhoJxsIuRMrfgnqRPA1t3KPzy647QI=
-=Nsy1
+iQIzBAEBCgAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmphqsMACgkQiIBOb1ld
+UjKRYg//TJFiYnH8oi750x23ZsW9YOn+zad9AJo3S7JxvsH+f6WyYi9hRyocEFbb
+Ygq+efksJLOjfo1EkUbmhJ32IqK0geY4PFwJXUUqGXd7lNlMBUD3qt0rXpLw4ZW5
+uwtVfC4xFfg91IhKC276Py0ccIoT9XkKrL8PKmXw4uc9x84uufYomAfDk72QhYpU
+ThptLT+Ucl9D63a71AsmYy4+KuQEFc23hX+WHr36B2PTFg0ylikHOI1yyOi/uoHY
+BrvnXnw15J+2q3qkS92iLzhSCGDbwMDpI8p2Jf0ac/id8T2z5R72W7PVQ4UGqCk4
+l1scVduCIduHwb2P6CUT6zQar3NlELvjRWwdm3sVeExmSslXNeFYYaGoRZYX3Xtc
+lOzbHhcxWZMycYe/UvWkgXWqUXKnQZTx8RfAEkoJxT2q7qZWWpOGhfK3BzKDeWco
+0JGQ0ZPiFx7GWmPooul/SbBBlYCAkIudirnpw/GRJsySiHQjHJzhiFWwqipBX4o2
+lKR10iAMG/gPPXdrRHrP/M7wRqo7XgwNyeWRIYiTfFnKWQsI4/dC/1JVwdJ1M4Yj
+zKBjG6V/rhOCiUJ0FGBD+MwToKAXuUQ7m0MFaSq6+DmhS2VBo/ftqsb7TaDqA0IX
++PPjt18DFq4fdNPoj04NLtGzRBersW2FM5c2LMCJCrOBIDEK8qM=
+=/Rc4
 -----END PGP SIGNATURE-----
 
---MtfhSntS9TW1Vu1E--
+--UwOsK4L2pA/cHaH4--
