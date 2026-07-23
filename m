@@ -1,52 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 172424908BB;
-	Thu, 23 Jul 2026 23:02:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09FB5372EE9
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 23:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784847739; cv=none; b=av4wpCW/29mHgZuoD+10kkgKlB8KfivulfnAuSFzrgNjEAKoOeGDzQFPzP/u4b/LH19R6XCMjd/IKxMQqL7J027taYALzA+WM1qRjxSI8TG6OmAkOJfqtM88puCCevZYxKPLHB5qTil43Ut1JIMBzderBiOifpwIujSh3yN+NIY=
+	t=1784848056; cv=none; b=p2AY90jdH+w12xm/Xu5QI3b72fqapKlbkvTGnqUHYOfqmJFgo97XIA/Xa0UZtq7Jbco2xVkK1wnLElMW9uq5sBBF45zEE4VQI8PZLk7i6GiNizJ3iuxVGA1JrlXKNojXVOfyBDbav7PnyEv9+7DDcLGhKjbIkrEQ+tUmhNvYKBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784847739; c=relaxed/simple;
-	bh=nRF7+lQ36GB5xUC0+O913FCfHUvUIT4YIiWrtMx8jjw=;
+	s=arc-20240116; t=1784848056; c=relaxed/simple;
+	bh=W3WAWfwjKm76x5cqeEv1mZOIhGORoHeLMYfdV0IahkU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nmPmOamM37Wzl2oHGky5bH+vI2TrQHTJ+vDsO5qhUmk+I1j95K7Q1dcD38OyevMQWXqvpgE46H7j85vJzKjMmWD8pjx9F5NZrjIEyXktQTMsKTT4FAS5F506KqbB4GvnxmdZexwDcgZ07nvG7YPxuT6Itvr6RuQY7qRpAvyPtfA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/WC+S/L; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Z0EL0ttA83ZEB+cee4Gp/0mjSc5F99YWCl4aIntinqtmcXsSmQIZCGqhoEEJTvN89NVcCL21PIhLtKyn/JBJHsfkTZd/mFjVW0LY4PRFRiEAMlUyCuF07p9G3eZhZcnaQjYSeEZO0Xmd2IE6N3IKZkGw6vE8vHYq3PoAcMR/w3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kKiGqtDv; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YdRWNh3X; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/WC+S/L"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B535E1F000E9;
-	Thu, 23 Jul 2026 23:02:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784847738;
-	bh=7UNqZ4A5NZ/sz3LYwH+ygbQXhe+aJgx7hitGbQj8Rz4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=h/WC+S/LvDz+scCgVsvtO5/mSBQF2MeVHHigum+eGlJc3lGXAGx7fXpbnBUHHJgmX
-	 WGt+pdllFGvKcF64zqPuYQKhcP+fVqm+VMP/pQawx7FDN1sfffNBdNHMTTgye6e5j/
-	 yls1q0mukcRbWwsMep7PLgJNjUNgie2xqYy2tdBZ4qt3M8Yu8YoqAVjccCDT7yFIqX
-	 2y4V+MlxBXNQ5NO6Bt9FsgIe0AJp4d0ozOpw8pvvOcOGdnr/EX2Q6fSUxUmq3rOQN7
-	 GgkbIuxrC7437cNL7tP2SXPo8gpvVTDLxUEYdvG0AEhYHcLZwDM2X6aOpHUA5qOg2Z
-	 kBfjXraEkwjXg==
-Date: Fri, 24 Jul 2026 00:02:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Morgan <macromorgan@hotmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Chris Morgan
- <macroalpha82@gmail.com>, linux-iio@vger.kernel.org, andy@kernel.org,
- nuno.sa@analog.com, dlechner@baylibre.com, jean-baptiste.maneyrol@tdk.com,
- linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
- heiko@sntech.de, conor+dt@kernel.org, krzk+dt@kernel.org, robh@kernel.org,
- andriy.shevchenko@intel.com
-Subject: Re: [PATCH v16 02/10] dt-bindings: iio: imu: icm42600: Remove
- interrupts from required
-Message-ID: <20260724000212.775169c4@jic23-huawei>
-In-Reply-To: <DS4PR19MB997335033645A4555221CC6006A5C32@DS4PR19MB997335.namprd19.prod.outlook.com>
-References: <20260713215842.69097-1-macroalpha82@gmail.com>
-	<20260713215842.69097-3-macroalpha82@gmail.com>
-	<20260715-mottled-uncovered-mastodon-6c08be@quoll>
-	<PH0PR19MB997338D80EB8ABB7C623850A23A5F82@PH0PR19MB997338.namprd19.prod.outlook.com>
-	<82e3c736-f06f-484a-887c-9e156cb7cb44@kernel.org>
-	<PH0PR19MB99733836951FBC9755A5361641A5F82@PH0PR19MB997338.namprd19.prod.outlook.com>
-	<20260719001848.435886e0@jic23-huawei>
-	<DS4PR19MB997335033645A4555221CC6006A5C32@DS4PR19MB997335.namprd19.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kKiGqtDv";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YdRWNh3X"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66NLehed949329
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 23:07:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	F6JlrUHM8mWHgshlpDOWVeAhgGevmf7PFwXz3+xRVRU=; b=kKiGqtDvGGgIboQZ
+	MoVtMg10Y7Lf8ehuVRwX4UWROBvZVse3QW//NjtRcF+RLxcXF2oTLt85k1D9zMXM
+	wUxa1XtuMIs9BDmojQH1/si4plCQGDI/ERhkvNGYNV4atOgI9OPvGwBun9yD5FwQ
+	wkpfRnB4dGNUx76CtvSYBTz8GzHDdemAgSww7fZ/E+ZCdIU2yQE7ulU8+iNGqCZJ
+	tmdrcbL8Kyoo8RcNYgyOJaRnE+owQTp3Kr3Lpu0JGgCxI0ep4LpbkLiwWWXGuQQf
+	4FfbrPlP669ZiXrqeOliV74XFpJO+NvUyF9aDLq+8ypmsD+QH3CFAJSIipPlH5fe
+	oV+FZw==
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fke0kuws3-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 23:07:33 +0000 (GMT)
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2cc6dd43737so25723545ad.2
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 16:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1784848053; x=1785452853; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=F6JlrUHM8mWHgshlpDOWVeAhgGevmf7PFwXz3+xRVRU=;
+        b=YdRWNh3XhkZoi2aBXC7cKFaOhWpATvCEEEBnjv2jf705lZ0z6CfqybDkHLmhtQ/AVv
+         OVx7Sh+zuW5FyhuKLPZkG2mUYzgRv3zHmU/HeGhN/jvEMXZxXjMuS9OCCb3CeSvZVCnL
+         K4Hfn56cEFWdwsNmmJwQhn16NLWDZKCHUvKxTJS6+pdePH/QyvpHRN3dDWr+KFh8FWmT
+         9xmGVRAZkL3J0gglk8118LAxfE4XBuIZ29t1aTGbgHz8c4LA4WmPxh5fL7qS4O5O6YNj
+         kwi2K4vbxsJpQiKTvgVKRIRvaWMIb9Xs/uLeF2zOxdr1ABPVHsaAx4V+GW3uKJ4Un90E
+         T8HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784848053; x=1785452853;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=F6JlrUHM8mWHgshlpDOWVeAhgGevmf7PFwXz3+xRVRU=;
+        b=gNkH44P67vurldlF5anZGN9sTDSf9ufPF/H/iB0nOw6nZqATeOf62348LFtKhTVmOq
+         vmuxqr867jRngoe5JBZMQtvaSYpe0NlNZ51ZqwiGL6l3G5YPMRNrYdSrKQgzsJxKUiW+
+         QPP7+Yf8wwY1FjuzOhfwdnknkaAwHVANSXpBLUKp3ZPT/bZPJ7M+4NTKaFIhscTTJwAt
+         5/denXs2hJ1Jc4c9RqUQhZ1K7sT8gb0ac1NGEAoYDaXffS6yYLYF1TMRbKuoowrOW7R6
+         6g/wk0SXomWpcYdn/enWWO5mNAfZFE7s5Vxf609G6aekM+pLXkOywYgaGn89U7dBCwhZ
+         rSFQ==
+X-Forwarded-Encrypted: i=1; AHgh+Rr8vZ4HOE38hB0x8Lu6dUwl6T2fkgWeToT45DJbS+HlNeS0zUFX133drPxLoLfWFqNaa3Z0bRSRZLM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxe1s7oPKOkMYLmQ0IUPMqYLdNwyIIerhklCTMY6w+MZnGEffQx
+	48DfeXehAsMjAh4yqjkdWgnzZw3oOD7BgVBxNKfU3oRc/ojNX+NybHQln+waymElxS6vuHAQyo3
+	zqIUwrIcUIywdSeSq+nGIyRTxe5+lljtZL6qtqhi4dW9us3rAMzm2uWu4+A1G50w=
+X-Gm-Gg: AR+sD12RhxSI/KD8EpCyvsxiARRuFogU5kOm1Wr8zHuOVGLKI8FokhLRYnGsZOW1rcK
+	SpWvK/Q55OqdeJC+4DuVEEuz9UuBskTdaOR8fUKChZSCYmIloMcnjWCnME0wluxKYFlBZ6M37Sh
+	ywCD4yQSDQYDpIkTHkaV+xCcONio6e8Caf3C1etDaTdw6U1xGdD8OzSWb0hVV44DEkUG0tzRWFx
+	FZXVVFgJyCcyKt+VeD8Rc5Zv7eV17BXHGc0IsbnjwO1e/j18Rm31ry1MJnE8k6ubhQXQmP8JUpL
+	MCErWzR7hllGNNKUaLJIlpfgWZ2OZ9oWrbqu8h3d2hP8IwPhQTPwWqD1V4dZJEqwXEwfMKXhSlC
+	5+mxZwzZziTQ2bO8E
+X-Received: by 2002:a17:903:22cc:b0:2ca:caa5:9c04 with SMTP id d9443c01a7336-2cfa74e3bb7mr62120015ad.23.1784848053046;
+        Thu, 23 Jul 2026 16:07:33 -0700 (PDT)
+X-Received: by 2002:a17:903:22cc:b0:2ca:caa5:9c04 with SMTP id d9443c01a7336-2cfa74e3bb7mr62119695ad.23.1784848052651;
+        Thu, 23 Jul 2026 16:07:32 -0700 (PDT)
+Received: from jic23-huawei ([50.35.46.84])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cf8f3be1ddsm41205935ad.84.2026.07.23.16.07.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jul 2026 16:07:32 -0700 (PDT)
+Date: Fri, 24 Jul 2026 00:07:26 +0100
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>,
+        Michael Auchter
+ <michael.auchter@ni.com>, linux@analog.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Michael Hennerich
+ <Michael.Hennerich@analog.com>,
+        David Lechner <dlechner@baylibre.com>,
+        Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 3/4] iio: dac: ad5686: extend device support with new
+ parts
+Message-ID: <20260724000726.6810f531@jic23-huawei>
+In-Reply-To: <yt72xnzniqqiutxrmfbk474m6jelzfpzdc767emqiwomgxg3ez@mivshbbogi5o>
+References: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
+	<20260719-ad5686-extend-dev-support-v1-3-841ec75cf5d8@analog.com>
+	<20260719224351.1af8aef9@jic23-huawei>
+	<yt72xnzniqqiutxrmfbk474m6jelzfpzdc767emqiwomgxg3ez@mivshbbogi5o>
+Organization: Qualcomm
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,116 +114,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 1rHvQgLtrGFl3QFos01ww-RAmNAIT_vn
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzIzMDIyNCBTYWx0ZWRfX073ggVcCD/cw
+ mFXC7U3gVXbbyILkJqbief2CkoYcz034oVrAeEw57qwhwpNYOihPS9q2PqsoEZZjZxgj6zyGXCc
+ WzcSddbK4LcpcfNmZMx9ksAym0ELucI=
+X-Authority-Analysis: v=2.4 cv=S7DpBosP c=1 sm=1 tr=0 ts=6a629eb5 cx=c_pps
+ a=JL+w9abYAAE89/QcEU+0QA==:117 a=qC1CW/w66vtJz1P9yTJxNA==:17
+ a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=pGLkceISAAAA:8 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=LT-n39R2GKJzoR_0PBwA:9
+ a=CjuIK1q_8ugA:10 a=324X-CrmTo6CU4MGRt3R:22
+X-Proofpoint-GUID: 1rHvQgLtrGFl3QFos01ww-RAmNAIT_vn
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIzMDIyNCBTYWx0ZWRfX1kb059/ibOpl
+ amkCgGjvtgdMYnsCqDaksr1kpqTlEDGTUDuCx1P+J1KStkZrHEgOW1wr99uV1s4gJPaOnGG0y9W
+ 1XmKdb+TxvlEk2IowOBjcEo0ljCR7g2f1ax98CMOevE4Lraejds659yBXhdV7knKoVnG/eAFIy3
+ PKVhQNEfgGeazcJcyigWNzj5CvGC5s2t5qM5PTRWBYUtj8eQhEFsr0zxzTzfNWHFwYfcJisd60x
+ R8+PlJjDY1x8+32psRtimznngNOXlDXWpP3+PG3cctA9QTFo40d6PK2cidKS0nIHQo+Sx6SPGAt
+ 7OUhRoU6RSGQeINsb4ias5+2ZChBm42tfTtYNe2sbdMY8t0IWSim/NA5srzxv9yGwjr2lfe4w7s
+ O7RMlbB9FGehePxH4Y6keXF1B6hthFYLap4O5PfJUPfpvNsR4Lm2WniaAAd8fQ1BYiW4luokkbn
+ hqLYzuFCqtvLId+YQpw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-23_07,2026-07-22_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0 bulkscore=0
+ priorityscore=1501 adultscore=0 impostorscore=0 phishscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607230224
 
-On Mon, 20 Jul 2026 12:16:46 -0500
-Chris Morgan <macromorgan@hotmail.com> wrote:
+On Mon, 20 Jul 2026 12:16:29 +0100
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> On Sun, Jul 19, 2026 at 12:19:00AM +0100, Jonathan Cameron wrote:
-> > On Wed, 15 Jul 2026 15:34:53 -0500
-> > Chris Morgan <macromorgan@hotmail.com> wrote:
+> On 19/07/26 22:43, Jonathan Cameron wrote:
+> > On Sun, 19 Jul 2026 10:51:59 +0100
+> > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 > >   
-> > > On Wed, Jul 15, 2026 at 08:29:44PM +0200, Krzysztof Kozlowski wrote:  
-> > > > On 15/07/2026 16:52, Chris Morgan wrote:    
-> > > > > On Wed, Jul 15, 2026 at 07:52:52AM +0200, Krzysztof Kozlowski wrote:    
-> > > > >> On Mon, Jul 13, 2026 at 04:58:32PM -0500, Chris Morgan wrote:    
-> > > > >>> From: Chris Morgan <macromorgan@hotmail.com>
-> > > > >>>
-> > > > >>> Interrupts are almost never required for IIO devices per upstream
-> > > > >>> maintainers. Remove interrupt as a required parameter for the
-> > > > >>> devicetree binding.    
-> > > > >>
-> > > > >> That's an odd statement. We do require interrupts when the hardware
-> > > > >> requires them. We do not require interrupts, not because we have such
-> > > > >> policy, but because hardware does not require them.
-> > > > >>
-> > > > >> Plus, we do require interrupts when software implementing ABI requires
-> > > > >> them.
-> > > > >>
-> > > > >> Above commit msg is simply inaccurate and misleading. Instead, please
-> > > > >> use actual hardware arguments or how ABI is actually used. You must not
-> > > > >> introduce changes to ABI just "because" while for example making that
-> > > > >> ABI conflicting with existing implementation.    
-> > > > > 
-> > > > > I will defer then to Jonathan on the specifics of this, but from what I
-> > > > > can tell:
-> > > > > 
-> > > > > 1) The icm42600 devices don't need an interrupt for operation other
-> > > > > than for buffered mode or wake on movement. One-shot should work
-> > > > > without it.
-> > > > > 
-> > > > > 2) The existing icm42600 driver does require an interrupt however, and
-> > > > > refuses to bind without it. The driver could in theory be modified to
-> > > > > not require an interrupt though and skip using buffered mode and WoM
-> > > > > when no interrupt is present; however I don't plan on making these
-> > > > > changes at this time.
-> > > > > 
-> > > > > 3) The new icm42607 driver I'm trying to upstream does not use an
-> > > > > interrupt, because on my current test device it's not even wired up.
-> > > > > On future devices that I have with this chip I may pursue using an
-> > > > > interrupt, but it will never be required.
-> > > > > 
-> > > > > So should I go back to requiring the interrupt for all devices except
-> > > > > for the new driver then?    
-> > > > 
-> > > > You mentioned two drivers, I don't know how does this relate to them. In
-> > > > any case your commit msg is inaccurate and not a correct reason to make
-> > > > a change.
-> > > > 
-> > > > Best regards,
-> > > > Krzysztof    
+> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > > > 
-> > > I'm confused, so again should I just go back to the way things were?
-> > > 
-> > > This binding is to describe the hardware for devices using two distinct
-> > > drivers, the inv_icm42600 and the new (that I am trying to finish)
-> > > inv_icm42607 driver. The hardware requires an interrupt if you want to
-> > > use features such as wake-on-motion or hardware buffers. The existing
-> > > driver inv_icm42600 always assumes an interrupt is present and thus
-> > > fails to probe if one is not (making it a "requirement"). The new
-> > > driver I'm writing does not use the interrupt, because I don't have
-> > > one.  
+> > > Add support for AD5313R, AD5317R, AD5674, AD5679, AD5687, AD5687R, AD5689,
+> > > AD5689R to the AD5686 SPI driver. Also adding support for AD5316R, AD5675,
+> > > AD5697R to the AD5696 I2C driver. AD5673R and AD5677R were missing from
+> > > the of_match table.  
 > > 
-> > For dt-bindings, look at it from the question of 'is the hardware useful
-> > without this interrupt?'  Answer is yes for vast majority of sensors as we
-> > can either reduce features but still have some useful ones, or use another
-> > approach such as polling a ready flag to replace doing it with an interrupt.
-> > It is very common for boards to come out where none of the interrupts are
-> > wired.
-> > 
-> > The only time I've seen that they are actually required for IIO stuff is
-> > for very simple devices where the interrupt is the data - e.g. stand alone
-> > threshold detectors with no ADC like functionality.
-> > 
-> > All this is independent of the driver working without the interrupt.
-> > It is fully allowed to refuse to probe because it relies on something
-> > optional in the DT-binding.
-> > 
-> > Jonathan
-> >   
+> > Given I'm asking for a v2 anyway, please break out the missing of_match
+> > table entries as a precursor.  
 > 
-> At this point (if it's okay with you) I'll just make sure the interrupt
-> is not required for the new chips supported, as the distinction between
-> whether the hardware needs it versus the driver is a bit lost on me;
-> however for now the driver will fail on all the older chips if the
-> interrupt isn't present.
+> checkpatch complains adding stuff to of_match table without having the entry in
+> the dt-binding. I suppose the desired order for the changes would be:
 
-Ok. We can leave relaxing the requirement for the older devices for now.
+With a good reason it is fine to ignore checkpatch. 
 
-Jonathan
+The sequence you have is indeed the ideal patch break up.
 
 > 
-> Thank you,
-> Chris
+> clean ups:
 > 
-> >   
-> > > 
-> > > I'm thinking I'll just go back to the way it was previously, unless
-> > > Jonathan disagrees. The interrupt will be listed as required for all
-> > > devices using the inv_icm42600 driver, and not required for devices
-> > > using the inv_icm42607 driver.
-> > > 
-> > > Thank you.
-> > >   
-> >   
+> - ad5696 dt-binding: adding support for the 'missing' entries.
+> - ad5696-i2c: add missing of_match entries
+> - Adjust reformat device list in file-comment headers and Kconfig
+> 
+> extend dev support:
+> 
+> - ad5686 dt-binding changes (new devices)
+> - ad5696 dt-binding changes (new devices)
+> - create new chip info's and populated device tables
+> - Add new devices to Kconfig option description
+> 
+> Does it sound reasonable?
 > 
 
