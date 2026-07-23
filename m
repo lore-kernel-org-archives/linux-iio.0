@@ -1,49 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D97345ED9;
-	Thu, 23 Jul 2026 23:11:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6214311C2A;
+	Thu, 23 Jul 2026 23:15:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784848306; cv=none; b=GNEGmSZrZbnwJNuN8EQu+J1YYqT3EkMFZB+VRzBoOICd1yGJ1K0zspGfXOA9yB8aR1h2qutp9f7IcNXBnbd8++3DO2X4xjwHs/wcabRT6PSCP0BJZ8O2f0DDxSshLsPvHeqttV9MtVTdycjtCPfjYKNLpn2X8mF2cfSj6Hgt5a4=
+	t=1784848541; cv=none; b=RfmwEXiEYKnVP2EQFmmT6PDaATDszLPY6qPt5MP3VN/z5v6KlXkmPrrFTP4VACT6Bh66zBnmLTnBolHvmqQiweJKET50eoRXlwmG0RoC9DORG1JMUTBHWkzZl9fOHF6b8Ldfzkst5Irqlwklm9nh6vHS5I3Qess4EPEqDg2uHSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784848306; c=relaxed/simple;
-	bh=tJE7QLmFm+TE3GEKwAzBI+AjFYpvW8DrXlfdJwgStfk=;
+	s=arc-20240116; t=1784848541; c=relaxed/simple;
+	bh=byqjKbVkLIvqDk6HOYLYZazYe4VJ8u+SNghPk6AXupE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XIas0O6i7gkfbe2zCRlDvKc83UR1kNoaoZ+zyXP2X/JB9c/5JHdPmZZnV/ZDO4WJUwLbwyP+Tj0LcPuouhPmrB80yrmPE5cuOXDSdE7umHkgz2ebKODsjbwF4htNoOkVNiSoi0GXB/WttWPxk3R/XxXwYfGeZctJu09SYEqpvYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Do62ZEJo; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Zv2k+4HjZJ5TpQFlYAnQL9/f8yjQZxYLJg70G1ECN6nTYx6Ct4a/GVygYyC2RaNMpfYVsYQPZh//qikTAPT+/KoM5LmXH3LLfYxrYmZYY9fr40t+WboPg1G1vS4bmmGaqdURQ5wC0oGmmhtUThNMeZuo3Ry07AjFMWUw+0VUJf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d0vIRSI4; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Do62ZEJo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C3D1F000E9;
-	Thu, 23 Jul 2026 23:11:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d0vIRSI4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7654D1F000E9;
+	Thu, 23 Jul 2026 23:15:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784848301;
-	bh=1HQLCQ5a6IsgFhtsBNgUA+ogFOIV9X2KyIa89PgiQdo=;
+	s=k20260515; t=1784848540;
+	bh=yFszR+aoiyfsqBGg5FluY44HniJLCj3pYOcguVsSajE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Do62ZEJoUn2WexzPaXHDOZc+lNZ+qErmVKlYAco6xgjtL5DwoAtkbNvvhTwVlhSUh
-	 KYHnw3vYsdtUW9asvFQMyogJUunoSfRhfOK/4BNRBWjLoSNNdB8EU1k0TORpI/EJgv
-	 i+XMyhDAWV9ow2Y76gbjx+U7M8LiOUohuzmIEiAAb/zBqjv71zQ+qVNgoFsAljRyLo
-	 6keNo4CkDR2yTjeGLAkshG7ngHM/wT+01I2AcstOFJy2lS7YfTuaOiki/trvlw9R03
-	 fBJc5zp6pQVCjvnNkN+Jph8cvLN7OmKe24hHlL9deNGG8NwiVCJNh1E1l0OGh0xBdl
-	 NsXR/44KGbl2Q==
-Date: Fri, 24 Jul 2026 00:11:35 +0100
+	b=d0vIRSI4UckEKljXRVTQyYQQEPewZ0fcFxotGaOgpq+7qKFDqXB37RCmMPfl9tPz3
+	 +fW/ZzA0EgYgbNVyjolcmNIfW9XZVu4EzW08Qoj9lgoJAIdjDkV0TOWjq+btM0yupb
+	 Mslvf10ELmmL5YsYmlfL3GDegyj4dkufbIPAQ81m8HUL0T0G0l+enQqjBqsAsudT5q
+	 oKvJhU/lixlndcj+aBiVsXFee+2pShQy34wAt/EJ09hyS68U0l+DwXuYfo53+5tSlQ
+	 VKz2RqBUTzMkZFjRdoZ8rnorkY+wK5Tk7OJnCTOyckbJ2CI4yXCTHRodmg+iQKXpN5
+	 +lf2p2aDjj9Tw==
+Date: Fri, 24 Jul 2026 00:15:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>, Michael Auchter
- <michael.auchter@ni.com>, linux@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH 4/4] iio: dac: ad5686: update device list and file
- header comments
-Message-ID: <20260724001123.0e201f90@jic23-huawei>
-In-Reply-To: <nxybhlqzbyz5jpwzam6hh72rst37fqcekxhtt6gjqge4t5gh7e@gbbm3g2pklim>
-References: <20260719-ad5686-extend-dev-support-v1-0-841ec75cf5d8@analog.com>
-	<20260719-ad5686-extend-dev-support-v1-4-841ec75cf5d8@analog.com>
-	<20260719223035.0acb57d6@jic23-huawei>
-	<nxybhlqzbyz5jpwzam6hh72rst37fqcekxhtt6gjqge4t5gh7e@gbbm3g2pklim>
+To: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>
+Cc: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org,
+ andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
+ jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+ devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+ krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com, Chris
+ Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH v16 04/10] iio: imu: inv_icm42607: Add inv_icm42607 Core
+ Driver
+Message-ID: <20260724001535.5991853b@jic23-huawei>
+In-Reply-To: <alYoUSf_jGegFP9E@monoceros>
+References: <20260713215842.69097-1-macroalpha82@gmail.com>
+	<20260713215842.69097-5-macroalpha82@gmail.com>
+	<alYoUSf_jGegFP9E@monoceros>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,106 +49,62 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 20 Jul 2026 12:27:34 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Tue, 14 Jul 2026 14:18:53 +0200
+Uwe Kleine-K=C3=B6nig <u.kleine-koenig@baylibre.com> wrote:
 
-> On 19/07/26 22:30, Jonathan Cameron wrote:
-> > On Sun, 19 Jul 2026 10:52:00 +0100
-> > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> >   
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > 
-> > > Update device list entries in Kconfig and remove device description from
-> > > file headers. One can rely on the ID table(s) to check for supported
-> > > devices. Adjust comment header accordingly and update Copyright notice in
-> > > comment file headers with the current year.
-> > > 
-> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > ---  
-> > 
-> > Main comments here are about the patch break up.  I think it needs
-> > just enough modification for a v2 to be needed.
-> >   
-> > >  drivers/iio/dac/Kconfig      | 31 ++++++++++++++++++++++++-------
-> > >  drivers/iio/dac/ad5686-spi.c |  7 ++-----
-> > >  drivers/iio/dac/ad5686.c     |  4 ++--
-> > >  drivers/iio/dac/ad5696-i2c.c |  6 ++----
-> > >  4 files changed, 30 insertions(+), 18 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> > > index d6d560c09e25..ba2065241af3 100644
-> > > --- a/drivers/iio/dac/Kconfig
-> > > +++ b/drivers/iio/dac/Kconfig
-> > > @@ -251,9 +251,18 @@ config AD5686_SPI
-> > >  	depends on SPI
-> > >  	select AD5686
-> > >  	help
-> > > -	  Say yes here to build support for Analog Devices AD5672R, AD5674R,
-> > > -	  AD5676, AD5676R, AD5679R, AD5684, AD5684R, AD5684R, AD5685R, AD5686,
-> > > -	  AD5686R Voltage Output Digital to Analog Converter.  
-> > 
-> > Given this is adding entrees that were in the previous patch, I'd have
-> > preferred to see the more complex dance of a precursor patch before that
-> > which did the reformat (and dropped the stuff form the c files)
-> > 
-> > That would then be followed the new stuff being added as part of the previous
-> > patch.
-> > 
-> > Whilst the ends result is the same I think it is worth doing a v2 just
-> > to clean that break down of patches up.
-> >   
-> > > +	  Say yes here to build support for Analog Devices Voltage Output
-> > > +	  Digital to Analog Converters:
-> > > +	  - Single-channel:
-> > > +	    AD5310R, AD5681R, AD5682R, AD5683R, AD5683R  
-> > 
-> > Eagle eyed Sashiko spotted last entry is a duplicate.  
-> 
-> Yeah, one of the entries should have been just AD5683...
-> 
-> Also, that this AD5337R was missing, which I didnt add because I could not
-> find documentation for this one. Maybe a device that does not exists or it
-> was deprecated.
+> Hello,
+>=20
+> On Mon, Jul 13, 2026 at 04:58:34PM -0500, Chris Morgan wrote:
+> > +#include <linux/i2c.h>
+> > +#include <linux/mod_devicetable.h> =20
+>=20
+> Please don't use <linux/mod_devicetable.h>, to get i2c_device_id and
+> of_device_id it's enough to have <linux/i2c.h>.
+>=20
+> > +static const struct i2c_device_id inv_icm42607_id[] =3D {
+> > +	{
+> > +		.name =3D "icm42607",
+> > +		.driver_data =3D (kernel_ulong_t)&inv_icm42607_hw_data,
+> > +	}, {
+> > +		.name =3D "icm42607p",
+> > +		.driver_data =3D (kernel_ulong_t)&inv_icm42607p_hw_data,
+> > +	},
+> > +	{ }
+> > +};
+> > +MODULE_DEVICE_TABLE(i2c, inv_icm42607_id);
+> > +
+> > +static const struct of_device_id inv_icm42607_of_matches[] =3D {
+> > +	{
+> > +		.compatible =3D "invensense,icm42607",
+> > +		.data =3D &inv_icm42607_hw_data,
+> > +	}, {
+> > +		.compatible =3D "invensense,icm42607p",
+> > +		.data =3D &inv_icm42607p_hw_data,
+> > +	},
+> > +	{ }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, inv_icm42607_of_matches); =20
+>=20
+> It would be enough to provide the driver_data pointers in the
+> i2c_device_id array only.
+I'd prefer to keep them in both.
 
-We've had a few IDs sneak in either through typos or because a part
-existed on a datasheet but wasn't released in the end.
+The match function tries the of_device_id path first and if we
+should ever get a typo or mismatch we can end up with a driver
+failing in a way that is annoyingly hard to track down. =20
+It has happened :(  Now I'd love us to get to the point
+where we could just have the of_device_id table (and maybe
+ACPI on occasion) but we aren't there today.
 
-Good idea to just not mention it here though we might get someone
-helpfully 'fixing' the fact it was missed in future :(
-
-> > > diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-> > > index 003541edb742..b4531b49cb22 100644
-> > > --- a/drivers/iio/dac/ad5686-spi.c
-> > > +++ b/drivers/iio/dac/ad5686-spi.c
-> > > @@ -1,11 +1,8 @@
-> > >  // SPDX-License-Identifier: GPL-2.0
-> > >  /*
-> > > - * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
-> > > - * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
-> > > - * AD5684R, AD5685R, AD5686, AD5686R
-> > > - * Digital to analog converters driver
-> > > + * SPI driver for AD5686 and similar Digital to Analog Converters
-> > >   *
-> > > - * Copyright 2018 Analog Devices Inc.
-> > > + * Copyright 2018-2026 Analog Devices Inc.  
-> > 
-> > That definitely belongs in the patch that made a real change, not one
-> > that is just messing with comments.  
-> 
-> Will drop this one. As I was touching the file headers I assumed it was fine
-> to put this here, given that I ended up adding a lot of changes to these files
-> lately.
-
-The change to update the copyright is fine.  Just do it in patch 3
-instead as that is where you are making substantial changes and a copyright
-update is appropriate.  If you were updating that for other recent changes
-and didn't have any in this series, then separate patch where you can say that
-it is about other recent changes.
+This came up in v17 where I asked why they were missing and Chris
+mentioned it would be fine to drop them.
 
 Jonathan
 
-> 
+>=20
+> Best regards
+> Uwe
 
