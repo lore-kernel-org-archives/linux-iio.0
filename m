@@ -1,110 +1,110 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83BE8456DF6
-	for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 16:19:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217D12F39C2;
+	Thu, 23 Jul 2026 16:22:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784823563; cv=none; b=izqUK179iVSYSF0bslmX1m6oQk1H7cM/BaSoUUIwPAG4u31Ekcydd/aWD4HuCcNl8t9GIoPPg2K1XuVL9qCtyXblMR1uqvKj43dN58v9GO09r3ADZB7dLQGn/4+c5DfyFRbfJd50/44Ep8DU37SBrOLnlh9OlwJYYIFXuWMQ3sI=
+	t=1784823781; cv=none; b=UwwTR+73KivihJABv0oZNSd8FPhSOSheITcm4hRFAdk0fI2+AVoRNcZpNOxhosvLPdvIoH/k1ik2B4Z/tmwS6HPOyFRMHrWNe1J69/9RVeUKmTOeKOUQMnrh7hElRWjs+R2vSchmNag3c73p8HHl5sK6vH3p3jIQFCZDrwHvR60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784823563; c=relaxed/simple;
-	bh=ig76kvL9psH3DE91fqVWlMTnKGxSch2e5BZbLuGTwtw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TbmDC3ljneZPbGeaBKzSzTBRxNy6GkVAkhyKP94kPuGp1IpYPlk1aqIk1SFsE94O/+dnSU7XPFFYcCuIdfT343MJe+m3t6gDkvwHftZciT3OaEfE4C6PcV6lpKFuGE9zjTOf6A2UvSjM7mb8vS2vheduQICDaR4gPqOo8pa4ALY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C/rCwvLH; arc=none smtp.client-ip=209.85.216.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784823781; c=relaxed/simple;
+	bh=Z5ri1e7p0GBMcGQRKmcWT/Ohx1/Nc4ixnJm6BsQJtYo=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
+	 References:In-Reply-To; b=sZnc2shhToDGT6nq/ZO3NGCdBTZgVfGk2OalzxP4p+zLBWyLfN4d4ZGXEDzlTUQA7t8qulUQk0PRWspXSIbZOge2yxJAdOyx48RhnKjxtb/39VYK/V5a+ZTrWVWKvkamcT2cyCubiSJBNYZprr1WJx+dXZdl82GcncDEJ8+wXCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=BT+JG3zK; arc=none smtp.client-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C/rCwvLH"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-383cb94f742so857856a91.3
-        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2026 09:19:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784823550; x=1785428350; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lWik9mcOvPSWmwo9ZWauI742Oayf/83cjlLhW4ZICxA=;
-        b=C/rCwvLHmDj4CaD2AwcdFRRbYgP40YDCU9mpFFE0xfhpZ2OgaRYXrJiuf+3msxqeLe
-         M7rvm1EJPI/ERJJd0oV6K0qd3f/iatqYd27yTCPcgpyOIqAYf9J8RBeq7SbdOk6/jp7j
-         XQAlNLRTZxvKKC6yDSqeKcUumQb3RdRrQRv+VSvEElmq0Mh3Z+jh22bRnEjbQ4ZkxuwR
-         alT9Z8KQ2VaqBPXASUu+O7gF5LYbrmePVn8QNusG5ESiQ73JS0Lzj/y59M75HjLuPAfr
-         Ptxysuvf0Lst+64/gZtM7eIyFKNqLbeC/pqoX9IekE/RTOGA8swWliu/taBsR7xC7cvC
-         1v/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784823550; x=1785428350;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=lWik9mcOvPSWmwo9ZWauI742Oayf/83cjlLhW4ZICxA=;
-        b=blUDzjxlw/bSbIK64mmajFDV3DAVFdFq2dOUS1gG1TpWN2fCKWJwTp87R90pFGVKws
-         CsV/iCWRlFzwiWwKrVSbE2j/OCitr9VMIYynaAMSsujGg1iY65fVlYoI0C3TjC3w+OBD
-         ldJT/eHMQrfPUO8+A8Q+MCLST5YQsVRfPE0FPysecs45f/95iwn7iWU43F96xuYwAGnT
-         d+WeBQmsO9yHOFrpqGcCCJ1tJYL7nNHHjn+0UM9IIaRhoP9F97gRET2hiKdsrUQ5cAJv
-         NJyq3IYbJ95JMeqHFCNmxalgkINRsvQG0AFLJ57ir95qjQuTQngLwkpVbPSl64/xL4cB
-         vHMw==
-X-Forwarded-Encrypted: i=1; AHgh+Rp5wM4DEz2fbPrb4EpJDqiW+NCdIpisRnvK2P0KUmh1GDdCEVD6+qrQKX1jZxE7/c2VVI4q7edMC1o=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxWuOP23HWogR9nYuhzPLlPn42/ehSzG+7fJiK5ARLZiXgDzoc+
-	cgTV3xY9mKn+75GTtTXqQ+jeOaZxYnI6HyYh3XW/yVswYyuvQnqrQOcj
-X-Gm-Gg: AR+sD100YfzeaF88ygEOUB2PJ50XmUZJotsRmqkdQT4Ea0eQCXF6RLaKFTueOid0La5
-	U/eNM1xoX5bX3VfsxGJPCMYNOw2L3iflffaCd+l4ky7qTVQZs0movKgemmIa0//TXv9F8OwRPKF
-	Nnz5ZTpk5MNmSSqwPp93FTlUMfbixB3bUMqiWOd4SZ7dwd0YFuKTCa383rmYDq4zLo0zxf8nktf
-	ZgTMGvLT5IMvjrd+XcZUZ6loXp8AN82c7V6jCcUiqF3Z3/YG6teU6G8UBo72dUqQh43lmg52Ul7
-	pttDx6jQ5zXfmPoeis7ZxV01MTdtOUtQgBS+6keeJbYB9eMel9Jnbc5/T8y4++kUyG3+3XSNzKB
-	NPyHYc8969ErQiOvd36kHrptczTHLyspcIsFyyJ0GYDMOEXCGGpBtcMcEXWff206dV77TtE7V9d
-	X1FnFmqWVjNpof3oloVJ9NYct1kjhEhGUBZovb0xNDp2URONevJrEyIi+QrJaM5yGkG+V6I4ElK
-	hE=
-X-Received: by 2002:a17:90b:1642:b0:37f:f4ae:5f25 with SMTP id 98e67ed59e1d1-38ec6a51c61mr3504827a91.20.1784823550345;
-        Thu, 23 Jul 2026 09:19:10 -0700 (PDT)
-Received: from debian13.localdomain (bb219-75-96-14.singnet.com.sg. [219.75.96.14])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-38ea47f4d31sm1910241a91.1.2026.07.23.09.19.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jul 2026 09:19:09 -0700 (PDT)
-From: Adi Nata <adinata.softwareengineer@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	u.kleine-koenig@baylibre.com,
-	email@sirat.me,
-	krzysztof.kozlowski@oss.qualcomm.com,
-	mazziesaccount@gmail.com,
-	adinata.softwareengineer@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: linux-kernel-mentees@lists.linux.dev
-Subject: [PATCH] [PATCH] iio: chemical: sgp30: cleanup codestyle warning
-Date: Fri, 24 Jul 2026 00:18:49 +0800
-Message-ID: <20260723161851.21722-1-adinata.softwareengineer@gmail.com>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="BT+JG3zK"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-02.galae.net (Postfix) with ESMTPS id 7F4131A118D;
+	Thu, 23 Jul 2026 16:22:54 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 4FB0D6038D;
+	Thu, 23 Jul 2026 16:22:54 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 162FC11C111F8;
+	Thu, 23 Jul 2026 18:22:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1784823773; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=P9FjUcSgxHdEsXMburt0XM1gJPAJd7G58Z7kpvKR4BA=;
+	b=BT+JG3zKFc9b2QG4EFyMoTUIsGOTnYiKwfSWNhqsITpOPdBro9YvKAUZPqptOifCf2IOKV
+	rczJfSkuIbN9v2oB6s/ROmZHMWzKXQPOY3ld9saf0SNKVllzkp1ZZjdvN6a7qlM8V0+j1E
+	ZCd67EY2vLwamdsqCxxR+icVDdULNu5iX/2IhpBTQVaDDbi7ExCAyA1RSB/bR/8CgIEq5B
+	3fqQKol1rl4z0cfvRwoSh7TlJ30VesZ8EtrAoThhRuCbRC3iJTTvl3YComTRguzwE4EXmh
+	x/97kBvpa8VoWrLvAryDpetdUpc4HB+VgiDpxVmv81J3gzFqhx53HUCNZrbVwg==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Thu, 23 Jul 2026 18:22:47 +0200
+Message-Id: <DK637ZCIRBUN.2YESFM7RFP8PM@bootlin.com>
+Subject: Re: [PATCH v7 9/9] gpio: realtek: Add driver for Realtek DHC
+ RTD1625 SoC
+Cc: <dlechner@baylibre.com>, <linux-kernel@vger.kernel.org>,
+ <linux-gpio@vger.kernel.org>, <linux@analog.com>,
+ <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
+ <james.tai@realtek.com>
+From: "Mathieu Dubois-Briand" <mathieu.dubois-briand@bootlin.com>
+To: "Yu-Chun Lin" <eleanor.lin@realtek.com>, <linusw@kernel.org>,
+ <andriy.shevchenko@intel.com>, <mwalle@kernel.org>, <brgl@kernel.org>,
+ <tychang@realtek.com>, <wbg@kernel.org>, <nuno.sa@analog.com>,
+ <Michael.Hennerich@analog.com>, <jic23@kernel.org>, <andy@kernel.org>,
+ <u.kleine-koenig@baylibre.com>, <dakr@kernel.org>, <bhelgaas@google.com>,
+ <o-takashi@sakamocchi.jp>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260723034237.2501507-1-eleanor.lin@realtek.com>
+ <20260723034237.2501507-10-eleanor.lin@realtek.com>
+In-Reply-To: <20260723034237.2501507-10-eleanor.lin@realtek.com>
+X-Last-TLS-Session-Version: TLSv1.3
 
-Reported by checkpatch:
-FILE: drivers/iio/chemical/sgp30.c
-WARNING: Prefer __packed over __attribute__((__packed__))
-+} __attribute__((__packed__));
+On Thu Jul 23, 2026 at 5:42 AM CEST, Yu-Chun Lin wrote:
 
-Signed-off-by: Adi Nata <adinata.softwareengineer@gmail.com>
----
- drivers/iio/chemical/sgp30.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
-index f10bbebc29e4..c33592a1e0c9 100644
---- a/drivers/iio/chemical/sgp30.c
-+++ b/drivers/iio/chemical/sgp30.c
-@@ -82,7 +82,7 @@ struct sgp_version {
- struct sgp_crc_word {
- 	__be16 value;
- 	u8 crc8;
--} __attribute__((__packed__));
-+} __packed;
- 
- union sgp_reading {
- 	u8 start;
--- 
-2.47.3
+> From: Tzuyi Chang <tychang@realtek.com>
+> +static void rtd1625_gpio_irq_handle(struct irq_desc *desc)
+> +{
+> +	unsigned int (*get_reg_offset)(struct rtd1625_gpio *gpio, unsigned int =
+offset);
+> +	struct rtd1625_gpio *data =3D irq_desc_get_handler_data(desc);
+> +	struct irq_chip *chip =3D irq_desc_get_chip(desc);
+> +	unsigned int irq =3D irq_desc_get_irq(desc);
+> +	struct irq_domain *domain =3D data->domain;
+> +	unsigned int reg_offset, i, j, val;
+> +	irq_hw_number_t hwirq;
+> +	unsigned long status;
+> +	u32 irq_type;
+> +
+> +	if (irq =3D=3D data->irqs[RTD1625_IRQ_ASSERT])
+> +		get_reg_offset =3D &rtd1625_gpio_gpa_offset;
+> +	else if (irq =3D=3D data->irqs[RTD1625_IRQ_DEASSERT])
+> +		get_reg_offset =3D &rtd1625_gpio_gpda_offset;
+> +	else if (irq =3D=3D data->irqs[RTD1625_IRQ_LEVEL])
+> +		get_reg_offset =3D &rtd1625_gpio_level_offset;
+> +	else
+> +		return;
+> +
+> +	chained_irq_enter(chip, desc);
+> +
+> +	for (i =3D 0; i < data->info->num_gpios; i +=3D 32) {
+> +		reg_offset =3D get_reg_offset(data, i);
+> +		regmap_read(data->regmap, reg_offset, &val);
+> +
+> +		status =3D val;
+
+Can the regmap_read() fail here? We are not checking its return, so
+maybe status will contain garbage?
+
+Thanks,
+Mathieu
+
+--=20
+Mathieu Dubois-Briand, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
