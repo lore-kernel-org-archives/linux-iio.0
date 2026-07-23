@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14F435C6BA;
-	Thu, 23 Jul 2026 23:18:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E7840B0ED;
+	Thu, 23 Jul 2026 23:25:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784848732; cv=none; b=sYPZVAAeBY/eT0oTXcNVLrcSRoie+x/76V+hU6pvo9AJ6UjnrUGSabE2MdnJaCAP02OgN7y11Y0zLy9mptVq+Q2JnfNPfarmo7K4zKdH/YRPu/UqPGbst4k8OWFsWlnYegBbBSieIBvXjcI7E3jHGbCXfdKFT1TWQ4tzJ6uC8o0=
+	t=1784849114; cv=none; b=F/Fdibg7itPT0QyNXzAm7B01Gx6S441Hydb+K2CDtJR0T5XX27+9V43gxtevazrDSp7Zf03c5iZPCFtnUlJkGd4XgW5+8FV1J2UaJjBAh+VEc+T8/vjLqRrzdb+G3ByWeuWIq2Fqzk2zoynUhoeosvIKTmpC7BAXG4Th20PsuDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784848732; c=relaxed/simple;
-	bh=hH/gELiYQN6zzc+XOXAkEfoUH5nQ95YFtFYIYh5yhyM=;
+	s=arc-20240116; t=1784849114; c=relaxed/simple;
+	bh=RvFzBzYzArkmBLsuamj0bKNRYY1+HoTS9pYGfhO6joI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TMM+/xvRN5O2RHdPx1cXKSsSiWGilpw9iES2BOX1Yv8yeIm78QGaCemv+pcQs37s6fUmYgnb9UJnaL+2d8z1LukbqLwEFLMMnW7ssN/p8n3qMg0Wa2hPyTzMwywb6C88XzdGGnFD/Wy7VxiAtbTCr+6g+9q0rJBfOgrE3+CZl+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eAeOzzn+; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=Z13IfRYiuQNhvzujvh4M7DRnppBsMPbPRC1Zc4cK5wu3LzwmiPnHjqGVy4w2XdexDQzicN+fmYpOEjsIm5U81QAsGsKQyigNunDnwxamYaBtKTH96exG9Ik9Y3sPUhQmqSJGilBrXLXunDhzlIUTa+vArqI/L8Q5vrOCiykYWZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LHZamSOa; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eAeOzzn+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F831F000E9;
-	Thu, 23 Jul 2026 23:18:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LHZamSOa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBB81F000E9;
+	Thu, 23 Jul 2026 23:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784848731;
-	bh=03L7NoK71JrSO2+rlndvZFvmPMFXfiGEYY7Ka5jQX0A=;
+	s=k20260515; t=1784849112;
+	bh=JBe4NscLq/hf7ZGAdF/CUOznX7tcAvEtK6uzgB8k7wk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=eAeOzzn+ejgsAK3MuzY+USuuKCeIj1Y6dJpdvbqT5qZtzGGHmyb8FB6Erd8xKYb7F
-	 rzjxNkCkdYb0G2spmkFVfhPE1fmxWYsWwMlYvsat8J1tyR7y1NOprfk5TXDTcT317+
-	 LWpF3Hgw8pVs5gWUVOVYPLsPovjt5jDnftKizSfOjeGA4RkpXGSONtnndnDTty74GQ
-	 GCS6aWIi5VFntYua/9ffn+Z/bnBNktAbhSognIwOASSG7U27XW5G+n1KIZvT0+0Y+W
-	 sTjltp0GdfmW5AbDs0JjOiExjh7B/zcd9MaEPhKdKppUTOC7/efZNvsguVh942XfgK
-	 y0IFBPGlb0TKA==
-Date: Fri, 24 Jul 2026 00:18:48 +0100
+	b=LHZamSOaTuCcmkunlmSVS/lr0WLxHn5EAKl6o8tNj/q9dHIYudQOpljto5AJSEtdL
+	 tkw97G3aZgGkMaEzwO6Flp/DQJYK5hIFu8OsAtXAER26Ou7b7BGe7CZ+bYb5ycHGgl
+	 5mZKkrFfLU8nhF6gOD0sigqbVIJ31F688UTJ8TwSvJr2Hlf7DZ22L0d/6qlD0NNsQc
+	 kQegTvZEGdiEUwCFKbdnm+sbKo9t6Q/ooK2QAzlH7lVvY4TRvhFKj71f6VJM/3gH32
+	 bUM78HoV6MWa6WSXD9ZbIgQl9nJ2v9DlSiv/Tld1P3XULiD1ORYHeFy6yElNcE/CFJ
+	 +/gwkWs+jbkkw==
+Date: Fri, 24 Jul 2026 00:25:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
@@ -34,13 +34,14 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
  <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien
  <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: ti-ads112c14: add debugfs register access
-Message-ID: <20260724001848.42db9509@jic23-huawei>
-In-Reply-To: <c8bd955b-1d1f-40e1-bede-82e5e9a7bde8@baylibre.com>
+Subject: Re: [PATCH 3/3] iio: adc: ti-ads112c14: add support for buffered
+ read
+Message-ID: <20260724002508.7e176510@jic23-huawei>
+In-Reply-To: <7a600363-ae61-48db-a0a2-34b9a4919b6d@baylibre.com>
 References: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com>
-	<20260714-iio-adc-ti-ads112c14-buffered-read-v1-1-fe6e1c971288@baylibre.com>
-	<20260720012446.27f0411b@jic23-huawei>
-	<c8bd955b-1d1f-40e1-bede-82e5e9a7bde8@baylibre.com>
+	<20260714-iio-adc-ti-ads112c14-buffered-read-v1-3-fe6e1c971288@baylibre.com>
+	<20260720015527.0ccc543d@jic23-huawei>
+	<7a600363-ae61-48db-a0a2-34b9a4919b6d@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,27 +52,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Jul 2026 17:52:41 -0500
+On Tue, 21 Jul 2026 18:23:58 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> On 7/19/26 7:24 PM, Jonathan Cameron wrote:
-> > On Tue, 14 Jul 2026 19:19:30 -0500
+> On 7/19/26 7:55 PM, Jonathan Cameron wrote:
+> > On Tue, 14 Jul 2026 19:19:32 -0500
 > > "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 > >   
-> >> Add debugfs register access to the ads112c14 driver. This is a complex
-> >> chip and being able to poke registers is useful for debugging and
-> >> diagnostic/calibration purposes.
+> >> Add support for buffered reads using a triggered buffer.
 > >>
-> >> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>  
-> > Given this one is trivial, applied.  
-> 
-> Did this get dropped or just not pushed out yet?
-> 
-I forgot to push.  Done now.
-
-J
+> >> The device has a continuous conversion mode, but that can only be used
+> >> with one channel at a time since there is nothing like a sequencer to
+> >> support that in hardware. Instead, we use single-shot reads like we do
+> >> for direct reads to be able to read multiple channels.
+> >>
+> >> Support for continuous conversion mode could be added in the future if
+> >> needed via a 2nd buffer.  
 > > 
-> > Jonathan
+> > How about enabling that if only one channel is requested?  I vaguely recall
+> > us doing that for another driver (though I might be dreaming :)  I did
+> > see your comment in the cover letter about it affecting timing and that
+> > making life complex.  Fine to leave considering this for another day
+> > but maybe don't suggest a particular solution here.
 > >   
+> Actually, my latest thought it to do it by trigger type. This chip has
+> a DRDY interrupt that can be used as the trigger for the continuous
+> conversion mode but we need some software trigger to the single-shot
+> mode. It think this would take care of the timing issues as well.
+> 
+> The logic would be that if the self trigger (DRDY) is selected in
+> the trigger/current_trigger attribute, then buffered read will use
+> continuous mode and fail if more than one channel is enabled. If
+> another (software) trigger is enabled, then use single-shot mode
+> and allow multiple channels.
+
+Hmm. Bit unintuitive but can't really be helped.
+
+> 
+> The timing issue is that (or will be since I haven't sent the relevant
+> patches yet) there is a settling delay before the first sample. For
+> single-shot mode, every sample is considered the first sample (because
+> it is "single"), so the chip applies this settling time on every sample.
+> So it might be good enough to just document that as a quirk of software
+> triggers for this particular chip since they would be using single-shot
+> mode?
+> 
+This is where it gets messy if settling time is reported. I guess acceptable
+given it doesn't make that much sense for an external trigger anyway.
+In theory if the settling time has to happen each single shot, we could
+just merge it into sampling frequency (as no longer depends on whether
+channel changes or not) but then we have to make that dependent on whether
+it is the devices own trigger or not. Messy. I guess one to paper over
+as a quirk / corner case and document as you say.
+
 > 
 
