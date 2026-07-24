@@ -1,127 +1,156 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9455A478841
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 23:46:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC8E484232;
+	Fri, 24 Jul 2026 23:57:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784936781; cv=none; b=unjBr27YMVRC3yUVsWNQvIGrtzP8WNMbkn7Bj04CewEl+0/xyCp2i+zTHIsj0pe7440r0ENlNu2BGcmgBiMpOGOohhrzulAsYAxUHGyuJ8alllTEJiHygtyvt37a5euAtvIsUYng0TkeYwaZYfWhYmwcUfndKeSobAawTAlmMB8=
+	t=1784937443; cv=none; b=XSMi1wz/TPPVfvJAW4h/FCIzy9y1CBjIeM+VM/Z6lmCuAvvaVf/6yHPXVbGIhTTYULhl47ihf/58WgznE+fPnAvSIjLsQa8f8mifwvS4TjYMY3kvPdRRSzIcuc73NQvZ8lwawTjrAUVcJyGXjhfdrRWj2HXcHjfB7zN68jlr8w0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784936781; c=relaxed/simple;
-	bh=HYodwXLgKJemsWjlWqYe0putlTEDSsZ3W5gad2+sPq0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=WirzMDrtEOTpFd14HI/bFbJ6955zZQLOJ5NOF7Tj12oiCp2IrU5CRpR1Mu2n/povkg7XO+/VUXY47EgLK7j2h2rDP5k/jHxWk/vwVNjYr9wRJMpT6HVIS+oZvj3S7H1lDDjNQDBlVOuUfj8umGDjNwCIFs33aLuxYL4ZfeEXz50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SmvRRaK/; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784937443; c=relaxed/simple;
+	bh=VLFRgFB8k6jSFCc2/m122MOjG32aZgdusOd+F9kCF4A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ICWKk+E2aPMlhwK6oIGuy9X+3BjbW4NgHFck71l3UZ+7cWYXt65JDKNeOqMtduPEBfI7/gTdGk1sQQcs5ll9+F5JGBZ/hAoyaKmZg5kgp37a6rbvZzwi3JnlCZuAfArwN0KJrzepw9/sB9ocz09hWX3URz0FZQDrNOkmqM22h3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pq4tAO83; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SmvRRaK/"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c16ac21acso6995061cf.0
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 16:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784936779; x=1785541579; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=gI8goOI5GAfMgkrajbg39zO5GSoNhCTqBmbPaqQ9j9c=;
-        b=SmvRRaK/28GqU1kbroWC7koNm0HmCD0ipEE2afH8MCbr/poSF7EhNIkWpRKMP1tH+y
-         HXwXl2667mWvJi8Php0l6Spe9xZ9jfJo7HE57Ac3MruzigfYJ5TNgthyzNpemYE1mQbh
-         SWT9irzi0a0ZEhCEmO0RqqnWMbPPJYycw7ATG0ZR2Avqc832fq0OPf4rKnJD4WXB0gdB
-         JdHrEy8JP6geisyrNomuGpcvevWzgaV+4hUVtuITqWr4kNUHCBUXPYfgABp8vvhJDjNy
-         8YeaAMnDkxztuu2r+RB1SYUmTf/nd8CfWG1IuF6ucqcOHj0eWJU+wH5aTbXxKLfCNg8d
-         EJvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784936779; x=1785541579;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=gI8goOI5GAfMgkrajbg39zO5GSoNhCTqBmbPaqQ9j9c=;
-        b=geqcQWfJ44FJgtq8xHVLCFRueIW1ig6OWQn5QY6/+aCWBj3BqkD+5UFJvnZmOmYQJf
-         A+DhFg7WnzxLsy4KokFZuXHqOYB419s/+yBA0ccMthWCarORco2eribZSK7hNNnXqLhr
-         OMI1mphkgjnPJKlpSge7H4PLZPUiGP+li0gJIvl+JgnApnMBOjUTdnpcfLlPx2H4PhcC
-         5XqmQIcbJqh4MH2xpUdS6uwrmtj9nrg8KWc8+Gi2/mb47n3rArRnxLwRJbB0d6W6Q04d
-         I8klndyWn62rTRRmQ+oCcNf1zrOl3rWPV2UzP0bjdlNgfoS71GuUjMUElZKKrx8M00TU
-         Hikg==
-X-Gm-Message-State: AOJu0Yxk3XFOk3bp4nAygGlJD6615abszfejdUcgzwx77OM/stTOTBB8
-	SFTSC7d7AIeQIVpy0N5MIPvrNqfNM+YErX2kFObJzsWlZrkYBOuYBsj5
-X-Gm-Gg: AR+sD13UH0xJ753oqT8aa2soqme9AyOxxWzQ3mW+WrDTqySVnl3idi3rBiimoGd38UR
-	ns06ySTMW4tmYC99gPCJp3qQZZvDid8F7Qi0uA6r2FR7Xba8fmdkEkgsnpvwDF91+6lXkHkrNvT
-	9MBKfXonInRRJmm1lwqxO1Oad6eU9cjsm41s75InpvXg8uHpIZuEC053Za4T0BN0Xj1trRRF4zy
-	PoDu8BZAaxvnnYork2HYcwZ/9F0EodkRw7K6n3TkIa/Jdb/kuL3qJOiI57itVjYNIL+shGPFNbM
-	scKCYIZMwYY+qumUPaEc42NtwtOK1p1bvVNVkz7pahFChSJmpTUkRNAoMfqP+7ywBEYRTZ42MoW
-	fVeNpiqpZWDNrdWZjp09J7WpNQap1A0X1BrBsM6SegSGuYO9/iNysv8OFkiiNvCMGu9BuPJbgfO
-	uLvmY=
-X-Received: by 2002:ac8:5e4b:0:b0:528:583:a6c6 with SMTP id d75a77b69052e-529a8382417mr5322591cf.6.1784936779469;
-        Fri, 24 Jul 2026 16:46:19 -0700 (PDT)
-Received: from [172.17.0.2] ([138.28.231.64])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-907e871ef16sm8957836d6.48.2026.07.24.16.46.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 16:46:19 -0700 (PDT)
-From: Yuanshen Cao <alex.caoys@gmail.com>
-Date: Fri, 24 Jul 2026 23:46:01 +0000
-Subject: [PATCH] iio: light: tsl2772: fix ALS calibscale readback
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pq4tAO83"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C39A91F000E9;
+	Fri, 24 Jul 2026 23:57:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784937441;
+	bh=luou0a9E4J3Yzrp5vnno3ir/fWWZK4SMn+VFxGiw2ag=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Pq4tAO83vbZo0KJu2KtgxEOQTp7lUHBWgp2DiCrb7shKZku07bDJ+U0OoLVYJSaVH
+	 7EARG4gkdsSBGgq3Z6xSRlJxwM5JKkkXCtyM6orTTGJUImFSOj+5IRUu9HVwmKfZib
+	 WW4yh7KqrP5xQ7EFxKQD2P9ZzRMc2vreKWDQ7WNPCUNhta9kn2XBgjBetavjSnkS+o
+	 peAlpKiWc12AXBRlg0cTpcRiM+v7m0muJCt/KCMEdYLXBJ2EjTURGpBeq5kWBeoM1X
+	 VgtFG2EJ5dXZ9CAAxAPG7To9C7Y7pVEH6fLIw6Awsf5DJxHLZVQujMVcq2EISeE+Kr
+	 q5R2F26JQByjg==
+Date: Sat, 25 Jul 2026 00:57:14 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Janani Sunil <janani.sunil@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, "Jonathan Corbet" <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Marius
+ Cristea <marius.cristea@microchip.com>, "Marcus Folkesson"
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>, Janani Sunil
+ <jan.sun97@gmail.com>, <linux-spi@vger.kernel.org>, Kent Gustavsson
+ <nedo80@gmail.com>
+Subject: Re: [PATCH v7 7/7] iio: dac: Add AD5529R DAC driver support
+Message-ID: <20260725005714.034b50bf@jic23-huawei>
+In-Reply-To: <20260722-ad5529r-driver-v7-7-7781cd74ad75@analog.com>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+	<20260722-ad5529r-driver-v7-7-7781cd74ad75@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260724-tsl2772-calibscale-fix-v1-1-00a7789f4deb@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWMQQqDQAxFryJZNzAGdUqvIl1ojBoRKxNbBPHup
- u3mw/vw3gEmScXgkR2Q5KOmr8Uhv2XAY7MMgto5AwWqQqQCN5spRkJuZm3NV7DXHQNzQWV+78q
- eweU1id+/cP38s73bSXj71uA8L1pvVj16AAAA
-X-Change-ID: 20260724-tsl2772-calibscale-fix-0cc42518d5fc
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Yuanshen Cao <alex.caoys@gmail.com>
-X-Mailer: b4 0.15.2
 
-The read_raw() implementation uses IIO_LIGHT to distinguish between the
-ambient light and proximity channels when handling
-IIO_CHAN_INFO_CALIBSCALE.
+On Wed, 22 Jul 2026 09:54:19 +0200
+Janani Sunil <janani.sunil@analog.com> wrote:
 
-However, the ALS channel is registered as IIO_INTENSITY, while
-write_raw() correctly writes to IIO_INTENSITY. As a result, reading
-in_intensity0_calibscale incorrectly returns the proximity gain instead
-of the ALS gain.
+> Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
+> from Analog Devices.
+> 
+> The device communicates over SPI and supports per-channel output range
+> configuration. An optional external 4.096V reference can be used in
+> place of the internal reference.
+> 
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 
-This causes the following user-visible behavior:
-- Writing in_intensity0_calibscale appears to have no effect because the
-  readback reports the proximity gain.
-- Writing in_proximity0_calibscale causes both in_proximity0_calibscale
-  and in_intensity0_calibscale to report the same value.
+Sashiko had one comment that I think deserves a tiny modification.
 
-Fix this by checking for IIO_INTENSITY in read_raw(), matching the
-channel definition and the existing write_raw() implementation.
+Otherwise looks good to me.
 
-Signed-off-by: Yuanshen Cao <alex.caoys@gmail.com>
----
- drivers/iio/light/tsl2772.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I would have just tweaked that and  the [] (and still may) bit giving time for that SPI
+ack from Mark for the generic property before I pick this series up.
 
-diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
-index 244f44379c36..2287585711c6 100644
---- a/drivers/iio/light/tsl2772.c
-+++ b/drivers/iio/light/tsl2772.c
-@@ -1274,7 +1274,7 @@ static int tsl2772_read_raw(struct iio_dev *indio_dev,
- 		}
- 		break;
- 	case IIO_CHAN_INFO_CALIBSCALE:
--		if (chan->type == IIO_LIGHT)
-+		if (chan->type == IIO_INTENSITY)
- 			*val = tsl2772_als_gain[chip->settings.als_gain];
- 		else
- 			*val = tsl2772_prox_gain[chip->settings.prox_gain];
+Feel free to send a new version if you prefer.
 
----
-base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
-change-id: 20260724-tsl2772-calibscale-fix-0cc42518d5fc
+Thanks,
 
-Best regards,
---  
-Yuanshen Cao <alex.caoys@gmail.com>
+Jonathan
 
+
+> diff --git a/drivers/iio/dac/ad5529r.c b/drivers/iio/dac/ad5529r.c
+> new file mode 100644
+> index 000000000000..2fd1dd053da5
+> --- /dev/null
+> +++ b/drivers/iio/dac/ad5529r.c
+
+> +
+> +static int ad5529r_parse_channel_ranges(struct device *dev,
+> +					struct ad5529r_state *st)
+> +{
+> +	s32 vals[2];
+> +	int ret, range_idx;
+> +	u32 ch;
+> +
+> +	device_for_each_child_node_scoped(dev, child) {
+
+As below, lets check we don't come in here once too many.
+		if (st->num_channels == ARRAY_SIZE(st->channels))
+			return dev_err_probe(dev, -EINVAL, "Too many channels\n");
+
+> +		ret = fwnode_property_read_u32(child, "reg", &ch);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Missing reg property in channel node\n");
+> +
+> +		if (ch >= 16)
+> +			return dev_err_probe(dev, -EINVAL,
+> +					     "Channel %u exceeds maximum 15\n",
+> +					     ch);
+> +
+> +		if (fwnode_property_present(child, "output-range-microvolt")) {
+> +			/*
+> +			 * DT stores cells as raw 32-bit values; signed endpoints are
+> +			 * encoded by dtc in two's-complement and then interpreted
+> +			 * here as s32.
+> +			 */
+> +			ret = fwnode_property_read_u32_array(child,
+> +							     "output-range-microvolt",
+> +							     (u32 *)vals, ARRAY_SIZE(vals));
+> +			if (ret < 0)
+> +				return dev_err_probe(dev, ret,
+> +						     "Failed to read range for ch %u\n",
+> +						     ch);
+> +
+> +			range_idx = ad5529r_find_output_range(vals);
+> +			if (range_idx < 0)
+> +				return dev_err_probe(dev, range_idx,
+> +						     "Invalid range [%d %d] for ch %u\n",
+> +						     vals[0], vals[1], ch);
+> +		} else {
+> +			range_idx = AD5529R_RANGE_0V_5V;
+> +		}
+> +
+> +		st->output_range_idx[ch] = range_idx;
+> +		ret = regmap_write(st->regmap_16bit,
+> +				   AD5529R_REG_OUT_RANGE(ch), range_idx);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "Failed to configure range for ch %u\n",
+> +					     ch);
+> +
+> +		st->channels[st->num_channels++] = AD5529R_DAC_CHANNEL(ch);
+
+Sashiko calls out that a malformed DT could have repeat entries and so overflow channels.
+Given it is easy to harden against that, let us do so alongside that check on
+if (ch < 16) above.
+
+> +	}
+> +
+> +	return 0;
+> +}
