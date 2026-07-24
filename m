@@ -1,58 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18BAD3AF66D
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:46:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50AEE3A839B
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:47:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784879198; cv=none; b=K7igDweRYP76V2jKH365ggD3cd5hPJF+smm1n3EPfUsWXuIx/JgC+FZqnpiQhBAyKgHvz/7BbJPesnoi36mb9JfAKx1ROaFyEoIiasRi+uKN6ru0JT4GH3Zh9iKYQVje8XoSd1CrxlaHla+uHvgGpFqC1XbFHIT6uvP3btHIPvw=
+	t=1784879232; cv=none; b=o3n/tb8iKlOml07U3Uv4zNUYrK6aqcl587rvu8kHy5KFf79M1q/1tyBaxVdGcR+cwbVSKHD/PPbOpadVWJMMMhza3EZdiru25r/LEA6PcVoRL7ewahXYyyhJjn3EmVTG0bbuYhPpBmqHVUvOHNCfJKmHT4Bx2wqofxW8V4+57Os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784879198; c=relaxed/simple;
-	bh=q+SoAChfHihj2C1OY6mAEkJV8Ndl18NofL/2g0AVns8=;
+	s=arc-20240116; t=1784879232; c=relaxed/simple;
+	bh=VKvmsdynWHHxiKiqHSvpoY73jZ2qPZhhyWjJeUOOmGs=;
 	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=c5CJFEhX1+DMIDVg/v06+XybQz2QskXC3fxAamUqLBDrGX2PbHLGj5Wb3L6axFD0oex0AdW/VdSHTL2OSCFUsjaCgbHaVt0lm1aQxNafIcvHi6VZ9XNK0ladtUP1/kRYZwxOpWzv4XTUe/+QkTB44waglfZNKwLn1nOwHT7M2TA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TRV0nOdf; arc=none smtp.client-ip=100.103.45.18
+	 To:Cc:Content-Type; b=p4YB2g/FQbvIFVPEYmHVlzQbxKUPjX8n4ZGKWR51MME/2G8uJmO/t9xILO5sI27YiDn85Q42Pqx+t9G21ZAz6BNRwWiEgW311mnbTpDu0W9SI2oJZlXKUHtS4RPYK2s73mBpFV6sAQFU7EuX+oVBFLe1mXqtTO9YCUICcsF6mlc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V9guBN7t; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TRV0nOdf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42A441F01568
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:46:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V9guBN7t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C7F1F0155F
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784879190;
-	bh=q+SoAChfHihj2C1OY6mAEkJV8Ndl18NofL/2g0AVns8=;
+	s=k20260515; t=1784879228;
+	bh=VKvmsdynWHHxiKiqHSvpoY73jZ2qPZhhyWjJeUOOmGs=;
 	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=TRV0nOdfcybaTzF2XN+uSDKG/q0YmUw+TY/hMce1fU9c9WVx8GLRSern/xD9hiNl8
-	 s43vmxoCYlnzJQSanNSWTLCXmZBcvulJqItHzF+Bjw7gKySb+nj9RU4yH0Xf4utZkh
-	 fqHWMvULRIntJwY2CszZB9x+3t/Z8FLuFBiXUUFbYyEddsdGTxexvPpDD6oQ//2V78
-	 wZ4pm2kO4BgCYwWeID0w9C7N2rgGrfIYcICojGvOa+KGNdEMuLpgUuRqfPVLHkjRuM
-	 zO4HiCMoTCI2YnyYgXD0UgQc7HkoMg6zhe3zRRBMYjzTuttKfz0amGC/OHtkSclSxR
-	 VB8IWN63Xq+ZA==
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-39c95395230so1120151fa.2
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 00:46:30 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+Rpq7K/NZmUN/hiKAEBv/lsaoC/VKYOZm1TcVmG6J917OPlDcSRWiOHHrKucSIvF48OngYOxZvg7+4g=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxJ4XoYEwyRWO8+84hMBgvaKZDjTiGy6kdDgUtGAYVRQYaz6TDf
-	sAp1/ptgmaIqZUjpnZN22ohnReyr/vmyX4MXLaS9Oo9roe/olzv6wAKFEu/6WohfWbqO2VSqsF3
-	FWInas7yHpYEG/gx1DqBmmYYdoELRch+cvDtZ8dar0A==
-X-Received: by 2002:a05:6512:1518:20b0:5b1:5351:712 with SMTP id
- 2adb3069b0e04-5b2b2e59542mr980925e87.28.1784879188912; Fri, 24 Jul 2026
- 00:46:28 -0700 (PDT)
+	b=V9guBN7tXc6PezDLLrSq4LgmWSQPsklFPdtlL6qlf2qvZocMYqJedRuGf1+z9//Kq
+	 pImbUi327ONahpD34UFLzmR2VpJq+oDArf+q3/wye3zzaU81ZjF8vTzT8f3Y1S6ALi
+	 flw52y4Llyo0LN1dmPXdkSMZOBQ0v0WY+jA5W4+2JIYoLT4DyWiy3blLEqlOvbj7Co
+	 6O2bmwlX4d2l0W9NhKjNdhfasIytFe3f5orCcYI+jqzEhUa037r2x6UYF9A+wUJTOx
+	 PV83uE0j4vy3ExkEx9QL63zlQVzkc26juWkQFuMdnR8y3n+nz/23cB1LSTDZYX0lj4
+	 UowzbfRxigHbw==
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5b2a8e4c77eso139453e87.1
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 00:47:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RobOow4+bAzhOmV+sFcjPlqxAsqN8JQ3fKk1a3xCvDitWFJJB1d9XO7k9iDR978p9/aZWpPZ7cOoeM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy7Ig4mhwnYf/EzLmxdD4g2jWleguGyJEL2EZWUZng1wp4vqECs
+	QXtsRGTu7fsQ2jY2yMUjszaiLQEflgfnHzo/28j2msYVy/ylvYS1uDickeFSUtbXPjuVPXD2Zi4
+	7CtaIAwIM4fsw5utAzNENXCrd2OTEUB0Bf7Nah0mY3w==
+X-Received: by 2002:ac2:456c:0:b0:5b0:17c9:a4f3 with SMTP id
+ 2adb3069b0e04-5b2b2f7c71fmr1094999e87.60.1784879227601; Fri, 24 Jul 2026
+ 00:47:07 -0700 (PDT)
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 24 Jul 2026 00:46:27 -0700
+ HTTPREST; Fri, 24 Jul 2026 00:47:06 -0700
 Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 24 Jul 2026 00:46:27 -0700
+ HTTPREST; Fri, 24 Jul 2026 00:47:06 -0700
 From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260723175632.44812-1-farbere@amazon.com>
+In-Reply-To: <20260723175632.44812-2-farbere@amazon.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260723175632.44812-1-farbere@amazon.com>
-Date: Fri, 24 Jul 2026 00:46:27 -0700
-X-Gmail-Original-Message-ID: <CAMRc=MfmFwx4U4D_FXMUyf-jVh7r8nWvyxJE2yi1LEkUh9ik8g@mail.gmail.com>
-X-Gm-Features: AUfX_mxVD-CwkTGspLVy2DW1kerTLycxmmZGgKBMf7USBKBu13VE2iFPbK51l48
-Message-ID: <CAMRc=MfmFwx4U4D_FXMUyf-jVh7r8nWvyxJE2yi1LEkUh9ik8g@mail.gmail.com>
-Subject: Re: [PATCH 10/12] gpio: eic-sprd: use devm_atomic_notifier_chain_register()
+References: <20260723175632.44812-1-farbere@amazon.com> <20260723175632.44812-2-farbere@amazon.com>
+Date: Fri, 24 Jul 2026 00:47:06 -0700
+X-Gmail-Original-Message-ID: <CAMRc=Mfi69735cg9LQM0g4Osc6WK4Prux-95O3dAG5Zp3RJv3g@mail.gmail.com>
+X-Gm-Features: AUfX_mx79AKNj1qCS6C9H0NjCOtAQc3vPy-utnofV6xM24xjALKd5AgheCkuKq8
+Message-ID: <CAMRc=Mfi69735cg9LQM0g4Osc6WK4Prux-95O3dAG5Zp3RJv3g@mail.gmail.com>
+Subject: Re: [PATCH 11/12] gpio: gpiolib-kunit: use devm_blocking_notifier_chain_register()
 To: Eliav Farber <farbere@amazon.com>
 Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com, 
 	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
@@ -69,13 +69,16 @@ Cc: rafael@kernel.org, tony.luck@intel.com, bp@alien8.de, guohanjun@huawei.com,
 	linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 23 Jul 2026 19:56:30 +0200, Eliav Farber <farbere@amazon.com> said:
-> Replace the atomic_notifier_chain_register() +
+On Thu, 23 Jul 2026 19:56:31 +0200, Eliav Farber <farbere@amazon.com> said:
+> Replace the blocking_notifier_chain_register() +
 > devm_add_action_or_reset() pattern with a single call to
-> devm_atomic_notifier_chain_register(), removing the
-> sprd_eic_unregister_notifier() callback.
+> devm_blocking_notifier_chain_register(), removing the
+> gpio_unbind_unregister_notifier() callback.
 >
 > Signed-off-by: Eliav Farber <farbere@amazon.com>
 > ---
 
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+This could conflict with the changes I already have queued so either it waits
+until the next cycle or I'd need an immutable branch with patch 1/12.
+
+Bartosz
