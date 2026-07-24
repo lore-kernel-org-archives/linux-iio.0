@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9920346A07;
-	Fri, 24 Jul 2026 23:04:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD2D31A07B;
+	Fri, 24 Jul 2026 23:04:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784934286; cv=none; b=r4sHybHqirUVjiTUyesinuPTEopmZXdGRoYe89hWs43mlu7BLo1SkhWYoiBCeIllDgRSHhAuU5Tb002yl4sBiYPKfbhQOFXla22YBPYwUhLqxy+zI7nmOSRcBTe97UHJgBtbSLo9uTcPFQzr6P/iRXpIqMEIlfUdZaujMIzOAn0=
+	t=1784934297; cv=none; b=P0bK0K+Q+2RTAsmw8u3g6kz/XIgIu/Ni5wfiM7kenir9LTY5bsJ+5HqP7er3pTDmUWPm0w18QHt0XHfTJn9YmrYT490t78cGBplk4sEQnmu19nO2Atv42cYi4ZJ+vBNUaD9JZmrDAeWJlxEw2KpmBibmVFkc+bbXGWVUhBirPYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784934286; c=relaxed/simple;
+	s=arc-20240116; t=1784934297; c=relaxed/simple;
 	bh=YswN2yb4hyZpVp3JfyJZn1np+yu0ha3Xp40buFyCZig=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=L/RbdNTixIGyTuMORrvCaAWFfzNanWV0nyPwf2eFuqtt+mH1jyOD1FeQT5A0nrm9MmbW7kPprz6aOQPDu2Hu7vrb/v57J6uIJxfsmyihcjUCeyBXCY12CaxB+WT/CPvojukDKuhhZfAqeV1VquxQVekcFiyaD+17jqQUJb3C77s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QhLZeomz; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=BqpLhJULXK1uk8qQeH51mikSnwvEpk8nCeZrnwCzLYx5wfqeKC1JWOg7mYOHhkwwYrZ6e1Rq6LqGT130A+36ZPqWEVHJ3hHXQpB6fJLfnl/V0UALmnLdNBi7644zCswMDrkjfo1RWjSjbmIerKIHEtssSsaqgsFrcr/uJGaECDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hzGKoVbR; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QhLZeomz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA34C1F000E9;
-	Fri, 24 Jul 2026 23:04:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hzGKoVbR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E261F000E9;
+	Fri, 24 Jul 2026 23:04:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784934283;
+	s=k20260515; t=1784934296;
 	bh=ksQFxE64qO54rNV34FZK8nV9gnk6ejElqDe/XL6zOJ0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=QhLZeomztnUGSru/11b/4h9QuRPPQqc1zqF1zEnMGBR7BgvHFrR8hzq/Q/ld2rSRp
-	 E3/RondvhFp5KOQ6pOfz12TjSwpT4hpuZs2kLiLrtO5Hv7+tYMvtQrFFRta9mphao7
-	 bEp6M1ScxWn8xrJLId2m9i5acfyXCgTGITHTLvAyn/VAXDibqzY8/l3nvdNOYvltu4
-	 KJsYpqT9Y3/m7WbJ8oyKsHyntGLzUQbljwhCeU8ELG3UoML8N+7V7qHk5XxnP4uV5/
-	 m5pVAwSDuQyQCSKbypEM2gC6ThiCwuKrmtXRxBQIB4OKW3nwOQl+T7A9e0NUpzjvkb
-	 VG7Dn/8qZgXeA==
-Date: Sat, 25 Jul 2026 00:04:39 +0100
+	b=hzGKoVbRGeu6Au0fwV9ZwgR6/HYpkrtn+i9pvxqs6J+dUosfOVXlFT1YLs/vEyH9w
+	 Idpv0fu/EWvLGY1eVZ+NIrx735roOks+Z3lxZW8B/kZlE8hJ27kwK/pSH+x6q5kK5w
+	 Wk+kCSrjlmXApKjX6cFY67qvE2iaDxq94gz68iJnsVmAMJpHba13FF0iFVfe3f8dzI
+	 +A5QdoWmhTbqYBuF6Clu5iZZnfgKJ683UaUgJn4gRWXYvHe92O5yjDChSO3eaOB2xl
+	 yj3OqjMVQAtHF+gB8wH7/cLhphL8GDnkYnd5krrgt1qOc7RPD++rsLr/ESUV8hy1hT
+	 kBDnpwUasv8SA==
+Date: Sat, 25 Jul 2026 00:04:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -48,6 +48,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Message-ID: <20260724230451.nH7nAZlVrz7XcuJtnM4SMO6_itM8Av2hlQ0N9tDEEjg@z>
 
 On Tue, 21 Jul 2026 20:24:38 +0200
 Joshua Crofts <joshua.crofts1@gmail.com> wrote:
