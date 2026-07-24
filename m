@@ -1,89 +1,64 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF752476CEE;
-	Fri, 24 Jul 2026 23:35:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9455A478841
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 23:46:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784936112; cv=none; b=J0KWaa/Munz1//BCYW2eIjIIeNnd1whPFGcvXNYu//CpZtkf4/iPsAuY3kGvjEHlLpCWJsbZbYiD6sAP6agFEyde0Ue97aPr8n3idslwePjXgd6d3Lj2BE2Y/DY6BmGRdDhJswgTB1A9A3ZslJhCTB/2yfx9GLjbwksWwr5o2/4=
+	t=1784936781; cv=none; b=unjBr27YMVRC3yUVsWNQvIGrtzP8WNMbkn7Bj04CewEl+0/xyCp2i+zTHIsj0pe7440r0ENlNu2BGcmgBiMpOGOohhrzulAsYAxUHGyuJ8alllTEJiHygtyvt37a5euAtvIsUYng0TkeYwaZYfWhYmwcUfndKeSobAawTAlmMB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784936112; c=relaxed/simple;
-	bh=aYrgDhizOckPspQJ6t3G3K3Lc7NOOpJo78OVx01YiFQ=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=G/cSxaNLZ38oJ0X1nq0GPY0ElORcleiWqC7Akkm8pgkr2qB4x24Wfhj25KXuDl209nPlNLwTXL/IiP67u++BEachw61Hw9arR/4iQCsKPNLl3YZpLwOJuyc1XtIlbzlSCXdN6vhikgAv3oHAtpg6bAtc5HzcC/qwyzIeJuO+DGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E171F00A3A;
-	Fri, 24 Jul 2026 23:35:11 +0000 (UTC)
-Received: by venus (Postfix, from userid 1000)
-	id 93CE9181F1C; Sat, 25 Jul 2026 01:35:08 +0200 (CEST)
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Julia.Lawall@inria.fr, Alex Deucher <alexander.deucher@amd.com>, 
- Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, 
- Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, 
- Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, 
- Borislav Petkov <bp@alien8.de>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Daniel Lezcano <daniel.lezcano@kernel.org>, 
- David Airlie <airlied@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
- Eric Dumazet <edumazet@google.com>, Florian Westphal <fw@strlen.de>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Hans de Goede <hansg@kernel.org>, Hans Verkuil <hverkuil@kernel.org>, 
- Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
- Herbert Xu <herbert@gondor.apana.org.au>, 
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Jakub Kicinski <kuba@kernel.org>, 
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
- Jani Nikula <jani.nikula@linux.intel.com>, Jaroslav Kysela <perex@perex.cz>, 
- Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Johan Hovold <johan@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, 
- Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, 
- Julian Anastasov <ja@ssi.bg>, Leon Romanovsky <leon@kernel.org>, 
- Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Mark Brown <broonie@kernel.org>, 
- "Martin K. Petersen" <martin.petersen@oracle.com>, 
- Matthew Sakai <msakai@redhat.com>, 
- Mauro Carvalho Chehab <mchehab@kernel.org>, 
- Maxime Ripard <mripard@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Mike Rapoport <rppt@kernel.org>, 
- Miri Korenblit <miriam.rachel.korenblit@intel.com>, 
- Nicolas Palix <nicolas.palix@imag.fr>, 
- Pablo Neira Ayuso <pablo@netfilter.org>, Paolo Abeni <pabeni@redhat.com>, 
- Ping-Ke Shih <pkshih@realtek.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Rodrigo Vivi <rodrigo.vivi@intel.com>, Sebastian Reichel <sre@kernel.org>, 
- Shuah Khan <shuah@kernel.org>, Simona Vetter <simona@ffwll.ch>, 
- Simon Horman <horms@verge.net.au>, Stephen Boyd <sboyd@kernel.org>, 
- Steve French <sfrench@samba.org>, Takashi Iwai <tiwai@suse.com>, 
- Thomas Renninger <trenn@suse.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Tony Luck <tony.luck@intel.com>, Tvrtko Ursulin <tursulin@ursulin.net>, 
- Vadim Fedorenko <vadim.fedorenko@linux.dev>, Vinod Koul <vkoul@kernel.org>, 
- Will Deacon <will@kernel.org>, Yazen Ghannam <Yazen.Ghannam@amd.com>, 
- Sang-Heon Jeon <ekffu200098@gmail.com>
-Cc: cocci@inria.fr, amd-gfx@lists.freedesktop.org, 
- dmaengine@vger.kernel.org, dm-devel@lists.linux.dev, 
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
- intel-wired-lan@lists.osuosl.org, iommu@lists.linux.dev, 
- linux-cifs@vger.kernel.org, linux-clk@vger.kernel.org, 
- linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pm@vger.kernel.org, 
- linux-rdma@vger.kernel.org, linux-rtc@vger.kernel.org, 
- linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
- linux-sound@vger.kernel.org, linux-usb@vger.kernel.org, 
- linux-wireless@vger.kernel.org, lvs-devel@vger.kernel.org, 
- netdev@vger.kernel.org, netfilter-devel@vger.kernel.org, 
- nouveau@lists.freedesktop.org, platform-driver-x86@vger.kernel.org
-In-Reply-To: <20260723184538.3888637-1-ekffu200098@gmail.com>
-References: <20260723184538.3888637-1-ekffu200098@gmail.com>
-Subject: Re: (subset) [PATCH 00/36] treewide: remove conditional returns
- with no effect
-Message-Id: <178493610858.699463.6794401814873674138.b4-ty@collabora.com>
-Date: Sat, 25 Jul 2026 01:35:08 +0200
+	s=arc-20240116; t=1784936781; c=relaxed/simple;
+	bh=HYodwXLgKJemsWjlWqYe0putlTEDSsZ3W5gad2+sPq0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=WirzMDrtEOTpFd14HI/bFbJ6955zZQLOJ5NOF7Tj12oiCp2IrU5CRpR1Mu2n/povkg7XO+/VUXY47EgLK7j2h2rDP5k/jHxWk/vwVNjYr9wRJMpT6HVIS+oZvj3S7H1lDDjNQDBlVOuUfj8umGDjNwCIFs33aLuxYL4ZfeEXz50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SmvRRaK/; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SmvRRaK/"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-51c16ac21acso6995061cf.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 16:46:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784936779; x=1785541579; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=gI8goOI5GAfMgkrajbg39zO5GSoNhCTqBmbPaqQ9j9c=;
+        b=SmvRRaK/28GqU1kbroWC7koNm0HmCD0ipEE2afH8MCbr/poSF7EhNIkWpRKMP1tH+y
+         HXwXl2667mWvJi8Php0l6Spe9xZ9jfJo7HE57Ac3MruzigfYJ5TNgthyzNpemYE1mQbh
+         SWT9irzi0a0ZEhCEmO0RqqnWMbPPJYycw7ATG0ZR2Avqc832fq0OPf4rKnJD4WXB0gdB
+         JdHrEy8JP6geisyrNomuGpcvevWzgaV+4hUVtuITqWr4kNUHCBUXPYfgABp8vvhJDjNy
+         8YeaAMnDkxztuu2r+RB1SYUmTf/nd8CfWG1IuF6ucqcOHj0eWJU+wH5aTbXxKLfCNg8d
+         EJvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784936779; x=1785541579;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=gI8goOI5GAfMgkrajbg39zO5GSoNhCTqBmbPaqQ9j9c=;
+        b=geqcQWfJ44FJgtq8xHVLCFRueIW1ig6OWQn5QY6/+aCWBj3BqkD+5UFJvnZmOmYQJf
+         A+DhFg7WnzxLsy4KokFZuXHqOYB419s/+yBA0ccMthWCarORco2eribZSK7hNNnXqLhr
+         OMI1mphkgjnPJKlpSge7H4PLZPUiGP+li0gJIvl+JgnApnMBOjUTdnpcfLlPx2H4PhcC
+         5XqmQIcbJqh4MH2xpUdS6uwrmtj9nrg8KWc8+Gi2/mb47n3rArRnxLwRJbB0d6W6Q04d
+         I8klndyWn62rTRRmQ+oCcNf1zrOl3rWPV2UzP0bjdlNgfoS71GuUjMUElZKKrx8M00TU
+         Hikg==
+X-Gm-Message-State: AOJu0Yxk3XFOk3bp4nAygGlJD6615abszfejdUcgzwx77OM/stTOTBB8
+	SFTSC7d7AIeQIVpy0N5MIPvrNqfNM+YErX2kFObJzsWlZrkYBOuYBsj5
+X-Gm-Gg: AR+sD13UH0xJ753oqT8aa2soqme9AyOxxWzQ3mW+WrDTqySVnl3idi3rBiimoGd38UR
+	ns06ySTMW4tmYC99gPCJp3qQZZvDid8F7Qi0uA6r2FR7Xba8fmdkEkgsnpvwDF91+6lXkHkrNvT
+	9MBKfXonInRRJmm1lwqxO1Oad6eU9cjsm41s75InpvXg8uHpIZuEC053Za4T0BN0Xj1trRRF4zy
+	PoDu8BZAaxvnnYork2HYcwZ/9F0EodkRw7K6n3TkIa/Jdb/kuL3qJOiI57itVjYNIL+shGPFNbM
+	scKCYIZMwYY+qumUPaEc42NtwtOK1p1bvVNVkz7pahFChSJmpTUkRNAoMfqP+7ywBEYRTZ42MoW
+	fVeNpiqpZWDNrdWZjp09J7WpNQap1A0X1BrBsM6SegSGuYO9/iNysv8OFkiiNvCMGu9BuPJbgfO
+	uLvmY=
+X-Received: by 2002:ac8:5e4b:0:b0:528:583:a6c6 with SMTP id d75a77b69052e-529a8382417mr5322591cf.6.1784936779469;
+        Fri, 24 Jul 2026 16:46:19 -0700 (PDT)
+Received: from [172.17.0.2] ([138.28.231.64])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-907e871ef16sm8957836d6.48.2026.07.24.16.46.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 16:46:19 -0700 (PDT)
+From: Yuanshen Cao <alex.caoys@gmail.com>
+Date: Fri, 24 Jul 2026 23:46:01 +0000
+Subject: [PATCH] iio: light: tsl2772: fix ALS calibscale readback
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -92,26 +67,61 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.14.3
+Message-Id: <20260724-tsl2772-calibscale-fix-v1-1-00a7789f4deb@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWMQQqDQAxFryJZNzAGdUqvIl1ojBoRKxNbBPHup
+ u3mw/vw3gEmScXgkR2Q5KOmr8Uhv2XAY7MMgto5AwWqQqQCN5spRkJuZm3NV7DXHQNzQWV+78q
+ eweU1id+/cP38s73bSXj71uA8L1pvVj16AAAA
+X-Change-ID: 20260724-tsl2772-calibscale-fix-0cc42518d5fc
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Yuanshen Cao <alex.caoys@gmail.com>
+X-Mailer: b4 0.15.2
 
+The read_raw() implementation uses IIO_LIGHT to distinguish between the
+ambient light and proximity channels when handling
+IIO_CHAN_INFO_CALIBSCALE.
 
-On Fri, 24 Jul 2026 03:45:02 +0900, Sang-Heon Jeon wrote:
-> While reading mm/memblock, I found a conditional return where both
-> branches return the same value:
-> 
-> 	err = do_something();
-> 	if (err)
-> 		return err;
-> 	return err;
-> 
-> [...]
+However, the ALS channel is registered as IIO_INTENSITY, while
+write_raw() correctly writes to IIO_INTENSITY. As a result, reading
+in_intensity0_calibscale incorrectly returns the proximity gain instead
+of the ALS gain.
 
-Applied, thanks!
+This causes the following user-visible behavior:
+- Writing in_intensity0_calibscale appears to have no effect because the
+  readback reports the proximity gain.
+- Writing in_proximity0_calibscale causes both in_proximity0_calibscale
+  and in_intensity0_calibscale to report the same value.
 
-[26/36] power: supply: pm8916_lbc: remove conditional return with no effect
-        commit: b7c8d46411317f135e7791c0eddc56691de63f07
+Fix this by checking for IIO_INTENSITY in read_raw(), matching the
+channel definition and the existing write_raw() implementation.
+
+Signed-off-by: Yuanshen Cao <alex.caoys@gmail.com>
+---
+ drivers/iio/light/tsl2772.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+index 244f44379c36..2287585711c6 100644
+--- a/drivers/iio/light/tsl2772.c
++++ b/drivers/iio/light/tsl2772.c
+@@ -1274,7 +1274,7 @@ static int tsl2772_read_raw(struct iio_dev *indio_dev,
+ 		}
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+-		if (chan->type == IIO_LIGHT)
++		if (chan->type == IIO_INTENSITY)
+ 			*val = tsl2772_als_gain[chip->settings.als_gain];
+ 		else
+ 			*val = tsl2772_prox_gain[chip->settings.prox_gain];
+
+---
+base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
+change-id: 20260724-tsl2772-calibscale-fix-0cc42518d5fc
 
 Best regards,
--- 
-Sebastian Reichel <sebastian.reichel@collabora.com>
+--  
+Yuanshen Cao <alex.caoys@gmail.com>
 
