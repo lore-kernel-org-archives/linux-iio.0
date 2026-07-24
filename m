@@ -1,168 +1,148 @@
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F19352036
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 14:47:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6096D434E33
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 14:47:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784904442; cv=none; b=ZhgJLRRSZEnbCDZD0HiC8Ell8En908DJVUvR3AiRO+W1ftHkthD0nw/kXUIzN0kmuA3m48VBLDjNxYx5Gm4yIQ8EstyJDHhU2G+UKTxo9pLGOms+ktleK+g5s3jENv1x0bhvoUCBXoNa2ON88HT7fAtTNYeolzodFsN4XKSL4N0=
+	t=1784904459; cv=none; b=nS1Y9nlg+zHLSYDJXHj3M5suT9MCN83fioTUyJ1sKIyTLcbL8B+yxV6YeHOv6u113bV+uC7tnU45sxvYmzlBZOEyZC44HUnb1mkSc7y1IWnOMAzlLlENj09rvb/2UedVMngOfRWJXlMlO1eGR6w1caTigNrpcU401Fc+yIj8LoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784904442; c=relaxed/simple;
-	bh=OxwT/NZpAw9aMLGpXFCht2PPuvSomIUkFsVv2SQEvHY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rbWcFgIHOmqTshWNiuHc/q2f7Kww+UiCidHJaHI/edzNiUlPazn/8bJY72wEddq5PpGbXeUSkYYsFZC7D7t+jILzS0tqojGJ1mSiFmvmLlc2JCMKbJFwJVfMtW9a2NbMrsQHm4PGxqP2EEUzES760MtqX/cZBlLaI1ncdf9IvJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=itevPDil; arc=none smtp.client-ip=209.85.221.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1784904459; c=relaxed/simple;
+	bh=Nx87VYJM0REWWok6Rt3R7OhjA0KYcrlavwA8aaReBlo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EG4Zge9LM87PuS6Z4pgGfZUnnM3d0ZsKGPp89te6yWx2ACASHYDko/LuHY0WLqnHvb9zala/dpwOsPwZsyGutyjwEQixS0Q7rZl0+ZI+0L3cWcqBJyt3K/4zy7ShM+XyTogva1hD9GFRvLZ6ylWsBPd2use3mKEyfU02VEXkNG8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=g9UZy27I; arc=none smtp.client-ip=209.85.161.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="itevPDil"
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-5c2c96286f0so181608e0c.3
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:47:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="g9UZy27I"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-6a375ba035eso259820eaf.3
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 07:47:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784904439; x=1785509239; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=dd5ljADXPcqLcjndY5eXs0DUhwwgIKl9NmXiyKOKsEA=;
-        b=itevPDilwuZk9FwyjF5z+V160Wj4S+iiLNXLFxSmA5G7dsSsO2+AxZ+0kq0btzFCuX
-         38arPPZu2hKIvJqOv03DbrGCQAmrU8ikkY3FVmKIu9I5ZDPqEg72Degsim1XB5wS0b8j
-         76dOyYpFE0TVVdd5UEq+ljQ6CoapGCxQ8MJO4+oVNytb5K04w0VhS2H5y8Z0oku+ausA
-         0n3gjbbevUJY2AQdoHTBwHkkSibSwbknYCh7j45QISoFQu4wIFSx4ffhRexEilHCuHR4
-         LigR2P13BTHQ5moFgbfVIEWzEm2QIl7l68o151I1ms0IjCnW6RWWwRCvqDUY6BWWKT74
-         C6gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784904439; x=1785509239;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=baylibre.com; s=google; t=1784904456; x=1785509256; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=dd5ljADXPcqLcjndY5eXs0DUhwwgIKl9NmXiyKOKsEA=;
-        b=D1oIbWyY6vcMWcmdf96zKLCwHPtZOvMwfr3rCIgVAwZz0YkNvtb8eG8cYDvYG6uUFj
-         UFW4d22oPRhJqMV/zVJFarIYqOZQN/lwTGmkp3ahDysDbPOr8PxsYtm6VHf6QYVOSlQ/
-         C+LvFMBQkFn2wz3ZrTNlPN5ASF5tirsB7dhYKy5FcuYRgzKywbR/8LFsaG/o8GhfDJHJ
-         Nbh7sLnmVFp3XekuMKBKwFxd104t8BwdcvBvxzT/EZ/gz5PDaAZHEnrkYRqOkqH+oDIb
-         ldRMrmkffuzXIfZfPwHcSFBfeyTqNgRDNGMI4jZiVpAp0nf9/becGf4uho42scCDI5FX
-         Jc/w==
-X-Gm-Message-State: AOJu0Yxgl3jxV+IYis08DJpY7KC3QCdhJFC49G5BGDIvIAn0W1Ic1+Lj
-	V43fDf/vyb2oB2gh4DEtmLLpqAq13PJH55J21hu/sUdqJsKHVXSOdqyCbDWovQ==
-X-Gm-Gg: AR+sD11VjC2bbCmb2wZ/N6xSPvTrrfwp+uI0Icdf6zapwG3zwRMn5QMPdGeewO2Dqng
-	nIdbEAatxVfafPhnz6PAE5gdAIMXenk35HQHGRym2KyNUsMaM17Ol2qjyuDK7dJpWZiFKiMOCF0
-	IwVzpkjC8g4yKneOhDQHGbbdX4vuRTasYI4Y3AloopZswIW+06Ek1+KavLkBByfNOC5d7J8E/11
-	ETg3NtTzKGZPIUSX7jIC8XJlCTRXT0VZ7n+OQ5SAwUE9psqNTacYM83aQsfqr9hYbDRLawe9r+t
-	7cUov4ud9DdpnFoaoTH5X8QIltO1AOsOMUDbWYEIDeFymyLujavwk3wlY1xWriCvKsA00udGL9r
-	ppi1+OtXhXjF4GOg9hB3yD3dB7E+ZoPBa5+Ff/gaCTZGz3YxgvxrrORiOJl95kacvvFw6IeXv4t
-	Gfje53LwatpQ==
-X-Received: by 2002:a05:6122:3a12:b0:5bf:a181:d46d with SMTP id 71dfb90a1353d-5c2d9ff4689mr3368040e0c.3.1784904439086;
-        Fri, 24 Jul 2026 07:47:19 -0700 (PDT)
-Received: from localhost ([2804:30c:90d:6100:8a69:5cf5:f1f8:a1e1])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5c2c6276fbfsm9432671e0c.4.2026.07.24.07.47.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 07:47:18 -0700 (PDT)
-Date: Fri, 24 Jul 2026 11:48:23 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, conor+dt@kernel.org,
-	robh@kernel.org, devicetree@vger.kernel.org,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v8 3/5] iio: adc: ltc2378: Enable high-speed data capture
-Message-ID: <amN7N-U7KCb03sGa@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1784835663.git.marcelo.schmitt@analog.com>
- <c331ad2c4e4162c285a3c6c89798388ad4962036.1784835663.git.marcelo.schmitt@analog.com>
- <20260723201317.B76B21F000E9@smtp.kernel.org>
+        bh=dRlF3IQQlS/Ntedp5kuuB6fxxHvV2JxB/PlK113cVg4=;
+        b=g9UZy27IS3bGwUcfcBSSVlxqa+oj0k+Oh50JuGxEoI8TgqXXkkcrMgNW339Bt1s9o8
+         u2cDnJrhXEkO3FepUORYO3ekqQCqKc8qxglvH6dUIsX37Ac1tsWT44aBXdsAYwkcU51N
+         WHDAzyQKUjrgHzkXxPCIDGWvHsr3SQf8mDa0/CZXsYfd+FWYrfcF45ZPVRZ3nEe1BERw
+         uPKHMJbmLssc5pPKfFT87ea3GYQyRKOUOneaGkoda45daxgcLpA1DsDpLEHYiQhTqh0m
+         1+yDKAfmVj4it07BhWosNu1Rf4cs777pBvUfszCXzKk87Ot03OxFvxam93dxjlEP4ZTw
+         DSvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784904456; x=1785509256;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dRlF3IQQlS/Ntedp5kuuB6fxxHvV2JxB/PlK113cVg4=;
+        b=EtlxbbWoUegYyO7ibapsMDBXFV8jqGGC+SHvYPcYA1Ul1LL83IcF2qggk28V6tpW9+
+         rKOIXevjEXOjSPj0MYKEnDkCZdMFtxI67ZtdXxIYkjzv2/NRF5ZBSIk+LYC9mPBSZee+
+         WZriQ685HSmC9CA9zlM45KXejY5ish532sRst5kan1PSEIO3xn5gbQn33wbTd8cuTMwr
+         naCMNl2O96gVU33bKCq6rHnBIQXkvU36QDrtmBA7nQemPWSYpse0eQRiSoL18enzMIqJ
+         3GMhAQ95zjLTPTuBJfps3N59x0OkhlGre4sZxGE6FmVP5wB5ofjqFlutisVt7tVVZeTF
+         kr1Q==
+X-Forwarded-Encrypted: i=1; AHgh+RoDxJP2/+ZKFKTynagMpq3I9Z3cQpaM7GQYhVR3OQAIKQHQ5bdbBJO+022RHgVg0ti1v9Hy7m11Hmo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yygcg69IdoPyUsr3GBfNCkZPkhvrSSRaMaUbcizgZZj+7fU0MPf
+	CyWgITsmzTkLOUHmr69afglq/LY3d/RHduSaVm9wjyNJE2fwhIk0wMzmcqoPPQj6f9g=
+X-Gm-Gg: AR+sD12vDxs/9XE3ocBOVmraS4JdqMrsTpsXYcPtfJf2mcJUeV9tKYM5LSb9+7T/9An
+	Rr/CQBiv7Kvutl4ZURfWSZVQMQAA0F0guythBKtyJ1XGtCqFx0/gCkmMv2V3mWZ6H4Q3KDeojtj
+	qWt1dsGtFKKMbUbVXKkVO20ITeDEy8J9REwS0eU28EY/hPQXlJmggQ8HzlG9zsodb+BuBk3ajIq
+	eU+EBHGu0Ft+AGLeNcNB/3dpae6EOReC4KAX/ANEr/p2TNnyIWlVKv8GzfbFRjZcLww4KgdxbFp
+	pKKnqYeZY9Wndyysufyt14G2IEohvi6D2x714/P6D+Lu79f5gpzGZxV2+IglO/QqSwIKkqvlb3H
+	6zx6pGMSO6opy544CxNxUyqzVuImFCUdglgAPxv1t/gd9+9DW4IzTN3KnSZxzYJtRNzP50rdxvl
+	/RmuB6h88nlRPeqBJMzqxUoxGAy7xWyiPJnjhmIjBQuxpH9pFX6Te3Xja9Qx2+
+X-Received: by 2002:a05:6820:1c97:b0:6a1:8b23:d4c8 with SMTP id 006d021491bc7-6aad3f90dd2mr4667159eaf.3.1784904456312;
+        Fri, 24 Jul 2026 07:47:36 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:b635:d463:c98:cc75? ([2600:8803:e7e4:500:b635:d463:c98:cc75])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6aa79301fe8sm5634326eaf.10.2026.07.24.07.47.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jul 2026 07:47:35 -0700 (PDT)
+Message-ID: <d8d69bf3-8fd7-41ed-8fd4-8b42e9165ac9@baylibre.com>
+Date: Fri, 24 Jul 2026 09:47:34 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260723201317.B76B21F000E9@smtp.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] iio: adc: ti-ads112c14: add support for buffered read
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Chris Hall <c-hall@ti.com>,
+ Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>,
+ Nguyen Minh Tien <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com>
+ <20260714-iio-adc-ti-ads112c14-buffered-read-v1-3-fe6e1c971288@baylibre.com>
+ <20260720015527.0ccc543d@jic23-huawei>
+ <7a600363-ae61-48db-a0a2-34b9a4919b6d@baylibre.com>
+ <20260724002508.7e176510@jic23-huawei>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260724002508.7e176510@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 07/23, sashiko-bot@kernel.org wrote:
-> Thank you for your contribution! Sashiko AI review found 2 potential issue(s) to consider:
-> - [High] Division by zero vulnerabilities in ltc2378_update_conversion_rate due to unhandled hardware rounding of period/frequency.
-> - [Low] Unlocked data race on st->cnv_Hz between read_raw and write_raw.
-> --
+On 7/23/26 6:25 PM, Jonathan Cameron wrote:
+> On Tue, 21 Jul 2026 18:23:58 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> --- Patch [3]: [PATCH v8 3/5] iio: adc: ltc2378: Enable high-speed data capture ---
-> commit cad96004cef5739b24db063923b36678ea8e3617
-> Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> Subject: iio: adc: ltc2378: Enable high-speed data capture
+>> On 7/19/26 7:55 PM, Jonathan Cameron wrote:
+>>> On Tue, 14 Jul 2026 19:19:32 -0500
+>>> "David Lechner (TI)" <dlechner@baylibre.com> wrote:
+>>>   
+>>>> Add support for buffered reads using a triggered buffer.
+>>>>
+>>>> The device has a continuous conversion mode, but that can only be used
+>>>> with one channel at a time since there is nothing like a sequencer to
+>>>> support that in hardware. Instead, we use single-shot reads like we do
+>>>> for direct reads to be able to read multiple channels.
+>>>>
+>>>> Support for continuous conversion mode could be added in the future if
+>>>> needed via a 2nd buffer.  
+>>>
+>>> How about enabling that if only one channel is requested?  I vaguely recall
+>>> us doing that for another driver (though I might be dreaming :)  I did
+>>> see your comment in the cover letter about it affecting timing and that
+>>> making life complex.  Fine to leave considering this for another day
+>>> but maybe don't suggest a particular solution here.
+>>>   
+>> Actually, my latest thought it to do it by trigger type. This chip has
+>> a DRDY interrupt that can be used as the trigger for the continuous
+>> conversion mode but we need some software trigger to the single-shot
+>> mode. It think this would take care of the timing issues as well.
+>>
+>> The logic would be that if the self trigger (DRDY) is selected in
+>> the trigger/current_trigger attribute, then buffered read will use
+>> continuous mode and fail if more than one channel is enabled. If
+>> another (software) trigger is enabled, then use single-shot mode
+>> and allow multiple channels.
 > 
-> Make use of SPI transfer offloading to speed up data capture, enabling data
-> acquisition at faster sample rates (up to 2 MSPS).
+> Hmm. Bit unintuitive but can't really be helped.
 > 
-> > diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
-> > index 107388f870626..7baee02450d39 100644
-> > --- a/drivers/iio/adc/ltc2378.c
-> > +++ b/drivers/iio/adc/ltc2378.c
-> > @@ -264,7 +384,137 @@ static int ltc2378_read_raw(struct iio_dev *indio_dev,
-> >  			*val2 = chan->scan_type.realbits;
-> >  
-> >  		return IIO_VAL_FRACTIONAL_LOG2;
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		*val = st->cnv_Hz;
-> 
-> [Severity: Low]
-> Does this lockless read of st->cnv_Hz race with concurrent updates?
-> 
-Not a big deal, IMHO.
+>>
+>> The timing issue is that (or will be since I haven't sent the relevant
+>> patches yet) there is a settling delay before the first sample. For
+>> single-shot mode, every sample is considered the first sample (because
+>> it is "single"), so the chip applies this settling time on every sample.
+>> So it might be good enough to just document that as a quirk of software
+>> triggers for this particular chip since they would be using single-shot
+>> mode?
+>>
+> This is where it gets messy if settling time is reported. I guess acceptable
+> given it doesn't make that much sense for an external trigger anyway.
+> In theory if the settling time has to happen each single shot, we could
+> just merge it into sampling frequency (as no longer depends on whether
+> channel changes or not) but then we have to make that dependent on whether
+> it is the devices own trigger or not. Messy. I guess one to paper over
+> as a quirk / corner case and document as you say.
+Yes, this is the direction I am leaning as well. The input chopping feature
+that we have been talking about has a similar issue. In addition to doubling
+the sample period, it also includes the settling time (2x as well) minus a
+few clock cycles. Even messier.
 
-> While ltc2378_write_raw() acquires the IIO direct mode lock before calling
-> ltc2378_update_conversion_rate() to update st->cnv_Hz, this read path appears
-> to access it without synchronization or READ_ONCE()/WRITE_ONCE() macros.
-> 
-> > +		return IIO_VAL_INT;
-> 
-> [ ... ]
-> 
-> > +static int ltc2378_update_conversion_rate(struct ltc2378_state *st, int freq_Hz)
-> > +{
-> 
-> [ ... ]
-> 
-> > +	/*
-> > +	 * Configure SPI offload PWM trigger.
-> > +	 * The trigger should fire after tBUSYLH + tCONV + tDSDOBUSYL.
-> > +	 * Minimum time needed: TBUSYLH (13ns) + TCONV (part-specific) + TDSDOBUSYL (5ns)
-> > +	 *
-> > +	 * Use the same period as CNV PWM to avoid timing issues.
-> > +	 * Convert back from period to frequency for the SPI offload API.
-> > +	 */
-> > +	offload_period_ns = cnv_wf.period_length_ns;
-> > +	config.periodic.frequency_hz = div_u64(HZ_PER_GHZ, offload_period_ns);
-> 
-> [Severity: High]
-> Can this result in a division by zero if offload_period_ns is 0?
-> 
-> If pwm_round_waveform_might_sleep() rounds the requested period down to 0,
-> offload_period_ns will be 0 and cause a kernel panic here.
-> 
-> > +	min_read_offset = LTC2378_TBUSYLH_NS + st->info->tconv_ns + LTC2378_TDSDOBUSYL_NS;
-> 
-> [ ... ]
-> 
-> > +	/* Check the minimum CNV to SCLK delay is met */
-> > +	if (config.periodic.offset_ns < min_read_offset)
-> > +		return -EDOM;
-> > +
-> > +	/* Check the PWM periods remain the same */
-> > +	offload_period_ns = div64_u64(HZ_PER_GHZ, config.periodic.frequency_hz);
-> 
-> [Severity: High]
-> Does this code panic if config.periodic.frequency_hz evaluates to 0?
-> 
-> If a user writes a very low sampling frequency, the PWM driver might round
-> the hardware period up to a value greater than HZ_PER_GHZ. If
-> offload_period_ns > HZ_PER_GHZ, the earlier calculation for
-> config.periodic.frequency_hz will evaluate to 0.
-> 
-> Additionally, if spi_offload_trigger_validate() mutates frequency_hz down
-> to 0, it would also result in a division by zero here.
-> 
-> > +	if (cnv_wf.period_length_ns != offload_period_ns)
-> > +		return -EDOM;
-> 
-Theory already refuted in previous version.
-https://lore.kernel.org/linux-iio/alpZwoau3QVPtBsP@debian-BULLSEYE-live-builder-AMD64/
+
