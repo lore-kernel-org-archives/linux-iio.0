@@ -1,85 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04E56345CD0;
-	Fri, 24 Jul 2026 16:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F038734B682;
+	Fri, 24 Jul 2026 17:14:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784912017; cv=none; b=T7dqAeHTfwq2GUeynNVIe5H9I9x4kXlzuBvhlovK53vo4RX7wva0AvbYF2OoLkYTRInUcHjTAI1gsPx5D0jhazGfNxnoXDl3BmD0dSl3pVdxJVP4CqwXgmEdvxwNJRHIrQnvtfPFb328hvjOmvHHb5svE8NoYvs5xphha6p9F88=
+	t=1784913275; cv=none; b=jN56WRBZVInYCylpRDFVLWyCKrbRufc6k48FoZF0PJJ91UOJ8ZEtzlyczVpn+WX1y0c5tQBwyGIAljA7gKF3ys+R5d+rSoYiA3xIW8nMGEbs+49FthhOKWm6pLzClDYSwd/6c4eZ6gE79/u4fuI0xiGf853MQ/NPY4gWQ1I76wo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784912017; c=relaxed/simple;
-	bh=Ej7dj+z0Cyu0ZFrtcH0Y8M2eGSdFCAL+KFVos5SqCWA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ePcSCGGzvT5vPtIvTknAguWz4uBaoG92qRLMdu4rEtsJXq3X162lw6jEuYfKsQSd4f0+UV9WRMUIMey66pKqLu4GALZSBf5TEWmO87zh2WLsSYRe4iDJ6anC62C4zKkHMboY5hi2vcl83JNq6rpzFBBule9GrwFA68i8KJqKMN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oLGX2pdn; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1784913275; c=relaxed/simple;
+	bh=VLmbC918n56zU5M7ig+ixBQFXWMbfyQwjpWwHo+6GOk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Bmc1tKhL1FCWk1MxGamQaHIYt/QbOc8ptD2u0Gc97Fu5CXkrNxPWhDCBYT8KJX0NFxgr6pDhAzXE4uwl0vJSOaoYiSn3tDJK3CZqQWFp5RvsdAp1TvA8rvtjlstzr3ILi+g+sCi2axBbvcVqKSziBOpHo+sCHReAo0aC0LwupFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JaeIIs93; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oLGX2pdn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 402321F000E9;
-	Fri, 24 Jul 2026 16:53:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784912015;
-	bh=Ej7dj+z0Cyu0ZFrtcH0Y8M2eGSdFCAL+KFVos5SqCWA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=oLGX2pdnaWt/NjnbnfrHCWMTE8gFdfyVkNOXr2ezRATGDYdZEd7qvq1RQwHWy7r+Q
-	 nsRanSFXZ98wKeEa+apwOfiKiaH4G8fcx+v+hZHDxMTx6dZzzxLdPApAImYPuHImqX
-	 +LEQw0zfKEtixr1vv7Gvvxoi3crzIvuDzwZONgYLgH9AWv9q7PMYshxSENd16QmoAU
-	 /YhsFhfufwjAHSVwhaMr9oJzILue7pCV5fwEycxSG4gxsgMlquObEdA4OQh/Znea/W
-	 YT4crIW0WwphwBkKpGbCdeLbb8cn6g2w+Y+ph821FDGL9vZZK+UhRNpLfrEJZ3Mh1C
-	 /YEShhZLUppGQ==
-Date: Fri, 24 Jul 2026 17:53:31 +0100
-From: Conor Dooley <conor@kernel.org>
-To: rodrigo.alencar@analog.com
-Cc: Michael Auchter <michael.auchter@ni.com>, linux@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v2 1/6] dt-bindings: iio: dac: ad5696: add
- AD5673R/AD5677R support
-Message-ID: <20260724-rescuer-sliding-49b446591d52@spud>
-References: <20260724-ad5686-extend-dev-support-v2-0-cfc2b30ce988@analog.com>
- <20260724-ad5686-extend-dev-support-v2-1-cfc2b30ce988@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JaeIIs93"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8DDA8C19425;
+	Fri, 24 Jul 2026 17:14:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1784913274;
+	bh=VLmbC918n56zU5M7ig+ixBQFXWMbfyQwjpWwHo+6GOk=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=JaeIIs93PyeKnhpT9KwV+IUWpZlWHaM/PuF1ZwhBhLuLVd1mb4hDK/FBs8wZrnezv
+	 2Er/FhCQ8z4SYNb2Laap0VhK7VnK8ORVsyWAqLyiejrld1HjbSIKIzE2YFK3mOsp9o
+	 m1nfLjM1fD4JXOg8ZI+tOgtazae8R/gwOmVbq2/d5tSXConflsMFzBQTm9m3JWhbFh
+	 7k430IctxhgpwC+hJSwew2/BD1L5wmzHSb/M3CYc3c6d57vfkFpHi2cn55D8uVxUQM
+	 1Yx8his63KeC4fT15yl8nWesKZaPwvbsqQFf+5onDcnQ3s1sHoVXsNkHJh5xsLyWgt
+	 FyfKbGV/rkTqA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CA8C531F9;
+	Fri, 24 Jul 2026 17:14:34 +0000 (UTC)
+From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
+Subject: [PATCH 0/2] HID: iio: gyro: hid-sensor-gyro-3d: probe cleanup
+Date: Fri, 24 Jul 2026 22:44:29 +0530
+Message-Id: <20260724-24-july-hid-gyro-dev-log-clenaup-v1-0-0c932b77104a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bz+ABYr8mY0hYAYT"
-Content-Disposition: inline
-In-Reply-To: <20260724-ad5686-extend-dev-support-v2-1-cfc2b30ce988@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAHWdY2oC/yXNQQ6DIBCF4auYWTuJpWCtV2m6sDDFMQQMFFNjv
+ HupJm/zbf63QaLIlKCvNoi0cOLgCy51BXocvCVkUwyiEW1zExLLpuxWHNmgXWNAQwu6YFE78kO
+ eUXadukoS6t4qKJk50pu/x8XjeTrl10T68+/Cvv8Ayi8fLoQAAAA=
+X-Change-ID: 20260724-24-july-hid-gyro-dev-log-clenaup-488534e25965
+To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1784913273; l=753;
+ i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
+ bh=VLmbC918n56zU5M7ig+ixBQFXWMbfyQwjpWwHo+6GOk=;
+ b=KcqKL2wXwE3y3Vm2P5JHnSR3tQP9UOLP7s6WOkdFmhb4Ah9nqWFVe6EzsBTYKO++vlbZi13Sv
+ gUFEZWiaOSUDtFBZNfaRciSk0ZeUx0U4jYOco7QDFH3EPHj5CrNxqau
+X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
+ pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
+X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
+ with auth_id=848
+X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Reply-To: sanjayembeddedse@gmail.com
 
---bz+ABYr8mY0hYAYT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi all,
 
-On Fri, Jul 24, 2026 at 01:03:11PM +0100, Rodrigo Alencar via B4 Relay wrot=
-e:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Add compatible entries for AD5673R and AD5677R. These 16-channel devices
-> have different bit resolutions so no fallback compatibles are used.
->=20
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+This series cleans up probe error handling in the hid-sensor-gyro-3d
+driver by removing redundant dev_err() calls and replacing remaining
+dev_err() with dev_err_probe() to simplify error handling.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+Testing:
+ - Compiled with W=1 for each patch in series
 
---bz+ABYr8mY0hYAYT
-Content-Type: application/pgp-signature; name=signature.asc
+---
+Sanjay Chitroda (2):
+      iio: gyro: hid-sensor-gyro-3d: Remove redundant dev_err()
+      iio: gyro: hid-sensor-gyro-3d: Use dev_err_probe()
 
------BEGIN PGP SIGNATURE-----
+ drivers/iio/gyro/hid-sensor-gyro-3d.c | 35 ++++++++++++-----------------------
+ 1 file changed, 12 insertions(+), 23 deletions(-)
+---
+base-commit: 36c12dbda81c284d72f3c64689461647497b643b
+change-id: 20260724-24-july-hid-gyro-dev-log-clenaup-488534e25965
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCamOYiwAKCRB4tDGHoIJi
-0kROAP9KXP6liZdyUuR5UvS1kbLN4JXdZpPa4EDBKRWFY3omIwEA9SWNnqk+vb0N
-tEXaU8YRm0ULu7w6OKBGpu3cX/ScvQg=
-=9/qd
------END PGP SIGNATURE-----
+Best regards,
+--  
+Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
---bz+ABYr8mY0hYAYT--
+
