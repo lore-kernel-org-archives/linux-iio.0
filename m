@@ -1,342 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010046.outbound.protection.outlook.com [40.93.198.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A2BE414DCB;
-	Fri, 24 Jul 2026 12:03:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784894594; cv=none; b=dCUX7AKCX2smkUZPeMxqYqmgwXxleCzU+INdt627+tgVIj8TGesZNVQfGak0Ka9M9Pvxi3vt/kQR/m1TlA6MrigwPFamRYVBcK9Ga9iFY1bWH9m4+RmTYbIfShGEeqa1GAR9m0xUuxPNeEM59RZQTQDxY86aYFUYtK9FBiUMMNA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784894594; c=relaxed/simple;
-	bh=tnGDiskgp+7aCQ7/TOqAAUPC2zOTii+6FY8zASwETVQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Anc2qV9cdxdTx1nHdQxA6jmYf6AWbhC3MzmgnSR9AdmGDM3OGXSV0GkDOy5rbtVyeW4PG9k2SvarGeh8qFEWQc5EX0Tl8ccdmXSzQevk3JELmVMYmGzl4Hb3v/0DDATyR2rWeko87QQWAw5Ei6vPnAFpDkUQXmNoIwnZN6gDfac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qA/rjhoX; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0578E42F71D;
+	Fri, 24 Jul 2026 12:30:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784896242; cv=fail; b=Y7X1H2uHkzgPfduQw8s68qmAm7IKWymR4GPUzokDNzS92ilhv+62Go0pYsPncQqMRlucz5ixRYni7ujv0ejCI+yK8I1J6BPkuBB5UqOESDP9iQFdtK/t/vFtmDjkZtSoHw9fnFJhWjvhLQXn9ZprzxD5NgWsxRyx5AdnLJVmbEU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784896242; c=relaxed/simple;
+	bh=IqAnHq1ggeTC5AB4abJbDO/8G+p6QvssC8CleDOD8Rw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=BT0s9vOASTxHm/s+ENDTw400UedaAcHiweftX260sAZyc3I2/hy+qzel56HL0pDPTRW0gwKxb7Lq1p/xcPgh1FQkMxy18++SXqHT+cc9dwyI+RS25gtkXcdBvc6b51ikXcANpZq/AXf24A+l73yl1DVuEiwenF76poGPxfVkO0A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=61dZ8DFD; arc=fail smtp.client-ip=40.93.198.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qA/rjhoX"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 08041C4AF15;
-	Fri, 24 Jul 2026 12:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1784894594;
-	bh=tnGDiskgp+7aCQ7/TOqAAUPC2zOTii+6FY8zASwETVQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=qA/rjhoXbACpvsxVFpdd9IAddf6REz4XEkPvOEenIrXGrUs67jEzQqBC7PhEBG0NV
-	 bvSXrvy9eLDVe/d00zsUYmZUO0RgfSUPP0d9Akw/m0G9n66rNnflB4xV4jZ0lZ19gC
-	 CYD+CmhUIj6hv3HwNKgrahV2XgGZ8UY4o2G7pjABTD9MNPkWNBeOkJ0fMq9PO69c/Q
-	 fzTNYD3qJEa55xyJAyKIHH8u3c5v/vtzZhiAIwgCkA3lLvn7bsdsYEIzr27qVGs83u
-	 ziGNgyccK2aY8iFcJcdVcBrHf4EB9pDPdydfSzrZdenTpLWxsEFbHfYITRZZzJuhJD
-	 859ysId90xnlQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7323C531F9;
-	Fri, 24 Jul 2026 12:03:13 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 24 Jul 2026 13:03:16 +0100
-Subject: [PATCH v2 6/6] iio: dac: ad5686: extend device support with new
- parts
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="61dZ8DFD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=G4HpnCnAV9oMiXadr2KQJjepxznwOm30oaowQHo48edyaxwzIlz7KMOjLDoCid9pR3Gb+uEzaT4W4fllnfuSEtxiQTatNtwHGRpFHY/OJSjDqtC4/V7/gTWzgR+zEuTiPbzScYdmUX1kts9jqDdA4p6XDF+EUrIfHk9a8aGxg+XIE96n7+e1GPIMQC8ZHNdcFh1j0vaDF7aGwRvOAkiJrir7YYBTI0tps8ladWA13iVa+VAJNNHRyW9XCZBUxCqj+WxRaKTXUkcMZB47j0tYMakxTADp6ibeNjPcQigdUaswTU768CksqK7RTcKFPDQxAFJADiUUuqH61UcxxHltQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IqAnHq1ggeTC5AB4abJbDO/8G+p6QvssC8CleDOD8Rw=;
+ b=Y3YtOxhrqVbXESFQg3Rn2cVDAPD8VNaAuy3QOE0O4SO/ehfuo7+y7c3qNZPfmXjSoumyWZDt/O3XOMbOv09jLSa3GdHM1q2k7J2oBk39e4zhdCJ8UdjJs+l0NmRLp6qZcCA9lQ5/m6s/+JQMlYCQK9oHKJvbStNG2gfHhxWUzgjkCCkJ6CIheGmfQq/VPJuO0uaRSuaAgrSaMPoyNsQCPNcF5Reh0v4A5ud5I0pBsXEY8ZrI4yWFSWVBc3yFHqi56CvPoNWbjEFze27s6du77RHF/v7TOIshFxRT+bO8YaWFpvexvFW108/lnje+ItOBbD04TxRDtcCVLNctZOplzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microchip.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IqAnHq1ggeTC5AB4abJbDO/8G+p6QvssC8CleDOD8Rw=;
+ b=61dZ8DFDHW8GspmA3Scd0NW0iAIyf/QaJM+AxuxVLiBwobxw7RI8D+IXztY5G05K5xT1mMEawpZdHbzyEBcTg36IrKTJ4+FdGxG8GYBdJO4MOjh3KgTrKtopfTsqG1UFlKo7mzcQpo80XB5Ye69cAsk+0m2r1I/y5r/MyYmMPwZKQ4vvxTQpvrcNvyztlxWcZrh7x6/yEK8RvLA0PurSwk3YGiprx4CEGb0j5EXg1rKuuG6dDJRPbJp9bVtCxXskiDhB4+JZpVCOUhk/ldV/sI+84fuqS7bPqNRMwVIgih9jJgrCK0CGiS1igDSiQGJMcsxZ95SLnxY4+qrRNANKrw==
+Received: from PH7PR11MB8251.namprd11.prod.outlook.com (2603:10b6:510:1a9::9)
+ by SJ5PPFEF71E136E.namprd11.prod.outlook.com (2603:10b6:a0f:fc02::85f) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.10; Fri, 24 Jul
+ 2026 12:30:31 +0000
+Received: from PH7PR11MB8251.namprd11.prod.outlook.com
+ ([fe80::e81b:3e24:1804:5c7c]) by PH7PR11MB8251.namprd11.prod.outlook.com
+ ([fe80::e81b:3e24:1804:5c7c%3]) with mapi id 15.21.0245.010; Fri, 24 Jul 2026
+ 12:30:31 +0000
+From: <Ariana.Lazar@microchip.com>
+To: <conor@kernel.org>
+CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>, <robh@kernel.org>,
+	<jic23@kernel.org>, <andy@kernel.org>, <krzk+dt@kernel.org>,
+	<linux-kernel@vger.kernel.org>, <conor+dt@kernel.org>
+Subject: Re: [PATCH 2/3] dt-bindings: iio: dac: add support for MCP48FEB02 SPI
+Thread-Topic: [PATCH 2/3] dt-bindings: iio: dac: add support for MCP48FEB02
+ SPI
+Thread-Index: AQHdGqk+S+5IJLdiNke9LBtZmvMfQLZ7ThwAgAFM/YA=
+Date: Fri, 24 Jul 2026 12:30:31 +0000
+Message-ID: <7e121a7afaaa5aa72e39a4a70de2b0edff796def.camel@microchip.com>
+References: <20260723-mcp47feb02_refactor-v1-0-ee59e63672bc@microchip.com>
+	 <20260723-mcp47feb02_refactor-v1-2-ee59e63672bc@microchip.com>
+	 <20260723-festive-genetics-3645c8e0b318@spud>
+In-Reply-To: <20260723-festive-genetics-3645c8e0b318@spud>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR11MB8251:EE_|SJ5PPFEF71E136E:EE_
+x-ms-office365-filtering-correlation-id: a6b2523f-568f-4eec-c242-08dee97f5a1b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|366016|376014|7416014|23010399003|22082099003|4143699003|11063799006|18002099003|38070700021|56012099006|10067099003;
+x-microsoft-antispam-message-info:
+ lW+t+ky+qX7LTghHRecfompGapRRxmNHDXLHJ1KYJyIZ59MHGcjWE5QCRi6gNzfiTVjn0Hsn1zF+DltPSCrPrQjaR4JVA6hzCOalOETKsScHqDg6mC7p7L8qj06XgIjYYoU2JOmI6PXfTwri/5W8QHiMjDOOJEXOPUiwulZZPxJvqobVZQTElhfllX8lXtCclXdCzXXQUNGuUPtNrLufuuT7wx+uh89AqNfGvlEO+uxk9Q/6ipts8lWJ6hs0EM2TkoUipicDbU4XCN02JPUGDs12+mZYyiNxvP/0n+6LbsSlLp0tpy5jefpOU56HzPN1rSwgknLCaEvKgWIrlqq3Q9zq7UvUALOvAGzGaqfjeZFSUkbtl+uwsNDAEgOvzXMhZuIGncBMH1X9zw1Rm9ox3+2zwAx9si7zFGgOArY4OA2GhKw8C0gW09dIZarcvB1OaCeP2pSSqw1fwPE1BS765xB/Yzk8RlmnYRnPKE5eBUB0B6bJu9Tthk/l1MB4QEYLfABE/4ZAEDJBTsGko5XwKbUVASESkrBiPMc9op7abiiK9863yEs3pOUij5Ephx80buJkeUKI2I/xwLBWaxg/se+fXsat+dAk8pu86A/k2XZhAETVl/q0Pc6kdk7u2JtdvgdCrfcqq71SoCE3MS3eRVyvhAakAY0xbmtnkweUZWi3MO34Bv11ND+YI/tkLXLFU6kso0rJas+TIurpgOSB+47lf/hMNPkPPT+0fFj1uNs=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR11MB8251.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(23010399003)(22082099003)(4143699003)(11063799006)(18002099003)(38070700021)(56012099006)(10067099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?R2tDZ3RRL1MrNUtlVkVMUldpVGNObk5CdGZYUlBtdUJnM2FaYTBxWHg3bTh4?=
+ =?utf-8?B?eE5Zb1JMeVFzcWRnU0lYSE5nT01XQlduMDJwbkk2NnA0Vlg5RzYzVjdhTzg3?=
+ =?utf-8?B?QndNalYzRDI4YWN3UXdxMWNPVXYyOFhCajhrRTFBL0FXUlQxM29SRkhuS2lZ?=
+ =?utf-8?B?N2RIZU4xMXdHanBIcForamFLUW1XZmxLREMwOUNVRU1IRmNiVEVzMnhrYm9m?=
+ =?utf-8?B?d3ZvNENaREZGbWF3eWtmblBpR1pqUGlMUEZhS05GdDZJcDg1c084bUNSdEk5?=
+ =?utf-8?B?R2pHMkRQeFdDMEhjNHBHN2lIekFyaEN3WDJhZWl0dW5lSW9zdnptK0FXcllm?=
+ =?utf-8?B?cXRqMnlyTm9NQ3RBY2lzWElXdVJpRlFuMk13b2N3THZJK01YU3RxVVBoVnEy?=
+ =?utf-8?B?V3Y1Vm1iaXdoVGlYRU1JemJ5U1gxK3gxQVFPeEdoVWt2YjgxTGdXcUd2L0hi?=
+ =?utf-8?B?ZFJhLzF4bGgydHBwQnhPUDlwNlJoWmpMTnpCRkxFejB2NkpRMGNMT29BQmNT?=
+ =?utf-8?B?dklGMUozak42ZlJyTitFRnYxZVRiOGNkUE1Ka2tlRVd2NHc0UmhOL1hFbDdK?=
+ =?utf-8?B?bzNUdEhwV09xN2F4bzNhUHU1YStrMm1qV0pySnBmVnE5UkIvbk1KNzdhUTZj?=
+ =?utf-8?B?NUcyQy9ScllzRXlldUc0T09GUnhUak9zaDZ3T05FN1c5clBUVTlpMjVFOU9l?=
+ =?utf-8?B?QnVOZDNLVzlra1BHanJjSTQzZGlwRjY3OEg0M1lNYWR1aFdwSjdyRmh3MEUw?=
+ =?utf-8?B?UWVVbUwwUW8vbk9zSWNwamMrcXVSQi9SYlhTNTlvYVhnK0JSV2VjZnRkbkw3?=
+ =?utf-8?B?VzJMUEdNSmoyWFdMWXZodlFOMnFVeUd0ZHR4NVNVeUo1WTh3TEIycEh6Unl1?=
+ =?utf-8?B?VDNLYXJVQ3RRNTBzQU5qUGQrYXl6aGN4bmt1QTVtbkpuTy82bmVieHpmNE9L?=
+ =?utf-8?B?MERxb3pJNFhLeFp0MFBZZXVteVFTbEQra1E3VGsyUjVJTWJIYTY2ZlNhcElM?=
+ =?utf-8?B?Q1ZPWVhnZzVydHFubjR5R2NpSUJCcVdHcFRpVjJ4VGdVVlozWGJaanA2TFEw?=
+ =?utf-8?B?ZWhIMkJtYm1vZWFKbzFtdmVqZ0xDR01CM05HTXkzQkNmNWd1ODBVMk4vYkhx?=
+ =?utf-8?B?TjNHYTk2cldCQlNGMG5xSmRRMTVUb1R0SG1VSjNIQWdNUW9wc00ySkU5RmtD?=
+ =?utf-8?B?dDduV1VpQzljSUFLK2VpTlhJNytuSFV5cGRHcmZ0WkJ0blFsSGRuejA3SUhk?=
+ =?utf-8?B?ZFpGMGlMOXhSOEpIY1BtWElPelZuNHhMNXpiKy9GWUhleVczTEoyL1IyRmcz?=
+ =?utf-8?B?NG4yNDNYR2xBOW5YeWRLWnVRZ29GWFFsaloyeTFNQVVCV0kvUXlJZzNFRGJo?=
+ =?utf-8?B?M0YyRmQ2NGQ0d0J1SzdmYzQ5b0RDcHFYNVhCM2ZCYSt0UUtIN0diNjlCMVJG?=
+ =?utf-8?B?VlRmQjlkSjcyS0FlTEk1M3l0Rk1KUzc4UlBiZXpSQ0N6WmVnQktPWHZQWS9P?=
+ =?utf-8?B?YU44WEZPL2VGcDlxNWM0NVdHbnNSSi9BOUtWSGwvK204cWdzdC9PbEdORUxC?=
+ =?utf-8?B?N1VFYzhNbXUwYXdEZ3I3bXNDdG50SndVSkRUQU9ia01NTFlubnVCby9XcEFr?=
+ =?utf-8?B?Wm1uZExpRzZma2lOa2V2WjNESy9TbUNndThxTGMrYzZ6NVUyTDVBaWo2c2Fv?=
+ =?utf-8?B?bWtWYytxbVFZcXdIOE5DUHpleFZranVHSVJ3TzZpeHUrMUpoRjlhNUgvNVZm?=
+ =?utf-8?B?SDV5c2dlUWRVZWtRdXVLT2FteFdwWDdNM1lJeU5pQUE2YnpPYkNCZ0FkNUVy?=
+ =?utf-8?B?ai9LODVIaVJaS2dseVRsQUk4djRKU0lzL0lad1cxQ2RsS0VMQ1F0ZzNVTTJM?=
+ =?utf-8?B?TE1YTUhUaENDdlRxQ2dYSFRsZE13TnlQQjRLbmhRVkt3SDJrdUlORCtnVlFp?=
+ =?utf-8?B?bS82WjZieGF1cXp3Z1FXUmprVzhFWU15VWFTSE5ERWlod3drTXM0dTBveHVG?=
+ =?utf-8?B?R0gzcjJwRWo5RlNNdmdCVHJPU1h5dnM4Vm9aWjhnM3ZiZXVCSXdGM2xEN1lD?=
+ =?utf-8?B?UHhib1VReXlwTUduWVpUNytDTjA3RVpEWktpVDc4RnJ0d1dSU0dWbW5aaDVi?=
+ =?utf-8?B?Y3h0a25jNnNQS092ZkI2L21lODR3QXdqR0pKd0d3eXRsRERienFpNzR2ZFdk?=
+ =?utf-8?B?dUhZcWE1aGxFZk9zLzdWVXhvbVMycDlTZDFoMlRpZmh3dHZBT1cyck10R1RE?=
+ =?utf-8?B?cUM0eUdyUEl5OGQweHFtaVBNM2dpRzJObTVsS0tRRnptL1RUcSthaGplRUx5?=
+ =?utf-8?B?ZmJhWVozckRvekdENjB2bjdJM3hBYnRRc3Fhd1RqQ2N3QWFiYkdQd29IQ1VE?=
+ =?utf-8?Q?ElBuihd+tdXodtrQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <567161B7E1D4B942AF808768E385F9FC@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260724-ad5686-extend-dev-support-v2-6-cfc2b30ce988@analog.com>
-References: <20260724-ad5686-extend-dev-support-v2-0-cfc2b30ce988@analog.com>
-In-Reply-To: <20260724-ad5686-extend-dev-support-v2-0-cfc2b30ce988@analog.com>
-To: Michael Auchter <michael.auchter@ni.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1784894592; l=12031;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=r4tTUPqjyaUCmzwMhrMqRzy8M9AM9PAmGC+d3VXToU8=;
- b=H4+5YhZ8Fl2fOCs4vwCDyD+NFeekiMEtVENPpy8smPQlKXrCAqGgmVJAZz1MjwaUOFJxrXNeR
- 1bVHtbI8jZSDhz23kO05o1Xgh1gzPkz8vXxkEp4Y/Ln+DEmQoRDK8Uc
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+X-OriginatorOrg: microchip.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR11MB8251.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6b2523f-568f-4eec-c242-08dee97f5a1b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jul 2026 12:30:31.4853
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 08zMzL28CBlaas8Pcola1d1OXSBoAuelohpFWZxFKW3wx2Uq87K+nLlyAYlT8sU2OyZPzqrl2wCxTHdgK/xmi20BQkO+SyA3kkHYgraXVv0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPFEF71E136E
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-
-Add support for AD5313R, AD5317R, AD5674, AD5679, AD5687, AD5687R, AD5689,
-AD5689R to the AD5686 SPI driver. Also adding support for AD5316R, AD5675,
-AD5697R to the AD5696 I2C driver. This includes the creation of seven chip
-info struct instances and reuse of existing ones.
-
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- drivers/iio/dac/Kconfig      | 12 ++++++----
- drivers/iio/dac/ad5686-spi.c | 16 +++++++++++++
- drivers/iio/dac/ad5686.c     | 55 ++++++++++++++++++++++++++++++++++++++++++++
- drivers/iio/dac/ad5686.h     |  7 ++++++
- drivers/iio/dac/ad5696-i2c.c |  6 +++++
- 5 files changed, 91 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 3ae997939ff5..18a27785e28b 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -255,12 +255,14 @@ config AD5686_SPI
- 	  Digital to Analog Converters:
- 	  - Single-channel:
- 	    AD5310R, AD5681R, AD5682R, AD5683, AD5683R
-+	  - Dual-channel:
-+	    AD5313R, AD5687, AD5687R, AD5689, AD5689R
- 	  - Quad-channel:
--	    AD5684, AD5684R, AD5685R, AD5686, AD5686R
-+	    AD5317R, AD5684, AD5684R, AD5685R, AD5686, AD5686R
- 	  - 8-channel:
- 	    AD5672R, AD5676, AD5676R
- 	  - 16-channel:
--	    AD5674R, AD5679R
-+	    AD5674, AD5674R, AD5679, AD5679R
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5686.
-@@ -275,11 +277,11 @@ config AD5696_I2C
- 	  - Single-channel:
- 	    AD5311R, AD5691R, AD5692R, AD5693, AD5693R
- 	  - Dual-channel:
--	    AD5338R
-+	    AD5338R, AD5697R
- 	  - Quad-channel:
--	    AD5694, AD5694R, AD5695R, AD5696, AD5696R
-+	    AD5316R, AD5694, AD5694R, AD5695R, AD5696, AD5696R
- 	  - 8-channel:
--	    AD5671R, AD5675R
-+	    AD5671R, AD5675, AD5675R
- 	  - 16-channel:
- 	    AD5673R, AD5677R
- 
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 2689d66c7c20..2a09b448acd4 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -175,10 +175,14 @@ static int ad5686_spi_probe(struct spi_device *spi)
- 
- static const struct spi_device_id ad5686_spi_id[] = {
- 	{ .name = "ad5310r", .driver_data = (kernel_ulong_t)&ad5310r_chip_info },
-+	{ .name = "ad5313r", .driver_data = (kernel_ulong_t)&ad5338r_chip_info },
-+	{ .name = "ad5317r", .driver_data = (kernel_ulong_t)&ad5317r_chip_info },
- 	{ .name = "ad5672r", .driver_data = (kernel_ulong_t)&ad5672r_chip_info },
-+	{ .name = "ad5674",  .driver_data = (kernel_ulong_t)&ad5674_chip_info },
- 	{ .name = "ad5674r", .driver_data = (kernel_ulong_t)&ad5674r_chip_info },
- 	{ .name = "ad5676",  .driver_data = (kernel_ulong_t)&ad5676_chip_info },
- 	{ .name = "ad5676r", .driver_data = (kernel_ulong_t)&ad5676r_chip_info },
-+	{ .name = "ad5679",  .driver_data = (kernel_ulong_t)&ad5679_chip_info },
- 	{ .name = "ad5679r", .driver_data = (kernel_ulong_t)&ad5679r_chip_info },
- 	{ .name = "ad5681r", .driver_data = (kernel_ulong_t)&ad5681r_chip_info },
- 	{ .name = "ad5682r", .driver_data = (kernel_ulong_t)&ad5682r_chip_info },
-@@ -190,16 +194,24 @@ static const struct spi_device_id ad5686_spi_id[] = {
- 	{ .name = "ad5685r", .driver_data = (kernel_ulong_t)&ad5685r_chip_info },
- 	{ .name = "ad5686",  .driver_data = (kernel_ulong_t)&ad5686_chip_info },
- 	{ .name = "ad5686r", .driver_data = (kernel_ulong_t)&ad5686r_chip_info },
-+	{ .name = "ad5687",  .driver_data = (kernel_ulong_t)&ad5687_chip_info },
-+	{ .name = "ad5687r", .driver_data = (kernel_ulong_t)&ad5687r_chip_info },
-+	{ .name = "ad5689",  .driver_data = (kernel_ulong_t)&ad5689_chip_info },
-+	{ .name = "ad5689r", .driver_data = (kernel_ulong_t)&ad5689r_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ad5686_spi_id);
- 
- static const struct of_device_id ad5686_of_match[] = {
- 	{ .compatible = "adi,ad5310r", .data = &ad5310r_chip_info },
-+	{ .compatible = "adi,ad5313r", .data = &ad5338r_chip_info },
-+	{ .compatible = "adi,ad5317r", .data = &ad5317r_chip_info },
- 	{ .compatible = "adi,ad5672r", .data = &ad5672r_chip_info },
-+	{ .compatible = "adi,ad5674",  .data = &ad5674_chip_info },
- 	{ .compatible = "adi,ad5674r", .data = &ad5674r_chip_info },
- 	{ .compatible = "adi,ad5676",  .data = &ad5676_chip_info },
- 	{ .compatible = "adi,ad5676r", .data = &ad5676r_chip_info },
-+	{ .compatible = "adi,ad5679",  .data = &ad5679_chip_info },
- 	{ .compatible = "adi,ad5679r", .data = &ad5679r_chip_info },
- 	{ .compatible = "adi,ad5681r", .data = &ad5681r_chip_info },
- 	{ .compatible = "adi,ad5682r", .data = &ad5682r_chip_info },
-@@ -210,6 +222,10 @@ static const struct of_device_id ad5686_of_match[] = {
- 	{ .compatible = "adi,ad5685r", .data = &ad5685r_chip_info },
- 	{ .compatible = "adi,ad5686",  .data = &ad5686_chip_info },
- 	{ .compatible = "adi,ad5686r", .data = &ad5686r_chip_info },
-+	{ .compatible = "adi,ad5687",  .data = &ad5687_chip_info },
-+	{ .compatible = "adi,ad5687r", .data = &ad5687r_chip_info },
-+	{ .compatible = "adi,ad5689",  .data = &ad5689_chip_info },
-+	{ .compatible = "adi,ad5689r", .data = &ad5689r_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad5686_of_match);
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index e2beba6d54b1..0cc1c9c22a28 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -409,8 +409,11 @@ DECLARE_AD5683_CHANNELS(ad5683r_channels, 16, 0);
- /* dual-channel */
- DECLARE_AD5338_CHANNELS(ad5337r_channels, 8, 8);
- DECLARE_AD5338_CHANNELS(ad5338r_channels, 10, 6);
-+DECLARE_AD5338_CHANNELS(ad5687r_channels, 12, 4);
-+DECLARE_AD5338_CHANNELS(ad5689r_channels, 16, 0);
- 
- /* quad-channel */
-+DECLARE_AD5686_CHANNELS(ad5317r_channels, 10, 6);
- DECLARE_AD5686_CHANNELS(ad5684r_channels, 12, 4);
- DECLARE_AD5686_CHANNELS(ad5685r_channels, 14, 2);
- DECLARE_AD5686_CHANNELS(ad5686r_channels, 16, 0);
-@@ -486,6 +489,44 @@ const struct ad5686_chip_info ad5338r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5338r_chip_info, "IIO_AD5686");
- 
-+const struct ad5686_chip_info ad5687_chip_info = {
-+	.channels = ad5687r_channels,
-+	.num_channels = 2,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5687_chip_info, "IIO_AD5686");
-+
-+const struct ad5686_chip_info ad5687r_chip_info = {
-+	.channels = ad5687r_channels,
-+	.int_vref_mv = 2500,
-+	.num_channels = 2,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5687r_chip_info, "IIO_AD5686");
-+
-+const struct ad5686_chip_info ad5689_chip_info = {
-+	.channels = ad5689r_channels,
-+	.num_channels = 2,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5689_chip_info, "IIO_AD5686");
-+
-+const struct ad5686_chip_info ad5689r_chip_info = {
-+	.channels = ad5689r_channels,
-+	.int_vref_mv = 2500,
-+	.num_channels = 2,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5689r_chip_info, "IIO_AD5686");
-+
-+const struct ad5686_chip_info ad5317r_chip_info = {
-+	.channels = ad5317r_channels,
-+	.int_vref_mv = 2500,
-+	.num_channels = 4,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5317r_chip_info, "IIO_AD5686");
-+
- const struct ad5686_chip_info ad5684_chip_info = {
- 	.channels = ad5684r_channels,
- 	.num_channels = 4,
-@@ -547,6 +588,13 @@ const struct ad5686_chip_info ad5676r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5676r_chip_info, "IIO_AD5686");
- 
-+const struct ad5686_chip_info ad5674_chip_info = {
-+	.channels = ad5674r_channels,
-+	.num_channels = 16,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5674_chip_info, "IIO_AD5686");
-+
- const struct ad5686_chip_info ad5674r_chip_info = {
- 	.channels = ad5674r_channels,
- 	.int_vref_mv = 2500,
-@@ -555,6 +603,13 @@ const struct ad5686_chip_info ad5674r_chip_info = {
- };
- EXPORT_SYMBOL_NS_GPL(ad5674r_chip_info, "IIO_AD5686");
- 
-+const struct ad5686_chip_info ad5679_chip_info = {
-+	.channels = ad5679r_channels,
-+	.num_channels = 16,
-+	.regmap_type = AD5686_REGMAP,
-+};
-+EXPORT_SYMBOL_NS_GPL(ad5679_chip_info, "IIO_AD5686");
-+
- const struct ad5686_chip_info ad5679r_chip_info = {
- 	.channels = ad5679r_channels,
- 	.int_vref_mv = 2500,
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index c1222ef83a4f..482bc70515f7 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -106,8 +106,13 @@ extern const struct ad5686_chip_info ad5683r_chip_info;
- /* dual-channel instances */
- extern const struct ad5686_chip_info ad5337r_chip_info;
- extern const struct ad5686_chip_info ad5338r_chip_info;
-+extern const struct ad5686_chip_info ad5687_chip_info;
-+extern const struct ad5686_chip_info ad5687r_chip_info;
-+extern const struct ad5686_chip_info ad5689_chip_info;
-+extern const struct ad5686_chip_info ad5689r_chip_info;
- 
- /* quad-channel instances */
-+extern const struct ad5686_chip_info ad5317r_chip_info;
- extern const struct ad5686_chip_info ad5684_chip_info;
- extern const struct ad5686_chip_info ad5684r_chip_info;
- extern const struct ad5686_chip_info ad5685r_chip_info;
-@@ -120,7 +125,9 @@ extern const struct ad5686_chip_info ad5676_chip_info;
- extern const struct ad5686_chip_info ad5676r_chip_info;
- 
- /* 16-channel instances */
-+extern const struct ad5686_chip_info ad5674_chip_info;
- extern const struct ad5686_chip_info ad5674r_chip_info;
-+extern const struct ad5686_chip_info ad5679_chip_info;
- extern const struct ad5686_chip_info ad5679r_chip_info;
- 
- /**
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index 4a249f9cdb8f..bffe60452c34 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -78,10 +78,12 @@ static int ad5686_i2c_probe(struct i2c_client *i2c)
- 
- static const struct i2c_device_id ad5686_i2c_id[] = {
- 	{ .name = "ad5311r", .driver_data = (kernel_ulong_t)&ad5311r_chip_info },
-+	{ .name = "ad5316r", .driver_data = (kernel_ulong_t)&ad5317r_chip_info },
- 	{ .name = "ad5337r", .driver_data = (kernel_ulong_t)&ad5337r_chip_info },
- 	{ .name = "ad5338r", .driver_data = (kernel_ulong_t)&ad5338r_chip_info },
- 	{ .name = "ad5671r", .driver_data = (kernel_ulong_t)&ad5672r_chip_info },
- 	{ .name = "ad5673r", .driver_data = (kernel_ulong_t)&ad5674r_chip_info },
-+	{ .name = "ad5675",  .driver_data = (kernel_ulong_t)&ad5676_chip_info },
- 	{ .name = "ad5675r", .driver_data = (kernel_ulong_t)&ad5676r_chip_info },
- 	{ .name = "ad5677r", .driver_data = (kernel_ulong_t)&ad5679r_chip_info },
- 	{ .name = "ad5691r", .driver_data = (kernel_ulong_t)&ad5681r_chip_info },
-@@ -93,16 +95,19 @@ static const struct i2c_device_id ad5686_i2c_id[] = {
- 	{ .name = "ad5695r", .driver_data = (kernel_ulong_t)&ad5685r_chip_info },
- 	{ .name = "ad5696",  .driver_data = (kernel_ulong_t)&ad5686_chip_info },
- 	{ .name = "ad5696r", .driver_data = (kernel_ulong_t)&ad5686r_chip_info },
-+	{ .name = "ad5697r", .driver_data = (kernel_ulong_t)&ad5687r_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ad5686_i2c_id);
- 
- static const struct of_device_id ad5686_of_match[] = {
- 	{ .compatible = "adi,ad5311r", .data = &ad5311r_chip_info },
-+	{ .compatible = "adi,ad5316r", .data = &ad5317r_chip_info },
- 	{ .compatible = "adi,ad5337r", .data = &ad5337r_chip_info },
- 	{ .compatible = "adi,ad5338r", .data = &ad5338r_chip_info },
- 	{ .compatible = "adi,ad5671r", .data = &ad5672r_chip_info },
- 	{ .compatible = "adi,ad5673r", .data = &ad5674r_chip_info },
-+	{ .compatible = "adi,ad5675",  .data = &ad5676_chip_info },
- 	{ .compatible = "adi,ad5675r", .data = &ad5676r_chip_info },
- 	{ .compatible = "adi,ad5677r", .data = &ad5679r_chip_info },
- 	{ .compatible = "adi,ad5691r", .data = &ad5681r_chip_info },
-@@ -114,6 +119,7 @@ static const struct of_device_id ad5686_of_match[] = {
- 	{ .compatible = "adi,ad5695r", .data = &ad5685r_chip_info },
- 	{ .compatible = "adi,ad5696",  .data = &ad5686_chip_info },
- 	{ .compatible = "adi,ad5696r", .data = &ad5686r_chip_info },
-+	{ .compatible = "adi,ad5697r", .data = &ad5687r_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad5686_of_match);
-
--- 
-2.43.0
-
-
+SGkgQ29ub3IsDQoNCj4gVGhpcyBpcyBhY3R1YWxseSBhIHYyLCByaWdodD8gVGhpcyB3YXMgc3Vi
+bWl0dGVkIGJlZm9yZSB1c2luZyBhIGJpdA0KPiBvZiBhDQo+IGRpZmZlcmVudCBhcHByb2FjaCBJ
+SVJDPw0KDQpUaGlzIGlzIHRoZSBmaXJzdCB2ZXJzaW9uIGNvbWJpbmluZyBib3RoIHRoZSByZWZh
+Y3RvcmluZyBhbmQgdGhlIFNQSQ0Kc3VwcG9ydCBpbnRvIGEgc2luZ2xlIHNlcmllcy4gT3JpZ2lu
+YWxseSBJIGhhdmUgc2VudCB0aGUgcmVmYWN0b3JpbmcNCnBhdGNoZXMgc2VwYXJhdGVseSBhbmQg
+aW4gb3JkZXIgdG8gYXZvaWQgY29uZnVzaW9uIChjYW5ub3QgZG8gYSBkaWZmDQp3aXRoIG9sZCBw
+YXRjaGVzKSBhbmQgdG8gYmUgdHJhY2tlZCBlYXNpbHkgSSBoYXZlIGRlY2lkZWQgdG8gbWFrZSB0
+aGlzDQpzZXJpZXMgYXMgdmVyc2lvbiAxLg0KDQpJZiB5b3UgdGhpbmsgaXQgaXMgYSBnb29kIGlk
+ZWEgdG8gbWFyayBpdCBhcyB2ZXJzaW9uIDIsIEkgY2FuIHJlc2VuZA0KdGhlIHNlcmllcyBhcyB2
+ZXJzaW9uIDIgYW5kIHBvaW50IHRvIHRoZSBvbGQgcGF0Y2hlcyBhcyB2ZXJzaW9uIDEuDQoNCkJl
+c3QgcmVnYXJkcywNCkFyaWFuYQ0KDQoNCg0K
