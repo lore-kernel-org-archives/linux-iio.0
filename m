@@ -1,123 +1,183 @@
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D27A3B3C17
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 20:49:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1848E3603EF;
+	Fri, 24 Jul 2026 21:32:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784926192; cv=none; b=oalHYiGiubkoSll3bl5PYHgGTkrVg7hRQ6FFRZ8L5L47SdERp4txoF1JjqUs3vf+6aDT4KtwEoVilAx2xJZvTiDyq2fOkBUcwPVZAQ7rl8Fq8Ay36csTTLU+a4JvWNu+JMPCqPkgfWKoANzcf5cMcnf+NyHBrC6kdOgm3W5pGVg=
+	t=1784928732; cv=none; b=dbQSAN08BA5bPuV4W9tpHgb0zozaRUZHFBtz1ZTXB2LDEbli8b28/rChXQEnUTeP4OdWQLc5Jsmqj1bhsZaqJmoiSpk96s94h8a9FvGQURboLORSwcN013iDafTJLJFuXQz5K7OU9rmNQ9uz94XV6FNTW1mzJeGrkvFWe15pNmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784926192; c=relaxed/simple;
-	bh=+6NzsAXpxpUyYVYr7CrkYkFkcEajA1+j6cXX/jJG7dM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=K4N83b7I0FpFOY05PdcxPBReOmILWjD+Re7O9qQ6OZPQbBr9CYK8NVeN0StH5gl5KpstECKf8xn8q+QrNPvm7AEkdL8KJaWpiW79Tj7Jc/xmBxMe2rmUxq8qjB4CyXqrn1x+jMigOqD/alkoUjyyig3RmqBivTHSBocPxC+p7NE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OuWac5/7; arc=none smtp.client-ip=209.85.160.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1784928732; c=relaxed/simple;
+	bh=0SoReVqPG8OARZk3PKxhC9ElIHsbHT70s0BWq+efhYI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IdLu/gapnSOb1ARdlvRpgD40+Jq606nMt27uazc7sT3jkomzarz9e6kDVtLnZBjswPPpGk/ZnutXqMKD4GqYf5e9vsF+AWtdsFz77F3UQ+9r8pjv7oHn4V40ju+dld9b6RrmLS4Clkr9bz2R6gzzWC9jhX1WhsEUy8pPW6amqiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YsrG/i62; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OuWac5/7"
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-4472500e25fso473161fac.1
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 13:49:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784926188; x=1785530988; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=SDKoS7M6FWotXuFa/jW1tR0/zPrDl09a09em6cgDMYE=;
-        b=OuWac5/7t0GMPJyzq6fBVPspdI16+xujmkjf1yVVM2kXyj23jXPn5fiQXfzZpm3wYG
-         dj3bx2eDzUMf5HSsvihtyXGXBHCjUSAu8NkozKSCn1jZzbFB0zs8IUOTwuC5HOylY1ol
-         cY1kMgR7SP38ONftkum1iZ+HB1Hdj2EnyRp9GF6lJ+cV5X267xqBd/dD7HSz8f2TqDwg
-         ZlsmjXSi5a1ki4GeuTGMcHQA+GuOn/VahBoUqvTOdhm2hcveGGO0m4ZPEox7QioLzlRR
-         R2SgxjasOs8ggPt7k8EAXsUibyi+7w9vHMS3e8iSB1yvREMQxp2HdCkEbO8ZEA806zl1
-         dynQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784926188; x=1785530988;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=SDKoS7M6FWotXuFa/jW1tR0/zPrDl09a09em6cgDMYE=;
-        b=RVh/YfxJ9ZjVFw7fDITl6m7wCkKUnGAToYrfDqgKADqTCIjMqg+4ay0i1zVk0uDXsy
-         IX8npYj6dFKTQXMWIOHm740W261FFcsaTWuTTyOQSv4+va5xivgUtjSpXJ6WoKiZifnG
-         JwvllXjKv7YZmka+gpf5ruRM5tDkuDvUu4EJIOC85Q7fzqIk1+RIOG/CHtChVTYumEVr
-         e3IEIqfLb+JnyCauA/1SRJQ50xxyEqg6WffDxq8GQZ/M9oUyR+eA2h2M8zet9kogyo5p
-         bOpFkzMuDryaaNJYrfV7/MhZcEZ6ReJR1sIV3Q9j3SzsMskrp9sjpBcB1jQQnBTGcv1M
-         SUVg==
-X-Forwarded-Encrypted: i=1; AHgh+Rr9KWOfnKhl/TmUOHo69Ep4F+tfxiTMRY9cMD78z2h175B+b4FOl4ajTkoYCddKHQaWMzZVzhgiu5A=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyx65MIkUQE5K9FWS2+3ibBm2LyD2nj1f764EUzViAS4vcpgLuh
-	iSQxRnpxCbiVpvj4VevOY3JVYJbtpB9fiabT9UncPOJiuIThVzjsYtnI2/SuBLis7f+soHqqT7u
-	F9Q1w
-X-Gm-Gg: AR+sD13+P/FxBq7+07u2LclN4acKKh5lgELwUhC/ngpkWYtuOpsmv7NvMoqO+pBkQ1U
-	1Egb/0f1Qh3pS/ItSKPRvPY4ob8M8EWgB+JOVOsyjXFDzkEiA6C+1GrDSZSzbrAZUQKoC+Bz/eN
-	6ldG4EsCfEAZSdPgTNTLVwR6Q2li+bvldtcmb8viAaGmNlMQ07TOAJWeZZkhKMOXfSxrXxHzkUt
-	nFNjqMJgtpMblbjzBUvBTgfhffv95Hl382WSq54aOfnxyyla+8yNBRXNXoOBAx2JUTavAsplgIn
-	PC3p2p3h4HHc7+6nOPNK5330ZNR8DBDvrgTDQn2oGDgDwwIcTenBh+NgdCYOS4/Y0psWrSJFhkC
-	g1H5X53wGmPwVcUfZrwHTSQ8bNGmXYPK5pdBDKEpbt83fkg0F8be1dulUCL7LqfWTRpvH4AmzUj
-	fqZg5Nts9eXFxqCihw
-X-Received: by 2002:a05:6808:178a:b0:486:5466:e41f with SMTP id 5614622812f47-4ab6a190e23mr32272b6e.38.1784926187877;
-        Fri, 24 Jul 2026 13:49:47 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:b635:d463:c98:cc75])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45766e66674sm7255201fac.3.2026.07.24.13.49.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2026 13:49:47 -0700 (PDT)
-From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Fri, 24 Jul 2026 15:49:18 -0500
-Subject: [PATCH 2/2] iio: ABI: add sysfs attribute for _burnoutraw
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YsrG/i62"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7342D1F000E9;
+	Fri, 24 Jul 2026 21:32:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1784928730;
+	bh=gfkC5Hgbwc7M1k5qZ5mj/SEyy6byTNhChcQuDHwZrXo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=YsrG/i62boOuWezgB+3hMCRv6Cbk0GDNTz0RDbZ8bivCoJdvgQTz9kFM5baq8IyQW
+	 1EZg50maocEvl3quH8ENgSvaRWdMjE5gVtcruTGmk7aTtiassr2AVDT2a5BK2QW0WL
+	 B8GFpeHUt+7/RrpjcdG59vHhGt7PK3KIL6XHISMd0Ved7HOd0jWItbJB1Gtfz6xNor
+	 RWzHU21o5Ue6aKa/qxpz29JvkY7OMy42gGttpGwpDOM0dyI5fZoixbPRmy10J4qaJo
+	 adbXxdzBSh1X4OPbUEXMJ6gkUx00ojQXHiU7aXJ8UZ4KEcwT6EssEA93A8pYWDqSwD
+	 YlYkr/R//VzTw==
+Date: Fri, 24 Jul 2026 22:32:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Piyush Patle <piyushpatle228@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ak@it-klinger.de, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
+ nuno.sa@analog.com, dlechner@baylibre.com
+Subject: Re: [PATCH v11 00/11] iio: adc: Add support for AVIA HX710B ADC
+Message-ID: <20260724223205.25184e92@jic23-huawei>
+In-Reply-To: <CAMB+xkbpgDxv1Lt=qxqKyeEhXyxRpZ3Y1v7ZDaMGKUqAa1hDxg@mail.gmail.com>
+References: <20260603184859.89693-1-piyushpatle228@gmail.com>
+	<20260614220400.106dd636@jic23-huawei>
+	<CAMB+xkbpgDxv1Lt=qxqKyeEhXyxRpZ3Y1v7ZDaMGKUqAa1hDxg@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260724-iio-adc-ti-ads112c14-burnout-v1-2-f0204cecbe3a@baylibre.com>
-References: <20260724-iio-adc-ti-ads112c14-burnout-v1-0-f0204cecbe3a@baylibre.com>
-In-Reply-To: <20260724-iio-adc-ti-ads112c14-burnout-v1-0-f0204cecbe3a@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
- Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
-X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1104; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=+6NzsAXpxpUyYVYr7CrkYkFkcEajA1+j6cXX/jJG7dM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqY8/eVgHYVCXmvEb2EPRwTLgV/6VbeymHbE50t
- pJYxg8FW8yJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamPP3gAKCRDCzCAB/wGP
- wJ5xB/0R1kB6mTw9e/dBjym6WUujDJHQ+RRrT1zfav9hdHDAyDlhdNHLgHYeH/zyVm7EbWO3YSi
- F/K+D3qx00eyTS++hxAN60SKYhqiWs9Ej34ybYYLLndVqRqDTKCxxTlosG0/O0OLG54rrJtfkF+
- kGqielXIaLQR90VRaS8ZhIc4Yw/YDNqkXszHX1L6cNcDvOUQjozVcZfW7h3nc+Uay+vsl2kyCVY
- /notcd9KeRYi7cFTKuX75AGAwsckOxKIVO6AhV0LZJpzPwGRn0g5JfSLNRcgtvdz9WXrgJP6wOP
- urNnxi/73CDeRBnbcNTaTsCLk438i9BAt7oSqXdd04Fzoxol
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Add a new _burnoutraw attribute to the IIO ADC ABI. This is likely only
-applicable to ADCs (but is seen on multiple chips and vendors) so it
-gets its own file instead of being added to the main IIO ABI file.
+On Fri, 24 Jul 2026 05:51:25 +0530
+Piyush Patle <piyushpatle228@gmail.com> wrote:
 
-Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-adc | 9 +++++++++
- 1 file changed, 9 insertions(+)
+> On Mon, Jun 15, 2026 at 2:34=E2=80=AFAM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Thu,  4 Jun 2026 00:18:48 +0530
+> > Piyush Patle <piyushpatle228@gmail.com> wrote:
+> > =20
+> > > The HX710B is a 24-bit ADC from AVIA Semiconductor, related to the
+> > > HX711 already supported in this driver.  Unlike the HX711 (which has
+> > > selectable gain and two input channels), the HX710B has a fixed gain
+> > > of 128 and two operating modes selected by the trailing PD_SCK pulse
+> > > count after each conversion:
+> > >
+> > >   25 pulses (1 trailing): differential input at 10 SPS
+> > >   26 pulses (2 trailing): DVDD-AVDD supply monitor at 40 SPS
+> > >   27 pulses (3 trailing): differential input at 40 SPS
+> > >
+> > > This series first extends the existing HX711 binding and driver with
+> > > preparatory refactoring, then adds HX710B support on top.
+> > >
+> > > The differential input is exposed as a single IIO channel with
+> > > IIO_CHAN_INFO_SAMP_FREQ, allowing userspace to select 10 or 40 SPS
+> > > without needing two separate channels for the same physical input.
+> > > The supply monitor is a second channel at fixed 40 SPS.
+> > >
+> > > This revision is rebased onto current mainline.  Note that
+> > > iio_device_claim_direct_mode() / iio_device_release_direct_mode() were
+> > > removed from the IIO core since v10, so 11/11 now uses the replacement
+> > > iio_device_claim_direct() / iio_device_release_direct() API.
+> > >
+> > > Tested on a PocketBeagle2 (TI AM625): the avia,hx710b node probes and
+> > > the driver registers its two IIO channels.
+> > >
+> > > Changes from v10:
+> > >   - 02/11: Retitled to "add VSUP and DVDD supply properties"; the
+> > >     commit message now documents both supplies (the patch already
+> > >     added both; only the title/text were out of sync). [Jonathan]
+> > >   - 04/11: Reworded commit message so DVDD is no longer described as
+> > >     HX710B-specific (it is added for both parts in 02/11). The
+> > >     compatible match now uses "contains: const: avia,hx710b" so the
+> > >     constraints still apply if the compatible is later used as a
+> > >     fallback. dvdd-supply is now required for HX710B (in the HX710B
+> > >     branch only, so existing HX711 device trees are unaffected) and
+> > >     added to the HX710B example. [Jonathan, Conor, Sashiko]
+> > >   - 11/11: Kconfig title and file header use "similar" instead of
+> > >     "compatible". Simplified the tail of hx711_set_hx710b_channel()
+> > >     to "return hx711_wait_for_ready()". Dropped an unrelated
+> > >     reindentation of the iio_push_to_buffers_with_timestamp() call.
+> > >     Converted hx710b_write_raw() to the new
+> > >     iio_device_claim_direct() API (see above). [Jonathan]
+> > >
+> > > The Reviewed-by (Andy Shevchenko) and Acked-by (Conor Dooley) tags on
+> > > 02/11 and 04/11 are carried over although those patches changed; plea=
+se
+> > > re-confirm if you disagree with the reworked constraints. =20
+> > As the only comments I had (well mostly sashiko) were on the 710b patch
+> > at the end and some patches were queued from previous patches, I now ha=
+ve
+> > patches 1-3 and 5-10 applied to the testing branch of iio.git. =20
+>=20
+> Thanks a lot for picking those up, and for the reviews through the
+> series.
+>=20
+> Two questions, mostly to make sure I do the right thing next:
+>=20
+> Looking at mainline I currently only see 01/11 ("dt-bindings: iio: adc:
+> hx711: clean up existing binding text") and 05/11 ("iio: adc: hx711:
+> move scale computation to per-device storage") under my name.  I assume
+> the rest are still sitting in testing/togreg and will flow in at the
+> next merge window rather than anything having gone missing, is that
+> right?  Just checking I'm reading the tree correctly, no rush from my
+> side.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc b/Documentation/ABI/testing/sysfs-bus-iio-adc
-new file mode 100644
-index 000000000000..d45f0a4eb18e
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-adc
-@@ -0,0 +1,9 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_resistanceY_burnoutraw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_burnoutraw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_burnoutraw
-+KernelVersion:	7.3
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value from channel Y read using a single conversion with
-+		the channel burnout current enabled. This is typically used
-+		for diagnostic purposes to detect an open or shorted input.
+Exactly that - assuming nothing odd happens they should go into mainline
+in the next merge window.=20
 
--- 
-2.43.0
+>=20
+> For the two that weren't applied, 04/11 (dt-bindings HX710B) and 11/11
+> (driver HX710B support): would you prefer I resend just those two as a
+> standalone v12 based on the testing branch, once I've worked through
+> the remaining comments from you and Sashiko?  That seemed cleaner than
+> reposting all eleven, but happy to send the full series again if you'd
+> rather have it that way.
+
+Go for the togreg branch (it's a little behind but should have all your
+work on it) and make sure to have a Based-on entry in the cover letter.
+I'm not sure if Sashiko will find the right thing test on but worth a go.
+
+
+>=20
+> If there is anything still outstanding on 04/11 or 11/11 beyond what
+> was raised on v11, please do point me at it and I'll fold it in.
+
+Not that I know of, but we'll see on v11 :)
+
+Jonathan
+
+>=20
+> Thanks,
+> Piyush
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> > >
+> > > Patches 01/11, 03/11, and 05/11 are unchanged from v10.
+> > >
+> > > Piyush Patle (11):
+> > >   dt-bindings: iio: adc: hx711: clean up existing binding text
+> > >   dt-bindings: iio: adc: hx711: add VSUP and DVDD supply properties
+> > >   dt-bindings: iio: adc: hx711: add RATE GPIO property
+> > >   dt-bindings: iio: adc: hx711: add HX710B support
+> > >   iio: adc: hx711: move scale computation to per-device storage
+> > >   iio: adc: hx711: introduce hx711_chip_info structure
+> > >   iio: adc: hx711: pass trailing pulse count into hx711_read
+> > >   iio: adc: hx711: split variable assignments in hx711_read and
+> > >     hx711_reset
+> > >   iio: adc: hx711: localize loop iterators in hx711_read
+> > >   iio: adc: hx711: pass iio_chan_spec to hx711_reset_read
+> > >   iio: adc: hx711: add support for HX710B
+> > >
+> > >  .../bindings/iio/adc/avia-hx711.yaml          |  82 ++++-
+> > >  drivers/iio/adc/Kconfig                       |   8 +-
+> > >  drivers/iio/adc/hx711.c                       | 343 +++++++++++++++-=
+--
+> > >  3 files changed, 359 insertions(+), 74 deletions(-)
+> > > =20
+> > =20
 
