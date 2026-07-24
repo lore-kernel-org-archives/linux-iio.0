@@ -1,50 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C7E13D503;
-	Fri, 24 Jul 2026 00:22:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0B421C16A;
+	Fri, 24 Jul 2026 00:25:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784852534; cv=none; b=f8caLummmAsc8VQ4dEbcFKX2K9Y9ZglE5dZ5KYzvI2KfeYrVnYx1kPBKTbldiDC1wqKXVWGzD5nkhv6ZVJfZdI18mDjbBCLhQiAcJJMH7rvNeJLr5A4Gq9gpIBagtGuAtRFy92B9DdT1CpNd8YSKCGiYDrOFUi2fGUOgGn2UxUY=
+	t=1784852710; cv=none; b=V4aezJROmNsCGu/GuEq0Qot2wutvfRl5BmKAQ4TjAyks13COkPAiJJAq7E0L9Mkot0ZRsEi4C/uZAMMcAvzBvOTDM0gS233Zwjv9LlkmjOnoLSb8GDhjDIm+75loVuxBvvnkNopa50RmYBSf0jWOLZAP6NGlZWR3BaJB1MrRStY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784852534; c=relaxed/simple;
-	bh=NsI7D64Zwp1jqAPistajs58rxIDyOBjPR7pAEq9eDz4=;
+	s=arc-20240116; t=1784852710; c=relaxed/simple;
+	bh=+uSmUyNE5Mwph4Csfg3Wj6AXYPSbG5Ue2FUPzfO6hjM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ms0YJkiTrNFBVUs0au+R/WwsUi/ZDK00pK6Ej/glVQ9W+lp8v2TIwWZQId+YkvboQa0NBZgtGaVmaABZiGhdvMyMJYOfzurH3OOTwtgpF+mdXOsd27Mj8A/Gm14W5GPsORMN9UUeSRs+nfQZD4+J7pJ+sQPCa1sYF8zfsUIdKPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=maLUvQ80; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=FLZaAfk0NeB5H+6vXTOhGD9DLcE45nfjfv8CY9ns4ESD428djpJvvbBUtEUAxybeocuODr5l7WfhQ0VcGBJ7PUR0mHc8rRXnmyFrrgWU3fXl4WoIvHsZWvZwRweCSjBhJibIhpzDiD48QqdClTjp5ma1/GpMnbcfW5vcYUk1bR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BFUKmD3x; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="maLUvQ80"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE4271F000E9;
-	Fri, 24 Jul 2026 00:22:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BFUKmD3x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3D571F000E9;
+	Fri, 24 Jul 2026 00:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1784852532;
-	bh=RQzMlb3RzDDwVpamN+WjGOZ3rR0CHVnsub3C8HVDb8U=;
+	s=k20260515; t=1784852709;
+	bh=oq0ZDK1ZxeeMF8swvdYj4UKGN/R4xplxMYhulgskbxI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=maLUvQ805Rp0u12xlVeGtQDhVkRB/zqRLpnLg+BSJNxnhziFVkRmSh1g9wPlyM5l9
-	 cTIBRlwRnp2asrRaR95znQkHcHKf1DUkJQ97PN7XLuUv4aqWZQd1nqSlucvUs5EdUw
-	 cKyk3Mb8sPJOAsyZS7o2+Lb5tgGlepFR+JuAugHIp2QKOIy7XULqzHPaHpyPM/edGt
-	 ySp/9kaCWyqDJNu8AjRFeXZWeGogfjtfAwfHNN9rjktsPwhmIe6JWVUEacO6GfrMl5
-	 njtYW7WtLE3u2+lsh49f+5IRXNyE2apbXsArZLP5rKx2AIdUxXwRg2/RRb5zH2v/jv
-	 ojVdQXdKLWznA==
-Date: Fri, 24 Jul 2026 01:22:07 +0100
+	b=BFUKmD3xyJvEEPVVi1m9uZcQqw+U/t7moFxdROowaxBSmhv93mqOZIRimXXoyhW+s
+	 3aXJ2h3kRW4eEkLDGSS9pTmcvl8xKOT/ukSCp5mZBLHySJyLVlvAq2UZjLttRD0doU
+	 giW7kIe8y6f2Cfrf84z9j6gEE/q2VKRncoULnPGbXJel6grwepbOs3NqB0cWoBSnkn
+	 mgGDPuNO3C54+XIin+apUwrTYVFHrWLg6nAHulwRjQ+tTm+1x6WVzTDziSRsscXyv2
+	 seH5kf520YCUzpLaDIaQ1leQC/E6SwWiLnhIlhh+QA3Myn93+d3LQfqYCGi0ltCsMP
+	 z0p9lmMBIoqSg==
+Date: Fri, 24 Jul 2026 01:25:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jean-Baptiste
- Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>, David Lechner
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chris
  Morgan <macromorgan@hotmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: icm42600: add icm42630
-Message-ID: <20260724012207.56d737bc@jic23-huawei>
-In-Reply-To: <20260722-creature-volley-0f083b904c1d@spud>
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: imu: inv_icm42600: add support for icm42630
+Message-ID: <20260724012505.02029e51@jic23-huawei>
+In-Reply-To: <BE1P281MB142628222E8A8A94CDBB5693CEC22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
 References: <20260720173411.82979-1-jorijnvdgraaf@catcrafts.net>
-	<20260720173411.82979-2-jorijnvdgraaf@catcrafts.net>
-	<20260721-lethargic-purge-e3cfb3c50677@spud>
-	<20260721171647.26128-1-jorijnvdgraaf@catcrafts.net>
-	<20260722-creature-volley-0f083b904c1d@spud>
+	<20260720173411.82979-3-jorijnvdgraaf@catcrafts.net>
+	<BE1P281MB142628222E8A8A94CDBB5693CEC22@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,91 +50,130 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 22 Jul 2026 17:59:42 +0100
-Conor Dooley <conor@kernel.org> wrote:
+On Tue, 21 Jul 2026 07:18:02 +0000
+Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com> wrote:
 
-> On Tue, Jul 21, 2026 at 07:16:47PM +0200, Jorijn van der Graaf wrote:
-> > On Tue, Jul 21, 2026 at 05:01:26PM +0100, Conor Dooley wrote:  
-> > > On Mon, Jul 20, 2026 at 07:34:10PM +0200, Jorijn van der Graaf wrote:  
-> > > > The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family,
-> > > > found e.g. in the Fairphone 6. Document its compatible.
-> > > >
-> > > > A fallback compatible to a sibling is not usable: the part reports its
-> > > > own WHOAMI register value, which software validates against the
-> > > > compatible.  
-> > >
-> > > Why does software do this? If the whoami is the only difference, the
-> > > software should stop checking it.  
-> > 
-> > Whether the whoami is the only difference is exactly what I cannot
-> > establish: the part has no public datasheet. What I can establish is
-> > driver-visible: the unmodified driver has been tested to drive it
-> > correctly, and Jean-Baptiste confirmed the chip is "similar" to the
-> > ICM-42631 and "can be supported by inv_icm42600 driver without any
-> > modification". That is short of knowing the parts are identical (the
-> > family has precedent for real differences behind the same register
-> > layout: ICM-42686, different full-scale ranges), so I did not want
-> > to claim full compatibility with a sibling.
-> > 
-> > As for the check: it is not mine - inv_icm42600 has returned -ENODEV
-> > on a whoami mismatch since its 2020 introduction (and per-part config
-> > does differ within the family, see above). Since every released
-> > kernel enforces it, a fallback would not probe on any kernel already
-> > out there regardless of what we change now; and even if the check
-> > were relaxed, a fallback-matched part would bind with icm42631 as
-> > its ABI-visible name - so the dedicated compatible is needed either  
-> 
-> Is that really problematic? It's not problematic for any of the dozens
-> of other IIO devices that use fallbacks, is there something that would
-> make this one different?
-> 
-> > way. Whether the check should become a warning is
-> > Jean-Baptiste's call, as a behavior change for all parts the driver
-> > supports; I did not want to gate a trivial ID addition on it, but am
-> > happy to send that as a follow-up if wanted.  
-> 
-> The check should be deleted since it prevent using fallbacks.
-> IMO, delete the check and add the fallback rather than retain it and
-> propagate the issue. Even if you think having a fallback is a bad idea
-> because you cannot be 101% sure that there are no programming model
-> differences, delete the check. Personally I think that given the
-> testing, patches and quote from JeanBaptiste, a fallback is suitable
-> here.
-> 
-> I think Jonathan has sorta changed his stance "recently" on the
-> correctness of checking whoami values versus the compatible, so what was
-> done in 2020 doesn't represent what's the current guidance and I am
-> always a proponent of removing these checks whenever I become aware of
-> one preventing use of fallbacks.
+> >
+> >________________________________________
+> >From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+> >Sent: Monday, July 20, 2026 19:34
+> >To: Jonathan Cameron; Jean-Baptiste Maneyrol
+> >Cc: Jorijn van der Graaf; David Lechner; Nuno S=C3=A1; Andy Shevchenko; =
+Rob Herring; Krzysztof Kozlowski; Conor Dooley; Chris Morgan; Luca Weiss; l=
+inux-iio@vger.kernel.org; devicetree@vger.kernel.org; linux-kernel@vger.ker=
+nel.org
+> >Subject: [PATCH 2/2] iio: imu: inv_icm42600: add support for icm42630
+> >
+> >The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family, fo=
+und e.=E2=80=8Ag. in the Fairphone 6. It is register-compatible with its si=
+blings (the existing driver works on it unmodified) and reports WHOAMI valu=
+e 0x0C. The part appears to
+> >ZjQcmQRYFpfptBannerStart
+> >This Message Is From an External Sender
+> >This message came from outside your organization.
+> >
+> >ZjQcmQRYFpfptBannerEnd
+> >
+> >The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family,
+> >found e.g. in the Fairphone 6. It is register-compatible with its
+> >siblings (the existing driver works on it unmodified) and reports
+> >WHOAMI value 0x0C.
+> >
+> >The part appears to be a mobile SKU and has no public datasheet: the
+> >identity comes from the Fairphone 6 platform documentation and
+> >schematics naming the part, and the WHOAMI value was read from the
+> >hardware, whose bank 0 register defaults match the ICM-42600 family
+> >layout.
+> >
+> >Add the chip id, WHOAMI value and I2C/SPI match entries, using the
+> >family default configuration like the ICM-42631.
+> >
+> >Tested on the Fairphone 6 via a backport of this change to the
+> >device's 7.1-based kernel (only the id-table style adjusted to that
+> >base), on a bit-banged SPI bus with INT1 wired to the SoC: probe,
+> >accelerometer, gyroscope and temperature raw reads, all full-scale
+> >ranges, multiple sampling frequencies, and watermark-paced FIFO reads
+> >through the INT1 interrupt.
+> >
+> >Assisted-by: Claude:claude-fable-5
+> >Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
 
-Yup.  I was convinced (probably by you ;) that whoami hard checks should
-go.  There are quite a lot left from before that time and this probably
-one of those.
+Just one minor thing inline
 
-If it does turn out there is a difference then that is what the specific
-compatible allows us to handle
+> >diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/i=
+io/imu/inv_icm42600/inv_icm42600_i2c.c
+> >index 28552d2db91d..c413904c8680 100644
+> >--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> >+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> >@@ -81,6 +81,7 @@ static const struct i2c_device_id inv_icm42600_id[] =
+=3D {
+> >        { .name =3D "icm42622", .driver_data =3D INV_CHIP_ICM42622 },
+> >        { .name =3D "icm42688", .driver_data =3D INV_CHIP_ICM42688 },
+> >        { .name =3D "icm42631", .driver_data =3D INV_CHIP_ICM42631 },
+> >+       { .name =3D "icm42630", .driver_data =3D INV_CHIP_ICM42630 },
+> >        { }
+> > };
+> > MODULE_DEVICE_TABLE(i2c, inv_icm42600_id);
+> >@@ -107,6 +108,9 @@ static const struct of_device_id inv_icm42600_of_mat=
+ches[] =3D {
+> >        }, {
+> >                .compatible =3D "invensense,icm42631",
+> >                .data =3D (void *)INV_CHIP_ICM42631,
+> >+       }, {
+> >+               .compatible =3D "invensense,icm42630",
+> >+               .data =3D (void *)INV_CHIP_ICM42630,
+> >        },
+> >        { }
+> > };
+> >diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/i=
+io/imu/inv_icm42600/inv_icm42600_spi.c
+> >index faf743bc6444..a1d12ce3bf87 100644
+> >--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> >+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> >@@ -78,6 +78,7 @@ static const struct spi_device_id inv_icm42600_id[] =
+=3D {
+> >        { .name =3D "icm42622", .driver_data =3D INV_CHIP_ICM42622 },
+> >        { .name =3D "icm42688", .driver_data =3D INV_CHIP_ICM42688 },
+> >        { .name =3D "icm42631", .driver_data =3D INV_CHIP_ICM42631 },
+> >+       { .name =3D "icm42630", .driver_data =3D INV_CHIP_ICM42630 },
+> >        { }
+> > };
+> > MODULE_DEVICE_TABLE(spi, inv_icm42600_id);
+> >@@ -104,6 +105,9 @@ static const struct of_device_id inv_icm42600_of_mat=
+ches[] =3D {
+> >        }, {
+> >                .compatible =3D "invensense,icm42631",
+> >                .data =3D (void *)INV_CHIP_ICM42631,
+> >+       }, {
+> >+               .compatible =3D "invensense,icm42630",
+> >+               .data =3D (void *)INV_CHIP_ICM42630,
+> >        },
 
-So dt-binding wise, please go with the fallback route for this new part.
-For old kernels that just means backporting relaxing that constraint and given
-a backport is required either way it doesn't matter.
+Hmm. These tables should ideally be in numeric order.   That can be
+a separate follow up patch though.   For this one can you just
+put it before the 42631 here and wherever else that is relevant.
 
-At least a first glance all that is needed is to drop the error return?
+If you don't mind doing a precursor patch to reorder the entrees
+then even better!
 
 Thanks,
 
 Jonathan
 
-> 
-> Cheers,
-> Conor.
-> 
-> > The commit message led with the driver check where the real reason
-> > is the identity uncertainty above; I will reword that in a v2 if one
-> > is needed.
-> > 
-> > Thanks,
-> > Jorijn  
-
+> >        { }
+> > };
+> >--
+> >2.55.0
+> > =20
+>=20
+> Hello Jorijn,
+>=20
+> it is OK for me, thanks for the patch.
+>=20
+> Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+>=20
+> Thanks,
+> JB
