@@ -1,252 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63F24360751;
-	Fri, 24 Jul 2026 15:30:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC57143CE7D
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 15:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784907033; cv=none; b=qAFXn9M5MgCRQTT2yljA3A+kLVZOv/8WiOxOee9RgxUI3604k8T4Lf/+1ejrsTwmHVJVZURyY9NdNDuCCNR7f1BsQnWI0wCI6J3K99XW2Yi5HIMyKo7MBQz5jv9cweq0cE2lTvE7Dj9cX/PQjzsVT+AlpSUvbyo4IXy+f2cRom8=
+	t=1784908533; cv=none; b=D0HceOOzsY0On9dSCq0oTZzvIMQ1EYjp2u38a5+Kc08jOtnj0NBaSgHpZ+tzyT8gyVskpH5H/xtsMXWQBj79K0YhgoPLa77XTM7c8SDL1qddWl/PqpJ2TF2o/C6Al6zv4spSGbfvIkCo3wbyDusQGGHMk1PuaK78eosUSezpqzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784907033; c=relaxed/simple;
-	bh=O9piygf4mclTLSx4e3UlgjLQXNtkVuA++5iO9IxjET8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=BqtbaTB+G87H99p1VE9hG8WhV/XbamdXt2axY4Jeen3W4ho7KHqbcTJRRcgnTAUHOTxI/ETOAVwIqIpDTc43ifLQrJkNUDKR9K+i/v02sKsCNlytEY6oPI8gbqSR42GUZrW/9Jakjqe8QCF8rv1qrx/XBdN9o06Ryrp+Yu7nki8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B1AdiOqo; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1784908533; c=relaxed/simple;
+	bh=13LyG2fhABc676ik9gHXQA/E9NV0US2+ZEqwKc2Ktdw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=S9IQnKH2ZRPCjT7iSi59nkOrKPHp1PETiadjCBtmExJ/0xwP+9BuRUrb+FIThwVFrRHBWYuXWq9xZCtW9h6y5MxhZmkt42zMpE6/7C6Quxilo0s3yqNBZacLNpKGVquzEwMGjpqK+dyoa4kpALcRaGjKpsfJRUgqEie/niNEvyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Ev/aCI6f; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B1AdiOqo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1784907031; x=1816443031;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=O9piygf4mclTLSx4e3UlgjLQXNtkVuA++5iO9IxjET8=;
-  b=B1AdiOqoVwn1sZAn4ObrASY0f3fCH0UKmK/urvACr2VLdJ+sxs1DT7a7
-   yki35sIPk+S6l2Lq6tw9h7MMzHyLeFX++mc8+E+L73m4SSiZWUw457JBZ
-   JboMW6MoSXGFbDyjZDWOYZYzAi0qSFekACKzOTTJi9o++mo0PJk1hMZwv
-   MPk9Ut4irlvvirCSV/cOai8tmBSiZipSSxWU5ILSGdwSPCeLg2HYbDOTZ
-   sF6uBfoTqJER/22amz1saoLtYuEWgdfLRtXCrHPMJuROJpzKMOWH+pyJR
-   Y7MTZoAEWOu00IH1MqdeReDiYYDmmz324yi1IYqyPftGCxwDCK2B9ZZsv
-   Q==;
-X-CSE-ConnectionGUID: vl1iv66NRKWTu9IPqLkBHA==
-X-CSE-MsgGUID: jykp7n0MRYS3v9XNMXbB4w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11854"; a="85621717"
-X-IronPort-AV: E=Sophos;i="6.25,182,1779174000"; 
-   d="scan'208";a="85621717"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2026 08:30:30 -0700
-X-CSE-ConnectionGUID: HCrolK7iSO2wmuEtPkBZxA==
-X-CSE-MsgGUID: Tq4z16YQTx2NOg1ptwyHHw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,182,1779174000"; 
-   d="scan'208";a="262256353"
-Received: from spandruv-desk2.jf.intel.com ([10.88.27.176])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2026 08:30:31 -0700
-Message-ID: <7df349cbcccc8004d9aef37f95be5c8e0e51f713.camel@linux.intel.com>
-Subject: Re: hid-sensor-custom: async notification for input-report sysfs
- attributes? (human presence / attention sensors)
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Daniel Paul Perinchery <danielpaulperinchery07012005@gmail.com>, Jiri
- Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Benjamin
- Tissoires	 <bentiss@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Fri, 24 Jul 2026 08:30:15 -0700
-In-Reply-To: <CA+8Hp=M3ynUHzcDshLup5G+HDs0XoWkav0R5k-00m+O7LbOv1w@mail.gmail.com>
-References: 
-	<CA+8Hp=M3ynUHzcDshLup5G+HDs0XoWkav0R5k-00m+O7LbOv1w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-1.fc44) 
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Ev/aCI6f"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7ee50eb2db4so453594a34.3
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 08:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1784908530; x=1785513330; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=cyid8Sn56jsXPKcKwRrHqdi3wSKWUNrscCWSRaYha8E=;
+        b=Ev/aCI6fOj5ZWdMjBO/n8Ou7AMm5LQ4I/ZURgvP4qHxi7eztozDw+CwPHMdPqvy6dD
+         0xAY4GmG4JeULQPDLqkkwcs396TuDMyc8GTNnQr3NGLkAACMgX2gDkcxvSSMANGSX8XF
+         uc9oOlIRpnFSVFJtJncmKYSS939PFkOqxQG3q6fzrjvMqOFOseDHX1694iwfUBA3PZ6/
+         tYUXweR0oA8FdAz35ays0mrZG5lp5pdhloA5xn2U08YwpjYpRrZKUyCqIp3Nkxw8pOXg
+         ToOFkZQ1IqliDkPuK0I+T5ORJoOVtMyY6d8ra+rdPL6fbGUw0EsCKCFzpgUnNVzgPYLY
+         mPUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784908530; x=1785513330;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=cyid8Sn56jsXPKcKwRrHqdi3wSKWUNrscCWSRaYha8E=;
+        b=Rsw71GPmhmboQUEpGwMaz6e4wNYwRAY138x9M0UtXHNsINkCDlzMVXcHshQ6RgItMV
+         owT5h9WHJtjlJi0PenAkTa/UzYtIGTVL+NaZx0SogpKCdq40qq4Lh3cM6Wa+xPlr+OkA
+         +ZGzpC5UUXoTAN73fAr0iYN5D/gtr+UDBYvruw8TYoYE9N2h6nKrO67Ra9CXIfakx/bC
+         wcHBGoS3CJUlrhYmPLdu9Xh2fOnYJajS0ovnamNrdR1o5ZRF7iI3WbWxYsG822JS4iz7
+         LfbuxhRYGMPMkNYclPBh0c4FrV/erPiiCKpLcpJQ+Y0GakCM1+bWADqT60xRBejFUlZp
+         vtYA==
+X-Forwarded-Encrypted: i=1; AHgh+RoOThq6TQcZvlUE6T4Wm9JMzjhKXuDQOZ6yYVDey1rQej6Whtg/crtnnWyaNL3whE0+SIuVCwpDIFU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw9z6u2GgsfSUDZTthIQMd1EBQRK2r7jx1EL49CQYX7dGhx9zQW
+	p3B7FkCij70sVwWQaJ2RdmVLYAfqkZT6brx3J7oXhkzfru4JdbvYFhqG0P85SVlOUwk=
+X-Gm-Gg: AR+sD12udAjFaNMyibuX1FpyNLV4Fxb+L1T4+3Uas5JWc9Uz4QkJE14kSYwLi/HrCTJ
+	8zBkHFyY2orfsNRm7OxcV4NyBmazAemwJFvsdEgdhVqkLG7lLj0o1Mii429ASLxyt9pLBNbqbTO
+	BnGSLphnaonwOIXufCz9+WZpVP6CAUMbgxL/krpod6ZL1Zdmae7Wm9FOessexSd+Ayj9JqR45i5
+	aSyMu4kvvZRwpsDAk7RNCyoV82uk8pYPCUaNCpdQOTq17NC9t/Xueb0RgWfEOiCETSRfNCPtslw
+	6zt4J+KNhx5g9czKIn519xuDtOoyNrIcQWNl/TUXzSzub8uPwsSykIy4+sxxstyngUbMsTC3yGv
+	7CBzUrdCRM4uXY9+tg9Zmp/8Y3ogrTfjl/uF6KZZgKi0iSrr6Nie44kn358fiXgUpU3cjx+Yad5
+	j1YMyHkQ==
+X-Received: by 2002:a05:6830:6ac2:b0:7df:5fc:3fd8 with SMTP id 46e09a7af769-7ee43a1fd18mr5020745a34.1.1784908530278;
+        Fri, 24 Jul 2026 08:55:30 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:b635:d463:c98:cc75])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ee2a03eba8sm6160911a34.17.2026.07.24.08.55.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 08:55:29 -0700 (PDT)
+From: "David Lechner (TI)" <dlechner@baylibre.com>
+Subject: [PATCH v2 0/2] iio: adc: ti-ads112c14: buffered read support
+Date: Fri, 24 Jul 2026 10:55:05 -0500
+Message-Id: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-0-98b06f3d47d9@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5VPS07DQAy9SuQ1JvFQ+ltxD9TFfJzWiGTAM4moq
+ twdN+UCrKxnv59vUFiFCxybGyjPUiSPBtxTA/HixzOjJMPgOrftdrRBkYw+RaxioxC5aMsw9T0
+ rJ1T2CTfEr4mi71J8ATP6Uu7lZw15Pz1wmcIHx3p3/mMof0+WXh80CL4wxjwMUo+N6UurPGS7t
+ lagtVllPMPd7SKlZr2uH8y0iv9TdibssOctUzzsyO33b8FfPyUoP1s8nJZl+QUn548YJQEAAA=
+ =
+X-Change-ID: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+ Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ "David Lechner (TI)" <dlechner@baylibre.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1576; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=13LyG2fhABc676ik9gHXQA/E9NV0US2+ZEqwKc2Ktdw=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqY4rdXRbdKzNgomIgovXbFNdymyFhGfuPuhlkD
+ 8mdiNayEguJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamOK3QAKCRDCzCAB/wGP
+ wIbvB/0QB/yBDjrxGutCracP7xpq0YRUfV5Xo3dXSMlou5axFeLam75mgi2nAWRIkeu4xxGODpV
+ AQ6WCFlXi4xn1U95F1nnJI8LeVhl/4wrKDemWMpHV94CxG+rIpSBSW9xPtlF6eqc5f2QtLirhJp
+ RTlJvqxMO46YCQwTju0Rc7WoFbi4DXWShRxlN9PX0i+IgyKfReQp2dt6IfjHdvfSWFfsAOOPXD7
+ UtMukXtg067WW0rHN+aADcOOLWJYRRIYauCeFX00RhQOit+2DCYmd2Twl1EDEbAqJswqYsaDj2B
+ M/MFPa40pGqf04WiGBlCeYF2/0wCG8An4hdRFAqxPxjO7VR8
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Hi,
+This is the next phase of ti-ads112c14 support after [1].
 
-On Fri, 2026-07-24 at 12:42 +0530, Daniel Paul Perinchery wrote:
-> Hi,
->=20
-> I've been investigating why userspace can't efficiently watch a
-> hid-sensor-custom input-report value (specifically a human-presence
-> sensor, HID usage 2000e1, on an AMD Sensor Fusion Hub / amd_sfh
-> platform) for changes without polling, and wanted to check whether
-> there's interest in closing this gap before I try to write anything.
->=20
-> Setup: Lenovo IdeaPad Pro 5 14AKP10, AMD Ryzen AI 7 350, kernel
-> 7.0.13
-> (Debian/Parrot, but this is stock hid-sensor-custom.c). Presence and
-> gaze/attention are exposed as separate logical sensors under the same
-> physical hub (HID-SENSOR-2000e1.x.auto), each with the usual
-> auto-generated input-N-<usage>-value sysfs attribute.
->=20
-> What I found tracing show_value() in hid-sensor-custom.c: for input
-> reports, it calls sensor_hub_input_attr_get_raw_value(..., report_id,
-> SENSOR_HUB_SYNC, false) -- i.e. every read of the -value file issues
-> a
-> synchronous GET_REPORT to the hub and returns the live answer.
-> There's
-> no cached field backing that attribute, so there's nothing for a
-> notify-on-change mechanism to attach to on that path.
->=20
-> Separately, hid_sensor_capture_sample() *is* a genuine async callback
-> fired on hub-pushed input reports, but as far as I can tell it only
-> feeds the raw kfifo behind the driver's misc-device streaming
-> interface (custom_dev), gated on test_bit(0,
-> &sensor_inst->misc_opened). It doesn't appear to update any per-field
-> cached value, so it isn't reachable from the sysfs show_value() path
-> either.
->=20
-> Net effect: there's no way for a userspace consumer to poll()/
-> select() on the -value file and be woken only on real hardware
-> events.
+Some design decision notes:
+* This just includes support for software triggers using the single-shot
+  mode for now. We will follow up later with DRDY interrupt support and
+  a new trigger to allow using the continuous mode.
+* We wanted to enable CRC checking for data integrity, so it is just
+  always enabled. This way, the buffer layout is always the same. I
+  don't think we have an existing control for toggling CRC checking
+  anyway.
 
+[1]: https://lore.kernel.org/linux-iio/20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485@baylibre.com/
 
-I have a test program for poll(). Attached poll part.
+Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+---
+Changes in v2:
+- Dropped debugfs patch that was applied.
+- Adjusted for tweaks made to [1] when it was applied.
+- Made some clarifications in the last patch (commit message and comments).
+- Refactored the index tracking (`i` variable) in the last patch.
+- Link to v1: https://patch.msgid.link/20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com
 
-#define DEVICE_PATH "/dev/HID-SENSOR-2000e1.2.auto"
-#define BUFFER_SIZE 256
+---
+David Lechner (TI) (2):
+      iio: adc: ti-ads112c14: add support for I2C CRC8
+      iio: adc: ti-ads112c14: add support for buffered read
 
-int main(int argc, char *argv[])
-{
-	int fd;
-	struct pollfd pfd;
-	char buffer[BUFFER_SIZE];
-	int ret;
-	struct sigaction sa;
+ drivers/iio/adc/Kconfig        |   1 -
+ drivers/iio/adc/ti-ads112c14.c | 255 +++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 243 insertions(+), 13 deletions(-)
+---
+base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470
+change-id: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3
 
-	if (argc < 2) {
-		printf("syntax %s sample_interval\n", argv[0]);
-		exit(0);
-	}
-=09
+Best regards,
+--  
+David Lechner (TI) <dlechner@baylibre.com>
 
-	// 1. Set up Ctrl+C signal handler
-	sa.sa_handler =3D handle_sigint;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags =3D 0; // Don't use SA_RESTART so poll() unblocks on
-signal
-	if (sigaction(SIGINT, &sa, NULL) < 0) {
-		perror("Error setting up signal handler");
-		return -1;
-	}
-
-	enable_sensor(1);
-
-	// 2. Open the misc device
-	fd =3D open(DEVICE_PATH, O_RDONLY | O_NONBLOCK);
-	if (fd < 0) {
-		perror("Failed to open device");
-		return -1;
-	}
-
-	// 3. Configure poll structure
-	pfd.fd =3D fd;
-	pfd.events =3D POLLIN;
-
-	printf("Polling loop started. Press Ctrl+C to exit
-safely.\n");
-
-	// 4. Main event loop
-	while (keep_running) {
-		printf("Waiting for data...\n");
-=09
-		ret =3D poll(&pfd, 1, -1);=20
-
-		if (ret < 0) {
-			// Signal interrupted poll, loop will exit if
-it was SIGINT
-			continue;=20
-		}
-
-		if (ret =3D=3D 0) {
-			// Timeout reached with no data
-			continue;=20
-		}
-
-		// 5. Handle readable data event
-		if (pfd.revents & POLLIN) {
-			rx_tsc =3D read_rdtsc();
-			ssize_t bytes_read =3D read(fd, buffer,
-sizeof(buffer) - 1);
-			if (bytes_read > 0) {
-				time_t tm;
-
-				buffer[bytes_read] =3D '\0'; // Null-
-terminate string
-				printf("tm:%ld Received %ld bytes:
-%s\n", time(&tm), (long)bytes_read, buffer);
-				read_time_stamp(buffer, bytes_read);
-			} else if (bytes_read < 0) {
-				perror("Read error");
-			}
-		}
-	}
-
-	// 6. Cleanup
-	printf("\nExiting program cleanly...\n");
-	close(fd);
-
-	enable_sensor(0);
-
-	return 0;
-}
-
-Does it help.
-
-Thanks,
-Srinivas
-
-
-> The hub itself is already configured for threshold-based reporting
-> (property-reporting-state =3D 2, i.e. "Threshold Events") in my case,
-> so
-> the inefficiency is entirely on the kernel/sysfs side -- userspace
-> has
-> to fall back to timed re-reads of a synchronous, firmware-round-trip
-> attribute, which is more expensive per-read than a typical cached
-> sysfs value and awkward to size a safe polling interval for.
->=20
-> This seems like a real gap for the presence/proximity use case
-> specifically (walk-away lock, auto-dim, etc.), which is inherently
-> event-oriented and is exactly the kind of feature vendors implement
-> natively on Windows via push notifications from the same class of
-> sensor.
->=20
-> Before I put together a patch I wanted to ask: is there interest in
-> adding async caching + sysfs_notify() (or sysfs_notify_dirent(), if
-> attrs end up carrying a stored kernfs_node) for input-report values
-> specifically, sourced from hid_sensor_capture_sample()'s existing
-> async path? Rough shape as I see it:
->=20
-> =C2=A0 - add a cached "last input value" (+ a bool "valid") per relevant
-> field in struct hid_sensor_custom_field
-> =C2=A0 - in hid_sensor_capture_sample(), in addition to (or instead of,
-> behind a config/attr) feeding the misc-device fifo, decode and store
-> the value for the matching field, then sysfs_notify() its -value
-> attribute
-> =C2=A0 - leave show_value()'s SENSOR_HUB_SYNC path untouched for feature
-> reports and for any input attrs that never get an async report, so
-> nothing regresses for existing consumers
->=20
-> Happy to be told this already exists via a different interface I've
-> missed (I did look at whether this should just go through the IIO
-> buffered/trigger interface instead, given some other hid-sensor-*
-> drivers are IIO-backed -- but hid-sensor-custom exposes vendor/custom
-> usages directly via this sysfs shape rather than IIO channels, so I
-> wasn't sure that's the right layer to add it at). Also open to being
-> told the misc-device/fifo interface is meant to be the async
-> consumption path already and userspace tools should be using that
-> instead of polling -value -- if so, is there existing tooling/docs
-> for
-> that path I should be pointing presence-detection use cases at?
->=20
-> Not attaching a patch yet since I'd rather get a read on the right
-> approach (and whether it's wanted at all) before writing one.
->=20
-> Thanks,
-> Daniel Paul
