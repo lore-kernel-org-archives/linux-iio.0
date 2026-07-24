@@ -1,166 +1,135 @@
-Received: from MTA-13-4.privateemail.com (mta-13-4.privateemail.com [198.54.127.109])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49DA53B14CD;
-	Fri, 24 Jul 2026 20:28:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.54.127.109
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4295233938E
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 20:49:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784924922; cv=none; b=ueQF90cdoSsnSB82TOd2i1pabbraKvovfJWr6OypLAg7OSKjT54lFKrYb2jRg9mSJwkwcHdMSBsHmyczOWqYl26SGy/kIjfcfoLfonh6nL7uZ7+LTy1nfllE/yIBnRbdAToBs03NNKfmTXtfoVYCEcLjn0Uk+9MVT6NsD00JZxo=
+	t=1784926188; cv=none; b=idGHXP2MfhE+QfNvxXbLwemvOQ/RUWCu99x7MBoFqThtjOIXsHMJHpnzpWDFdB26dkY90OVq1GP1N/15ogGfRekwn8ag0Rrjxx6qh8yVVuZHl0rc5KjraP304SCxfWGHej77Qjl7tqiiMaIZFNtO57AAUDFxRcUMjoF+KQLhS08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784924922; c=relaxed/simple;
-	bh=v0etaXw1S/chPUzBhWK6v2uYzeoygcIlmvq3BkEUI4Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=j9Cmzjows+brSHqn/GvTqktkxoNFpD7k4WOzKnDzO1zlTsSbdPoK9Iv8uleo4CanngpZhU1ZZJ2jUZ+vRK3uXki6mvub86AQA2iTttlX/4pV3Px0iYmC/OxEpH3QA9X4XaAWLWowK24zKOmPIxdsNMYLKTSajEXUeSKVpu0S9y0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net; spf=pass smtp.mailfrom=catcrafts.net; arc=none smtp.client-ip=198.54.127.109
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
-Received: from mail.privateemail.com (K8S-PROD-WORKER-08 [87.215.145.39])
-	by mta-13.privateemail.com (Postfix) with ESMTPA id 4h6KLw6r1pz3hhTR;
-	Fri, 24 Jul 2026 16:28:23 -0400 (EDT)
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] iio: imu: inv_icm42600: add support for icm42630
-Date: Fri, 24 Jul 2026 22:27:08 +0200
-Message-ID: <20260724202708.128267-5-jorijnvdgraaf@catcrafts.net>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260724202708.128267-1-jorijnvdgraaf@catcrafts.net>
-References: <20260724202708.128267-1-jorijnvdgraaf@catcrafts.net>
+	s=arc-20240116; t=1784926188; c=relaxed/simple;
+	bh=8hJyHYw/rE+dTCvhZpQoJoUywl50GiNMK7WNfrV5KtA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n0zajfVvPljo90xhYXAIF2lbzkD0wrK3sAE0RIgn4nMuS7hdueogLFU9uQGL2o1szDThl8t2A7X9QGQ6cXcDmqzYXbwVxqoMKibi34RKFJXt//IK+OHIl/aNs5JV/xDTy0nTCvm3maVqSTApwIvrY8+BWG3JbGOumXrFDVJWu78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=OepGxdut; arc=none smtp.client-ip=209.85.160.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="OepGxdut"
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-455ca262ccbso480060fac.1
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 13:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1784926184; x=1785530984; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=6pnlKNadGW00nMEoH6DTsPxDvjGOA4CBzkmVTviW8os=;
+        b=OepGxdutbEYOzyON6+cVtE2H5eJogP89cviKJHw1vEGFFm2ANaA6hw1Nl/nurS2OvI
+         GyyhsW4Q4tzF4YSnaC1hXmfX3Qr2+yfCp0FnRBwnkDiDEsJ1yh30DTRRej6Arhi2Oyub
+         onmyv3QOXahnRu9a0aQVqtbK7UWlc/FWYASA+EAzHv3agVcR2VGivjleJGReB/+WZ/DH
+         MtMqbxkG1JYwXmrkfUU/DOwKumEgZkff8abao7c6/zoqm7ivR5BlMwHG7iNrZGRdks3C
+         NSmoihiv1Gt9HxvDS3WZKpbo1vbIr3uoJK3eAwtbTqso2D15IRGCPXJ1MtpmVh0u5e0h
+         gMnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784926184; x=1785530984;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=6pnlKNadGW00nMEoH6DTsPxDvjGOA4CBzkmVTviW8os=;
+        b=kOxDFtZ2DCKqcm37SCj8LrEKlRhOPFiw3Kk2ILw/Z1UfD1jxIFTCbvEtvs8yWokMs/
+         bIBFAMA1vlDUvd4Xk41oUsAt1z3aGL334fT/NTbdXqJCK1tH3Lagvr+c3plWdRxYRzno
+         jGWjbPjAxcoJD2AgG118oU8XQrCIhKmyaiOxOFrL/dDVCrVypTegZ9/0HwYqKPAIPR1W
+         fOdJXSlFEAyDZefa/qt1BdWsdq8GAlArXXXvUfS8ns5rYKWipELQ8DP6vzs+UigVEt/M
+         E19Nx2Ko5xJRo6i+Kyyn2GrGB3mclFcloDDcZoDi/CV4n+7MewjCICMqaZXJEzu7e1QL
+         naOA==
+X-Forwarded-Encrypted: i=1; AHgh+Rp4hAG4LCUGtNtOAR6BS5SqOHnu60J93KTOhXbwtb29oWZ38DtEtfApA3k+JUNYHU6U9MIHAcUto7k=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyt3aX/0eVS/xrjq/xZvZNhwJalFBtAk+DmBoSFj8oXyI9wwvs4
+	gHBVBPvElj+Y+2LDu2HfZyaPzJZMiQ9t241KlUMFmAQdRIJjcD3gKKorMqqo3VkOfel0xwayioO
+	raTD8
+X-Gm-Gg: AR+sD13GoOmxd6O5SDT31ubMFaiKb/2dcwQjnEVPtmL4VZXxmfg9XNaMVebWVIlt8kU
+	abOFXWkBE5W6YHoQzuWJUpBy9VWDkEhHNUW3x1BLhZWEV6yAID+row6Hoh/MHVNuBNlp9WHhrkB
+	luZ+yKoVNbLVQD6UXGLF9sBULy6VE9WPK8LRn7eYaCoxQ8s3Lzylcwc6Q5ZECR/o74cUF56Aw0O
+	pL5M0MZtUrcAQZMmyoEwqRK8n7x5V1UJ04GZWkF+dv8z8MvktUOtKwrawH3DNRUTv1wtdfCOuTw
+	u0B6JBbu37VvgTCbMrt6Ede5iUpjiiraR22sG95aTy4p4PqryD3bukeXvrCNapF18EYyGtPZ6AC
+	IIu6Gr05BKHoJGWMwg84DIEebShaBMF/atkzOifnPHRNDspB5zLNXNXmFoO298otm0tzth7y5KF
+	mt8paRiw==
+X-Received: by 2002:a05:6870:194d:b0:440:67b1:b59b with SMTP id 586e51a60fabf-457f1ecd9a3mr109227fac.0.1784926184037;
+        Fri, 24 Jul 2026 13:49:44 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:b635:d463:c98:cc75])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45766e66674sm7255201fac.3.2026.07.24.13.49.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 13:49:42 -0700 (PDT)
+From: "David Lechner (TI)" <dlechner@baylibre.com>
+Subject: [PATCH 0/2] iio: adc: ti-ads112c14: add burnout current support
+Date: Fri, 24 Jul 2026 15:49:16 -0500
+Message-Id: <20260724-iio-adc-ti-ads112c14-burnout-v1-0-f0204cecbe3a@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WPzW7CMBCEXyXyuat4jWPAr1JxcOwNdaXE1D9RJ
+ cS7dyFU7YXTaKTZb3auolCOVITtriLTGktMCxt864T/cMuZIAb2Qkll5F5piDGBCx5qZCmIyqO
+ GseUltQp40DupjTmiGQQjLpmm+P3Av582X9r4Sb7emc9Epq/GvXWL/dXabivFl6XTxMcBMrkAG
+ mkI6J0MfmdXJf4P+CW9et+npcalpVZgToEgBBwOcj9oI492xTtrdIU4N8+x2o5XlT7TnPjnnok
+ 9KwPO4nS7/QBQNLk6UgEAAA==
+X-Change-ID: 20260724-iio-adc-ti-ads112c14-burnout-184304669165
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+ Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1814; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=8hJyHYw/rE+dTCvhZpQoJoUywl50GiNMK7WNfrV5KtA=;
+ b=kA0DAAoBwswgAf8Bj8AByyZiAGpjz9ChF/9wNnY7q+0GTvHSZpazzXwjFU6bHy04Vi6At6/RY
+ YkBMwQAAQoAHRYhBOwY2Z5iDoPWnNhomMLMIAH/AY/ABQJqY8/QAAoJEMLMIAH/AY/A6I4H/25e
+ dhv8PKgIffJvU0RTuohHRptTzxxlB263KjHLn39SmC4Ov4jXqybJM10FScrFLNOmWWT6/eA+aGf
+ 9u60WDJDwqAF8IzMcxSAU36ryFzldjf8HmZZucTr8NwrPGIIJSeDvjFZMwXJpZ8tX0JPwwNRkE/
+ krY0MrQ+dZrHNCsCaWlmZeNtYWxKhWVLjDBO7NT72OXC/6UeiscZSgt3l6+/VdMjd/X7JVLSou+
+ 7alF4KwKxWPhlUVdxZEcaCRLVV4EVys3jTtqhPdnSIdHduOyhfkxtXV7hl3l5uaY9SUiEpSzaMu
+ eOTUOEEhdPfJTzqcwDpGOOywlSWzzQWJkgl9T9o=
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family,
-found e.g. in the Fairphone 6. It is register-compatible with its
-siblings (the existing driver works on it unmodified) and reports
-WHOAMI value 0x0C.
+The TI ADS112C14 ADC has a feature to enable a "burnout" current when
+taking a measurement. This can be used to detect open/short circuit
+conditions of a connected sensor. However, enabling this affects the
+accuracy of the reading. So we add a custom "burnoutraw" attribute for
+this. This works like the standard raw attribute to do a direct read
+but does so with the burnout current enabled.
 
-The part appears to be a mobile SKU and has no public datasheet: the
-identity comes from the Fairphone 6 platform documentation and
-schematics naming the part, and the WHOAMI value was read from the
-hardware, whose bank 0 register defaults match the ICM-42600 family
-layout.
+If this sounds familiar, it is because we discussed this on a similar
+chip recently [1]. And this is why I put the ABI docs in a common ADC
+file rather than one specific to this chip.
 
-Add the chip id, WHOAMI value and I2C/SPI match entries, using the
-family default configuration like the ICM-42631. Devicetrees describe
-the part with an icm42631 fallback; the dedicated entries bind the
-exact part where the kernel knows it.
+[1]: https://lore.kernel.org/linux-iio/20260622110223.7e854dde@jic23-huawei/
 
-Tested on the Fairphone 6 via a backport of this change to the
-device's 7.1-based kernel (only the id-table style and entry placement
-adjusted to that base), on a bit-banged SPI bus with INT1 wired to the
-SoC: probe, accelerometer, gyroscope and temperature raw reads, all
-full-scale ranges, multiple sampling frequencies, and watermark-paced
-FIFO reads through the INT1 interrupt.
-
-Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Assisted-by: Claude:claude-fable-5
-Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
-v2: place the match entries in numeric position (the only code
-change); kept the Acked-by.
- drivers/iio/imu/inv_icm42600/inv_icm42600.h      | 2 ++
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 5 +++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c  | 4 ++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c  | 4 ++++
- 4 files changed, 15 insertions(+)
+David Lechner (TI) (2):
+      iio: adc: ti-ads112c14: add burnout current support
+      iio: ABI: add sysfs attribute for _burnoutraw
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index b55d993f0264..349de5458581 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -28,6 +28,7 @@ enum inv_icm42600_chip {
- 	INV_CHIP_ICM42622,
- 	INV_CHIP_ICM42688,
- 	INV_CHIP_ICM42631,
-+	INV_CHIP_ICM42630,
- 	INV_CHIP_NB,
- };
- 
-@@ -386,6 +387,7 @@ struct inv_icm42600_sensor_state {
- #define INV_ICM42600_WHOAMI_ICM42622			0x46
- #define INV_ICM42600_WHOAMI_ICM42688			0x47
- #define INV_ICM42600_WHOAMI_ICM42631			0x5C
-+#define INV_ICM42600_WHOAMI_ICM42630			0x0C
- 
- /* User bank 1 (MSB 0x10) */
- #define INV_ICM42600_REG_SENSOR_CONFIG0			0x1003
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index f306e3ffca48..da7bc0f1155c 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -177,6 +177,11 @@ static const struct inv_icm42600_hw inv_icm42600_hw[INV_CHIP_NB] = {
- 		.name = "icm42631",
- 		.conf = &inv_icm42600_default_conf,
- 	},
-+	[INV_CHIP_ICM42630] = {
-+		.whoami = INV_ICM42600_WHOAMI_ICM42630,
-+		.name = "icm42630",
-+		.conf = &inv_icm42600_default_conf,
-+	},
- };
- 
- const struct iio_mount_matrix *
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-index e44ed6dcde02..672b19d2e41c 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
-@@ -78,6 +78,7 @@ static const struct i2c_device_id inv_icm42600_id[] = {
- 	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
- 	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
- 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
-+	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
- 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
- 	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
- 	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
-@@ -98,6 +99,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
- 	}, {
- 		.compatible = "invensense,icm42622",
- 		.data = (void *)INV_CHIP_ICM42622,
-+	}, {
-+		.compatible = "invensense,icm42630",
-+		.data = (void *)INV_CHIP_ICM42630,
- 	}, {
- 		.compatible = "invensense,icm42631",
- 		.data = (void *)INV_CHIP_ICM42631,
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-index 3e2f4eb42e97..3707460d77e1 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-@@ -75,6 +75,7 @@ static const struct spi_device_id inv_icm42600_id[] = {
- 	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
- 	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
- 	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
-+	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
- 	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
- 	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
- 	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
-@@ -95,6 +96,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
- 	}, {
- 		.compatible = "invensense,icm42622",
- 		.data = (void *)INV_CHIP_ICM42622,
-+	}, {
-+		.compatible = "invensense,icm42630",
-+		.data = (void *)INV_CHIP_ICM42630,
- 	}, {
- 		.compatible = "invensense,icm42631",
- 		.data = (void *)INV_CHIP_ICM42631,
--- 
-2.55.0
+ Documentation/ABI/testing/sysfs-bus-iio-adc |   9 ++
+ drivers/iio/adc/ti-ads112c14.c              | 126 ++++++++++++++++++++++++++--
+ 2 files changed, 126 insertions(+), 9 deletions(-)
+---
+base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470
+change-id: 20260724-iio-adc-ti-ads112c14-burnout-184304669165
+prerequisite-change-id: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3:v2
+prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
+prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
+prerequisite-change-id: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1580754609:v1
+prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
+prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
+prerequisite-patch-id: ed5d4c1628ef60ed542339fe5fb490383ee8074f
+prerequisite-patch-id: b92f5609fcf39e958e78b4dd74c3d323ebb6a161
+
+Best regards,
+--  
+David Lechner (TI) <dlechner@baylibre.com>
 
