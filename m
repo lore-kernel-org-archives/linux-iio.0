@@ -1,100 +1,131 @@
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 198133E49C8
-	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 18:34:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB21E46AA86
+	for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 20:13:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784918087; cv=none; b=Wxu7y8hkbD2HmoOP1K4RfRnbGtLGDmySLzCQDsKtsv31+QRRyEH1oXGJk5nSfflKcuUzIa7xw9jcuSXPbyP/2jPpg6rTILztgqDMhXKtp+INbsVD0BL/ivsJ9wHgYX4ONWzD5AIHquwmC6SUdmmMAYrI/6JjlekytzqLWyzqT7o=
+	t=1784924027; cv=none; b=mYQgv+WCFfAk1AED3MxQvmiT3BVmXV6MM1Cxy02Z7v1tHLe+HEgwYO9FWeYVLsaDJlL1Tbj9yUe31ZfoqEJhz7VTmN9BE1hiItsux0eV9VS4WkTQag+SfB5BZr7bHNian5JcKo9zvQyiYulBtU8ubeUf+ThB2+dIZsoujTiBMnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784918087; c=relaxed/simple;
-	bh=iZ7vQH8peAhqHqNDGABkJ+YljfQupn5WXRIhTxPm8RQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ScIJDghTfbOLfbXCe0Ov73JzoDbREWT7xHsH7CkITpZmIq13Cm5+KY9ExM6Qk3fWpImt8UpEcfCJ3D6k8weaSDquqiuRn/bxsHyn5UiRZJ5fuwaA2ebhTuJ27vF0D+3IekUO+P+Qcdlghnop6a4G6l9p+r1l+BFdMpStSDcwa8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=g9f6MLjr; arc=none smtp.client-ip=209.85.210.41
+	s=arc-20240116; t=1784924027; c=relaxed/simple;
+	bh=yRVmGTHlVjCqAMICdYZX/WJ2qye72HSFuevm87sKa9E=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=lbcvD162m8tgL2mRdiUP1CK1G6kt0EgI07p8P8OoSDV2Xt9/dcJVsn2W1LfyLSzho911AX9pdmhZB7bwQd5qS4lm0jvraBrGUodG7Kq9j0JdZLVMuBTm2oTzhOWHoPJO+oa6WAb6jTLUZRJIxKpYUcAXq+GIMlHVbsaUA/jcDYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=Xn5LboaD; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="g9f6MLjr"
-Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-7ee50eb2db4so614480a34.3
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 11:34:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="Xn5LboaD"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-45133d2974fso518449fac.1
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 13:13:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1784918084; x=1785522884; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=dAXLRJ9/PZ/rI2vMByWvFT9Fv2LJeEhr/b/aoSJgCw0=;
-        b=g9f6MLjrM57Ck33CzzmJUC94KEwMdbmwV2bUFwHp0FdGu9rJczOoyHU1DVR6dDIy1c
-         DUVtRm1KrajanEwbsoqjFM0KEJFmqZLbnHNHckvXZowSD+oA+tgHJwqAU0M2s3IbG2PZ
-         XUHmUnd3a3gEz5hJf4kRiemNxvOZJ1ylO9NCSLEKrsUO6kwgkJurChgLrlggZhZwgM4X
-         bLaNc8jtWwUDnHUc5PPptF5gKYvv5JipXvLMuYkwmivCfQbikIGMZx0eUlJdNYIGAdNK
-         U02OqatpxJxd8f0aYeb9Nrr42kdhNV7L53+ur1yNqYUVSoL1Xg8bKdDt6RlyjEdkVGS1
-         W2nA==
+        d=baylibre.com; s=google; t=1784924016; x=1785528816; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=hxwsKA/pBOcqaGT9IA2EJlmhRxzg1/JW4iMwxTMeU3g=;
+        b=Xn5LboaDg6CdxGlV0AtAUiWAVJluoMgXOhdApbPo3df/+lKQWszhCRuo3yGc0/zjUo
+         WVmBwyPPduommi+493UQjdNpDsqcPz8s+HgzdKD3pTNUikB0lZrx++pr4CJm6pxCr/tA
+         wFEomCTJRi/m6Sog+sL/jgGDyuI8OPlQWorJu39qpSG7kQpMVqsiD3HMzCaFgLQMmqRk
+         B8i9RATYVoOBSqNTdlBaC9NAPypOz17NOZ+Lpba8XvkWVthl11ddmM1Mo7nvVZ3Q1xue
+         bMffhVhgy/7MPUzzgb0swjJuwx6LsFEYrkHZcetV8pIi42wuen8glk53Uo4g1SQcEya5
+         Z2Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784918084; x=1785522884;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dAXLRJ9/PZ/rI2vMByWvFT9Fv2LJeEhr/b/aoSJgCw0=;
-        b=Lly3PBlOGciCqgAQClf2czeDyGDVKV8j+/5vff3UuyiKz6tER+oc/Y+LZKO65Lehne
-         zPMEnhJLDYuxMH1Ypw81f2demsmqe2rAPV1tXFE4pjJ4cSZFd5cijlagEABJuKTpyeWB
-         VJJJSO3wjeUHOxaPccfBKs9kX7tXjrA5EWdFdbkg1jGnukeaQhKTeK3hOpNyPVdkmEfy
-         DojuuoHEPfyMWEKBDdGYvSOpPiCX3lrZ2Hh85kQuZ1tYSXpf8e5G4WTRpdr4Q2Dt2Wsf
-         52SpVOVTmS6s2dWaESuIT7Z1jctTOZ4fVZqtWDiX+f27KC8noJzslxUt2sWXckWIAjJM
-         +49Q==
-X-Forwarded-Encrypted: i=1; AHgh+RrKr1sxkWKBkycDqixLbMzStiXaCXfUh60Mq9+khy+HPN+OIKcGeusUmQouvlIgs66Dy6Nf/mN4GCM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwxyEshXu2atoGypc1M3wApv3jX0bSw3Jnye/PENiuOKIfW/t7B
-	6P6bmfcqUGadwB/PnAwA39QK7DE8rJeU5CbOHMBMYCTTHTluGJK0uo3kfYs/m+yNDP4=
-X-Gm-Gg: AR+sD12i8+pzFd4CKnsen/56TryZM5l0PstzSamB2j/zkQctotND1WoCX1Y1ui40Kb2
-	APCht2xCRx+ORJPfSX8UzZAvK9BjP1dXWFM7NqBhOjdRmBYwY8+rqsYXcZTgZ0crwYKONftGkj7
-	89YroKZG739AoeY5sOyEf+5ZviB50IGYcvHg897k3GlajHM4oCaBmCD5pLqzHdymkz4d5AkP/RF
-	lAq8EkX+6vbs7QINxy7kKRrYqiZs1Q+2POG+JTqSDufVCCd/eKAmS91aIgSS9iS4hDxDOwzzDka
-	yom5BPA64biKKOneQPDbErRCEWu07YPg6LXS8dWtjI3FGJBi7zuFuOVg2/Ws405aLBokX1nHgUE
-	qrv3n3eTZdy5Gg/hbqMtmUdxK3AUphJk8eFb9QzgeV8l8fyMAZBYTJyyQj5fPYHIkqbTZvv+rS6
-	TJxk+2o6WBb93cBsMOZvs91AKCKGh1CcEgOiEQcTFqXXJbKcrQbw==
-X-Received: by 2002:a05:6830:6017:b0:7e9:b4d1:78af with SMTP id 46e09a7af769-7ee43e30760mr5632329a34.29.1784918083982;
-        Fri, 24 Jul 2026 11:34:43 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:b635:d463:c98:cc75? ([2600:8803:e7e4:500:b635:d463:c98:cc75])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ee29db292esm6534098a34.6.2026.07.24.11.34.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jul 2026 11:34:43 -0700 (PDT)
-Message-ID: <4cd1c123-acd2-48a5-b2df-8e7a247f25df@baylibre.com>
-Date: Fri, 24 Jul 2026 13:34:42 -0500
+        d=1e100.net; s=20251104; t=1784924016; x=1785528816;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=hxwsKA/pBOcqaGT9IA2EJlmhRxzg1/JW4iMwxTMeU3g=;
+        b=fck7j+1W8KhqDV/obJv6+uhqVAj5AVxUd/gpDXankE7plBVK49nI99X9HzxaXJaJmJ
+         x8J+OR1oBJMLLZUsF/tupEH+XBCZir3zFB6FkwSVigsojTv2gIcFGnrg/uvEzgkPSSnV
+         6qMkOQ/kqyULxSm1K4HIA8hvzjf6ANgPw+PCiM4GsYNEvyDLArZPTNOadfxdbIzad/nW
+         HUBO37NAW9Kx7Wio4jlZz/tX39gB8PiVWlnoEmV6VMCyXNMqg9zjegd4wWrjFxVMqNnP
+         NL5ngkuohTrkfSDwERdtGhSRAt0Iszx9Ihb8EJbfflbv8pqMK+Gi1AzPnWhVeujbLv5G
+         VzKw==
+X-Forwarded-Encrypted: i=1; AHgh+Ro9/37tRAaWfWTXSvVWx1sXEgiVZq0DOHq62JE3ePt4R7hDF25Adq/lEnHNooJxpQdleUSLrkzl7wQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwTBp8TeEJF8po0VyL1ex4hsWSQn19n3w/cTBeSO4gAaR3FxZc5
+	SIj1bcruU3rM9usnRmt5clSdpE7ZJBVn7pOfd6vbjoK9VY677vZJFL3ZPBXekSYoYZo=
+X-Gm-Gg: AR+sD12RFlwtPiRNmzHl6QFM/qEJXqnvuL2Ax7S1fTNYbssS2lhS9Y8cLIUpljGH5WS
+	Cb8LMJn+JVS9MtD6odr8vROgDn+0wFvzt6FGsHrl06GZUsuEyZ1qeSfrzusuqxMj2tI5WdV+kCj
+	SL5w5NCb/GzQ/LlipnNsclcNGe1WO0pJpWWlliBAZBnZCaSNz7qUbbh+Dx6iGQ3bVW2PgzsZpPs
+	VY9Ux0oksBUMA4u4n0CvEK+joU6AEFoYssYWgrkYJd4KOlY3JpcCtXI4/AHpUA5TIA6GoF9gijG
+	trhz5MjvURlnBcLYnyiCHn8+634xWVbpdunKFxdfsNrYamcLAtRVt/uThgdkA7uWYe3JyDWkqXN
+	JJRuOzQdaQEPydq5UpoFs6tZ0gnoqPdGKRVm50WhnpCYCN78MDJxYKow5dORJoavsqg6V/3G5ms
+	lZDdjNA0G44+BNBSRH
+X-Received: by 2002:a05:6870:63a8:b0:456:771a:f843 with SMTP id 586e51a60fabf-457a106f518mr5949618fac.29.1784924016034;
+        Fri, 24 Jul 2026 13:13:36 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:b635:d463:c98:cc75])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-457675260b4sm8309042fac.17.2026.07.24.13.13.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 13:13:35 -0700 (PDT)
+From: "David Lechner (TI)" <dlechner@baylibre.com>
+Subject: [PATCH 0/2] iio: adc: ti-ads112c14: continuous mode support
+Date: Fri, 24 Jul 2026 15:13:09 -0500
+Message-Id: <20260724-iio-adc-ti-ads112c14-continuous-mode-v1-0-9eb0b7a4f020@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add support for buffered
- read
-To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
- Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-0-98b06f3d47d9@baylibre.com>
- <20260724-iio-adc-ti-ads112c14-buffered-read-v2-2-98b06f3d47d9@baylibre.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-2-98b06f3d47d9@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WOywrCMBBFf6Vk7dAktj76K9JFmpnqCG00DxHEf
+ 3e0gitXlwsz59yHShSZkuqqh4p048RhlmJWlfInNx8JGKUrq+1Gb20DzAEcesgskYyx3jTgw5x
+ 5LqEkmAISIJp2p7dts9F7JahLpJHvH82hX3oqw5l8frO/F5GuRfx5Ofvpu2qRmz/yoYyjPCNEc
+ giNoRaNdxr9urvZN3twiWTiNHHuKlmS6khTEE8tvFpSth9V/3y+AExWIbYOAQAA
+X-Change-ID: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1580754609
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+ Kurt Borja <kuurtb@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, "David Lechner (TI)" <dlechner@baylibre.com>
+X-Mailer: b4 0.16-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1691; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=yRVmGTHlVjCqAMICdYZX/WJ2qye72HSFuevm87sKa9E=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqY8da5EEplt2Wiri0pqeXHh282YyCOq6rJXNxC
+ vkJBQqVPmuJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamPHWgAKCRDCzCAB/wGP
+ wLlJB/0ai/+RctGy9TF5LWiQRrk4AJCMJlDc9kGB3/6BgBC+xIrSJEvUAXA/giTcw41mPLRe0CH
+ ipRoqjFg+Tz+vu8kCQUXJQGVwzP/uvnvl82uGDmASovV9QZFmgjpLIDt7so+l0ubT9Ncj38Zfjo
+ EYtxWKOWeq/SFPm7GHSkobBrgEkhQAPx8L5yPkz1iBW2a42lMkHAfNhIhrXMfb3KSpQPg3D4bHK
+ 0fOh3pWmvJHlGw4LlrO0xW9QcGQ95M5CjjQK3QShSsVdc5mUGBVfVic6QtI6Ra8DD6kcEFVaXxJ
+ 8aAjsDmZxs77k9IvJCpTElgQf0JWsTitYqk13EJsmZsMR/hE
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On 7/24/26 10:55 AM, David Lechner (TI) wrote:
-> Add support for buffered reads using a triggered buffer.
-> 
+The TI ADS112C14 ADC has a continuous mode where it can trigger
+conversions using its own clock and signals that data is ready using
+the /DRDY line. This allows capturing data at higher rates since it
+avoids the settling time between conversions. But it is limited to only
+being able to sample one channel at a time.
 
-...
+Users will be able to select between continuous and single-shot mode
+for buffered reads by selecting the trigger. If the "own" trigger from
+the /DRDY interrupt is selected, continuous mode will be used. Or if
+some other (software) trigger is selected, single-shot mode will be used
+as was already implemented before this series.
 
->  	data->num_measurements = i;
-> +	if (data->num_measurements >= ADS112C14_MAX_MEASUREMENT_CHANNELS)
+Supporting open-drain /DRDY is deferred for future work. In simple cases
+we have just done a `drive-open-drain` DT property for this, but on this
+chip there is more than one pin (GPIO, FAULT interrupt) that could also
+need to be open-drain and not all at the same time.
 
-Sashiko caught that this should be >, not >=.
+Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+---
+David Lechner (TI) (2):
+      iio: adc: ti-ads112c14: add DRDY interrupt support
+      iio: adc: ti-ads112c14: add continuous mode support
 
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "too many measurement channels defined\n");
-> +
+ drivers/iio/adc/ti-ads112c14.c | 278 +++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 251 insertions(+), 27 deletions(-)
+---
+base-commit: 0b5e142ced4bcf20532da051934bd694d1bbd470
+change-id: 20260724-iio-adc-ti-ads112c14-continuous-mode-dd1580754609
+prerequisite-change-id: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3:v2
+prerequisite-patch-id: 8723aa599dcf5b836fb81cf1efb6c9096bf60b7a
+prerequisite-patch-id: 12754335ccf210bcdeaa8a5d60b2280618d50993
+
+Best regards,
+--  
+David Lechner (TI) <dlechner@baylibre.com>
+
