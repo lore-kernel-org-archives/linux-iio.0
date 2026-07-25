@@ -1,115 +1,154 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36B60308F23
-	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 02:10:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784945403; cv=pass; b=kkt6pmlDWTj9chUxTZqDKR/IuROEYeu52PlI/inmkPTL4/JlzmuqE/oqdDGdf8f9p939gN2NS5V3EKEY8hsWOfjnQb+KijZ98m8kAQ92tp88W2lJTZDiWKex/YffOOAQKDBISOxjfjkc1IvpTVNlkJjWYAv/ldv7gXUA4MDseW8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784945403; c=relaxed/simple;
-	bh=Ykz4oN16e2m8UPLH/sIlexJ6ulTek1lnz4lKH3TIRpk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PCPGVnhAb4VcP9BGElH7tQauL2yoJcMs1vlb+PlrrROmvOh9ms4YD5DVOFQKEiwOjA6mUqLNhvnHzIhmexgFYPAu1Kf+mG3SHaQMdtlJkFLhDLKf7j/WlUUaOkb7gI7qmd68lI0M5Ix55D+BtXfQ7uCSChWNavDhVt8E73X3S0E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RStPY40S; arc=pass smtp.client-ip=74.125.224.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8840A30C156
+	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 05:10:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784956260; cv=none; b=gi48MlXIveS0j+RdRGhy/GyccjFFYCkcchURWzz+OVgbK+xhml6LOpi1vEq8A48e03R0cxW86FNs8+wM5JGFe6qk2aYZHmY7edYz3fVpggJa7tYqtTphI8CFv3NNosLWhMFGnplt2Ipie+aMg/S5Sa5C1UwDaipgzQMdCbx8P0s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784956260; c=relaxed/simple;
+	bh=JeHX5wCK+eWh2x0vBH8Tjole6M5Zvb/8/2HLBL9CW3E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mNt/Jlbko/y6vCfFJKFo5raFm+Rt0Nd2kEtjtJ0245/d3kEOpL1yceb+hQ3v0A/XZhZIRrXLwla9Puu88kv87H4hosRXS8CNehwsvwYZZ7kVqLVAnj86YhIzvMxVKyycOw/HYUjio+O2963cJLCVrbQNAB9jEmpqxeq6FirhIsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kmvguw+u; arc=none smtp.client-ip=209.85.210.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RStPY40S"
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-667971437d6so927870d50.2
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 19:10:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1784945400; cv=none;
-        d=google.com; s=arc-20260327;
-        b=rtiN3RgcvlchsDP1bmcWMUxvDCEqNobp5t0bJZXKJsl5Bvw8coYWBJe1fj/D2dFvLo
-         vZbAmjC24pJ4CKadBBehVGA/sE7895LnOnGfZbLpq2uTAScnxkz2pLTy1v0imvGIuYKq
-         VpIWCxgwegh6mjP/VGKfNYwxS9cJDG77Ej2a3WCQFxJ2SE0tVTIW5v7Bv987WlXRuX6C
-         jflJ7KJ0Uk0YjDFQRAFOglIAJuZaKWIksAGkRR9iSpBle6smn/nzTCw/sFAtZw/cCg5Q
-         jeGUwPUW2fWnRU38ppm2iAxageMktRMlLYTtCajSTPIi9BdDUiRoNyG31NhunXuvD/nU
-         9ZbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=O+XtrFxmT+vtqiozFhgCLyYnXvcvZ4n6cvsA7pNOdp8=;
-        fh=nsGH5hvenSrVYWAyl46ZdZGAbhQfMnsWwL6/lfpvVdE=;
-        b=aAvDxFGDARw0iKPcbrwhsSK080UtqtO3IiBBtItQXuW2TAKB/9IY41bsheie3IAy2Q
-         EFCjRo5Ca8HQ4Bhs9n9EAI/9SkaGDtQQDupoc76FSNGh0EMZazyBlYAmjTZiomAWNmOi
-         da6vVjrXhqbeXvRZlqQs8aEtOy35J6NzB3BVBl631JwEF0VEOUb6DtHB1vBFBb7+97ew
-         5LfE99AUiBZ+kondiho4MtKikGuXvx5B5dC+HfD9NwYROVJgy2znFAazn1ogTyAgMqsq
-         1a5pxTT0OuIXdgPCfZsYJti4YlTNy5jYoY+yU4FosKL3ddvt6Zs2SXamRq3X9DClNAvh
-         I2BA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kmvguw+u"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-84a2c90e383so1496146b3a.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2026 22:10:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1784945400; x=1785550200; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=O+XtrFxmT+vtqiozFhgCLyYnXvcvZ4n6cvsA7pNOdp8=;
-        b=RStPY40SSA6uxi7oRBGMLGsgKqPtTNw6afehnhqNipS0O3XcILXJ2kXo7dCXyOqHdT
-         +HwgSJndZDG7leasakFUYhmX6afIoauWP00dE77TuJX3BaH5pk/vREt4s1dE8UrKHBAT
-         6bgLEpR+ATjbaNnY634L8abpBHMzHo33N1VcDYDAYM9Nz65L0L2UOVuTzP/AlNn0ZRkn
-         tbMpED7jBzcpYRrTwIpyJ5M84B7n8lNQfBPhXAufBTLFTEbafsRPzbMtg3uOLhYLRGGh
-         bcTZ6TI1jRfxk5nXuyKFjPqHZ24+A89ogQLgGsLJ+Gso3N/cS5Z0X94eGSUNxIhX2E5m
-         q0Kg==
+        d=gmail.com; s=20251104; t=1784956258; x=1785561058; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=cYNr122iGMgO/EI6gg3d5n1DYFQvFWkuT6oNTUvaAfU=;
+        b=kmvguw+uK1aFYCb/duCY9/KxDHWwbZ9XTv2fAsA0lldRnU3defio8wJChlXfsQdqr4
+         9gSHgUxFmllZ2hLn3KAE7FMz2UkqBo74bFIuxFAsYSfx4ofCcXm6vM9ok33wb95vuNyE
+         m+rNdqJD5d71s9nKmj1mQbkhysJGy5I6VgHTkS2D5BZz9Zn9Ufl3N505XFsA8vUMo4KI
+         uCQPSdjBi0+enqVp1D3Bj/37tnukj5Zkou5Csul/3U9CzI/lOylPYjuHX9Yys9Sc3hoM
+         0YWrFgzCNnzLRviffJ/uFM1FuodIEDTk50CdLJI2KSHhF7+hiWRiziDXLCMHvNyes7A1
+         HL/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1784945400; x=1785550200;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=O+XtrFxmT+vtqiozFhgCLyYnXvcvZ4n6cvsA7pNOdp8=;
-        b=qIctz8/BtbfeSbQ62mAihu3ssSdHZA2hev/CJ+fqBJd4ssNuqQ7/FMJG1E9Hnzni4s
-         3UAM0EkAPsUsvMCd3LA2LxWRI1P7GaT195QY62CE80LXy28GECRasLiolTJiVn7oHDOb
-         CxAQjvp5wKyf6EZFE/nGJb8iz5bPI+W2id7KV/RDPFVgJBzAwhrylneMj2EmW9d/jzlP
-         ZA61nb1Cmy/pgK7VBZgu+84nH0FsfD6wEyx7ybdSs6OJDWVWrYT0v7KjLZ0w6y3I1gSe
-         KwNRXeiqfsVjEVKetOGryIN20j7BJm6UP9SvuKBNpBbO4SwacdvlNBXRhhMyOk/nTUn0
-         iKpA==
-X-Forwarded-Encrypted: i=1; AHgh+RpAf9/MZClgwHgAG0o9BKafSiKwD9g6c1Kjugp/Hf4KL8Us/KdDbD9Fe/xnAX1kY7unLxx0vK28j28=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzGZcbYE1fcEOOyQHcd2seTY6hyaaTXEgNlmtO0Mou1Q8i3GAHo
-	GKOY4MWHK1ZVo0rst6DipO9rQ5Q0Ntnpq8dc5VKquw8BgtnlrOXIY4HvqUMOMbWmBB7Fphi++zR
-	I5Hvnn4ASvTi0wGFqcx1EtOEWfkr4haA=
-X-Gm-Gg: AR+sD102OBRmZnG6pXHm+J6Q8BaM/eLjG+P5D03zv33xzXUfgv0fsHUe3DHnS0+fBZN
-	5Dlw66Ig+96fkD3rPoVcltzo1Kp2q/gQcI5bRcus4Xwc//zHwq19K+pjbhl7rP7RANRD9X8g3R6
-	Lu/mKAxsqyuBeeWol8kg1pqdlsiqi0ZCz0LR8uuiy+67IpoYMFwtR6JG38YB6qasARAokv2RwrP
-	sxKiYxlJfQVwpaoEFLgh4ULJpRRlk33pqYuO3j/983hSoov5j4Dkf4HA5uWfwabt7uGwIZEuyfQ
-	j+d4SN3U72pqKEwkZHYu
-X-Received: by 2002:a53:acca:0:10b0:668:7ba0:6798 with SMTP id
- 956f58d0204a3-668c7a023dfmr150312d50.80.1784945399746; Fri, 24 Jul 2026
- 19:09:59 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1784956258; x=1785561058;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=cYNr122iGMgO/EI6gg3d5n1DYFQvFWkuT6oNTUvaAfU=;
+        b=QrhohV61HAFPgChvrhY/giJAn8GAX964YSPGm/EB5IL48ylm/q12aZv8Wakaj1A+EG
+         0Wl23ACU4K7cv9UtQkYdZmnSrrM8nCTwSoHAfGuA1/OKZ7vXwGe+0HyycQWmvb/X8Kfq
+         yN6Kqag4x2N81ZgU9bg+/LHNevJ+134XCjp/TBhThZikPgFChFHx4RBSKQGw0MAUvWkJ
+         OP6hscvC8PYcbPv6yIzl8qxspmfdIQ8irubf223sRFxj8DdQFqlNecwGbZiPI41yLFJZ
+         LZRCUZbyBwVji9WkCTmf9XQGs60BapH/gmYfhf5s8g9lNNLf43aIV7EYz/3qSe1VkuTw
+         BnKQ==
+X-Forwarded-Encrypted: i=1; AHgh+RpKjV6liFlUCYHYDWp8mf3BLyxbu6QehGekYGJFJ/R/bdsrlUKkRAf4PoH+4qA484zJDaZIr+iF/Y4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRcSVP6MJmzd1YIm4PGxWm38raX/T0D6aKC49oOvipzVIRGUXF
+	ItZDMCgqfZ8hLDiLg9cMLdGTkUudtN6PV/fZkAhz1YISyetZ04VvCSii
+X-Gm-Gg: AR+sD10n62W98Sjppdib57SRBTZnGd0psisoqOQo3LKawWa/x1E3SqdCr5186XCYJC/
+	1fn1rS68LvYSYtxUTHT7uKIL8iQQoq7sIYjzJ0u3Jy/N/vCWyZanyKIhO8ukcw4zFRZt4D9iDYF
+	kEDnlUuuW3SkbAdxRaWo10U5Gu9G0DVlUsUfo5nd6lvfYhJLRZ1D++4b/z6T/4IPjaKslTTsjRu
+	aoiXZi4uS45GQNobxig0MImudOZ8stqVL/EXPRb0/il2bQfevt/V0lJSiIRCm8sx8Cu1h1J/9t3
+	rYvuO3A5FbyENAhwbt26nb/Jubfw9lVoC6fHmJbXKSWH0LFwd9DGTiMmHYoohXCm6+ShLRxWpPO
+	83MYXTEtNQ3Fy2aOjW8K+A3h9CrtOXBHZNLYK+f2gtDXYxwC8nYus5ALHnmli0DpZZcUfz3DDht
+	PYWSbsms2Mq99RP3oEbGGK3uor3lvR7mkPdiOkYOln+h7VcqpLh1Bh9/jy9E8Gr0A=
+X-Received: by 2002:a05:6a21:6b8c:b0:3c3:8315:80b6 with SMTP id adf61e73a8af0-3c67267e948mr3145679637.32.1784956258481;
+        Fri, 24 Jul 2026 22:10:58 -0700 (PDT)
+Received: from moksh-Nitro-ANV15-51.. ([36.255.90.79])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc3e127asm9263154eec.2.2026.07.24.22.10.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jul 2026 22:10:57 -0700 (PDT)
+From: Moksh Panicker <mokshpanicker.7@gmail.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	skhan@linuxfoundation.org,
+	Moksh Panicker <mokshpanicker.7@gmail.com>
+Subject: [PATCH] iio: light: apds9306: fix PM reference leak in apds9306_read_data()
+Date: Sat, 25 Jul 2026 05:10:48 +0000
+Message-Id: <20260725051048.5616-1-mokshpanicker.7@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260713223046.20779-1-maxwell@maxwelld.cc> <20260713223046.20779-2-maxwell@maxwelld.cc>
-In-Reply-To: <20260713223046.20779-2-maxwell@maxwelld.cc>
-From: Maxwell Doose <m32285159@gmail.com>
-Date: Fri, 24 Jul 2026 22:10:59 -0400
-X-Gm-Features: AUfX_myR_v9XX_1QTBWzooAI6JW2OyaFYtEL8Dm1CkQrdf5pz5iNvgMPG7_pj2Q
-Message-ID: <CAKqfh0Gu-iZ5ucKXWY=wzkUHSm1r7-YjaXExuq=tGcjqg5eerA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mailmap: add email mapping
-To: Tomasz Duszynski <tduszyns@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jul 13, 2026 at 6:31=E2=80=AFPM Maxwell Doose <maxwell@maxwelld.cc>=
- wrote:
->
-> I'm transitioning to a new email, add mapping to keep email up to date.
->
-> Signed-off-by: Maxwell Doose <maxwell@maxwelld.cc>
-> ---
->  .mailmap | 1 +
->  1 file changed, 1 insertion(+)
->
+apds9306_read_data() calls pm_runtime_resume_and_get() but several
+error paths return directly without calling pm_runtime_put_autosuspend(),
+leaking the runtime PM reference and preventing the device from
+autosuspending.
 
-Ping
+Add a goto label before pm_runtime_put_autosuspend() and use it on
+all error paths after a successful pm_runtime_resume_and_get().
 
-I'm also away right now (sorry for not mentioning).
+Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+Cc: stable@vger.kernel.org
+Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+---
+ drivers/iio/light/apds9306.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
---
-best regards,
-max
+diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+index 5ca4c87524fe..014db7a1787e 100644
+--- a/drivers/iio/light/apds9306.c
++++ b/drivers/iio/light/apds9306.c
+@@ -475,19 +475,21 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+ 
+ 	ret = regmap_field_read(rf->intg_time, &intg_time_idx);
+ 	if (ret)
+-		return ret;
++		goto out_pm_put;
+ 
+ 	ret = regmap_field_read(rf->repeat_rate, &repeat_rate_idx);
+ 	if (ret)
+-		return ret;
++		goto out_pm_put;
+ 
+ 	ret = regmap_field_read(rf->int_src, &int_src);
+ 	if (ret)
+-		return ret;
++		goto out_pm_put;
+ 
+ 	intg_time = iio_gts_find_int_time_by_sel(&data->gts, intg_time_idx);
+-	if (intg_time < 0)
+-		return intg_time;
++	if (intg_time < 0) {
++		ret = intg_time;
++		goto out_pm_put;
++	}
+ 
+ 	/* Whichever is greater - integration time period or sampling period. */
+ 	delay = max(intg_time, apds9306_repeat_rate_period[repeat_rate_idx]);
+@@ -510,7 +512,7 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+ 						  APDS9306_ALS_INT_STAT_MASK)),
+ 				       APDS9306_ALS_READ_DATA_DELAY_US, delay * 2);
+ 	if (ret)
+-		return ret;
++		goto out_pm_put;
+ 
+ 	/* If we reach here before the interrupt handler we push an event */
+ 	if ((status & APDS9306_ALS_INT_STAT_MASK)) {
+@@ -530,14 +532,15 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+ 	ret = regmap_bulk_read(data->regmap, reg, buff, sizeof(buff));
+ 	if (ret) {
+ 		dev_err_ratelimited(dev, "read data failed\n");
+-		return ret;
++		goto out_pm_put;
+ 	}
+ 
+ 	*val = get_unaligned_le24(&buff);
+ 
++out_pm_put:
+ 	pm_runtime_put_autosuspend(data->dev);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int apds9306_intg_time_get(struct apds9306_data *data, int *val2)
+-- 
+2.34.1
+
