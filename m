@@ -1,47 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A38945039;
-	Sat, 25 Jul 2026 21:54:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E2C4908D5;
+	Sat, 25 Jul 2026 22:04:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785016454; cv=none; b=ondMm44nBRuojZnzRmzkhIkoTfkXVtSmVAUhHuG5p4fOLX7d+L/B05sstw//+aXcMhVZpGqSv4YBC0NNwBrF1oGrXK4JCaWKL6BkjzZ1sMcUn/Chz0aGvXBht4RXSBKqlzII7zwyJCHCZbfLN+zELmNoKnBXL73idnDk2gC21ts=
+	t=1785017095; cv=none; b=sVfPG/lGJEwUbpAQ9/SBVlfcVOZmYtRaqgDpWXCJ5xJPE3lPQP49/cOI/1RMxdSgGK/h/gQlSuaePtryFTcsF6vTjRaXQ3WLtXpMvmyf4JRiV52hFj3ar4hP8JuEIDyOZ8nj/7tIP8Cbah3sU/3jP6/DqbGJwsuhuDMFHCpdnJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785016454; c=relaxed/simple;
-	bh=5nzdStxuxCjKVHbZ46S61w7r3v87qGySonRUU4DFyLw=;
+	s=arc-20240116; t=1785017095; c=relaxed/simple;
+	bh=sBvP77nDqvs7b3/rasZlyhu8wl5UbFK1tgyQbe4JUlg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=inUjvgBBa08sXw9RsAyWtMQQKj4aLZMMMCRHTCLsPR4ao4Ajb82FRrFA0LH8Sybcq1Y0+MaviTg2M6WlxbBQkGV5iKOO3QmuyymN+w2V79v8rZAnrolYdn1tJ2p5IL13jWWwOMvW9/Sya3mwH47EhLAk1h+gRHNVnXIc2keDYmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cIfUzMvD; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=HwZaQodcmfhfsh9RLpFHx7kIUisOZbmKV4ip9GR3vS7EkxyPrlueDD9wT7qU42P8a2trpo5+t7m99Xm5HQEZ0iqTSgTc2qKePj9VMyZ/6+dln+QL7Wjn9hZsp/ZlOtbsYkq1xr7qaJkkd3C5Ny8GBAbld7h0nwILz6Z9y/M+6W4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kz1xxdVp; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cIfUzMvD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574A41F000E9;
-	Sat, 25 Jul 2026 21:54:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kz1xxdVp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E303E1F000E9;
+	Sat, 25 Jul 2026 22:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785016452;
-	bh=Jbh6XR1mONAR+A7P1P5GbYhGOzORcjEqhQotQxGKdVE=;
+	s=k20260515; t=1785017094;
+	bh=tsy/2HA8AH0lGrICc0FjsCAfMhHDa6b9pKycKEmlL4U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cIfUzMvDNpQ6ZLoapUZqCwoRNzhztkBwhIWCn5TwcWbtM9Cupa6f3hzh6Jun2vL4g
-	 pEJu0eexWtsB/pji6JD15Fb4s5x36axswXgAOHESKVmqoOdAdPVG+nKf03+1Y0w8DJ
-	 jCyHii7DlYSXjgc3ur859gPAVXTDMnfsnCaFAtLBalLR1iSyuV1lPxTRUnVvOpH+eW
-	 JDt506LgKFfFOjENUEolybqrAqwSuFWCMBfxLKsLWGbYl2MKn2mjb2mF5lmVMMXnvG
-	 bTey+MVzk0d0fQZcJzTO9KwOHGvDVGFU12UbmLWM8wfxIY9bBiZ0fqCyojuotsGx89
-	 Rxwe8uzhG2Aag==
-Date: Sat, 25 Jul 2026 22:54:07 +0100
+	b=kz1xxdVpFy6lwB7uwS/QxtM//bbPg4/mjyLDMKOi4z5DcqIVfIWJUawtBqyGKA+HQ
+	 mbsfcLk4yh+kTDt3pUfn7x07hYBWkDu4wjF95/u0Lz0Kdors65DOUsQOr5qymNvqit
+	 OYs131j+GzDQbdwEhgwlRXzqFf5ywAEkh8ppcJ4+6wBnt9bIVGHy6rCMJJ839K/d9J
+	 McrF0tXUVwddQxR2ZmYNEjXoJE0YTH8RB7/LUYbFpgqtCrnVVADqAA8Vy5LuHZKe5H
+	 N8rntdqOxKuWswOuRLg8T1fmgzx2qGDF5rP4w8fWW5RmoDH7Dp9A7jBSNCwjPFLtjF
+	 30uN5+ws4nWAg==
+Date: Sat, 25 Jul 2026 23:04:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: add support for mcp47a1
-Message-ID: <20260725225407.1768a2f5@jic23-huawei>
-In-Reply-To: <023a4c95-4dd5-4405-bc73-2171a2292f29@baylibre.com>
-References: <20260721-mcp47a1-add-support-v1-0-da045a2567e3@gmail.com>
-	<20260721-mcp47a1-add-support-v1-1-da045a2567e3@gmail.com>
-	<20260725000439.5ad6f4d1@jic23-huawei>
-	<20260725101208.06f60b70@systembl0wer>
-	<023a4c95-4dd5-4405-bc73-2171a2292f29@baylibre.com>
+Cc: Janani Sunil <janani.sunil@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Mark Brown <broonie@kernel.org>, Marius Cristea
+ <marius.cristea@microchip.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
+ <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson
+ <nedo80@gmail.com>
+Subject: Re: [PATCH v7 1/7] spi: dt-bindings: Add spi-device-addr peripheral
+ property
+Message-ID: <20260725230445.60a445a0@jic23-huawei>
+In-Reply-To: <e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+	<20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
+	<e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,84 +59,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 25 Jul 2026 10:41:30 -0500
+On Sat, 25 Jul 2026 15:55:01 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> On 7/25/26 3:12 AM, Joshua Crofts wrote:
-> > On Sat, 25 Jul 2026 00:04:51 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:
-> >   
-> >> On Tue, 21 Jul 2026 20:24:38 +0200
-> >> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
-> >>  
-> >>> The Microchip MCP47A1 is a 6-bit volatile Digital-to-Analog converted
-> >>> which communicates via I2C.
-> >>>
-> >>> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> >>> ---
-> >>>  .../bindings/iio/dac/microchip,mcp47a1.yaml        | 56 ++++++++++++++++++++++
-> >>>  MAINTAINERS                                        |  6 +++
-> >>>  2 files changed, 62 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
-> >>> new file mode 100644
-> >>> index 000000000000..3322fca03b3a
-> >>> --- /dev/null
-> >>> +++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml    
-> >>  
-> >>> +
-> >>> +examples:
-> >>> +  - |
-> >>> +    i2c {
-> >>> +          #address-cells = <1>;
-> >>> +          #size-cells = <0>;
-> >>> +
-> >>> +          dac@2e {
-> >>> +              compatible = "microchip,mcp47a1";
-> >>> +              reg = <0x2e>;
-> >>> +              vref-supply = <&vref_regulator>;
-> >>> +              vdd-supply = <&vdd_regulator>;
-> >>> +          };
-> >>> +
-> >>> +          dac@3e {
-> >>> +              compatible = "microchip,mcp47a1";    
-> >> Hi Joshua,
-> >>
-> >> What is the advantage of the second example?  I'd drop it.
-> >>  
+> On 7/22/26 2:54 AM, Janani Sunil wrote:
+> > Some SPI devices support sharing a single chip select across multiple
+> > physical chips by encoding a device address in the SPI frame itself.
+> > Add the generic spi-device-addr property for describing these hardware
+> > addresses. The property is placed on the SPI peripheral node and may
+> > contain multiple addresses.
 > > 
-> > Hi Jonathan,
+> > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > ---
+> >  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 +++++++
+> >  1 file changed, 7 insertions(+)
 > > 
-> > Per the datasheet, the MCP47A1 can have two different I2C slave
-> > addresses (0x2e and 0x3e), which allows two DACs to share the
-> > same bus, something I thought would be good to illustrate in the
-> > example.
+> > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > index 880a9f624566..b59d047cf117 100644
+> > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > @@ -142,6 +142,13 @@ properties:
+> >      minItems: 2
+> >      maxItems: 4
+> >  
+> > +  spi-device-addr:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> > +    description:
+> > +      Device addresses used when multiple peripherals share a single chip
+> > +      select. The array allows one logical peripheral to comprise multiple
+> > +      physical devices, with one address per device.  
+> 
+> "per physical device" for clarity.
+> 
 
-Given many i2c devices either come in a couple of variants or have
-a pinstrap method to change their address, to me this looks like
-an unnecessary level of detail.
+We may end up relaxing that again if multichip packages start doing this.
+Fine to add that clarification for now. We can revisit when / if it ever
+needs that relaxing.
+
+> > +
+> >    st,spi-midi-ns:
+> >      deprecated: true
+> >      description: |
 > >   
 > 
-> I know we haven't done this much historically, but we could make
-> that more obvious with this instead:
-> 
->   reg:
->     items:
->       - enum: [0x2e, 0x3e]
-> 
-> Then the bindings validator would actually check for a valid
-> address.
-> 
-Sure, there is some precedence. I did a quick grep and immediately
-spotted:
-Documentation/devicetree/bindings/regulator/adi,max77857.yaml
+> If there is nothing useful the SPI core code can do with this information,
+> I'm not entirely convinced that this needs to be a common property.
 
-So, whilst I don't want to see a mass set of 'fixes' adding
-limits on reg for available I2C addresses I'm fine with this style
-in new bindings. 
+I think being common does make some sense from a standarization point of
+view and it isn't obvious where to put it other than under spi.
 
-Thanks,
+> 
+> And this only allows for one logical device. If we wanted to treat each
+> address as a logical device (all with same CS), we would need #address-cells = <2>;
+> instead where the DT "address" is two values, the CS and the device address.
+
+Ah.  Good point for the adc@address or similar needing to match a combination
+of CS and spi-device-addr.  Conor any thoughts on how this would be done?
+
+
+Also feels like this series should update the one use of the microchip binding
+in tree.
+
+arch/riscv/boot/dts/microchip/mpfs-beaglev-fire.dts
 
 Jonathan
-
+> 
+> This isn't a nak or request for change - just putting my thoughts out there
+> to make sure we considered it thoroughly.
+> 
+> 
 
