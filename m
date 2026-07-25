@@ -1,66 +1,66 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EF4230214B
-	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 20:57:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B039D23AE62
+	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 21:24:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785013032; cv=none; b=b76lVUzUNtZlvjzCWrUQCvtncTkSo8ncbcdzW2aqVkljEtD+0mxR2R+iD0e/YknYQK73JupGSFU709QBckgnV9e/PyWyFVA3zXytK0HoFeqD3URBJkbMs8qjMkMS0gnDAHTOz5q5xL9C+46Iv/If8OKRIu5QlM+0u0emXXr0SB8=
+	t=1785014680; cv=none; b=is/dQgbMw9U+Ed6YZAJpZscrmFy/8n9+OPFpERmvV2gr831bkZFRS1P0tvPpC+iZ7YwsovOQZrmx/eJMbkj1x4ELDW0WbUPxwrxgiiRCrd0m6kBk/eKFr12OnbqSEN1y1wZ+1LDKpUddHXCbyGsMnQ6KLsdzTcer91lVtI0MK3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785013032; c=relaxed/simple;
-	bh=Sywa6/Ye08B6vTkrcTaHJZX5fieJQ2q2ifsiIriTUl4=;
+	s=arc-20240116; t=1785014680; c=relaxed/simple;
+	bh=4gz5R9M+oa/P32DT0BIugV/l9k7FJJm7zZXwSsQIvZ0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GliATQ4zh8zPUvChuJHat8wUTbLLC0jBCA4REeMvEs4z8sWQOko3MKCshISf0sVuWoIF8Ax0TL1EVdEPlROxqAUTiebsT7BWlVcJiqmBz18Va/aV8ZHbENPQ4eXifbCKAvSjLc+7guKauiLlYNRuN6BPacIgGGR1NZSmDN3ZzBo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=XgXGecnW; arc=none smtp.client-ip=209.85.210.46
+	 In-Reply-To:Content-Type; b=f4bUi2oKq0v1rhgtBE0oZcdK3jylpijHjN0gkUL76OhD49yTs3a+29Cvk8Hh9VR6GwY7sOa2Zu465MBagKmz45YiyQQLNo2v/1VDNRT4fVxmObp+Tv5aefdldj4qxs1BE+yrDH5k5X4+JOjrk6vAUY8ebLrZ52nDpmV8ymE6yYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=cekW0Zof; arc=none smtp.client-ip=209.85.161.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="XgXGecnW"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7eb29ed2bbdso487464a34.2
-        for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 13:57:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="cekW0Zof"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6aae244ef49so886219eaf.2
+        for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 14:24:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785013029; x=1785617829; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1785014677; x=1785619477; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7BJq+VUPT3xZNhGxvs3I7o0afQFSkLHmMhg0Yb2V7f4=;
-        b=XgXGecnWc2nEmXeTMJu4aE+7fYlkAajlinZaSfzJqoYWHspr36w66qq6lE9JiL1rO/
-         YGJj13SiwXIjqC/4fp5RVpVhP+onvxpmqUXUGOO6Sp9UMx0vhZqVCKcMRe3rQpmFBwKP
-         8Crb3Gk/URnYS6g5TZzGm2cg3gXqzNmSTsUfThmm+zgXR8DkG8GDZkIvNeGq6QlM/kab
-         7ho5dDQ3jzpmKLdh7Bp+FGYNTWBeLcEQ1AJ/eW+0ns9/RvHv+BCjcZEcJtrG9FOtuS0w
-         r0cnJdzeGZ979yUmbd4DmcrNg89ZdbNvpAxuQH0N0t2JeghqlXP6zblvP6+ZvRnS0OS5
-         MaKg==
+        bh=2Q45Gsx0m2v4LPXx0jIGvR8WQdPydqxbJsSsLtf8XUc=;
+        b=cekW0Zof0qwE/aK8zWwC2EkFGEXgLmkgiGm0mEZVXl7C/FpW8boutwMmD4JqwzV8Ew
+         Mcoxh6plj2HRKX+UO7YoX0FeSMOUGrZgdjs+aPBcEHiHkLz9fvUatvsRoYsFtdAG7CXB
+         aDm5R4BTIl+Z9YCzkMzHbhy2D5+aLGN9hte932zziO917xU4Dq/L304drkGnfKUk3WlN
+         Y6RM2i5KfsAlyDA5S46gnz1ObmXBadpOSMxG4SiHa1lYtkimuaJyseQVvIeOV7dfWJED
+         OuqjMvj1j80eVRRzN1zb/FfCEmLLDpku3OpKzqnTOaIMFGdPzjDvo5mxwDganMFo0g1o
+         xcYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785013029; x=1785617829;
+        d=1e100.net; s=20251104; t=1785014677; x=1785619477;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=7BJq+VUPT3xZNhGxvs3I7o0afQFSkLHmMhg0Yb2V7f4=;
-        b=egsOIGeRQQdoVKXJp8nxgRcKY+fR/wop0V4J9U+epOCpcU/2R5EHuq93NrgxyJqGxd
-         s3tcq+f6IvBlZmCOcwa4yyf0Dd/fTn9+RD6MrWrSXnOSW3wZlpi3yLUHOvothSmKHgCL
-         8teuGw3QlEI4SNa5RZjciP1la1EMx3zn3XvhLIZcUWu56NwNZKb1JgIceWJ7eTT2v2ze
-         Lb/i2+q3WKki7BZZbqoc0A1kT7cD/j0osWmrEqWpKV1Z35i5spTfDG+aiKlVlPgJXRUL
-         Qd8u2vEZ3qEUj8E9/siWwm/GcaPTVLrFRl9xt4oj8raTu1hvDD7kVurViWGc9T3SY67b
-         W6zA==
-X-Gm-Message-State: AOJu0YwLExN3PoyKqYhhUGlwABozwlx1f8QjoBvK8KOiJd2dMj7W2w2y
-	5tE+9CvIx5Gqp4F3dUArLxKDu/tlAtNZXJCtz0YDGDOmDxuveNmcrYIbjlMH62m8J7k=
-X-Gm-Gg: AR+sD11geV5BcTZ8NwFNgbP6OaTUs1gYMQIOqFwk6/9SkBAyK97LDS84lNQtl1HgLTP
-	G1w0l7sbd3LdxdoSaoXEePyVvrtpXdR9Lza9GglvA+gP1nn7EH4ScSwnvGZBWNrQ5nH2Km7APu+
-	UUtR8YK55oDEqQFmwmcR6gw0mPYIeLe45aLooAny3R/YaiycYjIObvoLNbbb/WMGI5v5ASp6UNR
-	laZxxre5YjJ3Qc8Seet7UxDuyIJmovIM/TLOdyTjJ4MRFaXaMwXjbcbFEzKlxNfBXThBpXWMZhC
-	qlN+Ju2e33AvnDLFAAUgPX+orz6CM7pjqWu5WuU/rFIJwBzZqLyk19c7HNCNLlYXg89kK562L69
-	GgkzRiOEufieNdi3zFmPVRHAgb8g7IsZUgH2nV+6yao1FNZbeBmu9vF/Ig5rbaDYv/DYs7lK9Gt
-	Or7kVefavJakbmyUPiWFFKgVqw7KE5Xf2UXYpj+8ANiV/VWBUHkuZc
-X-Received: by 2002:a05:6830:2906:b0:7ed:ceed:95b9 with SMTP id 46e09a7af769-7ee78d2ae71mr2872531a34.32.1785013029154;
-        Sat, 25 Jul 2026 13:57:09 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:677a:56dd:37eb:cf53? ([2600:8803:e7e4:500:677a:56dd:37eb:cf53])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ee2a0ad02fsm9782435a34.19.2026.07.25.13.57.08
+        bh=2Q45Gsx0m2v4LPXx0jIGvR8WQdPydqxbJsSsLtf8XUc=;
+        b=obn45SIPyUOWdlLocRNoiMajmaP3TePxHmUXAaZtrOP7wTGCGM2ViCBb66bw2DJn8h
+         NqjhrVRKduqNJNMTThC7d6ICPIsgf8wZJinPRuOaiLni1thn3sqUqSEqG3qeloI75eiP
+         u1/IRViOr3/7RDlmGo4htzEyMuqzcKo2ZYpdRUouksvkwMU3NtTCq4zTsD3uYG7djUwQ
+         FjzRr1MSDCwqbgtKNyXAcyfzL8+H9WzLWBYKk9TSbYXT+j+EA4EQMQJ8RY77WlyCDK1q
+         L3CIfCjNNpf1ackoaPjeVTAilMzMw59Ob0LaIOh2Ts5JwFg3rfoTUVNC6m+AHI9r0pY7
+         T22w==
+X-Gm-Message-State: AOJu0Yz3IynMAlcs8AfaWFmb8lbwOCVxHvPP5xDp1H7LYlAMuHCzwmnR
+	a7GqXSDsjR+HisTsWAsp5wYas5SBAwilbFXe+9JzLnKrp1m6dL12TOe1tPHHWVPCcF0=
+X-Gm-Gg: AR+sD13qdexNCsxJo9413fmyTuT5F3JSpm/NsAd75nSPMxGRl8kSfYEp4Cdo17jTbC3
+	KvhFEHJC6Y4oAMFKH8KZsyzHO1u/5om7yP/n+5ALX9nOzHVVdUz+ot1R/cZ22/g9PIXhlYBrM/j
+	412zAaNoH2InJ2DuR9/JdtTSOnN1wgl9/zckQ6qKd2e0FVpx4Rpb6WWRYYSm5kW4J9WtYBvjBl/
+	XwF97jLEsBsky5batZnArIhAcBg/aaOHcbwbrUIJgSpZy7zPr8smAl5wqfeoqIKWQvd8DEyBsHe
+	LJgV9cpmfWVYb2hyniPCclMVDEXBFjtlmWTNX8l0pUuvd6ikIKCmzj802WLZXuAW3xt4t8kzfMf
+	mXgoeiPD/0AhRzEhh4jE4vAzGifhw7EigOGNqDwIH+jiQcZtt1xHjmvpiTc8DzDl99J5yEK/SiX
+	d9unvBPqAQmDEJOuPc2RWGiNtdjjPiyQ57cGgd7uovZTsDOeo=
+X-Received: by 2002:a05:6820:4c02:b0:6a3:77e0:84b with SMTP id 006d021491bc7-6aaffaa784amr2679037eaf.60.1785014677542;
+        Sat, 25 Jul 2026 14:24:37 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:105e:29ca:45cc:c7? ([2600:8803:e7e4:500:105e:29ca:45cc:c7])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-6aaf96f4501sm2239669eaf.12.2026.07.25.14.24.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jul 2026 13:57:08 -0700 (PDT)
-Message-ID: <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
-Date: Sat, 25 Jul 2026 15:57:07 -0500
+        Sat, 25 Jul 2026 14:24:36 -0700 (PDT)
+Message-ID: <a1970d93-6bfa-4eec-8bd5-a2457b49bd88@baylibre.com>
+Date: Sat, 25 Jul 2026 16:24:33 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,8 +68,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
+Subject: Re: [PATCH v7 7/7] iio: dac: Add AD5529R DAC driver support
 To: Janani Sunil <janani.sunil@analog.com>,
  Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -87,68 +86,145 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org,
  Kent Gustavsson <nedo80@gmail.com>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+ <20260722-ad5529r-driver-v7-7-7781cd74ad75@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+In-Reply-To: <20260722-ad5529r-driver-v7-7-7781cd74ad75@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 7/22/26 2:54 AM, Janani Sunil wrote:
-> Add the generic spi-device-addr property to the binding and deprecate
-> the existing vendor specific microchip,hw-device-address property.
+> Add support for AD5529R 16-channel, 12/16 bit Digital to Analog Converter
+> from Analog Devices.
 > 
-> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> ---
->  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> index 675319276197..de1ea289e7f5 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> @@ -80,6 +80,7 @@ properties:
->      $ref: /schemas/types.yaml#/definitions/uint32
->      minimum: 0
->      maximum: 3
-> +    deprecated: true
->      description:
->        The address is set on a per-device basis by fuses in the factory,
->        configured on request. If not requested, the fuses are set for 0x1.
-> @@ -91,6 +92,12 @@ properties:
->        clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
->        which is first one on the wire).
->  
-> +  spi-device-addr:
-> +    maxItems: 1
 
-Does it not make sense to all for more than once device connected
-to the same CS here? I would expect maxItems to be 4 to match the
-number of possible addresses.
+...
 
-> +    items:
-> +      enum: [0, 1, 2, 3]
-> +    default: [1]
+> +struct ad5529r_state {
+> +	struct spi_device *spi;
+> +	const struct ad5529r_model_data *model_data;
+> +	struct regmap *regmap_8bit;
+> +	struct regmap *regmap_16bit;
+> +	struct iio_chan_spec channels[16];
+
+Probably makes sense to make a macro for max num channels.
+
+> +	unsigned int num_channels;
+> +	enum ad5529r_output_range output_range_idx[16];
+> +};
 > +
->    "#io-channel-cells":
->      const: 1
->  
-> @@ -123,7 +130,6 @@ dependencies:
->  required:
->    - compatible
->    - reg
-> -  - microchip,hw-device-address
->    - spi-max-frequency
->  
->  allOf:
-> @@ -159,7 +165,7 @@ examples:
->              spi-cpha;
->              spi-cpol;
->              spi-max-frequency = <10000000>;
-> -            microchip,hw-device-address = <1>;
-> +            spi-device-addr = <1>;
->  
->              #address-cells = <1>;
->              #size-cells = <0>;
-> 
 
+...
+
+> +static int ad5529r_probe(struct spi_device *spi)
+> +{
+> +	struct device *dev = &spi->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct ad5529r_state *st;
+> +	struct regmap_config regmap_8bit_cfg;
+> +	struct regmap_config regmap_16bit_cfg;
+> +	bool external_vref;
+> +	u32 dev_addr = 0;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	st->spi = spi;
+> +
+> +	st->model_data = spi_get_device_match_data(spi);
+> +	if (!st->model_data)
+> +		return dev_err_probe(dev, -EINVAL,
+
+We should pick a value and stick with it. Latest favorite is ENODATA.
+
+> +				     "Failed to identify device variant\n");
+> +
+> +	device_property_read_u32(dev, "spi-device-addr", &dev_addr);
+> +	if (dev_addr > 3)
+> +		return dev_err_probe(dev, -EINVAL,
+> +				     "spi-device-addr %u out of range [0, 3]\n",
+> +				     dev_addr);
+> +
+> +	regmap_8bit_cfg = (struct regmap_config) {
+> +		.name = "ad5529r-8bit",
+> +		.reg_bits = 16,
+> +		.val_bits = 8,
+> +		.max_register = AD5529R_8BIT_REG_MAX,
+> +		.read_flag_mask = AD5529R_SPI_READ_FLAG,
+> +		.rd_table = &ad5529r_8bit_readable_table,
+> +		.wr_table = &ad5529r_8bit_writeable_table,
+> +		.reg_base = dev_addr << AD5529R_ADDR_SHIFT,
+> +	};
+> +	regmap_16bit_cfg = (struct regmap_config) {
+> +		.name = "ad5529r-16bit",
+> +		.reg_bits = 16,
+> +		.val_bits = 16,
+> +		.max_register = AD5529R_MAX_REGISTER,
+> +		.read_flag_mask = AD5529R_SPI_READ_FLAG,
+> +		.val_format_endian = REGMAP_ENDIAN_LITTLE,
+> +		.rd_table = &ad5529r_16bit_readable_table,
+> +		.wr_table = &ad5529r_16bit_writeable_table,
+> +		.reg_stride = 2,
+> +		.reg_base = dev_addr << AD5529R_ADDR_SHIFT,
+> +	};
+> +
+> +	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(ad5529r_supply_names),
+> +					     ad5529r_supply_names);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get and enable regulators\n");
+> +
+> +	ret = devm_regulator_get_enable_optional(dev, "hvss");
+> +	if (ret && ret != -ENODEV)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get and enable hvss regulator\n");
+> +
+> +	ret = devm_regulator_get_enable_optional(dev, "vref");
+> +	if (ret == -ENODEV)
+> +		external_vref = false;
+> +	else if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to get and enable vref regulator\n");
+> +	else
+> +		external_vref = true;
+> +
+> +	st->regmap_8bit = devm_regmap_init_spi(spi, &regmap_8bit_cfg);
+> +	if (IS_ERR(st->regmap_8bit))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap_8bit),
+> +				     "Failed to initialize 8-bit regmap\n");
+> +
+> +	st->regmap_16bit = devm_regmap_init_spi(spi, &regmap_16bit_cfg);
+> +	if (IS_ERR(st->regmap_16bit))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap_16bit),
+> +				     "Failed to initialize 16-bit regmap\n");
+> +
+> +	ret = ad5529r_reset(st);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to reset device\n");
+> +
+> +	ret = regmap_assign_bits(st->regmap_16bit, AD5529R_REG_REF_SEL,
+> +				 AD5529R_REF_SEL_INTERNAL_REF,
+> +				 external_vref ? 0 : AD5529R_REF_SEL_INTERNAL_REF);
+
+regmap_assign_bits() take bool, so just external_vref without the ?:.
+
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to configure reference\n");
+> +
+> +	ret = ad5529r_parse_channel_ranges(dev, st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->name = st->model_data->model_name;
+> +	indio_dev->info = &ad5529r_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = st->channels;
+> +	indio_dev->num_channels = st->num_channels;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
