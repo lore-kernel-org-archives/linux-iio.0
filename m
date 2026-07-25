@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E132175A95;
-	Sat, 25 Jul 2026 22:46:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B540286425;
+	Sat, 25 Jul 2026 22:56:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785019606; cv=none; b=bEVfhUemvCAvpN5Xhqhzal9Z8vBpBjiaoRVRctdUB2HoWuHKk2ub1D95TJoxviXY1rLhhX4uYT4w9TerYubK1C/qCarl9VX/4FpmlTu39vfJXN9axzU1COZXZBaw6qhUkTJ3QtwA0/qZ1jdtu7znb5DIb/CCFSxPB/UXn+4oT78=
+	t=1785020189; cv=none; b=GKC5Um314qPg3LLk4yw4IBNEeu+fZhKlutaI9KtyCsoPdHgSlTT23zVPYBA9L1BR29C2BUmo8FSaiPo716Wr6I1wDWkUo34e6bATcquukTkR+XA7n64TGl5MGTpagT25O3I4uOYnBARg/C5o6S7utfIkOMr0k/zeu434TrzEMNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785019606; c=relaxed/simple;
-	bh=gj1Ub5SNsXSE0BZBHDQEyBYNVhJNP1yfrzTDvIIR2tw=;
+	s=arc-20240116; t=1785020189; c=relaxed/simple;
+	bh=iDWpAqRkfZ35v8WKKY0xbWLOfcTI8IuQYHGt4m8Um1s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KCfvSVA2p0VcbkL+3+1wFSmn4BTCt0WPJquIsr4GTyeqbJmSQsM9ZE/br0qlzzuV/tw+jrfuQHBV/4j7HnQDVECO3IGuvh6+cGinz8rQ33rChK+sgkhDx1EHNETM5U6q7yezWBEyEsagc6gjY2bOCNm09nZghK2Rk0S2vwqddfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LNLSHwmv; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=F6KNd1fzBIKgj7gp/51CmbRYDqKP77Fac+8l/ZyEBbmMUEIipfoZi3vDZ8coK4P9X2Yw4uVAlAF53BTNYwfQTaWmqBnimg96SQDoRxUZ1G4w/18hYy4wiD0j7ncI/Q9mTymoi6KLtlQCxU3MSpndWPIqJCFQCDSzTbO7d4c6tFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rq0kxMt2; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LNLSHwmv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0BE1F000E9;
-	Sat, 25 Jul 2026 22:46:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rq0kxMt2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D228F1F000E9;
+	Sat, 25 Jul 2026 22:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785019605;
-	bh=TAMunMrpAubw8V4mXg6Of5X2Q35Lhj9nxNh5rmYsjIk=;
+	s=k20260515; t=1785020188;
+	bh=oe/e1NIktgaY3sdLbPwFx54yVzEFlDJX9fTvKfXYWuw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LNLSHwmvSFDkXzC/YJuQBgccWOpsSekPgRUxweD+31XYauztaUF8ZYHkm5JIX7NbG
-	 M5INAzLQsD/X+ZQkxYM9WwswZ9uUFWdtN+H7EZYgImU/4lObxCmDzUuEgejC+kv5qm
-	 T7UOwwRwQQznJNGzmfmuQ3vCrMCF6/ZRbz9qGyR9CAzhNGDmXm2c7I9z5c7F93USLF
-	 c5x0bk8XhY2b+5ii0nb8UJCrrsQtGhaZhx1rek5yrXqAz8Xb9+MOT4wdYHpajQ8Sck
-	 ElXQ4lQA0OADxXTGOxUOQjfDPykwAUjnvZnjPQOvOjYPnxgdJokb+BVceiJSIdWUOg
-	 Q/OHQmW5jcaiA==
-Date: Sat, 25 Jul 2026 23:46:37 +0100
+	b=Rq0kxMt26gE2Xqbm0ouVxEIwNxdbIX8x2dHFd9/IAqvcbkTQc+r81CZZDK+RS7nwA
+	 KlWnqELmHO0+CcfdkuxjQq8woacKEzvpOiPxAF9zyIKH7gvhCjDzdspKqmf7juzPL+
+	 663kPcfuCKfevDWT+KNOb0fLWcfsS8szPsQa4lsoeuisjP45W0RK2dd6hlsUUryzpy
+	 O3OgmXOWAWcpWOtQCfN9ko8TtMc9E/OxlPFLmVe0APKEKJqbjqbkGGG424zwxTiV14
+	 ihrWD3oF51Tbx3rc7jg9KkyO3X3/kl/RyxfbEYm/Nh03WgnZnFwwELxXZES59Z2TvG
+	 MTMDeYaN3U82w==
+Date: Sat, 25 Jul 2026 23:56:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
@@ -40,11 +40,12 @@ Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
  Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
  R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v9 13/17] iio: frequency: ad9910: add RAM mode support
-Message-ID: <20260725234637.4ee42657@jic23-huawei>
-In-Reply-To: <20260722-ad9910-iio-driver-v9-13-459d1df5ac56@analog.com>
+Subject: Re: [PATCH v9 15/17] iio: frequency: ad9910: show channel priority
+ in debugfs
+Message-ID: <20260725235621.6dd73e71@jic23-huawei>
+In-Reply-To: <20260722-ad9910-iio-driver-v9-15-459d1df5ac56@analog.com>
 References: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
-	<20260722-ad9910-iio-driver-v9-13-459d1df5ac56@analog.com>
+	<20260722-ad9910-iio-driver-v9-15-459d1df5ac56@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,100 +56,78 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 22 Jul 2026 16:50:22 +0100
+On Wed, 22 Jul 2026 16:50:24 +0100
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Add RAM control channel, which includes:
-> - RAM data loading via firmware upload interface;
-> - Per-profile configuration and DDS core parameter destination as firmware
->   metadata;
-> - Profile switching relying on profile channels;
-> - Sampling frequency control of the active profile;
-> - ram-enable-aware read/write paths that redirect single tone
->   frequency/phase/amplitude access through reg_profile cache when RAM is
->   active;
+> Expose frequency_source, phase_source and amplitude_source attributes in
+> debugfs. Those indicate from which channel the specific DDS parameter is
+> being sourced by returning its label. The implementation follows the
+> priority table found in the datasheet.
 > 
-> When RAM is enabled, the DDS profile parameters (frequency, phase,
-> amplitude) for the single tone mode are sourced from a shadow register
-> cache (reg_profile[]) since the profile registers are repurposed for RAM
-> control.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-As mentioned in reply to an earlier patch, I haven't looked in detail
-at the firmware cancel path stuff sashiko is unhappy with.  Whilst
-it looks like the sort of esoteric path where maybe it is fine to fail
-good to take one more look.
+For this one sashiko raised some questions and made me wonder how this
+actually works given it is using active_scan_masks and so far we don't
+have any buffered support in the driver.  My guess is you backported
+this from on top of some other code that you haven't posted yet.
 
-One other thing Sashiko commented on inline. I think that is either right
-or a bit more detail is needed in the comment.
+Please have another check that this all works with just the series
+posted.
 
-Thanks,
-
-Jonathan
+Note that you will need to claim buffer mode successfully to mess
+around with that in paths that aren't inherently only used in buffered
+mode.
 
 
-> diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-> index 6c794e1b4b1c..844cc0cc8f3e 100644
-> --- a/drivers/iio/frequency/ad9910.c
-> +++ b/drivers/iio/frequency/ad9910.c
-...
 
-> @@ -1119,7 +1220,7 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
->  	struct ad9910_state *st = iio_priv(indio_dev);
->  	u64 tmp64;
->  	u32 tmp32;
-> -	int ret;
-> +	int ret, i;
+> @@ -2078,6 +2092,171 @@ static int ad9910_setup(struct device *dev, struct ad9910_state *st,
+>  	return ad9910_io_update(st);
+>  }
 >  
->  	guard(mutex)(&st->lock);
->  
-> @@ -1156,6 +1257,41 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
->  						   AD9910_CFR2_DRG_DEST_MSK |
->  						   AD9910_CFR2_DRG_ENABLE_MSK,
->  						   tmp32, true);
-> +		case AD9910_CHANNEL_RAM:
-> +			if (AD9910_RAM_ENABLED(st) == !!val)
-> +				return 0;
+> +static inline const char *ad9910_frequency_source_get(struct iio_dev *indio_dev)
+> +{
+> +	struct ad9910_state *st = iio_priv(indio_dev);
+> +	bool ram_en, mode_en;
 > +
-> +			/* swap profile configs */
-> +			for (i = 0; i < AD9910_NUM_PROFILES; i++) {
-> +				tmp64 = st->reg[AD9910_REG_PROFILE(i)].val64;
-> +				ret = ad9910_reg64_write(st,
-> +							 AD9910_REG_PROFILE(i),
-> +							 st->reg_profile[i],
-> +							 false);
-> +				if (ret)
-> +					break;
-> +				st->reg_profile[i] = tmp64;
-> +			}
+> +	guard(mutex)(&st->lock);
 > +
-> +			if (ret) {
-> +				/*
-> +				 * After the write failure, profiles 0..i-1 were
-> +				 * already swapped in SW, but Hw registers are
-> +				 * still pending an IO update, so swap them back
-> +				 * in SW to keep the state consistent.
-
-Sashiko's follow up question about whether a subsequent use of IO update might
-end up with these stale values seems like a reasonable one. Perhaps a little
-more detail on why that doesn't matter is needed here?
-
-> +				 */
-> +				while (i--) {
-> +					tmp64 = st->reg[AD9910_REG_PROFILE(i)].val64;
-> +					st->reg[AD9910_REG_PROFILE(i)].val64 = st->reg_profile[i];
-> +					st->reg_profile[i] = tmp64;
-> +				}
-> +				return ret;
-> +			}
+> +	/* RAM enabled and data destination is frequency */
+> +	ram_en = AD9910_RAM_ENABLED(st);
+> +	if (ram_en && AD9910_DEST_FREQUENCY ==
+> +		      FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
+> +				st->reg[AD9910_REG_CFR1].val32))
+> +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
 > +
-> +			tmp32 = FIELD_PREP(AD9910_CFR1_RAM_ENABLE_MSK, !!val);
-> +			return ad9910_reg32_update(st, AD9910_REG_CFR1,
-> +						   AD9910_CFR1_RAM_ENABLE_MSK,
-> +						   tmp32, true);
->  		default:
->  			return -EINVAL;
->  		}
+> +	/* DRG enabled and data destination is frequency */
+> +	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
+> +			    st->reg[AD9910_REG_CFR2].val32);
+> +	if (mode_en && AD9910_DEST_FREQUENCY ==
+> +		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
+> +				 st->reg[AD9910_REG_CFR2].val32))
+> +		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_FREQ];
+> +
+> +	/* Parallel data port enabled and data destination is frequency */
+> +	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
+> +			    st->reg[AD9910_REG_CFR2].val32);
+> +	if (mode_en && indio_dev->active_scan_mask &&
 
+active_scan_mask is only set on a call to iio_enable_buffers.
+So what is this checking?  I guess today it will always fail as
+active_scan_mask is NULL.  Once that is in use, it will be racy
+however, so you'll need to claim buffered mode (or fail in which
+case the null check isn't needed).  That claim will hold it
+in a particular state - under the hood it is taking mlock
+which is what sashiko suggests - that is just meant to be opaque
+to drivers so do it with an explicit attempt to claim buffered mode.
+
+
+> +	    test_bit(AD9910_SCAN_IDX_FREQ, indio_dev->active_scan_mask))
+> +		return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_FREQ];
+> +
+> +	/* FTW: RAM enabled and data destination is phase, amplitude, or polar */
+> +	if (ram_en)
+> +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
+> +
+> +	/* single tone profiles */
+> +	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
+> +}
