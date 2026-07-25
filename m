@@ -1,66 +1,66 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39583364042
-	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 20:38:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D11FA317170
+	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 20:55:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785011904; cv=none; b=mD8DH5BgVyyAQvi8RIgvI3lhI6XeLewJLjTtUh9nzuZ8/C0hAR9mh/YTzu2msN+gX31ciD1d7lyzrJTIQOZFs1Wyayoq4VH5S02sC8TIYoimlJltObdSOY1BOny0FI2rsUhWNbe4GTD3MBtLNG/B36QCj78R7cbcWdpA/viOBdQ=
+	t=1785012908; cv=none; b=ois/3Z0W9Ko5E2GXvOpZYV2T52MvPJJ124nJtRa2Imp13TD4PhQevoh+O4YGH09rkvDInj4qakIyBmlmWvKGJGkWp5DQ9FhKgTGOCMpaYVjY6gEk3OpDSRMjL8QNZhnZInjMQuQJ3aod/dukJuotWbNABVk9OYY0o7C+Hsl/CDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785011904; c=relaxed/simple;
-	bh=iONqM2Lq54NpnqmXjiLdtYtjE4xrJUW9mk+59xZC6g0=;
+	s=arc-20240116; t=1785012908; c=relaxed/simple;
+	bh=Z/e68nc6QKQvwGRK8quiSuLi4r1Hwd7lrj1OFbny9/c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MNjwmk+eekw76XLdwoJXPthCnc0k66K0dJTSpd3D6SiwwRNamvViktLxWrORuzUoTo6LU2Ec24Q1Opal4flFHiuFL5J/lwjzdItaU12Q2QKVwtvynT/cYlWv+Yjv1lIfisXRgeJjI+0VHyBRYUu3TzYhRW1CnTX6DcXYIDrRsQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=T245BYQd; arc=none smtp.client-ip=209.85.160.47
+	 In-Reply-To:Content-Type; b=PtleQe5bjsrkLaw48N4KmWVpQdhc74o1X0c/HSS92naQLYnWnqPaLqz7RCUAPiqXcCw3WGRmFlDB1w5T07eHDHGOu99w+po4Fr32TYluUBgGMPvi+TSnkm2i5XEe7h1JIUPGSu8DcQ/qrCDJnrlYC0uNVMwHPPwKc9k0Du5C8/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=UVmaj10c; arc=none smtp.client-ip=209.85.167.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="T245BYQd"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-44caeb973b3so832116fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 13:38:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="UVmaj10c"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-4ab47c40e7eso582848b6e.3
+        for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 13:55:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785011901; x=1785616701; darn=vger.kernel.org;
+        d=baylibre.com; s=google; t=1785012904; x=1785617704; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=6IaoMi6Hd0SLtKbgts/aDL0YFdHS36nKYEo+scTrYk4=;
-        b=T245BYQdhzhB2xMb26XRlbPzRglEvd/9VdyuCGfwOmPkyWQLDuWDZDqTnktAKCpat2
-         FNdo0Dr97uCS6ne4I4RAgFownIgs1cKLd95XgkEXt/rUEceVg6v31K8cqtD0JU2tH9VE
-         9eN6Rj8LnYs7wjGjnTybcnc4JOBxyO69PxlFt4Skw+Ext1uwYmbFlOH4svgPVBB8Zqpw
-         OlCI7bmiZOUpoeRlGSlHi1R3tzmEOgPMS28e9nHmpdlUpiwSw4eyRRmqa890DPnTS1Vb
-         lSCdU7Vi0J+jBWK44dCvTVukx4+i20mKW7XcjppJi8VR8c4j/iouMPHxx2obpRgTY8ls
-         3eSQ==
+        bh=YH9JqQUCimPMSpXV6NW6PpXAq5f8VZcE+lJasgXweSE=;
+        b=UVmaj10cJnKoZsrxjsj1Io8LoRnQtj37Svr0g0AdVhrtuBYaMSvJwF5xRJKA42+ktk
+         WW1cZLbAvj0LB3GJEJVRrSF7o7qyWx8lySxxEftEMxPx8vx7tvQIYL/3ads9fTLTjXQs
+         rts/936KCVDvEoNC20z93NbcQQsF0syAxowAr8/2cFxJSiqGJnzowwCyP6S1AGe3HR+c
+         B+y7NwyNuwjbzncal+NLWsgXC3gPzETsQ0Yy+iRATSajo6sY4E78hDGq1R0VyLCbE7it
+         Ad1lBnbHAE/fGm98BwNniFlK+/NaHUskHb6C6IXgIOf1LOtkwgE7Se92Xv4QMMQo6cdJ
+         0zmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785011901; x=1785616701;
+        d=1e100.net; s=20251104; t=1785012904; x=1785617704;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=6IaoMi6Hd0SLtKbgts/aDL0YFdHS36nKYEo+scTrYk4=;
-        b=HCMkcGUoD6PSm67Ycs5xH8y5q6HTolPSpGnnX5J6YyCEQAS68cCtGvM8D2kKBL5Tdd
-         m+PGzTeDVwSef2XJKuCM0xm6ylimH7NfRPuV6WMbMhoLSTWzOckvfkjqY2p6TV6HVYSv
-         YIQSVokgLiVd77UuG2P7TYlD2SLI8s0wiwVjaT7TTtYVMrr3gcNOKN011qU0Bn6F1gle
-         qhQFOh54v1r/hgsa4gWTWmBm4n0thYkfeSOHuxUyMTruJcUZ1NXIUkFoMlA0I+z2uo/T
-         I0wD2IOLF9ZBACrT2X7CvFeYkf5wj9r4lE5epP51cySFy3+M6Da+KWRFvmdHrXZmxodS
-         lDjw==
-X-Gm-Message-State: AOJu0Yx07czlnHUWcEayisKCLZK4BIkB2J+xfHC6uEYYrOePNnmdftI2
-	ZkWRdkyAxScoO8QqsGYRURVJF1zdPztlWCPUXat2wmSbQaz42gi8Z5AsA9ig8G0LKC0=
-X-Gm-Gg: AR+sD10e04Fp0hCYj4mUwziM9/2zI61udBRWPgFFKdYNjniHcLH9dTInO7yvwPwVRK9
-	aFe23lzbaO/CT8JkfAHxPTCY9/VWlbajoq0EMgpH0v8ZpxSLRuP751T+V9KCuK3wMa84n8UqUW2
-	g4f8j+A67zxLAMvJqHmCc+iaW2Tzxelft01SjrMNdhgJlWy9VsmsvlUcyS9zAUebL2iYVU5lKav
-	MYhC28FwSuTbnhpJvd8RFEBXYwP18NegqnSHf4d2xFIE1Z/YqA5vqVU3T2MZ9KrjnV9T7ZPd25I
-	KcqpPfWj56VjGqBUQHNSOaksh+dteZjupDtqBf3Qgmin7X9NwOvVSclDXx0bGOTNQeOhhMXjLSq
-	70O46amW+AZSKA71pfx9tdsl8upfI1ikwxc5WiPpNw4MlFwQlvQKxGCdZDdmNPnwSGZXdOVgnq4
-	FYvacafqW4H5pAjpFknlIibDt7FoRe7bW5zCSQIaZG0nRiKCGkBiv8
-X-Received: by 2002:a05:6870:3c07:b0:43b:6ad5:6ab8 with SMTP id 586e51a60fabf-457f26bb220mr3050354fac.20.1785011901114;
-        Sat, 25 Jul 2026 13:38:21 -0700 (PDT)
+        bh=YH9JqQUCimPMSpXV6NW6PpXAq5f8VZcE+lJasgXweSE=;
+        b=mOZ4Cd0due1SHuxMSzGSNRWzKLb659ZToObyUFLdVkAVULDUadA+c2a2NJRk2PawCv
+         Frk6mvbz0uMCtjQHYuoknN6mAFxY1IrU/IcTJqUKbHvM7zK1WbTC7ZKyVjJyKRu7Qt0h
+         KfmBd2PdOlXuuv7E2gcaPmKUmFSOlI+GtQwb5w9nt2e+7QE8sBTBboIyRsuZASORPUfm
+         1J6EJGB9r2hmqtsWfek5rvZ2F2LNGUhRD6M/VdzGz36wgsX6gP5dImxK80UdFuetgB++
+         XXutzsN/qF4uwCd9IHenpkuW/Qi9391bA0nOwsDJA4KRHJ2sAfFsdFCc8rEVUWvjp3KD
+         xb+w==
+X-Gm-Message-State: AOJu0YyxdsRH6gp7KcPTeSSJmtohhELhQ8kYrnUJq+wiG8g4aBqEqdR5
+	VvmzFxG3q41rDPPKKTiQeuUBO72fKT9bQaK4nlqlI3LW/KNWiN06L7dz65Sn297yAc8=
+X-Gm-Gg: AR+sD11o1TUMw6htSemlsW5bfmnQAykhF40ILyqPYLN9lGtBvHHrz3kbS7GkQzAlaf6
+	hyadEg38f3KUSX3xFFc9X9WCQyKbG93vL8lBEyJ2JvEmJOCPVGrnKBbQtObtuxlJAYO8oOZNs0+
+	8OyUN/Sq4UztKmwia8u2apLjwpB/PaA5smNIMaVwwYjPrh/WlVGUWEWmc3htykbD6St5kXFAXV2
+	PcDMJUaYA5H1DjSydPcu2I2mHd7EBpnMxP5o6mfZmoIoxltyaXfT/N0D6HFp+aqZYGqkeIQepEV
+	O29yH+atZEqMCmhwZ3yMgnDBocx27EPLukTs3xPyXO1xV/LkERV1lC9zDo78QslJ6xvmh9z+fY4
+	W/ndZTlYFRPUkPEpHnjYAvGDulkeNbIp3lkWGdYK127h6Gw8KMmjrcS2qKnf5L9czk42YPr+4IE
+	qBq6EYqbutZyJFcy5uEDKQXbPEF+4I2LUf3ieJyj6WeewEEFbIbWRr
+X-Received: by 2002:a05:6808:c413:b0:4a3:fb6c:9adf with SMTP id 5614622812f47-4ab69fdc1c0mr3905211b6e.12.1785012904631;
+        Sat, 25 Jul 2026 13:55:04 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:677a:56dd:37eb:cf53? ([2600:8803:e7e4:500:677a:56dd:37eb:cf53])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45766f16dfcsm11225502fac.7.2026.07.25.13.38.17
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4ab46f5927bsm5144829b6e.9.2026.07.25.13.55.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jul 2026 13:38:19 -0700 (PDT)
-Message-ID: <e39a9345-0302-425d-ac43-53a524f13394@baylibre.com>
-Date: Sat, 25 Jul 2026 15:38:17 -0500
+        Sat, 25 Jul 2026 13:55:03 -0700 (PDT)
+Message-ID: <e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
+Date: Sat, 25 Jul 2026 15:55:01 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,7 +68,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 6/7] dt-bindings: iio: dac: Add AD5529R
+Subject: Re: [PATCH v7 1/7] spi: dt-bindings: Add spi-device-addr peripheral
+ property
 To: Janani Sunil <janani.sunil@analog.com>,
  Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -86,54 +87,56 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  Janani Sunil <jan.sun97@gmail.com>, linux-spi@vger.kernel.org,
  Kent Gustavsson <nedo80@gmail.com>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-6-7781cd74ad75@analog.com>
+ <20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260722-ad5529r-driver-v7-6-7781cd74ad75@analog.com>
+In-Reply-To: <20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 On 7/22/26 2:54 AM, Janani Sunil wrote:
-> Devicetree bindings for AD5529R 16 channel 12/16 bit high voltage,
-> buffered voltage output digital-to-analog converter (DAC) with an
-> integrated precision reference.
+> Some SPI devices support sharing a single chip select across multiple
+> physical chips by encoding a device address in the SPI frame itself.
+> Add the generic spi-device-addr property for describing these hardware
+> addresses. The property is placed on the SPI peripheral node and may
+> contain multiple addresses.
+> 
+> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> ---
+>  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> index 880a9f624566..b59d047cf117 100644
+> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> @@ -142,6 +142,13 @@ properties:
+>      minItems: 2
+>      maxItems: 4
+>  
+> +  spi-device-addr:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description:
+> +      Device addresses used when multiple peripherals share a single chip
+> +      select. The array allows one logical peripheral to comprise multiple
+> +      physical devices, with one address per device.
+
+"per physical device" for clarity.
+
+> +
+>    st,spi-midi-ns:
+>      deprecated: true
+>      description: |
 > 
 
-...
+If there is nothing useful the SPI core code can do with this information,
+I'm not entirely convinced that this needs to be a common property.
 
-> +  vdd-supply:
+And this only allows for one logical device. If we wanted to treat each
+address as a logical device (all with same CS), we would need #address-cells = <2>;
+instead where the DT "address" is two values, the CS and the device address.
 
-So vdd-io-supply to match the datasheet name?
+This isn't a nak or request for change - just putting my thoughts out there
+to make sure we considered it thoroughly.
 
-> +    description: Digital power supply (1.08V to 1.98V)
-> +
-> +  avdd-supply:
 
-And vdd-5v-supply? Datasheet doesn't mention any AVDD.
-
-> +    description: Analog power supply (4.75V to 5.25V)
-> +
-> +  hvdd-supply:
-
-There are 4 of these according to the datasheet. e.g. vdd-hd0-supply ...
-
-> +    description:
-> +      High voltage positive supply (7V to 45V). Supply voltage should be chosen
-> +      based on configured output ranges (see datasheet Table 9).
-> +
-> +  hvss-supply:
-
-Same here.
-
-> +    description:
-> +      High voltage negative supply (-22.5V to 0V). Required only when using
-> +      bipolar output ranges (±5V, ±10V, ±15V, ±20V). Supply voltage should be
-> +      chosen based on configured output ranges (see datasheet Table 9).
-> +
-> +  vref-supply:
-> +    description:
-> +      External voltage reference supply (4.056V to 4.136V, typically 4.096V).
-> +      When specified, the device uses external reference mode and the VREF pin
-> +      becomes an input. The device uses the internal 4.096V precision reference
-> +      otherwise.
-> +
