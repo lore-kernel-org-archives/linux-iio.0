@@ -1,133 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B540286425;
-	Sat, 25 Jul 2026 22:56:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD471A6824
+	for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 23:16:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785020189; cv=none; b=GKC5Um314qPg3LLk4yw4IBNEeu+fZhKlutaI9KtyCsoPdHgSlTT23zVPYBA9L1BR29C2BUmo8FSaiPo716Wr6I1wDWkUo34e6bATcquukTkR+XA7n64TGl5MGTpagT25O3I4uOYnBARg/C5o6S7utfIkOMr0k/zeu434TrzEMNc=
+	t=1785021388; cv=none; b=mny2t+nLZ5OLPlwzj2ZdGKodnZlQg0HDDDS2WoWO/3pqvTlWqEB8aClUPBBfdLI4u1JwldZusmP0vtecKJbb+9uYyt1dZA8E3DkkRkvjt7xnd0i8tlvjQ9he4ubjkDtNF+r7cKmLwbsyXeNdI6YbRRayIcgLmZGsVowXOknCICs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785020189; c=relaxed/simple;
-	bh=iDWpAqRkfZ35v8WKKY0xbWLOfcTI8IuQYHGt4m8Um1s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F6KNd1fzBIKgj7gp/51CmbRYDqKP77Fac+8l/ZyEBbmMUEIipfoZi3vDZ8coK4P9X2Yw4uVAlAF53BTNYwfQTaWmqBnimg96SQDoRxUZ1G4w/18hYy4wiD0j7ncI/Q9mTymoi6KLtlQCxU3MSpndWPIqJCFQCDSzTbO7d4c6tFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rq0kxMt2; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785021388; c=relaxed/simple;
+	bh=XvWOejc2bzwGyJUxOo43sOvPPDldX/KX9qx8Pwhw8T8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kgeWzXS9wNWZQuL/q6yqDS+30uHg775EI7znivpH0zT4kwkE/5xxHPEDHlg4LrJjG/rI1uqp6DTyDHN36m47sZr5IXZsZ0h5clX/NpsCNQ/h8DWxDQ1oFSb/uJZYIwwLZQvUNH+63Qk37lsCRzGDzq/SzZZSiHSqUxqMnp+vmjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X7kj6dwB; arc=none smtp.client-ip=209.85.222.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rq0kxMt2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D228F1F000E9;
-	Sat, 25 Jul 2026 22:56:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785020188;
-	bh=oe/e1NIktgaY3sdLbPwFx54yVzEFlDJX9fTvKfXYWuw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Rq0kxMt26gE2Xqbm0ouVxEIwNxdbIX8x2dHFd9/IAqvcbkTQc+r81CZZDK+RS7nwA
-	 KlWnqELmHO0+CcfdkuxjQq8woacKEzvpOiPxAF9zyIKH7gvhCjDzdspKqmf7juzPL+
-	 663kPcfuCKfevDWT+KNOb0fLWcfsS8szPsQa4lsoeuisjP45W0RK2dd6hlsUUryzpy
-	 O3OgmXOWAWcpWOtQCfN9ko8TtMc9E/OxlPFLmVe0APKEKJqbjqbkGGG424zwxTiV14
-	 ihrWD3oF51Tbx3rc7jg9KkyO3X3/kl/RyxfbEYm/Nh03WgnZnFwwELxXZES59Z2TvG
-	 MTMDeYaN3U82w==
-Date: Sat, 25 Jul 2026 23:56:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v9 15/17] iio: frequency: ad9910: show channel priority
- in debugfs
-Message-ID: <20260725235621.6dd73e71@jic23-huawei>
-In-Reply-To: <20260722-ad9910-iio-driver-v9-15-459d1df5ac56@analog.com>
-References: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
-	<20260722-ad9910-iio-driver-v9-15-459d1df5ac56@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X7kj6dwB"
+Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-9673385b1efso613500241.2
+        for <linux-iio@vger.kernel.org>; Sat, 25 Jul 2026 16:16:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785021386; x=1785626186; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=n98HKdEUkcQbXRo76aiKXR6hUvPPOHvacsbRXwi7Sps=;
+        b=X7kj6dwB/cmxNTr/L1jlMearMAALXmef4VuuGGuU8/06AULUVimBLtXX4R5HprXXC2
+         7aLVuN1WtQ5Ee7cZTmNda/595MfuAA/Mb/hW+SV4FtYzgP5CbwdX0np8eU9UF7Kyh4UY
+         tOKJxchqpqLuflL0h6QGDCHnYSCEIzLuys2E07g9Hlx17hWTGfz/e5K8P65XwD+6pHuo
+         51Eqh9SjpYm1nvBCJHGZTqzX3vOGLE4RZ6ivNRscxk7oT/UZKGwPwBz243mq40NhfpN6
+         i5rMNvy0HuAgutbWUUf0+IZiQh0mK7cZAMepFayGy95u5ETXM7Fh6eYfoAVJHn1H0Wlf
+         gWVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785021386; x=1785626186;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=n98HKdEUkcQbXRo76aiKXR6hUvPPOHvacsbRXwi7Sps=;
+        b=oP5bgnf0GoWEiaKHsiurSJ0utz++dJ5BcldfITgrpZL2BCqaxbyugusg2SfTRM8Mxo
+         riOgXcE9ynMCn7skjXN4XhPXsqjKNQVq/5uG4LHES4BcFQ7gsJ0fGR4cxDTdsHu/WbSW
+         AerriCdPESq2fPSjYbY8sayS9F7wNHpQD/HEtR9RYv6HSrCgrD7LmIBDxtvRofl65UHz
+         MfrgmdKeu5KU3/2fN2KEVMLHoIk78twBLa69YJFm/EKUrlZCklPCggBjOoCTrBZu9aKM
+         knCNr1a6kZk4S02pLWR+PT8fICOe7vDP312Bia9TVmlim5zUMx2D7VeZ+GphbWfq+fXs
+         zYVw==
+X-Forwarded-Encrypted: i=1; AHgh+Rpsu8eey/+JxmlXDPYJMyk2Tgc1nzxNu9iD+TLIYMjTYczAQqHd6nRtK/jEp2BcZAxmOYQdsjPZUkQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxLOVhd+2JMuij5JNNM+TOVI2FCAhAZMSXWqD/CG2VU1Z3Zvpzy
+	0j2EysWpFIn0cy5DzrP71NtyawWVp8UuxyOMAmgmmumQ0AuNCzmf5qPJ
+X-Gm-Gg: AR+sD11cty0Je5PN0DzAD+V30XxZNqd6e1TinsuIP+z0aZ0z8HtlDTl+VKTgq+C7E2W
+	yzsXl/6NDhZbE7CSBF4Wp2YWMv7arKBwn1U4ca4lcI6ka+k8hyVgCNLIOdfBJ43U/t0wc/zClQV
+	+99MYNhfS6+lfWpkh4vjZaKXwkVRI2FTZmPKZLUcK9vDtzvPfcQxiy5XsLe6RUGwjQctmMMKdUv
+	ai46EDw/jA05COQioOOc5yITQgmkgslnrWCt0Sda6S8jzDQp2FeRIRryxiJQ8bE+lxFkpHwKXgu
+	SD5M6/oj3Xt83sE6ZD++wWc7+H+umCuPN4AmGj9rD40rYB9NFFPWXhnpTK7Z8yQ5DbcOMLD1l0U
+	LJyZCwh/aIXOfQHQFWwjAJv3xrSorzbToVyingsU58IkDTpPTBJwjZJvTHa6fn7EwdiTYAbzg+e
+	bZ73W9RdwDtBQ0tffxNahJfIR8QukGTOP//3BU2w==
+X-Received: by 2002:a05:6102:918:b0:738:8022:d74c with SMTP id ada2fe7eead31-7503ffae2e1mr1808103137.15.1785021385687;
+        Sat, 25 Jul 2026 16:16:25 -0700 (PDT)
+Received: from archlinux ([2804:14d:90a8:44dd:7952:7d5f:7f15:1990])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97774f12690sm2605004241.12.2026.07.25.16.16.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Jul 2026 16:16:24 -0700 (PDT)
+Date: Sat, 25 Jul 2026 20:16:15 -0300
+From: Gustavo Silva <gustavograzs@gmail.com>
+To: Pan Chuang <panchuang@vivo.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Maxwell Doose <m32285159@gmail.com>, 
+	Tomasz Duszynski <tduszyns@gmail.com>, Siratul Islam <email@sirat.me>, 
+	Matti Vaittinen <mazziesaccount@gmail.com>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 03/13] iio: chemical: Remove redundant
+ dev_err()/dev_err_probe()
+Message-ID: <amVAkbdREpNVZahV@archlinux>
+References: <20260724030524.607185-1-panchuang@vivo.com>
+ <20260724030524.607185-4-panchuang@vivo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260724030524.607185-4-panchuang@vivo.com>
 
-On Wed, 22 Jul 2026 16:50:24 +0100
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Fri, Jul 24, 2026 at 11:03:38AM +0800, Pan Chuang wrote:
+> Since commit
+> 55b48e23f5c4 ("genirq/devres: Add error handling in devm_request_*_irq()"),
+> devm_request_irq() and devm_request_threaded_irq() automatically log
+> detailed error messages on failure. Remove the now-redundant
+> driver-specific dev_err() and dev_err_probe() calls.
 > 
-> Expose frequency_source, phase_source and amplitude_source attributes in
-> debugfs. Those indicate from which channel the specific DDS parameter is
-> being sourced by returning its label. The implementation follows the
-> priority table found in the datasheet.
+> Signed-off-by: Pan Chuang <panchuang@vivo.com>
+> ---
+>  drivers/iio/chemical/ccs811.c      | 4 +---
+>  drivers/iio/chemical/ens160_core.c | 2 +-
+>  drivers/iio/chemical/scd30_core.c  | 2 +-
+>  3 files changed, 3 insertions(+), 5 deletions(-)
 > 
-For this one sashiko raised some questions and made me wonder how this
-actually works given it is using active_scan_masks and so far we don't
-have any buffered support in the driver.  My guess is you backported
-this from on top of some other code that you haven't posted yet.
 
-Please have another check that this all works with just the series
-posted.
-
-Note that you will need to claim buffer mode successfully to mess
-around with that in paths that aren't inherently only used in buffered
-mode.
-
-
-
-> @@ -2078,6 +2092,171 @@ static int ad9910_setup(struct device *dev, struct ad9910_state *st,
->  	return ad9910_io_update(st);
->  }
->  
-> +static inline const char *ad9910_frequency_source_get(struct iio_dev *indio_dev)
-> +{
-> +	struct ad9910_state *st = iio_priv(indio_dev);
-> +	bool ram_en, mode_en;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	/* RAM enabled and data destination is frequency */
-> +	ram_en = AD9910_RAM_ENABLED(st);
-> +	if (ram_en && AD9910_DEST_FREQUENCY ==
-> +		      FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
-> +				st->reg[AD9910_REG_CFR1].val32))
-> +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-> +
-> +	/* DRG enabled and data destination is frequency */
-> +	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
-> +			    st->reg[AD9910_REG_CFR2].val32);
-> +	if (mode_en && AD9910_DEST_FREQUENCY ==
-> +		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
-> +				 st->reg[AD9910_REG_CFR2].val32))
-> +		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_FREQ];
-> +
-> +	/* Parallel data port enabled and data destination is frequency */
-> +	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
-> +			    st->reg[AD9910_REG_CFR2].val32);
-> +	if (mode_en && indio_dev->active_scan_mask &&
-
-active_scan_mask is only set on a call to iio_enable_buffers.
-So what is this checking?  I guess today it will always fail as
-active_scan_mask is NULL.  Once that is in use, it will be racy
-however, so you'll need to claim buffered mode (or fail in which
-case the null check isn't needed).  That claim will hold it
-in a particular state - under the hood it is taking mlock
-which is what sashiko suggests - that is just meant to be opaque
-to drivers so do it with an explicit attempt to claim buffered mode.
-
-
-> +	    test_bit(AD9910_SCAN_IDX_FREQ, indio_dev->active_scan_mask))
-> +		return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_FREQ];
-> +
-> +	/* FTW: RAM enabled and data destination is phase, amplitude, or polar */
-> +	if (ram_en)
-> +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
-> +
-> +	/* single tone profiles */
-> +	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
-> +}
+Reviewed-by: Gustavo Silva <gustavograzs@gmail.com> # for ens160
