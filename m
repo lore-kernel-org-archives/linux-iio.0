@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 790D8389E07;
-	Sun, 26 Jul 2026 11:28:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACE639D3DA;
+	Sun, 26 Jul 2026 11:31:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785065306; cv=none; b=t9wdLIqhYC5XSqyow0cMcCf8UCWtuwo8OiTAbykaZwaeXkqv3jh0sKVPyaOmMOR9AGY0q7qlkkHvfvyDEqj/lUS67AcM3V5+d9EMLQSJHJxBjL7KZf7dShoVd2+zcSFp1p5Ujz6KGQyHxbU2RxBrSOo7nOWG/Y9vcyvzfsIoAec=
+	t=1785065481; cv=none; b=udIKKmFyyGRCfNK6H0cKuvkxSeLVr/DwHZx8+8mBVKQocf0cjiIhYx0idTVkEETw2I5I81EtRt+TSkRrY2Mtwr3cEuoth+aMwEYnzMcWVIZJJ9JFw44XTZLMKBH/cNizKhHCfNxtEwKx1EHaACsH/EAFdFp8etNFh3jDnlW0OpU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785065306; c=relaxed/simple;
-	bh=3klxKVt7lIDxS7MNuIpdR367hCaWLHDKYYB936nr3qM=;
+	s=arc-20240116; t=1785065481; c=relaxed/simple;
+	bh=0t8LF0Xm4T22bcWgrvyLapHz3eXrkY+Z3oxgYOwXniQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=q5Rq+ibbE23U7ijNdtFXYT+jd45bS2MMIL80p4/6oLpu1VuEVmcu9y/0nEIrgnT2PqkkqdgKV4aL5QhQo1VKXqlUMzyahA+iZD7jA72wjSm7xRzrz2PvRgtEas6DxBs1SAfNXRX0wf3UCJAJGwBh9TJFVWfl1F6tPiI8b2wdGAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=onjxruKK; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=N0ONIwBU1OcO8PNUI8qx4B2dL+Xi8gwdBcUllRXwTh1O/gukNdAb96CtOZyBkBI3lyFijUtTPrmDJtLElEe/NnI+4yETHp1VoIfvX2lmK2G3kqaCl+5xSVnSghAX2hAPOWvukofnoVJvjyk1m+q8CMAYeSw/Goaa3Qy13VJTFhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NBKbhNnX; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="onjxruKK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15791F000E9;
-	Sun, 26 Jul 2026 11:28:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NBKbhNnX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACF41F000E9;
+	Sun, 26 Jul 2026 11:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785065301;
-	bh=02oTvQxJHyCBY/K1DJxUpUMbUBKPseOdjqQn6HWC8Bo=;
+	s=k20260515; t=1785065480;
+	bh=lrIhWNU4CHoiY2rjDv8WhlXEC1zWKZDlvhZWApLgC8A=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=onjxruKK+TtLCEm3KmZv1g0M095cfQwA55rRvV5q9+b9D5+4/OTzw0xpnPN2S7Sm1
-	 gVcqRyrdU8YD0LZJYh0akx6j8SbufloOkPloinUKIWX7KAzuAQ6WTesi00iw2Byk43
-	 PN5dzZZlurYh5QzH12QcH1+SJnJ36qTCVPiEuH+aERR9fnMPIUcXOFha2CKUccEgD3
-	 hY8zqJzKH9DlpQfToO08YSCEIf/D5aeznzWiAs0abcY0JrQfwZsrXNU04dt6qnRhs3
-	 xn99DBDeH2IdJLoGaAlanJ2ElFWXjt5H29raOnModZCaPXPkGsh5jstPfx7P/zjvaj
-	 B6oa7/BYVGg7w==
-Message-ID: <01a34500-3cce-4934-93ed-59598718aa5e@kernel.org>
-Date: Sun, 26 Jul 2026 13:28:14 +0200
+	b=NBKbhNnXT9N7TGZoN3W/XH0ToOnP/uMxGuVF1yPv+0xIayn2t3v6hHwIG0FbUuecs
+	 V/kFYXEUFcXiRn0lfFWD026s0Vsu8LeHfJWGaCFySUCTfc5AobWQ3ce5V8FB3h4CY1
+	 KJ6wGzKg9N4sP75fcBQn+S9aQSpSjKaETlhbd28Lc8SvwIFnW40zl37ijqkFt4wfyt
+	 asZH2NwiDE0cd8LEi6RJ7jFpAmX04zr2S1KkR+M+GPLVoToUPTBV8lvrSFsuANpmRz
+	 QfHSdL0Pu2PQeFumpiv1wDu5WV3sJhitiUAzjssCdXZ1UDb2Ms3zZzTE+zaf1af7lQ
+	 kqfwPHGBqgWpg==
+Message-ID: <2d168bc5-1410-4771-923d-229041913c88@kernel.org>
+Date: Sun, 26 Jul 2026 13:31:16 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,16 +35,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: iio: dac: adi,ad5791: fix 'referance'
- spelling
-To: "shaikh.kamal" <shaikhkamal2012@gmail.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+Subject: Re: [PATCH] MAINTAINERS: add mailing list to veml3328 entry
+To: Jonathan Cameron <jic23@kernel.org>,
+ Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-References: <20260726055609.18326-1-shaikhkamal2012@gmail.com>
+References: <20260721-veml3328-maitainers-v1-1-8166db77c79c@gmail.com>
+ <20260724234301.64660df6@jic23-huawei>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,19 +88,27 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260726055609.18326-1-shaikhkamal2012@gmail.com>
+In-Reply-To: <20260724234301.64660df6@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 26/07/2026 07:56, shaikh.kamal wrote:
-> Fix spelling error reported by codespell: referance -> reference.
-> No functional change.
+On 25/07/2026 00:43, Jonathan Cameron wrote:
+> On Tue, 21 Jul 2026 16:28:19 +0200
+> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 > 
-> Signed-off-by: shaikh.kamal <shaikhkamal2012@gmail.com>
-> ---
->  Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml | 4 ++--
+>> Add the IIO mailing list to VEML3328 entry in MAINTAINERS, as it is
+>> standard to do so.
+>>
+>> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Hmm. ok I guess, but I can't say I'm enthusiastic about this sort of
+> entry by entry update.
+> 
 
-Slow down, same comments.
+No, this is just wrong, please don't do this. The subsystem defines the
+list and tree. Individual drivers should not duplicate the information.
+
+This is just not only pointless churn but ACTUAL information
+duplication, which is never a positive thing.
 
 Best regards,
 Krzysztof
