@@ -1,48 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE7235C6B8;
-	Sun, 26 Jul 2026 18:18:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F24F3D902D;
+	Sun, 26 Jul 2026 18:22:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785089917; cv=none; b=B7CHuYD64rWI5F4TvQEC/UBePYlvFjyyHlXHiOapLbWyLSymMxmiVIjRS+LdTD50KzJzFmenOnAH6/0NAzXJW5KSOriea1qEKZEchPOVwaiHBmAGIxhhGGrxI8wcPPIGKVTJc9fI1kpzmRKtTHNIxseCpI1eRZgxaGqj+YA8biY=
+	t=1785090163; cv=none; b=lE3WhHqoEuEsnONKlceO0z/YIO8iUrHAjCIzLjg32fENpJ39tFoRvXOi3FYUtawUiHpbw4+y2HwL8uUPFhJ7plYZxgoyLp67RLvq/YyF2v/m5eDBoypLiHa/qjQHxVNBkT8pGS/xvsZdIKPtXJljH5+w5zHvhkjS8tFuOdE2/P8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785089917; c=relaxed/simple;
-	bh=hS4vXEt2REFFV4CR73elSBd3YHj0n/4ooyCfMyyWy/g=;
+	s=arc-20240116; t=1785090163; c=relaxed/simple;
+	bh=sycNYN/Zpx3AngXNEUMy/Pghd9PMrHie6smcGtpwpRU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bM27F5GmheJwzPE/wmKXm8rxPISvxO2SifXNaBGnPyyuw+as5Ih+X+GfEQsZfDy3QrXPYOif/vO6fAPUJuWisbMDELQGUO3pyJ83g02h17jPhNnzP+gHwv/2BAXTJHhq2VNG6/kDjJhij6hQaUajWk9fg19Fdhi1PaPZ6OdPMCE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U6nFur2Y; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=h5der4xwwcyQCzme7PPIDOC3EbpEs7Fch6qXB71NGi9TaarQ2xvRxUaxhvaaREp41mIO58BS6wrCyWczdgASIhZUidIIW81q19Zthx6Uf01FR7cbW341+PRZV6hdT7YnQcLgjoACQF5CTCxUUfcC8jq+ARmK0kjH4GaowCffHWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TMtOOsuv; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U6nFur2Y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8567F1F000E9;
-	Sun, 26 Jul 2026 18:18:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TMtOOsuv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D021F000E9;
+	Sun, 26 Jul 2026 18:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785089915;
-	bh=qnOb8plgpvZSaUyBKqfLqxUcBwY3vZcTa0Qh/IwhO/A=;
+	s=k20260515; t=1785090162;
+	bh=Xhf/Ffzu3Uysc2lY5M8EO00iavAGYcNy+7Efwn32KzM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=U6nFur2Ym5UOalMtI8nk00cxcH2NzYdvNhTEVK1SDFmc0nmbvIYn/TQc39RSAccjG
-	 b6cbC/EwsedwWAzHiYT8OgwmqvA1cY5RT2C+r8lW7eF5aHp9Ch0kmBp6hyuq6XD8k5
-	 /Z4jxil155mv2nTgujv917vDqxE8emjtm183KXqTi8DhQxt3RzUMpKYwjCaXuzsi+6
-	 pHXLXAgX9/hSyOpSJwDabxF1bz+awSZfOEJJPdWLUytezjOEod0/kB/lw5f26Vg/AW
-	 gMhj+i9lJGghV03zbK/aU1j0YcFsHNcIdyhcwICqzrZkfOJ8jlPlZfvATYEve9A3jw
-	 Rlr2v989c8C+g==
-Date: Sun, 26 Jul 2026 19:18:33 +0100
+	b=TMtOOsuvCOamrpusRFkIWQEaQKP1uIKV94tXtoM33mwtFwZkgPtGK88fMM10qnTMY
+	 1gwjVB0ArwthsmFB8GH8z58yZ90tltSTNEamZUM2e4CWRCs6hB4AjHEstcm4t0HfJr
+	 MujAr+8mtaW4a/vJn7VVbFUYH0MgTseozLvv4wxirCJvdTX1eYSmcnqwsLEvoHAzoY
+	 LQEr/SXkmzqxom2lF18d0Px8OzRn4AOw5aMVa9EUN1fKbH2VLPBw16svlLLldCo93f
+	 93MerShIAgr+bJI1rZNjEG2Xd3sp4yxhAB3xHmWX5iPGevKJOBb7/BAKF550GQM8O2
+	 QfGRc5Djii6jw==
+Date: Sun, 26 Jul 2026 19:22:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Siratul Islam" <siratul.islam@linux.dev>
-Cc: "Lukas" <lukas.metz@gmx.net>, "David Lechner" <dlechner@baylibre.com>,
- "Nuno =?UTF-8?B?U8Oh?=" <nuno.sa@analog.com>, "Andy Shevchenko"
- <andy@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: dac: dac8163: Add driver for DAC8163
-Message-ID: <20260726191833.67dcfac2@jic23-huawei>
-In-Reply-To: <6b3f1b6188afbb8ebf9576274894b5ed292eca92@linux.dev>
-References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
-	<20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
-	<e84c4e047e104cca9b88dda791997ceecba1204c.camel@linux.dev>
-	<amYVZtbxu4fjhBkx@berta-MS-7693>
-	<6b3f1b6188afbb8ebf9576274894b5ed292eca92@linux.dev>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, Andy Shevchenko
+ <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: add mailing list to veml3328 entry
+Message-ID: <20260726192237.17cd42ef@jic23-huawei>
+In-Reply-To: <2d168bc5-1410-4771-923d-229041913c88@kernel.org>
+References: <20260721-veml3328-maitainers-v1-1-8166db77c79c@gmail.com>
+	<20260724234301.64660df6@jic23-huawei>
+	<2d168bc5-1410-4771-923d-229041913c88@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,76 +49,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 26 Jul 2026 17:01:51 +0000
-"Siratul Islam" <siratul.islam@linux.dev> wrote:
+On Sun, 26 Jul 2026 13:31:16 +0200
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> July 26, 2026 at 8:10 PM, "Lukas" <lukas.metz@gmx.net mailto:lukas.metz@gmx.net?to=%22Lukas%22%20%3Clukas.metz%40gmx.net%3E > wrote:
-> 
-> 
-> > 
-> > On Wed, Jul 08, 2026 at 09:58:13PM +0600, Siratul Islam wrote:
+> On 25/07/2026 00:43, Jonathan Cameron wrote:
+> > On Tue, 21 Jul 2026 16:28:19 +0200
+> > Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 > >   
-> > > 
-> > > +
-> > >  + const struct reg_default reg_defaults[] = {
-> > >  + {
-> > >  + .reg = CMD_SET(CMD_WRITE_UPDATE, 0),
-> > >  + .def = info->default_output_reg,
-> > >  + },
-> > >  + {
-> > >  + .reg = CMD_SET(CMD_WRITE_UPDATE, 1),
-> > >  + .def = info->default_output_reg,
-> > >  + },
-> > >  + };
-> > >  +
-> > >  + const struct regmap_config regmap_config = {
-> > >  + .reg_bits = 8,
-> > >  + .val_bits = 16,
-> > >  +
-> > >  + .max_register = CMD_REF << 3,
-> > >  + .cache_type = REGCACHE_MAPLE,
-> > >  +
-> > >  + .volatile_reg = dac8163_reg_false,
-> > >  +
-> > >  + .reg_defaults = reg_defaults,
-> > >  + .num_reg_defaults = ARRAY_SIZE(reg_defaults),
-> > >  + };
-> > >  Why are these defined inside probe? Should be defined outside the function.
-> > >   
-> > The default values after reset are different for the compatible devices
-> > (0 for the dacxxx2 devices and mid-scale for the dacxxx3 devices).
-> > So these are runtime dependent. The alternative would be to have two
-> > regmap_configs for the two device types and add these to the chip_info.
-> > Or do you have another suggestion?  
-> You don't need two regmap_configs. The way I would do it is, move the "regmap_config" out of probe and name it something 
-> like "dac8563_regmap_config". And in chip info struct, replace "default_output_reg" with "reg_defaults[]". 
-> Then for each "dacxxxx_chip_info" define the appropriate "reg_defaults" configuration.
+> >> Add the IIO mailing list to VEML3328 entry in MAINTAINERS, as it is
+> >> standard to do so.
+> >>
+> >> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>  
+> > Hmm. ok I guess, but I can't say I'm enthusiastic about this sort of
+> > entry by entry update.
+> >   
 > 
-> This way you can do
+> No, this is just wrong, please don't do this. The subsystem defines the
+> list and tree. Individual drivers should not duplicate the information.
 > 
-> struct regmap_config regmap_config = dac8563_regmap_config;
-> ...
-> regmap_config.reg_defaults = info->reg_defaults;
-> regmap_config.num_reg_defaults = ARRAY_SIZE(info->reg_defaults);
+> This is just not only pointless churn but ACTUAL information
+> duplication, which is never a positive thing.
 > 
-> A bit of work, but it would ensure most of the work is done at compile time,
-> and we avoid reconstructing these sructs everytime probe runs.
+I'll drop this, though I think there are arguments both ways on simplicity
+vs duplication of info.  Anyhow, I also don't want to see mass patches
+removing these lists from subsystem entries without a clear consensus on that
+being worth the churn.
 
-As this has come up, I'd favour just having two static const regmap_config structures
-and picking between them.  Obviously I haven't checked but I'd guess that any
-overhead of extra text data for those is not that different to the extra code of the current
-approach.  Generally if you can make this sort of thing data rather than code it
-is a net gain.
-
-Jonathan
-
-> 
-> > 
-> > Best regards
-> > 
-> > Lukas
-> >  
-> --
 > Best regards,
-> Sirat
+> Krzysztof
 
