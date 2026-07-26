@@ -1,41 +1,77 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44EA03793A5;
-	Sun, 26 Jul 2026 19:50:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53C0379987;
+	Sun, 26 Jul 2026 19:59:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785095436; cv=none; b=k+ezZCBNl9kS0vTU4k8eyVRxei4m/eP9T7Rkux2c4a4vtduQqbcQgUOrlLWquN/RkYE2eXLyVOZX7KjuaJTBDIQqyNx12qOOrTkKUEPq+gJEEz6OrrRiAAR/8wrSmrmPJVvxUnlcKTDtXJOa3i203tJRLLC+DqnuJXCulLDsG4c=
+	t=1785095995; cv=none; b=sHAQ7y+SAyxHytSLUshKbV7Kcj2B6yftMZsUmGDR/KA8ZOqWyi++qhR2RKGCYkN9AR4DtqRgm6VorWc5ua37B4o56MXIPk267pAc00tyqK0t8HZgO4Bp7cVyqAvKVVBFjcqLof6tgUDMrTmz+vFv3ekOqZqrMDMlty/GDd/97ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785095436; c=relaxed/simple;
-	bh=qqqLP6mcck1TJAfeTdOYs7Fl0wukgct+utcOrhrXKZE=;
+	s=arc-20240116; t=1785095995; c=relaxed/simple;
+	bh=hUZ5ps5AQ1e1xGcqJrHC0K7BmjIos5zDwd6o7fmPPlg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pfi4A1OPmhcAVhLMB2yXP6m/+SWPjUYpE3nOXFMk44FN6YwpQeEpX09JA5Yb2h1behZkQPojqp+3D4gNl1FX7+GHys/xGZF/qJEQgupqbheAzl+wXoCm7O+nzotA639NYI3iVG3RHhhf3gSJGRWxonk5bOkDz7gR1IWDpkx8YUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GCtop4Vt; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=RfCabgM/5FEaPwD28keP0mCxj/Ibaj3SzBB1FT4bM5BxWod2Ozp9VQoQUHGUuKZoW+jbBpkft/Bl9lvoUZ5fouCev+3W9IWjVPqXUzSlVtiHMryJ8jGe42mGVqG1yiVxjExZhUDlcKmA8GWblEq9N3PwH/KB8RwhhzV6y7h0wK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bqpHW46m; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GCtop4Vt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D67471F000E9;
-	Sun, 26 Jul 2026 19:50:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bqpHW46m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B531F000E9;
+	Sun, 26 Jul 2026 19:59:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785095435;
-	bh=CLopO89B8ZpHTR2+aNYOFR55eleY8de8BKw9FZhqcFI=;
+	s=k20260515; t=1785095993;
+	bh=FLy+HtY0DJaJQCklCIN73S4dGy4dcZGkDMsgmHLYuH0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GCtop4VtI7VFZobsU+bL/SaE+eX+v7KBedTRCu6Lz0VgIN7NopROfg6zmdYidFqE5
-	 j1HB6aFJS9U+FBvHyRv+EFP1PSXZ0mq+E3TFB65l+yNoN5+PvHJIOG6QsG4Gwxse17
-	 Uy619tolGmoYpvK45w+fTdyc/VNfHNOVj6ka4c/nixsS9IKuQ9b43S3Al63QGU0gKe
-	 6JLelSWxzxMVeZmUSXNeweppsTL9d4kOEpPeKhyuKHolDpJX9TRayOz6Z9WKgKp9KX
-	 f8//+5WuQ0VF33LTGQO7n6SVWwJEZfIju1dIlANl4zfbNsZTtb4mC7igkAdSWBBkT4
-	 a4nYAikCFDhiQ==
-Date: Sun, 26 Jul 2026 20:50:30 +0100
+	b=bqpHW46m6PRsQ9e/fAc/X2YDO8Ta6fGVDJH2aXH0P7UWMXEwRyRR050ohCF2DxuBR
+	 Ys1JV9ACONuenvvQ5mtS60/vyFG+UjhghkDhkEMFVeRwaRNBE62l2D2bnX05IBsQpG
+	 KX4uedObZFf7EE8KE17mKGdJfEJsVLMfj40xp33b3FmtuYPhkvUsC3bwsjn/9yFqVR
+	 2o6ivqq5CJ998mNaJfn90CgLyd5+NHTZO90tePgsS58rxW1NWQv6TM2xS7/a1ZtkGO
+	 ZxpGiiUBcJfdaEmKQihgDX8uaEE0c0dr0ij9kzkY7ir6kDyA5gaRyNaYaziBtfbnHv
+	 vCYbXtNjgeL5w==
+Date: Sun, 26 Jul 2026 20:59:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: kr494167@gmail.com
-Cc: azpijr@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: apds9999: register standby action after
- enabling device
-Message-ID: <20260726205030.4ca33bb8@jic23-huawei>
-In-Reply-To: <20260724025802.13499-1-kr494167@gmail.com>
-References: <20260724025802.13499-1-kr494167@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Pan Chuang <panchuang@vivo.com>, Puranjay Mohan <puranjay@kernel.org>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Petre Rodan <petre.rodan@subdimension.ro>, Dan Robertson
+ <dan@dlrobertson.com>, Matti Vaittinen <mazziesaccount@gmail.com>, Gustavo
+ Silva <gustavograzs@gmail.com>, Maxwell Doose <m32285159@gmail.com>, Tomasz
+ Duszynski <tduszyns@gmail.com>, Nishant Malpani <nish.malpani25@gmail.com>,
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>, Li peiyu
+ <579lpy@gmail.com>, Lorenzo Bianconi <lorenzo@kernel.org>, Alex Lanzano
+ <lanzano.alex@gmail.com>, Jagath Jog J <jagathjog1996@gmail.com>, Mikael
+ Gonella-Bolduc <m.gonella.bolduc@gmail.com>, Subhajit Ghosh
+ <subhajit.ghosh@tweaklogic.com>, Mudit Sharma <muditsharma.info@gmail.com>,
+ Kevin Tsai <ktsai@capellamicro.com>, Linus Walleij <linusw@kernel.org>,
+ Anshul Dalal <anshulusr@gmail.com>, Song Qiang
+ <songqiang1304521@gmail.com>, Andreas Klinger <ak@it-klinger.de>, "Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, Siratul Islam <email@sirat.me>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, Bjorn Helgaas
+ <bhelgaas@google.com>, Danilo Krummrich <dakr@kernel.org>, Takashi Sakamoto
+ <o-takashi@sakamocchi.jp>, Xichao Zhao <zhao.xichao@vivo.com>, Waqar Hameed
+ <waqar.hameed@axis.com>, Sakari Ailus <sakari.ailus@linux.intel.com>,
+ Marcus Folkesson <marcus.folkesson@gmail.com>, Miao Li <limiao@kylinos.cn>,
+ Dixit Parmar <dixitparmar19@gmail.com>, Andrew Davis <afd@ti.com>, Kurt
+ Borja <kuurtb@gmail.com>, Shrikant Raskar <raskar.shree97@gmail.com>, Chu
+ Guangqing <chuguangqing@inspur.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, "Rafael G. Dias"
+ <rafael.guimaraes.dias@usp.br>, Svyatoslav Ryhel <clamor95@gmail.com>, Shi
+ Hao <i.shihao.999@gmail.com>, Colin Ian King <colin.i.king@gmail.com>,
+ Salah Triki <salah.triki@gmail.com>, Yury Norov <ynorov@nvidia.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Yash Suthar
+ <yashsuthar983@gmail.com>, Achim Gratz <Achim.Gratz@Stromeko.DE>, Yasin Lee
+ <yasin.lee.x@gmail.com>, linux-iio@vger.kernel.org (open list:ADXL355
+ THREE-AXIS DIGITAL ACCELEROMETER DRIVER), linux@analog.com (open
+ list:ANALOG DEVICES INC IIO DRIVERS), linux-kernel@vger.kernel.org (open
+ list)
+Subject: Re: [PATCH v2 00/13] iio: Remove redundant error messages on IRQ
+ request failure
+Message-ID: <20260726205941.40f6eade@jic23-huawei>
+In-Reply-To: <20260724122701.0000156f@gmail.com>
+References: <20260724030524.607185-1-panchuang@vivo.com>
+	<20260724122701.0000156f@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,71 +82,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Jul 2026 08:28:02 +0530
-kr494167@gmail.com wrote:
+On Fri, 24 Jul 2026 12:27:01 +0200
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> From: Surendra Singh Chouhan <kr494167@gmail.com>
+> On Fri, 24 Jul 2026 11:03:35 +0800
+> Pan Chuang <panchuang@vivo.com> wrote:
 > 
-> apds9999_init() called devm_add_action_or_reset() at the start
-> of the function, before register configuration and before enabling the
-> device via APDS9999_MAIN_CTRL_LS_EN.
+> > Commit 55b48e23f5c4 ("genirq/devres: Add error handling in devm_request_*_irq()")
+> > added automatic error logging to devm_request_threaded_irq() and
+> > devm_request_any_context_irq() via the new devm_request_result() helper,
+> > which prints device name, IRQ number, handler functions, and error code
+> > on failure.
+> > 
+> > Since devm_request_irq() is a static inline wrapper around
+> > devm_request_threaded_irq(), it also benefits from this
+> > automatic logging.
+> > 
+> > Remove the now-redundant dev_err() and dev_err_probe() calls
+> > in iio drivers that follow these devm_request_*_irq()
+> > functions, as the core now provides more detailed diagnostic
+> > information on failure.
+> > 
+> > v2:
+> > - Rewrap commit description to one line.
+> > - Drop redundant "!= 0" and "< 0" comparisons.
+> >   
 > 
-> If register initialization failed during apds9999_init() (e.g. SMBus
-> write failures on LS_MEAS_RATE or LS_GAIN), devm_add_action_or_reset()
-> immediately triggered apds9999_standby(), writing to the control
-> register on a device that failed initialization and was never enabled.
+> Okay, code-wise it's fine, but rewrap your commit messages to 72
+> characters per line. 
+
+That would involve breaking the commit reference across lines.
+I asked that the author not do that on the previous version because
+it'll make it harder to search for if anyone ever wants to do so.
+
+Also submitting patches suggests 75 chars. I'm not sure where the 72
+comes from, though it is often quoted and another bit of submitting
+patches does say 70 to 75.
+
+
+
+> Feel free to apply my tag for the whole series:
 > 
-> Fix this by registering devm_add_action_or_reset() only after
-> APDS9999_MAIN_CTRL_LS_EN is successfully written to the control
-> register.
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 > 
-> Fixes: 5f9363e52300 ("iio: light: add support for APDS9999 sensor")
-
-Given the side effect of this is write that is harmless, I don't
-think the fixes tag is justified. 
-
-Having said that this is a logical improvement.
-
-I would like Jose to have taken a look though before I consider picking
-it up so let us leave it on list for now.
-
-Thanks,
-
-Jonathan
-
-> Signed-off-by: Surendra Singh Chouhan <kr494167@gmail.com>
-> ---
->  drivers/iio/light/apds9999.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+> Also, I was scratching my head at how enormous the To: list is, given
+> these changes are only in IIO, but I assume you also added emails of
+> the people who authored the latest changes on a file that get_maintainer
+> outputs - there is no need to do this. Tools like b4 can automatically
+> add (correct) recipients based on get_maintainer.pl
 > 
-> diff --git a/drivers/iio/light/apds9999.c b/drivers/iio/light/apds9999.c
-> index 43fa9992c9c2..62620c4a2fbc 100644
-> --- a/drivers/iio/light/apds9999.c
-> +++ b/drivers/iio/light/apds9999.c
-> @@ -100,10 +100,6 @@ static int apds9999_init(struct apds9999_data *data)
->  	u8 regval;
->  	int ret;
->  
-> -	ret = devm_add_action_or_reset(dev, apds9999_standby, client);
-> -	if (ret)
-> -		return ret;
-> -
->  	guard(mutex)(&data->lock);
->  
->  	regval = FIELD_PREP(APDS9999_LS_RES_MASK, APDS9999_RES_18BIT) |
-> @@ -121,8 +117,12 @@ static int apds9999_init(struct apds9999_data *data)
->  		return ret;
->  	data->als_gain_idx = APDS9999_GAIN_3X;
->  
-> -	return i2c_smbus_write_byte_data(client, APDS9999_REG_MAIN_CTRL,
-> -					 APDS9999_MAIN_CTRL_LS_EN);
-> +	ret = i2c_smbus_write_byte_data(client, APDS9999_REG_MAIN_CTRL,
-> +					APDS9999_MAIN_CTRL_LS_EN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_add_action_or_reset(dev, apds9999_standby, client);
->  }
->  
->  static int apds9999_read_channel(struct apds9999_data *data, u8 reg,
 
