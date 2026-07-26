@@ -1,130 +1,157 @@
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
+Received: from pdx-out-004.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-004.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.246.77.92])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30C011E1DE5;
-	Sun, 26 Jul 2026 09:59:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA5701DF75A;
+	Sun, 26 Jul 2026 10:17:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.246.77.92
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785059969; cv=none; b=pAvajMB7gHwxMGJjnvKxN1vSHUS0TP+jXuxLADoLA7O85Kc24yj8n8+cjIpChx2SJm/DHSl+tLMayLZ5YWoi8yR8+ZvKo3F/k5zlxi9cR1iWeLajbScE4i91sb9gmA5TegWzK2Asyhr7WciBEmvXBst7KLjgGXLB0s9Brysa8qE=
+	t=1785061078; cv=none; b=OgXPoGvGdH2dMOp4JhPSZNMOYD5u1lp6dQDsbsSSH0OLCIdSrlgbe6Z5GJM3zIoF+hBDpHPr5YJDJqa9tOvb9hnnGRfBcMTVDLQERGNpxwUMs6UxmwV+/Gi9xZAJxTy9jkc+3XEssMeMdbQ/Ng0DG3T94Yt8v5CM5c0Odx2+VhU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785059969; c=relaxed/simple;
-	bh=tvcKytaHRkT6941rbzRwqc1wJE8yqzbnu0SBrJTW1Ko=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ikcYMx5TJ/jTBbJN8Kq4xeAhNj2MNJyno9K8g8Qoo8UsfwItege/bkZirQosJJ8QgxKBNuU4Qpex+3ImjpjMjyuUaRJOTxexN92UT+VsX0eHI54vfjC9b/HUdAlZs4ruJdvh/tYrNTTXafkgLrGH3dM4syM5gmgz9crUlnYYMb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=A+V6Eltj; arc=none smtp.client-ip=95.215.58.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1785061078; c=relaxed/simple;
+	bh=allb5KNeRefH9BMm4RvnlhgzOZPGgF0M58H36b7ZsKI=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=rkHrUwhp1ojg8pM9IN5MjsO2lIx2XY9uOJirV6I/6EQ5+3Ym2u97Gi16+2a5NsP8LhTcCIsFAPVIc4prnAqU6oq8n72VeRT2jOvgeckCffp7J3tN42qBaJ3XgoWkIFYPRf4fWGC5xwsNbIxRACjg1nuZRcEeDGJMoz/uR0B8Mzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=F+3+hNmV; arc=none smtp.client-ip=44.246.77.92
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="A+V6Eltj"
-Message-ID: <196a781d5ff487fb890abc8c3ed2ae07f8614b38.camel@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1785059964;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=tvcKytaHRkT6941rbzRwqc1wJE8yqzbnu0SBrJTW1Ko=;
-	b=A+V6Eltj9T2DU0S7tdXl/SLh6KWvh2o0KMHm2G1VfJvy/IOciOw8K3yxR2SECGNHLk51Wu
-	C6RNgRdfTLyKJjhigPGGToPbtX0xURTvIWm1d/ldLB4EdDpFpqjLGcgpN9X/JhpLQMIgyN
-	MtqztQ1ydGkhcMvGG6VShFJlSlbUyCU=
-Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: add maxim,max40080
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Siratul Islam <siratul.islam@linux.dev>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com, 
-	linux@roeck-us.net, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, 	dlechner@baylibre.com, ciprian.hegbeli@analog.com,
- u.kleine-koenig@baylibre.com
-Date: Sun, 26 Jul 2026 15:59:09 +0600
-In-Reply-To: <20260726003152.1d9f36d5@jic23-huawei>
-References: <20260723065036.2683075-1-stefan.popa@analog.com>
-		<20260723065036.2683075-2-stefan.popa@analog.com>
-		<a79b2fd8d08d4594bbb472b005534d7c91d86e49.camel@linux.dev>
-	 <20260726003152.1d9f36d5@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="F+3+hNmV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
+  t=1785061076; x=1816597076;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NOzRwXLbdThqlskEtxfEsqrmGFxHPHNE59ZV5xlBpwA=;
+  b=F+3+hNmVcKWfyNGeqHlsTRQ4bAz6NCwMXKO64eJjoyOTBg6RAr3cGcIC
+   oVjzDPZaE893i3Erc6nNLnLZK0n/t3Dpv1Y9y9fK6Lpu3quwwGZjz+REE
+   7Tko4cI9/XFx3RgkvrYVw9MPvXi0TzhwiITG0+yHyffBMm6QPygBR8DdV
+   ssP6JNjey7EDS5J1p6VcJZe0A2KWNOZy4Cxpls2Z5QcVFQSXJshARg1vc
+   fOTAPAdziTXpAuDOBbwF8Xm++e18t7IT0kF82K+kGMM7doBwh9n+zzlLs
+   xftRdGW/NEFs42GDi3nLg8fS3gEHxn1fxPVWd8cyNttER1TGA/NMKj82/
+   Q==;
+X-CSE-ConnectionGUID: DThI+WwJRpi0A7aplxF1bg==
+X-CSE-MsgGUID: ibitYszJRrO3uyoJj7NbUQ==
+X-IronPort-AV: E=Sophos;i="6.25,186,1779148800"; 
+   d="scan'208";a="24362879"
+Received: from ip-10-5-9-48.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.9.48])
+  by internal-pdx-out-004.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2026 10:17:53 +0000
+Received: from EX19MTAUWA002.ant.amazon.com [205.251.233.178:2757]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.32.26:2525] with esmtp (Farcaster)
+ id 4c7151db-74cc-41dd-8f7c-cde8848a34bf; Sun, 26 Jul 2026 10:17:53 +0000 (UTC)
+X-Farcaster-Flow-ID: 4c7151db-74cc-41dd-8f7c-cde8848a34bf
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.43;
+ Sun, 26 Jul 2026 10:17:53 +0000
+Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
+ (172.19.116.181) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.45; Sun, 26 Jul 2026
+ 10:17:48 +0000
+From: Eliav Farber <farbere@amazon.com>
+To: <rafael@kernel.org>, <tony.luck@intel.com>, <bp@alien8.de>,
+	<guohanjun@huawei.com>, <mchehab@kernel.org>, <xueshuai@linux.alibaba.com>,
+	<lenb@kernel.org>, <laurent.pinchart@ideasonboard.com>, <linusw@kernel.org>,
+	<brgl@kernel.org>, <orsonzhai@gmail.com>, <baolin.wang@linux.alibaba.com>,
+	<zhang.lyra@gmail.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <dmitry.torokhov@gmail.com>,
+	<hansg@kernel.org>, <ilpo.jarvinen@linux.intel.com>, <W_Armin@gmx.de>,
+	<ukleinek@kernel.org>, <fabio.m.de.francesco@linux.intel.com>,
+	<kaihengf@nvidia.com>, <ankita@nvidia.com>, <leitao@debian.org>,
+	<farbere@amazon.com>, <pedro.pbg@usp.br>, <paulmck@kernel.org>,
+	<frederic@kernel.org>, <kees@kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux-pwm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-input@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>
+Subject: [PATCH v4 00/13] notifier: add device-managed registration APIs and convert drivers
+Date: Sun, 26 Jul 2026 10:17:26 +0000
+Message-ID: <20260726101739.33170-1-farbere@amazon.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: EX19D032UWB002.ant.amazon.com (10.13.139.190) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-On Sun, 2026-07-26 at 00:31 +0100, Jonathan Cameron wrote:
-> On Thu, 23 Jul 2026 22:23:39 +0600
-> Siratul Islam <siratul.islam@linux.dev> wrote:
->=20
-> > On Thu, 2026-07-23 at 09:50 +0300, Stefan Popa wrote:
-> > > Add device tree bindings for the Maxim MAX40080 bidirectional
-> > > current-sense amplifier with a 12-bit ADC and an I2C/SMBus interface.
-> > >=20
-> > > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> > > ---
-> > > =C2=A0=20
-> > ...
-> > > +
-> > > +title: Maxim MAX40080 bidirectional current-sense amplifier
-> > > +
-> > > +maintainers:
-> > > +=C2=A0 - Ciprian Hegbeli <ciprian.hegbeli@analog.com>
-> > > +=C2=A0 - Stefan Popa <stefan.popa@analog.com>
-> > > +
-> > > +description: |
-> > > +=C2=A0 The MAX40080 is a high-precision, bidirectional current-sense=
- amplifier with
-> > > +=C2=A0 an integrated 12-bit ADC and an I2C/SMBus interface. It measu=
-res the voltage
-> > > +=C2=A0 across an external shunt resistor and the input bus voltage, =
-and stores the
-> > > +=C2=A0 results in an internal FIFO.
-> > > +
-> > > +=C2=A0 Datasheet:
-> > > +=C2=A0=C2=A0=C2=A0 https://www.analog.com/en/products/max40080.html=
-=C2=A0=20
-> > This URL links to a product page rather than a datasheet as the tag sug=
-gests.
-> > Would be difficult to fetch using CLI tools.
-> > Were you supposed to use something like
-> > "https://www.analog.com/media/en/technical-documentation/data-sheets/MA=
-X40080.pdf"?
->=20
-> I think the argument for using product pages is that they are stable and =
-datasheet
-> paths sometimes change.
->=20
-> For ADI there is a neater form as well that is supposed to be stable (and
-> has been for last few years at least)
-> https://www.analog.com/max40080
-> Works for any product and takes you to the equilvalent product page to th=
-e
-> link above.
->=20
-> So whilst you make a good point I think we will have to let Analog decide
-> on a standard way to link to their product info / datasheets.=C2=A0 That =
-is
-> on the perhaps optimistic basis they have more insight into stable choice=
-s
-> than we do!
->=20
-I was just nitpicking because it said "Datasheet" to point to a link which =
-was not a=20
-datasheet.
+Many drivers repeat the same boilerplate when registering notifiers with
+device lifetime:
 
-But yes, a standard way to link all their products (like https://www.analog=
-.com/max40080)
-makes more=C2=A0sense. I just checked and currently some adi devices use pr=
-oduct page links,
-some use PDF links and some don't include any links at all.
-> >=20
-> > > +
-> > > =C2=A0=20
-> > ...
-...
-> > >=20
-> >=20
---
-Best regards,
-Sirat
+  1. Register the notifier with *_notifier_chain_register()
+  2. Check for error
+  3. Register a devm action to unregister on teardown
+  4. Implement a per-driver static unregister callback
+
+This series adds devm_atomic_notifier_chain_register() and
+devm_blocking_notifier_chain_register() that automatically unregister
+the notifier when the device is unbound, then converts 11 drivers to use
+them.
+
+Each conversion eliminates a per-driver unregister callback and the
+associated devm_add_action_or_reset() call, reducing code by ~15 lines
+per driver.
+
+The implementation follows the established devres pattern used by other
+device-managed kernel APIs.
+
+Changes in v4:
+- Patch 8: split the removal of unused
+  ghes_register_vendor_record_notifier() and
+  ghes_unregister_vendor_record_notifier() into a separate preceding
+  patch (Andy Shevchenko)
+
+Changes in v3:
+- Patch 1: drop devm_raw_notifier_chain_register() since raw notifiers
+  require caller-provided locking which is incompatible with the devres
+  teardown callback (Sashiko)
+- Patch 12: fix commit message to accurately describe the old code as
+  using devres_alloc() + register_reboot_notifier() (Sashiko)
+
+Changes in v2:
+- Patch 1: drop 'extern' from new function prototypes (Bart Van Assche)
+- Patch 1: fix kerneldoc to use 'Return:' format (Bart Van Assche)
+- Patch 1: use <linux/device/devres.h> instead of <linux/device.h>
+  (Andy Shevchenko)
+- Patch 8: also remove unused ghes_register_vendor_record_notifier() and
+  ghes_unregister_vendor_record_notifier() along with their exports and
+  ghes.h declarations (Jonathan Cameron)
+
+Eliav Farber (13):
+  notifier: add device-managed registration APIs
+  pwm: iqs620a: use devm_blocking_notifier_chain_register()
+  iio: light: iqs621-als: use devm_blocking_notifier_chain_register()
+  iio: position: iqs624: use devm_blocking_notifier_chain_register()
+  gpio: adp5585: use devm_blocking_notifier_chain_register()
+  platform/x86: bitland-mifs-wmi: use
+    devm_blocking_notifier_chain_register()
+  Input: adp5585: use devm_blocking_notifier_chain_register()
+  ACPI: APEI: GHES: remove unused
+    ghes_{,un}register_vendor_record_notifier()
+  ACPI: APEI: GHES: use devm_blocking_notifier_chain_register()
+  platform/x86: uniwill-wmi: use devm_blocking_notifier_chain_register()
+  gpio: eic-sprd: use devm_atomic_notifier_chain_register()
+  gpio: gpiolib-kunit: use devm_blocking_notifier_chain_register()
+  reboot: use devm_blocking_notifier_chain_register()
+
+ drivers/acpi/apei/ghes.c                   |  27 +-----
+ drivers/gpio/gpio-adp5585.c                |  20 +---
+ drivers/gpio/gpio-eic-sprd.c               |  17 +---
+ drivers/gpio/gpiolib-kunit.c               |  14 +--
+ drivers/iio/light/iqs621-als.c             |  24 +----
+ drivers/iio/position/iqs624-pos.c          |  24 +----
+ drivers/input/keyboard/adp5585-keys.c      |  18 +---
+ drivers/platform/x86/bitland-mifs-wmi.c    |  17 +---
+ drivers/platform/x86/uniwill/uniwill-wmi.c |  17 +---
+ drivers/pwm/pwm-iqs620a.c                  |  21 +----
+ include/acpi/ghes.h                        |  16 ----
+ include/linux/notifier.h                   |   7 ++
+ kernel/notifier.c                          | 103 +++++++++++++++++++++
+ kernel/reboot.c                            |  24 +----
+ 14 files changed, 140 insertions(+), 209 deletions(-)
+
+-- 
+2.47.3
+
