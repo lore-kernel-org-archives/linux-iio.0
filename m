@@ -1,153 +1,203 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D511D37C118;
-	Sun, 26 Jul 2026 20:24:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7490013777E
+	for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 20:57:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785097488; cv=none; b=EPtTFMdTVq0aYQ/H6bLbJu48eAHRLpM/SOW9n8EMnQ6uYghZKDp/ZRvBqrqlwickAL+qaQ8zOBfhyNIEACeVT/bIqAknuLieoxWiieZAwWZG8MMoX9tS7d5O/CSb8IONPQ+FfQdPW8VM46UHSd1qs3Iumo1dIgaDJPdWhQmfWkk=
+	t=1785099444; cv=none; b=EQ+tWUnf6459Hsmsu7Ov/VCJwQqL0HRV59wqN+kXTv+rQGnuEMZEdrwmUGV71KiulFFpNvJcu07wuXfVTQktD+jX3jpeoy7jkeMioz25UuAFNyc3ZDErULL125Xs9ZbR1IJKYNH3qbSpQMrOG31Elabe/slBd4K2OLG+zZ8ST0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785097488; c=relaxed/simple;
-	bh=tI8SSGUobmZ65r1WAnE1n7mZhJKSa/0JfoIBx3/P2fc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KyDibEQhYWyEszkdT4aF4TdCOInoV4UVPdj2jdBm4JgmNiV1gk5Yq3NC0/aIOfVZ9GlKBIVSTxALufTZSvs0g+Au0Rmg8IJGSI/QYoyJG6FM/y8qfnjSLhmKlNzaTBEGmdTiWiWnLXXvE7kCjgiIqjo7mqmL8pa1+gTHnZ0oLAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gs9y4i6n; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785099444; c=relaxed/simple;
+	bh=kIdU00xsCwLL9fidDKVRAoIrHeudl7Pql0qPe0E1P4w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cX//1hmKNq8gIlqB0c7jYJPIsRqdb1ZPW/+drQNv5CHZrEg7NOSE9eyb+k8kZTVGZFk4VMKuvl9Zdih4P9gpayJiDm2yT71lL+7YBtba/YVA6ZWtAEdhzphACXuDkBZcCHGa6jC3FzTQL0DRt1q5M+p7azhagnPEF/RTW7RYGAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=fsxZWXAY; arc=none smtp.client-ip=209.85.210.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gs9y4i6n"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A7F71F000E9;
-	Sun, 26 Jul 2026 20:24:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785097486;
-	bh=OnMqqxswChY/ksukqd9B1K2o5b/IJoLlGSnr98cqu8I=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Gs9y4i6nwpyMUYE5qpDTL/IqPSeV0/oQtDP5GfTpW2+a0MW1HYAP43IeLKKfkRW6o
-	 mtdqOmLjywBCqcXU0squuHPvP8rbTEvQWu/Bm0mIyVxt09lVu0Gok7fJ4wB6MoMjea
-	 HEyo3xcFRQh4e5eXTyiPmNIdyZZqmlTbuGokdaeP401l45dhm/iTyxp3TkjDcFUIDL
-	 AregR/zJXS0eRfFdIQjc94zFy5Osootaj/WqsMr5YktJnPi0SQuxzqCBcHB4gkNRWO
-	 GSwgLScrgFWt4K4c9uaXA02v2j4pEJEFwNwMDQwUV0Dn5l+EaJby/QLWeUI+TX/CuE
-	 HNgugCgDTEcLA==
-Date: Sun, 26 Jul 2026 21:24:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Pan Chuang <panchuang@vivo.com>, Puranjay Mohan <puranjay@kernel.org>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Petre Rodan <petre.rodan@subdimension.ro>, Dan Robertson
- <dan@dlrobertson.com>, Matti Vaittinen <mazziesaccount@gmail.com>, Gustavo
- Silva <gustavograzs@gmail.com>, Maxwell Doose <m32285159@gmail.com>, Tomasz
- Duszynski <tduszyns@gmail.com>, Nishant Malpani <nish.malpani25@gmail.com>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, Li peiyu
- <579lpy@gmail.com>, Lorenzo Bianconi <lorenzo@kernel.org>, Alex Lanzano
- <lanzano.alex@gmail.com>, Jagath Jog J <jagathjog1996@gmail.com>, Mikael
- Gonella-Bolduc <m.gonella.bolduc@gmail.com>, Subhajit Ghosh
- <subhajit.ghosh@tweaklogic.com>, Mudit Sharma <muditsharma.info@gmail.com>,
- Kevin Tsai <ktsai@capellamicro.com>, Linus Walleij <linusw@kernel.org>,
- Anshul Dalal <anshulusr@gmail.com>, Song Qiang
- <songqiang1304521@gmail.com>, Andreas Klinger <ak@it-klinger.de>, "Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>, Siratul Islam <email@sirat.me>, Sebastian
- Andrzej Siewior <bigeasy@linutronix.de>, Bjorn Helgaas
- <bhelgaas@google.com>, Danilo Krummrich <dakr@kernel.org>, Takashi Sakamoto
- <o-takashi@sakamocchi.jp>, Xichao Zhao <zhao.xichao@vivo.com>, Waqar Hameed
- <waqar.hameed@axis.com>, Sakari Ailus <sakari.ailus@linux.intel.com>,
- Marcus Folkesson <marcus.folkesson@gmail.com>, Miao Li <limiao@kylinos.cn>,
- Dixit Parmar <dixitparmar19@gmail.com>, Andrew Davis <afd@ti.com>, Kurt
- Borja <kuurtb@gmail.com>, Shrikant Raskar <raskar.shree97@gmail.com>, Chu
- Guangqing <chuguangqing@inspur.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, "Rafael G. Dias"
- <rafael.guimaraes.dias@usp.br>, Svyatoslav Ryhel <clamor95@gmail.com>, Shi
- Hao <i.shihao.999@gmail.com>, Colin Ian King <colin.i.king@gmail.com>,
- Salah Triki <salah.triki@gmail.com>, Yury Norov <ynorov@nvidia.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Yash Suthar
- <yashsuthar983@gmail.com>, Achim Gratz <Achim.Gratz@Stromeko.DE>, Yasin Lee
- <yasin.lee.x@gmail.com>, linux-iio@vger.kernel.org (open list:ADXL355
- THREE-AXIS DIGITAL ACCELEROMETER DRIVER), linux@analog.com (open
- list:ANALOG DEVICES INC IIO DRIVERS), linux-kernel@vger.kernel.org (open
- list)
-Subject: Re: [PATCH v2 00/13] iio: Remove redundant error messages on IRQ
- request failure
-Message-ID: <20260726212440.6fa412f2@jic23-huawei>
-In-Reply-To: <20260726205941.40f6eade@jic23-huawei>
-References: <20260724030524.607185-1-panchuang@vivo.com>
-	<20260724122701.0000156f@gmail.com>
-	<20260726205941.40f6eade@jic23-huawei>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="fsxZWXAY"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7e9f69ee6f4so1821425a34.2
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 13:57:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1785099441; x=1785704241; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xQmP8MtwhLpnNWavacoVMEqOOrV7CaZe5qiKgrP7ZgU=;
+        b=fsxZWXAYTx4dm+ekJETu/1rGtL5HSZQb2v8whBFXVmh9Bas/Z/7BPv2gPySB5nv1M2
+         f4QFmuf4jynPUhvw07UY8fDPSzM15odAVtOwoQO8WtJU5I4dEcAcDRViMGnncN2nGVtB
+         fVXB+oPEzz+I2isr49SHjNv86/iK+e1aemuybES11LslzirxjGSc2qwCp0DtrJfLNRhM
+         5ncA+qIwoMMwvDe+h/JUfmTG+hSzeOV7X8nSPjDVzM/SIOaQhhj25BqrzS9/Ocbov//e
+         cRnEygbHk9/455jvBYQhXsBew2U+Qn4t69yEFU+6fh5sRYqlFmbdhDId6YB+G5gq9nU3
+         fCwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785099441; x=1785704241;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=xQmP8MtwhLpnNWavacoVMEqOOrV7CaZe5qiKgrP7ZgU=;
+        b=BCpjy433lQdPlYxm56nhGM2Lwh/kucuhD9T48FEEuQbGywx4fa7xNP2JpuMVjB1TY8
+         3sJ7keUiuZcThG+TdSD0oJyM3fEVKHd5C+Z755KUwG7FLWz/a92+Zxlhztt3juGgwro5
+         /kLrzP52pS+RgIer3phWm4JGMms7iHx7K7k7rivqOQ6mzHQfu7pSKehTX6gBdD3q2WA7
+         VDZmBfB8UcWxuj/v2uN7aSRP197Zk74D0n9/KezhIegeB6xqLW+Hpp32UapvZqu/WVBf
+         E8nWwgfqZfz/wOgIy+WOXI6nn7nfD4fGFMSaIr+qW1oymOFx7cgFuVgZSd2/y3oZmQXP
+         BXhA==
+X-Forwarded-Encrypted: i=1; AHgh+RrtMcVleN8mAWRpKbQRjVugoEE2NJewA0iKmciW9EEr8J+3oqsrzWk1+KxmiMoLhu8B88u5ekzUUDM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzxjKA4qm7whr8/EFUNTvhUI+IlVOVwShNMfnc67d+U6GgGDQne
+	m2h6OgFtKopQOriFsI1bhABbsDuXBWiz42/S1X+5Dh0KpjLKJy8wvAxm2+l15+uCobQ=
+X-Gm-Gg: AR+sD11Q9m5jFC9nWpETlrlHyoGlpB6MRKA8BFomHkfmSBDHiC0vj7yRKyZvQdmaUp1
+	5I2JDfm50dwpnjs1wGxN8/U6IfcVzEKwWsYy9dr8i+hGLrhOdpbeas+VoasfPO7VqGVt5gfYpXG
+	QiEVnh7LaA0a5gLr/Ms/3RdSb+Rk5KSkf/Ns5mLkMh/SwGEPDaUbepVqDx2XXua/zHKu9J5eAvc
+	zyArA3nK6AtCd0+v0P7e+LBNPobx7mjHH7ju7YbwsOtF+HovZ09EK0Cc7nZILokWJw4uBbIIF56
+	kmtvQbA1B4c+iCFyiiuvVvT8krlAf8ebBIucjKixNHUv1ZSfBKFbClsk2ev5QsrSGfqzXHQ2q6N
+	clBFoocHi1vTzt/s/fU+3eHD4XirKfBshkuUCQJLnbk7xyXGgISqpn+0k6RGV2hb+WhWkG4DbTW
+	u5B+TJAwAFgE0RYxDhABUOZAGATG7eeZB4Z/yUaamDW4HXaj+99h3vgcI8og==
+X-Received: by 2002:a05:6830:32a1:b0:7e9:b673:cbef with SMTP id 46e09a7af769-7ee78d72f81mr3829352a34.17.1785099441382;
+        Sun, 26 Jul 2026 13:57:21 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:105e:29ca:45cc:c7? ([2600:8803:e7e4:500:105e:29ca:45cc:c7])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7ee5682c23esm7673308a34.14.2026.07.26.13.57.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jul 2026 13:57:20 -0700 (PDT)
+Message-ID: <84bd13c8-02d7-44b6-95b1-adc64242a8a1@baylibre.com>
+Date: Sun, 26 Jul 2026 15:57:19 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/7] dt-bindings: iio: adc: Add TI ADS126x ADC family
+To: Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260628-ads126x-v2-0-4b1b231325ba@gmail.com>
+ <20260628-ads126x-v2-1-4b1b231325ba@gmail.com>
+ <946a30c9-01e9-42f1-bd2b-b7934fda85cf@baylibre.com>
+ <DJKX600ONL4O.1YUTCD1L9FU8F@gmail.com>
+ <a16f61fb-4e98-4c30-8d4f-da084e27ebeb@baylibre.com>
+ <DJLOAISPZLG7.VZYX8B16QU4K@gmail.com>
+ <22e1e1c2-659c-4991-857c-b38d66769c7e@baylibre.com>
+ <DJMJX5FGSZ9X.1GQK24K6CI60X@gmail.com>
+ <2a0a9fe9-b3b5-49a0-bf58-5035655fc16d@baylibre.com>
+ <20260701012842.16272045@jic23-huawei> <DK8RHLBX32NR.AD0TDBDF1HNL@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <DK8RHLBX32NR.AD0TDBDF1HNL@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Sun, 26 Jul 2026 20:59:41 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On Fri, 24 Jul 2026 12:27:01 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On 7/26/26 2:49 PM, Kurt Borja wrote:
+> On Tue Jun 30, 2026 at 7:28 PM -05, Jonathan Cameron wrote:
+>> On Tue, 30 Jun 2026 13:38:30 -0500
+>> David Lechner <dlechner@baylibre.com> wrote:
+>>
+>>> On 6/30/26 12:14 PM, Kurt Borja wrote:
+>>>> On Mon Jun 29, 2026 at 11:43 AM -05, David Lechner wrote:  
+>>>>> On 6/29/26 11:27 AM, Kurt Borja wrote:  
+>>>>>> On Mon Jun 29, 2026 at 9:21 AM -05, David Lechner wrote:  
+>>>>>>> On 6/28/26 2:12 PM, Kurt Borja wrote:  
+>>>>>>>> On Sun Jun 28, 2026 at 10:45 AM -05, David Lechner wrote:  
+>>>>>>>>> On 6/28/26 12:36 AM, Kurt Borja wrote:  
+>>>>>>>>>> The ADS1262 and ADS1263 are 32-bit, 38.4-kSPS delta-sigma ADCs with an
+>>>>>>>>>> integrated PGA, internal reference, excitation and burn-out current
+>>>>>>>>>> sources for sensor biasing and diagnostics. The ADS1263 adds a second,
+>>>>>>>>>> 24-bit delta-sigma ADC (ADC2) for background measurements.
+>>>>>>>>>>  
+>>>>>>>
+>>>>>>> ...
+>>>>>>>  
+>>>>>>>>>> +
+>>>>>>>>>> +patternProperties:
+>>>>>>>>>> +  "^channel@[0-9]+$":
+>>>>>>>>>> +    $ref: /schemas/iio/adc/adc.yaml#
+>>>>>>>>>> +    unevaluatedProperties: false
+>>>>>>>>>> +
+>>>>>>>>>> +    properties:
+>>>>>>>>>> +      reg:
+>>>>>>>>>> +        maxItems: 1
+>>>>>>>>>> +  
+>>>>>>>>>
+>>>>>>>>> If we want to allow single-ended/pseudo-differential inputs, then we should
+>>>>>>>>> also allow single-channel (positive pin) and common-mode-channel (negative
+>>>>>>>>> pin) properties.
+>>>>>>>>>
+>>>>>>>>> This will also require additional common-mode-<N>-supply properties to allow
+>>>>>>>>> for the negative pin connected to something other than GND.  
+>>>>>>>>
+>>>>>>>> Ah interesting. Why the N though? wouldn't a single supply connected to
+>>>>>>>> AINCOM be enough here?  
+>>>>>>>
+>>>>>>> In theory, any AINx could be a common mode input by connecting it to
+>>>>>>> a constant voltage supply.  
+>>>>>>
+>>>>>> Technically yes, but there is a pin named AINCOM intended for this
+>>>>>> purpose. Can we do a simplification here? I propose having
+>>>>>>
+>>>>>>   common-mode-channel:
+>>>>>>     /* AINCOM pin */
+>>>>>>     const: 10
+>>>>>>
+>>>>>> That way we would only need one common-mode-supply. Would that be okay?
+>>>>>>  
+>>>>>
+>>>>> Ideally, we shouldn't limit how the chip can be wired up in the devicetree
+>>>>> bindings. It doesn't mean that we have to implement everything in the driver
+>>>>> though.  
+>>
+>> I'm a bit confused on this.  Arguably you could wire up any side of a differential
+>> pair to a common mode signal, but we haven't had this binding applied more generally
+>> than cases where their is a setup where the intent is a shared common (shielding
+>> on cable in some cases IIRC). 
+>>
+>> So why is this case special? I see AIN_COM can be wired up to an internal vbias
+>> but other than that it looks like any other AINX input.
 > 
-> > On Fri, 24 Jul 2026 11:03:35 +0800
-> > Pan Chuang <panchuang@vivo.com> wrote:
-> >   
-> > > Commit 55b48e23f5c4 ("genirq/devres: Add error handling in devm_request_*_irq()")
-> > > added automatic error logging to devm_request_threaded_irq() and
-> > > devm_request_any_context_irq() via the new devm_request_result() helper,
-> > > which prints device name, IRQ number, handler functions, and error code
-> > > on failure.
-> > > 
-> > > Since devm_request_irq() is a static inline wrapper around
-> > > devm_request_threaded_irq(), it also benefits from this
-> > > automatic logging.
-> > > 
-> > > Remove the now-redundant dev_err() and dev_err_probe() calls
-> > > in iio drivers that follow these devm_request_*_irq()
-> > > functions, as the core now provides more detailed diagnostic
-> > > information on failure.
-> > > 
-> > > v2:
-> > > - Rewrap commit description to one line.
-> > > - Drop redundant "!= 0" and "< 0" comparisons.
-> > >     
-> > 
-> > Okay, code-wise it's fine, but rewrap your commit messages to 72
-> > characters per line.   
+> Hi, 
 > 
-> That would involve breaking the commit reference across lines.
-> I asked that the author not do that on the previous version because
-> it'll make it harder to search for if anyone ever wants to do so.
+> I forgot to respond to this email!
 > 
-> Also submitting patches suggests 75 chars. I'm not sure where the 72
-> comes from, though it is often quoted and another bit of submitting
-> patches does say 70 to 75.
+> As you said, there is nothing special about AINCOM, it's just like any
+> other input. That's why David suggested to have a common-mode-N-supply
+> for each input.
 > 
+> I implemented this of course, but I still have doubts because there is
+> no precedent for something like this in IIO. I understand the logic, but
 
-Picked up series with a few tweaks to call out where if (ret < 0)
-changes occurred and making sure Andy's RB actually got added.
-There was enough changing in here that b4's fuzzy matching missed
-sometimes.
+FWIW, we have 4 ainx-supply properties on adi,ad7380.
 
-Pan, please be careful to pick up given tags on future patch sets.
+> I'll personally be inclined to drop it. If there is no further
+> discussion I'll keep the 10 common-mode supplies.
 
-Thanks,
+To make the bindings less verbose, we could use:
 
-Jonathan
-
+  patternProperties:
+    ain[0-9]-supply:
+      description: fixed voltage input when AIN pin is used as common mode
 
 > 
+> I'm finishing v3 and I'll submit it in a couple of days.
 > 
-> > Feel free to apply my tag for the whole series:
-> > 
-> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> > 
-> > Also, I was scratching my head at how enormous the To: list is, given
-> > these changes are only in IIO, but I assume you also added emails of
-> > the people who authored the latest changes on a file that get_maintainer
-> > outputs - there is no need to do this. Tools like b4 can automatically
-> > add (correct) recipients based on get_maintainer.pl
-> >   
-> 
+>>
+>> Jonathan
+>>
+>>>>
+>>>> Makes sense.
+>>>>
+>>>> I just have a doubt: In the ADS112c14 bindings, is there a specific
+>>>> reason why you didn't describe common-mode-<N>-supply?
+>>>>   
+>>>
+>>> For singled-ended inputs on ADS112c14, there is an internal
+>>> connection to GND, so it isn't possible to have a pseudo-
+>>> differential input like that. I guess technically, it could
+>>> still be possible, but wasn't a typical wiring described in
+>>> the datasheet like it is on ADS1263.
+>>>
 > 
 
