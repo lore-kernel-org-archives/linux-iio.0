@@ -1,130 +1,128 @@
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0261305669
-	for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 18:03:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE7235C6B8;
+	Sun, 26 Jul 2026 18:18:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785089036; cv=none; b=kHGgFKHheO4Iqkb8FqTtdZUog8qdVlAnod54miMfCO+QFvsZxpqqup3zLwphz71g/J3nUrJaDXgrs+CrGuqxhCDWPIRJuq73LDwkfYwjQIvlU2SWrX/u+NxdO4/UFStvmrmGGwxUCbRdGSLJz3jUaDE6aprRzWyj+A9WQYC3UBU=
+	t=1785089917; cv=none; b=B7CHuYD64rWI5F4TvQEC/UBePYlvFjyyHlXHiOapLbWyLSymMxmiVIjRS+LdTD50KzJzFmenOnAH6/0NAzXJW5KSOriea1qEKZEchPOVwaiHBmAGIxhhGGrxI8wcPPIGKVTJc9fI1kpzmRKtTHNIxseCpI1eRZgxaGqj+YA8biY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785089036; c=relaxed/simple;
-	bh=q9dAk8eF3iiJ+cl/0uS54dQjKdefX8YMOgEw3GcSL6o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PkvVGHrPbfGHsDBdqoUhdmnVVQ9Rd1npazvwb9d/s3+XxN307EFlJfT+KldTKQ3nIXfgToYqbKX5CliXrt7av6yk5MM/qGOmlnUGdu2W1waRbuK2l2bpCjS4ShAy1Qser7u8442B9KH7BjHPINnu6SmZ6k048d92Am6cHFX/594=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sF554Ke1; arc=none smtp.client-ip=209.85.215.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785089917; c=relaxed/simple;
+	bh=hS4vXEt2REFFV4CR73elSBd3YHj0n/4ooyCfMyyWy/g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bM27F5GmheJwzPE/wmKXm8rxPISvxO2SifXNaBGnPyyuw+as5Ih+X+GfEQsZfDy3QrXPYOif/vO6fAPUJuWisbMDELQGUO3pyJ83g02h17jPhNnzP+gHwv/2BAXTJHhq2VNG6/kDjJhij6hQaUajWk9fg19Fdhi1PaPZ6OdPMCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U6nFur2Y; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sF554Ke1"
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c9c26a5fb98so1360754a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 11:03:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785089034; x=1785693834; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PdwZxxP8oqz0gMmIElZLBFtAWKuHTGQms5/kGxcVlaA=;
-        b=sF554Ke1PMvrl1QSPfxB+mWk4DuccVheqT9cTBhUrQfCVueRGeGvYvw0dNnYkr+ewY
-         9xRI03yO3kSfl5Vc/e0uLA1jArl6H70wBxTju2pnGI+fmHFSjUjIq/PPQiJ0O5sdzqws
-         kgY8Z4ByJMYCwDUoK2pZnbXsePZP2+OoZgJ275DUFm7nWSsbcwm8ACTLVkuu6yJGBom2
-         WevuLyScGg0Nu6Liu88ILkh6Goz0r2l8ms7d4szecVEpcWw7NRKqR8FTJim6qp8SMAuT
-         FVYef6NR+vYYpOypTwalDIFGcgwsIK6AS6hdisntBHGt5pOEoDGSrIf/xNCokvz7Suab
-         PPHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785089034; x=1785693834;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PdwZxxP8oqz0gMmIElZLBFtAWKuHTGQms5/kGxcVlaA=;
-        b=N5J4ZvlQLoAx6glc3CjgqxLPD9oCNnbB6ZIRFp0zADg+mgZ8uI0OyE4VTb5Yo0a8E5
-         24dzb3qCukYChWG4eW54QPB9yLAh01mWNjT2Ch0Jz46ICtceLKfN3IqJsGeZ7ft3S8u1
-         cl1fhVFpsepfri54ZjuqdsS8PYH6ZVH0cIyyUObT3PUqtth9fZQhsjPWvOvY6r1ENU9X
-         lynhS7dJbO0acREcpfOp+8HG53m4pyXGxG5v6YZTtHIGMSOAJG6cwhi2anp5wZcH69cO
-         FPpzBN7SwqPAkRwISvHBARqw9P5G+u4bPd15H75f53n33nv2NRLKk5nbCMRpmNhKbSwJ
-         z51Q==
-X-Forwarded-Encrypted: i=1; AHgh+RqtEyjAtALh000lu0WYIa4jGlXV2xhkuJBB/J6WtAnC6gXvyEvc1HUIY7ddB5M1G1EXFgc2Pgc5l6I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxhjf7P3iy1LUOq5dQ1dQU3O5Ccea7b/J68Bz7rMDwhuz1qU8M0
-	wVqQKz9xWHlOHJcz4f0u3Sw132vAfpbbIxGcSEoiT1eUXpoLx4f64yxz
-X-Gm-Gg: AR+sD12alwYgmfepwZBEc9sBPuPwSD52qGdhQBRZ/cqjuKjhyKDVyVTdz3sO/d7yIut
-	5NWFuORkJeyEsyPLJK7ZN9/Y9MEqSQY1MVXiEuRUkVBTZpEd47OGivT1vT8wtJmzuVggkIcUC5f
-	i8QoeAV+QxcpXJgYxM2RszeivhWCXsX+h4RrlRSMEJVJuABnWyJho9KtRv2EQ44O7uSS2936H/3
-	p07Em0BC4geyjh1rKI5iOy1u+0y0muFIKEHm8QDl/FSOott/1OjZ2b2kS8k8hXC8Mnnqbx+mqv1
-	jnflJXOofA4tmsBUW0FBgYFwQImoDsSgz9WS9rE1QN2pXWVeZvIMSADjc4JczkJ6TQ9o6HgINL7
-	kHzD9DCJTD975U0r3RyR7CIx7YHTJgA/ND0eBcdALqpyVwQamMRvls4HgSENub8332UmQcxIVPQ
-	Ewh1LrONPjLgo=
-X-Received: by 2002:a05:6a21:6b8c:b0:3c3:8315:80b6 with SMTP id adf61e73a8af0-3c67267e948mr7535903637.32.1785089033798;
-        Sun, 26 Jul 2026 11:03:53 -0700 (PDT)
-Received: from ubuntu.. ([2405:201:8026:213e:30b7:9ffb:4fac:ad00])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc3e1285sm24729671eec.5.2026.07.26.11.03.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2026 11:03:53 -0700 (PDT)
-From: mdshahid03@gmail.com
-To: Jonathan Cameron <jic23@kernel.org>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Mohammad Shahid <mdshahid03@gmail.com>
-Subject: [PATCH] iio: adc: bcm_iproc_adc: Use dev_err_probe() for resource acquisition failures
-Date: Sun, 26 Jul 2026 23:33:19 +0530
-Message-ID: <20260726180319.315016-1-mdshahid03@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U6nFur2Y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8567F1F000E9;
+	Sun, 26 Jul 2026 18:18:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1785089915;
+	bh=qnOb8plgpvZSaUyBKqfLqxUcBwY3vZcTa0Qh/IwhO/A=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=U6nFur2Ym5UOalMtI8nk00cxcH2NzYdvNhTEVK1SDFmc0nmbvIYn/TQc39RSAccjG
+	 b6cbC/EwsedwWAzHiYT8OgwmqvA1cY5RT2C+r8lW7eF5aHp9Ch0kmBp6hyuq6XD8k5
+	 /Z4jxil155mv2nTgujv917vDqxE8emjtm183KXqTi8DhQxt3RzUMpKYwjCaXuzsi+6
+	 pHXLXAgX9/hSyOpSJwDabxF1bz+awSZfOEJJPdWLUytezjOEod0/kB/lw5f26Vg/AW
+	 gMhj+i9lJGghV03zbK/aU1j0YcFsHNcIdyhcwICqzrZkfOJ8jlPlZfvATYEve9A3jw
+	 Rlr2v989c8C+g==
+Date: Sun, 26 Jul 2026 19:18:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Siratul Islam" <siratul.islam@linux.dev>
+Cc: "Lukas" <lukas.metz@gmx.net>, "David Lechner" <dlechner@baylibre.com>,
+ "Nuno =?UTF-8?B?U8Oh?=" <nuno.sa@analog.com>, "Andy Shevchenko"
+ <andy@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
+ <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: dac: dac8163: Add driver for DAC8163
+Message-ID: <20260726191833.67dcfac2@jic23-huawei>
+In-Reply-To: <6b3f1b6188afbb8ebf9576274894b5ed292eca92@linux.dev>
+References: <20260708-dac8163-work-v2-0-3acd1bf20182@gmx.net>
+	<20260708-dac8163-work-v2-2-3acd1bf20182@gmx.net>
+	<e84c4e047e104cca9b88dda791997ceecba1204c.camel@linux.dev>
+	<amYVZtbxu4fjhBkx@berta-MS-7693>
+	<6b3f1b6188afbb8ebf9576274894b5ed292eca92@linux.dev>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Mohammad Shahid <mdshahid03@gmail.com>
+On Sun, 26 Jul 2026 17:01:51 +0000
+"Siratul Islam" <siratul.islam@linux.dev> wrote:
 
-Replace open-coded dev_err() and error returns with dev_err_probe()
-for failures from syscon_regmap_lookup_by_phandle() and devm_clk_get()
-in the probe path.
+> July 26, 2026 at 8:10 PM, "Lukas" <lukas.metz@gmx.net mailto:lukas.metz@gmx.net?to=%22Lukas%22%20%3Clukas.metz%40gmx.net%3E > wrote:
+> 
+> 
+> > 
+> > On Wed, Jul 08, 2026 at 09:58:13PM +0600, Siratul Islam wrote:
+> >   
+> > > 
+> > > +
+> > >  + const struct reg_default reg_defaults[] = {
+> > >  + {
+> > >  + .reg = CMD_SET(CMD_WRITE_UPDATE, 0),
+> > >  + .def = info->default_output_reg,
+> > >  + },
+> > >  + {
+> > >  + .reg = CMD_SET(CMD_WRITE_UPDATE, 1),
+> > >  + .def = info->default_output_reg,
+> > >  + },
+> > >  + };
+> > >  +
+> > >  + const struct regmap_config regmap_config = {
+> > >  + .reg_bits = 8,
+> > >  + .val_bits = 16,
+> > >  +
+> > >  + .max_register = CMD_REF << 3,
+> > >  + .cache_type = REGCACHE_MAPLE,
+> > >  +
+> > >  + .volatile_reg = dac8163_reg_false,
+> > >  +
+> > >  + .reg_defaults = reg_defaults,
+> > >  + .num_reg_defaults = ARRAY_SIZE(reg_defaults),
+> > >  + };
+> > >  Why are these defined inside probe? Should be defined outside the function.
+> > >   
+> > The default values after reset are different for the compatible devices
+> > (0 for the dacxxx2 devices and mid-scale for the dacxxx3 devices).
+> > So these are runtime dependent. The alternative would be to have two
+> > regmap_configs for the two device types and add these to the chip_info.
+> > Or do you have another suggestion?  
+> You don't need two regmap_configs. The way I would do it is, move the "regmap_config" out of probe and name it something 
+> like "dac8563_regmap_config". And in chip info struct, replace "default_output_reg" with "reg_defaults[]". 
+> Then for each "dacxxxx_chip_info" define the appropriate "reg_defaults" configuration.
+> 
+> This way you can do
+> 
+> struct regmap_config regmap_config = dac8563_regmap_config;
+> ...
+> regmap_config.reg_defaults = info->reg_defaults;
+> regmap_config.num_reg_defaults = ARRAY_SIZE(info->reg_defaults);
+> 
+> A bit of work, but it would ensure most of the work is done at compile time,
+> and we avoid reconstructing these sructs everytime probe runs.
 
-This simplifies error handling and properly handles deferred probing.
+As this has come up, I'd favour just having two static const regmap_config structures
+and picking between them.  Obviously I haven't checked but I'd guess that any
+overhead of extra text data for those is not that different to the extra code of the current
+approach.  Generally if you can make this sort of thing data rather than code it
+is a net gain.
 
-Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
----
- drivers/iio/adc/bcm_iproc_adc.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+Jonathan
 
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index cf4738b16e62..62f12eecc8b2 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -522,19 +522,16 @@ static int iproc_adc_probe(struct platform_device *pdev)
- 
- 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
- 			   "adc-syscon");
--	if (IS_ERR(adc_priv->regmap)) {
--		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
--		ret = PTR_ERR(adc_priv->regmap);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->regmap))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc_priv->regmap),
-+				     "failed to get handle for tsc syscon\n");
- 
- 	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
--	if (IS_ERR(adc_priv->adc_clk)) {
--		dev_err(&pdev->dev,
--			"failed getting clock tsc_clk\n");
--		ret = PTR_ERR(adc_priv->adc_clk);
--		return ret;
--	}
-+	if (IS_ERR(adc_priv->adc_clk))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc_priv->adc_clk),
-+				     "failed getting clock tsc_clk\n");
- 
- 	adc_priv->irqno = platform_get_irq(pdev, 0);
- 	if (adc_priv->irqno < 0)
--- 
-2.43.0
+> 
+> > 
+> > Best regards
+> > 
+> > Lukas
+> >  
+> --
+> Best regards,
+> Sirat
 
