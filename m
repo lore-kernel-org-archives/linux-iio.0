@@ -1,33 +1,67 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACE639D3DA;
-	Sun, 26 Jul 2026 11:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0548C346FAE
+	for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 11:44:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785065481; cv=none; b=udIKKmFyyGRCfNK6H0cKuvkxSeLVr/DwHZx8+8mBVKQocf0cjiIhYx0idTVkEETw2I5I81EtRt+TSkRrY2Mtwr3cEuoth+aMwEYnzMcWVIZJJ9JFw44XTZLMKBH/cNizKhHCfNxtEwKx1EHaACsH/EAFdFp8etNFh3jDnlW0OpU=
+	t=1785066265; cv=none; b=ILuG6pFXIuqmAwhUY3jpMvnMrj4gJJjB4l0kShHeK5SQ6HGj7w2yvMHP2MrquQCxV4oAUsJC+Vo2Ul+vn3/wUwG/U5vt4F77h4N7aK6mK+/HEGcBN5J9sknUn3SJ30jmO9ect9MB9NFxrDNzZakSQ9dYdhjLrvXBXE6brPoqBpk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785065481; c=relaxed/simple;
-	bh=0t8LF0Xm4T22bcWgrvyLapHz3eXrkY+Z3oxgYOwXniQ=;
+	s=arc-20240116; t=1785066265; c=relaxed/simple;
+	bh=aRAxuoFIpT5iiNuX1y0oJLKjAX7jWXl8mgVLbL0uStE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=N0ONIwBU1OcO8PNUI8qx4B2dL+Xi8gwdBcUllRXwTh1O/gukNdAb96CtOZyBkBI3lyFijUtTPrmDJtLElEe/NnI+4yETHp1VoIfvX2lmK2G3kqaCl+5xSVnSghAX2hAPOWvukofnoVJvjyk1m+q8CMAYeSw/Goaa3Qy13VJTFhQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NBKbhNnX; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=Hga4Lpvr5ylG9+Z5Np9qwa8pZDPV1fIqHx+2HoPUuJfZvAvzk1bOZpBe7AOK2YvxFW94RmFh+NKkhcEi7BapocLMDCOaskXNq550Uws67+ckdqLp2OOX7lnjt4f2vCWh0Uj+Ehc/0y0Gq0/0xFgcVnSXiJmA/pcXbMLzq4iMfmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eFY7V1+e; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NBKbhNnX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACF41F000E9;
-	Sun, 26 Jul 2026 11:31:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785065480;
-	bh=lrIhWNU4CHoiY2rjDv8WhlXEC1zWKZDlvhZWApLgC8A=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=NBKbhNnXT9N7TGZoN3W/XH0ToOnP/uMxGuVF1yPv+0xIayn2t3v6hHwIG0FbUuecs
-	 V/kFYXEUFcXiRn0lfFWD026s0Vsu8LeHfJWGaCFySUCTfc5AobWQ3ce5V8FB3h4CY1
-	 KJ6wGzKg9N4sP75fcBQn+S9aQSpSjKaETlhbd28Lc8SvwIFnW40zl37ijqkFt4wfyt
-	 asZH2NwiDE0cd8LEi6RJ7jFpAmX04zr2S1KkR+M+GPLVoToUPTBV8lvrSFsuANpmRz
-	 QfHSdL0Pu2PQeFumpiv1wDu5WV3sJhitiUAzjssCdXZ1UDb2Ms3zZzTE+zaf1af7lQ
-	 kqfwPHGBqgWpg==
-Message-ID: <2d168bc5-1410-4771-923d-229041913c88@kernel.org>
-Date: Sun, 26 Jul 2026 13:31:16 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eFY7V1+e"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4955158f26aso11839005e9.3
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 04:44:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785066261; x=1785671061; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=LlEYYQFwJ049ecKkONrkZDcdDe6IgGEY4lTlwkRmH6g=;
+        b=eFY7V1+e+2jBJGaasmYGIk3Y6lKIazs1dNK4t6LLpX1rloQslNI8HAzj6ngu6sgjQT
+         jbS3gOZavUG9iJd9co3urMnPWl+S7v9IQT/zshd+Q7pFI7qpwlKdd1h8td7HCQ0nJRTk
+         h1MmpdU4zbjzzd0FmEKtpUCFM1oWYfbOqIn0pyttiPgXc2lemBuJFHxdakTyvYk7MTHm
+         V9p3Q64vRWCeHqUMmFVLmy7bptv95PaBoYIVIY61UUuLH7KnTYO++ou2WzzhW6RpyDLE
+         j6zQ08RHx7AN99PrfYOwjj9C4Cf3OAeajDir/eEciQX5Y00KS+el4UpXzps6ARBANeeW
+         27Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785066261; x=1785671061;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=LlEYYQFwJ049ecKkONrkZDcdDe6IgGEY4lTlwkRmH6g=;
+        b=MViE3u+Uw2zHXuCG8MebVKFk/2uzS1h4Rly1W9AE1sLxbyVLLn7A19CV7K3Sp8ei6F
+         qFiRAnPbL7/2mrNEIvjtTmC6Q6FYEdu5xoI5DwBPP1okTTRywf83iJUSobTSnx7aj1Ph
+         egp0vPTYT4XnsQV6P5I2vihEf8YbzYwzvh8+lYAaJxHfNatNGHobSfbc8Z7SXI9bFTVN
+         c1sEORTYS/pnClCYd2S3nQFbxBS/H+j57MyHpWy2vp2WVl5fae+ewqgkb019f3C+73S3
+         QfO+O9FYBk4CAaXACFQ8UWNczYF8pVz/h7yFnBNm9Z2WsPCWfrPJYePA1B2GCaTETJlF
+         Ym/A==
+X-Forwarded-Encrypted: i=1; AHgh+RrvobGG8/AbXpIDhqJUTdU4puciiDyxKrQEbKQpn4i0g4KCR7iIZ2OyZKlObJD47HDJApdmhriVEeI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyEjMU/y7k8M1P2K5Uj4VO4lesI9nKYXnmNeekbKbC6tS+p083f
+	9XUwLzrQEbmn/iPSyXBucpnvRFqdKs+Mlbhtuib4g2augMyArc5RY3k+
+X-Gm-Gg: AR+sD12S4+pcg+0LIvKcvITF6gIPjBfMIFBROZKUV+B2j4y3ddrHXGWI647VlsDAuhV
+	gJ293ixpaU5Z09AjFviuIaAWe2oGDm+foZzhcZKxFwk3JfV29qj9lSdXbFG1/q9PRy6gtEraTx5
+	LhOnc5BAcQLFfyd+Oak/hvnpgX+vlriCdYLi3u1kQFQtJwz+qBvDqhsudXuGPvY8wkMuksrBhkx
+	xfwVliyR2iZvkkCwHXbxoWxLG2cB0WoBGiH31ZwzGSlOxT/fwyf6KALSRD7PO4OsGDzWQAVgc4z
+	9fuwFFtAp1VNPUYPjLFj8T9E9DMQeIfHWv5sRA0vb0GZK99N1VquE8JtzpGI7wnSLKxADEI7BuN
+	fcpvJ0Mn+l5eE7bphbgoHU/fmVFo3vHy/1y8Vz9QEoZpVHzxb6Gg+3bpehj6LPHj2qciSuEJ3zd
+	2sXaEc05sTOn0Qmcm0M9upKjtL3G1z/bDlmzbUtEDwcHuRimjTz1yn
+X-Received: by 2002:a05:600c:5486:b0:493:e57e:7aa5 with SMTP id 5b1f17b1804b1-496b56f9c9cmr60868985e9.22.1785066260893;
+        Sun, 26 Jul 2026 04:44:20 -0700 (PDT)
+Received: from ?IPV6:2a01:e11:5402:d840:e7f1:1a60:4b66:808b? ([2a01:e11:5402:d840:e7f1:1a60:4b66:808b])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-496b4ed6b76sm142289215e9.2.2026.07.26.04.44.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Jul 2026 04:44:20 -0700 (PDT)
+Message-ID: <39df42eb-433f-4cc5-b76a-8a7beeb3704b@gmail.com>
+Date: Sun, 26 Jul 2026 13:44:19 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,80 +69,73 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] MAINTAINERS: add mailing list to veml3328 entry
-To: Jonathan Cameron <jic23@kernel.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260721-veml3328-maitainers-v1-1-8166db77c79c@gmail.com>
- <20260724234301.64660df6@jic23-huawei>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v4 1/2] iio: light: cm3323: fix reg_conf not being
+ initialized correctly
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: ktsai@capellamicro.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+ me@brighamcampbell.com, linux-kernel-mentees@lists.linux.dev
+References: <20260407151702.15208-1-aldocontelk@gmail.com>
+ <20260407151702.15208-2-aldocontelk@gmail.com>
+ <20260420185333.3bab224d@jic23-huawei>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20260724234301.64660df6@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+From: Aldo Conte <aldocontelk@gmail.com>
+In-Reply-To: <20260420185333.3bab224d@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 25/07/2026 00:43, Jonathan Cameron wrote:
-> On Tue, 21 Jul 2026 16:28:19 +0200
-> Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On 20/04/26 19:53, Jonathan Cameron wrote:
+> On Tue,  7 Apr 2026 17:17:01 +0200
+> Aldo Conte <aldocontelk@gmail.com> wrote:
 > 
->> Add the IIO mailing list to VEML3328 entry in MAINTAINERS, as it is
->> standard to do so.
+>> The code stores the return value of i2c_smbus_write_word_data()
+>> in data->reg_conf; however, this value represents the result
+>> of the write operation and not the value actually written to
+>> the configuration register. This meant that the contents of
+>> data->reg_conf did not truly reflect the contents
+>> of the hardware register.
 >>
->> Signed-off-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Hmm. ok I guess, but I can't say I'm enthusiastic about this sort of
-> entry by entry update.
+>> Instead, save the value of the register before the write
+>> and use this value in the I2C write.
+>>
+>> The bug was found by code inspection: i2c_smbus_write_word_data()
+>> returns 0 on success, not the value written to the register.
+>>
+>> Tested using i2c-stub on a Raspberry Pi 3B running a custom 6.19.10
+>> kernel. Before loading the driver, the configuration register 0x00
+>> CM3323_CMD_CONF was populated with 0x0030 using
+>> `i2cset -y 11 0x10 0x00 0x0030 w`, encoding an integration time of 320ms
+>> in bits[6:4].
+>>
+>> Due to incorrect initialization of data->reg_conf in
+>> cm3323_init(), the print of integration_time returns 0.040000
+>> instead of the expected 0.320000. This happens because the read of the
+>> integration_time depends on cm3323_get_it_bits() that is based on the
+>> value of data->reg_conf, which is erroneously set to 0.
+>>
+>> With this fix applied, data->reg_conf correctly saves 0x0030 after init
+>> and the successive integration_time reports 0.320000 as expected.
+>>
+>> Fixes: 8b0544263761 ("iio: light: Add support for Capella CM3323 color sensor")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+> Applied this patch, but patch 2 will need to wait for this to make its way
+> into upstream - probably middle of the next cycle before that is in place.
+> 
+> thanks,
+> 
+> Jonathan
 > 
 
-No, this is just wrong, please don't do this. The subsystem defines the
-list and tree. Individual drivers should not duplicate the information.
+Hi Jonathan,
 
-This is just not only pointless churn but ACTUAL information
-duplication, which is never a positive thing.
+The fix this depended on (commit 1f4f0bcc5255 "iio: light: cm3323: fix
+reg_conf not being initialized correctly") has since landed in mainline.
 
-Best regards,
-Krzysztof
+Is there anything still needed on my side for patch 2 (iio: light: cm3323: use 
+dev_err_probe() in probe path) to proceed?
+
+Thanks,
+Aldo
+
