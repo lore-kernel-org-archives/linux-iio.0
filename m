@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1040522D4C3;
-	Sun, 26 Jul 2026 19:07:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B27D03C9EE5;
+	Sun, 26 Jul 2026 19:12:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785092869; cv=none; b=NvaZyy4bNw8Di8HpOkg9BdkzqJcEUhpTiZpqV7acUN6+877In+nUEd9wH1SbZu3ZhBfiBHV1Wfzcq/NEgOcMqEwflAXgRYT0LYty76uNSpX/XsIbeqTG1qNjy0/gKv5iy3j3Dw9Ph4r068JBv3lnnjfb95IcfkD+y870cIgqu0U=
+	t=1785093135; cv=none; b=f6M6HJs1Jtli/2E1jibqV/eGTza2b9YTmdFf4sURLzoWeS4vVvGEqrMR32c5+/m41rcyxkIzOwafFG3+vMT0zMheWB1P1p5R5MB5S2l8PX25YVRUWv9dWVIsPwbby3+oKtj2mz7VpLuemSq6mDw6rKvtxPEd+7HP6XOGEgJl8zI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785092869; c=relaxed/simple;
-	bh=oON23xFbkNyAMPDbMMaRT7hyMrRP2v+DFa+P6gGpUkk=;
+	s=arc-20240116; t=1785093135; c=relaxed/simple;
+	bh=1N8Q5nMLQeoEiC+bsBcNXEg7XdRHCXPbQUvVFIKePPo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Je5Kgq8kfhHfIw1gZFaxI4RsFeXS2gzAc8XQ01Jk4s0aACjg1IvQmHNLf4s5IGObwjz7grDUUE4WtWCcdzEZTOK3j4zha1P5SKPa+5h0SsaLNhaXnZNHAEK0REAeT6Y13JzTct8jCYLMPJkWW0D9kdbPPhJVdssvc7aisr9XwWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PCCQ1e9w; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=C16J57tjMHYc9/XTqcerIy7RV6EwpvdXEuAvL29GKd1iBfLyDPD5Cl3lUgZ0NIwJ3UAwK1DJfygPfsx65q8SWSaNFdwUM2rFIxsYVeBfgOBfv2RznMsvDZ4kM2vx2TPQuQAilRKSfbx1RVm9sih7MS8DCDgiciAceRlazokUJ8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GpC1YCLn; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PCCQ1e9w"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79E81F000E9;
-	Sun, 26 Jul 2026 19:07:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GpC1YCLn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 271CA1F00A3A;
+	Sun, 26 Jul 2026 19:12:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785092867;
-	bh=z/3gNw8jDqRmIukYRJCsBdb/MizwSld3mpvYQm6OfpU=;
+	s=k20260515; t=1785093132;
+	bh=rMRZhKDRi2VCNYahbTpDxAxfrw3li3aT33SeaJ/F4S0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=PCCQ1e9ww71wisnb5pRqpeqPQofLn8NUTdg63z2aHPnytvpb1Q6RHAJi1ArY+cNBv
-	 q/wMvLzgUA3OyHhscYLiWw1OrYAOsKeazhzYWBo8y0calsujmb7V6r8KhqI8WvJwCL
-	 fSVSFPpGVO6gKlW/cPXmOQbofEej6gU2zrltMdtr1qmu9G6W/ge+j3x2XWBBLYIwR5
-	 oxHadGswkMPaLXNPEnrUNihU/fna/XqR9dKrsvz8lD4f4vWXIffph5JhH/OGVeaiNv
-	 zc+pI4y5CkhyZe6BJ36AKl+CuegIiLgp5fCv50/ZkAM2u/lPioMDZP0kdNip8x+8ym
-	 c/7uBUkfNDExw==
-Date: Sun, 26 Jul 2026 20:07:38 +0100
+	b=GpC1YCLnByZBdZg6fq8990G0APGFhg03QNTXZb8OSH4ZdVNNAU77SEBfyJz2lfbsw
+	 lQpSW2l7jF7lkzUi3uI8rc7tGN3JRUh3DOdEwfJEk5njl31SutlHdRUxAPZEv7pmar
+	 aqOY8j2p22TWTsb53LcJhQzHF/del0btb2WHy6rPWcdSn6XIeEb3tXqVbjliRbItrC
+	 cIhyTmAivhE5izkgZrzj8MYuEjERwYgoMeeF5iy6fcmmk6bgCaXIC9gCBAjGNeZjpC
+	 TNJw0yf7lHoDnCGeQGUEwZOA1nSW9Vhkl3cpwg5i4AU59HtXJ3gHbbxeFP5lanFXG9
+	 lrl52l7Q1/U1Q==
+Date: Sun, 26 Jul 2026 20:12:09 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: linux-iio@vger.kernel.org, Marcelo Schmitt <marcelo.schmitt@analog.com>,
- robh@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 2/5] iio: adc: ltc2378: Add support for LTC2378-20
- and similar ADCs
-Message-ID: <20260726200738.0410749e@jic23-huawei>
-In-Reply-To: <amN5Sw-EsciZCF1V@debian-BULLSEYE-live-builder-AMD64>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <nuno.sa@analog.com>,
+ <Michael.Hennerich@analog.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <julianbraha@gmail.com>, <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v8 5/5] iio: ABI: Encourage differential voltage ABI
+ usage
+Message-ID: <20260726201209.7c400ebd@jic23-huawei>
+In-Reply-To: <9f47e67f188a910c3e025255dcd1354ef2dc026a.1784835663.git.marcelo.schmitt@analog.com>
 References: <cover.1784835663.git.marcelo.schmitt@analog.com>
-	<1c12e37f273d4f99916768e1a9b44dbae30f9d0c.1784835663.git.marcelo.schmitt@analog.com>
-	<20260723200452.082871F00A3D@smtp.kernel.org>
-	<amN5Sw-EsciZCF1V@debian-BULLSEYE-live-builder-AMD64>
+	<9f47e67f188a910c3e025255dcd1354ef2dc026a.1784835663.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,45 +50,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Jul 2026 11:40:11 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+On Thu, 23 Jul 2026 16:53:35 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> On 07/23, sashiko-bot@kernel.org wrote:
-> > Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> > - [Medium] The IIO scale factor exported for the LTC2338-18 is incorrect due to an unaccounted internal resistor divider (missing 2.5x multiplier).
-> > --
-> > 
-> > --- Patch [2]: [PATCH v8 2/5] iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs ---
-> > commit 79bd7cc98e49057401d7fb8d26685b9092c4787e
-> > Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > 
-> > iio: adc: ltc2378: Add support for LTC2378-20 and similar ADCs
-> > 
-> > Support for LTC2378-20 and similar analog-to-digital converters.
-> >   
-> > > diff --git a/drivers/iio/adc/ltc2378.c b/drivers/iio/adc/ltc2378.c
-> > > new file mode 100644
-> > > index 0000000000000..107388f870626
-> > > --- /dev/null
-> > > +++ b/drivers/iio/adc/ltc2378.c  
-> > [ ... ]  
-> > > +static const struct ltc2378_chip_info ltc2338_18_chip_info = {
-> > > +	.name = "ltc2338-18",
-> > > +	.internal_ref_uV = 2048000,
-> > > +	.chan = LTC2378_DIFF_CHANNEL(18),
-> > > +};  
-> > 
-> > [Severity: Medium]
-> > Does this chip info need a field to indicate the scale multiplier?
-> > 
-> > The LTC2338-18 has an internal resistor divider which acts as a 2.5x multiplier,
-> > but this struct doesn't currently contain a way to specify it.  
+> So far, parts that could only do differential voltage measurements were
+> only required to have a consistent labeling of their channels by complying
+> either to voltageY or to voltageY-voltageZ ABI. Over time, code maintainers
+> came to the conclusion that the voltageY-voltageZ ABI is better suited for
+> differential-only chips as it provides a simple indication to users that
+> the channels measure the difference of two inputs.
 > 
-> I guess it makes sense. Might split support for this specific part into a
-> separate patch to avoid it holding on the rest of the series in v9.
-
-Works for me. 
-
-J
+> Adjust the ABI documentation to recommend using the voltageY-voltageZ ABI
+> for chips that do only differential voltage measurements.
 > 
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> ---
+> New patch in v8.
+> 
+> The updated ABI doc might not have gotten very clear, so I'm completely fine
+> with any modifications to this patch. Also, since the documentation update is
+> minimal, doesn't add any new ABI, and might be picked up through Jonathan's
+> tree, I'm not CCing the documentaion mailing list.
+> 
+Looks fine to me.  
+
+I looked through the rest of the series and other than the thing you've
+suggested doing of dropping the slightly more complex part for now, looks
+good to me.  Feel free to send a v9 whenever you have it ready.  This is
+near enough merge I don't mind going a bit quicker than normal.
+
+Jonathan
+
+>  Documentation/ABI/testing/sysfs-bus-iio | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 5cc2e82c4997..7446e07b9ab2 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -162,10 +162,11 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Raw (unscaled) differential voltage measurement equivalent to
+>  		channel Y - channel Z where these channel numbers apply to the
+> -		physically equivalent inputs when non differential readings are
+> -		separately available. In differential only parts, then all that
+> -		is required is a consistent labeling.  Units after application
+> -		of scale and offset are millivolts.
+> +		physically equivalent inputs when non-differential readings are
+> +		separately available. Even though differential-only parts had
+> +		been merely required to have consistent channel labeling, this
+> +		ABI is preferred over the non-differential one for those chips.
+> +		Units after application of scale and offset are millivolts.
+>  
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltageY_rms_raw
+>  KernelVersion:	6.18
 
