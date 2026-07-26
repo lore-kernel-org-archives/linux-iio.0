@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786A4346E56;
-	Sun, 26 Jul 2026 20:08:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CEE5285CBC;
+	Sun, 26 Jul 2026 20:16:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785096517; cv=none; b=nq1g4PFm8wPXlVNTfkI1MJdw4DkwfVE7uywZhvlty9Xk+6PVqMKyMlGSFzJFcjvqd3ZyLUc6DVbxtQEBEmeL9iSCVwGjsqLvbdTOJbSQGVsaG/OCaBqxd6Dwf443hZD77Shg75XNqP3Kxy8Z257oQm2t2e2Oa7zoCQA3SOfXEX8=
+	t=1785096968; cv=none; b=f309Cy9chGxkgSSlOoe+VOSEpXZ5tvwRrC4vY+7qMVd7vKuHozbRcrc3csKx73/75fdm43JWS+v8haXFuRSRH1JNnz+M34c1vN+j2CKLLb81lq7YjsL532wW4sHEOHLr9dO4wlyNQbU+Le7xnO9fJY9JoNqyCkvmE1/7W/9MAW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785096517; c=relaxed/simple;
-	bh=OS8R3o8sPXu+5Er/VTsw3wTJ232UZm/BYLNhvoQPxpk=;
+	s=arc-20240116; t=1785096968; c=relaxed/simple;
+	bh=fcCdAr8xxH2dyKosq8WGnZhWmfEmcynozj3yOuJ11pA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=C/XI5gHYFXuUaHW73lhrIhXdg2gCM3JRLPRLdi3bzphvz4o6WI3tfnnNzK0LiGRb6Ftv//SVkrOf6mnDyrTnhdT3f9PWWZ824rfl/HICgyFSfp1IMnshAo+NmYYoUMWN1GU4sWrjblu9uMuR3Bsij0KG+3SVUwAcZMQe8b7oLFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pruv/9Zq; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=NjNYlX4qp4m298iA39G0lAjyiwpkT+dfE5Y4F2v2BsOcsxpBKemZsIw6n16FhWpYkSs+E0Wup8J8dLCLfuu4d7X32svIQO6VVyc+cnPAWzs9XMaXOxlZ7b6TyFj5kIz3lCg+LXrm5HbnAPHZyXJrseN32ogFe9thmMSDiA6HeoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kMSV34bT; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pruv/9Zq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C991F000E9;
-	Sun, 26 Jul 2026 20:08:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kMSV34bT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56651F000E9;
+	Sun, 26 Jul 2026 20:16:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785096516;
-	bh=DzMZkhJoSysZDRCHgIZ0EewLtn9Oo7973j/pwjoT1dk=;
+	s=k20260515; t=1785096965;
+	bh=AFxGd3miAptodylZ/HuqfE+79F68cubA4xUFsoymyHQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Pruv/9Zq55I9mCxkGVcHREPfvgUQwnrbHRQEIigAEtXRRWYuUwAstK9Q5UKGmivoH
-	 3CI0iXIbJwpd6fQ5+2HEXKP0GNmdNDv6CRsm2vCMaOqQ/dmVSm20Cj7vfWQi7iNQ8V
-	 MRK9iu/IeTcOLJ92iQWRMU2JwEHwPvWr0Khos5c5paGnf+yV2XgX9hdzqDL6VJNoyh
-	 BgOOoVuLbbzvvY0r5ZJ4egs1EkWD4Yir6H3DgUp52UCge3yz/lZTFJBPkXLM1Vmn/7
-	 rZQsA2nbHGZCbPGUtou6JePF8EdFluhWd2pzOHi0XnGxrqDpCi/VisnjW14mI86vwY
-	 mozmDwzNTWl3g==
-Date: Sun, 26 Jul 2026 21:08:30 +0100
+	b=kMSV34bTOpp629cxCGpvkpWyLGBSPWftqcDCX4nEToSihMvqnx09RfkBWj2TBjiH7
+	 I9DQaQQm/XAIhxgItVTE4Z02L+iLUPsNO030UaKX7NmqV4QG0hoayIIr9ihqcp778w
+	 hOHjRxkuyd0KdZA54v438VSJHoJDmqrPlEee8IZsuiZuV35ndvokTMoBoacVW+xj/L
+	 FAwhAs2Y4hYjrQjP2hQSQ78S1v4ckHqjF4Kma3Z2E2CckzMeko+gKxMRKo3yA+8lHr
+	 n2yivhjgLS+p1VVuUSCAQrcL4KPgkrBlgCBZpP/Hip0tVecjRhgKhB1tMGyUP4SqBV
+	 ypePcr3ES2RoA==
+Date: Sun, 26 Jul 2026 21:16:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Gustavo Silva <gustavograzs@gmail.com>
 Cc: Pan Chuang <panchuang@vivo.com>, David Lechner <dlechner@baylibre.com>,
@@ -39,11 +39,12 @@ Cc: Pan Chuang <panchuang@vivo.com>, David Lechner <dlechner@baylibre.com>,
  <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v2 03/13] iio: chemical: Remove redundant
  dev_err()/dev_err_probe()
-Message-ID: <20260726210830.2eca3e9a@jic23-huawei>
-In-Reply-To: <amVAkbdREpNVZahV@archlinux>
+Message-ID: <20260726211601.2b7aef65@jic23-huawei>
+In-Reply-To: <20260726210830.2eca3e9a@jic23-huawei>
 References: <20260724030524.607185-1-panchuang@vivo.com>
 	<20260724030524.607185-4-panchuang@vivo.com>
 	<amVAkbdREpNVZahV@archlinux>
+	<20260726210830.2eca3e9a@jic23-huawei>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,33 +55,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 25 Jul 2026 20:16:15 -0300
-Gustavo Silva <gustavograzs@gmail.com> wrote:
+On Sun, 26 Jul 2026 21:08:30 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Fri, Jul 24, 2026 at 11:03:38AM +0800, Pan Chuang wrote:
-> > Since commit
-> > 55b48e23f5c4 ("genirq/devres: Add error handling in devm_request_*_irq()"),
-> > devm_request_irq() and devm_request_threaded_irq() automatically log
-> > detailed error messages on failure. Remove the now-redundant
-> > driver-specific dev_err() and dev_err_probe() calls.
+> On Sat, 25 Jul 2026 20:16:15 -0300
+> Gustavo Silva <gustavograzs@gmail.com> wrote:
+> 
+> > On Fri, Jul 24, 2026 at 11:03:38AM +0800, Pan Chuang wrote:  
+> > > Since commit
+> > > 55b48e23f5c4 ("genirq/devres: Add error handling in devm_request_*_irq()"),
+> > > devm_request_irq() and devm_request_threaded_irq() automatically log
+> > > detailed error messages on failure. Remove the now-redundant
+> > > driver-specific dev_err() and dev_err_probe() calls.
+> > > 
+> > > Signed-off-by: Pan Chuang <panchuang@vivo.com>
+> > > ---
+> > >  drivers/iio/chemical/ccs811.c      | 4 +---
+> > >  drivers/iio/chemical/ens160_core.c | 2 +-
+> > >  drivers/iio/chemical/scd30_core.c  | 2 +-
+> > >  3 files changed, 3 insertions(+), 5 deletions(-)
+> > >     
 > > 
-> > Signed-off-by: Pan Chuang <panchuang@vivo.com>
-> > ---
-> >  drivers/iio/chemical/ccs811.c      | 4 +---
-> >  drivers/iio/chemical/ens160_core.c | 2 +-
-> >  drivers/iio/chemical/scd30_core.c  | 2 +-
-> >  3 files changed, 3 insertions(+), 5 deletions(-)
+> > Reviewed-by: Gustavo Silva <gustavograzs@gmail.com> # for ens160
 > >   
 > 
-> Reviewed-by: Gustavo Silva <gustavograzs@gmail.com> # for ens160
+> For some reason b4 is adding a review from Andy to this one
+> that I can't find either locally or on the list (not for v1
+> or this).  I've edited it out by hand.
+> 
+> Maxwell did give a tag though on v1 so I've kept that.
+Ah. Andy did give it, and the author should have picked it up
+after following the condition attached in reply to v1.
+
+> 
+> Thanks,
+> 
+> Jonathan
 > 
 
-For some reason b4 is adding a review from Andy to this one
-that I can't find either locally or on the list (not for v1
-or this).  I've edited it out by hand.
-
-Maxwell did give a tag though on v1 so I've kept that.
-
-Thanks,
-
-Jonathan
