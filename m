@@ -1,65 +1,130 @@
-Received: from out-170.mta0.migadu.com (out-170.mta0.migadu.com [91.218.175.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BC8C3BBA1E
-	for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 17:59:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0261305669
+	for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 18:03:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785088788; cv=none; b=j0Xh1A8ub0OBYtDMs6X0lI9vW7azAPSzvXX8PssTUvd88aP3Mwvafel6EB3aQ+5M0ZMZzCxVkVN9lKesoZCkoP7YKlfC9Xw/xd/mJEo4FNXC+6cZTj+gQFW/fyW0+mkNwsUZy342jtaXTzEvWiU3B3yqeW0a5N6UUczi84C2URM=
+	t=1785089036; cv=none; b=kHGgFKHheO4Iqkb8FqTtdZUog8qdVlAnod54miMfCO+QFvsZxpqqup3zLwphz71g/J3nUrJaDXgrs+CrGuqxhCDWPIRJuq73LDwkfYwjQIvlU2SWrX/u+NxdO4/UFStvmrmGGwxUCbRdGSLJz3jUaDE6aprRzWyj+A9WQYC3UBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785088788; c=relaxed/simple;
-	bh=cD9r5rgbyeEJeZPEcQsZu54NOuAAt1fqMW53neQG9qo=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=OD+Q741I7OGSCegrntpvb3B/z/JxygI8g8If9xWwJMfndnViRwB6rfkMiZHRsw9p8wFdcZmOOjQ3HJeAPW/18ORwRI7k0kKNZDboSd0Lte7SnXO2Ic6qfdkJQ+5hXwIoj8k4ln535d25bzw3UtK8Tb2kubDMsPBhNrnbJiLZgms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=RRywLx8g; arc=none smtp.client-ip=91.218.175.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1785089036; c=relaxed/simple;
+	bh=q9dAk8eF3iiJ+cl/0uS54dQjKdefX8YMOgEw3GcSL6o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PkvVGHrPbfGHsDBdqoUhdmnVVQ9Rd1npazvwb9d/s3+XxN307EFlJfT+KldTKQ3nIXfgToYqbKX5CliXrt7av6yk5MM/qGOmlnUGdu2W1waRbuK2l2bpCjS4ShAy1Qser7u8442B9KH7BjHPINnu6SmZ6k048d92Am6cHFX/594=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sF554Ke1; arc=none smtp.client-ip=209.85.215.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="RRywLx8g"
-Message-ID: <eda63b141f49e544efb2accfbe5d5a6bc9e801bd.camel@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1785088782;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cD9r5rgbyeEJeZPEcQsZu54NOuAAt1fqMW53neQG9qo=;
-	b=RRywLx8g7BmkIlcVBi7dG7TZBt9VkvsTsdmY2b9avbGa5ApfO+zoHWs5B07BotMKcHY+Et
-	2dz6bFYqlkiANZgKhMe9wnpjUS6mAjWZJhYcioVrR+sbWIoOF1ZkX+7UMJna+2FrwqIKCd
-	MgHDC9yYJqO+KGkQHKlbqr1X06Jb7G0=
-Subject: Re: [PATCH] iio: chemical: bme680: Use dev_err_probe()
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Siratul Islam <siratul.islam@linux.dev>
-To: =?UTF-8?Q?Vojt=C4=9Bch_Kr=C3=A1tk=C3=BD?= <vo.kratky@seznam.cz>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
- "(The Capable Hub)"	 <u.kleine-koenig@baylibre.com>, Matti Vaittinen
- <mazziesaccount@gmail.com>,  Siratul Islam	 <email@sirat.me>, Bjorn Helgaas
- <bhelgaas@google.com>, Takashi Sakamoto	 <o-takashi@sakamocchi.jp>, Danilo
- Krummrich <dakr@kernel.org>, "open list:IIO SUBSYSTEM AND DRIVERS"	
- <linux-iio@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Date: Sun, 26 Jul 2026 23:59:33 +0600
-In-Reply-To: <20260726152111.171339-1-vo.kratky@seznam.cz>
-References: <20260726152111.171339-1-vo.kratky@seznam.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sF554Ke1"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c9c26a5fb98so1360754a12.0
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 11:03:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785089034; x=1785693834; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PdwZxxP8oqz0gMmIElZLBFtAWKuHTGQms5/kGxcVlaA=;
+        b=sF554Ke1PMvrl1QSPfxB+mWk4DuccVheqT9cTBhUrQfCVueRGeGvYvw0dNnYkr+ewY
+         9xRI03yO3kSfl5Vc/e0uLA1jArl6H70wBxTju2pnGI+fmHFSjUjIq/PPQiJ0O5sdzqws
+         kgY8Z4ByJMYCwDUoK2pZnbXsePZP2+OoZgJ275DUFm7nWSsbcwm8ACTLVkuu6yJGBom2
+         WevuLyScGg0Nu6Liu88ILkh6Goz0r2l8ms7d4szecVEpcWw7NRKqR8FTJim6qp8SMAuT
+         FVYef6NR+vYYpOypTwalDIFGcgwsIK6AS6hdisntBHGt5pOEoDGSrIf/xNCokvz7Suab
+         PPHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785089034; x=1785693834;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PdwZxxP8oqz0gMmIElZLBFtAWKuHTGQms5/kGxcVlaA=;
+        b=N5J4ZvlQLoAx6glc3CjgqxLPD9oCNnbB6ZIRFp0zADg+mgZ8uI0OyE4VTb5Yo0a8E5
+         24dzb3qCukYChWG4eW54QPB9yLAh01mWNjT2Ch0Jz46ICtceLKfN3IqJsGeZ7ft3S8u1
+         cl1fhVFpsepfri54ZjuqdsS8PYH6ZVH0cIyyUObT3PUqtth9fZQhsjPWvOvY6r1ENU9X
+         lynhS7dJbO0acREcpfOp+8HG53m4pyXGxG5v6YZTtHIGMSOAJG6cwhi2anp5wZcH69cO
+         FPpzBN7SwqPAkRwISvHBARqw9P5G+u4bPd15H75f53n33nv2NRLKk5nbCMRpmNhKbSwJ
+         z51Q==
+X-Forwarded-Encrypted: i=1; AHgh+RqtEyjAtALh000lu0WYIa4jGlXV2xhkuJBB/J6WtAnC6gXvyEvc1HUIY7ddB5M1G1EXFgc2Pgc5l6I=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxhjf7P3iy1LUOq5dQ1dQU3O5Ccea7b/J68Bz7rMDwhuz1qU8M0
+	wVqQKz9xWHlOHJcz4f0u3Sw132vAfpbbIxGcSEoiT1eUXpoLx4f64yxz
+X-Gm-Gg: AR+sD12alwYgmfepwZBEc9sBPuPwSD52qGdhQBRZ/cqjuKjhyKDVyVTdz3sO/d7yIut
+	5NWFuORkJeyEsyPLJK7ZN9/Y9MEqSQY1MVXiEuRUkVBTZpEd47OGivT1vT8wtJmzuVggkIcUC5f
+	i8QoeAV+QxcpXJgYxM2RszeivhWCXsX+h4RrlRSMEJVJuABnWyJho9KtRv2EQ44O7uSS2936H/3
+	p07Em0BC4geyjh1rKI5iOy1u+0y0muFIKEHm8QDl/FSOott/1OjZ2b2kS8k8hXC8Mnnqbx+mqv1
+	jnflJXOofA4tmsBUW0FBgYFwQImoDsSgz9WS9rE1QN2pXWVeZvIMSADjc4JczkJ6TQ9o6HgINL7
+	kHzD9DCJTD975U0r3RyR7CIx7YHTJgA/ND0eBcdALqpyVwQamMRvls4HgSENub8332UmQcxIVPQ
+	Ewh1LrONPjLgo=
+X-Received: by 2002:a05:6a21:6b8c:b0:3c3:8315:80b6 with SMTP id adf61e73a8af0-3c67267e948mr7535903637.32.1785089033798;
+        Sun, 26 Jul 2026 11:03:53 -0700 (PDT)
+Received: from ubuntu.. ([2405:201:8026:213e:30b7:9ffb:4fac:ad00])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc3e1285sm24729671eec.5.2026.07.26.11.03.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jul 2026 11:03:53 -0700 (PDT)
+From: mdshahid03@gmail.com
+To: Jonathan Cameron <jic23@kernel.org>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Mohammad Shahid <mdshahid03@gmail.com>
+Subject: [PATCH] iio: adc: bcm_iproc_adc: Use dev_err_probe() for resource acquisition failures
+Date: Sun, 26 Jul 2026 23:33:19 +0530
+Message-ID: <20260726180319.315016-1-mdshahid03@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-On Sun, 2026-07-26 at 17:21 +0200, Vojt=C4=9Bch Kr=C3=A1tk=C3=BD wrote:
-> Used dev_err_probe() instead of dev_err() to simplify error handling.
->=20
-> Signed-off-by: Vojt=C4=9Bch Kr=C3=A1tk=C3=BD <vo.kratky@seznam.cz>
-> ---
-Reviewed-by: Siratul Islam <siratul.islam@linux.dev>
+From: Mohammad Shahid <mdshahid03@gmail.com>
 
---
-Best regards,
-Sirat
+Replace open-coded dev_err() and error returns with dev_err_probe()
+for failures from syscon_regmap_lookup_by_phandle() and devm_clk_get()
+in the probe path.
+
+This simplifies error handling and properly handles deferred probing.
+
+Signed-off-by: Mohammad Shahid <mdshahid03@gmail.com>
+---
+ drivers/iio/adc/bcm_iproc_adc.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+index cf4738b16e62..62f12eecc8b2 100644
+--- a/drivers/iio/adc/bcm_iproc_adc.c
++++ b/drivers/iio/adc/bcm_iproc_adc.c
+@@ -522,19 +522,16 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 
+ 	adc_priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+ 			   "adc-syscon");
+-	if (IS_ERR(adc_priv->regmap)) {
+-		dev_err(&pdev->dev, "failed to get handle for tsc syscon\n");
+-		ret = PTR_ERR(adc_priv->regmap);
+-		return ret;
+-	}
++	if (IS_ERR(adc_priv->regmap))
++		return dev_err_probe(&pdev->dev,
++				     PTR_ERR(adc_priv->regmap),
++				     "failed to get handle for tsc syscon\n");
+ 
+ 	adc_priv->adc_clk = devm_clk_get(&pdev->dev, "tsc_clk");
+-	if (IS_ERR(adc_priv->adc_clk)) {
+-		dev_err(&pdev->dev,
+-			"failed getting clock tsc_clk\n");
+-		ret = PTR_ERR(adc_priv->adc_clk);
+-		return ret;
+-	}
++	if (IS_ERR(adc_priv->adc_clk))
++		return dev_err_probe(&pdev->dev,
++				     PTR_ERR(adc_priv->adc_clk),
++				     "failed getting clock tsc_clk\n");
+ 
+ 	adc_priv->irqno = platform_get_irq(pdev, 0);
+ 	if (adc_priv->irqno < 0)
+-- 
+2.43.0
 
