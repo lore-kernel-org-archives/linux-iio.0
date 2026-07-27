@@ -1,47 +1,48 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FB5D3FF1B8;
-	Mon, 27 Jul 2026 12:28:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DFA40096C;
+	Mon, 27 Jul 2026 12:28:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785155301; cv=none; b=E4sxQ6upnhU8HrYYNn/f70xOj+e7EdvFcZkRh54zD8sbY895oT8nNZI7vGhvfyRq2Lvl728ZWYcwCxli7AaIHJETrTlw6T/Gc5UzkqGqIRpLMq8yqbOoRqcC/70fcLAN0mhMJHacGbp2g66u/73Kde+yChW6bSk7YkDP4Ux+tDc=
+	t=1785155302; cv=none; b=Y3mKowPrKFRljpcsSQyZlkDBCyWm7yVyyL+XtFCstQYGU3bR1FCZpPy32xvRTAwlOyA3bPPjPP/NDMkYnaynrkrtk6mEido7E/dXXWE2jmYuvmvoRTaRwWcEwfYPNsHTcaDdLDFqd+qrM7jvyO8axH6E8OP/Q0ALsZbRHP0Hxp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785155301; c=relaxed/simple;
-	bh=Mbj4w0TDA4+w0y1P2uajyobwOmyRYUIqUhiltOTMV0Y=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=UhjlpA/nHDEp8UJLPz44vpjKd0S0XgmzsH/txs0iIeJuBcQ3Nbm49d6Ih3kkvY1HMlkCc2a3IQ39NqGp7IHt+bBmzPT4uFJ6dG8mplgVBXgSX//XyflwmhfYH6RqjPlDNFi9nSrs883nZ1c8nAwQPkNFYAXnlsDqJyCrkRPKyMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=OhY7Qm5m; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1785155302; c=relaxed/simple;
+	bh=u15qrM0OxZ0RvZIq7htTa72mSwEegJY4xHMEJ2Ga+Kw=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Qy+UDfQu9GJ43iK3uqjyGSWXNzvVb9W6AgrC405gqltrLiVvlOjOvbX5DcaH2TaDSJ8kP/f8NbRJKdwwXsU2sr/DICEu4STAHDxgHLfmAgXOMFddIcbdVnUpt4kBAJHXGEwWcYxiVWh1KxSMRS42NnXfnNlsV6Oxq/Djd2b7zQE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=kMgOgkm1; arc=none smtp.client-ip=68.232.153.233
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="OhY7Qm5m"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="kMgOgkm1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785155299; x=1816691299;
-  h=from:to:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Mbj4w0TDA4+w0y1P2uajyobwOmyRYUIqUhiltOTMV0Y=;
-  b=OhY7Qm5mrkpr5xS0XclbrO2qQCSu6fDabtDUVGeJfaO+ChPOlUIiVois
-   Q5ZCfGB3dKVjrM6PemdB/daIZUlvKx8rZNNfQsU0gsmn/IJyrUvW3ot1J
-   UbM/BDpDDD//Zn7rX2eqaDea7zlapQBQhrx56xO6OvJBPyJMcDJL6DNzz
-   BAXgHSpvFQpqY3NPmtAlQE4aoR3ovAXvVr3mh+yD5n10eCsXhSym1hZQN
-   Uxf3KMFF+nz8JyWDaPsWPE3hIr0qVya6H81XmDz9afykRrLaM5cAEE/YQ
-   oJxGEu/Fl0VJ6fG9fPFOYEwAmR/X67J98TG7PxX4U41f9Me/0BQilBlKN
-   A==;
-X-CSE-ConnectionGUID: YUCQaNk4QbSeoV2azYwxBw==
-X-CSE-MsgGUID: lgSZ8HG2QXK0XyLxMkzKJg==
+  t=1785155300; x=1816691300;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=u15qrM0OxZ0RvZIq7htTa72mSwEegJY4xHMEJ2Ga+Kw=;
+  b=kMgOgkm1q0jtUoGNOzTXZOQdNWp0psTVOS9vSBSfmwe1RUYrpoue3S2M
+   nX7pjem9PuWbVEAAQawtO/ikBLykrfVfv1cCBFOkdyvgwRbKUnrbnwcp3
+   TyS41ParFf2Dyo/C02zX/Zz1rgJ+FlfKAQVSO5YuAZaIV+pDzq+KAHH+A
+   sFoYIFJWtk5HP48y+CooYoROv+8HH2OBkaLiQm69h1CP/Om3ZDCwsmZ+N
+   ariGlYamzt3zOwnuNTPUMCen2PUMM7vVjuVDq++PT7Y69iyFULNjohzSs
+   ql9U4MeZG6156X3RmXLv6qhgO2sHIIzGTd0W4DeiHiUXhnkPpERLk0NS/
+   Q==;
+X-CSE-ConnectionGUID: opGnupBsQuiohLycbo45AQ==
+X-CSE-MsgGUID: yQdRrD+DRR+iH4IQXKiaQA==
 X-IronPort-AV: E=Sophos;i="6.25,188,1779174000"; 
-   d="scan'208";a="70709540"
+   d="scan'208";a="70709542"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jul 2026 05:27:08 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2026 05:27:09 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
+ chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Mon, 27 Jul 2026 05:26:48 -0700
+ 15.2.2562.43; Mon, 27 Jul 2026 05:27:08 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Mon, 27 Jul 2026 05:26:38 -0700
+ 15.1.2507.58 via Frontend Transport; Mon, 27 Jul 2026 05:26:58 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -54,136 +55,100 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 00/16] Add thermal management support for sama7d65
-Date: Mon, 27 Jul 2026 17:56:17 +0530
-Message-ID: <20260727122633.117435-1-varshini.rajendran@microchip.com>
+CC: Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v4 02/16] iio: adc: at91-sama5d2_adc: use cleanup.h for NVMEM buffer
+Date: Mon, 27 Jul 2026 17:56:19 +0530
+Message-ID: <20260727122633.117435-3-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260727122633.117435-1-varshini.rajendran@microchip.com>
+References: <20260727122633.117435-1-varshini.rajendran@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Thermal management system of sama7d65 includes:
+Use __free(kfree) and __free(nvmem_cell_put) cleanup helpers in
+at91_adc_temp_sensor_init() to simplify error handling paths.
 
-- Temperature sensor as a part of ADC channel
-- Temperature calibration data retrieved from the OTP memory for
-  improved accuracy of the readings
-- DVFS implementation
-- Thermal system with DVFS as cooling cell.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+---
+ drivers/iio/adc/at91-sama5d2_adc.c | 33 +++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 19 deletions(-)
 
-This patch series adds support for the following:
-
-- Tag-based packet lookup for the NVMEM OTPC driver while preserving
-  backward compatibility with existing ID-based access
-- Temperature calibration layout handling in the ADC driver to support
-  different SoC-specific calibration data formats
-- ADC driver adaptation for sama7d65
-- DT nodes for OTP, ADC, temperature sensor, and thermal zones for
-  sama7d65
-
-Changes in v4:
-	- Reworked cleanup.h usage: define and assign __free() variables at point
-	  of use after early returns, add DEFINE_FREE(nvmem_cell_put, ...) for
-	  nvmem_cell cleanup
-	- Split patch 3/13 into two: refactoring (layout struct) and tag validation
-	- Used struct u32_fract for p1 scaling factors
-	- Return -ENODEV instead of -EINVAL when layout is missing
-	- New precursor patch to remove unnecessary casts in of_device_id
-	- Removed trailing comma from single-line initializer array
-	- Moved emulation mode validation into a separate patch
-	- Added FourCC validation for packet tags; invalid tags fall back to ID-only
-	  access
-	- Mentioned FourCC in commit message and comments
-	- Used intermediate variable for off % 4
-	- Rename tmp → mr_val, val→ tag
-	- Addressed style issues: Removed comment blocks, put functions in
-	  one line
-	- Remove blank line after compatible in regulator node
-	- Reorder properties.
-
-Link to v3: https://lore.kernel.org/lkml/20260630093603.38663-1-varshini.rajendran@microchip.com/
-
-Changes in v3:
-    - Updated the commit message with reasoning for a new compatible
-      without a fallback (sama7d65-adc)
-    - Split patch 2/12 into two patches: a patch with cleanup.h changes only
-      and the rework patch
-    - Added comment explaining the TAG ACST
-    - Fixed the holes identified in the at91_adc_platform struct by
-      pahole tool
-    - Dropped labels in the dt document example
-    - Added temp variable in mchp_otpc_resolve_packet() to avoid % and /
-      operations in the same instruction (avoiding compiler optimization)
-    - Added the SoC details in the ADC driver Kconfig help section
-    - Maintained reverse xmas ordering in declarations
-    - Fixed node ordering (alphabetically) in the board dts file
-
-Link to v2: https://lore.kernel.org/lkml/20260623105944.128840-1-varshini.rajendran@microchip.com/
-
-Changes in v2:
-    - Preserved backward compatibility with ID-based packet lookup to
-      avoid breaking existing users
-    - Removed sama7g5 DTS changes (not needed with backward compatible
-      driver - will be sent later to update to the new access method)
-    - Preserved the packet data structure returned not to break the
-      consumers
-    - Reworked ADC driver to use a calibration layout structure instead of
-      hardcoded indexes, for scalability
-    - Fixed kernel-doc Return section
-    - Removed stray blank line in mchp_otpc_read()
-    - Removed unnecessary UL suffix in writel_relaxed()
-    - Dropped unused packet types
-    - Fixed stray spaces before exclamation marks in error messages
-    - Added ASCII representation to TAG macro definition
-    - Removed odd MAX enum with trailing comma and refactored
-    - Moved DTS patches to the end of series
-    - Used cleanup.h helpers for NVMEM data buffer handling in ADC driver
-    - Combined multiple v1 patches into logical units
-    - Used correct subject prefixes for dt-bindings patches
-    - Used fixed-layout NVMEM syntax for sama7d65 DTS and binding
-      instead of deprecated syntax
-    - Added cpu-supply linkage for proper DVFS voltage scaling
-    - Updated stale stride=4 comment in dt-bindings header
-
-Link to v1: https://lore.kernel.org/linux-arm-kernel/20250804100219.63325-1-varshini.rajendran@microchip.com/
-
-
-
-Varshini Rajendran (16):
-  dt-bindings: iio: adc: at91-sama5d2: document sama7d65
-  iio: adc: at91-sama5d2_adc: use cleanup.h for NVMEM buffer
-  iio: adc: at91-sama5d2_adc: rework temp calibration layout handling
-  iio: adc: at91-sama5d2_adc: add condition to validate calibration data
-  iio: adc: at91-sama5d2_adc: remove unnecessary casts in of_device_id
-  iio: adc: at91-sama5d2_adc: adapt the driver for sama7d65
-  dt-bindings: nvmem: microchip,sama7g5-otpc: add sama7d65 and dt node
-    example
-  nvmem: microchip-otpc: nvmem: microchip-otpc: add tag-based packet
-    lookup
-  nvmem: microchip-otpc: nvmem: add emulation mode and OTP access
-    validation
-  ARM: dts: microchip: sama7d65: add cpu opps
-  ARM: dts: microchip: sama7d65: Add ADC node
-  ARM: dts: microchip: sama7d65_curiosity: Enable ADC, DVFS
-  ARM: dts: microchip: sama7d65: add otpc node
-  ARM: dts: microchip: sama7d65: add cells for temperature calibration
-  ARM: dts: microchip: sama7d65: add temperature sensor
-  ARM: dts: microchip: sama7d65: add thermal zones node
-
- .../bindings/iio/adc/atmel,sama5d2-adc.yaml   |   1 +
- .../nvmem/microchip,sama7g5-otpc.yaml         |  28 +++-
- .../dts/microchip/at91-sama7d65_curiosity.dts |  27 ++++
- arch/arm/boot/dts/microchip/sama7d65.dtsi     | 131 +++++++++++++++++
- drivers/iio/adc/Kconfig                       |   2 +-
- drivers/iio/adc/at91-sama5d2_adc.c            | 132 ++++++++++++-----
- drivers/nvmem/microchip-otpc.c                | 133 ++++++++++++++++--
- .../nvmem/microchip,sama7g5-otpc.h            |   4 +-
- 8 files changed, 404 insertions(+), 54 deletions(-)
-
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index e8a5285bb6d4..4a4a25f3c715 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -35,6 +35,8 @@
+ 
+ #include <dt-bindings/iio/adc/at91-sama5d2_adc.h>
+ 
++DEFINE_FREE(nvmem_cell_put, struct nvmem_cell *, if (_T) nvmem_cell_put(_T))
++
+ struct at91_adc_reg_layout {
+ /* Control Register */
+ 	u16				CR;
+@@ -2249,33 +2251,28 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+ 				     struct device *dev)
+ {
+ 	struct at91_adc_temp_sensor_clb *clb = &st->soc_info.temp_sensor_clb;
+-	struct nvmem_cell *temp_calib;
+-	u32 *buf;
+ 	size_t len;
+-	int ret = 0;
+ 
+ 	if (!st->soc_info.platform->temp_sensor)
+ 		return 0;
+ 
+ 	/* Get the calibration data from NVMEM. */
+-	temp_calib = nvmem_cell_get(dev, "temperature_calib");
++	struct nvmem_cell *temp_calib __free(nvmem_cell_put) =
++		nvmem_cell_get(dev, "temperature_calib");
+ 	if (IS_ERR(temp_calib)) {
+-		ret = PTR_ERR(temp_calib);
+-		if (ret != -ENOENT)
++		if (PTR_ERR(temp_calib) != -ENOENT)
+ 			dev_err(dev, "Failed to get temperature_calib cell!\n");
+-		return ret;
++		return PTR_ERR(temp_calib);
+ 	}
+ 
+-	buf = nvmem_cell_read(temp_calib, &len);
+-	nvmem_cell_put(temp_calib);
+-	if (IS_ERR(buf)) {
+-		dev_err(dev, "Failed to read calibration data!\n");
+-		return PTR_ERR(buf);
+-	}
+-	if (len < AT91_ADC_TS_CLB_IDX_MAX * 4) {
++	u32 *buf __free(kfree) = nvmem_cell_read(temp_calib, &len);
++	if (IS_ERR(buf))
++		return dev_err_probe(dev, PTR_ERR(buf),
++				     "Failed to read calibration data!\n");
++
++	if (len < AT91_ADC_TS_CLB_IDX_MAX * sizeof(*buf)) {
+ 		dev_err(dev, "Invalid calibration data!\n");
+-		ret = -EINVAL;
+-		goto free_buf;
++		return -EINVAL;
+ 	}
+ 
+ 	/* Store calibration data for later use. */
+@@ -2288,9 +2285,7 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
+ 	 */
+ 	clb->p1 = clb->p1 * 1000;
+ 
+-free_buf:
+-	kfree(buf);
+-	return ret;
++	return 0;
+ }
+ 
+ static int at91_adc_probe(struct platform_device *pdev)
 -- 
 2.34.1
 
