@@ -1,348 +1,155 @@
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 988EA313E36
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:10:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 145F9377AAE
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785161457; cv=none; b=Xbvn6vnvXLbR6l69KOPgIPf2SbPjbIQRz7aZXblM3vZxh8oUkE2llhhi9d7Jt8kDJ4SreZWv/jxJdORF7O/JNzKVxLnN1e65aOpmNvI+nz4mn6j4c91dJCpXQ7AxGj1yCVSrE5NNbrFydIwnvM5V4AIw0aAniqGJIHHrhgjPBh8=
+	t=1785162373; cv=none; b=EOoCb2jqRGFszBI7KSjrlUa/Z+rrAcs/sPTGnaOb/Vkl0IxdoryjvJwLYT4Y/8MzNPOuL9SHJfHQHvjXKlHy5CS3mLSuAxJEFsNTu+O3ZV5QXCkbU+ZMVZebifG8mNWKWnH8DayfUtpGt/s9s1hR0G3FUy8wo+HnRGLJPAAODC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785161457; c=relaxed/simple;
-	bh=uWnAP2LbvdcP6Yf+1fF1qrKIY2JUdai3OgzS72ukHqg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=oYF1xqMN6ZAxNhuOmFzNb87UNg0E25C9JUILpRm0pC0nYbVQXgaEiuBxsRX57NZKdjKF1i2LKZ6jykHHsJzGi+aMpHuWYipvCKKEYrsNNfZ4GtTKrnd2ENEkqYhPil+dgokeVZtZ4hxfPoe1ntVW5uG0CUgiU8HDCW0eymqdoR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=LGbecNtz; arc=none smtp.client-ip=209.85.161.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1785162373; c=relaxed/simple;
+	bh=xBrj8om7cZyJutOzs5H4xLwjicqpb4hECpicCs4d5Pw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p9EkCLqHo3Dlr50JrM8TAsFZ0TxbnO1Dnx5lGH4CqfDtC3UnOX/r+8Gt3hXLUf83+Ew16jJ65h/rFsZ1l4J+cQKKQeuKbe1Toq8Brru+rJKCuFqeXq/hrVeLESSDyRKlBHSseqv5U6Dw/ZUtXSxucVN4vh3uKaEDME/rw7sUqd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Fw39adlV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=hmZ3S4mR; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="LGbecNtz"
-Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-6a198cdc4e4so1198995eaf.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:10:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Fw39adlV";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="hmZ3S4mR"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66RDlqtk3787376
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=oy0mH4sOH578efJ6Gq+6ZULd
+	BJ7VNf5OuMq0T7ZLoOs=; b=Fw39adlV1Dw8yAT9DITYXrSv26tgBA3e66fmtToj
+	mEVio62D5SLx4V4uI6n93+d1Xj+TGTvIRCZcvBCPWqBTFzLGBv/RiMrHv44f/zv+
+	QQ8qAIVgJYIeWVj0EvXWyJFYhXyacy0MUJrDYvQ3D2qREgMg3hoWvu5BzlZbF47j
+	NvZGAzb1mfNwCpP55/rKGOzS05XRUFsgIiRdTRE//Rekd6dL7lpZdjAKEbIg34Yd
+	lDlGv+aAHtDdho7apKCxjgcKbljJ0WS3MK2LUgiKfOHbcEoLqqxnhvrQNzYJXDCy
+	yfWGp5Pno/s2bqeEidhQdCjqNE+wndeiX0PMW/q/pQn8QA==
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fp3v2hc1g-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:10 +0000 (GMT)
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-52769fc3f2eso34046621cf.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785161444; x=1785766244; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=MfP6H4Bb4FYzzCvuX4aX45TcJpR2nYosbcwMTiIpNho=;
-        b=LGbecNtz7XAtRicaZ7vY7J35bpqQfZo3dNsnkHdHqceDLKaa/KQ1tr/Q3zL79pVbkH
-         AIihpPvd3wH5cgl5oUg7Etxk4pZSO15QhcoJjdhI/s1MMOz4xkFEBikfWxOL1ehWP8jj
-         Ud3yqIKR7Q9jMyEpylSkeHs+Xb3CphSkws0uTchcIg0IHTAcrrIeenlpDjuFsxpzVUD5
-         pPgsTIzHK85GmfwJ8q3DMoixW79yjDY34sui9gTP+P/hffXnSxIQfuw9FCIGv2VItK2b
-         ZKhH+3jimzf9N6DQzpY9netx/rN+NLkcKyuV8NbaGUypvR3SLq1IGxfJ2AwK6zl7z2aD
-         FC/A==
+        d=oss.qualcomm.com; s=google; t=1785162370; x=1785767170; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=oy0mH4sOH578efJ6Gq+6ZULdBJ7VNf5OuMq0T7ZLoOs=;
+        b=hmZ3S4mRIG7RedK8Sjza+l8w+50hMFUF9yWQLS/FaiGBza+BMeJsHhpJMrvJxIAtGg
+         rXvGFCvMdK3aHeaPx4rUc1hdNEWmR/qvKt4hp1FPzVvXk0JWg8pf7p8iXFKOYCIyM+vk
+         EnZ5+FIgWzyO/ZjQeGnYusz77SkDaby5jNHuE+zKxqN2g2JfxuJRw/TiwcYh7pRVweun
+         G4t7XVekzuV6BbZKg1DhukyZd8ITGl2kPCmSEz/31qtRkpzgK5NWlSXkvNtzT37z9rd6
+         3Bdo1PqR5IjxocRzkqNxwm1/01j9pwSXrVeuIIcYeuWGJGv7CYFrvpz0mmwm7tvBGwXD
+         I7pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785161444; x=1785766244;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20251104; t=1785162370; x=1785767170;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=MfP6H4Bb4FYzzCvuX4aX45TcJpR2nYosbcwMTiIpNho=;
-        b=mclYfLfTwp6oKzLYtTQQc/bY/cjoqdyeIMVAWtUFKQxGuO2rfE03xo5fa+9NCh0H3x
-         eSPIKQRmi6ojHAV8er1kUNRPbSuf6eACa+22f/yMxme8+dM5ribTajRY8NwSLJyuAslU
-         wWCwl4AmPc2g5vwOZ1Kdj3zpenuy6p2O51OjkZDs1EZ7PEQWdxj9aaoYpmfJuUgsaNb2
-         tPAvqoxSO82olEPVGCmRAs48SyOd79m+cNg/B1BjtaaIzvVY9jkTBDo/Y7zGUjY0KjmP
-         axsVH73d5nvfKrqALeK9ZeBXBrnDaepJdiANeu4S2eNrrMSLeVMveHx3OgtBsjbZQPfO
-         axqw==
-X-Forwarded-Encrypted: i=1; AHgh+RrZlHJwAfWxzrixnhfTkzBmYbMUK21EGVjOHiOyc9BFi71GtDcKsqMxzA3koUjSdCGVKT1cw1Cr7uQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzk2Aga2/ZUkTNhFDlzJPuaLEvSYwPWn1YRpikB2X5WBzz/+/G5
-	seb6oDKJE6tttxT7seNSoEJyycMDoO8AGC2lEqPt3ZXJ5w++YWFQvkBHDezC393r5iM=
-X-Gm-Gg: AR+sD11GNC2GVojUWYC1oFkJaY+OES0rjwEdUKaq1OWudCdslE13N3ph9Pat4v85AM4
-	tvGuPBnn44hh7j7yLbdYox7X6ahDmmbelqZr2qDEhBGP4r5EER32f1tWqCl7ajBQp07xY6unJtr
-	lxvvy+GNMdYbphSC/057l4cN0EjHtLIu8JbXHU9BgcvTMiiAk7Ec9a9+Mr3Hr906t7oDaAohrkL
-	RaXoOSOtL5bFBn48ZNOpLRtZ56nYTHy6wyhJ5jEAYVBUiNSQndoCenZxfigcgrQVGdTeJdPHNxu
-	a42DimP6YNBHFzuqojU1eh/Njq2DdKebBdAY62aAxX/xZcOdpJNLSYBVo5+/0FBneQKkWSiHUaO
-	HBP1WlFoDJrZ/RUBGCt8DP1dGDVQMjkNowkE1az0ybrpaXsuJXsh6VQcRBd0tHpSDGKB/fxrz+3
-	LNZn3qiqY=
-X-Received: by 2002:a05:6820:824:b0:6ab:140a:7d82 with SMTP id 006d021491bc7-6ab140a830fmr4106007eaf.67.1785161443930;
-        Mon, 27 Jul 2026 07:10:43 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:41b4:f2ef:8a0a:2104])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45767486cf6sm15998645fac.15.2026.07.27.07.10.42
+        bh=oy0mH4sOH578efJ6Gq+6ZULdBJ7VNf5OuMq0T7ZLoOs=;
+        b=dG7j9awM5zB1+Cx98K0BCeABxW+QGVkyaq2F3TUONPdPdsaMFOqnD9YpcmemVrhlHa
+         3ja574phPJsZPUVGylzrUA/ODtbz+SEfcBxeiN0EzLzTGybA/L5wvjggoJGMYhIhWmAF
+         hbcB25Wy6aluhCDEcIRs/50l+zR3//UdLL+FP67CypgyfXhMI1bEw4LfPuc/eje/bqXa
+         HVXqnY8ioWJeG9E44QRpGOICHHyoB+6I/9SIdl/kB7heqG/xh51eJAtM/SM8Am5eddAf
+         1AnuOCIVsQmXGBxS77LAvN7FA7/alQfobiZNNXFlI3P04XbEzd6rhB3SXYt0jCButgdk
+         EPsw==
+X-Forwarded-Encrypted: i=1; AHgh+RoRNtg5HQCzLNWS+MiGqi8khbSULp0C0faALYwRJWKmDD9fnypF3/Z7PwOXyq+9gYY9lkLv1Ub1Xi4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyfsin/bSwFTp0CDhHsUSaoDqSehIb4EHaxSJsVRLLv32DefStg
+	mkWC6lXy6vaFA8Y27QT0RPybEgGcbVjix6TQIPM5J0SaT/loeD26iKFfxTk6DnPD/Jwe56NvbOs
+	Np41ybMgHA7hdUk11NwbzhFQNeLXjzhA1N/LTF/gC6kCEwSwFenn1/Ug0stMvRjM=
+X-Gm-Gg: AR+sD11dRWG+125S6BsyvxmeIZ3MxzZT32iSxCHiU4rGWdeRzFTThsaD49vFt0Hy0nw
+	sE0gYPRhY07si6pYhzFey8fLGu0sS2vR10GTQH6bj6MxRJKDpHPI1Fo9zAQsGqiAqVDOB+zYWXW
+	GWnSpFIgr32iIO5uC/ljE8XEVvM9L2rC3+RnYKdUo+tjL5xFu07S0H1bzP2GzAQwi5B1rK3/c1z
+	IOXqOgo4qF6V1JxN/g173wYSqoM5Fve3CB87WNsm/Qp2aEwoUT9RWE90R8HTl1T8p/DIfY17Una
+	2LS2wHl1DTJVKmhZAQw4aq8LUkaveNjhmqPvdixYjcoT3Ew9yEew24/mZM83vj1q1JmbdGwRGED
+	A6MDUZbrdsw6bE+o=
+X-Received: by 2002:ac8:5714:0:b0:517:87bc:9b47 with SMTP id d75a77b69052e-529a85ed059mr87169431cf.39.1785162370017;
+        Mon, 27 Jul 2026 07:26:10 -0700 (PDT)
+X-Received: by 2002:ac8:5714:0:b0:517:87bc:9b47 with SMTP id d75a77b69052e-529a85ed059mr87168661cf.39.1785162369415;
+        Mon, 27 Jul 2026 07:26:09 -0700 (PDT)
+Received: from oss.qualcomm.com ([86.121.163.114])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f864305f5sm48323508f8f.17.2026.07.27.07.26.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 07:10:42 -0700 (PDT)
-From: "David Lechner (TI)" <dlechner@baylibre.com>
-Date: Mon, 27 Jul 2026 09:09:50 -0500
-Subject: [PATCH v3 1/2] iio: adc: ti-ads112c14: add support for I2C CRC8
+        Mon, 27 Jul 2026 07:26:08 -0700 (PDT)
+Date: Mon, 27 Jul 2026 17:26:05 +0300
+From: Abel Vesa <abel.vesa@oss.qualcomm.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: jic23@kernel.org, sboyd@kernel.org, dlechner@baylibre.com,
+        nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de,
+        gregkh@linuxfoundation.org, srini@kernel.org, vkoul@kernel.org,
+        neil.armstrong@linaro.org, sre@kernel.org, krzk@kernel.org,
+        dmitry.baryshkov@oss.qualcomm.com, quic_wcheng@quicinc.com,
+        melody.olvera@oss.qualcomm.com, quic_nsekar@quicinc.com,
+        ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org,
+        luca.weiss@fairphone.com, konrad.dybcio@oss.qualcomm.com,
+        mitltlatltl@gmail.com, krishna.kurapati@oss.qualcomm.com,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-pm@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH v13 06/12] spmi: Add helper to get a parent SPMI device
+Message-ID: <tdx7aygeu3li6gjmzsxntg24mgcg5fkiz7c6oibuhucedupwjo@iqpnvtiohstz>
+References: <20260721093626.96264-1-angelogioacchino.delregno@collabora.com>
+ <20260721093626.96264-7-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-1-cbbcaf030148@baylibre.com>
-References: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-0-cbbcaf030148@baylibre.com>
-In-Reply-To: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-0-cbbcaf030148@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
- Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien <zizuzacker@gmail.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- "David Lechner (TI)" <dlechner@baylibre.com>
-X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7814; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=uWnAP2LbvdcP6Yf+1fF1qrKIY2JUdai3OgzS72ukHqg=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqZ2bShnUN6p2nm1FoyE/5pam7g1ph7Kq/Bfm1a
- Pji76YoN26JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamdm0gAKCRDCzCAB/wGP
- wH8UCACMwPe0MGoY5TThgLlmB/zDanS5ypH2LNsycrU2iVL34MxxNke1tlPeVrkVFXlrHOO1ZF9
- ryiRMVJQIjHX49A8w2sUJoItHSrlAFfyggTuvrs873HgwKQuKiohOha2kVVR8EWkNpGTFDjhWgC
- rjzaZ//F+LIwfv285y4cZgnrETboHwmDPvftHURusbhW6XkPrJmeaLLCz1UkH3MRp4HxrgZwfB8
- 9jt4rJ59fPPL7F+7e0cIUvI87FZRCli3oUD7cdB7B9LhkswXwCyG8aNWAwNhdq528yMh75WgZLI
- 3Br017uW/IedQ7ey3umE4VqgpuisE3zw7NIet1vYrSxLJUkc
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260721093626.96264-7-angelogioacchino.delregno@collabora.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI3MDEzNiBTYWx0ZWRfX1eaHUP1HA/c+
+ X6glDhFcDRs5Uy7mVpBclrV1FwCK/6VxFTwPp8peAlGST+MDE2toDaOawGCF6TweNk8oHIyDHPv
+ mmHNfufodehTrSnKPiQzRZFvvLoRDF0=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI3MDEzNiBTYWx0ZWRfX2OsfxqEisAos
+ HPa8Zzs/GBK0MJi4owYq6p91aFfZlEArmKatjP79Pu0iTMRervFQeeDtGyjVumVfEzbrKE9tTC1
+ lpVDMStnDwMGXNsklra7rz9swy0OdmJeq3N1+XrVSfHrLoDdUDh7ljF4qtuXdK5NF5PHTtGlHED
+ yeoXxomkokCfC4yo3A3jL1lAtAKpHQbsvw4zQg3dMj2zE6fGc+CFBfU6Bcnr7PwrEwBjVLVa336
+ XuCv01DOmnP+X73o047VGDogpZHZfNHJxRX3IuCsdmlahHki44jiF5BCEezzjxVSqsJG6Gw61EY
+ jPiGpwIbvG2Z4f3SEjMW7DGCA/+wpVX3yJa/3mqj3yZT0N9FzC2+BEGrOR13b831XMzSLaNYhfm
+ S+dVG3DJFh9sZJq4CG0uk9sPPB+3g0o6O42BcR3O7hCUl+yzxYI8A1JUuRA3mJH9sz0DEFfNzA1
+ KKsf1YHTmF7pm6rDYxw==
+X-Proofpoint-GUID: hJokBmoj_L8WkCeDiPDzcu2p3H8ro-xX
+X-Authority-Analysis: v=2.4 cv=KJ9qylFo c=1 sm=1 tr=0 ts=6a676a82 cx=c_pps
+ a=WeENfcodrlLV9YRTxbY/uA==:117 a=6dw9+iwJWV8PcCi9M4lOBg==:17
+ a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=QX4gbG5DAAAA:8 a=EUspDBNiAAAA:8 a=vXzjEk_Rc76YdSX0aKIA:9 a=CjuIK1q_8ugA:10
+ a=zgiPjhLxNE0A:10 a=kacYvNCVWA4VmyqE58fU:22 a=AbAUZ8qAyYyZVLSsDulk:22
+X-Proofpoint-ORIG-GUID: hJokBmoj_L8WkCeDiPDzcu2p3H8ro-xX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-27_04,2026-07-24_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 impostorscore=0 malwarescore=0 clxscore=1011 lowpriorityscore=0
+ phishscore=0 priorityscore=1501 suspectscore=0 bulkscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607270136
 
-Add support for I2C CRC8 to the TI ADS112C14 ADC driver. This verifies
-data integrity of all I2C transactions with the device.
+On 26-07-21 11:36:20, AngeloGioacchino Del Regno wrote:
+> Drivers that register a SPMI sub-device as a platform_driver are
+> not guaranteed to have a SPMI device as their parent: add a new
+> helper `spmi_get_parent_spmi_device()` that takes a struct device
+> and checks if there's a parent, and if that parent is actually a
+> SPMI device by checking if its device type matches with SPMI: if
+> so, returns a pointer to the relative struct spmi_device without
+> incrementing any refcount.
+> 
+> As a note, in the specific case of using this helper to retrieve
+> a SPMI subdevice's parent, the spmi_subdevice_alloc_and_add()
+> function does actually call device_add(), which will already take
+> care of raising the refcount of the associated parent device.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-For now, it is always enabled, but it could be made optional in the
-future if needed (e.g. for higher-speed data acquisition).
+Looks good to me:
 
-Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
----
-
-v3 changes:
-* Add select CRC8 to Kconfig.
-* Use regmap_set_bits() for ADS112C14_DIGITAL_CFG_I2C_CRC_EN.
-
-v2 changes:
-* Rebased on iio/testing.
----
- drivers/iio/adc/Kconfig        |   2 +-
- drivers/iio/adc/ti-ads112c14.c | 148 ++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 140 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 642c42b1fae7..b043c00f8939 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1801,8 +1801,8 @@ config TI_ADS1119
- config TI_ADS112C14
- 	tristate "Texas Instruments ADS112C14/ADS122C14"
- 	depends on I2C
-+	select CRC8
- 	select REGMAP
--	select REGMAP_I2C
- 	help
- 	  If you say yes here you get support for Texas Instruments ADS112C14,
- 	  ADS122C14 ADC chips.
-diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
-index 3035d45b64b0..5610d16f4467 100644
---- a/drivers/iio/adc/ti-ads112c14.c
-+++ b/drivers/iio/adc/ti-ads112c14.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/bitfield.h>
- #include <linux/cleanup.h>
-+#include <linux/crc8.h>
- #include <linux/delay.h>
- #include <linux/dev_printk.h>
- #include <linux/device/devres.h>
-@@ -156,6 +157,9 @@ static const u32 ads112c14_pga_gains_x10[] = {
- 	200, 320, 500, 640, 1000, 1280, 2000, 2560,	/* 8 - 15 */
- };
- 
-+#define ADS112C14_I2C_CRC8_POLYNOMIAL 0x07
-+DECLARE_CRC8_TABLE(ads112c14_crc8_table);
-+
- struct ads112c14_chip_info {
- 	const char *name;
- 	u8 device_id;
-@@ -241,6 +245,7 @@ struct ads112c14_data {
- 	struct regmap *regmap;
- 	/* Synchronizes access to register value fields. */
- 	struct mutex lock;
-+	bool i2c_crc_enabled;
- 	u32 avdd_uV;
- 	u32 ext_ref_uV;
- 	bool refp_is_avdd;
-@@ -289,6 +294,120 @@ static const struct reg_default ads112c14_reg_defaults[] = {
- 	{ ADS112C14_REG_IDAC_MUX_CFG, FIELD_PREP_CONST(ADS112C14_IDAC_MUX_CFG_I2MUX, 1) },
- };
- 
-+/**
-+ * ads112c14_i2c_read_bytes() - Read bytes from the device over I2C
-+ * @client: I2C client for the device
-+ * @cmd: Command to send to the device before reading
-+ * @buf: Buffer to store the read bytes
-+ * @len: Number of bytes to read
-+ * @use_crc: Whether to use CRC8 for data integrity check
-+ *
-+ * If I2C_CRC is enabled, @use_crc may be set to true to perform a CRC8 check
-+ * on the received data.
-+ */
-+static int ads112c14_i2c_read_bytes(struct i2c_client *client, u8 cmd,
-+				    u8 *buf, u8 len, bool use_crc)
-+{
-+	u8 rx_buf[4]; /* Up to 3 data bytes + 1 CRC byte. */
-+	u8 rx_len;
-+	int ret;
-+
-+	rx_len = len + (use_crc ? 1 : 0);
-+
-+	if (rx_len > sizeof(rx_buf))
-+		return -EINVAL;
-+
-+	ret = i2c_smbus_read_i2c_block_data(client, cmd, rx_len, rx_buf);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (use_crc) {
-+		u8 crc = crc8(ads112c14_crc8_table, rx_buf, len, CRC8_INIT_VALUE);
-+
-+		if (crc != rx_buf[len])
-+			return -EBADMSG;
-+	}
-+
-+	memcpy(buf, rx_buf, len);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ads112c14_regmap_bus_read() - Read a register from the device
-+ * @context: Pointer to the device context
-+ * @reg_buf: Register address to read
-+ * @reg_size: Size of the register address (should be 1)
-+ * @val_buf: Buffer to store the read value
-+ * @val_size: Size of the value to read
-+ *
-+ * Custom regmap read function that also does CRC check when enabled.
-+ */
-+static int ads112c14_regmap_bus_read(void *context, const void *reg_buf,
-+				     size_t reg_size, void *val_buf,
-+				     size_t val_size)
-+{
-+	struct ads112c14_data *data = context;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	struct i2c_client *client = to_i2c_client(dev);
-+	const u8 *cmd = reg_buf;
-+
-+	if (reg_size != 1)
-+		return -EINVAL;
-+
-+	return ads112c14_i2c_read_bytes(client, cmd[0], val_buf, val_size,
-+					data->i2c_crc_enabled);
-+}
-+
-+/**
-+ * ads112c14_regmap_bus_write() - Write a register to the device
-+ * @context: Pointer to the device context
-+ * @data_buf: Buffer containing the register address and value to write
-+ * @count: Number of bytes to write
-+ *
-+ * Custom regmap write function that also does readback with CRC check of
-+ * nonvolatile registers when CRC is enabled.
-+ */
-+static int ads112c14_regmap_bus_write(void *context, const void *data_buf,
-+				      size_t count)
-+{
-+	struct ads112c14_data *data = context;
-+	struct device *dev = regmap_get_device(data->regmap);
-+	struct i2c_client *client = to_i2c_client(dev);
-+	const u8 *tx = data_buf;
-+	u8 reg, readback;
-+	int ret;
-+
-+	if (count != 2)
-+		return -EINVAL;
-+
-+	ret = i2c_smbus_write_byte_data(client, tx[0], tx[1]);
-+	if (ret)
-+		return ret;
-+
-+	reg = tx[0] & ~ADS112C14_CMD_WREG;
-+
-+	if (!data->i2c_crc_enabled || ads112c14_volatile_reg(dev, reg))
-+		return 0;
-+
-+	ret = ads112c14_i2c_read_bytes(client, reg | ADS112C14_CMD_RREG,
-+				       &readback, sizeof(readback), true);
-+	if (ret)
-+		return ret;
-+
-+	if (readback != tx[1])
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+static const struct regmap_bus ads112c14_regmap_bus = {
-+	.read = ads112c14_regmap_bus_read,
-+	.write = ads112c14_regmap_bus_write,
-+	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
-+	.val_format_endian_default = REGMAP_ENDIAN_BIG,
-+};
-+
- static const struct regmap_config ads112c14_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-@@ -486,13 +605,9 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
- 	if (ret)
- 		return ret;
- 
--	ret = i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
--					    BITS_TO_BYTES(data->chip_info->resolution_bits),
--					    buf);
--	if (ret < 0)
--		return ret;
--
--	return 0;
-+	return ads112c14_i2c_read_bytes(client, ADS112C14_CMD_RDATA, buf,
-+					BITS_TO_BYTES(data->chip_info->resolution_bits),
-+					data->i2c_crc_enabled);
- }
- 
- static int ads112c14_read_raw(struct iio_dev *indio_dev,
-@@ -1121,7 +1236,8 @@ static int ads112c14_probe(struct i2c_client *client)
- 	/* It takes some time for the internal reference to stabilize. */
- 	fsleep(10 * USEC_PER_MSEC);
- 
--	data->regmap = devm_regmap_init_i2c(client, &ads112c14_regmap_config);
-+	data->regmap = devm_regmap_init(dev, &ads112c14_regmap_bus, data,
-+					&ads112c14_regmap_config);
- 	if (IS_ERR(data->regmap))
- 		return dev_err_probe(dev, PTR_ERR(data->regmap),
- 				     "failed to init regmap\n");
-@@ -1158,6 +1274,13 @@ static int ads112c14_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	ret = regmap_set_bits(data->regmap, ADS112C14_REG_DIGITAL_CFG,
-+			      ADS112C14_DIGITAL_CFG_I2C_CRC_EN);
-+	if (ret)
-+		return ret;
-+
-+	data->i2c_crc_enabled = true;
-+
- 	ret = regmap_read(data->regmap, ADS112C14_REG_DEVICE_ID, &reg_val);
- 	if (ret)
- 		return ret;
-@@ -1209,6 +1332,13 @@ static const struct i2c_device_id ads112c14_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, ads112c14_id);
- 
-+static int ads112c14_i2c_add_driver(struct i2c_driver *driver)
-+{
-+	crc8_populate_msb(ads112c14_crc8_table, ADS112C14_I2C_CRC8_POLYNOMIAL);
-+
-+	return i2c_add_driver(driver);
-+}
-+
- static struct i2c_driver ads112c14_driver = {
- 	.driver = {
- 		.name = "ads112c14",
-@@ -1217,7 +1347,7 @@ static struct i2c_driver ads112c14_driver = {
- 	.probe = ads112c14_probe,
- 	.id_table = ads112c14_id,
- };
--module_i2c_driver(ads112c14_driver);
-+module_driver(ads112c14_driver, ads112c14_i2c_add_driver, i2c_del_driver);
- 
- MODULE_AUTHOR("David Lechner (TI) <dlechner@baylibre.com>");
- MODULE_DESCRIPTION("TI ADS112C14 I2C ADC driver");
-
--- 
-2.43.0
-
+Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
