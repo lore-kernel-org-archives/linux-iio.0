@@ -1,66 +1,68 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B6A3168EE
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:10:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 168FC313E17
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785161453; cv=none; b=Hr1n2vhr/LyyUN7eM6txqtIsiUAK+wOVA90UK6dO5oKCND3i/Y18L3R/w0DN79R3N1n2IpD+IodCFAlXrj8TCbc/JIVsKuIZFzcWf+sV8xQ1gmwThWO2wmoQLnka8nPw7L57bOs/DN8pXhFsJ4H2FOok0KZb0cVpiebEH4j+afc=
+	t=1785161457; cv=none; b=qfKjNMXsj6uiRioShEYWJOmbf35YHkMmJifOOC4drBsyfCLY00/322HyroFj2pVwjyv2KUVUV41sTTxbzI0Sf1E5hAcFOwMu4eZRvZnGhKp05/plQ0i1oenQyDptFTCwgw7wXvc0kV5dayaa4fENIjqTthG/oC/clSsYNDh8W0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785161453; c=relaxed/simple;
-	bh=De6ssdhNfQ9IVvR2e2HK7O1ncS2xZ97aRo8J/f/MU+E=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=iD9/4Qn3Y6nolh7FbeueKmp49IV2qAnA9uMxu9Kvv3r47iEwWPA49Q/MaQQFgLuF6B21LaKu/xb3B1WVypSzdJXvH0eNiaa2QoJgP6KSkmjQlzZOao6Ar5WTa1jcKiPVrlyfJgvCFbR70HrK6HwAXrDxrRvs3//ji8bXsSPhv/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=WePlSP7Y; arc=none smtp.client-ip=209.85.161.45
+	s=arc-20240116; t=1785161457; c=relaxed/simple;
+	bh=xH3vJNAk19MPrNE6QAQT/iPmZjRAUZBH2JibYJD/xYc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Au8dqBKzoTBq2zifKhkZumR+2VpBpMvcFw3+t0PCo9DRpGL+IcEFp35aymp8/oeNRO7C/PFcHXdX425C6CzKlLrzJrnRvcJOBpSBwLddMxs1GxkqTsVbZ225drnsYppW2laFT7GwSJBQ9izeQRJIzudHmrjdHEyzOZbC0lbJva4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b=gYclcXRa; arc=none smtp.client-ip=209.85.160.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="WePlSP7Y"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-6ab077379ddso808040eaf.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:10:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.b="gYclcXRa"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-448b69cfc6dso2308932fac.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:10:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1785161442; x=1785766242; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=0IF9xqTFiQ4E0NlZSx0j/NVzt/YFh372McZcqmHxOjA=;
-        b=WePlSP7YfCVJFjZo+g/x4Ozz5kHTsLOO4wTGOha22OqCOKKLc4BuGU42E+KM+xa+Mp
-         OI30jTShdL7UCIqU+ZEc+diN/P6d2JgwspNCbzshaEKz3/F3/ePQZx8RlBzQprcpjiaT
-         fa0wMsj3i98vFthbiYlfWGWatSJHM8FZcNdWcrpeB1EoNKZLVYkvvtOB6qqaMchiX6Ka
-         /tvno9RXlDV2IubBPc30d+xg1LLxYoSOYA40Cs9KrpL2trXw4YYRcKBD6nOE7HjJq13h
-         Mdk7cASLbwbjbBks23rKT/2j2Osls1G+cm0eKPsPMiynhCZzA1WCIFD1uwkAWkaR3oUV
-         2X9A==
+        d=baylibre.com; s=google; t=1785161445; x=1785766245; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=kab9DAWIhAckGttNkH5bjDh+HT59M3wQV4Qz4OAw0HI=;
+        b=gYclcXRawtGZGmBVedy5iRCfGMUjcjF+texaVhv/XBJxhOZmtiaph8u0Pq0pUfLk+S
+         mv6pYgkwJ8E3ZEVGWgvHc/x1WnT2exRzXNC9MMshJP19cklggYW3AtEjSWYcP/NEoXp9
+         RxTUzpfO7jD/ozbit9luXvxrHAKqbp9lZo3+sYUNQ08ig25P8rX0yQjGsaaVBxmrdYbI
+         UxNZqS+wc3DWBM6WFvsHUbwHybU9NQPAqU/HX8bCnevadH3VOs3CieD9Z/9MniPN/PAk
+         0kYd90GmNMTfvi0ps0shA6NMrcqzPSRUORVDTZfy+/OYVfhJmvxt6ryn7k2EAyIJd0Ds
+         GyZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785161442; x=1785766242;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=0IF9xqTFiQ4E0NlZSx0j/NVzt/YFh372McZcqmHxOjA=;
-        b=pSbGbbOM5rViYwUbbtlm0z9wDqbkn5kYsIBK83waBdkxdvSgo2xpevphIGbXzLgTN4
-         vIBBH9pcDQjp+BwbAwb2AC2YKOD2t+kWdH75qhB7L7kqoORsXGpKZh21kLdYgYJ4rfUm
-         9c29EpyfVuHmLwfEMUfDrrYXeIWyRczJ3Gobj9S4u9FDvLEGwszkP/E65Lo3DwCVeEJf
-         3zFokEDd3TyZrOyF2hA+aghL6gz55P0EVApk0iu3Q/l2t8Xtbif0bRIXjdziBLiP+qFQ
-         8eb+SRgDjSXVzZpXcIX3i8J0MRfYMQNoE5EaCDOTh37TJOSX4Ee2nIXpa/2pNEts/E16
-         MSMQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrkIC6B8TGaE8D8NCR82M0WSA67NaTW2aLMuoXWrRRu6Jlk8IZBmJxZXXVbnckss5qgtKqrZk7xRGA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxA+23yuUHOO7ybe5WwbpTkyfv8zm3D73IDNaLdHa0QJbrIRml5
-	CFgzcvCDDJnNE+BNwYrFIp8XTA3N0wGrJ4tB+Egd86q+c6lS9PTwXJ15twUsmcy4ziA=
-X-Gm-Gg: AR+sD12hQcpcwYk3zTpyUVFDDahMLeiklf5VrQprrihoSMzCdWwX79xjxoGtPQDq3c3
-	CQ4dlmjoTB+g8rjw6L36dpW7TqBrgS7sJO07YPwlUSxyrWBe3Bv7CyO6RS4eVslf6Ciq7BsiuQz
-	4cAjZGldazXJJElt0d7ubSA8/zKyJLQrA2i1FjzNZdYRoSJ+JsmwHrTglpBLzjBeYw+nzekzRFm
-	sGl5ftbaKibkLfo+ICp/B1crUqba3+CtnoQlrgE6pS7mGwX3jZsT0DST/0doep1JUbwjTLDlw9d
-	wFJCid2oNFjD4Cx8eC6HpEi5ioJOqmgddU0KOCBfwDaL3VKID4UAqMasjF/uFzij4RUyv16G7Eb
-	dNrCg54PjtpFwqOxM+ePrnszKAZ8wxh9nCuk7osd4yx/J7ZBdAE6Bh8SAiLLbp+23Q8Yy6jXYC9
-	VZscLvXYY=
-X-Received: by 2002:a05:6820:1994:b0:6aa:d6bd:f6f5 with SMTP id 006d021491bc7-6aaffa040e4mr6614445eaf.38.1785161441897;
-        Mon, 27 Jul 2026 07:10:41 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1785161445; x=1785766245;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=kab9DAWIhAckGttNkH5bjDh+HT59M3wQV4Qz4OAw0HI=;
+        b=gGwrMveI4l3Pc0i5FTAW2LaZPnAQdfXx6vEurIVucgMBXDf3inBr3FsyC+ZBHsz2FF
+         wPzGWUY4sXHn2whTOu0fgHH5I2zn1KQ5ld4/J3Yt0ssXaz64T2qv44OQA/qiTo2RHczd
+         PfqMeybflFa5O905ugIGp+aqtTSGXG5Zn2tbaXKLWKjPWFnJtcivsAVrExoo2ZUBuck7
+         wa9yvWMTxJ5+zEbK8SpLDzqQd3rbRwNiY43EaEIb95Yz/BxvgFvvic1UPHaiBB5ifMUa
+         609kCiasK5gMyNzyG/SoeHKwO/6VHUPwTNSgT9r9hulgHFg0zAd3jkt57u7h8TCPBYCr
+         Osbg==
+X-Forwarded-Encrypted: i=1; AHgh+RqlizAKOgZQ5QdpIciC098bKUAX8bZpM29JeMSUCZGSLPVSWzXU/6STp4SCk7hf15GCBGPEfegl6Cs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxGpxRRN9NeSKLudd8S5J7eUGSATCLEOvqUhRLd5OWSARsJyZ7I
+	W3PYr0cYclYjF0xcRQx64gJx34U2XsjSnwlUE9mhQf0yemvMpRhrxLpomGJVjQFZSR0=
+X-Gm-Gg: AR+sD10L5PXBjXKGnq+SrK4Bs+TO1RS6bpsvQm+AbT6lgbNcd9eBjmdbdcQFOfxbDBo
+	qrfnahXwlJG1asFdqSRLAcBDeyxb9jDRq2zMBqZzIOfluzswpA5Xx7NBVgQGMbRScSxEc+8whxN
+	LnMoyAEQa/WgRgXLdrBsVccJWLVEKVJqeD5vCG14XCWQ3a178hIqMbphHUH7zc1OAHOIAaHWszv
+	HTeub1thsLby+9+5EIveFYvXnTXC3zU1HI+UzXOHkRPYM2jXFsPwR2iEzMm7yMygIGezoia3kbI
+	QokdKjw0LEpuddEWwSBlrZ4hMupnCphX5aOtM3kQlg3q4GAUr2jaGbVFvRu2G+uoPNcYxLuo1Og
+	SAWLDgppdX11/kvJGGNfvE/klF85AkZ790HA6ckNplFhKhEUh3fI4wtMy8VG8h3MfpdsKZXgsDM
+	JiYQ8h1bk=
+X-Received: by 2002:a05:6870:80cf:b0:448:c864:2ed6 with SMTP id 586e51a60fabf-457f2862b1dmr7646474fac.39.1785161444890;
+        Mon, 27 Jul 2026 07:10:44 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:41b4:f2ef:8a0a:2104])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45767486cf6sm15998645fac.15.2026.07.27.07.10.41
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-45767486cf6sm15998645fac.15.2026.07.27.07.10.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 07:10:41 -0700 (PDT)
+        Mon, 27 Jul 2026 07:10:44 -0700 (PDT)
 From: "David Lechner (TI)" <dlechner@baylibre.com>
-Subject: [PATCH v3 0/2] iio: adc: ti-ads112c14: buffered read support
-Date: Mon, 27 Jul 2026 09:09:49 -0500
-Message-Id: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-0-cbbcaf030148@baylibre.com>
+Date: Mon, 27 Jul 2026 09:09:51 -0500
+Subject: [PATCH v3 2/2] iio: adc: ti-ads112c14: add support for buffered
+ read
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,12 +71,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5WPy07DMBBFfyXymiG2E/Loiv9ALPwYt4NIXGwno
- qry70xTFogVrEZ3HufeuYqMiTCLQ3UVCVfKFGcWzUMl3MnMRwTyrIWWupO9aoEogvEOCnHJSmn
- HTbuEgAk9JDQeWoVPXjkjvWsEg84JA33uJi+vd50X+4au3MjfGwk/FnYv9zVhTUZwcZqoHCq+z
- 3XCKfK05gA110LzUdxoJ8olpsv+war24/+EXRVICNihcmOv9DA8W3N5J5vwke13h1X/oOq/UTV
- Tx8HKLjS+7f34i7pt2xegqwkDewEAAA==
-X-Change-ID: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3
+Message-Id: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-2-cbbcaf030148@baylibre.com>
+References: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-0-cbbcaf030148@baylibre.com>
+In-Reply-To: <20260727-iio-adc-ti-ads112c14-buffered-read-v3-0-cbbcaf030148@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
@@ -83,58 +82,249 @@ Cc: Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  "David Lechner (TI)" <dlechner@baylibre.com>
 X-Mailer: b4 0.16-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1780; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=De6ssdhNfQ9IVvR2e2HK7O1ncS2xZ97aRo8J/f/MU+E=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqZ2ayVlFDodSZUnd52COxutKuFQeVQO1zg4CfR
- kzm86gRzgeJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamdmsgAKCRDCzCAB/wGP
- wPCRCACFqUHfDe+eAf7NJjzhqjYIMp6hYNGSEB7UCIthJzeAdOYGw8ihsyJvRkn1XplJpN1fLan
- XGRch8YAk5389Lf7VPeHyYFBlwkUrrza9mgAjEtW0Hz9JysxJAkiZDZcpNAuGggJMDSqDm2nnQC
- 54tLmj928Wfovl+k+cglkF+RbcQFS/iibajiwJIHbMX109sLtYReM3uCA2TlknHe9wCNCuvLH+5
- 5/5LYdRmatxIQmBHkQFW3Xpd8qCTRSYSUxGKVqdNKX0vmLShstPItDQ4NDqqA3YvH2+jO37USVG
- iQv41nQyAOZxZhjC2IT1rrZljXGaVImbI3aDfdo+0ElxXGXO
+X-Developer-Signature: v=1; a=openpgp-sha256; l=7691; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=xH3vJNAk19MPrNE6QAQT/iPmZjRAUZBH2JibYJD/xYc=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBqZ2baPaXLmIJaqS4JoPU/N34/SwTrwNbvzmv8F
+ 169sLknQy+JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCamdm2gAKCRDCzCAB/wGP
+ wH4lB/0YvtMocf/Y25z7W7f8tKZyMAy3OH83JxM4bmqvG709BO2dvvjCBHxe2u61tgmNyTT2L8w
+ csN7yc4GQ7TTA59L2YVXXnU1L+N7gIGWrZLr329IzzRrEeCrCjAACnnlYABtNlVMep+Q7c2tk0e
+ gGKNxotHDrh4CyZvpVo2IiiVpWHBlTI7xxLl/GmPBS6AyBy7LVh75apmLWdOWQaI7DVUjNTN9um
+ 3tkY78ZT/csJgAAn142M2WlAcpTJpI32oB5+yvpSmHNiWhiLRe+SXFsy46MkO+gnv0bnypUD9cI
+ RuR2KSpX7i4rBhOE+xIcVpmT4vLox2kR8yJLdSnnBsX9zvJp
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-This is the next phase of ti-ads112c14 support after [1].
+Add support for buffered reads using a triggered buffer.
 
-Some design decision notes:
-* This just includes support for software triggers using the single-shot
-  mode for now. We will follow up later with DRDY interrupt support and
-  a new trigger to allow using the continuous mode.
-* We wanted to enable CRC checking for data integrity, so it is just
-  always enabled. This way, the buffer layout is always the same. I
-  don't think we have an existing control for toggling CRC checking
-  anyway.
+The device has a continuous conversion mode, but that can only be used
+with one channel at a time since there is nothing like a sequencer to
+support that in hardware. Instead, we use single-shot reads like we do
+for direct reads to be able to read multiple channels.
 
-[1]: https://lore.kernel.org/linux-iio/20260714-iio-adc-ti-ads122c14-v4-0-25f8e3084485@baylibre.com/
+Since CRC is always enabled, buffered reads include the CRC byte along
+with the raw data without verifying it. This allows userspace to perform
+it's own CRC verification per-sample and drop bad samples rather than
+failing the entire buffered read for one bad sample.
+
+Support for continuous conversion mode could be added in the future if
+needed.
 
 Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
 ---
-Changes in v3:
-- Fix bugs found by Sashiko.
-- Use regmap_set_bits() when possible.
-- Link to v2: https://patch.msgid.link/20260724-iio-adc-ti-ads112c14-buffered-read-v2-0-98b06f3d47d9@baylibre.com
 
-Changes in v2:
-- Dropped debugfs patch that was applied.
-- Adjusted for tweaks made to [1] when it was applied.
-- Made some clarifications in the last patch (commit message and comments).
-- Refactored the index tracking (`i` variable) in the last patch.
-- Link to v1: https://patch.msgid.link/20260714-iio-adc-ti-ads112c14-buffered-read-v1-0-fe6e1c971288@baylibre.com
+v3 changes:
+* Fix >= should be > ADS112C14_MAX_MEASUREMENT_CHANNELS.
 
+v2 changes:
+* Rebased on iio/testing.
+* Don't say how to implement continuous conversion mode in the commit
+  message.
+* Explain CRC usage in buffered reads in the commit message.
+* Added comment on updating the template for system monitor channels
+  with dynamic values.
+* Refactored total channel count to always use i++.
 ---
-David Lechner (TI) (2):
-      iio: adc: ti-ads112c14: add support for I2C CRC8
-      iio: adc: ti-ads112c14: add support for buffered read
+ drivers/iio/adc/ti-ads112c14.c | 108 +++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 104 insertions(+), 4 deletions(-)
 
- drivers/iio/adc/Kconfig        |   2 +-
- drivers/iio/adc/ti-ads112c14.c | 254 +++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 243 insertions(+), 13 deletions(-)
----
-base-commit: e2c4207d8eee17db9b09eb36f0f5edfafb223bd7
-change-id: 20260714-iio-adc-ti-ads112c14-buffered-read-41e5d1ca0dc3
+diff --git a/drivers/iio/adc/ti-ads112c14.c b/drivers/iio/adc/ti-ads112c14.c
+index 5610d16f4467..60eab4852ba2 100644
+--- a/drivers/iio/adc/ti-ads112c14.c
++++ b/drivers/iio/adc/ti-ads112c14.c
+@@ -15,7 +15,10 @@
+ #include <linux/dev_printk.h>
+ #include <linux/device/devres.h>
+ #include <linux/i2c.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ #include <linux/math64.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -29,6 +32,9 @@
+ #include <linux/unaligned.h>
+ #include <linux/units.h>
+ 
++/* Arbitrary limit since channels are dynamic. */
++#define ADS112C14_MAX_MEASUREMENT_CHANNELS 16
++
+ /* Datasheet t_d(RST) - time to wait after reset before next I2C use. */
+ #define ADS112C14_DELAY_RESET_US 500
+ 
+@@ -255,6 +261,8 @@ struct ads112c14_data {
+ 	u32 num_measurements;
+ 	u8 sys_mon_chan_short_gain_val;
+ 	int sys_mon_chan_short_scale_available[ARRAY_SIZE(ads112c14_pga_gains_x10)][2];
++	IIO_DECLARE_BUFFER_WITH_TS(__be32, scan, ADS112C14_MAX_MEASUREMENT_CHANNELS +
++						 ARRAY_SIZE(ads112c14_sys_mon_channels));
+ };
+ 
+ static bool ads112c14_writeable_reg(struct device *dev, unsigned int reg)
+@@ -575,7 +583,7 @@ static int ads112c14_prepare_sys_mon_channel(struct ads112c14_data *data,
+ 
+ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 				       const struct iio_chan_spec *chan,
+-				       u8 *buf)
++				       u8 *buf, bool for_scan)
+ {
+ 	struct i2c_client *client = to_i2c_client(regmap_get_device(data->regmap));
+ 	u32 reg_val;
+@@ -605,6 +613,24 @@ static int ads112c14_single_conversion(struct ads112c14_data *data,
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * When doing buffered read, we don't check the CRC, but rather pass it
++	 * along with the raw data. This way, we don't silently drop samples
++	 * with CRC errors, but rather leave it to userspace to decide what to
++	 * do.
++	 */
++	if (for_scan) {
++		u8 len = BITS_TO_BYTES(data->chip_info->resolution_bits) +
++			 (data->i2c_crc_enabled ? 1 : 0);
++
++		ret = i2c_smbus_read_i2c_block_data(client, ADS112C14_CMD_RDATA,
++						    len, buf);
++		if (ret < 0)
++			return ret;
++
++		return 0;
++	}
++
+ 	return ads112c14_i2c_read_bytes(client, ADS112C14_CMD_RDATA, buf,
+ 					BITS_TO_BYTES(data->chip_info->resolution_bits),
+ 					data->i2c_crc_enabled);
+@@ -639,7 +665,7 @@ static int ads112c14_read_raw(struct iio_dev *indio_dev,
+ 		if (IIO_DEV_ACQUIRE_FAILED(claim))
+ 			return -EBUSY;
+ 
+-		ret = ads112c14_single_conversion(data, chan, buf);
++		ret = ads112c14_single_conversion(data, chan, buf, false);
+ 		if (ret)
+ 			return ret;
+ 
+@@ -765,6 +791,10 @@ static int ads112c14_write_raw(struct iio_dev *indio_dev,
+ 	const int (*scale_avail)[2];
+ 	u8 *gain_val;
+ 
++	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++	if (IIO_DEV_ACQUIRE_FAILED(claim))
++		return -EBUSY;
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE: {
+ 		guard(mutex)(&data->lock);
+@@ -863,6 +893,37 @@ static int ads112c14_read_label(struct iio_dev *indio_dev,
+ 	return sysfs_emit(label, "%s\n", label_source);
+ }
+ 
++static irqreturn_t ads112c14_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ads112c14_data *data = iio_priv(indio_dev);
++	u32 offset = 0;
++	u32 i;
++	int ret;
++
++	iio_for_each_active_channel(indio_dev, i) {
++		const struct iio_chan_spec *chan = &indio_dev->channels[i];
++
++		ret = ads112c14_single_conversion(data, chan,
++						  (u8 *)&data->scan[offset++],
++						  true);
++		if (ret) {
++			dev_err_once(indio_dev->dev.parent,
++				     "failed to read channel %d: %pe; additional errors will be suppressed\n",
++				     chan->channel, ERR_PTR(ret));
++			goto out;
++		}
++	}
++
++	iio_push_to_buffers_with_ts(indio_dev, data->scan,
++				    sizeof(data->scan), pf->timestamp);
++out:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ static const struct iio_info ads112c14_info = {
+ 	.read_raw = ads112c14_read_raw,
+ 	.read_avail = ads112c14_read_avail,
+@@ -908,7 +969,7 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
+ 		return -ENOMEM;
+ 
+ 	channels = devm_kcalloc(dev, num_child_nodes +
+-				ARRAY_SIZE(ads112c14_sys_mon_channels),
++				ARRAY_SIZE(ads112c14_sys_mon_channels) + 1,
+ 				sizeof(*channels), GFP_KERNEL);
+ 	if (!channels)
+ 		return -ENOMEM;
+@@ -1069,14 +1130,47 @@ static int ads112c14_parse_channels(struct iio_dev *indio_dev,
+ 		if (spec->type == IIO_RESISTANCE)
+ 			spec->differential = 0;
+ 
++		spec->scan_type = (struct iio_scan_type){
++			.format = measurement->bipolar ?
++				  IIO_SCAN_FORMAT_SIGNED_INT :
++				  IIO_SCAN_FORMAT_UNSIGNED_INT,
++			.realbits = data->chip_info->resolution_bits,
++			.storagebits = 32,
++			.shift = 32 - data->chip_info->resolution_bits,
++			.endianness = IIO_BE,
++		};
++
+ 		i++;
+ 	}
+ 
+ 	data->num_measurements = i;
++	if (data->num_measurements > ADS112C14_MAX_MEASUREMENT_CHANNELS)
++		return dev_err_probe(dev, -EINVAL,
++				     "too many measurement channels defined\n");
++
+ 	memcpy(channels + i, ads112c14_sys_mon_channels, sizeof(ads112c14_sys_mon_channels));
+ 
++	for (u32 j = 0; j < ARRAY_SIZE(ads112c14_sys_mon_channels); j++) {
++		struct iio_chan_spec *spec = &channels[i];
++
++		/* Update the template that was already copied with dynamic values. */
++		spec->scan_index = i;
++		spec->scan_type = (struct iio_scan_type){
++			.format = IIO_SCAN_FORMAT_SIGNED_INT,
++			.realbits = data->chip_info->resolution_bits,
++			.storagebits = 32,
++			.shift = 32 - data->chip_info->resolution_bits,
++			.endianness = IIO_BE,
++		};
++
++		i++;
++	}
++
++	channels[i] = IIO_CHAN_SOFT_TIMESTAMP(i);
++	i++;
++
+ 	indio_dev->channels = channels;
+-	indio_dev->num_channels = i + ARRAY_SIZE(ads112c14_sys_mon_channels);
++	indio_dev->num_channels = i;
+ 
+ 	return 0;
+ }
+@@ -1303,6 +1397,12 @@ static int ads112c14_probe(struct i2c_client *client)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &ads112c14_info;
+ 
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      iio_pollfunc_store_time,
++					      ads112c14_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ 
 
-Best regards,
---  
-David Lechner (TI) <dlechner@baylibre.com>
+-- 
+2.43.0
 
