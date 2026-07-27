@@ -1,106 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C61F3DDDAC
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:47:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E353DC4BC;
+	Mon, 27 Jul 2026 08:20:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.84.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785138467; cv=none; b=EK305Gs9Ik8oah0cxO5CzY7gfReGU0uEr3vWRA3Ck5V+ahFcl9cNiFUN2ImuNQoleGrGiCIsJYuVis9+N1d3/3MXpb7oHEQv8NVooALGF1Wnp/SPxOpNR50Gpwq7nYxP7AZ5Tmt80Lqvn0IaNb64ccWWFKI+szQN1TOQ9APz8dk=
+	t=1785140446; cv=none; b=D2DU6kjhJK98fafYh/wDbNjodbPHhPhlK38ild0Zn2VQC0VqIkTXyocbD2lUPaAb3l+R3dgcU6EVTcNRT+8V4ilIWKoteYFaC9zh/yTdEGJpesNnN9P9VtF/zE3yr/ovteCRNlQA6wtsuf/ZZxojBCHJtUzEJJQBrExoQX4mbCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785138467; c=relaxed/simple;
-	bh=JvxUq/iYUDkBFhAJpNpfuCTuKCodr+3K1ReumsuOTW0=;
-	h=From:In-Reply-To:MIME-Version:References:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kwbkoJr1O7PXKMbZ+K6d63CJp/DzW9OAbMM8GO6x8oEcTeeEAIjnAir4hFOfZ9+22e0v9YFrJEt81n8mnTx4Ak/qpsmRL9VKJ4MIf9pi6eHZdmpIxeMfaWpv6dMYZUoUk+2rTxdlWKzZSJTpLsP0NzyIB3fwyHSLu+prMTC7fiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Us/mk17p; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1785140446; c=relaxed/simple;
+	bh=4lV3MuJSK+GCy9bYJYj1uxxJLnCM62+BK0vVOW3fu3w=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:From:To:
+	 References:In-Reply-To; b=SnjBKAoeqz8u30c32+njLRXHakHHc91khXJj5KRg07gb61tdi6WXMZ3sWSZLzKShuY8oBdlgrdkHNQzA5V3FXQ2E3JInEdb4MElWwp1knB+Z+eCTVOW7VigxNGSmxcx7V6FRdcoprM0wrC3GPazVxqxcz7C+r8Gt7I++xl1+FeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=IPqP7Mha; arc=none smtp.client-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Us/mk17p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A24F1F00A3D
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:47:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785138466;
-	bh=LMdxTbEBC7qZA8RQ+1HVgfF515tY7oL1xF/DhlIoUos=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=Us/mk17pVkhDMx0imCnsR1/FdtpGBdBr5EmUo+4q/epDMSC7W/btrpK9pjt8V9aST
-	 p7WukUWMZvs0i3uErF8fp85fRYDt+Bw2RTch+g50/U3EvoFsGLFQa+ngHhBauHZDnM
-	 9hXmKph8cFZcqF14pCY8lqoaXj5XFOBkh0J1aD+PVOx2SpwM/OYtWvSLcgVtiX2byY
-	 HUvqZcg0cBbNBuNRdd85ez67E+mDKUuzzlIltzw2zHw4h2ElwVLxO0wGdc4sLcjdef
-	 yWexROKJuXWE74MNxbukUV9VLryzaYWhpjxs8lqMKAoKcFb+355pbUrfBAjFJJJURs
-	 OP2OSaucWDKEg==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5b021916bd3so2589791e87.3
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 00:47:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AHgh+RrVm2YN1hB+gJcJaEkIhC7nOp6szt2Uj3EEb47qPqnAl0BvnonZOuHU3qzizW7BDIjDRWOY07zBbQM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YziX/gUNOuaxvcqPzIDJGNw5rmK755P1uOBslF87dnuSuVn4Mdq
-	v+QtnURggA1gBFJK1ZkyoMpiwZQoMalVYHZY/ds3j7ifjaKIU3age5Dxqtw/DxSd41ZHD3TwGAF
-	pGEuOyrYy1IfOJZf7yPalPVgdRjfxzKasBMw7J98xAw==
-X-Received: by 2002:a05:6512:1191:b0:5b2:8a6a:1dca with SMTP id
- 2adb3069b0e04-5b2c1b297b1mr1336942e87.36.1785138464623; Mon, 27 Jul 2026
- 00:47:44 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 27 Jul 2026 00:47:42 -0700
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 27 Jul 2026 00:47:42 -0700
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <20260726141029.GAamYVVeVnJfH5ebH5@fat_crate.local>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="IPqP7Mha"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-02.galae.net (Postfix) with ESMTPS id 980321A1283;
+	Mon, 27 Jul 2026 08:20:42 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id 6716C601BE;
+	Mon, 27 Jul 2026 08:20:42 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 8D32A11C12257;
+	Mon, 27 Jul 2026 10:20:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1785140441; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=4lV3MuJSK+GCy9bYJYj1uxxJLnCM62+BK0vVOW3fu3w=;
+	b=IPqP7MhakrqOpAnk2q6D0BHbPShaE4CIvNH9SESDbZqEGCFQZJ8hE1mKhCAX0WS386PR9A
+	SWCCamYd+flDdQf9a3Jzzt0oOXfd23sYsqnmSNyrrCjhxT26DCU+R+I898Zt0jXR2KPHsi
+	fTN+JngXwKm5U4o7XcLBMuBx8jbHAN4zVI8EadP+vhpKUttdhwLRcFrbsFhANAXEBiy79Q
+	0v8K2+4KoOV7MlCT1ASczHMqte3HlNnuwciswj1QLNXGsdPP9Gwi3tHfnXJSu61uCLvqXk
+	Q36GGQVX+gYZb1smEN4tjDRX/4ZHDHENI0r86/yXFj96w/8/aFUbFEqVPGmRwA==
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20260726101739.33170-1-farbere@amazon.com> <20260726141029.GAamYVVeVnJfH5ebH5@fat_crate.local>
-Date: Mon, 27 Jul 2026 00:47:42 -0700
-X-Gmail-Original-Message-ID: <CAMRc=McOT6m1CsmheePCxpZnB+GJmrqYa+D77Dz76Ovy0FPadg@mail.gmail.com>
-X-Gm-Features: AUfX_mwvXfjV5Db7FPNy2PNZM2AvQmMoXAOyTg5q8xJTdsDrQvC7kqKotPet8MQ
-Message-ID: <CAMRc=McOT6m1CsmheePCxpZnB+GJmrqYa+D77Dz76Ovy0FPadg@mail.gmail.com>
-Subject: Re: [PATCH v4 00/13] notifier: add device-managed registration APIs
- and convert drivers
-To: Borislav Petkov <bp@alien8.de>
-Cc: rafael@kernel.org, tony.luck@intel.com, guohanjun@huawei.com, 
-	mchehab@kernel.org, xueshuai@linux.alibaba.com, lenb@kernel.org, 
-	laurent.pinchart@ideasonboard.com, linusw@kernel.org, brgl@kernel.org, 
-	orsonzhai@gmail.com, baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	dmitry.torokhov@gmail.com, hansg@kernel.org, ilpo.jarvinen@linux.intel.com, 
-	W_Armin@gmx.de, ukleinek@kernel.org, fabio.m.de.francesco@linux.intel.com, 
-	kaihengf@nvidia.com, ankita@nvidia.com, leitao@debian.org, pedro.pbg@usp.br, 
-	paulmck@kernel.org, frederic@kernel.org, kees@kernel.org, 
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	platform-driver-x86@vger.kernel.org, Eliav Farber <farbere@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Mon, 27 Jul 2026 10:20:35 +0200
+Message-Id: <DK97GYVRUA1Q.2JUNL4U3HPGX@bootlin.com>
+Subject: Re: [PATCH v8 9/9] gpio: realtek: Add driver for Realtek DHC
+ RTD1625 SoC
+Cc: <u.kleine-koenig@baylibre.com>, <dakr@kernel.org>,
+ <bhelgaas@google.com>, <dlechner@baylibre.com>,
+ <linux-kernel@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+ <linux@analog.com>, <linux-iio@vger.kernel.org>, <cy.huang@realtek.com>,
+ <james.tai@realtek.com>, <stanley_chang@realtek.com>
+From: "Mathieu Dubois-Briand" <mathieu.dubois-briand@bootlin.com>
+To: "Yu-Chun Lin" <eleanor.lin@realtek.com>, <linusw@kernel.org>,
+ <andriy.shevchenko@intel.com>, <mwalle@kernel.org>, <brgl@kernel.org>,
+ <tychang@realtek.com>, <wbg@kernel.org>, <nuno.sa@analog.com>,
+ <Michael.Hennerich@analog.com>, <jic23@kernel.org>, <andy@kernel.org>,
+ <o-takashi@sakamocchi.jp>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260726125209.140307-1-eleanor.lin@realtek.com>
+ <20260726125209.140307-10-eleanor.lin@realtek.com>
+In-Reply-To: <20260726125209.140307-10-eleanor.lin@realtek.com>
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Sun, 26 Jul 2026 16:10:29 +0200, Borislav Petkov <bp@alien8.de> said:
-> On Sun, Jul 26, 2026 at 10:17:26AM +0000, Eliav Farber wrote:
->> Many drivers repeat the same boilerplate when registering notifiers with
->> device lifetime:
+On Sun Jul 26, 2026 at 2:52 PM CEST, Yu-Chun Lin wrote:
+> From: Tzuyi Chang <tychang@realtek.com>
 >
-> From: Documentation/process/submitting-patches.rst
+> Add support for the GPIO controller found on Realtek DHC RTD1625 SoCs.
 >
-> Don't get discouraged - or impatient
-> ------------------------------------
+> Unlike the existing Realtek GPIO driver (drivers/gpio/gpio-rtd.c),
+> which manages pins via shared bank registers, the RTD1625 introduces
+> a per-pin register architecture. Each GPIO line now has its own
+> dedicated 32-bit control register to manage configuration independently,
+> including direction, output value, input value, interrupt enable, and
+> debounce. Therefore, this distinct hardware design requires a separate
+> driver.
 >
-> After you have submitted your change, be patient and wait.  Reviewers are
-> busy people and may not get to your patch right away.
+> The RTD1625 GPIO controller has a hardware quirk where both 'assert'
+> and 'de-assert' interrupts are fired simultaneously on any edge toggle.
+> The driver works around this quirk to correctly handle edge interrupts.
 >
-> Once upon a time, patches used to disappear into the void without comment,
-> but the development process works more smoothly than that now.  You should
-> receive comments within a week or so; if that does not happen, make sure
-> that you have sent your patches to the right place.  Wait for a minimum of
-> 						     ^^^^^^^^^^^^^^^^^^^^^
-> one week before resubmitting or pinging reviewers - possibly longer during
-> ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> busy times like merge windows.
+> Interrupt support is optional for this device, matching the dt-bindings.
+> If the interrupts property is not provided, the driver simply skips IRQ
+> initialization and operates purely as a basic GPIO controller.
 >
-> --
-> Regards/Gruss,
->     Boris.
->
-> https://people.kernel.org/tglx/notes-about-netiquette
->
+> Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Signed-off-by: Tzuyi Chang <tychang@realtek.com>
+> Co-developed-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+> Signed-off-by: Yu-Chun Lin <eleanor.lin@realtek.com>
+> ---
+> Changes in v8:
+> - Add error handlers in td1625_gpio_irq_handle().
+> - Move the direction-checking logic from the core to our custom
+> reg_mask_xlate() callback.
+> - Add Reviewed-by tag from Linus.
+> ---
 
-If the above snippet is not clear enough: *do not send three different versions
-of a series on a Sunday*.
+Thanks for the fixes.
 
-Thanks,
-Bartosz
+Reviewed-by: Mathieu Dubois-Briand <mathieu.dubois-briand@bootlin.com>
+
+--=20
+Mathieu Dubois-Briand, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
