@@ -1,338 +1,343 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012000.outbound.protection.outlook.com [40.107.200.0])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67FE935DA75
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 06:08:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A55C53CF208;
+	Mon, 27 Jul 2026 06:24:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.0
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785132536; cv=pass; b=PbFb7mhgugIHAfA2lHQ/YXZlXv3LrOF2FmzOgRlCe8ADDKOG1QkJSLcW4dpiCv/V0pehgCOSZ6a4QgZwskzAjBuRos3jZ7rWGf5OJk5lvyTPIaDWSem0xpj5OOMK1+l5rN6KEtLIGDB/C84qMl5q7TYDvwYhyYJPq5jqhu9CcUg=
+	t=1785133488; cv=fail; b=d8oidKkehNM5lfTnROo6e70j+qbVaSyjsEowyVfSmzgiKlFVzLy/dayCl8rc5ypeVPm+sM8bVhFimIligOOtyVyjBddf0ODjhYL5xYj4iU6AcVSNw3FgfEZElhL12cxSCn7whnfd7bpHComDj1pSSSQrw2LWxz3FzwOW+zpPcbQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785132536; c=relaxed/simple;
-	bh=I8nZMzbkZAznY6mHohPSZv/fO0E0qqzemqUWFmAp4NY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=c0o4jn6z/5X9qF+iDEOi1XMhlJIPy9c7s3PipNO5Fv920xcIDRPgXOUf7fr2io8/ICh42cI/VGZj4MNGb+1j6O29aPR9NdCSczUABjlXyuL0UQoKEjWGEDLoBtFBtA+h8YwntoK+751ZXWuzpZ7Eb8fhkD33aVxerLUkA1rabMM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XPPtz8GV; arc=pass smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1785133488; c=relaxed/simple;
+	bh=EltYfYVD6cXXyWIthz/p+w4WNXF2iTzx5v5jMJ44rw8=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=IDqBLpP1NAeCjEov64NM6djIXtbAcphvnJ970RaLco61I6r9nkV/hdIkjRRYk93yjww5lJX/qiipJpWrwfiD2iv/wO7FJoT9MVorCw+3jcE83mMkqzVeVBm/mWvsKGBUuhSBZi1IkcG8KdHvk2blTd5TIZVfqkqqp6pw0TM+Aw0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Pj4tJ5T3; arc=fail smtp.client-ip=40.107.200.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XPPtz8GV"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-51ca592e80eso4868781cf.2
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 23:08:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785132533; cv=none;
-        d=google.com; s=arc-20260327;
-        b=By1InpjdB5iNQ7+dY7eAGYfaEz6BVuW1KSnvwn5ESM9QZYR9BUQpgEa0DOcfNN2mha
-         ecTZpgORFDYiVd0KTgYEEmCXVZpZK4Y13Q+PmBnkK0wbYqPKVPNPb/slKu3+ISBOIPjh
-         Npcxm3MUbnF9uBTnbgLDTPrHvPQff3iKQ/GU8XIIrUQqks+iugYV8RYtPVjGRQFAENX5
-         GJWbBjU6Do5gVP2pLflEChfPqr4jv88Z+lE7Z9w+B0GvhptOAi5dtoYf+mglBIfKjInb
-         PFdm45xoR+fsn/syKgVgck4HwFlJEzbCEoiaR1GOWlAxCRVo0CXWbNuB09GVmjxvl5mM
-         Mf4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
-        fh=qZwElXO76sQMalzpUGYHLx3b9GeOxxT2MMyuodjAy+Q=;
-        b=axjzqsNa70hIL/dzHjHqJB2DxaYZmJ/DBM8YOjq0huko2oFr3VNSNSmthgoea34WmN
-         ltFOgfliU2KPsnhuqKKh/IcE5pl8MS4sCddQTC9Ofbc/ZRIWmzjrJ9ulUnF6JHGMm/dP
-         MpBhaJaQ2Zr3uZ/Pwdxb7oV2zsQ7nxgubvBTSjFKkdPQKoUWhE/Dt7eOUuSTv9Jw8RpS
-         BQ86sIdt7+wY2RYH0UOgwpXM7ke0Xl//mQvtCPSltNyrnXYJR9QYWoQ+cmcXWYDldwSo
-         zgM0YPdMhXQOAENdjfSp3/OZNUkoD5lNE2khrYZxqz0pAaahRnHAiy0v/22gHaH7wqbd
-         8Mew==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785132533; x=1785737333; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
-        b=XPPtz8GVMTUoJtG0P9qRCYouSRyoYEHz/R3H8tCVx2ZRgPJi7dlxHKVTBNWau8emjy
-         WSixw6yy14oytS+bXZbZUnQsCoVGMB85mLtmHiJ0awrTyfbkm0uyzv7RpeYqVHvPpwEc
-         uB9IXZAYN2l571ZrX24sOt6hn1z/EcxaNXjo2F29ndHitLqJ2tMXWQz5KNrWXHIiu6/K
-         zUv0kpdU2AuzkpUj/xk9lwDXicRArZgw+J74UCrIQG4bYTd8Uex5eIVPh4fpn3XYhVo7
-         dChlW0dJCM6+8z8ZMuM0HFTHIu43yNEo69XHpRbVUDaFLdrpvqSHsDfpUIJkwFqRIeB0
-         iRUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785132533; x=1785737333;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
-        b=EwarG9hkljAbe/T0k495UlIwiD6AwRmkv/p+6HfvdKRKJ7CZ+RjWYVHA6IM3pOm8QY
-         wRbfhtKZgebj1gP/WEk0xP9v3kkB4gGoLH80xFHstPaSBdZjEd7H/ZFOrBn3KHAXuPep
-         CdEIE1e9w4R1bmbPiLqaEB7RKIM5wFLH6A+xgAQgwj6uTXRmyU2mOULjnrkil47QqelI
-         VrLJFcvsLtRrINYqVcp3YmWk35NMhk88ZXw+UJzuOMUIY8/k0WzOlDSk4VjiwuPSALsB
-         ViB4ZWlFYQCmkbHUEj7AB8epGJ4r+1XNbs4wshHYcJMDGgYAv62hrcaHgNoYYnfsu3Q1
-         tNCw==
-X-Forwarded-Encrypted: i=1; AHgh+RrB4Z8R6vIZEymFfp6CNdjeTQKxxnDEoisLH+itK8qTbE668RQlQQnvO0noaoSXUTne+xyEDkEsESg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyvwy9+W33AblX+enYmnEecjCI9vbzj5PPxmY43qhXLGvi8FL83
-	CRVrBWFyo/1F9zQcZko3TRCg446wFpifTc82+FFizXi8aoJMveiGrOsoQZRjbta+mFl78S8pUix
-	Xauy8q8nf4SbL/8L3R4YnCcjs2G6VbRg=
-X-Gm-Gg: AR+sD12Nh9IvE8Vr+bu42jhPLnEFZmpyNpdVyMLLGT9DW2dSK/UAqq9phoZ5o5DUs8S
-	5BugNTFgGXD4OoHjuFc0VZ2Me2sW3W1B7cvsulgYRvmWEzjJNfK70ghuj9cj8w6G8X8N5YZRX8D
-	F4Xk3aNMUZiiHuN68j8Q0yRppxEyf2135xz8D+A6SBfqNZomYmbzlIxAaeWiMbfoUTVnIjF4lSR
-	UUYOMgVyeYVk7lOCqAtAKZtCQeX2oRfQnvRGu7fa/oJ02R2y1V7hmPEobD2Sdlzyn3mCJUR1Im9
-	UHiFXyiTkaOk4VcXPGAu6jsQB0BUtcuAF8KO11K6uvCY28A6d/kySiMsPkuW1O+EYIq0n/CCcU9
-	jX9D5
-X-Received: by 2002:a05:622a:aa4d:10b0:528:3722:a372 with SMTP id
- d75a77b69052e-529a84dec8dmr48090321cf.4.1785132533145; Sun, 26 Jul 2026
- 23:08:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Pj4tJ5T3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=P3leTvDJrX720/wJnwxWzQnuh/OdxssvLI0mg8538YGh2FWtwvr32I7FuMpeTuGeFQWyC6oevIjU6STusuYcEgQRcsBQUwhCsxJqpW56A5wSymiSzSW3gQ0SWF2GvCQduGud8/rzbimePxZkG7vjr9SDuiRym3AW/bxp2VSBGcu1kzIHS1CdUX2NXtX6vV2YcZAZhy2P91ytYHrVwd/+REbjIt6rz9A++tjX3Wna6zGY8vO4AizANFIIMJNcXCRU8gU7a+7k69Rx8F3Btx9b7VXuFSXV7kJUuztgGkUZXQ0f8vWc9+jdlYOSKo7dOKEHlvgRlNRAQfZi/lY+u1YqSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EltYfYVD6cXXyWIthz/p+w4WNXF2iTzx5v5jMJ44rw8=;
+ b=P2R02OphxJUKUY7OXrjO9Q5KAyKyLwKYcMFZLF28Nr/T/2pzY9Efh95MNf9u/Fj5NlDedzeSaOk7MjjCilIEjHzEParlpu5CO8dkL71yAt1ishRtOGMmXPqrRt0o4/Ikby/RKKGFGReE+okGO1tnkvM+h2vKK3MKRg2jbIS+dAIy1L1+uUZ/YuaOrZsJMpAIyd8OVHqmqIIZQI3no/G0mMJOongB4CKxZyFoUY0C3GgTEUIiqa3oaZUtfVdaEFmTjAzIC+81ZbpeeDW31sH/tdwK4V8FNCZP7nLsu+NV4h+wBn3vmPKNvNZeQPVJGy5j0DEf/mK4pXGUI7lSGlcZeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microchip.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EltYfYVD6cXXyWIthz/p+w4WNXF2iTzx5v5jMJ44rw8=;
+ b=Pj4tJ5T3E4b8gP4Uz+AcTlmV0asUlHI69Ym1a8q9JZ9/ZWDHGkGP+UcWVOt4E3GYsuheecUAadd2A8tKevcAcsJ3r18vS63lHcmw7M407Dch8584ym4L0I7AEY0Qn5lVx1ggRZweurDgofZutn5wE8QmeZyndkdSK9AMCQhjy/QWosLPLnYgQAkioQe9KBcLq7rH8eUL2yCDoUxMmGzSX8A7jRVvVL1SVBmwT1tfzDfQ7MJjPH7dFAAoLO6F9c2a1wMR78MwqJ6ODv1WOw49SavU+ygrAKjhJrFZ1uywLfIc5OkgN/93vdcvX1TsClTa0zAYZs3wxI/lQ6UjPggsKA==
+Received: from IA3PR11MB9014.namprd11.prod.outlook.com (2603:10b6:208:583::17)
+ by SA2PR11MB4809.namprd11.prod.outlook.com (2603:10b6:806:112::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Mon, 27 Jul
+ 2026 06:24:39 +0000
+Received: from IA3PR11MB9014.namprd11.prod.outlook.com
+ ([fe80::13c0:2f12:94a2:8dc8]) by IA3PR11MB9014.namprd11.prod.outlook.com
+ ([fe80::13c0:2f12:94a2:8dc8%6]) with mapi id 15.21.0223.017; Mon, 27 Jul 2026
+ 06:24:39 +0000
+From: <Varshini.Rajendran@microchip.com>
+To: <claudiu.beznea@tuxon.dev>
+CC: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <Nicolas.Ferre@microchip.com>,
+	<alexandre.belloni@bootlin.com>, <srini@kernel.org>,
+	<marcelo.schmitt@analog.com>, <jorge.marques@analog.com>,
+	<mazziesaccount@gmail.com>, <Jonathan.Santos@analog.com>,
+	<jishnu.prakash@oss.qualcomm.com>, <antoniu.miclaus@analog.com>,
+	<duje@dujemihanovic.xyz>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 06/13] nvmem: microchip-otpc: add tag-based packet
+ lookup
+Thread-Topic: [PATCH v3 06/13] nvmem: microchip-otpc: add tag-based packet
+ lookup
+Thread-Index: AQHdCHQZdJFct0OCy0CWRGZddDJB/7Z4eVqAgACxrgCABUdkgIACneCA
+Date: Mon, 27 Jul 2026 06:24:39 +0000
+Message-ID: <5f84fd39-e8cd-488e-95f5-6fd39c3c6acb@microchip.com>
+References: <20260630093603.38663-1-varshini.rajendran@microchip.com>
+ <20260630093603.38663-7-varshini.rajendran@microchip.com>
+ <3998b196-6417-49b0-b8d3-a95a5b415916@tuxon.dev>
+ <5e940d60-3137-49d5-8a62-25c746c58d7e@microchip.com>
+ <87697527-0aff-4647-ae11-0eb51db9b134@tuxon.dev>
+In-Reply-To: <87697527-0aff-4647-ae11-0eb51db9b134@tuxon.dev>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA3PR11MB9014:EE_|SA2PR11MB4809:EE_
+x-ms-office365-filtering-correlation-id: 7d53846f-f219-44cd-aa9f-08deeba7bd0c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|376014|7416014|1800799024|366016|23010399003|38070700021|6133799003|4143699003|56012099006|11063799006|10067099003|22082099003|18002099003;
+x-microsoft-antispam-message-info:
+ 8PT4Pvhi98eiiZPRFlfDjrw80nuqQfJz/GLdLd28sUmutZaohHT833AtS6Jf1SC9vUo3v7R9ijHZK/Clu8W6NmYiht4PgJ86YKhz0djLZEZdRGPIxkSsD9iC1qrg/2aPrAuCvAmxMXr+a8dZ8aBDFmeXQ5nAXnPrTlcSs/t2x0qTEd5RJPZdYEsBIqCxOQBGnQAsk5EkH/tdrO4MbUQA6r1zlkRKhSNOfo2q7ivotyl5LC2pZ9WmbJLMlgSfSAgM/9UpKoJCD4GZMHoUAi7xl7OdiTLLLafdG6otrvY4Ijlu2HcFOasPpLSi542WAUjo3m2dv9pxf1SSy97h79cwoJgDjKH2xKnRT5dqteyaOOAXW3Ux36cYqLQibkCmhQwgJ02MS32x9IE0/hURQEDSgLpnJbvtuZoR13K4787xrkAlAM0xXAil/d+M8xFPTd8Eo6MwuaDxR9TUDkxzaSC6bL/e9rL/7pRku/Xp5lczwZi2+3/nkaIPGlvYzuW4zMGsJ+OqfH0QkzzL7rXBwWpy+YLxUjIWM7XsNRoAozhSOGG7iPW70pYfti+PUAgF2HZ+qmlvu5EuOpVa5agKbIs691gezS57gYLrNGKZMolZVnWOs1Q9SNsR0f/DWkacj+SweiBtI5fqueppkzSUfAfnzbLV9v62NpBD85wB+kaXTdIuVxmj6FujehlIvnqx9CcHnxaKZeSXtz9g8mLEpJ4s1Xo0qriBE25llfjNP+8x0b0=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA3PR11MB9014.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(23010399003)(38070700021)(6133799003)(4143699003)(56012099006)(11063799006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?NVl0dTQzOGhhdkROTFdvaVVUOEJjd0c0YnFpWkR6YjRmcnVnTEVMdnZ6ZTlG?=
+ =?utf-8?B?MnJ0OGdmWDJBazJablRYT1h4dGgyaWU4ekljc3VEUVpsdmRnRkU3ZG4xVG1K?=
+ =?utf-8?B?Rkl1TEVnbzdtdzFrMVFOcWVMUEl3dWdIZVowMDdRVi93ZlNNL0x6alhsYytZ?=
+ =?utf-8?B?TVRHUjI3NU9xTnBXaUh3QW9vTyt6QkN0TmFpSEVQZ1o4SzFEbW5kU2xWMnFH?=
+ =?utf-8?B?RjFDMnJVMjcvaG5KVHUyd1F3RW54NzJrT2JER2dlWUNzYTNGYkptT1ZjVGFw?=
+ =?utf-8?B?aEtaRXIzUWdBY2ZiQngyZFZWT0prMkt4NXhXK2RBRHZqSTk4WFdpTlpkd2Zt?=
+ =?utf-8?B?ZzhqREI4Uk13dVd4Zkk0aG5QTUJTdWxSQUwrYml5cWFFWlNWY1pZMUNFaUJt?=
+ =?utf-8?B?bE04bHErQ2hZQWJUYW42RlVwU2E1YnhpemExRnFpN3dQL05reWlNMmpMY25w?=
+ =?utf-8?B?aVdzdTQzN3VrSlhCaWdEdStRWmVkbXJHUXo0NHZkVHFJMUtJbklidldkcDlL?=
+ =?utf-8?B?aWRWYktPSHVGT3V6TUZmU2E1TTFFQ0t0Wk9yamRPVkwzdzk5dUphaFZYS3Ir?=
+ =?utf-8?B?Vjc4MmZ6YTB2Y1krNGI1bGtKRi9UeERIeGhzT2pCcE9nZCt2Y29QeHY0K3d4?=
+ =?utf-8?B?OWx4N0VvS3lHbVZkUkZPZ1NLbHErb05KWjQwbE5HOHFHYjdFRnVVRDZ1RWdZ?=
+ =?utf-8?B?VFUzaFJCcGdxUTZUeGpoRHo2ZUM2VG9sby9LMDhxRDhmQktqNmlOZ3dZVnlI?=
+ =?utf-8?B?TW5nM2FMRGxYbU5oeXNmWjhuQ0tMalliajFsRko5TUJPNTJMUDZIWXozaldw?=
+ =?utf-8?B?T0tBOGFJbnBNcXN4RU5pRGlKOWxuZE8vazYvV0M5RHdiQXhYRjBrSlRVTUZk?=
+ =?utf-8?B?SkM3cktPSjVybnNzQkFFbDl3c1JWRzFxMXVhai9rSDJpN3JZRnhlSHhmZXNM?=
+ =?utf-8?B?Y0VrTWJsRFFaV3VhODZpZGROSXBlYXJpMnU5a0plYXB3WGthdWdpT29Fazdw?=
+ =?utf-8?B?b2ZiY1c5VTJjVzVVUkFlQ2hlNDFlNkxXRFNqTFhESHFHUitraU54akMxRWhs?=
+ =?utf-8?B?M1FwSnF6OHAyNE9iTDBGN29MRGl2ZDFoMm1LV1d0VjFadXdocFFqRzlnQ3FH?=
+ =?utf-8?B?UmZhVHRDQzJ1eXh6ZHhKcS9SOFgyb3dHcDdCNitBOHcrWFJ6cjF2Q1FlalhK?=
+ =?utf-8?B?ejhad1hObllxZVZxak1rTWFJbTE2MVkwZGpoWVhFbXU0Q1ZPT1dodWFYaGFX?=
+ =?utf-8?B?ZEJnWnB5aXBKV1B3VG1QRWd4eXQ5ait0eW1rMjBlZVJFTFltRnZrdW9pdkpB?=
+ =?utf-8?B?MERSOXpnTzcrbmZUeXRjQnhFVVRVQWFwU0tZc0V5M05XSVcwVjZETFdjaDgv?=
+ =?utf-8?B?Nk1NbTEwbk1neC9PeHRyMGVUUkE3Mzl6VEpGQVpJT0NiZ2g3K0dCTUYvdmFv?=
+ =?utf-8?B?ZUs2MzROcUU2Y2RiTVVHZ1g4MmNwbjBUbkNkOXJjbUhtbzN6aThIN1lrcEhV?=
+ =?utf-8?B?MlpVd2lld3orSWdoTVZHc1hxUnNQVVVTMEx3ODIvYlNFRDZnUmEyOFFGQ3Nx?=
+ =?utf-8?B?WGx3eEEvZ0J1RU1pTmRmY0N0ZVdRODZRY1k0M2g4cGpZd1JjdTIrTkNQQlgz?=
+ =?utf-8?B?RWkyMzB3dW85Rmc3Rkw5Q1lLdkJhMmRVWkJ4SGN4MEhqR3pVdW5WQWl5MUxQ?=
+ =?utf-8?B?TmlUV3RneGV2R0d4ay94bHp2aEtXSTVrZXVTSmJiMDR3UEo2cHcwZzBrUW5a?=
+ =?utf-8?B?anR2RGw3V0RKM21VTlM5M2ZuK0JVdFRZRUVCN3VNSU5BSTJXY25TVGF3Mk90?=
+ =?utf-8?B?UUh1eVRaazFLV1Bpeko5bi9HeXR2N1RXRnhVcmNqdm02d2dpMGZQVWNwdHlq?=
+ =?utf-8?B?SDNkVkxGeDdPalhHTDBDcE9oc05rQkVnNlFMczVyNzlsUzNucHUraXlmOXZB?=
+ =?utf-8?B?TFFNdFNFRTl0NFZCOUlzc1hldzFnTUI0WktrUUhYRnR3RmRpR2xvQWdVd2Ir?=
+ =?utf-8?B?cXhTQ0JHa0xKYzNxWnJBYm5FNVVwVTdZNUsvTXdvbmtGVldzYVNzTkZuQnJX?=
+ =?utf-8?B?aXBxUTNkN0tOQUVHNVBhdUp6QzUxL3V6ZEF6MjlQWm03NFZnTFYwdkl4NkJo?=
+ =?utf-8?B?Z3Zka3VwQkVaS213QjZENmh4MFNLM0c0ZFdRcTBTempiSXZGalFHRGExbExz?=
+ =?utf-8?B?bGdkUktadzIzWGUwajJyMXgydTdjUHFlRm8xd3N3RzRTcWltTURtUllkb09E?=
+ =?utf-8?B?NTJ3N2dVNGZsTXhMUEs3QWRUWWE2dlhJMnVTOGZPM21zNXl4T1FTaVVaVW9D?=
+ =?utf-8?B?WnZFNjMrT3JUM2pDajg2czJxZG1LTWhkekxIdW16QUpoL2lUa2hHOVlnUDdy?=
+ =?utf-8?Q?i99uU6r2rYF+k57o=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <74325D1D7ABE0A409A639074D51E471F@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <CA+8Hp=M3ynUHzcDshLup5G+HDs0XoWkav0R5k-00m+O7LbOv1w@mail.gmail.com>
- <7df349cbcccc8004d9aef37f95be5c8e0e51f713.camel@linux.intel.com>
-In-Reply-To: <7df349cbcccc8004d9aef37f95be5c8e0e51f713.camel@linux.intel.com>
-From: Daniel Paul Perinchery <danielpaulperinchery07012005@gmail.com>
-Date: Mon, 27 Jul 2026 11:38:42 +0530
-X-Gm-Features: AUfX_mwVuK7N8Tdvd-3xis3OaVDKSpEC98dcBi8NzfS7udTnPE0Kw7MI8pFRQlQ
-Message-ID: <CA+8Hp=Pv_zsYiPOhxTQ4NtQ-rMSyPKbWrGyU0d+d--BHpT87YQ@mail.gmail.com>
-Subject: Re: hid-sensor-custom: async notification for input-report sysfs
- attributes? (human presence / attention sensors)
-To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Benjamin Tissoires <bentiss@kernel.org>, linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: microchip.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA3PR11MB9014.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d53846f-f219-44cd-aa9f-08deeba7bd0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jul 2026 06:24:39.6483
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: U0Eur4eFjhHt64xkSQV8b5taE/hAh7YDKNYK1Z5qrTOMNnlYVspIAe9FOUx3BaTSykGDYSK6Y+MvhOanVDsHBvCV7a4Xln0X/qteNH5re3BX9whKRBaqBh1uJMp9qlxS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4809
 
-Apologies =E2=80=94 my last message went to Srinivas directly instead of th=
-e
-whole thread. Reposting here so it's visible to everyone and gets
-archived properly:
-
-Hi,
-
-Thanks, this does help. I got it running and poll()/read() on
-/dev/HID-SENSOR-2000e1.3.auto does work. Two things I wasn't
-expecting, and wanted to check with you before going further:
-
-1. The reports arrive continuously, roughly every 100ms, whether or
-not anything actually changed (matches property-report-interval on
-this device, which reads 100). property-reporting-state reads 2
-("Threshold Events" per the HID sensor usage table), which I'd assumed
-meant the async path would only push on a real threshold crossing --
-but empirically it's a steady ~10Hz stream throughout, including long
-stretches where the sensor value isn't changing. Is that expected for
-this reporting-state value on the async report path specifically, or
-is there a separate control I'm missing to actually get
-sparse/event-only pushes out of the misc device (vs. it just always
-streaming at the configured report interval regardless of
-reporting-state)?
-
-2. Every sample's usage_id field comes back as 0x002000e1, i.e. the
-collection's own usage (hsdev->usage), not the usage of whichever
-individual input field the report is carrying. This instance
-(2000e1.3.auto) has five input fields under it in sysfs
-(input-0-200201 through input-4-2004b1), so I think each 11-byte
-payload is a packed report containing some/all of those fields
-together, keyed by byte offset rather than by usage_id per sample. Is
-there a way to get the per-field usage or offset table from userspace
-(something under sysfs or a report-descriptor dump via hidraw) so I
-don't have to reverse-engineer the byte layout empirically by
-correlating against the -value sysfs files field by field?
-
-My use case is specifically the human-presence input (2004b1) for a
-walk-away lock/dim daemon, so what I actually want is: wake up only
-when *that* field changes, ideally without also waking up for the
-other four fields' updates every 100ms if they're unrelated to
-presence. Let me know if that's realistically achievable with this
-interface as-is, or if it'd need something added on the kernel side
-after all (which circles back to my original question -- happy to go
-either direction depending on what you'd recommend).
-
-Thanks again for the pointer, this is a big step forward from polling sysfs=
-.
-
-Daniel Paul
-
-On Fri, Jul 24, 2026 at 9:00=E2=80=AFPM srinivas pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
->
-> Hi,
->
-> On Fri, 2026-07-24 at 12:42 +0530, Daniel Paul Perinchery wrote:
-> > Hi,
-> >
-> > I've been investigating why userspace can't efficiently watch a
-> > hid-sensor-custom input-report value (specifically a human-presence
-> > sensor, HID usage 2000e1, on an AMD Sensor Fusion Hub / amd_sfh
-> > platform) for changes without polling, and wanted to check whether
-> > there's interest in closing this gap before I try to write anything.
-> >
-> > Setup: Lenovo IdeaPad Pro 5 14AKP10, AMD Ryzen AI 7 350, kernel
-> > 7.0.13
-> > (Debian/Parrot, but this is stock hid-sensor-custom.c). Presence and
-> > gaze/attention are exposed as separate logical sensors under the same
-> > physical hub (HID-SENSOR-2000e1.x.auto), each with the usual
-> > auto-generated input-N-<usage>-value sysfs attribute.
-> >
-> > What I found tracing show_value() in hid-sensor-custom.c: for input
-> > reports, it calls sensor_hub_input_attr_get_raw_value(..., report_id,
-> > SENSOR_HUB_SYNC, false) -- i.e. every read of the -value file issues
-> > a
-> > synchronous GET_REPORT to the hub and returns the live answer.
-> > There's
-> > no cached field backing that attribute, so there's nothing for a
-> > notify-on-change mechanism to attach to on that path.
-> >
-> > Separately, hid_sensor_capture_sample() *is* a genuine async callback
-> > fired on hub-pushed input reports, but as far as I can tell it only
-> > feeds the raw kfifo behind the driver's misc-device streaming
-> > interface (custom_dev), gated on test_bit(0,
-> > &sensor_inst->misc_opened). It doesn't appear to update any per-field
-> > cached value, so it isn't reachable from the sysfs show_value() path
-> > either.
-> >
-> > Net effect: there's no way for a userspace consumer to poll()/
-> > select() on the -value file and be woken only on real hardware
-> > events.
->
->
-> I have a test program for poll(). Attached poll part.
->
-> #define DEVICE_PATH "/dev/HID-SENSOR-2000e1.2.auto"
-> #define BUFFER_SIZE 256
->
-> int main(int argc, char *argv[])
-> {
->         int fd;
->         struct pollfd pfd;
->         char buffer[BUFFER_SIZE];
->         int ret;
->         struct sigaction sa;
->
->         if (argc < 2) {
->                 printf("syntax %s sample_interval\n", argv[0]);
->                 exit(0);
->         }
->
->
->         // 1. Set up Ctrl+C signal handler
->         sa.sa_handler =3D handle_sigint;
->         sigemptyset(&sa.sa_mask);
->         sa.sa_flags =3D 0; // Don't use SA_RESTART so poll() unblocks on
-> signal
->         if (sigaction(SIGINT, &sa, NULL) < 0) {
->                 perror("Error setting up signal handler");
->                 return -1;
->         }
->
->         enable_sensor(1);
->
->         // 2. Open the misc device
->         fd =3D open(DEVICE_PATH, O_RDONLY | O_NONBLOCK);
->         if (fd < 0) {
->                 perror("Failed to open device");
->                 return -1;
->         }
->
->         // 3. Configure poll structure
->         pfd.fd =3D fd;
->         pfd.events =3D POLLIN;
->
->         printf("Polling loop started. Press Ctrl+C to exit
-> safely.\n");
->
->         // 4. Main event loop
->         while (keep_running) {
->                 printf("Waiting for data...\n");
->
->                 ret =3D poll(&pfd, 1, -1);
->
->                 if (ret < 0) {
->                         // Signal interrupted poll, loop will exit if
-> it was SIGINT
->                         continue;
->                 }
->
->                 if (ret =3D=3D 0) {
->                         // Timeout reached with no data
->                         continue;
->                 }
->
->                 // 5. Handle readable data event
->                 if (pfd.revents & POLLIN) {
->                         rx_tsc =3D read_rdtsc();
->                         ssize_t bytes_read =3D read(fd, buffer,
-> sizeof(buffer) - 1);
->                         if (bytes_read > 0) {
->                                 time_t tm;
->
->                                 buffer[bytes_read] =3D '\0'; // Null-
-> terminate string
->                                 printf("tm:%ld Received %ld bytes:
-> %s\n", time(&tm), (long)bytes_read, buffer);
->                                 read_time_stamp(buffer, bytes_read);
->                         } else if (bytes_read < 0) {
->                                 perror("Read error");
->                         }
->                 }
->         }
->
->         // 6. Cleanup
->         printf("\nExiting program cleanly...\n");
->         close(fd);
->
->         enable_sensor(0);
->
->         return 0;
-> }
->
-> Does it help.
->
-> Thanks,
-> Srinivas
->
->
-> > The hub itself is already configured for threshold-based reporting
-> > (property-reporting-state =3D 2, i.e. "Threshold Events") in my case,
-> > so
-> > the inefficiency is entirely on the kernel/sysfs side -- userspace
-> > has
-> > to fall back to timed re-reads of a synchronous, firmware-round-trip
-> > attribute, which is more expensive per-read than a typical cached
-> > sysfs value and awkward to size a safe polling interval for.
-> >
-> > This seems like a real gap for the presence/proximity use case
-> > specifically (walk-away lock, auto-dim, etc.), which is inherently
-> > event-oriented and is exactly the kind of feature vendors implement
-> > natively on Windows via push notifications from the same class of
-> > sensor.
-> >
-> > Before I put together a patch I wanted to ask: is there interest in
-> > adding async caching + sysfs_notify() (or sysfs_notify_dirent(), if
-> > attrs end up carrying a stored kernfs_node) for input-report values
-> > specifically, sourced from hid_sensor_capture_sample()'s existing
-> > async path? Rough shape as I see it:
-> >
-> >   - add a cached "last input value" (+ a bool "valid") per relevant
-> > field in struct hid_sensor_custom_field
-> >   - in hid_sensor_capture_sample(), in addition to (or instead of,
-> > behind a config/attr) feeding the misc-device fifo, decode and store
-> > the value for the matching field, then sysfs_notify() its -value
-> > attribute
-> >   - leave show_value()'s SENSOR_HUB_SYNC path untouched for feature
-> > reports and for any input attrs that never get an async report, so
-> > nothing regresses for existing consumers
-> >
-> > Happy to be told this already exists via a different interface I've
-> > missed (I did look at whether this should just go through the IIO
-> > buffered/trigger interface instead, given some other hid-sensor-*
-> > drivers are IIO-backed -- but hid-sensor-custom exposes vendor/custom
-> > usages directly via this sysfs shape rather than IIO channels, so I
-> > wasn't sure that's the right layer to add it at). Also open to being
-> > told the misc-device/fifo interface is meant to be the async
-> > consumption path already and userspace tools should be using that
-> > instead of polling -value -- if so, is there existing tooling/docs
-> > for
-> > that path I should be pointing presence-detection use cases at?
-> >
-> > Not attaching a patch yet since I'd rather get a read on the right
-> > approach (and whether it's wanted at all) before writing one.
-> >
-> > Thanks,
-> > Daniel Paul
+SGkgQ2xhdWRpdSwNCg0KT24gMjUvMDcvMjYgNzo1NyBwbSwgQ2xhdWRpdSBCZXpuZWEgd3JvdGU6
+DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50
+cyB1bmxlc3MgeW91IGtub3cgDQo+IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IEhpLCBWYXJz
+aGluaSwNCj4gDQo+IE9uIDcvMjIvMjYgMDg6NTAsIFZhcnNoaW5pLlJhamVuZHJhbkBtaWNyb2No
+aXAuY29tIHdyb3RlOg0KPj4gSGkgQ2xhdWRpdSwNCj4+DQo+PiBUaGFua3MgZm9yIHRha2luZyB0
+aGUgdGltZSB0byByZXZpZXcuDQo+Pg0KPj4gT24gMjIvMDcvMjYgMTI6NDQgYW0sIENsYXVkaXUg
+QmV6bmVhIHdyb3RlOg0KPj4+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Ig
+b3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cNCj4+PiB0aGUgY29udGVudCBpcyBzYWZl
+DQo+Pj4NCj4+PiBIaSwgVmFyc2hpbmksDQo+Pj4NCj4+PiBPbiA2LzMwLzI2IDEyOjM1LCBWYXJz
+aGluaSBSYWplbmRyYW4gd3JvdGU6DQo+Pj4+IEFkZCBzdXBwb3J0IGZvciBhY2Nlc3NpbmcgT1RQ
+IHBhY2tldHMgYnkgdGhlaXIgNC1ieXRlIEFTQ0lJIHRhZyB3aGlsZQ0KPj4+PiBwcmVzZXJ2aW5n
+IGJhY2t3YXJkIGNvbXBhdGliaWxpdHkgd2l0aCB0aGUgZXhpc3RpbmcgSUQtYmFzZWQgbG9va3Vw
+Lg0KPj4+Pg0KPj4+PiBUaGUgT1RQIG1lbW9yeSBsYXlvdXQgY2FuIHZhcnkgYWNyb3NzIGRldmlj
+ZXMgYW5kIG1heSBjaGFuZ2Ugb3ZlciB0aW1lLA0KPj4+PiBtYWtpbmcgdGhlIHBhY2tldCBJRCBh
+cHByb2FjaCB1bnJlbGlhYmxlIHdoZW4gdGhlIG1lbW9yeSBtYXAgaXMgbm90DQo+Pj4+IGtub3du
+IGluIGFkdmFuY2UuIFRoZSBwYWNrZXQgdGFnIHByb3ZpZGVzIGEgcmVsaWFibGUgd2F5IHRvIGlk
+ZW50aWZ5DQo+Pj4+IGFuZCBhY2Nlc3MgcGFja2V0cyB3aXRob3V0IHByaW9yIGtub3dsZWRnZSBv
+ZiB0aGUgT1RQIG1lbW9yeSBsYXlvdXQuDQo+Pj4+DQo+Pj4+IFR3byBvZmZzZXQgZW5jb2Rpbmcg
+YXJlIG5vdyBzdXBwb3J0ZWQ6DQo+Pj4+IMKgwqDCoCAxLiBMZWdhY3kgSUQtYmFzZWQ6IG9mZnNl
+dCA9IE9UUF9QS1QoaWQpID0gaWQgKiA0DQo+Pj4+IMKgwqDCoMKgwqDCoCBVc2VkIGluIERUIGFz
+OiByZWcgPSA8T1RQX1BLVCgxKSA3Nj47DQo+Pj4+IMKgwqDCoCAyLiBUQUctYmFzZWQ6IG9mZnNl
+dCA9IDQtYnl0ZSBBU0NJSSBwYWNrZXQgdGFnDQo+Pj4+IMKgwqDCoMKgwqDCoCBVc2VkIGluIERU
+IGFzOiByZWcgPSA8MHg0MTQzNTM1NCAweDRjPjsgKHRhZyAiQUNTVCIpDQo+Pj4+DQo+Pj4NCj4+
+PiBJIHRoaW5rIHRoaXM6DQo+Pj4NCj4+Pj4gVGhlIGRyaXZlciByZXNvbHZlcyBvZmZzZXRzIG1h
+dGNoaW5nIHZhbGlkIGxlZ2FjeSBzZWxlY3RvcnMgKG11bHRpcGxlcw0KPj4+PiBvZiA0IHdpdGhp
+biB0aGUgcGFja2V0IGNvdW50KSB0aHJvdWdoIElEIGxvb2t1cCwgZmFsbGluZyBiYWNrIHRvIHRh
+Zw0KPj4+PiBsb29rdXAgZm9yIG90aGVyIHZhbHVlcy4gVGhpcyBlbnN1cmVzIGV4aXN0aW5nIGRl
+dmljZSB0cmVlcyBjb250aW51ZQ0KPj4+PiB0byB3b3JrIHdoaWxlIGVuYWJsaW5nIG5ldyB0YWct
+YmFzZWQgYWNjZXNzLg0KPj4+DQo+Pj4gc2hvdWxkIGZhbGwgaW4gYSBkaWZmZXJlbnQgcGF0Y2g/
+DQo+Pg0KPj4gWW91IG1lYW4gbW92aW5nIHRoZSAiaW52b2tpbmcgdGhlIG5ldyB0YWctYmFzZWQg
+bWV0aG9kIHdpdGggdGhlIGxlZ2FjeQ0KPj4gbWV0aG9kIGFzIGEgZmFsbGJhY2siIHBhcnQgYWxv
+bmU/IE9ubHkgYWRkIHRoZSBmdW5jdGlvbnMgaW4gdGhpcyBwYXRjaA0KPj4gYW5kIGludm9raW5n
+IHRoZW0gaW4gdGhlIG5leHQgb25lIC0gRGlkIEkgZ2V0IGl0IHJpZ2h0Pw0KPiANCj4gQWgsIGFw
+b2xvZ2llcyBmb3IgY29uZnVzaW9uLCBJIHJlZmVycmVkIHRvIHRoZSB3cm9uZyBzZWN0aW9uLiBJ
+IHdhbnRlZCANCj4gdG8gcmVmZXINCj4gdG8gdGhpcyBzZWN0aW9uOg0KPiANCj4+Pj4gVGhlIGRy
+aXZlciBhbHNvIHZhbGlkYXRlcyBPVFAgbWVtb3J5IGFjY2Vzc2liaWxpdHkgYW5kIGVtdWxhdGlv
+biBtb2RlDQo+Pj4+IHN0YXR1cy4gV2hlbiB0aGUgYm9vdCBwYWNrZXQgaXMgbm90IGNvbmZpZ3Vy
+ZWQsIGVtdWxhdGlvbiBtb2RlIGFsbG93cw0KPj4+PiBhY2Nlc3MgdG8gdGhlIG90aGVyIHBhY2tl
+dHMuIFdoZW4gYm90aCBhcmUgbm90IGF2YWlsYWJsZSBhbg0KPj4+PiBpbmZvcm1hdGlvbmFsIG1l
+c3NhZ2UgaXMgbG9nZ2VkLg0KPiANCj4gVGhhdCBpcyBoYW5kbGVkIHRocm91Z2ggdGhpcyBjb2Rl
+Og0KPiANCj4gKw0KPiArwqDCoMKgwqDCoMKgIHRtcCA9IHJlYWRsX3JlbGF4ZWQob3RwYy0+YmFz
+ZSArIE1DSFBfT1RQQ19NUik7DQo+ICvCoMKgwqDCoMKgwqAgZW11bF9lbmFibGUgPSB0bXAgJiBN
+Q0hQX09UUENfTVJfRU1VTDsNCj4gK8KgwqDCoMKgwqDCoCBpZiAoZW11bF9lbmFibGUpDQo+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldl9pbmZvKG90cGMtPmRldiwgIkVtdWxhdGlv
+biBtb2RlIGVuYWJsZWRcbiIpOw0KPiArDQo+ICDCoMKgwqDCoMKgwqAgcmV0ID0gbWNocF9vdHBj
+X2luaXRfcGFja2V0c19saXN0KG90cGMsICZzaXplKTsNCj4gIMKgwqDCoMKgwqDCoCBpZiAocmV0
+KQ0KPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Ow0KPiANCj4gK8Kg
+wqDCoMKgwqDCoCBpZiAoIXNpemUpIHsNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+ZGV2X3dhcm4ob3RwYy0+ZGV2LCAiQ2Fubm90IGFjY2VzcyBPVFAgbWVtb3J5XG4iKTsNCj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKCFlbXVsX2VuYWJsZSkNCj4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldl9pbmZvKG90cGMtPmRldiwg
+IkJvb3QgcGFja2V0IG5vdCBwcm9ncmFtbWVkIA0KPiBhbmQgZW11bGF0aW9uIG1vZGUgZGlzYWJs
+ZWRcbiIpOw0KPiArwqDCoMKgwqDCoMKgIH0NCj4gKw0KPiANCj4gVGhpcyBJIHRoaW5rIHNob3Vs
+ZCBnbyBpbiBhIGRpZmZlcmVudCBwYXRjaC4NCj4gDQo+Pg0KPj4+DQo+Pj4+DQo+Pj4+IER1cmlu
+ZyBwcm9iZSwgcGFja2V0IG1ldGEgZGF0YSBpbmNsdWRpbmcgdGhlIHRhZyBpcyByZWFkIGFuZCBj
+YWNoZWQuDQo+Pj4+IFRoZSBkcml2ZXIgYWxzbyB2YWxpZGF0ZXMgT1RQIG1lbW9yeSBhY2Nlc3Np
+YmlsaXR5IGFuZCBlbXVsYXRpb24gbW9kZQ0KPj4+PiBzdGF0dXMuIFdoZW4gdGhlIGJvb3QgcGFj
+a2V0IGlzIG5vdCBjb25maWd1cmVkLCBlbXVsYXRpb24gbW9kZSBhbGxvd3MNCj4+Pj4gYWNjZXNz
+IHRvIHRoZSBvdGhlciBwYWNrZXRzLiBXaGVuIGJvdGggYXJlIG5vdCBhdmFpbGFibGUgYW4NCj4+
+Pj4gaW5mb3JtYXRpb25hbCBtZXNzYWdlIGlzIGxvZ2dlZC4NCj4+Pj4NCj4+Pj4gVGhlIHN0cmlk
+ZSBvZiB0aGUgbnZtZW0gbWVtb3J5IGlzIHNldCB0byAxIGluIG9yZGVyIHRvIHN1cHBvcnQgdGFn
+IA0KPj4+PiBiYXNlZA0KPj4+PiBvZmZzZXRzLCBjb21tZW50IGluIHRoZSBoZWFkZXIgZmlsZSBp
+cyB1cGRhdGVkIGFjY29yZGluZ2x5Lg0KPj4+Pg0KPj4+PiBTaWduZWQtb2ZmLWJ5OiBWYXJzaGlu
+aSBSYWplbmRyYW4gPHZhcnNoaW5pLnJhamVuZHJhbkBtaWNyb2NoaXAuY29tPg0KPj4+PiAtLS0N
+Cj4+Pj4gwqDCoCBkcml2ZXJzL252bWVtL21pY3JvY2hpcC1vdHBjLmPCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgfCAxNDMgKysrKysrKysrKysrKyANCj4+Pj4gKysrLS0NCj4+Pj4gwqDC
+oCAuLi4vbnZtZW0vbWljcm9jaGlwLHNhbWE3ZzUtb3RwYy5owqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB8wqDCoCA0ICstDQo+Pj4+IMKgwqAgMiBmaWxlcyBjaGFuZ2VkLCAxMzYgaW5zZXJ0aW9ucygr
+KSwgMTEgZGVsZXRpb25zKC0pDQo+Pj4+DQo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL252bWVt
+L21pY3JvY2hpcC1vdHBjLmMgYi9kcml2ZXJzL252bWVtL21pY3JvY2hpcC0NCj4+Pj4gb3RwYy5j
+DQo+Pj4+IGluZGV4IGRmOTc5ZTg1NDlmZC4uYmY4NTg5MDQ4ZTE3IDEwMDY0NA0KPj4+PiAtLS0g
+YS9kcml2ZXJzL252bWVtL21pY3JvY2hpcC1vdHBjLmMNCj4+Pj4gKysrIGIvZHJpdmVycy9udm1l
+bS9taWNyb2NoaXAtb3RwYy5jDQo+Pj4+IEBAIC0xOCwxNiArMTgsMjAgQEANCj4+Pj4gwqDCoCAj
+ZGVmaW5lIE1DSFBfT1RQQ19DUl9SRUFEwqDCoMKgwqDCoMKgwqDCoMKgwqAgQklUKDYpDQo+Pj4+
+IMKgwqAgI2RlZmluZSBNQ0hQX09UUENfTVLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgICgweDQpDQo+Pj4+IMKgwqAgI2RlZmluZSBNQ0hQX09UUENfTVJfQURE
+UsKgwqDCoMKgwqDCoMKgwqDCoMKgIEdFTk1BU0soMzEsIDE2KQ0KPj4+PiArI2RlZmluZSBNQ0hQ
+X09UUENfTVJfRU1VTMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgQklUKDcpDQo+Pj4+IMKgwqAgI2Rl
+ZmluZSBNQ0hQX09UUENfQVLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgICgweDgpDQo+Pj4+IMKgwqAgI2RlZmluZSBNQ0hQX09UUENfU1LCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICgweGMpDQo+Pj4+IMKgwqAgI2RlZmlu
+ZSBNQ0hQX09UUENfU1JfUkVBRMKgwqDCoMKgwqDCoMKgwqDCoMKgIEJJVCg2KQ0KPj4+PiDCoMKg
+ICNkZWZpbmUgTUNIUF9PVFBDX0hSwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAoMHgyMCkNCj4+Pj4gwqDCoCAjZGVmaW5lIE1DSFBfT1RQQ19IUl9TSVpFwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgR0VOTUFTSygxNSwgOCkNCj4+Pj4gKyNkZWZpbmUgTUNIUF9PVFBD
+X0hSX1BBQ0tFVF9UWVBFwqDCoMKgwqAgR0VOTUFTSygyLCAwKQ0KPj4+DQo+Pj4gTml0OiBpbiBT
+QU1BN0Q2NSBtYW51YWwgdGhpcyBpcyBzaW1wbHkgcGFja2V0LiBNYXliZSByZW5hbWUgaXQ6DQo+
+Pj4gTUNIUF9PVFBDX0hSX1BBQ0tFVCB0byBtYXRjaCB0aGUgbWFudWFsLg0KPj4+DQo+Pj4+IMKg
+wqAgI2RlZmluZSBNQ0hQX09UUENfRFLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgICgweDI0KQ0KPj4+Pg0KPj4+PiDCoMKgICNkZWZpbmUgTUNIUF9PVFBDX05B
+TUXCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgIm1jaHAtb3RwYyIN
+Cj4+Pj4gwqDCoCAjZGVmaW5lIE1DSFBfT1RQQ19TSVpFwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgICgxMSAqIDEwMjQpDQo+Pj4+DQo+Pj4+ICsjZGVmaW5lIFBBQ0tF
+VF9UWVBFX1JFR1VMQVLCoMKgwqDCoMKgwqDCoMKgwqAgMQ0KPj4+DQo+Pj4gSSB3b3VsZCBtb3Zl
+IHRoaXMgY2xvc2UgdG8gTUNIUF9PVFBDX0hSX1BBQ0tFVF9UWVBFIGFuZCBuYW1lIGl0DQo+Pj4g
+c29tZXRoaW5nIGxpa2U6DQo+Pj4gTUNIUF9PVFBDX0hSX1BBQ0tFVF9SRUdVTEFSIHRvIG1hdGNo
+IHRoZSBkYXRhc2hlZXQuDQo+Pj4NCj4+Pj4gKw0KPj4+PiDCoMKgIC8qKg0KPj4+PiDCoMKgwqAg
+KiBzdHJ1Y3QgbWNocF9vdHBjIC0gT1RQQyBwcml2YXRlIGRhdGEgc3RydWN0dXJlDQo+Pj4+IMKg
+wqDCoCAqIEBiYXNlOiBiYXNlIGFkZHJlc3MNCj4+Pj4gQEAgLTQ3LDExICs1MSwxNSBAQCBzdHJ1
+Y3QgbWNocF9vdHBjIHsNCj4+Pj4gwqDCoMKgICogQGxpc3Q6IGxpc3QgaGVhZA0KPj4+PiDCoMKg
+wqAgKiBAaWQ6IHBhY2tldCBJRA0KPj4+PiDCoMKgwqAgKiBAb2Zmc2V0OiBwYWNrZXQgb2Zmc2V0
+IChpbiB3b3JkcykgaW4gT1RQIG1lbW9yeQ0KPj4+PiArICogQHR5cGU6IHR5cGUgb2YgdGhlIHBh
+Y2tldA0KPj4+PiArICogQHRhZzogNC1ieXRlIEFTQ0lJIHRhZyBvZiB0aGUgcGFja2V0DQo+Pj4+
+IMKgwqDCoCAqLw0KPj4+PiDCoMKgIHN0cnVjdCBtY2hwX290cGNfcGFja2V0IHsNCj4+Pj4gwqDC
+oMKgwqDCoMKgIHN0cnVjdCBsaXN0X2hlYWQgbGlzdDsNCj4+Pj4gwqDCoMKgwqDCoMKgIHUzMiBp
+ZDsNCj4+Pj4gwqDCoMKgwqDCoMKgIHUzMiBvZmZzZXQ7DQo+Pj4+ICvCoMKgwqDCoCB1MzIgdHlw
+ZTsNCj4+Pg0KPj4+IFRoaXMgY2FuIGJlIGRyb3BwZWQgZm9yIG5vdyBzaW5jZSBpdCdzIHVzZWQg
+b25seSBpbiB0aGUgaW5pdGlhbGl6YXRpb24NCj4+PiBwYXRoLg0KPj4+DQo+Pj4+ICvCoMKgwqDC
+oCB1MzIgdGFnOw0KPj4+PiDCoMKgIH07DQo+Pj4+DQo+Pj4+IMKgwqAgc3RhdGljIHN0cnVjdCBt
+Y2hwX290cGNfcGFja2V0ICptY2hwX290cGNfaWRfdG9fcGFja2V0KHN0cnVjdA0KPj4+PiBtY2hw
+X290cGMgKm90cGMsDQo+Pj4+IEBAIC03MCw2ICs3OCw1NiBAQCBzdGF0aWMgc3RydWN0IG1jaHBf
+b3RwY19wYWNrZXQNCj4+Pj4gKm1jaHBfb3RwY19pZF90b19wYWNrZXQoc3RydWN0IG1jaHBfb3Rw
+YyAqb3RwYywNCj4+Pj4gwqDCoMKgwqDCoMKgIHJldHVybiBOVUxMOw0KPj4+PiDCoMKgIH0NCj4+
+Pj4NCj4+Pj4gKy8qKg0KPj4+PiArICogbWNocF9vdHBjX3RhZ190b19wYWNrZXQoKSAtIGZpbmQg
+cGFja2V0IGJ5IHRhZw0KPj4+PiArICogQG90cGM6IE9UUEMgcHJpdmF0ZSBkYXRhDQo+Pj4+ICsg
+KiBAdGFnOiA0LWJ5dGUgQVNDSUkgdGFnIHRvIHNlYXJjaCBmb3INCj4+Pj4gKyAqDQo+Pj4+ICsg
+KiBSZXR1cm46IHBvaW50ZXIgdG8gcGFja2V0IGlmIGZvdW5kLCBOVUxMIG90aGVyd2lzZQ0KPj4+
+PiArICovDQo+Pj4NCj4+PiBJJ20gbm90IHN1cmUgd2UgbmVlZCB0aGlzIGRlc2NyaXB0aW9uIHNp
+bmNlIHRoZSBmdW5jdGlvbiBpcyBzaW1wbGUNCj4+PiBlbm91Z2guIEkNCj4+PiB3b3VsZCBkcm9w
+IGl0Lg0KPj4+DQo+Pj4+ICtzdGF0aWMgc3RydWN0IG1jaHBfb3RwY19wYWNrZXQgKm1jaHBfb3Rw
+Y190YWdfdG9fcGFja2V0KHN0cnVjdA0KPj4+PiBtY2hwX290cGMgKm90cGMsDQo+Pj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1MzIgdGFnKQ0KPj4+
+PiArew0KPj4+PiArwqDCoMKgwqAgc3RydWN0IG1jaHBfb3RwY19wYWNrZXQgKnBhY2tldDsNCj4+
+Pj4gKw0KPj4+PiArwqDCoMKgwqAgbGlzdF9mb3JfZWFjaF9lbnRyeShwYWNrZXQsICZvdHBjLT5w
+YWNrZXRzLCBsaXN0KSB7DQo+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKHBhY2tl
+dC0+dGFnID09IHRhZykNCj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgcmV0dXJuIHBhY2tldDsNCj4+Pj4gK8KgwqDCoMKgIH0NCj4+Pj4gKw0KPj4+PiArwqDC
+oMKgwqAgcmV0dXJuIE5VTEw7DQo+Pj4+ICt9DQo+Pj4+ICsNCj4+Pj4gKy8qKg0KPj4+PiArICog
+bWNocF9vdHBjX3Jlc29sdmVfcGFja2V0KCkgLSByZXNvbHZlIG9mZnNldCB0byBwYWNrZXQNCj4+
+Pj4gKyAqIEBvdHBjOiBPVFBDIHByaXZhdGUgZGF0YQ0KPj4+PiArICogQG9mZjogTlZNRU0gb2Zm
+c2V0IChsZWdhY3kgSUQtYmFzZWQgb3IgVEFHLWJhc2VkKQ0KPj4+PiArICoNCj4+Pj4gKyAqIExl
+Z2FjeSBvZmZzZXRzIChtdWx0aXBsZXMgb2YgNCB3aXRoaW4gdmFsaWQgSUQgcmFuZ2UpIGFyZSBy
+ZXNvbHZlZA0KPj4+PiArICogdGhyb3VnaCBJRCBsb29rdXAuIE90aGVyIG9mZnNldHMgYXJlIHRy
+ZWF0ZWQgYXMgNC1ieXRlIEFTQ0lJIHRhZ3MuDQo+Pj4+ICsgKg0KPj4+PiArICogUmV0dXJuOiBw
+b2ludGVyIHRvIHBhY2tldCBpZiBmb3VuZCwgTlVMTCBvdGhlcndpc2UNCj4+Pj4gKyAqLw0KPj4+
+DQo+Pj4gU2FtZSBoZXJlLg0KPj4+DQo+Pj4+ICtzdGF0aWMgc3RydWN0IG1jaHBfb3RwY19wYWNr
+ZXQgKm1jaHBfb3RwY19yZXNvbHZlX3BhY2tldChzdHJ1Y3QNCj4+Pj4gbWNocF9vdHBjICpvdHBj
+LA0KPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB1MzIgb2ZmKQ0KPj4+PiArew0KPj4+PiArwqDCoMKgwqAgLyoNCj4+Pj4gK8KgwqDCoMKgwqAg
+KiBMZWdhY3kgaWQgYmFzZWQgcGFja2V0IGFjY2Vzczogb2Zmc2V0ID0gaWQgKiA0DQo+Pj4+ICvC
+oMKgwqDCoMKgICogSW5zaWRlIHRoZSBkcml2ZXIgd2UgdXNlIGNvbnRpbnVvdXMgdW5zaWduZWQg
+aW50ZWdlciBudW1iZXJzDQo+Pj4+ICvCoMKgwqDCoMKgICogZm9yIHBhY2tldCBpZCwgdGh1cyBk
+aXZpZGUgb2ZmIGJ5IDQgYmVmb3JlIHBhc3NpbmcgaXQgdG8NCj4+Pj4gK8KgwqDCoMKgwqAgKiBt
+Y2hwX290cGNfaWRfdG9fcGFja2V0KCkuDQo+Pj4+ICvCoMKgwqDCoMKgICovDQo+Pj4+ICvCoMKg
+wqDCoCB1MzIgaWQgPSBvZmYgLyA0Ow0KPj4+PiArDQo+Pj4+ICvCoMKgwqDCoCBpZiAoIShvZmYg
+JSA0KSAmJiBpZCA8IG90cGMtPm5wYWNrZXRzKQ0KPj4+DQo+Pj4gVGhlIHRhZyBjYW4gYmUgYW55
+dGhpbmcsIG5vPyBDYW4ndCB0aGUgdGFnIHNhdGlzZnkgdGhpcyBjb25kaXRpb24gYW5kIA0KPj4+
+IHRoZQ0KPj4+IGV4ZWN1dGlvbiB0byB3cm9uZ2x5IHVzZSBtY2hwX290cGNfaWRfdG9fcGFja2V0
+KCkgPw0KPj4NCj4+IFRoZSB0YWcgaXMgYSBGb3VyQ0MgY29kZS4gU28gdGhlIG1pbmltdW0gdmFs
+dWUgd291bGQgYmUgMHgyMDIwMjAyMCB3aGljaA0KPj4gd2F5IHRvbyBiaWcgdGhhbiB0aGUgbnVt
+YmVyIG9mIHBhY2tldHMgdGhlIE9UUCBjb3VsZCBob2xkLiBTbyB0aGlzDQo+PiBjb25kaXRpb24g
+cHJldHR5IG11Y2ggbmV2ZXIgZmFpbHMuIElmIHlvdSB3YW50IG1lIHRvIGFkZCB0aGlzDQo+PiAi
+MHgyMDIwMjAyMCIgdmFsdWUgYXMgYW4gYWRkaXRpb25hbCBjaGVjayBJIGNhbiBkbyB0aGF0Lg0K
+PiANCj4gUGxlYXNlIG1lbnRpb24gRm91ckNDIGluIHBhdGNoIGRlc2NyaXB0aW9uLg0KDQpZZXMu
+IEkgd2lsbCBkbyB0aGlzLg0KDQo+IA0KPiBBbHNvLCBJIHRoaW5rIG9uZSB3b3VsZCBtYW5hZ2Ug
+dG8gYWNjZXNzIGEgcGFja2V0IHdpdGggYSB0YWcgdGhhdCBpcyBub3QgaW4NCj4gRm91ckNDIGZv
+cm1hdCAodGFnID49IDB4MjAyMDIwMjApLiBFLmcuIGlmIHRoZSBtZW1vcnkgZm9vdHByaW50IGlz
+Og0KPiANCj4gIMKgSGVhZGVyIDANCj4gLS0tLS0tLS0tLS0NCj4gIMKgUGF5bG9hZCAwOg0KPiAg
+wqB0YWcwID0gMHgyMDIwMjAyMA0KPiAtLS0tLS0tLS0tLQ0KPiAgwqBIZWFkZXIgMQ0KPiAtLS0t
+LS0tLS0tLQ0KPiAgwqBQYXlsb2FkIDE6DQo+ICDCoHRhZzEgPSAweDAwMDAyMDIwDQo+IC0tLS0t
+LS0tLS0tLQ0KPiAgwqBIZWFkZXIgMg0KPiAtLS0tLS0tLS0tLS0NCj4gIMKgUGF5bG9hZCAyOg0K
+PiAgwqB0YWcyID0gMHgwMDAwMDAwNA0KPiAtLS0tLS0tLS0tLQ0KPiAgwqBIZWFkZXIgMw0KPiAt
+LS0tLS0tLS0tLQ0KPiAgwqBQYXlsb2FkIDM6DQo+ICDCoHRhZzMgPSAweDAwMDAyMDIwDQo+IC0t
+LS0tLS0tLS0tDQo+ICDCoEhlYWRlciA0DQo+IC0tLS0tLS0tLS0tDQo+ICDCoFBheWxvYWQgNDoN
+Cj4gIMKgdGFnMyA9IDB4MDAwMDIwMjANCj4gDQo+IA0KPiBTaW5jZSB0aGUgaW5pdGlhbGl6YXRp
+b24gZnVuY3Rpb24gbWNocF9vdHBjX3JlYWRfcGFja2V0X3RhZygpIGRvbid0IA0KPiB2YWxpZGF0
+ZSB0aGUNCj4gRm91ckNDIGZvcm1hdCB3aXRoIHRoZSBtaW5pbWFsIEZvdXJDQyB2YWx1ZSwgaXQg
+d2lsbCBjcmVhdGUgYSBsaXN0IHdpdGggNQ0KPiBwYWNrZXRzIGFzIGZvbGxvd3M6DQo+IA0KPiBw
+YWNrZXQwOg0KPiAtIGlkID0gMA0KPiAtIHRhZyA9IDB4MjAyMDIwMjANCj4gDQo+IHBhY2tldDE6
+DQo+IC0gaWQgPSAwDQo+IC0gdGFnID0gMHgwMDAwMjAyMA0KPiANCj4gcGFja2V0MjoNCj4gLSBp
+ZCA9IDINCj4gLSB0YWcgPSAweDAwMDAwMDA0DQo+IA0KPiBwYWNrZXQzOg0KPiAtIGlkID0gMw0K
+PiAtIHRhZyA9IDB4MDAwMDIwMjANCj4gDQo+IHBhY2tldDQ6DQo+IC0gaWQgPSA0DQo+IC0gdGFn
+ID0gMHgwMDAwMjAyMA0KPiANCj4gVGh1cywgcmVhY2hpbmcgbWNocF9vdHBjX3JlYWQoKSB3aXRo
+IG9mZj0weDAwMDAyMDIwIHdpbGwgYWxsb3cgdGhlIHVzZXIgDQo+IHRvIGdldA0KPiBwYWNrZXQx
+IHVzaW5nIHRhZyBtZXRob2QgKGV2ZW4gdGhvdWdoIHRoZSB1c2VyIGZsYXNoZWQgbXVsdGlwbGUg
+cGFja2V0cyANCj4gd2l0aCB0aGUNCj4gc2FtZSB0YWc7IEknbSBub3Qgc3VyZSBpZiB3ZSBzaG91
+bGQgdmFsaWRhdGUgdGhpcykuDQo+IA0KPiBBdCB0aGUgc2FtZSB0aW1lIGlmIG9mZj0weDAwMDAw
+MDA0IChjb3JyZXNwb25kaW5nIHRvIHBhY2tldDIpIHRoZSBjb2RlIHdpbGwNCj4gcmV0dXJuIHRo
+ZSBwYXlsb2FkIG9mIHBhY2tldDEgYXMgaXQgd2lsbCByZXNvbHZlIHRoZSBwYWNrZXQgdXNpbmcN
+Cj4gbWNocF9vdHBjX2lkX3RvX3BhY2tldCgpLg0KDQoNClllcy4gVGhhdCBpcyBjb3JyZWN0LiBC
+dXQgc2luY2UgdGhlIHRhZyB3aWxsIHRlY2huaWNhbGx5IGJlIGEgRm91ckNDIA0KY29kZSwgdGhp
+cyBwcm9ibGVtIHdpbGwgbm90IGFyaXNlLiBGb3IgY2F1dGlvbiwgSSBjYW4gdmFsaWRhdGUgdGhl
+IHRhZyANCmlmIGl0IGlzIGEgRm91ckNDIGNvZGUsIGJlZm9yZSBjcmVhdGluZyB0aGUgdGFibGUg
+b2YgY29udGVudHMgZm9yIHRoZSANCnBhY2tldHMuDQoNCkJ1dCBlaXRoZXIgd2F5LCB0aGUgYmVo
+YXZpb3IgaXMgZGV0ZXJtaW5pc3RpYyBiYXNlZCBvbiB3aGF0IGlzIHF1ZXJpZWQ6DQoNCi0gSWYg
+aXQgaXMgYSB2YWxpZCB0YWcgKGZvdXJDQyBjb2RlKSwgdGhlbiBpdCB3aWxsIGFsd2F5cyBleGNl
+ZWQgYW55IA0KcmVhbGlzdGljIHBhY2tldCBjb3VudCwgc28gdGhleSByZWxpYWJseSBmYWxsIHRo
+cm91Z2ggdG8gdGFnIGxvb2t1cC4NCg0KLSBJZiBpdCBpcyBhIExlZ2FjeSBJRCwgdGhlIGxvb2t1
+cCB3aWxsIGFsd2F5cyB1c2UgaWQgcmVnYXJkbGVzcyBvZiB3aGF0IA0KdGFnIGlzIHByb2dyYW1t
+ZWQuDQoNCklmIHRoZSB0YWcgaXMgcHJvZ3JhbW1lZCBhcyBhIG5vbi1Gb3VyQ0MgY29kZSwgdGhl
+biBsZWdhY3kgaWQgYWNjZXNzIGlzIA0KdGhlIG9ubHkgd2F5IGZvciB0aGUgdXNlciB0byBxdWVy
+eSB0aGUgcGFja2V0Lg0KDQo+IA0KPiBQbGVhc2UgY29ycmVjdCBtZSBpZiBJJ20gd3JvbmcuDQo+
+IA0KPiBUaGFuayB5b3UsDQo+IENsYXVkaXUNCg0KDQotLSANClRoYW5rcywNClZhcnNoaW5pIFJh
+amVuZHJhbi4NCg==
