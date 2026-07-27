@@ -1,63 +1,63 @@
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B1A3CF054
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 19:21:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B17843CF67F
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 19:21:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785180088; cv=none; b=gkViA2gUg1ncs4D2n2xG/QTAD8r8d/97mDtrrr2DRg2ppG/2/iFT2CCpkN6iXHLIGvgWulqSROARI9bCCGjDx/IA28Rjlw5RP5mw0lhp+RnTil0MNYbVSOOQ2iFWaXQd1SWi9iYD/QwwF7CMkIa8MHedfp5SHl1r6mt6cb4HdKs=
+	t=1785180093; cv=none; b=Vg/l5V/n9Fiq7z3w//zL7YuAKHHPKz9qJVQ09lJUQ8vCUJAHTqZyJBa9OkvqiTIjpdaGnAb8ULCl2XdvClMXJ/3cuUlMl3eTk1S72fp0J/ib0q6PU43/DPawkNxZTLOcFZEV2BycREoFpdiv0JrMPdzcM4e3eZ5A31t96jBoUik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785180088; c=relaxed/simple;
-	bh=f/UUJEQwVW/zzZmUVc5qiSPTThaU5hzPDPyQD5pCBD4=;
+	s=arc-20240116; t=1785180093; c=relaxed/simple;
+	bh=bB7cTFtQkA6GY2hg96XdtGA5bAmnXPgrq8JSiOvFnOM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nfAarwAIClslSjEuM3Kkbt1tVKP0wZyo7bOd1ydbeH2ACdFm/x5sQrgw0ZymxrlYyLQ3aRo+g1khtTDsCvxrgCYoeRmUW8TuLS1aUa0NNX0xFK3HKjo/SYljSz8NOkfhSDedfjSCLf3lF5wA9u5nP3s8JyejCzhTWiu+mxYcJAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TBUfXwfs; arc=none smtp.client-ip=209.85.215.176
+	 MIME-Version; b=cbuDBOMKbQMazSoaw6DJQXh3CrP3RxNw2MILy6t1aTVD15GFQyTOiR3xdS2zDB6qCVHeyGVFA2NXiCDUk5TH+60oFKcJQIENkJBFjgYT/mZAZ/Tl+mawqU/w4Co5elpRCwuAQOp98RweBT5md8fhNB5OPkENesDrpC0FRIqbj6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TVBgNBUW; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TBUfXwfs"
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-c998fd549a8so2162663a12.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 12:21:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TVBgNBUW"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2cf41bab353so43988395ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 12:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785180087; x=1785784887; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785180091; x=1785784891; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=moa1cK3lyfsCbpEdiaubsjKB+6nL5U25oPdI+VgXliM=;
-        b=TBUfXwfsRMDSw9Px0AmJ4SrW8le8Fx8JAhNm4KFStDjW/URBoImN/d6LVk0LMEq+g9
-         9BZqb46WWdc8KQ8VxvzgwGxujHo7nLzzNL22IoDms2kYEfVhWgzmwY8jsx2+IqWaZyDP
-         4QIN5bbG3e97cLSLCrFjcaQrqmOrgryYpzKyep7f/OGLogD/Wvxw94o+V7xerY0XxVdg
-         n0fTgDzsXQxTDh63DFNlAII8Nlyzpqf9vZRMLsHNXmmYI/yh+bGWzypqU5l37QAvt3JL
-         0Tj1fPb4EQiMic1GO86AhoKZunkXKSGYgMr/0hSKbgtB9nqlO1tv5DfEUfIv9nbmF9zR
-         PXjQ==
+        bh=wctmwy/+rV9SrvO63suyHx9jYj3uIcWMAuL/oEwqgBs=;
+        b=TVBgNBUWbJ/SJCTKD6IVbq6oKN/9kYxV/GsIoCdVyPuYrM6PlaHQz1RpwiC1QEEryy
+         F0vrRzg7wNjWhBoED10HfjIgvZgN7+N+lCZylXXEWENQW0YaZFLxo465OwGz+n0WpMU5
+         BVarM3lN1HCCmd25ysZFHmnxv7flASIj6HKjcyADCIad96PiycV0GC6IXDzdqga0Hs8o
+         TZr22rYwri2n+9RlOL9eZlWh4TSoinawYFcA5Dxk105lSts3p+6lQVCOpghwRlr2QgkK
+         HnJNGMjzuTYURJZDcw1CA/qH3KYjBasG725TQeG22eEVSyOmKqTYxZcDh+R82/85bCJ0
+         qdpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785180087; x=1785784887;
+        d=1e100.net; s=20251104; t=1785180091; x=1785784891;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=moa1cK3lyfsCbpEdiaubsjKB+6nL5U25oPdI+VgXliM=;
-        b=Zcm9fzx3Ljt7q4hlL/ygUmI7OUD4I21qdahGqLgqGbvjOo+CA/H8rJGVGbC3yxHOd2
-         oVlYBdkE2XDAz2+kJP0f3doNnP5e1nNCKptm5+q914Tei3z40WptUiYrwynNDsxNlScW
-         M2f/XR1EXqxE0spfODQZwAWF32nmTv0IPOktCTzopKudhHgFZuu+70ib0FUq6iZ29dOz
-         rbhUk1jLyrV5zR9HSg//B+f/EZLOLDzLwMOJBIwk4CE4v1R5g/eZQMzGd3CbZEjLFrgm
-         eIsbbCA93WfJnMRYTpyR/K+/fQTc49ylrASnQ2a9eA1KxTC+JtEed/BMc5glVsgjt6aT
-         zjhg==
-X-Forwarded-Encrypted: i=1; AHgh+Rp8bZypkZn1bfGNbeqC3779YSOaj7t+u/KXcZPS5LDWJg80ZwLk6wa34edkiWZu/NAYZMknywRrhXo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyJQsIk6o02XqgeCyR1S+6yPP+QRxtKMAxTInDBYUHrVXvH4KrM
-	wcY2naRIYiLcQ7WnweFciJc7Ysb2jwn0nimY8/ac2jMVBQh+7l9bWnIG
-X-Gm-Gg: AR+sD13IcAbDErFyFS26j4iADQqs6ny1QdM72t3/jrkTKLuhU3BrVc8+7sAz9HOxsbk
-	w+2o/T2O8CZkDPGg4Gn7QjxUDr1EQSexE44Jw5XiMRiwSnStTz+u6VycJs5f3sBQdqXj6vzOyXz
-	tv6Zsj+vUppjjC6MJW1jVAWbPlB0PeXlMX/O1rxDCpPbxPAoTTkeFJtYD0AdYGID4YlJBuFJa0Y
-	W+ak8e7MWWyuZqE9Pshg1626XdKfgILjeOcaFr/CawpgKlcsNR17KZxq22VkdbqePL/bV3gQcXt
-	C2qOK92G2FW0xp9j8Pln+l6PMSrJgiC26mg/GRXWCcA9xmVDa8JWzfKh1ePMf7aWknjWpL8YKP5
-	/NwwUAqdpISrCUfkwC1uAmk0IHLiiSvz6ZB5IcffFGssGwiGF7ZAhdZJhDXushD0qQthsZB6CFU
-	FlmqmeXMlBkWEls8SQ7GkZR5xyMhoP0rw9DyIJPQiHGetDMuWzXprp
-X-Received: by 2002:a05:6a20:6a0a:b0:3bf:6c08:fb88 with SMTP id adf61e73a8af0-3c67e0edb57mr9634600637.56.1785180086786;
-        Mon, 27 Jul 2026 12:21:26 -0700 (PDT)
+        bh=wctmwy/+rV9SrvO63suyHx9jYj3uIcWMAuL/oEwqgBs=;
+        b=V9KXu/lHCzexV1zT+Nf98h5NiG25J9wUVjxYmd8D+DoByrRFB+32CAdV2LaP9w4aD2
+         0Y23mFBgn/xvuZbxaxuIDA8LhQRGIw4ANj9wc9184yBFVusTnn0yzzgT4uWOkH1i01Ew
+         r/r96SQ6wx/pIvG5Y7JyA6Qp7dek7E4/CWKseLAK5n8N6XWIQvvgrfXHyFPF1nmxszSI
+         P0BCPZiD0gRin8KcWCa/ImO/mrYKE3bf7MJ/vdddpum9odMdpv7kVrSkMPcEw6pOieDM
+         hS0N22LmDsX1NgS3Bc2MSXopUvyMfp1Y5KyRNfgH+x9S4gvP8tZ1j4ZGUJ9A9BeiRZcU
+         Y60w==
+X-Forwarded-Encrypted: i=1; AHgh+RprM+8xP/nFHMe5kYNDMtgssxn4ICDWUD+cpBAk+qkbfgErJW/Fq46r5VzrmEeJ8Mew96hH7HuGFIc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKzgnnljfMF0b4f2pFfDIr+uHW3JH1peh/WDfiGjK0eOZEbUVg
+	HnFT7VUPP/f1oQ7mFCA6C+GzVvTC1m5HMn3WEYfG4LRvaxsSmFXCD6YS
+X-Gm-Gg: AR+sD11ieovpFi1/d7hZBEKGA5PaeI7L8c3i4t68DFMCEHrUqr5FAQ/ixeSZdxwILJ0
+	yhPvNtS559COH7Wx8eSGw2PaqKrBlv49/82QObU4MnWxrWIi5YgBJPGpZsqYkUUZoZzgXPNyWOQ
+	6eFWN3JD9Ra7kPRBY8E8jpVIHL89nwVy7i2009jPrqyiWwPq4mw+M7ro8G3pEj4/0IGFZ0VFRcG
+	6obIVkbzDFrzlQ5ZpFtsF/+2p6UqF1MhDJzCS6u0p78X9+MoChXZhzZUY8xh9PE4xeqjtX6EaI/
+	O0XisZKeVPyHYDZmO7Z6aAMjvdOuDxnS1an7n7tVE9aRfT8gz0HwiNFpF1+6RV7HXKP89WId//R
+	0tuLixr55WWvMyrMlkBI69DKKfqZpIbhNaAvwUXZFAB9J0he6D/eNB4gQhW4GBSJdeTNka0G7gW
+	rkyc+WxDwI5zEDrFj3sscqWhlGet/syWmWORIxQbCkJl5dI5NRqiNf
+X-Received: by 2002:a05:6a21:496:b0:3bf:e24e:3afe with SMTP id adf61e73a8af0-3c67e060010mr9471885637.43.1785180090860;
+        Mon, 27 Jul 2026 12:21:30 -0700 (PDT)
 Received: from debian.ari ([152.58.178.230])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc549b11sm37595470eec.18.2026.07.27.12.21.23
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc549b11sm37595470eec.18.2026.07.27.12.21.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 12:21:26 -0700 (PDT)
+        Mon, 27 Jul 2026 12:21:30 -0700 (PDT)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -67,9 +67,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v2 2/6] iio: adc: ti-ads1015: fix PM leak on probe failure
-Date: Tue, 28 Jul 2026 00:50:58 +0530
-Message-Id: <20260727192102.37968-3-architanant5@gmail.com>
+Subject: [PATCH v2 3/6] iio: adc: ti-ads1015: sort headers alphabetically
+Date: Tue, 28 Jul 2026 00:50:59 +0530
+Message-Id: <20260727192102.37968-4-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260727192102.37968-1-architanant5@gmail.com>
 References: <20260727192102.37968-1-architanant5@gmail.com>
@@ -81,31 +81,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-If iio_device_register() fails during probe(), the runtime PM
-subsystem is left enabled. This leads to a resource leak upon failure.
+Reorder include headers alphabetically to comply with the preferred
+coding style and improve maintainability.
 
-Add the missing pm_runtime_disable() and pm_runtime_set_suspended()
-calls to the probe() error path to ensure proper cleanup.
+No functional changes.
 
-Reported-by: Jonathan Cameron <jic23@kernel.org>
-Link: https://lore.kernel.org/linux-iio/20260718225515.7e49a458@jic23-huawei/
 Signed-off-by: Archit Anant <architanant5@gmail.com>
 ---
- drivers/iio/adc/ti-ads1015.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/ti-ads1015.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 9cd620b71429..3a14fdab56d8 100644
+index 3a14fdab56d8..293fdd49381f 100644
 --- a/drivers/iio/adc/ti-ads1015.c
 +++ b/drivers/iio/adc/ti-ads1015.c
-@@ -1042,6 +1042,8 @@ static int ads1015_probe(struct i2c_client *client)
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(&client->dev, "Failed to register IIO device\n");
-+		pm_runtime_disable(&client->dev);
-+		pm_runtime_set_suspended(&client->dev);
- 		return ret;
- 	}
+@@ -11,24 +11,24 @@
+  *	* 0x4B - ADDR connected to SCL
+  */
+ 
+-#include <linux/module.h>
+ #include <linux/cleanup.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
+ #include <linux/init.h>
+ #include <linux/irq.h>
+-#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/pm_runtime.h>
+ #include <linux/property.h>
+ #include <linux/regmap.h>
+-#include <linux/pm_runtime.h>
+-#include <linux/mutex.h>
+-#include <linux/delay.h>
+ 
++#include <linux/iio/buffer.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+-#include <linux/iio/types.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+-#include <linux/iio/buffer.h>
+-#include <linux/iio/triggered_buffer.h>
+ #include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/types.h>
+ 
+ #define ADS1015_DRV_NAME "ads1015"
  
 -- 
 2.39.5
