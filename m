@@ -1,140 +1,178 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DC137B00E;
-	Mon, 27 Jul 2026 08:30:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EECC53E9F60
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 09:05:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785141041; cv=none; b=VKI5bW6DwjrdrPlLz+R1G58m3Jg+vjdxNOOKhEQ5z1ySQ+rhzzgh+DCSrN7sihfFjvfkO1DqECWSvcKw7oMJCCygguMXpTS8SNkAy/d/w9orowKIjpZqqHtdqo6dr9QbBSuToy2nyjc7rtB3y+PtStaEGaH7OwOPSLfIoPS/8jo=
+	t=1785143142; cv=none; b=M/g3/T3Df5gBPxMNsjXrtH5YPZYk+joJC2PcIHgPANtiikSHOB0lvrlTQYNx0xMDKS+pjjJffCKx0FLNIDZHpAGAhiCTRegFS2QVo4gBzUxa7cmZFlXg6Qb0DVIrLDN42wad6Fun0xMrLGKNwgGhgI5TH1tHquyGmulIrbCDfrY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785141041; c=relaxed/simple;
-	bh=qWnqu6VCUiwZWG189ixa/W9uGeC6PMG4tY9t7kvdnXI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=h8LKZ8EVsai8wMrYj/fT0xVSgPTrl6DOh04/nUgZtFoRkGUPmdEqBdwE+VdRVHNKYYPYr8u+qMLJeJGWgH7glJdNWS6Amw1ytL7A1XMPHxgDaVTsiau46edgGKidGiYhptvON8UGHYeJRIfP1yJhpgmVpJCTvFCOacKBXdHd9K4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bn7dLIip; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1785143142; c=relaxed/simple;
+	bh=Zy/C1kSICIxQV8qJ5+qR9sxTNqRgcuri1YslBruhkZs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FbiHjNItb6tAQEQuchfnkJAfXfVGyiWrkciP9aNVaXIQrePkT6Y3DIJcOFyX7V0FLxjnCCOr5OjpmVwReFTycvmTYkhxttwqaQBeTYBl40xMLSu/FlBOxcIMKIa9ISdSZiQtV+njfGU6S5sS2FG8o4vbrixh0Mm9CKooPsoCur8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fgq+tAO/; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bn7dLIip"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1785141039; x=1816677039;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=qWnqu6VCUiwZWG189ixa/W9uGeC6PMG4tY9t7kvdnXI=;
-  b=bn7dLIipZCNqvW289b61vT4b6u+LiCajh52WIL+tFfRrmJloKWtUXBG+
-   ZVDoonEWBjxGTWB+TpaP1dMgq905yih2+PZN8ueg2IgP/evaSIknEaQAL
-   sOKMLvBHqFYLDjGevHnwVch9P4Ys6B6dOm9LdKPySPt8mEYMMGnH2QoJC
-   aF5JBvyQDaYcJ0j4N4y7zOns8t8E4CNEzASqkc1P8xkX3THpp4bsMdc1r
-   4+3C/8LmINhYo2vRvUxZOSY6tooBcFJdahJfewgCAoBHpOnR3ol8IO/Kg
-   t6VRYs0MkffinszzXhu5i2/2b1QBE07PokaNo3Am7W/dJ1Y/8SCMhSsNn
-   Q==;
-X-CSE-ConnectionGUID: mgZgOQ5BQgGfhlx+0PVe4w==
-X-CSE-MsgGUID: I0V/57TmQ1qX9+TI9szaWA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11857"; a="85573917"
-X-IronPort-AV: E=Sophos;i="6.25,188,1779174000"; 
-   d="scan'208";a="85573917"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2026 01:30:34 -0700
-X-CSE-ConnectionGUID: zuBRshsISau4U4oJl9pq1g==
-X-CSE-MsgGUID: S6JnVra9Qs26laDkF7yO1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.25,188,1779174000"; 
-   d="scan'208";a="259417611"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.197])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2026 01:30:04 -0700
-From: Jani Nikula <jani.nikula@linux.intel.com>
-To: Jakub Kicinski <kuba@kernel.org>, Sang-Heon Jeon <ekffu200098@gmail.com>
-Cc: Julia.Lawall@inria.fr, Alex Deucher <alexander.deucher@amd.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Andrew Lunn <andrew@lunn.ch>, Andrew
- Morton <akpm@linux-foundation.org>, Arkadiusz Kubalewski
- <arkadiusz.kubalewski@intel.com>, Borislav Petkov <bp@alien8.de>,
- Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>, Daniel Lezcano
- <daniel.lezcano@kernel.org>, David Airlie <airlied@gmail.com>, "David S.
- Miller" <davem@davemloft.net>, Dmitry Torokhov
- <dmitry.torokhov@gmail.com>, Eric Dumazet <edumazet@google.com>, Florian
- Westphal <fw@strlen.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Hans de Goede <hansg@kernel.org>, Hans Verkuil <hverkuil@kernel.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Jaroslav Kysela <perex@perex.cz>,
- Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>, "Joerg
- Roedel
- (AMD)" <joro@8bytes.org>, Johan Hovold <johan@kernel.org>, Jonathan Cameron
- <jic23@kernel.org>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- Julian Anastasov <ja@ssi.bg>, Leon Romanovsky <leon@kernel.org>, Liam
- Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>, Maarten
- Lankhorst <maarten.lankhorst@linux.intel.com>, Mark Brown
- <broonie@kernel.org>, "Martin K. Petersen" <martin.petersen@oracle.com>,
- Matthew Sakai <msakai@redhat.com>, Mauro Carvalho Chehab
- <mchehab@kernel.org>, Maxime Ripard <mripard@kernel.org>, Michael
- Turquette <mturquette@baylibre.com>, Mike Rapoport <rppt@kernel.org>, Miri
- Korenblit <miriam.rachel.korenblit@intel.com>, Nicolas Palix
- <nicolas.palix@imag.fr>, Pablo Neira Ayuso <pablo@netfilter.org>, Paolo
- Abeni <pabeni@redhat.com>, Ping-Ke Shih <pkshih@realtek.com>, "Rafael J.
- Wysocki" <rafael@kernel.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Sebastian Reichel <sre@kernel.org>, Shuah Khan <shuah@kernel.org>, Simona
- Vetter <simona@ffwll.ch>, Simon Horman <horms@verge.net.au>, Stephen Boyd
- <sboyd@kernel.org>, Steve French <sfrench@samba.org>, Takashi Iwai
- <tiwai@suse.com>, Thomas Renninger <trenn@suse.com>, Thomas Zimmermann
- <tzimmermann@suse.de>, Tony Luck <tony.luck@intel.com>, Tvrtko Ursulin
- <tursulin@ursulin.net>, Vadim Fedorenko <vadim.fedorenko@linux.dev>, Vinod
- Koul <vkoul@kernel.org>, Will
- Deacon <will@kernel.org>, Yazen Ghannam <Yazen.Ghannam@amd.com>,
- cocci@inria.fr, amd-gfx@lists.freedesktop.org, dmaengine@vger.kernel.org,
- dm-devel@lists.linux.dev, dri-devel@lists.freedesktop.org,
- intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
- iommu@lists.linux.dev, linux-cifs@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org,
- linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mm@kvack.org, linux-pm@vger.kernel.org, linux-rdma@vger.kernel.org,
- linux-rtc@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-sound@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
- lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
- netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org
-Subject: Re: [PATCH 00/36] treewide: remove conditional returns with no effect
-In-Reply-To: <20260724144822.6af8213f@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park,
- 6 krs Bertel Jungin Aukio 5, 02600 Espoo, Finland
-References: <20260723184538.3888637-1-ekffu200098@gmail.com>
- <20260724144822.6af8213f@kernel.org>
-Date: Mon, 27 Jul 2026 11:30:01 +0300
-Message-ID: <0ee1ef4aa7daa908bf28397ccc639c89b6aabd9c@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fgq+tAO/"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-69c108fee7fso3239197a12.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 02:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1785143139; x=1785747939; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Xa6du2hskAfuvL5DvwnynjBiYF7AzqZLEYEbhlKLATU=;
+        b=Fgq+tAO/Nx2D1/ADm4l3n9UXb289PWRcfGa4EHeijKE8zQEKPt+vP1LwZBOxpWYY8E
+         CK4C6VuCip+p2dElRiSIARS6bs2gx+TPDtbGIw8rTLz2mqQwHs1UXuDDyYoBQ6R3V4N/
+         RCiPuFmG2RRSJrndOpz4kW7KFQ74GuylVngfmHPC34VMxUFMy7nZ+zxv6C2M3p4C6+7p
+         AFQHu4crtbR1Nutk6BjS0up3u/a5OEtNVMYeBfaoqdspD5/9IxkMmjMAUcNubrbOaBN7
+         xFlvUAJDdqDU7rXGWZABbdCsaV/c68H2q/b3ap1P5v6QxamsFBYW4mUE9L5Ink5MI15W
+         QbYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785143139; x=1785747939;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Xa6du2hskAfuvL5DvwnynjBiYF7AzqZLEYEbhlKLATU=;
+        b=MSgwogBqF2cTQ/3pO4DoFGWJOV1cqABSpQlnW+ZmVPc0cEa3mdHYLK2SBt/nCJ91Is
+         9AUSwQSeXNrtUi4itcJTOJfudnaDPI4Nib3tM2YliNO3kYFwGhFVPhKYuxPTCuux7+DF
+         FkiCi0Xv/qrEiCudVY/999FIxEH09NuN11WFluK7TFuCDRkMbKLlChpJraOHRiFeIfRb
+         tBP8KEL2t2L3M98aQiLk5vTTA7Zwayb12AlkXU0qgyduxb90+aWL21IhBqkl09a+2g4T
+         rHDs6uY4u//eEPDKFuoeQq06l5FXIzHQG40gbCpv6p5FlE7fah+0WsAPo4yQcOvSUYxZ
+         y0Ew==
+X-Gm-Message-State: AOJu0Yx95YCvISDPEI2Ipat3/OuAG4Jh55C0RBMyXBPQN4R/7MK05oxz
+	5NkFr6194kF4MlfC89F1thV8S2HEaSZIE7suIG5DGbNBnMkn/d371v3k
+X-Gm-Gg: AR+sD11tiQKunKytNVB/bQObN16TAdAC6W7FZCmKfUVYM55fXedov1vlVyJ/UxYqR8v
+	eFvCbkkhnY5ebYlKbyYS5inSyFAWRrsWDXYV9Vpq7xHFU6jqPNz2DQpjqsU8vM2iA34Mdzm7LlZ
+	/LWB5C43KRomu8i7SkqMQEvMhniJJ6iu/woIYBZlPtfZovhGMkwzg0+UVsHt3mTp7lS85KuuCO4
+	4qFZX74AFERyX+eT29DqYwFLA3ouIXK6v1e7Iy6CrjNUVGKNRazWjDyUb5BmDSFj0eCpX+OaeS2
+	Wja6f4a+KvN7MncYLt8ots8dVWMftasRbya4a9eUqZQplFsZNwzuM3BF9xXuHjv1ij0v36BQl0C
+	VvgRiVaiaZXsHRlPOF4nFot9fN4BcTjXsBY9FB65V7dHHCJzrwSGYxq7Y52BhaPQDEJfobGzPm9
+	eGl9UaEyrFdRjf4IvJnjie7aJ20Ivan0L5F8KpIbtVcT4ESxRVZC8g8yg8S/OJXzaKUkF3OcpD4
+	3wG0g==
+X-Received: by 2002:a05:6402:5383:b0:698:9251:2f87 with SMTP id 4fb4d7f45d1cf-69fc11a2e10mr2408351a12.39.1785143138950;
+        Mon, 27 Jul 2026 02:05:38 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-69fb5543ab7sm2278741a12.17.2026.07.27.02.05.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2026 02:05:37 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Date: Mon, 27 Jul 2026 10:05:32 +0100
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH v9 15/17] iio: frequency: ad9910: show channel priority
+ in debugfs
+Message-ID: <wdxe6pwcgwlunpjpx6veymajt4tqxkakr2tg3k7wwqpxq3rqnl@klrmhb5qe263>
+References: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
+ <20260722-ad9910-iio-driver-v9-15-459d1df5ac56@analog.com>
+ <20260725235621.6dd73e71@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260725235621.6dd73e71@jic23-huawei>
 
-On Fri, 24 Jul 2026, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Fri, 24 Jul 2026 03:45:02 +0900 Sang-Heon Jeon wrote:
->> Patch 1 adds a Coccinelle script that matches the pattern, including
->> negation and constant-comparison variants. Where a local variable is
->> assigned right before the check, the assignment and the two returns
->> turn into a single return of the assigned expression.
->
-> Huh, I thought we already had such script. Various script children have
-> been sending such "cleanups" in the past.
+On 25/07/26 23:56, Jonathan Cameron wrote:
+> On Wed, 22 Jul 2026 16:50:24 +0100
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Expose frequency_source, phase_source and amplitude_source attributes in
+> > debugfs. Those indicate from which channel the specific DDS parameter is
+> > being sourced by returning its label. The implementation follows the
+> > priority table found in the datasheet.
+> > 
+> For this one sashiko raised some questions and made me wonder how this
+> actually works given it is using active_scan_masks and so far we don't
+> have any buffered support in the driver.  My guess is you backported
+> this from on top of some other code that you haven't posted yet.
+> 
+> Please have another check that this all works with just the series
+> posted.
+> 
+> Note that you will need to claim buffer mode successfully to mess
+> around with that in paths that aren't inherently only used in buffered
+> mode.
 
-We did, and it was removed, I believe in 1a617a8475e8 ("coccinelle:
-misc: remove "complex return code" warnings"), because people just don't
-want this constant churn.
+Yes, I will drop that part for now.
+ 
+> 
+> 
+> > @@ -2078,6 +2092,171 @@ static int ad9910_setup(struct device *dev, struct ad9910_state *st,
+> >  	return ad9910_io_update(st);
+> >  }
+> >  
+> > +static inline const char *ad9910_frequency_source_get(struct iio_dev *indio_dev)
+> > +{
+> > +	struct ad9910_state *st = iio_priv(indio_dev);
+> > +	bool ram_en, mode_en;
+> > +
+> > +	guard(mutex)(&st->lock);
+> > +
+> > +	/* RAM enabled and data destination is frequency */
+> > +	ram_en = AD9910_RAM_ENABLED(st);
+> > +	if (ram_en && AD9910_DEST_FREQUENCY ==
+> > +		      FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
+> > +				st->reg[AD9910_REG_CFR1].val32))
+> > +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
+> > +
+> > +	/* DRG enabled and data destination is frequency */
+> > +	mode_en = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
+> > +			    st->reg[AD9910_REG_CFR2].val32);
+> > +	if (mode_en && AD9910_DEST_FREQUENCY ==
+> > +		       FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
+> > +				 st->reg[AD9910_REG_CFR2].val32))
+> > +		return ad9910_channel_str[AD9910_CHAN_IDX_DRG_FREQ];
+> > +
+> > +	/* Parallel data port enabled and data destination is frequency */
+> > +	mode_en = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
+> > +			    st->reg[AD9910_REG_CFR2].val32);
+> > +	if (mode_en && indio_dev->active_scan_mask &&
+> 
+> active_scan_mask is only set on a call to iio_enable_buffers.
+> So what is this checking?  I guess today it will always fail as
+> active_scan_mask is NULL.  Once that is in use, it will be racy
+> however, so you'll need to claim buffered mode (or fail in which
+> case the null check isn't needed).  That claim will hold it
+> in a particular state - under the hood it is taking mlock
+> which is what sashiko suggests - that is just meant to be opaque
+> to drivers so do it with an explicit attempt to claim buffered mode.
 
-It's perfectly fine to have the error case and happy day scenario
-separated.
+I will have buffer ops implemented, so I better cache the current
+scan mask in a state variable and have that protected with the local lock.
 
+I will drop those checks for now.
 
-BR,
-Jani.
-
+> 
+> > +	    test_bit(AD9910_SCAN_IDX_FREQ, indio_dev->active_scan_mask))
+> > +		return ad9910_channel_str[AD9910_CHAN_IDX_PARALLEL_FREQ];
+> > +
+> > +	/* FTW: RAM enabled and data destination is phase, amplitude, or polar */
+> > +	if (ram_en)
+> > +		return ad9910_channel_str[AD9910_CHAN_IDX_RAM];
+> > +
+> > +	/* single tone profiles */
+> > +	return ad9910_channel_str[AD9910_CHAN_IDX_PROFILE_0 + st->profile];
+> > +}
 
 -- 
-Jani Nikula, Intel
+Kind regards,
+
+Rodrigo Alencar
