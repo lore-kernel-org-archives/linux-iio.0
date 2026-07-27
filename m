@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59DC18C2C;
-	Mon, 27 Jul 2026 01:04:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FB48227B94;
+	Mon, 27 Jul 2026 01:10:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785114241; cv=none; b=urzsqk225nihS11GVR6yU9E1giosj8yTJhtzD69H/bp/gFgR8ZkN5hYWMAL9vM6OrsP9OL1kt0aL7ZAqAoReTa5joWx3LTJi8I7OTuTK+YdbetC5EzQHtg2osPknnmhwGytJT8azPvuI2ftGtDSj63XsHlbTtoDA9oDQ10JHBu0=
+	t=1785114604; cv=none; b=XV0vWLaKC4r6VyFZpc/w/G/aj8tq1Ih+UitIjNJl84QhFyE59wkRCuJsse1iJvVYReDt+HnxYwdxO1IYr9RvFJj6zv62QR6wqx0EaeO/j7medRmJuQ3zXcPuNuGUlKcjHnQk8goW7dOvZ4NaVx+Tnb5dr8DiGHTBtiFzHsy4tws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785114241; c=relaxed/simple;
-	bh=pPjkUZJV0wKJWjN87TCXwkddjwkavfq5/Ci41Zd8ag8=;
+	s=arc-20240116; t=1785114604; c=relaxed/simple;
+	bh=/2lnLfQ+6mpcXuuk+osIOAfNOjG4abamUzcxuOCMs/0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qTF1uznnbWxEckYKDD9z+d89RdlAWGhTt73dDqmJmv9KGqyPVIYyGTHcIx4a/IVkD0RQHLKzrpoDALP2tPQyi9EplFPtRxyhhqdPvUut+5gNzv3o9XHJ3crAA4POVO1S3XEhkMoAUTHc+7MkQlsg22hx5UdzZdzTtt5LhzXvJhk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xarctk9u; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=XKRla8giN0XdnEmRyH+84DZNCnWifNI849wHT/hElJ/aGZjuKKS11jJl2l6tHLTNp+fvYa3kFVCSEWEu78uy8yrZz/lyV8+5+FIFT7ugoXeWd2D03GzrOPaOes1a41pk2oxMgEb7ZqLuA0cNtKzvoVx675musNoMngG3QX9cpVs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ldzz2bSd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xarctk9u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DD801F000E9;
-	Mon, 27 Jul 2026 01:03:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ldzz2bSd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC111F000E9;
+	Mon, 27 Jul 2026 01:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785114240;
-	bh=8mzdSM86o6j/XiomfeN1i+drLxXHqRa9TueBwOMc7Cg=;
+	s=k20260515; t=1785114602;
+	bh=4tTC/X1Rkkv2V3lmYt0Jz6pd4I0gzoGvUjx74QXtY8M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Xarctk9urbFo7o4vg5p69/jvvgiJwaEF35vD31bCfyLuxim29ICHfADS+XMuskCIL
-	 ryi+MH6P0ejTSvWIFYntjiF+lRXmZLUn9y2ozuN/GB6LMKFITKG5u+irYE/tZ0nCdi
-	 NUpuQ4SXyM6RxhCigl/LWuVgZUihnYp5iKJ7SJdzU+6cP/v7keMl/2nPqhmIS2KKxk
-	 hBFQ2wCAmZ9TZrrK1Nyl7lRvhAlbDwTMuCIAEZD016CRGGCMhuuEdXVnV1Iz7woxxc
-	 JVUZhBY3bSrN1aaK4MwiyBBrqDfzorG0oJxuw2BrRe2FvKXcigrRVY1zXQl8bRFOXD
-	 i9lpeIdetiyYQ==
-Date: Mon, 27 Jul 2026 02:03:55 +0100
+	b=Ldzz2bSd2lvE/YZLInqu7njaifqHWmCye4lV5+tHLyfso80Yw0qutaY+sY89XKieC
+	 5KEzqk8O2jhe1bNNeBa7uEEM/Xei0rDTXK7DYIaY9E9WI8mB4UyX5HNmTlP8gVL5TK
+	 4CDFBzbyxg7CLpkXFs2EB+erYyABMxADSaIKBZFi0kY2WKADHSdPizhFgiurqYhRfa
+	 Aop9IwTEbg1ToYpvpVBY31Wr3UrX2tqBc+Nx6m16pf4Kvl7EbCAylAM8gWr199zF0/
+	 1bLBxdJiwpOFNcashuPZ3p/0XDf4GK8XW5yNLaSgWX42sve2yDfe0yFAVBkOwVsW7O
+	 kvvjcH/TXc/Zg==
+Date: Mon, 27 Jul 2026 02:09:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: "David Lechner (TI)" <dlechner@baylibre.com>
 Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
@@ -34,11 +34,12 @@ Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
  <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Nguyen Minh Tien
  <zizuzacker@gmail.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: adc: ti-ads112c14: add support for I2C CRC8
-Message-ID: <20260727020355.731746c1@jic23-huawei>
-In-Reply-To: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-1-98b06f3d47d9@baylibre.com>
+Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add support for buffered
+ read
+Message-ID: <20260727020958.4e39fe87@jic23-huawei>
+In-Reply-To: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-2-98b06f3d47d9@baylibre.com>
 References: <20260724-iio-adc-ti-ads112c14-buffered-read-v2-0-98b06f3d47d9@baylibre.com>
-	<20260724-iio-adc-ti-ads112c14-buffered-read-v2-1-98b06f3d47d9@baylibre.com>
+	<20260724-iio-adc-ti-ads112c14-buffered-read-v2-2-98b06f3d47d9@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,45 +50,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 24 Jul 2026 10:55:06 -0500
+On Fri, 24 Jul 2026 10:55:07 -0500
 "David Lechner (TI)" <dlechner@baylibre.com> wrote:
 
-> Add support for I2C CRC8 to the TI ADS112C14 ADC driver. This verifies
-> data integrity of all I2C transactions with the device.
+> Add support for buffered reads using a triggered buffer.
 > 
-> For now, it is always enabled, but it could be made optional in the
-> future if needed (e.g. for higher-speed data acquisition).
+> The device has a continuous conversion mode, but that can only be used
+> with one channel at a time since there is nothing like a sequencer to
+> support that in hardware. Instead, we use single-shot reads like we do
+> for direct reads to be able to read multiple channels.
+> 
+> Since CRC is always enabled, buffered reads include the CRC byte along
+> with the raw data without verifying it. This allows userspace to perform
+> it's own CRC verification per-sample and drop bad samples rather than
+> failing the entire buffered read for one bad sample.
+> 
+> Support for continuous conversion mode could be added in the future if
+> needed.
 > 
 > Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
-> ---
-> v2 changes:
-> * Rebased on iio/testing.
+Looks fine to me other than the thing sashiko caught.
 
-Just one trivial thing.
-
-...
-
-
->  	if (IS_ERR(data->regmap))
->  		return dev_err_probe(dev, PTR_ERR(data->regmap),
->  				     "failed to init regmap\n");
-> @@ -1158,6 +1274,14 @@ static int ads112c14_probe(struct i2c_client *client)
->  	if (ret)
->  		return ret;
->  
-> +	ret = regmap_update_bits(data->regmap, ADS112C14_REG_DIGITAL_CFG,
-> +				 ADS112C14_DIGITAL_CFG_I2C_CRC_EN,
-> +				 ADS112C14_DIGITAL_CFG_I2C_CRC_EN);
-
-regmap_set_bits() or maybe some future patch breaks using that?
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->i2c_crc_enabled = true;
-> +
->  	ret = regmap_read(data->regmap, ADS112C14_REG_DEVICE_ID, &reg_val);
->  	if (ret)
->  		return ret;
-
-
+J
