@@ -1,62 +1,62 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3EA6FC5
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 18:49:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3826C6FC5
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 18:49:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785178157; cv=none; b=AuLwD0T+SAQgqibBpj04oqDtNPT2S4UNA/EZuxSYe/mDSeI0wPjMgq/zzbx5hJNSTDElqsk6YHGp98/AAgGfzuPBHt/pipk2I1K/EX1GRs5dzCRapGx/HmGpRPeVwFWVzaZIFKMHEBqv8ryKBkGuWW4k/DnSvv1TdGw0O815Xqw=
+	t=1785178159; cv=none; b=h7qsLeOgmqo+69v9i6DQEaQsTXmp6w4NxG3xc5Ughvv/udYbMr2pJPDBZ+qK+c2Eitq+Y8oqKkeDGJEGf2v+NJu9Gii9IHF6OD7fzPsmLIn7bR/RKk5sWqQo6e1InVLt7RvQxNCpwuEXRlQZKq/FIexO40ITohzskWvIBRjcVIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785178157; c=relaxed/simple;
-	bh=fiezkaJGJxXczHYOm/sTNZx+Hl7nM2Yt2kbRzZHMh0Q=;
+	s=arc-20240116; t=1785178159; c=relaxed/simple;
+	bh=7RWIoSclFP1i3qWRPE54q4B38ZhRaoSug7X3jmx7E1Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oNU0f6XT3eSH8QuitS/hVCfbfb3cLqGMJEfWR3nmC7QZ2inTVQwz8SsOaJSRq3+iyNXi0Q9egbWphhfTZ7rNAJIPRYgI7mnstr0acdZICgZ+DOqjAeIbWd/01PsWAEGaoiBNdPmLC+Yxz3ZMHhHXmXF90tvV+lY5InUcK5Fivlw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RT4p5Qb/; arc=none smtp.client-ip=209.85.214.175
+	 MIME-Version; b=n2sa7230JkBBOfwdSOFWUVf4YlGeu6uKJtk9cvb8UIPZzRAEIz/EmdrfLvY6I5FrPBfPCffSfqGGP8azaoPspwvAKOopxEeaRB318tYNWClu0dAUMlJSlVEov4UEpQbokWxC76f6hoCCyzx2VfCNBPoZC3FnKxgjghap9ThL2B4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XNJKQdA3; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RT4p5Qb/"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2cf52d15d88so31218895ad.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 11:49:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XNJKQdA3"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2cab973140bso41095725ad.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 11:49:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785178155; x=1785782955; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1785178158; x=1785782958; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=WISQE5wCB1uVyIS21pc5n1TL5kDVY/0ueF6BiECd4fI=;
-        b=RT4p5Qb/TtLtoP3xmrHfRtQMA1vTjuyPUMBcq55QmSwtcKu5WReBfn+arxWCWQv32g
-         6uvohSHk7fwTmEKjM6DVNEzQ5hhY3Hkcs4lMeVxABsINJzX1gi7M8zlYM8cLpznACg45
-         Wb+0BGLXvulUXaPBTo78XKIS8Fp6wH62zb4xn4BWJVmsR/wTplHU/zoq+a5PqmK9ZeCA
-         h1kzXuSa8luwMnDtfccFrpfyh9vjwtkHMslwWwvBmP5ZZzi1Ni8AfXIpHg4Bh6L7n3bo
-         5XlcUEmMblpaJkaHKTw7MCs5ta0R6XKPDGoTtZ9/RHX//dFYRNiyImF9q8diakJk7z5I
-         2gVw==
+        bh=6U94ZLfUTkdFVTd30M9C67yCfXIWRpfQ6ZBe9ZOpY14=;
+        b=XNJKQdA353t7zaK0AeAeIOhPsWj/ZG9aK3LrP2Q8lCRICMsrZ+S8VtS32bdYILJE7T
+         +Itt4UiN1+B/X62/CSOElAhqH5pZPITKVH0uIj+TwsqoHnbA20MufjturQK3z3fvSo+d
+         A6Xz4fpS0dco3dHlYUPkfI5zbducigB3tMN7GA82/mZFywrDczSXfJqmg9dosKLw34nY
+         Jxe4cQXkwNHXkZqKzwVBml9s/mEx4utFPeBpibg1drniQOYTL18LSJW9l8ZeuxLtgha8
+         bxPDmgLr/EiMa8vNrz5Pn1B8GIp2OEfPh6hAeznH0NLR/bQiHZgLOKHpteeM6AlSQUQ2
+         fuWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785178155; x=1785782955;
+        d=1e100.net; s=20251104; t=1785178158; x=1785782958;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=WISQE5wCB1uVyIS21pc5n1TL5kDVY/0ueF6BiECd4fI=;
-        b=hXqFzTe5H4FJoPfP04vpLtzfkEw3JlVVUVQB5wfcNKj8zb5qx6SDCX9/kZ45hbW5XF
-         AgQUXShu2CnkEmbGO71OcJGVbSSND30uVW2CKhuE2/1NpJgn5MMDI3J+feGitd3K6llX
-         YiOfQMwLXca/eN6zm3hftrH/0Pq4sH+IcT63hCZLZy8qd6DcU5AnkRkB4x6GKckp/io8
-         EtQad00Ac/mwkFkvuHsGpKsQjGabhEWHKXM155HtC11xKO/MtUQvpT282ddevdEuqHSK
-         gzDnMqwdd1/QmXaHbuwVxjjLoGAUdGU8uAPKkUreSUWJiJV7acvgpDgKwhPyFJ1Lgob6
-         tL2g==
-X-Forwarded-Encrypted: i=1; AHgh+RqC9GjUgjB/IGA1XVVWWZ8Gr0zaiGScrFJRCJ5ti/kTOvxpzGOrSsZx8GzKod9ie/Gg0RFCzRCrB9I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyuKMesJn1hbF3mGAxMe8Xz8vBiNgHceTuOL2Mryp1bUMhd7PzA
-	Rrga2Eph2oakjwSflCDz89HE7mv/+0Q8e+PTJNJiVbTSPopKGetcCXls
-X-Gm-Gg: AR+sD10ph0zJWAuH6jJTNUP4HL5csqxIOsOMhvec87auSJRAhrGou/YjOezHXkan1Fl
-	RATNwePtnHXAeBSDtGXqjRzu7xTLcZW4MrL0P9Rehqyqv0O4AhsXXjypAbdJov1oiQ79SFhXZNW
-	IpdnbeZMiDnnnlbJ/3mJ/c9q12hSCZnArh6PBfLrK0b1nzopx2ejvGetvSGauTgHfAVaO3fc9m7
-	FXYlpdGC6g54AjRFqeG6azrdftJs2E42dTMzrH7x4rKfT4jjk+vbcDUMejmWoYAHYkGIWNB5hNW
-	aVxX49IQQzcqyXWncIlt3iSgX+lcBfOmFJjl4scuGL0UXb9JVI1evod/ZVE8lcl85IsXb3+ssPX
-	3KKnigFKHbnu+ZazjMKuGYXjNZgh+1ujb4PN7QvY9ClkSFeFApzhI+1patu96nSiTLZjS8QKd
-X-Received: by 2002:a17:902:d984:b0:2c9:b8b7:5d1c with SMTP id d9443c01a7336-2cfde798cfdmr88120275ad.16.1785178155039;
-        Mon, 27 Jul 2026 11:49:15 -0700 (PDT)
+        bh=6U94ZLfUTkdFVTd30M9C67yCfXIWRpfQ6ZBe9ZOpY14=;
+        b=As5NPV+mAehl8D7R3P+IMCJdQu75jOl9oi0Xji+H44DAPiK8yQvCbE6Xsz8KdzoV4h
+         tmLLEiJSDaeIY2Tgvbk9cAdpmZfF7X16oKpjifxEPPaaDWhDf2Jhki85jdrQfbbZQiQ4
+         PqleFIUWivSOCLjIlbpfpOJHU176+UpCOs8ozFkDy1r9aVdwMr9z5djjs1W/qNtw2yMv
+         Sdpospcw0Dq/NTvyk7hmsb50BjSsuC+sDuGtmKrJ8XhTzRHYcNHe+gKIBr8LoZdd972s
+         V+1vkk+6ae6jz+7Z8ACue3040gqNQqaFUM6BWOWdRRQZu7/qmsAKg1tTU1UuFpZKN6Ac
+         ld6w==
+X-Forwarded-Encrypted: i=1; AHgh+RpBT0l6HMOnCh/yLosLF7htd73FivsMzXZZ3tol3rsnp4iIanyXYt9Z2JCF0BywOtkficMu5Wc3fLg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnKMq4cTcHRMBA0jZUk/S6kNB6D/QXb7zEYUqA6Mecnw7N+dza
+	Fx0YkD262IWmDWQB3MpBD9llVmcpYxvT/HJgEK6Rs/6fjJJayoV0y1p8
+X-Gm-Gg: AR+sD12pFX/O7uDmYe+fQS0vKx18hvujoppQti+1cnr/YQ1wwPY/WbXQVYubgj+7Mcm
+	6tagY2kOmxaRdrz5T6xl+PgroXj4/p/6dktMqDjUH9NohacSIyhw4JFdLfk8XNWhwi0LPD9mUGh
+	l4t/pem10vTlWakecRPSkShyeltwtXikhSi3Yun2bGTyny8DizTWq8dY29/TggtkIfb3XWX9kdQ
+	uxxWk79gdgkhl7XVJJPxpZpeAs+IrNJnqGRZQz2XYM+07bULgGrGceYUzmeRDGVKWn4eeoXR4jc
+	Va+65M7L4qnAHFuJ8thrOBdNrbd+G1TAzaIun3JWI28cdI6nlxk8mr/M/9VzlKUF3colvC5bFRD
+	2rKrtGE7p+/W+z1k1qit7DqA6KihmuyfxO9RDbMoGMaIsx3G1Ma2wzrr/L8LSEvGNzjCBlp6V
+X-Received: by 2002:a17:902:c402:b0:2cf:a2d2:84c0 with SMTP id d9443c01a7336-2cfde55bb4amr93146695ad.0.1785178157618;
+        Mon, 27 Jul 2026 11:49:17 -0700 (PDT)
 Received: from ubuntu.. ([110.9.142.4])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cfde7d7b87sm40186245ad.57.2026.07.27.11.49.12
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2cfde7d7b87sm40186245ad.57.2026.07.27.11.49.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 11:49:14 -0700 (PDT)
+        Mon, 27 Jul 2026 11:49:17 -0700 (PDT)
 From: Sang-Heon Jeon <ekffu200098@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Andy Shevchenko <andy@kernel.org>,
@@ -68,9 +68,9 @@ Cc: Andy Shevchenko <andy@kernel.org>,
 	Magnus Damm <magnus.damm@gmail.com>,
 	Marek Vasut <marek.vasut+renesas@mailbox.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH 5/9] iio: light: vcnl4035: remove vcnl4035_set_pm_runtime_state() helper
-Date: Tue, 28 Jul 2026 03:47:42 +0900
-Message-ID: <20260727184755.2055414-6-ekffu200098@gmail.com>
+Subject: [PATCH 6/9] iio: light: vcnl4000: remove vcnl4000_set_pm_runtime_state() helper
+Date: Tue, 28 Jul 2026 03:47:43 +0900
+Message-ID: <20260727184755.2055414-7-ekffu200098@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260727184755.2055414-1-ekffu200098@gmail.com>
 References: <20260727184755.2055414-1-ekffu200098@gmail.com>
@@ -82,7 +82,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-vcnl4035_set_pm_runtime_state() just calls pm_runtime_resume_and_get()
+vcnl4000_set_pm_runtime_state() just calls pm_runtime_resume_and_get()
 or pm_runtime_put_autosuspend() depending on its bool argument. Call
 them directly and remove the helper.
 
@@ -90,18 +90,18 @@ No functional change.
 
 Signed-off-by: Sang-Heon Jeon <ekffu200098@gmail.com>
 ---
- drivers/iio/light/vcnl4035.c | 18 ++++--------------
- 1 file changed, 4 insertions(+), 14 deletions(-)
+ drivers/iio/light/vcnl4000.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
-index d13c5ff33e07..ce1bd42b0c7c 100644
---- a/drivers/iio/light/vcnl4035.c
-+++ b/drivers/iio/light/vcnl4035.c
-@@ -145,16 +145,6 @@ static const struct iio_trigger_ops vcnl4035_trigger_ops = {
- 	.set_trigger_state = vcnl4035_als_drdy_set_state,
- };
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index b8ac156ad5c9..336468d59ea7 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -537,16 +537,6 @@ static bool vcnl4010_is_in_periodic_mode(struct vcnl4000_data *data)
+ 	return !!(ret & VCNL4000_SELF_TIMED_EN);
+ }
  
--static int vcnl4035_set_pm_runtime_state(struct vcnl4035_data *data, bool on)
+-static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
 -{
 -	struct device *dev = &data->client->dev;
 -
@@ -111,41 +111,27 @@ index d13c5ff33e07..ce1bd42b0c7c 100644
 -	return pm_runtime_put_autosuspend(dev);
 -}
 -
- static int vcnl4035_read_info_raw(struct iio_dev *indio_dev,
- 				  struct iio_chan_spec const *chan, int *val)
+ static int vcnl4040_read_als_it(struct vcnl4000_data *data, int *val, int *val2)
  {
-@@ -202,11 +192,11 @@ static int vcnl4035_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+@@ -850,7 +840,7 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
  
  	switch (mask) {
  	case IIO_CHAN_INFO_RAW:
--		ret = vcnl4035_set_pm_runtime_state(data, true);
-+		ret = pm_runtime_resume_and_get(&data->client->dev);
- 		if  (ret < 0)
- 			return ret;
- 		ret = vcnl4035_read_info_raw(indio_dev, chan, val);
--		vcnl4035_set_pm_runtime_state(data, false);
-+		pm_runtime_put_autosuspend(&data->client->dev);
- 		return ret;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		*val = 50;
-@@ -237,7 +227,7 @@ static int vcnl4035_write_raw(struct iio_dev *indio_dev,
- 		if (val <= 0 || val > 800)
- 			return -EINVAL;
- 
--		ret = vcnl4035_set_pm_runtime_state(data, true);
+-		ret = vcnl4000_set_pm_runtime_state(data, true);
 +		ret = pm_runtime_resume_and_get(&data->client->dev);
  		if  (ret < 0)
  			return ret;
  
-@@ -247,7 +237,7 @@ static int vcnl4035_write_raw(struct iio_dev *indio_dev,
- 		if (!ret)
- 			data->als_it_val = val / 100;
- 
--		vcnl4035_set_pm_runtime_state(data, false);
+@@ -869,7 +859,7 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			ret = -EINVAL;
+ 		}
+-		vcnl4000_set_pm_runtime_state(data, false);
 +		pm_runtime_put_autosuspend(&data->client->dev);
  		return ret;
- 	default:
- 		return -EINVAL;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type != IIO_LIGHT)
 -- 
 2.43.0
 
