@@ -1,52 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E5A03E5597;
-	Mon, 27 Jul 2026 21:11:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F6736B905;
+	Mon, 27 Jul 2026 21:13:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785186700; cv=none; b=KcpQBi16etpw/EbhdRqO423HONrLVcvWVnZ/K8lBvudyOjgicPFt2pC1WUHSs6ve+OzY8Yps4r0g/5I7Uc59T/UyQcqcAyrt/r3gAJpCsq1Oa/YPuO4KGfJo961nLvzldIIdSjuAiRyo10e6vHuah9TN7fFOUjf8BnXXMR/MWlQ=
+	t=1785186836; cv=none; b=HbucMeORQvlfFRDZbHKIzC1XZWMmYdhbERwX/WXWHntYCobpvVRtR/a/AZe2aPbWxKsQbtaZEHzkH/nX4wMcD56UPVQ6mVlcUWeEl2XE1AQMiWEt0gy4CprVPwgRA1PwFX1Qw/XmrYeYv6VtHj6p0vTQrdvmDTCocf0sxE13Ofk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785186700; c=relaxed/simple;
-	bh=Zox1rL+anhsnhF5Umocuz0PFGxaTPq4EgfuvGfVd5e0=;
+	s=arc-20240116; t=1785186836; c=relaxed/simple;
+	bh=6OuHhWkr5k5h73x3L6NngBFNSF4CMb8qsuVefnRkODc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lavBBc0cXOHhO4Ove7cbziAZcR/qMuwqKya+O3Ydvgvvk9N5+SlTUebrGVmvsjpX+pOnq2bu8IDejlJFR6OMjRdOpAAQAuokpSL0O4GjKcc/TspvG2tA5hb0JXYC2HUl8dt00wO2eGsJDg9l4u3iLMTq9GNXVCUJSdFDcD0mz5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dtAT2JvX; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=NxEbNL/nV4y2qdyNhPTy3uQcJvi6ogKb4qy8NBa9QGKlYgY3SOzBsy0nQU1LA7UiJUZhwe2rRQVCLA+493TzonMifj6g2CP8qTI/IB57vlG86OkPeOJCZuyPmiVixEaPKOOIKNqprgMDQ23RvxWH4+IWe5dzYiRQMX2IGvqSFVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=owTX40ur; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dtAT2JvX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DFC61F000E9;
-	Mon, 27 Jul 2026 21:11:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="owTX40ur"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E6AE1F000E9;
+	Mon, 27 Jul 2026 21:13:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785186699;
-	bh=RnNNyxTBk4SJ42ChXRJx7pUndcMCuA8jFdZrwXCGPrY=;
+	s=k20260515; t=1785186833;
+	bh=31eF4FIh5kuxF/IJfqgmBo72pJnFnFPz7WY5RTWXcR4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dtAT2JvXkHIpC8AhHEMfxvRUsbUlELsl1cd/nyg2mfhUPmmCuhnu6XC6fu9bVFtJ4
-	 eoScoXaafl/K9PLT8lRnxfJBsha6dHWTMnBlMpwpGAl9+EIOzV3PmJ95m0QnmflLVm
-	 IXOBadDUbu5RQvxzbhHMrtL0nwYDUAJhYb21tuqBy5n8GToziAza6J1SNkRmFtqgBI
-	 FS7QJCVoQD6g28vnC3JGJ78cUvkErl6ptg/ZE7Uzj8PLWDCGXhjozULNlpeRUgjfeb
-	 3jsRmP2bAybetst9tHNHjxKJfuJDdGCznXSlBBfBKlDB7glzpGZ8tdg0PUdxehHW5Y
-	 BO75We384f7CQ==
-Date: Mon, 27 Jul 2026 22:11:34 +0100
+	b=owTX40urXVVnl0C1DkxoDi1zLMnKr36uPT5vh11dGcVGscQg0jybGu2VYZff3+nzx
+	 HVtC2GX4GyUXAF865lQK19pHqSlSaN1CU7di6eZe5ziAexZ+nGidvFBcI2RiDjGEJi
+	 quIb3g7W4IzpEpEgXI+4e8IubiS7UOZjMsYJhP69UjXnFV1NFisGLoKSJNCHz36mhd
+	 uoWGvGSt9sH5FvqpsIA6qwe6shhqyNBn5yi5m+ecWXeoxCEpF7okJ++j9jR8h+LZwx
+	 FVE9F8SNCTKAMM0ys/eF71m+0yicwMVFR83tgrMkmV4SxNsSdU/+q3i1i18j8hiIEL
+	 DBVOQyWulufcw==
+Date: Mon, 27 Jul 2026 22:13:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Kees Cook <kees@kernel.org>, "Gustavo A.
- R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH v9 13/17] iio: frequency: ad9910: add RAM mode support
-Message-ID: <20260727221134.77d269b6@jic23-huawei>
-In-Reply-To: <fv4zpxtmvobho3xna2pvmgdnpnwleil33bp2z6w3grzonxf6fq@yukanjhc5fsz>
-References: <20260722-ad9910-iio-driver-v9-0-459d1df5ac56@analog.com>
-	<20260722-ad9910-iio-driver-v9-13-459d1df5ac56@analog.com>
-	<20260725234637.4ee42657@jic23-huawei>
-	<fv4zpxtmvobho3xna2pvmgdnpnwleil33bp2z6w3grzonxf6fq@yukanjhc5fsz>
+To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: dhs@frame.work, Jiri Kosina <jikos@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=  <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Sven
+ =?UTF-8?B?VmFpbmvDvGxh?=  <sven@xn--vainkla-r2a.ee>, linux@frame.work
+Subject: Re: [PATCH] iio: hid-sensor: als: scale each channel individually
+Message-ID: <20260727221338.29f1da9b@jic23-huawei>
+In-Reply-To: <b6e684365758146193421ac3a36b58d55af77691.camel@linux.intel.com>
+References: <20260723-chromaticity-v1-1-5ef5746ace2a@frame.work>
+	<b6e684365758146193421ac3a36b58d55af77691.camel@linux.intel.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,129 +46,114 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 27 Jul 2026 10:28:44 +0100
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Mon, 27 Jul 2026 08:18:47 -0700
+srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-> On 25/07/26 23:46, Jonathan Cameron wrote:
-> > On Wed, 22 Jul 2026 16:50:22 +0100
-> > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
-> >   
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > 
-> > > Add RAM control channel, which includes:
-> > > - RAM data loading via firmware upload interface;
-> > > - Per-profile configuration and DDS core parameter destination as firmware
-> > >   metadata;
-> > > - Profile switching relying on profile channels;
-> > > - Sampling frequency control of the active profile;
-> > > - ram-enable-aware read/write paths that redirect single tone
-> > >   frequency/phase/amplitude access through reg_profile cache when RAM is
-> > >   active;
-> > > 
-> > > When RAM is enabled, the DDS profile parameters (frequency, phase,
-> > > amplitude) for the single tone mode are sourced from a shadow register
-> > > cache (reg_profile[]) since the profile registers are repurposed for RAM
-> > > control.
-> > > 
-> > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>  
-> > As mentioned in reply to an earlier patch, I haven't looked in detail
-> > at the firmware cancel path stuff sashiko is unhappy with.  Whilst
-> > it looks like the sort of esoteric path where maybe it is fine to fail
-> > good to take one more look.  
-> 
-> Yeah.. it is considering a cancel request right after the fw-update starts,
-> with the fw-update failing for an invalid format before the check of the
-> cancellation flag. With this, a second attempt on fw-update would fail again
-> because the flag would not have been cleared.
-> 
-> Unusual, but I can have that handled.
-> 
-> > One other thing Sashiko commented on inline. I think that is either right
-> > or a bit more detail is needed in the comment.
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> > 
-> >   
-> > > diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
-> > > index 6c794e1b4b1c..844cc0cc8f3e 100644
-> > > --- a/drivers/iio/frequency/ad9910.c
-> > > +++ b/drivers/iio/frequency/ad9910.c  
-> > ...
-> >   
-> > > @@ -1119,7 +1220,7 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
-> > >  	struct ad9910_state *st = iio_priv(indio_dev);
-> > >  	u64 tmp64;
-> > >  	u32 tmp32;
-> > > -	int ret;
-> > > +	int ret, i;
-> > >  
-> > >  	guard(mutex)(&st->lock);
-> > >  
-> > > @@ -1156,6 +1257,41 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
-> > >  						   AD9910_CFR2_DRG_DEST_MSK |
-> > >  						   AD9910_CFR2_DRG_ENABLE_MSK,
-> > >  						   tmp32, true);
-> > > +		case AD9910_CHANNEL_RAM:
-> > > +			if (AD9910_RAM_ENABLED(st) == !!val)
-> > > +				return 0;
-> > > +
-> > > +			/* swap profile configs */
-> > > +			for (i = 0; i < AD9910_NUM_PROFILES; i++) {
-> > > +				tmp64 = st->reg[AD9910_REG_PROFILE(i)].val64;
-> > > +				ret = ad9910_reg64_write(st,
-> > > +							 AD9910_REG_PROFILE(i),
-> > > +							 st->reg_profile[i],
-> > > +							 false);
-> > > +				if (ret)
-> > > +					break;
-> > > +				st->reg_profile[i] = tmp64;
-> > > +			}
-> > > +
-> > > +			if (ret) {
-> > > +				/*
-> > > +				 * After the write failure, profiles 0..i-1 were
-> > > +				 * already swapped in SW, but Hw registers are
-> > > +				 * still pending an IO update, so swap them back
-> > > +				 * in SW to keep the state consistent.  
-> > 
-> > Sashiko's follow up question about whether a subsequent use of IO update might
-> > end up with these stale values seems like a reasonable one. Perhaps a little
-> > more detail on why that doesn't matter is needed here?  
-> 
-> Here, I focus on protecting the cached states (reverting the successful writes)
-> rather than reverting stuff in HW after a SPI failure. The spi failure is delivered
-> to userspace, so user should be aware that something is off.
-> 
-> What would happen if reverting HW states fails for nother SPI failure... I don't
-> want to go into that...
-> 
-> If SPI starts to work again, other write attempts should be able to sync cached
-> configs with HW.
-Ok. That's fair. 
-
+> On Thu, 2026-07-23 at 01:18 +0800, Daniel Schaefer via B4 Relay wrote:
+> > From: Daniel Schaefer <dhs@frame.work>
+> >=20
+> > Some sensors have multiple channels (not just brightness but color
+> > ALS
+> > sensors) with different scaling factors.
+> >=20
+> > Tested on Asus ProArt PX13 laptop by Sven.
+> >=20
+> > Signed-off-by: Daniel Schaefer <dhs@frame.work>
+> > Link:
+> > https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/merge_requests=
+/413
+> > Cc: Sven Vaink=C3=BCla <sven@xn--vainkla-r2a.ee>
+> > Cc: Jiri Kosina <jikos@kernel.org>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > Cc: David Lechner <dlechner@baylibre.com>
+> > Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > Cc: Andy Shevchenko <andy@kernel.org>
+> > Cc: linux-input@vger.kernel.org
+> > Cc: linux-iio@vger.kernel.org
+> > Cc: linux@frame.work =20
+>=20
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Added.  Thanks Srinivas!
 J
->  
-> > > +				 */
-> > > +				while (i--) {
-> > > +					tmp64 = st->reg[AD9910_REG_PROFILE(i)].val64;
-> > > +					st->reg[AD9910_REG_PROFILE(i)].val64 = st->reg_profile[i];
-> > > +					st->reg_profile[i] = tmp64;
-> > > +				}
-> > > +				return ret;
-> > > +			}
-> > > +
-> > > +			tmp32 = FIELD_PREP(AD9910_CFR1_RAM_ENABLE_MSK, !!val);
-> > > +			return ad9910_reg32_update(st, AD9910_REG_CFR1,
-> > > +						   AD9910_CFR1_RAM_ENABLE_MSK,
-> > > +						   tmp32, true);
-> > >  		default:
-> > >  			return -EINVAL;
-> > >  		}  
-> >   
-> 
+>=20
+> > ---
+> > =C2=A0drivers/iio/light/hid-sensor-als.c | 22 ++++++++++++----------
+> > =C2=A01 file changed, 12 insertions(+), 10 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/light/hid-sensor-als.c
+> > b/drivers/iio/light/hid-sensor-als.c
+> > index 384572844162..232cb58e0a9f 100644
+> > --- a/drivers/iio/light/hid-sensor-als.c
+> > +++ b/drivers/iio/light/hid-sensor-als.c
+> > @@ -33,9 +33,9 @@ struct als_state {
+> > =C2=A0		u32 illum[CHANNEL_SCAN_INDEX_MAX];
+> > =C2=A0		aligned_s64 timestamp;
+> > =C2=A0	} scan;
+> > -	int scale_pre_decml;
+> > -	int scale_post_decml;
+> > -	int scale_precision;
+> > +	int scale_pre_decml[CHANNEL_SCAN_INDEX_MAX];
+> > +	int scale_post_decml[CHANNEL_SCAN_INDEX_MAX];
+> > +	int scale_precision[CHANNEL_SCAN_INDEX_MAX];
+> > =C2=A0	int value_offset;
+> > =C2=A0	int num_channels;
+> > =C2=A0	s64 timestamp;
+> > @@ -186,9 +186,11 @@ static int als_read_raw(struct iio_dev
+> > *indio_dev,
+> > =C2=A0		ret_type =3D IIO_VAL_INT;
+> > =C2=A0		break;
+> > =C2=A0	case IIO_CHAN_INFO_SCALE:
+> > -		*val =3D als_state->scale_pre_decml;
+> > -		*val2 =3D als_state->scale_post_decml;
+> > -		ret_type =3D als_state->scale_precision;
+> > +		if (chan->scan_index >=3D CHANNEL_SCAN_INDEX_MAX)
+> > +			return -EINVAL;
+> > +		*val =3D als_state->scale_pre_decml[chan->scan_index];
+> > +		*val2 =3D als_state->scale_post_decml[chan- =20
+> > >scan_index]; =20
+> > +		ret_type =3D als_state->scale_precision[chan- =20
+> > >scan_index]; =20
+> > =C2=A0		break;
+> > =C2=A0	case IIO_CHAN_INFO_OFFSET:
+> > =C2=A0		*val =3D als_state->value_offset;
+> > @@ -338,6 +340,10 @@ static int als_parse_report(struct
+> > platform_device *pdev,
+> > =C2=A0		als_adjust_channel_bit_mask(channels, index, st- =20
+> > >als[i].size); =20
+> > =C2=A0		++index;
+> > =C2=A0
+> > +		st->scale_precision[i] =3D
+> > hid_sensor_format_scale(usage_id,
+> > +					&st->als[i], &st- =20
+> > >scale_pre_decml[i], =20
+> > +					&st->scale_post_decml[i]);
+> > +
+> > =C2=A0		dev_dbg(&pdev->dev, "als %x:%x\n", st->als[i].index,
+> > =C2=A0			st->als[i].report_id);
+> > =C2=A0	}
+> > @@ -347,10 +353,6 @@ static int als_parse_report(struct
+> > platform_device *pdev,
+> > =C2=A0	if (index)
+> > =C2=A0		ret =3D 0;
+> > =C2=A0
+> > -	st->scale_precision =3D hid_sensor_format_scale(usage_id,
+> > -				&st- =20
+> > >als[CHANNEL_SCAN_INDEX_INTENSITY], =20
+> > -				&st->scale_pre_decml, &st- =20
+> > >scale_post_decml); =20
+> > -
+> > =C2=A0	return ret;
+> > =C2=A0}
+> > =C2=A0
+> >=20
+> > ---
+> > base-commit: 194a48576843858afcd9c00ed4f105ec2b398e6c
+> > change-id: 20260723-chromaticity-88fec417f00c
+> >=20
+> > Best regards, =20
+>=20
 
