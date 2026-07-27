@@ -1,155 +1,126 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 145F9377AAE
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC07C3ED3CC
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 15:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785162373; cv=none; b=EOoCb2jqRGFszBI7KSjrlUa/Z+rrAcs/sPTGnaOb/Vkl0IxdoryjvJwLYT4Y/8MzNPOuL9SHJfHQHvjXKlHy5CS3mLSuAxJEFsNTu+O3ZV5QXCkbU+ZMVZebifG8mNWKWnH8DayfUtpGt/s9s1hR0G3FUy8wo+HnRGLJPAAODC0=
+	t=1785164980; cv=none; b=Gn8b4oftsBS9t+XZAj31/nMY4K5PtvdI1vhvpNzUexnZP/ED+/Uid9qhX0KkYz5+nUci1+KjU7RnMIJC05vK9+KJrn0AlxSZuU4BxI6rA2IuMh2LPNewFMt/FObAqBlfrk6/UXDeA6SfJz3WevSSA+LCt1weKxI+6nBFfzu4fi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785162373; c=relaxed/simple;
-	bh=xBrj8om7cZyJutOzs5H4xLwjicqpb4hECpicCs4d5Pw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p9EkCLqHo3Dlr50JrM8TAsFZ0TxbnO1Dnx5lGH4CqfDtC3UnOX/r+8Gt3hXLUf83+Ew16jJ65h/rFsZ1l4J+cQKKQeuKbe1Toq8Brru+rJKCuFqeXq/hrVeLESSDyRKlBHSseqv5U6Dw/ZUtXSxucVN4vh3uKaEDME/rw7sUqd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Fw39adlV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=hmZ3S4mR; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1785164980; c=relaxed/simple;
+	bh=HSuzWCNfmtGOZwoIGq5Nl7XfdshlgFq1Zx4Gb4KZxT0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=DidViGAg96qB6zmsVEreCjdJ7ksriokBlM5m+eyJDj9WcWyzgiHvX4ESqsE4aZoUaVbdviXWXanqtfJlnr6cKKGpCWqenpp4RmzuZ1kgc6w6ZBd2taKtRcOJK7AYPA5DE5ToSq9K0YO7WudDTrEHzvMFtGGY6rReDUS3QZOLbIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZPdAcBwW; arc=none smtp.client-ip=209.85.167.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Fw39adlV";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="hmZ3S4mR"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 66RDlqtk3787376
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=oy0mH4sOH578efJ6Gq+6ZULd
-	BJ7VNf5OuMq0T7ZLoOs=; b=Fw39adlV1Dw8yAT9DITYXrSv26tgBA3e66fmtToj
-	mEVio62D5SLx4V4uI6n93+d1Xj+TGTvIRCZcvBCPWqBTFzLGBv/RiMrHv44f/zv+
-	QQ8qAIVgJYIeWVj0EvXWyJFYhXyacy0MUJrDYvQ3D2qREgMg3hoWvu5BzlZbF47j
-	NvZGAzb1mfNwCpP55/rKGOzS05XRUFsgIiRdTRE//Rekd6dL7lpZdjAKEbIg34Yd
-	lDlGv+aAHtDdho7apKCxjgcKbljJ0WS3MK2LUgiKfOHbcEoLqqxnhvrQNzYJXDCy
-	yfWGp5Pno/s2bqeEidhQdCjqNE+wndeiX0PMW/q/pQn8QA==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4fp3v2hc1g-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 14:26:10 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-52769fc3f2eso34046621cf.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 07:26:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZPdAcBwW"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5b28c91fba5so3319950e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 08:09:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1785162370; x=1785767170; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=oy0mH4sOH578efJ6Gq+6ZULdBJ7VNf5OuMq0T7ZLoOs=;
-        b=hmZ3S4mRIG7RedK8Sjza+l8w+50hMFUF9yWQLS/FaiGBza+BMeJsHhpJMrvJxIAtGg
-         rXvGFCvMdK3aHeaPx4rUc1hdNEWmR/qvKt4hp1FPzVvXk0JWg8pf7p8iXFKOYCIyM+vk
-         EnZ5+FIgWzyO/ZjQeGnYusz77SkDaby5jNHuE+zKxqN2g2JfxuJRw/TiwcYh7pRVweun
-         G4t7XVekzuV6BbZKg1DhukyZd8ITGl2kPCmSEz/31qtRkpzgK5NWlSXkvNtzT37z9rd6
-         3Bdo1PqR5IjxocRzkqNxwm1/01j9pwSXrVeuIIcYeuWGJGv7CYFrvpz0mmwm7tvBGwXD
-         I7pw==
+        d=gmail.com; s=20251104; t=1785164977; x=1785769777; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=zkj+aZ90VE+X2jMZTbdBhdtF1Q29knWNG0mAcpOL1oE=;
+        b=ZPdAcBwWl4b8zf5GzwvqflvCbm5ukpdVlpzzncmEmimRgPU2GBz96SEtDJORr2s4CS
+         JlYSuthABQncj1HJRDYUhi1glQjNc7Hy8jOyHHC8GD1pOHnXS9+Ea2V1AtuWZNWCcpkZ
+         J6nhFyEOuvmCqw/iY2mfKw8XldjNsGSVpVGRgTTVL6dve0sDHW7QYdllMAr2218v/DZY
+         JwLf4PBEXh0vyNvoh4aK/IEAFoEApIZflLWskmX/O/WGAueL03YcRSDBTxo3drxnmE3F
+         MFE1lA/k1zHgPetHOJmmhw/VX0V6aTLjd9wCevbTmQvmOXF7aYwc4lRuK0FCRKdpNObA
+         iT2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785162370; x=1785767170;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oy0mH4sOH578efJ6Gq+6ZULdBJ7VNf5OuMq0T7ZLoOs=;
-        b=dG7j9awM5zB1+Cx98K0BCeABxW+QGVkyaq2F3TUONPdPdsaMFOqnD9YpcmemVrhlHa
-         3ja574phPJsZPUVGylzrUA/ODtbz+SEfcBxeiN0EzLzTGybA/L5wvjggoJGMYhIhWmAF
-         hbcB25Wy6aluhCDEcIRs/50l+zR3//UdLL+FP67CypgyfXhMI1bEw4LfPuc/eje/bqXa
-         HVXqnY8ioWJeG9E44QRpGOICHHyoB+6I/9SIdl/kB7heqG/xh51eJAtM/SM8Am5eddAf
-         1AnuOCIVsQmXGBxS77LAvN7FA7/alQfobiZNNXFlI3P04XbEzd6rhB3SXYt0jCButgdk
-         EPsw==
-X-Forwarded-Encrypted: i=1; AHgh+RoRNtg5HQCzLNWS+MiGqi8khbSULp0C0faALYwRJWKmDD9fnypF3/Z7PwOXyq+9gYY9lkLv1Ub1Xi4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyfsin/bSwFTp0CDhHsUSaoDqSehIb4EHaxSJsVRLLv32DefStg
-	mkWC6lXy6vaFA8Y27QT0RPybEgGcbVjix6TQIPM5J0SaT/loeD26iKFfxTk6DnPD/Jwe56NvbOs
-	Np41ybMgHA7hdUk11NwbzhFQNeLXjzhA1N/LTF/gC6kCEwSwFenn1/Ug0stMvRjM=
-X-Gm-Gg: AR+sD11dRWG+125S6BsyvxmeIZ3MxzZT32iSxCHiU4rGWdeRzFTThsaD49vFt0Hy0nw
-	sE0gYPRhY07si6pYhzFey8fLGu0sS2vR10GTQH6bj6MxRJKDpHPI1Fo9zAQsGqiAqVDOB+zYWXW
-	GWnSpFIgr32iIO5uC/ljE8XEVvM9L2rC3+RnYKdUo+tjL5xFu07S0H1bzP2GzAQwi5B1rK3/c1z
-	IOXqOgo4qF6V1JxN/g173wYSqoM5Fve3CB87WNsm/Qp2aEwoUT9RWE90R8HTl1T8p/DIfY17Una
-	2LS2wHl1DTJVKmhZAQw4aq8LUkaveNjhmqPvdixYjcoT3Ew9yEew24/mZM83vj1q1JmbdGwRGED
-	A6MDUZbrdsw6bE+o=
-X-Received: by 2002:ac8:5714:0:b0:517:87bc:9b47 with SMTP id d75a77b69052e-529a85ed059mr87169431cf.39.1785162370017;
-        Mon, 27 Jul 2026 07:26:10 -0700 (PDT)
-X-Received: by 2002:ac8:5714:0:b0:517:87bc:9b47 with SMTP id d75a77b69052e-529a85ed059mr87168661cf.39.1785162369415;
-        Mon, 27 Jul 2026 07:26:09 -0700 (PDT)
-Received: from oss.qualcomm.com ([86.121.163.114])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f864305f5sm48323508f8f.17.2026.07.27.07.26.06
+        d=1e100.net; s=20251104; t=1785164977; x=1785769777;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=zkj+aZ90VE+X2jMZTbdBhdtF1Q29knWNG0mAcpOL1oE=;
+        b=nUEE6eJRDDYcLvbXcrU7s2+5kWijTtMNn6bYj5lBH0TIwk/OsyboD0IL0przG0cqzM
+         wl4PXuGdD7pDPKd++1i3E9o/fIZhV6xxy4m7Sw3qkt5ZYM87PEjRfJ9L+xCkMvpvo0aJ
+         iWkxGG8Id9WqGdwwHywG3TONjU4/3kWih+eDmmBnZyiJgfgA/JC5TNSC29iijJBWWtnn
+         L4+VB8w2ujkWVP+mrH9Ikyg9l+wKn/aNC2n9jrwQ0sgIHA6LemKyC/8weqXbCy6BDsDo
+         XXgqURBFLLwrAQMpS9xqT5+4ppZg7U8S5nkZo/k9wUHTMQ7G+/Snk5DADTA2vyUhMcUp
+         ZhEQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrPZ/5niYDVKsEoLIcTSwdtLLyfYtlP06VKoyghMtpAoJ0w5fdt57IZYwA77b82L0YUDJWHFIlPaxk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw1hPHAmKTq7C2HExeBzHBvDxukJBah/Gw7dYMcm21RChv5yu9G
+	rH30X0rT79iRxVBsSCOmT+gaPxHoe1bqgEEjoOQjlaAkFFVIRtb0v9BJFfw8RRsN
+X-Gm-Gg: AR+sD11DFiP2Hx6WQ8M7g+76LTq191iaNOtRz/CH7DYOUo8+jwgFIUle8ljm4TRZF3l
+	uTYhwrlSXBBxyivYkHYkCZ12nLLjL56eMYdUdkiVjhGSb4x5/tKCDcG1zL2S1SRT163CpUBneBA
+	te+N3B75Itq3fQBwCa/gyt9usM3uRSe0PbHfoxFZipjaU8KPOFJboR2Oo/MmpluVKvSHs2Y8aph
+	oxWM+hC53EnHGgKkb9QFnJvShEZXAJ0NCxdbQ653exnEVWyRd+AY88CXQ7OSfQTviHLEP0fDUSb
+	Pz5ptNUTKekwwZvXMqPzOwuoaJq/blqufWaT7X/47YzmrYBP/Xl1zI8OTi1dydUMR7WnDEDmW9d
+	kVkf3LxS5h8721dgo4iI6RxEmC2lr8/0vokjKuu2jy8BCSLzLEHPK5OQroNF8vEFy6Ajbd2hEtK
+	DSUomd9mUcenxPCP5lPpKdJlyI3lXB85D9sbrVkuCVya06DaPz2EnjkedsY6HVlBU+c9xOmX7uU
+	A==
+X-Received: by 2002:a05:6512:6d5:b0:5ae:acbd:439c with SMTP id 2adb3069b0e04-5b2c1a4f09emr1724048e87.23.1785164976430;
+        Mon, 27 Jul 2026 08:09:36 -0700 (PDT)
+Received: from yantra.. (dsl-trebng21-58c187-236.dhcp.inet.fi. [88.193.135.236])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b2be1f83c4sm1481719e87.69.2026.07.27.08.09.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 07:26:08 -0700 (PDT)
-Date: Mon, 27 Jul 2026 17:26:05 +0300
-From: Abel Vesa <abel.vesa@oss.qualcomm.com>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: jic23@kernel.org, sboyd@kernel.org, dlechner@baylibre.com,
-        nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de,
-        gregkh@linuxfoundation.org, srini@kernel.org, vkoul@kernel.org,
-        neil.armstrong@linaro.org, sre@kernel.org, krzk@kernel.org,
-        dmitry.baryshkov@oss.qualcomm.com, quic_wcheng@quicinc.com,
-        melody.olvera@oss.qualcomm.com, quic_nsekar@quicinc.com,
-        ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org,
-        luca.weiss@fairphone.com, konrad.dybcio@oss.qualcomm.com,
-        mitltlatltl@gmail.com, krishna.kurapati@oss.qualcomm.com,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-pm@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH v13 06/12] spmi: Add helper to get a parent SPMI device
-Message-ID: <tdx7aygeu3li6gjmzsxntg24mgcg5fkiz7c6oibuhucedupwjo@iqpnvtiohstz>
-References: <20260721093626.96264-1-angelogioacchino.delregno@collabora.com>
- <20260721093626.96264-7-angelogioacchino.delregno@collabora.com>
+        Mon, 27 Jul 2026 08:09:35 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: pressure: dps310: fix pressure result shift bit definition
+Date: Mon, 27 Jul 2026 18:09:34 +0300
+Message-ID: <20260727150934.9471-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <bb74b15e-6a95-4eaa-82bf-7c256b554c45@baylibre.com>
+References: <20260727070547.649074-1-zoone.rupert@gmail.com> <bb74b15e-6a95-4eaa-82bf-7c256b554c45@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260721093626.96264-7-angelogioacchino.delregno@collabora.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYwNzI3MDEzNiBTYWx0ZWRfX1eaHUP1HA/c+
- X6glDhFcDRs5Uy7mVpBclrV1FwCK/6VxFTwPp8peAlGST+MDE2toDaOawGCF6TweNk8oHIyDHPv
- mmHNfufodehTrSnKPiQzRZFvvLoRDF0=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzI3MDEzNiBTYWx0ZWRfX2OsfxqEisAos
- HPa8Zzs/GBK0MJi4owYq6p91aFfZlEArmKatjP79Pu0iTMRervFQeeDtGyjVumVfEzbrKE9tTC1
- lpVDMStnDwMGXNsklra7rz9swy0OdmJeq3N1+XrVSfHrLoDdUDh7ljF4qtuXdK5NF5PHTtGlHED
- yeoXxomkokCfC4yo3A3jL1lAtAKpHQbsvw4zQg3dMj2zE6fGc+CFBfU6Bcnr7PwrEwBjVLVa336
- XuCv01DOmnP+X73o047VGDogpZHZfNHJxRX3IuCsdmlahHki44jiF5BCEezzjxVSqsJG6Gw61EY
- jPiGpwIbvG2Z4f3SEjMW7DGCA/+wpVX3yJa/3mqj3yZT0N9FzC2+BEGrOR13b831XMzSLaNYhfm
- S+dVG3DJFh9sZJq4CG0uk9sPPB+3g0o6O42BcR3O7hCUl+yzxYI8A1JUuRA3mJH9sz0DEFfNzA1
- KKsf1YHTmF7pm6rDYxw==
-X-Proofpoint-GUID: hJokBmoj_L8WkCeDiPDzcu2p3H8ro-xX
-X-Authority-Analysis: v=2.4 cv=KJ9qylFo c=1 sm=1 tr=0 ts=6a676a82 cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=6dw9+iwJWV8PcCi9M4lOBg==:17
- a=kj9zAlcOel0A:10 a=RAioF0-LDSMA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
- a=QX4gbG5DAAAA:8 a=EUspDBNiAAAA:8 a=vXzjEk_Rc76YdSX0aKIA:9 a=CjuIK1q_8ugA:10
- a=zgiPjhLxNE0A:10 a=kacYvNCVWA4VmyqE58fU:22 a=AbAUZ8qAyYyZVLSsDulk:22
-X-Proofpoint-ORIG-GUID: hJokBmoj_L8WkCeDiPDzcu2p3H8ro-xX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-07-27_04,2026-07-24_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 impostorscore=0 malwarescore=0 clxscore=1011 lowpriorityscore=0
- phishscore=0 priorityscore=1501 suspectscore=0 bulkscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607270136
+Content-Transfer-Encoding: 8bit
 
-On 26-07-21 11:36:20, AngeloGioacchino Del Regno wrote:
-> Drivers that register a SPMI sub-device as a platform_driver are
-> not guaranteed to have a SPMI device as their parent: add a new
-> helper `spmi_get_parent_spmi_device()` that takes a struct device
-> and checks if there's a parent, and if that parent is actually a
-> SPMI device by checking if its device type matches with SPMI: if
-> so, returns a pointer to the relative struct spmi_device without
-> incrementing any refcount.
-> 
-> As a note, in the specific case of using this helper to retrieve
-> a SPMI subdevice's parent, the spmi_subdevice_alloc_and_add()
-> function does actually call device_add(), which will already take
-> care of raising the refcount of the associated parent device.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+On 7/27/26 4:27 PM, David Lechner wrote:
+> In your followup work, it would be nice to start with a patch to
+> sort these in a logical order.
+>
+> Right now, there is a mix of GENMASK being sorted from high to low
+> while bits are low to high (with DPS310_INT_HL being out of order).
+> Normally, we go from low to high on everything because that is how
+> datasheets usually list things.
 
-Looks good to me:
+Makes sense, I will do that. I have a cleanup series queued from Andy's
+review of the ACPI fix, so the sort will go in as the first patch of that,
+after the buffer work lands.
 
-Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+One thing worth flagging about the block you pasted: it keeps FIFO_EN at
+BIT(5) and SPI_EN at BIT(6), which is what the driver has today, but the
+datasheet puts FIFO_EN at bit 1 and SPI_MODE at bit 0. Datasheet V1.1
+(2019-07-11), section 8.6 "Interrupt and FIFO configuration (CFG_REG)", the
+bit table reads INT_HL, INT_FIFO, INT_TMP, INT_PRS, T_SHIFT, P_SHIFT,
+FIFO_EN, SPI_MODE for bits 7 down to 0. So bits 5 and 6 are INT_TMP and
+INT_FIFO.
+
+Neither define is used right now, so nothing is broken today, but the FIFO
+enable is needed by the FIFO patches. I have that as a separate one-liner
+ahead of them, since it changes values rather than moving lines around.
+
+That leaves CFG_REG looking like this once both go in:
+
+#define DPS310_CFG_REG		0x09
+#define  DPS310_INT_HL		BIT(7)
+#define  DPS310_TMP_SHIFT_EN	BIT(3)
+#define  DPS310_PRS_SHIFT_EN	BIT(2)
+#define  DPS310_FIFO_EN		BIT(1)
+#define  DPS310_SPI_EN		BIT(0)
+
+I left the three interrupt enables at bits 6 to 4 out, since nothing uses
+them and the driver has no interrupt path. Say if you would rather see them
+defined for completeness.
+
+The rest of your ordering I will take as is.
+
+Thanks for looking at this.
+
+Rupesh
