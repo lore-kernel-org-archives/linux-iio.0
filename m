@@ -1,61 +1,63 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2BA33CB56C
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 19:21:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F8F3C6A38
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 19:21:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785180080; cv=none; b=bOZWqRHiAXE4rywRTMjLhq2zHN3HOsFKl3gOv6QjhlKvUoOhsDFBy33eBjuXAOaV8tLU6kMYUtJhhRCPjfs70k+U5cxNkWVMyAJqy05LSJ/5bF/e5vXvLqLoINZHK0siB6yt8qLDkUZaqP2vMqe9Q37z1ZHtwsZmZIbwcwsrSOM=
+	t=1785180084; cv=none; b=FCyG+2cJh+UrpUoGQDv+OcQF4ZYb6iQCibLAbrDh5Xnkyf18MvXSkKOC19PWpkKi04R3aeO9NSmyd+mtdX19DT0O+DZA+6+eEL+RiSgkhItpZolOwaoWvdQUvhZEJH/WpUwkK8SaONIyzzDVNTa1mL6UpArFaClrSXMqK/Ah0bg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785180080; c=relaxed/simple;
-	bh=7nIC945Sv334N3OjbUN6ZCwKSgY6D/5noyhIzwHrKkk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=phOdDKjKshhN2ZLoly2F5x6LhUn1LOEtO01vqOLTdvRAcimVaPmybzjw4tYPZPAG7Sd1J+21Yk/4qrbEZiM/cEw1sCew9D1QMsPbFY2yDlfoRv07HLIpenoHmsak4Tdh+xhP9aQhCR8xWkw6grmxEuoL0pubVr4pAVFFr28z584=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FZyqosgq; arc=none smtp.client-ip=209.85.214.180
+	s=arc-20240116; t=1785180084; c=relaxed/simple;
+	bh=KqU7hUX6EEnvGvvXp6tf05FdZonTZfQ28JEGxpEGpyc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=iilIDOF8BqL5eBw7xx8N/wPJLJV87PuYulLmZAOKEpb/CjMd84jXiezxl+cnCU5mFuyf4eO+ofz7TVMHHZT4WMRGSFkmmwZ4oSCMtYDMhX3ulKs1BQlUyxmRUCPkukK7O5mzarLVb18MWPwGK66SpM6hIHi2m2+A6y3+4eYiBmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=p/AHpsDn; arc=none smtp.client-ip=209.85.215.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FZyqosgq"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ceab75934dso39048165ad.2
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 12:21:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p/AHpsDn"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-caf707e3a70so156100a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 12:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785180078; x=1785784878; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Z4mNCG9beTSG/GAQNF32mwCuWY/ZfBeusHCM5eRg8Sk=;
-        b=FZyqosgqh6ColgWb3jWIBVyolZsuPHRyIOpVW1Jxr/2pVzIxAyPedzIyWAKPQqnW1W
-         9aLHfjXw5C956cqO1T9M1/pxB2P/ifscCX4VLQ070V0i+08tDt3zNaFAs5Zfpa/krVCI
-         5g1Zj1IAsyx3vHObw2xyGp27ULk4BcPzNy1zzSWJHNhXYOqR8l8BUm4xZKedCJv6FM5z
-         JOCSa+OD2zr7X1nUDyy1L73atb5KTlAyGwZVWiMNAtBOmHri2oR33k+NAeJb8VFJT2Bf
-         tfSFWS7IzWNjxUHYwYpEoQlJfpapcZAkM9fuVh3jqwdqXOVKP+CvhxnPMCyBuvXwoz9m
-         6hhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785180078; x=1785784878;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1785180082; x=1785784882; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Z4mNCG9beTSG/GAQNF32mwCuWY/ZfBeusHCM5eRg8Sk=;
-        b=jgdq9Gd5JoROZW3t+qWOvk5YYllAxQjZmtVqezUeSFF7kQtCVn1H0ZCCw38Fqs885k
-         8uTkYTkAzq7ZQn5tjQXHEYn7YdMOHB7lILJpIJJxtSAHHQaFWcyKmdSHQNWbDbbpUN86
-         lJF46yXaUODR4HMRG51RgzSm15OMXqcYmDjOhWO94hTw1FoG1/F4QAYZAod9D9Vz+ahx
-         oZvui1Wq6J7K8plmN42grBNTNj69taJPb3r2VZpn8CcG7wKw6paP6N4OhZAV0HdByHHx
-         wdhEz1bil86qhqDpRXeQfLZbFpmOvrY7DWgi+ythSJ7zPZExM0PZLFI1GQwkSmQYwA8H
-         F/iw==
-X-Forwarded-Encrypted: i=1; AHgh+RqX9/MgVOf6ULc5Z899MmgzCPKByhZB58f6vdzo6QWvqmY7hBo7MFRQ2iwt1Ff716qcUOVAd2VAFDw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxec0uhUzcxNsRSlCTOn2dJYdBoJZ3sUiShPPDdP8DVkR7goiq/
-	t4EpcIMnlulsyJcNKnQHSe/J4VvB28kKQ8CfeilTGQ7SHEriZDu1TSj+
-X-Gm-Gg: AR+sD10X8aZZWzmCxo+sB61URBIHPRMVkb7D4AinjU4t0SskDpLIdxuF0kOrJQ4ctoI
-	jRLkVSyzgwwFZnCjZMkNjy+VeTQ8feYPHHPGAyqcXmLG9D6LEtcN1l2x0vtrQpvYSFJfEuOclXb
-	JrCKQIr5wj4h66HAVwY0/s15PKKEkOfow++Hm4fBYIxP+4Rm4xt0shFbs5Ubo2ZlVCzZSBqsEuY
-	Rg0UJ/9Dm/8qxQyJAHICItfYdiMKViARyM/J5bvuQ7I/vAnPt7GqHHwynAvg9tc3CbhvQfNoFX2
-	TZk7EAfLsCSGXGxmUbIFst30h1pijvTDZAOGgOlD40Q2J8ll+5sCgF+swYi4TLH12pggikd1a4w
-	lAAQgS8w83OmGvITDmFJg1uyLIg06qcJ2Y/s1kwrupj40pdzk3o7QZXDA5SYVsgk0bo9lYnHNLi
-	E4sDMXfLY+7nYt0/faYBqESowB4t/7CYhMoBv29qUeB/iCYJhgQCxM
-X-Received: by 2002:a05:6a21:7107:b0:3bf:6c08:fb83 with SMTP id adf61e73a8af0-3c67e0e2d3bmr9083960637.51.1785180078287;
-        Mon, 27 Jul 2026 12:21:18 -0700 (PDT)
+        bh=nAYjNEgUAHuckjfKebSgoAzLO2c7KwVpNw4ZzJakepY=;
+        b=p/AHpsDnpepkpzCkzN0NJ+xHmzppThZBUH/IpOUG6s67L8SmZOmi2Tz8DhAO7zEsPt
+         Wlh9JcOE8z/KY1TceaFZeJxIu9JiBuUzJ/jCYkRSpCvqDk45AbDbnGhsGUIaf6pwCWG0
+         /RLqi7np9U6MK8WGz+mrhDiAjYGDjAnic7IDwEoKDrwrkNGgeN3Z7EsKDAikWkElu9pB
+         ko3jlfB9n0/9hrABi29j7FgPP6z/xUiCXaZkOoaDNN5igyy0g1uarSgmo4eAeuN3MqBF
+         mzDK84phsi4pZ0vXQNk2TYAqHmWGe0HGwJCbKdp71O3akAP2QvbrnWSLGTx9Z37DaSFt
+         2eag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1785180082; x=1785784882;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=nAYjNEgUAHuckjfKebSgoAzLO2c7KwVpNw4ZzJakepY=;
+        b=RE5254ENwiIenAnb5NMEJOqc2nYLL3XAEwkWPPlzLjQYVSRnmQJ6pToM4YP0HIgxxV
+         sp0uRObjEOIGj3CxYusD1LKFstRKPYrVse/VNNKcgGOc18gddlJexDs9+6QPn+7AZDwY
+         70pS0RfNNAZT0qyOh0L4IDtFxglUDS56vym59HkMzFc2+pHcGm13K4kwKCQwvNIvtZJe
+         4DbWZqa3QkXcmJu3p7eBmoI3u8+EKYkdi9N1k/b64RdldGD4b/BJdxugr5DUNssuAXpu
+         KDSArvqPaMQLMgFpmXkIyTyFgsCtek/gmPnN8ERqLMoKwfR2XP04S4cUXUa38QHo6RV4
+         wieA==
+X-Forwarded-Encrypted: i=1; AHgh+RoqxCiTfpHD2cAEArKkfvgG2ooQ4lkMK++FdMcfn+N09qlAnAqgaue/hw0+980Pm26fKOeQstcjv0k=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw4lCj6qcpBPfCym0vxOy2j1QpKzQTweUg2xm2ofUpx+0RuNfLn
+	mtu5mkHDkasoUdt4BatKnoilEltf0tZhOu4bG55vuyuHUNjng16edXqJor1hKqRlYV463A==
+X-Gm-Gg: AR+sD11Ox0RHL0v2fAxiSbUYaiOsEJx11vPdrMIGrqwPPsj90AlB3wzjr09phD6d1da
+	3GDs0CmWElfygSnfGL5Y1urGDv3lTsXLa2n1CW+rzHpf4QYDrsiqn4oxgoJOJcd1EjLzi6ZVNNn
+	6/71gUv/F3GXbBeuEn5tMImb/90uzCIbXokrVO7hlDEX8mtkWYEM09g4rj89JBbxHHfFLMOqs0q
+	BDnVtenU84WDfgk+FS0T05mXYZxpo+qdpvv0e7f2je6B7EB0aseoj9OFHpJoE/LwbMgETXv2to3
+	AimTaPV2riRXEP6I0yOBPVFeMZVwkugUgKo5P634GOoOfg2Tuv0NMw/zwPaJ8jchOpKAz8CDWz+
+	LFc/0ToKMB4sJsdNMBdOyZoGvfFGAPQuJYPfAWICqOKWN61LWUBg2xY8TJ6074WBQW5Ka0QHi16
+	rofrFSPoP0NqjMUsiKYUnNr1ZDWREipYkXNM15o3VRbqxeb3benkY9
+X-Received: by 2002:a05:6a20:9f09:b0:3bf:990d:3fc7 with SMTP id adf61e73a8af0-3c7858ef368mr41891637.20.1785180082471;
+        Mon, 27 Jul 2026 12:21:22 -0700 (PDT)
 Received: from debian.ari ([152.58.178.230])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc549b11sm37595470eec.18.2026.07.27.12.21.14
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-314bc549b11sm37595470eec.18.2026.07.27.12.21.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Jul 2026 12:21:17 -0700 (PDT)
+        Mon, 27 Jul 2026 12:21:22 -0700 (PDT)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -65,10 +67,12 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v2 0/6] iio: adc: ti-ads1015: modernize resource management
-Date: Tue, 28 Jul 2026 00:50:56 +0530
-Message-Id: <20260727192102.37968-1-architanant5@gmail.com>
+Subject: [PATCH v2 1/6] iio: adc: ti-ads1015: use DEFINE_RUNTIME_DEV_PM_OPS()
+Date: Tue, 28 Jul 2026 00:50:57 +0530
+Message-Id: <20260727192102.37968-2-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260727192102.37968-1-architanant5@gmail.com>
+References: <20260727192102.37968-1-architanant5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,44 +81,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series modernizes the ti-ads1015 by transitioning it
-to a fully devm_ architecture.
+Replace the deprecated SET_RUNTIME_PM_OPS() with the modern
+DEFINE_RUNTIME_DEV_PM_OPS() macro. This allows for the removal of the
+macro automatically handles dropping unused functions when PM is
+disabled.
 
-By moving resource allocation, device registration, and runtime power
-management to the devm_ infrastructure, the teardown sequence is now
-guaranteed to execute safely in the reverse order of initialization.
-This allows for the complete removal of the ads1015_remove() function,
-eliminating boilerplate code and reducing the risk of future resource
-leaks.
+Update the driver struct to use pm_ptr() to avoid unused variable
+warnings.
 
-Additionally, housekeeping patches are included to ensure header
-includes remain alphabetically sorted, dev_err_probe() is used
-consistently, and PM macros are updated to modern standards.
+Signed-off-by: Archit Anant <architanant5@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-Changes in v2:
-- Split the monolithic v1 patch into a 6-patch series to isolate
-  housekeeping, bug fixes, and API modernizations for easier review
-  and backporting.
-- Patch 1: Added to modernize PM ops and remove #ifdef CONFIG_PM.
-- Patch 2: Added to fix a pre-existing PM leak on probe failure
-  identified by Jonathan Cameron.
-- Patch 3: Extracted header sorting into a prerequisite patch.
-- Patch 4 & 5: Extracted the introduction of the local 'dev' pointer
-  and dev_err_probe() conversions, suggested by Jonathan Cameron.
-- Patch 6: Now contains only the devm_ conversions and the removal
-  of ads1015_remove().
-
-Archit Anant (6):
-  iio: adc: ti-ads1015: use DEFINE_RUNTIME_DEV_PM_OPS()
-  iio: adc: ti-ads1015: fix PM leak on probe failure
-  iio: adc: ti-ads1015: sort headers alphabetically
-  iio: adc: ti-ads1015: use local device pointer in probe
-  iio: adc: ti-ads1015: use dev_err_probe() for error handling
-  iio: adc: ti-ads1015: convert to fully managed resources
-
- drivers/iio/adc/ti-ads1015.c | 114 +++++++++++++++--------------------
- 1 file changed, 50 insertions(+), 64 deletions(-)
-
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 8a272af69f7d..9cd620b71429 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -1066,7 +1066,6 @@ static void ads1015_remove(struct i2c_client *client)
+ 			 ERR_PTR(ret));
+ }
+ 
+-#ifdef CONFIG_PM
+ static int ads1015_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+@@ -1087,12 +1086,11 @@ static int ads1015_runtime_resume(struct device *dev)
+ 
+ 	return ret;
+ }
+-#endif
+ 
+-static const struct dev_pm_ops ads1015_pm_ops = {
+-	SET_RUNTIME_PM_OPS(ads1015_runtime_suspend,
+-			   ads1015_runtime_resume, NULL)
+-};
++static DEFINE_RUNTIME_DEV_PM_OPS(ads1015_pm_ops,
++				 ads1015_runtime_suspend,
++				 ads1015_runtime_resume,
++				 NULL);
+ 
+ static const struct ads1015_chip_data ads1015_data = {
+ 	.channels	= ads1015_channels,
+@@ -1147,7 +1145,7 @@ static struct i2c_driver ads1015_driver = {
+ 	.driver = {
+ 		.name = ADS1015_DRV_NAME,
+ 		.of_match_table = ads1015_of_match,
+-		.pm = &ads1015_pm_ops,
++		.pm = pm_ptr(&ads1015_pm_ops),
+ 	},
+ 	.probe		= ads1015_probe,
+ 	.remove		= ads1015_remove,
 -- 
 2.39.5
 
