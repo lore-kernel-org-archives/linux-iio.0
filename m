@@ -1,46 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83A97187346;
-	Mon, 27 Jul 2026 02:27:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74327221277;
+	Mon, 27 Jul 2026 02:31:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785119229; cv=none; b=VpQkT8PQkrc4TQ6UvrRHEOXvhA6e+HeXj6vDb1Y9OfOIOZnIi0pLcwUjnAih3xWx38tbgpDoCPkDyA0tUqEAfY0Xfh1iqbKeRubliKqcTkmTcDjOzQQm8waq3TA32kKhaO0Qqt1vPXFh6Svfw4snI2/Z5XUEza/s8l+c11vWdp0=
+	t=1785119517; cv=none; b=r6Knd9zfv8aA5Qy8nEGcl4BCo6Dn4w2y5h51divwodYKxzZwig8J9l29G3UJQc/8N9AD4Qdmhz/MI8cpRlPaL+LrRy0/fVandpUIMHX7E8PlSebdj9xJmU9iUvHXrcEPYIv06ncC88RHxHDAZ9caR6URxC62WtMNM47ix0PZo8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785119229; c=relaxed/simple;
-	bh=Lgi7amTDfKhfrnC2hsMmYADrT5AmfZKdxIMCqAwfQ+g=;
+	s=arc-20240116; t=1785119517; c=relaxed/simple;
+	bh=ahX09hCMWRq6fvgmb+fqZDH6p8L24KPDgXvLX4ETW0E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ogdOXGuOT6UNL8bsugESN9/D2MDm3WpGFX/npL7+su/w1OPCBqQY50cIjr6bEaJKnxuDmvq8IrVzc/SpjV6FaR9BPJIiyTWm0t1Td7Iib67wY5qj02EkuU2CuVT6zPMJLlHCrwL2y07RUuBvo7u4bxDb/3Ui/a5kE5/R9BlcZ4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kr/FrMYG; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=pMAgEsJRcqj5RRDvs0ZTL3VrSjCLmE8MA5O8Op2WPiKDyOS0WZ18UGjpVKzocaOJtU8GAA4RyAWdYi8LSQVI0IMaVrKu24D+3K39E/fNob9vOC+mG6/LHILOYv6HK85sV7CqLyhQm4T6IhcTdhOrNJtJe/hKO57yeMOzAWePUF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cew87S6l; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kr/FrMYG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D851F00A3A;
-	Mon, 27 Jul 2026 02:27:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cew87S6l"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619AE1F000E9;
+	Mon, 27 Jul 2026 02:31:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785119228;
-	bh=THkU+FvYXuDF/gOh3xpmtNnA75bi5cnc57IzJ2h3Yc4=;
+	s=k20260515; t=1785119516;
+	bh=Er+E8J6pWnRc+l9TKEaFFu14LRNnOAIt5FQYdwQ5JN0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Kr/FrMYGsl/qT4p7QgcQz3RFS6DxyXesMzXNPfFFi0EolB10w0jM3Pz9/UAUClF0I
-	 PygSZ+eiHRh31eN16S6pBKiB0ua+m84fLI1vRmqnn2HbQHxF2vZG3u9Tmf0mLDMGBI
-	 qd+lSEfNqJvNX2F2fqnH0hCNssa042tdo8rwW6ysT9nnKn59v5qgCF7ukFBXaAUh24
-	 3QjgW6uiLLPUIZjCGDkQISC/azRuyM3OIHIyNeUiejxW95eEDrwieOfXT91LBL5xtv
-	 37SY+9bc4LzWXpmD3mMd5ziDMR8yyuVEoQrFewOoBpdVcJ7YPFk6T5Cvi2ZfvO1PFP
-	 YuSlqlXJVS6nw==
-Date: Mon, 27 Jul 2026 03:27:02 +0100
+	b=Cew87S6l6bc+gvIwRIjZcyC9afNHhWNVjJzOraQjPqtnACJdVa6Guq2RYRgYDvP9r
+	 KhuEEynuXBJEsl9vNS56LpE1a3IuTPUPbE+c5uyLCZvwVKKaqxY04WonKyTUFgFBDs
+	 5JjeaSGep8/ny8HosfeAHyK93+l8eRlvxAi4I9fomX6cEblvzdpkV07+vhUp5FISSX
+	 Yd6EchRaTsBo7r4RTfiNCp0wWR3/EKtBDl9ZlNESDhJAm9NxhdaM3yf0yA3aZMDpEb
+	 pL7+CkbRi3vT4oipRE5mGbWwrfIkJkWkoG++S16Exj4cF4GDYKEoyluRX2Ekt0u/Xs
+	 essWp0JjwhjcQ==
+Date: Mon, 27 Jul 2026 03:31:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: ktsai@capellamicro.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, daniel.baluta@intel.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
- me@brighamcampbell.com, linux-kernel-mentees@lists.linux.dev
-Subject: Re: [PATCH v4 1/2] iio: light: cm3323: fix reg_conf not being
- initialized correctly
-Message-ID: <20260727032702.12d1f7bb@jic23-huawei>
-In-Reply-To: <39df42eb-433f-4cc5-b76a-8a7beeb3704b@gmail.com>
-References: <20260407151702.15208-1-aldocontelk@gmail.com>
-	<20260407151702.15208-2-aldocontelk@gmail.com>
-	<20260420185333.3bab224d@jic23-huawei>
-	<39df42eb-433f-4cc5-b76a-8a7beeb3704b@gmail.com>
+To: Moksh Panicker <mokshpanicker.7@gmail.com>
+Cc: dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ skhan@linuxfoundation.org
+Subject: Re: [PATCH] iio: light: apds9306: fix PM reference leak in
+ apds9306_read_data()
+Message-ID: <20260727033151.0ea0cb9d@jic23-huawei>
+In-Reply-To: <20260725051048.5616-1-mokshpanicker.7@gmail.com>
+References: <20260725051048.5616-1-mokshpanicker.7@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,72 +47,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 26 Jul 2026 13:44:19 +0200
-Aldo Conte <aldocontelk@gmail.com> wrote:
+On Sat, 25 Jul 2026 05:10:48 +0000
+Moksh Panicker <mokshpanicker.7@gmail.com> wrote:
 
-> On 20/04/26 19:53, Jonathan Cameron wrote:
-> > On Tue,  7 Apr 2026 17:17:01 +0200
-> > Aldo Conte <aldocontelk@gmail.com> wrote:
-> >   
-> >> The code stores the return value of i2c_smbus_write_word_data()
-> >> in data->reg_conf; however, this value represents the result
-> >> of the write operation and not the value actually written to
-> >> the configuration register. This meant that the contents of
-> >> data->reg_conf did not truly reflect the contents
-> >> of the hardware register.
-> >>
-> >> Instead, save the value of the register before the write
-> >> and use this value in the I2C write.
-> >>
-> >> The bug was found by code inspection: i2c_smbus_write_word_data()
-> >> returns 0 on success, not the value written to the register.
-> >>
-> >> Tested using i2c-stub on a Raspberry Pi 3B running a custom 6.19.10
-> >> kernel. Before loading the driver, the configuration register 0x00
-> >> CM3323_CMD_CONF was populated with 0x0030 using
-> >> `i2cset -y 11 0x10 0x00 0x0030 w`, encoding an integration time of 320ms
-> >> in bits[6:4].
-> >>
-> >> Due to incorrect initialization of data->reg_conf in
-> >> cm3323_init(), the print of integration_time returns 0.040000
-> >> instead of the expected 0.320000. This happens because the read of the
-> >> integration_time depends on cm3323_get_it_bits() that is based on the
-> >> value of data->reg_conf, which is erroneously set to 0.
-> >>
-> >> With this fix applied, data->reg_conf correctly saves 0x0030 after init
-> >> and the successive integration_time reports 0.320000 as expected.
-> >>
-> >> Fixes: 8b0544263761 ("iio: light: Add support for Capella CM3323 color sensor")
-> >> Cc: stable@vger.kernel.org
-> >> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>  
-> > Applied this patch, but patch 2 will need to wait for this to make its way
-> > into upstream - probably middle of the next cycle before that is in place.
-> > 
-> > thanks,
-> > 
-> > Jonathan
-> >   
+> apds9306_read_data() calls pm_runtime_resume_and_get() but several
+> error paths return directly without calling pm_runtime_put_autosuspend(),
+> leaking the runtime PM reference and preventing the device from
+> autosuspending.
 > 
-> Hi Jonathan,
+> Add a goto label before pm_runtime_put_autosuspend() and use it on
+> all error paths after a successful pm_runtime_resume_and_get().
 > 
-> The fix this depended on (commit 1f4f0bcc5255 "iio: light: cm3323: fix
-> reg_conf not being initialized correctly") has since landed in mainline.
+> Fixes: 620d1e6c7a3f ("iio: light: Add support for APDS9306 Light Sensor")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Moksh Panicker <mokshpanicker.7@gmail.com>
+Good find.
+Please look at PM_RUNTIME_ACQUIRE_AUTOSUSPEND() and matching ERR macro.
+
+Using that should simplify this fix quite a bit and generally give us nicer code.
+
+
+> ---
+>  drivers/iio/light/apds9306.c | 19 +++++++++++--------
+>  1 file changed, 11 insertions(+), 8 deletions(-)
 > 
-> Is there anything still needed on my side for patch 2 (iio: light: cm3323: use 
-> dev_err_probe() in probe path) to proceed?
-Good thing you checked - I'd marked it wrong in patchwork and so had lost
-track of it :(
-
-Fixed that now and applied to the testing branch of iio.git
-
-Thanks
-
-Jonathan
-
-
-
-> 
-> Thanks,
-> Aldo
-> 
+> diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+> index 5ca4c87524fe..014db7a1787e 100644
+> --- a/drivers/iio/light/apds9306.c
+> +++ b/drivers/iio/light/apds9306.c
+> @@ -475,19 +475,21 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+>  
+>  	ret = regmap_field_read(rf->intg_time, &intg_time_idx);
+>  	if (ret)
+> -		return ret;
+> +		goto out_pm_put;
+>  
+>  	ret = regmap_field_read(rf->repeat_rate, &repeat_rate_idx);
+>  	if (ret)
+> -		return ret;
+> +		goto out_pm_put;
+>  
+>  	ret = regmap_field_read(rf->int_src, &int_src);
+>  	if (ret)
+> -		return ret;
+> +		goto out_pm_put;
+>  
+>  	intg_time = iio_gts_find_int_time_by_sel(&data->gts, intg_time_idx);
+> -	if (intg_time < 0)
+> -		return intg_time;
+> +	if (intg_time < 0) {
+> +		ret = intg_time;
+> +		goto out_pm_put;
+> +	}
+>  
+>  	/* Whichever is greater - integration time period or sampling period. */
+>  	delay = max(intg_time, apds9306_repeat_rate_period[repeat_rate_idx]);
+> @@ -510,7 +512,7 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+>  						  APDS9306_ALS_INT_STAT_MASK)),
+>  				       APDS9306_ALS_READ_DATA_DELAY_US, delay * 2);
+>  	if (ret)
+> -		return ret;
+> +		goto out_pm_put;
+>  
+>  	/* If we reach here before the interrupt handler we push an event */
+>  	if ((status & APDS9306_ALS_INT_STAT_MASK)) {
+> @@ -530,14 +532,15 @@ static int apds9306_read_data(struct apds9306_data *data, int *val, int reg)
+>  	ret = regmap_bulk_read(data->regmap, reg, buff, sizeof(buff));
+>  	if (ret) {
+>  		dev_err_ratelimited(dev, "read data failed\n");
+> -		return ret;
+> +		goto out_pm_put;
+>  	}
+>  
+>  	*val = get_unaligned_le24(&buff);
+>  
+> +out_pm_put:
+>  	pm_runtime_put_autosuspend(data->dev);
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static int apds9306_intg_time_get(struct apds9306_data *data, int *val2)
 
