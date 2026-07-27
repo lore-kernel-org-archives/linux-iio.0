@@ -1,48 +1,48 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17DFA40096C;
-	Mon, 27 Jul 2026 12:28:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BF33403E8A;
+	Mon, 27 Jul 2026 12:28:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785155302; cv=none; b=Y3mKowPrKFRljpcsSQyZlkDBCyWm7yVyyL+XtFCstQYGU3bR1FCZpPy32xvRTAwlOyA3bPPjPP/NDMkYnaynrkrtk6mEido7E/dXXWE2jmYuvmvoRTaRwWcEwfYPNsHTcaDdLDFqd+qrM7jvyO8axH6E8OP/Q0ALsZbRHP0Hxp0=
+	t=1785155304; cv=none; b=fviAIkjNZ8a67w0L0AN1BhfVgXU7pQXRJSrZFbwZn0ncIFklocjITh+b4o80er33iiOioNdZE63xp/2ZJuvuChCiNl7W15Qy6aqqHMO2EYS+GlOUKkceM0mug3pd8bZrpO8tzbwwFZoeFl9ozfH4FXyNOBHHkHxMf67KawBmOLw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785155302; c=relaxed/simple;
-	bh=u15qrM0OxZ0RvZIq7htTa72mSwEegJY4xHMEJ2Ga+Kw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Qy+UDfQu9GJ43iK3uqjyGSWXNzvVb9W6AgrC405gqltrLiVvlOjOvbX5DcaH2TaDSJ8kP/f8NbRJKdwwXsU2sr/DICEu4STAHDxgHLfmAgXOMFddIcbdVnUpt4kBAJHXGEwWcYxiVWh1KxSMRS42NnXfnNlsV6Oxq/Djd2b7zQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=kMgOgkm1; arc=none smtp.client-ip=68.232.153.233
+	s=arc-20240116; t=1785155304; c=relaxed/simple;
+	bh=Av6eeg2ekqj+HOs2zrQPFQA1RnGOcXg/+B9uTPlD7J8=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jd/TMpL26ANhYl+PklBb1D3Z7NTySSgS5kvnhn2b/pXiZMqmshuiS20uE0tGABNZqQtHrLR/dRV4ZeMtOYRtDJUjIsziPvY6Lkc/lis/rZPJer50xF04GYXOYep8qS3NXLEKIkrRAhlMpdoNxG4zjew7aYwUqldiRUAw9SnOi6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=ufm+zAK5; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="kMgOgkm1"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="ufm+zAK5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785155300; x=1816691300;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=u15qrM0OxZ0RvZIq7htTa72mSwEegJY4xHMEJ2Ga+Kw=;
-  b=kMgOgkm1q0jtUoGNOzTXZOQdNWp0psTVOS9vSBSfmwe1RUYrpoue3S2M
-   nX7pjem9PuWbVEAAQawtO/ikBLykrfVfv1cCBFOkdyvgwRbKUnrbnwcp3
-   TyS41ParFf2Dyo/C02zX/Zz1rgJ+FlfKAQVSO5YuAZaIV+pDzq+KAHH+A
-   sFoYIFJWtk5HP48y+CooYoROv+8HH2OBkaLiQm69h1CP/Om3ZDCwsmZ+N
-   ariGlYamzt3zOwnuNTPUMCen2PUMM7vVjuVDq++PT7Y69iyFULNjohzSs
-   ql9U4MeZG6156X3RmXLv6qhgO2sHIIzGTd0W4DeiHiUXhnkPpERLk0NS/
-   Q==;
-X-CSE-ConnectionGUID: opGnupBsQuiohLycbo45AQ==
-X-CSE-MsgGUID: yQdRrD+DRR+iH4IQXKiaQA==
+  t=1785155302; x=1816691302;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=Av6eeg2ekqj+HOs2zrQPFQA1RnGOcXg/+B9uTPlD7J8=;
+  b=ufm+zAK5Je6u0C2BJQVbZwDwhlADW2PeJ6NpjY0NAJMFC//0ufs620vA
+   O4vC5eJbaAulN70bmYNeEOasHlKy3cmlqLSwKSyF/GwfQNQcWHJDI7+S3
+   4+6VTriw6AUZ7YOLUx3H2YuIu5Y0g/brw5AiBwc5PKrATCu4ivPEk2dic
+   pJWJYrllafBNIpugvz6Vobu8P2I+k37KYBlK6ACAQA2BJh2fw3swvA2bE
+   jbM+S8Np2v3oN/kUcqScflXEr9BjP0ypjMOsC4krkVmq7/o8okHUC40GW
+   zhmi0q03kFmhKdPFKSz1fhUQdcJFkx2Daz3gLYJesOTVGDKiwkmV0w/V2
+   A==;
+X-CSE-ConnectionGUID: u1lwqlS2TZaRZCDD2h+pYg==
+X-CSE-MsgGUID: 0erGazzNR/a50LU+sSnktA==
 X-IronPort-AV: E=Sophos;i="6.25,188,1779174000"; 
-   d="scan'208";a="70709542"
+   d="scan'208";a="60344933"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2026 05:27:09 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2026 05:28:19 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
- chn-vm-ex4.mchp-main.com (10.10.87.33) with Microsoft SMTP Server
+ chn-vm-ex1.mchp-main.com (10.10.87.30) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.43; Mon, 27 Jul 2026 05:27:08 -0700
+ 15.2.2562.43; Mon, 27 Jul 2026 05:28:16 -0700
 Received: from che-ll-i67070.microchip.com (10.10.85.11) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.58 via Frontend Transport; Mon, 27 Jul 2026 05:26:58 -0700
+ 15.1.2507.58 via Frontend Transport; Mon, 27 Jul 2026 05:28:07 -0700
 From: Varshini Rajendran <varshini.rajendran@microchip.com>
 To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
@@ -55,10 +55,9 @@ To: <ehristev@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
 	<mazziesaccount@gmail.com>, <linux-iio@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>
-CC: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v4 02/16] iio: adc: at91-sama5d2_adc: use cleanup.h for NVMEM buffer
-Date: Mon, 27 Jul 2026 17:56:19 +0530
-Message-ID: <20260727122633.117435-3-varshini.rajendran@microchip.com>
+Subject: [PATCH v4 09/16] nvmem: microchip-otpc: nvmem: add emulation mode and OTP access validation
+Date: Mon, 27 Jul 2026 17:56:26 +0530
+Message-ID: <20260727122633.117435-10-varshini.rajendran@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260727122633.117435-1-varshini.rajendran@microchip.com>
 References: <20260727122633.117435-1-varshini.rajendran@microchip.com>
@@ -71,84 +70,63 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-Use __free(kfree) and __free(nvmem_cell_put) cleanup helpers in
-at91_adc_temp_sensor_init() to simplify error handling paths.
+Add validation of OTP memory accessibility and emulation mode status
+during probe.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+When the boot packet is not configured, emulation mode allows access to
+the other packets. When both are not available an informational message
+is logged to help with debugging.
+
 Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 33 +++++++++++++-----------------
- 1 file changed, 14 insertions(+), 19 deletions(-)
+ drivers/nvmem/microchip-otpc.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index e8a5285bb6d4..4a4a25f3c715 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -35,6 +35,8 @@
- 
- #include <dt-bindings/iio/adc/at91-sama5d2_adc.h>
- 
-+DEFINE_FREE(nvmem_cell_put, struct nvmem_cell *, if (_T) nvmem_cell_put(_T))
-+
- struct at91_adc_reg_layout {
- /* Control Register */
- 	u16				CR;
-@@ -2249,33 +2251,28 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
- 				     struct device *dev)
+diff --git a/drivers/nvmem/microchip-otpc.c b/drivers/nvmem/microchip-otpc.c
+index a17f82afdc37..6b0184423463 100644
+--- a/drivers/nvmem/microchip-otpc.c
++++ b/drivers/nvmem/microchip-otpc.c
+@@ -18,6 +18,7 @@
+ #define MCHP_OTPC_CR_READ		BIT(6)
+ #define MCHP_OTPC_MR			(0x4)
+ #define MCHP_OTPC_MR_ADDR		GENMASK(31, 16)
++#define MCHP_OTPC_MR_EMUL		BIT(7)
+ #define MCHP_OTPC_AR			(0x8)
+ #define MCHP_OTPC_SR			(0xc)
+ #define MCHP_OTPC_SR_READ		BIT(6)
+@@ -343,7 +344,8 @@ static int mchp_otpc_probe(struct platform_device *pdev)
  {
- 	struct at91_adc_temp_sensor_clb *clb = &st->soc_info.temp_sensor_clb;
--	struct nvmem_cell *temp_calib;
--	u32 *buf;
- 	size_t len;
--	int ret = 0;
+ 	struct nvmem_device *nvmem;
+ 	struct mchp_otpc *otpc;
+-	u32 size;
++	bool emul_enable;
++	u32 size, mr_val;
+ 	int ret;
  
- 	if (!st->soc_info.platform->temp_sensor)
- 		return 0;
+ 	otpc = devm_kzalloc(&pdev->dev, sizeof(*otpc), GFP_KERNEL);
+@@ -355,10 +357,22 @@ static int mchp_otpc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(otpc->base);
  
- 	/* Get the calibration data from NVMEM. */
--	temp_calib = nvmem_cell_get(dev, "temperature_calib");
-+	struct nvmem_cell *temp_calib __free(nvmem_cell_put) =
-+		nvmem_cell_get(dev, "temperature_calib");
- 	if (IS_ERR(temp_calib)) {
--		ret = PTR_ERR(temp_calib);
--		if (ret != -ENOENT)
-+		if (PTR_ERR(temp_calib) != -ENOENT)
- 			dev_err(dev, "Failed to get temperature_calib cell!\n");
--		return ret;
-+		return PTR_ERR(temp_calib);
- 	}
- 
--	buf = nvmem_cell_read(temp_calib, &len);
--	nvmem_cell_put(temp_calib);
--	if (IS_ERR(buf)) {
--		dev_err(dev, "Failed to read calibration data!\n");
--		return PTR_ERR(buf);
--	}
--	if (len < AT91_ADC_TS_CLB_IDX_MAX * 4) {
-+	u32 *buf __free(kfree) = nvmem_cell_read(temp_calib, &len);
-+	if (IS_ERR(buf))
-+		return dev_err_probe(dev, PTR_ERR(buf),
-+				     "Failed to read calibration data!\n");
+ 	otpc->dev = &pdev->dev;
 +
-+	if (len < AT91_ADC_TS_CLB_IDX_MAX * sizeof(*buf)) {
- 		dev_err(dev, "Invalid calibration data!\n");
--		ret = -EINVAL;
--		goto free_buf;
-+		return -EINVAL;
- 	}
++	mr_val = readl_relaxed(otpc->base + MCHP_OTPC_MR);
++	emul_enable = mr_val & MCHP_OTPC_MR_EMUL;
++	if (emul_enable)
++		dev_info(otpc->dev, "Emulation mode enabled\n");
++
+ 	ret = mchp_otpc_init_packets_list(otpc, &size);
+ 	if (ret)
+ 		return ret;
  
- 	/* Store calibration data for later use. */
-@@ -2288,9 +2285,7 @@ static int at91_adc_temp_sensor_init(struct at91_adc_state *st,
- 	 */
- 	clb->p1 = clb->p1 * 1000;
- 
--free_buf:
--	kfree(buf);
--	return ret;
-+	return 0;
- }
- 
- static int at91_adc_probe(struct platform_device *pdev)
++	if (!size) {
++		dev_warn(otpc->dev, "Cannot access OTP memory\n");
++		if (!emul_enable)
++			dev_info(otpc->dev, "Boot packet not programmed and emulation mode disabled\n");
++	}
++
+ 	mchp_nvmem_config.dev = otpc->dev;
+ 	mchp_nvmem_config.add_legacy_fixed_of_cells = true;
+ 	mchp_nvmem_config.size = size;
 -- 
 2.34.1
 
