@@ -1,169 +1,338 @@
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B02FB374E5B
-	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 04:40:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785127218; cv=none; b=a/3m8xt2Z39CVGUk9nCbTbJA4V73Bzp3gH/e8fHyN6JAFWG9XiFYY8qUz8w+yS7AOzDRM9s0AVtD1VHIq6xVPs27Wk4ho4PshuGaIaVAj8CXXc4GyJfm7bhjqmP/8nyIVbgKLQoDr6u7d6Mp+JX1XTw+3MAaJADca77C+kMgpAA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785127218; c=relaxed/simple;
-	bh=KhayGZ8jwb8sLYOGw7j7nva3p7BUr11Zgf0U4g+3kls=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lKaHgFRPC2x6buETiNUNtqvODXN9H5RBFupDJwVR3CteBl62HBdFIlVtwgPISPmXxmknCbMko3ThUSL5Z0WaiJINaqGnzl3XTQldTT/jDt1TWSjm+KryjVQTD1zuT0FrDk2jT8LnJQXvGzC+0WCmD9hxUDsIj+fwQrgKrZADQ54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L0qqt8XA; arc=none smtp.client-ip=209.85.222.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67FE935DA75
+	for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2026 06:08:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.180
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785132536; cv=pass; b=PbFb7mhgugIHAfA2lHQ/YXZlXv3LrOF2FmzOgRlCe8ADDKOG1QkJSLcW4dpiCv/V0pehgCOSZ6a4QgZwskzAjBuRos3jZ7rWGf5OJk5lvyTPIaDWSem0xpj5OOMK1+l5rN6KEtLIGDB/C84qMl5q7TYDvwYhyYJPq5jqhu9CcUg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785132536; c=relaxed/simple;
+	bh=I8nZMzbkZAznY6mHohPSZv/fO0E0qqzemqUWFmAp4NY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=c0o4jn6z/5X9qF+iDEOi1XMhlJIPy9c7s3PipNO5Fv920xcIDRPgXOUf7fr2io8/ICh42cI/VGZj4MNGb+1j6O29aPR9NdCSczUABjlXyuL0UQoKEjWGEDLoBtFBtA+h8YwntoK+751ZXWuzpZ7Eb8fhkD33aVxerLUkA1rabMM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XPPtz8GV; arc=pass smtp.client-ip=209.85.160.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L0qqt8XA"
-Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-969524c1aefso774239241.3
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 21:40:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XPPtz8GV"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-51ca592e80eso4868781cf.2
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jul 2026 23:08:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1785132533; cv=none;
+        d=google.com; s=arc-20260327;
+        b=By1InpjdB5iNQ7+dY7eAGYfaEz6BVuW1KSnvwn5ESM9QZYR9BUQpgEa0DOcfNN2mha
+         ecTZpgORFDYiVd0KTgYEEmCXVZpZK4Y13Q+PmBnkK0wbYqPKVPNPb/slKu3+ISBOIPjh
+         Npcxm3MUbnF9uBTnbgLDTPrHvPQff3iKQ/GU8XIIrUQqks+iugYV8RYtPVjGRQFAENX5
+         GJWbBjU6Do5gVP2pLflEChfPqr4jv88Z+lE7Z9w+B0GvhptOAi5dtoYf+mglBIfKjInb
+         PFdm45xoR+fsn/syKgVgck4HwFlJEzbCEoiaR1GOWlAxCRVo0CXWbNuB09GVmjxvl5mM
+         Mf4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
+        fh=qZwElXO76sQMalzpUGYHLx3b9GeOxxT2MMyuodjAy+Q=;
+        b=axjzqsNa70hIL/dzHjHqJB2DxaYZmJ/DBM8YOjq0huko2oFr3VNSNSmthgoea34WmN
+         ltFOgfliU2KPsnhuqKKh/IcE5pl8MS4sCddQTC9Ofbc/ZRIWmzjrJ9ulUnF6JHGMm/dP
+         MpBhaJaQ2Zr3uZ/Pwdxb7oV2zsQ7nxgubvBTSjFKkdPQKoUWhE/Dt7eOUuSTv9Jw8RpS
+         BQ86sIdt7+wY2RYH0UOgwpXM7ke0Xl//mQvtCPSltNyrnXYJR9QYWoQ+cmcXWYDldwSo
+         zgM0YPdMhXQOAENdjfSp3/OZNUkoD5lNE2khrYZxqz0pAaahRnHAiy0v/22gHaH7wqbd
+         8Mew==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785127215; x=1785732015; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1785132533; x=1785737333; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=QZW8tsZIKTlk51QueT1yxpi+p4RNZ9ybHTGQ8PcnIhU=;
-        b=L0qqt8XAhaB71jIAl/xMh1p5Uab980iUjcaPp1NP6c25I8ynImCbzygeJ/hIXBIPPB
-         vWlAf1oEKxtmEZ2aC2oH99Cs6XTtDMpBWfBux0wPSTetLKQJUn2swcXIkGn1KkwRRxqW
-         Mtej6fLKcqSGEugPjiaDeUSzqxpY3eo/ObXGD2/JGkubcv+/sIdtxjrhuIJ40lpg9hE6
-         2Ucu2UKLY300uGdT+hwo6gKizkF3mRQlW7LkHyzHv8UiNKGOIF85274te0hAjFNcyQBg
-         4V81eTvFg+JJHe4OuK67BMykx0c+iagUUTDLOdKbI19QaKMeB4Fdr8eyHXd+WjsZVxrp
-         ClSQ==
+        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
+        b=XPPtz8GVMTUoJtG0P9qRCYouSRyoYEHz/R3H8tCVx2ZRgPJi7dlxHKVTBNWau8emjy
+         WSixw6yy14oytS+bXZbZUnQsCoVGMB85mLtmHiJ0awrTyfbkm0uyzv7RpeYqVHvPpwEc
+         uB9IXZAYN2l571ZrX24sOt6hn1z/EcxaNXjo2F29ndHitLqJ2tMXWQz5KNrWXHIiu6/K
+         zUv0kpdU2AuzkpUj/xk9lwDXicRArZgw+J74UCrIQG4bYTd8Uex5eIVPh4fpn3XYhVo7
+         dChlW0dJCM6+8z8ZMuM0HFTHIu43yNEo69XHpRbVUDaFLdrpvqSHsDfpUIJkwFqRIeB0
+         iRUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785127215; x=1785732015;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20251104; t=1785132533; x=1785737333;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=QZW8tsZIKTlk51QueT1yxpi+p4RNZ9ybHTGQ8PcnIhU=;
-        b=Onp0tNbd/FVSy1gbhUZB3D3QsWTG47KrBWdc3ikpIBd2JyN+XCaPIJ4cbbfmUDcrz5
-         BgzwB7NpfbvmctsiNG7Ol3JHXfLPoYeQTgXw4kPJBTrj/pRtY4HXd5PTU/gKKAB8dm5T
-         AuVJVZk4F+p8onm+9WFp4AJEakS/I7T8UoUn6cmbgGtxU8ZngF0B3nHFglmwfOcrKIVY
-         rVLJ78kXn7LrR4h8TRkvYg9Qh3sUQhTPZ13O8OeMyD5+lErcXHSyRh3r1kJC99C0G2Lh
-         reRqzVGq2s83/ZY/2rbhUI4y/bgAFQdpGbKyDxGjlOjwlXLpEkwd0LMVh4JUsZ4l1sDt
-         ReJw==
-X-Forwarded-Encrypted: i=1; AHgh+RoHP1KTuMPePteBlM7Lrzaru0CcDn8YMPRygq2JHq/XqKrSuQnofPkU4rgKCqObJqMQGtxBJg1GhiU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzA30nX0OWIT+qrH6wjhsmq109jkXxfghBhofxPW6OXW1wVLWkp
-	5LTgtbShdqskfIzLMM5OeVhmwnJP5DHAzikXgOjW731P96x+Qthpv9HN
-X-Gm-Gg: AR+sD10tOZlgXSdTkO4zb0cH/3ntlEWwyH9zPmIf5utaT0whz9egPvBx0dYV/xWu0P3
-	giYhf821Vismszgu/AeZ9oXYyUIAAnWNHOZ4djBzOA0JL3RNXYJzH84FE7KSY/V/u3a4zObWV6R
-	oZRHrHWZVpL7qvgAWIPNAjwgLkV1jB6jjponUsVo1qnHiZet48xqM02YiFXjaIWakrg/OYq5n/y
-	KaLgZAjqZIDnhF5UGiofEkJG81R1lvb4qwCLU5HlEkrb9SJVriZi5bjNucQQA8zzSj6wG6W4LeI
-	jsAtXYJSc/R5Fdec7w0tEyu38O+6XYFl7sEqenXp/7V2U3oL0OobdHlhsqeTatKEB29IaLB/711
-	to7Mo4vRTbiVvoNaUA1e2ed/RePHhN5ycYbWugXa1dPykPnEga0RyMlgduCKSO2u5iyW2srOccs
-	Hi9w0=
-X-Received: by 2002:a05:6102:4425:b0:6cb:d562:b96a with SMTP id ada2fe7eead31-7503feb7446mr3207711137.14.1785127215445;
-        Sun, 26 Jul 2026 21:40:15 -0700 (PDT)
-Received: from 45fec588b341 ([138.28.231.64])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-97774e119b8sm4688785241.9.2026.07.26.21.40.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Jul 2026 21:40:15 -0700 (PDT)
-Date: Mon, 27 Jul 2026 04:40:13 +0000
-From: Yuanshen Cao <alex.caoys@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: tsl2772: fix ALS calibscale readback
-Message-ID: <ambhLVO6CkMVzqKJ@45fec588b341>
-References: <20260724-tsl2772-calibscale-fix-v1-1-00a7789f4deb@gmail.com>
- <20260727031407.44a6d201@jic23-huawei>
+        bh=mO2yEgmy0uLYubiS6bMWaivQtv2wiYD2udY7mlP9ld4=;
+        b=EwarG9hkljAbe/T0k495UlIwiD6AwRmkv/p+6HfvdKRKJ7CZ+RjWYVHA6IM3pOm8QY
+         wRbfhtKZgebj1gP/WEk0xP9v3kkB4gGoLH80xFHstPaSBdZjEd7H/ZFOrBn3KHAXuPep
+         CdEIE1e9w4R1bmbPiLqaEB7RKIM5wFLH6A+xgAQgwj6uTXRmyU2mOULjnrkil47QqelI
+         VrLJFcvsLtRrINYqVcp3YmWk35NMhk88ZXw+UJzuOMUIY8/k0WzOlDSk4VjiwuPSALsB
+         ViB4ZWlFYQCmkbHUEj7AB8epGJ4r+1XNbs4wshHYcJMDGgYAv62hrcaHgNoYYnfsu3Q1
+         tNCw==
+X-Forwarded-Encrypted: i=1; AHgh+RrB4Z8R6vIZEymFfp6CNdjeTQKxxnDEoisLH+itK8qTbE668RQlQQnvO0noaoSXUTne+xyEDkEsESg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyvwy9+W33AblX+enYmnEecjCI9vbzj5PPxmY43qhXLGvi8FL83
+	CRVrBWFyo/1F9zQcZko3TRCg446wFpifTc82+FFizXi8aoJMveiGrOsoQZRjbta+mFl78S8pUix
+	Xauy8q8nf4SbL/8L3R4YnCcjs2G6VbRg=
+X-Gm-Gg: AR+sD12Nh9IvE8Vr+bu42jhPLnEFZmpyNpdVyMLLGT9DW2dSK/UAqq9phoZ5o5DUs8S
+	5BugNTFgGXD4OoHjuFc0VZ2Me2sW3W1B7cvsulgYRvmWEzjJNfK70ghuj9cj8w6G8X8N5YZRX8D
+	F4Xk3aNMUZiiHuN68j8Q0yRppxEyf2135xz8D+A6SBfqNZomYmbzlIxAaeWiMbfoUTVnIjF4lSR
+	UUYOMgVyeYVk7lOCqAtAKZtCQeX2oRfQnvRGu7fa/oJ02R2y1V7hmPEobD2Sdlzyn3mCJUR1Im9
+	UHiFXyiTkaOk4VcXPGAu6jsQB0BUtcuAF8KO11K6uvCY28A6d/kySiMsPkuW1O+EYIq0n/CCcU9
+	jX9D5
+X-Received: by 2002:a05:622a:aa4d:10b0:528:3722:a372 with SMTP id
+ d75a77b69052e-529a84dec8dmr48090321cf.4.1785132533145; Sun, 26 Jul 2026
+ 23:08:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260727031407.44a6d201@jic23-huawei>
+References: <CA+8Hp=M3ynUHzcDshLup5G+HDs0XoWkav0R5k-00m+O7LbOv1w@mail.gmail.com>
+ <7df349cbcccc8004d9aef37f95be5c8e0e51f713.camel@linux.intel.com>
+In-Reply-To: <7df349cbcccc8004d9aef37f95be5c8e0e51f713.camel@linux.intel.com>
+From: Daniel Paul Perinchery <danielpaulperinchery07012005@gmail.com>
+Date: Mon, 27 Jul 2026 11:38:42 +0530
+X-Gm-Features: AUfX_mwVuK7N8Tdvd-3xis3OaVDKSpEC98dcBi8NzfS7udTnPE0Kw7MI8pFRQlQ
+Message-ID: <CA+8Hp=Pv_zsYiPOhxTQ4NtQ-rMSyPKbWrGyU0d+d--BHpT87YQ@mail.gmail.com>
+Subject: Re: hid-sensor-custom: async notification for input-report sysfs
+ attributes? (human presence / attention sensors)
+To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	Benjamin Tissoires <bentiss@kernel.org>, linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 27, 2026 at 03:14:07AM +0100, Jonathan Cameron wrote:
-> On Fri, 24 Jul 2026 23:46:01 +0000
-> Yuanshen Cao <alex.caoys@gmail.com> wrote:
-> 
-> > The read_raw() implementation uses IIO_LIGHT to distinguish between the
-> > ambient light and proximity channels when handling
-> > IIO_CHAN_INFO_CALIBSCALE.
-> > 
-> > However, the ALS channel is registered as IIO_INTENSITY, while
-> > write_raw() correctly writes to IIO_INTENSITY. As a result, reading
-> > in_intensity0_calibscale incorrectly returns the proximity gain instead
-> > of the ALS gain.
-> > 
-> > This causes the following user-visible behavior:
-> > - Writing in_intensity0_calibscale appears to have no effect because the
-> >   readback reports the proximity gain.
-> > - Writing in_proximity0_calibscale causes both in_proximity0_calibscale
-> >   and in_intensity0_calibscale to report the same value.
-> > 
-> > Fix this by checking for IIO_INTENSITY in read_raw(), matching the
-> > channel definition and the existing write_raw() implementation.
-> > 
-> > Signed-off-by: Yuanshen Cao <alex.caoys@gmail.com>
+Apologies =E2=80=94 my last message went to Srinivas directly instead of th=
+e
+whole thread. Reposting here so it's visible to everyone and gets
+archived properly:
+
+Hi,
+
+Thanks, this does help. I got it running and poll()/read() on
+/dev/HID-SENSOR-2000e1.3.auto does work. Two things I wasn't
+expecting, and wanted to check with you before going further:
+
+1. The reports arrive continuously, roughly every 100ms, whether or
+not anything actually changed (matches property-report-interval on
+this device, which reads 100). property-reporting-state reads 2
+("Threshold Events" per the HID sensor usage table), which I'd assumed
+meant the async path would only push on a real threshold crossing --
+but empirically it's a steady ~10Hz stream throughout, including long
+stretches where the sensor value isn't changing. Is that expected for
+this reporting-state value on the async report path specifically, or
+is there a separate control I'm missing to actually get
+sparse/event-only pushes out of the misc device (vs. it just always
+streaming at the configured report interval regardless of
+reporting-state)?
+
+2. Every sample's usage_id field comes back as 0x002000e1, i.e. the
+collection's own usage (hsdev->usage), not the usage of whichever
+individual input field the report is carrying. This instance
+(2000e1.3.auto) has five input fields under it in sysfs
+(input-0-200201 through input-4-2004b1), so I think each 11-byte
+payload is a packed report containing some/all of those fields
+together, keyed by byte offset rather than by usage_id per sample. Is
+there a way to get the per-field usage or offset table from userspace
+(something under sysfs or a report-descriptor dump via hidraw) so I
+don't have to reverse-engineer the byte layout empirically by
+correlating against the -value sysfs files field by field?
+
+My use case is specifically the human-presence input (2004b1) for a
+walk-away lock/dim daemon, so what I actually want is: wake up only
+when *that* field changes, ideally without also waking up for the
+other four fields' updates every 100ms if they're unrelated to
+presence. Let me know if that's realistically achievable with this
+interface as-is, or if it'd need something added on the kernel side
+after all (which circles back to my original question -- happy to go
+either direction depending on what you'd recommend).
+
+Thanks again for the pointer, this is a big step forward from polling sysfs=
+.
+
+Daniel Paul
+
+On Fri, Jul 24, 2026 at 9:00=E2=80=AFPM srinivas pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+>
 > Hi,
-> 
-> Fix looks good and the explanation correct.  Was this an AI found
-> one, or did you either spot this whilst reading the code or best
-> of all saw it in practice and went looking for what is wrong?
-
-Hi Jonathan,
-
-It's actually a bit of both. I first noticed the strange calibscale
-behavior while testing a device with this sensor. Since most part of
-this driver has been around for 7+ years, I wasn't expecting to find a
-bug there. I asked ChatGPT for some ideas about what might explain the
-behavior, and it pointed out the mismatch. I then went back and verified
-it, and sure enough, it turned out to be a 14-year-old bug. After that,
-I checked the rest of the file for similar issues, but this appears to
-be the only instance. Also this was tested on the device and it works
-as intended now.
-
-> Give it is fix, what is missing is a suitable Fixes tag.
-> Please see if you can figure out what that should be.
-> No need to send a v2 unless anything else comes up in review.
-> Just reply to this thread with the Fixes tag so I'll get it
-> when I use b4 to pick up the patch
-
-Thanks for pointing this out.
-The missing tag is:
-
-Fixes: 3c97c08b5735 ("iio: light: add TAOS tsl2x7x driver")
-
-Best,
-
-Yuanshen (Alex) Cao
-
+>
+> On Fri, 2026-07-24 at 12:42 +0530, Daniel Paul Perinchery wrote:
+> > Hi,
+> >
+> > I've been investigating why userspace can't efficiently watch a
+> > hid-sensor-custom input-report value (specifically a human-presence
+> > sensor, HID usage 2000e1, on an AMD Sensor Fusion Hub / amd_sfh
+> > platform) for changes without polling, and wanted to check whether
+> > there's interest in closing this gap before I try to write anything.
+> >
+> > Setup: Lenovo IdeaPad Pro 5 14AKP10, AMD Ryzen AI 7 350, kernel
+> > 7.0.13
+> > (Debian/Parrot, but this is stock hid-sensor-custom.c). Presence and
+> > gaze/attention are exposed as separate logical sensors under the same
+> > physical hub (HID-SENSOR-2000e1.x.auto), each with the usual
+> > auto-generated input-N-<usage>-value sysfs attribute.
+> >
+> > What I found tracing show_value() in hid-sensor-custom.c: for input
+> > reports, it calls sensor_hub_input_attr_get_raw_value(..., report_id,
+> > SENSOR_HUB_SYNC, false) -- i.e. every read of the -value file issues
+> > a
+> > synchronous GET_REPORT to the hub and returns the live answer.
+> > There's
+> > no cached field backing that attribute, so there's nothing for a
+> > notify-on-change mechanism to attach to on that path.
+> >
+> > Separately, hid_sensor_capture_sample() *is* a genuine async callback
+> > fired on hub-pushed input reports, but as far as I can tell it only
+> > feeds the raw kfifo behind the driver's misc-device streaming
+> > interface (custom_dev), gated on test_bit(0,
+> > &sensor_inst->misc_opened). It doesn't appear to update any per-field
+> > cached value, so it isn't reachable from the sysfs show_value() path
+> > either.
+> >
+> > Net effect: there's no way for a userspace consumer to poll()/
+> > select() on the -value file and be woken only on real hardware
+> > events.
+>
+>
+> I have a test program for poll(). Attached poll part.
+>
+> #define DEVICE_PATH "/dev/HID-SENSOR-2000e1.2.auto"
+> #define BUFFER_SIZE 256
+>
+> int main(int argc, char *argv[])
+> {
+>         int fd;
+>         struct pollfd pfd;
+>         char buffer[BUFFER_SIZE];
+>         int ret;
+>         struct sigaction sa;
+>
+>         if (argc < 2) {
+>                 printf("syntax %s sample_interval\n", argv[0]);
+>                 exit(0);
+>         }
+>
+>
+>         // 1. Set up Ctrl+C signal handler
+>         sa.sa_handler =3D handle_sigint;
+>         sigemptyset(&sa.sa_mask);
+>         sa.sa_flags =3D 0; // Don't use SA_RESTART so poll() unblocks on
+> signal
+>         if (sigaction(SIGINT, &sa, NULL) < 0) {
+>                 perror("Error setting up signal handler");
+>                 return -1;
+>         }
+>
+>         enable_sensor(1);
+>
+>         // 2. Open the misc device
+>         fd =3D open(DEVICE_PATH, O_RDONLY | O_NONBLOCK);
+>         if (fd < 0) {
+>                 perror("Failed to open device");
+>                 return -1;
+>         }
+>
+>         // 3. Configure poll structure
+>         pfd.fd =3D fd;
+>         pfd.events =3D POLLIN;
+>
+>         printf("Polling loop started. Press Ctrl+C to exit
+> safely.\n");
+>
+>         // 4. Main event loop
+>         while (keep_running) {
+>                 printf("Waiting for data...\n");
+>
+>                 ret =3D poll(&pfd, 1, -1);
+>
+>                 if (ret < 0) {
+>                         // Signal interrupted poll, loop will exit if
+> it was SIGINT
+>                         continue;
+>                 }
+>
+>                 if (ret =3D=3D 0) {
+>                         // Timeout reached with no data
+>                         continue;
+>                 }
+>
+>                 // 5. Handle readable data event
+>                 if (pfd.revents & POLLIN) {
+>                         rx_tsc =3D read_rdtsc();
+>                         ssize_t bytes_read =3D read(fd, buffer,
+> sizeof(buffer) - 1);
+>                         if (bytes_read > 0) {
+>                                 time_t tm;
+>
+>                                 buffer[bytes_read] =3D '\0'; // Null-
+> terminate string
+>                                 printf("tm:%ld Received %ld bytes:
+> %s\n", time(&tm), (long)bytes_read, buffer);
+>                                 read_time_stamp(buffer, bytes_read);
+>                         } else if (bytes_read < 0) {
+>                                 perror("Read error");
+>                         }
+>                 }
+>         }
+>
+>         // 6. Cleanup
+>         printf("\nExiting program cleanly...\n");
+>         close(fd);
+>
+>         enable_sensor(0);
+>
+>         return 0;
+> }
+>
+> Does it help.
+>
 > Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/light/tsl2772.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
-> > index 244f44379c36..2287585711c6 100644
-> > --- a/drivers/iio/light/tsl2772.c
-> > +++ b/drivers/iio/light/tsl2772.c
-> > @@ -1274,7 +1274,7 @@ static int tsl2772_read_raw(struct iio_dev *indio_dev,
-> >  		}
-> >  		break;
-> >  	case IIO_CHAN_INFO_CALIBSCALE:
-> > -		if (chan->type == IIO_LIGHT)
-> > +		if (chan->type == IIO_INTENSITY)
-> >  			*val = tsl2772_als_gain[chip->settings.als_gain];
-> >  		else
-> >  			*val = tsl2772_prox_gain[chip->settings.prox_gain];
-> > 
-> > ---
-> > base-commit: 1590cf0329716306e948a8fc29f1d3ee87d3989f
-> > change-id: 20260724-tsl2772-calibscale-fix-0cc42518d5fc
-> > 
-> > Best regards,
-> > --  
-> > Yuanshen Cao <alex.caoys@gmail.com>
-> > 
-> 
+> Srinivas
+>
+>
+> > The hub itself is already configured for threshold-based reporting
+> > (property-reporting-state =3D 2, i.e. "Threshold Events") in my case,
+> > so
+> > the inefficiency is entirely on the kernel/sysfs side -- userspace
+> > has
+> > to fall back to timed re-reads of a synchronous, firmware-round-trip
+> > attribute, which is more expensive per-read than a typical cached
+> > sysfs value and awkward to size a safe polling interval for.
+> >
+> > This seems like a real gap for the presence/proximity use case
+> > specifically (walk-away lock, auto-dim, etc.), which is inherently
+> > event-oriented and is exactly the kind of feature vendors implement
+> > natively on Windows via push notifications from the same class of
+> > sensor.
+> >
+> > Before I put together a patch I wanted to ask: is there interest in
+> > adding async caching + sysfs_notify() (or sysfs_notify_dirent(), if
+> > attrs end up carrying a stored kernfs_node) for input-report values
+> > specifically, sourced from hid_sensor_capture_sample()'s existing
+> > async path? Rough shape as I see it:
+> >
+> >   - add a cached "last input value" (+ a bool "valid") per relevant
+> > field in struct hid_sensor_custom_field
+> >   - in hid_sensor_capture_sample(), in addition to (or instead of,
+> > behind a config/attr) feeding the misc-device fifo, decode and store
+> > the value for the matching field, then sysfs_notify() its -value
+> > attribute
+> >   - leave show_value()'s SENSOR_HUB_SYNC path untouched for feature
+> > reports and for any input attrs that never get an async report, so
+> > nothing regresses for existing consumers
+> >
+> > Happy to be told this already exists via a different interface I've
+> > missed (I did look at whether this should just go through the IIO
+> > buffered/trigger interface instead, given some other hid-sensor-*
+> > drivers are IIO-backed -- but hid-sensor-custom exposes vendor/custom
+> > usages directly via this sysfs shape rather than IIO channels, so I
+> > wasn't sure that's the right layer to add it at). Also open to being
+> > told the misc-device/fifo interface is meant to be the async
+> > consumption path already and userspace tools should be using that
+> > instead of polling -value -- if so, is there existing tooling/docs
+> > for
+> > that path I should be pointing presence-detection use cases at?
+> >
+> > Not attaching a patch yet since I'd rather get a read on the right
+> > approach (and whether it's wanted at all) before writing one.
+> >
+> > Thanks,
+> > Daniel Paul
