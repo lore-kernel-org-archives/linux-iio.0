@@ -1,51 +1,59 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C00B41D638;
-	Tue, 28 Jul 2026 15:41:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB30324B06;
+	Tue, 28 Jul 2026 16:01:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785253294; cv=none; b=eWXVJegmk7op4YuFmA9QxLY3HEWcz9Lx8ZtgCBUVShqRD5Yvg72iBh8ZJhBTeAMMC3fUku5YUoE6DWfAwWxA9ymAyX70CQ43NgCn/8X5CCwIMupR5JMEne/XH8rLD6Uru0P/72tusZ9SVGiC9o6IMtveJ/a0SJeauHp/1VArEgc=
+	t=1785254464; cv=none; b=KV0bdHni0jC/NCcyNChiDoYnyM8jOt73joaoE3sK36vTavve1YInm3jhOO8+p/rMLF3UMIcbciT2d+46TDIjzeC00h7xIvqwuegOR92Ft9ShW3s0rr923ul6tCeGZ5M8oH0TSQ6ItsEerjFbdwM0WuIggsQD7nkWf6HUxGt7FM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785253294; c=relaxed/simple;
-	bh=swG3UxAhhK/mEY0PP+j/48S/NXKotXJQT0xx5fxyH5o=;
+	s=arc-20240116; t=1785254464; c=relaxed/simple;
+	bh=czRWxwPdV0B/TC9cXN1ww//UFiMOnbUt5OusGyRLRdY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Udebh5VJ8aXnxCwr2XIZynxgFTZxPuScX0MiS1QCL+7kmXP8TP9Wm42EHIug8/v6smsRU4dxZk6/R4Lh4G5ENPcC6vL4QjMSULJ/M/d397hyONRjWPiuYad0aXpKn7n4xjqqMsr46DOtqjiJanfjYAoc4lD/utTOLzqn9vJSEY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bTugzkng; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=PHVDcwFBZpfcOw5d1Zl7cjoA5Z2IwQel0gHclFTan0eXP+sBlXl9+sGI5KPsBusFXLzIZuAJui1TBJe3ztP9/RJFVG87rfMzjsz8OwjBGUmHAU8p9dS1jV1lrXB33NHStxqEs5xzHCgOCgZbrkmGs2SqakhLG15Ypz6FjQ5/aG4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fl/g7mzg; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bTugzkng"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0F171F00AC4;
-	Tue, 28 Jul 2026 15:41:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fl/g7mzg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D76C41F000E9;
+	Tue, 28 Jul 2026 16:00:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785253292;
-	bh=viNqCJqKCav85XPi9IbGjxy5ALG3OVfZkoc0jfp2Btk=;
+	s=k20260515; t=1785254462;
+	bh=+1ypUeeD+B1IwxzZUM25vLW6cTdOr3YMLvqGxJNEiDk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=bTugzkng+4UoY6mBvJeHNOxLASQ5Q1OdkDo9zBhPgsNqfWYgeaIo8qONHJAMR4mqX
-	 wOiCfsxin9aZSOn1senbaSDMCdgAvV02OERVLlMPAV395+tyDvjRubBenw811vp6mz
-	 +qxlEUke+qwT8AYGtntZ2It8f4bIhnQGVNBGP9HB7u/NEq3gj0x7VqyshwTGvBtACo
-	 Np5SmpoVFsJkenCOwIsxJ9Oh1N6JqDNFiHKtaVQL09Wqx/hoSHIJFMZ5LJRVw45sto
-	 a4tJisl9HqIDHOucwVNsX7mSJ56JkewglkZh0TGjB+QTGehtjE49L1ZwVdoEM+/Zks
-	 LgzsvV/8Kpuiw==
-Date: Tue, 28 Jul 2026 16:41:26 +0100
+	b=fl/g7mzgatzU05Syo9DEk3Dm2ynabnYerxBsx9Q2ml+z7r7w/l61mxRNZ3alVb903
+	 k4yMsVtWFbKpKTatT/enw2xYEK2mrdRxPcbfHTKdM37QXIibXabplwyRgmzIfs9w+F
+	 sG6M7wlgZyGtGTCCRJQau8ISxenSX6K4VfdmwsVBZjnm/8HAoRje9DiP8qhRryF8qh
+	 KV3MKZGzmWNDihur5nC8KTiksrFkrQ5hkETwb3js6qN8Vyv0gFGrCLarMQnIZIZzxx
+	 JwvyIgi00vKu2MTGcv/ePd50imGydE2/K8ScXv+1v/fcne4tzxHcCpv9eBlnsYOMT3
+	 tAMVErJ6ZtdUg==
+Date: Tue, 28 Jul 2026 17:00:55 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Kim Seer Paller <kimseer.paller@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
+Cc: David Lechner <dlechner@baylibre.com>,
+	Janani Sunil <janani.sunil@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] dt-bindings: iio: dac: add adi,ad5710r.yaml
-Message-ID: <20260728-selected-pancake-8fa8a066f95d@spud>
-References: <20260721-iio-ad5710r-upstream-v2-0-324949dc72da@analog.com>
- <20260721-iio-ad5710r-upstream-v2-2-324949dc72da@analog.com>
- <20260721-clustered-jolliness-30d70a2acc49@spud>
- <20260724225738.2e090842@jic23-huawei>
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Mark Brown <broonie@kernel.org>,
+	Marius Cristea <marius.cristea@microchip.com>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>,
+	Kent Gustavsson <kent@minoris.se>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
+	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
+Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
+ spi-device-addr
+Message-ID: <20260728-patronize-thwarting-56fab2e11077@spud>
+References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
+ <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+ <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
+ <20260725230739.63ff7000@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,88 +61,107 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="AEhZ5P1g6XrlKNht"
+	protocol="application/pgp-signature"; boundary="xuABnB4oaxi0GLxH"
 Content-Disposition: inline
-In-Reply-To: <20260724225738.2e090842@jic23-huawei>
+In-Reply-To: <20260725230739.63ff7000@jic23-huawei>
 
---AEhZ5P1g6XrlKNht
+--xuABnB4oaxi0GLxH
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 24, 2026 at 10:57:38PM +0100, Jonathan Cameron wrote:
-> On Tue, 21 Jul 2026 16:52:10 +0100
-> Conor Dooley <conor@kernel.org> wrote:
+On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:
+> On Sat, 25 Jul 2026 15:57:07 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 >=20
-> > On Tue, Jul 21, 2026 at 04:47:11PM +0800, Kim Seer Paller wrote:
-> > > Add device tree bindings for the Analog Devices AD5710R/AD5711R
-> > > 8-channel 12-/16-bit Configurable IDAC/VDAC.
+> > On 7/22/26 2:54 AM, Janani Sunil wrote:
+> > > Add the generic spi-device-addr property to the binding and deprecate
+> > > the existing vendor specific microchip,hw-device-address property.
 > > >=20
-> > > Signed-off-by: Kim Seer Paller <kimseer.paller@analog.com>
+> > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 > > > ---
-> > >  .../devicetree/bindings/iio/dac/adi,ad5710r.yaml   | 143 +++++++++++=
-++++++++++ =20
+> > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 =
+++++++++--
+> > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3=
+564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > index 675319276197..de1ea289e7f5 100644
+> > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > @@ -80,6 +80,7 @@ properties:
+> > >      $ref: /schemas/types.yaml#/definitions/uint32
+> > >      minimum: 0
+> > >      maximum: 3
+> > > +    deprecated: true
+> > >      description:
+> > >        The address is set on a per-device basis by fuses in the facto=
+ry,
+> > >        configured on request. If not requested, the fuses are set for=
+ 0x1.
+> > > @@ -91,6 +92,12 @@ properties:
+> > >        clocking of the device address (BITS[7:6] - top two bits of CO=
+MMAND BYTE
+> > >        which is first one on the wire).
+> > > =20
+> > > +  spi-device-addr:
+> > > +    maxItems: 1 =20
 > >=20
-> > > +patternProperties:
-> > > +  "^channel@[0-7]$":
-> > > +    $ref: /schemas/iio/dac/dac.yaml#
-> > > +    type: object
-> > > +    description:
-> > > +      Represents the external channels which are connected to the DA=
-C.
-> > > +
-> > > +    properties:
-> > > +      reg:
-> > > +        description: Channel number
-> > > +        items:
-> > > +          minimum: 0
-> > > +          maximum: 7
-> > > +
-> > > +      adi,ch-func:
-> > > +        description:
-> > > +          Channel output type. Use CH_FUNC_VOLTAGE_OUTPUT for voltage
-> > > +          output or CH_FUNC_CURRENT_OUTPUT for current output.
-> > > +        $ref: /schemas/types.yaml#/definitions/uint32
-> > > +        enum: [1, 2] =20
+> > Does it not make sense to all for more than once device connected
+> > to the same CS here? I would expect maxItems to be 4 to match the
+> > number of possible addresses.
 > >=20
-> > Please make this property a string.
 >=20
-> It's an existing binding.  I guess it is generic enough that perhaps we
-> should make it a generic channel property and as part of that we can
-> flip over to a string.
+> I think for this part their isn't a reason to aggregate.
+> No magic accesses that touch them all at once.  So this hits
+> exactly the point you raised about how we set the address for
+> more than one of them.
 
-Ah, if it is something already established then it can stay as-is.
+No David is actually right here, and maxitems should be 4.
+Setting the address for multiple was already discussed I thought, with
+the property being an array and each compatible being used to determine
+the "stride" between entries based on the number of supported channels?
 
-> We may need to create a top level channels.yaml to cover both ADC and DAC
-> channels though and reference that from both files.
-
-I mean yeah, that was one thought I had originally about the
-spi-device-address property. I'm surprised there's already not more
-commonality to begin with.
-
-Just how common is some sort of "channel function" property and how
-many devices are bastardising other properties like diff-channel with a
-virtual channel to achieve the same result?
-
->=20
-> I guess we don't need to do that yet though given this is a DAC only devi=
-ce.
-> The original place we added adi,ch-func is a combined ADC / DAC and=20
-> has a lot more possible functions.
 >=20
 > Jonathan
 >=20
+> > > +    items:
+> > > +      enum: [0, 1, 2, 3]
+> > > +    default: [1]
+> > > +
+> > >    "#io-channel-cells":
+> > >      const: 1
+> > > =20
+> > > @@ -123,7 +130,6 @@ dependencies:
+> > >  required:
+> > >    - compatible
+> > >    - reg
+> > > -  - microchip,hw-device-address
+> > >    - spi-max-frequency
+> > > =20
+> > >  allOf:
+> > > @@ -159,7 +165,7 @@ examples:
+> > >              spi-cpha;
+> > >              spi-cpol;
+> > >              spi-max-frequency =3D <10000000>;
+> > > -            microchip,hw-device-address =3D <1>;
+> > > +            spi-device-addr =3D <1>;
+> > > =20
+> > >              #address-cells =3D <1>;
+> > >              #size-cells =3D <0>;
+> > >  =20
+> >=20
 >=20
 
---AEhZ5P1g6XrlKNht
+--xuABnB4oaxi0GLxH
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCamjNpgAKCRB4tDGHoIJi
-0liXAPwLY0NB610GhKTshIgo0xoN1LC8fy1qiN7chYjskX3j9QEA9swxph1amSbi
-b7QjkJ8qbY4AoqiJVTeNO3IP6p8uFAk=
-=3Sbn
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCamjSNwAKCRB4tDGHoIJi
+0rn4AP42ioQsDXk1nWfaQ52szjKb9oAfOTImJ1DGK2rKiMAIMAEA+twTrfpIzo0F
+YYUt5tBk1kRPX4fcAx5R0otddEZVbww=
+=qzWE
 -----END PGP SIGNATURE-----
 
---AEhZ5P1g6XrlKNht--
+--xuABnB4oaxi0GLxH--
