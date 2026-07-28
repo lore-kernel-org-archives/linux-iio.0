@@ -1,80 +1,86 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D97862DCF45;
-	Tue, 28 Jul 2026 08:57:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B75EA2DCF45;
+	Tue, 28 Jul 2026 08:57:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785229027; cv=none; b=I7mNEoSlL/DOQMXCSITTWJHCDJlycu0mldwhiqjJR8ljVNfLPska4Hbwa1FxUNNxUrbLS4btJgDxCgPME0FB+e5ew5BPNKqeKcblvzMl1AbxhiLMvDK7veACI0DMQChxQUHn7gU0B9VZ/7hDcl6epA0rsPIdCncyfPpAeQBUMes=
+	t=1785229042; cv=none; b=l5NdWYtcyARfeOKoYv6G1sRpphfw3LyQcjMtDVZhJVLshZH9yVj17AIJhpcHZtgwJDflirKzK1jUFRIS8xD+RjJdlBCZiMUob7gRtgTzqYyGbuh+IpNZoJJUuRLG3WpmRFxEq2dfyc8zZly16Uqz//CM/e87b99JR2lJcpKKZGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785229027; c=relaxed/simple;
-	bh=Espnjtem9bvcKUaeF4V7sJlCl/16E1+vcH39OyQyhxA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Jv+gnul9KDanzY2PIAuZqgAtaeuSclFH1IhvVBMZVw9wHZvvSB02s+OoR165317k06ZU7d6bltDdPnknDUw2LC7kL7raLDeeGHDIMGcGXKx1oLOQ7b7WDAg5yU/ZAfCO057p3R5FPHhWZvF7Hfeq9yiG7P6nlogGzyLvGzO0pf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=hPJBJS7Q; arc=none smtp.client-ip=148.251.105.195
+	s=arc-20240116; t=1785229042; c=relaxed/simple;
+	bh=lUhD51bc6FbmG7QU3H2DChRpvP96MhevdBzHdhS/M5g=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=K4EMdcRnNuNBXwuucOT//0vJauoUHaS/fft0t4NT6fQHWLZ2GYsAlNoK17YlL/LEvkPVbVXlwZJl4gmPkqyKKu+Ly+4J/p6HDwLghy9OhOSLBkgi+0HGdnd3in2FTzOcoxF31kINWBIPPAieFNVn2BqZRDuM4RNAB29aj0v4gPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=WyV6xFHQ; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="hPJBJS7Q"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="WyV6xFHQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1785229023;
-	bh=Espnjtem9bvcKUaeF4V7sJlCl/16E1+vcH39OyQyhxA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=hPJBJS7QLi4Vjmi7xZtFmjRuReuaYGx0yP6leV84veSFvdQe7ls6qY16trOVe9Odf
-	 0YJPqyKfVzbzdMurUm6FypTE/868DSpVHeZ+m9ZOG3nN6o9kYXNaY2a+osDazQu1hW
-	 7QejtWtQQZvLhDrb+LAM+sh0tfUISgkU1qfe+0jU0cZ5cdGw1R2gdc+uqZ/NJWgEU4
-	 yaxi3Q3jEGzKG5TbAp+pEhAeVpZlStbKksKA0LA4Pq0ExPj0KGPdqJCi7/mSWrxnvb
-	 QtWbrcTPqvibMbRTwJC+BPMLW6TZ2gqfIXjKitFHIsNjn1eiOh1g1XJN2nAS0o/d35
-	 n8KmDlshds6CA==
-Received: from [100.64.1.21] (unknown [100.64.1.21])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	s=mail; t=1785229038;
+	bh=lUhD51bc6FbmG7QU3H2DChRpvP96MhevdBzHdhS/M5g=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=WyV6xFHQVO1MkoWRzNERwwuHvdoo1TpMtSmpAgrFCtPK56bPUjBmJLxe+ahdzPKv+
+	 xnu6ghGr6T795gabC6orDVpbRy/TeSOCNXvUUyTrl2UlIG/kkao7lF+iBoJ53nUM7Y
+	 7wVwyQY4zHuao3vr8Ana9wLGEvhg+CkBZ0eZR/zSN3EPG/y5tkclmr/WMycB/z5s42
+	 D3X7CXCJi53cbVfc7g9yPDIlAFWY9ORlBKPREM9yNlRQFTIejqZ0HM+zValwQAOb4s
+	 U+Kf1R/q4/HURt7f+RYZeqGd1dvpH/jdzc0qgWQusxfDJgeMmAQCgRTEaJLFN9M79Y
+	 yFxnnBbgxzTQQ==
+Received: from IcarusMOD.eternityproject.eu (unknown [100.64.1.21])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 0CC2917E0676;
-	Tue, 28 Jul 2026 10:57:03 +0200 (CEST)
-Message-ID: <0b63e6e9-2a0b-44c7-a0bf-66a5aac9610c@collabora.com>
-Date: Tue, 28 Jul 2026 10:57:02 +0200
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 18BB917E019E;
+	Tue, 28 Jul 2026 10:57:18 +0200 (CEST)
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, Lee Jones <lee@kernel.org>, 
+ Roman Vivchar <rva333@protonmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-mediatek@lists.infradead.org, Ben Grisdale <bengris32@protonmail.ch>, 
+ Conor Dooley <conor.dooley@microchip.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+In-Reply-To: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
+References: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
+Subject: Re: (subset) [PATCH v5 0/4] AUXADC driver for the MediaTek mt6323
+ PMIC
+Message-Id: <178522903805.10327.4229525653360897202.b4-ty@b4>
+Date: Tue, 28 Jul 2026 10:57:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 0/4] AUXADC driver for the MediaTek mt6323 PMIC
-To: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- Ben Grisdale <bengris32@protonmail.ch>,
- Conor Dooley <conor.dooley@microchip.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-References: <20260709-mt6323-adc-v5-0-d11b8332a735@protonmail.com>
- <f2d5801c-1d12-4a61-ac23-aa24dfd0ee5c@collabora.com>
- <20260710005424.5c559b5a@jic23-huawei>
- <c11705b1-fc46-440b-a27e-0cc38f3b2d69@collabora.com>
- <92F7jsoczEi2TOWKT6Qqmppk-KE3uJjCKASTXa0RPV7nJZVfXhxdbuP9RptMsvV4_dnvJAlCh9NYvmiiO2mDGQojZoCozVKhXyOJmp2x6AM=@protonmail.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <92F7jsoczEi2TOWKT6Qqmppk-KE3uJjCKASTXa0RPV7nJZVfXhxdbuP9RptMsvV4_dnvJAlCh9NYvmiiO2mDGQojZoCozVKhXyOJmp2x6AM=@protonmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.15.2
 
-On 7/28/26 09:58, Roman Vivchar wrote:
-> Hi Angelo,
+On Thu, 09 Jul 2026 13:52:46 +0300, Roman Vivchar wrote:
+> This series adds support for the 15-bit AUXADC hardware block found on
+> the MediaTek mt6323 PMIC.
 > 
-> Could you take a look at patch 4 (DT)?
+> The previous version of the series for all AUXADC, EFUSE and thermal
+> drivers was split after Krzysztof's comment [1].
 > 
+> Tested on the MediaTek mt6572 and mt8163 SoCs (Ben), both paired with a
+> mt6323.
+> 
+> [...]
 
-Yes, I already did, but then I forgot to pick it because ... reasons?
+Applied to v7.2-next/dts32, thanks!
 
-Thanks for the ping, btw.
+[4/4] ARM: dts: mediatek: mt6323: add AUXADC support
+      commit: 6326a6811b1af6674e3eef128df6a3825de26872
 
 Cheers,
 Angelo
+
+
