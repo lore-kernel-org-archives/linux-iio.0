@@ -1,56 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 707DF409635;
-	Tue, 28 Jul 2026 21:17:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317BC3ACA77;
+	Tue, 28 Jul 2026 21:20:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785273446; cv=none; b=ga5bfaycRuWokyza0mn/iPK68k/E6V9/UsjbH1YNbLvMn4SCbpKJh8iGWOOgRz5EjaqW3iNY/0zie06P1TA5t47ewZL5fhB3lr3dKa9viEqqVs6p1qmWrD2V+etZy5TNstTA6Ba/xb7JQNwGtKgQjecu2hJNhGrQJ4O8pHyxBG4=
+	t=1785273623; cv=none; b=ZTHeAqsCN+MZixq+wQUikCSz7QZxHUF+L292vnN89FBwAJs/pGjfZznvXZVa+UDMh6tOEEGdwNQKp54wggVcVmny3MWO8Ghjqxa9d8e+QVgkW6SljfLoQjBO53Pta5thOznJz/N55EtAzw0xSVamzd2IvIjO4bjCu+xU2dOQF1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785273446; c=relaxed/simple;
-	bh=72f8biyVUgH335xMxu6GsNjwxPf4qtOV1/vFiyhG41w=;
+	s=arc-20240116; t=1785273623; c=relaxed/simple;
+	bh=cQ/axbG4u2xMhP7KYYBACZecVz24/hpgptT3EV6khcQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HD+T1b56C9bxe82AlRIDyanHeXNyz6UCyizvqsynI4/8WM/PZ5aBbCl2uSGBK0Z6ZNN+1OKOdcknNycGbL0oOw7ynqp0JCSSdTx/XQodnPATFxKBGGJNpCn+zcVYx7d8baDudSwwDJ3AvZ2L3ZtfP0LZBHCkRxMG5dNTqff8xj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ga2S1uTO; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=aBKLRZYD6ECliK1xfRmg5UBFAgnxcF9ThNNcC6ZEl43xHS5M+1IVfbkn2oqTRgbq3ywgfgtCdbFoaNTPZp0V6O4h6GnsaOBKzxccfOdGnsTr4/fssGyRH4hBiXO9n4iV0Tr/fI3PR2tjZvikWT7AnQVjZwF+nF7KcWzULl0iUpU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eUb62dVM; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ga2S1uTO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 844401F000E9;
-	Tue, 28 Jul 2026 21:17:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eUb62dVM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 719441F000E9;
+	Tue, 28 Jul 2026 21:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785273445;
-	bh=RPYyzEACWXmL3B1yuWD9+3WsAbReeEdqc/tsPpB+Cz8=;
+	s=k20260515; t=1785273622;
+	bh=iPZA0jMAzfMFPA/GiEBtreKUM+ZSQ2eea/AtUjxGUqg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ga2S1uTOGLy3klZKkkmwDKmf82X4HWiqyRgsDOjF7WDZFcYZhh4ME6B+Ts/Yhb9J/
-	 GObH1TwC9F/3c6RLD/nCeGyaH6m0Xh4J+T5A1TomNDkk+ZHBiP8+ReNXGkNblMKXpi
-	 yMNYfuIorUmEXBt/9b9ImwbwrIeqX0ybORU2LMs1fqXU6I4j1TJILZPtAhUZffBFET
-	 C5vcZrunFh4NvOk3ROBZ91KqVRzGdmAloUdKR0LIQ4tpnIyAM6PgrTbJm64CvpEVrd
-	 sGpbzpGAzmuGMircFkRwv7JZ+mKcjNskIjfEM5UBwGSQSLPQX1kPe+Rjvr3/18OV9C
-	 /GOZKbJhaCwIg==
-Date: Tue, 28 Jul 2026 22:17:19 +0100
+	b=eUb62dVMiJGpG80osjIpauY+bA4lCc/4KA1/mBOTmkpXLeTievq+3xgESSnglGDt2
+	 sbrFvesazkkG6kUC1NnAFN/mUwKd4tY3x9wVngofcDCknMhTgdq6eBIObrqYadmxUh
+	 BLE3WEuf1eno1sXpWlfIu6QSd0wtT8mRiPoyGQnL0EKOARQL2G2q2AQUpKqbuSaYXm
+	 7q0xP18KvPe3OUgCmtenNvAnTDm13+OHmFDxyvdFOddFlSBJM0y0yIiwxhp5lKqXYN
+	 HcGXzUQczcY67nAFI3SmfnFuHXstM8ByTVfQRbHWy1f+esTuwRBhpSN5J0B5ey4zyu
+	 Omvo1Ct9jhNfA==
+Date: Tue, 28 Jul 2026 22:20:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Conor Dooley <conor@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Janani Sunil
- <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
- Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Mark Brown
- <broonie@kernel.org>, Marius Cristea <marius.cristea@microchip.com>, Marcus
- Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jean-Baptiste
+ Maneyrol <jean-baptiste.maneyrol@tdk.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Chris
+ Morgan <macromorgan@hotmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
- <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson
- <nedo80@gmail.com>
-Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
-Message-ID: <20260728221719.7f668a73@jic23-huawei>
-In-Reply-To: <20260728-patronize-thwarting-56fab2e11077@spud>
-References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
-	<20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
-	<cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
-	<20260725230739.63ff7000@jic23-huawei>
-	<20260728-patronize-thwarting-56fab2e11077@spud>
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] iio: imu: inv_icm42600: warn on whoami mismatch
+ instead of failing probe
+Message-ID: <20260728222015.6a62b287@jic23-huawei>
+In-Reply-To: <20260728-extradite-yanking-42d918637f61@spud>
+References: <20260724202708.128267-1-jorijnvdgraaf@catcrafts.net>
+	<20260724202708.128267-3-jorijnvdgraaf@catcrafts.net>
+	<20260728-extradite-yanking-42d918637f61@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -61,98 +54,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 17:00:55 +0100
+On Tue, 28 Jul 2026 17:51:57 +0100
 Conor Dooley <conor@kernel.org> wrote:
 
-> On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:
-> > On Sat, 25 Jul 2026 15:57:07 -0500
-> > David Lechner <dlechner@baylibre.com> wrote:
-> >   
-> > > On 7/22/26 2:54 AM, Janani Sunil wrote:  
-> > > > Add the generic spi-device-addr property to the binding and deprecate
-> > > > the existing vendor specific microchip,hw-device-address property.
-> > > > 
-> > > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> > > > ---
-> > > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 ++++++++--
-> > > >  1 file changed, 8 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > > index 675319276197..de1ea289e7f5 100644
-> > > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > > @@ -80,6 +80,7 @@ properties:
-> > > >      $ref: /schemas/types.yaml#/definitions/uint32
-> > > >      minimum: 0
-> > > >      maximum: 3
-> > > > +    deprecated: true
-> > > >      description:
-> > > >        The address is set on a per-device basis by fuses in the factory,
-> > > >        configured on request. If not requested, the fuses are set for 0x1.
-> > > > @@ -91,6 +92,12 @@ properties:
-> > > >        clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
-> > > >        which is first one on the wire).
-> > > >  
-> > > > +  spi-device-addr:
-> > > > +    maxItems: 1    
-> > > 
-> > > Does it not make sense to all for more than once device connected
-> > > to the same CS here? I would expect maxItems to be 4 to match the
-> > > number of possible addresses.
-> > >   
+> On Fri, Jul 24, 2026 at 10:27:06PM +0200, Jorijn van der Graaf wrote:
+> > A WHOAMI value differing from the one the compatible implies aborts
+> > probe with -ENODEV, which prevents a register-compatible part described
+> > with a fallback compatible from probing at all.
 > > 
-> > I think for this part their isn't a reason to aggregate.
-> > No magic accesses that touch them all at once.  So this hits
-> > exactly the point you raised about how we set the address for
-> > more than one of them.  
+> > The devicetree compatible is authoritative for which part is fitted:
+> > demote the mismatch to a warning and continue, as st_sensors does since
+> > commit a3c2c5c937ed ("iio: st_sensors: relax WhoAmI check in
+> > st_sensors_verify_id()"). This changes the probe outcome on mismatch
+> > for all parts the driver supports.
+> > 
+> > Tested via a backport to a Fairphone 6 running a 7.1-based kernel: its
+> > ICM-42630 (WHOAMI 0x0C), described with an icm42631 fallback compatible
+> > and matched as icm42631, warns once and probes, and accelerometer,
+> > gyroscope and temperature reads work.
+> > 
+> > Suggested-by: Conor Dooley <conor@kernel.org>  
 > 
-> No David is actually right here, and maxitems should be 4.
-> Setting the address for multiple was already discussed I thought, with
-> the property being an array and each compatible being used to determine
-> the "stride" between entries based on the number of supported channels?
+> I don't want this to warn, I want it gone. Fallback use should not
+> produce a warning.
 
-I don't think that applies for this device or at least to do so
-is a major driver rewrite, not a simple binding change.  Probably we'd
-just add a bus and hang the 4 instances off it. They are running on own
-timing etc so we can't grab data across all of them in any sort of
-synchronous way - the clocks will probably drift over time etc.
+We've had enough problems with 'supposed' like for like replacements
+in the past that were anything but that I've been allowing some type of print.
 
-They are independent devices (think of them using spi-device-address
-like an i2c address) -  so why have one DT node for up to 4 of
-them?  Note this is different from the AD5529R where the design
-is intended for them to operate as one single larger device.
+Don't mind it being a dev_info() though if that works for you.
+Some have I think gone as far as dev_dbg() which would be fine from my 
+point of view as well.
 
 Jonathan
 
 > 
+> > Link: https://lore.kernel.org/all/20260722-creature-volley-0f083b904c1d@spud/
+> > Assisted-by: Claude:claude-fable-5
+> > Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+> > ---
+> > New in v2.
+> >  drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 8 +++-----
+> >  1 file changed, 3 insertions(+), 5 deletions(-)
 > > 
-> > Jonathan
-> >   
-> > > > +    items:
-> > > > +      enum: [0, 1, 2, 3]
-> > > > +    default: [1]
-> > > > +
-> > > >    "#io-channel-cells":
-> > > >      const: 1
-> > > >  
-> > > > @@ -123,7 +130,6 @@ dependencies:
-> > > >  required:
-> > > >    - compatible
-> > > >    - reg
-> > > > -  - microchip,hw-device-address
-> > > >    - spi-max-frequency
-> > > >  
-> > > >  allOf:
-> > > > @@ -159,7 +165,7 @@ examples:
-> > > >              spi-cpha;
-> > > >              spi-cpol;
-> > > >              spi-max-frequency = <10000000>;
-> > > > -            microchip,hw-device-address = <1>;
-> > > > +            spi-device-addr = <1>;
-> > > >  
-> > > >              #address-cells = <1>;
-> > > >              #size-cells = <0>;
-> > > >     
-> > >   
+> > diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+> > index dc97d8a274e3..f306e3ffca48 100644
+> > --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+> > +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+> > @@ -509,11 +509,9 @@ static int inv_icm42600_setup(struct inv_icm42600_state *st,
+> >  	ret = regmap_read(st->map, INV_ICM42600_REG_WHOAMI, &val);
+> >  	if (ret)
+> >  		return ret;
+> > -	if (val != hw->whoami) {
+> > -		dev_err(dev, "invalid whoami %#02x expected %#02x (%s)\n",
+> > -			val, hw->whoami, hw->name);
+> > -		return -ENODEV;
+> > -	}
+> > +	if (val != hw->whoami)
+> > +		dev_warn(dev, "unexpected whoami %#02x, expected %#02x (%s)\n",
+> > +			 val, hw->whoami, hw->name);
+> >  	st->name = hw->name;
+> >  
+> >  	/* reset to make sure previous state are not there */
+> > -- 
+> > 2.55.0
 > >   
 
