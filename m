@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB30324B06;
-	Tue, 28 Jul 2026 16:01:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86BEA3B585F;
+	Tue, 28 Jul 2026 16:11:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785254464; cv=none; b=KV0bdHni0jC/NCcyNChiDoYnyM8jOt73joaoE3sK36vTavve1YInm3jhOO8+p/rMLF3UMIcbciT2d+46TDIjzeC00h7xIvqwuegOR92Ft9ShW3s0rr923ul6tCeGZ5M8oH0TSQ6ItsEerjFbdwM0WuIggsQD7nkWf6HUxGt7FM4=
+	t=1785255064; cv=none; b=JbkEQgt/GVKYJVsEusf1zBWCoy2CGD/Q5yTxWlNFBK1OAXs4iUsPqaXSc98+3EyVqLANoPGXmMtaIMCgJbqoALdxi8FYgR4dasnR40/1gKjBYyMCx127sd2MGhTH54kXkFSOjim5ggaaGHITPO2fUZZvVV3/EmL3hGm4We7r1N0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785254464; c=relaxed/simple;
-	bh=czRWxwPdV0B/TC9cXN1ww//UFiMOnbUt5OusGyRLRdY=;
+	s=arc-20240116; t=1785255064; c=relaxed/simple;
+	bh=zqyea4KlW9sx7WyP8RD66yutgT12sdYjOh4dqAjdo6o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PHVDcwFBZpfcOw5d1Zl7cjoA5Z2IwQel0gHclFTan0eXP+sBlXl9+sGI5KPsBusFXLzIZuAJui1TBJe3ztP9/RJFVG87rfMzjsz8OwjBGUmHAU8p9dS1jV1lrXB33NHStxqEs5xzHCgOCgZbrkmGs2SqakhLG15Ypz6FjQ5/aG4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fl/g7mzg; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZPhc9heyROM0nQ7c3JDtxbaCKWf1qoE017j8CklGOJ0ovN4N1KofYRSRgHSbyi/f0g2JDa7s/E039Bvh1Y+bboCHhls/gmwpzBcWNVSNvo1YLxihzxiFpQFPU88/I5Nk4X8vH0/uL66jjbO7yc2cQ0m9q7l9Cpj/tN0L9uA1IhE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IFVpm3Zr; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fl/g7mzg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D76C41F000E9;
-	Tue, 28 Jul 2026 16:00:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IFVpm3Zr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4BA1F000E9;
+	Tue, 28 Jul 2026 16:10:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785254462;
-	bh=+1ypUeeD+B1IwxzZUM25vLW6cTdOr3YMLvqGxJNEiDk=;
+	s=k20260515; t=1785255063;
+	bh=LK45KgmTPBDfsOlZRJLoIZIxy0qO+UzbMPT7ybgozpU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=fl/g7mzgatzU05Syo9DEk3Dm2ynabnYerxBsx9Q2ml+z7r7w/l61mxRNZ3alVb903
-	 k4yMsVtWFbKpKTatT/enw2xYEK2mrdRxPcbfHTKdM37QXIibXabplwyRgmzIfs9w+F
-	 sG6M7wlgZyGtGTCCRJQau8ISxenSX6K4VfdmwsVBZjnm/8HAoRje9DiP8qhRryF8qh
-	 KV3MKZGzmWNDihur5nC8KTiksrFkrQ5hkETwb3js6qN8Vyv0gFGrCLarMQnIZIZzxx
-	 JwvyIgi00vKu2MTGcv/ePd50imGydE2/K8ScXv+1v/fcne4tzxHcCpv9eBlnsYOMT3
-	 tAMVErJ6ZtdUg==
-Date: Tue, 28 Jul 2026 17:00:55 +0100
+	b=IFVpm3ZrjoXsKOuw74h/r1oiQBCFEgQvVGOpY3ZZvxrZgp3XuDN4XuSSgrZ6hm1JS
+	 d3XDkcCsZ9D2wT8oIs0SxcJbTUrEXKmFZeriLYm+OJuuHsEl1kkZ+EYvCQMJJ775/z
+	 43RJeBwWOT2CG11HM+wJKio4pqkZQpq5tK13QDQ2o8tHEFzaL79uAwmBO6XrQ9OABw
+	 zkN4hpZJ9JsBP5IQaxxi15BBdxYgwBFOT7eUtfFe6aEID0EXnaHGRwvu6dfwBL+AVx
+	 ommqUvtZTTEU+EBbIiDZn/nQVaMTFqZI7mz7qajAjkONMtBJ7/sPBF8QS828KIB6qP
+	 i2o3yoyA5xysw==
+Date: Tue, 28 Jul 2026 17:10:55 +0100
 From: Conor Dooley <conor@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -47,13 +47,13 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org, Janani Sunil <jan.sun97@gmail.com>,
 	linux-spi@vger.kernel.org, Kent Gustavsson <nedo80@gmail.com>
-Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
- spi-device-addr
-Message-ID: <20260728-patronize-thwarting-56fab2e11077@spud>
+Subject: Re: [PATCH v7 1/7] spi: dt-bindings: Add spi-device-addr peripheral
+ property
+Message-ID: <20260728-barrette-rickety-788b47da503c@spud>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
- <20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
- <cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
- <20260725230739.63ff7000@jic23-huawei>
+ <20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
+ <e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
+ <20260725230445.60a445a0@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,107 +61,112 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="xuABnB4oaxi0GLxH"
+	protocol="application/pgp-signature"; boundary="HZvrUuI80rBimIHj"
 Content-Disposition: inline
-In-Reply-To: <20260725230739.63ff7000@jic23-huawei>
+In-Reply-To: <20260725230445.60a445a0@jic23-huawei>
 
---xuABnB4oaxi0GLxH
+--HZvrUuI80rBimIHj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:
-> On Sat, 25 Jul 2026 15:57:07 -0500
+On Sat, Jul 25, 2026 at 11:04:45PM +0100, Jonathan Cameron wrote:
+> On Sat, 25 Jul 2026 15:55:01 -0500
 > David Lechner <dlechner@baylibre.com> wrote:
 >=20
 > > On 7/22/26 2:54 AM, Janani Sunil wrote:
-> > > Add the generic spi-device-addr property to the binding and deprecate
-> > > the existing vendor specific microchip,hw-device-address property.
+> > > Some SPI devices support sharing a single chip select across multiple
+> > > physical chips by encoding a device address in the SPI frame itself.
+> > > Add the generic spi-device-addr property for describing these hardware
+> > > addresses. The property is placed on the SPI peripheral node and may
+> > > contain multiple addresses.
 > > >=20
 > > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
 > > > ---
-> > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 =
-++++++++--
-> > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > >  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 =
++++++++
+> > >  1 file changed, 7 insertions(+)
 > > >=20
-> > > diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3=
-564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > index 675319276197..de1ea289e7f5 100644
-> > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
-> > > @@ -80,6 +80,7 @@ properties:
-> > >      $ref: /schemas/types.yaml#/definitions/uint32
-> > >      minimum: 0
-> > >      maximum: 3
-> > > +    deprecated: true
-> > >      description:
-> > >        The address is set on a per-device basis by fuses in the facto=
-ry,
-> > >        configured on request. If not requested, the fuses are set for=
- 0x1.
-> > > @@ -91,6 +92,12 @@ properties:
-> > >        clocking of the device address (BITS[7:6] - top two bits of CO=
-MMAND BYTE
-> > >        which is first one on the wire).
+> > > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-pro=
+ps.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > index 880a9f624566..b59d047cf117 100644
+> > > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > @@ -142,6 +142,13 @@ properties:
+> > >      minItems: 2
+> > >      maxItems: 4
 > > > =20
 > > > +  spi-device-addr:
-> > > +    maxItems: 1 =20
+> > > +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> > > +    description:
+> > > +      Device addresses used when multiple peripherals share a single=
+ chip
+> > > +      select. The array allows one logical peripheral to comprise mu=
+ltiple
+> > > +      physical devices, with one address per device. =20
 > >=20
-> > Does it not make sense to all for more than once device connected
-> > to the same CS here? I would expect maxItems to be 4 to match the
-> > number of possible addresses.
+> > "per physical device" for clarity.
 > >=20
 >=20
-> I think for this part their isn't a reason to aggregate.
-> No magic accesses that touch them all at once.  So this hits
-> exactly the point you raised about how we set the address for
-> more than one of them.
-
-No David is actually right here, and maxitems should be 4.
-Setting the address for multiple was already discussed I thought, with
-the property being an array and each compatible being used to determine
-the "stride" between entries based on the number of supported channels?
-
+> We may end up relaxing that again if multichip packages start doing this.
+> Fine to add that clarification for now. We can revisit when / if it ever
+> needs that relaxing.
 >=20
-> Jonathan
->=20
-> > > +    items:
-> > > +      enum: [0, 1, 2, 3]
-> > > +    default: [1]
 > > > +
-> > >    "#io-channel-cells":
-> > >      const: 1
-> > > =20
-> > > @@ -123,7 +130,6 @@ dependencies:
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > > -  - microchip,hw-device-address
-> > >    - spi-max-frequency
-> > > =20
-> > >  allOf:
-> > > @@ -159,7 +165,7 @@ examples:
-> > >              spi-cpha;
-> > >              spi-cpol;
-> > >              spi-max-frequency =3D <10000000>;
-> > > -            microchip,hw-device-address =3D <1>;
-> > > +            spi-device-addr =3D <1>;
-> > > =20
-> > >              #address-cells =3D <1>;
-> > >              #size-cells =3D <0>;
+> > >    st,spi-midi-ns:
+> > >      deprecated: true
+> > >      description: |
 > > >  =20
 > >=20
+> > If there is nothing useful the SPI core code can do with this informati=
+on,
+> > I'm not entirely convinced that this needs to be a common property.
 >=20
+> I think being common does make some sense from a standarization point of
+> view and it isn't obvious where to put it other than under spi.
+>=20
+> >=20
+> > And this only allows for one logical device. If we wanted to treat each
+> > address as a logical device (all with same CS), we would need #address-=
+cells =3D <2>;
+> > instead where the DT "address" is two values, the CS and the device add=
+ress.
+>=20
+> Ah.  Good point for the adc@address or similar needing to match a combina=
+tion
+> of CS and spi-device-addr.  Conor any thoughts on how this would be done?
 
---xuABnB4oaxi0GLxH
+I'm sorry, I don't quite understand. Why do you want to support both of
+these representations? Hardware wise both of these things would be
+describing the same setup, so allowing this alternate "multiple logical
+device" typically is not permitted. What even is the use case of it?
+Does it matter at all if you have one or more logical devices from a
+consumer perspective?
+
+I do have an idea of how to solve the adc@address problem (you can do
+adc@address,spi-device-address like some other devices) but as I said I
+don't get why it would be needed.
+
+>=20
+>=20
+> Also feels like this series should update the one use of the microchip bi=
+nding
+> in tree.
+>=20
+> arch/riscv/boot/dts/microchip/mpfs-beaglev-fire.dts
+
+I never asked for this cos I maintain the platform and was gonna fix it
+up myself, but sure!
+
+--HZvrUuI80rBimIHj
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCamjSNwAKCRB4tDGHoIJi
-0rn4AP42ioQsDXk1nWfaQ52szjKb9oAfOTImJ1DGK2rKiMAIMAEA+twTrfpIzo0F
-YYUt5tBk1kRPX4fcAx5R0otddEZVbww=
-=qzWE
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCamjUjwAKCRB4tDGHoIJi
+0mFNAP9Jwjj7O7DOBVj8zE3EFT87Ba1ni0zhggv16veVcF9ajQEAg6puaVmWx6DC
+kZ8+kniDQr2Dmg/yIXhaPolKuUKbcQY=
+=ncSq
 -----END PGP SIGNATURE-----
 
---xuABnB4oaxi0GLxH--
+--HZvrUuI80rBimIHj--
