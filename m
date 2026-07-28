@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317BC3ACA77;
-	Tue, 28 Jul 2026 21:20:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 644DD3E49C6;
+	Tue, 28 Jul 2026 21:26:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785273623; cv=none; b=ZTHeAqsCN+MZixq+wQUikCSz7QZxHUF+L292vnN89FBwAJs/pGjfZznvXZVa+UDMh6tOEEGdwNQKp54wggVcVmny3MWO8Ghjqxa9d8e+QVgkW6SljfLoQjBO53Pta5thOznJz/N55EtAzw0xSVamzd2IvIjO4bjCu+xU2dOQF1c=
+	t=1785273964; cv=none; b=gIiGoq7ExXHpcbXYP2+f4t5BaZBvNq1eqS0jHaW4mkNMeeJJAggXdsxCNHxgAONfKFAKb3RfKrQOvD0H/ZL/N0iOYMuRlAohu0LkM2UCzz4V0VzP91iuhRBcsAYXg5BaBQRJlVKed3X45QND32ZePa6NjKJEXozxGYDDkxEsvbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785273623; c=relaxed/simple;
-	bh=cQ/axbG4u2xMhP7KYYBACZecVz24/hpgptT3EV6khcQ=;
+	s=arc-20240116; t=1785273964; c=relaxed/simple;
+	bh=qHJyDlD8JcbfrTE/mhaZwEdjZqBHzhOAm2nMdHYLCdU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aBKLRZYD6ECliK1xfRmg5UBFAgnxcF9ThNNcC6ZEl43xHS5M+1IVfbkn2oqTRgbq3ywgfgtCdbFoaNTPZp0V6O4h6GnsaOBKzxccfOdGnsTr4/fssGyRH4hBiXO9n4iV0Tr/fI3PR2tjZvikWT7AnQVjZwF+nF7KcWzULl0iUpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eUb62dVM; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=o03g2AAI6GPFI5QBlJSeOjmSd9feUuRiV3eCrwPr2WFopBRY42J8QHBB0zZpbrFjg7lUutK2npYl6PKU6A8pSkpVF4oyKY/oo9W5tmAef1kk+yJak6bLTUhN5/Te1LRamxiTmjY4O4+PdDZjdkz66UfO8JW5hh4V5/CJxwhGnIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XnfzHRlN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eUb62dVM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 719441F000E9;
-	Tue, 28 Jul 2026 21:20:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XnfzHRlN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6012A1F000E9;
+	Tue, 28 Jul 2026 21:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785273622;
-	bh=iPZA0jMAzfMFPA/GiEBtreKUM+ZSQ2eea/AtUjxGUqg=;
+	s=k20260515; t=1785273963;
+	bh=U0Nmx2Ful6U4YHYmvRnIbaUEm1Rle8hLr4TVXpJezv4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=eUb62dVMiJGpG80osjIpauY+bA4lCc/4KA1/mBOTmkpXLeTievq+3xgESSnglGDt2
-	 sbrFvesazkkG6kUC1NnAFN/mUwKd4tY3x9wVngofcDCknMhTgdq6eBIObrqYadmxUh
-	 BLE3WEuf1eno1sXpWlfIu6QSd0wtT8mRiPoyGQnL0EKOARQL2G2q2AQUpKqbuSaYXm
-	 7q0xP18KvPe3OUgCmtenNvAnTDm13+OHmFDxyvdFOddFlSBJM0y0yIiwxhp5lKqXYN
-	 HcGXzUQczcY67nAFI3SmfnFuHXstM8ByTVfQRbHWy1f+esTuwRBhpSN5J0B5ey4zyu
-	 Omvo1Ct9jhNfA==
-Date: Tue, 28 Jul 2026 22:20:15 +0100
+	b=XnfzHRlNps+7IsOQhCyRSXsBw2xKVKIQilvcOejCfKV+dLDitMLJwaNFyl3iTwRP+
+	 9J640R+ITO8B8KaWLSklsIg0MpiFscjKhGNqDvXtI7R3szH7Mfy2eg9NmR7eUGzcPV
+	 TFrrHu2sIZ6Frg8OId9GWxZCu4hb4S0KxrMdh2IGbliO9c5h461shhkNu2oHL+Ob34
+	 qf/fmJI1GUDxWm5AqWmEmj+gLKP3tPZPztE+cCBHZ9cMiytk9+x6uEtGnk/BLePLT7
+	 tSkzDpXmYljZ2dfQerqSiV8sqbjrAF3WFnP2dvB+uEVo1TWxjj9t68n2EhOanW18s8
+	 2MsarV3xTHohw==
+Date: Tue, 28 Jul 2026 22:25:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Conor Dooley <conor@kernel.org>
 Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jean-Baptiste
@@ -37,13 +37,12 @@ Cc: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>, Jean-Baptiste
  Morgan <macromorgan@hotmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: imu: inv_icm42600: warn on whoami mismatch
- instead of failing probe
-Message-ID: <20260728222015.6a62b287@jic23-huawei>
-In-Reply-To: <20260728-extradite-yanking-42d918637f61@spud>
+Subject: Re: [PATCH v2 4/4] iio: imu: inv_icm42600: add support for icm42630
+Message-ID: <20260728222558.56062c45@jic23-huawei>
+In-Reply-To: <20260728-hardwood-support-f18e98366142@spud>
 References: <20260724202708.128267-1-jorijnvdgraaf@catcrafts.net>
-	<20260724202708.128267-3-jorijnvdgraaf@catcrafts.net>
-	<20260728-extradite-yanking-42d918637f61@spud>
+	<20260724202708.128267-5-jorijnvdgraaf@catcrafts.net>
+	<20260728-hardwood-support-f18e98366142@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,67 +53,143 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 17:51:57 +0100
+On Tue, 28 Jul 2026 17:53:37 +0100
 Conor Dooley <conor@kernel.org> wrote:
 
-> On Fri, Jul 24, 2026 at 10:27:06PM +0200, Jorijn van der Graaf wrote:
-> > A WHOAMI value differing from the one the compatible implies aborts
-> > probe with -ENODEV, which prevents a register-compatible part described
-> > with a fallback compatible from probing at all.
+> On Fri, Jul 24, 2026 at 10:27:08PM +0200, Jorijn van der Graaf wrote:
+> > The TDK InvenSense ICM-42630 is a 6-axis IMU of the ICM-42600 family,
+> > found e.g. in the Fairphone 6. It is register-compatible with its
+> > siblings (the existing driver works on it unmodified) and reports
+> > WHOAMI value 0x0C.
 > > 
-> > The devicetree compatible is authoritative for which part is fitted:
-> > demote the mismatch to a warning and continue, as st_sensors does since
-> > commit a3c2c5c937ed ("iio: st_sensors: relax WhoAmI check in
-> > st_sensors_verify_id()"). This changes the probe outcome on mismatch
-> > for all parts the driver supports.
+> > The part appears to be a mobile SKU and has no public datasheet: the
+> > identity comes from the Fairphone 6 platform documentation and
+> > schematics naming the part, and the WHOAMI value was read from the
+> > hardware, whose bank 0 register defaults match the ICM-42600 family
+> > layout.
 > > 
-> > Tested via a backport to a Fairphone 6 running a 7.1-based kernel: its
-> > ICM-42630 (WHOAMI 0x0C), described with an icm42631 fallback compatible
-> > and matched as icm42631, warns once and probes, and accelerometer,
-> > gyroscope and temperature reads work.
+> > Add the chip id, WHOAMI value and I2C/SPI match entries, using the
+> > family default configuration like the ICM-42631. Devicetrees describe
+> > the part with an icm42631 fallback; the dedicated entries bind the
+> > exact part where the kernel knows it.
 > > 
-> > Suggested-by: Conor Dooley <conor@kernel.org>  
+> > Tested on the Fairphone 6 via a backport of this change to the
+> > device's 7.1-based kernel (only the id-table style and entry placement
+> > adjusted to that base), on a bit-banged SPI bus with INT1 wired to the
+> > SoC: probe, accelerometer, gyroscope and temperature raw reads, all
+> > full-scale ranges, multiple sampling frequencies, and watermark-paced
+> > FIFO reads through the INT1 interrupt.
+> > 
+> > Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> > Assisted-by: Claude:claude-fable-5
+> > Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>  
 > 
-> I don't want this to warn, I want it gone. Fallback use should not
-> produce a warning.
+> This patch is not needed because you can make use of the fallback and
+> should be dropped.
 
-We've had enough problems with 'supposed' like for like replacements
-in the past that were anything but that I've been allowing some type of print.
-
-Don't mind it being a dev_info() though if that works for you.
-Some have I think gone as far as dev_dbg() which would be fine from my 
-point of view as well.
+This is related to whether we print or not.
+ 
++ the name is userspace ABI so whilst it will work with the fallback naming
+that can cause confusion.  I don't mind just using the fallback in this
+particular case given as far as we know this really is effectively identical
+to the other part rather than a superset case where later driver changes
+will add more features and changing the ABI by 'correcting' the name.
 
 Jonathan
 
 > 
-> > Link: https://lore.kernel.org/all/20260722-creature-volley-0f083b904c1d@spud/
-> > Assisted-by: Claude:claude-fable-5
-> > Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+> Thanks,
+> Conor.
+> 
 > > ---
-> > New in v2.
-> >  drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 8 +++-----
-> >  1 file changed, 3 insertions(+), 5 deletions(-)
+> > v2: place the match entries in numeric position (the only code
+> > change); kept the Acked-by.
+> >  drivers/iio/imu/inv_icm42600/inv_icm42600.h      | 2 ++
+> >  drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 5 +++++
+> >  drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c  | 4 ++++
+> >  drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c  | 4 ++++
+> >  4 files changed, 15 insertions(+)
 > > 
+> > diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+> > index b55d993f0264..349de5458581 100644
+> > --- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+> > +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+> > @@ -28,6 +28,7 @@ enum inv_icm42600_chip {
+> >  	INV_CHIP_ICM42622,
+> >  	INV_CHIP_ICM42688,
+> >  	INV_CHIP_ICM42631,
+> > +	INV_CHIP_ICM42630,
+> >  	INV_CHIP_NB,
+> >  };
+> >  
+> > @@ -386,6 +387,7 @@ struct inv_icm42600_sensor_state {
+> >  #define INV_ICM42600_WHOAMI_ICM42622			0x46
+> >  #define INV_ICM42600_WHOAMI_ICM42688			0x47
+> >  #define INV_ICM42600_WHOAMI_ICM42631			0x5C
+> > +#define INV_ICM42600_WHOAMI_ICM42630			0x0C
+> >  
+> >  /* User bank 1 (MSB 0x10) */
+> >  #define INV_ICM42600_REG_SENSOR_CONFIG0			0x1003
 > > diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-> > index dc97d8a274e3..f306e3ffca48 100644
+> > index f306e3ffca48..da7bc0f1155c 100644
 > > --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
 > > +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-> > @@ -509,11 +509,9 @@ static int inv_icm42600_setup(struct inv_icm42600_state *st,
-> >  	ret = regmap_read(st->map, INV_ICM42600_REG_WHOAMI, &val);
-> >  	if (ret)
-> >  		return ret;
-> > -	if (val != hw->whoami) {
-> > -		dev_err(dev, "invalid whoami %#02x expected %#02x (%s)\n",
-> > -			val, hw->whoami, hw->name);
-> > -		return -ENODEV;
-> > -	}
-> > +	if (val != hw->whoami)
-> > +		dev_warn(dev, "unexpected whoami %#02x, expected %#02x (%s)\n",
-> > +			 val, hw->whoami, hw->name);
-> >  	st->name = hw->name;
+> > @@ -177,6 +177,11 @@ static const struct inv_icm42600_hw inv_icm42600_hw[INV_CHIP_NB] = {
+> >  		.name = "icm42631",
+> >  		.conf = &inv_icm42600_default_conf,
+> >  	},
+> > +	[INV_CHIP_ICM42630] = {
+> > +		.whoami = INV_ICM42600_WHOAMI_ICM42630,
+> > +		.name = "icm42630",
+> > +		.conf = &inv_icm42600_default_conf,
+> > +	},
+> >  };
 > >  
-> >  	/* reset to make sure previous state are not there */
+> >  const struct iio_mount_matrix *
+> > diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> > index e44ed6dcde02..672b19d2e41c 100644
+> > --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> > +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+> > @@ -78,6 +78,7 @@ static const struct i2c_device_id inv_icm42600_id[] = {
+> >  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+> >  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+> >  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+> > +	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
+> >  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
+> >  	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+> >  	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+> > @@ -98,6 +99,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+> >  	}, {
+> >  		.compatible = "invensense,icm42622",
+> >  		.data = (void *)INV_CHIP_ICM42622,
+> > +	}, {
+> > +		.compatible = "invensense,icm42630",
+> > +		.data = (void *)INV_CHIP_ICM42630,
+> >  	}, {
+> >  		.compatible = "invensense,icm42631",
+> >  		.data = (void *)INV_CHIP_ICM42631,
+> > diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> > index 3e2f4eb42e97..3707460d77e1 100644
+> > --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> > +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+> > @@ -75,6 +75,7 @@ static const struct spi_device_id inv_icm42600_id[] = {
+> >  	{ .name = "icm42602", .driver_data = INV_CHIP_ICM42602 },
+> >  	{ .name = "icm42605", .driver_data = INV_CHIP_ICM42605 },
+> >  	{ .name = "icm42622", .driver_data = INV_CHIP_ICM42622 },
+> > +	{ .name = "icm42630", .driver_data = INV_CHIP_ICM42630 },
+> >  	{ .name = "icm42631", .driver_data = INV_CHIP_ICM42631 },
+> >  	{ .name = "icm42686", .driver_data = INV_CHIP_ICM42686 },
+> >  	{ .name = "icm42688", .driver_data = INV_CHIP_ICM42688 },
+> > @@ -95,6 +96,9 @@ static const struct of_device_id inv_icm42600_of_matches[] = {
+> >  	}, {
+> >  		.compatible = "invensense,icm42622",
+> >  		.data = (void *)INV_CHIP_ICM42622,
+> > +	}, {
+> > +		.compatible = "invensense,icm42630",
+> > +		.data = (void *)INV_CHIP_ICM42630,
+> >  	}, {
+> >  		.compatible = "invensense,icm42631",
+> >  		.data = (void *)INV_CHIP_ICM42631,
 > > -- 
 > > 2.55.0
 > >   
