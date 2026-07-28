@@ -1,51 +1,51 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9058F4302F8;
-	Tue, 28 Jul 2026 12:04:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E50E8433041;
+	Tue, 28 Jul 2026 12:04:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785240242; cv=none; b=Gn+T1xxQZjk/x97/goc+tNyrqkMP3wlRVAI6RB2hFa4+ClDWWlS48prUqEB1rvV29gDh8HQIx6wIRFpG5ZPewt62PCg21W6ZQYGIwnAT/7QM64tX1D17Zjf3yrypalqyh0jZNuxe7LQV+gtc/TQ3A6E/xt7qE81pd2dNbAA7m1c=
+	t=1785240246; cv=none; b=YCiBOEwEIlpSvs3Bq9+uxQHaaBBVh9redJManTEs0fk10Ijr4N9e2BXman2dfHhjkgrre6DTEj+fLp1IY08woUHHKMqXwRf3W1H7DI5xITAKhJYfeotKZTgWcMLZAnb0PuJxIYn+islkE5EWqWUV/b6y5MBEXpv1r06qh8Ipjw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785240242; c=relaxed/simple;
-	bh=V19fbSLzvHpzMsP6Mui6fJeygeZShodtkUsSnV2ejG4=;
+	s=arc-20240116; t=1785240246; c=relaxed/simple;
+	bh=Qqs08UYZn5pDEE4yqrHa87Xdd+T+GqgzOCR4HWFIyuU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=S9EjxB4zzjfApeSGg8IJSAljNGRRKPFDb+Z95Vl0/NWr4UgKtBgquruRFeVSOnqVEV2MN9L2X5tie/nDgp+XHRIuMfA4nZsIrMdUqcxeJqL6F0hdmJKlg4YndCne0i+vWgALDGiLtmnjFGuwPLZLnhfw/cICIyjVZAJPvIv/vUI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=dl+ZpCH6; arc=none smtp.client-ip=68.232.154.123
+	 In-Reply-To:To:CC; b=Nq1daHTJsTKrrTziHZkKP474kjtZ455q2js5Daxe9DAWCuprswU51ZNDEaUgNRoqeYKiGVDfxaERmp2WbxZds1JRW+0lWAvoHluBaO0OOntQX6Qv1iy/4EIx4AQCZen9Yww+PCbtENEgRTub4GQNpUtcEhOvS6WINd2LdLvo/h0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=1Gj6fhog; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="dl+ZpCH6"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="1Gj6fhog"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1785240243; x=1816776243;
+  t=1785240245; x=1816776245;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=V19fbSLzvHpzMsP6Mui6fJeygeZShodtkUsSnV2ejG4=;
-  b=dl+ZpCH66eC1P6S084ySz4VeMhcI6IFzdeZ7CmBlFZyLBGEfu5jMwWuq
-   V3I3cQOqU05nF/B4sYPnRRtGN+8AVysCAk+bUvpTdPjsULQotakESu1xD
-   J1p6prc4LChajm289Pwq3nOKhGSxHckl2Jvr/ArXBPmP1C99O2OadI0ce
-   A5wBiOcswM1KaxjwvwodDl7Cmk9y40npXjm3jxEOqlwd0fzd9qsQXEoYa
-   VHWKPl15D/2tDuirtEY0JwYv3vBwPLrkKvkCNbxFGBUAVkPUpNnXHBE9v
-   ktDOU2Cq1Ag7/zI/sIxjMsMFE1MMt+5ekHx63ICLabq/esGI4L/+dmITq
-   A==;
-X-CSE-ConnectionGUID: vSGaj8DwT5qoKbKogfo4Yg==
-X-CSE-MsgGUID: OaCj1pGVT1+WvFf+EbZ1YQ==
+  bh=Qqs08UYZn5pDEE4yqrHa87Xdd+T+GqgzOCR4HWFIyuU=;
+  b=1Gj6fhogVtQeJMzyD2q5GfvOaK1WGg5U8rT6Jk96/qdzBCjVoaH1mrDy
+   ioCfs69T1vU1O4Eu42S1NsqSFgNu5M1U+i5/o3xEB6w7S7RolbpZu9aPN
+   TwWWm022UqFTXYJSyYx49krzFcmpWylWv30ctBUjstS7+w8d684MKB2eH
+   b4bjnEnkv6PZFnJLxDWR6n2o8FB1psIda4OUQdEda95wjW9Vn+o+kmL/z
+   0MfPKoYKgp1lIVqf/lmLG9n0slmhhYRqOTGCPTZ4pi2NsdaIJlR0MH0HX
+   iJcMqVfq8xO6ucvoq+x39wQJ9rUYqbx1E1K/CrnPd2BPklYg7rA1kB/R6
+   g==;
+X-CSE-ConnectionGUID: DtK/NXqbQjuduuyfWY9vWA==
+X-CSE-MsgGUID: IxfKKX0JR2Ku+w1zntgVQQ==
 X-IronPort-AV: E=Sophos;i="6.25,190,1779174000"; 
-   d="scan'208";a="228423002"
+   d="scan'208";a="228423006"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jul 2026 05:04:02 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jul 2026 05:04:05 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Tue, 28 Jul 2026 05:03:59 -0700
+ 15.1.2507.58; Tue, 28 Jul 2026 05:04:02 -0700
 Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Tue, 28 Jul 2026 05:03:56 -0700
+ Transport; Tue, 28 Jul 2026 05:03:59 -0700
 From: Ariana Lazar <ariana.lazar@microchip.com>
-Date: Tue, 28 Jul 2026 15:03:48 +0300
-Subject: [PATCH v2 1/2] dt-bindings: iio: adc: add support for PAC1711
+Date: Tue, 28 Jul 2026 15:03:49 +0300
+Subject: [PATCH v2 2/2] iio: adc: add support for PAC1711
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,7 +54,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20260728-pac1711-v2-1-609bc026093c@microchip.com>
+Message-ID: <20260728-pac1711-v2-2-609bc026093c@microchip.com>
 References: <20260728-pac1711-v2-0-609bc026093c@microchip.com>
 In-Reply-To: <20260728-pac1711-v2-0-609bc026093c@microchip.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -64,16 +64,16 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, Ariana Lazar <ariana.lazar@microchip.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1785240233; l=9516;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1785240233; l=43728;
  i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
- bh=V19fbSLzvHpzMsP6Mui6fJeygeZShodtkUsSnV2ejG4=;
- b=zKgk+u4miKxkyxINA0j6YODQ8zgLwd6STztJS3Xz6K/Mg+6g+Lufk1/13ljTn4SnOQTMSe9eb
- 2TfZpeKHThPBWqEpfdXwB5j2sfCYFCY+wajqCwUVfndjMiu1akmaGGE
+ bh=Qqs08UYZn5pDEE4yqrHa87Xdd+T+GqgzOCR4HWFIyuU=;
+ b=l9r/rqisSsyYR0zwdaS0wQBGld4waArrAj2hfZD0xUVkAxP2XudKhosaS5iTsBzOzVcyGnRCC
+ 77XrE42t+C4BFDwMhFiJ5RdYtJvH1gf9r403c5atWWw5Cts+zpdeMlR
 X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
  pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-This is the device tree schema for Microchip PAC1711, PAC1721, PAC1811 and
-PAC1821 single-channel power monitor with accumulator. The PAC1711 and
+This is the iio driver for Microchip PAC1711, PAC1721, PAC1811 and
+PAC1821 single-channel power monitors with accumulator. The PAC1711 and
 PAC1721 devices use 12-bit resolution for voltage and current measurements
 and 24 bits for power calculations, while PAC1811 and PAC1821 have 16-bit
 resolution and use 32 bits for power calculations. The 56-bit accumulator
@@ -84,242 +84,1371 @@ PAC1721 and PAC1821.
 
 Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
 ---
- .../bindings/iio/adc/microchip,pac1711.yaml        | 209 +++++++++++++++++++++
- MAINTAINERS                                        |   6 +
- 2 files changed, 215 insertions(+)
+ .../ABI/testing/sysfs-bus-iio-adc-pac1711          |   24 +
+ MAINTAINERS                                        |    2 +
+ drivers/iio/adc/Kconfig                            |   11 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/pac1711.c                          | 1274 ++++++++++++++++++++
+ 5 files changed, 1312 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,pac1711.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,pac1711.yaml
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-pac1711 b/Documentation/ABI/testing/sysfs-bus-iio-adc-pac1711
 new file mode 100644
-index 0000000000000000000000000000000000000000..846e7801a1667c312c753ab8ee4d5637e258e2e5
+index 0000000000000000000000000000000000000000..88e8aecbc42cfa9159d07a3c05705f728b824b69
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,pac1711.yaml
-@@ -0,0 +1,209 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/microchip,pac1711.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-pac1711
+@@ -0,0 +1,24 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_coulomb_counter_raw
++KernelVersion:	6.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to read the accumulated voltage
++		measured on the shunt resistor (Coulomb counter). Units
++		after application of scale are Coulombs. X is the IIO index
++		of the device.
 +
-+title: Microchip PAC1711 Power Monitors with Accumulator
++What:		/sys/bus/iio/devices/iio:deviceX/in_coulomb_counter_scale
++KernelVersion:	6.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If known for a device, scale to be applied to
++		in_coulomb_counter_raw in order to obtain the measured
++		value in Coulombs. X is the IIO index of the device.
 +
-+maintainers:
-+  - Ariana Lazar <ariana.lazar@microchip.com>
-+
-+description: |
-+  This device is part of the Microchip family of Power Monitors with Accumulator.
-+  Datasheet links:
-+  [PAC1711]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/PAC1711-Data-Sheet-DS20007058.pdf
-+  [PAC1721]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/PAC1721-Single-Channel-Power-Monitor-with-Accumulator-DS20007088.pdf
-+  [PAC1811]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC1811-Data-Sheet-DS20007066.pdf
-+  [PAC1821]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC1821-Data-Sheet-DS20007097.pdf
-+
-+  PAC1711, PAC1721, PAC1811 and PAC1821 are Single Channel Power Monitors
-+  with Accumulator, having 12-bit or 16-bit resolution. The devices PAC1711
-+  and PAC1811 can measure up to 42V Full-Scale Range, respectively 9V
-+  Full-Scale Range for PAC1721 and PAC1821.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,pac1711
-+      - microchip,pac1721
-+      - microchip,pac1811
-+      - microchip,pac1821
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+  interrupts:
-+    description:
-+      Could be triggered by overvoltage, undervoltage, overcurrent, overpower,
-+      undercurrent, step limit, accumulator overflow and accumulator count
-+      overflow.
-+    minItems: 1
-+
-+  interrupt-names:
-+    items:
-+      - enum: [alert0, alert1]
-+
-+  microchip,gpio0-mode:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description:
-+      Defines the function of the pin. This is a multifunction gpio digital I/O
-+      pin which can be configured as alert0 interrupt, GPIO digital input, GPIO
-+      digital output or slow. When functioning as SLOW pin pulling the pin high
-+      overrides the programmed sample rate and results in a sample rate of 8 sps
-+      (Slow mode).
-+    enum: [alert0, gpio0_input, gpio0_output, slow]
-+    default: gpio0_input
-+
-+  microchip,gpio1-mode:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description:
-+      Defines the function of the pin. This is a multifunction gpio digital I/O
-+      pin which can be configured as alert1 interrupt, GPIO digital input, GPIO
-+      digital output or slow. When functioning as SLOW pin pulling the pin high
-+      overrides the programmed sample rate and results in a sample rate of 8 sps
-+      (Slow mode).
-+    enum: [alert1, gpio1_input, gpio1_output, slow]
-+    default: gpio1_input
-+
-+  powerdown-gpios:
-+    description:
-+      Active low puts the device in power-down state. When the PWRDN pin is
-+      pulled high, measurement and accumulation will resume using the default
-+      register settings.
-+    maxItems: 1
-+
-+  shunt-resistor-micro-ohms:
-+    description:
-+      Value in micro Ohms of the shunt resistor connected between
-+      the VSENSEP and VSENSEN inputs, across which the current is measured.
-+      Value is needed to compute the scaling of the measured current.
-+
-+  label:
-+    description: Unique name to identify which device this is.
-+
-+  microchip,vbus-input-range-microvolt:
-+    description: |
-+      Specifies the voltage range in microvolts chosen for the voltage full
-+      scale range (FSR). The range should be set as <minimum, maximum> by
-+      hardware design and should not be changed during runtime.
-+
-+      The VBUS could be configured into the following full scale range:
-+        - for PAC1711 or PAC1811:
-+            - VBUS has unipolar 0V to 42V FSR (default)
-+            - VBUS has bipolar -42V to 42V FSR
-+            - VBUS has bipolar -21V to 21V FSR
-+        - for PAC1721 or PAC1821:
-+            - VBUS has unipolar 0V to 9V FSR (default)
-+            - VBUS has bipolar -9V to 9V FSR
-+            - VBUS has bipolar -4.5V to 4.5V FSR
-+
-+  microchip,vsense-input-range-microvolt:
-+    description: |
-+      Specifies the voltage range in microvolts chosen for the current full
-+      scale range (FSR). The current is calculated by dividing the vsense
-+      voltage by the value of the shunt resistor. The range should be set as
-+      <minimum, maximum> by hardware design and it should not be changed during
-+      runtime.
-+
-+      The VSENSE could be configured into the following full scale range:
-+        - VSENSE has unipolar 0 mV to 100 mV FSR (default)
-+        - VSENSE has bipolar -100 mV to 100 mV FSR
-+        - VSENSE has bipolar -50 mV to 50 mV FSR
-+    oneOf:
-+      - items:
-+          - const: 0
-+          - const: 100000
-+      - items:
-+          - const: -100000
-+          - const: 100000
-+      - items:
-+          - const: -50000
-+          - const: 50000
-+
-+  microchip,accumulation-mode:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: |
-+      The Hardware Accumulator may be used to accumulate VPOWER or VSENSE values
-+      for any channel. By setting the accumulator for a channel to accumulate
-+      the VPOWER values gives a measure of accumulated power over a time period,
-+      which is equivalent to energy. Setting the accumulator for a channel to
-+      accumulate VSENSE values gives a measure of accumulated current, which is
-+      equivalent to charge.
-+
-+      The Hardware Accumulator could be configured as:
-+       "vpower" - Accumulator accumulates VPOWER (energy)
-+       "vsense" - Accumulator accumulates VSENSE (Coulomb Counter)
-+    enum: [vpower, vsense]
-+    default: vpower
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - shunt-resistor-micro-ohms
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          pattern: "^microchip,pac1[78]11$"
-+    then:
-+      properties:
-+        microchip,vbus-input-range-microvolt:
-+          oneOf:
-+            - items:
-+                - const: 0
-+                - const: 42000000
-+            - items:
-+                - const: -42000000
-+                - const: 42000000
-+            - items:
-+                - const: -21000000
-+                - const: 21000000
-+          default: [0, 42000000]
-+  - if:
-+      properties:
-+        compatible:
-+          pattern: "^microchip,pac1[78]21$"
-+    then:
-+      properties:
-+        microchip,vbus-input-range-microvolt:
-+          oneOf:
-+            - items:
-+                - const: 0
-+                - const: 9000000
-+            - items:
-+                - const: -9000000
-+                - const: 9000000
-+            - items:
-+                - const: -4500000
-+                - const: 4500000
-+          default: [0, 9000000]
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        power-monitor@40 {
-+            compatible = "microchip,pac1711";
-+            reg = <0x40>;
-+
-+            shunt-resistor-micro-ohms = <10000>;
-+            label = "VDD3V3";
-+            vdd-supply = <&vdd>;
-+            microchip,vbus-input-range-microvolt = <(-21000000) 21000000>;
-+            microchip,vsense-input-range-microvolt = <(-50000) 50000>;
-+            microchip,accumulation-mode = "vpower";
-+        };
-+    };
-+...
++What:		/sys/bus/iio/devices/iio:deviceX/in_coulomb_counter_en
++KernelVersion:	6.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute, if available, is used to enable digital
++		accumulation of VSENSE measurements. X is the IIO index of
++		the device.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index a92290fffa163f9fe8fe3f04bf66426f9a894409..399da37f79fd9768f29cc60aa5384a1ba9fe8afc 100644
+index 399da37f79fd9768f29cc60aa5384a1ba9fe8afc..c41cb5878e62297d14e5b9710a6f1210b6bd8ea1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -16337,6 +16337,12 @@ F:	Documentation/devicetree/bindings/nvmem/microchip,sama7g5-otpc.yaml
- F:	drivers/nvmem/microchip-otpc.c
- F:	include/dt-bindings/nvmem/microchip,sama7g5-otpc.h
+@@ -16341,7 +16341,9 @@ MICROCHIP PAC1711 POWER/CURRENT MONITOR DRIVER
+ M:	Ariana Lazar <ariana.lazar@microchip.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
++F:	Documentation/ABI/testing/sysfs-bus-iio-adc-pac1711
+ F:	Documentation/devicetree/bindings/iio/adc/microchip,pac1711.yaml
++F:	drivers/iio/adc/pac1711.c
  
-+MICROCHIP PAC1711 POWER/CURRENT MONITOR DRIVER
-+M:	Ariana Lazar <ariana.lazar@microchip.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/iio/adc/microchip,pac1711.yaml
-+
  MICROCHIP PAC1921 POWER/CURRENT MONITOR DRIVER
  M:	Matteo Martelli <matteomartelli3@gmail.com>
- L:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index ea3ba139739281de82848e25fd2b6ca479a939dc..bc4d606132089515a4d6b01f0602ce7ff4f872c8 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1125,6 +1125,17 @@ config NPCM_ADC
+ 	  This driver can also be built as a module. If so, the module
+ 	  will be called npcm_adc.
+ 
++config PAC1711
++	tristate "Microchip Technology PAC1711 driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Microchip Technology's PAC1711,
++	  PAC1721, PAC1811 and PAC1821 Single-Channel Power Monitors with
++	  Accumulator.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called pac1711.
++
+ config PAC1921
+ 	tristate "Microchip Technology PAC1921 driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 09ae6edb26504991f011def6618efc3f4cf4df4c..d039a23cde02d442b161730ad2c939c7d035a4c6 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -101,6 +101,7 @@ obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_NCT7201) += nct7201.o
+ obj-$(CONFIG_NPCM_ADC) += npcm_adc.o
++obj-$(CONFIG_PAC1711) += pac1711.o
+ obj-$(CONFIG_PAC1921) += pac1921.o
+ obj-$(CONFIG_PAC1934) += pac1934.o
+ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
+diff --git a/drivers/iio/adc/pac1711.c b/drivers/iio/adc/pac1711.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee6adee31524e73371450d04bd501c545bd682b6
+--- /dev/null
++++ b/drivers/iio/adc/pac1711.c
+@@ -0,0 +1,1274 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * IIO driver for PAC1711 Single-Channel DC Power/Energy Monitor
++ *
++ * Copyright (C) 2025 Microchip Technology Inc. and its subsidiaries
++ *
++ * Author: Ariana Lazar <ariana.lazar@microchip.com>
++ *
++ * Datasheet links:
++ * [PAC1711]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/PAC1711-Data-Sheet-DS20007058.pdf
++ * [PAC1721]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/PAC1721-Single-Channel-Power-Monitor-with-Accumulator-DS20007088.pdf
++ * [PAC1811]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC1811-Data-Sheet-DS20007066.pdf
++ * [PAC1821]: https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/PAC1821-Data-Sheet-DS20007097.pdf
++ */
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/byteorder/generic.h>
++#include <linux/cleanup.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/math64.h>
++#include <linux/mutex.h>
++#include <linux/overflow.h>
++#include <linux/property.h>
++#include <linux/types.h>
++#include <linux/unaligned.h>
++#include <linux/workqueue.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++/*
++ * Maximum accumulation time should be 1,165 hours at 1,024 sps
++ * till PAC1711 accumulation registers starts to saturate
++ */
++#define PAC1711_MAX_RFSH_LIMIT_MS		60000
++/* 50msec is the timeout for validity of the cached registers */
++#define PAC1711_MIN_POLLING_TIME_MS		50
++/*
++ * 1000usec is the minimum wait time for normal conversions when sample
++ * rate doesn't change
++ */
++#define PAC1711_MIN_UPDATE_WAIT_TIME_US		1000
++
++/* 42000mV */
++#define PAC1711_VOLTAGE_MILLIVOLTS_MAX	42000
++#define PAC1721_VOLTAGE_MILLIVOLTS_MAX	9000
++
++/* Maximum power-product value - 42 V * 0.1 V */
++#define PAC1711_PRODUCT_VOLTAGE_PV_FSR		4200000000000UL
++#define PAC1721_PRODUCT_VOLTAGE_PV_FSR		900000000000UL
++
++/* I2C address map */
++#define PAC1711_REFRESH_REG_ADDR		0x00
++#define PAC1711_ACC_COUNT_REG_ADDR		0x02
++#define PAC1711_VACC_REG_ADDR			0x03
++#define PAC1711_VBUS_REG_ADDR			0x04
++#define PAC1711_VSENSE_REG_ADDR			0x05
++#define PAC1711_VPOWER_REG_ADDR			0x08
++#define PAC1711_CTRL_LAT_REG_ADDR		0x0F
++#define PAC1711_SLOW_REG_ADDR			0x16
++#define PAC1711_CTRL_ACT_REG_ADDR		0x17
++
++#define PAC1711_NEG_PWR_FSR_REG_ADDR		0x13
++#define PAC1711_NEG_PWR_FSR_VS_MASK		GENMASK(3, 2)
++#define PAC1711_NEG_PWR_FSR_VB_MASK		GENMASK(1, 0)
++
++#define PAC1711_CTRL_REG_ADDR			0x01
++#define PAC1711_CTRL_SAMPLE_MODE_MASK		GENMASK(15, 12)
++#define PAC1711_CTRL_ACC_MODE_MASK		GENMASK(3, 2)
++
++#define PAC1711_PID_REG_ADDR			0xFD
++
++/* Dimension of each register in bytes */
++#define PAC1711_ACC_REG_LEN			4
++#define PAC1711_VACC_REG_LEN			7
++#define PAC1711_VBUS_SENSE_REG_LEN		2
++
++/*
++ * The sum of the measurement registers' dimensions in bytes - from ACC_COUNT to
++ * VPOWER in datasheet register description.
++ */
++#define PAC1711_MEAS_REG_SNAPSHOT_LEN		23
++
++#define PAC1711_ACC_VPOWER_STR			"vpower"
++#define PAC1711_ACC_VSENSE_STR			"vsense"
++
++#define PAC1711_PRODUCT_ID_1711			0x80
++#define PAC1711_PRODUCT_ID_1721			0x81
++#define PAC1711_PRODUCT_ID_1811			0x84
++#define PAC1711_PRODUCT_ID_1821			0x85
++
++#define PAC1711_DEV_ATTR(name)			(&iio_dev_attr_##name.dev_attr.attr)
++
++enum pac1711_ch_idx {
++	PAC1711_CH_POWER,
++	PAC1711_CH_VOLTAGE,
++	PAC1711_CH_CURRENT,
++};
++
++enum pac1711_acc_mode {
++	PAC1711_ACCMODE_VPOWER = 0,
++	PAC1711_ACCMODE_VSENSE = 1,
++};
++
++enum pac1711_fsr {
++	PAC1711_FULL_RANGE_UNIPOLAR = 0,
++	PAC1711_FULL_RANGE_BIPOLAR = 1,
++	PAC1711_HALF_RANGE_BIPOLAR = 2,
++};
++
++enum pac1711_voltage_range_idx {
++	PAC1711_VOLTAGE_RANGE_IDX = 0,
++	PAC1721_VOLTAGE_RANGE_IDX = 1,
++};
++
++static const int pac1711_vbus_range_tbl[2][3][2] = {
++	[PAC1711_VOLTAGE_RANGE_IDX] = {
++		[PAC1711_FULL_RANGE_UNIPOLAR] = { 0, 42000000 },
++		[PAC1711_FULL_RANGE_BIPOLAR]  = { -42000000, 42000000 },
++		[PAC1711_HALF_RANGE_BIPOLAR]  = { -21000000, 21000000 },
++	},
++	[PAC1721_VOLTAGE_RANGE_IDX] = {
++		[PAC1711_FULL_RANGE_UNIPOLAR] = { 0, 9000000 },
++		[PAC1711_FULL_RANGE_BIPOLAR]  = { -9000000, 9000000 },
++		[PAC1711_HALF_RANGE_BIPOLAR]  = { -4500000, 4500000 },
++	},
++};
++
++static const int pac1711_vsense_range_tbl[3][2] = {
++	[PAC1711_FULL_RANGE_UNIPOLAR] = { 0, 100000 },
++	[PAC1711_FULL_RANGE_BIPOLAR] = { -100000, 100000 },
++	[PAC1711_HALF_RANGE_BIPOLAR] = { -50000, 50000 },
++};
++
++enum pac1711_samps {
++	PAC1711_SAMP_8192SPS = 0,
++	PAC1711_SAMP_4096SPS = 1,
++	PAC1711_SAMP_1024SPS = 2,
++	PAC1711_SAMP_256SPS = 3,
++	PAC1711_SAMP_64SPS = 4,
++	PAC1711_SAMP_8SPS = 5,
++};
++
++static const int pac1711_samp_rate_map_tbl[] = {
++	[PAC1711_SAMP_8192SPS] = 8192,
++	[PAC1711_SAMP_4096SPS] = 4096,
++	[PAC1711_SAMP_1024SPS] = 1024, /* Default */
++	[PAC1711_SAMP_256SPS] = 256,
++	[PAC1711_SAMP_64SPS] = 64,
++	[PAC1711_SAMP_8SPS] = 8,
++};
++
++/**
++ * struct pac1711_features - features of a pac1711 instance
++ * @name: chip's name
++ * @prod_id: hardware ID
++ */
++struct pac1711_features {
++	const char *name;
++	u8 prod_id;
++};
++
++static const struct pac1711_features pac1711_chip_features = {
++	.name = "pac1711",
++	.prod_id = PAC1711_PRODUCT_ID_1711,
++};
++
++static const struct pac1711_features pac1721_chip_features = {
++	.name = "pac1721",
++	.prod_id = PAC1711_PRODUCT_ID_1721,
++};
++
++static const struct pac1711_features pac1811_chip_features = {
++	.name = "pac1811",
++	.prod_id = PAC1711_PRODUCT_ID_1811,
++};
++
++static const struct pac1711_features pac1821_chip_features = {
++	.name = "pac1821",
++	.prod_id = PAC1711_PRODUCT_ID_1821,
++};
++
++/**
++ * struct reg_data - data from the registers
++ * @vacc:		accumulated vpower value
++ * @acc_val:		accumulated values per second
++ * @vpower:		vpower registers
++ * @vsense:		vsense registers
++ * @vbus:		vbus registers
++ * @acc_count:		the acc_count register
++ * @total_samples_nr:	total number of samples
++ * @jiffies_tstamp:	timestamp
++ * @ctrl_act_reg:	the ctrl_act register
++ * @ctrl_lat_reg:	the ctrl_lat register
++ * @meas_regs:		snapshot of raw measurements registers
++ */
++struct reg_data {
++	s64	vacc;
++	s64	acc_val;
++	s64	vpower;
++	s32	vsense;
++	s32	vbus;
++	u32	acc_count;
++	u32	total_samples_nr;
++	unsigned long jiffies_tstamp;
++	u16	ctrl_act_reg;
++	u16	ctrl_lat_reg;
++	u8	meas_regs[PAC1711_MEAS_REG_SNAPSHOT_LEN];
++};
++
++/**
++ * struct pac1711_chip_info - information about the chip
++ * @chip_reg_data:	measurement/control/accumulator output device registers
++ * @iio_info:		device information
++ * @client:		the i2c-client attached to the device
++ * @work_chip_rfsh:	work queue used for refresh commands
++ * @lock:		synchronize access to driver's state members
++ * @shunt:		shunt resistor value
++ * @vbus_mode:		Full Scale Range (FSR) mode for VBus
++ * @vsense_mode:	Full Scale Range (FSR) mode for VSense
++ * @accumulation_mode:	accumulation mode for hardware accumulator
++ * @sample_rate_idx:	sampling frequency index
++ * @chip_variant:	chip variant
++ * @voltage_range_idx:	Voltage range based on part number
++ * @enable_acc:		true means that accumulation channel is measured
++ * @is_pac18x1_family:	true if device is part of the PAC18x1 family
++ */
++struct pac1711_chip_info {
++	struct reg_data		chip_reg_data;
++	struct iio_info		iio_info;
++	struct i2c_client	*client;
++	struct delayed_work	work_chip_rfsh;
++	/* Prevents concurrent writes into control, voltage measurement or accumulator registers. */
++	struct mutex		lock;
++	u32			shunt;
++	u8			vbus_mode;
++	u8			vsense_mode;
++	u8			accumulation_mode;
++	u8			sample_rate_idx;
++	u8			chip_variant;
++	u8			voltage_range_idx;
++	bool			enable_acc;
++	bool			is_pac18x1_family;
++};
++
++static inline u64 pac1711_get_unaligned_be56(u8 *p)
++{
++	return (u64)p[0] << 48 | (u64)p[1] << 40 | (u64)p[2] << 32 |
++		(u64)p[3] << 24 | p[4] << 16 | p[5] << 8 | p[6];
++}
++
++static int pac1711_send_refresh(struct pac1711_chip_info *info, u8 refresh_cmd,
++				u32 wait_time)
++{
++	struct i2c_client *client = info->client;
++	int ret;
++
++	/* Writing a REFRESH or a REFRESH_V command */
++	ret = i2c_smbus_write_byte(client, refresh_cmd);
++	if (ret) {
++		dev_err(&client->dev, "%s - cannot send Refresh cmd (0x%02X)\n",
++			__func__, refresh_cmd);
++		return ret;
++	}
++
++	/* Register data retrieval timestamp */
++	info->chip_reg_data.jiffies_tstamp = jiffies;
++
++	/* Wait till the data is available */
++	fsleep(wait_time);
++
++	return 0;
++}
++
++static int pac1711_reg_snapshot(struct pac1711_chip_info *info, bool do_refresh,
++				u8 refresh_cmd, u32 wait_time)
++{
++	struct i2c_client *client = info->client;
++	struct device *dev = &client->dev;
++	s64 tmp_s64;
++	u8 *offset_reg_data_p;
++	bool is_bipolar;
++	__be16 tmp_be16;
++	u16 tmp_u16;
++	s64 inc = 0;
++	u8 shift;
++	int ret;
++
++	guard(mutex)(&info->lock);
++
++	if (do_refresh) {
++		ret = pac1711_send_refresh(info, refresh_cmd, wait_time);
++		if (ret < 0) {
++			dev_err(dev, "cannot send refresh\n");
++			return ret;
++		}
++	}
++
++	/* Read the ctrl/status registers for this snapshot */
++	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_ACT_REG_ADDR,
++					    sizeof(tmp_be16), (u8 *)&tmp_be16);
++	if (ret < 0) {
++		dev_err(dev, "%s - cannot read regs from 0x%02X\n",
++			__func__, PAC1711_CTRL_ACT_REG_ADDR);
++		return ret;
++	}
++
++	info->chip_reg_data.ctrl_act_reg = be16_to_cpu(tmp_be16);
++
++	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_LAT_REG_ADDR,
++					    sizeof(tmp_be16), (u8 *)&tmp_be16);
++	if (ret < 0) {
++		dev_err(dev, "%s - cannot read regs from 0x%02X\n",
++			__func__, PAC1711_CTRL_LAT_REG_ADDR);
++		return ret;
++	}
++
++	info->chip_reg_data.ctrl_lat_reg = be16_to_cpu(tmp_be16);
++
++	/* Read the data registers */
++	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_ACC_COUNT_REG_ADDR,
++					    PAC1711_MEAS_REG_SNAPSHOT_LEN,
++					    (u8 *)info->chip_reg_data.meas_regs);
++	if (ret < 0) {
++		dev_err(dev, "%s - cannot read regs from 0x%02X\n",
++			__func__, PAC1711_ACC_COUNT_REG_ADDR);
++		return ret;
++	}
++
++	offset_reg_data_p = &info->chip_reg_data.meas_regs[0];
++	info->chip_reg_data.acc_count = get_unaligned_be32(offset_reg_data_p);
++	offset_reg_data_p += PAC1711_ACC_REG_LEN;
++
++	/* skip if the energy accumulation is disabled */
++	if (info->enable_acc) {
++		info->chip_reg_data.vacc = pac1711_get_unaligned_be56(offset_reg_data_p);
++		is_bipolar = false;
++
++		switch (info->accumulation_mode) {
++		case PAC1711_ACCMODE_VPOWER:
++			if (info->vbus_mode != PAC1711_FULL_RANGE_UNIPOLAR ||
++			    info->vsense_mode != PAC1711_FULL_RANGE_UNIPOLAR)
++				is_bipolar = true;
++			break;
++		case PAC1711_ACCMODE_VSENSE:
++			if (info->vsense_mode != PAC1711_FULL_RANGE_UNIPOLAR)
++				is_bipolar = true;
++			break;
++		}
++
++		if (is_bipolar)
++			info->chip_reg_data.vacc = sign_extend64(info->chip_reg_data.vacc, 55);
++
++		/*
++		 * Integrate the accumulated power or current over
++		 * the elapsed interval.
++		 */
++		tmp_u16 = FIELD_GET(PAC1711_CTRL_SAMPLE_MODE_MASK,
++				    info->chip_reg_data.ctrl_lat_reg);
++		tmp_s64 = info->chip_reg_data.vacc;
++
++		if (tmp_u16 <= PAC1711_SAMP_8SPS) {
++			shift = ffs(pac1711_samp_rate_map_tbl[tmp_u16]) - 1;
++			inc = tmp_s64 >> shift;
++		} else {
++			dev_err(dev, "Invalid sample rate index: %d!\n", tmp_u16);
++			return -EINVAL;
++		}
++
++		if (check_add_overflow(info->chip_reg_data.acc_val, inc,
++				       &info->chip_reg_data.acc_val)) {
++			if (inc < 0)
++				info->chip_reg_data.acc_val = S64_MIN;
++			else
++				info->chip_reg_data.acc_val = S64_MAX;
++
++			dev_err(dev, "Accumulator Overflow detected!\n");
++			return -EINVAL;
++		}
++	}
++
++	offset_reg_data_p += PAC1711_VACC_REG_LEN;
++
++	/* VBUS */
++	info->chip_reg_data.vbus = get_unaligned_be16(offset_reg_data_p);
++
++	if (info->vbus_mode != PAC1711_FULL_RANGE_UNIPOLAR)
++		info->chip_reg_data.vbus = sign_extend32(info->chip_reg_data.vbus, 15);
++
++	offset_reg_data_p += PAC1711_VBUS_SENSE_REG_LEN;
++
++	/* VSENSE */
++	info->chip_reg_data.vsense = get_unaligned_be16(offset_reg_data_p);
++
++	if (info->vsense_mode != PAC1711_FULL_RANGE_UNIPOLAR)
++		info->chip_reg_data.vsense = sign_extend32(info->chip_reg_data.vsense, 15);
++
++	/* Skip VBUS_AVG and VSENSE_AVG registers */
++	offset_reg_data_p += PAC1711_VBUS_SENSE_REG_LEN * 3;
++
++	/* VPOWER */
++	info->chip_reg_data.vpower = get_unaligned_be32(offset_reg_data_p);
++
++	if (info->vbus_mode != PAC1711_FULL_RANGE_UNIPOLAR ||
++	    info->vsense_mode != PAC1711_FULL_RANGE_UNIPOLAR)
++		info->chip_reg_data.vpower = sign_extend64(info->chip_reg_data.vpower, 31);
++
++	return 0;
++}
++
++static int pac1711_retrieve_data(struct pac1711_chip_info *info, u32 wait_time)
++{
++	int ret = 0;
++
++	/*
++	 * Check if the minimal elapsed time has passed and if so,
++	 * read again the chip, otherwise use the cached info.
++	 */
++	if (time_after(jiffies, info->chip_reg_data.jiffies_tstamp +
++			msecs_to_jiffies(PAC1711_MIN_POLLING_TIME_MS))) {
++		ret = pac1711_reg_snapshot(info, true, PAC1711_REFRESH_REG_ADDR,
++					   wait_time);
++
++		/*
++		 * Re-schedule the work for the read registers timeout
++		 * (to prevent chip regs saturation)
++		 */
++		cancel_delayed_work_sync(&info->work_chip_rfsh);
++		schedule_delayed_work(&info->work_chip_rfsh,
++				      msecs_to_jiffies(PAC1711_MAX_RFSH_LIMIT_MS));
++	}
++
++	return ret;
++}
++
++static int pac1711_get_samp_rate_idx(u32 new_samp_rate)
++{
++	int cnt;
++
++	for (cnt = 0; cnt < ARRAY_SIZE(pac1711_samp_rate_map_tbl); cnt++)
++		if (new_samp_rate == pac1711_samp_rate_map_tbl[cnt])
++			return cnt;
++
++	return -EINVAL;
++}
++
++static ssize_t pac1711_read_shunt_resistor(struct iio_dev *indio_dev, uintptr_t private,
++					   const struct iio_chan_spec *ch, char *buf)
++{
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++
++	return sysfs_emit(buf, "%u\n", info->shunt);
++}
++
++static ssize_t pac1711_in_power_acc_raw_show(struct device *dev, struct device_attribute *attr,
++					     char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	s64 curr_energy, int_part;
++	int ret, rem;
++
++	ret = pac1711_retrieve_data(info, PAC1711_MIN_UPDATE_WAIT_TIME_US);
++	if (ret)
++		return ret;
++
++	/* Expresses the 64 bit energy value as a 64 bit integer and a 32 bit nano value */
++	curr_energy = info->chip_reg_data.acc_val;
++	int_part = div_s64_rem(curr_energy, 1000000000, &rem);
++
++	if (rem < 0)
++		return sysfs_emit(buf, "-%lld.%09u\n", abs(int_part), -rem);
++	else
++		return sysfs_emit(buf, "%lld.%09u\n", int_part, abs(rem));
++}
++
++static ssize_t pac1711_in_power_acc_scale_show(struct device *dev, struct device_attribute *attr,
++					       char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	unsigned int rem;
++	u64 tmp, ref;
++
++	/*
++	 * For PAC1711/PAC1811 the scale constant = (10^3 * 4.2 * 10^9 / 2^(31 or 23))
++	 * for mili Watt-second
++	 *
++	 * For PAC1721/PAC1821 the scale constant = (10^3 * 0.9 * 10^9 / 2^(31 or 23))
++	 * for mili Watt-second
++	 */
++	switch (info->voltage_range_idx) {
++	case PAC1711_VOLTAGE_RANGE_IDX:
++		ref = info->is_pac18x1_family ? (u64)1958 : (u64)500680;
++		break;
++	case PAC1721_VOLTAGE_RANGE_IDX:
++		ref = info->is_pac18x1_family ? (u64)419 : (u64)107288;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if ((info->vsense_mode == PAC1711_FULL_RANGE_UNIPOLAR &&
++	     info->vbus_mode == PAC1711_FULL_RANGE_UNIPOLAR)  ||
++	    info->vsense_mode == PAC1711_HALF_RANGE_BIPOLAR ||
++	    info->vbus_mode == PAC1711_HALF_RANGE_BIPOLAR)
++		ref = ref >> 1;
++
++	tmp = div_u64(ref * 1000000000UL, info->shunt);
++	rem = do_div(tmp, 1000000000UL);
++
++	return sysfs_emit(buf, "%llu.%09u\n", tmp, rem);
++}
++
++static ssize_t pac1711_in_enable_acc_show(struct device *dev, struct device_attribute *attr,
++					  char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++
++	return sysfs_emit(buf, "%d\n", info->enable_acc);
++}
++
++static ssize_t pac1711_in_enable_acc_store(struct device *dev, struct device_attribute *attr,
++					   const char *buf, size_t count)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	bool val;
++	int ret;
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	scoped_guard(mutex, &info->lock) {
++		info->enable_acc = val;
++		if (!val) {
++			info->chip_reg_data.acc_val = 0;
++			info->chip_reg_data.total_samples_nr = 0;
++		}
++	}
++
++	return count;
++}
++
++static ssize_t pac1711_in_coulomb_counter_raw_show(struct device *dev,
++						   struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	int ret;
++
++	ret = pac1711_retrieve_data(info, PAC1711_MIN_UPDATE_WAIT_TIME_US);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%lld\n", info->chip_reg_data.acc_val);
++}
++
++static ssize_t pac1711_in_coulomb_counter_scale_show(struct device *dev,
++						     struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	u64 tmp_u64, ref;
++	unsigned int rem;
++
++	if (info->is_pac18x1_family)
++		/*
++		 * Calculate the scale for accumulated current/Coulomb counter
++		 * (100mV * 1000000) / (2^16 * shunt(uOhm)) - depends on the channel's shunt value
++		 */
++		ref = (u64)1525878906250ULL;
++	else
++		/* (100mV * 1000000) / (2^12 * shunt(uOhm)) */
++		ref = (u64)24414062500000ULL;
++
++	if (info->vsense_mode == PAC1711_FULL_RANGE_BIPOLAR)
++		ref = ref << 1;
++
++	/*
++	 * Increasing precision
++	 * (100mV * 1000000 * 1000000000) / 2^(12 or 16))
++	 */
++	tmp_u64 = div_u64(ref, info->shunt);
++	rem = do_div(tmp_u64, 1000000000UL);
++
++	return sysfs_emit(buf, "%lld.%09u\n", tmp_u64, rem);
++}
++
++static IIO_DEVICE_ATTR(in_energy_raw, 0444,
++		       pac1711_in_power_acc_raw_show, NULL, 0);
++
++static IIO_DEVICE_ATTR(in_energy_scale, 0444,
++		       pac1711_in_power_acc_scale_show, NULL, 0);
++
++static IIO_DEVICE_ATTR(in_energy_en, 0644,
++		       pac1711_in_enable_acc_show, pac1711_in_enable_acc_store, 0);
++
++static IIO_DEVICE_ATTR(in_coulomb_counter_raw, 0444,
++		       pac1711_in_coulomb_counter_raw_show, NULL, 0);
++
++static IIO_DEVICE_ATTR(in_coulomb_counter_scale, 0444,
++		       pac1711_in_coulomb_counter_scale_show, NULL, 0);
++
++static IIO_DEVICE_ATTR(in_coulomb_counter_en, 0644,
++		       pac1711_in_enable_acc_show, pac1711_in_enable_acc_store, 0);
++
++static struct attribute *pac1711_power_acc_attr[] = {
++	PAC1711_DEV_ATTR(in_energy_raw),
++	PAC1711_DEV_ATTR(in_energy_scale),
++	PAC1711_DEV_ATTR(in_energy_en),
++	NULL,
++};
++
++static struct attribute *pac1711_coulomb_counter_attr[] = {
++	PAC1711_DEV_ATTR(in_coulomb_counter_raw),
++	PAC1711_DEV_ATTR(in_coulomb_counter_scale),
++	PAC1711_DEV_ATTR(in_coulomb_counter_en),
++	NULL,
++};
++
++static ssize_t pac1711_write_shunt_resistor(struct iio_dev *indio_dev, uintptr_t private,
++					    const struct iio_chan_spec *ch, const char *buf,
++					    size_t len)
++{
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	struct device *dev = &info->client->dev;
++	unsigned int sh_val;
++
++	if (kstrtouint(buf, 10, &sh_val)) {
++		dev_err(dev, "Shunt value is not valid\n");
++		return -EINVAL;
++	}
++
++	if (sh_val == 0)
++		return -EINVAL;
++
++	scoped_guard(mutex, &info->lock)
++		info->shunt = sh_val;
++
++	return len;
++}
++
++static const struct iio_chan_spec_ext_info pac1711_ext_info[] = {
++	{
++		.name = "in_shunt_resistor",
++		.read = pac1711_read_shunt_resistor,
++		.write = pac1711_write_shunt_resistor,
++		.shared = IIO_SHARED_BY_ALL,
++	},
++	{ }
++};
++
++#define TO_PAC1711_CHIP_INFO(d) container_of(d, struct pac1711_chip_info, work_chip_rfsh)
++
++#define PAC1711_VBUS_CHANNEL(_index, _address) {				\
++	.type = IIO_VOLTAGE,							\
++	.address = (_address),							\
++	.indexed = 1,								\
++	.channel = (_index),							\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
++			      BIT(IIO_CHAN_INFO_SCALE),				\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
++	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++}
++
++#define PAC1711_VSENSE_CHANNEL(_index, _address) {				\
++	.type = IIO_CURRENT,							\
++	.address = (_address),							\
++	.indexed = 1,								\
++	.channel = (_index),							\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
++			      BIT(IIO_CHAN_INFO_SCALE),				\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
++	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.ext_info = pac1711_ext_info,						\
++}
++
++#define PAC1711_VPOWER_CHANNEL(_index, _address) {				\
++	.type = IIO_POWER,							\
++	.address = (_address),							\
++	.indexed = 1,								\
++	.channel = (_index),							\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |				\
++			      BIT(IIO_CHAN_INFO_SCALE),				\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
++	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++}
++
++static int pac1711_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	u64 tmp = 0;
++	int ret;
++
++	ret = pac1711_retrieve_data(info, PAC1711_MIN_UPDATE_WAIT_TIME_US);
++	if (ret)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			*val = info->chip_reg_data.vbus;
++			return IIO_VAL_INT;
++		case IIO_CURRENT:
++			*val = info->chip_reg_data.vsense;
++			return IIO_VAL_INT;
++		case IIO_POWER:
++			*val = (u32)info->chip_reg_data.vpower;
++			*val2 = (u32)(info->chip_reg_data.vpower >> 32);
++			return IIO_VAL_INT_64;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->address) {
++		case PAC1711_VBUS_REG_ADDR:
++			/* Voltages - scale for millivolts */
++			switch (info->chip_variant) {
++			case PAC1711_PRODUCT_ID_1711:
++			case PAC1711_PRODUCT_ID_1811:
++				*val = PAC1711_VOLTAGE_MILLIVOLTS_MAX;
++				break;
++			case PAC1711_PRODUCT_ID_1721:
++			case PAC1711_PRODUCT_ID_1821:
++				*val = PAC1721_VOLTAGE_MILLIVOLTS_MAX;
++				break;
++			default:
++				return -EINVAL;
++			}
++
++			*val2 = (info->vbus_mode == PAC1711_FULL_RANGE_BIPOLAR) ? 15 : 16;
++
++			return IIO_VAL_FRACTIONAL_LOG2;
++		case PAC1711_VSENSE_REG_ADDR:
++			/*
++			 * Currents - scale for mA - depends on the channel's shunt value
++			 * (100mV * 1000000) / (2^16 * shunt(uohm))
++			 */
++			*val = 1526;
++			*val2 = info->shunt;
++
++			if (info->vsense_mode == PAC1711_FULL_RANGE_BIPOLAR)
++				*val = *val << 1;
++
++			return IIO_VAL_FRACTIONAL;
++		case PAC1711_VPOWER_REG_ADDR:
++			/*
++			 * Power - uW - it will use the combined scale
++			 * for current and voltage
++			 * current(mA) * voltage(mV) = power (uW)
++			 */
++			switch (info->chip_variant) {
++			case PAC1711_PRODUCT_ID_1711:
++			case PAC1711_PRODUCT_ID_1811:
++				tmp = PAC1711_PRODUCT_VOLTAGE_PV_FSR;
++				break;
++			case PAC1711_PRODUCT_ID_1721:
++			case PAC1711_PRODUCT_ID_1821:
++				tmp = PAC1721_PRODUCT_VOLTAGE_PV_FSR;
++				break;
++			default:
++				return -EINVAL;
++			}
++
++			do_div(tmp, info->shunt);
++			*val = (int)tmp;
++
++			if ((info->vsense_mode == PAC1711_FULL_RANGE_UNIPOLAR &&
++			     info->vbus_mode == PAC1711_FULL_RANGE_UNIPOLAR)  ||
++			    info->vsense_mode == PAC1711_HALF_RANGE_BIPOLAR ||
++			    info->vbus_mode == PAC1711_HALF_RANGE_BIPOLAR)
++				*val2 = 32;
++			else
++				*val2 = 31;
++
++			return IIO_VAL_FRACTIONAL_LOG2;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = pac1711_samp_rate_map_tbl[info->sample_rate_idx];
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int pac1711_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct pac1711_chip_info *info = iio_priv(indio_dev);
++	struct i2c_client *client = info->client;
++	struct device *dev = &info->client->dev;
++	s32 old_samp_rate;
++	int new_idx, ret;
++	__be16 tmp_be16;
++	u16 tmp_u16;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		scoped_guard(mutex, &info->lock) {
++			old_samp_rate = pac1711_samp_rate_map_tbl[info->sample_rate_idx];
++			new_idx = pac1711_get_samp_rate_idx(val);
++			if (new_idx < 0)
++				return new_idx;
++
++			ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_ACT_REG_ADDR,
++							    sizeof(tmp_u16), (u8 *)&tmp_be16);
++			if (ret < 0) {
++				dev_err(&client->dev, "cannot read regs from 0x%02X\n",
++					PAC1711_CTRL_ACT_REG_ADDR);
++				return ret;
++			}
++
++			tmp_u16 = be16_to_cpu(tmp_be16);
++			tmp_u16 &= ~PAC1711_CTRL_SAMPLE_MODE_MASK;
++			tmp_u16 |= FIELD_PREP(PAC1711_CTRL_SAMPLE_MODE_MASK, new_idx);
++			tmp_be16 = cpu_to_be16(tmp_u16);
++
++			ret = i2c_smbus_write_word_data(client, PAC1711_CTRL_REG_ADDR, tmp_be16);
++			if (ret < 0) {
++				dev_err(&client->dev, "Failed to configure sampling mode\n");
++				return ret;
++			}
++
++			info->sample_rate_idx = new_idx;
++			info->chip_reg_data.ctrl_act_reg = tmp_u16;
++		}
++
++		/* Force register snapshot and timestamp update with a refresh. */
++		info->chip_reg_data.jiffies_tstamp -= msecs_to_jiffies(PAC1711_MIN_POLLING_TIME_MS);
++		ret = pac1711_retrieve_data(info, (1024 / old_samp_rate) * 1000);
++		if (ret) {
++			dev_err(dev, "%s - cannot snapshot ctrl and measurement regs\n", __func__);
++			return ret;
++		}
++
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static void pac1711_work_periodic_rfsh(struct work_struct *work)
++{
++	struct pac1711_chip_info *info = TO_PAC1711_CHIP_INFO((struct delayed_work *)work);
++	struct device *dev = &info->client->dev;
++
++	dev_dbg(dev, "%s - Periodic refresh\n", __func__);
++
++	/* Do a REFRESH, then read */
++	pac1711_reg_snapshot(info, true, PAC1711_REFRESH_REG_ADDR,
++			     PAC1711_MIN_UPDATE_WAIT_TIME_US);
++
++	schedule_delayed_work(&info->work_chip_rfsh,
++			      msecs_to_jiffies(PAC1711_MAX_RFSH_LIMIT_MS));
++}
++
++static int pac1711_chip_identify(struct iio_dev *indio_dev, struct pac1711_chip_info *info)
++{
++	struct i2c_client *client = info->client;
++	struct device *dev = &client->dev;
++	u8 chip_rev_info[3];
++	int ret;
++
++	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_PID_REG_ADDR,
++					    sizeof(chip_rev_info), chip_rev_info);
++	if (ret < 0) {
++		dev_info(&client->dev, "cannot read product ID reg\n");
++		return ret;
++	}
++
++	info->chip_variant = chip_rev_info[0];
++	switch (info->chip_variant) {
++	case PAC1711_PRODUCT_ID_1711:
++		info->is_pac18x1_family = false;
++		info->voltage_range_idx = PAC1711_VOLTAGE_RANGE_IDX;
++		indio_dev->name = pac1711_chip_features.name;
++		break;
++	case PAC1711_PRODUCT_ID_1721:
++		info->is_pac18x1_family = false;
++		info->voltage_range_idx = PAC1721_VOLTAGE_RANGE_IDX;
++		indio_dev->name = pac1721_chip_features.name;
++		break;
++	case PAC1711_PRODUCT_ID_1811:
++		info->is_pac18x1_family = true;
++		info->voltage_range_idx = PAC1711_VOLTAGE_RANGE_IDX;
++		indio_dev->name = pac1811_chip_features.name;
++		break;
++	case PAC1711_PRODUCT_ID_1821:
++		info->is_pac18x1_family = true;
++		info->voltage_range_idx = PAC1721_VOLTAGE_RANGE_IDX;
++		indio_dev->name = pac1821_chip_features.name;
++		break;
++	default:
++		dev_info(dev, "product ID (0x%02X, 0x%02X, 0x%02X) not recognized\n",
++			 chip_rev_info[0], chip_rev_info[1], chip_rev_info[2]);
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static int pac1711_check_range(struct device *dev, s32 *vals, bool is_vbus,
++			       unsigned int voltage_range_idx)
++{
++	int num_ranges = ARRAY_SIZE(pac1711_vbus_range_tbl[PAC1711_VOLTAGE_RANGE_IDX]);
++	const int (*ranges)[3][2];
++	int i;
++
++	if (is_vbus)
++		switch (voltage_range_idx) {
++		case PAC1711_VOLTAGE_RANGE_IDX:
++			ranges = &pac1711_vbus_range_tbl[PAC1711_VOLTAGE_RANGE_IDX];
++			break;
++		case PAC1721_VOLTAGE_RANGE_IDX:
++			ranges = &pac1711_vbus_range_tbl[PAC1721_VOLTAGE_RANGE_IDX];
++			break;
++		default:
++			return -EINVAL;
++		}
++	else
++		ranges = &pac1711_vsense_range_tbl;
++
++	for (i = 0; i < num_ranges; i++) {
++		if (vals[0] == (*ranges)[i][0] && vals[1] == (*ranges)[i][1])
++			return i;
++	}
++
++	return -EINVAL;
++}
++
++static int pac1711_init_vbus_vsense_ranges(struct pac1711_chip_info *info, bool is_vbus)
++{
++	struct i2c_client *client = info->client;
++	struct device *dev = &client->dev;
++	const char *prop_name;
++	s32 vals[2];
++	int ret;
++
++	if (is_vbus)
++		prop_name = "microchip,vbus-input-range-microvolt";
++	else
++		prop_name = "microchip,vsense-input-range-microvolt";
++
++	ret = device_property_read_u32_array(dev, prop_name, vals, 2);
++	if (ret) {
++		dev_dbg(dev, "%s property error %X\n", prop_name, ret);
++		/* Set default range to PAC1711_FULL_RANGE_UNIPOLAR */
++		ret = PAC1711_FULL_RANGE_UNIPOLAR;
++	} else {
++		ret = pac1711_check_range(dev, vals, is_vbus, info->voltage_range_idx);
++		if (ret < 0)
++			return dev_err_probe(dev, -EINVAL, "Invalid value %d, %d for prop %s\n",
++					     vals[0], vals[1], prop_name);
++	}
++
++	if (is_vbus)
++		info->vbus_mode = ret;
++	else
++		info->vsense_mode = ret;
++
++	return 0;
++}
++
++static int pac1711_parse_fw(struct i2c_client *client, struct pac1711_chip_info *info)
++{
++	struct device *dev = &client->dev;
++	const char *temp;
++	int ret = 0;
++	int tmp;
++
++	ret = device_property_read_u32(dev, "shunt-resistor-micro-ohms", &info->shunt);
++	if (ret)
++		return dev_err_probe(dev, ret, "Shunt resistor property error\n");
++
++	if (!info->shunt)
++		return dev_err_probe(dev, -EINVAL, "Invalid value for shunt resistor\n");
++
++	ret = pac1711_init_vbus_vsense_ranges(info, true);
++	if (ret)
++		return ret;
++
++	ret = pac1711_init_vbus_vsense_ranges(info, false);
++	if (ret)
++		return ret;
++
++	ret = device_property_read_string(dev, "microchip,accumulation-mode", &temp);
++	if (ret) {
++		info->accumulation_mode = PAC1711_ACCMODE_VPOWER;
++		return 0;
++	}
++
++	if (!strcmp(temp, PAC1711_ACC_VPOWER_STR))
++		tmp = PAC1711_ACCMODE_VPOWER;
++	else if (!strcmp(temp, PAC1711_ACC_VSENSE_STR))
++		tmp = PAC1711_ACCMODE_VSENSE;
++	else
++		return dev_err_probe(dev, -EINVAL, "invalid accumulation-mode value %s\n", temp);
++
++	dev_dbg(dev, "Accumulation mode set to: %s\n", temp);
++	info->accumulation_mode = tmp;
++
++	return 0;
++}
++
++static void pac1711_cancel_delayed_work(void *dwork)
++{
++	cancel_delayed_work_sync(dwork);
++}
++
++static int pac1711_chip_configure(struct pac1711_chip_info *info)
++{
++	struct i2c_client *client = info->client;
++	struct device *dev = &client->dev;
++	u32 post_refresh_wait;
++	__be16 tmp_be16;
++	u32 wait_time;
++	u16 tmp_u16;
++	int ret = 0;
++	u8 tmp_u8;
++
++	/*
++	 * The current/voltage can be measured unidirectional, bidirectional or half FSR
++	 * no SLOW triggered REFRESH, clear POR
++	 */
++	tmp_u8 = FIELD_PREP(PAC1711_NEG_PWR_FSR_VS_MASK, info->vsense_mode) |
++		FIELD_PREP(PAC1711_NEG_PWR_FSR_VB_MASK, info->vbus_mode);
++
++	ret = i2c_smbus_write_byte_data(client, PAC1711_NEG_PWR_FSR_REG_ADDR, tmp_u8);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n",
++				     PAC1711_NEG_PWR_FSR_REG_ADDR);
++
++	ret = i2c_smbus_write_byte_data(client, PAC1711_SLOW_REG_ADDR, 0);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n", PAC1711_SLOW_REG_ADDR);
++
++	/* Get sampling rate from PAC */
++	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_REG_ADDR,
++					    sizeof(tmp_u16), (u8 *)&tmp_be16);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "cannot read 0x%02X reg\n", PAC1711_CTRL_REG_ADDR);
++
++	tmp_u16 = be16_to_cpu(tmp_be16);
++	info->sample_rate_idx = FIELD_GET(PAC1711_CTRL_SAMPLE_MODE_MASK, tmp_u16);
++	if (info->sample_rate_idx >= ARRAY_SIZE(pac1711_samp_rate_map_tbl)) {
++		/*
++		 * Use default sample rate in case the chip is configured with an sample
++		 * rate unsupported by the driver. The Control Register is updated.
++		 */
++		info->sample_rate_idx = PAC1711_SAMP_1024SPS;
++
++		tmp_u16 &= ~PAC1711_CTRL_SAMPLE_MODE_MASK;
++		tmp_u16 |= FIELD_PREP(PAC1711_CTRL_SAMPLE_MODE_MASK, info->sample_rate_idx);
++	}
++
++	/* Configure the accumulation mode */
++	tmp_u16 &= ~PAC1711_CTRL_ACC_MODE_MASK;
++	tmp_u16 |= FIELD_PREP(PAC1711_CTRL_ACC_MODE_MASK, info->accumulation_mode);
++
++	tmp_be16 = cpu_to_be16(tmp_u16);
++	ret = i2c_smbus_write_word_data(client, PAC1711_CTRL_REG_ADDR, tmp_be16);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n", PAC1711_CTRL_REG_ADDR);
++
++	/*
++	 * Sending a REFRESH to the chip, so the new settings take place
++	 * as well as resetting the accumulators
++	 */
++	ret = i2c_smbus_write_byte(client, PAC1711_REFRESH_REG_ADDR);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n",
++				     PAC1711_REFRESH_REG_ADDR);
++
++	if (info->sample_rate_idx < ARRAY_SIZE(pac1711_samp_rate_map_tbl) &&
++	    pac1711_samp_rate_map_tbl[info->sample_rate_idx] > 0)
++		post_refresh_wait = 1000000 / pac1711_samp_rate_map_tbl[info->sample_rate_idx];
++	else
++		post_refresh_wait = 1000;
++
++	fsleep(post_refresh_wait);
++
++	/*
++	 * Get the current (in the chip) sampling speed and compute the
++	 * required timeout based on its value the timeout is 1/sampling_speed
++	 * wait the maximum amount of time to be on the safe side - the
++	 * maximum wait time is for 8sps
++	 */
++	wait_time = (1024 / pac1711_samp_rate_map_tbl[info->sample_rate_idx]) * 1000;
++	fsleep(wait_time);
++
++	INIT_DELAYED_WORK(&info->work_chip_rfsh, pac1711_work_periodic_rfsh);
++	/* Setup the latest moment for reading the regs before saturation */
++	schedule_delayed_work(&info->work_chip_rfsh,
++			      msecs_to_jiffies(PAC1711_MAX_RFSH_LIMIT_MS));
++
++	return devm_add_action_or_reset(&client->dev, pac1711_cancel_delayed_work,
++					&info->work_chip_rfsh);
++}
++
++static struct iio_chan_spec pac1711_chan_spec[] = {
++	PAC1711_VPOWER_CHANNEL(0, PAC1711_VPOWER_REG_ADDR),
++	PAC1711_VBUS_CHANNEL(0, PAC1711_VBUS_REG_ADDR),
++	PAC1711_VSENSE_CHANNEL(0, PAC1711_VSENSE_REG_ADDR),
++};
++
++static int pac1711_prep_custom_attributes(struct pac1711_chip_info *info, struct iio_dev *indio_dev)
++{
++	struct device *dev = &info->client->dev;
++	struct attribute_group *pac1711_group;
++
++	pac1711_group = devm_kzalloc(dev, sizeof(*pac1711_group), GFP_KERNEL);
++	if (!pac1711_group)
++		return -ENOMEM;
++
++	switch (info->accumulation_mode) {
++	case PAC1711_ACCMODE_VPOWER:
++		pac1711_group->attrs = pac1711_power_acc_attr;
++		break;
++	case PAC1711_ACCMODE_VSENSE:
++		pac1711_group->attrs = pac1711_coulomb_counter_attr;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	info->iio_info.attrs = pac1711_group;
++
++	return 0;
++}
++
++static int pac1711_read_avail(struct iio_dev *indio_dev, struct iio_chan_spec const *channel,
++			      const int **vals, int *type, int *length, long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*type = IIO_VAL_INT;
++		*vals = pac1711_samp_rate_map_tbl;
++		*length = ARRAY_SIZE(pac1711_samp_rate_map_tbl);
++		return IIO_AVAIL_LIST;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info pac1711_info = {
++	.read_raw = pac1711_read_raw,
++	.write_raw = pac1711_write_raw,
++	.read_avail = pac1711_read_avail,
++};
++
++static int pac1711_probe(struct i2c_client *client)
++{
++	const struct pac1711_features *chip;
++	struct device *dev = &client->dev;
++	struct pac1711_chip_info *info;
++	struct iio_dev *indio_dev;
++	int ret, err;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	info = iio_priv(indio_dev);
++	info->client = client;
++
++	ret = pac1711_chip_identify(indio_dev, info);
++	if (ret) {
++		/*
++		 * If it fails to identify the hardware based on internal
++		 * registers, use compatible from devicetree.
++		 */
++		chip = i2c_get_match_data(client);
++		if (!chip)
++			return -EINVAL;
++
++		info->chip_variant = chip->prod_id;
++		indio_dev->name = chip->name;
++	}
++
++	/* Always start with accumulation channels enabled. */
++	info->enable_acc = true;
++
++	err = pac1711_parse_fw(client, info);
++	if (err)
++		return dev_err_probe(dev, err, "Error parsing devicetree data\n");
++
++	ret = devm_mutex_init(dev, &info->lock);
++	if (ret)
++		return ret;
++
++	ret = pac1711_chip_configure(info);
++	if (ret)
++		return ret;
++
++	indio_dev->num_channels = ARRAY_SIZE(pac1711_chan_spec);
++	indio_dev->channels = pac1711_chan_spec;
++	info->iio_info = pac1711_info;
++	indio_dev->info = &info->iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = pac1711_prep_custom_attributes(info, indio_dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Can't configure custom attributes\n");
++
++	/* Read what has been accumulated in the chip so far and reset the accumulators. */
++	ret = pac1711_reg_snapshot(info, true, PAC1711_REFRESH_REG_ADDR,
++				   PAC1711_MIN_UPDATE_WAIT_TIME_US);
++	if (ret)
++		return ret;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Can't register IIO device\n");
++
++	return 0;
++}
++
++static const struct i2c_device_id pac1711_id[] = {
++	{ .name = "pac1711", .driver_data = (kernel_ulong_t)&pac1711_chip_features },
++	{ .name = "pac1721", .driver_data = (kernel_ulong_t)&pac1721_chip_features },
++	{ .name = "pac1811", .driver_data = (kernel_ulong_t)&pac1811_chip_features },
++	{ .name = "pac1821", .driver_data = (kernel_ulong_t)&pac1821_chip_features },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, pac1711_id);
++
++static const struct of_device_id pac1711_of_match[] = {
++	{
++		.compatible = "microchip,pac1711",
++		.data = &pac1711_chip_features
++	},
++	{
++		.compatible = "microchip,pac1721",
++		.data = &pac1721_chip_features
++	},
++	{
++		.compatible = "microchip,pac1811",
++		.data = &pac1811_chip_features
++	},
++	{
++		.compatible = "microchip,pac1821",
++		.data = &pac1821_chip_features
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, pac1711_of_match);
++
++static struct i2c_driver pac1711_driver = {
++	.driver	 = {
++		.name = "pac1711",
++		.of_match_table = pac1711_of_match,
++	},
++	.probe = pac1711_probe,
++	.id_table = pac1711_id,
++};
++
++module_i2c_driver(pac1711_driver);
++
++MODULE_AUTHOR("Ariana Lazar <ariana.lazar@microchip.com>");
++MODULE_DESCRIPTION("IIO driver for PAC1711 DC Power Monitor with Accumulator");
++MODULE_LICENSE("GPL");
 
 -- 
 2.43.0
