@@ -1,62 +1,64 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F4447729F
-	for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2026 22:58:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4303E4756CB
+	for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2026 22:58:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785279495; cv=none; b=Z0iTxxyPWnzS3ShmxGIMwZiFMYF034by2qHrKOUKS5asCdoq+sntvhe6rHRXRU9xpHOTM5QG79RweCbqHkoiAqPsCInsEQDizc0G071VuxncuDxImiAyOA5eBtuPhWs/yaLU9OPjtmQ1N9cZEi5P9kxe9FrW4G9fgGrsrxRSn2o=
+	t=1785279496; cv=none; b=eK4uGDuizNnFnB+alPsYJggkNieG6iCoVY+0rtvFxs5iLGF2gC1rEWsUoBNTKEVyAjR1Nc4w7r8XruzCVRLkqCOMrQ9AhW0hx+/2qBmzEx2xn1NhEtw362RacwF2wGHTPCCGwocuZkMK0NlTWu1/vM2j9X9jj9Bf+R4kkuaXerg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785279495; c=relaxed/simple;
-	bh=2DLCZHkNH32v7ozmBQNJZxQ0KPzLf4Z7SzmOR66PMh8=;
+	s=arc-20240116; t=1785279496; c=relaxed/simple;
+	bh=D6sJHlEYiwJlYgjs8rVMwlNjixgsqo8hneitLOi2kwM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OfzyxMWm7lpVOWJLCT89DPvbkRtz29eaXo8oTyE2Niuhpqej/iKV6JUUc/AP9gVxv7AbQzyAJ5kwOXhK7T8+MAPvOqAQt3rxUiV7owvvyXiEgbACygf4SK/ZprAOsQMJu7/xTEPqMC9EyjrYhvuXpqBQuNeXYVV88Q/XqX2puPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h/5TbD44; arc=none smtp.client-ip=209.85.161.51
+	 MIME-Version:Content-Type; b=dDl6+uTF2muYCalwmeqvKw4euDApLgPggSxggQVCp+pyydy9+NaAo+ye8ko/at0DIG53UA4NrNcuMngyKJ15NQctpgDZNAHFHiqHM2sLaM6KOXN4Ot+hHb8zVIh1I4Aq4gHbhUTvQxcReijC02YFa1KZ1bGzcVbcmLvI1IDua58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TKBcg8pE; arc=none smtp.client-ip=209.85.160.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h/5TbD44"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-6aa9606ddadso330844eaf.0
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2026 15:58:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TKBcg8pE"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-4563ac048f4so199096fac.0
+        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2026 15:58:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785279492; x=1785884292; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=NpN+ZPzDDJIi2OGVLAIGzdkpJCAVWletSuzbfhlaAMU=;
-        b=h/5TbD44OqQfv33keayfQ6nh5k2alh9uSKzfSSJgigYk27gmQ0Db3/C3wG7fOwmKtz
-         GbqeCiKzYjPiK+uFZLj6T0d3mpir0sm2SIPZ4DAbl2Mtc8Zum+LKG9RVXUbN1Hlxi8x6
-         QjI/iJ1MXGkPOgdj2jwfPPvk1d3LtxCysMuKrZLeyeii1SoMFPpFCDHebn91Q12+25l6
-         ehrA/FHddH29honQCbn894kdbR26M+bC2ecOx7WXcmkWyYkG8iW+dAzhuKVMq95vYGK5
-         TYisUkyz5OiAXZTSD9bf3fIVXvvzdHtTCikuHcKBxWjkyVEyfr/B+TUxKHbKXgRe2eAG
-         JRmw==
+        d=gmail.com; s=20251104; t=1785279493; x=1785884293; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=50F5mRgpqPvmKKjCLRrhJ9L7gJbpklm0K6az4nkvCb8=;
+        b=TKBcg8pE2nBFxKT0GjnOmftJsTOpkKohKgn5x86zJFEue6nYzFZ276nj37vnamx7fI
+         OQdBrU03W1itnimDznSwPM4Nrcxy9820z5bPKRfVi0WouPdA5aGLpyzkFYaCqSkEJrFG
+         6CtTmr9OzIXNlAc2GlyouC1qQb34O/08+xlkL32NKGxgdjJ/3c7UL4KHdlUM9h32reuG
+         Q/wB8CKiYyuA0uNwfuUlLuQT0rP8VTe/+/satVB7ouGXNMLzSmd9z7GBT4rCeYulV7bs
+         UlyjVMdeuR/obGmKWRrdscsvxTqhTIUKYnk6BmVXQp9Rs0j9qqE2dVadIY8BXygXeVUY
+         qOAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785279492; x=1785884292;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=NpN+ZPzDDJIi2OGVLAIGzdkpJCAVWletSuzbfhlaAMU=;
-        b=sJOwqqd0PfBWM2JxeDUdE5yEWv1Bobd7Be4keP3urBgLxk/SRuu2ctIpHe2xi258MT
-         iNQM+3E1wItjaIeVCaXLP8zKYicA/On0EpJIbL9nJ2ma+yyIu+TE72M3cpwo10iQcb9h
-         S90Tpc2Vv1yhocwX/tHn4UVCGrwejEL3BCPJmhwHl+hNzPl6gKNA4w+wpEvJPZCcCzkM
-         N2FycfG3l9v1nh4LN+njetNGtrkO2m7tG8KSfS0HOXenmuzr8Adr+700ux0bb/OxzCP/
-         tS2xg3/qtzjGxoq4p93neDQk+qOTm4wWjAI4ICaP+eQApou3q1jtzEKo3kfCHhO0PpH0
-         9/fA==
-X-Gm-Message-State: AOJu0Yx/cGpwceKxhO92M2aTymtvc1B/mEkfC1Gm8PsvBley602HeHzi
-	L4k5e7KWxSeQxls3BdC+7NYmsPgVeBHg5IO0uw5zqwtiJdODDyQkB43IW1F3FQ==
-X-Gm-Gg: AR+sD10t1uL83WKAzFPZ++YoLY3UEhX6IQGlrQTfbdnBuLP6TIqdj5QFjxYqk534XHI
-	ckkxqoRnS+z92NUPquLeznw9qgW7VKg2Il6YxlRNEkv4w+agWC/yl0VQxW8d+uCx4SNcWt8iqKl
-	oOlfG2QqKWqiOjZlYCtXj40YTuTCDXyj5LY5gZbOXB/NRu1pk53KEyIOTQ5L4Y0f7pTO0FQwxKJ
-	xfwEDGWDY8Oa+SPBezEiPa4BMJbdBqJaFAC0vNT6Yp2qTxP8CDeFCFbHFta4scFIvzjnejgozEF
-	s5zaFQSHa6M3PG92ZFOIfeGtWfnSu51EsHtCQy0+RzX0nSsAqnZbPxFYScuPIdncM1zovSvFZ3q
-	JPmFTNI2LZoC9ijNSn4nDbuLnBMPMFCTrBntKNL0blgT8+efsQ2oODCP+UFN8PE8OsTmEvRSOba
-	xvcNGnwh2ZRAs42Ul8Z4fEDQ==
-X-Received: by 2002:a05:6820:1806:b0:6a3:7761:b50d with SMTP id 006d021491bc7-6ac96ce07d1mr2464385eaf.55.1785279492096;
+        d=1e100.net; s=20251104; t=1785279493; x=1785884293;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=50F5mRgpqPvmKKjCLRrhJ9L7gJbpklm0K6az4nkvCb8=;
+        b=BoTd7M/ZGESlGpUHMvjbKJsysnNZj2Hj5bylrOfgrGJw1fzR0Gy4lYxvSNOivfMOsV
+         jxbMJXiCe8ZfI1rSmYz7yaZQ85NI8wYOe3N/YV+LxdNsxt4WydsZpFU4s3rbX+JQaqLY
+         Yd6FssmRPDO74JiN8gwarjH/PkN+QjvhisztEyNeaQKED07g9iVKtX7dOGrn3dw+XScg
+         /lZG/FFeavXDK249PibX/irk9o7sHeDCSysZJ7IaN7CApXeXW9hPv2N93cyb/VtqZvAI
+         vOJLPSv8OsGQzfxklQE325IgsPTK5omPn/y4jRmkpKCO/B6MTw6iBGeucN285Jk2Brmf
+         bQUg==
+X-Gm-Message-State: AOJu0YxaZjClVayfLjKkSQ+WN2aIR9VFrNqytP8Y2jvg+VZfehsB1eGv
+	kkDm3dDXdkRTp8jySv3ny/Vaivgq6NKaaMkHB4jmHaX5aodjsIe+fXeFmO7Obw==
+X-Gm-Gg: AR+sD11BtXnTvbLbXqcXz+l1y/8S8M6gg8sW27JV56Q1HX6AJtAq/F9sfhHIX3kRzCe
+	HbqJ+2ZfEyApOEyvM35nY6T5GYiHEiFx3spMNrI+ayC+ZYkZCj9J8Gd9tKC8FHpl4GbtccyQuke
+	7gLD7wv3HVwNQdUjg4PXrj+53Gc/Nh+I9EMaP2LC24V/xMUUy6cRR913DpGf1XA2bCMUGt08zyr
+	3OvJTXpUiqfSyMRql3XDPtzzTlxUOmHjawJoCpSrIjq9A9QI8MDPeR0DTqIdFIqY9+JTL/VOqt3
+	BmWBpHIg3h+jjKUQSNCSZz9eNKGeJH1v9tDgNNmDQuOQtW6SsIANzFz3RezfP//PCGYHij54bp1
+	hXVIy674BGhdwz4PgqbzO7yyzaH0qp9byMKxQ+QAhpDZQRe9FzZJ6JpqxJQRG+aQybT+p46G0Ra
+	7MUtY/lraS93dvpimX+2v9aWo337baMeH1TRk3OKx/L6OQlDKxSjIb4Lww3MHLLVWjcCZ6u2kju
+	7Zbx4Bt
+X-Received: by 2002:a05:6870:f107:b0:456:4c93:a7f8 with SMTP id 586e51a60fabf-4586cc3051cmr2315297fac.6.1785279492907;
         Tue, 28 Jul 2026 15:58:12 -0700 (PDT)
 Received: from localhost.localdomain ([2600:1700:fb0:1bc0:9162:e42b:cb94:2d55])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4588646ade0sm990277fac.5.2026.07.28.15.58.11
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4588646ade0sm990277fac.5.2026.07.28.15.58.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2026 15:58:11 -0700 (PDT)
+        Tue, 28 Jul 2026 15:58:12 -0700 (PDT)
 From: Chris Morgan <macroalpha82@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: andy@kernel.org,
@@ -72,9 +74,9 @@ Cc: andy@kernel.org,
 	robh@kernel.org,
 	andriy.shevchenko@intel.com,
 	Chris Morgan <macromorgan@hotmail.com>
-Subject: [PATCH V21 7/9] iio: imu: inv_icm42607: Add Gyroscope to icm42607
-Date: Tue, 28 Jul 2026 17:55:38 -0500
-Message-ID: <20260728225542.174825-8-macroalpha82@gmail.com>
+Subject: [PATCH V21 8/9] iio: imu: inv_icm42607: Add Temp Support in icm42607
+Date: Tue, 28 Jul 2026 17:55:39 -0500
+Message-ID: <20260728225542.174825-9-macroalpha82@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260728225542.174825-1-macroalpha82@gmail.com>
 References: <20260728225542.174825-1-macroalpha82@gmail.com>
@@ -84,183 +86,148 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Chris Morgan <macromorgan@hotmail.com>
 
-Add gyroscope functions to the icm42607 driver.
+Add functions for reading temperature sensor data.
 
 Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 ---
- drivers/iio/imu/inv_icm42607/Makefile         |   1 +
- drivers/iio/imu/inv_icm42607/inv_icm42607.h   |   4 +
- .../iio/imu/inv_icm42607/inv_icm42607_core.c  |   5 +
- .../iio/imu/inv_icm42607/inv_icm42607_gyro.c  | 305 ++++++++++++++++++
- 4 files changed, 315 insertions(+)
- create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
+ drivers/iio/imu/inv_icm42607/Makefile         |  1 +
+ .../iio/imu/inv_icm42607/inv_icm42607_accel.c |  8 ++
+ .../iio/imu/inv_icm42607/inv_icm42607_gyro.c  |  8 ++
+ .../iio/imu/inv_icm42607/inv_icm42607_temp.c  | 99 +++++++++++++++++++
+ .../iio/imu/inv_icm42607/inv_icm42607_temp.h  | 38 +++++++
+ 5 files changed, 154 insertions(+)
+ create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
+ create mode 100644 drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
 
 diff --git a/drivers/iio/imu/inv_icm42607/Makefile b/drivers/iio/imu/inv_icm42607/Makefile
-index 372c6d6bdcec..8e73385c8f4b 100644
+index 8e73385c8f4b..7b907e019601 100644
 --- a/drivers/iio/imu/inv_icm42607/Makefile
 +++ b/drivers/iio/imu/inv_icm42607/Makefile
-@@ -2,6 +2,7 @@
- 
- obj-$(CONFIG_INV_ICM42607) += inv-icm42607.o
+@@ -4,6 +4,7 @@ obj-$(CONFIG_INV_ICM42607) += inv-icm42607.o
  inv-icm42607-y += inv_icm42607_core.o
-+inv-icm42607-y += inv_icm42607_gyro.o
+ inv-icm42607-y += inv_icm42607_gyro.o
  inv-icm42607-y += inv_icm42607_accel.o
++inv-icm42607-y += inv_icm42607_temp.o
  
  obj-$(CONFIG_INV_ICM42607_I2C) += inv-icm42607-i2c.o
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607.h b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-index fd3e57ee4f14..4d51b0da1aa1 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607.h
-@@ -138,6 +138,7 @@ struct inv_icm42607_hw {
-  *  @lock:		lock for serializing multiple registers access.
-  *  @map:		regmap pointer.
-  *  @indio_accel:	accelerometer IIO device.
-+ *  @indio_gyro:	gyroscope IIO device.
-  *  @vddio_supply:	I/O voltage regulator for the chip.
-  *  @vddio_en:		I/O voltage status for runtime PM.
-  *  @conf:		chip sensors configurations.
-@@ -148,6 +149,7 @@ struct inv_icm42607_state {
- 	struct mutex lock;
- 	struct regmap *map;
- 	struct iio_dev *indio_accel;
-+	struct iio_dev *indio_gyro;
- 	struct regulator *vddio_supply;
- 	bool vddio_en;
- 	struct inv_icm42607_conf conf;
-@@ -412,6 +414,8 @@ int inv_icm42607_core_probe(struct regmap *regmap,
- 			    const struct inv_icm42607_hw *hw,
- 			    inv_icm42607_bus_setup bus_setup);
+ inv-icm42607-i2c-y += inv_icm42607_i2c.o
+diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+index f563c7708420..0b3f035c2da0 100644
+--- a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
++++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
+@@ -15,6 +15,7 @@
+ #include <linux/types.h>
  
-+struct iio_dev *inv_icm42607_gyro_init(struct inv_icm42607_state *st);
-+
- struct iio_dev *inv_icm42607_accel_init(struct inv_icm42607_state *st);
+ #include "inv_icm42607.h"
++#include "inv_icm42607_temp.h"
  
- #endif
-diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-index 68e84597241a..190e998f7b8e 100644
---- a/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-+++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_core.c
-@@ -635,6 +635,11 @@ int inv_icm42607_core_probe(struct regmap *regmap,
- 	if (IS_ERR(st->indio_accel))
- 		return PTR_ERR(st->indio_accel);
+ #define INV_ICM42607_ACCEL_CHAN(_modifier, _index, _ext_info)			\
+ {										\
+@@ -40,6 +41,7 @@ enum inv_icm42607_accel_scan {
+ 	INV_ICM42607_ACCEL_SCAN_X,
+ 	INV_ICM42607_ACCEL_SCAN_Y,
+ 	INV_ICM42607_ACCEL_SCAN_Z,
++	INV_ICM42607_ACCEL_SCAN_TEMP,
+ };
  
-+	/* Initialize IIO device for Gyro */
-+	st->indio_gyro = inv_icm42607_gyro_init(st);
-+	if (IS_ERR(st->indio_gyro))
-+		return PTR_ERR(st->indio_gyro);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_NS_GPL(inv_icm42607_core_probe, "IIO_ICM42607");
+ static const struct iio_chan_spec_ext_info inv_icm42607_accel_ext_infos[] = {
+@@ -54,6 +56,7 @@ static const struct iio_chan_spec inv_icm42607_accel_channels[] = {
+ 				inv_icm42607_accel_ext_infos),
+ 	INV_ICM42607_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42607_ACCEL_SCAN_Z,
+ 				inv_icm42607_accel_ext_infos),
++	INV_ICM42607_TEMP_CHAN(INV_ICM42607_ACCEL_SCAN_TEMP),
+ };
+ 
+ static const int inv_icm42607_accel_scale_nano[][2] = {
+@@ -187,6 +190,11 @@ static int inv_icm42607_accel_read_raw(struct iio_dev *indio_dev,
+ 	switch (chan->type) {
+ 	case IIO_ACCEL:
+ 		break;
++	case IIO_TEMP:
++		if (mask != IIO_CHAN_INFO_SAMP_FREQ)
++			return inv_icm42607_temp_read_raw(indio_dev, chan,
++							  val, val2, mask);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
 diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
-new file mode 100644
-index 000000000000..b68d4d6f5c3f
---- /dev/null
+index b68d4d6f5c3f..5b4683c2dd1e 100644
+--- a/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
 +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_gyro.c
-@@ -0,0 +1,305 @@
+@@ -15,6 +15,7 @@
+ #include <linux/types.h>
+ 
+ #include "inv_icm42607.h"
++#include "inv_icm42607_temp.h"
+ 
+ #define INV_ICM42607_GYRO_CHAN(_modifier, _index, _ext_info)			\
+ {										\
+@@ -40,6 +41,7 @@ enum inv_icm42607_gyro_scan {
+ 	INV_ICM42607_GYRO_SCAN_X,
+ 	INV_ICM42607_GYRO_SCAN_Y,
+ 	INV_ICM42607_GYRO_SCAN_Z,
++	INV_ICM42607_GYRO_SCAN_TEMP,
+ };
+ 
+ static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
+@@ -54,6 +56,7 @@ static const struct iio_chan_spec inv_icm42607_gyro_channels[] = {
+ 			       inv_icm42607_gyro_ext_infos),
+ 	INV_ICM42607_GYRO_CHAN(IIO_MOD_Z, INV_ICM42607_GYRO_SCAN_Z,
+ 			       inv_icm42607_gyro_ext_infos),
++	INV_ICM42607_TEMP_CHAN(INV_ICM42607_GYRO_SCAN_TEMP),
+ };
+ 
+ static const int inv_icm42607_gyro_scale_nano[][2] = {
+@@ -184,6 +187,11 @@ static int inv_icm42607_gyro_read_raw(struct iio_dev *indio_dev,
+ 	switch (chan->type) {
+ 	case IIO_ANGL_VEL:
+ 		break;
++	case IIO_TEMP:
++		if (mask != IIO_CHAN_INFO_SAMP_FREQ)
++			return inv_icm42607_temp_read_raw(indio_dev, chan,
++							  val, val2, mask);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
+new file mode 100644
+index 000000000000..53f0484c0845
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.c
+@@ -0,0 +1,99 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Copyright (C) 2026 InvenSense, Inc.
 + */
 +
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
++#include <linux/bitfield.h>
 +#include <linux/cleanup.h>
-+#include <linux/device/devres.h>
++#include <linux/device.h>
 +#include <linux/err.h>
 +#include <linux/iio/iio.h>
 +#include <linux/mutex.h>
 +#include <linux/pm_runtime.h>
 +#include <linux/regmap.h>
 +#include <linux/types.h>
++#include <linux/unaligned.h>
 +
 +#include "inv_icm42607.h"
++#include "inv_icm42607_temp.h"
 +
-+#define INV_ICM42607_GYRO_CHAN(_modifier, _index, _ext_info)			\
-+{										\
-+	.type = IIO_ANGL_VEL,							\
-+	.modified = 1,								\
-+	.channel2 = _modifier,							\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),				\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),			\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
-+	.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = _index,							\
-+	.scan_type = {								\
-+		.sign = 's',							\
-+		.realbits = 16,							\
-+		.storagebits = 16,						\
-+		.endianness = IIO_BE,						\
-+	},									\
-+	.ext_info = _ext_info,							\
-+}
-+
-+enum inv_icm42607_gyro_scan {
-+	INV_ICM42607_GYRO_SCAN_X,
-+	INV_ICM42607_GYRO_SCAN_Y,
-+	INV_ICM42607_GYRO_SCAN_Z,
-+};
-+
-+static const struct iio_chan_spec_ext_info inv_icm42607_gyro_ext_infos[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42607_get_mount_matrix),
-+	{ }
-+};
-+
-+static const struct iio_chan_spec inv_icm42607_gyro_channels[] = {
-+	INV_ICM42607_GYRO_CHAN(IIO_MOD_X, INV_ICM42607_GYRO_SCAN_X,
-+			       inv_icm42607_gyro_ext_infos),
-+	INV_ICM42607_GYRO_CHAN(IIO_MOD_Y, INV_ICM42607_GYRO_SCAN_Y,
-+			       inv_icm42607_gyro_ext_infos),
-+	INV_ICM42607_GYRO_CHAN(IIO_MOD_Z, INV_ICM42607_GYRO_SCAN_Z,
-+			       inv_icm42607_gyro_ext_infos),
-+};
-+
-+static const int inv_icm42607_gyro_scale_nano[][2] = {
-+	[INV_ICM42607_GYRO_FS_2000DPS] = { 0, 1065264 },
-+	[INV_ICM42607_GYRO_FS_1000DPS] = { 0, 532632 },
-+	[INV_ICM42607_GYRO_FS_500DPS] = { 0, 266316 },
-+	[INV_ICM42607_GYRO_FS_250DPS] = { 0, 133158 },
-+};
-+
-+static int inv_icm42607_gyro_read_scale(struct iio_dev *indio_dev,
-+					int *val, int *val2)
++static int inv_icm42607_temp_read(struct inv_icm42607_state *st, s16 *temp)
 +{
-+	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	unsigned int idx;
-+
-+	guard(mutex)(&st->lock);
-+
-+	idx = st->conf.gyro.fs;
-+
-+	*val = inv_icm42607_gyro_scale_nano[idx][0];
-+	*val2 = inv_icm42607_gyro_scale_nano[idx][1];
-+	return IIO_VAL_INT_PLUS_NANO;
-+}
-+
-+static int inv_icm42607_gyro_write_scale(struct iio_dev *indio_dev,
-+					 int val, int val2)
-+{
-+	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	struct device *dev = regmap_get_device(st->map);
-+	unsigned int idx;
 +	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
-+	size_t scales_len = ARRAY_SIZE(inv_icm42607_gyro_scale_nano);
-+	int ret;
-+
-+	for (idx = 0; idx < scales_len; idx++) {
-+		if (val == inv_icm42607_gyro_scale_nano[idx][0] &&
-+		    val2 == inv_icm42607_gyro_scale_nano[idx][1])
-+			break;
-+	}
-+	if (idx == scales_len)
-+		return -EINVAL;
-+
-+	conf.fs = idx;
++	struct device *dev = regmap_get_device(st->map);
++	int ret, gyro_mode, accel_mode;
++	unsigned int val;
++	u8 raw[2];
 +
 +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
 +	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
@@ -269,204 +236,115 @@ index 000000000000..b68d4d6f5c3f
 +
 +	guard(mutex)(&st->lock);
 +
-+	return inv_icm42607_set_sensor_conf(st, &conf, IIO_ANGL_VEL);
-+}
-+
-+/* IIO format int + micro , values 0-4 reserved. */
-+static const int inv_icm42607_gyro_odr[][2] = {
-+	[INV_ICM42607_ODR_1600HZ] = { 1600, 0 },
-+	[INV_ICM42607_ODR_800HZ] = { 800, 0 },
-+	[INV_ICM42607_ODR_400HZ] = { 400, 0 },
-+	[INV_ICM42607_ODR_200HZ] = { 200, 0 },
-+	[INV_ICM42607_ODR_100HZ] = { 100, 0 },
-+	[INV_ICM42607_ODR_50HZ] = { 50, 0 },
-+	[INV_ICM42607_ODR_25HZ] = { 25, 0 },
-+	[INV_ICM42607_ODR_12_5HZ] = { 12, 500000 },
-+};
-+
-+static int inv_icm42607_gyro_read_odr(struct inv_icm42607_state *st,
-+				      int *val, int *val2)
-+{
-+	unsigned int odr;
-+	unsigned int i;
-+
-+	guard(mutex)(&st->lock);
-+
-+	odr = st->conf.gyro.odr;
-+
-+	for (i = INV_ICM42607_ODR_1600HZ; i < ARRAY_SIZE(inv_icm42607_gyro_odr); i++) {
-+		if (i == odr)
-+			break;
-+	}
-+	if (i == ARRAY_SIZE(inv_icm42607_gyro_odr))
-+		return -EINVAL;
-+
-+	*val = inv_icm42607_gyro_odr[i][0];
-+	*val2 = inv_icm42607_gyro_odr[i][1];
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int inv_icm42607_gyro_write_odr(struct iio_dev *indio_dev,
-+				       int val, int val2)
-+{
-+	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	struct device *dev = regmap_get_device(st->map);
-+	unsigned int idx;
-+	struct inv_icm42607_sensor_conf conf = INV_ICM42607_SENSOR_CONF_INIT;
-+	int ret;
-+
-+	for (idx = INV_ICM42607_ODR_1600HZ;
-+	     idx < ARRAY_SIZE(inv_icm42607_gyro_odr); idx++) {
-+		if (val == inv_icm42607_gyro_odr[idx][0] &&
-+		    val2 == inv_icm42607_gyro_odr[idx][1])
-+			break;
-+	}
-+	if (idx == ARRAY_SIZE(inv_icm42607_gyro_odr))
-+		return -EINVAL;
-+
-+	conf.odr = idx;
-+
-+	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-+	ret = PM_RUNTIME_ACQUIRE_ERR(&pm);
++	/*
++	 * Check if both the gyro and accel are off and if so, enable one
++	 * of them. The temp sensor cannot be read if both the gyro and
++	 * accel sensor are off. Prefer to enable the accel over the gyro
++	 * as the datasheet says the gyro uses 5x more power and it has
++	 * a minimum run time of 45ms.
++	 */
++	ret = regmap_read(st->map, INV_ICM42607_REG_PWR_MGMT0, &val);
 +	if (ret)
 +		return ret;
 +
-+	guard(mutex)(&st->lock);
++	accel_mode = FIELD_GET(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, val);
++	gyro_mode = FIELD_GET(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, val);
++	if (!gyro_mode && !accel_mode) {
++		/* enable accel sensor */
++		conf.mode = INV_ICM42607_SENSOR_MODE_LOW_NOISE;
++		ret = inv_icm42607_set_sensor_conf(st, &conf, IIO_ACCEL);
++		if (ret)
++			return ret;
++	}
 +
-+	return inv_icm42607_set_sensor_conf(st, &conf, IIO_ANGL_VEL);
++	ret = regmap_bulk_read(st->map, INV_ICM42607_REG_TEMP_DATA1,
++			       raw, sizeof(raw));
++	if (ret)
++		return ret;
++
++	*temp = get_unaligned_be16(raw);
++	if (*temp == INV_ICM42607_DATA_INVALID)
++		return -EINVAL;
++
++	return 0;
 +}
 +
-+static int inv_icm42607_gyro_read_raw(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan,
-+				      int *val, int *val2, long mask)
++int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
 +{
 +	struct inv_icm42607_state *st = iio_device_get_drvdata(indio_dev);
-+	s16 data;
++	s16 temp;
 +	int ret;
-+
-+	switch (chan->type) {
-+	case IIO_ANGL_VEL:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
-+		ret = inv_icm42607_read_sensor(indio_dev, chan, &data);
++		ret = inv_icm42607_temp_read(st, &temp);
 +		if (ret)
 +			return ret;
-+		*val = data;
++		*val = temp;
 +		return IIO_VAL_INT;
++	/*
++	 * T°C = (temp / 128) + 25
++	 * Tm°C = 1000 * ((temp * 100 / 12800) + 25)
++	 * scale: 100000 / 12800 ~= 7.8125
++	 * offset: 3200
++	 */
 +	case IIO_CHAN_INFO_SCALE:
-+		return inv_icm42607_gyro_read_scale(indio_dev, val, val2);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return inv_icm42607_gyro_read_odr(st, val, val2);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42607_gyro_read_avail(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					const int **vals,
-+					int *type, int *length, long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type != IIO_ANGL_VEL)
-+			return -EINVAL;
-+		*vals = (const int *)inv_icm42607_gyro_scale_nano;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*length = ARRAY_SIZE(inv_icm42607_gyro_scale_nano) * 2;
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = (const int *)inv_icm42607_gyro_odr[INV_ICM42607_ODR_1600HZ];
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		*length = (ARRAY_SIZE(inv_icm42607_gyro_odr) -
-+			   INV_ICM42607_ODR_1600HZ) * 2;
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42607_gyro_write_raw(struct iio_dev *indio_dev,
-+				       struct iio_chan_spec const *chan,
-+				       int val, int val2, long mask)
-+{
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type != IIO_ANGL_VEL)
-+			return -EINVAL;
-+		ret = inv_icm42607_gyro_write_scale(indio_dev, val, val2);
-+		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return inv_icm42607_gyro_write_odr(indio_dev, val, val2);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42607_gyro_write_raw_get_fmt(struct iio_dev *indio_dev,
-+					       struct iio_chan_spec const *chan,
-+					       long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type != IIO_ANGL_VEL)
-+			return -EINVAL;
++		*val = 7;
++		*val2 = 812500000;
 +		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 3200;
++		return IIO_VAL_INT;
 +	default:
 +		return -EINVAL;
 +	}
 +}
+diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
+new file mode 100644
+index 000000000000..18499b4d0b94
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_temp.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2026 InvenSense, Inc.
++ */
 +
-+static const struct iio_info inv_icm42607_gyro_info = {
-+	.read_raw = inv_icm42607_gyro_read_raw,
-+	.read_avail = inv_icm42607_gyro_read_avail,
-+	.write_raw = inv_icm42607_gyro_write_raw,
-+	.write_raw_get_fmt = inv_icm42607_gyro_write_raw_get_fmt,
-+};
++#ifndef INV_ICM42607_TEMP_H_
++#define INV_ICM42607_TEMP_H_
 +
-+struct iio_dev *inv_icm42607_gyro_init(struct inv_icm42607_state *st)
-+{
-+	struct device *dev = regmap_get_device(st->map);
-+	const char *name;
-+	struct inv_icm42607_sensor_state *gyro_st;
-+	struct iio_dev *indio_dev;
-+	int ret;
++#include <linux/bitops.h>
 +
-+	name = devm_kasprintf(dev, GFP_KERNEL, "%s-gyro", st->hw->name);
-+	if (!name)
-+		return ERR_PTR(-ENOMEM);
++struct iio_dev;
++struct iio_chan_spec;
 +
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*gyro_st));
-+	if (!indio_dev)
-+		return ERR_PTR(-ENOMEM);
-+
-+	gyro_st = iio_priv(indio_dev);
-+	gyro_st->power_mode = INV_ICM42607_SENSOR_MODE_LOW_NOISE;
-+	gyro_st->filter = INV_ICM42607_FILTER_BW_73HZ;
-+
-+	indio_dev->name = name;
-+	indio_dev->info = &inv_icm42607_gyro_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = inv_icm42607_gyro_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(inv_icm42607_gyro_channels);
-+	iio_device_set_drvdata(indio_dev, st);
-+
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	return indio_dev;
++#define INV_ICM42607_TEMP_CHAN(_index)				\
++{								\
++	.type = IIO_TEMP,					\
++	.info_mask_separate =					\
++		BIT(IIO_CHAN_INFO_RAW) |			\
++		BIT(IIO_CHAN_INFO_OFFSET) |			\
++		BIT(IIO_CHAN_INFO_SCALE),			\
++	.info_mask_shared_by_all =				\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
++	.info_mask_shared_by_all_available =			\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
++	.scan_index = _index,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 16,					\
++		.storagebits = 16,				\
++		.endianness = IIO_BE,				\
++	},							\
 +}
++
++int inv_icm42607_temp_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2, long mask);
++
++#endif
 -- 
 2.43.0
 
