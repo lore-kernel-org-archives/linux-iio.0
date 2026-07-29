@@ -1,59 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1830A37E5CE;
-	Wed, 29 Jul 2026 22:47:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA660381EA3;
+	Wed, 29 Jul 2026 23:09:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785365260; cv=none; b=AdZXlk7CYcNJO/MJ3nwfpAj20YMfGBuFDLSAxS8KIAVOa6LQ+kY6YYYU5xpGMBskotxVXSFANfmo7O2XG8un1Tjs1f1ZJVcNeAV13LpSLWLhM+sqRw9FgW7IONfi3L1A2g8IVYHLfX138imGhoBJVmrgrUGT74Ra7P31CcCeIuo=
+	t=1785366577; cv=none; b=KxqymJaSWyZ05c+2KwOO757EdxbyrB/uzOWHitaZ71TsB2LAj039LEdBdSUCM02DvGMcvIdwSWoGQrNFFUrNaQuHqnoBxR/2sihajgZffZHfmN8/AzfScJlw+iMgWgWUHz8y6DnQCrwqtkYb5dFDVYbEIDwnOCDaDbWb6S38Ibs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785365260; c=relaxed/simple;
-	bh=W4Ui70n5xFnTa802mEnZLkbAQG4UwWdi84S/0eTZq+s=;
+	s=arc-20240116; t=1785366577; c=relaxed/simple;
+	bh=VaLLg4E77zypU7MzWB173soKqIC+WlqYXnBlXkX8m/g=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ncDv6VxBwyslBaIg+qs+zPnJVTFXcl2W4UXYoYfVZE32c6ECq93X6O32d9mp6xE8F+2q/zEBdxSjGcd6w3zO2cYcaaABONFaodJVvhd1NAKMsNVQAGMuh6Lt8Hrpe+OGLXb8Nlgxa3HiiAZsSkNO6ws8pg06pAyB2u5ME1oxpIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AxSKw8HL; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=sFeN/h8wk1xTZePLCvIrdFCBxzPjBlY+bh8JqTaF0oEfXAfO0cMzKh06jnhi5plv2FObpQqqFH4hcNfSOLwi8vab71c4lqFwsw/ify0qm0CNCIhNGh1ZYDuzr01gaiaQ1V012wSYwTFjaWS2YIKn7hMo/bHLJzofnPE+s22Rj2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VfYz/K6H; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AxSKw8HL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F7D1F000E9;
-	Wed, 29 Jul 2026 22:47:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VfYz/K6H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455DC1F000E9;
+	Wed, 29 Jul 2026 23:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1785365258;
-	bh=vMXRsnL3EafGsZdVSmTWqi92Pdp6B251xlDnGExp0iw=;
+	s=k20260515; t=1785366575;
+	bh=qwCwB4l1jJif4G/OahJteb6HrtiO/YmN0M2WQ7WqvxM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AxSKw8HLkRHHqjcc1/u1RT1Q2jwU5+NEYqAinUt5CcD4xvrymZnPeH6RuWUhntiny
-	 VtdgFAK77/dfdwxf03MXlsZaq+9aT/g1lnVklNhdw5NGg2cKjlCfOLX6plVnZ1sbtA
-	 CIfFv1P8N8hZHTa6Qc4vdthyoIs85mpp5NJFgou0vXIQyY3ZRha3yzi7pPWzJTcZPY
-	 yAWBT4XAvW0hGyjsFgbACFOG1YSJP7K6ZI5AjVeVUonj110HpUERBBgCk1wRJTDTa3
-	 prdJYAkSPlHB05FaBIUoQE0xYBj3tS/L11W7eZX6lNOiRgxQdBp+g2gqbuqLzc3udj
-	 l83AhvsGTpHDA==
-Date: Wed, 29 Jul 2026 23:47:33 +0100
+	b=VfYz/K6H6vBzOEUoOcR7YxF7g0i3/wyZEw8vyRNkxRiIv4xT3VXaAghc5b30F2Vf8
+	 P2DDahVCfbawqk1wiH4uerYZJhmH+a1Y99UCIurFB9sMr1a5WsxF4Es+4rwrhWPr+A
+	 rhfZq4GaGVkV0ly3z1xc7Bq8Gj+Y5P/WfcyUokBztRW0m3TqiOESC6es2eGlUdeDXJ
+	 SNRfKOvyPfcCrJqj7T7rJKrCO1Qb3jzL+1xLqNFfE+E26gsEecw9lenrnDr0cmA9uA
+	 3WjZ+IA6EcJQurl7SkNfFeaRZtn7p/OE5MokutHvp+uy/tYhGjCmvbhSUQ/xbhO78r
+	 F+4++YPB4XC+Q==
+Date: Thu, 30 Jul 2026 00:09:29 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Conor Dooley <conor@kernel.org>, Janani Sunil <janani.sunil@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Philipp
- Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, Shuah
- Khan <skhan@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Marius
- Cristea <marius.cristea@microchip.com>, Marcus Folkesson
- <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
+To: Conor Dooley <conor@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Janani Sunil
+ <janani.sunil@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
+ Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Mark Brown
+ <broonie@kernel.org>, Marius Cristea <marius.cristea@microchip.com>, Marcus
+ Folkesson <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Janani Sunil
  <jan.sun97@gmail.com>, linux-spi@vger.kernel.org, Kent Gustavsson
  <nedo80@gmail.com>
-Subject: Re: [PATCH v7 1/7] spi: dt-bindings: Add spi-device-addr peripheral
- property
-Message-ID: <20260729234733.6b092a00@jic23-huawei>
-In-Reply-To: <163c9872-17ef-4b01-9392-96e896c284b8@baylibre.com>
+Subject: Re: [PATCH v7 2/7] dt-bindings: iio: adc: microchip,mcp3564: Add
+ spi-device-addr
+Message-ID: <20260730000929.2ec20cf8@jic23-huawei>
+In-Reply-To: <20260729-hundredth-suffice-f28afa67bc06@spud>
 References: <20260722-ad5529r-driver-v7-0-7781cd74ad75@analog.com>
-	<20260722-ad5529r-driver-v7-1-7781cd74ad75@analog.com>
-	<e2118cfc-feef-4843-917f-844834ef4e60@baylibre.com>
-	<20260725230445.60a445a0@jic23-huawei>
-	<20260728-barrette-rickety-788b47da503c@spud>
-	<e1f977a8-ab38-4dc6-a82b-b955545550a0@baylibre.com>
-	<20260728220544.5c65bc50@jic23-huawei>
-	<163c9872-17ef-4b01-9392-96e896c284b8@baylibre.com>
+	<20260722-ad5529r-driver-v7-2-7781cd74ad75@analog.com>
+	<cb4098c1-4bad-4a11-9a6f-a833e554f197@baylibre.com>
+	<20260725230739.63ff7000@jic23-huawei>
+	<20260728-patronize-thwarting-56fab2e11077@spud>
+	<20260728221719.7f668a73@jic23-huawei>
+	<20260729-hundredth-suffice-f28afa67bc06@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -64,160 +63,164 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 28 Jul 2026 16:46:26 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Wed, 29 Jul 2026 21:47:45 +0100
+Conor Dooley <conor@kernel.org> wrote:
 
-> On 7/28/26 4:05 PM, Jonathan Cameron wrote:
-> > On Tue, 28 Jul 2026 13:39:20 -0500
-> > David Lechner <dlechner@baylibre.com> wrote:
+> On Tue, Jul 28, 2026 at 10:17:19PM +0100, Jonathan Cameron wrote:
+> > On Tue, 28 Jul 2026 17:00:55 +0100
+> > Conor Dooley <conor@kernel.org> wrote:
 > >   
-> >> On 7/28/26 11:10 AM, Conor Dooley wrote:  
-> >>> On Sat, Jul 25, 2026 at 11:04:45PM +0100, Jonathan Cameron wrote:    
-> >>>> On Sat, 25 Jul 2026 15:55:01 -0500
-> >>>> David Lechner <dlechner@baylibre.com> wrote:
-> >>>>    
-> >>>>> On 7/22/26 2:54 AM, Janani Sunil wrote:    
-> >>>>>> Some SPI devices support sharing a single chip select across multiple
-> >>>>>> physical chips by encoding a device address in the SPI frame itself.
-> >>>>>> Add the generic spi-device-addr property for describing these hardware
-> >>>>>> addresses. The property is placed on the SPI peripheral node and may
-> >>>>>> contain multiple addresses.
-> >>>>>>
-> >>>>>> Signed-off-by: Janani Sunil <janani.sunil@analog.com>
-> >>>>>> ---
-> >>>>>>  Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml | 7 +++++++
-> >>>>>>  1 file changed, 7 insertions(+)
-> >>>>>>
-> >>>>>> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> >>>>>> index 880a9f624566..b59d047cf117 100644
-> >>>>>> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> >>>>>> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> >>>>>> @@ -142,6 +142,13 @@ properties:
-> >>>>>>      minItems: 2
-> >>>>>>      maxItems: 4
-> >>>>>>  
-> >>>>>> +  spi-device-addr:
-> >>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> >>>>>> +    description:
-> >>>>>> +      Device addresses used when multiple peripherals share a single chip
-> >>>>>> +      select. The array allows one logical peripheral to comprise multiple
-> >>>>>> +      physical devices, with one address per device.      
-> >>>>>
-> >>>>> "per physical device" for clarity.
-> >>>>>    
-> >>>>
-> >>>> We may end up relaxing that again if multichip packages start doing this.
-> >>>> Fine to add that clarification for now. We can revisit when / if it ever
-> >>>> needs that relaxing.
-> >>>>    
-> >>>>>> +
-> >>>>>>    st,spi-midi-ns:
-> >>>>>>      deprecated: true
-> >>>>>>      description: |
-> >>>>>>       
-> >>>>>
-> >>>>> If there is nothing useful the SPI core code can do with this information,
-> >>>>> I'm not entirely convinced that this needs to be a common property.    
-> >>>>
-> >>>> I think being common does make some sense from a standarization point of
-> >>>> view and it isn't obvious where to put it other than under spi.
-> >>>>    
-> >>>>>
-> >>>>> And this only allows for one logical device. If we wanted to treat each
-> >>>>> address as a logical device (all with same CS), we would need #address-cells = <2>;
-> >>>>> instead where the DT "address" is two values, the CS and the device address.    
-> >>>>
-> >>>> Ah.  Good point for the adc@address or similar needing to match a combination
-> >>>> of CS and spi-device-addr.  Conor any thoughts on how this would be done?    
-> >>>
-> >>> I'm sorry, I don't quite understand. Why do you want to support both of
-> >>> these representations? Hardware wise both of these things would be
-> >>> describing the same setup, so allowing this alternate "multiple logical
-> >>> device" typically is not permitted. What even is the use case of it?  
+> > > On Sat, Jul 25, 2026 at 11:07:39PM +0100, Jonathan Cameron wrote:  
+> > > > On Sat, 25 Jul 2026 15:57:07 -0500
+> > > > David Lechner <dlechner@baylibre.com> wrote:
+> > > >     
+> > > > > On 7/22/26 2:54 AM, Janani Sunil wrote:    
+> > > > > > Add the generic spi-device-addr property to the binding and deprecate
+> > > > > > the existing vendor specific microchip,hw-device-address property.
+> > > > > > 
+> > > > > > Signed-off-by: Janani Sunil <janani.sunil@analog.com>
+> > > > > > ---
+> > > > > >  .../devicetree/bindings/iio/adc/microchip,mcp3564.yaml         | 10 ++++++++--
+> > > > > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > > > > > 
+> > > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > > > > index 675319276197..de1ea289e7f5 100644
+> > > > > > --- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > > > > +++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3564.yaml
+> > > > > > @@ -80,6 +80,7 @@ properties:
+> > > > > >      $ref: /schemas/types.yaml#/definitions/uint32
+> > > > > >      minimum: 0
+> > > > > >      maximum: 3
+> > > > > > +    deprecated: true
+> > > > > >      description:
+> > > > > >        The address is set on a per-device basis by fuses in the factory,
+> > > > > >        configured on request. If not requested, the fuses are set for 0x1.
+> > > > > > @@ -91,6 +92,12 @@ properties:
+> > > > > >        clocking of the device address (BITS[7:6] - top two bits of COMMAND BYTE
+> > > > > >        which is first one on the wire).
+> > > > > >  
+> > > > > > +  spi-device-addr:
+> > > > > > +    maxItems: 1      
+> > > > > 
+> > > > > Does it not make sense to all for more than once device connected
+> > > > > to the same CS here? I would expect maxItems to be 4 to match the
+> > > > > number of possible addresses.
+> > > > >     
+> > > > 
+> > > > I think for this part their isn't a reason to aggregate.
+> > > > No magic accesses that touch them all at once.  So this hits
+> > > > exactly the point you raised about how we set the address for
+> > > > more than one of them.    
+> > > 
+> > > No David is actually right here, and maxitems should be 4.
+> > > Setting the address for multiple was already discussed I thought, with
+> > > the property being an array and each compatible being used to determine
+> > > the "stride" between entries based on the number of supported channels?  
 > > 
-> > The microchip parts.  They are entirely independent. The device address is
-> > just a way to save pins.  That is contrasting those with the one in this
-> > series where the design assumes you want to treat them as a large logical
-> > device in a similar way to spi device chaining.
-> > 
-> >   
-> >>> Does it matter at all if you have one or more logical devices from a
-> >>> consumer perspective?
-> >>>
-> >>> I do have an idea of how to solve the adc@address problem (you can do
-> >>> adc@address,spi-device-address like some other devices) but as I said I
-> >>> don't get why it would be needed.    
-> > 
-> > I think we should often do this because there are some confusing cases
-> > otherwise. See below.
-> >   
-> >>
-> >> I would expect that if such a device was intended to be used as individual
-> >> logical devices that they would just be wired up each with their own chip
-> >> select rather than sharing one.
-> >>
-> >> The only reason I can think of actually needing adc@address,spi-device-address
-> >> would be on a system that was really short on pins on the MCU.
-> >>
-> >> So not saying that we need it right now. Just wanted to make sure we were
-> >> intentional about saying we don't need it if we don't.  
-> > 
-> > To enumerate the cases:
-> > 
-> > 1. One CS has multiple spi-device-address and needs to be a combined device.
-> > 	Given this ADC does some fun stuff to include messages with no
-> >         spi-device-address that are meant to be received by all such
-> > 	devices we pretty much have to map any that share a CS to one
-> > 	logical device - we have to bind one driver.  This is kind of
-> > 	similar to SPI device chaining.
-> > 	address == cs.  spi-device-address property not used for that.
-> > 	- This one can be normal SPI style.
-> > 
-> > 2. One CS has multiple spi-device-address but logically separate otherwise.
-> > 	This is the microchip devices I think.  For those the device-address
-> > 	is just a pin saving exercise.
-> > 	address == spi-device-address. CS not needed as there is only one.  
+> > I don't think that applies for this device or at least to do so
+> > is a major driver rewrite, not a simple binding change.  Probably we'd  
 > 
-> We would still need CS to tell the SPI controller which one is wired. So
-> we should never have adc@spi-device-address, only adc@cs,spi-device-address.
+> Whether or not it is a big driver change, the binding should represent
+> what the hardware is capable of.
 > 
-> (There currently isn't any binding for SPI_NO_CS, so the controller would
-> still need a CS line even if it isn't wired/muxed and CS on the peripheral
-> is hardwired.)
+> > just add a bus and hang the 4 instances off it. They are running on own
+> > timing etc so we can't grab data across all of them in any sort of
+> > synchronous way - the clocks will probably drift over time etc.  
+> 
+> Did I miss something about the ADI devices in this thread where they
+> have some multicast ability to read all devices at once? I thought that
+> that was a different series where each device had dedicated mosi and
+> miso lines, rather than the shared ones here. I didn't think the ad5529r
+> did anything special from my reading of the datasheet but I'm not the
+> expert in this area!
 
-Sure - it needs to provided today because the reg entry must match the adc@reg
-bit.  That 'could' be relaxed.  I don't think it's a good idea but
-I thought this was what Conor was proposing.
+It's a DAC so other way around but yes they have exactly that in the section:
+https://www.analog.com/media/en/technical-documentation/data-sheets/ad5529r.pdf
+
+	Register Details: Hotpath DAC registermap.
+
+The is a brief description earlier of the whole feature that might
+serve for this discussion:
+
+"DAC HOTPATH
+The DAC hotpath is a dedicated register region that optimizes
+DAC updates in multidevice configurations where several AD5529R
+devices share a common SPI bus. It reduces the number of SPI
+frames required to write DAC data and supports synchronized
+output updates across devices. In single device systems, the hotpath
+offers no advantage over the standard register map and can be
+disregarded."
+
+As an example
+MULTI DEVICE SW LDAC MODE 0 REGISTER
+"This register sends a software LDAC update to the selected devices
+that share the SPI lines but have different addresses, using the ID0
+and ID1 pins. The selection is done on a per-device basis corresponding
+to the configured bit field."
+
+This one triggers all selected DACs (there is bit corresponding to
+each address) to update in sync. (Lets put aside normal systems
+where an LDAC gpio is wired to multiple devices as that is a whole
+different problem).
+
+
+It is this part that is driving the suggestion of having
+a combined device representation for multiple physical devices.
+In practice it is very similar to chained devices where we do that
+already in that a longer access sequence is used to talk to multiple
+devices at once.
+
+Those SPI messages do not carry the address (or they are ignored - I didn't
+dig into the mechanism).
+
 
 > 
-> > 
-> > 2b.  Same as 2, but there is another normal ADC with a chip select.
-> > 	How do we know adc@spi-device-address vs adc@cs given they could
-> > 	easily take same address value by coincidence?  
+> > They are independent devices (think of them using spi-device-address
+> > like an i2c address) -  so why have one DT node for up to 4 of
+> > them?  Note this is different from the AD5529R where the design
+> > is intended for them to operate as one single larger device.  
 > 
-> As above.
+> I don't buy this argument, I just don't see what differs between the
+> devices. The microchip datasheet I read talked about using 3 devices to
+> measure 3 phase power setups (I think that's what it was) which is, in
+> my book, evidence that they're not just intended to be used
+> independently.
+
+Sure but that could just as easily be done with normal SPI and 3 chip
+selects. For these devices there is no broadcast write magic (I think
+anyway!)
+
 > 
-> > 
-> > 2c. Basically Case as 2 but * N CS all on same SPI bus.
-> > 	As David calls out this is the pin count minimization case.
-> > 	E.g. I want 8 devices each of which has 2 pin straps to set the
-> > 	device address.  So I have to use at least 2 CS.
-> > 	For this I need both cs and device-address and Conor's suggestion works.
-> > 
-> > There is a case of 1 + 2 with different device types but result is same
-> > as 2c.
-> > 
-> > Now, to me the question is whether we say that if spi-device-address is
-> > present you always do adc@cs,spi-device-address or do we allow for not
-> > doing so for the composite devices where nothing else is sharing the CS
-> > (like this driver).
-> > 
-> > My inclination is standardize on always doing it for these devices.
-> > 
-> > Jonathan
-> >   
-> >>
-> >>  
-> >   
+> That said, the more this discussion goes on, the more I think that
+> merging the devices into a single node is a mistake. Logically there may
+> be one device, but really there are one to four devices. Doing the
+> logical device thing is nice maybe for software but I no longer think
+> that it represents the hardware correctly. I know this will cause
+> problems with registration of devices in the SPI core, but we need to
+> pick one representation for these devices that fits in all usecases
+> and with the things brought up in the other mail I am having a lot of
+> doubts.
+
+This wasn't about use cases as such but the broadcast like facilities the
+ADI parts have which to me smell like the main reason you'd put them on
+a single bus and use this feature in the first place - you are making
+one big DAC from multiple chips.
+
 > 
+> Only going to reply to this for now, I'll reply to the other thread of
+> this conversation later so as not to end up duplicating discussion, but
+> I am thinking of things like what if someone puts a mcp3654r and an
+> ad5529r on the same chip select? I think that's actually perfectly
+> functional on a hardware level, provided the fuses/pins are set up
+> correctly (and if it is not, mixing the microchip devices is possible
+> and probably mixing future ADI ones will be too).
+
+The broadcast stuff is what breaks this.  Otherwise I fully agree they
+should be independent and we should have SPI allow that.
+
+Jonathan
+
+> 
+> Cheers,
+> Conor.
 
